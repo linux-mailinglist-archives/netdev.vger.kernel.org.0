@@ -2,119 +2,125 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 95F3D138FC8
-	for <lists+netdev@lfdr.de>; Mon, 13 Jan 2020 12:08:47 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8C2A2138FE2
+	for <lists+netdev@lfdr.de>; Mon, 13 Jan 2020 12:16:36 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728346AbgAMLIp (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 13 Jan 2020 06:08:45 -0500
-Received: from mail-qk1-f172.google.com ([209.85.222.172]:46564 "EHLO
-        mail-qk1-f172.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726193AbgAMLIp (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 13 Jan 2020 06:08:45 -0500
-Received: by mail-qk1-f172.google.com with SMTP id r14so8014377qke.13
-        for <netdev@vger.kernel.org>; Mon, 13 Jan 2020 03:08:45 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=NDxnmPtvSGzzeJPZGyzWDMJa+QjPbLIfskiiXnAiIGs=;
-        b=eTFXZeYgGWhe2RqqUNxARLPN+yF0DiEVMA2vKrnbyyWGrAcjRhN6qF6PzPn99UQiYR
-         GBDR1OWZmXIKSESj8ybF48OryL8SC6OBIM2sqpUsudCfjZljTi0Klwxva5Vr8q2jFwrr
-         eI/fEGPgqEg0UAIMaj6uj+o2GGB7AHlhw+S9s8WtVhUGA+6oMYVkBiIdJhUnLAeXzy6j
-         Id38VqtHzemA9pczMMoqQDe5r10gWgy7DlqkhabfHRt/V+FdO4KDo7ww/audpTiU04hU
-         t2No5haP+AyMs0X7b1me8Wj7HGEZ+CpYhJ0dWU7kZnb4KPixJ+dA6H3bgoojsGwI6DLq
-         ADVQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=NDxnmPtvSGzzeJPZGyzWDMJa+QjPbLIfskiiXnAiIGs=;
-        b=SD3y/UG22Xm5vSGKcJxgOMT5Ov/RSNvB+6N/zoCYk07BjZk//VsPh+huH9tb7LMCfQ
-         3UntDvwdDbVYQ/Zq7JUW1ogBos1I5RB39aKItryRQQ3CJRUY6jOrcP8NKsYncj34V26N
-         /gfpZfu1gs9T6rolnyAJ8ypWfvxmLSkryK4m+uNj4YZpRmDxEVcbMlRRhkeRsavAwf1j
-         hRF+lkZl09u48xKMJko4JCtPHmBgpgybKZvLyrnE0Fdu/sgAUDKgAFHA8LabwJunrXQq
-         Pc/PIuDJsHQUvfyIrWlhbgPGxOLYWGvHCKMjXSzbklWzi9RlT/11t8ouR8+NPp7VCKIe
-         P9lQ==
-X-Gm-Message-State: APjAAAVKD1rRzDB4rIEOecI83m7RC0CyfZ3c15NZYYt2nZtdqmxEfEON
-        0lXvgkUmmP/au1DRvDqIPImWmXOUofIi114LVN2H7A==
-X-Google-Smtp-Source: APXvYqxQGyK0Ge5+xgutPLUgyR8mWRfPeinvZ/SDIQ3SSfvBNmdYHEs5esk+m8/e7q0c9hibP8HP6lhrkVV/BeqvDTQ=
-X-Received: by 2002:a37:e312:: with SMTP id y18mr15828723qki.250.1578913724420;
- Mon, 13 Jan 2020 03:08:44 -0800 (PST)
+        id S1727286AbgAMLQ3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 13 Jan 2020 06:16:29 -0500
+Received: from mail.kernel.org ([198.145.29.99]:39780 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726163AbgAMLQ2 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 13 Jan 2020 06:16:28 -0500
+Received: from disco-boy.misterjones.org (disco-boy.misterjones.org [51.254.78.96])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id E34BD207E0;
+        Mon, 13 Jan 2020 11:16:27 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1578914188;
+        bh=oQgIRZE3Ca1zvjHWdut6CuVqEaxiZSV5sbQvWLbrvag=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=e3TcvGj31AwlkiLT/c2UDThap+MfQ1EwwdLbheey2cC7to/q4SOcYLDkg406rEFf0
+         LXe9K5ORlRbmcMY05oDtY9CrSsLFr2i4qGS1k3/8tFudNQUDC1T087p4NcCBMYiguz
+         L0ETEtO7VrTs+z8DDuIoxk2Czw4BqJLM9CJopX2A=
+Received: from disco-boy.misterjones.org ([51.254.78.96] helo=www.loen.fr)
+        by disco-boy.misterjones.org with esmtpsa (TLS1.2:ECDHE_RSA_AES_128_GCM_SHA256:128)
+        (Exim 4.92)
+        (envelope-from <maz@kernel.org>)
+        id 1iqxhq-0002vN-8G; Mon, 13 Jan 2020 11:16:26 +0000
 MIME-Version: 1.0
-References: <000000000000ab3f800598cec624@google.com> <000000000000802598059b6c7989@google.com>
- <CAM_iQpX7-BF=C+CAV3o=VeCZX7=CgdscZaazTD6QT-Tw1=XY9Q@mail.gmail.com>
- <CAMArcTXTtJB8WUuJUumP2NHVg_c19m-6EheC3JRGxzseYmHVDw@mail.gmail.com>
- <CAM_iQpVJiYHnhUJKzQpoPzaUhjrd=O4WR6zFJ+329KnWi6jJig@mail.gmail.com> <CAMArcTVPrKrhY63P=VgFuTQf0wUNO_9=H2R96p08-xoJ+mbZ5w@mail.gmail.com>
-In-Reply-To: <CAMArcTVPrKrhY63P=VgFuTQf0wUNO_9=H2R96p08-xoJ+mbZ5w@mail.gmail.com>
-From:   Dmitry Vyukov <dvyukov@google.com>
-Date:   Mon, 13 Jan 2020 12:08:32 +0100
-Message-ID: <CACT4Y+ZcTRhfoLs-9Va1p1fZFDsCxd8gjaxUGgEPqgtjBvjWzQ@mail.gmail.com>
-Subject: Re: WARNING: bad unlock balance in sch_direct_xmit
-To:     Taehee Yoo <ap420073@gmail.com>
-Cc:     Cong Wang <xiyou.wangcong@gmail.com>,
-        syzbot <syzbot+4ec99438ed7450da6272@syzkaller.appspotmail.com>,
-        Linux Kernel Network Developers <netdev@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=US-ASCII;
+ format=flowed
+Content-Transfer-Encoding: 7bit
+Date:   Mon, 13 Jan 2020 11:16:26 +0000
+From:   Marc Zyngier <maz@kernel.org>
+To:     Jianyong Wu <Jianyong.Wu@arm.com>
+Cc:     netdev@vger.kernel.org, yangbo.lu@nxp.com, john.stultz@linaro.org,
+        tglx@linutronix.de, pbonzini@redhat.com,
+        sean.j.christopherson@intel.com, richardcochran@gmail.com,
+        Mark Rutland <Mark.Rutland@arm.com>, will@kernel.org,
+        Suzuki Poulose <Suzuki.Poulose@arm.com>,
+        Steven Price <Steven.Price@arm.com>,
+        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        kvmarm@lists.cs.columbia.edu, kvm@vger.kernel.org,
+        Steve Capper <Steve.Capper@arm.com>,
+        Kaly Xin <Kaly.Xin@arm.com>, Justin He <Justin.He@arm.com>,
+        nd <nd@arm.com>
+Subject: Re: [RFC PATCH v9 6/8] psci: Add hvc call service for ptp_kvm.
+In-Reply-To: <HE1PR0801MB167693BFB769ACEEA8A6B007F4350@HE1PR0801MB1676.eurprd08.prod.outlook.com>
+References: <20191210034026.45229-1-jianyong.wu@arm.com>
+ <20191210034026.45229-7-jianyong.wu@arm.com>
+ <7383dc06897bba253f174cd21a19b5c0@kernel.org>
+ <HE1PR0801MB1676AB738138AB24E2158AD4F4390@HE1PR0801MB1676.eurprd08.prod.outlook.com>
+ <099a26ffef5d554b88a5e33d7f2a6e3a@kernel.org>
+ <HE1PR0801MB16765B507D9B5A1A7827078BF4380@HE1PR0801MB1676.eurprd08.prod.outlook.com>
+ <ca80d88f5e00937fca7ee80be8f5c962@kernel.org>
+ <HE1PR0801MB167693BFB769ACEEA8A6B007F4350@HE1PR0801MB1676.eurprd08.prod.outlook.com>
+Message-ID: <22ba1283a7b82f018c1fdf85414e5bfe@kernel.org>
+X-Sender: maz@kernel.org
+User-Agent: Roundcube Webmail/1.3.8
+X-SA-Exim-Connect-IP: 51.254.78.96
+X-SA-Exim-Rcpt-To: Jianyong.Wu@arm.com, netdev@vger.kernel.org, yangbo.lu@nxp.com, john.stultz@linaro.org, tglx@linutronix.de, pbonzini@redhat.com, sean.j.christopherson@intel.com, richardcochran@gmail.com, Mark.Rutland@arm.com, will@kernel.org, Suzuki.Poulose@arm.com, Steven.Price@arm.com, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, kvmarm@lists.cs.columbia.edu, kvm@vger.kernel.org, Steve.Capper@arm.com, Kaly.Xin@arm.com, Justin.He@arm.com, nd@arm.com
+X-SA-Exim-Mail-From: maz@kernel.org
+X-SA-Exim-Scanned: No (on disco-boy.misterjones.org); SAEximRunCond expanded to false
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Jan 8, 2020 at 12:44 PM Taehee Yoo <ap420073@gmail.com> wrote:
->
-> On Wed, 8 Jan 2020 at 09:34, Cong Wang <xiyou.wangcong@gmail.com> wrote:
-> >
-> > On Tue, Jan 7, 2020 at 3:31 AM Taehee Yoo <ap420073@gmail.com> wrote:
-> > > After "ip link set team0 master team1", the "team1 -> team0" locking path
-> > > will be recorded in lockdep key of both team1 and team0.
-> > > Then, if "ip link set team1 master team0" is executed, "team0 -> team1"
-> > > locking path also will be recorded in lockdep key. At this moment,
-> > > lockdep will catch possible deadlock situation and it prints the above
-> > > warning message. But, both "team0 -> team1" and "team1 -> team0"
-> > > will not be existing concurrently. so the above message is actually wrong.
-> > > In order to avoid this message, a recorded locking path should be
-> > > removed. So, both lockdep_unregister_key() and lockdep_register_key()
-> > > are needed.
-> > >
-> >
-> > So, after you move the key down to each netdevice, they are now treated
-> > as different locks. Is this stacked device scenario the reason why you
-> > move it to per-netdevice? If so, I wonder why not just use nested locks?
-> > Like:
-> >
-> > netif_addr_nested_lock(upper, 0);
-> > netif_addr_nested_lock(lower, 1);
-> > netif_addr_nested_unlock(lower);
-> > netif_addr_nested_unlock(upper);
-> >
-> > For this case, they could still share a same key.
-> >
-> > Thanks for the details!
->
-> Yes, the reason for using dynamic lockdep key is to avoid lockdep
-> warning in stacked device scenario.
-> But, the addr_list_lock case is a little bit different.
-> There was a bug in netif_addr_lock_nested() that
-> "dev->netdev_ops->ndo_get_lock_subclass" isn't updated after "master"
-> and "nomaster" command.
-> So, the wrong subclass is used, so lockdep warning message was printed.
-> There were some ways to fix this problem, using dynamic key is just one
-> of them. I think using the correct subclass in netif_addr_lock_nested()
-> is also a correct way to fix that problem. Another minor reason was that
-> the subclass is limited by 8. but dynamic key has no limitation.
->
-> Unfortunately, dynamic key has a problem too.
-> lockdep limits the maximum number of lockdep keys.
->    $cat /proc/lockdep_stats
->    lock-classes:                         1228 [max: 8192]
->
-> So, If so many network interfaces are created, they use so many
-> lockdep keys. If so, lockdep will stop.
-> This is the cause of "BUG: MAX_LOCKDEP_KEYS too low!".
+Hi Jianyong,
 
-Hi Taehee, Cong,
+On 2020-01-13 10:30, Jianyong Wu wrote:
+> Hi Marc,
+> 
+>> -----Original Message-----
+>> From: Marc Zyngier <maz@kernel.org>
+>> Sent: Friday, January 10, 2020 6:56 PM
+>> NV breaks that assumtion, because the guest hypervisor is using the 
+>> physical
+>> counter. Also, let's not forget that the hypercall isn't Linux 
+>> specific.
+>> I can write my own non-Linux guest and still use this hypercall. 
+>> Nothing in
+>> there says that I can't use the physical counter if I want to.
+>> 
+>> So somehow, you need to convey the the hypervisor the notion of 
+>> *which*
+>> counter the guest uses.
+>> 
+>> Does it make sense? Or am I missing something?
+>> 
+> I know what you say. Let me try to solve this problem.
+> 	Step 0, summary out all the conditions we should process, which will
+> sever as branch condition.(now only normal virt and nested virt, I
+> think)
 
-We actually have some serious problems with lockdep limits recently:
-https://groups.google.com/g/syzkaller-bugs/c/O9pFzd9KABU/m/KCuRo3w5CgAJ
-I wonder if it's related to what you mentioned... I will CC you on
-that other thread.
+No. You shouldn't think of the various use cases, but of which time
+references a guest can use. You don't need nested virt to use the 
+physical
+counter, for example.
+
+> 	Step 1, figure out the set of reference counter value used by guest
+> in all condition.
+
+That should be for the guest to tell you when it calls into the PV 
+service.
+
+> 	Step 2, determine which reference counter value will be used by guest
+> in a certain condition in hypercall.
+> In step 1, can we give the set only 2 elements that one is physical
+> counter the other is virtual counter?
+
+I don't think returning the two values is useful. Just return what the
+guest asks for.
+
+> For step 2, I have no idea for that now. can you give me some hint 
+> about it?
+
+Just expand your SMC call to take a parameter indicating the reference
+counter, and return the sampled (or computed) value corresponding to
+that counter.
+
+         M.
+-- 
+Jazz is not dead. It just smells funny...
