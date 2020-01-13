@@ -2,121 +2,137 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id DAA8D139A77
-	for <lists+netdev@lfdr.de>; Mon, 13 Jan 2020 21:03:11 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A0B20139A9C
+	for <lists+netdev@lfdr.de>; Mon, 13 Jan 2020 21:15:10 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728769AbgAMUDF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 13 Jan 2020 15:03:05 -0500
-Received: from mail-pg1-f193.google.com ([209.85.215.193]:38087 "EHLO
-        mail-pg1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727331AbgAMUDF (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 13 Jan 2020 15:03:05 -0500
-Received: by mail-pg1-f193.google.com with SMTP id a33so5218873pgm.5
-        for <netdev@vger.kernel.org>; Mon, 13 Jan 2020 12:03:04 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=networkplumber-org.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:cc:subject:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=dDAqkyD/tpiI4U9+257qc3YqD7LGOrkT6Qv3kWgevuE=;
-        b=2MUdmRFc3DM2x6YdfwZWMEm65bzamjR9XdINw9TimbeINbeMnyVtTF0qPit7prP/Uh
-         pXy//399Sf5SND8p5Swx/Q7REar6APJSl2dAqoEVZWffC2Rwfuf2KY/vmpRjvLVZu+kI
-         oEmcDVABS5SJ2CmoPsHKSxNggmZ5/Sh66PEPV6y0+6FHuXYHyYFkYS0to8/aXHo9//Mk
-         qFL/14pNozRgmeOEqlk8rjXJ8WraQT4jaCehig3cHRHD3GydVmphlVMIhLhmZhhwhKg/
-         RfmUPrU04QoxTGAlkO2mkR+poQBz34a3VbZRzqmBjZmfnNLrJw6vx5MXis/V8RI7WpaA
-         8Z9w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=dDAqkyD/tpiI4U9+257qc3YqD7LGOrkT6Qv3kWgevuE=;
-        b=DstV309p2XOe42Q6fXOOcDNEZnVPK+Jdqu9wpSZXOEXI0jeuD+LJrKC4B/1pThRGBj
-         EDzxJDTYxy/GwDJ71bXRMJko+4ia1k4CgXGpC0jSgrt+kE5OdLvKDB4bhNZqyZfyyaFW
-         YjD3Tihpq4HpHluq72F0i6sRKvMCG3jDAzA6mZ/me6AWzBvh2hDdgPHBldLEyeV6+tt7
-         AeIQZKQfw8Yo16iaE+8Sle9jgm+D3tIcMT+PWN/VvNQJtZCtqoc1lNHK8tQ8+MAZg79d
-         +kFwV7X+tCAP3paKbLlFT3EPtP11UAn/X+sRga2DPcVDfZ0caLrXDzuI4a6OxGpoWH0/
-         0JDw==
-X-Gm-Message-State: APjAAAX0AGdE6FRkNHIE2zFQ13Vz0lzPN7hicbgg8biuXfYQvABUOLAo
-        qIlt2EZcgjSnt+MebNziC70Aeg==
-X-Google-Smtp-Source: APXvYqz6uphmWGcjboP01vghF9D5x3AKtSgg35fYZqjtVxpHV8z8FCrT50vxWER+r7gDYXSul3DEEg==
-X-Received: by 2002:a63:2a49:: with SMTP id q70mr22072600pgq.265.1578945784482;
-        Mon, 13 Jan 2020 12:03:04 -0800 (PST)
-Received: from hermes.lan (204-195-22-127.wavecable.com. [204.195.22.127])
-        by smtp.gmail.com with ESMTPSA id 189sm15772620pfw.73.2020.01.13.12.03.03
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 13 Jan 2020 12:03:04 -0800 (PST)
-Date:   Mon, 13 Jan 2020 12:02:54 -0800
-From:   Stephen Hemminger <stephen@networkplumber.org>
-To:     Mohammed Gamal <mgamal@redhat.com>
-Cc:     linux-hyperv@vger.kernel.org, sthemmin@microsoft.com,
-        haiyangz@microsoft.com, netdev@vger.kernel.org, kys@microsoft.com,
-        sashal@kernel.org, vkuznets@redhat.com, cavery@redhat.com,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] hv_netvsc: Fix memory leak when removing rndis device
-Message-ID: <20200113120254.2f61148d@hermes.lan>
-In-Reply-To: <20200113192752.1266-1-mgamal@redhat.com>
-References: <20200113192752.1266-1-mgamal@redhat.com>
+        id S1728669AbgAMUPJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 13 Jan 2020 15:15:09 -0500
+Received: from mx0a-00082601.pphosted.com ([67.231.145.42]:3450 "EHLO
+        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1726878AbgAMUPI (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 13 Jan 2020 15:15:08 -0500
+Received: from pps.filterd (m0044010.ppops.net [127.0.0.1])
+        by mx0a-00082601.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 00DKAnpf022355;
+        Mon, 13 Jan 2020 12:15:03 -0800
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
+ : date : message-id : references : in-reply-to : content-type : content-id
+ : content-transfer-encoding : mime-version; s=facebook;
+ bh=yK011gqg2Xa4jCpgMCdQM3yemgz2G4m9cPuz3ChorIM=;
+ b=Kjkm/lsjsNymioecuWmRx9WZhTqfoNhoGBdpTf1prtLEbxMeeky6pGHEIPWAlYv2ay9P
+ lCPTsWMrC3uAdiyaZmbKxNrgoEMASsI4tOePf5sWIR/mq3HOTj1tmGSFALV0ImESz9H1
+ bOgq0cis+1+4odny82sbb+tQgZsWFTqMYss= 
+Received: from maileast.thefacebook.com ([163.114.130.16])
+        by mx0a-00082601.pphosted.com with ESMTP id 2xfydne808-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
+        Mon, 13 Jan 2020 12:15:03 -0800
+Received: from NAM10-MW2-obe.outbound.protection.outlook.com (100.104.31.183)
+ by o365-in.thefacebook.com (100.104.35.175) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.1713.5; Mon, 13 Jan 2020 12:15:02 -0800
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=FwAzAVYf1UrbdM/fvr514qcP4hvs/3t2db/sTJw29KaGb5CH+CF68w3OOpsKJ3MDh0Bfp4Ovr0lBKodX4kIocfOODx7phExn0Gs+NOHm1bTyGxMLtATu2aSLw9ZkLFZdUC6dQt70bRBF+RpjyU2xrvTkHj1q1U4k21HSiKGUX6sBiByhH3CCngOqhl8jS2rWrDkNW94fh1K0FkSOrhI1qGrQbH36GydFq4Y3BqK2HJXUvTEcC0pRgOb/34T4mVBevexocVgRpFetoQkxgAHsjtvEeHIZDNWIoW2vp5CyzbpUrdosIRanxIRM3TSytf23iURb5w4mXow1DWr6Df5b8g==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=yK011gqg2Xa4jCpgMCdQM3yemgz2G4m9cPuz3ChorIM=;
+ b=FaxvRdRxKGu2M0JMKbIFc/Hh92vc3mZTreeq5QTJSVTbxyux8K4TDoyzJNjs+uYZnzQnY8M/xePluvKGGse6Ms071Q128+jnx3M0rtjDusA1Hi8mRrnCBVAxq6mg8Z3efkIeyBgtqfJsSLM8tTE6uafzc2NYULKxqB3rgazNAEM/YbN+DxGD98v9AijMESfhvDDEX9izl5vLlh3OfyfKdsnotnAzQtzFaNlCKzmD5Ew+VnN9OhcLeR3vqIoOeUNSQ9sbv1FvsxaMQPvkMGLak/qXOjG5PNaysCUyQxUfM1WBWM4MHhNJGQkvswmAO6AvKvBqbwmeGwpy/qIGl4KVTA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=fb.com; dmarc=pass action=none header.from=fb.com; dkim=pass
+ header.d=fb.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.onmicrosoft.com;
+ s=selector2-fb-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=yK011gqg2Xa4jCpgMCdQM3yemgz2G4m9cPuz3ChorIM=;
+ b=LokofnzTKZJgUMIdIIBb4OyQc6opKxNO+93Ckjq9uMGQyxfnDNdm1M5M/S6G3d4TEIiwX7+24h0IYWTL06af4WQG4XZbNgclWs1kGR1lTDU+/tYJAT5fVNC3dJJKFzUbYCsCTiJHuA+U0IcxCKJJATam8Bhl6ehvUYBX6iUmJqE=
+Received: from MN2PR15MB3213.namprd15.prod.outlook.com (20.179.21.76) by
+ MN2PR15MB2783.namprd15.prod.outlook.com (20.179.145.215) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.2623.15; Mon, 13 Jan 2020 20:15:01 +0000
+Received: from MN2PR15MB3213.namprd15.prod.outlook.com
+ ([fe80::6d1e:f2f7:d36:a42f]) by MN2PR15MB3213.namprd15.prod.outlook.com
+ ([fe80::6d1e:f2f7:d36:a42f%4]) with mapi id 15.20.2623.015; Mon, 13 Jan 2020
+ 20:15:01 +0000
+Received: from kafai-mbp.dhcp.thefacebook.com (2620:10d:c090:200::1:34fe) by MWHPR10CA0011.namprd10.prod.outlook.com (2603:10b6:301::21) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.2623.12 via Frontend Transport; Mon, 13 Jan 2020 20:14:59 +0000
+From:   Martin Lau <kafai@fb.com>
+To:     Jakub Sitnicki <jakub@cloudflare.com>
+CC:     "bpf@vger.kernel.org" <bpf@vger.kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "kernel-team@cloudflare.com" <kernel-team@cloudflare.com>,
+        Eric Dumazet <edumazet@google.com>,
+        "John Fastabend" <john.fastabend@gmail.com>,
+        Lorenz Bauer <lmb@cloudflare.com>
+Subject: Re: [PATCH bpf-next v2 03/11] net, sk_msg: Clear sk_user_data pointer
+ on clone if tagged
+Thread-Topic: [PATCH bpf-next v2 03/11] net, sk_msg: Clear sk_user_data
+ pointer on clone if tagged
+Thread-Index: AQHVx6PNoYuTANqsXU2uEYENNwDHMKfpDPcA
+Date:   Mon, 13 Jan 2020 20:15:01 +0000
+Message-ID: <20200113201456.t5apbcjdqdr6by5t@kafai-mbp.dhcp.thefacebook.com>
+References: <20200110105027.257877-1-jakub@cloudflare.com>
+ <20200110105027.257877-4-jakub@cloudflare.com>
+In-Reply-To: <20200110105027.257877-4-jakub@cloudflare.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-clientproxiedby: MWHPR10CA0011.namprd10.prod.outlook.com (2603:10b6:301::21)
+ To MN2PR15MB3213.namprd15.prod.outlook.com (2603:10b6:208:3d::12)
+x-ms-exchange-messagesentrepresentingtype: 1
+x-originating-ip: [2620:10d:c090:200::1:34fe]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: 5e1ffe99-058d-435a-101a-08d7986544c6
+x-ms-traffictypediagnostic: MN2PR15MB2783:
+x-microsoft-antispam-prvs: <MN2PR15MB2783552D6A283BBA130B0FDED5350@MN2PR15MB2783.namprd15.prod.outlook.com>
+x-fb-source: Internal
+x-ms-oob-tlc-oobclassifiers: OLM:4714;
+x-forefront-prvs: 028166BF91
+x-forefront-antispam-report: SFV:NSPM;SFS:(10019020)(366004)(376002)(39860400002)(396003)(346002)(136003)(189003)(199004)(52116002)(8936002)(9686003)(6666004)(16526019)(71200400001)(7696005)(186003)(86362001)(478600001)(66476007)(66556008)(81166006)(64756008)(66446008)(66946007)(8676002)(81156014)(5660300002)(6506007)(55016002)(1076003)(54906003)(4326008)(316002)(4744005)(6916009)(2906002);DIR:OUT;SFP:1102;SCL:1;SRVR:MN2PR15MB2783;H:MN2PR15MB3213.namprd15.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;MX:1;A:1;
+received-spf: None (protection.outlook.com: fb.com does not designate
+ permitted sender hosts)
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: vbSEs57+VbUmBqlSeVgTT5wpj7aRU414z5cxk4AZC7dZYZOK4lY0ZZYV5zfcAKsigj6IEdk7SGvAqx+mTuJMEM0N1LFlivDcDf2ctwRP+C9pDtILrmprrRFxBe6zH77tOwrusjwEmW3+IL8ITw9Zi7oqJXA6rQmTZLIr+uK1qOw3nn8NZkBUpidHW2XW7G/A8Cv5tqkrNeSz5f89tKAsg3sj9NsglVhNd0HUAx4kxKr8UiBB4rTs4oQyBXbNPVInzwf5lyqhWZoj7P0FPQeAZPAskTtNiAPb+3Cq6RsjQFa16KOVQR0/IgMuUX6cowneBARoSCaJHrbcU/miOqeesktmE2J1igo/iypgOmF0igmAElRTCgi2ktS5E5DMobFa0o/SnxZJKiDyyGZZb+bMaJfjbWnRaKg2+cucRRhFRrzcjhbtiECUi4sgCgK3tbHq
+x-ms-exchange-transport-forked: True
+Content-Type: text/plain; charset="us-ascii"
+Content-ID: <F89ED11D0836F54D89CCA5E324450517@namprd15.prod.outlook.com>
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+X-MS-Exchange-CrossTenant-Network-Message-Id: 5e1ffe99-058d-435a-101a-08d7986544c6
+X-MS-Exchange-CrossTenant-originalarrivaltime: 13 Jan 2020 20:15:01.1053
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 8ae927fe-1255-47a7-a2af-5f3a069daaa2
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: /0/Quj86t6HHdAL1Iku3RMCxpwsTJg7NZVfX0520bu79QX3Nc1tKlH2wn5feHo8O
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: MN2PR15MB2783
+X-OriginatorOrg: fb.com
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.138,18.0.572
+ definitions=2020-01-13_06:2020-01-13,2020-01-13 signatures=0
+X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 adultscore=0
+ mlxlogscore=606 spamscore=0 impostorscore=0 lowpriorityscore=0 bulkscore=0
+ mlxscore=0 clxscore=1015 priorityscore=1501 malwarescore=0 phishscore=0
+ suspectscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-1910280000 definitions=main-2001130164
+X-FB-Internal: deliver
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, 13 Jan 2020 21:27:52 +0200
-Mohammed Gamal <mgamal@redhat.com> wrote:
+On Fri, Jan 10, 2020 at 11:50:19AM +0100, Jakub Sitnicki wrote:
+> sk_user_data can hold a pointer to an object that is not intended to be
+> shared between the parent socket and the child that gets a pointer copy o=
+n
+> clone. This is the case when sk_user_data points at reference-counted
+> object, like struct sk_psock.
+>=20
+> One way to resolve it is to tag the pointer with a no-copy flag by
+> repurposing its lowest bit. Based on the bit-flag value we clear the chil=
+d
+> sk_user_data pointer after cloning the parent socket.
+LGTM.  One nit, WARN_ON_ONCE should be enough for all the cases if they
+would ever happen.  Having continuous splat on the same thing is not
+necessary useful while it could be quite distributing for people
+capture/log them.
 
-> kmemleak detects the following memory leak when hot removing
-> a network device:
-> 
-> unreferenced object 0xffff888083f63600 (size 256):
->   comm "kworker/0:1", pid 12, jiffies 4294831717 (age 1113.676s)
->   hex dump (first 32 bytes):
->     00 40 c7 33 80 88 ff ff 00 00 00 00 10 00 00 00  .@.3............
->     00 00 00 00 ad 4e ad de ff ff ff ff 00 00 00 00  .....N..........
->   backtrace:
->     [<00000000d4a8f5be>] rndis_filter_device_add+0x117/0x11c0 [hv_netvsc]
->     [<000000009c02d75b>] netvsc_probe+0x5e7/0xbf0 [hv_netvsc]
->     [<00000000ddafce23>] vmbus_probe+0x74/0x170 [hv_vmbus]
->     [<00000000046e64f1>] really_probe+0x22f/0xb50
->     [<000000005cc35eb7>] driver_probe_device+0x25e/0x370
->     [<0000000043c642b2>] bus_for_each_drv+0x11f/0x1b0
->     [<000000005e3d09f0>] __device_attach+0x1c6/0x2f0
->     [<00000000a72c362f>] bus_probe_device+0x1a6/0x260
->     [<0000000008478399>] device_add+0x10a3/0x18e0
->     [<00000000cf07b48c>] vmbus_device_register+0xe7/0x1e0 [hv_vmbus]
->     [<00000000d46cf032>] vmbus_add_channel_work+0x8ab/0x1770 [hv_vmbus]
->     [<000000002c94bb64>] process_one_work+0x919/0x17d0
->     [<0000000096de6781>] worker_thread+0x87/0xb40
->     [<00000000fbe7397e>] kthread+0x333/0x3f0
->     [<000000004f844269>] ret_from_fork+0x3a/0x50
-> 
-> rndis_filter_device_add() allocates an instance of struct rndis_device
-> which never gets deallocated and rndis_filter_device_remove() sets
-> net_device->extension which points to the rndis_device struct to NULL
-> without ever freeing the structure first, leaving it dangling.
-> 
-> This patch fixes this by freeing the structure before setting
-> net_device->extension to NULL
-> 
-> Signed-off-by: Mohammed Gamal <mgamal@redhat.com>
-> ---
->  drivers/net/hyperv/rndis_filter.c | 1 +
->  1 file changed, 1 insertion(+)
-> 
-> diff --git a/drivers/net/hyperv/rndis_filter.c b/drivers/net/hyperv/rndis_filter.c
-> index 857c4bea451c..d2e094f521a4 100644
-> --- a/drivers/net/hyperv/rndis_filter.c
-> +++ b/drivers/net/hyperv/rndis_filter.c
-> @@ -1443,6 +1443,7 @@ void rndis_filter_device_remove(struct hv_device *dev,
->  	/* Halt and release the rndis device */
->  	rndis_filter_halt_device(net_dev, rndis_dev);
->  
-> +	kfree(rndis_dev);
->  	net_dev->extension = NULL;
->  
->  	netvsc_device_remove(dev);
-
-That is one way, but maybe safer to just remove the line that sets
-extension to NULL. That way netvsc_device_remove will clean it up:
-    netvsc_device_remove -> free_netvsc_device_rcu -> free_netvsc_device.
+Acked-by: Martin KaFai Lau <kafai@fb.com>
