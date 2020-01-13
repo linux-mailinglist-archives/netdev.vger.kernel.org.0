@@ -2,102 +2,97 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 420CA1388D3
-	for <lists+netdev@lfdr.de>; Mon, 13 Jan 2020 00:54:58 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4AA4413890B
+	for <lists+netdev@lfdr.de>; Mon, 13 Jan 2020 01:10:21 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2387485AbgALXy4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 12 Jan 2020 18:54:56 -0500
-Received: from mail-qt1-f195.google.com ([209.85.160.195]:46892 "EHLO
-        mail-qt1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2387471AbgALXy4 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 12 Jan 2020 18:54:56 -0500
-Received: by mail-qt1-f195.google.com with SMTP id g1so7618394qtr.13
-        for <netdev@vger.kernel.org>; Sun, 12 Jan 2020 15:54:56 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ziepe.ca; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=QECIxvXldhkMJFt0djz6qtJ/uPYPO1s9x56W6TJ6wzo=;
-        b=SpLegbzOveTbs+ZOtT+k6RWf2vdDMJuG3gB5bR8kFxxQdenmqVPhSDBN9SvMhuA62K
-         F6D1CPtyMpVMDV89mgv9eQsutM0RHdE04KAEBzkh6q7pdoyK638sBTLxQHFga5MsKuYU
-         B/UNe+ziZlxnKPic7vK1qcgU/Yul1zMlxqTsgyZz4f03Wk8JV3wWtm6PBbXEfhS22fKK
-         Yn7R4FCKp6lTZXMmprhQUGkMgbCniLoVTEYuNQWjtD3+5rixwfeIP5x9fYCPfbRVAwMt
-         +GnbCRtm+qecsJSsBx0sGZoQ6HdO8gOignRD6rJjG7m3PTGOee02y0x827zvmSN5SrCh
-         NVfA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=QECIxvXldhkMJFt0djz6qtJ/uPYPO1s9x56W6TJ6wzo=;
-        b=rPn9XIRDx7XV7b2Lm5fpysFaw5WpX60gSnRgB5iH8iZ2R/m1YX9TOWpvfcyaIa4+5A
-         c3nFtH7rN0a3f/VoNyoI8kVpDEooiDepSk6D4R4GV+mTo6hl2mK3KHvsunQVVESQn3kv
-         36TC1koD6fA96NVbLNiWnmidhip9ofSIbUrpN/SMm0BTAqJmAn/sxxdXBY0l0Yv95wME
-         ChdyZYjsx1eCdsBEJs2JIC2Kp+TO0WM099l7nP9R94ifrpClaNFbBnrEYGTxumXp+pE4
-         ISINohVF8zCZSVL9MVOwqjUspgoBuiJbfLpRwDFrHxYFz/qYn/qxoHh2cwR/2P7wSx7E
-         tvOQ==
-X-Gm-Message-State: APjAAAXslVpzPvThlFiI6FXfNG341J6VP03MJBPJbXP8qbegb7udykPe
-        Ym21bWjh8OXRY5H+xOodx8K69Q==
-X-Google-Smtp-Source: APXvYqw0HF3THv3cEhFsjUx4gokaXgXA4wvGXQ/CnZgRdvb3tRdwInZCk1qTVjtITXmqbxoLhnkEIg==
-X-Received: by 2002:ac8:1aeb:: with SMTP id h40mr8262135qtk.269.1578873295622;
-        Sun, 12 Jan 2020 15:54:55 -0800 (PST)
-Received: from ziepe.ca (hlfxns017vw-142-68-57-212.dhcp-dynamic.fibreop.ns.bellaliant.net. [142.68.57.212])
-        by smtp.gmail.com with ESMTPSA id f5sm4192976qke.109.2020.01.12.15.54.54
-        (version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
-        Sun, 12 Jan 2020 15:54:55 -0800 (PST)
-Received: from jgg by mlx.ziepe.ca with local (Exim 4.90_1)
-        (envelope-from <jgg@ziepe.ca>)
-        id 1iqn4I-0008Ht-8U; Sun, 12 Jan 2020 19:54:54 -0400
-Date:   Sun, 12 Jan 2020 19:54:54 -0400
-From:   Jason Gunthorpe <jgg@ziepe.ca>
-To:     Leon Romanovsky <leon@kernel.org>
-Cc:     Saeed Mahameed <saeedm@mellanox.com>,
-        Doug Ledford <dledford@redhat.com>,
-        RDMA mailing list <linux-rdma@vger.kernel.org>,
-        Shahaf Shuler <shahafs@mellanox.com>,
-        Yishai Hadas <yishaih@mellanox.com>,
-        linux-netdev <netdev@vger.kernel.org>
-Subject: Re: [PATCH rdma-next 0/5] VIRTIO_NET Emulation Offload
-Message-ID: <20200112235454.GA20866@ziepe.ca>
-References: <20191212110928.334995-1-leon@kernel.org>
- <20200107193744.GB18256@ziepe.ca>
- <20200110183041.GA6871@unreal>
+        id S2387503AbgAMAKT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 12 Jan 2020 19:10:19 -0500
+Received: from mail.kernel.org ([198.145.29.99]:47358 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S2387460AbgAMAKT (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sun, 12 Jan 2020 19:10:19 -0500
+Received: from cakuba (c-73-93-4-247.hsd1.ca.comcast.net [73.93.4.247])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 37AD6206DA;
+        Mon, 13 Jan 2020 00:10:18 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1578874218;
+        bh=GUDs/y06Kpbbpg6tDXqmKoRcfaBF1YO6bipPFNelPq4=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=eNpzFcFD0axGSQrPp8xOwkS8p91ErFJDSttifjC4rURNKVnUl8gncA/qpnmnQeJgD
+         7f+dSpifykfSYRJhQjNtDkbxqzW7iy7Ip85Qo6Xf0F7NIL2Ui7lYr340fen3O1Hcb+
+         hz4npH+WESIH5mjVDVgOz6g+R7pDhGqEGJwyC8ks=
+Date:   Sun, 12 Jan 2020 16:10:17 -0800
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Ido Schimmel <idosch@idosch.org>
+Cc:     netdev@vger.kernel.org, davem@davemloft.net, jiri@mellanox.com,
+        mlxsw@mellanox.com, Shalom Toledo <shalomt@mellanox.com>,
+        Ido Schimmel <idosch@mellanox.com>
+Subject: Re: [PATCH net 2/4] mlxsw: switchx2: Do not modify cloned SKBs
+ during xmit
+Message-ID: <20200112161017.43b728c8@cakuba>
+In-Reply-To: <20200112160641.282108-3-idosch@idosch.org>
+References: <20200112160641.282108-1-idosch@idosch.org>
+        <20200112160641.282108-3-idosch@idosch.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200110183041.GA6871@unreal>
-User-Agent: Mutt/1.9.4 (2018-02-28)
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Jan 10, 2020 at 08:30:41PM +0200, Leon Romanovsky wrote:
-> On Tue, Jan 07, 2020 at 03:37:44PM -0400, Jason Gunthorpe wrote:
-> > On Thu, Dec 12, 2019 at 01:09:23PM +0200, Leon Romanovsky wrote:
-> > > From: Leon Romanovsky <leonro@mellanox.com>
-> > >
-> > > Hi,
-> > >
-> > > In this series, we introduce VIRTIO_NET_Q HW offload capability, so SW will
-> > > be able to create special general object with relevant virtqueue properties.
-> > >
-> > > This series is based on -rc patches:
-> > > https://lore.kernel.org/linux-rdma/20191212100237.330654-1-leon@kernel.org
-> > >
-> > > Thanks
-> > >
-> > > Yishai Hadas (5):
-> > >   net/mlx5: Add Virtio Emulation related device capabilities
-> > >   net/mlx5: Expose vDPA emulation device capabilities
-> >
-> > This series looks OK enough to me. Saeed can you update the share
-> > branch with the two patches?
+On Sun, 12 Jan 2020 18:06:39 +0200, Ido Schimmel wrote:
+> From: Shalom Toledo <shalomt@mellanox.com>
 > 
-> Merged, thanks,
+> The driver needs to prepend a Tx header to each packet it is transmitting.
+> The header includes information such as the egress port and traffic class.
 > 
-> ca1992c62cad net/mlx5: Expose vDPA emulation device capabilities
-> 90fbca595243 net/mlx5: Add Virtio Emulation related device capabilities
+> The addition of the header requires the driver to modify the SKB's data
+> buffer and therefore the SKB must be unshared first. Otherwise, we risk
+> hitting various race conditions with cloned SKBs.
+> 
+> For example, when a packet is flooded (cloned) by the bridge driver to two
+> switch ports swp1 and swp2:
+> 
+> t0 - mlxsw_sp_port_xmit() is called for swp1. Tx header is prepended with
+>      swp1's port number
+> t1 - mlxsw_sp_port_xmit() is called for swp2. Tx header is prepended with
+>      swp2's port number, overwriting swp1's port number
+> t2 - The device processes data buffer from t0. Packet is transmitted via
+>      swp2
+> t3 - The device processes data buffer from t1. Packet is transmitted via
+>      swp2
+> 
+> Usually, the device is fast enough and transmits the packet before its
+> Tx header is overwritten, but this is not the case in emulated
+> environments.
+> 
+> Fix this by unsharing the SKB.
 
-Done, thanks
+Isn't this what skb_cow_head() is for?
 
-Jason
+> diff --git a/drivers/net/ethernet/mellanox/mlxsw/switchx2.c b/drivers/net/ethernet/mellanox/mlxsw/switchx2.c
+> index de6cb22f68b1..47826e905e5c 100644
+> --- a/drivers/net/ethernet/mellanox/mlxsw/switchx2.c
+> +++ b/drivers/net/ethernet/mellanox/mlxsw/switchx2.c
+> @@ -299,6 +299,10 @@ static netdev_tx_t mlxsw_sx_port_xmit(struct sk_buff *skb,
+>  	u64 len;
+>  	int err;
+>  
+> +	skb = skb_unshare(skb, GFP_ATOMIC);
+> +	if (unlikely(!skb))
+> +		return NETDEV_TX_BUSY;
+> +
+>  	memset(skb->cb, 0, sizeof(struct mlxsw_skb_cb));
+>  
+>  	if (mlxsw_core_skb_transmit_busy(mlxsw_sx->core, &tx_info))
+
+the next line here is:
+
+		return NETDEV_TX_BUSY;
+
+Is it okay to return BUSY after copying an skb? The reference to the
+original skb may already be gone at this point, while the copy is going
+to be leaked, right?
