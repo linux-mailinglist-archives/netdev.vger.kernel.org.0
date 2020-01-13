@@ -2,32 +2,32 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 4BB211391B0
-	for <lists+netdev@lfdr.de>; Mon, 13 Jan 2020 14:03:44 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5132C1391A7
+	for <lists+netdev@lfdr.de>; Mon, 13 Jan 2020 14:03:20 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728695AbgAMNCx (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 13 Jan 2020 08:02:53 -0500
-Received: from us03-smtprelay2.synopsys.com ([149.117.87.133]:56760 "EHLO
+        id S1728820AbgAMNCy (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 13 Jan 2020 08:02:54 -0500
+Received: from us03-smtprelay2.synopsys.com ([149.117.87.133]:56784 "EHLO
         smtprelay-out1.synopsys.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726934AbgAMNCx (ORCPT
+        by vger.kernel.org with ESMTP id S1726976AbgAMNCx (ORCPT
         <rfc822;netdev@vger.kernel.org>); Mon, 13 Jan 2020 08:02:53 -0500
 Received: from mailhost.synopsys.com (mdc-mailhost1.synopsys.com [10.225.0.209])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits))
         (No client certificate requested)
-        by smtprelay-out1.synopsys.com (Postfix) with ESMTPS id A67C8C05CC;
+        by smtprelay-out1.synopsys.com (Postfix) with ESMTPS id AB9FCC05CE;
         Mon, 13 Jan 2020 13:02:51 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=synopsys.com; s=mail;
-        t=1578920572; bh=Ben06d7t9W2BvCud3kGg7X4OfXW/BtwnEBLz0+lX38c=;
+        t=1578920572; bh=lnen1K/tDz2A9H4GTK3qRrNyC5Q/weucAfwOJ6GT9sA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:In-Reply-To:
          References:From;
-        b=gTS81Hli2yTwMbs6NcfqUORcIq2q6Z96PjA5tjQCtvoIV3pqp89Sfdl3Il1Eoxjt1
-         ccQyfH4lSFKVOylsuAH9cPUFeO2vjJHu32V6DzDWe9uUX2zhFBiuBgHd72XwSTqmMr
-         EX1j0Eygwjx4fU8/yNk9wkPEpeMcAoSG9OVh8H3fbgsHJZ/T7+Qqqi7rFi4jArMIKW
-         0GD6Gi83y1+WGmWUdXdBIDqhLTO2TV5I6YwEfVi4d7AXuUJF+1AfIi81R0JllkCfdl
-         lWRzWKY666wfR+zsXDElTcu20cyuBxODfn+wjK6RGmPfpaN6eg7gEeALxi3nO/GMyl
-         vbn7/dc4Kjxwg==
+        b=kSuvAYXiLM4aNfQ0CflE/SGLlS11xMRvdhQFZ5m7M0hXlrcW057SZH6rDXLKTQMoF
+         16qH498Jq+Zia4fyfq/Z9WD2du+CUvdYQJ7mwkplbwImdsAwoO8KWMMSCcvZ61ABQY
+         HBlMdbLC3F3f/hhW6SjWNhqRZTIbWB3A+8oXc2UKeCgNj2sw8BwzZMUV5AAw1ofhHQ
+         xgs7KXK+csaVrkl0ryKAen7WDfiPuAxFcHtoEDXxGy+Xd6rEO6u7sf2eXEWoHxqiN3
+         8wCqx1DucsY+JE+WnkhvL/Mgw98CNkXK1Q/kKhJkIOkO2snLSmjOzcQmoa4HUwHTpN
+         6My1WDrqrUMPQ==
 Received: from de02dwia024.internal.synopsys.com (de02dwia024.internal.synopsys.com [10.225.19.81])
-        by mailhost.synopsys.com (Postfix) with ESMTP id 617E7A006F;
+        by mailhost.synopsys.com (Postfix) with ESMTP id 72299A0073;
         Mon, 13 Jan 2020 13:02:50 +0000 (UTC)
 From:   Jose Abreu <Jose.Abreu@synopsys.com>
 To:     netdev@vger.kernel.org
@@ -40,9 +40,9 @@ Cc:     Joao Pinto <Joao.Pinto@synopsys.com>,
         Maxime Coquelin <mcoquelin.stm32@gmail.com>,
         linux-stm32@st-md-mailman.stormreply.com,
         linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
-Subject: [PATCH net-next v2 5/8] net: stmmac: pci: Enable TBS on GMAC5 IPK PCI entry
-Date:   Mon, 13 Jan 2020 14:02:40 +0100
-Message-Id: <89c71da18546c396463f286d518d57054b7b6de9.1578920366.git.Jose.Abreu@synopsys.com>
+Subject: [PATCH net-next v2 6/8] net: stmmac: Add missing information in DebugFS capabilities file
+Date:   Mon, 13 Jan 2020 14:02:41 +0100
+Message-Id: <faaa377a5518be7357f897d02eb0e35b57912093.1578920366.git.Jose.Abreu@synopsys.com>
 X-Mailer: git-send-email 2.7.4
 In-Reply-To: <cover.1578920366.git.Jose.Abreu@synopsys.com>
 References: <cover.1578920366.git.Jose.Abreu@synopsys.com>
@@ -53,7 +53,8 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Enable TBS support on GMAC5 PCI entry for all Queues except Queue 0.
+Adds more information regarding HW Capabilities in the corresponding
+DebugFS file.
 
 Signed-off-by: Jose Abreu <Jose.Abreu@synopsys.com>
 
@@ -68,22 +69,37 @@ Cc: linux-stm32@st-md-mailman.stormreply.com
 Cc: linux-arm-kernel@lists.infradead.org
 Cc: linux-kernel@vger.kernel.org
 ---
- drivers/net/ethernet/stmicro/stmmac/stmmac_pci.c | 2 ++
- 1 file changed, 2 insertions(+)
+ drivers/net/ethernet/stmicro/stmmac/stmmac_main.c | 10 ++++++++++
+ 1 file changed, 10 insertions(+)
 
-diff --git a/drivers/net/ethernet/stmicro/stmmac/stmmac_pci.c b/drivers/net/ethernet/stmicro/stmmac/stmmac_pci.c
-index 40f171d310d7..623521052152 100644
---- a/drivers/net/ethernet/stmicro/stmmac/stmmac_pci.c
-+++ b/drivers/net/ethernet/stmicro/stmmac/stmmac_pci.c
-@@ -401,6 +401,8 @@ static int snps_gmac5_default_data(struct pci_dev *pdev,
- 		plat->tx_queues_cfg[i].use_prio = false;
- 		plat->tx_queues_cfg[i].mode_to_use = MTL_QUEUE_DCB;
- 		plat->tx_queues_cfg[i].weight = 25;
-+		if (i > 0)
-+			plat->tx_queues_cfg[i].tbs_en = 1;
- 	}
- 
- 	plat->rx_sched_algorithm = MTL_RX_ALGORITHM_SP;
+diff --git a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
+index fcc1ffe0b11e..7c2645ee81b1 100644
+--- a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
++++ b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
+@@ -4341,6 +4341,10 @@ static int stmmac_dma_cap_show(struct seq_file *seq, void *v)
+ 		   priv->dma_cap.number_rx_queues);
+ 	seq_printf(seq, "\tNumber of Additional TX queues: %d\n",
+ 		   priv->dma_cap.number_tx_queues);
++	seq_printf(seq, "\tCurrent number of TX queues: %d\n",
++		   priv->plat->tx_queues_to_use);
++	seq_printf(seq, "\tCurrent number of RX queues: %d\n",
++		   priv->plat->rx_queues_to_use);
+ 	seq_printf(seq, "\tEnhanced descriptors: %s\n",
+ 		   (priv->dma_cap.enh_desc) ? "Y" : "N");
+ 	seq_printf(seq, "\tTX Fifo Size: %d\n", priv->dma_cap.tx_fifo_size);
+@@ -4369,6 +4373,12 @@ static int stmmac_dma_cap_show(struct seq_file *seq, void *v)
+ 		   priv->dma_cap.l3l4fnum);
+ 	seq_printf(seq, "\tARP Offloading: %s\n",
+ 		   priv->dma_cap.arpoffsel ? "Y" : "N");
++	seq_printf(seq, "\tEnhancements to Scheduled Traffic (EST): %s\n",
++		   priv->dma_cap.estsel ? "Y" : "N");
++	seq_printf(seq, "\tFrame Preemption (FPE): %s\n",
++		   priv->dma_cap.fpesel ? "Y" : "N");
++	seq_printf(seq, "\tTime-Based Scheduling (TBS): %s\n",
++		   priv->dma_cap.tbssel ? "Y" : "N");
+ 	return 0;
+ }
+ DEFINE_SHOW_ATTRIBUTE(stmmac_dma_cap);
 -- 
 2.7.4
 
