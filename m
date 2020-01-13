@@ -2,164 +2,102 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id BEDB9139BC2
-	for <lists+netdev@lfdr.de>; Mon, 13 Jan 2020 22:39:38 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 01775139BDE
+	for <lists+netdev@lfdr.de>; Mon, 13 Jan 2020 22:51:17 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728880AbgAMVje (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 13 Jan 2020 16:39:34 -0500
-Received: from us-smtp-delivery-1.mimecast.com ([207.211.31.120]:22861 "EHLO
-        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S1726778AbgAMVja (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 13 Jan 2020 16:39:30 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1578951570;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=GokqsxQySXClEUUtIjbogJ7HgVx0ZNQI/xTxE+WHQTY=;
-        b=UqzksbOLWLN2QWsw52q03DZFEGGYb/qGw20jCCP4W5An0wywtN/Uls8Mat7JQpXe7YkFkD
-        uk/lHxfVfNMJ9SgZuXvWQIatbRgctdQfWvfWnM/FfkFEKo13qfPrcpdU6N5IufM2FNWN4z
-        1jL2dECEocMbZ6VtxKltFswIynvM0ok=
-Received: from mail-wm1-f71.google.com (mail-wm1-f71.google.com
- [209.85.128.71]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-219-zrgPJRavORKhiABwGm5fHw-1; Mon, 13 Jan 2020 16:39:27 -0500
-X-MC-Unique: zrgPJRavORKhiABwGm5fHw-1
-Received: by mail-wm1-f71.google.com with SMTP id o24so1587771wmh.0
-        for <netdev@vger.kernel.org>; Mon, 13 Jan 2020 13:39:27 -0800 (PST)
+        id S1728850AbgAMVvM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 13 Jan 2020 16:51:12 -0500
+Received: from mail-ot1-f65.google.com ([209.85.210.65]:34788 "EHLO
+        mail-ot1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726488AbgAMVvL (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 13 Jan 2020 16:51:11 -0500
+Received: by mail-ot1-f65.google.com with SMTP id a15so10514615otf.1;
+        Mon, 13 Jan 2020 13:51:11 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=GokqsxQySXClEUUtIjbogJ7HgVx0ZNQI/xTxE+WHQTY=;
-        b=fBrUfbm8TvCUXL3qqiehT8F2fPmxdWc4Dd8OAtA3M0DRA4y7icQjPLkurRfK98on8z
-         gVjrNWr2eYkWXMwUtvibg6y5DIwtaqrF9E+4L9K+v3FzXd6mfER82PtkXO0CwAV/N8S4
-         RRjFpe9/FBhAxCfCDY/GhNJrUU0OVuoGORZuCCWlXiZKILgoJCAAc3y2BQ9jNbNfXDVG
-         QqA9IGbwNT3+SFEME3WvmLh++ZG6FL5OJsiNf9j49sH7C/lyejMk+JiR9QyotedEHyRz
-         tpp76mx9K3Jo4MJ2lha+VJDKjW+h4BPeJqaGBgta1vl76UE62C8CfdnBXhs9ZL+UGxmZ
-         4vjg==
-X-Gm-Message-State: APjAAAW1dKR8eMbuhFZ3YlI0uU3Dcjy9Cu+LGPVJkTaciVPlH9TX0oAF
-        nnV7ypXrql5cURnD+tfHFAG5YUrGwb9UIO3o6K9mXbyPyJRTe4DP/UIj4P3CnF04JIBGCnVRehx
-        T4pb6GPuTuEWuStyE
-X-Received: by 2002:a1c:23d7:: with SMTP id j206mr21873525wmj.39.1578951566066;
-        Mon, 13 Jan 2020 13:39:26 -0800 (PST)
-X-Google-Smtp-Source: APXvYqycwD6Zz2E61DDT5KdOMRy674i0jHQdlfd4ISfgbwWvcpkfTUgN+4vTP8HaZbb0YHZ5Q9Kjzg==
-X-Received: by 2002:a1c:23d7:: with SMTP id j206mr21873509wmj.39.1578951565884;
-        Mon, 13 Jan 2020 13:39:25 -0800 (PST)
-Received: from linux.home (2a01cb058a4e7100d3814d1912515f67.ipv6.abo.wanadoo.fr. [2a01:cb05:8a4e:7100:d381:4d19:1251:5f67])
-        by smtp.gmail.com with ESMTPSA id v17sm16665980wrt.91.2020.01.13.13.39.24
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 13 Jan 2020 13:39:25 -0800 (PST)
-Date:   Mon, 13 Jan 2020 22:39:23 +0100
-From:   Guillaume Nault <gnault@redhat.com>
-To:     David Miller <davem@davemloft.net>,
-        Jakub Kicinski <jakub.kicinski@netronome.com>
-Cc:     netdev@vger.kernel.org, Nicolas Dichtel <nicolas.dichtel@6wind.com>
-Subject: [PATCH net-next 3/3] netns: don't disable BHs when locking
- "nsid_lock"
-Message-ID: <7bd9e9800d8f1d5511608927baa1a5ab4d3072f5.1578950227.git.gnault@redhat.com>
-References: <cover.1578950227.git.gnault@redhat.com>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=ffKiZp7TgACphMkCDUm1FD5yMgsxVZ6Ff6N1urk4jWc=;
+        b=deFlpVMUp8KPg/GoPHcDInQsdO2DE3pW1dltR5BS+dQWI6Zfumqd6IaxGvnF/jQNK1
+         JxwTl6yG5pKob2Kpni0NmwZhZMt+1baYy+a2n4sUXoO4h0ODYrNiynQ+AFJJh8y7jFGD
+         8rWlRFPMy0k3zS+LbblyK/w2r6Pk7XF7O0QgccnBy/WoJw6fII4AJehYAy3BC1TiR860
+         PWn9GpSkBlMQNVDGiS9c+DaGrC35F4w1Ya1GeThKk/NhzvwRpkcGzS/YUhkVfXNkhMTC
+         DW7UFg/YXGBuirigcFU1mOPa3KhkHpvT5hOsfmPF+Zj7CYeIpiZTImxe9I5JTzM670Hn
+         okKQ==
+X-Gm-Message-State: APjAAAWTuT559MLu0l1TK5pr1WjoB5TzR77tzOlIm3Oi+VkeOTL9o1dy
+        PFWppNRUgL7xnF6VPL7FSPmBtfG7/gn5HoRrePo=
+X-Google-Smtp-Source: APXvYqzboRxdkjdj+vWtBhL4TgciiCHxHfLR6hQIa9NC97Z5QPZwbV5+qGJCzmxQC2fQg0RpLiUiJ5XFNlHcaKaz1Xg=
+X-Received: by 2002:a05:6830:4b9:: with SMTP id l25mr15083303otd.266.1578952270976;
+ Mon, 13 Jan 2020 13:51:10 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <cover.1578950227.git.gnault@redhat.com>
+References: <20200107234526.GA19034@dev-dsk-anchalag-2a-9c2d1d96.us-west-2.amazon.com>
+ <20200108105011.GY2827@hirez.programming.kicks-ass.net> <20200110153520.GC8214@u40b0340c692b58f6553c.ant.amazon.com>
+ <20200113101609.GT2844@hirez.programming.kicks-ass.net> <857b42b2e86b2ae09a23f488daada3b1b2836116.camel@amazon.com>
+ <20200113124247.GG2827@hirez.programming.kicks-ass.net>
+In-Reply-To: <20200113124247.GG2827@hirez.programming.kicks-ass.net>
+From:   "Rafael J. Wysocki" <rafael@kernel.org>
+Date:   Mon, 13 Jan 2020 22:50:59 +0100
+Message-ID: <CAJZ5v0jv+5aLY3N4wFSitu61o9S8tJWEWGGn1Xyw-P82_TwFdQ@mail.gmail.com>
+Subject: Re: [RFC PATCH V2 11/11] x86: tsc: avoid system instability in hibernation
+To:     Peter Zijlstra <peterz@infradead.org>
+Cc:     "Singh, Balbir" <sblbir@amazon.com>,
+        "Valentin, Eduardo" <eduval@amazon.com>,
+        "boris.ostrovsky@oracle.com" <boris.ostrovsky@oracle.com>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "Agarwal, Anchal" <anchalag@amazon.com>,
+        "Woodhouse, David" <dwmw@amazon.co.uk>,
+        "vkuznets@redhat.com" <vkuznets@redhat.com>,
+        "sstabellini@kernel.org" <sstabellini@kernel.org>,
+        "tglx@linutronix.de" <tglx@linutronix.de>,
+        "linux-pm@vger.kernel.org" <linux-pm@vger.kernel.org>,
+        "Woodhouse@dev-dsk-anchalag-2a-9c2d1d96.us-west-2.amazon.com" 
+        <Woodhouse@dev-dsk-anchalag-2a-9c2d1d96.us-west-2.amazon.com>,
+        "linux-mm@kvack.org" <linux-mm@kvack.org>,
+        "jgross@suse.com" <jgross@suse.com>, "pavel@ucw.cz" <pavel@ucw.cz>,
+        "axboe@kernel.dk" <axboe@kernel.dk>,
+        "x86@kernel.org" <x86@kernel.org>,
+        "roger.pau@citrix.com" <roger.pau@citrix.com>,
+        "hpa@zytor.com" <hpa@zytor.com>,
+        "rjw@rjwysocki.net" <rjw@rjwysocki.net>,
+        "mingo@redhat.com" <mingo@redhat.com>,
+        "Kamata, Munehisa" <kamatam@amazon.com>,
+        "bp@alien8.de" <bp@alien8.de>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "konrad.wilk@oracle.co" <konrad.wilk@oracle.co>,
+        "len.brown@intel.com" <len.brown@intel.com>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "fllinden@amaozn.com" <fllinden@amaozn.com>,
+        "xen-devel@lists.xenproject.org" <xen-devel@lists.xenproject.org>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-When peernet2id() had to lock "nsid_lock" before iterating through the
-nsid table, we had to disable BHs, because VXLAN can call peernet2id()
-from the xmit path:
-  vxlan_xmit() -> vxlan_fdb_miss() -> vxlan_fdb_notify()
-    -> __vxlan_fdb_notify() -> vxlan_fdb_info() -> peernet2id().
+On Mon, Jan 13, 2020 at 1:43 PM Peter Zijlstra <peterz@infradead.org> wrote:
+>
+> On Mon, Jan 13, 2020 at 11:43:18AM +0000, Singh, Balbir wrote:
+> > For your original comment, just wanted to clarify the following:
+> >
+> > 1. After hibernation, the machine can be resumed on a different but compatible
+> > host (these are VM images hibernated)
+> > 2. This means the clock between host1 and host2 can/will be different
+> >
+> > In your comments are you making the assumption that the host(s) is/are the
+> > same? Just checking the assumptions being made and being on the same page with
+> > them.
+>
+> I would expect this to be the same problem we have as regular suspend,
+> after power off the TSC will have been reset, so resume will have to
+> somehow bridge that gap. I've no idea if/how it does that.
 
-Now that peernet2id() uses RCU protection, "nsid_lock" isn't used in BH
-context anymore. Therefore, we can safely use plain
-spin_lock()/spin_unlock() and let BHs run when holding "nsid_lock".
+In general, this is done by timekeeping_resume() and the only special
+thing done for the TSC appears to be the tsc_verify_tsc_adjust(true)
+call in tsc_resume().
 
-Signed-off-by: Guillaume Nault <gnault@redhat.com>
----
- net/core/net_namespace.c | 22 +++++++++++-----------
- 1 file changed, 11 insertions(+), 11 deletions(-)
+> I remember some BIOSes had crazy TSC ideas for suspend2ram, and we grew
+> tsc_restore_sched_clock_state() for it.
+>
+> Playing crazy games like what you're doing just isn't it though.
 
-diff --git a/net/core/net_namespace.c b/net/core/net_namespace.c
-index e7a5ff4966c9..6412c1fbfcb5 100644
---- a/net/core/net_namespace.c
-+++ b/net/core/net_namespace.c
-@@ -237,10 +237,10 @@ int peernet2id_alloc(struct net *net, struct net *peer, gfp_t gfp)
- 	if (refcount_read(&net->count) == 0)
- 		return NETNSA_NSID_NOT_ASSIGNED;
- 
--	spin_lock_bh(&net->nsid_lock);
-+	spin_lock(&net->nsid_lock);
- 	id = __peernet2id(net, peer);
- 	if (id >= 0) {
--		spin_unlock_bh(&net->nsid_lock);
-+		spin_unlock(&net->nsid_lock);
- 		return id;
- 	}
- 
-@@ -250,12 +250,12 @@ int peernet2id_alloc(struct net *net, struct net *peer, gfp_t gfp)
- 	 * just been idr_remove()'d from there in cleanup_net().
- 	 */
- 	if (!maybe_get_net(peer)) {
--		spin_unlock_bh(&net->nsid_lock);
-+		spin_unlock(&net->nsid_lock);
- 		return NETNSA_NSID_NOT_ASSIGNED;
- 	}
- 
- 	id = alloc_netid(net, peer, -1);
--	spin_unlock_bh(&net->nsid_lock);
-+	spin_unlock(&net->nsid_lock);
- 
- 	put_net(peer);
- 	if (id < 0)
-@@ -520,20 +520,20 @@ static void unhash_nsid(struct net *net, struct net *last)
- 	for_each_net(tmp) {
- 		int id;
- 
--		spin_lock_bh(&tmp->nsid_lock);
-+		spin_lock(&tmp->nsid_lock);
- 		id = __peernet2id(tmp, net);
- 		if (id >= 0)
- 			idr_remove(&tmp->netns_ids, id);
--		spin_unlock_bh(&tmp->nsid_lock);
-+		spin_unlock(&tmp->nsid_lock);
- 		if (id >= 0)
- 			rtnl_net_notifyid(tmp, RTM_DELNSID, id, 0, NULL,
- 					  GFP_KERNEL);
- 		if (tmp == last)
- 			break;
- 	}
--	spin_lock_bh(&net->nsid_lock);
-+	spin_lock(&net->nsid_lock);
- 	idr_destroy(&net->netns_ids);
--	spin_unlock_bh(&net->nsid_lock);
-+	spin_unlock(&net->nsid_lock);
- }
- 
- static LLIST_HEAD(cleanup_list);
-@@ -746,9 +746,9 @@ static int rtnl_net_newid(struct sk_buff *skb, struct nlmsghdr *nlh,
- 		return PTR_ERR(peer);
- 	}
- 
--	spin_lock_bh(&net->nsid_lock);
-+	spin_lock(&net->nsid_lock);
- 	if (__peernet2id(net, peer) >= 0) {
--		spin_unlock_bh(&net->nsid_lock);
-+		spin_unlock(&net->nsid_lock);
- 		err = -EEXIST;
- 		NL_SET_BAD_ATTR(extack, nla);
- 		NL_SET_ERR_MSG(extack,
-@@ -757,7 +757,7 @@ static int rtnl_net_newid(struct sk_buff *skb, struct nlmsghdr *nlh,
- 	}
- 
- 	err = alloc_netid(net, peer, nsid);
--	spin_unlock_bh(&net->nsid_lock);
-+	spin_unlock(&net->nsid_lock);
- 	if (err >= 0) {
- 		rtnl_net_notifyid(net, RTM_NEWNSID, err, NETLINK_CB(skb).portid,
- 				  nlh, GFP_KERNEL);
--- 
-2.21.1
-
+Right.
