@@ -2,63 +2,128 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 0690D138DC6
-	for <lists+netdev@lfdr.de>; Mon, 13 Jan 2020 10:28:32 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E3CCA138DD1
+	for <lists+netdev@lfdr.de>; Mon, 13 Jan 2020 10:29:40 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726277AbgAMJ21 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 13 Jan 2020 04:28:27 -0500
-Received: from mail.kernel.org ([198.145.29.99]:53510 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725992AbgAMJ21 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 13 Jan 2020 04:28:27 -0500
-Received: from localhost.localdomain.com (nat-pool-mxp-t.redhat.com [149.6.153.186])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id DC4602082E;
-        Mon, 13 Jan 2020 09:28:25 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1578907706;
-        bh=ygHpcQTSgJvmKr3qjvk9ydPGZAd2LHo2CwCBvdhfPC4=;
-        h=From:To:Cc:Subject:Date:From;
-        b=w9exuz7KHMROvwGdNxLoCen/gV4UdgaylbyEkNUVSb1VZzHmlXDjogTXV++MxFrFW
-         2XMsiuTTamb0wp2XkwbeR8mcHzSckj4yPn1hqGp0Bc+sc3ePYjSZte7P0neXVsXIg7
-         fAOmEhHjtjtr0U8vAbVqQKIPZ5ghHKO1jdEWbTBY=
-From:   Lorenzo Bianconi <lorenzo@kernel.org>
-To:     netdev@vger.kernel.org
-Cc:     lorenzo.bianconi@redhat.com, davem@davemloft.net, brouer@redhat.com
-Subject: [PATCH] net: mvneta: change page pool nid to NUMA_NO_NODE
-Date:   Mon, 13 Jan 2020 10:28:12 +0100
-Message-Id: <70183613cb1a0253f25709e640d88cdd0584a813.1578907338.git.lorenzo@kernel.org>
-X-Mailer: git-send-email 2.21.1
+        id S1728676AbgAMJ3f (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 13 Jan 2020 04:29:35 -0500
+Received: from userp2130.oracle.com ([156.151.31.86]:35876 "EHLO
+        userp2130.oracle.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726109AbgAMJ3f (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 13 Jan 2020 04:29:35 -0500
+Received: from pps.filterd (userp2130.oracle.com [127.0.0.1])
+        by userp2130.oracle.com (8.16.0.27/8.16.0.27) with SMTP id 00D9S6vc118764;
+        Mon, 13 Jan 2020 09:29:21 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=date : from : to : cc
+ : subject : message-id : references : mime-version : content-type :
+ in-reply-to; s=corp-2019-08-05;
+ bh=rk5u8L6wRMK1AGNiB+kNPMk8Q8W00RDcw7ifTsL/9as=;
+ b=nlKWV3eTOHgW0MXu7mATwZ052y9HMkO5W8Cr5S8DRJ0X2mlQmb5VTOa+2fXcxljx39NO
+ i+MfCT01edsAbzMOvB0Q+1YcOg6Ktm+3B270Sg7Lg0QEfWrEqL8jYAeBKy3rEqzWDLl+
+ xi4gvvhsq6vz45/fmwc+Lg+aqZ7enxov6toQ5izJrYJJWtZro4xtJZIGeU2JIuAq8F2X
+ OYYYIFHyjI/7Nv2o0s/zoadlPx/BjKRvcklIITo7cVvLdc2JWBNR7/gZHSxWGQ73iFQg
+ rBc3Mew4ZOQq5G04zMmebbRoleRbiKAH9NtrdbUozbTuZdDsEYpbcwJYx0RaGfH/6ee9 mg== 
+Received: from aserp3020.oracle.com (aserp3020.oracle.com [141.146.126.70])
+        by userp2130.oracle.com with ESMTP id 2xf74rwpp8-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Mon, 13 Jan 2020 09:29:21 +0000
+Received: from pps.filterd (aserp3020.oracle.com [127.0.0.1])
+        by aserp3020.oracle.com (8.16.0.27/8.16.0.27) with SMTP id 00D9TEvj015587;
+        Mon, 13 Jan 2020 09:29:20 GMT
+Received: from userv0122.oracle.com (userv0122.oracle.com [156.151.31.75])
+        by aserp3020.oracle.com with ESMTP id 2xfqvq4665-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Mon, 13 Jan 2020 09:29:19 +0000
+Received: from abhmp0014.oracle.com (abhmp0014.oracle.com [141.146.116.20])
+        by userv0122.oracle.com (8.14.4/8.14.4) with ESMTP id 00D9STPe002615;
+        Mon, 13 Jan 2020 09:28:29 GMT
+Received: from kadam (/129.205.23.165)
+        by default (Oracle Beehive Gateway v4.0)
+        with ESMTP ; Mon, 13 Jan 2020 01:28:28 -0800
+Date:   Mon, 13 Jan 2020 12:28:20 +0300
+From:   Dan Carpenter <dan.carpenter@oracle.com>
+To:     Justin Capella <justincapella@gmail.com>
+Cc:     Johannes Berg <johannes@sipsolutions.net>,
+        syzbot <syzbot+34b582cf32c1db008f8e@syzkaller.appspotmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        LKML <linux-kernel@vger.kernel.org>,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        syzkaller-bugs@googlegroups.com,
+        Cody Schuffelen <schuffelen@google.com>
+Subject: Re: BUG: unable to handle kernel NULL pointer dereference in
+ cfg80211_wext_siwrts
+Message-ID: <20200113092820.GB9510@kadam>
+References: <00000000000073b469059bcde315@google.com>
+ <b5d74ce6b6e3c4b39cfac7df6c2b65d0a43d4416.camel@sipsolutions.net>
+ <CAMrEMU_a9evtp26tYB6VUxznmSmH98AmpP8xnejQr5bGTgE+8g@mail.gmail.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAMrEMU_a9evtp26tYB6VUxznmSmH98AmpP8xnejQr5bGTgE+8g@mail.gmail.com>
+User-Agent: Mutt/1.9.4 (2018-02-28)
+X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9498 signatures=668685
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 suspectscore=0 malwarescore=0
+ phishscore=0 bulkscore=0 spamscore=0 mlxscore=0 mlxlogscore=999
+ adultscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.0.1-1911140001 definitions=main-2001130080
+X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9498 signatures=668685
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 priorityscore=1501 malwarescore=0
+ suspectscore=0 phishscore=0 bulkscore=0 spamscore=0 clxscore=1011
+ lowpriorityscore=0 mlxscore=0 impostorscore=0 mlxlogscore=999 adultscore=0
+ classifier=spam adjust=0 reason=mlx scancount=1 engine=8.0.1-1911140001
+ definitions=main-2001130080
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-With 'commit 44768decb7c0 ("page_pool: handle page recycle for NUMA_NO_NODE
-condition")' we can safely change nid to NUMA_NO_NODE and accommodate
-future NUMA aware hardware using mvneta network interface
+That's the wrong ops struct?  I think I was looking at the "previous
+report" that Johannes mentioned where it was crashing because
+virt_wifi doesn't implement a set_wiphy_params function.
 
-Signed-off-by: Lorenzo Bianconi <lorenzo@kernel.org>
----
- drivers/net/ethernet/marvell/mvneta.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+Smatch says there are two other drivers, the libertas and ipw2x00 which
+don't have a set_wiphy_params function either.  But maybe those handle
+it a different way.
 
-diff --git a/drivers/net/ethernet/marvell/mvneta.c b/drivers/net/ethernet/marvell/mvneta.c
-index dcf831005ce6..4b4b2177982d 100644
---- a/drivers/net/ethernet/marvell/mvneta.c
-+++ b/drivers/net/ethernet/marvell/mvneta.c
-@@ -3072,7 +3072,7 @@ static int mvneta_create_page_pool(struct mvneta_port *pp,
- 		.order = 0,
- 		.flags = PP_FLAG_DMA_MAP | PP_FLAG_DMA_SYNC_DEV,
- 		.pool_size = size,
--		.nid = cpu_to_node(0),
-+		.nid = NUMA_NO_NODE,
- 		.dev = pp->dev->dev.parent,
- 		.dma_dir = xdp_prog ? DMA_BIDIRECTIONAL : DMA_FROM_DEVICE,
- 		.offset = pp->rx_offset_correction,
--- 
-2.21.1
+drivers/net/wireless/marvell/libertas/cfg.c | (null)                         | (struct cfg80211_ops)->set_wiphy_params | 0
+drivers/net/wireless/virt_wifi.c | (null)                         | (struct cfg80211_ops)->set_wiphy_params | 0
+drivers/net/wireless/intel/ipw2x00/libipw_module.c | (null)                         | (struct cfg80211_ops)->set_wiphy_params | 0
 
+regards,
+dan carpenter
+
+On Fri, Jan 10, 2020 at 09:23:57PM -0800, Justin Capella wrote:
+> I noticed pfifo_qdisc_ops is exported as default_qdisc_ops is it
+> possible this is how rdev->ops is NULL
+> 
+> Seems unlikely, but thought I'd point it out.
+> 
+> 
+> On Fri, Jan 10, 2020 at 11:13 AM Johannes Berg
+> <johannes@sipsolutions.net> wrote:
+> >
+> > On Fri, 2020-01-10 at 11:11 -0800, syzbot wrote:
+> > > Hello,
+> > >
+> > > syzbot found the following crash on:
+> > >
+> > > HEAD commit:    2f806c2a Merge branch 'net-ungraft-prio'
+> > > git tree:       net
+> > > console output: https://syzkaller.appspot.com/x/log.txt?x=1032069ee00000
+> > > kernel config:  https://syzkaller.appspot.com/x/.config?x=5c90cac8f1f8c619
+> > > dashboard link: https://syzkaller.appspot.com/bug?extid=34b582cf32c1db008f8e
+> > > compiler:       gcc (GCC) 9.0.0 20181231 (experimental)
+> > >
+> > > Unfortunately, I don't have any reproducer for this crash yet.
+> >
+> > It's quite likely also in virt_wifi, evidently that has some issues.
+> >
+> > Cody, did you take a look at the previous report by any chance?
+> >
+> > johannes
+> >
+> 
+> -- 
+> You received this message because you are subscribed to the Google Groups "syzkaller-bugs" group.
+> To unsubscribe from this group and stop receiving emails from it, send an email to syzkaller-bugs+unsubscribe@googlegroups.com.
+> To view this discussion on the web visit https://groups.google.com/d/msgid/syzkaller-bugs/CAMrEMU_a9evtp26tYB6VUxznmSmH98AmpP8xnejQr5bGTgE%2B8g%40mail.gmail.com.
