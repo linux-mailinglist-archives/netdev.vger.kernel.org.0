@@ -2,98 +2,67 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id E1640139D48
-	for <lists+netdev@lfdr.de>; Tue, 14 Jan 2020 00:30:18 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 62641139D4A
+	for <lists+netdev@lfdr.de>; Tue, 14 Jan 2020 00:30:25 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728993AbgAMXaO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 13 Jan 2020 18:30:14 -0500
-Received: from mail-oi1-f193.google.com ([209.85.167.193]:39897 "EHLO
-        mail-oi1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727282AbgAMXaO (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 13 Jan 2020 18:30:14 -0500
-Received: by mail-oi1-f193.google.com with SMTP id a67so10073685oib.6;
-        Mon, 13 Jan 2020 15:30:13 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=eZaqiw319VJnCml2+zBJxKWVWM0h/GzDX6yg9g2Rquw=;
-        b=azLS09kg+Uk/fO35rdud1DlwwVzPiuH5S7OM5V8SHMM5D1fX8rwNxsfx5M1Upshs+x
-         0mmpxoqHrsRoGKlrc2LaQ9ALZ5Tv5iN9HBPMjsA+lijecPUDoArwpyRyjiMfX4gWYhWH
-         tnHnmmWYyMRk32sf3/9XeSbBwTSik4C8ZZ5ujulGD44lATnZAh4e/T5O0MyTCrPF2PDB
-         w75OLfRqIHlkMi8E0Zwu7VC+pviVK6P6BYtSeqMtWNKgENiJJbuarQ/aAwGc/ZHfzBgC
-         HDTdjeMqkLJ8EDBoNjjiItfXwNPhsWMKGew3+TvvO1zX4ts5zBy8ovtPl32hBX+SFwpX
-         4Gvw==
-X-Gm-Message-State: APjAAAU1JDj8op1wzhwlKWHFacauqx2P6d5pm6Ko/Ch3+91PR+kVzJYW
-        xlI/Zg5qmtDa+3YYmupKpVPTBJCiKKxNj5CHAI8=
-X-Google-Smtp-Source: APXvYqzg8CdbzHzyG2pmz4js9Msb/H7pbgSPntduERaOQNPUZYVj+FwHMkNAuBIckeikwPmAWFV/f2vKNieGQbmMI6k=
-X-Received: by 2002:a54:488d:: with SMTP id r13mr14062187oic.115.1578958213346;
- Mon, 13 Jan 2020 15:30:13 -0800 (PST)
+        id S1729248AbgAMXaU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 13 Jan 2020 18:30:20 -0500
+Received: from vps0.lunn.ch ([185.16.172.187]:35538 "EHLO vps0.lunn.ch"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1727282AbgAMXaT (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 13 Jan 2020 18:30:19 -0500
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:
+        Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
+        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
+        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
+        List-Post:List-Owner:List-Archive;
+        bh=QwAoXOqjyyg/vJ5GZRN0tl9HB/BzOvUwdKHRpL6PwmI=; b=OvKpla9ORTpemj4RUAFr9Do/Ej
+        d5IvnR79Rtu/GSeeBW7wb0+8Te29GyWtZruIrafjHVaz7flLIPYt/Z6Y9Yws0FHohEyeDONTTV/6q
+        9DEyMxjGCmEaRFB9inmS+f/SSN+37wW0i66XpBaMOSSqtrIwJVnXEan9IFrMDtzspMsw=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.93)
+        (envelope-from <andrew@lunn.ch>)
+        id 1ir99v-0008CN-Sw; Tue, 14 Jan 2020 00:30:11 +0100
+Date:   Tue, 14 Jan 2020 00:30:11 +0100
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Horatiu Vultur <horatiu.vultur@microchip.com>
+Cc:     linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        bridge@lists.linux-foundation.org, davem@davemloft.net,
+        roopa@cumulusnetworks.com, nikolay@cumulusnetworks.com,
+        jakub.kicinski@netronome.com, vivien.didelot@gmail.com,
+        olteanv@gmail.com, anirudh.venkataramanan@intel.com,
+        dsahern@gmail.com, jiri@resnulli.us, ivecera@redhat.com,
+        UNGLinuxDriver@microchip.com
+Subject: Re: [RFC net-next Patch v2 4/4] net: bridge: mrp: switchdev: Add HW
+ offload
+Message-ID: <20200113233011.GF11788@lunn.ch>
+References: <20200113124620.18657-1-horatiu.vultur@microchip.com>
+ <20200113124620.18657-5-horatiu.vultur@microchip.com>
+ <20200113140053.GE11788@lunn.ch>
+ <20200113225751.jkkio4rztyuff4xj@soft-dev3.microsemi.net>
 MIME-Version: 1.0
-References: <20200107234526.GA19034@dev-dsk-anchalag-2a-9c2d1d96.us-west-2.amazon.com>
- <20200108105011.GY2827@hirez.programming.kicks-ass.net> <20200110153520.GC8214@u40b0340c692b58f6553c.ant.amazon.com>
- <20200113101609.GT2844@hirez.programming.kicks-ass.net> <857b42b2e86b2ae09a23f488daada3b1b2836116.camel@amazon.com>
- <20200113124247.GG2827@hirez.programming.kicks-ass.net> <CAJZ5v0jv+5aLY3N4wFSitu61o9S8tJWEWGGn1Xyw-P82_TwFdQ@mail.gmail.com>
-In-Reply-To: <CAJZ5v0jv+5aLY3N4wFSitu61o9S8tJWEWGGn1Xyw-P82_TwFdQ@mail.gmail.com>
-From:   "Rafael J. Wysocki" <rafael@kernel.org>
-Date:   Tue, 14 Jan 2020 00:30:02 +0100
-Message-ID: <CAJZ5v0imNbbch=NWAdgVKf_hjwRrEiWAL8SFNwe6rW_SjgYzrw@mail.gmail.com>
-Subject: Re: [RFC PATCH V2 11/11] x86: tsc: avoid system instability in hibernation
-To:     Peter Zijlstra <peterz@infradead.org>
-Cc:     "Singh, Balbir" <sblbir@amazon.com>,
-        "Valentin, Eduardo" <eduval@amazon.com>,
-        "boris.ostrovsky@oracle.com" <boris.ostrovsky@oracle.com>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "Agarwal, Anchal" <anchalag@amazon.com>,
-        "Woodhouse, David" <dwmw@amazon.co.uk>,
-        "vkuznets@redhat.com" <vkuznets@redhat.com>,
-        "sstabellini@kernel.org" <sstabellini@kernel.org>,
-        "tglx@linutronix.de" <tglx@linutronix.de>,
-        "linux-pm@vger.kernel.org" <linux-pm@vger.kernel.org>,
-        "linux-mm@kvack.org" <linux-mm@kvack.org>,
-        "pavel@ucw.cz" <pavel@ucw.cz>, "axboe@kernel.dk" <axboe@kernel.dk>,
-        "x86@kernel.org" <x86@kernel.org>,
-        "roger.pau@citrix.com" <roger.pau@citrix.com>,
-        "hpa@zytor.com" <hpa@zytor.com>,
-        "rjw@rjwysocki.net" <rjw@rjwysocki.net>,
-        "mingo@redhat.com" <mingo@redhat.com>,
-        "Kamata, Munehisa" <kamatam@amazon.com>,
-        "bp@alien8.de" <bp@alien8.de>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "konrad.wilk@oracle.co" <konrad.wilk@oracle.co>,
-        "len.brown@intel.com" <len.brown@intel.com>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "fllinden@amaozn.com" <fllinden@amaozn.com>,
-        "xen-devel@lists.xenproject.org" <xen-devel@lists.xenproject.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20200113225751.jkkio4rztyuff4xj@soft-dev3.microsemi.net>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Jan 13, 2020 at 10:50 PM Rafael J. Wysocki <rafael@kernel.org> wrote:
->
-> On Mon, Jan 13, 2020 at 1:43 PM Peter Zijlstra <peterz@infradead.org> wrote:
-> >
-> > On Mon, Jan 13, 2020 at 11:43:18AM +0000, Singh, Balbir wrote:
-> > > For your original comment, just wanted to clarify the following:
-> > >
-> > > 1. After hibernation, the machine can be resumed on a different but compatible
-> > > host (these are VM images hibernated)
-> > > 2. This means the clock between host1 and host2 can/will be different
-> > >
-> > > In your comments are you making the assumption that the host(s) is/are the
-> > > same? Just checking the assumptions being made and being on the same page with
-> > > them.
-> >
-> > I would expect this to be the same problem we have as regular suspend,
-> > after power off the TSC will have been reset, so resume will have to
-> > somehow bridge that gap. I've no idea if/how it does that.
->
-> In general, this is done by timekeeping_resume() and the only special
-> thing done for the TSC appears to be the tsc_verify_tsc_adjust(true)
-> call in tsc_resume().
+Hi Horatiu
 
-And I forgot about tsc_restore_sched_clock_state() that gets called
-via restore_processor_state() on x86, before calling
-timekeeping_resume().
+It has been said a few times what the basic state machine should be in
+user space. A pure software solution can use raw sockets to send and
+receive MRP_Test test frames. When considering hardware acceleration,
+the switchdev API you have proposed here seems quite simple. It should
+not be too hard to map it to a set of netlink messages from userspace.
+
+Yet your argument for kernel, not user space, is you are worried about
+the parameters which need to be passed to the hardware offload engine.
+In order to win the argument for a kernel solution, we are going to
+need a better idea what you think this problem is. The MRP_Test is TLV
+based. Are there other things which could be in this message? Is that
+what you are worried about?
+
+Thanks
+     Andrew
