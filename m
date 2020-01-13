@@ -2,130 +2,144 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 7FE77138CF0
-	for <lists+netdev@lfdr.de>; Mon, 13 Jan 2020 09:32:59 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A031A138D31
+	for <lists+netdev@lfdr.de>; Mon, 13 Jan 2020 09:49:22 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728862AbgAMIcx (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 13 Jan 2020 03:32:53 -0500
-Received: from host.76.145.23.62.rev.coltfrance.com ([62.23.145.76]:40217 "EHLO
-        proxy.6wind.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728699AbgAMIcw (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 13 Jan 2020 03:32:52 -0500
-Received: from bretzel.dev.6wind.com (unknown [10.16.0.19])
-        by proxy.6wind.com (Postfix) with ESMTPS id 685113694BA;
-        Mon, 13 Jan 2020 09:32:49 +0100 (CET)
-Received: from dichtel by bretzel.dev.6wind.com with local (Exim 4.92)
-        (envelope-from <dichtel@bretzel.dev.6wind.com>)
-        id 1iqv9V-0003pl-A5; Mon, 13 Jan 2020 09:32:49 +0100
-From:   Nicolas Dichtel <nicolas.dichtel@6wind.com>
-To:     steffen.klassert@secunet.com, davem@davemloft.net
-Cc:     netdev@vger.kernel.org, Nicolas Dichtel <nicolas.dichtel@6wind.com>
-Subject: [PATCH ipsec v3 2/2] xfrm interface: fix packet tx through bpf_redirect()
-Date:   Mon, 13 Jan 2020 09:32:47 +0100
-Message-Id: <20200113083247.14650-3-nicolas.dichtel@6wind.com>
-X-Mailer: git-send-email 2.24.0
-In-Reply-To: <20200113083247.14650-1-nicolas.dichtel@6wind.com>
-References: <6407b52a-b01d-5580-32e2-fbe352c2f47e@6wind.com>
- <20200113083247.14650-1-nicolas.dichtel@6wind.com>
+        id S1728890AbgAMItS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 13 Jan 2020 03:49:18 -0500
+Received: from aserp2120.oracle.com ([141.146.126.78]:49288 "EHLO
+        aserp2120.oracle.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728783AbgAMItR (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 13 Jan 2020 03:49:17 -0500
+Received: from pps.filterd (aserp2120.oracle.com [127.0.0.1])
+        by aserp2120.oracle.com (8.16.0.27/8.16.0.27) with SMTP id 00D8mev4053829;
+        Mon, 13 Jan 2020 08:49:08 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=date : from : to : cc
+ : subject : message-id : references : mime-version : content-type :
+ content-transfer-encoding : in-reply-to; s=corp-2019-08-05;
+ bh=lMx21tGcjb+jsEbRtABZz15Zz4x8qwLIqH7vx+tLHy0=;
+ b=QAtIetbIzElkUUiTe/pxyaKmXwng6vbZ1v5NDNRT6l/qp1JS3dBkZkyiM/1dtc1qwIwu
+ E0a6NJRrmGjM8dcXr8cuk449QA3F4Xj0ibSDrO/mtExqscsX5n9seKFhYEFRsx+GB7C0
+ AIrxB2FjJM7mW6+0ihQhgU61iuQaQM+DoQISkaGyM5+8x2wAaChEZ7dnsu2VOVKxvIjM
+ 0yrNFv2/J/JzI6WzXtoRMzV1XPZjwKha7z7xssCN/3YOMkyHkA16kWehp54NBajgsBYl
+ MoglJSF6brE6dEgxZZ8pXGfaaWpsEKuKBELD+XanouscNtmkghxuuMnxTdX109e6OsKt 4w== 
+Received: from aserp3020.oracle.com (aserp3020.oracle.com [141.146.126.70])
+        by aserp2120.oracle.com with ESMTP id 2xf73tdgdy-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Mon, 13 Jan 2020 08:49:08 +0000
+Received: from pps.filterd (aserp3020.oracle.com [127.0.0.1])
+        by aserp3020.oracle.com (8.16.0.27/8.16.0.27) with SMTP id 00D8n4gM117794;
+        Mon, 13 Jan 2020 08:49:08 GMT
+Received: from aserv0122.oracle.com (aserv0122.oracle.com [141.146.126.236])
+        by aserp3020.oracle.com with ESMTP id 2xfqvpxaen-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Mon, 13 Jan 2020 08:49:07 +0000
+Received: from abhmp0019.oracle.com (abhmp0019.oracle.com [141.146.116.25])
+        by aserv0122.oracle.com (8.14.4/8.14.4) with ESMTP id 00D8m2Ue014690;
+        Mon, 13 Jan 2020 08:48:02 GMT
+Received: from kadam (/129.205.23.165)
+        by default (Oracle Beehive Gateway v4.0)
+        with ESMTP ; Mon, 13 Jan 2020 00:48:01 -0800
+Date:   Mon, 13 Jan 2020 11:47:53 +0300
+From:   Dan Carpenter <dan.carpenter@oracle.com>
+To:     Marion & Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+Cc:     Colin King <colin.king@canonical.com>,
+        David Miller <davem@davemloft.net>,
+        linux-wireless@vger.kernel.org,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        Kernel Janitors <kernel-janitors@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH][next] ath11k: avoid null pointer dereference when
+ pointer band is null
+Message-ID: <20200113084753.GA9510@kadam>
+References: <05d5d54e035e4d69ad4ffb4a835a495a@huawei.com>
+ <64797126-0c77-4c2c-ad2b-29d7af452c13@wanadoo.fr>
+ <17571eee-9d72-98cb-00f5-d714a28b853b@wanadoo.fr>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
+In-Reply-To: <17571eee-9d72-98cb-00f5-d714a28b853b@wanadoo.fr>
+User-Agent: Mutt/1.9.4 (2018-02-28)
+X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9498 signatures=668685
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 suspectscore=0 malwarescore=0
+ phishscore=0 bulkscore=0 spamscore=0 mlxscore=0 mlxlogscore=999
+ adultscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.0.1-1911140001 definitions=main-2001130074
+X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9498 signatures=668685
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 priorityscore=1501 malwarescore=0
+ suspectscore=0 phishscore=0 bulkscore=0 spamscore=0 clxscore=1011
+ lowpriorityscore=0 mlxscore=0 impostorscore=0 mlxlogscore=999 adultscore=0
+ classifier=spam adjust=0 reason=mlx scancount=1 engine=8.0.1-1911140001
+ definitions=main-2001130074
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-With an ebpf program that redirects packets through a xfrm interface,
-packets are dropped because no dst is attached to skb.
+On Sat, Jan 11, 2020 at 12:57:11PM +0100, Marion & Christophe JAILLET wrote:
+> Le 11/01/2020 à 10:50, linmiaohe a écrit :
+> > Colin Ian King<colin.king@canonical.com>  wrote：
+> > > From: Colin Ian King<colin.king@canonical.com>
+> > > 
+> > > In the unlikely event that cap->supported_bands has neither WMI_HOST_WLAN_2G_CAP set or WMI_HOST_WLAN_5G_CAP set then pointer band is null and a null dereference occurs when assigning
+> > > band->n_iftype_data.  Move the assignment to the if blocks to
+> > > avoid this.  Cleans up static analysis warnings.
+> > > 
+> > > Addresses-Coverity: ("Explicit null dereference")
+> > > Fixes: 9f056ed8ee01 ("ath11k: add HE support")
+> > > Signed-off-by: Colin Ian King<colin.king@canonical.com>
+> > > ---
+> > > drivers/net/wireless/ath/ath11k/mac.c | 8 ++++----
+> > > 1 file changed, 4 insertions(+), 4 deletions(-)
+> > It looks fine for me. Thanks.
+> > Reviewed-by: Miaohe Lin<linmiaohe@huawei.com>
+> (sorry for incomplete mail and mailing list addresses, my newsreader ate
+> them, and I cannot get the list from get_maintainer.pl because my (outdated)
+> tree does not have ath11k/...
+> I've only including the ones in memory of my mail writer.
+> 
+> Please forward if needed)
+> 
+> 
+> Hi
+> 
+> Shouldn't there be a
+> 
+> |
+> 
+> - band->n_iftype_data  =  count; at the end of the patch if the assignment
+> is *moved*? Without it, 'band' (as well as 'count') could be un-initialized,
+> and lead to memory corruption. Just my 2c. CJ |
 
-This could also be reproduced with an AF_PACKET socket, with the following
-python script (xfrm1 is a xfrm interface):
+You must be looking at different code.  There is no uninitialized
+variable.  The patched code looks like:
 
- import socket
- send_s = socket.socket(socket.AF_PACKET, socket.SOCK_RAW, 0)
- # scapy
- # p = IP(src='10.100.0.2', dst='10.200.0.1')/ICMP(type='echo-request')
- # raw(p)
- req = b'E\x00\x00\x1c\x00\x01\x00\x00@\x01e\xb2\nd\x00\x02\n\xc8\x00\x01\x08\x00\xf7\xff\x00\x00\x00\x00'
- send_s.sendto(req, ('xfrm1', 0x800, 0, 0))
+drivers/net/wireless/ath/ath11k/mac.c
+  3520  static void ath11k_mac_setup_he_cap(struct ath11k *ar,
+  3521                                      struct ath11k_pdev_cap *cap)
+  3522  {
+  3523          struct ieee80211_supported_band *band;
+  3524          int count;
+  3525  
+  3526          if (cap->supported_bands & WMI_HOST_WLAN_2G_CAP) {
+  3527                  count = ath11k_mac_copy_he_cap(ar, cap,
+  3528                                                 ar->mac.iftype[NL80211_BAND_2GHZ],
+  3529                                                 NL80211_BAND_2GHZ);
+  3530                  band = &ar->mac.sbands[NL80211_BAND_2GHZ];
+  3531                  band->iftype_data = ar->mac.iftype[NL80211_BAND_2GHZ];
+  3532                  band->n_iftype_data = count;
+  3533          }
+  3534  
+  3535          if (cap->supported_bands & WMI_HOST_WLAN_5G_CAP) {
+  3536                  count = ath11k_mac_copy_he_cap(ar, cap,
+  3537                                                 ar->mac.iftype[NL80211_BAND_5GHZ],
+  3538                                                 NL80211_BAND_5GHZ);
+  3539                  band = &ar->mac.sbands[NL80211_BAND_5GHZ];
+  3540                  band->iftype_data = ar->mac.iftype[NL80211_BAND_5GHZ];
+  3541                  band->n_iftype_data = count;
+  3542          }
+  3543  }
 
-It was also not possible to send an ip packet through an AF_PACKET socket
-because a LL header was expected. Let's remove those LL header constraints.
-
-Signed-off-by: Nicolas Dichtel <nicolas.dichtel@6wind.com>
----
- net/xfrm/xfrm_interface.c | 32 +++++++++++++++++++++++++-------
- 1 file changed, 25 insertions(+), 7 deletions(-)
-
-diff --git a/net/xfrm/xfrm_interface.c b/net/xfrm/xfrm_interface.c
-index 7ac1542feaf8..00393179f185 100644
---- a/net/xfrm/xfrm_interface.c
-+++ b/net/xfrm/xfrm_interface.c
-@@ -268,9 +268,6 @@ xfrmi_xmit2(struct sk_buff *skb, struct net_device *dev, struct flowi *fl)
- 	int err = -1;
- 	int mtu;
- 
--	if (!dst)
--		goto tx_err_link_failure;
--
- 	dst_hold(dst);
- 	dst = xfrm_lookup_with_ifid(xi->net, dst, fl, NULL, 0, xi->p.if_id);
- 	if (IS_ERR(dst)) {
-@@ -343,6 +340,7 @@ static netdev_tx_t xfrmi_xmit(struct sk_buff *skb, struct net_device *dev)
- {
- 	struct xfrm_if *xi = netdev_priv(dev);
- 	struct net_device_stats *stats = &xi->dev->stats;
-+	struct dst_entry *dst = skb_dst(skb);
- 	struct flowi fl;
- 	int ret;
- 
-@@ -352,10 +350,33 @@ static netdev_tx_t xfrmi_xmit(struct sk_buff *skb, struct net_device *dev)
- 	case htons(ETH_P_IPV6):
- 		xfrm_decode_session(skb, &fl, AF_INET6);
- 		memset(IP6CB(skb), 0, sizeof(*IP6CB(skb)));
-+		if (!dst) {
-+			fl.u.ip6.flowi6_oif = dev->ifindex;
-+			fl.u.ip6.flowi6_flags |= FLOWI_FLAG_ANYSRC;
-+			dst = ip6_route_output(dev_net(dev), NULL, &fl.u.ip6);
-+			if (dst->error) {
-+				dst_release(dst);
-+				stats->tx_carrier_errors++;
-+				goto tx_err;
-+			}
-+			skb_dst_set(skb, dst);
-+		}
- 		break;
- 	case htons(ETH_P_IP):
- 		xfrm_decode_session(skb, &fl, AF_INET);
- 		memset(IPCB(skb), 0, sizeof(*IPCB(skb)));
-+		if (!dst) {
-+			struct rtable *rt;
-+
-+			fl.u.ip4.flowi4_oif = dev->ifindex;
-+			fl.u.ip4.flowi4_flags |= FLOWI_FLAG_ANYSRC;
-+			rt = __ip_route_output_key(dev_net(dev), &fl.u.ip4);
-+			if (IS_ERR(rt)) {
-+				stats->tx_carrier_errors++;
-+				goto tx_err;
-+			}
-+			skb_dst_set(skb, &rt->dst);
-+		}
- 		break;
- 	default:
- 		goto tx_err;
-@@ -563,12 +584,9 @@ static void xfrmi_dev_setup(struct net_device *dev)
- {
- 	dev->netdev_ops 	= &xfrmi_netdev_ops;
- 	dev->type		= ARPHRD_NONE;
--	dev->hard_header_len 	= ETH_HLEN;
--	dev->min_header_len	= ETH_HLEN;
- 	dev->mtu		= ETH_DATA_LEN;
- 	dev->min_mtu		= ETH_MIN_MTU;
--	dev->max_mtu		= ETH_DATA_LEN;
--	dev->addr_len		= ETH_ALEN;
-+	dev->max_mtu		= IP_MAX_MTU;
- 	dev->flags 		= IFF_NOARP;
- 	dev->needs_free_netdev	= true;
- 	dev->priv_destructor	= xfrmi_dev_free;
--- 
-2.24.0
-
+regards,
+dan carpenter
