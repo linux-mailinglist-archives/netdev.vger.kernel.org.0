@@ -2,117 +2,286 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id B5F91139C7E
-	for <lists+netdev@lfdr.de>; Mon, 13 Jan 2020 23:31:49 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A5AA6139C97
+	for <lists+netdev@lfdr.de>; Mon, 13 Jan 2020 23:32:59 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728838AbgAMWbr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 13 Jan 2020 17:31:47 -0500
-Received: from mail-lj1-f196.google.com ([209.85.208.196]:45707 "EHLO
-        mail-lj1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728792AbgAMWbr (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 13 Jan 2020 17:31:47 -0500
-Received: by mail-lj1-f196.google.com with SMTP id j26so11961165ljc.12
-        for <netdev@vger.kernel.org>; Mon, 13 Jan 2020 14:31:46 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=cloudflare.com; s=google;
-        h=references:user-agent:from:to:cc:subject:in-reply-to:date
-         :message-id:mime-version;
-        bh=e74JGoY1ojHAtLAhiWMAFpQFNt52SQK2CW+q5dprebc=;
-        b=YyWUFUX5S5aTlmidhrgT2cM157XASQX91W+Fpl5omKHy3WW7Bk/6Y/gk+LKj4b9brQ
-         tq8nDWCdrSIy6+WN+tfVR7XVtu4rdiovyI9Jc+7PvWqYwtet5E6X/BhzYsiONdNI7Shx
-         AMgPU2gsvjOhI06wZIT9p7oZX2upctykXbHmc=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:references:user-agent:from:to:cc:subject
-         :in-reply-to:date:message-id:mime-version;
-        bh=e74JGoY1ojHAtLAhiWMAFpQFNt52SQK2CW+q5dprebc=;
-        b=f97jMNdU1VbE7dZHs0w11jWX1TUM6ei4AVtRua41iPDuEs+2VloFeu6YotesH4IW/l
-         8WTJEPn+75PsXCN1X/4OfVb0H7LUgXXzQRit77JW33T5lB2KTjIn0VPGc0B1bsTJAQHe
-         i4nX4b0Mx2YITZs015NosFitIrjZKS7MUchVdjJJd0mp5xufGAJYH46YpPzRy68Z/2uc
-         fB3X599xJfR64SpzGtEMn0vLVZoXGRkvBLxiPeViGdZ5sum7uz80jI8e5S44+Lh69LMD
-         n33X9DnGJevV5uzQQiGii2rdW+xSM9wx9t7Su3o0EosrZzX/lPRAtWelsvtOKHxa4eJH
-         xugQ==
-X-Gm-Message-State: APjAAAVUSPp+Q6HKirqzonlen+PON+dXqJNU0Rgv4UDMeC572L5Bbqv7
-        /v7cuYS6A1B3Ky9ou3ngU+YOLQ==
-X-Google-Smtp-Source: APXvYqxX26oDY+WvfgPZeQyhs3z0Dx4CL26PCTQFhVlKVc06Vujs5oDxPbT0tv3W/KgJYCI04FUJwA==
-X-Received: by 2002:a2e:9716:: with SMTP id r22mr12715781lji.224.1578954705203;
-        Mon, 13 Jan 2020 14:31:45 -0800 (PST)
-Received: from cloudflare.com ([2a02:a310:c262:aa00:b35e:8938:2c2a:ba8b])
-        by smtp.gmail.com with ESMTPSA id d11sm6339255lfj.3.2020.01.13.14.31.44
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 13 Jan 2020 14:31:44 -0800 (PST)
-References: <20200110105027.257877-1-jakub@cloudflare.com> <20200110105027.257877-5-jakub@cloudflare.com> <5e1a5ed97885d_1e7f2b0c859c45c0d7@john-XPS-13-9370.notmuch>
-User-agent: mu4e 1.1.0; emacs 26.3
-From:   Jakub Sitnicki <jakub@cloudflare.com>
-To:     John Fastabend <john.fastabend@gmail.com>
-Cc:     bpf@vger.kernel.org, netdev@vger.kernel.org,
-        kernel-team@cloudflare.com, Eric Dumazet <edumazet@google.com>,
-        Lorenz Bauer <lmb@cloudflare.com>,
-        Martin KaFai Lau <kafai@fb.com>
-Subject: Re: [PATCH bpf-next v2 04/11] tcp_bpf: Don't let child socket inherit parent protocol ops on copy
-In-reply-to: <5e1a5ed97885d_1e7f2b0c859c45c0d7@john-XPS-13-9370.notmuch>
-Date:   Mon, 13 Jan 2020 23:31:43 +0100
-Message-ID: <87h80zrnsg.fsf@cloudflare.com>
+        id S1728904AbgAMWcw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 13 Jan 2020 17:32:52 -0500
+Received: from relay2-d.mail.gandi.net ([217.70.183.194]:40629 "EHLO
+        relay2-d.mail.gandi.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729009AbgAMWcE (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 13 Jan 2020 17:32:04 -0500
+X-Originating-IP: 90.76.143.236
+Received: from localhost (lfbn-tou-1-1075-236.w90-76.abo.wanadoo.fr [90.76.143.236])
+        (Authenticated sender: antoine.tenart@bootlin.com)
+        by relay2-d.mail.gandi.net (Postfix) with ESMTPSA id CAAC040006;
+        Mon, 13 Jan 2020 22:32:01 +0000 (UTC)
+From:   Antoine Tenart <antoine.tenart@bootlin.com>
+To:     davem@davemloft.net, sd@queasysnail.net, andrew@lunn.ch,
+        f.fainelli@gmail.com, hkallweit1@gmail.com
+Cc:     Antoine Tenart <antoine.tenart@bootlin.com>,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        thomas.petazzoni@bootlin.com, alexandre.belloni@bootlin.com,
+        allan.nielsen@microchip.com, camelia.groza@nxp.com,
+        Simon.Edelhaus@aquantia.com, Igor.Russkikh@aquantia.com,
+        jakub.kicinski@netronome.com
+Subject: [PATCH net-next v6 06/10] net: macsec: add nla support for changing the offloading selection
+Date:   Mon, 13 Jan 2020 23:31:44 +0100
+Message-Id: <20200113223148.746096-7-antoine.tenart@bootlin.com>
+X-Mailer: git-send-email 2.24.1
+In-Reply-To: <20200113223148.746096-1-antoine.tenart@bootlin.com>
+References: <20200113223148.746096-1-antoine.tenart@bootlin.com>
 MIME-Version: 1.0
-Content-Type: text/plain
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, Jan 12, 2020 at 12:48 AM CET, John Fastabend wrote:
-> Jakub Sitnicki wrote:
->> Prepare for cloning listening sockets that have their protocol callbacks
->> overridden by sk_msg. Child sockets must not inherit parent callbacks that
->> access state stored in sk_user_data owned by the parent.
->> 
->> Restore the child socket protocol callbacks before the it gets hashed and
->> any of the callbacks can get invoked.
->> 
->> Signed-off-by: Jakub Sitnicki <jakub@cloudflare.com>
->> ---
->>  include/net/tcp.h        |  1 +
->>  net/ipv4/tcp_bpf.c       | 13 +++++++++++++
->>  net/ipv4/tcp_minisocks.c |  2 ++
->>  3 files changed, 16 insertions(+)
->> 
->> diff --git a/include/net/tcp.h b/include/net/tcp.h
->> index 9dd975be7fdf..7cbf9465bb10 100644
->> --- a/include/net/tcp.h
->> +++ b/include/net/tcp.h
->> @@ -2181,6 +2181,7 @@ int tcp_bpf_recvmsg(struct sock *sk, struct msghdr *msg, size_t len,
->>  		    int nonblock, int flags, int *addr_len);
->>  int __tcp_bpf_recvmsg(struct sock *sk, struct sk_psock *psock,
->>  		      struct msghdr *msg, int len, int flags);
->> +void tcp_bpf_clone(const struct sock *sk, struct sock *child);
->>  
->>  /* Call BPF_SOCK_OPS program that returns an int. If the return value
->>   * is < 0, then the BPF op failed (for example if the loaded BPF
->> diff --git a/net/ipv4/tcp_bpf.c b/net/ipv4/tcp_bpf.c
->> index f6c83747c71e..6f96320fb7cf 100644
->> --- a/net/ipv4/tcp_bpf.c
->> +++ b/net/ipv4/tcp_bpf.c
->> @@ -586,6 +586,19 @@ static void tcp_bpf_close(struct sock *sk, long timeout)
->>  	saved_close(sk, timeout);
->>  }
->>  
->> +/* If a child got cloned from a listening socket that had tcp_bpf
->> + * protocol callbacks installed, we need to restore the callbacks to
->> + * the default ones because the child does not inherit the psock state
->> + * that tcp_bpf callbacks expect.
->> + */
->> +void tcp_bpf_clone(const struct sock *sk, struct sock *newsk)
->> +{
->> +	struct proto *prot = newsk->sk_prot;
->> +
->> +	if (prot->recvmsg == tcp_bpf_recvmsg)
->> +		newsk->sk_prot = sk->sk_prot_creator;
->> +}
->> +
->
-> ^^^^ probably needs to go into tcp.h wrapped in ifdef NET_SOCK_MSG with
-> a stub for ifndef NET_SOCK_MSG case.
->
-> Looks like build bot also caught this.
+MACsec offloading to underlying hardware devices is disabled by default
+(the software implementation is used). This patch adds support for
+changing this setting through the MACsec netlink interface. Many checks
+are done when enabling offloading on a given MACsec interface as there
+are limitations (it must be supported by the hardware, only a single
+interface can be offloaded on a given physical device at a time, rules
+can't be moved for now).
 
-Oops, I need to add NET_SOCK_MSG to my build matrix :-)
+Signed-off-by: Antoine Tenart <antoine.tenart@bootlin.com>
+---
+ drivers/net/macsec.c           | 145 ++++++++++++++++++++++++++++++++-
+ include/uapi/linux/if_macsec.h |  11 +++
+ 2 files changed, 153 insertions(+), 3 deletions(-)
+
+diff --git a/drivers/net/macsec.c b/drivers/net/macsec.c
+index 36b0416381bf..e515919e8687 100644
+--- a/drivers/net/macsec.c
++++ b/drivers/net/macsec.c
+@@ -1484,6 +1484,7 @@ static const struct nla_policy macsec_genl_policy[NUM_MACSEC_ATTR] = {
+ 	[MACSEC_ATTR_IFINDEX] = { .type = NLA_U32 },
+ 	[MACSEC_ATTR_RXSC_CONFIG] = { .type = NLA_NESTED },
+ 	[MACSEC_ATTR_SA_CONFIG] = { .type = NLA_NESTED },
++	[MACSEC_ATTR_OFFLOAD] = { .type = NLA_NESTED },
+ };
+ 
+ static const struct nla_policy macsec_genl_rxsc_policy[NUM_MACSEC_RXSC_ATTR] = {
+@@ -1501,6 +1502,10 @@ static const struct nla_policy macsec_genl_sa_policy[NUM_MACSEC_SA_ATTR] = {
+ 				 .len = MACSEC_MAX_KEY_LEN, },
+ };
+ 
++static const struct nla_policy macsec_genl_offload_policy[NUM_MACSEC_OFFLOAD_ATTR] = {
++	[MACSEC_OFFLOAD_ATTR_TYPE] = { .type = NLA_U8 },
++};
++
+ /* Offloads an operation to a device driver */
+ static int macsec_offload(int (* const func)(struct macsec_context *),
+ 			  struct macsec_context *ctx)
+@@ -2329,6 +2334,126 @@ static int macsec_upd_rxsc(struct sk_buff *skb, struct genl_info *info)
+ 	return ret;
+ }
+ 
++static bool macsec_is_configured(struct macsec_dev *macsec)
++{
++	struct macsec_secy *secy = &macsec->secy;
++	struct macsec_tx_sc *tx_sc = &secy->tx_sc;
++	int i;
++
++	if (secy->n_rx_sc > 0)
++		return true;
++
++	for (i = 0; i < MACSEC_NUM_AN; i++)
++		if (tx_sc->sa[i])
++			return true;
++
++	return false;
++}
++
++static int macsec_upd_offload(struct sk_buff *skb, struct genl_info *info)
++{
++	struct nlattr *tb_offload[MACSEC_OFFLOAD_ATTR_MAX + 1];
++	enum macsec_offload offload, prev_offload;
++	int (*func)(struct macsec_context *ctx);
++	struct nlattr **attrs = info->attrs;
++	struct net_device *dev, *loop_dev;
++	const struct macsec_ops *ops;
++	struct macsec_context ctx;
++	struct macsec_dev *macsec;
++	struct net *loop_net;
++	int ret;
++
++	if (!attrs[MACSEC_ATTR_IFINDEX])
++		return -EINVAL;
++
++	if (!attrs[MACSEC_ATTR_OFFLOAD])
++		return -EINVAL;
++
++	if (nla_parse_nested_deprecated(tb_offload, MACSEC_OFFLOAD_ATTR_MAX,
++					attrs[MACSEC_ATTR_OFFLOAD],
++					macsec_genl_offload_policy, NULL))
++		return -EINVAL;
++
++	dev = get_dev_from_nl(genl_info_net(info), attrs);
++	if (IS_ERR(dev))
++		return PTR_ERR(dev);
++	macsec = macsec_priv(dev);
++
++	offload = nla_get_u8(tb_offload[MACSEC_OFFLOAD_ATTR_TYPE]);
++	if (macsec->offload == offload)
++		return 0;
++
++	/* Check if the offloading mode is supported by the underlying layers */
++	if (offload != MACSEC_OFFLOAD_OFF &&
++	    !macsec_check_offload(offload, macsec))
++		return -EOPNOTSUPP;
++
++	if (offload == MACSEC_OFFLOAD_OFF)
++		goto skip_limitation;
++
++	/* Check the physical interface isn't offloading another interface
++	 * first.
++	 */
++	for_each_net(loop_net) {
++		for_each_netdev(loop_net, loop_dev) {
++			struct macsec_dev *priv;
++
++			if (!netif_is_macsec(loop_dev))
++				continue;
++
++			priv = macsec_priv(loop_dev);
++
++			if (priv->real_dev == macsec->real_dev &&
++			    priv->offload != MACSEC_OFFLOAD_OFF)
++				return -EBUSY;
++		}
++	}
++
++skip_limitation:
++	/* Check if the net device is busy. */
++	if (netif_running(dev))
++		return -EBUSY;
++
++	rtnl_lock();
++
++	prev_offload = macsec->offload;
++	macsec->offload = offload;
++
++	/* Check if the device already has rules configured: we do not support
++	 * rules migration.
++	 */
++	if (macsec_is_configured(macsec)) {
++		ret = -EBUSY;
++		goto rollback;
++	}
++
++	ops = __macsec_get_ops(offload == MACSEC_OFFLOAD_OFF ? prev_offload : offload,
++			       macsec, &ctx);
++	if (!ops) {
++		ret = -EOPNOTSUPP;
++		goto rollback;
++	}
++
++	if (prev_offload == MACSEC_OFFLOAD_OFF)
++		func = ops->mdo_add_secy;
++	else
++		func = ops->mdo_del_secy;
++
++	ctx.secy = &macsec->secy;
++	ret = macsec_offload(func, &ctx);
++	if (ret)
++		goto rollback;
++
++	rtnl_unlock();
++	return 0;
++
++rollback:
++	macsec->offload = prev_offload;
++
++	rtnl_unlock();
++	return ret;
++}
++
+ static int copy_tx_sa_stats(struct sk_buff *skb,
+ 			    struct macsec_tx_sa_stats __percpu *pstats)
+ {
+@@ -2590,12 +2715,13 @@ static noinline_for_stack int
+ dump_secy(struct macsec_secy *secy, struct net_device *dev,
+ 	  struct sk_buff *skb, struct netlink_callback *cb)
+ {
+-	struct macsec_rx_sc *rx_sc;
++	struct macsec_dev *macsec = netdev_priv(dev);
+ 	struct macsec_tx_sc *tx_sc = &secy->tx_sc;
+ 	struct nlattr *txsa_list, *rxsc_list;
+-	int i, j;
+-	void *hdr;
++	struct macsec_rx_sc *rx_sc;
+ 	struct nlattr *attr;
++	void *hdr;
++	int i, j;
+ 
+ 	hdr = genlmsg_put(skb, NETLINK_CB(cb->skb).portid, cb->nlh->nlmsg_seq,
+ 			  &macsec_fam, NLM_F_MULTI, MACSEC_CMD_GET_TXSC);
+@@ -2607,6 +2733,13 @@ dump_secy(struct macsec_secy *secy, struct net_device *dev,
+ 	if (nla_put_u32(skb, MACSEC_ATTR_IFINDEX, dev->ifindex))
+ 		goto nla_put_failure;
+ 
++	attr = nla_nest_start_noflag(skb, MACSEC_ATTR_OFFLOAD);
++	if (!attr)
++		goto nla_put_failure;
++	if (nla_put_u8(skb, MACSEC_OFFLOAD_ATTR_TYPE, macsec->offload))
++		goto nla_put_failure;
++	nla_nest_end(skb, attr);
++
+ 	if (nla_put_secy(secy, skb))
+ 		goto nla_put_failure;
+ 
+@@ -2872,6 +3005,12 @@ static const struct genl_ops macsec_genl_ops[] = {
+ 		.doit = macsec_upd_rxsa,
+ 		.flags = GENL_ADMIN_PERM,
+ 	},
++	{
++		.cmd = MACSEC_CMD_UPD_OFFLOAD,
++		.validate = GENL_DONT_VALIDATE_STRICT | GENL_DONT_VALIDATE_DUMP,
++		.doit = macsec_upd_offload,
++		.flags = GENL_ADMIN_PERM,
++	},
+ };
+ 
+ static struct genl_family macsec_fam __ro_after_init = {
+diff --git a/include/uapi/linux/if_macsec.h b/include/uapi/linux/if_macsec.h
+index 98e4d5d7c45c..1d63c43c38cc 100644
+--- a/include/uapi/linux/if_macsec.h
++++ b/include/uapi/linux/if_macsec.h
+@@ -45,6 +45,7 @@ enum macsec_attrs {
+ 	MACSEC_ATTR_RXSC_LIST,   /* dump, nested, macsec_rxsc_attrs for each RXSC */
+ 	MACSEC_ATTR_TXSC_STATS,  /* dump, nested, macsec_txsc_stats_attr */
+ 	MACSEC_ATTR_SECY_STATS,  /* dump, nested, macsec_secy_stats_attr */
++	MACSEC_ATTR_OFFLOAD,     /* config, nested, macsec_offload_attrs */
+ 	__MACSEC_ATTR_END,
+ 	NUM_MACSEC_ATTR = __MACSEC_ATTR_END,
+ 	MACSEC_ATTR_MAX = __MACSEC_ATTR_END - 1,
+@@ -97,6 +98,15 @@ enum macsec_sa_attrs {
+ 	MACSEC_SA_ATTR_MAX = __MACSEC_SA_ATTR_END - 1,
+ };
+ 
++enum macsec_offload_attrs {
++	MACSEC_OFFLOAD_ATTR_UNSPEC,
++	MACSEC_OFFLOAD_ATTR_TYPE, /* config/dump, u8 0..2 */
++	MACSEC_OFFLOAD_ATTR_PAD,
++	__MACSEC_OFFLOAD_ATTR_END,
++	NUM_MACSEC_OFFLOAD_ATTR = __MACSEC_OFFLOAD_ATTR_END,
++	MACSEC_OFFLOAD_ATTR_MAX = __MACSEC_OFFLOAD_ATTR_END - 1,
++};
++
+ enum macsec_nl_commands {
+ 	MACSEC_CMD_GET_TXSC,
+ 	MACSEC_CMD_ADD_RXSC,
+@@ -108,6 +118,7 @@ enum macsec_nl_commands {
+ 	MACSEC_CMD_ADD_RXSA,
+ 	MACSEC_CMD_DEL_RXSA,
+ 	MACSEC_CMD_UPD_RXSA,
++	MACSEC_CMD_UPD_OFFLOAD,
+ };
+ 
+ /* u64 per-RXSC stats */
+-- 
+2.24.1
+
