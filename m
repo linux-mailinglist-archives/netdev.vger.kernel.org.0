@@ -2,193 +2,191 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id E5EB8139D00
-	for <lists+netdev@lfdr.de>; Mon, 13 Jan 2020 23:58:00 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A832E139D20
+	for <lists+netdev@lfdr.de>; Tue, 14 Jan 2020 00:12:35 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729146AbgAMW5z (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 13 Jan 2020 17:57:55 -0500
-Received: from esa2.microchip.iphmx.com ([68.232.149.84]:12990 "EHLO
-        esa2.microchip.iphmx.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728829AbgAMW5z (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 13 Jan 2020 17:57:55 -0500
-Received-SPF: Pass (esa2.microchip.iphmx.com: domain of
-  Horatiu.Vultur@microchip.com designates 198.175.253.82 as
-  permitted sender) identity=mailfrom;
-  client-ip=198.175.253.82; receiver=esa2.microchip.iphmx.com;
-  envelope-from="Horatiu.Vultur@microchip.com";
-  x-sender="Horatiu.Vultur@microchip.com";
-  x-conformance=spf_only; x-record-type="v=spf1";
-  x-record-text="v=spf1 mx a:ushub1.microchip.com
-  a:smtpout.microchip.com -exists:%{i}.spf.microchip.iphmx.com
-  include:servers.mcsv.net include:mktomail.com
-  include:spf.protection.outlook.com ~all"
-Received-SPF: None (esa2.microchip.iphmx.com: no sender
-  authenticity information available from domain of
-  postmaster@email.microchip.com) identity=helo;
-  client-ip=198.175.253.82; receiver=esa2.microchip.iphmx.com;
-  envelope-from="Horatiu.Vultur@microchip.com";
-  x-sender="postmaster@email.microchip.com";
-  x-conformance=spf_only
-Authentication-Results: esa2.microchip.iphmx.com; dkim=none (message not signed) header.i=none; spf=Pass smtp.mailfrom=Horatiu.Vultur@microchip.com; spf=None smtp.helo=postmaster@email.microchip.com; dmarc=pass (p=none dis=none) d=microchip.com
-IronPort-SDR: uLdyb5/8R7WdrAuvZZJHHEW+0FURP8Mm7nPewEH2KVe415sRQZBrXTBFgHGr82rS96k4G+y9ZN
- 5Knjg7uZxTqBsg55Kd+EQFNnqmnwYYiwbgZc4BUmPTRBZx4DCoRfoIDcF/d2vPeS33qmRIiGaH
- y7udqvM+Y/3eEx6VInACJRR0lz7nKbF9N0P32Ez78dNlCZkyP0UxpK6Lud29bDFNqq4G6/Fgmf
- qDk6mqEx892r/ff3Jakj7LeNegALia07v1Q1SY6Oq2KDRP+hw7dLXOGeE4drnrUTXCGJUXUk4K
- eeo=
-X-IronPort-AV: E=Sophos;i="5.69,430,1571727600"; 
-   d="scan'208";a="62491319"
-Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
-  by esa2.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 13 Jan 2020 15:57:54 -0700
-Received: from chn-vm-ex02.mchp-main.com (10.10.85.144) by
- chn-vm-ex03.mchp-main.com (10.10.85.151) with Microsoft SMTP Server
+        id S1729196AbgAMXMd (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 13 Jan 2020 18:12:33 -0500
+Received: from mx0b-00082601.pphosted.com ([67.231.153.30]:53326 "EHLO
+        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1728900AbgAMXMd (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 13 Jan 2020 18:12:33 -0500
+Received: from pps.filterd (m0089730.ppops.net [127.0.0.1])
+        by m0089730.ppops.net (8.16.0.42/8.16.0.42) with SMTP id 00DN4ir9009690;
+        Mon, 13 Jan 2020 15:12:29 -0800
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
+ : date : message-id : references : in-reply-to : content-type : content-id
+ : content-transfer-encoding : mime-version; s=facebook;
+ bh=UUNjkLuQ0jCz2PwuAGdDURC0Zo/B8LxYl1Wd0YvUJmo=;
+ b=rUjS2IuoDLh7c72BaxhpgU5DQtvuXjnSW0Webr22j3dI0gIwz64IcJcMCqsnTb4XIYCe
+ O3Flf1p9TXNyFjrVKjzHvq9s9DeVTKQXWo1nF79QVMVYx18KqevkFOEM2ZQeUiY7Ookq
+ V+gh4ZWfFWZlPiOj2MSZNWr6eAx7W5YBlSs= 
+Received: from maileast.thefacebook.com ([163.114.130.16])
+        by m0089730.ppops.net with ESMTP id 2xfar4at9g-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
+        Mon, 13 Jan 2020 15:12:29 -0800
+Received: from NAM12-MW2-obe.outbound.protection.outlook.com (100.104.31.183)
+ by o365-in.thefacebook.com (100.104.36.103) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.1713.5; Mon, 13 Jan 2020 15:57:52 -0700
-Received: from localhost (10.10.85.251) by chn-vm-ex02.mchp-main.com
- (10.10.85.144) with Microsoft SMTP Server id 15.1.1713.5 via Frontend
- Transport; Mon, 13 Jan 2020 15:57:51 -0700
-Date:   Mon, 13 Jan 2020 23:57:51 +0100
-From:   Horatiu Vultur <horatiu.vultur@microchip.com>
-To:     Andrew Lunn <andrew@lunn.ch>
-CC:     <linux-kernel@vger.kernel.org>, <netdev@vger.kernel.org>,
-        <bridge@lists.linux-foundation.org>, <davem@davemloft.net>,
-        <roopa@cumulusnetworks.com>, <nikolay@cumulusnetworks.com>,
-        <jakub.kicinski@netronome.com>, <vivien.didelot@gmail.com>,
-        <olteanv@gmail.com>, <anirudh.venkataramanan@intel.com>,
-        <dsahern@gmail.com>, <jiri@resnulli.us>, <ivecera@redhat.com>,
-        <UNGLinuxDriver@microchip.com>
-Subject: Re: [RFC net-next Patch v2 4/4] net: bridge: mrp: switchdev: Add HW
- offload
-Message-ID: <20200113225751.jkkio4rztyuff4xj@soft-dev3.microsemi.net>
-References: <20200113124620.18657-1-horatiu.vultur@microchip.com>
- <20200113124620.18657-5-horatiu.vultur@microchip.com>
- <20200113140053.GE11788@lunn.ch>
+ 15.1.1713.5; Mon, 13 Jan 2020 15:12:28 -0800
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=V598s81x2CJc5tvobZ5AXv9oxTC8u6ox5DOnnJM1/PihGuwGGQkjlO7h5k6xpw4vNL/jWEwq/TUCx4GxZV9A/k90inrLgmvEZBQx2jd07qOMS9fAAseoPpPHOQR7wEYTQ9iz9YMwyPMElCEkKU6CGmIxY6TglfVj+FpQFmSmspxvJVW6+28+4MDHaIq0CKgoHgtiI7lKe5L8x+mz/REEO87jQLE1B/MR9pwsNg0aJmq7os8ZI59mOBMj0w4HQHNalkCzSStO4GME+NjkxgG+SPBK2VKrjPTFhYBDGx/cAYDD198R5h1EgPZ3org7UXvLEb3fBlWOtjcd9hWLTbsx7g==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=UUNjkLuQ0jCz2PwuAGdDURC0Zo/B8LxYl1Wd0YvUJmo=;
+ b=Jzz4zLGfezc2I3sAneDGWBFErHl/F8KlqKrQ5LH0FF017GOHIOOb5gX0S9UfSg881PuS1/NIzOlQaD2D+BpfXybhz6L59NFCJICu5h6m2BoxbJ2b5JxtBWkCMii/xSYjDtW4z3qPyhQLe+vYDUQJQQxL2A0Qr/kUK8Fn2ZJnxpAPjIAi9RD4sFeLYmZgfZos8Uj5fKxcBTYAvPa3Ln9BuH9q3XmeJywTABrTT9rMox/Wmvz7RNs1iMjF+MbpFoG1wm15pS79NaSxwbsV4bNwA/kIxlBnGf6TrsNvSJ97XxO/BaliAruSL+unJdjskUuUz8Ysqjy88hkOCHcc1/Fl0Q==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=fb.com; dmarc=pass action=none header.from=fb.com; dkim=pass
+ header.d=fb.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.onmicrosoft.com;
+ s=selector2-fb-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=UUNjkLuQ0jCz2PwuAGdDURC0Zo/B8LxYl1Wd0YvUJmo=;
+ b=Ao/lhsO0qvr0ImKmzeptC2a4bt0WmoV4TxLJCGcAaJ7vftPAZv9fCp3L5PKyvFH6orQXaimvC8K1rY4uzF9pKcMegSgngUzCvIWNL4OGvqZayFqCtIVvnSVuqetZiS8+zChL2L4JYM7aQP+j5q+mFfA8BrzOirVUT7mqu97Rw+U=
+Received: from MN2PR15MB3213.namprd15.prod.outlook.com (20.179.21.76) by
+ MN2PR15MB2767.namprd15.prod.outlook.com (20.179.145.86) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.2623.10; Mon, 13 Jan 2020 23:12:27 +0000
+Received: from MN2PR15MB3213.namprd15.prod.outlook.com
+ ([fe80::6d1e:f2f7:d36:a42f]) by MN2PR15MB3213.namprd15.prod.outlook.com
+ ([fe80::6d1e:f2f7:d36:a42f%4]) with mapi id 15.20.2623.015; Mon, 13 Jan 2020
+ 23:12:27 +0000
+Received: from kafai-mbp.dhcp.thefacebook.com (2620:10d:c090:200::1:34fe) by MWHPR2201CA0058.namprd22.prod.outlook.com (2603:10b6:301:16::32) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.2623.9 via Frontend Transport; Mon, 13 Jan 2020 23:12:25 +0000
+From:   Martin Lau <kafai@fb.com>
+To:     Jakub Sitnicki <jakub@cloudflare.com>
+CC:     "bpf@vger.kernel.org" <bpf@vger.kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "kernel-team@cloudflare.com" <kernel-team@cloudflare.com>,
+        Eric Dumazet <edumazet@google.com>,
+        "John Fastabend" <john.fastabend@gmail.com>,
+        Lorenz Bauer <lmb@cloudflare.com>
+Subject: Re: [PATCH bpf-next v2 07/11] bpf, sockmap: Return socket cookie on
+ lookup from syscall
+Thread-Topic: [PATCH bpf-next v2 07/11] bpf, sockmap: Return socket cookie on
+ lookup from syscall
+Thread-Index: AQHVx6PS4j84qlTDvUut8pO4R0heWKfpPouA
+Date:   Mon, 13 Jan 2020 23:12:26 +0000
+Message-ID: <20200113231223.cl77bxxs44bl6uhw@kafai-mbp.dhcp.thefacebook.com>
+References: <20200110105027.257877-1-jakub@cloudflare.com>
+ <20200110105027.257877-8-jakub@cloudflare.com>
+In-Reply-To: <20200110105027.257877-8-jakub@cloudflare.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-clientproxiedby: MWHPR2201CA0058.namprd22.prod.outlook.com
+ (2603:10b6:301:16::32) To MN2PR15MB3213.namprd15.prod.outlook.com
+ (2603:10b6:208:3d::12)
+x-ms-exchange-messagesentrepresentingtype: 1
+x-originating-ip: [2620:10d:c090:200::1:34fe]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: af456331-8a8c-46e6-9352-08d7987e0e39
+x-ms-traffictypediagnostic: MN2PR15MB2767:
+x-microsoft-antispam-prvs: <MN2PR15MB276719DF4407E731F897124DD5350@MN2PR15MB2767.namprd15.prod.outlook.com>
+x-fb-source: Internal
+x-ms-oob-tlc-oobclassifiers: OLM:7219;
+x-forefront-prvs: 028166BF91
+x-forefront-antispam-report: SFV:NSPM;SFS:(10019020)(39860400002)(396003)(376002)(366004)(136003)(346002)(199004)(189003)(6506007)(4326008)(1076003)(16526019)(6916009)(186003)(478600001)(8936002)(86362001)(5660300002)(55016002)(2906002)(71200400001)(54906003)(66946007)(66476007)(64756008)(316002)(9686003)(7696005)(52116002)(66446008)(66556008)(81166006)(81156014)(8676002);DIR:OUT;SFP:1102;SCL:1;SRVR:MN2PR15MB2767;H:MN2PR15MB3213.namprd15.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;A:1;MX:1;
+received-spf: None (protection.outlook.com: fb.com does not designate
+ permitted sender hosts)
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: A/iDZxXCP0TK1ErGH1KnPRMy/YCnUkZ/DXSMjKE3mMEYxC1bz37R90nDLNRRCXAMRnsA/I2EtEZ+Sk8NCmMOzJ61cJV5CDFPy8ma+qXug86aIqARv4gpS3IJbzEqn7Nt5P4eLj2cGWzdlqOQGEJLERq4YUm9B6Ys3/mBe28wKonK+od6ZBK6qCG7IBXYEE5nPPv/h6s5mfhCywuw+jtW+p3m58uwQklAtknKMdbMKsgKwlSjQLcOMt3Y8PDszxECjYLpqGvRTsP4r6NJjxUP0Ekb0EtDzcxo6LYut1I9UmbMGkEEexgHzwNz0d1pesxVDyRmKhBMVJvIPMJkIl7sW63LqfWv9aIha+C5Asq9a41iO33nwD9s8gViRY7/j3G53+an9/7UnjpvuNgF50eep6ce0COG/Dem0QhOvqjUVOYfrDmnDFFSetZ93y/pHeO0
+x-ms-exchange-transport-forked: True
+Content-Type: text/plain; charset="us-ascii"
+Content-ID: <5F8673772B63F847B78C72D015E0AD65@namprd15.prod.outlook.com>
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Disposition: inline
-In-Reply-To: <20200113140053.GE11788@lunn.ch>
-User-Agent: NeoMutt/20180716
+X-MS-Exchange-CrossTenant-Network-Message-Id: af456331-8a8c-46e6-9352-08d7987e0e39
+X-MS-Exchange-CrossTenant-originalarrivaltime: 13 Jan 2020 23:12:26.9969
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 8ae927fe-1255-47a7-a2af-5f3a069daaa2
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: hULr1GiCuTZa89xDSRLsXftBcOYS1yK2q4Ul7uczgymdb6cdaRw+s2jCFDWzywjv
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: MN2PR15MB2767
+X-OriginatorOrg: fb.com
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.138,18.0.572
+ definitions=2020-01-13_08:2020-01-13,2020-01-13 signatures=0
+X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 mlxscore=0
+ mlxlogscore=999 bulkscore=0 clxscore=1015 priorityscore=1501
+ impostorscore=0 adultscore=0 lowpriorityscore=0 suspectscore=0
+ phishscore=0 spamscore=0 malwarescore=0 classifier=spam adjust=0
+ reason=mlx scancount=1 engine=8.12.0-1910280000
+ definitions=main-2001130186
+X-FB-Internal: deliver
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The 01/13/2020 15:00, Andrew Lunn wrote:
-> EXTERNAL EMAIL: Do not click links or open attachments unless you know the content is safe
-> 
-> On Mon, Jan 13, 2020 at 01:46:20PM +0100, Horatiu Vultur wrote:
-> > +#ifdef CONFIG_BRIDGE_MRP
-> > +/* SWITCHDEV_OBJ_ID_PORT_MRP */
-> > +struct switchdev_obj_port_mrp {
-> > +     struct switchdev_obj obj;
-> > +     struct net_device *port;
-> > +     u32 ring_nr;
-> > +};
-> > +
-> > +#define SWITCHDEV_OBJ_PORT_MRP(OBJ) \
-> > +     container_of((OBJ), struct switchdev_obj_port_mrp, obj)
-> > +
-> > +/* SWITCHDEV_OBJ_ID_RING_TEST_MRP */
-> > +struct switchdev_obj_ring_test_mrp {
-> > +     struct switchdev_obj obj;
-> > +     /* The value is in us and a value of 0 represents to stop */
-> > +     u32 interval;
-> > +     u8 max;
-> > +     u32 ring_nr;
-> > +};
-> > +
-> > +#define SWITCHDEV_OBJ_RING_TEST_MRP(OBJ) \
-> > +     container_of((OBJ), struct switchdev_obj_ring_test_mrp, obj)
-> > +
-> > +/* SWITCHDEV_OBJ_ID_RING_ROLE_MRP */
-> > +struct switchdev_obj_ring_role_mrp {
-> > +     struct switchdev_obj obj;
-> > +     u8 ring_role;
-> > +     u32 ring_nr;
-> > +};
-> 
-> Hi Horatiu
-> 
-> The structures above should give me enough information to build this,
-> correct?
+On Fri, Jan 10, 2020 at 11:50:23AM +0100, Jakub Sitnicki wrote:
+> Tooling that populates the SOCKMAP with sockets from user-space needs a w=
+ay
+> to inspect its contents. Returning the struct sock * that SOCKMAP holds t=
+o
+> user-space is neither safe nor useful. An approach established by
+> REUSEPORT_SOCKARRAY is to return a socket cookie (a unique identifier)
+> instead.
+>=20
+> Since socket cookies are u64 values SOCKMAP needs to support such a value
+> size for lookup to be possible. This requires special handling on update,
+> though. Attempts to do a lookup on SOCKMAP holding u32 values will be met
+> with ENOSPC error.
+>=20
+> Signed-off-by: Jakub Sitnicki <jakub@cloudflare.com>
+> ---
+>  net/core/sock_map.c | 31 +++++++++++++++++++++++++++++--
+>  1 file changed, 29 insertions(+), 2 deletions(-)
+>=20
+> diff --git a/net/core/sock_map.c b/net/core/sock_map.c
+> index d1a91e41ff82..3731191a7d1e 100644
+> --- a/net/core/sock_map.c
+> +++ b/net/core/sock_map.c
+> @@ -10,6 +10,7 @@
+>  #include <linux/skmsg.h>
+>  #include <linux/list.h>
+>  #include <linux/jhash.h>
+> +#include <linux/sock_diag.h>
+> =20
+>  struct bpf_stab {
+>  	struct bpf_map map;
+> @@ -31,7 +32,8 @@ static struct bpf_map *sock_map_alloc(union bpf_attr *a=
+ttr)
+>  		return ERR_PTR(-EPERM);
+>  	if (attr->max_entries =3D=3D 0 ||
+>  	    attr->key_size    !=3D 4 ||
+> -	    attr->value_size  !=3D 4 ||
+> +	    (attr->value_size !=3D sizeof(u32) &&
+> +	     attr->value_size !=3D sizeof(u64)) ||
+>  	    attr->map_flags & ~SOCK_CREATE_FLAG_MASK)
+>  		return ERR_PTR(-EINVAL);
+> =20
+> @@ -298,6 +300,23 @@ static void *sock_map_lookup(struct bpf_map *map, vo=
+id *key)
+>  	return ERR_PTR(-EOPNOTSUPP);
+>  }
+> =20
+> +static void *sock_map_lookup_sys(struct bpf_map *map, void *key)
+> +{
+> +	struct sock *sk;
+> +
+> +	WARN_ON_ONCE(!rcu_read_lock_held());
+It seems unnecessary.  It is only called by syscall.c which
+holds the rcu_read_lock().  Other than that,
 
-Hi Andrew,
+Acked-by: Martin KaFai Lau <kafai@fb.com>
 
-You will need also these attributes to build a minimum MRP_Test frame:
-SWITCHDEV_ATTR_ID_MRP_PORT_STATE,
-SWITCHDEV_ATTR_ID_MRP_PORT_ROLE,
-SWITCHDEV_ATTR_ID_MRP_RING_STATE,
-SWITCHDEV_ATTR_ID_MRP_RING_TRANS,
-
-> 
-> Ethernet II, Src: 7a:8b:b1:35:96:e1 (7a:8b:b1:35:96:e1), Dst: Iec_00:00:01 (01:15:4e:00:00:01)
->     Destination: Iec_00:00:01 (01:15:4e:00:00:01)
->     Source: 7a:8b:b1:35:96:e1 (7a:8b:b1:35:96:e1)
->     Type: MRP (0x88e3)
-> PROFINET MRP MRP_Test, MRP_Common, MRP_End
->     MRP_Version: 1
->     MRP_TLVHeader.Type: MRP_Test (0x02)
->         MRP_TLVHeader.Type: MRP_Test (0x02)
->         MRP_TLVHeader.Length: 18
->         MRP_Prio: 0x1f40 High priorities
->         MRP_SA: 7a:8b:b1:35:96:e1 (7a:8b:b1:35:96:e1)
->         MRP_PortRole: Primary ring port (0x0000)
->         MRP_RingState: Ring closed (0x0001)
->         MRP_Transition: 0x0001
->         MRP_TimeStamp [ms]: 0x000cf574             <---------- Updated automatic
->     MRP_TLVHeader.Type: MRP_Common (0x01)
->         MRP_TLVHeader.Type: MRP_Common (0x01)
->         MRP_TLVHeader.Length: 18
->         MRP_SequenceID: 0x00e9                     <---------- Updated automatic
->         MRP_DomainUUID: ffffffff-ffff-ffff-ffff-ffffffffffff
->     MRP_TLVHeader.Type: MRP_End (0x00)
->         MRP_TLVHeader.Type: MRP_End (0x00)
->         MRP_TLVHeader.Length: 0
-> 
-> There are a couple of fields i don't see. MRP_SA, MRP_Transition.
-
-Regarding the MRP_SA, which represents the bridge MAC address, we could
-get this information from listening to the notifications in the driver.
-So I don't think we need a special call for this.
-
-The same could be for MRP_Transition, which counts the number of times
-the ring goes in open state. In theory we could get information by
-counting in the driver how many times the ring gets in the open state.
-And we get this information through the attribute
-SWITCHDEV_ATTR_ID_MRP_RING_STATE.
-
-The other fields that are missing are MRP_Prio and MRP_DomainUUID. But
-these values could be set to a default values for now because they are
-used by MRA(Media Redundancy Auto-manager), which is not part of this
-patch series.
-
-> 
-> What are max and ring_nr used for?
-
-The max represents the number of MRP_Test frames that can be missed
-by receiver before it declares the ring open. For example if the
-receiver expects a MRP_Frame every 10ms and it sets the max to 3. Then
-it means that if it didn't receive a frame in 30ms, it would set that
-the port didn't receive MRP_Test.
-The ring_nr represents the ID of the MRP instance. For example, on a
-switch which has 8 ports, there can be 4 MRP instances. Because each
-instance requires 2 ports. And to be able to differences them, each
-instance has it's own ID, which is this ring_nr.
-
-> 
-> Do you need to set the first value MRP_SequenceID uses? Often, in
-> order to detect a reset, a random value is used to initialise the
-> sequence number. Also, does the time stamp need initializing?
-
-I couldn't see in the standard if they required an initial for
-MRP_SequenceID. From what I have seen on some switches that have their
-own MRP implementation, they set the initial value of MRP_SequenceID to
-0 and they increase for it frame.
-Regarding the timestamp, again the standard doesn't say anything about
-initial value. This timestamp is used by MRM to determine the maximum
-travel time of the MRP_Test frames in a ring.
-> 
-> Thanks
->         Andrew
-
--- 
-/Horatiu
+> +
+> +	if (map->value_size !=3D sizeof(u64))
+> +		return ERR_PTR(-ENOSPC);
+> +
+> +	sk =3D __sock_map_lookup_elem(map, *(u32 *)key);
+> +	if (!sk)
+> +		return ERR_PTR(-ENOENT);
+> +
+> +	sock_gen_cookie(sk);
+> +	return &sk->sk_cookie;
+> +}
+> +
