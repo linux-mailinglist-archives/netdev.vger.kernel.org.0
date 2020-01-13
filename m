@@ -2,105 +2,177 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id E10DB13900B
-	for <lists+netdev@lfdr.de>; Mon, 13 Jan 2020 12:27:20 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5A2D713903A
+	for <lists+netdev@lfdr.de>; Mon, 13 Jan 2020 12:37:43 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728679AbgAML1T (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 13 Jan 2020 06:27:19 -0500
-Received: from mail-wr1-f65.google.com ([209.85.221.65]:41974 "EHLO
-        mail-wr1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725992AbgAML1T (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 13 Jan 2020 06:27:19 -0500
-Received: by mail-wr1-f65.google.com with SMTP id c9so8150485wrw.8
-        for <netdev@vger.kernel.org>; Mon, 13 Jan 2020 03:27:18 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=hv7WalCUQbzbA3pi5aBe19DfUwpwwtqRi1L3/cTZpV8=;
-        b=UfpIgxFvikOw0QXiJN2s2mqitwfz9W9a9QZR8WXRLsipMErwiV/fRbrLP9gdjGwavM
-         QOsndAxmFf59+AxRNuTNfhvZ2axBV+X5l5DZjWkqrgROckljezXn4q8qLCt2dc1t7yY4
-         wVN+/AFJ4K2f9yGAYWAzpcRmQVbtIc1gr5yVKgfBWcivB04D+U9OvaVOcHOnoxPeLcKr
-         vAsgLLfGJQwpvEoLcUBDZs9FEHuY2jjeqpB0r4YJAzSPkYNuuYuCKuSsMk7xHB56AhSI
-         XeWNFVHYzw1OQzL9+gj71JcpFu31Xujd3IhlI3xCqv9mHFL9tP4aVP19/Us5G2MrQQjM
-         TSOg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=hv7WalCUQbzbA3pi5aBe19DfUwpwwtqRi1L3/cTZpV8=;
-        b=jSDXwhmON/eqdYoSOrCBK3LkYxOnYRelC6UGFmOvDNngn8Yqj9g0pD8Pl9NPqxMt5X
-         S0eXEIEfBG+A7cwn9QnhpgwPtLR6co4CuClQaOnOfFmLD4gpjM+yLpWoJ5S5MXLp31WX
-         RIadqeLGiq4B85lgCgV5KLMFpp/XV/dxLoN36A629V9fDc6ysZqzWj+2GxNfmUI068OI
-         MFXyyU5tsYoWMWSRXhFW2HC8W0aGVi/YKq1y5N+mFaymeKplRSILOW9zRM9Eq7b5ZGuS
-         J0XhP1zfT4lnR/JY+99faCOip76dT0Mp3yRUdt7HC5WY7kJKHdeesX4C50SIV5gfWA4c
-         kGfg==
-X-Gm-Message-State: APjAAAWvf06KRFlE2Men4jeBIqGwFhbMhPjIZCb6t4gd9SlmBndPWKwB
-        JUNTWqqovM58XW/7+whrZkuWH/L+zERojp7T/fTUm0xr
-X-Google-Smtp-Source: APXvYqxdBAaDlpuUIpKZcugWYJjGLp9r2YD0t9P5YoePQ6OFo7BDgI6ks4kHlS8oQpU/4Xw2cc17JQhh5O/OOpbJpwM=
-X-Received: by 2002:a5d:4a8c:: with SMTP id o12mr17885651wrq.43.1578914837781;
- Mon, 13 Jan 2020 03:27:17 -0800 (PST)
+        id S1728643AbgAMLhf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 13 Jan 2020 06:37:35 -0500
+Received: from mail-m971.mail.163.com ([123.126.97.1]:41730 "EHLO
+        mail-m971.mail.163.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725992AbgAMLhf (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 13 Jan 2020 06:37:35 -0500
+X-Greylist: delayed 936 seconds by postgrey-1.27 at vger.kernel.org; Mon, 13 Jan 2020 06:37:33 EST
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=163.com;
+        s=s110527; h=From:Subject:Date:Message-Id:MIME-Version; bh=ebuOu
+        i0AX5Ee0xOZV1fWjPDv5XEGQ0+O2EC0o8syPO0=; b=FD6+qbMQNkhULhMdfo+Oc
+        x3DiomSPA4esnDPYm9q9RdcrV+9HTrcRowzaZozeuEmoMI8Pd5LC919i+LO7lqhH
+        AI9jvDdcVrVlWlCButHxgwC82kqOyurF+IA8FUozLUeIF8qs34Kp05uox/l1NCkZ
+        BkXV4w7I/z+T66ly/yX69s=
+Received: from xilei-TM1604.mioffice.cn (unknown [114.247.175.223])
+        by smtp1 (Coremail) with SMTP id GdxpCgBXROKhUhxeZ+sQBA--.1392S4;
+        Mon, 13 Jan 2020 19:21:05 +0800 (CST)
+From:   Niu Xilei <niu_xilei@163.com>
+To:     davem@davemloft.net
+Cc:     tglx@linutronix.de, fw@strlen.de, peterz@infradead.org,
+        steffen.klassert@secunet.com, bigeasy@linutronix.de,
+        jonathan.lemon@gmail.com, pabeni@redhat.com,
+        anshuman.khandual@arm.com, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Niu Xilei <niu_xilei@163.com>
+Subject: [PATCH v2] pktgen: create packet use IPv6 source address between src6_min and src6_max.
+Date:   Mon, 13 Jan 2020 19:21:02 +0800
+Message-Id: <20200113112103.6766-1-niu_xilei@163.com>
+X-Mailer: git-send-email 2.20.1
 MIME-Version: 1.0
-References: <1578656521-14189-1-git-send-email-sunil.kovvuri@gmail.com>
- <1578656521-14189-15-git-send-email-sunil.kovvuri@gmail.com>
- <20200110112808.4970c92e@cakuba.netronome.com> <CA+sq2Ccr5jB1cBN62Y56C=19L-P7hgYPrD9o7EJN71Kroou9Ew@mail.gmail.com>
- <20200111052724.768f5e25@cakuba.netronome.com>
-In-Reply-To: <20200111052724.768f5e25@cakuba.netronome.com>
-From:   Sunil Kovvuri <sunil.kovvuri@gmail.com>
-Date:   Mon, 13 Jan 2020 16:57:06 +0530
-Message-ID: <CA+sq2CcCSX4NuoyZZ020xH75s1+ii5Xc6XM5jAovUTpQtaZXfQ@mail.gmail.com>
-Subject: Re: [PATCH 14/17] octeontx2-pf: Add basic ethtool support
-To:     Jakub Kicinski <kubakici@wp.pl>
-Cc:     Linux Netdev List <netdev@vger.kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Christina Jacob <cjacob@marvell.com>,
-        Sunil Goutham <sgoutham@marvell.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
+X-CM-TRANSID: GdxpCgBXROKhUhxeZ+sQBA--.1392S4
+X-Coremail-Antispam: 1Uf129KBjvJXoWxur47Zr1DJF1xWw4xAF1UZFb_yoWrJw1kpa
+        y3GF9xJryxZr43twsxJF9rtr1S9w4v9345XayfA3sY9FyDWryrA397Ga43tFyjqr9ak398
+        Jr42gFWqga1qqrUanT9S1TB71UUUUUUqnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
+        9KBjDUYxBIdaVFxhVjvjDU0xZFpf9x07jhb18UUUUU=
+X-Originating-IP: [114.247.175.223]
+X-CM-SenderInfo: pqlxs5plohxqqrwthudrp/1tbiTRepgFc7O8RRGwAAsq
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, Jan 11, 2020 at 6:57 PM Jakub Kicinski <kubakici@wp.pl> wrote:
->
-> On Sat, 11 Jan 2020 14:17:45 +0530, Sunil Kovvuri wrote:
-> > On Sat, Jan 11, 2020 at 12:58 AM Jakub Kicinski wrote:
-> > > On Fri, 10 Jan 2020 17:11:58 +0530, sunil.kovvuri@gmail.com wrote:
-> > > > +static const struct otx2_stat otx2_dev_stats[] = {
-> > > > +     OTX2_DEV_STAT(rx_bytes),
-> > > > +     OTX2_DEV_STAT(rx_frames),
-> > > > +     OTX2_DEV_STAT(rx_ucast_frames),
-> > > > +     OTX2_DEV_STAT(rx_bcast_frames),
-> > > > +     OTX2_DEV_STAT(rx_mcast_frames),
-> > > > +     OTX2_DEV_STAT(rx_drops),
-> > > > +
-> > > > +     OTX2_DEV_STAT(tx_bytes),
-> > > > +     OTX2_DEV_STAT(tx_frames),
-> > > > +     OTX2_DEV_STAT(tx_ucast_frames),
-> > > > +     OTX2_DEV_STAT(tx_bcast_frames),
-> > > > +     OTX2_DEV_STAT(tx_mcast_frames),
-> > > > +     OTX2_DEV_STAT(tx_drops),
-> > > > +};
-> > >
-> > > Please don't duplicate the same exact stats which are exposed via
-> > > ndo_get_stats64 via ethtool.
-> >
-> > ndo_stats64 doesn't have separate stats for ucast, mcast and bcast on Rx and
-> > Tx sides, they are combined ones. Hence added separate stats here.
-> > The ones repeated here are bytes, frames and drops which are added to have
-> > full set of stats at one place which could help anyone debugging pkt
-> > drop etc issues.
->
-> Same exact as in bytes, frames, and drops are exactly the same rather
-> than e.g. one being counted by hardware and the other by software.
->
-> No objection to reporting the *cast stats broken out via ethtool.
+Pktgen can use only one IPv6 source address from output device, or src6 command
+setting. In pressure test we need create lots of session more than 65536.If
+IPSRC_RND flag is set, generate random source address between src6_min and src6_max.
 
-I am not getting what your objection here is, what's reported via stats64 and
-ethtool both are counted by hardware. I have checked other NIC drivers and they
-also do report overall pkts, bytes, drop counters via ethtool.
+Signed-off-by: Niu Xilei <niu_xilei@163.com>
 
-Is there any harm in reporting this way ?
+Changes since v1:
+ - only create IPv6 source address over least significant 64 bit range
+---
+ net/core/pktgen.c | 90 +++++++++++++++++++++++++++++++++++++++++++++++
+ 1 file changed, 90 insertions(+)
 
-Thanks,
-Sunil.
+diff --git a/net/core/pktgen.c b/net/core/pktgen.c
+index 294bfcf0ce0e..33435ae0ba68 100644
+--- a/net/core/pktgen.c
++++ b/net/core/pktgen.c
+@@ -1355,6 +1355,49 @@ static ssize_t pktgen_if_write(struct file *file,
+ 		sprintf(pg_result, "OK: dst6_max=%s", buf);
+ 		return count;
+ 	}
++	if (!strcmp(name, "src6_min")) {
++		len = strn_len(&user_buffer[i], sizeof(buf) - 1);
++		if (len < 0)
++			return len;
++
++		pkt_dev->flags |= F_IPV6;
++
++		if (copy_from_user(buf, &user_buffer[i], len))
++			return -EFAULT;
++		buf[len] = 0;
++
++		in6_pton(buf, -1, pkt_dev->min_in6_saddr.s6_addr, -1, NULL);
++		snprintf(buf, sizeof(buf), "%pI6c", &pkt_dev->min_in6_saddr);
++
++		pkt_dev->cur_in6_saddr = pkt_dev->min_in6_saddr;
++		if (debug)
++			pr_debug("src6_min set to: %s\n", buf);
++
++		i += len;
++		sprintf(pg_result, "OK: src6_min=%s", buf);
++		return count;
++	}
++	if (!strcmp(name, "src6_max")) {
++		len = strn_len(&user_buffer[i], sizeof(buf) - 1);
++		if (len < 0)
++			return len;
++
++		pkt_dev->flags |= F_IPV6;
++
++		if (copy_from_user(buf, &user_buffer[i], len))
++			return -EFAULT;
++		buf[len] = 0;
++
++		in6_pton(buf, -1, pkt_dev->max_in6_saddr.s6_addr, -1, NULL);
++		snprintf(buf, sizeof(buf), "%pI6c", &pkt_dev->max_in6_saddr);
++
++		if (debug)
++			pr_debug("dst6_max set to: %s\n", buf);
++
++		i += len;
++		sprintf(pg_result, "OK: dst6_max=%s", buf);
++		return count;
++	}
+ 	if (!strcmp(name, "src6")) {
+ 		len = strn_len(&user_buffer[i], sizeof(buf) - 1);
+ 		if (len < 0)
+@@ -2286,6 +2329,51 @@ static void set_cur_queue_map(struct pktgen_dev *pkt_dev)
+ 	pkt_dev->cur_queue_map  = pkt_dev->cur_queue_map % pkt_dev->odev->real_num_tx_queues;
+ }
+ 
++/* generate ipv6 source addr */
++static inline void set_src_in6_addr(struct pktgen_dev *pkt_dev)
++{
++	__be64 min6_h, min6_l, max6_h, max6_l, addr_l, *t;
++	u64 min6, max6, rand, i;
++	struct in6_addr addr6;
++
++	memcpy(&min6_h, pkt_dev->min_in6_saddr.s6_addr, 8);
++	memcpy(&min6_l, pkt_dev->min_in6_saddr.s6_addr + 8, 8);
++	memcpy(&max6_h, pkt_dev->max_in6_saddr.s6_addr, 8);
++	memcpy(&max6_l, pkt_dev->max_in6_saddr.s6_addr + 8, 8);
++
++	/* only generate source address in least significant 64 bits range
++	 * most significant 64 bits must be equal
++	 */
++	if (max6_h != min6_h)
++		return;
++
++	addr6 = pkt_dev->min_in6_saddr;
++	t = (__be64 *)addr6.s6_addr + 1;
++	min6 = be64_to_cpu(min6_l);
++	max6 = be64_to_cpu(max6_l);
++
++	if (min6 < max6) {
++		if (pkt_dev->flags & F_IPSRC_RND) {
++			do {
++				prandom_bytes(&rand, sizeof(rand));
++				rand = rand % (max6 - min6) + min6;
++				addr_l = cpu_to_be64(rand);
++				memcpy(t, &addr_l, 8);
++			} while (ipv6_addr_loopback(&addr6) ||
++				 ipv6_addr_v4mapped(&addr6) ||
++				 ipv6_addr_is_multicast(&addr6));
++		} else {
++			addr6 = pkt_dev->cur_in6_saddr;
++			i = be64_to_cpu(*t);
++			if (++i > max6)
++				i = min6;
++			addr_l = cpu_to_be64(i);
++			memcpy(t, &addr_l, 8);
++		}
++	}
++	pkt_dev->cur_in6_saddr = addr6;
++}
++
+ /* Increment/randomize headers according to flags and current values
+  * for IP src/dest, UDP src/dst port, MAC-Addr src/dst
+  */
+@@ -2454,6 +2542,8 @@ static void mod_cur_headers(struct pktgen_dev *pkt_dev)
+ 		}
+ 	} else {		/* IPV6 * */
+ 
++		set_src_in6_addr(pkt_dev);
++
+ 		if (!ipv6_addr_any(&pkt_dev->min_in6_daddr)) {
+ 			int i;
+ 
+-- 
+2.20.1
+
