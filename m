@@ -2,857 +2,117 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id DC221139C87
-	for <lists+netdev@lfdr.de>; Mon, 13 Jan 2020 23:32:28 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B5F91139C7E
+	for <lists+netdev@lfdr.de>; Mon, 13 Jan 2020 23:31:49 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729095AbgAMWcR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 13 Jan 2020 17:32:17 -0500
-Received: from relay11.mail.gandi.net ([217.70.178.231]:56475 "EHLO
-        relay11.mail.gandi.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729061AbgAMWcO (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 13 Jan 2020 17:32:14 -0500
-Received: from localhost (lfbn-tou-1-1075-236.w90-76.abo.wanadoo.fr [90.76.143.236])
-        (Authenticated sender: antoine.tenart@bootlin.com)
-        by relay11.mail.gandi.net (Postfix) with ESMTPSA id 8668D100004;
-        Mon, 13 Jan 2020 22:32:10 +0000 (UTC)
-From:   Antoine Tenart <antoine.tenart@bootlin.com>
-To:     davem@davemloft.net, sd@queasysnail.net, andrew@lunn.ch,
-        f.fainelli@gmail.com, hkallweit1@gmail.com
-Cc:     Antoine Tenart <antoine.tenart@bootlin.com>,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        thomas.petazzoni@bootlin.com, alexandre.belloni@bootlin.com,
-        allan.nielsen@microchip.com, camelia.groza@nxp.com,
-        Simon.Edelhaus@aquantia.com, Igor.Russkikh@aquantia.com,
-        jakub.kicinski@netronome.com
-Subject: [PATCH net-next v6 05/10] net: macsec: hardware offloading infrastructure
+        id S1728838AbgAMWbr (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 13 Jan 2020 17:31:47 -0500
+Received: from mail-lj1-f196.google.com ([209.85.208.196]:45707 "EHLO
+        mail-lj1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728792AbgAMWbr (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 13 Jan 2020 17:31:47 -0500
+Received: by mail-lj1-f196.google.com with SMTP id j26so11961165ljc.12
+        for <netdev@vger.kernel.org>; Mon, 13 Jan 2020 14:31:46 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=cloudflare.com; s=google;
+        h=references:user-agent:from:to:cc:subject:in-reply-to:date
+         :message-id:mime-version;
+        bh=e74JGoY1ojHAtLAhiWMAFpQFNt52SQK2CW+q5dprebc=;
+        b=YyWUFUX5S5aTlmidhrgT2cM157XASQX91W+Fpl5omKHy3WW7Bk/6Y/gk+LKj4b9brQ
+         tq8nDWCdrSIy6+WN+tfVR7XVtu4rdiovyI9Jc+7PvWqYwtet5E6X/BhzYsiONdNI7Shx
+         AMgPU2gsvjOhI06wZIT9p7oZX2upctykXbHmc=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:references:user-agent:from:to:cc:subject
+         :in-reply-to:date:message-id:mime-version;
+        bh=e74JGoY1ojHAtLAhiWMAFpQFNt52SQK2CW+q5dprebc=;
+        b=f97jMNdU1VbE7dZHs0w11jWX1TUM6ei4AVtRua41iPDuEs+2VloFeu6YotesH4IW/l
+         8WTJEPn+75PsXCN1X/4OfVb0H7LUgXXzQRit77JW33T5lB2KTjIn0VPGc0B1bsTJAQHe
+         i4nX4b0Mx2YITZs015NosFitIrjZKS7MUchVdjJJd0mp5xufGAJYH46YpPzRy68Z/2uc
+         fB3X599xJfR64SpzGtEMn0vLVZoXGRkvBLxiPeViGdZ5sum7uz80jI8e5S44+Lh69LMD
+         n33X9DnGJevV5uzQQiGii2rdW+xSM9wx9t7Su3o0EosrZzX/lPRAtWelsvtOKHxa4eJH
+         xugQ==
+X-Gm-Message-State: APjAAAVUSPp+Q6HKirqzonlen+PON+dXqJNU0Rgv4UDMeC572L5Bbqv7
+        /v7cuYS6A1B3Ky9ou3ngU+YOLQ==
+X-Google-Smtp-Source: APXvYqxX26oDY+WvfgPZeQyhs3z0Dx4CL26PCTQFhVlKVc06Vujs5oDxPbT0tv3W/KgJYCI04FUJwA==
+X-Received: by 2002:a2e:9716:: with SMTP id r22mr12715781lji.224.1578954705203;
+        Mon, 13 Jan 2020 14:31:45 -0800 (PST)
+Received: from cloudflare.com ([2a02:a310:c262:aa00:b35e:8938:2c2a:ba8b])
+        by smtp.gmail.com with ESMTPSA id d11sm6339255lfj.3.2020.01.13.14.31.44
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 13 Jan 2020 14:31:44 -0800 (PST)
+References: <20200110105027.257877-1-jakub@cloudflare.com> <20200110105027.257877-5-jakub@cloudflare.com> <5e1a5ed97885d_1e7f2b0c859c45c0d7@john-XPS-13-9370.notmuch>
+User-agent: mu4e 1.1.0; emacs 26.3
+From:   Jakub Sitnicki <jakub@cloudflare.com>
+To:     John Fastabend <john.fastabend@gmail.com>
+Cc:     bpf@vger.kernel.org, netdev@vger.kernel.org,
+        kernel-team@cloudflare.com, Eric Dumazet <edumazet@google.com>,
+        Lorenz Bauer <lmb@cloudflare.com>,
+        Martin KaFai Lau <kafai@fb.com>
+Subject: Re: [PATCH bpf-next v2 04/11] tcp_bpf: Don't let child socket inherit parent protocol ops on copy
+In-reply-to: <5e1a5ed97885d_1e7f2b0c859c45c0d7@john-XPS-13-9370.notmuch>
 Date:   Mon, 13 Jan 2020 23:31:43 +0100
-Message-Id: <20200113223148.746096-6-antoine.tenart@bootlin.com>
-X-Mailer: git-send-email 2.24.1
-In-Reply-To: <20200113223148.746096-1-antoine.tenart@bootlin.com>
-References: <20200113223148.746096-1-antoine.tenart@bootlin.com>
+Message-ID: <87h80zrnsg.fsf@cloudflare.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This patch introduces the MACsec hardware offloading infrastructure.
+On Sun, Jan 12, 2020 at 12:48 AM CET, John Fastabend wrote:
+> Jakub Sitnicki wrote:
+>> Prepare for cloning listening sockets that have their protocol callbacks
+>> overridden by sk_msg. Child sockets must not inherit parent callbacks that
+>> access state stored in sk_user_data owned by the parent.
+>> 
+>> Restore the child socket protocol callbacks before the it gets hashed and
+>> any of the callbacks can get invoked.
+>> 
+>> Signed-off-by: Jakub Sitnicki <jakub@cloudflare.com>
+>> ---
+>>  include/net/tcp.h        |  1 +
+>>  net/ipv4/tcp_bpf.c       | 13 +++++++++++++
+>>  net/ipv4/tcp_minisocks.c |  2 ++
+>>  3 files changed, 16 insertions(+)
+>> 
+>> diff --git a/include/net/tcp.h b/include/net/tcp.h
+>> index 9dd975be7fdf..7cbf9465bb10 100644
+>> --- a/include/net/tcp.h
+>> +++ b/include/net/tcp.h
+>> @@ -2181,6 +2181,7 @@ int tcp_bpf_recvmsg(struct sock *sk, struct msghdr *msg, size_t len,
+>>  		    int nonblock, int flags, int *addr_len);
+>>  int __tcp_bpf_recvmsg(struct sock *sk, struct sk_psock *psock,
+>>  		      struct msghdr *msg, int len, int flags);
+>> +void tcp_bpf_clone(const struct sock *sk, struct sock *child);
+>>  
+>>  /* Call BPF_SOCK_OPS program that returns an int. If the return value
+>>   * is < 0, then the BPF op failed (for example if the loaded BPF
+>> diff --git a/net/ipv4/tcp_bpf.c b/net/ipv4/tcp_bpf.c
+>> index f6c83747c71e..6f96320fb7cf 100644
+>> --- a/net/ipv4/tcp_bpf.c
+>> +++ b/net/ipv4/tcp_bpf.c
+>> @@ -586,6 +586,19 @@ static void tcp_bpf_close(struct sock *sk, long timeout)
+>>  	saved_close(sk, timeout);
+>>  }
+>>  
+>> +/* If a child got cloned from a listening socket that had tcp_bpf
+>> + * protocol callbacks installed, we need to restore the callbacks to
+>> + * the default ones because the child does not inherit the psock state
+>> + * that tcp_bpf callbacks expect.
+>> + */
+>> +void tcp_bpf_clone(const struct sock *sk, struct sock *newsk)
+>> +{
+>> +	struct proto *prot = newsk->sk_prot;
+>> +
+>> +	if (prot->recvmsg == tcp_bpf_recvmsg)
+>> +		newsk->sk_prot = sk->sk_prot_creator;
+>> +}
+>> +
+>
+> ^^^^ probably needs to go into tcp.h wrapped in ifdef NET_SOCK_MSG with
+> a stub for ifndef NET_SOCK_MSG case.
+>
+> Looks like build bot also caught this.
 
-The main idea here is to re-use the logic and data structures of the
-software MACsec implementation. This allows not to duplicate definitions
-and structure storing the same kind of information. It also allows to
-use a unified genlink interface for both MACsec implementations (so that
-the same userspace tool, `ip macsec`, is used with the same arguments).
-The MACsec offloading support cannot be disabled if an interface
-supports it at the moment.
-
-The MACsec configuration is passed to device drivers supporting it
-through macsec_ops which are called from the MACsec genl helpers. Those
-functions call the macsec ops of PHY and Ethernet drivers in two steps:
-a preparation one, and a commit one. The first step is allowed to fail
-and should be used to check if a provided configuration is compatible
-with the features provided by a MACsec engine, while the second step is
-not allowed to fail and should only be used to enable a given MACsec
-configuration. Two extra calls are made: when a virtual MACsec interface
-is created and when it is deleted, so that the hardware driver can stay
-in sync.
-
-The Rx and TX handlers are modified to take in account the special case
-were the MACsec transformation happens in the hardware, whether in a PHY
-or in a MAC, as the packets seen by the networking stack on both the
-physical and MACsec virtual interface are exactly the same. This leads
-to some limitations: the hardware and software implementations can't be
-used on the same physical interface, as the policies would be impossible
-to fulfill (such as strict validation of the frames). Also only a single
-virtual MACsec interface can be offloaded to a physical port supporting
-hardware offloading as it would be impossible to guess onto which
-interface a given packet should go (for ingress traffic).
-
-Another limitation as of now is that the counters and statistics are not
-reported back from the hardware to the software MACsec implementation.
-This isn't an issue when using offloaded MACsec transformations, but it
-should be added in the future so that the MACsec state can be reported
-to the user (which would also improve the debug).
-
-Signed-off-by: Antoine Tenart <antoine.tenart@bootlin.com>
----
- drivers/net/macsec.c | 453 +++++++++++++++++++++++++++++++++++++++++--
- 1 file changed, 441 insertions(+), 12 deletions(-)
-
-diff --git a/drivers/net/macsec.c b/drivers/net/macsec.c
-index a336eee018f0..36b0416381bf 100644
---- a/drivers/net/macsec.c
-+++ b/drivers/net/macsec.c
-@@ -11,12 +11,14 @@
- #include <linux/module.h>
- #include <crypto/aead.h>
- #include <linux/etherdevice.h>
-+#include <linux/netdevice.h>
- #include <linux/rtnetlink.h>
- #include <linux/refcount.h>
- #include <net/genetlink.h>
- #include <net/sock.h>
- #include <net/gro_cells.h>
- #include <net/macsec.h>
-+#include <linux/phy.h>
- 
- #include <uapi/linux/if_macsec.h>
- 
-@@ -98,6 +100,7 @@ struct pcpu_secy_stats {
-  * @real_dev: pointer to underlying netdevice
-  * @stats: MACsec device stats
-  * @secys: linked list of SecY's on the underlying device
-+ * @offload: status of offloading on the MACsec device
-  */
- struct macsec_dev {
- 	struct macsec_secy secy;
-@@ -105,6 +108,7 @@ struct macsec_dev {
- 	struct pcpu_secy_stats __percpu *stats;
- 	struct list_head secys;
- 	struct gro_cells gro_cells;
-+	enum macsec_offload offload;
- };
- 
- /**
-@@ -318,6 +322,56 @@ static void macsec_set_shortlen(struct macsec_eth_header *h, size_t data_len)
- 		h->short_length = data_len;
- }
- 
-+/* Checks if a MACsec interface is being offloaded to an hardware engine */
-+static bool macsec_is_offloaded(struct macsec_dev *macsec)
-+{
-+	if (macsec->offload == MACSEC_OFFLOAD_PHY)
-+		return true;
-+
-+	return false;
-+}
-+
-+/* Checks if underlying layers implement MACsec offloading functions. */
-+static bool macsec_check_offload(enum macsec_offload offload,
-+				 struct macsec_dev *macsec)
-+{
-+	if (!macsec || !macsec->real_dev)
-+		return false;
-+
-+	if (offload == MACSEC_OFFLOAD_PHY)
-+		return macsec->real_dev->phydev &&
-+		       macsec->real_dev->phydev->macsec_ops;
-+
-+	return false;
-+}
-+
-+static const struct macsec_ops *__macsec_get_ops(enum macsec_offload offload,
-+						 struct macsec_dev *macsec,
-+						 struct macsec_context *ctx)
-+{
-+	if (ctx) {
-+		memset(ctx, 0, sizeof(*ctx));
-+		ctx->offload = offload;
-+
-+		if (offload == MACSEC_OFFLOAD_PHY)
-+			ctx->phydev = macsec->real_dev->phydev;
-+	}
-+
-+	return macsec->real_dev->phydev->macsec_ops;
-+}
-+
-+/* Returns a pointer to the MACsec ops struct if any and updates the MACsec
-+ * context device reference if provided.
-+ */
-+static const struct macsec_ops *macsec_get_ops(struct macsec_dev *macsec,
-+					       struct macsec_context *ctx)
-+{
-+	if (!macsec_check_offload(macsec->offload, macsec))
-+		return NULL;
-+
-+	return __macsec_get_ops(macsec->offload, macsec, ctx);
-+}
-+
- /* validate MACsec packet according to IEEE 802.1AE-2006 9.12 */
- static bool macsec_validate_skb(struct sk_buff *skb, u16 icv_len)
- {
-@@ -867,8 +921,10 @@ static struct macsec_rx_sc *find_rx_sc_rtnl(struct macsec_secy *secy, sci_t sci)
- 	return NULL;
- }
- 
--static void handle_not_macsec(struct sk_buff *skb)
-+static enum rx_handler_result handle_not_macsec(struct sk_buff *skb)
- {
-+	/* Deliver to the uncontrolled port by default */
-+	enum rx_handler_result ret = RX_HANDLER_PASS;
- 	struct macsec_rxh_data *rxd;
- 	struct macsec_dev *macsec;
- 
-@@ -883,7 +939,8 @@ static void handle_not_macsec(struct sk_buff *skb)
- 		struct sk_buff *nskb;
- 		struct pcpu_secy_stats *secy_stats = this_cpu_ptr(macsec->stats);
- 
--		if (macsec->secy.validate_frames == MACSEC_VALIDATE_STRICT) {
-+		if (!macsec_is_offloaded(macsec) &&
-+		    macsec->secy.validate_frames == MACSEC_VALIDATE_STRICT) {
- 			u64_stats_update_begin(&secy_stats->syncp);
- 			secy_stats->stats.InPktsNoTag++;
- 			u64_stats_update_end(&secy_stats->syncp);
-@@ -902,9 +959,17 @@ static void handle_not_macsec(struct sk_buff *skb)
- 			secy_stats->stats.InPktsUntagged++;
- 			u64_stats_update_end(&secy_stats->syncp);
- 		}
-+
-+		if (netif_running(macsec->secy.netdev) &&
-+		    macsec_is_offloaded(macsec)) {
-+			ret = RX_HANDLER_EXACT;
-+			goto out;
-+		}
- 	}
- 
-+out:
- 	rcu_read_unlock();
-+	return ret;
- }
- 
- static rx_handler_result_t macsec_handle_frame(struct sk_buff **pskb)
-@@ -929,12 +994,8 @@ static rx_handler_result_t macsec_handle_frame(struct sk_buff **pskb)
- 		goto drop_direct;
- 
- 	hdr = macsec_ethhdr(skb);
--	if (hdr->eth.h_proto != htons(ETH_P_MACSEC)) {
--		handle_not_macsec(skb);
--
--		/* and deliver to the uncontrolled port */
--		return RX_HANDLER_PASS;
--	}
-+	if (hdr->eth.h_proto != htons(ETH_P_MACSEC))
-+		return handle_not_macsec(skb);
- 
- 	skb = skb_unshare(skb, GFP_ATOMIC);
- 	*pskb = skb;
-@@ -1440,6 +1501,40 @@ static const struct nla_policy macsec_genl_sa_policy[NUM_MACSEC_SA_ATTR] = {
- 				 .len = MACSEC_MAX_KEY_LEN, },
- };
- 
-+/* Offloads an operation to a device driver */
-+static int macsec_offload(int (* const func)(struct macsec_context *),
-+			  struct macsec_context *ctx)
-+{
-+	int ret;
-+
-+	if (unlikely(!func))
-+		return 0;
-+
-+	if (ctx->offload == MACSEC_OFFLOAD_PHY)
-+		mutex_lock(&ctx->phydev->lock);
-+
-+	/* Phase I: prepare. The drive should fail here if there are going to be
-+	 * issues in the commit phase.
-+	 */
-+	ctx->prepare = true;
-+	ret = (*func)(ctx);
-+	if (ret)
-+		goto phy_unlock;
-+
-+	/* Phase II: commit. This step cannot fail. */
-+	ctx->prepare = false;
-+	ret = (*func)(ctx);
-+	/* This should never happen: commit is not allowed to fail */
-+	if (unlikely(ret))
-+		WARN(1, "MACsec offloading commit failed (%d)\n", ret);
-+
-+phy_unlock:
-+	if (ctx->offload == MACSEC_OFFLOAD_PHY)
-+		mutex_unlock(&ctx->phydev->lock);
-+
-+	return ret;
-+}
-+
- static int parse_sa_config(struct nlattr **attrs, struct nlattr **tb_sa)
- {
- 	if (!attrs[MACSEC_ATTR_SA_CONFIG])
-@@ -1555,13 +1650,40 @@ static int macsec_add_rxsa(struct sk_buff *skb, struct genl_info *info)
- 	if (tb_sa[MACSEC_SA_ATTR_ACTIVE])
- 		rx_sa->active = !!nla_get_u8(tb_sa[MACSEC_SA_ATTR_ACTIVE]);
- 
--	nla_memcpy(rx_sa->key.id, tb_sa[MACSEC_SA_ATTR_KEYID], MACSEC_KEYID_LEN);
- 	rx_sa->sc = rx_sc;
-+
-+	/* If h/w offloading is available, propagate to the device */
-+	if (macsec_is_offloaded(netdev_priv(dev))) {
-+		const struct macsec_ops *ops;
-+		struct macsec_context ctx;
-+
-+		ops = macsec_get_ops(netdev_priv(dev), &ctx);
-+		if (!ops) {
-+			err = -EOPNOTSUPP;
-+			goto cleanup;
-+		}
-+
-+		ctx.sa.assoc_num = assoc_num;
-+		ctx.sa.rx_sa = rx_sa;
-+		memcpy(ctx.sa.key, nla_data(tb_sa[MACSEC_SA_ATTR_KEY]),
-+		       MACSEC_KEYID_LEN);
-+
-+		err = macsec_offload(ops->mdo_add_rxsa, &ctx);
-+		if (err)
-+			goto cleanup;
-+	}
-+
-+	nla_memcpy(rx_sa->key.id, tb_sa[MACSEC_SA_ATTR_KEYID], MACSEC_KEYID_LEN);
- 	rcu_assign_pointer(rx_sc->sa[assoc_num], rx_sa);
- 
- 	rtnl_unlock();
- 
- 	return 0;
-+
-+cleanup:
-+	kfree(rx_sa);
-+	rtnl_unlock();
-+	return err;
- }
- 
- static bool validate_add_rxsc(struct nlattr **attrs)
-@@ -1584,6 +1706,8 @@ static int macsec_add_rxsc(struct sk_buff *skb, struct genl_info *info)
- 	struct nlattr **attrs = info->attrs;
- 	struct macsec_rx_sc *rx_sc;
- 	struct nlattr *tb_rxsc[MACSEC_RXSC_ATTR_MAX + 1];
-+	bool was_active;
-+	int ret;
- 
- 	if (!attrs[MACSEC_ATTR_IFINDEX])
- 		return -EINVAL;
-@@ -1609,12 +1733,35 @@ static int macsec_add_rxsc(struct sk_buff *skb, struct genl_info *info)
- 		return PTR_ERR(rx_sc);
- 	}
- 
-+	was_active = rx_sc->active;
- 	if (tb_rxsc[MACSEC_RXSC_ATTR_ACTIVE])
- 		rx_sc->active = !!nla_get_u8(tb_rxsc[MACSEC_RXSC_ATTR_ACTIVE]);
- 
-+	if (macsec_is_offloaded(netdev_priv(dev))) {
-+		const struct macsec_ops *ops;
-+		struct macsec_context ctx;
-+
-+		ops = macsec_get_ops(netdev_priv(dev), &ctx);
-+		if (!ops) {
-+			ret = -EOPNOTSUPP;
-+			goto cleanup;
-+		}
-+
-+		ctx.rx_sc = rx_sc;
-+
-+		ret = macsec_offload(ops->mdo_add_rxsc, &ctx);
-+		if (ret)
-+			goto cleanup;
-+	}
-+
- 	rtnl_unlock();
- 
- 	return 0;
-+
-+cleanup:
-+	rx_sc->active = was_active;
-+	rtnl_unlock();
-+	return ret;
- }
- 
- static bool validate_add_txsa(struct nlattr **attrs)
-@@ -1651,6 +1798,7 @@ static int macsec_add_txsa(struct sk_buff *skb, struct genl_info *info)
- 	struct macsec_tx_sa *tx_sa;
- 	unsigned char assoc_num;
- 	struct nlattr *tb_sa[MACSEC_SA_ATTR_MAX + 1];
-+	bool was_operational;
- 	int err;
- 
- 	if (!attrs[MACSEC_ATTR_IFINDEX])
-@@ -1701,8 +1849,6 @@ static int macsec_add_txsa(struct sk_buff *skb, struct genl_info *info)
- 		return err;
- 	}
- 
--	nla_memcpy(tx_sa->key.id, tb_sa[MACSEC_SA_ATTR_KEYID], MACSEC_KEYID_LEN);
--
- 	spin_lock_bh(&tx_sa->lock);
- 	tx_sa->next_pn = nla_get_u32(tb_sa[MACSEC_SA_ATTR_PN]);
- 	spin_unlock_bh(&tx_sa->lock);
-@@ -1710,14 +1856,43 @@ static int macsec_add_txsa(struct sk_buff *skb, struct genl_info *info)
- 	if (tb_sa[MACSEC_SA_ATTR_ACTIVE])
- 		tx_sa->active = !!nla_get_u8(tb_sa[MACSEC_SA_ATTR_ACTIVE]);
- 
-+	was_operational = secy->operational;
- 	if (assoc_num == tx_sc->encoding_sa && tx_sa->active)
- 		secy->operational = true;
- 
-+	/* If h/w offloading is available, propagate to the device */
-+	if (macsec_is_offloaded(netdev_priv(dev))) {
-+		const struct macsec_ops *ops;
-+		struct macsec_context ctx;
-+
-+		ops = macsec_get_ops(netdev_priv(dev), &ctx);
-+		if (!ops) {
-+			err = -EOPNOTSUPP;
-+			goto cleanup;
-+		}
-+
-+		ctx.sa.assoc_num = assoc_num;
-+		ctx.sa.tx_sa = tx_sa;
-+		memcpy(ctx.sa.key, nla_data(tb_sa[MACSEC_SA_ATTR_KEY]),
-+		       MACSEC_KEYID_LEN);
-+
-+		err = macsec_offload(ops->mdo_add_txsa, &ctx);
-+		if (err)
-+			goto cleanup;
-+	}
-+
-+	nla_memcpy(tx_sa->key.id, tb_sa[MACSEC_SA_ATTR_KEYID], MACSEC_KEYID_LEN);
- 	rcu_assign_pointer(tx_sc->sa[assoc_num], tx_sa);
- 
- 	rtnl_unlock();
- 
- 	return 0;
-+
-+cleanup:
-+	secy->operational = was_operational;
-+	kfree(tx_sa);
-+	rtnl_unlock();
-+	return err;
- }
- 
- static int macsec_del_rxsa(struct sk_buff *skb, struct genl_info *info)
-@@ -1730,6 +1905,7 @@ static int macsec_del_rxsa(struct sk_buff *skb, struct genl_info *info)
- 	u8 assoc_num;
- 	struct nlattr *tb_rxsc[MACSEC_RXSC_ATTR_MAX + 1];
- 	struct nlattr *tb_sa[MACSEC_SA_ATTR_MAX + 1];
-+	int ret;
- 
- 	if (!attrs[MACSEC_ATTR_IFINDEX])
- 		return -EINVAL;
-@@ -1753,12 +1929,35 @@ static int macsec_del_rxsa(struct sk_buff *skb, struct genl_info *info)
- 		return -EBUSY;
- 	}
- 
-+	/* If h/w offloading is available, propagate to the device */
-+	if (macsec_is_offloaded(netdev_priv(dev))) {
-+		const struct macsec_ops *ops;
-+		struct macsec_context ctx;
-+
-+		ops = macsec_get_ops(netdev_priv(dev), &ctx);
-+		if (!ops) {
-+			ret = -EOPNOTSUPP;
-+			goto cleanup;
-+		}
-+
-+		ctx.sa.assoc_num = assoc_num;
-+		ctx.sa.rx_sa = rx_sa;
-+
-+		ret = macsec_offload(ops->mdo_del_rxsa, &ctx);
-+		if (ret)
-+			goto cleanup;
-+	}
-+
- 	RCU_INIT_POINTER(rx_sc->sa[assoc_num], NULL);
- 	clear_rx_sa(rx_sa);
- 
- 	rtnl_unlock();
- 
- 	return 0;
-+
-+cleanup:
-+	rtnl_unlock();
-+	return ret;
- }
- 
- static int macsec_del_rxsc(struct sk_buff *skb, struct genl_info *info)
-@@ -1769,6 +1968,7 @@ static int macsec_del_rxsc(struct sk_buff *skb, struct genl_info *info)
- 	struct macsec_rx_sc *rx_sc;
- 	sci_t sci;
- 	struct nlattr *tb_rxsc[MACSEC_RXSC_ATTR_MAX + 1];
-+	int ret;
- 
- 	if (!attrs[MACSEC_ATTR_IFINDEX])
- 		return -EINVAL;
-@@ -1795,10 +1995,31 @@ static int macsec_del_rxsc(struct sk_buff *skb, struct genl_info *info)
- 		return -ENODEV;
- 	}
- 
-+	/* If h/w offloading is available, propagate to the device */
-+	if (macsec_is_offloaded(netdev_priv(dev))) {
-+		const struct macsec_ops *ops;
-+		struct macsec_context ctx;
-+
-+		ops = macsec_get_ops(netdev_priv(dev), &ctx);
-+		if (!ops) {
-+			ret = -EOPNOTSUPP;
-+			goto cleanup;
-+		}
-+
-+		ctx.rx_sc = rx_sc;
-+		ret = macsec_offload(ops->mdo_del_rxsc, &ctx);
-+		if (ret)
-+			goto cleanup;
-+	}
-+
- 	free_rx_sc(rx_sc);
- 	rtnl_unlock();
- 
- 	return 0;
-+
-+cleanup:
-+	rtnl_unlock();
-+	return ret;
- }
- 
- static int macsec_del_txsa(struct sk_buff *skb, struct genl_info *info)
-@@ -1810,6 +2031,7 @@ static int macsec_del_txsa(struct sk_buff *skb, struct genl_info *info)
- 	struct macsec_tx_sa *tx_sa;
- 	u8 assoc_num;
- 	struct nlattr *tb_sa[MACSEC_SA_ATTR_MAX + 1];
-+	int ret;
- 
- 	if (!attrs[MACSEC_ATTR_IFINDEX])
- 		return -EINVAL;
-@@ -1830,12 +2052,35 @@ static int macsec_del_txsa(struct sk_buff *skb, struct genl_info *info)
- 		return -EBUSY;
- 	}
- 
-+	/* If h/w offloading is available, propagate to the device */
-+	if (macsec_is_offloaded(netdev_priv(dev))) {
-+		const struct macsec_ops *ops;
-+		struct macsec_context ctx;
-+
-+		ops = macsec_get_ops(netdev_priv(dev), &ctx);
-+		if (!ops) {
-+			ret = -EOPNOTSUPP;
-+			goto cleanup;
-+		}
-+
-+		ctx.sa.assoc_num = assoc_num;
-+		ctx.sa.tx_sa = tx_sa;
-+
-+		ret = macsec_offload(ops->mdo_del_txsa, &ctx);
-+		if (ret)
-+			goto cleanup;
-+	}
-+
- 	RCU_INIT_POINTER(tx_sc->sa[assoc_num], NULL);
- 	clear_tx_sa(tx_sa);
- 
- 	rtnl_unlock();
- 
- 	return 0;
-+
-+cleanup:
-+	rtnl_unlock();
-+	return ret;
- }
- 
- static bool validate_upd_sa(struct nlattr **attrs)
-@@ -1868,6 +2113,9 @@ static int macsec_upd_txsa(struct sk_buff *skb, struct genl_info *info)
- 	struct macsec_tx_sa *tx_sa;
- 	u8 assoc_num;
- 	struct nlattr *tb_sa[MACSEC_SA_ATTR_MAX + 1];
-+	bool was_operational, was_active;
-+	u32 prev_pn = 0;
-+	int ret = 0;
- 
- 	if (!attrs[MACSEC_ATTR_IFINDEX])
- 		return -EINVAL;
-@@ -1888,19 +2136,52 @@ static int macsec_upd_txsa(struct sk_buff *skb, struct genl_info *info)
- 
- 	if (tb_sa[MACSEC_SA_ATTR_PN]) {
- 		spin_lock_bh(&tx_sa->lock);
-+		prev_pn = tx_sa->next_pn;
- 		tx_sa->next_pn = nla_get_u32(tb_sa[MACSEC_SA_ATTR_PN]);
- 		spin_unlock_bh(&tx_sa->lock);
- 	}
- 
-+	was_active = tx_sa->active;
- 	if (tb_sa[MACSEC_SA_ATTR_ACTIVE])
- 		tx_sa->active = nla_get_u8(tb_sa[MACSEC_SA_ATTR_ACTIVE]);
- 
-+	was_operational = secy->operational;
- 	if (assoc_num == tx_sc->encoding_sa)
- 		secy->operational = tx_sa->active;
- 
-+	/* If h/w offloading is available, propagate to the device */
-+	if (macsec_is_offloaded(netdev_priv(dev))) {
-+		const struct macsec_ops *ops;
-+		struct macsec_context ctx;
-+
-+		ops = macsec_get_ops(netdev_priv(dev), &ctx);
-+		if (!ops) {
-+			ret = -EOPNOTSUPP;
-+			goto cleanup;
-+		}
-+
-+		ctx.sa.assoc_num = assoc_num;
-+		ctx.sa.tx_sa = tx_sa;
-+
-+		ret = macsec_offload(ops->mdo_upd_txsa, &ctx);
-+		if (ret)
-+			goto cleanup;
-+	}
-+
- 	rtnl_unlock();
- 
- 	return 0;
-+
-+cleanup:
-+	if (tb_sa[MACSEC_SA_ATTR_PN]) {
-+		spin_lock_bh(&tx_sa->lock);
-+		tx_sa->next_pn = prev_pn;
-+		spin_unlock_bh(&tx_sa->lock);
-+	}
-+	tx_sa->active = was_active;
-+	secy->operational = was_operational;
-+	rtnl_unlock();
-+	return ret;
- }
- 
- static int macsec_upd_rxsa(struct sk_buff *skb, struct genl_info *info)
-@@ -1913,6 +2194,9 @@ static int macsec_upd_rxsa(struct sk_buff *skb, struct genl_info *info)
- 	u8 assoc_num;
- 	struct nlattr *tb_rxsc[MACSEC_RXSC_ATTR_MAX + 1];
- 	struct nlattr *tb_sa[MACSEC_SA_ATTR_MAX + 1];
-+	bool was_active;
-+	u32 prev_pn = 0;
-+	int ret = 0;
- 
- 	if (!attrs[MACSEC_ATTR_IFINDEX])
- 		return -EINVAL;
-@@ -1936,15 +2220,46 @@ static int macsec_upd_rxsa(struct sk_buff *skb, struct genl_info *info)
- 
- 	if (tb_sa[MACSEC_SA_ATTR_PN]) {
- 		spin_lock_bh(&rx_sa->lock);
-+		prev_pn = rx_sa->next_pn;
- 		rx_sa->next_pn = nla_get_u32(tb_sa[MACSEC_SA_ATTR_PN]);
- 		spin_unlock_bh(&rx_sa->lock);
- 	}
- 
-+	was_active = rx_sa->active;
- 	if (tb_sa[MACSEC_SA_ATTR_ACTIVE])
- 		rx_sa->active = nla_get_u8(tb_sa[MACSEC_SA_ATTR_ACTIVE]);
- 
-+	/* If h/w offloading is available, propagate to the device */
-+	if (macsec_is_offloaded(netdev_priv(dev))) {
-+		const struct macsec_ops *ops;
-+		struct macsec_context ctx;
-+
-+		ops = macsec_get_ops(netdev_priv(dev), &ctx);
-+		if (!ops) {
-+			ret = -EOPNOTSUPP;
-+			goto cleanup;
-+		}
-+
-+		ctx.sa.assoc_num = assoc_num;
-+		ctx.sa.rx_sa = rx_sa;
-+
-+		ret = macsec_offload(ops->mdo_upd_rxsa, &ctx);
-+		if (ret)
-+			goto cleanup;
-+	}
-+
- 	rtnl_unlock();
- 	return 0;
-+
-+cleanup:
-+	if (tb_sa[MACSEC_SA_ATTR_PN]) {
-+		spin_lock_bh(&rx_sa->lock);
-+		rx_sa->next_pn = prev_pn;
-+		spin_unlock_bh(&rx_sa->lock);
-+	}
-+	rx_sa->active = was_active;
-+	rtnl_unlock();
-+	return ret;
- }
- 
- static int macsec_upd_rxsc(struct sk_buff *skb, struct genl_info *info)
-@@ -1954,6 +2269,9 @@ static int macsec_upd_rxsc(struct sk_buff *skb, struct genl_info *info)
- 	struct macsec_secy *secy;
- 	struct macsec_rx_sc *rx_sc;
- 	struct nlattr *tb_rxsc[MACSEC_RXSC_ATTR_MAX + 1];
-+	unsigned int prev_n_rx_sc;
-+	bool was_active;
-+	int ret;
- 
- 	if (!attrs[MACSEC_ATTR_IFINDEX])
- 		return -EINVAL;
-@@ -1971,6 +2289,8 @@ static int macsec_upd_rxsc(struct sk_buff *skb, struct genl_info *info)
- 		return PTR_ERR(rx_sc);
- 	}
- 
-+	was_active = rx_sc->active;
-+	prev_n_rx_sc = secy->n_rx_sc;
- 	if (tb_rxsc[MACSEC_RXSC_ATTR_ACTIVE]) {
- 		bool new = !!nla_get_u8(tb_rxsc[MACSEC_RXSC_ATTR_ACTIVE]);
- 
-@@ -1980,9 +2300,33 @@ static int macsec_upd_rxsc(struct sk_buff *skb, struct genl_info *info)
- 		rx_sc->active = new;
- 	}
- 
-+	/* If h/w offloading is available, propagate to the device */
-+	if (macsec_is_offloaded(netdev_priv(dev))) {
-+		const struct macsec_ops *ops;
-+		struct macsec_context ctx;
-+
-+		ops = macsec_get_ops(netdev_priv(dev), &ctx);
-+		if (!ops) {
-+			ret = -EOPNOTSUPP;
-+			goto cleanup;
-+		}
-+
-+		ctx.rx_sc = rx_sc;
-+
-+		ret = macsec_offload(ops->mdo_upd_rxsc, &ctx);
-+		if (ret)
-+			goto cleanup;
-+	}
-+
- 	rtnl_unlock();
- 
- 	return 0;
-+
-+cleanup:
-+	secy->n_rx_sc = prev_n_rx_sc;
-+	rx_sc->active = was_active;
-+	rtnl_unlock();
-+	return ret;
- }
- 
- static int copy_tx_sa_stats(struct sk_buff *skb,
-@@ -2550,6 +2894,11 @@ static netdev_tx_t macsec_start_xmit(struct sk_buff *skb,
- 	struct pcpu_secy_stats *secy_stats;
- 	int ret, len;
- 
-+	if (macsec_is_offloaded(netdev_priv(dev))) {
-+		skb->dev = macsec->real_dev;
-+		return dev_queue_xmit(skb);
-+	}
-+
- 	/* 10.5 */
- 	if (!secy->protect_frames) {
- 		secy_stats = this_cpu_ptr(macsec->stats);
-@@ -2663,6 +3012,22 @@ static int macsec_dev_open(struct net_device *dev)
- 			goto clear_allmulti;
- 	}
- 
-+	/* If h/w offloading is available, propagate to the device */
-+	if (macsec_is_offloaded(macsec)) {
-+		const struct macsec_ops *ops;
-+		struct macsec_context ctx;
-+
-+		ops = macsec_get_ops(netdev_priv(dev), &ctx);
-+		if (!ops) {
-+			err = -EOPNOTSUPP;
-+			goto clear_allmulti;
-+		}
-+
-+		err = macsec_offload(ops->mdo_dev_open, &ctx);
-+		if (err)
-+			goto clear_allmulti;
-+	}
-+
- 	if (netif_carrier_ok(real_dev))
- 		netif_carrier_on(dev);
- 
-@@ -2683,6 +3048,16 @@ static int macsec_dev_stop(struct net_device *dev)
- 
- 	netif_carrier_off(dev);
- 
-+	/* If h/w offloading is available, propagate to the device */
-+	if (macsec_is_offloaded(macsec)) {
-+		const struct macsec_ops *ops;
-+		struct macsec_context ctx;
-+
-+		ops = macsec_get_ops(macsec, &ctx);
-+		if (ops)
-+			macsec_offload(ops->mdo_dev_stop, &ctx);
-+	}
-+
- 	dev_mc_unsync(real_dev, dev);
- 	dev_uc_unsync(real_dev, dev);
- 
-@@ -2914,6 +3289,11 @@ static int macsec_changelink(struct net_device *dev, struct nlattr *tb[],
- 			     struct nlattr *data[],
- 			     struct netlink_ext_ack *extack)
- {
-+	struct macsec_dev *macsec = macsec_priv(dev);
-+	struct macsec_tx_sa tx_sc;
-+	struct macsec_secy secy;
-+	int ret;
-+
- 	if (!data)
- 		return 0;
- 
-@@ -2923,7 +3303,41 @@ static int macsec_changelink(struct net_device *dev, struct nlattr *tb[],
- 	    data[IFLA_MACSEC_PORT])
- 		return -EINVAL;
- 
--	return macsec_changelink_common(dev, data);
-+	/* Keep a copy of unmodified secy and tx_sc, in case the offload
-+	 * propagation fails, to revert macsec_changelink_common.
-+	 */
-+	memcpy(&secy, &macsec->secy, sizeof(secy));
-+	memcpy(&tx_sc, &macsec->secy.tx_sc, sizeof(tx_sc));
-+
-+	ret = macsec_changelink_common(dev, data);
-+	if (ret)
-+		return ret;
-+
-+	/* If h/w offloading is available, propagate to the device */
-+	if (macsec_is_offloaded(macsec)) {
-+		const struct macsec_ops *ops;
-+		struct macsec_context ctx;
-+		int ret;
-+
-+		ops = macsec_get_ops(netdev_priv(dev), &ctx);
-+		if (!ops) {
-+			ret = -EOPNOTSUPP;
-+			goto cleanup;
-+		}
-+
-+		ctx.secy = &macsec->secy;
-+		ret = macsec_offload(ops->mdo_upd_secy, &ctx);
-+		if (ret)
-+			goto cleanup;
-+	}
-+
-+	return 0;
-+
-+cleanup:
-+	memcpy(&macsec->secy.tx_sc, &tx_sc, sizeof(tx_sc));
-+	memcpy(&macsec->secy, &secy, sizeof(secy));
-+
-+	return ret;
- }
- 
- static void macsec_del_dev(struct macsec_dev *macsec)
-@@ -2966,6 +3380,18 @@ static void macsec_dellink(struct net_device *dev, struct list_head *head)
- 	struct net_device *real_dev = macsec->real_dev;
- 	struct macsec_rxh_data *rxd = macsec_data_rtnl(real_dev);
- 
-+	/* If h/w offloading is available, propagate to the device */
-+	if (macsec_is_offloaded(macsec)) {
-+		const struct macsec_ops *ops;
-+		struct macsec_context ctx;
-+
-+		ops = macsec_get_ops(netdev_priv(dev), &ctx);
-+		if (ops) {
-+			ctx.secy = &macsec->secy;
-+			macsec_offload(ops->mdo_del_secy, &ctx);
-+		}
-+	}
-+
- 	macsec_common_dellink(dev, head);
- 
- 	if (list_empty(&rxd->secys)) {
-@@ -3077,6 +3503,9 @@ static int macsec_newlink(struct net *net, struct net_device *dev,
- 
- 	macsec->real_dev = real_dev;
- 
-+	/* MACsec offloading is off by default */
-+	macsec->offload = MACSEC_OFFLOAD_OFF;
-+
- 	if (data && data[IFLA_MACSEC_ICV_LEN])
- 		icv_len = nla_get_u8(data[IFLA_MACSEC_ICV_LEN]);
- 	dev->mtu = real_dev->mtu - icv_len - macsec_extra_len(true);
--- 
-2.24.1
-
+Oops, I need to add NET_SOCK_MSG to my build matrix :-)
