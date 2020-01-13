@@ -2,95 +2,124 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 9132E13955C
-	for <lists+netdev@lfdr.de>; Mon, 13 Jan 2020 16:58:10 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 863A3139565
+	for <lists+netdev@lfdr.de>; Mon, 13 Jan 2020 17:01:18 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728755AbgAMP6I (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 13 Jan 2020 10:58:08 -0500
-Received: from mail-wm1-f65.google.com ([209.85.128.65]:37401 "EHLO
-        mail-wm1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728640AbgAMP6I (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 13 Jan 2020 10:58:08 -0500
-Received: by mail-wm1-f65.google.com with SMTP id f129so10256797wmf.2
-        for <netdev@vger.kernel.org>; Mon, 13 Jan 2020 07:58:07 -0800 (PST)
+        id S1728801AbgAMQBQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 13 Jan 2020 11:01:16 -0500
+Received: from mail-wr1-f66.google.com ([209.85.221.66]:41826 "EHLO
+        mail-wr1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728709AbgAMQBP (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 13 Jan 2020 11:01:15 -0500
+Received: by mail-wr1-f66.google.com with SMTP id c9so9136049wrw.8
+        for <netdev@vger.kernel.org>; Mon, 13 Jan 2020 08:01:14 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=cloudflare.com; s=google;
-        h=references:user-agent:from:to:cc:subject:in-reply-to:date
-         :message-id:mime-version;
-        bh=xuRv0bRrZmLh6/KELpV2UKLTZadCivbQ3Y3zds4jbws=;
-        b=AN4P9S1MEvCGhshm0bKq0thZhjv2gvMxMBZrDoEgsisEZ2flIj6aZzLv302CT04ph+
-         jEvx0tzMPNyWl6DEI/M6laHazcY0ewVcjRNMmwDMEa6f5St2+Ma0SuNAss+nq+X3Of1v
-         BpBGjszCtDAEZw+4tqBZEfJXedXJdokeSaAbo=
+        d=resnulli-us.20150623.gappssmtp.com; s=20150623;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:content-transfer-encoding:in-reply-to;
+        bh=VJ2I8bVjh406gtJuNrBH16DaMI1Itvx05/c74M6wft8=;
+        b=wcJVBNGQcVPQ0xvdGtG2k2J38F+daqvgDEWf9Oyeul9ot4a52KywkpkM4M13AipHLu
+         GI388SfURNeNCjXxXI5C5l8p6ik+pW0ztjmKChcm5CUrj+R7dgx34VMdXff3cvT3K+3b
+         jvCYgG5J0tful/gOCIc89D8XdCNiIk1sd4lZ1d3i2J72kzqr7dMJOdenE5yIxmOebUoN
+         CvArh3Sh6+t0pm494NwZgNGczFWiMDCjWpExune2b7vr3FDw1AMf1H7O0O/TjtZiMODL
+         00h32HfxgbHGZRIwKWHOeywxQrvU5J5h+9tla/KVLgwocrmLRhWd2em9v5Kt9J/3MkMj
+         e4lw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:references:user-agent:from:to:cc:subject
-         :in-reply-to:date:message-id:mime-version;
-        bh=xuRv0bRrZmLh6/KELpV2UKLTZadCivbQ3Y3zds4jbws=;
-        b=kEbDh7i8LeMU++Thf5O5Q/G1V7pUpcuY3P4xX3io2KpUExOIRnIeUhdyOBb9Y3P+0q
-         p181bG67TyFeo5IyL1FKlTzojsWu6t3WgfO6lkajG+94DyO2JWJt12jfTLwbawqUU7il
-         rw8z+6dqtzOUeMuaXLDAVBnoKkVMJUUsL/Ci/c09SuU26u3p9o9JMHsLRR+lirUubQSB
-         KdWA+8XYUVyxvM1neidyCrecn2tvn/AnST9iSWVFL+S1SpxyQDzvNq5Y706DHo80MPvS
-         tZ3pi/B2uO8qM8wqIVLYxgAUsLA027lOCEdeSycHBYuhp/AjrdsdUvHAJaGebNUJsjXz
-         C2iA==
-X-Gm-Message-State: APjAAAW+IFq7VV9NJ6yUEMqGHf39l75b6cm2YM+UK7//poq8Ybg1C/lc
-        pmRoys8ejCQN9F7DYJZ0haO0Ug==
-X-Google-Smtp-Source: APXvYqzwCReOQ51CvyOqs+7XHhS1CAjcUa5dNI+iCe5BDXxMdXmpmssCSh1KzNa9RULQ5OI0izxFhg==
-X-Received: by 2002:a1c:dcd5:: with SMTP id t204mr21980385wmg.34.1578931086453;
-        Mon, 13 Jan 2020 07:58:06 -0800 (PST)
-Received: from cloudflare.com ([176.221.114.230])
-        by smtp.gmail.com with ESMTPSA id b21sm14822473wmd.37.2020.01.13.07.58.05
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:content-transfer-encoding
+         :in-reply-to;
+        bh=VJ2I8bVjh406gtJuNrBH16DaMI1Itvx05/c74M6wft8=;
+        b=dDVNZXLMR+Xk89XwfHEn6eL/V3tPfCdqzO0yOFCgSDCAH9he7hya0gpDtrZtm986n2
+         a1ngpWG7NQnBHAAQrKVRHYMmaoiFoO688rVQG1S1WatFMRJ7MvsA7fO1vQyOjMIIm0IQ
+         lDU1rr/2aT70fRY6WpYuQNAc1Uuej9vI1DWpmbqbI1/axisE98UxY/s1XSAi4pAoy/4j
+         /TLG9e6rwzSYBBTmSYZ6rxwqTa9ZFsd+lytWXuaYOViqeIEhb2yE79vX9rYsUjl3WW7T
+         j/k5f2IoASQ4dTLAKbKIkoYHdvCuKhhMSwhI0bEt7poQKLRyAyqJKDahCd8EjT3f8vfO
+         t+cA==
+X-Gm-Message-State: APjAAAWg5iJW+23XKBqSWofbQv+2UnJx0iUj5n30iQLR2WGq+xP0TVst
+        4oDxgLnX8O6XHPalMNqOSiShlQ==
+X-Google-Smtp-Source: APXvYqz+wIKpxexS9htZEf5ylW4xVlVtWBFDIb7X9/vCrhz4wjrU+PeGtBByqJUS5lDOlv9N3+huyw==
+X-Received: by 2002:a5d:4f8e:: with SMTP id d14mr20115727wru.112.1578931273141;
+        Mon, 13 Jan 2020 08:01:13 -0800 (PST)
+Received: from localhost (ip-78-102-249-43.net.upcbroadband.cz. [78.102.249.43])
+        by smtp.gmail.com with ESMTPSA id p7sm14332600wmp.31.2020.01.13.08.01.12
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 13 Jan 2020 07:58:05 -0800 (PST)
-References: <20200110105027.257877-1-jakub@cloudflare.com> <20200110105027.257877-12-jakub@cloudflare.com> <5e1a712c16d1_76782ace374ba5c02b@john-XPS-13-9370.notmuch>
-User-agent: mu4e 1.1.0; emacs 26.3
-From:   Jakub Sitnicki <jakub@cloudflare.com>
-To:     John Fastabend <john.fastabend@gmail.com>
-Cc:     bpf@vger.kernel.org, netdev@vger.kernel.org,
-        kernel-team@cloudflare.com, Eric Dumazet <edumazet@google.com>,
-        Lorenz Bauer <lmb@cloudflare.com>,
-        Martin KaFai Lau <kafai@fb.com>
-Subject: Re: [PATCH bpf-next v2 11/11] selftests/bpf: Tests for SOCKMAP holding listening sockets
-In-reply-to: <5e1a712c16d1_76782ace374ba5c02b@john-XPS-13-9370.notmuch>
-Date:   Mon, 13 Jan 2020 16:58:05 +0100
-Message-ID: <87k15vs60i.fsf@cloudflare.com>
+        Mon, 13 Jan 2020 08:01:12 -0800 (PST)
+Date:   Mon, 13 Jan 2020 17:01:11 +0100
+From:   Jiri Pirko <jiri@resnulli.us>
+To:     Antoine Tenart <antoine.tenart@bootlin.com>
+Cc:     davem@davemloft.net, sd@queasysnail.net, andrew@lunn.ch,
+        f.fainelli@gmail.com, hkallweit1@gmail.com, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, thomas.petazzoni@bootlin.com,
+        alexandre.belloni@bootlin.com, allan.nielsen@microchip.com,
+        camelia.groza@nxp.com, Simon.Edelhaus@aquantia.com,
+        Igor.Russkikh@aquantia.com, jakub.kicinski@netronome.com
+Subject: Re: [PATCH net-next v5 02/15] net: macsec: introduce the
+ macsec_context structure
+Message-ID: <20200113160111.GF2131@nanopsycho>
+References: <20200110162010.338611-1-antoine.tenart@bootlin.com>
+ <20200110162010.338611-3-antoine.tenart@bootlin.com>
+ <20200113143956.GB2131@nanopsycho>
+ <20200113151231.GD3078@kwain>
 MIME-Version: 1.0
-Content-Type: text/plain
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20200113151231.GD3078@kwain>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, Jan 12, 2020 at 02:06 AM CET, John Fastabend wrote:
-> Jakub Sitnicki wrote:
->> Now that SOCKMAP can store listening sockets, user-space and BPF API is
->> open to a new set of potential pitfalls. Exercise the map operations (with
->> extra attention to code paths susceptible to races between map ops and
->> socket cloning), and BPF helpers that work with SOCKMAP to gain confidence
->> that all works as expected.
+Mon, Jan 13, 2020 at 04:12:31PM CET, antoine.tenart@bootlin.com wrote:
+>On Mon, Jan 13, 2020 at 03:39:56PM +0100, Jiri Pirko wrote:
+>> Fri, Jan 10, 2020 at 05:19:57PM CET, antoine.tenart@bootlin.com wrote:
 >> 
->> Signed-off-by: Jakub Sitnicki <jakub@cloudflare.com>
->> ---
+>> >diff --git a/include/uapi/linux/if_link.h b/include/uapi/linux/if_link.h
+>> >index 1d69f637c5d6..024af2d1d0af 100644
+>> >--- a/include/uapi/linux/if_link.h
+>> >+++ b/include/uapi/linux/if_link.h
+>> >@@ -486,6 +486,13 @@ enum macsec_validation_type {
+>> > 	MACSEC_VALIDATE_MAX = __MACSEC_VALIDATE_END - 1,
+>> > };
+>> > 
+>> >+enum macsec_offload {
+>> >+	MACSEC_OFFLOAD_OFF = 0,
+>> >+	MACSEC_OFFLOAD_PHY = 1,
+>> 
+>> No need to assign 0, 1 here. That is given.
 >
-> [...]
+>Right, however MACSEC_VALIDATE_ uses the same notation. I think it's
+>nice to be consistent, but of course of patch can be sent to convert
+>both of those enums.
+
+Ok.
+
 >
->> +static void test_sockmap_insert_listening(int family, int sotype, int mapfd)
->> +{
->> +	u64 value;
->> +	u32 key;
->> +	int s;
->> +
->> +	s = listen_loopback(family, sotype);
->> +	if (s < 0)
->> +		return;
+>> >+	__MACSEC_OFFLOAD_END,
+>> >+	MACSEC_OFFLOAD_MAX = __MACSEC_OFFLOAD_END - 1,
+>> >+};
+>> >+
+>> > /* IPVLAN section */
+>> > enum {
+>> > 	IFLA_IPVLAN_UNSPEC,
+>> >diff --git a/tools/include/uapi/linux/if_link.h b/tools/include/uapi/linux/if_link.h
+>> >index 8aec8769d944..42efdb84d189 100644
+>> >--- a/tools/include/uapi/linux/if_link.h
+>> >+++ b/tools/include/uapi/linux/if_link.h
+>> 
+>> Why you are adding to this header?
 >
-> Will the test be marked OK if listen fails here? Should we mark it skipped or
-> maybe even failed? Just concerned it may be passing even if the update doesn't
-> actually happen.
+>Because the two headers are synced.
 
-Yes, it will be marked as failed if we don't succeed in creating a
-listening socket. The listen_loopback helper uses x{socket,bind,listen}
-wrappers, which in turn use the CHECK_FAIL macro to fail the test.
+It is synced manually from time to time. (October is the last time)
 
-Thanks for going through this series till the end :-)
 
--jkbs
+>
+>Thanks,
+>Antoine
+>
+>-- 
+>Antoine Ténart, Bootlin
+>Embedded Linux and Kernel engineering
+>https://bootlin.com
