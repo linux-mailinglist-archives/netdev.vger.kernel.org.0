@@ -2,96 +2,136 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 410CA138C3D
-	for <lists+netdev@lfdr.de>; Mon, 13 Jan 2020 08:17:47 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5549C138C58
+	for <lists+netdev@lfdr.de>; Mon, 13 Jan 2020 08:31:46 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728755AbgAMHRn (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 13 Jan 2020 02:17:43 -0500
-Received: from mail26.static.mailgun.info ([104.130.122.26]:44947 "EHLO
-        mail26.static.mailgun.info" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1728679AbgAMHRm (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 13 Jan 2020 02:17:42 -0500
-DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org; q=dns/txt;
- s=smtp; t=1578899862; h=Content-Type: MIME-Version: Message-ID:
- In-Reply-To: Date: References: Subject: Cc: To: From: Sender;
- bh=PHpcWydMf81SX9BI3zK7atci8ZDAip52kbaK4/vTAKM=; b=ikpiilzn5hVfd3fXdBnA5QZYXGJE5+T8/wd8Lv1ouOM73RBqc02XntX1KBHiSyXUE1ol9LKu
- 50dtrg+Yos2DLBoyLwdfs37MAkAuq0m3KhKBqHRfflqQux5CJmJzjSWWrhGZandCvjih0VQh
- APb3F6gXSM8TRwGGAvS16hnSfvc=
-X-Mailgun-Sending-Ip: 104.130.122.26
-X-Mailgun-Sid: WyJiZjI2MiIsICJuZXRkZXZAdmdlci5rZXJuZWwub3JnIiwgImJlOWU0YSJd
-Received: from smtp.codeaurora.org (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171])
- by mxa.mailgun.org with ESMTP id 5e1c1991.7f8189d6d6c0-smtp-out-n02;
- Mon, 13 Jan 2020 07:17:37 -0000 (UTC)
-Received: by smtp.codeaurora.org (Postfix, from userid 1001)
-        id 77C56C4479C; Mon, 13 Jan 2020 07:17:37 +0000 (UTC)
-X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
-        aws-us-west-2-caf-mail-1.web.codeaurora.org
-X-Spam-Level: 
-X-Spam-Status: No, score=-1.0 required=2.0 tests=ALL_TRUSTED,SPF_NONE
-        autolearn=unavailable autolearn_force=no version=3.4.0
-Received: from x230.qca.qualcomm.com (dsl-hkibng32-54f84f-238.dhcp.inet.fi [84.248.79.238])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-        (No client certificate requested)
-        (Authenticated sender: kvalo)
-        by smtp.codeaurora.org (Postfix) with ESMTPSA id A0D18C433CB;
-        Mon, 13 Jan 2020 07:17:35 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org A0D18C433CB
-Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
-Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; spf=none smtp.mailfrom=kvalo@codeaurora.org
-From:   Kalle Valo <kvalo@codeaurora.org>
-To:     Jia-Ju Bai <baijiaju1990@gmail.com>
-Cc:     ath9k-devel@qca.qualcomm.com, davem@davemloft.net,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] ath9k: Fix possible data races in ath_set_channel()
-References: <20200111171528.7053-1-baijiaju1990@gmail.com>
-Date:   Mon, 13 Jan 2020 09:17:28 +0200
-In-Reply-To: <20200111171528.7053-1-baijiaju1990@gmail.com> (Jia-Ju Bai's
-        message of "Sun, 12 Jan 2020 01:15:28 +0800")
-Message-ID: <87a76rsu47.fsf@codeaurora.org>
-User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/24.5 (gnu/linux)
+        id S1728765AbgAMHbl (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 13 Jan 2020 02:31:41 -0500
+Received: from smtprelay0033.hostedemail.com ([216.40.44.33]:40108 "EHLO
+        smtprelay.hostedemail.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1728646AbgAMHbl (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 13 Jan 2020 02:31:41 -0500
+Received: from filter.hostedemail.com (clb03-v110.bra.tucows.net [216.40.38.60])
+        by smtprelay07.hostedemail.com (Postfix) with ESMTP id 0D0DF181D3417;
+        Mon, 13 Jan 2020 07:31:39 +0000 (UTC)
+X-Session-Marker: 6A6F6540706572636865732E636F6D
+X-Spam-Summary: 2,0,0,,d41d8cd98f00b204,joe@perches.com,:::::::::::,RULES_HIT:41:355:379:800:960:968:973:988:989:1260:1277:1311:1313:1314:1345:1437:1515:1516:1518:1535:1544:1593:1594:1711:1730:1747:1777:1792:2194:2198:2199:2200:2393:2559:2562:2828:3138:3139:3140:3141:3142:3354:3865:3866:3867:3868:3870:3871:4225:4321:4419:4605:5007:6119:8660:10004:10848:11026:11657:11658:11914:12043:12296:12297:12438:12555:12760:12986:13019:13148:13230:13439:14181:14394:14659:14721:21080:21627:21990:30054,0,RBL:none,CacheIP:none,Bayesian:0.5,0.5,0.5,Netcheck:none,DomainCache:0,MSF:not bulk,SPF:,MSBL:0,DNSBL:none,Custom_rules:0:0:0,LFtime:1,LUA_SUMMARY:none
+X-HE-Tag: fear63_658d484eb9418
+X-Filterd-Recvd-Size: 5014
+Received: from XPS-9350.home (unknown [47.151.135.224])
+        (Authenticated sender: joe@perches.com)
+        by omf08.hostedemail.com (Postfix) with ESMTPA;
+        Mon, 13 Jan 2020 07:31:37 +0000 (UTC)
+Message-ID: <3b91c274164d1ae9d81dce9f3b398d691cc6765e.camel@perches.com>
+Subject: [PATCH net-next] mlx5: Use proper logging and tracing line
+ terminations
+From:   Joe Perches <joe@perches.com>
+To:     Saeed Mahameed <saeedm@mellanox.com>,
+        Leon Romanovsky <leon@kernel.org>
+Cc:     "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
+        linux-rdma@vger.kernel.org, linux-kernel@vger.kernel.org
+Date:   Sun, 12 Jan 2020 23:30:43 -0800
+Content-Type: text/plain; charset="ISO-8859-1"
+User-Agent: Evolution 3.34.1-2 
 MIME-Version: 1.0
-Content-Type: text/plain
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Jia-Ju Bai <baijiaju1990@gmail.com> writes:
+netdev_err should use newline termination but mlx5_health_report
+is used in a trace output function devlink_health_report where
+no newline should be used.
 
-> The functions ath9k_config() and ath_ani_calibrate() may be concurrently
-> executed.
->
-> A variable survey->filled is accessed with holding a spinlock
-> common->cc_lock, through:
-> ath_ani_calibrate()
->     spin_lock_irqsave(&common->cc_lock, flags);
->     ath_update_survey_stats()
->         ath_update_survey_nf()
->             survey->filled |= SURVEY_INFO_NOISE_DBM;
->
-> The identical variables sc->cur_survey->filled and 
-> sc->survey[pos].filled is accessed without holding this lock, through:
-> ath9k_config()
->     ath_chanctx_set_channel()
->         ath_set_channel()
->             sc->cur_survey->filled &= ~SURVEY_INFO_IN_USE;
->             sc->cur_survey->filled |= SURVEY_INFO_IN_USE;
->             else if (!(sc->survey[pos].filled & SURVEY_INFO_IN_USE))
->             ath_update_survey_nf
->                 survey->filled |= SURVEY_INFO_NOISE_DBM;
->
-> Thus, possible data races may occur.
->
-> To fix these data races, in ath_set_channel(), these variables are
-> accessed with holding the spinlock common->cc_lock.
->
-> These data races are found by the runtime testing of our tool DILP-2.
->
-> Signed-off-by: Jia-Ju Bai <baijiaju1990@gmail.com>
+Remove the newlines from a couple formats and add a format string
+of "%s\n" to the netdev_err call to not directly output the
+logging string.
 
-I need a detailed review from somone familiar with ath9k before I can
-consider applying this.
+Also use snprintf to avoid any possible output string overrun.
 
--- 
-https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
+Signed-off-by: Joe Perches <joe@perches.com>
+---
+ drivers/net/ethernet/mellanox/mlx5/core/en/health.c      |  2 +-
+ drivers/net/ethernet/mellanox/mlx5/core/en/reporter_rx.c |  9 +++++----
+ drivers/net/ethernet/mellanox/mlx5/core/en/reporter_tx.c | 10 +++++-----
+ 3 files changed, 11 insertions(+), 10 deletions(-)
+
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en/health.c b/drivers/net/ethernet/mellanox/mlx5/core/en/health.c
+index 3a9756..75a35f1 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/en/health.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/en/health.c
+@@ -197,7 +197,7 @@ int mlx5e_health_report(struct mlx5e_priv *priv,
+ 			struct devlink_health_reporter *reporter, char *err_str,
+ 			struct mlx5e_err_ctx *err_ctx)
+ {
+-	netdev_err(priv->netdev, err_str);
++	netdev_err(priv->netdev, "%s\n", err_str);
+ 
+ 	if (!reporter)
+ 		return err_ctx->recover(&err_ctx->ctx);
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en/reporter_rx.c b/drivers/net/ethernet/mellanox/mlx5/core/en/reporter_rx.c
+index 6c72b59..67d2f70 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/en/reporter_rx.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/en/reporter_rx.c
+@@ -110,7 +110,7 @@ void mlx5e_reporter_icosq_cqe_err(struct mlx5e_icosq *icosq)
+ 
+ 	err_ctx.ctx = icosq;
+ 	err_ctx.recover = mlx5e_rx_reporter_err_icosq_cqe_recover;
+-	sprintf(err_str, "ERR CQE on ICOSQ: 0x%x", icosq->sqn);
++	snprintf(err_str, sizeof(err_str), "ERR CQE on ICOSQ: 0x%x", icosq->sqn);
+ 
+ 	mlx5e_health_report(priv, priv->rx_reporter, err_str, &err_ctx);
+ }
+@@ -179,7 +179,7 @@ void mlx5e_reporter_rq_cqe_err(struct mlx5e_rq *rq)
+ 
+ 	err_ctx.ctx = rq;
+ 	err_ctx.recover = mlx5e_rx_reporter_err_rq_cqe_recover;
+-	sprintf(err_str, "ERR CQE on RQ: 0x%x", rq->rqn);
++	snprintf(err_str, sizeof(err_str), "ERR CQE on RQ: 0x%x", rq->rqn);
+ 
+ 	mlx5e_health_report(priv, priv->rx_reporter, err_str, &err_ctx);
+ }
+@@ -210,8 +210,9 @@ void mlx5e_reporter_rx_timeout(struct mlx5e_rq *rq)
+ 
+ 	err_ctx.ctx = rq;
+ 	err_ctx.recover = mlx5e_rx_reporter_timeout_recover;
+-	sprintf(err_str, "RX timeout on channel: %d, ICOSQ: 0x%x RQ: 0x%x, CQ: 0x%x\n",
+-		icosq->channel->ix, icosq->sqn, rq->rqn, rq->cq.mcq.cqn);
++	snprintf(err_str, sizeof(err_str),
++		 "RX timeout on channel: %d, ICOSQ: 0x%x RQ: 0x%x, CQ: 0x%x",
++		 icosq->channel->ix, icosq->sqn, rq->rqn, rq->cq.mcq.cqn);
+ 
+ 	mlx5e_health_report(priv, priv->rx_reporter, err_str, &err_ctx);
+ }
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en/reporter_tx.c b/drivers/net/ethernet/mellanox/mlx5/core/en/reporter_tx.c
+index b46854..5ecb986 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/en/reporter_tx.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/en/reporter_tx.c
+@@ -90,7 +90,7 @@ void mlx5e_reporter_tx_err_cqe(struct mlx5e_txqsq *sq)
+ 
+ 	err_ctx.ctx = sq;
+ 	err_ctx.recover = mlx5e_tx_reporter_err_cqe_recover;
+-	sprintf(err_str, "ERR CQE on SQ: 0x%x", sq->sqn);
++	snprintf(err_str, sizeof(err_str), "ERR CQE on SQ: 0x%x", sq->sqn);
+ 
+ 	mlx5e_health_report(priv, priv->tx_reporter, err_str, &err_ctx);
+ }
+@@ -118,10 +118,10 @@ int mlx5e_reporter_tx_timeout(struct mlx5e_txqsq *sq)
+ 
+ 	err_ctx.ctx = sq;
+ 	err_ctx.recover = mlx5e_tx_reporter_timeout_recover;
+-	sprintf(err_str,
+-		"TX timeout on queue: %d, SQ: 0x%x, CQ: 0x%x, SQ Cons: 0x%x SQ Prod: 0x%x, usecs since last trans: %u\n",
+-		sq->channel->ix, sq->sqn, sq->cq.mcq.cqn, sq->cc, sq->pc,
+-		jiffies_to_usecs(jiffies - sq->txq->trans_start));
++	snprintf(err_str, sizeof(err_str),
++		 "TX timeout on queue: %d, SQ: 0x%x, CQ: 0x%x, SQ Cons: 0x%x SQ Prod: 0x%x, usecs since last trans: %u",
++		 sq->channel->ix, sq->sqn, sq->cq.mcq.cqn, sq->cc, sq->pc,
++		 jiffies_to_usecs(jiffies - sq->txq->trans_start));
+ 
+ 	return mlx5e_health_report(priv, priv->tx_reporter, err_str, &err_ctx);
+ }
+
+
+
