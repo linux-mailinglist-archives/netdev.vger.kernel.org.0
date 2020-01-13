@@ -2,156 +2,368 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 0413A138A3B
-	for <lists+netdev@lfdr.de>; Mon, 13 Jan 2020 05:33:56 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 68A94138A7A
+	for <lists+netdev@lfdr.de>; Mon, 13 Jan 2020 05:54:20 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2387604AbgAMEdv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 12 Jan 2020 23:33:51 -0500
-Received: from mail-ot1-f67.google.com ([209.85.210.67]:35847 "EHLO
-        mail-ot1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2387552AbgAMEdv (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 12 Jan 2020 23:33:51 -0500
-Received: by mail-ot1-f67.google.com with SMTP id m2so2925380otq.3
-        for <netdev@vger.kernel.org>; Sun, 12 Jan 2020 20:33:51 -0800 (PST)
+        id S2387590AbgAMEyQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 12 Jan 2020 23:54:16 -0500
+Received: from mail-pj1-f66.google.com ([209.85.216.66]:35789 "EHLO
+        mail-pj1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2387525AbgAMEyP (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 12 Jan 2020 23:54:15 -0500
+Received: by mail-pj1-f66.google.com with SMTP id s7so3735250pjc.0;
+        Sun, 12 Jan 2020 20:54:15 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=sifive.com; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=0SADaU9gu70a2Bm0Kanw0/QkZVrOHiIb+3LRKLBcUWk=;
-        b=OxFJ5+uPpMQkwvT9Qje5xmITqR1pEl3memtQG8Of66iLLXIir/M+praEuySJUPpWqx
-         B7k8EbjZfdkqQtjY7IOgRq/+bLOoJw0+Spj1+UCP9x0BoGO+r6hPIyQ9fl/tDsd1miBa
-         RD7OyyUJkbYPcTYY11AR32jO97qb5LBnOc6cysWfFY761YIxTiErD/jyiKNnNneKy8Ek
-         VJ8n3eNNluAdNyiiQrPSN050ayi1RvZbWNM07Dwfo+GwlQrh4LBz2p+loFt7Ezh9PzS5
-         hRO1OvgiH8Xrlt5JLkPpxi2yPu9JEOjmeygncihU08HnpWE6Bz4mej+gZFrOGt7W+9CS
-         eUqQ==
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=jX6qkWmYXUSx+80QFz0j0DhZg4Qpek+NelAh9fppjdQ=;
+        b=k3rG7LqnPF2FTFtwNb23rU9ImcmkpyUGYNl2N6+NgpWw7BLCFCt5N5XOguel+QfCnT
+         Pu2ygmiFciJFAnMwLnJgFP5UmYr2QINIiUe2ajpKtq86l9lSym16rsoYWoBiLR51Vii7
+         dQTdcR1IuiYpDerYrfDwCMpv9YpQg6UyEOQhrcDMzcH42f5EzfsSH2GvbNEvjqka9rwt
+         3HPwkQVRZ6udFeJ+1KfnQUmWkfFq7gv2tmsiMRtTjcmchC9UiJ24uwno7blwVEL+RJfN
+         gdT84Ss3aIymehIm5s21IAbpjJssdnEDjJA93xmi5O8MnOjqLWWWjYnq9lZJJ6gW1w+H
+         owqQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=0SADaU9gu70a2Bm0Kanw0/QkZVrOHiIb+3LRKLBcUWk=;
-        b=LUl5IchdhAiRUaMhWeXOy+A5WYGJ473Fs+gRao9aOVNfzukkjlvq+xOvs4yvvDUgF8
-         iwjbkyOZMPfdEDJAtSUNqCw377yoahXbVmqQl15MOEWYysFtt7VHevooCaNsNSAfQfEq
-         4phxtHtN4OUeVQwNnS5yWLmsDp9+RZypDtNitlvZSxE+C05bMSoDqWvKlGdNCU1hjbEE
-         BNK2gl8sEc9zLseAq15Bd5zuA3aLhv9VgdXUDInmxcrSJcrSPJl90OZEqYDOFKI3ckGy
-         Ta+amq0Csavpohp+91UJjW7LY7QbESdghbYWiWK1vX0T8quSHlzAGiL1nNee+1Wn0LUj
-         WH3Q==
-X-Gm-Message-State: APjAAAXbg5tbxwYeToGQVmASZJdPzFUEo9waTxFcPF5DtnLhnYxT4So7
-        KxUqmzfMhPVL/0AZ5Ec9CAdUEUUeMaNLe7U2SQ+6fg==
-X-Google-Smtp-Source: APXvYqzKKJLKVTUSZcp0sj2AT+aiCvmTg5KUl6YAuMPe9/ClQhmL25Wu+pX1UtlR8rzIUjHdZZAxcUMMWVH9uWU1+Sw=
-X-Received: by 2002:a9d:2c68:: with SMTP id f95mr12075160otb.33.1578890030841;
- Sun, 12 Jan 2020 20:33:50 -0800 (PST)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=jX6qkWmYXUSx+80QFz0j0DhZg4Qpek+NelAh9fppjdQ=;
+        b=gi/LECLA/j5a1eBpl+3ckkZ46KiWR6p4L7fx1o4WRV67su4flqBS8OSHGlsdur3mPW
+         rBHvUZBwiN7qi31K73XH1yuGh65wX6gf44jBMXtlXcb3T38edeS7sM7PYOtEKN6vKyOb
+         mlzmFQDuY51HRuC2KOFKmE5gNeNA+Nxj152Ai5ALhAlyGCQLA/yZ/r7nw+bSTmtVH8cZ
+         P6AvVjJzvNzd0QmoaXA595TnSzBKQ679vOMi7AkH2wBCJGF9CtkHgQQ3im30w92Q38C4
+         Osse3LEk72nwiWU3evLV5cHa6ooVUoIkEpgKgPlTFqFHEPEnv2tX+IOKec7JYeDD8i/J
+         mHtA==
+X-Gm-Message-State: APjAAAWYCnG4VsytSeXfO1BNN1wJ6ZFa8Q9UGP0jig+cH3BzALx0AiTO
+        +F3Z0SNZZcM6u/9HzY/IPdIk4rf+
+X-Google-Smtp-Source: APXvYqwtknO3kxI7C9uPremhfdNnAfkBAYhIa82+deb2Gh5ilyF0a59T2PPmW/2VtZ25g63FZgqORA==
+X-Received: by 2002:a17:902:9b94:: with SMTP id y20mr5684488plp.291.1578891254243;
+        Sun, 12 Jan 2020 20:54:14 -0800 (PST)
+Received: from localhost.localdomain (ip68-111-84-250.oc.oc.cox.net. [68.111.84.250])
+        by smtp.gmail.com with ESMTPSA id j8sm11723787pfe.182.2020.01.12.20.54.13
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sun, 12 Jan 2020 20:54:13 -0800 (PST)
+From:   Florian Fainelli <f.fainelli@gmail.com>
+To:     netdev@vger.kernel.org
+Cc:     cphealy@gmail.com, rmk+kernel@armlinux.org.uk, kuba@kernel.org,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        linux-kernel@vger.kernel.org (open list)
+Subject: [PATCH net-next] net: phy: Maintain MDIO device and bus statistics
+Date:   Sun, 12 Jan 2020 20:53:19 -0800
+Message-Id: <20200113045325.13470-1-f.fainelli@gmail.com>
+X-Mailer: git-send-email 2.19.1
 MIME-Version: 1.0
-References: <a367af4d-7267-2e94-74dc-2a2aac204080@ghiti.fr>
- <20191018105657.4584ec67@canb.auug.org.au> <20191028110257.6d6dba6e@canb.auug.org.au>
- <mhng-0daa1a90-2bed-4b2e-833e-02cd9c0aa73f@palmerdabbelt-glaptop> <d5d59f54-e391-3659-d4c0-eada50f88187@ghiti.fr>
-In-Reply-To: <d5d59f54-e391-3659-d4c0-eada50f88187@ghiti.fr>
-From:   Zong Li <zong.li@sifive.com>
-Date:   Mon, 13 Jan 2020 12:33:40 +0800
-Message-ID: <CANXhq0pn+Nq6T5dNyJiB6xvmqTnPSzo8sVfqHhGyWUURY+1ydg@mail.gmail.com>
-Subject: Re: linux-next: build warning after merge of the bpf-next tree
-To:     Alexandre Ghiti <alexandre@ghiti.fr>
-Cc:     Palmer Dabbelt <palmerdabbelt@google.com>,
-        Stephen Rothwell <sfr@canb.auug.org.au>, daniel@iogearbox.net,
-        ast@kernel.org, netdev@vger.kernel.org, linux-next@vger.kernel.org,
-        "linux-kernel@vger.kernel.org List" <linux-kernel@vger.kernel.org>,
-        linuxppc-dev@lists.ozlabs.org,
-        linux-arm-kernel <linux-arm-kernel@lists.infradead.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, Jan 11, 2020 at 10:31 PM Alexandre Ghiti <alexandre@ghiti.fr> wrote:
->
->
-> On 1/10/20 7:20 PM, Palmer Dabbelt wrote:
-> > On Fri, 10 Jan 2020 14:28:17 PST (-0800), alexandre@ghiti.fr wrote:
-> >> Hi guys,
-> >>
-> >> On 10/27/19 8:02 PM, Stephen Rothwell wrote:
-> >>> Hi all,
-> >>>
-> >>> On Fri, 18 Oct 2019 10:56:57 +1100 Stephen Rothwell
-> >>> <sfr@canb.auug.org.au> wrote:
-> >>>> Hi all,
-> >>>>
-> >>>> After merging the bpf-next tree, today's linux-next build (powerpc
-> >>>> ppc64_defconfig) produced this warning:
-> >>>>
-> >>>> WARNING: 2 bad relocations
-> >>>> c000000001998a48 R_PPC64_ADDR64 _binary__btf_vmlinux_bin_start
-> >>>> c000000001998a50 R_PPC64_ADDR64 _binary__btf_vmlinux_bin_end
-> >>>>
-> >>>> Introduced by commit
-> >>>>
-> >>>>    8580ac9404f6 ("bpf: Process in-kernel BTF")
-> >>> This warning now appears in the net-next tree build.
-> >>>
-> >>>
-> >> I bump that thread up because Zong also noticed that 2 new
-> >> relocations for
-> >> those symbols appeared in my riscv relocatable kernel branch following
-> >> that commit.
-> >>
-> >> I also noticed 2 new relocations R_AARCH64_ABS64 appearing in arm64
-> >> kernel.
-> >>
-> >> Those 2 weak undefined symbols have existed since commit
-> >> 341dfcf8d78e ("btf: expose BTF info through sysfs") but this is the fact
-> >> to declare those symbols into btf.c that produced those relocations.
-> >>
-> >> I'm not sure what this all means, but this is not something I expected
-> >> for riscv for
-> >> a kernel linked with -shared/-fpie. Maybe should we just leave them to
-> >> zero ?
-> >>
-> >> I think that deserves a deeper look if someone understands all this
-> >> better than I do.
-> >
-> > Can you give me a pointer to your tree and how to build a relocatable
-> > kernel?
-> > Weak undefined symbols have the absolute value 0,
->
->
-> So according to you the 2 new relocations R_RISCV_64 are normal and
-> should not
-> be modified at runtime right ?
->
->
-> > but the kernel is linked at
-> > an address such that 0 can't be reached by normal means.  When I added
-> > support
-> > to binutils for this I did it in a way that required almost no code --
-> > essetially I just stopped dissallowing x0 as a possible base register
-> > for PCREL
-> > relocations, which results in 0 always being accessible.  I just
-> > wanted to get
-> > the kernel to build again, so I didn't worry about chasing around all the
-> > addressing modes.  The PIC/PIE support generates different relocations
-> > and I
-> > wouldn't be surprised if I just missed one (or more likely all) of them.
-> >
-> > It's probably a simple fix, though I feel like every time I say that
-> > about the
-> > linker I end up spending a month in there...
->
-> You can find it here:
->
-> https://github.com/AlexGhiti/riscv-linux/tree/int/alex/riscv_relocatable_v1
->
-> Zong fixed the bug introduced by those 2 new relocations and everything
-> works
-> like a charm, so I'm not sure you have to dig in the linker :)
->
+Maintain per MDIO device and MDIO bus statistics comprised of the number
+of transfers/operations, reads and writes and errors. This is useful for
+tracking the per-device and global MDIO bus bandwidth and doing
+optimizations as necessary.
 
-I'm not quite familiar with btf, so I have no idea why there are two
-weak symbols be added in 8580ac9404f6 ("bpf: Process in-kernel BTF")
-as well, According on relocation mechanism, maybe it is unnecessary to
-handle weak undefined symbol at this time, because there is no
-substantive help to relocate the absolute value 0. I just simply
-ignore the non-relative relocation types to make processing can go
-forward, and it works for me based on v5.5-rc5.
+Signed-off-by: Florian Fainelli <f.fainelli@gmail.com>
+---
+ Documentation/ABI/testing/sysfs-bus-mdio |  34 +++++++
+ drivers/net/phy/mdio_bus.c               | 116 +++++++++++++++++++++++
+ drivers/net/phy/mdio_device.c            |   1 +
+ include/linux/mdio.h                     |  10 ++
+ include/linux/phy.h                      |   2 +
+ 5 files changed, 163 insertions(+)
+ create mode 100644 Documentation/ABI/testing/sysfs-bus-mdio
 
-> Alex
->
+diff --git a/Documentation/ABI/testing/sysfs-bus-mdio b/Documentation/ABI/testing/sysfs-bus-mdio
+new file mode 100644
+index 000000000000..a552d92890f1
+--- /dev/null
++++ b/Documentation/ABI/testing/sysfs-bus-mdio
+@@ -0,0 +1,34 @@
++What:          /sys/bus/mdio_bus/devices/.../statistics/
++Date:          January 2020
++KernelVersion: 5.6
++Contact:       netdev@vger.kernel.org
++Description:
++		This folder contains statistics about MDIO bus transactions.
++
++What:          /sys/bus/mdio_bus/devices/.../statistics/transfers
++Date:          January 2020
++KernelVersion: 5.6
++Contact:       netdev@vger.kernel.org
++Description:
++		Total number of transfers for this MDIO bus.
++
++What:          /sys/bus/mdio_bus/devices/.../statistics/errors
++Date:          January 2020
++KernelVersion: 5.6
++Contact:       netdev@vger.kernel.org
++Description:
++		Total number of transfer errors for this MDIO bus.
++
++What:          /sys/bus/mdio_bus/devices/.../statistics/writes
++Date:          January 2020
++KernelVersion: 5.6
++Contact:       netdev@vger.kernel.org
++Description:
++		Total number of write transactions for this MDIO bus.
++
++What:          /sys/bus/mdio_bus/devices/.../statistics/reads
++Date:          January 2020
++KernelVersion: 5.6
++Contact:       netdev@vger.kernel.org
++Description:
++		Total number of read transactions for this MDIO bus.
+diff --git a/drivers/net/phy/mdio_bus.c b/drivers/net/phy/mdio_bus.c
+index 229e480179ff..805bc2e3b139 100644
+--- a/drivers/net/phy/mdio_bus.c
++++ b/drivers/net/phy/mdio_bus.c
+@@ -168,6 +168,9 @@ struct mii_bus *mdiobus_alloc_size(size_t size)
+ 	for (i = 0; i < PHY_MAX_ADDR; i++)
+ 		bus->irq[i] = PHY_POLL;
+ 
++	/* Initialize 64-bit seqcounts */
++	u64_stats_init(&bus->stats.syncp);
++
+ 	return bus;
+ }
+ EXPORT_SYMBOL(mdiobus_alloc_size);
+@@ -255,9 +258,77 @@ static void mdiobus_release(struct device *d)
+ 	kfree(bus);
+ }
+ 
++#define MDIO_BUS_STATS_ATTR(field, file)				\
++static ssize_t mdio_bus_##field##_show(struct device *dev,		\
++				       struct device_attribute *attr,	\
++				       char *buf)			\
++{									\
++	struct mii_bus *bus = to_mii_bus(dev);				\
++	return mdio_bus_stats_##field##_show(&bus->stats, buf);		\
++}									\
++static struct device_attribute dev_attr_mdio_bus_##field = {		\
++	.attr = { .name = file, .mode = 0444 },				\
++	.show = mdio_bus_##field##_show,				\
++};									\
++static ssize_t mdio_bus_device_##field##_show(struct device *dev,	\
++					      struct device_attribute *attr,\
++					      char *buf)		\
++{									\
++	struct mdio_device *mdiodev = to_mdio_device(dev);		\
++	return mdio_bus_stats_##field##_show(&mdiodev->stats, buf);	\
++}									\
++static struct device_attribute dev_attr_mdio_bus_device_##field = {	\
++	.attr = { .name = file, .mode = 0444 },				\
++	.show = mdio_bus_device_##field##_show,				\
++}
++
++#define MDIO_BUS_STATS_SHOW_NAME(name, file, field, format_string)	\
++static ssize_t mdio_bus_stats_##name##_show(struct mdio_bus_stats *s,	\
++					    char *buf)			\
++{									\
++	unsigned int start;						\
++	ssize_t len;							\
++	u64 tmp;							\
++	do {								\
++		start = u64_stats_fetch_begin(&s->syncp);		\
++		tmp = u64_stats_read(&s->field);			\
++	} while (u64_stats_fetch_retry(&s->syncp, start));		\
++	len = sprintf(buf, format_string ## "\n", tmp);			\
++	return len;							\
++}									\
++MDIO_BUS_STATS_ATTR(name, file)
++
++#define MDIO_BUS_STATS_SHOW(field, format_string)			\
++	MDIO_BUS_STATS_SHOW_NAME(field, __stringify(field),		\
++				      field, format_string)
++
++MDIO_BUS_STATS_SHOW(transfers, "%llu");
++MDIO_BUS_STATS_SHOW(errors, "%llu");
++MDIO_BUS_STATS_SHOW(writes, "%llu");
++MDIO_BUS_STATS_SHOW(reads, "%llu");
++
++static struct attribute *mdio_bus_statistics_attrs[] = {
++	&dev_attr_mdio_bus_transfers.attr,
++	&dev_attr_mdio_bus_errors.attr,
++	&dev_attr_mdio_bus_writes.attr,
++	&dev_attr_mdio_bus_reads.attr,
++	NULL,
++};
++
++static const struct attribute_group mdio_bus_statistics_group = {
++	.name	= "statistics",
++	.attrs	= mdio_bus_statistics_attrs,
++};
++
++static const struct attribute_group *mdio_bus_groups[] = {
++	&mdio_bus_statistics_group,
++	NULL,
++};
++
+ static struct class mdio_bus_class = {
+ 	.name		= "mdio_bus",
+ 	.dev_release	= mdiobus_release,
++	.dev_groups	= mdio_bus_groups,
+ };
+ 
+ #if IS_ENABLED(CONFIG_OF_MDIO)
+@@ -536,6 +607,24 @@ struct phy_device *mdiobus_scan(struct mii_bus *bus, int addr)
+ }
+ EXPORT_SYMBOL(mdiobus_scan);
+ 
++static void mdiobus_stats_acct(struct mdio_bus_stats *stats, bool op, int ret)
++{
++	u64_stats_update_begin(&stats->syncp);
++
++	u64_stats_inc(&stats->transfers);
++	if (ret < 0) {
++		u64_stats_inc(&stats->errors);
++		goto out;
++	}
++
++	if (op)
++		u64_stats_inc(&stats->reads);
++	else
++		u64_stats_inc(&stats->writes);
++out:
++	u64_stats_update_end(&stats->syncp);
++}
++
+ /**
+  * __mdiobus_read - Unlocked version of the mdiobus_read function
+  * @bus: the mii_bus struct
+@@ -548,6 +637,7 @@ EXPORT_SYMBOL(mdiobus_scan);
+  */
+ int __mdiobus_read(struct mii_bus *bus, int addr, u32 regnum)
+ {
++	struct mdio_device *mdiodev = bus->mdio_map[addr];
+ 	int retval;
+ 
+ 	WARN_ON_ONCE(!mutex_is_locked(&bus->mdio_lock));
+@@ -555,6 +645,9 @@ int __mdiobus_read(struct mii_bus *bus, int addr, u32 regnum)
+ 	retval = bus->read(bus, addr, regnum);
+ 
+ 	trace_mdio_access(bus, 1, addr, regnum, retval, retval);
++	mdiobus_stats_acct(&bus->stats, true, retval);
++	if (mdiodev)
++		mdiobus_stats_acct(&mdiodev->stats, true, retval);
+ 
+ 	return retval;
+ }
+@@ -573,6 +666,7 @@ EXPORT_SYMBOL(__mdiobus_read);
+  */
+ int __mdiobus_write(struct mii_bus *bus, int addr, u32 regnum, u16 val)
+ {
++	struct mdio_device *mdiodev = bus->mdio_map[addr];
+ 	int err;
+ 
+ 	WARN_ON_ONCE(!mutex_is_locked(&bus->mdio_lock));
+@@ -580,6 +674,9 @@ int __mdiobus_write(struct mii_bus *bus, int addr, u32 regnum, u16 val)
+ 	err = bus->write(bus, addr, regnum, val);
+ 
+ 	trace_mdio_access(bus, 0, addr, regnum, val, err);
++	mdiobus_stats_acct(&bus->stats, false, err);
++	if (mdiodev)
++		mdiobus_stats_acct(&mdiodev->stats, false, err);
+ 
+ 	return err;
+ }
+@@ -725,8 +822,27 @@ static int mdio_uevent(struct device *dev, struct kobj_uevent_env *env)
+ 	return 0;
+ }
+ 
++static struct attribute *mdio_bus_device_statistics_attrs[] = {
++	&dev_attr_mdio_bus_device_transfers.attr,
++	&dev_attr_mdio_bus_device_errors.attr,
++	&dev_attr_mdio_bus_device_writes.attr,
++	&dev_attr_mdio_bus_device_reads.attr,
++	NULL,
++};
++
++static const struct attribute_group mdio_bus_device_statistics_group = {
++	.name	= "statistics",
++	.attrs	= mdio_bus_device_statistics_attrs,
++};
++
++static const struct attribute_group *mdio_bus_dev_groups[] = {
++	&mdio_bus_device_statistics_group,
++	NULL,
++};
++
+ struct bus_type mdio_bus_type = {
+ 	.name		= "mdio_bus",
++	.dev_groups	= mdio_bus_dev_groups,
+ 	.match		= mdio_bus_match,
+ 	.uevent		= mdio_uevent,
+ };
+diff --git a/drivers/net/phy/mdio_device.c b/drivers/net/phy/mdio_device.c
+index c1d345c3cab3..e89ed990de7d 100644
+--- a/drivers/net/phy/mdio_device.c
++++ b/drivers/net/phy/mdio_device.c
+@@ -53,6 +53,7 @@ struct mdio_device *mdio_device_create(struct mii_bus *bus, int addr)
+ 	if (!mdiodev)
+ 		return ERR_PTR(-ENOMEM);
+ 
++	u64_stats_init(&mdiodev->stats.syncp);
+ 	mdiodev->dev.release = mdio_device_release;
+ 	mdiodev->dev.parent = &bus->dev;
+ 	mdiodev->dev.bus = &mdio_bus_type;
+diff --git a/include/linux/mdio.h b/include/linux/mdio.h
+index a7604248777b..d6035d973a0d 100644
+--- a/include/linux/mdio.h
++++ b/include/linux/mdio.h
+@@ -8,6 +8,7 @@
+ 
+ #include <uapi/linux/mdio.h>
+ #include <linux/mod_devicetable.h>
++#include <linux/u64_stats_sync.h>
+ 
+ struct gpio_desc;
+ struct mii_bus;
+@@ -23,11 +24,20 @@ enum mdio_mutex_lock_class {
+ 	MDIO_MUTEX_NESTED,
+ };
+ 
++struct mdio_bus_stats {
++	struct u64_stats_sync syncp;
++	u64_stats_t transfers;
++	u64_stats_t errors;
++	u64_stats_t writes;
++	u64_stats_t reads;
++};
++
+ struct mdio_device {
+ 	struct device dev;
+ 
+ 	struct mii_bus *bus;
+ 	char modalias[MDIO_NAME_SIZE];
++	struct mdio_bus_stats stats;
+ 
+ 	int (*bus_match)(struct device *dev, struct device_driver *drv);
+ 	void (*device_free)(struct mdio_device *mdiodev);
+diff --git a/include/linux/phy.h b/include/linux/phy.h
+index 5932bb8e9c35..8d3ac1ebfef2 100644
+--- a/include/linux/phy.h
++++ b/include/linux/phy.h
+@@ -22,6 +22,7 @@
+ #include <linux/timer.h>
+ #include <linux/workqueue.h>
+ #include <linux/mod_devicetable.h>
++#include <linux/u64_stats_sync.h>
+ 
+ #include <linux/atomic.h>
+ 
+@@ -224,6 +225,7 @@ struct mii_bus {
+ 	int (*read)(struct mii_bus *bus, int addr, int regnum);
+ 	int (*write)(struct mii_bus *bus, int addr, int regnum, u16 val);
+ 	int (*reset)(struct mii_bus *bus);
++	struct mdio_bus_stats stats;
+ 
+ 	/*
+ 	 * A lock to ensure that only one thing can read/write
+-- 
+2.19.1
+
