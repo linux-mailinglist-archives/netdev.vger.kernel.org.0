@@ -2,111 +2,95 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 42EB5139273
-	for <lists+netdev@lfdr.de>; Mon, 13 Jan 2020 14:46:31 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 922B8139268
+	for <lists+netdev@lfdr.de>; Mon, 13 Jan 2020 14:44:36 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728813AbgAMNqU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 13 Jan 2020 08:46:20 -0500
-Received: from relay12.mail.gandi.net ([217.70.178.232]:39949 "EHLO
-        relay12.mail.gandi.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726074AbgAMNqU (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 13 Jan 2020 08:46:20 -0500
-Received: from nexussix.ar.arcelik (unknown [84.44.14.226])
-        (Authenticated sender: cengiz@kernel.wtf)
-        by relay12.mail.gandi.net (Postfix) with ESMTPSA id 01116200012;
-        Mon, 13 Jan 2020 13:46:10 +0000 (UTC)
-From:   Cengiz Can <cengiz@kernel.wtf>
-To:     Leon Romanovsky <leon@kernel.org>,
-        Saeed Mahameed <saeedm@mellanox.com>,
-        Yevgeny Kliteynik <kliteyn@mellanox.com>,
-        Alex Vesker <valex@mellanox.com>,
-        Erez Shitrit <erezsh@mellanox.com>,
-        Tariq Toukan <tariqt@mellanox.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <jakub.kicinski@netronome.com>
-Cc:     netdev@vger.kernel.org, linux-rdma@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Cengiz Can <cengiz@kernel.wtf>
-Subject: [PATCH] net: mellanox: prevent resource leak on htbl
-Date:   Mon, 13 Jan 2020 16:44:16 +0300
-Message-Id: <20200113134415.86110-1-cengiz@kernel.wtf>
-X-Mailer: git-send-email 2.24.1
+        id S1728779AbgAMNoc (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 13 Jan 2020 08:44:32 -0500
+Received: from mx4.wp.pl ([212.77.101.12]:60350 "EHLO mx4.wp.pl"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726934AbgAMNoc (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 13 Jan 2020 08:44:32 -0500
+Received: (wp-smtpd smtp.wp.pl 10166 invoked from network); 13 Jan 2020 14:44:29 +0100
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=wp.pl; s=1024a;
+          t=1578923069; bh=UsdRYxS3iGOmtf0BEiK0IvADZIqLSlvpWzvsyvMhIXo=;
+          h=From:To:Cc:Subject;
+          b=gN9yEc2Vyd63V7y0w1TnejykErvemGMT0NtKxOurlQfv5EjFBMaOZMthDVqh6mtoO
+           T+tjr4cyHs+GHch7mQ3HcWX/AlQb3jfWvms5l92k9selHMGC34ygppSvj23nXxAGUX
+           iH2WR19JM4B5HfoGJIc5Ucgwxpw1YL4yK7S5r6JY=
+Received: from c-73-93-4-247.hsd1.ca.comcast.net (HELO cakuba) (kubakici@wp.pl@[73.93.4.247])
+          (envelope-sender <kubakici@wp.pl>)
+          by smtp.wp.pl (WP-SMTPD) with ECDHE-RSA-AES256-GCM-SHA384 encrypted SMTP
+          for <ms@dev.tdt.de>; 13 Jan 2020 14:44:29 +0100
+Date:   Mon, 13 Jan 2020 05:44:21 -0800
+From:   Jakub Kicinski <kubakici@wp.pl>
+To:     Martin Schiller <ms@dev.tdt.de>
+Cc:     khc@pm.waw.pl, davem@davemloft.net, linux-x25@vger.kernel.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 2/2] wan/hdlc_x25: fix skb handling
+Message-ID: <20200113054421.55cd5ddc@cakuba>
+In-Reply-To: <20200113124551.2570-2-ms@dev.tdt.de>
+References: <20200113124551.2570-1-ms@dev.tdt.de>
+        <20200113124551.2570-2-ms@dev.tdt.de>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+X-WP-MailID: 5947819778d9914c21dddc05a56b3135
+X-WP-AV: skaner antywirusowy Poczty Wirtualnej Polski
+X-WP-SPAM: NO 000000A [QfPU]                               
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-According to a Coverity static analysis tool,
-`drivers/net/mellanox/mlx5/core/steering/dr_rule.c#63` leaks a
-`struct mlx5dr_ste_htbl *` named `new_htbl` while returning from
-`dr_rule_create_collision_htbl` function.
+On Mon, 13 Jan 2020 13:45:51 +0100, Martin Schiller wrote:
+>  o call skb_reset_network_header() before hdlc->xmit()
+>  o change skb proto to HDLC (0x0019) before hdlc->xmit()
+>  o call dev_queue_xmit_nit() before hdlc->xmit()
+> 
+> This changes make it possible to trace (tcpdump) outgoing layer2
+> (ETH_P_HDLC) packets
+> 
+>  o use a copy of the skb for lapb_data_request() in x25_xmit()
 
-A annotated snippet of the possible resource leak follows:
+It's not clear to me why
 
-```
-static struct mlx5dr_ste *
-dr_rule_create_collision_htbl(struct mlx5dr_matcher *matcher,
-                              struct mlx5dr_matcher_rx_tx *nic_matcher,
-                              u8 *hw_ste)
-   /* ... */
-   /* ... */
+> This fixes the problem, that tracing layer3 (ETH_P_X25) packets
+> results in a malformed first byte of the packets.
+> 
+> Signed-off-by: Martin Schiller <ms@dev.tdt.de>
+> ---
+>  drivers/net/wan/hdlc_x25.c | 15 +++++++++++----
+>  1 file changed, 11 insertions(+), 4 deletions(-)
+> 
+> diff --git a/drivers/net/wan/hdlc_x25.c b/drivers/net/wan/hdlc_x25.c
+> index b28051eba736..434e5263eddf 100644
+> --- a/drivers/net/wan/hdlc_x25.c
+> +++ b/drivers/net/wan/hdlc_x25.c
+> @@ -72,6 +72,7 @@ static int x25_data_indication(struct net_device *dev, struct sk_buff *skb)
+>  	unsigned char *ptr;
+>  
+>  	skb_push(skb, 1);
+> +	skb_reset_network_header(skb);
+>  
+>  	if (skb_cow(skb, 1))
 
-   /* Storage is returned from allocation function mlx5dr_ste_htbl_alloc. */
-   /* Assigning: new_htbl = storage returned from mlx5dr_ste_htbl_alloc(..) */
-        new_htbl = mlx5dr_ste_htbl_alloc(dmn->ste_icm_pool,
-                                         DR_CHUNK_SIZE_1,
-                                         MLX5DR_STE_LU_TYPE_DONT_CARE,
-                                         0);
-   /* Condition !new_htbl, taking false branch. */
-        if (!new_htbl) {
-                mlx5dr_dbg(dmn, "Failed allocating collision table\n");
-                return NULL;
-        }
+This skb_cow() here is for the next handler down to have a 1 byte of
+headroom guaranteed? It'd seem more natural to have skb_cow before the
+push.. not that it's related to your patch.
 
-        /* One and only entry, never grows */
-        ste = new_htbl->ste_arr;
-        mlx5dr_ste_set_miss_addr(hw_ste, nic_matcher->e_anchor->chunk->icm_addr);
-   /* Resource new_htbl is not freed or pointed-to in mlx5dr_htbl_get */
-        mlx5dr_htbl_get(new_htbl);
+>  		return NET_RX_DROP;
+> @@ -88,6 +89,9 @@ static int x25_data_indication(struct net_device *dev, struct sk_buff *skb)
+>  static void x25_data_transmit(struct net_device *dev, struct sk_buff *skb)
+>  {
+>  	hdlc_device *hdlc = dev_to_hdlc(dev);
 
-   /* Variable new_htbl going out of scope leaks the storage it points to. */
-        return ste;
-```
+Please insert a new line after the variable declaration since you're
+touching this one.
 
-There's a caller of this function which does refcounting and free'ing by
-itself but that function also skips free'ing `new_htbl` due to missing
-jump to error label. (referring to `dr_rule_create_collision_entry lines
-75-77. They don't jump to `free_tbl`)
-
-Added a `kfree(new_htbl)` just before returning `ste` pointer to fix the
-leak.
-
-Signed-off-by: Cengiz Can <cengiz@kernel.wtf>
----
-
-This might be totally breaking the refcounting logic in the file so
-please provide any feedback so I can evolve this into something more
-suitable.
-
-For the record, Coverity scan id is CID 1457773.
-
- drivers/net/ethernet/mellanox/mlx5/core/steering/dr_rule.c | 2 ++
- 1 file changed, 2 insertions(+)
-
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_rule.c b/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_rule.c
-index e4cff7abb348..047b403c61db 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_rule.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_rule.c
-@@ -60,6 +60,8 @@ dr_rule_create_collision_htbl(struct mlx5dr_matcher *matcher,
- 	mlx5dr_ste_set_miss_addr(hw_ste, nic_matcher->e_anchor->chunk->icm_addr);
- 	mlx5dr_htbl_get(new_htbl);
-
-+	kfree(new_htbl);
-+
- 	return ste;
- }
-
---
-2.24.1
-
+> +	skb_reset_network_header(skb);
+> +	skb->protocol = hdlc_type_trans(skb, dev);
+> +	dev_queue_xmit_nit(skb, dev);
+>  	hdlc->xmit(skb, dev); /* Ignore return value :-( */
+>  }
+>  
