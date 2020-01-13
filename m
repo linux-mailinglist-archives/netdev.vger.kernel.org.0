@@ -2,20 +2,20 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id BE471139C9A
-	for <lists+netdev@lfdr.de>; Mon, 13 Jan 2020 23:33:20 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E9B28139C85
+	for <lists+netdev@lfdr.de>; Mon, 13 Jan 2020 23:32:16 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728915AbgAMWb6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 13 Jan 2020 17:31:58 -0500
-Received: from relay8-d.mail.gandi.net ([217.70.183.201]:54541 "EHLO
+        id S1729031AbgAMWcF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 13 Jan 2020 17:32:05 -0500
+Received: from relay8-d.mail.gandi.net ([217.70.183.201]:54901 "EHLO
         relay8-d.mail.gandi.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728746AbgAMWb6 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 13 Jan 2020 17:31:58 -0500
+        with ESMTP id S1729005AbgAMWcD (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 13 Jan 2020 17:32:03 -0500
 X-Originating-IP: 90.76.143.236
 Received: from localhost (lfbn-tou-1-1075-236.w90-76.abo.wanadoo.fr [90.76.143.236])
         (Authenticated sender: antoine.tenart@bootlin.com)
-        by relay8-d.mail.gandi.net (Postfix) with ESMTPSA id C4E2D1BF203;
-        Mon, 13 Jan 2020 22:31:54 +0000 (UTC)
+        by relay8-d.mail.gandi.net (Postfix) with ESMTPSA id 86EC31BF207;
+        Mon, 13 Jan 2020 22:32:00 +0000 (UTC)
 From:   Antoine Tenart <antoine.tenart@bootlin.com>
 To:     davem@davemloft.net, sd@queasysnail.net, andrew@lunn.ch,
         f.fainelli@gmail.com, hkallweit1@gmail.com
@@ -25,10 +25,12 @@ Cc:     Antoine Tenart <antoine.tenart@bootlin.com>,
         allan.nielsen@microchip.com, camelia.groza@nxp.com,
         Simon.Edelhaus@aquantia.com, Igor.Russkikh@aquantia.com,
         jakub.kicinski@netronome.com
-Subject: [PATCH net-next v6 00/10] net: macsec: initial support for hardware offloading
-Date:   Mon, 13 Jan 2020 23:31:38 +0100
-Message-Id: <20200113223148.746096-1-antoine.tenart@bootlin.com>
+Subject: [PATCH net-next v6 01/10] net: macsec: move some definitions in a dedicated header
+Date:   Mon, 13 Jan 2020 23:31:39 +0100
+Message-Id: <20200113223148.746096-2-antoine.tenart@bootlin.com>
 X-Mailer: git-send-email 2.24.1
+In-Reply-To: <20200113223148.746096-1-antoine.tenart@bootlin.com>
+References: <20200113223148.746096-1-antoine.tenart@bootlin.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
@@ -36,150 +38,403 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello,
+This patch moves some structure, type and identifier definitions into a
+MACsec specific header. This patch does not modify how the MACsec code
+is running and only move things around. This is a preparation for the
+future MACsec hardware offloading support, which will re-use those
+definitions outside macsec.c.
 
-This series intends to add support for offloading MACsec transformations
-to hardware enabled devices. The series adds the necessary
-infrastructure for offloading MACsec configurations to hardware drivers,
-in patches 1 to 5; then introduces MACsec offloading support in the
-Microsemi MSCC PHY driver, in patches 6 to 10.
-
-The series can also be found at:
-https://github.com/atenart/linux/tree/net-next/macsec
-
-IProute2 modifications can be found at:
-https://github.com/atenart/iproute2/tree/macsec
-
-MACsec hardware offloading infrastructure
------------------------------------------
-
-Linux has a software implementation of the MACsec standard. There are
-hardware engines supporting MACsec operations, such as the Intel ixgbe
-NIC and some Microsemi PHYs (the one we use in this series). This means
-the MACsec offloading infrastructure should support networking PHY and
-MAC drivers. Note that MAC driver preliminary support is part of this
-series, but should not be merged before we actually have a provider for
-this.
-
-We do intend in this series to re-use the logic, netlink API and data
-structures of the existing MACsec software implementation. This allows
-not to duplicate definitions and structure storing the same information;
-as well as using the same userspace tools to configure both software or
-hardware offloaded MACsec flows (with `ip macsec`).
-
-When adding a new MACsec virtual interface the existing logic is kept:
-offloading is disabled by default. A user driven configuration choice is
-needed to switch to offloading mode (a patch in iproute2 is needed for
-this). A single MACsec interface can be offloaded for now, and some
-limitations are there: no flow can be moved from one implementation to
-the other so the decision needs to be done before configuring the
-interface.
-
-MACsec offloading ops are called in 2 steps: a preparation one, and a
-commit one. The first step is allowed to fail and should be used to
-check if a provided configuration is compatible with a given MACsec
-capable hardware. The second step is not allowed to fail and should
-only be used to enable a given MACsec configuration.
-
-A limitation as of now is the counters and statistics are not reported
-back from the hardware to the software MACsec implementation. This
-isn't an issue when using offloaded MACsec transformations, but it
-should be added in the future so that the MACsec state can be reported
-to the user (which would also improve the debug).
-
-Microsemi PHY MACsec support
-----------------------------
-
-In order to add support for the MACsec offloading feature in the
-Microsemi MSCC PHY driver, the __phy_read_page and __phy_write_page
-helpers had to be exported. This is because the initialization of the
-PHY is done while holding the MDIO bus lock, and we need to change the
-page to configure the MACsec block.
-
-The support itself is then added in three patches. The first one adds
-support for configuring the MACsec block within the PHY, so that it is
-up, running and available for future configuration, but is not doing any
-modification on the traffic passing through the PHY. The second patch
-implements the phy_device MACsec ops in the Microsemi MSCC PHY driver,
-and introduce helpers to configure MACsec transformations and flows to
-match specific packets. The last one adds support for PN rollover.
-
-Thanks!
-Antoine
-
-Since v5:
-  - Fixed a compilation issue due to an inclusion from an UAPI header.
-  - Added an EXPORT_SYMBOL_GPL for the PN rollover helper, to fix module
-    compilation issues.
-  - Added a dependency for the MSCC driver on MACSEC || MACSEC=n.
-  - Removed the patches including the MAC offloading support as they are
-    not to be applied for now.
-
-Since v4:
-  - Reworked the MACsec read and write functions in the MSCC PHY driver
-    to remove the conditional locking.
-
-Since v3:
-  - Fixed a check when enabling offloading that was too restrictive.
-  - Fixed the propagation of the changelink event to the underlying
-    device drivers.
-
-Since v2:
-  - Allow selection the offloading from userspace, defaulting to the
-    software implementation when adding a new MACsec interface. The
-    offloading mode is now also reported through netlink.
-  - Added support for letting MKA packets in and out when using MACsec
-    (there are rules to let them bypass the MACsec h/w engine within the
-    PHY).
-  - Added support for PN rollover (following what's currently done in
-    the software implementation: the flow is disabled).
-  - Split patches to remove MAC offloading support for now, as there are
-    no current provider for this (patches are still included).
-  - Improved a few parts of the MACsec support within the MSCC PHY
-    driver (e.g. default rules now block non-MACsec traffic, depending
-    on the configuration).
-  - Many cosmetic fixes & small improvements.
-
-Since v1:
-  - Reworked the MACsec offloading API, moving from a single helper
-    called for all MACsec configuration operations, to a per-operation
-    function that is provided by the underlying hardware drivers.
-  - Those functions now contain a verb to describe the configuration
-    action they're offloading.
-  - Improved the error handling in the MACsec genl helpers to revert
-    the configuration to its previous state when the offloading call
-    failed.
-  - Reworked the file inclusions.
-
-Antoine Tenart (10):
-  net: macsec: move some definitions in a dedicated header
-  net: macsec: introduce the macsec_context structure
-  net: macsec: introduce MACsec ops
-  net: phy: add MACsec ops in phy_device
-  net: macsec: hardware offloading infrastructure
-  net: macsec: add nla support for changing the offloading selection
-  net: phy: mscc: macsec initialization
-  net: phy: mscc: macsec support
-  net: macsec: PN wrap callback
-  net: phy: mscc: PN rollover support
-
- drivers/net/macsec.c               |  787 ++++++++++++++-----
- drivers/net/phy/Kconfig            |    3 +
- drivers/net/phy/mscc.c             | 1133 +++++++++++++++++++++++++++-
- drivers/net/phy/mscc_fc_buffer.h   |   64 ++
- drivers/net/phy/mscc_mac.h         |  159 ++++
- drivers/net/phy/mscc_macsec.h      |  266 +++++++
- include/linux/phy.h                |    9 +
- include/net/macsec.h               |  224 ++++++
- include/uapi/linux/if_link.h       |    7 +
- include/uapi/linux/if_macsec.h     |   11 +
- tools/include/uapi/linux/if_link.h |    7 +
- 11 files changed, 2485 insertions(+), 185 deletions(-)
- create mode 100644 drivers/net/phy/mscc_fc_buffer.h
- create mode 100644 drivers/net/phy/mscc_mac.h
- create mode 100644 drivers/net/phy/mscc_macsec.h
+Signed-off-by: Antoine Tenart <antoine.tenart@bootlin.com>
+---
+ drivers/net/macsec.c | 164 +--------------------------------------
+ include/net/macsec.h | 177 +++++++++++++++++++++++++++++++++++++++++++
+ 2 files changed, 178 insertions(+), 163 deletions(-)
  create mode 100644 include/net/macsec.h
 
+diff --git a/drivers/net/macsec.c b/drivers/net/macsec.c
+index afd8b2a08245..a336eee018f0 100644
+--- a/drivers/net/macsec.c
++++ b/drivers/net/macsec.c
+@@ -16,11 +16,10 @@
+ #include <net/genetlink.h>
+ #include <net/sock.h>
+ #include <net/gro_cells.h>
++#include <net/macsec.h>
+ 
+ #include <uapi/linux/if_macsec.h>
+ 
+-typedef u64 __bitwise sci_t;
+-
+ #define MACSEC_SCI_LEN 8
+ 
+ /* SecTAG length = macsec_eth_header without the optional SCI */
+@@ -58,8 +57,6 @@ struct macsec_eth_header {
+ #define GCM_AES_IV_LEN 12
+ #define DEFAULT_ICV_LEN 16
+ 
+-#define MACSEC_NUM_AN 4 /* 2 bits for the association number */
+-
+ #define for_each_rxsc(secy, sc)				\
+ 	for (sc = rcu_dereference_bh(secy->rx_sc);	\
+ 	     sc;					\
+@@ -77,49 +74,6 @@ struct gcm_iv {
+ 	__be32 pn;
+ };
+ 
+-/**
+- * struct macsec_key - SA key
+- * @id: user-provided key identifier
+- * @tfm: crypto struct, key storage
+- */
+-struct macsec_key {
+-	u8 id[MACSEC_KEYID_LEN];
+-	struct crypto_aead *tfm;
+-};
+-
+-struct macsec_rx_sc_stats {
+-	__u64 InOctetsValidated;
+-	__u64 InOctetsDecrypted;
+-	__u64 InPktsUnchecked;
+-	__u64 InPktsDelayed;
+-	__u64 InPktsOK;
+-	__u64 InPktsInvalid;
+-	__u64 InPktsLate;
+-	__u64 InPktsNotValid;
+-	__u64 InPktsNotUsingSA;
+-	__u64 InPktsUnusedSA;
+-};
+-
+-struct macsec_rx_sa_stats {
+-	__u32 InPktsOK;
+-	__u32 InPktsInvalid;
+-	__u32 InPktsNotValid;
+-	__u32 InPktsNotUsingSA;
+-	__u32 InPktsUnusedSA;
+-};
+-
+-struct macsec_tx_sa_stats {
+-	__u32 OutPktsProtected;
+-	__u32 OutPktsEncrypted;
+-};
+-
+-struct macsec_tx_sc_stats {
+-	__u64 OutPktsProtected;
+-	__u64 OutPktsEncrypted;
+-	__u64 OutOctetsProtected;
+-	__u64 OutOctetsEncrypted;
+-};
+-
+ struct macsec_dev_stats {
+ 	__u64 OutPktsUntagged;
+ 	__u64 InPktsUntagged;
+@@ -131,124 +85,8 @@ struct macsec_dev_stats {
+ 	__u64 InPktsOverrun;
+ };
+ 
+-/**
+- * struct macsec_rx_sa - receive secure association
+- * @active:
+- * @next_pn: packet number expected for the next packet
+- * @lock: protects next_pn manipulations
+- * @key: key structure
+- * @stats: per-SA stats
+- */
+-struct macsec_rx_sa {
+-	struct macsec_key key;
+-	spinlock_t lock;
+-	u32 next_pn;
+-	refcount_t refcnt;
+-	bool active;
+-	struct macsec_rx_sa_stats __percpu *stats;
+-	struct macsec_rx_sc *sc;
+-	struct rcu_head rcu;
+-};
+-
+-struct pcpu_rx_sc_stats {
+-	struct macsec_rx_sc_stats stats;
+-	struct u64_stats_sync syncp;
+-};
+-
+-/**
+- * struct macsec_rx_sc - receive secure channel
+- * @sci: secure channel identifier for this SC
+- * @active: channel is active
+- * @sa: array of secure associations
+- * @stats: per-SC stats
+- */
+-struct macsec_rx_sc {
+-	struct macsec_rx_sc __rcu *next;
+-	sci_t sci;
+-	bool active;
+-	struct macsec_rx_sa __rcu *sa[MACSEC_NUM_AN];
+-	struct pcpu_rx_sc_stats __percpu *stats;
+-	refcount_t refcnt;
+-	struct rcu_head rcu_head;
+-};
+-
+-/**
+- * struct macsec_tx_sa - transmit secure association
+- * @active:
+- * @next_pn: packet number to use for the next packet
+- * @lock: protects next_pn manipulations
+- * @key: key structure
+- * @stats: per-SA stats
+- */
+-struct macsec_tx_sa {
+-	struct macsec_key key;
+-	spinlock_t lock;
+-	u32 next_pn;
+-	refcount_t refcnt;
+-	bool active;
+-	struct macsec_tx_sa_stats __percpu *stats;
+-	struct rcu_head rcu;
+-};
+-
+-struct pcpu_tx_sc_stats {
+-	struct macsec_tx_sc_stats stats;
+-	struct u64_stats_sync syncp;
+-};
+-
+-/**
+- * struct macsec_tx_sc - transmit secure channel
+- * @active:
+- * @encoding_sa: association number of the SA currently in use
+- * @encrypt: encrypt packets on transmit, or authenticate only
+- * @send_sci: always include the SCI in the SecTAG
+- * @end_station:
+- * @scb: single copy broadcast flag
+- * @sa: array of secure associations
+- * @stats: stats for this TXSC
+- */
+-struct macsec_tx_sc {
+-	bool active;
+-	u8 encoding_sa;
+-	bool encrypt;
+-	bool send_sci;
+-	bool end_station;
+-	bool scb;
+-	struct macsec_tx_sa __rcu *sa[MACSEC_NUM_AN];
+-	struct pcpu_tx_sc_stats __percpu *stats;
+-};
+-
+ #define MACSEC_VALIDATE_DEFAULT MACSEC_VALIDATE_STRICT
+ 
+-/**
+- * struct macsec_secy - MACsec Security Entity
+- * @netdev: netdevice for this SecY
+- * @n_rx_sc: number of receive secure channels configured on this SecY
+- * @sci: secure channel identifier used for tx
+- * @key_len: length of keys used by the cipher suite
+- * @icv_len: length of ICV used by the cipher suite
+- * @validate_frames: validation mode
+- * @operational: MAC_Operational flag
+- * @protect_frames: enable protection for this SecY
+- * @replay_protect: enable packet number checks on receive
+- * @replay_window: size of the replay window
+- * @tx_sc: transmit secure channel
+- * @rx_sc: linked list of receive secure channels
+- */
+-struct macsec_secy {
+-	struct net_device *netdev;
+-	unsigned int n_rx_sc;
+-	sci_t sci;
+-	u16 key_len;
+-	u16 icv_len;
+-	enum macsec_validation_type validate_frames;
+-	bool operational;
+-	bool protect_frames;
+-	bool replay_protect;
+-	u32 replay_window;
+-	struct macsec_tx_sc tx_sc;
+-	struct macsec_rx_sc __rcu *rx_sc;
+-};
+-
+ struct pcpu_secy_stats {
+ 	struct macsec_dev_stats stats;
+ 	struct u64_stats_sync syncp;
+diff --git a/include/net/macsec.h b/include/net/macsec.h
+new file mode 100644
+index 000000000000..e7b41c1043f6
+--- /dev/null
++++ b/include/net/macsec.h
+@@ -0,0 +1,177 @@
++/* SPDX-License-Identifier: GPL-2.0+ */
++/*
++ * MACsec netdev header, used for h/w accelerated implementations.
++ *
++ * Copyright (c) 2015 Sabrina Dubroca <sd@queasysnail.net>
++ */
++#ifndef _NET_MACSEC_H_
++#define _NET_MACSEC_H_
++
++#include <linux/u64_stats_sync.h>
++#include <uapi/linux/if_link.h>
++#include <uapi/linux/if_macsec.h>
++
++typedef u64 __bitwise sci_t;
++
++#define MACSEC_NUM_AN 4 /* 2 bits for the association number */
++
++/**
++ * struct macsec_key - SA key
++ * @id: user-provided key identifier
++ * @tfm: crypto struct, key storage
++ */
++struct macsec_key {
++	u8 id[MACSEC_KEYID_LEN];
++	struct crypto_aead *tfm;
++};
++
++struct macsec_rx_sc_stats {
++	__u64 InOctetsValidated;
++	__u64 InOctetsDecrypted;
++	__u64 InPktsUnchecked;
++	__u64 InPktsDelayed;
++	__u64 InPktsOK;
++	__u64 InPktsInvalid;
++	__u64 InPktsLate;
++	__u64 InPktsNotValid;
++	__u64 InPktsNotUsingSA;
++	__u64 InPktsUnusedSA;
++};
++
++struct macsec_rx_sa_stats {
++	__u32 InPktsOK;
++	__u32 InPktsInvalid;
++	__u32 InPktsNotValid;
++	__u32 InPktsNotUsingSA;
++	__u32 InPktsUnusedSA;
++};
++
++struct macsec_tx_sa_stats {
++	__u32 OutPktsProtected;
++	__u32 OutPktsEncrypted;
++};
++
++struct macsec_tx_sc_stats {
++	__u64 OutPktsProtected;
++	__u64 OutPktsEncrypted;
++	__u64 OutOctetsProtected;
++	__u64 OutOctetsEncrypted;
++};
++
++/**
++ * struct macsec_rx_sa - receive secure association
++ * @active:
++ * @next_pn: packet number expected for the next packet
++ * @lock: protects next_pn manipulations
++ * @key: key structure
++ * @stats: per-SA stats
++ */
++struct macsec_rx_sa {
++	struct macsec_key key;
++	spinlock_t lock;
++	u32 next_pn;
++	refcount_t refcnt;
++	bool active;
++	struct macsec_rx_sa_stats __percpu *stats;
++	struct macsec_rx_sc *sc;
++	struct rcu_head rcu;
++};
++
++struct pcpu_rx_sc_stats {
++	struct macsec_rx_sc_stats stats;
++	struct u64_stats_sync syncp;
++};
++
++struct pcpu_tx_sc_stats {
++	struct macsec_tx_sc_stats stats;
++	struct u64_stats_sync syncp;
++};
++
++/**
++ * struct macsec_rx_sc - receive secure channel
++ * @sci: secure channel identifier for this SC
++ * @active: channel is active
++ * @sa: array of secure associations
++ * @stats: per-SC stats
++ */
++struct macsec_rx_sc {
++	struct macsec_rx_sc __rcu *next;
++	sci_t sci;
++	bool active;
++	struct macsec_rx_sa __rcu *sa[MACSEC_NUM_AN];
++	struct pcpu_rx_sc_stats __percpu *stats;
++	refcount_t refcnt;
++	struct rcu_head rcu_head;
++};
++
++/**
++ * struct macsec_tx_sa - transmit secure association
++ * @active:
++ * @next_pn: packet number to use for the next packet
++ * @lock: protects next_pn manipulations
++ * @key: key structure
++ * @stats: per-SA stats
++ */
++struct macsec_tx_sa {
++	struct macsec_key key;
++	spinlock_t lock;
++	u32 next_pn;
++	refcount_t refcnt;
++	bool active;
++	struct macsec_tx_sa_stats __percpu *stats;
++	struct rcu_head rcu;
++};
++
++/**
++ * struct macsec_tx_sc - transmit secure channel
++ * @active:
++ * @encoding_sa: association number of the SA currently in use
++ * @encrypt: encrypt packets on transmit, or authenticate only
++ * @send_sci: always include the SCI in the SecTAG
++ * @end_station:
++ * @scb: single copy broadcast flag
++ * @sa: array of secure associations
++ * @stats: stats for this TXSC
++ */
++struct macsec_tx_sc {
++	bool active;
++	u8 encoding_sa;
++	bool encrypt;
++	bool send_sci;
++	bool end_station;
++	bool scb;
++	struct macsec_tx_sa __rcu *sa[MACSEC_NUM_AN];
++	struct pcpu_tx_sc_stats __percpu *stats;
++};
++
++/**
++ * struct macsec_secy - MACsec Security Entity
++ * @netdev: netdevice for this SecY
++ * @n_rx_sc: number of receive secure channels configured on this SecY
++ * @sci: secure channel identifier used for tx
++ * @key_len: length of keys used by the cipher suite
++ * @icv_len: length of ICV used by the cipher suite
++ * @validate_frames: validation mode
++ * @operational: MAC_Operational flag
++ * @protect_frames: enable protection for this SecY
++ * @replay_protect: enable packet number checks on receive
++ * @replay_window: size of the replay window
++ * @tx_sc: transmit secure channel
++ * @rx_sc: linked list of receive secure channels
++ */
++struct macsec_secy {
++	struct net_device *netdev;
++	unsigned int n_rx_sc;
++	sci_t sci;
++	u16 key_len;
++	u16 icv_len;
++	enum macsec_validation_type validate_frames;
++	bool operational;
++	bool protect_frames;
++	bool replay_protect;
++	u32 replay_window;
++	struct macsec_tx_sc tx_sc;
++	struct macsec_rx_sc __rcu *rx_sc;
++};
++
++#endif /* _NET_MACSEC_H_ */
 -- 
 2.24.1
 
