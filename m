@@ -2,76 +2,76 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 1A66B1389B7
-	for <lists+netdev@lfdr.de>; Mon, 13 Jan 2020 04:27:35 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B7CDB1389BD
+	for <lists+netdev@lfdr.de>; Mon, 13 Jan 2020 04:31:20 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1733203AbgAMD1a (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 12 Jan 2020 22:27:30 -0500
-Received: from mx0b-0014ca01.pphosted.com ([208.86.201.193]:13082 "EHLO
+        id S1733229AbgAMDbQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 12 Jan 2020 22:31:16 -0500
+Received: from mx0b-0014ca01.pphosted.com ([208.86.201.193]:45306 "EHLO
         mx0a-0014ca01.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1733103AbgAMD1a (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 12 Jan 2020 22:27:30 -0500
+        by vger.kernel.org with ESMTP id S1732961AbgAMDbQ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 12 Jan 2020 22:31:16 -0500
 Received: from pps.filterd (m0042333.ppops.net [127.0.0.1])
-        by mx0b-0014ca01.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 00D3AorD012554;
-        Sun, 12 Jan 2020 19:27:08 -0800
+        by mx0b-0014ca01.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 00D3U0Fu007514;
+        Sun, 12 Jan 2020 19:30:56 -0800
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=cadence.com; h=from : to : cc :
  subject : date : message-id : mime-version : content-type; s=proofpoint;
  bh=rhPR+4mkELiEcoJKlE92xREatymPhp0CrVk12t/4yjw=;
- b=mafKBt1mWttmic34ZkpFAePGw2fyQEQTOzs9wcsigEvJqJO1bA9LelL/zVCcA2UwD3tB
- XpztLgu+IjCfreqgN23/aCyRYJBN1dSRL44vF/DYd4CKZTfOoWQZoSY/LK/Ug5uTwdmr
- dXWlC5SIvX5RLWtWZ5t43W6mcv3qtve6hgTiIcZ1eok7MI0l+nYB+b6aEz/oId6Jz+E1
- VPlp+qYYZ5l4b9f5CwZ7PuMwHtvadU8A7dMa7y71EdTEZI1wXNQ+YaojFhBa839a7ILs
- rscl7nrtSkFAeL8AKEeY829jQgM3E8S+VpkGvQb2IAk5WLHx/74NSp5kizFSyGQb07DJ UQ== 
-Received: from nam10-bn7-obe.outbound.protection.outlook.com (mail-bn7nam10lp2102.outbound.protection.outlook.com [104.47.70.102])
-        by mx0b-0014ca01.pphosted.com with ESMTP id 2xfau2c61x-1
+ b=Cd7mm+5xy7gz2Jcq+MBuB7eVhHDS2VR2BbMRAgxnWuTjZKIQpawpuwAK3ri4T9cGvEiC
+ UsP4tTX+x0oIpOxc2fOoESWE5lzcoJaqjvNB708AqJVVSF6jdO4RUWe0Z14m0rxUjjzS
+ Tv6isv/wJSjHa/GsFv3PIvcAOQ+BUPpk9O9sJJajiuE/Vg6EUgxfn5dCarJx5Ac8gnWR
+ eKohOcIHEm154vaHIHk7TRMObGq+OYRYz5yWy4kRtQOrBGYPVSsU8QkjHcnITBAV3E1j
+ UNmNZv0kE3DMAuhKjqCPTOQxmAWvAcAK5k9nBp6hHTceZ24ikDvmEMHnGHpUpg+XMnxQ mg== 
+Received: from nam10-dm6-obe.outbound.protection.outlook.com (mail-dm6nam10lp2106.outbound.protection.outlook.com [104.47.58.106])
+        by mx0b-0014ca01.pphosted.com with ESMTP id 2xfau2c68j-1
         (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Sun, 12 Jan 2020 19:27:07 -0800
+        Sun, 12 Jan 2020 19:30:56 -0800
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=TUo9fFwr62OcGxmahXFfGQsuCJ/vm8TifbyzvSFvkdtu3NVI4/dSrCvmRtar1yYhgIoO/Qr+TIZVhRKb/mygybi9HRKN4k8oSyu5xSQAcYoVEbAUx6Z8G8Nv8q1GMx0FXDcm6lYx/HqT5uiMZlxK/XTWcJpTy1HuGF2CU6DUOarJ1Q129pap71ol74XT/w+dKvUx2ZDzJxL+apF2oDRvJ0y+YVbWAy8cVE9OeyhjPHVBkQzNF5aSgmNiTcdvcuS01vhKBhmzLGNJU4/tw0+z+boz7dgYODyVcFGnOcROCi7Z5lYDTjCauyZ5FQkUd6fKHIdNokqkgxzO4Qw9m1ZTwg==
+ b=FsGNtiWE7uhKbBo2kW/evY6I9CUWa3UiTG3o3uuQxuSfZ53S1XCZhlV58J21q5wMUwnUJ5d0emQ9PQPpLWc0fHdLb1LIS0Rism8FJcysWiewkdmQa2k3Ykv/Yf0umiQmqIITJGQnjarsMYobihvcqHJKfpQsD/f+XB+3kKGcOwtzD4EtjAW+I0gU81TnTaUsFUkJdBj8rxXopFA7rmqsTCke7DzgmOHyd31CKg75KVqYjlc9bhu/FyUBVFRBcHnlIEUm0HKifY4aqJaBIcP1vQalkLBXxMLN8+cSpulEIYw7tjUUao8DpgkG3mFvThmOFgUwRkEYSKmvHrN17Nqhzw==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
  bh=rhPR+4mkELiEcoJKlE92xREatymPhp0CrVk12t/4yjw=;
- b=hGEY0xRxhj3xnEaahd1vhOVd/o+tSvX+EUCSZZlyWvO2ZSm2cO6geaeOA7v8IpiWf+Ok20ZjOPCTG42Y5x0hr4CdaD4ew0wN8s06Zp6EiUiSlYawKy28QZ2afHky8r0bF2ksjlmN4qKd+ojwZppj11733bqkoo/4z6h669wpydciEuXcqjuwkfThpcyAQfaXvM/I4TZXPy2nQdMrV9HVJc+2Fds92hX+xjQWLcyyyAQ3iiOj45/mUpbLst/kF0stnrk4qMWabjcAJ0YM0e49FMHrldet44hU+di6IRQY2xLR2Gx3fNhTu+jMS1Mzxl4xMwvbrfPNorlqfxZD+6B1sw==
+ b=Pfh2b+OuBPpoHHT39IQsjJ/ajZsTc93mXBDenwpfFevnxAfnAjsuIubOZMYlpjMC6z5dlIB5wUOj/S2Q6nuuJzYhqhNZHRiVw+Cqv0JcUW8/hr0YiUI/YrAOMpOABEJpiRZgDFIbG18YResBceqsSy5irbfr8gDGByY4MimX/K64F4q2JGfJvwIwSoU5lsCn6N4j4CkRe9N1ySBouoBEVHETMhLn11hh4sallFOmv7+lREVRp+xD/XalDlyCfUBhm5Hh3e5ecOYghIRMM2gEBD0uJscspsLmxCbncpLStkcuHyQgNcexp8mIgpzVdB6Xse4/9D5a4zfrRKXKXvDtpg==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 64.207.220.243) smtp.rcpttodomain=gmail.com smtp.mailfrom=cadence.com;
+ 199.43.4.28) smtp.rcpttodomain=gmail.com smtp.mailfrom=cadence.com;
  dmarc=pass (p=none sp=none pct=100) action=none header.from=cadence.com;
  dkim=none (message not signed); arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=cadence.com;
  s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
  bh=rhPR+4mkELiEcoJKlE92xREatymPhp0CrVk12t/4yjw=;
- b=svMuTxo5dBMjE0P8J9muA0GDQReTTas6lUekiRUkOkkE3jSeYBz4sSTaipl/UoMk94OKi28wnVedj4eTOEMitFEBgSlRfJubbQaE8BjhJvA9VyovbrpDUOz6bH/2sQ72WglH/yGYq/1/pjc+cnGB5efzH6zQJkSQrTFM9zry7Yk=
-Received: from CO2PR07CA0069.namprd07.prod.outlook.com (2603:10b6:100::37) by
- BN7PR07MB4897.namprd07.prod.outlook.com (2603:10b6:406:fe::32) with Microsoft
+ b=1ykFJ2Fu2p9rbkVHVdi/yZC+45pNuYXZBSNpyoQGVNl9UZRwwMGurj3YRb8cKBvMkuWjn2nayfRrrSHQQWdv5qT3g85GSjqj3oZyo42B2gB/j1YtZ+Y9TXBzBV7h8i+s/DBFuj65zVbvdOrGPq24VmP2PfxYBqtfxns5r8//hdw=
+Received: from DM5PR07CA0100.namprd07.prod.outlook.com (2603:10b6:4:ae::29) by
+ DM6PR07MB6716.namprd07.prod.outlook.com (2603:10b6:5:1c9::16) with Microsoft
  SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.2623.9; Mon, 13 Jan 2020 03:27:05 +0000
-Received: from MW2NAM12FT011.eop-nam12.prod.protection.outlook.com
- (2a01:111:f400:fe5a::206) by CO2PR07CA0069.outlook.office365.com
- (2603:10b6:100::37) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.2623.8 via Frontend
- Transport; Mon, 13 Jan 2020 03:27:05 +0000
+ 15.20.2623.9; Mon, 13 Jan 2020 03:30:54 +0000
+Received: from BN8NAM12FT065.eop-nam12.prod.protection.outlook.com
+ (2a01:111:f400:fe5b::203) by DM5PR07CA0100.outlook.office365.com
+ (2603:10b6:4:ae::29) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.2623.13 via Frontend
+ Transport; Mon, 13 Jan 2020 03:30:54 +0000
 Received-SPF: Pass (protection.outlook.com: domain of cadence.com designates
- 64.207.220.243 as permitted sender) receiver=protection.outlook.com;
- client-ip=64.207.220.243; helo=wcmailrelayl01.cadence.com;
-Received: from wcmailrelayl01.cadence.com (64.207.220.243) by
- MW2NAM12FT011.mail.protection.outlook.com (10.13.180.78) with Microsoft SMTP
+ 199.43.4.28 as permitted sender) receiver=protection.outlook.com;
+ client-ip=199.43.4.28; helo=rmmaillnx1.cadence.com;
+Received: from rmmaillnx1.cadence.com (199.43.4.28) by
+ BN8NAM12FT065.mail.protection.outlook.com (10.13.182.134) with Microsoft SMTP
  Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.2644.6 via Frontend Transport; Mon, 13 Jan 2020 03:27:04 +0000
+ 15.20.2644.6 via Frontend Transport; Mon, 13 Jan 2020 03:30:53 +0000
 Received: from maileu3.global.cadence.com (maileu3.cadence.com [10.160.88.99])
-        by wcmailrelayl01.cadence.com (8.14.7/8.14.4) with ESMTP id 00D3R1op120842
-        (version=TLSv1/SSLv3 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=OK);
-        Sun, 12 Jan 2020 19:27:02 -0800
+        by rmmaillnx1.cadence.com (8.14.4/8.14.4) with ESMTP id 00D3UjUm026667
+        (version=TLSv1/SSLv3 cipher=AES256-SHA bits=256 verify=OK);
+        Sun, 12 Jan 2020 22:30:47 -0500
 X-CrossPremisesHeadersFilteredBySendConnector: maileu3.global.cadence.com
 Received: from maileu3.global.cadence.com (10.160.88.99) by
  maileu3.global.cadence.com (10.160.88.99) with Microsoft SMTP Server (TLS) id
- 15.0.1367.3; Mon, 13 Jan 2020 04:26:55 +0100
+ 15.0.1367.3; Mon, 13 Jan 2020 04:30:45 +0100
 Received: from lvlabc.cadence.com (10.165.128.101) by
  maileu3.global.cadence.com (10.160.88.99) with Microsoft SMTP Server (TLS) id
- 15.0.1367.3 via Frontend Transport; Mon, 13 Jan 2020 04:26:55 +0100
+ 15.0.1367.3 via Frontend Transport; Mon, 13 Jan 2020 04:30:45 +0100
 Received: from lvlabc.cadence.com (localhost.localdomain [127.0.0.1])
-        by lvlabc.cadence.com (8.14.4/8.14.4) with ESMTP id 00D3QnqE042253;
-        Mon, 13 Jan 2020 03:26:49 GMT
+        by lvlabc.cadence.com (8.14.4/8.14.4) with ESMTP id 00D3Uiv0043995;
+        Mon, 13 Jan 2020 03:30:44 GMT
 From:   Milind Parab <mparab@cadence.com>
 To:     <nicolas.ferre@microchip.com>, <jakub.kicinski@netronome.com>,
         <andrew@lunn.ch>, <antoine.tenart@bootlin.com>,
@@ -82,39 +82,39 @@ CC:     <Claudiu.Beznea@microchip.com>, <f.fainelli@gmail.com>,
         <dkangude@cadence.com>, <a.fatoum@pengutronix.de>,
         <brad.mouring@ni.com>, <pthombar@cadence.com>,
         Milind Parab <mparab@cadence.com>
-Subject: [PATCH] net: macb: fix for fixed-link mode
-Date:   Mon, 13 Jan 2020 03:26:32 +0000
-Message-ID: <1578885992-42113-1-git-send-email-mparab@cadence.com>
+Subject: [PATCH v3 net] net: macb: fix for fixed-link mode
+Date:   Mon, 13 Jan 2020 03:30:43 +0000
+Message-ID: <1578886243-43953-1-git-send-email-mparab@cadence.com>
 X-Mailer: git-send-email 2.2.2
 MIME-Version: 1.0
 Content-Type: text/plain
 X-OrganizationHeadersPreserved: maileu3.global.cadence.com
 X-EOPAttributedMessage: 0
-X-Forefront-Antispam-Report: CIP:64.207.220.243;IPV:;CTRY:US;EFV:NLI;SFV:NSPM;SFS:(10009020)(4636009)(396003)(346002)(376002)(136003)(39860400002)(36092001)(189003)(199004)(478600001)(7126003)(426003)(70586007)(336012)(2616005)(8676002)(2906002)(7696005)(81156014)(81166006)(5660300002)(26005)(7416002)(316002)(186003)(70206006)(36756003)(110136005)(36906005)(54906003)(6666004)(356004)(8936002)(4326008)(86362001)(107886003)(2101003);DIR:OUT;SFP:1101;SCL:1;SRVR:BN7PR07MB4897;H:wcmailrelayl01.cadence.com;FPR:;SPF:Pass;LANG:en;PTR:unused.mynethost.com;MX:1;A:1;
+X-Forefront-Antispam-Report: CIP:199.43.4.28;IPV:CAL;SCL:-1;CTRY:US;EFV:NLI;SFV:NSPM;SFS:(10009020)(4636009)(136003)(346002)(396003)(39850400004)(376002)(189003)(199004)(36092001)(7696005)(7416002)(4326008)(356004)(7126003)(86362001)(5660300002)(2616005)(36756003)(8936002)(478600001)(8676002)(81156014)(26826003)(107886003)(54906003)(110136005)(81166006)(316002)(2906002)(26005)(426003)(336012)(186003)(70586007)(70206006)(2101003);DIR:OUT;SFP:1101;SCL:1;SRVR:DM6PR07MB6716;H:rmmaillnx1.cadence.com;FPR:;SPF:Pass;LANG:en;PTR:InfoDomainNonexistent;MX:1;A:1;
 X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: d664d226-2d2d-4389-ca7e-08d797d87649
-X-MS-TrafficTypeDiagnostic: BN7PR07MB4897:
-X-Microsoft-Antispam-PRVS: <BN7PR07MB489733E950593B6421F92C98D3350@BN7PR07MB4897.namprd07.prod.outlook.com>
+X-MS-Office365-Filtering-Correlation-Id: 76d29732-3ddf-4aea-677a-08d797d8feb6
+X-MS-TrafficTypeDiagnostic: DM6PR07MB6716:
+X-Microsoft-Antispam-PRVS: <DM6PR07MB67166F408226A883E095FE7BD3350@DM6PR07MB6716.namprd07.prod.outlook.com>
 X-MS-Oob-TLC-OOBClassifiers: OLM:6430;
 X-Forefront-PRVS: 028166BF91
 X-MS-Exchange-SenderADCheck: 1
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: GF6MX5xBd2u8HOwu7pNHLrR6CT/y/KH0j3VN13TPhhk8IExLkJDBTUx+na098agQbMs+OGKxOt5OGvJp9mhojFOElomjlrAp0JUOz1mwvzLfjcOmlB7IkCyvn+C8+YY9pVJX4Io7cdht1mJoDzwfGKOdsKR33k+u3p0HF9nkqDlgR8co83bpqzeQTcOiL6SYigN2ZX4BWUXxnE5owE0FC2U3Xqn2sHF7A0ixrkI6y+vE5QPgD5VsfQRW+a0YoB5HdjXzOo7Qz+aa0Co7eIT3U5hv5IN8+WDV6822Q//cD54+MC9jt3mMIIE6yqY4sqQGGkehvoZsOPUzniyxMbGCLsddrH751AI24nNjyXddpgbjQ2UMeFSjEa2KVeYRta8QsxkR0Aljt2XRNpROvOKnKlOP9jF0OfG7si4UTw6DXEzMkpYm0Lte84y9ptGgeTbNwFczie8RBRI9AStLRTesB4+AAQAdK9JTvqgnKbE66O4ot6wp2SB3yDwOgpeskL/HgetCWcHjq4wRBivvNS2tdA==
+X-Microsoft-Antispam-Message-Info: sx69ETMTZ5hA21N7i4HM2pA1RKh1V38vVqFFm4ATk0zZTBUFW7KjVQrH2u8ZUurfPEB1BgzgqeKAzqqnxuCGfhxFpNv5VoQsU3N5elj8zsWiXsuTpDItdTHiNEsC8oWLOb2lLI5bvdt+3uNpkhM+V9uDGDZADt6rrWFJW6YV4wl69Q5+oHfNgouk48kjU8sOIHxTrbz+8Oy6IwW0+KdwYYV62erwA8FvTWtJU/7cK3kssKAvCysLbgXQmJ3lSj4ig/CCo2Gmzyu02gzbsdRGSH7eqxxtOuWGkQbaPEupASgJdtY9n1TILIBOJaNZemQW+SxZdggV/F5KajlCGp3zJunaDTtZerLtJDhtqAYaa2jHRHEwtkhcjuJPqePO6C8h1mNIMoNEqLsAXR3CCeWhzMOcusttoEb4qPqyG8PjXZAzUjboTiQg33m39tsxJiVJwjYfKcKLADmC0G8Wrrf1fWbGN/LJhArQR4cuVkVdv80FufMNWe0IWEo3BZzLQM1qB3emFTf0iA5x7kQazN6fig==
 X-OriginatorOrg: cadence.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 13 Jan 2020 03:27:04.8911
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 13 Jan 2020 03:30:53.8011
  (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: d664d226-2d2d-4389-ca7e-08d797d87649
+X-MS-Exchange-CrossTenant-Network-Message-Id: 76d29732-3ddf-4aea-677a-08d797d8feb6
 X-MS-Exchange-CrossTenant-Id: d36035c5-6ce6-4662-a3dc-e762e61ae4c9
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=d36035c5-6ce6-4662-a3dc-e762e61ae4c9;Ip=[64.207.220.243];Helo=[wcmailrelayl01.cadence.com]
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=d36035c5-6ce6-4662-a3dc-e762e61ae4c9;Ip=[199.43.4.28];Helo=[rmmaillnx1.cadence.com]
 X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BN7PR07MB4897
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM6PR07MB6716
 X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.138,18.0.572
  definitions=2020-01-12_11:2020-01-10,2020-01-12 signatures=0
 X-Proofpoint-Spam-Details: rule=outbound_check_notspam policy=outbound_check score=0
  priorityscore=1501 mlxlogscore=999 spamscore=0 adultscore=0 suspectscore=0
  bulkscore=0 impostorscore=0 lowpriorityscore=0 malwarescore=0 mlxscore=0
  phishscore=0 clxscore=1015 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-1910280000 definitions=main-2001130025
+ engine=8.12.0-1910280000 definitions=main-2001130026
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
