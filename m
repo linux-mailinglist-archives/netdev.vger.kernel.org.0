@@ -2,60 +2,60 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 2656E139BBF
+	by mail.lfdr.de (Postfix) with ESMTP id 8EFBF139BC0
 	for <lists+netdev@lfdr.de>; Mon, 13 Jan 2020 22:39:31 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728859AbgAMVj1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 13 Jan 2020 16:39:27 -0500
-Received: from us-smtp-2.mimecast.com ([205.139.110.61]:26487 "EHLO
-        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1728836AbgAMVj0 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 13 Jan 2020 16:39:26 -0500
+        id S1728868AbgAMVj3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 13 Jan 2020 16:39:29 -0500
+Received: from us-smtp-delivery-1.mimecast.com ([207.211.31.120]:38503 "EHLO
+        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+        with ESMTP id S1726778AbgAMVj1 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 13 Jan 2020 16:39:27 -0500
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
         s=mimecast20190719; t=1578951566;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          in-reply-to:in-reply-to:references:references;
-        bh=5kQvYl3bWkkEOFtkGtb9DiISVu/0bqJPGbXsf10KC8U=;
-        b=GHtIGMYz0hgLUR4j14OyOznuoqtl8zE1cutYT1g638bi7dAtq7q47u07dcE/vQfoai6eeU
-        XfB8XjQATSng+nJWKKofwIe9hGeU/mNJup3CLppOCE3CXlastB5gZd7RgYCBjaUr9F7EBp
-        gM5D4PONwZGbW0xn1nsoJeHwQH+eVNA=
-Received: from mail-wm1-f70.google.com (mail-wm1-f70.google.com
- [209.85.128.70]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-284-t8-cHEFQMe-MhA6i8rSBTw-1; Mon, 13 Jan 2020 16:39:25 -0500
-X-MC-Unique: t8-cHEFQMe-MhA6i8rSBTw-1
-Received: by mail-wm1-f70.google.com with SMTP id q206so970761wme.9
-        for <netdev@vger.kernel.org>; Mon, 13 Jan 2020 13:39:24 -0800 (PST)
+        bh=c6pvUy+BgGk9fXmHIYc6FuRPGv6sOMj5BnD2gJKkYdw=;
+        b=fPC5fqf0bcDpoj1AAO4YuK3JjWByU6XtbyRDmEEFSg1N/9Kh8UfCOuhqIjOfYWCRvUlMJf
+        +Hxr66y2k/t9PO6/TSa8LguYSm6afbPhu3R5tg7cvrK3iMxScQzZafIlmZyvNuSjzIv35V
+        JZATutSrC9RYiK8qXYOr/d54Gg/iSwQ=
+Received: from mail-wm1-f69.google.com (mail-wm1-f69.google.com
+ [209.85.128.69]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-373-E0HhSBGeOYCl3ylJUytkBw-1; Mon, 13 Jan 2020 16:39:25 -0500
+X-MC-Unique: E0HhSBGeOYCl3ylJUytkBw-1
+Received: by mail-wm1-f69.google.com with SMTP id b9so2840042wmj.6
+        for <netdev@vger.kernel.org>; Mon, 13 Jan 2020 13:39:25 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:date:from:to:cc:subject:message-id:references
          :mime-version:content-disposition:in-reply-to;
-        bh=5kQvYl3bWkkEOFtkGtb9DiISVu/0bqJPGbXsf10KC8U=;
-        b=fNDTqSZhIbnMsUpXN1Fn5f0o94lNwY0hgyRy9TreKutLsHJBZGnLyzJXhaTLkJSiJE
-         o8fFVAMsJE1dM0+LmSEFL3cATuloYivBjHI5L8ZiISou4ed+nfCP+rbIVFny1AnaAkAs
-         MaO/Lkhwz2BOnveepnpDljlgLE+Pqe9oVTQmP8P8kfuc/Q+qe19J76J3tf3XNI6dP+qW
-         SLDCDd+VqRGMvvFZVcfmAkp/Wp9qlon2TCWFx665rSRIAb9+K+fsojIAXw3KdhAmuyFD
-         SIshbKro4afC6ydh3KFB8IdlrPjVuTnrSnsY56OmW7nC0FYUSfnr+7MKUtY/WMSoH7eI
-         Kt4Q==
-X-Gm-Message-State: APjAAAWD9gsJg2EztjIUKuG78rcyQcYyH8apfXTlHLqzrDPo2gxUE1Gk
-        KCRrdmNWam/gtrfbzr17lsNks4ZdGqy2Fv1AdPRzPyLQglO+EZeqNHGeoKTzsungM+f/hI7dCjn
-        wUr6jR6JJmsunUwm7
-X-Received: by 2002:adf:f103:: with SMTP id r3mr20438271wro.295.1578951563518;
-        Mon, 13 Jan 2020 13:39:23 -0800 (PST)
-X-Google-Smtp-Source: APXvYqy1AxWYdDlajBsYF2RwBoEeFOJZrPRUpYUROWRmROFoj6gUVq7L68WGdoBKju+zYxxmid2P7w==
-X-Received: by 2002:adf:f103:: with SMTP id r3mr20438249wro.295.1578951563221;
-        Mon, 13 Jan 2020 13:39:23 -0800 (PST)
+        bh=c6pvUy+BgGk9fXmHIYc6FuRPGv6sOMj5BnD2gJKkYdw=;
+        b=SArVSU0YJ/f+PgHKJA+fgDtNTauUJzohS6XmF3pXj7HGej5fbTVrIo6x8GFkR3RB8l
+         lnd41XOqwk1gFlUgeroM9IbM/jPuf6TGGWHsF9w1R2L9YoBx2lq0rsvJCVfjqfpGVJDl
+         r8oCBOEUjwxt4ECRu3swChuw4XDiI0NcAYuyldub+gE5SyRlF4a/pD8ILyWJPo0jauNy
+         6DU1RIepotfWpOMgRHJGc+C9n7/FwBtKdypNlJNa/j9Urd2u+LIOWeosEEF7vV4VlKR0
+         QFTBHBgoAZTwtmJ344wYbj6RXYqwrrL0DYNNFIqcrYxa9ej7Dw8aO4OQ4DEum0HxgYsV
+         MVww==
+X-Gm-Message-State: APjAAAVkBRCQCOrA74Ei9+oLKLPWhFd8g7LqvPkNjx9Rc60XHjzG13tX
+        7BD9N2F73Pgu29NkIMrMajkQ9NeYjUJrzijOdW3c1tJo8ykkFs6qmN70wx6YX42llrNAqWAOFSA
+        CcJ0PvFHlZwb+WdTH
+X-Received: by 2002:a1c:7406:: with SMTP id p6mr22375272wmc.82.1578951564813;
+        Mon, 13 Jan 2020 13:39:24 -0800 (PST)
+X-Google-Smtp-Source: APXvYqz1h5OT1XBVqV8yvlY8pyQT9HVrvuIF529Ak7L+9lSHoFPwNehw9h716oTYf40YqbI3EqPSNQ==
+X-Received: by 2002:a1c:7406:: with SMTP id p6mr22375258wmc.82.1578951564636;
+        Mon, 13 Jan 2020 13:39:24 -0800 (PST)
 Received: from linux.home (2a01cb058a4e7100d3814d1912515f67.ipv6.abo.wanadoo.fr. [2a01:cb05:8a4e:7100:d381:4d19:1251:5f67])
-        by smtp.gmail.com with ESMTPSA id h2sm17466927wrt.45.2020.01.13.13.39.22
+        by smtp.gmail.com with ESMTPSA id f1sm16858815wmc.45.2020.01.13.13.39.23
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 13 Jan 2020 13:39:22 -0800 (PST)
-Date:   Mon, 13 Jan 2020 22:39:20 +0100
+        Mon, 13 Jan 2020 13:39:24 -0800 (PST)
+Date:   Mon, 13 Jan 2020 22:39:22 +0100
 From:   Guillaume Nault <gnault@redhat.com>
 To:     David Miller <davem@davemloft.net>,
         Jakub Kicinski <jakub.kicinski@netronome.com>
 Cc:     netdev@vger.kernel.org, Nicolas Dichtel <nicolas.dichtel@6wind.com>
-Subject: [PATCH net-next 1/3] netns: Remove __peernet2id_alloc()
-Message-ID: <08c9fc961300286913ce9b0494b8601fccb5c059.1578950227.git.gnault@redhat.com>
+Subject: [PATCH net-next 2/3] netns: protect netns ID lookups with RCU
+Message-ID: <44c8f937a2bd6b902b7d4f82261f087b49b5ab29.1578950227.git.gnault@redhat.com>
 References: <cover.1578950227.git.gnault@redhat.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
@@ -66,118 +66,76 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-__peernet2id_alloc() was used for both plain lookups and for netns ID
-allocations (depending the value of '*alloc'). Let's separate lookups
-from allocations instead. That is, integrate the lookup code into
-__peernet2id() and make peernet2id_alloc() responsible for allocating
-new netns IDs when necessary.
+__peernet2id() can be protected by RCU as it only calls idr_for_each(),
+which is RCU-safe, and never modifies the nsid table.
 
-This makes it clear that __peernet2id() doesn't modify the idr and
-prepares the code for lockless lookups.
-
-Also, mark the 'net' argument of __peernet2id() as 'const', since we're
-modifying this line.
+rtnl_net_dumpid() can also do lockless lookups. It does two nested
+idr_for_each() calls on nsid tables (one direct call and one indirect
+call because of rtnl_net_dumpid_one() calling __peernet2id()). The
+netnsid tables are never updated. Therefore it is safe to not take the
+nsid_lock and run within an RCU-critical section instead.
 
 Signed-off-by: Guillaume Nault <gnault@redhat.com>
 ---
- net/core/net_namespace.c | 55 +++++++++++++++++-----------------------
- 1 file changed, 23 insertions(+), 32 deletions(-)
+ net/core/net_namespace.c | 22 +++++++---------------
+ 1 file changed, 7 insertions(+), 15 deletions(-)
 
 diff --git a/net/core/net_namespace.c b/net/core/net_namespace.c
-index 39402840025e..05e07d24b45b 100644
+index 05e07d24b45b..e7a5ff4966c9 100644
 --- a/net/core/net_namespace.c
 +++ b/net/core/net_namespace.c
-@@ -211,16 +211,10 @@ static int net_eq_idr(int id, void *net, void *peer)
+@@ -211,7 +211,7 @@ static int net_eq_idr(int id, void *net, void *peer)
  	return 0;
  }
  
--/* Should be called with nsid_lock held. If a new id is assigned, the bool alloc
-- * is set to true, thus the caller knows that the new id must be notified via
-- * rtnl.
-- */
--static int __peernet2id_alloc(struct net *net, struct net *peer, bool *alloc)
-+/* Should be called with nsid_lock held. */
-+static int __peernet2id(const struct net *net, struct net *peer)
+-/* Should be called with nsid_lock held. */
++/* Must be called from RCU-critical section or with nsid_lock held */
+ static int __peernet2id(const struct net *net, struct net *peer)
  {
  	int id = idr_for_each(&net->netns_ids, net_eq_idr, peer);
--	bool alloc_it = *alloc;
--
--	*alloc = false;
- 
- 	/* Magic value for id 0. */
- 	if (id == NET_ID_ZERO)
-@@ -228,23 +222,9 @@ static int __peernet2id_alloc(struct net *net, struct net *peer, bool *alloc)
- 	if (id > 0)
- 		return id;
- 
--	if (alloc_it) {
--		id = alloc_netid(net, peer, -1);
--		*alloc = true;
--		return id >= 0 ? id : NETNSA_NSID_NOT_ASSIGNED;
--	}
--
- 	return NETNSA_NSID_NOT_ASSIGNED;
- }
- 
--/* should be called with nsid_lock held */
--static int __peernet2id(struct net *net, struct net *peer)
--{
--	bool no = false;
--
--	return __peernet2id_alloc(net, peer, &no);
--}
--
- static void rtnl_net_notifyid(struct net *net, int cmd, int id, u32 portid,
- 			      struct nlmsghdr *nlh, gfp_t gfp);
- /* This function returns the id of a peer netns. If no id is assigned, one will
-@@ -252,26 +232,37 @@ static void rtnl_net_notifyid(struct net *net, int cmd, int id, u32 portid,
-  */
- int peernet2id_alloc(struct net *net, struct net *peer, gfp_t gfp)
+@@ -272,9 +272,10 @@ int peernet2id(struct net *net, struct net *peer)
  {
--	bool alloc = false, alive = false;
  	int id;
  
- 	if (refcount_read(&net->count) == 0)
- 		return NETNSA_NSID_NOT_ASSIGNED;
-+
- 	spin_lock_bh(&net->nsid_lock);
--	/*
--	 * When peer is obtained from RCU lists, we may race with
-+	id = __peernet2id(net, peer);
-+	if (id >= 0) {
-+		spin_unlock_bh(&net->nsid_lock);
-+		return id;
-+	}
-+
-+	/* When peer is obtained from RCU lists, we may race with
- 	 * its cleanup. Check whether it's alive, and this guarantees
- 	 * we never hash a peer back to net->netns_ids, after it has
- 	 * just been idr_remove()'d from there in cleanup_net().
- 	 */
--	if (maybe_get_net(peer))
--		alive = alloc = true;
--	id = __peernet2id_alloc(net, peer, &alloc);
-+	if (!maybe_get_net(peer)) {
-+		spin_unlock_bh(&net->nsid_lock);
-+		return NETNSA_NSID_NOT_ASSIGNED;
-+	}
-+
-+	id = alloc_netid(net, peer, -1);
- 	spin_unlock_bh(&net->nsid_lock);
--	if (alloc && id >= 0)
--		rtnl_net_notifyid(net, RTM_NEWNSID, id, 0, NULL, gfp);
--	if (alive)
--		put_net(peer);
-+
-+	put_net(peer);
-+	if (id < 0)
-+		return NETNSA_NSID_NOT_ASSIGNED;
-+
-+	rtnl_net_notifyid(net, RTM_NEWNSID, id, 0, NULL, gfp);
+-	spin_lock_bh(&net->nsid_lock);
++	rcu_read_lock();
+ 	id = __peernet2id(net, peer);
+-	spin_unlock_bh(&net->nsid_lock);
++	rcu_read_unlock();
 +
  	return id;
  }
- EXPORT_SYMBOL_GPL(peernet2id_alloc);
+ EXPORT_SYMBOL(peernet2id);
+@@ -941,6 +942,7 @@ struct rtnl_net_dump_cb {
+ 	int s_idx;
+ };
+ 
++/* Runs in RCU-critical section. */
+ static int rtnl_net_dumpid_one(int id, void *peer, void *data)
+ {
+ 	struct rtnl_net_dump_cb *net_cb = (struct rtnl_net_dump_cb *)data;
+@@ -1025,19 +1027,9 @@ static int rtnl_net_dumpid(struct sk_buff *skb, struct netlink_callback *cb)
+ 			goto end;
+ 	}
+ 
+-	spin_lock_bh(&net_cb.tgt_net->nsid_lock);
+-	if (net_cb.fillargs.add_ref &&
+-	    !net_eq(net_cb.ref_net, net_cb.tgt_net) &&
+-	    !spin_trylock_bh(&net_cb.ref_net->nsid_lock)) {
+-		spin_unlock_bh(&net_cb.tgt_net->nsid_lock);
+-		err = -EAGAIN;
+-		goto end;
+-	}
++	rcu_read_lock();
+ 	idr_for_each(&net_cb.tgt_net->netns_ids, rtnl_net_dumpid_one, &net_cb);
+-	if (net_cb.fillargs.add_ref &&
+-	    !net_eq(net_cb.ref_net, net_cb.tgt_net))
+-		spin_unlock_bh(&net_cb.ref_net->nsid_lock);
+-	spin_unlock_bh(&net_cb.tgt_net->nsid_lock);
++	rcu_read_unlock();
+ 
+ 	cb->args[0] = net_cb.idx;
+ end:
 -- 
 2.21.1
 
