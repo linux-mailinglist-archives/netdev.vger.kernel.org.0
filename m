@@ -2,128 +2,107 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id E3CCA138DD1
-	for <lists+netdev@lfdr.de>; Mon, 13 Jan 2020 10:29:40 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id CA776138DDA
+	for <lists+netdev@lfdr.de>; Mon, 13 Jan 2020 10:30:29 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728676AbgAMJ3f (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 13 Jan 2020 04:29:35 -0500
-Received: from userp2130.oracle.com ([156.151.31.86]:35876 "EHLO
-        userp2130.oracle.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726109AbgAMJ3f (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 13 Jan 2020 04:29:35 -0500
-Received: from pps.filterd (userp2130.oracle.com [127.0.0.1])
-        by userp2130.oracle.com (8.16.0.27/8.16.0.27) with SMTP id 00D9S6vc118764;
-        Mon, 13 Jan 2020 09:29:21 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=date : from : to : cc
- : subject : message-id : references : mime-version : content-type :
- in-reply-to; s=corp-2019-08-05;
- bh=rk5u8L6wRMK1AGNiB+kNPMk8Q8W00RDcw7ifTsL/9as=;
- b=nlKWV3eTOHgW0MXu7mATwZ052y9HMkO5W8Cr5S8DRJ0X2mlQmb5VTOa+2fXcxljx39NO
- i+MfCT01edsAbzMOvB0Q+1YcOg6Ktm+3B270Sg7Lg0QEfWrEqL8jYAeBKy3rEqzWDLl+
- xi4gvvhsq6vz45/fmwc+Lg+aqZ7enxov6toQ5izJrYJJWtZro4xtJZIGeU2JIuAq8F2X
- OYYYIFHyjI/7Nv2o0s/zoadlPx/BjKRvcklIITo7cVvLdc2JWBNR7/gZHSxWGQ73iFQg
- rBc3Mew4ZOQq5G04zMmebbRoleRbiKAH9NtrdbUozbTuZdDsEYpbcwJYx0RaGfH/6ee9 mg== 
-Received: from aserp3020.oracle.com (aserp3020.oracle.com [141.146.126.70])
-        by userp2130.oracle.com with ESMTP id 2xf74rwpp8-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Mon, 13 Jan 2020 09:29:21 +0000
-Received: from pps.filterd (aserp3020.oracle.com [127.0.0.1])
-        by aserp3020.oracle.com (8.16.0.27/8.16.0.27) with SMTP id 00D9TEvj015587;
-        Mon, 13 Jan 2020 09:29:20 GMT
-Received: from userv0122.oracle.com (userv0122.oracle.com [156.151.31.75])
-        by aserp3020.oracle.com with ESMTP id 2xfqvq4665-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Mon, 13 Jan 2020 09:29:19 +0000
-Received: from abhmp0014.oracle.com (abhmp0014.oracle.com [141.146.116.20])
-        by userv0122.oracle.com (8.14.4/8.14.4) with ESMTP id 00D9STPe002615;
-        Mon, 13 Jan 2020 09:28:29 GMT
-Received: from kadam (/129.205.23.165)
-        by default (Oracle Beehive Gateway v4.0)
-        with ESMTP ; Mon, 13 Jan 2020 01:28:28 -0800
-Date:   Mon, 13 Jan 2020 12:28:20 +0300
-From:   Dan Carpenter <dan.carpenter@oracle.com>
-To:     Justin Capella <justincapella@gmail.com>
-Cc:     Johannes Berg <johannes@sipsolutions.net>,
-        syzbot <syzbot+34b582cf32c1db008f8e@syzkaller.appspotmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        LKML <linux-kernel@vger.kernel.org>,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        syzkaller-bugs@googlegroups.com,
-        Cody Schuffelen <schuffelen@google.com>
-Subject: Re: BUG: unable to handle kernel NULL pointer dereference in
- cfg80211_wext_siwrts
-Message-ID: <20200113092820.GB9510@kadam>
-References: <00000000000073b469059bcde315@google.com>
- <b5d74ce6b6e3c4b39cfac7df6c2b65d0a43d4416.camel@sipsolutions.net>
- <CAMrEMU_a9evtp26tYB6VUxznmSmH98AmpP8xnejQr5bGTgE+8g@mail.gmail.com>
+        id S1728721AbgAMJaY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 13 Jan 2020 04:30:24 -0500
+Received: from fd.dlink.ru ([178.170.168.18]:52132 "EHLO fd.dlink.ru"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1725992AbgAMJaX (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 13 Jan 2020 04:30:23 -0500
+Received: by fd.dlink.ru (Postfix, from userid 5000)
+        id D580E1B214D6; Mon, 13 Jan 2020 12:30:20 +0300 (MSK)
+DKIM-Filter: OpenDKIM Filter v2.11.0 fd.dlink.ru D580E1B214D6
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=dlink.ru; s=mail;
+        t=1578907820; bh=ay0aQdubfRd2z0EzjvG25Fck9nkLxv3o/IS7a8ekqDc=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References;
+        b=bGqnuwxbo0Z07sOYtv9NUXBctnRgbn7nlabKLezk3u4M46bLYz7z9E6ySDnUpTWMZ
+         Ezwe/0ZWB6UgSVedSes8EerOVLi70PFeujrQSEqsZJjOB/rMRcy+0gc9E7jce0wj47
+         gC4dSYDAHBLi17t9IhWDm9gDK7btRMzc9ex8AXt0=
+X-Spam-Checker-Version: SpamAssassin 3.4.2 (2018-09-13) on mail.dlink.ru
+X-Spam-Level: 
+X-Spam-Status: No, score=-99.2 required=7.5 tests=BAYES_50,URIBL_BLOCKED,
+        USER_IN_WHITELIST autolearn=disabled version=3.4.2
+Received: from mail.rzn.dlink.ru (mail.rzn.dlink.ru [178.170.168.13])
+        by fd.dlink.ru (Postfix) with ESMTP id CCEA41B20968;
+        Mon, 13 Jan 2020 12:30:07 +0300 (MSK)
+DKIM-Filter: OpenDKIM Filter v2.11.0 fd.dlink.ru CCEA41B20968
+Received: from mail.rzn.dlink.ru (localhost [127.0.0.1])
+        by mail.rzn.dlink.ru (Postfix) with ESMTP id 2FC251B2613E;
+        Mon, 13 Jan 2020 12:30:07 +0300 (MSK)
+Received: from mail.rzn.dlink.ru (localhost [127.0.0.1])
+        by mail.rzn.dlink.ru (Postfix) with ESMTPA;
+        Mon, 13 Jan 2020 12:30:07 +0300 (MSK)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CAMrEMU_a9evtp26tYB6VUxznmSmH98AmpP8xnejQr5bGTgE+8g@mail.gmail.com>
-User-Agent: Mutt/1.9.4 (2018-02-28)
-X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9498 signatures=668685
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 suspectscore=0 malwarescore=0
- phishscore=0 bulkscore=0 spamscore=0 mlxscore=0 mlxlogscore=999
- adultscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.0.1-1911140001 definitions=main-2001130080
-X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9498 signatures=668685
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 priorityscore=1501 malwarescore=0
- suspectscore=0 phishscore=0 bulkscore=0 spamscore=0 clxscore=1011
- lowpriorityscore=0 mlxscore=0 impostorscore=0 mlxlogscore=999 adultscore=0
- classifier=spam adjust=0 reason=mlx scancount=1 engine=8.0.1-1911140001
- definitions=main-2001130080
+Content-Type: text/plain; charset=UTF-8;
+ format=flowed
+Content-Transfer-Encoding: 8bit
+Date:   Mon, 13 Jan 2020 12:30:06 +0300
+From:   Alexander Lobakin <alobakin@dlink.ru>
+To:     Vladimir Oltean <olteanv@gmail.com>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Edward Cree <ecree@solarflare.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Hauke Mehrtens <hauke@hauke-m.de>,
+        Sean Wang <sean.wang@mediatek.com>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        Jiri Pirko <jiri@mellanox.com>,
+        Eric Dumazet <edumazet@google.com>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Jakub Kicinski <jakub.kicinski@netronome.com>,
+        Taehee Yoo <ap420073@gmail.com>,
+        Stephen Hemminger <stephen@networkplumber.org>,
+        Stanislav Fomichev <sdf@google.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Song Liu <songliubraving@fb.com>,
+        Matteo Croce <mcroce@redhat.com>,
+        Jakub Sitnicki <jakub@cloudflare.com>,
+        Paul Blakey <paulb@mellanox.com>,
+        Yoshiki Komachi <komachi.yoshiki@gmail.com>,
+        netdev <netdev@vger.kernel.org>,
+        lkml <linux-kernel@vger.kernel.org>,
+        linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org
+Subject: Re: [PATCH RFC net-next 00/20] net: dsa: add GRO support
+In-Reply-To: <CA+h21hq95SmS3BraUQeEytP+3Y7irmShBEwpXqqJv+xOp4ePrg@mail.gmail.com>
+References: <20191230143028.27313-1-alobakin@dlink.ru>
+ <CA+h21hq95SmS3BraUQeEytP+3Y7irmShBEwpXqqJv+xOp4ePrg@mail.gmail.com>
+User-Agent: Roundcube Webmail/1.4.0
+Message-ID: <607283965483d3bc3c0e969b1fadf540@dlink.ru>
+X-Sender: alobakin@dlink.ru
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-That's the wrong ops struct?  I think I was looking at the "previous
-report" that Johannes mentioned where it was crashing because
-virt_wifi doesn't implement a set_wiphy_params function.
+Vladimir Oltean wrote 31.12.2019 18:32:
+> Hi Alexander,
 
-Smatch says there are two other drivers, the libertas and ipw2x00 which
-don't have a set_wiphy_params function either.  But maybe those handle
-it a different way.
+Hi,
 
-drivers/net/wireless/marvell/libertas/cfg.c | (null)                         | (struct cfg80211_ops)->set_wiphy_params | 0
-drivers/net/wireless/virt_wifi.c | (null)                         | (struct cfg80211_ops)->set_wiphy_params | 0
-drivers/net/wireless/intel/ipw2x00/libipw_module.c | (null)                         | (struct cfg80211_ops)->set_wiphy_params | 0
+> On Mon, 30 Dec 2019 at 16:31, Alexander Lobakin <alobakin@dlink.ru> 
+> wrote:
+>> 
+>> I mark this as RFC, and there are the key questions for maintainers,
+>> developers, users etc.:
+>> - Do we need GRO support for DSA at all?
+>> - Which tagger protocols really need it and which don't?
+>> - Does this series bring any performance improvements on the
+>>   affected systems?
+> 
+> If these are these questions for maintainers, developers, users etc,
+> then what has determined you to make these changes?
 
-regards,
-dan carpenter
+The main reason was obviously pretty good results on a particular
+hardware on which I developed this (and other) series and a general
+opinion that GRO improves overall performance on most systems.
+DSA is a special case though.
 
-On Fri, Jan 10, 2020 at 09:23:57PM -0800, Justin Capella wrote:
-> I noticed pfifo_qdisc_ops is exported as default_qdisc_ops is it
-> possible this is how rdev->ops is NULL
-> 
-> Seems unlikely, but thought I'd point it out.
-> 
-> 
-> On Fri, Jan 10, 2020 at 11:13 AM Johannes Berg
-> <johannes@sipsolutions.net> wrote:
-> >
-> > On Fri, 2020-01-10 at 11:11 -0800, syzbot wrote:
-> > > Hello,
-> > >
-> > > syzbot found the following crash on:
-> > >
-> > > HEAD commit:    2f806c2a Merge branch 'net-ungraft-prio'
-> > > git tree:       net
-> > > console output: https://syzkaller.appspot.com/x/log.txt?x=1032069ee00000
-> > > kernel config:  https://syzkaller.appspot.com/x/.config?x=5c90cac8f1f8c619
-> > > dashboard link: https://syzkaller.appspot.com/bug?extid=34b582cf32c1db008f8e
-> > > compiler:       gcc (GCC) 9.0.0 20181231 (experimental)
-> > >
-> > > Unfortunately, I don't have any reproducer for this crash yet.
-> >
-> > It's quite likely also in virt_wifi, evidently that has some issues.
-> >
-> > Cody, did you take a look at the previous report by any chance?
-> >
-> > johannes
-> >
-> 
-> -- 
-> You received this message because you are subscribed to the Google Groups "syzkaller-bugs" group.
-> To unsubscribe from this group and stop receiving emails from it, send an email to syzkaller-bugs+unsubscribe@googlegroups.com.
-> To view this discussion on the web visit https://groups.google.com/d/msgid/syzkaller-bugs/CAMrEMU_a9evtp26tYB6VUxznmSmH98AmpP8xnejQr5bGTgE%2B8g%40mail.gmail.com.
+> Thanks,
+> -Vladimir
+
+Regards,
+ᚷ ᛖ ᚢ ᚦ ᚠ ᚱ
