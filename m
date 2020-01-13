@@ -2,101 +2,207 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id D4C00139134
-	for <lists+netdev@lfdr.de>; Mon, 13 Jan 2020 13:43:56 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 71D3E13913B
+	for <lists+netdev@lfdr.de>; Mon, 13 Jan 2020 13:46:04 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726804AbgAMMnt (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 13 Jan 2020 07:43:49 -0500
-Received: from merlin.infradead.org ([205.233.59.134]:33168 "EHLO
-        merlin.infradead.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725832AbgAMMnt (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 13 Jan 2020 07:43:49 -0500
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=merlin.20170209; h=In-Reply-To:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
-        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
-        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-         bh=Cl+a0Ksq5P2uxep+vtJZs+gr7i53uKQU6pt50ip33jo=; b=fcyw21hMSWLKxkn0vyj9yS8LY
-        wTdB37m/bjABnGDJO3uV2yMcbzG0G9laSW8+lt2vO7890PInmOvbiEQOdxO9qLd5WROVTvEIH8bLg
-        EANxWyZetCLm5G8Ikg53/8ubDWoDT1G2/VqkzbZJcE/TZjPcxXLers49AKrdse34lF5o4YG16a+0A
-        C6dKSoxpr0MbLEWEW7aMfP90uKKBo1LNmKIJpJ1BeqRR6GdzFNSbxD4jJUn/mYqv6RkmQyX3XI/sB
-        jZO1ErhSAKvhw+JvB/Paj64HFq+2BVsRVpS1ImhPasWC+CTBvY2Yf/ll0Ewpk4tuJWoeHvEJfTnoC
-        OBKuZRRag==;
-Received: from j217100.upc-j.chello.nl ([24.132.217.100] helo=noisy.programming.kicks-ass.net)
-        by merlin.infradead.org with esmtpsa (Exim 4.92.3 #3 (Red Hat Linux))
-        id 1iqz3S-0004AK-FT; Mon, 13 Jan 2020 12:42:50 +0000
-Received: from hirez.programming.kicks-ass.net (hirez.programming.kicks-ass.net [192.168.1.225])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (Client did not present a certificate)
-        by noisy.programming.kicks-ass.net (Postfix) with ESMTPS id 56D1D304121;
-        Mon, 13 Jan 2020 13:41:12 +0100 (CET)
-Received: by hirez.programming.kicks-ass.net (Postfix, from userid 1000)
-        id AD5752B6B2F94; Mon, 13 Jan 2020 13:42:47 +0100 (CET)
-Date:   Mon, 13 Jan 2020 13:42:47 +0100
-From:   Peter Zijlstra <peterz@infradead.org>
-To:     "Singh, Balbir" <sblbir@amazon.com>
-Cc:     "Valentin, Eduardo" <eduval@amazon.com>,
-        "boris.ostrovsky@oracle.com" <boris.ostrovsky@oracle.com>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "Agarwal, Anchal" <anchalag@amazon.com>,
-        "Woodhouse, David" <dwmw@amazon.co.uk>,
-        "vkuznets@redhat.com" <vkuznets@redhat.com>,
-        "sstabellini@kernel.org" <sstabellini@kernel.org>,
-        "tglx@linutronix.de" <tglx@linutronix.de>,
-        "linux-pm@vger.kernel.org" <linux-pm@vger.kernel.org>,
-        "Woodhouse@dev-dsk-anchalag-2a-9c2d1d96.us-west-2.amazon.com" 
-        <Woodhouse@dev-dsk-anchalag-2a-9c2d1d96.us-west-2.amazon.com>,
-        "linux-mm@kvack.org" <linux-mm@kvack.org>,
-        "jgross@suse.com" <jgross@suse.com>, "pavel@ucw.cz" <pavel@ucw.cz>,
-        "axboe@kernel.dk" <axboe@kernel.dk>,
-        "x86@kernel.org" <x86@kernel.org>,
-        "roger.pau@citrix.com" <roger.pau@citrix.com>,
-        "hpa@zytor.com" <hpa@zytor.com>,
-        "rjw@rjwysocki.net" <rjw@rjwysocki.net>,
-        "mingo@redhat.com" <mingo@redhat.com>,
-        "Kamata, Munehisa" <kamatam@amazon.com>,
-        "bp@alien8.de" <bp@alien8.de>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "konrad.wilk@oracle.co" <konrad.wilk@oracle.co>,
-        "len.brown@intel.com" <len.brown@intel.com>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "fllinden@amaozn.com" <fllinden@amaozn.com>,
-        "xen-devel@lists.xenproject.org" <xen-devel@lists.xenproject.org>
-Subject: Re: [RFC PATCH V2 11/11] x86: tsc: avoid system instability in
- hibernation
-Message-ID: <20200113124247.GG2827@hirez.programming.kicks-ass.net>
-References: <20200107234526.GA19034@dev-dsk-anchalag-2a-9c2d1d96.us-west-2.amazon.com>
- <20200108105011.GY2827@hirez.programming.kicks-ass.net>
- <20200110153520.GC8214@u40b0340c692b58f6553c.ant.amazon.com>
- <20200113101609.GT2844@hirez.programming.kicks-ass.net>
- <857b42b2e86b2ae09a23f488daada3b1b2836116.camel@amazon.com>
+        id S1728621AbgAMMqA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 13 Jan 2020 07:46:00 -0500
+Received: from host-88-217-225-28.customer.m-online.net ([88.217.225.28]:42809
+        "EHLO mail.dev.tdt.de" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+        with ESMTP id S1725832AbgAMMqA (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 13 Jan 2020 07:46:00 -0500
+Received: from mschiller01.dev.tdt.de (unknown [10.2.3.20])
+        by mail.dev.tdt.de (Postfix) with ESMTPSA id 7B5A520498;
+        Mon, 13 Jan 2020 12:45:55 +0000 (UTC)
+From:   Martin Schiller <ms@dev.tdt.de>
+To:     khc@pm.waw.pl, davem@davemloft.net
+Cc:     linux-x25@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Martin Schiller <ms@dev.tdt.de>
+Subject: [PATCH 1/2] wan/hdlc_x25: make lapb params configurable
+Date:   Mon, 13 Jan 2020 13:45:50 +0100
+Message-Id: <20200113124551.2570-1-ms@dev.tdt.de>
+X-Mailer: git-send-email 2.20.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <857b42b2e86b2ae09a23f488daada3b1b2836116.camel@amazon.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-1.0 required=5.0 tests=ALL_TRUSTED autolearn=ham
+        autolearn_force=no version=3.4.2
+X-Spam-Checker-Version: SpamAssassin 3.4.2 (2018-09-13) on mail.dev.tdt.de
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Jan 13, 2020 at 11:43:18AM +0000, Singh, Balbir wrote:
-> For your original comment, just wanted to clarify the following:
-> 
-> 1. After hibernation, the machine can be resumed on a different but compatible
-> host (these are VM images hibernated)
-> 2. This means the clock between host1 and host2 can/will be different
-> 
-> In your comments are you making the assumption that the host(s) is/are the
-> same? Just checking the assumptions being made and being on the same page with
-> them.
+This enables you to configure mode (DTE/DCE), Modulo, Window, T1, T2, N2 via
+sethdlc (which needs to be patched as well).
 
-I would expect this to be the same problem we have as regular suspend,
-after power off the TSC will have been reset, so resume will have to
-somehow bridge that gap. I've no idea if/how it does that.
+Signed-off-by: Martin Schiller <ms@dev.tdt.de>
+---
+ drivers/net/wan/hdlc_x25.c      | 67 ++++++++++++++++++++++++++++++++-
+ include/uapi/linux/hdlc/ioctl.h | 11 +++++-
+ include/uapi/linux/if.h         |  1 +
+ 3 files changed, 76 insertions(+), 3 deletions(-)
 
-I remember some BIOSes had crazy TSC ideas for suspend2ram, and we grew
-tsc_restore_sched_clock_state() for it.
+diff --git a/drivers/net/wan/hdlc_x25.c b/drivers/net/wan/hdlc_x25.c
+index 5643675ff724..b28051eba736 100644
+--- a/drivers/net/wan/hdlc_x25.c
++++ b/drivers/net/wan/hdlc_x25.c
+@@ -21,8 +21,17 @@
+ #include <linux/skbuff.h>
+ #include <net/x25device.h>
+ 
++struct x25_state {
++	x25_hdlc_proto settings;
++};
++
+ static int x25_ioctl(struct net_device *dev, struct ifreq *ifr);
+ 
++static inline struct x25_state* state(hdlc_device *hdlc)
++{
++	return (struct x25_state *)hdlc->state;
++}
++
+ /* These functions are callbacks called by LAPB layer */
+ 
+ static void x25_connect_disconnect(struct net_device *dev, int reason, int code)
+@@ -132,6 +141,8 @@ static netdev_tx_t x25_xmit(struct sk_buff *skb, struct net_device *dev)
+ static int x25_open(struct net_device *dev)
+ {
+ 	int result;
++	hdlc_device *hdlc = dev_to_hdlc(dev);
++	struct lapb_parms_struct params;
+ 	static const struct lapb_register_struct cb = {
+ 		.connect_confirmation = x25_connected,
+ 		.connect_indication = x25_connected,
+@@ -144,6 +155,26 @@ static int x25_open(struct net_device *dev)
+ 	result = lapb_register(dev, &cb);
+ 	if (result != LAPB_OK)
+ 		return result;
++
++	result = lapb_getparms(dev, &params);
++	if (result != LAPB_OK)
++		return result;
++
++	if (state(hdlc)->settings.dce)
++		params.mode = params.mode | LAPB_DCE;
++
++	if (state(hdlc)->settings.modulo == 128)
++		params.mode = params.mode | LAPB_EXTENDED;
++
++	params.window = state(hdlc)->settings.window;
++	params.t1 = state(hdlc)->settings.t1;
++	params.t2 = state(hdlc)->settings.t2;
++	params.n2 = state(hdlc)->settings.n2;
++
++	result = lapb_setparms(dev, &params);
++	if (result != LAPB_OK)
++		return result;
++
+ 	return 0;
+ }
+ 
+@@ -186,6 +217,9 @@ static struct hdlc_proto proto = {
+ 
+ static int x25_ioctl(struct net_device *dev, struct ifreq *ifr)
+ {
++	x25_hdlc_proto __user *x25_s = ifr->ifr_settings.ifs_ifsu.x25;
++	const size_t size = sizeof(x25_hdlc_proto);
++	x25_hdlc_proto new_settings;
+ 	hdlc_device *hdlc = dev_to_hdlc(dev);
+ 	int result;
+ 
+@@ -194,7 +228,13 @@ static int x25_ioctl(struct net_device *dev, struct ifreq *ifr)
+ 		if (dev_to_hdlc(dev)->proto != &proto)
+ 			return -EINVAL;
+ 		ifr->ifr_settings.type = IF_PROTO_X25;
+-		return 0; /* return protocol only, no settable parameters */
++		if (ifr->ifr_settings.size < size) {
++			ifr->ifr_settings.size = size; /* data size wanted */
++			return -ENOBUFS;
++		}
++		if (copy_to_user(x25_s, &state(hdlc)->settings, size))
++			return -EFAULT;
++		return 0;
+ 
+ 	case IF_PROTO_X25:
+ 		if (!capable(CAP_NET_ADMIN))
+@@ -203,12 +243,35 @@ static int x25_ioctl(struct net_device *dev, struct ifreq *ifr)
+ 		if (dev->flags & IFF_UP)
+ 			return -EBUSY;
+ 
++		if (copy_from_user(&new_settings, x25_s, size))
++			return -EFAULT;
++
++		if ((new_settings.dce != 0 &&
++		     new_settings.dce != 1) ||
++		    (new_settings.modulo != 8 &&
++		     new_settings.modulo != 128) ||
++		    new_settings.window < 1 ||
++		    (new_settings.modulo == 8 &&
++		     new_settings.window > 7) ||
++		    (new_settings.modulo == 128 &&
++		     new_settings.window > 127) ||
++		    new_settings.t1 < 1 ||
++		    new_settings.t1 > 255 ||
++		    new_settings.t2 < 1 ||
++		    new_settings.t2 > 255 ||
++		    new_settings.n2 < 1 ||
++		    new_settings.n2 > 255)
++			return -EINVAL;
++
+ 		result=hdlc->attach(dev, ENCODING_NRZ,PARITY_CRC16_PR1_CCITT);
+ 		if (result)
+ 			return result;
+ 
+-		if ((result = attach_hdlc_protocol(dev, &proto, 0)))
++		if ((result = attach_hdlc_protocol(dev, &proto,
++						   sizeof(struct x25_state))))
+ 			return result;
++
++		memcpy(&state(hdlc)->settings, &new_settings, size);
+ 		dev->type = ARPHRD_X25;
+ 		call_netdevice_notifiers(NETDEV_POST_TYPE_CHANGE, dev);
+ 		netif_dormant_off(dev);
+diff --git a/include/uapi/linux/hdlc/ioctl.h b/include/uapi/linux/hdlc/ioctl.h
+index 0fe4238e8246..3656ce8b8af0 100644
+--- a/include/uapi/linux/hdlc/ioctl.h
++++ b/include/uapi/linux/hdlc/ioctl.h
+@@ -3,7 +3,7 @@
+ #define __HDLC_IOCTL_H__
+ 
+ 
+-#define GENERIC_HDLC_VERSION 4	/* For synchronization with sethdlc utility */
++#define GENERIC_HDLC_VERSION 5	/* For synchronization with sethdlc utility */
+ 
+ #define CLOCK_DEFAULT   0	/* Default setting */
+ #define CLOCK_EXT	1	/* External TX and RX clock - DTE */
+@@ -79,6 +79,15 @@ typedef struct {
+     unsigned int timeout;
+ } cisco_proto;
+ 
++typedef struct {
++	unsigned short dce; /* 1 for DCE (network side) operation */
++	unsigned int modulo; /* modulo (8 = basic / 128 = extended) */
++	unsigned int window; /* frame window size */
++	unsigned int t1; /* timeout t1 */
++	unsigned int t2; /* timeout t2 */
++	unsigned int n2; /* frame retry counter */
++} x25_hdlc_proto;
++
+ /* PPP doesn't need any info now - supply length = 0 to ioctl */
+ 
+ #endif /* __ASSEMBLY__ */
+diff --git a/include/uapi/linux/if.h b/include/uapi/linux/if.h
+index 4bf33344aab1..be714cd8c826 100644
+--- a/include/uapi/linux/if.h
++++ b/include/uapi/linux/if.h
+@@ -213,6 +213,7 @@ struct if_settings {
+ 		fr_proto		__user *fr;
+ 		fr_proto_pvc		__user *fr_pvc;
+ 		fr_proto_pvc_info	__user *fr_pvc_info;
++		x25_hdlc_proto		__user *x25;
+ 
+ 		/* interface settings */
+ 		sync_serial_settings	__user *sync;
+-- 
+2.20.1
 
-Playing crazy games like what you're doing just isn't it though.
