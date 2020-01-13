@@ -2,32 +2,32 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id E41FA138CDE
-	for <lists+netdev@lfdr.de>; Mon, 13 Jan 2020 09:30:30 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D6102138CE0
+	for <lists+netdev@lfdr.de>; Mon, 13 Jan 2020 09:30:31 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728970AbgAMIaP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 13 Jan 2020 03:30:15 -0500
-Received: from sv2-smtprelay2.synopsys.com ([149.117.73.133]:54384 "EHLO
+        id S1729014AbgAMIaV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 13 Jan 2020 03:30:21 -0500
+Received: from sv2-smtprelay2.synopsys.com ([149.117.73.133]:54398 "EHLO
         smtprelay-out1.synopsys.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1728882AbgAMI34 (ORCPT
+        by vger.kernel.org with ESMTP id S1728883AbgAMI34 (ORCPT
         <rfc822;netdev@vger.kernel.org>); Mon, 13 Jan 2020 03:29:56 -0500
 Received: from mailhost.synopsys.com (mdc-mailhost2.synopsys.com [10.225.0.210])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits))
         (No client certificate requested)
-        by smtprelay-out1.synopsys.com (Postfix) with ESMTPS id 8F89140649;
+        by smtprelay-out1.synopsys.com (Postfix) with ESMTPS id 9953E40691;
         Mon, 13 Jan 2020 08:29:55 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=synopsys.com; s=mail;
-        t=1578904196; bh=RtCcLdV0JRXGmln5oZ6H8Oca0j6jsRso4o/fczZ5LFQ=;
+        t=1578904196; bh=Qm3XveBqQA5PwdNtFJKTAbTjqSNRMQmwLjWWGFFLe74=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:In-Reply-To:
          References:From;
-        b=kTfn85wuwrxQe5FOwa+sX+ZPEWnC5+0WTu8LHCbWj3eY6HwSU1g7Ndbrbs/Kxdzul
-         zTKAtd2/p5hUPg64okviwYpvR7B16ELsMkVRdZ2MFnrJXX9PDxuxmoWzoWUqPmw176
-         I9Ad0Y+WDTH/st3w108P9lwTq/J9uyPdLmosSQ7kF/sZRTfhp36Jq8ElTGuTxfOJHw
-         X2USxSkpLU+Wuk/nB6s0ByOSfBBXGcTA/o74LECknN6L71q8hCPKCM+fX4teTXQTzT
-         or4hGOAQyEkrYIxVkxMEOXUBc55fZ9Bhet1DXirUiiHUtDjapP/W17erOJbSbKunvG
-         KKd+LwLOtQS/Q==
+        b=M6sDmTrAwdy08l52Odwb8y9SHUw3tkAF28Ovmcldj+IGHdEZCSwUZsnqgryBY75Aw
+         i4pGWtYFiP4iCW4ApXz/k5Zbj5N5AG6U5FvUYu/FJImGh63OQUfNLukrjGzNIxZFem
+         hl8ljfI70Z+GerPqpQ7lZfGIG1fTs3hzdEXJSKwZTLN73tgEgipN4wv4sDr/NqWXq0
+         W55DPvWiLTnGdVDNzPWrMBuDOxnYigYRQ1OXTGo+YK9IA6scarGBwtgF1utAAJ2ZE0
+         PaEavMLGNew++KQY9dpvAnUN6dEVsyZdQLs96nCegdr1gc+NIPSx5AFkXgICISnnB4
+         wGS4I3iV+Sb+g==
 Received: from de02dwia024.internal.synopsys.com (de02dwia024.internal.synopsys.com [10.225.19.81])
-        by mailhost.synopsys.com (Postfix) with ESMTP id 3BE99A006A;
+        by mailhost.synopsys.com (Postfix) with ESMTP id 59628A0072;
         Mon, 13 Jan 2020 08:29:54 +0000 (UTC)
 From:   Jose Abreu <Jose.Abreu@synopsys.com>
 To:     netdev@vger.kernel.org
@@ -40,9 +40,9 @@ Cc:     Joao Pinto <Joao.Pinto@synopsys.com>,
         Maxime Coquelin <mcoquelin.stm32@gmail.com>,
         linux-stm32@st-md-mailman.stormreply.com,
         linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
-Subject: [PATCH net-next 2/6] net: stmmac: tc: Add support for ETF Scheduler using TBS
-Date:   Mon, 13 Jan 2020 09:29:36 +0100
-Message-Id: <f6674bfbffcd34c3adedef6deeafb65cd014595a.1578903874.git.Jose.Abreu@synopsys.com>
+Subject: [PATCH net-next 4/6] net: stmmac: gmac4+: Add TBS support
+Date:   Mon, 13 Jan 2020 09:29:38 +0100
+Message-Id: <5da384fdd4269d4c6aa3a78daf567f49ab5930a2.1578903874.git.Jose.Abreu@synopsys.com>
 X-Mailer: git-send-email 2.7.4
 In-Reply-To: <cover.1578903874.git.Jose.Abreu@synopsys.com>
 References: <cover.1578903874.git.Jose.Abreu@synopsys.com>
@@ -53,8 +53,7 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Adds the support for ETF scheduler using TBS feature which is available
-in XGMAC and QoS IPs.
+Adds all the necessary HW hooks to support TBS feature in QoS cores.
 
 Signed-off-by: Jose Abreu <Jose.Abreu@synopsys.com>
 
@@ -69,100 +68,164 @@ Cc: linux-stm32@st-md-mailman.stormreply.com
 Cc: linux-arm-kernel@lists.infradead.org
 Cc: linux-kernel@vger.kernel.org
 ---
- drivers/net/ethernet/stmicro/stmmac/common.h      |  1 +
- drivers/net/ethernet/stmicro/stmmac/hwif.h        |  5 +++++
- drivers/net/ethernet/stmicro/stmmac/stmmac_main.c |  2 ++
- drivers/net/ethernet/stmicro/stmmac/stmmac_tc.c   | 18 ++++++++++++++++++
- 4 files changed, 26 insertions(+)
+ drivers/net/ethernet/stmicro/stmmac/dwmac4.h       |  4 ++++
+ drivers/net/ethernet/stmicro/stmmac/dwmac4_descs.c | 10 ++++++++++
+ drivers/net/ethernet/stmicro/stmmac/dwmac4_descs.h |  7 +++++++
+ drivers/net/ethernet/stmicro/stmmac/dwmac4_dma.c   | 21 +++++++++++++++++++++
+ drivers/net/ethernet/stmicro/stmmac/dwmac4_dma.h   |  7 +++++++
+ 5 files changed, 49 insertions(+)
 
-diff --git a/drivers/net/ethernet/stmicro/stmmac/common.h b/drivers/net/ethernet/stmicro/stmmac/common.h
-index 31003b67d24f..487099092693 100644
---- a/drivers/net/ethernet/stmicro/stmmac/common.h
-+++ b/drivers/net/ethernet/stmicro/stmmac/common.h
-@@ -368,6 +368,7 @@ struct dma_features {
- 	unsigned int estdep;
- 	unsigned int estsel;
- 	unsigned int fpesel;
-+	unsigned int tbssel;
- };
+diff --git a/drivers/net/ethernet/stmicro/stmmac/dwmac4.h b/drivers/net/ethernet/stmicro/stmmac/dwmac4.h
+index 2e6b60a476c6..d400e8be8799 100644
+--- a/drivers/net/ethernet/stmicro/stmmac/dwmac4.h
++++ b/drivers/net/ethernet/stmicro/stmmac/dwmac4.h
+@@ -12,6 +12,9 @@
  
- /* RX Buffer size must be multiple of 4/8/16 bytes */
-diff --git a/drivers/net/ethernet/stmicro/stmmac/hwif.h b/drivers/net/ethernet/stmicro/stmmac/hwif.h
-index 71c23cbd7af8..df63b0367aff 100644
---- a/drivers/net/ethernet/stmicro/stmmac/hwif.h
-+++ b/drivers/net/ethernet/stmicro/stmmac/hwif.h
-@@ -533,6 +533,7 @@ struct tc_cls_u32_offload;
- struct tc_cbs_qopt_offload;
- struct flow_cls_offload;
- struct tc_taprio_qopt_offload;
-+struct tc_etf_qopt_offload;
+ #include "common.h"
  
- struct stmmac_tc_ops {
- 	int (*init)(struct stmmac_priv *priv);
-@@ -544,6 +545,8 @@ struct stmmac_tc_ops {
- 			 struct flow_cls_offload *cls);
- 	int (*setup_taprio)(struct stmmac_priv *priv,
- 			    struct tc_taprio_qopt_offload *qopt);
-+	int (*setup_etf)(struct stmmac_priv *priv,
-+			 struct tc_etf_qopt_offload *qopt);
- };
++/* Misc */
++#define GMAC_LT_SHIFT			8 /* LT is in 256ns base */
++
+ /*  MAC registers */
+ #define GMAC_CONFIG			0x00000000
+ #define GMAC_EXT_CONFIG			0x00000004
+@@ -239,6 +242,7 @@ enum power_event {
  
- #define stmmac_tc_init(__priv, __args...) \
-@@ -556,6 +559,8 @@ struct stmmac_tc_ops {
- 	stmmac_do_callback(__priv, tc, setup_cls, __args)
- #define stmmac_tc_setup_taprio(__priv, __args...) \
- 	stmmac_do_callback(__priv, tc, setup_taprio, __args)
-+#define stmmac_tc_setup_etf(__priv, __args...) \
-+	stmmac_do_callback(__priv, tc, setup_etf, __args)
+ /* MAC HW features3 bitmap */
+ #define GMAC_HW_FEAT_ASP		GENMASK(29, 28)
++#define GMAC_HW_FEAT_TBSSEL		BIT(27)
+ #define GMAC_HW_FEAT_FPESEL		BIT(26)
+ #define GMAC_HW_FEAT_ESTWID		GENMASK(21, 20)
+ #define GMAC_HW_FEAT_ESTDEP		GENMASK(19, 17)
+diff --git a/drivers/net/ethernet/stmicro/stmmac/dwmac4_descs.c b/drivers/net/ethernet/stmicro/stmmac/dwmac4_descs.c
+index 3e14da69f378..017b46defa84 100644
+--- a/drivers/net/ethernet/stmicro/stmmac/dwmac4_descs.c
++++ b/drivers/net/ethernet/stmicro/stmmac/dwmac4_descs.c
+@@ -10,6 +10,7 @@
  
- struct stmmac_counters;
+ #include <linux/stmmac.h>
+ #include "common.h"
++#include "dwmac4.h"
+ #include "dwmac4_descs.h"
  
-diff --git a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
-index 82bf81b7ae76..fcc1ffe0b11e 100644
---- a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
-+++ b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
-@@ -4163,6 +4163,8 @@ static int stmmac_setup_tc(struct net_device *ndev, enum tc_setup_type type,
- 		return stmmac_tc_setup_cbs(priv, priv, type_data);
- 	case TC_SETUP_QDISC_TAPRIO:
- 		return stmmac_tc_setup_taprio(priv, priv, type_data);
-+	case TC_SETUP_QDISC_ETF:
-+		return stmmac_tc_setup_etf(priv, priv, type_data);
- 	default:
- 		return -EOPNOTSUPP;
- 	}
-diff --git a/drivers/net/ethernet/stmicro/stmmac/stmmac_tc.c b/drivers/net/ethernet/stmicro/stmmac/stmmac_tc.c
-index 6c4686b77516..ca953fa60fa2 100644
---- a/drivers/net/ethernet/stmicro/stmmac/stmmac_tc.c
-+++ b/drivers/net/ethernet/stmicro/stmmac/stmmac_tc.c
-@@ -727,10 +727,28 @@ static int tc_setup_taprio(struct stmmac_priv *priv,
- 	return ret;
+ static int dwmac4_wrback_get_tx_status(void *data, struct stmmac_extra_stats *x,
+@@ -505,6 +506,14 @@ static void dwmac4_set_sec_addr(struct dma_desc *p, dma_addr_t addr)
+ 	p->des3 = cpu_to_le32(upper_32_bits(addr) | RDES3_BUFFER2_VALID_ADDR);
  }
  
-+static int tc_setup_etf(struct stmmac_priv *priv,
-+			struct tc_etf_qopt_offload *qopt)
++static void dwmac4_set_tbs(struct dma_edesc *p, u32 sec, u32 nsec)
 +{
++	p->des4 = cpu_to_le32((sec & TDES4_LT) | TDES4_LTV);
++	p->des5 = cpu_to_le32((nsec >> GMAC_LT_SHIFT) & TDES5_LT);
++	p->des6 = 0;
++	p->des7 = 0;
++}
 +
-+	if (!priv->dma_cap.tbssel)
-+		return -EOPNOTSUPP;
-+	if (qopt->queue >= priv->plat->tx_queues_to_use)
-+		return -EINVAL;
-+	if (!priv->tx_queue[qopt->queue].tbs_avail)
-+		return -EINVAL;
+ const struct stmmac_desc_ops dwmac4_desc_ops = {
+ 	.tx_status = dwmac4_wrback_get_tx_status,
+ 	.rx_status = dwmac4_wrback_get_rx_status,
+@@ -534,6 +543,7 @@ const struct stmmac_desc_ops dwmac4_desc_ops = {
+ 	.set_vlan = dwmac4_set_vlan,
+ 	.get_rx_header_len = dwmac4_get_rx_header_len,
+ 	.set_sec_addr = dwmac4_set_sec_addr,
++	.set_tbs = dwmac4_set_tbs,
+ };
+ 
+ const struct stmmac_mode_ops dwmac4_ring_mode_ops = {
+diff --git a/drivers/net/ethernet/stmicro/stmmac/dwmac4_descs.h b/drivers/net/ethernet/stmicro/stmmac/dwmac4_descs.h
+index 6d92109dc9aa..6da070ccd737 100644
+--- a/drivers/net/ethernet/stmicro/stmmac/dwmac4_descs.h
++++ b/drivers/net/ethernet/stmicro/stmmac/dwmac4_descs.h
+@@ -73,6 +73,13 @@
+ #define TDES3_CONTEXT_TYPE		BIT(30)
+ #define	TDES3_CONTEXT_TYPE_SHIFT	30
+ 
++/* TDES4 */
++#define TDES4_LTV			BIT(31)
++#define TDES4_LT			GENMASK(7, 0)
 +
-+	priv->tx_queue[qopt->queue].tbs_en = qopt->enable;
-+	netdev_info(priv->dev, "%s ETF for Queue %d\n",
-+			qopt->enable ? "enabled" : "disabled", qopt->queue);
++/* TDES5 */
++#define TDES5_LT			GENMASK(31, 8)
++
+ /* TDS3 use for both format (read and write back) */
+ #define TDES3_OWN			BIT(31)
+ #define TDES3_OWN_SHIFT			31
+diff --git a/drivers/net/ethernet/stmicro/stmmac/dwmac4_dma.c b/drivers/net/ethernet/stmicro/stmmac/dwmac4_dma.c
+index 213d44482ffa..bb29bfcd62c3 100644
+--- a/drivers/net/ethernet/stmicro/stmmac/dwmac4_dma.c
++++ b/drivers/net/ethernet/stmicro/stmmac/dwmac4_dma.c
+@@ -404,6 +404,7 @@ static void dwmac4_get_hw_feature(void __iomem *ioaddr,
+ 
+ 	/* 5.10 Features */
+ 	dma_cap->asp = (hw_cap & GMAC_HW_FEAT_ASP) >> 28;
++	dma_cap->tbssel = (hw_cap & GMAC_HW_FEAT_TBSSEL) >> 27;
+ 	dma_cap->fpesel = (hw_cap & GMAC_HW_FEAT_FPESEL) >> 26;
+ 	dma_cap->estwid = (hw_cap & GMAC_HW_FEAT_ESTWID) >> 20;
+ 	dma_cap->estdep = (hw_cap & GMAC_HW_FEAT_ESTDEP) >> 17;
+@@ -471,6 +472,25 @@ static void dwmac4_enable_sph(void __iomem *ioaddr, bool en, u32 chan)
+ 	writel(value, ioaddr + DMA_CHAN_CONTROL(chan));
+ }
+ 
++static int dwmac4_enable_tbs(void __iomem *ioaddr, bool en, u32 chan)
++{
++	u32 value = readl(ioaddr + DMA_CHAN_TX_CONTROL(chan));
++
++	if (en)
++		value |= DMA_CONTROL_EDSE;
++	else
++		value &= ~DMA_CONTROL_EDSE;
++
++	writel(value, ioaddr + DMA_CHAN_TX_CONTROL(chan));
++
++	value = readl(ioaddr + DMA_CHAN_TX_CONTROL(chan)) & DMA_CONTROL_EDSE;
++	if (en && !value)
++		return -EIO;
++
++	writel(DMA_TBS_DEF_FTOS, ioaddr + DMA_TBS_CTRL);
 +	return 0;
 +}
 +
- const struct stmmac_tc_ops dwmac510_tc_ops = {
- 	.init = tc_init,
- 	.setup_cls_u32 = tc_setup_cls_u32,
- 	.setup_cbs = tc_setup_cbs,
- 	.setup_cls = tc_setup_cls,
- 	.setup_taprio = tc_setup_taprio,
-+	.setup_etf = tc_setup_etf,
+ const struct stmmac_dma_ops dwmac4_dma_ops = {
+ 	.reset = dwmac4_dma_reset,
+ 	.init = dwmac4_dma_init,
+@@ -527,4 +547,5 @@ const struct stmmac_dma_ops dwmac410_dma_ops = {
+ 	.qmode = dwmac4_qmode,
+ 	.set_bfsize = dwmac4_set_bfsize,
+ 	.enable_sph = dwmac4_enable_sph,
++	.enable_tbs = dwmac4_enable_tbs,
  };
+diff --git a/drivers/net/ethernet/stmicro/stmmac/dwmac4_dma.h b/drivers/net/ethernet/stmicro/stmmac/dwmac4_dma.h
+index bcb6d5190f3d..8391ca63d943 100644
+--- a/drivers/net/ethernet/stmicro/stmmac/dwmac4_dma.h
++++ b/drivers/net/ethernet/stmicro/stmmac/dwmac4_dma.h
+@@ -22,6 +22,7 @@
+ #define DMA_DEBUG_STATUS_1		0x00001010
+ #define DMA_DEBUG_STATUS_2		0x00001014
+ #define DMA_AXI_BUS_MODE		0x00001028
++#define DMA_TBS_CTRL			0x00001050
+ 
+ /* DMA Bus Mode bitmap */
+ #define DMA_BUS_MODE_SFT_RESET		BIT(0)
+@@ -82,6 +83,11 @@
+ 
+ #define DMA_AXI_BURST_LEN_MASK		0x000000FE
+ 
++/* DMA TBS Control */
++#define DMA_TBS_FTOS			GENMASK(31, 8)
++#define DMA_TBS_FTOV			BIT(0)
++#define DMA_TBS_DEF_FTOS		(DMA_TBS_FTOS | DMA_TBS_FTOV)
++
+ /* Following DMA defines are chanels oriented */
+ #define DMA_CHAN_BASE_ADDR		0x00001100
+ #define DMA_CHAN_BASE_OFFSET		0x80
+@@ -114,6 +120,7 @@
+ #define DMA_CONTROL_MSS_MASK		GENMASK(13, 0)
+ 
+ /* DMA Tx Channel X Control register defines */
++#define DMA_CONTROL_EDSE		BIT(28)
+ #define DMA_CONTROL_TSE			BIT(12)
+ #define DMA_CONTROL_OSP			BIT(4)
+ #define DMA_CONTROL_ST			BIT(0)
 -- 
 2.7.4
 
