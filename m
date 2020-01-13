@@ -2,89 +2,103 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 052051398E8
-	for <lists+netdev@lfdr.de>; Mon, 13 Jan 2020 19:29:18 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4F3FD1398F2
+	for <lists+netdev@lfdr.de>; Mon, 13 Jan 2020 19:33:09 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728633AbgAMS3N (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 13 Jan 2020 13:29:13 -0500
-Received: from vps0.lunn.ch ([185.16.172.187]:35076 "EHLO vps0.lunn.ch"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728516AbgAMS3N (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 13 Jan 2020 13:29:13 -0500
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:
-        Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
-        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
-        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
-        List-Post:List-Owner:List-Archive;
-        bh=k0IAJpagMBUGdKxmx+KUKE83rGMLlu0VL7Kzi8GGMgI=; b=fPEt1IBW3wyg39jdDUMctfq575
-        wkW5rzJLEqWNQ6bmJ/X+IoY47PG7NUxR9NJq55xweYwPPY3PTa0N33HRvX2BtJbkXRIlr8P6hX8Ew
-        +M3b+edWLo0OzrS+IwAfCEGC6B6rhKJm4Oq4I3C7akx4xSavYPo/TsAIJtwZ5rFnoByg=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.93)
-        (envelope-from <andrew@lunn.ch>)
-        id 1ir4SX-00078j-Cr; Mon, 13 Jan 2020 19:29:05 +0100
-Date:   Mon, 13 Jan 2020 19:29:05 +0100
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Florian Fainelli <f.fainelli@gmail.com>
-Cc:     netdev@vger.kernel.org, cphealy@gmail.com,
-        rmk+kernel@armlinux.org.uk, kuba@kernel.org,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        open list <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH net-next] net: phy: Maintain MDIO device and bus
- statistics
-Message-ID: <20200113182905.GB26448@lunn.ch>
-References: <20200113045325.13470-1-f.fainelli@gmail.com>
- <20200113132152.GB11788@lunn.ch>
- <ebeb2bb2-c816-6cb8-acaa-cfd86878678d@gmail.com>
+        id S1728813AbgAMSdI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 13 Jan 2020 13:33:08 -0500
+Received: from mail-wm1-f68.google.com ([209.85.128.68]:52820 "EHLO
+        mail-wm1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728641AbgAMSdH (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 13 Jan 2020 13:33:07 -0500
+Received: by mail-wm1-f68.google.com with SMTP id p9so10913958wmc.2
+        for <netdev@vger.kernel.org>; Mon, 13 Jan 2020 10:33:06 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=resnulli-us.20150623.gappssmtp.com; s=20150623;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=q0bGSICAx1pbHYHOWbJKg+AmvJvz7a95IIUv+bSd8t8=;
+        b=PzLsRu3GFLOX7/ue7FryDfE7Mk8OEf3gDqM9GZykAJJj6G7bhQA0uTHsKJ2bGWi+oP
+         9GQH2BW622LsEXN+3MuB3vfA0YEx1P1MVDAkT13hE6Si9AWi9NNU6vqsMDy/s58jQIFE
+         4wwNZP1L2dgc9v7N9kQJxWRXQcqutNM8dBasZ8JrN2oDkxnjitDTaeytyC0SZjECeBOr
+         Co2HmXdzJeJuvPmcvDjpijP5xD3/Zjhu/4nU3ffN0YsP3tYfME6/FhoiUhVBlE8LlNZK
+         TlZbCGsClqv8rqsDZcL73rYCZ6JYmBDS4xjIDsuxhjAL+3p8/8QvFusYLLYFTud/+cmq
+         TcHg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=q0bGSICAx1pbHYHOWbJKg+AmvJvz7a95IIUv+bSd8t8=;
+        b=P7V/kLy+pU6GoBAP3SeKXVpC8pKEWSvpXnlSUWiP7ThzA+Qtrglzpy8iKhGR+MbFaR
+         geYwSRBTl+X3Vf2OuvVcuD+lPNnse7/TP+Bct+QIm9w9isYFje7alF/uwcENZN9OKwGC
+         /vwkFw6FUgPrqZUIngc6+K8o3Ucz9VW4hdnzkCrh6NVkGhiDw2rULr4PgACvkk6yFbLZ
+         ZyC5rnF/8r4U/bhRqoKkZi7DYwAG4wsSp/1UB4pnS0qYJ/c8hygBReMkBLsmiLqvcG/k
+         BkG1NQPT6LEMCirdbrUkZucM73IyGOA7bz6VrWFS4nVtE8HoHwN4aBZT7b3tA5GFAW5J
+         qiAw==
+X-Gm-Message-State: APjAAAXktV0JP4r92eRc2uqU36FDT/OLTJNxsfBD6eeUAcH1kS10zA6s
+        YiqWGHn3sJi8loEb4V6lY3o88A==
+X-Google-Smtp-Source: APXvYqxTlk0OM7uUYKbqgVlUyukyACPvaxoGgFYVC1T8cELvN5V7CCyWv3a0VVhAmGydFG33+AeuCw==
+X-Received: by 2002:a1c:2394:: with SMTP id j142mr22589527wmj.25.1578940385846;
+        Mon, 13 Jan 2020 10:33:05 -0800 (PST)
+Received: from localhost (ip-78-102-249-43.net.upcbroadband.cz. [78.102.249.43])
+        by smtp.gmail.com with ESMTPSA id t25sm15317639wmj.19.2020.01.13.10.33.05
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 13 Jan 2020 10:33:05 -0800 (PST)
+Date:   Mon, 13 Jan 2020 19:33:04 +0100
+From:   Jiri Pirko <jiri@resnulli.us>
+To:     Jacob Keller <jacob.e.keller@intel.com>
+Cc:     Jakub Kicinski <kubakici@wp.pl>,
+        Yunsheng Lin <linyunsheng@huawei.com>,
+        Alex Vesker <valex@mellanox.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+Subject: Re: [PATCH v2 0/3] devlink region trigger support
+Message-ID: <20200113183304.GI2131@nanopsycho>
+References: <20200109193311.1352330-1-jacob.e.keller@intel.com>
+ <4d8fe881-8d36-06dd-667a-276a717a0d89@huawei.com>
+ <1d00deb9-16fc-b2a5-f8f7-5bb8316dbac2@intel.com>
+ <fe6c0d5e-5705-1118-1a71-80bd0e26a97e@huawei.com>
+ <20200112124521.467fa06a@cakuba>
+ <DB6PR0501MB224859D8DC219E81D4CFB17CC33A0@DB6PR0501MB2248.eurprd05.prod.outlook.com>
+ <421f78c2-7713-b931-779e-dfe675fe5f53@huawei.com>
+ <20200113033431.1d32dcbe@cakuba>
+ <28bc8945-6c55-2ad3-963a-156efe616038@intel.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <ebeb2bb2-c816-6cb8-acaa-cfd86878678d@gmail.com>
+In-Reply-To: <28bc8945-6c55-2ad3-963a-156efe616038@intel.com>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> For MDIO switches you would usually have the mdio_device claim the
-> pseudo PHY address and all other MDIO addresses should correspond to
-> built-in PHYs, for which we also have mdio_device instances, is there a
-> case that I am missing?
+Mon, Jan 13, 2020 at 07:16:51PM CET, jacob.e.keller@intel.com wrote:
+>On 1/13/2020 3:34 AM, Jakub Kicinski wrote:
+>> On Mon, 13 Jan 2020 09:39:50 +0800, Yunsheng Lin wrote:
+>>> I am not sure I understand "live region" here, what is the usecase of live
+>>> region?
+>> 
+>> Reading registers of a live system without copying them to a snapshot
+>> first. Some chips have so many registers it's impractical to group them
+>> beyond "registers of IP block X", if that. IMHO that fits nicely with
+>> regions, health is grouped by event, so we'd likely want to dump for
+>> example one or two registers from the MAC there, while the entire set
+>> of MAC registers can be exposed as a region.
+>> 
+>
+>Right. I'm actually wondering about this as well. Region snapshots are
+>captured in whole and stored and then returned through the devlink
+>region commands.
 
-Marvell switches don't work like this. It varies from family to
-family. The 6390 family for example has address 0x0-0xa representing
-registers for ports 0 to 10, 32 registers per port. address 0x1b and
-0x1c contain registers for global configuration. 0x1e is used to
-communication with the internal MCU, and 0x1f is the TCAM. The
-internal PHYs are not in this MDIO address space at all, there is
-another MDIO bus, implemented by a couple of the global registers.
+Well, driver does not have to support snapshots for particular region,
+only live reading. Yes, this needs to be implemented.
 
-The 6352 has a different layout. 0x0-0x4 represent the internal
-PHYs. 0xf is the SERDES for SGMII, 0x10-x016 are the port registers,
-0x1b 0x1c are global.
+>
+>This could be problematic if you wanted to expose a larger chunk of
+>registers or addressable sections of flash contents, as the size of the
+>contents goes beyond a single page.
+>
+>If we instead focus regions onto the live-read aspect, the API can
+>simply be a request to read a segment of the region. Then, the driver
+>could perform the read of that chunk and report it back.
 
-There is one family, i don't remember which, which uses 16
-addresses. And you can put two of them on one MDIO bus.
-
-In each of these cases, we have one mdiodev, per switch, claiming a
-single address, generally 0.
-
-Other vendors switches are similar, using multiple addresses on one
-bus.
-
-> If the answer to my question above is that we still have reads to
-> addresses for which we do not have mdio_device (which we might very well
-> have), then we could either:
-> 
-> - create <mdio_bus>:<address>/statistics/ folders even for non-existent
-> devices, but just to track the per-address statistics
-> - create <mdio_bus>/<address>/statistics and when a mdio_device instance
-> exists we symbolic link <mdio_bus>:<address>/statistics ->
-> ../<mdio_bus>/<addr>/statistics
-> 
-> Would that work?
-
-Keeping the statistics for all 32 addresses in the struct mii_bus
-would be good. Then directories 0-31. And symlinks. Yes, that is good.
-
-      Andrew
+Yep.
