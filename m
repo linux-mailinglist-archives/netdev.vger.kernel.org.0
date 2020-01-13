@@ -2,70 +2,66 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 374A51394AA
-	for <lists+netdev@lfdr.de>; Mon, 13 Jan 2020 16:20:26 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5D1FF1394AE
+	for <lists+netdev@lfdr.de>; Mon, 13 Jan 2020 16:20:57 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728871AbgAMPUR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 13 Jan 2020 10:20:17 -0500
-Received: from mx4.wp.pl ([212.77.101.12]:21486 "EHLO mx4.wp.pl"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726567AbgAMPUQ (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 13 Jan 2020 10:20:16 -0500
-Received: (wp-smtpd smtp.wp.pl 25356 invoked from network); 13 Jan 2020 16:20:13 +0100
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=wp.pl; s=1024a;
-          t=1578928814; bh=ckiIUgf+Tu5dz5bSkyhu+9/WG8U3ri+CC3Yzi1RogcU=;
-          h=From:To:Cc:Subject;
-          b=NeSFLFdiaaOtnduuiNXv0m3FxynzuH3vJW9Ys2S+vbRzGA0LVmL0946RrA6kxb4KH
-           +VLCkHAyV57L9+KK16iXno0hhZnd//0dphpVH4rQMsgypOHg3029TTgu6CasCN+Hs3
-           jcUW6qwhui9F5L0Bn2LzwrHrTHCsdDI4zJyAPdvI=
-Received: from unknown (HELO cakuba) (kubakici@wp.pl@[172.58.35.234])
-          (envelope-sender <kubakici@wp.pl>)
-          by smtp.wp.pl (WP-SMTPD) with ECDHE-RSA-AES256-GCM-SHA384 encrypted SMTP
-          for <Jose.Abreu@synopsys.com>; 13 Jan 2020 16:20:13 +0100
-Date:   Mon, 13 Jan 2020 07:19:46 -0800
-From:   Jakub Kicinski <kubakici@wp.pl>
-To:     Jose Abreu <Jose.Abreu@synopsys.com>
-Cc:     netdev@vger.kernel.org, Joao Pinto <Joao.Pinto@synopsys.com>,
-        Giuseppe Cavallaro <peppe.cavallaro@st.com>,
-        Alexandre Torgue <alexandre.torgue@st.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
-        linux-stm32@st-md-mailman.stormreply.com,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH net-next v2 6/8] net: stmmac: Add missing information in
- DebugFS capabilities file
-Message-ID: <20200113071946.1dbdecd1@cakuba>
-In-Reply-To: <faaa377a5518be7357f897d02eb0e35b57912093.1578920366.git.Jose.Abreu@synopsys.com>
-References: <cover.1578920366.git.Jose.Abreu@synopsys.com>
-        <faaa377a5518be7357f897d02eb0e35b57912093.1578920366.git.Jose.Abreu@synopsys.com>
+        id S1729095AbgAMPUx (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 13 Jan 2020 10:20:53 -0500
+Received: from relay9-d.mail.gandi.net ([217.70.183.199]:56605 "EHLO
+        relay9-d.mail.gandi.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728811AbgAMPUw (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 13 Jan 2020 10:20:52 -0500
+X-Originating-IP: 90.76.211.102
+Received: from localhost (lfbn-tou-1-1151-102.w90-76.abo.wanadoo.fr [90.76.211.102])
+        (Authenticated sender: antoine.tenart@bootlin.com)
+        by relay9-d.mail.gandi.net (Postfix) with ESMTPSA id 937EAFF813;
+        Mon, 13 Jan 2020 15:20:49 +0000 (UTC)
+Date:   Mon, 13 Jan 2020 16:20:48 +0100
+From:   Antoine Tenart <antoine.tenart@bootlin.com>
+To:     Jiri Pirko <jiri@resnulli.us>
+Cc:     Antoine Tenart <antoine.tenart@bootlin.com>, davem@davemloft.net,
+        sd@queasysnail.net, andrew@lunn.ch, f.fainelli@gmail.com,
+        hkallweit1@gmail.com, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, thomas.petazzoni@bootlin.com,
+        alexandre.belloni@bootlin.com, allan.nielsen@microchip.com,
+        camelia.groza@nxp.com, Simon.Edelhaus@aquantia.com,
+        Igor.Russkikh@aquantia.com, jakub.kicinski@netronome.com
+Subject: Re: [PATCH net-next v5 06/15] net: macsec: add nla support for
+ changing the offloading selection
+Message-ID: <20200113152048.GE3078@kwain>
+References: <20200110162010.338611-1-antoine.tenart@bootlin.com>
+ <20200110162010.338611-7-antoine.tenart@bootlin.com>
+ <20200113150202.GC2131@nanopsycho>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-X-WP-MailID: e9542c228b230751ee00c2b6f941528f
-X-WP-AV: skaner antywirusowy Poczty Wirtualnej Polski
-X-WP-SPAM: NO 0000000 [gaNR]                               
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20200113150202.GC2131@nanopsycho>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, 13 Jan 2020 14:02:41 +0100, Jose Abreu wrote:
-> diff --git a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
-> index fcc1ffe0b11e..7c2645ee81b1 100644
-> --- a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
-> +++ b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
-> @@ -4341,6 +4341,10 @@ static int stmmac_dma_cap_show(struct seq_file *seq, void *v)
->  		   priv->dma_cap.number_rx_queues);
->  	seq_printf(seq, "\tNumber of Additional TX queues: %d\n",
->  		   priv->dma_cap.number_tx_queues);
-> +	seq_printf(seq, "\tCurrent number of TX queues: %d\n",
-> +		   priv->plat->tx_queues_to_use);
-> +	seq_printf(seq, "\tCurrent number of RX queues: %d\n",
-> +		   priv->plat->rx_queues_to_use);
+Hello Jiri,
 
-You should probably just implement ethtool get_channels. 
-nack on this part.
+On Mon, Jan 13, 2020 at 04:02:02PM +0100, Jiri Pirko wrote:
+> 
+> I wonder, did you consider having MACSEC_OFFLOAD_ATTR_TYPE attribute
+> passed during the macsec device creation (to macsec_newlink), so the
+> device is either created "offloded" or not? Looks like an extra step.
+> Or do you see a scenario one would change "offload" setting on fly?
+> If not, I don't see any benefit in having this as a separate command.
 
->  	seq_printf(seq, "\tEnhanced descriptors: %s\n",
->  		   (priv->dma_cap.enh_desc) ? "Y" : "N");
->  	seq_printf(seq, "\tTX Fifo Size: %d\n", priv->dma_cap.tx_fifo_size);
+That would be possible as well. When we discussed offloading selection
+we thought allowing the user to fallback to another offloading mode when
+a rule or a set of rules isn't supported by a given device would be
+useful, even though updating the offloading selection at runtime isn't
+fully transparent for now (this would be a nice follow-up).
+
+Thanks,
+Antoine
+
+-- 
+Antoine Ténart, Bootlin
+Embedded Linux and Kernel engineering
+https://bootlin.com
