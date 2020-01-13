@@ -2,35 +2,35 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 90CEB139D94
-	for <lists+netdev@lfdr.de>; Tue, 14 Jan 2020 00:43:01 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 47DC2139D95
+	for <lists+netdev@lfdr.de>; Tue, 14 Jan 2020 00:43:04 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729238AbgAMXnA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 13 Jan 2020 18:43:00 -0500
+        id S1729254AbgAMXnC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 13 Jan 2020 18:43:02 -0500
 Received: from frisell.zx2c4.com ([192.95.5.64]:55677 "EHLO frisell.zx2c4.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728794AbgAMXm4 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 13 Jan 2020 18:42:56 -0500
-Received: by frisell.zx2c4.com (ZX2C4 Mail Server) with ESMTP id 795d2bec;
-        Mon, 13 Jan 2020 22:42:56 +0000 (UTC)
+        id S1729211AbgAMXm6 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 13 Jan 2020 18:42:58 -0500
+Received: by frisell.zx2c4.com (ZX2C4 Mail Server) with ESMTP id d929d7a2;
+        Mon, 13 Jan 2020 22:42:58 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha1; c=relaxed; d=zx2c4.com; h=from:to:cc
         :subject:date:message-id:in-reply-to:references:mime-version
-        :content-transfer-encoding; s=mail; bh=lpYQ8mRTKKl00+oMm1LKTn2+b
-        2U=; b=OZxdqHiJTVgxLo6ec8KH7Kc1HC0A5DsFdISCvHXFEFl1NyFhXP1t0qLgj
-        ylpJo0VgbCJ0MPaA/VwHOK6ci34OvKdQFi3N1wFHSiqPGtt7qT/2X9Zbd4jagycl
-        aaRPzzUbO26ymZ4jvy2sbsZpj58wn9gEx+nGNxRm/K78asu/7m58BVd0+BsJi/6g
-        7n0GaOjEf7OfgW6LiopWXu5ZBr8HPkM8k8mZ4Lki4EVJc6BXddrgCGcIx1buD4Hc
-        XrU9E7drtaYdx9UCSQBpxKTiqG/SSsS6Ip6RJrj6gNDb5hBJDWTeEt5C2z4Hwo5y
-        j4kWhOVlOjqqDbLBSbJEkLjsmfbWA==
-Received: by frisell.zx2c4.com (ZX2C4 Mail Server) with ESMTPSA id 9f5ad967 (TLSv1.2:ECDHE-RSA-AES256-GCM-SHA384:256:NO);
-        Mon, 13 Jan 2020 22:42:56 +0000 (UTC)
+        :content-transfer-encoding; s=mail; bh=0gEIfT81wd3jBIyRff7NNLZ/X
+        d4=; b=nBMEj4EK0pfMGzn0NQVsnr1/oct2+x18C2VKlFh1PKEu4vH3quUJO2Jp9
+        nzdLxvPZ6aIY6yubJIMPl8GVT3YFJMo2e4Zf0ERdw29iilNSaP+xQQ/x6sUfwH6g
+        PEQv0/mBNZpodW7SCwOVnBU5EuGuYEXhFYOediA4DUI9/OoCgpojWDQtT5Div/Or
+        9WlwseKbTwDBFEQRfkIJCTx0QQF3Up0Qz4WeiOtzoKMHECNtlOdNBFGvM8fZxByO
+        BFVE8K2mxZ7Ezor4kZrn4VG0K78L1r3RBxvZ5dW/OiuI2B9xzm0kZZCwAwetlWSi
+        kv66TKBYY46QC7XcovE5ZWrpe5zxQ==
+Received: by frisell.zx2c4.com (ZX2C4 Mail Server) with ESMTPSA id 199c41b3 (TLSv1.2:ECDHE-RSA-AES256-GCM-SHA384:256:NO);
+        Mon, 13 Jan 2020 22:42:57 +0000 (UTC)
 From:   "Jason A. Donenfeld" <Jason@zx2c4.com>
 To:     davem@davemloft.net, johannes@sipsolutions.net,
         netdev@vger.kernel.org
 Cc:     "Jason A. Donenfeld" <Jason@zx2c4.com>
-Subject: [PATCH net-next 5/8] net: sched: use skb_list_walk_safe helper for gso segments
-Date:   Mon, 13 Jan 2020 18:42:30 -0500
-Message-Id: <20200113234233.33886-6-Jason@zx2c4.com>
+Subject: [PATCH net-next 6/8] net: ipv4: use skb_list_walk_safe helper for gso segments
+Date:   Mon, 13 Jan 2020 18:42:31 -0500
+Message-Id: <20200113234233.33886-7-Jason@zx2c4.com>
 In-Reply-To: <20200113234233.33886-1-Jason@zx2c4.com>
 References: <20200113234233.33886-1-Jason@zx2c4.com>
 MIME-Version: 1.0
@@ -45,54 +45,43 @@ the flow of the existing code as intact as possible.
 
 Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
 ---
- net/sched/sch_cake.c | 4 +---
- net/sched/sch_tbf.c  | 4 +---
- 2 files changed, 2 insertions(+), 6 deletions(-)
+ net/ipv4/ip_output.c | 8 +++-----
+ 1 file changed, 3 insertions(+), 5 deletions(-)
 
-diff --git a/net/sched/sch_cake.c b/net/sched/sch_cake.c
-index 90ef7cc79b69..1496e87cd07b 100644
---- a/net/sched/sch_cake.c
-+++ b/net/sched/sch_cake.c
-@@ -1682,8 +1682,7 @@ static s32 cake_enqueue(struct sk_buff *skb, struct Qdisc *sch,
- 		if (IS_ERR_OR_NULL(segs))
- 			return qdisc_drop(skb, sch, to_free);
+diff --git a/net/ipv4/ip_output.c b/net/ipv4/ip_output.c
+index 14db1e0b8a6e..d84819893db9 100644
+--- a/net/ipv4/ip_output.c
++++ b/net/ipv4/ip_output.c
+@@ -240,8 +240,8 @@ static int ip_finish_output2(struct net *net, struct sock *sk, struct sk_buff *s
+ static int ip_finish_output_gso(struct net *net, struct sock *sk,
+ 				struct sk_buff *skb, unsigned int mtu)
+ {
++	struct sk_buff *segs, *nskb;
+ 	netdev_features_t features;
+-	struct sk_buff *segs;
+ 	int ret = 0;
  
--		while (segs) {
--			nskb = segs->next;
-+		skb_list_walk_safe(segs, segs, nskb) {
- 			skb_mark_not_on_list(segs);
- 			qdisc_skb_cb(segs)->pkt_len = segs->len;
- 			cobalt_set_enqueue_time(segs, now);
-@@ -1696,7 +1695,6 @@ static s32 cake_enqueue(struct sk_buff *skb, struct Qdisc *sch,
- 			slen += segs->len;
- 			q->buffer_used += segs->truesize;
- 			b->packets++;
--			segs = nskb;
- 		}
+ 	/* common case: seglen is <= mtu
+@@ -272,8 +272,7 @@ static int ip_finish_output_gso(struct net *net, struct sock *sk,
  
- 		/* stats */
-diff --git a/net/sched/sch_tbf.c b/net/sched/sch_tbf.c
-index 5f72f3f916a5..2cd94973795c 100644
---- a/net/sched/sch_tbf.c
-+++ b/net/sched/sch_tbf.c
-@@ -155,8 +155,7 @@ static int tbf_segment(struct sk_buff *skb, struct Qdisc *sch,
- 		return qdisc_drop(skb, sch, to_free);
+ 	consume_skb(skb);
  
- 	nb = 0;
--	while (segs) {
--		nskb = segs->next;
+-	do {
+-		struct sk_buff *nskb = segs->next;
 +	skb_list_walk_safe(segs, segs, nskb) {
+ 		int err;
+ 
  		skb_mark_not_on_list(segs);
- 		qdisc_skb_cb(segs)->pkt_len = segs->len;
- 		len += segs->len;
-@@ -167,7 +166,6 @@ static int tbf_segment(struct sk_buff *skb, struct Qdisc *sch,
- 		} else {
- 			nb++;
- 		}
+@@ -281,8 +280,7 @@ static int ip_finish_output_gso(struct net *net, struct sock *sk,
+ 
+ 		if (err && ret == 0)
+ 			ret = err;
 -		segs = nskb;
- 	}
- 	sch->q.qlen += nb;
- 	if (nb > 1)
+-	} while (segs);
++	}
+ 
+ 	return ret;
+ }
 -- 
 2.24.1
 
