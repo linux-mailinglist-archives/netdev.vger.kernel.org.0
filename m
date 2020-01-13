@@ -2,155 +2,99 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 429E413979C
-	for <lists+netdev@lfdr.de>; Mon, 13 Jan 2020 18:25:43 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9DFE71397A1
+	for <lists+netdev@lfdr.de>; Mon, 13 Jan 2020 18:27:19 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728765AbgAMRZd (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 13 Jan 2020 12:25:33 -0500
-Received: from relay12.mail.gandi.net ([217.70.178.232]:53833 "EHLO
-        relay12.mail.gandi.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728621AbgAMRZd (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 13 Jan 2020 12:25:33 -0500
-Received: from webmail.gandi.net (webmail23.sd4.0x35.net [10.200.201.23])
-        (Authenticated sender: cengiz@kernel.wtf)
-        by relay12.mail.gandi.net (Postfix) with ESMTPA id D6B36200008;
-        Mon, 13 Jan 2020 17:25:29 +0000 (UTC)
-MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII;
- format=flowed
-Content-Transfer-Encoding: 7bit
-Date:   Mon, 13 Jan 2020 20:25:29 +0300
-From:   Cengiz Can <cengiz@kernel.wtf>
-To:     Alex Vesker <valex@mellanox.com>
-Cc:     Leon Romanovsky <leon@kernel.org>,
-        Saeed Mahameed <saeedm@mellanox.com>,
-        Yevgeny Kliteynik <kliteyn@mellanox.com>,
-        Erez Shitrit <erezsh@mellanox.com>,
-        Tariq Toukan <tariqt@mellanox.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <jakub.kicinski@netronome.com>,
-        netdev@vger.kernel.org, linux-rdma@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] net: mellanox: prevent resource leak on htbl
-In-Reply-To: <HE1PR0501MB22490CD10A5A258E8C08DE86C3350@HE1PR0501MB2249.eurprd05.prod.outlook.com>
-References: <20200113134415.86110-1-cengiz@kernel.wtf>
- <HE1PR0501MB22490CD10A5A258E8C08DE86C3350@HE1PR0501MB2249.eurprd05.prod.outlook.com>
-Message-ID: <69daf825678a38b676602933303190c9@kernel.wtf>
-X-Sender: cengiz@kernel.wtf
-User-Agent: Roundcube Webmail/1.3.8
+        id S1728682AbgAMR1Q (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 13 Jan 2020 12:27:16 -0500
+Received: from mail-ua1-f73.google.com ([209.85.222.73]:52961 "EHLO
+        mail-ua1-f73.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727331AbgAMR1Q (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 13 Jan 2020 12:27:16 -0500
+Received: by mail-ua1-f73.google.com with SMTP id n10so1427405ual.19
+        for <netdev@vger.kernel.org>; Mon, 13 Jan 2020 09:27:15 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20161025;
+        h=date:message-id:mime-version:subject:from:to:cc;
+        bh=JRjYbcM2SC+k7GP+rZPB/pimG3XkTeJVP6zcDS8rJ6I=;
+        b=jR2K1RUZyy9DFKQOmMD3ybMYR+MFaZ8t9WQcNkb59VbrC7xNSg7YhI+wfFJE6IJIrx
+         jn+ne6PyjkjquCqUurCCSpz4Jag2LYc1t5ioJzfZMtee9E4V7qR+u/MVFCzaeC4X7+Q3
+         BGk07SBc70o9xWyJlz2MqN1TDMqrIuhuhXs9JrHra/VyiGpi/nqVgq9/uq6CD5RJgp+P
+         7470pafwYHuPZilHRzZqj2R5nPzIe/JfAu2s1FV2l0qpdYY3J9mgXxuDlw3zQqGQJno4
+         za34RTefSW3vBXeZfop4prXh0DpvjsxPoTa/h+mWI7x1C/LYwgfeVpuGQP8IJE8Zzuhp
+         uyqA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:message-id:mime-version:subject:from:to:cc;
+        bh=JRjYbcM2SC+k7GP+rZPB/pimG3XkTeJVP6zcDS8rJ6I=;
+        b=FB8r0ylWDtfXoJswo2mlVzJpiTfhrpfLWoq/4fDifWxQ7Kk/rkVc8g5qDueSo8mEzb
+         Dlnzm61H/Hpu0MOWNYs8EXYovOFjZovy3NpZId7YXKl2xgxUZNZHEhqEZY5LM77Ce7S8
+         mowji9T9PSNKvNzLd/f3nlugT7NKxQQDiz0uaVHsdHMLXElNnFF+8vRtlXTRzYxQl2O8
+         tgkD7QSWklptlUUN/FJQcdx8UrfjnIvhxpr/PVUDZ9Dbsy1N8re9Ng7LE0U9ZRIRLTsv
+         bjLLevV/zf1p7qY7Z65rL5avuwD3Pz/GcSqsPMWL9Ni1rlJ60MZ7t7p4V+dt98gcR9bv
+         Kv8g==
+X-Gm-Message-State: APjAAAVFUY54SsafbICuVQaZOtivUJ98xoSBJa340QhCLwXlf9xeRZlP
+        9aob3p41dpMxH1BxgDZ7LhKvvxJZcixKLA==
+X-Google-Smtp-Source: APXvYqw6yG3AWdGzdAxqr3xjLrSgtZEkzQgfBtBBt9ZAZQsk9jS8JVE7oTKbflvRsrlq8bo9HVnrpoqxbAHXcw==
+X-Received: by 2002:ab0:2a93:: with SMTP id h19mr7955321uar.27.1578936435277;
+ Mon, 13 Jan 2020 09:27:15 -0800 (PST)
+Date:   Mon, 13 Jan 2020 09:27:11 -0800
+Message-Id: <20200113172711.122918-1-edumazet@google.com>
+Mime-Version: 1.0
+X-Mailer: git-send-email 2.25.0.rc1.283.g88dfdc4193-goog
+Subject: [PATCH net] net: usb: lan78xx: limit size of local TSO packets
+From:   Eric Dumazet <edumazet@google.com>
+To:     "David S . Miller" <davem@davemloft.net>
+Cc:     netdev <netdev@vger.kernel.org>,
+        Eric Dumazet <edumazet@google.com>,
+        Eric Dumazet <eric.dumazet@gmail.com>,
+        RENARD Pierre-Francois <pfrenard@gmail.com>,
+        Stefan Wahren <stefan.wahren@i2se.com>,
+        Woojung Huh <woojung.huh@microchip.com>,
+        Microchip Linux Driver Support <UNGLinuxDriver@microchip.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 2020-01-13 17:49, Alex Vesker wrote:
-> On 1/13/2020 3:46 PM, Cengiz Can wrote:
->> According to a Coverity static analysis tool,
->> `drivers/net/mellanox/mlx5/core/steering/dr_rule.c#63` leaks a
->> `struct mlx5dr_ste_htbl *` named `new_htbl` while returning from
->> `dr_rule_create_collision_htbl` function.
->> 
->> A annotated snippet of the possible resource leak follows:
->> 
->> ```
->> static struct mlx5dr_ste *
->> dr_rule_create_collision_htbl(struct mlx5dr_matcher *matcher,
->>                               struct mlx5dr_matcher_rx_tx 
->> *nic_matcher,
->>                               u8 *hw_ste)
->>    /* ... */
->>    /* ... */
->> 
->>    /* Storage is returned from allocation function 
->> mlx5dr_ste_htbl_alloc. */
->>    /* Assigning: new_htbl = storage returned from 
->> mlx5dr_ste_htbl_alloc(..) */
->>         new_htbl = mlx5dr_ste_htbl_alloc(dmn->ste_icm_pool,
->>                                          DR_CHUNK_SIZE_1,
->>                                          MLX5DR_STE_LU_TYPE_DONT_CARE,
->>                                          0);
->>    /* Condition !new_htbl, taking false branch. */
->>         if (!new_htbl) {
->>                 mlx5dr_dbg(dmn, "Failed allocating collision 
->> table\n");
->>                 return NULL;
->>         }
->> 
->>         /* One and only entry, never grows */
->>         ste = new_htbl->ste_arr;
->>         mlx5dr_ste_set_miss_addr(hw_ste, 
->> nic_matcher->e_anchor->chunk->icm_addr);
->>    /* Resource new_htbl is not freed or pointed-to in mlx5dr_htbl_get 
->> */
->>         mlx5dr_htbl_get(new_htbl);
->> 
->>    /* Variable new_htbl going out of scope leaks the storage it points 
->> to. */
->>         return ste;
->> ```
->> 
->> There's a caller of this function which does refcounting and free'ing 
->> by
->> itself but that function also skips free'ing `new_htbl` due to missing
->> jump to error label. (referring to `dr_rule_create_collision_entry 
->> lines
->> 75-77. They don't jump to `free_tbl`)
->> 
->> Added a `kfree(new_htbl)` just before returning `ste` pointer to fix 
->> the
->> leak.
->> 
->> Signed-off-by: Cengiz Can <cengiz@kernel.wtf>
->> ---
->> 
->> This might be totally breaking the refcounting logic in the file so
->> please provide any feedback so I can evolve this into something more
->> suitable.
->> 
->> For the record, Coverity scan id is CID 1457773.
->> 
->>  drivers/net/ethernet/mellanox/mlx5/core/steering/dr_rule.c | 2 ++
->>  1 file changed, 2 insertions(+)
->> 
->> diff --git 
->> a/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_rule.c 
->> b/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_rule.c
->> index e4cff7abb348..047b403c61db 100644
->> --- a/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_rule.c
->> +++ b/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_rule.c
->> @@ -60,6 +60,8 @@ dr_rule_create_collision_htbl(struct mlx5dr_matcher 
->> *matcher,
->>  	mlx5dr_ste_set_miss_addr(hw_ste, 
->> nic_matcher->e_anchor->chunk->icm_addr);
->>  	mlx5dr_htbl_get(new_htbl);
->> 
->> +	kfree(new_htbl);
->> +
->>  	return ste;
->>  }
->> 
->> --
->> 2.24.1
->> 
->> 
-> The fix looks incorrect to me.
-> The table is pointed by each ste in the ste_arr, ste->new_htbl and 
-> being
-> freed on mlx5dr_htbl_put.
-> We tested kmemleak a few days ago and came clean.
-> usually coverity is not wrong, but in this case I don't see the bug...
+lan78xx_tx_bh() makes sure to not exceed MAX_SINGLE_PACKET_SIZE
+bytes in the aggregated packets it builds, but does
+nothing to prevent large GSO packets being submitted.
 
-Hello Alex,
+Pierre-Francois reported various hangs when/if TSO is enabled.
 
-To my experience, the refcounting logic is complex and spread out to 
-multiple files.
+For localy generated packets, we can use netif_set_gso_max_size()
+to limit the size of TSO packets.
 
-It might be a false positive on Coverity's side.
+Note that forwarded packets could still hit the issue,
+so a complete fix might require implementing .ndo_features_check
+for this driver, forcing a software segmentation if the size
+of the TSO packet exceeds MAX_SINGLE_PACKET_SIZE.
 
-If it certainly sounds wrong, we can ignore this.
+Fixes: 55d7de9de6c3 ("Microchip's LAN7800 family USB 2/3 to 10/100/1000 Ethernet device driver")
+Signed-off-by: Eric Dumazet <edumazet@google.com>
+Reported-by: RENARD Pierre-Francois <pfrenard@gmail.com>
+Tested-by: RENARD Pierre-Francois <pfrenard@gmail.com>
+Cc: Stefan Wahren <stefan.wahren@i2se.com>
+Cc: Woojung Huh <woojung.huh@microchip.com>
+Cc: Microchip Linux Driver Support <UNGLinuxDriver@microchip.com>
+---
+ drivers/net/usb/lan78xx.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-Thanks
-
+diff --git a/drivers/net/usb/lan78xx.c b/drivers/net/usb/lan78xx.c
+index fb4781080d6dec2af22f41c5e064350ea74130b3..75bdfae5f3e20afef3d2880171c7c6e8511546c5 100644
+--- a/drivers/net/usb/lan78xx.c
++++ b/drivers/net/usb/lan78xx.c
+@@ -3750,6 +3750,7 @@ static int lan78xx_probe(struct usb_interface *intf,
+ 
+ 	/* MTU range: 68 - 9000 */
+ 	netdev->max_mtu = MAX_SINGLE_PACKET_SIZE;
++	netif_set_gso_max_size(netdev, MAX_SINGLE_PACKET_SIZE - MAX_HEADER);
+ 
+ 	dev->ep_blkin = (intf->cur_altsetting)->endpoint + 0;
+ 	dev->ep_blkout = (intf->cur_altsetting)->endpoint + 1;
 -- 
-Cengiz Can
-@cengiz_io
+2.25.0.rc1.283.g88dfdc4193-goog
+
