@@ -2,124 +2,96 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id EC71D138C0C
-	for <lists+netdev@lfdr.de>; Mon, 13 Jan 2020 07:51:18 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 410CA138C3D
+	for <lists+netdev@lfdr.de>; Mon, 13 Jan 2020 08:17:47 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728695AbgAMGvJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 13 Jan 2020 01:51:09 -0500
-Received: from mail-il1-f200.google.com ([209.85.166.200]:55902 "EHLO
-        mail-il1-f200.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728641AbgAMGvJ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 13 Jan 2020 01:51:09 -0500
-Received: by mail-il1-f200.google.com with SMTP id p8so7181821ilp.22
-        for <netdev@vger.kernel.org>; Sun, 12 Jan 2020 22:51:09 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
-        bh=Ycj0awElW1hWnnKMNTaanNWIbCD1FSZip4i2JBGkPVA=;
-        b=THmwR9F5ccPUgIT1KKwp12gPc95EIDGbfq4Y5tv05u/zGMRRltVjTBFLsJTHRyPloM
-         oHu7BY4mh3PHuS1BDl66FyibcT2j8/jAWQhnons2D8IOsrzkDP+9N/y6ciGZrNU0n1yC
-         lZKjNbzIjtyacsULWAZoHjiaV5GL6pWrsOpZ5a4qQpD/tfXob763xsalRjyV9brmeqNL
-         bz5ThrrBHla2CMCurEqnvuTa3VVvvlcNQdEUovpCZqdsOH9Vdgvo49P4CT3S2R/eM2KR
-         UxIe1oQDU9XDxYezOu1mG1RsH62M/FRrgFuQqQfE2RntzitNDrWAESxh8Hj0+orh8hOI
-         HnKg==
-X-Gm-Message-State: APjAAAW7DuSzGhU7ga++GZ1PkMQohp8L5ni4EG5uTT1QzopGonWbwbWO
-        2xfE7igVQEvlvvi/3eddhnhtEpYFFok1vI3rrxadYlpO24IA
-X-Google-Smtp-Source: APXvYqxccUNa6DXjS1lJQt9z+UwHdt/rDmithf+xkwkwyToXyN47QgtPSLOYybeOMjCdkMhlHkCh1nrBfJsXuN7rEBA6LzyLZ0wD
+        id S1728755AbgAMHRn (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 13 Jan 2020 02:17:43 -0500
+Received: from mail26.static.mailgun.info ([104.130.122.26]:44947 "EHLO
+        mail26.static.mailgun.info" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1728679AbgAMHRm (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 13 Jan 2020 02:17:42 -0500
+DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org; q=dns/txt;
+ s=smtp; t=1578899862; h=Content-Type: MIME-Version: Message-ID:
+ In-Reply-To: Date: References: Subject: Cc: To: From: Sender;
+ bh=PHpcWydMf81SX9BI3zK7atci8ZDAip52kbaK4/vTAKM=; b=ikpiilzn5hVfd3fXdBnA5QZYXGJE5+T8/wd8Lv1ouOM73RBqc02XntX1KBHiSyXUE1ol9LKu
+ 50dtrg+Yos2DLBoyLwdfs37MAkAuq0m3KhKBqHRfflqQux5CJmJzjSWWrhGZandCvjih0VQh
+ APb3F6gXSM8TRwGGAvS16hnSfvc=
+X-Mailgun-Sending-Ip: 104.130.122.26
+X-Mailgun-Sid: WyJiZjI2MiIsICJuZXRkZXZAdmdlci5rZXJuZWwub3JnIiwgImJlOWU0YSJd
+Received: from smtp.codeaurora.org (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171])
+ by mxa.mailgun.org with ESMTP id 5e1c1991.7f8189d6d6c0-smtp-out-n02;
+ Mon, 13 Jan 2020 07:17:37 -0000 (UTC)
+Received: by smtp.codeaurora.org (Postfix, from userid 1001)
+        id 77C56C4479C; Mon, 13 Jan 2020 07:17:37 +0000 (UTC)
+X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
+        aws-us-west-2-caf-mail-1.web.codeaurora.org
+X-Spam-Level: 
+X-Spam-Status: No, score=-1.0 required=2.0 tests=ALL_TRUSTED,SPF_NONE
+        autolearn=unavailable autolearn_force=no version=3.4.0
+Received: from x230.qca.qualcomm.com (dsl-hkibng32-54f84f-238.dhcp.inet.fi [84.248.79.238])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+        (No client certificate requested)
+        (Authenticated sender: kvalo)
+        by smtp.codeaurora.org (Postfix) with ESMTPSA id A0D18C433CB;
+        Mon, 13 Jan 2020 07:17:35 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org A0D18C433CB
+Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
+Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; spf=none smtp.mailfrom=kvalo@codeaurora.org
+From:   Kalle Valo <kvalo@codeaurora.org>
+To:     Jia-Ju Bai <baijiaju1990@gmail.com>
+Cc:     ath9k-devel@qca.qualcomm.com, davem@davemloft.net,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] ath9k: Fix possible data races in ath_set_channel()
+References: <20200111171528.7053-1-baijiaju1990@gmail.com>
+Date:   Mon, 13 Jan 2020 09:17:28 +0200
+In-Reply-To: <20200111171528.7053-1-baijiaju1990@gmail.com> (Jia-Ju Bai's
+        message of "Sun, 12 Jan 2020 01:15:28 +0800")
+Message-ID: <87a76rsu47.fsf@codeaurora.org>
+User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/24.5 (gnu/linux)
 MIME-Version: 1.0
-X-Received: by 2002:a02:3946:: with SMTP id w6mr13289460jae.9.1578898268776;
- Sun, 12 Jan 2020 22:51:08 -0800 (PST)
-Date:   Sun, 12 Jan 2020 22:51:08 -0800
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <0000000000007272b9059bffe6cc@google.com>
-Subject: WARNING: refcount bug in j1939_netdev_start (2)
-From:   syzbot <syzbot+85d9878b19c94f9019ad@syzkaller.appspotmail.com>
-To:     davem@davemloft.net, kernel@pengutronix.de,
-        linux-can@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux@rempel-privat.de, mkl@pengutronix.de, netdev@vger.kernel.org,
-        robin@protonic.nl, socketcan@hartkopp.net,
-        syzkaller-bugs@googlegroups.com
-Content-Type: text/plain; charset="UTF-8"; format=flowed; delsp=yes
+Content-Type: text/plain
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello,
+Jia-Ju Bai <baijiaju1990@gmail.com> writes:
 
-syzbot found the following crash on:
+> The functions ath9k_config() and ath_ani_calibrate() may be concurrently
+> executed.
+>
+> A variable survey->filled is accessed with holding a spinlock
+> common->cc_lock, through:
+> ath_ani_calibrate()
+>     spin_lock_irqsave(&common->cc_lock, flags);
+>     ath_update_survey_stats()
+>         ath_update_survey_nf()
+>             survey->filled |= SURVEY_INFO_NOISE_DBM;
+>
+> The identical variables sc->cur_survey->filled and 
+> sc->survey[pos].filled is accessed without holding this lock, through:
+> ath9k_config()
+>     ath_chanctx_set_channel()
+>         ath_set_channel()
+>             sc->cur_survey->filled &= ~SURVEY_INFO_IN_USE;
+>             sc->cur_survey->filled |= SURVEY_INFO_IN_USE;
+>             else if (!(sc->survey[pos].filled & SURVEY_INFO_IN_USE))
+>             ath_update_survey_nf
+>                 survey->filled |= SURVEY_INFO_NOISE_DBM;
+>
+> Thus, possible data races may occur.
+>
+> To fix these data races, in ath_set_channel(), these variables are
+> accessed with holding the spinlock common->cc_lock.
+>
+> These data races are found by the runtime testing of our tool DILP-2.
+>
+> Signed-off-by: Jia-Ju Bai <baijiaju1990@gmail.com>
 
-HEAD commit:    6327edce Merge branch 'i2c/for-current' of git://git.kerne..
-git tree:       upstream
-console output: https://syzkaller.appspot.com/x/log.txt?x=1608b349e00000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=7e89bd00623fe71e
-dashboard link: https://syzkaller.appspot.com/bug?extid=85d9878b19c94f9019ad
-compiler:       gcc (GCC) 9.0.0 20181231 (experimental)
+I need a detailed review from somone familiar with ath9k before I can
+consider applying this.
 
-Unfortunately, I don't have any reproducer for this crash yet.
-
-IMPORTANT: if you fix the bug, please add the following tag to the commit:
-Reported-by: syzbot+85d9878b19c94f9019ad@syzkaller.appspotmail.com
-
-------------[ cut here ]------------
-refcount_t: addition on 0; use-after-free.
-WARNING: CPU: 1 PID: 26973 at lib/refcount.c:25  
-refcount_warn_saturate+0x174/0x1f0 lib/refcount.c:25
-Kernel panic - not syncing: panic_on_warn set ...
-CPU: 1 PID: 26973 Comm: syz-executor.2 Not tainted 5.5.0-rc5-syzkaller #0
-Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS  
-Google 01/01/2011
-Call Trace:
-  __dump_stack lib/dump_stack.c:77 [inline]
-  dump_stack+0x197/0x210 lib/dump_stack.c:118
-  panic+0x2e3/0x75c kernel/panic.c:221
-  __warn.cold+0x2f/0x3e kernel/panic.c:582
-  report_bug+0x289/0x300 lib/bug.c:195
-  fixup_bug arch/x86/kernel/traps.c:174 [inline]
-  fixup_bug arch/x86/kernel/traps.c:169 [inline]
-  do_error_trap+0x11b/0x200 arch/x86/kernel/traps.c:267
-  do_invalid_op+0x37/0x50 arch/x86/kernel/traps.c:286
-  invalid_op+0x23/0x30 arch/x86/entry/entry_64.S:1027
-RIP: 0010:refcount_warn_saturate+0x174/0x1f0 lib/refcount.c:25
-Code: 06 31 ff 89 de e8 6c 18 d9 fd 84 db 0f 85 33 ff ff ff e8 1f 17 d9 fd  
-48 c7 c7 c0 27 71 88 c6 05 7b d8 da 06 01 e8 9b c6 a9 fd <0f> 0b e9 14 ff  
-ff ff e8 00 17 d9 fd 0f b6 1d 60 d8 da 06 31 ff 89
-RSP: 0018:ffffc90008e77ce0 EFLAGS: 00010286
-RAX: 0000000000000000 RBX: 0000000000000000 RCX: 0000000000000000
-RDX: 0000000000009ee4 RSI: ffffffff815e53a6 RDI: fffff520011cef8e
-RBP: ffffc90008e77cf0 R08: ffff888093580600 R09: ffffed1015d26621
-R10: ffffed1015d26620 R11: ffff8880ae933107 R12: 0000000000000002
-R13: ffff888047150000 R14: ffff8880a725b000 R15: 0000000000000118
-  refcount_add include/linux/refcount.h:191 [inline]
-  refcount_inc include/linux/refcount.h:228 [inline]
-  kref_get include/linux/kref.h:45 [inline]
-  j1939_netdev_start+0x534/0x650 net/can/j1939/main.c:277
-  j1939_sk_bind+0x68d/0x980 net/can/j1939/socket.c:469
-  __sys_bind+0x239/0x290 net/socket.c:1649
-  __do_sys_bind net/socket.c:1660 [inline]
-  __se_sys_bind net/socket.c:1658 [inline]
-  __x64_sys_bind+0x73/0xb0 net/socket.c:1658
-  do_syscall_64+0xfa/0x790 arch/x86/entry/common.c:294
-  entry_SYSCALL_64_after_hwframe+0x49/0xbe
-RIP: 0033:0x45af49
-Code: ad b6 fb ff c3 66 2e 0f 1f 84 00 00 00 00 00 66 90 48 89 f8 48 89 f7  
-48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff  
-ff 0f 83 7b b6 fb ff c3 66 2e 0f 1f 84 00 00 00 00
-RSP: 002b:00007f0a1184dc78 EFLAGS: 00000246 ORIG_RAX: 0000000000000031
-RAX: ffffffffffffffda RBX: 0000000000000003 RCX: 000000000045af49
-RDX: 0000000000000018 RSI: 0000000020000240 RDI: 0000000000000005
-RBP: 000000000075c070 R08: 0000000000000000 R09: 0000000000000000
-R10: 0000000000000000 R11: 0000000000000246 R12: 00007f0a1184e6d4
-R13: 00000000004c1358 R14: 00000000004d6080 R15: 00000000ffffffff
-Kernel Offset: disabled
-Rebooting in 86400 seconds..
-
-
----
-This bug is generated by a bot. It may contain errors.
-See https://goo.gl/tpsmEJ for more information about syzbot.
-syzbot engineers can be reached at syzkaller@googlegroups.com.
-
-syzbot will keep track of this bug report. See:
-https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
+-- 
+https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
