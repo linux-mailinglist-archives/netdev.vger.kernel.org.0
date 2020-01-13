@@ -2,74 +2,123 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 21C8D139874
-	for <lists+netdev@lfdr.de>; Mon, 13 Jan 2020 19:14:15 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id BE96513985E
+	for <lists+netdev@lfdr.de>; Mon, 13 Jan 2020 19:11:04 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728516AbgAMSON (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 13 Jan 2020 13:14:13 -0500
-Received: from canardo.mork.no ([148.122.252.1]:45357 "EHLO canardo.mork.no"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726435AbgAMSON (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 13 Jan 2020 13:14:13 -0500
-X-Greylist: delayed 644 seconds by postgrey-1.27 at vger.kernel.org; Mon, 13 Jan 2020 13:14:12 EST
-Received: from miraculix.mork.no (miraculix.mork.no [IPv6:2001:4641:0:2:7627:374e:db74:e353])
-        (authenticated bits=0)
-        by canardo.mork.no (8.15.2/8.15.2) with ESMTPSA id 00DI3R6n015898
-        (version=TLSv1.3 cipher=TLS_AES_256_GCM_SHA384 bits=256 verify=NO);
-        Mon, 13 Jan 2020 19:03:27 +0100
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=mork.no; s=b;
-        t=1578938607; bh=QjXuhahTNn2hxQHP2MQWZR/uh17Qw5zNYV3owU01MsM=;
-        h=From:To:Cc:Subject:References:Date:Message-ID:From;
-        b=WA+ZshgV/SZ9zG0XBIKcCKMnmAUELfxCfspllhuR4I2z354Qw8wDtv9ceRtcV/P/e
-         3bgEKt5F9SpzZJvA0RryFd5JvvtpWQKeh3Dx/+inH5W9sj2RM3Zc6Kbl8pWxO8uLPZ
-         Sp3n4S5qXgcVVECmBMm56yJgLBo9IulfRar8l+3k=
-Received: from bjorn by miraculix.mork.no with local (Exim 4.92)
-        (envelope-from <bjorn@mork.no>)
-        id 1ir43i-0007wv-Vn; Mon, 13 Jan 2020 19:03:27 +0100
-From:   =?utf-8?Q?Bj=C3=B8rn_Mork?= <bjorn@mork.no>
-To:     Kristian Evensen <kristian.evensen@gmail.com>
-Cc:     netdev@vger.kernel.org
-Subject: Re: [PATCH net] qmi_wwan: Add support for Quectel RM500Q
-Organization: m
-References: <20200113135740.31600-1-kristian.evensen@gmail.com>
-Date:   Mon, 13 Jan 2020 19:03:26 +0100
-In-Reply-To: <20200113135740.31600-1-kristian.evensen@gmail.com> (Kristian
-        Evensen's message of "Mon, 13 Jan 2020 14:57:40 +0100")
-Message-ID: <87a76rutch.fsf@miraculix.mork.no>
-User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/26.1 (gnu/linux)
+        id S1728641AbgAMSLC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 13 Jan 2020 13:11:02 -0500
+Received: from us-smtp-1.mimecast.com ([205.139.110.61]:35675 "EHLO
+        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1726878AbgAMSLC (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 13 Jan 2020 13:11:02 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1578939061;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=0GiC4x1xyl7Nxzus/W1mb/zYOcTy1w7cfVX4WnGR3Cw=;
+        b=KslWuBKjHoJm0kbTL0wDb1K2lZ2i5KNpHAz1lb6MKskZZIl+sF4pWusgSPFklyoKl3r4Bq
+        dEVTlyeyvGZ5VtQSWCLcAZMg9C5wKwkR+EgUhNLb2j05aT8Q3/FQSm+ulNG5GSvvvEVxyO
+        I8qSjmcwrTMuW/THPzcRQ9lLE+jp06w=
+Received: from mail-lj1-f197.google.com (mail-lj1-f197.google.com
+ [209.85.208.197]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-214-OgxpwCZ7MMCSLLyPiXefcQ-1; Mon, 13 Jan 2020 13:10:58 -0500
+X-MC-Unique: OgxpwCZ7MMCSLLyPiXefcQ-1
+Received: by mail-lj1-f197.google.com with SMTP id k21so2282224ljg.3
+        for <netdev@vger.kernel.org>; Mon, 13 Jan 2020 10:10:57 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:from:to:cc:date:message-id:user-agent
+         :mime-version:content-transfer-encoding;
+        bh=0GiC4x1xyl7Nxzus/W1mb/zYOcTy1w7cfVX4WnGR3Cw=;
+        b=CSUrqFCoN7l12wJwf4Zah0tKi6F9j4auzccpGAbcIWLWwn7+K5KvjPqtNNGQ7LeJtf
+         tCeW0lw8VBoGtpTIIOqTkl2T4kAinVNCVww7ILY/Q1Rb1NJUtaOdqiMytx1laucUtA2G
+         7DT10eSjr7E8/Jjf3vw6L6RUCMi41C2qh1cDEp+NrXGOKiPD/omrOuoEPlRDCG2vKQkt
+         NuBdOgdu4iL8RmXlE0wurkPilvKSZfZGlnVxDZMjKWvAK65gglKzB5OXpA66v22Lyrr9
+         VedOm0DEIyi6HSDCOZ2yCVyArRBAEJk8cRB70Em1+37BipOxh0W/id52KDMntT/g7C5Q
+         zbFg==
+X-Gm-Message-State: APjAAAUK/Vsi8COXRp/gcwNl1LhQfpwcM9cNMyUz7zUpewYc5wbMr+hf
+        TikEMGc3Gvn5X6X+lKw4iGG7tjLla4p1QhBHlhbcGzssRUbGYzlcyGZlpJRYJLNN7fhcj44/F88
+        p2QT0glhgnaOwCUgd
+X-Received: by 2002:a2e:96c6:: with SMTP id d6mr11768033ljj.4.1578939056411;
+        Mon, 13 Jan 2020 10:10:56 -0800 (PST)
+X-Google-Smtp-Source: APXvYqykskaBPu0tmqGarkd/Rbms3XY/pthHACGXXDa0CI//T1u2y4oAh8xB39NNgMYjNM3ZB0OOVw==
+X-Received: by 2002:a2e:96c6:: with SMTP id d6mr11768022ljj.4.1578939056212;
+        Mon, 13 Jan 2020 10:10:56 -0800 (PST)
+Received: from alrua-x1.borgediget.toke.dk ([2a0c:4d80:42:443::2])
+        by smtp.gmail.com with ESMTPSA id i4sm7335829lji.0.2020.01.13.10.10.55
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 13 Jan 2020 10:10:55 -0800 (PST)
+Received: by alrua-x1.borgediget.toke.dk (Postfix, from userid 1000)
+        id AE63D1804D6; Mon, 13 Jan 2020 19:10:54 +0100 (CET)
+Subject: [PATCH bpf-next v2 0/2] xdp: Introduce bulking for non-map
+ XDP_REDIRECT
+From:   =?utf-8?q?Toke_H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
+To:     netdev@vger.kernel.org
+Cc:     bpf@vger.kernel.org, Daniel Borkmann <daniel@iogearbox.net>,
+        Alexei Starovoitov <ast@kernel.org>,
+        David Miller <davem@davemloft.net>,
+        Jesper Dangaard Brouer <brouer@redhat.com>,
+        =?utf-8?b?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@gmail.com>,
+        John Fastabend <john.fastabend@gmail.com>
+Date:   Mon, 13 Jan 2020 19:10:54 +0100
+Message-ID: <157893905455.861394.14341695989510022302.stgit@toke.dk>
+User-Agent: StGit/0.21
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
-X-Virus-Scanned: clamav-milter 0.101.4 at canardo
-X-Virus-Status: Clean
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Kristian Evensen <kristian.evensen@gmail.com> writes:
+Since commit 96360004b862 ("xdp: Make devmap flush_list common for all map
+instances"), devmap flushing is a global operation instead of tied to a
+particular map. This means that with a bit of refactoring, we can finally fix
+the performance delta between the bpf_redirect_map() and bpf_redirect() helper
+functions, by introducing bulking for the latter as well.
 
-> RM500Q is a 5G module from Quectel, supporting both standalone and
-> non-standalone modes. The normal Quectel quirks apply (DTR and dynamic
-> interface numbers).
->
-> Signed-off-by: Kristian Evensen <kristian.evensen@gmail.com>
-> ---
->  drivers/net/usb/qmi_wwan.c | 1 +
->  1 file changed, 1 insertion(+)
->
-> diff --git a/drivers/net/usb/qmi_wwan.c b/drivers/net/usb/qmi_wwan.c
-> index 4196c0e32740..9485c8d1de8a 100644
-> --- a/drivers/net/usb/qmi_wwan.c
-> +++ b/drivers/net/usb/qmi_wwan.c
-> @@ -1062,6 +1062,7 @@ static const struct usb_device_id products[] =3D {
->  	{QMI_QUIRK_QUECTEL_DYNCFG(0x2c7c, 0x0125)},	/* Quectel EC25, EC20 R2.0 =
- Mini PCIe */
->  	{QMI_QUIRK_QUECTEL_DYNCFG(0x2c7c, 0x0306)},	/* Quectel EP06/EG06/EM06 */
->  	{QMI_QUIRK_QUECTEL_DYNCFG(0x2c7c, 0x0512)},	/* Quectel EG12/EM12 */
-> +	{QMI_QUIRK_QUECTEL_DYNCFG(0x2c7c, 0x0800)},	/* Quectel RM500Q-GL */
->=20=20
->  	/* 3. Combined interface devices matching on interface number */
->  	{QMI_FIXED_INTF(0x0408, 0xea42, 4)},	/* Yota / Megafon M100-1 */
+This series makes this change by moving the data structure used for the bulking
+into struct net_device itself, so we can access it even when there is not
+devmap. Once this is done, moving the bpf_redirect() helper to use the bulking
+mechanism becomes quite trivial, and brings bpf_redirect() up to the same as
+bpf_redirect_map():
 
-Acked-by: Bj=C3=B8rn Mork <bjorn@mork.no>
+                       Before:   After:
+1 CPU:
+bpf_redirect_map:      8.4 Mpps  8.4 Mpps  (no change)
+bpf_redirect:          5.0 Mpps  8.4 Mpps  (+68%)
+2 CPUs:
+bpf_redirect_map:     15.9 Mpps  16.1 Mpps  (+1% or ~no change)
+bpf_redirect:          9.5 Mpps  15.9 Mpps  (+67%)
+
+After this patch series, the only semantics different between the two variants
+of the bpf() helper (apart from the absence of a map argument, obviously) is
+that the _map() variant will return an error if passed an invalid map index,
+whereas the bpf_redirect() helper will succeed, but drop packets on
+xdp_do_redirect(). This is because the helper has no reference to the calling
+netdev, so unfortunately we can't do the ifindex lookup directly in the helper.
+
+Changelog:
+
+v2:
+  - Consolidate code paths and tracepoints for map and non-map redirect variants
+    (Björn)
+  - Add performance data for 2-CPU test (Jesper)
+  - Move fields to avoid shifting cache lines in struct net_device (Eric)
+
+---
+
+Toke Høiland-Jørgensen (2):
+      xdp: Move devmap bulk queue into struct net_device
+      xdp: Use bulking for non-map XDP_REDIRECT and consolidate code paths
+
+
+ include/linux/bpf.h        |   13 +++++-
+ include/linux/netdevice.h  |   11 +++--
+ include/trace/events/xdp.h |  104 +++++++++++++++++++-------------------------
+ kernel/bpf/devmap.c        |   94 +++++++++++++++++++++-------------------
+ net/core/dev.c             |    2 +
+ net/core/filter.c          |   86 +++++++-----------------------------
+ 6 files changed, 132 insertions(+), 178 deletions(-)
+
