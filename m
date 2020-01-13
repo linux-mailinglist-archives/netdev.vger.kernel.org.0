@@ -2,123 +2,113 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 6E4AB139169
-	for <lists+netdev@lfdr.de>; Mon, 13 Jan 2020 13:51:37 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 28CCF13916A
+	for <lists+netdev@lfdr.de>; Mon, 13 Jan 2020 13:51:51 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728656AbgAMMvd (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 13 Jan 2020 07:51:33 -0500
-Received: from mx2.suse.de ([195.135.220.15]:44914 "EHLO mx2.suse.de"
+        id S1728767AbgAMMvt (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 13 Jan 2020 07:51:49 -0500
+Received: from mx4.wp.pl ([212.77.101.12]:45366 "EHLO mx4.wp.pl"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726480AbgAMMvc (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 13 Jan 2020 07:51:32 -0500
-X-Virus-Scanned: by amavisd-new at test-mx.suse.de
-Received: from relay2.suse.de (unknown [195.135.220.254])
-        by mx2.suse.de (Postfix) with ESMTP id CEAC2ACC9;
-        Mon, 13 Jan 2020 12:51:30 +0000 (UTC)
-Received: by unicorn.suse.cz (Postfix, from userid 1000)
-        id 28CC0E3C1F; Mon, 13 Jan 2020 13:51:29 +0100 (CET)
-Date:   Mon, 13 Jan 2020 13:51:29 +0100
-From:   Michal Kubecek <mkubecek@suse.cz>
-To:     netdev@vger.kernel.org
-Cc:     Kai-Heng Feng <kai.heng.feng@canonical.com>, davem@davemloft.ne,
-        jeffrey.t.kirsher@intel.com,
-        "David S. Miller" <davem@davemloft.net>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Jiri Pirko <jiri@mellanox.com>,
-        Pablo Neira Ayuso <pablo@netfilter.org>,
-        Maxime Chevallier <maxime.chevallier@bootlin.com>,
-        Jakub Kicinski <jakub.kicinski@netronome.com>,
-        Li RongQing <lirongqing@baidu.com>,
-        open list <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH 2/2] ethtool: Call begin() and complete() in
- __ethtool_get_link_ksettings()
-Message-ID: <20200113125129.GD25361@unicorn.suse.cz>
-References: <20200110074159.18473-1-kai.heng.feng@canonical.com>
- <20200110074159.18473-2-kai.heng.feng@canonical.com>
+        id S1726480AbgAMMvt (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 13 Jan 2020 07:51:49 -0500
+Received: (wp-smtpd smtp.wp.pl 17450 invoked from network); 13 Jan 2020 13:51:46 +0100
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=wp.pl; s=1024a;
+          t=1578919906; bh=Mxm7b8zM02QFZaaphROEcKcn/YEx9WXTuE/NQeKUMUs=;
+          h=From:To:Cc:Subject;
+          b=rUht59dHg4E9WOMTiWla3X+3rKCaD7tAd0PX3Ue1TBpJntMZkghkbgqQgvWXcoV3i
+           Y3oZ3nPg2I1dfYthFTDcGv0gGLDOqhs7ZG3yrNS8xidHYGyWTd9xVUU2ndHKNQkDv9
+           cZ39RH3qFpGHmV0OcbokFoBLxDh2D5cypZWD04MY=
+Received: from c-73-93-4-247.hsd1.ca.comcast.net (HELO cakuba) (kubakici@wp.pl@[73.93.4.247])
+          (envelope-sender <kubakici@wp.pl>)
+          by smtp.wp.pl (WP-SMTPD) with ECDHE-RSA-AES256-GCM-SHA384 encrypted SMTP
+          for <niu_xilei@163.com>; 13 Jan 2020 13:51:46 +0100
+Date:   Mon, 13 Jan 2020 04:51:36 -0800
+From:   Jakub Kicinski <kubakici@wp.pl>
+To:     Niu Xilei <niu_xilei@163.com>
+Cc:     davem@davemloft.net, tglx@linutronix.de, fw@strlen.de,
+        peterz@infradead.org, steffen.klassert@secunet.com,
+        bigeasy@linutronix.de, jonathan.lemon@gmail.com, pabeni@redhat.com,
+        anshuman.khandual@arm.com, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v2] pktgen: create packet use IPv6 source address
+ between src6_min and src6_max.
+Message-ID: <20200113045136.4d59dded@cakuba>
+In-Reply-To: <20200113112103.6766-1-niu_xilei@163.com>
+References: <20200113112103.6766-1-niu_xilei@163.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200110074159.18473-2-kai.heng.feng@canonical.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+X-WP-MailID: b6ed76e7110333e816cd291da4871436
+X-WP-AV: skaner antywirusowy Poczty Wirtualnej Polski
+X-WP-SPAM: NO 0000000 [oWMU]                               
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Jan 10, 2020 at 03:41:59PM +0800, Kai-Heng Feng wrote:
-> Device like igb gets runtime suspended when there's no link partner. We
-> can't get correct speed under that state:
-> $ cat /sys/class/net/enp3s0/speed
-> 1000
-> 
-> In addition to that, an error can also be spotted in dmesg:
-> [  385.991957] igb 0000:03:00.0 enp3s0: PCIe link lost
-> 
-> It's because the igb device doesn't get runtime resumed before calling
-> get_link_ksettings().
-> 
-> So let's call begin() and complete() like what dev_ethtool() does, to
-> runtime resume/suspend or power up/down the device properly.
-> 
-> Once this fix is in place, igb can show the speed correctly without link
-> partner:
-> $ cat /sys/class/net/enp3s0/speed
-> -1
+The subject line could use some rewording, I think.
 
-I agree that we definitely should make sure ->begin() and ->complete()
-are always called around ethtool_ops calls. But even if nesting should
-be safe now (for in-tree drivers, that is), I'm not really happy about
-calling them even in places where we positively know we are always
-inside a begin / complete block as e.g. vxlan or net_failover do. (And
-also linkinfo.c and linkmodes.c but it may be easier to call
-->get_link_ksettings() directly there.)
-
-How about having two helpers: one simple for "ethtool context" where we
-know we already are between ->begin() and ->complete() and one with the
-begin/complete calls for the rest? Another interesting question is if
-any of the callers which do not have their own begin()/complete() wrap
-does actually need anything more than speed and duplex (I didn't do
-a full check).
-
-Michal
-
-> Signed-off-by: Kai-Heng Feng <kai.heng.feng@canonical.com>
-> ---
->  net/ethtool/ioctl.c | 15 ++++++++++++++-
->  1 file changed, 14 insertions(+), 1 deletion(-)
+On Mon, 13 Jan 2020 19:21:02 +0800, Niu Xilei wrote:
+> Pktgen can use only one IPv6 source address from output device, or src6 command
+> setting. In pressure test we need create lots of session more than 65536.If
+> IPSRC_RND flag is set, generate random source address between src6_min and src6_max.
 > 
-> diff --git a/net/ethtool/ioctl.c b/net/ethtool/ioctl.c
-> index 182bffbffa78..c768dbf45fc4 100644
-> --- a/net/ethtool/ioctl.c
-> +++ b/net/ethtool/ioctl.c
-> @@ -423,13 +423,26 @@ struct ethtool_link_usettings {
->  int __ethtool_get_link_ksettings(struct net_device *dev,
->  				 struct ethtool_link_ksettings *link_ksettings)
->  {
-> +	int rc;
+> Signed-off-by: Niu Xilei <niu_xilei@163.com>
+> 
+> Changes since v1:
+>  - only create IPv6 source address over least significant 64 bit range
+
+> +/* generate ipv6 source addr */
+> +static inline void set_src_in6_addr(struct pktgen_dev *pkt_dev)
+
+Please just use "static" instead of "static inline". The compiler will
+be clever enough to decide the inlining.
+
+> +{
+> +	__be64 min6_h, min6_l, max6_h, max6_l, addr_l, *t;
+> +	u64 min6, max6, rand, i;
+> +	struct in6_addr addr6;
 > +
->  	ASSERT_RTNL();
->  
->  	if (!dev->ethtool_ops->get_link_ksettings)
->  		return -EOPNOTSUPP;
->  
-> +	if (dev->ethtool_ops->begin) {
-> +		rc = dev->ethtool_ops->begin(dev);
-> +		if (rc  < 0)
-> +			return rc;
+> +	memcpy(&min6_h, pkt_dev->min_in6_saddr.s6_addr, 8);
+> +	memcpy(&min6_l, pkt_dev->min_in6_saddr.s6_addr + 8, 8);
+> +	memcpy(&max6_h, pkt_dev->max_in6_saddr.s6_addr, 8);
+> +	memcpy(&max6_l, pkt_dev->max_in6_saddr.s6_addr + 8, 8);
+> +
+> +	/* only generate source address in least significant 64 bits range
+> +	 * most significant 64 bits must be equal
+> +	 */
+> +	if (max6_h != min6_h)
+> +		return;
+> +
+> +	addr6 = pkt_dev->min_in6_saddr;
+> +	t = (__be64 *)addr6.s6_addr + 1;
+> +	min6 = be64_to_cpu(min6_l);
+> +	max6 = be64_to_cpu(max6_l);
+> +
+> +	if (min6 < max6) {
+
+Since this code is executed on every packet, would it be possible to
+pre-compute the decision if the IPv6 address is to be generated or not?
+We have 4 memcpy()s and 2 byte swaps, and the conditions never change,
+so it could be computed at setup time, right?
+
+> +		if (pkt_dev->flags & F_IPSRC_RND) {
+> +			do {
+> +				prandom_bytes(&rand, sizeof(rand));
+> +				rand = rand % (max6 - min6) + min6;
+> +				addr_l = cpu_to_be64(rand);
+> +				memcpy(t, &addr_l, 8);
+> +			} while (ipv6_addr_loopback(&addr6) ||
+> +				 ipv6_addr_v4mapped(&addr6) ||
+> +				 ipv6_addr_is_multicast(&addr6));
+> +		} else {
+> +			addr6 = pkt_dev->cur_in6_saddr;
+> +			i = be64_to_cpu(*t);
+> +			if (++i > max6)
+> +				i = min6;
+> +			addr_l = cpu_to_be64(i);
+> +			memcpy(t, &addr_l, 8);
+> +		}
 > +	}
-> +
->  	memset(link_ksettings, 0, sizeof(*link_ksettings));
-> -	return dev->ethtool_ops->get_link_ksettings(dev, link_ksettings);
-> +	rc = dev->ethtool_ops->get_link_ksettings(dev, link_ksettings);
-> +
-> +	if (dev->ethtool_ops->complete)
-> +		dev->ethtool_ops->complete(dev);
-> +
-> +	return rc;
->  }
->  EXPORT_SYMBOL(__ethtool_get_link_ksettings);
->  
-> -- 
-> 2.17.1
-> 
+> +	pkt_dev->cur_in6_saddr = addr6;
+> +}
