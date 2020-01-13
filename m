@@ -2,193 +2,135 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id D0EF1139C8A
-	for <lists+netdev@lfdr.de>; Mon, 13 Jan 2020 23:32:30 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 84FAA139CBC
+	for <lists+netdev@lfdr.de>; Mon, 13 Jan 2020 23:42:48 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729083AbgAMWcQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 13 Jan 2020 17:32:16 -0500
-Received: from relay9-d.mail.gandi.net ([217.70.183.199]:34943 "EHLO
-        relay9-d.mail.gandi.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729052AbgAMWcN (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 13 Jan 2020 17:32:13 -0500
-X-Originating-IP: 90.76.143.236
-Received: from localhost (lfbn-tou-1-1075-236.w90-76.abo.wanadoo.fr [90.76.143.236])
-        (Authenticated sender: antoine.tenart@bootlin.com)
-        by relay9-d.mail.gandi.net (Postfix) with ESMTPSA id C9B33FF805;
-        Mon, 13 Jan 2020 22:32:08 +0000 (UTC)
-From:   Antoine Tenart <antoine.tenart@bootlin.com>
-To:     davem@davemloft.net, sd@queasysnail.net, andrew@lunn.ch,
-        f.fainelli@gmail.com, hkallweit1@gmail.com
-Cc:     Antoine Tenart <antoine.tenart@bootlin.com>,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        thomas.petazzoni@bootlin.com, alexandre.belloni@bootlin.com,
-        allan.nielsen@microchip.com, camelia.groza@nxp.com,
-        Simon.Edelhaus@aquantia.com, Igor.Russkikh@aquantia.com,
-        jakub.kicinski@netronome.com
-Subject: [PATCH net-next v6 10/10] net: phy: mscc: PN rollover support
-Date:   Mon, 13 Jan 2020 23:31:48 +0100
-Message-Id: <20200113223148.746096-11-antoine.tenart@bootlin.com>
-X-Mailer: git-send-email 2.24.1
-In-Reply-To: <20200113223148.746096-1-antoine.tenart@bootlin.com>
-References: <20200113223148.746096-1-antoine.tenart@bootlin.com>
+        id S1728905AbgAMWmq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 13 Jan 2020 17:42:46 -0500
+Received: from mail-lf1-f67.google.com ([209.85.167.67]:33550 "EHLO
+        mail-lf1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726530AbgAMWmq (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 13 Jan 2020 17:42:46 -0500
+Received: by mail-lf1-f67.google.com with SMTP id n25so8204442lfl.0
+        for <netdev@vger.kernel.org>; Mon, 13 Jan 2020 14:42:45 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=cloudflare.com; s=google;
+        h=references:user-agent:from:to:cc:subject:in-reply-to:date
+         :message-id:mime-version;
+        bh=hYezfZM0vvLS3M5s++Lru0Dkzvjkxpc7Nto24AAXinM=;
+        b=dwIyPyXfHowi/NcCWY7Kzdsig1ZmvIYBKaA6gNstjR8jNNxmJx2c576/8dzckEkosV
+         eaOuv/hEFh3DkSjIX2Jn/e9unPzOGTq8ZA9AuVJKjP3uccUYN+5qftkqJI6nbeVrhU/o
+         lAeuVVdROABPeu9c/HJPTRY7S93wUYdPgMFv0=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:references:user-agent:from:to:cc:subject
+         :in-reply-to:date:message-id:mime-version;
+        bh=hYezfZM0vvLS3M5s++Lru0Dkzvjkxpc7Nto24AAXinM=;
+        b=jn57UYesMrV9CJALSiJ1uw+qxUovzfZbhsG8K7Inqkj+doafGqq9tFYXgpEwn6o/uT
+         N0bDFOgS8kvDHVgpblzjTURqOPZoX03IzJsxO4K0NzXw7BdORYR0jaF/GE7yPn+4yN8Z
+         H/xHJm8cmS6y0FEAlUoOfZH6xnx5nS28eMXee6VyqTw/Vvip28gapY1b5vxFtCKfA8S3
+         aG1bVi0rW09u0GUD1oEXa9UoakFDIl415yoH8VqlFasRUWNzTm+hGymc35moyS0caRj/
+         QbRqzF4AeQ14oqPm3dD3hgFa3bvOaurgeB9Wtfh83t7O3pfkVuVVRabVXAO6DcY1ODTa
+         68/A==
+X-Gm-Message-State: APjAAAWIznoC+CXwz6AqmAvmY750A2RzsY4kp8wpaEcMjB0JlecptzX8
+        97K4H1o3tFxxVxsCkRVkh8+L9w==
+X-Google-Smtp-Source: APXvYqyQ+1cE+sTLxxgen+bJhJ8btjNu7hFcEEIPyCQ4ipolBW/T7Sv6MsE3yO+8YIebAk0PpFJpNQ==
+X-Received: by 2002:a19:5212:: with SMTP id m18mr11046342lfb.7.1578955364322;
+        Mon, 13 Jan 2020 14:42:44 -0800 (PST)
+Received: from cloudflare.com ([2a02:a310:c262:aa00:b35e:8938:2c2a:ba8b])
+        by smtp.gmail.com with ESMTPSA id y25sm6279571lfy.59.2020.01.13.14.42.43
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 13 Jan 2020 14:42:43 -0800 (PST)
+References: <20200110105027.257877-1-jakub@cloudflare.com> <20200110105027.257877-5-jakub@cloudflare.com> <20200113222342.suypc3rgib7xbkjl@kafai-mbp.dhcp.thefacebook.com>
+User-agent: mu4e 1.1.0; emacs 26.3
+From:   Jakub Sitnicki <jakub@cloudflare.com>
+To:     Martin Lau <kafai@fb.com>
+Cc:     "bpf\@vger.kernel.org" <bpf@vger.kernel.org>,
+        "netdev\@vger.kernel.org" <netdev@vger.kernel.org>,
+        "kernel-team\@cloudflare.com" <kernel-team@cloudflare.com>,
+        Eric Dumazet <edumazet@google.com>,
+        "John Fastabend" <john.fastabend@gmail.com>,
+        Lorenz Bauer <lmb@cloudflare.com>
+Subject: Re: [PATCH bpf-next v2 04/11] tcp_bpf: Don't let child socket inherit parent protocol ops on copy
+In-reply-to: <20200113222342.suypc3rgib7xbkjl@kafai-mbp.dhcp.thefacebook.com>
+Date:   Mon, 13 Jan 2020 23:42:42 +0100
+Message-ID: <87ftgjrna5.fsf@cloudflare.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This patch adds support for handling MACsec PN rollover in the mscc PHY
-driver. When a flow rolls over, an interrupt is fired. This patch adds
-the logic to check all flows and identify the one rolling over in the
-handle_interrupt PHY helper, then disables the flow and report the event
-to the MACsec core.
+On Mon, Jan 13, 2020 at 11:23 PM CET, Martin Lau wrote:
+> On Fri, Jan 10, 2020 at 11:50:20AM +0100, Jakub Sitnicki wrote:
+>> Prepare for cloning listening sockets that have their protocol callbacks
+>> overridden by sk_msg. Child sockets must not inherit parent callbacks that
+>> access state stored in sk_user_data owned by the parent.
+>>
+>> Restore the child socket protocol callbacks before the it gets hashed and
+>> any of the callbacks can get invoked.
+>>
+>> Signed-off-by: Jakub Sitnicki <jakub@cloudflare.com>
+>> ---
+>>  include/net/tcp.h        |  1 +
+>>  net/ipv4/tcp_bpf.c       | 13 +++++++++++++
+>>  net/ipv4/tcp_minisocks.c |  2 ++
+>>  3 files changed, 16 insertions(+)
+>>
+>> diff --git a/include/net/tcp.h b/include/net/tcp.h
+>> index 9dd975be7fdf..7cbf9465bb10 100644
+>> --- a/include/net/tcp.h
+>> +++ b/include/net/tcp.h
+>> @@ -2181,6 +2181,7 @@ int tcp_bpf_recvmsg(struct sock *sk, struct msghdr *msg, size_t len,
+>>  		    int nonblock, int flags, int *addr_len);
+>>  int __tcp_bpf_recvmsg(struct sock *sk, struct sk_psock *psock,
+>>  		      struct msghdr *msg, int len, int flags);
+>> +void tcp_bpf_clone(const struct sock *sk, struct sock *child);
+>>
+>>  /* Call BPF_SOCK_OPS program that returns an int. If the return value
+>>   * is < 0, then the BPF op failed (for example if the loaded BPF
+>> diff --git a/net/ipv4/tcp_bpf.c b/net/ipv4/tcp_bpf.c
+>> index f6c83747c71e..6f96320fb7cf 100644
+>> --- a/net/ipv4/tcp_bpf.c
+>> +++ b/net/ipv4/tcp_bpf.c
+>> @@ -586,6 +586,19 @@ static void tcp_bpf_close(struct sock *sk, long timeout)
+>>  	saved_close(sk, timeout);
+>>  }
+>>
+>> +/* If a child got cloned from a listening socket that had tcp_bpf
+>> + * protocol callbacks installed, we need to restore the callbacks to
+>> + * the default ones because the child does not inherit the psock state
+>> + * that tcp_bpf callbacks expect.
+>> + */
+>> +void tcp_bpf_clone(const struct sock *sk, struct sock *newsk)
+>> +{
+>> +	struct proto *prot = newsk->sk_prot;
+>> +
+>> +	if (prot->recvmsg == tcp_bpf_recvmsg)
+> A question not related to this patch (may be it is more for patch 6).
+>
+> How tcp_bpf_recvmsg may be used for a listening sock (sk here)?
 
-Signed-off-by: Antoine Tenart <antoine.tenart@bootlin.com>
----
- drivers/net/phy/mscc.c        | 60 ++++++++++++++++++++++++++++++++++-
- drivers/net/phy/mscc_macsec.h |  2 ++
- 2 files changed, 61 insertions(+), 1 deletion(-)
+It can't be used. It's a way of checking if sock has tcp_bpf callbacks
+that I copied from sk_psock_get_checked:
 
-diff --git a/drivers/net/phy/mscc.c b/drivers/net/phy/mscc.c
-index ccf17818570f..937ac7da2789 100644
---- a/drivers/net/phy/mscc.c
-+++ b/drivers/net/phy/mscc.c
-@@ -80,7 +80,7 @@ enum rgmii_rx_clock_delay {
- #define MSCC_PHY_EXT_PHY_CNTL_2		  24
- 
- #define MII_VSC85XX_INT_MASK		  25
--#define MII_VSC85XX_INT_MASK_MASK	  0xa000
-+#define MII_VSC85XX_INT_MASK_MASK	  0xa020
- #define MII_VSC85XX_INT_MASK_WOL	  0x0040
- #define MII_VSC85XX_INT_STATUS		  26
- 
-@@ -207,6 +207,9 @@ enum macsec_bank {
- #define SECURE_ON_ENABLE		  0x8000
- #define SECURE_ON_PASSWD_LEN_4		  0x4000
- 
-+#define MSCC_PHY_EXTENDED_INT		  28
-+#define MSCC_PHY_EXTENDED_INT_MS_EGR	  BIT(9)
-+
- /* Extended Page 3 Registers */
- #define MSCC_PHY_SERDES_TX_VALID_CNT	  21
- #define MSCC_PHY_SERDES_TX_CRC_ERR_CNT	  22
-@@ -2831,6 +2834,43 @@ static int vsc8584_config_init(struct phy_device *phydev)
- 	return ret;
- }
- 
-+static int vsc8584_handle_interrupt(struct phy_device *phydev)
-+{
-+#if IS_ENABLED(CONFIG_MACSEC)
-+	struct vsc8531_private *priv = phydev->priv;
-+	struct macsec_flow *flow, *tmp;
-+	u32 cause, rec;
-+
-+	/* Check MACsec PN rollover */
-+	cause = vsc8584_macsec_phy_read(phydev, MACSEC_EGR,
-+					MSCC_MS_INTR_CTRL_STATUS);
-+	cause &= MSCC_MS_INTR_CTRL_STATUS_INTR_CLR_STATUS_M;
-+	if (!(cause & MACSEC_INTR_CTRL_STATUS_ROLLOVER))
-+		goto skip_rollover;
-+
-+	rec = 6 + priv->secy->key_len / sizeof(u32);
-+	list_for_each_entry_safe(flow, tmp, &priv->macsec_flows, list) {
-+		u32 val;
-+
-+		if (flow->bank != MACSEC_EGR || !flow->has_transformation)
-+			continue;
-+
-+		val = vsc8584_macsec_phy_read(phydev, MACSEC_EGR,
-+					      MSCC_MS_XFORM_REC(flow->index, rec));
-+		if (val == 0xffffffff) {
-+			vsc8584_macsec_flow_disable(phydev, flow);
-+			macsec_pn_wrapped(priv->secy, flow->tx_sa);
-+			break;
-+		}
-+	}
-+
-+skip_rollover:
-+#endif
-+
-+	phy_mac_interrupt(phydev);
-+	return 0;
-+}
-+
- static int vsc85xx_config_init(struct phy_device *phydev)
- {
- 	int rc, i, phy_id;
-@@ -3274,6 +3314,20 @@ static int vsc85xx_config_intr(struct phy_device *phydev)
- 	int rc;
- 
- 	if (phydev->interrupts == PHY_INTERRUPT_ENABLED) {
-+#if IS_ENABLED(CONFIG_MACSEC)
-+		phy_write(phydev, MSCC_EXT_PAGE_ACCESS,
-+			  MSCC_PHY_PAGE_EXTENDED_2);
-+		phy_write(phydev, MSCC_PHY_EXTENDED_INT,
-+			  MSCC_PHY_EXTENDED_INT_MS_EGR);
-+		phy_write(phydev, MSCC_EXT_PAGE_ACCESS,
-+			  MSCC_PHY_PAGE_STANDARD);
-+
-+		vsc8584_macsec_phy_write(phydev, MACSEC_EGR,
-+					 MSCC_MS_AIC_CTRL, 0xf);
-+		vsc8584_macsec_phy_write(phydev, MACSEC_EGR,
-+			MSCC_MS_INTR_CTRL_STATUS,
-+			MSCC_MS_INTR_CTRL_STATUS_INTR_ENABLE(MACSEC_INTR_CTRL_STATUS_ROLLOVER));
-+#endif
- 		rc = phy_write(phydev, MII_VSC85XX_INT_MASK,
- 			       MII_VSC85XX_INT_MASK_MASK);
- 	} else {
-@@ -3623,6 +3677,7 @@ static struct phy_driver vsc85xx_driver[] = {
- 	.config_aneg    = &vsc85xx_config_aneg,
- 	.aneg_done	= &genphy_aneg_done,
- 	.read_status	= &vsc85xx_read_status,
-+	.handle_interrupt = &vsc8584_handle_interrupt,
- 	.ack_interrupt  = &vsc85xx_ack_interrupt,
- 	.config_intr    = &vsc85xx_config_intr,
- 	.did_interrupt  = &vsc8584_did_interrupt,
-@@ -3675,6 +3730,7 @@ static struct phy_driver vsc85xx_driver[] = {
- 	.config_aneg    = &vsc85xx_config_aneg,
- 	.aneg_done	= &genphy_aneg_done,
- 	.read_status	= &vsc85xx_read_status,
-+	.handle_interrupt = &vsc8584_handle_interrupt,
- 	.ack_interrupt  = &vsc85xx_ack_interrupt,
- 	.config_intr    = &vsc85xx_config_intr,
- 	.did_interrupt  = &vsc8584_did_interrupt,
-@@ -3699,6 +3755,7 @@ static struct phy_driver vsc85xx_driver[] = {
- 	.config_aneg    = &vsc85xx_config_aneg,
- 	.aneg_done	= &genphy_aneg_done,
- 	.read_status	= &vsc85xx_read_status,
-+	.handle_interrupt = &vsc8584_handle_interrupt,
- 	.ack_interrupt  = &vsc85xx_ack_interrupt,
- 	.config_intr    = &vsc85xx_config_intr,
- 	.did_interrupt  = &vsc8584_did_interrupt,
-@@ -3723,6 +3780,7 @@ static struct phy_driver vsc85xx_driver[] = {
- 	.config_aneg    = &vsc85xx_config_aneg,
- 	.aneg_done	= &genphy_aneg_done,
- 	.read_status	= &vsc85xx_read_status,
-+	.handle_interrupt = &vsc8584_handle_interrupt,
- 	.ack_interrupt  = &vsc85xx_ack_interrupt,
- 	.config_intr    = &vsc85xx_config_intr,
- 	.did_interrupt  = &vsc8584_did_interrupt,
-diff --git a/drivers/net/phy/mscc_macsec.h b/drivers/net/phy/mscc_macsec.h
-index 9b5d0af91d20..d9ab6aba7482 100644
---- a/drivers/net/phy/mscc_macsec.h
-+++ b/drivers/net/phy/mscc_macsec.h
-@@ -83,6 +83,7 @@ enum mscc_macsec_validate_levels {
- #define MSCC_MS_STATUS_CONTEXT_CTRL	0x3d02
- #define MSCC_MS_INTR_CTRL_STATUS	0x3d04
- #define MSCC_MS_BLOCK_CTX_UPDATE	0x3d0c
-+#define MSCC_MS_AIC_CTRL		0x3e02
- 
- /* MACSEC_ENA_CFG */
- #define MSCC_MS_ENA_CFG_CLK_ENA				BIT(0)
-@@ -260,5 +261,6 @@ enum mscc_macsec_validate_levels {
- #define MSCC_MS_INTR_CTRL_STATUS_INTR_CLR_STATUS_M	GENMASK(15, 0)
- #define MSCC_MS_INTR_CTRL_STATUS_INTR_ENABLE(x)		((x) << 16)
- #define MSCC_MS_INTR_CTRL_STATUS_INTR_ENABLE_M		GENMASK(31, 16)
-+#define MACSEC_INTR_CTRL_STATUS_ROLLOVER		BIT(5)
- 
- #endif
--- 
-2.24.1
+static inline struct sk_psock *sk_psock_get_checked(struct sock *sk)
+{
+	struct sk_psock *psock;
 
+	rcu_read_lock();
+	psock = sk_psock(sk);
+	if (psock) {
+		if (sk->sk_prot->recvmsg != tcp_bpf_recvmsg) {
+			psock = ERR_PTR(-EBUSY);
+			goto out;
+		}
+        ...
+
+This makes me think that perhaps it deserves a well-named helper.
+
+>
+>> +		newsk->sk_prot = sk->sk_prot_creator;
+>> +}
+>> +
