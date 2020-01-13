@@ -2,99 +2,170 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 1F08A1394CC
-	for <lists+netdev@lfdr.de>; Mon, 13 Jan 2020 16:28:41 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 11B8513952B
+	for <lists+netdev@lfdr.de>; Mon, 13 Jan 2020 16:48:52 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728650AbgAMP2h (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 13 Jan 2020 10:28:37 -0500
-Received: from mail-wr1-f67.google.com ([209.85.221.67]:33648 "EHLO
-        mail-wr1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726163AbgAMP2h (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 13 Jan 2020 10:28:37 -0500
-Received: by mail-wr1-f67.google.com with SMTP id b6so9039683wrq.0
-        for <netdev@vger.kernel.org>; Mon, 13 Jan 2020 07:28:35 -0800 (PST)
+        id S1728809AbgAMPsu (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 13 Jan 2020 10:48:50 -0500
+Received: from mail-lj1-f195.google.com ([209.85.208.195]:46524 "EHLO
+        mail-lj1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727323AbgAMPsu (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 13 Jan 2020 10:48:50 -0500
+Received: by mail-lj1-f195.google.com with SMTP id m26so10589910ljc.13
+        for <netdev@vger.kernel.org>; Mon, 13 Jan 2020 07:48:48 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=resnulli-us.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:content-transfer-encoding:in-reply-to;
-        bh=DJdu1SM2rViHKC/+EMs2F2c88FpqWZzqdGPMLRlXoQg=;
-        b=gPDZVhMugRdH49x1x628A84U0dPj4aP4Ji+p0zvjmHvMHldyKIjMecomXk4G3uuYRP
-         d8f1llFles5L8AF5LSGDO4jVa4XaG3Vnuhh3sRRruhGoDmsxgFPkHD5VY5Pfl18a4ha1
-         Zdfx2yZUZOKbDtwYa0ZXQ3NPhVlB8rcavv8JhcJ6W2nSipndmIDrqk9CLlkHSOcBA096
-         XH27bmG0OJuQbd9JFdXqVmN1ptV0g7PI7Fj6WMHm+uFGUdD+WPHlZo7MPXK++vVzvHLH
-         2ourELDw2jG8W5mlk4fg33e4+tQYPBLnppaz9m4QzOBUbocWlDf8D0KxO/X3cL9NOFR0
-         Sdyw==
+        d=cloudflare.com; s=google;
+        h=references:user-agent:from:to:cc:subject:in-reply-to:date
+         :message-id:mime-version;
+        bh=51yD4BqU0bWqVd7ntuW6FnYah+NnBC6M9yv7K4akYVA=;
+        b=XJFwoj52wly3jJcjqf7SiTLkYHTharJdMxLePTalVF8djqcUG95tORny36WSidwH7f
+         j9EXfxV1euwyhx5ExXWL4DQbtm8o++EGsDsuMRgdH018gohVqUCs1/gKKGpXE970rTco
+         M/tSO7SagFeU03/cJS7OVqRvBTcR2vacaWhCc=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:content-transfer-encoding
-         :in-reply-to;
-        bh=DJdu1SM2rViHKC/+EMs2F2c88FpqWZzqdGPMLRlXoQg=;
-        b=lwq3Ba7Xf1D2p7Fhcta7xX6iakGJnpA3Bz9/shfC+Q9u/hOqikSXmp9DZtG3/mjv5z
-         2ckIlz4uUn0FzBeNMfsN09l5urnUVWFbMED6CUXFYlMLoWeMpB/mbJY5l3BWh5Yk1YmG
-         EE+zXH+UIyIWcvDfUKfZXeMf5I3woILKSsL0EMgRyyocQd+VYY6GMEJXRbAZAa5fZloY
-         iexVhse1FUmHOMEdPv4ej1AAMzkvf7dND29vbaCps2pasdnHpgBxkwpWy/uqgWHDmo5j
-         AMwYdZh0GVswbolxGn4dC/J3B3UWJjFhlqOkxELYl2/hbLPxYbLzam9Avq8CWJSXrRxb
-         dc5Q==
-X-Gm-Message-State: APjAAAVgZ66jNabw7ZnTmVZ4hVUhTQdUVkxMQkv3rQnzZYg29Me4+6S2
-        N+y2u8NRN13v8JE+jVxu+3Xy+Q==
-X-Google-Smtp-Source: APXvYqwWk74G/dbwyegRFtKtj+L+iByYxySuLcEymQD8fP2ZZbObP+K02R+VX5mc6fL2NbrBeWWRfQ==
-X-Received: by 2002:a5d:540f:: with SMTP id g15mr18642169wrv.86.1578929315237;
-        Mon, 13 Jan 2020 07:28:35 -0800 (PST)
-Received: from localhost (ip-78-102-249-43.net.upcbroadband.cz. [78.102.249.43])
-        by smtp.gmail.com with ESMTPSA id i8sm15878983wro.47.2020.01.13.07.28.34
+        h=x-gm-message-state:references:user-agent:from:to:cc:subject
+         :in-reply-to:date:message-id:mime-version;
+        bh=51yD4BqU0bWqVd7ntuW6FnYah+NnBC6M9yv7K4akYVA=;
+        b=XJrkAnZV26RowTuCJehyAJY67NE0JSGRCknnj0v+xwHPwixrvIn1PDNUrouZ9YyGZx
+         UKANkwDiwAeg9zu8uBOvNVxEBNImXP4k1XKXDplQO2Co6d0rqGah+XErd06xnv0+hgga
+         k71UVjwgWNFQ5AtyzvLW8t+qg3HTHH81GUzEMc+eokHebOtGB0VtkNh7vDOQWgVhF/9a
+         aEY3YW95y8o0lJOtyEmxHk/GgsqgiqAYY6JZDGvCRpKoLEajcDMiBLh1Kqb+nd43JI9h
+         F9iVx0ncL8bw9AYMG8U9ub07pgNVW7zvwV08ATDMdZN1+dTpDCxyRRwECBZ212ctf/HN
+         urYw==
+X-Gm-Message-State: APjAAAWB9Wq+5ZcDlfRXyskryb6sbrlGrXmH8RZY5uq6+CMe9UhSMQIE
+        PkGw3lC329VNQNC4mmAT6o3xZw==
+X-Google-Smtp-Source: APXvYqwQYyi0Xo2b7UiFJ4L8MGTDZHWjzoOfMioSSKq+3kDzllwtsOIVk5rGXwkTR8StfHHujlFeJQ==
+X-Received: by 2002:a2e:93c5:: with SMTP id p5mr10879289ljh.192.1578930527948;
+        Mon, 13 Jan 2020 07:48:47 -0800 (PST)
+Received: from cloudflare.com ([176.221.114.230])
+        by smtp.gmail.com with ESMTPSA id t27sm6178162ljd.26.2020.01.13.07.48.47
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 13 Jan 2020 07:28:34 -0800 (PST)
-Date:   Mon, 13 Jan 2020 16:28:33 +0100
-From:   Jiri Pirko <jiri@resnulli.us>
-To:     Antoine Tenart <antoine.tenart@bootlin.com>
-Cc:     davem@davemloft.net, sd@queasysnail.net, andrew@lunn.ch,
-        f.fainelli@gmail.com, hkallweit1@gmail.com, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, thomas.petazzoni@bootlin.com,
-        alexandre.belloni@bootlin.com, allan.nielsen@microchip.com,
-        camelia.groza@nxp.com, Simon.Edelhaus@aquantia.com,
-        Igor.Russkikh@aquantia.com, jakub.kicinski@netronome.com
-Subject: Re: [PATCH net-next v5 06/15] net: macsec: add nla support for
- changing the offloading selection
-Message-ID: <20200113152833.GD2131@nanopsycho>
-References: <20200110162010.338611-1-antoine.tenart@bootlin.com>
- <20200110162010.338611-7-antoine.tenart@bootlin.com>
- <20200113150202.GC2131@nanopsycho>
- <20200113152048.GE3078@kwain>
+        Mon, 13 Jan 2020 07:48:47 -0800 (PST)
+References: <20200110105027.257877-1-jakub@cloudflare.com> <20200110105027.257877-6-jakub@cloudflare.com> <5e1a615bedf9c_1e7f2b0c859c45c01f@john-XPS-13-9370.notmuch>
+User-agent: mu4e 1.1.0; emacs 26.3
+From:   Jakub Sitnicki <jakub@cloudflare.com>
+To:     John Fastabend <john.fastabend@gmail.com>
+Cc:     bpf@vger.kernel.org, netdev@vger.kernel.org,
+        kernel-team@cloudflare.com, Eric Dumazet <edumazet@google.com>,
+        Lorenz Bauer <lmb@cloudflare.com>,
+        Martin KaFai Lau <kafai@fb.com>
+Subject: Re: [PATCH bpf-next v2 05/11] bpf, sockmap: Allow inserting listening TCP sockets into sockmap
+In-reply-to: <5e1a615bedf9c_1e7f2b0c859c45c01f@john-XPS-13-9370.notmuch>
+Date:   Mon, 13 Jan 2020 16:48:46 +0100
+Message-ID: <87lfqbs6g1.fsf@cloudflare.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20200113152048.GE3078@kwain>
+Content-Type: text/plain
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Mon, Jan 13, 2020 at 04:20:48PM CET, antoine.tenart@bootlin.com wrote:
->Hello Jiri,
+On Sun, Jan 12, 2020 at 12:59 AM CET, John Fastabend wrote:
+> Jakub Sitnicki wrote:
+>> In order for sockmap type to become a generic collection for storing TCP
+>> sockets we need to loosen the checks during map update, while tightening
+>> the checks in redirect helpers.
+>>
+>> Currently sockmap requires the TCP socket to be in established state (or
+>> transitioning out of SYN_RECV into established state when done from BPF),
+>> which prevents inserting listening sockets.
+>>
+>> Change the update pre-checks so that the socket can also be in listening
+>> state. If the state is not white-listed, return -EINVAL to be consistent
+>> with REUSEPORT_SOCKARRY map type.
+>>
+>> Since it doesn't make sense to redirect with sockmap to listening sockets,
+>> add appropriate socket state checks to BPF redirect helpers too.
+>>
+>> Signed-off-by: Jakub Sitnicki <jakub@cloudflare.com>
+>> ---
+>>  net/core/sock_map.c                     | 46 ++++++++++++++++++++-----
+>>  tools/testing/selftests/bpf/test_maps.c |  6 +---
+>>  2 files changed, 39 insertions(+), 13 deletions(-)
+>>
+>> diff --git a/net/core/sock_map.c b/net/core/sock_map.c
+>> index eb114ee419b6..99daea502508 100644
+>> --- a/net/core/sock_map.c
+>> +++ b/net/core/sock_map.c
+>> @@ -396,6 +396,23 @@ static bool sock_map_sk_is_suitable(const struct sock *sk)
+>>  	       sk->sk_protocol == IPPROTO_TCP;
+>>  }
+>>
+>> +/* Is sock in a state that allows inserting into the map?
+>> + * SYN_RECV is needed for updates on BPF_SOCK_OPS_PASSIVE_ESTABLISHED_CB.
+>> + */
+>> +static bool sock_map_update_okay(const struct sock *sk)
+>> +{
+>> +	return (1 << sk->sk_state) & (TCPF_ESTABLISHED |
+>> +				      TCPF_SYN_RECV |
+>> +				      TCPF_LISTEN);
+>> +}
+>> +
+>> +/* Is sock in a state that allows redirecting into it? */
+>> +static bool sock_map_redirect_okay(const struct sock *sk)
+>> +{
+>> +	return (1 << sk->sk_state) & (TCPF_ESTABLISHED |
+>> +				      TCPF_SYN_RECV);
+>> +}
+>> +
+>>  static int sock_map_update_elem(struct bpf_map *map, void *key,
+>>  				void *value, u64 flags)
+>>  {
+>> @@ -413,11 +430,14 @@ static int sock_map_update_elem(struct bpf_map *map, void *key,
+>>  		ret = -EINVAL;
+>>  		goto out;
+>>  	}
+>> -	if (!sock_map_sk_is_suitable(sk) ||
+>> -	    sk->sk_state != TCP_ESTABLISHED) {
+>> +	if (!sock_map_sk_is_suitable(sk)) {
+>>  		ret = -EOPNOTSUPP;
+>>  		goto out;
+>>  	}
+>> +	if (!sock_map_update_okay(sk)) {
+>> +		ret = -EINVAL;
+>> +		goto out;
+>> +	}
 >
->On Mon, Jan 13, 2020 at 04:02:02PM +0100, Jiri Pirko wrote:
->> 
->> I wonder, did you consider having MACSEC_OFFLOAD_ATTR_TYPE attribute
->> passed during the macsec device creation (to macsec_newlink), so the
->> device is either created "offloded" or not? Looks like an extra step.
->> Or do you see a scenario one would change "offload" setting on fly?
->> If not, I don't see any benefit in having this as a separate command.
->
->That would be possible as well. When we discussed offloading selection
->we thought allowing the user to fallback to another offloading mode when
->a rule or a set of rules isn't supported by a given device would be
->useful, even though updating the offloading selection at runtime isn't
->fully transparent for now (this would be a nice follow-up).
+> I nit but seeing we need a v3 anyways. How about consolidating
+> this state checks into sock_map_sk_is_suitable() so we don't have
+> multiple if branches or this '|| TCP_ESTABLISHED' like we do now.
 
-Okay. Thanks!
+Ah, I see the pattern now :-)
 
+>>
+>>  	sock_map_sk_acquire(sk);
+>>  	ret = sock_map_update_common(map, idx, sk, flags);
+>> @@ -433,6 +453,7 @@ BPF_CALL_4(bpf_sock_map_update, struct bpf_sock_ops_kern *, sops,
+>>  	WARN_ON_ONCE(!rcu_read_lock_held());
+>>
+>>  	if (likely(sock_map_sk_is_suitable(sops->sk) &&
+>> +		   sock_map_update_okay(sops->sk) &&
+>>  		   sock_map_op_okay(sops)))
+>>  		return sock_map_update_common(map, *(u32 *)key, sops->sk,
+>>  					      flags);
+>> @@ -454,13 +475,17 @@ BPF_CALL_4(bpf_sk_redirect_map, struct sk_buff *, skb,
+>>  	   struct bpf_map *, map, u32, key, u64, flags)
+>>  {
+>>  	struct tcp_skb_cb *tcb = TCP_SKB_CB(skb);
+>> +	struct sock *sk;
+>>
+>>  	if (unlikely(flags & ~(BPF_F_INGRESS)))
+>>  		return SK_DROP;
+>> -	tcb->bpf.flags = flags;
+>> -	tcb->bpf.sk_redir = __sock_map_lookup_elem(map, key);
+>> -	if (!tcb->bpf.sk_redir)
+>> +
+>> +	sk = __sock_map_lookup_elem(map, key);
+>> +	if (!sk || !sock_map_redirect_okay(sk))
+>>  		return SK_DROP;
 >
->Thanks,
->Antoine
+> unlikely(!sock_map_redirect_okay)? Or perhaps unlikely the entire case,
+> if (unlikely(!sk || !sock_map_redirect_okay(sk)). I think users should
+> know if the sk is a valid sock or not and this is just catching the
+> error case. Any opinion?
 >
->-- 
->Antoine Ténart, Bootlin
->Embedded Linux and Kernel engineering
->https://bootlin.com
+> Otherwise looks good.
+
+Both ideas SGTM. Will incorporate into next version. Thanks!
+
+-jkbs
