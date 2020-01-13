@@ -2,174 +2,156 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 24F09138F56
-	for <lists+netdev@lfdr.de>; Mon, 13 Jan 2020 11:39:25 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4C664138FAB
+	for <lists+netdev@lfdr.de>; Mon, 13 Jan 2020 11:53:59 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726567AbgAMKjX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 13 Jan 2020 05:39:23 -0500
-Received: from mail-wr1-f67.google.com ([209.85.221.67]:45067 "EHLO
-        mail-wr1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726109AbgAMKjX (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 13 Jan 2020 05:39:23 -0500
-Received: by mail-wr1-f67.google.com with SMTP id j42so7951984wrj.12
-        for <netdev@vger.kernel.org>; Mon, 13 Jan 2020 02:39:21 -0800 (PST)
+        id S1726480AbgAMKx4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 13 Jan 2020 05:53:56 -0500
+Received: from mail-lj1-f194.google.com ([209.85.208.194]:39855 "EHLO
+        mail-lj1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725992AbgAMKx4 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 13 Jan 2020 05:53:56 -0500
+Received: by mail-lj1-f194.google.com with SMTP id l2so9465507lja.6
+        for <netdev@vger.kernel.org>; Mon, 13 Jan 2020 02:53:54 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=dQ8f56ZN/tVf4Fmykd/+TOCp3i7bYMcxDSDgUDAUo1E=;
-        b=I/J1AVKLuQqhO4S+SvzdMffyCXy+uYZgm0c38ngerHwultb5RIZWiuCwQWwTr/bCVL
-         CnoAirx+XQ8kXqy8CF+Kc4U9KTjO4nF1xdqenqeGtY8ZYDcCjmNUR1JejKskv1WunuW/
-         W0PBAILbJV4dDyiuT8O+5cXT7xz5ur0taXW818sImlZj1DCEqLelqQEIOhTcjfmeV3L6
-         EdTiFo94hxK7eCarF17wZbrkDLXxKfQuM2VKBjwMC8GP8TX4Ih55o0IC0a0L8efKTZTo
-         1+4koKtXri0ic9WtvgcUdSucgCF07/7FWwvgYL6RaE+CeeRwlR8nuJfyzMOGS/Z6Y6P6
-         tHEQ==
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=sCLrwv1Cw6cBFxDg6n4pC4wRSyOzBgPiDKs3xxcrCbs=;
+        b=MJoyRZBCtxoegdSafLArafzIUZAgRAZmi3Qj1dqPGoTDT4qaij5dk5IK+3xjAX02KV
+         FSpkQvH/LL+t5S8CcnTuVpVrn+bKReXBYZaz5S9bv1bwM5a/h6NOLAk8hAclffXVI2I0
+         qX5ojsIopxfhSXWtCg23aGC5BVmO+O6bqs020sjxW+QkSXVHSGeml5hZcBi2QhotoW8n
+         VwpgxuGl54IRcB+oR48qkI6fKBcxKMtFrT2JZuZtoNzTgd3w1tyRdLRcX1EisPgH+RI5
+         o2Y9yPjn7x7VTxP7wmfL89vbOASm3gd3QLDRoT+ytjcsaCps+ezPVusNrJR/iu8q+34+
+         5oNA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=dQ8f56ZN/tVf4Fmykd/+TOCp3i7bYMcxDSDgUDAUo1E=;
-        b=Vv1EbhLEAQen2AceGtNFa97o60HN8WOboKaMOsj5VR8QWb9wWVc6YK4KhE2CRpfC70
-         mgz/vRRI/joDyMyZYlEGZgCPtLrPbkyZc6pbUfJQWFmfkxOp0NLcjnrQxrL1KQZE3Y2c
-         97TiArY5pHlfEGYdiq4AIh5Fa+uJj85Fu9y1WUZ7rrw6zeGqbgRsyf5hDItwKJ1QYHJk
-         g9J4DBVQm4+KF0Y5YSqtjGlie6j17zxk4UV0+YG+Z+l2WhDgy1bl2o0q3Ij2zRGXTKLV
-         tLk/ETn2rSPEKhvWllhoDSlKdlXgtmlk0d87b+7iITd7YiIPlaip6FPbh0EIN+Kg7rJt
-         5IjA==
-X-Gm-Message-State: APjAAAWhxziycB5POS4Co5COsKCr2P8UuceRo4VYcPIeU3bFIMsdf3Qo
-        21IJSFTSSDQOr3oo3Sw5MqnyvQ==
-X-Google-Smtp-Source: APXvYqxzktfTfQnEikQlTucXbD1GnAAPNdQhs3MFRBR7WE+4dW4JO/4CeSKVLg+lf94GgaHtz13Yeg==
-X-Received: by 2002:adf:e3cd:: with SMTP id k13mr16847045wrm.338.1578911960295;
-        Mon, 13 Jan 2020 02:39:20 -0800 (PST)
-Received: from apalos.home (athedsl-270514.home.otenet.gr. [85.73.104.80])
-        by smtp.gmail.com with ESMTPSA id w19sm13501970wmc.22.2020.01.13.02.39.19
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 13 Jan 2020 02:39:19 -0800 (PST)
-Date:   Mon, 13 Jan 2020 12:39:17 +0200
-From:   Ilias Apalodimas <ilias.apalodimas@linaro.org>
-To:     Lorenzo Bianconi <lorenzo@kernel.org>
-Cc:     Jesper Dangaard Brouer <brouer@redhat.com>,
-        Lorenzo Bianconi <lorenzo.bianconi@redhat.com>,
-        netdev@vger.kernel.org, davem@davemloft.net
-Subject: Re: [PATCH v2 net-next] net: socionext: get rid of huge dma sync in
- netsec_alloc_rx_data
-Message-ID: <20200113103917.GA115887@apalos.home>
-References: <81eeb4aaf1cbbbdcd4f58c5a7f06bdab67f20633.1578664483.git.lorenzo@kernel.org>
- <20200110145631.GA69461@apalos.home>
- <20200110153413.GA31419@localhost.localdomain>
- <20200110183328.219ed2bd@carbon>
- <20200110181940.GB31419@localhost.localdomain>
- <20200110200156.041f063f@carbon>
- <20200110193651.GA14384@localhost.localdomain>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=sCLrwv1Cw6cBFxDg6n4pC4wRSyOzBgPiDKs3xxcrCbs=;
+        b=n+1yLSDzJqZ0nTVUPjRUfHdTbZIHkRLaWjNUlOIYi2p8Q9Nlvski9hkudwuKjzNU+x
+         JcybkBAXR+PrXmdRZyz1fmphALYOU79FfqGbGYPoQ0OUQmAYIrd9bt6qEN2N6pY1J3g2
+         kAML0N9t5zjGi4bmJJqIg1W4xahNN78PCqOh00H8Co1nKuVUGjMWPqAEmxG9HDhAHE/J
+         ly5y7de3tBBc9aZbzRv24VjNAQz/mffNV4+XWUwBXCwUrtsnYSvArCItkoNTDCDkMBiS
+         VjtjOQNKKL++Ysk+GA/10xgFvuXesiL+8L2Qgi2jy4nA0rPnlmWwwgmv8gA7R3+kw2k+
+         tNOA==
+X-Gm-Message-State: APjAAAV3H9kk5mZex9Ug0ma5lObOTvfZsz/P6/Vt9VirgkQn4lXEmYVo
+        WeGbUmzMkyL1vIzV/RaI+x3pDfu6javVcKaf4VY=
+X-Google-Smtp-Source: APXvYqzCtDtLkN0/Toe1WNldDLNgsUG0ymPINMMfVWe5ytwadv0CxchY6nyAIA77l3/N74zB+9KGHBqixgfkKFY9CwI=
+X-Received: by 2002:a2e:9d90:: with SMTP id c16mr7144037ljj.264.1578912834160;
+ Mon, 13 Jan 2020 02:53:54 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200110193651.GA14384@localhost.localdomain>
+References: <000000000000ab3f800598cec624@google.com> <000000000000802598059b6c7989@google.com>
+ <CAM_iQpX7-BF=C+CAV3o=VeCZX7=CgdscZaazTD6QT-Tw1=XY9Q@mail.gmail.com>
+ <CAMArcTXTtJB8WUuJUumP2NHVg_c19m-6EheC3JRGxzseYmHVDw@mail.gmail.com>
+ <CAM_iQpVJiYHnhUJKzQpoPzaUhjrd=O4WR6zFJ+329KnWi6jJig@mail.gmail.com>
+ <CAMArcTVPrKrhY63P=VgFuTQf0wUNO_9=H2R96p08-xoJ+mbZ5w@mail.gmail.com>
+ <CAM_iQpX-S7cPvYTqAMkZF=avaoMi_af70dwQEiC37OoXNWA4Aw@mail.gmail.com>
+ <CAMArcTUFK6TUYP+zwD3009m126fz+S-cAT5CN5pZ3C5axErh8g@mail.gmail.com>
+ <CAM_iQpUpZLcsC2eYPGO-UCRf047FTvP-0x8hQnDxRZ-w3vL9Tg@mail.gmail.com>
+ <CAMArcTV66StxE=Pjiv6zsh0san039tuVvsKNE2Sb=7+jJ3xEdQ@mail.gmail.com>
+ <CAM_iQpU9EXx7xWAaps2E3DWiZbt25ByCK4sR=njYMHF=KsvLFg@mail.gmail.com> <CAM_iQpUDd6hFrQwb2TkGpbe5AFOtTMyeVg1-OBfY50vC5CEJnQ@mail.gmail.com>
+In-Reply-To: <CAM_iQpUDd6hFrQwb2TkGpbe5AFOtTMyeVg1-OBfY50vC5CEJnQ@mail.gmail.com>
+From:   Taehee Yoo <ap420073@gmail.com>
+Date:   Mon, 13 Jan 2020 19:53:42 +0900
+Message-ID: <CAMArcTVHj2_yGjsYMoMow0LsAe0cs+Xyz68+TAa6Nb4tQbc6EA@mail.gmail.com>
+Subject: Re: WARNING: bad unlock balance in sch_direct_xmit
+To:     Cong Wang <xiyou.wangcong@gmail.com>
+Cc:     syzbot <syzbot+4ec99438ed7450da6272@syzkaller.appspotmail.com>,
+        Linux Kernel Network Developers <netdev@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Jan 10, 2020 at 08:36:51PM +0100, Lorenzo Bianconi wrote:
-> > On Fri, 10 Jan 2020 19:19:40 +0100
-> > Lorenzo Bianconi <lorenzo.bianconi@redhat.com> wrote:
-> > 
-> > > > On Fri, 10 Jan 2020 16:34:13 +0100
-> > > > Lorenzo Bianconi <lorenzo@kernel.org> wrote:
-> > > >   
-> > > > > > On Fri, Jan 10, 2020 at 02:57:44PM +0100, Lorenzo Bianconi wrote:    
-> > > > > > > Socionext driver can run on dma coherent and non-coherent devices.
-> > > > > > > Get rid of huge dma_sync_single_for_device in netsec_alloc_rx_data since
-> > > > > > > now the driver can let page_pool API to managed needed DMA sync
-> > > > > > > 
-> > > > > > > Signed-off-by: Lorenzo Bianconi <lorenzo@kernel.org>
-> > > > > > > ---
-> > > > > > > Changes since v1:
-> > > > > > > - rely on original frame size for dma sync
-> > > > > > > ---
-> > > > > > >  drivers/net/ethernet/socionext/netsec.c | 43 +++++++++++++++----------
-> > > > > > >  1 file changed, 26 insertions(+), 17 deletions(-)
-> > > > > > >     
-> > > > > 
-> > > > > [...]
-> > > > >   
-> > > > > > > @@ -883,6 +881,8 @@ static u32 netsec_xdp_xmit_back(struct netsec_priv *priv, struct xdp_buff *xdp)
-> > > > > > >  static u32 netsec_run_xdp(struct netsec_priv *priv, struct bpf_prog *prog,
-> > > > > > >  			  struct xdp_buff *xdp)
-> > > > > > >  {
-> > > > > > > +	struct netsec_desc_ring *dring = &priv->desc_ring[NETSEC_RING_RX];
-> > > > > > > +	unsigned int len = xdp->data_end - xdp->data;    
-> > > > > > 
-> > > > > > We need to account for XDP expanding the headers as well here. 
-> > > > > > So something like max(xdp->data_end(before bpf), xdp->data_end(after bpf)) -
-> > > > > > xdp->data (original)    
-> > > > > 
-> > > > > correct, the corner case that is not covered at the moment is when data_end is
-> > > > > moved forward by the bpf program. I will fix it in v3. Thx  
-> > > > 
-> > > > Maybe we can simplify do:
-> > > > 
-> > > >  void *data_start = NETSEC_RXBUF_HEADROOM + xdp->data_hard_start;
-> > > >  unsigned int len = xdp->data_end - data_start;
-> > > >   
-> > > 
-> > > Hi Jesper,
-> > > 
-> > > please correct me if I am wrong but this seems to me the same as v2.
-> > 
-> > No, this is v2, where you do:
-> >    len = xdp->data_end - xdp->data;
-> 
-> I mean in the solution you proposed you set (before running the bpf program):
-> 
-> len = xdp->data_end - data_start
-> where:
-> data_start = NETSEC_RXBUF_HEADROOM + xdp->data_hard_start
-> 
-> that is equivalent to what I did in v2 (before running the bpf program):
-> len = xdp->data_end - xdp->data
-> 
-> since:
-> xdp->data = xdp->data_hard_start + NETSEC_RXBUF_HEADROOM
-> (set in netsec_process_rx())
-> 
-> Am I missing something?
-> 
-> > 
-> > Maybe you mean v1? where you calc len like:
-> >    len = xdp->data_end - xdp->data_hard_start;
-> >    
-> > 
-> > > The leftover corner case is if xdp->data_end is moved 'forward' by
-> > > the bpf program (I guess it is possible, right?). In this case we
-> > > will not sync xdp->data_end(new) - xdp->data_end(old)
-> > 
-> > Currently xdp->data_end can only shrink (but I plan to extend it). Yes,
-> > this corner case is left, but I don't think we need to handle it.  When
-> > a BPF prog shrink xdp->data_end, then i believe it cannot change that
-> > part the shunk part any longer.
-> > 
+On Sun, 12 Jan 2020 at 08:28, Cong Wang <xiyou.wangcong@gmail.com> wrote:
+>
+> On Sat, Jan 11, 2020 at 1:53 PM Cong Wang <xiyou.wangcong@gmail.com> wrote:
+> > The details you provide here are really helpful for me to understand
+> > the reasons behind your changes. Let me think about this and see how
+> > I could address both problems. This appears to be harder than I originally
+> > thought.
+>
+> Do you think the following patch will make everyone happy?
+>
+> diff --git a/net/core/dev.c b/net/core/dev.c
+> index 0ad39c87b7fd..7e885d069707 100644
+> --- a/net/core/dev.c
+> +++ b/net/core/dev.c
+> @@ -9177,22 +9177,10 @@ static void
+> netdev_unregister_lockdep_key(struct net_device *dev)
+>
+>  void netdev_update_lockdep_key(struct net_device *dev)
+>  {
+> -       struct netdev_queue *queue;
+> -       int i;
+> -
+> -       lockdep_unregister_key(&dev->qdisc_xmit_lock_key);
+>         lockdep_unregister_key(&dev->addr_list_lock_key);
+> -
+> -       lockdep_register_key(&dev->qdisc_xmit_lock_key);
+>         lockdep_register_key(&dev->addr_list_lock_key);
+>
+>         lockdep_set_class(&dev->addr_list_lock, &dev->addr_list_lock_key);
+> -       for (i = 0; i < dev->num_tx_queues; i++) {
+> -               queue = netdev_get_tx_queue(dev, i);
+> -
+> -               lockdep_set_class(&queue->_xmit_lock,
+> -                                 &dev->qdisc_xmit_lock_key);
+> -       }
+>  }
+>  EXPORT_SYMBOL(netdev_update_lockdep_key);
+>
+> I think as long as we don't take _xmit_lock nestedly, it is fine. And
+> most (or all?) of the software netdev's are already lockless, so I can't
+> think of any case we take more than one _xmit_lock on TX path.
+>
+> I tested it with the syzbot reproducer and your set master/nomaster
+> commands, I don't get any lockdep splat.
+>
+> What do you think?
+>
+> Thanks!
 
-Ok, i thought it could expand as well.
-If that's the case the current patchset is ok
+I have tested this approach and I have no found any problem.
+As you said, most of virtual interfaces are already lockless.
+So, generally lockdep warning will not occur.
+I found two virtual interfaces that they don't have LLTX and they also
+could be upper interface. Interfaces are "rmnet" and virt_wifi" type.
 
-> 
-> ack, fine to me.
-> 
-> Regards,
-> Lorenzo
-> 
-> > 
-> > > 
-> > > > The cache-lines that need to be flushed/synced for_device is the area
-> > > > used by NIC DMA engine.  We know it will always start at a certain
-> > > > point (given driver configured hardware to this).
-> > 
-> > 
-> > -- 
-> > Best regards,
-> >   Jesper Dangaard Brouer
-> >   MSc.CS, Principal Kernel Engineer at Red Hat
-> >   LinkedIn: http://www.linkedin.com/in/brouer
-> > 
+My test case is here.
 
-Reviewed-by: Ilias Apalodimas <ilias.apalodimas@linaro.org>
+[Before]
+master0(bond or team or bridge)
+    |
+slave0(rmnet or virt_wifi)
+    |
+master1
+    |
+slave1
+    |
+master2
+    |
+veth
+
+[After]
+master0(bond or team or bridge)
+    |
+slave1(rmnet or virt_wifi)
+    |
+master2
+    |
+slave0
+    |
+master1
+    |
+veth
+
+In this test, the ordering of slave1 and slave0 will be changed.
+But, rmnet and virt_wifi type interface couldn't be slave of bond, team,
+and bridge type interface. So, This graph will not be made.
+So, I agree with this approach.
+
+Thank you so much!
+Taehee Yoo
