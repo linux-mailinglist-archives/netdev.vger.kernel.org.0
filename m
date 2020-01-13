@@ -2,39 +2,39 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 0F252138B93
-	for <lists+netdev@lfdr.de>; Mon, 13 Jan 2020 07:02:17 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B6E89138BB3
+	for <lists+netdev@lfdr.de>; Mon, 13 Jan 2020 07:12:21 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732311AbgAMGCM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 13 Jan 2020 01:02:12 -0500
-Received: from mail-eopbgr770050.outbound.protection.outlook.com ([40.107.77.50]:12634
-        "EHLO NAM02-SN1-obe.outbound.protection.outlook.com"
+        id S1733187AbgAMGMQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 13 Jan 2020 01:12:16 -0500
+Received: from mail-bn8nam12on2074.outbound.protection.outlook.com ([40.107.237.74]:55264
+        "EHLO NAM12-BN8-obe.outbound.protection.outlook.com"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1726475AbgAMGCL (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 13 Jan 2020 01:02:11 -0500
+        id S1726480AbgAMGMQ (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 13 Jan 2020 01:12:16 -0500
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=MOQ+ietlEQwLfDu997h0pyyiFuXocLgVTVD7PzyhS0say4PWLOF1UZ3dUqPW2Cq/8+gkxgvCUfgTNmW4WIn0E/+7xmArNfvS2m4X+H2YFdHJu5ICn5jxR5PkZWJ5qDNlr0+01vxmlhyVe/kG4ZNntL4mdegUmVK13KdmtD7qkyq/ki4uJOPgctZIFARBkQtJ5zDMEBpqG3mZK/aQwmbDpRxkoshzseKOecihPwZ2fWZkX3fjnidQlQfPuZhwnzKIVCw9w6ogdbeqorHiIkQ0Iab2l06p9P+TvtWVN6n77vcEbdR7K9LoPU9cN9pBKrFi5GY4F5/apynqXUNEKzBm7Q==
+ b=hgpfADQ+/wH241dxTjK/KfEsCyuENM5EAZzc1OBu2OVTzCUqCRFeagUCqwT2GuJVXMGGJQIHt+jnLzoNFs0GeKWOj+1MFEeTdFFv3NU6VGSAIqxqEm626AiBjwZB9WMY0OIu0cC/rWvX2jFwaSKb8s4ddNAfKrAcVG0i99NIDQVa6/Szpx31v/UQicHNvXhuGm6LeMJOnuvCTtG5KaI+j6ZQkJVPK2ZorefwQS0PIQSLYhzOg+HHCV7yKUyPLhdLa72FEtGNWvLrHYgE3QIAQCIw8dzelZ1YGKyK9k2EPSs/oH03CFL8PFZDeMuvdztQ/EF//RUvbRGRYBYmjEw9iQ==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=AFdO11OKxeoVt4iOmV+DEvFLiaBH7k429f1RnfyonLE=;
- b=k4P8kyzgW3o5JhudB1hcrkzZdhJGuV5rxvt5mLs7Z4nBl8qLFp8HQ7FiuyaP7VTD4NEZkaCxUDczNNlVtbgv7lSRIJ8UbjhybhrEV02W571X3R7MCLiuwfceMHMCXUniplJgGOMxtIW9V4h5iqZIuhYV8KBFZOr1tJfzaWbAGyATHLPzzVIbetSKDSthDAsNHLWGMzYTuUhu4NEeqst3zNZO2yHhL+QB4UM1sxdL7UljJMIyPzE2GyJfqC/krYXr2513b4Kz7CK+zeGMJ6t0WZfoz9nm3bcsoD/8z+q6EvGBu8KZb8DDjaPIPdNKEt1NLew61ofRrj7JqNY3wqhfhA==
+ bh=KeLb/RbhQZSDQoQJ/eWbzkLqeR8+z7ElgOb5/VTxEy4=;
+ b=SazQKbSjnRxB1l0+IhrBd/Glu3Kn4g8C2Y0MwSS/xF4TbkX+QnW0Tzn10FNnQ4zMh7H9OEBVEDML7hMLqaYtASW06fkSomZeIbscZqkrnHi6MxN2V7nFzgO2SfNG32SPK0AsygGcCCTjzx8FIQNdQ3OsAAKz3mMLyXHwbjNp3me3v/BHZNziXORaJrx4Uv5eq8OVjza6kd5kvpZ0I6DFcY40MRWt9mVu8q0BZ6mSAtknxUKNyTXyZ32wLKsS8SIDINC7sBMOhAIRDQxeTMEgeCm/BEhaV2WnUWM5THFvWQ11Qk3HDxPzenHYxuZVxGuo5mwKjFV7vou/DPlzCge0EA==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=xilinx.com; dmarc=pass action=none header.from=xilinx.com;
  dkim=pass header.d=xilinx.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
  d=xilinx.onmicrosoft.com; s=selector2-xilinx-onmicrosoft-com;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=AFdO11OKxeoVt4iOmV+DEvFLiaBH7k429f1RnfyonLE=;
- b=akSfqgawdKoh3uVNEqPhKcv3e8LbJTtB2UppNnx7KqJBoDUhIQqL/UFh7FwTy58zthAuAV0h94bsmn6Ze6OGHiq3hTQ0ooii+U28ZNZfJCYrIbfhCsPCMWZ7GhbeD0sWIX+mPPvnbRlGxYIgCbMR8ey4iQ/Z+LBdcObV0g4lJUU=
+ bh=KeLb/RbhQZSDQoQJ/eWbzkLqeR8+z7ElgOb5/VTxEy4=;
+ b=rOewxgNJBGSrO4m/zZCEDpQohiIBCtYRL8iDhw/MmSN5qMsDq/DWNU6doUcNTR6tF2n0/YWHkqHvqeoO9AGgwGSVUMlpWLNBwNb8/9u3e19YuOLBGWY/myscifw1YlxnSPPxL8N2nBG3VOc4BdTVzu052mVpADBLojc3HHkB5Co=
 Received: from CH2PR02MB7000.namprd02.prod.outlook.com (20.180.9.216) by
- CH2PR02MB6151.namprd02.prod.outlook.com (52.132.230.92) with Microsoft SMTP
+ CH2PR02MB6632.namprd02.prod.outlook.com (10.141.156.71) with Microsoft SMTP
  Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.2623.13; Mon, 13 Jan 2020 06:02:06 +0000
+ 15.20.2623.9; Mon, 13 Jan 2020 06:12:11 +0000
 Received: from CH2PR02MB7000.namprd02.prod.outlook.com
  ([fe80::969:436f:b4b8:4899]) by CH2PR02MB7000.namprd02.prod.outlook.com
  ([fe80::969:436f:b4b8:4899%7]) with mapi id 15.20.2623.015; Mon, 13 Jan 2020
- 06:02:06 +0000
+ 06:12:10 +0000
 From:   Radhey Shyam Pandey <radheys@xilinx.com>
 To:     Andre Przywara <andre.przywara@arm.com>,
         "David S . Miller" <davem@davemloft.net>
@@ -44,16 +44,14 @@ CC:     Michal Simek <michals@xilinx.com>,
         "linux-arm-kernel@lists.infradead.org" 
         <linux-arm-kernel@lists.infradead.org>,
         "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: RE: [PATCH 08/14] net: axienet: Drop MDIO interrupt registers from
- ethtools dump
-Thread-Topic: [PATCH 08/14] net: axienet: Drop MDIO interrupt registers from
- ethtools dump
-Thread-Index: AQHVx6y7Cl3Mr7YIzE6y4oKaxbl9yafoHX0A
-Date:   Mon, 13 Jan 2020 06:02:06 +0000
-Message-ID: <CH2PR02MB7000F73F928C719596BF3611C7350@CH2PR02MB7000.namprd02.prod.outlook.com>
+Subject: RE: [PATCH 09/14] net: axienet: Add mii-tool support
+Thread-Topic: [PATCH 09/14] net: axienet: Add mii-tool support
+Thread-Index: AQHVx6y7unY7S2F2T0yZeT1nU7iHwafoHtrA
+Date:   Mon, 13 Jan 2020 06:12:10 +0000
+Message-ID: <CH2PR02MB700089E502A8C146D71C67C8C7350@CH2PR02MB7000.namprd02.prod.outlook.com>
 References: <20200110115415.75683-1-andre.przywara@arm.com>
- <20200110115415.75683-9-andre.przywara@arm.com>
-In-Reply-To: <20200110115415.75683-9-andre.przywara@arm.com>
+ <20200110115415.75683-10-andre.przywara@arm.com>
+In-Reply-To: <20200110115415.75683-10-andre.przywara@arm.com>
 Accept-Language: en-US
 Content-Language: en-US
 X-MS-Has-Attach: 
@@ -64,30 +62,30 @@ authentication-results: spf=none (sender IP is )
 x-originating-ip: [149.199.50.133]
 x-ms-publictraffictype: Email
 x-ms-office365-filtering-ht: Tenant
-x-ms-office365-filtering-correlation-id: e0d130ff-50ad-4d42-726a-08d797ee1e93
-x-ms-traffictypediagnostic: CH2PR02MB6151:|CH2PR02MB6151:
+x-ms-office365-filtering-correlation-id: 632de85d-79bf-45d1-7c2e-08d797ef86b9
+x-ms-traffictypediagnostic: CH2PR02MB6632:|CH2PR02MB6632:
 x-ms-exchange-transport-forked: True
-x-microsoft-antispam-prvs: <CH2PR02MB6151CC6117C68EEAD868DF25C7350@CH2PR02MB6151.namprd02.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:513;
+x-microsoft-antispam-prvs: <CH2PR02MB6632377B72E13B34F18E0567C7350@CH2PR02MB6632.namprd02.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:6790;
 x-forefront-prvs: 028166BF91
-x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(4636009)(39860400002)(136003)(376002)(396003)(346002)(366004)(189003)(199004)(4326008)(54906003)(6506007)(7696005)(316002)(53546011)(110136005)(8936002)(64756008)(66476007)(66946007)(71200400001)(86362001)(76116006)(66556008)(66446008)(2906002)(81156014)(81166006)(186003)(52536014)(478600001)(8676002)(26005)(55016002)(9686003)(5660300002)(33656002);DIR:OUT;SFP:1101;SCL:1;SRVR:CH2PR02MB6151;H:CH2PR02MB7000.namprd02.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;MX:1;A:1;
+x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(4636009)(376002)(39850400004)(396003)(366004)(346002)(136003)(189003)(199004)(66476007)(66446008)(2906002)(6506007)(53546011)(26005)(71200400001)(66556008)(64756008)(66946007)(76116006)(33656002)(186003)(7696005)(86362001)(52536014)(5660300002)(8936002)(4326008)(81166006)(316002)(9686003)(478600001)(8676002)(55016002)(81156014)(110136005)(54906003);DIR:OUT;SFP:1101;SCL:1;SRVR:CH2PR02MB6632;H:CH2PR02MB7000.namprd02.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;MX:1;A:1;
 received-spf: None (protection.outlook.com: xilinx.com does not designate
  permitted sender hosts)
 x-ms-exchange-senderadcheck: 1
 x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: 1ZrD/D383Ufh18YMHlLbLIasokfXGZL2UE7M6Y4mCO40MUfo1LV9c4lKj+9ESk0Xp2XCR8YF2znQHbp4FFPq590JNZealkyZ6vNDrO3AmLhWm5AshWnoWYcwgueKumRuFWgY/dBnApiXTUVjEKkoks51iXyaFvZahzf9mKQGBNtpAB5rxokkwJr6dvujhMeQIK8oefzJx1lmBZb87vKr0SxD8LzW/RN0sMY6acZ+1Cs/1bofMCRj1Iympf88/L9USoxka+Mj2BVLVGzDngTa8gTy15vmF2qP6jdoEFAKWD/HCLqH4PEWnZgR+baxDFR+m6Fff7T4XwDhTls0Y5smVX+PnX6WB+At0FpI8GLstWnI4mIowJiPs9tyV+S/EdaZsFKWIwacLKhu+MxJhlLqRb3RZ36P1pkWCMYn1iAG67NPrOC52+gts89yHbGXL+GG
+x-microsoft-antispam-message-info: mY8ne1LYocl0i01S7yPGT+XqI79esG6e25g21897Yq/JGrLZ+wVgzB0deudikyWvPpifw18t/xHnktc5IZe01fyLLCtyIomyr2yDm8+ju/EK+IvGxRZxLRukQ1BzVJPSfM0bZST2KjwLgZgv9DgRSOKE91/xspXGRkXue2Zmwi4xfHtgHBtl+xN50+x2XOWsboDaUicofSqPPVNVCM7/zFZ99Dsc4UiSTDWDP9AiEAY45AfbqLj5+6h2tBrBZfwd12wdXrX8U5xD/bVBrqJeFGmnTCMHAlbMgOQeOieYgCbBEdGOmdRfocyy/69QBYgQ55eTmJI9AkSeZRE2egiDXGvJGQLjsb8Ru51OEGkdcfBTVaJx63+pl+EjOM4ODJ5hdv1flEs8RAYLKFAtFC5Ap4slXJMNaoyg7o//Nqodhz2Md2FBcTjVxQW2Q5BhEeWG
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
 X-OriginatorOrg: xilinx.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: e0d130ff-50ad-4d42-726a-08d797ee1e93
-X-MS-Exchange-CrossTenant-originalarrivaltime: 13 Jan 2020 06:02:06.5472
+X-MS-Exchange-CrossTenant-Network-Message-Id: 632de85d-79bf-45d1-7c2e-08d797ef86b9
+X-MS-Exchange-CrossTenant-originalarrivaltime: 13 Jan 2020 06:12:10.6558
  (UTC)
 X-MS-Exchange-CrossTenant-fromentityheader: Hosted
 X-MS-Exchange-CrossTenant-id: 657af505-d5df-48d0-8300-c31994686c5c
 X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: Wl2DZcKfWSYLjtZYQ2XCaOPVX5NZEOLnDIRXyofENuncxC57l30QEm4WZ5gmmYftMipq6zJN8tJFvI5YL/fF1A==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: CH2PR02MB6151
+X-MS-Exchange-CrossTenant-userprincipalname: 4Q8RWQR1U/j7avijrcT4EYIpX3ydu0hQIE/3PBCVWxsRVxLg0E2Gb95//5EvwQDus8P3Zn0mqG4rwJ9iNREjsA==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: CH2PR02MB6632
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
@@ -101,41 +99,55 @@ X-Mailing-List: netdev@vger.kernel.org
 > Cc: Michal Simek <michals@xilinx.com>; Robert Hancock
 > <hancock@sedsystems.ca>; netdev@vger.kernel.org; linux-arm-
 > kernel@lists.infradead.org; linux-kernel@vger.kernel.org
-> Subject: [PATCH 08/14] net: axienet: Drop MDIO interrupt registers from
-> ethtools dump
+> Subject: [PATCH 09/14] net: axienet: Add mii-tool support
 >=20
-> Newer revisions of the IP don't have these registers. Since we don't
-> really use them, just drop them from the ethtools dump.
+> mii-tool is useful for debugging, and all it requires to work is to wire
+> up the ioctl ops function pointer.
+> Add this to the axienet driver to enable mii-tool.
 >=20
 > Signed-off-by: Andre Przywara <andre.przywara@arm.com>
 > ---
->  drivers/net/ethernet/xilinx/xilinx_axienet_main.c | 4 ----
->  1 file changed, 4 deletions(-)
+>  drivers/net/ethernet/xilinx/xilinx_axienet_main.c | 11 +++++++++++
+>  1 file changed, 11 insertions(+)
 >=20
 > diff --git a/drivers/net/ethernet/xilinx/xilinx_axienet_main.c
 > b/drivers/net/ethernet/xilinx/xilinx_axienet_main.c
-> index e83c7b005f50..7a747345e98e 100644
+> index 7a747345e98e..64f799f3d248 100644
 > --- a/drivers/net/ethernet/xilinx/xilinx_axienet_main.c
 > +++ b/drivers/net/ethernet/xilinx/xilinx_axienet_main.c
-> @@ -1239,10 +1239,6 @@ static void axienet_ethtools_get_regs(struct
-> net_device *ndev,
->  	data[20] =3D axienet_ior(lp, XAE_MDIO_MCR_OFFSET);
->  	data[21] =3D axienet_ior(lp, XAE_MDIO_MWD_OFFSET);
->  	data[22] =3D axienet_ior(lp, XAE_MDIO_MRD_OFFSET);
-> -	data[23] =3D axienet_ior(lp, XAE_MDIO_MIS_OFFSET);
-> -	data[24] =3D axienet_ior(lp, XAE_MDIO_MIP_OFFSET);
-> -	data[25] =3D axienet_ior(lp, XAE_MDIO_MIE_OFFSET);
-> -	data[26] =3D axienet_ior(lp, XAE_MDIO_MIC_OFFSET);
+> @@ -1152,6 +1152,16 @@ static void axienet_poll_controller(struct net_dev=
+ice
+> *ndev)
+>  }
+>  #endif
+>=20
+> +static int axienet_ioctl(struct net_device *dev, struct ifreq *rq, int c=
+md)
+> +{
+> +	struct axienet_local *lp =3D netdev_priv(dev);
+> +
+> +	if (!netif_running(dev))
+> +		return -EINVAL;
 
-We can also remove these #defines from the header.
-Alternatively, we can cherry-pick commit f5b9e58 " net: xilinx: axiethernet=
-:
-Fix axiethernet register description" from xilinx tree and include it in th=
-is
-series.
->  	data[27] =3D axienet_ior(lp, XAE_UAW0_OFFSET);
->  	data[28] =3D axienet_ior(lp, XAE_UAW1_OFFSET);
->  	data[29] =3D axienet_ior(lp, XAE_FMI_OFFSET);
+I think phy ioctl should be allowed even if the device is not up.=20
+Or is there any specific reason for keeping it?
+
+> +
+> +	return phylink_mii_ioctl(lp->phylink, rq, cmd);
+> +}
+> +
+>  static const struct net_device_ops axienet_netdev_ops =3D {
+>  	.ndo_open =3D axienet_open,
+>  	.ndo_stop =3D axienet_stop,
+> @@ -1159,6 +1169,7 @@ static const struct net_device_ops
+> axienet_netdev_ops =3D {
+>  	.ndo_change_mtu	=3D axienet_change_mtu,
+>  	.ndo_set_mac_address =3D netdev_set_mac_address,
+>  	.ndo_validate_addr =3D eth_validate_addr,
+> +	.ndo_do_ioctl =3D axienet_ioctl,
+>  	.ndo_set_rx_mode =3D axienet_set_multicast_list,
+>  #ifdef CONFIG_NET_POLL_CONTROLLER
+>  	.ndo_poll_controller =3D axienet_poll_controller,
 > --
 > 2.17.1
 
