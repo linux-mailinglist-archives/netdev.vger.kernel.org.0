@@ -2,80 +2,96 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id CA930139002
-	for <lists+netdev@lfdr.de>; Mon, 13 Jan 2020 12:23:38 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id F1F7D139003
+	for <lists+netdev@lfdr.de>; Mon, 13 Jan 2020 12:25:12 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726985AbgAMLXg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 13 Jan 2020 06:23:36 -0500
-Received: from mail-io1-f68.google.com ([209.85.166.68]:39197 "EHLO
-        mail-io1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725992AbgAMLXg (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 13 Jan 2020 06:23:36 -0500
-Received: by mail-io1-f68.google.com with SMTP id c16so9369463ioh.6
-        for <netdev@vger.kernel.org>; Mon, 13 Jan 2020 03:23:36 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=cloud.ionos.com; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=U4v91slysBtu2+ZNUNp733HGyuTdWdB0vCTPvzlAMaQ=;
-        b=Hs40/hCtDaw8kIdqbXXKtTxZGwlkdcXPIDSr52sBt9lKZdJOA8HTIs1ZJ6HDFBBSPi
-         VQ29OLELQpXHhFZ7d3W2i8YPFQNotSpRMRfktWCTtklFthmuOj+HiqKwvTFybvX7EeIU
-         17M7lpOhht4JNwwXL8Syph5dMdt6WeUH641P95PEbNJy/TD1t2gXTe4Xm25TRe8Ai5T+
-         y2kJPxuaHzZcBDfLYg8Gxrel4rToqKqV/alyquGkWsJr7CX0alX/MGe/xyLb08aRIsGr
-         2cSxy/i7JUBgY8X5p9Qq+yLCv44Pg+emYzgR/Ou2ozfELUGO36BSInuQuZfWtRTceGnm
-         alHg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=U4v91slysBtu2+ZNUNp733HGyuTdWdB0vCTPvzlAMaQ=;
-        b=qtxw5irO0gSMgQyfJk8gWLTdawDu7n9F5BqT0WNShQBMxe3dcnjuiud5+SOlShfqm+
-         K5BiKD1ulQZ7SCMjwoQeZPcRASmOEwVAbS0W5o5oJqQIk8KdWKbFlUgcPe79dAWJDWzY
-         BQQgxyth1qiZcZKYxcpzcvK2/aq0mYLpB2TkyhP5YBCgTt6PEY34o8nk49egaW02m0fb
-         FicfUV9ZrVodAeuaXx2OxXH6lLaYEhjIx6Y+rcM9bhZAN4cYXb+VxivGV8TaI65Bor1z
-         lA4E9T5wzifsymU5RbmP48wdb9eoo9m54lFQKiV4wXOhYTzA/XY6KwLTXpJEV8pUNXWS
-         u9AA==
-X-Gm-Message-State: APjAAAXtFinLUo1ydOFCIIymXtYC1u0k6wOVLrSYT19PgskkxUMAChnz
-        Cs0mSnq0E4cTOay5DMijLkqrGFm1fMqRu29dnpETtQ==
-X-Google-Smtp-Source: APXvYqz3R0cwnpdFNzGF+9v6caVTmnupsODQb8Q35NPNszuiOcxuERTT/1cGd+mLaOMrq7IQY9L3CBVEeb5VduDXGpE=
-X-Received: by 2002:a5e:c606:: with SMTP id f6mr12207438iok.71.1578914615813;
- Mon, 13 Jan 2020 03:23:35 -0800 (PST)
+        id S1726934AbgAMLZL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 13 Jan 2020 06:25:11 -0500
+Received: from szxga06-in.huawei.com ([45.249.212.32]:44152 "EHLO huawei.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1725992AbgAMLZL (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 13 Jan 2020 06:25:11 -0500
+Received: from DGGEMS408-HUB.china.huawei.com (unknown [172.30.72.58])
+        by Forcepoint Email with ESMTP id A0E33B4E9EDF1334A4EF;
+        Mon, 13 Jan 2020 19:25:08 +0800 (CST)
+Received: from localhost.localdomain (10.175.124.28) by
+ DGGEMS408-HUB.china.huawei.com (10.3.19.208) with Microsoft SMTP Server id
+ 14.3.439.0; Mon, 13 Jan 2020 19:24:59 +0800
+From:   Zhang Xiaoxu <zhangxiaoxu5@huawei.com>
+To:     <linux-net-drivers@solarflare.com>, <ecree@solarflare.com>,
+        <amaftei@solarflare.com>, <davem@davemloft.net>,
+        <mhabets@solarflare.com>, <zhangxiaoxu5@huawei.com>
+CC:     <netdev@vger.kernel.org>
+Subject: [PATCH] sfc/ethtool_common: Make some function to static
+Date:   Mon, 13 Jan 2020 19:24:11 +0800
+Message-ID: <20200113112411.28090-1-zhangxiaoxu5@huawei.com>
+X-Mailer: git-send-email 2.17.2
 MIME-Version: 1.0
-References: <20200109192317.4045173-1-jonathan.lemon@gmail.com>
- <20200112125055.512b65f6@cakuba> <CAMGffEntn9nQAUk5ejEiEfnSjGda20rqQVi-zNu+GFr3v39pAA@mail.gmail.com>
- <20200113032030.2fc9d891@cakuba>
-In-Reply-To: <20200113032030.2fc9d891@cakuba>
-From:   Jinpu Wang <jinpu.wang@cloud.ionos.com>
-Date:   Mon, 13 Jan 2020 12:23:24 +0100
-Message-ID: <CAMGffEm1ruZsen6RwH3sSaV8LCHxBBRkBttJ2J1nDyq4N+2VwA@mail.gmail.com>
-Subject: Re: [PATCH net-next] mlx4: Bump up MAX_MSIX from 64 to 128
-To:     Jakub Kicinski <kubakici@wp.pl>
-Cc:     Jonathan Lemon <jonathan.lemon@gmail.com>,
-        netdev <netdev@vger.kernel.org>, tariqt@mellanox.com,
-        "David S. Miller" <davem@davemloft.net>, kernel-team@fb.com
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain
+X-Originating-IP: [10.175.124.28]
+X-CFilter-Loop: Reflected
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Jan 13, 2020 at 12:20 PM Jakub Kicinski <kubakici@wp.pl> wrote:
->
-> On Mon, 13 Jan 2020 09:47:59 +0100, Jinpu Wang wrote:
-> > On Sun, Jan 12, 2020 at 9:51 PM Jakub Kicinski <kubakici@wp.pl> wrote:
-> > > On Thu, 9 Jan 2020 11:23:17 -0800, Jonathan Lemon wrote:
-> > > > On modern hardware with a large number of cpus and using XDP,
-> > > > the current MSIX limit is insufficient.  Bump the limit in
-> > > > order to allow more queues.
-> > > >
-> > > > Signed-off-by: Jonathan Lemon <jonathan.lemon@gmail.com>
-> > >
-> > > Applied to net-next, thanks everyone!
-> > >
-> > > (Jack, please make sure you spell your tags right)
-> > Checked, It's correct both in my reply and in net-next.git.
->
-> I manually corrected it in tree. You swapped 'i' and 'e'
-> in the word reviewed, your email had "reveiwed".
-oh, sorry for that, will be more careful next time.
-And thanks for the correction.
+Fix sparse warning:
+
+drivers/net/ethernet/sfc/ethtool_common.c
+  warning: symbol 'efx_fill_test' was not declared. Should it be static?
+  warning: symbol 'efx_fill_loopback_test' was not declared.
+           Should it be static?
+  warning: symbol 'efx_describe_per_queue_stats' was not declared.
+           Should it be static?
+
+Reported-by: Hulk Robot <hulkci@huawei.com>
+Signed-off-by: Zhang Xiaoxu <zhangxiaoxu5@huawei.com>
+---
+ drivers/net/ethernet/sfc/ethtool_common.c | 17 +++++++++--------
+ 1 file changed, 9 insertions(+), 8 deletions(-)
+
+diff --git a/drivers/net/ethernet/sfc/ethtool_common.c b/drivers/net/ethernet/sfc/ethtool_common.c
+index 3d7f75cc5cf0..b8d281ab6c7a 100644
+--- a/drivers/net/ethernet/sfc/ethtool_common.c
++++ b/drivers/net/ethernet/sfc/ethtool_common.c
+@@ -147,9 +147,9 @@ void efx_ethtool_get_pauseparam(struct net_device *net_dev,
+  *
+  * Fill in an individual self-test entry.
+  */
+-void efx_fill_test(unsigned int test_index, u8 *strings, u64 *data,
+-		   int *test, const char *unit_format, int unit_id,
+-		   const char *test_format, const char *test_id)
++static void efx_fill_test(unsigned int test_index, u8 *strings, u64 *data,
++			  int *test, const char *unit_format, int unit_id,
++			  const char *test_format, const char *test_id)
+ {
+ 	char unit_str[ETH_GSTRING_LEN], test_str[ETH_GSTRING_LEN];
+ 
+@@ -189,10 +189,11 @@ void efx_fill_test(unsigned int test_index, u8 *strings, u64 *data,
+  * Fill in a block of loopback self-test entries.  Return new test
+  * index.
+  */
+-int efx_fill_loopback_test(struct efx_nic *efx,
+-			   struct efx_loopback_self_tests *lb_tests,
+-			   enum efx_loopback_mode mode,
+-			   unsigned int test_index, u8 *strings, u64 *data)
++static int efx_fill_loopback_test(struct efx_nic *efx,
++				  struct efx_loopback_self_tests *lb_tests,
++				  enum efx_loopback_mode mode,
++				  unsigned int test_index,
++				  u8 *strings, u64 *data)
+ {
+ 	struct efx_channel *channel =
+ 		efx_get_channel(efx, efx->tx_channel_offset);
+@@ -293,7 +294,7 @@ int efx_ethtool_fill_self_tests(struct efx_nic *efx,
+ 	return n;
+ }
+ 
+-size_t efx_describe_per_queue_stats(struct efx_nic *efx, u8 *strings)
++static size_t efx_describe_per_queue_stats(struct efx_nic *efx, u8 *strings)
+ {
+ 	size_t n_stats = 0;
+ 	struct efx_channel *channel;
+-- 
+2.17.2
+
