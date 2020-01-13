@@ -2,105 +2,105 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 6B98B138CC8
-	for <lists+netdev@lfdr.de>; Mon, 13 Jan 2020 09:27:15 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 76B56138CCD
+	for <lists+netdev@lfdr.de>; Mon, 13 Jan 2020 09:29:58 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728787AbgAMI1G (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 13 Jan 2020 03:27:06 -0500
-Received: from nbd.name ([46.4.11.11]:57666 "EHLO nbd.name"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728680AbgAMI1G (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 13 Jan 2020 03:27:06 -0500
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=nbd.name;
-         s=20160729; h=Content-Transfer-Encoding:Content-Type:In-Reply-To:
-        MIME-Version:Date:Message-ID:From:References:Cc:To:Subject:Sender:Reply-To:
-        Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
-        Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:
-        List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=/NHwwQnGBAa85zcV4M8gNdsSSkTKTe3Kl6d6gN17ino=; b=tKzaUnt5QT42dRYU/FjhfrfmXF
-        liDld7MJepEdNDuZpRoJSCDIIssSb89CrgCkjhONFiFWr7YWBQIH2phOTbzAnEcQjVLTL2+1CG6U7
-        4RX7rRAIuuzvovpbMQ6U6FmI9hBwv00Plhb3hqh5d01LR7iDoXC2kTx9s03RqGfl5X3U=;
-Received: from [80.255.7.117] (helo=nf.local)
-        by ds12 with esmtpsa (TLS1.2:ECDHE_RSA_AES_128_GCM_SHA256:128)
-        (Exim 4.89)
-        (envelope-from <nbd@nbd.name>)
-        id 1iqv3u-0007t4-C7; Mon, 13 Jan 2020 09:27:02 +0100
-Subject: Re: [PATCH] ath9k: Fix possible data races in ath_set_channel()
-To:     Jia-Ju Bai <baijiaju1990@gmail.com>, ath9k-devel@qca.qualcomm.com,
-        kvalo@codeaurora.org, davem@davemloft.net
-Cc:     linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-References: <20200111171528.7053-1-baijiaju1990@gmail.com>
-From:   Felix Fietkau <nbd@nbd.name>
-Autocrypt: addr=nbd@nbd.name; prefer-encrypt=mutual; keydata=
- xsDiBEah5CcRBADIY7pu4LIv3jBlyQ/2u87iIZGe6f0f8pyB4UjzfJNXhJb8JylYYRzIOSxh
- ExKsdLCnJqsG1PY1mqTtoG8sONpwsHr2oJ4itjcGHfn5NJSUGTbtbbxLro13tHkGFCoCr4Z5
- Pv+XRgiANSpYlIigiMbOkide6wbggQK32tC20QxUIwCg4k6dtV/4kwEeiOUfErq00TVqIiEE
- AKcUi4taOuh/PQWx/Ujjl/P1LfJXqLKRPa8PwD4j2yjoc9l+7LptSxJThL9KSu6gtXQjcoR2
- vCK0OeYJhgO4kYMI78h1TSaxmtImEAnjFPYJYVsxrhay92jisYc7z5R/76AaELfF6RCjjGeP
- wdalulG+erWju710Bif7E1yjYVWeA/9Wd1lsOmx6uwwYgNqoFtcAunDaMKi9xVQW18FsUusM
- TdRvTZLBpoUAy+MajAL+R73TwLq3LnKpIcCwftyQXK5pEDKq57OhxJVv1Q8XkA9Dn1SBOjNB
- l25vJDFAT9ntp9THeDD2fv15yk4EKpWhu4H00/YX8KkhFsrtUs69+vZQwc0cRmVsaXggRmll
- dGthdSA8bmJkQG5iZC5uYW1lPsJgBBMRAgAgBQJGoeQnAhsjBgsJCAcDAgQVAggDBBYCAwEC
- HgECF4AACgkQ130UHQKnbvXsvgCgjsAIIOsY7xZ8VcSm7NABpi91yTMAniMMmH7FRenEAYMa
- VrwYTIThkTlQzsFNBEah5FQQCACMIep/hTzgPZ9HbCTKm9xN4bZX0JjrqjFem1Nxf3MBM5vN
- CYGBn8F4sGIzPmLhl4xFeq3k5irVg/YvxSDbQN6NJv8o+tP6zsMeWX2JjtV0P4aDIN1pK2/w
- VxcicArw0VYdv2ZCarccFBgH2a6GjswqlCqVM3gNIMI8ikzenKcso8YErGGiKYeMEZLwHaxE
- Y7mTPuOTrWL8uWWRL5mVjhZEVvDez6em/OYvzBwbkhImrryF29e3Po2cfY2n7EKjjr3/141K
- DHBBdgXlPNfDwROnA5ugjjEBjwkwBQqPpDA7AYPvpHh5vLbZnVGu5CwG7NAsrb2isRmjYoqk
- wu++3117AAMFB/9S0Sj7qFFQcD4laADVsabTpNNpaV4wAgVTRHKV/kC9luItzwDnUcsZUPdQ
- f3MueRJ3jIHU0UmRBG3uQftqbZJj3ikhnfvyLmkCNe+/hXhPu9sGvXyi2D4vszICvc1KL4RD
- aLSrOsROx22eZ26KqcW4ny7+va2FnvjsZgI8h4sDmaLzKczVRIiLITiMpLFEU/VoSv0m1F4B
- FtRgoiyjFzigWG0MsTdAN6FJzGh4mWWGIlE7o5JraNhnTd+yTUIPtw3ym6l8P+gbvfoZida0
- TspgwBWLnXQvP5EDvlZnNaKa/3oBes6z0QdaSOwZCRA3QSLHBwtgUsrT6RxRSweLrcabwkkE
- GBECAAkFAkah5FQCGwwACgkQ130UHQKnbvW2GgCfTKx80VvCR/PvsUlrvdOLsIgeRGAAn1ee
- RjMaxwtSdaCKMw3j33ZbsWS4
-Message-ID: <67d7a9f7-546b-3dc9-07b2-846e390c1c5e@nbd.name>
-Date:   Mon, 13 Jan 2020 09:27:01 +0100
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.14; rv:68.0)
- Gecko/20100101 Thunderbird/68.3.1
-MIME-Version: 1.0
-In-Reply-To: <20200111171528.7053-1-baijiaju1990@gmail.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+        id S1728912AbgAMI35 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 13 Jan 2020 03:29:57 -0500
+Received: from smtprelay-out1.synopsys.com ([149.117.73.133]:54330 "EHLO
+        smtprelay-out1.synopsys.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1728877AbgAMI34 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 13 Jan 2020 03:29:56 -0500
+Received: from mailhost.synopsys.com (mdc-mailhost2.synopsys.com [10.225.0.210])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits))
+        (No client certificate requested)
+        by smtprelay-out1.synopsys.com (Postfix) with ESMTPS id 925CC40688;
+        Mon, 13 Jan 2020 08:29:55 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=synopsys.com; s=mail;
+        t=1578904196; bh=9KZBCoBScps294ahSGzzYLQE+3wpdcKilU3Fh+QcUD0=;
+        h=From:To:Cc:Subject:Date:From;
+        b=DAZMo4c69MlMllYQsngPi1DCHBNLU1Jy6ZYeom1eS0wElvBml443ufSMAWaQOcn1m
+         YYmbBlEvt4MRPEp87GCXBuQkjcFdEW+g10GgQvx2QxTzaTy3DERIjISCKZWMFdvbPn
+         HZBbP3eFr4mdouCzuFJpV7oyeQvfSCesYy5aj/Tsy95njBIw2Oad64W+A92lCRtG5O
+         apRmE+d/E/m+eGFVxvX038SYEaM04vvnZrVuj4ab75kE++CQK2IVdV97sTgnvDBufb
+         8hBS2FpD8hFsvBiQ5S9C20XUDYCade3ehnub68uv4G3qkfU7ziw+J01KPUmvrL6Bie
+         pRaW651lscthg==
+Received: from de02dwia024.internal.synopsys.com (de02dwia024.internal.synopsys.com [10.225.19.81])
+        by mailhost.synopsys.com (Postfix) with ESMTP id 5F7B4A0061;
+        Mon, 13 Jan 2020 08:29:48 +0000 (UTC)
+From:   Jose Abreu <Jose.Abreu@synopsys.com>
+To:     netdev@vger.kernel.org
+Cc:     Joao Pinto <Joao.Pinto@synopsys.com>,
+        Jose Abreu <Jose.Abreu@synopsys.com>,
+        Giuseppe Cavallaro <peppe.cavallaro@st.com>,
+        Alexandre Torgue <alexandre.torgue@st.com>,
+        Jose Abreu <Jose.Abreu@synopsys.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+        linux-stm32@st-md-mailman.stormreply.com,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
+Subject: [PATCH net-next 0/6] net: stmmac: ETF support
+Date:   Mon, 13 Jan 2020 09:29:34 +0100
+Message-Id: <cover.1578903874.git.Jose.Abreu@synopsys.com>
+X-Mailer: git-send-email 2.7.4
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 2020-01-11 18:15, Jia-Ju Bai wrote:
-> The functions ath9k_config() and ath_ani_calibrate() may be concurrently
-> executed.
-> 
-> A variable survey->filled is accessed with holding a spinlock
-> common->cc_lock, through:
-> ath_ani_calibrate()
->     spin_lock_irqsave(&common->cc_lock, flags);
->     ath_update_survey_stats()
->         ath_update_survey_nf()
->             survey->filled |= SURVEY_INFO_NOISE_DBM;
-> 
-> The identical variables sc->cur_survey->filled and 
-> sc->survey[pos].filled is accessed without holding this lock, through:
-> ath9k_config()
->     ath_chanctx_set_channel()
->         ath_set_channel()
->             sc->cur_survey->filled &= ~SURVEY_INFO_IN_USE;
->             sc->cur_survey->filled |= SURVEY_INFO_IN_USE;
->             else if (!(sc->survey[pos].filled & SURVEY_INFO_IN_USE))
->             ath_update_survey_nf
->                 survey->filled |= SURVEY_INFO_NOISE_DBM;
-> 
-> Thus, possible data races may occur.
-> 
-> To fix these data races, in ath_set_channel(), these variables are
-> accessed with holding the spinlock common->cc_lock.
-> 
-> These data races are found by the runtime testing of our tool DILP-2.
-> 
-> Signed-off-by: Jia-Ju Bai <baijiaju1990@gmail.com>
-I think a much better solution would be to stop common->ani.timer
-earlier in ath_set_channel to prevent this race from occurring.
+This series adds the support for ETF scheduler in stmmac.
 
-- Felix
+1) Starts adding the support by implementing Enhanced Descriptors in stmmac
+main core. This is needed for ETF feature in XGMAC and QoS cores.
+
+2) Integrates the ETF logic into stmmac TC core.
+
+3) and 4) adds the HW specific support for ETF in XGMAC and QoS cores. The
+IP feature is called TBS (Time Based Scheduling).
+
+5) Enables ETF in GMAC5 IPK PCI entry for all Queues except Queue 0.
+
+6) Adds the new TBS feature and even more information into the debugFS
+HW features file.
+
+---
+Cc: Giuseppe Cavallaro <peppe.cavallaro@st.com>
+Cc: Alexandre Torgue <alexandre.torgue@st.com>
+Cc: Jose Abreu <joabreu@synopsys.com>
+Cc: "David S. Miller" <davem@davemloft.net>
+Cc: Maxime Coquelin <mcoquelin.stm32@gmail.com>
+Cc: netdev@vger.kernel.org
+Cc: linux-stm32@st-md-mailman.stormreply.com
+Cc: linux-arm-kernel@lists.infradead.org
+Cc: linux-kernel@vger.kernel.org
+---
+
+Jose Abreu (6):
+  net: stmmac: Initial support for TBS
+  net: stmmac: tc: Add support for ETF Scheduler using TBS
+  net: stmmac: xgmac: Add TBS support
+  net: stmmac: gmac4+: Add TBS support
+  net: stmmac: pci: Enable TBS on GMAC5 IPK PCI entry
+  net: stmmac: Add missing information in DebugFS capabilities file
+
+ drivers/net/ethernet/stmicro/stmmac/common.h       |   1 +
+ drivers/net/ethernet/stmicro/stmmac/descs.h        |   9 ++
+ drivers/net/ethernet/stmicro/stmmac/dwmac4.h       |   4 +
+ drivers/net/ethernet/stmicro/stmmac/dwmac4_descs.c |  10 ++
+ drivers/net/ethernet/stmicro/stmmac/dwmac4_descs.h |   7 +
+ drivers/net/ethernet/stmicro/stmmac/dwmac4_dma.c   |  21 +++
+ drivers/net/ethernet/stmicro/stmmac/dwmac4_dma.h   |   7 +
+ drivers/net/ethernet/stmicro/stmmac/dwxgmac2.h     |  14 ++
+ .../net/ethernet/stmicro/stmmac/dwxgmac2_descs.c   |   9 ++
+ drivers/net/ethernet/stmicro/stmmac/dwxgmac2_dma.c |  24 ++++
+ drivers/net/ethernet/stmicro/stmmac/hwif.h         |  12 ++
+ drivers/net/ethernet/stmicro/stmmac/stmmac.h       |   3 +
+ drivers/net/ethernet/stmicro/stmmac/stmmac_main.c  | 149 ++++++++++++++++-----
+ drivers/net/ethernet/stmicro/stmmac/stmmac_pci.c   |   2 +
+ drivers/net/ethernet/stmicro/stmmac/stmmac_tc.c    |  18 +++
+ include/linux/stmmac.h                             |   1 +
+ 16 files changed, 259 insertions(+), 32 deletions(-)
+
+-- 
+2.7.4
+
