@@ -2,120 +2,73 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 30637139A64
-	for <lists+netdev@lfdr.de>; Mon, 13 Jan 2020 20:55:54 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id DAA8D139A77
+	for <lists+netdev@lfdr.de>; Mon, 13 Jan 2020 21:03:11 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728679AbgAMTzu (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 13 Jan 2020 14:55:50 -0500
-Received: from mail-bn8nam11on2115.outbound.protection.outlook.com ([40.107.236.115]:6376
-        "EHLO NAM11-BN8-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1726985AbgAMTzt (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 13 Jan 2020 14:55:49 -0500
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=LITcxhKP41gBasn5z9amOze662wGEzSk9hio9LjhlFbOBokmmSCAL3D0TdNPqjLg2UpJNT559mRxOkV5nwOO9WNpcmMVHJlXtoWa4c6FwwQsKzMCopHGqnovQ2cm1kiag1NiGkK8ALw9/9/6kDDeyZf2kZz/HkKVlN60b3JmM/04Br/ktXjM9YvTva/HbfurKLmpISxMoIB4tfMaZFDXwFPceNvZnFikPVupSYqwNVOBp/zuTcgpl7zPFCQQFtPmAFosDOJUJq8UAL5x0uyokgtduiMtSd1gvPeOYMk0TbcGwlN/I39K0pd2X5r7iBTGuq+8srIdQpPO9a8zsLXxQg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=/QVCCQ2MIfXYaaFQHYD5acKivoTlhDrJcDzSawoBsnI=;
- b=U2TLbgDu2VdIEXbFg6xu5DnyFaD4rgEV98X6Nl4dGTSeA+pdlbBdkK6oxCPl8xeFV7xPAu/WLOaNVexmhE/pBDhDFtWPAD0Mns8vDNFHQfVf17PoG8p/lcBUHMt5DX0jxyTMvto9ooIWtwWqSjbiJkYCuT3xH+kGF5WCVSyM+O8g1AgcXFrTahJCcXfvyRb+UkZDaYZ38TzGKKDqlfwR10FGL6kwENBqNydBDw2TsxEJUROZct99a81gJ0SRQ+ns23Ni6Y/+9qba2Yy9z0jRJ4JAGIWS/sUNh7501VpQIHZeHo4/f+IsChEXh1UDLzOhTnL5FCkrgzJAiLNXB4ibjg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=microsoft.com; dmarc=pass action=none
- header.from=microsoft.com; dkim=pass header.d=microsoft.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=/QVCCQ2MIfXYaaFQHYD5acKivoTlhDrJcDzSawoBsnI=;
- b=HqwZ3OWcmgi/4rFLZg82zuCVjX4/whz1kfiXUophk5oR+9hDA/HQqjB33eoDP3+1nJJCgSybeMKX7eq4SyPiyKifdmoICxGltC3gofzFWYi72HqQ2PV9BghSPzs6v07vLheetNfpvdEjWaMSGHWWCnwS8d449TOJeh70hZ/J5Qo=
-Received: from MN2PR21MB1375.namprd21.prod.outlook.com (20.179.23.160) by
- MN2PR21MB1470.namprd21.prod.outlook.com (20.180.27.71) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.2665.3; Mon, 13 Jan 2020 19:55:46 +0000
-Received: from MN2PR21MB1375.namprd21.prod.outlook.com
- ([fe80::6de3:c062:9e55:ffc4]) by MN2PR21MB1375.namprd21.prod.outlook.com
- ([fe80::6de3:c062:9e55:ffc4%5]) with mapi id 15.20.2644.015; Mon, 13 Jan 2020
- 19:55:46 +0000
-From:   Haiyang Zhang <haiyangz@microsoft.com>
-To:     Mohammed Gamal <mgamal@redhat.com>,
-        "linux-hyperv@vger.kernel.org" <linux-hyperv@vger.kernel.org>,
-        Stephen Hemminger <sthemmin@microsoft.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-CC:     KY Srinivasan <kys@microsoft.com>,
-        "sashal@kernel.org" <sashal@kernel.org>,
-        vkuznets <vkuznets@redhat.com>, cavery <cavery@redhat.com>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: RE: [PATCH] hv_netvsc: Fix memory leak when removing rndis device
-Thread-Topic: [PATCH] hv_netvsc: Fix memory leak when removing rndis device
-Thread-Index: AQHVykeZNk0GzNDhI0uj+RVD6t6utafo/cLA
-Date:   Mon, 13 Jan 2020 19:55:45 +0000
-Message-ID: <MN2PR21MB1375C1C333928779BC4978ECCA350@MN2PR21MB1375.namprd21.prod.outlook.com>
-References: <20200113192752.1266-1-mgamal@redhat.com>
+        id S1728769AbgAMUDF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 13 Jan 2020 15:03:05 -0500
+Received: from mail-pg1-f193.google.com ([209.85.215.193]:38087 "EHLO
+        mail-pg1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727331AbgAMUDF (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 13 Jan 2020 15:03:05 -0500
+Received: by mail-pg1-f193.google.com with SMTP id a33so5218873pgm.5
+        for <netdev@vger.kernel.org>; Mon, 13 Jan 2020 12:03:04 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=networkplumber-org.20150623.gappssmtp.com; s=20150623;
+        h=date:from:to:cc:subject:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=dDAqkyD/tpiI4U9+257qc3YqD7LGOrkT6Qv3kWgevuE=;
+        b=2MUdmRFc3DM2x6YdfwZWMEm65bzamjR9XdINw9TimbeINbeMnyVtTF0qPit7prP/Uh
+         pXy//399Sf5SND8p5Swx/Q7REar6APJSl2dAqoEVZWffC2Rwfuf2KY/vmpRjvLVZu+kI
+         oEmcDVABS5SJ2CmoPsHKSxNggmZ5/Sh66PEPV6y0+6FHuXYHyYFkYS0to8/aXHo9//Mk
+         qFL/14pNozRgmeOEqlk8rjXJ8WraQT4jaCehig3cHRHD3GydVmphlVMIhLhmZhhwhKg/
+         RfmUPrU04QoxTGAlkO2mkR+poQBz34a3VbZRzqmBjZmfnNLrJw6vx5MXis/V8RI7WpaA
+         8Z9w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=dDAqkyD/tpiI4U9+257qc3YqD7LGOrkT6Qv3kWgevuE=;
+        b=DstV309p2XOe42Q6fXOOcDNEZnVPK+Jdqu9wpSZXOEXI0jeuD+LJrKC4B/1pThRGBj
+         EDzxJDTYxy/GwDJ71bXRMJko+4ia1k4CgXGpC0jSgrt+kE5OdLvKDB4bhNZqyZfyyaFW
+         YjD3Tihpq4HpHluq72F0i6sRKvMCG3jDAzA6mZ/me6AWzBvh2hDdgPHBldLEyeV6+tt7
+         AeIQZKQfw8Yo16iaE+8Sle9jgm+D3tIcMT+PWN/VvNQJtZCtqoc1lNHK8tQ8+MAZg79d
+         +kFwV7X+tCAP3paKbLlFT3EPtP11UAn/X+sRga2DPcVDfZ0caLrXDzuI4a6OxGpoWH0/
+         0JDw==
+X-Gm-Message-State: APjAAAX0AGdE6FRkNHIE2zFQ13Vz0lzPN7hicbgg8biuXfYQvABUOLAo
+        qIlt2EZcgjSnt+MebNziC70Aeg==
+X-Google-Smtp-Source: APXvYqz6uphmWGcjboP01vghF9D5x3AKtSgg35fYZqjtVxpHV8z8FCrT50vxWER+r7gDYXSul3DEEg==
+X-Received: by 2002:a63:2a49:: with SMTP id q70mr22072600pgq.265.1578945784482;
+        Mon, 13 Jan 2020 12:03:04 -0800 (PST)
+Received: from hermes.lan (204-195-22-127.wavecable.com. [204.195.22.127])
+        by smtp.gmail.com with ESMTPSA id 189sm15772620pfw.73.2020.01.13.12.03.03
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 13 Jan 2020 12:03:04 -0800 (PST)
+Date:   Mon, 13 Jan 2020 12:02:54 -0800
+From:   Stephen Hemminger <stephen@networkplumber.org>
+To:     Mohammed Gamal <mgamal@redhat.com>
+Cc:     linux-hyperv@vger.kernel.org, sthemmin@microsoft.com,
+        haiyangz@microsoft.com, netdev@vger.kernel.org, kys@microsoft.com,
+        sashal@kernel.org, vkuznets@redhat.com, cavery@redhat.com,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] hv_netvsc: Fix memory leak when removing rndis device
+Message-ID: <20200113120254.2f61148d@hermes.lan>
 In-Reply-To: <20200113192752.1266-1-mgamal@redhat.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-msip_labels: MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_Enabled=True;
- MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_SiteId=72f988bf-86f1-41af-91ab-2d7cd011db47;
- MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_Owner=haiyangz@microsoft.com;
- MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_SetDate=2020-01-13T19:55:44.0455820Z;
- MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_Name=General;
- MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_Application=Microsoft Azure
- Information Protection;
- MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_ActionId=e34eb14c-2151-472d-8546-ae6293bc44a1;
- MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_Extended_MSFT_Method=Automatic
-authentication-results: spf=none (sender IP is )
- smtp.mailfrom=haiyangz@microsoft.com; 
-x-originating-ip: [96.61.92.94]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-ht: Tenant
-x-ms-office365-filtering-correlation-id: c1db2179-f43a-470a-e7a3-08d798629465
-x-ms-traffictypediagnostic: MN2PR21MB1470:|MN2PR21MB1470:|MN2PR21MB1470:
-x-ms-exchange-transport-forked: True
-x-ld-processed: 72f988bf-86f1-41af-91ab-2d7cd011db47,ExtAddr
-x-microsoft-antispam-prvs: <MN2PR21MB14708BE42EBA743188639588CA350@MN2PR21MB1470.namprd21.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:551;
-x-forefront-prvs: 028166BF91
-x-forefront-antispam-report: SFV:NSPM;SFS:(10019020)(4636009)(366004)(189003)(199004)(2906002)(53546011)(8990500004)(7696005)(498600001)(76116006)(186003)(10290500003)(6506007)(66476007)(66446008)(64756008)(71200400001)(66556008)(86362001)(9686003)(52536014)(8676002)(54906003)(5660300002)(8936002)(26005)(66946007)(55016002)(33656002)(110136005)(81166006)(81156014)(4326008);DIR:OUT;SFP:1102;SCL:1;SRVR:MN2PR21MB1470;H:MN2PR21MB1375.namprd21.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;MX:1;A:1;
-received-spf: None (protection.outlook.com: microsoft.com does not designate
- permitted sender hosts)
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: u0DJpfTa5FUK8j9hpDhZXZrw5+IDT3wYjSyLXdCDhfmh9jFi2loBOcT8o/lb0KtjoMGe+ZbnM/eDkPYrqQPYPFmFlJTvz4vQriSu/FreOg86mBCh2PcyBE91XT6YjTJKdvblFh4gaYrsXP9jSn0m2W6+GzLsZcm1ba892Vlrv5F6fu7jEozfI7q8Zf2AdnCMWMBS8WvSme/BSERDK7/tN4TXCEGA0Pj1/6gJ0HrnNqaA3oWmF/L0aZQQjLlwPOR5BhmEoVBKKUqgh+3lqM1uBdQ+yddmOzmsBLnCKPqPL3pQ+6yceZhcwKOhGH5x99uQjIB75oyWe3TqmiY018BPDZd5yscgQs3FmKRaC6nIoM2AqVI6M5zXI14X1xabqi3HPy/oOcsnJPjQpVadNFxtZVOVhVtmQZQdq8GBJjYsQ3vClDws7cNRQ7aHgK1dL1lq
-x-ms-exchange-antispam-messagedata: 5j9++WxZq7N6/pp2a8GKxuMaqQu93pHMf4K8YiL+ghmsSioo+ORnIC790sWkPvxvbx2kXpyEnjRmyiRt54fJFdQil5remc3Qv0+n37uWeaTSjrdOSJpsyPC4Gk3j27YIyLLl4Mu72oDi6BTRlxb4DQ==
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+References: <20200113192752.1266-1-mgamal@redhat.com>
 MIME-Version: 1.0
-X-OriginatorOrg: microsoft.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: c1db2179-f43a-470a-e7a3-08d798629465
-X-MS-Exchange-CrossTenant-originalarrivaltime: 13 Jan 2020 19:55:45.8178
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 72f988bf-86f1-41af-91ab-2d7cd011db47
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: fwi3f7a07ipSt79HYM98GT6kGxsM81rfb9aOH4uOnyH4zrgCj30MdcVOwpr3rYa/hDiZ0RBwulb/BBI/F4ETKA==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: MN2PR21MB1470
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Mon, 13 Jan 2020 21:27:52 +0200
+Mohammed Gamal <mgamal@redhat.com> wrote:
 
-
-> -----Original Message-----
-> From: Mohammed Gamal <mgamal@redhat.com>
-> Sent: Monday, January 13, 2020 2:28 PM
-> To: linux-hyperv@vger.kernel.org; Stephen Hemminger
-> <sthemmin@microsoft.com>; Haiyang Zhang <haiyangz@microsoft.com>;
-> netdev@vger.kernel.org
-> Cc: KY Srinivasan <kys@microsoft.com>; sashal@kernel.org; vkuznets
-> <vkuznets@redhat.com>; cavery <cavery@redhat.com>; linux-
-> kernel@vger.kernel.org; Mohammed Gamal <mgamal@redhat.com>
-> Subject: [PATCH] hv_netvsc: Fix memory leak when removing rndis device
->=20
-> kmemleak detects the following memory leak when hot removing a network
-> device:
->=20
+> kmemleak detects the following memory leak when hot removing
+> a network device:
+> 
 > unreferenced object 0xffff888083f63600 (size 256):
 >   comm "kworker/0:1", pid 12, jiffies 4294831717 (age 1113.676s)
 >   hex dump (first 32 bytes):
@@ -137,60 +90,33 @@ X-Mailing-List: netdev@vger.kernel.org
 >     [<0000000096de6781>] worker_thread+0x87/0xb40
 >     [<00000000fbe7397e>] kthread+0x333/0x3f0
 >     [<000000004f844269>] ret_from_fork+0x3a/0x50
->=20
-> rndis_filter_device_add() allocates an instance of struct rndis_device wh=
-ich
-> never gets deallocated and rndis_filter_device_remove() sets net_device-
-> >extension which points to the rndis_device struct to NULL without ever f=
-reeing
-> the structure first, leaving it dangling.
->=20
-> This patch fixes this by freeing the structure before setting net_device-
-> >extension to NULL
->=20
+> 
+> rndis_filter_device_add() allocates an instance of struct rndis_device
+> which never gets deallocated and rndis_filter_device_remove() sets
+> net_device->extension which points to the rndis_device struct to NULL
+> without ever freeing the structure first, leaving it dangling.
+> 
+> This patch fixes this by freeing the structure before setting
+> net_device->extension to NULL
+> 
 > Signed-off-by: Mohammed Gamal <mgamal@redhat.com>
 > ---
 >  drivers/net/hyperv/rndis_filter.c | 1 +
 >  1 file changed, 1 insertion(+)
->=20
-> diff --git a/drivers/net/hyperv/rndis_filter.c b/drivers/net/hyperv/rndis=
-_filter.c
+> 
+> diff --git a/drivers/net/hyperv/rndis_filter.c b/drivers/net/hyperv/rndis_filter.c
 > index 857c4bea451c..d2e094f521a4 100644
 > --- a/drivers/net/hyperv/rndis_filter.c
 > +++ b/drivers/net/hyperv/rndis_filter.c
-> @@ -1443,6 +1443,7 @@ void rndis_filter_device_remove(struct hv_device
-> *dev,
+> @@ -1443,6 +1443,7 @@ void rndis_filter_device_remove(struct hv_device *dev,
 >  	/* Halt and release the rndis device */
 >  	rndis_filter_halt_device(net_dev, rndis_dev);
->=20
+>  
 > +	kfree(rndis_dev);
->  	net_dev->extension =3D NULL;
+>  	net_dev->extension = NULL;
+>  
+>  	netvsc_device_remove(dev);
 
-The struct rndis_device *should* be freed in free_netvsc_device_rcu()
-=3D=3D> free_netvsc_device():
-
-static void free_netvsc_device(struct rcu_head *head)
-{
-        struct netvsc_device *nvdev
-                =3D container_of(head, struct netvsc_device, rcu);
-        int i;
-
-        kfree(nvdev->extension);
-
-So we no longer free it in the rndis_filter_device_remove().
-
-But, the commit 02400fcee2542ee334a2394e0d9f6efd969fe782 did
-have a bug:
-	Date: Tue, 20 Mar 2018 15:03:03 -0700
-	[PATCH] hv_netvsc: use RCU to fix concurrent rx and queue changes
-
-It should have removed the following line when moving the free() to=20
-free_netvsc_device():
->  	net_dev->extension =3D NULL;
-Then, the leak of rndis_dev will be fixed. I suggested you to fix it in thi=
-s
-way.
-
-Thanks,
-- Haiyang
-
+That is one way, but maybe safer to just remove the line that sets
+extension to NULL. That way netvsc_device_remove will clean it up:
+    netvsc_device_remove -> free_netvsc_device_rcu -> free_netvsc_device.
