@@ -2,139 +2,133 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 9641E138EC0
-	for <lists+netdev@lfdr.de>; Mon, 13 Jan 2020 11:14:17 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A1792138EDB
+	for <lists+netdev@lfdr.de>; Mon, 13 Jan 2020 11:17:17 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728904AbgAMKOB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 13 Jan 2020 05:14:01 -0500
-Received: from mail-lj1-f181.google.com ([209.85.208.181]:39463 "EHLO
-        mail-lj1-f181.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726133AbgAMKN5 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 13 Jan 2020 05:13:57 -0500
-Received: by mail-lj1-f181.google.com with SMTP id l2so9330473lja.6
-        for <netdev@vger.kernel.org>; Mon, 13 Jan 2020 02:13:56 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=hZJxZMQS594195Qe6tKoE26QmSPdp9R0kh3oLsErtOg=;
-        b=qthhyP3Bk8MI8oRNnwDxAO9lpEjEQSIckE3uSZXWOkNnqmO/xRLee1CCKvb20j3+eZ
-         CxSYIteDBBX0nSWvcS4Z915ANVUQjMWmCn4rFhhhGonPztvTPO2s8busGHqDadigNDCA
-         P/rQHPfg1FDV2jS/bXHVr/XogXxV1xiibaN4T7VGrLkbL/hoUhtMUOHzQUbRGPjHBoUI
-         o0tlWTo6SV+8vva94Ht1G4OhdkFZ7+jwxt311DlJkRtR4k8LX+NsLiSZLa72xBFasHTg
-         b8/TInhc2tBK3tgBE4FZSSFUu5tPcHOIrxwNmlJE/kwiAdtf3yTMEN3hHLT/srRmprlo
-         bzfg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=hZJxZMQS594195Qe6tKoE26QmSPdp9R0kh3oLsErtOg=;
-        b=q7Jb89ZuOrfDgs/DC09LQ4hqjgiqA5cGjFU/1hcYv89dBny0/hXNL+C88IvPVrX71+
-         AKi81cKUjNgQADnGyiHmOmj3WBbo7kLAwm8VVGrwyxk6QdtgwucClUYm+L2N9qPBqjVa
-         8Ghl0xLeRnzGhd5VS74xyuZVRU/T1KWpHjgrTuLwJW6WW5XkCe/imVkfPF+T+wrr9w2o
-         M2r4AsstL+HWd1vnNuB3Q/dF50NG5COHxm5xvbqM89vZasRkIXA6zWc7XeEH30YcOPgc
-         4LhTUyVYLoWHuSLLMmuKNf1lcUXAk906BzNPeETAYZQqv84Y9sxQsabZtO5xL5Tmus8I
-         TNzQ==
-X-Gm-Message-State: APjAAAVDJNIJifwrZcOj/ci0V+98zjeGCVL1vXPRbirC2ceEaYp2/3/J
-        vd9bwFSzKNcuoXafKAySI18NUPxXWtBBQgK5K7M=
-X-Google-Smtp-Source: APXvYqwPdvpwzOsCN499JBKvI5ZRMkCYxRh7TEsFaw32YbwIZtXW4GXRGPls2IvF+/pCqI8IHzPxKxS5lkqWZZ0bDKE=
-X-Received: by 2002:a2e:880a:: with SMTP id x10mr10112502ljh.211.1578910435363;
- Mon, 13 Jan 2020 02:13:55 -0800 (PST)
+        id S1728731AbgAMKQ7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 13 Jan 2020 05:16:59 -0500
+Received: from bombadil.infradead.org ([198.137.202.133]:51688 "EHLO
+        bombadil.infradead.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725978AbgAMKQ7 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 13 Jan 2020 05:16:59 -0500
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=bombadil.20170209; h=In-Reply-To:Content-Type:MIME-Version
+        :References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
+        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
+        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+         bh=TC8ktWymGRn+4RZ97AzmjSGIJ8ZQa/9bHdinVyx7ycg=; b=m9fa8+qyDpqOPF1lzJst9rx9Z
+        tLwFtzUYhZGUGuR8ylDqhtV0deAG3/4U4pZ4AgRJFA6lwRXtlybu3cu/hdvzKNW/ASZqVK5bjR9d2
+        dB7XKvGOnyW9pv/Y67GknqAc/nAWs4VILGEjXA7jXTMncEPOiTq6TypYHXj0QgKaIqi5fgFex9yJZ
+        IvASIqOaazC2uF2dvArIiRK7ES6Kl+7TVLWEUsK0tXjYges7EwbOU342OUtpqfS9A/c/m7rVWvxz4
+        eRT8VrqFpVq1r16TFS5UDVLUq8CAImRAiIt3vS+XPW6sqx8WuRLBIaIAqn0xz+Gg717mt5YWuj7XU
+        NlJYa7ilg==;
+Received: from j217100.upc-j.chello.nl ([24.132.217.100] helo=noisy.programming.kicks-ass.net)
+        by bombadil.infradead.org with esmtpsa (Exim 4.92.3 #3 (Red Hat Linux))
+        id 1iqwlY-0002xH-Vd; Mon, 13 Jan 2020 10:16:13 +0000
+Received: from hirez.programming.kicks-ass.net (hirez.programming.kicks-ass.net [192.168.1.225])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (Client did not present a certificate)
+        by noisy.programming.kicks-ass.net (Postfix) with ESMTPS id 0C901304121;
+        Mon, 13 Jan 2020 11:14:34 +0100 (CET)
+Received: by hirez.programming.kicks-ass.net (Postfix, from userid 1000)
+        id 4D3C02B616422; Mon, 13 Jan 2020 11:16:09 +0100 (CET)
+Date:   Mon, 13 Jan 2020 11:16:09 +0100
+From:   Peter Zijlstra <peterz@infradead.org>
+To:     Eduardo Valentin <eduval@amazon.com>
+Cc:     Anchal Agarwal <anchalag@amazon.com>, tglx@linutronix.de,
+        mingo@redhat.com, bp@alien8.de, hpa@zytor.com, x86@kernel.org,
+        boris.ostrovsky@oracle.com, jgross@suse.com,
+        linux-pm@vger.kernel.org, linux-mm@kvack.org, kamatam@amazon.com,
+        sstabellini@kernel.org, konrad.wilk@oracle.co,
+        roger.pau@citrix.com, axboe@kernel.dk, davem@davemloft.net,
+        rjw@rjwysocki.net, len.brown@intel.com, pavel@ucw.cz,
+        sblbir@amazon.com, xen-devel@lists.xenproject.org,
+        vkuznets@redhat.com, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        Woodhouse@dev-dsk-anchalag-2a-9c2d1d96.us-west-2.amazon.com,
+        dwmw@amazon.co.uk, fllinden@amaozn.com
+Subject: Re: [RFC PATCH V2 11/11] x86: tsc: avoid system instability in
+ hibernation
+Message-ID: <20200113101609.GT2844@hirez.programming.kicks-ass.net>
+References: <20200107234526.GA19034@dev-dsk-anchalag-2a-9c2d1d96.us-west-2.amazon.com>
+ <20200108105011.GY2827@hirez.programming.kicks-ass.net>
+ <20200110153520.GC8214@u40b0340c692b58f6553c.ant.amazon.com>
 MIME-Version: 1.0
-References: <000000000000ab3f800598cec624@google.com> <000000000000802598059b6c7989@google.com>
- <CAM_iQpX7-BF=C+CAV3o=VeCZX7=CgdscZaazTD6QT-Tw1=XY9Q@mail.gmail.com>
- <CAMArcTXTtJB8WUuJUumP2NHVg_c19m-6EheC3JRGxzseYmHVDw@mail.gmail.com>
- <CAM_iQpVJiYHnhUJKzQpoPzaUhjrd=O4WR6zFJ+329KnWi6jJig@mail.gmail.com>
- <CAMArcTVPrKrhY63P=VgFuTQf0wUNO_9=H2R96p08-xoJ+mbZ5w@mail.gmail.com>
- <CAM_iQpX-S7cPvYTqAMkZF=avaoMi_af70dwQEiC37OoXNWA4Aw@mail.gmail.com>
- <CAMArcTUFK6TUYP+zwD3009m126fz+S-cAT5CN5pZ3C5axErh8g@mail.gmail.com>
- <CAM_iQpUpZLcsC2eYPGO-UCRf047FTvP-0x8hQnDxRZ-w3vL9Tg@mail.gmail.com>
- <CAMArcTV66StxE=Pjiv6zsh0san039tuVvsKNE2Sb=7+jJ3xEdQ@mail.gmail.com> <CAM_iQpU9EXx7xWAaps2E3DWiZbt25ByCK4sR=njYMHF=KsvLFg@mail.gmail.com>
-In-Reply-To: <CAM_iQpU9EXx7xWAaps2E3DWiZbt25ByCK4sR=njYMHF=KsvLFg@mail.gmail.com>
-From:   Taehee Yoo <ap420073@gmail.com>
-Date:   Mon, 13 Jan 2020 19:13:43 +0900
-Message-ID: <CAMArcTVy1vf38ktQY4e_V7ZnCq+pDf49jFHYGnZHSEy1zjinkg@mail.gmail.com>
-Subject: Re: WARNING: bad unlock balance in sch_direct_xmit
-To:     Cong Wang <xiyou.wangcong@gmail.com>
-Cc:     syzbot <syzbot+4ec99438ed7450da6272@syzkaller.appspotmail.com>,
-        Linux Kernel Network Developers <netdev@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20200110153520.GC8214@u40b0340c692b58f6553c.ant.amazon.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, 12 Jan 2020 at 06:53, Cong Wang <xiyou.wangcong@gmail.com> wrote:
->
-> On Thu, Jan 9, 2020 at 10:02 PM Taehee Yoo <ap420073@gmail.com> wrote:
-> > ndo_get_lock_subclass() was used to calculate subclass which was used by
-> > netif_addr_lock_nested().
-> >
-> > -static inline void netif_addr_lock_nested(struct net_device *dev)
-> > -{
-> > -       int subclass = SINGLE_DEPTH_NESTING;
-> > -
-> > -       if (dev->netdev_ops->ndo_get_lock_subclass)
-> > -               subclass = dev->netdev_ops->ndo_get_lock_subclass(dev);
-> > -
-> > -       spin_lock_nested(&dev->addr_list_lock, subclass);
-> > -}
-> >
-> > The most important thing about nested lock is to get the correct subclass.
-> > nest_level was used as subclass and this was calculated by
-> > ->ndo_get_lock_subclass().
-> > But, ->ndo_get_lock_subclass() didn't calculate correct subclass.
-> > After "master" and "nomaster" operations, nest_level should be updated
-> > recursively, but it didn't. So incorrect subclass was used.
-> >
-> > team3 <-- subclass 0
-> >
-> > "ip link set team3 master team2"
-> >
-> > team2 <-- subclass 0
-> > team3 <-- subclass 1
-> >
-> > "ip link set team2 master team1"
-> >
-> > team1 <-- subclass 0
-> > team3 <-- subclass 1
-> > team3 <-- subclass 1
-> >
-> > "ip link set team1 master team0"
-> >
-> > team0 <-- subclass 0
-> > team1 <-- subclass 1
-> > team3 <-- subclass 1
-> > team3 <-- subclass 1
-> >
-> > After "master" and "nomaster" operation, subclass values of all lower or
-> > upper interfaces would be changed. But ->ndo_get_lock_subclass()
-> > didn't update subclass recursively, lockdep warning appeared.
-> > In order to fix this, I had two ways.
-> > 1. use dynamic keys instead of static keys.
-> > 2. fix ndo_get_lock_subclass().
-> >
-> > The reason why I adopted using dynamic keys instead of fixing
-> > ->ndo_get_lock_subclass() is that the ->ndo_get_lock_subclass() isn't
-> > a common helper function.
-> > So, driver writers should implement ->ndo_get_lock_subclass().
-> > If we use dynamic keys, ->ndo_get_lock_subclass() code could be removed.
-> >
->
-> The details you provide here are really helpful for me to understand
-> the reasons behind your changes. Let me think about this and see how
-> I could address both problems. This appears to be harder than I originally
-> thought.
->
-> >
-> > What I fixed problems with dynamic lockdep keys could be fixed by
-> > nested lock too. I think if the subclass value synchronization routine
-> > works well, there will be no problem.
->
-> Great! We are on the same page.
->
-> Thanks for all the information and the reproducer too!
+On Fri, Jan 10, 2020 at 07:35:20AM -0800, Eduardo Valentin wrote:
+> Hey Peter,
+> 
+> On Wed, Jan 08, 2020 at 11:50:11AM +0100, Peter Zijlstra wrote:
+> > On Tue, Jan 07, 2020 at 11:45:26PM +0000, Anchal Agarwal wrote:
+> > > From: Eduardo Valentin <eduval@amazon.com>
+> > > 
+> > > System instability are seen during resume from hibernation when system
+> > > is under heavy CPU load. This is due to the lack of update of sched
+> > > clock data, and the scheduler would then think that heavy CPU hog
+> > > tasks need more time in CPU, causing the system to freeze
+> > > during the unfreezing of tasks. For example, threaded irqs,
+> > > and kernel processes servicing network interface may be delayed
+> > > for several tens of seconds, causing the system to be unreachable.
+> > 
+> > > The fix for this situation is to mark the sched clock as unstable
+> > > as early as possible in the resume path, leaving it unstable
+> > > for the duration of the resume process. This will force the
+> > > scheduler to attempt to align the sched clock across CPUs using
+> > > the delta with time of day, updating sched clock data. In a post
+> > > hibernation event, we can then mark the sched clock as stable
+> > > again, avoiding unnecessary syncs with time of day on systems
+> > > in which TSC is reliable.
+> > 
+> > This makes no frigging sense what so bloody ever. If the clock is
+> > stable, we don't care about sched_clock_data. When it is stable you get
+> > a linear function of the TSC without complicated bits on.
+> > 
+> > When it is unstable, only then do we care about the sched_clock_data.
+> > 
+> 
+> Yeah, maybe what is not clear here is that we covering for situation
+> where clock stability changes over time, e.g. at regular boot clock is
+> stable, hibernation happens, then restore happens in a non-stable clock.
 
-I really glad my explanation helps you!
+Still confused, who marks the thing unstable? The patch seems to suggest
+you do yourself, but it is not at all clear why.
 
-Thank you so much!
+If TSC really is unstable, then it needs to remain unstable. If the TSC
+really is stable then there is no point in marking is unstable.
+
+Either way something is off, and you're not telling me what.
+
+> > > Reviewed-by: Erik Quanstrom <quanstro@amazon.com>
+> > > Reviewed-by: Frank van der Linden <fllinden@amazon.com>
+> > > Reviewed-by: Balbir Singh <sblbir@amazon.com>
+> > > Reviewed-by: Munehisa Kamata <kamatam@amazon.com>
+> > > Tested-by: Anchal Agarwal <anchalag@amazon.com>
+> > > Signed-off-by: Eduardo Valentin <eduval@amazon.com>
+> > > ---
+> > 
+> > NAK, the code very much relies on never getting marked stable again
+> > after it gets set to unstable.
+> > 
+> 
+> Well actually, at the PM_POST_HIBERNATION, we do the check and set stable if
+> known to be stable.
+> 
+> The issue only really happens during the restoration path under scheduling pressure,
+> which takes forever to finish, as described in the commit.
+> 
+> Do you see a better solution for this issue?
+
+I still have no clue what your actual problem is. You say scheduling
+goes wobbly because sched_clock_data is stale, but when stable that
+doesn't matter.
+
+So what is the actual problem?
