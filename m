@@ -2,49 +2,49 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id C14D01393C0
-	for <lists+netdev@lfdr.de>; Mon, 13 Jan 2020 15:35:04 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6A1BB1393CD
+	for <lists+netdev@lfdr.de>; Mon, 13 Jan 2020 15:40:02 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728880AbgAMOe4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 13 Jan 2020 09:34:56 -0500
-Received: from mail-wr1-f65.google.com ([209.85.221.65]:38428 "EHLO
+        id S1727286AbgAMOkA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 13 Jan 2020 09:40:00 -0500
+Received: from mail-wr1-f65.google.com ([209.85.221.65]:43757 "EHLO
         mail-wr1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726074AbgAMOe4 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 13 Jan 2020 09:34:56 -0500
-Received: by mail-wr1-f65.google.com with SMTP id y17so8824340wrh.5
-        for <netdev@vger.kernel.org>; Mon, 13 Jan 2020 06:34:54 -0800 (PST)
+        with ESMTP id S1726074AbgAMOkA (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 13 Jan 2020 09:40:00 -0500
+Received: by mail-wr1-f65.google.com with SMTP id d16so8818024wre.10
+        for <netdev@vger.kernel.org>; Mon, 13 Jan 2020 06:39:59 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=resnulli-us.20150623.gappssmtp.com; s=20150623;
         h=date:from:to:cc:subject:message-id:references:mime-version
          :content-disposition:in-reply-to;
-        bh=OmcWfIBXkgyvN2cgft6r1ms+tR1sv2tTxJ3TL0EKA+g=;
-        b=BjSBuIz0rqihO1u6oVG994zIp4LszvgfRyi3TQIDE9elXW2RNLXBA9Qa9hSk9WYUHp
-         4evf6MYWH1Uk3c/DnxD20kDx5llyTzfvKjoYm575UEKChy+28T2/c/S2YoxHsMjFpemo
-         zfyIuvsQ4up1UMLF2NkbUJWPej4HkVaUmNxpsQBBauf+TO0NA9FNfWzogkLx/Hfm142N
-         L5pP4sAxO+x4dkQwdEgFDOngz+NMzpvqYmnc6FW9v/jp/bqgYAMAfATqx/VgozdgbTte
-         4C/x5MLMYcsIojpEux8gaPd5/Yk2TLwM8fRV/J+4nbX//exFdx4bbwLzZx1m+YlxHAJE
-         sQ+g==
+        bh=Y1L1lZjbFBN4CXswUQ+h7dh7/TRqWSLx3YSeYJ+MJZg=;
+        b=xbCeYNeYVF4J3flLSfo0iblGnbGQoStjm2tacm8nZiSkPXJsCinCqMpYCo/sqpAsr8
+         gpNRTU1UqVRZk0Gl2RkW8myV18RsNDY+YeMUuBan2pYd8V5HvSBBhiIlCcXej2LOMNUS
+         vmothpRpGbH0f9KStvWbBmW9p+BRl7mjWwr9ir0PWSUQHsd4QWnFKzQRiKyrESc321UB
+         B6d8edUa0cBkmIKdi1UOgPNkDQ14iJCEWuK+hzbUzIvHxRoExPJH23hy1DeSqCrmyUEu
+         /UeAeRm4I0D58ffPAUeM7qyl+BIhtdovSSsT1kB2z5UIrm72I/s7bqKEriLhnZotGDPJ
+         NFRw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:date:from:to:cc:subject:message-id:references
          :mime-version:content-disposition:in-reply-to;
-        bh=OmcWfIBXkgyvN2cgft6r1ms+tR1sv2tTxJ3TL0EKA+g=;
-        b=LT1IukbIS043ylXqhOPUZhYy/PBJp3wtY5OAWDIxv/DGzWBmogBsMMqnyuV7Q30M8X
-         ZhDcFTlMPBe9IdF8eA+jDevXOwRK/UJkcjv8a4PM1i9eOu7NLFLJasHBBrpnF9Qi/Yvg
-         IcuuM3HxhlOm/UJvtAg+pR4I6ora2iwhZy/y/CEW6FscLsQT5s7u4y33nKrLguM9/NO9
-         cqSASSLX5FPh3w+MzBCiYBQVUky1c2AfwZ6aSZqv4ziUtzOKQX249KyVCGo3vetsO726
-         6SBh1NVZsCscLvoeIpNPNdm3kTm5Ux7mfu2wcpO264g6gsLzRF1owmEnGc8Zgxq1GWjd
-         FY1A==
-X-Gm-Message-State: APjAAAWUOI+UKHJSJys1fOcbLr63e7fk3K33+82SuNOESWPvxXJaleD1
-        LUfmcE7tXiqAOg+khxee51DoS0o52yGkiQ==
-X-Google-Smtp-Source: APXvYqzs5RfhHexyHDgfnn5rf2OytVWc6odXONn7jRukll8feWi5Dn5ZVX6pU3hEsY5aT/Q+0PfQmw==
-X-Received: by 2002:a5d:66c3:: with SMTP id k3mr17870446wrw.370.1578926094258;
-        Mon, 13 Jan 2020 06:34:54 -0800 (PST)
+        bh=Y1L1lZjbFBN4CXswUQ+h7dh7/TRqWSLx3YSeYJ+MJZg=;
+        b=XVFq+zUdB7Yb3xJsc67/GikHZ/h15m74ifILaLx9Tp9FYvRUKgjL/sbPlf7OBGdWQc
+         HvxR+cQ/OrMWxDXK0ygWtME815CRsbtLau3qzM/SGUsgLm0H8u9MR1K1OCK6yJBUfsKN
+         EL1lu35UvXVzmgrH53kaOH/7EXibvCq0oL2svP5bbY+okD+Vdx4Z0QKgXrG7NuCUgbG7
+         Pfbw61mBLfLbaTnj0aGyXtZIYpXKBaEKI5pKQon+IFaPGc37dHLUZSLQkI+V7ZSHfEY0
+         L+KA2psUvp8R8ynPnhYbd2c1UjQezZsJcmgDe9HZ4EXLez8pbY03tHKc+HosH1uOf4AS
+         tFKw==
+X-Gm-Message-State: APjAAAVJMk6gf1C4YevAMsZbdYELUxX4hcpcX4esq5byhtrLWU7NQsct
+        ZpYrm/z8Rr4srn6iNz7EnFwQ0Q==
+X-Google-Smtp-Source: APXvYqwmeDehO+UYAhxmj707LmVry5pgexW1xkdCcqcV4cnA2dzWSO+e9m4Kfgr4L/nJpY4L0CwEJA==
+X-Received: by 2002:a5d:4e90:: with SMTP id e16mr19561911wru.318.1578926398566;
+        Mon, 13 Jan 2020 06:39:58 -0800 (PST)
 Received: from localhost (ip-78-102-249-43.net.upcbroadband.cz. [78.102.249.43])
-        by smtp.gmail.com with ESMTPSA id l19sm14443297wmj.12.2020.01.13.06.34.53
+        by smtp.gmail.com with ESMTPSA id k8sm15224959wrl.3.2020.01.13.06.39.57
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 13 Jan 2020 06:34:53 -0800 (PST)
-Date:   Mon, 13 Jan 2020 15:34:52 +0100
+        Mon, 13 Jan 2020 06:39:58 -0800 (PST)
+Date:   Mon, 13 Jan 2020 15:39:56 +0100
 From:   Jiri Pirko <jiri@resnulli.us>
 To:     Antoine Tenart <antoine.tenart@bootlin.com>
 Cc:     davem@davemloft.net, sd@queasysnail.net, andrew@lunn.ch,
@@ -53,77 +53,69 @@ Cc:     davem@davemloft.net, sd@queasysnail.net, andrew@lunn.ch,
         alexandre.belloni@bootlin.com, allan.nielsen@microchip.com,
         camelia.groza@nxp.com, Simon.Edelhaus@aquantia.com,
         Igor.Russkikh@aquantia.com, jakub.kicinski@netronome.com
-Subject: Re: [PATCH net-next v5 05/15] net: macsec: hardware offloading
- infrastructure
-Message-ID: <20200113143452.GA2131@nanopsycho>
+Subject: Re: [PATCH net-next v5 02/15] net: macsec: introduce the
+ macsec_context structure
+Message-ID: <20200113143956.GB2131@nanopsycho>
 References: <20200110162010.338611-1-antoine.tenart@bootlin.com>
- <20200110162010.338611-6-antoine.tenart@bootlin.com>
+ <20200110162010.338611-3-antoine.tenart@bootlin.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20200110162010.338611-6-antoine.tenart@bootlin.com>
+In-Reply-To: <20200110162010.338611-3-antoine.tenart@bootlin.com>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Fri, Jan 10, 2020 at 05:20:00PM CET, antoine.tenart@bootlin.com wrote:
-
-Couple nitpicks I randomly spotted:
+Fri, Jan 10, 2020 at 05:19:57PM CET, antoine.tenart@bootlin.com wrote:
 
 [...]
 
 
->+static bool macsec_is_offloaded(struct macsec_dev *macsec)
->+{
->+	if (macsec->offload == MACSEC_OFFLOAD_PHY)
->+		return true;
+>diff --git a/include/uapi/linux/if_link.h b/include/uapi/linux/if_link.h
+>index 1d69f637c5d6..024af2d1d0af 100644
+>--- a/include/uapi/linux/if_link.h
+>+++ b/include/uapi/linux/if_link.h
+>@@ -486,6 +486,13 @@ enum macsec_validation_type {
+> 	MACSEC_VALIDATE_MAX = __MACSEC_VALIDATE_END - 1,
+> };
+> 
+>+enum macsec_offload {
+>+	MACSEC_OFFLOAD_OFF = 0,
+>+	MACSEC_OFFLOAD_PHY = 1,
+
+No need to assign 0, 1 here. That is given.
+
+
+>+	__MACSEC_OFFLOAD_END,
+>+	MACSEC_OFFLOAD_MAX = __MACSEC_OFFLOAD_END - 1,
+>+};
 >+
->+	return false;
+> /* IPVLAN section */
+> enum {
+> 	IFLA_IPVLAN_UNSPEC,
+>diff --git a/tools/include/uapi/linux/if_link.h b/tools/include/uapi/linux/if_link.h
+>index 8aec8769d944..42efdb84d189 100644
+>--- a/tools/include/uapi/linux/if_link.h
+>+++ b/tools/include/uapi/linux/if_link.h
 
-Just:
-	return macsec->offload == MACSEC_OFFLOAD_PHY;
+Why you are adding to this header?
 
 
->+}
+>@@ -485,6 +485,13 @@ enum macsec_validation_type {
+> 	MACSEC_VALIDATE_MAX = __MACSEC_VALIDATE_END - 1,
+> };
+> 
+>+enum macsec_offload {
+>+	MACSEC_OFFLOAD_OFF = 0,
+>+	MACSEC_OFFLOAD_PHY = 1,
+>+	__MACSEC_OFFLOAD_END,
+>+	MACSEC_OFFLOAD_MAX = __MACSEC_OFFLOAD_END - 1,
+>+};
 >+
->+/* Checks if underlying layers implement MACsec offloading functions. */
->+static bool macsec_check_offload(enum macsec_offload offload,
->+				 struct macsec_dev *macsec)
->+{
->+	if (!macsec || !macsec->real_dev)
->+		return false;
->+
->+	if (offload == MACSEC_OFFLOAD_PHY)
-
-You have a helper for this already - macsec_is_offloaded(). No need for
-"offload" arg then.
-
-
->+		return macsec->real_dev->phydev &&
->+		       macsec->real_dev->phydev->macsec_ops;
->+
->+	return false;
->+}
->+
->+static const struct macsec_ops *__macsec_get_ops(enum macsec_offload offload,
->+						 struct macsec_dev *macsec,
->+						 struct macsec_context *ctx)
->+{
->+	if (ctx) {
->+		memset(ctx, 0, sizeof(*ctx));
->+		ctx->offload = offload;
->+
->+		if (offload == MACSEC_OFFLOAD_PHY)
-
-Same here.
-
-
->+			ctx->phydev = macsec->real_dev->phydev;
->+	}
->+
->+	return macsec->real_dev->phydev->macsec_ops;
->+}
->+
-
-[...]
+> /* IPVLAN section */
+> enum {
+> 	IFLA_IPVLAN_UNSPEC,
+>-- 
+>2.24.1
+>
