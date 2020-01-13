@@ -2,136 +2,101 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id C366A13917D
-	for <lists+netdev@lfdr.de>; Mon, 13 Jan 2020 13:59:54 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1CBB513918E
+	for <lists+netdev@lfdr.de>; Mon, 13 Jan 2020 14:00:59 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728670AbgAMM7w (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 13 Jan 2020 07:59:52 -0500
-Received: from out4-smtp.messagingengine.com ([66.111.4.28]:58001 "EHLO
-        out4-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1728643AbgAMM7w (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 13 Jan 2020 07:59:52 -0500
-Received: from compute3.internal (compute3.nyi.internal [10.202.2.43])
-        by mailout.nyi.internal (Postfix) with ESMTP id E126922091;
-        Mon, 13 Jan 2020 07:59:51 -0500 (EST)
-Received: from mailfrontend1 ([10.202.2.162])
-  by compute3.internal (MEProxy); Mon, 13 Jan 2020 07:59:51 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-        messagingengine.com; h=cc:content-type:date:from:in-reply-to
-        :message-id:mime-version:references:subject:to:x-me-proxy
-        :x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=fm1; bh=YsHyfK
-        dfpZOaKIZL/4KdRoBZnATQgxCuILpjE4eKZYU=; b=pbVny28JppSQMjVQLO/de/
-        WPVqhjset6AN20Rip8KV5zjDzSr1b6aJ/gOnL1Xdmh5j/4VN7WSqKp2WO00m4OsO
-        ph5892sFNIHsDXzhDfCVaJ5S++0gTnuONGMg3KT3HiuLX0UrwY4NI1H3i/dmc7GK
-        am1LTVTpHTVg/6FqPNClDDVfR76ujwxyTNqFLKt4ds2zzahwR9Bwh7cKEAyKdNDy
-        vxIxwUdh7Oj6lKz4vLuqHI21w3yjGqa1VUKcKqZ804BNjNQD/Z1IQFHCQq9OBB0q
-        owVDytTmPv94nExiQyUOYxKelKQlN1MgucPocqOwK+3UMPFMR1G40FEH84NlI49Q
-        ==
-X-ME-Sender: <xms:x2kcXtXZA8w971DzXcHdHfb4djz8AgbDZJ_4yu4YyZU6ogBjlMSG_w>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedufedrvdejtddggeeiucetufdoteggodetrfdotf
-    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
-    uceurghilhhouhhtmecufedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmne
-    cujfgurhepfffhvffukfhfgggtuggjsehttdertddttddvnecuhfhrohhmpefkughoucfu
-    tghhihhmmhgvlhcuoehiughoshgthhesihguohhstghhrdhorhhgqeenucfkphepudelfe
-    drgeejrdduieehrddvhedunecurfgrrhgrmhepmhgrihhlfhhrohhmpehiughoshgthhes
-    ihguohhstghhrdhorhhgnecuvehluhhsthgvrhfuihiivgeptd
-X-ME-Proxy: <xmx:x2kcXiShZfmnBZBT4iKqYiq0haILUruu_ojBxTg7GYBnOsK12YJQ6w>
-    <xmx:x2kcXppcKqeD_zQ-QUNJffcoI4pcxmq2Om1kYDjkQSCSfBwJrS2u9w>
-    <xmx:x2kcXkcG9DCHJxTAb24T5QNdbXQI1UF1i9F_MDGx-8tFVbpoD_78-Q>
-    <xmx:x2kcXtQjl37sGqEcoh4lQ96euAHJuz7j5eewEc2UDbCqWqO_pcUZjA>
-Received: from localhost (unknown [193.47.165.251])
-        by mail.messagingengine.com (Postfix) with ESMTPA id 3B75C80062;
-        Mon, 13 Jan 2020 07:59:51 -0500 (EST)
-Date:   Mon, 13 Jan 2020 14:59:49 +0200
-From:   Ido Schimmel <idosch@idosch.org>
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     netdev@vger.kernel.org, davem@davemloft.net, jiri@mellanox.com,
-        mlxsw@mellanox.com, Shalom Toledo <shalomt@mellanox.com>,
-        Ido Schimmel <idosch@mellanox.com>
-Subject: Re: [PATCH net 2/4] mlxsw: switchx2: Do not modify cloned SKBs
- during xmit
-Message-ID: <20200113125949.GA613635@splinter>
-References: <20200112160641.282108-1-idosch@idosch.org>
- <20200112160641.282108-3-idosch@idosch.org>
- <20200112161017.43b728c8@cakuba>
+        id S1728778AbgAMNA5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 13 Jan 2020 08:00:57 -0500
+Received: from us-smtp-delivery-1.mimecast.com ([207.211.31.120]:57786 "EHLO
+        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+        with ESMTP id S1727494AbgAMNA4 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 13 Jan 2020 08:00:56 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1578920455;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=Ev18epwrOyGsovY9mZaXn1IwdIuRdMV0wrxhb9Bjf6Q=;
+        b=CiW/poOcvoqjH1a31R6IZtQebmETpP8nV3P8aVzJv3OcPkuVYJw2qXRDDn6w5WHSRpsVkV
+        7+AM06HYluAhnEITo2OmFYMMZ0GTLAFpYImx4/19JAUtbAdKJrfFFDN7WxHEQ9UbAFMgeZ
+        uImuYPShS3eecEOPus644jPL41EWhB0=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-141-plZront1Oxu0z16vwwqTZw-1; Mon, 13 Jan 2020 08:00:52 -0500
+X-MC-Unique: plZront1Oxu0z16vwwqTZw-1
+Received: from smtp.corp.redhat.com (int-mx04.intmail.prod.int.phx2.redhat.com [10.5.11.14])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id D573485EE6D;
+        Mon, 13 Jan 2020 13:00:50 +0000 (UTC)
+Received: from rules.brq.redhat.com (unknown [10.43.2.123])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id E9A095DA70;
+        Mon, 13 Jan 2020 13:00:12 +0000 (UTC)
+From:   Vladis Dronov <vdronov@redhat.com>
+To:     Antti Laakso <antti.laakso@intel.com>, netdev@vger.kernel.org
+Cc:     Richard Cochran <richardcochran@gmail.com>, vdronov@redhat.com,
+        sjohnsto@redhat.com, vlovejoy@redhat.com,
+        linux-kernel@vger.kernel.org, davem@davemloft.net,
+        artem.bityutskiy@intel.com
+Subject: [PATCH] ptp: free ptp device pin descriptors properly
+Date:   Mon, 13 Jan 2020 14:00:09 +0100
+Message-Id: <20200113130009.2938-1-vdronov@redhat.com>
+In-Reply-To: <3d2bd09735dbdaf003585ca376b7c1e5b69a19bd.camel@intel.com>
+References: <3d2bd09735dbdaf003585ca376b7c1e5b69a19bd.camel@intel.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200112161017.43b728c8@cakuba>
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.14
+Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, Jan 12, 2020 at 04:10:17PM -0800, Jakub Kicinski wrote:
-> On Sun, 12 Jan 2020 18:06:39 +0200, Ido Schimmel wrote:
-> > From: Shalom Toledo <shalomt@mellanox.com>
-> > 
-> > The driver needs to prepend a Tx header to each packet it is transmitting.
-> > The header includes information such as the egress port and traffic class.
-> > 
-> > The addition of the header requires the driver to modify the SKB's data
-> > buffer and therefore the SKB must be unshared first. Otherwise, we risk
-> > hitting various race conditions with cloned SKBs.
-> > 
-> > For example, when a packet is flooded (cloned) by the bridge driver to two
-> > switch ports swp1 and swp2:
-> > 
-> > t0 - mlxsw_sp_port_xmit() is called for swp1. Tx header is prepended with
-> >      swp1's port number
-> > t1 - mlxsw_sp_port_xmit() is called for swp2. Tx header is prepended with
-> >      swp2's port number, overwriting swp1's port number
-> > t2 - The device processes data buffer from t0. Packet is transmitted via
-> >      swp2
-> > t3 - The device processes data buffer from t1. Packet is transmitted via
-> >      swp2
-> > 
-> > Usually, the device is fast enough and transmits the packet before its
-> > Tx header is overwritten, but this is not the case in emulated
-> > environments.
-> > 
-> > Fix this by unsharing the SKB.
-> 
-> Isn't this what skb_cow_head() is for?
+There is a bug in ptp_clock_unregister(), where ptp_cleanup_pin_groups()
+first frees ptp->pin_{,dev_}attr, but then posix_clock_unregister() needs
+them to destroy a related sysfs device.
 
-Yes, this does look better. If you look further in the code, we have
-this check for the headroom:
+These functions can not be just swapped, as posix_clock_unregister() free=
+s
+ptp which is needed in the ptp_cleanup_pin_groups(). Fix this by calling
+ptp_cleanup_pin_groups() in ptp_clock_release(), right before ptp is free=
+d.
 
-if (unlikely(skb_headroom(skb) < MLXSW_TXHDR_LEN)) {
-...
-}
+This makes this patch fix an UAF bug in a patch which fixes an UAF bug.
 
-We can remove it by replacing skb_unshare() with skb_cow_head().
+Reported-by: Antti Laakso <antti.laakso@intel.com>
+Fixes: a33121e5487b ("ptp: fix the race between the release of ptp_clock =
+and cdev")
+Link: https://lore.kernel.org/netdev/3d2bd09735dbdaf003585ca376b7c1e5b69a=
+19bd.camel@intel.com/
+Signed-off-by: Vladis Dronov <vdronov@redhat.com>
+---
+ drivers/ptp/ptp_clock.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-> 
-> > diff --git a/drivers/net/ethernet/mellanox/mlxsw/switchx2.c b/drivers/net/ethernet/mellanox/mlxsw/switchx2.c
-> > index de6cb22f68b1..47826e905e5c 100644
-> > --- a/drivers/net/ethernet/mellanox/mlxsw/switchx2.c
-> > +++ b/drivers/net/ethernet/mellanox/mlxsw/switchx2.c
-> > @@ -299,6 +299,10 @@ static netdev_tx_t mlxsw_sx_port_xmit(struct sk_buff *skb,
-> >  	u64 len;
-> >  	int err;
-> >  
-> > +	skb = skb_unshare(skb, GFP_ATOMIC);
-> > +	if (unlikely(!skb))
-> > +		return NETDEV_TX_BUSY;
-> > +
-> >  	memset(skb->cb, 0, sizeof(struct mlxsw_skb_cb));
-> >  
-> >  	if (mlxsw_core_skb_transmit_busy(mlxsw_sx->core, &tx_info))
-> 
-> the next line here is:
-> 
-> 		return NETDEV_TX_BUSY;
-> 
-> Is it okay to return BUSY after copying an skb? The reference to the
-> original skb may already be gone at this point, while the copy is going
-> to be leaked, right?
+diff --git a/drivers/ptp/ptp_clock.c b/drivers/ptp/ptp_clock.c
+index 61fafe0374ce..b84f16bbd6f2 100644
+--- a/drivers/ptp/ptp_clock.c
++++ b/drivers/ptp/ptp_clock.c
+@@ -170,6 +170,7 @@ static void ptp_clock_release(struct device *dev)
+ {
+ 	struct ptp_clock *ptp =3D container_of(dev, struct ptp_clock, dev);
+=20
++	ptp_cleanup_pin_groups(ptp);
+ 	mutex_destroy(&ptp->tsevq_mux);
+ 	mutex_destroy(&ptp->pincfg_mux);
+ 	ida_simple_remove(&ptp_clocks_map, ptp->index);
+@@ -302,9 +303,8 @@ int ptp_clock_unregister(struct ptp_clock *ptp)
+ 	if (ptp->pps_source)
+ 		pps_unregister_source(ptp->pps_source);
+=20
+-	ptp_cleanup_pin_groups(ptp);
+-
+ 	posix_clock_unregister(&ptp->clock);
++
+ 	return 0;
+ }
+ EXPORT_SYMBOL(ptp_clock_unregister);
+--=20
+2.20.1
 
-Yes, you're correct, but if we convert to skb_cow_head() like you
-suggested, then the skb shell is not changed and only its header is
-(potentially) expanded, so I believe we can keep this check as-is.
-
-Thanks, Jakub!
-
-P.S. I'll take care of v2 as Shalom is OOO until next week.
