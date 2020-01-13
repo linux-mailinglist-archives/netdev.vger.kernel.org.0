@@ -2,177 +2,100 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 5A2D713903A
-	for <lists+netdev@lfdr.de>; Mon, 13 Jan 2020 12:37:43 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7697A139033
+	for <lists+netdev@lfdr.de>; Mon, 13 Jan 2020 12:34:43 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728643AbgAMLhf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 13 Jan 2020 06:37:35 -0500
-Received: from mail-m971.mail.163.com ([123.126.97.1]:41730 "EHLO
-        mail-m971.mail.163.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725992AbgAMLhf (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 13 Jan 2020 06:37:35 -0500
-X-Greylist: delayed 936 seconds by postgrey-1.27 at vger.kernel.org; Mon, 13 Jan 2020 06:37:33 EST
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=163.com;
-        s=s110527; h=From:Subject:Date:Message-Id:MIME-Version; bh=ebuOu
-        i0AX5Ee0xOZV1fWjPDv5XEGQ0+O2EC0o8syPO0=; b=FD6+qbMQNkhULhMdfo+Oc
-        x3DiomSPA4esnDPYm9q9RdcrV+9HTrcRowzaZozeuEmoMI8Pd5LC919i+LO7lqhH
-        AI9jvDdcVrVlWlCButHxgwC82kqOyurF+IA8FUozLUeIF8qs34Kp05uox/l1NCkZ
-        BkXV4w7I/z+T66ly/yX69s=
-Received: from xilei-TM1604.mioffice.cn (unknown [114.247.175.223])
-        by smtp1 (Coremail) with SMTP id GdxpCgBXROKhUhxeZ+sQBA--.1392S4;
-        Mon, 13 Jan 2020 19:21:05 +0800 (CST)
-From:   Niu Xilei <niu_xilei@163.com>
-To:     davem@davemloft.net
-Cc:     tglx@linutronix.de, fw@strlen.de, peterz@infradead.org,
-        steffen.klassert@secunet.com, bigeasy@linutronix.de,
-        jonathan.lemon@gmail.com, pabeni@redhat.com,
-        anshuman.khandual@arm.com, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Niu Xilei <niu_xilei@163.com>
-Subject: [PATCH v2] pktgen: create packet use IPv6 source address between src6_min and src6_max.
-Date:   Mon, 13 Jan 2020 19:21:02 +0800
-Message-Id: <20200113112103.6766-1-niu_xilei@163.com>
-X-Mailer: git-send-email 2.20.1
+        id S1728670AbgAMLel (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 13 Jan 2020 06:34:41 -0500
+Received: from mx4.wp.pl ([212.77.101.11]:31104 "EHLO mx4.wp.pl"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726236AbgAMLel (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 13 Jan 2020 06:34:41 -0500
+Received: (wp-smtpd smtp.wp.pl 1922 invoked from network); 13 Jan 2020 12:34:38 +0100
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=wp.pl; s=1024a;
+          t=1578915279; bh=iQ0nggdey2ZPVnoSjqedUA+2gwem6PFelkSXn/nb/NI=;
+          h=From:To:Cc:Subject;
+          b=dG2vVrEhqO3WAXJskzkApZqnb8kuAbcVNQOlXjmUkRE/XZE2nPOWbZQAgRWWpdof+
+           YF958KctVfwXUTTcED3UwtMTU89movHFxLJxTmvLk5H9rah/0OKm5010cWgRZlmJP+
+           S0oVz4QyhT63NYxgPHxLARd63OkPTWLF5nyVf440=
+Received: from c-73-93-4-247.hsd1.ca.comcast.net (HELO cakuba) (kubakici@wp.pl@[73.93.4.247])
+          (envelope-sender <kubakici@wp.pl>)
+          by smtp.wp.pl (WP-SMTPD) with ECDHE-RSA-AES256-GCM-SHA384 encrypted SMTP
+          for <linyunsheng@huawei.com>; 13 Jan 2020 12:34:38 +0100
+Date:   Mon, 13 Jan 2020 03:34:31 -0800
+From:   Jakub Kicinski <kubakici@wp.pl>
+To:     Yunsheng Lin <linyunsheng@huawei.com>
+Cc:     Alex Vesker <valex@mellanox.com>,
+        Jacob Keller <jacob.e.keller@intel.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "jiri@resnulli.us" <jiri@resnulli.us>
+Subject: Re: [PATCH v2 0/3] devlink region trigger support
+Message-ID: <20200113033431.1d32dcbe@cakuba>
+In-Reply-To: <421f78c2-7713-b931-779e-dfe675fe5f53@huawei.com>
+References: <20200109193311.1352330-1-jacob.e.keller@intel.com>
+        <4d8fe881-8d36-06dd-667a-276a717a0d89@huawei.com>
+        <1d00deb9-16fc-b2a5-f8f7-5bb8316dbac2@intel.com>
+        <fe6c0d5e-5705-1118-1a71-80bd0e26a97e@huawei.com>
+        <20200112124521.467fa06a@cakuba>
+        <DB6PR0501MB224859D8DC219E81D4CFB17CC33A0@DB6PR0501MB2248.eurprd05.prod.outlook.com>
+        <421f78c2-7713-b931-779e-dfe675fe5f53@huawei.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-CM-TRANSID: GdxpCgBXROKhUhxeZ+sQBA--.1392S4
-X-Coremail-Antispam: 1Uf129KBjvJXoWxur47Zr1DJF1xWw4xAF1UZFb_yoWrJw1kpa
-        y3GF9xJryxZr43twsxJF9rtr1S9w4v9345XayfA3sY9FyDWryrA397Ga43tFyjqr9ak398
-        Jr42gFWqga1qqrUanT9S1TB71UUUUUUqnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
-        9KBjDUYxBIdaVFxhVjvjDU0xZFpf9x07jhb18UUUUU=
-X-Originating-IP: [114.247.175.223]
-X-CM-SenderInfo: pqlxs5plohxqqrwthudrp/1tbiTRepgFc7O8RRGwAAsq
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+X-WP-MailID: 9650bdc1223cf781506c3d4191338ec1
+X-WP-AV: skaner antywirusowy Poczty Wirtualnej Polski
+X-WP-SPAM: NO 000000A [YaP0]                               
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Pktgen can use only one IPv6 source address from output device, or src6 command
-setting. In pressure test we need create lots of session more than 65536.If
-IPSRC_RND flag is set, generate random source address between src6_min and src6_max.
+On Mon, 13 Jan 2020 09:39:50 +0800, Yunsheng Lin wrote:
+> On 2020/1/13 5:18, Alex Vesker wrote:
+> > On 1/12/2020 10:45 PM, Jakub Kicinski wrote:  
+> >> I think there is a fundamental difference between health API and
+> >> regions in the fact that health reporters allow for returning
+> >> structured data from different sources which are associated with 
+> >> an event/error condition. That includes information read from the
+> >> hardware or driver/software state. Region API (as Jake said) is good
+> >> for dumping arbitrary addressable content, e.g. registers. I don't see
+> >> much use for merging the two right now, FWIW...  
+> 
+> The point is that we are beginning to use health API for event/error
+> condition, right? Do we use health API or regions API to dump a arbitrary
+> addressable content when there is an event/error detected?
+> 
+> Also we may need to dump both a arbitrary addressable content and the
 
-Signed-off-by: Niu Xilei <niu_xilei@163.com>
+If the information dumped is pertinent in the context of a health event
+it's not arbitrary.
 
-Changes since v1:
- - only create IPv6 source address over least significant 64 bit range
----
- net/core/pktgen.c | 90 +++++++++++++++++++++++++++++++++++++++++++++++
- 1 file changed, 90 insertions(+)
+> structured data when there is an event/error detected, the health API or
+> regions API can not do both, right?
 
-diff --git a/net/core/pktgen.c b/net/core/pktgen.c
-index 294bfcf0ce0e..33435ae0ba68 100644
---- a/net/core/pktgen.c
-+++ b/net/core/pktgen.c
-@@ -1355,6 +1355,49 @@ static ssize_t pktgen_if_write(struct file *file,
- 		sprintf(pg_result, "OK: dst6_max=%s", buf);
- 		return count;
- 	}
-+	if (!strcmp(name, "src6_min")) {
-+		len = strn_len(&user_buffer[i], sizeof(buf) - 1);
-+		if (len < 0)
-+			return len;
-+
-+		pkt_dev->flags |= F_IPV6;
-+
-+		if (copy_from_user(buf, &user_buffer[i], len))
-+			return -EFAULT;
-+		buf[len] = 0;
-+
-+		in6_pton(buf, -1, pkt_dev->min_in6_saddr.s6_addr, -1, NULL);
-+		snprintf(buf, sizeof(buf), "%pI6c", &pkt_dev->min_in6_saddr);
-+
-+		pkt_dev->cur_in6_saddr = pkt_dev->min_in6_saddr;
-+		if (debug)
-+			pr_debug("src6_min set to: %s\n", buf);
-+
-+		i += len;
-+		sprintf(pg_result, "OK: src6_min=%s", buf);
-+		return count;
-+	}
-+	if (!strcmp(name, "src6_max")) {
-+		len = strn_len(&user_buffer[i], sizeof(buf) - 1);
-+		if (len < 0)
-+			return len;
-+
-+		pkt_dev->flags |= F_IPV6;
-+
-+		if (copy_from_user(buf, &user_buffer[i], len))
-+			return -EFAULT;
-+		buf[len] = 0;
-+
-+		in6_pton(buf, -1, pkt_dev->max_in6_saddr.s6_addr, -1, NULL);
-+		snprintf(buf, sizeof(buf), "%pI6c", &pkt_dev->max_in6_saddr);
-+
-+		if (debug)
-+			pr_debug("dst6_max set to: %s\n", buf);
-+
-+		i += len;
-+		sprintf(pg_result, "OK: dst6_max=%s", buf);
-+		return count;
-+	}
- 	if (!strcmp(name, "src6")) {
- 		len = strn_len(&user_buffer[i], sizeof(buf) - 1);
- 		if (len < 0)
-@@ -2286,6 +2329,51 @@ static void set_cur_queue_map(struct pktgen_dev *pkt_dev)
- 	pkt_dev->cur_queue_map  = pkt_dev->cur_queue_map % pkt_dev->odev->real_num_tx_queues;
- }
- 
-+/* generate ipv6 source addr */
-+static inline void set_src_in6_addr(struct pktgen_dev *pkt_dev)
-+{
-+	__be64 min6_h, min6_l, max6_h, max6_l, addr_l, *t;
-+	u64 min6, max6, rand, i;
-+	struct in6_addr addr6;
-+
-+	memcpy(&min6_h, pkt_dev->min_in6_saddr.s6_addr, 8);
-+	memcpy(&min6_l, pkt_dev->min_in6_saddr.s6_addr + 8, 8);
-+	memcpy(&max6_h, pkt_dev->max_in6_saddr.s6_addr, 8);
-+	memcpy(&max6_l, pkt_dev->max_in6_saddr.s6_addr + 8, 8);
-+
-+	/* only generate source address in least significant 64 bits range
-+	 * most significant 64 bits must be equal
-+	 */
-+	if (max6_h != min6_h)
-+		return;
-+
-+	addr6 = pkt_dev->min_in6_saddr;
-+	t = (__be64 *)addr6.s6_addr + 1;
-+	min6 = be64_to_cpu(min6_l);
-+	max6 = be64_to_cpu(max6_l);
-+
-+	if (min6 < max6) {
-+		if (pkt_dev->flags & F_IPSRC_RND) {
-+			do {
-+				prandom_bytes(&rand, sizeof(rand));
-+				rand = rand % (max6 - min6) + min6;
-+				addr_l = cpu_to_be64(rand);
-+				memcpy(t, &addr_l, 8);
-+			} while (ipv6_addr_loopback(&addr6) ||
-+				 ipv6_addr_v4mapped(&addr6) ||
-+				 ipv6_addr_is_multicast(&addr6));
-+		} else {
-+			addr6 = pkt_dev->cur_in6_saddr;
-+			i = be64_to_cpu(*t);
-+			if (++i > max6)
-+				i = min6;
-+			addr_l = cpu_to_be64(i);
-+			memcpy(t, &addr_l, 8);
-+		}
-+	}
-+	pkt_dev->cur_in6_saddr = addr6;
-+}
-+
- /* Increment/randomize headers according to flags and current values
-  * for IP src/dest, UDP src/dst port, MAC-Addr src/dst
-  */
-@@ -2454,6 +2542,8 @@ static void mod_cur_headers(struct pktgen_dev *pkt_dev)
- 		}
- 	} else {		/* IPV6 * */
- 
-+		set_src_in6_addr(pkt_dev);
-+
- 		if (!ipv6_addr_any(&pkt_dev->min_in6_daddr)) {
- 			int i;
- 
--- 
-2.20.1
+I think for errors and events health API will be more suitable 99% of
+the time.
 
+> It still seems it is a little confusing when deciding to use health or
+> regions API.
+>
+> > Totally agree with Jakub, I think health and region are different and
+> > each has its
+> > usages as mentioned above. Using words such as recovery and health for
+> > exposing
+> > registers doesn't sound correct. There are future usages I can think of
+> > for region if we
+> > will add the trigger support as well as the live region read.  
+> 
+> health API already has "trigger support" now if region API is merged to
+> health API.
+> 
+> I am not sure I understand "live region" here, what is the usecase of live
+> region?
+
+Reading registers of a live system without copying them to a snapshot
+first. Some chips have so many registers it's impractical to group them
+beyond "registers of IP block X", if that. IMHO that fits nicely with
+regions, health is grouped by event, so we'd likely want to dump for
+example one or two registers from the MAC there, while the entire set
+of MAC registers can be exposed as a region.
