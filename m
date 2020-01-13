@@ -2,145 +2,80 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 19187138FF9
-	for <lists+netdev@lfdr.de>; Mon, 13 Jan 2020 12:21:24 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id CA930139002
+	for <lists+netdev@lfdr.de>; Mon, 13 Jan 2020 12:23:38 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728761AbgAMLVP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 13 Jan 2020 06:21:15 -0500
-Received: from mail.kernel.org ([198.145.29.99]:51056 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726163AbgAMLVO (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 13 Jan 2020 06:21:14 -0500
-Received: from disco-boy.misterjones.org (disco-boy.misterjones.org [51.254.78.96])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id A9C962081E;
-        Mon, 13 Jan 2020 11:21:12 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1578914472;
-        bh=MacVSu0STCJHhHc0ljONo5y6xoV7nal96sORZMm0SSc=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=arrIa/WEpFeLMrHb//HLi36Tu08TB6YjYA8H+g4g+xc4jaJ8j4yheAtFN9FfH3HTH
-         Xtvpvb7DQQV57PNFlCG/Dy2IywB5ZQPZ1qsVvoik8KhBkjLGzzONiHH9bZTNOkALRE
-         lobe4VzuZIKnbUV0n1Xb0KTEfKzVSFsEccDNleEA=
-Received: from disco-boy.misterjones.org ([51.254.78.96] helo=www.loen.fr)
-        by disco-boy.misterjones.org with esmtpsa (TLS1.2:ECDHE_RSA_AES_128_GCM_SHA256:128)
-        (Exim 4.92)
-        (envelope-from <maz@kernel.org>)
-        id 1iqxmR-000307-1i; Mon, 13 Jan 2020 11:21:11 +0000
+        id S1726985AbgAMLXg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 13 Jan 2020 06:23:36 -0500
+Received: from mail-io1-f68.google.com ([209.85.166.68]:39197 "EHLO
+        mail-io1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725992AbgAMLXg (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 13 Jan 2020 06:23:36 -0500
+Received: by mail-io1-f68.google.com with SMTP id c16so9369463ioh.6
+        for <netdev@vger.kernel.org>; Mon, 13 Jan 2020 03:23:36 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=cloud.ionos.com; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=U4v91slysBtu2+ZNUNp733HGyuTdWdB0vCTPvzlAMaQ=;
+        b=Hs40/hCtDaw8kIdqbXXKtTxZGwlkdcXPIDSr52sBt9lKZdJOA8HTIs1ZJ6HDFBBSPi
+         VQ29OLELQpXHhFZ7d3W2i8YPFQNotSpRMRfktWCTtklFthmuOj+HiqKwvTFybvX7EeIU
+         17M7lpOhht4JNwwXL8Syph5dMdt6WeUH641P95PEbNJy/TD1t2gXTe4Xm25TRe8Ai5T+
+         y2kJPxuaHzZcBDfLYg8Gxrel4rToqKqV/alyquGkWsJr7CX0alX/MGe/xyLb08aRIsGr
+         2cSxy/i7JUBgY8X5p9Qq+yLCv44Pg+emYzgR/Ou2ozfELUGO36BSInuQuZfWtRTceGnm
+         alHg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=U4v91slysBtu2+ZNUNp733HGyuTdWdB0vCTPvzlAMaQ=;
+        b=qtxw5irO0gSMgQyfJk8gWLTdawDu7n9F5BqT0WNShQBMxe3dcnjuiud5+SOlShfqm+
+         K5BiKD1ulQZ7SCMjwoQeZPcRASmOEwVAbS0W5o5oJqQIk8KdWKbFlUgcPe79dAWJDWzY
+         BQQgxyth1qiZcZKYxcpzcvK2/aq0mYLpB2TkyhP5YBCgTt6PEY34o8nk49egaW02m0fb
+         FicfUV9ZrVodAeuaXx2OxXH6lLaYEhjIx6Y+rcM9bhZAN4cYXb+VxivGV8TaI65Bor1z
+         lA4E9T5wzifsymU5RbmP48wdb9eoo9m54lFQKiV4wXOhYTzA/XY6KwLTXpJEV8pUNXWS
+         u9AA==
+X-Gm-Message-State: APjAAAXtFinLUo1ydOFCIIymXtYC1u0k6wOVLrSYT19PgskkxUMAChnz
+        Cs0mSnq0E4cTOay5DMijLkqrGFm1fMqRu29dnpETtQ==
+X-Google-Smtp-Source: APXvYqz3R0cwnpdFNzGF+9v6caVTmnupsODQb8Q35NPNszuiOcxuERTT/1cGd+mLaOMrq7IQY9L3CBVEeb5VduDXGpE=
+X-Received: by 2002:a5e:c606:: with SMTP id f6mr12207438iok.71.1578914615813;
+ Mon, 13 Jan 2020 03:23:35 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII;
- format=flowed
-Content-Transfer-Encoding: 7bit
-Date:   Mon, 13 Jan 2020 11:21:11 +0000
-From:   Marc Zyngier <maz@kernel.org>
-To:     Jianyong Wu <Jianyong.Wu@arm.com>
-Cc:     netdev@vger.kernel.org, yangbo.lu@nxp.com, john.stultz@linaro.org,
-        tglx@linutronix.de, pbonzini@redhat.com,
-        sean.j.christopherson@intel.com, richardcochran@gmail.com,
-        Mark Rutland <Mark.Rutland@arm.com>, will@kernel.org,
-        Suzuki Poulose <Suzuki.Poulose@arm.com>,
-        Steven Price <Steven.Price@arm.com>,
-        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        kvmarm@lists.cs.columbia.edu, kvm@vger.kernel.org,
-        Steve Capper <Steve.Capper@arm.com>,
-        Kaly Xin <Kaly.Xin@arm.com>, Justin He <Justin.He@arm.com>,
-        nd <nd@arm.com>
-Subject: Re: [RFC PATCH v9 7/8] ptp: arm64: Enable ptp_kvm for arm64
-In-Reply-To: <HE1PR0801MB16765F2905CD0F381E33AD9EF4350@HE1PR0801MB1676.eurprd08.prod.outlook.com>
-References: <20191210034026.45229-1-jianyong.wu@arm.com>
- <20191210034026.45229-8-jianyong.wu@arm.com>
- <ca162efb3a0de530e119f5237c006515@kernel.org>
- <HE1PR0801MB1676EE12CF0DB7C5BB8CC62DF4390@HE1PR0801MB1676.eurprd08.prod.outlook.com>
- <ee801dacbf4143e8d41807d5bfad1409@kernel.org>
- <HE1PR0801MB16765B52E5DCD8EA480EDABFF4380@HE1PR0801MB1676.eurprd08.prod.outlook.com>
- <a85deebc23c1fa77e6f70b6eaef22a34@kernel.org>
- <HE1PR0801MB16765F2905CD0F381E33AD9EF4350@HE1PR0801MB1676.eurprd08.prod.outlook.com>
-Message-ID: <a65143199c03230c74cb456586f75627@kernel.org>
-X-Sender: maz@kernel.org
-User-Agent: Roundcube Webmail/1.3.8
-X-SA-Exim-Connect-IP: 51.254.78.96
-X-SA-Exim-Rcpt-To: Jianyong.Wu@arm.com, netdev@vger.kernel.org, yangbo.lu@nxp.com, john.stultz@linaro.org, tglx@linutronix.de, pbonzini@redhat.com, sean.j.christopherson@intel.com, richardcochran@gmail.com, Mark.Rutland@arm.com, will@kernel.org, Suzuki.Poulose@arm.com, Steven.Price@arm.com, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, kvmarm@lists.cs.columbia.edu, kvm@vger.kernel.org, Steve.Capper@arm.com, Kaly.Xin@arm.com, Justin.He@arm.com, nd@arm.com
-X-SA-Exim-Mail-From: maz@kernel.org
-X-SA-Exim-Scanned: No (on disco-boy.misterjones.org); SAEximRunCond expanded to false
+References: <20200109192317.4045173-1-jonathan.lemon@gmail.com>
+ <20200112125055.512b65f6@cakuba> <CAMGffEntn9nQAUk5ejEiEfnSjGda20rqQVi-zNu+GFr3v39pAA@mail.gmail.com>
+ <20200113032030.2fc9d891@cakuba>
+In-Reply-To: <20200113032030.2fc9d891@cakuba>
+From:   Jinpu Wang <jinpu.wang@cloud.ionos.com>
+Date:   Mon, 13 Jan 2020 12:23:24 +0100
+Message-ID: <CAMGffEm1ruZsen6RwH3sSaV8LCHxBBRkBttJ2J1nDyq4N+2VwA@mail.gmail.com>
+Subject: Re: [PATCH net-next] mlx4: Bump up MAX_MSIX from 64 to 128
+To:     Jakub Kicinski <kubakici@wp.pl>
+Cc:     Jonathan Lemon <jonathan.lemon@gmail.com>,
+        netdev <netdev@vger.kernel.org>, tariqt@mellanox.com,
+        "David S. Miller" <davem@davemloft.net>, kernel-team@fb.com
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 2020-01-13 10:37, Jianyong Wu wrote:
-> Hi Marc,
-> 
->> -----Original Message-----
->> From: Marc Zyngier <maz@kernel.org>
->> Sent: Friday, January 10, 2020 6:35 PM
->> To: Jianyong Wu <Jianyong.Wu@arm.com>
->> Cc: netdev@vger.kernel.org; yangbo.lu@nxp.com; john.stultz@linaro.org;
->> tglx@linutronix.de; pbonzini@redhat.com; 
->> sean.j.christopherson@intel.com;
->> richardcochran@gmail.com; Mark Rutland <Mark.Rutland@arm.com>;
->> will@kernel.org; Suzuki Poulose <Suzuki.Poulose@arm.com>; Steven Price
->> <Steven.Price@arm.com>; linux-kernel@vger.kernel.org; linux-arm-
->> kernel@lists.infradead.org; kvmarm@lists.cs.columbia.edu;
->> kvm@vger.kernel.org; Steve Capper <Steve.Capper@arm.com>; Kaly Xin
->> <Kaly.Xin@arm.com>; Justin He <Justin.He@arm.com>; nd <nd@arm.com>
->> Subject: Re: [RFC PATCH v9 7/8] ptp: arm64: Enable ptp_kvm for arm64
->> 
->> Hi Jianyong,
->> 
->> On 2020-01-10 10:15, Jianyong Wu wrote:
->> > Hi Marc,
->> 
->> [...]
->> 
->> >> >> > +	ktime_overall = hvc_res.a0 << 32 | hvc_res.a1;
->> >> >> > +	*ts = ktime_to_timespec64(ktime_overall);
->> >> >> > +	*cycle = hvc_res.a2 << 32 | hvc_res.a3;
->> >> >>
->> >> >> So why isn't that just a read of the virtual counter, given that
->> >> >> what you do in the hypervisor seems to be "cntpct - cntvoff"?
->> >> >>
->> >> >> What am I missing here?
->> >> >>
->> >> > We need get clock time and counter cycle at the same time, so we
->> >> > can't just read virtual counter at guest and must get it from host.
->> >>
->> >> See my comment in my reply to patch #6: *Must* seems like a very
->> >> strong word, and you don't explain *why* that's better than just
->> >> computing the total hypercall cost. Hint: given the frequency of the
->> >> counter (in the few MHz
->> >> range) vs the frequency of a CPU (in the multiple GHz range, and with
->> >> an IPC close enough to 1), I doubt that you'll see the counter making
->> >> much progress across a hypercall.
->> >>
->> > Sorry, I will avoid to use those strong words.
->> >
->> > It's really the case that the hypercall won't across cycle in general.
->> > But sometimes, kernel preempt
->> > may happen in the middle of the hypercall which we can't assume how
->> > long before schedule back. so it's better capture them together at the
->> > same time.
->> 
->> Fair enough. Please document the rational, as I guess others will ask 
->> the
->> same questions.
->> 
-> Ok
-> 
->> Then the problem to solve is that of the reference counter, as you so 
->> far
->> assume the virtual counter. I guess you need to be able to let the 
->> guest
->> select the reference counter when calling the PTP service.
->> 
-> I could not come up with an idea about the point where the guest give
-> this info of counter value.
-> Where we give that interface to ptp service, as it's not a user space
-> application.
-
-Again: why don't you let the guest ask for the counter it wants as part
-of the SMC call? What is preventing this?
-
-         M.
--- 
-Jazz is not dead. It just smells funny...
+On Mon, Jan 13, 2020 at 12:20 PM Jakub Kicinski <kubakici@wp.pl> wrote:
+>
+> On Mon, 13 Jan 2020 09:47:59 +0100, Jinpu Wang wrote:
+> > On Sun, Jan 12, 2020 at 9:51 PM Jakub Kicinski <kubakici@wp.pl> wrote:
+> > > On Thu, 9 Jan 2020 11:23:17 -0800, Jonathan Lemon wrote:
+> > > > On modern hardware with a large number of cpus and using XDP,
+> > > > the current MSIX limit is insufficient.  Bump the limit in
+> > > > order to allow more queues.
+> > > >
+> > > > Signed-off-by: Jonathan Lemon <jonathan.lemon@gmail.com>
+> > >
+> > > Applied to net-next, thanks everyone!
+> > >
+> > > (Jack, please make sure you spell your tags right)
+> > Checked, It's correct both in my reply and in net-next.git.
+>
+> I manually corrected it in tree. You swapped 'i' and 'e'
+> in the word reviewed, your email had "reveiwed".
+oh, sorry for that, will be more careful next time.
+And thanks for the correction.
