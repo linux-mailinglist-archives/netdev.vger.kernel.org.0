@@ -2,154 +2,198 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 94EE6138A7C
-	for <lists+netdev@lfdr.de>; Mon, 13 Jan 2020 05:55:55 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4C0D1138B7A
+	for <lists+netdev@lfdr.de>; Mon, 13 Jan 2020 06:54:52 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2387608AbgAMEzu (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 12 Jan 2020 23:55:50 -0500
-Received: from mail-pj1-f65.google.com ([209.85.216.65]:37687 "EHLO
-        mail-pj1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2387525AbgAMEzu (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 12 Jan 2020 23:55:50 -0500
-Received: by mail-pj1-f65.google.com with SMTP id m13so3728420pjb.2;
-        Sun, 12 Jan 2020 20:55:49 -0800 (PST)
+        id S1729184AbgAMFyr (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 13 Jan 2020 00:54:47 -0500
+Received: from mail-bn8nam11on2042.outbound.protection.outlook.com ([40.107.236.42]:6157
+        "EHLO NAM11-BN8-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1726105AbgAMFyq (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 13 Jan 2020 00:54:46 -0500
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=ikMVegvcLHwN54d/lRcB3OQsdXHb9W+tcijSHPOs2x6NYXuVOuk9ua3gz3+KSr304x7Jn4VUFg89SKBOsMLZVrCJwevswYsnIvSmOBpTGS85lXT2fWF9+IJhBl6JCq//mGidMWmXjsa+uMM0yhgVixRCdm9NfB4RrhNrGlRJbdtc9RVx1FzcTsTXPkZ7V6abOzTsrYzKMq1OSiY4AieN6ZayhE5JBVbqgwmtwy4vm+7mJiCYpWB3QgpHXeR+5R2Q4EY07RKOMJvXG1uD1T3tUQ3qYvTawV7BIjiOAKXvzboVWfjlJ2mg8m1eCR2cLfdMy0t9/y1L8HXRx3Ozvz3YcQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=xbExrjRHLYrj+ysdWFSVdoVhEaI2OqdjqEaFOz/pK8Q=;
+ b=MUzzxhj9fkgm6PTYtMXDzpKrzdPm5NyHmrZm4eDPQE8rjWn6KViAcwPAT94pewEyWqGPr291eNY/2Tj+oxFyysgUSQjriwm27/BTK4EkaxuTAZjWb5iE0LMEX01T5oC/hXVBdvVFWTQJkO8Uudgn96rZC/AzENeI5jZMnMR8X4luKgWKR1VI3C7nGVlT+WeAgHS+SKTRb7Pv/5IBQNlvFxaxBhupB7l4R06JM3TJ+/kfGpp8eXCjHndHTSc4Ezg/R6zsoGdCasce2l1J6MuO1RBAsoN9/5fVgD2YFumr4br4OKPW154uz75lZgZFromixRE0hXodVO4V6fgMAr1srA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=xilinx.com; dmarc=pass action=none header.from=xilinx.com;
+ dkim=pass header.d=xilinx.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:autocrypt:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=fp2FmMBHj9/9S3dTfdTWhItfkq0lFlg8sj+smCQ8dv4=;
-        b=Q18aqciZuqAabPVo1qWb+AlKpUdLcTKQJ/sE1I0iyOanexWF2WFsGSUnMzEPJJmlGu
-         Xa6fZHWtSIetBVdf2eRvfbYRY48/ZVsAaKJ9lpy38o61KfRsr5gj7uv708i3Msq80V7q
-         qwo8S9iSaa1+KJUu03ANdxyQBhp53YH7AXgytzUG2i508KTyyQcShnk5UhmdZKLbxZw9
-         /jOlEtaqqOLddQz/4+/pB2I2cS2PzDjtjwlOra1HYX6mLDwRuhTot8Ff+ue2WnuNL2f+
-         Q/qYzNvD3iRt6EK85hcVXDDRyFm+DZln87cgrxTx5sVlNnYNoyNha33fZ9xyoq9wfWMf
-         RbkA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:autocrypt
-         :message-id:date:user-agent:mime-version:in-reply-to
-         :content-language:content-transfer-encoding;
-        bh=fp2FmMBHj9/9S3dTfdTWhItfkq0lFlg8sj+smCQ8dv4=;
-        b=lsVMT9djpfsuAD7uc7OsA4Ww7eLyDj7eWkSGpQWMIkJ4OAFvWkFFPOYi5R6eki6APO
-         arE2Ccmod3h95i8lJTJrJmZYj5yRT+9gLfpW1/sg+a1nsGLDMAlbyRURxBpRHXdVivAG
-         5EFdWrLAQLQ+2ZlZOFYchh9UMJiShCpNvEsqnr/1QUhy0vW8bND36U4ANvV43cMTIh4u
-         TI9BH11rVOBJL8srI7WhbKe+xSlE/83Cc6QriairrZWy1CdkjCE9g4N9555e5xvFkJYX
-         /VKn/1bJhCHJ59alJzTES/FU3ayD9NiaSM4GdImmgDVb8e0CnrA779XZh/CUjRG8xK9z
-         0cbA==
-X-Gm-Message-State: APjAAAUuO3PIxbvWHFozCsFa4tCpaOq6tgzvJZrv4/15n5vphEwyJEr3
-        E7JYZD53ATqoV9ShvG3Bf8n+Q/aw
-X-Google-Smtp-Source: APXvYqzsR48Dk8R5w6+XT8QXW61XMlcwHPTuHfMEwziAY12c8HuvOTk5gEEFfr1Kx3RqZ6/ZU73mgw==
-X-Received: by 2002:a17:902:968b:: with SMTP id n11mr17024559plp.120.1578891348628;
-        Sun, 12 Jan 2020 20:55:48 -0800 (PST)
-Received: from [192.168.1.3] (ip68-111-84-250.oc.oc.cox.net. [68.111.84.250])
-        by smtp.gmail.com with ESMTPSA id r2sm11108983pgv.16.2020.01.12.20.55.47
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sun, 12 Jan 2020 20:55:47 -0800 (PST)
-Subject: Re: [PATCH net-next] net: phy: Maintain MDIO device and bus
- statistics
-To:     netdev@vger.kernel.org
-Cc:     cphealy@gmail.com, rmk+kernel@armlinux.org.uk, kuba@kernel.org,
-        Andrew Lunn <andrew@lunn.ch>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        open list <linux-kernel@vger.kernel.org>
-References: <20200113045325.13470-1-f.fainelli@gmail.com>
-From:   Florian Fainelli <f.fainelli@gmail.com>
-Autocrypt: addr=f.fainelli@gmail.com; keydata=
- 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
- a9BQwACgnzGuH1BVeT2J0Ra+ZYgkx7DaPR0=
-Message-ID: <09dcf653-ea83-0978-7549-54574d38bfd7@gmail.com>
-Date:   Sun, 12 Jan 2020 20:55:46 -0800
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
- Thunderbird/68.4.1
-MIME-Version: 1.0
-In-Reply-To: <20200113045325.13470-1-f.fainelli@gmail.com>
-Content-Type: text/plain; charset=utf-8
+ d=xilinx.onmicrosoft.com; s=selector2-xilinx-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=xbExrjRHLYrj+ysdWFSVdoVhEaI2OqdjqEaFOz/pK8Q=;
+ b=cZsy6o/7WaH1RmGmF5zAJoYLOxEyoDxsc6lG6HNayUdufQRNOcZ96Md2ZN85paMkK7DAZ8UXhEHFWNqhd1tGm2Q+F8c0wuLZhTSxUnz7PwUv2POCSfKVTqAQOECl9PMgAkST3VQm3DW5iJ+tfRB3DqMQmhh2S9F6iieNBJcSBjY=
+Received: from CH2PR02MB7000.namprd02.prod.outlook.com (20.180.9.216) by
+ CH2PR02MB6597.namprd02.prod.outlook.com (20.180.17.152) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.2623.10; Mon, 13 Jan 2020 05:54:43 +0000
+Received: from CH2PR02MB7000.namprd02.prod.outlook.com
+ ([fe80::969:436f:b4b8:4899]) by CH2PR02MB7000.namprd02.prod.outlook.com
+ ([fe80::969:436f:b4b8:4899%7]) with mapi id 15.20.2623.015; Mon, 13 Jan 2020
+ 05:54:42 +0000
+From:   Radhey Shyam Pandey <radheys@xilinx.com>
+To:     Andre Przywara <andre.przywara@arm.com>,
+        "David S . Miller" <davem@davemloft.net>
+CC:     Michal Simek <michals@xilinx.com>,
+        Robert Hancock <hancock@sedsystems.ca>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-arm-kernel@lists.infradead.org" 
+        <linux-arm-kernel@lists.infradead.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Subject: RE: [PATCH 06/14] net: axienet: Check for DMA mapping errors
+Thread-Topic: [PATCH 06/14] net: axienet: Check for DMA mapping errors
+Thread-Index: AQHVx6y50lT2nOuC90+8UAg/2dRde6foFwfg
+Date:   Mon, 13 Jan 2020 05:54:42 +0000
+Message-ID: <CH2PR02MB70001247E6EE3EF6968CCC04C7350@CH2PR02MB7000.namprd02.prod.outlook.com>
+References: <20200110115415.75683-1-andre.przywara@arm.com>
+ <20200110115415.75683-7-andre.przywara@arm.com>
+In-Reply-To: <20200110115415.75683-7-andre.przywara@arm.com>
+Accept-Language: en-US
 Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+X-MS-Has-Attach: 
+X-Auto-Response-Suppress: DR, RN, NRN, OOF, AutoReply
+X-MS-TNEF-Correlator: 
+authentication-results: spf=none (sender IP is )
+ smtp.mailfrom=radheys@xilinx.com; 
+x-originating-ip: [149.199.50.133]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-ht: Tenant
+x-ms-office365-filtering-correlation-id: 1fd32a2e-8a84-402f-5cbd-08d797ed1617
+x-ms-traffictypediagnostic: CH2PR02MB6597:|CH2PR02MB6597:
+x-ms-exchange-transport-forked: True
+x-microsoft-antispam-prvs: <CH2PR02MB659796EEE90F5D97A53DE734C7350@CH2PR02MB6597.namprd02.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:8882;
+x-forefront-prvs: 028166BF91
+x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(4636009)(346002)(376002)(136003)(396003)(39860400002)(366004)(189003)(199004)(54906003)(86362001)(5660300002)(316002)(110136005)(52536014)(4326008)(478600001)(33656002)(9686003)(55016002)(26005)(2906002)(186003)(6506007)(53546011)(66446008)(7696005)(81166006)(81156014)(66556008)(8676002)(8936002)(66946007)(76116006)(66476007)(64756008)(71200400001);DIR:OUT;SFP:1101;SCL:1;SRVR:CH2PR02MB6597;H:CH2PR02MB7000.namprd02.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;MX:1;A:1;
+received-spf: None (protection.outlook.com: xilinx.com does not designate
+ permitted sender hosts)
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: 3m6BupiJdki17xPVJOnQsUvwUmq813lNwnyMD+vYaJDfE21xxXpx2PJZsz6Lc2Unv6TAD0kPi8FRLgehG3I7vI9iYoXqm9gujfQAqWPFqH27YCWeB4baXhFpLRudnfd7YpQP5XDLHRz24Xj3CkffVpSt+/iaJLDlGdwoDGT0VNQYHTpd6b/2LPHjQkcisoo1oMB9SyqIC6kZdOtEOe07D3kFPUv0bhMBcmvEu9FUG91zIN7VVNv7DLG/gjatmCWzrLguImoV780KE58fmHTWDHmo8c4TfwWWphZF8ziyVr57bcmlokUGLf/dV+5oKxpP+NZ9PqPeskvjpt8XTVgMBvOFvrx5xgZUW3gOp+iOjvHjlaXluMThDX0+ccXHatw35PVFomSLsaa9EUPWox7UjGRe5TT28lrNOYhXD8BFrVVXkvtrf/ismVVCf03eVDK7
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
+MIME-Version: 1.0
+X-OriginatorOrg: xilinx.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 1fd32a2e-8a84-402f-5cbd-08d797ed1617
+X-MS-Exchange-CrossTenant-originalarrivaltime: 13 Jan 2020 05:54:42.7577
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 657af505-d5df-48d0-8300-c31994686c5c
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: PdAnmZKsw/byrfoKC6WXpMlgjBvGQn9/tv//M8fFPcSKQjc/81OVayry4IOZYkTzQhJdM0gLHTgHs61jW45N5g==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: CH2PR02MB6597
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-
-
-On 1/12/2020 8:53 PM, Florian Fainelli wrote:
-> Maintain per MDIO device and MDIO bus statistics comprised of the number
-> of transfers/operations, reads and writes and errors. This is useful for
-> tracking the per-device and global MDIO bus bandwidth and doing
-> optimizations as necessary.
-> 
-> Signed-off-by: Florian Fainelli <f.fainelli@gmail.com>
+> -----Original Message-----
+> From: Andre Przywara <andre.przywara@arm.com>
+> Sent: Friday, January 10, 2020 5:24 PM
+> To: David S . Miller <davem@davemloft.net>; Radhey Shyam Pandey
+> <radheys@xilinx.com>
+> Cc: Michal Simek <michals@xilinx.com>; Robert Hancock
+> <hancock@sedsystems.ca>; netdev@vger.kernel.org; linux-arm-
+> kernel@lists.infradead.org; linux-kernel@vger.kernel.org
+> Subject: [PATCH 06/14] net: axienet: Check for DMA mapping errors
+>=20
+> Especially with the default 32-bit DMA mask, DMA buffers are a limited
+> resource, so their allocation can fail.
+> So as the DMA API documentation requires, add error checking code after
+> dma_map_single() calls to catch the case where we run out of "low" memory=
+.
+>=20
+> Signed-off-by: Andre Przywara <andre.przywara@arm.com>
 > ---
+>  .../net/ethernet/xilinx/xilinx_axienet_main.c | 22 ++++++++++++++++++-
+>  1 file changed, 21 insertions(+), 1 deletion(-)
+>=20
+> diff --git a/drivers/net/ethernet/xilinx/xilinx_axienet_main.c
+> b/drivers/net/ethernet/xilinx/xilinx_axienet_main.c
+> index 82abe2b0f16a..8d2b67cbecf9 100644
+> --- a/drivers/net/ethernet/xilinx/xilinx_axienet_main.c
+> +++ b/drivers/net/ethernet/xilinx/xilinx_axienet_main.c
+> @@ -248,6 +248,11 @@ static int axienet_dma_bd_init(struct net_device
+> *ndev)
+>  						     skb->data,
+>  						     lp->max_frm_size,
+>  						     DMA_FROM_DEVICE);
+> +		if (dma_mapping_error(ndev->dev.parent, lp->rx_bd_v[i].phys))
 
-[snip]
+Prefer using unlikely compiler hint for dma_mapping_error.=20
+Also, we need to add error print to report this condition to the user,
+in case it isn't there in dma_mapping_error implementation.
 
-> +#define MDIO_BUS_STATS_SHOW_NAME(name, file, field, format_string)	\
-> +static ssize_t mdio_bus_stats_##name##_show(struct mdio_bus_stats *s,	\
-> +					    char *buf)			\
-> +{									\
-> +	unsigned int start;						\
-> +	ssize_t len;							\
-> +	u64 tmp;							\
-> +	do {								\
-> +		start = u64_stats_fetch_begin(&s->syncp);		\
-> +		tmp = u64_stats_read(&s->field);			\
-> +	} while (u64_stats_fetch_retry(&s->syncp, start));		\
-> +	len = sprintf(buf, format_string ## "\n", tmp);			\
+> {
+> +			dev_kfree_skb(skb);
 
-	^ ===== that hunk right there does not build, I sent a non-fixed up
-patch, I would still appreciate comments though.
--- 
-Florian
+free of skb is already handled in _release. We can reuse that?
+> +			goto out;
+> +		}
+> +
+>  		lp->rx_bd_v[i].cntrl =3D lp->max_frm_size;
+>  	}
+>=20
+> @@ -668,6 +673,7 @@ axienet_start_xmit(struct sk_buff *skb, struct
+> net_device *ndev)
+>  	dma_addr_t tail_p;
+>  	struct axienet_local *lp =3D netdev_priv(ndev);
+>  	struct axidma_bd *cur_p;
+> +	u32 orig_tail_ptr =3D lp->tx_bd_tail;
+>=20
+>  	num_frag =3D skb_shinfo(skb)->nr_frags;
+>  	cur_p =3D &lp->tx_bd_v[lp->tx_bd_tail];
+> @@ -703,9 +709,11 @@ axienet_start_xmit(struct sk_buff *skb, struct
+> net_device *ndev)
+>  		cur_p->app0 |=3D 2; /* Tx Full Checksum Offload Enabled */
+>  	}
+>=20
+> -	cur_p->cntrl =3D skb_headlen(skb) | XAXIDMA_BD_CTRL_TXSOF_MASK;
+>  	cur_p->phys =3D dma_map_single(ndev->dev.parent, skb->data,
+>  				     skb_headlen(skb), DMA_TO_DEVICE);
+> +	if (dma_mapping_error(ndev->dev.parent, cur_p->phys))
+> +		return NETDEV_TX_BUSY;
+
+This is not ideally tx busy and related to available mem mapping in the sys=
+tem.=20
+I just looked at other eth drivers and it seems they return TX_OK with drop
+count stats incremented.
+
+> +	cur_p->cntrl =3D skb_headlen(skb) | XAXIDMA_BD_CTRL_TXSOF_MASK;
+>=20
+>  	for (ii =3D 0; ii < num_frag; ii++) {
+>  		if (++lp->tx_bd_tail >=3D lp->tx_bd_num) @@ -716,6 +724,13 @@
+> axienet_start_xmit(struct sk_buff *skb, struct net_device *ndev)
+>  					     skb_frag_address(frag),
+>  					     skb_frag_size(frag),
+>  					     DMA_TO_DEVICE);
+> +		if (dma_mapping_error(ndev->dev.parent, cur_p->phys)) {
+> +			axienet_free_tx_chain(ndev, orig_tail_ptr, ii + 1,
+> +					      NULL);
+> +			lp->tx_bd_tail =3D orig_tail_ptr;
+> +
+> +			return NETDEV_TX_BUSY;
+> +		}
+>  		cur_p->cntrl =3D skb_frag_size(frag);
+>  	}
+>=20
+> @@ -796,6 +811,11 @@ static void axienet_recv(struct net_device *ndev)
+>  		cur_p->phys =3D dma_map_single(ndev->dev.parent, new_skb-
+> >data,
+>  					     lp->max_frm_size,
+>  					     DMA_FROM_DEVICE);
+> +		if (dma_mapping_error(ndev->dev.parent, cur_p->phys)) {
+> +			dev_kfree_skb(new_skb);
+> +			return;
+> +		}
+> +
+>  		cur_p->cntrl =3D lp->max_frm_size;
+>  		cur_p->status =3D 0;
+>  		cur_p->skb =3D new_skb;
+> --
+> 2.17.1
+
