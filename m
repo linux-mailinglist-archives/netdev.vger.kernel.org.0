@@ -2,67 +2,56 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 62641139D4A
-	for <lists+netdev@lfdr.de>; Tue, 14 Jan 2020 00:30:25 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 364F5139DB2
+	for <lists+netdev@lfdr.de>; Tue, 14 Jan 2020 00:57:18 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729248AbgAMXaU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 13 Jan 2020 18:30:20 -0500
-Received: from vps0.lunn.ch ([185.16.172.187]:35538 "EHLO vps0.lunn.ch"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727282AbgAMXaT (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 13 Jan 2020 18:30:19 -0500
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:
-        Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
-        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
-        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
-        List-Post:List-Owner:List-Archive;
-        bh=QwAoXOqjyyg/vJ5GZRN0tl9HB/BzOvUwdKHRpL6PwmI=; b=OvKpla9ORTpemj4RUAFr9Do/Ej
-        d5IvnR79Rtu/GSeeBW7wb0+8Te29GyWtZruIrafjHVaz7flLIPYt/Z6Y9Yws0FHohEyeDONTTV/6q
-        9DEyMxjGCmEaRFB9inmS+f/SSN+37wW0i66XpBaMOSSqtrIwJVnXEan9IFrMDtzspMsw=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.93)
-        (envelope-from <andrew@lunn.ch>)
-        id 1ir99v-0008CN-Sw; Tue, 14 Jan 2020 00:30:11 +0100
-Date:   Tue, 14 Jan 2020 00:30:11 +0100
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Horatiu Vultur <horatiu.vultur@microchip.com>
-Cc:     linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        bridge@lists.linux-foundation.org, davem@davemloft.net,
-        roopa@cumulusnetworks.com, nikolay@cumulusnetworks.com,
-        jakub.kicinski@netronome.com, vivien.didelot@gmail.com,
-        olteanv@gmail.com, anirudh.venkataramanan@intel.com,
-        dsahern@gmail.com, jiri@resnulli.us, ivecera@redhat.com,
-        UNGLinuxDriver@microchip.com
-Subject: Re: [RFC net-next Patch v2 4/4] net: bridge: mrp: switchdev: Add HW
- offload
-Message-ID: <20200113233011.GF11788@lunn.ch>
-References: <20200113124620.18657-1-horatiu.vultur@microchip.com>
- <20200113124620.18657-5-horatiu.vultur@microchip.com>
- <20200113140053.GE11788@lunn.ch>
- <20200113225751.jkkio4rztyuff4xj@soft-dev3.microsemi.net>
+        id S1729072AbgAMX5Q (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 13 Jan 2020 18:57:16 -0500
+Received: from imap3.hz.codethink.co.uk ([176.9.8.87]:43258 "EHLO
+        imap3.hz.codethink.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728802AbgAMX5Q (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 13 Jan 2020 18:57:16 -0500
+X-Greylist: delayed 1035 seconds by postgrey-1.27 at vger.kernel.org; Mon, 13 Jan 2020 18:57:15 EST
+Received: from [167.98.27.226] (helo=xylophone)
+        by imap3.hz.codethink.co.uk with esmtpsa  (Exim 4.92 #3 (Debian))
+        id 1ir9JN-0003ga-WA; Mon, 13 Jan 2020 23:39:58 +0000
+Message-ID: <cbed1d656d40ba099714b13f17b912a3dd30b402.camel@codethink.co.uk>
+Subject: [stable] wimax: i2400: fix memory leaks
+From:   Ben Hutchings <ben.hutchings@codethink.co.uk>
+To:     "David S. Miller" <davem@davemloft.net>
+Cc:     netdev <netdev@vger.kernel.org>, stable <stable@vger.kernel.org>,
+        Navid Emamdoost <navid.emamdoost@gmail.com>,
+        Inaky Perez-Gonzalez <inaky.perez-gonzalez@intel.com>
+Date:   Mon, 13 Jan 2020 23:39:57 +0000
+Organization: Codethink Ltd.
+Content-Type: text/plain; charset="UTF-8"
+User-Agent: Evolution 3.30.5-1.1 
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200113225751.jkkio4rztyuff4xj@soft-dev3.microsemi.net>
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Horatiu
+It looks like these fixes are needed for 4.19 (and older stable
+branches):
 
-It has been said a few times what the basic state machine should be in
-user space. A pure software solution can use raw sockets to send and
-receive MRP_Test test frames. When considering hardware acceleration,
-the switchdev API you have proposed here seems quite simple. It should
-not be too hard to map it to a set of netlink messages from userspace.
+commit 2507e6ab7a9a440773be476141a255934468c5ef
+Author: Navid Emamdoost <navid.emamdoost@gmail.com>
+Date:   Tue Sep 10 18:01:40 2019 -0500
 
-Yet your argument for kernel, not user space, is you are worried about
-the parameters which need to be passed to the hardware offload engine.
-In order to win the argument for a kernel solution, we are going to
-need a better idea what you think this problem is. The MRP_Test is TLV
-based. Are there other things which could be in this message? Is that
-what you are worried about?
+    wimax: i2400: fix memory leak
 
-Thanks
-     Andrew
+commit 6f3ef5c25cc762687a7341c18cbea5af54461407
+Author: Navid Emamdoost <navid.emamdoost@gmail.com>
+Date:   Fri Oct 25 23:53:30 2019 -0500
+
+    wimax: i2400: Fix memory leak in i2400m_op_rfkill_sw_toggle
+
+Ben.
+
+-- 
+Ben Hutchings, Software Developer                         Codethink Ltd
+https://www.codethink.co.uk/                 Dale House, 35 Dale Street
+                                     Manchester, M1 2HF, United Kingdom
+
