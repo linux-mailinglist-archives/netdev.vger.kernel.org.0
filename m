@@ -2,127 +2,287 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id C5C1F13AD91
-	for <lists+netdev@lfdr.de>; Tue, 14 Jan 2020 16:25:01 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6D9B613AD9B
+	for <lists+netdev@lfdr.de>; Tue, 14 Jan 2020 16:26:39 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729048AbgANPY4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 14 Jan 2020 10:24:56 -0500
-Received: from mga02.intel.com ([134.134.136.20]:34615 "EHLO mga02.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725904AbgANPY4 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 14 Jan 2020 10:24:56 -0500
-X-Amp-Result: SKIPPED(no attachment in message)
-X-Amp-File-Uploaded: False
-Received: from fmsmga005.fm.intel.com ([10.253.24.32])
-  by orsmga101.jf.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 14 Jan 2020 07:24:55 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.69,433,1571727600"; 
-   d="scan'208";a="423185376"
-Received: from orsmsx105.amr.corp.intel.com ([10.22.225.132])
-  by fmsmga005.fm.intel.com with ESMTP; 14 Jan 2020 07:24:54 -0800
-Received: from orsmsx111.amr.corp.intel.com (10.22.240.12) by
- ORSMSX105.amr.corp.intel.com (10.22.225.132) with Microsoft SMTP Server (TLS)
- id 14.3.439.0; Tue, 14 Jan 2020 07:24:54 -0800
-Received: from ORSEDG001.ED.cps.intel.com (10.7.248.4) by
- ORSMSX111.amr.corp.intel.com (10.22.240.12) with Microsoft SMTP Server (TLS)
- id 14.3.439.0; Tue, 14 Jan 2020 07:24:54 -0800
-Received: from NAM04-BN3-obe.outbound.protection.outlook.com (104.47.46.59) by
- edgegateway.intel.com (134.134.137.100) with Microsoft SMTP Server (TLS) id
- 14.3.439.0; Tue, 14 Jan 2020 07:24:53 -0800
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=UV4ZWaomqLVD/2uk0J2FA2+Xh3rxycF5s3zoUoXuQal9zeFRZii/Fj6L4AU2eAcce+wmFNnXkoR+AAGi+i+33gdKBFmarEo++VwkzPQ7ijQ114K3S6IugDDf05wMquYWxtjkksFB7ZXwvgXH9EFU9Fu3myIUDKiggL4Qlp2ShWu7TBAiQrnDQweHYJE71NFFPTqt6CdCKGKhMBLYCwHW8wk26csZA9SqXfOEA81rpMhk6qkbqLP18P01Q+/SgDAzS24fDlki3odUSEtgp90AEYguO4GRmAJiziIbKbJRr5gQj4JRYPYzRUmKkmH0gIob811dLywe+S/9ukQWpAGIig==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=CanE5ZT0RtztTL6iqVn1cUanfjBFsUN7v42feL5sbMU=;
- b=ZGOC2swHvIX4sIcvOuCoRJgX2lU9nK8xBO+9SaKrAvv7he5Llo8nSs6eKf4Yfthq4DxdIrYdlenBvpcUXHRTaO6abbKouXhX0OYGTE384d3QC4aHICGOIYcwZdK0g4O+5zrXWvN7FhhyCCHJ0EUMM2du0v+EPy2PPhbu3IHBisApD4B62X7MTqBzl9ejYrD/IjbNcwocNga97fpIB9QkA4MuEP+puUhcwFnKy2IoIkrp0o8KDjyTIE5Pg3W1XXTK5nrfkdv6Yj7qoBPsVPJuntE6E2ctGwXdV+1P8Ex3muxwxSlIP6MeKJ8z0KAxi7++ISuNyR6gEoRf4FdY1eYThQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
- dkim=pass header.d=intel.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=intel.onmicrosoft.com;
- s=selector2-intel-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=CanE5ZT0RtztTL6iqVn1cUanfjBFsUN7v42feL5sbMU=;
- b=IWpPi5gW86IAL4tO32PBl9ylQNI75gKLNNAls1QuaKgsLj268+qQltHFKIYgENzp3EOXuzs1w/HY5apinFXLsAMq1pBje1RQ3yCH5ZBmLbTTjatbnOxsYnobjhOpe9mLvBprtGGcTCoL9c2d+RT5l4JdrzbMXHaTFM/Ep48+vzk=
-Received: from DM6PR11MB2764.namprd11.prod.outlook.com (20.176.95.140) by
- DM6PR11MB2587.namprd11.prod.outlook.com (20.176.97.144) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.2623.9; Tue, 14 Jan 2020 15:24:51 +0000
-Received: from DM6PR11MB2764.namprd11.prod.outlook.com
- ([fe80::7934:4f68:4a8b:5877]) by DM6PR11MB2764.namprd11.prod.outlook.com
- ([fe80::7934:4f68:4a8b:5877%5]) with mapi id 15.20.2623.015; Tue, 14 Jan 2020
- 15:24:50 +0000
-From:   "Voon, Weifeng" <weifeng.voon@intel.com>
-To:     Jose Abreu <Jose.Abreu@synopsys.com>,
-        "Ong, Boon Leong" <boon.leong.ong@intel.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-CC:     Giuseppe Cavallaro <peppe.cavallaro@st.com>,
-        Alexandre Torgue <alexandre.torgue@st.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        "Maxime Coquelin" <mcoquelin.stm32@gmail.com>,
-        "Tan, Tee Min" <tee.min.tan@intel.com>,
-        "linux-stm32@st-md-mailman.stormreply.com" 
-        <linux-stm32@st-md-mailman.stormreply.com>,
-        "linux-arm-kernel@lists.infradead.org" 
-        <linux-arm-kernel@lists.infradead.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: RE: [PATCH net 4/7] net: stmmac: Fix priority steering for tx/rx
- queue >3
-Thread-Topic: [PATCH net 4/7] net: stmmac: Fix priority steering for tx/rx
- queue >3
-Thread-Index: AQHVyfo2lz0yFuzXdkS7LDIUtJYSi6foZfKAgAHiKfA=
-Date:   Tue, 14 Jan 2020 15:24:50 +0000
-Message-ID: <DM6PR11MB276467B2B56B0CF246B5CFB088340@DM6PR11MB2764.namprd11.prod.outlook.com>
-References: <1578967276-55956-1-git-send-email-boon.leong.ong@intel.com>
- <1578967276-55956-5-git-send-email-boon.leong.ong@intel.com>
- <BN8PR12MB3266F6242596920E608021ACD3350@BN8PR12MB3266.namprd12.prod.outlook.com>
-In-Reply-To: <BN8PR12MB3266F6242596920E608021ACD3350@BN8PR12MB3266.namprd12.prod.outlook.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-dlp-version: 11.2.0.6
-dlp-product: dlpe-windows
-dlp-reaction: no-action
-authentication-results: spf=none (sender IP is )
- smtp.mailfrom=weifeng.voon@intel.com; 
-x-originating-ip: [192.198.147.223]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: 52789ce5-19ed-4c53-94f8-08d79905e603
-x-ms-traffictypediagnostic: DM6PR11MB2587:
-x-ld-processed: 46c98d88-e344-4ed4-8496-4ed7712e255d,ExtAddr
-x-ms-exchange-transport-forked: True
-x-microsoft-antispam-prvs: <DM6PR11MB25878821A24C9DB48116084E88340@DM6PR11MB2587.namprd11.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:421;
-x-forefront-prvs: 028256169F
-x-forefront-antispam-report: SFV:NSPM;SFS:(10019020)(39860400002)(366004)(136003)(346002)(396003)(376002)(189003)(199004)(81166006)(81156014)(8676002)(52536014)(33656002)(26005)(186003)(110136005)(54906003)(6506007)(8936002)(316002)(2906002)(7696005)(9686003)(66946007)(5660300002)(4744005)(966005)(4326008)(71200400001)(66556008)(64756008)(66476007)(55016002)(66446008)(86362001)(478600001)(76116006);DIR:OUT;SFP:1102;SCL:1;SRVR:DM6PR11MB2587;H:DM6PR11MB2764.namprd11.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;MX:1;A:1;
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: O3HIsSh88RE2CIn75M5LJSKL98FfBdjVflVssrB/i3UUcnki1czV54ZHT/MkZfbENVFapP3U6SI39Zo/dZVG8rTObUgM7h45kqlKgi+8lo4k0+CyjrObS1niIKEF+fRTbStPQ+X19jL51c782Gcf0FIDnk94kc4TG/3BNTZiCD+Zlb23YYoxoAWsBlbS6b3JmDbRqXLRQVLxm3b7M5/zukzj3NebtQ88yTyVOleSQ51R4FP8SMrIHJnuQQSBgNCWah8Cy+PdbbQ7RDH0qna9dHalLjTMs9tI/8igROv5DBgSarmTRy8i/76q3fP9tstkG5Cc+qn/lxzrvNi0aivylCm1sbXGQ9f/JUIY195DqA6XW7FS58eair+4tbJtWtwxTbaUBjgBiKDSb+s3IlZIpdmH3laUmHO3UM5zf9MkkUJyi2rm+ZZ5YjWcsb8HLVF2SLG6rkjQm9cv9O6jcRzWGa7TyCyXrk9fSHxOTbOncnGe1U19fUrFJTolnbuws32RTodyeefu0+4T5ghA5iXfEQ==
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+        id S1728516AbgANP0h (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 14 Jan 2020 10:26:37 -0500
+Received: from mail-lf1-f68.google.com ([209.85.167.68]:35554 "EHLO
+        mail-lf1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726335AbgANP0h (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 14 Jan 2020 10:26:37 -0500
+Received: by mail-lf1-f68.google.com with SMTP id 15so10152797lfr.2
+        for <netdev@vger.kernel.org>; Tue, 14 Jan 2020 07:26:35 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=tgGCroEitzw9p32ODqoZdnIHofH0Pn9M8DzK2/Ed3lI=;
+        b=r9+Dy3hB/VWuf7M/+Xh0/U+KIkyp4FnX/eTUI3FPcO2bqMqjYWFka0Zc4kUuuuOX2Z
+         1FhN9KorNKsx83VH5t9Wm9m9+JJILRTDGZQr/Xq/v0Kj5DzVxgS69VFocEpJ242gHGMi
+         lh4IayYsytnCU3YOnuPRGvIotWVh4I2A0QsTeqk4afSYneTuNQsTDvTpvSEuzWgSYo42
+         jSk7Tz0QqTKxN5yAJzmSHHWHzW8LyWp6+5SuSt10Maw2h9MZ+LhDdhQPvMFsOfYPIqFN
+         XzvcTgf2SjEltIxpAndoFnQHUHm3EuBfEQRVAitG1R3jvnbba3WHOg3/jBKs5GCgArY4
+         vZRw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=tgGCroEitzw9p32ODqoZdnIHofH0Pn9M8DzK2/Ed3lI=;
+        b=K7JUvJH64FIAMyTAn201p2gGECsw7LrpPbn399g3Liv0w76XV95gzNZZq8oNij3Xfg
+         7NoCinf8jBP9XZJGra2GvMRTfjKKvg0a/Uw27a3n55Qt8uHBJgoxkKJAKspr0qYfh67u
+         xpVy3hhUviTeGEkyvKrs9b9N7TL9t2/fipMEAMBcvQIMnB1ZxzTvXsEiRhPjDs6RrRuy
+         I6mRq/uFwBBjcLczonwRf7nwMUllKqREs6QGDEPpeCjd8cImrmWGi/xsjgvm33oZvhDX
+         nnbYDOP1ytmMT9YySYntxrBQZGY714SDAqFsU/pGy2zdIRzuJLa873TUjoRGL2yRed0n
+         +WEg==
+X-Gm-Message-State: APjAAAU6upcNhIKW44LY7MhBAHQitJPtx6rn/PmxOdgZcRd34cWeynie
+        KDRr3KEDvOm6i2GpIJ0OpMAOIN9FqcQ0yQQ0gVS2MRkj
+X-Google-Smtp-Source: APXvYqzfFrBd5db0Z2y3SBwtZKybZdIQv6UayivHbwi3ir0jKdqF3N7kW9HfzTL6BXWgPr4FxKLBYFOqs/e0/BdEJus=
+X-Received: by 2002:a19:850a:: with SMTP id h10mr2022543lfd.89.1579015594765;
+ Tue, 14 Jan 2020 07:26:34 -0800 (PST)
 MIME-Version: 1.0
-X-MS-Exchange-CrossTenant-Network-Message-Id: 52789ce5-19ed-4c53-94f8-08d79905e603
-X-MS-Exchange-CrossTenant-originalarrivaltime: 14 Jan 2020 15:24:50.7436
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 46c98d88-e344-4ed4-8496-4ed7712e255d
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: LhUjTCYmlak01D4e2j6q4LcBHCt5TRKluZZVmEErwAzSdXVXfHx9mCMTCNoaxf/UIYZspZfw7ZGvV4LrdqMMew==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM6PR11MB2587
-X-OriginatorOrg: intel.com
+References: <20200111163655.4087-1-ap420073@gmail.com> <20200112061937.171f6d88@cakuba>
+In-Reply-To: <20200112061937.171f6d88@cakuba>
+From:   Taehee Yoo <ap420073@gmail.com>
+Date:   Wed, 15 Jan 2020 00:26:22 +0900
+Message-ID: <CAMArcTUx46w35JPhw5hvnKW+g9z9Lqrv7u1DsnKOeWnvFaAsxg@mail.gmail.com>
+Subject: Re: [PATCH net 1/5] netdevsim: fix a race condition in netdevsim operations
+To:     Jakub Kicinski <jakub.kicinski@netronome.com>
+Cc:     David Miller <davem@davemloft.net>,
+        Netdev <netdev@vger.kernel.org>, Jiri Pirko <jiri@resnulli.us>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> > Fix MACRO function define for TX and RX user priority queue steering
-> > for register masking and shifting.
->=20
-> I think this was already fixed as seen on:
-> - https://git.kernel.org/pub/scm/linux/kernel/git/netdev/net-
-> next.git/commit/?id=3De8df7e8c233a18d2704e37ecff47583b494789d3
->=20
-> Did I forget something ?
-This issue is indeed already fixed by the patch that you have pointed out.
-Weifeng=20
+On Sun, 12 Jan 2020 at 23:19, Jakub Kicinski
+<jakub.kicinski@netronome.com> wrote:
+>
+
+Hi Jakub,
+Thank you for your review!
+
+> On Sat, 11 Jan 2020 16:36:55 +0000, Taehee Yoo wrote:
+> > netdevsim basic operations are called with sysfs.
+> >
+> > Create netdevsim device:
+> > echo "1 1" > /sys/bus/netdevsim/new_device
+> > Delete netdevsim device:
+> > echo 1 > /sys/bus/netdevsim/del_device
+> > Create netdevsim port:
+> > echo 4 > /sys/devices/netdevsim1/new_port
+> > Delete netdevsim port:
+> > echo 4 > /sys/devices/netdevsim1/del_port
+> > Set sriov number:
+> > echo 4 > /sys/devices/netdevsim1/sriov_numvfs
+> >
+> > These operations use the same resource so they should acquire a lock for
+> > the whole resource not only for a list.
+> >
+> > Test commands:
+> >     #SHELL1
+> >     modprobe netdevsim
+> >     while :
+> >     do
+> >         echo "1 1" > /sys/bus/netdevsim/new_device
+> >         echo "1 1" > /sys/bus/netdevsim/del_device
+> >     done
+> >
+> >     #SHELL2
+> >     while :
+> >     do
+> >         echo 1 > /sys/devices/netdevsim1/new_port
+> >         echo 1 > /sys/devices/netdevsim1/del_port
+> >     done
+> >
+> > Splat looks like:
+> > [  151.623634][ T1165] kasan: CONFIG_KASAN_INLINE enabled
+> > [  151.626503][ T1165] kasan: GPF could be caused by NULL-ptr deref or user memory access
+>
+>
+> > In this patch, __init and __exit function also acquire a lock.
+> > operations could be called while __init and __exit functions are
+> > processing. If so, uninitialized or freed resources could be used.
+> > So, __init() and __exit function also need lock.
+> >
+> > Fixes: 83c9e13aa39a ("netdevsim: add software driver for testing offloads")
+>
+> I don't think that's the correct Fixes tag, the first version of the
+> driver did not use the sysfs interface.
+>
+
+I checked up the Fixes tag. you're right, this Fixes tag is not correct.
+I will fix this.
+
+> > Signed-off-by: Taehee Yoo <ap420073@gmail.com>
+>
+> > --- a/drivers/net/netdevsim/bus.c
+> > +++ b/drivers/net/netdevsim/bus.c
+> > @@ -16,7 +16,8 @@
+> >
+> >  static DEFINE_IDA(nsim_bus_dev_ids);
+> >  static LIST_HEAD(nsim_bus_dev_list);
+> > -static DEFINE_MUTEX(nsim_bus_dev_list_lock);
+> > +/* mutex lock for netdevsim operations */
+> > +DEFINE_MUTEX(nsim_bus_dev_ops_lock);
+> >
+> >  static struct nsim_bus_dev *to_nsim_bus_dev(struct device *dev)
+> >  {
+> > @@ -51,9 +52,14 @@ nsim_bus_dev_numvfs_store(struct device *dev, struct device_attribute *attr,
+>
+> Could the vf handling use the device lock like PCI does?
+>
+> But actually, we free VF info from the release function, which IIUC is
+> called after all references to the device are gone. So this should be
+> fine, no?
+>
+
+I have tested this patch without locking in the
+nsim_bus_dev_numvfs_store(). It worked well.
+The freeing and allocating routines are protected by RTNL.
+As you said, the ->release() routine, which frees vconfig is protected by
+reference count. So, It's safe.
+I will drop this at a v2 patch.
+
+> Perhaps the entire bus dev structure should be freed from release?
+>
+
+I tested this like this.
+
+@@ -146,6 +161,8 @@ static void nsim_bus_dev_release(struct device *dev)
+        struct nsim_bus_dev *nsim_bus_dev = to_nsim_bus_dev(dev);
+
+        nsim_bus_dev_vfs_disable(nsim_bus_dev);
++       ida_free(&nsim_bus_dev_ids, nsim_bus_dev->dev.id);
++       kfree(nsim_bus_dev);
+ }
+@@ -300,8 +320,6 @@ nsim_bus_dev_new(unsigned int id, unsigned int port_count)
+ static void nsim_bus_dev_del(struct nsim_bus_dev *nsim_bus_dev)
+ {
+        device_unregister(&nsim_bus_dev->dev);
+-       ida_free(&nsim_bus_dev_ids, nsim_bus_dev->dev.id);
+-       kfree(nsim_bus_dev);
+ }
+
+It works well. but I'm not sure this is needed.
+
+> >       unsigned int num_vfs;
+> >       int ret;
+> >
+> > +     if (!mutex_trylock(&nsim_bus_dev_ops_lock))
+> > +             return -EBUSY;
+>
+> Why the trylocks? Are you trying to catch the races between unregister
+> and other ops?
+>
+
+The reason is to avoid deadlock.
+If we use mutex_lock() instead of mutex_trylock(), the below message
+will be printed and actual deadlock also appeared.
+
+[  426.879562][  T805] WARNING: possible circular locking dependency detected
+[  426.880477][  T805] 5.5.0-rc5+ #280 Not tainted
+[  426.881080][  T805] ------------------------------------------------------
+[  426.882035][  T805] bash/805 is trying to acquire lock:
+[  426.882826][  T805] ffffffffc03b7830 (nsim_bus_dev_ops_lock){+.+.},
+at: del_port_store+0x68/0xe0 [netdevsim]
+[  426.884159][  T805]
+[  426.884159][  T805] but task is already holding lock:
+[  426.885061][  T805] ffff88805edb54b0 (kn->count#170){++++}, at:
+kernfs_fop_write+0x1f2/0x410
+[  426.886130][  T805]
+[  426.886130][  T805] which lock already depends on the new lock.
+[  426.886130][  T805]
+[  426.887492][  T805]
+[  426.887492][  T805] the existing dependency chain (in reverse order) is:
+[  426.888606][  T805]
+[  426.888606][  T805] -> #1 (kn->count#170){++++}:
+[  426.889749][  T805]        __kernfs_remove+0x612/0x7f0
+[  426.890392][  T805]        kernfs_remove_by_name_ns+0x40/0x80
+[  426.891342][  T805]        remove_files.isra.1+0x6c/0x170
+[  426.892359][  T805]        sysfs_remove_group+0x9b/0x170
+[  426.893414][  T805]        sysfs_remove_groups+0x4f/0x90
+[  426.894405][  T805]        device_remove_attrs+0xc9/0x130
+[  426.895198][  T805]        device_del+0x413/0xc10
+[  426.895798][  T805]        device_unregister+0x16/0xa0
+[  426.896457][  T805]        del_device_store+0x288/0x3c0 [netdevsim]
+[  426.897250][  T805]        kernfs_fop_write+0x276/0x410
+[  426.897915][  T805]        vfs_write+0x197/0x4a0
+[  426.898506][  T805]        ksys_write+0x141/0x1d0
+[  426.899111][  T805]        do_syscall_64+0x99/0x4f0
+[  426.899738][  T805]        entry_SYSCALL_64_after_hwframe+0x49/0xbe
+[  426.900557][  T805]
+[  426.900557][  T805] -> #0 (nsim_bus_dev_ops_lock){+.+.}:
+[  426.901425][  T805]        __lock_acquire+0x2d8d/0x3de0
+[  426.902023][  T805]        lock_acquire+0x164/0x3b0
+[  426.902586][  T805]        __mutex_lock+0x14d/0x14b0
+[  426.903166][  T805]        del_port_store+0x68/0xe0 [netdevsim]
+[  426.903840][  T805]        kernfs_fop_write+0x276/0x410
+[  426.904430][  T805]        vfs_write+0x197/0x4a0
+[  426.904952][  T805]        ksys_write+0x141/0x1d0
+[  426.905481][  T805]        do_syscall_64+0x99/0x4f0
+[  426.906032][  T805]        entry_SYSCALL_64_after_hwframe+0x49/0xbe
+[  426.906745][  T805]
+[  426.906745][  T805] other info that might help us debug this:
+[  426.906745][  T805]
+[  426.907883][  T805]  Possible unsafe locking scenario:
+[  426.907883][  T805]
+[  426.908715][  T805]        CPU0                    CPU1
+[  426.909312][  T805]        ----                    ----
+[  426.909902][  T805]   lock(kn->count#170);
+[  426.910372][  T805]
+lock(nsim_bus_dev_ops_lock);
+[  426.911277][  T805]                                lock(kn->count#170);
+[  426.912032][  T805]   lock(nsim_bus_dev_ops_lock);
+[  426.912581][  T805]
+[  426.912581][  T805]  *** DEADLOCK ***
+[  426.912581][  T805]
+[  426.913495][  T805] 3 locks held by bash/805:
+[  426.913998][  T805]  #0: ffff88806547c478 (sb_writers#5){.+.+}, at:
+vfs_write+0x3bb/0x4a0
+[  426.914944][  T805]  #1: ffff88805ff55c90 (&of->mutex){+.+.}, at:
+kernfs_fop_write+0x1cf/0x410
+[  426.915928][  T805]  #2: ffff88805edb54b0 (kn->count#170){++++},
+at: kernfs_fop_write+0x1f2/0x410
+[  426.916957][  T805]
+[  426.916957][  T805] stack backtrace:
+[  426.917614][  T805] CPU: 1 PID: 805 Comm: bash Not tainted 5.5.0-rc5+ #280
+[  426.918398][  T805] Hardware name: innotek GmbH
+VirtualBox/VirtualBox, BIOS VirtualBox 12/01/2006
+[  426.919408][  T805] Call Trace:
+[  426.919804][  T805]  dump_stack+0x96/0xdb
+[  426.920263][  T805]  check_noncircular+0x371/0x450
+[  426.920813][  T805]  ? print_circular_bug.isra.36+0x310/0x310
+[  426.921475][  T805]  ? lock_acquire+0x164/0x3b0
+[  426.921993][  T805]  ? hlock_class+0x130/0x130
+[  426.922502][  T805]  ? __lock_acquire+0x2d8d/0x3de0
+[  426.923158][  T805]  __lock_acquire+0x2d8d/0x3de0
+[  426.923692][  T805]  ? register_lock_class+0x14d0/0x14d0
+[  426.924282][  T805]  lock_acquire+0x164/0x3b0
+[  426.924784][  T805]  ? del_port_store+0x68/0xe0 [netdevsim]
+[  426.925415][  T805]  __mutex_lock+0x14d/0x14b0
+[  426.925925][  T805]  ? del_port_store+0x68/0xe0 [netdevsim]
+[  426.926551][  T805]  ? __lock_acquire+0xdfe/0x3de0
+[  426.927108][  T805]  ? del_port_store+0x68/0xe0 [netdevsim]
+[  426.927740][  T805]  ? mutex_lock_io_nested+0x1380/0x1380
+[  426.928349][  T805]  ? register_lock_class+0x14d0/0x14d0
+[  426.928947][  T805]  ? check_chain_key+0x236/0x5d0
+[  426.929490][  T805]  ? kernfs_fop_write+0x1cf/0x410
+[  426.930042][  T805]  ? lock_acquire+0x164/0x3b0
+[  426.930558][  T805]  ? kernfs_fop_write+0x1f2/0x410
+[  426.931123][  T805]  ? del_port_store+0x68/0xe0 [netdevsim]
+[  426.931761][  T805]  del_port_store+0x68/0xe0 [netdevsim]
+[  426.932389][  T805]  ? nsim_bus_dev_release+0x100/0x100 [netdevsim]
+[  426.933097][  T805]  ? sysfs_file_ops+0x112/0x160
+[  426.933630][  T805]  ? sysfs_kf_write+0x3b/0x180
+[  426.934152][  T805]  ? sysfs_file_ops+0x160/0x160
+[  426.934683][  T805]  kernfs_fop_write+0x276/0x410
+[  426.935226][  T805]  ? __sb_start_write+0x215/0x2e0
+[  426.935780][  T805]  vfs_write+0x197/0x4a0
+
+Locking ordering of {new/del}_device() and {new/del}_port is different.
+So, a deadlock could occur.
+
+Thank you,
+Taehee Yoo
