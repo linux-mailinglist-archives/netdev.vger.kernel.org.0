@@ -2,94 +2,84 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 1E98613A245
-	for <lists+netdev@lfdr.de>; Tue, 14 Jan 2020 08:51:57 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E5FAE13A265
+	for <lists+netdev@lfdr.de>; Tue, 14 Jan 2020 08:58:31 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728682AbgANHvz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 14 Jan 2020 02:51:55 -0500
-Received: from mail-qt1-f194.google.com ([209.85.160.194]:40812 "EHLO
-        mail-qt1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725956AbgANHvz (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 14 Jan 2020 02:51:55 -0500
-Received: by mail-qt1-f194.google.com with SMTP id v25so11670673qto.7
-        for <netdev@vger.kernel.org>; Mon, 13 Jan 2020 23:51:54 -0800 (PST)
+        id S1729021AbgANH5w (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 14 Jan 2020 02:57:52 -0500
+Received: from mail-pg1-f196.google.com ([209.85.215.196]:46006 "EHLO
+        mail-pg1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728734AbgANH5w (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 14 Jan 2020 02:57:52 -0500
+Received: by mail-pg1-f196.google.com with SMTP id b9so5994708pgk.12
+        for <netdev@vger.kernel.org>; Mon, 13 Jan 2020 23:57:52 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=rhT+e3kmyPDqgmQXDlJ4XsnZWAFBKtN4akZdNapdz4g=;
-        b=WZsk/3S904U6Amhzam+HkGVGpD9ofxhA0809RiDrT4fVh1PaMXFYcK96PQcfeyPXZl
-         FlPKJH9jlqc5Ygh1B+1E3BbPSYyZiE9w4na87cGBZfI0kChGFZNae2WE61YWxiuqQeTN
-         zuAGmr5K/3zvgCUsMOh1QPxfKAKIsTYj2kOwg=
+        d=linaro.org; s=google;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=rz+1A6+K1PzsFBhkTCJB1epd9yg/lbQ9jkVOeEMF3bA=;
+        b=WKA2xbKplXk9+U7EVxjiEyxOePWsDur8y5OxbhG24UzYTyjn21JVwDI7za+TbhHpCA
+         9sTjB/ChIBgk58fBPHQlYPNcPR+57/DL+El+VZh7Pj9g1yfYeyOrjaSc33kprfivRP/5
+         bHsILXH0OY36TRX1ksCc1uJCWmztzEcfsIReKXgXSsW416Fd8tMGT47A3lWRO3okLQCi
+         32qQ5U9B65L6v5m99XvGZkayHtl1IjMWHHCCAj2TVbmY2hwDlDj4SXrO4eVDWixDYXCd
+         Y5K9rtt7+4Es5tFomqL0ZOwfU8HvgvunKNKKs7z5uUrSA5XgyuCr/LdpjcQBjbDQzhZY
+         3T+Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=rhT+e3kmyPDqgmQXDlJ4XsnZWAFBKtN4akZdNapdz4g=;
-        b=RHMBwM5v6vv3X5eOVIuOeChkBsP11ZRAbX9SFEkyI+duj7VCZ7ecDkms619O5EWsDk
-         VeZecAVxDXywg0g3tqjZx1V2eJHGpAPReV/GeMNjrat7D0vKFNPjXYoPXNa6F9FNxc1z
-         a2DuhZfcLZk2s7VFu1F5d/aj+OR23yH+gp0AIC0QZKMI1fxH7NepmNHtVYlKlXVuFrVL
-         QwhmjSEFsXZ3XyXCi8nY9CYdhx5HI5HqayDNj0KZhFaAi+jYd7HYrAxwtu4gKVg2LzsY
-         OsPcZXXgjbECR3G5aF/TeJhhnFugOQTdry/6ioJ2gXmMNhY9WvskFigDOOmjxQ7kTKuG
-         M07w==
-X-Gm-Message-State: APjAAAUub7DCAw/zZbkBZJJlUzFep3amr4SbdVZ3HcXbp/SHqnzUqKrE
-        SG6bcw3xa2WaWpexRjR5YoA/nqn1VQp8fk5eGx2/fQ==
-X-Google-Smtp-Source: APXvYqwhQYF/GKLD9HKWK24cEOdmxhckIK4Lacr+f3TBQEpZsO2ajEnxpItfNVrVcpPo1oY6aK0PPcZ8WZLG9FomFVA=
-X-Received: by 2002:aed:29e1:: with SMTP id o88mr2577201qtd.182.1578988313958;
- Mon, 13 Jan 2020 23:51:53 -0800 (PST)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=rz+1A6+K1PzsFBhkTCJB1epd9yg/lbQ9jkVOeEMF3bA=;
+        b=PPb0g1RWqKH3hVelmHi4piXabKCrCtOQ4mujlIV5aOWwtuZUz3WuHbmwTp4DjlQwtZ
+         45iECBThgo30wwa3x+LMwg34LnP/UN228kX039WqlRGqknX1HAYh1reVPyrTk/p1IsW9
+         PJFHlCDCftJevWINdeFzU9n5yHJqiOBPPUaL/A8APYAfyPtGfCiGiEbQ35+8YoWEzvpX
+         kiwa3QOqeVNl+9TsjhOP6BC3Wl8ohqAtteGEN4Uxa31Ld+sZKqvobF5xEDwXU6tV2b/q
+         JbR62r6XI2IBvzCQEA3lUTRMF2VaTF8wT+V2xUTQh5olOq5efkNrem+qMoJAZ7qqPHeN
+         2wrQ==
+X-Gm-Message-State: APjAAAXzA1pvfuXbvx3lNiDg2s29Shsp9qZHCQV4lPLxyyaalDpYW3y+
+        rAXFvNVNtWQXNXQckgFN21lVsw==
+X-Google-Smtp-Source: APXvYqz4KBxXvA7TWAR4lzvTyYHOkRgwFmEqymwdpHQNTuw/iJJ6d9qIPbQ4s+AGZcJ4Uv2xErwBaQ==
+X-Received: by 2002:a62:87c5:: with SMTP id i188mr24018264pfe.52.1578988671689;
+        Mon, 13 Jan 2020 23:57:51 -0800 (PST)
+Received: from localhost.localdomain (104-188-17-28.lightspeed.sndgca.sbcglobal.net. [104.188.17.28])
+        by smtp.gmail.com with ESMTPSA id q63sm17349352pfb.149.2020.01.13.23.57.50
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 13 Jan 2020 23:57:51 -0800 (PST)
+From:   Bjorn Andersson <bjorn.andersson@linaro.org>
+To:     "David S. Miller" <davem@davemloft.net>
+Cc:     Arun Kumar Neelakantam <aneela@codeaurora.org>,
+        Chris Lew <clew@codeaurora.org>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-arm-msm@vger.kernel.org
+Subject: [PATCH v4 0/5] QRTR flow control improvements
+Date:   Mon, 13 Jan 2020 23:56:58 -0800
+Message-Id: <20200114075703.2145718-1-bjorn.andersson@linaro.org>
+X-Mailer: git-send-email 2.24.0
 MIME-Version: 1.0
-References: <20200114044127.20085-1-kai.heng.feng@canonical.com>
-In-Reply-To: <20200114044127.20085-1-kai.heng.feng@canonical.com>
-From:   Prashant Malani <pmalani@chromium.org>
-Date:   Mon, 13 Jan 2020 23:51:42 -0800
-Message-ID: <CACeCKacQpDsptRi6AZhuFYg2c87-bW0KS6vy=CacB8+j+6YBXA@mail.gmail.com>
-Subject: Re: [PATCH] r8152: Add MAC passthrough support to new device
-To:     Kai-Heng Feng <kai.heng.feng@canonical.com>
-Cc:     David Miller <davem@davemloft.net>,
-        Hayes Wang <hayeswang@realtek.com>,
-        Jakub Kicinski <jakub.kicinski@netronome.com>,
-        Grant Grundler <grundler@chromium.org>,
-        Mario Limonciello <mario.limonciello@dell.com>,
-        David Chen <david.chen7@dell.com>,
-        "open list:USB NETWORKING DRIVERS" <linux-usb@vger.kernel.org>,
-        "open list:NETWORKING DRIVERS" <netdev@vger.kernel.org>,
-        open list <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Jan 13, 2020 at 8:41 PM Kai-Heng Feng
-<kai.heng.feng@canonical.com> wrote:
->
-> Device 0xa387 also supports MAC passthrough, therefore add it to the
-> whitelst.
->
-> BugLink: https://bugs.launchpad.net/bugs/1827961/comments/30
-> Signed-off-by: Kai-Heng Feng <kai.heng.feng@canonical.com>
-> ---
->  drivers/net/usb/r8152.c | 3 ++-
->  1 file changed, 2 insertions(+), 1 deletion(-)
->
-> diff --git a/drivers/net/usb/r8152.c b/drivers/net/usb/r8152.c
-> index c5ebf35d2488..42dcf1442cc0 100644
-> --- a/drivers/net/usb/r8152.c
-> +++ b/drivers/net/usb/r8152.c
-> @@ -6657,7 +6657,8 @@ static int rtl8152_probe(struct usb_interface *intf,
->         }
->
->         if (le16_to_cpu(udev->descriptor.idVendor) == VENDOR_ID_LENOVO &&
-> -           le16_to_cpu(udev->descriptor.idProduct) == 0x3082)
-> +           (le16_to_cpu(udev->descriptor.idProduct) == 0x3082 ||
-> +            le16_to_cpu(udev->descriptor.idProduct) == 0xa387))
-Perhaps we can try to use #define's for these vendor IDs (like
-https://github.com/torvalds/linux/blob/master/drivers/net/usb/r8152.c#L680)
-?
+In order to prevent overconsumption of resources on the remote side QRTR
+implements a flow control mechanism.
 
->                 set_bit(LENOVO_MACPASSTHRU, &tp->flags);
->
->         if (le16_to_cpu(udev->descriptor.bcdDevice) == 0x3011 && udev->serial &&
-> --
-> 2.17.1
->
+Move the handling of the incoming confirm_rx to the receiving process to
+ensure incoming flow is controlled. Then implement outgoing flow
+control, using the recommended algorithm of counting outstanding
+non-confirmed messages and blocking when hitting a limit. The last three
+patches refactors the node assignment and port lookup, in order to
+remove the worker in the receive path.
+
+Bjorn Andersson (5):
+  net: qrtr: Move resume-tx transmission to recvmsg
+  net: qrtr: Implement outgoing flow control
+  net: qrtr: Migrate node lookup tree to spinlock
+  net: qrtr: Make qrtr_port_lookup() use RCU
+  net: qrtr: Remove receive worker
+
+ net/qrtr/qrtr.c | 319 +++++++++++++++++++++++++++++++++++++-----------
+ 1 file changed, 247 insertions(+), 72 deletions(-)
+
+-- 
+2.24.0
+
