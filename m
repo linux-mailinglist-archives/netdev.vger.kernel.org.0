@@ -2,223 +2,98 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 809F213B3CA
-	for <lists+netdev@lfdr.de>; Tue, 14 Jan 2020 21:46:12 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 09BF513B3E4
+	for <lists+netdev@lfdr.de>; Tue, 14 Jan 2020 22:00:42 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728748AbgANUqK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 14 Jan 2020 15:46:10 -0500
-Received: from mail-eopbgr150081.outbound.protection.outlook.com ([40.107.15.81]:20951
-        "EHLO EUR01-DB5-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1727102AbgANUqK (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 14 Jan 2020 15:46:10 -0500
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=OAUWTQEHswKFaYsq/TKvV8n5MppXkV41BjdOkuOrSV8wqaaSJueS8DS8E6XWQUfa7XOfN/3ajFVk+CLtcV7nlbdlmHxJvELMJm1Fqm+d/IWe1NqZwnpcDgsaoLhgx/Pn/euCeUmA9GV/QjhroAGOYi+5/UFxqTTyZwI8enfIBJByGDqTq9PaZUGVyh6s8VMNWSidsVKytKr8QUUvhWIy3Wc1qYjWzDEcW7slg1RbcTNXfshfI/2zeULItWKPgqZnkL/Us+gVGhHn8h2Wb1IImP79pHnO23Qwg4yBGWRWtxp2AOKKzFfEEFP4CBkIFMMA9qLz+Y8pzQnMHh4VavZ34w==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=5aWy1iBDZDkRXv0Z01F9gcCJl9GHqRE0L/LMuToMWGs=;
- b=XxYyHPOco9c9J2wguyM1fkNKS4LarhBp6RAAXay+8yL0z+KUAmsUEsEmbRp5cI/btNboTNAFza8wo3mQl12Npxy5jJWgPUFYBOAuHk4pqvAL/OoTsRNXGpXRwVmZPVR0Zsa2gRYugjko8yQK2nX/+4rtuvGPKW/UClND2XB7N+8TYkeXZcFFmw713FAIjIaKQYyXYzIbA/u5EdRA54PeAWbwOmGG9iilurOepqCKzUBV4IkhG3juMoDXePNAcpyvgIaCCY4QwTdluObSBypoJhmWMDoM/LzEoWcwikf1lTn1DIGpMU/Eb7ssgs8+8wmQcWg7o94V/GzQ1iFoYQ6C1A==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=mellanox.com; dmarc=pass action=none header.from=mellanox.com;
- dkim=pass header.d=mellanox.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Mellanox.com;
- s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=5aWy1iBDZDkRXv0Z01F9gcCJl9GHqRE0L/LMuToMWGs=;
- b=JrJadIXOnue2qvJBTpnI3LTBYNN66/zwig6CVlI7PW4E916qE+zPvHiPdQUMsvZU1I67Vn3JxfcwtoU09a78dhTxcKXy40vvJuT2rv9Pep6V6Csp1C/pUR5fTTKxVjp3dMhvUPP13ycwNFPKIafAFwk47KcIcIdo5rJBLvHhXqI=
-Received: from VI1PR05MB5102.eurprd05.prod.outlook.com (20.177.51.151) by
- VI1PR05MB3390.eurprd05.prod.outlook.com (10.175.243.146) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.2623.13; Tue, 14 Jan 2020 20:46:04 +0000
-Received: from VI1PR05MB5102.eurprd05.prod.outlook.com
- ([fe80::d830:96fc:e928:c096]) by VI1PR05MB5102.eurprd05.prod.outlook.com
- ([fe80::d830:96fc:e928:c096%6]) with mapi id 15.20.2623.017; Tue, 14 Jan 2020
- 20:46:04 +0000
-From:   Saeed Mahameed <saeedm@mellanox.com>
-To:     "wenxu@ucloud.cn" <wenxu@ucloud.cn>, Roi Dayan <roid@mellanox.com>,
-        Mark Bloch <markb@mellanox.com>,
-        Paul Blakey <paulb@mellanox.com>,
-        Vlad Buslov <vladbu@mellanox.com>
-CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-Subject: Re: [PATCH net-next v2] net/mlx5e: Add mlx5e_flower_parse_meta
- support
-Thread-Topic: [PATCH net-next v2] net/mlx5e: Add mlx5e_flower_parse_meta
- support
-Thread-Index: AQHVxTsc0R/oby9wVku6xKhcy3y5W6fqrMyA
-Date:   Tue, 14 Jan 2020 20:46:04 +0000
-Message-ID: <c4d6fe12986bd2b21faf831eb76f0f472ef903d1.camel@mellanox.com>
-References: <1578388566-27310-1-git-send-email-wenxu@ucloud.cn>
-In-Reply-To: <1578388566-27310-1-git-send-email-wenxu@ucloud.cn>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-user-agent: Evolution 3.34.2 (3.34.2-1.fc31) 
-authentication-results: spf=none (sender IP is )
- smtp.mailfrom=saeedm@mellanox.com; 
-x-originating-ip: [209.116.155.178]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-ht: Tenant
-x-ms-office365-filtering-correlation-id: f6144094-56b4-4c20-c3fe-08d79932c5da
-x-ms-traffictypediagnostic: VI1PR05MB3390:|VI1PR05MB3390:
-x-ms-exchange-transport-forked: True
-x-microsoft-antispam-prvs: <VI1PR05MB33902869076DEEA5E34A8B17BE340@VI1PR05MB3390.eurprd05.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:10000;
-x-forefront-prvs: 028256169F
-x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(4636009)(396003)(136003)(366004)(376002)(346002)(39860400002)(189003)(199004)(71200400001)(316002)(6486002)(8936002)(36756003)(5660300002)(2616005)(26005)(186003)(966005)(6636002)(6506007)(2906002)(478600001)(110136005)(4326008)(86362001)(81156014)(81166006)(6512007)(91956017)(76116006)(8676002)(66946007)(66476007)(66556008)(64756008)(66446008);DIR:OUT;SFP:1101;SCL:1;SRVR:VI1PR05MB3390;H:VI1PR05MB5102.eurprd05.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;MX:1;A:1;
-received-spf: None (protection.outlook.com: mellanox.com does not designate
- permitted sender hosts)
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: SoGPcDD5Uv4T2gF3xdl7GffJs8Tndk9mJ/cghmLtsElOLGm7X7+1ISdBzVCHfUGDAfoiGlq4kFMUun6bLLFYLNfnWyaFgpBinXpMrqd1ByFy5T69tsXQDy4v8/5SE1EPK4ayreaRhb3RsLAPMg97iNgt2nPw363RkZWbL1LRubH5xa/a3OfvABiGUj3JxLJPVqkX9nuRQKm7blT9HjpsK4CGUVSuiv95tP78pgupnTFpPtBFOm4P5yMjlNsQb9+U0r3/BSMsGT0wH6f2TWA5fIdgSQBPQL/ep43xJy0pma0Uk9Q4fKr2aypltVJOv7TLNil594jHjw+iiWsVX974luQTIFtS4Im0Y7U3JwWN//idnQSE+e6UhnpDVfA9/cnZTju0JE0R9RnOuCdTcFOvzUCw9eIFIlGGpZU609XGPbqDf3YbsC6nvYCA5aASOgbB4hC3dXBcWYzP29OYzgBj736LUGTUsHOSUhWOPvF3ip6fS5Ba7YDI+9DDjAKoEX8G4o3y5pZmeNPxcAaqGZn2cw==
-Content-Type: text/plain; charset="utf-8"
-Content-ID: <50BDF3AB6A22964FB5D56B8EDED95388@eurprd05.prod.outlook.com>
-Content-Transfer-Encoding: base64
-MIME-Version: 1.0
-X-OriginatorOrg: Mellanox.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: f6144094-56b4-4c20-c3fe-08d79932c5da
-X-MS-Exchange-CrossTenant-originalarrivaltime: 14 Jan 2020 20:46:04.0439
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: a652971c-7d2e-4d9b-a6a4-d149256f461b
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: o0mAcpNn2zwxf89s0O3dsYiPifKRhFCvdY1WVjAMwW1qYSwHJLormxOWxJ74Nuflyg8uEf6qsg4UsrssPXUIhQ==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR05MB3390
+        id S1728765AbgANVAk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 14 Jan 2020 16:00:40 -0500
+Received: from mail-qk1-f202.google.com ([209.85.222.202]:45724 "EHLO
+        mail-qk1-f202.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726491AbgANVAk (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 14 Jan 2020 16:00:40 -0500
+Received: by mail-qk1-f202.google.com with SMTP id 143so9188201qkg.12
+        for <netdev@vger.kernel.org>; Tue, 14 Jan 2020 13:00:39 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20161025;
+        h=date:message-id:mime-version:subject:from:to:cc;
+        bh=PuoqIYg2h4GAkf+klWzahAc5y/3k74tDlxUvlYyB17A=;
+        b=GRapa6W89Z+2pGH3/UTK2qE4+ht7YFjRBmRiaOLVNveT7vU3HWgI7zaqdw2DqgSdr+
+         qBh3xNvwWhWyIarkUiZPEqVabRha0o8rhlBFTIQk4L9mRvcggasSBjjEUCGuYm0GOQ3M
+         FS7yfeQlDAr7nbutPuUT2Y3+9e6dNszERJ8O4hr+4QBov6mDjK41a4DdU9sOYMVGdBTN
+         zb77zS8Zmmn8MlwOEjJmgUi+KXuHUrGq1xWR2+zV5sMS4l0IP9dtS2nduJh6uz3iqBRM
+         RfD0Se5fABvh91vDAkafokpdgNUOYdGzNbc6TSHuVzy3xQcSCg4wnHO/wh5oQKTctcJY
+         EZbA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:message-id:mime-version:subject:from:to:cc;
+        bh=PuoqIYg2h4GAkf+klWzahAc5y/3k74tDlxUvlYyB17A=;
+        b=qHaluxf2ei/sTVCLqt1XQOYIZWFyTOCuZ+M76Wy7e266TsT6ijijFdIKUP6vUI/VYB
+         v0PBYS1e2hewIysPvntFCUWMRhbHC98sBEVlluxXyH+bnFpHdrcfNCKmrGQ6TFYQD+fL
+         R6pncKf3lNSY3tLuGQRqzX+4PRVjVt5s26uZrhv9cwPLlyRDQmcMDNauv7wfNScvcOuf
+         1NalHJB1gQODrSPW7j+/6jsAyf98Cz3TNS7s4xDJvzzPu2IauEaYC1I5qMx1899tY64N
+         nFy2QY4jLlYHlovVVj0blfUIvjNHNv5aIoC/VaD7UwgtGtkKg4QmqsUx8K/vccRLbfk0
+         sUHQ==
+X-Gm-Message-State: APjAAAUv7g5tuxSM3jKHDHG1dy9Rx2UsBi7Cd64j8+ouw2Zgmrjqkfkp
+        XZ10r0VNAlNd96DT9b7LcfpyHXbj0zsxWQ==
+X-Google-Smtp-Source: APXvYqzqFx0MnT9SRvbO/YfNA3BgSyVXJ5XlZX0UCr6NL2bJkidROqseDKZOhAUN7BSNOc7DYVkXjKrL6j48DQ==
+X-Received: by 2002:ac8:4456:: with SMTP id m22mr490829qtn.362.1579035638818;
+ Tue, 14 Jan 2020 13:00:38 -0800 (PST)
+Date:   Tue, 14 Jan 2020 13:00:35 -0800
+Message-Id: <20200114210035.65042-1-edumazet@google.com>
+Mime-Version: 1.0
+X-Mailer: git-send-email 2.25.0.rc1.283.g88dfdc4193-goog
+Subject: [PATCH net] macvlan: use skb_reset_mac_header() in macvlan_queue_xmit()
+From:   Eric Dumazet <edumazet@google.com>
+To:     "David S . Miller" <davem@davemloft.net>
+Cc:     netdev <netdev@vger.kernel.org>,
+        Eric Dumazet <edumazet@google.com>,
+        Eric Dumazet <eric.dumazet@gmail.com>,
+        Jurgen Van Ham <juvanham@gmail.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-T24gVHVlLCAyMDIwLTAxLTA3IGF0IDE3OjE2ICswODAwLCB3ZW54dUB1Y2xvdWQuY24gd3JvdGU6
-DQo+IEZyb206IHdlbnh1IDx3ZW54dUB1Y2xvdWQuY24+DQo+IA0KPiBJbiB0aGUgZmxvd3RhYmxl
-cyBvZmZsb2FkIGFsbCB0aGUgZGV2aWNlcyBpbiB0aGUgZmxvd3RhYmxlcw0KPiBzaGFyZSB0aGUg
-c2FtZSBmbG93X2Jsb2NrLiBBbiBvZmZsb2FkIHJ1bGUgd2lsbCBiZSBpbnN0YWxsZWQgb24NCj4g
-YWxsIHRoZSBkZXZpY2VzLiBUaGlzIHNjZW5hcmlvIGlzIG5vdCBjb3JyZWN0Lg0KPiANCj4gSXQg
-aXMgbm8gcHJvYmxlbSBpZiB0aGVyZSBhcmUgb25seSB0d28gZGV2aWNlcyBpbiB0aGUgZmxvd3Rh
-YmxlLA0KPiBUaGUgcnVsZSB3aXRoIGluZ3Jlc3MgYW5kIGVncmVzcyBvbiB0aGUgc2FtZSBkZXZp
-Y2UgY2FuIGJlIHJlamVjdA0KPiBieSBkcml2ZXIuDQo+IA0KPiBCdXQgbW9yZSB0aGFuIHR3byBk
-ZXZpY2VzIGluIHRoZSBmbG93dGFibGUgd2lsbCBpbnN0YWxsIHRoZSB3cm9uZw0KPiBydWxlcyBv
-biBoYXJkd2FyZS4NCj4gDQo+IEZvciBleGFtcGxlOg0KPiBUaHJlZSBkZXZpY2VzIGluIGEgb2Zm
-bG9hZCBmbG93dGFibGVzOiBkZXZfYSwgZGV2X2IsIGRldl9jDQo+IA0KPiBBIHJ1bGUgaW5ncmVz
-cyBmcm9tIGRldl9hIGFuZCBlZ3Jlc3MgdG8gZGV2X2I6DQo+IFRoZSBydWxlIHdpbGwgaW5zdGFs
-bCBvbiBkZXZpY2UgZGV2X2EuDQo+IFRoZSBydWxlIHdpbGwgdHJ5IHRvIGluc3RhbGwgb24gZGV2
-X2IgYnV0IGZhaWxlZCBmb3IgaW5ncmVzcw0KPiBhbmQgZWdyZXNzIG9uIHRoZSBzYW1lIGRldmlj
-ZS4NCj4gVGhlIHJ1bGUgd2lsbCBpbnN0YWxsIG9uIGRldl9jLiBUaGlzIGlzIG5vdCBjb3JyZWN0
-Lg0KPiANCj4gVGhlIGZsb3d0YWJsZXMgb2ZmbG9hZCBhdm9pZCB0aGlzIGNhc2UgdGhyb3VnaCBy
-ZXN0cmljdGluZyB0aGUNCj4gaW5ncmVzcyBkZXYNCj4gd2l0aCBGTE9XX0RJU1NFQ1RPUl9LRVlf
-TUVUQSBhcyBmb2xsb3dpbmcgcGF0Y2guDQo+IGh0dHA6Ly9wYXRjaHdvcmsub3psYWJzLm9yZy9w
-YXRjaC8xMjE4MTA5Lw0KPiANCj4gU28gdGhlIG1seDVlIGRyaXZlciBhbHNvIHNob3VsZCBzdXBw
-b3J0IHRoZSBGTE9XX0RJU1NFQ1RPUl9LRVlfTUVUQQ0KPiBwYXJzZS4NCj4gDQo+IFNpZ25lZC1v
-ZmYtYnk6IHdlbnh1IDx3ZW54dUB1Y2xvdWQuY24+DQo+IC0tLQ0KPiB2MjogcmVtYXAgdGhlIHBh
-dGNoIGRlc2NyaXB0aW9uDQo+IA0KPiAgZHJpdmVycy9uZXQvZXRoZXJuZXQvbWVsbGFub3gvbWx4
-NS9jb3JlL2VuX3RjLmMgfCAzOQ0KPiArKysrKysrKysrKysrKysrKysrKysrKysrDQoNCkhpIFdl
-bnh1LA0KDQpBY2NvcmRpbmcgdG8gb3VyIHJlZ3Jlc3Npb24gVGVhbSwgVGhpcyBjb21taXQgaXMg
-YnJlYWtpbmcgdnhsYW4gb2ZmbG9hZA0KQ0MnZWQgUGF1bCwgUm9pIGFuZCBWbGFkLCB0aGV5IHdp
-bGwgYXNzaXN0IHlvdSBpZiB5b3UgbmVlZCBhbnkgaGVscC4NCg0KY2FuIHlvdSBwbGVhc2UgaW52
-ZXN0aWdhdGUgdGhlIGZvbGxvd2luZyBjYWxsIHRyYWNlID8NCg0KDQpbICAzNjMuNzg5ODA1XSAj
-IyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjDQogWyAgMzYzLjc5MTE1MF0gIyMg
-VEVTVCB0ZXN0LXZ4bGFuLXBvcnQtb2ZmbG9hZC5zaCAjIw0KIFsgIDM2My43OTI0OTldICMjIyMj
-IyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMNCiBbICAzNjQuOTE2ODYyXSA6dGVzdDog
-VGVzdCBhZGRpbmcgdnhsYW4gcnVsZSBhZnRlciBjcmVhdGluZyB2eGxhbg0KaW50ZXJmYWNlIGFu
-ZCByZWxvYWRpbmcgbW9kdWxlcw0KIFsgIDM2NC45MjY4NzddIDp0ZXN0OiAtIGNyZWF0ZSB2eGxh
-biBpbnRlcmZhY2UNCiBbICAzNjQuOTM4OTc2XSA6dGVzdDogLSByZWxvYWQgbW9kdWxlcw0KIFsg
-IDM2NS42ODk4MjVdIG1seDVfY29yZSAwMDAwOjAwOjA4LjMgZW5wMHM4ZjM6IExpbmsgZG93bg0K
-IFsgIDM2NS43OTAwNjNdIG1seDVfY29yZSAwMDAwOjAwOjA4LjIgZW5wMHM4ZjI6IExpbmsgZG93
-bg0KIFsgIDM2Ni4wNDAxNjddIG1seDVfY29yZSAwMDAwOjAwOjA4LjYgZW5wMHM4ZjY6IExpbmsg
-ZG93bg0KIFsgIDM3MC4zOTk3NzFdIG1seDVfY29yZSAwMDAwOjAwOjA4LjE6IEUtU3dpdGNoOiBE
-aXNhYmxlOg0KbW9kZShPRkZMT0FEUyksIG52ZnMoMSksIGFjdGl2ZSB2cG9ydHMoMikNCiBbICAz
-NzEuMDA2MDk3XSBtbHg1X2NvcmUgMDAwMDowMDowOC4xOiBFLVN3aXRjaDogY2xlYW51cA0KIFsg
-IDM3MS41ODExNzldIG1seDVfY29yZSAwMDAwOjAwOjA4LjE6IGRyaXZlciBsZWZ0IFNSLUlPViBl
-bmFibGVkDQphZnRlciByZW1vdmUNCiBbICAzNzEuNTg1MDIxXSBtbHg1X2NvcmUgMDAwMDowMDow
-OC4wOiBFLVN3aXRjaDogRGlzYWJsZToNCm1vZGUoT0ZGTE9BRFMpLCBudmZzKDMpLCBhY3RpdmUg
-dnBvcnRzKDQpDQogWyAgMzcxLjc0MzAyOV0NCj09PT09PT09PT09PT09PT09PT09PT09PT09PT09
-PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09DQo9PT09PT0NCiBbICAz
-NzEuNzQ2OTE3XSBCVUcgbWx4NV9mc19mdGVzIChOb3QgdGFpbnRlZCk6IE9iamVjdHMgcmVtYWlu
-aW5nIGluDQptbHg1X2ZzX2Z0ZXMgb24gX19rbWVtX2NhY2hlX3NodXRkb3duKCkNCiBbICAzNzEu
-NzUxMjY1XSAtLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0t
-LS0tLQ0KLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tDQogWyAgMzcxLjc1MTI2NV0gDQogWyAgMzcx
-Ljc1NDY2Ml0gRGlzYWJsaW5nIGxvY2sgZGVidWdnaW5nIGR1ZSB0byBrZXJuZWwgdGFpbnQNCiBb
-ICAzNzEuNzU1NjcyXSBJTkZPOiBTbGFiIDB4MDAwMDAwMDBjM2ZjNDI0ZSBvYmplY3RzPTI3IHVz
-ZWQ9MQ0KZnA9MHgwMDAwMDAwMGI3MTFjYmRmIGZsYWdzPTB4ODAwMDAwMDAwMDAxMDIwMA0KIFsg
-IDM3MS43NTc1MjNdIENQVTogMCBQSUQ6IDEzMTEyIENvbW06IG1vZHByb2JlIFRhaW50ZWQ6DQpH
-ICAgIEIgICAgICAgICAgICAgNS41LjAtcmM0LUo4NTUzLUc4YjI2MTMwN2E4YjAgIzENCiBbICAz
-NzEuNzU5NDU4XSBIYXJkd2FyZSBuYW1lOiBRRU1VIFN0YW5kYXJkIFBDIChRMzUgKyBJQ0g5LCAy
-MDA5KSwNCkJJT1MgcmVsLTEuMTIuMS0wLWdhNWNhYjU4ZTlhM2YtcHJlYnVpbHQucWVtdS5vcmcg
-MDQvMDEvMjAxNA0KIFsgIDM3MS43NjE2OTJdIENhbGwgVHJhY2U6DQogWyAgMzcxLjc2MjM3OF0g
-IGR1bXBfc3RhY2srMHg1MC8weDcwDQogWyAgMzcxLjc2MzE2OF0gIHNsYWJfZXJyKzB4YjcvMHhk
-Yw0KIFsgIDM3MS43NjM5MzZdICA/IHNsdWJfY3B1X2RlYWQrMHgxMC8weGEwDQogWyAgMzcxLjc2
-NDg3M10gID8gb25fZWFjaF9jcHVfY29uZF9tYXNrKzB4N2EvMHhhMA0KIFsgIDM3MS43NjU5MTld
-ICA/IF9fa21hbGxvYysweDE5Zi8weDFmMA0KIFsgIDM3MS43NjY3NDldICBfX2ttZW1fY2FjaGVf
-c2h1dGRvd24uY29sZCsweDFiLzB4MTJmDQogWyAgMzcxLjc2Nzc2OV0gIGttZW1fY2FjaGVfZGVz
-dHJveSsweDQ1LzB4ZTANCiBbICAzNzEuNzY4NjY5XSAgbWx4NV9jbGVhbnVwX2ZzKzB4MTJjLzB4
-MTUwIFttbHg1X2NvcmVdDQogWyAgMzcxLjc2OTc1M10gIG1seDVfdW5sb2FkKzB4MWUvMHg3MCBb
-bWx4NV9jb3JlXQ0KIFsgIDM3MS43NzA3NDRdICBtbHg1X3VubG9hZF9vbmUrMHg0OS8weGIwIFtt
-bHg1X2NvcmVdDQogWyAgMzcxLjc3MTc3Ml0gIHJlbW92ZV9vbmUrMHgzOC8weDgwIFttbHg1X2Nv
-cmVdDQogWyAgMzcxLjc3MjcyNF0gIHBjaV9kZXZpY2VfcmVtb3ZlKzB4MzYvMHhhMA0KIFsgIDM3
-MS43NzM2MjVdICBkZXZpY2VfcmVsZWFzZV9kcml2ZXJfaW50ZXJuYWwrMHhlMS8weDFiMA0KIFsg
-IDM3MS43NzQ3MzFdICBkcml2ZXJfZGV0YWNoKzB4M2YvMHg3OQ0KIFsgIDM3MS43NzU1MzJdICBi
-dXNfcmVtb3ZlX2RyaXZlcisweDU4LzB4Y2MNCiBbICAzNzEuNzc2NDA3XSAgcGNpX3VucmVnaXN0
-ZXJfZHJpdmVyKzB4MmQvMHg5MA0KIFsgIDM3MS43Nzc0MzZdICBjbGVhbnVwKzB4MTEvMHgyNTQg
-W21seDVfY29yZV0NCiBbICAzNzEuNzc4Mzc2XSAgX194NjRfc3lzX2RlbGV0ZV9tb2R1bGUrMHgx
-MWIvMHgxZjANCiBbICAzNzEuNzc5MzU4XSAgPyBleGl0X3RvX3VzZXJtb2RlX2xvb3ArMHhhYy8w
-eGIwDQogWyAgMzcxLjc4MDMxNF0gIGRvX3N5c2NhbGxfNjQrMHg0Mi8weDEzMA0KIFsgIDM3MS43
-ODExMjldICBlbnRyeV9TWVNDQUxMXzY0X2FmdGVyX2h3ZnJhbWUrMHg0NC8weGE5DQogWyAgMzcx
-Ljc4MjMwNV0gUklQOiAwMDMzOjB4N2YwNDk2NTg5YWU3DQogWyAgMzcxLjc4MzEwN10gQ29kZTog
-NzMgMDEgYzMgNDggOGIgMGQgOTkgYTMgMmIgMDAgZjcgZDggNjQgODkgMDEgNDgNCjgzIGM4IGZm
-IGMzIDY2IDJlIDBmIDFmIDg0IDAwIDAwIDAwIDAwIDAwIDBmIDFmIDQ0IDAwIDAwIGI4IGIwIDAw
-IDAwIDAwDQowZiAwNSA8NDg+IDNkIDAxIGYwIGZmIGZmIDczIDAxIGMzIDQ4IDhiIDBkIDY5IGEz
-IDJiIDAwIGY3IGQ4IDY0IDg5IDAxDQo0OA0KIFsgIDM3MS43ODY1OTVdIFJTUDogMDAyYjowMDAw
-N2ZmZDE0YWZmNzc4IEVGTEFHUzogMDAwMDAyMDYgT1JJR19SQVg6DQowMDAwMDAwMDAwMDAwMGIw
-DQogWyAgMzcxLjc4ODEyMl0gUkFYOiBmZmZmZmZmZmZmZmZmZmRhIFJCWDogMDAwMDU1ZTVhMjYx
-YmY3MCBSQ1g6DQowMDAwN2YwNDk2NTg5YWU3DQogWyAgMzcxLjc5OTk0OF0gUkRYOiAwMDAwMDAw
-MDAwMDAwMDAwIFJTSTogMDAwMDAwMDAwMDAwMDgwMCBSREk6DQowMDAwNTVlNWEyNjFiZmQ4DQog
-WyAgMzcxLjgwMTMzNl0gUkJQOiAwMDAwNTVlNWEyNjFiZjcwIFIwODogMDAwMDdmZmQxNGFmZTcy
-MSBSMDk6DQowMDAwMDAwMDAwMDAwMDAwDQogWyAgMzcxLjgwMjc3M10gUjEwOiAwMDAwN2YwNDk2
-NWY4MWUwIFIxMTogMDAwMDAwMDAwMDAwMDIwNiBSMTI6DQowMDAwNTVlNWEyNjFiZmQ4DQogWyAg
-MzcxLjgwNDE4Ml0gUjEzOiAwMDAwNTVlNWEyNjFjOGUwIFIxNDogMDAwMDU1ZTVhMjYxYmMzOCBS
-MTU6DQowMDAwN2ZmZDE0YjAwYjk4DQogWyAgMzcxLjgwNTYzM10gSU5GTzogT2JqZWN0IDB4MDAw
-MDAwMDA1N2E5NmU2OSBAb2Zmc2V0PTkwMDANCiBbICAzNzEuODA2ODUxXSBrbWVtX2NhY2hlX2Rl
-c3Ryb3kgbWx4NV9mc19mdGVzOiBTbGFiIGNhY2hlIHN0aWxsIGhhcw0Kb2JqZWN0cw0KIFsgIDM3
-MS44MDgzMzBdIENQVTogMCBQSUQ6IDEzMTEyIENvbW06IG1vZHByb2JlIFRhaW50ZWQ6DQpHICAg
-IEIgICAgICAgICAgICAgNS41LjAtcmM0LUo4NTUzLUc4YjI2MTMwN2E4YjAgIzENCiBbICAzNzEu
-ODEwMzExXSBIYXJkd2FyZSBuYW1lOiBRRU1VIFN0YW5kYXJkIFBDIChRMzUgKyBJQ0g5LCAyMDA5
-KSwNCkJJT1MgcmVsLTEuMTIuMS0wLWdhNWNhYjU4ZTlhM2YtcHJlYnVpbHQucWVtdS5vcmcgMDQv
-MDEvMjAxNA0KDQoNCj4gIDEgZmlsZSBjaGFuZ2VkLCAzOSBpbnNlcnRpb25zKCspDQo+IA0KPiBk
-aWZmIC0tZ2l0IGEvZHJpdmVycy9uZXQvZXRoZXJuZXQvbWVsbGFub3gvbWx4NS9jb3JlL2VuX3Rj
-LmMNCj4gYi9kcml2ZXJzL25ldC9ldGhlcm5ldC9tZWxsYW5veC9tbHg1L2NvcmUvZW5fdGMuYw0K
-PiBpbmRleCA5YjMyYTljLi4zM2QxY2U1IDEwMDY0NA0KPiAtLS0gYS9kcml2ZXJzL25ldC9ldGhl
-cm5ldC9tZWxsYW5veC9tbHg1L2NvcmUvZW5fdGMuYw0KPiArKysgYi9kcml2ZXJzL25ldC9ldGhl
-cm5ldC9tZWxsYW5veC9tbHg1L2NvcmUvZW5fdGMuYw0KPiBAQCAtMTgwNSw2ICsxODA1LDQwIEBA
-IHN0YXRpYyB2b2lkICpnZXRfbWF0Y2hfaGVhZGVyc192YWx1ZSh1MzINCj4gZmxhZ3MsDQo+ICAJ
-CQkgICAgIG91dGVyX2hlYWRlcnMpOw0KPiAgfQ0KPiAgDQo+ICtzdGF0aWMgaW50IG1seDVlX2Zs
-b3dlcl9wYXJzZV9tZXRhKHN0cnVjdCBuZXRfZGV2aWNlICpmaWx0ZXJfZGV2LA0KPiArCQkJCSAg
-IHN0cnVjdCBmbG93X2Nsc19vZmZsb2FkICpmKQ0KPiArew0KPiArCXN0cnVjdCBmbG93X3J1bGUg
-KnJ1bGUgPSBmbG93X2Nsc19vZmZsb2FkX2Zsb3dfcnVsZShmKTsNCj4gKwlzdHJ1Y3QgbmV0bGlu
-a19leHRfYWNrICpleHRhY2sgPSBmLT5jb21tb24uZXh0YWNrOw0KPiArCXN0cnVjdCBuZXRfZGV2
-aWNlICppbmdyZXNzX2RldjsNCj4gKwlzdHJ1Y3QgZmxvd19tYXRjaF9tZXRhIG1hdGNoOw0KPiAr
-DQo+ICsJaWYgKCFmbG93X3J1bGVfbWF0Y2hfa2V5KHJ1bGUsIEZMT1dfRElTU0VDVE9SX0tFWV9N
-RVRBKSkNCj4gKwkJcmV0dXJuIDA7DQo+ICsNCj4gKwlmbG93X3J1bGVfbWF0Y2hfbWV0YShydWxl
-LCAmbWF0Y2gpOw0KPiArCWlmIChtYXRjaC5tYXNrLT5pbmdyZXNzX2lmaW5kZXggIT0gMHhGRkZG
-RkZGRikgew0KPiArCQlOTF9TRVRfRVJSX01TR19NT0QoZXh0YWNrLCAiVW5zdXBwb3J0ZWQgaW5n
-cmVzcyBpZmluZGV4DQo+IG1hc2siKTsNCj4gKwkJcmV0dXJuIC1FSU5WQUw7DQo+ICsJfQ0KPiAr
-DQo+ICsJaW5ncmVzc19kZXYgPSBfX2Rldl9nZXRfYnlfaW5kZXgoZGV2X25ldChmaWx0ZXJfZGV2
-KSwNCj4gKwkJCQkJIG1hdGNoLmtleS0+aW5ncmVzc19pZmluZGV4KTsNCj4gKwlpZiAoIWluZ3Jl
-c3NfZGV2KSB7DQo+ICsJCU5MX1NFVF9FUlJfTVNHX01PRChleHRhY2ssDQo+ICsJCQkJICAgIkNh
-bid0IGZpbmQgdGhlIGluZ3Jlc3MgcG9ydCB0bw0KPiBtYXRjaCBvbiIpOw0KPiArCQlyZXR1cm4g
-LUVJTlZBTDsNCj4gKwl9DQo+ICsNCj4gKwlpZiAoaW5ncmVzc19kZXYgIT0gZmlsdGVyX2Rldikg
-ew0KPiArCQlOTF9TRVRfRVJSX01TR19NT0QoZXh0YWNrLA0KPiArCQkJCSAgICJDYW4ndCBtYXRj
-aCBvbiB0aGUgaW5ncmVzcyBmaWx0ZXINCj4gcG9ydCIpOw0KPiArCQlyZXR1cm4gLUVJTlZBTDsN
-Cj4gKwl9DQo+ICsNCj4gKwlyZXR1cm4gMDsNCj4gK30NCj4gKw0KPiAgc3RhdGljIGludCBfX3Bh
-cnNlX2Nsc19mbG93ZXIoc3RydWN0IG1seDVlX3ByaXYgKnByaXYsDQo+ICAJCQkgICAgICBzdHJ1
-Y3QgbWx4NV9mbG93X3NwZWMgKnNwZWMsDQo+ICAJCQkgICAgICBzdHJ1Y3QgZmxvd19jbHNfb2Zm
-bG9hZCAqZiwNCj4gQEAgLTE4MjUsNiArMTg1OSw3IEBAIHN0YXRpYyBpbnQgX19wYXJzZV9jbHNf
-Zmxvd2VyKHN0cnVjdCBtbHg1ZV9wcml2DQo+ICpwcml2LA0KPiAgCXUxNiBhZGRyX3R5cGUgPSAw
-Ow0KPiAgCXU4IGlwX3Byb3RvID0gMDsNCj4gIAl1OCAqbWF0Y2hfbGV2ZWw7DQo+ICsJaW50IGVy
-cjsNCj4gIA0KPiAgCW1hdGNoX2xldmVsID0gb3V0ZXJfbWF0Y2hfbGV2ZWw7DQo+ICANCj4gQEAg
-LTE4NjgsNiArMTkwMywxMCBAQCBzdGF0aWMgaW50IF9fcGFyc2VfY2xzX2Zsb3dlcihzdHJ1Y3QN
-Cj4gbWx4NWVfcHJpdiAqcHJpdiwNCj4gIAkJCQkJCSAgICBzcGVjKTsNCj4gIAl9DQo+ICANCj4g
-KwllcnIgPSBtbHg1ZV9mbG93ZXJfcGFyc2VfbWV0YShmaWx0ZXJfZGV2LCBmKTsNCj4gKwlpZiAo
-ZXJyKQ0KPiArCQlyZXR1cm4gZXJyOw0KPiArDQo+ICAJaWYgKGZsb3dfcnVsZV9tYXRjaF9rZXko
-cnVsZSwgRkxPV19ESVNTRUNUT1JfS0VZX0JBU0lDKSkgew0KPiAgCQlzdHJ1Y3QgZmxvd19tYXRj
-aF9iYXNpYyBtYXRjaDsNCj4gIA0K
+I missed the fact that macvlan_broadcast() can be used both
+in RX and TX.
+
+skb_eth_hdr() makes only sense in TX paths, so we can not
+use it blindly in macvlan_broadcast()
+
+Fixes: 96cc4b69581d ("macvlan: do not assume mac_header is set in macvlan_broadcast()")
+Signed-off-by: Eric Dumazet <edumazet@google.com>
+Reported-by: Jurgen Van Ham <juvanham@gmail.com>
+---
+ drivers/net/macvlan.c | 5 +++--
+ 1 file changed, 3 insertions(+), 2 deletions(-)
+
+diff --git a/drivers/net/macvlan.c b/drivers/net/macvlan.c
+index 747c0542a53c763676d491c91a5b704f0eb9848e..c5bf61565726b15aa1ea63590d7d8627b0c20d4a 100644
+--- a/drivers/net/macvlan.c
++++ b/drivers/net/macvlan.c
+@@ -259,7 +259,7 @@ static void macvlan_broadcast(struct sk_buff *skb,
+ 			      struct net_device *src,
+ 			      enum macvlan_mode mode)
+ {
+-	const struct ethhdr *eth = skb_eth_hdr(skb);
++	const struct ethhdr *eth = eth_hdr(skb);
+ 	const struct macvlan_dev *vlan;
+ 	struct sk_buff *nskb;
+ 	unsigned int i;
+@@ -513,10 +513,11 @@ static int macvlan_queue_xmit(struct sk_buff *skb, struct net_device *dev)
+ 	const struct macvlan_dev *dest;
+ 
+ 	if (vlan->mode == MACVLAN_MODE_BRIDGE) {
+-		const struct ethhdr *eth = (void *)skb->data;
++		const struct ethhdr *eth = skb_eth_hdr(skb);
+ 
+ 		/* send to other bridge ports directly */
+ 		if (is_multicast_ether_addr(eth->h_dest)) {
++			skb_reset_mac_header(skb);
+ 			macvlan_broadcast(skb, port, dev, MACVLAN_MODE_BRIDGE);
+ 			goto xmit_world;
+ 		}
+-- 
+2.25.0.rc1.283.g88dfdc4193-goog
+
