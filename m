@@ -2,98 +2,123 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 09BF513B3E4
-	for <lists+netdev@lfdr.de>; Tue, 14 Jan 2020 22:00:42 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1CCAF13B442
+	for <lists+netdev@lfdr.de>; Tue, 14 Jan 2020 22:27:06 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728765AbgANVAk (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 14 Jan 2020 16:00:40 -0500
-Received: from mail-qk1-f202.google.com ([209.85.222.202]:45724 "EHLO
-        mail-qk1-f202.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726491AbgANVAk (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 14 Jan 2020 16:00:40 -0500
-Received: by mail-qk1-f202.google.com with SMTP id 143so9188201qkg.12
-        for <netdev@vger.kernel.org>; Tue, 14 Jan 2020 13:00:39 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20161025;
-        h=date:message-id:mime-version:subject:from:to:cc;
-        bh=PuoqIYg2h4GAkf+klWzahAc5y/3k74tDlxUvlYyB17A=;
-        b=GRapa6W89Z+2pGH3/UTK2qE4+ht7YFjRBmRiaOLVNveT7vU3HWgI7zaqdw2DqgSdr+
-         qBh3xNvwWhWyIarkUiZPEqVabRha0o8rhlBFTIQk4L9mRvcggasSBjjEUCGuYm0GOQ3M
-         FS7yfeQlDAr7nbutPuUT2Y3+9e6dNszERJ8O4hr+4QBov6mDjK41a4DdU9sOYMVGdBTN
-         zb77zS8Zmmn8MlwOEjJmgUi+KXuHUrGq1xWR2+zV5sMS4l0IP9dtS2nduJh6uz3iqBRM
-         RfD0Se5fABvh91vDAkafokpdgNUOYdGzNbc6TSHuVzy3xQcSCg4wnHO/wh5oQKTctcJY
-         EZbA==
+        id S1728872AbgANV1E (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 14 Jan 2020 16:27:04 -0500
+Received: from us-smtp-delivery-1.mimecast.com ([207.211.31.120]:25559 "EHLO
+        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+        with ESMTP id S1726491AbgANV1D (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 14 Jan 2020 16:27:03 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1579037223;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=WQzb35NsyS3GXmNQNK71Fh1Dt7Fa9cHgnvIOIY+3fZw=;
+        b=Eww5+yF5gcVlrdgxG+/4eSss99fWkjolcfSnlJwIsLJpmdlhoIRp/bLtMHNqFyNAUfncVJ
+        sa2rOgl5edbRkdxFWrvCRgSoZEDRAcCYaIN7P6QGzcKBTneNAiiquNsDRd4f0R8Y7ItgCH
+        lltkQZkAbzodfca/0hY8c9nJrqbFnPU=
+Received: from mail-lj1-f198.google.com (mail-lj1-f198.google.com
+ [209.85.208.198]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-227-3mrQIj18Mv-sYYF4hA5t1A-1; Tue, 14 Jan 2020 16:27:01 -0500
+X-MC-Unique: 3mrQIj18Mv-sYYF4hA5t1A-1
+Received: by mail-lj1-f198.google.com with SMTP id g5so3402477ljj.22
+        for <netdev@vger.kernel.org>; Tue, 14 Jan 2020 13:27:01 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:message-id:mime-version:subject:from:to:cc;
-        bh=PuoqIYg2h4GAkf+klWzahAc5y/3k74tDlxUvlYyB17A=;
-        b=qHaluxf2ei/sTVCLqt1XQOYIZWFyTOCuZ+M76Wy7e266TsT6ijijFdIKUP6vUI/VYB
-         v0PBYS1e2hewIysPvntFCUWMRhbHC98sBEVlluxXyH+bnFpHdrcfNCKmrGQ6TFYQD+fL
-         R6pncKf3lNSY3tLuGQRqzX+4PRVjVt5s26uZrhv9cwPLlyRDQmcMDNauv7wfNScvcOuf
-         1NalHJB1gQODrSPW7j+/6jsAyf98Cz3TNS7s4xDJvzzPu2IauEaYC1I5qMx1899tY64N
-         nFy2QY4jLlYHlovVVj0blfUIvjNHNv5aIoC/VaD7UwgtGtkKg4QmqsUx8K/vccRLbfk0
-         sUHQ==
-X-Gm-Message-State: APjAAAUv7g5tuxSM3jKHDHG1dy9Rx2UsBi7Cd64j8+ouw2Zgmrjqkfkp
-        XZ10r0VNAlNd96DT9b7LcfpyHXbj0zsxWQ==
-X-Google-Smtp-Source: APXvYqzqFx0MnT9SRvbO/YfNA3BgSyVXJ5XlZX0UCr6NL2bJkidROqseDKZOhAUN7BSNOc7DYVkXjKrL6j48DQ==
-X-Received: by 2002:ac8:4456:: with SMTP id m22mr490829qtn.362.1579035638818;
- Tue, 14 Jan 2020 13:00:38 -0800 (PST)
-Date:   Tue, 14 Jan 2020 13:00:35 -0800
-Message-Id: <20200114210035.65042-1-edumazet@google.com>
-Mime-Version: 1.0
-X-Mailer: git-send-email 2.25.0.rc1.283.g88dfdc4193-goog
-Subject: [PATCH net] macvlan: use skb_reset_mac_header() in macvlan_queue_xmit()
-From:   Eric Dumazet <edumazet@google.com>
-To:     "David S . Miller" <davem@davemloft.net>
-Cc:     netdev <netdev@vger.kernel.org>,
-        Eric Dumazet <edumazet@google.com>,
-        Eric Dumazet <eric.dumazet@gmail.com>,
-        Jurgen Van Ham <juvanham@gmail.com>
-Content-Type: text/plain; charset="UTF-8"
+        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
+         :message-id:mime-version:content-transfer-encoding;
+        bh=WQzb35NsyS3GXmNQNK71Fh1Dt7Fa9cHgnvIOIY+3fZw=;
+        b=qNttrja6dslV15Ft8RKZBZ1NBxN0+3WwgjXh9QLyVUdgHZUeCFh7jp8jH6Cj6yJVrS
+         B/qpcu6lzUKN1o/Cc3WtYVz4z2KclS9cCAPJZEEAnypD8wmXT99v9r5qLovtaFDFM5VF
+         UWIiYhlyiW84l5qMZkdqWfqwyWrA0iFyd6wKrlSjXBpE5DtNxHOdqYXXrqCg2WaSSKDy
+         JVEcmLotGYZYOOEOXOyuUpW/42bAM/fdrjhNxtiDC6OLYBKkasjziII328zFNyANUzgv
+         lCTXU3ehRUTlU7RVLvCeHGW8YKSpVu9AvGbIKR1LBWu3mfBfwmMcdYHd2/IM5Bai/QBQ
+         EQqQ==
+X-Gm-Message-State: APjAAAXpWXBE3LJXycKnVZkvi2N4uEbgTMPWHoJ6yOKPeN/GBZubuC0B
+        gMd29gtW80+EhPKK0/DXVHafND8k4+vMNYb38ok7hBmBNkrINfiFNyyzpCXTOQd5jnIrhlQknlf
+        ByEjdIUuqZFMA8/9W
+X-Received: by 2002:ac2:5549:: with SMTP id l9mr2933764lfk.53.1579037219935;
+        Tue, 14 Jan 2020 13:26:59 -0800 (PST)
+X-Google-Smtp-Source: APXvYqwJQ06h3KjQea7X/023FVmNesshffHEIjTOOVdi11XNOFCXDqaSwEwqZDPU2Cwko7wgR2kNOQ==
+X-Received: by 2002:ac2:5549:: with SMTP id l9mr2933755lfk.53.1579037219747;
+        Tue, 14 Jan 2020 13:26:59 -0800 (PST)
+Received: from alrua-x1.borgediget.toke.dk ([45.145.92.2])
+        by smtp.gmail.com with ESMTPSA id d24sm7871439lfb.94.2020.01.14.13.26.59
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 14 Jan 2020 13:26:59 -0800 (PST)
+Received: by alrua-x1.borgediget.toke.dk (Postfix, from userid 1000)
+        id 332E21804D6; Tue, 14 Jan 2020 22:26:57 +0100 (CET)
+From:   Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
+To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Cc:     Andrii Nakryiko <andriin@fb.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>
+Subject: Re: [PATCH bpf-next] libbpf: Fix include of bpf_helpers.h when libbpf is installed on system
+In-Reply-To: <CAEf4Bzaqi6Wt4oPyd=ygTwBNzczAaF-7boKB025-6H=DDtsuqQ@mail.gmail.com>
+References: <20200114164250.922192-1-toke@redhat.com> <CAEf4Bzb9sTF4BWA1wyWM-3jsMUnbwYi1XtkDj8ZXdyHk7C4_mQ@mail.gmail.com> <CAEf4Bzaqi6Wt4oPyd=ygTwBNzczAaF-7boKB025-6H=DDtsuqQ@mail.gmail.com>
+X-Clacks-Overhead: GNU Terry Pratchett
+Date:   Tue, 14 Jan 2020 22:26:57 +0100
+Message-ID: <87sgkhvie6.fsf@toke.dk>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-I missed the fact that macvlan_broadcast() can be used both
-in RX and TX.
+Andrii Nakryiko <andrii.nakryiko@gmail.com> writes:
 
-skb_eth_hdr() makes only sense in TX paths, so we can not
-use it blindly in macvlan_broadcast()
+> On Tue, Jan 14, 2020 at 11:07 AM Andrii Nakryiko
+> <andrii.nakryiko@gmail.com> wrote:
+>>
+>> On Tue, Jan 14, 2020 at 8:43 AM Toke H=C3=B8iland-J=C3=B8rgensen <toke@r=
+edhat.com> wrote:
+>> >
+>> > The change to use angled includes for bpf_helper_defs.h breaks compila=
+tion
+>> > against libbpf when it is installed in the include path, since the fil=
+e is
+>> > installed in the bpf/ subdirectory of $INCLUDE_PATH. Fix this by addin=
+g the
+>> > bpf/ prefix to the #include directive.
+>> >
+>> > Fixes: 6910d7d3867a ("selftests/bpf: Ensure bpf_helper_defs.h are take=
+n from selftests dir")
+>> > Signed-off-by: Toke H=C3=B8iland-J=C3=B8rgensen <toke@redhat.com>
+>> > ---
+>> > Not actually sure this fix works for all the cases you originally trie=
+d to
+>>
+>> This does break selftests/bpf. Have you tried building selftests, does
+>> it work for you? We need to fix selftests simultaneously with this
+>> change.
+>>
+>> > fix with the referred commit; please check. Also, could we please stop=
+ breaking
+>> > libbpf builds? :)
+>>
+>> Which libbpf build is failing right now? Both github and in-kernel
+>> libbpf builds are fine. You must be referring to something else. What
+>> exactly?
+>
+> I think it's better to just ensure that when compiling BPF programs,
+> they have -I/usr/include/bpf specified, so that all BPF-side headers
+> can be simply included as #include <bpf_helpers.h>, #include
+> <bpf_tracing.h>, etc
 
-Fixes: 96cc4b69581d ("macvlan: do not assume mac_header is set in macvlan_broadcast()")
-Signed-off-by: Eric Dumazet <edumazet@google.com>
-Reported-by: Jurgen Van Ham <juvanham@gmail.com>
----
- drivers/net/macvlan.c | 5 +++--
- 1 file changed, 3 insertions(+), 2 deletions(-)
+And break all programs that don't have that already? Just to make the
+kernel build env slightly more convenient? Hardly friendly to the
+library users, is it? :)
 
-diff --git a/drivers/net/macvlan.c b/drivers/net/macvlan.c
-index 747c0542a53c763676d491c91a5b704f0eb9848e..c5bf61565726b15aa1ea63590d7d8627b0c20d4a 100644
---- a/drivers/net/macvlan.c
-+++ b/drivers/net/macvlan.c
-@@ -259,7 +259,7 @@ static void macvlan_broadcast(struct sk_buff *skb,
- 			      struct net_device *src,
- 			      enum macvlan_mode mode)
- {
--	const struct ethhdr *eth = skb_eth_hdr(skb);
-+	const struct ethhdr *eth = eth_hdr(skb);
- 	const struct macvlan_dev *vlan;
- 	struct sk_buff *nskb;
- 	unsigned int i;
-@@ -513,10 +513,11 @@ static int macvlan_queue_xmit(struct sk_buff *skb, struct net_device *dev)
- 	const struct macvlan_dev *dest;
- 
- 	if (vlan->mode == MACVLAN_MODE_BRIDGE) {
--		const struct ethhdr *eth = (void *)skb->data;
-+		const struct ethhdr *eth = skb_eth_hdr(skb);
- 
- 		/* send to other bridge ports directly */
- 		if (is_multicast_ether_addr(eth->h_dest)) {
-+			skb_reset_mac_header(skb);
- 			macvlan_broadcast(skb, port, dev, MACVLAN_MODE_BRIDGE);
- 			goto xmit_world;
- 		}
--- 
-2.25.0.rc1.283.g88dfdc4193-goog
+As far as selftests are concerned, I finally managed to get an LLVM
+version that will build them all; so I'll test that tomorrow and send a
+v2 that doesn't break them...
+
+-Toke
 
