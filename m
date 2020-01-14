@@ -2,123 +2,170 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 36D1713A3BB
-	for <lists+netdev@lfdr.de>; Tue, 14 Jan 2020 10:24:56 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E4F5913A3B8
+	for <lists+netdev@lfdr.de>; Tue, 14 Jan 2020 10:24:37 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728899AbgANJYi (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 14 Jan 2020 04:24:38 -0500
-Received: from mail.wangsu.com ([123.103.51.227]:54216 "EHLO wangsu.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1725820AbgANJYh (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 14 Jan 2020 04:24:37 -0500
-Received: from 137.localdomain (unknown [59.61.78.232])
-        by app2 (Coremail) with SMTP id 4zNnewDXIjS8iB1ea_sEAA--.5S2;
-        Tue, 14 Jan 2020 17:24:13 +0800 (CST)
-From:   Pengcheng Yang <yangpc@wangsu.com>
-To:     edumazet@google.com
-Cc:     davem@davemloft.net, kuznet@ms2.inr.ac.ru, yoshfuji@linux-ipv6.org,
-        ast@kernel.org, daniel@iogearbox.net, kafai@fb.com,
-        songliubraving@fb.com, yhs@fb.com, andriin@fb.com,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Pengcheng Yang <yangpc@wangsu.com>
-Subject: [PATCH] tcp: fix marked lost packets not being retransmitted
-Date:   Tue, 14 Jan 2020 17:23:40 +0800
-Message-Id: <1578993820-2114-1-git-send-email-yangpc@wangsu.com>
-X-Mailer: git-send-email 1.8.3.1
-X-CM-TRANSID: 4zNnewDXIjS8iB1ea_sEAA--.5S2
-X-Coremail-Antispam: 1UD129KBjvJXoWxAF18WF43uF4UtryfKF17KFg_yoW5Wr17pa
-        n5KwnrJFZ8Gr1Fkw1DKrWUXryUtFs3A343J39Yyr9Iya15Gr17uF45K3y3KFy3GFZ5Jay0
-        qFW0yw13Ka4DCFDanT9S1TB71UUUUUUqnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
-        9KBjDU0xBIdaVrnRJUUUyG1xkIjI8I6I8E6xAIw20EY4v20xvaj40_Wr0E3s1l8cAvFVAK
-        0II2c7xJM28CjxkF64kEwVA0rcxSw2x7M28EF7xvwVC0I7IYx2IY67AKxVWDJVCq3wA2z4
-        x0Y4vE2Ix0cI8IcVCY1x0267AKxVW0oVCq3wA2z4x0Y4vEx4A2jsIE14v26rxl6s0DM28E
-        F7xvwVC2z280aVCY1x0267AKxVW0oVCq3wAS0I0E0xvYzxvE52x082IY62kv0487Mc02F4
-        0EFcxC0VAKzVAqx4xG6I80ewAv7VCjz48v1sIEY20_Gr4lOx8S6xCaFVCjc4AY6r1j6r4U
-        M4x0Y48IcxkI7VAKI48JM4x0x7Aq67IIx4CEVc8vx2IErcIFxwACI402YVCY1x02628vn2
-        kIc2xKxwCY02Avz4vE14v_GFWl42xK82IYc2Ij64vIr41l42xK82IY6x8ErcxFaVAv8VW8
-        GwCFx2IqxVCFs4IE7xkEbVWUJVW8JwC20s026c02F40E14v26r1j6r18MI8I3I0E7480Y4
-        vE14v26r106r1rMI8E67AF67kF1VAFwI0_Jw0_GFylIxkGc2Ij64vIr41lIxAIcVC0I7IY
-        x2IY67AKxVWUJVWUCwCI42IY6xIIjxv20xvEc7CjxVAFwI0_Gr0_Cr1lIxAIcVCF04k26c
-        xKx2IYs7xG6rW3Jr0E3s1lIxAIcVC2z280aVAFwI0_Jr0_Gr1lIxAIcVC2z280aVCY1x02
-        67AKxVW8JVW8JrUvcSsGvfC2KfnxnUUI43ZEXa7VU0F_M3UUUUU==
-X-CM-SenderInfo: p1dqw1nf6zt0xjvxhudrp/
+        id S1726169AbgANJYg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 14 Jan 2020 04:24:36 -0500
+Received: from mail.kernel.org ([198.145.29.99]:36416 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1725842AbgANJYf (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 14 Jan 2020 04:24:35 -0500
+Received: from localhost.localdomain.com (nat-pool-mxp-t.redhat.com [149.6.153.186])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 8CD04207FF;
+        Tue, 14 Jan 2020 09:24:33 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1578993874;
+        bh=VsJG0o5dNghW9MlWnWtkQopNlrykQlJYLXvW+/N9GUQ=;
+        h=From:To:Cc:Subject:Date:From;
+        b=A8Ma+UDounUJEAMl98WsAoypXxMG/A+MA9Pe4W6gl1xylX8KdHKok3LvBBha6DEzU
+         FXTr3BwO4/E4GpKd05uTEQMl6qbN2JYydH4lHcTK05UzrZlqqRJsKAdFVhj0Ri5A4g
+         jerhD1nnv7VsCj5RoHxpJbt3AlLQRVl78kjf0/XU=
+From:   Lorenzo Bianconi <lorenzo@kernel.org>
+To:     netdev@vger.kernel.org
+Cc:     lorenzo.bianconi@redhat.com, davem@davemloft.net,
+        brouer@redhat.com, ilias.apalodimas@linaro.org, kuba@kernel.org
+Subject: [PATCH v3 net-next] net: socionext: get rid of huge dma sync in netsec_alloc_rx_data
+Date:   Tue, 14 Jan 2020 10:24:19 +0100
+Message-Id: <1fce975f9f77780b92b86dbaf1ca89ffe37255bb.1578993365.git.lorenzo@kernel.org>
+X-Mailer: git-send-email 2.21.1
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-When the packet pointed to by retransmit_skb_hint is unlinked by ACK,
-retransmit_skb_hint will be set to NULL in tcp_clean_rtx_queue().
-If packet loss is detected at this time, retransmit_skb_hint will be set
-to point to the current packet loss in tcp_verify_retransmit_hint(),
-then the packets that were previously marked lost but not retransmitted
-due to the restriction of cwnd will be skipped and cannot be
-retransmitted.
+Socionext driver can run on dma coherent and non-coherent devices.
+Get rid of huge dma_sync_single_for_device in netsec_alloc_rx_data since
+now the driver can let page_pool API to managed needed DMA sync
 
-To fix this, when retransmit_skb_hint is NULL, retransmit_skb_hint can
-be reset only after all marked lost packets are retransmitted
-(retrans_out >= lost_out), otherwise we need to traverse from
-tcp_rtx_queue_head in tcp_xmit_retransmit_queue().
-
-Packetdrill to demonstrate:
-
-// Disable RACK and set max_reordering to keep things simple
-    0 `sysctl -q net.ipv4.tcp_recovery=0`
-   +0 `sysctl -q net.ipv4.tcp_max_reordering=3`
-
-// Establish a connection
-   +0 socket(..., SOCK_STREAM, IPPROTO_TCP) = 3
-   +0 setsockopt(3, SOL_SOCKET, SO_REUSEADDR, [1], 4) = 0
-   +0 bind(3, ..., ...) = 0
-   +0 listen(3, 1) = 0
-
-  +.1 < S 0:0(0) win 32792 <mss 1000,sackOK,nop,nop,nop,wscale 7>
-   +0 > S. 0:0(0) ack 1 <...>
- +.01 < . 1:1(0) ack 1 win 257
-   +0 accept(3, ..., ...) = 4
-
-// Send 8 data segments
-   +0 write(4, ..., 8000) = 8000
-   +0 > P. 1:8001(8000) ack 1
-
-// Enter recovery and 1:3001 is marked lost
- +.01 < . 1:1(0) ack 1 win 257 <sack 3001:4001,nop,nop>
-   +0 < . 1:1(0) ack 1 win 257 <sack 5001:6001 3001:4001,nop,nop>
-   +0 < . 1:1(0) ack 1 win 257 <sack 5001:7001 3001:4001,nop,nop>
-
-// Retransmit 1:1001, now retransmit_skb_hint points to 1001:2001
-   +0 > . 1:1001(1000) ack 1
-
-// 1001:2001 was ACKed causing retransmit_skb_hint to be set to NULL
- +.01 < . 1:1(0) ack 2001 win 257 <sack 5001:8001 3001:4001,nop,nop>
-// Now retransmit_skb_hint points to 4001:5001 which is now marked lost
-
-// BUG: 2001:3001 was not retransmitted
-   +0 > . 2001:3001(1000) ack 1
-
-Signed-off-by: Pengcheng Yang <yangpc@wangsu.com>
+Reviewed-by: Ilias Apalodimas <ilias.apalodimas@linaro.org>
+Signed-off-by: Lorenzo Bianconi <lorenzo@kernel.org>
 ---
- net/ipv4/tcp_input.c | 7 ++++---
- 1 file changed, 4 insertions(+), 3 deletions(-)
+Changes since v2:
+- fix checkpatch warnings
 
-diff --git a/net/ipv4/tcp_input.c b/net/ipv4/tcp_input.c
-index 0238b55..5347ab2 100644
---- a/net/ipv4/tcp_input.c
-+++ b/net/ipv4/tcp_input.c
-@@ -915,9 +915,10 @@ static void tcp_check_sack_reordering(struct sock *sk, const u32 low_seq,
- /* This must be called before lost_out is incremented */
- static void tcp_verify_retransmit_hint(struct tcp_sock *tp, struct sk_buff *skb)
- {
--	if (!tp->retransmit_skb_hint ||
--	    before(TCP_SKB_CB(skb)->seq,
--		   TCP_SKB_CB(tp->retransmit_skb_hint)->seq))
-+	if ((!tp->retransmit_skb_hint && tp->retrans_out >= tp->lost_out) ||
-+	    (tp->retransmit_skb_hint &&
-+	     before(TCP_SKB_CB(skb)->seq,
-+		    TCP_SKB_CB(tp->retransmit_skb_hint)->seq)))
- 		tp->retransmit_skb_hint = skb;
- }
+Changes since v1:
+- rely on original frame size for dma sync
+---
+ drivers/net/ethernet/socionext/netsec.c | 43 +++++++++++++++----------
+ 1 file changed, 26 insertions(+), 17 deletions(-)
+
+diff --git a/drivers/net/ethernet/socionext/netsec.c b/drivers/net/ethernet/socionext/netsec.c
+index b5a9e947a4a8..6870a6ce76a6 100644
+--- a/drivers/net/ethernet/socionext/netsec.c
++++ b/drivers/net/ethernet/socionext/netsec.c
+@@ -243,6 +243,7 @@
+ 			       NET_IP_ALIGN)
+ #define NETSEC_RX_BUF_NON_DATA (NETSEC_RXBUF_HEADROOM + \
+ 				SKB_DATA_ALIGN(sizeof(struct skb_shared_info)))
++#define NETSEC_RX_BUF_SIZE	(PAGE_SIZE - NETSEC_RX_BUF_NON_DATA)
  
+ #define DESC_SZ	sizeof(struct netsec_de)
+ 
+@@ -719,7 +720,6 @@ static void *netsec_alloc_rx_data(struct netsec_priv *priv,
+ {
+ 
+ 	struct netsec_desc_ring *dring = &priv->desc_ring[NETSEC_RING_RX];
+-	enum dma_data_direction dma_dir;
+ 	struct page *page;
+ 
+ 	page = page_pool_dev_alloc_pages(dring->page_pool);
+@@ -734,9 +734,7 @@ static void *netsec_alloc_rx_data(struct netsec_priv *priv,
+ 	/* Make sure the incoming payload fits in the page for XDP and non-XDP
+ 	 * cases and reserve enough space for headroom + skb_shared_info
+ 	 */
+-	*desc_len = PAGE_SIZE - NETSEC_RX_BUF_NON_DATA;
+-	dma_dir = page_pool_get_dma_dir(dring->page_pool);
+-	dma_sync_single_for_device(priv->dev, *dma_handle, *desc_len, dma_dir);
++	*desc_len = NETSEC_RX_BUF_SIZE;
+ 
+ 	return page_address(page);
+ }
+@@ -883,6 +881,8 @@ static u32 netsec_xdp_xmit_back(struct netsec_priv *priv, struct xdp_buff *xdp)
+ static u32 netsec_run_xdp(struct netsec_priv *priv, struct bpf_prog *prog,
+ 			  struct xdp_buff *xdp)
+ {
++	struct netsec_desc_ring *dring = &priv->desc_ring[NETSEC_RING_RX];
++	unsigned int len = xdp->data_end - xdp->data;
+ 	u32 ret = NETSEC_XDP_PASS;
+ 	int err;
+ 	u32 act;
+@@ -896,7 +896,9 @@ static u32 netsec_run_xdp(struct netsec_priv *priv, struct bpf_prog *prog,
+ 	case XDP_TX:
+ 		ret = netsec_xdp_xmit_back(priv, xdp);
+ 		if (ret != NETSEC_XDP_TX)
+-			xdp_return_buff(xdp);
++			__page_pool_put_page(dring->page_pool,
++					     virt_to_head_page(xdp->data),
++					     len, true);
+ 		break;
+ 	case XDP_REDIRECT:
+ 		err = xdp_do_redirect(priv->ndev, xdp, prog);
+@@ -904,7 +906,9 @@ static u32 netsec_run_xdp(struct netsec_priv *priv, struct bpf_prog *prog,
+ 			ret = NETSEC_XDP_REDIR;
+ 		} else {
+ 			ret = NETSEC_XDP_CONSUMED;
+-			xdp_return_buff(xdp);
++			__page_pool_put_page(dring->page_pool,
++					     virt_to_head_page(xdp->data),
++					     len, true);
+ 		}
+ 		break;
+ 	default:
+@@ -915,7 +919,9 @@ static u32 netsec_run_xdp(struct netsec_priv *priv, struct bpf_prog *prog,
+ 		/* fall through -- handle aborts by dropping packet */
+ 	case XDP_DROP:
+ 		ret = NETSEC_XDP_CONSUMED;
+-		xdp_return_buff(xdp);
++		__page_pool_put_page(dring->page_pool,
++				     virt_to_head_page(xdp->data),
++				     len, true);
+ 		break;
+ 	}
+ 
+@@ -1014,7 +1020,8 @@ static int netsec_process_rx(struct netsec_priv *priv, int budget)
+ 			 * cache state. Since we paid the allocation cost if
+ 			 * building an skb fails try to put the page into cache
+ 			 */
+-			page_pool_recycle_direct(dring->page_pool, page);
++			__page_pool_put_page(dring->page_pool, page,
++					     pkt_len, true);
+ 			netif_err(priv, drv, priv->ndev,
+ 				  "rx failed to build skb\n");
+ 			break;
+@@ -1272,17 +1279,19 @@ static int netsec_setup_rx_dring(struct netsec_priv *priv)
+ {
+ 	struct netsec_desc_ring *dring = &priv->desc_ring[NETSEC_RING_RX];
+ 	struct bpf_prog *xdp_prog = READ_ONCE(priv->xdp_prog);
+-	struct page_pool_params pp_params = { 0 };
++	struct page_pool_params pp_params = {
++		.order = 0,
++		/* internal DMA mapping in page_pool */
++		.flags = PP_FLAG_DMA_MAP | PP_FLAG_DMA_SYNC_DEV,
++		.pool_size = DESC_NUM,
++		.nid = NUMA_NO_NODE,
++		.dev = priv->dev,
++		.dma_dir = xdp_prog ? DMA_BIDIRECTIONAL : DMA_FROM_DEVICE,
++		.offset = NETSEC_RXBUF_HEADROOM,
++		.max_len = NETSEC_RX_BUF_SIZE,
++	};
+ 	int i, err;
+ 
+-	pp_params.order = 0;
+-	/* internal DMA mapping in page_pool */
+-	pp_params.flags = PP_FLAG_DMA_MAP;
+-	pp_params.pool_size = DESC_NUM;
+-	pp_params.nid = NUMA_NO_NODE;
+-	pp_params.dev = priv->dev;
+-	pp_params.dma_dir = xdp_prog ? DMA_BIDIRECTIONAL : DMA_FROM_DEVICE;
+-
+ 	dring->page_pool = page_pool_create(&pp_params);
+ 	if (IS_ERR(dring->page_pool)) {
+ 		err = PTR_ERR(dring->page_pool);
 -- 
-1.8.3.1
+2.21.1
 
