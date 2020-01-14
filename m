@@ -2,54 +2,54 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id C739113A852
-	for <lists+netdev@lfdr.de>; Tue, 14 Jan 2020 12:23:57 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7626913A853
+	for <lists+netdev@lfdr.de>; Tue, 14 Jan 2020 12:23:58 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729590AbgANLXv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 14 Jan 2020 06:23:51 -0500
-Received: from out2-smtp.messagingengine.com ([66.111.4.26]:48393 "EHLO
+        id S1729603AbgANLXw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 14 Jan 2020 06:23:52 -0500
+Received: from out2-smtp.messagingengine.com ([66.111.4.26]:34849 "EHLO
         out2-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1729543AbgANLXu (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 14 Jan 2020 06:23:50 -0500
+        by vger.kernel.org with ESMTP id S1726053AbgANLXv (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 14 Jan 2020 06:23:51 -0500
 Received: from compute3.internal (compute3.nyi.internal [10.202.2.43])
-        by mailout.nyi.internal (Postfix) with ESMTP id 558C521F18;
-        Tue, 14 Jan 2020 06:23:49 -0500 (EST)
+        by mailout.nyi.internal (Postfix) with ESMTP id DB48621DC6;
+        Tue, 14 Jan 2020 06:23:50 -0500 (EST)
 Received: from mailfrontend1 ([10.202.2.162])
-  by compute3.internal (MEProxy); Tue, 14 Jan 2020 06:23:49 -0500
+  by compute3.internal (MEProxy); Tue, 14 Jan 2020 06:23:50 -0500
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
         messagingengine.com; h=cc:content-transfer-encoding:date:from
         :in-reply-to:message-id:mime-version:references:subject:to
         :x-me-proxy:x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=
-        fm1; bh=0xWuPDfJ1T5CS0oPYvWGwv+pA2+0uLbk38xKzgjznA4=; b=ZIglVE73
-        RvVMbske3zj0FONaOHoxusK+3vQj9+PkRrRSiMzasOeWXVak7UbZ+7FnIzbXwpcB
-        FUlxbLWsV6l/7B0UtZVUFGdIHgK6dtVfuqE4wKcFw5iWJ5URkzPuwhBD7BJb1B7W
-        oLzFpxZ4GbN//jsA3KS3n0FuLsyyA3lSqlJc6hZdtcL4rWni0Fsp3uYZ0bHeaSbL
-        JxQ8Blb8JUaaqmDAsZh7WLht24abMFGGGkzPwo9oo0+VZ+JH4aRAM2AKHr8PHW+o
-        o7Bs+NXDFC3ZQQ3iOaFSoASM6WEY/vect/cDOhOxgpUeAP2bN2FeORGpgZpXx/EV
-        so5hBOeJLUNSbg==
-X-ME-Sender: <xms:xaQdXvTWuAXqCXQ6sG06Ka9EWenEbJq-b_N0cYkKvhkWTS_NmsSaSQ>
+        fm1; bh=niMjvdO5QhBKqMJQ3DOAw6nr9t2lmQieVaGOEY8mFt4=; b=THPmCPUD
+        y3o0cw16DCynA2N+s/SSsxXePIKWPRb99KNoIto1XAt//oAuZjv4FyjCvV5lETlK
+        mg9KUzWgxmUOt+VAeeRWpAcOMrs27xNg7dtZZs7Dv2VFjDlt+4eua0KIWg8pwP4y
+        uzBO7xZmtBtY/4W5TlLNYzqFAiv3WkoKepz5ZFXUnYhd/d4v0RLss7dwVWfxz24q
+        WN2kT9ndGlWoDzkcXi1EAC7vLhuKUnfZFtSvavD5QAMk87IgNdyPbPgaInvzAtbD
+        LO/wrHGD6HeY2Nvsw/bb5j8xX5jyoBVywblPBhGqVnh41oRfMSHz5YN9qOmhxpGZ
+        djdVmgcF7ND6gw==
+X-ME-Sender: <xms:xqQdXl0R2BJimZ8sJl4ihUTRcxI80LTLwrx0A02DDxytHmhpp2VbqQ>
 X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedugedrtddtgddtlecutefuodetggdotefrodftvf
     curfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfghnecu
     uegrihhlohhuthemuceftddtnecunecujfgurhephffvufffkffojghfggfgsedtkeertd
     ertddtnecuhfhrohhmpefkughoucfutghhihhmmhgvlhcuoehiughoshgthhesihguohhs
     tghhrdhorhhgqeenucfkphepudelfedrgeejrdduieehrddvhedunecurfgrrhgrmhepmh
     grihhlfhhrohhmpehiughoshgthhesihguohhstghhrdhorhhgnecuvehluhhsthgvrhfu
-    ihiivgeptd
-X-ME-Proxy: <xmx:xaQdXsldie53DigNzHWxK4Ljr44huGyjK3L9x2fSPdIZ_mjS9mvJPA>
-    <xmx:xaQdXrSoctkhBDUZKACWFQbilRBOqjXa3r1oHjUeCL8M2xk-ao5dqQ>
-    <xmx:xaQdXruRfsv6fo4iXXgUeyIncQSkF-Vx48uV-MgKM6aYnD6VtvtYDg>
-    <xmx:xaQdXkxpj59F_ThdiDEGZOTj7NP2FVsMypoIKa0uxa80JVoF_AOiMQ>
+    ihiivgepfe
+X-ME-Proxy: <xmx:xqQdXoJHA69CUOWY6i42sHxR_880NQugYMfXLw7sIDb6Hs_6vYnyAQ>
+    <xmx:xqQdXimNvFGuVbV8sXIiADtavxJR68ZSHHt1qr0y6ByUGLUumup97w>
+    <xmx:xqQdXpIeEAXuHwkv9xc8TaHTeLdcCeVrI6sRO_caFCS1i8Xe4okL9Q>
+    <xmx:xqQdXj8H96WKD0cYsXakR1bw40Q6yWeoIr3noq3Bp9I039Mr-Kfnqg>
 Received: from splinter.mtl.com (unknown [193.47.165.251])
-        by mail.messagingengine.com (Postfix) with ESMTPA id B5B5180063;
-        Tue, 14 Jan 2020 06:23:47 -0500 (EST)
+        by mail.messagingengine.com (Postfix) with ESMTPA id 5166C80061;
+        Tue, 14 Jan 2020 06:23:49 -0500 (EST)
 From:   Ido Schimmel <idosch@idosch.org>
 To:     netdev@vger.kernel.org
 Cc:     davem@davemloft.net, kuba@kernel.org, jiri@mellanox.com,
         dsahern@gmail.com, roopa@cumulusnetworks.com, mlxsw@mellanox.com,
         Ido Schimmel <idosch@mellanox.com>
-Subject: [PATCH net-next v2 03/10] ipv4: Add "offload" and "trap" indications to routes
-Date:   Tue, 14 Jan 2020 13:23:11 +0200
-Message-Id: <20200114112318.876378-4-idosch@idosch.org>
+Subject: [PATCH net-next v2 04/10] ipv6: Add "offload" and "trap" indications to routes
+Date:   Tue, 14 Jan 2020 13:23:12 +0200
+Message-Id: <20200114112318.876378-5-idosch@idosch.org>
 X-Mailer: git-send-email 2.24.1
 In-Reply-To: <20200114112318.876378-1-idosch@idosch.org>
 References: <20200114112318.876378-1-idosch@idosch.org>
@@ -62,261 +62,69 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Ido Schimmel <idosch@mellanox.com>
 
-When performing L3 offload, routes and nexthops are usually programmed
-into two different tables in the underlying device. Therefore, the fact
-that a nexthop resides in hardware does not necessarily mean that all
-the associated routes also reside in hardware and vice-versa.
+In a similar fashion to previous patch, add "offload" and "trap"
+indication to IPv6 routes.
 
-While the kernel can signal to user space the presence of a nexthop in
-hardware (via 'RTNH_F_OFFLOAD'), it does not have a corresponding flag
-for routes. In addition, the fact that a route resides in hardware does
-not necessarily mean that the traffic is offloaded. For example,
-unreachable routes (i.e., 'RTN_UNREACHABLE') are programmed to trap
-packets to the CPU so that the kernel will be able to generate the
-appropriate ICMP error packet.
-
-This patch adds an "offload" and "trap" indications to IPv4 routes, so
-that users will have better visibility into the offload process.
-
-'struct fib_alias' is extended with two new fields that indicate if the
-route resides in hardware or not and if it is offloading traffic from
-the kernel or trapping packets to it. Note that the new fields are added
-in the 6 bytes hole and therefore the struct still fits in a single
-cache line [1].
-
-Capable drivers are expected to invoke fib_alias_hw_flags_set() with the
-route's key in order to set the flags.
-
-The indications are dumped to user space via a new flags (i.e.,
-'RTM_F_OFFLOAD' and 'RTM_F_TRAP') in the 'rtm_flags' field in the
-ancillary header.
-
-v2:
-* Make use of 'struct fib_rt_info' in fib_alias_hw_flags_set()
-
-[1]
-struct fib_alias {
-        struct hlist_node  fa_list;                      /*     0    16 */
-        struct fib_info *          fa_info;              /*    16     8 */
-        u8                         fa_tos;               /*    24     1 */
-        u8                         fa_type;              /*    25     1 */
-        u8                         fa_state;             /*    26     1 */
-        u8                         fa_slen;              /*    27     1 */
-        u32                        tb_id;                /*    28     4 */
-        s16                        fa_default;           /*    32     2 */
-        u8                         offload:1;            /*    34: 0  1 */
-        u8                         trap:1;               /*    34: 1  1 */
-        u8                         unused:6;             /*    34: 2  1 */
-
-        /* XXX 5 bytes hole, try to pack */
-
-        struct callback_head rcu __attribute__((__aligned__(8))); /*    40    16 */
-
-        /* size: 56, cachelines: 1, members: 12 */
-        /* sum members: 50, holes: 1, sum holes: 5 */
-        /* sum bitfield members: 8 bits (1 bytes) */
-        /* forced alignments: 1, forced holes: 1, sum forced holes: 5 */
-        /* last cacheline: 56 bytes */
-} __attribute__((__aligned__(8)));
+This is done by using two unused bits in 'struct fib6_info' to hold
+these indications. Capable drivers are expected to set these when
+processing the various in-kernel route notifications.
 
 Signed-off-by: Ido Schimmel <idosch@mellanox.com>
+Reviewed-by: Jiri Pirko <jiri@mellanox.com>
+Reviewed-by: David Ahern <dsahern@gmail.com>
+Acked-by: Roopa Prabhu <roopa@cumulusnetworks.com>
 ---
- include/net/ip_fib.h           |  4 +++
- include/uapi/linux/rtnetlink.h |  2 ++
- net/ipv4/fib_lookup.h          |  3 ++
- net/ipv4/fib_semantics.c       |  7 +++++
- net/ipv4/fib_trie.c            | 52 ++++++++++++++++++++++++++++++++++
- net/ipv4/route.c               | 19 +++++++++++++
- 6 files changed, 87 insertions(+)
+ include/net/ip6_fib.h | 11 ++++++++++-
+ net/ipv6/route.c      |  7 +++++++
+ 2 files changed, 17 insertions(+), 1 deletion(-)
 
-diff --git a/include/net/ip_fib.h b/include/net/ip_fib.h
-index 0c071c820e33..6a1ae49809de 100644
---- a/include/net/ip_fib.h
-+++ b/include/net/ip_fib.h
-@@ -211,6 +211,9 @@ struct fib_rt_info {
- 	int			dst_len;
- 	u8			tos;
- 	u8			type;
-+	u8			offload:1,
-+				trap:1,
-+				unused:6;
- };
+diff --git a/include/net/ip6_fib.h b/include/net/ip6_fib.h
+index b579faea41e9..fd60a8ac02ee 100644
+--- a/include/net/ip6_fib.h
++++ b/include/net/ip6_fib.h
+@@ -192,7 +192,9 @@ struct fib6_info {
+ 					dst_nopolicy:1,
+ 					dst_host:1,
+ 					fib6_destroying:1,
+-					unused:3;
++					offload:1,
++					trap:1,
++					unused:1;
  
- struct fib_entry_notifier_info {
-@@ -473,6 +476,7 @@ int fib_nh_common_init(struct fib_nh_common *nhc, struct nlattr *fc_encap,
- void fib_nh_common_release(struct fib_nh_common *nhc);
- 
- /* Exported by fib_trie.c */
-+void fib_alias_hw_flags_set(struct net *net, const struct fib_rt_info *fri);
- void fib_trie_init(void);
- struct fib_table *fib_trie_table(u32 id, struct fib_table *alias);
- 
-diff --git a/include/uapi/linux/rtnetlink.h b/include/uapi/linux/rtnetlink.h
-index 1418a8362bb7..cd43321d20dd 100644
---- a/include/uapi/linux/rtnetlink.h
-+++ b/include/uapi/linux/rtnetlink.h
-@@ -309,6 +309,8 @@ enum rt_scope_t {
- #define RTM_F_PREFIX		0x800	/* Prefix addresses		*/
- #define RTM_F_LOOKUP_TABLE	0x1000	/* set rtm_table to FIB lookup result */
- #define RTM_F_FIB_MATCH	        0x2000	/* return full fib lookup match */
-+#define RTM_F_OFFLOAD		0x4000	/* route is offloaded */
-+#define RTM_F_TRAP		0x8000	/* route is trapping packets */
- 
- /* Reserved table identifiers */
- 
-diff --git a/net/ipv4/fib_lookup.h b/net/ipv4/fib_lookup.h
-index a4b829358bfa..c092e9a55790 100644
---- a/net/ipv4/fib_lookup.h
-+++ b/net/ipv4/fib_lookup.h
-@@ -16,6 +16,9 @@ struct fib_alias {
- 	u8			fa_slen;
- 	u32			tb_id;
- 	s16			fa_default;
-+	u8			offload:1,
-+				trap:1,
-+				unused:6;
- 	struct rcu_head		rcu;
- };
- 
-diff --git a/net/ipv4/fib_semantics.c b/net/ipv4/fib_semantics.c
-index 3ed1349be428..a803cdd9400a 100644
---- a/net/ipv4/fib_semantics.c
-+++ b/net/ipv4/fib_semantics.c
-@@ -519,6 +519,8 @@ void rtmsg_fib(int event, __be32 key, struct fib_alias *fa,
- 	fri.dst_len = dst_len;
- 	fri.tos = fa->fa_tos;
- 	fri.type = fa->fa_type;
-+	fri.offload = fa->offload;
-+	fri.trap = fa->trap;
- 	err = fib_dump_info(skb, info->portid, seq, event, &fri, nlm_flags);
- 	if (err < 0) {
- 		/* -EMSGSIZE implies BUG in fib_nlmsg_size() */
-@@ -1801,6 +1803,11 @@ int fib_dump_info(struct sk_buff *skb, u32 portid, u32 seq, int event,
- 			goto nla_put_failure;
- 	}
- 
-+	if (fri->offload)
-+		rtm->rtm_flags |= RTM_F_OFFLOAD;
-+	if (fri->trap)
-+		rtm->rtm_flags |= RTM_F_TRAP;
-+
- 	nlmsg_end(skb, nlh);
- 	return 0;
- 
-diff --git a/net/ipv4/fib_trie.c b/net/ipv4/fib_trie.c
-index 75af3f8ae50e..6ce1f2bbffd0 100644
---- a/net/ipv4/fib_trie.c
-+++ b/net/ipv4/fib_trie.c
-@@ -1012,6 +1012,52 @@ static struct fib_alias *fib_find_alias(struct hlist_head *fah, u8 slen,
- 	return NULL;
+ 	struct rcu_head			rcu;
+ 	struct nexthop			*nh;
+@@ -329,6 +331,13 @@ static inline void fib6_info_release(struct fib6_info *f6i)
+ 		call_rcu(&f6i->rcu, fib6_info_destroy_rcu);
  }
  
-+static struct fib_alias *
-+fib_find_matching_alias(struct net *net, const struct fib_rt_info *fri)
++static inline void fib6_info_hw_flags_set(struct fib6_info *f6i, bool offload,
++					  bool trap)
 +{
-+	u8 slen = KEYLENGTH - fri->dst_len;
-+	struct key_vector *l, *tp;
-+	struct fib_table *tb;
-+	struct fib_alias *fa;
-+	struct trie *t;
++	f6i->offload = offload;
++	f6i->trap = trap;
++}
 +
-+	tb = fib_get_table(net, fri->tb_id);
-+	if (!tb)
-+		return NULL;
-+
-+	t = (struct trie *)tb->tb_data;
-+	l = fib_find_node(t, &tp, be32_to_cpu(fri->dst));
-+	if (!l)
-+		return NULL;
-+
-+	hlist_for_each_entry_rcu(fa, &l->leaf, fa_list) {
-+		if (fa->fa_slen == slen && fa->tb_id == fri->tb_id &&
-+		    fa->fa_tos == fri->tos && fa->fa_info == fri->fi &&
-+		    fa->fa_type == fri->type)
-+			return fa;
+ enum fib6_walk_state {
+ #ifdef CONFIG_IPV6_SUBTREES
+ 	FWS_S,
+diff --git a/net/ipv6/route.c b/net/ipv6/route.c
+index 0253b702afb7..4fbdc60b4e07 100644
+--- a/net/ipv6/route.c
++++ b/net/ipv6/route.c
+@@ -5576,6 +5576,13 @@ static int rt6_fill_node(struct net *net, struct sk_buff *skb,
+ 		expires -= jiffies;
+ 	}
+ 
++	if (!dst) {
++		if (rt->offload)
++			rtm->rtm_flags |= RTM_F_OFFLOAD;
++		if (rt->trap)
++			rtm->rtm_flags |= RTM_F_TRAP;
 +	}
 +
-+	return NULL;
-+}
-+
-+void fib_alias_hw_flags_set(struct net *net, const struct fib_rt_info *fri)
-+{
-+	struct fib_alias *fa_match;
-+
-+	rcu_read_lock();
-+
-+	fa_match = fib_find_matching_alias(net, fri);
-+	if (!fa_match)
-+		goto out;
-+
-+	fa_match->offload = fri->offload;
-+	fa_match->trap = fri->trap;
-+
-+out:
-+	rcu_read_unlock();
-+}
-+EXPORT_SYMBOL_GPL(fib_alias_hw_flags_set);
-+
- static void trie_rebalance(struct trie *t, struct key_vector *tn)
- {
- 	while (!IS_TRIE(tn))
-@@ -1220,6 +1266,8 @@ int fib_table_insert(struct net *net, struct fib_table *tb,
- 			new_fa->fa_slen = fa->fa_slen;
- 			new_fa->tb_id = tb->tb_id;
- 			new_fa->fa_default = -1;
-+			new_fa->offload = 0;
-+			new_fa->trap = 0;
+ 	if (rtnl_put_cacheinfo(skb, dst, 0, expires, dst ? dst->error : 0) < 0)
+ 		goto nla_put_failure;
  
- 			hlist_replace_rcu(&fa->fa_list, &new_fa->fa_list);
- 
-@@ -1278,6 +1326,8 @@ int fib_table_insert(struct net *net, struct fib_table *tb,
- 	new_fa->fa_slen = slen;
- 	new_fa->tb_id = tb->tb_id;
- 	new_fa->fa_default = -1;
-+	new_fa->offload = 0;
-+	new_fa->trap = 0;
- 
- 	/* Insert new entry to the list. */
- 	err = fib_insert_alias(t, tp, l, new_fa, fa, key);
-@@ -2202,6 +2252,8 @@ static int fn_trie_dump_leaf(struct key_vector *l, struct fib_table *tb,
- 				fri.dst_len = KEYLENGTH - fa->fa_slen;
- 				fri.tos = fa->fa_tos;
- 				fri.type = fa->fa_type;
-+				fri.offload = fa->offload;
-+				fri.trap = fa->trap;
- 				err = fib_dump_info(skb,
- 						    NETLINK_CB(cb->skb).portid,
- 						    cb->nlh->nlmsg_seq,
-diff --git a/net/ipv4/route.c b/net/ipv4/route.c
-index 167a7357d12a..2010888e68ca 100644
---- a/net/ipv4/route.c
-+++ b/net/ipv4/route.c
-@@ -3237,6 +3237,25 @@ static int inet_rtm_getroute(struct sk_buff *in_skb, struct nlmsghdr *nlh,
- 		fri.dst_len = res.prefixlen;
- 		fri.tos = fl4.flowi4_tos;
- 		fri.type = rt->rt_type;
-+		fri.offload = 0;
-+		fri.trap = 0;
-+		if (res.fa_head) {
-+			struct fib_alias *fa;
-+
-+			hlist_for_each_entry_rcu(fa, res.fa_head, fa_list) {
-+				u8 slen = 32 - fri.dst_len;
-+
-+				if (fa->fa_slen == slen &&
-+				    fa->tb_id == fri.tb_id &&
-+				    fa->fa_tos == fri.tos &&
-+				    fa->fa_info == res.fi &&
-+				    fa->fa_type == fri.type) {
-+					fri.offload = fa->offload;
-+					fri.trap = fa->trap;
-+					break;
-+				}
-+			}
-+		}
- 		err = fib_dump_info(skb, NETLINK_CB(in_skb).portid,
- 				    nlh->nlmsg_seq, RTM_NEWROUTE, &fri, 0);
- 	} else {
 -- 
 2.24.1
 
