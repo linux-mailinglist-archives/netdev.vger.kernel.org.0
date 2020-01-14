@@ -2,117 +2,59 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 798F9139F02
-	for <lists+netdev@lfdr.de>; Tue, 14 Jan 2020 02:36:29 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 77B75139F3E
+	for <lists+netdev@lfdr.de>; Tue, 14 Jan 2020 02:59:13 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728942AbgANBgZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 13 Jan 2020 20:36:25 -0500
-Received: from mta04.svc.cra.dublin.eircom.net ([159.134.118.171]:47652 "HELO
-        mta04.svc.cra.dublin.eircom.net" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with SMTP id S1728890AbgANBgY (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 13 Jan 2020 20:36:24 -0500
-Received: (qmail 27825 messnum 4064699 invoked from network[213.94.190.12/avas01.vendorsvc.cra.dublin.eircom.net]); 14 Jan 2020 01:36:20 -0000
-Received: from avas01.vendorsvc.cra.dublin.eircom.net (HELO avas01) (213.94.190.12)
-  by mta04.svc.cra.dublin.eircom.net (qp 27825) with SMTP; 14 Jan 2020 01:36:20 -0000
-Received: from vzmbx18.eircom.net ([86.43.60.98])
-        by Cloudmark Gateway with SMTP
-        id rB7zilJ1EvSCGrB7zils7i; Tue, 14 Jan 2020 01:36:20 +0000
-X-Spam-Flag: NO
-X-CNFS-Analysis: v=2.2 cv=Vs1TO6+n c=1 sm=1 tr=0
- a=e7gqILOnBbllteVy7xBg4A==:117 a=9cW_t1CCXrUA:10 a=FKkrIqjQGGEA:10
- a=56OF8xidLmEA:10 a=Ta-MJLm6_moA:10 a=IkcTkHD0fZMA:10 a=x7bEGLp0ZPQA:10
- a=mf9jJPqrL4kA:10 a=sgm4F-J2Ld0A:10 a=ZZnuYtJkoWoA:10 a=UqCG9HQmAAAA:8
- a=4q5nmWF_J0Ip0owdAhoA:9 a=sdQFkm6Mf0l6Isv9:21 a=5ynS3-km4IMm0R91:21
- a=QEXdDO2ut3YA:10 a=dRqJYu-X7R0A:10 a=UuxKnNfG_hQA:10 a=i0FYOed3za4A:10
-Date:   Tue, 14 Jan 2020 01:36:19 +0000 (GMT)
-From:   Ahmed <ahmed25442@eircom.net>
-Reply-To: ouedraogoahmed@outlook.com
-Message-ID: <2106433558.135482.1578965779397.JavaMail.zimbra@eircom.net>
-Subject: HELLO DEAR
+        id S1729410AbgANB7E (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 13 Jan 2020 20:59:04 -0500
+Received: from mail.kernel.org ([198.145.29.99]:53104 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1728838AbgANB7D (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 13 Jan 2020 20:59:03 -0500
+Received: from cakuba (c-73-93-4-247.hsd1.ca.comcast.net [73.93.4.247])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id C756B20CC7;
+        Tue, 14 Jan 2020 01:59:02 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1578967143;
+        bh=gqYHHLS/aWfy+hfVzwouBr11jL7rn3btXpeGgfdzwBU=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=XKdAydoo5i9u2EJ2sJ9j/Gz/tXAF+eKNeXDXfwS+U7g2OnV+hleqdEukz0cqs1H2y
+         c+stNJDHj45dMT0hPSr9SNOWfdOzWknA2irAI/hOMfojdFiSuw6iMyBBJIcy/kyL82
+         Xd0X9MSaNMYBiuo4fvLsmwTviBlTSbB54xVSiCsc=
+Date:   Mon, 13 Jan 2020 17:59:00 -0800
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Niu Xilei <niu_xilei@163.com>
+Cc:     davem@davemloft.net, tglx@linutronix.de, fw@strlen.de,
+        peterz@infradead.org, steffen.klassert@secunet.com,
+        bigeasy@linutronix.de, jonathan.lemon@gmail.com, pabeni@redhat.com,
+        anshuman.khandual@arm.com, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [v3] pktgen: Allow configuration of IPv6 source address range
+Message-ID: <20200113175900.05094fac@cakuba>
+In-Reply-To: <20200114010122.5327-1-niu_xilei@163.com>
+References: <20200114010122.5327-1-niu_xilei@163.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
-X-Originating-IP: [37.120.208.67]
-X-Mailer: Zimbra 8.6.0_GA_1242 (zclient/8.6.0_GA_1242)
-Thread-Topic: HELLO DEAR
-Thread-Index: M/FExM3km1AqAc4WBjV7CLKa/MWY5A==
-X-CMAE-Envelope: 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
- RX5TCLotsInL8A==
-To:     unlisted-recipients:; (no To-header on input)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Dear Friend,
+On Tue, 14 Jan 2020 09:01:22 +0800, Niu Xilei wrote:
+> Pktgen can use only one IPv6 source address from output device or src6
+> command setting. In pressure test we need create lots of sessions more than
+> 65535. So add src6_min and src6_max command to set the range.
+> 
+> Signed-off-by: Niu Xilei <niu_xilei@163.com>
+> 
+> Changes since v2:
+>  - reword subject line
 
-I need your urgent assistance in transferring the sum of $11.3million to your private account.By indicating your interest i will send you the full details on how the business will be executed.
+Seems you have missed the inline feedback on v2. There were two other
+issues I raised within the quoted patch. Please take a look again.
 
-Please if you are interested contact me through my private e-mail (ouedraogoahmed@outlook.com)  
-
-Best Regards,
-Ahmed Ouedraogo
+> Changes since v1:
+>  - only create IPv6 source address over least significant 64 bit range
