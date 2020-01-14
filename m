@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id C252E13B4E2
-	for <lists+netdev@lfdr.de>; Tue, 14 Jan 2020 22:57:16 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 24A1013B4F5
+	for <lists+netdev@lfdr.de>; Tue, 14 Jan 2020 22:58:39 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728986AbgANV5M (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 14 Jan 2020 16:57:12 -0500
-Received: from mail-ed1-f67.google.com ([209.85.208.67]:32863 "EHLO
-        mail-ed1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726491AbgANV5J (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 14 Jan 2020 16:57:09 -0500
-Received: by mail-ed1-f67.google.com with SMTP id r21so13494310edq.0;
-        Tue, 14 Jan 2020 13:57:08 -0800 (PST)
+        id S1729110AbgANV6M (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 14 Jan 2020 16:58:12 -0500
+Received: from mail-ed1-f65.google.com ([209.85.208.65]:39402 "EHLO
+        mail-ed1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728824AbgANV6K (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 14 Jan 2020 16:58:10 -0500
+Received: by mail-ed1-f65.google.com with SMTP id t17so13475703eds.6;
+        Tue, 14 Jan 2020 13:58:08 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=subject:to:cc:references:from:autocrypt:message-id:date:user-agent
          :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=dWX0qH3iccx0g4AYWNuVHAofcVC/hMHz2INt2O8t/GA=;
-        b=NjvFavWXuubzGh467wyrmrgu/taGZf/9CWRMDm1ZpUOXqXRtdphGeRW77uSbeyPQsv
-         v9pr+Wm0ouvQJd6o4bFZYTbOhr2X9wZImTpQLo0kwzRSaAlHcpfFp/fZfesfqF13kTA9
-         +HrHFyNAw9f4jA0z36wRvMGWbu2zORRVdvoz7ABCf909a86w+pYdSV7ENLBK55Dm78mw
-         6N+WC/1BK+1LGTw4agLY02HhgKGnAGKmZW6tGuf24wO8NjgYD0HjABo10jcidpYTb/ik
-         SUTR/B43SHq4fiUkUa41jymCwUKy9D2/ET/JF8rNE8nSRFDnIpBr6zhTK2J938OX2/pH
-         Ghjg==
+        bh=Mye4LmyzQE+LrbbIEq6tP/9MPNsewchUD91k+otVz+w=;
+        b=n52rsCEiRkzPFenvyx25SeM1GC8hE/eMjP0sjse+wfLL1IXV4keBvfRflPo8igr69f
+         m2z5keNNqfIGqxNsbFUM7CmlS/ifpZYvSUKWsyMKdtN08cpWEk20wH1+1EWO6mawknjh
+         04hnMapLyNp4Mmzxxm0ddfuLS1xMgl8Cn8ULxDjtqPpai9AiDAhjPD9yZJoEzc0bzC7+
+         mY2YfGbdky7W3S+neN+QY5bkt0Htu+ChM2KLROgntLWCuPWBpIvJwkCZu4GCnLU7BNel
+         othYC5z84OXy7XQThXKC98DIQnbCTTQuFS8/qeLA1GycbCPMxd/Peq6HFSRX6VjtLFxM
+         2Otw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:subject:to:cc:references:from:autocrypt
          :message-id:date:user-agent:mime-version:in-reply-to
          :content-language:content-transfer-encoding;
-        bh=dWX0qH3iccx0g4AYWNuVHAofcVC/hMHz2INt2O8t/GA=;
-        b=NIKmZq6xAS9UoMYaDZymIeYTGzk938LBc5CEuqS2B9BSUIDlh9U4rEB4DCB1T8aBli
-         BTGu1O573Vv6UV0yKSy3KkiNaoYUnsmb9JYF1KynKeUvdBT78qsIx2+J8bjqXuh22Vam
-         WOCO8hgLUw4h7a1jQtVBInLas/zyWN39uBfIJU+Ghw/8zVZY+v5j76Law0z2j8PTqtdo
-         Kq8FScFDd/6Tts64iaF6kU5OYj8qRBdSOMKT3ez2o+6X7b57ZzAD4FHplRT3iOaDXo5p
-         fS4eeu41HtE94JaKBI6KvwWjJCZR+5PofE6vJg5tkzk5Ms7LebKHPmolRAq8PcRENHw4
-         ggHQ==
-X-Gm-Message-State: APjAAAUAieDbufGcp7zk7LfBRuUYS+5E4XvOfsmjazIPmtUdCdE9zdKi
-        Qp15LgCWGOfVmfjj8YTX5eR2Xjul
-X-Google-Smtp-Source: APXvYqzSYmganXj/6DwiVipHB62E3FOeOHJ3lMar2NcWyAIMaP6N4qyIYkAfeJDBjRznzIDNewaV7g==
-X-Received: by 2002:a05:6402:609:: with SMTP id n9mr26283516edv.305.1579039027311;
-        Tue, 14 Jan 2020 13:57:07 -0800 (PST)
+        bh=Mye4LmyzQE+LrbbIEq6tP/9MPNsewchUD91k+otVz+w=;
+        b=ee8D1TZjqT1zvznyclo3GWLfxXHAtUyVMMCPL17Mxxt+a6DQ/JhxR/UiiL5UcYvCq8
+         SDX06x5Z/Lknr819ZukayE5Cn+bGg0l36WOBY7PSePxnR3OyR1nahcPBIOaAy3N3KipM
+         iYaMOZkovCvQGDkwcP1WIetIdj9W9Bmc7zcfb1GVFOEI4KVY3gXY8QQNbe0GVRTFjeqm
+         u6kOLpsd8ToFLimyE1hOsjGoD2w+uzhQFWJ3QeE7Ll5i/66tRxCmlsaMmbxOIRk8Aajh
+         vOAp5BitDdte0ob2/NZ2MrfepIpbNuFLxTvAd+MiUY7DP2BWkOLH9m4nJgO6AO6pUHX7
+         I1tA==
+X-Gm-Message-State: APjAAAX9okrZW2nUT5Rr62prv4aQTM+9J/rWcKXgsvF4A7A0mtlAiOX0
+        EzZYfjGTbQnyjjKhDhEIIj8=
+X-Google-Smtp-Source: APXvYqxB09DwRODZB2nlJ/k1cFJE9gsRdldb66R9ThkKbXcsmtV8y8kBgCC6iLHu2bkV3WZ35PRLCQ==
+X-Received: by 2002:a17:906:1356:: with SMTP id x22mr25313595ejb.55.1579039088179;
+        Tue, 14 Jan 2020 13:58:08 -0800 (PST)
 Received: from [10.67.50.41] ([192.19.223.252])
-        by smtp.googlemail.com with ESMTPSA id lc20sm662295ejb.78.2020.01.14.13.57.02
+        by smtp.googlemail.com with ESMTPSA id ba29sm655434edb.47.2020.01.14.13.57.58
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 14 Jan 2020 13:57:06 -0800 (PST)
-Subject: Re: [PATCH RFC net-next 16/19] net: dsa: tag_qca: fix doubled Tx
- statistics
+        Tue, 14 Jan 2020 13:58:07 -0800 (PST)
+Subject: Re: [PATCH RFC net-next 06/19] net: dsa: tag_gswip: fix typo in tag
+ name
 To:     Andrew Lunn <andrew@lunn.ch>, Alexander Lobakin <alobakin@dlink.ru>
 Cc:     "David S. Miller" <davem@davemloft.net>,
         Edward Cree <ecree@solarflare.com>,
@@ -71,7 +71,7 @@ Cc:     "David S. Miller" <davem@davemloft.net>,
         linux-arm-kernel@lists.infradead.org,
         linux-mediatek@lists.infradead.org
 References: <20191230143028.27313-1-alobakin@dlink.ru>
- <20191230143028.27313-17-alobakin@dlink.ru> <20191230172345.GF13569@lunn.ch>
+ <20191230143028.27313-7-alobakin@dlink.ru> <20191230172209.GE13569@lunn.ch>
 From:   Florian Fainelli <f.fainelli@gmail.com>
 Autocrypt: addr=f.fainelli@gmail.com; prefer-encrypt=mutual; keydata=
  xsDiBEjPuBIRBACW9MxSJU9fvEOCTnRNqG/13rAGsj+vJqontvoDSNxRgmafP8d3nesnqPyR
@@ -127,12 +127,12 @@ Autocrypt: addr=f.fainelli@gmail.com; prefer-encrypt=mutual; keydata=
  HvsHIcv4lxCWkFXkwsuWqzEKK6kxVpRDoEQPDj+Oy/ZJ5fYuMbkdHrlegwoQ64LrqdmiVVPC
  TwQYEQIADwIbDAUCVF/S8QUJHlwd3wAKCRBhV5kVtWN2Do+FAJ956xSz2XpDHql+Wg/2qv3b
  G10n8gCguORqNGMsVRxrlLs7/himep7MrCc=
-Message-ID: <2a9bdadd-4724-bbad-a8c2-79066a03ba36@gmail.com>
-Date:   Tue, 14 Jan 2020 13:57:00 -0800
+Message-ID: <0edda44f-7a75-e6c9-eec3-48259630bb3d@gmail.com>
+Date:   Tue, 14 Jan 2020 13:57:56 -0800
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
  Thunderbird/68.2.2
 MIME-Version: 1.0
-In-Reply-To: <20191230172345.GF13569@lunn.ch>
+In-Reply-To: <20191230172209.GE13569@lunn.ch>
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
@@ -141,18 +141,18 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 12/30/19 9:23 AM, Andrew Lunn wrote:
-> On Mon, Dec 30, 2019 at 05:30:24PM +0300, Alexander Lobakin wrote:
->> DSA core updates Tx stats for slaves in dsa_slave_xmit(), no need to do
->> it manually in .xmit() tagger callback.
+On 12/30/19 9:22 AM, Andrew Lunn wrote:
+> On Mon, Dec 30, 2019 at 05:30:14PM +0300, Alexander Lobakin wrote:
+>> "gwsip" -> "gswip".
 >>
 >> Signed-off-by: Alexander Lobakin <alobakin@dlink.ru>
 > 
 > Reviewed-by: Andrew Lunn <andrew@lunn.ch>
 
-Alexander, can you submit that separately from your GRO series and add a
-Fixes tag for this?
+Likewise, this is a bug fix that should be extracted out of this GRO
+series and a Fixes: tag be put since this has an user-visible impact
+through /sys/class/net/*/dsa/tagging.
 
-Thanks!
+Thanks
 -- 
 Florian
