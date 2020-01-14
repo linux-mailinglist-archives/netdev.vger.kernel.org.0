@@ -2,262 +2,90 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 14BEF13A859
-	for <lists+netdev@lfdr.de>; Tue, 14 Jan 2020 12:24:07 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 118F513A85B
+	for <lists+netdev@lfdr.de>; Tue, 14 Jan 2020 12:24:37 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729679AbgANLYF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 14 Jan 2020 06:24:05 -0500
-Received: from out2-smtp.messagingengine.com ([66.111.4.26]:49789 "EHLO
-        out2-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1729652AbgANLYB (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 14 Jan 2020 06:24:01 -0500
-Received: from compute3.internal (compute3.nyi.internal [10.202.2.43])
-        by mailout.nyi.internal (Postfix) with ESMTP id B71542247C;
-        Tue, 14 Jan 2020 06:24:00 -0500 (EST)
-Received: from mailfrontend1 ([10.202.2.162])
-  by compute3.internal (MEProxy); Tue, 14 Jan 2020 06:24:00 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-        messagingengine.com; h=cc:content-transfer-encoding:date:from
-        :in-reply-to:message-id:mime-version:references:subject:to
-        :x-me-proxy:x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=
-        fm1; bh=RH3GcOKScMopXdOIeQ3naMkD99aPgZXK3xQKTzjCnxU=; b=qt365eOg
-        rY0IpDXi/al2+vBd3h3XYVHUljkScQ0V/vZCFOtS6VWVJtSUv0tzBGIMM3uvcu5p
-        jAYACfkuCILqdXZSCP6Y61T3JjBEDAuyRzyXu8CxmlEQxeZCEbl60Qnpx24xSLGY
-        QDSyBi5QRSkvuAUXtROosU0EH2MiHLbPG9ZQd6bJwCRReHzejHjbBMDA2tSvoCcz
-        VWyyksyOnDxePuFzoQUF46VcYY+8ASYTkbTv0UiPJd069eLX4FNTl/I+txqhWZk/
-        WZ7yuu221Fakbi02zdl18Ap8ax6tsqgZsNCmmm57V8ZRmKt6jkvG7PSlatT1lb3p
-        6s4XgaIv+bIrGA==
-X-ME-Sender: <xms:0KQdXiyz1vtE3yKVyoUKRvsXbJ6duh2wUQi3QrYDoxFb8ZA4vHi6SQ>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedugedrtddtgddtlecutefuodetggdotefrodftvf
-    curfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfghnecu
-    uegrihhlohhuthemuceftddtnecunecujfgurhephffvufffkffojghfggfgsedtkeertd
-    ertddtnecuhfhrohhmpefkughoucfutghhihhmmhgvlhcuoehiughoshgthhesihguohhs
-    tghhrdhorhhgqeenucfkphepudelfedrgeejrdduieehrddvhedunecurfgrrhgrmhepmh
-    grihhlfhhrohhmpehiughoshgthhesihguohhstghhrdhorhhgnecuvehluhhsthgvrhfu
-    ihiivgepje
-X-ME-Proxy: <xmx:0KQdXo7EhdTdCsOeb71CUBedaZvlexahA6DFL8CdnoIkvCB3_j_xzA>
-    <xmx:0KQdXgXRxundbatVHqDgEq-6_cu3KDbpbE4i_p-u4VeNu53saQYBGA>
-    <xmx:0KQdXoxKyALmgYQQuO_-OA2H4iMA0Xn-oJpX8bDn2P_ge0CCZKDfIA>
-    <xmx:0KQdXgJloBpzT7ChffC32uVwQgu4uxcYIZeVnH-jhqNJZJaIYqCq_w>
-Received: from splinter.mtl.com (unknown [193.47.165.251])
-        by mail.messagingengine.com (Postfix) with ESMTPA id 3B9B380064;
-        Tue, 14 Jan 2020 06:23:59 -0500 (EST)
-From:   Ido Schimmel <idosch@idosch.org>
+        id S1728983AbgANLYd (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 14 Jan 2020 06:24:33 -0500
+Received: from metis.ext.pengutronix.de ([85.220.165.71]:35165 "EHLO
+        metis.ext.pengutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725956AbgANLYd (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 14 Jan 2020 06:24:33 -0500
+Received: from dude.hi.pengutronix.de ([2001:67c:670:100:1d::7])
+        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <mgr@pengutronix.de>)
+        id 1irKJD-0003xD-8l; Tue, 14 Jan 2020 12:24:31 +0100
+Received: from mgr by dude.hi.pengutronix.de with local (Exim 4.92)
+        (envelope-from <mgr@pengutronix.de>)
+        id 1irKJB-0006An-HC; Tue, 14 Jan 2020 12:24:29 +0100
+From:   Michael Grzeschik <m.grzeschik@pengutronix.de>
 To:     netdev@vger.kernel.org
-Cc:     davem@davemloft.net, kuba@kernel.org, jiri@mellanox.com,
-        dsahern@gmail.com, roopa@cumulusnetworks.com, mlxsw@mellanox.com,
-        Ido Schimmel <idosch@mellanox.com>
-Subject: [PATCH net-next v2 10/10] selftests: mlxsw: Add test for FIB offload API
-Date:   Tue, 14 Jan 2020 13:23:18 +0200
-Message-Id: <20200114112318.876378-11-idosch@idosch.org>
-X-Mailer: git-send-email 2.24.1
-In-Reply-To: <20200114112318.876378-1-idosch@idosch.org>
-References: <20200114112318.876378-1-idosch@idosch.org>
+Cc:     andrew@lunn.ch, f.fainelli@gmail.com, hkallweit1@gmail.com,
+        kernel@pengutronix.de
+Subject: [PATCH] net: phy: dp83867: Set FORCE_LINK_GOOD do default after reset
+Date:   Tue, 14 Jan 2020 12:24:25 +0100
+Message-Id: <20200114112425.19967-1-m.grzeschik@pengutronix.de>
+X-Mailer: git-send-email 2.25.0.rc1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
+X-SA-Exim-Connect-IP: 2001:67c:670:100:1d::7
+X-SA-Exim-Mail-From: mgr@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: netdev@vger.kernel.org
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Ido Schimmel <idosch@mellanox.com>
+According to the Datasheet this bit should be 0 (Normal operation) in
+default. With the FORCE_LINK_GOOD bit set, it is not possible to get a
+link. This patch sets FORCE_LINK_GOOD to the default value after
+resetting the phy.
 
-The test reuses the common FIB offload tests in order to make sure that
-mlxsw correctly implements FIB offload.
-
-Signed-off-by: Ido Schimmel <idosch@mellanox.com>
-Acked-by: Jiri Pirko <jiri@mellanox.com>
+Signed-off-by: Michael Grzeschik <m.grzeschik@pengutronix.de>
 ---
- .../selftests/drivers/net/mlxsw/fib.sh        | 180 ++++++++++++++++++
- 1 file changed, 180 insertions(+)
- create mode 100755 tools/testing/selftests/drivers/net/mlxsw/fib.sh
+ drivers/net/phy/dp83867.c | 13 ++++++++++++-
+ 1 file changed, 12 insertions(+), 1 deletion(-)
 
-diff --git a/tools/testing/selftests/drivers/net/mlxsw/fib.sh b/tools/testing/selftests/drivers/net/mlxsw/fib.sh
-new file mode 100755
-index 000000000000..45115f81c2b1
---- /dev/null
-+++ b/tools/testing/selftests/drivers/net/mlxsw/fib.sh
-@@ -0,0 +1,180 @@
-+#!/bin/bash
-+# SPDX-License-Identifier: GPL-2.0
-+#
-+# This test is for checking the FIB offload API on top of mlxsw.
+diff --git a/drivers/net/phy/dp83867.c b/drivers/net/phy/dp83867.c
+index adda0d0eab800..60a09fabf41d1 100644
+--- a/drivers/net/phy/dp83867.c
++++ b/drivers/net/phy/dp83867.c
+@@ -99,6 +99,7 @@
+ #define DP83867_PHYCR_TX_FIFO_DEPTH_MASK	GENMASK(15, 14)
+ #define DP83867_PHYCR_RX_FIFO_DEPTH_MASK	GENMASK(13, 12)
+ #define DP83867_PHYCR_RESERVED_MASK		BIT(11)
++#define DP83867_PHYCR_FORCE_LINK_GOOD		BIT(10)
+ 
+ /* RGMIIDCTL bits */
+ #define DP83867_RGMII_TX_CLK_DELAY_MAX		0xf
+@@ -627,7 +628,7 @@ static int dp83867_config_init(struct phy_device *phydev)
+ 
+ static int dp83867_phy_reset(struct phy_device *phydev)
+ {
+-	int err;
++	int val, err;
+ 
+ 	err = phy_write(phydev, DP83867_CTRL, DP83867_SW_RESET);
+ 	if (err < 0)
+@@ -635,6 +636,16 @@ static int dp83867_phy_reset(struct phy_device *phydev)
+ 
+ 	usleep_range(10, 20);
+ 
++	/* After reset FORCE_LINK_GOOD bit is set. Although the
++	 * default value should be unset. Disable FORCE_LINK_GOOD
++	 * for the phy to work properly.
++	 */
++	val = phy_read(phydev, MII_DP83867_PHYCTRL);
++	if (val & DP83867_PHYCR_FORCE_LINK_GOOD) {
++		val &= ~(DP83867_PHYCR_FORCE_LINK_GOOD);
++		phy_write(phydev, MII_DP83867_PHYCTRL, val);
++	}
 +
-+lib_dir=$(dirname $0)/../../../net/forwarding
-+
-+ALL_TESTS="
-+	ipv4_identical_routes
-+	ipv4_tos
-+	ipv4_metric
-+	ipv4_replace
-+	ipv4_delete
-+	ipv4_plen
-+	ipv4_replay
-+	ipv4_flush
-+	ipv6_add
-+	ipv6_metric
-+	ipv6_append_single
-+	ipv6_replace_single
-+	ipv6_metric_multipath
-+	ipv6_append_multipath
-+	ipv6_replace_multipath
-+	ipv6_append_multipath_to_single
-+	ipv6_delete_single
-+	ipv6_delete_multipath
-+	ipv6_replay_single
-+	ipv6_replay_multipath
-+"
-+NUM_NETIFS=0
-+source $lib_dir/lib.sh
-+source $lib_dir/devlink_lib.sh
-+source $lib_dir/fib_offload_lib.sh
-+
-+ipv4_identical_routes()
-+{
-+	fib_ipv4_identical_routes_test "testns1"
-+}
-+
-+ipv4_tos()
-+{
-+	fib_ipv4_tos_test "testns1"
-+}
-+
-+ipv4_metric()
-+{
-+	fib_ipv4_metric_test "testns1"
-+}
-+
-+ipv4_replace()
-+{
-+	fib_ipv4_replace_test "testns1"
-+}
-+
-+ipv4_delete()
-+{
-+	fib_ipv4_delete_test "testns1"
-+}
-+
-+ipv4_plen()
-+{
-+	fib_ipv4_plen_test "testns1"
-+}
-+
-+ipv4_replay_metric()
-+{
-+	fib_ipv4_replay_metric_test "testns1" "$DEVLINK_DEV"
-+}
-+
-+ipv4_replay_tos()
-+{
-+	fib_ipv4_replay_tos_test "testns1" "$DEVLINK_DEV"
-+}
-+
-+ipv4_replay_plen()
-+{
-+	fib_ipv4_replay_plen_test "testns1" "$DEVLINK_DEV"
-+}
-+
-+ipv4_replay()
-+{
-+	ipv4_replay_metric
-+	ipv4_replay_tos
-+	ipv4_replay_plen
-+}
-+
-+ipv4_flush()
-+{
-+	fib_ipv4_flush_test "testns1"
-+}
-+
-+ipv6_add()
-+{
-+	fib_ipv6_add_test "testns1"
-+}
-+
-+ipv6_metric()
-+{
-+	fib_ipv6_metric_test "testns1"
-+}
-+
-+ipv6_append_single()
-+{
-+	fib_ipv6_append_single_test "testns1"
-+}
-+
-+ipv6_replace_single()
-+{
-+	fib_ipv6_replace_single_test "testns1"
-+}
-+
-+ipv6_metric_multipath()
-+{
-+	fib_ipv6_metric_multipath_test "testns1"
-+}
-+
-+ipv6_append_multipath()
-+{
-+	fib_ipv6_append_multipath_test "testns1"
-+}
-+
-+ipv6_replace_multipath()
-+{
-+	fib_ipv6_replace_multipath_test "testns1"
-+}
-+
-+ipv6_append_multipath_to_single()
-+{
-+	fib_ipv6_append_multipath_to_single_test "testns1"
-+}
-+
-+ipv6_delete_single()
-+{
-+	fib_ipv6_delete_single_test "testns1"
-+}
-+
-+ipv6_delete_multipath()
-+{
-+	fib_ipv6_delete_multipath_test "testns1"
-+}
-+
-+ipv6_replay_single()
-+{
-+	fib_ipv6_replay_single_test "testns1" "$DEVLINK_DEV"
-+}
-+
-+ipv6_replay_multipath()
-+{
-+	fib_ipv6_replay_multipath_test "testns1" "$DEVLINK_DEV"
-+}
-+
-+setup_prepare()
-+{
-+	ip netns add testns1
-+	if [ $? -ne 0 ]; then
-+		echo "Failed to add netns \"testns1\""
-+		exit 1
-+	fi
-+
-+	devlink dev reload $DEVLINK_DEV netns testns1
-+	if [ $? -ne 0 ]; then
-+		echo "Failed to reload into netns \"testns1\""
-+		exit 1
-+	fi
-+}
-+
-+cleanup()
-+{
-+	pre_cleanup
-+	devlink -N testns1 dev reload $DEVLINK_DEV netns $$
-+	ip netns del testns1
-+}
-+
-+trap cleanup EXIT
-+
-+setup_prepare
-+
-+tests_run
-+
-+exit $EXIT_STATUS
+ 	return 0;
+ }
+ 
 -- 
-2.24.1
+2.25.0.rc1
 
