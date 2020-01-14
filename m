@@ -2,56 +2,54 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 92EDC13B4DB
-	for <lists+netdev@lfdr.de>; Tue, 14 Jan 2020 22:57:13 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C252E13B4E2
+	for <lists+netdev@lfdr.de>; Tue, 14 Jan 2020 22:57:16 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728872AbgANV4X (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 14 Jan 2020 16:56:23 -0500
-Received: from mail-ed1-f67.google.com ([209.85.208.67]:44180 "EHLO
+        id S1728986AbgANV5M (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 14 Jan 2020 16:57:12 -0500
+Received: from mail-ed1-f67.google.com ([209.85.208.67]:32863 "EHLO
         mail-ed1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726491AbgANV4W (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 14 Jan 2020 16:56:22 -0500
-Received: by mail-ed1-f67.google.com with SMTP id bx28so13456808edb.11;
-        Tue, 14 Jan 2020 13:56:20 -0800 (PST)
+        with ESMTP id S1726491AbgANV5J (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 14 Jan 2020 16:57:09 -0500
+Received: by mail-ed1-f67.google.com with SMTP id r21so13494310edq.0;
+        Tue, 14 Jan 2020 13:57:08 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=subject:to:cc:references:from:autocrypt:message-id:date:user-agent
          :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=yH3gRAxnfteCLLH/u2qSnjxRy8GxS8UCwyFGMa2DlSk=;
-        b=L8TLJ3X3zeA1DIMsprrsvpWLzlNOIhK4gRrrwo1pWCBT2v6TzZt4fyCDREJ5gMRHB1
-         w3Tp0Ge+TB+EcXDYqq/S3H3H6dsnQhPBnJDXcrIekSfsKC9NqaQvKCOeGIpuJE05Ipkc
-         2Uw8qi25HOS7n5tOtEoGTi7iZeSrf2TttZ2Jl/iyp7NOqn4KJsYpRNvl93C9zqvvfWAV
-         VLaPVVelE92hWnWCTwTnfNksNwxvNpUQnWb3fpWfqlkXLVWAo540W2abWB2ihtMd5AFP
-         SSv4sdAdjrGGpIPzE5oneuBDdE5vw70m3ZK18regWMUwN5vUjoNXQKiasgd6vJ1gDr0S
-         n49w==
+        bh=dWX0qH3iccx0g4AYWNuVHAofcVC/hMHz2INt2O8t/GA=;
+        b=NjvFavWXuubzGh467wyrmrgu/taGZf/9CWRMDm1ZpUOXqXRtdphGeRW77uSbeyPQsv
+         v9pr+Wm0ouvQJd6o4bFZYTbOhr2X9wZImTpQLo0kwzRSaAlHcpfFp/fZfesfqF13kTA9
+         +HrHFyNAw9f4jA0z36wRvMGWbu2zORRVdvoz7ABCf909a86w+pYdSV7ENLBK55Dm78mw
+         6N+WC/1BK+1LGTw4agLY02HhgKGnAGKmZW6tGuf24wO8NjgYD0HjABo10jcidpYTb/ik
+         SUTR/B43SHq4fiUkUa41jymCwUKy9D2/ET/JF8rNE8nSRFDnIpBr6zhTK2J938OX2/pH
+         Ghjg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:subject:to:cc:references:from:autocrypt
          :message-id:date:user-agent:mime-version:in-reply-to
          :content-language:content-transfer-encoding;
-        bh=yH3gRAxnfteCLLH/u2qSnjxRy8GxS8UCwyFGMa2DlSk=;
-        b=jJEXy3OZ27E24r2CrAkcNJ7P3geaLRtNA6LZcCv1QYRLEUOALXcUaXkLqg8Q/ktuRI
-         ZgdGxg3fzgzGnOr83hzSkrzskFfW36xVeYlXUBmv2hhnWXeoudHI3dBjCM9D9mKqAaQf
-         wsi7eeLG+DA1PNy/wfyPICHyvYl2erK0Q359ubA4j2KBHjjE86PLfKNOqeP6lTcHXM6F
-         f+frEUjNSyYcHtXGsEx30CbbF9DwBurIHVzbthMKtItMssLFNEJ/kMN1a6bn2FCwqM85
-         aOan0QpJEmGdAazmSE2E8dNNAl+iLD+LjYQITRs0ikRCEBguvNrw+4Er4GoQxF6p5ahu
-         lkbA==
-X-Gm-Message-State: APjAAAVSi6SIWmG+2q69qbAl1IvJa3a6s6+wphQ97NhxbGfUcjAM39z6
-        fFhZSKQ0AYQsX2HelD9hAFA=
-X-Google-Smtp-Source: APXvYqyWnO9iRf5STWhMn69PWxX8fFlxQ2pGMtj6O19YvlnMFQQfsTfJA4C1fnENHdovGqy+6ivD2g==
-X-Received: by 2002:aa7:d84b:: with SMTP id f11mr25642369eds.96.1579038979890;
-        Tue, 14 Jan 2020 13:56:19 -0800 (PST)
+        bh=dWX0qH3iccx0g4AYWNuVHAofcVC/hMHz2INt2O8t/GA=;
+        b=NIKmZq6xAS9UoMYaDZymIeYTGzk938LBc5CEuqS2B9BSUIDlh9U4rEB4DCB1T8aBli
+         BTGu1O573Vv6UV0yKSy3KkiNaoYUnsmb9JYF1KynKeUvdBT78qsIx2+J8bjqXuh22Vam
+         WOCO8hgLUw4h7a1jQtVBInLas/zyWN39uBfIJU+Ghw/8zVZY+v5j76Law0z2j8PTqtdo
+         Kq8FScFDd/6Tts64iaF6kU5OYj8qRBdSOMKT3ez2o+6X7b57ZzAD4FHplRT3iOaDXo5p
+         fS4eeu41HtE94JaKBI6KvwWjJCZR+5PofE6vJg5tkzk5Ms7LebKHPmolRAq8PcRENHw4
+         ggHQ==
+X-Gm-Message-State: APjAAAUAieDbufGcp7zk7LfBRuUYS+5E4XvOfsmjazIPmtUdCdE9zdKi
+        Qp15LgCWGOfVmfjj8YTX5eR2Xjul
+X-Google-Smtp-Source: APXvYqzSYmganXj/6DwiVipHB62E3FOeOHJ3lMar2NcWyAIMaP6N4qyIYkAfeJDBjRznzIDNewaV7g==
+X-Received: by 2002:a05:6402:609:: with SMTP id n9mr26283516edv.305.1579039027311;
+        Tue, 14 Jan 2020 13:57:07 -0800 (PST)
 Received: from [10.67.50.41] ([192.19.223.252])
-        by smtp.googlemail.com with ESMTPSA id i11sm656262eds.23.2020.01.14.13.56.14
+        by smtp.googlemail.com with ESMTPSA id lc20sm662295ejb.78.2020.01.14.13.57.02
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 14 Jan 2020 13:56:19 -0800 (PST)
-Subject: Re: [PATCH RFC net-next 05/19] net: dsa: tag_ar9331: add GRO
- callbacks
-To:     Vladimir Oltean <olteanv@gmail.com>,
-        Alexander Lobakin <alobakin@dlink.ru>
+        Tue, 14 Jan 2020 13:57:06 -0800 (PST)
+Subject: Re: [PATCH RFC net-next 16/19] net: dsa: tag_qca: fix doubled Tx
+ statistics
+To:     Andrew Lunn <andrew@lunn.ch>, Alexander Lobakin <alobakin@dlink.ru>
 Cc:     "David S. Miller" <davem@davemloft.net>,
         Edward Cree <ecree@solarflare.com>,
-        Andrew Lunn <andrew@lunn.ch>,
         Vivien Didelot <vivien.didelot@gmail.com>,
         Hauke Mehrtens <hauke@hauke-m.de>,
         Sean Wang <sean.wang@mediatek.com>,
@@ -69,19 +67,11 @@ Cc:     "David S. Miller" <davem@davemloft.net>,
         Jakub Sitnicki <jakub@cloudflare.com>,
         Paul Blakey <paulb@mellanox.com>,
         Yoshiki Komachi <komachi.yoshiki@gmail.com>,
-        netdev <netdev@vger.kernel.org>,
-        lkml <linux-kernel@vger.kernel.org>,
-        "moderated list:ARM/Mediatek SoC support" 
-        <linux-arm-kernel@lists.infradead.org>,
-        "moderated list:ARM/Mediatek SoC support" 
-        <linux-mediatek@lists.infradead.org>
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org
 References: <20191230143028.27313-1-alobakin@dlink.ru>
- <20191230143028.27313-6-alobakin@dlink.ru>
- <ee6f83fd-edf4-5a98-9868-4cbe9e226b9b@gmail.com>
- <ed0ad0246c95a9ee87352d8ddbf0d4a1@dlink.ru>
- <CA+h21hoSoZT+ieaOu8N=MCSqkzey0L6HeoXSyLtHjZztT0S9ug@mail.gmail.com>
- <0002a7388dfd5fb70db4b43a6c521c52@dlink.ru>
- <CA+h21hqZoLrU7nL3Vo0KcmFnOxNxQPwoOVSEd6styyjK7XO+5w@mail.gmail.com>
+ <20191230143028.27313-17-alobakin@dlink.ru> <20191230172345.GF13569@lunn.ch>
 From:   Florian Fainelli <f.fainelli@gmail.com>
 Autocrypt: addr=f.fainelli@gmail.com; prefer-encrypt=mutual; keydata=
  xsDiBEjPuBIRBACW9MxSJU9fvEOCTnRNqG/13rAGsj+vJqontvoDSNxRgmafP8d3nesnqPyR
@@ -137,57 +127,32 @@ Autocrypt: addr=f.fainelli@gmail.com; prefer-encrypt=mutual; keydata=
  HvsHIcv4lxCWkFXkwsuWqzEKK6kxVpRDoEQPDj+Oy/ZJ5fYuMbkdHrlegwoQ64LrqdmiVVPC
  TwQYEQIADwIbDAUCVF/S8QUJHlwd3wAKCRBhV5kVtWN2Do+FAJ956xSz2XpDHql+Wg/2qv3b
  G10n8gCguORqNGMsVRxrlLs7/himep7MrCc=
-Message-ID: <129bf2bc-c0e9-02a3-7d40-0f7920803769@gmail.com>
-Date:   Tue, 14 Jan 2020 13:56:11 -0800
+Message-ID: <2a9bdadd-4724-bbad-a8c2-79066a03ba36@gmail.com>
+Date:   Tue, 14 Jan 2020 13:57:00 -0800
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
  Thunderbird/68.2.2
 MIME-Version: 1.0
-In-Reply-To: <CA+h21hqZoLrU7nL3Vo0KcmFnOxNxQPwoOVSEd6styyjK7XO+5w@mail.gmail.com>
+In-Reply-To: <20191230172345.GF13569@lunn.ch>
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 1/13/20 2:28 AM, Vladimir Oltean wrote:
-> On Mon, 13 Jan 2020 at 11:46, Alexander Lobakin <alobakin@dlink.ru> wrote:
+On 12/30/19 9:23 AM, Andrew Lunn wrote:
+> On Mon, Dec 30, 2019 at 05:30:24PM +0300, Alexander Lobakin wrote:
+>> DSA core updates Tx stats for slaves in dsa_slave_xmit(), no need to do
+>> it manually in .xmit() tagger callback.
 >>
->> Vladimir Oltean wrote 13.01.2020 12:42:
->>> Hi Alexander,
->>>
->>> On Mon, 13 Jan 2020 at 11:22, Alexander Lobakin <alobakin@dlink.ru>
->>> wrote:
->>>>
->>>> CPU ports can't be bridged anyway
->>>>
->>>> Regards,
->>>> ᚷ ᛖ ᚢ ᚦ ᚠ ᚱ
->>>
->>> The fact that CPU ports can't be bridged is already not ideal.
->>> One can have a DSA switch with cascaded switches on each port, so it
->>> acts like N DSA masters (not as DSA links, since the taggers are
->>> incompatible), with each switch forming its own tree. It is desirable
->>> that the ports of the DSA switch on top are bridged, so that
->>> forwarding between cascaded switches does not pass through the CPU.
->>
->> Oh, I see. But currently DSA infra forbids the adding DSA masters to
->> bridges IIRC. Can't name it good or bad decision, but was introduced
->> to prevent accidental packet flow breaking on DSA setups.
->>
+>> Signed-off-by: Alexander Lobakin <alobakin@dlink.ru>
 > 
-> I just wanted to point out that some people are going to be looking at
-> ways by which the ETH_P_XDSA handler can be made to play nice with the
-> master's rx_handler, and that it would be nice to at least not make
-> the limitation worse than it is by converting everything to
-> rx_handlers (which "currently" can't be stacked, from the comments in
-> netdevice.h).
+> Reviewed-by: Andrew Lunn <andrew@lunn.ch>
 
-I am not sure this would change the situation much, today we cannot have
-anything but switch tags travel on the DSA master network device,
-whether we accomplish the RX tap through a special skb->protocol value
-or via rx_handler, it probably does not functionally matter, but it
-could change the performance.
+Alexander, can you submit that separately from your GRO series and add a
+Fixes tag for this?
+
+Thanks!
 -- 
 Florian
