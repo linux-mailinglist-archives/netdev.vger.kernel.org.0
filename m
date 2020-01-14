@@ -2,122 +2,173 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 3414613AFC5
-	for <lists+netdev@lfdr.de>; Tue, 14 Jan 2020 17:46:24 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D8B3613AFE0
+	for <lists+netdev@lfdr.de>; Tue, 14 Jan 2020 17:47:33 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728853AbgANQqS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 14 Jan 2020 11:46:18 -0500
-Received: from esa1.microchip.iphmx.com ([68.232.147.91]:6828 "EHLO
-        esa1.microchip.iphmx.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728827AbgANQqS (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 14 Jan 2020 11:46:18 -0500
-Received-SPF: Pass (esa1.microchip.iphmx.com: domain of
-  Horatiu.Vultur@microchip.com designates 198.175.253.82 as
-  permitted sender) identity=mailfrom;
-  client-ip=198.175.253.82; receiver=esa1.microchip.iphmx.com;
-  envelope-from="Horatiu.Vultur@microchip.com";
-  x-sender="Horatiu.Vultur@microchip.com";
-  x-conformance=spf_only; x-record-type="v=spf1";
-  x-record-text="v=spf1 mx a:ushub1.microchip.com
-  a:smtpout.microchip.com -exists:%{i}.spf.microchip.iphmx.com
-  include:servers.mcsv.net include:mktomail.com
-  include:spf.protection.outlook.com ~all"
-Received-SPF: None (esa1.microchip.iphmx.com: no sender
-  authenticity information available from domain of
-  postmaster@email.microchip.com) identity=helo;
-  client-ip=198.175.253.82; receiver=esa1.microchip.iphmx.com;
-  envelope-from="Horatiu.Vultur@microchip.com";
-  x-sender="postmaster@email.microchip.com";
-  x-conformance=spf_only
-Authentication-Results: esa1.microchip.iphmx.com; dkim=none (message not signed) header.i=none; spf=Pass smtp.mailfrom=Horatiu.Vultur@microchip.com; spf=None smtp.helo=postmaster@email.microchip.com; dmarc=pass (p=none dis=none) d=microchip.com
-IronPort-SDR: y+ft/dlKJOCa17GdZ1QBuWly0sE48PA5wRGmIFD6wVJusyZ8AcWlL3fyfIG6YhYN/nJeKrCins
- Ahg78OxmOcrIdFk+0U9KHOIPhaCpJIGTqEJN+6dDV1FI2aZUdDw4I2mawl4zZLfbzMEz7tEu0W
- nI8gib6X0JaYJ9MbdAt+omA11WCk86f2l8mm/I6lm6Re1SvWChmL++MKtecYBOoljRvpyAdyBe
- b+bmzBTVMlh4iYDnZ05itmtjCwKgkPmFmJtg207FN6DkG5ngdmMUAdwRkg8pTjjSoGHxqZt50w
- FkM=
-X-IronPort-AV: E=Sophos;i="5.70,433,1574146800"; 
-   d="scan'208";a="64704366"
-Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
-  by esa1.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 14 Jan 2020 09:46:16 -0700
-Received: from chn-vm-ex03.mchp-main.com (10.10.85.151) by
- chn-vm-ex03.mchp-main.com (10.10.85.151) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.1713.5; Tue, 14 Jan 2020 09:46:16 -0700
-Received: from localhost (10.10.85.251) by chn-vm-ex03.mchp-main.com
- (10.10.85.151) with Microsoft SMTP Server id 15.1.1713.5 via Frontend
- Transport; Tue, 14 Jan 2020 09:46:16 -0700
-Date:   Tue, 14 Jan 2020 17:46:15 +0100
-From:   Horatiu Vultur <horatiu.vultur@microchip.com>
-To:     Andrew Lunn <andrew@lunn.ch>
-CC:     <linux-kernel@vger.kernel.org>, <netdev@vger.kernel.org>,
-        <bridge@lists.linux-foundation.org>, <davem@davemloft.net>,
-        <roopa@cumulusnetworks.com>, <nikolay@cumulusnetworks.com>,
-        <jakub.kicinski@netronome.com>, <vivien.didelot@gmail.com>,
-        <olteanv@gmail.com>, <anirudh.venkataramanan@intel.com>,
-        <dsahern@gmail.com>, <jiri@resnulli.us>, <ivecera@redhat.com>,
-        <UNGLinuxDriver@microchip.com>
-Subject: Re: [RFC net-next Patch v2 4/4] net: bridge: mrp: switchdev: Add HW
- offload
-Message-ID: <20200114164615.yvidcidrj24x4gcy@soft-dev3.microsemi.net>
-References: <20200113124620.18657-1-horatiu.vultur@microchip.com>
- <20200113124620.18657-5-horatiu.vultur@microchip.com>
- <20200113140053.GE11788@lunn.ch>
- <20200113225751.jkkio4rztyuff4xj@soft-dev3.microsemi.net>
- <20200113233011.GF11788@lunn.ch>
- <20200114080856.wa7ljxyzaf34u4xj@soft-dev3.microsemi.net>
- <20200114132047.GG11788@lunn.ch>
+        id S1729121AbgANQrP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 14 Jan 2020 11:47:15 -0500
+Received: from mga04.intel.com ([192.55.52.120]:19189 "EHLO mga04.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1728773AbgANQrO (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 14 Jan 2020 11:47:14 -0500
+X-Amp-Result: SKIPPED(no attachment in message)
+X-Amp-File-Uploaded: False
+Received: from orsmga007.jf.intel.com ([10.7.209.58])
+  by fmsmga104.fm.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 14 Jan 2020 08:47:14 -0800
+X-IronPort-AV: E=Sophos;i="5.70,433,1574150400"; 
+   d="scan'208";a="213390392"
+Received: from jmanteyx-desk.jf.intel.com ([10.54.51.75])
+  by orsmga007-auth.jf.intel.com with ESMTP/TLS/DHE-RSA-AES256-SHA; 14 Jan 2020 08:47:13 -0800
+Subject: Re: [PATCH] Propagate NCSI channel carrier loss/gain events to the
+ kernel
+To:     samjonas <sam@mendozajonas.com>, netdev@vger.kernel.org
+Cc:     davem@davemloft.net
+References: <b2ef76f2-cf4e-3d14-7436-8c66e63776ba@intel.com>
+ <20b75baf4fa6781278614162b05918dcdedd2e29.camel@mendozajonas.com>
+From:   Johnathan Mantey <johnathanx.mantey@intel.com>
+Autocrypt: addr=johnathanx.mantey@intel.com; prefer-encrypt=mutual; keydata=
+ mQENBFija08BCAC60TO2X22b0tJ2Gy2iQLWx20mGcD7ugBpm1o2IW2M+um3GR0BG/bUcLciw
+ dEnX9SWT30jx8TimenyUYeDS1CKML/e4JnCAUhSktNZRPBjzla991OkpqtFJEHj/pHrXTsz0
+ ODhmnSaZ49TsY+5BqtRMexICYOtSP8+xuftPN7g2pQNFi7xYlQkutP8WKIY3TacW/6MPiYek
+ pqVaaF0cXynCMDvbK0km7m0S4X01RZFKXUwlbuMireNk4IyZ/59hN+fh1MYMQ6RXOgmHqxSu
+ 04GjkbBLf2Sddplb6KzPMRWPJ5uNdvlkAfyT4P0R5EfkV5wCRdoJ1lNC9WI1bqHkbt07ABEB
+ AAG0JUpvaG5hdGhhbiBNYW50ZXkgPG1hbnRleWpnQGdtYWlsLmNvbT6JATcEEwEIACEFAlij
+ a08CGwMFCwkIBwIGFQgJCgsCBBYCAwECHgECF4AACgkQ0EfviT3fHwmcBAgAkENzQ8s0RK+f
+ nr4UogrCBS132lDdtlOypm1WgGDOVQNra7A1rvXFgN05RqrdRTpRevv7+S8ipbiG/kxn9P8+
+ VhhW1SvUT8Tvkb9YYHos6za3v0YblibFNbYRgQcybYMeKz2/DcVU+ioKZ1SxNJsFXx6wH71I
+ V2YumQRHAsh4Je6CmsiMVP4XNadzCQXzzcU9sstKV0A194JM/d8hjXfwMHZE6qnKgAkHIV3Q
+ 61YCuvkdr5SJSrOVo2IMN0pVxhhW7lqCAGBGb4oOhqePwGqOabU3Ui4qTbHP2BWP5UscehkK
+ 6TVKcpYApsUcWyxvvOARoktmlPnGYqJPnRwXpQBlqLkBDQRYo2tPAQgAyOv5Lgg2VkHO84R7
+ LJJDBxcaCDjyAvHBynznEEk11JHrPuonEWi6pqgB8+Kc588/GerXZqJ9AMkR43UW/5cPlyF2
+ wVO4aYaQwryDtiXEu+5rpbQfAvBpKTbrBfYIPc8thuAC2kdB4IO24T6PVSYVXYc/giOL0Iwb
+ /WZfMd5ajtKfa727xfbKCEHlzakqmUl0SyrARdrSynhX1R9Wnf2BwtUV7mxFxtMukak0zdTf
+ 2IXZXDltZC224vWqkXiI7Gt/FDc2y6gcsYY/4a2+vjhWuZk3lEzP0pbXQqOseDM1zZXln/m7
+ BFbJ6VUn1zWcrt0c82GTMqkeGUheUhDiYLQ7xwARAQABiQEfBBgBCAAJBQJYo2tPAhsMAAoJ
+ ENBH74k93x8JKEUH/3UPZryjmM0F3h8I0ZWuruxAxiqvksLOOtarU6RikIAHhwjvluEcTH4E
+ JsDjqtRUvBMU907XNotpqpW2e9jN8tFRyR4wW9CYkilB02qgrDm9DXVGb2BDtC/MY+6KUgsG
+ k5Ftr9uaXNd0K4IGRJSyU6ZZn0inTcXlqD+NgOE2eX9qpeKEhDufgF7fKHbKDkS4hj6Z09dT
+ Y8eW9d6d2Yf/RzTBJvZxjBFbIgeUGeykbSKztp2OBe6mecpVPhKooTq+X/mJehpRA6mAhuQZ
+ 28lvie7hbRFjqR3JB7inAKL4eT1/9bT/MqcPh43PXTAzB6/Iclg5B7GGgEFe27VL0hyqiqc=
+Message-ID: <54db4c95-44a1-da74-a6d4-21d591926dbd@intel.com>
+Date:   Tue, 14 Jan 2020 08:47:13 -0800
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.3.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Disposition: inline
-In-Reply-To: <20200114132047.GG11788@lunn.ch>
-User-Agent: NeoMutt/20180716
+In-Reply-To: <20b75baf4fa6781278614162b05918dcdedd2e29.camel@mendozajonas.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The 01/14/2020 14:20, Andrew Lunn wrote:
-> 
-> On Tue, Jan 14, 2020 at 09:08:56AM +0100, Horatiu Vultur wrote:
-> > The 01/14/2020 00:30, Andrew Lunn wrote:
-> > >
-> > > Hi Horatiu
-> > >
-> > > It has been said a few times what the basic state machine should be in
-> > > user space. A pure software solution can use raw sockets to send and
-> > > receive MRP_Test test frames. When considering hardware acceleration,
-> > > the switchdev API you have proposed here seems quite simple. It should
-> > > not be too hard to map it to a set of netlink messages from userspace.
-> >
-> > Yes and we will try to go with this approach, to have a user space
-> > application that contains the state machines and then in the kernel to
-> > extend the netlink messages to map to the switchdev API.
-> > So we will create a new RFC once we will have the user space and the
-> > definition of the netlink messages.
-> 
-> Cool.
-> 
-> Before you get too far, we might want to discuss exactly how you pass
-> these netlink messages. Do we want to make this part of the new
-> ethtool Netlink implementation? Part of devlink? Extend the current
-> bridge netlink interface used by userspae RSTP daemons? A new generic
-> netlink socket?
+Sam,
 
-We are not yet 100% sure. We were thinking to choose between extending
-the bridge netlink interface or adding a new netlink socket.  I was
-leaning to create a new netlink socket, because I think that would be
-clearer and easier to understand. But I don't have much experience with
-this, so in both cases I need to sit down and actually try to implement
-it to see exactly.
+This code is working on a channel that is completely configured.  This
+code is covering a situation where the RJ45 cable is intentionally or
+mistakenly removed from a system. In the event that the network cable is
+removed/damaged/slips, the kernel needs to change state to show that
+network interface no longer has a link.  For my employers use case the
+loss of carrier is then added to a log of system state changes. Thus for
+each internal channel there needs to be a way to report that the channel
+has/does not have a link carrier.
 
+On 1/13/20 4:43 PM, samjonas wrote:
+> On Fri, 2020-01-10 at 14:02 -0800, Johnathan Mantey wrote:
+>> From 76d99782ec897b010ba507895d60d27dca8dca44 Mon Sep 17 00:00:00
+>> 2001
+>> From: Johnathan Mantey <johnathanx.mantey@intel.com>
+>> Date: Fri, 10 Jan 2020 12:46:17 -0800
+>> Subject: [PATCH] Propagate NCSI channel carrier loss/gain events to
+>> the
+>> kernel
+>>
+>> Problem statement:
+>> Insertion or removal of a network cable attached to a NCSI controlled
+>> network channel does not notify the kernel of the loss/gain of the
+>> network link.
+>>
+>> The expectation is that /sys/class/net/eth(x)/carrier will change
+>> state after a pull/insertion event. In addition the carrier_up_count
+>> and carrier_down_count files should increment.
+>>
+>> Change statement:
+>> Use the NCSI Asynchronous Event Notification handler to detect a
+>> change in a NCSI link.
+>> Add code to propagate carrier on/off state to the network interface.
+>> The on/off state is only modified after the existing code identifies
+>> if the network device HAD or HAS a link state change.
 > 
-> Extending the bridge netlink interface might seem the most logical.
-> The argument against it, is that the kernel bridge code probably does
-> not need to know anything about this offloading. But it does allow you
-> to make use of the switchdev API, so we have a uniform API between the
-> network stack and drivers implementing offloading.
+> If we set the carrier state off until we successfully configured a
+> channel could we avoid this limitation?
 > 
->       Andrew
+> Cheers,
+> Sam
+> 
+>>
+>> Test procedure:
+>> Connected a L2 switch with only two ports connected.
+>> One port was a DHCP corporate net, the other port attached to the
+>> NCSI
+>> controlled NIC.
+>>
+>> Starting with the L2 switch with DC on, check to make sure the NCSI
+>> link is operating.
+>> cat /sys/class/net/eth1/carrier
+>> 1
+>> cat /sys/class/net/eth1/carrier_up_count
+>> 0
+>> cat /sys/class/net/eth1/carrier_down_count
+>> 0
+>>
+>> Remove DC from the L2 switch, and check link state
+>> cat /sys/class/net/eth1/carrier
+>> 0
+>> cat /sys/class/net/eth1/carrier_up_count
+>> 0
+>> cat /sys/class/net/eth1/carrier_down_count
+>> 1
+>>
+>> Restore DC to the L2 switch, and check link state
+>> cat /sys/class/net/eth1/carrier
+>> 1
+>> cat /sys/class/net/eth1/carrier_up_count
+>> 1
+>> cat /sys/class/net/eth1/carrier_down_count
+>> 1
+>>
+>> Signed-off-by: Johnathan Mantey <johnathanx.mantey@intel.com>
+>> ---
+>>  net/ncsi/ncsi-aen.c | 6 ++++++
+>>  1 file changed, 6 insertions(+)
+>>
+>> diff --git a/net/ncsi/ncsi-aen.c b/net/ncsi/ncsi-aen.c
+>> index b635c194f0a8..274c415dcead 100644
+>> --- a/net/ncsi/ncsi-aen.c
+>> +++ b/net/ncsi/ncsi-aen.c
+>> @@ -89,6 +89,12 @@ static int ncsi_aen_handler_lsc(struct
+>> ncsi_dev_priv
+>> *ndp,
+>>      if ((had_link == has_link) || chained)
+>>          return 0;
+>>  
+>> +    if (had_link) {
+>> +        netif_carrier_off(ndp->ndev.dev);
+>> +    } else {
+>> +        netif_carrier_on(ndp->ndev.dev);
+>> +    }
+>> +
+>>      if (!ndp->multi_package && !nc->package->multi_channel) {
+>>          if (had_link) {
+>>              ndp->flags |= NCSI_DEV_RESHUFFLE;
+> 
 
 -- 
-/Horatiu
+Johnathan Mantey
+Senior Software Engineer
+*azad technology partners*
+Contributing to Technology Innovation since 1992
+Phone: (503) 712-6764
+Email: johnathanx.mantey@intel.com <mailto:johnathanx.mantey@intel.com>
+
