@@ -2,55 +2,54 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id AA0BA13A147
-	for <lists+netdev@lfdr.de>; Tue, 14 Jan 2020 08:03:31 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9AFF013A148
+	for <lists+netdev@lfdr.de>; Tue, 14 Jan 2020 08:03:37 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728986AbgANHDa (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 14 Jan 2020 02:03:30 -0500
-Received: from mail-pj1-f68.google.com ([209.85.216.68]:56204 "EHLO
-        mail-pj1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728949AbgANHD3 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 14 Jan 2020 02:03:29 -0500
-Received: by mail-pj1-f68.google.com with SMTP id d5so5277975pjz.5
-        for <netdev@vger.kernel.org>; Mon, 13 Jan 2020 23:03:28 -0800 (PST)
+        id S1728994AbgANHDd (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 14 Jan 2020 02:03:33 -0500
+Received: from mail-pj1-f67.google.com ([209.85.216.67]:33818 "EHLO
+        mail-pj1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728949AbgANHDb (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 14 Jan 2020 02:03:31 -0500
+Received: by mail-pj1-f67.google.com with SMTP id s94so664008pjc.1
+        for <netdev@vger.kernel.org>; Mon, 13 Jan 2020 23:03:31 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=6X5IztkHgtVHkRyV/Oszuo14Ifik6eB0VsDCilYnSjM=;
-        b=Z7dJieJB7fuMxbYog20+KoDgvZHvY2b5oJKpgQmjjbj23/u02FyuEubndHdr7FrIKP
-         8XrOgSrudptiJACfEszJY692ZJ3U5xIQ1stOd7oNeaYt8vSa1r0Bl1VPjtKFeqZH+og8
-         uLvJb48u4YUuGY9FThXVafcwGyNehNV/4B/aGClU2ESiCazYsPYPJxYgWgX6LpsOwcLU
-         p9Y8Ztmbj6K3P59P6j9LyPb61LiO0HczbMS6cQywdxNOw+bAsJ9w3DN04psGQ3j+EYAO
-         wbTNZBv4j4JB3xa3n5iykKHEPQfwSe+qb/rINzasycsWT4Dt4TQWwhXCd6nkFdRKRQtf
-         DS6w==
+        bh=JT4gQITz5X9Xt6Y+CPiYWOuaQyLN3EbApxlmt3oZ4ms=;
+        b=Yn3FyfRt/GHJfiT5WA12QGY0ae+GzG0x/COwvypKJdpq8CmDnkwt7/jz/thyCZ4IHM
+         TrayoivpCFGBdrNFgRGHJfYiQOCsBpycZ68oJt2S1IoiaL2NJWYAvXomZ61aRfLZOgFV
+         283RUwgDgbxsKQSR/EB8Tu97b14mPFYnEg1mNQgqx8l0NHLASg7A8+lKaG5dwWwi3yAG
+         S5jjND/asVE6zHKhaVT4YsDp4LA7bgU2gJDGGxRceB4AsLh3wplyLlvxx4VAzc2dWZNL
+         nL9/v+IKr5/N2hinWehIY+VrE+AyP/WFsMx0J/Y+SZDr//CXAJu5eqICjELRmLUmmNsN
+         I2IA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references;
-        bh=6X5IztkHgtVHkRyV/Oszuo14Ifik6eB0VsDCilYnSjM=;
-        b=mkergmnJDflJFXqPnRFXJz32KOZ9xODYf6+hKjZagXux0k27wirPUEZ8XswlxmEzHi
-         7BBGvzwCQO2Jko4g1IAVzZSwHKPPdpgGdltVUFQZuzd8MxmjzBhXzACLqMVlK5TDJtB8
-         GabxQ+nC2nkKZ7Z9UAN7xK2nGDOqI6HvQRGoN5hr+F6bOPlpeAZqVaaLLuV7DsbG90XU
-         03ftdOA69w70tfTo52IqpQCfgiZKyzby8+AsK0YBRLphx9ClKiEzpPSwzRVJL3dUX+fo
-         cegZ46ZoP9V+WO6wHuezBVm1Fd53RaYSzF+Ijs662h7VEohu1vOsrpe5rBwgijFsWDzT
-         z8ag==
-X-Gm-Message-State: APjAAAWwPinZw6hEbJqi+SJSAL+vMI0hhF9cVZ+1o702lDeKUO7mcCh2
-        Y+ZNtBYYGf1r5FlPrqVRq5si7mtk3/M=
-X-Google-Smtp-Source: APXvYqxJvf11UNAOQ2Qntj6jJG0ufCMw9SBy5InkM84mk5ZPaiyJsQ5QqSvft99wbF4iQ97BIcpWMA==
-X-Received: by 2002:a17:90a:3243:: with SMTP id k61mr27461507pjb.46.1578985407963;
-        Mon, 13 Jan 2020 23:03:27 -0800 (PST)
+        bh=JT4gQITz5X9Xt6Y+CPiYWOuaQyLN3EbApxlmt3oZ4ms=;
+        b=g+nvr2zxBSxMToaBwCjcjJMC96BJgMMWlKCMT+jremSKsSk04cu5YQR/BmzuSdPRD2
+         sfZd59iwZYIu5Difet85PXNn5LEjbYcc28l22Jq8VFOrr9ZVPwDO4WZXGR68Gn6jfYkA
+         QWkUuNxaLlZgz2l2mpDRd7vz8kFDNbYdCnTOY9TKALB8QGv2/tl13JeaiaAvYk6OEUU3
+         XqI6PtF/QvQmgNRG13rUq2K22ffRfbDe+DcGT9hEcP5PFlHt+0WLTVQW5aOdJ5YMPODw
+         X795+UaOE8GqrvDYLiG5OQ+9XP5dZVStHDVJo9/As3+Ea2HMRuyxzeHqSHZXivGi34Jn
+         BoOg==
+X-Gm-Message-State: APjAAAVGDGOQJ34/KlQEwa42nysEWoVA1YiQUSX8PLVX/8YjY610EUWD
+        ZPOryLSVAnBMm7/1YY1d3kbL23LMiQs=
+X-Google-Smtp-Source: APXvYqygW8yRULkjlVivzTdi9rjQFjUX2ZwaFg/arS73un0EJGmB0b93uF7pRy0ZrK2BcabehEWjXA==
+X-Received: by 2002:a17:902:528:: with SMTP id 37mr25147061plf.322.1578985410245;
+        Mon, 13 Jan 2020 23:03:30 -0800 (PST)
 Received: from machine421.marvell.com ([115.113.156.2])
-        by smtp.googlemail.com with ESMTPSA id o19sm2241014pjr.2.2020.01.13.23.03.25
+        by smtp.googlemail.com with ESMTPSA id o19sm2241014pjr.2.2020.01.13.23.03.28
         (version=TLS1_2 cipher=ECDHE-RSA-AES128-SHA bits=128/128);
-        Mon, 13 Jan 2020 23:03:27 -0800 (PST)
+        Mon, 13 Jan 2020 23:03:29 -0800 (PST)
 From:   sunil.kovvuri@gmail.com
 To:     netdev@vger.kernel.org
 Cc:     davem@davemloft.net, kubakici@wp.pl,
-        Sunil Goutham <sgoutham@marvell.com>,
-        Prakash Brahmajyosyula <bprakash@marvell.com>
-Subject: [PATCH v2 15/17] octeontx2-pf: ethtool RSS config support
-Date:   Tue, 14 Jan 2020 12:32:18 +0530
-Message-Id: <1578985340-28775-16-git-send-email-sunil.kovvuri@gmail.com>
+        Sunil Goutham <sgoutham@marvell.com>
+Subject: [PATCH v2 16/17] Documentation: net: octeontx2: Add RVU HW and drivers overview
+Date:   Tue, 14 Jan 2020 12:32:19 +0530
+Message-Id: <1578985340-28775-17-git-send-email-sunil.kovvuri@gmail.com>
 X-Mailer: git-send-email 2.7.4
 In-Reply-To: <1578985340-28775-1-git-send-email-sunil.kovvuri@gmail.com>
 References: <1578985340-28775-1-git-send-email-sunil.kovvuri@gmail.com>
@@ -61,364 +60,206 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Sunil Goutham <sgoutham@marvell.com>
 
-Added support to show or configure RSS hash key, indirection table,
-2,4 tuple via ethtool. Also added debug msg_level support
-to dump messages when HW reports errors in packet received
-or transmitted.
+Added high level overview of OcteonTx2 RVU HW and functionality of
+various drivers which will be upstreamed.
 
-Signed-off-by: Prakash Brahmajyosyula <bprakash@marvell.com>
 Signed-off-by: Sunil Goutham <sgoutham@marvell.com>
 ---
- .../ethernet/marvell/octeontx2/nic/otx2_common.c   |   6 +-
- .../ethernet/marvell/octeontx2/nic/otx2_common.h   |   6 +
- .../ethernet/marvell/octeontx2/nic/otx2_ethtool.c  | 239 +++++++++++++++++++++
- .../net/ethernet/marvell/octeontx2/nic/otx2_txrx.c |  13 +-
- 4 files changed, 258 insertions(+), 6 deletions(-)
+ Documentation/networking/device_drivers/index.rst  |   1 +
+ .../device_drivers/marvell/octeontx2.rst           | 159 +++++++++++++++++++++
+ MAINTAINERS                                        |   1 +
+ 3 files changed, 161 insertions(+)
+ create mode 100644 Documentation/networking/device_drivers/marvell/octeontx2.rst
 
-diff --git a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_common.c b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_common.c
-index 3de1fcf..6e4a108 100644
---- a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_common.c
-+++ b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_common.c
-@@ -220,7 +220,7 @@ int otx2_hw_set_mtu(struct otx2_nic *pfvf, int mtu)
- 	return err;
- }
+diff --git a/Documentation/networking/device_drivers/index.rst b/Documentation/networking/device_drivers/index.rst
+index 4bc6ff2..a191faa 100644
+--- a/Documentation/networking/device_drivers/index.rst
++++ b/Documentation/networking/device_drivers/index.rst
+@@ -22,6 +22,7 @@ Contents:
+    intel/iavf
+    intel/ice
+    google/gve
++   marvell/octeontx2
+    mellanox/mlx5
+    netronome/nfp
+    pensando/ionic
+diff --git a/Documentation/networking/device_drivers/marvell/octeontx2.rst b/Documentation/networking/device_drivers/marvell/octeontx2.rst
+new file mode 100644
+index 0000000..51d9ccb
+--- /dev/null
++++ b/Documentation/networking/device_drivers/marvell/octeontx2.rst
+@@ -0,0 +1,159 @@
++.. SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
++
++====================================
++Marvell OcteonTx2 RVU Kernel Drivers
++====================================
++
++Copyright (c) 2020 Marvell International Ltd.
++
++Contents
++========
++
++- `Overview`_
++- `Drivers`_
++- `Basic packet flow`_
++
++Overview
++========
++
++Resource virtualization unit (RVU) on Marvell's OcteonTX2 SOC maps HW
++resources from the network, crypto and other functional blocks into
++PCI-compatible physical and virtual functions. Each functional block
++again has multiple local functions (LFs) for provisioning to PCI devices.
++RVU supports multiple PCIe SRIOV physical functions (PFs) and virtual
++functions (VFs). PF0 is called the administrative / admin function (AF)
++and has privileges to provision RVU functional block's LFs to each of the
++PF/VF.
++
++RVU managed networking functional blocks
++ - Network pool or buffer allocator (NPA)
++ - Network interface controller (NIX)
++ - Network parser CAM (NPC)
++ - Schedule/Synchronize/Order unit (SSO)
++ - Loopback interface (LBK)
++
++RVU managed non-networking functional blocks
++ - Crypto accelerator (CPT)
++ - Scheduled timers unit (TIM)
++ - Schedule/Synchronize/Order unit (SSO)
++   Used for both networking and non networking usecases
++
++Resource provisioning examples
++ - A PF/VF with NIX-LF & NPA-LF resources works as a pure network device
++ - A PF/VF with CPT-LF resource works as a pure crypto offload device.
++
++RVU functional blocks are highly configurable as per software requirements.
++
++Firmware setups following stuff before kernel boots
++ - Enables required number of RVU PFs based on number of physical links.
++ - Number of VFs per PF are either static or configurable at compile time.
++   Based on config, firmware assigns VFs to each of the PFs.
++ - Also assigns MSIX vectors to each of PF and VFs.
++ - These are not changed after kernel boot.
++
++Drivers
++=======
++
++Linux kernel will have multiple drivers registering to different PF and VFs
++of RVU. Wrt networking there will be 3 flavours of drivers.
++
++Admin Function driver
++---------------------
++
++As mentioned above RVU PF0 is called the admin function (AF), this driver
++supports resource provisioning and configuration of functional blocks.
++Doesn't handle any I/O. It sets up few basic stuff but most of the
++funcionality is achieved via configuration requests from PFs and VFs.
++
++PF/VFs communicates with AF via a shared memory region (mailbox). Upon
++receiving requests AF does resource provisioning and other HW configuration.
++AF is always attached to host kernel, but PFs and their VFs may be used by host
++kernel itself, or attached to VMs or to userspace applications like
++DPDK etc. So AF has to handle provisioning/configuration requests sent
++by any device from any domain.
++
++AF driver also interacts with underlying firmware to
++ - Manage physical ethernet links ie CGX LMACs.
++ - Retrieve information like speed, duplex, autoneg etc
++ - Retrieve PHY EEPROM and stats.
++ - Configure FEC, PAM modes
++ - etc
++
++From pure networking side AF driver supports following functionality.
++ - Map a physical link to a RVU PF to which a netdev is registered.
++ - Attach NIX and NPA block LFs to RVU PF/VF which provide buffer pools, RQs, SQs
++   for regular networking functionality.
++ - Flow control (pause frames) enable/disable/config.
++ - HW PTP timestamping related config.
++ - NPC parser profile config, basically how to parse pkt and what info to extract.
++ - NPC extract profile config, what to extract from the pkt to match data in MCAM entries.
++ - Manage NPC MCAM entries, upon request can frame and install requested packet forwarding rules.
++ - Defines receive side scaling (RSS) algorithms.
++ - Defines segmentation offload algorithms (eg TSO)
++ - VLAN stripping, capture and insertion config.
++ - SSO and TIM blocks config which provide packet scheduling support.
++ - Debugfs support, to check current resource provising, current status of
++   NPA pools, NIX RQ, SQ and CQs, various stats etc which helps in debugging issues.
++ - And many more.
++
++Physical Function driver
++------------------------
++
++This RVU PF handles IO, is mapped to a physical ethernet link and this
++driver registers a netdev. This supports SR-IOV. As said above this driver
++communicates with AF with a mailbox. To retrieve information from physical
++links this driver talks to AF and AF gets that info from firmware and responds
++back ie cannot talk to firmware directly.
++
++Supports ethtool for configuring links, RSS, queue count, queue size,
++flow control, ntuple filters, dump PHY EEPROM, config FEC etc.
++
++Virtual Function driver
++-----------------------
++
++There are two types VFs, VFs that share the physical link with their parent
++SR-IOV PF and the VFs which work in pairs using internal HW loopback channels (LBK).
++
++Type1:
++ - These VFs and their parent PF share a physical link and used for outside communication.
++ - VFs cannot communicate with AF directly, they send mbox message to PF and PF
++   forwards that to AF. AF after processing, responds back to PF and PF forwards
++   the reply to VF.
++ - From functionality point of view there is no difference between PF and VF as same type
++   HW resources are attached to both. But user would be able to configure few stuff only
++   from PF as PF is treated as owner/admin of the link.
++
++Type2:
++ - RVU PF0 ie admin function creates these VFs and maps them to loopback block's channels.
++ - A set of two VFs (VF0 & VF1, VF2 & VF3 .. so on) works as a pair ie pkts sent out of
++   VF0 will be received by VF1 and viceversa.
++ - These VFs can be used by applications or virtual machines to communicate between them
++   without sending traffic outside. There is no switch present in HW, hence the support
++   for loopback VFs.
++ - These communicate directly with AF (PF0) via mbox.
++
++Except for the IO channels or links used for packet reception and transmission there is
++no other difference between these VF types. AF driver takes care of IO channel mapping,
++hence same VF driver works for both types of devices.
++
++Basic packet flow
++===========
++
++Ingress
++-------
++
++1. CGX LMAC receives packet.
++2. Forwards the packet to the NIX block.
++3. Then submitted to NPC block for parsing and then MCAM lookup to get the destination RVU device.
++4. NIX LF attached to the destination RVU device allocates a buffer from RQ mapped buffer pool of NPA block LF.
++5. RQ may be selected by RSS or by configuring MCAM rule with a RQ number.
++6. Packet is DMA'ed and driver is notified.
++
++Egress
++------
++
++1. Driver prepares a send descriptor and submits to SQ for transmission.
++2. The SQ is already configured (by AF) to transmit on a specific link/channel.
++3. The SQ descriptor ring is maintained in buffers allocated from SQ mapped pool of NPA block LF.
++4. NIX block transmits the pkt on the designated channel.
++5. NPC MCAM entries can be installed to divert pkt onto a different channel.
+diff --git a/MAINTAINERS b/MAINTAINERS
+index 2549f10..6659dd5 100644
+--- a/MAINTAINERS
++++ b/MAINTAINERS
+@@ -10000,6 +10000,7 @@ M:	Jerin Jacob <jerinj@marvell.com>
+ L:	netdev@vger.kernel.org
+ S:	Supported
+ F:	drivers/net/ethernet/marvell/octeontx2/af/
++F:	Documentation/networking/device_drivers/marvell/octeontx2.rst
  
--static int otx2_set_flowkey_cfg(struct otx2_nic *pfvf)
-+int otx2_set_flowkey_cfg(struct otx2_nic *pfvf)
- {
- 	struct otx2_rss_info *rss = &pfvf->hw.rss_info;
- 	struct nix_rss_flowkey_cfg *req;
-@@ -241,7 +241,7 @@ static int otx2_set_flowkey_cfg(struct otx2_nic *pfvf)
- 	return err;
- }
- 
--static int otx2_set_rss_table(struct otx2_nic *pfvf)
-+int otx2_set_rss_table(struct otx2_nic *pfvf)
- {
- 	struct otx2_rss_info *rss = &pfvf->hw.rss_info;
- 	struct mbox *mbox = &pfvf->mbox;
-@@ -280,7 +280,7 @@ static int otx2_set_rss_table(struct otx2_nic *pfvf)
- 	return err;
- }
- 
--static void otx2_set_rss_key(struct otx2_nic *pfvf)
-+void otx2_set_rss_key(struct otx2_nic *pfvf)
- {
- 	struct otx2_rss_info *rss = &pfvf->hw.rss_info;
- 	u64 *key = (u64 *)&rss->key[4];
-diff --git a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_common.h b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_common.h
-index d8e7565..c82555f 100644
---- a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_common.h
-+++ b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_common.h
-@@ -222,6 +222,9 @@ struct otx2_nic {
- 	struct work_struct	reset_task;
- 	struct refill_work	*refill_wrk;
- 
-+	/* Ethtool stuff */
-+	u32			msg_enable;
-+
- 	/* Block address of NIX either BLKADDR_NIX0 or BLKADDR_NIX1 */
- 	int			nix_blkaddr;
- };
-@@ -580,6 +583,9 @@ void otx2_cleanup_tx_cqes(struct otx2_nic *pfvf, struct otx2_cq_queue *cq);
- 
- /* RSS configuration APIs*/
- int otx2_rss_init(struct otx2_nic *pfvf);
-+int otx2_set_flowkey_cfg(struct otx2_nic *pfvf);
-+void otx2_set_rss_key(struct otx2_nic *pfvf);
-+int otx2_set_rss_table(struct otx2_nic *pfvf);
- 
- /* Mbox handlers */
- void mbox_handler_msix_offset(struct otx2_nic *pfvf,
-diff --git a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_ethtool.c b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_ethtool.c
-index f1ee9c2..ad30de0 100644
---- a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_ethtool.c
-+++ b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_ethtool.c
-@@ -401,7 +401,238 @@ static int otx2_set_coalesce(struct net_device *netdev,
- 	return 0;
- }
- 
-+static int otx2_get_rss_hash_opts(struct otx2_nic *pfvf,
-+				  struct ethtool_rxnfc *nfc)
-+{
-+	struct otx2_rss_info *rss = &pfvf->hw.rss_info;
-+
-+	if (!(rss->flowkey_cfg &
-+	    (NIX_FLOW_KEY_TYPE_IPV4 | NIX_FLOW_KEY_TYPE_IPV6)))
-+		return 0;
-+
-+	/* Mimimum is IPv4 and IPv6, SIP/DIP */
-+	nfc->data = RXH_IP_SRC | RXH_IP_DST;
-+
-+	switch (nfc->flow_type) {
-+	case TCP_V4_FLOW:
-+	case TCP_V6_FLOW:
-+		if (rss->flowkey_cfg & NIX_FLOW_KEY_TYPE_TCP)
-+			nfc->data |= RXH_L4_B_0_1 | RXH_L4_B_2_3;
-+		break;
-+	case UDP_V4_FLOW:
-+	case UDP_V6_FLOW:
-+		if (rss->flowkey_cfg & NIX_FLOW_KEY_TYPE_UDP)
-+			nfc->data |= RXH_L4_B_0_1 | RXH_L4_B_2_3;
-+		break;
-+	case SCTP_V4_FLOW:
-+	case SCTP_V6_FLOW:
-+		if (rss->flowkey_cfg & NIX_FLOW_KEY_TYPE_SCTP)
-+			nfc->data |= RXH_L4_B_0_1 | RXH_L4_B_2_3;
-+		break;
-+	case AH_ESP_V4_FLOW:
-+	case AH_V4_FLOW:
-+	case ESP_V4_FLOW:
-+	case IPV4_FLOW:
-+	case AH_ESP_V6_FLOW:
-+	case AH_V6_FLOW:
-+	case ESP_V6_FLOW:
-+	case IPV6_FLOW:
-+		break;
-+	default:
-+		return -EINVAL;
-+	}
-+	return 0;
-+}
-+
-+static int otx2_set_rss_hash_opts(struct otx2_nic *pfvf,
-+				  struct ethtool_rxnfc *nfc)
-+{
-+	struct otx2_rss_info *rss = &pfvf->hw.rss_info;
-+	u32 rxh_l4 = RXH_L4_B_0_1 | RXH_L4_B_2_3;
-+	u32 rss_cfg = rss->flowkey_cfg;
-+
-+	if (!rss->enable)
-+		netdev_err(pfvf->netdev, "RSS is disabled, cmd ignored\n");
-+
-+	/* Mimimum is IPv4 and IPv6, SIP/DIP */
-+	if (!(nfc->data & RXH_IP_SRC) || !(nfc->data & RXH_IP_DST))
-+		return -EINVAL;
-+
-+	switch (nfc->flow_type) {
-+	case TCP_V4_FLOW:
-+	case TCP_V6_FLOW:
-+		/* Different config for v4 and v6 is not supported.
-+		 * Both of them have to be either 4-tuple or 2-tuple.
-+		 */
-+		if ((nfc->data & rxh_l4) == rxh_l4)
-+			rss_cfg |= NIX_FLOW_KEY_TYPE_TCP;
-+		else
-+			rss_cfg &= ~NIX_FLOW_KEY_TYPE_TCP;
-+		break;
-+	case UDP_V4_FLOW:
-+	case UDP_V6_FLOW:
-+		if ((nfc->data & rxh_l4) == rxh_l4)
-+			rss_cfg |= NIX_FLOW_KEY_TYPE_UDP;
-+		else
-+			rss_cfg &= ~NIX_FLOW_KEY_TYPE_UDP;
-+		break;
-+	case SCTP_V4_FLOW:
-+	case SCTP_V6_FLOW:
-+		if ((nfc->data & rxh_l4) == rxh_l4)
-+			rss_cfg |= NIX_FLOW_KEY_TYPE_SCTP;
-+		else
-+			rss_cfg &= ~NIX_FLOW_KEY_TYPE_SCTP;
-+		break;
-+	case AH_ESP_V4_FLOW:
-+	case AH_V4_FLOW:
-+	case ESP_V4_FLOW:
-+	case IPV4_FLOW:
-+	case AH_ESP_V6_FLOW:
-+	case AH_V6_FLOW:
-+	case ESP_V6_FLOW:
-+	case IPV6_FLOW:
-+		rss_cfg = NIX_FLOW_KEY_TYPE_IPV4 | NIX_FLOW_KEY_TYPE_IPV6;
-+		break;
-+	default:
-+		return -EINVAL;
-+	}
-+
-+	rss->flowkey_cfg = rss_cfg;
-+	otx2_set_flowkey_cfg(pfvf);
-+	return 0;
-+}
-+
-+static int otx2_get_rxnfc(struct net_device *dev,
-+			  struct ethtool_rxnfc *nfc, u32 *rules)
-+{
-+	struct otx2_nic *pfvf = netdev_priv(dev);
-+	int ret = -EOPNOTSUPP;
-+
-+	switch (nfc->cmd) {
-+	case ETHTOOL_GRXRINGS:
-+		nfc->data = pfvf->hw.rx_queues;
-+		ret = 0;
-+		break;
-+	case ETHTOOL_GRXFH:
-+		return otx2_get_rss_hash_opts(pfvf, nfc);
-+	default:
-+		break;
-+	}
-+	return ret;
-+}
-+
-+static int otx2_set_rxnfc(struct net_device *dev, struct ethtool_rxnfc *nfc)
-+{
-+	struct otx2_nic *pfvf = netdev_priv(dev);
-+	int ret = -EOPNOTSUPP;
-+
-+	switch (nfc->cmd) {
-+	case ETHTOOL_SRXFH:
-+		ret = otx2_set_rss_hash_opts(pfvf, nfc);
-+		break;
-+	default:
-+		break;
-+	}
-+
-+	return ret;
-+}
-+
-+static u32 otx2_get_rxfh_key_size(struct net_device *netdev)
-+{
-+	struct otx2_nic *pfvf = netdev_priv(netdev);
-+	struct otx2_rss_info *rss;
-+
-+	rss = &pfvf->hw.rss_info;
-+
-+	return sizeof(rss->key);
-+}
-+
-+static u32 otx2_get_rxfh_indir_size(struct net_device *dev)
-+{
-+	struct otx2_nic *pfvf = netdev_priv(dev);
-+
-+	return pfvf->hw.rss_info.rss_size;
-+}
-+
-+/* Get RSS configuration*/
-+static int otx2_get_rxfh(struct net_device *dev, u32 *indir,
-+			 u8 *hkey, u8 *hfunc)
-+{
-+	struct otx2_nic *pfvf = netdev_priv(dev);
-+	struct otx2_rss_info *rss;
-+	int idx;
-+
-+	rss = &pfvf->hw.rss_info;
-+
-+	if (indir) {
-+		for (idx = 0; idx < rss->rss_size; idx++)
-+			indir[idx] = rss->ind_tbl[idx];
-+	}
-+
-+	if (hkey)
-+		memcpy(hkey, rss->key, sizeof(rss->key));
-+
-+	if (hfunc)
-+		*hfunc = ETH_RSS_HASH_TOP;
-+
-+	return 0;
-+}
-+
-+/* Configure RSS table and hash key*/
-+static int otx2_set_rxfh(struct net_device *dev, const u32 *indir,
-+			 const u8 *hkey, const u8 hfunc)
-+{
-+	struct otx2_nic *pfvf = netdev_priv(dev);
-+	struct otx2_rss_info *rss;
-+	int idx;
-+
-+	if (hfunc != ETH_RSS_HASH_NO_CHANGE && hfunc != ETH_RSS_HASH_TOP)
-+		return -EOPNOTSUPP;
-+
-+	rss = &pfvf->hw.rss_info;
-+
-+	if (!rss->enable) {
-+		netdev_err(dev, "RSS is disabled, cannot change settings\n");
-+		return -EIO;
-+	}
-+
-+	if (indir) {
-+		for (idx = 0; idx < rss->rss_size; idx++)
-+			rss->ind_tbl[idx] = indir[idx];
-+	}
-+
-+	if (hkey) {
-+		memcpy(rss->key, hkey, sizeof(rss->key));
-+		otx2_set_rss_key(pfvf);
-+	}
-+
-+	otx2_set_rss_table(pfvf);
-+	return 0;
-+}
-+
-+static u32 otx2_get_msglevel(struct net_device *netdev)
-+{
-+	struct otx2_nic *pfvf = netdev_priv(netdev);
-+
-+	return pfvf->msg_enable;
-+}
-+
-+static void otx2_set_msglevel(struct net_device *netdev, u32 val)
-+{
-+	struct otx2_nic *pfvf = netdev_priv(netdev);
-+
-+	pfvf->msg_enable = val;
-+}
-+
-+static u32 otx2_get_link(struct net_device *netdev)
-+{
-+	struct otx2_nic *pfvf = netdev_priv(netdev);
-+
-+	return pfvf->linfo.link_up;
-+}
-+
- static const struct ethtool_ops otx2_ethtool_ops = {
-+	.get_link		= otx2_get_link,
- 	.get_drvinfo		= otx2_get_drvinfo,
- 	.get_strings		= otx2_get_strings,
- 	.get_ethtool_stats	= otx2_get_ethtool_stats,
-@@ -412,6 +643,14 @@ static const struct ethtool_ops otx2_ethtool_ops = {
- 	.set_ringparam		= otx2_set_ringparam,
- 	.get_coalesce		= otx2_get_coalesce,
- 	.set_coalesce		= otx2_set_coalesce,
-+	.get_rxnfc		= otx2_get_rxnfc,
-+	.set_rxnfc              = otx2_set_rxnfc,
-+	.get_rxfh_key_size	= otx2_get_rxfh_key_size,
-+	.get_rxfh_indir_size	= otx2_get_rxfh_indir_size,
-+	.get_rxfh		= otx2_get_rxfh,
-+	.set_rxfh		= otx2_set_rxfh,
-+	.get_msglevel		= otx2_get_msglevel,
-+	.set_msglevel		= otx2_set_msglevel,
- };
- 
- void otx2_set_ethtool_ops(struct net_device *netdev)
-diff --git a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_txrx.c b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_txrx.c
-index 993e045..135506f 100644
---- a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_txrx.c
-+++ b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_txrx.c
-@@ -85,9 +85,11 @@ static void otx2_snd_pkt_handler(struct otx2_nic *pfvf,
- 	struct sg_list *sg;
- 
- 	if (unlikely(snd_comp->status)) {
--		netdev_info(pfvf->netdev,
--			    "TX%d: Error in send CQ status:%x\n",
--			    cq->cint_idx, snd_comp->status);
-+		if (netif_msg_tx_err(pfvf)) {
-+			netdev_info(pfvf->netdev,
-+				    "TX%d: Error in send CQ status:%x\n",
-+				    cq->cint_idx, snd_comp->status);
-+		}
- 	}
- 
- 	/* Barrier, so that update to sq by other cpus is visible */
-@@ -148,6 +150,11 @@ static bool otx2_check_rcv_errors(struct otx2_nic *pfvf,
- 	struct otx2_drv_stats *stats = &pfvf->hw.drv_stats;
- 	struct nix_rx_parse_s *parse = &cqe->parse;
- 
-+	if (netif_msg_rx_err(pfvf))
-+		netdev_err(pfvf->netdev,
-+			   "RQ%d: Error pkt with errlev:0x%x errcode:0x%x\n",
-+			   qidx, parse->errlev, parse->errcode);
-+
- 	if (parse->errlev == NPC_ERRLVL_RE) {
- 		switch (parse->errcode) {
- 		case ERRCODE_FCS:
+ MATROX FRAMEBUFFER DRIVER
+ L:	linux-fbdev@vger.kernel.org
 -- 
 2.7.4
 
