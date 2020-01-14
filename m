@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 5975313AFCF
-	for <lists+netdev@lfdr.de>; Tue, 14 Jan 2020 17:47:26 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 39D0B13AFD1
+	for <lists+netdev@lfdr.de>; Tue, 14 Jan 2020 17:47:27 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728992AbgANQqp (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 14 Jan 2020 11:46:45 -0500
-Received: from mail-pl1-f201.google.com ([209.85.214.201]:50739 "EHLO
-        mail-pl1-f201.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728983AbgANQqp (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 14 Jan 2020 11:46:45 -0500
-Received: by mail-pl1-f201.google.com with SMTP id g5so2052006plq.17
-        for <netdev@vger.kernel.org>; Tue, 14 Jan 2020 08:46:44 -0800 (PST)
+        id S1729022AbgANQqu (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 14 Jan 2020 11:46:50 -0500
+Received: from mail-vk1-f202.google.com ([209.85.221.202]:55750 "EHLO
+        mail-vk1-f202.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728983AbgANQqr (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 14 Jan 2020 11:46:47 -0500
+Received: by mail-vk1-f202.google.com with SMTP id a20so5972968vkm.22
+        for <netdev@vger.kernel.org>; Tue, 14 Jan 2020 08:46:47 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=google.com; s=20161025;
         h=date:in-reply-to:message-id:mime-version:references:subject:from:to
          :cc;
         bh=bTzv6GNpgfrRZmeHOV0jVc+oFdZ9HuTWtPYHIUcg/W4=;
-        b=QNnMhi1W2Lwr9MiJV1KUIy84wUVGideJuBgoE8jzj7ATu3d+8Iej5m7jE4wEyrUloG
-         PmCzBN3Y/FcSXfgNrjtdeca6SP75c21ZSFxwQ33whfSl8Llc/Tfs931jR7JFlKvtpL7R
-         OVQD2+sf7pxwqUSXltEoe9xWiW8qtliCn4a6dmeqj6LHT9vtAQItMQikhZnofmzBG3ZN
-         SY4j+4f9chtw5cTVKbA+v/YxZpuJTUPdcuSaDlkWIegcBGwvg2oifZEqpMBK4bDDbS8f
-         oJPCU+5ZciMpiDheJSoUQnu4UnxzEBByQdSSTGsNpWfzD/C9yoO51HaQXhDAknnJLTT/
-         RP5A==
+        b=S70B1gZPy/hQdsMI3k2PIeDncvGnKD4+33/gDuZ4XKA2/sUizILM7mWuAQp/UGsq0K
+         Sfx74WC6dkf9O7Puh8BR1bYEp8OD4mkhSouiJOzM/dPBybExzOAawG+QKta2BE0fFC4L
+         I3Gk14zSgsFpw3ui1F2HWlvm4O0pXiolI38oHwk1hGpNZB2ETWyyLs2tuDBePt0sAhUJ
+         6DhRs703GqXiGt+kXnPPo6fmu4rjMUVsBqR6xpHb9E/o2RGXL3vk7Tfk9kuxnNYP9es5
+         UNhxKPbhCp7cr2KWhFgTaRjXS1A2GrzW0eErqULc325gA0Xk8dZeFvJttcpxcJaUExnb
+         hnaQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:date:in-reply-to:message-id:mime-version
          :references:subject:from:to:cc;
         bh=bTzv6GNpgfrRZmeHOV0jVc+oFdZ9HuTWtPYHIUcg/W4=;
-        b=RQSFV01J7ZF9AadjOnPSaU83gdSRglnl6ThrNWDEc3BCaluDiTs6IUTKaacjXB4lhB
-         w0SqHIi3SrQgLiP8ciu4yKwATYJ0KRO8Z5g8ajp1dkpYrEQi+zbEmLGZ4LDe7pH21AV7
-         ZXfR5vjYxtFw9pgwbJynwngsDXgwn71GxVeQZ3vtzE3m2wBZL1v5SOfZ04Wj/B9rYCkQ
-         SqYjAGXmhm/9Mmdu4vqZVyg1iNYKQ/vtELpOvqQfw8CwaKgvUnjwx85C1QBFTff3F7XZ
-         lmlhXE5T9gyhEBAoRIKgIYwrG/sk9aIhS4WnajXJDpDd7LKTofAJ60x7fGm0mgziHno+
-         XK+A==
-X-Gm-Message-State: APjAAAXnKHjE0AdpUVH8tOaJb499VsN4BgAqjjxlPATHBETAS1EBSlVf
-        +PpmhptdNr1485uTxqlAfQuQ5FVXOkBM
-X-Google-Smtp-Source: APXvYqwNlRjnwBABlatph1aPgTiQJF+O6lc81rsDh02aseJJD5vR/jzq0Fjyes0uwdcfrH/meeLDOMTraN4R
-X-Received: by 2002:a63:7843:: with SMTP id t64mr27824323pgc.144.1579020404127;
- Tue, 14 Jan 2020 08:46:44 -0800 (PST)
-Date:   Tue, 14 Jan 2020 08:46:08 -0800
+        b=Q94bQ2VqXCsAGlenkZSjvIiyT7Uxobc69udJWQhmWv1vl/gH4vQXfDseWChloEhJIz
+         fIyEfMKKZHxq7bM0ua8/QYWr0Lj4ia6ee7tzBEDKnUTUy2/iR6Lw7UCeu+DgT73yqSXX
+         o4gXzJ5yW4Scj4x1auUXtTrCY08/ztN+jKlE2yrUOHpG+IX97lPOoI2TsQZE5Lzjp8GC
+         7ONcq/rrTz7Bnq2UblMU+pxjQx5w4Huub2pVo2Q0ruj64nyrHKHvneMgg1/WR5hzBoo6
+         Gvv549/icdE2QMaaniB3V1QbMqkFdstFaJNDXL3glRzn6sVtSI/mPHE4/j35E0liWwM1
+         lQgw==
+X-Gm-Message-State: APjAAAW1Yb7k792xCISV8PDyB8RtQO6WPnnbSHek1kIIIMoSl5skXT6c
+        yXxTVfCjMdmr2/RPxeFMjpw8YCCCx5RQ
+X-Google-Smtp-Source: APXvYqzZQBV7AbWitZ2PB2oSQE21EANy/WfEvZSvsFN3/ZWYfM6BaTau/5PBcwtYNhP1qRudj1jff6eSnd0u
+X-Received: by 2002:a67:be13:: with SMTP id x19mr1832482vsq.20.1579020406547;
+ Tue, 14 Jan 2020 08:46:46 -0800 (PST)
+Date:   Tue, 14 Jan 2020 08:46:09 -0800
 In-Reply-To: <20200114164614.47029-1-brianvv@google.com>
-Message-Id: <20200114164614.47029-5-brianvv@google.com>
+Message-Id: <20200114164614.47029-6-brianvv@google.com>
 Mime-Version: 1.0
 References: <20200114164614.47029-1-brianvv@google.com>
 X-Mailer: git-send-email 2.25.0.rc1.283.g88dfdc4193-goog
-Subject: [PATCH v4 bpf-next 4/9] bpf: add lookup and update batch ops to arraymap
+Subject: [PATCH v4 bpf-next 4/9] bpf: add lookup and updated batch ops to arraymap
 From:   Brian Vazquez <brianvv@google.com>
 To:     Brian Vazquez <brianvv.kernel@gmail.com>,
         Brian Vazquez <brianvv@google.com>,
