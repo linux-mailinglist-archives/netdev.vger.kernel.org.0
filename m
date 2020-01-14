@@ -2,170 +2,85 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id E4F5913A3B8
-	for <lists+netdev@lfdr.de>; Tue, 14 Jan 2020 10:24:37 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7455A13A435
+	for <lists+netdev@lfdr.de>; Tue, 14 Jan 2020 10:49:33 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726169AbgANJYg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 14 Jan 2020 04:24:36 -0500
-Received: from mail.kernel.org ([198.145.29.99]:36416 "EHLO mail.kernel.org"
+        id S1728746AbgANJta (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 14 Jan 2020 04:49:30 -0500
+Received: from mga04.intel.com ([192.55.52.120]:50971 "EHLO mga04.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725842AbgANJYf (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 14 Jan 2020 04:24:35 -0500
-Received: from localhost.localdomain.com (nat-pool-mxp-t.redhat.com [149.6.153.186])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 8CD04207FF;
-        Tue, 14 Jan 2020 09:24:33 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1578993874;
-        bh=VsJG0o5dNghW9MlWnWtkQopNlrykQlJYLXvW+/N9GUQ=;
-        h=From:To:Cc:Subject:Date:From;
-        b=A8Ma+UDounUJEAMl98WsAoypXxMG/A+MA9Pe4W6gl1xylX8KdHKok3LvBBha6DEzU
-         FXTr3BwO4/E4GpKd05uTEQMl6qbN2JYydH4lHcTK05UzrZlqqRJsKAdFVhj0Ri5A4g
-         jerhD1nnv7VsCj5RoHxpJbt3AlLQRVl78kjf0/XU=
-From:   Lorenzo Bianconi <lorenzo@kernel.org>
-To:     netdev@vger.kernel.org
-Cc:     lorenzo.bianconi@redhat.com, davem@davemloft.net,
-        brouer@redhat.com, ilias.apalodimas@linaro.org, kuba@kernel.org
-Subject: [PATCH v3 net-next] net: socionext: get rid of huge dma sync in netsec_alloc_rx_data
-Date:   Tue, 14 Jan 2020 10:24:19 +0100
-Message-Id: <1fce975f9f77780b92b86dbaf1ca89ffe37255bb.1578993365.git.lorenzo@kernel.org>
-X-Mailer: git-send-email 2.21.1
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+        id S1725956AbgANJta (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 14 Jan 2020 04:49:30 -0500
+X-Amp-Result: SKIPPED(no attachment in message)
+X-Amp-File-Uploaded: False
+Received: from orsmga004.jf.intel.com ([10.7.209.38])
+  by fmsmga104.fm.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 14 Jan 2020 01:49:30 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.69,432,1571727600"; 
+   d="scan'208";a="372534591"
+Received: from mkarlsso-mobl.ger.corp.intel.com (HELO VM.isw.intel.com) ([10.103.211.46])
+  by orsmga004.jf.intel.com with ESMTP; 14 Jan 2020 01:49:27 -0800
+From:   Magnus Karlsson <magnus.karlsson@intel.com>
+To:     magnus.karlsson@intel.com, bjorn.topel@intel.com, ast@kernel.org,
+        daniel@iogearbox.net, netdev@vger.kernel.org,
+        jonathan.lemon@gmail.com
+Cc:     rgoodfel@isi.edu, bpf@vger.kernel.org
+Subject: [PATCH bpf-next] xsk: support allocations of large umems
+Date:   Tue, 14 Jan 2020 10:49:25 +0100
+Message-Id: <1578995365-7050-1-git-send-email-magnus.karlsson@intel.com>
+X-Mailer: git-send-email 2.7.4
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Socionext driver can run on dma coherent and non-coherent devices.
-Get rid of huge dma_sync_single_for_device in netsec_alloc_rx_data since
-now the driver can let page_pool API to managed needed DMA sync
+When registering a umem area that is sufficiently large (>1G on an
+x86), kmalloc cannot be used to allocate one of the internal data
+structures, as the size requested gets too large. Use kvmalloc instead
+that falls back on vmalloc if the allocation is too large for kmalloc.
 
-Reviewed-by: Ilias Apalodimas <ilias.apalodimas@linaro.org>
-Signed-off-by: Lorenzo Bianconi <lorenzo@kernel.org>
+Also add accounting for this structure as it is triggered by a user
+space action (the XDP_UMEM_REG setsockopt) and it is by far the
+largest structure of kernel allocated memory in xsk.
+
+Signed-off-by: Magnus Karlsson <magnus.karlsson@intel.com>
+Reported-by: Ryan Goodfellow <rgoodfel@isi.edu>
 ---
-Changes since v2:
-- fix checkpatch warnings
+ net/xdp/xdp_umem.c | 7 ++++---
+ 1 file changed, 4 insertions(+), 3 deletions(-)
 
-Changes since v1:
-- rely on original frame size for dma sync
----
- drivers/net/ethernet/socionext/netsec.c | 43 +++++++++++++++----------
- 1 file changed, 26 insertions(+), 17 deletions(-)
-
-diff --git a/drivers/net/ethernet/socionext/netsec.c b/drivers/net/ethernet/socionext/netsec.c
-index b5a9e947a4a8..6870a6ce76a6 100644
---- a/drivers/net/ethernet/socionext/netsec.c
-+++ b/drivers/net/ethernet/socionext/netsec.c
-@@ -243,6 +243,7 @@
- 			       NET_IP_ALIGN)
- #define NETSEC_RX_BUF_NON_DATA (NETSEC_RXBUF_HEADROOM + \
- 				SKB_DATA_ALIGN(sizeof(struct skb_shared_info)))
-+#define NETSEC_RX_BUF_SIZE	(PAGE_SIZE - NETSEC_RX_BUF_NON_DATA)
+diff --git a/net/xdp/xdp_umem.c b/net/xdp/xdp_umem.c
+index 3049af2..f93e917 100644
+--- a/net/xdp/xdp_umem.c
++++ b/net/xdp/xdp_umem.c
+@@ -249,7 +249,7 @@ static void xdp_umem_release(struct xdp_umem *umem)
+ 	xdp_umem_unmap_pages(umem);
+ 	xdp_umem_unpin_pages(umem);
  
- #define DESC_SZ	sizeof(struct netsec_de)
+-	kfree(umem->pages);
++	kvfree(umem->pages);
+ 	umem->pages = NULL;
  
-@@ -719,7 +720,6 @@ static void *netsec_alloc_rx_data(struct netsec_priv *priv,
- {
+ 	xdp_umem_unaccount_pages(umem);
+@@ -409,7 +409,8 @@ static int xdp_umem_reg(struct xdp_umem *umem, struct xdp_umem_reg *mr)
+ 	if (err)
+ 		goto out_account;
  
- 	struct netsec_desc_ring *dring = &priv->desc_ring[NETSEC_RING_RX];
--	enum dma_data_direction dma_dir;
- 	struct page *page;
+-	umem->pages = kcalloc(umem->npgs, sizeof(*umem->pages), GFP_KERNEL);
++	umem->pages = kvcalloc(umem->npgs, sizeof(*umem->pages),
++			       GFP_KERNEL_ACCOUNT);
+ 	if (!umem->pages) {
+ 		err = -ENOMEM;
+ 		goto out_pin;
+@@ -419,7 +420,7 @@ static int xdp_umem_reg(struct xdp_umem *umem, struct xdp_umem_reg *mr)
+ 	if (!err)
+ 		return 0;
  
- 	page = page_pool_dev_alloc_pages(dring->page_pool);
-@@ -734,9 +734,7 @@ static void *netsec_alloc_rx_data(struct netsec_priv *priv,
- 	/* Make sure the incoming payload fits in the page for XDP and non-XDP
- 	 * cases and reserve enough space for headroom + skb_shared_info
- 	 */
--	*desc_len = PAGE_SIZE - NETSEC_RX_BUF_NON_DATA;
--	dma_dir = page_pool_get_dma_dir(dring->page_pool);
--	dma_sync_single_for_device(priv->dev, *dma_handle, *desc_len, dma_dir);
-+	*desc_len = NETSEC_RX_BUF_SIZE;
+-	kfree(umem->pages);
++	kvfree(umem->pages);
  
- 	return page_address(page);
- }
-@@ -883,6 +881,8 @@ static u32 netsec_xdp_xmit_back(struct netsec_priv *priv, struct xdp_buff *xdp)
- static u32 netsec_run_xdp(struct netsec_priv *priv, struct bpf_prog *prog,
- 			  struct xdp_buff *xdp)
- {
-+	struct netsec_desc_ring *dring = &priv->desc_ring[NETSEC_RING_RX];
-+	unsigned int len = xdp->data_end - xdp->data;
- 	u32 ret = NETSEC_XDP_PASS;
- 	int err;
- 	u32 act;
-@@ -896,7 +896,9 @@ static u32 netsec_run_xdp(struct netsec_priv *priv, struct bpf_prog *prog,
- 	case XDP_TX:
- 		ret = netsec_xdp_xmit_back(priv, xdp);
- 		if (ret != NETSEC_XDP_TX)
--			xdp_return_buff(xdp);
-+			__page_pool_put_page(dring->page_pool,
-+					     virt_to_head_page(xdp->data),
-+					     len, true);
- 		break;
- 	case XDP_REDIRECT:
- 		err = xdp_do_redirect(priv->ndev, xdp, prog);
-@@ -904,7 +906,9 @@ static u32 netsec_run_xdp(struct netsec_priv *priv, struct bpf_prog *prog,
- 			ret = NETSEC_XDP_REDIR;
- 		} else {
- 			ret = NETSEC_XDP_CONSUMED;
--			xdp_return_buff(xdp);
-+			__page_pool_put_page(dring->page_pool,
-+					     virt_to_head_page(xdp->data),
-+					     len, true);
- 		}
- 		break;
- 	default:
-@@ -915,7 +919,9 @@ static u32 netsec_run_xdp(struct netsec_priv *priv, struct bpf_prog *prog,
- 		/* fall through -- handle aborts by dropping packet */
- 	case XDP_DROP:
- 		ret = NETSEC_XDP_CONSUMED;
--		xdp_return_buff(xdp);
-+		__page_pool_put_page(dring->page_pool,
-+				     virt_to_head_page(xdp->data),
-+				     len, true);
- 		break;
- 	}
- 
-@@ -1014,7 +1020,8 @@ static int netsec_process_rx(struct netsec_priv *priv, int budget)
- 			 * cache state. Since we paid the allocation cost if
- 			 * building an skb fails try to put the page into cache
- 			 */
--			page_pool_recycle_direct(dring->page_pool, page);
-+			__page_pool_put_page(dring->page_pool, page,
-+					     pkt_len, true);
- 			netif_err(priv, drv, priv->ndev,
- 				  "rx failed to build skb\n");
- 			break;
-@@ -1272,17 +1279,19 @@ static int netsec_setup_rx_dring(struct netsec_priv *priv)
- {
- 	struct netsec_desc_ring *dring = &priv->desc_ring[NETSEC_RING_RX];
- 	struct bpf_prog *xdp_prog = READ_ONCE(priv->xdp_prog);
--	struct page_pool_params pp_params = { 0 };
-+	struct page_pool_params pp_params = {
-+		.order = 0,
-+		/* internal DMA mapping in page_pool */
-+		.flags = PP_FLAG_DMA_MAP | PP_FLAG_DMA_SYNC_DEV,
-+		.pool_size = DESC_NUM,
-+		.nid = NUMA_NO_NODE,
-+		.dev = priv->dev,
-+		.dma_dir = xdp_prog ? DMA_BIDIRECTIONAL : DMA_FROM_DEVICE,
-+		.offset = NETSEC_RXBUF_HEADROOM,
-+		.max_len = NETSEC_RX_BUF_SIZE,
-+	};
- 	int i, err;
- 
--	pp_params.order = 0;
--	/* internal DMA mapping in page_pool */
--	pp_params.flags = PP_FLAG_DMA_MAP;
--	pp_params.pool_size = DESC_NUM;
--	pp_params.nid = NUMA_NO_NODE;
--	pp_params.dev = priv->dev;
--	pp_params.dma_dir = xdp_prog ? DMA_BIDIRECTIONAL : DMA_FROM_DEVICE;
--
- 	dring->page_pool = page_pool_create(&pp_params);
- 	if (IS_ERR(dring->page_pool)) {
- 		err = PTR_ERR(dring->page_pool);
+ out_pin:
+ 	xdp_umem_unpin_pages(umem);
 -- 
-2.21.1
+2.7.4
 
