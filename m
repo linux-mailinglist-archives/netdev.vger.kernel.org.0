@@ -2,151 +2,131 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 3224C13AE58
-	for <lists+netdev@lfdr.de>; Tue, 14 Jan 2020 17:05:54 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0273D13AE96
+	for <lists+netdev@lfdr.de>; Tue, 14 Jan 2020 17:10:49 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728774AbgANQFo (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 14 Jan 2020 11:05:44 -0500
-Received: from mail-yw1-f68.google.com ([209.85.161.68]:34423 "EHLO
-        mail-yw1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726450AbgANQFn (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 14 Jan 2020 11:05:43 -0500
-Received: by mail-yw1-f68.google.com with SMTP id b186so9431966ywc.1
-        for <netdev@vger.kernel.org>; Tue, 14 Jan 2020 08:05:43 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=JAAP2JdXcgFxBhl56nV1tk8WCkwM6wjoMIO0G3IteqI=;
-        b=o1RTeYs0to9YmBEHxHTwHSEUv/fnUFuviFip7biVyFBtfv5BDeL0yAdUT55WtszMqM
-         ZtntMmTkEAMK1rWaB7QrdvmGZ2EOI74jVS4ilQfTFWt2lt2dJZVYZ5NRZNNlJWMjDcFl
-         QCiLlI8UBrYup1P8VCdFz2ls7TLH19qwmU4f1qd5CfW2IaKnFt50WMK6C9XCquq5YStv
-         FBo42piZx2N64YHzBR3D4m7KVj5PPEoZSWXhvrNLga+L1DrLnshGrTNdkSCAzAfOP6jP
-         0u/2VH5CuV3aVHEM5/D4L45RP6aMp27BEqdvWtX1tRhHzXMSj2V7op94wQugvjwU7jGA
-         TKtQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=JAAP2JdXcgFxBhl56nV1tk8WCkwM6wjoMIO0G3IteqI=;
-        b=U3dQB/hoHTBliiO6VE3QgN9i89nzCmZe8pZtxv8D2SHqV1Nw/LoLgPlQ6b98+Yd3LF
-         yWwLSPcTP+pvG1qWGQU5b91/a/lbChmUxqNBokqRqB0nG8xsPxA7NVAYbm2+Mhqnu1C/
-         J4lo6zwWht2Zl/IHT5l2GX3VQ+eCK3jW1ke75whXKcreN2QlCVvXIyEE/+rW4bulB9GJ
-         Q8+GdKIMFV4oLuh03o5v722Bxqg0W+BK081Pw/ilkFmhzFrcusaGh6iN2xXbixH3WolV
-         eyfqtv1JAwfRZdmL2ZfSxZduTDrb8ZSO8YDwSLDxI8ubP5D1GqoH4ZT/5bXANAN/aUzL
-         f51w==
-X-Gm-Message-State: APjAAAWrH5b/3G5xt9+DBrYqluTWrltuGC3MOG8y+1hSNwpoML12VH4N
-        OT0pIfxkz9WyTLwqwCHau80lA3XbRxMm1IUvG9hv2g==
-X-Google-Smtp-Source: APXvYqwC0OB/6gLA6rihbYKssh977hvwsHcfpO/KRTW1EX3faERVWGaeFnIgAC1VBqkXkhCGpThc6iCZ1wiXtKcbvxU=
-X-Received: by 2002:a0d:dd56:: with SMTP id g83mr17603981ywe.174.1579017942555;
- Tue, 14 Jan 2020 08:05:42 -0800 (PST)
-MIME-Version: 1.0
-References: <1578993820-2114-1-git-send-email-yangpc@wangsu.com>
-In-Reply-To: <1578993820-2114-1-git-send-email-yangpc@wangsu.com>
-From:   Eric Dumazet <edumazet@google.com>
-Date:   Tue, 14 Jan 2020 08:05:30 -0800
-Message-ID: <CANn89i+nf+cPSxZdRziRa3NaDvdMG+xKYBsy752NX+3vkLba1w@mail.gmail.com>
-Subject: Re: [PATCH] tcp: fix marked lost packets not being retransmitted
-To:     Pengcheng Yang <yangpc@wangsu.com>
-Cc:     David Miller <davem@davemloft.net>,
-        Alexey Kuznetsov <kuznet@ms2.inr.ac.ru>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        andriin@fb.com, netdev <netdev@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+        id S1729290AbgANQJk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 14 Jan 2020 11:09:40 -0500
+Received: from smtprelay-out1.synopsys.com ([149.117.87.133]:40714 "EHLO
+        smtprelay-out1.synopsys.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1728699AbgANQJi (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 14 Jan 2020 11:09:38 -0500
+Received: from mailhost.synopsys.com (mdc-mailhost1.synopsys.com [10.225.0.209])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits))
+        (No client certificate requested)
+        by smtprelay-out1.synopsys.com (Postfix) with ESMTPS id 8B4D0C0620;
+        Tue, 14 Jan 2020 16:09:36 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=synopsys.com; s=mail;
+        t=1579018177; bh=lMsPxq+6nqsKDOeBMq7JTDZwDRAvL67CUWdXLkXkMqk=;
+        h=From:To:Cc:Subject:Date:From;
+        b=iffSGqxx8OFb+Pmq5zvInZjDB2S3nvyAmHaayuDazU2IvKr/ANqsV+5cZMMo8mEA7
+         D/qW49WaOk4HilFsZS4A6AtLQpWaLJHDroppQP33m0JNSFWe0yPFn0Anbbg8bTjS9+
+         NC5VtqbX5LZ3aE5VqaUl+HbTu18GVXyBoUFKuDW4bBBFWCjHssPmMRURjNyldKlSTd
+         jOZVxY2F2e5aMUW8ntYKkUK21GyFdSAxBUD4StzGG/z/L8ThH3c4OIuxFdChJUTV0J
+         /CyV16jzSwo0YukQ+a8zJk4cwoeD+HK9N3ktwFJPa3+MsS7cwCl8d4h6SGO0uaqTgz
+         J/sl3s3Q7dV3A==
+Received: from de02dwia024.internal.synopsys.com (de02dwia024.internal.synopsys.com [10.225.19.81])
+        by mailhost.synopsys.com (Postfix) with ESMTP id 221CDA005B;
+        Tue, 14 Jan 2020 16:09:34 +0000 (UTC)
+From:   Jose Abreu <Jose.Abreu@synopsys.com>
+To:     netdev@vger.kernel.org
+Cc:     Joao Pinto <Joao.Pinto@synopsys.com>,
+        Jose Abreu <Jose.Abreu@synopsys.com>,
+        Giuseppe Cavallaro <peppe.cavallaro@st.com>,
+        Alexandre Torgue <alexandre.torgue@st.com>,
+        Jose Abreu <Jose.Abreu@synopsys.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+        linux-stm32@st-md-mailman.stormreply.com,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        Alexey Brodkin <Alexey.Brodkin@synopsys.com>,
+        Vineet Gupta <Vineet.Gupta1@synopsys.com>,
+        linux-snps-arc@lists.infradead.org
+Subject: [PATCH net 0/4] net: stmmac: Fix selftests in Synopsys AXS101 board
+Date:   Tue, 14 Jan 2020 17:09:20 +0100
+Message-Id: <cover.1579017787.git.Jose.Abreu@synopsys.com>
+X-Mailer: git-send-email 2.7.4
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Jan 14, 2020 at 1:24 AM Pengcheng Yang <yangpc@wangsu.com> wrote:
->
-> When the packet pointed to by retransmit_skb_hint is unlinked by ACK,
-> retransmit_skb_hint will be set to NULL in tcp_clean_rtx_queue().
-> If packet loss is detected at this time, retransmit_skb_hint will be set
-> to point to the current packet loss in tcp_verify_retransmit_hint(),
-> then the packets that were previously marked lost but not retransmitted
-> due to the restriction of cwnd will be skipped and cannot be
-> retransmitted.
+Set of fixes for sefltests so that they work in Synopsys AXS101 board.
 
+Final output:
 
-"cannot be retransmittted"  sounds quite alarming.
+$ ethtool -t eth0
+The test result is PASS
+The test extra info:
+ 1. MAC Loopback                 0
+ 2. PHY Loopback                 -95
+ 3. MMC Counters                 0
+ 4. EEE                          -95
+ 5. Hash Filter MC               0
+ 6. Perfect Filter UC            0
+ 7. MC Filter                    0
+ 8. UC Filter                    0
+ 9. Flow Control                 -95
+10. RSS                          -95
+11. VLAN Filtering               -95
+12. VLAN Filtering (perf)        -95
+13. Double VLAN Filter           -95
+14. Double VLAN Filter (perf)    -95
+15. Flexible RX Parser           -95
+16. SA Insertion (desc)          -95
+17. SA Replacement (desc)        -95
+18. SA Insertion (reg)           -95
+19. SA Replacement (reg)         -95
+20. VLAN TX Insertion            -95
+21. SVLAN TX Insertion           -95
+22. L3 DA Filtering              -95
+23. L3 SA Filtering              -95
+24. L4 DA TCP Filtering          -95
+25. L4 SA TCP Filtering          -95
+26. L4 DA UDP Filtering          -95
+27. L4 SA UDP Filtering          -95
+28. ARP Offload                  -95
+29. Jumbo Frame                  0
+30. Multichannel Jumbo           -95
+31. Split Header                 -95
 
-You meant they will eventually be retransmitted, or that the flow is
-completely frozen at this point ?
+Description:
 
-Thanks for the fix and test !
+1) Fixes the unaligned accesses that caused CPU halt in Synopsys AXS101
+boards.
 
-(Not sure why you CC all these people having little TCP expertise btw)
+2) Fixes the VLAN tests when filtering failed to work.
 
-> To fix this, when retransmit_skb_hint is NULL, retransmit_skb_hint can
-> be reset only after all marked lost packets are retransmitted
-> (retrans_out >= lost_out), otherwise we need to traverse from
-> tcp_rtx_queue_head in tcp_xmit_retransmit_queue().
->
-> Packetdrill to demonstrate:
->
-> // Disable RACK and set max_reordering to keep things simple
->     0 `sysctl -q net.ipv4.tcp_recovery=0`
->    +0 `sysctl -q net.ipv4.tcp_max_reordering=3`
->
-> // Establish a connection
->    +0 socket(..., SOCK_STREAM, IPPROTO_TCP) = 3
->    +0 setsockopt(3, SOL_SOCKET, SO_REUSEADDR, [1], 4) = 0
->    +0 bind(3, ..., ...) = 0
->    +0 listen(3, 1) = 0
->
->   +.1 < S 0:0(0) win 32792 <mss 1000,sackOK,nop,nop,nop,wscale 7>
->    +0 > S. 0:0(0) ack 1 <...>
->  +.01 < . 1:1(0) ack 1 win 257
->    +0 accept(3, ..., ...) = 4
->
-> // Send 8 data segments
->    +0 write(4, ..., 8000) = 8000
->    +0 > P. 1:8001(8000) ack 1
->
-> // Enter recovery and 1:3001 is marked lost
->  +.01 < . 1:1(0) ack 1 win 257 <sack 3001:4001,nop,nop>
->    +0 < . 1:1(0) ack 1 win 257 <sack 5001:6001 3001:4001,nop,nop>
->    +0 < . 1:1(0) ack 1 win 257 <sack 5001:7001 3001:4001,nop,nop>
->
-> // Retransmit 1:1001, now retransmit_skb_hint points to 1001:2001
->    +0 > . 1:1001(1000) ack 1
->
-> // 1001:2001 was ACKed causing retransmit_skb_hint to be set to NULL
->  +.01 < . 1:1(0) ack 2001 win 257 <sack 5001:8001 3001:4001,nop,nop>
-> // Now retransmit_skb_hint points to 4001:5001 which is now marked lost
->
-> // BUG: 2001:3001 was not retransmitted
->    +0 > . 2001:3001(1000) ack 1
->
-> Signed-off-by: Pengcheng Yang <yangpc@wangsu.com>
-> ---
->  net/ipv4/tcp_input.c | 7 ++++---
->  1 file changed, 4 insertions(+), 3 deletions(-)
->
-> diff --git a/net/ipv4/tcp_input.c b/net/ipv4/tcp_input.c
-> index 0238b55..5347ab2 100644
-> --- a/net/ipv4/tcp_input.c
-> +++ b/net/ipv4/tcp_input.c
-> @@ -915,9 +915,10 @@ static void tcp_check_sack_reordering(struct sock *sk, const u32 low_seq,
->  /* This must be called before lost_out is incremented */
->  static void tcp_verify_retransmit_hint(struct tcp_sock *tp, struct sk_buff *skb)
->  {
-> -       if (!tp->retransmit_skb_hint ||
-> -           before(TCP_SKB_CB(skb)->seq,
-> -                  TCP_SKB_CB(tp->retransmit_skb_hint)->seq))
-> +       if ((!tp->retransmit_skb_hint && tp->retrans_out >= tp->lost_out) ||
-> +           (tp->retransmit_skb_hint &&
-> +            before(TCP_SKB_CB(skb)->seq,
-> +                   TCP_SKB_CB(tp->retransmit_skb_hint)->seq)))
->                 tp->retransmit_skb_hint = skb;
->  }
->
-> --
-> 1.8.3.1
->
+3) Fixes the VLAN Perfect tests when filtering is not available in HW.
+
+4) Fixes the Ethernet DT bindings for AXS101 board.
+
+---
+Cc: Giuseppe Cavallaro <peppe.cavallaro@st.com>
+Cc: Alexandre Torgue <alexandre.torgue@st.com>
+Cc: Jose Abreu <joabreu@synopsys.com>
+Cc: "David S. Miller" <davem@davemloft.net>
+Cc: Maxime Coquelin <mcoquelin.stm32@gmail.com>
+Cc: netdev@vger.kernel.org
+Cc: linux-stm32@st-md-mailman.stormreply.com
+Cc: linux-arm-kernel@lists.infradead.org
+Cc: linux-kernel@vger.kernel.org
+Cc: Alexey Brodkin <abrodkin@synopsys.com>
+Cc: Vineet Gupta <vgupta@synopsys.com>
+Cc: linux-snps-arc@lists.infradead.org
+---
+
+Jose Abreu (4):
+  net: stmmac: selftests: Make it work in Synopsys AXS101 boards
+  net: stmmac: selftests: Mark as fail when received VLAN ID != expected
+  net: stmmac: selftests: Guard VLAN Perfect test against non supported
+    HW
+  ARC: [plat-axs10x]: Add missing multicast filter number to GMAC node
+
+ arch/arc/boot/dts/axs10x_mb.dtsi                   |  1 +
+ .../net/ethernet/stmicro/stmmac/stmmac_selftests.c | 32 +++++++++++++++-------
+ 2 files changed, 23 insertions(+), 10 deletions(-)
+
+-- 
+2.7.4
+
