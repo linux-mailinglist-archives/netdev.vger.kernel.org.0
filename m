@@ -2,113 +2,113 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 9FEDA13A26F
-	for <lists+netdev@lfdr.de>; Tue, 14 Jan 2020 09:04:00 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id DBA0113A272
+	for <lists+netdev@lfdr.de>; Tue, 14 Jan 2020 09:04:17 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729019AbgANID7 convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Tue, 14 Jan 2020 03:03:59 -0500
-Received: from youngberry.canonical.com ([91.189.89.112]:39852 "EHLO
-        youngberry.canonical.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728734AbgANID6 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 14 Jan 2020 03:03:58 -0500
-Received: from mail-pj1-f71.google.com ([209.85.216.71])
-        by youngberry.canonical.com with esmtps (TLS1.2:ECDHE_RSA_AES_128_GCM_SHA256:128)
-        (Exim 4.86_2)
-        (envelope-from <kai.heng.feng@canonical.com>)
-        id 1irHB5-0006fs-RL
-        for netdev@vger.kernel.org; Tue, 14 Jan 2020 08:03:56 +0000
-Received: by mail-pj1-f71.google.com with SMTP id u91so1133695pjb.0
-        for <netdev@vger.kernel.org>; Tue, 14 Jan 2020 00:03:55 -0800 (PST)
+        id S1729153AbgANIEQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 14 Jan 2020 03:04:16 -0500
+Received: from mail-wr1-f65.google.com ([209.85.221.65]:44039 "EHLO
+        mail-wr1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728682AbgANIEQ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 14 Jan 2020 03:04:16 -0500
+Received: by mail-wr1-f65.google.com with SMTP id q10so11126738wrm.11;
+        Tue, 14 Jan 2020 00:04:14 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=tOBb/YBX+mgFK3HoZRSSrszIJj8mOyipLOkzLeqqBos=;
+        b=kjW9+tOMEv/CdrVht6LgVC8LJyOQR3+lzLqzT9j4tbzaNeDYLd6L/p8Q+86zYa0rv9
+         9WNpwoXYYNoIwBYJbh8XIrOPSDn7j6UkDBBMeUkYF2qQUyd+NMTXQip7eQfsQVEUKjAr
+         5LfE0MKXUpieGWQg3MMrLpZ9eRtjy5IQcT920cp5BHmML0C3iSXNJSf1bwa274ys57K6
+         jG37BObm6sN3KPnzjWueGaQUScgWB/v4zjJCxFkGPmnk+7f85mmP27wdqHOpezdzyPd3
+         flVw4MWmc5iB/bfbCG42lcByafJ50J9+prI3RYNS8ZinyGQ0jjASOxtIiP+bntVfSANX
+         Nc1w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:subject:from:in-reply-to:date:cc
-         :content-transfer-encoding:message-id:references:to;
-        bh=oyHMiGCOwwLhZ3ql1qP5fClJMPTVAnuOcLkJMOC5WrM=;
-        b=N/JcXt9jrYypQ6vuyZBdL6RB/edBJfco1VOau6BDWyk4o+nFdGUQ0Q+IQv12K82NJo
-         3yGycRZNdzkT4sRFNx69Lbt55aGIwqyUtywOOr1/pPKqarLlMRzIbH+Dn91YvEUKG/Bu
-         V3gG/YiQ2X0QLcLz0nbVyox4M0w2QiyL6/Tf2QeEBlp+ADvnchPzAMQUoWcvQuccaxXS
-         c66Ih2rsp2vzpLWB0h+3Lqr+dneWu6XG39fJLFLcmqXYnFSU+u2EGc4Gx8gNw4Rk1v5D
-         uD+zeQJV6SzN2iyLcWtIzncRpVWmN+lxXt89RNx9CQiM+sb70BqUcydQ0FenILfDpR30
-         L8mA==
-X-Gm-Message-State: APjAAAUFsGb976wNPuN3J4715JCCXzZikkqaCn2Zn02wqbC+Ue8dHaSf
-        tVkcMcojfLZDrBaNI5yXzfcrVfKaQHXdD/2MnbxM22e6rT89BNqJROSqYlKiDZT3upD5K7lOaDV
-        ClcrYuPFMaSA3IKRyYG+AFBZQ7hPQ7CsG6w==
-X-Received: by 2002:a63:ea4c:: with SMTP id l12mr24798747pgk.174.1578989034499;
-        Tue, 14 Jan 2020 00:03:54 -0800 (PST)
-X-Google-Smtp-Source: APXvYqxShyOZDQstdIjpd/FUo8c7HCAwhOQJ9K9D7HaFj30wgfmPowWV6e8wRIMwJtnAXgZ8tGtY1g==
-X-Received: by 2002:a63:ea4c:: with SMTP id l12mr24798706pgk.174.1578989034126;
-        Tue, 14 Jan 2020 00:03:54 -0800 (PST)
-Received: from 2001-b011-380f-35a3-5d99-e277-e07f-4d26.dynamic-ip6.hinet.net (2001-b011-380f-35a3-5d99-e277-e07f-4d26.dynamic-ip6.hinet.net. [2001:b011:380f:35a3:5d99:e277:e07f:4d26])
-        by smtp.gmail.com with ESMTPSA id bo19sm15439224pjb.25.2020.01.14.00.03.51
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Tue, 14 Jan 2020 00:03:53 -0800 (PST)
-Content-Type: text/plain;
-        charset=us-ascii
-Mime-Version: 1.0 (Mac OS X Mail 13.0 \(3608.40.2.2.4\))
-Subject: Re: [PATCH] r8152: Add MAC passthrough support to new device
-From:   Kai-Heng Feng <kai.heng.feng@canonical.com>
-In-Reply-To: <CACeCKacQpDsptRi6AZhuFYg2c87-bW0KS6vy=CacB8+j+6YBXA@mail.gmail.com>
-Date:   Tue, 14 Jan 2020 16:03:50 +0800
-Cc:     David Miller <davem@davemloft.net>,
-        Hayes Wang <hayeswang@realtek.com>,
-        Jakub Kicinski <jakub.kicinski@netronome.com>,
-        Grant Grundler <grundler@chromium.org>,
-        Mario Limonciello <mario.limonciello@dell.com>,
-        David Chen <david.chen7@dell.com>,
-        "open list:USB NETWORKING DRIVERS" <linux-usb@vger.kernel.org>,
-        "open list:NETWORKING DRIVERS" <netdev@vger.kernel.org>,
-        open list <linux-kernel@vger.kernel.org>
-Content-Transfer-Encoding: 8BIT
-Message-Id: <14A65209-846C-4C94-9EC3-55605D2528B0@canonical.com>
-References: <20200114044127.20085-1-kai.heng.feng@canonical.com>
- <CACeCKacQpDsptRi6AZhuFYg2c87-bW0KS6vy=CacB8+j+6YBXA@mail.gmail.com>
-To:     Prashant Malani <pmalani@chromium.org>
-X-Mailer: Apple Mail (2.3608.40.2.2.4)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=tOBb/YBX+mgFK3HoZRSSrszIJj8mOyipLOkzLeqqBos=;
+        b=nalGTplKZeVkV8wYPSK3/E1GyLkS5yOTWSYl5TbKPWY2oMkm7B+Ceg6YAe4fhI+SXb
+         yDjHrUqWiK8Dy2PGYPmost4fctSGr71WYMqB8gY6dKW05bary6S30tvMY4CqgDPUwrT9
+         YxSfSX37Ha53Bc98tSzcgkEBK/hO4fH1PNOqPUPCPI50Y08i1SkQaaeW6n8wIkaZbvbV
+         6qYB+cRmRU7FRTBlj4/I7OD1G8M/HuG3s8eEMxYFni3yqgWq2W/r6JDbIT4nQqnOemeb
+         4nI+rGeaQ+7H1TS36eiDKvzebJsl4ACtAV7szVuhoKxPA9h+xU6fhW1S//k/QK0/Rby4
+         xOwQ==
+X-Gm-Message-State: APjAAAXU+e6YqX2vjEFTBbOxs2r5EQsDdsWjHah6GfFcvAd8cGD726Fo
+        PYk0d9EQOzpwp3NyDKvi2oc=
+X-Google-Smtp-Source: APXvYqzE3NCzivSoAfFEEE5KUOZc0EnalZ6I9WzQuCzL4JdGsgkSW/tFYMu6wuEhaibv1VUWpQiWtQ==
+X-Received: by 2002:a05:6000:118e:: with SMTP id g14mr23195865wrx.39.1578989053563;
+        Tue, 14 Jan 2020 00:04:13 -0800 (PST)
+Received: from localhost.localdomain (bzq-82-81-225-244.cablep.bezeqint.net. [82.81.225.244])
+        by smtp.gmail.com with ESMTPSA id p5sm17640772wrt.79.2020.01.14.00.04.11
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 14 Jan 2020 00:04:12 -0800 (PST)
+From:   Eyal Birger <eyal.birger@gmail.com>
+To:     pablo@netfilter.org, kadlec@netfilter.org, fw@strlen.de,
+        davem@davemloft.net, netfilter-devel@vger.kernel.org,
+        coreteam@netfilter.org, netdev@vger.kernel.org
+Cc:     Eyal Birger <eyal.birger@gmail.com>,
+        Shmulik Ladkani <shmulik.ladkani@gmail.com>
+Subject: [net,v2] netfilter: nat: fix ICMP header corruption on ICMP errors
+Date:   Tue, 14 Jan 2020 10:03:50 +0200
+Message-Id: <20200114080350.4693-1-eyal.birger@gmail.com>
+X-Mailer: git-send-email 2.20.1
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Commit 8303b7e8f018 ("netfilter: nat: fix spurious connection timeouts")
+made nf_nat_icmp_reply_translation() use icmp_manip_pkt() as the l4
+manipulation function for the outer packet on ICMP errors.
 
+However, icmp_manip_pkt() assumes the packet has an 'id' field which
+is not correct for all types of ICMP messages.
 
-> On Jan 14, 2020, at 15:51, Prashant Malani <pmalani@chromium.org> wrote:
-> 
-> On Mon, Jan 13, 2020 at 8:41 PM Kai-Heng Feng
-> <kai.heng.feng@canonical.com> wrote:
->> 
->> Device 0xa387 also supports MAC passthrough, therefore add it to the
->> whitelst.
->> 
->> BugLink: https://bugs.launchpad.net/bugs/1827961/comments/30
->> Signed-off-by: Kai-Heng Feng <kai.heng.feng@canonical.com>
->> ---
->> drivers/net/usb/r8152.c | 3 ++-
->> 1 file changed, 2 insertions(+), 1 deletion(-)
->> 
->> diff --git a/drivers/net/usb/r8152.c b/drivers/net/usb/r8152.c
->> index c5ebf35d2488..42dcf1442cc0 100644
->> --- a/drivers/net/usb/r8152.c
->> +++ b/drivers/net/usb/r8152.c
->> @@ -6657,7 +6657,8 @@ static int rtl8152_probe(struct usb_interface *intf,
->>        }
->> 
->>        if (le16_to_cpu(udev->descriptor.idVendor) == VENDOR_ID_LENOVO &&
->> -           le16_to_cpu(udev->descriptor.idProduct) == 0x3082)
->> +           (le16_to_cpu(udev->descriptor.idProduct) == 0x3082 ||
->> +            le16_to_cpu(udev->descriptor.idProduct) == 0xa387))
-> Perhaps we can try to use #define's for these vendor IDs (like
-> https://github.com/torvalds/linux/blob/master/drivers/net/usb/r8152.c#L680)
-> ?
+This is not correct for ICMP error packets, and leads to bogus bytes
+being written the ICMP header, which can be wrongfully regarded as
+'length' bytes by RFC 4884 compliant receivers.
 
-We can, but it'll bring some inconsistencies inside of rtl8152_table[], since we don't know idProduct for other devices.
+Fix by assigning the 'id' field only for ICMP messages that have this
+semantic.
 
-Kai-Heng
+Reported-by: Shmulik Ladkani <shmulik.ladkani@gmail.com>
+Fixes: 8303b7e8f018 ("netfilter: nat: fix spurious connection timeouts")
+Signed-off-by: Eyal Birger <eyal.birger@gmail.com>
 
-> 
->>                set_bit(LENOVO_MACPASSTHRU, &tp->flags);
->> 
->>        if (le16_to_cpu(udev->descriptor.bcdDevice) == 0x3011 && udev->serial &&
->> --
->> 2.17.1
->> 
+---
+v1->v2 apply id field to all relevant ICMP messages
+---
+ net/netfilter/nf_nat_proto.c | 13 +++++++++++++
+ 1 file changed, 13 insertions(+)
+
+diff --git a/net/netfilter/nf_nat_proto.c b/net/netfilter/nf_nat_proto.c
+index 0a59c14b5177..64eedc17037a 100644
+--- a/net/netfilter/nf_nat_proto.c
++++ b/net/netfilter/nf_nat_proto.c
+@@ -233,6 +233,19 @@ icmp_manip_pkt(struct sk_buff *skb,
+ 		return false;
+ 
+ 	hdr = (struct icmphdr *)(skb->data + hdroff);
++	switch (hdr->type) {
++	case ICMP_ECHO:
++	case ICMP_ECHOREPLY:
++	case ICMP_TIMESTAMP:
++	case ICMP_TIMESTAMPREPLY:
++	case ICMP_INFO_REQUEST:
++	case ICMP_INFO_REPLY:
++	case ICMP_ADDRESS:
++	case ICMP_ADDRESSREPLY:
++		break;
++	default:
++		return true;
++	}
+ 	inet_proto_csum_replace2(&hdr->checksum, skb,
+ 				 hdr->un.echo.id, tuple->src.u.icmp.id, false);
+ 	hdr->un.echo.id = tuple->src.u.icmp.id;
+-- 
+2.20.1
 
