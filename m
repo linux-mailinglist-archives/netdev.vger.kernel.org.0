@@ -2,177 +2,135 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 9629713A0B6
-	for <lists+netdev@lfdr.de>; Tue, 14 Jan 2020 06:37:14 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7766213A124
+	for <lists+netdev@lfdr.de>; Tue, 14 Jan 2020 07:54:39 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726379AbgANFhI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 14 Jan 2020 00:37:08 -0500
-Received: from host-88-217-225-28.customer.m-online.net ([88.217.225.28]:9358
-        "EHLO mail.dev.tdt.de" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S1725820AbgANFhH (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 14 Jan 2020 00:37:07 -0500
-Received: from mail.dev.tdt.de (localhost [IPv6:::1])
-        by mail.dev.tdt.de (Postfix) with ESMTP id 79EDF20498;
-        Tue, 14 Jan 2020 05:37:03 +0000 (UTC)
+        id S1728819AbgANGye convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Tue, 14 Jan 2020 01:54:34 -0500
+Received: from mga12.intel.com ([192.55.52.136]:47936 "EHLO mga12.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726995AbgANGye (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 14 Jan 2020 01:54:34 -0500
+X-Amp-Result: SKIPPED(no attachment in message)
+X-Amp-File-Uploaded: False
+Received: from orsmga001.jf.intel.com ([10.7.209.18])
+  by fmsmga106.fm.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 13 Jan 2020 22:54:33 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.69,431,1571727600"; 
+   d="scan'208";a="305065519"
+Received: from pgsmsx113.gar.corp.intel.com ([10.108.55.202])
+  by orsmga001.jf.intel.com with ESMTP; 13 Jan 2020 22:54:30 -0800
+Received: from pgsmsx110.gar.corp.intel.com (10.221.44.111) by
+ pgsmsx113.gar.corp.intel.com (10.108.55.202) with Microsoft SMTP Server (TLS)
+ id 14.3.439.0; Tue, 14 Jan 2020 14:54:30 +0800
+Received: from pgsmsx114.gar.corp.intel.com ([169.254.4.192]) by
+ PGSMSX110.gar.corp.intel.com ([169.254.13.252]) with mapi id 14.03.0439.000;
+ Tue, 14 Jan 2020 14:54:29 +0800
+From:   "Ong, Boon Leong" <boon.leong.ong@intel.com>
+To:     Jose Abreu <Jose.Abreu@synopsys.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+CC:     Giuseppe Cavallaro <peppe.cavallaro@st.com>,
+        Alexandre Torgue <alexandre.torgue@st.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        "Maxime Coquelin" <mcoquelin.stm32@gmail.com>,
+        "Tan, Tee Min" <tee.min.tan@intel.com>,
+        "Voon, Weifeng" <weifeng.voon@intel.com>,
+        "linux-stm32@st-md-mailman.stormreply.com" 
+        <linux-stm32@st-md-mailman.stormreply.com>,
+        "linux-arm-kernel@lists.infradead.org" 
+        <linux-arm-kernel@lists.infradead.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Subject: RE: [PATCH net 1/7] net: stmmac: fix error in updating rx tail
+ pointer to last free entry
+Thread-Topic: [PATCH net 1/7] net: stmmac: fix error in updating rx tail
+ pointer to last free entry
+Thread-Index: AQHVyfokBfT9czhzrkq4pJYkkv91Cqfn3pcAgAHSG5A=
+Date:   Tue, 14 Jan 2020 06:54:29 +0000
+Message-ID: <AF233D1473C1364ABD51D28909A1B1B75C45CBAC@pgsmsx114.gar.corp.intel.com>
+References: <1578967276-55956-1-git-send-email-boon.leong.ong@intel.com>
+ <1578967276-55956-2-git-send-email-boon.leong.ong@intel.com>
+ <BN8PR12MB32661345472470F495EFAC0DD3350@BN8PR12MB3266.namprd12.prod.outlook.com>
+In-Reply-To: <BN8PR12MB32661345472470F495EFAC0DD3350@BN8PR12MB3266.namprd12.prod.outlook.com>
+Accept-Language: en-GB, en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+dlp-product: dlpe-windows
+dlp-version: 11.2.0.6
+dlp-reaction: no-action
+x-originating-ip: [172.30.20.205]
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 8BIT
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII;
- format=flowed
-Content-Transfer-Encoding: 7bit
-Date:   Tue, 14 Jan 2020 06:37:03 +0100
-From:   Martin Schiller <ms@dev.tdt.de>
-To:     Jakub Kicinski <kubakici@wp.pl>
-Cc:     khc@pm.waw.pl, davem@davemloft.net, linux-x25@vger.kernel.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 1/2] wan/hdlc_x25: make lapb params configurable
-Organization: TDT AG
-In-Reply-To: <20200113055316.4e811276@cakuba>
-References: <20200113124551.2570-1-ms@dev.tdt.de>
- <20200113055316.4e811276@cakuba>
-Message-ID: <83f60f76a0cf602c73361ccdb34cc640@dev.tdt.de>
-X-Sender: ms@dev.tdt.de
-User-Agent: Roundcube Webmail/1.1.5
-X-Spam-Status: No, score=-1.0 required=5.0 tests=ALL_TRUSTED autolearn=ham
-        autolearn_force=no version=3.4.2
-X-Spam-Checker-Version: SpamAssassin 3.4.2 (2018-09-13) on mail.dev.tdt.de
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 2020-01-13 14:53, Jakub Kicinski wrote:
-> On Mon, 13 Jan 2020 13:45:50 +0100, Martin Schiller wrote:
->> This enables you to configure mode (DTE/DCE), Modulo, Window, T1, T2, 
->> N2 via
->> sethdlc (which needs to be patched as well).
->> 
->> Signed-off-by: Martin Schiller <ms@dev.tdt.de>
-> 
->> diff --git a/drivers/net/wan/hdlc_x25.c b/drivers/net/wan/hdlc_x25.c
->> index 5643675ff724..b28051eba736 100644
->> --- a/drivers/net/wan/hdlc_x25.c
->> +++ b/drivers/net/wan/hdlc_x25.c
->> @@ -21,8 +21,17 @@
->>  #include <linux/skbuff.h>
->>  #include <net/x25device.h>
->> 
->> +struct x25_state {
->> +	x25_hdlc_proto settings;
->> +};
->> +
->>  static int x25_ioctl(struct net_device *dev, struct ifreq *ifr);
->> 
->> +static inline struct x25_state* state(hdlc_device *hdlc)
-> 
-> Please no more static inlines in source files. Compiler will know what
-> to do.
+>From: Ong Boon Leong <boon.leong.ong@intel.com>
+>Date: Jan/14/2020, 02:01:10 (UTC+00:00)
+>
+>> DMA_CH(#i)_RxDesc_Tail_Pointer points to an offset from the base and
+>> indicates the location of the last valid descriptor.
+>>
+>> The change introduced by "net: stmmac: Update RX Tail Pointer to last
+>> free entry" incorrectly updates the RxDesc_Tail_Pointer and causess
+>> Rx operation to freeze in corner case. The issue is explained as
+>> follow:-
+>>
+>> Say, cur_rx=1 and dirty_rx=0, then we have dirty=1 and entry=0 before
+>> the while (dirty-- > 0) loop of stmmac_rx_refill() is entered. When
+>> the while loop is 1st entered, Rx buffer[entry=0] is refilled and after
+>> entry++, then, entry=1. Now, the while loop condition check "dirty-- > 0"
+>> and the while loop bails out because dirty=0. Up to this point, the
+>> driver code works correctly.
+>>
+>> However, the current implementation sets the Rx Tail Pointer to the
+>> location pointed by dirty_rx, just updated to the value of entry(=1).
+>> This is incorrect because the last Rx buffer that is refileld with empty
+>> buffer is with entry=0. In another words, the current logics always sets
+>> Rx Tail Pointer to the next Rx buffer to be refilled (too early).
+>>
+>> So, we fix this by tracking the index of the most recently refilled Rx
+>> buffer by using "last_refill" and use "last_refill" to update the Rx Tail
+>> Pointer instead of using "entry" which points to the next dirty_rx to be
+>> refilled in future.
+>
+>I'm not sure about this ...
+>
+>RX Tail points to last valid descriptor but it doesn't point to the base
+>address of that one, it points to the end address.
+>
+>Let's say we have a ring buffer with just 1 descriptor. With your new
+>logic then: RX base == RX tail (== RX base), so the IP will not see any
+>descriptor. But with old logic: RX base == (RX base + 1), which causes
+>the IP to correctly see the descriptor.
+>
+>Can you provide more information on the Rx operation freeze you
+>mentioned ? Can it be another issue ?
 
-OK, i will remove the "inline". I've just used it, because it's also
-in the hdlc_fr.c and hdlc_cisco.c code.
+I recheck on my side, it seems like the fix needed for simics model at my
+end and not needed for actual SoC. This is strange but I can check internal
+team. I also read through the databook which says that for 40-bit or 48-bit
+addressing mode, the tail pointer must be advanced to the location
+immediately after the descriptors are set, for the DMA to know that
+additional descriptors are available.
 
-> 
->> +{
->> +	return (struct x25_state *)hdlc->state;
->> +}
->> +
->>  /* These functions are callbacks called by LAPB layer */
->> 
->>  static void x25_connect_disconnect(struct net_device *dev, int 
->> reason, int code)
-> 
->> @@ -186,6 +217,9 @@ static struct hdlc_proto proto = {
->> 
->>  static int x25_ioctl(struct net_device *dev, struct ifreq *ifr)
->>  {
->> +	x25_hdlc_proto __user *x25_s = ifr->ifr_settings.ifs_ifsu.x25;
->> +	const size_t size = sizeof(x25_hdlc_proto);
->> +	x25_hdlc_proto new_settings;
->>  	hdlc_device *hdlc = dev_to_hdlc(dev);
->>  	int result;
->> 
->> @@ -194,7 +228,13 @@ static int x25_ioctl(struct net_device *dev, 
->> struct ifreq *ifr)
->>  		if (dev_to_hdlc(dev)->proto != &proto)
->>  			return -EINVAL;
->>  		ifr->ifr_settings.type = IF_PROTO_X25;
->> -		return 0; /* return protocol only, no settable parameters */
->> +		if (ifr->ifr_settings.size < size) {
->> +			ifr->ifr_settings.size = size; /* data size wanted */
->> +			return -ENOBUFS;
->> +		}
->> +		if (copy_to_user(x25_s, &state(hdlc)->settings, size))
->> +			return -EFAULT;
->> +		return 0;
->> 
->>  	case IF_PROTO_X25:
->>  		if (!capable(CAP_NET_ADMIN))
->> @@ -203,12 +243,35 @@ static int x25_ioctl(struct net_device *dev, 
->> struct ifreq *ifr)
->>  		if (dev->flags & IFF_UP)
->>  			return -EBUSY;
->> 
->> +		if (copy_from_user(&new_settings, x25_s, size))
->> +			return -EFAULT;
->> +
->> +		if ((new_settings.dce != 0 &&
->> +		     new_settings.dce != 1) ||
->> +		    (new_settings.modulo != 8 &&
->> +		     new_settings.modulo != 128) ||
->> +		    new_settings.window < 1 ||
->> +		    (new_settings.modulo == 8 &&
->> +		     new_settings.window > 7) ||
->> +		    (new_settings.modulo == 128 &&
->> +		     new_settings.window > 127) ||
->> +		    new_settings.t1 < 1 ||
->> +		    new_settings.t1 > 255 ||
->> +		    new_settings.t2 < 1 ||
->> +		    new_settings.t2 > 255 ||
->> +		    new_settings.n2 < 1 ||
->> +		    new_settings.n2 > 255)
->> +			return -EINVAL;
->> +
->>  		result=hdlc->attach(dev, ENCODING_NRZ,PARITY_CRC16_PR1_CCITT);
->>  		if (result)
->>  			return result;
->> 
->> -		if ((result = attach_hdlc_protocol(dev, &proto, 0)))
->> +		if ((result = attach_hdlc_protocol(dev, &proto,
->> +						   sizeof(struct x25_state))))
->>  			return result;
->> +
->> +		memcpy(&state(hdlc)->settings, &new_settings, size);
->>  		dev->type = ARPHRD_X25;
->>  		call_netdevice_notifiers(NETDEV_POST_TYPE_CHANGE, dev);
->>  		netif_dormant_off(dev);
->> diff --git a/include/uapi/linux/hdlc/ioctl.h 
->> b/include/uapi/linux/hdlc/ioctl.h
->> index 0fe4238e8246..3656ce8b8af0 100644
->> --- a/include/uapi/linux/hdlc/ioctl.h
->> +++ b/include/uapi/linux/hdlc/ioctl.h
->> @@ -3,7 +3,7 @@
->>  #define __HDLC_IOCTL_H__
->> 
->> 
->> -#define GENERIC_HDLC_VERSION 4	/* For synchronization with sethdlc 
->> utility */
->> +#define GENERIC_HDLC_VERSION 5	/* For synchronization with sethdlc 
->> utility */
-> 
-> What's the backward compatibility story in this code?
+Now, relooking at the current logic which sets the rx tail pointer according
+to the value of "dirty_rx" which can be "zero" as it takes value from entry
+that is incremented through STMMAC_GET_ENTRY(entry, DMA_RX_SIZE).
+This too can give a situation that the base and tail registers is pointing to
+the same location.
 
-Well, I thought I have to increment the version to keep the kernel code
-and the sethdlc utility in sync (like the comment says).
+According to SNPS databook, the DMA engine goes into SUSPEND state if the
+Rx descriptors are not OWN=1. The operation can be resumed by ensuring that
+the descriptors are owned by the DMA and then update the tail pointer.
 
-> 
-> The IOCTL handling at least looks like it may start returning errors
-> to existing user space which could have expected the parameters to
-> IF_PROTO_X25 (other than just ifr_settings.type) to be ignored.
+What is your opinion here if we always update the Rx tail pointer to pointer
+the boundary of the DMA size as follow without depending on dirty_rx.
 
-I could also try to implement it without incrementing the version by
-looking at ifr_settings.size and using the former defaults if the size
-doesn't match.
+rx_q->rx_tail_addr = rx_q->dma_rx_phy + (DMA_RX_SIZE *
+		     sizeof(struct dma_desc))
 
-
-> 
->>  #define CLOCK_DEFAULT   0	/* Default setting */
->>  #define CLOCK_EXT	1	/* External TX and RX clock - DTE */
-
+Thanks
+Boon Leong
