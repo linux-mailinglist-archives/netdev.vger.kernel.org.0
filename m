@@ -2,105 +2,111 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 2E7D113A280
-	for <lists+netdev@lfdr.de>; Tue, 14 Jan 2020 09:09:05 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6B4F713A28B
+	for <lists+netdev@lfdr.de>; Tue, 14 Jan 2020 09:10:47 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729212AbgANIJB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 14 Jan 2020 03:09:01 -0500
-Received: from esa6.microchip.iphmx.com ([216.71.154.253]:47472 "EHLO
-        esa6.microchip.iphmx.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728992AbgANIJA (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 14 Jan 2020 03:09:00 -0500
-Received-SPF: Pass (esa6.microchip.iphmx.com: domain of
-  Horatiu.Vultur@microchip.com designates 198.175.253.82 as
-  permitted sender) identity=mailfrom;
-  client-ip=198.175.253.82; receiver=esa6.microchip.iphmx.com;
-  envelope-from="Horatiu.Vultur@microchip.com";
-  x-sender="Horatiu.Vultur@microchip.com";
-  x-conformance=spf_only; x-record-type="v=spf1";
-  x-record-text="v=spf1 mx a:ushub1.microchip.com
-  a:smtpout.microchip.com -exists:%{i}.spf.microchip.iphmx.com
-  include:servers.mcsv.net include:mktomail.com
-  include:spf.protection.outlook.com ~all"
-Received-SPF: None (esa6.microchip.iphmx.com: no sender
-  authenticity information available from domain of
-  postmaster@email.microchip.com) identity=helo;
-  client-ip=198.175.253.82; receiver=esa6.microchip.iphmx.com;
-  envelope-from="Horatiu.Vultur@microchip.com";
-  x-sender="postmaster@email.microchip.com";
-  x-conformance=spf_only
-Authentication-Results: esa6.microchip.iphmx.com; dkim=none (message not signed) header.i=none; spf=Pass smtp.mailfrom=Horatiu.Vultur@microchip.com; spf=None smtp.helo=postmaster@email.microchip.com; dmarc=pass (p=none dis=none) d=microchip.com
-IronPort-SDR: 0diy65lC91otsjZEQ4eu3Nna2eRW0F5DDZSr6SdYu7P1/X58HMQZR5luLnlYZXeV6r5EcQL8M8
- pH30V0qkTK+rD9KKYemCr6Zmt91DO8KLPX8rrV1YaLdPt4IIjiXSu9KWt8Bw0dp2aSYIoVc5o5
- pApc4uMQu6ZC6ACLAPwlaVlIBh+/qNV80CedAblfAiKYCuf7I3fUIehJmOvSdhPxIs2KmTcKFA
- hid8u0abZkoBoErJIXOw+m5jZhvXK00DbHxUX6z+NTjHpsLqYr8d5+yPY5ed+JYs+fclC3a2vp
- BYM=
-X-IronPort-AV: E=Sophos;i="5.69,432,1571727600"; 
-   d="scan'208";a="60701153"
-Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
-  by esa6.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 14 Jan 2020 01:08:58 -0700
-Received: from chn-vm-ex01.mchp-main.com (10.10.85.143) by
- chn-vm-ex04.mchp-main.com (10.10.85.152) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.1713.5; Tue, 14 Jan 2020 01:08:58 -0700
-Received: from localhost (10.10.85.251) by chn-vm-ex01.mchp-main.com
- (10.10.85.143) with Microsoft SMTP Server id 15.1.1713.5 via Frontend
- Transport; Tue, 14 Jan 2020 01:08:57 -0700
-Date:   Tue, 14 Jan 2020 09:08:56 +0100
-From:   Horatiu Vultur <horatiu.vultur@microchip.com>
-To:     Andrew Lunn <andrew@lunn.ch>
-CC:     <linux-kernel@vger.kernel.org>, <netdev@vger.kernel.org>,
-        <bridge@lists.linux-foundation.org>, <davem@davemloft.net>,
-        <roopa@cumulusnetworks.com>, <nikolay@cumulusnetworks.com>,
-        <jakub.kicinski@netronome.com>, <vivien.didelot@gmail.com>,
-        <olteanv@gmail.com>, <anirudh.venkataramanan@intel.com>,
-        <dsahern@gmail.com>, <jiri@resnulli.us>, <ivecera@redhat.com>,
-        <UNGLinuxDriver@microchip.com>
-Subject: Re: [RFC net-next Patch v2 4/4] net: bridge: mrp: switchdev: Add HW
- offload
-Message-ID: <20200114080856.wa7ljxyzaf34u4xj@soft-dev3.microsemi.net>
-References: <20200113124620.18657-1-horatiu.vultur@microchip.com>
- <20200113124620.18657-5-horatiu.vultur@microchip.com>
- <20200113140053.GE11788@lunn.ch>
- <20200113225751.jkkio4rztyuff4xj@soft-dev3.microsemi.net>
- <20200113233011.GF11788@lunn.ch>
+        id S1729262AbgANIKn (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 14 Jan 2020 03:10:43 -0500
+Received: from host-88-217-225-28.customer.m-online.net ([88.217.225.28]:1074
+        "EHLO mail.dev.tdt.de" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+        with ESMTP id S1725956AbgANIKn (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 14 Jan 2020 03:10:43 -0500
+Received: from mail.dev.tdt.de (localhost [IPv6:::1])
+        by mail.dev.tdt.de (Postfix) with ESMTP id 9D3F3204F5;
+        Tue, 14 Jan 2020 08:10:33 +0000 (UTC)
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Disposition: inline
-In-Reply-To: <20200113233011.GF11788@lunn.ch>
-User-Agent: NeoMutt/20180716
+Content-Type: text/plain; charset=US-ASCII;
+ format=flowed
+Content-Transfer-Encoding: 7bit
+Date:   Tue, 14 Jan 2020 09:10:33 +0100
+From:   Martin Schiller <ms@dev.tdt.de>
+To:     Jakub Kicinski <kubakici@wp.pl>
+Cc:     khc@pm.waw.pl, davem@davemloft.net, linux-x25@vger.kernel.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 2/2] wan/hdlc_x25: fix skb handling
+Organization: TDT AG
+In-Reply-To: <20200113054421.55cd5ddc@cakuba>
+References: <20200113124551.2570-1-ms@dev.tdt.de>
+ <20200113124551.2570-2-ms@dev.tdt.de> <20200113054421.55cd5ddc@cakuba>
+Message-ID: <f013ad8007d948436e85100184f82b67@dev.tdt.de>
+X-Sender: ms@dev.tdt.de
+User-Agent: Roundcube Webmail/1.1.5
+X-Spam-Status: No, score=-1.0 required=5.0 tests=ALL_TRUSTED autolearn=ham
+        autolearn_force=no version=3.4.2
+X-Spam-Checker-Version: SpamAssassin 3.4.2 (2018-09-13) on mail.dev.tdt.de
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The 01/14/2020 00:30, Andrew Lunn wrote:
+On 2020-01-13 14:44, Jakub Kicinski wrote:
+> On Mon, 13 Jan 2020 13:45:51 +0100, Martin Schiller wrote:
+>>  o call skb_reset_network_header() before hdlc->xmit()
+>>  o change skb proto to HDLC (0x0019) before hdlc->xmit()
+>>  o call dev_queue_xmit_nit() before hdlc->xmit()
+>> 
+>> This changes make it possible to trace (tcpdump) outgoing layer2
+>> (ETH_P_HDLC) packets
+>> 
+>>  o use a copy of the skb for lapb_data_request() in x25_xmit()
 > 
-> Hi Horatiu
-> 
-> It has been said a few times what the basic state machine should be in
-> user space. A pure software solution can use raw sockets to send and
-> receive MRP_Test test frames. When considering hardware acceleration,
-> the switchdev API you have proposed here seems quite simple. It should
-> not be too hard to map it to a set of netlink messages from userspace.
+> It's not clear to me why
 
-Yes and we will try to go with this approach, to have a user space
-application that contains the state machines and then in the kernel to
-extend the netlink messages to map to the switchdev API.
-So we will create a new RFC once we will have the user space and the
-definition of the netlink messages.
-
-> 
-> Yet your argument for kernel, not user space, is you are worried about
-> the parameters which need to be passed to the hardware offload engine.
-> In order to win the argument for a kernel solution, we are going to
-> need a better idea what you think this problem is. The MRP_Test is TLV
-> based. Are there other things which could be in this message? Is that
-> what you are worried about?
+Well, this patch is ported form an older environment which is based on
+linux-3.4. I can't reproduce the misbehavior with actual version, so I
+will drop this part of the patch.
 
 > 
-> Thanks
->      Andrew
+>> This fixes the problem, that tracing layer3 (ETH_P_X25) packets
+>> results in a malformed first byte of the packets.
+>> 
+>> Signed-off-by: Martin Schiller <ms@dev.tdt.de>
+>> ---
+>>  drivers/net/wan/hdlc_x25.c | 15 +++++++++++----
+>>  1 file changed, 11 insertions(+), 4 deletions(-)
+>> 
+>> diff --git a/drivers/net/wan/hdlc_x25.c b/drivers/net/wan/hdlc_x25.c
+>> index b28051eba736..434e5263eddf 100644
+>> --- a/drivers/net/wan/hdlc_x25.c
+>> +++ b/drivers/net/wan/hdlc_x25.c
+>> @@ -72,6 +72,7 @@ static int x25_data_indication(struct net_device 
+>> *dev, struct sk_buff *skb)
+>>  	unsigned char *ptr;
+>> 
+>>  	skb_push(skb, 1);
+>> +	skb_reset_network_header(skb);
+>> 
+>>  	if (skb_cow(skb, 1))
+> 
+> This skb_cow() here is for the next handler down to have a 1 byte of
+> headroom guaranteed? It'd seem more natural to have skb_cow before the
+> push.. not that it's related to your patch.
 
--- 
-/Horatiu
+Thanks for the hint. I will move the skb_cow() before the skb_push().
+
+> 
+>>  		return NET_RX_DROP;
+>> @@ -88,6 +89,9 @@ static int x25_data_indication(struct net_device 
+>> *dev, struct sk_buff *skb)
+>>  static void x25_data_transmit(struct net_device *dev, struct sk_buff 
+>> *skb)
+>>  {
+>>  	hdlc_device *hdlc = dev_to_hdlc(dev);
+> 
+> Please insert a new line after the variable declaration since you're
+> touching this one.
+
+OK, will do.
+
+> 
+>> +	skb_reset_network_header(skb);
+>> +	skb->protocol = hdlc_type_trans(skb, dev);
+
+
+I will also insert an "if (dev_nit_active(dev))" here.
+
+>> +	dev_queue_xmit_nit(skb, dev);
+>>  	hdlc->xmit(skb, dev); /* Ignore return value :-( */
+>>  }
+>> 
+
