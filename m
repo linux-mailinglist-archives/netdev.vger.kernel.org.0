@@ -2,101 +2,108 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id CF9DA13AFAD
-	for <lists+netdev@lfdr.de>; Tue, 14 Jan 2020 17:43:05 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7E38813AFB9
+	for <lists+netdev@lfdr.de>; Tue, 14 Jan 2020 17:46:01 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726839AbgANQnD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 14 Jan 2020 11:43:03 -0500
-Received: from us-smtp-1.mimecast.com ([205.139.110.61]:41608 "EHLO
-        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1726379AbgANQnD (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 14 Jan 2020 11:43:03 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1579020182;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=gDOl5oOf2cpVq2YFw06OX+4Yf7QXZq+3GEoWn2wy/eA=;
-        b=ULBwI69Vl9J0xKOr+AK79Y8LRi8Lgrzhkk5wIO2lGT3WimTUXhm4eYPEj3jm6kKxIbZuFg
-        JfBO+vaC3oh2N+cHXZBmofj5DdKwpD0VOu48CR7PSlwSppbVBW+0V91bjzJLtWx4isOeiW
-        ktnpUUgD79jJ3w7lPMFi9HCM1DbnsSc=
-Received: from mail-lj1-f198.google.com (mail-lj1-f198.google.com
- [209.85.208.198]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-430-1LJNeMwaPPiDI6tCWP5j-w-1; Tue, 14 Jan 2020 11:43:00 -0500
-X-MC-Unique: 1LJNeMwaPPiDI6tCWP5j-w-1
-Received: by mail-lj1-f198.google.com with SMTP id m1so3127579lji.5
-        for <netdev@vger.kernel.org>; Tue, 14 Jan 2020 08:43:00 -0800 (PST)
+        id S1728712AbgANQpw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 14 Jan 2020 11:45:52 -0500
+Received: from mail-lj1-f195.google.com ([209.85.208.195]:40285 "EHLO
+        mail-lj1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726450AbgANQpv (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 14 Jan 2020 11:45:51 -0500
+Received: by mail-lj1-f195.google.com with SMTP id u1so15122817ljk.7
+        for <netdev@vger.kernel.org>; Tue, 14 Jan 2020 08:45:50 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=cumulusnetworks.com; s=google;
+        h=subject:from:to:cc:references:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=/sWh7+7+OUKVxtsGUyUPmwfLLEU4raHR2CwW0UB18ac=;
+        b=Gbex73vtG5zmTfTRwDfT/HlTOZaMGn8olVK2tLOcd/WFZy7S4oqH1K/OqXs88O46vI
+         rZq7gtkDgk2sG+ALAPG36F2eQbj3rZE38UilWkitKvTG4bPsTsNvPNYNiz0rqq3WJuB1
+         jwlWMQ3hI04+bS0PcOLMO75D0++0XOolFrgW8=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+        h=x-gm-message-state:subject:from:to:cc:references:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
          :content-transfer-encoding;
-        bh=gDOl5oOf2cpVq2YFw06OX+4Yf7QXZq+3GEoWn2wy/eA=;
-        b=XS37MM+gJYVPOmRfqqz/Y7z1G01a8NauZNAzB7ihdN44pn1eXkLruAITfhN/7+lhIq
-         aBXBkPOxoPFeB30prdQp/PgJvZEMa9n5qXeJHPQAVH5VAzbubCzJSkBA1PqEXfmPQNbW
-         6X7jHUvCriAjX68Y5lubQTpjn0dN4U+Ffw8ZenmN2jF7Kq48OMsLdz+LAYms0ho03Qzn
-         kn+r3oSfw/KrUqjtNIhTxKNcAdIU2lUTW9DOernai+OEDTfQLBGuVsoRt6yWAjsZigtk
-         u/dYG3Y/+KwvHoxUnfNbLFMl/s1bSmXbzmUntZdsf5U+sLTJ/1jnwbHA2v9lxCf0qhNA
-         /ddA==
-X-Gm-Message-State: APjAAAV0I0DBlj4vyeCQS4nOb47oszt05mYi2FYSVroZSY+up5BCk0E6
-        6LjJY13/G2cmb6KB4hINoFg95HLBjz7M0q6vtlmRcv/fKWn04jPy5di9YXe8kf4coBAtI2H9dqv
-        ycr3Z3XjJkoCu1/rY
-X-Received: by 2002:a05:6512:40e:: with SMTP id u14mr2277060lfk.161.1579020179299;
-        Tue, 14 Jan 2020 08:42:59 -0800 (PST)
-X-Google-Smtp-Source: APXvYqzfpQ0TbloNrejHB7aTPs3vqYhNyYGz8aXpQBBk+AqMb7yu1+Uh487I+uLHWk7n92xlo/xlbg==
-X-Received: by 2002:a05:6512:40e:: with SMTP id u14mr2277015lfk.161.1579020177990;
-        Tue, 14 Jan 2020 08:42:57 -0800 (PST)
-Received: from alrua-x1.borgediget.toke.dk ([2a0c:4d80:42:443::2])
-        by smtp.gmail.com with ESMTPSA id d20sm7773851ljg.95.2020.01.14.08.42.57
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 14 Jan 2020 08:42:57 -0800 (PST)
-Received: by alrua-x1.borgediget.toke.dk (Postfix, from userid 1000)
-        id 7BB4B1804D6; Tue, 14 Jan 2020 17:42:56 +0100 (CET)
-From:   =?UTF-8?q?Toke=20H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
-To:     Andrii Nakryiko <andriin@fb.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>
-Cc:     =?UTF-8?q?Toke=20H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>,
-        netdev@vger.kernel.org, bpf@vger.kernel.org
-Subject: [PATCH bpf-next] libbpf: Fix include of bpf_helpers.h when libbpf is installed on system
-Date:   Tue, 14 Jan 2020 17:42:50 +0100
-Message-Id: <20200114164250.922192-1-toke@redhat.com>
-X-Mailer: git-send-email 2.24.1
+        bh=/sWh7+7+OUKVxtsGUyUPmwfLLEU4raHR2CwW0UB18ac=;
+        b=om6BobpBaAYL2jRcYWzXiUXFul2hY3q7qabb1hleaE4Z1ooNz/oPPANBzaHorDw5Co
+         zJdY/4ERrledNmXaS0jiV/kvvjz1BHc6jPiEzEWNNj9jS6CLZEAv+VYbzOj3/DNv/Bft
+         +vOF/WCprOR+tC9YO85r2MuDcYsmMgCHLmPfxPJ62cgcxP1p79MZQqO156t7A5XFWcjh
+         jPTj2R3aSuAxk0//zqLDdsXBqFAw1IIoaQmNOKvot0AV4kjFKXpDlXvqnDSSrZ8ZTxhe
+         6c5IrqqiP/yIcXFiYKES9+VRWR0Vcm4YM70e7OqY+zqAVykE93369qomXk3WTn9xVz88
+         l7LA==
+X-Gm-Message-State: APjAAAUsCI9cKGGt+MSkEuM8S0RFdMDbdlNQtHa393FNrR1exsLCA6Dn
+        S+NdXty4E5KxlJD3damyzQMV6A==
+X-Google-Smtp-Source: APXvYqwmxQmNg8BxjVeQGlMzs/GV5zbrIV4IUHt7pI3dH0CY1M9RsXjSPcRkwwfrdk/Y+qdd227foQ==
+X-Received: by 2002:a05:651c:214:: with SMTP id y20mr14603586ljn.139.1579020349035;
+        Tue, 14 Jan 2020 08:45:49 -0800 (PST)
+Received: from [192.168.0.107] (84-238-136-197.ip.btc-net.bg. [84.238.136.197])
+        by smtp.gmail.com with ESMTPSA id g15sm7737882ljn.32.2020.01.14.08.45.47
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 14 Jan 2020 08:45:48 -0800 (PST)
+Subject: Re: [PATCH net-next 3/8] net: bridge: vlan: add rtm definitions and
+ dump support
+From:   Nikolay Aleksandrov <nikolay@cumulusnetworks.com>
+To:     David Ahern <dsahern@gmail.com>, Jakub Kicinski <kuba@kernel.org>
+Cc:     netdev@vger.kernel.org, roopa@cumulusnetworks.com,
+        davem@davemloft.net, bridge@lists.linux-foundation.org
+References: <20200113155233.20771-1-nikolay@cumulusnetworks.com>
+ <20200113155233.20771-4-nikolay@cumulusnetworks.com>
+ <20200114055544.77a7806f@cakuba.hsd1.ca.comcast.net>
+ <076a7a9f-67c6-483a-7b86-f9d70be6ad47@gmail.com>
+ <00c4bc6b-2b31-338e-a9ad-b4ea28fc731c@cumulusnetworks.com>
+Message-ID: <344f496a-5d34-4292-b663-97353f6cfa94@cumulusnetworks.com>
+Date:   Tue, 14 Jan 2020 18:45:46 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.1.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+In-Reply-To: <00c4bc6b-2b31-338e-a9ad-b4ea28fc731c@cumulusnetworks.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The change to use angled includes for bpf_helper_defs.h breaks compilation
-against libbpf when it is installed in the include path, since the file is
-installed in the bpf/ subdirectory of $INCLUDE_PATH. Fix this by adding the
-bpf/ prefix to the #include directive.
+On 14/01/2020 18:36, Nikolay Aleksandrov wrote:
+> On 14/01/2020 17:34, David Ahern wrote:
+>> On 1/14/20 6:55 AM, Jakub Kicinski wrote:
+>>> On Mon, 13 Jan 2020 17:52:28 +0200, Nikolay Aleksandrov wrote:
+>>>> +static int br_vlan_rtm_dump(struct sk_buff *skb, struct netlink_callback *cb)
+>>>> +{
+>>>> +	int idx = 0, err = 0, s_idx = cb->args[0];
+>>>> +	struct net *net = sock_net(skb->sk);
+>>>> +	struct br_vlan_msg *bvm;
+>>>> +	struct net_device *dev;
+>>>> +
+>>>> +	if (cb->nlh->nlmsg_len < nlmsg_msg_size(sizeof(*bvm))) {
+>>>
+>>> I wonder if it'd be useful to make this a strict != check? At least
+>>> when strict validation is on? Perhaps we'll one day want to extend 
+>>> the request?
+>>>
+>>
+>> +1. All new code should be using the strict checks.
+>>
+> 
+> IIRC, I did it to be able to add filter attributes later, but it should just use nlmsg_parse()
+> instead and all will be taken care of.
+> I'll respin v2 with that change.
+> 
+> Thanks,
+>  Nik
+> 
 
-Fixes: 6910d7d3867a ("selftests/bpf: Ensure bpf_helper_defs.h are taken from selftests dir")
-Signed-off-by: Toke Høiland-Jørgensen <toke@redhat.com>
----
-Not actually sure this fix works for all the cases you originally tried to
-fix with the referred commit; please check. Also, could we please stop breaking
-libbpf builds? :)
+Actually nlmsg_parse() uses the same "<" check for the size before parsing. :)
+If I change to it and with no attributes to parse would be essentially equal to the
+current situation, but if I make it strict "!=" then we won't be able to add
+filter attributes later as we won't be backwards compatible. I'll continue looking
+into it, but IMO we should leave it as it is in order to be able to add the filtering later.
 
- tools/lib/bpf/bpf_helpers.h | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+Thoughts ?
 
-diff --git a/tools/lib/bpf/bpf_helpers.h b/tools/lib/bpf/bpf_helpers.h
-index 050bb7bf5be6..fa43d649e7a2 100644
---- a/tools/lib/bpf/bpf_helpers.h
-+++ b/tools/lib/bpf/bpf_helpers.h
-@@ -2,7 +2,7 @@
- #ifndef __BPF_HELPERS__
- #define __BPF_HELPERS__
- 
--#include <bpf_helper_defs.h>
-+#include <bpf/bpf_helper_defs.h>
- 
- #define __uint(name, val) int (*name)[val]
- #define __type(name, val) typeof(val) *name
--- 
-2.24.1
+
+
 
