@@ -2,85 +2,96 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id ED99813AF81
-	for <lists+netdev@lfdr.de>; Tue, 14 Jan 2020 17:35:37 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 08F8813AF89
+	for <lists+netdev@lfdr.de>; Tue, 14 Jan 2020 17:36:53 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728765AbgANQfg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 14 Jan 2020 11:35:36 -0500
-Received: from mail-wm1-f67.google.com ([209.85.128.67]:36199 "EHLO
-        mail-wm1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726121AbgANQff (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 14 Jan 2020 11:35:35 -0500
-Received: by mail-wm1-f67.google.com with SMTP id p17so14507132wma.1
-        for <netdev@vger.kernel.org>; Tue, 14 Jan 2020 08:35:34 -0800 (PST)
+        id S1726946AbgANQgv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 14 Jan 2020 11:36:51 -0500
+Received: from mail-lf1-f68.google.com ([209.85.167.68]:39667 "EHLO
+        mail-lf1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726121AbgANQgv (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 14 Jan 2020 11:36:51 -0500
+Received: by mail-lf1-f68.google.com with SMTP id y1so10317380lfb.6
+        for <netdev@vger.kernel.org>; Tue, 14 Jan 2020 08:36:50 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=resnulli-us.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=LkS0OIviUNHCQEjd+5V8pyD76+IapGl4QNjOPYL2TYc=;
-        b=B+AAT5zH3IPzx49G0bTCgxatxP3IDVjcJyw0y9z95MHj42bk0wDCwijFKedKR2trcR
-         PmY05wS4K7KFpw93p3MHH4OoQyg3W9mN8yRRpcWKyMWTV018RvxuCAGpwl3VRXyogYaH
-         4PPANfM/jvSQS4PtlTTht/Sw474Ztjfd9GzATJX1FaGsT4xc2kP9yyoyMiS2OTaNgRp6
-         disVMQUQ8e7+BPsi6K4NUcY2pO1++W2KPrgDToez+E6a3fzX0TCHk7A+ybLpmJnNIqjM
-         oC53PlosHDKtOje5Mft5wyC/qAM1BR1MeFgNO7z4vBS0Gx/FBkBGb1kD+LrealKGuZH3
-         yzkQ==
+        d=cumulusnetworks.com; s=google;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=V2/KACwQfuatGD6xiBWykj7BNbLnSCoeL08Mx230O9w=;
+        b=KMHOAoyODqv/sIwy3dOoTEhjU3Z918xwkAGL76mJjmwpi2a3LbUK16dHfaL3Xaf4WK
+         q4sgR/qtO07q+q7i699yKKMRfcTKsXsfvN0Pr70rsCT2nWjhzvMEj+VV7B6RBo/mGMHk
+         5iAh92DBrZ1TS+8hwQcrAiK9UATl3+6N5Kpfg=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=LkS0OIviUNHCQEjd+5V8pyD76+IapGl4QNjOPYL2TYc=;
-        b=tUEik7hoyHjdW32cNDR/eDPlmM3gUbNInFDUuedcJEtE5aHP8i/jmGavLekXFMVVMl
-         ygN9jQoHXLvjoF0D1Q+p823nq0x9sULQD4Xqd5tmWsEs8B+OeCC9y8K2crCyRnJTJy+y
-         vqM2lTW2kEp19OuBL7Bts5Wb7R03vsJuTg955AHUkevBfoH2OcLnveJ+28xKvu91f16P
-         oYp4jwdifnzg8hCHSCYTH9zJbm3hG/uR2xcNXJF+iQ9Vy/q5gdhi+7A2V7THFfZyMnhb
-         Ze5Vo/BtBRDbEo6xa5VH2vQwG+B+zgd8eiaqhuEaahS0xDSkuD7I4s11SqMyHPEDQWDE
-         BzOg==
-X-Gm-Message-State: APjAAAVlZC3Ypw0zNdNnc3ry/vuVkUhQZX964DsMxnTtqhllqvkp8Nli
-        QbijDHqaR5YmHxRn5oxSdifSVA==
-X-Google-Smtp-Source: APXvYqxrBAtJi1n5wQVVQGXXV0Ns271PwmB6WxN132dWTLLXZEt88nsrCSWEv/tP/RNSAh1OECLNPw==
-X-Received: by 2002:a1c:b603:: with SMTP id g3mr27309966wmf.133.1579019733906;
-        Tue, 14 Jan 2020 08:35:33 -0800 (PST)
-Received: from localhost (ip-78-102-249-43.net.upcbroadband.cz. [78.102.249.43])
-        by smtp.gmail.com with ESMTPSA id z124sm20993248wmc.20.2020.01.14.08.35.33
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 14 Jan 2020 08:35:33 -0800 (PST)
-Date:   Tue, 14 Jan 2020 17:35:32 +0100
-From:   Jiri Pirko <jiri@resnulli.us>
-To:     Ido Schimmel <idosch@idosch.org>
-Cc:     netdev@vger.kernel.org, davem@davemloft.net, kuba@kernel.org,
-        jiri@mellanox.com, dsahern@gmail.com, roopa@cumulusnetworks.com,
-        mlxsw@mellanox.com, Ido Schimmel <idosch@mellanox.com>
-Subject: Re: [PATCH net-next v2 02/10] ipv4: Encapsulate function arguments
- in a struct
-Message-ID: <20200114163532.GM2131@nanopsycho>
-References: <20200114112318.876378-1-idosch@idosch.org>
- <20200114112318.876378-3-idosch@idosch.org>
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=V2/KACwQfuatGD6xiBWykj7BNbLnSCoeL08Mx230O9w=;
+        b=WoadLL19HpJUSDyf5gDtxTQ4PF0diLq49IubONjzMjA2DLluUVZ0SibUFJ+EznN7xc
+         kGEATJW6EBSJV9FsoHgYAuW7dlsHKCaNJiZi+GpOrje1AW22JkhoZons2TqpkTJcsIO9
+         WQEoaXTNV2nCLEskdvrWIj4XBwOGVXCQ3c6VNlXvS41+IxGSYfIU+zStQDuKL2ZRK/G+
+         2pymGFlVnTrYLd870IAlqMtR47P0O6rqgR0oD9WAsUCUI6t6h159YEnU2W7UikSge619
+         Sc8y8Q8/D/NMoklnU99AnIva1ByD4Q3eEb9l9QduDqlDTU16E63DWXfXun7FFJQfcFsg
+         G7uQ==
+X-Gm-Message-State: APjAAAUoSAk+FqHqUtBa62gJuepKKIl8/GG2p7zsEwF1jqboTWRWBpEJ
+        5JMkrHaHRdbsCeZcxnU+asSPJw==
+X-Google-Smtp-Source: APXvYqxCBUsAFl2wOUpsoWrmjTzIQuWo/Akdp2UkvaQFIQvYpa8q+WkhJB4KSifekgs05tQw4ojVSA==
+X-Received: by 2002:ac2:4316:: with SMTP id l22mr2274218lfh.115.1579019809333;
+        Tue, 14 Jan 2020 08:36:49 -0800 (PST)
+Received: from [192.168.0.107] (84-238-136-197.ip.btc-net.bg. [84.238.136.197])
+        by smtp.gmail.com with ESMTPSA id n11sm7751988ljg.15.2020.01.14.08.36.48
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 14 Jan 2020 08:36:48 -0800 (PST)
+Subject: Re: [PATCH net-next 3/8] net: bridge: vlan: add rtm definitions and
+ dump support
+To:     David Ahern <dsahern@gmail.com>, Jakub Kicinski <kuba@kernel.org>
+Cc:     netdev@vger.kernel.org, roopa@cumulusnetworks.com,
+        davem@davemloft.net, bridge@lists.linux-foundation.org
+References: <20200113155233.20771-1-nikolay@cumulusnetworks.com>
+ <20200113155233.20771-4-nikolay@cumulusnetworks.com>
+ <20200114055544.77a7806f@cakuba.hsd1.ca.comcast.net>
+ <076a7a9f-67c6-483a-7b86-f9d70be6ad47@gmail.com>
+From:   Nikolay Aleksandrov <nikolay@cumulusnetworks.com>
+Message-ID: <00c4bc6b-2b31-338e-a9ad-b4ea28fc731c@cumulusnetworks.com>
+Date:   Tue, 14 Jan 2020 18:36:47 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.1.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200114112318.876378-3-idosch@idosch.org>
+In-Reply-To: <076a7a9f-67c6-483a-7b86-f9d70be6ad47@gmail.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Tue, Jan 14, 2020 at 12:23:10PM CET, idosch@idosch.org wrote:
->From: Ido Schimmel <idosch@mellanox.com>
->
->fib_dump_info() is used to prepare RTM_{NEW,DEL}ROUTE netlink messages
->using the passed arguments. Currently, the function takes 11 arguments,
->6 of which are attributes of the route being dumped (e.g., prefix, TOS).
->
->The next patch will need the function to also dump to user space an
->indication if the route is present in hardware or not. Instead of
->passing yet another argument, change the function to take a struct
->containing the different route attributes.
->
->v2:
->* Name last argument of fib_dump_info()
->* Move 'struct fib_rt_info' to include/net/ip_fib.h so that it could
->  later be passed to fib_alias_hw_flags_set()
->
->Signed-off-by: Ido Schimmel <idosch@mellanox.com>
+On 14/01/2020 17:34, David Ahern wrote:
+> On 1/14/20 6:55 AM, Jakub Kicinski wrote:
+>> On Mon, 13 Jan 2020 17:52:28 +0200, Nikolay Aleksandrov wrote:
+>>> +static int br_vlan_rtm_dump(struct sk_buff *skb, struct netlink_callback *cb)
+>>> +{
+>>> +	int idx = 0, err = 0, s_idx = cb->args[0];
+>>> +	struct net *net = sock_net(skb->sk);
+>>> +	struct br_vlan_msg *bvm;
+>>> +	struct net_device *dev;
+>>> +
+>>> +	if (cb->nlh->nlmsg_len < nlmsg_msg_size(sizeof(*bvm))) {
+>>
+>> I wonder if it'd be useful to make this a strict != check? At least
+>> when strict validation is on? Perhaps we'll one day want to extend 
+>> the request?
+>>
+> 
+> +1. All new code should be using the strict checks.
+> 
 
-Reviewed-by: Jiri Pirko <jiri@mellanox.com>
+IIRC, I did it to be able to add filter attributes later, but it should just use nlmsg_parse()
+instead and all will be taken care of.
+I'll respin v2 with that change.
+
+Thanks,
+ Nik
+
+
+
