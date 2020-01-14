@@ -2,118 +2,102 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id C817513ADDD
-	for <lists+netdev@lfdr.de>; Tue, 14 Jan 2020 16:43:10 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9DA3E13ADFC
+	for <lists+netdev@lfdr.de>; Tue, 14 Jan 2020 16:48:29 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726491AbgANPnJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 14 Jan 2020 10:43:09 -0500
-Received: from mail-il1-f194.google.com ([209.85.166.194]:33261 "EHLO
-        mail-il1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725904AbgANPnI (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 14 Jan 2020 10:43:08 -0500
-Received: by mail-il1-f194.google.com with SMTP id v15so11916629iln.0
-        for <netdev@vger.kernel.org>; Tue, 14 Jan 2020 07:43:08 -0800 (PST)
+        id S1729112AbgANPs1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 14 Jan 2020 10:48:27 -0500
+Received: from mail-lj1-f195.google.com ([209.85.208.195]:42636 "EHLO
+        mail-lj1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728688AbgANPs1 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 14 Jan 2020 10:48:27 -0500
+Received: by mail-lj1-f195.google.com with SMTP id y4so14893329ljj.9
+        for <netdev@vger.kernel.org>; Tue, 14 Jan 2020 07:48:26 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=GIfIPU4Hm1zdh9Ilk0yt5smZLFcWtrMT+sQQS4661no=;
-        b=qmLAPNr8o72/G4NPryzd358n7v5gCPUxFb/a4E/qoNvQghLVpdCe65fPptzm5KIPWM
-         kXIWOlZwSXEf9hzDNvRsvYqOfItNDJ80h4uAG/zwAsrzCw50KOfZGKpGU+UNOMOx843F
-         4tvjbWy5mz75mI1LJ/JhAuOTTO5dBtnF3u+/O037u6sq1uhrXgmqcPYGhXX2be5toco0
-         a4IfwIit29vkA4LBdhtpOA4CBc+azlUnfNSZbG0KxrbsyS8Lc2uqQXRRo/MNXl3Hjw8V
-         nRifml981TwdzaIVPO+88Tj9H4qtA5b+br21FH70u6thedHZcwsBRTOenSjXOi4ECGcA
-         Vj9Q==
+        d=cloudflare.com; s=google;
+        h=references:user-agent:from:to:cc:subject:in-reply-to:date
+         :message-id:mime-version;
+        bh=dLbjHKuyCSdvL37+hmsui6qZ9EwBG7rzByZNk6nyh4c=;
+        b=tgvoiZI6l59IuleGfm//PJpb7gertpUzKN0IamEWqiPPgE7T6kOWTwbagxp6E6QbM0
+         El87f6PJCR/8kNUiNtFEDg844zxQ+8jQatF31Q+lVOJU5CbgKexiKpjLKetg/ucrRlv6
+         wWhIm2NVvymkm9FPkmM9lpie7t4w7ECSEbxaE=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=GIfIPU4Hm1zdh9Ilk0yt5smZLFcWtrMT+sQQS4661no=;
-        b=IU+UtfVIQbLm4o5sWNQCX3gFMavXUApW09ylMydwFmXaIEQ8hftRpEirRncWt/obW3
-         BS5KSH6tg4RcgyowbijUB2UI37IAjJujCE0zEMGKDsm9CapBr7T84tTSxqscnlEmk0VE
-         oVu2rtQNBxAuiYxzpfOQ+zVflLP3ltz5uv/m3bTFMmmAAnv7gusCOPMFHYtS9MErUC7p
-         NdW0g41cqwyC8M6yiodc7lDha9J3D/IJo7DQF6YYktbOdtcb69eTpBuP22GPoII8izwY
-         QmupCQ4TvZSlbVf/Cq/8WiFSE9ZNXjmT3pzX3m/byEGnX6ASP4Fqu55YBjX7BaDhXlny
-         bWiw==
-X-Gm-Message-State: APjAAAUVycx4rL7RiFLE381EfXgA3PUtVneTaoMl4HuNTrBaPtfQN13l
-        5/uIlYXC4NpSola6iaeDAl8=
-X-Google-Smtp-Source: APXvYqyAd+yWZIAWT/AUfmmcfYjfSRFuTxsqFaFG+S8pLEGT/3sdq+JE7LH7+y/vN0VMwAQ31m1aUA==
-X-Received: by 2002:a92:b11:: with SMTP id b17mr3990638ilf.202.1579016588273;
-        Tue, 14 Jan 2020 07:43:08 -0800 (PST)
-Received: from ?IPv6:2601:282:800:7a:ad53:3eb0:98a5:6359? ([2601:282:800:7a:ad53:3eb0:98a5:6359])
-        by smtp.googlemail.com with ESMTPSA id i83sm4970800ilf.65.2020.01.14.07.43.07
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 14 Jan 2020 07:43:07 -0800 (PST)
-Subject: Re: [PATCH net-next v2 03/10] ipv4: Add "offload" and "trap"
- indications to routes
-To:     Ido Schimmel <idosch@idosch.org>, netdev@vger.kernel.org
-Cc:     davem@davemloft.net, kuba@kernel.org, jiri@mellanox.com,
-        roopa@cumulusnetworks.com, mlxsw@mellanox.com,
-        Ido Schimmel <idosch@mellanox.com>
-References: <20200114112318.876378-1-idosch@idosch.org>
- <20200114112318.876378-4-idosch@idosch.org>
-From:   David Ahern <dsahern@gmail.com>
-Message-ID: <7a2082c1-b6a5-cba2-00aa-329a813b8343@gmail.com>
-Date:   Tue, 14 Jan 2020 08:43:06 -0700
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:68.0)
- Gecko/20100101 Thunderbird/68.3.1
+        h=x-gm-message-state:references:user-agent:from:to:cc:subject
+         :in-reply-to:date:message-id:mime-version;
+        bh=dLbjHKuyCSdvL37+hmsui6qZ9EwBG7rzByZNk6nyh4c=;
+        b=DcbsUlfXWSKO92N65BLBUxjqIMx/TYE0xzKAqAgDViKgHfNmzBvS1C85i31vD0XdWZ
+         KW27hYLGg10PSGQs0A9zNssyZbXcT7vrNb96cDgG9g3817kI6x68/rWDhKRNCPyua6sJ
+         Y2INNeqiZ/aFKyc2p/ZMgOGtEaCvJnzWj0rn8vBIQdUvwTS3N5WQo4VheobA4QZvEeFm
+         eYfBnA3i7GxbxwZBg5IELUKD0jqse6kmZLxPnDOpRRK1ecdzhnmINB0uvHTfJrMcRb2K
+         MHUAYNRrn2jiMjB2Vi364ZQT/d3cOXttDCIkpPDeflonimpecWk7rBjVyv8nMJequ9Uo
+         RSyA==
+X-Gm-Message-State: APjAAAV2+eBYk3FrzwadAHKkuyhkSCZAQsDfv0+WVAgYw8JGqV6tVpfr
+        N1U3jKKQbz+CIFiQ7AlWTebrNQ==
+X-Google-Smtp-Source: APXvYqx+CUX33laMHA9Cyf1lrkU3CChvyiNtZzGRhKUGdEVMwLMOUGDWk4EK/dVmL5gl2ebKdd0+wA==
+X-Received: by 2002:a2e:81c3:: with SMTP id s3mr14991096ljg.168.1579016905323;
+        Tue, 14 Jan 2020 07:48:25 -0800 (PST)
+Received: from cloudflare.com ([176.221.114.230])
+        by smtp.gmail.com with ESMTPSA id w19sm7378995lfl.55.2020.01.14.07.48.24
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 14 Jan 2020 07:48:24 -0800 (PST)
+References: <20200110105027.257877-1-jakub@cloudflare.com> <20200110105027.257877-8-jakub@cloudflare.com> <20200113231223.cl77bxxs44bl6uhw@kafai-mbp.dhcp.thefacebook.com> <5e1d328d760e_78752af1940225b4b7@john-XPS-13-9370.notmuch>
+User-agent: mu4e 1.1.0; emacs 26.3
+From:   Jakub Sitnicki <jakub@cloudflare.com>
+To:     Martin Lau <kafai@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>
+Cc:     "bpf\@vger.kernel.org" <bpf@vger.kernel.org>,
+        "netdev\@vger.kernel.org" <netdev@vger.kernel.org>,
+        "kernel-team\@cloudflare.com" <kernel-team@cloudflare.com>,
+        Eric Dumazet <edumazet@google.com>,
+        Lorenz Bauer <lmb@cloudflare.com>
+Subject: Re: [PATCH bpf-next v2 07/11] bpf, sockmap: Return socket cookie on lookup from syscall
+In-reply-to: <5e1d328d760e_78752af1940225b4b7@john-XPS-13-9370.notmuch>
+Date:   Tue, 14 Jan 2020 16:48:23 +0100
+Message-ID: <87blr6rqd4.fsf@cloudflare.com>
 MIME-Version: 1.0
-In-Reply-To: <20200114112318.876378-4-idosch@idosch.org>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 1/14/20 4:23 AM, Ido Schimmel wrote:
-> From: Ido Schimmel <idosch@mellanox.com>
-> 
-> When performing L3 offload, routes and nexthops are usually programmed
-> into two different tables in the underlying device. Therefore, the fact
-> that a nexthop resides in hardware does not necessarily mean that all
-> the associated routes also reside in hardware and vice-versa.
-> 
-> While the kernel can signal to user space the presence of a nexthop in
-> hardware (via 'RTNH_F_OFFLOAD'), it does not have a corresponding flag
-> for routes. In addition, the fact that a route resides in hardware does
-> not necessarily mean that the traffic is offloaded. For example,
-> unreachable routes (i.e., 'RTN_UNREACHABLE') are programmed to trap
-> packets to the CPU so that the kernel will be able to generate the
-> appropriate ICMP error packet.
-> 
-> This patch adds an "offload" and "trap" indications to IPv4 routes, so
-> that users will have better visibility into the offload process.
-> 
-> 'struct fib_alias' is extended with two new fields that indicate if the
-> route resides in hardware or not and if it is offloading traffic from
-> the kernel or trapping packets to it. Note that the new fields are added
-> in the 6 bytes hole and therefore the struct still fits in a single
-> cache line [1].
-> 
-> Capable drivers are expected to invoke fib_alias_hw_flags_set() with the
-> route's key in order to set the flags.
-> 
-> The indications are dumped to user space via a new flags (i.e.,
-> 'RTM_F_OFFLOAD' and 'RTM_F_TRAP') in the 'rtm_flags' field in the
-> ancillary header.
-> 
+On Tue, Jan 14, 2020 at 04:16 AM CET, John Fastabend wrote:
+> Martin Lau wrote:
+>> On Fri, Jan 10, 2020 at 11:50:23AM +0100, Jakub Sitnicki wrote:
+>> > Tooling that populates the SOCKMAP with sockets from user-space needs a way
+>> > to inspect its contents. Returning the struct sock * that SOCKMAP holds to
+>> > user-space is neither safe nor useful. An approach established by
+>> > REUSEPORT_SOCKARRAY is to return a socket cookie (a unique identifier)
+>> > instead.
+>> >
+>> > Since socket cookies are u64 values SOCKMAP needs to support such a value
+>> > size for lookup to be possible. This requires special handling on update,
+>> > though. Attempts to do a lookup on SOCKMAP holding u32 values will be met
+>> > with ENOSPC error.
+>> >
+>> > Signed-off-by: Jakub Sitnicki <jakub@cloudflare.com>
+>> > ---
+>
+> [...]
+>
+>> > +static void *sock_map_lookup_sys(struct bpf_map *map, void *key)
+>> > +{
+>> > +	struct sock *sk;
+>> > +
+>> > +	WARN_ON_ONCE(!rcu_read_lock_held());
+>> It seems unnecessary.  It is only called by syscall.c which
+>> holds the rcu_read_lock().  Other than that,
+>>
+>
+> +1 drop it. The normal rcu annotations/splats should catch anything
+> here.
 
-...
+Oh, okay. Thanks for pointing it out.
 
-> Signed-off-by: Ido Schimmel <idosch@mellanox.com>
-> ---
->  include/net/ip_fib.h           |  4 +++
->  include/uapi/linux/rtnetlink.h |  2 ++
->  net/ipv4/fib_lookup.h          |  3 ++
->  net/ipv4/fib_semantics.c       |  7 +++++
->  net/ipv4/fib_trie.c            | 52 ++++++++++++++++++++++++++++++++++
->  net/ipv4/route.c               | 19 +++++++++++++
->  6 files changed, 87 insertions(+)
-> 
+I noticed __sock_map_lookup_elem called from sock_map_lookup_sys has the
+same WARN_ON_ONCE check. Looks like it can be cleaned up.
 
-Reviewed-by: David Ahern <dsahern@gmail.com>
-
-
+Granted, __sock_map_lookup_elem also gets invoked by sockmap BPF helpers
+for redirecting (bpf_msg_redirect_map, bpf_sk_redirect_map). But we
+always run sk_skb and sk_msg progs RCU read lock held.
