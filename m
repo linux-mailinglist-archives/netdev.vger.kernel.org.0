@@ -2,115 +2,88 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 67AAA13B14D
-	for <lists+netdev@lfdr.de>; Tue, 14 Jan 2020 18:48:15 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4702213B15F
+	for <lists+netdev@lfdr.de>; Tue, 14 Jan 2020 18:52:33 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728633AbgANRsN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 14 Jan 2020 12:48:13 -0500
-Received: from mail-lf1-f65.google.com ([209.85.167.65]:35800 "EHLO
-        mail-lf1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726053AbgANRsN (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 14 Jan 2020 12:48:13 -0500
-Received: by mail-lf1-f65.google.com with SMTP id 15so10524361lfr.2;
-        Tue, 14 Jan 2020 09:48:11 -0800 (PST)
+        id S1728734AbgANRwb (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 14 Jan 2020 12:52:31 -0500
+Received: from mail-lf1-f67.google.com ([209.85.167.67]:35199 "EHLO
+        mail-lf1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726053AbgANRwb (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 14 Jan 2020 12:52:31 -0500
+Received: by mail-lf1-f67.google.com with SMTP id 15so10534320lfr.2
+        for <netdev@vger.kernel.org>; Tue, 14 Jan 2020 09:52:30 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=ZaTr+IvG7tRVXBltIqSxbTvG3xphjExjX9hhTKjw4Y8=;
-        b=vS2RXo2cBFAFG+ZISdr+pGVFenA4xTSgi549VHy5cAK7zdEaF8Ejj7zk4wMygNatiN
-         xtruNX+IWwiF36HFt8SoQ4PuVWflrrHkBGS4EDJPr15PDEzp32FV28h/+NhnfqXxOT9P
-         ykEXyKByCOLsiuJ8rSmju/Q3eldhDr5/QZwupoKib0UBDHSyTfRNdUd7JUfTs3mtTUfc
-         XBmXrR90tJFJMTISqNv+HxtDTZVHQalrqbwmFd/0i6XfqerjfX9gUgMA6g4GJzXB/Wos
-         T6M4SZOlIt/abRNPzeb3SOIsTPta4rMbjtonlE8HhFyD9DGF0XPV/2o3E03wRa2MYEPt
-         IMhw==
+        d=cumulusnetworks.com; s=google;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=DSwJDN8tvKZIB15Co+RV4TjQqizFvEQ1g5xhaUGMxvM=;
+        b=BxuIw7llM5VJ5Foo76K6dEzNdP/AoQSUESBDwYDOo/GzWwHehjwLp44avxKn67rQP4
+         a9BsJXhkVJ5/SfNjUBZBWRVoMxodH6+t8I4+07dys6oUnl/uTK57Fs6T7z8xFwSsvwu0
+         C4i8KCHQR1kwSFo3imo6IqI7+FgOp25qxxJBQ=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=ZaTr+IvG7tRVXBltIqSxbTvG3xphjExjX9hhTKjw4Y8=;
-        b=BuSLbEjFitSHNXQYp2u7izgM7v+63M1EaE0cx1jR8hUYb9Khq9AZ/xIETyJ9+OlzBc
-         1TKy9I4lH4xl5DmX9CgGQy+zyEq2/P4wTLcV6Acy/WGPbwOgKWMQEli+yluD8Nv8ilW1
-         LPyc29WAgfrgZ10Sf07A6ZfpBsEz/18xCPDgpMeFrJpOBTqx7OtGIpVwA9qfX85M6bMr
-         wb7yBoW/r+cnmUWydckdjB3AqQtLF/07o4UItc0LF5/kMXVqu8ZAEn6or0a8knftujvd
-         xxroZoIvhKfjxDKCZxBukX2C7Ux+Zq4PXcoxro6utFY9PsHEYV2kO15NWh9Bg/b94HAL
-         xHOA==
-X-Gm-Message-State: APjAAAXPfygDfj6jwwQToNco+gpyLF+8tHKViXhieU8nYzbjUGS5MblR
-        hXZoWyMLcTljVgZthwO9yZNVU/aP267ZYjd6/7c=
-X-Google-Smtp-Source: APXvYqxDErfR1Oz7svF8aEBTFcictPJMmQKu81w0CFfiVqARt1SZ+FDS4pswIByPzzaX6p0XfOub7/2xg8EyxNDPLoo=
-X-Received: by 2002:a19:9157:: with SMTP id y23mr2523676lfj.74.1579024090830;
- Tue, 14 Jan 2020 09:48:10 -0800 (PST)
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=DSwJDN8tvKZIB15Co+RV4TjQqizFvEQ1g5xhaUGMxvM=;
+        b=G1FzVTMGT1qwdvO7XuspPr6ADkN2eILjmMTm5bqRecg7zRyxs7KB/mDGX0hvc8dveO
+         WpjaN3X3MkIexDvg+bZoxB6rDoFFBXQ933NlFvoLf6EYVHgEkAjhA0OVWV2Zgt3vGYsn
+         h8Qfi4JdYF1YxDym9thWKc2e9/ripQS3Oeb6x/3rrRVQOrbRMz472k+uMKRPfghk3hRi
+         LE2vW0kqTOyMLk/AjjBHlCq6K9DiEuMox/SgPc9FWCXAXrD5fK2rItGan3uImN0SQK24
+         d8xfeFKB9WWBQ+ivSzwnbOmYnLcbHfKkG7dgUoB4i7CXLdG7GihGWCXXeHV2UTcQkOlB
+         SL8w==
+X-Gm-Message-State: APjAAAVRMmP7xbs2iL5d1sFo7CXTpuJZTZCvAeM2rQG/Clbc0pt/iRiK
+        F5ipbqyAsrmutOPJrtLjAKw/fg==
+X-Google-Smtp-Source: APXvYqyZmFT5TWZSmX4q8zW9ZMDHt7BfreCFFdL1gB1A1XHgyV+RG7FHFhHQJvxinyuJEFinalnzzA==
+X-Received: by 2002:ac2:5147:: with SMTP id q7mr2550922lfd.87.1579024349496;
+        Tue, 14 Jan 2020 09:52:29 -0800 (PST)
+Received: from [192.168.0.107] (84-238-136-197.ip.btc-net.bg. [84.238.136.197])
+        by smtp.gmail.com with ESMTPSA id t20sm7774941ljk.87.2020.01.14.09.52.28
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 14 Jan 2020 09:52:28 -0800 (PST)
+Subject: Re: [PATCH net-next 3/8] net: bridge: vlan: add rtm definitions and
+ dump support
+To:     David Ahern <dsahern@gmail.com>, Jakub Kicinski <kuba@kernel.org>
+Cc:     netdev@vger.kernel.org, roopa@cumulusnetworks.com,
+        davem@davemloft.net, bridge@lists.linux-foundation.org
+References: <20200113155233.20771-1-nikolay@cumulusnetworks.com>
+ <20200113155233.20771-4-nikolay@cumulusnetworks.com>
+ <20200114055544.77a7806f@cakuba.hsd1.ca.comcast.net>
+ <076a7a9f-67c6-483a-7b86-f9d70be6ad47@gmail.com>
+ <00c4bc6b-2b31-338e-a9ad-b4ea28fc731c@cumulusnetworks.com>
+ <344f496a-5d34-4292-b663-97353f6cfa94@cumulusnetworks.com>
+ <d5291717-2ce5-97e0-6204-3ff0d27583c5@gmail.com>
+ <aa9878d2-22d7-3bcd-deae-cf9bccd4226e@cumulusnetworks.com>
+ <473cb0a5-f6ad-ccd3-9186-02713f9cb92f@gmail.com>
+From:   Nikolay Aleksandrov <nikolay@cumulusnetworks.com>
+Message-ID: <71fd75c5-3bb2-abf8-4977-50911d49e142@cumulusnetworks.com>
+Date:   Tue, 14 Jan 2020 19:52:27 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.1.1
 MIME-Version: 1.0
-References: <157893905455.861394.14341695989510022302.stgit@toke.dk>
-In-Reply-To: <157893905455.861394.14341695989510022302.stgit@toke.dk>
-From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Date:   Tue, 14 Jan 2020 09:47:59 -0800
-Message-ID: <CAADnVQ+Kr_zv9eWF2+eDLJVtva48o04Jj0v4wjzmERVGKSA+ng@mail.gmail.com>
-Subject: Re: [PATCH bpf-next v2 0/2] xdp: Introduce bulking for non-map XDP_REDIRECT
-To:     =?UTF-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <toke@redhat.com>
-Cc:     Network Development <netdev@vger.kernel.org>,
-        bpf <bpf@vger.kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Alexei Starovoitov <ast@kernel.org>,
-        David Miller <davem@davemloft.net>,
-        Jesper Dangaard Brouer <brouer@redhat.com>,
-        =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@gmail.com>,
-        John Fastabend <john.fastabend@gmail.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+In-Reply-To: <473cb0a5-f6ad-ccd3-9186-02713f9cb92f@gmail.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Jan 13, 2020 at 10:11 AM Toke H=C3=B8iland-J=C3=B8rgensen <toke@red=
-hat.com> wrote:
->
-> Since commit 96360004b862 ("xdp: Make devmap flush_list common for all ma=
-p
-> instances"), devmap flushing is a global operation instead of tied to a
-> particular map. This means that with a bit of refactoring, we can finally=
- fix
-> the performance delta between the bpf_redirect_map() and bpf_redirect() h=
-elper
-> functions, by introducing bulking for the latter as well.
->
-> This series makes this change by moving the data structure used for the b=
-ulking
-> into struct net_device itself, so we can access it even when there is not
-> devmap. Once this is done, moving the bpf_redirect() helper to use the bu=
-lking
-> mechanism becomes quite trivial, and brings bpf_redirect() up to the same=
- as
-> bpf_redirect_map():
->
->                        Before:   After:
-> 1 CPU:
-> bpf_redirect_map:      8.4 Mpps  8.4 Mpps  (no change)
-> bpf_redirect:          5.0 Mpps  8.4 Mpps  (+68%)
-> 2 CPUs:
-> bpf_redirect_map:     15.9 Mpps  16.1 Mpps  (+1% or ~no change)
-> bpf_redirect:          9.5 Mpps  15.9 Mpps  (+67%)
->
-> After this patch series, the only semantics different between the two var=
-iants
-> of the bpf() helper (apart from the absence of a map argument, obviously)=
- is
-> that the _map() variant will return an error if passed an invalid map ind=
-ex,
-> whereas the bpf_redirect() helper will succeed, but drop packets on
-> xdp_do_redirect(). This is because the helper has no reference to the cal=
-ling
-> netdev, so unfortunately we can't do the ifindex lookup directly in the h=
-elper.
->
-> Changelog:
->
-> v2:
->   - Consolidate code paths and tracepoints for map and non-map redirect v=
-ariants
->     (Bj=C3=B6rn)
->   - Add performance data for 2-CPU test (Jesper)
->   - Move fields to avoid shifting cache lines in struct net_device (Eric)
+On 14/01/2020 18:53, David Ahern wrote:
+> On 1/14/20 9:50 AM, Nikolay Aleksandrov wrote:
+>> Ah fair enough, so nlmsg_parse() would be better even without attrs.
+> 
+> that was the intention. It would be a good verification of the theory if
+> you could run a test with a larger ancillary header.
+> 
 
-John, since you commented on v1 please review this v2. Thanks!
+Just did, works like expected. Tested all sorts of wrong messages and attributes,
+they get properly validated and thrown out.
+
+Sending v2 in a minute. :)
+
+Thanks!
+
+
