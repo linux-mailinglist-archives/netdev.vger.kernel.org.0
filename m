@@ -2,178 +2,127 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id D817413AD5C
-	for <lists+netdev@lfdr.de>; Tue, 14 Jan 2020 16:18:06 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C5C1F13AD91
+	for <lists+netdev@lfdr.de>; Tue, 14 Jan 2020 16:25:01 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729044AbgANPRz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 14 Jan 2020 10:17:55 -0500
-Received: from mail-pf1-f194.google.com ([209.85.210.194]:38478 "EHLO
-        mail-pf1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726335AbgANPRy (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 14 Jan 2020 10:17:54 -0500
-Received: by mail-pf1-f194.google.com with SMTP id x185so6734314pfc.5;
-        Tue, 14 Jan 2020 07:17:54 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=NccOTQjRE3K/mry3ktyfcVSqMgiS7x0ndgHbwmuP8TQ=;
-        b=eZt7jWyj1lFcAl+nxOMeOUkRlU/C5B9gtr1fYUIkxqtPV7ZLoHlFBT9L+nnBkuVvsI
-         76KXt4W1Sc/eX0hJHYnfXtkmSrjtCzlZ4knqTozpPeGS4awMa/uhW5RKe5F5IK2KxtcC
-         hSzOwtndvb3vc2n6un8ZoX7X3QF2T/PHZVi/kZFTqibdl06MqwPVw9EtcTZ7Xbs72esb
-         OBxlvh7+wXJQbjJw+voB2QhTM2w3dpqxOA2xLLooA4mWpZxvX4FsZPnXWCM99GvyABb/
-         hJDBBKujbLMqDpB5XfxABB6VDerelAx8BJIceJDqMh0DTximUuNaWkMvTKfp2kbMGLGf
-         M9sA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=NccOTQjRE3K/mry3ktyfcVSqMgiS7x0ndgHbwmuP8TQ=;
-        b=i47GzduhUsvnFM57j1NA7YQ8xQhWXKR5r5r9QlXL0uTfTv2PZ4u7wFQP8Qif3c/wkM
-         PWjf5decpgSCE6sudoJAoj0E+lEjyEY61lqwj1TALuDdIf87b9pUnuI3hIYlcc8kvYFc
-         3ilQa8UGVnbYS9WlOUaCn6iw5PgKLknLFpomr8J3FGoOe8UfpX95PA2RpuUUqMmDmuPc
-         XeiUjk7Nx2fDaTQ06/R+Vo3kJlbWhk5/OTP54P1a5np9VbsfCfTrS2QhliVSjUagl51a
-         k3T1ZaRCRrDuXMqXSmfYypCyE/K7lkn1sKRkygTxaI+XCGFKPTTLSksVzc1Rbis6di6b
-         viPg==
-X-Gm-Message-State: APjAAAU4I3C1rklI4BT/MTdYdBaknLnfWdEEW/HPphC9GMVAlBDpmDA/
-        CWoiYMtWElIF13Tjm+FXXPs=
-X-Google-Smtp-Source: APXvYqzwNEAFXEtPiRfWUAnOnIb8U9kJ3KgFoweLCKDYPBx7VAISFddFFf8Pt91PMer7e3JiwzH0Jw==
-X-Received: by 2002:a63:b005:: with SMTP id h5mr26671855pgf.67.1579015073738;
-        Tue, 14 Jan 2020 07:17:53 -0800 (PST)
-Received: from [192.168.86.235] (c-73-241-150-58.hsd1.ca.comcast.net. [73.241.150.58])
-        by smtp.gmail.com with ESMTPSA id s131sm20232099pfs.135.2020.01.14.07.17.52
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 14 Jan 2020 07:17:52 -0800 (PST)
-Subject: Re: [PATCH] can, slip: Protect tty->disc_data access with RCU
-To:     Richard Palethorpe <rpalethorpe@suse.com>,
-        linux-can@vger.kernel.org
-Cc:     syzbot+017e491ae13c0068598a@syzkaller.appspotmail.com,
-        Wolfgang Grandegger <wg@grandegger.com>,
-        Marc Kleine-Budde <mkl@pengutronix.de>,
-        "David S. Miller" <davem@davemloft.net>,
-        Tyler Hall <tylerwhall@gmail.com>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, syzkaller@googlegroups.com
-References: <0000000000002b81b70590a83ad7@google.com>
- <20200114143244.20739-1-rpalethorpe@suse.com>
-From:   Eric Dumazet <eric.dumazet@gmail.com>
-Message-ID: <19d5e4c6-72f4-631f-2ccd-b5df660a5ef6@gmail.com>
-Date:   Tue, 14 Jan 2020 07:17:51 -0800
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.2.2
-MIME-Version: 1.0
-In-Reply-To: <20200114143244.20739-1-rpalethorpe@suse.com>
-Content-Type: text/plain; charset=utf-8
+        id S1729048AbgANPY4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 14 Jan 2020 10:24:56 -0500
+Received: from mga02.intel.com ([134.134.136.20]:34615 "EHLO mga02.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1725904AbgANPY4 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 14 Jan 2020 10:24:56 -0500
+X-Amp-Result: SKIPPED(no attachment in message)
+X-Amp-File-Uploaded: False
+Received: from fmsmga005.fm.intel.com ([10.253.24.32])
+  by orsmga101.jf.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 14 Jan 2020 07:24:55 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.69,433,1571727600"; 
+   d="scan'208";a="423185376"
+Received: from orsmsx105.amr.corp.intel.com ([10.22.225.132])
+  by fmsmga005.fm.intel.com with ESMTP; 14 Jan 2020 07:24:54 -0800
+Received: from orsmsx111.amr.corp.intel.com (10.22.240.12) by
+ ORSMSX105.amr.corp.intel.com (10.22.225.132) with Microsoft SMTP Server (TLS)
+ id 14.3.439.0; Tue, 14 Jan 2020 07:24:54 -0800
+Received: from ORSEDG001.ED.cps.intel.com (10.7.248.4) by
+ ORSMSX111.amr.corp.intel.com (10.22.240.12) with Microsoft SMTP Server (TLS)
+ id 14.3.439.0; Tue, 14 Jan 2020 07:24:54 -0800
+Received: from NAM04-BN3-obe.outbound.protection.outlook.com (104.47.46.59) by
+ edgegateway.intel.com (134.134.137.100) with Microsoft SMTP Server (TLS) id
+ 14.3.439.0; Tue, 14 Jan 2020 07:24:53 -0800
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=UV4ZWaomqLVD/2uk0J2FA2+Xh3rxycF5s3zoUoXuQal9zeFRZii/Fj6L4AU2eAcce+wmFNnXkoR+AAGi+i+33gdKBFmarEo++VwkzPQ7ijQ114K3S6IugDDf05wMquYWxtjkksFB7ZXwvgXH9EFU9Fu3myIUDKiggL4Qlp2ShWu7TBAiQrnDQweHYJE71NFFPTqt6CdCKGKhMBLYCwHW8wk26csZA9SqXfOEA81rpMhk6qkbqLP18P01Q+/SgDAzS24fDlki3odUSEtgp90AEYguO4GRmAJiziIbKbJRr5gQj4JRYPYzRUmKkmH0gIob811dLywe+S/9ukQWpAGIig==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=CanE5ZT0RtztTL6iqVn1cUanfjBFsUN7v42feL5sbMU=;
+ b=ZGOC2swHvIX4sIcvOuCoRJgX2lU9nK8xBO+9SaKrAvv7he5Llo8nSs6eKf4Yfthq4DxdIrYdlenBvpcUXHRTaO6abbKouXhX0OYGTE384d3QC4aHICGOIYcwZdK0g4O+5zrXWvN7FhhyCCHJ0EUMM2du0v+EPy2PPhbu3IHBisApD4B62X7MTqBzl9ejYrD/IjbNcwocNga97fpIB9QkA4MuEP+puUhcwFnKy2IoIkrp0o8KDjyTIE5Pg3W1XXTK5nrfkdv6Yj7qoBPsVPJuntE6E2ctGwXdV+1P8Ex3muxwxSlIP6MeKJ8z0KAxi7++ISuNyR6gEoRf4FdY1eYThQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
+ dkim=pass header.d=intel.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=intel.onmicrosoft.com;
+ s=selector2-intel-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=CanE5ZT0RtztTL6iqVn1cUanfjBFsUN7v42feL5sbMU=;
+ b=IWpPi5gW86IAL4tO32PBl9ylQNI75gKLNNAls1QuaKgsLj268+qQltHFKIYgENzp3EOXuzs1w/HY5apinFXLsAMq1pBje1RQ3yCH5ZBmLbTTjatbnOxsYnobjhOpe9mLvBprtGGcTCoL9c2d+RT5l4JdrzbMXHaTFM/Ep48+vzk=
+Received: from DM6PR11MB2764.namprd11.prod.outlook.com (20.176.95.140) by
+ DM6PR11MB2587.namprd11.prod.outlook.com (20.176.97.144) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.2623.9; Tue, 14 Jan 2020 15:24:51 +0000
+Received: from DM6PR11MB2764.namprd11.prod.outlook.com
+ ([fe80::7934:4f68:4a8b:5877]) by DM6PR11MB2764.namprd11.prod.outlook.com
+ ([fe80::7934:4f68:4a8b:5877%5]) with mapi id 15.20.2623.015; Tue, 14 Jan 2020
+ 15:24:50 +0000
+From:   "Voon, Weifeng" <weifeng.voon@intel.com>
+To:     Jose Abreu <Jose.Abreu@synopsys.com>,
+        "Ong, Boon Leong" <boon.leong.ong@intel.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+CC:     Giuseppe Cavallaro <peppe.cavallaro@st.com>,
+        Alexandre Torgue <alexandre.torgue@st.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        "Maxime Coquelin" <mcoquelin.stm32@gmail.com>,
+        "Tan, Tee Min" <tee.min.tan@intel.com>,
+        "linux-stm32@st-md-mailman.stormreply.com" 
+        <linux-stm32@st-md-mailman.stormreply.com>,
+        "linux-arm-kernel@lists.infradead.org" 
+        <linux-arm-kernel@lists.infradead.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Subject: RE: [PATCH net 4/7] net: stmmac: Fix priority steering for tx/rx
+ queue >3
+Thread-Topic: [PATCH net 4/7] net: stmmac: Fix priority steering for tx/rx
+ queue >3
+Thread-Index: AQHVyfo2lz0yFuzXdkS7LDIUtJYSi6foZfKAgAHiKfA=
+Date:   Tue, 14 Jan 2020 15:24:50 +0000
+Message-ID: <DM6PR11MB276467B2B56B0CF246B5CFB088340@DM6PR11MB2764.namprd11.prod.outlook.com>
+References: <1578967276-55956-1-git-send-email-boon.leong.ong@intel.com>
+ <1578967276-55956-5-git-send-email-boon.leong.ong@intel.com>
+ <BN8PR12MB3266F6242596920E608021ACD3350@BN8PR12MB3266.namprd12.prod.outlook.com>
+In-Reply-To: <BN8PR12MB3266F6242596920E608021ACD3350@BN8PR12MB3266.namprd12.prod.outlook.com>
+Accept-Language: en-US
 Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+dlp-version: 11.2.0.6
+dlp-product: dlpe-windows
+dlp-reaction: no-action
+authentication-results: spf=none (sender IP is )
+ smtp.mailfrom=weifeng.voon@intel.com; 
+x-originating-ip: [192.198.147.223]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: 52789ce5-19ed-4c53-94f8-08d79905e603
+x-ms-traffictypediagnostic: DM6PR11MB2587:
+x-ld-processed: 46c98d88-e344-4ed4-8496-4ed7712e255d,ExtAddr
+x-ms-exchange-transport-forked: True
+x-microsoft-antispam-prvs: <DM6PR11MB25878821A24C9DB48116084E88340@DM6PR11MB2587.namprd11.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:421;
+x-forefront-prvs: 028256169F
+x-forefront-antispam-report: SFV:NSPM;SFS:(10019020)(39860400002)(366004)(136003)(346002)(396003)(376002)(189003)(199004)(81166006)(81156014)(8676002)(52536014)(33656002)(26005)(186003)(110136005)(54906003)(6506007)(8936002)(316002)(2906002)(7696005)(9686003)(66946007)(5660300002)(4744005)(966005)(4326008)(71200400001)(66556008)(64756008)(66476007)(55016002)(66446008)(86362001)(478600001)(76116006);DIR:OUT;SFP:1102;SCL:1;SRVR:DM6PR11MB2587;H:DM6PR11MB2764.namprd11.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;MX:1;A:1;
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: O3HIsSh88RE2CIn75M5LJSKL98FfBdjVflVssrB/i3UUcnki1czV54ZHT/MkZfbENVFapP3U6SI39Zo/dZVG8rTObUgM7h45kqlKgi+8lo4k0+CyjrObS1niIKEF+fRTbStPQ+X19jL51c782Gcf0FIDnk94kc4TG/3BNTZiCD+Zlb23YYoxoAWsBlbS6b3JmDbRqXLRQVLxm3b7M5/zukzj3NebtQ88yTyVOleSQ51R4FP8SMrIHJnuQQSBgNCWah8Cy+PdbbQ7RDH0qna9dHalLjTMs9tI/8igROv5DBgSarmTRy8i/76q3fP9tstkG5Cc+qn/lxzrvNi0aivylCm1sbXGQ9f/JUIY195DqA6XW7FS58eair+4tbJtWtwxTbaUBjgBiKDSb+s3IlZIpdmH3laUmHO3UM5zf9MkkUJyi2rm+ZZ5YjWcsb8HLVF2SLG6rkjQm9cv9O6jcRzWGa7TyCyXrk9fSHxOTbOncnGe1U19fUrFJTolnbuws32RTodyeefu0+4T5ghA5iXfEQ==
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
+MIME-Version: 1.0
+X-MS-Exchange-CrossTenant-Network-Message-Id: 52789ce5-19ed-4c53-94f8-08d79905e603
+X-MS-Exchange-CrossTenant-originalarrivaltime: 14 Jan 2020 15:24:50.7436
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 46c98d88-e344-4ed4-8496-4ed7712e255d
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: LhUjTCYmlak01D4e2j6q4LcBHCt5TRKluZZVmEErwAzSdXVXfHx9mCMTCNoaxf/UIYZspZfw7ZGvV4LrdqMMew==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM6PR11MB2587
+X-OriginatorOrg: intel.com
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-
-
-On 1/14/20 6:32 AM, Richard Palethorpe wrote:
-> write_wakeup can happen in parallel with close where tty->disc_data is set
-> to NULL. So we a) need to check if tty->disc_data is NULL and b) ensure it
-> is an atomic operation. Otherwise accessing tty->disc_data could result in
-> a NULL pointer deref or access to some random location.
-> 
-> This problem was found by Syzkaller on slcan, but the same issue appears to
-> exist in slip where slcan was copied from.
-> 
-> A fix which didn't use RCU was posted by Hillf Danton.
-> 
-> Fixes: 661f7fda21b1 ("slip: Fix deadlock in write_wakeup")
-> Fixes: a8e83b17536a ("slcan: Port write_wakeup deadlock fix from slip")
-> Reported-by: syzbot+017e491ae13c0068598a@syzkaller.appspotmail.com
-> Signed-off-by: Richard Palethorpe <rpalethorpe@suse.com>
-> Cc: Wolfgang Grandegger <wg@grandegger.com>
-> Cc: Marc Kleine-Budde <mkl@pengutronix.de>
-> Cc: "David S. Miller" <davem@davemloft.net>
-> Cc: Tyler Hall <tylerwhall@gmail.com>
-> Cc: netdev@vger.kernel.org
-> Cc: linux-kernel@vger.kernel.org
-> Cc: syzkaller@googlegroups.com
-> ---
-> 
-> Note, that mabye RCU should also applied to receive_buf as that also happens
-> in interrupt context. So if the pointer assignment is split by the compiler
-> then sl may point somewhere unexpected?
-> 
->  drivers/net/can/slcan.c | 11 +++++++++--
->  drivers/net/slip/slip.c | 11 +++++++++--
->  2 files changed, 18 insertions(+), 4 deletions(-)
-> 
-> diff --git a/drivers/net/can/slcan.c b/drivers/net/can/slcan.c
-> index 2e57122f02fb..ee029aae69d4 100644
-> --- a/drivers/net/can/slcan.c
-> +++ b/drivers/net/can/slcan.c
-> @@ -344,7 +344,14 @@ static void slcan_transmit(struct work_struct *work)
->   */
->  static void slcan_write_wakeup(struct tty_struct *tty)
->  {
-> -	struct slcan *sl = tty->disc_data;
-> +	struct slcan *sl;
-> +
-> +	rcu_read_lock();
-> +	sl = rcu_dereference(tty->disc_data);
-> +	rcu_read_unlock();
-
-This rcu_read_lock()/rcu_read_unlock() pair is not protecting anything.
-
-Right after rcu_read_unlock(), sl validity can not be guaranteed.
-
-> +
-> +	if (!sl)
-> +		return;
->  
->  	schedule_work(&sl->tx_work);
->  }
-> @@ -644,7 +651,7 @@ static void slcan_close(struct tty_struct *tty)
->  		return;
->  
->  	spin_lock_bh(&sl->lock);
-> -	tty->disc_data = NULL;
-> +	rcu_assign_pointer(tty->disc_data, NULL);
->  	sl->tty = NULL;
->  	spin_unlock_bh(&sl->lock);
-
-
-
-Where is the rcu grace period before freeing enforced ?
-
->  
-> diff --git a/drivers/net/slip/slip.c b/drivers/net/slip/slip.c
-> index 2a91c192659f..dfed9f0b8646 100644
-> --- a/drivers/net/slip/slip.c
-> +++ b/drivers/net/slip/slip.c
-> @@ -452,7 +452,14 @@ static void slip_transmit(struct work_struct *work)
->   */
->  static void slip_write_wakeup(struct tty_struct *tty)
->  {
-> -	struct slip *sl = tty->disc_data;
-> +	struct slip *sl;
-> +
-> +	rcu_read_lock();
-> +	sl = rcu_dereference(tty->disc_data);
-> +	rcu_read_unlock();
-
-Same here.
-
-> +
-> +	if (!sl)
-> +		return;
->  
->  	schedule_work(&sl->tx_work);
->  }
-> @@ -882,7 +889,7 @@ static void slip_close(struct tty_struct *tty)
->  		return;
->  
->  	spin_lock_bh(&sl->lock);
-> -	tty->disc_data = NULL;
-> +	rcu_assign_pointer(tty->disc_data, NULL);
->  	sl->tty = NULL;
->  	spin_unlock_bh(&sl->lock);
->  
-> 
+> > Fix MACRO function define for TX and RX user priority queue steering
+> > for register masking and shifting.
+>=20
+> I think this was already fixed as seen on:
+> - https://git.kernel.org/pub/scm/linux/kernel/git/netdev/net-
+> next.git/commit/?id=3De8df7e8c233a18d2704e37ecff47583b494789d3
+>=20
+> Did I forget something ?
+This issue is indeed already fixed by the patch that you have pointed out.
+Weifeng=20
