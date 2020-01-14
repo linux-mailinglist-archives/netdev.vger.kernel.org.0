@@ -2,92 +2,106 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id ACE6213A149
-	for <lists+netdev@lfdr.de>; Tue, 14 Jan 2020 08:03:37 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 214FB13A209
+	for <lists+netdev@lfdr.de>; Tue, 14 Jan 2020 08:26:22 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729010AbgANHDf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 14 Jan 2020 02:03:35 -0500
-Received: from mail-pg1-f193.google.com ([209.85.215.193]:35769 "EHLO
-        mail-pg1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728998AbgANHDd (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 14 Jan 2020 02:03:33 -0500
-Received: by mail-pg1-f193.google.com with SMTP id l24so5956352pgk.2
-        for <netdev@vger.kernel.org>; Mon, 13 Jan 2020 23:03:33 -0800 (PST)
+        id S1729451AbgANH0U (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 14 Jan 2020 02:26:20 -0500
+Received: from mail-wm1-f67.google.com ([209.85.128.67]:36136 "EHLO
+        mail-wm1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729251AbgANH0T (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 14 Jan 2020 02:26:19 -0500
+Received: by mail-wm1-f67.google.com with SMTP id p17so12462301wma.1;
+        Mon, 13 Jan 2020 23:26:17 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=7JA7OaAwygRJhFE5OhJzasHdhSSViUU13KIg0q1FSec=;
-        b=KQSRTbaO01EOdiu5Y64UwbOxVIgRXKfkLOnjOHc8ylFSjF+NV2sulWmkSCbLnQbuh1
-         7VMI5Vj86AeuqGFHjE6i/fPbTGrwKFuN4dSr5IVoSD5ORgeGTSN6/Ahq3W9RXRbmYvA/
-         Uz5K3M5CFjfe03sjRNziKOZ3vHgwdNUr9lZ7NCjvnysYFMXgMsI0fzLSMTaRrRhBJ1T3
-         gjMDEChus6Dz0MnpkwuJTTLzbzUHh7bCHkMzCTJCFBcWsl7oc1PKAZoPHRYlEv+yY+iT
-         HM4yBl6241EnrIs78ij2W8kTjSmBBNbVTC3WdsuJII1m2RV0CuMSkKgh0klmtsbxT7/P
-         UFUg==
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=jiCYJM3p9g7mHv0l5QKjZySrGo0xYWEW7P1c+G0gG1c=;
+        b=urYHp5WgdiyJ2FzUrZ/THbwnHqQb0dyutWCLTmLe4JGZPuzC1dX24dm19mpDIuE5NS
+         rJxRUh5a+BrMBk7NcuOAymQmWxifFDDdaMy7XZIQjnZuevBhszaFWU1YyCzXu8AwsUL9
+         tkpn8hChejNFAHUzqsomQ/JGTZFP7LTVPiM6b6s+lsGzKxSXrqOQIQaxJDMtXKz9ve3v
+         rYrpBzunWTWIsb67/8E7E88YQLEeMAGph6oKpdOx+kA06RgmNsaqgcixJCf4hKG7AxMW
+         TdEabt/0QSxM5ztEwQ97b33Po0K3hVCoC3/SpYg/zRp21Z8QcWMT08TB+x5O1C59L/g0
+         1BMA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references;
-        bh=7JA7OaAwygRJhFE5OhJzasHdhSSViUU13KIg0q1FSec=;
-        b=tCa4ukmKLZyBfTGRWc9L+PRg/wy/MQ+R1IrZHChd0E0ahUgs33vsnhZoklmmxjmjtq
-         PJIIOpSgxCIsP9HYnOUgXYVcz0/Sz+QALkRy35XpKXTdFxCIIP2ZblOPAup8eIpWiPXM
-         FiGCtord8z6d8T/gENOIN7DID92C9/ZKdQH78S+4PHW3xja6WUBgL32FaIDraBQYnkEX
-         fO5jDiOn519avRh80ltof1wNFKI4z7XnbX9y7VMVBdqMlw6yfK67kyst46CAe90wgfhI
-         aMGJxNXkhqsLpMKcVLbRXNmWj1gHcKpVuXGKoCnG+F1+ei0NbDU4U3jlQbML3ant1uCt
-         i/tw==
-X-Gm-Message-State: APjAAAVKFu1G4OYxRNIWmzBrEy1PAn+Vz8ANc7s+aRShO2b7zcNxQgEi
-        PSaznCIET7/lzYTjOGV5zcp0k6qGqVQ=
-X-Google-Smtp-Source: APXvYqycSdiSdjJqei+t11tFAb11VUjDDXzA/T/7s4VSXAn5TApHu+s0OEpOJH0FTU35BelBcxDGHw==
-X-Received: by 2002:a65:6216:: with SMTP id d22mr25308539pgv.437.1578985412611;
-        Mon, 13 Jan 2020 23:03:32 -0800 (PST)
-Received: from machine421.marvell.com ([115.113.156.2])
-        by smtp.googlemail.com with ESMTPSA id o19sm2241014pjr.2.2020.01.13.23.03.30
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-SHA bits=128/128);
-        Mon, 13 Jan 2020 23:03:32 -0800 (PST)
-From:   sunil.kovvuri@gmail.com
-To:     netdev@vger.kernel.org
-Cc:     davem@davemloft.net, kubakici@wp.pl,
-        Sunil Goutham <sgoutham@marvell.com>
-Subject: [PATCH v2 17/17] MAINTAINERS: Add entry for Marvell OcteonTX2 Physical Function driver
-Date:   Tue, 14 Jan 2020 12:32:20 +0530
-Message-Id: <1578985340-28775-18-git-send-email-sunil.kovvuri@gmail.com>
-X-Mailer: git-send-email 2.7.4
-In-Reply-To: <1578985340-28775-1-git-send-email-sunil.kovvuri@gmail.com>
-References: <1578985340-28775-1-git-send-email-sunil.kovvuri@gmail.com>
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=jiCYJM3p9g7mHv0l5QKjZySrGo0xYWEW7P1c+G0gG1c=;
+        b=XLyfq1UWIbu2lYqpwH/gX93xx1ArHm6yjaOWyQ8Xqr0pPNgn49Uyw0FmsQrvWcnA8M
+         tlmIVDIWpMiHySCvluHE88CMatqqgm3y3N4XXlDa20pys078d84q4lBwr47fwNHZLIDG
+         Wx1mu5V7wrW0f9sEzzcrvU0jZZjY9V822BcG1Q78N9nBE1IVm3Zd4Ow5a9i9HIbcGhcy
+         z4Xw+/HBpmzH9mT1FxSXvhr/FBn9WyHdIYffzZvkJr1vaQaYHOhrwEzIsvT7zZzc0Oku
+         0wQaQ5udSBG4oplOxYFMYLErTecP8VTM3O2atvF1btgSXrp5Gqao39jnNTo/8tlWEzr2
+         Gliw==
+X-Gm-Message-State: APjAAAVbNxWs4mC+Sprnr6+sDlN044124OJzKjirifkeLwAUr3JZ3DBB
+        rETCBrPwKQIa/titXx35v2gDFXYAVzk=
+X-Google-Smtp-Source: APXvYqzWOIZiK56I9jxXqr/hFmvMYuAe8Tix/5WvctTLmTQUntV+dzrWxzBlZTItUj0mvuKBXlKLGw==
+X-Received: by 2002:a7b:c1c7:: with SMTP id a7mr23865170wmj.168.1578986776918;
+        Mon, 13 Jan 2020 23:26:16 -0800 (PST)
+Received: from localhost.localdomain (bzq-82-81-225-244.cablep.bezeqint.net. [82.81.225.244])
+        by smtp.gmail.com with ESMTPSA id n10sm18247510wrt.14.2020.01.13.23.26.14
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 13 Jan 2020 23:26:15 -0800 (PST)
+From:   Eyal Birger <eyal.birger@gmail.com>
+To:     pablo@netfilter.org, kadlec@netfilter.org, fw@strlen.de,
+        davem@davemloft.net, netfilter-devel@vger.kernel.org,
+        coreteam@netfilter.org, netdev@vger.kernel.org
+Cc:     Eyal Birger <eyal.birger@gmail.com>,
+        Shmulik Ladkani <shmulik.ladkani@gmail.com>
+Subject: [NET] netfilter: nat: fix ICMP header corruption on ICMP errors
+Date:   Tue, 14 Jan 2020 09:25:48 +0200
+Message-Id: <20200114072548.23426-1-eyal.birger@gmail.com>
+X-Mailer: git-send-email 2.20.1
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Sunil Goutham <sgoutham@marvell.com>
+Commit 8303b7e8f018 ("netfilter: nat: fix spurious connection timeouts")
+made nf_nat_icmp_reply_translation() use icmp_manip_pkt() as the l4
+manipulation function for the outer packet on ICMP errors.
 
-Added maintainers entry for Marvell OcteonTX2 SOC's physical
-function NIC driver.
+However, icmp_manip_pkt() assumes the packet is an ICMP echo packet
+and therefore that the ICMP header's 'un' field is an ICMP echo id.
 
-Signed-off-by: Sunil Goutham <sgoutham@marvell.com>
+This is not correct for ICMP error packets, and leads to bogus bytes
+being written the ICMP header, which can be wrongfully regarded as
+'length' bytes by RFC 4884 compliant receivers.
+
+Fix by assigning the 'id' field only for ICMP echo packets similar
+to the treatment in ICMPv6.
+
+Reported-by: Shmulik Ladkani <shmulik.ladkani@gmail.com>
+Fixes: 8303b7e8f018 ("netfilter: nat: fix spurious connection timeouts")
+Signed-off-by: Eyal Birger <eyal.birger@gmail.com>
 ---
- MAINTAINERS | 9 +++++++++
- 1 file changed, 9 insertions(+)
+ net/netfilter/nf_nat_proto.c | 9 ++++++---
+ 1 file changed, 6 insertions(+), 3 deletions(-)
 
-diff --git a/MAINTAINERS b/MAINTAINERS
-index 6659dd5..73b510b 100644
---- a/MAINTAINERS
-+++ b/MAINTAINERS
-@@ -10002,6 +10002,15 @@ S:	Supported
- F:	drivers/net/ethernet/marvell/octeontx2/af/
- F:	Documentation/networking/device_drivers/marvell/octeontx2.rst
+diff --git a/net/netfilter/nf_nat_proto.c b/net/netfilter/nf_nat_proto.c
+index 0a59c14b5177..92ef91c120f4 100644
+--- a/net/netfilter/nf_nat_proto.c
++++ b/net/netfilter/nf_nat_proto.c
+@@ -233,9 +233,12 @@ icmp_manip_pkt(struct sk_buff *skb,
+ 		return false;
  
-+MARVELL OCTEONTX2 PHYSICAL FUNCTION DRIVER
-+M:	Sunil Goutham <sgoutham@marvell.com>
-+M:	Geetha sowjanya <gakula@marvell.com>
-+M:	Subbaraya Sundeep <sbhatta@marvell.com>
-+M:	hariprasad <hkelam@marvell.com>
-+L:	netdev@vger.kernel.org
-+S:	Supported
-+F:	drivers/net/ethernet/marvell/octeontx2/nic/
-+
- MATROX FRAMEBUFFER DRIVER
- L:	linux-fbdev@vger.kernel.org
- S:	Orphan
+ 	hdr = (struct icmphdr *)(skb->data + hdroff);
+-	inet_proto_csum_replace2(&hdr->checksum, skb,
+-				 hdr->un.echo.id, tuple->src.u.icmp.id, false);
+-	hdr->un.echo.id = tuple->src.u.icmp.id;
++	if (hdr->type == ICMP_ECHO || hdr->type == ICMP_ECHOREPLY) {
++		inet_proto_csum_replace2(&hdr->checksum, skb,
++					 hdr->un.echo.id, tuple->src.u.icmp.id,
++					 false);
++		hdr->un.echo.id = tuple->src.u.icmp.id;
++	}
+ 	return true;
+ }
+ 
 -- 
-2.7.4
+2.20.1
 
