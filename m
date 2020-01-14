@@ -2,80 +2,82 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 94D6C13B00D
-	for <lists+netdev@lfdr.de>; Tue, 14 Jan 2020 17:53:44 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7910F13B015
+	for <lists+netdev@lfdr.de>; Tue, 14 Jan 2020 17:54:34 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728841AbgANQxm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 14 Jan 2020 11:53:42 -0500
-Received: from mail-qk1-f194.google.com ([209.85.222.194]:33719 "EHLO
-        mail-qk1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728734AbgANQxm (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 14 Jan 2020 11:53:42 -0500
-Received: by mail-qk1-f194.google.com with SMTP id d71so12786177qkc.0
-        for <netdev@vger.kernel.org>; Tue, 14 Jan 2020 08:53:41 -0800 (PST)
+        id S1728850AbgANQya (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 14 Jan 2020 11:54:30 -0500
+Received: from mail-wm1-f68.google.com ([209.85.128.68]:37515 "EHLO
+        mail-wm1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727102AbgANQy3 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 14 Jan 2020 11:54:29 -0500
+Received: by mail-wm1-f68.google.com with SMTP id f129so14577298wmf.2
+        for <netdev@vger.kernel.org>; Tue, 14 Jan 2020 08:54:28 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=f8ZdMZ1BS3aK0eDev5KldCmx7KcdNZN/UQ+7XtW/aqA=;
-        b=PUzelXAoI5TjMVnykFB4tdf0SzFYY08HScf9jPX4dI6ofPUxy6MFhNInrqQTFoMQ9x
-         JXZ2r+afDsrdLUPHMqOcWONPjxiKx05dTPgRPJdQyH7avOnBoUJWvam/6dWFDjX7L/J0
-         B/pdsz/UirHJAgv3AqEYcVkkpb/OIo+PV2iucJBDZEN5HhquzE7vN1IdB7gUL21Za9ag
-         uc3IlQTxklGtKmU0kw//wBZJYQgXmzRx9VXyorxyMtjA9KXqtS4PQpnIf6Owf9UpKLlg
-         uXNLZF4Ygrj9OvIf/J72+hriWk3+YpidsAZjJVKosvGAc37UYxKXcmGwPAcj2MvfuuX2
-         aVJg==
+        d=resnulli-us.20150623.gappssmtp.com; s=20150623;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=edPnPB8C8Ktc3G7J2d1DSKckT4XxVvXzRg7KsA8hW3Q=;
+        b=bB49UBIJMaoYi4wDBDKKqKpebTAUbZTw09KderopmK+8Fb0QYepTctwTPNR/6dCEdw
+         DmZjHHzVymnrBpeaFU8RXSZympxCWjswTWr0gJ4x14iGBNgtLT5JWjpd5mO5KYLhiepu
+         Fr+Dhhrs5izAELx5lv3b2qMcjG9hYUv+Om8CDBsqp0ZKTF4jazrh+IgjkvPaSPeqwkVJ
+         vlTiCqv1HtjeJwjG+NXnXVkFZkjBR3nE30CYnE3t3uWNCOjU/3LQxL+MvHcTIOiJic8t
+         N/N9l6OQ6LreSj1Hv+8K9z1vBHglQ5EEbeJC8xOdfHY1hV9mM7egzicTHpiqkyxIBK8Z
+         E6Dg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=f8ZdMZ1BS3aK0eDev5KldCmx7KcdNZN/UQ+7XtW/aqA=;
-        b=nfIm5LPhxPVyad6s052ildLphy/71Q5q7emsoY/e4VZklayFCNOFirQDCbbnXaGhpv
-         iF2Hs+pYCcsbpDoTQCL4N2b0aegfs3llOxEwR0gOQRv2taFLVERLxvE1/hvMPJqZqUEQ
-         fnKnFNoeBjpgKn4JiD6TJyEhErJQb96pDu0/I/zndijl/V49uSFsTreF/iHjTcg+MvrY
-         JuVHdLrtCI3CMJoY394vAXFlrT5+IZXzO1HzCBVSRpfF3gWE5MJSSVrfmHpR8WGzPoL6
-         QN4tkaI0cO5anhPPVNBvdi0cDB/SLv56MNnyCVQ/2nC+VEgGCIA5PlLdge/ZABiWsTKm
-         cdOA==
-X-Gm-Message-State: APjAAAWEr1JStkK6YvFakknK3H941bAeQarvAhdBXZSvxkFHbYkBLlZE
-        Ifrb4RN//aJqJEpEVC89gHs=
-X-Google-Smtp-Source: APXvYqxKYed/TLW46cHyC5xOS8UU5tfLSRUCEhw20sPHnKtFndfsphZ3e43Ob/OCgXKBfIb6+ZfsaA==
-X-Received: by 2002:a05:620a:1014:: with SMTP id z20mr22166290qkj.196.1579020821154;
-        Tue, 14 Jan 2020 08:53:41 -0800 (PST)
-Received: from ?IPv6:2601:282:800:7a:cda2:cdcb:a404:13ae? ([2601:282:800:7a:cda2:cdcb:a404:13ae])
-        by smtp.googlemail.com with ESMTPSA id r10sm6852694qkm.23.2020.01.14.08.53.39
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 14 Jan 2020 08:53:40 -0800 (PST)
-Subject: Re: [PATCH net-next 3/8] net: bridge: vlan: add rtm definitions and
- dump support
-To:     Nikolay Aleksandrov <nikolay@cumulusnetworks.com>,
-        Jakub Kicinski <kuba@kernel.org>
-Cc:     netdev@vger.kernel.org, roopa@cumulusnetworks.com,
-        davem@davemloft.net, bridge@lists.linux-foundation.org
-References: <20200113155233.20771-1-nikolay@cumulusnetworks.com>
- <20200113155233.20771-4-nikolay@cumulusnetworks.com>
- <20200114055544.77a7806f@cakuba.hsd1.ca.comcast.net>
- <076a7a9f-67c6-483a-7b86-f9d70be6ad47@gmail.com>
- <00c4bc6b-2b31-338e-a9ad-b4ea28fc731c@cumulusnetworks.com>
- <344f496a-5d34-4292-b663-97353f6cfa94@cumulusnetworks.com>
- <d5291717-2ce5-97e0-6204-3ff0d27583c5@gmail.com>
- <aa9878d2-22d7-3bcd-deae-cf9bccd4226e@cumulusnetworks.com>
-From:   David Ahern <dsahern@gmail.com>
-Message-ID: <473cb0a5-f6ad-ccd3-9186-02713f9cb92f@gmail.com>
-Date:   Tue, 14 Jan 2020 09:53:39 -0700
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:68.0)
- Gecko/20100101 Thunderbird/68.3.1
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=edPnPB8C8Ktc3G7J2d1DSKckT4XxVvXzRg7KsA8hW3Q=;
+        b=cQAQnwKy/l/fqYwOfm42Xt9VwNkq2a6lYq9mBBMwQPvUISQsSCGz2NhQ9HxVpneEIH
+         RgJkCcoCjKCWdidMweibPMH7AzwZhN3PCUBTR10+38931RuMncY3efkz/20vre4SkLXE
+         XF1nHZFT4Lbqyp05qb2+MCsHiG7sJqxby/ll1K/0z4srWtZy/i4SLvl3V8F+jub6ECGX
+         D0pjncNvaPmt7Ug50AhiDoTnCAEX1ls+beeDwOupSeFir1+ebBklXvIM5exTPVGZxOrS
+         M4IRNNmHkRnUxYgor4pRbza1d5TcoMe5HrkICPuE7dEZzbmR0aeZVnWJvI5ZfQ1Ter9P
+         T8sw==
+X-Gm-Message-State: APjAAAXeoTx+Vh/rdom66Wiw4J2HXCz2wzSgsOw2lQ16IFTReYlqeK8I
+        MVA7pHNWCog/EZugpj6UA2EJPg==
+X-Google-Smtp-Source: APXvYqygQZ12hVo7a0h1Du4OBfbasczmdBTH9qqxDBaCY1uBxKhNID6wi4WhQ1rBxjHil9RpyzcmrA==
+X-Received: by 2002:a1c:5f06:: with SMTP id t6mr28560142wmb.32.1579020867896;
+        Tue, 14 Jan 2020 08:54:27 -0800 (PST)
+Received: from localhost (ip-78-102-249-43.net.upcbroadband.cz. [78.102.249.43])
+        by smtp.gmail.com with ESMTPSA id t5sm20133520wrr.35.2020.01.14.08.54.27
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 14 Jan 2020 08:54:27 -0800 (PST)
+Date:   Tue, 14 Jan 2020 17:54:26 +0100
+From:   Jiri Pirko <jiri@resnulli.us>
+To:     Ido Schimmel <idosch@idosch.org>
+Cc:     netdev@vger.kernel.org, davem@davemloft.net, kuba@kernel.org,
+        jiri@mellanox.com, dsahern@gmail.com, roopa@cumulusnetworks.com,
+        mlxsw@mellanox.com, Ido Schimmel <idosch@mellanox.com>
+Subject: Re: [PATCH net-next v2 07/10] netdevsim: fib: Add dummy
+ implementation for FIB offload
+Message-ID: <20200114165426.GQ2131@nanopsycho>
+References: <20200114112318.876378-1-idosch@idosch.org>
+ <20200114112318.876378-8-idosch@idosch.org>
 MIME-Version: 1.0
-In-Reply-To: <aa9878d2-22d7-3bcd-deae-cf9bccd4226e@cumulusnetworks.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20200114112318.876378-8-idosch@idosch.org>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 1/14/20 9:50 AM, Nikolay Aleksandrov wrote:
-> Ah fair enough, so nlmsg_parse() would be better even without attrs.
+Tue, Jan 14, 2020 at 12:23:15PM CET, idosch@idosch.org wrote:
+>From: Ido Schimmel <idosch@mellanox.com>
+>
+>Implement dummy IPv4 and IPv6 FIB "offload" in the driver by storing
+>currently "programmed" routes in a hash table. Each route in the hash
+>table is marked with "trap" indication. The indication is cleared when
+>the route is replaced or when the netdevsim instance is deleted.
+>
+>This will later allow us to test the route offload API on top of
+>netdevsim.
+>
+>v2:
+>* Convert to new fib_alias_hw_flags_set() interface
+>
+>Signed-off-by: Ido Schimmel <idosch@mellanox.com>
 
-that was the intention. It would be a good verification of the theory if
-you could run a test with a larger ancillary header.
+Reviewed-by: Jiri Pirko <jiri@mellanox.com>
