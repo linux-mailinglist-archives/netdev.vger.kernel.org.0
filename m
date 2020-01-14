@@ -2,54 +2,56 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 4A82F13B17A
-	for <lists+netdev@lfdr.de>; Tue, 14 Jan 2020 18:58:34 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id AD5C213B17E
+	for <lists+netdev@lfdr.de>; Tue, 14 Jan 2020 18:58:40 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728753AbgANR6c (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 14 Jan 2020 12:58:32 -0500
-Received: from mail-lj1-f174.google.com ([209.85.208.174]:39442 "EHLO
-        mail-lj1-f174.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726270AbgANR6c (ORCPT
+        id S1728733AbgANR6e (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 14 Jan 2020 12:58:34 -0500
+Received: from mail-lj1-f193.google.com ([209.85.208.193]:42582 "EHLO
+        mail-lj1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726053AbgANR6c (ORCPT
         <rfc822;netdev@vger.kernel.org>); Tue, 14 Jan 2020 12:58:32 -0500
-Received: by mail-lj1-f174.google.com with SMTP id l2so15360123lja.6
-        for <netdev@vger.kernel.org>; Tue, 14 Jan 2020 09:58:30 -0800 (PST)
+Received: by mail-lj1-f193.google.com with SMTP id y4so15387728ljj.9
+        for <netdev@vger.kernel.org>; Tue, 14 Jan 2020 09:58:31 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=cumulusnetworks.com; s=google;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=4lvd4hONF4LwQ0KcHPfRvvqYGPQNzQBVH0ylqHglG+U=;
-        b=e8DEKRPlXoM8gE2YiOrEiUZdNFMy7q5S9RzC5clSP9ltor8zYOx2W+bpxhhMh5HVvE
-         VEH41BXSLrhXK03uKplOQv461L4yaga18aLv8a9ptQixB3KgJc0rvOgAI5IryIW+3KQ6
-         x3kbwh+QO8uJGSVzHvASIz78omT7bW35QViXM=
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=M7dGQIqTzWEMkio4akH4cg6mHCfmnNJAqzweWg3IPew=;
+        b=KOyrYoPDKO/L6xfHagAIPLVBllOIvBf02OrQ4SsgBrEjWAf7oiimfkex4sixNWEiBV
+         +6nt2FT4ON+JFNG6S/hfsbMQyP9M4qIzxecg0KgnJn0H4YELqwLf9ErKC7a8gETYz79I
+         o2BJAH0YfjbeerHgdfsH8XybtDzGes0Rrkx/4=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=4lvd4hONF4LwQ0KcHPfRvvqYGPQNzQBVH0ylqHglG+U=;
-        b=R2Romrj87+vVLQT1CB5xyqQcJC7EEJXb/l3kmxv9MnIV5JWDhcL74kOQJsjO3JaOuc
-         JjZOaLyk6+/hs7u3/ilHDzyFa6FGO9MOShHpAwI0/y2COdIan3EcDLh3VgHdxBXH9/Kb
-         xT10ej17n7KuWbwRUg9jsWzlW1f5ldcv0hSxr0h7T1UOM/HayR0J9j7EFSiqaCLMkSn3
-         mQzPhwurzrcgvdgjoZDKLB+rHjctLLPtydX17XKyaO1EyExSRQpEE5lI8hw5mPpBe+fQ
-         TNvuq3U7Y/VuNchG3SY/huSJqYbfJNq0DTWfqF4I5IB7CNhvyMWcx9gHeTVTLNPBn/3m
-         f2lg==
-X-Gm-Message-State: APjAAAX5auOhSnxQfQhRjZu3FvzqJE3AQ4X4ITF0Y1xoq1T9eR4Ryyxk
-        cSTlyCkxsbwMbngeevq4HWw9N0ONhTQ=
-X-Google-Smtp-Source: APXvYqyat+OPBi6KKdRfQCuLD6z6EVJdbn86ar77Psvojs+Mp+Wfs56qHEsMQBumL14GQp9iZkjjIQ==
-X-Received: by 2002:a2e:86d6:: with SMTP id n22mr15168541ljj.77.1579024708985;
-        Tue, 14 Jan 2020 09:58:28 -0800 (PST)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=M7dGQIqTzWEMkio4akH4cg6mHCfmnNJAqzweWg3IPew=;
+        b=ofE2uqTjgAcQUmTSN2W8qPf73zep7rt11P1mN0zOmv5VKwGN49aDViNOTkn8pjPOEI
+         OCDsjNrRo6ZIQ0iGZKA0gAt+EpCW372gv91KW+sYmWpVeVAIaOsVeGk2ywSdPUqYEoI0
+         awGHP323n5SGgVXXmOv79ewBLxgKkTgP3HKPSBYH2RM/1Xl65YGavBk/i8/0qFjDbbjP
+         3jz5vxtUNNj4A7xiksnMnMoYa/KPk5WOA+gJ/ITUlRdGVDczBsvbB1AtX8Yr813bdA0I
+         r6R4kVwIvOyQKAMjc6v/KpGwBGWvZIB+TZ2okjv4CcdyxCuKTj+7BddOAJtadNxb+ftr
+         Zqug==
+X-Gm-Message-State: APjAAAWGDM3P4nJhgYbPeF/dMTWAEo0gKC2zbLibg+3/NT8AHOjUccUF
+        9KeffQXKpaI2iAFzlz0fpTO4Kj2lz00=
+X-Google-Smtp-Source: APXvYqxcLZRY3/TOPTNVim2eGLUxFCGINorQpID+jv3qnjDdBIE71omVW0RrCPu8IIaG8Ak9h0xU1g==
+X-Received: by 2002:a05:651c:1b0:: with SMTP id c16mr15378691ljn.236.1579024710559;
+        Tue, 14 Jan 2020 09:58:30 -0800 (PST)
 Received: from localhost.localdomain (84-238-136-197.ip.btc-net.bg. [84.238.136.197])
-        by smtp.gmail.com with ESMTPSA id a15sm7685655lfi.60.2020.01.14.09.58.27
+        by smtp.gmail.com with ESMTPSA id a15sm7685655lfi.60.2020.01.14.09.58.29
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 14 Jan 2020 09:58:27 -0800 (PST)
+        Tue, 14 Jan 2020 09:58:29 -0800 (PST)
 From:   Nikolay Aleksandrov <nikolay@cumulusnetworks.com>
 To:     netdev@vger.kernel.org
 Cc:     roopa@cumulusnetworks.com, davem@davemloft.net, kuba@kernel.org,
         bridge@lists.linux-foundation.org, dsahern@gmail.com,
         Nikolay Aleksandrov <nikolay@cumulusnetworks.com>
-Subject: [PATCH net-next v2 0/8] net: bridge: add vlan notifications and rtm support
-Date:   Tue, 14 Jan 2020 19:56:06 +0200
-Message-Id: <20200114175614.17543-1-nikolay@cumulusnetworks.com>
+Subject: [PATCH net-next v2 1/8] net: bridge: vlan: add helpers to check for vlan id/range validity
+Date:   Tue, 14 Jan 2020 19:56:07 +0200
+Message-Id: <20200114175614.17543-2-nikolay@cumulusnetworks.com>
 X-Mailer: git-send-email 2.21.0
+In-Reply-To: <20200114175614.17543-1-nikolay@cumulusnetworks.com>
+References: <20200114175614.17543-1-nikolay@cumulusnetworks.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
@@ -57,73 +59,93 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi,
-This patch-set is a prerequisite for adding per-vlan options support
-because we need to be able to send vlan-only notifications and do larger
-vlan netlink dumps. Per-vlan options are needed as we move the control
-more to vlans and would like to add per-vlan state (needed for per-vlan
-STP and EVPN), per-vlan multicast options and control, and I'm sure
-there would be many more per-vlan options coming.
-Now we create/delete/dump vlans with the device AF_SPEC attribute which is
-fine since we support vlan ranges or use a compact bridge_vlan_info
-structure, but that cannot really be extended to support per-vlan options
-well. The biggest issue is dumping them - we tried using the af_spec with
-a new vlan option attribute but that led to insufficient message size
-quickly, also another minor problem with that is we have to dump all vlans
-always when notifying which, with options present, can be huge if they have
-different options set, so we decided to add new rtm message types
-specifically for vlans and register handlers for them and a new bridge vlan
-notification nl group for vlan-only notifications.
-The new RTM NEW/DEL/GETVLAN types introduced match the current af spec
-bridge functionality and in fact use the same helpers.
-The new nl format is:
- [BRIDGE_VLANDB_ENTRY]
-    [BRIDGE_VLANDB_ENTRY_INFO] - bridge_vlan_info (either 1 vlan or
-                                                   range start)
-    [BRIDGE_VLANDB_ENTRY_RANGE] - range end
+Add helpers to check if a vlan id or range are valid. The range helper
+must be called when range start or end are detected.
 
-This allows to encapsulate a range in a single attribute and also to
-create vlans and immediately set options on all of them with a single
-attribute. The GETVLAN dump can span multiple messages and dump all the
-necessary information. The vlan-only notifications are sent on
-NEW/DELVLAN events or when vlan options change (currently only flags),
-we try hard to compress the vlans into ranges in the notifications as
-well. When the per-vlan options are added we'll add helpers to check for
-option equality between neighbor vlans and will keep compressing them
-when possible.
+Signed-off-by: Nikolay Aleksandrov <nikolay@cumulusnetworks.com>
+---
+ net/bridge/br_netlink.c | 13 +++----------
+ net/bridge/br_private.h | 31 +++++++++++++++++++++++++++++++
+ 2 files changed, 34 insertions(+), 10 deletions(-)
 
-Note patch 02 is not really required, it's just a nice addition to have
-human-readable error messages from the different vlan checks.
-
-iproute2 changes and selftests will be sent with the next set which adds
-the first per-vlan option - per-vlan state similar to the port state.
-
-v2: changed patch 03 and patch 04 to use nlmsg_parse() in order to
-    strictly validate the msg and make sure there are no remaining bytes
-
-
-Thank you,
- Nik
-
-
-Nikolay Aleksandrov (8):
-  net: bridge: vlan: add helpers to check for vlan id/range validity
-  net: bridge: netlink: add extack error messages when processing vlans
-  net: bridge: vlan: add rtm definitions and dump support
-  net: bridge: vlan: add new rtm message support
-  net: bridge: vlan: add del rtm message support
-  net: bridge: vlan: add rtm range support
-  net: bridge: vlan: add rtnetlink group and notify support
-  net: bridge: vlan: notify on vlan add/delete/change flags
-
- include/uapi/linux/if_bridge.h |  29 ++
- include/uapi/linux/rtnetlink.h |   9 +
- net/bridge/br_netlink.c        |  61 +++--
- net/bridge/br_private.h        |  90 +++++++
- net/bridge/br_vlan.c           | 473 +++++++++++++++++++++++++++++++--
- security/selinux/nlmsgtab.c    |   5 +-
- 6 files changed, 632 insertions(+), 35 deletions(-)
-
+diff --git a/net/bridge/br_netlink.c b/net/bridge/br_netlink.c
+index 60136575aea4..14100e8653e6 100644
+--- a/net/bridge/br_netlink.c
++++ b/net/bridge/br_netlink.c
+@@ -568,17 +568,13 @@ static int br_process_vlan_info(struct net_bridge *br,
+ 				bool *changed,
+ 				struct netlink_ext_ack *extack)
+ {
+-	if (!vinfo_curr->vid || vinfo_curr->vid >= VLAN_VID_MASK)
++	if (!br_vlan_valid_id(vinfo_curr->vid))
+ 		return -EINVAL;
+ 
+ 	if (vinfo_curr->flags & BRIDGE_VLAN_INFO_RANGE_BEGIN) {
+-		/* check if we are already processing a range */
+-		if (*vinfo_last)
++		if (!br_vlan_valid_range(vinfo_curr, *vinfo_last))
+ 			return -EINVAL;
+ 		*vinfo_last = vinfo_curr;
+-		/* don't allow range of pvids */
+-		if ((*vinfo_last)->flags & BRIDGE_VLAN_INFO_PVID)
+-			return -EINVAL;
+ 		return 0;
+ 	}
+ 
+@@ -586,10 +582,7 @@ static int br_process_vlan_info(struct net_bridge *br,
+ 		struct bridge_vlan_info tmp_vinfo;
+ 		int v, err;
+ 
+-		if (!(vinfo_curr->flags & BRIDGE_VLAN_INFO_RANGE_END))
+-			return -EINVAL;
+-
+-		if (vinfo_curr->vid <= (*vinfo_last)->vid)
++		if (!br_vlan_valid_range(vinfo_curr, *vinfo_last))
+ 			return -EINVAL;
+ 
+ 		memcpy(&tmp_vinfo, *vinfo_last,
+diff --git a/net/bridge/br_private.h b/net/bridge/br_private.h
+index f540f3bdf294..dbc0089e2c1a 100644
+--- a/net/bridge/br_private.h
++++ b/net/bridge/br_private.h
+@@ -507,6 +507,37 @@ static inline bool nbp_state_should_learn(const struct net_bridge_port *p)
+ 	return p->state == BR_STATE_LEARNING || p->state == BR_STATE_FORWARDING;
+ }
+ 
++static inline bool br_vlan_valid_id(u16 vid)
++{
++	return vid > 0 && vid < VLAN_VID_MASK;
++}
++
++static inline bool br_vlan_valid_range(const struct bridge_vlan_info *cur,
++				       const struct bridge_vlan_info *last)
++{
++	/* pvid flag is not allowed in ranges */
++	if (cur->flags & BRIDGE_VLAN_INFO_PVID)
++		return false;
++
++	/* check for required range flags */
++	if (!(cur->flags & (BRIDGE_VLAN_INFO_RANGE_BEGIN |
++			    BRIDGE_VLAN_INFO_RANGE_END)))
++		return false;
++
++	/* when cur is the range end, check if:
++	 *  - it has range start flag
++	 *  - range ids are invalid (end is equal to or before start)
++	 */
++	if (last) {
++		if (cur->flags & BRIDGE_VLAN_INFO_RANGE_BEGIN)
++			return false;
++		else if (cur->vid <= last->vid)
++			return false;
++	}
++
++	return true;
++}
++
+ static inline int br_opt_get(const struct net_bridge *br,
+ 			     enum net_bridge_opts opt)
+ {
 -- 
 2.21.0
 
