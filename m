@@ -2,32 +2,32 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id F341913A850
-	for <lists+netdev@lfdr.de>; Tue, 14 Jan 2020 12:23:50 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 73FAA13A851
+	for <lists+netdev@lfdr.de>; Tue, 14 Jan 2020 12:23:51 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729521AbgANLXr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 14 Jan 2020 06:23:47 -0500
-Received: from out2-smtp.messagingengine.com ([66.111.4.26]:52347 "EHLO
+        id S1729262AbgANLXt (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 14 Jan 2020 06:23:49 -0500
+Received: from out2-smtp.messagingengine.com ([66.111.4.26]:36709 "EHLO
         out2-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726053AbgANLXq (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 14 Jan 2020 06:23:46 -0500
+        by vger.kernel.org with ESMTP id S1726053AbgANLXs (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 14 Jan 2020 06:23:48 -0500
 Received: from compute3.internal (compute3.nyi.internal [10.202.2.43])
-        by mailout.nyi.internal (Postfix) with ESMTP id 1A73B21B10;
-        Tue, 14 Jan 2020 06:23:46 -0500 (EST)
+        by mailout.nyi.internal (Postfix) with ESMTP id AE0E221DC6;
+        Tue, 14 Jan 2020 06:23:47 -0500 (EST)
 Received: from mailfrontend1 ([10.202.2.162])
-  by compute3.internal (MEProxy); Tue, 14 Jan 2020 06:23:46 -0500
+  by compute3.internal (MEProxy); Tue, 14 Jan 2020 06:23:47 -0500
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
         messagingengine.com; h=cc:content-transfer-encoding:date:from
         :in-reply-to:message-id:mime-version:references:subject:to
         :x-me-proxy:x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=
-        fm1; bh=+7x55T/BdyzRqhHf8reJZv0QytQu+y4M25lWVJfpdFU=; b=tbSO9Vuo
-        /tQsCkjWlzmrTfNo6DWEI6ueWqqM4dOBQ+9zOxIXQyk52/us37BF1GsURQhRbzMr
-        njDdqC918Lnw+rmMAni96rqxUpv1snkyi3hR2RFlu95abUuI8Rwtpe7umbcKJZng
-        A+zMxJHgNrvjVg615Hy3PlqCVRixlucUFtT+OAtkowuhsC4H/Zxh+nhOOvS65x/W
-        go7EQBD/J98QpuKg9IfZSwzttk4JOfjI6kFkJrpOvlZElht2CuJOFETqnrqIJOa+
-        HR8Jxm5u0GV0/+Y6bARWbTkkkpsRdy/dMt7Rhk7RRrZYOIevsFQcwoHD2St0aBhE
-        ScEvGLVa/bf5Mw==
-X-ME-Sender: <xms:waQdXufxjGFb1sbZTaAe7CopSZVJtfeld9GGUhuK4ItHH1Kqi3fgpg>
+        fm1; bh=WDmrJ+52J8h23G9TCXjkyjtxEyJk7FyLkaNizgrIW6I=; b=XMPKQ9e9
+        HhaFbzsr5V0Nd23y6Osi8uLR6lqifNkQK89SY58Lx3xUzMjOunk3/jCy7Am5frpO
+        kaSj8oiwcRhljH3iso0TK4apzK2pkoDvlonp5YK0pw+gYyiOc8I1IxxXRGx/XuSg
+        1pkUMDIVrLt9u9uoVehtKT/NgE0SbLuLShUEhIeknQbLOFoPz/gwCv7WPbZSVQlR
+        Fct7l918WOpmMLZycuW0zu91qb8jQQ0E0HRW5VBwYzRtxaQhqZjdADoY2TvM+5Ap
+        qpL4oo82smJLcmMIu4rh8W7NXwpaAuHt6cgZvbqYHh4yPK7Ftm5T5e/a3vLhMa/X
+        PJmcki/BsQ31Ug==
+X-ME-Sender: <xms:w6QdXoDe3_inCyUQYWDU6zb0WYH-WqpkPmCtkVt77HZVxV8T6xk_4g>
 X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedugedrtddtgddtlecutefuodetggdotefrodftvf
     curfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfghnecu
     uegrihhlohhuthemuceftddtnecunecujfgurhephffvufffkffojghfggfgsedtkeertd
@@ -35,21 +35,21 @@ X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedugedrtddtgddtlecutefuodetggdote
     tghhrdhorhhgqeenucfkphepudelfedrgeejrdduieehrddvhedunecurfgrrhgrmhepmh
     grihhlfhhrohhmpehiughoshgthhesihguohhstghhrdhorhhgnecuvehluhhsthgvrhfu
     ihiivgeptd
-X-ME-Proxy: <xmx:wqQdXjsUFMBiRUZdVlNthqs9Bb2C7GxYFms4TFBzMNVUm8dERW7Ypw>
-    <xmx:wqQdXknuPwYsP0Ji6lunTGimQhpnFO6_CzEV6HqpalIUSIYfIzysOA>
-    <xmx:wqQdXq7XK5QmGhl-w5Ww-qUmcn3GgQasf5IA0T9vu5MEDhA9BupIUw>
-    <xmx:wqQdXmirLnJqBcoM190O7vZy85k3Lff6xjV8_JkCxOK_CX99rreudw>
+X-ME-Proxy: <xmx:w6QdXnMI40S_4H_K_hmirRffsxGbCpBvhxq4IOh6TEu5PX6ucUertg>
+    <xmx:w6QdXvfNM0yCd_BKDBZDHFcVWmPXROWJ0kRwaOZhlDjjEgTVTrS4_w>
+    <xmx:w6QdXo6PlKwoGZmDD0sf9cz3VSJ4eurFAMzhh8Ma9ozNjIZm4jIQiQ>
+    <xmx:w6QdXrk2CyGDbXoekSFxQJV5DYaStYDgzQvpNQ2S0jKRoGgkPY1HkQ>
 Received: from splinter.mtl.com (unknown [193.47.165.251])
-        by mail.messagingengine.com (Postfix) with ESMTPA id 83FA580061;
-        Tue, 14 Jan 2020 06:23:44 -0500 (EST)
+        by mail.messagingengine.com (Postfix) with ESMTPA id 2015A8005A;
+        Tue, 14 Jan 2020 06:23:46 -0500 (EST)
 From:   Ido Schimmel <idosch@idosch.org>
 To:     netdev@vger.kernel.org
 Cc:     davem@davemloft.net, kuba@kernel.org, jiri@mellanox.com,
         dsahern@gmail.com, roopa@cumulusnetworks.com, mlxsw@mellanox.com,
         Ido Schimmel <idosch@mellanox.com>
-Subject: [PATCH net-next v2 01/10] ipv4: Replace route in list before notifying
-Date:   Tue, 14 Jan 2020 13:23:09 +0200
-Message-Id: <20200114112318.876378-2-idosch@idosch.org>
+Subject: [PATCH net-next v2 02/10] ipv4: Encapsulate function arguments in a struct
+Date:   Tue, 14 Jan 2020 13:23:10 +0200
+Message-Id: <20200114112318.876378-3-idosch@idosch.org>
 X-Mailer: git-send-email 2.24.1
 In-Reply-To: <20200114112318.876378-1-idosch@idosch.org>
 References: <20200114112318.876378-1-idosch@idosch.org>
@@ -62,62 +62,194 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Ido Schimmel <idosch@mellanox.com>
 
-Subsequent patches will add an offload / trap indication to routes which
-will signal if the route is present in hardware or not.
+fib_dump_info() is used to prepare RTM_{NEW,DEL}ROUTE netlink messages
+using the passed arguments. Currently, the function takes 11 arguments,
+6 of which are attributes of the route being dumped (e.g., prefix, TOS).
 
-After programming the route to the hardware, drivers will have to ask
-the IPv4 code to set the flags by passing the route's key.
+The next patch will need the function to also dump to user space an
+indication if the route is present in hardware or not. Instead of
+passing yet another argument, change the function to take a struct
+containing the different route attributes.
 
-In the case of route replace, the new route is notified before it is
-actually inserted into the FIB alias list. This can prevent simple
-drivers (e.g., netdevsim) that program the route to the hardware in the
-same context it is notified in from being able to set the flag.
-
-Solve this by first inserting the new route to the list and rollback the
-operation in case the route was vetoed.
+v2:
+* Name last argument of fib_dump_info()
+* Move 'struct fib_rt_info' to include/net/ip_fib.h so that it could
+  later be passed to fib_alias_hw_flags_set()
 
 Signed-off-by: Ido Schimmel <idosch@mellanox.com>
-Reviewed-by: Jiri Pirko <jiri@mellanox.com>
-Reviewed-by: David Ahern <dsahern@gmail.com>
 ---
- net/ipv4/fib_trie.c | 11 +++++++----
- 1 file changed, 7 insertions(+), 4 deletions(-)
+ include/net/ip_fib.h     |  9 +++++++++
+ net/ipv4/fib_lookup.h    |  5 ++---
+ net/ipv4/fib_semantics.c | 26 ++++++++++++++++----------
+ net/ipv4/fib_trie.c      | 14 +++++++++-----
+ net/ipv4/route.c         | 12 +++++++++---
+ 5 files changed, 45 insertions(+), 21 deletions(-)
 
+diff --git a/include/net/ip_fib.h b/include/net/ip_fib.h
+index b9cba41c6d4f..0c071c820e33 100644
+--- a/include/net/ip_fib.h
++++ b/include/net/ip_fib.h
+@@ -204,6 +204,15 @@ __be32 fib_result_prefsrc(struct net *net, struct fib_result *res);
+ #define FIB_RES_DEV(res)	(FIB_RES_NHC(res)->nhc_dev)
+ #define FIB_RES_OIF(res)	(FIB_RES_NHC(res)->nhc_oif)
+ 
++struct fib_rt_info {
++	struct fib_info		*fi;
++	u32			tb_id;
++	__be32			dst;
++	int			dst_len;
++	u8			tos;
++	u8			type;
++};
++
+ struct fib_entry_notifier_info {
+ 	struct fib_notifier_info info; /* must be first */
+ 	u32 dst;
+diff --git a/net/ipv4/fib_lookup.h b/net/ipv4/fib_lookup.h
+index a68b5e21ec51..a4b829358bfa 100644
+--- a/net/ipv4/fib_lookup.h
++++ b/net/ipv4/fib_lookup.h
+@@ -35,9 +35,8 @@ struct fib_info *fib_create_info(struct fib_config *cfg,
+ int fib_nh_match(struct fib_config *cfg, struct fib_info *fi,
+ 		 struct netlink_ext_ack *extack);
+ bool fib_metrics_match(struct fib_config *cfg, struct fib_info *fi);
+-int fib_dump_info(struct sk_buff *skb, u32 pid, u32 seq, int event, u32 tb_id,
+-		  u8 type, __be32 dst, int dst_len, u8 tos, struct fib_info *fi,
+-		  unsigned int);
++int fib_dump_info(struct sk_buff *skb, u32 pid, u32 seq, int event,
++		  struct fib_rt_info *fri, unsigned int flags);
+ void rtmsg_fib(int event, __be32 key, struct fib_alias *fa, int dst_len,
+ 	       u32 tb_id, const struct nl_info *info, unsigned int nlm_flags);
+ 
+diff --git a/net/ipv4/fib_semantics.c b/net/ipv4/fib_semantics.c
+index f1888c683426..3ed1349be428 100644
+--- a/net/ipv4/fib_semantics.c
++++ b/net/ipv4/fib_semantics.c
+@@ -504,6 +504,7 @@ void rtmsg_fib(int event, __be32 key, struct fib_alias *fa,
+ 	       int dst_len, u32 tb_id, const struct nl_info *info,
+ 	       unsigned int nlm_flags)
+ {
++	struct fib_rt_info fri;
+ 	struct sk_buff *skb;
+ 	u32 seq = info->nlh ? info->nlh->nlmsg_seq : 0;
+ 	int err = -ENOBUFS;
+@@ -512,9 +513,13 @@ void rtmsg_fib(int event, __be32 key, struct fib_alias *fa,
+ 	if (!skb)
+ 		goto errout;
+ 
+-	err = fib_dump_info(skb, info->portid, seq, event, tb_id,
+-			    fa->fa_type, key, dst_len,
+-			    fa->fa_tos, fa->fa_info, nlm_flags);
++	fri.fi = fa->fa_info;
++	fri.tb_id = tb_id;
++	fri.dst = key;
++	fri.dst_len = dst_len;
++	fri.tos = fa->fa_tos;
++	fri.type = fa->fa_type;
++	err = fib_dump_info(skb, info->portid, seq, event, &fri, nlm_flags);
+ 	if (err < 0) {
+ 		/* -EMSGSIZE implies BUG in fib_nlmsg_size() */
+ 		WARN_ON(err == -EMSGSIZE);
+@@ -1725,10 +1730,11 @@ static int fib_add_multipath(struct sk_buff *skb, struct fib_info *fi)
+ #endif
+ 
+ int fib_dump_info(struct sk_buff *skb, u32 portid, u32 seq, int event,
+-		  u32 tb_id, u8 type, __be32 dst, int dst_len, u8 tos,
+-		  struct fib_info *fi, unsigned int flags)
++		  struct fib_rt_info *fri, unsigned int flags)
+ {
+-	unsigned int nhs = fib_info_num_path(fi);
++	unsigned int nhs = fib_info_num_path(fri->fi);
++	struct fib_info *fi = fri->fi;
++	u32 tb_id = fri->tb_id;
+ 	struct nlmsghdr *nlh;
+ 	struct rtmsg *rtm;
+ 
+@@ -1738,22 +1744,22 @@ int fib_dump_info(struct sk_buff *skb, u32 portid, u32 seq, int event,
+ 
+ 	rtm = nlmsg_data(nlh);
+ 	rtm->rtm_family = AF_INET;
+-	rtm->rtm_dst_len = dst_len;
++	rtm->rtm_dst_len = fri->dst_len;
+ 	rtm->rtm_src_len = 0;
+-	rtm->rtm_tos = tos;
++	rtm->rtm_tos = fri->tos;
+ 	if (tb_id < 256)
+ 		rtm->rtm_table = tb_id;
+ 	else
+ 		rtm->rtm_table = RT_TABLE_COMPAT;
+ 	if (nla_put_u32(skb, RTA_TABLE, tb_id))
+ 		goto nla_put_failure;
+-	rtm->rtm_type = type;
++	rtm->rtm_type = fri->type;
+ 	rtm->rtm_flags = fi->fib_flags;
+ 	rtm->rtm_scope = fi->fib_scope;
+ 	rtm->rtm_protocol = fi->fib_protocol;
+ 
+ 	if (rtm->rtm_dst_len &&
+-	    nla_put_in_addr(skb, RTA_DST, dst))
++	    nla_put_in_addr(skb, RTA_DST, fri->dst))
+ 		goto nla_put_failure;
+ 	if (fi->fib_priority &&
+ 	    nla_put_u32(skb, RTA_PRIORITY, fi->fib_priority))
 diff --git a/net/ipv4/fib_trie.c b/net/ipv4/fib_trie.c
-index b92a42433a7d..39f56d68ec19 100644
+index 39f56d68ec19..75af3f8ae50e 100644
 --- a/net/ipv4/fib_trie.c
 +++ b/net/ipv4/fib_trie.c
-@@ -1221,23 +1221,26 @@ int fib_table_insert(struct net *net, struct fib_table *tb,
- 			new_fa->tb_id = tb->tb_id;
- 			new_fa->fa_default = -1;
+@@ -2194,14 +2194,18 @@ static int fn_trie_dump_leaf(struct key_vector *l, struct fib_table *tb,
  
-+			hlist_replace_rcu(&fa->fa_list, &new_fa->fa_list);
+ 		if (filter->dump_routes) {
+ 			if (!s_fa) {
++				struct fib_rt_info fri;
 +
- 			if (fib_find_alias(&l->leaf, fa->fa_slen, 0, 0,
--					   tb->tb_id, true) == fa) {
-+					   tb->tb_id, true) == new_fa) {
- 				enum fib_event_type fib_event;
- 
- 				fib_event = FIB_EVENT_ENTRY_REPLACE;
- 				err = call_fib_entry_notifiers(net, fib_event,
- 							       key, plen,
- 							       new_fa, extack);
--				if (err)
-+				if (err) {
-+					hlist_replace_rcu(&new_fa->fa_list,
-+							  &fa->fa_list);
- 					goto out_free_new_fa;
-+				}
++				fri.fi = fi;
++				fri.tb_id = tb->tb_id;
++				fri.dst = xkey;
++				fri.dst_len = KEYLENGTH - fa->fa_slen;
++				fri.tos = fa->fa_tos;
++				fri.type = fa->fa_type;
+ 				err = fib_dump_info(skb,
+ 						    NETLINK_CB(cb->skb).portid,
+ 						    cb->nlh->nlmsg_seq,
+-						    RTM_NEWROUTE,
+-						    tb->tb_id, fa->fa_type,
+-						    xkey,
+-						    KEYLENGTH - fa->fa_slen,
+-						    fa->fa_tos, fi, flags);
++						    RTM_NEWROUTE, &fri, flags);
+ 				if (err < 0)
+ 					goto stop;
  			}
+diff --git a/net/ipv4/route.c b/net/ipv4/route.c
+index 87e979f2b74a..167a7357d12a 100644
+--- a/net/ipv4/route.c
++++ b/net/ipv4/route.c
+@@ -3223,16 +3223,22 @@ static int inet_rtm_getroute(struct sk_buff *in_skb, struct nlmsghdr *nlh,
+ 	skb_reset_mac_header(skb);
  
- 			rtmsg_fib(RTM_NEWROUTE, htonl(key), new_fa, plen,
- 				  tb->tb_id, &cfg->fc_nlinfo, nlflags);
- 
--			hlist_replace_rcu(&fa->fa_list, &new_fa->fa_list);
--
- 			alias_free_mem_rcu(fa);
- 
- 			fib_release_info(fi_drop);
+ 	if (rtm->rtm_flags & RTM_F_FIB_MATCH) {
++		struct fib_rt_info fri;
++
+ 		if (!res.fi) {
+ 			err = fib_props[res.type].error;
+ 			if (!err)
+ 				err = -EHOSTUNREACH;
+ 			goto errout_rcu;
+ 		}
++		fri.fi = res.fi;
++		fri.tb_id = table_id;
++		fri.dst = res.prefix;
++		fri.dst_len = res.prefixlen;
++		fri.tos = fl4.flowi4_tos;
++		fri.type = rt->rt_type;
+ 		err = fib_dump_info(skb, NETLINK_CB(in_skb).portid,
+-				    nlh->nlmsg_seq, RTM_NEWROUTE, table_id,
+-				    rt->rt_type, res.prefix, res.prefixlen,
+-				    fl4.flowi4_tos, res.fi, 0);
++				    nlh->nlmsg_seq, RTM_NEWROUTE, &fri, 0);
+ 	} else {
+ 		err = rt_fill_info(net, dst, src, rt, table_id, &fl4, skb,
+ 				   NETLINK_CB(in_skb).portid,
 -- 
 2.24.1
 
