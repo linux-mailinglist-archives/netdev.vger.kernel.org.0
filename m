@@ -2,161 +2,251 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 77170139E78
-	for <lists+netdev@lfdr.de>; Tue, 14 Jan 2020 01:43:40 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 23D4B139E98
+	for <lists+netdev@lfdr.de>; Tue, 14 Jan 2020 01:52:34 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729049AbgANAnb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 13 Jan 2020 19:43:31 -0500
-Received: from wout5-smtp.messagingengine.com ([64.147.123.21]:39363 "EHLO
-        wout5-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1728641AbgANAna (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 13 Jan 2020 19:43:30 -0500
-Received: from compute2.internal (compute2.nyi.internal [10.202.2.42])
-        by mailout.west.internal (Postfix) with ESMTP id 927D44F1;
-        Mon, 13 Jan 2020 19:43:29 -0500 (EST)
-Received: from mailfrontend1 ([10.202.2.162])
-  by compute2.internal (MEProxy); Mon, 13 Jan 2020 19:43:29 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-        mendozajonas.com; h=message-id:subject:from:to:cc:date
-        :in-reply-to:references:content-type:mime-version
-        :content-transfer-encoding; s=fm1; bh=6etDPgWlryGvYGlPpSZPyzq7P7
-        lk1NK9CB5lkNHHVAQ=; b=JMwSzFLZfwxDtciiJAg2SXrr9JbjFywZ/QhfmP3B0e
-        b7vYZ78O730RDsQooxrcWQNNswV7wogCeltDuQ7F2j1SKIS7nKYoooJzuR5e0H8q
-        Ub3GgBR5l+E256tqMua5jfIhB44m370wfdeXs0sE1MzFT00KH8nhn4RM6qYXKjsX
-        n+Lu63A3fuRu4FbE0Pr6JpK4k2zcTHcLxd+luzngYRdaXbg+LaUY089YulKmaoiU
-        M4idDBWN+D92exZaLULzfU2PMOn8j2WJ3tqxS8k7vQcaiuxvbI/PYxHoJy2KDM5/
-        YvaHtfb+Imyo7w5lfvXYHOCeXz80khiA9NylDMVMIETA==
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-        messagingengine.com; h=cc:content-transfer-encoding:content-type
-        :date:from:in-reply-to:message-id:mime-version:references
-        :subject:to:x-me-proxy:x-me-proxy:x-me-sender:x-me-sender
-        :x-sasl-enc; s=fm1; bh=6etDPgWlryGvYGlPpSZPyzq7P7lk1NK9CB5lkNHHV
-        AQ=; b=FpTO6YtBfivj7DTtr6tAwdrY1KDnPXfh4/ht0NQ8JRFamE4Z6zAfTCdMC
-        DbP4PY6c+eL6FwRqYUmxlbyQNBQSOgMkvjB3nEkrmNqd20eC78ie2oeqdxi92r7B
-        LRDow3Wg7lv6xheZyUuKuOSXoL+SC8g4xluQ/POxlJ2FUv6fi0tlQucyuMqesGxi
-        gn+WzcbsNsAz7nEU1WK+5ferqjYfp2L55ic+zSXdRuKUCbfukMleYKPb1r7NEWBm
-        NY9zt/2GN1vnGsHrqRWtmjQfxjrBT2YegISm8cEtT8Am/yCNU/Xhns/clg4TLiMI
-        nYH9ThlWqOyJwhbSd/3vHcoCcRW5Q==
-X-ME-Sender: <xms:sA4dXlB4MDPiCQPUm_2B18gq8u3LkeU2BXJt-zfQXzJWNggq4K51cQ>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedufedrvdejuddgvdegucetufdoteggodetrfdotf
-    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
-    uceurghilhhouhhtmecufedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmne
-    cujfgurhepkffuhffvffgjfhgtofgggfesthejredtredtjeenucfhrhhomhepshgrmhhj
-    ohhnrghsuceoshgrmhesmhgvnhguohiirghjohhnrghsrdgtohhmqeenucffohhmrghinh
-    epohhpvghrrghtihhnghdrtggrthenucfkphepheegrddvgedtrdduleefrddunecurfgr
-    rhgrmhepmhgrihhlfhhrohhmpehsrghmsehmvghnughoiigrjhhonhgrshdrtghomhenuc
-    evlhhushhtvghrufhiiigvpedt
-X-ME-Proxy: <xmx:sA4dXpAQ2kk6qxN8oiv4g91izYNIsJ29lcgTKSZUUU_fT90d122jFg>
-    <xmx:sA4dXjTX_Jsaa4uRX0UlFnKMPTy81pZ4-HWxTkbgC90GFTPienGdYg>
-    <xmx:sA4dXtLYHhBwGGQhCYEm5MkLWCiAmVxGG4TsG1o_Vc1HLcNlVdzO4w>
-    <xmx:sQ4dXo8qkhi-jYZdEUefVki0tLlTF_2LyYWqwLtLZK7di02wLidlSw>
-Received: from cdg1-dhcp-7-191.amazon.fr (unknown [54.240.193.1])
-        by mail.messagingengine.com (Postfix) with ESMTPA id F146A80060;
-        Mon, 13 Jan 2020 19:43:21 -0500 (EST)
-Message-ID: <20b75baf4fa6781278614162b05918dcdedd2e29.camel@mendozajonas.com>
-Subject: Re: [PATCH] Propagate NCSI channel carrier loss/gain events to the
- kernel
-From:   samjonas <sam@mendozajonas.com>
-To:     Johnathan Mantey <johnathanx.mantey@intel.com>,
-        netdev@vger.kernel.org
-Cc:     davem@davemloft.net
-Date:   Mon, 13 Jan 2020 16:43:13 -0800
-In-Reply-To: <b2ef76f2-cf4e-3d14-7436-8c66e63776ba@intel.com>
-References: <b2ef76f2-cf4e-3d14-7436-8c66e63776ba@intel.com>
-Content-Type: text/plain; charset="UTF-8"
-X-Mailer: Evolution 3.28.5-0ubuntu0.18.04.1 
-Mime-Version: 1.0
-Content-Transfer-Encoding: 7bit
+        id S1729101AbgANAwT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 13 Jan 2020 19:52:19 -0500
+Received: from mail-dm6nam11on2129.outbound.protection.outlook.com ([40.107.223.129]:26113
+        "EHLO NAM11-DM6-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1726536AbgANAwS (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 13 Jan 2020 19:52:18 -0500
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=WoZNUncx5uulUVXtEnViDBqd2OTMi6jzjtHOJTqCvnqRYTFhUwmFiV3U8TfOe7m0q41+cZi1rHrxa8LX0VtOBeggpZuE/oGZgsievT3ezkcVV9ZJpQag9fJJP2fpHXSNqRSFqJXfRitLeyCq1psR1i3U/PilJc92ew/nsDyJjHADkqI78/XmT5sgyzMTotP+xtdkXEYIf/dFT/MUfQKDGNAerqylZP4ht96CHcQK3B21Oea1eGO8aRDSPrLLF3LlJ8zEsQlayK1qlukswCdYsU1CKMU7hUYIdVHcZZyUCJ4ao7b4GMUqUwOcc+NJlUzdkZwx7TBofoaKVma/J7BL7g==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=pGQLEJGPUMi8Hg3s78JzmlE130VimwEGtOPucNQ8XzQ=;
+ b=TFmGnYoOTcedh8WsbugBuHBDgl5VkhgYMZOGy3Qkkmc6DOveZoNt3SPKpLMnZtTWipKCVLltaFpyJKuyTq3MGT2U2ziPGLjDyI9roSubEreKUEqjg3C4ssb+fjwN7zQvjWFYrPTCV61knE//+JbS4BsBvU7P08ERZU3v//YdEIXfurh3ajJ5vfCM98RoygF3HFAIcv58bUmJIbNy+sUtUxd0EzW7A72aib29p156Ns6Ih2Ay0MwI9P9SK4eK9YDt28vLFMBh3X2A9BckAMJk0xJbRvUQz5A3+URxRUqRlDUzMg4bY36dPJ/SbuNtbDNdrsFfwfNeJ+Bo5B1i7dOVQA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=microsoft.com; dmarc=pass action=none
+ header.from=microsoft.com; dkim=pass header.d=microsoft.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=pGQLEJGPUMi8Hg3s78JzmlE130VimwEGtOPucNQ8XzQ=;
+ b=eOU2SEsjzeVKLNASh8vgfVHMoX+Eu3gmurkjlP69UFy08POAsmIVS0NJma3a8RyuaQVJ6K4TxHtLw/ynsZOfKAVFjLzgTEkC0GzFKUi5mcfheoGMD/vXfxl/MnPoGnK3LnbY+Ik57+b5R+AitQCN/IciFUwjTbi4ZAya+FUcdeQ=
+Received: from SN4PR2101MB0880.namprd21.prod.outlook.com (10.167.151.161) by
+ SN4PR2101MB0815.namprd21.prod.outlook.com (10.167.151.157) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.2644.4; Tue, 14 Jan 2020 00:52:14 +0000
+Received: from SN4PR2101MB0880.namprd21.prod.outlook.com
+ ([fe80::a9bd:595e:2ea9:471a]) by SN4PR2101MB0880.namprd21.prod.outlook.com
+ ([fe80::a9bd:595e:2ea9:471a%2]) with mapi id 15.20.2644.015; Tue, 14 Jan 2020
+ 00:52:14 +0000
+From:   Sunil Muthuswamy <sunilmut@microsoft.com>
+To:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Dexuan Cui <decui@microsoft.com>
+CC:     Stephen Hemminger <sthemmin@microsoft.com>,
+        Sasha Levin <sashal@kernel.org>,
+        "linux-hyperv@vger.kernel.org" <linux-hyperv@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Subject: [PATCH net]: hv_sock: Remove the accept port restriction
+Thread-Topic: [PATCH net]: hv_sock: Remove the accept port restriction
+Thread-Index: AdXKdNH1RBG+R7RHRNOEABe6Ndiffg==
+Date:   Tue, 14 Jan 2020 00:52:14 +0000
+Message-ID: <SN4PR2101MB08808AAFCEB4E8FC178A4B79C0340@SN4PR2101MB0880.namprd21.prod.outlook.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+authentication-results: spf=none (sender IP is )
+ smtp.mailfrom=sunilmut@microsoft.com; 
+x-originating-ip: [2001:4898:80e8:b:54a5:1766:8019:ea72]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-ht: Tenant
+x-ms-office365-filtering-correlation-id: c92bebbe-8d07-4dae-2a18-08d7988bff39
+x-ms-traffictypediagnostic: SN4PR2101MB0815:|SN4PR2101MB0815:
+x-ms-exchange-transport-forked: True
+x-microsoft-antispam-prvs: <SN4PR2101MB08156DE26D665DF075EFB23DC0340@SN4PR2101MB0815.namprd21.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:10000;
+x-forefront-prvs: 028256169F
+x-forefront-antispam-report: SFV:NSPM;SFS:(10019020)(4636009)(39860400002)(136003)(396003)(376002)(366004)(346002)(189003)(199004)(6506007)(2906002)(8936002)(6636002)(71200400001)(186003)(10290500003)(110136005)(54906003)(81156014)(8676002)(8990500004)(478600001)(81166006)(7696005)(66946007)(66556008)(9686003)(64756008)(76116006)(66476007)(4326008)(33656002)(52536014)(66446008)(316002)(86362001)(5660300002)(55016002);DIR:OUT;SFP:1102;SCL:1;SRVR:SN4PR2101MB0815;H:SN4PR2101MB0880.namprd21.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;MX:1;A:1;
+received-spf: None (protection.outlook.com: microsoft.com does not designate
+ permitted sender hosts)
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: HDQlhvm3WIepmhpOMX/tc7W/t/qS8xBglmSGsNBrReyndrpdGMetFyD6PFTJH5MBYqjz9jyBFjO8q9UqfpdvSqtEX1Nu72ORAsnqmFLkgskH7zSzKJuAhBI24mkIO3QRwF8LqM+ezBg+ogqVfo2uiCF/fLIVO3e9cPNEm46PMn3vIVjR7R4Vu9kn+ak/uFTjx3RP9uWh+EPJoqTQX1+DoCVk2JuHx6MNUydU2WAT28NMpN1tksP93WLw733V4Ej10f5UYUDbjqf/Qfz1A6z1VvCP3uqGoLBreUp/sfvjwB8C/AiI0OVcqp6R5h4aqDa333X8kfBXxEHPpnln1f6fGmPecRE8zr0PFrldSxzDsJStfIg/2GYKrv8Qu7tFaLyQlhjChVIWVMqh51ixnD6bxbscKMKEWLWJQcI7IuB04Z3NchRjBhuveRvrXIzKgSsW
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
+MIME-Version: 1.0
+X-OriginatorOrg: microsoft.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: c92bebbe-8d07-4dae-2a18-08d7988bff39
+X-MS-Exchange-CrossTenant-originalarrivaltime: 14 Jan 2020 00:52:14.4378
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 72f988bf-86f1-41af-91ab-2d7cd011db47
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: 4wVh/lXvs/bCVdHpqtOSOxSdAoSUHwzQR+qROwlVgl5PncNhz3pWbolDyE5IhtsKM225GPQn4FV8HF82ThElrvqe1zAOJkNkXOxeU1Guk+c=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: SN4PR2101MB0815
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, 2020-01-10 at 14:02 -0800, Johnathan Mantey wrote:
-> From 76d99782ec897b010ba507895d60d27dca8dca44 Mon Sep 17 00:00:00
-> 2001
-> From: Johnathan Mantey <johnathanx.mantey@intel.com>
-> Date: Fri, 10 Jan 2020 12:46:17 -0800
-> Subject: [PATCH] Propagate NCSI channel carrier loss/gain events to
-> the
-> kernel
-> 
-> Problem statement:
-> Insertion or removal of a network cable attached to a NCSI controlled
-> network channel does not notify the kernel of the loss/gain of the
-> network link.
-> 
-> The expectation is that /sys/class/net/eth(x)/carrier will change
-> state after a pull/insertion event. In addition the carrier_up_count
-> and carrier_down_count files should increment.
-> 
-> Change statement:
-> Use the NCSI Asynchronous Event Notification handler to detect a
-> change in a NCSI link.
-> Add code to propagate carrier on/off state to the network interface.
-> The on/off state is only modified after the existing code identifies
-> if the network device HAD or HAS a link state change.
+Currently, hv_sock restricts the port the guest socket can accept
+connections on. hv_sock divides the socket port namespace into two parts
+for server side (listening socket), 0-0x7FFFFFFF & 0x80000000-0xFFFFFFFF
+(there are no restrictions on client port namespace). The first part
+(0-0x7FFFFFFF) is reserved for sockets where connections can be accepted.
+The second part (0x80000000-0xFFFFFFFF) is reserved for allocating ports
+for the peer (host) socket, once a connection is accepted.
+This reservation of the port namespace is specific to hv_sock and not
+known by the generic vsock library (ex: af_vsock). This is problematic
+because auto-binds/ephemeral ports are handled by the generic vsock
+library and it has no knowledge of this port reservation and could
+allocate a port that is not compatible with hv_sock (and legitimately so).
+The issue hasn't surfaced so far because the auto-bind code of vsock
+(__vsock_bind_stream) prior to the change 'VSOCK: bind to random port for
+VMADDR_PORT_ANY' would start walking up from LAST_RESERVED_PORT (1023) and
+start assigning ports. That will take a large number of iterations to hit
+0x7FFFFFFF. But, after the above change to randomize port selection, the
+issue has started coming up more frequently.
+There has really been no good reason to have this port reservation logic
+in hv_sock from the get go. Reserving a local port for peer ports is not
+how things are handled generally. Peer ports should reflect the peer port.
+This fixes the issue by lifting the port reservation, and also returns the
+right peer port. Since the code converts the GUID to the peer port (by
+using the first 4 bytes), there is a possibility of conflicts, but that
+seems like a reasonable risk to take, given this is limited to vsock and
+that only applies to all local sockets.
 
-If we set the carrier state off until we successfully configured a
-channel could we avoid this limitation?
+Signed-off-by: Sunil Muthuswamy <sunilmut@microsoft.com>
+---
+ net/vmw_vsock/hyperv_transport.c | 65 +++-----------------------------
+ 1 file changed, 6 insertions(+), 59 deletions(-)
 
-Cheers,
-Sam
-
-> 
-> Test procedure:
-> Connected a L2 switch with only two ports connected.
-> One port was a DHCP corporate net, the other port attached to the
-> NCSI
-> controlled NIC.
-> 
-> Starting with the L2 switch with DC on, check to make sure the NCSI
-> link is operating.
-> cat /sys/class/net/eth1/carrier
-> 1
-> cat /sys/class/net/eth1/carrier_up_count
-> 0
-> cat /sys/class/net/eth1/carrier_down_count
-> 0
-> 
-> Remove DC from the L2 switch, and check link state
-> cat /sys/class/net/eth1/carrier
-> 0
-> cat /sys/class/net/eth1/carrier_up_count
-> 0
-> cat /sys/class/net/eth1/carrier_down_count
-> 1
-> 
-> Restore DC to the L2 switch, and check link state
-> cat /sys/class/net/eth1/carrier
-> 1
-> cat /sys/class/net/eth1/carrier_up_count
-> 1
-> cat /sys/class/net/eth1/carrier_down_count
-> 1
-> 
-> Signed-off-by: Johnathan Mantey <johnathanx.mantey@intel.com>
-> ---
->  net/ncsi/ncsi-aen.c | 6 ++++++
->  1 file changed, 6 insertions(+)
-> 
-> diff --git a/net/ncsi/ncsi-aen.c b/net/ncsi/ncsi-aen.c
-> index b635c194f0a8..274c415dcead 100644
-> --- a/net/ncsi/ncsi-aen.c
-> +++ b/net/ncsi/ncsi-aen.c
-> @@ -89,6 +89,12 @@ static int ncsi_aen_handler_lsc(struct
-> ncsi_dev_priv
-> *ndp,
->      if ((had_link == has_link) || chained)
->          return 0;
->  
-> +    if (had_link) {
-> +        netif_carrier_off(ndp->ndev.dev);
-> +    } else {
-> +        netif_carrier_on(ndp->ndev.dev);
-> +    }
-> +
->      if (!ndp->multi_package && !nc->package->multi_channel) {
->          if (had_link) {
->              ndp->flags |= NCSI_DEV_RESHUFFLE;
-
+diff --git a/net/vmw_vsock/hyperv_transport.c b/net/vmw_vsock/hyperv_transp=
+ort.c
+index b3bdae74c243..3492c021925f 100644
+--- a/net/vmw_vsock/hyperv_transport.c
++++ b/net/vmw_vsock/hyperv_transport.c
+@@ -138,28 +138,15 @@ struct hvsock {
+  *************************************************************************=
+***
+  * The only valid Service GUIDs, from the perspectives of both the host an=
+d *
+  * Linux VM, that can be connected by the other end, must conform to this =
+  *
+- * format: <port>-facb-11e6-bd58-64006a7986d3, and the "port" must be in  =
+  *
+- * this range [0, 0x7FFFFFFF].                                            =
+  *
++ * format: <port>-facb-11e6-bd58-64006a7986d3.                            =
+  *
+  *************************************************************************=
+***
+  *
+  * When we write apps on the host to connect(), the GUID ServiceID is used=
+.
+  * When we write apps in Linux VM to connect(), we only need to specify th=
+e
+  * port and the driver will form the GUID and use that to request the host=
+.
+  *
+- * From the perspective of Linux VM:
+- * 1. the local ephemeral port (i.e. the local auto-bound port when we cal=
+l
+- * connect() without explicit bind()) is generated by __vsock_bind_stream(=
+),
+- * and the range is [1024, 0xFFFFFFFF).
+- * 2. the remote ephemeral port (i.e. the auto-generated remote port for
+- * a connect request initiated by the host's connect()) is generated by
+- * hvs_remote_addr_init() and the range is [0x80000000, 0xFFFFFFFF).
+  */
+=20
+-#define MAX_LISTEN_PORT			((u32)0x7FFFFFFF)
+-#define MAX_VM_LISTEN_PORT		MAX_LISTEN_PORT
+-#define MAX_HOST_LISTEN_PORT		MAX_LISTEN_PORT
+-#define MIN_HOST_EPHEMERAL_PORT		(MAX_HOST_LISTEN_PORT + 1)
+-
+ /* 00000000-facb-11e6-bd58-64006a7986d3 */
+ static const guid_t srv_id_template =3D
+ 	GUID_INIT(0x00000000, 0xfacb, 0x11e6, 0xbd, 0x58,
+@@ -184,34 +171,6 @@ static void hvs_addr_init(struct sockaddr_vm *addr, co=
+nst guid_t *svr_id)
+ 	vsock_addr_init(addr, VMADDR_CID_ANY, port);
+ }
+=20
+-static void hvs_remote_addr_init(struct sockaddr_vm *remote,
+-				 struct sockaddr_vm *local)
+-{
+-	static u32 host_ephemeral_port =3D MIN_HOST_EPHEMERAL_PORT;
+-	struct sock *sk;
+-
+-	/* Remote peer is always the host */
+-	vsock_addr_init(remote, VMADDR_CID_HOST, VMADDR_PORT_ANY);
+-
+-	while (1) {
+-		/* Wrap around ? */
+-		if (host_ephemeral_port < MIN_HOST_EPHEMERAL_PORT ||
+-		    host_ephemeral_port =3D=3D VMADDR_PORT_ANY)
+-			host_ephemeral_port =3D MIN_HOST_EPHEMERAL_PORT;
+-
+-		remote->svm_port =3D host_ephemeral_port++;
+-
+-		sk =3D vsock_find_connected_socket(remote, local);
+-		if (!sk) {
+-			/* Found an available ephemeral port */
+-			return;
+-		}
+-
+-		/* Release refcnt got in vsock_find_connected_socket */
+-		sock_put(sk);
+-	}
+-}
+-
+ static void hvs_set_channel_pending_send_size(struct vmbus_channel *chan)
+ {
+ 	set_channel_pending_send_size(chan,
+@@ -341,12 +300,7 @@ static void hvs_open_connection(struct vmbus_channel *=
+chan)
+ 	if_type =3D &chan->offermsg.offer.if_type;
+ 	if_instance =3D &chan->offermsg.offer.if_instance;
+ 	conn_from_host =3D chan->offermsg.offer.u.pipe.user_def[0];
+-
+-	/* The host or the VM should only listen on a port in
+-	 * [0, MAX_LISTEN_PORT]
+-	 */
+-	if (!is_valid_srv_id(if_type) ||
+-	    get_port_by_srv_id(if_type) > MAX_LISTEN_PORT)
++	if (!is_valid_srv_id(if_type))
+ 		return;
+=20
+ 	hvs_addr_init(&addr, conn_from_host ? if_type : if_instance);
+@@ -371,8 +325,11 @@ static void hvs_open_connection(struct vmbus_channel *=
+chan)
+ 		vnew =3D vsock_sk(new);
+=20
+ 		hvs_addr_init(&vnew->local_addr, if_type);
+-		hvs_remote_addr_init(&vnew->remote_addr, &vnew->local_addr);
+=20
++		/* Remote peer is always the host */
++		vsock_addr_init(&vnew->remote_addr,
++				VMADDR_CID_HOST, VMADDR_PORT_ANY);
++		vnew->remote_addr.svm_port =3D get_port_by_srv_id(if_instance);
+ 		ret =3D vsock_assign_transport(vnew, vsock_sk(sk));
+ 		/* Transport assigned (looking at remote_addr) must be the
+ 		 * same where we received the request.
+@@ -766,16 +723,6 @@ static bool hvs_stream_is_active(struct vsock_sock *vs=
+k)
+=20
+ static bool hvs_stream_allow(u32 cid, u32 port)
+ {
+-	/* The host's port range [MIN_HOST_EPHEMERAL_PORT, 0xFFFFFFFF) is
+-	 * reserved as ephemeral ports, which are used as the host's ports
+-	 * when the host initiates connections.
+-	 *
+-	 * Perform this check in the guest so an immediate error is produced
+-	 * instead of a timeout.
+-	 */
+-	if (port > MAX_HOST_LISTEN_PORT)
+-		return false;
+-
+ 	if (cid =3D=3D VMADDR_CID_HOST)
+ 		return true;
+=20
+--=20
+2.17.1
