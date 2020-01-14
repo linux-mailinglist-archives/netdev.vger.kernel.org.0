@@ -2,149 +2,115 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id C08E813B2C7
-	for <lists+netdev@lfdr.de>; Tue, 14 Jan 2020 20:14:07 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1363E13B2D8
+	for <lists+netdev@lfdr.de>; Tue, 14 Jan 2020 20:21:33 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728820AbgANTN7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 14 Jan 2020 14:13:59 -0500
-Received: from mail-qt1-f196.google.com ([209.85.160.196]:44886 "EHLO
-        mail-qt1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726523AbgANTN7 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 14 Jan 2020 14:13:59 -0500
-Received: by mail-qt1-f196.google.com with SMTP id t3so13446288qtr.11;
-        Tue, 14 Jan 2020 11:13:58 -0800 (PST)
+        id S1728699AbgANTVb (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 14 Jan 2020 14:21:31 -0500
+Received: from mail-wr1-f67.google.com ([209.85.221.67]:45617 "EHLO
+        mail-wr1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726491AbgANTVa (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 14 Jan 2020 14:21:30 -0500
+Received: by mail-wr1-f67.google.com with SMTP id j42so13322916wrj.12
+        for <netdev@vger.kernel.org>; Tue, 14 Jan 2020 11:21:29 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=MFqB+06rBeER++BRySglojh7CJB3/vJLed3nR17srZY=;
-        b=Cr1uy4rA/yc63G/NYnYI6sGqCHjIbj2TiaQVLsKC492L5usjwa9oleTsoZYu7gfzAz
-         fViS+p1sEET0HTnq0582qDyZfsPjAw9Ra2caO/4j6osRwltuRqO4/3vDtygeKSJc5Isd
-         5OXxYJlilf3YnCifUUYtc59aGVj8cejFf5udT1ze8tUSnxdZg+oZDuh75TG2ov1we41u
-         5wuNe7KELTyQuRDb+nQ6wVTXB5CRurnsWsmU2IV5cbDT/ZGTWhRWaQV9TnDXkS8+Fq8t
-         nBf+mW01SclboYCRG+sxLVUG8YtFgwpfHnPt2yo7FFNV0j1WgVRego3SjXeap6hREQk6
-         WBBw==
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=QJLDq14f39yOcS2mcOQCkyRhKJ+NIw05mpXsM1cbSn0=;
+        b=MdAYrdH9LrQHxYI+UXO42NU6pQWpMFV2sFbUwrBvX7MlGkzsW3eV06+1YwbtCfwoE0
+         AR4IgWZ343uqY44h+OykaPvnryzOlQjRJATumkJJNr5HZPQgCkVN7I+6Tb4LPh7MZ+Y1
+         bei3w5Xfkh5VldkuxJju0SvgeMU/ENwBFHNZSXCEhLTG7eoL09C8ZgGskbT7yWldFY3D
+         YTqtsjzOq0Ok4Yy7eYWZdrAaLiGQwXna8/hNaoqzFQ5hLaHfzIDwPEpkafSyIkF+mKoN
+         +yJyYSqx0uGcqcKvVG9dCPXVq01cTFBMuL984G+XIz6W6Ld5hZz7xtkaMLmEPKujfLma
+         D2zg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=MFqB+06rBeER++BRySglojh7CJB3/vJLed3nR17srZY=;
-        b=RZl0rP21WpIFESdYGs2F//HMoxhqAaE0qgc4q7BGZqRF6yXRnAbGWhWtCTKfd3cZ1j
-         t+/YzU0UXva+qpWsF7uWtisRxLKMg7DkCHwKNr2wyewSKceFrua7MHi+x78fMFb386SD
-         bi/JaGWYHLCjX4cVJQod+f+B0Nmy9z4A5Ftz/R4BwnGaFFetvVyLpptEpHDGbyfcNSYQ
-         iCuZiWrEwDHjHJQlNEFdHipeLBV+7s+aU1qp8Q1QG0l8sHeXxWRd/ARu2FhcBNO7Exf9
-         M4DqcgnGqS0On0hABrgt0HjkTpUdrE1q6BnV1+UYs7ravOjdnuEr102enN0xw4Qu1QEq
-         g1iA==
-X-Gm-Message-State: APjAAAUHqwlR1+E4oRJAtd+kJcJc9UrflkD8AKj/Hs+i4JAqiB6TEKN/
-        kyCXwP1HDUzcpZtDZXE33+md3LXwBiMYJtpkrKtG3HRs
-X-Google-Smtp-Source: APXvYqzlubP7Me7CKiqxoDf6GVTcdnAviypa3ckAtyf8BEQW1oEW0BFawdKK8kqKdvmjfa1uBN2JxgI5I5GwUsEjXcc=
-X-Received: by 2002:ac8:7b29:: with SMTP id l9mr72065qtu.141.1579029238026;
- Tue, 14 Jan 2020 11:13:58 -0800 (PST)
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=QJLDq14f39yOcS2mcOQCkyRhKJ+NIw05mpXsM1cbSn0=;
+        b=BoUPzK09Chg0CjbSr2+yiMtBRGWhpMmMZvTmj2r6lMILJnYuc9Q1+YsPtehN/rJWTc
+         9Cpf7BNVnmi9AtYouIuH9YYcFroiu8jnGqkZfwVIrIJJWE36w8fH2kxVMZRxRRmFHUlm
+         P9ZYYDtWpv1yNiwRROMqt6m0iL5b3vxIZhJa4j6vbQtveNQYMntvPCImjotZ9tOaIJ+x
+         qe2nZwTzqGEVibdwt45lEg1ACYuTlVROL0H0mi/zfFoxwegajhhifg+O2NuvS/sMSXun
+         +4xx/19bpKBYT6w/ycWYWQxEyqJ54vdMUlROzFQsz0Yk8CTrcY7MK0LhJGbN9LBrY+iW
+         vccQ==
+X-Gm-Message-State: APjAAAWlJ5Mtjjti/Di3/UKnl7Aj9iDbnGKA3/SkytAw0vnQX4QWBg6F
+        gA5U3cX+8TDumtNrjPpUWojyXUE+
+X-Google-Smtp-Source: APXvYqxMJKNXlUrO1mMwcQlVURPIvNHXCaS8t/5Lor5SuO6eAKzRagGqqmRa8RXKV1gTEPXK+L202g==
+X-Received: by 2002:a5d:410e:: with SMTP id l14mr26068260wrp.238.1579029689017;
+        Tue, 14 Jan 2020 11:21:29 -0800 (PST)
+Received: from [192.168.178.85] (pD9F901D9.dip0.t-ipconnect.de. [217.249.1.217])
+        by smtp.googlemail.com with ESMTPSA id p17sm19984652wmk.30.2020.01.14.11.21.28
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 14 Jan 2020 11:21:28 -0800 (PST)
+Subject: Re: [PATCH v2] net: phy: dp83867: Set FORCE_LINK_GOOD to default
+ after reset
+To:     Michael Grzeschik <m.grzeschik@pengutronix.de>,
+        netdev@vger.kernel.org
+Cc:     andrew@lunn.ch, f.fainelli@gmail.com, kernel@pengutronix.de
+References: <20200114132502.GH11788@lunn.ch>
+ <20200114164553.12997-1-m.grzeschik@pengutronix.de>
+From:   Heiner Kallweit <hkallweit1@gmail.com>
+Message-ID: <1871867b-717d-ba43-4a6e-1b469867b0aa@gmail.com>
+Date:   Tue, 14 Jan 2020 20:21:20 +0100
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
+ Thunderbird/68.4.1
 MIME-Version: 1.0
-References: <20200114164614.47029-1-brianvv@google.com> <20200114164614.47029-9-brianvv@google.com>
- <CAEf4BzYEGv-q7p0rK-d94Ng0fyQLuTEvsy1ZSzTdk0xZcyibQA@mail.gmail.com> <CAMzD94ScYuQfvx2FLY7RAzgZ8xO-E31L79dGEJH-tNDKJzrmOg@mail.gmail.com>
-In-Reply-To: <CAMzD94ScYuQfvx2FLY7RAzgZ8xO-E31L79dGEJH-tNDKJzrmOg@mail.gmail.com>
-From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Tue, 14 Jan 2020 11:13:47 -0800
-Message-ID: <CAEf4BzZHFaCGNg21VuWywB0Qsa_AkqDPnM4k_pcU_ssmFjd0Yg@mail.gmail.com>
-Subject: Re: [PATCH v4 bpf-next 7/9] libbpf: add libbpf support to batch ops
-To:     Brian Vazquez <brianvv@google.com>
-Cc:     Brian Vazquez <brianvv.kernel@gmail.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        "David S . Miller" <davem@davemloft.net>,
-        Yonghong Song <yhs@fb.com>,
-        Stanislav Fomichev <sdf@google.com>,
-        Petar Penkov <ppenkov@google.com>,
-        Willem de Bruijn <willemb@google.com>,
-        open list <linux-kernel@vger.kernel.org>,
-        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+In-Reply-To: <20200114164553.12997-1-m.grzeschik@pengutronix.de>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Jan 14, 2020 at 10:54 AM Brian Vazquez <brianvv@google.com> wrote:
->
-> On Tue, Jan 14, 2020 at 10:36 AM Andrii Nakryiko
-> <andrii.nakryiko@gmail.com> wrote:
-> >
-> > On Tue, Jan 14, 2020 at 8:46 AM Brian Vazquez <brianvv@google.com> wrote:
-> > >
-> > > From: Yonghong Song <yhs@fb.com>
-> > >
-> > > Added four libbpf API functions to support map batch operations:
-> > >   . int bpf_map_delete_batch( ... )
-> > >   . int bpf_map_lookup_batch( ... )
-> > >   . int bpf_map_lookup_and_delete_batch( ... )
-> > >   . int bpf_map_update_batch( ... )
-> > >
-> > > Signed-off-by: Yonghong Song <yhs@fb.com>
-> > > ---
-> > >  tools/lib/bpf/bpf.c      | 60 ++++++++++++++++++++++++++++++++++++++++
-> > >  tools/lib/bpf/bpf.h      | 22 +++++++++++++++
-> > >  tools/lib/bpf/libbpf.map |  4 +++
-> > >  3 files changed, 86 insertions(+)
-> > >
-> > > diff --git a/tools/lib/bpf/bpf.c b/tools/lib/bpf/bpf.c
-> > > index 500afe478e94a..12ce8d275f7dc 100644
-> > > --- a/tools/lib/bpf/bpf.c
-> > > +++ b/tools/lib/bpf/bpf.c
-> > > @@ -452,6 +452,66 @@ int bpf_map_freeze(int fd)
-> > >         return sys_bpf(BPF_MAP_FREEZE, &attr, sizeof(attr));
-> > >  }
-> > >
-> > > +static int bpf_map_batch_common(int cmd, int fd, void  *in_batch,
-> > > +                               void *out_batch, void *keys, void *values,
-> > > +                               __u32 *count,
-> > > +                               const struct bpf_map_batch_opts *opts)
-> > > +{
-> > > +       union bpf_attr attr = {};
-> > > +       int ret;
-> > > +
-> > > +       if (!OPTS_VALID(opts, bpf_map_batch_opts))
-> > > +               return -EINVAL;
-> > > +
-> > > +       memset(&attr, 0, sizeof(attr));
-> > > +       attr.batch.map_fd = fd;
-> > > +       attr.batch.in_batch = ptr_to_u64(in_batch);
-> > > +       attr.batch.out_batch = ptr_to_u64(out_batch);
-> > > +       attr.batch.keys = ptr_to_u64(keys);
-> > > +       attr.batch.values = ptr_to_u64(values);
-> > > +       if (count)
-> > > +               attr.batch.count = *count;
-> > > +       attr.batch.elem_flags  = OPTS_GET(opts, elem_flags, 0);
-> > > +       attr.batch.flags = OPTS_GET(opts, flags, 0);
-> > > +
-> > > +       ret = sys_bpf(cmd, &attr, sizeof(attr));
-> > > +       if (count)
-> > > +               *count = attr.batch.count;
-> >
-> > what if syscall failed, do you still want to assign *count then?
->
-> Hi Andrii, thanks for taking a look.
->
-> attr.batch.count should report the number of entries correctly
-> processed before finding and error, an example could be when you
-> provided a buffer for 3 entries and the map only has 1, ret is going
-> to be -ENOENT meaning that you traversed the map and you still want to
-> assign *count.
+On 14.01.2020 17:45, Michael Grzeschik wrote:
+> According to the Datasheet this bit should be 0 (Normal operation) in
+> default. With the FORCE_LINK_GOOD bit set, it is not possible to get a
+> link. This patch sets FORCE_LINK_GOOD to the default value after
+> resetting the phy.
+> 
+> Signed-off-by: Michael Grzeschik <m.grzeschik@pengutronix.de>
+> ---
+> v1 -> v2: - fixed typo in subject line
+>           - used phy_modify instead of read/write
+> 
+>  drivers/net/phy/dp83867.c | 10 ++++++++++
+>  1 file changed, 10 insertions(+)
+> 
+> diff --git a/drivers/net/phy/dp83867.c b/drivers/net/phy/dp83867.c
+> index adda0d0eab800..68855177d92cc 100644
+> --- a/drivers/net/phy/dp83867.c
+> +++ b/drivers/net/phy/dp83867.c
+> @@ -99,6 +99,7 @@
+>  #define DP83867_PHYCR_TX_FIFO_DEPTH_MASK	GENMASK(15, 14)
+>  #define DP83867_PHYCR_RX_FIFO_DEPTH_MASK	GENMASK(13, 12)
+>  #define DP83867_PHYCR_RESERVED_MASK		BIT(11)
+> +#define DP83867_PHYCR_FORCE_LINK_GOOD		BIT(10)
+>  
+>  /* RGMIIDCTL bits */
+>  #define DP83867_RGMII_TX_CLK_DELAY_MAX		0xf
+> @@ -635,6 +636,15 @@ static int dp83867_phy_reset(struct phy_device *phydev)
+>  
+>  	usleep_range(10, 20);
+>  
+> +	/* After reset FORCE_LINK_GOOD bit is set. Although the
+> +	 * default value should be unset. Disable FORCE_LINK_GOOD
+> +	 * for the phy to work properly.
+> +	 */
+> +	err = phy_modify(phydev, MII_DP83867_PHYCTRL,
+> +			 DP83867_PHYCR_FORCE_LINK_GOOD, 0);
+> +	if (err < 0)
+> +		return err;
+> +
+>  	return 0;
 
-ah, ok, tricky semantics :) if syscall failed before kernel got to
-updating count, I'm guessing it is guaranteed to preserve old value?
+You can simply do "return phy_modify();" here.
 
->
-> That being said, the condition 'if (count)' is wrong and I think it
-> should be removed.
+>  }
+>  
+> 
 
-So count is mandatory, right? In that case both `if (count)` checks are wrong.
-
->
-> >
-> > > +
-> > > +       return ret;
-> > > +}
-> > > +
-> >
-> > [...]
