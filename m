@@ -2,203 +2,127 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 5831313B03F
-	for <lists+netdev@lfdr.de>; Tue, 14 Jan 2020 18:03:52 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 45E4413B048
+	for <lists+netdev@lfdr.de>; Tue, 14 Jan 2020 18:04:49 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728783AbgANRDr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 14 Jan 2020 12:03:47 -0500
-Received: from mail-dm6nam12on2060.outbound.protection.outlook.com ([40.107.243.60]:6089
-        "EHLO NAM12-DM6-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1726053AbgANRDr (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 14 Jan 2020 12:03:47 -0500
+        id S1728831AbgANREh (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 14 Jan 2020 12:04:37 -0500
+Received: from smtprelay-out1.synopsys.com ([149.117.73.133]:44076 "EHLO
+        smtprelay-out1.synopsys.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1726450AbgANREh (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 14 Jan 2020 12:04:37 -0500
+Received: from mailhost.synopsys.com (badc-mailhost1.synopsys.com [10.192.0.17])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits))
+        (No client certificate requested)
+        by smtprelay-out1.synopsys.com (Postfix) with ESMTPS id 51DB8406E6;
+        Tue, 14 Jan 2020 17:04:36 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=synopsys.com; s=mail;
+        t=1579021476; bh=Mm3MSZqC1zqJvH0MmChVvhHcosSr0ipdo2lXzi0QO5M=;
+        h=From:To:CC:Subject:Date:References:In-Reply-To:From;
+        b=ZYSY1t4hQMiyegvX6Oa/w9qRIfEV9gP2M3pHMjNkOF1VLrFHUzlG/QpY0DQGFi2lU
+         knoLULLarUEffcTmYWVvvwFhQYu9asv7wII5QiPy2bVMgrlLEQuLc8+O7wzT4V0OqA
+         PwMOrxVdKUxTsaEKAqg+5XOOMf+8d446e8MpE+2ju1zWLvTimCeWkqOruZF0K8C7X4
+         gqH0ztHh42C8OruVrDgTk5sK1G0F4IKQIdw13K269GEpEuvv3hLXwzNN/lzgBbNxRJ
+         3KBGEGwbjJRCdKO/MvrnERDVX2axvpMy6/li39iUMulwBUkmPK1iFAFlzPzycvr+iX
+         wAUWrHtqeU9Ag==
+Received: from US01WEHTC3.internal.synopsys.com (us01wehtc3.internal.synopsys.com [10.15.84.232])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mailhost.synopsys.com (Postfix) with ESMTPS id 24581A0085;
+        Tue, 14 Jan 2020 17:04:36 +0000 (UTC)
+Received: from us01hybrid1.internal.synopsys.com (10.200.27.51) by
+ US01WEHTC3.internal.synopsys.com (10.15.84.232) with Microsoft SMTP Server
+ (TLS) id 14.3.408.0; Tue, 14 Jan 2020 09:04:20 -0800
+Received: from NAM12-MW2-obe.outbound.protection.outlook.com (10.202.3.67) by
+ mrs.synopsys.com (10.200.27.51) with Microsoft SMTP Server (TLS) id
+ 14.3.408.0; Tue, 14 Jan 2020 09:04:19 -0800
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=BooovLpsBMsIs82f56XAAuW3mq7Basoj49S7X6odw2247T74mO3XEnKx8Y9hZ/4HAX8rAclFUE/ivgFNLyQDVvU+5el/Wk/sHBCbzKn9gY6oDPqakA+BfIxU8x3pCoCrznpfzGEtUR9NM5tzbOPG1oqoRC0zF9PwvZWVGcMdctddRymfVRaLlGOicaf9OBQ12x8lqtyg5nfuNXlaJeQbANA8n846X/oHBoyNHKEQhngAEVyILB1AaihFPHMnw+h+OMe/ytkLoexYtXwxSGwEyLsU3ptfLJZirfjFn0P08k/KBqrsj2/LOmCDwO9DUuP9gg/dtfrgg8DSGr+D5ebK0A==
+ b=B0xlQDGHnMCakRBGBEgvhYnXStQZzYgb6qH0Y0qucyHUc2o9O1YiR76H/jdC51svEvztYniOuejDFNvsWp0wrG8v0tK2qOh3uUJi9Kn7m7YDRfxqL7YaRIOswzYjbDiijh7EYFBriuKXe6SdUVACQ/MKtoVCl1JyUi1GO4dsmLPugS2Ll7pl42UUK00rhw8oDM5XYdG0IGUYIo2LuSpZmO3bF0PFbuzmtc3ZhzNK5soLSM09IRpsmsV326DIiBGAZPvJcDpmXJr4iHmTwUeZW7ZDKGn9LeZQSsvQCnF1rRRVEqNcqIOwsSlMuqpX6l6KtEoa6oY4MBy0dRZHuiZlYA==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=xcwSUU1LAL+B9eq2VXF9Lgyc/en0lRjHDqTyiQBmowc=;
- b=HI8z+97AH7MpK6blz8FJmUeglpKlOYFQ5uE1Izhy9SuvrHNoYIaZSPcbViBinMs4033q803VVZsjbV697RGSwxrWO/mLtgmWhmSkQCilnVXmdRHxm2dcnK+5tfbJFLfqpoE3NZ7NQ+Azv3ppWx3knpKabxbmgcU3ttB6c8pgm8gJfXXPfJlBPYGhxLKfy5IsoEG6JexIYIudyWZ2q/1mlxEXc9s28myv7X6LC03Zj0TA7kLGN+Ti0C/8jg2txCDCiEnm9Or9u4CncneCD42eOozfefwcja8uu26vg3Y74aHC3HrriGzJsXoHwsa6ypu6mtLfHA+xR3CYHJvFk70Mng==
+ bh=Mm3MSZqC1zqJvH0MmChVvhHcosSr0ipdo2lXzi0QO5M=;
+ b=HVxOxjDHERJjALjwZpcVia6QT24T4H7T4Xa10QTpmsumLJNul6kTkD+DNRAJGeXFrz9GeIC1whCIcqp8NHZNl9/Cw7E9SBxaAclZ+Seuy+/sdeo0E3W025G/JOwLG0j4X6eL92uNt1EkbSDAslGuhP+wRc5AdywmG5Uc0pE4LlGR3LpP1nhSXCgVzkrl2KjzuiepxcT69nOd6WMzfevf6SzcUgZj2F1QhHYHC/B34YiHYuVe2W0nTpWHnxJyg2TTDISklHlTwGnrFx5hcNvPqXH1whxMbxC+S4s3X2Rbi7OmjfemBxzoc94JG/iKCcBBEbbIhqY1q3lXEhFmEEuoxw==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=xilinx.com; dmarc=pass action=none header.from=xilinx.com;
- dkim=pass header.d=xilinx.com; arc=none
+ smtp.mailfrom=synopsys.com; dmarc=pass action=none header.from=synopsys.com;
+ dkim=pass header.d=synopsys.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=xilinx.onmicrosoft.com; s=selector2-xilinx-onmicrosoft-com;
+ d=synopsys.onmicrosoft.com; s=selector2-synopsys-onmicrosoft-com;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=xcwSUU1LAL+B9eq2VXF9Lgyc/en0lRjHDqTyiQBmowc=;
- b=Z7n9FMg+P3ad/y43EX3CsjdlOtHcvixvo0ma50XUgpgO3RZAjf3F+VNw/p+76kNgrgK9tKstGZ2gfy3W9tYcsjVt1VHBKIcyrc5vXNH4s/LwayCzw8aq4vPMeMsa4bg8WbpgbES1dSvZTqEbikEitzORwhkZVv4KR/DK0nXr8e8=
-Received: from CH2PR02MB7000.namprd02.prod.outlook.com (20.180.9.216) by
- CH2PR02MB6725.namprd02.prod.outlook.com (20.180.7.77) with Microsoft SMTP
+ bh=Mm3MSZqC1zqJvH0MmChVvhHcosSr0ipdo2lXzi0QO5M=;
+ b=XC3dc04pVlh1mzxwVEVgZ1XyRf+53DsFR7Fn49SrXOVOY1j/xJPcwKT+Ea/L7hBZOPuh2P5BMivct6DajNviRkLaOJUDssRlxjAftq199ntQkMwkUqb9+AuAgmwBDT+p67y8fmAtaMdSDHbndCylVGXArpQbiPzioM9AdgND/L4=
+Received: from BYAPR12MB3592.namprd12.prod.outlook.com (20.178.54.89) by
+ BYAPR12MB3189.namprd12.prod.outlook.com (20.179.92.139) with Microsoft SMTP
  Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.2623.9; Tue, 14 Jan 2020 17:03:41 +0000
-Received: from CH2PR02MB7000.namprd02.prod.outlook.com
- ([fe80::969:436f:b4b8:4899]) by CH2PR02MB7000.namprd02.prod.outlook.com
- ([fe80::969:436f:b4b8:4899%7]) with mapi id 15.20.2623.015; Tue, 14 Jan 2020
- 17:03:41 +0000
-From:   Radhey Shyam Pandey <radheys@xilinx.com>
-To:     Andre Przywara <andre.przywara@arm.com>,
-        "David S . Miller" <davem@davemloft.net>
-CC:     Michal Simek <michals@xilinx.com>,
-        Robert Hancock <hancock@sedsystems.ca>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-arm-kernel@lists.infradead.org" 
-        <linux-arm-kernel@lists.infradead.org>,
+ 15.20.2623.13; Tue, 14 Jan 2020 17:04:18 +0000
+Received: from BYAPR12MB3592.namprd12.prod.outlook.com
+ ([fe80::39a1:22ee:7030:8333]) by BYAPR12MB3592.namprd12.prod.outlook.com
+ ([fe80::39a1:22ee:7030:8333%6]) with mapi id 15.20.2623.017; Tue, 14 Jan 2020
+ 17:04:18 +0000
+From:   Vineet Gupta <Vineet.Gupta1@synopsys.com>
+To:     Jose Abreu <Jose.Abreu@synopsys.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+CC:     Joao Pinto <Joao.Pinto@synopsys.com>,
+        Alexey Brodkin <Alexey.Brodkin@synopsys.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Mark Rutland <mark.rutland@arm.com>,
+        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
+        "linux-snps-arc@lists.infradead.org" 
+        <linux-snps-arc@lists.infradead.org>,
         "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: RE: [PATCH 12/14] net: axienet: Autodetect 64-bit DMA capability
-Thread-Topic: [PATCH 12/14] net: axienet: Autodetect 64-bit DMA capability
-Thread-Index: AQHVx6y+W25+wq1cpkmcd5TNSAo3EKfqY36g
-Date:   Tue, 14 Jan 2020 17:03:41 +0000
-Message-ID: <CH2PR02MB70006450DBDCEC27CA76503AC7340@CH2PR02MB7000.namprd02.prod.outlook.com>
-References: <20200110115415.75683-1-andre.przywara@arm.com>
- <20200110115415.75683-13-andre.przywara@arm.com>
-In-Reply-To: <20200110115415.75683-13-andre.przywara@arm.com>
+Subject: Re: [PATCH net 4/4] ARC: [plat-axs10x]: Add missing multicast filter
+ number to GMAC node
+Thread-Topic: [PATCH net 4/4] ARC: [plat-axs10x]: Add missing multicast filter
+ number to GMAC node
+Thread-Index: AQHVyvUfClf4TsxnMkuRbCyapjHT5KfqY2YA
+Date:   Tue, 14 Jan 2020 17:04:18 +0000
+Message-ID: <139baf42-2704-db1b-579b-50f35c86c6d7@synopsys.com>
+References: <cover.1579017787.git.Jose.Abreu@synopsys.com>
+ <b1abebaf6ac9a0176b82e179944a455fbf1d7a15.1579017787.git.Jose.Abreu@synopsys.com>
+In-Reply-To: <b1abebaf6ac9a0176b82e179944a455fbf1d7a15.1579017787.git.Jose.Abreu@synopsys.com>
 Accept-Language: en-US
 Content-Language: en-US
 X-MS-Has-Attach: 
-X-Auto-Response-Suppress: DR, RN, NRN, OOF, AutoReply
 X-MS-TNEF-Correlator: 
+user-agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.9.0
 authentication-results: spf=none (sender IP is )
- smtp.mailfrom=radheys@xilinx.com; 
-x-originating-ip: [149.199.50.133]
+ smtp.mailfrom=vgupta@synopsys.com; 
+x-originating-ip: [149.117.75.13]
 x-ms-publictraffictype: Email
-x-ms-office365-filtering-ht: Tenant
-x-ms-office365-filtering-correlation-id: 1c1feae8-f5c4-486d-bb33-08d79913b4db
-x-ms-traffictypediagnostic: CH2PR02MB6725:|CH2PR02MB6725:
+x-ms-office365-filtering-correlation-id: 00166dc8-5278-482b-8f3d-08d79913cb15
+x-ms-traffictypediagnostic: BYAPR12MB3189:
 x-ms-exchange-transport-forked: True
-x-microsoft-antispam-prvs: <CH2PR02MB6725A84A378E726FAB23CB77C7340@CH2PR02MB6725.namprd02.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:9508;
+x-microsoft-antispam-prvs: <BYAPR12MB3189BCD5223DCC9787C5B98BB6340@BYAPR12MB3189.namprd12.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:612;
 x-forefront-prvs: 028256169F
-x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(4636009)(366004)(136003)(376002)(346002)(396003)(39860400002)(189003)(199004)(4326008)(2906002)(8936002)(55016002)(9686003)(6506007)(66556008)(66476007)(33656002)(54906003)(8676002)(110136005)(64756008)(76116006)(5660300002)(66446008)(81166006)(81156014)(52536014)(478600001)(316002)(71200400001)(66946007)(7696005)(186003)(86362001)(53546011)(26005);DIR:OUT;SFP:1101;SCL:1;SRVR:CH2PR02MB6725;H:CH2PR02MB7000.namprd02.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;MX:1;A:1;
-received-spf: None (protection.outlook.com: xilinx.com does not designate
+x-forefront-antispam-report: SFV:NSPM;SFS:(10019020)(396003)(39860400002)(346002)(136003)(366004)(376002)(199004)(189003)(558084003)(76116006)(86362001)(316002)(64756008)(66946007)(36756003)(66476007)(26005)(66556008)(5660300002)(31696002)(6512007)(66446008)(478600001)(4326008)(110136005)(71200400001)(6486002)(31686004)(186003)(54906003)(2906002)(53546011)(8936002)(81156014)(2616005)(6506007)(81166006)(8676002);DIR:OUT;SFP:1102;SCL:1;SRVR:BYAPR12MB3189;H:BYAPR12MB3592.namprd12.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;A:1;MX:1;
+received-spf: None (protection.outlook.com: synopsys.com does not designate
  permitted sender hosts)
 x-ms-exchange-senderadcheck: 1
 x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: SWG7O5Wml3jv8w+iyYfc8eZ6yF3vMDcpdeKGEdxwzecrORBPS+No7GEOMivX54FEt4VdFpLmG/Qd3lQpNaS5RqMSXZ+8UARMNdB6WbQaYW1XAGYseHVoP8KjR6/MoqgWcIlDk2m7qDFfrXRrcpEXtnJZv/dSpM9WUjXOH3q1VR/TK9Y6w+SRtIRLb8zeuBZaYQOCG9fARsukXlHpiQ0j0I/5flCkOlBLE2U2mdMK42z1280CD8UOUHGAQ5r17ZTGVvisvRSRFJwi7fiNHopBr0c6hW9XTFV1/knnhm2PQRW524Oiz2hzOTqRL04Fctkar3GWYm5zPkv+EV/uopFeKqdo/xgzOq2Stesq0+6MBJ8ktiPCe/ZYxXWhwmpQmvM59vIrVdLVarRt/yDc+471B9nqzGerS4DKHLT9+Dixj9s9yArOa6rhuUKQeqwZ24RV
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+x-microsoft-antispam-message-info: an9ym0rcXWG/gzs48vn8cAKvuaAsdhonDPavf9SUus/e6yFOlEeGQ/qvTZ/im9HAC6JXmsdHKU+6c7f2QzZ2fxENO7VEWbQ0de6jmElTWgyBuD4FRNmXUKqASIhBneTE87U1B3qgXu7CPgm7RJRAz7/0LkSmQGuC66uhR+/XeRfXUAAG/WSrb2FUoLW7GLyOzhmdtsKR6HX1PoxDegN+lxIqeaIDQD7BnyfnNT2vYbTwBVT99+l5ihEuJqUlipBkBgg+mpB04IWOrMHc5cF9hTM6qWZb9aWn4+mTvBKEKZ4iGtQrHqOJn9sCIniFHgMhNmIWgVVLf8cn0s1GkNpCRuYXnEKGP2N+KrZF43GwPCnBHUKPENS9RgN4X7hv2Z+KIadPMX6Is65+EyVt3kd+Ryv12WrLWYMqpTIq1HblxHU+BUKgjXknFqb2L9cAVzkw
+Content-Type: text/plain; charset="utf-8"
+Content-ID: <CDDAF59D5ED969459334D80E14DDC0AB@namprd12.prod.outlook.com>
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-X-OriginatorOrg: xilinx.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 1c1feae8-f5c4-486d-bb33-08d79913b4db
-X-MS-Exchange-CrossTenant-originalarrivaltime: 14 Jan 2020 17:03:41.2598
+X-MS-Exchange-CrossTenant-Network-Message-Id: 00166dc8-5278-482b-8f3d-08d79913cb15
+X-MS-Exchange-CrossTenant-originalarrivaltime: 14 Jan 2020 17:04:18.5561
  (UTC)
 X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 657af505-d5df-48d0-8300-c31994686c5c
+X-MS-Exchange-CrossTenant-id: c33c9f88-1eb7-4099-9700-16013fd9e8aa
 X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: 4dqVi2BY3a1HMDlpyIK7KJJKGHaUPr34nUFofS1UmCG+J2ZvXkfORcj5kd9A2VR5a+nbG2Da2fovsGMLDbYB7Q==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: CH2PR02MB6725
+X-MS-Exchange-CrossTenant-userprincipalname: YHlzY9vp+Jte1XeVbiJSRWJHH0p7Z6/BWBO57emIdwga4qLydyxnKjPLwQQ/LxFllMcRRQ+vKHifBONmmWu+lQ==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BYAPR12MB3189
+X-OriginatorOrg: synopsys.com
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> -----Original Message-----
-> From: Andre Przywara <andre.przywara@arm.com>
-> Sent: Friday, January 10, 2020 5:24 PM
-> To: David S . Miller <davem@davemloft.net>; Radhey Shyam Pandey
-> <radheys@xilinx.com>
-> Cc: Michal Simek <michals@xilinx.com>; Robert Hancock
-> <hancock@sedsystems.ca>; netdev@vger.kernel.org; linux-arm-
-> kernel@lists.infradead.org; linux-kernel@vger.kernel.org
-> Subject: [PATCH 12/14] net: axienet: Autodetect 64-bit DMA capability
->=20
-> When newer revisions of the Axienet IP are configured for a 64-bit bus,
-I assume in design axidma address width is set to 64-bits.=20
-If not, please provide an overview of the design connections.
-
-> we *need* to write to the MSB part of the an address registers,
-> otherwise the IP won't recognise this as a DMA start condition.
-> This is even true when the actual DMA address comes from the lower 4 GB.
->=20
-> To autodetect this configuration, at probe time we write all 1's to such
-Is reading address width axidma IP user parameter(c_addr_width) from
-the design not sufficient to detect configured bus width?
-
-> an MSB register, and see if any bits stick. If this is configured for a
-> 32-bit bus, those MSB registers are RES0, so reading back 0 indicates
-> that no MSB writes are necessary.
-> On the other hands reading anything other than 0 indicated the need to
-> write the MSB registers, so we set the respective flag.
->=20
-> For now this leaves the actual DMA mask at 32-bit, as we can't reliably
-> detect the actually wired number of address lines beyond 32.
->=20
-> Signed-off-by: Andre Przywara <andre.przywara@arm.com>
-> ---
->  drivers/net/ethernet/xilinx/xilinx_axienet.h  |  1 +
->  .../net/ethernet/xilinx/xilinx_axienet_main.c | 27 +++++++++++++++++++
->  2 files changed, 28 insertions(+)
->=20
-> diff --git a/drivers/net/ethernet/xilinx/xilinx_axienet.h
-> b/drivers/net/ethernet/xilinx/xilinx_axienet.h
-> index 4aea4c23d3bb..4feaaa02819c 100644
-> --- a/drivers/net/ethernet/xilinx/xilinx_axienet.h
-> +++ b/drivers/net/ethernet/xilinx/xilinx_axienet.h
-> @@ -161,6 +161,7 @@
->  #define XAE_FCC_OFFSET		0x0000040C /* Flow Control
-> Configuration */
->  #define XAE_EMMC_OFFSET		0x00000410 /* EMAC mode
-> configuration */
->  #define XAE_PHYC_OFFSET		0x00000414 /* RGMII/SGMII
-> configuration */
-> +#define XAE_ID_OFFSET		0x000004F8 /* Identification register
-> */
->  #define XAE_MDIO_MC_OFFSET	0x00000500 /* MII Management
-> Config */
->  #define XAE_MDIO_MCR_OFFSET	0x00000504 /* MII Management
-> Control */
->  #define XAE_MDIO_MWD_OFFSET	0x00000508 /* MII Management Write
-> Data */
-> diff --git a/drivers/net/ethernet/xilinx/xilinx_axienet_main.c
-> b/drivers/net/ethernet/xilinx/xilinx_axienet_main.c
-> index 133f088d797e..f7f593df0c11 100644
-> --- a/drivers/net/ethernet/xilinx/xilinx_axienet_main.c
-> +++ b/drivers/net/ethernet/xilinx/xilinx_axienet_main.c
-> @@ -151,6 +151,9 @@ static void axienet_dma_out_addr(struct axienet_local
-> *lp, off_t reg,
->  				 dma_addr_t addr)
->  {
->  	axienet_dma_out32(lp, reg, lower_32_bits(addr));
-> +
-> +	if (lp->features & XAE_FEATURE_DMA_64BIT)
-> +		axienet_dma_out32(lp, reg + 4, upper_32_bits(addr));
->  }
->=20
->  static void desc_set_phys_addr(struct axienet_local *lp, dma_addr_t addr=
-,
-> @@ -1934,6 +1937,30 @@ static int axienet_probe(struct platform_device
-> *pdev)
->  		goto free_netdev;
->  	}
->=20
-> +	/*
-> +	 * Autodetect the need for 64-bit DMA pointers.
-> +	 * When the IP is configured for a bus width bigger than 32 bits,
-> +	 * writing the MSB registers is mandatory, even if they are all 0.
-> +	 * We can detect this case by writing all 1's to one such register
-> +	 * and see if that sticks: when the IP is configured for 32 bits
-> +	 * only, those registers are RES0.
-> +	 * Those MSB registers were introduced in IP v7.1, which we check first=
-.
-> +	 */
-> +	if ((axienet_ior(lp, XAE_ID_OFFSET) >> 24) >=3D 0x9) {
-> +		void __iomem *desc =3D lp->dma_regs +
-> XAXIDMA_TX_CDESC_OFFSET + 4;
-> +
-> +		iowrite32(0x0, desc);
-> +		if (ioread32(desc) =3D=3D 0) {	/* sanity check */
-> +			iowrite32(0xffffffff, desc);
-> +			if (ioread32(desc) > 0) {
-> +				lp->features |=3D XAE_FEATURE_DMA_64BIT;
-> +				dev_info(&pdev->dev,
-> +					 "autodetected 64-bit DMA range\n");
-> +			}
-> +			iowrite32(0x0, desc);
-> +		}
-> +	}
-> +
->  	/* Check for Ethernet core IRQ (optional) */
->  	if (lp->eth_irq <=3D 0)
->  		dev_info(&pdev->dev, "Ethernet core IRQ not defined\n");
-> --
-> 2.17.1
-
+T24gMS8xNC8yMCA4OjA5IEFNLCBKb3NlIEFicmV1IHdyb3RlOg0KPiBBZGQgYSBtaXNzaW5nIHBy
+b3BlcnR5IHRvIEdNQUMgbm9kZSBzbyB0aGF0IG11bHRpY2FzdCBmaWx0ZXJpbmcgd29ya3MNCj4g
+Y29ycmVjdGx5Lg0KPg0KPiBGaXhlczogNTU2Y2MxYzVmNTI4ICgiQVJDOiBbYXhzMTAxXSBBZGQg
+c3VwcG9ydCBmb3IgQVhTMTAxIFNEUCAoc29mdHdhcmUgZGV2ZWxvcG1lbnQgcGxhdGZvcm0pIikN
+Cj4gU2lnbmVkLW9mZi1ieTogSm9zZSBBYnJldSA8Sm9zZS5BYnJldUBzeW5vcHN5cy5jb20+DQoN
+CkFkZGVkIHRvIGZvci1jdXJyLg0KDQpUaHgsDQotVmluZWV0DQo=
