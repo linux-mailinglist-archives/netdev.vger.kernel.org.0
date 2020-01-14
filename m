@@ -2,223 +2,122 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id B0B0713AFDB
-	for <lists+netdev@lfdr.de>; Tue, 14 Jan 2020 17:47:31 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3414613AFC5
+	for <lists+netdev@lfdr.de>; Tue, 14 Jan 2020 17:46:24 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729078AbgANQrB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 14 Jan 2020 11:47:01 -0500
-Received: from mail-pf1-f201.google.com ([209.85.210.201]:54585 "EHLO
-        mail-pf1-f201.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726669AbgANQq7 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 14 Jan 2020 11:46:59 -0500
-Received: by mail-pf1-f201.google.com with SMTP id v14so9084032pfm.21
-        for <netdev@vger.kernel.org>; Tue, 14 Jan 2020 08:46:59 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20161025;
-        h=date:in-reply-to:message-id:mime-version:references:subject:from:to
-         :cc;
-        bh=utFWUT6wlMosbqdVUWks9jGqk+aaGoz4H9C5fn7YGjc=;
-        b=suons98sXGv+WZP3A0WOzWUhmDaJzA6cISir0AQCPvyueitlHsxzE44GK+dKUUr7zc
-         EMvkPYuT+d8+lefNZ3Dz84eqb0HXbkq4WzC2Jv4RgH72LPXXLTE+wMLzPv7oQfhG0OvT
-         FBf+2aPSjBU5WLejdzHOg6Bg+FQnu5P9s387y41rraratirCb495x0yv1zX9d4SFk/7m
-         ta4YXNpmQUy1BACaHa95A4ckd1dgWon2VH/Kvtv6C93tJhcFU0WGzAr/WhSn1Gs5NpRY
-         9YLfdwOqpeYbcxhPdYcLRu2Qup2ndWwJM4ujCNuOvRflKsxN0XT/zKE102LansKoa+LO
-         h65Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:in-reply-to:message-id:mime-version
-         :references:subject:from:to:cc;
-        bh=utFWUT6wlMosbqdVUWks9jGqk+aaGoz4H9C5fn7YGjc=;
-        b=rITrLIajMx8BhnVunUB3PsCAC+49BsV/rH5Qojo8hnXIlMea+lyGSqwqhbNwlml7FF
-         S/Lei8Bem66+2Oj2CYI1wW0b8IxwKCohR7VKVxmYpGB8gOJLbMpTTJoQhh8fapbLEMyo
-         wn7p+8KeFc8ZNEWH/VnZMdzxG/W08i+b2KlDwlhDmf4zcJbEuFTWhi0PFv30lLp3hA3D
-         yXbkEbrVHdyKROAW5YmZdUstugnrKaCK0+0cMQh59rEXn6OrODLimZ3LVhaUMc7ZvVcC
-         BKb+6rAS6iHN83bNeV8IcXAMHgy2ati5euXpM0H7oJweyakgvgW27l2GoT7wTV6WWGLW
-         wO+A==
-X-Gm-Message-State: APjAAAUheUNPJH+US9VT5DH4jPHvRHYoUqX+haIlwVCYmAgaDoTgwZ9c
-        GxfOPCvHf/BiGkAb60ece5qVy0XHIvld
-X-Google-Smtp-Source: APXvYqwCbXHUN96hD1m5fhRfxiQHBzeJoLHzVq40CD8wueDkFEN9quREbNiy+kM8hP5feUtpk9+shhAo33Gm
-X-Received: by 2002:a63:30c:: with SMTP id 12mr27766270pgd.276.1579020418779;
- Tue, 14 Jan 2020 08:46:58 -0800 (PST)
-Date:   Tue, 14 Jan 2020 08:46:14 -0800
-In-Reply-To: <20200114164614.47029-1-brianvv@google.com>
-Message-Id: <20200114164614.47029-11-brianvv@google.com>
-Mime-Version: 1.0
-References: <20200114164614.47029-1-brianvv@google.com>
-X-Mailer: git-send-email 2.25.0.rc1.283.g88dfdc4193-goog
-Subject: [PATCH v4 bpf-next 9/9] selftests/bpf: add batch ops testing to array
- bpf map
-From:   Brian Vazquez <brianvv@google.com>
-To:     Brian Vazquez <brianvv.kernel@gmail.com>,
-        Brian Vazquez <brianvv@google.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        "David S . Miller" <davem@davemloft.net>
-Cc:     Yonghong Song <yhs@fb.com>,
-        Andrii Nakryiko <andrii.nakryiko@gmail.com>,
-        Stanislav Fomichev <sdf@google.com>,
-        Petar Penkov <ppenkov@google.com>,
-        Willem de Bruijn <willemb@google.com>,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        bpf@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+        id S1728853AbgANQqS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 14 Jan 2020 11:46:18 -0500
+Received: from esa1.microchip.iphmx.com ([68.232.147.91]:6828 "EHLO
+        esa1.microchip.iphmx.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728827AbgANQqS (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 14 Jan 2020 11:46:18 -0500
+Received-SPF: Pass (esa1.microchip.iphmx.com: domain of
+  Horatiu.Vultur@microchip.com designates 198.175.253.82 as
+  permitted sender) identity=mailfrom;
+  client-ip=198.175.253.82; receiver=esa1.microchip.iphmx.com;
+  envelope-from="Horatiu.Vultur@microchip.com";
+  x-sender="Horatiu.Vultur@microchip.com";
+  x-conformance=spf_only; x-record-type="v=spf1";
+  x-record-text="v=spf1 mx a:ushub1.microchip.com
+  a:smtpout.microchip.com -exists:%{i}.spf.microchip.iphmx.com
+  include:servers.mcsv.net include:mktomail.com
+  include:spf.protection.outlook.com ~all"
+Received-SPF: None (esa1.microchip.iphmx.com: no sender
+  authenticity information available from domain of
+  postmaster@email.microchip.com) identity=helo;
+  client-ip=198.175.253.82; receiver=esa1.microchip.iphmx.com;
+  envelope-from="Horatiu.Vultur@microchip.com";
+  x-sender="postmaster@email.microchip.com";
+  x-conformance=spf_only
+Authentication-Results: esa1.microchip.iphmx.com; dkim=none (message not signed) header.i=none; spf=Pass smtp.mailfrom=Horatiu.Vultur@microchip.com; spf=None smtp.helo=postmaster@email.microchip.com; dmarc=pass (p=none dis=none) d=microchip.com
+IronPort-SDR: y+ft/dlKJOCa17GdZ1QBuWly0sE48PA5wRGmIFD6wVJusyZ8AcWlL3fyfIG6YhYN/nJeKrCins
+ Ahg78OxmOcrIdFk+0U9KHOIPhaCpJIGTqEJN+6dDV1FI2aZUdDw4I2mawl4zZLfbzMEz7tEu0W
+ nI8gib6X0JaYJ9MbdAt+omA11WCk86f2l8mm/I6lm6Re1SvWChmL++MKtecYBOoljRvpyAdyBe
+ b+bmzBTVMlh4iYDnZ05itmtjCwKgkPmFmJtg207FN6DkG5ngdmMUAdwRkg8pTjjSoGHxqZt50w
+ FkM=
+X-IronPort-AV: E=Sophos;i="5.70,433,1574146800"; 
+   d="scan'208";a="64704366"
+Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
+  by esa1.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 14 Jan 2020 09:46:16 -0700
+Received: from chn-vm-ex03.mchp-main.com (10.10.85.151) by
+ chn-vm-ex03.mchp-main.com (10.10.85.151) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.1713.5; Tue, 14 Jan 2020 09:46:16 -0700
+Received: from localhost (10.10.85.251) by chn-vm-ex03.mchp-main.com
+ (10.10.85.151) with Microsoft SMTP Server id 15.1.1713.5 via Frontend
+ Transport; Tue, 14 Jan 2020 09:46:16 -0700
+Date:   Tue, 14 Jan 2020 17:46:15 +0100
+From:   Horatiu Vultur <horatiu.vultur@microchip.com>
+To:     Andrew Lunn <andrew@lunn.ch>
+CC:     <linux-kernel@vger.kernel.org>, <netdev@vger.kernel.org>,
+        <bridge@lists.linux-foundation.org>, <davem@davemloft.net>,
+        <roopa@cumulusnetworks.com>, <nikolay@cumulusnetworks.com>,
+        <jakub.kicinski@netronome.com>, <vivien.didelot@gmail.com>,
+        <olteanv@gmail.com>, <anirudh.venkataramanan@intel.com>,
+        <dsahern@gmail.com>, <jiri@resnulli.us>, <ivecera@redhat.com>,
+        <UNGLinuxDriver@microchip.com>
+Subject: Re: [RFC net-next Patch v2 4/4] net: bridge: mrp: switchdev: Add HW
+ offload
+Message-ID: <20200114164615.yvidcidrj24x4gcy@soft-dev3.microsemi.net>
+References: <20200113124620.18657-1-horatiu.vultur@microchip.com>
+ <20200113124620.18657-5-horatiu.vultur@microchip.com>
+ <20200113140053.GE11788@lunn.ch>
+ <20200113225751.jkkio4rztyuff4xj@soft-dev3.microsemi.net>
+ <20200113233011.GF11788@lunn.ch>
+ <20200114080856.wa7ljxyzaf34u4xj@soft-dev3.microsemi.net>
+ <20200114132047.GG11788@lunn.ch>
+MIME-Version: 1.0
+Content-Type: text/plain; charset="utf-8"
+Content-Disposition: inline
+In-Reply-To: <20200114132047.GG11788@lunn.ch>
+User-Agent: NeoMutt/20180716
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Tested bpf_map_lookup_batch() and bpf_map_update_batch()
-functionality.
+The 01/14/2020 14:20, Andrew Lunn wrote:
+> 
+> On Tue, Jan 14, 2020 at 09:08:56AM +0100, Horatiu Vultur wrote:
+> > The 01/14/2020 00:30, Andrew Lunn wrote:
+> > >
+> > > Hi Horatiu
+> > >
+> > > It has been said a few times what the basic state machine should be in
+> > > user space. A pure software solution can use raw sockets to send and
+> > > receive MRP_Test test frames. When considering hardware acceleration,
+> > > the switchdev API you have proposed here seems quite simple. It should
+> > > not be too hard to map it to a set of netlink messages from userspace.
+> >
+> > Yes and we will try to go with this approach, to have a user space
+> > application that contains the state machines and then in the kernel to
+> > extend the netlink messages to map to the switchdev API.
+> > So we will create a new RFC once we will have the user space and the
+> > definition of the netlink messages.
+> 
+> Cool.
+> 
+> Before you get too far, we might want to discuss exactly how you pass
+> these netlink messages. Do we want to make this part of the new
+> ethtool Netlink implementation? Part of devlink? Extend the current
+> bridge netlink interface used by userspae RSTP daemons? A new generic
+> netlink socket?
 
-  $ ./test_maps
-      ...
-        test_array_map_batch_ops:PASS
-      ...
+We are not yet 100% sure. We were thinking to choose between extending
+the bridge netlink interface or adding a new netlink socket.  I was
+leaning to create a new netlink socket, because I think that would be
+clearer and easier to understand. But I don't have much experience with
+this, so in both cases I need to sit down and actually try to implement
+it to see exactly.
 
-Signed-off-by: Brian Vazquez <brianvv@google.com>
-Signed-off-by: Yonghong Song <yhs@fb.com>
----
- .../bpf/map_tests/array_map_batch_ops.c       | 131 ++++++++++++++++++
- 1 file changed, 131 insertions(+)
- create mode 100644 tools/testing/selftests/bpf/map_tests/array_map_batch_ops.c
+> 
+> Extending the bridge netlink interface might seem the most logical.
+> The argument against it, is that the kernel bridge code probably does
+> not need to know anything about this offloading. But it does allow you
+> to make use of the switchdev API, so we have a uniform API between the
+> network stack and drivers implementing offloading.
+> 
+>       Andrew
 
-diff --git a/tools/testing/selftests/bpf/map_tests/array_map_batch_ops.c b/tools/testing/selftests/bpf/map_tests/array_map_batch_ops.c
-new file mode 100644
-index 0000000000000..05b7caea6a444
---- /dev/null
-+++ b/tools/testing/selftests/bpf/map_tests/array_map_batch_ops.c
-@@ -0,0 +1,131 @@
-+// SPDX-License-Identifier: GPL-2.0
-+
-+#include <stdio.h>
-+#include <errno.h>
-+#include <string.h>
-+
-+#include <bpf/bpf.h>
-+#include <bpf/libbpf.h>
-+
-+#include <test_maps.h>
-+
-+static void map_batch_update(int map_fd, __u32 max_entries, int *keys,
-+			     int *values)
-+{
-+	int i, err;
-+
-+	DECLARE_LIBBPF_OPTS(bpf_map_batch_opts, opts,
-+		.elem_flags = 0,
-+		.flags = 0,
-+	);
-+
-+	for (i = 0; i < max_entries; i++) {
-+		keys[i] = i;
-+		values[i] = i + 1;
-+	}
-+
-+	err = bpf_map_update_batch(map_fd, keys, values, &max_entries, &opts);
-+	CHECK(err, "bpf_map_update_batch()", "error:%s\n", strerror(errno));
-+}
-+
-+static void map_batch_verify(int *visited, __u32 max_entries,
-+			     int *keys, int *values)
-+{
-+	int i;
-+
-+	memset(visited, 0, max_entries * sizeof(*visited));
-+	for (i = 0; i < max_entries; i++) {
-+		CHECK(keys[i] + 1 != values[i], "key/value checking",
-+		      "error: i %d key %d value %d\n", i, keys[i], values[i]);
-+		visited[i] = 1;
-+	}
-+	for (i = 0; i < max_entries; i++) {
-+		CHECK(visited[i] != 1, "visited checking",
-+		      "error: keys array at index %d missing\n", i);
-+	}
-+}
-+
-+void test_array_map_batch_ops(void)
-+{
-+	struct bpf_create_map_attr xattr = {
-+		.name = "array_map",
-+		.map_type = BPF_MAP_TYPE_ARRAY,
-+		.key_size = sizeof(int),
-+		.value_size = sizeof(int),
-+	};
-+	int map_fd, *keys, *values, *visited;
-+	__u32 count, total, total_success;
-+	const __u32 max_entries = 10000;
-+	bool nospace_err;
-+	__u64 batch = 0;
-+	int err, step;
-+
-+	DECLARE_LIBBPF_OPTS(bpf_map_batch_opts, opts,
-+		.elem_flags = 0,
-+		.flags = 0,
-+	);
-+
-+	xattr.max_entries = max_entries;
-+	map_fd = bpf_create_map_xattr(&xattr);
-+	CHECK(map_fd == -1,
-+	      "bpf_create_map_xattr()", "error:%s\n", strerror(errno));
-+
-+	keys = malloc(max_entries * sizeof(int));
-+	values = malloc(max_entries * sizeof(int));
-+	visited = malloc(max_entries * sizeof(int));
-+	CHECK(!keys || !values || !visited, "malloc()", "error:%s\n",
-+	      strerror(errno));
-+
-+	/* populate elements to the map */
-+	map_batch_update(map_fd, max_entries, keys, values);
-+
-+	/* test 1: lookup in a loop with various steps. */
-+	total_success = 0;
-+	for (step = 1; step < max_entries; step++) {
-+		map_batch_update(map_fd, max_entries, keys, values);
-+		map_batch_verify(visited, max_entries, keys, values);
-+		memset(keys, 0, max_entries * sizeof(*keys));
-+		memset(values, 0, max_entries * sizeof(*values));
-+		batch = 0;
-+		total = 0;
-+		/* iteratively lookup/delete elements with 'step'
-+		 * elements each.
-+		 */
-+		count = step;
-+		nospace_err = false;
-+		while (true) {
-+			err = bpf_map_lookup_batch(map_fd,
-+						total ? &batch : NULL, &batch,
-+						keys + total,
-+						values + total,
-+						&count, &opts);
-+
-+			CHECK((err && errno != ENOENT), "lookup with steps",
-+			      "error: %s\n", strerror(errno));
-+
-+			total += count;
-+			if (err)
-+				break;
-+
-+		}
-+
-+		if (nospace_err == true)
-+			continue;
-+
-+		CHECK(total != max_entries, "lookup with steps",
-+		      "total = %u, max_entries = %u\n", total, max_entries);
-+
-+		map_batch_verify(visited, max_entries, keys, values);
-+
-+		total_success++;
-+	}
-+
-+	CHECK(total_success == 0, "check total_success",
-+	      "unexpected failure\n");
-+
-+	printf("%s:PASS\n", __func__);
-+
-+	free(keys);
-+	free(values);
-+	free(visited);
-+}
 -- 
-2.25.0.rc1.283.g88dfdc4193-goog
-
+/Horatiu
