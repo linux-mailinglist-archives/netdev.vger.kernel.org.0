@@ -2,157 +2,147 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 24A1013B4F5
-	for <lists+netdev@lfdr.de>; Tue, 14 Jan 2020 22:58:39 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7310B13B507
+	for <lists+netdev@lfdr.de>; Tue, 14 Jan 2020 23:04:24 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729110AbgANV6M (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 14 Jan 2020 16:58:12 -0500
-Received: from mail-ed1-f65.google.com ([209.85.208.65]:39402 "EHLO
-        mail-ed1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728824AbgANV6K (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 14 Jan 2020 16:58:10 -0500
-Received: by mail-ed1-f65.google.com with SMTP id t17so13475703eds.6;
-        Tue, 14 Jan 2020 13:58:08 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:autocrypt:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=Mye4LmyzQE+LrbbIEq6tP/9MPNsewchUD91k+otVz+w=;
-        b=n52rsCEiRkzPFenvyx25SeM1GC8hE/eMjP0sjse+wfLL1IXV4keBvfRflPo8igr69f
-         m2z5keNNqfIGqxNsbFUM7CmlS/ifpZYvSUKWsyMKdtN08cpWEk20wH1+1EWO6mawknjh
-         04hnMapLyNp4Mmzxxm0ddfuLS1xMgl8Cn8ULxDjtqPpai9AiDAhjPD9yZJoEzc0bzC7+
-         mY2YfGbdky7W3S+neN+QY5bkt0Htu+ChM2KLROgntLWCuPWBpIvJwkCZu4GCnLU7BNel
-         othYC5z84OXy7XQThXKC98DIQnbCTTQuFS8/qeLA1GycbCPMxd/Peq6HFSRX6VjtLFxM
-         2Otw==
+        id S1728847AbgANWEN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 14 Jan 2020 17:04:13 -0500
+Received: from mail-io1-f72.google.com ([209.85.166.72]:46298 "EHLO
+        mail-io1-f72.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728760AbgANWEN (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 14 Jan 2020 17:04:13 -0500
+Received: by mail-io1-f72.google.com with SMTP id p206so9053703iod.13
+        for <netdev@vger.kernel.org>; Tue, 14 Jan 2020 14:04:13 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:autocrypt
-         :message-id:date:user-agent:mime-version:in-reply-to
-         :content-language:content-transfer-encoding;
-        bh=Mye4LmyzQE+LrbbIEq6tP/9MPNsewchUD91k+otVz+w=;
-        b=ee8D1TZjqT1zvznyclo3GWLfxXHAtUyVMMCPL17Mxxt+a6DQ/JhxR/UiiL5UcYvCq8
-         SDX06x5Z/Lknr819ZukayE5Cn+bGg0l36WOBY7PSePxnR3OyR1nahcPBIOaAy3N3KipM
-         iYaMOZkovCvQGDkwcP1WIetIdj9W9Bmc7zcfb1GVFOEI4KVY3gXY8QQNbe0GVRTFjeqm
-         u6kOLpsd8ToFLimyE1hOsjGoD2w+uzhQFWJ3QeE7Ll5i/66tRxCmlsaMmbxOIRk8Aajh
-         vOAp5BitDdte0ob2/NZ2MrfepIpbNuFLxTvAd+MiUY7DP2BWkOLH9m4nJgO6AO6pUHX7
-         I1tA==
-X-Gm-Message-State: APjAAAX9okrZW2nUT5Rr62prv4aQTM+9J/rWcKXgsvF4A7A0mtlAiOX0
-        EzZYfjGTbQnyjjKhDhEIIj8=
-X-Google-Smtp-Source: APXvYqxB09DwRODZB2nlJ/k1cFJE9gsRdldb66R9ThkKbXcsmtV8y8kBgCC6iLHu2bkV3WZ35PRLCQ==
-X-Received: by 2002:a17:906:1356:: with SMTP id x22mr25313595ejb.55.1579039088179;
-        Tue, 14 Jan 2020 13:58:08 -0800 (PST)
-Received: from [10.67.50.41] ([192.19.223.252])
-        by smtp.googlemail.com with ESMTPSA id ba29sm655434edb.47.2020.01.14.13.57.58
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 14 Jan 2020 13:58:07 -0800 (PST)
-Subject: Re: [PATCH RFC net-next 06/19] net: dsa: tag_gswip: fix typo in tag
- name
-To:     Andrew Lunn <andrew@lunn.ch>, Alexander Lobakin <alobakin@dlink.ru>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Edward Cree <ecree@solarflare.com>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Hauke Mehrtens <hauke@hauke-m.de>,
-        Sean Wang <sean.wang@mediatek.com>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        Jiri Pirko <jiri@mellanox.com>,
-        Eric Dumazet <edumazet@google.com>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Jakub Kicinski <jakub.kicinski@netronome.com>,
-        Taehee Yoo <ap420073@gmail.com>,
-        Stephen Hemminger <stephen@networkplumber.org>,
-        Stanislav Fomichev <sdf@google.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Song Liu <songliubraving@fb.com>,
-        Matteo Croce <mcroce@redhat.com>,
-        Jakub Sitnicki <jakub@cloudflare.com>,
-        Paul Blakey <paulb@mellanox.com>,
-        Yoshiki Komachi <komachi.yoshiki@gmail.com>,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org
-References: <20191230143028.27313-1-alobakin@dlink.ru>
- <20191230143028.27313-7-alobakin@dlink.ru> <20191230172209.GE13569@lunn.ch>
-From:   Florian Fainelli <f.fainelli@gmail.com>
-Autocrypt: addr=f.fainelli@gmail.com; prefer-encrypt=mutual; keydata=
- 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
- G10n8gCguORqNGMsVRxrlLs7/himep7MrCc=
-Message-ID: <0edda44f-7a75-e6c9-eec3-48259630bb3d@gmail.com>
-Date:   Tue, 14 Jan 2020 13:57:56 -0800
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.2.2
+        h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
+        bh=OMN3C/VoYyKIvwTqw2B7b50mrKvNUjoFBtsQzpL17pw=;
+        b=WOJqWWTtjPIgPjxi7Zz7m0zwCdqd7EPkpA6fDP3Uqi1OD9vybocpSj/l4sxPlaDUqJ
+         bpyAA7l5TIEMMcmPd6hLuYvegzLLi9mFjpbgXv7Ll873PvfyXBmDQyc6VrbI57NBTYNe
+         Al+N9zPdnNZYmoOkLVO92Go09nRHJRGMiZt4RDE0DjW6gGGVG3yOHm0PAIOc4eLSQOGk
+         ggX62N9u6ci4BFRh16WqEZUfnQ8Ql3+2qN9gJY/CFZmP4S0X/ebXgM2xe6ezo2oNgAk9
+         rH4GZeIftJ0+W+e9WvmLNvR/hfrA8O/AaafW0Q5vD9kvUJs8dT5yDshyb0Fq0XaelX1x
+         Blcg==
+X-Gm-Message-State: APjAAAVjYiT2hQWg+R3NwhI7D+k+b561AIJHTATISkvSpxgxRlhBXpwK
+        4FlqbWa9dTYXNjBp8F6+pn6HSjiC8V3JAOYAT1S0LEzK5iwc
+X-Google-Smtp-Source: APXvYqwT5gXgVOW2dudlVYr3OrjQUlenltw3HdN1hwCoQje3ZeeWmf8prgS/U+Qse+oz3HaCUTBqLCpufZngjUDXwJlPy1cnd1QE
 MIME-Version: 1.0
-In-Reply-To: <20191230172209.GE13569@lunn.ch>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+X-Received: by 2002:a92:cd07:: with SMTP id z7mr583436iln.124.1579039452376;
+ Tue, 14 Jan 2020 14:04:12 -0800 (PST)
+Date:   Tue, 14 Jan 2020 14:04:12 -0800
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <000000000000a539c1059c20c5aa@google.com>
+Subject: WARNING: refcount bug in free_nsproxy (2)
+From:   syzbot <syzbot+a98eee31f5df4261d88c@syzkaller.appspotmail.com>
+To:     allison@lohutok.net, armijn@tjaldur.nl, ast@kernel.org,
+        bpf@vger.kernel.org, daniel@iogearbox.net, davem@davemloft.net,
+        gregkh@linuxfoundation.org, jakub.kicinski@netronome.com,
+        jhs@mojatatu.com, jiri@resnulli.us, kafai@fb.com,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        songliubraving@fb.com, syzkaller-bugs@googlegroups.com,
+        tglx@linutronix.de, xiyou.wangcong@gmail.com, yhs@fb.com
+Content-Type: text/plain; charset="UTF-8"; format=flowed; delsp=yes
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 12/30/19 9:22 AM, Andrew Lunn wrote:
-> On Mon, Dec 30, 2019 at 05:30:14PM +0300, Alexander Lobakin wrote:
->> "gwsip" -> "gswip".
->>
->> Signed-off-by: Alexander Lobakin <alobakin@dlink.ru>
-> 
-> Reviewed-by: Andrew Lunn <andrew@lunn.ch>
+Hello,
 
-Likewise, this is a bug fix that should be extracted out of this GRO
-series and a Fixes: tag be put since this has an user-visible impact
-through /sys/class/net/*/dsa/tagging.
+syzbot found the following crash on:
 
-Thanks
--- 
-Florian
+HEAD commit:    6c09d7db Add linux-next specific files for 20200110
+git tree:       linux-next
+console output: https://syzkaller.appspot.com/x/log.txt?x=102b2156e00000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=7dc7ab9739654fbe
+dashboard link: https://syzkaller.appspot.com/bug?extid=a98eee31f5df4261d88c
+compiler:       gcc (GCC) 9.0.0 20181231 (experimental)
+syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=162f16aee00000
+C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=13457571e00000
+
+The bug was bisected to:
+
+commit 14215108a1fd7e002c0a1f9faf8fbaf41fdda50d
+Author: Cong Wang <xiyou.wangcong@gmail.com>
+Date:   Thu Feb 21 05:37:42 2019 +0000
+
+     net_sched: initialize net pointer inside tcf_exts_init()
+
+bisection log:  https://syzkaller.appspot.com/x/bisect.txt?x=1063da9ee00000
+final crash:    https://syzkaller.appspot.com/x/report.txt?x=1263da9ee00000
+console output: https://syzkaller.appspot.com/x/log.txt?x=1463da9ee00000
+
+IMPORTANT: if you fix the bug, please add the following tag to the commit:
+Reported-by: syzbot+a98eee31f5df4261d88c@syzkaller.appspotmail.com
+Fixes: 14215108a1fd ("net_sched: initialize net pointer inside  
+tcf_exts_init()")
+
+R13: 0000000000000008 R14: 0000000000000000 R15: 0000000000000000
+------------[ cut here ]------------
+refcount_t: underflow; use-after-free.
+WARNING: CPU: 1 PID: 9780 at lib/refcount.c:28  
+refcount_warn_saturate+0x1dc/0x1f0 lib/refcount.c:28
+Kernel panic - not syncing: panic_on_warn set ...
+CPU: 1 PID: 9780 Comm: syz-executor174 Not tainted  
+5.5.0-rc5-next-20200110-syzkaller #0
+Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS  
+Google 01/01/2011
+Call Trace:
+  __dump_stack lib/dump_stack.c:77 [inline]
+  dump_stack+0x197/0x210 lib/dump_stack.c:118
+  panic+0x2e3/0x75c kernel/panic.c:221
+  __warn.cold+0x2f/0x3e kernel/panic.c:582
+  report_bug+0x289/0x300 lib/bug.c:195
+  fixup_bug arch/x86/kernel/traps.c:176 [inline]
+  fixup_bug arch/x86/kernel/traps.c:171 [inline]
+  do_error_trap+0x11b/0x200 arch/x86/kernel/traps.c:269
+  do_invalid_op+0x37/0x50 arch/x86/kernel/traps.c:288
+  invalid_op+0x23/0x30 arch/x86/entry/entry_64.S:1027
+RIP: 0010:refcount_warn_saturate+0x1dc/0x1f0 lib/refcount.c:28
+Code: e9 d8 fe ff ff 48 89 df e8 b1 a6 13 fe e9 85 fe ff ff e8 47 6e d5 fd  
+48 c7 c7 80 64 91 88 c6 05 4f 5b 00 07 01 e8 e3 f5 a5 fd <0f> 0b e9 ac fe  
+ff ff 0f 1f 00 66 2e 0f 1f 84 00 00 00 00 00 55 48
+RSP: 0018:ffffc90005fd7cf8 EFLAGS: 00010286
+RAX: 0000000000000000 RBX: 0000000000000000 RCX: 0000000000000000
+RDX: 0000000000000000 RSI: ffffffff815e8546 RDI: fffff52000bfaf91
+RBP: ffffc90005fd7d08 R08: ffff8880a65ee500 R09: ffffed1015d26659
+R10: ffffed1015d26658 R11: ffff8880ae9332c7 R12: 0000000000000003
+R13: ffff88809aff6040 R14: ffff88809aff6044 R15: 00000000000002bc
+  refcount_sub_and_test include/linux/refcount.h:261 [inline]
+  refcount_dec_and_test include/linux/refcount.h:281 [inline]
+  put_net include/net/net_namespace.h:259 [inline]
+  free_nsproxy+0x2eb/0x330 kernel/nsproxy.c:180
+  switch_task_namespaces+0xb3/0xd0 kernel/nsproxy.c:225
+  exit_task_namespaces+0x18/0x20 kernel/nsproxy.c:230
+  do_exit+0xbc6/0x2f70 kernel/exit.c:800
+  do_group_exit+0x135/0x360 kernel/exit.c:899
+  __do_sys_exit_group kernel/exit.c:910 [inline]
+  __se_sys_exit_group kernel/exit.c:908 [inline]
+  __x64_sys_exit_group+0x44/0x50 kernel/exit.c:908
+  do_syscall_64+0xfa/0x790 arch/x86/entry/common.c:294
+  entry_SYSCALL_64_after_hwframe+0x49/0xbe
+RIP: 0033:0x441228
+Code: 74 20 63 6f 64 65 20 62 61 73 65 2e 00 00 00 00 00 00 72 73 79 73 6c  
+6f 67 64 3a 20 24 41 62 6f 72 74 4f 6e 55 6e 63 6c 65 61 <6e> 43 6f 6e 66  
+69 67 20 69 73 20 73 65 74 2c 20 61 6e 64 20 63 6f
+RSP: 002b:00007ffedb54aa88 EFLAGS: 00000246 ORIG_RAX: 00000000000000e7
+RAX: ffffffffffffffda RBX: 0000000000000001 RCX: 0000000000441228
+RDX: 0000000000000001 RSI: 000000000000003c RDI: 0000000000000001
+RBP: 00000000004c79d0 R08: 00000000000000e7 R09: ffffffffffffffd0
+R10: 0000000000000000 R11: 0000000000000246 R12: 0000000000000001
+R13: 00000000006daa80 R14: 0000000000000000 R15: 0000000000000000
+Kernel Offset: disabled
+Rebooting in 86400 seconds..
+
+
+---
+This bug is generated by a bot. It may contain errors.
+See https://goo.gl/tpsmEJ for more information about syzbot.
+syzbot engineers can be reached at syzkaller@googlegroups.com.
+
+syzbot will keep track of this bug report. See:
+https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
+For information about bisection process see: https://goo.gl/tpsmEJ#bisection
+syzbot can test patches for this bug, for details see:
+https://goo.gl/tpsmEJ#testing-patches
