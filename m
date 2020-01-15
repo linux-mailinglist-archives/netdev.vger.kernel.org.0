@@ -2,132 +2,173 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id B0AB113CC38
-	for <lists+netdev@lfdr.de>; Wed, 15 Jan 2020 19:37:16 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0913A13CC4C
+	for <lists+netdev@lfdr.de>; Wed, 15 Jan 2020 19:43:35 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729347AbgAOShK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 15 Jan 2020 13:37:10 -0500
-Received: from mout-p-101.mailbox.org ([80.241.56.151]:31484 "EHLO
-        mout-p-101.mailbox.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729040AbgAOShK (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 15 Jan 2020 13:37:10 -0500
-Received: from smtp2.mailbox.org (smtp2.mailbox.org [80.241.60.241])
-        (using TLSv1.2 with cipher ECDHE-RSA-CHACHA20-POLY1305 (256/256 bits))
-        (No client certificate requested)
-        by mout-p-101.mailbox.org (Postfix) with ESMTPS id 47ybdt5vyZzKmfb;
-        Wed, 15 Jan 2020 19:37:06 +0100 (CET)
-X-Virus-Scanned: amavisd-new at heinlein-support.de
-Received: from smtp2.mailbox.org ([80.241.60.241])
-        by hefe.heinlein-support.de (hefe.heinlein-support.de [91.198.250.172]) (amavisd-new, port 10030)
-        with ESMTP id MVlequWCYhKN; Wed, 15 Jan 2020 19:37:00 +0100 (CET)
-Subject: Re: [PATCH net] net: dsa: tag_gswip: fix typo in tagger name
-To:     Alexander Lobakin <alobakin@dlink.ru>,
-        "David S. Miller" <davem@davemloft.net>
-Cc:     Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-References: <20200115085438.11948-1-alobakin@dlink.ru>
-From:   Hauke Mehrtens <hauke@hauke-m.de>
-Autocrypt: addr=hauke@hauke-m.de; keydata=
- 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
-Message-ID: <b5698102-05a2-9840-1bb5-b0d25a42df11@hauke-m.de>
-Date:   Wed, 15 Jan 2020 19:36:57 +0100
-MIME-Version: 1.0
-In-Reply-To: <20200115085438.11948-1-alobakin@dlink.ru>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+        id S1729072AbgAOSnW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 15 Jan 2020 13:43:22 -0500
+Received: from mail-pj1-f73.google.com ([209.85.216.73]:55910 "EHLO
+        mail-pj1-f73.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726587AbgAOSnW (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 15 Jan 2020 13:43:22 -0500
+Received: by mail-pj1-f73.google.com with SMTP id bg6so418340pjb.5
+        for <netdev@vger.kernel.org>; Wed, 15 Jan 2020 10:43:21 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20161025;
+        h=date:message-id:mime-version:subject:from:to:cc;
+        bh=quGuCKW4EISGK4Hy3QkXGiA4O368RfnyVO/5mhv/zy0=;
+        b=Y3cA+BWUSe9akT5omGsDbcfs51Z43HYfnbw4ChN9ZtZigtQkZQ6CaDsQx/0x/Ti7ef
+         ffcFvdtz4TLUdDR6fzYYWyfV/0qzfWpqkLdV8Qklhpi7O/tagoRRpRntD/HElkizyrRL
+         xQYZ3DtH3dtbOElyGa9/poaqWS8Sj+nQsfY1Y2E8juFusIp6HLwPy6F1YNexpBZ+hVdc
+         7NQRIkD72A4DNQbUr+UkqSzUke1YeoNNhn4RCfErO8Mdcx9XO931ftK5PyCqF8L4t9JJ
+         5lHacg5KeIe3WHBaHrFx3VjN0KSLeTNDcbktb2qwPb4Avk+X+YVNugBjtp0X6LIEwL31
+         I+Nw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:message-id:mime-version:subject:from:to:cc;
+        bh=quGuCKW4EISGK4Hy3QkXGiA4O368RfnyVO/5mhv/zy0=;
+        b=bBlvMEWnfehHdMLuQCk8aG9vZEYHQNewq0E35ZG5oEwmopWX5nfjPjefY+dMnXwxdk
+         Z3qVAdWZCwQNwey7VZnTzf/lCytwY62trHdpSEbat5pUXjw1cgxHiqZ8Zk1ojyfoq6r1
+         zcTWmDWqGhOLICpaRRdWHLtH8an3uovC7Au8leyeV/k1HNtdYh10sxoSBbkBFDysDNFg
+         JBisYQ6NVRjqM5+OIuDhVt3L0KX6aeQ2k9ebot8qgdlYi462IZU9luJidiF8EW3ETDYk
+         DZr57CfCOw6ameCTWiFXU5hcOFERSc+o/kNHDR3Gxg5Nq1oNFTkiWlBav4WyN9GUVI8a
+         Vs/Q==
+X-Gm-Message-State: APjAAAW25LGFb8vyDXO1qhD5aK/lQomH012DKMfOOd2w0Gd6vWZblLeC
+        2i8ycciqp2i/iGhOWPFIg5tSJ9qyI3k1
+X-Google-Smtp-Source: APXvYqwnWiWJM3nIWopzaQLOFXUvYOBDJHYtnbHtV4I6g6NTAk1EW1MagpO1ixh0/8tS7jTs6Sfe6SL7vSQ9
+X-Received: by 2002:a65:55cc:: with SMTP id k12mr35481833pgs.184.1579113801410;
+ Wed, 15 Jan 2020 10:43:21 -0800 (PST)
+Date:   Wed, 15 Jan 2020 10:42:59 -0800
+Message-Id: <20200115184308.162644-1-brianvv@google.com>
+Mime-Version: 1.0
+X-Mailer: git-send-email 2.25.0.rc1.283.g88dfdc4193-goog
+Subject: [PATCH v5 bpf-next 0/9] add bpf batch ops to process more than 1 elem
+From:   Brian Vazquez <brianvv@google.com>
+To:     Brian Vazquez <brianvv.kernel@gmail.com>,
+        Brian Vazquez <brianvv@google.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        "David S . Miller" <davem@davemloft.net>
+Cc:     Yonghong Song <yhs@fb.com>,
+        Andrii Nakryiko <andrii.nakryiko@gmail.com>,
+        Stanislav Fomichev <sdf@google.com>,
+        Petar Penkov <ppenkov@google.com>,
+        Willem de Bruijn <willemb@google.com>,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        bpf@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 1/15/20 9:54 AM, Alexander Lobakin wrote:
-> The correct name is GSWIP (Gigabit Switch IP). Typo was introduced in
-> 875138f81d71a ("dsa: Move tagger name into its ops structure") while
-> moving tagger names to their structures.
-> 
-> Fixes: 875138f81d71a ("dsa: Move tagger name into its ops structure")
-> Reviewed-by: Andrew Lunn <andrew@lunn.ch>
-> Signed-off-by: Alexander Lobakin <alobakin@dlink.ru>
+This patch series introduce batch ops that can be added to bpf maps to
+lookup/lookup_and_delete/update/delete more than 1 element at the time,
+this is specially useful when syscall overhead is a problem and in case
+of hmap it will provide a reliable way of traversing them.
 
-Acked-by: Hauke Mehrtens <hauke@hauke-m.de>
+The implementation inclues a generic approach that could potentially be
+used by any bpf map and adds it to arraymap, it also includes the specific
+implementation of hashmaps which are traversed using buckets instead
+of keys.
 
-> ---
->  net/dsa/tag_gswip.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
-> 
-> diff --git a/net/dsa/tag_gswip.c b/net/dsa/tag_gswip.c
-> index b678160bbd66..408d4af390a0 100644
-> --- a/net/dsa/tag_gswip.c
-> +++ b/net/dsa/tag_gswip.c
-> @@ -104,7 +104,7 @@ static struct sk_buff *gswip_tag_rcv(struct sk_buff *skb,
->  }
->  
->  static const struct dsa_device_ops gswip_netdev_ops = {
-> -	.name = "gwsip",
-> +	.name = "gswip",
->  	.proto	= DSA_TAG_PROTO_GSWIP,
->  	.xmit = gswip_tag_xmit,
->  	.rcv = gswip_tag_rcv,
-> 
+The bpf syscall subcommands introduced are:
+
+  BPF_MAP_LOOKUP_BATCH
+  BPF_MAP_LOOKUP_AND_DELETE_BATCH
+  BPF_MAP_UPDATE_BATCH
+  BPF_MAP_DELETE_BATCH
+
+The UAPI attribute is:
+
+  struct { /* struct used by BPF_MAP_*_BATCH commands */
+         __aligned_u64   in_batch;       /* start batch,
+                                          * NULL to start from beginning
+                                          */
+         __aligned_u64   out_batch;      /* output: next start batch */
+         __aligned_u64   keys;
+         __aligned_u64   values;
+         __u32           count;          /* input/output:
+                                          * input: # of key/value
+                                          * elements
+                                          * output: # of filled elements
+                                          */
+         __u32           map_fd;
+         __u64           elem_flags;
+         __u64           flags;
+  } batch;
+
+
+in_batch and out_batch are only used for lookup and lookup_and_delete since
+those are the only two operations that attempt to traverse the map.
+
+update/delete batch ops should provide the keys/values that user wants
+to modify.
+
+Here are the previous discussions on the batch processing:
+ - https://lore.kernel.org/bpf/20190724165803.87470-1-brianvv@google.com/
+ - https://lore.kernel.org/bpf/20190829064502.2750303-1-yhs@fb.com/
+ - https://lore.kernel.org/bpf/20190906225434.3635421-1-yhs@fb.com/
+
+Changelog sinve v4:
+ - Remove unnecessary checks from libbpf API (Andrii Nakryiko)
+ - Move DECLARE_LIBBPF_OPTS with all var declarations (Andrii Nakryiko)
+ - Change bucket internal buffer size to 5 entries (Yonghong Song)
+ - Fix some minor bugs in hashtab batch ops implementation (Yonghong Song)
+
+Changelog sinve v3:
+ - Do not use copy_to_user inside atomic region (Yonghong Song)
+ - Use _opts approach on libbpf APIs (Andrii Nakryiko)
+ - Drop generic_map_lookup_and_delete_batch support
+ - Free malloc-ed memory in tests (Yonghong Song)
+ - Reverse christmas tree (Yonghong Song)
+ - Add acked labels
+
+Changelog sinve v2:
+ - Add generic batch support for lpm_trie and test it (Yonghong Song)
+ - Use define MAP_LOOKUP_RETRIES for retries (John Fastabend)
+ - Return errors directly and remove labels (Yonghong Song)
+ - Insert new API functions into libbpf alphabetically (Yonghong Song)
+ - Change hlist_nulls_for_each_entry_rcu to
+   hlist_nulls_for_each_entry_safe in htab batch ops (Yonghong Song)
+
+Changelog since v1:
+ - Fix SOB ordering and remove Co-authored-by tag (Alexei Starovoitov)
+
+Changelog since RFC:
+ - Change batch to in_batch and out_batch to support more flexible opaque
+   values to iterate the bpf maps.
+ - Remove update/delete specific batch ops for htab and use the generic
+   implementations instead.
+
+Brian Vazquez (5):
+  bpf: add bpf_map_{value_size,update_value,map_copy_value} functions
+  bpf: add generic support for lookup batch op
+  bpf: add generic support for update and delete batch ops
+  bpf: add lookup and update batch ops to arraymap
+  selftests/bpf: add batch ops testing to array bpf map
+
+Yonghong Song (4):
+  bpf: add batch ops to all htab bpf map
+  tools/bpf: sync uapi header bpf.h
+  libbpf: add libbpf support to batch ops
+  selftests/bpf: add batch ops testing for htab and htab_percpu map
+
+ include/linux/bpf.h                           |  18 +
+ include/uapi/linux/bpf.h                      |  21 +
+ kernel/bpf/arraymap.c                         |   2 +
+ kernel/bpf/hashtab.c                          | 264 +++++++++
+ kernel/bpf/syscall.c                          | 554 ++++++++++++++----
+ tools/include/uapi/linux/bpf.h                |  21 +
+ tools/lib/bpf/bpf.c                           |  58 ++
+ tools/lib/bpf/bpf.h                           |  22 +
+ tools/lib/bpf/libbpf.map                      |   4 +
+ .../bpf/map_tests/array_map_batch_ops.c       | 129 ++++
+ .../bpf/map_tests/htab_map_batch_ops.c        | 283 +++++++++
+ 11 files changed, 1248 insertions(+), 128 deletions(-)
+ create mode 100644 tools/testing/selftests/bpf/map_tests/array_map_batch_ops.c
+ create mode 100644 tools/testing/selftests/bpf/map_tests/htab_map_batch_ops.c
+
+-- 
+2.25.0.rc1.283.g88dfdc4193-goog
 
