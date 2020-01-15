@@ -2,133 +2,129 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 9730A13C83D
-	for <lists+netdev@lfdr.de>; Wed, 15 Jan 2020 16:43:49 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E5A6713C86D
+	for <lists+netdev@lfdr.de>; Wed, 15 Jan 2020 16:54:01 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728928AbgAOPns (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 15 Jan 2020 10:43:48 -0500
-Received: from mail-yb1-f194.google.com ([209.85.219.194]:41060 "EHLO
-        mail-yb1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726165AbgAOPns (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 15 Jan 2020 10:43:48 -0500
-Received: by mail-yb1-f194.google.com with SMTP id z15so3071776ybm.8
-        for <netdev@vger.kernel.org>; Wed, 15 Jan 2020 07:43:47 -0800 (PST)
+        id S1726562AbgAOPx5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 15 Jan 2020 10:53:57 -0500
+Received: from mail-pf1-f195.google.com ([209.85.210.195]:36223 "EHLO
+        mail-pf1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726132AbgAOPx5 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 15 Jan 2020 10:53:57 -0500
+Received: by mail-pf1-f195.google.com with SMTP id x184so8721956pfb.3;
+        Wed, 15 Jan 2020 07:53:56 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=tRacpxn3WSP8qw75gELoYRldETM6kBb4Jb9sC1zqQrc=;
-        b=ma0CavwiF8k4FyYwZ9Ca65oJTYUL/SeXSyplB6tr2rjHQIvtjlaI1H8AS+XleYoYA5
-         VJq+lUevqQTBt4kubnkWh54jGzmwtCmjI0i06hc03z2vVjcLntUHRMT0k5lDnRxuE92x
-         HOfqEq4d1bRBSQDw57givelBSxsrI+HB7rMP/Zhb3v4jpkh5TJBlDYVY/CAtsntHEOof
-         TTgWl/1VmrXuEJ5rWsPx2X0A8/hfweL7c/DnyMpykKQV6Vrr9Z2uRtmSfR7+tCfTgPsY
-         3dL/C9mUVcAl+iU95SrZY2VrqbO3iE4HWd9aXlvcwUlR2c3pT0Xzc0UUcfQj/b59X+j7
-         nNXg==
+        h=from:to:cc:subject:date:message-id;
+        bh=c/GWPQtRfN7j/bEfY+uIGMfC4b83t2OdSqf9AvElNRM=;
+        b=EwuEbm4VZGa5Yrj1M1k5z/SPIhI/TyArbfnbVrC91uJvgqCXjVIYHF5u+M5/X1rdJT
+         70gnHeB+JCcWu5W4tgZ1AO7gppBRrmPJhPzaC6T7a/sQlFkxe/ild7vt8rZ9zah7jWtE
+         Z4I7BJFOJ5+XZh33RgFyQjHfnKNYYhB++PdcLYi7aYsJK1WIJ14lZtuiYXMErVz4EPyx
+         FBnF+th9KbYbdtNpiaWd7qI+ImCzrn0S2An3ip7vWxySJWmnkbLp+PgK4KcjGJTzLKfP
+         GnRrnYuLBNwEaidccyXlPF952M7ocLNt8U1ydpR/UJMCeb1xs020494ha66/l6yU+5jS
+         K+Vg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=tRacpxn3WSP8qw75gELoYRldETM6kBb4Jb9sC1zqQrc=;
-        b=W0uFlTo+VKNMFeqk8vgeleF80rLKo5R9NFJUklHx8Veikd1jUjAYVlRqwlL4xY2Xom
-         R0SmpWAeoLqdiVt/lsUMpbCZakt6aMfqQgY+sdNeMm1j65gMXXqJHwjwlvZJuPtSMMD1
-         DTrv4vTTnKAPpQffyvHxxH3m9lea8m/EJzx2pjeCA+/NleE6+xKq/a3bt8e5XPrN1DJd
-         b6RAn7dqxD9QDRjotiAH5t/T8o9CKCZ5PHs6RO/VU8s0bIPk7Ptq+dbc8r4tVyTJYmKl
-         pRm8UP4I7H8wczoi4w9Rv9kozBFSraoNaGyH5074GDRwgI8LKmmndlEhzUgmqU8BfS9D
-         lshA==
-X-Gm-Message-State: APjAAAWvjljbMh3EfEvwF+UvKsVq4PVh7ACFtMxYNPnykMPYho3R9MIS
-        VNbhdExM1tH8kdyznLpyipKRFcDw
-X-Google-Smtp-Source: APXvYqyASjGoc5FKBy/JpqWqIOLa4O+HmvhLPbtGYm8YPhWIgrpI/Mjv9Ignt2KIbem0ORDWhukpww==
-X-Received: by 2002:a25:840c:: with SMTP id u12mr18122434ybk.1.1579103026422;
-        Wed, 15 Jan 2020 07:43:46 -0800 (PST)
-Received: from mail-yw1-f54.google.com (mail-yw1-f54.google.com. [209.85.161.54])
-        by smtp.gmail.com with ESMTPSA id n1sm8358059ywe.78.2020.01.15.07.43.44
-        for <netdev@vger.kernel.org>
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 15 Jan 2020 07:43:45 -0800 (PST)
-Received: by mail-yw1-f54.google.com with SMTP id u139so11162510ywf.13
-        for <netdev@vger.kernel.org>; Wed, 15 Jan 2020 07:43:44 -0800 (PST)
-X-Received: by 2002:a0d:dcc7:: with SMTP id f190mr23514583ywe.193.1579103024339;
- Wed, 15 Jan 2020 07:43:44 -0800 (PST)
-MIME-Version: 1.0
-References: <20191218133458.14533-1-steffen.klassert@secunet.com>
- <20191218133458.14533-4-steffen.klassert@secunet.com> <CA+FuTScnux23Gj1WTEXHmZkiFG3RQsgmSz19TOWdWByM4Rd15Q@mail.gmail.com>
- <20191219082246.GS8621@gauss3.secunet.de> <CA+FuTScKcwyh7rZdDNQsujndrA+ZnYMmtA7Uh7-ji+RM+t6-hQ@mail.gmail.com>
- <20200113085128.GH8621@gauss3.secunet.de> <CA+FuTSc3sOuPsQ3sJSCudCwZky4FcGF5CopejURmGZUSjXEn3Q@mail.gmail.com>
- <20200115094733.GP8621@gauss3.secunet.de>
-In-Reply-To: <20200115094733.GP8621@gauss3.secunet.de>
-From:   Willem de Bruijn <willemdebruijn.kernel@gmail.com>
-Date:   Wed, 15 Jan 2020 10:43:08 -0500
-X-Gmail-Original-Message-ID: <CA+FuTSeF06hJstQBH4eL4L3=yGdiizw_38BUheYyircW8E3cXg@mail.gmail.com>
-Message-ID: <CA+FuTSeF06hJstQBH4eL4L3=yGdiizw_38BUheYyircW8E3cXg@mail.gmail.com>
-Subject: Re: [PATCH net-next 3/4] net: Support GRO/GSO fraglist chaining.
-To:     Steffen Klassert <steffen.klassert@secunet.com>
-Cc:     Willem de Bruijn <willemdebruijn.kernel@gmail.com>,
-        David Miller <davem@davemloft.net>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Subash Abhinov Kasiviswanathan <subashab@codeaurora.org>,
-        Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>,
-        Network Development <netdev@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=c/GWPQtRfN7j/bEfY+uIGMfC4b83t2OdSqf9AvElNRM=;
+        b=UWrGkG8Sp4FK/H64YWzWeXGaTWphFo1Va1yrdwuzC8Ux4w4hrVHrm25L7HWa3Aaynw
+         pura02OBQIzOSUFIayNO9GHhaLdgVjCVP6bGiXHZqCczurhPjVijNwC4GC8wvhiklPnX
+         BkMSOTq2V88A1brrEM8qnWDW9wVr6dPTSodemgyjuXvkxLf6+nORAAot4GrB5KYnhVXs
+         kEd66vm2JmxMjNjQHUg3epOr0/U0ho6y6wLyYOz+dxVV2A79MqibBUDwaSKB/ysxHvLu
+         TnNPtC6/jVWW1YtIc/s6QGQgZcxVIS19wP+Z7n2Je3q772cqCTS2oZSbZ8DwOuc9aXXd
+         tFBw==
+X-Gm-Message-State: APjAAAUlxARnCxjhLFD/t0zw1Vcrm22pZHtPuqbkDVP0blobqvsEtpLe
+        2Y/RCUcJXfRcFbJZGPhf7UTAjvmS
+X-Google-Smtp-Source: APXvYqyKceOTx9ZjZoes/c2uX1iezUq1hng9gL92ptSPdkUO9WPHZB3PUuC6MsV6ZBJ7g6f6sPoZEQ==
+X-Received: by 2002:aa7:8088:: with SMTP id v8mr32789472pff.142.1579103636329;
+        Wed, 15 Jan 2020 07:53:56 -0800 (PST)
+Received: from localhost (64.64.229.47.16clouds.com. [64.64.229.47])
+        by smtp.gmail.com with ESMTPSA id i66sm22664925pfg.85.2020.01.15.07.53.55
+        (version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
+        Wed, 15 Jan 2020 07:53:55 -0800 (PST)
+From:   Dejin Zheng <zhengdejin5@gmail.com>
+To:     peppe.cavallaro@st.com, alexandre.torgue@st.com,
+        joabreu@synopsys.com, davem@davemloft.net,
+        mcoquelin.stm32@gmail.com
+Cc:     netdev@vger.kernel.org, linux-stm32@st-md-mailman.stormreply.com,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        Dejin Zheng <zhengdejin5@gmail.com>
+Subject: [PATCH] net: stmmac: modified pcs mode support for RGMII
+Date:   Wed, 15 Jan 2020 23:53:23 +0800
+Message-Id: <20200115155323.15543-1-zhengdejin5@gmail.com>
+X-Mailer: git-send-email 2.17.1
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> > > Maybe we can be conservative here and do a full
-> > > __copy_skb_header for now. The initial version
-> > > does not necessarily need to be the most performant
-> > > version. We could try to identify the correct subset
-> > > of header fields later then.
-> >
-> > We should probably aim for the right set from the start. If you think
-> > this set is it, let's keep it.
->
-> I'd prefer to do a full __copy_skb_header for now and think a bit
-> longer if that what I chose is really the correct subset.
+snps databook noted that physical coding sublayer (PCS) interface
+that can be used when the MAC is configured for the TBI, RTBI, or
+SGMII PHY interface. we have RGMII and SGMII in a SoC and it also
+has the PCS block. it needs stmmac_init_phy and stmmac_mdio_register
+function for initializing phy when it used RGMII interface.
 
-Ok
+Signed-off-by: Dejin Zheng <zhengdejin5@gmail.com>
+---
+ .../net/ethernet/stmicro/stmmac/stmmac_main.c   | 17 ++++++-----------
+ 1 file changed, 6 insertions(+), 11 deletions(-)
 
-> > > > > I had to set ip_summed to CHECKSUM_UNNECESSARY on GRO to
-> > > > > make sure the noone touches the checksum of the head
-> > > > > skb. Otherise netfilter etc. tries to touch the csum.
-> > > > >
-> > > > > Before chaining I make sure that ip_summed and csum_level is
-> > > > > the same for all chained skbs and here I restore the original
-> > > > > value from nskb.
-> > > >
-> > > > This is safe because the skb_gro_checksum_validate will have validated
-> > > > already on CHECKSUM_PARTIAL? What happens if there is decap or encap
-> > > > in the path? We cannot revert to CHECKSUM_PARTIAL after that, I
-> > > > imagine.
-> > >
-> > > Yes, the checksum is validated with skb_gro_checksum_validate. If the
-> > > packets are UDP encapsulated, they are segmented before decapsulation.
-> > > Original values are already restored. If an additional encapsulation
-> > > happens, the encap checksum will be calculated after segmentation.
-> > > Original values are restored before that.
-> >
-> > I was wondering more about additional other encapsulation protocols.
-> >
-> > >From a quick read, it seems like csum_level is associated only with
-> > CHECKSUM_UNNECESSARY.
-> >
-> > What if a device returns CHECKSUM_COMPLETE for packets with a tunnel
-> > that is decapsulated before forwarding. Say, just VLAN. That gets
-> > untagged in __netif_receive_skb_core with skb_vlan_untag calling
-> > skb_pull_rcsum. After segmentation the ip_summed is restored, with
-> > skb->csum still containing the unmodified csum that includes the VLAN
-> > tag?
->
-> Hm, that could be really a problem. So setting CHECKSUM_UNNECESSARY
-> should be ok, but restoring the old values are not. Our checksum
-> magic is rather complex, it's hard to get it right for all possible
-> cases. Maybe we can just set CHECKSUM_UNNECESSARY for all packets
-> and keep this value after segmentation.
+diff --git a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
+index 6f51a265459d..9778e7e0c005 100644
+--- a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
++++ b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
+@@ -387,9 +387,8 @@ bool stmmac_eee_init(struct stmmac_priv *priv)
+ 	/* Using PCS we cannot dial with the phy registers at this stage
+ 	 * so we do not support extra feature like EEE.
+ 	 */
+-	if ((priv->hw->pcs == STMMAC_PCS_RGMII) ||
+-	    (priv->hw->pcs == STMMAC_PCS_TBI) ||
+-	    (priv->hw->pcs == STMMAC_PCS_RTBI))
++	if (priv->hw->pcs == STMMAC_PCS_TBI ||
++	    priv->hw->pcs == STMMAC_PCS_RTBI)
+ 		return false;
+ 
+ 	/* Check if MAC core supports the EEE feature. */
+@@ -2652,8 +2651,7 @@ static int stmmac_open(struct net_device *dev)
+ 	u32 chan;
+ 	int ret;
+ 
+-	if (priv->hw->pcs != STMMAC_PCS_RGMII &&
+-	    priv->hw->pcs != STMMAC_PCS_TBI &&
++	if (priv->hw->pcs != STMMAC_PCS_TBI &&
+ 	    priv->hw->pcs != STMMAC_PCS_RTBI) {
+ 		ret = stmmac_init_phy(dev);
+ 		if (ret) {
+@@ -4725,8 +4723,7 @@ int stmmac_dvr_probe(struct device *device,
+ 
+ 	stmmac_check_pcs_mode(priv);
+ 
+-	if (priv->hw->pcs != STMMAC_PCS_RGMII  &&
+-	    priv->hw->pcs != STMMAC_PCS_TBI &&
++	if (priv->hw->pcs != STMMAC_PCS_TBI &&
+ 	    priv->hw->pcs != STMMAC_PCS_RTBI) {
+ 		/* MDIO bus Registration */
+ 		ret = stmmac_mdio_register(ndev);
+@@ -4760,8 +4757,7 @@ int stmmac_dvr_probe(struct device *device,
+ error_netdev_register:
+ 	phylink_destroy(priv->phylink);
+ error_phy_setup:
+-	if (priv->hw->pcs != STMMAC_PCS_RGMII &&
+-	    priv->hw->pcs != STMMAC_PCS_TBI &&
++	if (priv->hw->pcs != STMMAC_PCS_TBI &&
+ 	    priv->hw->pcs != STMMAC_PCS_RTBI)
+ 		stmmac_mdio_unregister(ndev);
+ error_mdio_register:
+@@ -4806,8 +4802,7 @@ int stmmac_dvr_remove(struct device *dev)
+ 		reset_control_assert(priv->plat->stmmac_rst);
+ 	clk_disable_unprepare(priv->plat->pclk);
+ 	clk_disable_unprepare(priv->plat->stmmac_clk);
+-	if (priv->hw->pcs != STMMAC_PCS_RGMII &&
+-	    priv->hw->pcs != STMMAC_PCS_TBI &&
++	if (priv->hw->pcs != STMMAC_PCS_TBI &&
+ 	    priv->hw->pcs != STMMAC_PCS_RTBI)
+ 		stmmac_mdio_unregister(ndev);
+ 	destroy_workqueue(priv->wq);
+-- 
+2.17.1
 
-Note that I'm not 100% sure that the issue can occur. But it seems likely.
-
-Yes, inverse CHECKSUM_UNNECESSARY conversion after verifying the checksum is
-probably the way to go. Inverse, because it is the opposite of
-__skb_gro_checksum_convert.
-
-Or forgo (this variant of) GRO when encountering unexpected outer encap headers?
