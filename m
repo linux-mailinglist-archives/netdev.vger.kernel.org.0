@@ -2,188 +2,130 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id ADB0013B9D3
-	for <lists+netdev@lfdr.de>; Wed, 15 Jan 2020 07:40:00 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4FA4013B9D6
+	for <lists+netdev@lfdr.de>; Wed, 15 Jan 2020 07:40:38 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726165AbgAOGj6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 15 Jan 2020 01:39:58 -0500
-Received: from mail-qt1-f194.google.com ([209.85.160.194]:43981 "EHLO
-        mail-qt1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725962AbgAOGj6 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 15 Jan 2020 01:39:58 -0500
-Received: by mail-qt1-f194.google.com with SMTP id d18so14861660qtj.10;
-        Tue, 14 Jan 2020 22:39:57 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=OkABScBdRODOxQvYQ7uBZR9KdTUTCfP+0qd3dGJcuQ0=;
-        b=ZDdmJOzVrfW9XmyJVJXMWlWTeMnx3FSlN+3/H5hQoXWywFuTfJ6QheXlP95lDlCK2q
-         0ZxdvUU+q340XF10bx9qL3I2Uu+WOUaeLQc8kyabqZR/MNvKYmTX3Cgbq+Li+x3nlnAY
-         FD+8k2b30A0NCfT3/8+hn+fdoeX9b1BAwH0yLsC+fBweWdcTiuBZfZOU6ZX/ZiG5vIIG
-         Z/GTwUkEEJq+t7j049sJxPBZiUjbVx1Bi3bpR8QbV8ADkNrQzwcvljAnGIaMDAEgxUpf
-         M+ZIFWK2g+Qa9foiCrmcheCRGa8AVR1ZCp40VFKUBgsCOrcUwcqRxtJ/OJFdjJU8pD2K
-         8t8g==
+        id S1729112AbgAOGkO convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Wed, 15 Jan 2020 01:40:14 -0500
+Received: from youngberry.canonical.com ([91.189.89.112]:49546 "EHLO
+        youngberry.canonical.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725962AbgAOGkL (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 15 Jan 2020 01:40:11 -0500
+Received: from mail-pg1-f197.google.com ([209.85.215.197])
+        by youngberry.canonical.com with esmtps (TLS1.2:ECDHE_RSA_AES_128_GCM_SHA256:128)
+        (Exim 4.86_2)
+        (envelope-from <kai.heng.feng@canonical.com>)
+        id 1ircLZ-00029A-AZ
+        for netdev@vger.kernel.org; Wed, 15 Jan 2020 06:40:09 +0000
+Received: by mail-pg1-f197.google.com with SMTP id c8so9778263pgl.15
+        for <netdev@vger.kernel.org>; Tue, 14 Jan 2020 22:40:09 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=OkABScBdRODOxQvYQ7uBZR9KdTUTCfP+0qd3dGJcuQ0=;
-        b=HPQsJEuVrdk84eYSaHFTlqXQmLkjKM6BUodC5qAAWcKk3tk8qYCepia5jbPFN2Ja9u
-         qg6gqHyuxtHYM50TrKSOqGm0re7wmcIJmMsu9roVi2f13FVfulhumKztCBhxpIHHECuc
-         J3kj5ypL+T2VdlhLrl8SgT6jg8Z3dp0Ye2Rk3gpY0Br7sfF30+gpS/cNPES6U2jhSyuY
-         K/rsNZsWs6hBdDxgafHLWwn+zT54b5FCRxd+ekHVFrD9IPznZtp7euJd7VzQ0GbS937L
-         A7JPQ8aFRHkA20BU070Md1U9+fdYpL15nECHNNCWVQVtASvlvcDpHdiJ+u+cvwVwRFCH
-         UdAA==
-X-Gm-Message-State: APjAAAXONhNqc8Jv4UbMx83LIYyqyH/iLDGZ0rM5lrDWuprAMruYb5jt
-        en+zYzdsVb9Qvqm7jsscA5tGTQHcK7pZ1yKn3LMCRA==
-X-Google-Smtp-Source: APXvYqwkQNFhnDHj+aNqRxoFHKL4OM3PqX76Va2rbh+1vzIrSaB5WNyLfagtI9zxPxUxNZ1st+sz6+m9lU/pdZW4VyA=
-X-Received: by 2002:ac8:4050:: with SMTP id j16mr2122360qtl.171.1579070396752;
- Tue, 14 Jan 2020 22:39:56 -0800 (PST)
-MIME-Version: 1.0
-References: <20200114224358.3027079-1-kafai@fb.com> <20200114224426.3028966-1-kafai@fb.com>
- <CAEf4BzYgvq+s09d7eKhf_dd-Goh-V3DRHWmMM+=k0=Ce=zQ2ug@mail.gmail.com> <20200115060406.ze7kwkljkytmodq7@kafai-mbp.dhcp.thefacebook.com>
-In-Reply-To: <20200115060406.ze7kwkljkytmodq7@kafai-mbp.dhcp.thefacebook.com>
-From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Tue, 14 Jan 2020 22:39:45 -0800
-Message-ID: <CAEf4BzaBw93YEU7CktQp8FkphsBYRGRHpsF-D-BjWHG1UXoakA@mail.gmail.com>
-Subject: Re: [PATCH bpf-next 5/5] bpftool: Support dumping a map with btf_vmlinux_value_type_id
-To:     Martin Lau <kafai@fb.com>
-Cc:     bpf <bpf@vger.kernel.org>, Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        David Miller <davem@davemloft.net>,
-        Kernel Team <Kernel-team@fb.com>,
-        Networking <netdev@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+        h=x-gm-message-state:mime-version:subject:from:in-reply-to:date:cc
+         :content-transfer-encoding:message-id:references:to;
+        bh=ks+FKtYdipfmIovpRk0e6E//v9CS+XKOemaSP1iQ0A8=;
+        b=KFOblWfa3uA/WsJu33k6T1shghgwOmFNW6R1zm8Yzn87JIZoQ3+g5iNhELUXtkQb9Y
+         9a1IjJn/EFNdvIfbyEieoRB9PaNW4442quRw5AuV95Lf3o7tZLHMZXlsuhAq25DsLYpM
+         +YxbfnqK0klx9TLFAV756PSr1lkJf5y7hgcw4gYiakhRgqYaxh513joT+B1IIhiNE1y/
+         7woLAfcErHpOowSfFIDgZXyjyEhyyk8q+oPaWzwVQpSe3xfxU9FKMHhnogWqfNq5OW1s
+         8C4mnAM29ewtQlD8xvCSJ7Q/sG7U1JqUHOjH4T4CurklK1qqptkz0gGzT8cdoZ4vXrdX
+         wvMA==
+X-Gm-Message-State: APjAAAX2J81C/Q+ja5GlHD5xPsifkHTEqeIAVL8kvI35QUyM2at1kz0P
+        pCtCsl5ohtvhp1KzyGn4mpnXt7yfaCo8YC70H6kRlDpJrghdvtHz1T3X4pzDPyZnNpcZC3bNadQ
+        2u+cgIOA+2MVCTGzfSqGDArSNhJBiPyzq9A==
+X-Received: by 2002:a63:d141:: with SMTP id c1mr26072649pgj.397.1579070407858;
+        Tue, 14 Jan 2020 22:40:07 -0800 (PST)
+X-Google-Smtp-Source: APXvYqyCAlUxgFq4p9aUmqfpZAip45/nK5+OQYN5+5gQPity3Khdrn/uFB+ajTrWkrsHEqOLOxPIzg==
+X-Received: by 2002:a63:d141:: with SMTP id c1mr26072612pgj.397.1579070407423;
+        Tue, 14 Jan 2020 22:40:07 -0800 (PST)
+Received: from [10.101.46.91] (61-220-137-37.HINET-IP.hinet.net. [61.220.137.37])
+        by smtp.gmail.com with ESMTPSA id l14sm17861129pgt.42.2020.01.14.22.40.05
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Tue, 14 Jan 2020 22:40:06 -0800 (PST)
+Content-Type: text/plain;
+        charset=us-ascii
+Mime-Version: 1.0 (Mac OS X Mail 13.0 \(3594.4.19\))
+Subject: Re: [PATCH] r8152: Add MAC passthrough support to new device
+From:   Kai Heng Feng <kai.heng.feng@canonical.com>
+In-Reply-To: <d8af34dbf4994b7b8b0bf48e81084dd0@AUSX13MPC101.AMER.DELL.COM>
+Date:   Wed, 15 Jan 2020 14:40:03 +0800
+Cc:     David Miller <davem@davemloft.net>, hayeswang@realtek.com,
+        Jakub Kicinski <jakub.kicinski@netronome.com>,
+        pmalani@chromium.org, grundler@chromium.org,
+        "<David.Chen7@dell.com>" <David.Chen7@Dell.com>,
+        linux-usb@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Content-Transfer-Encoding: 8BIT
+Message-Id: <430A264A-27E0-489D-B7B1-8E78AAD528D7@canonical.com>
+References: <20200114044127.20085-1-kai.heng.feng@canonical.com>
+ <d8af34dbf4994b7b8b0bf48e81084dd0@AUSX13MPC101.AMER.DELL.COM>
+To:     Mario.Limonciello@dell.com
+X-Mailer: Apple Mail (2.3594.4.19)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Jan 14, 2020 at 10:04 PM Martin Lau <kafai@fb.com> wrote:
->
-> On Tue, Jan 14, 2020 at 05:49:00PM -0800, Andrii Nakryiko wrote:
-> > On Tue, Jan 14, 2020 at 2:46 PM Martin KaFai Lau <kafai@fb.com> wrote:
-> > >
-> > > This patch makes bpftool support dumping a map's value properly
-> > > when the map's value type is a type of the running kernel's btf.
-> > > (i.e. map_info.btf_vmlinux_value_type_id is set instead of
-> > > map_info.btf_value_type_id).  The first usecase is for the
-> > > BPF_MAP_TYPE_STRUCT_OPS.
-> > >
-> > > Signed-off-by: Martin KaFai Lau <kafai@fb.com>
-> > > ---
-> > >  tools/bpf/bpftool/map.c | 43 +++++++++++++++++++++++++++++++----------
-> > >  1 file changed, 33 insertions(+), 10 deletions(-)
-> > >
-> > > diff --git a/tools/bpf/bpftool/map.c b/tools/bpf/bpftool/map.c
-> > > index 4c5b15d736b6..d25f3b2355ad 100644
-> > > --- a/tools/bpf/bpftool/map.c
-> > > +++ b/tools/bpf/bpftool/map.c
-> > > @@ -20,6 +20,7 @@
-> > >  #include "btf.h"
-> > >  #include "json_writer.h"
-> > >  #include "main.h"
-> > > +#include "libbpf_internal.h"
-> > >
-> > >  const char * const map_type_name[] = {
-> > >         [BPF_MAP_TYPE_UNSPEC]                   = "unspec",
-> > > @@ -252,6 +253,7 @@ static int do_dump_btf(const struct btf_dumper *d,
-> > >                        struct bpf_map_info *map_info, void *key,
-> > >                        void *value)
-> > >  {
-> > > +       __u32 value_id;
-> > >         int ret;
-> > >
-> > >         /* start of key-value pair */
-> > > @@ -265,9 +267,12 @@ static int do_dump_btf(const struct btf_dumper *d,
-> > >                         goto err_end_obj;
-> > >         }
-> > >
-> > > +       value_id = map_info->btf_vmlinux_value_type_id ?
-> > > +               : map_info->btf_value_type_id;
-> > > +
-> > >         if (!map_is_per_cpu(map_info->type)) {
-> > >                 jsonw_name(d->jw, "value");
-> > > -               ret = btf_dumper_type(d, map_info->btf_value_type_id, value);
-> > > +               ret = btf_dumper_type(d, value_id, value);
-> > >         } else {
-> > >                 unsigned int i, n, step;
-> > >
-> > > @@ -279,8 +284,7 @@ static int do_dump_btf(const struct btf_dumper *d,
-> > >                         jsonw_start_object(d->jw);
-> > >                         jsonw_int_field(d->jw, "cpu", i);
-> > >                         jsonw_name(d->jw, "value");
-> > > -                       ret = btf_dumper_type(d, map_info->btf_value_type_id,
-> > > -                                             value + i * step);
-> > > +                       ret = btf_dumper_type(d, value_id, value + i * step);
-> > >                         jsonw_end_object(d->jw);
-> > >                         if (ret)
-> > >                                 break;
-> > > @@ -932,6 +936,27 @@ static int maps_have_btf(int *fds, int nb_fds)
-> > >         return 1;
-> > >  }
-> > >
-> > > +static struct btf *get_map_kv_btf(const struct bpf_map_info *info)
-> > > +{
-> > > +       struct btf *btf = NULL;
-> > > +
-> > > +       if (info->btf_vmlinux_value_type_id) {
-> > > +               btf = bpf_find_kernel_btf();
-> >
-> > If there are multiple maps we are dumping, it might become quite
-> > costly to re-read and re-parse kernel BTF all the time. Can we lazily
-> > load it, when required,
-> It is loaded lazily.
->
 
-yeah, it was meant as "lazy load and cache" vs "pre-load always"
-(which makes caching simpler).
 
-> > and cache instead?
-> Cache it in bpftool/map.c? Sure.
+> On Jan 15, 2020, at 4:33 AM, Mario.Limonciello@dell.com wrote:
+> 
+> 
+> 
+>> -----Original Message-----
+>> From: Kai-Heng Feng <kai.heng.feng@canonical.com>
+>> Sent: Monday, January 13, 2020 10:41 PM
+>> To: davem@davemloft.net; hayeswang@realtek.com
+>> Cc: Kai-Heng Feng; Jakub Kicinski; Prashant Malani; Grant Grundler; Limonciello,
+>> Mario; Chen7, David; open list:USB NETWORKING DRIVERS; open list:NETWORKING
+>> DRIVERS; open list
+>> Subject: [PATCH] r8152: Add MAC passthrough support to new device
+>> 
+>> 
+>> [EXTERNAL EMAIL]
+>> 
+>> Device 0xa387 also supports MAC passthrough, therefore add it to the
+>> whitelst.
+> 
+> Have you confirmed whether this product ID is unique to the products that
+> support this feature or if it's also re-used in other products?
 
-yeah, for the duration of dumping
+This is unique for Lenovo product.
 
->
-> >
-> > > +               if (IS_ERR(btf))
-> > > +                       p_err("failed to get kernel btf");
-> > > +       } else if (info->btf_value_type_id) {
-> > > +               int err;
-> > > +
-> > > +               err = btf__get_from_id(info->btf_id, &btf);
-> > > +               if (err || !btf) {
-> > > +                       p_err("failed to get btf");
-> > > +                       btf = err ? ERR_PTR(err) : ERR_PTR(-ESRCH);
-> > > +               }
-> > > +       }
-> > > +
-> > > +       return btf;
-> > > +}
-> > > +
-> > >  static int
-> > >  map_dump(int fd, struct bpf_map_info *info, json_writer_t *wtr,
-> > >          bool show_header)
-> > > @@ -952,13 +977,11 @@ map_dump(int fd, struct bpf_map_info *info, json_writer_t *wtr,
-> > >         prev_key = NULL;
-> > >
-> > >         if (wtr) {
-> > > -               if (info->btf_id) {
-> > > -                       err = btf__get_from_id(info->btf_id, &btf);
-> > > -                       if (err || !btf) {
-> > > -                               err = err ? : -ESRCH;
-> > > -                               p_err("failed to get btf");
-> > > -                               goto exit_free;
-> > > -                       }
-> > > +               btf = get_map_kv_btf(info);
-> > > +               if (IS_ERR(btf)) {
-> > > +                       err = PTR_ERR(btf);
-> > > +                       btf = NULL;
-> > > +                       goto exit_free;
-> > >                 }
-> > >
-> > >                 if (show_header) {
-> > > --
-> > > 2.17.1
-> > >
+> 
+> For Dell's devices there are very specific tests that make sure that this
+> feature only applies on the products it is supposed to and nothing else
+> (For example RTL8153-AD checks variant as well as effuse value)
+> (Example two: RTL8153-BND is a Dell only part).
+
+Hayes, do you know how macpassthru on Lenovo dock works?
+
+Kai-Heng
+
+> 
+>> 
+>> BugLink: https://bugs.launchpad.net/bugs/1827961/comments/30
+>> Signed-off-by: Kai-Heng Feng <kai.heng.feng@canonical.com>
+>> ---
+>> drivers/net/usb/r8152.c | 3 ++-
+>> 1 file changed, 2 insertions(+), 1 deletion(-)
+>> 
+>> diff --git a/drivers/net/usb/r8152.c b/drivers/net/usb/r8152.c
+>> index c5ebf35d2488..42dcf1442cc0 100644
+>> --- a/drivers/net/usb/r8152.c
+>> +++ b/drivers/net/usb/r8152.c
+>> @@ -6657,7 +6657,8 @@ static int rtl8152_probe(struct usb_interface *intf,
+>> 	}
+>> 
+>> 	if (le16_to_cpu(udev->descriptor.idVendor) == VENDOR_ID_LENOVO &&
+>> -	    le16_to_cpu(udev->descriptor.idProduct) == 0x3082)
+>> +	    (le16_to_cpu(udev->descriptor.idProduct) == 0x3082 ||
+>> +	     le16_to_cpu(udev->descriptor.idProduct) == 0xa387))
+>> 		set_bit(LENOVO_MACPASSTHRU, &tp->flags);
+>> 
+>> 	if (le16_to_cpu(udev->descriptor.bcdDevice) == 0x3011 && udev->serial
+>> &&
+>> --
+>> 2.17.1
+> 
+
