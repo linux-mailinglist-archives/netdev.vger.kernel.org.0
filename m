@@ -2,150 +2,254 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id AF99313B942
-	for <lists+netdev@lfdr.de>; Wed, 15 Jan 2020 06:57:34 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B813213B953
+	for <lists+netdev@lfdr.de>; Wed, 15 Jan 2020 07:02:14 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726088AbgAOF42 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 15 Jan 2020 00:56:28 -0500
-Received: from mx0b-00082601.pphosted.com ([67.231.153.30]:17234 "EHLO
-        mx0b-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1725999AbgAOF42 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 15 Jan 2020 00:56:28 -0500
-Received: from pps.filterd (m0109331.ppops.net [127.0.0.1])
-        by mx0a-00082601.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 00F5rGg5004499;
-        Tue, 14 Jan 2020 21:56:14 -0800
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
- : date : message-id : references : in-reply-to : content-type : content-id
- : content-transfer-encoding : mime-version; s=facebook;
- bh=zJ0oOBf9uLQbHKC4/0it0OjJL7n+Y079cwhFFUnlZ/U=;
- b=dusOYn/VueZsO9gPa+B7fSqJ2nHM2tVwt7+s/bCiJfq/s+k1n0OJYeoG1DJMNpU+rzzf
- dM+yzur7yCNUBFnwDVwclF7j/clBj7EcANtwcoZiraSgAE0Afuse/wWH3vPJujxkCMSK
- he0DeLWoYkwFIbo7/sSiNnp9DNbzO5oLCVc= 
-Received: from maileast.thefacebook.com ([163.114.130.16])
-        by mx0a-00082601.pphosted.com with ESMTP id 2xhaj2damd-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
-        Tue, 14 Jan 2020 21:56:14 -0800
-Received: from NAM04-BN3-obe.outbound.protection.outlook.com (100.104.31.183)
- by o365-in.thefacebook.com (100.104.36.103) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.1713.5; Tue, 14 Jan 2020 21:56:13 -0800
+        id S1726187AbgAOGCI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 15 Jan 2020 01:02:08 -0500
+Received: from mail-mw2nam12on2041.outbound.protection.outlook.com ([40.107.244.41]:32813
+        "EHLO NAM12-MW2-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1725962AbgAOGCI (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 15 Jan 2020 01:02:08 -0500
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=TnTmG7Bx5I4rMM2clNCY4PUnAx4ir7aOQn8S7NUXMJFKTD8UKpNL9F2zZfQrPtM0Nzzm8o67aZVfqETTrL7opFf3wBep52zy8g3m183gzjjQz/8kfqf2HWzPZ6HBlI899Ut2wZSV9xebBcKF06ARLzQdVkUfEWuF9Juh0lo1i8fNuwO8SiQRoeh00PoZ3BRZajYIde3S5OTK/SMKjRTRrPgybpSws+UNz/ILypFE3Q8DD3IN8P7NrUiG9NSBXhL5PRqvwZ5POc1rF5rW4V4dNPF02unImjwpXApIxWh5LRZ17qLz6tZglB4B9n56oph1/7WpdECFNz+hJIzsAWGSmQ==
+ b=VzcRRDvPoAO9vgHiNpMDmySMDp9R5Up+RQHUxPHHH8z4ZiY1Mlw39mOJ3wHWMh4/T/hVyrJfDbx0KLmQd2c3psr0RR2zx3nInMqt/09rhSUdADBS0Wr+kPu2pNY/ld/dHdpP7joTroC9nbS1Z5luuM+ZEkFTuWAzlQZZ58nJIj4kvXuY18SNZwoDGiSp5BoNk8dpaFcjQc9ujVsyKVcpj0pTKOTQelrDU6tzUe7JlBDLj7rwn2iveiJzT7oPAIkk2ibxTVs576qBglPhcISXzYntFF15JA1SWIJYe47OhRPj+vrhUH0sTS/HdTCTQFgriLn2uUuoIgaCHjO72FRW1g==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=zJ0oOBf9uLQbHKC4/0it0OjJL7n+Y079cwhFFUnlZ/U=;
- b=cj8esaiZfguzBDPtYetJAfLXBhIr0riea1W7gysPm55Nv03swwzfCUFiW+t1HW/IoZWDQJb6DU/e5HOpsWX6mIVAkBirkWntzGhyva+teWR5e/HMY7kxOyeJ6MSJl+EIkWx7Vr8aIS2PpBlQqbYJunHqUmiDfjzq28ZIPNkMhKyF0Ein62Z8eLmbFI7dzlgu5Gufsa5119atIYHpMx1SYrGgsg2w6t2gmeLWtbzsQz3DCAvNWnIOclTeqv2U1Sxr3udsVL17iitAJh0N/Dw1Sz/6KTVx0Tdr56zWQcbWlabVBHY4Jumt/I6OTDvBM02xXiarDOchy6KJkasoMxW5pQ==
+ bh=UpxRgxJzyaHMjS87+FyGfwoC+gNy8SRFH7N2y/KkEgY=;
+ b=dVz4v6ame/r9A+34iJnW2P159FOrCHfF6Z0bXKbRV+BHg5uttI4r3wm9gzW+u2QRgdXXcsH/iFrk8zQdk99e+B19rez3JyY2Dk4ZZijhKqcdtl1QXzO95wOflaKokmd4wEzsn2Twt5Em8EtDQG275WmcUojOakpQEXaor/xbPEJxdfxEakHy54xJvuXswM4bsJXinAZcvN8hJmO6GnGVUI35Xwr7a/BL+vCMf1E9alrgHI4rPiypLZPFjmaFm3Q8/5bA9RCECHmdKFORFKQe/aU/Dq5JxmQIlbfk/kFuK7tjn9gVe4aoiqJ8FsSqgqr2mc+b82snHciRJJXq8HRbzA==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=fb.com; dmarc=pass action=none header.from=fb.com; dkim=pass
- header.d=fb.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.onmicrosoft.com;
- s=selector2-fb-onmicrosoft-com;
+ smtp.mailfrom=xilinx.com; dmarc=pass action=none header.from=xilinx.com;
+ dkim=pass header.d=xilinx.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=xilinx.onmicrosoft.com; s=selector2-xilinx-onmicrosoft-com;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=zJ0oOBf9uLQbHKC4/0it0OjJL7n+Y079cwhFFUnlZ/U=;
- b=hwBVFgdMuWOhhB7wUoiNGFW7L/ML7wUV98vXMFzQMxGMO7QQzu0P3ZCTMkIpdjpve8t9S3ojkl6n1u61wa+Ke7CcZ6iA7E6Jxze0r6F2vOBBLTS1aQdUY4jSXqJX9G3ZvE/d+V9TcDdOycXvks6wTwfXASe7Dv8Njruh6GTSh74=
-Received: from MN2PR15MB3213.namprd15.prod.outlook.com (20.179.21.76) by
- MN2PR15MB2848.namprd15.prod.outlook.com (20.178.252.32) with Microsoft SMTP
+ bh=UpxRgxJzyaHMjS87+FyGfwoC+gNy8SRFH7N2y/KkEgY=;
+ b=ofwnDNjhvXylPe1vWFqEee+5zlf+1kmqjyYIYqgiqa+mQPAp8f+RmYI4CtJlJzXb1msMxB0H6biX4/rwzt9oy/WOK2XVkDoX5P8TVj3IJTYgjcOY4OSg18oe7OdOqoDRHWRPBnjgy+JbHbT95H33IfRk5mgy6Mchud6qh8YyIuw=
+Received: from MN2PR02MB7007.namprd02.prod.outlook.com (20.180.25.208) by
+ MN2PR02MB6976.namprd02.prod.outlook.com (20.179.223.146) with Microsoft SMTP
  Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.2623.9; Wed, 15 Jan 2020 05:56:12 +0000
-Received: from MN2PR15MB3213.namprd15.prod.outlook.com
- ([fe80::6d1e:f2f7:d36:a42f]) by MN2PR15MB3213.namprd15.prod.outlook.com
- ([fe80::6d1e:f2f7:d36:a42f%4]) with mapi id 15.20.2623.017; Wed, 15 Jan 2020
- 05:56:12 +0000
-Received: from kafai-mbp.dhcp.thefacebook.com (2620:10d:c090:180::55) by MWHPR11CA0021.namprd11.prod.outlook.com (2603:10b6:301:1::31) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.2623.10 via Frontend Transport; Wed, 15 Jan 2020 05:56:10 +0000
-From:   Martin Lau <kafai@fb.com>
-To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
-CC:     bpf <bpf@vger.kernel.org>, Alexei Starovoitov <ast@kernel.org>,
-        "Daniel Borkmann" <daniel@iogearbox.net>,
-        David Miller <davem@davemloft.net>,
-        "Kernel Team" <Kernel-team@fb.com>,
-        Networking <netdev@vger.kernel.org>
-Subject: Re: [PATCH bpf-next 3/5] libbpf: Expose bpf_find_kernel_btf to
- libbpf_internal.h
-Thread-Topic: [PATCH bpf-next 3/5] libbpf: Expose bpf_find_kernel_btf to
- libbpf_internal.h
-Thread-Index: AQHVy0VKApD4lsQFrEyp1aVQzbhgSafrOmqA
-Date:   Wed, 15 Jan 2020 05:56:12 +0000
-Message-ID: <20200115055607.x54orahytzq5siuk@kafai-mbp.dhcp.thefacebook.com>
-References: <20200114224358.3027079-1-kafai@fb.com>
- <20200114224412.3028054-1-kafai@fb.com>
- <CAEf4BzYOjgCbbr_zofZcGMiJj=fpH5JMBbL=jZqD5KXzYjmahA@mail.gmail.com>
-In-Reply-To: <CAEf4BzYOjgCbbr_zofZcGMiJj=fpH5JMBbL=jZqD5KXzYjmahA@mail.gmail.com>
+ 15.20.2644.19; Wed, 15 Jan 2020 06:02:03 +0000
+Received: from MN2PR02MB7007.namprd02.prod.outlook.com
+ ([fe80::d8da:3434:fcd5:6cdc]) by MN2PR02MB7007.namprd02.prod.outlook.com
+ ([fe80::d8da:3434:fcd5:6cdc%7]) with mapi id 15.20.2623.015; Wed, 15 Jan 2020
+ 06:02:03 +0000
+From:   Radhey Shyam Pandey <radheys@xilinx.com>
+To:     Andre Przywara <andre.przywara@arm.com>
+CC:     "David S . Miller" <davem@davemloft.net>,
+        Michal Simek <michals@xilinx.com>,
+        Robert Hancock <hancock@sedsystems.ca>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-arm-kernel@lists.infradead.org" 
+        <linux-arm-kernel@lists.infradead.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Subject: RE: [PATCH 12/14] net: axienet: Autodetect 64-bit DMA capability
+Thread-Topic: [PATCH 12/14] net: axienet: Autodetect 64-bit DMA capability
+Thread-Index: AQHVx6y+W25+wq1cpkmcd5TNSAo3EKfqY36ggAAQ7gCAAMh4AA==
+Date:   Wed, 15 Jan 2020 06:02:03 +0000
+Message-ID: <MN2PR02MB7007DF6B24EABA513274B489C7370@MN2PR02MB7007.namprd02.prod.outlook.com>
+References: <20200110115415.75683-1-andre.przywara@arm.com>
+        <20200110115415.75683-13-andre.przywara@arm.com>
+        <CH2PR02MB70006450DBDCEC27CA76503AC7340@CH2PR02MB7000.namprd02.prod.outlook.com>
+ <20200114174144.6e8c6387@donnerap.cambridge.arm.com>
+In-Reply-To: <20200114174144.6e8c6387@donnerap.cambridge.arm.com>
 Accept-Language: en-US
 Content-Language: en-US
 X-MS-Has-Attach: 
+X-Auto-Response-Suppress: DR, RN, NRN, OOF, AutoReply
 X-MS-TNEF-Correlator: 
-x-clientproxiedby: MWHPR11CA0021.namprd11.prod.outlook.com
- (2603:10b6:301:1::31) To MN2PR15MB3213.namprd15.prod.outlook.com
- (2603:10b6:208:3d::12)
-x-ms-exchange-messagesentrepresentingtype: 1
-x-originating-ip: [2620:10d:c090:180::55]
+authentication-results: spf=none (sender IP is )
+ smtp.mailfrom=radheys@xilinx.com; 
+x-originating-ip: [149.199.50.133]
 x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: ff826070-436e-46e0-47eb-08d7997fa023
-x-ms-traffictypediagnostic: MN2PR15MB2848:
+x-ms-office365-filtering-ht: Tenant
+x-ms-office365-filtering-correlation-id: 1d9184c3-dee2-49b9-e9a2-08d799807166
+x-ms-traffictypediagnostic: MN2PR02MB6976:|MN2PR02MB6976:
 x-ms-exchange-transport-forked: True
-x-microsoft-antispam-prvs: <MN2PR15MB28485CADBA562995EFEFAB2BD5370@MN2PR15MB2848.namprd15.prod.outlook.com>
-x-fb-source: Internal
-x-ms-oob-tlc-oobclassifiers: OLM:8882;
+x-microsoft-antispam-prvs: <MN2PR02MB6976AA14E2E72D75AD399A2BC7370@MN2PR02MB6976.namprd02.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:10000;
 x-forefront-prvs: 02830F0362
-x-forefront-antispam-report: SFV:NSPM;SFS:(10019020)(366004)(396003)(376002)(346002)(39860400002)(136003)(189003)(199004)(81156014)(8676002)(81166006)(1076003)(66446008)(8936002)(16526019)(66476007)(66556008)(64756008)(54906003)(186003)(66946007)(4326008)(5660300002)(6506007)(86362001)(6916009)(2906002)(71200400001)(478600001)(9686003)(7696005)(52116002)(55016002)(53546011)(316002);DIR:OUT;SFP:1102;SCL:1;SRVR:MN2PR15MB2848;H:MN2PR15MB3213.namprd15.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;MX:1;A:1;
-received-spf: None (protection.outlook.com: fb.com does not designate
+x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(4636009)(39860400002)(346002)(366004)(376002)(396003)(136003)(199004)(189003)(6916009)(54906003)(53546011)(71200400001)(6506007)(8936002)(2906002)(81166006)(8676002)(33656002)(86362001)(7696005)(81156014)(478600001)(52536014)(5660300002)(9686003)(316002)(26005)(55016002)(186003)(64756008)(66946007)(66476007)(66446008)(66556008)(76116006)(4326008);DIR:OUT;SFP:1101;SCL:1;SRVR:MN2PR02MB6976;H:MN2PR02MB7007.namprd02.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;A:1;MX:1;
+received-spf: None (protection.outlook.com: xilinx.com does not designate
  permitted sender hosts)
 x-ms-exchange-senderadcheck: 1
 x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: vm8dOvrFmll0m1BKF3WQas0Qp7kH3P0PvHb83dMnOwWH3Ommhn240WTz0KK43c74twiBYkGyf+Y9kxz8juefQDy5vetDciSjvPVWYj9ap2eZDkDGBchawoz0JE0YomX5+ki19BrJ8zPBu2DsWpsNSRB0+NX3w5gsIOzSwqErj+6SOUC73sL2FKoxzs9yxqNv0vWeNNSVPEvUacVZEfbNysi0r0XFIQWj5WpM7VrmevJrHQ1jDpo2eZd9LypdgI2oQTD1x6T+tRGpwQqUGclK4OIniHsNREHW4EkS7AvOJ2R4tpCDWxD3Pu8ob0Lwj9b6MfdFt+4MuyEySuQ6qSE4kYJOfArZXGbGJpq+633xCs4OpQaO/xyb1sut6dSQuB4YHkdITxBFcrg8Aw7w8oggbob+E1TvN4pLClBVfEM6Bkv/YRGGpO3/S3t6ZgMW3rnb
+x-microsoft-antispam-message-info: /7lpJw0vAmtqvtRW0GJclPWEyQRCXcZBHzQIubGDmRJ4Syo05PfiwQ4gA6Bg3+8o5hdnuHfIuicvBXcNWz0xC9FV+oYVO5E4/wH9d8G0eNU1Es494wA6F44i0H/SCOm0QTf8hhZ2WAtizjJ0xFfj/NYbn5Og0l1n72cd72mOlwFILoubfcjvBZio0Y0pRA0OdqjoJM516z+Yzd/fsyVJ7UnaGKXAGNbtlQu9Junum3DVnPuVHauz3Zl8yuP8Z9+B1Q3PsezCNqi9hkkicMye+IHaCScz8pyk4aaQFubqrFnl1bJ5gRwKD1eGh9UERqFeX7sKa/LXw6a6Us3gMbgfunFTxJDoyWNou5O9ZopZymPv2hMRqouZmKiq0koiKz/ZX1wK3VXuvxBu+5koSr+sD4PHUe4+F2e5nZict5V4dNN3ROhaJfZLhMeJ5bkg455t
 Content-Type: text/plain; charset="us-ascii"
-Content-ID: <43E01CBE45AC8A4882563133C90206EA@namprd15.prod.outlook.com>
 Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-X-MS-Exchange-CrossTenant-Network-Message-Id: ff826070-436e-46e0-47eb-08d7997fa023
-X-MS-Exchange-CrossTenant-originalarrivaltime: 15 Jan 2020 05:56:12.6265
+X-OriginatorOrg: xilinx.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 1d9184c3-dee2-49b9-e9a2-08d799807166
+X-MS-Exchange-CrossTenant-originalarrivaltime: 15 Jan 2020 06:02:03.2224
  (UTC)
 X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 8ae927fe-1255-47a7-a2af-5f3a069daaa2
+X-MS-Exchange-CrossTenant-id: 657af505-d5df-48d0-8300-c31994686c5c
 X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: nSVtrCypge0m6+ZA/Xmjqx3GO0x/GlNIpQIkYWl2yvYLyPewUvgghKPkU/D/Rli2
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: MN2PR15MB2848
-X-OriginatorOrg: fb.com
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.138,18.0.572
- definitions=2020-01-14_06:2020-01-14,2020-01-14 signatures=0
-X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 suspectscore=0
- bulkscore=0 impostorscore=0 mlxscore=0 phishscore=0 clxscore=1015
- mlxlogscore=504 priorityscore=1501 lowpriorityscore=0 spamscore=0
- adultscore=0 malwarescore=0 classifier=spam adjust=0 reason=mlx
- scancount=1 engine=8.12.0-1910280000 definitions=main-2001150047
-X-FB-Internal: deliver
+X-MS-Exchange-CrossTenant-userprincipalname: 7dME4H/hQeWSwT4TEW0fmI4fzglgIyS+BX+hi8Fo56W3DJV05X3WLF3UR1DFC4e6bRhCdqa5HGw/Twc1puiSaQ==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: MN2PR02MB6976
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Jan 14, 2020 at 05:43:58PM -0800, Andrii Nakryiko wrote:
-> On Tue, Jan 14, 2020 at 2:44 PM Martin KaFai Lau <kafai@fb.com> wrote:
-> >
-> > This patch exposes bpf_find_kernel_btf() to libbpf_internal.h.
-> > It will be used in 'bpftool map dump' in a following patch
-> > to dump a map with btf_vmlinux_value_type_id set.
-> >
-> > Signed-off-by: Martin KaFai Lau <kafai@fb.com>
-> > ---
+> -----Original Message-----
+> From: Andre Przywara <andre.przywara@arm.com>
+> Sent: Tuesday, January 14, 2020 11:12 PM
+> To: Radhey Shyam Pandey <radheys@xilinx.com>
+> Cc: David S . Miller <davem@davemloft.net>; Michal Simek
+> <michals@xilinx.com>; Robert Hancock <hancock@sedsystems.ca>;
+> netdev@vger.kernel.org; linux-arm-kernel@lists.infradead.org; linux-
+> kernel@vger.kernel.org
+> Subject: Re: [PATCH 12/14] net: axienet: Autodetect 64-bit DMA capability
 >=20
-> This function comes up not a first time, I guess it makes sense to
-> finally make it a public API. We should also try to minimize number of
-> internal APIs used by bpftool.
+> On Tue, 14 Jan 2020 17:03:41 +0000
+> Radhey Shyam Pandey <radheys@xilinx.com> wrote:
 >=20
-> So if no one objects to expose it, should we call it a bit more
-> precisely and according to libbpf naming guidelines:
-> libbpf_load_kernel_btf? libbpf_find_kernel_btf is acceptable, but it
-> does more than just finding, thus "load". It should also probably live
-> in btf.c+btf.h? WDYT?
-Sure, I will add it as LIBBPF_API in btf.h
+> Hi,
+>=20
+> > > -----Original Message-----
+> > > From: Andre Przywara <andre.przywara@arm.com>
+> > > Sent: Friday, January 10, 2020 5:24 PM
+> > > To: David S . Miller <davem@davemloft.net>; Radhey Shyam Pandey
+> > > <radheys@xilinx.com>
+> > > Cc: Michal Simek <michals@xilinx.com>; Robert Hancock
+> > > <hancock@sedsystems.ca>; netdev@vger.kernel.org; linux-arm-
+> > > kernel@lists.infradead.org; linux-kernel@vger.kernel.org
+> > > Subject: [PATCH 12/14] net: axienet: Autodetect 64-bit DMA
+> > > capability
+> > >
+> > > When newer revisions of the Axienet IP are configured for a 64-bit
+> > > bus,
+> > I assume in design axidma address width is set to 64-bits.
+>=20
+> So I wrote "64-bit bus" here, but really meant: "address bus wider than 3=
+2 bits".
+> In our case it's set to 40 bits, because that's how wide the other busses=
+ in the
+> system are.
+> And we have memory from 2GB to 4GB, and from 34GB till 40GB, but not in-
+> between (VExpress/Juno memory layout).
+>=20
+> > If not, please provide an overview of the design connections.
+>=20
+> The exact parameter name from PG021 is: "Address Width (32-64) /
+> c_addr_width".
+Thanks. It's right.
 
 >=20
+> > > we *need* to write to the MSB part of the an address registers,
+> > > otherwise the IP won't recognise this as a DMA start condition.
+> > > This is even true when the actual DMA address comes from the lower 4 =
+GB.
+> > >
+> > > To autodetect this configuration, at probe time we write all 1's to
+> > > such
+> > Is reading address width axidma IP user parameter(c_addr_width) from
+> > the design not sufficient to detect configured bus width?
 >=20
-> >  tools/lib/bpf/libbpf.c          | 3 +--
-> >  tools/lib/bpf/libbpf_internal.h | 1 +
-> >  2 files changed, 2 insertions(+), 2 deletions(-)
+> What do you mean by that? Reading from where? Is there a way to access th=
+ose
+> parameters from a running system?
+Hardware design data i.e IP parameter can be accessed using hsi in-built co=
+mmands.
+Please refer to ug1138-generating-basic-software-platforms.pdf, chapter-4.
+The same flow is used in DT,  xilinx device tree generator parses HDF and r=
+ead IP=20
+parameters and populate DT binding.
+
+>=20
+> Cheers,
+> Andre.
+>=20
+> > > an MSB register, and see if any bits stick. If this is configured
+> > > for a 32-bit bus, those MSB registers are RES0, so reading back 0
+> > > indicates that no MSB writes are necessary.
+> > > On the other hands reading anything other than 0 indicated the need
+> > > to write the MSB registers, so we set the respective flag.
+> > >
+> > > For now this leaves the actual DMA mask at 32-bit, as we can't
+> > > reliably detect the actually wired number of address lines beyond 32.
+> > >
+> > > Signed-off-by: Andre Przywara <andre.przywara@arm.com>
+> > > ---
+> > >  drivers/net/ethernet/xilinx/xilinx_axienet.h  |  1 +
+> > > .../net/ethernet/xilinx/xilinx_axienet_main.c | 27
+> > > +++++++++++++++++++
+> > >  2 files changed, 28 insertions(+)
+> > >
+> > > diff --git a/drivers/net/ethernet/xilinx/xilinx_axienet.h
+> > > b/drivers/net/ethernet/xilinx/xilinx_axienet.h
+> > > index 4aea4c23d3bb..4feaaa02819c 100644
+> > > --- a/drivers/net/ethernet/xilinx/xilinx_axienet.h
+> > > +++ b/drivers/net/ethernet/xilinx/xilinx_axienet.h
+> > > @@ -161,6 +161,7 @@
+> > >  #define XAE_FCC_OFFSET		0x0000040C /* Flow Control
+> > > Configuration */
+> > >  #define XAE_EMMC_OFFSET		0x00000410 /* EMAC mode
+> > > configuration */
+> > >  #define XAE_PHYC_OFFSET		0x00000414 /* RGMII/SGMII
+> > > configuration */
+> > > +#define XAE_ID_OFFSET		0x000004F8 /* Identification register
+> > > */
+> > >  #define XAE_MDIO_MC_OFFSET	0x00000500 /* MII Management
+> > > Config */
+> > >  #define XAE_MDIO_MCR_OFFSET	0x00000504 /* MII Management
+> > > Control */
+> > >  #define XAE_MDIO_MWD_OFFSET	0x00000508 /* MII Management Write
+> > > Data */
+> > > diff --git a/drivers/net/ethernet/xilinx/xilinx_axienet_main.c
+> > > b/drivers/net/ethernet/xilinx/xilinx_axienet_main.c
+> > > index 133f088d797e..f7f593df0c11 100644
+> > > --- a/drivers/net/ethernet/xilinx/xilinx_axienet_main.c
+> > > +++ b/drivers/net/ethernet/xilinx/xilinx_axienet_main.c
+> > > @@ -151,6 +151,9 @@ static void axienet_dma_out_addr(struct
+> > > axienet_local *lp, off_t reg,
+> > >  				 dma_addr_t addr)
+> > >  {
+> > >  	axienet_dma_out32(lp, reg, lower_32_bits(addr));
+> > > +
+> > > +	if (lp->features & XAE_FEATURE_DMA_64BIT)
+> > > +		axienet_dma_out32(lp, reg + 4, upper_32_bits(addr));
+> > >  }
+> > >
+> > >  static void desc_set_phys_addr(struct axienet_local *lp, dma_addr_t
+> > > addr, @@ -1934,6 +1937,30 @@ static int axienet_probe(struct
+> > > platform_device
+> > > *pdev)
+> > >  		goto free_netdev;
+> > >  	}
+> > >
+> > > +	/*
+> > > +	 * Autodetect the need for 64-bit DMA pointers.
+> > > +	 * When the IP is configured for a bus width bigger than 32 bits,
+> > > +	 * writing the MSB registers is mandatory, even if they are all 0.
+> > > +	 * We can detect this case by writing all 1's to one such register
+> > > +	 * and see if that sticks: when the IP is configured for 32 bits
+> > > +	 * only, those registers are RES0.
+> > > +	 * Those MSB registers were introduced in IP v7.1, which we check f=
+irst.
+> > > +	 */
+> > > +	if ((axienet_ior(lp, XAE_ID_OFFSET) >> 24) >=3D 0x9) {
+> > > +		void __iomem *desc =3D lp->dma_regs +
+> > > XAXIDMA_TX_CDESC_OFFSET + 4;
+> > > +
+> > > +		iowrite32(0x0, desc);
+> > > +		if (ioread32(desc) =3D=3D 0) {	/* sanity check */
+> > > +			iowrite32(0xffffffff, desc);
+> > > +			if (ioread32(desc) > 0) {
+> > > +				lp->features |=3D XAE_FEATURE_DMA_64BIT;
+> > > +				dev_info(&pdev->dev,
+> > > +					 "autodetected 64-bit DMA range\n");
+> > > +			}
+> > > +			iowrite32(0x0, desc);
+> > > +		}
+> > > +	}
+> > > +
+> > >  	/* Check for Ethernet core IRQ (optional) */
+> > >  	if (lp->eth_irq <=3D 0)
+> > >  		dev_info(&pdev->dev, "Ethernet core IRQ not defined\n");
+> > > --
+> > > 2.17.1
 > >
->=20
-> [...]
+
