@@ -2,130 +2,166 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 4FA4013B9D6
-	for <lists+netdev@lfdr.de>; Wed, 15 Jan 2020 07:40:38 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B887A13B9DA
+	for <lists+netdev@lfdr.de>; Wed, 15 Jan 2020 07:43:03 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729112AbgAOGkO convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Wed, 15 Jan 2020 01:40:14 -0500
-Received: from youngberry.canonical.com ([91.189.89.112]:49546 "EHLO
-        youngberry.canonical.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725962AbgAOGkL (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 15 Jan 2020 01:40:11 -0500
-Received: from mail-pg1-f197.google.com ([209.85.215.197])
-        by youngberry.canonical.com with esmtps (TLS1.2:ECDHE_RSA_AES_128_GCM_SHA256:128)
-        (Exim 4.86_2)
-        (envelope-from <kai.heng.feng@canonical.com>)
-        id 1ircLZ-00029A-AZ
-        for netdev@vger.kernel.org; Wed, 15 Jan 2020 06:40:09 +0000
-Received: by mail-pg1-f197.google.com with SMTP id c8so9778263pgl.15
-        for <netdev@vger.kernel.org>; Tue, 14 Jan 2020 22:40:09 -0800 (PST)
+        id S1729140AbgAOGlL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 15 Jan 2020 01:41:11 -0500
+Received: from mail-qk1-f194.google.com ([209.85.222.194]:45338 "EHLO
+        mail-qk1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725999AbgAOGlK (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 15 Jan 2020 01:41:10 -0500
+Received: by mail-qk1-f194.google.com with SMTP id x1so14669914qkl.12;
+        Tue, 14 Jan 2020 22:41:10 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=g10iVwTLydyduQitYL7dAnpOhmhB3UwIsOF+ltahW8s=;
+        b=irjpI7/3lFCE2vbVDydcIjl9rBZ3RIi7PhdklEk3PblddLSw/4xvcfzu2VzuSMHbh4
+         0sQODjJHIWrUEopI6aGH9jBloApchJNsrd4Wh8c+Z+NxYBa2RPYxo3xeRlJZXENBmh/X
+         5ht10TlKqjavQhjXFeK7cunBHQKM1wGE4ccyycFXLDGS0z5Lfkjzzveb7BKa+dtKBWaI
+         P+UjZAmTrkfP5bILEeIumNiTQg0QCXrtM1nVTu7450H+QXwUfKFrwxDBuApg7/ONsjFf
+         oLhLWWpLwVGG/v6y5qr1Lrjqqp7zX7K47e7HHY2gkATm3jvFtvSxuMY7o+bwTJuOo2ae
+         e0Tg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:subject:from:in-reply-to:date:cc
-         :content-transfer-encoding:message-id:references:to;
-        bh=ks+FKtYdipfmIovpRk0e6E//v9CS+XKOemaSP1iQ0A8=;
-        b=KFOblWfa3uA/WsJu33k6T1shghgwOmFNW6R1zm8Yzn87JIZoQ3+g5iNhELUXtkQb9Y
-         9a1IjJn/EFNdvIfbyEieoRB9PaNW4442quRw5AuV95Lf3o7tZLHMZXlsuhAq25DsLYpM
-         +YxbfnqK0klx9TLFAV756PSr1lkJf5y7hgcw4gYiakhRgqYaxh513joT+B1IIhiNE1y/
-         7woLAfcErHpOowSfFIDgZXyjyEhyyk8q+oPaWzwVQpSe3xfxU9FKMHhnogWqfNq5OW1s
-         8C4mnAM29ewtQlD8xvCSJ7Q/sG7U1JqUHOjH4T4CurklK1qqptkz0gGzT8cdoZ4vXrdX
-         wvMA==
-X-Gm-Message-State: APjAAAX2J81C/Q+ja5GlHD5xPsifkHTEqeIAVL8kvI35QUyM2at1kz0P
-        pCtCsl5ohtvhp1KzyGn4mpnXt7yfaCo8YC70H6kRlDpJrghdvtHz1T3X4pzDPyZnNpcZC3bNadQ
-        2u+cgIOA+2MVCTGzfSqGDArSNhJBiPyzq9A==
-X-Received: by 2002:a63:d141:: with SMTP id c1mr26072649pgj.397.1579070407858;
-        Tue, 14 Jan 2020 22:40:07 -0800 (PST)
-X-Google-Smtp-Source: APXvYqyCAlUxgFq4p9aUmqfpZAip45/nK5+OQYN5+5gQPity3Khdrn/uFB+ajTrWkrsHEqOLOxPIzg==
-X-Received: by 2002:a63:d141:: with SMTP id c1mr26072612pgj.397.1579070407423;
-        Tue, 14 Jan 2020 22:40:07 -0800 (PST)
-Received: from [10.101.46.91] (61-220-137-37.HINET-IP.hinet.net. [61.220.137.37])
-        by smtp.gmail.com with ESMTPSA id l14sm17861129pgt.42.2020.01.14.22.40.05
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Tue, 14 Jan 2020 22:40:06 -0800 (PST)
-Content-Type: text/plain;
-        charset=us-ascii
-Mime-Version: 1.0 (Mac OS X Mail 13.0 \(3594.4.19\))
-Subject: Re: [PATCH] r8152: Add MAC passthrough support to new device
-From:   Kai Heng Feng <kai.heng.feng@canonical.com>
-In-Reply-To: <d8af34dbf4994b7b8b0bf48e81084dd0@AUSX13MPC101.AMER.DELL.COM>
-Date:   Wed, 15 Jan 2020 14:40:03 +0800
-Cc:     David Miller <davem@davemloft.net>, hayeswang@realtek.com,
-        Jakub Kicinski <jakub.kicinski@netronome.com>,
-        pmalani@chromium.org, grundler@chromium.org,
-        "<David.Chen7@dell.com>" <David.Chen7@Dell.com>,
-        linux-usb@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Content-Transfer-Encoding: 8BIT
-Message-Id: <430A264A-27E0-489D-B7B1-8E78AAD528D7@canonical.com>
-References: <20200114044127.20085-1-kai.heng.feng@canonical.com>
- <d8af34dbf4994b7b8b0bf48e81084dd0@AUSX13MPC101.AMER.DELL.COM>
-To:     Mario.Limonciello@dell.com
-X-Mailer: Apple Mail (2.3594.4.19)
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=g10iVwTLydyduQitYL7dAnpOhmhB3UwIsOF+ltahW8s=;
+        b=FL5iZLDkTeEak2PDLPhqY1gjZzoAH94QbVpA1GtUspUNkOQMsHRMXGbi8phqaCJC6p
+         NmjgrxsNTdokCp/pS4P/lBHVBJwFKJVg9O+0F0asesPRxg+CxQ3rnd2c6sjdA3Li24pd
+         4Pulok7f/jWNxjFa5i4VKlhkESdq3z+u0n+IL6RUnRBdGIeVQJaV3Lk52qPGQ43Xeosf
+         42eSF50w2m0J1xKbAfeAybhCFeS7WHBMw4IForHQka93IWtf/wUtelYTYT0pLW6mMA2Q
+         7YLWrL/mRqiThPj/R+9i/iZN/48k+CtsJPb7zPOBzTe9tvzDF1lWZTbV01dXhtPmxsdY
+         glKQ==
+X-Gm-Message-State: APjAAAWP75QsTurh/fctd6sSBc+WZYclrGJp6cjDgG1vzRZURweD5A58
+        JIMJGo8T2UY0bFh/sgoAVxjdljhi67QtPE1Qcfr0lQ==
+X-Google-Smtp-Source: APXvYqxr2OTohEiP7kY+Tsz9VwaVVW0FUZ829XgoGfAzb9juD4uZsS/9PXh4DaQDHmvbuTl6KuA0BsCGcIbe54k7OWU=
+X-Received: by 2002:a37:a685:: with SMTP id p127mr22091084qke.449.1579070469532;
+ Tue, 14 Jan 2020 22:41:09 -0800 (PST)
+MIME-Version: 1.0
+References: <20200114224358.3027079-1-kafai@fb.com> <20200114224400.3027140-1-kafai@fb.com>
+ <CAEf4BzZd-NmpJqYStpDTSAFmN=EDCLftqoYBaSAKECOY8ooR_w@mail.gmail.com> <20200115054554.sb4nrpmvaulnqya3@kafai-mbp.dhcp.thefacebook.com>
+In-Reply-To: <20200115054554.sb4nrpmvaulnqya3@kafai-mbp.dhcp.thefacebook.com>
+From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Date:   Tue, 14 Jan 2020 22:40:58 -0800
+Message-ID: <CAEf4BzY5U+yuTaRUoCRvUzxWz13HTi=-c1X58W3kGWzjM3Zf1w@mail.gmail.com>
+Subject: Re: [PATCH bpf-next 1/5] bpftool: Fix a leak of btf object
+To:     Martin Lau <kafai@fb.com>
+Cc:     bpf <bpf@vger.kernel.org>, Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        David Miller <davem@davemloft.net>,
+        Kernel Team <Kernel-team@fb.com>,
+        Networking <netdev@vger.kernel.org>,
+        Paul Chaignon <paul.chaignon@orange.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Tue, Jan 14, 2020 at 9:46 PM Martin Lau <kafai@fb.com> wrote:
+>
+> On Tue, Jan 14, 2020 at 05:10:03PM -0800, Andrii Nakryiko wrote:
+> > On Tue, Jan 14, 2020 at 2:44 PM Martin KaFai Lau <kafai@fb.com> wrote:
+> > >
+> > > When testing a map has btf or not, maps_have_btf() tests it by actually
+> > > getting a btf_fd from sys_bpf(BPF_BTF_GET_FD_BY_ID). However, it
+> > > forgot to btf__free() it.
+> > >
+> > > In maps_have_btf() stage, there is no need to test it by really
+> > > calling sys_bpf(BPF_BTF_GET_FD_BY_ID). Testing non zero
+> > > info.btf_id is good enough.
+> > >
+> > > Also, the err_close case is unnecessary, and also causes double
+> > > close() because the calling func do_dump() will close() all fds again.
+> > >
+> > > Fixes: 99f9863a0c45 ("bpftool: Match maps by name")
+> > > Cc: Paul Chaignon <paul.chaignon@orange.com>
+> > > Signed-off-by: Martin KaFai Lau <kafai@fb.com>
+> > > ---
+> >
+> > this is clearly a simplification, but isn't do_dump still buggy? see below
+> >
+> > >  tools/bpf/bpftool/map.c | 16 ++--------------
+> > >  1 file changed, 2 insertions(+), 14 deletions(-)
+> > >
+> > > diff --git a/tools/bpf/bpftool/map.c b/tools/bpf/bpftool/map.c
+> > > index c01f76fa6876..e00e9e19d6b7 100644
+> > > --- a/tools/bpf/bpftool/map.c
+> > > +++ b/tools/bpf/bpftool/map.c
+> > > @@ -915,32 +915,20 @@ static int maps_have_btf(int *fds, int nb_fds)
+> > >  {
+> > >         struct bpf_map_info info = {};
+> > >         __u32 len = sizeof(info);
+> > > -       struct btf *btf = NULL;
+> > >         int err, i;
+> > >
+> > >         for (i = 0; i < nb_fds; i++) {
+> > >                 err = bpf_obj_get_info_by_fd(fds[i], &info, &len);
+> > >                 if (err) {
+> > >                         p_err("can't get map info: %s", strerror(errno));
+> > > -                       goto err_close;
+> > > -               }
+> > > -
+> > > -               err = btf__get_from_id(info.btf_id, &btf);
+> > > -               if (err) {
+> > > -                       p_err("failed to get btf");
+> > > -                       goto err_close;
+> > > +                       return -1;
+> > >                 }
+> > >
+> > > -               if (!btf)
+> > > +               if (!info.btf_id)
+> > >                         return 0;
+> >
+> > if info.btf_id is non-zero, shouldn't we immediately return 1 and be
+> > done with it?
+> No.  maps_have_btf() returns 1 only if all the maps have btf.
+>
+> >
+> > I'm also worried about do_dump logic. What's the behavior when some
+> > maps do have BTF and some don't? Should we use btf_writer for all,
+> > some or none maps for that case?
+> For plain_text, btf output is either for all or for none.
+> It is the intention of the "Fixes" patch if I read it correctly,
+> and it is kept as is in this bug fix.
+> It will become clear by doing a plain text dump on maps with and
+> without btf.  They are very different.
+>
+> Can the output format for with and without BTF somehow merged for
+> plain text?  May be if it is still common to have no-BTF map
+> going forward but how this may look like will need another
+> discussion.
 
+I see, ok, seems like that behavior was intentional, I didn't mean to
+start a new discussion about format :)
 
-> On Jan 15, 2020, at 4:33 AM, Mario.Limonciello@dell.com wrote:
-> 
-> 
-> 
->> -----Original Message-----
->> From: Kai-Heng Feng <kai.heng.feng@canonical.com>
->> Sent: Monday, January 13, 2020 10:41 PM
->> To: davem@davemloft.net; hayeswang@realtek.com
->> Cc: Kai-Heng Feng; Jakub Kicinski; Prashant Malani; Grant Grundler; Limonciello,
->> Mario; Chen7, David; open list:USB NETWORKING DRIVERS; open list:NETWORKING
->> DRIVERS; open list
->> Subject: [PATCH] r8152: Add MAC passthrough support to new device
->> 
->> 
->> [EXTERNAL EMAIL]
->> 
->> Device 0xa387 also supports MAC passthrough, therefore add it to the
->> whitelst.
-> 
-> Have you confirmed whether this product ID is unique to the products that
-> support this feature or if it's also re-used in other products?
+Acked-by: Andrii Nakryiko <andriin@fb.com>
 
-This is unique for Lenovo product.
-
-> 
-> For Dell's devices there are very specific tests that make sure that this
-> feature only applies on the products it is supposed to and nothing else
-> (For example RTL8153-AD checks variant as well as effuse value)
-> (Example two: RTL8153-BND is a Dell only part).
-
-Hayes, do you know how macpassthru on Lenovo dock works?
-
-Kai-Heng
-
-> 
->> 
->> BugLink: https://bugs.launchpad.net/bugs/1827961/comments/30
->> Signed-off-by: Kai-Heng Feng <kai.heng.feng@canonical.com>
->> ---
->> drivers/net/usb/r8152.c | 3 ++-
->> 1 file changed, 2 insertions(+), 1 deletion(-)
->> 
->> diff --git a/drivers/net/usb/r8152.c b/drivers/net/usb/r8152.c
->> index c5ebf35d2488..42dcf1442cc0 100644
->> --- a/drivers/net/usb/r8152.c
->> +++ b/drivers/net/usb/r8152.c
->> @@ -6657,7 +6657,8 @@ static int rtl8152_probe(struct usb_interface *intf,
->> 	}
->> 
->> 	if (le16_to_cpu(udev->descriptor.idVendor) == VENDOR_ID_LENOVO &&
->> -	    le16_to_cpu(udev->descriptor.idProduct) == 0x3082)
->> +	    (le16_to_cpu(udev->descriptor.idProduct) == 0x3082 ||
->> +	     le16_to_cpu(udev->descriptor.idProduct) == 0xa387))
->> 		set_bit(LENOVO_MACPASSTHRU, &tp->flags);
->> 
->> 	if (le16_to_cpu(udev->descriptor.bcdDevice) == 0x3011 && udev->serial
->> &&
->> --
->> 2.17.1
-> 
-
+>
+> > I'd expect we'd use BTF info for
+> > those maps that have BTF and fall back to raw output for those that
+> > don't, but I'm not sure that how code behaves right now.
+> The json_output is doing what you described, print BTF info
+> whenever available.
+>
+> >
+> > Maybe Paul can clarify...
+> >
+> >
+> > >         }
+> > >
+> > >         return 1;
+> > > -
+> > > -err_close:
+> > > -       for (; i < nb_fds; i++)
+> > > -               close(fds[i]);
+> > > -       return -1;
+> > >  }
+> > >
+> > >  static int
+> > > --
+> > > 2.17.1
+> > >
