@@ -2,332 +2,158 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id E69EA13C9C0
-	for <lists+netdev@lfdr.de>; Wed, 15 Jan 2020 17:40:55 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id ADA4713C9EF
+	for <lists+netdev@lfdr.de>; Wed, 15 Jan 2020 17:48:26 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728931AbgAOQkv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 15 Jan 2020 11:40:51 -0500
-Received: from us-smtp-1.mimecast.com ([205.139.110.61]:43726 "EHLO
-        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1726574AbgAOQku (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 15 Jan 2020 11:40:50 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1579106449;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=cuoFxGvfj/E5m56spHOc2aFS7gn7FCqMWxsYUn1RGaU=;
-        b=THTX6LWBgKmgd4T4v5pXw0TykzwZzo8mMOLbPyNX53C2qBG40kodwwVPlHklBeb+ltuGyd
-        pvQnd05qYlQozf6qMjlZwY1/4fkVXDlXsGFeFbPNORIE+ekUNVDROgkrH1wqGNISZOIfqa
-        2GzpjxSYV2+Yw+kncbrles3VYzxlGpU=
-Received: from mail-wr1-f71.google.com (mail-wr1-f71.google.com
- [209.85.221.71]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-246-lYfI4hDBMjuZadjstlq4tQ-1; Wed, 15 Jan 2020 11:40:47 -0500
-X-MC-Unique: lYfI4hDBMjuZadjstlq4tQ-1
-Received: by mail-wr1-f71.google.com with SMTP id w6so8141303wrm.16
-        for <netdev@vger.kernel.org>; Wed, 15 Jan 2020 08:40:47 -0800 (PST)
+        id S1729019AbgAOQsX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 15 Jan 2020 11:48:23 -0500
+Received: from mail-wr1-f68.google.com ([209.85.221.68]:33087 "EHLO
+        mail-wr1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728896AbgAOQsX (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 15 Jan 2020 11:48:23 -0500
+Received: by mail-wr1-f68.google.com with SMTP id b6so16475289wrq.0
+        for <netdev@vger.kernel.org>; Wed, 15 Jan 2020 08:48:21 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=resnulli-us.20150623.gappssmtp.com; s=20150623;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:content-transfer-encoding:in-reply-to;
+        bh=5kb/7FK3XFZ8+xw5shLPR//BFaG4pInBIKfPFR2hY4g=;
+        b=uqm+2MKtoTBzJb3GSLyuiUONUpJRsCg1cMcU+lwCAzKjHST4HtfEK9z3ZvVqYMpxAQ
+         GdINtR4/3MeWxpt2bt4ySpQePAS3PQjTlFkuAo8d3og3gW+iHs9zpA6Ncoh8B+h2ryxj
+         3WQ8JtOeaiYkbINOVW9Jlmj9Tw2WpxwxoQ6qTgTfJOnl/noeBOioHommR+W205EIXQ2C
+         wJfG/sw2lE2c5NbcPnKDMBCGVcdxp6jirAzfFg1ICmnpCXecEwucUc45bWQOykZ2dPLc
+         mnSmeU8FX8Zgnfhaxt0p3qbdo/CoMzMK1ndkbkQVhgTbWVqv3/Fkir6baw179EJ20qG1
+         mLFg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=cuoFxGvfj/E5m56spHOc2aFS7gn7FCqMWxsYUn1RGaU=;
-        b=WuT3yUx8HzfiTwQxXJWeFa18xWkBOm0M+G38qnesRuhkgezCk0PnJuLD+FkvP8QTO2
-         UZbNFCvvHvfBK+5/PJxu9qRIDsXvAWvjPOFqWA945pzu6JqXaZ7xXJVGn6cDKb7ZaEvo
-         1fMGXQUyaF8mLuMh6/t609kA+KRh58GHm7fNP8kW6HdnGE5iTxPSsICDeu0TANH7Ou0E
-         5/QsXDXqmyz7JXJIndNkROxUiV0BxyvITuX3IGtl2RZagUqljFXZyUEbl/KJdmUSCJHV
-         Eb7df1SCLkQtVrkJXsn2udRQYKEwB1ONuqmm+Y3vDk188idC/ljEnBsZ42xJzyBejL7F
-         tZgQ==
-X-Gm-Message-State: APjAAAWIZgqktD/aEeBXjDWNlrUjVtuBDroPMMpqG+L05dtcpkriwVxk
-        Gnq0vb47nW5Ozwl+0V7PBdS8H+1R9VdeDvglbQwIguJoLpIZBBGXfm6KR2hdlOlF796f77kQ8C3
-        8wWagGq1iYs+MjYKa
-X-Received: by 2002:a1c:5f8a:: with SMTP id t132mr760180wmb.162.1579106445976;
-        Wed, 15 Jan 2020 08:40:45 -0800 (PST)
-X-Google-Smtp-Source: APXvYqzUhF1OEW1q+M+fKTUfv0YChLDUicAzacmSFn/VN+DA8ziQnNvczJHXXTu9ytjBzG3hJPbUzg==
-X-Received: by 2002:a1c:5f8a:: with SMTP id t132mr760160wmb.162.1579106445704;
-        Wed, 15 Jan 2020 08:40:45 -0800 (PST)
-Received: from mcroce-redhat.mxp.redhat.com (nat-pool-mxp-t.redhat.com. [149.6.153.186])
-        by smtp.gmail.com with ESMTPSA id c5sm542023wmb.9.2020.01.15.08.40.44
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:content-transfer-encoding
+         :in-reply-to;
+        bh=5kb/7FK3XFZ8+xw5shLPR//BFaG4pInBIKfPFR2hY4g=;
+        b=idBPIZlAcaxKvZT739Ot0PvdsumGcQ66MU3IJr/VgXOl2Gi6gFjE7plv9hTrMIc/ox
+         z5UQpYp7WI1i3yH9IUGXQvB9nGjKrzY9pF1xq1TABetiY7g6r2HjzV/usBdoUwhnj6xq
+         Dtoql2K/wvOtjCqFpBc193P98WV8glNsrLGhwHhoQTvbJgTLmySypLXuP/TA4mHsK3dE
+         BMn9+SlATNF0aFGWcvn/gCgWWmD0HQ7XfPI45U9AcYJ8ggFXFM0x/7ThSPu7phZObT+x
+         h0A+wRc/WoXKb/uxKKETNCGxSQa2GqWD6rZkDeGIa9mGs93A/gjNuT0AAfoNoP1TCxHB
+         geRg==
+X-Gm-Message-State: APjAAAUFLyJXLX6M0F/YfT/TlW1cU3Qv+faN8JXT2d/y3isKW/3ZeWik
+        07urD3j01eObeFx5hqO4HGzCdA==
+X-Google-Smtp-Source: APXvYqysm9+qJxhdfZw4SfVxrSEnfNO7jPxZvvkQuPwoRDTbGKp7E+m8X87JNZP++0cv4tbOaeTVKw==
+X-Received: by 2002:a5d:5706:: with SMTP id a6mr19353748wrv.108.1579106900722;
+        Wed, 15 Jan 2020 08:48:20 -0800 (PST)
+Received: from localhost (ip-78-102-249-43.net.upcbroadband.cz. [78.102.249.43])
+        by smtp.gmail.com with ESMTPSA id a9sm43574wmm.15.2020.01.15.08.48.20
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 15 Jan 2020 08:40:44 -0800 (PST)
-From:   Matteo Croce <mcroce@redhat.com>
-To:     netdev@vger.kernel.org, dev@openvswitch.org
-Cc:     linux-kernel@vger.kernel.org, Pravin B Shelar <pshelar@ovn.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Bindiya Kurle <bindiyakurle@gmail.com>,
-        Simon Horman <simon.horman@netronome.com>,
-        Ben Pfaff <blp@ovn.org>,
-        Nikolay Aleksandrov <nikolay@cumulusnetworks.com>
-Subject: [PATCH net-next v3] openvswitch: add TTL decrement action
-Date:   Wed, 15 Jan 2020 17:40:30 +0100
-Message-Id: <20200115164030.56045-1-mcroce@redhat.com>
-X-Mailer: git-send-email 2.24.1
+        Wed, 15 Jan 2020 08:48:20 -0800 (PST)
+Date:   Wed, 15 Jan 2020 17:48:19 +0100
+From:   Jiri Pirko <jiri@resnulli.us>
+To:     Leon Romanovsky <leonro@mellanox.com>
+Cc:     Maor Gottlieb <maorg@mellanox.com>,
+        "j.vosburgh@gmail.com" <j.vosburgh@gmail.com>,
+        "vfalico@gmail.com" <vfalico@gmail.com>,
+        "andy@greyhouse.net" <andy@greyhouse.net>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        Saeed Mahameed <saeedm@mellanox.com>,
+        Jason Gunthorpe <jgg@mellanox.com>,
+        Jiri Pirko <jiri@mellanox.com>,
+        Alex Rosenbaum <alexr@mellanox.com>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        Mark Zhang <markz@mellanox.com>,
+        Parav Pandit <parav@mellanox.com>
+Subject: Re: Expose bond_xmit_hash function
+Message-ID: <20200115164819.GX2131@nanopsycho>
+References: <03a6dcfc-f3c7-925d-8ed8-3c42777fd03c@mellanox.com>
+ <20200115094513.GS2131@nanopsycho>
+ <80ad03a2-9926-bf75-d79c-be554c4afaaf@mellanox.com>
+ <20200115141535.GT2131@nanopsycho>
+ <20200115143320.GA76932@unreal>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
+In-Reply-To: <20200115143320.GA76932@unreal>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-New action to decrement TTL instead of setting it to a fixed value.
-This action will decrement the TTL and, in case of expired TTL, drop it
-or execute an action passed via a nested attribute.
-The default TTL expired action is to drop the packet.
+Wed, Jan 15, 2020 at 03:33:23PM CET, leonro@mellanox.com wrote:
+>On Wed, Jan 15, 2020 at 03:15:35PM +0100, Jiri Pirko wrote:
+>> Wed, Jan 15, 2020 at 02:04:49PM CET, maorg@mellanox.com wrote:
+>> >
+>> >On 1/15/2020 11:45 AM, Jiri Pirko wrote:
+>> >> Wed, Jan 15, 2020 at 09:01:43AM CET, maorg@mellanox.com wrote:
+>> >>> RDMA over Converged Ethernet (RoCE) is a standard protocol which enables
+>> >>> RDMA’s efficient data transfer over Ethernet networks allowing transport
+>> >>> offload with hardware RDMA engine implementation.
+>> >>> The RoCE v2 protocol exists on top of either the UDP/IPv4 or the
+>> >>> UDP/IPv6 protocol:
+>> >>>
+>> >>> --------------------------------------------------------------
+>> >>> | L2 | L3 | UDP |IB BTH | Payload| ICRC | FCS |
+>> >>> --------------------------------------------------------------
+>> >>>
+>> >>> When a bond LAG netdev is in use, we would like to have the same hash
+>> >>> result for RoCE packets as any other UDP packets, for this purpose we
+>> >>> need to expose the bond_xmit_hash function to external modules.
+>> >>> If no objection, I will push a patch that export this symbol.
+>> >> I don't think it is good idea to do it. It is an internal bond function.
+>> >> it even accepts "struct bonding *bond". Do you plan to push netdev
+>> >> struct as an arg instead? What about team? What about OVS bonding?
+>> >
+>> >No, I am planning to pass the bond struct as an arg. Currently, team
+>>
+>> Hmm, that would be ofcourse wrong, as it is internal bonding driver
+>> structure.
+>>
+>>
+>> >bonding is not supported in RoCE LAG and I don't see how OVS is related.
+>>
+>> Should work for all. OVS is related in a sense that you can do bonding
+>> there too.
+>>
+>>
+>> >
+>> >>
+>> >> Also, you don't really need a hash, you need a slave that is going to be
+>> >> used for a packet xmit.
+>> >>
+>> >> I think this could work in a generic way:
+>> >>
+>> >> struct net_device *master_xmit_slave_get(struct net_device *master_dev,
+>> >> 					 struct sk_buff *skb);
+>> >
+>> >The suggestion is to put this function in the bond driver and call it
+>> >instead of bond_xmit_hash? is it still necessary if I have the bond pointer?
+>>
+>> No. This should be in a generic code. No direct calls down to bonding
+>> driver please. Or do you want to load bonding module every time your
+>> module loads?
+>>
+>> I thinks this can be implemented with ndo with "master_xmit_slave_get()"
+>> as a wrapper. Masters that support this would just implement the ndo.
+>
+>We are talking about code sharing and not attempting to solve any
+>problem other than that.
 
-Supports both IPv4 and IPv6 via the ttl and hop_limit fields, respectively.
+Nope Leon, you are wrong. This is not about code sharing. You need to
+know exact slave that is going to be used for the xmit. The hashing
+function can be setup per bonding instance, it could only L2 for
+example.
 
-Tested with a corresponding change in the userspace:
 
-    # ovs-dpctl dump-flows
-    in_port(2),eth(),eth_type(0x0800), packets:0, bytes:0, used:never, actions:dec_ttl{ttl<=1 action:(drop)},1
-    in_port(1),eth(),eth_type(0x0800), packets:0, bytes:0, used:never, actions:dec_ttl{ttl<=1 action:(drop)},2
-    in_port(1),eth(),eth_type(0x0806), packets:0, bytes:0, used:never, actions:2
-    in_port(2),eth(),eth_type(0x0806), packets:0, bytes:0, used:never, actions:1
+>
+>Right now, we have one of two options:
+>1. One-to-one copy/paste of that bond_xmit function to RDMA.
+>2. Add EXPORT_SYMBOL and call from RDMA.
+>
+>Do you have another solution to our undesire to do copy/paste in mind?
 
-    # ping -c1 192.168.0.2 -t 42
-    IP (tos 0x0, ttl 41, id 61647, offset 0, flags [DF], proto ICMP (1), length 84)
-        192.168.0.1 > 192.168.0.2: ICMP echo request, id 386, seq 1, length 64
-    # ping -c1 192.168.0.2 -t 120
-    IP (tos 0x0, ttl 119, id 62070, offset 0, flags [DF], proto ICMP (1), length 84)
-        192.168.0.1 > 192.168.0.2: ICMP echo request, id 388, seq 1, length 64
-    # ping -c1 192.168.0.2 -t 1
-    #
+I presented it in this thread.
 
-Co-developed-by: Bindiya Kurle <bindiyakurle@gmail.com>
-Signed-off-by: Bindiya Kurle <bindiyakurle@gmail.com>
-Signed-off-by: Matteo Croce <mcroce@redhat.com>
----
- include/uapi/linux/openvswitch.h |  2 +
- net/openvswitch/actions.c        | 67 ++++++++++++++++++++++++++++++
- net/openvswitch/flow_netlink.c   | 71 ++++++++++++++++++++++++++++++++
- 3 files changed, 140 insertions(+)
 
-diff --git a/include/uapi/linux/openvswitch.h b/include/uapi/linux/openvswitch.h
-index ae2bff14e7e1..9d3f040847af 100644
---- a/include/uapi/linux/openvswitch.h
-+++ b/include/uapi/linux/openvswitch.h
-@@ -958,6 +958,7 @@ enum ovs_action_attr {
- 	OVS_ACTION_ATTR_CLONE,        /* Nested OVS_CLONE_ATTR_*.  */
- 	OVS_ACTION_ATTR_CHECK_PKT_LEN, /* Nested OVS_CHECK_PKT_LEN_ATTR_*. */
- 	OVS_ACTION_ATTR_ADD_MPLS,     /* struct ovs_action_add_mpls. */
-+	OVS_ACTION_ATTR_DEC_TTL,      /* Nested OVS_DEC_TTL_ATTR_*. */
- 
- 	__OVS_ACTION_ATTR_MAX,	      /* Nothing past this will be accepted
- 				       * from userspace. */
-@@ -1050,4 +1051,5 @@ struct ovs_zone_limit {
- 	__u32 count;
- };
- 
-+#define OVS_DEC_TTL_ATTR_EXEC      0
- #endif /* _LINUX_OPENVSWITCH_H */
-diff --git a/net/openvswitch/actions.c b/net/openvswitch/actions.c
-index 7fbfe2adfffa..1b0afc9bf1ad 100644
---- a/net/openvswitch/actions.c
-+++ b/net/openvswitch/actions.c
-@@ -964,6 +964,26 @@ static int output_userspace(struct datapath *dp, struct sk_buff *skb,
- 	return ovs_dp_upcall(dp, skb, key, &upcall, cutlen);
- }
- 
-+static int dec_ttl(struct datapath *dp, struct sk_buff *skb,
-+		   struct sw_flow_key *key,
-+		   const struct nlattr *attr, bool last)
-+{
-+	/* The first action is always 'OVS_DEC_TTL_ATTR_ARG'. */
-+	struct nlattr *dec_ttl_arg = nla_data(attr);
-+	u32 nested = nla_get_u32(dec_ttl_arg);
-+	int rem = nla_len(attr);
-+
-+	if (nested) {
-+		struct nlattr *actions = nla_next(dec_ttl_arg, &rem);
-+
-+		if (actions)
-+			return clone_execute(dp, skb, key, 0, actions, rem,
-+					     last, false);
-+	}
-+	consume_skb(skb);
-+	return 0;
-+}
-+
- /* When 'last' is true, sample() should always consume the 'skb'.
-  * Otherwise, sample() should keep 'skb' intact regardless what
-  * actions are executed within sample().
-@@ -1180,6 +1200,45 @@ static int execute_check_pkt_len(struct datapath *dp, struct sk_buff *skb,
- 			     nla_len(actions), last, clone_flow_key);
- }
- 
-+static int execute_dec_ttl(struct sk_buff *skb, struct sw_flow_key *key)
-+{
-+	int err;
-+
-+	if (skb->protocol == htons(ETH_P_IPV6)) {
-+		struct ipv6hdr *nh;
-+
-+		err = skb_ensure_writable(skb, skb_network_offset(skb) +
-+					  sizeof(*nh));
-+		if (unlikely(err))
-+			return err;
-+
-+		nh = ipv6_hdr(skb);
-+
-+		if (nh->hop_limit <= 1)
-+			return -EHOSTUNREACH;
-+
-+		key->ip.ttl = --nh->hop_limit;
-+	} else {
-+		struct iphdr *nh;
-+		u8 old_ttl;
-+
-+		err = skb_ensure_writable(skb, skb_network_offset(skb) +
-+					  sizeof(*nh));
-+		if (unlikely(err))
-+			return err;
-+
-+		nh = ip_hdr(skb);
-+		if (nh->ttl <= 1)
-+			return -EHOSTUNREACH;
-+
-+		old_ttl = nh->ttl--;
-+		csum_replace2(&nh->check, htons(old_ttl << 8),
-+			      htons(nh->ttl << 8));
-+		key->ip.ttl = nh->ttl;
-+	}
-+	return 0;
-+}
-+
- /* Execute a list of actions against 'skb'. */
- static int do_execute_actions(struct datapath *dp, struct sk_buff *skb,
- 			      struct sw_flow_key *key,
-@@ -1365,6 +1424,14 @@ static int do_execute_actions(struct datapath *dp, struct sk_buff *skb,
- 
- 			break;
- 		}
-+
-+		case OVS_ACTION_ATTR_DEC_TTL:
-+			err = execute_dec_ttl(skb, key);
-+			if (err == -EHOSTUNREACH) {
-+				err = dec_ttl(dp, skb, key, a, true);
-+				return err;
-+			}
-+			break;
- 		}
- 
- 		if (unlikely(err)) {
-diff --git a/net/openvswitch/flow_netlink.c b/net/openvswitch/flow_netlink.c
-index 7da4230627f5..0354d5501b70 100644
---- a/net/openvswitch/flow_netlink.c
-+++ b/net/openvswitch/flow_netlink.c
-@@ -80,6 +80,7 @@ static bool actions_may_change_flow(const struct nlattr *actions)
- 		case OVS_ACTION_ATTR_METER:
- 		case OVS_ACTION_ATTR_CHECK_PKT_LEN:
- 		case OVS_ACTION_ATTR_ADD_MPLS:
-+		case OVS_ACTION_ATTR_DEC_TTL:
- 		default:
- 			return true;
- 		}
-@@ -2495,6 +2496,40 @@ static int validate_and_copy_sample(struct net *net, const struct nlattr *attr,
- 	return 0;
- }
- 
-+static int validate_and_copy_dec_ttl(struct net *net,
-+				     const struct nlattr *attr,
-+				     const struct sw_flow_key *key,
-+				     struct sw_flow_actions **sfa,
-+				     __be16 eth_type, __be16 vlan_tci,
-+				     u32 mpls_label_count, bool log)
-+{
-+	u32 nested = true;
-+	int start, err;
-+
-+	if (!nla_len(attr))
-+		nested = false;
-+
-+	start = add_nested_action_start(sfa, OVS_ACTION_ATTR_DEC_TTL, log);
-+	if (start < 0)
-+		return start;
-+
-+	err = ovs_nla_add_action(sfa, OVS_DEC_TTL_ATTR_EXEC, &nested,
-+				 sizeof(nested), log);
-+
-+	if (err)
-+		return err;
-+
-+	if (nested) {
-+		err = __ovs_nla_copy_actions(net, attr, key, sfa, eth_type,
-+					     vlan_tci, mpls_label_count, log);
-+		if (err)
-+			return err;
-+	}
-+
-+	add_nested_action_end(*sfa, start);
-+	return 0;
-+}
-+
- static int validate_and_copy_clone(struct net *net,
- 				   const struct nlattr *attr,
- 				   const struct sw_flow_key *key,
-@@ -3007,6 +3042,7 @@ static int __ovs_nla_copy_actions(struct net *net, const struct nlattr *attr,
- 			[OVS_ACTION_ATTR_CLONE] = (u32)-1,
- 			[OVS_ACTION_ATTR_CHECK_PKT_LEN] = (u32)-1,
- 			[OVS_ACTION_ATTR_ADD_MPLS] = sizeof(struct ovs_action_add_mpls),
-+			[OVS_ACTION_ATTR_DEC_TTL] = (u32)-1,
- 		};
- 		const struct ovs_action_push_vlan *vlan;
- 		int type = nla_type(a);
-@@ -3267,6 +3303,15 @@ static int __ovs_nla_copy_actions(struct net *net, const struct nlattr *attr,
- 			break;
- 		}
- 
-+		case OVS_ACTION_ATTR_DEC_TTL:
-+			err = validate_and_copy_dec_ttl(net, a, key, sfa,
-+							eth_type, vlan_tci,
-+							mpls_label_count, log);
-+			if (err)
-+				return err;
-+			skip_copy = true;
-+			break;
-+
- 		default:
- 			OVS_NLERR(log, "Unknown Action type %d", type);
- 			return -EINVAL;
-@@ -3438,6 +3483,26 @@ static int check_pkt_len_action_to_attr(const struct nlattr *attr,
- 	return err;
- }
- 
-+static int dec_ttl_action_to_attr(const struct nlattr *attr,
-+				  struct sk_buff *skb)
-+{
-+	int err = 0, rem = nla_len(attr);
-+	struct nlattr *start;
-+
-+	start = nla_nest_start_noflag(skb, OVS_ACTION_ATTR_DEC_TTL);
-+
-+	if (!start)
-+		return -EMSGSIZE;
-+
-+	err = ovs_nla_put_actions(nla_data(attr), rem, skb);
-+	if (err)
-+		nla_nest_cancel(skb, start);
-+	else
-+		nla_nest_end(skb, start);
-+
-+	return err;
-+}
-+
- static int set_action_to_attr(const struct nlattr *a, struct sk_buff *skb)
- {
- 	const struct nlattr *ovs_key = nla_data(a);
-@@ -3538,6 +3603,12 @@ int ovs_nla_put_actions(const struct nlattr *attr, int len, struct sk_buff *skb)
- 				return err;
- 			break;
- 
-+		case OVS_ACTION_ATTR_DEC_TTL:
-+			err = dec_ttl_action_to_attr(a, skb);
-+			if (err)
-+				return err;
-+			break;
-+
- 		default:
- 			if (nla_put(skb, type, nla_len(a), nla_data(a)))
- 				return -EMSGSIZE;
--- 
-2.24.1
-
+>
+>Thanks
+>
+>>
+>> >
