@@ -2,124 +2,83 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id D7AB313D0A0
-	for <lists+netdev@lfdr.de>; Thu, 16 Jan 2020 00:19:53 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A644B13D0A5
+	for <lists+netdev@lfdr.de>; Thu, 16 Jan 2020 00:26:32 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730523AbgAOXTj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 15 Jan 2020 18:19:39 -0500
-Received: from vps0.lunn.ch ([185.16.172.187]:40196 "EHLO vps0.lunn.ch"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726513AbgAOXTj (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 15 Jan 2020 18:19:39 -0500
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:
-        Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
-        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
-        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
-        List-Post:List-Owner:List-Archive;
-        bh=om+XDgmT/HasblOlQJMaFnMBZQDtEHgJob8myvB/iL4=; b=RdYPEzcOaAhRIB+TK9A2lOQjmk
-        6oUBaDFE9kzDiGMQgI/o9m4ZA65U07klDMnyT7c9zckloskpb/daMsn606OTV1wYspOWBo7NY9tx9
-        ZdqXIgWG+ZTVlRupOwQ3myITTPT7l252lStk0Krk/hD33mpxlZ87Lv9eRuU6MSBVoEmI=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.93)
-        (envelope-from <andrew@lunn.ch>)
-        id 1irrwa-0002Qm-Ig; Thu, 16 Jan 2020 00:19:24 +0100
-Date:   Thu, 16 Jan 2020 00:19:24 +0100
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Florian Fainelli <f.fainelli@gmail.com>
-Cc:     netdev@vger.kernel.org, cphealy@gmail.com,
-        rmk+kernel@armlinux.org.uk, Heiner Kallweit <hkallweit1@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        open list <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH net-next v2] net: phy: Maintain MDIO device and bus
- statistics
-Message-ID: <20200115231924.GF2475@lunn.ch>
-References: <20200115204228.26094-1-f.fainelli@gmail.com>
+        id S1729550AbgAOX0b (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 15 Jan 2020 18:26:31 -0500
+Received: from mail-pj1-f67.google.com ([209.85.216.67]:52318 "EHLO
+        mail-pj1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726513AbgAOX0b (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 15 Jan 2020 18:26:31 -0500
+Received: by mail-pj1-f67.google.com with SMTP id a6so629575pjh.2;
+        Wed, 15 Jan 2020 15:26:30 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=zdml4UeLEt0s/1BLRCQY3uiyNW6whOFDg1JrZMFRe+k=;
+        b=ba211we2+vdKuAuSUqJdcl526e7qKNQB/cjbuvV0FwuKGSkRGCuACVLQ5NmWM6awSo
+         PfO/Hkb/gCIaH61OrjvRY8EFJUSmvPU0wHTuxj523dZd4zBh6xIYBsk1DLYHxJ91wG88
+         rzvoHKhqLezIiveDSrLYYRWIrYch+U7n3dhlObowknOTb52TN96mMeMpk++Ov+J5+yQ3
+         JWEu7HQa3YquJnrFnnuah7oLNvhhc32U4MjhRz0hMg3Qhx6pixXQP6eT2YjWpP9tn6Ou
+         CJdUP9Nqx0cXRZ+I+qeRApDSoyBHb1VhceRcXvBnbGNCDjviFLdxuLl33N6uhPMs34Ka
+         LS9A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=zdml4UeLEt0s/1BLRCQY3uiyNW6whOFDg1JrZMFRe+k=;
+        b=nhjSzRsiX+CVtf4q6Dgbm3Zf9PdmCkytVhoxmjXiUF0E9W799rZKGlOPa4Y6icpDeN
+         DU6ti/iZ19C0JCNLiXM8BuA6F2v4/WDMpsizhUYRI1pUp+Gxm2XkdJsxjhZKpw4X6MOm
+         2s6mVvswM9lGb91P6UmS1Ta/B23OGi7qUcJqKLbKAOLuWs1BMSCkbMTtQ9wijBILo10K
+         s8KIRzoXrrFufhOS2/596S55dQcmyS0vDAgD4xOevLj36Lv6PNLUPI/8dzHlYNH82gYt
+         D8ZvzW/ZEhJZWftUQCH+hhxIXKDXFlfB0mbpojEeWDfwbfkiVrJJnEdi9gSPjHD129c3
+         dp4g==
+X-Gm-Message-State: APjAAAUZbU6JI610y+cLxlH5DO0teHHeMhCw5czYOB2JBDSR7UY5duGY
+        tlbGA88w++FKsE8tB3TUh2A=
+X-Google-Smtp-Source: APXvYqyCgs4oi/ryRUaLYW4oKuzkhEyawPem25BwP6bRI+ZirmVy13l5/6i8quPKdYjXU/3WKalMhw==
+X-Received: by 2002:a17:902:bd87:: with SMTP id q7mr21397922pls.239.1579130790308;
+        Wed, 15 Jan 2020 15:26:30 -0800 (PST)
+Received: from ast-mbp.dhcp.thefacebook.com ([2620:10d:c090:200::3:e760])
+        by smtp.gmail.com with ESMTPSA id r20sm21576905pgu.89.2020.01.15.15.26.29
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Wed, 15 Jan 2020 15:26:29 -0800 (PST)
+Date:   Wed, 15 Jan 2020 15:26:28 -0800
+From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
+To:     Martin KaFai Lau <kafai@fb.com>
+Cc:     bpf@vger.kernel.org, Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        David Miller <davem@davemloft.net>, kernel-team@fb.com,
+        netdev@vger.kernel.org
+Subject: Re: [PATCH v3 bpf-next 0/5] bpftool: Support dumping a map with
+ btf_vmlinux_value_type_id
+Message-ID: <20200115232626.x5qzdvmx2d3d4abl@ast-mbp.dhcp.thefacebook.com>
+References: <20200115230012.1100525-1-kafai@fb.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20200115204228.26094-1-f.fainelli@gmail.com>
+In-Reply-To: <20200115230012.1100525-1-kafai@fb.com>
+User-Agent: NeoMutt/20180223
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Jan 15, 2020 at 12:42:20PM -0800, Florian Fainelli wrote:
-> We maintain global statistics for an entire MDIO bus, as well as broken
-> down, per MDIO bus address statistics. Given that it is possible for
-> MDIO devices such as switches to access MDIO bus addressies for which
-> there is not a mdio_device instance created (therefore not a a
-> corresponding device directory in sysfs either), we also maintain
-> per-address statistics under the statistics folder. The layout looks
-> like this:
+On Wed, Jan 15, 2020 at 03:00:12PM -0800, Martin KaFai Lau wrote:
+> When a map is storing a kernel's struct, its
+> map_info->btf_vmlinux_value_type_id is set.  The first map type
+> supporting it is BPF_MAP_TYPE_STRUCT_OPS.
 > 
-> /sys/class/mdio_bus/../statistics/
-> 	transfers
-> 	errrors
-> 	writes
-> 	reads
-> 	transfers_<addr>
-> 	errors_<addr>
-> 	writes_<addr>
-> 	reads_<addr>
+> This series adds support to dump this kind of map with BTF.
+> The first two patches are bug fixes which are only applicable to
+> bpf-next.
 > 
-> When a mdio_device instance is registered, a statistics/ folder is
-> created with the tranfers, errors, writes and reads attributes which
-> point to the appropriate MDIO bus statistics structure.
+> Please see individual patches for details.
 > 
-> Statistics are 64-bit unsigned quantities and maintained through the
-> u64_stats_sync.h helper functions.
-> 
-> Signed-off-by: Florian Fainelli <f.fainelli@gmail.com>
-> ---
-> Changes in v2:
-> 
-> - tracked per MDIO address statististics in separate attributes
+> v3:
+> - Remove unnecessary #include "libbpf_internal.h" from patch 5
 
-Hi Florian
+I think the subj of patch 3 is fine as-is.
 
-This is much better. Here is an MDIO bus with a Marvel MV88E6390
-
-andrew@zii-devel-c-bidi:/sys/class/mdio_bus/0.1/statistics$ awk ' { print FILENAME " " $0  } ' transfers_? transfers_?? transfers
-transfers_0 93
-transfers_1 80
-transfers_2 80
-transfers_3 80
-transfers_4 102
-transfers_5 18
-transfers_6 7
-transfers_7 7
-transfers_8 7
-transfers_9 7
-transfers_10 82
-transfers_11 0
-transfers_12 0
-transfers_13 0
-transfers_14 0
-transfers_15 0
-transfers_16 0
-transfers_17 0
-transfers_18 0
-transfers_19 0
-transfers_20 0
-transfers_21 0
-transfers_22 0
-transfers_23 0
-transfers_24 0
-transfers_25 0
-transfers_26 0
-transfers_27 288
-transfers_28 3328
-transfers_29 0
-transfers_30 0
-transfers_31 0
-transfers 4179
-
-As you can see, there are transfers on a number of addresses.
-
-I've not looked at the code yet, but i can give:
-
-Tested-by: Andrew Lunn <andrew@lunn.ch>
-
-I will review the code soon.
-
-    Andrew
+Applied. Thanks
