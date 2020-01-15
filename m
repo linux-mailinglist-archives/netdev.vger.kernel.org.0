@@ -2,27 +2,27 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 04D8313C152
-	for <lists+netdev@lfdr.de>; Wed, 15 Jan 2020 13:44:01 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7182813C14E
+	for <lists+netdev@lfdr.de>; Wed, 15 Jan 2020 13:43:54 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729093AbgAOMn7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 15 Jan 2020 07:43:59 -0500
-Received: from mail.kernel.org ([198.145.29.99]:57326 "EHLO mail.kernel.org"
+        id S1729049AbgAOMnw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 15 Jan 2020 07:43:52 -0500
+Received: from mail.kernel.org ([198.145.29.99]:57202 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725999AbgAOMn6 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 15 Jan 2020 07:43:58 -0500
+        id S1725999AbgAOMnw (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 15 Jan 2020 07:43:52 -0500
 Received: from localhost (unknown [193.47.165.251])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 43920222C3;
-        Wed, 15 Jan 2020 12:43:57 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id C7F26222C3;
+        Wed, 15 Jan 2020 12:43:50 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1579092237;
-        bh=WOxWPvT5vCVhiL79Xr9riM1KPDDuufjN5dlnvD9Et4c=;
+        s=default; t=1579092231;
+        bh=9+VTtQRn4BN0SwTlA0aCwnQ461txTVqxYUvJ4f+j/Xc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=uNMA22cGPdBg7Mvk4m3ZRlk/teFaWQfc1GcAaHM4hfkJqqhWHA/BkYD6C0JHxrqu5
-         a/zQCpAr9LMsMNjeRyxYFgRYr1vrFxe7QemXBkmn9GQ5f1G4pU7kdy2Xii/UzbeOMd
-         zCSqp6rsqr23cO7oivmwQk/BABbg82NoeYYYShbY=
+        b=ASx6m93ajkzrmxxsPAAna258hfOj6cvCPxyTgMTfNvnbm1V2+dOqgxHD4EouSoJ6I
+         /kAvCJbjWOfrL5cRZeuhLC6MHtXMtp5tIsoGuhe69cLe3+LB8Es/HI3NrQ+uwGIW4L
+         M368pVOsfkAVDI6Swq2zoqdBzNzEsF9j5+0dsiHg=
 From:   Leon Romanovsky <leon@kernel.org>
 To:     Doug Ledford <dledford@redhat.com>,
         Jason Gunthorpe <jgg@mellanox.com>,
@@ -32,11 +32,10 @@ Cc:     Leon Romanovsky <leonro@mellanox.com>,
         RDMA mailing list <linux-rdma@vger.kernel.org>,
         Hans Westgaard Ry <hans.westgaard.ry@oracle.com>,
         Moni Shoua <monis@mellanox.com>,
-        linux-netdev <netdev@vger.kernel.org>,
-        Guy Levi <guyle@mellanox.com>
-Subject: [PATCH mlx5-next 02/10] IB/core: Introduce ib_reg_user_mr
-Date:   Wed, 15 Jan 2020 14:43:32 +0200
-Message-Id: <20200115124340.79108-3-leon@kernel.org>
+        linux-netdev <netdev@vger.kernel.org>
+Subject: [PATCH mlx5-next 03/10] IB/core: Add interface to advise_mr for kernel users
+Date:   Wed, 15 Jan 2020 14:43:33 +0200
+Message-Id: <20200115124340.79108-4-leon@kernel.org>
 X-Mailer: git-send-email 2.24.1
 In-Reply-To: <20200115124340.79108-1-leon@kernel.org>
 References: <20200115124340.79108-1-leon@kernel.org>
@@ -49,112 +48,49 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Moni Shoua <monis@mellanox.com>
 
-Add ib_reg_user_mr() for kernel ULPs to register user MRs.
-
-The common use case that uses this function is a userspace application
-that allocates memory for HCA access but the responsibility to register
-the memory at the HCA is on an kernel ULP. This ULP that acts as an agent
-for the userspace application.
-
-This function is intended to be used without a user context so vendor
-drivers need to be aware of calling reg_user_mr() device operation with
-udata equal to NULL.
-
-Among all drivers, i40iw is the only driver which relies on presence
-of udata, so check udata existence for that driver.
+Allow ULPs to call advise_mr, so they can control ODP regions
+in the same way as user space applications.
 
 Signed-off-by: Moni Shoua <monis@mellanox.com>
-Reviewed-by: Guy Levi <guyle@mellanox.com>
 Signed-off-by: Leon Romanovsky <leonro@mellanox.com>
 ---
- drivers/infiniband/core/verbs.c           | 30 +++++++++++++++++++++++
- drivers/infiniband/hw/efa/efa_verbs.c     |  2 +-
- drivers/infiniband/hw/i40iw/i40iw_verbs.c |  3 +++
- include/rdma/ib_verbs.h                   |  6 +++++
- 4 files changed, 40 insertions(+), 1 deletion(-)
+ drivers/infiniband/core/verbs.c | 11 +++++++++++
+ include/rdma/ib_verbs.h         |  3 +++
+ 2 files changed, 14 insertions(+)
 
 diff --git a/drivers/infiniband/core/verbs.c b/drivers/infiniband/core/verbs.c
-index 78b27aff2846..23d9911f7365 100644
+index 23d9911f7365..3ebae3b65c28 100644
 --- a/drivers/infiniband/core/verbs.c
 +++ b/drivers/infiniband/core/verbs.c
-@@ -1993,6 +1993,36 @@ EXPORT_SYMBOL(ib_resize_cq);
+@@ -2023,6 +2023,17 @@ struct ib_mr *ib_reg_user_mr(struct ib_pd *pd, u64 start, u64 length,
+ }
+ EXPORT_SYMBOL(ib_reg_user_mr);
 
- /* Memory regions */
-
-+struct ib_mr *ib_reg_user_mr(struct ib_pd *pd, u64 start, u64 length,
-+			     u64 virt_addr, int access_flags)
++int ib_advise_mr(struct ib_pd *pd, enum ib_uverbs_advise_mr_advice advice,
++		 u32 flags, struct ib_sge *sg_list, u32 num_sge)
 +{
-+	struct ib_mr *mr;
++	if (!pd->device->ops.advise_mr)
++		return -EOPNOTSUPP;
 +
-+	if (access_flags & IB_ACCESS_ON_DEMAND) {
-+		if (!(pd->device->attrs.device_cap_flags &
-+		      IB_DEVICE_ON_DEMAND_PAGING)) {
-+			pr_debug("ODP support not available\n");
-+			return ERR_PTR(-EINVAL);
-+		}
-+	}
-+
-+	mr = pd->device->ops.reg_user_mr(pd, start, length, virt_addr,
-+					 access_flags, NULL);
-+
-+	if (IS_ERR(mr))
-+		return mr;
-+
-+	mr->device = pd->device;
-+	mr->pd = pd;
-+	mr->dm = NULL;
-+	atomic_inc(&pd->usecnt);
-+	mr->res.type = RDMA_RESTRACK_MR;
-+	rdma_restrack_kadd(&mr->res);
-+
-+	return mr;
++	return pd->device->ops.advise_mr(pd, advice, flags, sg_list, num_sge,
++					 NULL);
 +}
-+EXPORT_SYMBOL(ib_reg_user_mr);
++EXPORT_SYMBOL(ib_advise_mr);
 +
  int ib_dereg_mr_user(struct ib_mr *mr, struct ib_udata *udata)
  {
  	struct ib_pd *pd = mr->pd;
-diff --git a/drivers/infiniband/hw/efa/efa_verbs.c b/drivers/infiniband/hw/efa/efa_verbs.c
-index 7e05033a650f..74c5ed32c7c5 100644
---- a/drivers/infiniband/hw/efa/efa_verbs.c
-+++ b/drivers/infiniband/hw/efa/efa_verbs.c
-@@ -1358,7 +1358,7 @@ struct ib_mr *efa_reg_mr(struct ib_pd *ibpd, u64 start, u64 length,
- 	int inline_size;
- 	int err;
-
--	if (udata->inlen &&
-+	if (udata && udata->inlen &&
- 	    !ib_is_udata_cleared(udata, 0, sizeof(udata->inlen))) {
- 		ibdev_dbg(&dev->ibdev,
- 			  "Incompatible ABI params, udata not cleared\n");
-diff --git a/drivers/infiniband/hw/i40iw/i40iw_verbs.c b/drivers/infiniband/hw/i40iw/i40iw_verbs.c
-index e75787ddc941..4072cc68aa10 100644
---- a/drivers/infiniband/hw/i40iw/i40iw_verbs.c
-+++ b/drivers/infiniband/hw/i40iw/i40iw_verbs.c
-@@ -1758,6 +1758,9 @@ static struct ib_mr *i40iw_reg_user_mr(struct ib_pd *pd,
- 	int ret;
- 	int pg_shift;
-
-+	if (!udata)
-+		return ERR_PTR(-EOPNOTSUPP);
-+
- 	if (iwdev->closing)
- 		return ERR_PTR(-ENODEV);
-
 diff --git a/include/rdma/ib_verbs.h b/include/rdma/ib_verbs.h
-index 6506df9f31ae..1aeb92609279 100644
+index 1aeb92609279..1f779fad3a1e 100644
 --- a/include/rdma/ib_verbs.h
 +++ b/include/rdma/ib_verbs.h
-@@ -4166,6 +4166,12 @@ static inline void ib_dma_free_coherent(struct ib_device *dev,
- 	dma_free_coherent(dev->dma_device, size, cpu_addr, dma_handle);
- }
+@@ -4172,6 +4172,9 @@ static inline void ib_dma_free_coherent(struct ib_device *dev,
+ struct ib_mr *ib_reg_user_mr(struct ib_pd *pd, u64 start, u64 length,
+ 			     u64 virt_addr, int mr_access_flags);
 
-+/* ib_reg_user_mr - register a memory region for virtual addresses from kernel
-+ * space. This function should be called when 'current' is the owning MM.
-+ */
-+struct ib_mr *ib_reg_user_mr(struct ib_pd *pd, u64 start, u64 length,
-+			     u64 virt_addr, int mr_access_flags);
-+
++/* ib_advise_mr -  give an advice about an address range in a memory region */
++int ib_advise_mr(struct ib_pd *pd, enum ib_uverbs_advise_mr_advice advice,
++		 u32 flags, struct ib_sge *sg_list, u32 num_sge);
  /**
   * ib_dereg_mr_user - Deregisters a memory region and removes it from the
   *   HCA translation table.
