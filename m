@@ -2,200 +2,188 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 48BAB13D00D
-	for <lists+netdev@lfdr.de>; Wed, 15 Jan 2020 23:23:29 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2A7A913D022
+	for <lists+netdev@lfdr.de>; Wed, 15 Jan 2020 23:34:10 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730697AbgAOWX1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 15 Jan 2020 17:23:27 -0500
-Received: from mx0b-00082601.pphosted.com ([67.231.153.30]:65082 "EHLO
-        mx0b-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1730588AbgAOWX1 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 15 Jan 2020 17:23:27 -0500
-Received: from pps.filterd (m0109332.ppops.net [127.0.0.1])
-        by mx0a-00082601.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 00FMN5aL016287
-        for <netdev@vger.kernel.org>; Wed, 15 Jan 2020 14:23:26 -0800
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
- : date : message-id : in-reply-to : references : mime-version :
- content-type; s=facebook; bh=VGswns7iuZEl51MOvzGuiL6n5XoXwg9qfgPFgvIJ7K4=;
- b=DHrrQQwkEw8sZNsJSsas7L36Z5itznlBjvCYNU3OX5jM/ZZ9i3HDa/AoVNqEtnb8QBOg
- 5PKNIyq4qWCTMfWDHmdFefmMV0WhBVjXshZB82F2fsyN/FgOvoWOZ7T+VCZLg9w0uPhB
- rQr5vipPblOUHbd6hI5RtLZIcv2esR/p8Lo= 
-Received: from maileast.thefacebook.com ([163.114.130.16])
-        by mx0a-00082601.pphosted.com with ESMTP id 2xhgwuf8a6-2
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT)
-        for <netdev@vger.kernel.org>; Wed, 15 Jan 2020 14:23:26 -0800
-Received: from intmgw003.08.frc2.facebook.com (2620:10d:c0a8:1b::d) by
- mail.thefacebook.com (2620:10d:c0a8:82::f) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.1713.5; Wed, 15 Jan 2020 14:23:25 -0800
-Received: by devbig005.ftw2.facebook.com (Postfix, from userid 6611)
-        id A9FB9294163F; Wed, 15 Jan 2020 14:23:12 -0800 (PST)
-Smtp-Origin-Hostprefix: devbig
-From:   Martin KaFai Lau <kafai@fb.com>
-Smtp-Origin-Hostname: devbig005.ftw2.facebook.com
-To:     <bpf@vger.kernel.org>
-CC:     Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        David Miller <davem@davemloft.net>, <kernel-team@fb.com>,
-        <netdev@vger.kernel.org>
-Smtp-Origin-Cluster: ftw2c04
-Subject: [PATCH v2 bpf-next 5/5] bpftool: Support dumping a map with btf_vmlinux_value_type_id
-Date:   Wed, 15 Jan 2020 14:23:12 -0800
-Message-ID: <20200115222312.948025-1-kafai@fb.com>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20200115222241.945672-1-kafai@fb.com>
-References: <20200115222241.945672-1-kafai@fb.com>
-X-FB-Internal: Safe
+        id S1730071AbgAOWbu (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 15 Jan 2020 17:31:50 -0500
+Received: from mail-qk1-f193.google.com ([209.85.222.193]:36467 "EHLO
+        mail-qk1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728899AbgAOWbu (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 15 Jan 2020 17:31:50 -0500
+Received: by mail-qk1-f193.google.com with SMTP id a203so17355080qkc.3;
+        Wed, 15 Jan 2020 14:31:48 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=m3ykeEiv2DWhC3YDv/3M+ztOkLKwpMGFjEqD6cnUt4s=;
+        b=cNt51iDcDZI6zelQEGvFbm8lPIlIGnZldM0f2rIq1AgcoCCdkQIbVvR19pY8xHwYlP
+         7R2OMxb5sfqI39LAluJjBuUlrFm8jXcFHwHzpQsVk9IHMN/xpCMK491szpikUKk8RT8X
+         m7307OpYrbxFQJI8OakwrfTa3HGJZ4eJBfI86Xby5q50ox6WVd4PzkYEVcAciFBIwS8u
+         f7mRKTLIgkBP65rlD0vn09o9FPFOgGm1EUGPVidZ+W/ZFmk+dDe2ZjwrZvCB++dEJ8sV
+         SkthSvzz+nTTMBTamfNnFkYTRMY01cXfsbE7dr+lHGbkVSn+2SSSqgQh18vnIuXka7P3
+         jZ8Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=m3ykeEiv2DWhC3YDv/3M+ztOkLKwpMGFjEqD6cnUt4s=;
+        b=cK76LIAP5ynqr0Qta/8qtkniBiwY6z2LvYl36KzJhC160HWZAgWe7jrqSs6rdz51KO
+         jvOYzc5iDZ5jEMidCg5GTs6O4px3Y9vBjWG95814auLdEtPiisD6EOzE4jAM7pZ/if06
+         Y73rLUhWf5YehK9/0knabFTx+SmCHoRVm0XkuQh9SeHo7s/9OBXRisdV1InonIhgnHvY
+         kvxy66xTcUm0LeQKyHsjwPbDFOeJueNg0/TXS9c/A/cnPj84VMNww/UfbaRJatW8cJtH
+         Mte43cYFkUJjnqhSIxlzcsWwulykNHHh+yVSJd6j9xHx2a9ykwKoTYMCxPM9qh21vYh7
+         XOIg==
+X-Gm-Message-State: APjAAAVLiYLb8203H9f0aSWU+jQBOW6ieGh/6E8+TWrMNMJgtQICPqfV
+        ZOGrpVd0Z2SQwg49NYDkGtG7+lsqO9IdXO45MaU=
+X-Google-Smtp-Source: APXvYqzukFfHfNkIeKb+uK+DszszlveC2wPehwk6e8vAwphJhtnuhVoFPfjcvFFmRoCVVG49lShaKmldjnY1Y1hDegY=
+X-Received: by 2002:ae9:e809:: with SMTP id a9mr13631663qkg.92.1579127508368;
+ Wed, 15 Jan 2020 14:31:48 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.138,18.0.572
- definitions=2020-01-15_03:2020-01-15,2020-01-15 signatures=0
-X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 mlxlogscore=679
- suspectscore=38 phishscore=0 bulkscore=0 spamscore=0 clxscore=1015
- priorityscore=1501 mlxscore=0 lowpriorityscore=0 adultscore=0
- malwarescore=0 impostorscore=0 classifier=spam adjust=0 reason=mlx
- scancount=1 engine=8.12.0-1910280000 definitions=main-2001150167
-X-FB-Internal: deliver
+References: <157909756858.1192265.6657542187065456112.stgit@toke.dk>
+ <157909757089.1192265.9038866294345740126.stgit@toke.dk> <CAEf4BzbqY8zivZy637Xy=iTECzBAYQ7vo=M7TvsLM2Yp12bJpg@mail.gmail.com>
+ <87v9pctlvn.fsf@toke.dk>
+In-Reply-To: <87v9pctlvn.fsf@toke.dk>
+From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Date:   Wed, 15 Jan 2020 14:31:37 -0800
+Message-ID: <CAEf4BzZpGe-1S5_iwS8GBw9iiyFJmDUkOaO+2qaftRn_iy5cNA@mail.gmail.com>
+Subject: Re: [PATCH bpf-next v2 02/10] tools/bpf/runqslower: Fix override
+ option for VMLINUX_BTF
+To:     =?UTF-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <toke@redhat.com>
+Cc:     Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        Andrii Nakryiko <andriin@fb.com>,
+        Doug Ledford <dledford@redhat.com>,
+        Jason Gunthorpe <jgg@ziepe.ca>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <jakub.kicinski@netronome.com>,
+        Jesper Dangaard Brouer <brouer@redhat.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Ingo Molnar <mingo@redhat.com>,
+        Arnaldo Carvalho de Melo <acme@kernel.org>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
+        Jiri Olsa <jolsa@redhat.com>,
+        Namhyung Kim <namhyung@kernel.org>,
+        Shuah Khan <shuah@kernel.org>,
+        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        open list <linux-kernel@vger.kernel.org>,
+        linux-rdma@vger.kernel.org,
+        "open list:KERNEL SELFTEST FRAMEWORK" 
+        <linux-kselftest@vger.kernel.org>,
+        clang-built-linux@googlegroups.com
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This patch makes bpftool support dumping a map's value properly
-when the map's value type is a type of the running kernel's btf.
-(i.e. map_info.btf_vmlinux_value_type_id is set instead of
-map_info.btf_value_type_id).  The first usecase is for the
-BPF_MAP_TYPE_STRUCT_OPS.
+On Wed, Jan 15, 2020 at 2:06 PM Toke H=C3=B8iland-J=C3=B8rgensen <toke@redh=
+at.com> wrote:
+>
+> Andrii Nakryiko <andrii.nakryiko@gmail.com> writes:
+>
+> > On Wed, Jan 15, 2020 at 6:13 AM Toke H=C3=B8iland-J=C3=B8rgensen <toke@=
+redhat.com> wrote:
+> >>
+> >> From: Toke H=C3=B8iland-J=C3=B8rgensen <toke@redhat.com>
+> >>
+> >> The runqslower tool refuses to build without a file to read vmlinux BT=
+F
+> >> from. The build fails with an error message to override the location b=
+y
+> >> setting the VMLINUX_BTF variable if autodetection fails. However, the
+> >> Makefile doesn't actually work with that override - the error message =
+is
+> >> still emitted.
+> >
+> > Do you have example command with VMLINUX_BTF override that didn't work
+> > (and what error message was emitted)?
+>
+> Before this patch:
+>
+> $ cd ~/build/linux/tools/bpf/runqslower
+> $ make
+> Makefile:18: *** "Can't detect kernel BTF, use VMLINUX_BTF to specify it =
+explicitly".  Stop.
+>
+> $ make VMLINUX_BTF=3D~/build/linux/vmlinux
+> Makefile:18: *** "Can't detect kernel BTF, use VMLINUX_BTF to specify it =
+explicitly".  Stop.
 
-Signed-off-by: Martin KaFai Lau <kafai@fb.com>
----
- tools/bpf/bpftool/map.c | 62 +++++++++++++++++++++++++++++++++--------
- 1 file changed, 51 insertions(+), 11 deletions(-)
+Ok, so this is strange. Try make clean and run with V=3D1, it might help
+to debug this. This could happen if ~/build/linux/vmlinux doesn't
+exist, but I assume you double-checked that. It works for me just fine
+(Makefile won't do VMLINUX_BTF :=3D assignment, if it's defined through
+make invocation, so your change should be a no-op in that regard):
 
-diff --git a/tools/bpf/bpftool/map.c b/tools/bpf/bpftool/map.c
-index 4c5b15d736b6..33636f86bcbb 100644
---- a/tools/bpf/bpftool/map.c
-+++ b/tools/bpf/bpftool/map.c
-@@ -20,6 +20,7 @@
- #include "btf.h"
- #include "json_writer.h"
- #include "main.h"
-+#include "libbpf_internal.h"
- 
- const char * const map_type_name[] = {
- 	[BPF_MAP_TYPE_UNSPEC]			= "unspec",
-@@ -252,6 +253,7 @@ static int do_dump_btf(const struct btf_dumper *d,
- 		       struct bpf_map_info *map_info, void *key,
- 		       void *value)
- {
-+	__u32 value_id;
- 	int ret;
- 
- 	/* start of key-value pair */
-@@ -265,9 +267,12 @@ static int do_dump_btf(const struct btf_dumper *d,
- 			goto err_end_obj;
- 	}
- 
-+	value_id = map_info->btf_vmlinux_value_type_id ?
-+		: map_info->btf_value_type_id;
-+
- 	if (!map_is_per_cpu(map_info->type)) {
- 		jsonw_name(d->jw, "value");
--		ret = btf_dumper_type(d, map_info->btf_value_type_id, value);
-+		ret = btf_dumper_type(d, value_id, value);
- 	} else {
- 		unsigned int i, n, step;
- 
-@@ -279,8 +284,7 @@ static int do_dump_btf(const struct btf_dumper *d,
- 			jsonw_start_object(d->jw);
- 			jsonw_int_field(d->jw, "cpu", i);
- 			jsonw_name(d->jw, "value");
--			ret = btf_dumper_type(d, map_info->btf_value_type_id,
--					      value + i * step);
-+			ret = btf_dumper_type(d, value_id, value + i * step);
- 			jsonw_end_object(d->jw);
- 			if (ret)
- 				break;
-@@ -932,6 +936,44 @@ static int maps_have_btf(int *fds, int nb_fds)
- 	return 1;
- }
- 
-+static struct btf *btf_vmlinux;
-+
-+static struct btf *get_map_kv_btf(const struct bpf_map_info *info)
-+{
-+	struct btf *btf = NULL;
-+
-+	if (info->btf_vmlinux_value_type_id) {
-+		if (!btf_vmlinux) {
-+			btf_vmlinux = libbpf_find_kernel_btf();
-+			if (IS_ERR(btf_vmlinux))
-+				p_err("failed to get kernel btf");
-+		}
-+		return btf_vmlinux;
-+	} else if (info->btf_value_type_id) {
-+		int err;
-+
-+		err = btf__get_from_id(info->btf_id, &btf);
-+		if (err || !btf) {
-+			p_err("failed to get btf");
-+			btf = err ? ERR_PTR(err) : ERR_PTR(-ESRCH);
-+		}
-+	}
-+
-+	return btf;
-+}
-+
-+static void free_map_kv_btf(struct btf *btf)
-+{
-+	if (!IS_ERR(btf) && btf != btf_vmlinux)
-+		btf__free(btf);
-+}
-+
-+static void free_btf_vmlinux(void)
-+{
-+	if (!IS_ERR(btf_vmlinux))
-+		btf__free(btf_vmlinux);
-+}
-+
- static int
- map_dump(int fd, struct bpf_map_info *info, json_writer_t *wtr,
- 	 bool show_header)
-@@ -952,13 +994,10 @@ map_dump(int fd, struct bpf_map_info *info, json_writer_t *wtr,
- 	prev_key = NULL;
- 
- 	if (wtr) {
--		if (info->btf_id) {
--			err = btf__get_from_id(info->btf_id, &btf);
--			if (err || !btf) {
--				err = err ? : -ESRCH;
--				p_err("failed to get btf");
--				goto exit_free;
--			}
-+		btf = get_map_kv_btf(info);
-+		if (IS_ERR(btf)) {
-+			err = PTR_ERR(btf);
-+			goto exit_free;
- 		}
- 
- 		if (show_header) {
-@@ -999,7 +1038,7 @@ map_dump(int fd, struct bpf_map_info *info, json_writer_t *wtr,
- 	free(key);
- 	free(value);
- 	close(fd);
--	btf__free(btf);
-+	free_map_kv_btf(btf);
- 
- 	return err;
- }
-@@ -1067,6 +1106,7 @@ static int do_dump(int argc, char **argv)
- 		close(fds[i]);
- exit_free:
- 	free(fds);
-+	free_btf_vmlinux();
- 	return err;
- }
- 
--- 
-2.17.1
+$ make clean
+$ make VMLINUX_BTF=3D~/linux-build/default/vmlinux V=3D1
+...
+.output/sbin/bpftool btf dump file ~/linux-build/default/vmlinux
+format c > .output/vmlinux.h
+...
 
+Wonder what your output looks like?
+
+>
+> >> Fix this by only doing auto-detection if no override is set. And while
+> >> we're at it, also look for a vmlinux file in the current kernel build =
+dir
+> >> if none if found on the running kernel.
+> >>
+> >> Fixes: 9c01546d26d2 ("tools/bpf: Add runqslower tool to tools/bpf")
+> >> Signed-off-by: Toke H=C3=B8iland-J=C3=B8rgensen <toke@redhat.com>
+> >> ---
+> >>  tools/bpf/runqslower/Makefile |   16 ++++++++++------
+> >>  1 file changed, 10 insertions(+), 6 deletions(-)
+> >>
+> >> diff --git a/tools/bpf/runqslower/Makefile b/tools/bpf/runqslower/Make=
+file
+> >> index cff2fbcd29a8..fb93ce2bf2fe 100644
+> >> --- a/tools/bpf/runqslower/Makefile
+> >> +++ b/tools/bpf/runqslower/Makefile
+> >> @@ -10,12 +10,16 @@ CFLAGS :=3D -g -Wall
+> >>
+> >>  # Try to detect best kernel BTF source
+> >>  KERNEL_REL :=3D $(shell uname -r)
+> >> -ifneq ("$(wildcard /sys/kernel/btf/vmlinux)","")
+> >> -VMLINUX_BTF :=3D /sys/kernel/btf/vmlinux
+> >> -else ifneq ("$(wildcard /boot/vmlinux-$(KERNEL_REL))","")
+> >> -VMLINUX_BTF :=3D /boot/vmlinux-$(KERNEL_REL)
+> >> -else
+> >> -$(error "Can't detect kernel BTF, use VMLINUX_BTF to specify it expli=
+citly")
+> >> +ifeq ("$(VMLINUX_BTF)","")
+> >> +  ifneq ("$(wildcard /sys/kernel/btf/vmlinux)","")
+> >> +  VMLINUX_BTF :=3D /sys/kernel/btf/vmlinux
+> >> +  else ifneq ("$(wildcard /boot/vmlinux-$(KERNEL_REL))","")
+> >> +  VMLINUX_BTF :=3D /boot/vmlinux-$(KERNEL_REL)
+> >> +  else ifneq ("$(wildcard $(abspath ../../../vmlinux))","")
+> >> +  VMLINUX_BTF :=3D $(abspath ../../../vmlinux)
+> >
+> > I'm planning to mirror runqslower into libbpf Github repo and this
+> > ../../../vmlinux piece will be completely out of place in that
+> > context. Also it only will help when building kernel in-tree. So I'd
+> > rather not add this.
+>
+> Well building the kernel in-tree is something people sometimes want to do=
+ ;)
+>
+> Specifically, the selftests depend on this, so we should at least fix
+> those; but I guess it could work to just pass in VMLINUX_BTF as part of
+> the make -C from the selftests dir? I'll try that...
+
+Yes, it can be handled through VMLINUX_BTF override for selftests. As
+I said, this will be a self-contained example in libbpf's Github repo,
+so this "in kernel tree" assumption doesn't stand there.
+
+
+>
+> -Toke
+>
