@@ -2,195 +2,111 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id C8E2B13C263
-	for <lists+netdev@lfdr.de>; Wed, 15 Jan 2020 14:16:00 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 995D813C2C0
+	for <lists+netdev@lfdr.de>; Wed, 15 Jan 2020 14:30:19 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728963AbgAONP7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 15 Jan 2020 08:15:59 -0500
-Received: from us-smtp-2.mimecast.com ([205.139.110.61]:46730 "EHLO
-        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1728927AbgAONP6 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 15 Jan 2020 08:15:58 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1579094158;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=CxVhE7XjFwcijbDOtv3VHh0R3n/aqdvJnm3oZGS0Kxo=;
-        b=jKBmYwEVilrpESQyu0urZGR4NLwaHA3A+3iLqVcNXVe3dN/xIl2XlBb5QCSl5giXvw9xs/
-        57qpoJICMw1gppFMF4hHRIIYbyRt45zVxWgbi8+4t76UKClzzBPBoNZ3Um9DZl00be1fm+
-        3CQ1It2DFpCvBx7ncMWr+F5RhDBs1hY=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-214-F9lvZH4iOse5fMVTXIsz9w-1; Wed, 15 Jan 2020 08:15:54 -0500
-X-MC-Unique: F9lvZH4iOse5fMVTXIsz9w-1
-Received: from smtp.corp.redhat.com (int-mx05.intmail.prod.int.phx2.redhat.com [10.5.11.15])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 9076491222;
-        Wed, 15 Jan 2020 13:15:53 +0000 (UTC)
-Received: from localhost.localdomain (wsfd-netdev76.ntdv.lab.eng.bos.redhat.com [10.19.188.157])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id DC166842BF;
-        Wed, 15 Jan 2020 13:15:52 +0000 (UTC)
-From:   Eelco Chaudron <echaudro@redhat.com>
-To:     bpf@vger.kernel.org
-Cc:     davem@davemloft.net, ast@kernel.org, netdev@vger.kernel.org,
-        andrii.nakryiko@gmail.com, maciej.fijalkowski@intel.com
-Subject: [PATCH bpf-next v3] selftests/bpf: Add a test for attaching a bpf fentry/fexit trace to an XDP program
-Date:   Wed, 15 Jan 2020 13:15:39 +0000
-Message-Id: <157909410480.47481.11202505690938004673.stgit@xdp-tutorial>
-User-Agent: StGit/0.19
+        id S1726248AbgAONaR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 15 Jan 2020 08:30:17 -0500
+Received: from mail-wr1-f65.google.com ([209.85.221.65]:41670 "EHLO
+        mail-wr1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726071AbgAONaR (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 15 Jan 2020 08:30:17 -0500
+Received: by mail-wr1-f65.google.com with SMTP id c9so15748849wrw.8
+        for <netdev@vger.kernel.org>; Wed, 15 Jan 2020 05:30:16 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=6wind.com; s=google;
+        h=reply-to:subject:to:cc:references:from:organization:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=T0YLzqfrLW1TFPTFyetIPuiU4ElOFslfRB5SrvXVr1Y=;
+        b=f6cMykjpyXmxygcqE2TpVKg7UV+K0Agg4E0TxefSrOmALM/4BJDlqMlHR2jf02tuPW
+         xYAphXgryB/d4YV5qZ4d0tijXFFhNp9FURjeXVwlILDjmwC7odkl0ghosoSnYlZe5QqO
+         uhbXLkXDO1LbuOVxaqc3BTY2W7gixv49xDBFf7VRTpEhX2Fi8ovUw74HfuRhDtU2Kiqj
+         afIGsAKFoU+ucW9fWlUsbhLZV6qPm3qTmqvIn/5XPP8+R8L08Nb1ZwG5RXm0Bh41V6LB
+         p+36zHuFE1YfxJo+TBVGxuLcQY/PgJNsG1RMPFGNn7rj/IVx3ZHkjVAJPiQ39wfttMxw
+         CVEw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:reply-to:subject:to:cc:references:from
+         :organization:message-id:date:user-agent:mime-version:in-reply-to
+         :content-language:content-transfer-encoding;
+        bh=T0YLzqfrLW1TFPTFyetIPuiU4ElOFslfRB5SrvXVr1Y=;
+        b=jjFokNh3NEH0pThRZPkJm4FJ69Gr8ejElozRcHunFmhwwefXJm4tw7kiRdD8uVb7tF
+         I9EvtdKVTmaOBBAhtfLK1F3HdkR41yO9ZNPh6lWFiFePWlWLFktdM68P7kvvoCCuDYiz
+         KqRwv9hiNy3lT4b+AhUgJ+m+Gy2mTgr2mCJ0+4Vajxg5o6d4EzbuxoJGX46bm1qXxFmj
+         rhxFQruvWhoQ6LhPM1Cf9idPoIXjqhw//yLKDh6HzVeJ+Ky8Yyt8MC0NA9/C56CpaDYj
+         FfWzr4m3egsSAo9J9+OmBdFzSNSO4u4cYzAEUYOxz6EdBWHYZ7sWzvsiuwRMl1L2PRbs
+         S8bQ==
+X-Gm-Message-State: APjAAAXOydVaOAWzGmuMmTVhyZtdUH1r9RBnnuav3LDVI7StILNpnAhr
+        FWYJGPCz/EEnPchkL4xVeUqVSQW9cM4=
+X-Google-Smtp-Source: APXvYqyrItOspP7PzIFYcafj2bDEesRz+7eG0GLZXGDdaBXWA8uG8zNKeBA1JKfQubUCZZxLR/cmkg==
+X-Received: by 2002:adf:eb46:: with SMTP id u6mr31881291wrn.239.1579095014987;
+        Wed, 15 Jan 2020 05:30:14 -0800 (PST)
+Received: from ?IPv6:2a01:e0a:410:bb00:d497:1e4d:f822:7486? ([2a01:e0a:410:bb00:d497:1e4d:f822:7486])
+        by smtp.gmail.com with ESMTPSA id p5sm23430750wrt.79.2020.01.15.05.30.13
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 15 Jan 2020 05:30:14 -0800 (PST)
+Reply-To: nicolas.dichtel@6wind.com
+Subject: Re: [PATCH net-next 1/2] netns: Parse NETNSA_FD and NETNSA_PID as
+ signed integers
+To:     Guillaume Nault <gnault@redhat.com>,
+        David Miller <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>
+Cc:     netdev@vger.kernel.org
+References: <cover.1579040200.git.gnault@redhat.com>
+ <0f37c946179b082bf1c5e34d2cfdd9223979ea83.1579040200.git.gnault@redhat.com>
+From:   Nicolas Dichtel <nicolas.dichtel@6wind.com>
+Organization: 6WIND
+Message-ID: <b4a7a751-5566-fd9b-d038-c80878ec41f7@6wind.com>
+Date:   Wed, 15 Jan 2020 14:30:13 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.2.2
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.15
-Content-Transfer-Encoding: quoted-printable
+In-Reply-To: <0f37c946179b082bf1c5e34d2cfdd9223979ea83.1579040200.git.gnault@redhat.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add a test that will attach a FENTRY and FEXIT program to the XDP test
-program. It will also verify data from the XDP context on FENTRY and
-verifies the return code on exit.
+Le 14/01/2020 à 23:25, Guillaume Nault a écrit :
+> These attributes represent signed values (file descriptors and PIDs).
+> Make that clear in nla_policy.
+> 
+> Signed-off-by: Guillaume Nault <gnault@redhat.com>
+> ---
+>  net/core/net_namespace.c | 12 ++++++------
+>  1 file changed, 6 insertions(+), 6 deletions(-)
+> 
+> diff --git a/net/core/net_namespace.c b/net/core/net_namespace.c
+> index 6412c1fbfcb5..85c565571c1c 100644
+> --- a/net/core/net_namespace.c
+> +++ b/net/core/net_namespace.c
+> @@ -706,8 +706,8 @@ static struct pernet_operations __net_initdata net_ns_ops = {
+>  static const struct nla_policy rtnl_net_policy[NETNSA_MAX + 1] = {
+>  	[NETNSA_NONE]		= { .type = NLA_UNSPEC },
+>  	[NETNSA_NSID]		= { .type = NLA_S32 },
+> -	[NETNSA_PID]		= { .type = NLA_U32 },
+> -	[NETNSA_FD]		= { .type = NLA_U32 },
+> +	[NETNSA_PID]		= { .type = NLA_S32 },
+> +	[NETNSA_FD]		= { .type = NLA_S32 },
+Please, keep them consistent with IFLA_NET_NS_*:
+https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/tree/net/core/rtnetlink.c?h=v5.5-rc6#n1793
 
-Signed-off-by: Eelco Chaudron <echaudro@redhat.com>
----
-v2 -> v3:
-  - Incorporated review comments from Andrii and Maciej
+>  	[NETNSA_TARGET_NSID]	= { .type = NLA_S32 },
+>  };
+>  
+> @@ -731,10 +731,10 @@ static int rtnl_net_newid(struct sk_buff *skb, struct nlmsghdr *nlh,
+>  	nsid = nla_get_s32(tb[NETNSA_NSID]);
+>  
+>  	if (tb[NETNSA_PID]) {
+> -		peer = get_net_ns_by_pid(nla_get_u32(tb[NETNSA_PID]));
+> +		peer = get_net_ns_by_pid(nla_get_s32(tb[NETNSA_PID]));
+Same here:
+https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/tree/net/core/rtnetlink.c?h=v5.5-rc6#n2115
 
-v1 -> v2:
-  - Changed code to use the BPF skeleton
-  - Replace static volatile with global variable in eBPF code
 
- .../testing/selftests/bpf/prog_tests/xdp_bpf2bpf.c |   65 ++++++++++++++=
-++++++
- .../testing/selftests/bpf/progs/test_xdp_bpf2bpf.c |   44 ++++++++++++++
- 2 files changed, 109 insertions(+)
- create mode 100644 tools/testing/selftests/bpf/prog_tests/xdp_bpf2bpf.c
- create mode 100644 tools/testing/selftests/bpf/progs/test_xdp_bpf2bpf.c
-
-diff --git a/tools/testing/selftests/bpf/prog_tests/xdp_bpf2bpf.c b/tools=
-/testing/selftests/bpf/prog_tests/xdp_bpf2bpf.c
-new file mode 100644
-index 000000000000..6b56bdc73ebc
---- /dev/null
-+++ b/tools/testing/selftests/bpf/prog_tests/xdp_bpf2bpf.c
-@@ -0,0 +1,65 @@
-+// SPDX-License-Identifier: GPL-2.0
-+#include <test_progs.h>
-+#include <net/if.h>
-+#include "test_xdp.skel.h"
-+#include "test_xdp_bpf2bpf.skel.h"
-+
-+void test_xdp_bpf2bpf(void)
-+{
-+	__u32 duration =3D 0, retval, size;
-+	char buf[128];
-+	int err, pkt_fd, map_fd;
-+	struct iphdr *iph =3D (void *)buf + sizeof(struct ethhdr);
-+	struct iptnl_info value4 =3D {.family =3D AF_INET};
-+	struct test_xdp *pkt_skel =3D NULL;
-+	struct test_xdp_bpf2bpf *ftrace_skel =3D NULL;
-+	struct vip key4 =3D {.protocol =3D 6, .family =3D AF_INET};
-+	DECLARE_LIBBPF_OPTS(bpf_object_open_opts, opts);
-+
-+	/* Load XDP program to introspect */
-+	pkt_skel =3D test_xdp__open_and_load();
-+	if (CHECK(!pkt_skel, "pkt_skel_load", "test_xdp skeleton failed\n"))
-+		return;
-+
-+	pkt_fd =3D bpf_program__fd(pkt_skel->progs._xdp_tx_iptunnel);
-+
-+	map_fd =3D bpf_map__fd(pkt_skel->maps.vip2tnl);
-+	bpf_map_update_elem(map_fd, &key4, &value4, 0);
-+
-+	/* Load trace program */
-+	opts.attach_prog_fd =3D pkt_fd,
-+	ftrace_skel =3D test_xdp_bpf2bpf__open_opts(&opts);
-+	if (CHECK(!ftrace_skel, "__open", "ftrace skeleton failed\n"))
-+		goto out;
-+
-+	err =3D test_xdp_bpf2bpf__load(ftrace_skel);
-+	if (CHECK(err, "__load", "ftrace skeleton failed\n"))
-+		goto out;
-+
-+	err =3D test_xdp_bpf2bpf__attach(ftrace_skel);
-+	if (CHECK(err, "ftrace_attach", "ftrace attach failed: %d\n", err))
-+		goto out;
-+
-+	/* Run test program */
-+	err =3D bpf_prog_test_run(pkt_fd, 1, &pkt_v4, sizeof(pkt_v4),
-+				buf, &size, &retval, &duration);
-+
-+	if (CHECK(err || retval !=3D XDP_TX || size !=3D 74 ||
-+		  iph->protocol !=3D IPPROTO_IPIP, "ipv4",
-+		  "err %d errno %d retval %d size %d\n",
-+		  err, errno, retval, size))
-+		goto out;
-+
-+	/* Verify test results */
-+	if (CHECK(ftrace_skel->bss->test_result_fentry !=3D if_nametoindex("lo"=
-),
-+		  "result", "fentry failed err %llu\n",
-+		  ftrace_skel->bss->test_result_fentry))
-+		goto out;
-+
-+	CHECK(ftrace_skel->bss->test_result_fexit !=3D XDP_TX, "result",
-+	      "fexit failed err %llu\n", ftrace_skel->bss->test_result_fexit);
-+
-+out:
-+	test_xdp__destroy(pkt_skel);
-+	test_xdp_bpf2bpf__destroy(ftrace_skel);
-+}
-diff --git a/tools/testing/selftests/bpf/progs/test_xdp_bpf2bpf.c b/tools=
-/testing/selftests/bpf/progs/test_xdp_bpf2bpf.c
-new file mode 100644
-index 000000000000..f8f105af6743
---- /dev/null
-+++ b/tools/testing/selftests/bpf/progs/test_xdp_bpf2bpf.c
-@@ -0,0 +1,44 @@
-+// SPDX-License-Identifier: GPL-2.0
-+#include <linux/bpf.h>
-+#include "bpf_helpers.h"
-+#include "bpf_trace_helpers.h"
-+
-+struct net_device {
-+	/* Structure does not need to contain all entries,
-+	 * as "preserve_access_index" will use BTF to fix this...
-+	 */
-+	int ifindex;
-+} __attribute__((preserve_access_index));
-+
-+struct xdp_rxq_info {
-+	/* Structure does not need to contain all entries,
-+	 * as "preserve_access_index" will use BTF to fix this...
-+	 */
-+	struct net_device *dev;
-+	__u32 queue_index;
-+} __attribute__((preserve_access_index));
-+
-+struct xdp_buff {
-+	void *data;
-+	void *data_end;
-+	void *data_meta;
-+	void *data_hard_start;
-+	unsigned long handle;
-+	struct xdp_rxq_info *rxq;
-+} __attribute__((preserve_access_index));
-+
-+__u64 test_result_fentry =3D 0;
-+SEC("fentry/_xdp_tx_iptunnel")
-+int BPF_PROG(trace_on_entry, struct xdp_buff *xdp)
-+{
-+	test_result_fentry =3D xdp->rxq->dev->ifindex;
-+	return 0;
-+}
-+
-+__u64 test_result_fexit =3D 0;
-+SEC("fexit/_xdp_tx_iptunnel")
-+int BPF_PROG(trace_on_exit, struct xdp_buff *xdp, int ret)
-+{
-+	test_result_fexit =3D ret;
-+	return 0;
-+}
-
+Thank you,
+Nicolas
