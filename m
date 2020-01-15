@@ -2,53 +2,56 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id E3BCC13BEE7
-	for <lists+netdev@lfdr.de>; Wed, 15 Jan 2020 12:54:14 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 425B813BEE8
+	for <lists+netdev@lfdr.de>; Wed, 15 Jan 2020 12:54:16 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730154AbgAOLyN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 15 Jan 2020 06:54:13 -0500
-Received: from out4-smtp.messagingengine.com ([66.111.4.28]:51709 "EHLO
+        id S1730170AbgAOLyP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 15 Jan 2020 06:54:15 -0500
+Received: from out4-smtp.messagingengine.com ([66.111.4.28]:59877 "EHLO
         out4-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1730090AbgAOLyN (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 15 Jan 2020 06:54:13 -0500
+        by vger.kernel.org with ESMTP id S1730090AbgAOLyO (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 15 Jan 2020 06:54:14 -0500
 Received: from compute3.internal (compute3.nyi.internal [10.202.2.43])
-        by mailout.nyi.internal (Postfix) with ESMTP id 515092202A;
-        Wed, 15 Jan 2020 06:54:12 -0500 (EST)
+        by mailout.nyi.internal (Postfix) with ESMTP id AD42D22056;
+        Wed, 15 Jan 2020 06:54:13 -0500 (EST)
 Received: from mailfrontend1 ([10.202.2.162])
-  by compute3.internal (MEProxy); Wed, 15 Jan 2020 06:54:12 -0500
+  by compute3.internal (MEProxy); Wed, 15 Jan 2020 06:54:13 -0500
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
         messagingengine.com; h=cc:content-transfer-encoding:date:from
-        :message-id:mime-version:subject:to:x-me-proxy:x-me-proxy
-        :x-me-sender:x-me-sender:x-sasl-enc; s=fm1; bh=D1G32YglMuEjal6lv
-        hC0bDIgtl0EnCcy9YoVlqiu6QI=; b=lzDshJ6X6kr67jEjshQ3JcPLfVgOT5TsZ
-        0Yh+NySMwqeRnF57ZmP15iJtCDiwzy2Bd0pzGbqAKtzStMC7wQ7f6IR66Y1uifHY
-        2ZDwxorFAq+siPwmEttLgzeUAFq4F6aJpdDiqpaGDI/swtsVOsG0IEhZOFabDycb
-        hejWmKeWnppGG7N7LHu5ntkEOCmk6KAGuA2+nNR41H9IC0J/khDmJuSfm6ibVEnW
-        HojydRGhoyYIH2C0EA2mEwp7+jPZHH56zv/Qmn+dfrj99WCI3RvcumVLehGheV9l
-        L1rDWteDprn/ZLqOkOWbkmLrArTF5tzlBDS1CdGacM/syZNCksVDg==
-X-ME-Sender: <xms:ZP0eXlaZ0Ori6kElFURbj3z7cTSmiwFm4YM6dJr3COrOEMIPq0-SKw>
+        :in-reply-to:message-id:mime-version:references:subject:to
+        :x-me-proxy:x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=
+        fm1; bh=4ygeAYpl8IiEHgWr1BP4ICLJNz754hM6AlR/4grek8g=; b=Qh8Q8T1o
+        N9Q4bgG3/NF//DEFsoEFtP3kEWVUeHOURRfIY/C2MDBj+ExxWlrW/h7tJPZNi2r2
+        NxbZT/xRQYFiY1iL4yWJ5B2ZGrlFzdoiRFCTeWdB5QhZYHNd8+jnjm0dKkaMoVc9
+        28JeiLLtmSqIwq/JbFLA6L589YQnI0jVPF5ZTb2kOPZ0NXSlael60fG2o0AfBhh6
+        QRBco/ClHiUNVVKKtLDV0NYbZWfsv6aaNj8Cu3AM0ys+7roBOhHP8w4kesjvPIRt
+        4iAK22sq1qz32ArVqzGN0Rb8nOP8PmDNlTpQ3Ef7fcPG2S8YGZ6lecxgN9Cd3KIH
+        gpKUdS5USqLfvA==
+X-ME-Sender: <xms:Zf0eXql1xTXfuxOhE9XPiZb9b9AEuyTzZQWGe6HqbrKio78QRg5k8Q>
 X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedugedrtdefgdeffecutefuodetggdotefrodftvf
     curfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfghnecu
-    uegrihhlohhuthemuceftddtnecunecujfgurhephffvufffkffoggfgsedtkeertdertd
-    dtnecuhfhrohhmpefkughoucfutghhihhmmhgvlhcuoehiughoshgthhesihguohhstghh
-    rdhorhhgqeenucfkphepudelfedrgeejrdduieehrddvhedunecurfgrrhgrmhepmhgrih
-    hlfhhrohhmpehiughoshgthhesihguohhstghhrdhorhhgnecuvehluhhsthgvrhfuihii
-    vgeptd
-X-ME-Proxy: <xmx:ZP0eXj2FrgXBNUuM1oF3DVq_jNOaaDrstdUWaO-VAgleXBf7Go-vKA>
-    <xmx:ZP0eXlWRvSUF1MX-CGmla88jzEWGuVtOs1zGrNf1scbTBO-To1hjhA>
-    <xmx:ZP0eXtXCb_soWPgN8RmJhrg3qw0pt_3l17nG6IniAiulHkA4bId3qQ>
-    <xmx:ZP0eXlf7ax-51oXkaV2_NR0rBVq08PRs4noGG7uZhRXxCl5DZMpHwg>
+    uegrihhlohhuthemuceftddtnecunecujfgurhephffvufffkffojghfggfgsedtkeertd
+    ertddtnecuhfhrohhmpefkughoucfutghhihhmmhgvlhcuoehiughoshgthhesihguohhs
+    tghhrdhorhhgqeenucfkphepudelfedrgeejrdduieehrddvhedunecurfgrrhgrmhepmh
+    grihhlfhhrohhmpehiughoshgthhesihguohhstghhrdhorhhgnecuvehluhhsthgvrhfu
+    ihiivgeptd
+X-ME-Proxy: <xmx:Zf0eXt9TbWyXaRl-rW5GYNtwpu0gV44YqSqNRnJip75O23sT79FGBQ>
+    <xmx:Zf0eXkyDMIUUJy7T9aAryTmMMihdOgF_8F9W02zReYKWF1h3D4pPpA>
+    <xmx:Zf0eXjMjXIeY0okYqCVqc1UWT7Zuc5ac6f_Qv2g8yDkuERJZQyhskg>
+    <xmx:Zf0eXoB6WoRlf9oQdgbb6g91M-aSZyXQwSDw0z1DPZlxRFbTGduLHw>
 Received: from splinter.mtl.com (unknown [193.47.165.251])
-        by mail.messagingengine.com (Postfix) with ESMTPA id 098F280069;
-        Wed, 15 Jan 2020 06:54:10 -0500 (EST)
+        by mail.messagingengine.com (Postfix) with ESMTPA id 5D6088005A;
+        Wed, 15 Jan 2020 06:54:12 -0500 (EST)
 From:   Ido Schimmel <idosch@idosch.org>
 To:     netdev@vger.kernel.org
 Cc:     davem@davemloft.net, kuba@kernel.org, jiri@mellanox.com,
         mlxsw@mellanox.com, Ido Schimmel <idosch@mellanox.com>
-Subject: [PATCH net v2 0/6] mlxsw: Various fixes
-Date:   Wed, 15 Jan 2020 13:53:43 +0200
-Message-Id: <20200115115349.1273610-1-idosch@idosch.org>
+Subject: [PATCH net v2 1/6] mlxsw: spectrum: Do not enforce same firmware version for multiple ASICs
+Date:   Wed, 15 Jan 2020 13:53:44 +0200
+Message-Id: <20200115115349.1273610-2-idosch@idosch.org>
 X-Mailer: git-send-email 2.24.1
+In-Reply-To: <20200115115349.1273610-1-idosch@idosch.org>
+References: <20200115115349.1273610-1-idosch@idosch.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
@@ -58,49 +61,63 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Ido Schimmel <idosch@mellanox.com>
 
-This patch set contains various fixes for mlxsw.
+In commit a72afb6879bb ("mlxsw: Enforce firmware version for
+Spectrum-2") I added a required firmware version for Spectrum-2, but
+missed the fact that mlxsw_sp2_init() is used by both Spectrum-2 and
+Spectrum-3. This means that the same firmware version will be used for
+both, which is wrong.
 
-Patch #1 splits the init() callback between Spectrum-2 and Spectrum-3 in
-order to avoid enforcing the same firmware version for both ASICs, as
-this can't possibly work. Without this patch the driver cannot boot with
-the Spectrum-3 ASIC.
+Fix this by creating a new init() callback for Spectrum-3.
 
-Patches #2-#3 fix a long standing race condition that was recently
-exposed while testing the driver on an emulator, which is very slow
-compared to the actual hardware. The problem is explained in detail in
-the commit messages.
+Fixes: a72afb6879bb ("mlxsw: Enforce firmware version for Spectrum-2")
+Signed-off-by: Ido Schimmel <idosch@mellanox.com>
+Acked-by: Jiri Pirko <jiri@mellanox.com>
+Tested-by: Shalom Toledo <shalomt@mellanox.com>
+---
+ .../net/ethernet/mellanox/mlxsw/spectrum.c    | 23 ++++++++++++++++++-
+ 1 file changed, 22 insertions(+), 1 deletion(-)
 
-Patch #4 fixes a selftest.
-
-Patch #5 prevents offloaded qdiscs from presenting a non-zero backlog to
-the user when the netdev is down. This is done by clearing the cached
-backlog in the driver when the netdev goes down.
-
-Patch #6 fixes qdisc statistics (backlog and tail drops) to also take
-into account the multicast traffic classes.
-
-v2:
-* Patches #2-#3: use skb_cow_head() instead of skb_unshare() as
-  suggested by Jakub. Remove unnecessary check regarding headroom
-* Patches #5-#6: new
-
-Ido Schimmel (3):
-  mlxsw: spectrum: Do not enforce same firmware version for multiple
-    ASICs
-  mlxsw: spectrum: Do not modify cloned SKBs during xmit
-  mlxsw: switchx2: Do not modify cloned SKBs during xmit
-
-Petr Machata (3):
-  selftests: mlxsw: qos_mc_aware: Fix mausezahn invocation
-  mlxsw: spectrum: Wipe xstats.backlog of down ports
-  mlxsw: spectrum_qdisc: Include MC TCs in Qdisc counters
-
- .../net/ethernet/mellanox/mlxsw/spectrum.c    | 54 ++++++++++++++-----
- .../ethernet/mellanox/mlxsw/spectrum_qdisc.c  | 30 ++++++++---
- .../net/ethernet/mellanox/mlxsw/switchx2.c    | 17 +++---
- .../drivers/net/mlxsw/qos_mc_aware.sh         |  8 ++-
- 4 files changed, 76 insertions(+), 33 deletions(-)
-
+diff --git a/drivers/net/ethernet/mellanox/mlxsw/spectrum.c b/drivers/net/ethernet/mellanox/mlxsw/spectrum.c
+index f7fd5e8fbf96..5408a964bd10 100644
+--- a/drivers/net/ethernet/mellanox/mlxsw/spectrum.c
++++ b/drivers/net/ethernet/mellanox/mlxsw/spectrum.c
+@@ -5132,6 +5132,27 @@ static int mlxsw_sp2_init(struct mlxsw_core *mlxsw_core,
+ 	return mlxsw_sp_init(mlxsw_core, mlxsw_bus_info, extack);
+ }
+ 
++static int mlxsw_sp3_init(struct mlxsw_core *mlxsw_core,
++			  const struct mlxsw_bus_info *mlxsw_bus_info,
++			  struct netlink_ext_ack *extack)
++{
++	struct mlxsw_sp *mlxsw_sp = mlxsw_core_driver_priv(mlxsw_core);
++
++	mlxsw_sp->kvdl_ops = &mlxsw_sp2_kvdl_ops;
++	mlxsw_sp->afa_ops = &mlxsw_sp2_act_afa_ops;
++	mlxsw_sp->afk_ops = &mlxsw_sp2_afk_ops;
++	mlxsw_sp->mr_tcam_ops = &mlxsw_sp2_mr_tcam_ops;
++	mlxsw_sp->acl_tcam_ops = &mlxsw_sp2_acl_tcam_ops;
++	mlxsw_sp->nve_ops_arr = mlxsw_sp2_nve_ops_arr;
++	mlxsw_sp->mac_mask = mlxsw_sp2_mac_mask;
++	mlxsw_sp->rif_ops_arr = mlxsw_sp2_rif_ops_arr;
++	mlxsw_sp->sb_vals = &mlxsw_sp2_sb_vals;
++	mlxsw_sp->port_type_speed_ops = &mlxsw_sp2_port_type_speed_ops;
++	mlxsw_sp->ptp_ops = &mlxsw_sp2_ptp_ops;
++
++	return mlxsw_sp_init(mlxsw_core, mlxsw_bus_info, extack);
++}
++
+ static void mlxsw_sp_fini(struct mlxsw_core *mlxsw_core)
+ {
+ 	struct mlxsw_sp *mlxsw_sp = mlxsw_core_driver_priv(mlxsw_core);
+@@ -5634,7 +5655,7 @@ static struct mlxsw_driver mlxsw_sp2_driver = {
+ static struct mlxsw_driver mlxsw_sp3_driver = {
+ 	.kind				= mlxsw_sp3_driver_name,
+ 	.priv_size			= sizeof(struct mlxsw_sp),
+-	.init				= mlxsw_sp2_init,
++	.init				= mlxsw_sp3_init,
+ 	.fini				= mlxsw_sp_fini,
+ 	.basic_trap_groups_set		= mlxsw_sp_basic_trap_groups_set,
+ 	.port_split			= mlxsw_sp_port_split,
 -- 
 2.24.1
 
