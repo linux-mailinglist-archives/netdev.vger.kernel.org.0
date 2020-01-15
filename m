@@ -2,96 +2,137 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id AF84A13C140
-	for <lists+netdev@lfdr.de>; Wed, 15 Jan 2020 13:42:14 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B50EC13C14A
+	for <lists+netdev@lfdr.de>; Wed, 15 Jan 2020 13:43:47 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729021AbgAOMmJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 15 Jan 2020 07:42:09 -0500
-Received: from mail-pl1-f195.google.com ([209.85.214.195]:39977 "EHLO
-        mail-pl1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726483AbgAOMmJ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 15 Jan 2020 07:42:09 -0500
-Received: by mail-pl1-f195.google.com with SMTP id s21so6806395plr.7;
-        Wed, 15 Jan 2020 04:42:09 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id;
-        bh=S3wXxo3Bh9oayGWM8jZCD/Gnpt0hNiPJrwn1QYGnm2M=;
-        b=auOyDPgVe8RTFRbA5W4EWOXH32dZQVkLy+zdkE2NamNJ/gwg8H60PNu7Lv559iQMy8
-         +Uf1+gYH+3O1bRayk3SvFe+zasRl5E+RgFunTFI3s7zr7bU7UuUa1QBxGBGG0LzjsDze
-         bQi12uwfRkAMQ5ouovUAbj1CdKvwlrV11g8viM4XpvGwjw2uUTQyDBK5JpP66aykCgEz
-         vY4fGSxWClC5AyfgITKjn2lhV5F/HnF4oPzRneGRvIa3bOxw9iqRyEE2i+Uo3Kw/jc2L
-         Y+091uGOMmax/zqpjYMMcGDh7guRcl1dBh8eCVyHEDYj1tDqyt/XpXF5PcMLIDmaHqeV
-         6Ijg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id;
-        bh=S3wXxo3Bh9oayGWM8jZCD/Gnpt0hNiPJrwn1QYGnm2M=;
-        b=eKYFOa5Difh9Yh9R3Y+jSTyOD29VUmaVGTMQ4zKH0AabHevzPixaWMNLHOmFl2wzZu
-         /x/Chy8EiaZkkoYHEgXKJ8iVWF4bSIiZe4u/KWyHPN+goMXnq+OHAG8pZF38rfCQFjrb
-         o48VmKalx83eO1E022+2Rih2HLlhkM3z7s0AfFP9Y3z49O/v34kPCVlY1O4WNMvdTK5r
-         GUI35HeH6DY31cP1GYNG3jDAt+nEPhzwIhbN5nnE3qdzYwR5xGAFO1NuxEo6FGca0E8e
-         YtnC8iJUc5gd/DdvjJXbqvsmz9MlpLMeFzHcARFvOOc7ww5JyHN8DXQ4acmdgXnSqXBx
-         sCnw==
-X-Gm-Message-State: APjAAAVSdZb2Dyw8SK4OLqdPS9DdnORovjxQ8hdfUpKUtiBz+2ij22RA
-        Q5HLTqseG8Qicv9ZQeo4xr8=
-X-Google-Smtp-Source: APXvYqzyYSD1kqH06PWZT5j+hjPxOJVeYfDpiBoVq5NBAlR42H2eqCY0MexVhcMO00FKLXtnuMtjCw==
-X-Received: by 2002:a17:902:bd08:: with SMTP id p8mr31051161pls.39.1579092128653;
-        Wed, 15 Jan 2020 04:42:08 -0800 (PST)
-Received: from madhuparna-HP-Notebook.nitk.ac.in ([2402:3a80:1ee2:fbb9:75ba:e01f:bdbc:c547])
-        by smtp.gmail.com with ESMTPSA id y23sm12638990pjj.3.2020.01.15.04.42.04
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 15 Jan 2020 04:42:08 -0800 (PST)
-From:   madhuparnabhowmik04@gmail.com
-To:     wei.liu@kernel.org, paul@xen.org, davem@davemloft.net
-Cc:     xen-devel@lists.xenproject.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, paulmck@kernel.org,
-        joel@joelfernandes.org, frextrite@gmail.com,
-        linux-kernel-mentees@lists.linuxfoundation.org,
-        Madhuparna Bhowmik <madhuparnabhowmik04@gmail.com>
-Subject: [PATCH] net: xen-netbank: hash.c: Use built-in RCU list checking
-Date:   Wed, 15 Jan 2020 18:11:28 +0530
-Message-Id: <20200115124129.5684-1-madhuparnabhowmik04@gmail.com>
-X-Mailer: git-send-email 2.17.1
+        id S1728998AbgAOMnp (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 15 Jan 2020 07:43:45 -0500
+Received: from mail.kernel.org ([198.145.29.99]:57112 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1728884AbgAOMnp (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 15 Jan 2020 07:43:45 -0500
+Received: from localhost (unknown [193.47.165.251])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 1CDFC222C3;
+        Wed, 15 Jan 2020 12:43:43 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1579092224;
+        bh=X9sbDmmjEfGqMQAx2L+k/ZDn1gKCbHe3fFJYZS86pn4=;
+        h=From:To:Cc:Subject:Date:From;
+        b=QekXmLHeD8p8qPgEoDcsxV8vlvF/6t9iLMhIpp0Q+QNP1NTgqpLrmfhhWkDbZ3zvj
+         hkIvj3pKH7TkK2KkEGiqbQr8NBiqOHXv82zDnS5xjZOFwaOw+O1ABstt3E2Uzn92PN
+         5N7+v69oQ6bs6kZ79uRTDkWidBk1hbNsluxfolVY=
+From:   Leon Romanovsky <leon@kernel.org>
+To:     Doug Ledford <dledford@redhat.com>,
+        Jason Gunthorpe <jgg@mellanox.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Santosh Shilimkar <santosh.shilimkar@oracle.com>
+Cc:     Leon Romanovsky <leonro@mellanox.com>,
+        RDMA mailing list <linux-rdma@vger.kernel.org>,
+        Hans Westgaard Ry <hans.westgaard.ry@oracle.com>,
+        Moni Shoua <monis@mellanox.com>,
+        linux-netdev <netdev@vger.kernel.org>
+Subject: [PATCH mlx5-next 00/10] Use ODP MRs for kernel ULPs
+Date:   Wed, 15 Jan 2020 14:43:30 +0200
+Message-Id: <20200115124340.79108-1-leon@kernel.org>
+X-Mailer: git-send-email 2.24.1
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Madhuparna Bhowmik <madhuparnabhowmik04@gmail.com>
+From: Leon Romanovsky <leonro@mellanox.com>
 
-list_for_each_entry_rcu has built-in RCU and lock checking.
-Pass cond argument to list_for_each_entry_rcu.
+Hi,
 
-Signed-off-by: Madhuparna Bhowmik <madhuparnabhowmik04@gmail.com>
----
- drivers/net/xen-netback/hash.c | 6 ++++--
- 1 file changed, 4 insertions(+), 2 deletions(-)
+The following series extends MR creation routines to allow creation of
+user MRs through kernel ULPs as a proxy. The immediate use case is to
+allow RDS to work over FS-DAX, which requires ODP (on-demand-paging)
+MRs to be created and such MRs were not possible to create prior this
+series.
 
-diff --git a/drivers/net/xen-netback/hash.c b/drivers/net/xen-netback/hash.c
-index 10d580c3dea3..30709bc9d170 100644
---- a/drivers/net/xen-netback/hash.c
-+++ b/drivers/net/xen-netback/hash.c
-@@ -51,7 +51,8 @@ static void xenvif_add_hash(struct xenvif *vif, const u8 *tag,
- 
- 	found = false;
- 	oldest = NULL;
--	list_for_each_entry_rcu(entry, &vif->hash.cache.list, link) {
-+	list_for_each_entry_rcu(entry, &vif->hash.cache.list, link,
-+							lockdep_is_held(&vif->hash.cache.lock)) {
- 		/* Make sure we don't add duplicate entries */
- 		if (entry->len == len &&
- 		    memcmp(entry->tag, tag, len) == 0)
-@@ -102,7 +103,8 @@ static void xenvif_flush_hash(struct xenvif *vif)
- 
- 	spin_lock_irqsave(&vif->hash.cache.lock, flags);
- 
--	list_for_each_entry_rcu(entry, &vif->hash.cache.list, link) {
-+	list_for_each_entry_rcu(entry, &vif->hash.cache.list, link,
-+							lockdep_is_held(&vif->hash.cache.lock)) {
- 		list_del_rcu(&entry->link);
- 		vif->hash.cache.count--;
- 		kfree_rcu(entry, rcu);
--- 
-2.17.1
+The first part of this patchset extends RDMA to have special verb
+ib_reg_user_mr(). The common use case that uses this function is a userspace
+application that allocates memory for HCA access but the responsibility
+to register the memory at the HCA is on an kernel ULP. This ULP that acts
+as an agent for the userspace application.
+
+The second part provides advise MR functionality for ULPs. This is
+integral part of ODP flows and used to trigger pagefaults in advance
+to prepare memory before running working set.
+
+The third part is actual user of those in-kernel APIs.
+
+Thanks
+
+Hans Westgaard Ry (3):
+  net/rds: Detect need of On-Demand-Paging memory registration
+  net/rds: Handle ODP mr registration/unregistration
+  net/rds: Use prefetch for On-Demand-Paging MR
+
+Jason Gunthorpe (1):
+  RDMA/mlx5: Fix handling of IOVA != user_va in ODP paths
+
+Leon Romanovsky (1):
+  RDMA/mlx5: Don't fake udata for kernel path
+
+Moni Shoua (5):
+  IB: Allow calls to ib_umem_get from kernel ULPs
+  IB/core: Introduce ib_reg_user_mr
+  IB/core: Add interface to advise_mr for kernel users
+  IB/mlx5: Add ODP WQE handlers for kernel QPs
+  IB/mlx5: Mask out unsupported ODP capabilities for kernel QPs
+
+ drivers/infiniband/core/umem.c                |  27 +--
+ drivers/infiniband/core/umem_odp.c            |  29 +--
+ drivers/infiniband/core/verbs.c               |  41 +++++
+ drivers/infiniband/hw/bnxt_re/ib_verbs.c      |  12 +-
+ drivers/infiniband/hw/cxgb4/mem.c             |   2 +-
+ drivers/infiniband/hw/efa/efa_verbs.c         |   4 +-
+ drivers/infiniband/hw/hns/hns_roce_cq.c       |   2 +-
+ drivers/infiniband/hw/hns/hns_roce_db.c       |   3 +-
+ drivers/infiniband/hw/hns/hns_roce_mr.c       |   4 +-
+ drivers/infiniband/hw/hns/hns_roce_qp.c       |   2 +-
+ drivers/infiniband/hw/hns/hns_roce_srq.c      |   5 +-
+ drivers/infiniband/hw/i40iw/i40iw_verbs.c     |   5 +-
+ drivers/infiniband/hw/mlx4/cq.c               |   2 +-
+ drivers/infiniband/hw/mlx4/doorbell.c         |   3 +-
+ drivers/infiniband/hw/mlx4/mr.c               |   8 +-
+ drivers/infiniband/hw/mlx4/qp.c               |   5 +-
+ drivers/infiniband/hw/mlx4/srq.c              |   3 +-
+ drivers/infiniband/hw/mlx5/cq.c               |   6 +-
+ drivers/infiniband/hw/mlx5/devx.c             |   2 +-
+ drivers/infiniband/hw/mlx5/doorbell.c         |   3 +-
+ drivers/infiniband/hw/mlx5/main.c             |  51 ++++--
+ drivers/infiniband/hw/mlx5/mlx5_ib.h          |  12 +-
+ drivers/infiniband/hw/mlx5/mr.c               |  20 +--
+ drivers/infiniband/hw/mlx5/odp.c              |  33 ++--
+ drivers/infiniband/hw/mlx5/qp.c               | 167 +++++++++++-------
+ drivers/infiniband/hw/mlx5/srq.c              |   2 +-
+ drivers/infiniband/hw/mthca/mthca_provider.c  |   2 +-
+ drivers/infiniband/hw/ocrdma/ocrdma_verbs.c   |   2 +-
+ drivers/infiniband/hw/qedr/verbs.c            |   9 +-
+ drivers/infiniband/hw/vmw_pvrdma/pvrdma_cq.c  |   2 +-
+ drivers/infiniband/hw/vmw_pvrdma/pvrdma_mr.c  |   2 +-
+ drivers/infiniband/hw/vmw_pvrdma/pvrdma_qp.c  |   7 +-
+ drivers/infiniband/hw/vmw_pvrdma/pvrdma_srq.c |   2 +-
+ drivers/infiniband/sw/rdmavt/mr.c             |   2 +-
+ drivers/infiniband/sw/rxe/rxe_mr.c            |   2 +-
+ include/rdma/ib_umem.h                        |   4 +-
+ include/rdma/ib_umem_odp.h                    |   6 +-
+ include/rdma/ib_verbs.h                       |   9 +
+ net/rds/ib.c                                  |   7 +
+ net/rds/ib.h                                  |   3 +-
+ net/rds/ib_mr.h                               |   7 +-
+ net/rds/ib_rdma.c                             |  83 ++++++++-
+ net/rds/ib_send.c                             |  44 +++--
+ net/rds/rdma.c                                | 156 +++++++++++-----
+ net/rds/rds.h                                 |  13 +-
+ 45 files changed, 559 insertions(+), 256 deletions(-)
+
+--
+2.20.1
 
