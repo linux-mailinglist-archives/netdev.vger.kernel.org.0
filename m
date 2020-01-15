@@ -2,216 +2,166 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 1030F13BC76
-	for <lists+netdev@lfdr.de>; Wed, 15 Jan 2020 10:32:02 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 185C113BC86
+	for <lists+netdev@lfdr.de>; Wed, 15 Jan 2020 10:37:12 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729470AbgAOJcA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 15 Jan 2020 04:32:00 -0500
-Received: from mail-eopbgr80073.outbound.protection.outlook.com ([40.107.8.73]:34819
-        "EHLO EUR04-VI1-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1729396AbgAOJcA (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 15 Jan 2020 04:32:00 -0500
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=K4Tc2RJWSepaJCP74kc6dd5KCnFH03FkMcyjixsrR6Y8kGcr2PqqVTJGi8QuIx9ZgbZO+GlNJ+cLMAfVivcC+kaO5cU56GkAUOzchjVVJVp4YBF8+ksOEcfy07DnhaEQWJOj+Rh8lKmncZ0SFm+tl8r6MpB1vtEClflRnhYyD6hAQ6KyeNtlqO7Vhx1mFtt0ugBOa5YCAjqvksdkks5G1HYOOfpg7Q2w/NUm701do5oxPhUqvnBu5WDuQBOYPT5R4yzRPDV10XmKs7IfyEX7okVN5Tea0+Q7AsXRYX7wihnZxubUxlA05kA9MNaOCDaFV8hZJ8EJjEDIFzzAekJDaA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=JHbnd5r+r+cfVuJ012ax3JRqtigqpM/uvmTbw0IAzMM=;
- b=F9bLkVJ7skOBcELvs9g6CvRciZG2jmharh7zlGSMoVujt2tjXsVTyf7YgEN9Ka0JZUnDAhNByrmHknttMdSqowMw0mQOEtwj9Ff8ZKKGSthyb2QK2oSca2eKp4G6ttk8snRtkEfqOyxiQRTNZ/sTdkV0FCmRR/3EHsM0Zm7pLx7G1OAWXx93yUhhicsHbEAijVFDT8xvXZ+rrTloW4mF3BiaSH6FYwqYfMxXEMhR/ypbqDsArBLzh+MMDBvldAe4bYwVLIau+UjxZH8iwW3TRjZFH1UEo7VDVviCkHh9BhDN8+AD2KMZBtOCFSH2wvb60oTIPK41yD/ecrg7J4R3zA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=mellanox.com; dmarc=pass action=none header.from=mellanox.com;
- dkim=pass header.d=mellanox.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Mellanox.com;
- s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=JHbnd5r+r+cfVuJ012ax3JRqtigqpM/uvmTbw0IAzMM=;
- b=DXChYZOJaGJUt1DREDKxvK1IRoJV32TZhBZuUDRNEAGdMnHn3b0M7Mfkpb9EhkYTyBRBiNHYztQdAXa37/TWxUSyRgSxgG+S/HhFO62FY9Om/s70PBaRDP1HpiFE/XTWIGVfhpeF9w2j/JJ4q68ZbCJOaK72zpt7w+aZeI4lh+I=
-Received: from AM4PR05MB3396.eurprd05.prod.outlook.com (10.171.187.33) by
- AM4PR05MB3219.eurprd05.prod.outlook.com (10.170.126.15) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.2623.9; Wed, 15 Jan 2020 09:31:54 +0000
-Received: from AM4PR05MB3396.eurprd05.prod.outlook.com
- ([fe80::4ddd:bf4e:72d0:a720]) by AM4PR05MB3396.eurprd05.prod.outlook.com
- ([fe80::4ddd:bf4e:72d0:a720%2]) with mapi id 15.20.2623.017; Wed, 15 Jan 2020
- 09:31:54 +0000
-Received: from [10.223.0.122] (193.47.165.251) by ZR0P278CA0005.CHEP278.PROD.OUTLOOK.COM (2603:10a6:910:16::15) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.2644.19 via Frontend Transport; Wed, 15 Jan 2020 09:31:53 +0000
-From:   Roi Dayan <roid@mellanox.com>
-To:     Tonghao Zhang <xiangxia.m.yue@gmail.com>,
-        Or Gerlitz <gerlitz.or@gmail.com>
-CC:     Saeed Mahameed <saeedm@dev.mellanox.co.il>,
+        id S1729521AbgAOJhJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 15 Jan 2020 04:37:09 -0500
+Received: from m9784.mail.qiye.163.com ([220.181.97.84]:18550 "EHLO
+        m9784.mail.qiye.163.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729467AbgAOJhJ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 15 Jan 2020 04:37:09 -0500
+Received: from [192.168.188.14] (unknown [120.132.1.226])
+        by m9784.mail.qiye.163.com (Hmail) with ESMTPA id 68F1E41618;
+        Wed, 15 Jan 2020 17:37:03 +0800 (CST)
+Subject: Re: [PATCH net-next v2] net/mlx5e: Add mlx5e_flower_parse_meta
+ support
+To:     Or Gerlitz <gerlitz.or@gmail.com>
+Cc:     Paul Blakey <paulb@mellanox.com>,
+        Saeed Mahameed <saeedm@mellanox.com>,
         Linux Netdev List <netdev@vger.kernel.org>
-Subject: Re: [PATCH net-next] net/mlx5e: Don't allow forwarding between uplink
-Thread-Topic: [PATCH net-next] net/mlx5e: Don't allow forwarding between
- uplink
-Thread-Index: AQHVxUAuoCAnZKk13U6YaxirolVR2KfiJYiAgAAJQoCACVPxgA==
-Date:   Wed, 15 Jan 2020 09:31:54 +0000
-Message-ID: <5508b43e-2d2a-d86f-890f-58ca8e87e456@mellanox.com>
-References: <1578390738-30712-1-git-send-email-xiangxia.m.yue@gmail.com>
- <CAJ3xEMgR-pzqPCpt_SDiGr57sdgezWV3kW67CQzTXLk4TKRCmA@mail.gmail.com>
- <CAMDZJNW4picjoETkjm3+ujpjycbAeJ5j5zA=j8LPm3d36SQjVg@mail.gmail.com>
-In-Reply-To: <CAMDZJNW4picjoETkjm3+ujpjycbAeJ5j5zA=j8LPm3d36SQjVg@mail.gmail.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-originating-ip: [193.47.165.251]
-user-agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
- Thunderbird/68.3.1
-x-clientproxiedby: ZR0P278CA0005.CHEP278.PROD.OUTLOOK.COM
- (2603:10a6:910:16::15) To AM4PR05MB3396.eurprd05.prod.outlook.com
- (2603:10a6:205:5::33)
-authentication-results: spf=none (sender IP is )
- smtp.mailfrom=roid@mellanox.com; 
-x-ms-exchange-messagesentrepresentingtype: 1
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-ht: Tenant
-x-ms-office365-filtering-correlation-id: 590e32b8-8e7a-4cf4-3856-08d7999dc1eb
-x-ms-traffictypediagnostic: AM4PR05MB3219:|AM4PR05MB3219:
-x-ms-exchange-transport-forked: True
-x-microsoft-antispam-prvs: <AM4PR05MB3219F6044F36645C0184A106B5370@AM4PR05MB3219.eurprd05.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:4125;
-x-forefront-prvs: 02830F0362
-x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(4636009)(366004)(39860400002)(376002)(396003)(346002)(136003)(189003)(199004)(31686004)(66446008)(66476007)(86362001)(2616005)(81166006)(66946007)(956004)(66556008)(64756008)(8676002)(4326008)(71200400001)(31696002)(52116002)(16526019)(81156014)(26005)(8936002)(186003)(2906002)(478600001)(54906003)(110136005)(16576012)(6486002)(316002)(36756003)(5660300002)(53546011);DIR:OUT;SFP:1101;SCL:1;SRVR:AM4PR05MB3219;H:AM4PR05MB3396.eurprd05.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;MX:1;A:1;
-received-spf: None (protection.outlook.com: mellanox.com does not designate
- permitted sender hosts)
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: +PeWoKuBXtXuwqSVCqTfTJw/CfR8WFnCYOQbvlOiq9IlrWpwXBURKkPgUhdHhal7YZssUN/zw64roaIONXu/56plQ/nKfaK3yIhy/pZtY6Oo1rBKPjGcWDWfrvSQ/s5UfY8h5UFnYUgPQ2z5m6cNXx8giQI9ePRfltp9v6a2wtgYkAl1qXZVvmW484Jv4uLQP9Ug29fFwTkMj2QkgW2oQm2uKjDafdOzZtHelMu0lwP6T9qDv1fhHmPl22X0MRoK/X7hllBmfYpSnHJud3a9JFCoqjy6bMC2UBBt1cpUKgI0SmQ7qRzeDKGamsBkpxJrmqhV4/pxkEibkUeAIu8jg9430LTIR+0DC3TforYfrf91LO5UAF1gPn+rI+aOtuAmruLuvqUJ2VK+s178r9Ej3vng1NMDeBFdYCF+YACuTY0VjC7jtaPpj+M6HBSN5hcr
-Content-Type: text/plain; charset="utf-8"
-Content-ID: <24CB61DA64F8644CB62A7B01B9B370AA@eurprd05.prod.outlook.com>
-Content-Transfer-Encoding: base64
+References: <1578388566-27310-1-git-send-email-wenxu@ucloud.cn>
+ <CAJ3xEMjmS=oo6xmep7seVUJ58NPpLQ_UKZH1qVWxf6w=sBBJgQ@mail.gmail.com>
+From:   wenxu <wenxu@ucloud.cn>
+Message-ID: <03dcc568-b855-0a58-66e5-d4df0c8f202e@ucloud.cn>
+Date:   Wed, 15 Jan 2020 17:37:00 +0800
+User-Agent: Mozilla/5.0 (Windows NT 6.1; WOW64; rv:60.0) Gecko/20100101
+ Thunderbird/60.9.1
 MIME-Version: 1.0
-X-OriginatorOrg: Mellanox.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 590e32b8-8e7a-4cf4-3856-08d7999dc1eb
-X-MS-Exchange-CrossTenant-originalarrivaltime: 15 Jan 2020 09:31:54.3155
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: a652971c-7d2e-4d9b-a6a4-d149256f461b
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: oG1ZQG/xwvx6l67guSczvF229xY/3urluMwYTxTMRuvnF0Tzxr08YJV+SRDVwsTvz6vFXlBsHrverRY63cUJAQ==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM4PR05MB3219
+In-Reply-To: <CAJ3xEMjmS=oo6xmep7seVUJ58NPpLQ_UKZH1qVWxf6w=sBBJgQ@mail.gmail.com>
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 7bit
+Content-Language: en-US
+X-HM-Spam-Status: e1kfGhgUHx5ZQUtXWQgYFAkeWUFZVkpVS0tNS0tLS09KQk1KTUxZV1koWU
+        FJQjdXWS1ZQUlXWQkOFx4IWUFZNTQpNjo3JCkuNz5ZBg++
+X-HM-Sender-Digest: e1kMHhlZQR0aFwgeV1kSHx4VD1lBWUc6K006Hhw5Ajg4DjFLKT1MS0lW
+        PhlPCh9VSlVKTkxCS0NKS0lPTExNVTMWGhIXVQweFQMOOw4YFxQOH1UYFUVZV1kSC1lBWUpJS1VK
+        SElVSlVJSU1ZV1kIAVlBTkJPTTcG
+X-HM-Tid: 0a6fa890408c2086kuqy68f1e41618
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-DQoNCk9uIDIwMjAtMDEtMDkgMTowNSBQTSwgVG9uZ2hhbyBaaGFuZyB3cm90ZToNCj4gT24gVGh1
-LCBKYW4gOSwgMjAyMCBhdCA2OjMyIFBNIE9yIEdlcmxpdHogPGdlcmxpdHoub3JAZ21haWwuY29t
-PiB3cm90ZToNCj4+DQo+PiBPbiBUdWUsIEphbiA3LCAyMDIwIGF0IDExOjUyIEFNIDx4aWFuZ3hp
-YS5tLnl1ZUBnbWFpbC5jb20+IHdyb3RlOg0KPj4NCj4+PiBXZSBjYW4gaW5zdGFsbCBmb3J3YXJk
-aW5nIHBhY2tldHMgcnVsZSBiZXR3ZWVuIHVwbGluaw0KPj4+IGluIGVzd2l0Y2hkZXYgbW9kZSwg
-YXMgc2hvdyBiZWxvdy4gQnV0IHRoZSBoYXJkd2FyZSBkb2VzDQo+Pj4gbm90IGRvIHRoYXQgYXMg
-ZXhwZWN0ZWQgKG1sbnhfcGVyZiAtaSAkUEYxLCB3ZSBjYW4ndCBnZXQNCj4+PiB0aGUgY291bnRl
-ciBvZiB0aGUgUEYxKS4gQnkgdGhlIHdheSwgaWYgd2UgYWRkIHRoZSB1cGxpbmsNCj4+DQo+PiB5
-ZWFoLCBJTU9IIHRoZXJlJ3MgcHJvYmFibHkgYSBmaXJtd2FyZSBidWcgdW5kZXIgd2hpY2ggaW5z
-dGFsbGF0aW9uDQo+PiBvZiB0aGlzIHJ1bGUgZG9lc24ndCBmYWlsIGJ1dCBhcyB5b3Ugc2FpZCB0
-aGUgdHJhZmZpYyBkb2Vzbid0IHBhc3MuDQo+Pg0KPj4gV2UgZG9uJ3QgZmFpbCB0aGUgcnVsZSBi
-L2MgZHVlIHRvIHdoYXQgd2UgY2FsbCAibWVyZ2VkIGVzd2l0Y2giDQo+PiB3aGljaCBpcyBhIGJ1
-aWxkaW5nIGJsb2NrIG9mIHRoZSB1cGxpbmsgTEFHIGFuZCAgRUNNUCBjb25maWd1cmF0aW9ucw0K
-Pj4gdGhhdCB3ZSBkbyBzdXBwb3J0LCB0aGUgZHJpdmVyIGxldHMgeW91IGluc3RhbGwgYSBmbG93
-IGZyb20gKHNheSkgVkYwDQo+PiBvbiBQRi91cGxpbmswIHRvIHVwbGluazEgZXRjLg0KPj4NCj4+
-IFRhbGtpbmcgdG8gUm9pLCBoZSBwcmVmZXJzIHRvIGZ1cnRoZXIgaW52ZXN0aWdhdGUgLyBvcGVu
-IGEgY2FzZSB0byB0aGUgRlcNCj4+IGFuZCBsYXRlciBzZWUgaWYvaG93IHRvIGJsb2NrIHRoaXMg
-cnVsZSBpbiB0aGUgZHJpdmVyLg0KPiBtYWtlIGFueSBwcm9jZXNzLCBwbGVhc2UgbGV0IG1lIGtu
-b3csIHRoYW5rcw0KPiANCj4+PiBQRjAsIFBGMSB0byBPcGVuIHZTd2l0Y2ggYW5kIGVuYWJsZSBo
-dy1vZmZsb2FkLCB0aGUgcnVsZXMNCj4+PiBjYW4gYmUgb2ZmbG9hZGVkIGJ1dCBub3Qgd29yayBm
-aW5lIHRvby4gVGhpcyBwYXRjaCBhZGQgYQ0KPj4+IGNoZWNrIGFuZCBpZiBzbyByZXR1cm4gLUVP
-UE5PVFNVUFAuDQo+Pj4NCj4+PiAkIHRjIGZpbHRlciBhZGQgZGV2ICRQRjAgcHJvdG9jb2wgYWxs
-IHBhcmVudCBmZmZmOiBwcmlvIDEgaGFuZGxlIDEgXA0KPj4+ICAgICBmbG93ZXIgc2tpcF9zdyBh
-Y3Rpb24gbWlycmVkIGVncmVzcyByZWRpcmVjdCBkZXYgJFBGMQ0KPj4+DQo+Pj4gJCB0YyAtZCAt
-cyBmaWx0ZXIgc2hvdyBkZXYgJFBGMCBpbmdyZXNzDQo+Pj4gICAgIHNraXBfc3cNCj4+PiAgICAg
-aW5faHcgaW5faHdfY291bnQgMQ0KPj4+ICAgICBhY3Rpb24gb3JkZXIgMTogbWlycmVkIChFZ3Jl
-c3MgUmVkaXJlY3QgdG8gZGV2aWNlIGVucDEzMHMwZjEpIHN0b2xlbg0KPj4+ICAgICAgICAgLi4u
-DQo+Pj4gICAgICAgICBTZW50IDQwODk1NCBieXRlcyA0MTczIHBrdCAoZHJvcHBlZCAwLCBvdmVy
-bGltaXRzIDAgcmVxdWV1ZXMgMCkNCj4+PiAgICAgICAgIFNlbnQgaGFyZHdhcmUgNDA4OTU0IGJ5
-dGVzIDQxNzMgcGt0DQo+Pj4gICAgICAgICAuLi4NCj4+Pg0KPj4+IFNpZ25lZC1vZmYtYnk6IFRv
-bmdoYW8gWmhhbmcgPHhpYW5neGlhLm0ueXVlQGdtYWlsLmNvbT4NCj4+PiAtLS0NCj4+PiAgZHJp
-dmVycy9uZXQvZXRoZXJuZXQvbWVsbGFub3gvbWx4NS9jb3JlL2VuX3JlcC5jIHwgIDcgKysrKysr
-LQ0KPj4+ICBkcml2ZXJzL25ldC9ldGhlcm5ldC9tZWxsYW5veC9tbHg1L2NvcmUvZW5fcmVwLmgg
-fCAgMSArDQo+Pj4gIGRyaXZlcnMvbmV0L2V0aGVybmV0L21lbGxhbm94L21seDUvY29yZS9lbl90
-Yy5jICB8IDE2ICsrKysrKysrKysrKystLS0NCj4+PiAgMyBmaWxlcyBjaGFuZ2VkLCAyMCBpbnNl
-cnRpb25zKCspLCA0IGRlbGV0aW9ucygtKQ0KPj4+DQo+Pj4gZGlmZiAtLWdpdCBhL2RyaXZlcnMv
-bmV0L2V0aGVybmV0L21lbGxhbm94L21seDUvY29yZS9lbl9yZXAuYyBiL2RyaXZlcnMvbmV0L2V0
-aGVybmV0L21lbGxhbm94L21seDUvY29yZS9lbl9yZXAuYw0KPj4+IGluZGV4IGYxNzVjYjIuLjYz
-ZmFkNjYgMTAwNjQ0DQo+Pj4gLS0tIGEvZHJpdmVycy9uZXQvZXRoZXJuZXQvbWVsbGFub3gvbWx4
-NS9jb3JlL2VuX3JlcC5jDQo+Pj4gKysrIGIvZHJpdmVycy9uZXQvZXRoZXJuZXQvbWVsbGFub3gv
-bWx4NS9jb3JlL2VuX3JlcC5jDQo+Pj4gQEAgLTE0MzQsMTAgKzE0MzQsMTUgQEAgc3RhdGljIHN0
-cnVjdCBkZXZsaW5rX3BvcnQgKm1seDVlX2dldF9kZXZsaW5rX3BvcnQoc3RydWN0IG5ldF9kZXZp
-Y2UgKmRldikNCj4+PiAgICAgICAgIC5uZG9fc2V0X2ZlYXR1cmVzICAgICAgICA9IG1seDVlX3Nl
-dF9mZWF0dXJlcywNCj4+PiAgfTsNCj4+Pg0KPj4+ICtib29sIG1seDVlX2Vzd2l0Y2hfdXBsaW5r
-X3JlcChzdHJ1Y3QgbmV0X2RldmljZSAqbmV0ZGV2KQ0KPj4+ICt7DQo+Pj4gKyAgICAgICByZXR1
-cm4gbmV0ZGV2LT5uZXRkZXZfb3BzID09ICZtbHg1ZV9uZXRkZXZfb3BzX3VwbGlua19yZXA7DQo+
-Pj4gK30NCj4+PiArDQo+Pj4gIGJvb2wgbWx4NWVfZXN3aXRjaF9yZXAoc3RydWN0IG5ldF9kZXZp
-Y2UgKm5ldGRldikNCj4+PiAgew0KPj4+ICAgICAgICAgaWYgKG5ldGRldi0+bmV0ZGV2X29wcyA9
-PSAmbWx4NWVfbmV0ZGV2X29wc19yZXAgfHwNCj4+PiAtICAgICAgICAgICBuZXRkZXYtPm5ldGRl
-dl9vcHMgPT0gJm1seDVlX25ldGRldl9vcHNfdXBsaW5rX3JlcCkNCj4+PiArICAgICAgICAgICBt
-bHg1ZV9lc3dpdGNoX3VwbGlua19yZXAobmV0ZGV2KSkNCj4+PiAgICAgICAgICAgICAgICAgcmV0
-dXJuIHRydWU7DQo+Pj4NCj4+PiAgICAgICAgIHJldHVybiBmYWxzZTsNCj4+PiBkaWZmIC0tZ2l0
-IGEvZHJpdmVycy9uZXQvZXRoZXJuZXQvbWVsbGFub3gvbWx4NS9jb3JlL2VuX3JlcC5oIGIvZHJp
-dmVycy9uZXQvZXRoZXJuZXQvbWVsbGFub3gvbWx4NS9jb3JlL2VuX3JlcC5oDQo+Pj4gaW5kZXgg
-MzFmODNjOC4uMjgyYzY0YiAxMDA2NDQNCj4+PiAtLS0gYS9kcml2ZXJzL25ldC9ldGhlcm5ldC9t
-ZWxsYW5veC9tbHg1L2NvcmUvZW5fcmVwLmgNCj4+PiArKysgYi9kcml2ZXJzL25ldC9ldGhlcm5l
-dC9tZWxsYW5veC9tbHg1L2NvcmUvZW5fcmVwLmgNCj4+PiBAQCAtMTk4LDYgKzE5OCw3IEBAIHZv
-aWQgbWx4NWVfcmVwX2VuY2FwX2VudHJ5X2RldGFjaChzdHJ1Y3QgbWx4NWVfcHJpdiAqcHJpdiwN
-Cj4+Pg0KPj4+ICB2b2lkIG1seDVlX3JlcF9xdWV1ZV9uZWlnaF9zdGF0c193b3JrKHN0cnVjdCBt
-bHg1ZV9wcml2ICpwcml2KTsNCj4+Pg0KPj4+ICtib29sIG1seDVlX2Vzd2l0Y2hfdXBsaW5rX3Jl
-cChzdHJ1Y3QgbmV0X2RldmljZSAqbmV0ZGV2KTsNCj4+PiAgYm9vbCBtbHg1ZV9lc3dpdGNoX3Jl
-cChzdHJ1Y3QgbmV0X2RldmljZSAqbmV0ZGV2KTsNCj4+Pg0KPj4+ICAjZWxzZSAvKiBDT05GSUdf
-TUxYNV9FU1dJVENIICovDQo+Pj4gZGlmZiAtLWdpdCBhL2RyaXZlcnMvbmV0L2V0aGVybmV0L21l
-bGxhbm94L21seDUvY29yZS9lbl90Yy5jIGIvZHJpdmVycy9uZXQvZXRoZXJuZXQvbWVsbGFub3gv
-bWx4NS9jb3JlL2VuX3RjLmMNCj4+PiBpbmRleCBmOTFlMDU3ZS4uYjJjMThmYSAxMDA2NDQNCj4+
-PiAtLS0gYS9kcml2ZXJzL25ldC9ldGhlcm5ldC9tZWxsYW5veC9tbHg1L2NvcmUvZW5fdGMuYw0K
-Pj4+ICsrKyBiL2RyaXZlcnMvbmV0L2V0aGVybmV0L21lbGxhbm94L21seDUvY29yZS9lbl90Yy5j
-DQo+Pj4gQEAgLTMyMTQsNiArMzIxNCwxMCBAQCBzdGF0aWMgaW50IGFkZF92bGFuX3BvcF9hY3Rp
-b24oc3RydWN0IG1seDVlX3ByaXYgKnByaXYsDQo+Pj4gIGJvb2wgbWx4NWVfaXNfdmFsaWRfZXN3
-aXRjaF9md2RfZGV2KHN0cnVjdCBtbHg1ZV9wcml2ICpwcml2LA0KPj4+ICAgICAgICAgICAgICAg
-ICAgICAgICAgICAgICAgICAgICAgIHN0cnVjdCBuZXRfZGV2aWNlICpvdXRfZGV2KQ0KPj4+ICB7
-DQo+Pj4gKyAgICAgICBpZiAobWx4NWVfZXN3aXRjaF91cGxpbmtfcmVwKHByaXYtPm5ldGRldikg
-JiYNCj4+PiArICAgICAgICAgICBtbHg1ZV9lc3dpdGNoX3VwbGlua19yZXAob3V0X2RldikpDQo+
-Pj4gKyAgICAgICAgICAgICAgIHJldHVybiBmYWxzZTsNCj4+PiArDQo+Pj4gICAgICAgICBpZiAo
-aXNfbWVyZ2VkX2Vzd2l0Y2hfZGV2KHByaXYsIG91dF9kZXYpKQ0KPj4+ICAgICAgICAgICAgICAg
-ICByZXR1cm4gdHJ1ZTsNCj4+Pg0KPj4+IEBAIC0zMzM5LDkgKzMzNDMsMTUgQEAgc3RhdGljIGlu
-dCBwYXJzZV90Y19mZGJfYWN0aW9ucyhzdHJ1Y3QgbWx4NWVfcHJpdiAqcHJpdiwNCj4+Pg0KPj4+
-ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgaWYgKCFtbHg1ZV9pc192YWxpZF9lc3dp
-dGNoX2Z3ZF9kZXYocHJpdiwgb3V0X2RldikpIHsNCj4+PiAgICAgICAgICAgICAgICAgICAgICAg
-ICAgICAgICAgICAgICAgICAgTkxfU0VUX0VSUl9NU0dfTU9EKGV4dGFjaywNCj4+PiAtICAgICAg
-ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICJkZXZp
-Y2VzIGFyZSBub3Qgb24gc2FtZSBzd2l0Y2ggSFcsIGNhbid0IG9mZmxvYWQgZm9yd2FyZGluZyIp
-Ow0KPj4+IC0gICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICBwcl9lcnIoImRl
-dmljZXMgJXMgJXMgbm90IG9uIHNhbWUgc3dpdGNoIEhXLCBjYW4ndCBvZmZsb2FkIGZvcndhcmRp
-bmdcbiIsDQo+Pj4gLSAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
-ICBwcml2LT5uZXRkZXYtPm5hbWUsIG91dF9kZXYtPm5hbWUpOw0KPj4+ICsgICAgICAgICAgICAg
-ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgImRldmljZXMgYXJl
-IGJvdGggdXBsaW5rICINCj4+PiArICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
-ICAgICAgICAgICAgICAgICAgICAgICJvciBub3Qgb24gc2FtZSBzd2l0Y2ggSFcsICINCj4+PiAr
-ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
-ICJjYW4ndCBvZmZsb2FkIGZvcndhcmRpbmciKTsNCj4+PiArICAgICAgICAgICAgICAgICAgICAg
-ICAgICAgICAgICAgICAgICAgcHJfZXJyKCJkZXZpY2VzICVzICVzIGFyZSBib3RoIHVwbGluayAi
-DQo+Pj4gKyAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAib3Ig
-bm90IG9uIHNhbWUgc3dpdGNoIEhXLCAiDQo+Pj4gKyAgICAgICAgICAgICAgICAgICAgICAgICAg
-ICAgICAgICAgICAgICAgICAgICAiY2FuJ3Qgb2ZmbG9hZCBmb3J3YXJkaW5nXG4iLA0KPj4+ICsg
-ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgcHJpdi0+bmV0ZGV2
-LT5uYW1lLA0KPj4+ICsgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
-ICAgb3V0X2Rldi0+bmFtZSk7DQo+Pj4gKw0KPj4+ICAgICAgICAgICAgICAgICAgICAgICAgICAg
-ICAgICAgICAgICAgICByZXR1cm4gLUVPUE5PVFNVUFA7DQo+Pj4gICAgICAgICAgICAgICAgICAg
-ICAgICAgICAgICAgICB9DQo+Pj4NCj4+PiAtLQ0KPj4+IDEuOC4zLjENCj4+Pg0KDQpIaSwNCg0K
-SSBmb3J3YXJkZWQgdGhlIGlzc3VlIHRvIGZ3IGZvciBhIHJlc3BvbnNlLg0KVGhvdWdoLCB3ZSBj
-YW4gcHJvZ3Jlc3Mgd2l0aCBibG9ja2luZyB1cGxpbmstPnVwbGluayBydWxlcyBidXQgdGhpcyBw
-YXRjaA0KY3VycmVudGx5IGJyZWFrcyBMQUcgbW9kZS4NCkluIExBRyBtb2RlIHdlIGFkZCBhIHJ1
-bGUgdG8gYm90aCBlc3cwIG9mIHVwbGluazAgYW5kIGVzdzEgb2YgdXBsaW5rMSwNCnNvIGZvciB0
-aGUgY2hlY2sgaXQgbG9va3MgbGlrZSBwcml2IGFuZCBvdXRfZGV2IGFyZSBib3RoIHVwbGlua3Ms
-DQpidXQgdGhpcyBpcyBhbGxvd2VkIGFzIE9yIHNhaWQuIHdlIGZvcndhcmQgdG8gdGhlIG90aGVy
-IGVzd2l0Y2ggYnV0DQpkaWZmZXJlbnQgdnBvcnQuIHNvIHRoZSBjaGVjayBpcyBtaXNzaW5nIGlm
-IHRoZSB2cG9ydCBpcyB1cGxpbmsuDQoNCnNvIG5vcm1hbGx5IHByaXYgaXMgdGhlIHJlcHJlc2Vu
-dG9yIHByaXYgYnV0IGluIGNhc2Ugb2YgTEFHDQoNCm1seDVlX2FkZF9mZGJfZmxvdygpLT5pc19w
-ZWVyX2Zsb3dfbmVlZGVkKCktPm1seDVlX3RjX2FkZF9mZGJfcGVlcl9mbG93KCkNCg0Kd2UgcGFz
-cyBwcml2IGFzIHRoZSB1cGxpbmsgb2YgdGhlIG90aGVyIGVzd2l0Y2guDQp0aGUgdnBvcnQgaXMg
-c2F2ZWQgaW4gZXN3X2F0dHItPmluX3JlcC4NCnNvIGZvciB0aGlzIGNhc2Ugd2UgbmVlZCB0byBj
-b21wYXJlIGlmIGluX3JlcCAoYW5kIG5vdCBwcml2KSBpcyBhY3R1YWxseQ0KdmYgcmVwcmVzZW50
-b3Igb3IgdXBsaW5rIHJlcHJlc2VudG9yLg0KDQp0aGUgY2FzZSBpIHRlc3RlZCBpcyBjcmVhdGUg
-Ym9uZDAgd2l0aCB0aGUgMiB1cGxpbmtzLg0KYWRkIHJ1bGUgZnJvbSByZXByZXNlbnRvciB0byBi
-b25kMC4NCmUuZy4gdGMgZmlsdGVyIGFkZCBkZXYgZW5zMWYwXzAgcHJvdG9jb2wgYXJwIHBhcmVu
-dCBmZmZmOiBwcmlvIDMgZmxvd2VyIFwNCiAgZHN0X21hYyBlNDoxZDoyZDpmZDo4YjowMiBza2lw
-X3N3IGFjdGlvbiBtaXJyZWQgZWdyZXNzIHJlZGlyZWN0IGRldiBib25kMA0KDQoNClRoYW5rcywN
-ClJvaQ0K
+
+On 1/15/2020 5:13 PM, Or Gerlitz wrote:
+> On Tue, Jan 7, 2020 at 11:17 AM <wenxu@ucloud.cn> wrote:
+>> In the flowtables offload all the devices in the flowtables
+>> share the same flow_block. An offload rule will be installed on
+> "In the flowtables offload all the devices in the flowtables share the"
+>
+> I am not managing to follow on this sentence. What does "devices in
+> the flowtables" mean?
+
+
+All the devices are added in flowtables.
+
+>
+>> all the devices. This scenario is not correct.
+> so this is a fix and should go to net, or maybe the code you are fixing
+> was only introduced in net-next?
+
+The fix netfilter patch "netfilter: flowtable: restrict flow dissector match on meta ingress device"
+
+now plans to be introduced to nf-next.
+
+http://patchwork.ozlabs.org/patch/1222292/
+
+>
+>> It is no problem if there are only two devices in the flowtable,
+>> The rule with ingress and egress on the same device can be reject
+> nit: rejected
+>
+>> by driver.
+>> But more than two devices in the flowtable will install the wrong
+>> rules on hardware.
+>>
+>> For example:
+>> Three devices in a offload flowtables: dev_a, dev_b, dev_c
+>>
+>> A rule ingress from dev_a and egress to dev_b:
+>> The rule will install on device dev_a.
+>> The rule will try to install on dev_b but failed for ingress
+>> and egress on the same device.
+>> The rule will install on dev_c. This is not correct.
+>>
+>> The flowtables offload avoid this case through restricting the ingress dev
+>> with FLOW_DISSECTOR_KEY_META as following patch.
+>> http://patchwork.ozlabs.org/patch/1218109/
+>>
+>> So the mlx5e driver also should support the FLOW_DISSECTOR_KEY_META parse.
+>>
+>> Signed-off-by: wenxu <wenxu@ucloud.cn>
+>> ---
+>> v2: remap the patch description
+>>
+>>  drivers/net/ethernet/mellanox/mlx5/core/en_tc.c | 39 +++++++++++++++++++++++++
+>>  1 file changed, 39 insertions(+)
+>>
+>> diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_tc.c b/drivers/net/ethernet/mellanox/mlx5/core/en_tc.c
+>> index 9b32a9c..33d1ce5 100644
+>> --- a/drivers/net/ethernet/mellanox/mlx5/core/en_tc.c
+>> +++ b/drivers/net/ethernet/mellanox/mlx5/core/en_tc.c
+>> @@ -1805,6 +1805,40 @@ static void *get_match_headers_value(u32 flags,
+>>                              outer_headers);
+>>  }
+>>
+>> +static int mlx5e_flower_parse_meta(struct net_device *filter_dev,
+>> +                                  struct flow_cls_offload *f)
+>> +{
+>> +       struct flow_rule *rule = flow_cls_offload_flow_rule(f);
+>> +       struct netlink_ext_ack *extack = f->common.extack;
+>> +       struct net_device *ingress_dev;
+>> +       struct flow_match_meta match;
+>> +
+>> +       if (!flow_rule_match_key(rule, FLOW_DISSECTOR_KEY_META))
+>> +               return 0;
+>> +
+>> +       flow_rule_match_meta(rule, &match);
+>> +       if (match.mask->ingress_ifindex != 0xFFFFFFFF) {
+>> +               NL_SET_ERR_MSG_MOD(extack, "Unsupported ingress ifindex mask");
+>> +               return -EINVAL;
+>> +       }
+>> +
+>> +       ingress_dev = __dev_get_by_index(dev_net(filter_dev),
+>> +                                        match.key->ingress_ifindex);
+>> +       if (!ingress_dev) {
+>> +               NL_SET_ERR_MSG_MOD(extack,
+>> +                                  "Can't find the ingress port to match on");
+>> +               return -EINVAL;
+>> +       }
+>> +
+>> +       if (ingress_dev != filter_dev) {
+>> +               NL_SET_ERR_MSG_MOD(extack,
+>> +                                  "Can't match on the ingress filter port");
+>> +               return -EINVAL;
+>> +       }
+>> +
+>> +       return 0;
+>> +}
+>> +
+>>  static int __parse_cls_flower(struct mlx5e_priv *priv,
+>>                               struct mlx5_flow_spec *spec,
+>>                               struct flow_cls_offload *f,
+>> @@ -1825,6 +1859,7 @@ static int __parse_cls_flower(struct mlx5e_priv *priv,
+>>         u16 addr_type = 0;
+>>         u8 ip_proto = 0;
+>>         u8 *match_level;
+>> +       int err;
+>>
+>>         match_level = outer_match_level;
+>>
+>> @@ -1868,6 +1903,10 @@ static int __parse_cls_flower(struct mlx5e_priv *priv,
+>>                                                     spec);
+>>         }
+>>
+>> +       err = mlx5e_flower_parse_meta(filter_dev, f);
+>> +       if (err)
+>> +               return err;
+>> +
+>>         if (flow_rule_match_key(rule, FLOW_DISSECTOR_KEY_BASIC)) {
+>>                 struct flow_match_basic match;
+>>
+>> --
+>> 1.8.3.1
+>>
