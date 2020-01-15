@@ -2,87 +2,171 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 2EEF213BBDB
-	for <lists+netdev@lfdr.de>; Wed, 15 Jan 2020 10:04:37 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2913813BC21
+	for <lists+netdev@lfdr.de>; Wed, 15 Jan 2020 10:13:37 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729317AbgAOJEb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 15 Jan 2020 04:04:31 -0500
-Received: from mail25.static.mailgun.info ([104.130.122.25]:47218 "EHLO
-        mail25.static.mailgun.info" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1729066AbgAOJEb (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 15 Jan 2020 04:04:31 -0500
-DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org; q=dns/txt;
- s=smtp; t=1579079070; h=Content-Type: MIME-Version: Message-ID:
- In-Reply-To: Date: References: Subject: Cc: To: From: Sender;
- bh=SEmOCijvsdwGF7pEkrg8FPnYkaWi/mjXIm3JEWQ3QPA=; b=s//VdPe036U0D5R/GboAtHSmjvnKmgi85K3lL8AKpFV2mwIgROj9H8buZOLHZ6H22m+sinDZ
- 01ov9iBcqtxGxfrPgTWZZF48wG6fbO/MOtan2rq6yGB625u9rPS9XL7w1aRqdfFgTuxn5w6S
- NHxJzh2RXvSCICrsr3ZAPm1xOdY=
-X-Mailgun-Sending-Ip: 104.130.122.25
-X-Mailgun-Sid: WyJiZjI2MiIsICJuZXRkZXZAdmdlci5rZXJuZWwub3JnIiwgImJlOWU0YSJd
-Received: from smtp.codeaurora.org (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171])
- by mxa.mailgun.org with ESMTP id 5e1ed59e.7f1f0790f6f8-smtp-out-n01;
- Wed, 15 Jan 2020 09:04:30 -0000 (UTC)
-Received: by smtp.codeaurora.org (Postfix, from userid 1001)
-        id EBAE0C447A2; Wed, 15 Jan 2020 09:04:28 +0000 (UTC)
-X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
-        aws-us-west-2-caf-mail-1.web.codeaurora.org
-X-Spam-Level: 
-X-Spam-Status: No, score=-1.0 required=2.0 tests=ALL_TRUSTED,SPF_NONE
-        autolearn=unavailable autolearn_force=no version=3.4.0
-Received: from potku.adurom.net (88-114-240-156.elisa-laajakaista.fi [88.114.240.156])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-        (No client certificate requested)
-        (Authenticated sender: kvalo)
-        by smtp.codeaurora.org (Postfix) with ESMTPSA id E1EFEC43383;
-        Wed, 15 Jan 2020 09:04:24 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org E1EFEC43383
-Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
-Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; spf=none smtp.mailfrom=kvalo@codeaurora.org
-From:   Kalle Valo <kvalo@codeaurora.org>
-To:     Bjorn Andersson <bjorn.andersson@linaro.org>
-Cc:     Mark Rutland <mark.rutland@arm.com>, devicetree@vger.kernel.org,
-        netdev@vger.kernel.org, linux-wireless@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Rob Herring <robh+dt@kernel.org>,
-        Andy Gross <agross@kernel.org>, ath10k@lists.infradead.org,
-        linux-arm-msm@vger.kernel.org,
-        "David S. Miller" <davem@davemloft.net>
-Subject: Re: [PATCH 0/2] ath10k: Enable QDSS clock on sm8150
-References: <20191223054855.3020665-1-bjorn.andersson@linaro.org>
-        <87zhevsrwk.fsf@codeaurora.org>
-Date:   Wed, 15 Jan 2020 11:04:22 +0200
-In-Reply-To: <87zhevsrwk.fsf@codeaurora.org> (Kalle Valo's message of "Fri, 10
-        Jan 2020 09:16:11 +0200")
-Message-ID: <87r201xf8p.fsf@kamboji.qca.qualcomm.com>
-User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/24.5 (gnu/linux)
+        id S1729197AbgAOJNf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 15 Jan 2020 04:13:35 -0500
+Received: from mail-yb1-f194.google.com ([209.85.219.194]:44862 "EHLO
+        mail-yb1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726472AbgAOJNf (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 15 Jan 2020 04:13:35 -0500
+Received: by mail-yb1-f194.google.com with SMTP id f136so2590100ybg.11
+        for <netdev@vger.kernel.org>; Wed, 15 Jan 2020 01:13:34 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=XcRqeuWoIkNtgyvJChZlQKJy6Bkfi12aLypwjiX603U=;
+        b=jfklyf6hOkOkf7hgbJgBZ47uUgFxJHVpkH8v1wteNlftAAOCLFGyS0nNg8V0f8Woj0
+         Bc3P6YzKtLULzutBQYUvomYlrU7fXr3rN/PvTJoQbc267CvGDLnFoTjQGs/OTAVVhil6
+         sQ+84J696XsNa21fCHKHgxXfDhk63uMnWR8Lo5Lgw82ema4i44IlZiBvbm9J90unAth/
+         4CRSE0eCB6GWp2S7NBU2VJ0YrTjKg0HD1EdQAYCI0IRUiCD+bg8NFBnVc56oIkr98hAW
+         L3tZCkFEDnZOdh09nRwYfpoSU10DiwI5vtWijEVlBvCPRzXZ21M0lZZ014TTdIqO/8s/
+         hduA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=XcRqeuWoIkNtgyvJChZlQKJy6Bkfi12aLypwjiX603U=;
+        b=s2yRkID9/HrEflvNX1HRnx2QV3LjJ5iM31Cic5RUVxNIML8CglmR+eFv0lNqVyfvY/
+         GQFkorwfiHA56eLKvX839vQFZGhlF8f6OozSTd7K7HqmI041IrKAjIa2dTD24PXH1s9e
+         Zi7Nmu4S3OvabTLqwDyJDhsx9Jg3+/zSAZWsFPR7TOLTS0Yeyug4lIIUrx8GYG9h3A5i
+         Ty6OJJWFloTGok/yjUluegjU0SXHA124h02qsk4/9wqPoDQgpEH7cVJgs8twqYlQD1tN
+         Qm0sZ9DJZjZ1BlBPRUrlCa+GKyTls0HUnKgozoIrEQux703AQiJ9CSqJEOE74QpucQPm
+         GWNg==
+X-Gm-Message-State: APjAAAWdHRkq2gTIRWJ37AU8UyL2B+5h40u410Pne8A9weM8ogcLx8Gx
+        l1GWkIt2DmVaB74yQ2oF6n+pv1YHtj4BEXI20Ys=
+X-Google-Smtp-Source: APXvYqzxsm88/SicNWFyp7PjVnPdruk+Kvawk5wcVb2J7p+Q6nyC3KFTqTW7VLukpPDaYBFWCG8XE4rnawvGLwFywcY=
+X-Received: by 2002:a5b:c0f:: with SMTP id f15mr20481310ybq.129.1579079614454;
+ Wed, 15 Jan 2020 01:13:34 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain
+References: <1578388566-27310-1-git-send-email-wenxu@ucloud.cn>
+In-Reply-To: <1578388566-27310-1-git-send-email-wenxu@ucloud.cn>
+From:   Or Gerlitz <gerlitz.or@gmail.com>
+Date:   Wed, 15 Jan 2020 11:13:23 +0200
+Message-ID: <CAJ3xEMjmS=oo6xmep7seVUJ58NPpLQ_UKZH1qVWxf6w=sBBJgQ@mail.gmail.com>
+Subject: Re: [PATCH net-next v2] net/mlx5e: Add mlx5e_flower_parse_meta support
+To:     wenxu <wenxu@ucloud.cn>
+Cc:     Paul Blakey <paulb@mellanox.com>,
+        Saeed Mahameed <saeedm@mellanox.com>,
+        Linux Netdev List <netdev@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Kalle Valo <kvalo@codeaurora.org> writes:
+On Tue, Jan 7, 2020 at 11:17 AM <wenxu@ucloud.cn> wrote:
+> In the flowtables offload all the devices in the flowtables
+> share the same flow_block. An offload rule will be installed on
 
-> Bjorn Andersson <bjorn.andersson@linaro.org> writes:
+"In the flowtables offload all the devices in the flowtables share the"
+
+I am not managing to follow on this sentence. What does "devices in
+the flowtables" mean?
+
+> all the devices. This scenario is not correct.
+
+so this is a fix and should go to net, or maybe the code you are fixing
+was only introduced in net-next?
+
+> It is no problem if there are only two devices in the flowtable,
+> The rule with ingress and egress on the same device can be reject
+
+nit: rejected
+
+> by driver.
+
+> But more than two devices in the flowtable will install the wrong
+> rules on hardware.
 >
->> On SM8150 the WiFi firmware depends on the QDSS clock ticking, or the system
->> will reset due to an NoC error. So this adds an optional clock to the ath10k
->> binding and makes sure it's enabled while the WiFi firmware needs it.
->>
->> Bjorn Andersson (2):
->>   ath10k: Add optional qdss clk
->>   arm64: dts: qcom: sm8150: Specify qdss clock for wifi
->>
->>  .../devicetree/bindings/net/wireless/qcom,ath10k.txt          | 2 +-
->>  arch/arm64/boot/dts/qcom/sm8150.dtsi                          | 4 ++--
->>  drivers/net/wireless/ath/ath10k/snoc.c                        | 2 +-
->>  3 files changed, 4 insertions(+), 4 deletions(-)
+> For example:
+> Three devices in a offload flowtables: dev_a, dev_b, dev_c
 >
-> Via which tree are these supposed to go? I'll take patch 1 and arm
-> mantainers take patch 2, or what?
-
-No reply, so I'm planning to take patch 1. Please holler if I
-misunderstood.
-
--- 
-https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
+> A rule ingress from dev_a and egress to dev_b:
+> The rule will install on device dev_a.
+> The rule will try to install on dev_b but failed for ingress
+> and egress on the same device.
+> The rule will install on dev_c. This is not correct.
+>
+> The flowtables offload avoid this case through restricting the ingress dev
+> with FLOW_DISSECTOR_KEY_META as following patch.
+> http://patchwork.ozlabs.org/patch/1218109/
+>
+> So the mlx5e driver also should support the FLOW_DISSECTOR_KEY_META parse.
+>
+> Signed-off-by: wenxu <wenxu@ucloud.cn>
+> ---
+> v2: remap the patch description
+>
+>  drivers/net/ethernet/mellanox/mlx5/core/en_tc.c | 39 +++++++++++++++++++++++++
+>  1 file changed, 39 insertions(+)
+>
+> diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_tc.c b/drivers/net/ethernet/mellanox/mlx5/core/en_tc.c
+> index 9b32a9c..33d1ce5 100644
+> --- a/drivers/net/ethernet/mellanox/mlx5/core/en_tc.c
+> +++ b/drivers/net/ethernet/mellanox/mlx5/core/en_tc.c
+> @@ -1805,6 +1805,40 @@ static void *get_match_headers_value(u32 flags,
+>                              outer_headers);
+>  }
+>
+> +static int mlx5e_flower_parse_meta(struct net_device *filter_dev,
+> +                                  struct flow_cls_offload *f)
+> +{
+> +       struct flow_rule *rule = flow_cls_offload_flow_rule(f);
+> +       struct netlink_ext_ack *extack = f->common.extack;
+> +       struct net_device *ingress_dev;
+> +       struct flow_match_meta match;
+> +
+> +       if (!flow_rule_match_key(rule, FLOW_DISSECTOR_KEY_META))
+> +               return 0;
+> +
+> +       flow_rule_match_meta(rule, &match);
+> +       if (match.mask->ingress_ifindex != 0xFFFFFFFF) {
+> +               NL_SET_ERR_MSG_MOD(extack, "Unsupported ingress ifindex mask");
+> +               return -EINVAL;
+> +       }
+> +
+> +       ingress_dev = __dev_get_by_index(dev_net(filter_dev),
+> +                                        match.key->ingress_ifindex);
+> +       if (!ingress_dev) {
+> +               NL_SET_ERR_MSG_MOD(extack,
+> +                                  "Can't find the ingress port to match on");
+> +               return -EINVAL;
+> +       }
+> +
+> +       if (ingress_dev != filter_dev) {
+> +               NL_SET_ERR_MSG_MOD(extack,
+> +                                  "Can't match on the ingress filter port");
+> +               return -EINVAL;
+> +       }
+> +
+> +       return 0;
+> +}
+> +
+>  static int __parse_cls_flower(struct mlx5e_priv *priv,
+>                               struct mlx5_flow_spec *spec,
+>                               struct flow_cls_offload *f,
+> @@ -1825,6 +1859,7 @@ static int __parse_cls_flower(struct mlx5e_priv *priv,
+>         u16 addr_type = 0;
+>         u8 ip_proto = 0;
+>         u8 *match_level;
+> +       int err;
+>
+>         match_level = outer_match_level;
+>
+> @@ -1868,6 +1903,10 @@ static int __parse_cls_flower(struct mlx5e_priv *priv,
+>                                                     spec);
+>         }
+>
+> +       err = mlx5e_flower_parse_meta(filter_dev, f);
+> +       if (err)
+> +               return err;
+> +
+>         if (flow_rule_match_key(rule, FLOW_DISSECTOR_KEY_BASIC)) {
+>                 struct flow_match_basic match;
+>
+> --
+> 1.8.3.1
+>
