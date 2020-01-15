@@ -2,101 +2,131 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 51CF713BCA8
-	for <lists+netdev@lfdr.de>; Wed, 15 Jan 2020 10:45:18 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 751EC13BCB6
+	for <lists+netdev@lfdr.de>; Wed, 15 Jan 2020 10:47:45 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729524AbgAOJpQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 15 Jan 2020 04:45:16 -0500
-Received: from mail-wr1-f53.google.com ([209.85.221.53]:46736 "EHLO
-        mail-wr1-f53.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729459AbgAOJpQ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 15 Jan 2020 04:45:16 -0500
-Received: by mail-wr1-f53.google.com with SMTP id z7so14997713wrl.13
-        for <netdev@vger.kernel.org>; Wed, 15 Jan 2020 01:45:15 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=resnulli-us.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:content-transfer-encoding:in-reply-to;
-        bh=dFBhTHpC7CyrTauKs7b51rFwl6gHvh8r009ho3+H9fQ=;
-        b=u6hV/8oBm+tdQ7sbOfXVu0x+ho3/Sts/R2w5dgZ96hvOfDyTCg8Rp6K/aKLIME5IrR
-         py6kCCfWZpNaNb8oIgIQ7a7pvYJEKzwjT2j4puNj+MRZLN0VFx32bJraQ1LdUe2Bo1rM
-         t6X1Z7FbnlGGRDIe+G3+wGVN5CretzD1xiZXIgLWcKQ2Wu1bT5nYq5GN+HJrHyQZ5KE7
-         iDRY+0GGW/IeLvkJqNN+mMtKN+0+osnEdjtakZHoSdmut30U9/eJwHjg8sNg6xFUFkga
-         EgJG9YRtR2ZTDnhqBcCziPIihGiNU48LSueKH2EDtMWYLzM8S/sCa5k7FE9TBDZe2HVU
-         OCcQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:content-transfer-encoding
-         :in-reply-to;
-        bh=dFBhTHpC7CyrTauKs7b51rFwl6gHvh8r009ho3+H9fQ=;
-        b=KQO2NixgNnDKguPZTrrMr1dlY/iQEzOlwwXHWWGMgEcbEiDmieg7BTW3qc+U/c+Vlu
-         purdlBHFoeVeqrbtNbRedjimc+y6XvQtlSj4PWt8i9PUd3oob/ezt9eP9/mtn6I1HnoR
-         WRlTtVVtCM/Z+fh6WS8//DBwZJpLVXj2G3lKdR9I3qzZADB8O03zXRLfWTdqhrp/iB6g
-         /a4gjYMGYQr7BpCaGOaXLPUtGyBPER3EOzWOE0jD6I4Xxy3StS3pnYW5wrmr3fKt14mw
-         XRR8fFhjV2fl9FTVxHzSTG4fVXSuv423WLY5wyS4N59L9KQr/0UEO7J/gyJVbwtfnzLy
-         aZmg==
-X-Gm-Message-State: APjAAAU19cqQuum3FFU7k5l3oHPqhdERUAXNzerToDGTCnqguSabH8cv
-        nFJo9q3F1x4EQ4O8H7geKz74YG8F/H8=
-X-Google-Smtp-Source: APXvYqztS3LY6iYuZu7XZSL7rjWRk1i52nzEyV8djbsISOhmBoWLC6Z2KJc3ol/kaJDNoYdX76wHAw==
-X-Received: by 2002:a5d:6350:: with SMTP id b16mr30647004wrw.132.1579081514449;
-        Wed, 15 Jan 2020 01:45:14 -0800 (PST)
-Received: from localhost (ip-78-102-249-43.net.upcbroadband.cz. [78.102.249.43])
-        by smtp.gmail.com with ESMTPSA id z83sm23375845wmg.2.2020.01.15.01.45.13
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 15 Jan 2020 01:45:14 -0800 (PST)
-Date:   Wed, 15 Jan 2020 10:45:13 +0100
-From:   Jiri Pirko <jiri@resnulli.us>
-To:     Maor Gottlieb <maorg@mellanox.com>
-Cc:     "j.vosburgh@gmail.com" <j.vosburgh@gmail.com>,
-        "vfalico@gmail.com" <vfalico@gmail.com>,
-        "andy@greyhouse.net" <andy@greyhouse.net>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        Saeed Mahameed <saeedm@mellanox.com>,
-        Jason Gunthorpe <jgg@mellanox.com>,
-        Leon Romanovsky <leonro@mellanox.com>,
-        Jiri Pirko <jiri@mellanox.com>,
-        Alex Rosenbaum <alexr@mellanox.com>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        Mark Zhang <markz@mellanox.com>
-Subject: Re: Expose bond_xmit_hash function
-Message-ID: <20200115094513.GS2131@nanopsycho>
-References: <03a6dcfc-f3c7-925d-8ed8-3c42777fd03c@mellanox.com>
+        id S1729536AbgAOJrg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 15 Jan 2020 04:47:36 -0500
+Received: from a.mx.secunet.com ([62.96.220.36]:35892 "EHLO a.mx.secunet.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1729497AbgAOJrf (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 15 Jan 2020 04:47:35 -0500
+Received: from localhost (localhost [127.0.0.1])
+        by a.mx.secunet.com (Postfix) with ESMTP id 42A59201E4;
+        Wed, 15 Jan 2020 10:47:34 +0100 (CET)
+X-Virus-Scanned: by secunet
+Received: from a.mx.secunet.com ([127.0.0.1])
+        by localhost (a.mx.secunet.com [127.0.0.1]) (amavisd-new, port 10024)
+        with ESMTP id GE3sKTFuVl9K; Wed, 15 Jan 2020 10:47:33 +0100 (CET)
+Received: from mail-essen-01.secunet.de (mail-essen-01.secunet.de [10.53.40.204])
+        (using TLSv1 with cipher ECDHE-RSA-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by a.mx.secunet.com (Postfix) with ESMTPS id B5409200A3;
+        Wed, 15 Jan 2020 10:47:33 +0100 (CET)
+Received: from gauss2.secunet.de (10.182.7.193) by mail-essen-01.secunet.de
+ (10.53.40.204) with Microsoft SMTP Server id 14.3.439.0; Wed, 15 Jan 2020
+ 10:47:33 +0100
+Received: by gauss2.secunet.de (Postfix, from userid 1000)      id 18EDC318021B;
+ Wed, 15 Jan 2020 10:47:33 +0100 (CET)
+Date:   Wed, 15 Jan 2020 10:47:33 +0100
+From:   Steffen Klassert <steffen.klassert@secunet.com>
+To:     Willem de Bruijn <willemdebruijn.kernel@gmail.com>
+CC:     David Miller <davem@davemloft.net>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Subash Abhinov Kasiviswanathan <subashab@codeaurora.org>,
+        Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>,
+        Network Development <netdev@vger.kernel.org>
+Subject: Re: [PATCH net-next 3/4] net: Support GRO/GSO fraglist chaining.
+Message-ID: <20200115094733.GP8621@gauss3.secunet.de>
+References: <20191218133458.14533-1-steffen.klassert@secunet.com>
+ <20191218133458.14533-4-steffen.klassert@secunet.com>
+ <CA+FuTScnux23Gj1WTEXHmZkiFG3RQsgmSz19TOWdWByM4Rd15Q@mail.gmail.com>
+ <20191219082246.GS8621@gauss3.secunet.de>
+ <CA+FuTScKcwyh7rZdDNQsujndrA+ZnYMmtA7Uh7-ji+RM+t6-hQ@mail.gmail.com>
+ <20200113085128.GH8621@gauss3.secunet.de>
+ <CA+FuTSc3sOuPsQ3sJSCudCwZky4FcGF5CopejURmGZUSjXEn3Q@mail.gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset="us-ascii"
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <03a6dcfc-f3c7-925d-8ed8-3c42777fd03c@mellanox.com>
+In-Reply-To: <CA+FuTSc3sOuPsQ3sJSCudCwZky4FcGF5CopejURmGZUSjXEn3Q@mail.gmail.com>
+User-Agent: Mutt/1.9.4 (2018-02-28)
+X-EXCLAIMER-MD-CONFIG: 2c86f778-e09b-4440-8b15-867914633a10
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Wed, Jan 15, 2020 at 09:01:43AM CET, maorg@mellanox.com wrote:
->RDMA over Converged Ethernet (RoCE) is a standard protocol which enables 
->RDMA’s efficient data transfer over Ethernet networks allowing transport 
->offload with hardware RDMA engine implementation.
->The RoCE v2 protocol exists on top of either the UDP/IPv4 or the 
->UDP/IPv6 protocol:
->
->--------------------------------------------------------------
->| L2 | L3 | UDP |IB BTH | Payload| ICRC | FCS |
->--------------------------------------------------------------
->
->When a bond LAG netdev is in use, we would like to have the same hash 
->result for RoCE packets as any other UDP packets, for this purpose we 
->need to expose the bond_xmit_hash function to external modules.
->If no objection, I will push a patch that export this symbol.
+On Mon, Jan 13, 2020 at 11:21:07AM -0500, Willem de Bruijn wrote:
+> On Mon, Jan 13, 2020 at 3:51 AM Steffen Klassert
+> <steffen.klassert@secunet.com> wrote:
+> >
+> > On Thu, Dec 19, 2019 at 11:28:34AM -0500, Willem de Bruijn wrote:
+> > > On Thu, Dec 19, 2019 at 3:22 AM Steffen Klassert
+> > > <steffen.klassert@secunet.com> wrote:
+> > > >
+> > > > I tried to find the subset of __copy_skb_header() that is needed to copy.
+> > > > Some fields of nskb are still valid, and some (csum related) fields
+> > > > should not be copied from skb to nskb.
+> > >
+> > > Duplicating that code is kind of fragile wrt new fields being added to
+> > > skbs later (such as the recent skb_ext example).
+> > >
+> > > Perhaps we can split __copy_skb_header further and call the
+> > > inner part directly.
+> >
+> > I thought already about that, but __copy_skb_header does a
+> > memcpy over all the header fields. If we split this, we
+> > would need change the memcpy to direct assignments.
+> 
+> Okay, if any of those fields should not be overwritten in this case,
+> then that's not an option. That memcpy is probably a lot more
+> efficient than all the direct assignments.
+> 
+> > Maybe we can be conservative here and do a full
+> > __copy_skb_header for now. The initial version
+> > does not necessarily need to be the most performant
+> > version. We could try to identify the correct subset
+> > of header fields later then.
+> 
+> We should probably aim for the right set from the start. If you think
+> this set is it, let's keep it.
 
-I don't think it is good idea to do it. It is an internal bond function.
-it even accepts "struct bonding *bond". Do you plan to push netdev
-struct as an arg instead? What about team? What about OVS bonding?
+I'd prefer to do a full __copy_skb_header for now and think a bit
+longer if that what I chose is really the correct subset.
 
-Also, you don't really need a hash, you need a slave that is going to be
-used for a packet xmit.
+> > > > I had to set ip_summed to CHECKSUM_UNNECESSARY on GRO to
+> > > > make sure the noone touches the checksum of the head
+> > > > skb. Otherise netfilter etc. tries to touch the csum.
+> > > >
+> > > > Before chaining I make sure that ip_summed and csum_level is
+> > > > the same for all chained skbs and here I restore the original
+> > > > value from nskb.
+> > >
+> > > This is safe because the skb_gro_checksum_validate will have validated
+> > > already on CHECKSUM_PARTIAL? What happens if there is decap or encap
+> > > in the path? We cannot revert to CHECKSUM_PARTIAL after that, I
+> > > imagine.
+> >
+> > Yes, the checksum is validated with skb_gro_checksum_validate. If the
+> > packets are UDP encapsulated, they are segmented before decapsulation.
+> > Original values are already restored. If an additional encapsulation
+> > happens, the encap checksum will be calculated after segmentation.
+> > Original values are restored before that.
+> 
+> I was wondering more about additional other encapsulation protocols.
+> 
+> >From a quick read, it seems like csum_level is associated only with
+> CHECKSUM_UNNECESSARY.
+> 
+> What if a device returns CHECKSUM_COMPLETE for packets with a tunnel
+> that is decapsulated before forwarding. Say, just VLAN. That gets
+> untagged in __netif_receive_skb_core with skb_vlan_untag calling
+> skb_pull_rcsum. After segmentation the ip_summed is restored, with
+> skb->csum still containing the unmodified csum that includes the VLAN
+> tag?
 
-I think this could work in a generic way:
-
-struct net_device *master_xmit_slave_get(struct net_device *master_dev,
-					 struct sk_buff *skb);
-
+Hm, that could be really a problem. So setting CHECKSUM_UNNECESSARY
+should be ok, but restoring the old values are not. Our checksum
+magic is rather complex, it's hard to get it right for all possible
+cases. Maybe we can just set CHECKSUM_UNNECESSARY for all packets
+and keep this value after segmentation.
