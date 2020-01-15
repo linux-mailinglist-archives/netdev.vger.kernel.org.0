@@ -2,81 +2,49 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id ABDDE13B7F4
-	for <lists+netdev@lfdr.de>; Wed, 15 Jan 2020 03:47:02 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id F34E713B7F5
+	for <lists+netdev@lfdr.de>; Wed, 15 Jan 2020 03:47:13 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728904AbgAOCqz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 14 Jan 2020 21:46:55 -0500
-Received: from szxga06-in.huawei.com ([45.249.212.32]:47458 "EHLO huawei.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1728862AbgAOCqy (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 14 Jan 2020 21:46:54 -0500
-Received: from DGGEMS414-HUB.china.huawei.com (unknown [172.30.72.58])
-        by Forcepoint Email with ESMTP id BB136C706C7E975A87C8;
-        Wed, 15 Jan 2020 10:46:52 +0800 (CST)
-Received: from localhost.localdomain (10.69.192.56) by
- DGGEMS414-HUB.china.huawei.com (10.3.19.214) with Microsoft SMTP Server id
- 14.3.439.0; Wed, 15 Jan 2020 10:46:46 +0800
-From:   Huazhong Tan <tanhuazhong@huawei.com>
-To:     <davem@davemloft.net>
-CC:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <salil.mehta@huawei.com>, <yisen.zhuang@huawei.com>,
-        <linuxarm@huawei.com>, <jakub.kicinski@netronome.com>,
-        Yunsheng Lin <linyunsheng@huawei.com>,
-        Huazhong Tan <tanhuazhong@huawei.com>
-Subject: [PATCH net] net: hns3: pad the short frame before sending to the hardware
-Date:   Wed, 15 Jan 2020 10:46:45 +0800
-Message-ID: <1579056405-30385-1-git-send-email-tanhuazhong@huawei.com>
-X-Mailer: git-send-email 2.7.4
-MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.69.192.56]
-X-CFilter-Loop: Reflected
+        id S1728998AbgAOCrM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 14 Jan 2020 21:47:12 -0500
+Received: from shards.monkeyblade.net ([23.128.96.9]:51718 "EHLO
+        shards.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728862AbgAOCrL (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 14 Jan 2020 21:47:11 -0500
+Received: from localhost (unknown [8.46.75.2])
+        (using TLSv1 with cipher AES256-SHA (256/256 bits))
+        (Client did not present a certificate)
+        (Authenticated sender: davem-davemloft)
+        by shards.monkeyblade.net (Postfix) with ESMTPSA id 076D41580B4E9;
+        Tue, 14 Jan 2020 18:47:01 -0800 (PST)
+Date:   Tue, 14 Jan 2020 18:46:54 -0800 (PST)
+Message-Id: <20200114.184654.254868360954041208.davem@davemloft.net>
+To:     lorenzo@kernel.org
+Cc:     netdev@vger.kernel.org, lorenzo.bianconi@redhat.com,
+        brouer@redhat.com, ilias.apalodimas@linaro.org, kuba@kernel.org
+Subject: Re: [PATCH v3 net-next] net: socionext: get rid of huge dma sync
+ in netsec_alloc_rx_data
+From:   David Miller <davem@davemloft.net>
+In-Reply-To: <1fce975f9f77780b92b86dbaf1ca89ffe37255bb.1578993365.git.lorenzo@kernel.org>
+References: <1fce975f9f77780b92b86dbaf1ca89ffe37255bb.1578993365.git.lorenzo@kernel.org>
+X-Mailer: Mew version 6.8 on Emacs 26.3
+Mime-Version: 1.0
+Content-Type: Text/Plain; charset=us-ascii
+Content-Transfer-Encoding: 7bit
+X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Tue, 14 Jan 2020 18:47:11 -0800 (PST)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Yunsheng Lin <linyunsheng@huawei.com>
+From: Lorenzo Bianconi <lorenzo@kernel.org>
+Date: Tue, 14 Jan 2020 10:24:19 +0100
 
-The hardware can not handle short frames below or equal to 32
-bytes according to the hardware user manual, and it will trigger
-a RAS error when the frame's length is below 33 bytes.
+> Socionext driver can run on dma coherent and non-coherent devices.
+> Get rid of huge dma_sync_single_for_device in netsec_alloc_rx_data since
+> now the driver can let page_pool API to managed needed DMA sync
+> 
+> Reviewed-by: Ilias Apalodimas <ilias.apalodimas@linaro.org>
+> Signed-off-by: Lorenzo Bianconi <lorenzo@kernel.org>
 
-This patch pads the SKB when skb->len is below 33 bytes before
-sending it to hardware.
-
-Fixes: 76ad4f0ee747 ("net: hns3: Add support of HNS3 Ethernet Driver for hip08 SoC")
-Signed-off-by: Yunsheng Lin <linyunsheng@huawei.com>
-Signed-off-by: Huazhong Tan <tanhuazhong@huawei.com>
----
- drivers/net/ethernet/hisilicon/hns3/hns3_enet.c | 6 ++++++
- 1 file changed, 6 insertions(+)
-
-diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3_enet.c b/drivers/net/ethernet/hisilicon/hns3/hns3_enet.c
-index 69545dd..b3deb5e 100644
---- a/drivers/net/ethernet/hisilicon/hns3/hns3_enet.c
-+++ b/drivers/net/ethernet/hisilicon/hns3/hns3_enet.c
-@@ -54,6 +54,8 @@ MODULE_PARM_DESC(debug, " Network interface message level setting");
- #define HNS3_INNER_VLAN_TAG	1
- #define HNS3_OUTER_VLAN_TAG	2
- 
-+#define HNS3_MIN_TX_LEN		33U
-+
- /* hns3_pci_tbl - PCI Device ID Table
-  *
-  * Last entry must be all 0s
-@@ -1405,6 +1407,10 @@ netdev_tx_t hns3_nic_net_xmit(struct sk_buff *skb, struct net_device *netdev)
- 	int bd_num = 0;
- 	int ret;
- 
-+	/* Hardware can only handle short frames above 32 bytes */
-+	if (skb_put_padto(skb, HNS3_MIN_TX_LEN))
-+		return NETDEV_TX_OK;
-+
- 	/* Prefetch the data used later */
- 	prefetch(skb->data);
- 
--- 
-2.7.4
-
+Applied, thanks.
