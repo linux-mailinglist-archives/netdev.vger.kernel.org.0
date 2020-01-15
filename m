@@ -2,57 +2,145 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id C46B713CAE3
-	for <lists+netdev@lfdr.de>; Wed, 15 Jan 2020 18:24:26 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E9BEC13CAF4
+	for <lists+netdev@lfdr.de>; Wed, 15 Jan 2020 18:27:43 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729095AbgAORYY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 15 Jan 2020 12:24:24 -0500
-Received: from mail-io1-f52.google.com ([209.85.166.52]:38134 "EHLO
-        mail-io1-f52.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726574AbgAORYX (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 15 Jan 2020 12:24:23 -0500
-Received: by mail-io1-f52.google.com with SMTP id i7so10216019ioo.5
-        for <netdev@vger.kernel.org>; Wed, 15 Jan 2020 09:24:23 -0800 (PST)
+        id S1729014AbgAOR1m (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 15 Jan 2020 12:27:42 -0500
+Received: from mail-ed1-f65.google.com ([209.85.208.65]:33796 "EHLO
+        mail-ed1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726778AbgAOR1l (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 15 Jan 2020 12:27:41 -0500
+Received: by mail-ed1-f65.google.com with SMTP id l8so16246834edw.1
+        for <netdev@vger.kernel.org>; Wed, 15 Jan 2020 09:27:40 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to;
-        bh=LJYDOYPoMTTFEzN8iN5iPSdIcUq2HE9sqFVa/D/VIlQ=;
-        b=dUEBl2C0LPGCQEZfPExVgXfOXl3FvC5v0rCu6WUULGCUmLGIg5zzI7OvCwfEz+uEE4
-         OloHEPxDwC9taYARTKWkCR3VJCLdxXvs0X//g2PaPTY6PeFh6fTxP7GypClQmOUOorah
-         34uJtE2/VhiMsIxQdospxRsx3ldo0f/47szZrV662bBp1/1AiypwGXqoEIJqU1NGwbTR
-         DPmvdAH0k6yz6/6SUmwni+OxAicbbcuWpnqGh9yQM6gAbKmpPCk6P/8338No+x2/qUrc
-         Qa+KD//iguNsVd9cDjfhcsrBD0wbsqILFXBtsNbMQ/Gwq+Xr5vNmktinltLzWGlJxCmM
-         RClw==
+        h=subject:to:references:from:autocrypt:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=TxW87RYdjmp6G2EU9IQiSLDkIATXCgsyl0iq0r0oI70=;
+        b=XXD6qfs/gIToij2JiQNLpg23YlQ1FloGyjrhPOCDbxZ3r0PmkwK8ZIzxURj5sl4ojs
+         DfWpnPDX+Pae+lIIli51pf3IzKizAhJU71c3EBP+uc2Ap3dPC+rW6ScuV7BppbkBpaS9
+         TE/gVbNdnGNYqYnjDz0U1xUsJYBezUjv5dqlIJUi1HE0xuaNxQYHjYAmqNcgT4q3poqV
+         ATJyW4UFEEMwDtpsOImRSHkPQZtM7IoaXZv2ltstglp8NZ5C6AwX28SD7cYZFDnaUDcM
+         mxqGOunqWSjdxk40DOEA5/3TcVtx6g0MzhWXeCJF3PvhEGLchOgZv0qjVL3ROdDXh41i
+         gxEg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to;
-        bh=LJYDOYPoMTTFEzN8iN5iPSdIcUq2HE9sqFVa/D/VIlQ=;
-        b=AyVbK4lDyCwjnunJLMiG+SSZYlvZscHF3up3skdt9Jw/X2Ku0pqlG/ve/AgreaQCA8
-         ta5seCPj8uy307uRmbUzDqHC/6FrtsHCUUHA7zliwbbS0kH9R4co33XvhRWVy9+7jgc0
-         lI4eTqP8DN60o69ZHYMH8iWuZVh+KGujAjyl0xocXlDZRcxdW0nTKHuUFE4TNEvArJok
-         jBlDCXKGCu9zv5Rf0OTtCHwabvAJvXKJCTXCC9g5hIdV0gm/SJKhkhnzbXxS++U76MEk
-         OfL/p30Ur5iEG5zvkfRR3W4KapeC3gh5eA+Ejp3kQTbCjjOsmnCoj+0Bu7e3Dj9n0xnr
-         iKgw==
-X-Gm-Message-State: APjAAAXEwVA4ZhKY29FFubOjcdrN8K1nK4+y5MLqMnweI4KXvG9L7tMa
-        waAtsrZVU8Hb+LS+RqOUuQe9+my3sq2TONCYgdQ=
-X-Google-Smtp-Source: APXvYqyc42lon9EnWoi/YtA8YcQn4dAWeTeA5dfPpkc597wO2i2VdDJSm3gslwXJ6Q5c2i6/dfeKQ1IG3fzap+XPnJE=
-X-Received: by 2002:a05:6638:a99:: with SMTP id 25mr25493655jas.37.1579109063038;
- Wed, 15 Jan 2020 09:24:23 -0800 (PST)
-MIME-Version: 1.0
-References: <CADYdroOZ37YY5-+oRB9xb0KdeWGVz3C2skAccYX4htEYp7mvhA@mail.gmail.com>
-In-Reply-To: <CADYdroOZ37YY5-+oRB9xb0KdeWGVz3C2skAccYX4htEYp7mvhA@mail.gmail.com>
-From:   Norbert Lange <nolange79@gmail.com>
-Date:   Wed, 15 Jan 2020 18:24:12 +0100
-Message-ID: <CADYdroOqvmm-CXyk6rORPPx3igTKNVrGQJWunvFQqs06v1kfMQ@mail.gmail.com>
+        h=x-gm-message-state:subject:to:references:from:autocrypt:message-id
+         :date:user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=TxW87RYdjmp6G2EU9IQiSLDkIATXCgsyl0iq0r0oI70=;
+        b=Cd45EvnAePeXL2Kg6bm/++tI3SfFsN95QwXT6Ctw66bfoXYPTuVgi5jMZf2JONNAzM
+         8wl08N6yCXJ5vUYM4RkhCJipJBVVM8U41VVj+73/K+NdnsHeIc3e8LRTPVVRNSDFLYO8
+         UMHM0VKq3+nhPIjN2yv7ldcgM+mICAnwF2QcKSR4ThhLD/FG4rvrIEbb9J/mdALcuB0i
+         19T2XQpJQYtZtp9TpqkwMg16SFyj1108YzA8Uy9qzgzTUAR63CBE1z6rJx2qJ0y8PGur
+         gGgaToUEshuyqPxETT4GK9IFibetOHjSHkOPoIJxCGFCtpVYvt5PFhdu3kJTTzTrPQKt
+         MAWQ==
+X-Gm-Message-State: APjAAAVP4bByN5qkz+PWnMwYmlZ8uf2dFdCbTK5TTDPBU8fBhJUDH6cQ
+        BdnyOJi6OhHP4iw9d8koEQ5Tv9Mi
+X-Google-Smtp-Source: APXvYqztuI0BZB5bbRzUk+NKhm4mvqvlSFFmw04qvH6gXjIYddVjhbouREmLsqOOAc0O+6j/qIzRdQ==
+X-Received: by 2002:a17:906:2e41:: with SMTP id r1mr29101104eji.127.1579109259172;
+        Wed, 15 Jan 2020 09:27:39 -0800 (PST)
+Received: from [10.67.50.41] ([192.19.223.252])
+        by smtp.googlemail.com with ESMTPSA id k5sm780088edx.58.2020.01.15.09.27.37
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 15 Jan 2020 09:27:38 -0800 (PST)
 Subject: Re: PROBLEM: kernel crash when unbinding igb device with 4.19.94
-To:     Richard Cochran <richardcochran@gmail.com>, netdev@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+To:     Norbert Lange <nolange79@gmail.com>,
+        Richard Cochran <richardcochran@gmail.com>,
+        netdev@vger.kernel.org
+References: <CADYdroOZ37YY5-+oRB9xb0KdeWGVz3C2skAccYX4htEYp7mvhA@mail.gmail.com>
+From:   Florian Fainelli <f.fainelli@gmail.com>
+Autocrypt: addr=f.fainelli@gmail.com; prefer-encrypt=mutual; keydata=
+ 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
+ G10n8gCguORqNGMsVRxrlLs7/himep7MrCc=
+Message-ID: <497abaf3-270f-951c-9b59-78c4df2f66c2@gmail.com>
+Date:   Wed, 15 Jan 2020 09:27:35 -0800
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.2.2
+MIME-Version: 1.0
+In-Reply-To: <CADYdroOZ37YY5-+oRB9xb0KdeWGVz3C2skAccYX4htEYp7mvhA@mail.gmail.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Small correction:
-I ran various versions from 4.14 up to 4.19.89, and *4.19.94* with above
-patch reversed, all which did not have this issue.
+On 1/15/20 9:10 AM, Norbert Lange wrote:
+> Hello,
+> 
+> The commit "ptp: fix the race between the release of ptp_clock and
+> cdev" (#0393b8720128) introduced a bad regression, atleast in the 4.19
+> branch.
+> 
+> I have a Intel I210 card in the system (actually 4 of them if that's
+> relevant), system is a custom buildroot so I dont have all tools to
+> create the information, but given that reverting the commit fixed the
+> issue I think its narrowed down enough.
+> unbinding the driver from one device will always trigger a crash.
+> 
+> I use the xenomai ipipe-patch on top, if required I could try with a
+> naked linux (would cost me some time to do).
+> I ran various versions from 4.14 up to 4.19.89, and 4.19.89 with above
+> patch reversed, all which did not have this issue.
+
+This patch should fix the problem:
+
+https://lore.kernel.org/netdev/20200113130009.2938-1-vdronov@redhat.com/
+
+and should soon reach stable kernels if it has not already.
+-- 
+Florian
