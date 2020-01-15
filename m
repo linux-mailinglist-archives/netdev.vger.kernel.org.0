@@ -2,82 +2,237 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 34B3213B710
-	for <lists+netdev@lfdr.de>; Wed, 15 Jan 2020 02:39:03 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4BA4413B711
+	for <lists+netdev@lfdr.de>; Wed, 15 Jan 2020 02:40:29 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728931AbgAOBjB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 14 Jan 2020 20:39:01 -0500
-Received: from us-smtp-delivery-1.mimecast.com ([207.211.31.120]:56340 "EHLO
-        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S1728848AbgAOBjB (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 14 Jan 2020 20:39:01 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1579052339;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=tKAaW9zZdUMl/X3Y3pjw/ZQo39z5yYT+FqpKcVm7um0=;
-        b=XUaITklwCOL4g4eli2HMhR3qh/A3s87JhnmoLW2Qk2mrnoYqR02nTvmVRQD5dMvV+1gF/8
-        eIYV0XFzPpM2l/m78ZNUYEq8FYu94aVnCUZeckcl3QIPnThIlCnN3diMVYbmITCy8Nfxu6
-        CbSi+ry0N4K7WNl/53+JSgEN/Eej4u8=
-Received: from mail-lj1-f199.google.com (mail-lj1-f199.google.com
- [209.85.208.199]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-317-siZM8M5iMvebyRAuej__5g-1; Tue, 14 Jan 2020 20:38:56 -0500
-X-MC-Unique: siZM8M5iMvebyRAuej__5g-1
-Received: by mail-lj1-f199.google.com with SMTP id w6so3537900ljo.20
-        for <netdev@vger.kernel.org>; Tue, 14 Jan 2020 17:38:56 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=tKAaW9zZdUMl/X3Y3pjw/ZQo39z5yYT+FqpKcVm7um0=;
-        b=F0uY8lGQAHmlT3OI2WTHMgIfMiLDj5lT34toc2uZwK1LMnWYSdWvISpR+ECUnOhi8L
-         XyCABwwYV134tIvqyu0IEmt3/GOyxXPdAo6tTpzkFuYxryfZPoT0k7eBgSCvLAq/r9cT
-         f2PNcw5Fj1+U4+0VHvf9YkTGd9j4+PpAjINGJFSlmiYfhjlvxWrrh2JoCOcmJ4Z4HlJz
-         Bq2NlbbNyvP4drTGESFyjtNf1zcyplqD/6EXBTnzuU/oNWMxLS3h02mh+7O6AHFtWkXj
-         ODgqWmYHcSF5f6JF6xmXbRa1PujzTn6WaqtCMn8e4YhN2e8kZGW5FjnTC9YnUQ/jfyrF
-         5lbw==
-X-Gm-Message-State: APjAAAUjV3wr36e4OzAvgMojMHWIOQcQee8tES9jZ6rIuAx5O+iaW6Lq
-        OGwPcgqAyrM9nF5IEKWXIVLi72y0pU79ugR8FQuQc69FQPIC7qmf7c3x8tQEqmGSx8jXCEpMfi1
-        BNNWxGvYEzLLQqrsKZA+UnT5AhBtSiwqM
-X-Received: by 2002:a19:7b0a:: with SMTP id w10mr3377267lfc.90.1579052335136;
-        Tue, 14 Jan 2020 17:38:55 -0800 (PST)
-X-Google-Smtp-Source: APXvYqyFhjtMseR79v7q/Eg5U9N3mVbSf8BTAvP7lU726oSG9hQGqArNrmISIkV1ZElFaRLedJer5eiLVEpDwosHrzY=
-X-Received: by 2002:a19:7b0a:: with SMTP id w10mr3377259lfc.90.1579052334976;
- Tue, 14 Jan 2020 17:38:54 -0800 (PST)
-MIME-Version: 1.0
-References: <20200114210035.65042-1-edumazet@google.com>
-In-Reply-To: <20200114210035.65042-1-edumazet@google.com>
-From:   Matteo Croce <mcroce@redhat.com>
-Date:   Wed, 15 Jan 2020 02:38:20 +0100
-Message-ID: <CAGnkfhx-V2xrRCbyjzZtiap0-gqQ+nDvf2E-5mRFZM8LVQLqWg@mail.gmail.com>
-Subject: Re: [PATCH net] macvlan: use skb_reset_mac_header() in macvlan_queue_xmit()
-To:     Eric Dumazet <edumazet@google.com>
-Cc:     "David S . Miller" <davem@davemloft.net>,
-        netdev <netdev@vger.kernel.org>,
-        Eric Dumazet <eric.dumazet@gmail.com>,
-        Jurgen Van Ham <juvanham@gmail.com>
+        id S1728877AbgAOBk1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 14 Jan 2020 20:40:27 -0500
+Received: from out2-smtp.messagingengine.com ([66.111.4.26]:42689 "EHLO
+        out2-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1728844AbgAOBk1 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 14 Jan 2020 20:40:27 -0500
+Received: from compute2.internal (compute2.nyi.internal [10.202.2.42])
+        by mailout.nyi.internal (Postfix) with ESMTP id 8F79221F85;
+        Tue, 14 Jan 2020 20:40:26 -0500 (EST)
+Received: from mailfrontend2 ([10.202.2.163])
+  by compute2.internal (MEProxy); Tue, 14 Jan 2020 20:40:26 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+        mendozajonas.com; h=message-id:subject:from:to:cc:date
+        :in-reply-to:references:content-type:mime-version
+        :content-transfer-encoding; s=fm2; bh=pOYd6CkHXgZyYUiNpxp7kp1OKE
+        FH4VCsoXBLNAdANrg=; b=hae356Skf0i9tddQOFHh+aTYeK6OqNhRcFPraY9+Dl
+        dwMja8naUGP1YXL7jWAC6W0SEWIopC9bitP6tLy/KfCsUtvhT/sI7g3qDtZHpC9u
+        Fwu/cdgVrqzuuEXNDj3RRHRulPyBfSyzmTg2lsB8ZdsY0VBIusaaVkCt8thXSbs6
+        F5uVVvdTHHrKsrPLzI8nAuFRuZs+LFAApU7p5/OcCq/MXgY5uj7j9vO2mb2b2X32
+        141oicrSULyccntpnkb/J98Y/ZvBMNriWmDOZ29CWHf5KYctmuTmjaCGzY96IW1X
+        R8aiLiT8AeBE5N2AlRcqDeR9p029uWheW2ev2TBQvuEQ==
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+        messagingengine.com; h=cc:content-transfer-encoding:content-type
+        :date:from:in-reply-to:message-id:mime-version:references
+        :subject:to:x-me-proxy:x-me-proxy:x-me-sender:x-me-sender
+        :x-sasl-enc; s=fm1; bh=pOYd6CkHXgZyYUiNpxp7kp1OKEFH4VCsoXBLNAdAN
+        rg=; b=rQZigUUMjamVClM2aM3XlrAFpg+0bFsE0rB59G7oXBaetjjxmelffha00
+        ln7k6u9jEiKzBrbjVZ3f/s4idtw7/oxb1uqpbby0jIP+kfcmm3+wnsWUrrR8ccGJ
+        HJNFn2U5pH8QNd8OZECEb6Qd1RcNJIzJW7GN2SCL6VBDu5t8VWt+QLzAtNZxBI0D
+        GRAC5/K/4TeFe6djfuNcl5v1/IfIsYVSjf78yzypc6X67zSiIYI0hAUtz1I5Kcqr
+        fIfe1huz51SnBnmpamZd9OrieaBewOu0A1HqAp1JievaJd6uDfPYp0URneNU1Xwf
+        Na6bl/HGhVJbuEWzYTmQe8ACN5DXg==
+X-ME-Sender: <xms:im0eXhHxHx6Q20FiaON9Tq0HzyEsORJZDQWNunmCSi_pkUYYjLgwWA>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedugedrtddvgdefiecutefuodetggdotefrodftvf
+    curfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfghnecu
+    uegrihhlohhuthemuceftddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmdenuc
+    fjughrpefkuffhvfffjghftgfoggfgsehtjeertdertdejnecuhfhrohhmpehsrghmjhho
+    nhgrshcuoehsrghmsehmvghnughoiigrjhhonhgrshdrtghomheqnecuffhomhgrihhnpe
+    hophgvrhgrthhinhhgrdgtrghtnecukfhppeehgedrvdegtddrudelfedrudenucfrrghr
+    rghmpehmrghilhhfrhhomhepshgrmhesmhgvnhguohiirghjohhnrghsrdgtohhmnecuve
+    hluhhsthgvrhfuihiivgeptd
+X-ME-Proxy: <xmx:im0eXiDBJxvhMG1CS3kgnWxxZZvuTZl-6spNUzcm_d16SJKH_FHc-g>
+    <xmx:im0eXqDyYd1gaop-OHZtEYv3RIEAEIhZkERwF1ey3ojMiTf3vY7N4g>
+    <xmx:im0eXr7OHPzs3BMw0YRpOJAuTdZSUuHVOYvx0HKFn1dXOn1hwkjcEw>
+    <xmx:im0eXmHiHv2uYZJeLRevgkF5wnx9RsAhmxbWn9KwUBtrVg4nzQLlWA>
+Received: from cdg1-dhcp-7-194.amazon.fr (unknown [54.240.193.1])
+        by mail.messagingengine.com (Postfix) with ESMTPA id AD89030607B0;
+        Tue, 14 Jan 2020 20:40:24 -0500 (EST)
+Message-ID: <770869e375d49c2d5ced183e1f0466644c2be783.camel@mendozajonas.com>
+Subject: Re: [PATCH] Propagate NCSI channel carrier loss/gain events to the
+ kernel
+From:   samjonas <sam@mendozajonas.com>
+To:     Johnathan Mantey <johnathanx.mantey@intel.com>,
+        netdev@vger.kernel.org
+Cc:     davem@davemloft.net
+Date:   Tue, 14 Jan 2020 17:40:21 -0800
+In-Reply-To: <eaaa9fcf678a7d71b43c0792b559d9958e7af191.camel@mendozajonas.com>
+References: <b2ef76f2-cf4e-3d14-7436-8c66e63776ba@intel.com>
+         <20b75baf4fa6781278614162b05918dcdedd2e29.camel@mendozajonas.com>
+         <54db4c95-44a1-da74-a6d4-21d591926dbd@intel.com>
+         <eaaa9fcf678a7d71b43c0792b559d9958e7af191.camel@mendozajonas.com>
 Content-Type: text/plain; charset="UTF-8"
+X-Mailer: Evolution 3.28.5-0ubuntu0.18.04.1 
+Mime-Version: 1.0
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Jan 14, 2020 at 10:01 PM Eric Dumazet <edumazet@google.com> wrote:
->
-> I missed the fact that macvlan_broadcast() can be used both
-> in RX and TX.
->
-> skb_eth_hdr() makes only sense in TX paths, so we can not
-> use it blindly in macvlan_broadcast()
->
-> Fixes: 96cc4b69581d ("macvlan: do not assume mac_header is set in macvlan_broadcast()")
-> Signed-off-by: Eric Dumazet <edumazet@google.com>
-> Reported-by: Jurgen Van Ham <juvanham@gmail.com>
+On Tue, 2020-01-14 at 17:24 -0800, samjonas wrote:
+> On Tue, 2020-01-14 at 08:47 -0800, Johnathan Mantey wrote:
+> > Sam,
+> > 
+> > This code is working on a channel that is completely
+> > configured.  This
+> > code is covering a situation where the RJ45 cable is intentionally
+> > or
+> > mistakenly removed from a system. In the event that the network
+> > cable
+> > is
+> > removed/damaged/slips, the kernel needs to change state to show
+> > that
+> > network interface no longer has a link.  For my employers use case
+> > the
+> > loss of carrier is then added to a log of system state changes.
+> > Thus
+> > for
+> > each internal channel there needs to be a way to report that the
+> > channel
+> > has/does not have a link carrier.
+> 
+> Hi Johnathan,
+> 
+> Right, updating the carrier status for NC-SI enabled interfaces is
+> helpful for a number of use cases (DHCP, etc). At the moment this
+> will
+> only update the status after a LSC AEN appears, so on init the
+> carrier
+> status will always be "up" regardless of what's plugged into the
+> channels. Does NC-SI still behave as expected if the carrier status
+> is
+> initially set to "down"?
 
-Tested-by: Matteo Croce <mcroce@redhat.com>
+Ah I think I remember the issue with this; AFAIK netif_carrier_off()
+will stop scheduling packets for the interface. The change here should
+work for this specific case because the remote NIC will fire the LSC
+asynchronously, but it probably has the nasty side effect of stopping
+xmit for the entire local interface - ie, all packages and channels on
+this interface.
 
--- 
-Matteo Croce
-per aspera ad upstream
+With this change can you confirm that normal failover still works for
+example, or otherwise try to configure the interface after a LSC/down
+event?
+
+Thanks,
+Sam
+
+> (However if we did do that we would also need a change to set the
+> carrier status on on configuration, or for packages that don't
+> support
+> AENs).
+> 
+> Cheers,
+> Sam
+> 
+> > 
+> > On 1/13/20 4:43 PM, samjonas wrote:
+> > > On Fri, 2020-01-10 at 14:02 -0800, Johnathan Mantey wrote:
+> > > > From 76d99782ec897b010ba507895d60d27dca8dca44 Mon Sep 17
+> > > > 00:00:00
+> > > > 2001
+> > > > From: Johnathan Mantey <johnathanx.mantey@intel.com>
+> > > > Date: Fri, 10 Jan 2020 12:46:17 -0800
+> > > > Subject: [PATCH] Propagate NCSI channel carrier loss/gain
+> > > > events
+> > > > to
+> > > > the
+> > > > kernel
+> > > > 
+> > > > Problem statement:
+> > > > Insertion or removal of a network cable attached to a NCSI
+> > > > controlled
+> > > > network channel does not notify the kernel of the loss/gain of
+> > > > the
+> > > > network link.
+> > > > 
+> > > > The expectation is that /sys/class/net/eth(x)/carrier will
+> > > > change
+> > > > state after a pull/insertion event. In addition the
+> > > > carrier_up_count
+> > > > and carrier_down_count files should increment.
+> > > > 
+> > > > Change statement:
+> > > > Use the NCSI Asynchronous Event Notification handler to detect
+> > > > a
+> > > > change in a NCSI link.
+> > > > Add code to propagate carrier on/off state to the network
+> > > > interface.
+> > > > The on/off state is only modified after the existing code
+> > > > identifies
+> > > > if the network device HAD or HAS a link state change.
+> > > 
+> > > If we set the carrier state off until we successfully configured
+> > > a
+> > > channel could we avoid this limitation?
+> > > 
+> > > Cheers,
+> > > Sam
+> > > 
+> > > > 
+> > > > Test procedure:
+> > > > Connected a L2 switch with only two ports connected.
+> > > > One port was a DHCP corporate net, the other port attached to
+> > > > the
+> > > > NCSI
+> > > > controlled NIC.
+> > > > 
+> > > > Starting with the L2 switch with DC on, check to make sure the
+> > > > NCSI
+> > > > link is operating.
+> > > > cat /sys/class/net/eth1/carrier
+> > > > 1
+> > > > cat /sys/class/net/eth1/carrier_up_count
+> > > > 0
+> > > > cat /sys/class/net/eth1/carrier_down_count
+> > > > 0
+> > > > 
+> > > > Remove DC from the L2 switch, and check link state
+> > > > cat /sys/class/net/eth1/carrier
+> > > > 0
+> > > > cat /sys/class/net/eth1/carrier_up_count
+> > > > 0
+> > > > cat /sys/class/net/eth1/carrier_down_count
+> > > > 1
+> > > > 
+> > > > Restore DC to the L2 switch, and check link state
+> > > > cat /sys/class/net/eth1/carrier
+> > > > 1
+> > > > cat /sys/class/net/eth1/carrier_up_count
+> > > > 1
+> > > > cat /sys/class/net/eth1/carrier_down_count
+> > > > 1
+> > > > 
+> > > > Signed-off-by: Johnathan Mantey <johnathanx.mantey@intel.com>
+> > > > ---
+> > > >  net/ncsi/ncsi-aen.c | 6 ++++++
+> > > >  1 file changed, 6 insertions(+)
+> > > > 
+> > > > diff --git a/net/ncsi/ncsi-aen.c b/net/ncsi/ncsi-aen.c
+> > > > index b635c194f0a8..274c415dcead 100644
+> > > > --- a/net/ncsi/ncsi-aen.c
+> > > > +++ b/net/ncsi/ncsi-aen.c
+> > > > @@ -89,6 +89,12 @@ static int ncsi_aen_handler_lsc(struct
+> > > > ncsi_dev_priv
+> > > > *ndp,
+> > > >      if ((had_link == has_link) || chained)
+> > > >          return 0;
+> > > >  
+> > > > +    if (had_link) {
+> > > > +        netif_carrier_off(ndp->ndev.dev);
+> > > > +    } else {
+> > > > +        netif_carrier_on(ndp->ndev.dev);
+> > > > +    }
+> > > > +
+> > > >      if (!ndp->multi_package && !nc->package->multi_channel) {
+> > > >          if (had_link) {
+> > > >              ndp->flags |= NCSI_DEV_RESHUFFLE;
+> > 
+> > 
 
