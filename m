@@ -2,129 +2,96 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id E5A6713C86D
-	for <lists+netdev@lfdr.de>; Wed, 15 Jan 2020 16:54:01 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3549013C886
+	for <lists+netdev@lfdr.de>; Wed, 15 Jan 2020 16:56:43 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726562AbgAOPx5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 15 Jan 2020 10:53:57 -0500
-Received: from mail-pf1-f195.google.com ([209.85.210.195]:36223 "EHLO
+        id S1729015AbgAOP4i (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 15 Jan 2020 10:56:38 -0500
+Received: from mail-pf1-f195.google.com ([209.85.210.195]:46936 "EHLO
         mail-pf1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726132AbgAOPx5 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 15 Jan 2020 10:53:57 -0500
-Received: by mail-pf1-f195.google.com with SMTP id x184so8721956pfb.3;
-        Wed, 15 Jan 2020 07:53:56 -0800 (PST)
+        with ESMTP id S1726165AbgAOP4i (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 15 Jan 2020 10:56:38 -0500
+Received: by mail-pf1-f195.google.com with SMTP id n9so8695921pff.13;
+        Wed, 15 Jan 2020 07:56:38 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id;
-        bh=c/GWPQtRfN7j/bEfY+uIGMfC4b83t2OdSqf9AvElNRM=;
-        b=EwuEbm4VZGa5Yrj1M1k5z/SPIhI/TyArbfnbVrC91uJvgqCXjVIYHF5u+M5/X1rdJT
-         70gnHeB+JCcWu5W4tgZ1AO7gppBRrmPJhPzaC6T7a/sQlFkxe/ild7vt8rZ9zah7jWtE
-         Z4I7BJFOJ5+XZh33RgFyQjHfnKNYYhB++PdcLYi7aYsJK1WIJ14lZtuiYXMErVz4EPyx
-         FBnF+th9KbYbdtNpiaWd7qI+ImCzrn0S2An3ip7vWxySJWmnkbLp+PgK4KcjGJTzLKfP
-         GnRrnYuLBNwEaidccyXlPF952M7ocLNt8U1ydpR/UJMCeb1xs020494ha66/l6yU+5jS
-         K+Vg==
+        bh=HwV9sGACUDknSqn3rZRjdfv8PQfY2jtJrBDpPLg25bE=;
+        b=pfZQgYjBcjyCtn6E2E//UIWWV7YF8uAjc6ggh4p5mbPc/GNDh/t8TClwCoKqEY9iKm
+         31WcNv/TU4fwcs85/hvITBoBQwLVXKXc/pq1wY9AFtXF2yclNcKLougfpxo4Rk7HthPf
+         JKGNTLguhyvB97/Am9L/CUP3MrCj/46w4fxjcRfkXO25T4sy6vMUxLTAtfX+DvZ+ztaN
+         0TJinWp2KwiFxkOa5ztbYrQZYs73Hv1EuT6dgymCzvzr+fdm6LEZUH2G+6yYELu7EAOO
+         KM6yEegZ79mbzuNRVufVKJ2z4+wCZyjhs7MRMvV9HWkgyOvBGAQgQiMD9SVbFGb4EqZn
+         upRA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id;
-        bh=c/GWPQtRfN7j/bEfY+uIGMfC4b83t2OdSqf9AvElNRM=;
-        b=UWrGkG8Sp4FK/H64YWzWeXGaTWphFo1Va1yrdwuzC8Ux4w4hrVHrm25L7HWa3Aaynw
-         pura02OBQIzOSUFIayNO9GHhaLdgVjCVP6bGiXHZqCczurhPjVijNwC4GC8wvhiklPnX
-         BkMSOTq2V88A1brrEM8qnWDW9wVr6dPTSodemgyjuXvkxLf6+nORAAot4GrB5KYnhVXs
-         kEd66vm2JmxMjNjQHUg3epOr0/U0ho6y6wLyYOz+dxVV2A79MqibBUDwaSKB/ysxHvLu
-         TnNPtC6/jVWW1YtIc/s6QGQgZcxVIS19wP+Z7n2Je3q772cqCTS2oZSbZ8DwOuc9aXXd
-         tFBw==
-X-Gm-Message-State: APjAAAUlxARnCxjhLFD/t0zw1Vcrm22pZHtPuqbkDVP0blobqvsEtpLe
-        2Y/RCUcJXfRcFbJZGPhf7UTAjvmS
-X-Google-Smtp-Source: APXvYqyKceOTx9ZjZoes/c2uX1iezUq1hng9gL92ptSPdkUO9WPHZB3PUuC6MsV6ZBJ7g6f6sPoZEQ==
-X-Received: by 2002:aa7:8088:: with SMTP id v8mr32789472pff.142.1579103636329;
-        Wed, 15 Jan 2020 07:53:56 -0800 (PST)
-Received: from localhost (64.64.229.47.16clouds.com. [64.64.229.47])
-        by smtp.gmail.com with ESMTPSA id i66sm22664925pfg.85.2020.01.15.07.53.55
-        (version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
-        Wed, 15 Jan 2020 07:53:55 -0800 (PST)
-From:   Dejin Zheng <zhengdejin5@gmail.com>
-To:     peppe.cavallaro@st.com, alexandre.torgue@st.com,
-        joabreu@synopsys.com, davem@davemloft.net,
-        mcoquelin.stm32@gmail.com
-Cc:     netdev@vger.kernel.org, linux-stm32@st-md-mailman.stormreply.com,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        Dejin Zheng <zhengdejin5@gmail.com>
-Subject: [PATCH] net: stmmac: modified pcs mode support for RGMII
-Date:   Wed, 15 Jan 2020 23:53:23 +0800
-Message-Id: <20200115155323.15543-1-zhengdejin5@gmail.com>
+        bh=HwV9sGACUDknSqn3rZRjdfv8PQfY2jtJrBDpPLg25bE=;
+        b=b923+AWd4Tbl6fSwkJWwPGNQd+KJvHj6/EZEx5adh0wg1gk9OrL9kLT/bIj6hELgy+
+         t+cLRehQy/+d1hxYjOEnNdgR/cyWO+T4SUsgidp51lDK84zcahQ3pk3DCE+BL1lI3lG+
+         4lYmRcoR9MiOPxjLNTboDEdAF44eRBDfx1nMDIuL9ZxTSLOi5/lpZg0EWATPHOF7wiCS
+         fbG4wtVJGFmw+in8l7wH5fvQAiJqs9xReBrri4lMyVEx8PFfMzXA1jvklUlIhLUwBIg1
+         6vEVXEuR2zJbKLGUtnZ5OMd9W5crNTByJIk4oDvTBYeF96isAg8aS+9N2D5RpMhMlEa/
+         84OA==
+X-Gm-Message-State: APjAAAU/k43JoVzS1Ey5XideiIShi5rk90jd6PSPLi8SOgyR/8XwszIF
+        fq5fe5pnFKULoK2/dZiyz6IF8Md8EZc=
+X-Google-Smtp-Source: APXvYqwfBfFNxEYPBk1P4r0u33EcwZqChtsYsDBcPVXmULzU6XIoKIK5xPGRQ8bZGAylr4brUje92g==
+X-Received: by 2002:a63:4b50:: with SMTP id k16mr34152524pgl.386.1579103797712;
+        Wed, 15 Jan 2020 07:56:37 -0800 (PST)
+Received: from madhuparna-HP-Notebook.nitk.ac.in ([2402:3a80:1ee8:ed72:75ba:e01f:bdbc:c547])
+        by smtp.gmail.com with ESMTPSA id b8sm22755599pfr.64.2020.01.15.07.56.22
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 15 Jan 2020 07:56:37 -0800 (PST)
+From:   madhuparnabhowmik04@gmail.com
+To:     wei.liu@kernel.org, paul@xen.org
+Cc:     xen-devel@lists.xenproject.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, paulmck@kernel.org,
+        joel@joelfernandes.org, frextrite@gmail.com,
+        linux-kernel-mentees@lists.linuxfoundation.org,
+        Madhuparna Bhowmik <madhuparnabhowmik04@gmail.com>
+Subject: [PATCH] net: xen-netback: hash.c: Use built-in RCU list checking
+Date:   Wed, 15 Jan 2020 21:25:53 +0530
+Message-Id: <20200115155553.13471-1-madhuparnabhowmik04@gmail.com>
 X-Mailer: git-send-email 2.17.1
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-snps databook noted that physical coding sublayer (PCS) interface
-that can be used when the MAC is configured for the TBI, RTBI, or
-SGMII PHY interface. we have RGMII and SGMII in a SoC and it also
-has the PCS block. it needs stmmac_init_phy and stmmac_mdio_register
-function for initializing phy when it used RGMII interface.
+From: Madhuparna Bhowmik <madhuparnabhowmik04@gmail.com>
 
-Signed-off-by: Dejin Zheng <zhengdejin5@gmail.com>
+list_for_each_entry_rcu has built-in RCU and lock checking.
+Pass cond argument to list_for_each_entry_rcu.
+
+Signed-off-by: Madhuparna Bhowmik <madhuparnabhowmik04@gmail.com>
 ---
- .../net/ethernet/stmicro/stmmac/stmmac_main.c   | 17 ++++++-----------
- 1 file changed, 6 insertions(+), 11 deletions(-)
+ drivers/net/xen-netback/hash.c | 6 ++++--
+ 1 file changed, 4 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
-index 6f51a265459d..9778e7e0c005 100644
---- a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
-+++ b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
-@@ -387,9 +387,8 @@ bool stmmac_eee_init(struct stmmac_priv *priv)
- 	/* Using PCS we cannot dial with the phy registers at this stage
- 	 * so we do not support extra feature like EEE.
- 	 */
--	if ((priv->hw->pcs == STMMAC_PCS_RGMII) ||
--	    (priv->hw->pcs == STMMAC_PCS_TBI) ||
--	    (priv->hw->pcs == STMMAC_PCS_RTBI))
-+	if (priv->hw->pcs == STMMAC_PCS_TBI ||
-+	    priv->hw->pcs == STMMAC_PCS_RTBI)
- 		return false;
+diff --git a/drivers/net/xen-netback/hash.c b/drivers/net/xen-netback/hash.c
+index 10d580c3dea3..6b7532f7c936 100644
+--- a/drivers/net/xen-netback/hash.c
++++ b/drivers/net/xen-netback/hash.c
+@@ -51,7 +51,8 @@ static void xenvif_add_hash(struct xenvif *vif, const u8 *tag,
  
- 	/* Check if MAC core supports the EEE feature. */
-@@ -2652,8 +2651,7 @@ static int stmmac_open(struct net_device *dev)
- 	u32 chan;
- 	int ret;
+ 	found = false;
+ 	oldest = NULL;
+-	list_for_each_entry_rcu(entry, &vif->hash.cache.list, link) {
++	list_for_each_entry_rcu(entry, &vif->hash.cache.list, link,
++				lockdep_is_held(&vif->hash.cache.lock)) {
+ 		/* Make sure we don't add duplicate entries */
+ 		if (entry->len == len &&
+ 		    memcmp(entry->tag, tag, len) == 0)
+@@ -102,7 +103,8 @@ static void xenvif_flush_hash(struct xenvif *vif)
  
--	if (priv->hw->pcs != STMMAC_PCS_RGMII &&
--	    priv->hw->pcs != STMMAC_PCS_TBI &&
-+	if (priv->hw->pcs != STMMAC_PCS_TBI &&
- 	    priv->hw->pcs != STMMAC_PCS_RTBI) {
- 		ret = stmmac_init_phy(dev);
- 		if (ret) {
-@@ -4725,8 +4723,7 @@ int stmmac_dvr_probe(struct device *device,
+ 	spin_lock_irqsave(&vif->hash.cache.lock, flags);
  
- 	stmmac_check_pcs_mode(priv);
- 
--	if (priv->hw->pcs != STMMAC_PCS_RGMII  &&
--	    priv->hw->pcs != STMMAC_PCS_TBI &&
-+	if (priv->hw->pcs != STMMAC_PCS_TBI &&
- 	    priv->hw->pcs != STMMAC_PCS_RTBI) {
- 		/* MDIO bus Registration */
- 		ret = stmmac_mdio_register(ndev);
-@@ -4760,8 +4757,7 @@ int stmmac_dvr_probe(struct device *device,
- error_netdev_register:
- 	phylink_destroy(priv->phylink);
- error_phy_setup:
--	if (priv->hw->pcs != STMMAC_PCS_RGMII &&
--	    priv->hw->pcs != STMMAC_PCS_TBI &&
-+	if (priv->hw->pcs != STMMAC_PCS_TBI &&
- 	    priv->hw->pcs != STMMAC_PCS_RTBI)
- 		stmmac_mdio_unregister(ndev);
- error_mdio_register:
-@@ -4806,8 +4802,7 @@ int stmmac_dvr_remove(struct device *dev)
- 		reset_control_assert(priv->plat->stmmac_rst);
- 	clk_disable_unprepare(priv->plat->pclk);
- 	clk_disable_unprepare(priv->plat->stmmac_clk);
--	if (priv->hw->pcs != STMMAC_PCS_RGMII &&
--	    priv->hw->pcs != STMMAC_PCS_TBI &&
-+	if (priv->hw->pcs != STMMAC_PCS_TBI &&
- 	    priv->hw->pcs != STMMAC_PCS_RTBI)
- 		stmmac_mdio_unregister(ndev);
- 	destroy_workqueue(priv->wq);
+-	list_for_each_entry_rcu(entry, &vif->hash.cache.list, link) {
++	list_for_each_entry_rcu(entry, &vif->hash.cache.list, link,
++				lockdep_is_held(&vif->hash.cache.lock)) {
+ 		list_del_rcu(&entry->link);
+ 		vif->hash.cache.count--;
+ 		kfree_rcu(entry, rcu);
 -- 
 2.17.1
 
