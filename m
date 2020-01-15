@@ -2,108 +2,175 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 58EBE13CEBE
-	for <lists+netdev@lfdr.de>; Wed, 15 Jan 2020 22:19:11 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 93CB513CEC6
+	for <lists+netdev@lfdr.de>; Wed, 15 Jan 2020 22:20:07 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729971AbgAOVTG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 15 Jan 2020 16:19:06 -0500
-Received: from mail-pj1-f68.google.com ([209.85.216.68]:39600 "EHLO
-        mail-pj1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729950AbgAOVTF (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 15 Jan 2020 16:19:05 -0500
-Received: by mail-pj1-f68.google.com with SMTP id e11so504404pjt.4;
-        Wed, 15 Jan 2020 13:19:05 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:content-transfer-encoding:in-reply-to
-         :user-agent;
-        bh=Sr5D3Vmy2L4zBjOZJ4kwZ5hGeIC3RIyoZkA5ktLyrSY=;
-        b=CnNUH7zAw+/bJk6LxlmjXA0sLWhAkxwwNLCsne1NlHcoEkQygRFgZH9U10USJfcOhR
-         8T5/jg7Ly270/Aq9oDjdpfz3wA9dMAuzncMMQ+c20kO4AONHvQJq/GiFrXkVXoIlDEab
-         ITSwIntxIptfuIf3sXD3Kf+jCx5QIqGDw62NAhl1WX6uzHWEA7EynysNBzzmxNg9Qwe2
-         rWlocg/cEOxu5vjpbtyuQbf+k6s92MkR0O7atrXOfgppJMfBqn16k72wtPfvMw1vFCNh
-         h4kSp03F4vvF/ymOCVf/u5qNxHUFQ1rRH+hLvIJ9SNmFW0IE8Q5JQtf0vH1StRCRqyru
-         Ievg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:content-transfer-encoding
-         :in-reply-to:user-agent;
-        bh=Sr5D3Vmy2L4zBjOZJ4kwZ5hGeIC3RIyoZkA5ktLyrSY=;
-        b=MiNwOi5Fp/TbRIK0vyBF71FU0CK3Gwvzdhj1ZcDdQNwRVi6C4XoJydigZeQRBkuoX+
-         fdx2mLbAFm3hz0k5aTa+RTQCW6OQKmjvsvN9jQ0mIi8GCW4EFZnSiIPWeWgmdNoXqtiE
-         lqtp6i+nhwo6Quf/MaCaLF/4I/sZyWWgeF/C3Rb/1DfMzsB4d+0h2OilU5yUABZBIwWt
-         go7tGqfCQlM6L/VG/QgcqTZuBsnKHL2wl4yq1uoQYK/BPGoTep2Ca/qegIwgvUBW5bso
-         o4mWnFYVZzyCY1UzTVwwErdLNU29+0Lq0QyGlBECYEfUDMcuxYv1+d7m42W/KtZVxlkX
-         Q/9Q==
-X-Gm-Message-State: APjAAAWFi07P7Mtgj/VEc/MXISs/P6e0DJE3PcXdYP6mWeX2G+OaA9WM
-        IH3ojD32IW/7byoxr4R6O1I=
-X-Google-Smtp-Source: APXvYqzTB/kQWcNCbH6qWL8ALjnNfda6sZfEu5yGyPZ46PNXpF3lLh5Pnl9X61gJaRhkzWLyOUbcvg==
-X-Received: by 2002:a17:902:9003:: with SMTP id a3mr28071089plp.224.1579123144650;
-        Wed, 15 Jan 2020 13:19:04 -0800 (PST)
-Received: from ast-mbp.dhcp.thefacebook.com ([2620:10d:c090:200::3:e760])
-        by smtp.gmail.com with ESMTPSA id x65sm24047764pfb.171.2020.01.15.13.19.02
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Wed, 15 Jan 2020 13:19:03 -0800 (PST)
-Date:   Wed, 15 Jan 2020 13:19:02 -0800
-From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
-To:     Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
-Cc:     Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        Andrii Nakryiko <andriin@fb.com>,
-        Doug Ledford <dledford@redhat.com>,
-        Jason Gunthorpe <jgg@ziepe.ca>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <jakub.kicinski@netronome.com>,
-        Jesper Dangaard Brouer <brouer@redhat.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Ingo Molnar <mingo@redhat.com>,
-        Arnaldo Carvalho de Melo <acme@kernel.org>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
-        Jiri Olsa <jolsa@redhat.com>,
-        Namhyung Kim <namhyung@kernel.org>,
-        Shuah Khan <shuah@kernel.org>, netdev@vger.kernel.org,
-        bpf@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-rdma@vger.kernel.org, linux-kselftest@vger.kernel.org,
-        clang-built-linux@googlegroups.com
-Subject: Re: [PATCH bpf-next v2 00/10] tools: Use consistent libbpf include
- paths everywhere
-Message-ID: <20200115211900.h44pvhe57szzzymc@ast-mbp.dhcp.thefacebook.com>
-References: <157909756858.1192265.6657542187065456112.stgit@toke.dk>
+        id S1730086AbgAOVTp (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 15 Jan 2020 16:19:45 -0500
+Received: from hqnvemgate25.nvidia.com ([216.228.121.64]:11075 "EHLO
+        hqnvemgate25.nvidia.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729263AbgAOVTo (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 15 Jan 2020 16:19:44 -0500
+Received: from hqpgpgate101.nvidia.com (Not Verified[216.228.121.13]) by hqnvemgate25.nvidia.com (using TLS: TLSv1.2, DES-CBC3-SHA)
+        id <B5e1f81da0000>; Wed, 15 Jan 2020 13:19:22 -0800
+Received: from hqmail.nvidia.com ([172.20.161.6])
+  by hqpgpgate101.nvidia.com (PGP Universal service);
+  Wed, 15 Jan 2020 13:19:42 -0800
+X-PGP-Universal: processed;
+        by hqpgpgate101.nvidia.com on Wed, 15 Jan 2020 13:19:42 -0800
+Received: from [10.110.48.28] (10.124.1.5) by HQMAIL107.nvidia.com
+ (172.20.187.13) with Microsoft SMTP Server (TLS) id 15.0.1473.3; Wed, 15 Jan
+ 2020 21:19:42 +0000
+Subject: Re: [PATCH v12 04/22] mm: devmap: refactor 1-based refcounting for
+ ZONE_DEVICE pages
+To:     Christoph Hellwig <hch@infradead.org>
+CC:     Andrew Morton <akpm@linux-foundation.org>,
+        Al Viro <viro@zeniv.linux.org.uk>,
+        Alex Williamson <alex.williamson@redhat.com>,
+        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
+        =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@intel.com>,
+        Dan Williams <dan.j.williams@intel.com>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        Dave Chinner <david@fromorbit.com>,
+        David Airlie <airlied@linux.ie>,
+        "David S . Miller" <davem@davemloft.net>,
+        Ira Weiny <ira.weiny@intel.com>, Jan Kara <jack@suse.cz>,
+        Jason Gunthorpe <jgg@ziepe.ca>, Jens Axboe <axboe@kernel.dk>,
+        Jonathan Corbet <corbet@lwn.net>,
+        =?UTF-8?B?SsOpcsO0bWUgR2xpc3Nl?= <jglisse@redhat.com>,
+        "Kirill A . Shutemov" <kirill@shutemov.name>,
+        Magnus Karlsson <magnus.karlsson@intel.com>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        Michael Ellerman <mpe@ellerman.id.au>,
+        Michal Hocko <mhocko@suse.com>,
+        Mike Kravetz <mike.kravetz@oracle.com>,
+        Paul Mackerras <paulus@samba.org>,
+        Shuah Khan <shuah@kernel.org>,
+        Vlastimil Babka <vbabka@suse.cz>, <bpf@vger.kernel.org>,
+        <dri-devel@lists.freedesktop.org>, <kvm@vger.kernel.org>,
+        <linux-block@vger.kernel.org>, <linux-doc@vger.kernel.org>,
+        <linux-fsdevel@vger.kernel.org>, <linux-kselftest@vger.kernel.org>,
+        <linux-media@vger.kernel.org>, <linux-rdma@vger.kernel.org>,
+        <linuxppc-dev@lists.ozlabs.org>, <netdev@vger.kernel.org>,
+        <linux-mm@kvack.org>, LKML <linux-kernel@vger.kernel.org>,
+        Christoph Hellwig <hch@lst.de>
+References: <20200107224558.2362728-1-jhubbard@nvidia.com>
+ <20200107224558.2362728-5-jhubbard@nvidia.com>
+ <20200115152306.GA19546@infradead.org>
+X-Nvconfidentiality: public
+From:   John Hubbard <jhubbard@nvidia.com>
+Message-ID: <4707f191-86f8-db4a-c3de-0a84b415b658@nvidia.com>
+Date:   Wed, 15 Jan 2020 13:19:41 -0800
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.4.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <157909756858.1192265.6657542187065456112.stgit@toke.dk>
-User-Agent: NeoMutt/20180223
+In-Reply-To: <20200115152306.GA19546@infradead.org>
+X-Originating-IP: [10.124.1.5]
+X-ClientProxiedBy: HQMAIL105.nvidia.com (172.20.187.12) To
+ HQMAIL107.nvidia.com (172.20.187.13)
+Content-Type: text/plain; charset="utf-8"
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nvidia.com; s=n1;
+        t=1579123162; bh=GeG6npnwyerPXrXB3bHbzqY7iBJ1oGmlF7ZkUct1x7k=;
+        h=X-PGP-Universal:Subject:To:CC:References:X-Nvconfidentiality:From:
+         Message-ID:Date:User-Agent:MIME-Version:In-Reply-To:
+         X-Originating-IP:X-ClientProxiedBy:Content-Type:Content-Language:
+         Content-Transfer-Encoding;
+        b=jj9z8sItAejAXuqLJp407Y0oGvSfSmMgC2Khnl/UaD4X75Jfs+E4VVRGeSQsgj4wP
+         14n675+NVsxapYKvaJVbv9kK8eZuWxvO3Y6Z1FaTdzbTeZYm8ghKmuNIE5C0gACdNX
+         GRKd75x36rcOJr0kw/HdaVzIwMxuti46gF1ZGWWpciXiVKzpgvI3qlfJhfyWO1skXq
+         uplmy/sgWDjhYQkuOFvVaYpZjSy0ueb1q0Sh/SzXH1k9SEC0ZieDiM/hkNzj/S5EwR
+         OOf7dWtMC6wOQv1+ifMLfIwYfX7dbiwP1/6cV/7beAaEJMsZqU2lquKgjSAKnqyNBE
+         3XR6j/+C8nurA==
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Jan 15, 2020 at 03:12:48PM +0100, Toke Høiland-Jørgensen wrote:
-> The recent commit 6910d7d3867a ("selftests/bpf: Ensure bpf_helper_defs.h are
-> taken from selftests dir") broke compilation against libbpf if it is installed
-> on the system, and $INCLUDEDIR/bpf is not in the include path.
+On 1/15/20 7:23 AM, Christoph Hellwig wrote:
+...
 > 
-> Since having the bpf/ subdir of $INCLUDEDIR in the include path has never been a
-> requirement for building against libbpf before, this needs to be fixed. One
-> option is to just revert the offending commit and figure out a different way to
-> achieve what it aims for. However, this series takes a different approach:
-> Changing all in-tree users of libbpf to consistently use a bpf/ prefix in
-> #include directives for header files from libbpf.
+> I'm really not sold on this scheme.  Note that I think it is
+> particularly bad, but it also doesn't seem any better than what
+> we had before, and it introduced quite a bit more code.
+> 
 
-I don't think such approach will work in all cases.
-Consider the user installing libbpf headers into /home/somebody/include/bpf/,
-passing that path to -I and trying to build bpf progs
-that do #include "bpf_helpers.h"...
-In the current shape of libbpf everything will compile fine,
-but after patch 8 of this series the compiler will not find bpf/bpf_helper_defs.h.
-So I think we have no choice, but to revert that part of Andrii's patch.
-Note that doing #include "" for additional library headers is a common practice.
-There was nothing wrong about #include "bpf_helper_defs.h" in bpf_helpers.h.
+Hi Christoph,
+
+All by itself, yes. But the very next patch (which needs a little 
+rework for other reasons, so not included here) needs to reuse some of 
+these functions within __unpin_devmap_managed_user_page():
+
+    page_is_devmap_managed()
+    free_devmap_managed_page()
+
+That patch was posted as part of the v11 series [1], and it did this:
+
++#ifdef CONFIG_DEV_PAGEMAP_OPS
++static bool __unpin_devmap_managed_user_page(struct page *page)
++{
++	int count;
++
++	if (!page_is_devmap_managed(page))
++		return false;
++
++	count = page_ref_sub_return(page, GUP_PIN_COUNTING_BIAS);
++
++	__update_proc_vmstat(page, NR_FOLL_PIN_RETURNED, 1);
++	/*
++	 * devmap page refcounts are 1-based, rather than 0-based: if
++	 * refcount is 1, then the page is free and the refcount is
++	 * stable because nobody holds a reference on the page.
++	 */
++	if (count == 1)
++		free_devmap_managed_page(page);
++	else if (!count)
++		__put_page(page);
++
++	return true;
++}
++#else
++static bool __unpin_devmap_managed_user_page(struct page *page)
++{
++	return false;
++}
++#endif /* CONFIG_DEV_PAGEMAP_OPS */
++
++/**
++ * unpin_user_page() - release a dma-pinned page
++ * @page:            pointer to page to be released
++ *
++ * Pages that were pinned via pin_user_pages*() must be released via either
++ * unpin_user_page(), or one of the unpin_user_pages*() routines. This is so
++ * that such pages can be separately tracked and uniquely handled. In
++ * particular, interactions with RDMA and filesystems need special handling.
++ */
++void unpin_user_page(struct page *page)
++{
++	page = compound_head(page);
++
++	/*
++	 * For devmap managed pages we need to catch refcount transition from
++	 * GUP_PIN_COUNTING_BIAS to 1, when refcount reach one it means the
++	 * page is free and we need to inform the device driver through
++	 * callback. See include/linux/memremap.h and HMM for details.
++	 */
++	if (__unpin_devmap_managed_user_page(page))
++		return;
++
++	if (page_ref_sub_and_test(page, GUP_PIN_COUNTING_BIAS))
++		__put_page(page);
++
++	__update_proc_vmstat(page, NR_FOLL_PIN_RETURNED, 1);
++}
++EXPORT_SYMBOL(unpin_user_page);
+
+
+[1] https://lore.kernel.org/r/20191216222537.491123-24-jhubbard@nvidia.com  
+    [PATCH v11 23/25] mm/gup: track FOLL_PIN pages
+
+thanks,
+-- 
+John Hubbard
+NVIDIA
