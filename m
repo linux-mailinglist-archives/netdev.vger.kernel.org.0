@@ -2,184 +2,160 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 1134D13CFD5
-	for <lists+netdev@lfdr.de>; Wed, 15 Jan 2020 23:11:04 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 553E313CFDC
+	for <lists+netdev@lfdr.de>; Wed, 15 Jan 2020 23:11:07 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730354AbgAOWKJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 15 Jan 2020 17:10:09 -0500
-Received: from mail-lj1-f196.google.com ([209.85.208.196]:44192 "EHLO
-        mail-lj1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729203AbgAOWKI (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 15 Jan 2020 17:10:08 -0500
-Received: by mail-lj1-f196.google.com with SMTP id u71so20263470lje.11;
-        Wed, 15 Jan 2020 14:10:06 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=6Daw8rroguTTwo1dHrJV6J5E7u5lhzY+MHJz6rMDPfs=;
-        b=HaWMAk+v5hSFyw6J0JOYGjkt4PLXTcB9Ol0Jl+j+IvIZL05WyFamc3qXvQMrXNpga9
-         SjVedmjpkjGs2SDPZ1ZOtuiJkn9iRu8UVCrW/pmIjBROOfP+tD/3TzeEYnXoVkN43Qqr
-         55/+HApqZjT+MKrH8Ut6c//Is3EF6FCpkRfktQ+Xi2e493B6Cv426Jk7o9e00BBYT+HN
-         2qkIFKHtD0CoM1wtnjcaDwiyTWOaeIzquMRbgcEZQPNIg+kn9/K75QUxD8upDnh5BB3y
-         PL7w0Y0NbSJe+vZ1Lb4YmWtznXlTFx4kEA1lX0tROpsit/9YO1y9HWBaPjKr4RgcNZTP
-         XG1A==
+        id S1730592AbgAOWKg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 15 Jan 2020 17:10:36 -0500
+Received: from us-smtp-1.mimecast.com ([205.139.110.61]:22831 "EHLO
+        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1730335AbgAOWKe (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 15 Jan 2020 17:10:34 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1579126232;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=LWQgt+DnfJs1UobRSdbBwxSCnfmXDMiH/Jey6CvGz7s=;
+        b=OaRv6SAkpYDpRFht+xtVrulUMxOjOfz/SZykAPzpw26kCEVr16fYkXJFbHrzcq9Rjui2T/
+        yGErWNoBEbKLOMs+scxO0gnkAtL1oOCiMt11glfJelV/QcQQkrx9J2OwguJL0cxXSJsEMI
+        8Yb2AjS58/fslAcOw9nbmufS6APtZGg=
+Received: from mail-lj1-f200.google.com (mail-lj1-f200.google.com
+ [209.85.208.200]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-298-eaAD0RdtMgeOj7LGy1yliQ-1; Wed, 15 Jan 2020 17:10:31 -0500
+X-MC-Unique: eaAD0RdtMgeOj7LGy1yliQ-1
+Received: by mail-lj1-f200.google.com with SMTP id a19so4472638ljp.15
+        for <netdev@vger.kernel.org>; Wed, 15 Jan 2020 14:10:31 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=6Daw8rroguTTwo1dHrJV6J5E7u5lhzY+MHJz6rMDPfs=;
-        b=DirTicyDPfPWeE7frLvBqlOu19I7dWA28rz73WOSEO3pEVr14NH0uEFVDUomiyP52b
-         d5jBU0oRHVwdu5fOCwtCSj2E9yFdkHkKAZ2cPGVBJZfEYHonCPFYyS66WDsjqIMkPzZM
-         Smg/jr3wv9VCPS9mhZwkvd5wun8Bmm99HVbAnksvnzGIRP7qX0GpmobOv48kbAUPdqrP
-         A4aDQ08rlevj/rmlRdAeu/o8FOo9VZ7dSSAVuNs2KgIkTqUQdNkIMNdE+ckgyb2rMurF
-         y+4EgAbsxEQk6ohkocGmYyLvhYWMqYo6aMU7svwfXCZxz9o1Zj6C5ngeDHlIGvXMZoDN
-         SfKQ==
-X-Gm-Message-State: APjAAAUoOszcL8WwpzyCn3HzrlJv03Fnou8cZH30qgUCUZgCFMr9leiS
-        qHcXa9eG6BeZlPb9XNQJwXTgo+ufwyhKgW0ZEl0=
-X-Google-Smtp-Source: APXvYqzuZcfQxHGqhbLZO8OFGaRgCwwVeLpLhbttjmN5MCmZQ7M5gG+m4GAyZTXAUYjnlw0peH/6IJO+on+P/qQNe2s=
-X-Received: by 2002:a2e:b55c:: with SMTP id a28mr311117ljn.260.1579126205990;
- Wed, 15 Jan 2020 14:10:05 -0800 (PST)
-MIME-Version: 1.0
-References: <20200115184308.162644-1-brianvv@google.com> <0ed19302-a43c-c04e-110e-eb1f0a72146f@fb.com>
-In-Reply-To: <0ed19302-a43c-c04e-110e-eb1f0a72146f@fb.com>
-From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Date:   Wed, 15 Jan 2020 14:09:54 -0800
-Message-ID: <CAADnVQK5sBx7PFwqMGZi_6+6xFZQoE9deTujL4ewNBQzOi1q6Q@mail.gmail.com>
-Subject: Re: [PATCH v5 bpf-next 0/9] add bpf batch ops to process more than 1 elem
-To:     Yonghong Song <yhs@fb.com>
-Cc:     Brian Vazquez <brianvv@google.com>,
-        Brian Vazquez <brianvv.kernel@gmail.com>,
-        Alexei Starovoitov <ast@kernel.org>,
+        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
+         :message-id:mime-version:content-transfer-encoding;
+        bh=LWQgt+DnfJs1UobRSdbBwxSCnfmXDMiH/Jey6CvGz7s=;
+        b=fgkusnjX4PDW/81HjZm5NT/+zl9cKcJKYiRlWQhyy2xyfeq69ml/9NOkS88RRkWt7b
+         PmP0x3Mc+t++nnYIwqoS9hFQAhp/J84iGRKUyCUApxnojL7MUEZPwmLCElmAogbOq9rb
+         soM3P8GV+yYUhzNObctjOQ7T8j6oyRIMxX02r+3GsU63sY9Cn2ci9UQOvq6655CKC2N0
+         CKyKjG24EYksQGWLSWmVYTCNNq7kfqPnPSvsPJEa9p52UhBV4U5Z0ovmHiH9mnWO3Bcf
+         dNwDHcOoh9EE09Y32pm0eFCAOugHSTWuC4FlnS+zMvall8+ryN4qp0uL8qfkgYCShITD
+         ZwXA==
+X-Gm-Message-State: APjAAAVAf7Z8HE4XW47t3U824+FZDcvD7YENCSAIKPaI4Tiu67tCStnx
+        Dm7ZWtmlIx2hdJ+vfkFEUCEdFJQ6DQasQaV+Yb5tAcW89E+qF5cjXAC4nl14Bx7z20T8zNcGIjg
+        BJeoHqmjBI33rKAOb
+X-Received: by 2002:a05:651c:102c:: with SMTP id w12mr309557ljm.53.1579126230182;
+        Wed, 15 Jan 2020 14:10:30 -0800 (PST)
+X-Google-Smtp-Source: APXvYqwrMe2Yt2YfYiFKeLwwCIZhiM2ePXslA9DkgAL9gm4Pt7dVBs/ecmLwBp5r7JQsjiefGPMruw==
+X-Received: by 2002:a05:651c:102c:: with SMTP id w12mr309523ljm.53.1579126229909;
+        Wed, 15 Jan 2020 14:10:29 -0800 (PST)
+Received: from alrua-x1.borgediget.toke.dk ([2a0c:4d80:42:443::2])
+        by smtp.gmail.com with ESMTPSA id y1sm9734405ljm.12.2020.01.15.14.10.29
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 15 Jan 2020 14:10:29 -0800 (PST)
+Received: by alrua-x1.borgediget.toke.dk (Postfix, from userid 1000)
+        id A09761804D6; Wed, 15 Jan 2020 23:10:28 +0100 (CET)
+From:   Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
+To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Cc:     Alexei Starovoitov <ast@kernel.org>,
         Daniel Borkmann <daniel@iogearbox.net>,
-        "David S . Miller" <davem@davemloft.net>,
-        Andrii Nakryiko <andrii.nakryiko@gmail.com>,
-        Stanislav Fomichev <sdf@google.com>,
-        Petar Penkov <ppenkov@google.com>,
-        Willem de Bruijn <willemb@google.com>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "bpf@vger.kernel.org" <bpf@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        Andrii Nakryiko <andriin@fb.com>,
+        Doug Ledford <dledford@redhat.com>,
+        Jason Gunthorpe <jgg@ziepe.ca>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <jakub.kicinski@netronome.com>,
+        Jesper Dangaard Brouer <brouer@redhat.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Ingo Molnar <mingo@redhat.com>,
+        Arnaldo Carvalho de Melo <acme@kernel.org>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
+        Jiri Olsa <jolsa@redhat.com>,
+        Namhyung Kim <namhyung@kernel.org>,
+        Shuah Khan <shuah@kernel.org>,
+        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        open list <linux-kernel@vger.kernel.org>,
+        linux-rdma@vger.kernel.org,
+        "open list\:KERNEL SELFTEST FRAMEWORK" 
+        <linux-kselftest@vger.kernel.org>,
+        clang-built-linux@googlegroups.com
+Subject: Re: [PATCH bpf-next v2 00/10] tools: Use consistent libbpf include paths everywhere
+In-Reply-To: <CAEf4Bza+dNoD7HbVQGtXBq=raz4DQg0yTShKZHRbCo+zHYfoSA@mail.gmail.com>
+References: <157909756858.1192265.6657542187065456112.stgit@toke.dk> <CAEf4Bza+dNoD7HbVQGtXBq=raz4DQg0yTShKZHRbCo+zHYfoSA@mail.gmail.com>
+X-Clacks-Overhead: GNU Terry Pratchett
+Date:   Wed, 15 Jan 2020 23:10:28 +0100
+Message-ID: <87o8v4tlpn.fsf@toke.dk>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Jan 15, 2020 at 12:13 PM Yonghong Song <yhs@fb.com> wrote:
->
->
->
-> On 1/15/20 10:42 AM, Brian Vazquez wrote:
-> > This patch series introduce batch ops that can be added to bpf maps to
-> > lookup/lookup_and_delete/update/delete more than 1 element at the time,
-> > this is specially useful when syscall overhead is a problem and in case
-> > of hmap it will provide a reliable way of traversing them.
-> >
-> > The implementation inclues a generic approach that could potentially be
-> > used by any bpf map and adds it to arraymap, it also includes the specific
-> > implementation of hashmaps which are traversed using buckets instead
-> > of keys.
-> >
-> > The bpf syscall subcommands introduced are:
-> >
-> >    BPF_MAP_LOOKUP_BATCH
-> >    BPF_MAP_LOOKUP_AND_DELETE_BATCH
-> >    BPF_MAP_UPDATE_BATCH
-> >    BPF_MAP_DELETE_BATCH
-> >
-> > The UAPI attribute is:
-> >
-> >    struct { /* struct used by BPF_MAP_*_BATCH commands */
-> >           __aligned_u64   in_batch;       /* start batch,
-> >                                            * NULL to start from beginning
-> >                                            */
-> >           __aligned_u64   out_batch;      /* output: next start batch */
-> >           __aligned_u64   keys;
-> >           __aligned_u64   values;
-> >           __u32           count;          /* input/output:
-> >                                            * input: # of key/value
-> >                                            * elements
-> >                                            * output: # of filled elements
-> >                                            */
-> >           __u32           map_fd;
-> >           __u64           elem_flags;
-> >           __u64           flags;
-> >    } batch;
-> >
-> >
-> > in_batch and out_batch are only used for lookup and lookup_and_delete since
-> > those are the only two operations that attempt to traverse the map.
-> >
-> > update/delete batch ops should provide the keys/values that user wants
-> > to modify.
-> >
-> > Here are the previous discussions on the batch processing:
-> >   - https://lore.kernel.org/bpf/20190724165803.87470-1-brianvv@google.com/
-> >   - https://lore.kernel.org/bpf/20190829064502.2750303-1-yhs@fb.com/
-> >   - https://lore.kernel.org/bpf/20190906225434.3635421-1-yhs@fb.com/
-> >
-> > Changelog sinve v4:
-> >   - Remove unnecessary checks from libbpf API (Andrii Nakryiko)
-> >   - Move DECLARE_LIBBPF_OPTS with all var declarations (Andrii Nakryiko)
-> >   - Change bucket internal buffer size to 5 entries (Yonghong Song)
-> >   - Fix some minor bugs in hashtab batch ops implementation (Yonghong Song)
-> >
-> > Changelog sinve v3:
-> >   - Do not use copy_to_user inside atomic region (Yonghong Song)
-> >   - Use _opts approach on libbpf APIs (Andrii Nakryiko)
-> >   - Drop generic_map_lookup_and_delete_batch support
-> >   - Free malloc-ed memory in tests (Yonghong Song)
-> >   - Reverse christmas tree (Yonghong Song)
-> >   - Add acked labels
-> >
-> > Changelog sinve v2:
-> >   - Add generic batch support for lpm_trie and test it (Yonghong Song)
-> >   - Use define MAP_LOOKUP_RETRIES for retries (John Fastabend)
-> >   - Return errors directly and remove labels (Yonghong Song)
-> >   - Insert new API functions into libbpf alphabetically (Yonghong Song)
-> >   - Change hlist_nulls_for_each_entry_rcu to
-> >     hlist_nulls_for_each_entry_safe in htab batch ops (Yonghong Song)
-> >
-> > Changelog since v1:
-> >   - Fix SOB ordering and remove Co-authored-by tag (Alexei Starovoitov)
-> >
-> > Changelog since RFC:
-> >   - Change batch to in_batch and out_batch to support more flexible opaque
-> >     values to iterate the bpf maps.
-> >   - Remove update/delete specific batch ops for htab and use the generic
-> >     implementations instead.
-> >
-> > Brian Vazquez (5):
-> >    bpf: add bpf_map_{value_size,update_value,map_copy_value} functions
-> >    bpf: add generic support for lookup batch op
-> >    bpf: add generic support for update and delete batch ops
-> >    bpf: add lookup and update batch ops to arraymap
-> >    selftests/bpf: add batch ops testing to array bpf map
-> >
-> > Yonghong Song (4):
-> >    bpf: add batch ops to all htab bpf map
-> >    tools/bpf: sync uapi header bpf.h
-> >    libbpf: add libbpf support to batch ops
-> >    selftests/bpf: add batch ops testing for htab and htab_percpu map
-> >
-> >   include/linux/bpf.h                           |  18 +
-> >   include/uapi/linux/bpf.h                      |  21 +
-> >   kernel/bpf/arraymap.c                         |   2 +
-> >   kernel/bpf/hashtab.c                          | 264 +++++++++
-> >   kernel/bpf/syscall.c                          | 554 ++++++++++++++----
-> >   tools/include/uapi/linux/bpf.h                |  21 +
-> >   tools/lib/bpf/bpf.c                           |  58 ++
-> >   tools/lib/bpf/bpf.h                           |  22 +
-> >   tools/lib/bpf/libbpf.map                      |   4 +
-> >   .../bpf/map_tests/array_map_batch_ops.c       | 129 ++++
-> >   .../bpf/map_tests/htab_map_batch_ops.c        | 283 +++++++++
-> >   11 files changed, 1248 insertions(+), 128 deletions(-)
-> >   create mode 100644 tools/testing/selftests/bpf/map_tests/array_map_batch_ops.c
-> >   create mode 100644 tools/testing/selftests/bpf/map_tests/htab_map_batch_ops.c
->
-> Thanks for the work! LGTM. Ack for the whole series.
->
-> Acked-by: Yonghong Song <yhs@fb.com>
+Andrii Nakryiko <andrii.nakryiko@gmail.com> writes:
 
-Applied. Thanks!
+> On Wed, Jan 15, 2020 at 6:13 AM Toke H=C3=B8iland-J=C3=B8rgensen <toke@re=
+dhat.com> wrote:
+>>
+>> The recent commit 6910d7d3867a ("selftests/bpf: Ensure bpf_helper_defs.h=
+ are
+>> taken from selftests dir") broke compilation against libbpf if it is ins=
+talled
+>> on the system, and $INCLUDEDIR/bpf is not in the include path.
+>>
+>> Since having the bpf/ subdir of $INCLUDEDIR in the include path has neve=
+r been a
+>> requirement for building against libbpf before, this needs to be fixed. =
+One
+>> option is to just revert the offending commit and figure out a different=
+ way to
+>> achieve what it aims for. However, this series takes a different approac=
+h:
+>> Changing all in-tree users of libbpf to consistently use a bpf/ prefix in
+>> #include directives for header files from libbpf.
+>>
+>> This turns out to be a somewhat invasive change in the number of files t=
+ouched;
+>> however, the actual changes to files are fairly trivial (most of them ar=
+e simply
+>> made with 'sed'). Also, this approach has the advantage that it makes ex=
+ternal
+>> and internal users consistent with each other, and ensures no future cha=
+nges
+>> breaks things in the same way as the commit referenced above.
+>>
+>> The series is split to make the change for one tool subdir at a time, wh=
+ile
+>> trying not to break the build along the way. It is structured like this:
+>>
+>> - Patch 1-2: Trivial fixes to Makefiles for issues I discovered while ch=
+anging
+>>   the include paths.
+>>
+>> - Patch 3-7: Change the include directives to use the bpf/ prefix, and u=
+pdates
+>>   Makefiles to make sure tools/lib/ is part of the include path, but wit=
+hout
+>>   removing tools/lib/bpf
+>>
+>> - Patch 8: Change the bpf_helpers file in libbpf itself to use the bpf/ =
+prefix
+>>   when including (the original source of breakage).
+>>
+>> - Patch 9-10: Remove tools/lib/bpf from include paths to make sure we do=
+n't
+>>   inadvertently re-introduce includes without the bpf/ prefix.
+>>
+>> ---
+>
+> Thanks, Toke, for this clean up! I tested it locally for my set up:
+> runqslower, bpftool, libbpf, and selftests all build fine, so it looks
+> good. My only concern is with selftests/bpf Makefile, we shouldn't
+> build anything outside of selftests/bpf. Let's fix that. Thanks!
+
+Great, thanks for testing! I'll fix up your comments (and Alexei's) and
+submit another version tomorrow.
+
+-Toke
+
