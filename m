@@ -2,117 +2,116 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 1D4C113B93D
-	for <lists+netdev@lfdr.de>; Wed, 15 Jan 2020 06:57:32 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id AF99313B942
+	for <lists+netdev@lfdr.de>; Wed, 15 Jan 2020 06:57:34 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726574AbgAOFzC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 15 Jan 2020 00:55:02 -0500
-Received: from mx0b-00082601.pphosted.com ([67.231.153.30]:4652 "EHLO
+        id S1726088AbgAOF42 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 15 Jan 2020 00:56:28 -0500
+Received: from mx0b-00082601.pphosted.com ([67.231.153.30]:17234 "EHLO
         mx0b-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1725962AbgAOFzC (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 15 Jan 2020 00:55:02 -0500
+        by vger.kernel.org with ESMTP id S1725999AbgAOF42 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 15 Jan 2020 00:56:28 -0500
 Received: from pps.filterd (m0109331.ppops.net [127.0.0.1])
-        by mx0a-00082601.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 00F5rFoA004450;
-        Tue, 14 Jan 2020 21:54:46 -0800
+        by mx0a-00082601.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 00F5rGg5004499;
+        Tue, 14 Jan 2020 21:56:14 -0800
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
  : date : message-id : references : in-reply-to : content-type : content-id
  : content-transfer-encoding : mime-version; s=facebook;
- bh=Ij/W9DYkJUSTSB9MLCAizmBwd0hL39uU3HtxIrjMt1E=;
- b=X7cZeXU8dyVpAP+CmGe8V4HpMFBVtAX3UUI6uo8m+59QWbbwpyTStbl1SklSe9EZ+pLO
- omTvfa86nS0OqeLexFgfa+blLIO6NgOqtcMLj5aU4myV+cg080VIL85SXvVP7GJDr7Lk
- f7H/UAs1/0gQuvBczSzanfJbhmwl/ggFqx8= 
+ bh=zJ0oOBf9uLQbHKC4/0it0OjJL7n+Y079cwhFFUnlZ/U=;
+ b=dusOYn/VueZsO9gPa+B7fSqJ2nHM2tVwt7+s/bCiJfq/s+k1n0OJYeoG1DJMNpU+rzzf
+ dM+yzur7yCNUBFnwDVwclF7j/clBj7EcANtwcoZiraSgAE0Afuse/wWH3vPJujxkCMSK
+ he0DeLWoYkwFIbo7/sSiNnp9DNbzO5oLCVc= 
 Received: from maileast.thefacebook.com ([163.114.130.16])
-        by mx0a-00082601.pphosted.com with ESMTP id 2xhaj2dafc-1
+        by mx0a-00082601.pphosted.com with ESMTP id 2xhaj2damd-1
         (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
-        Tue, 14 Jan 2020 21:54:45 -0800
+        Tue, 14 Jan 2020 21:56:14 -0800
 Received: from NAM04-BN3-obe.outbound.protection.outlook.com (100.104.31.183)
- by o365-in.thefacebook.com (100.104.36.102) with Microsoft SMTP Server
+ by o365-in.thefacebook.com (100.104.36.103) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.1713.5; Tue, 14 Jan 2020 21:54:12 -0800
+ 15.1.1713.5; Tue, 14 Jan 2020 21:56:13 -0800
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=nA6eNONXfNCeTdEJ4rFxuqx9gENrpPUVOAFYkpjddRWPzZ1/srwv8PARn5LYhoG8io3sclAAflBs79ZK4LUoStlCjV0v+l3o/8fHonGZZYuxXBwV4gYZA2hf+sHBIK/vilGnmQ3vTzKatmy5cZ8jX7PjZKwuOU0QyMw/rL/ZPmNoBWkAKTPfkWBZ2ABCvxIPkd1xNP2McN0UegqKv9366YVfTne5+f735gECiR00vUAVs4gDYFfygwRhc420FKaiwuPwTSyo8Z2SH0NqBJzgmHS3gb8kVYuvp7rcxRirYf96Yj2WRssUVwNJdQnzpT4CHA/3fClWrgh2Geb6lnYduA==
+ b=TnTmG7Bx5I4rMM2clNCY4PUnAx4ir7aOQn8S7NUXMJFKTD8UKpNL9F2zZfQrPtM0Nzzm8o67aZVfqETTrL7opFf3wBep52zy8g3m183gzjjQz/8kfqf2HWzPZ6HBlI899Ut2wZSV9xebBcKF06ARLzQdVkUfEWuF9Juh0lo1i8fNuwO8SiQRoeh00PoZ3BRZajYIde3S5OTK/SMKjRTRrPgybpSws+UNz/ILypFE3Q8DD3IN8P7NrUiG9NSBXhL5PRqvwZ5POc1rF5rW4V4dNPF02unImjwpXApIxWh5LRZ17qLz6tZglB4B9n56oph1/7WpdECFNz+hJIzsAWGSmQ==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=Ij/W9DYkJUSTSB9MLCAizmBwd0hL39uU3HtxIrjMt1E=;
- b=XwZXgexdnn9WDZLV9itJ33Bo/wfQJHE47QWMPjGxbOKW6gLWvNFeGYcplAYMDLHFMyDFw5KIIOEDdghUP/X195mip9QxOJ0i2HuFmlibBvmxyIZxHFbT6tyje/m5HOwLu+eIwYY9hAYvjfJ3XYBn0yld2tnK4TeDGH5xlaEVtVjoQb7uMQWyLRctXSIRLbNcwBGkZqC1z9yuZazM7mMtlfiNyzGYAkY+SOU9p9xbrKUBJAMg/oNEInQ1HR2Kh8JD13BhMrUvOsb35KsbUA4VYsk5pV5t+D05sYEAmQ65W6mKTuotSpQr/2767kCLvvIp4ATIl639c2bL0LmBReq0Jw==
+ bh=zJ0oOBf9uLQbHKC4/0it0OjJL7n+Y079cwhFFUnlZ/U=;
+ b=cj8esaiZfguzBDPtYetJAfLXBhIr0riea1W7gysPm55Nv03swwzfCUFiW+t1HW/IoZWDQJb6DU/e5HOpsWX6mIVAkBirkWntzGhyva+teWR5e/HMY7kxOyeJ6MSJl+EIkWx7Vr8aIS2PpBlQqbYJunHqUmiDfjzq28ZIPNkMhKyF0Ein62Z8eLmbFI7dzlgu5Gufsa5119atIYHpMx1SYrGgsg2w6t2gmeLWtbzsQz3DCAvNWnIOclTeqv2U1Sxr3udsVL17iitAJh0N/Dw1Sz/6KTVx0Tdr56zWQcbWlabVBHY4Jumt/I6OTDvBM02xXiarDOchy6KJkasoMxW5pQ==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=fb.com; dmarc=pass action=none header.from=fb.com; dkim=pass
  header.d=fb.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.onmicrosoft.com;
  s=selector2-fb-onmicrosoft-com;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=Ij/W9DYkJUSTSB9MLCAizmBwd0hL39uU3HtxIrjMt1E=;
- b=XiEMRXrKKzfzC3djfY31TYOQHiMM5kEW9yn1/QKOzaIlP3/7WcbAWinX8XnVAtIuGt4s1m4R5ZRi8H9YepI9pFprlf36QVTcKjuY4T0KUG0lyQUxwVGH2YqiCFWbO9c4BlokwVkciY6FPXJ9SqM9E+1VHExjGiLJE/2r0NTSX5I=
+ bh=zJ0oOBf9uLQbHKC4/0it0OjJL7n+Y079cwhFFUnlZ/U=;
+ b=hwBVFgdMuWOhhB7wUoiNGFW7L/ML7wUV98vXMFzQMxGMO7QQzu0P3ZCTMkIpdjpve8t9S3ojkl6n1u61wa+Ke7CcZ6iA7E6Jxze0r6F2vOBBLTS1aQdUY4jSXqJX9G3ZvE/d+V9TcDdOycXvks6wTwfXASe7Dv8Njruh6GTSh74=
 Received: from MN2PR15MB3213.namprd15.prod.outlook.com (20.179.21.76) by
  MN2PR15MB2848.namprd15.prod.outlook.com (20.178.252.32) with Microsoft SMTP
  Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.2623.9; Wed, 15 Jan 2020 05:54:11 +0000
+ 15.20.2623.9; Wed, 15 Jan 2020 05:56:12 +0000
 Received: from MN2PR15MB3213.namprd15.prod.outlook.com
  ([fe80::6d1e:f2f7:d36:a42f]) by MN2PR15MB3213.namprd15.prod.outlook.com
  ([fe80::6d1e:f2f7:d36:a42f%4]) with mapi id 15.20.2623.017; Wed, 15 Jan 2020
- 05:54:11 +0000
-Received: from kafai-mbp.dhcp.thefacebook.com (2620:10d:c090:180::55) by MWHPR1601CA0003.namprd16.prod.outlook.com (2603:10b6:300:da::13) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.2623.10 via Frontend Transport; Wed, 15 Jan 2020 05:54:09 +0000
+ 05:56:12 +0000
+Received: from kafai-mbp.dhcp.thefacebook.com (2620:10d:c090:180::55) by MWHPR11CA0021.namprd11.prod.outlook.com (2603:10b6:301:1::31) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.2623.10 via Frontend Transport; Wed, 15 Jan 2020 05:56:10 +0000
 From:   Martin Lau <kafai@fb.com>
 To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
 CC:     bpf <bpf@vger.kernel.org>, Alexei Starovoitov <ast@kernel.org>,
         "Daniel Borkmann" <daniel@iogearbox.net>,
         David Miller <davem@davemloft.net>,
         "Kernel Team" <Kernel-team@fb.com>,
-        Networking <netdev@vger.kernel.org>,
-        Paul Chaignon <paul.chaignon@orange.com>
-Subject: Re: [PATCH bpf-next 2/5] bpftool: Fix missing BTF output for json
- during map dump
-Thread-Topic: [PATCH bpf-next 2/5] bpftool: Fix missing BTF output for json
- during map dump
-Thread-Index: AQHVy0P5xF36K3hBaUidJRp0rwj8+KfrOdwA
-Date:   Wed, 15 Jan 2020 05:54:11 +0000
-Message-ID: <20200115055406.gsouajufdzussm6e@kafai-mbp.dhcp.thefacebook.com>
+        Networking <netdev@vger.kernel.org>
+Subject: Re: [PATCH bpf-next 3/5] libbpf: Expose bpf_find_kernel_btf to
+ libbpf_internal.h
+Thread-Topic: [PATCH bpf-next 3/5] libbpf: Expose bpf_find_kernel_btf to
+ libbpf_internal.h
+Thread-Index: AQHVy0VKApD4lsQFrEyp1aVQzbhgSafrOmqA
+Date:   Wed, 15 Jan 2020 05:56:12 +0000
+Message-ID: <20200115055607.x54orahytzq5siuk@kafai-mbp.dhcp.thefacebook.com>
 References: <20200114224358.3027079-1-kafai@fb.com>
- <20200114224406.3027562-1-kafai@fb.com>
- <CAEf4BzbrcKLKvgKY+nSxV22T2nHgucmB2N01bEQiXS+g7npQfw@mail.gmail.com>
-In-Reply-To: <CAEf4BzbrcKLKvgKY+nSxV22T2nHgucmB2N01bEQiXS+g7npQfw@mail.gmail.com>
+ <20200114224412.3028054-1-kafai@fb.com>
+ <CAEf4BzYOjgCbbr_zofZcGMiJj=fpH5JMBbL=jZqD5KXzYjmahA@mail.gmail.com>
+In-Reply-To: <CAEf4BzYOjgCbbr_zofZcGMiJj=fpH5JMBbL=jZqD5KXzYjmahA@mail.gmail.com>
 Accept-Language: en-US
 Content-Language: en-US
 X-MS-Has-Attach: 
 X-MS-TNEF-Correlator: 
-x-clientproxiedby: MWHPR1601CA0003.namprd16.prod.outlook.com
- (2603:10b6:300:da::13) To MN2PR15MB3213.namprd15.prod.outlook.com
+x-clientproxiedby: MWHPR11CA0021.namprd11.prod.outlook.com
+ (2603:10b6:301:1::31) To MN2PR15MB3213.namprd15.prod.outlook.com
  (2603:10b6:208:3d::12)
 x-ms-exchange-messagesentrepresentingtype: 1
 x-originating-ip: [2620:10d:c090:180::55]
 x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: b2e34f9a-e3c9-4d21-6823-08d7997f57c4
+x-ms-office365-filtering-correlation-id: ff826070-436e-46e0-47eb-08d7997fa023
 x-ms-traffictypediagnostic: MN2PR15MB2848:
 x-ms-exchange-transport-forked: True
-x-microsoft-antispam-prvs: <MN2PR15MB2848578959D3951D1D7F227AD5370@MN2PR15MB2848.namprd15.prod.outlook.com>
+x-microsoft-antispam-prvs: <MN2PR15MB28485CADBA562995EFEFAB2BD5370@MN2PR15MB2848.namprd15.prod.outlook.com>
 x-fb-source: Internal
 x-ms-oob-tlc-oobclassifiers: OLM:8882;
 x-forefront-prvs: 02830F0362
-x-forefront-antispam-report: SFV:NSPM;SFS:(10019020)(366004)(396003)(376002)(346002)(39860400002)(136003)(189003)(199004)(81156014)(8676002)(81166006)(1076003)(66446008)(8936002)(16526019)(66476007)(66556008)(64756008)(54906003)(186003)(66946007)(4326008)(5660300002)(6506007)(86362001)(6666004)(6916009)(2906002)(71200400001)(478600001)(9686003)(7696005)(52116002)(55016002)(53546011)(316002);DIR:OUT;SFP:1102;SCL:1;SRVR:MN2PR15MB2848;H:MN2PR15MB3213.namprd15.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;MX:1;A:1;
+x-forefront-antispam-report: SFV:NSPM;SFS:(10019020)(366004)(396003)(376002)(346002)(39860400002)(136003)(189003)(199004)(81156014)(8676002)(81166006)(1076003)(66446008)(8936002)(16526019)(66476007)(66556008)(64756008)(54906003)(186003)(66946007)(4326008)(5660300002)(6506007)(86362001)(6916009)(2906002)(71200400001)(478600001)(9686003)(7696005)(52116002)(55016002)(53546011)(316002);DIR:OUT;SFP:1102;SCL:1;SRVR:MN2PR15MB2848;H:MN2PR15MB3213.namprd15.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;MX:1;A:1;
 received-spf: None (protection.outlook.com: fb.com does not designate
  permitted sender hosts)
 x-ms-exchange-senderadcheck: 1
 x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: J23I6CC0+ugn//zF1rwt3txoE11zw7ODKRh3NMUpm8HneQmYMyoBLxbLtjq7RBMPrdm27gQxCv3bzG+V+FeZGdjwvIAC7iNX8o7iMS4qx3TYSXgPuZwbCfUFHF/IKrKze+Ej+2gViJ0r6kWnivGV9GP3x6vHsxoQEZc2GVheGaixyPUavVHlmUwCK5wFmSy15QNwHNEf1pb39BrxUDiXXHSKyllI5QaXbgi0yUiWkBUdmX4wxOJrK9uDbaohGj8Bo1Kfl7/l54c3w+gk/bMtgwPNeXjK3cy5++30F4wQqR7hxH45T7LAML8bcFB26HhxkXZkwifpIgIAf+kcSlQhikXryfoGmxKPzk5e2Wat0sJ7inPQIIr6Cqqr2CNGy7mJ9XLF9Ijwk8WjK+ddIPSirzz6flu8Cgo01JhzSMRSsg67QS+mykwekf7ENLSLTLsV
+x-microsoft-antispam-message-info: vm8dOvrFmll0m1BKF3WQas0Qp7kH3P0PvHb83dMnOwWH3Ommhn240WTz0KK43c74twiBYkGyf+Y9kxz8juefQDy5vetDciSjvPVWYj9ap2eZDkDGBchawoz0JE0YomX5+ki19BrJ8zPBu2DsWpsNSRB0+NX3w5gsIOzSwqErj+6SOUC73sL2FKoxzs9yxqNv0vWeNNSVPEvUacVZEfbNysi0r0XFIQWj5WpM7VrmevJrHQ1jDpo2eZd9LypdgI2oQTD1x6T+tRGpwQqUGclK4OIniHsNREHW4EkS7AvOJ2R4tpCDWxD3Pu8ob0Lwj9b6MfdFt+4MuyEySuQ6qSE4kYJOfArZXGbGJpq+633xCs4OpQaO/xyb1sut6dSQuB4YHkdITxBFcrg8Aw7w8oggbob+E1TvN4pLClBVfEM6Bkv/YRGGpO3/S3t6ZgMW3rnb
 Content-Type: text/plain; charset="us-ascii"
-Content-ID: <AD00A787DEF52347A8C3170DBDC06E4F@namprd15.prod.outlook.com>
+Content-ID: <43E01CBE45AC8A4882563133C90206EA@namprd15.prod.outlook.com>
 Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-X-MS-Exchange-CrossTenant-Network-Message-Id: b2e34f9a-e3c9-4d21-6823-08d7997f57c4
-X-MS-Exchange-CrossTenant-originalarrivaltime: 15 Jan 2020 05:54:11.1348
+X-MS-Exchange-CrossTenant-Network-Message-Id: ff826070-436e-46e0-47eb-08d7997fa023
+X-MS-Exchange-CrossTenant-originalarrivaltime: 15 Jan 2020 05:56:12.6265
  (UTC)
 X-MS-Exchange-CrossTenant-fromentityheader: Hosted
 X-MS-Exchange-CrossTenant-id: 8ae927fe-1255-47a7-a2af-5f3a069daaa2
 X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: tlAVKegAd8jtXtA/L8SYLABpFuQe3UsH+0XlDzbM3cBosamdw145EBJ/zBreRK26
+X-MS-Exchange-CrossTenant-userprincipalname: nSVtrCypge0m6+ZA/Xmjqx3GO0x/GlNIpQIkYWl2yvYLyPewUvgghKPkU/D/Rli2
 X-MS-Exchange-Transport-CrossTenantHeadersStamped: MN2PR15MB2848
 X-OriginatorOrg: fb.com
 X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.138,18.0.572
  definitions=2020-01-14_06:2020-01-14,2020-01-14 signatures=0
 X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 suspectscore=0
  bulkscore=0 impostorscore=0 mlxscore=0 phishscore=0 clxscore=1015
- mlxlogscore=721 priorityscore=1501 lowpriorityscore=0 spamscore=0
+ mlxlogscore=504 priorityscore=1501 lowpriorityscore=0 spamscore=0
  adultscore=0 malwarescore=0 classifier=spam adjust=0 reason=mlx
  scancount=1 engine=8.12.0-1910280000 definitions=main-2001150047
 X-FB-Internal: deliver
@@ -121,80 +120,32 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Jan 14, 2020 at 05:34:33PM -0800, Andrii Nakryiko wrote:
-> On Tue, Jan 14, 2020 at 2:45 PM Martin KaFai Lau <kafai@fb.com> wrote:
+On Tue, Jan 14, 2020 at 05:43:58PM -0800, Andrii Nakryiko wrote:
+> On Tue, Jan 14, 2020 at 2:44 PM Martin KaFai Lau <kafai@fb.com> wrote:
 > >
-> > The btf availability check is only done for plain text output.
-> > It causes the whole BTF output went missing when json_output
-> > is used.
+> > This patch exposes bpf_find_kernel_btf() to libbpf_internal.h.
+> > It will be used in 'bpftool map dump' in a following patch
+> > to dump a map with btf_vmlinux_value_type_id set.
 > >
-> > This patch simplifies the logic a little by avoiding passing "int btf" =
-to
-> > map_dump().
-> >
-> > For plain text output, the btf_wtr is only created when the map has
-> > BTF (i.e. info->btf_id !=3D 0).  The nullness of "json_writer_t *wtr"
-> > in map_dump() alone can decide if dumping BTF output is needed.
-> > As long as wtr is not NULL, map_dump() will print out the BTF-described
-> > data whenever a map has BTF available (i.e. info->btf_id !=3D 0)
-> > regardless of json or plain-text output.
-> >
-> > In do_dump(), the "int btf" is also renamed to "int do_plain_btf".
-> >
-> > Fixes: 99f9863a0c45 ("bpftool: Match maps by name")
-> > Cc: Paul Chaignon <paul.chaignon@orange.com>
 > > Signed-off-by: Martin KaFai Lau <kafai@fb.com>
 > > ---
 >=20
-> just one nit below
+> This function comes up not a first time, I guess it makes sense to
+> finally make it a public API. We should also try to minimize number of
+> internal APIs used by bpftool.
 >=20
-> Acked-by: Andrii Nakryiko <andriin@fb.com>
->=20
-> >  tools/bpf/bpftool/map.c | 42 ++++++++++++++++++++---------------------
-> >  1 file changed, 20 insertions(+), 22 deletions(-)
-> >
-> > diff --git a/tools/bpf/bpftool/map.c b/tools/bpf/bpftool/map.c
-> > index e00e9e19d6b7..45c1eda6512c 100644
-> > --- a/tools/bpf/bpftool/map.c
-> > +++ b/tools/bpf/bpftool/map.c
-> > @@ -933,7 +933,7 @@ static int maps_have_btf(int *fds, int nb_fds)
-> >
-> >  static int
-> >  map_dump(int fd, struct bpf_map_info *info, json_writer_t *wtr,
-> > -        bool enable_btf, bool show_header)
-> > +        bool show_header)
-> >  {
-> >         void *key, *value, *prev_key;
-> >         unsigned int num_elems =3D 0;
-> > @@ -950,18 +950,16 @@ map_dump(int fd, struct bpf_map_info *info, json_=
-writer_t *wtr,
-> >
-> >         prev_key =3D NULL;
-> >
-> > -       if (enable_btf) {
-> > -               err =3D btf__get_from_id(info->btf_id, &btf);
-> > -               if (err || !btf) {
-> > -                       /* enable_btf is true only if we've already che=
-cked
-> > -                        * that all maps have BTF information.
-> > -                        */
-> > -                       p_err("failed to get btf");
-> > -                       goto exit_free;
-> > +       if (wtr) {
-> > +               if (info->btf_id) {
->=20
-> combine into if (wtr && info->btf_id) and reduce nestedness?
-There is other logic under the same "if (wtr)".
-Thus, it is better to leave it as is.
-and this indentation will be gone in patch 5.
+> So if no one objects to expose it, should we call it a bit more
+> precisely and according to libbpf naming guidelines:
+> libbpf_load_kernel_btf? libbpf_find_kernel_btf is acceptable, but it
+> does more than just finding, thus "load". It should also probably live
+> in btf.c+btf.h? WDYT?
+Sure, I will add it as LIBBPF_API in btf.h
 
 >=20
 >=20
-> > +                       err =3D btf__get_from_id(info->btf_id, &btf);
-> > +                       if (err || !btf) {
-> > +                               err =3D err ? : -ESRCH;
-> > +                               p_err("failed to get btf");
-> > +                               goto exit_free;
-> > +                       }
+> >  tools/lib/bpf/libbpf.c          | 3 +--
+> >  tools/lib/bpf/libbpf_internal.h | 1 +
+> >  2 files changed, 2 insertions(+), 2 deletions(-)
+> >
 >=20
 > [...]
