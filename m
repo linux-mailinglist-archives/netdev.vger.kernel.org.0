@@ -2,145 +2,114 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id E9BEC13CAF4
-	for <lists+netdev@lfdr.de>; Wed, 15 Jan 2020 18:27:43 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 18CC013CAFD
+	for <lists+netdev@lfdr.de>; Wed, 15 Jan 2020 18:29:09 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729014AbgAOR1m (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 15 Jan 2020 12:27:42 -0500
-Received: from mail-ed1-f65.google.com ([209.85.208.65]:33796 "EHLO
-        mail-ed1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726778AbgAOR1l (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 15 Jan 2020 12:27:41 -0500
-Received: by mail-ed1-f65.google.com with SMTP id l8so16246834edw.1
-        for <netdev@vger.kernel.org>; Wed, 15 Jan 2020 09:27:40 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:references:from:autocrypt:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=TxW87RYdjmp6G2EU9IQiSLDkIATXCgsyl0iq0r0oI70=;
-        b=XXD6qfs/gIToij2JiQNLpg23YlQ1FloGyjrhPOCDbxZ3r0PmkwK8ZIzxURj5sl4ojs
-         DfWpnPDX+Pae+lIIli51pf3IzKizAhJU71c3EBP+uc2Ap3dPC+rW6ScuV7BppbkBpaS9
-         TE/gVbNdnGNYqYnjDz0U1xUsJYBezUjv5dqlIJUi1HE0xuaNxQYHjYAmqNcgT4q3poqV
-         ATJyW4UFEEMwDtpsOImRSHkPQZtM7IoaXZv2ltstglp8NZ5C6AwX28SD7cYZFDnaUDcM
-         mxqGOunqWSjdxk40DOEA5/3TcVtx6g0MzhWXeCJF3PvhEGLchOgZv0qjVL3ROdDXh41i
-         gxEg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:references:from:autocrypt:message-id
-         :date:user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=TxW87RYdjmp6G2EU9IQiSLDkIATXCgsyl0iq0r0oI70=;
-        b=Cd45EvnAePeXL2Kg6bm/++tI3SfFsN95QwXT6Ctw66bfoXYPTuVgi5jMZf2JONNAzM
-         8wl08N6yCXJ5vUYM4RkhCJipJBVVM8U41VVj+73/K+NdnsHeIc3e8LRTPVVRNSDFLYO8
-         UMHM0VKq3+nhPIjN2yv7ldcgM+mICAnwF2QcKSR4ThhLD/FG4rvrIEbb9J/mdALcuB0i
-         19T2XQpJQYtZtp9TpqkwMg16SFyj1108YzA8Uy9qzgzTUAR63CBE1z6rJx2qJ0y8PGur
-         gGgaToUEshuyqPxETT4GK9IFibetOHjSHkOPoIJxCGFCtpVYvt5PFhdu3kJTTzTrPQKt
-         MAWQ==
-X-Gm-Message-State: APjAAAVP4bByN5qkz+PWnMwYmlZ8uf2dFdCbTK5TTDPBU8fBhJUDH6cQ
-        BdnyOJi6OhHP4iw9d8koEQ5Tv9Mi
-X-Google-Smtp-Source: APXvYqztuI0BZB5bbRzUk+NKhm4mvqvlSFFmw04qvH6gXjIYddVjhbouREmLsqOOAc0O+6j/qIzRdQ==
-X-Received: by 2002:a17:906:2e41:: with SMTP id r1mr29101104eji.127.1579109259172;
-        Wed, 15 Jan 2020 09:27:39 -0800 (PST)
-Received: from [10.67.50.41] ([192.19.223.252])
-        by smtp.googlemail.com with ESMTPSA id k5sm780088edx.58.2020.01.15.09.27.37
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 15 Jan 2020 09:27:38 -0800 (PST)
-Subject: Re: PROBLEM: kernel crash when unbinding igb device with 4.19.94
-To:     Norbert Lange <nolange79@gmail.com>,
-        Richard Cochran <richardcochran@gmail.com>,
-        netdev@vger.kernel.org
-References: <CADYdroOZ37YY5-+oRB9xb0KdeWGVz3C2skAccYX4htEYp7mvhA@mail.gmail.com>
-From:   Florian Fainelli <f.fainelli@gmail.com>
-Autocrypt: addr=f.fainelli@gmail.com; prefer-encrypt=mutual; keydata=
- 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
- G10n8gCguORqNGMsVRxrlLs7/himep7MrCc=
-Message-ID: <497abaf3-270f-951c-9b59-78c4df2f66c2@gmail.com>
-Date:   Wed, 15 Jan 2020 09:27:35 -0800
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.2.2
-MIME-Version: 1.0
-In-Reply-To: <CADYdroOZ37YY5-+oRB9xb0KdeWGVz3C2skAccYX4htEYp7mvhA@mail.gmail.com>
-Content-Type: text/plain; charset=utf-8
+        id S1729125AbgAOR3F (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 15 Jan 2020 12:29:05 -0500
+Received: from mail-eopbgr680058.outbound.protection.outlook.com ([40.107.68.58]:9856
+        "EHLO NAM04-BN3-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1726778AbgAOR3F (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 15 Jan 2020 12:29:05 -0500
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=dU46RyNWjt8jfxCqyCO/Nm+96T9vTgUmWhHVbbTPrznFfetT2SgpnlekwB5OJAi9fatR2rdQu4YMwryQvZ8bsABDX7ZjFmM0vLOa7CVxk6B91xQm7p1JoOxjM2eX4XrEvG6LFRJdP6y/iZzj8BcjJEWM0XfFkhsfpDjQrT2Is83GaX37ylh3s7Xay8k6lDwHrPetyBZIRPtFW2JzJOljOo7jWvBFUZT0ruecKeMxs+GazGhfUhW2CzaWzNYHia/GU3B+L/UDkmYB0dcJJDEUZcl/XHdqZf+s0BbNX2sPUSdRRkyJ5wFWk8iKQI0y2Zw/NLfJu5K+z1v4gqmEdIsTPg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=FTMn5GmK8iGbDlrzMGenSJgu5IdIBtIm9N/vKVIp+YU=;
+ b=C0u0zSY84E6KIYIAzQXD4Cb1j6MBgcmZVidcgAvs9tWyR/pvqPi0g/milBcDJek/ePCTAkHo1qmaCCD8XgPWsIIKXQh2y7f1Qa+lmo9MZw2xD2QBpf/SilTKeXgahJrMc4ejdIIvmHF26X7OOlt+TSacyKoR738+VSKSHTo09GighXenZMdjNarCSzZZJ8z/ZSQQ2sCmkpOsC9JIoVGsVzLorm6ONxQso+klGubMY8t0WnpCiXOyhh+wwoulMV1gSr51ZFUYG6Gp3gn+to32DxvPbqHsJcMoGblaGzao7uUjHhOaB0FhplaDW/UtqVDiCjA6ArGspfG1S72LldlM4Q==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=infinera.com; dmarc=pass action=none header.from=infinera.com;
+ dkim=pass header.d=infinera.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=infinera.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=FTMn5GmK8iGbDlrzMGenSJgu5IdIBtIm9N/vKVIp+YU=;
+ b=ClfO5+Kv+o0QSrHC1oOVXCCHqJWxOQYiI6s8mfJjoETjZlKqnbHFz1ETDY71uRpKn3fDcNDni0tS+JVCdViXbGoRooy7yzAPgcvvRXERbjTMFd+Sdp1rx273L6CK/J5YG3+KQ+kct4NaDk0Ygq8NKgoZqQBigCo5i9rZBgyPM+8=
+Received: from BN8PR10MB3540.namprd10.prod.outlook.com (20.179.77.152) by
+ BN8PR10MB3107.namprd10.prod.outlook.com (20.179.136.146) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.2623.9; Wed, 15 Jan 2020 17:29:03 +0000
+Received: from BN8PR10MB3540.namprd10.prod.outlook.com
+ ([fe80::6922:a072:d75e:74ef]) by BN8PR10MB3540.namprd10.prod.outlook.com
+ ([fe80::6922:a072:d75e:74ef%7]) with mapi id 15.20.2623.017; Wed, 15 Jan 2020
+ 17:29:02 +0000
+From:   Joakim Tjernlund <Joakim.Tjernlund@infinera.com>
+To:     "linuxppc-dev@lists.ozlabs.org" <linuxppc-dev@lists.ozlabs.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "colin.king@canonical.com" <colin.king@canonical.com>,
+        "qiang.zhao@nxp.com" <qiang.zhao@nxp.com>,
+        "davem@davemloft.net" <davem@davemloft.net>
+CC:     "kernel-janitors@vger.kernel.org" <kernel-janitors@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH] net/wan/fsl_ucc_hdlc: fix out of bounds write on array
+ utdm_info
+Thread-Topic: [PATCH] net/wan/fsl_ucc_hdlc: fix out of bounds write on array
+ utdm_info
+Thread-Index: AQHVyur09HukpX03t0SJoKItzNiieqfr/LeA
+Date:   Wed, 15 Jan 2020 17:29:02 +0000
+Message-ID: <335a44aa9bfbec197385c1e0a9cc35cc29fb307d.camel@infinera.com>
+References: <20200114145448.361888-1-colin.king@canonical.com>
+In-Reply-To: <20200114145448.361888-1-colin.king@canonical.com>
+Accept-Language: en-GB, en-US
 Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+authentication-results: spf=none (sender IP is )
+ smtp.mailfrom=Joakim.Tjernlund@infinera.com; 
+x-originating-ip: [88.131.87.201]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: 3ea309fc-cecf-4e29-ddaf-08d799e06a37
+x-ms-traffictypediagnostic: BN8PR10MB3107:
+x-microsoft-antispam-prvs: <BN8PR10MB3107EE434F0598FE87DCFE28F4370@BN8PR10MB3107.namprd10.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:7219;
+x-forefront-prvs: 02830F0362
+x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(4636009)(346002)(136003)(39860400002)(366004)(376002)(396003)(199004)(189003)(478600001)(2616005)(76116006)(66946007)(66476007)(66446008)(64756008)(66556008)(6506007)(71200400001)(91956017)(6512007)(5660300002)(8676002)(81166006)(36756003)(8936002)(110136005)(81156014)(54906003)(4326008)(6486002)(26005)(186003)(86362001)(316002)(2906002);DIR:OUT;SFP:1101;SCL:1;SRVR:BN8PR10MB3107;H:BN8PR10MB3540.namprd10.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;A:1;MX:1;
+received-spf: None (protection.outlook.com: infinera.com does not designate
+ permitted sender hosts)
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: Rd7YS82zsbHAVNYWqWNxGZX4HjJZIicVHIrlMTY/YKWl20qOUY6NZ7om5At3m1WmWIgsqEpyU4g0JCQEHyboUTzPeqP7kwAil4oiujCpmkzAX0aH6xGl10FcqFMj3+irotzfPDebwGE5/lRMSPAW4O9V4y/8ll11z341HFiy8eyJBlJl+WgvywxqFFSbV8qoH4dsEXc6f8mSAht5eJKO5/Iipgv46qrXD4rh79X4RWg49jWS2Tt84aB9Aq+8nMQw3n3hdMndnZlgjkKGEn9szHggaKMy1MF82YFeG7Kz/vIT1GlAROO/zR1nntCDujc9VVfVPcvhcs2WWVUcW4aw1GexsQz8w76+WgKHGJLduf4QpE0oRpU1nP8YR1rtODmIpM4oeKj72BP9Rv4cg3BaHpC5DMSsJu0MER6Qt1wRVCwge1Pbr+f4ej06JfEZyXmQ
+x-ms-exchange-transport-forked: True
+Content-Type: text/plain; charset="utf-8"
+Content-ID: <F4248A3C9FF1CF4B9C46F7E935C6075E@namprd10.prod.outlook.com>
+Content-Transfer-Encoding: base64
+MIME-Version: 1.0
+X-OriginatorOrg: infinera.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 3ea309fc-cecf-4e29-ddaf-08d799e06a37
+X-MS-Exchange-CrossTenant-originalarrivaltime: 15 Jan 2020 17:29:02.8935
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 285643de-5f5b-4b03-a153-0ae2dc8aaf77
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: gLfNMAaj0cyAiZnJx5M3+qiS5UYDCDxG0FT4wFz4Su6K7OeLm4CyjXyaobV1ZyVhdmsjQ9HTSwymmVIdMc7A4w==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BN8PR10MB3107
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 1/15/20 9:10 AM, Norbert Lange wrote:
-> Hello,
-> 
-> The commit "ptp: fix the race between the release of ptp_clock and
-> cdev" (#0393b8720128) introduced a bad regression, atleast in the 4.19
-> branch.
-> 
-> I have a Intel I210 card in the system (actually 4 of them if that's
-> relevant), system is a custom buildroot so I dont have all tools to
-> create the information, but given that reverting the commit fixed the
-> issue I think its narrowed down enough.
-> unbinding the driver from one device will always trigger a crash.
-> 
-> I use the xenomai ipipe-patch on top, if required I could try with a
-> naked linux (would cost me some time to do).
-> I ran various versions from 4.14 up to 4.19.89, and 4.19.89 with above
-> patch reversed, all which did not have this issue.
-
-This patch should fix the problem:
-
-https://lore.kernel.org/netdev/20200113130009.2938-1-vdronov@redhat.com/
-
-and should soon reach stable kernels if it has not already.
--- 
-Florian
+T24gVHVlLCAyMDIwLTAxLTE0IGF0IDE0OjU0ICswMDAwLCBDb2xpbiBLaW5nIHdyb3RlOg0KPiAN
+Cj4gRnJvbTogQ29saW4gSWFuIEtpbmcgPGNvbGluLmtpbmdAY2Fub25pY2FsLmNvbT4NCj4gDQo+
+IEFycmF5IHV0ZG1faW5mbyBpcyBkZWNsYXJlZCBhcyBhbiBhcnJheSBvZiBNQVhfSERMQ19OVU0g
+KDQpIGVsZW1lbnRzDQo+IGhvd2V2ZXIgdXAgdG8gVUNDX01BWF9OVU0gKDgpIGVsZW1lbnRzIGFy
+ZSBwb3RlbnRpYWxseSBiZWluZyB3cml0dGVuDQo+IHRvIGl0LiAgQ3VycmVudGx5IHdlIGhhdmUg
+YW4gYXJyYXkgb3V0LW9mLWJvdW5kcyB3cml0ZSBlcnJvciBvbiB0aGUNCj4gbGFzdCA0IGVsZW1l
+bnRzLiBGaXggdGhpcyBieSBtYWtpbmcgdXRkbV9pbmZvIFVDQ19NQVhfTlVNIGVsZW1lbnRzIGlu
+DQo+IHNpemUuDQo+IA0KPiBBZGRyZXNzZXMtQ292ZXJpdHk6ICgiT3V0LW9mLWJvdW5kcyB3cml0
+ZSIpDQo+IEZpeGVzOiBjMTliNmQyNDZhMzUgKCJkcml2ZXJzL25ldDogc3VwcG9ydCBoZGxjIGZ1
+bmN0aW9uIGZvciBRRS1VQ0MiKQ0KPiBTaWduZWQtb2ZmLWJ5OiBDb2xpbiBJYW4gS2luZyA8Y29s
+aW4ua2luZ0BjYW5vbmljYWwuY29tPg0KDQpUaGlzIHNob3VsZCBiZSBzZW50IHRvIHN0YWJsZSBh
+cyB3ZWxsDQpDYzogPHN0YWJsZUB2Z2VyLmtlcm5lbC5vcmc+ICMgNC4xOS54Kw0KDQo+IC0tLQ0K
+PiAgZHJpdmVycy9uZXQvd2FuL2ZzbF91Y2NfaGRsYy5jIHwgMiArLQ0KPiAgMSBmaWxlIGNoYW5n
+ZWQsIDEgaW5zZXJ0aW9uKCspLCAxIGRlbGV0aW9uKC0pDQo+IA0KPiBkaWZmIC0tZ2l0IGEvZHJp
+dmVycy9uZXQvd2FuL2ZzbF91Y2NfaGRsYy5jIGIvZHJpdmVycy9uZXQvd2FuL2ZzbF91Y2NfaGRs
+Yy5jDQo+IGluZGV4IDk0ZTg3MGY0OGUyMS4uOWVkZDk0Njc5MjgzIDEwMDY0NA0KPiAtLS0gYS9k
+cml2ZXJzL25ldC93YW4vZnNsX3VjY19oZGxjLmMNCj4gKysrIGIvZHJpdmVycy9uZXQvd2FuL2Zz
+bF91Y2NfaGRsYy5jDQo+IEBAIC03Myw3ICs3Myw3IEBAIHN0YXRpYyBzdHJ1Y3QgdWNjX3RkbV9p
+bmZvIHV0ZG1fcHJpbWFyeV9pbmZvID0gew0KPiAgICAgICAgIH0sDQo+ICB9Ow0KPiANCj4gLXN0
+YXRpYyBzdHJ1Y3QgdWNjX3RkbV9pbmZvIHV0ZG1faW5mb1tNQVhfSERMQ19OVU1dOw0KPiArc3Rh
+dGljIHN0cnVjdCB1Y2NfdGRtX2luZm8gdXRkbV9pbmZvW1VDQ19NQVhfTlVNXTsNCj4gDQo+ICBz
+dGF0aWMgaW50IHVoZGxjX2luaXQoc3RydWN0IHVjY19oZGxjX3ByaXZhdGUgKnByaXYpDQo+ICB7
+DQo+IC0tDQo+IDIuMjQuMA0KPiANCg0K
