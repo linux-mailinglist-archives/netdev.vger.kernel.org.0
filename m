@@ -2,96 +2,90 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 3549013C886
-	for <lists+netdev@lfdr.de>; Wed, 15 Jan 2020 16:56:43 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id BDEF213C888
+	for <lists+netdev@lfdr.de>; Wed, 15 Jan 2020 16:56:49 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729015AbgAOP4i (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 15 Jan 2020 10:56:38 -0500
-Received: from mail-pf1-f195.google.com ([209.85.210.195]:46936 "EHLO
-        mail-pf1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726165AbgAOP4i (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 15 Jan 2020 10:56:38 -0500
-Received: by mail-pf1-f195.google.com with SMTP id n9so8695921pff.13;
-        Wed, 15 Jan 2020 07:56:38 -0800 (PST)
+        id S1729044AbgAOP4s (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 15 Jan 2020 10:56:48 -0500
+Received: from mail-yb1-f194.google.com ([209.85.219.194]:42646 "EHLO
+        mail-yb1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726165AbgAOP4s (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 15 Jan 2020 10:56:48 -0500
+Received: by mail-yb1-f194.google.com with SMTP id c8so2504996ybk.9
+        for <netdev@vger.kernel.org>; Wed, 15 Jan 2020 07:56:47 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id;
-        bh=HwV9sGACUDknSqn3rZRjdfv8PQfY2jtJrBDpPLg25bE=;
-        b=pfZQgYjBcjyCtn6E2E//UIWWV7YF8uAjc6ggh4p5mbPc/GNDh/t8TClwCoKqEY9iKm
-         31WcNv/TU4fwcs85/hvITBoBQwLVXKXc/pq1wY9AFtXF2yclNcKLougfpxo4Rk7HthPf
-         JKGNTLguhyvB97/Am9L/CUP3MrCj/46w4fxjcRfkXO25T4sy6vMUxLTAtfX+DvZ+ztaN
-         0TJinWp2KwiFxkOa5ztbYrQZYs73Hv1EuT6dgymCzvzr+fdm6LEZUH2G+6yYELu7EAOO
-         KM6yEegZ79mbzuNRVufVKJ2z4+wCZyjhs7MRMvV9HWkgyOvBGAQgQiMD9SVbFGb4EqZn
-         upRA==
+        d=google.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=YdjfKgKLetCGu1ZW0KgSpCEYsKsIG0dHJMv78sEvBPA=;
+        b=SG/MW7+K/+h9MnuBquRvqt7I/sPgIUR+qLh8r3da1WVGVngLB6Kj/AT8xRajIh2yMs
+         ks52uuq0S2RE8gRbtHK4dqXoUSqRapPyabAsSDsgo5tFVjR5pEnx2jf97MQgScQIZMu0
+         IvDIZ992OQwipAqoA5wYx1HAKQhDy0z73pE+FRbqQopyV87MMDQylhn9XbBmiGakn4xE
+         /fOata6juWfAvBy1sKcGDyxMEjfrcauaF3rtc34xojs8U+xzRLYIOq4MQ8TunbZz17RU
+         9wcQp3PAhiheuO854NyaNuiBLhewzIpo4e+8bGaG8D0mHVrTI8FZNgt0Pz5i7hfa967S
+         EJvw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id;
-        bh=HwV9sGACUDknSqn3rZRjdfv8PQfY2jtJrBDpPLg25bE=;
-        b=b923+AWd4Tbl6fSwkJWwPGNQd+KJvHj6/EZEx5adh0wg1gk9OrL9kLT/bIj6hELgy+
-         t+cLRehQy/+d1hxYjOEnNdgR/cyWO+T4SUsgidp51lDK84zcahQ3pk3DCE+BL1lI3lG+
-         4lYmRcoR9MiOPxjLNTboDEdAF44eRBDfx1nMDIuL9ZxTSLOi5/lpZg0EWATPHOF7wiCS
-         fbG4wtVJGFmw+in8l7wH5fvQAiJqs9xReBrri4lMyVEx8PFfMzXA1jvklUlIhLUwBIg1
-         6vEVXEuR2zJbKLGUtnZ5OMd9W5crNTByJIk4oDvTBYeF96isAg8aS+9N2D5RpMhMlEa/
-         84OA==
-X-Gm-Message-State: APjAAAU/k43JoVzS1Ey5XideiIShi5rk90jd6PSPLi8SOgyR/8XwszIF
-        fq5fe5pnFKULoK2/dZiyz6IF8Md8EZc=
-X-Google-Smtp-Source: APXvYqwfBfFNxEYPBk1P4r0u33EcwZqChtsYsDBcPVXmULzU6XIoKIK5xPGRQ8bZGAylr4brUje92g==
-X-Received: by 2002:a63:4b50:: with SMTP id k16mr34152524pgl.386.1579103797712;
-        Wed, 15 Jan 2020 07:56:37 -0800 (PST)
-Received: from madhuparna-HP-Notebook.nitk.ac.in ([2402:3a80:1ee8:ed72:75ba:e01f:bdbc:c547])
-        by smtp.gmail.com with ESMTPSA id b8sm22755599pfr.64.2020.01.15.07.56.22
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 15 Jan 2020 07:56:37 -0800 (PST)
-From:   madhuparnabhowmik04@gmail.com
-To:     wei.liu@kernel.org, paul@xen.org
-Cc:     xen-devel@lists.xenproject.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, paulmck@kernel.org,
-        joel@joelfernandes.org, frextrite@gmail.com,
-        linux-kernel-mentees@lists.linuxfoundation.org,
-        Madhuparna Bhowmik <madhuparnabhowmik04@gmail.com>
-Subject: [PATCH] net: xen-netback: hash.c: Use built-in RCU list checking
-Date:   Wed, 15 Jan 2020 21:25:53 +0530
-Message-Id: <20200115155553.13471-1-madhuparnabhowmik04@gmail.com>
-X-Mailer: git-send-email 2.17.1
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=YdjfKgKLetCGu1ZW0KgSpCEYsKsIG0dHJMv78sEvBPA=;
+        b=KY9ILD9jVDW29MeoYYs4pPBKCTGPB/X8jTtCXa8zGnPRVUQNgzoG7+PCaM+f9oBp1n
+         31OktE9V3GcK5sYA+hs2K93bZMPyeU2891SI0dyrcHykViWzaAU7KzjJzQ3yiKHkVtn4
+         MfO0zt+Xxu074cwBOghE9xSZ+UuIpTHxwDPty1iwTvmyOQmw12Csriaz16c+/GlbYBZo
+         4bYDoVQMOkvVtBG8yN+vhFcJWO5jyhtmwo/9P9TQtW+WiTz/ucuWMt6U4Nt1AUYD3/yS
+         mrF7naQszcHufwivvCy1ilSc31QH5ybD+tCQnni1RbFpmzta6qiedtzzjYg2Zlwm7A/b
+         JX7g==
+X-Gm-Message-State: APjAAAVlnfNGEPTSvh/jCAkXMyCAXBZGICfPTBlSzfP5U4meBlOpiXPb
+        eUB5PTd/GCpQ2wjwgMmi/35a++HmkQm+iTxsvxKPTQ==
+X-Google-Smtp-Source: APXvYqyYPDovXaHYAKMejdIGa9GE9pNOpGZDh226ffCJfyI/eIjkD/t4T90aRtX985QmivaNy0o6vYDaQ50OgbWTLCE=
+X-Received: by 2002:a25:7c42:: with SMTP id x63mr23200599ybc.101.1579103806495;
+ Wed, 15 Jan 2020 07:56:46 -0800 (PST)
+MIME-Version: 1.0
+References: <20200114215128.87537-1-edumazet@google.com> <7b6aad5de9b62323f0a8b24ce2d5c7d5adcd89b4.camel@redhat.com>
+In-Reply-To: <7b6aad5de9b62323f0a8b24ce2d5c7d5adcd89b4.camel@redhat.com>
+From:   Eric Dumazet <edumazet@google.com>
+Date:   Wed, 15 Jan 2020 07:56:35 -0800
+Message-ID: <CANn89iLi2eAHTMveBQviUOh5v3qdiw7xBZRsucAW4CemrAnzHw@mail.gmail.com>
+Subject: Re: [PATCH net] net/sched: act_ife: initalize ife->metalist earlier
+To:     Davide Caratti <dcaratti@redhat.com>
+Cc:     "David S . Miller" <davem@davemloft.net>,
+        netdev <netdev@vger.kernel.org>,
+        Eric Dumazet <eric.dumazet@gmail.com>,
+        syzbot <syzkaller@googlegroups.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Madhuparna Bhowmik <madhuparnabhowmik04@gmail.com>
+On Wed, Jan 15, 2020 at 1:14 AM Davide Caratti <dcaratti@redhat.com> wrote:
+>
+> On Tue, 2020-01-14 at 13:51 -0800, Eric Dumazet wrote:
+> > It seems better to init ife->metalist earlier in tcf_ife_init()
+> > to avoid the following crash :
+>
+> hello Eric, and thanks for the patch.
+>
+> If I well understand the problem, we have
+>
+> _tcf_ife_cleanup()
+>
+> that does dereference of NULL ife->metalist,
+> because it has not yet initialized by tcf_ife_init(). This happened
+> probably because the control action was not valid (hence the Fixes:tag):
+> so, tcf_ife_init() jumped to the error path before doing INIT_LIST_HEAD().
+>
+> I applied your patch to my tree, and I see this:
+>
+> net/sched/act_ife.c: In function 'tcf_ife_init':
+> net/sched/act_ife.c:533:3: warning: 'ife' may be used uninitialized in
+> this function [-Wmaybe-uninitialized]
+>    INIT_LIST_HEAD(&ife->metalist);
+>    ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+>
+> And I think the warning is telling us a real problem, because
+>
+>         ife = to_ife(*a);
+>
 
-list_for_each_entry_rcu has built-in RCU and lock checking.
-Pass cond argument to list_for_each_entry_rcu.
-
-Signed-off-by: Madhuparna Bhowmik <madhuparnabhowmik04@gmail.com>
----
- drivers/net/xen-netback/hash.c | 6 ++++--
- 1 file changed, 4 insertions(+), 2 deletions(-)
-
-diff --git a/drivers/net/xen-netback/hash.c b/drivers/net/xen-netback/hash.c
-index 10d580c3dea3..6b7532f7c936 100644
---- a/drivers/net/xen-netback/hash.c
-+++ b/drivers/net/xen-netback/hash.c
-@@ -51,7 +51,8 @@ static void xenvif_add_hash(struct xenvif *vif, const u8 *tag,
- 
- 	found = false;
- 	oldest = NULL;
--	list_for_each_entry_rcu(entry, &vif->hash.cache.list, link) {
-+	list_for_each_entry_rcu(entry, &vif->hash.cache.list, link,
-+				lockdep_is_held(&vif->hash.cache.lock)) {
- 		/* Make sure we don't add duplicate entries */
- 		if (entry->len == len &&
- 		    memcmp(entry->tag, tag, len) == 0)
-@@ -102,7 +103,8 @@ static void xenvif_flush_hash(struct xenvif *vif)
- 
- 	spin_lock_irqsave(&vif->hash.cache.lock, flags);
- 
--	list_for_each_entry_rcu(entry, &vif->hash.cache.list, link) {
-+	list_for_each_entry_rcu(entry, &vif->hash.cache.list, link,
-+				lockdep_is_held(&vif->hash.cache.lock)) {
- 		list_del_rcu(&entry->link);
- 		vif->hash.cache.count--;
- 		kfree_rcu(entry, rcu);
--- 
-2.17.1
-
+Oops right, thanks for catching this. I am sending a V2.
