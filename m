@@ -2,115 +2,86 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 37FB313C5B9
-	for <lists+netdev@lfdr.de>; Wed, 15 Jan 2020 15:17:00 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2B15613C5C3
+	for <lists+netdev@lfdr.de>; Wed, 15 Jan 2020 15:19:45 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729299AbgAOOQh (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 15 Jan 2020 09:16:37 -0500
-Received: from mail.kernel.org ([198.145.29.99]:43488 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726501AbgAOOQg (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 15 Jan 2020 09:16:36 -0500
-Received: from cakuba.hsd1.ca.comcast.net (c-73-93-4-247.hsd1.ca.comcast.net [73.93.4.247])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 9CBBD2073A;
-        Wed, 15 Jan 2020 14:16:35 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1579097795;
-        bh=OH4aikfdqD2aIrwygUCTdgnd7dYGOYvI9tWf6tvDeX8=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=spaMyxtRPLtcVmkplPFiCVGICw60qKBxas3kxFZBWgR2nQGKzzWEiI+DHc+NXG6EJ
-         GJkp1V4UYK+8sQS154uAVcoYpBW8y5s1lavkrn8bZ6hRWSo++5uEYb1BQf5cwKHItt
-         OY/+lBRvIBVHc6cXq7zNcv5VuQIieqoUF0IP6xs8=
-Date:   Wed, 15 Jan 2020 06:16:34 -0800
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Taehee Yoo <ap420073@gmail.com>
-Cc:     Jakub Kicinski <jakub.kicinski@netronome.com>,
-        David Miller <davem@davemloft.net>,
-        Netdev <netdev@vger.kernel.org>, Jiri Pirko <jiri@resnulli.us>
-Subject: Re: [PATCH net 1/5] netdevsim: fix a race condition in netdevsim
- operations
-Message-ID: <20200115061634.35da2950@cakuba.hsd1.ca.comcast.net>
-In-Reply-To: <CAMArcTUx46w35JPhw5hvnKW+g9z9Lqrv7u1DsnKOeWnvFaAsxg@mail.gmail.com>
-References: <20200111163655.4087-1-ap420073@gmail.com>
-        <20200112061937.171f6d88@cakuba>
-        <CAMArcTUx46w35JPhw5hvnKW+g9z9Lqrv7u1DsnKOeWnvFaAsxg@mail.gmail.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+        id S1726550AbgAOOTi (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 15 Jan 2020 09:19:38 -0500
+Received: from mail-pf1-f194.google.com ([209.85.210.194]:38139 "EHLO
+        mail-pf1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726085AbgAOOTh (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 15 Jan 2020 09:19:37 -0500
+Received: by mail-pf1-f194.google.com with SMTP id x185so8602134pfc.5;
+        Wed, 15 Jan 2020 06:19:37 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id;
+        bh=rv/DqUwBL0cLyteq+cLEvFpPEt4GgePPdmAX2ItXChM=;
+        b=kIWJKZcsvkuUZvwRivtFvgIWWDo/Tti9TY17prXqhn8ou+0J4BFvJ8oIYES3K08qiV
+         R2Vd/rvzIe6i8Dil+hZ1hPy5ShyssowGgZBxu6/JRIa6PsjSIBRLZaXZ8XByGPpMGHXb
+         HMEh9ZxA9USfjlI/OVFGBEnv4FMtGnmgrp8YW8Bne7Sob31aw40Lz7ldLM/hNyY+ouRL
+         nO67kdJRx5Qqwd6mEg1nF2oLI06lV89EutTw90xedrb8KftavppvbuE85RQRPFz+aWLB
+         jofInZLvvseBm3dWeaCgohHSctkr/z6cg19t3fVZFRNbnLUnK+IO6HNECzCuhrooY2aC
+         7PAg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=rv/DqUwBL0cLyteq+cLEvFpPEt4GgePPdmAX2ItXChM=;
+        b=CavODgW43/U5eCvFO6KXXtU/lkl+g4CVa6s46dQvKvCZGCHS/G0EIg4tYW0XDFBK3x
+         ZVbWDjldpFX36VfnlFcUg4BOuIFjy32+mCwT9nvvqbMnOw0c0dpyQrvR3GCITEzhlygN
+         MG+/XXC6mP/9aToGwZCYTdO8xrRY7+GV3Jn9Bs4qRafs9oj2jfDv4sPdzx+Nu2Oxq3lx
+         qoyGDW609xzGDorCaDohM7Q7kcpSyI98Hrq8XkmHdKkbIwauUxWMPYJNWBWPm0tqJZgl
+         GaHkVCCWaNpENJ8aht0DRxRdCUJwtPLD0dcRlbZ9XEH2nFr8oddYmWDc1wUE2GXVsPLy
+         hvVA==
+X-Gm-Message-State: APjAAAXQ0gC/NpIPnpKzLBITq2Jm7iNCWg5Mh5PboJmCJnifUik+kG5R
+        O0U5Brnd9zmOjarCMO5KOIU=
+X-Google-Smtp-Source: APXvYqw/Ek4M3Mu/gGAWjG9C64Bz9YXgOVv1wSXGZqMVwUNkMRrlLduGljYrzFwonam0LSkXgoxpww==
+X-Received: by 2002:a63:534d:: with SMTP id t13mr31890500pgl.89.1579097977017;
+        Wed, 15 Jan 2020 06:19:37 -0800 (PST)
+Received: from madhuparna-HP-Notebook.nitk.ac.in ([2402:3a80:1ee8:ed72:75ba:e01f:bdbc:c547])
+        by smtp.gmail.com with ESMTPSA id p35sm21208425pgl.47.2020.01.15.06.19.32
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 15 Jan 2020 06:19:36 -0800 (PST)
+From:   madhuparnabhowmik04@gmail.com
+To:     wei.liu@kernel.org, paul@xen.org
+Cc:     xen-devel@lists.xenproject.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, paulmck@kernel.org,
+        joel@joelfernandes.org, frextrite@gmail.com,
+        linux-kernel-mentees@lists.linuxfoundation.org,
+        Madhuparna Bhowmik <madhuparnabhowmik04@gmail.com>
+Subject: [PATCH] net: xen-netback: hash.c: Use built-in RCU list checking
+Date:   Wed, 15 Jan 2020 19:48:40 +0530
+Message-Id: <20200115141840.10553-1-madhuparnabhowmik04@gmail.com>
+X-Mailer: git-send-email 2.17.1
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 15 Jan 2020 00:26:22 +0900, Taehee Yoo wrote:
-> On Sun, 12 Jan 2020 at 23:19, Jakub Kicinski wrote:
-> Hi Jakub,
-> Thank you for your review!
+From: Madhuparna Bhowmik <madhuparnabhowmik04@gmail.com>
 
-Thank you for fixing these tricky bugs! :)
+list_for_each_entry_rcu has built-in RCU and lock checking.
+Pass cond argument to list_for_each_entry_rcu.
 
-> > Perhaps the entire bus dev structure should be freed from release?
-> 
-> I tested this like this.
-> 
-> @@ -146,6 +161,8 @@ static void nsim_bus_dev_release(struct device *dev)
->         struct nsim_bus_dev *nsim_bus_dev = to_nsim_bus_dev(dev);
-> 
->         nsim_bus_dev_vfs_disable(nsim_bus_dev);
-> +       ida_free(&nsim_bus_dev_ids, nsim_bus_dev->dev.id);
-> +       kfree(nsim_bus_dev);
->  }
-> @@ -300,8 +320,6 @@ nsim_bus_dev_new(unsigned int id, unsigned int port_count)
->  static void nsim_bus_dev_del(struct nsim_bus_dev *nsim_bus_dev)
->  {
->         device_unregister(&nsim_bus_dev->dev);
-> -       ida_free(&nsim_bus_dev_ids, nsim_bus_dev->dev.id);
-> -       kfree(nsim_bus_dev);
->  }
-> 
-> It works well. but I'm not sure this is needed.
+Signed-off-by: Madhuparna Bhowmik <madhuparnabhowmik04@gmail.com>
+---
+ drivers/net/xen-netback/hash.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-My concern is that process A opens a sysfs file (eg. numvfs) then
-process B deletes the device, but process A still has a file descriptor
-(and device reference) so it may be able to write/read the numvfs file
-even though nsim_bus_dev was already freed. 
+diff --git a/drivers/net/xen-netback/hash.c b/drivers/net/xen-netback/hash.c
+index 10d580c3dea3..3f9783f70a75 100644
+--- a/drivers/net/xen-netback/hash.c
++++ b/drivers/net/xen-netback/hash.c
+@@ -51,7 +51,8 @@ static void xenvif_add_hash(struct xenvif *vif, const u8 *tag,
+ 
+ 	found = false;
+ 	oldest = NULL;
+-	list_for_each_entry_rcu(entry, &vif->hash.cache.list, link) {
++	list_for_each_entry_rcu(entry, &vif->hash.cache.list, link,
++				lockdep_is_held(&vif->hash.cache.lock)) {
+ 		/* Make sure we don't add duplicate entries */
+ 		if (entry->len == len &&
+ 		    memcmp(entry->tag, tag, len) == 0)
+-- 
+2.17.1
 
-I may very well be wrong, and something else may be preventing this
-condition. It's just a bit strange to see release free an internal
-sub-structure, while the main structure is freed immediately..
-
-> > >       unsigned int num_vfs;
-> > >       int ret;
-> > >
-> > > +     if (!mutex_trylock(&nsim_bus_dev_ops_lock))
-> > > +             return -EBUSY;  
-> >
-> > Why the trylocks? Are you trying to catch the races between unregister
-> > and other ops?
-> >  
-> 
-> The reason is to avoid deadlock.
-> If we use mutex_lock() instead of mutex_trylock(), the below message
-> will be printed and actual deadlock also appeared.
-
-> [  426.907883][  T805]  Possible unsafe locking scenario:
-> [  426.907883][  T805]
-> [  426.908715][  T805]        CPU0                    CPU1
-> [  426.909312][  T805]        ----                    ----
-> [  426.909902][  T805]   lock(kn->count#170);
-> [  426.910372][  T805]
-> lock(nsim_bus_dev_ops_lock);
-> [  426.911277][  T805]                                lock(kn->count#170);
-> [  426.912032][  T805]   lock(nsim_bus_dev_ops_lock);
-
-> Locking ordering of {new/del}_device() and {new/del}_port is different.
-> So, a deadlock could occur.
-
-Hm, we can't use the same lock for the bus ops and port ops.
-But the port ops already take port lock, do we really need 
-another lock there?
-
-Also does nsim_bus_exit() really need to iterate over devices to remove
-them? Does core not do it for us?
