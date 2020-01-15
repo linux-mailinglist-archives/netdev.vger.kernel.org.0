@@ -2,75 +2,63 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 93E7313CB22
-	for <lists+netdev@lfdr.de>; Wed, 15 Jan 2020 18:38:40 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4990E13CB2F
+	for <lists+netdev@lfdr.de>; Wed, 15 Jan 2020 18:41:12 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728896AbgAORii (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 15 Jan 2020 12:38:38 -0500
-Received: from us-smtp-2.mimecast.com ([207.211.31.81]:42550 "EHLO
-        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1726418AbgAORii (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 15 Jan 2020 12:38:38 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1579109917;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=GXI8VnOMf2O4lphef1G2NpSuVhxy2I19PiuH4dWJp+0=;
-        b=GUeAipwM/cNd/0LH19uwx6HtiLNz64NT49eMlruqi8ZzQBTIp7oXt3iBJ7KR7lkq9GmfSf
-        sn8J/FoHkTxVY9JQPga5frxZhfIKSjEtn440rgX5W0bzCW4KMUcDtgz6MPV5r3dlLFzydE
-        WjODtMgZxIj72Y7CeODoc0PYJu8/bls=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-383-4tK_vS23POOZy6uu-1IeSA-1; Wed, 15 Jan 2020 12:38:34 -0500
-X-MC-Unique: 4tK_vS23POOZy6uu-1IeSA-1
-Received: from smtp.corp.redhat.com (int-mx02.intmail.prod.int.phx2.redhat.com [10.5.11.12])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id C92368E47B6;
-        Wed, 15 Jan 2020 17:38:32 +0000 (UTC)
-Received: from ovpn-205-91.brq.redhat.com (ovpn-205-91.brq.redhat.com [10.40.205.91])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 432BB60C63;
-        Wed, 15 Jan 2020 17:38:31 +0000 (UTC)
-Message-ID: <5961acad0fa4ee00e00ad3773f39c9cb44df6929.camel@redhat.com>
-Subject: Re: [PATCH v3 net] net/sched: act_ife: initalize ife->metalist
- earlier
-From:   Davide Caratti <dcaratti@redhat.com>
-To:     Eric Dumazet <edumazet@google.com>,
-        "David S . Miller" <davem@davemloft.net>
-Cc:     netdev <netdev@vger.kernel.org>,
-        Eric Dumazet <eric.dumazet@gmail.com>,
-        syzbot <syzkaller@googlegroups.com>
-In-Reply-To: <20200115162039.113706-1-edumazet@google.com>
-References: <20200115162039.113706-1-edumazet@google.com>
-Organization: red hat
-Content-Type: text/plain; charset="UTF-8"
-Date:   Wed, 15 Jan 2020 18:38:30 +0100
+        id S1728939AbgAORlF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 15 Jan 2020 12:41:05 -0500
+Received: from mail-wr1-f66.google.com ([209.85.221.66]:46422 "EHLO
+        mail-wr1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726587AbgAORlF (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 15 Jan 2020 12:41:05 -0500
+Received: by mail-wr1-f66.google.com with SMTP id z7so16559887wrl.13;
+        Wed, 15 Jan 2020 09:41:04 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=/3QiPe/1GTUh4wvN6iqGkoCNxlqFn5o7CgcBx+S+Yxk=;
+        b=GJtdmt3vEfdhcaXDMtYuiGl4zqCoOsn5TSyZ8GuRgzJyfl/LRCfzBQ/DzO1aGt+K08
+         MdEX0EWZghG3xOPRlpo2kv9NEn9g2yjW7WZ477GpO3MU0yTVXD4pzzIV4qGZGOBQrH/p
+         knmMq8eSNdjf4HqRLUfr5c6gRIMLVVTYFK4iq5HK20r7usUlneIf1izMzZ7C3QrX+9M2
+         dvm4GP00cNivD117I26yL058vuZ38TfuvoXVMV+qaD9UiJPimwZxJRLkWl/FW1yzle1/
+         O6z1+qNtFg1hexDjR5nPpxuVvzTjUZZcrY/PZ8lMaubp9xGup5sW0dk08t3s1cC+XHq2
+         Obyw==
+X-Gm-Message-State: APjAAAVS/H1c6nrLChLwXutelHXOqiZtoKSfcN464L6TzgWJp6S12+Vo
+        wuLD9X+11fJYgpdJaUTGM+I=
+X-Google-Smtp-Source: APXvYqxTYlzZo5YP/kkwcJuy6q+2a5/NGOs+rhKjCJpOF46IvaQDw/+OQGyFX5tcR/JRocaQUcyDDQ==
+X-Received: by 2002:adf:f10a:: with SMTP id r10mr32438058wro.202.1579110063663;
+        Wed, 15 Jan 2020 09:41:03 -0800 (PST)
+Received: from debian (41.142.6.51.dyn.plus.net. [51.6.142.41])
+        by smtp.gmail.com with ESMTPSA id i10sm25964672wru.16.2020.01.15.09.41.02
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 15 Jan 2020 09:41:03 -0800 (PST)
+Date:   Wed, 15 Jan 2020 17:41:01 +0000
+From:   Wei Liu <wei.liu@kernel.org>
+To:     madhuparnabhowmik04@gmail.com
+Cc:     wei.liu@kernel.org, paul@xen.org, xen-devel@lists.xenproject.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        paulmck@kernel.org, joel@joelfernandes.org, frextrite@gmail.com,
+        linux-kernel-mentees@lists.linuxfoundation.org
+Subject: Re: [PATCH] net: xen-netback: hash.c: Use built-in RCU list checking
+Message-ID: <20200115174101.vqtsil6akmmyv3o4@debian>
+References: <20200115155553.13471-1-madhuparnabhowmik04@gmail.com>
 MIME-Version: 1.0
-User-Agent: Evolution 3.34.2 (3.34.2-1.fc31) 
-Content-Transfer-Encoding: 7bit
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.12
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20200115155553.13471-1-madhuparnabhowmik04@gmail.com>
+User-Agent: NeoMutt/20180716
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 2020-01-15 at 08:20 -0800, Eric Dumazet wrote:
-> It seems better to init ife->metalist earlier in tcf_ife_init()
-> to avoid the following crash :
+On Wed, Jan 15, 2020 at 09:25:53PM +0530, madhuparnabhowmik04@gmail.com wrote:
+> From: Madhuparna Bhowmik <madhuparnabhowmik04@gmail.com>
+> 
+> list_for_each_entry_rcu has built-in RCU and lock checking.
+> Pass cond argument to list_for_each_entry_rcu.
+> 
+> Signed-off-by: Madhuparna Bhowmik <madhuparnabhowmik04@gmail.com>
 
-hello Eric, LGTM now, thanks!
-
-[...]
-
-> Fixes: 11a94d7fd80f ("net/sched: act_ife: validate the control action inside init()")
-> Signed-off-by: Eric Dumazet <edumazet@google.com>
-> Reported-by: syzbot <syzkaller@googlegroups.com>
-> Cc: Davide Caratti <dcaratti@redhat.com>
-> ---
-> v2,v3: addressed Davide feedbacks.
-
-Reviewed-by: Davide Caratti <dcaratti@redhat.com>
-
-
+Acked-by: Wei Liu <wei.liu@kernel.org>
