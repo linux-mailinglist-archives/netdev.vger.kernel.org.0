@@ -2,189 +2,376 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id E858E13C48E
-	for <lists+netdev@lfdr.de>; Wed, 15 Jan 2020 15:00:27 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3E9A913C5AD
+	for <lists+netdev@lfdr.de>; Wed, 15 Jan 2020 15:16:54 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729712AbgAOOAK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 15 Jan 2020 09:00:10 -0500
-Received: from mail-eopbgr770053.outbound.protection.outlook.com ([40.107.77.53]:11386
-        "EHLO NAM02-SN1-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1729504AbgAONyr (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 15 Jan 2020 08:54:47 -0500
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=k2VvN2ZMXMv2GpTv1VwYZWS0sHgcI8ko++GkLPB6EShnEtbU6Smit40ofHbatUTvY8SbZnTtSnMrOKwrJWb25lpgSw6grL7DBylq7CUErykp9g3Y1w3I2QYB+7o3ZVJMnquHBgXjssOlNw9SOzkgwtDThzn+VXrogO1xm8PHw0SGPfK7JyEKMlWpb7hCswUpX+LTXKQjd1TfwRqVI5evZ0cJy/zRf34mud5N47OMyBzFpY87tWu44fOGTP7oerCWZtZAufiH21P1yFSIbE80jXo7yeGigF89gEOpHaxg7bu60jWuKjsYMZh+mMTcbBIPEb39a9JrWLHrnFtybQ+mbg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=lh4Sgj/UN1E/Qd8hmHGGL7HIEuTRhUu+NasuAtyaxyw=;
- b=k7ZOh3a9fyRuZFZwujpu9jtQg+BVVe1H7oaazGUW02vJezfMVmpPRwcJDIBT49eaBTqr0fxvAvNt5+irLfES2/6S4r4pLFHjgkdQh34BAkxA00EqdqF1gspgHtyMB8cMu9pQnMzpNmAPR65/zrWFqJJOVLD+cP6T+1RlAIOh8xd7R9+SYRh27DEMmMTVYYI1aMvD5DVJVFmxm1xoiHk/t/LulXxakWYK6HaEtHYjDz0BT7C96PJEx3Pe4Mh5OnMYGsyinrFfE9KPOVwetuPcVJfHhpAdNm78cUqQtAydt9jaKN2HjOG33nWKUYsgt0Uzp8hnMHEcIaOnhFm0oKFvpA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=silabs.com; dmarc=pass action=none header.from=silabs.com;
- dkim=pass header.d=silabs.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=silabs.onmicrosoft.com; s=selector2-silabs-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=lh4Sgj/UN1E/Qd8hmHGGL7HIEuTRhUu+NasuAtyaxyw=;
- b=WYVIRL53YEcxyOeTLO5nQYEjhZA5OmdUD3z7DJT1oGzz5VkGDGzQ4oGKXawiaWWUKLB3cS6389bK+v4+4Lmvoou8I6R7mx9cCDUyyWCfjmDWemmN2bghqUq2vx5T1i7YHlYqz6nXyXl1eRGQhkz1Dmr5pmj/ueFJeGKd4XdxZws=
-Received: from MN2PR11MB4063.namprd11.prod.outlook.com (10.255.180.22) by
- MN2PR11MB3661.namprd11.prod.outlook.com (20.178.252.33) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.2644.18; Wed, 15 Jan 2020 13:54:45 +0000
-Received: from MN2PR11MB4063.namprd11.prod.outlook.com
- ([fe80::f46c:e5b4:2a85:f0bf]) by MN2PR11MB4063.namprd11.prod.outlook.com
- ([fe80::f46c:e5b4:2a85:f0bf%4]) with mapi id 15.20.2623.018; Wed, 15 Jan 2020
- 13:54:45 +0000
-Received: from pc-42.home (2a01:e35:8bf5:66a0:3dbe:4cb5:6059:a948) by PR2P264CA0008.FRAP264.PROD.OUTLOOK.COM (2603:10a6:101::20) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.2644.18 via Frontend Transport; Wed, 15 Jan 2020 13:54:43 +0000
-From:   =?utf-8?B?SsOpcsO0bWUgUG91aWxsZXI=?= <Jerome.Pouiller@silabs.com>
-To:     "devel@driverdev.osuosl.org" <devel@driverdev.osuosl.org>,
-        "linux-wireless@vger.kernel.org" <linux-wireless@vger.kernel.org>
-CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Kalle Valo <kvalo@codeaurora.org>,
-        "David S . Miller" <davem@davemloft.net>,
-        =?utf-8?B?SsOpcsO0bWUgUG91aWxsZXI=?= <Jerome.Pouiller@silabs.com>
-Subject: [PATCH v2 29/65] staging: wfx: simplify hif_join()
-Thread-Topic: [PATCH v2 29/65] staging: wfx: simplify hif_join()
-Thread-Index: AQHVy6tXquCrSDEORkeaA5ycct2Rrw==
-Date:   Wed, 15 Jan 2020 13:54:44 +0000
-Message-ID: <20200115135338.14374-30-Jerome.Pouiller@silabs.com>
-References: <20200115135338.14374-1-Jerome.Pouiller@silabs.com>
-In-Reply-To: <20200115135338.14374-1-Jerome.Pouiller@silabs.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-clientproxiedby: PR2P264CA0008.FRAP264.PROD.OUTLOOK.COM (2603:10a6:101::20)
- To MN2PR11MB4063.namprd11.prod.outlook.com (2603:10b6:208:13f::22)
-authentication-results: spf=none (sender IP is )
- smtp.mailfrom=Jerome.Pouiller@silabs.com; 
-x-ms-exchange-messagesentrepresentingtype: 1
-x-mailer: git-send-email 2.25.0
-x-originating-ip: [2a01:e35:8bf5:66a0:3dbe:4cb5:6059:a948]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: a200b61c-5c96-4d7d-e1c7-08d799c27a1a
-x-ms-traffictypediagnostic: MN2PR11MB3661:
-x-ms-exchange-transport-forked: True
-x-microsoft-antispam-prvs: <MN2PR11MB3661E88C58F211A122C6379093370@MN2PR11MB3661.namprd11.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:3173;
-x-forefront-prvs: 02830F0362
-x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(39860400002)(376002)(396003)(136003)(346002)(366004)(199004)(189003)(8886007)(6486002)(316002)(54906003)(71200400001)(36756003)(6506007)(66476007)(66446008)(66946007)(110136005)(8676002)(81166006)(81156014)(478600001)(86362001)(2616005)(4326008)(66574012)(2906002)(107886003)(1076003)(16526019)(186003)(85202003)(5660300002)(6512007)(52116002)(64756008)(66556008)(85182001)(8936002);DIR:OUT;SFP:1101;SCL:1;SRVR:MN2PR11MB3661;H:MN2PR11MB4063.namprd11.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;A:1;MX:1;
-received-spf: None (protection.outlook.com: silabs.com does not designate
- permitted sender hosts)
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: F2LMhS+T2ONX6Xn89JBoFXGIxV3toVnamorFxhmBq1ieOfcsP4ATyjVgfozsSa7tFdVy4lVPIPN8VRFLyqJJKsmWkWfr9B20pFv5iujJzHcwxFrgxLR2Zal2lt7DaQ5Hpveqp9Ou15fSTdKNoPTWnKjeZ2qUeLG0TMpoPnCY1Rs3k92GETF+9faQ6YoqHPTepDEewSLvuP35nt7Tas1I7suGhBtI34re0Tekd47iNBakYJrnuVKXgZk7l/Px7iZAE23kktzPKyCGQmDuZbpPj44BA5oTwHv14ckrKnBBqXFFEJppk7dgy8oLl/xriK1Ux5ODeeuKOX1DGl7OKvlVBV7xNDrOw6fzcUxz/CQuYRBaSIBRqbqvyiEY1s+cSdJpAjXKiS74Ke9y0lZP3EgBvGxFAievz0bxL2KiQbZAFbc30kXtl04Ku3sJCm7on/Tu
-Content-Type: text/plain; charset="utf-8"
-Content-ID: <4EE34D735786754AACA3310B6DF3A509@namprd11.prod.outlook.com>
-Content-Transfer-Encoding: base64
+        id S1729360AbgAOONA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 15 Jan 2020 09:13:00 -0500
+Received: from us-smtp-delivery-1.mimecast.com ([207.211.31.120]:37348 "EHLO
+        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+        with ESMTP id S1726483AbgAOOM6 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 15 Jan 2020 09:12:58 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1579097576;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=saBPFAwsuv1615CQ4zI6QuQXluUkG0VYa063SwT+sFU=;
+        b=bwU+wq7bK6bq16wkenRhorCRR5kTRmdoyerVCkrGPjZEvm5hcHmQx3F0RicBAEM9L6rH4H
+        F3A8VIvQz+/it85d4Ky0vBpRBVqhQipQbp1uf2l/iEgVy2PN1GQQBcXCa+Mfj1gI9XloUC
+        glcxmAalFK3b2XJ+g5DoIPPqbpQXTKs=
+Received: from mail-lj1-f198.google.com (mail-lj1-f198.google.com
+ [209.85.208.198]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-43-tG6N9xbsNqak-YNBsjkb9A-1; Wed, 15 Jan 2020 09:12:54 -0500
+X-MC-Unique: tG6N9xbsNqak-YNBsjkb9A-1
+Received: by mail-lj1-f198.google.com with SMTP id y15so4177656lji.1
+        for <netdev@vger.kernel.org>; Wed, 15 Jan 2020 06:12:53 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:from:to:cc:date:message-id:user-agent
+         :mime-version:content-transfer-encoding;
+        bh=saBPFAwsuv1615CQ4zI6QuQXluUkG0VYa063SwT+sFU=;
+        b=Yj9Bdbzw0TT0al/Jnhqv5sAIdoQmkSYydx7bIKix4LAawRVCly0INR59PO8AQi3JVF
+         QhxXvlxu9p4MnbppVtU3FP1ms2cqgtvdoQ1LSL6ticJEnY3+NNJliSDxI/Q+WTdGN2DL
+         yaq6GNlP5MrEUb0MYDvoC08P1dFdrZBPUg7rNbppOF5Flb94UhXnk5shMqIeWMWM10xl
+         +FGNScpVwwqkiJkoNcUTeAXM2ahTtzY5t9DHyhHVNVP81Z+zF35dCYzjNagm2vxhJzo9
+         87/xFqdZVnMPR7XWchRPNgClts12u6AV0HqcMNl+FMKMs/40idpOFFaEiA8dWOURnWbQ
+         /HWA==
+X-Gm-Message-State: APjAAAXaIf8t8/fN5wVdmqPAB0aAQMxRQGEBDfxJg1awfcJUzLxiH6BO
+        VGNtfeFrhAJzPl3oeLzsbseacIAi9yhSOwP91afA3J5VupcWKPqkqMPt8xGPDDj7NKOtgWdPeMC
+        bdlHDk31gl5lPDvOV
+X-Received: by 2002:a2e:9a11:: with SMTP id o17mr1896821lji.256.1579097572417;
+        Wed, 15 Jan 2020 06:12:52 -0800 (PST)
+X-Google-Smtp-Source: APXvYqxOz6MLn3qRh9yjhsNOmCzgBNL6xnEKHhD/ve3KKlKsSz4BhA7JPOlVUTlzKiMwpE3+KfUf6A==
+X-Received: by 2002:a2e:9a11:: with SMTP id o17mr1896791lji.256.1579097572053;
+        Wed, 15 Jan 2020 06:12:52 -0800 (PST)
+Received: from alrua-x1.borgediget.toke.dk ([2a0c:4d80:42:443::2])
+        by smtp.gmail.com with ESMTPSA id u25sm8948959lfk.46.2020.01.15.06.12.50
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 15 Jan 2020 06:12:50 -0800 (PST)
+Received: by alrua-x1.borgediget.toke.dk (Postfix, from userid 1000)
+        id C96A71804D6; Wed, 15 Jan 2020 15:12:48 +0100 (CET)
+Subject: [PATCH bpf-next v2 00/10] tools: Use consistent libbpf include paths
+ everywhere
+From:   =?utf-8?q?Toke_H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
+To:     Alexei Starovoitov <ast@kernel.org>
+Cc:     Daniel Borkmann <daniel@iogearbox.net>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        Andrii Nakryiko <andriin@fb.com>,
+        Doug Ledford <dledford@redhat.com>,
+        Jason Gunthorpe <jgg@ziepe.ca>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <jakub.kicinski@netronome.com>,
+        Jesper Dangaard Brouer <brouer@redhat.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Ingo Molnar <mingo@redhat.com>,
+        Arnaldo Carvalho de Melo <acme@kernel.org>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
+        Jiri Olsa <jolsa@redhat.com>,
+        Namhyung Kim <namhyung@kernel.org>,
+        Shuah Khan <shuah@kernel.org>, netdev@vger.kernel.org,
+        bpf@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-rdma@vger.kernel.org, linux-kselftest@vger.kernel.org,
+        clang-built-linux@googlegroups.com
+Date:   Wed, 15 Jan 2020 15:12:48 +0100
+Message-ID: <157909756858.1192265.6657542187065456112.stgit@toke.dk>
+User-Agent: StGit/0.21
 MIME-Version: 1.0
-X-OriginatorOrg: silabs.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: a200b61c-5c96-4d7d-e1c7-08d799c27a1a
-X-MS-Exchange-CrossTenant-originalarrivaltime: 15 Jan 2020 13:54:44.9310
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 54dbd822-5231-4b20-944d-6f4abcd541fb
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: UyuXiyIMcnyeAx2GXGhhjRAF5Xsc73il+duY3sYyfpE3Qk2mym0G/6ZJhJg9kONYmMiuPR+bRiRmyk0I7h7cYA==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: MN2PR11MB3661
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-RnJvbTogSsOpcsO0bWUgUG91aWxsZXIgPGplcm9tZS5wb3VpbGxlckBzaWxhYnMuY29tPgoKVGhl
-IHN0cnVjdHVyZSBoaWZfcmVxX2pvaW4gY29tZSBmcm9tIGhhcmR3YXJlIEFQSS4gSXQgaXMgbm90
-IGludGVuZGVkCnRvIGJlIG1hbmlwdWxhdGVkIGluIHVwcGVyIGxheWVycyBvZiB0aGUgZHJpdmVy
-LgoKSW4gYWRkLCBjdXJyZW50IGNvZGUgZm9yIGhpZl9qb2luKCkgaXMgdG9vIGR1bWIuIEl0IHNo
-b3VsZCBwYWNrIGRhdGEKd2l0aCBoYXJkd2FyZSByZXByZXNlbnRhdGlvbiBpbnN0ZWFkIG9mIGxl
-YXZpbmcgYWxsIHdvcmsgdG8gdGhlIGNhbGxlci4KClNpZ25lZC1vZmYtYnk6IErDqXLDtG1lIFBv
-dWlsbGVyIDxqZXJvbWUucG91aWxsZXJAc2lsYWJzLmNvbT4KLS0tCiBkcml2ZXJzL3N0YWdpbmcv
-d2Z4L2hpZl90eC5jIHwgMjUgKysrKysrKysrKysrKystLS0tLS0KIGRyaXZlcnMvc3RhZ2luZy93
-ZngvaGlmX3R4LmggfCAgMyArKy0KIGRyaXZlcnMvc3RhZ2luZy93Zngvc3RhLmMgICAgfCA0NSAr
-KysrKysrKy0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0KIDMgZmlsZXMgY2hhbmdlZCwgMzAg
-aW5zZXJ0aW9ucygrKSwgNDMgZGVsZXRpb25zKC0pCgpkaWZmIC0tZ2l0IGEvZHJpdmVycy9zdGFn
-aW5nL3dmeC9oaWZfdHguYyBiL2RyaXZlcnMvc3RhZ2luZy93ZngvaGlmX3R4LmMKaW5kZXggMzJl
-ZWJhMmZjYTQ3Li4yNDI4MzYzMzcxZmEgMTAwNjQ0Ci0tLSBhL2RyaXZlcnMvc3RhZ2luZy93Zngv
-aGlmX3R4LmMKKysrIGIvZHJpdmVycy9zdGFnaW5nL3dmeC9oaWZfdHguYwpAQCAtMjg4LDE4ICsy
-ODgsMjkgQEAgaW50IGhpZl9zdG9wX3NjYW4oc3RydWN0IHdmeF92aWYgKnd2aWYpCiAJcmV0dXJu
-IHJldDsKIH0KIAotaW50IGhpZl9qb2luKHN0cnVjdCB3ZnhfdmlmICp3dmlmLCBjb25zdCBzdHJ1
-Y3QgaGlmX3JlcV9qb2luICphcmcpCitpbnQgaGlmX2pvaW4oc3RydWN0IHdmeF92aWYgKnd2aWYs
-IGNvbnN0IHN0cnVjdCBpZWVlODAyMTFfYnNzX2NvbmYgKmNvbmYsCisJICAgICBjb25zdCBzdHJ1
-Y3QgaWVlZTgwMjExX2NoYW5uZWwgKmNoYW5uZWwsIGNvbnN0IHU4ICpzc2lkaWUpCiB7CiAJaW50
-IHJldDsKIAlzdHJ1Y3QgaGlmX21zZyAqaGlmOwogCXN0cnVjdCBoaWZfcmVxX2pvaW4gKmJvZHkg
-PSB3ZnhfYWxsb2NfaGlmKHNpemVvZigqYm9keSksICZoaWYpOwogCi0JbWVtY3B5KGJvZHksIGFy
-Zywgc2l6ZW9mKHN0cnVjdCBoaWZfcmVxX2pvaW4pKTsKLQljcHVfdG9fbGUxNnMoJmJvZHktPmNo
-YW5uZWxfbnVtYmVyKTsKLQljcHVfdG9fbGUxNnMoJmJvZHktPmF0aW1fd2luZG93KTsKLQljcHVf
-dG9fbGUzMnMoJmJvZHktPnNzaWRfbGVuZ3RoKTsKLQljcHVfdG9fbGUzMnMoJmJvZHktPmJlYWNv
-bl9pbnRlcnZhbCk7Ci0JY3B1X3RvX2xlMzJzKCZib2R5LT5iYXNpY19yYXRlX3NldCk7CisJV0FS
-Tl9PTighY29uZi0+YmFzaWNfcmF0ZXMpOworCWJvZHktPmluZnJhc3RydWN0dXJlX2Jzc19tb2Rl
-ID0gIWNvbmYtPmlic3Nfam9pbmVkOworCWJvZHktPnNob3J0X3ByZWFtYmxlID0gY29uZi0+dXNl
-X3Nob3J0X3ByZWFtYmxlOworCWlmIChjaGFubmVsICYmIGNoYW5uZWwtPmZsYWdzICYgSUVFRTgw
-MjExX0NIQU5fTk9fSVIpCisJCWJvZHktPnByb2JlX2Zvcl9qb2luID0gMDsKKwllbHNlCisJCWJv
-ZHktPnByb2JlX2Zvcl9qb2luID0gMTsKKwlib2R5LT5jaGFubmVsX251bWJlciA9IGNwdV90b19s
-ZTE2KGNoYW5uZWwtPmh3X3ZhbHVlKTsKKwlib2R5LT5iZWFjb25faW50ZXJ2YWwgPSBjcHVfdG9f
-bGUzMihjb25mLT5iZWFjb25faW50KTsKKwlib2R5LT5iYXNpY19yYXRlX3NldCA9CisJCWNwdV90
-b19sZTMyKHdmeF9yYXRlX21hc2tfdG9faHcod3ZpZi0+d2RldiwgY29uZi0+YmFzaWNfcmF0ZXMp
-KTsKKwltZW1jcHkoYm9keS0+YnNzaWQsIGNvbmYtPmJzc2lkLCBzaXplb2YoYm9keS0+YnNzaWQp
-KTsKKwlpZiAoIWNvbmYtPmlic3Nfam9pbmVkICYmIHNzaWRpZSkgeworCQlib2R5LT5zc2lkX2xl
-bmd0aCA9IGNwdV90b19sZTMyKHNzaWRpZVsxXSk7CisJCW1lbWNweShib2R5LT5zc2lkLCAmc3Np
-ZGllWzJdLCBzc2lkaWVbMV0pOworCX0KIAl3ZnhfZmlsbF9oZWFkZXIoaGlmLCB3dmlmLT5pZCwg
-SElGX1JFUV9JRF9KT0lOLCBzaXplb2YoKmJvZHkpKTsKIAlyZXQgPSB3ZnhfY21kX3NlbmQod3Zp
-Zi0+d2RldiwgaGlmLCBOVUxMLCAwLCBmYWxzZSk7CiAJa2ZyZWUoaGlmKTsKZGlmZiAtLWdpdCBh
-L2RyaXZlcnMvc3RhZ2luZy93ZngvaGlmX3R4LmggYi9kcml2ZXJzL3N0YWdpbmcvd2Z4L2hpZl90
-eC5oCmluZGV4IDkyNGI4ODljYWQwYS4uMjA5NzdlNDYxNzE4IDEwMDY0NAotLS0gYS9kcml2ZXJz
-L3N0YWdpbmcvd2Z4L2hpZl90eC5oCisrKyBiL2RyaXZlcnMvc3RhZ2luZy93ZngvaGlmX3R4LmgK
-QEAgLTQ1LDcgKzQ1LDggQEAgaW50IGhpZl93cml0ZV9taWIoc3RydWN0IHdmeF9kZXYgKndkZXYs
-IGludCB2aWZfaWQsIHUxNiBtaWJfaWQsCiBpbnQgaGlmX3NjYW4oc3RydWN0IHdmeF92aWYgKnd2
-aWYsIHN0cnVjdCBjZmc4MDIxMV9zY2FuX3JlcXVlc3QgKnJlcTgwMjExLAogCSAgICAgaW50IGNo
-YW5fc3RhcnQsIGludCBjaGFuX251bSk7CiBpbnQgaGlmX3N0b3Bfc2NhbihzdHJ1Y3Qgd2Z4X3Zp
-ZiAqd3ZpZik7Ci1pbnQgaGlmX2pvaW4oc3RydWN0IHdmeF92aWYgKnd2aWYsIGNvbnN0IHN0cnVj
-dCBoaWZfcmVxX2pvaW4gKmFyZyk7CitpbnQgaGlmX2pvaW4oc3RydWN0IHdmeF92aWYgKnd2aWYs
-IGNvbnN0IHN0cnVjdCBpZWVlODAyMTFfYnNzX2NvbmYgKmNvbmYsCisJICAgICBjb25zdCBzdHJ1
-Y3QgaWVlZTgwMjExX2NoYW5uZWwgKmNoYW5uZWwsIGNvbnN0IHU4ICpzc2lkaWUpOwogaW50IGhp
-Zl9zZXRfcG0oc3RydWN0IHdmeF92aWYgKnd2aWYsIGJvb2wgcHMsIGludCBkeW5hbWljX3BzX3Rp
-bWVvdXQpOwogaW50IGhpZl9zZXRfYnNzX3BhcmFtcyhzdHJ1Y3Qgd2Z4X3ZpZiAqd3ZpZiwKIAkJ
-ICAgICAgIGNvbnN0IHN0cnVjdCBoaWZfcmVxX3NldF9ic3NfcGFyYW1zICphcmcpOwpkaWZmIC0t
-Z2l0IGEvZHJpdmVycy9zdGFnaW5nL3dmeC9zdGEuYyBiL2RyaXZlcnMvc3RhZ2luZy93Zngvc3Rh
-LmMKaW5kZXggMzk1YTI4MjM0NmIxLi4zMGM2MmUzYjM3MTYgMTAwNjQ0Ci0tLSBhL2RyaXZlcnMv
-c3RhZ2luZy93Zngvc3RhLmMKKysrIGIvZHJpdmVycy9zdGFnaW5nL3dmeC9zdGEuYwpAQCAtNTEy
-LDMyICs1MTIsMTkgQEAgc3RhdGljIHZvaWQgd2Z4X3NldF9tZnAoc3RydWN0IHdmeF92aWYgKnd2
-aWYsCiAKIHN0YXRpYyB2b2lkIHdmeF9kb19qb2luKHN0cnVjdCB3ZnhfdmlmICp3dmlmKQogewot
-CWNvbnN0IHU4ICpic3NpZDsKKwlpbnQgcmV0OworCWNvbnN0IHU4ICpzc2lkaWU7CiAJc3RydWN0
-IGllZWU4MDIxMV9ic3NfY29uZiAqY29uZiA9ICZ3dmlmLT52aWYtPmJzc19jb25mOwogCXN0cnVj
-dCBjZmc4MDIxMV9ic3MgKmJzcyA9IE5VTEw7Ci0Jc3RydWN0IGhpZl9yZXFfam9pbiBqb2luID0g
-ewotCQkuaW5mcmFzdHJ1Y3R1cmVfYnNzX21vZGUgPSAhY29uZi0+aWJzc19qb2luZWQsCi0JCS5z
-aG9ydF9wcmVhbWJsZSA9IGNvbmYtPnVzZV9zaG9ydF9wcmVhbWJsZSwKLQkJLnByb2JlX2Zvcl9q
-b2luID0gMSwKLQkJLmF0aW1fd2luZG93ID0gMCwKLQkJLmJhc2ljX3JhdGVfc2V0ID0gd2Z4X3Jh
-dGVfbWFza190b19odyh3dmlmLT53ZGV2LAotCQkJCQkJICAgICAgY29uZi0+YmFzaWNfcmF0ZXMp
-LAotCX07CiAKIAl3ZnhfdHhfbG9ja19mbHVzaCh3dmlmLT53ZGV2KTsKIAotCWlmICh3dmlmLT5j
-aGFubmVsLT5mbGFncyAmIElFRUU4MDIxMV9DSEFOX05PX0lSKQotCQlqb2luLnByb2JlX2Zvcl9q
-b2luID0gMDsKLQogCWlmICh3dmlmLT5zdGF0ZSkKIAkJd2Z4X2RvX3Vuam9pbih3dmlmKTsKIAot
-CWJzc2lkID0gd3ZpZi0+dmlmLT5ic3NfY29uZi5ic3NpZDsKLQogCWJzcyA9IGNmZzgwMjExX2dl
-dF9ic3Mod3ZpZi0+d2Rldi0+aHctPndpcGh5LCB3dmlmLT5jaGFubmVsLAotCQkJICAgICAgIGJz
-c2lkLCBOVUxMLCAwLAorCQkJICAgICAgIGNvbmYtPmJzc2lkLCBOVUxMLCAwLAogCQkJICAgICAg
-IElFRUU4MDIxMV9CU1NfVFlQRV9BTlksIElFRUU4MDIxMV9QUklWQUNZX0FOWSk7Ci0KIAlpZiAo
-IWJzcyAmJiAhY29uZi0+aWJzc19qb2luZWQpIHsKIAkJd2Z4X3R4X3VubG9jayh3dmlmLT53ZGV2
-KTsKIAkJcmV0dXJuOwpAQCAtNTQ1LDI5ICs1MzIsMTUgQEAgc3RhdGljIHZvaWQgd2Z4X2RvX2pv
-aW4oc3RydWN0IHdmeF92aWYgKnd2aWYpCiAKIAltdXRleF9sb2NrKCZ3dmlmLT53ZGV2LT5jb25m
-X211dGV4KTsKIAotCS8qIFNhbml0eSBjaGVjayBiYXNpYyByYXRlcyAqLwotCWlmICgham9pbi5i
-YXNpY19yYXRlX3NldCkKLQkJam9pbi5iYXNpY19yYXRlX3NldCA9IDc7Ci0KIAkvKiBTYW5pdHkg
-Y2hlY2sgYmVhY29uIGludGVydmFsICovCiAJaWYgKCF3dmlmLT5iZWFjb25faW50KQogCQl3dmlm
-LT5iZWFjb25faW50ID0gMTsKIAotCWpvaW4uYmVhY29uX2ludGVydmFsID0gd3ZpZi0+YmVhY29u
-X2ludDsKLQlqb2luLmNoYW5uZWxfbnVtYmVyID0gd3ZpZi0+Y2hhbm5lbC0+aHdfdmFsdWU7Ci0J
-bWVtY3B5KGpvaW4uYnNzaWQsIGJzc2lkLCBzaXplb2Yoam9pbi5ic3NpZCkpOwotCi0JaWYgKCFj
-b25mLT5pYnNzX2pvaW5lZCkgewotCQljb25zdCB1OCAqc3NpZGllOwotCi0JCXJjdV9yZWFkX2xv
-Y2soKTsKKwlyY3VfcmVhZF9sb2NrKCk7CisJaWYgKCFjb25mLT5pYnNzX2pvaW5lZCkKIAkJc3Np
-ZGllID0gaWVlZTgwMjExX2Jzc19nZXRfaWUoYnNzLCBXTEFOX0VJRF9TU0lEKTsKLQkJaWYgKHNz
-aWRpZSkgewotCQkJam9pbi5zc2lkX2xlbmd0aCA9IHNzaWRpZVsxXTsKLQkJCW1lbWNweShqb2lu
-LnNzaWQsICZzc2lkaWVbMl0sIGpvaW4uc3NpZF9sZW5ndGgpOwotCQl9Ci0JCXJjdV9yZWFkX3Vu
-bG9jaygpOwotCX0KKwllbHNlCisJCXNzaWRpZSA9IE5VTEw7CiAKIAl3ZnhfdHhfZmx1c2god3Zp
-Zi0+d2Rldik7CiAKQEAgLTU3OCw3ICs1NTEsOSBAQCBzdGF0aWMgdm9pZCB3ZnhfZG9fam9pbihz
-dHJ1Y3Qgd2Z4X3ZpZiAqd3ZpZikKIAogCS8qIFBlcmZvcm0gYWN0dWFsIGpvaW4gKi8KIAl3dmlm
-LT53ZGV2LT50eF9idXJzdF9pZHggPSAtMTsKLQlpZiAoaGlmX2pvaW4od3ZpZiwgJmpvaW4pKSB7
-CisJcmV0ID0gaGlmX2pvaW4od3ZpZiwgY29uZiwgd3ZpZi0+Y2hhbm5lbCwgc3NpZGllKTsKKwly
-Y3VfcmVhZF91bmxvY2soKTsKKwlpZiAocmV0KSB7CiAJCWllZWU4MDIxMV9jb25uZWN0aW9uX2xv
-c3Mod3ZpZi0+dmlmKTsKIAkJd3ZpZi0+am9pbl9jb21wbGV0ZV9zdGF0dXMgPSAtMTsKIAkJLyog
-VHggbG9jayBzdGlsbCBoZWxkLCB1bmpvaW4gd2lsbCBjbGVhciBpdC4gKi8KLS0gCjIuMjUuMAoK
+The recent commit 6910d7d3867a ("selftests/bpf: Ensure bpf_helper_defs.h are
+taken from selftests dir") broke compilation against libbpf if it is installed
+on the system, and $INCLUDEDIR/bpf is not in the include path.
+
+Since having the bpf/ subdir of $INCLUDEDIR in the include path has never been a
+requirement for building against libbpf before, this needs to be fixed. One
+option is to just revert the offending commit and figure out a different way to
+achieve what it aims for. However, this series takes a different approach:
+Changing all in-tree users of libbpf to consistently use a bpf/ prefix in
+#include directives for header files from libbpf.
+
+This turns out to be a somewhat invasive change in the number of files touched;
+however, the actual changes to files are fairly trivial (most of them are simply
+made with 'sed'). Also, this approach has the advantage that it makes external
+and internal users consistent with each other, and ensures no future changes
+breaks things in the same way as the commit referenced above.
+
+The series is split to make the change for one tool subdir at a time, while
+trying not to break the build along the way. It is structured like this:
+
+- Patch 1-2: Trivial fixes to Makefiles for issues I discovered while changing
+  the include paths.
+
+- Patch 3-7: Change the include directives to use the bpf/ prefix, and updates
+  Makefiles to make sure tools/lib/ is part of the include path, but without
+  removing tools/lib/bpf
+
+- Patch 8: Change the bpf_helpers file in libbpf itself to use the bpf/ prefix
+  when including (the original source of breakage).
+
+- Patch 9-10: Remove tools/lib/bpf from include paths to make sure we don't
+  inadvertently re-introduce includes without the bpf/ prefix.
+
+---
+
+Toke Høiland-Jørgensen (10):
+      samples/bpf: Don't try to remove user's homedir on clean
+      tools/bpf/runqslower: Fix override option for VMLINUX_BTF
+      tools/runqslower: Use consistent include paths for libbpf
+      selftests: Use consistent include paths for libbpf
+      bpftool: Use consistent include paths for libbpf
+      perf: Use consistent include paths for libbpf
+      samples/bpf: Use consistent include paths for libbpf
+      libbpf: Fix include of bpf_helpers.h when libbpf is installed on system
+      selftests: Remove tools/lib/bpf from include path
+      tools/runqslower: Remove tools/lib/bpf from include path
+
+
+ samples/bpf/Makefile                               |    5 ++---
+ samples/bpf/cpustat_kern.c                         |    2 +-
+ samples/bpf/fds_example.c                          |    2 +-
+ samples/bpf/hbm.c                                  |    4 ++--
+ samples/bpf/hbm_kern.h                             |    4 ++--
+ samples/bpf/ibumad_kern.c                          |    2 +-
+ samples/bpf/ibumad_user.c                          |    2 +-
+ samples/bpf/lathist_kern.c                         |    2 +-
+ samples/bpf/lwt_len_hist_kern.c                    |    2 +-
+ samples/bpf/map_perf_test_kern.c                   |    4 ++--
+ samples/bpf/offwaketime_kern.c                     |    4 ++--
+ samples/bpf/offwaketime_user.c                     |    2 +-
+ samples/bpf/parse_ldabs.c                          |    2 +-
+ samples/bpf/parse_simple.c                         |    2 +-
+ samples/bpf/parse_varlen.c                         |    2 +-
+ samples/bpf/sampleip_kern.c                        |    4 ++--
+ samples/bpf/sampleip_user.c                        |    2 +-
+ samples/bpf/sock_flags_kern.c                      |    2 +-
+ samples/bpf/sockex1_kern.c                         |    2 +-
+ samples/bpf/sockex1_user.c                         |    2 +-
+ samples/bpf/sockex2_kern.c                         |    2 +-
+ samples/bpf/sockex2_user.c                         |    2 +-
+ samples/bpf/sockex3_kern.c                         |    2 +-
+ samples/bpf/spintest_kern.c                        |    4 ++--
+ samples/bpf/spintest_user.c                        |    2 +-
+ samples/bpf/syscall_tp_kern.c                      |    2 +-
+ samples/bpf/task_fd_query_kern.c                   |    2 +-
+ samples/bpf/task_fd_query_user.c                   |    2 +-
+ samples/bpf/tc_l2_redirect_kern.c                  |    2 +-
+ samples/bpf/tcbpf1_kern.c                          |    2 +-
+ samples/bpf/tcp_basertt_kern.c                     |    4 ++--
+ samples/bpf/tcp_bufs_kern.c                        |    4 ++--
+ samples/bpf/tcp_clamp_kern.c                       |    4 ++--
+ samples/bpf/tcp_cong_kern.c                        |    4 ++--
+ samples/bpf/tcp_dumpstats_kern.c                   |    4 ++--
+ samples/bpf/tcp_iw_kern.c                          |    4 ++--
+ samples/bpf/tcp_rwnd_kern.c                        |    4 ++--
+ samples/bpf/tcp_synrto_kern.c                      |    4 ++--
+ samples/bpf/tcp_tos_reflect_kern.c                 |    4 ++--
+ samples/bpf/test_cgrp2_tc_kern.c                   |    2 +-
+ samples/bpf/test_current_task_under_cgroup_kern.c  |    2 +-
+ samples/bpf/test_lwt_bpf.c                         |    2 +-
+ samples/bpf/test_map_in_map_kern.c                 |    4 ++--
+ samples/bpf/test_overhead_kprobe_kern.c            |    4 ++--
+ samples/bpf/test_overhead_raw_tp_kern.c            |    2 +-
+ samples/bpf/test_overhead_tp_kern.c                |    2 +-
+ samples/bpf/test_probe_write_user_kern.c           |    4 ++--
+ samples/bpf/trace_event_kern.c                     |    4 ++--
+ samples/bpf/trace_event_user.c                     |    2 +-
+ samples/bpf/trace_output_kern.c                    |    2 +-
+ samples/bpf/trace_output_user.c                    |    2 +-
+ samples/bpf/tracex1_kern.c                         |    4 ++--
+ samples/bpf/tracex2_kern.c                         |    4 ++--
+ samples/bpf/tracex3_kern.c                         |    4 ++--
+ samples/bpf/tracex4_kern.c                         |    4 ++--
+ samples/bpf/tracex5_kern.c                         |    4 ++--
+ samples/bpf/tracex6_kern.c                         |    2 +-
+ samples/bpf/tracex7_kern.c                         |    2 +-
+ samples/bpf/xdp1_kern.c                            |    2 +-
+ samples/bpf/xdp1_user.c                            |    4 ++--
+ samples/bpf/xdp2_kern.c                            |    2 +-
+ samples/bpf/xdp2skb_meta_kern.c                    |    2 +-
+ samples/bpf/xdp_adjust_tail_kern.c                 |    2 +-
+ samples/bpf/xdp_adjust_tail_user.c                 |    4 ++--
+ samples/bpf/xdp_fwd_kern.c                         |    2 +-
+ samples/bpf/xdp_fwd_user.c                         |    2 +-
+ samples/bpf/xdp_monitor_kern.c                     |    2 +-
+ samples/bpf/xdp_redirect_cpu_kern.c                |    2 +-
+ samples/bpf/xdp_redirect_cpu_user.c                |    2 +-
+ samples/bpf/xdp_redirect_kern.c                    |    2 +-
+ samples/bpf/xdp_redirect_map_kern.c                |    2 +-
+ samples/bpf/xdp_redirect_map_user.c                |    2 +-
+ samples/bpf/xdp_redirect_user.c                    |    2 +-
+ samples/bpf/xdp_router_ipv4_kern.c                 |    2 +-
+ samples/bpf/xdp_router_ipv4_user.c                 |    2 +-
+ samples/bpf/xdp_rxq_info_kern.c                    |    2 +-
+ samples/bpf/xdp_rxq_info_user.c                    |    4 ++--
+ samples/bpf/xdp_sample_pkts_kern.c                 |    2 +-
+ samples/bpf/xdp_sample_pkts_user.c                 |    2 +-
+ samples/bpf/xdp_tx_iptunnel_kern.c                 |    2 +-
+ samples/bpf/xdp_tx_iptunnel_user.c                 |    2 +-
+ samples/bpf/xdpsock_kern.c                         |    2 +-
+ samples/bpf/xdpsock_user.c                         |    6 +++---
+ tools/bpf/bpftool/Documentation/bpftool-gen.rst    |    2 +-
+ tools/bpf/bpftool/Makefile                         |    2 +-
+ tools/bpf/bpftool/btf.c                            |    8 ++++----
+ tools/bpf/bpftool/btf_dumper.c                     |    2 +-
+ tools/bpf/bpftool/cgroup.c                         |    2 +-
+ tools/bpf/bpftool/common.c                         |    4 ++--
+ tools/bpf/bpftool/feature.c                        |    4 ++--
+ tools/bpf/bpftool/gen.c                            |   10 +++++-----
+ tools/bpf/bpftool/jit_disasm.c                     |    2 +-
+ tools/bpf/bpftool/main.c                           |    4 ++--
+ tools/bpf/bpftool/map.c                            |    4 ++--
+ tools/bpf/bpftool/map_perf_ring.c                  |    4 ++--
+ tools/bpf/bpftool/net.c                            |    8 ++++----
+ tools/bpf/bpftool/netlink_dumper.c                 |    4 ++--
+ tools/bpf/bpftool/perf.c                           |    2 +-
+ tools/bpf/bpftool/prog.c                           |    6 +++---
+ tools/bpf/bpftool/xlated_dumper.c                  |    2 +-
+ tools/bpf/runqslower/Makefile                      |   21 ++++++++++++--------
+ tools/bpf/runqslower/runqslower.bpf.c              |    2 +-
+ tools/bpf/runqslower/runqslower.c                  |    4 ++--
+ tools/lib/bpf/bpf_helpers.h                        |    2 +-
+ tools/perf/examples/bpf/5sec.c                     |    2 +-
+ tools/perf/examples/bpf/empty.c                    |    2 +-
+ tools/perf/examples/bpf/sys_enter_openat.c         |    2 +-
+ tools/perf/include/bpf/pid_filter.h                |    2 +-
+ tools/perf/include/bpf/stdio.h                     |    2 +-
+ tools/perf/include/bpf/unistd.h                    |    2 +-
+ tools/testing/selftests/bpf/.gitignore             |    3 ++-
+ tools/testing/selftests/bpf/Makefile               |   16 ++++++++-------
+ tools/testing/selftests/bpf/bpf_tcp_helpers.h      |    4 ++--
+ tools/testing/selftests/bpf/bpf_trace_helpers.h    |    2 +-
+ tools/testing/selftests/bpf/bpf_util.h             |    2 +-
+ tools/testing/selftests/bpf/prog_tests/cpu_mask.c  |    2 +-
+ .../testing/selftests/bpf/prog_tests/perf_buffer.c |    2 +-
+ tools/testing/selftests/bpf/progs/bpf_dctcp.c      |    2 +-
+ tools/testing/selftests/bpf/progs/bpf_flow.c       |    4 ++--
+ tools/testing/selftests/bpf/progs/connect4_prog.c  |    4 ++--
+ tools/testing/selftests/bpf/progs/connect6_prog.c  |    4 ++--
+ tools/testing/selftests/bpf/progs/dev_cgroup.c     |    2 +-
+ tools/testing/selftests/bpf/progs/fentry_test.c    |    2 +-
+ tools/testing/selftests/bpf/progs/fexit_bpf2bpf.c  |    2 +-
+ .../selftests/bpf/progs/fexit_bpf2bpf_simple.c     |    2 +-
+ tools/testing/selftests/bpf/progs/fexit_test.c     |    2 +-
+ .../selftests/bpf/progs/get_cgroup_id_kern.c       |    2 +-
+ tools/testing/selftests/bpf/progs/kfree_skb.c      |    4 ++--
+ tools/testing/selftests/bpf/progs/loop1.c          |    4 ++--
+ tools/testing/selftests/bpf/progs/loop2.c          |    4 ++--
+ tools/testing/selftests/bpf/progs/loop3.c          |    4 ++--
+ tools/testing/selftests/bpf/progs/loop4.c          |    2 +-
+ tools/testing/selftests/bpf/progs/loop5.c          |    2 +-
+ tools/testing/selftests/bpf/progs/netcnt_prog.c    |    2 +-
+ tools/testing/selftests/bpf/progs/pyperf.h         |    2 +-
+ .../testing/selftests/bpf/progs/sample_map_ret0.c  |    2 +-
+ tools/testing/selftests/bpf/progs/sendmsg4_prog.c  |    4 ++--
+ tools/testing/selftests/bpf/progs/sendmsg6_prog.c  |    4 ++--
+ .../selftests/bpf/progs/socket_cookie_prog.c       |    4 ++--
+ .../selftests/bpf/progs/sockmap_parse_prog.c       |    4 ++--
+ .../selftests/bpf/progs/sockmap_tcp_msg_prog.c     |    4 ++--
+ .../selftests/bpf/progs/sockmap_verdict_prog.c     |    4 ++--
+ .../testing/selftests/bpf/progs/sockopt_inherit.c  |    2 +-
+ tools/testing/selftests/bpf/progs/sockopt_multi.c  |    2 +-
+ tools/testing/selftests/bpf/progs/sockopt_sk.c     |    2 +-
+ tools/testing/selftests/bpf/progs/strobemeta.h     |    2 +-
+ tools/testing/selftests/bpf/progs/tailcall1.c      |    2 +-
+ tools/testing/selftests/bpf/progs/tailcall2.c      |    2 +-
+ tools/testing/selftests/bpf/progs/tailcall3.c      |    2 +-
+ tools/testing/selftests/bpf/progs/tailcall4.c      |    2 +-
+ tools/testing/selftests/bpf/progs/tailcall5.c      |    2 +-
+ tools/testing/selftests/bpf/progs/tcp_rtt.c        |    2 +-
+ .../testing/selftests/bpf/progs/test_adjust_tail.c |    2 +-
+ .../selftests/bpf/progs/test_attach_probe.c        |    2 +-
+ tools/testing/selftests/bpf/progs/test_btf_haskv.c |    2 +-
+ tools/testing/selftests/bpf/progs/test_btf_newkv.c |    2 +-
+ tools/testing/selftests/bpf/progs/test_btf_nokv.c  |    2 +-
+ .../testing/selftests/bpf/progs/test_core_extern.c |    2 +-
+ .../selftests/bpf/progs/test_core_reloc_arrays.c   |    4 ++--
+ .../bpf/progs/test_core_reloc_bitfields_direct.c   |    4 ++--
+ .../bpf/progs/test_core_reloc_bitfields_probed.c   |    4 ++--
+ .../bpf/progs/test_core_reloc_existence.c          |    4 ++--
+ .../selftests/bpf/progs/test_core_reloc_flavors.c  |    4 ++--
+ .../selftests/bpf/progs/test_core_reloc_ints.c     |    4 ++--
+ .../selftests/bpf/progs/test_core_reloc_kernel.c   |    4 ++--
+ .../selftests/bpf/progs/test_core_reloc_misc.c     |    4 ++--
+ .../selftests/bpf/progs/test_core_reloc_mods.c     |    4 ++--
+ .../selftests/bpf/progs/test_core_reloc_nesting.c  |    4 ++--
+ .../bpf/progs/test_core_reloc_primitives.c         |    4 ++--
+ .../bpf/progs/test_core_reloc_ptr_as_arr.c         |    4 ++--
+ .../selftests/bpf/progs/test_core_reloc_size.c     |    4 ++--
+ .../selftests/bpf/progs/test_get_stack_rawtp.c     |    2 +-
+ .../testing/selftests/bpf/progs/test_global_data.c |    2 +-
+ .../selftests/bpf/progs/test_global_func1.c        |    2 +-
+ .../selftests/bpf/progs/test_global_func3.c        |    2 +-
+ .../selftests/bpf/progs/test_global_func5.c        |    2 +-
+ .../selftests/bpf/progs/test_global_func6.c        |    2 +-
+ .../selftests/bpf/progs/test_global_func7.c        |    2 +-
+ tools/testing/selftests/bpf/progs/test_l4lb.c      |    4 ++--
+ .../selftests/bpf/progs/test_l4lb_noinline.c       |    4 ++--
+ .../selftests/bpf/progs/test_lirc_mode2_kern.c     |    2 +-
+ .../selftests/bpf/progs/test_lwt_ip_encap.c        |    4 ++--
+ .../selftests/bpf/progs/test_lwt_seg6local.c       |    4 ++--
+ .../testing/selftests/bpf/progs/test_map_in_map.c  |    2 +-
+ tools/testing/selftests/bpf/progs/test_map_lock.c  |    2 +-
+ tools/testing/selftests/bpf/progs/test_mmap.c      |    2 +-
+ tools/testing/selftests/bpf/progs/test_obj_id.c    |    2 +-
+ tools/testing/selftests/bpf/progs/test_overhead.c  |    4 ++--
+ .../testing/selftests/bpf/progs/test_perf_buffer.c |    2 +-
+ tools/testing/selftests/bpf/progs/test_pinning.c   |    2 +-
+ .../selftests/bpf/progs/test_pinning_invalid.c     |    2 +-
+ .../testing/selftests/bpf/progs/test_pkt_access.c  |    4 ++--
+ .../selftests/bpf/progs/test_pkt_md_access.c       |    2 +-
+ .../testing/selftests/bpf/progs/test_probe_user.c  |    4 ++--
+ .../selftests/bpf/progs/test_queue_stack_map.h     |    2 +-
+ .../testing/selftests/bpf/progs/test_rdonly_maps.c |    2 +-
+ tools/testing/selftests/bpf/progs/test_seg6_loop.c |    4 ++--
+ .../bpf/progs/test_select_reuseport_kern.c         |    4 ++--
+ .../selftests/bpf/progs/test_send_signal_kern.c    |    2 +-
+ .../selftests/bpf/progs/test_sk_lookup_kern.c      |    4 ++--
+ .../selftests/bpf/progs/test_skb_cgroup_id_kern.c  |    2 +-
+ tools/testing/selftests/bpf/progs/test_skb_ctx.c   |    2 +-
+ tools/testing/selftests/bpf/progs/test_skeleton.c  |    2 +-
+ .../selftests/bpf/progs/test_sock_fields_kern.c    |    4 ++--
+ tools/testing/selftests/bpf/progs/test_spin_lock.c |    2 +-
+ .../selftests/bpf/progs/test_stacktrace_build_id.c |    2 +-
+ .../selftests/bpf/progs/test_stacktrace_map.c      |    2 +-
+ .../selftests/bpf/progs/test_sysctl_loop1.c        |    2 +-
+ .../selftests/bpf/progs/test_sysctl_loop2.c        |    2 +-
+ .../testing/selftests/bpf/progs/test_sysctl_prog.c |    2 +-
+ tools/testing/selftests/bpf/progs/test_tc_edt.c    |    4 ++--
+ tools/testing/selftests/bpf/progs/test_tc_tunnel.c |    4 ++--
+ .../bpf/progs/test_tcp_check_syncookie_kern.c      |    4 ++--
+ .../testing/selftests/bpf/progs/test_tcp_estats.c  |    2 +-
+ .../testing/selftests/bpf/progs/test_tcpbpf_kern.c |    4 ++--
+ .../selftests/bpf/progs/test_tcpnotify_kern.c      |    4 ++--
+ .../testing/selftests/bpf/progs/test_tracepoint.c  |    2 +-
+ .../testing/selftests/bpf/progs/test_tunnel_kern.c |    4 ++--
+ .../selftests/bpf/progs/test_verif_scale1.c        |    2 +-
+ .../selftests/bpf/progs/test_verif_scale2.c        |    2 +-
+ .../selftests/bpf/progs/test_verif_scale3.c        |    2 +-
+ tools/testing/selftests/bpf/progs/test_xdp.c       |    4 ++--
+ tools/testing/selftests/bpf/progs/test_xdp_loop.c  |    4 ++--
+ tools/testing/selftests/bpf/progs/test_xdp_meta.c  |    2 +-
+ .../selftests/bpf/progs/test_xdp_noinline.c        |    4 ++--
+ .../selftests/bpf/progs/test_xdp_redirect.c        |    2 +-
+ tools/testing/selftests/bpf/progs/test_xdp_vlan.c  |    4 ++--
+ tools/testing/selftests/bpf/progs/xdp_dummy.c      |    2 +-
+ .../testing/selftests/bpf/progs/xdp_redirect_map.c |    2 +-
+ tools/testing/selftests/bpf/progs/xdp_tx.c         |    2 +-
+ tools/testing/selftests/bpf/progs/xdping_kern.c    |    4 ++--
+ tools/testing/selftests/bpf/test_cpp.cpp           |    6 +++---
+ tools/testing/selftests/bpf/test_hashmap.c         |    2 +-
+ tools/testing/selftests/bpf/test_progs.h           |    2 +-
+ tools/testing/selftests/bpf/test_sock.c            |    2 +-
+ tools/testing/selftests/bpf/test_sockmap_kern.h    |    4 ++--
+ tools/testing/selftests/bpf/test_sysctl.c          |    2 +-
+ tools/testing/selftests/bpf/trace_helpers.h        |    2 +-
+ 238 files changed, 359 insertions(+), 354 deletions(-)
+
