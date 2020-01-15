@@ -2,83 +2,94 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id A644B13D0A5
-	for <lists+netdev@lfdr.de>; Thu, 16 Jan 2020 00:26:32 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B7FF113D0BB
+	for <lists+netdev@lfdr.de>; Thu, 16 Jan 2020 00:41:55 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729550AbgAOX0b (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 15 Jan 2020 18:26:31 -0500
-Received: from mail-pj1-f67.google.com ([209.85.216.67]:52318 "EHLO
-        mail-pj1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726513AbgAOX0b (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 15 Jan 2020 18:26:31 -0500
-Received: by mail-pj1-f67.google.com with SMTP id a6so629575pjh.2;
-        Wed, 15 Jan 2020 15:26:30 -0800 (PST)
+        id S1731112AbgAOXly (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 15 Jan 2020 18:41:54 -0500
+Received: from mail-qk1-f194.google.com ([209.85.222.194]:46285 "EHLO
+        mail-qk1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726472AbgAOXly (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 15 Jan 2020 18:41:54 -0500
+Received: by mail-qk1-f194.google.com with SMTP id r14so17447283qke.13;
+        Wed, 15 Jan 2020 15:41:53 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=zdml4UeLEt0s/1BLRCQY3uiyNW6whOFDg1JrZMFRe+k=;
-        b=ba211we2+vdKuAuSUqJdcl526e7qKNQB/cjbuvV0FwuKGSkRGCuACVLQ5NmWM6awSo
-         PfO/Hkb/gCIaH61OrjvRY8EFJUSmvPU0wHTuxj523dZd4zBh6xIYBsk1DLYHxJ91wG88
-         rzvoHKhqLezIiveDSrLYYRWIrYch+U7n3dhlObowknOTb52TN96mMeMpk++Ov+J5+yQ3
-         JWEu7HQa3YquJnrFnnuah7oLNvhhc32U4MjhRz0hMg3Qhx6pixXQP6eT2YjWpP9tn6Ou
-         CJdUP9Nqx0cXRZ+I+qeRApDSoyBHb1VhceRcXvBnbGNCDjviFLdxuLl33N6uhPMs34Ka
-         LS9A==
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=gVR4fMo7dtC6YfR28ZV7I1BTq93R+fTaMa5SyNFmT18=;
+        b=nbNKp+rteZfygjV6f2slGFDhfmUNCuN0236Ps8cmo1DcIeL5IgZJ27CwiRgWCrYnRt
+         Wcon11RJ65hsQ1/ktKvqNRw7UyN+kh99Dy6H2Wgp87Hjc/yJFZ4+6hVUDOkzhSHqwbJ+
+         FdaSadD0SIuV8Q15SIXVquNu1x1t96pBRIBkqPxOiJvtMcMTfZVG2IsmtxBGXAIfdRHX
+         jlPPcrVovA7b88SF+cAaN89a5Bnt4hmmF1x1fQ2qcK+R5+feeASZTXf3fRdDH+9ZkbIh
+         ZUa7bs3tL575cQOOa8PhnK/XVg6XUkyHc8qc/aKE1mTlwamNEO/AOEn2xZNWkQEI3pIa
+         47Fw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=zdml4UeLEt0s/1BLRCQY3uiyNW6whOFDg1JrZMFRe+k=;
-        b=nhjSzRsiX+CVtf4q6Dgbm3Zf9PdmCkytVhoxmjXiUF0E9W799rZKGlOPa4Y6icpDeN
-         DU6ti/iZ19C0JCNLiXM8BuA6F2v4/WDMpsizhUYRI1pUp+Gxm2XkdJsxjhZKpw4X6MOm
-         2s6mVvswM9lGb91P6UmS1Ta/B23OGi7qUcJqKLbKAOLuWs1BMSCkbMTtQ9wijBILo10K
-         s8KIRzoXrrFufhOS2/596S55dQcmyS0vDAgD4xOevLj36Lv6PNLUPI/8dzHlYNH82gYt
-         D8ZvzW/ZEhJZWftUQCH+hhxIXKDXFlfB0mbpojEeWDfwbfkiVrJJnEdi9gSPjHD129c3
-         dp4g==
-X-Gm-Message-State: APjAAAUZbU6JI610y+cLxlH5DO0teHHeMhCw5czYOB2JBDSR7UY5duGY
-        tlbGA88w++FKsE8tB3TUh2A=
-X-Google-Smtp-Source: APXvYqyCgs4oi/ryRUaLYW4oKuzkhEyawPem25BwP6bRI+ZirmVy13l5/6i8quPKdYjXU/3WKalMhw==
-X-Received: by 2002:a17:902:bd87:: with SMTP id q7mr21397922pls.239.1579130790308;
-        Wed, 15 Jan 2020 15:26:30 -0800 (PST)
-Received: from ast-mbp.dhcp.thefacebook.com ([2620:10d:c090:200::3:e760])
-        by smtp.gmail.com with ESMTPSA id r20sm21576905pgu.89.2020.01.15.15.26.29
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Wed, 15 Jan 2020 15:26:29 -0800 (PST)
-Date:   Wed, 15 Jan 2020 15:26:28 -0800
-From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
-To:     Martin KaFai Lau <kafai@fb.com>
-Cc:     bpf@vger.kernel.org, Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        David Miller <davem@davemloft.net>, kernel-team@fb.com,
-        netdev@vger.kernel.org
-Subject: Re: [PATCH v3 bpf-next 0/5] bpftool: Support dumping a map with
- btf_vmlinux_value_type_id
-Message-ID: <20200115232626.x5qzdvmx2d3d4abl@ast-mbp.dhcp.thefacebook.com>
-References: <20200115230012.1100525-1-kafai@fb.com>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=gVR4fMo7dtC6YfR28ZV7I1BTq93R+fTaMa5SyNFmT18=;
+        b=Ikb/F1jTnyfkFM8meobbXp/R06H++p+uxVvewOJgBEGKpVpJEroW1b1AdeFj2ajbg4
+         xR3gG2J1yW0qjlAdCMHhlz6Jk5q4rJuTEeFBgtLYP85pHupBqft1U0loSzfWF+fYoGft
+         p0pmik1qZSvN/OcsUF5DdbXX2bScdhkugT8QD6llClg0PRrdYmT08sKgYpcgBvmlWBaL
+         en2yv344xcBC4Co4gGWmIAANRBmn4htG+uoQmEsg1WZaegerzg745Mngd5Im7rcWgt3O
+         ia7sNdOZqps3qn+tz+ydp6V2YYQkdtpkovAH9XwfypVcNmZNhgMEjhJCqChEE/KGX1bK
+         E1HA==
+X-Gm-Message-State: APjAAAVjINLCgHaWpo8ttuXCEkcxdq0ZqmqV+gcKXsi4Qf04HXXX5heG
+        cpeYb9DtwkhkuUaOf2tRZiipOddL+73YGWWOC2WiE+J8
+X-Google-Smtp-Source: APXvYqw0oJUnx2g1KYqMApQc16l6T9GNDyhCOPq6aN2+x63sYMXXcVgRva61BmfH1kZaGR181tBqA9M4N13PQusDHME=
+X-Received: by 2002:a37:e408:: with SMTP id y8mr30154611qkf.39.1579131713111;
+ Wed, 15 Jan 2020 15:41:53 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200115230012.1100525-1-kafai@fb.com>
-User-Agent: NeoMutt/20180223
+References: <20200115222241.945672-1-kafai@fb.com> <20200115222312.948025-1-kafai@fb.com>
+ <CAEf4BzbBTqp7jDsTFdT60DSFSw7hX2wr3PB4a8p2pOaqs18tVA@mail.gmail.com>
+ <20200115224955.45evt277ino4j5zi@kafai-mbp.dhcp.thefacebook.com>
+ <CAEf4BzZDnaYswB07s2HSMQ4D96LuqLwVa4rp3gwi8a6chV2Zog@mail.gmail.com> <20200115231219.ajxqzbg2khtgmql4@kafai-mbp.dhcp.thefacebook.com>
+In-Reply-To: <20200115231219.ajxqzbg2khtgmql4@kafai-mbp.dhcp.thefacebook.com>
+From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Date:   Wed, 15 Jan 2020 15:41:42 -0800
+Message-ID: <CAEf4BzZDOjnZVjTob-KUOZ_J9YHnbwC6Lzj3vPA9aB95kx7zRA@mail.gmail.com>
+Subject: Re: [PATCH v2 bpf-next 5/5] bpftool: Support dumping a map with btf_vmlinux_value_type_id
+To:     Martin Lau <kafai@fb.com>
+Cc:     bpf <bpf@vger.kernel.org>, Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        David Miller <davem@davemloft.net>,
+        Kernel Team <Kernel-team@fb.com>,
+        Networking <netdev@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Jan 15, 2020 at 03:00:12PM -0800, Martin KaFai Lau wrote:
-> When a map is storing a kernel's struct, its
-> map_info->btf_vmlinux_value_type_id is set.  The first map type
-> supporting it is BPF_MAP_TYPE_STRUCT_OPS.
-> 
-> This series adds support to dump this kind of map with BTF.
-> The first two patches are bug fixes which are only applicable to
-> bpf-next.
-> 
-> Please see individual patches for details.
-> 
-> v3:
-> - Remove unnecessary #include "libbpf_internal.h" from patch 5
+On Wed, Jan 15, 2020 at 3:12 PM Martin Lau <kafai@fb.com> wrote:
+>
+> On Wed, Jan 15, 2020 at 02:59:59PM -0800, Andrii Nakryiko wrote:
+> > On Wed, Jan 15, 2020 at 2:50 PM Martin Lau <kafai@fb.com> wrote:
+> > >
+> > > On Wed, Jan 15, 2020 at 02:46:10PM -0800, Andrii Nakryiko wrote:
+> > > > On Wed, Jan 15, 2020 at 2:28 PM Martin KaFai Lau <kafai@fb.com> wrote:
+> > > > >
+> > > > > This patch makes bpftool support dumping a map's value properly
+> > > > > when the map's value type is a type of the running kernel's btf.
+> > > > > (i.e. map_info.btf_vmlinux_value_type_id is set instead of
+> > > > > map_info.btf_value_type_id).  The first usecase is for the
+> > > > > BPF_MAP_TYPE_STRUCT_OPS.
+> > > > >
+> > > > > Signed-off-by: Martin KaFai Lau <kafai@fb.com>
+> > > > > ---
+> > > >
+> > > > LGTM.
+> > > >
+> > > > Acked-by: Andrii Nakryiko <andriin@fb.com>
+> > > Thanks for the review!
+> > >
+> > > I just noticied I forgot to remove the #include "libbpf_internal.h".
+> > > I will respin one more.
+> >
+> > didn't notice that. Please also update a subject on patch exposing
+> > libbpf_find_kernel_btf (it still mentions old name).
+> oops. already went out. :p
+> The commit message mentioned the renaming from old to new name.
 
-I think the subj of patch 3 is fine as-is.
-
-Applied. Thanks
+no worries
