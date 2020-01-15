@@ -2,142 +2,123 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 7A7E813C7FD
-	for <lists+netdev@lfdr.de>; Wed, 15 Jan 2020 16:36:39 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3ACE813C822
+	for <lists+netdev@lfdr.de>; Wed, 15 Jan 2020 16:41:21 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729151AbgAOPgg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 15 Jan 2020 10:36:36 -0500
-Received: from us-smtp-delivery-1.mimecast.com ([205.139.110.120]:43056 "EHLO
+        id S1728931AbgAOPlT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 15 Jan 2020 10:41:19 -0500
+Received: from us-smtp-delivery-1.mimecast.com ([205.139.110.120]:31509 "EHLO
         us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S1726418AbgAOPgf (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 15 Jan 2020 10:36:35 -0500
+        with ESMTP id S1726418AbgAOPlS (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 15 Jan 2020 10:41:18 -0500
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1579102594;
+        s=mimecast20190719; t=1579102878;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=DJubPjYV5ieGhBVDKcdhG12ZoyxttwO5oOLEcYKnOqg=;
-        b=Bn1AmIiy2Ek2glAVQXV3fIcMB4cwgbRk6+UvYw/RpF2ZU8AX0kJ0lmBO93mQbYZ+PU/mEy
-        Q8caQ9Fz4MVMlG3/8z56hK+mfwRdT+WvbhPFI6yi//aiuVdFnbisciO1jdvlOYTwnFZZ6m
-        ejnhtpibRF4WG9/GUHQ09vDERRWgg90=
-Received: from mail-wr1-f70.google.com (mail-wr1-f70.google.com
- [209.85.221.70]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-270-hNcuhYZIPUCYMTdSoA3bCA-1; Wed, 15 Jan 2020 10:36:32 -0500
-X-MC-Unique: hNcuhYZIPUCYMTdSoA3bCA-1
-Received: by mail-wr1-f70.google.com with SMTP id z15so8171326wrw.0
-        for <netdev@vger.kernel.org>; Wed, 15 Jan 2020 07:36:32 -0800 (PST)
+        bh=3l69K3PDMlJemoFXpDZpBSROJVwgjnc3IAfTJYLJE1A=;
+        b=B2m0lsnGUNo5ArHnmDUISwbD55qbMy8TzhNN0v5BspXXCVOhspRne2JEk/5YDABsnA579/
+        wrHFwbL0P9lhtSWsVnZ3QlrM0Uik6fh5cT4l3LUO9+UhuXdkU0rOvJBR4olbWyn3n+5VgD
+        dGRACogrLErhOg+PQrXOMa7IIc8cvVM=
+Received: from mail-lj1-f197.google.com (mail-lj1-f197.google.com
+ [209.85.208.197]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-246-MWyvfs5WP0ODZGKJBIboVw-1; Wed, 15 Jan 2020 10:41:16 -0500
+X-MC-Unique: MWyvfs5WP0ODZGKJBIboVw-1
+Received: by mail-lj1-f197.google.com with SMTP id v1so4247804lja.21
+        for <netdev@vger.kernel.org>; Wed, 15 Jan 2020 07:41:15 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=DJubPjYV5ieGhBVDKcdhG12ZoyxttwO5oOLEcYKnOqg=;
-        b=dFs/+yPdtexupidib1IZ5VYUWTt25ied++X1kwlIeM6BQYN7cd4ZHYkc8t6C6/BtR2
-         C1YfD7S3UiZz/N6F2t92ROMYUzh+oVIYJwjYZCzt0Rs3kVV10ty97aJTlZ5otVGeicFE
-         UH864MLVuFOV8Fa/JrObpf/sIX1JIbmyhygSFMn8576st7AyFKwLnid8HXGm+WIEeyFB
-         Wp8dyDEM6hT5G4yOf1Ib0NdTIEOeqsaUfB4pvuAdEOp/sQIv/RUE0M1EmAHnrK/TCFhk
-         962eMUMW7sI/P40j3XiNXinsN6oPGLUhhK+3RMC2k/M07Pyw3XZ/RNCwLWyUoCe5kV7v
-         GM7g==
-X-Gm-Message-State: APjAAAXmdQ0FlpBn5Y2koem9m+65F9kdRQgB4ekyGDg0gHn45uowNhDV
-        OyCHGZ7vSjl1YmKrnwOwp6whdHkMarvvyv+jyTMDK1qxXbHEHmzQEQyFxSLJzrHNBASx28vrzSv
-        c9NsMvDHhFYlkvMo5
-X-Received: by 2002:adf:e5ca:: with SMTP id a10mr31463836wrn.347.1579102591554;
-        Wed, 15 Jan 2020 07:36:31 -0800 (PST)
-X-Google-Smtp-Source: APXvYqxwg8KcSCXJnaNHNYl9Q1/nY/WSDFMY0T/QDU2FI9y0eAb7s+Mz+JiVIvvS5zPo88LwMdGHJA==
-X-Received: by 2002:adf:e5ca:: with SMTP id a10mr31463817wrn.347.1579102591330;
-        Wed, 15 Jan 2020 07:36:31 -0800 (PST)
-Received: from linux.home (2a01cb058a4e7100d3814d1912515f67.ipv6.abo.wanadoo.fr. [2a01:cb05:8a4e:7100:d381:4d19:1251:5f67])
-        by smtp.gmail.com with ESMTPSA id d8sm24445243wrx.71.2020.01.15.07.36.30
+        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
+         :message-id:mime-version:content-transfer-encoding;
+        bh=3l69K3PDMlJemoFXpDZpBSROJVwgjnc3IAfTJYLJE1A=;
+        b=Wo6WScNBMQkWDZLmykkbROVUoE5WPI3qJ8GqjfnXmyy+4SYVMIeBLLIp/CXVG660z9
+         IJY1YopVDWe5aAd/bPJ+5EgwRbdQ7LykA/CnoW8D2GIf8x/7yRSQFfSzutRXnwEdhsLR
+         KMhMVvhSxHeyXyk0k3LlO0E8BdJjtFj1q7VPgK6HnpO5traml4Xjl5ngK6SCMWiil0wt
+         uOUBwfIAC4K6AA5Y6WX/yJkLwqGiAr2imnlsi6K1SPqtkHSzlIWR4pu32ez9+QSZQWKb
+         wZr8nRgQEiTRCWi/ky9ICQqtznPhZAU1UdmcUZ7+xVdNMzEZce+Xxmaxlv+yhrGd+gJN
+         Jsjw==
+X-Gm-Message-State: APjAAAX6QV213leDGx+orYBkCgS58c19ZP52b0clzD+IEr/vVnXHK6Jk
+        r8vVmy0j6QtQBlXUDzykqgf90+fgcO6qTfEa6+3LC72+YQBnRHWty8ZNl1j+wsyTsQIPmuMT92O
+        g0jwq4+1ZWl4iZRlJ
+X-Received: by 2002:a19:5e0a:: with SMTP id s10mr5018198lfb.165.1579102874491;
+        Wed, 15 Jan 2020 07:41:14 -0800 (PST)
+X-Google-Smtp-Source: APXvYqyazUrqAH6dclikkhYZ4/DJpUS4QXtSoJ0WpysfA1lHkQWnuS6US8Z0PNCGkK1YfaYA0049DA==
+X-Received: by 2002:a19:5e0a:: with SMTP id s10mr5018171lfb.165.1579102874260;
+        Wed, 15 Jan 2020 07:41:14 -0800 (PST)
+Received: from alrua-x1.borgediget.toke.dk ([45.145.92.2])
+        by smtp.gmail.com with ESMTPSA id s22sm9557271ljm.41.2020.01.15.07.41.13
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 15 Jan 2020 07:36:30 -0800 (PST)
-Date:   Wed, 15 Jan 2020 16:36:28 +0100
-From:   Guillaume Nault <gnault@redhat.com>
-To:     David Miller <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-Cc:     netdev@vger.kernel.org, Nicolas Dichtel <nicolas.dichtel@6wind.com>
-Subject: [PATCH net-next v2 2/2] netns: constify exported functions
-Message-ID: <0c754407f2018e1a4e736508c91b8604e6cdd0db.1579102319.git.gnault@redhat.com>
-References: <cover.1579102319.git.gnault@redhat.com>
+        Wed, 15 Jan 2020 07:41:13 -0800 (PST)
+Received: by alrua-x1.borgediget.toke.dk (Postfix, from userid 1000)
+        id DB6C51804D6; Wed, 15 Jan 2020 16:41:12 +0100 (CET)
+From:   Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
+To:     Jesper Dangaard Brouer <brouer@redhat.com>
+Cc:     Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        Andrii Nakryiko <andriin@fb.com>,
+        Doug Ledford <dledford@redhat.com>,
+        Jason Gunthorpe <jgg@ziepe.ca>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        John Fastabend <john.fastabend@gmail.com>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Ingo Molnar <mingo@redhat.com>,
+        Arnaldo Carvalho de Melo <acme@kernel.org>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
+        Jiri Olsa <jolsa@redhat.com>,
+        Namhyung Kim <namhyung@kernel.org>,
+        Shuah Khan <shuah@kernel.org>, netdev@vger.kernel.org,
+        bpf@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-rdma@vger.kernel.org, linux-kselftest@vger.kernel.org,
+        clang-built-linux@googlegroups.com, brouer@redhat.com
+Subject: Re: [PATCH bpf-next v2 07/10] samples/bpf: Use consistent include paths for libbpf
+In-Reply-To: <20200115161825.351ebf23@carbon>
+References: <157909756858.1192265.6657542187065456112.stgit@toke.dk> <157909757639.1192265.16930011370158657444.stgit@toke.dk> <20200115161825.351ebf23@carbon>
+X-Clacks-Overhead: GNU Terry Pratchett
+Date:   Wed, 15 Jan 2020 16:41:12 +0100
+Message-ID: <87y2u8u3qf.fsf@toke.dk>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <cover.1579102319.git.gnault@redhat.com>
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Mark function parameters as 'const' where possible.
+Jesper Dangaard Brouer <brouer@redhat.com> writes:
 
-Signed-off-by: Guillaume Nault <gnault@redhat.com>
-Acked-by: Nicolas Dichtel <nicolas.dichtel@6wind.com>
----
- include/net/net_namespace.h | 10 +++++-----
- net/core/net_namespace.c    |  6 +++---
- 2 files changed, 8 insertions(+), 8 deletions(-)
+> On Wed, 15 Jan 2020 15:12:56 +0100
+> Toke H=C3=B8iland-J=C3=B8rgensen <toke@redhat.com> wrote:
+>
+>> From: Toke H=C3=B8iland-J=C3=B8rgensen <toke@redhat.com>
+>>=20
+>> Fix all files in samples/bpf to include libbpf header files with the bpf/
+>> prefix, to be consistent with external users of the library. Also ensure
+>> that all includes of exported libbpf header files (those that are export=
+ed
+>> on 'make install' of the library) use bracketed includes instead of quot=
+ed.
+>>=20
+>> To make sure no new files are introduced that doesn't include the bpf/
+>> prefix in its include, remove tools/lib/bpf from the include path entire=
+ly,
+>> and use tools/lib instead.
+>>=20
+>> Fixes: 6910d7d3867a ("selftests/bpf: Ensure bpf_helper_defs.h are taken =
+from selftests dir")
+>> Signed-off-by: Toke H=C3=B8iland-J=C3=B8rgensen <toke@redhat.com>
+>
+> I like this change. Maybe the reason so many samples/bpf/ files
+> still included "libbpf.h" was that once-upon-a-time we had a "eBPF mini
+> library" in the file samples/bpf/libbpf.h that were included.
 
-diff --git a/include/net/net_namespace.h b/include/net/net_namespace.h
-index b8ceaf0cd997..854d39ef1ca3 100644
---- a/include/net/net_namespace.h
-+++ b/include/net/net_namespace.h
-@@ -347,9 +347,9 @@ static inline struct net *read_pnet(const possible_net_t *pnet)
- #endif
- 
- int peernet2id_alloc(struct net *net, struct net *peer, gfp_t gfp);
--int peernet2id(struct net *net, struct net *peer);
--bool peernet_has_id(struct net *net, struct net *peer);
--struct net *get_net_ns_by_id(struct net *net, int id);
-+int peernet2id(const struct net *net, struct net *peer);
-+bool peernet_has_id(const struct net *net, struct net *peer);
-+struct net *get_net_ns_by_id(const struct net *net, int id);
- 
- struct pernet_operations {
- 	struct list_head list;
-@@ -427,7 +427,7 @@ static inline void unregister_net_sysctl_table(struct ctl_table_header *header)
- }
- #endif
- 
--static inline int rt_genid_ipv4(struct net *net)
-+static inline int rt_genid_ipv4(const struct net *net)
- {
- 	return atomic_read(&net->ipv4.rt_genid);
- }
-@@ -459,7 +459,7 @@ static inline void rt_genid_bump_all(struct net *net)
- 	rt_genid_bump_ipv6(net);
- }
- 
--static inline int fnhe_genid(struct net *net)
-+static inline int fnhe_genid(const struct net *net)
- {
- 	return atomic_read(&net->fnhe_genid);
- }
-diff --git a/net/core/net_namespace.c b/net/core/net_namespace.c
-index 85c565571c1c..fd0727670f34 100644
---- a/net/core/net_namespace.c
-+++ b/net/core/net_namespace.c
-@@ -268,7 +268,7 @@ int peernet2id_alloc(struct net *net, struct net *peer, gfp_t gfp)
- EXPORT_SYMBOL_GPL(peernet2id_alloc);
- 
- /* This function returns, if assigned, the id of a peer netns. */
--int peernet2id(struct net *net, struct net *peer)
-+int peernet2id(const struct net *net, struct net *peer)
- {
- 	int id;
- 
-@@ -283,12 +283,12 @@ EXPORT_SYMBOL(peernet2id);
- /* This function returns true is the peer netns has an id assigned into the
-  * current netns.
-  */
--bool peernet_has_id(struct net *net, struct net *peer)
-+bool peernet_has_id(const struct net *net, struct net *peer)
- {
- 	return peernet2id(net, peer) >= 0;
- }
- 
--struct net *get_net_ns_by_id(struct net *net, int id)
-+struct net *get_net_ns_by_id(const struct net *net, int id)
- {
- 	struct net *peer;
- 
--- 
-2.21.1
+Yes, I think something similar is the case with bpf_helpers.h - that
+used to be outside libbpf, and I guess no one bothered to do a cleanup
+such as this one when it was moved...
+
+-Toke
 
