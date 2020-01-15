@@ -2,79 +2,88 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 0744813C6E6
-	for <lists+netdev@lfdr.de>; Wed, 15 Jan 2020 16:04:37 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A4BA413C6EB
+	for <lists+netdev@lfdr.de>; Wed, 15 Jan 2020 16:05:54 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729212AbgAOPEc (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 15 Jan 2020 10:04:32 -0500
-Received: from mail-wm1-f68.google.com ([209.85.128.68]:38577 "EHLO
+        id S1728992AbgAOPFu (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 15 Jan 2020 10:05:50 -0500
+Received: from mail-wm1-f68.google.com ([209.85.128.68]:53652 "EHLO
         mail-wm1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729011AbgAOPEc (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 15 Jan 2020 10:04:32 -0500
-Received: by mail-wm1-f68.google.com with SMTP id u2so200942wmc.3;
-        Wed, 15 Jan 2020 07:04:30 -0800 (PST)
+        with ESMTP id S1726474AbgAOPFu (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 15 Jan 2020 10:05:50 -0500
+Received: by mail-wm1-f68.google.com with SMTP id m24so212763wmc.3;
+        Wed, 15 Jan 2020 07:05:49 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:date:from:to:cc:subject:message-id:references
          :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=xQvK3Khfh8ssHY6UKXAmXLE4MXakJFMEfTNk2HuT3e8=;
-        b=WGZFfxHNGxkn3qKiGXNyQWIkmR6gZtBOh5T54Ma6DLnAgmyCGoTkrObkQbpbFZqMlO
-         eSfMJg5THDN1axPJZo0QLmYOVFL+9TQ8SVTwzrq9pk6guLbN8wqAi6f6UUvitygc79Uc
-         0asMaM5hCAG9Ei7rLJ0AGJTO4M1OvvpNbe7+d5iJHdOQWz/5Hamim+9DcLrDRFD7iXSP
-         lJB2SvafIqMd7nJuDHW0VqJQPK6PkytVDkbhuFh9JofDC9Zj5nq6fq+U3JfdMQzC4kDi
-         gDQhAzaOFkXaTQBsq4v7l9sdWA5/+svsLZd8FKdxvtashccRiMYZlDjgmyeGTmAqSngR
-         27Ag==
-X-Gm-Message-State: APjAAAU7OxYUn+YDvFqMamo+fti/c3MbPHgVE12IHE7i3KxDHm7S9r4j
-        jRWZ08J5I0pWwGng9XlVJ8I=
-X-Google-Smtp-Source: APXvYqy279tPnlZqttod0cBi9Mva6wkZHlFzeLjXHeZe9tBQL0b+hXbPpd8U2Ldc2U+oX97PYuyAOw==
-X-Received: by 2002:a1c:2187:: with SMTP id h129mr244143wmh.44.1579100669759;
-        Wed, 15 Jan 2020 07:04:29 -0800 (PST)
+        bh=l+nye/BYJZe7Bw5ayLtgP5rQcdwwOtxIDTaqQZhLPlA=;
+        b=fxPwCbf7o6eRSxDsdLOZOY2y1q4AzpyRri/fv5lTTVSF+o/dMqz8jWR9BRrEOfH1eu
+         DO+zVbUv0FXYN0GuzqZmKGt3jgHKEqs7Pown8WpH07MATd3YDUiqe02Y755WyFmsz1gD
+         SJc3nPEE33yYSf1JGN/jn/WARmyRwW5au9E2Dr3eTBXspQnsumpFY3WaCuYs1YAxmwOw
+         956D3IxoBt28Prux3NFBnhStwQxcqXdsUQaO4Jdl9WClw3r++aSwaiGl9XvZYa+/j1OP
+         8HHPucwk8h50qNM6UNGlGQ0r8BvKTDQW/Z5zeoBliGb1qR4KDCmMX1XTzKjZ+kTpRJcG
+         wMMg==
+X-Gm-Message-State: APjAAAVpp5a3QpLbo46knyJvDTUQFTKV/oOLuU31jbB1sti7GYIAW5DF
+        hRexBjJRezOxiLcvP1zo4AI=
+X-Google-Smtp-Source: APXvYqztGYFP1LUF57lEbPErN/f7VP1qI9rU2yAcdmhylE8alEK9YH4yvGaqdMcNcSqYuH4XY8iHQg==
+X-Received: by 2002:a1c:dc08:: with SMTP id t8mr173641wmg.139.1579100748472;
+        Wed, 15 Jan 2020 07:05:48 -0800 (PST)
 Received: from debian (41.142.6.51.dyn.plus.net. [51.6.142.41])
-        by smtp.gmail.com with ESMTPSA id b137sm133936wme.26.2020.01.15.07.04.27
+        by smtp.gmail.com with ESMTPSA id r62sm148422wma.32.2020.01.15.07.05.47
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 15 Jan 2020 07:04:28 -0800 (PST)
-Date:   Wed, 15 Jan 2020 15:04:26 +0000
+        Wed, 15 Jan 2020 07:05:47 -0800 (PST)
+Date:   Wed, 15 Jan 2020 15:05:45 +0000
 From:   Wei Liu <wei.liu@kernel.org>
-To:     Madhuparna Bhowmik <madhuparnabhowmik04@gmail.com>
-Cc:     Wei Liu <wei.liu@kernel.org>, paul@xen.org, davem@davemloft.net,
-        xen-devel@lists.xenproject.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        "Paul E. McKenney" <paulmck@kernel.org>,
-        Joel Fernandes <joel@joelfernandes.org>,
-        Amol Grover <frextrite@gmail.com>,
+To:     madhuparnabhowmik04@gmail.com
+Cc:     wei.liu@kernel.org, paul@xen.org, xen-devel@lists.xenproject.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        paulmck@kernel.org, joel@joelfernandes.org, frextrite@gmail.com,
         linux-kernel-mentees@lists.linuxfoundation.org
-Subject: Re: [PATCH] net: xen-netbank: hash.c: Use built-in RCU list checking
-Message-ID: <20200115150426.svapzpux2tbbgvmn@debian>
-References: <20200115124129.5684-1-madhuparnabhowmik04@gmail.com>
- <20200115135631.edr2nrfkycppxcku@debian>
- <CAF65HP0q_KcrUP_50JxZL1xNc47=detHvdOzjBmuiqUtB3AwfA@mail.gmail.com>
+Subject: Re: [PATCH] net: xen-netback: hash.c: Use built-in RCU list checking
+Message-ID: <20200115150545.j5gu7lm3l3ouv7l4@debian>
+References: <20200115141840.10553-1-madhuparnabhowmik04@gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <CAF65HP0q_KcrUP_50JxZL1xNc47=detHvdOzjBmuiqUtB3AwfA@mail.gmail.com>
+In-Reply-To: <20200115141840.10553-1-madhuparnabhowmik04@gmail.com>
 User-Agent: NeoMutt/20180716
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Jan 15, 2020 at 07:36:38PM +0530, Madhuparna Bhowmik wrote:
-[...]
+On Wed, Jan 15, 2020 at 07:48:40PM +0530, madhuparnabhowmik04@gmail.com wrote:
+> From: Madhuparna Bhowmik <madhuparnabhowmik04@gmail.com>
 > 
-> > The surrounding code makes it pretty clear that the lock is already held
-> > by the time list_for_each_entry_rcu is called, yet the checking involved
-> > in lockdep_is_held is not trivial, so I'm afraid I don't consider this a
-> > strict improvement over the existing code.
-> >
-> > Actually,  we want to make CONFIG_PROVE_LIST_RCU enabled by default.
+> list_for_each_entry_rcu has built-in RCU and lock checking.
+> Pass cond argument to list_for_each_entry_rcu.
+> 
+> Signed-off-by: Madhuparna Bhowmik <madhuparnabhowmik04@gmail.com>
 
-I think you meant CONFIG_PROVE_RCU_LIST.
-
-> And if the cond argument is not passed when the usage of
-> list_for_each_entry_rcu()
-> is outside of rcu_read_lock(), it will lead to a false positive.
-> Therefore, I think this patch is required.
-
-Fair enough.
+You seem to have dropped the second hunk which modified
+xenvif_flush_hash, is that a mistake?
 
 Wei.
+
+> ---
+>  drivers/net/xen-netback/hash.c | 3 ++-
+>  1 file changed, 2 insertions(+), 1 deletion(-)
+> 
+> diff --git a/drivers/net/xen-netback/hash.c b/drivers/net/xen-netback/hash.c
+> index 10d580c3dea3..3f9783f70a75 100644
+> --- a/drivers/net/xen-netback/hash.c
+> +++ b/drivers/net/xen-netback/hash.c
+> @@ -51,7 +51,8 @@ static void xenvif_add_hash(struct xenvif *vif, const u8 *tag,
+>  
+>  	found = false;
+>  	oldest = NULL;
+> -	list_for_each_entry_rcu(entry, &vif->hash.cache.list, link) {
+> +	list_for_each_entry_rcu(entry, &vif->hash.cache.list, link,
+> +				lockdep_is_held(&vif->hash.cache.lock)) {
+>  		/* Make sure we don't add duplicate entries */
+>  		if (entry->len == len &&
+>  		    memcmp(entry->tag, tag, len) == 0)
+> -- 
+> 2.17.1
+> 
