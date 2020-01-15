@@ -2,142 +2,188 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 69B5A13B9C4
-	for <lists+netdev@lfdr.de>; Wed, 15 Jan 2020 07:37:05 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id ADB0013B9D3
+	for <lists+netdev@lfdr.de>; Wed, 15 Jan 2020 07:40:00 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729186AbgAOGhD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 15 Jan 2020 01:37:03 -0500
-Received: from mail-qt1-f195.google.com ([209.85.160.195]:39199 "EHLO
-        mail-qt1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726408AbgAOGhD (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 15 Jan 2020 01:37:03 -0500
-Received: by mail-qt1-f195.google.com with SMTP id e5so14862331qtm.6;
-        Tue, 14 Jan 2020 22:37:02 -0800 (PST)
+        id S1726165AbgAOGj6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 15 Jan 2020 01:39:58 -0500
+Received: from mail-qt1-f194.google.com ([209.85.160.194]:43981 "EHLO
+        mail-qt1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725962AbgAOGj6 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 15 Jan 2020 01:39:58 -0500
+Received: by mail-qt1-f194.google.com with SMTP id d18so14861660qtj.10;
+        Tue, 14 Jan 2020 22:39:57 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=uCV3OdMIlfxmQUB7b73DLTCy3NtPcS6hNnVmkkoXKEo=;
-        b=W+UtXvuaDmEC/TwN+x0Ow7z7zmi/aZt/6h/paZ6Lr57qbQF3P963NCJCVcX3Aoagqa
-         YZu6A7g1p4CQ2RYP7s7Au/edZzPfHWORiXahaFFfbGsIJvrHeOpK4NT+J2kTo8x5ZdBA
-         Iu5m4fSdLaFPbCmj7MJJns6Acst7BMyFt0B9UlrTekUq7/zbBunPnmQsy5Z4jVS3oxgW
-         XVk81iVPCYNj1MFxpOD36Mb80Iv9TuPJccTCfwZkzrbYhIDHAGKT1NspHVBe8TFXMkPg
-         vNl+7w/n2VLrErbHMMMS02TyfpLCk2ExS/ObSBQ7jRXiYbnudMU9cMGhSgDYEIAPO3CV
-         PrtA==
+        bh=OkABScBdRODOxQvYQ7uBZR9KdTUTCfP+0qd3dGJcuQ0=;
+        b=ZDdmJOzVrfW9XmyJVJXMWlWTeMnx3FSlN+3/H5hQoXWywFuTfJ6QheXlP95lDlCK2q
+         0ZxdvUU+q340XF10bx9qL3I2Uu+WOUaeLQc8kyabqZR/MNvKYmTX3Cgbq+Li+x3nlnAY
+         FD+8k2b30A0NCfT3/8+hn+fdoeX9b1BAwH0yLsC+fBweWdcTiuBZfZOU6ZX/ZiG5vIIG
+         Z/GTwUkEEJq+t7j049sJxPBZiUjbVx1Bi3bpR8QbV8ADkNrQzwcvljAnGIaMDAEgxUpf
+         M+ZIFWK2g+Qa9foiCrmcheCRGa8AVR1ZCp40VFKUBgsCOrcUwcqRxtJ/OJFdjJU8pD2K
+         8t8g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=uCV3OdMIlfxmQUB7b73DLTCy3NtPcS6hNnVmkkoXKEo=;
-        b=ia/WfTmFX7H2qoMgZaFzTy7P51m2l6Pf8YGADybKLuoBC6GIu+duCdtetjKHKjgFro
-         S2jpD5TCN4vC2MpBdY2JrJbZ5qUq74mg1QhfOUl3KioEa6owidlEBm6V/+egK17CTDc2
-         MCTbKeZCK/F+BDlal6xd/wWckZ3ImJ8GMRNJC+gJGTI4uKZLrqLOMWp3cLDnik6Wzr5a
-         1E2RH/KGUHzQ6m4xZfo/zbejOqsBzrR+F6wjpjhRdeo29g/AQA4LXfzlHg2NlrIqULXe
-         s2s2Tnzuij99O8RYZBNN7EazthRpahFPUnwIje9J2jiWOLm+L9GqqLX2QCKPOjKycooE
-         sEYQ==
-X-Gm-Message-State: APjAAAWgEgczM/n9k9fQ2m1bAclaws4Xzgzs4lqftw1piijr09Q5G6HF
-        pN6oLcX6QOkCmSYTdlns2gFzfVtvbN/q2w72m7o=
-X-Google-Smtp-Source: APXvYqw1GF3tEl8d4zG6FEiNHWXrrdaEuwikABOuJT+vsnSiRjK7AmG36OpxUaZ1AVqVrkwgUQulfr81KKD4BRkewU8=
-X-Received: by 2002:ac8:1385:: with SMTP id h5mr2091837qtj.59.1579070221937;
- Tue, 14 Jan 2020 22:37:01 -0800 (PST)
+        bh=OkABScBdRODOxQvYQ7uBZR9KdTUTCfP+0qd3dGJcuQ0=;
+        b=HPQsJEuVrdk84eYSaHFTlqXQmLkjKM6BUodC5qAAWcKk3tk8qYCepia5jbPFN2Ja9u
+         qg6gqHyuxtHYM50TrKSOqGm0re7wmcIJmMsu9roVi2f13FVfulhumKztCBhxpIHHECuc
+         J3kj5ypL+T2VdlhLrl8SgT6jg8Z3dp0Ye2Rk3gpY0Br7sfF30+gpS/cNPES6U2jhSyuY
+         K/rsNZsWs6hBdDxgafHLWwn+zT54b5FCRxd+ekHVFrD9IPznZtp7euJd7VzQ0GbS937L
+         A7JPQ8aFRHkA20BU070Md1U9+fdYpL15nECHNNCWVQVtASvlvcDpHdiJ+u+cvwVwRFCH
+         UdAA==
+X-Gm-Message-State: APjAAAXONhNqc8Jv4UbMx83LIYyqyH/iLDGZ0rM5lrDWuprAMruYb5jt
+        en+zYzdsVb9Qvqm7jsscA5tGTQHcK7pZ1yKn3LMCRA==
+X-Google-Smtp-Source: APXvYqwkQNFhnDHj+aNqRxoFHKL4OM3PqX76Va2rbh+1vzIrSaB5WNyLfagtI9zxPxUxNZ1st+sz6+m9lU/pdZW4VyA=
+X-Received: by 2002:ac8:4050:: with SMTP id j16mr2122360qtl.171.1579070396752;
+ Tue, 14 Jan 2020 22:39:56 -0800 (PST)
 MIME-Version: 1.0
-References: <20200114224358.3027079-1-kafai@fb.com> <20200114224406.3027562-1-kafai@fb.com>
- <CAEf4BzbrcKLKvgKY+nSxV22T2nHgucmB2N01bEQiXS+g7npQfw@mail.gmail.com> <20200115055406.gsouajufdzussm6e@kafai-mbp.dhcp.thefacebook.com>
-In-Reply-To: <20200115055406.gsouajufdzussm6e@kafai-mbp.dhcp.thefacebook.com>
+References: <20200114224358.3027079-1-kafai@fb.com> <20200114224426.3028966-1-kafai@fb.com>
+ <CAEf4BzYgvq+s09d7eKhf_dd-Goh-V3DRHWmMM+=k0=Ce=zQ2ug@mail.gmail.com> <20200115060406.ze7kwkljkytmodq7@kafai-mbp.dhcp.thefacebook.com>
+In-Reply-To: <20200115060406.ze7kwkljkytmodq7@kafai-mbp.dhcp.thefacebook.com>
 From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Tue, 14 Jan 2020 22:36:51 -0800
-Message-ID: <CAEf4BzZpvt+zNxMwAUjebNCQLpwHzX_Abj=efQXghjxjL6VKzg@mail.gmail.com>
-Subject: Re: [PATCH bpf-next 2/5] bpftool: Fix missing BTF output for json
- during map dump
+Date:   Tue, 14 Jan 2020 22:39:45 -0800
+Message-ID: <CAEf4BzaBw93YEU7CktQp8FkphsBYRGRHpsF-D-BjWHG1UXoakA@mail.gmail.com>
+Subject: Re: [PATCH bpf-next 5/5] bpftool: Support dumping a map with btf_vmlinux_value_type_id
 To:     Martin Lau <kafai@fb.com>
 Cc:     bpf <bpf@vger.kernel.org>, Alexei Starovoitov <ast@kernel.org>,
         Daniel Borkmann <daniel@iogearbox.net>,
         David Miller <davem@davemloft.net>,
         Kernel Team <Kernel-team@fb.com>,
-        Networking <netdev@vger.kernel.org>,
-        Paul Chaignon <paul.chaignon@orange.com>
+        Networking <netdev@vger.kernel.org>
 Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Jan 14, 2020 at 9:54 PM Martin Lau <kafai@fb.com> wrote:
+On Tue, Jan 14, 2020 at 10:04 PM Martin Lau <kafai@fb.com> wrote:
 >
-> On Tue, Jan 14, 2020 at 05:34:33PM -0800, Andrii Nakryiko wrote:
-> > On Tue, Jan 14, 2020 at 2:45 PM Martin KaFai Lau <kafai@fb.com> wrote:
+> On Tue, Jan 14, 2020 at 05:49:00PM -0800, Andrii Nakryiko wrote:
+> > On Tue, Jan 14, 2020 at 2:46 PM Martin KaFai Lau <kafai@fb.com> wrote:
 > > >
-> > > The btf availability check is only done for plain text output.
-> > > It causes the whole BTF output went missing when json_output
-> > > is used.
+> > > This patch makes bpftool support dumping a map's value properly
+> > > when the map's value type is a type of the running kernel's btf.
+> > > (i.e. map_info.btf_vmlinux_value_type_id is set instead of
+> > > map_info.btf_value_type_id).  The first usecase is for the
+> > > BPF_MAP_TYPE_STRUCT_OPS.
 > > >
-> > > This patch simplifies the logic a little by avoiding passing "int btf" to
-> > > map_dump().
-> > >
-> > > For plain text output, the btf_wtr is only created when the map has
-> > > BTF (i.e. info->btf_id != 0).  The nullness of "json_writer_t *wtr"
-> > > in map_dump() alone can decide if dumping BTF output is needed.
-> > > As long as wtr is not NULL, map_dump() will print out the BTF-described
-> > > data whenever a map has BTF available (i.e. info->btf_id != 0)
-> > > regardless of json or plain-text output.
-> > >
-> > > In do_dump(), the "int btf" is also renamed to "int do_plain_btf".
-> > >
-> > > Fixes: 99f9863a0c45 ("bpftool: Match maps by name")
-> > > Cc: Paul Chaignon <paul.chaignon@orange.com>
 > > > Signed-off-by: Martin KaFai Lau <kafai@fb.com>
 > > > ---
-> >
-> > just one nit below
-> >
-> > Acked-by: Andrii Nakryiko <andriin@fb.com>
-> >
-> > >  tools/bpf/bpftool/map.c | 42 ++++++++++++++++++++---------------------
-> > >  1 file changed, 20 insertions(+), 22 deletions(-)
+> > >  tools/bpf/bpftool/map.c | 43 +++++++++++++++++++++++++++++++----------
+> > >  1 file changed, 33 insertions(+), 10 deletions(-)
 > > >
 > > > diff --git a/tools/bpf/bpftool/map.c b/tools/bpf/bpftool/map.c
-> > > index e00e9e19d6b7..45c1eda6512c 100644
+> > > index 4c5b15d736b6..d25f3b2355ad 100644
 > > > --- a/tools/bpf/bpftool/map.c
 > > > +++ b/tools/bpf/bpftool/map.c
-> > > @@ -933,7 +933,7 @@ static int maps_have_btf(int *fds, int nb_fds)
+> > > @@ -20,6 +20,7 @@
+> > >  #include "btf.h"
+> > >  #include "json_writer.h"
+> > >  #include "main.h"
+> > > +#include "libbpf_internal.h"
 > > >
-> > >  static int
-> > >  map_dump(int fd, struct bpf_map_info *info, json_writer_t *wtr,
-> > > -        bool enable_btf, bool show_header)
-> > > +        bool show_header)
+> > >  const char * const map_type_name[] = {
+> > >         [BPF_MAP_TYPE_UNSPEC]                   = "unspec",
+> > > @@ -252,6 +253,7 @@ static int do_dump_btf(const struct btf_dumper *d,
+> > >                        struct bpf_map_info *map_info, void *key,
+> > >                        void *value)
 > > >  {
-> > >         void *key, *value, *prev_key;
-> > >         unsigned int num_elems = 0;
-> > > @@ -950,18 +950,16 @@ map_dump(int fd, struct bpf_map_info *info, json_writer_t *wtr,
+> > > +       __u32 value_id;
+> > >         int ret;
 > > >
-> > >         prev_key = NULL;
+> > >         /* start of key-value pair */
+> > > @@ -265,9 +267,12 @@ static int do_dump_btf(const struct btf_dumper *d,
+> > >                         goto err_end_obj;
+> > >         }
 > > >
-> > > -       if (enable_btf) {
-> > > -               err = btf__get_from_id(info->btf_id, &btf);
-> > > -               if (err || !btf) {
-> > > -                       /* enable_btf is true only if we've already checked
-> > > -                        * that all maps have BTF information.
-> > > -                        */
-> > > -                       p_err("failed to get btf");
-> > > -                       goto exit_free;
-> > > +       if (wtr) {
-> > > +               if (info->btf_id) {
+> > > +       value_id = map_info->btf_vmlinux_value_type_id ?
+> > > +               : map_info->btf_value_type_id;
+> > > +
+> > >         if (!map_is_per_cpu(map_info->type)) {
+> > >                 jsonw_name(d->jw, "value");
+> > > -               ret = btf_dumper_type(d, map_info->btf_value_type_id, value);
+> > > +               ret = btf_dumper_type(d, value_id, value);
+> > >         } else {
+> > >                 unsigned int i, n, step;
+> > >
+> > > @@ -279,8 +284,7 @@ static int do_dump_btf(const struct btf_dumper *d,
+> > >                         jsonw_start_object(d->jw);
+> > >                         jsonw_int_field(d->jw, "cpu", i);
+> > >                         jsonw_name(d->jw, "value");
+> > > -                       ret = btf_dumper_type(d, map_info->btf_value_type_id,
+> > > -                                             value + i * step);
+> > > +                       ret = btf_dumper_type(d, value_id, value + i * step);
+> > >                         jsonw_end_object(d->jw);
+> > >                         if (ret)
+> > >                                 break;
+> > > @@ -932,6 +936,27 @@ static int maps_have_btf(int *fds, int nb_fds)
+> > >         return 1;
+> > >  }
+> > >
+> > > +static struct btf *get_map_kv_btf(const struct bpf_map_info *info)
+> > > +{
+> > > +       struct btf *btf = NULL;
+> > > +
+> > > +       if (info->btf_vmlinux_value_type_id) {
+> > > +               btf = bpf_find_kernel_btf();
 > >
-> > combine into if (wtr && info->btf_id) and reduce nestedness?
-> There is other logic under the same "if (wtr)".
-> Thus, it is better to leave it as is.
+> > If there are multiple maps we are dumping, it might become quite
+> > costly to re-read and re-parse kernel BTF all the time. Can we lazily
+> > load it, when required,
+> It is loaded lazily.
+>
 
-My bad, missed those tiny minuses in diff :) Of course that would be incorrect.
+yeah, it was meant as "lazy load and cache" vs "pre-load always"
+(which makes caching simpler).
 
-> and this indentation will be gone in patch 5.
+> > and cache instead?
+> Cache it in bpftool/map.c? Sure.
+
+yeah, for the duration of dumping
+
 >
 > >
-> >
-> > > +                       err = btf__get_from_id(info->btf_id, &btf);
-> > > +                       if (err || !btf) {
-> > > +                               err = err ? : -ESRCH;
-> > > +                               p_err("failed to get btf");
-> > > +                               goto exit_free;
-> > > +                       }
-> >
-> > [...]
+> > > +               if (IS_ERR(btf))
+> > > +                       p_err("failed to get kernel btf");
+> > > +       } else if (info->btf_value_type_id) {
+> > > +               int err;
+> > > +
+> > > +               err = btf__get_from_id(info->btf_id, &btf);
+> > > +               if (err || !btf) {
+> > > +                       p_err("failed to get btf");
+> > > +                       btf = err ? ERR_PTR(err) : ERR_PTR(-ESRCH);
+> > > +               }
+> > > +       }
+> > > +
+> > > +       return btf;
+> > > +}
+> > > +
+> > >  static int
+> > >  map_dump(int fd, struct bpf_map_info *info, json_writer_t *wtr,
+> > >          bool show_header)
+> > > @@ -952,13 +977,11 @@ map_dump(int fd, struct bpf_map_info *info, json_writer_t *wtr,
+> > >         prev_key = NULL;
+> > >
+> > >         if (wtr) {
+> > > -               if (info->btf_id) {
+> > > -                       err = btf__get_from_id(info->btf_id, &btf);
+> > > -                       if (err || !btf) {
+> > > -                               err = err ? : -ESRCH;
+> > > -                               p_err("failed to get btf");
+> > > -                               goto exit_free;
+> > > -                       }
+> > > +               btf = get_map_kv_btf(info);
+> > > +               if (IS_ERR(btf)) {
+> > > +                       err = PTR_ERR(btf);
+> > > +                       btf = NULL;
+> > > +                       goto exit_free;
+> > >                 }
+> > >
+> > >                 if (show_header) {
+> > > --
+> > > 2.17.1
+> > >
