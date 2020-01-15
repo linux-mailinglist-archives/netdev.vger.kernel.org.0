@@ -2,132 +2,267 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id CA33113C23A
-	for <lists+netdev@lfdr.de>; Wed, 15 Jan 2020 14:04:56 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id AE3AA13C255
+	for <lists+netdev@lfdr.de>; Wed, 15 Jan 2020 14:12:59 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726553AbgAONEz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 15 Jan 2020 08:04:55 -0500
-Received: from mail-eopbgr20045.outbound.protection.outlook.com ([40.107.2.45]:44035
-        "EHLO EUR02-VE1-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1726187AbgAONEy (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 15 Jan 2020 08:04:54 -0500
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=GHFrzMBpMgNzL9kuW5HzYx7xOHFBDv0bdvexLdiiP1+lFogOw+o62Km0H7c2qw5cMIMdZPGnl3VhEnVhpJi5MyKnNuG3Cp2tDSNO8X+PMK+huEjTjDXJLTbTqlGFL9RJCXTnKtgS5P+13TpVaPyYSoNIKA81KrerYfFSQzI7amBRoIwd8K67Vr0g6djBMzAAsUf3izTzUW+izA8e1+w3fyQHvOVfBXhkm5/NOXzmU43/GMjnOCgGzQB0hjCWzu0gUx2+AnyufuFm7JwFrKrT0SUFJIJJ9NXQALBxRzELcHtElDCtiuLXLJ8+L1qEt5b7yc7DkJsqaQr02L6ViO+v5Q==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=IRjU3N98cs1/yxFFNyp7wjNF4ya8LjYllBil+VgCvOo=;
- b=nZo+2Dk7cO9/WAg9F/fJbZ4GbdLHFBBZFlQDeod9HBQt/bLYoZjGK1lrr8AUJ2ZdA1IbfYe8QMCZ8krkmV0po75WT1zPEZLyNVyD+1Nr4TNgVcdvQJjbTg3jLC3zAX1hui0tjtppghHranqxyuN+J2Bb9RdScjR+MGnwmv4ixi0OnKwdWJGGJGBD1Akp0FeNLJZFAz4PkR6Caw8pp50qsmt0yDclwOJUPNLnrdnOq32UPBC91bOHUR/yLSclj0TYM8CGLveh3tROK+ydHrevIVQhjC2Ci1xa30y3bI0RVEQnBQ0lXxFoAWGNK3GiXCJkvhFePx9uF2h+06FuaQLQGA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=mellanox.com; dmarc=pass action=none header.from=mellanox.com;
- dkim=pass header.d=mellanox.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Mellanox.com;
- s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=IRjU3N98cs1/yxFFNyp7wjNF4ya8LjYllBil+VgCvOo=;
- b=Ma/yxClyQ13qrwTkC0GzC1IEmP37X4bcrk1vPvcdgCcewmo/MU1h5g3pIkZzRTDQJlE8aCRyyw+RNB1APAMsX9XxlEOyCOAIH+IEygIzohyN6S26eF789C/KpczXUBZmDZmoAz0S0tXV/2ZFo+JBWKcfLkHotoAxu79cVPB4Nn8=
-Received: from AM0PR05MB5873.eurprd05.prod.outlook.com (20.178.117.153) by
- AM0PR05MB4178.eurprd05.prod.outlook.com (52.134.94.16) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.2623.9; Wed, 15 Jan 2020 13:04:49 +0000
-Received: from AM0PR05MB5873.eurprd05.prod.outlook.com
- ([fe80::a556:1de2:ef6c:9192]) by AM0PR05MB5873.eurprd05.prod.outlook.com
- ([fe80::a556:1de2:ef6c:9192%4]) with mapi id 15.20.2623.018; Wed, 15 Jan 2020
- 13:04:49 +0000
-Received: from [10.80.3.21] (193.47.165.251) by AM0PR10CA0031.EURPRD10.PROD.OUTLOOK.COM (2603:10a6:20b:150::11) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.2623.10 via Frontend Transport; Wed, 15 Jan 2020 13:04:48 +0000
-From:   Maor Gottlieb <maorg@mellanox.com>
-To:     Jiri Pirko <jiri@resnulli.us>
-CC:     "j.vosburgh@gmail.com" <j.vosburgh@gmail.com>,
-        "vfalico@gmail.com" <vfalico@gmail.com>,
-        "andy@greyhouse.net" <andy@greyhouse.net>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        Saeed Mahameed <saeedm@mellanox.com>,
-        Jason Gunthorpe <jgg@mellanox.com>,
-        Leon Romanovsky <leonro@mellanox.com>,
-        Jiri Pirko <jiri@mellanox.com>,
-        Alex Rosenbaum <alexr@mellanox.com>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        Mark Zhang <markz@mellanox.com>,
-        Parav Pandit <parav@mellanox.com>
-Subject: Re: Expose bond_xmit_hash function
-Thread-Topic: Expose bond_xmit_hash function
-Thread-Index: AQHVy3oG0EtUwers0UGLm6hc+vG4CqfregOAgAA3wQA=
-Date:   Wed, 15 Jan 2020 13:04:49 +0000
-Message-ID: <80ad03a2-9926-bf75-d79c-be554c4afaaf@mellanox.com>
-References: <03a6dcfc-f3c7-925d-8ed8-3c42777fd03c@mellanox.com>
- <20200115094513.GS2131@nanopsycho>
-In-Reply-To: <20200115094513.GS2131@nanopsycho>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-originating-ip: [193.47.165.251]
-x-clientproxiedby: AM0PR10CA0031.EURPRD10.PROD.OUTLOOK.COM
- (2603:10a6:20b:150::11) To AM0PR05MB5873.eurprd05.prod.outlook.com
- (2603:10a6:208:125::25)
-authentication-results: spf=none (sender IP is )
- smtp.mailfrom=maorg@mellanox.com; 
-x-ms-exchange-messagesentrepresentingtype: 1
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-ht: Tenant
-x-ms-office365-filtering-correlation-id: ea9b4b5e-c1ee-4c9d-7853-08d799bb80cc
-x-ms-traffictypediagnostic: AM0PR05MB4178:|AM0PR05MB4178:
-x-ms-exchange-transport-forked: True
-x-microsoft-antispam-prvs: <AM0PR05MB4178138369B77254D8B81828D3370@AM0PR05MB4178.eurprd05.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:8882;
-x-forefront-prvs: 02830F0362
-x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(4636009)(136003)(366004)(396003)(376002)(39860400002)(346002)(189003)(199004)(53546011)(478600001)(52116002)(8936002)(6486002)(81166006)(8676002)(81156014)(186003)(107886003)(31686004)(26005)(2906002)(4326008)(16526019)(31696002)(2616005)(66946007)(7116003)(956004)(66556008)(71200400001)(66476007)(36756003)(66446008)(5660300002)(64756008)(16576012)(86362001)(54906003)(316002)(6916009);DIR:OUT;SFP:1101;SCL:1;SRVR:AM0PR05MB4178;H:AM0PR05MB5873.eurprd05.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;MX:1;A:1;
-received-spf: None (protection.outlook.com: mellanox.com does not designate
- permitted sender hosts)
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: Jq5PuurpEUOdXS+RJ8zoeV9TKDsLfZXjml/Czpx4YbAENxB6A/6xVMyxl58T5bdW9nPq2BdPk74x9icVNAzF9GbEYV0NfxClGEzuQ0gcY2kAItOCXuUl6pkoTr8N2E6AYmC4o6n90o+18uz6S6PJlDPLgkA9VfkQDnmilCRJVyITgHgEmx3CJyMewn7pWAsV/53dsjMOorF0Ai7EzI3e2LENVDCDaJE/OjkRbFqZB13xwFC5gpK37+ZZAF1gkegkaUUgcXQ9QiklNJ23sVPBgz9o5JckNhDAWZYw/hZln57KU1JTe3wk9/6aRIHcoBkGvXWTpF7yWnTJnbepzhWJ9xbR9oXTz5uVrEwhgXSVNnxMeBw3eLgzt/svJ/wj+8Gz1OpPckgkI31xN49ZIZHXiU68kaIB6VSd1Gacix5zJxplFwQHcA8Hn4HnObop6M7H
-Content-Type: text/plain; charset="utf-8"
-Content-ID: <CE30D78D3EB53E4EB536089895797E8B@eurprd05.prod.outlook.com>
-Content-Transfer-Encoding: base64
+        id S1726554AbgAONM6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 15 Jan 2020 08:12:58 -0500
+Received: from us-smtp-1.mimecast.com ([205.139.110.61]:35689 "EHLO
+        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726088AbgAONM5 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 15 Jan 2020 08:12:57 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1579093975;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=vkwac9ipxdwjGCmCWEvnGmzcnFiuL5QS83aF2p0l61Q=;
+        b=TEQEIlL9CgBuOp71ae4LX8a0q5C/C2BRwBqbuaT5PwdIZx0UOhKo5HlhiCRkkOK20Y0eVg
+        NJs8elP2fv9Aona6/MQBjhBme4Zlqam7FteCYzkzUMEiRHxKz8rt33TPYHiCiXm42rkeGB
+        BUxHz4nvHV+klYwilVQEx1v2olz96Q8=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-10-Zo8P_6BKNDOiDqkk_gRyXg-1; Wed, 15 Jan 2020 08:12:51 -0500
+X-MC-Unique: Zo8P_6BKNDOiDqkk_gRyXg-1
+Received: from smtp.corp.redhat.com (int-mx05.intmail.prod.int.phx2.redhat.com [10.5.11.15])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 2B3D5800D41;
+        Wed, 15 Jan 2020 13:12:50 +0000 (UTC)
+Received: from [10.36.117.241] (ovpn-117-241.ams2.redhat.com [10.36.117.241])
+        by smtp.corp.redhat.com (Postfix) with ESMTPS id C676484326;
+        Wed, 15 Jan 2020 13:12:48 +0000 (UTC)
+From:   "Eelco Chaudron" <echaudro@redhat.com>
+To:     "Andrii Nakryiko" <andrii.nakryiko@gmail.com>,
+        maciej.fijalkowski@intel.com
+Cc:     bpf <bpf@vger.kernel.org>, "David S. Miller" <davem@davemloft.net>,
+        "Alexei Starovoitov" <ast@kernel.org>,
+        Networking <netdev@vger.kernel.org>
+Subject: Re: [PATCH bpf-next v2] selftests/bpf: Add a test for attaching a bpf
+ fentry/fexit trace to an XDP program
+Date:   Wed, 15 Jan 2020 14:12:46 +0100
+Message-ID: <18AB9E9B-FB00-4BC6-BB6F-B7001340C064@redhat.com>
+In-Reply-To: <CAEf4BzYmTBH5b0mNdJ1Sts1FzygSX_im+mupRhP5Eo7rgE6g-Q@mail.gmail.com>
+References: <157901745600.30872.10096561620432101095.stgit@xdp-tutorial>
+ <CAEf4BzYmTBH5b0mNdJ1Sts1FzygSX_im+mupRhP5Eo7rgE6g-Q@mail.gmail.com>
 MIME-Version: 1.0
-X-OriginatorOrg: Mellanox.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: ea9b4b5e-c1ee-4c9d-7853-08d799bb80cc
-X-MS-Exchange-CrossTenant-originalarrivaltime: 15 Jan 2020 13:04:49.6651
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: a652971c-7d2e-4d9b-a6a4-d149256f461b
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: VfIMrigVxEhfa1lP6cNLQBn3wuslNKsS5gBrV+CE51l/wgpsAnU4iR4K5Ko6X+KelbXCaZ+QiSGy53DFj1m+Aw==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM0PR05MB4178
+Content-Type: text/plain; charset="UTF-8"; format=flowed
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.15
+Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-DQpPbiAxLzE1LzIwMjAgMTE6NDUgQU0sIEppcmkgUGlya28gd3JvdGU6DQo+IFdlZCwgSmFuIDE1
-LCAyMDIwIGF0IDA5OjAxOjQzQU0gQ0VULCBtYW9yZ0BtZWxsYW5veC5jb20gd3JvdGU6DQo+PiBS
-RE1BIG92ZXIgQ29udmVyZ2VkIEV0aGVybmV0IChSb0NFKSBpcyBhIHN0YW5kYXJkIHByb3RvY29s
-IHdoaWNoIGVuYWJsZXMNCj4+IFJETUHigJlzIGVmZmljaWVudCBkYXRhIHRyYW5zZmVyIG92ZXIg
-RXRoZXJuZXQgbmV0d29ya3MgYWxsb3dpbmcgdHJhbnNwb3J0DQo+PiBvZmZsb2FkIHdpdGggaGFy
-ZHdhcmUgUkRNQSBlbmdpbmUgaW1wbGVtZW50YXRpb24uDQo+PiBUaGUgUm9DRSB2MiBwcm90b2Nv
-bCBleGlzdHMgb24gdG9wIG9mIGVpdGhlciB0aGUgVURQL0lQdjQgb3IgdGhlDQo+PiBVRFAvSVB2
-NiBwcm90b2NvbDoNCj4+DQo+PiAtLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0t
-LS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLQ0KPj4gfCBMMiB8IEwzIHwgVURQIHxJQiBCVEggfCBQ
-YXlsb2FkfCBJQ1JDIHwgRkNTIHwNCj4+IC0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0t
-LS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tDQo+Pg0KPj4gV2hlbiBhIGJvbmQgTEFHIG5l
-dGRldiBpcyBpbiB1c2UsIHdlIHdvdWxkIGxpa2UgdG8gaGF2ZSB0aGUgc2FtZSBoYXNoDQo+PiBy
-ZXN1bHQgZm9yIFJvQ0UgcGFja2V0cyBhcyBhbnkgb3RoZXIgVURQIHBhY2tldHMsIGZvciB0aGlz
-IHB1cnBvc2Ugd2UNCj4+IG5lZWQgdG8gZXhwb3NlIHRoZSBib25kX3htaXRfaGFzaCBmdW5jdGlv
-biB0byBleHRlcm5hbCBtb2R1bGVzLg0KPj4gSWYgbm8gb2JqZWN0aW9uLCBJIHdpbGwgcHVzaCBh
-IHBhdGNoIHRoYXQgZXhwb3J0IHRoaXMgc3ltYm9sLg0KPiBJIGRvbid0IHRoaW5rIGl0IGlzIGdv
-b2QgaWRlYSB0byBkbyBpdC4gSXQgaXMgYW4gaW50ZXJuYWwgYm9uZCBmdW5jdGlvbi4NCj4gaXQg
-ZXZlbiBhY2NlcHRzICJzdHJ1Y3QgYm9uZGluZyAqYm9uZCIuIERvIHlvdSBwbGFuIHRvIHB1c2gg
-bmV0ZGV2DQo+IHN0cnVjdCBhcyBhbiBhcmcgaW5zdGVhZD8gV2hhdCBhYm91dCB0ZWFtPyBXaGF0
-IGFib3V0IE9WUyBib25kaW5nPw0KDQpObywgSSBhbSBwbGFubmluZyB0byBwYXNzIHRoZSBib25k
-IHN0cnVjdCBhcyBhbiBhcmcuIEN1cnJlbnRseSwgdGVhbSANCmJvbmRpbmcgaXMgbm90IHN1cHBv
-cnRlZCBpbiBSb0NFIExBRyBhbmQgSSBkb24ndCBzZWUgaG93IE9WUyBpcyByZWxhdGVkLg0KDQo+
-DQo+IEFsc28sIHlvdSBkb24ndCByZWFsbHkgbmVlZCBhIGhhc2gsIHlvdSBuZWVkIGEgc2xhdmUg
-dGhhdCBpcyBnb2luZyB0byBiZQ0KPiB1c2VkIGZvciBhIHBhY2tldCB4bWl0Lg0KPg0KPiBJIHRo
-aW5rIHRoaXMgY291bGQgd29yayBpbiBhIGdlbmVyaWMgd2F5Og0KPg0KPiBzdHJ1Y3QgbmV0X2Rl
-dmljZSAqbWFzdGVyX3htaXRfc2xhdmVfZ2V0KHN0cnVjdCBuZXRfZGV2aWNlICptYXN0ZXJfZGV2
-LA0KPiAJCQkJCSBzdHJ1Y3Qgc2tfYnVmZiAqc2tiKTsNCg0KVGhlIHN1Z2dlc3Rpb24gaXMgdG8g
-cHV0IHRoaXMgZnVuY3Rpb24gaW4gdGhlIGJvbmQgZHJpdmVyIGFuZCBjYWxsIGl0IA0KaW5zdGVh
-ZCBvZiBib25kX3htaXRfaGFzaD8gaXMgaXQgc3RpbGwgbmVjZXNzYXJ5IGlmIEkgaGF2ZSB0aGUg
-Ym9uZCBwb2ludGVyPw0KDQo=
+Andrii and Maciej thanks for your reviews, I=E2=80=99ve addressed all you=
+r=20
+comments, and will send out a v3 soon=E2=80=A6
+
+//Eelco
+
+On 14 Jan 2020, at 19:49, Andrii Nakryiko wrote:
+
+> On Tue, Jan 14, 2020 at 7:58 AM Eelco Chaudron <echaudro@redhat.com>=20
+> wrote:
+>>
+>> Add a test that will attach a FENTRY and FEXIT program to the XDP=20
+>> test
+>> program. It will also verify data from the XDP context on FENTRY and
+>> verifies the return code on exit.
+>>
+>> Signed-off-by: Eelco Chaudron <echaudro@redhat.com>
+>>
+>> ---
+>> v1 -> v2:
+>>   - Changed code to use the BPF skeleton
+>>   - Replace static volatile with global variable in eBPF code
+>>
+>>  .../testing/selftests/bpf/prog_tests/xdp_bpf2bpf.c |   69=20
+>> ++++++++++++++++++++
+>>  .../testing/selftests/bpf/progs/test_xdp_bpf2bpf.c |   44=20
+>> +++++++++++++
+>>  2 files changed, 113 insertions(+)
+>>  create mode 100644=20
+>> tools/testing/selftests/bpf/prog_tests/xdp_bpf2bpf.c
+>>  create mode 100644=20
+>> tools/testing/selftests/bpf/progs/test_xdp_bpf2bpf.c
+>>
+>> diff --git a/tools/testing/selftests/bpf/prog_tests/xdp_bpf2bpf.c=20
+>> b/tools/testing/selftests/bpf/prog_tests/xdp_bpf2bpf.c
+>> new file mode 100644
+>> index 000000000000..e6e849df2632
+>> --- /dev/null
+>> +++ b/tools/testing/selftests/bpf/prog_tests/xdp_bpf2bpf.c
+>> @@ -0,0 +1,69 @@
+>> +// SPDX-License-Identifier: GPL-2.0
+>> +#include <test_progs.h>
+>> +#include <net/if.h>
+>> +#include "test_xdp.skel.h"
+>> +#include "test_xdp_bpf2bpf.skel.h"
+>> +
+>> +void test_xdp_bpf2bpf(void)
+>> +{
+>> +
+>
+> extra line
+>
+>> +       struct test_xdp *pkt_skel =3D NULL;
+>> +        struct test_xdp_bpf2bpf *ftrace_skel =3D NULL;
+>
+> something with indentation?
+>
+>> +       __u64 *ftrace_res;
+>> +
+>
+> variable declarations shouldn't be split, probably?
+>
+>> +       struct vip key4 =3D {.protocol =3D 6, .family =3D AF_INET};
+>> +       struct iptnl_info value4 =3D {.family =3D AF_INET};
+>> +       char buf[128];
+>> +       struct iphdr *iph =3D (void *)buf + sizeof(struct ethhdr);
+>> +       __u32 duration =3D 0, retval, size;
+>> +       int err, pkt_fd, map_fd;
+>> +
+>> +       /* Load XDP program to introspect */
+>> +       pkt_skel =3D test_xdp__open_and_load();
+>> +       if (CHECK(!pkt_skel, "pkt_skel_load", "test_xdp skeleton=20
+>> failed\n"))
+>> +               return;
+>> +
+>> +       pkt_fd =3D bpf_program__fd(pkt_skel->progs._xdp_tx_iptunnel);
+>> +
+>> +       map_fd =3D bpf_map__fd(pkt_skel->maps.vip2tnl);
+>> +       bpf_map_update_elem(map_fd, &key4, &value4, 0);
+>> +
+>> +       DECLARE_LIBBPF_OPTS(bpf_object_open_opts, opts,
+>> +                           .attach_prog_fd =3D pkt_fd,
+>> +                          );
+>
+> DECLARE_LIBBPF_OPTS is a variable declaration, so should go together
+> with all other declarations. Compiler should complain about this, but
+> I guess selftests/bpf Makefile doesn't have necessary flags, that
+> other kernel code has. You can declare opts first and then initialize
+> some extra fields later:
+>
+> DECLARE_LIBBPF_OPTS(bpf_object_open_opts, opts);
+>
+> ... later in code ...
+>
+> opts.attach_prog_fd =3D pkt_fd;
+>
+>
+>> +
+>> +       ftrace_skel =3D test_xdp_bpf2bpf__open_opts(&opts);
+>> +       if (CHECK(!ftrace_skel, "__open", "ftrace skeleton=20
+>> failed\n"))
+>> +         goto out;
+>> +
+>> +       if (CHECK(test_xdp_bpf2bpf__load(ftrace_skel), "__load",=20
+>> "ftrace skeleton failed\n"))
+>> +         goto out;
+>
+> for consistency with attach check below and for readability, move out
+> load call into separate statement, it's easy to miss when it is inside
+> CHECK()
+>
+>> +
+>> +       err =3D test_xdp_bpf2bpf__attach(ftrace_skel);
+>> +       if (CHECK(err, "ftrace_attach", "ftrace attach failed: %d\n",=20
+>> err))
+>> +               goto out;
+>> +
+>> +        /* Run test program */
+>> +       err =3D bpf_prog_test_run(pkt_fd, 1, &pkt_v4, sizeof(pkt_v4),
+>> +                               buf, &size, &retval, &duration);
+>> +
+>> +       CHECK(err || retval !=3D XDP_TX || size !=3D 74 ||
+>> +             iph->protocol !=3D IPPROTO_IPIP, "ipv4",
+>> +             "err %d errno %d retval %d size %d\n",
+>> +             err, errno, retval, size);
+>
+> should it goto out here as well?
+>
+>> +
+>> +       /* Verify test results */
+>> +       ftrace_res =3D (__u64 *)ftrace_skel->bss;
+>> +
+>> +       if (CHECK(ftrace_res[0] !=3D if_nametoindex("lo"), "result",
+>> +                 "fentry failed err %llu\n", ftrace_res[0]))
+>> +               goto out;
+>> +
+>> +       if (CHECK(ftrace_res[1] !=3D XDP_TX, "result",
+>> +                 "fexit failed err %llu\n", ftrace_res[1]))
+>> +               goto out;
+>
+> why this casting? You can do access those variables much more
+> naturally with ftrace_skel->bss->test_result_fentry and
+> ftrace_skel->bss->test_result_fexit without making dangerous
+> assumptions about their offsets within data section.
+>
+>
+>> +
+>> +out:
+>> +       test_xdp__destroy(pkt_skel);
+>> +       test_xdp_bpf2bpf__destroy(ftrace_skel);
+>> +}
+>> diff --git a/tools/testing/selftests/bpf/progs/test_xdp_bpf2bpf.c=20
+>> b/tools/testing/selftests/bpf/progs/test_xdp_bpf2bpf.c
+>> new file mode 100644
+>> index 000000000000..74c78b30ae07
+>> --- /dev/null
+>> +++ b/tools/testing/selftests/bpf/progs/test_xdp_bpf2bpf.c
+>> @@ -0,0 +1,44 @@
+>> +// SPDX-License-Identifier: GPL-2.0
+>> +#include <linux/bpf.h>
+>> +#include "bpf_helpers.h"
+>> +#include "bpf_trace_helpers.h"
+>> +
+>> +struct net_device {
+>> +       /* Structure does not need to contain all entries,
+>> +        * as "preserve_access_index" will use BTF to fix this...
+>> +        */
+>> +       int ifindex;
+>> +} __attribute__((preserve_access_index));
+>> +
+>> +struct xdp_rxq_info {
+>> +       /* Structure does not need to contain all entries,
+>> +        * as "preserve_access_index" will use BTF to fix this...
+>> +        */
+>> +       struct net_device *dev;
+>> +       __u32 queue_index;
+>> +} __attribute__((preserve_access_index));
+>> +
+>> +struct xdp_buff {
+>> +       void *data;
+>> +       void *data_end;
+>> +       void *data_meta;
+>> +       void *data_hard_start;
+>> +       unsigned long handle;
+>> +       struct xdp_rxq_info *rxq;
+>> +} __attribute__((preserve_access_index));
+>> +
+>> +__u64 test_result_fentry =3D 0;
+>> +BPF_TRACE_1("fentry/_xdp_tx_iptunnel", trace_on_entry,
+>> +           struct xdp_buff *, xdp)
+>
+> BPF_TRACE_x is no more, see BPF_PROG and how it's used for=20
+> fentry/fexit tests:
+>
+> SEC("fentry/_xdp_tx_iptunnel")
+> int BPF_PROG(trace_on_entry, struct xdp_buff *xdp)
+>
+>> +{
+>> +       test_result_fentry =3D xdp->rxq->dev->ifindex;
+>> +       return 0;
+>> +}
+>> +
+>> +__u64 test_result_fexit =3D 0;
+>> +BPF_TRACE_2("fexit/_xdp_tx_iptunnel", trace_on_exit,
+>> +           struct xdp_buff*, xdp, int, ret)
+>> +{
+>> +       test_result_fexit =3D ret;
+>> +       return 0;
+>> +}
+>>
+
