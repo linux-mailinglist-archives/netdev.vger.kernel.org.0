@@ -2,158 +2,109 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 1B06913CBA5
-	for <lists+netdev@lfdr.de>; Wed, 15 Jan 2020 19:06:25 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1715013CBB0
+	for <lists+netdev@lfdr.de>; Wed, 15 Jan 2020 19:08:52 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729078AbgAOSGO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 15 Jan 2020 13:06:14 -0500
-Received: from mail-qt1-f193.google.com ([209.85.160.193]:42042 "EHLO
-        mail-qt1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729092AbgAOSGN (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 15 Jan 2020 13:06:13 -0500
-Received: by mail-qt1-f193.google.com with SMTP id j5so16546955qtq.9;
-        Wed, 15 Jan 2020 10:06:13 -0800 (PST)
+        id S1729242AbgAOSIu (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 15 Jan 2020 13:08:50 -0500
+Received: from mail-qt1-f195.google.com ([209.85.160.195]:42398 "EHLO
+        mail-qt1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728928AbgAOSIt (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 15 Jan 2020 13:08:49 -0500
+Received: by mail-qt1-f195.google.com with SMTP id j5so16554988qtq.9
+        for <netdev@vger.kernel.org>; Wed, 15 Jan 2020 10:08:49 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=ELr/XxVqul6D20WrUY/+l7F3oFFhw69GAu+JHpk3Rbk=;
-        b=mSPCnteKMSkRqwiFoHYESYY9gfGWLfp6Wj/BRJUP4Q4KxvpnfSxnw0X2O3+zDKrdi2
-         ekhtzKXCQeB5Bs/+1KwVMaTkntDXBIcn8z87XMb0VBhZ9vRds4BnOJ1RRijlj0bhsXHM
-         MZqAwB0pn1lfKVRjzfD44HEDbEIJxlOANTTPhWK6WNDmflh7dEDPIboreBKEPBUAh3kE
-         IAx9DqhXMDYiSV+XZ3WFIbmx316U4AmPfTEFqArYRwMbcAj7g7BvaI+9n4mjdfVvUFP2
-         s0RQjCh/hK3MfGFEow+MTXJv1aobh9vIOraqaNtR1Kin1ku2oqwOpZ5jPUKyq+siMEgq
-         +tWQ==
+        d=ziepe.ca; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=DbNxMeA4XOtNCETrBCdq4uCDGOJYzYMRQjc2MJfRV9E=;
+        b=gjZRbxZW6Q9M2sP1AVtttPD4X06SaNIy/s7qGP6OyzExaSY7MXvXbw7LfhVDkbR9+q
+         WpqtVxcBj7JahfSkYq1tDBdNkqE3lY125GFLrkQ5kkJHFy/zVEgwWJuWCgfT7DuYtx3J
+         fZ/ewW8apSMBfw7/hsl+DE9MM8ScNSxAaF5hsb9jEh291X8drUxLcC9hoOAmm1C2gq8g
+         o/NmaZPW67R7lJRHcDHRUmuZQnOS9Qh5wZfG3Muf4J7S7gQK3g7qni4G1UFdWg3PCJqE
+         wdtdG/Lah4rPeZ/ZVcbyArtP0H4bxaK/uQtzUB2SZQcEPteNztRLcBQVTQi0Sz+3NYW/
+         ZLdQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=ELr/XxVqul6D20WrUY/+l7F3oFFhw69GAu+JHpk3Rbk=;
-        b=o6P6EnTCuaZSr0tBobB7yb1CyQJQy+i75avetHdcLfLvhSlZRIPhgBTGLNZGWXUEVr
-         qCDwXRkx+sH557gWzBs3EK0drowdhqEIDCxtr0yVP2SzHahmy/Mxg0bxzYvAYMCYxLco
-         p27Bj7E3a9t/ylAGFj/sKqlgLuTELBlXhearyl1/RrgRQr5lYQNZa2+diHptJompcdUP
-         yBz9tom61Edd6dNQrIYt55Drgg9N5S08cE6chlzxllccxzGpszm1+jymDdIew/qyfola
-         HwqJPy2oO3LsaI7ZcWD0Zyf4aoanOHGtwSkIfFfCyOAT43Tk49gK7wWGDq6k9JEnNw9L
-         CosA==
-X-Gm-Message-State: APjAAAX1Y7CClWRwDv/055D8SB80n6uC+hQcEJjArGkuseilKvYokLLx
-        U7skErymyYvvFUjiopK35x5LtoU1GblZjvbSWsg=
-X-Google-Smtp-Source: APXvYqyxmKUFZijBXdkuTtHh/L21hbP+2dYNdVYZ+ehzOljvqjBV6f2i6/sb3FoGBrunVSLpiVTX+WlgbzOZ4rbNNQg=
-X-Received: by 2002:ac8:1385:: with SMTP id h5mr4640404qtj.59.1579111572469;
- Wed, 15 Jan 2020 10:06:12 -0800 (PST)
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=DbNxMeA4XOtNCETrBCdq4uCDGOJYzYMRQjc2MJfRV9E=;
+        b=BySqDUgc3hLj5+14zQu1yQISQbEFKRt4FUvmAz36OL0eVTRWhaD3lbgr3EUT6PntY7
+         YFy5jnFrcfJ3noLrW9FGqo/z/PxCbRaLl3kVF33Zf9g5cEzqwirGg2Edg3GMYTBUKC2g
+         kuLrERNHAN8feoh7mo46asJDz8sdR/+cq0LHzDD70OdPUb8ED+0fw3bWWaYqlD+3JJpu
+         n7QgcH6Ta78YILb37B/9wdBF44tg6C3BgvCY0U1LyKTtYNiu34ze1vERBo6C30GJMHFe
+         9V7j0my6SYvlDt54NymO1AvVaERD/Ky+HR53Nw4dmg97opwNuOECd2Kl9FX5UECL/R3t
+         53pw==
+X-Gm-Message-State: APjAAAWs6w1jMNoQgoU8dckpwxqwdCYNIFUKOtu4fi4jgSF0Zn2qPDhY
+        KTAL226ReitVbLUyIVXniE21eQ==
+X-Google-Smtp-Source: APXvYqzEjTh8By02rqdm5JPhp7w+4ngsPAMDVccZz4DguCmHJ5qPF/g1t+kctKTLrdCUH0GTgSqytg==
+X-Received: by 2002:ac8:3631:: with SMTP id m46mr4909888qtb.226.1579111728988;
+        Wed, 15 Jan 2020 10:08:48 -0800 (PST)
+Received: from ziepe.ca (hlfxns017vw-142-68-57-212.dhcp-dynamic.fibreop.ns.bellaliant.net. [142.68.57.212])
+        by smtp.gmail.com with ESMTPSA id w21sm10075182qth.17.2020.01.15.10.08.48
+        (version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
+        Wed, 15 Jan 2020 10:08:48 -0800 (PST)
+Received: from jgg by mlx.ziepe.ca with local (Exim 4.90_1)
+        (envelope-from <jgg@ziepe.ca>)
+        id 1irn60-0003Wa-4z; Wed, 15 Jan 2020 14:08:48 -0400
+Date:   Wed, 15 Jan 2020 14:08:48 -0400
+From:   Jason Gunthorpe <jgg@ziepe.ca>
+To:     Yishai Hadas <yishaih@mellanox.com>
+Cc:     linux-rdma@vger.kernel.org, dledford@redhat.com,
+        saeedm@mellanox.com, maorg@mellanox.com, michaelgur@mellanox.com,
+        netdev@vger.kernel.org
+Subject: Re: [PATCH rdma-next 00/10] Relaxed ordering memory regions
+Message-ID: <20200115180848.GA13397@ziepe.ca>
+References: <1578506740-22188-1-git-send-email-yishaih@mellanox.com>
 MIME-Version: 1.0
-References: <157909756858.1192265.6657542187065456112.stgit@toke.dk>
-In-Reply-To: <157909756858.1192265.6657542187065456112.stgit@toke.dk>
-From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Wed, 15 Jan 2020 10:06:01 -0800
-Message-ID: <CAEf4Bza+dNoD7HbVQGtXBq=raz4DQg0yTShKZHRbCo+zHYfoSA@mail.gmail.com>
-Subject: Re: [PATCH bpf-next v2 00/10] tools: Use consistent libbpf include
- paths everywhere
-To:     =?UTF-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <toke@redhat.com>
-Cc:     Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        Andrii Nakryiko <andriin@fb.com>,
-        Doug Ledford <dledford@redhat.com>,
-        Jason Gunthorpe <jgg@ziepe.ca>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <jakub.kicinski@netronome.com>,
-        Jesper Dangaard Brouer <brouer@redhat.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Ingo Molnar <mingo@redhat.com>,
-        Arnaldo Carvalho de Melo <acme@kernel.org>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
-        Jiri Olsa <jolsa@redhat.com>,
-        Namhyung Kim <namhyung@kernel.org>,
-        Shuah Khan <shuah@kernel.org>,
-        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        open list <linux-kernel@vger.kernel.org>,
-        linux-rdma@vger.kernel.org,
-        "open list:KERNEL SELFTEST FRAMEWORK" 
-        <linux-kselftest@vger.kernel.org>,
-        clang-built-linux@googlegroups.com
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <1578506740-22188-1-git-send-email-yishaih@mellanox.com>
+User-Agent: Mutt/1.9.4 (2018-02-28)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Jan 15, 2020 at 6:13 AM Toke H=C3=B8iland-J=C3=B8rgensen <toke@redh=
-at.com> wrote:
->
-> The recent commit 6910d7d3867a ("selftests/bpf: Ensure bpf_helper_defs.h =
-are
-> taken from selftests dir") broke compilation against libbpf if it is inst=
-alled
-> on the system, and $INCLUDEDIR/bpf is not in the include path.
->
-> Since having the bpf/ subdir of $INCLUDEDIR in the include path has never=
- been a
-> requirement for building against libbpf before, this needs to be fixed. O=
-ne
-> option is to just revert the offending commit and figure out a different =
-way to
-> achieve what it aims for. However, this series takes a different approach=
-:
-> Changing all in-tree users of libbpf to consistently use a bpf/ prefix in
-> #include directives for header files from libbpf.
->
-> This turns out to be a somewhat invasive change in the number of files to=
-uched;
-> however, the actual changes to files are fairly trivial (most of them are=
- simply
-> made with 'sed'). Also, this approach has the advantage that it makes ext=
-ernal
-> and internal users consistent with each other, and ensures no future chan=
-ges
-> breaks things in the same way as the commit referenced above.
->
-> The series is split to make the change for one tool subdir at a time, whi=
-le
-> trying not to break the build along the way. It is structured like this:
->
-> - Patch 1-2: Trivial fixes to Makefiles for issues I discovered while cha=
-nging
->   the include paths.
->
-> - Patch 3-7: Change the include directives to use the bpf/ prefix, and up=
-dates
->   Makefiles to make sure tools/lib/ is part of the include path, but with=
-out
->   removing tools/lib/bpf
->
-> - Patch 8: Change the bpf_helpers file in libbpf itself to use the bpf/ p=
-refix
->   when including (the original source of breakage).
->
-> - Patch 9-10: Remove tools/lib/bpf from include paths to make sure we don=
-'t
->   inadvertently re-introduce includes without the bpf/ prefix.
->
-> ---
+On Wed, Jan 08, 2020 at 08:05:30PM +0200, Yishai Hadas wrote:
+> This series adds an ioctl command to allocate an async event file followed by a
+> new ioctl command to get a device context.
+> 
+> The get device context command enables reading some core generic capabilities
+> such as supporting an optional MR access flags by IB core and its related
+> drivers.
+> 
+> Once the above is enabled, a new optional MR access flag named
+> IB_UVERBS_ACCESS_RELAXED_ORDERING is added and is used by mlx5 driver.
+> 
+> This optional flag allows creation of relaxed ordering memory regions.  Access
+> through such MRs can improve performance by allowing the system to reorder
+> certain accesses.
+> 
+> As relaxed ordering is an optimization, drivers that do not support it can
+> simply ignore it.
+> 
+> Note: This series relies on the 'Refactoring FD usage' series [1] that was sent
+> to rdma-next.
+> [1] https://patchwork.kernel.org/project/linux-rdma/list/?series=225541
+> 
+> Yishai
+> 
+> Jason Gunthorpe (3):
+>   RDMA/core: Add UVERBS_METHOD_ASYNC_EVENT_ALLOC
+>   RDMA/core: Remove ucontext_lock from the uverbs_destry_ufile_hw() path
+>   RDMA/uverbs: Add ioctl command to get a device context
+> 
+> Michael Guralnik (7):
+>   net/mlx5: Expose relaxed ordering bits
+>   RDMA/uverbs: Verify MR access flags
+>   RDMA/core: Add optional access flags range
+>   RDMA/efa: Allow passing of optional access flags for MR registration
+>   RDMA/uverbs: Add new relaxed ordering memory region access flag
+>   RDMA/core: Add the core support field to METHOD_GET_CONTEXT
+>   RDMA/mlx5: Set relaxed ordering when requested
 
-Thanks, Toke, for this clean up! I tested it locally for my set up:
-runqslower, bpftool, libbpf, and selftests all build fine, so it looks
-good. My only concern is with selftests/bpf Makefile, we shouldn't
-build anything outside of selftests/bpf. Let's fix that. Thanks!
+This looks OK, can you update the shared branch please
 
->
-> Toke H=C3=B8iland-J=C3=B8rgensen (10):
->       samples/bpf: Don't try to remove user's homedir on clean
->       tools/bpf/runqslower: Fix override option for VMLINUX_BTF
->       tools/runqslower: Use consistent include paths for libbpf
->       selftests: Use consistent include paths for libbpf
->       bpftool: Use consistent include paths for libbpf
->       perf: Use consistent include paths for libbpf
->       samples/bpf: Use consistent include paths for libbpf
->       libbpf: Fix include of bpf_helpers.h when libbpf is installed on sy=
-stem
->       selftests: Remove tools/lib/bpf from include path
->       tools/runqslower: Remove tools/lib/bpf from include path
->
->
-
-[...]
+Thanks,
+Jason
