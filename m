@@ -2,94 +2,80 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 40B9513B72B
-	for <lists+netdev@lfdr.de>; Wed, 15 Jan 2020 02:46:35 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7B4C513B734
+	for <lists+netdev@lfdr.de>; Wed, 15 Jan 2020 02:47:31 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728927AbgAOBp2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 14 Jan 2020 20:45:28 -0500
-Received: from mail-qv1-f68.google.com ([209.85.219.68]:44139 "EHLO
-        mail-qv1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728884AbgAOBp1 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 14 Jan 2020 20:45:27 -0500
-Received: by mail-qv1-f68.google.com with SMTP id n8so6666623qvg.11;
-        Tue, 14 Jan 2020 17:45:27 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=26pT0x9nMPAWkcZLswp2shSuQ606h/dQkzwogdMerR8=;
-        b=fcvcAPfzeF19IeB3wfsRvhJTVMn0thbdWMpk4lmOzmFmU1SEv+rNDS1jvskDa+aPcV
-         VGwR5lrQ8uk6b/r7H+ozZzIyPtSAzpZ8iJ1j09AdHUcyqCPUBOGw8meBGNCNygoXxfk3
-         ycGsVwnf9F0Ovd70+UfO2l5VfWK5YR+o1ly9nao6hbDN0SrtPlpEfbnnaldp+nYpk0s6
-         5EM4vctam2S9hZJ2GfVTNZvf3IfsnkQr/fc/mWV5PYlRLiGE6SpbkRULF+8ITkmGFmvn
-         jzqymxMRb8kTequv03+REu26890zaG8UqO1P4j+7gOWzOsqnuaHBqL2+Uv34FIlPXMet
-         NCmQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=26pT0x9nMPAWkcZLswp2shSuQ606h/dQkzwogdMerR8=;
-        b=sDTRS+oQbBt84lDisOp9y1a4orb4cVgGk3Ay45Ur67nRJV0Qr+f41bso7p+HzVWj+h
-         NBpgnmRYv6bsgzf8F1AwJ2bnPerp1IKyW6W1JPBl1L8vJRe+Mf4BUppaYA6XWLZZFX2b
-         i4w3M3X7VrioC7cuk6gOmjbAKj5hXONIxHcZaXFk32iRggPY7l8Sv6dG/f1acI+zKb0F
-         LdIFBCmoobscO/ykhVTfkB6Cd0J3i3YhHvQmpY0zQ9RLqkFfHN9Lf4+AvY6dNrcyKloV
-         MxagLh/XQMur8hJaFLhjJksIEPKIgVoko49D6Jle+ABvRZCHo+nq8Fym8v9coODHb2mg
-         I/gQ==
-X-Gm-Message-State: APjAAAWKcvszyFZ3i3NLYdWIO4nDmRAcouM2LwuxTQp6enp1f5L8clfL
-        whmTJCbzHMPC3cIwTEO1tyiAHok3XaZD5DpbC3jaIg==
-X-Google-Smtp-Source: APXvYqxouNDd5psikCf3YmiaTn+ShjuxNMKVBSO+YN3IDZtJenV59iGL9cHihNYI2wktrLKBhA8zGDt9riQRJ496YPA=
-X-Received: by 2002:a05:6214:38c:: with SMTP id l12mr19807539qvy.224.1579052726736;
- Tue, 14 Jan 2020 17:45:26 -0800 (PST)
+        id S1728905AbgAOBrG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 14 Jan 2020 20:47:06 -0500
+Received: from rtits2.realtek.com ([211.75.126.72]:35876 "EHLO
+        rtits2.realtek.com.tw" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728834AbgAOBrF (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 14 Jan 2020 20:47:05 -0500
+Authenticated-By: 
+X-SpamFilter-By: BOX Solutions SpamTrap 5.62 with qID 00F1kVaC029300, This message is accepted by code: ctloc85258
+Received: from mail.realtek.com (RTITCAS11.realtek.com.tw[172.21.6.12])
+        by rtits2.realtek.com.tw (8.15.2/2.57/5.78) with ESMTPS id 00F1kVaC029300
+        (version=TLSv1.2 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Wed, 15 Jan 2020 09:46:31 +0800
+Received: from RTEXMB01.realtek.com.tw (172.21.6.94) by
+ RTITCAS11.realtek.com.tw (172.21.6.12) with Microsoft SMTP Server (TLS) id
+ 14.3.468.0; Wed, 15 Jan 2020 09:46:31 +0800
+Received: from RTEXMB04.realtek.com.tw (172.21.6.97) by
+ RTEXMB01.realtek.com.tw (172.21.6.94) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.1779.2; Wed, 15 Jan 2020 09:46:30 +0800
+Received: from RTEXMB04.realtek.com.tw ([fe80::d9c5:a079:495e:b999]) by
+ RTEXMB04.realtek.com.tw ([fe80::d9c5:a079:495e:b999%6]) with mapi id
+ 15.01.1779.005; Wed, 15 Jan 2020 09:46:30 +0800
+From:   Pkshih <pkshih@realtek.com>
+To:     "linux-wireless@vger.kernel.org" <linux-wireless@vger.kernel.org>,
+        "colin.king@canonical.com" <colin.king@canonical.com>,
+        "kvalo@codeaurora.org" <kvalo@codeaurora.org>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+CC:     "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "kernel-janitors@vger.kernel.org" <kernel-janitors@vger.kernel.org>
+Subject: Re: [PATCH] rtlwifi: rtl8188ee: remove redundant assignment to variable cond
+Thread-Topic: [PATCH] rtlwifi: rtl8188ee: remove redundant assignment to
+ variable cond
+Thread-Index: AQHVyvuETGjMBYS3AkaSVjAm0Ae8WKfqbyKA
+Date:   Wed, 15 Jan 2020 01:46:30 +0000
+Message-ID: <1579052789.2871.0.camel@realtek.com>
+References: <20200114165601.374597-1-colin.king@canonical.com>
+In-Reply-To: <20200114165601.374597-1-colin.king@canonical.com>
+Accept-Language: en-US, zh-TW
+Content-Language: zh-TW
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-originating-ip: [172.21.69.111]
+Content-Type: text/plain; charset="utf-8"
+Content-ID: <9FBABB5D96EED04FB83EA5521F5E7308@realtek.com>
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-References: <20200114224358.3027079-1-kafai@fb.com> <20200114224419.3028615-1-kafai@fb.com>
-In-Reply-To: <20200114224419.3028615-1-kafai@fb.com>
-From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Tue, 14 Jan 2020 17:45:15 -0800
-Message-ID: <CAEf4BzaTxSMoHPYEVZoMJ+vRZ+y4bGnxm7k10dhOOPzev23eRQ@mail.gmail.com>
-Subject: Re: [PATCH bpf-next 4/5] bpftool: Add struct_ops map name
-To:     Martin KaFai Lau <kafai@fb.com>
-Cc:     bpf <bpf@vger.kernel.org>, Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        David Miller <davem@davemloft.net>,
-        Kernel Team <kernel-team@fb.com>,
-        Networking <netdev@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Jan 14, 2020 at 2:45 PM Martin KaFai Lau <kafai@fb.com> wrote:
->
-> This patch adds BPF_MAP_TYPE_STRUCT_OPS to "struct_ops" name mapping
-> so that "bpftool map show" can print the "struct_ops" map type
-> properly.
->
-> [root@arch-fb-vm1 bpf]# ~/devshare/fb-kernel/linux/tools/bpf/bpftool/bpftool map show id 8
-> 8: struct_ops  name dctcp  flags 0x0
->         key 4B  value 256B  max_entries 1  memlock 4096B
->         btf_id 7
->
-> Signed-off-by: Martin KaFai Lau <kafai@fb.com>
-> ---
-
-Acked-by: Andrii Nakryiko <andriin@fb.com>
-
->  tools/bpf/bpftool/map.c | 1 +
->  1 file changed, 1 insertion(+)
->
-> diff --git a/tools/bpf/bpftool/map.c b/tools/bpf/bpftool/map.c
-> index 45c1eda6512c..4c5b15d736b6 100644
-> --- a/tools/bpf/bpftool/map.c
-> +++ b/tools/bpf/bpftool/map.c
-> @@ -48,6 +48,7 @@ const char * const map_type_name[] = {
->         [BPF_MAP_TYPE_QUEUE]                    = "queue",
->         [BPF_MAP_TYPE_STACK]                    = "stack",
->         [BPF_MAP_TYPE_SK_STORAGE]               = "sk_storage",
-> +       [BPF_MAP_TYPE_STRUCT_OPS]               = "struct_ops",
->  };
->
->  const size_t map_type_name_size = ARRAY_SIZE(map_type_name);
-> --
-> 2.17.1
->
+T24gVHVlLCAyMDIwLTAxLTE0IGF0IDE2OjU2ICswMDAwLCBDb2xpbiBLaW5nIHdyb3RlOg0KPiBG
+cm9tOiBDb2xpbiBJYW4gS2luZyA8Y29saW4ua2luZ0BjYW5vbmljYWwuY29tPg0KPiANCj4gVmFy
+aWFibGUgY29uZCBpcyBiZWluZyBhc3NpZ25lZCB3aXRoIGEgdmFsdWUgdGhhdCBpcyBuZXZlcg0K
+PiByZWFkLCBpdCBpcyBhc3NpZ25lZCBhIG5ldyB2YWx1ZSBsYXRlciBvbi4gVGhlIGFzc2lnbm1l
+bnQgaXMNCj4gcmVkdW5kYW50IGFuZCBjYW4gYmUgcmVtb3ZlZC4NCj4gDQo+IEFkZHJlc3Nlcy1D
+b3Zlcml0eTogKCJVbnVzZWQgdmFsdWUiKQ0KPiBTaWduZWQtb2ZmLWJ5OiBDb2xpbiBJYW4gS2lu
+ZyA8Y29saW4ua2luZ0BjYW5vbmljYWwuY29tPg0KDQpBY2tlZC1ieTogUGluZy1LZSBTaGloIDxw
+a3NoaWhAcmVhbHRlay5jb20+DQoNClRoYW5rIHlvdSEhDQoNCj4gLS0tDQo+IMKgZHJpdmVycy9u
+ZXQvd2lyZWxlc3MvcmVhbHRlay9ydGx3aWZpL3J0bDgxODhlZS9waHkuYyB8IDIgKy0NCj4gwqAx
+IGZpbGUgY2hhbmdlZCwgMSBpbnNlcnRpb24oKyksIDEgZGVsZXRpb24oLSkNCj4gDQo+IGRpZmYg
+LS1naXQgYS9kcml2ZXJzL25ldC93aXJlbGVzcy9yZWFsdGVrL3J0bHdpZmkvcnRsODE4OGVlL3Bo
+eS5jDQo+IGIvZHJpdmVycy9uZXQvd2lyZWxlc3MvcmVhbHRlay9ydGx3aWZpL3J0bDgxODhlZS9w
+aHkuYw0KPiBpbmRleCA1Y2E5MDBmOTdkNjYuLmQxMzk4M2VjMDlhZCAxMDA2NDQNCj4gLS0tIGEv
+ZHJpdmVycy9uZXQvd2lyZWxlc3MvcmVhbHRlay9ydGx3aWZpL3J0bDgxODhlZS9waHkuYw0KPiAr
+KysgYi9kcml2ZXJzL25ldC93aXJlbGVzcy9yZWFsdGVrL3J0bHdpZmkvcnRsODE4OGVlL3BoeS5j
+DQo+IEBAIC0yNjQsNyArMjY0LDcgQEAgc3RhdGljIGJvb2wgX3J0bDg4ZV9jaGVja19jb25kaXRp
+b24oc3RydWN0IGllZWU4MDIxMV9odw0KPiAqaHcsDQo+IMKgCXUzMiBfYm9hcmQgPSBydGxlZnVz
+ZS0+Ym9hcmRfdHlwZTsgLypuZWVkIGVmdXNlIGRlZmluZSovDQo+IMKgCXUzMiBfaW50ZXJmYWNl
+ID0gcnRsaGFsLT5pbnRlcmZhY2U7DQo+IMKgCXUzMiBfcGxhdGZvcm0gPSAweDA4Oy8qU3VwcG9y
+dFBsYXRmb3JtICovDQo+IC0JdTMyIGNvbmQgPSBjb25kaXRpb247DQo+ICsJdTMyIGNvbmQ7DQo+
+IMKgDQo+IMKgCWlmIChjb25kaXRpb24gPT0gMHhDRENEQ0RDRCkNCj4gwqAJCXJldHVybiB0cnVl
+Ow0K
