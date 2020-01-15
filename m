@@ -2,171 +2,100 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 2913813BC21
-	for <lists+netdev@lfdr.de>; Wed, 15 Jan 2020 10:13:37 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C877613BC2E
+	for <lists+netdev@lfdr.de>; Wed, 15 Jan 2020 10:14:30 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729197AbgAOJNf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 15 Jan 2020 04:13:35 -0500
-Received: from mail-yb1-f194.google.com ([209.85.219.194]:44862 "EHLO
-        mail-yb1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726472AbgAOJNf (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 15 Jan 2020 04:13:35 -0500
-Received: by mail-yb1-f194.google.com with SMTP id f136so2590100ybg.11
-        for <netdev@vger.kernel.org>; Wed, 15 Jan 2020 01:13:34 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=XcRqeuWoIkNtgyvJChZlQKJy6Bkfi12aLypwjiX603U=;
-        b=jfklyf6hOkOkf7hgbJgBZ47uUgFxJHVpkH8v1wteNlftAAOCLFGyS0nNg8V0f8Woj0
-         Bc3P6YzKtLULzutBQYUvomYlrU7fXr3rN/PvTJoQbc267CvGDLnFoTjQGs/OTAVVhil6
-         sQ+84J696XsNa21fCHKHgxXfDhk63uMnWR8Lo5Lgw82ema4i44IlZiBvbm9J90unAth/
-         4CRSE0eCB6GWp2S7NBU2VJ0YrTjKg0HD1EdQAYCI0IRUiCD+bg8NFBnVc56oIkr98hAW
-         L3tZCkFEDnZOdh09nRwYfpoSU10DiwI5vtWijEVlBvCPRzXZ21M0lZZ014TTdIqO/8s/
-         hduA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=XcRqeuWoIkNtgyvJChZlQKJy6Bkfi12aLypwjiX603U=;
-        b=s2yRkID9/HrEflvNX1HRnx2QV3LjJ5iM31Cic5RUVxNIML8CglmR+eFv0lNqVyfvY/
-         GQFkorwfiHA56eLKvX839vQFZGhlF8f6OozSTd7K7HqmI041IrKAjIa2dTD24PXH1s9e
-         Zi7Nmu4S3OvabTLqwDyJDhsx9Jg3+/zSAZWsFPR7TOLTS0Yeyug4lIIUrx8GYG9h3A5i
-         Ty6OJJWFloTGok/yjUluegjU0SXHA124h02qsk4/9wqPoDQgpEH7cVJgs8twqYlQD1tN
-         Qm0sZ9DJZjZ1BlBPRUrlCa+GKyTls0HUnKgozoIrEQux703AQiJ9CSqJEOE74QpucQPm
-         GWNg==
-X-Gm-Message-State: APjAAAWdHRkq2gTIRWJ37AU8UyL2B+5h40u410Pne8A9weM8ogcLx8Gx
-        l1GWkIt2DmVaB74yQ2oF6n+pv1YHtj4BEXI20Ys=
-X-Google-Smtp-Source: APXvYqzxsm88/SicNWFyp7PjVnPdruk+Kvawk5wcVb2J7p+Q6nyC3KFTqTW7VLukpPDaYBFWCG8XE4rnawvGLwFywcY=
-X-Received: by 2002:a5b:c0f:: with SMTP id f15mr20481310ybq.129.1579079614454;
- Wed, 15 Jan 2020 01:13:34 -0800 (PST)
-MIME-Version: 1.0
-References: <1578388566-27310-1-git-send-email-wenxu@ucloud.cn>
-In-Reply-To: <1578388566-27310-1-git-send-email-wenxu@ucloud.cn>
-From:   Or Gerlitz <gerlitz.or@gmail.com>
-Date:   Wed, 15 Jan 2020 11:13:23 +0200
-Message-ID: <CAJ3xEMjmS=oo6xmep7seVUJ58NPpLQ_UKZH1qVWxf6w=sBBJgQ@mail.gmail.com>
-Subject: Re: [PATCH net-next v2] net/mlx5e: Add mlx5e_flower_parse_meta support
-To:     wenxu <wenxu@ucloud.cn>
-Cc:     Paul Blakey <paulb@mellanox.com>,
-        Saeed Mahameed <saeedm@mellanox.com>,
-        Linux Netdev List <netdev@vger.kernel.org>
+        id S1729410AbgAOJO0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 15 Jan 2020 04:14:26 -0500
+Received: from us-smtp-delivery-1.mimecast.com ([207.211.31.120]:36333 "EHLO
+        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+        with ESMTP id S1729067AbgAOJOZ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 15 Jan 2020 04:14:25 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1579079664;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=S/TQNTrlWJoEcVej5gvUo106Sug5eqRN3gxypFSR12I=;
+        b=LbcTOpLPrzx2jY450NIO6yVdTSqVBlkRr181saxiVdxpyDH+yYfLGGjBqKJe4L9Nozb8YU
+        /L9SRnlF3du+HHe8pgwV2MdomzUb92Nw0h1RcIKAounbfYTv1gqYvoZKJZ64K5wnC1jqS3
+        Ra0nBi7KQIB+ylXV4Ow7MiNzwJKKcKU=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-319-62grvez_Owyt1U87IrV5iA-1; Wed, 15 Jan 2020 04:14:22 -0500
+X-MC-Unique: 62grvez_Owyt1U87IrV5iA-1
+Received: from smtp.corp.redhat.com (int-mx04.intmail.prod.int.phx2.redhat.com [10.5.11.14])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 922898024CF;
+        Wed, 15 Jan 2020 09:14:21 +0000 (UTC)
+Received: from ovpn-205-91.brq.redhat.com (ovpn-205-91.brq.redhat.com [10.40.205.91])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 1F0F65D9C9;
+        Wed, 15 Jan 2020 09:14:19 +0000 (UTC)
+Message-ID: <7b6aad5de9b62323f0a8b24ce2d5c7d5adcd89b4.camel@redhat.com>
+Subject: Re: [PATCH net] net/sched: act_ife: initalize ife->metalist earlier
+From:   Davide Caratti <dcaratti@redhat.com>
+To:     Eric Dumazet <edumazet@google.com>,
+        "David S . Miller" <davem@davemloft.net>
+Cc:     netdev <netdev@vger.kernel.org>,
+        Eric Dumazet <eric.dumazet@gmail.com>,
+        syzbot <syzkaller@googlegroups.com>
+In-Reply-To: <20200114215128.87537-1-edumazet@google.com>
+References: <20200114215128.87537-1-edumazet@google.com>
+Organization: red hat
 Content-Type: text/plain; charset="UTF-8"
+Date:   Wed, 15 Jan 2020 10:14:19 +0100
+MIME-Version: 1.0
+User-Agent: Evolution 3.34.2 (3.34.2-1.fc31) 
+Content-Transfer-Encoding: 7bit
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.14
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Jan 7, 2020 at 11:17 AM <wenxu@ucloud.cn> wrote:
-> In the flowtables offload all the devices in the flowtables
-> share the same flow_block. An offload rule will be installed on
+On Tue, 2020-01-14 at 13:51 -0800, Eric Dumazet wrote:
+> It seems better to init ife->metalist earlier in tcf_ife_init()
+> to avoid the following crash :
 
-"In the flowtables offload all the devices in the flowtables share the"
+hello Eric, and thanks for the patch.
 
-I am not managing to follow on this sentence. What does "devices in
-the flowtables" mean?
+If I well understand the problem, we have
 
-> all the devices. This scenario is not correct.
+_tcf_ife_cleanup()
 
-so this is a fix and should go to net, or maybe the code you are fixing
-was only introduced in net-next?
+that does dereference of NULL ife->metalist,
+because it has not yet initialized by tcf_ife_init(). This happened
+probably because the control action was not valid (hence the Fixes:tag):
+so, tcf_ife_init() jumped to the error path before doing INIT_LIST_HEAD().
 
-> It is no problem if there are only two devices in the flowtable,
-> The rule with ingress and egress on the same device can be reject
+I applied your patch to my tree, and I see this:
 
-nit: rejected
+net/sched/act_ife.c: In function 'tcf_ife_init':
+net/sched/act_ife.c:533:3: warning: 'ife' may be used uninitialized in
+this function [-Wmaybe-uninitialized]
+   INIT_LIST_HEAD(&ife->metalist);
+   ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-> by driver.
+And I think the warning is telling us a real problem, because
 
-> But more than two devices in the flowtable will install the wrong
-> rules on hardware.
->
-> For example:
-> Three devices in a offload flowtables: dev_a, dev_b, dev_c
->
-> A rule ingress from dev_a and egress to dev_b:
-> The rule will install on device dev_a.
-> The rule will try to install on dev_b but failed for ingress
-> and egress on the same device.
-> The rule will install on dev_c. This is not correct.
->
-> The flowtables offload avoid this case through restricting the ingress dev
-> with FLOW_DISSECTOR_KEY_META as following patch.
-> http://patchwork.ozlabs.org/patch/1218109/
->
-> So the mlx5e driver also should support the FLOW_DISSECTOR_KEY_META parse.
->
-> Signed-off-by: wenxu <wenxu@ucloud.cn>
-> ---
-> v2: remap the patch description
->
->  drivers/net/ethernet/mellanox/mlx5/core/en_tc.c | 39 +++++++++++++++++++++++++
->  1 file changed, 39 insertions(+)
->
-> diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_tc.c b/drivers/net/ethernet/mellanox/mlx5/core/en_tc.c
-> index 9b32a9c..33d1ce5 100644
-> --- a/drivers/net/ethernet/mellanox/mlx5/core/en_tc.c
-> +++ b/drivers/net/ethernet/mellanox/mlx5/core/en_tc.c
-> @@ -1805,6 +1805,40 @@ static void *get_match_headers_value(u32 flags,
->                              outer_headers);
->  }
->
-> +static int mlx5e_flower_parse_meta(struct net_device *filter_dev,
-> +                                  struct flow_cls_offload *f)
-> +{
-> +       struct flow_rule *rule = flow_cls_offload_flow_rule(f);
-> +       struct netlink_ext_ack *extack = f->common.extack;
-> +       struct net_device *ingress_dev;
-> +       struct flow_match_meta match;
-> +
-> +       if (!flow_rule_match_key(rule, FLOW_DISSECTOR_KEY_META))
-> +               return 0;
-> +
-> +       flow_rule_match_meta(rule, &match);
-> +       if (match.mask->ingress_ifindex != 0xFFFFFFFF) {
-> +               NL_SET_ERR_MSG_MOD(extack, "Unsupported ingress ifindex mask");
-> +               return -EINVAL;
-> +       }
-> +
-> +       ingress_dev = __dev_get_by_index(dev_net(filter_dev),
-> +                                        match.key->ingress_ifindex);
-> +       if (!ingress_dev) {
-> +               NL_SET_ERR_MSG_MOD(extack,
-> +                                  "Can't find the ingress port to match on");
-> +               return -EINVAL;
-> +       }
-> +
-> +       if (ingress_dev != filter_dev) {
-> +               NL_SET_ERR_MSG_MOD(extack,
-> +                                  "Can't match on the ingress filter port");
-> +               return -EINVAL;
-> +       }
-> +
-> +       return 0;
-> +}
-> +
->  static int __parse_cls_flower(struct mlx5e_priv *priv,
->                               struct mlx5_flow_spec *spec,
->                               struct flow_cls_offload *f,
-> @@ -1825,6 +1859,7 @@ static int __parse_cls_flower(struct mlx5e_priv *priv,
->         u16 addr_type = 0;
->         u8 ip_proto = 0;
->         u8 *match_level;
-> +       int err;
->
->         match_level = outer_match_level;
->
-> @@ -1868,6 +1903,10 @@ static int __parse_cls_flower(struct mlx5e_priv *priv,
->                                                     spec);
->         }
->
-> +       err = mlx5e_flower_parse_meta(filter_dev, f);
-> +       if (err)
-> +               return err;
-> +
->         if (flow_rule_match_key(rule, FLOW_DISSECTOR_KEY_BASIC)) {
->                 struct flow_match_basic match;
->
-> --
-> 1.8.3.1
->
+        ife = to_ife(*a);
+
+is done below the if (!exists) { } statement where you are dereferencing
+'ife'.
+
+I think the proper fix should do one of these two things:
+1) ensure that 'ife' is a valid pointer in the INIT_LIST_HEAD()
+2) leave tcf_ife_init() as is, and fix the priblem in _tcf_ife_clenup() by
+proper checking the value of ife->metalist  (which should be NULL in the
+error path, because tcf_idr_create() does kzalloc() [1].
+WDYT?
+
+thanks!
+-- 
+davide
+
+[1] https://elixir.bootlin.com/linux/latest/source/net/sched/act_api.c#L404
+
+
