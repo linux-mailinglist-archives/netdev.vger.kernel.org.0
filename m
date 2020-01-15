@@ -2,30 +2,30 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 4C9F713C7A2
-	for <lists+netdev@lfdr.de>; Wed, 15 Jan 2020 16:27:28 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B8B0713C7B7
+	for <lists+netdev@lfdr.de>; Wed, 15 Jan 2020 16:30:43 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729174AbgAOP1Q (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 15 Jan 2020 10:27:16 -0500
-Received: from bombadil.infradead.org ([198.137.202.133]:50656 "EHLO
+        id S1729016AbgAOPam (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 15 Jan 2020 10:30:42 -0500
+Received: from bombadil.infradead.org ([198.137.202.133]:50916 "EHLO
         bombadil.infradead.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726132AbgAOP1P (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 15 Jan 2020 10:27:15 -0500
+        with ESMTP id S1726132AbgAOPal (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 15 Jan 2020 10:30:41 -0500
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
         d=infradead.org; s=bombadil.20170209; h=In-Reply-To:Content-Type:MIME-Version
         :References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
         Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
         Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
         List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-         bh=D7e9eZKa6gYFU2IJRI9jG0xPpy15IcrwpA0ayX/o99E=; b=PgZaXKgJ+lATC1+pOarGwLB4N
-        gVqkzUD6yqFNbLIZ6JmUEYhxMoFUKFdDsBv/2ACO3AOvmdipDDnnzf52Dsv06NFofsbTKEm8X5pw8
-        PnESq2iyeoknuTRIXVGzLxBdTvhXqCsuznJpPO3DC9A4r54QE55RzMVGiLVH5j2ZZjRjnyA21d/Nl
-        Zs8ERvuY3+JDrKvKmlbafnwcLPVNx3swnKqlzVo/0HLWk/lYHiD8IGh36E+8eMKrxQspu1MmvWDCw
-        YmOoF4IudlL+Ok2mPmjz8OOAiLeU6G9TPbA1ggYhvCBPT3vnXA7qiY0LpO4OnaRM0YIaHuciss0sD
-        Zagq8RXRQ==;
+         bh=hlxbWHBq8lfTBkbbWblALE5WfMIrcmCMtir+afT5h7g=; b=KTafuKCnLEQxrDndx0KF1DZxC
+        rnKdoLI6sypMh61W+oBSzZckG9nErVqXpqRux90/jnJHBoNxCmDRhLN16rsx5kcLMMQTzpNlRHW3V
+        Kn+EfBOj9xXDn+MMy1P1Ce1dDs4zbgiDeuR8jQgZiUt61hA4+gx5SghScUnsRQG1ziTZYHV9R9Zgf
+        pJxhgaR5AeWS3+N32IQliDA3Jqotb5XQKegSIoZaLpNN+GhynXNs1L5cGpIhmQbJynCGULBXCRnjC
+        vAgzg7hshbf2g9UxNsiPKchC1nKbZKVYFzdAbYAS/fNwV5Y2i+QhIqJe1mPDizEBhtnZaTAQECgQV
+        KQqONFysg==;
 Received: from hch by bombadil.infradead.org with local (Exim 4.92.3 #3 (Red Hat Linux))
-        id 1irkZ8-0000t8-J0; Wed, 15 Jan 2020 15:26:42 +0000
-Date:   Wed, 15 Jan 2020 07:26:42 -0800
+        id 1irkce-0002dy-Qu; Wed, 15 Jan 2020 15:30:20 +0000
+Date:   Wed, 15 Jan 2020 07:30:20 -0800
 From:   Christoph Hellwig <hch@infradead.org>
 To:     John Hubbard <jhubbard@nvidia.com>
 Cc:     Andrew Morton <akpm@linux-foundation.org>,
@@ -57,22 +57,32 @@ Cc:     Andrew Morton <akpm@linux-foundation.org>,
         linux-fsdevel@vger.kernel.org, linux-kselftest@vger.kernel.org,
         linux-media@vger.kernel.org, linux-rdma@vger.kernel.org,
         linuxppc-dev@lists.ozlabs.org, netdev@vger.kernel.org,
-        linux-mm@kvack.org, LKML <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH v12 22/22] mm, tree-wide: rename put_user_page*() to
- unpin_user_page*()
-Message-ID: <20200115152642.GE19546@infradead.org>
+        linux-mm@kvack.org, LKML <linux-kernel@vger.kernel.org>,
+        Mike Rapoport <rppt@linux.ibm.com>
+Subject: Re: [PATCH v12 11/22] mm/gup: introduce pin_user_pages*() and
+ FOLL_PIN
+Message-ID: <20200115153020.GF19546@infradead.org>
 References: <20200107224558.2362728-1-jhubbard@nvidia.com>
- <20200107224558.2362728-23-jhubbard@nvidia.com>
+ <20200107224558.2362728-12-jhubbard@nvidia.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20200107224558.2362728-23-jhubbard@nvidia.com>
+In-Reply-To: <20200107224558.2362728-12-jhubbard@nvidia.com>
 X-SRS-Rewrite: SMTP reverse-path rewritten from <hch@infradead.org> by bombadil.infradead.org. See http://www.infradead.org/rpr.html
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Looks sensible:
+On Tue, Jan 07, 2020 at 02:45:47PM -0800, John Hubbard wrote:
+> Introduce pin_user_pages*() variations of get_user_pages*() calls,
+> and also pin_longterm_pages*() variations.
+> 
+> For now, these are placeholder calls, until the various call sites
+> are converted to use the correct get_user_pages*() or
+> pin_user_pages*() API.
 
-Reviewed-by: Christoph Hellwig <hch@lst.de>
+What do the pure placeholders buy us?  The API itself looks ok,
+but until it actually is properly implemented it doesn't help at
+all, and we've had all kinds of bad experiences with these sorts
+of stub APIs.
