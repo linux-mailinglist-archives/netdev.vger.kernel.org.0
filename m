@@ -2,30 +2,30 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 79E1E13C781
-	for <lists+netdev@lfdr.de>; Wed, 15 Jan 2020 16:24:54 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3B04213C790
+	for <lists+netdev@lfdr.de>; Wed, 15 Jan 2020 16:26:10 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729242AbgAOPYg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 15 Jan 2020 10:24:36 -0500
-Received: from bombadil.infradead.org ([198.137.202.133]:50328 "EHLO
+        id S1729160AbgAOP0J (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 15 Jan 2020 10:26:09 -0500
+Received: from bombadil.infradead.org ([198.137.202.133]:50548 "EHLO
         bombadil.infradead.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728949AbgAOPYf (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 15 Jan 2020 10:24:35 -0500
+        with ESMTP id S1726483AbgAOP0I (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 15 Jan 2020 10:26:08 -0500
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
         d=infradead.org; s=bombadil.20170209; h=In-Reply-To:Content-Type:MIME-Version
         :References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
         Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
         Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
         List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-         bh=l2WBiCb5duYJRA9nKpihqrJOH1Qjg6utSrFiu8qAdtc=; b=kt1toREaRLDGYTndUVzaGb7p9
-        4zeDVCwBiZs82+gJOw8ApLKEpTy0mC5GUbNhVFA5KfiYe9u7a+02sfK6iUHuH3GqO7JyKWWTxL5WO
-        XJXowEu3dIe0bflVkoKGnA4BgFI96shpr59qEdmQ/za1/HynyW+NjgvQQYgDMntuvE52brpHwzlf9
-        PQw/cYKdoKRQqm5kefLFVXCIfxKI2GSaZ+qaQXsf5+xchS1TRQqgYmVpalizU0rR0G1ly666/uGa/
-        LQOAuVmGLN5YKeCRP/F4Tezz8xTR/7nWhjfkhr0gC65LubnNUIJYJUsiCibV9WK+cMuQQbNOak6nT
-        cnrhJQN/Q==;
+         bh=l2WBiCb5duYJRA9nKpihqrJOH1Qjg6utSrFiu8qAdtc=; b=kHpvzbDYrkkUL3cc6cAeI5E40
+        ZM4+K5yaMP71I4XDs4NUIgcsDzecXQdTVQOI9UytyY4m6+JLlmCUKImi6/dR6L0pfsC4d/T3wdp6O
+        MiH8oMX11mdJxpFGhOL7MY3IiaLtrvOA39N0TisTI5sK4J7NubFbUAjuMwaWVei004tfkvfbrpAij
+        WTdPFX3eGuXTIlhNJQiA3RF5rEAKjEdpqrrh5f1fKjYLIoyd1CXYcnXJpOIhCKF5zP2Ta6n7nspuK
+        beARcZPMIHEiIKJBTW/sqFRg/NbSX1PMvzETS5fO9gFel4MAap2iKW4+78ZJA1pxuRM3jK5szGNmG
+        Rhb44UCRQ==;
 Received: from hch by bombadil.infradead.org with local (Exim 4.92.3 #3 (Red Hat Linux))
-        id 1irkWt-0007oc-Go; Wed, 15 Jan 2020 15:24:23 +0000
-Date:   Wed, 15 Jan 2020 07:24:23 -0800
+        id 1irkYK-0000mL-Dn; Wed, 15 Jan 2020 15:25:52 +0000
+Date:   Wed, 15 Jan 2020 07:25:52 -0800
 From:   Christoph Hellwig <hch@infradead.org>
 To:     John Hubbard <jhubbard@nvidia.com>
 Cc:     Andrew Morton <akpm@linux-foundation.org>,
@@ -58,16 +58,17 @@ Cc:     Andrew Morton <akpm@linux-foundation.org>,
         linux-media@vger.kernel.org, linux-rdma@vger.kernel.org,
         linuxppc-dev@lists.ozlabs.org, netdev@vger.kernel.org,
         linux-mm@kvack.org, LKML <linux-kernel@vger.kernel.org>,
-        Jason Gunthorpe <jgg@mellanox.com>
-Subject: Re: [PATCH v12 06/22] mm: fix get_user_pages_remote()'s handling of
- FOLL_LONGTERM
-Message-ID: <20200115152423.GC19546@infradead.org>
+        Christoph Hellwig <hch@lst.de>,
+        Leon Romanovsky <leonro@mellanox.com>
+Subject: Re: [PATCH v12 08/22] mm/gup: allow FOLL_FORCE for
+ get_user_pages_fast()
+Message-ID: <20200115152552.GD19546@infradead.org>
 References: <20200107224558.2362728-1-jhubbard@nvidia.com>
- <20200107224558.2362728-7-jhubbard@nvidia.com>
+ <20200107224558.2362728-9-jhubbard@nvidia.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20200107224558.2362728-7-jhubbard@nvidia.com>
+In-Reply-To: <20200107224558.2362728-9-jhubbard@nvidia.com>
 X-SRS-Rewrite: SMTP reverse-path rewritten from <hch@infradead.org> by bombadil.infradead.org. See http://www.infradead.org/rpr.html
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
