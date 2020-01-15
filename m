@@ -2,109 +2,102 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 5CAE313CCF6
-	for <lists+netdev@lfdr.de>; Wed, 15 Jan 2020 20:19:38 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9C9F013CCF9
+	for <lists+netdev@lfdr.de>; Wed, 15 Jan 2020 20:19:55 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726527AbgAOTTg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 15 Jan 2020 14:19:36 -0500
-Received: from out5-smtp.messagingengine.com ([66.111.4.29]:57183 "EHLO
-        out5-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1725999AbgAOTTg (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 15 Jan 2020 14:19:36 -0500
-Received: from compute3.internal (compute3.nyi.internal [10.202.2.43])
-        by mailout.nyi.internal (Postfix) with ESMTP id 5A58522085;
-        Wed, 15 Jan 2020 14:19:35 -0500 (EST)
-Received: from mailfrontend2 ([10.202.2.163])
-  by compute3.internal (MEProxy); Wed, 15 Jan 2020 14:19:35 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-        messagingengine.com; h=cc:content-type:date:from:in-reply-to
-        :message-id:mime-version:references:subject:to:x-me-proxy
-        :x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=fm1; bh=lFOhyx
-        55xjNGhMEvMKh98M1xXLHAofEmofJC0TwH0ek=; b=UWrRhi44JAHgmfltXo6BSP
-        3liUyO7XQYtLOf1pHoq1pQ3oYTTPb8bth7324N87oihx97BEdKTWEZGOPfuiK03u
-        kDofsfkQxaA+DXxevc6CVESO5En02AUaNb/3Wa2HVTzCSBPsB9iha3YeShC+Lxrh
-        sntHgKlmpOhW/hE/PZhgQ2MJOL4Ak8azmdy21ZCkZBZhH53NQrrPOrl6AzWByX+I
-        KAGQdXEqR99IfDLyy7g+Jl6kHWmrGmd+9nZj0wNYdslTqX4dwqgs1/IIC59EQY5P
-        naRrHY5NMb+sy80R/2DyKEhfBRAEx6uwSUXpwG30+N7tq8yg4NEymujQvWXMFhig
-        ==
-X-ME-Sender: <xms:xmUfXu_PhCKNM-4ZdgqtmuOhCNsJVpSCrq-b54qXEG3peCZbPB30IA>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedugedrtdefgdduvddvucetufdoteggodetrfdotf
-    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
-    uceurghilhhouhhtmecufedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmne
-    cujfgurhepfffhvffukfhfgggtuggjsehttdertddttddvnecuhfhrohhmpefkughoucfu
-    tghhihhmmhgvlhcuoehiughoshgthhesihguohhstghhrdhorhhgqeenucffohhmrghinh
-    eptggrnhguvghlrghtvggthhdrtghomhenucfkphepjeejrddufeekrddvgeelrddvtdel
-    necurfgrrhgrmhepmhgrihhlfhhrohhmpehiughoshgthhesihguohhstghhrdhorhhgne
-    cuvehluhhsthgvrhfuihiivgeptd
-X-ME-Proxy: <xmx:xmUfXuQIovbYrEd2neFHfCojbX-NEM2h-4VTVGJ87V7bnRef-KiM_A>
-    <xmx:xmUfXnCBF7YT8msFwVjvnDakUd9G8xKYoDv4DrgMBew9XP9aQZ1Rfw>
-    <xmx:xmUfXiezzmFrySVHfb0E98ilpEYR5z6_iWMJH5jUCvgjgJlLv7rj9w>
-    <xmx:x2UfXjBO_-RNQbJUbL6p1Vk25zITys_ewyxZ-EPn1A0tzYnx2fZkug>
-Received: from localhost (unknown [77.138.249.209])
-        by mail.messagingengine.com (Postfix) with ESMTPA id E72C030602DE;
-        Wed, 15 Jan 2020 14:19:33 -0500 (EST)
-Date:   Wed, 15 Jan 2020 21:19:20 +0200
-From:   Ido Schimmel <idosch@idosch.org>
-To:     Ben Greear <greearb@candelatech.com>
-Cc:     David Ahern <dsahern@gmail.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-Subject: Re: vrf and multicast is broken in some cases
-Message-ID: <20200115191920.GA1490933@splinter>
-References: <e439bcae-7d20-801c-007d-a41e8e9cd5f5@candelatech.com>
- <3906c6fe-e7a7-94c1-9d7d-74050084b56e@gmail.com>
- <dbefe9b1-c846-6cc6-3819-520fd084a447@candelatech.com>
+        id S1729027AbgAOTTt (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 15 Jan 2020 14:19:49 -0500
+Received: from mail-pg1-f196.google.com ([209.85.215.196]:41250 "EHLO
+        mail-pg1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728949AbgAOTTt (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 15 Jan 2020 14:19:49 -0500
+Received: by mail-pg1-f196.google.com with SMTP id x8so8643448pgk.8
+        for <netdev@vger.kernel.org>; Wed, 15 Jan 2020 11:19:48 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=y0L/6Kcm1GJKcnyPUoPeqUBC5pfceEUnD+q3JyvYAEE=;
+        b=A4YVAjQsjO9yS+bZ2p+xPTeFVjMqzAsB1haQHadcdWHedJzXAM6Cy6GYdTg9jS3xnB
+         ySSsVnvIo3WyNXb2ttDB6HFq9twxR0X1qjmFtg3RD7vTf9F6+BmwIevAFElHrDLqQ9zD
+         XJeHYsPAqifBydAE1iUwj2tew8zcqf9Tb6fQ1BK+RW5saqvk6Qn10yqHoTfOJoq3AhwL
+         kVt9GKUZtqLY0kkYedefoKWmKule6N33eUfBZqT4RAEA0HyRUewDbdGrqbskFoSCsdIJ
+         MDhHHYM2naLrVzRoZgTt6iOlsGD7mahhutqDgKBq9uusoCVsCClu9Dw5oX4UgOWPyDne
+         Hbzw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=y0L/6Kcm1GJKcnyPUoPeqUBC5pfceEUnD+q3JyvYAEE=;
+        b=q83UQsrC75dlkRnqYi1TNxUCmINSR3xuOApGfaS3n4sOZiS1MwX/5HMcvwKjEaI9hh
+         m7YA9repN9/Z4AqXI+q0vLTl/p0ba9TrNqipNbgqi50HzgGeftdwTROIAvFIyJK5nrjQ
+         Nu6TZ5mU4dOHV8FxPEBeIKsnHu8LzT55ajwviWoIwwArQn1+Un5W0WER6vmh9/OBjHJX
+         2Gd0bCL5ZmTai6KeJSCMXzAAiM2aweMucdDbLdTcBoYsggI2bx6zh3LXbJMuQN9gczL7
+         XqsarV7+T7DX1ahBhWxDWVdsThUt46Qdjg/qmKCwZ5hHde5RwJbDlyAMjAiFZJVz5++r
+         JeTg==
+X-Gm-Message-State: APjAAAX+rsKgF0apVH3FlHxOiOeBC1ppC5Hbnjo0bYPQsZzEfEqcgKdi
+        3zQz4Mp0cGVXWg7tyusdQ1+UaQ==
+X-Google-Smtp-Source: APXvYqxONnTtCwwnSki0/OOTTRl5EWXhbKn6I/OQTaLOzJ8xq81wDXDeIljZnF/OQciErxJzcjfMiA==
+X-Received: by 2002:a63:5442:: with SMTP id e2mr33667216pgm.18.1579115988269;
+        Wed, 15 Jan 2020 11:19:48 -0800 (PST)
+Received: from minitux (104-188-17-28.lightspeed.sndgca.sbcglobal.net. [104.188.17.28])
+        by smtp.gmail.com with ESMTPSA id a10sm21968793pgm.81.2020.01.15.11.19.46
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 15 Jan 2020 11:19:47 -0800 (PST)
+Date:   Wed, 15 Jan 2020 11:19:45 -0800
+From:   Bjorn Andersson <bjorn.andersson@linaro.org>
+To:     Kalle Valo <kvalo@codeaurora.org>
+Cc:     Mark Rutland <mark.rutland@arm.com>, devicetree@vger.kernel.org,
+        netdev@vger.kernel.org, linux-wireless@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Rob Herring <robh+dt@kernel.org>,
+        Andy Gross <agross@kernel.org>, ath10k@lists.infradead.org,
+        linux-arm-msm@vger.kernel.org,
+        "David S. Miller" <davem@davemloft.net>
+Subject: Re: [PATCH 0/2] ath10k: Enable QDSS clock on sm8150
+Message-ID: <20200115191945.GM1214176@minitux>
+References: <20191223054855.3020665-1-bjorn.andersson@linaro.org>
+ <87zhevsrwk.fsf@codeaurora.org>
+ <87r201xf8p.fsf@kamboji.qca.qualcomm.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <dbefe9b1-c846-6cc6-3819-520fd084a447@candelatech.com>
+In-Reply-To: <87r201xf8p.fsf@kamboji.qca.qualcomm.com>
+User-Agent: Mutt/1.12.2 (2019-09-21)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Jan 15, 2020 at 11:02:26AM -0800, Ben Greear wrote:
-> 
-> 
-> On 01/15/2020 10:45 AM, David Ahern wrote:
-> > On 1/15/20 10:57 AM, Ben Greear wrote:
-> > > Hello,
-> > > 
-> > > We put two different ports into their own VRF, and then tried to run a
-> > > multicast
-> > > sender on one and receiver on the other.  The receiver does not receive
-> > > anything.
-> > > 
-> > > Is this a known problem?
-> > > 
-> > > If we do a similar setup with policy based routing rules instead of VRF,
-> > > then the multicast
-> > > test works.
-> > > 
-> > 
-> > It works for OSPF for example. I have lost track of FRR features that
-> > use it, so you will need to specify more details.
-> > 
-> > Are the sender / receiver on the same host?
-> 
-> Yes, like eth2 sending to eth3, eth2 is associated with _vrf2, eth3 with _vrf3.
+On Wed 15 Jan 01:04 PST 2020, Kalle Valo wrote:
 
-Two questions:
+> Kalle Valo <kvalo@codeaurora.org> writes:
+> 
+> > Bjorn Andersson <bjorn.andersson@linaro.org> writes:
+> >
+> >> On SM8150 the WiFi firmware depends on the QDSS clock ticking, or the system
+> >> will reset due to an NoC error. So this adds an optional clock to the ath10k
+> >> binding and makes sure it's enabled while the WiFi firmware needs it.
+> >>
+> >> Bjorn Andersson (2):
+> >>   ath10k: Add optional qdss clk
+> >>   arm64: dts: qcom: sm8150: Specify qdss clock for wifi
+> >>
+> >>  .../devicetree/bindings/net/wireless/qcom,ath10k.txt          | 2 +-
+> >>  arch/arm64/boot/dts/qcom/sm8150.dtsi                          | 4 ++--
+> >>  drivers/net/wireless/ath/ath10k/snoc.c                        | 2 +-
+> >>  3 files changed, 4 insertions(+), 4 deletions(-)
+> >
+> > Via which tree are these supposed to go? I'll take patch 1 and arm
+> > mantainers take patch 2, or what?
 
-1. Did you re-order the FIB rules so that l3mdev rule is before the main
-table?
-2. Did you configure a default unreachable route in the VRF?
-
-IIRC, locally generated multicast packets are forwarded according to the
-unicast FIB rules, so if you don't have the unreachable route, it is
-possible the packet is forwarded according to the default route in the
-main table.
+That sounds good (you take the ath10k and we'll take the dts).
 
 > 
-> I'll go poking at the code.
+> No reply, so I'm planning to take patch 1. Please holler if I
+> misunderstood.
 > 
-> Thanks,
-> Ben
-> 
-> -- 
-> Ben Greear <greearb@candelatech.com>
-> Candela Technologies Inc  http://www.candelatech.com
+
+Sorry.
+
+Regards,
+Bjorn
