@@ -2,140 +2,119 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 73FBC13CE48
-	for <lists+netdev@lfdr.de>; Wed, 15 Jan 2020 21:51:49 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9718113CE6A
+	for <lists+netdev@lfdr.de>; Wed, 15 Jan 2020 21:58:27 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729134AbgAOUvO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 15 Jan 2020 15:51:14 -0500
-Received: from mail-io1-f70.google.com ([209.85.166.70]:46664 "EHLO
-        mail-io1-f70.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729548AbgAOUvN (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 15 Jan 2020 15:51:13 -0500
-Received: by mail-io1-f70.google.com with SMTP id p206so11250241iod.13
-        for <netdev@vger.kernel.org>; Wed, 15 Jan 2020 12:51:13 -0800 (PST)
+        id S1729203AbgAOU6Z (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 15 Jan 2020 15:58:25 -0500
+Received: from mail-qk1-f196.google.com ([209.85.222.196]:46741 "EHLO
+        mail-qk1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726513AbgAOU6Z (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 15 Jan 2020 15:58:25 -0500
+Received: by mail-qk1-f196.google.com with SMTP id r14so17038766qke.13
+        for <netdev@vger.kernel.org>; Wed, 15 Jan 2020 12:58:24 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=DFj9S/RciLvNGp51b1aXhlez64AQ5Souw8AWh8TXQNM=;
+        b=PqYkKM2hxs2S6jdfRUU9pmrD/lEBrXwpq1DJVpyE0nFlWBB6iSjgNYVpXVberJ+tjV
+         YjaLFrIsLh8SJfZiflTLzigkdpQyknaEZFaqKRzif91ET1QeBTIsjrNfTEYC9FkDQ1tK
+         fI3e6TV0GYx9BKskYAqzWc43hbtoUtnNkJ5088EohmM15gikaT9aWnCTCv6p5I+YIoYP
+         ITe0c5CCWGbdwC8XLPETsKVddZ/9cHwvQC5El3UnKt+1n17WQ87tSsBwyP6cZiM+KQiX
+         s48ajK6hGiyzs5+tlAvtFzzDBHIHPSZrukaef+Q6TIHUnv1nvnw/ArYtbgJVpuDX4H/1
+         MzJQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
-        bh=OqGpk3d1n93MNn3ynIn9sN0lhPXpjDGu0bKu+4j0ONc=;
-        b=VnoJlhDhWPwKM/BuLNUlV+d1uD5gwuOz0EkgXVIsHxKtoog8iZx87MOC/8f0V1d7Op
-         3ICilkemjaESH3/b2+jI70hHsXebZ79Ukz63m88apFOOMcYYOp53eY0zGniUvpsIDei3
-         U3AlUaA4J2usqa58G8CoXDvLhulc7+ToPrau3MsEluiDFoyXV1bW35Zw9vC5lbENhVKU
-         pT1YXMTpynzN63TEOaEJEmNInfyA59Vt74ZJ5YO2fGWrcADcXHshcfwYydz96YctxOx7
-         +xb7aOKHdyZROxkdNbDB5dSX1QKOG7fZvlYqE8aIGQ5ItbnLu7A5oEekVRMdsFW/j7iO
-         sGwQ==
-X-Gm-Message-State: APjAAAXiJNgXUJ8gcAUrz9qTkNVV3Lbb3ZjIIFYqM30bRJoYZeQVQbT1
-        C1ZqgnwABux18FXwr+yE9/iG4J7jWz7kQXb7RMlMx8L6RGdx
-X-Google-Smtp-Source: APXvYqwnEF2vzML966Ty5Kam9J16KCLEYWZ7qUfNwB+zgu0s43zrVsFpkGVzIkDvJrlbl3v/sfs7e0WUU8z3WiAtQemQ9cPptrCj
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=DFj9S/RciLvNGp51b1aXhlez64AQ5Souw8AWh8TXQNM=;
+        b=BX6m0rkYiOlw+ecN+iJR3wgC0XLnKHKYiqrPDTvTXHymVno6NMqxZjxhT+nnoikl6U
+         LWNL3/SVYiZXWvDMz42I+TTJkptuuFdJQxG/iKFZFRa/XwNwU2Tsx7LUB105t6H8o/ls
+         /VexRjXaTFmJbIn7GmV41dDTTs5iS0QRUY1Rl4ualpNbFBXE1DE9LzscmM+zjhNdUdK6
+         0vdo3jMe+wr1yssyaLLBDHSkvjQwOooDCIpt7RHPxnHg5P3ru43Mya5q5IdyxUM6UCQP
+         hw7Y7K9KMWiWnJvLk43ux5WmxyYz8qxeWGXNoNEldWXRarAUk+YqTcjt9I7aE35EFNe1
+         mT1g==
+X-Gm-Message-State: APjAAAXSvQXhNZWLCN8ZvuJ5vl055w/MgDl0et8KmNqxV2ZpqeVK/tDH
+        LTu1tX5fD4cPpW95zReoGns=
+X-Google-Smtp-Source: APXvYqzuyrrtMYfhVibxV8BVD4D8Sfaket20/J0lzgns14oZ4tmx5zO9zygXAOxI5YcVpUJhIo2Ycg==
+X-Received: by 2002:a37:a086:: with SMTP id j128mr24299483qke.459.1579121904548;
+        Wed, 15 Jan 2020 12:58:24 -0800 (PST)
+Received: from ?IPv6:2601:282:800:7a:b4a4:d30b:b000:b744? ([2601:282:800:7a:b4a4:d30b:b000:b744])
+        by smtp.googlemail.com with ESMTPSA id 124sm8974280qko.11.2020.01.15.12.58.22
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 15 Jan 2020 12:58:23 -0800 (PST)
+Subject: Re: Expose bond_xmit_hash function
+To:     Jiri Pirko <jiri@resnulli.us>
+Cc:     Jay Vosburgh <jay.vosburgh@canonical.com>,
+        Leon Romanovsky <leonro@mellanox.com>,
+        Maor Gottlieb <maorg@mellanox.com>,
+        "vfalico@gmail.com" <vfalico@gmail.com>,
+        "andy@greyhouse.net" <andy@greyhouse.net>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        Saeed Mahameed <saeedm@mellanox.com>,
+        Jason Gunthorpe <jgg@mellanox.com>,
+        Jiri Pirko <jiri@mellanox.com>,
+        Alex Rosenbaum <alexr@mellanox.com>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        Mark Zhang <markz@mellanox.com>,
+        Parav Pandit <parav@mellanox.com>
+References: <03a6dcfc-f3c7-925d-8ed8-3c42777fd03c@mellanox.com>
+ <20200115094513.GS2131@nanopsycho>
+ <80ad03a2-9926-bf75-d79c-be554c4afaaf@mellanox.com>
+ <20200115141535.GT2131@nanopsycho> <20200115143320.GA76932@unreal>
+ <20200115164819.GX2131@nanopsycho>
+ <b6ce5204-90ca-0095-a50b-a0306f61592d@gmail.com> <26054.1579111461@famine>
+ <4c78b341-b518-2409-1a7a-1fc41c792480@gmail.com>
+ <20200115204628.GZ2131@nanopsycho>
+From:   David Ahern <dsahern@gmail.com>
+Message-ID: <4e8258a8-c18a-f7d1-f4cc-20ca53030806@gmail.com>
+Date:   Wed, 15 Jan 2020 13:58:20 -0700
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:68.0)
+ Gecko/20100101 Thunderbird/68.3.1
 MIME-Version: 1.0
-X-Received: by 2002:a5d:80d6:: with SMTP id h22mr11791574ior.129.1579121473020;
- Wed, 15 Jan 2020 12:51:13 -0800 (PST)
-Date:   Wed, 15 Jan 2020 12:51:13 -0800
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <00000000000074ed27059c33dedc@google.com>
-Subject: general protection fault in nft_chain_parse_hook
-From:   syzbot <syzbot+156a04714799b1d480bc@syzkaller.appspotmail.com>
-To:     coreteam@netfilter.org, davem@davemloft.net, fw@strlen.de,
-        kadlec@netfilter.org, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org, netfilter-devel@vger.kernel.org,
-        pablo@netfilter.org, syzkaller-bugs@googlegroups.com
-Content-Type: text/plain; charset="UTF-8"; format=flowed; delsp=yes
+In-Reply-To: <20200115204628.GZ2131@nanopsycho>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello,
+On 1/15/20 1:46 PM, Jiri Pirko wrote:
+> Wed, Jan 15, 2020 at 07:12:54PM CET, dsahern@gmail.com wrote:
+>> On 1/15/20 11:04 AM, Jay Vosburgh wrote:
+>>>
+>>>> Something similar is needed for xdp and not necessarily tied to a
+>>>> specific bond mode. Some time back I was using this as a prototype:
+>>>>
+>>>> https://github.com/dsahern/linux/commit/2714abc1e629613e3485b7aa860fa3096e273cb2
+>>>>
+>>>> It is incomplete, but shows the intent - exporting bond_egress_slave for
+>>>> use by other code to take a bond device and return an egress leg.
+>>>
+>>> 	This seems much less awful, but would it make bonding a
+>>> dependency on pretty much everything?
+>>>
+>>
+>> The intent is to hide the bond details beyond the general "a bond has
+>> multiple egress paths and we need to pick one". ie., all of the logic
+>> and data structures are still private.
+>>
+>> Exporting the function for use by modules is the easy part.
+>>
+>> Making it accessible to core code (XDP) means ??? Obviously not a
+>> concern when bond is built in but the usual case is a module. One
+>> solution is to repeat the IPv6 stub format; not great from an indirect
+>> call perspective. I have not followed the work on INDIRECT_CALL to know
+>> if that mitigates the concern about the stub when bond is a module.
+> 
+> Why it can't be an ndo as I previously suggested in this thread? It is
+> not specific to bond, others might like to fillup this ndo too (team,
+> ovs, bridge).
+> 
 
-syzbot found the following crash on:
-
-HEAD commit:    4e2fa6b9 Merge branch 'bridge-add-vlan-notifications-and-r..
-git tree:       net-next
-console output: https://syzkaller.appspot.com/x/log.txt?x=142f4a21e00000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=66d8660c57ff3c98
-dashboard link: https://syzkaller.appspot.com/bug?extid=156a04714799b1d480bc
-compiler:       gcc (GCC) 9.0.0 20181231 (experimental)
-
-Unfortunately, I don't have any reproducer for this crash yet.
-
-IMPORTANT: if you fix the bug, please add the following tag to the commit:
-Reported-by: syzbot+156a04714799b1d480bc@syzkaller.appspotmail.com
-
-kasan: GPF could be caused by NULL-ptr deref or user memory access
-general protection fault: 0000 [#1] PREEMPT SMP KASAN
-CPU: 1 PID: 20602 Comm: syz-executor.1 Not tainted 5.5.0-rc5-syzkaller #0
-Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS  
-Google 01/01/2011
-RIP: 0010:nft_chain_parse_hook+0x386/0xa10  
-net/netfilter/nf_tables_api.c:1767
-Code: e8 7f ae 09 fb 41 83 fd 05 0f 87 62 05 00 00 e8 f0 ac 09 fb 49 8d 7c  
-24 18 48 b8 00 00 00 00 00 fc ff df 48 89 fa 48 c1 ea 03 <0f> b6 04 02 84  
-c0 74 08 3c 03 0f 8e a6 05 00 00 44 89 e9 be 01 00
-RSP: 0018:ffffc90001627100 EFLAGS: 00010206
-RAX: dffffc0000000000 RBX: ffffc900016272b0 RCX: ffffc90004e59000
-RDX: 0000000000000003 RSI: ffffffff866b5350 RDI: 0000000000000018
-RBP: ffffc900016271f0 R08: ffff8880648b4240 R09: 0000000000000000
-R10: fffff520002c4e2f R11: ffffc9000162717f R12: 0000000000000000
-R13: 0000000000000000 R14: 0000000000000000 R15: ffffc900016271c8
-FS:  00007f0770558700(0000) GS:ffff8880ae900000(0000) knlGS:0000000000000000
-CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-CR2: 00007fcdd829cdb8 CR3: 00000000a483c000 CR4: 00000000001406e0
-DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
-DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
-Call Trace:
-  nf_tables_addchain.constprop.0+0x1c1/0x1520  
-net/netfilter/nf_tables_api.c:1888
-  nf_tables_newchain+0x1033/0x1820 net/netfilter/nf_tables_api.c:2196
-  nfnetlink_rcv_batch+0xf42/0x17a0 net/netfilter/nfnetlink.c:433
-  nfnetlink_rcv_skb_batch net/netfilter/nfnetlink.c:543 [inline]
-  nfnetlink_rcv+0x3e7/0x460 net/netfilter/nfnetlink.c:561
-  netlink_unicast_kernel net/netlink/af_netlink.c:1302 [inline]
-  netlink_unicast+0x59e/0x7e0 net/netlink/af_netlink.c:1328
-  netlink_sendmsg+0x91c/0xea0 net/netlink/af_netlink.c:1917
-  sock_sendmsg_nosec net/socket.c:652 [inline]
-  sock_sendmsg+0xd7/0x130 net/socket.c:672
-  ____sys_sendmsg+0x753/0x880 net/socket.c:2343
-  ___sys_sendmsg+0x100/0x170 net/socket.c:2397
-  __sys_sendmsg+0x105/0x1d0 net/socket.c:2430
-  __do_sys_sendmsg net/socket.c:2439 [inline]
-  __se_sys_sendmsg net/socket.c:2437 [inline]
-  __x64_sys_sendmsg+0x78/0xb0 net/socket.c:2437
-  do_syscall_64+0xfa/0x790 arch/x86/entry/common.c:294
-  entry_SYSCALL_64_after_hwframe+0x49/0xbe
-RIP: 0033:0x45aff9
-Code: ad b6 fb ff c3 66 2e 0f 1f 84 00 00 00 00 00 66 90 48 89 f8 48 89 f7  
-48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff  
-ff 0f 83 7b b6 fb ff c3 66 2e 0f 1f 84 00 00 00 00
-RSP: 002b:00007f0770557c78 EFLAGS: 00000246 ORIG_RAX: 000000000000002e
-RAX: ffffffffffffffda RBX: 00007f07705586d4 RCX: 000000000045aff9
-RDX: 00000000040c4080 RSI: 000000002000c2c0 RDI: 0000000000000003
-RBP: 000000000075bf20 R08: 0000000000000000 R09: 0000000000000000
-R10: 0000000000000000 R11: 0000000000000246 R12: 00000000ffffffff
-R13: 0000000000000901 R14: 00000000004ca2fe R15: 000000000075bf2c
-Modules linked in:
----[ end trace c2d6a3781de0914d ]---
-RIP: 0010:nft_chain_parse_hook+0x386/0xa10  
-net/netfilter/nf_tables_api.c:1767
-Code: e8 7f ae 09 fb 41 83 fd 05 0f 87 62 05 00 00 e8 f0 ac 09 fb 49 8d 7c  
-24 18 48 b8 00 00 00 00 00 fc ff df 48 89 fa 48 c1 ea 03 <0f> b6 04 02 84  
-c0 74 08 3c 03 0f 8e a6 05 00 00 44 89 e9 be 01 00
-RSP: 0018:ffffc90001627100 EFLAGS: 00010206
-RAX: dffffc0000000000 RBX: ffffc900016272b0 RCX: ffffc90004e59000
-RDX: 0000000000000003 RSI: ffffffff866b5350 RDI: 0000000000000018
-RBP: ffffc900016271f0 R08: ffff8880648b4240 R09: 0000000000000000
-R10: fffff520002c4e2f R11: ffffc9000162717f R12: 0000000000000000
-R13: 0000000000000000 R14: 0000000000000000 R15: ffffc900016271c8
-FS:  00007f0770558700(0000) GS:ffff8880ae900000(0000) knlGS:0000000000000000
-CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-CR2: 00007fd461cd0000 CR3: 00000000a483c000 CR4: 00000000001406e0
-DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
-DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
-
-
----
-This bug is generated by a bot. It may contain errors.
-See https://goo.gl/tpsmEJ for more information about syzbot.
-syzbot engineers can be reached at syzkaller@googlegroups.com.
-
-syzbot will keep track of this bug report. See:
-https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
+Sure, that is an option to try. I can not remember if I explored that
+option previously; too much time has passed.
