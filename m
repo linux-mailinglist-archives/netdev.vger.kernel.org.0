@@ -2,166 +2,101 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 185C113BC86
-	for <lists+netdev@lfdr.de>; Wed, 15 Jan 2020 10:37:12 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 51CF713BCA8
+	for <lists+netdev@lfdr.de>; Wed, 15 Jan 2020 10:45:18 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729521AbgAOJhJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 15 Jan 2020 04:37:09 -0500
-Received: from m9784.mail.qiye.163.com ([220.181.97.84]:18550 "EHLO
-        m9784.mail.qiye.163.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729467AbgAOJhJ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 15 Jan 2020 04:37:09 -0500
-Received: from [192.168.188.14] (unknown [120.132.1.226])
-        by m9784.mail.qiye.163.com (Hmail) with ESMTPA id 68F1E41618;
-        Wed, 15 Jan 2020 17:37:03 +0800 (CST)
-Subject: Re: [PATCH net-next v2] net/mlx5e: Add mlx5e_flower_parse_meta
- support
-To:     Or Gerlitz <gerlitz.or@gmail.com>
-Cc:     Paul Blakey <paulb@mellanox.com>,
+        id S1729524AbgAOJpQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 15 Jan 2020 04:45:16 -0500
+Received: from mail-wr1-f53.google.com ([209.85.221.53]:46736 "EHLO
+        mail-wr1-f53.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729459AbgAOJpQ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 15 Jan 2020 04:45:16 -0500
+Received: by mail-wr1-f53.google.com with SMTP id z7so14997713wrl.13
+        for <netdev@vger.kernel.org>; Wed, 15 Jan 2020 01:45:15 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=resnulli-us.20150623.gappssmtp.com; s=20150623;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:content-transfer-encoding:in-reply-to;
+        bh=dFBhTHpC7CyrTauKs7b51rFwl6gHvh8r009ho3+H9fQ=;
+        b=u6hV/8oBm+tdQ7sbOfXVu0x+ho3/Sts/R2w5dgZ96hvOfDyTCg8Rp6K/aKLIME5IrR
+         py6kCCfWZpNaNb8oIgIQ7a7pvYJEKzwjT2j4puNj+MRZLN0VFx32bJraQ1LdUe2Bo1rM
+         t6X1Z7FbnlGGRDIe+G3+wGVN5CretzD1xiZXIgLWcKQ2Wu1bT5nYq5GN+HJrHyQZ5KE7
+         iDRY+0GGW/IeLvkJqNN+mMtKN+0+osnEdjtakZHoSdmut30U9/eJwHjg8sNg6xFUFkga
+         EgJG9YRtR2ZTDnhqBcCziPIihGiNU48LSueKH2EDtMWYLzM8S/sCa5k7FE9TBDZe2HVU
+         OCcQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:content-transfer-encoding
+         :in-reply-to;
+        bh=dFBhTHpC7CyrTauKs7b51rFwl6gHvh8r009ho3+H9fQ=;
+        b=KQO2NixgNnDKguPZTrrMr1dlY/iQEzOlwwXHWWGMgEcbEiDmieg7BTW3qc+U/c+Vlu
+         purdlBHFoeVeqrbtNbRedjimc+y6XvQtlSj4PWt8i9PUd3oob/ezt9eP9/mtn6I1HnoR
+         WRlTtVVtCM/Z+fh6WS8//DBwZJpLVXj2G3lKdR9I3qzZADB8O03zXRLfWTdqhrp/iB6g
+         /a4gjYMGYQr7BpCaGOaXLPUtGyBPER3EOzWOE0jD6I4Xxy3StS3pnYW5wrmr3fKt14mw
+         XRR8fFhjV2fl9FTVxHzSTG4fVXSuv423WLY5wyS4N59L9KQr/0UEO7J/gyJVbwtfnzLy
+         aZmg==
+X-Gm-Message-State: APjAAAU19cqQuum3FFU7k5l3oHPqhdERUAXNzerToDGTCnqguSabH8cv
+        nFJo9q3F1x4EQ4O8H7geKz74YG8F/H8=
+X-Google-Smtp-Source: APXvYqztS3LY6iYuZu7XZSL7rjWRk1i52nzEyV8djbsISOhmBoWLC6Z2KJc3ol/kaJDNoYdX76wHAw==
+X-Received: by 2002:a5d:6350:: with SMTP id b16mr30647004wrw.132.1579081514449;
+        Wed, 15 Jan 2020 01:45:14 -0800 (PST)
+Received: from localhost (ip-78-102-249-43.net.upcbroadband.cz. [78.102.249.43])
+        by smtp.gmail.com with ESMTPSA id z83sm23375845wmg.2.2020.01.15.01.45.13
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 15 Jan 2020 01:45:14 -0800 (PST)
+Date:   Wed, 15 Jan 2020 10:45:13 +0100
+From:   Jiri Pirko <jiri@resnulli.us>
+To:     Maor Gottlieb <maorg@mellanox.com>
+Cc:     "j.vosburgh@gmail.com" <j.vosburgh@gmail.com>,
+        "vfalico@gmail.com" <vfalico@gmail.com>,
+        "andy@greyhouse.net" <andy@greyhouse.net>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
         Saeed Mahameed <saeedm@mellanox.com>,
-        Linux Netdev List <netdev@vger.kernel.org>
-References: <1578388566-27310-1-git-send-email-wenxu@ucloud.cn>
- <CAJ3xEMjmS=oo6xmep7seVUJ58NPpLQ_UKZH1qVWxf6w=sBBJgQ@mail.gmail.com>
-From:   wenxu <wenxu@ucloud.cn>
-Message-ID: <03dcc568-b855-0a58-66e5-d4df0c8f202e@ucloud.cn>
-Date:   Wed, 15 Jan 2020 17:37:00 +0800
-User-Agent: Mozilla/5.0 (Windows NT 6.1; WOW64; rv:60.0) Gecko/20100101
- Thunderbird/60.9.1
+        Jason Gunthorpe <jgg@mellanox.com>,
+        Leon Romanovsky <leonro@mellanox.com>,
+        Jiri Pirko <jiri@mellanox.com>,
+        Alex Rosenbaum <alexr@mellanox.com>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        Mark Zhang <markz@mellanox.com>
+Subject: Re: Expose bond_xmit_hash function
+Message-ID: <20200115094513.GS2131@nanopsycho>
+References: <03a6dcfc-f3c7-925d-8ed8-3c42777fd03c@mellanox.com>
 MIME-Version: 1.0
-In-Reply-To: <CAJ3xEMjmS=oo6xmep7seVUJ58NPpLQ_UKZH1qVWxf6w=sBBJgQ@mail.gmail.com>
 Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 7bit
-Content-Language: en-US
-X-HM-Spam-Status: e1kfGhgUHx5ZQUtXWQgYFAkeWUFZVkpVS0tNS0tLS09KQk1KTUxZV1koWU
-        FJQjdXWS1ZQUlXWQkOFx4IWUFZNTQpNjo3JCkuNz5ZBg++
-X-HM-Sender-Digest: e1kMHhlZQR0aFwgeV1kSHx4VD1lBWUc6K006Hhw5Ajg4DjFLKT1MS0lW
-        PhlPCh9VSlVKTkxCS0NKS0lPTExNVTMWGhIXVQweFQMOOw4YFxQOH1UYFUVZV1kSC1lBWUpJS1VK
-        SElVSlVJSU1ZV1kIAVlBTkJPTTcG
-X-HM-Tid: 0a6fa890408c2086kuqy68f1e41618
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <03a6dcfc-f3c7-925d-8ed8-3c42777fd03c@mellanox.com>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-
-On 1/15/2020 5:13 PM, Or Gerlitz wrote:
-> On Tue, Jan 7, 2020 at 11:17 AM <wenxu@ucloud.cn> wrote:
->> In the flowtables offload all the devices in the flowtables
->> share the same flow_block. An offload rule will be installed on
-> "In the flowtables offload all the devices in the flowtables share the"
+Wed, Jan 15, 2020 at 09:01:43AM CET, maorg@mellanox.com wrote:
+>RDMA over Converged Ethernet (RoCE) is a standard protocol which enables 
+>RDMA’s efficient data transfer over Ethernet networks allowing transport 
+>offload with hardware RDMA engine implementation.
+>The RoCE v2 protocol exists on top of either the UDP/IPv4 or the 
+>UDP/IPv6 protocol:
 >
-> I am not managing to follow on this sentence. What does "devices in
-> the flowtables" mean?
-
-
-All the devices are added in flowtables.
-
+>--------------------------------------------------------------
+>| L2 | L3 | UDP |IB BTH | Payload| ICRC | FCS |
+>--------------------------------------------------------------
 >
->> all the devices. This scenario is not correct.
-> so this is a fix and should go to net, or maybe the code you are fixing
-> was only introduced in net-next?
+>When a bond LAG netdev is in use, we would like to have the same hash 
+>result for RoCE packets as any other UDP packets, for this purpose we 
+>need to expose the bond_xmit_hash function to external modules.
+>If no objection, I will push a patch that export this symbol.
 
-The fix netfilter patch "netfilter: flowtable: restrict flow dissector match on meta ingress device"
+I don't think it is good idea to do it. It is an internal bond function.
+it even accepts "struct bonding *bond". Do you plan to push netdev
+struct as an arg instead? What about team? What about OVS bonding?
 
-now plans to be introduced to nf-next.
+Also, you don't really need a hash, you need a slave that is going to be
+used for a packet xmit.
 
-http://patchwork.ozlabs.org/patch/1222292/
+I think this could work in a generic way:
 
->
->> It is no problem if there are only two devices in the flowtable,
->> The rule with ingress and egress on the same device can be reject
-> nit: rejected
->
->> by driver.
->> But more than two devices in the flowtable will install the wrong
->> rules on hardware.
->>
->> For example:
->> Three devices in a offload flowtables: dev_a, dev_b, dev_c
->>
->> A rule ingress from dev_a and egress to dev_b:
->> The rule will install on device dev_a.
->> The rule will try to install on dev_b but failed for ingress
->> and egress on the same device.
->> The rule will install on dev_c. This is not correct.
->>
->> The flowtables offload avoid this case through restricting the ingress dev
->> with FLOW_DISSECTOR_KEY_META as following patch.
->> http://patchwork.ozlabs.org/patch/1218109/
->>
->> So the mlx5e driver also should support the FLOW_DISSECTOR_KEY_META parse.
->>
->> Signed-off-by: wenxu <wenxu@ucloud.cn>
->> ---
->> v2: remap the patch description
->>
->>  drivers/net/ethernet/mellanox/mlx5/core/en_tc.c | 39 +++++++++++++++++++++++++
->>  1 file changed, 39 insertions(+)
->>
->> diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_tc.c b/drivers/net/ethernet/mellanox/mlx5/core/en_tc.c
->> index 9b32a9c..33d1ce5 100644
->> --- a/drivers/net/ethernet/mellanox/mlx5/core/en_tc.c
->> +++ b/drivers/net/ethernet/mellanox/mlx5/core/en_tc.c
->> @@ -1805,6 +1805,40 @@ static void *get_match_headers_value(u32 flags,
->>                              outer_headers);
->>  }
->>
->> +static int mlx5e_flower_parse_meta(struct net_device *filter_dev,
->> +                                  struct flow_cls_offload *f)
->> +{
->> +       struct flow_rule *rule = flow_cls_offload_flow_rule(f);
->> +       struct netlink_ext_ack *extack = f->common.extack;
->> +       struct net_device *ingress_dev;
->> +       struct flow_match_meta match;
->> +
->> +       if (!flow_rule_match_key(rule, FLOW_DISSECTOR_KEY_META))
->> +               return 0;
->> +
->> +       flow_rule_match_meta(rule, &match);
->> +       if (match.mask->ingress_ifindex != 0xFFFFFFFF) {
->> +               NL_SET_ERR_MSG_MOD(extack, "Unsupported ingress ifindex mask");
->> +               return -EINVAL;
->> +       }
->> +
->> +       ingress_dev = __dev_get_by_index(dev_net(filter_dev),
->> +                                        match.key->ingress_ifindex);
->> +       if (!ingress_dev) {
->> +               NL_SET_ERR_MSG_MOD(extack,
->> +                                  "Can't find the ingress port to match on");
->> +               return -EINVAL;
->> +       }
->> +
->> +       if (ingress_dev != filter_dev) {
->> +               NL_SET_ERR_MSG_MOD(extack,
->> +                                  "Can't match on the ingress filter port");
->> +               return -EINVAL;
->> +       }
->> +
->> +       return 0;
->> +}
->> +
->>  static int __parse_cls_flower(struct mlx5e_priv *priv,
->>                               struct mlx5_flow_spec *spec,
->>                               struct flow_cls_offload *f,
->> @@ -1825,6 +1859,7 @@ static int __parse_cls_flower(struct mlx5e_priv *priv,
->>         u16 addr_type = 0;
->>         u8 ip_proto = 0;
->>         u8 *match_level;
->> +       int err;
->>
->>         match_level = outer_match_level;
->>
->> @@ -1868,6 +1903,10 @@ static int __parse_cls_flower(struct mlx5e_priv *priv,
->>                                                     spec);
->>         }
->>
->> +       err = mlx5e_flower_parse_meta(filter_dev, f);
->> +       if (err)
->> +               return err;
->> +
->>         if (flow_rule_match_key(rule, FLOW_DISSECTOR_KEY_BASIC)) {
->>                 struct flow_match_basic match;
->>
->> --
->> 1.8.3.1
->>
+struct net_device *master_xmit_slave_get(struct net_device *master_dev,
+					 struct sk_buff *skb);
+
