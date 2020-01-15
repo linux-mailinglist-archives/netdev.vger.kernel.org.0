@@ -2,53 +2,53 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id AE37713BEE9
-	for <lists+netdev@lfdr.de>; Wed, 15 Jan 2020 12:54:19 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4FB1F13BEEB
+	for <lists+netdev@lfdr.de>; Wed, 15 Jan 2020 12:54:22 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730184AbgAOLyR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 15 Jan 2020 06:54:17 -0500
-Received: from out4-smtp.messagingengine.com ([66.111.4.28]:44783 "EHLO
+        id S1730198AbgAOLyU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 15 Jan 2020 06:54:20 -0500
+Received: from out4-smtp.messagingengine.com ([66.111.4.28]:36715 "EHLO
         out4-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1730166AbgAOLyQ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 15 Jan 2020 06:54:16 -0500
+        by vger.kernel.org with ESMTP id S1730177AbgAOLyR (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 15 Jan 2020 06:54:17 -0500
 Received: from compute3.internal (compute3.nyi.internal [10.202.2.43])
-        by mailout.nyi.internal (Postfix) with ESMTP id 0B2622202A;
-        Wed, 15 Jan 2020 06:54:15 -0500 (EST)
+        by mailout.nyi.internal (Postfix) with ESMTP id 4612222050;
+        Wed, 15 Jan 2020 06:54:16 -0500 (EST)
 Received: from mailfrontend1 ([10.202.2.162])
-  by compute3.internal (MEProxy); Wed, 15 Jan 2020 06:54:15 -0500
+  by compute3.internal (MEProxy); Wed, 15 Jan 2020 06:54:16 -0500
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
         messagingengine.com; h=cc:content-transfer-encoding:date:from
         :in-reply-to:message-id:mime-version:references:subject:to
         :x-me-proxy:x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=
-        fm1; bh=Eh8hLHyR8dynOI3n1O6c+pJAv+GKaFko3CsYR6FEKg8=; b=glM4SQEn
-        Y+iQrXplvQxOR4G5+G/6o0U88eQuRSULRJQootwFujztQjI8RRUHqLgc1R5Ze4qm
-        6Gf2DbzurF70r57TYppGv3jCE6Q3TlsTjHqokGZVImdDPYYJhectXb5C1G3eR685
-        oMzDvmrccAU2qpRBkLlagIsmk3IUfQJ7zKos5tnK/iAO1R0zoHDZtL2D2puNOCOq
-        ZtHDKtqU28goG0H0L+lig1lhjclXy75t2ewkgB4fUxeBcHNtfo/9OcWAR3/ndTgh
-        a/t54XCub7kYL52MI3NT2dBcrOgyf+uv93jtt+UuNIyPab1gQQxO0HNxzgChVjcs
-        XViK1HeLP36ttg==
-X-ME-Sender: <xms:Zv0eXtFULmqayexFpNeX0q4OfTWOUvIsvdRztC2o4Vq8hteezs_lDA>
+        fm1; bh=/LLpFx4UaJYnxCe0NRsJzZoJbPqK0vx4Kcyl1BV3SEU=; b=Ks4IrCc9
+        wu4FgyjGMkTB0yrzm1gF4vCH+utp4LjwYulPzufGHhRzGtcZAtlGfw5kjdcB/G6G
+        7eUB2Cr8TCac89LyqxSWnjg9BipE4YXhkB0t+/83AXfONBhqwcVeVvEdCaGiB7bG
+        hBdtzPh9GK/IpCHvz67uw9irswv3ioXJ6UmjKv7ffL1cjyxE4nkwXW2KbzIR0+0G
+        UD9MQYYOJvt6yKe7QVRhr1+KmYiFq9nmgooCwyX/602DxommrmLFXylB/5vV5G2b
+        vfESBvnosKZVZhdmRNdyC/F6FSrbQrAtnyKY7vB+PQoTkMlFN0516wS28ihLG+bG
+        rBNsqm1h6xA4VQ==
+X-ME-Sender: <xms:aP0eXkknDHSwW1QUCbgr2TLkKnTH27BHEQEB17S2dE4T9B-i6FSSZg>
 X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedugedrtdefgdeffecutefuodetggdotefrodftvf
     curfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfghnecu
     uegrihhlohhuthemuceftddtnecunecujfgurhephffvufffkffojghfggfgsedtkeertd
     ertddtnecuhfhrohhmpefkughoucfutghhihhmmhgvlhcuoehiughoshgthhesihguohhs
     tghhrdhorhhgqeenucfkphepudelfedrgeejrdduieehrddvhedunecurfgrrhgrmhepmh
     grihhlfhhrohhmpehiughoshgthhesihguohhstghhrdhorhhgnecuvehluhhsthgvrhfu
-    ihiivgeptd
-X-ME-Proxy: <xmx:Zv0eXuFMHF8QN_wHTppKL4pDvaPXXxxmBBwvAUNR5E4ud8hUvVkjzQ>
-    <xmx:Zv0eXnthuek7XzEnnXLrQV3kqP3pu7ntBrhPMYXcL_3dz5XROv2T0Q>
-    <xmx:Zv0eXkM5dZVOY4U3P64EMEbxl6GFzeA8phmor2czTYNhggE57vUDOg>
-    <xmx:Z_0eXucYOG-REetVhoc8MqkL3tZJzI1m4sCCl87VjTIVHFNeZ93ccg>
+    ihiivgepvd
+X-ME-Proxy: <xmx:aP0eXlHVZI-5Lj9UIeGNwMHCeMCKSJ73RiMynWbOHBPmby64kBzYTQ>
+    <xmx:aP0eXkY-CzHf1uL6R_07ftW0un8bBQno1xQmAOF_UjNWLWFke_Fg8Q>
+    <xmx:aP0eXqDAwWgB3MsJNlC3X9gsMXsSRU74m5Kar2X7xqeO8S0DxUx9ag>
+    <xmx:aP0eXtdQIlgNlYaYTYXQLo4pP9mKc3vTD165t01RISgneKJ-JHxt_w>
 Received: from splinter.mtl.com (unknown [193.47.165.251])
-        by mail.messagingengine.com (Postfix) with ESMTPA id AE29A8006A;
-        Wed, 15 Jan 2020 06:54:13 -0500 (EST)
+        by mail.messagingengine.com (Postfix) with ESMTPA id 0BBEF80065;
+        Wed, 15 Jan 2020 06:54:14 -0500 (EST)
 From:   Ido Schimmel <idosch@idosch.org>
 To:     netdev@vger.kernel.org
 Cc:     davem@davemloft.net, kuba@kernel.org, jiri@mellanox.com,
         mlxsw@mellanox.com, Ido Schimmel <idosch@mellanox.com>
-Subject: [PATCH net v2 2/6] mlxsw: spectrum: Do not modify cloned SKBs during xmit
-Date:   Wed, 15 Jan 2020 13:53:45 +0200
-Message-Id: <20200115115349.1273610-3-idosch@idosch.org>
+Subject: [PATCH net v2 3/6] mlxsw: switchx2: Do not modify cloned SKBs during xmit
+Date:   Wed, 15 Jan 2020 13:53:46 +0200
+Message-Id: <20200115115349.1273610-4-idosch@idosch.org>
 X-Mailer: git-send-email 2.24.1
 In-Reply-To: <20200115115349.1273610-1-idosch@idosch.org>
 References: <20200115115349.1273610-1-idosch@idosch.org>
@@ -93,31 +93,31 @@ v2:
 * Use skb_cow_head() instead of skb_unshare() as suggested by Jakub
 * Remove unnecessary check regarding headroom
 
-Fixes: 56ade8fe3fe1 ("mlxsw: spectrum: Add initial support for Spectrum ASIC")
+Fixes: 31557f0f9755 ("mlxsw: Introduce Mellanox SwitchX-2 ASIC support")
 Signed-off-by: Ido Schimmel <idosch@mellanox.com>
 Reported-by: Shalom Toledo <shalomt@mellanox.com>
 Acked-by: Jiri Pirko <jiri@mellanox.com>
 ---
- drivers/net/ethernet/mellanox/mlxsw/spectrum.c | 18 ++++++------------
- 1 file changed, 6 insertions(+), 12 deletions(-)
+ drivers/net/ethernet/mellanox/mlxsw/switchx2.c | 17 ++++++-----------
+ 1 file changed, 6 insertions(+), 11 deletions(-)
 
-diff --git a/drivers/net/ethernet/mellanox/mlxsw/spectrum.c b/drivers/net/ethernet/mellanox/mlxsw/spectrum.c
-index 5408a964bd10..2394c425b47d 100644
---- a/drivers/net/ethernet/mellanox/mlxsw/spectrum.c
-+++ b/drivers/net/ethernet/mellanox/mlxsw/spectrum.c
-@@ -860,23 +860,17 @@ static netdev_tx_t mlxsw_sp_port_xmit(struct sk_buff *skb,
+diff --git a/drivers/net/ethernet/mellanox/mlxsw/switchx2.c b/drivers/net/ethernet/mellanox/mlxsw/switchx2.c
+index de6cb22f68b1..f0e98ec8f1ee 100644
+--- a/drivers/net/ethernet/mellanox/mlxsw/switchx2.c
++++ b/drivers/net/ethernet/mellanox/mlxsw/switchx2.c
+@@ -299,22 +299,17 @@ static netdev_tx_t mlxsw_sx_port_xmit(struct sk_buff *skb,
  	u64 len;
  	int err;
  
 +	if (skb_cow_head(skb, MLXSW_TXHDR_LEN)) {
-+		this_cpu_inc(mlxsw_sp_port->pcpu_stats->tx_dropped);
++		this_cpu_inc(mlxsw_sx_port->pcpu_stats->tx_dropped);
 +		dev_kfree_skb_any(skb);
 +		return NETDEV_TX_OK;
 +	}
 +
  	memset(skb->cb, 0, sizeof(struct mlxsw_skb_cb));
  
- 	if (mlxsw_core_skb_transmit_busy(mlxsw_sp->core, &tx_info))
+ 	if (mlxsw_core_skb_transmit_busy(mlxsw_sx->core, &tx_info))
  		return NETDEV_TX_BUSY;
  
 -	if (unlikely(skb_headroom(skb) < MLXSW_TXHDR_LEN)) {
@@ -125,16 +125,15 @@ index 5408a964bd10..2394c425b47d 100644
 -
 -		skb = skb_realloc_headroom(skb, MLXSW_TXHDR_LEN);
 -		if (!skb) {
--			this_cpu_inc(mlxsw_sp_port->pcpu_stats->tx_dropped);
+-			this_cpu_inc(mlxsw_sx_port->pcpu_stats->tx_dropped);
 -			dev_kfree_skb_any(skb_orig);
 -			return NETDEV_TX_OK;
 -		}
 -		dev_consume_skb_any(skb_orig);
 -	}
--
- 	if (eth_skb_pad(skb)) {
- 		this_cpu_inc(mlxsw_sp_port->pcpu_stats->tx_dropped);
- 		return NETDEV_TX_OK;
+ 	mlxsw_sx_txhdr_construct(skb, &tx_info);
+ 	/* TX header is consumed by HW on the way so we shouldn't count its
+ 	 * bytes as being sent.
 -- 
 2.24.1
 
