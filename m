@@ -2,90 +2,105 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id B777613BEA6
-	for <lists+netdev@lfdr.de>; Wed, 15 Jan 2020 12:41:23 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E3BCC13BEE7
+	for <lists+netdev@lfdr.de>; Wed, 15 Jan 2020 12:54:14 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729986AbgAOLlR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 15 Jan 2020 06:41:17 -0500
-Received: from mail-pg1-f195.google.com ([209.85.215.195]:39833 "EHLO
-        mail-pg1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729900AbgAOLlR (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 15 Jan 2020 06:41:17 -0500
-Received: by mail-pg1-f195.google.com with SMTP id b137so8098458pga.6;
-        Wed, 15 Jan 2020 03:41:17 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id;
-        bh=NJMMur67AR0jae8jF9nPUvI7tXT+F1ukuVAKqerILaA=;
-        b=ZLy6jB7emzIXTRq+hgGRXWDcMcxvW/MxXSJxSfSOPYL7BT0wZJ9RmS4ECrN5sU64LE
-         71VnbUoHLMD2ny/8BwRo+KG2gQA7bGfp/c2QH5oCx9lEUohAd0DsHdnMcGCSOzKVCnlr
-         Mftxp9UKelVq0dZNII4VpiKfsAqEX7e+j6ZNI2rKuKgbdOsjRgXUipJdNXXOuOO00RSp
-         AKY9pyE4551I+2MNDQFFvH4gpTkDWVZ7ONmC4AQvmgKjAtS9l0lVfRLd7k33KHBIOgzm
-         myCYp341wTatTXf6qFxdajiVM9GXXcETTVnhYtgNuLJHofVS12KZvjCVja3WwRgi/X8+
-         Gwwg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id;
-        bh=NJMMur67AR0jae8jF9nPUvI7tXT+F1ukuVAKqerILaA=;
-        b=IGx0FlTttThZNisFPhgrzJksjMwZewSPz/nB+h0lwd1QlFB5ecQMRKQtYSv1IOrWx2
-         ERFjlWFdC7NUcY/gsLdbYrmYfO3fa8H68iQ0fqS2Krz1M3cFBldhqm3YC2gePCWsL8e2
-         Kj7H3mQNqiBkKaed4Z/XXFH2h5D3tpDxJMipDo7UauTbZyibL6WIWXknKo6vaWzc5rGJ
-         NxnDJMhKFnD5nYh2s3CaT5fQeWg1C5O2vkILQCX4J8Y8wO2z0Yec8tuEhs/l7ezzySAo
-         ryaXmavfJtzKxlipTAxCA28dtiflQ392SGXFvLmD0pM3+83vaSqrSONWJHy3dVJflWeX
-         rEqg==
-X-Gm-Message-State: APjAAAUKuGaLQEwRPgSdHThGSQpl6MVEad0CxFTHI8QWFVw1NTZPXVje
-        xJwyQ215jbg6O0UoflFEcuc=
-X-Google-Smtp-Source: APXvYqx7eBmWC19EHivXv+68lQFzkQ9AwswFFyZ1hC6yGbRYdKg3lmD3zxWhHuW82cTbauFGweytHg==
-X-Received: by 2002:a65:6451:: with SMTP id s17mr32436532pgv.188.1579088476475;
-        Wed, 15 Jan 2020 03:41:16 -0800 (PST)
-Received: from madhuparna-HP-Notebook.nitk.ac.in ([2402:3a80:1ee2:fbb9:d507:a4c2:d370:bd13])
-        by smtp.gmail.com with ESMTPSA id v4sm21300869pfn.181.2020.01.15.03.41.12
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 15 Jan 2020 03:41:16 -0800 (PST)
-From:   madhuparnabhowmik04@gmail.com
-To:     davem@davemloft.net, gregkh@linuxfoundation.org
-Cc:     paulmck@kernel.org, joel@joelfernandes.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, rcu@vger.kernel.org,
-        frextrite@gmail.com,
-        Madhuparna Bhowmik <madhuparnabhowmik04@gmail.com>
-Subject: [PATCH] net: wan: lapbether.c: Use built-in RCU list checking
-Date:   Wed, 15 Jan 2020 17:11:01 +0530
-Message-Id: <20200115114101.13068-1-madhuparnabhowmik04@gmail.com>
-X-Mailer: git-send-email 2.17.1
+        id S1730154AbgAOLyN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 15 Jan 2020 06:54:13 -0500
+Received: from out4-smtp.messagingengine.com ([66.111.4.28]:51709 "EHLO
+        out4-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1730090AbgAOLyN (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 15 Jan 2020 06:54:13 -0500
+Received: from compute3.internal (compute3.nyi.internal [10.202.2.43])
+        by mailout.nyi.internal (Postfix) with ESMTP id 515092202A;
+        Wed, 15 Jan 2020 06:54:12 -0500 (EST)
+Received: from mailfrontend1 ([10.202.2.162])
+  by compute3.internal (MEProxy); Wed, 15 Jan 2020 06:54:12 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+        messagingengine.com; h=cc:content-transfer-encoding:date:from
+        :message-id:mime-version:subject:to:x-me-proxy:x-me-proxy
+        :x-me-sender:x-me-sender:x-sasl-enc; s=fm1; bh=D1G32YglMuEjal6lv
+        hC0bDIgtl0EnCcy9YoVlqiu6QI=; b=lzDshJ6X6kr67jEjshQ3JcPLfVgOT5TsZ
+        0Yh+NySMwqeRnF57ZmP15iJtCDiwzy2Bd0pzGbqAKtzStMC7wQ7f6IR66Y1uifHY
+        2ZDwxorFAq+siPwmEttLgzeUAFq4F6aJpdDiqpaGDI/swtsVOsG0IEhZOFabDycb
+        hejWmKeWnppGG7N7LHu5ntkEOCmk6KAGuA2+nNR41H9IC0J/khDmJuSfm6ibVEnW
+        HojydRGhoyYIH2C0EA2mEwp7+jPZHH56zv/Qmn+dfrj99WCI3RvcumVLehGheV9l
+        L1rDWteDprn/ZLqOkOWbkmLrArTF5tzlBDS1CdGacM/syZNCksVDg==
+X-ME-Sender: <xms:ZP0eXlaZ0Ori6kElFURbj3z7cTSmiwFm4YM6dJr3COrOEMIPq0-SKw>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedugedrtdefgdeffecutefuodetggdotefrodftvf
+    curfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfghnecu
+    uegrihhlohhuthemuceftddtnecunecujfgurhephffvufffkffoggfgsedtkeertdertd
+    dtnecuhfhrohhmpefkughoucfutghhihhmmhgvlhcuoehiughoshgthhesihguohhstghh
+    rdhorhhgqeenucfkphepudelfedrgeejrdduieehrddvhedunecurfgrrhgrmhepmhgrih
+    hlfhhrohhmpehiughoshgthhesihguohhstghhrdhorhhgnecuvehluhhsthgvrhfuihii
+    vgeptd
+X-ME-Proxy: <xmx:ZP0eXj2FrgXBNUuM1oF3DVq_jNOaaDrstdUWaO-VAgleXBf7Go-vKA>
+    <xmx:ZP0eXlWRvSUF1MX-CGmla88jzEWGuVtOs1zGrNf1scbTBO-To1hjhA>
+    <xmx:ZP0eXtXCb_soWPgN8RmJhrg3qw0pt_3l17nG6IniAiulHkA4bId3qQ>
+    <xmx:ZP0eXlf7ax-51oXkaV2_NR0rBVq08PRs4noGG7uZhRXxCl5DZMpHwg>
+Received: from splinter.mtl.com (unknown [193.47.165.251])
+        by mail.messagingengine.com (Postfix) with ESMTPA id 098F280069;
+        Wed, 15 Jan 2020 06:54:10 -0500 (EST)
+From:   Ido Schimmel <idosch@idosch.org>
+To:     netdev@vger.kernel.org
+Cc:     davem@davemloft.net, kuba@kernel.org, jiri@mellanox.com,
+        mlxsw@mellanox.com, Ido Schimmel <idosch@mellanox.com>
+Subject: [PATCH net v2 0/6] mlxsw: Various fixes
+Date:   Wed, 15 Jan 2020 13:53:43 +0200
+Message-Id: <20200115115349.1273610-1-idosch@idosch.org>
+X-Mailer: git-send-email 2.24.1
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Madhuparna Bhowmik <madhuparnabhowmik04@gmail.com>
+From: Ido Schimmel <idosch@mellanox.com>
 
-The only callers of the function lapbeth_get_x25_dev()
-are lapbeth_rcv() and lapbeth_device_event().
+This patch set contains various fixes for mlxsw.
 
-lapbeth_rcv() uses rcu_read_lock() whereas lapbeth_device_event()
-is called with RTNL held (As mentioned in the comments).
+Patch #1 splits the init() callback between Spectrum-2 and Spectrum-3 in
+order to avoid enforcing the same firmware version for both ASICs, as
+this can't possibly work. Without this patch the driver cannot boot with
+the Spectrum-3 ASIC.
 
-Therefore, pass lockdep_rtnl_is_held() as cond argument in
-list_for_each_entry_rcu();
+Patches #2-#3 fix a long standing race condition that was recently
+exposed while testing the driver on an emulator, which is very slow
+compared to the actual hardware. The problem is explained in detail in
+the commit messages.
 
-Signed-off-by: Madhuparna Bhowmik <madhuparnabhowmik04@gmail.com>
----
- drivers/net/wan/lapbether.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+Patch #4 fixes a selftest.
 
-diff --git a/drivers/net/wan/lapbether.c b/drivers/net/wan/lapbether.c
-index 0f1217b506ad..e30d91a38cfb 100644
---- a/drivers/net/wan/lapbether.c
-+++ b/drivers/net/wan/lapbether.c
-@@ -64,7 +64,7 @@ static struct lapbethdev *lapbeth_get_x25_dev(struct net_device *dev)
- {
- 	struct lapbethdev *lapbeth;
- 
--	list_for_each_entry_rcu(lapbeth, &lapbeth_devices, node) {
-+	list_for_each_entry_rcu(lapbeth, &lapbeth_devices, node, lockdep_rtnl_is_held()) {
- 		if (lapbeth->ethdev == dev) 
- 			return lapbeth;
- 	}
+Patch #5 prevents offloaded qdiscs from presenting a non-zero backlog to
+the user when the netdev is down. This is done by clearing the cached
+backlog in the driver when the netdev goes down.
+
+Patch #6 fixes qdisc statistics (backlog and tail drops) to also take
+into account the multicast traffic classes.
+
+v2:
+* Patches #2-#3: use skb_cow_head() instead of skb_unshare() as
+  suggested by Jakub. Remove unnecessary check regarding headroom
+* Patches #5-#6: new
+
+Ido Schimmel (3):
+  mlxsw: spectrum: Do not enforce same firmware version for multiple
+    ASICs
+  mlxsw: spectrum: Do not modify cloned SKBs during xmit
+  mlxsw: switchx2: Do not modify cloned SKBs during xmit
+
+Petr Machata (3):
+  selftests: mlxsw: qos_mc_aware: Fix mausezahn invocation
+  mlxsw: spectrum: Wipe xstats.backlog of down ports
+  mlxsw: spectrum_qdisc: Include MC TCs in Qdisc counters
+
+ .../net/ethernet/mellanox/mlxsw/spectrum.c    | 54 ++++++++++++++-----
+ .../ethernet/mellanox/mlxsw/spectrum_qdisc.c  | 30 ++++++++---
+ .../net/ethernet/mellanox/mlxsw/switchx2.c    | 17 +++---
+ .../drivers/net/mlxsw/qos_mc_aware.sh         |  8 ++-
+ 4 files changed, 76 insertions(+), 33 deletions(-)
+
 -- 
-2.17.1
+2.24.1
 
