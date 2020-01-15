@@ -2,94 +2,90 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 1CBF513CE18
-	for <lists+netdev@lfdr.de>; Wed, 15 Jan 2020 21:33:47 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id AC6E513CE29
+	for <lists+netdev@lfdr.de>; Wed, 15 Jan 2020 21:39:32 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729154AbgAOUdp (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 15 Jan 2020 15:33:45 -0500
-Received: from mail-qk1-f177.google.com ([209.85.222.177]:46015 "EHLO
-        mail-qk1-f177.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729026AbgAOUdo (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 15 Jan 2020 15:33:44 -0500
-Received: by mail-qk1-f177.google.com with SMTP id x1so16960250qkl.12
-        for <netdev@vger.kernel.org>; Wed, 15 Jan 2020 12:33:44 -0800 (PST)
+        id S1729274AbgAOUjb (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 15 Jan 2020 15:39:31 -0500
+Received: from mail-qt1-f195.google.com ([209.85.160.195]:39014 "EHLO
+        mail-qt1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729238AbgAOUja (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 15 Jan 2020 15:39:30 -0500
+Received: by mail-qt1-f195.google.com with SMTP id e5so16984623qtm.6
+        for <netdev@vger.kernel.org>; Wed, 15 Jan 2020 12:39:30 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=kmDO8fPoIZwlzNZi7r0J/nGnTOTmECKqFE0ZM2IZmGs=;
-        b=Z39/Pkd71NyhAWZsbv/npWUaViC/WjpxAswiVV/ArqV95NkJKs6X49XReBx8EwIBx6
-         4yWev/O7zQqVpCv9IiK9gH1lu+P8dgoLRwQ3VWoe+ZNEyVJM4IT0ZLXInxPIEW8ytgAB
-         6++CZciKs05xLmldUIhD6WYsFapHdmJQ8PubFWpOjf6Q9RcD6noiRwkCF6mpuYWFXokD
-         Q4hEbZcoS+IFXrUZLIQPCgljV5ftoSQ4HGArcFAzmBMMdbB1uy8P/RfvUwB2AcbsnnBL
-         GgQ6tfEuEl4E816mjY5scZLTWpJtMNjmCdr360HVUaTAOt0HjOTNNca4olxpJAbDZyKV
-         gDkg==
+        d=ziepe.ca; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=ipG4hKVWO36UBYjzndMB1WJDOPTaBicd8BoGcrdlLvE=;
+        b=GW9nRogp3a2Z10qL/O/JVeeVSPowlp3ZdGAdfqatqJMcZmMMB6iSmLXYpnCCqIBhQa
+         H+nna9QB+l/Z6v4tAE8EqlWK/lG4RUXUG0zdASsEBA+3mmAotR2zVkOBiV6JoWbu9Hw5
+         A7btnI+DmQQFqtlB02AD9h7XHzhk0m09aHNFE07qnu3rRfURrJ56wlFpvX6O6zd3VW+H
+         rJa8l/Ar7KtWxpp8M471W7ZnWRXPiRKXUX4nq3uR23aVu/h5/jevqiydEX3dvVPVRLZX
+         1/jx4ohqCYxyxUrtd0rVM8M3ccoe/HRNBCrbUrFBZ35xvXobwDFxKt2vabX7DKK8ALXX
+         fptQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=kmDO8fPoIZwlzNZi7r0J/nGnTOTmECKqFE0ZM2IZmGs=;
-        b=KUtsGQII0+T7Rnq+pmaLB8PHdDnGiO2mNUossep7XAUh6rfhH9qgxMb9fE/uu5F/is
-         clOdDC9VuckraEwUhlLy1kJZUPvfatmucuja35UASabppZ0jGD7gxAVkSQXYtuEVrq9M
-         O7qevtSxrNfzTrcJNz8HBVhWfXP7/URbnlkZEvlUIUhz/wSK+NOZjxqRLCPn8Vqe1vUo
-         Fjh6a+iijQKnBGm8666tyM76G7D/Dia4h5lcoPd8KLHa5a4rcgwN4OF61BwwnxQH+hIK
-         eU2EYQLgbc9dI0vMWlwUF+VMVBV1MZ1ND8QGg69qyGxRmaUr+QEzl2rKfDXtV1wJyQj2
-         vxGA==
-X-Gm-Message-State: APjAAAWGc9Xt1rUGaG6Z2dxwdeD4acgfJ5EIx968NoWGr5499TJDauKP
-        inqgwi3XrvKKmDGf5jfBEDN1KETq
-X-Google-Smtp-Source: APXvYqx9CIHzkdAbjG4HRLQkkWo4Kxd6bSEsq2p7taP5rasBz3RzTQGmzWCXmqr8Bq2WY/99Yx5r+A==
-X-Received: by 2002:a05:620a:11a3:: with SMTP id c3mr29668379qkk.230.1579120423494;
-        Wed, 15 Jan 2020 12:33:43 -0800 (PST)
-Received: from ?IPv6:2601:282:800:7a:b4a4:d30b:b000:b744? ([2601:282:800:7a:b4a4:d30b:b000:b744])
-        by smtp.googlemail.com with ESMTPSA id o9sm9103020qko.16.2020.01.15.12.33.42
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 15 Jan 2020 12:33:42 -0800 (PST)
-Subject: Re: vrf and multicast is broken in some cases
-To:     Ido Schimmel <idosch@idosch.org>,
-        Ben Greear <greearb@candelatech.com>
-Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-References: <e439bcae-7d20-801c-007d-a41e8e9cd5f5@candelatech.com>
- <3906c6fe-e7a7-94c1-9d7d-74050084b56e@gmail.com>
- <dbefe9b1-c846-6cc6-3819-520fd084a447@candelatech.com>
- <20200115191920.GA1490933@splinter>
- <2b5cae7b-598a-8874-f9e9-5721099b9b6d@candelatech.com>
- <20200115202354.GB1513116@splinter>
-From:   David Ahern <dsahern@gmail.com>
-Message-ID: <9ed604cd-19de-337a-e112-96e05dad1073@gmail.com>
-Date:   Wed, 15 Jan 2020 13:33:41 -0700
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:68.0)
- Gecko/20100101 Thunderbird/68.3.1
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=ipG4hKVWO36UBYjzndMB1WJDOPTaBicd8BoGcrdlLvE=;
+        b=phITkd6LOYq9vjAP0vUrqAjAVm9l6kWjMSQ2plQM3IxS2txWNSxXn8QdRl71q9c3td
+         jVLO8JzEfge5RLiDAogP3aBjiG83cud5Ci84FTVTsCNkezGo2SKKaQ4Vcp52KjPBN2UB
+         cAq2b/X11KXjR385IqHrCWhvbOJr3qjI3XLt7hRCYOfAsFcv9e1llREwfS9jDUG30tGk
+         ru4JKCAZUAL989f4Rcz88t+qqALbl6OSzE5Ldwkew+lmXhTutuSvbbAuoSOJHYzP5SPJ
+         UIvMexlEuNL54HZrTjcXN3eds6HrDtCBpeohzsJvUzJ+96VdJD17lUdmXWemcQ9pl1kX
+         Vp7Q==
+X-Gm-Message-State: APjAAAXzuIvIxi5A4VFhI29fwshqTg1vUXrMnFucmkc/3i6KZ3e60Lpb
+        LhiiaxsDgqwNHrPF7cQ16o4SLFeg9WY=
+X-Google-Smtp-Source: APXvYqxc326AZJsqbdqeaEd/VQzC59gRyhUheeJsqg5NaIAc9NcrRnaG5LcQX+F9q15PuN4kX1I4Kg==
+X-Received: by 2002:aed:2f01:: with SMTP id l1mr417869qtd.391.1579120769915;
+        Wed, 15 Jan 2020 12:39:29 -0800 (PST)
+Received: from ziepe.ca (hlfxns017vw-142-68-57-212.dhcp-dynamic.fibreop.ns.bellaliant.net. [142.68.57.212])
+        by smtp.gmail.com with ESMTPSA id q25sm9175209qkq.88.2020.01.15.12.39.29
+        (version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
+        Wed, 15 Jan 2020 12:39:29 -0800 (PST)
+Received: from jgg by mlx.ziepe.ca with local (Exim 4.90_1)
+        (envelope-from <jgg@ziepe.ca>)
+        id 1irpRp-0006zN-4c; Wed, 15 Jan 2020 16:39:29 -0400
+Date:   Wed, 15 Jan 2020 16:39:29 -0400
+From:   Jason Gunthorpe <jgg@ziepe.ca>
+To:     Leon Romanovsky <leon@kernel.org>
+Cc:     Doug Ledford <dledford@redhat.com>,
+        Leon Romanovsky <leonro@mellanox.com>,
+        RDMA mailing list <linux-rdma@vger.kernel.org>,
+        Avihai Horon <avihaih@mellanox.com>,
+        Maor Gottlieb <maorg@mellanox.com>,
+        Saeed Mahameed <saeedm@mellanox.com>,
+        linux-netdev <netdev@vger.kernel.org>
+Subject: Re: [PATCH rdma-next 0/2] RoCE accelerator counters
+Message-ID: <20200115203929.GA26829@ziepe.ca>
+References: <20200115145459.83280-1-leon@kernel.org>
 MIME-Version: 1.0
-In-Reply-To: <20200115202354.GB1513116@splinter>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20200115145459.83280-1-leon@kernel.org>
+User-Agent: Mutt/1.9.4 (2018-02-28)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 1/15/20 1:23 PM, Ido Schimmel wrote:
+On Wed, Jan 15, 2020 at 04:54:57PM +0200, Leon Romanovsky wrote:
+> From: Leon Romanovsky <leonro@mellanox.com>
 > 
-> I'm not sure this is the correct way (David?). Can you try to delete
-> this default route and instead add a default unreachable route with an
-> high metric according to step 3 in Documentation/networking/vrf.txt:
+> Hi,
 > 
-> "
-> 3. Set the default route for the table (and hence default route for the VRF).
->        ip route add table 10 unreachable default metric 4278198272
+> Very small change, separated to two patches due to our shared methodology.
 > 
->    This high metric value ensures that the default unreachable route can
->    be overridden by a routing protocol suite.  FRRouting interprets
->    kernel metrics as a combined admin distance (upper byte) and priority
->    (lower 3 bytes).  Thus the above metric translates to [255/8192].
-> "
+> Thanks
 > 
-> If I'm reading ip_route_output_key_hash_rcu() correctly, then the error
-> returned from fib_lookup() because of the unreachable route should allow
-> you to route the packet via the requested interface.
+> Avihai Horon (1):
+>   IB/mlx5: Expose RoCE accelerator counters
 > 
+> Leon Romanovsky (1):
+>   net/mlx5: Add RoCE accelerator counters
 
-yes, IPv4 is a bit goofy with multicast (at least to me, but then I have
-not done much with mcast).
+Looks fine to me, can you update the shared branch?
+
+Thanks,
+Jason
