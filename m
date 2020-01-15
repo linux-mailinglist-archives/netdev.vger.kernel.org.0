@@ -2,175 +2,132 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 93CB513CEC6
-	for <lists+netdev@lfdr.de>; Wed, 15 Jan 2020 22:20:07 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6E06013CEE6
+	for <lists+netdev@lfdr.de>; Wed, 15 Jan 2020 22:26:39 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730086AbgAOVTp (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 15 Jan 2020 16:19:45 -0500
-Received: from hqnvemgate25.nvidia.com ([216.228.121.64]:11075 "EHLO
-        hqnvemgate25.nvidia.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729263AbgAOVTo (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 15 Jan 2020 16:19:44 -0500
-Received: from hqpgpgate101.nvidia.com (Not Verified[216.228.121.13]) by hqnvemgate25.nvidia.com (using TLS: TLSv1.2, DES-CBC3-SHA)
-        id <B5e1f81da0000>; Wed, 15 Jan 2020 13:19:22 -0800
-Received: from hqmail.nvidia.com ([172.20.161.6])
-  by hqpgpgate101.nvidia.com (PGP Universal service);
-  Wed, 15 Jan 2020 13:19:42 -0800
-X-PGP-Universal: processed;
-        by hqpgpgate101.nvidia.com on Wed, 15 Jan 2020 13:19:42 -0800
-Received: from [10.110.48.28] (10.124.1.5) by HQMAIL107.nvidia.com
- (172.20.187.13) with Microsoft SMTP Server (TLS) id 15.0.1473.3; Wed, 15 Jan
- 2020 21:19:42 +0000
-Subject: Re: [PATCH v12 04/22] mm: devmap: refactor 1-based refcounting for
- ZONE_DEVICE pages
-To:     Christoph Hellwig <hch@infradead.org>
-CC:     Andrew Morton <akpm@linux-foundation.org>,
-        Al Viro <viro@zeniv.linux.org.uk>,
-        Alex Williamson <alex.williamson@redhat.com>,
-        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
-        =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@intel.com>,
-        Dan Williams <dan.j.williams@intel.com>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        Dave Chinner <david@fromorbit.com>,
-        David Airlie <airlied@linux.ie>,
-        "David S . Miller" <davem@davemloft.net>,
-        Ira Weiny <ira.weiny@intel.com>, Jan Kara <jack@suse.cz>,
-        Jason Gunthorpe <jgg@ziepe.ca>, Jens Axboe <axboe@kernel.dk>,
-        Jonathan Corbet <corbet@lwn.net>,
-        =?UTF-8?B?SsOpcsO0bWUgR2xpc3Nl?= <jglisse@redhat.com>,
-        "Kirill A . Shutemov" <kirill@shutemov.name>,
-        Magnus Karlsson <magnus.karlsson@intel.com>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
-        Michael Ellerman <mpe@ellerman.id.au>,
-        Michal Hocko <mhocko@suse.com>,
-        Mike Kravetz <mike.kravetz@oracle.com>,
-        Paul Mackerras <paulus@samba.org>,
-        Shuah Khan <shuah@kernel.org>,
-        Vlastimil Babka <vbabka@suse.cz>, <bpf@vger.kernel.org>,
-        <dri-devel@lists.freedesktop.org>, <kvm@vger.kernel.org>,
-        <linux-block@vger.kernel.org>, <linux-doc@vger.kernel.org>,
-        <linux-fsdevel@vger.kernel.org>, <linux-kselftest@vger.kernel.org>,
-        <linux-media@vger.kernel.org>, <linux-rdma@vger.kernel.org>,
-        <linuxppc-dev@lists.ozlabs.org>, <netdev@vger.kernel.org>,
-        <linux-mm@kvack.org>, LKML <linux-kernel@vger.kernel.org>,
-        Christoph Hellwig <hch@lst.de>
-References: <20200107224558.2362728-1-jhubbard@nvidia.com>
- <20200107224558.2362728-5-jhubbard@nvidia.com>
- <20200115152306.GA19546@infradead.org>
-X-Nvconfidentiality: public
-From:   John Hubbard <jhubbard@nvidia.com>
-Message-ID: <4707f191-86f8-db4a-c3de-0a84b415b658@nvidia.com>
-Date:   Wed, 15 Jan 2020 13:19:41 -0800
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.4.1
+        id S1729377AbgAOV0h (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 15 Jan 2020 16:26:37 -0500
+Received: from mail-lf1-f68.google.com ([209.85.167.68]:41456 "EHLO
+        mail-lf1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726501AbgAOV0h (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 15 Jan 2020 16:26:37 -0500
+Received: by mail-lf1-f68.google.com with SMTP id m30so13857115lfp.8;
+        Wed, 15 Jan 2020 13:26:36 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=qUcqprxzi4OpusPge9b+ctTKe/+2yNyRvpVornc3kG4=;
+        b=B4M6c5R8fsObbWiRlCO3W/CnlZnVJ7BPXJtWE+mmdt7Xprg8HB71TiQp6TfvsUnpm8
+         K+vS5+JScBu2VN4Y3fq6BhOaSvzX3cL6BPy7mQWMYPiqosFB+pqGTampHaiPmG4K4O0y
+         XZpimzoHQiQYMmfUDWlTcLzxLrINYBA/HM3sZuF1GdYtXOYMEJuV6ST4kHVoeFP8VRY9
+         PgAaaILfbaml8wEVokV34dK2Y5pTrIi9burZWoEz75aaqBbwwl/R1mYdfXAPEeSr7rj7
+         PNjNygaj58irVDGKqzB7x2qBzuZXlFcaWCdRZ4dEbviUjwtbwWylLAyY+F1WwRu599S+
+         k8CQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=qUcqprxzi4OpusPge9b+ctTKe/+2yNyRvpVornc3kG4=;
+        b=CZxgH+M3iG0Kvg3L5c+Vg/77HVRXj+pt4eM8Kv2IUzjfSkvcZYKP70FleaxgzWe+TV
+         +gxU1urwqhe/NDwnyold7AqjCOgnIQzRHVtuynDXWcQeSEYaGemfXdh3rfF/VaRqsg7j
+         kmqRx+P8QSfjGHmS4nSGSsUuDXeVLx1g9kHk4jbyqUCxA7X3bHlkNPB1u6Kn+bAGcXVx
+         5VYFbCS8ApLuqbcG8Uh506GTLkOh6MnhwRASzVyaarbew9ovFKOL8097v78ff7Aacmsp
+         aZaY6HDAZmsaFierDjfzifi/KbA/lpx2rEvg7GJLg9/zWGd4fli1WGgi49HMbxrcl6YS
+         eh7g==
+X-Gm-Message-State: APjAAAUKh+nbC3YSDpM/6kH1fZfFm8zcy7HrNjM9iPleqC/AoL/nDj03
+        lTdMA7vY+vJXdUhvob5YaT9BBEgCIiYOAo4c2pk=
+X-Google-Smtp-Source: APXvYqyts+55ZZ64qWwScTdWkqCl47A2LtZn7PJWlMoF35S4yiuF2vAoLxI2JN3oPRLOhS+10MbHn6GvnRknCQ/4FlU=
+X-Received: by 2002:a19:4a12:: with SMTP id x18mr511139lfa.158.1579123595242;
+ Wed, 15 Jan 2020 13:26:35 -0800 (PST)
 MIME-Version: 1.0
-In-Reply-To: <20200115152306.GA19546@infradead.org>
-X-Originating-IP: [10.124.1.5]
-X-ClientProxiedBy: HQMAIL105.nvidia.com (172.20.187.12) To
- HQMAIL107.nvidia.com (172.20.187.13)
-Content-Type: text/plain; charset="utf-8"
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nvidia.com; s=n1;
-        t=1579123162; bh=GeG6npnwyerPXrXB3bHbzqY7iBJ1oGmlF7ZkUct1x7k=;
-        h=X-PGP-Universal:Subject:To:CC:References:X-Nvconfidentiality:From:
-         Message-ID:Date:User-Agent:MIME-Version:In-Reply-To:
-         X-Originating-IP:X-ClientProxiedBy:Content-Type:Content-Language:
-         Content-Transfer-Encoding;
-        b=jj9z8sItAejAXuqLJp407Y0oGvSfSmMgC2Khnl/UaD4X75Jfs+E4VVRGeSQsgj4wP
-         14n675+NVsxapYKvaJVbv9kK8eZuWxvO3Y6Z1FaTdzbTeZYm8ghKmuNIE5C0gACdNX
-         GRKd75x36rcOJr0kw/HdaVzIwMxuti46gF1ZGWWpciXiVKzpgvI3qlfJhfyWO1skXq
-         uplmy/sgWDjhYQkuOFvVaYpZjSy0ueb1q0Sh/SzXH1k9SEC0ZieDiM/hkNzj/S5EwR
-         OOf7dWtMC6wOQv1+ifMLfIwYfX7dbiwP1/6cV/7beAaEJMsZqU2lquKgjSAKnqyNBE
-         3XR6j/+C8nurA==
+References: <157909410480.47481.11202505690938004673.stgit@xdp-tutorial> <CAEf4BzZmF6TUtGkmcWAP8T5+JH=CEqAvu-q=LntsoYbuZbePgw@mail.gmail.com>
+In-Reply-To: <CAEf4BzZmF6TUtGkmcWAP8T5+JH=CEqAvu-q=LntsoYbuZbePgw@mail.gmail.com>
+From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Date:   Wed, 15 Jan 2020 13:26:23 -0800
+Message-ID: <CAADnVQ+o0JcbrJr9YE0wHgg11DMWfpxsYcexU1SXt-SOzD1E-w@mail.gmail.com>
+Subject: Re: [PATCH bpf-next v3] selftests/bpf: Add a test for attaching a bpf
+ fentry/fexit trace to an XDP program
+To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Cc:     Eelco Chaudron <echaudro@redhat.com>, bpf <bpf@vger.kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Networking <netdev@vger.kernel.org>,
+        "Fijalkowski, Maciej" <maciej.fijalkowski@intel.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 1/15/20 7:23 AM, Christoph Hellwig wrote:
-...
-> 
-> I'm really not sold on this scheme.  Note that I think it is
-> particularly bad, but it also doesn't seem any better than what
-> we had before, and it introduced quite a bit more code.
-> 
+On Wed, Jan 15, 2020 at 9:04 AM Andrii Nakryiko
+<andrii.nakryiko@gmail.com> wrote:
+>
+> On Wed, Jan 15, 2020 at 5:15 AM Eelco Chaudron <echaudro@redhat.com> wrote:
+> >
+> > Add a test that will attach a FENTRY and FEXIT program to the XDP test
+> > program. It will also verify data from the XDP context on FENTRY and
+> > verifies the return code on exit.
+> >
+> > Signed-off-by: Eelco Chaudron <echaudro@redhat.com>
+> > ---
+>
+> Looks good, thanks! You are just missing one CHECK() for
+> bpf_map_update_elem below, please add it. With that:
+>
+> Acked-by: Andrii Nakryiko <andriin@fb.com>
+>
+> > v2 -> v3:
+> >   - Incorporated review comments from Andrii and Maciej
+> >
+> > v1 -> v2:
+> >   - Changed code to use the BPF skeleton
+> >   - Replace static volatile with global variable in eBPF code
+> >
+> >  .../testing/selftests/bpf/prog_tests/xdp_bpf2bpf.c |   65 ++++++++++++++++++++
+> >  .../testing/selftests/bpf/progs/test_xdp_bpf2bpf.c |   44 ++++++++++++++
+> >  2 files changed, 109 insertions(+)
+> >  create mode 100644 tools/testing/selftests/bpf/prog_tests/xdp_bpf2bpf.c
+> >  create mode 100644 tools/testing/selftests/bpf/progs/test_xdp_bpf2bpf.c
+> >
+> > diff --git a/tools/testing/selftests/bpf/prog_tests/xdp_bpf2bpf.c b/tools/testing/selftests/bpf/prog_tests/xdp_bpf2bpf.c
+> > new file mode 100644
+> > index 000000000000..6b56bdc73ebc
+> > --- /dev/null
+> > +++ b/tools/testing/selftests/bpf/prog_tests/xdp_bpf2bpf.c
+> > @@ -0,0 +1,65 @@
+> > +// SPDX-License-Identifier: GPL-2.0
+> > +#include <test_progs.h>
+> > +#include <net/if.h>
+> > +#include "test_xdp.skel.h"
+> > +#include "test_xdp_bpf2bpf.skel.h"
+> > +
+> > +void test_xdp_bpf2bpf(void)
+> > +{
+> > +       __u32 duration = 0, retval, size;
+> > +       char buf[128];
+> > +       int err, pkt_fd, map_fd;
+> > +       struct iphdr *iph = (void *)buf + sizeof(struct ethhdr);
+> > +       struct iptnl_info value4 = {.family = AF_INET};
+> > +       struct test_xdp *pkt_skel = NULL;
+> > +       struct test_xdp_bpf2bpf *ftrace_skel = NULL;
+> > +       struct vip key4 = {.protocol = 6, .family = AF_INET};
+> > +       DECLARE_LIBBPF_OPTS(bpf_object_open_opts, opts);
+> > +
+> > +       /* Load XDP program to introspect */
+> > +       pkt_skel = test_xdp__open_and_load();
+> > +       if (CHECK(!pkt_skel, "pkt_skel_load", "test_xdp skeleton failed\n"))
+> > +               return;
+> > +
+> > +       pkt_fd = bpf_program__fd(pkt_skel->progs._xdp_tx_iptunnel);
+> > +
+> > +       map_fd = bpf_map__fd(pkt_skel->maps.vip2tnl);
+> > +       bpf_map_update_elem(map_fd, &key4, &value4, 0);
+>
+> CHECK()? Sorry, didn't spot first time.
 
-Hi Christoph,
+There is no such check in few other places in selftests and
+I don't think it's really necessary here.
+If we adjust them let's fix them all.
 
-All by itself, yes. But the very next patch (which needs a little 
-rework for other reasons, so not included here) needs to reuse some of 
-these functions within __unpin_devmap_managed_user_page():
-
-    page_is_devmap_managed()
-    free_devmap_managed_page()
-
-That patch was posted as part of the v11 series [1], and it did this:
-
-+#ifdef CONFIG_DEV_PAGEMAP_OPS
-+static bool __unpin_devmap_managed_user_page(struct page *page)
-+{
-+	int count;
-+
-+	if (!page_is_devmap_managed(page))
-+		return false;
-+
-+	count = page_ref_sub_return(page, GUP_PIN_COUNTING_BIAS);
-+
-+	__update_proc_vmstat(page, NR_FOLL_PIN_RETURNED, 1);
-+	/*
-+	 * devmap page refcounts are 1-based, rather than 0-based: if
-+	 * refcount is 1, then the page is free and the refcount is
-+	 * stable because nobody holds a reference on the page.
-+	 */
-+	if (count == 1)
-+		free_devmap_managed_page(page);
-+	else if (!count)
-+		__put_page(page);
-+
-+	return true;
-+}
-+#else
-+static bool __unpin_devmap_managed_user_page(struct page *page)
-+{
-+	return false;
-+}
-+#endif /* CONFIG_DEV_PAGEMAP_OPS */
-+
-+/**
-+ * unpin_user_page() - release a dma-pinned page
-+ * @page:            pointer to page to be released
-+ *
-+ * Pages that were pinned via pin_user_pages*() must be released via either
-+ * unpin_user_page(), or one of the unpin_user_pages*() routines. This is so
-+ * that such pages can be separately tracked and uniquely handled. In
-+ * particular, interactions with RDMA and filesystems need special handling.
-+ */
-+void unpin_user_page(struct page *page)
-+{
-+	page = compound_head(page);
-+
-+	/*
-+	 * For devmap managed pages we need to catch refcount transition from
-+	 * GUP_PIN_COUNTING_BIAS to 1, when refcount reach one it means the
-+	 * page is free and we need to inform the device driver through
-+	 * callback. See include/linux/memremap.h and HMM for details.
-+	 */
-+	if (__unpin_devmap_managed_user_page(page))
-+		return;
-+
-+	if (page_ref_sub_and_test(page, GUP_PIN_COUNTING_BIAS))
-+		__put_page(page);
-+
-+	__update_proc_vmstat(page, NR_FOLL_PIN_RETURNED, 1);
-+}
-+EXPORT_SYMBOL(unpin_user_page);
-
-
-[1] https://lore.kernel.org/r/20191216222537.491123-24-jhubbard@nvidia.com  
-    [PATCH v11 23/25] mm/gup: track FOLL_PIN pages
-
-thanks,
--- 
-John Hubbard
-NVIDIA
+Applied to bpf-next. Thanks.
