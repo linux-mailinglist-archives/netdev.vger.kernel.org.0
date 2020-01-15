@@ -2,125 +2,184 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id E120213CE08
-	for <lists+netdev@lfdr.de>; Wed, 15 Jan 2020 21:21:08 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2A17E13CE0F
+	for <lists+netdev@lfdr.de>; Wed, 15 Jan 2020 21:24:11 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729121AbgAOUVF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 15 Jan 2020 15:21:05 -0500
-Received: from mail-qt1-f195.google.com ([209.85.160.195]:44524 "EHLO
-        mail-qt1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726018AbgAOUVE (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 15 Jan 2020 15:21:04 -0500
-Received: by mail-qt1-f195.google.com with SMTP id w8so2528452qts.11;
-        Wed, 15 Jan 2020 12:21:03 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=gQDIp0O9QnAxX4WU+TXGscN8NS1YVLXeb9VJm6V5OoY=;
-        b=lXvNNSN9x27eKkpEf42K5E/i5sPyZRkW3eo3LqB4FkqRL2DhMZDY/WSoEBtIzsiIFO
-         6hTeNRtROe0iU6UQnNsb3TtKEAH1mMcRnHXMLyL97Jbd+QORixgkcbrPsQzGsw+E6G4a
-         9S2+ztvLWxDhaAW9qLhFHdkT10B8r0eqytUvsi1g0rAGTqXJK5NkmMnMcW+Jii3vrKhO
-         QQoRSyT9nKrjDX8A/nLJ9V6K5K3GaGSANPXsfn2cVCR+qxVOBPDq0ryBazMq/JbgFueH
-         mHF6bEYqdyfW5gSH385AJ//uXNwc192o4gekyY38rOcPNZRRpQy0XJOSxA3Vx0AdLWCD
-         1f2Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=gQDIp0O9QnAxX4WU+TXGscN8NS1YVLXeb9VJm6V5OoY=;
-        b=P3YuTSfG4YvtFJxf2O7zi3zcjvEk4rxY8GC/0vZsMfqMjAyJOtl3O+3NvkaKIfrk9n
-         kYJ+DtcfEs5cVQ0nxqpU7wgEO1r1g0qmXtxMs9jAoqtbpp70GWZp+ZKJwZUxkzWSWUny
-         JdBq4cAWbt+LbRoaKlFwRcJA1SaV8zpctT8f5hlabxQHk3auMiX0NPihSkRJBtUdvSNx
-         a2/22KlxdP9lXPv296Vjbe8mdCAa4sOcOjnusHe9o3bAAQBuLJfQLCBC6R20yfo67ZS/
-         3f4ryh+M4riAtXql7alZW1h8SJpXXm5UNh1Da/qVxWRW+oQnCNio9jY5k5S159frSimg
-         O4nA==
-X-Gm-Message-State: APjAAAWfEf/AJG6GHR42QR/sseAQl3suvh0KxO0JdFRaJT6usJUGFjgy
-        gubfTmEILb21nkX5EBgjKfsBeJZRWoFPD8tu3Mw=
-X-Google-Smtp-Source: APXvYqxUasebTmpN/r6CnD4d6Jf+zUxCLRbdtypRZ2A9uy6ktTsnq+Z2WBqBWo3XYSTfOFxSuYL1Ydf+yDse6G5xqBI=
-X-Received: by 2002:ac8:4050:: with SMTP id j16mr367798qtl.171.1579119663256;
- Wed, 15 Jan 2020 12:21:03 -0800 (PST)
+        id S1729026AbgAOUYK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 15 Jan 2020 15:24:10 -0500
+Received: from out5-smtp.messagingengine.com ([66.111.4.29]:53095 "EHLO
+        out5-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1726018AbgAOUYJ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 15 Jan 2020 15:24:09 -0500
+Received: from compute3.internal (compute3.nyi.internal [10.202.2.43])
+        by mailout.nyi.internal (Postfix) with ESMTP id EBF8A21DC7;
+        Wed, 15 Jan 2020 15:24:08 -0500 (EST)
+Received: from mailfrontend2 ([10.202.2.163])
+  by compute3.internal (MEProxy); Wed, 15 Jan 2020 15:24:08 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+        messagingengine.com; h=cc:content-type:date:from:in-reply-to
+        :message-id:mime-version:references:subject:to:x-me-proxy
+        :x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=fm1; bh=aVS0mP
+        fRmuP0R7y1XHUZoq8rFwY4gbd55zY5PSr0Ncw=; b=sfmFrwx+wy7qBYOMUZsSDL
+        xlueMhKhboLuzpAPqNrshaevcaAGrUrrIKhlxXAcE97ned/+5fEDgc1y7lPhExuA
+        n7v7vm9JXcjSjrRqf8VG4MdwyBAPjgkbsBmzch4m/9jWpdxgpVe1ldHHiajkyJiC
+        rH1/7vY23BTW84WSqGcBbWKP1scQTWoJeMW6iet4ZIdmMY/O6t64Vq0W2O4aTFte
+        5n3uXLH20zYhGPmkUDwcvqGtWqvlpp7IxJRzDdbJ4HiESs6i6u3YvUu6rAVOGGRD
+        w/2Y0Rwp01BhrF5kB+GCu21oIu5GeFkeoBqyyMgQwEX6UIAlLyBc/qUTkoIrfCRg
+        ==
+X-ME-Sender: <xms:6HQfXgoI2QPVuNGlcWSyVE2IUwFHgzEIS9ECEOlywIs6-eiSFYKu0w>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedugedrtdefgddufeehucetufdoteggodetrfdotf
+    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
+    uceurghilhhouhhtmecufedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmne
+    cujfgurhepfffhvffukfhfgggtuggjsehttdertddttddvnecuhfhrohhmpefkughoucfu
+    tghhihhmmhgvlhcuoehiughoshgthhesihguohhstghhrdhorhhgqeenucffohhmrghinh
+    eptggrnhguvghlrghtvggthhdrtghomhenucfkphepjeejrddufeekrddvgeelrddvtdel
+    necurfgrrhgrmhepmhgrihhlfhhrohhmpehiughoshgthhesihguohhstghhrdhorhhgne
+    cuvehluhhsthgvrhfuihiivgeptd
+X-ME-Proxy: <xmx:6HQfXojAneAqp1NvsJWaqsGDJLDEPptdWjdeKbIKbnVJlsW_T63xfg>
+    <xmx:6HQfXqVb47xJgxyerC61jyqpGCLG9u88j4DbyWZpfj656mxRH3k-og>
+    <xmx:6HQfXoGsEY0RiHsRvskMmUmnMksxVIYOm4f72Fpk8Y16HlCFSnMKLQ>
+    <xmx:6HQfXn71TjYwiTtUcI5cDV17XkTzc34WAfIUhDA0xtScMYCXLyAW0A>
+Received: from localhost (unknown [77.138.249.209])
+        by mail.messagingengine.com (Postfix) with ESMTPA id 34A2730607D0;
+        Wed, 15 Jan 2020 15:24:07 -0500 (EST)
+Date:   Wed, 15 Jan 2020 22:23:54 +0200
+From:   Ido Schimmel <idosch@idosch.org>
+To:     Ben Greear <greearb@candelatech.com>
+Cc:     David Ahern <dsahern@gmail.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+Subject: Re: vrf and multicast is broken in some cases
+Message-ID: <20200115202354.GB1513116@splinter>
+References: <e439bcae-7d20-801c-007d-a41e8e9cd5f5@candelatech.com>
+ <3906c6fe-e7a7-94c1-9d7d-74050084b56e@gmail.com>
+ <dbefe9b1-c846-6cc6-3819-520fd084a447@candelatech.com>
+ <20200115191920.GA1490933@splinter>
+ <2b5cae7b-598a-8874-f9e9-5721099b9b6d@candelatech.com>
 MIME-Version: 1.0
-References: <20200115184308.162644-1-brianvv@google.com> <20200115184308.162644-8-brianvv@google.com>
-In-Reply-To: <20200115184308.162644-8-brianvv@google.com>
-From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Wed, 15 Jan 2020 12:20:52 -0800
-Message-ID: <CAEf4BzYR2cNC_O6c8Fu4HtAny-XJaGafpDCMGhuj4-ubQ14vRw@mail.gmail.com>
-Subject: Re: [PATCH v5 bpf-next 7/9] libbpf: add libbpf support to batch ops
-To:     Brian Vazquez <brianvv@google.com>
-Cc:     Brian Vazquez <brianvv.kernel@gmail.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        "David S . Miller" <davem@davemloft.net>,
-        Yonghong Song <yhs@fb.com>,
-        Stanislav Fomichev <sdf@google.com>,
-        Petar Penkov <ppenkov@google.com>,
-        Willem de Bruijn <willemb@google.com>,
-        open list <linux-kernel@vger.kernel.org>,
-        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <2b5cae7b-598a-8874-f9e9-5721099b9b6d@candelatech.com>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Jan 15, 2020 at 10:43 AM Brian Vazquez <brianvv@google.com> wrote:
->
-> From: Yonghong Song <yhs@fb.com>
->
-> Added four libbpf API functions to support map batch operations:
->   . int bpf_map_delete_batch( ... )
->   . int bpf_map_lookup_batch( ... )
->   . int bpf_map_lookup_and_delete_batch( ... )
->   . int bpf_map_update_batch( ... )
->
-> Signed-off-by: Yonghong Song <yhs@fb.com>
-> ---
->  tools/lib/bpf/bpf.c      | 58 ++++++++++++++++++++++++++++++++++++++++
->  tools/lib/bpf/bpf.h      | 22 +++++++++++++++
->  tools/lib/bpf/libbpf.map |  4 +++
->  3 files changed, 84 insertions(+)
->
-> diff --git a/tools/lib/bpf/bpf.c b/tools/lib/bpf/bpf.c
-> index 500afe478e94a..317727d612149 100644
-> --- a/tools/lib/bpf/bpf.c
-> +++ b/tools/lib/bpf/bpf.c
-> @@ -452,6 +452,64 @@ int bpf_map_freeze(int fd)
->         return sys_bpf(BPF_MAP_FREEZE, &attr, sizeof(attr));
->  }
->
-> +static int bpf_map_batch_common(int cmd, int fd, void  *in_batch,
-> +                               void *out_batch, void *keys, void *values,
-> +                               __u32 *count,
-> +                               const struct bpf_map_batch_opts *opts)
-> +{
-> +       union bpf_attr attr = {};
+On Wed, Jan 15, 2020 at 12:00:08PM -0800, Ben Greear wrote:
+> 
+> 
+> On 01/15/2020 11:19 AM, Ido Schimmel wrote:
+> > On Wed, Jan 15, 2020 at 11:02:26AM -0800, Ben Greear wrote:
+> > > 
+> > > 
+> > > On 01/15/2020 10:45 AM, David Ahern wrote:
+> > > > On 1/15/20 10:57 AM, Ben Greear wrote:
+> > > > > Hello,
+> > > > > 
+> > > > > We put two different ports into their own VRF, and then tried to run a
+> > > > > multicast
+> > > > > sender on one and receiver on the other.  The receiver does not receive
+> > > > > anything.
+> > > > > 
+> > > > > Is this a known problem?
+> > > > > 
+> > > > > If we do a similar setup with policy based routing rules instead of VRF,
+> > > > > then the multicast
+> > > > > test works.
+> > > > > 
+> > > > 
+> > > > It works for OSPF for example. I have lost track of FRR features that
+> > > > use it, so you will need to specify more details.
+> > > > 
+> > > > Are the sender / receiver on the same host?
+> > > 
+> > > Yes, like eth2 sending to eth3, eth2 is associated with _vrf2, eth3 with _vrf3.
+> > 
+> > Two questions:
+> > 
+> > 1. Did you re-order the FIB rules so that l3mdev rule is before the main
+> > table?
+> 
+> That seems OK:
+> 
+> [root@lf0313-6477 lanforge]# ip ru show
+> 1000:	from all lookup [l3mdev-table]
+> 1512:	from all lookup local
+> 32766:	from all lookup main
+> 32767:	from all lookup default
+> 
+> 
+> > 2. Did you configure a default unreachable route in the VRF?
+> 
+> I did not have this, so maybe that is the issue.  This is my mcast
+> transmitter table.
+> 
+> [root@lf0313-6477 lanforge]# ip route show table 10
+> broadcast 7.7.1.0 dev rddVR0  proto kernel  scope link  src 7.7.1.2
+> 7.7.1.0/24 dev rddVR0  scope link  src 7.7.1.2
+> local 7.7.1.2 dev rddVR0  proto kernel  scope host  src 7.7.1.2
+> broadcast 7.7.1.255 dev rddVR0  proto kernel  scope link  src 7.7.1.2
+> 
+> When sniffing, I see IGMP group add/delete messages sent from the receiver
+> towards the sender, but transmitted mcast frames are not seen on the rddVR0
+> (veth mcast sender port).
+> 
+> > 
+> > IIRC, locally generated multicast packets are forwarded according to the
+> > unicast FIB rules, so if you don't have the unreachable route, it is
+> > possible the packet is forwarded according to the default route in the
+> > main table.
+> 
+> And now that is interesting.  When I sniff on eth0, which holds the default
+> route outside of the VRFs, then I do see the mcast frames sent there.
+> 
+> I tried adding default routes, and now sure enough it starts working!
 
+I'm not sure this is the correct way (David?). Can you try to delete
+this default route and instead add a default unreachable route with an
+high metric according to step 3 in Documentation/networking/vrf.txt:
 
-this is not a big issue and I don't want to delay landing your
-patches, so maybe you can follow up with another patch. But this '=
-{}' part is a complete waste because you do memset below.
+"
+3. Set the default route for the table (and hence default route for the VRF).
+       ip route add table 10 unreachable default metric 4278198272
 
-> +       int ret;
-> +
-> +       if (!OPTS_VALID(opts, bpf_map_batch_opts))
-> +               return -EINVAL;
-> +
-> +       memset(&attr, 0, sizeof(attr));
-> +       attr.batch.map_fd = fd;
-> +       attr.batch.in_batch = ptr_to_u64(in_batch);
-> +       attr.batch.out_batch = ptr_to_u64(out_batch);
-> +       attr.batch.keys = ptr_to_u64(keys);
-> +       attr.batch.values = ptr_to_u64(values);
-> +       attr.batch.count = *count;
-> +       attr.batch.elem_flags  = OPTS_GET(opts, elem_flags, 0);
-> +       attr.batch.flags = OPTS_GET(opts, flags, 0);
-> +
-> +       ret = sys_bpf(cmd, &attr, sizeof(attr));
-> +       *count = attr.batch.count;
-> +
-> +       return ret;
-> +}
-> +
+   This high metric value ensures that the default unreachable route can
+   be overridden by a routing protocol suite.  FRRouting interprets
+   kernel metrics as a combined admin distance (upper byte) and priority
+   (lower 3 bytes).  Thus the above metric translates to [255/8192].
+"
 
-[...]
+If I'm reading ip_route_output_key_hash_rcu() correctly, then the error
+returned from fib_lookup() because of the unreachable route should allow
+you to route the packet via the requested interface.
+
+> 
+> [root@lf0313-6477 lanforge]# ip route show table 10
+> default via 7.7.1.1 dev rddVR0
+> broadcast 7.7.1.0 dev rddVR0  proto kernel  scope link  src 7.7.1.2
+> 7.7.1.0/24 dev rddVR0  scope link  src 7.7.1.2
+> local 7.7.1.2 dev rddVR0  proto kernel  scope host  src 7.7.1.2
+> broadcast 7.7.1.255 dev rddVR0  proto kernel  scope link  src 7.7.1.2
+> 
+> 
+> I'll work on adding an un-reachable route when a real gateway is not
+> configured...
+> 
+> Thanks for the hint, saved me lots of work!
+> 
+> --Ben
+> 
+> > 
+> > > 
+> > > I'll go poking at the code.
+> > > 
+> > > Thanks,
+> > > Ben
+> > > 
+> > > --
+> > > Ben Greear <greearb@candelatech.com>
+> > > Candela Technologies Inc  http://www.candelatech.com
+> > 
+> 
+> -- 
+> Ben Greear <greearb@candelatech.com>
+> Candela Technologies Inc  http://www.candelatech.com
