@@ -2,36 +2,36 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 2F79613F81E
-	for <lists+netdev@lfdr.de>; Thu, 16 Jan 2020 20:17:50 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5EBEF13F7EC
+	for <lists+netdev@lfdr.de>; Thu, 16 Jan 2020 20:17:26 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2437663AbgAPTPg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 16 Jan 2020 14:15:36 -0500
-Received: from mail.kernel.org ([198.145.29.99]:41664 "EHLO mail.kernel.org"
+        id S1733130AbgAPQz6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 16 Jan 2020 11:55:58 -0500
+Received: from mail.kernel.org ([198.145.29.99]:41746 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1733115AbgAPQzz (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 16 Jan 2020 11:55:55 -0500
+        id S1729058AbgAPQz5 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 16 Jan 2020 11:55:57 -0500
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id EA1EE2467E;
-        Thu, 16 Jan 2020 16:55:53 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 672E424683;
+        Thu, 16 Jan 2020 16:55:55 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1579193755;
-        bh=jPadxU3bIAKq2rzDSYyu4zF/hz9uIqRi/y4LlM9n1g0=;
+        s=default; t=1579193756;
+        bh=o6ZUlheOHo+lvW9SfN6gTcRCJG4x8eLLXD3Zr83n1Xo=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=mMu7F657d7LPT29+n0CAqHT2sstpq86xYDms34bo8KcUAbg+Glq0QAsOxPIzvnhnc
-         3X0CmOY+Tk3wG2z2/TCPW+5phjjtRvBq7kAsF+P70ZvbenVxZ1IM1vQo32B9lj6EJ2
-         G81bWeEj/5FbKvd+W4v7ECnUMbJlxW0aOs1ZlYLM=
+        b=1KpLGb0UT+/N+qiqEFrjFXbkgWCBmY4tCAIAj7Su25MaBEWDLaAlRSyAevygnNTIX
+         rTvbHP0dJeF1hA2Etysj7SJoYD6oaC7sEXfogCpX5cMchSsqIS2YgRles/wsDKq5cS
+         3OmCE2/r5Dvdlu6I2MD832ihWm/21B3ne8gmRT20=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
 Cc:     Petr Machata <petrm@mellanox.com>,
         Ido Schimmel <idosch@mellanox.com>,
         "David S . Miller" <davem@davemloft.net>,
         Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.19 043/671] mlxsw: reg: QEEC: Add minimum shaper fields
-Date:   Thu, 16 Jan 2020 11:44:34 -0500
-Message-Id: <20200116165502.8838-43-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 4.19 044/671] mlxsw: spectrum: Set minimum shaper on MC TCs
+Date:   Thu, 16 Jan 2020 11:44:35 -0500
+Message-Id: <20200116165502.8838-44-sashal@kernel.org>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20200116165502.8838-1-sashal@kernel.org>
 References: <20200116165502.8838-1-sashal@kernel.org>
@@ -46,73 +46,79 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Petr Machata <petrm@mellanox.com>
 
-[ Upstream commit 8b931821aa04823e2e5df0ae93937baabbd23286 ]
+[ Upstream commit 0fe64023162aef123de2f1993ba13a35a786e1de ]
 
-Add QEEC.mise (minimum shaper enable) and QEEC.min_shaper_rate to enable
-configuration of minimum shaper.
+An MC-aware mode was introduced in commit 7b8195306694 ("mlxsw:
+spectrum: Configure MC-aware mode on mlxsw ports"). In MC-aware mode,
+BUM traffic gets a special treatment by being assigned to a separate set
+of traffic classes 8..15. Pairs of TCs 0 and 8, 1 and 9, etc., are then
+configured to strictly prioritize the lower-numbered ones. The intention
+is to prevent BUM traffic from flooding the switch and push out all UC
+traffic, which would otherwise happen, and instead give UC traffic
+precedence.
 
-Increase the QEEC length to 0x20 as well: that's the length that the
-register has had for a long time now, but with the configurations that
-mlxsw typically exercises, the firmware tolerated 0x1C-sized packets.
-With mise=true however, FW rejects packets unless they have the full
-required length.
+However strictly prioritizing UC traffic has the effect that UC overload
+pushes out all BUM traffic, such as legitimate ARP queries. These
+packets are kept in queues for a while, but under sustained UC overload,
+their lifetime eventually expires and these packets are dropped. That is
+detrimental to network performance as well.
 
-Fixes: b9b7cee40579 ("mlxsw: reg: Add QoS ETS Element Configuration register")
+Therefore configure the MC TCs (8..15) with minimum shaper of 200Mbps (a
+minimum permitted value) to allow a trickle of necessary control traffic
+to get through.
+
+Fixes: 7b8195306694 ("mlxsw: spectrum: Configure MC-aware mode on mlxsw ports")
 Signed-off-by: Petr Machata <petrm@mellanox.com>
 Signed-off-by: Ido Schimmel <idosch@mellanox.com>
 Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/mellanox/mlxsw/reg.h | 22 +++++++++++++++++++++-
- 1 file changed, 21 insertions(+), 1 deletion(-)
+ .../net/ethernet/mellanox/mlxsw/spectrum.c    | 25 +++++++++++++++++++
+ 1 file changed, 25 insertions(+)
 
-diff --git a/drivers/net/ethernet/mellanox/mlxsw/reg.h b/drivers/net/ethernet/mellanox/mlxsw/reg.h
-index aee58b3892f2..c9895876a231 100644
---- a/drivers/net/ethernet/mellanox/mlxsw/reg.h
-+++ b/drivers/net/ethernet/mellanox/mlxsw/reg.h
-@@ -3215,7 +3215,7 @@ static inline void mlxsw_reg_qtct_pack(char *payload, u8 local_port,
-  * Configures the ETS elements.
-  */
- #define MLXSW_REG_QEEC_ID 0x400D
--#define MLXSW_REG_QEEC_LEN 0x1C
-+#define MLXSW_REG_QEEC_LEN 0x20
+diff --git a/drivers/net/ethernet/mellanox/mlxsw/spectrum.c b/drivers/net/ethernet/mellanox/mlxsw/spectrum.c
+index e498ee95baca..4ce45f4c35aa 100644
+--- a/drivers/net/ethernet/mellanox/mlxsw/spectrum.c
++++ b/drivers/net/ethernet/mellanox/mlxsw/spectrum.c
+@@ -2750,6 +2750,21 @@ int mlxsw_sp_port_ets_maxrate_set(struct mlxsw_sp_port *mlxsw_sp_port,
+ 	return mlxsw_reg_write(mlxsw_sp->core, MLXSW_REG(qeec), qeec_pl);
+ }
  
- MLXSW_REG_DEFINE(qeec, MLXSW_REG_QEEC_ID, MLXSW_REG_QEEC_LEN);
- 
-@@ -3257,6 +3257,15 @@ MLXSW_ITEM32(reg, qeec, element_index, 0x04, 0, 8);
-  */
- MLXSW_ITEM32(reg, qeec, next_element_index, 0x08, 0, 8);
- 
-+/* reg_qeec_mise
-+ * Min shaper configuration enable. Enables configuration of the min
-+ * shaper on this ETS element
-+ * 0 - Disable
-+ * 1 - Enable
-+ * Access: RW
-+ */
-+MLXSW_ITEM32(reg, qeec, mise, 0x0C, 31, 1);
++static int mlxsw_sp_port_min_bw_set(struct mlxsw_sp_port *mlxsw_sp_port,
++				    enum mlxsw_reg_qeec_hr hr, u8 index,
++				    u8 next_index, u32 minrate)
++{
++	struct mlxsw_sp *mlxsw_sp = mlxsw_sp_port->mlxsw_sp;
++	char qeec_pl[MLXSW_REG_QEEC_LEN];
 +
- enum {
- 	MLXSW_REG_QEEC_BYTES_MODE,
- 	MLXSW_REG_QEEC_PACKETS_MODE,
-@@ -3273,6 +3282,17 @@ enum {
-  */
- MLXSW_ITEM32(reg, qeec, pb, 0x0C, 28, 1);
++	mlxsw_reg_qeec_pack(qeec_pl, mlxsw_sp_port->local_port, hr, index,
++			    next_index);
++	mlxsw_reg_qeec_mise_set(qeec_pl, true);
++	mlxsw_reg_qeec_min_shaper_rate_set(qeec_pl, minrate);
++
++	return mlxsw_reg_write(mlxsw_sp->core, MLXSW_REG(qeec), qeec_pl);
++}
++
+ int mlxsw_sp_port_prio_tc_set(struct mlxsw_sp_port *mlxsw_sp_port,
+ 			      u8 switch_prio, u8 tclass)
+ {
+@@ -2827,6 +2842,16 @@ static int mlxsw_sp_port_ets_init(struct mlxsw_sp_port *mlxsw_sp_port)
+ 			return err;
+ 	}
  
-+/* The smallest permitted min shaper rate. */
-+#define MLXSW_REG_QEEC_MIS_MIN	200000		/* Kbps */
++	/* Configure the min shaper for multicast TCs. */
++	for (i = 0; i < IEEE_8021QAZ_MAX_TCS; i++) {
++		err = mlxsw_sp_port_min_bw_set(mlxsw_sp_port,
++					       MLXSW_REG_QEEC_HIERARCY_TC,
++					       i + 8, i,
++					       MLXSW_REG_QEEC_MIS_MIN);
++		if (err)
++			return err;
++	}
 +
-+/* reg_qeec_min_shaper_rate
-+ * Min shaper information rate.
-+ * For CPU port, can only be configured for port hierarchy.
-+ * When in bytes mode, value is specified in units of 1000bps.
-+ * Access: RW
-+ */
-+MLXSW_ITEM32(reg, qeec, min_shaper_rate, 0x0C, 0, 28);
-+
- /* reg_qeec_mase
-  * Max shaper configuration enable. Enables configuration of the max
-  * shaper on this ETS element.
+ 	/* Map all priorities to traffic class 0. */
+ 	for (i = 0; i < IEEE_8021QAZ_MAX_TCS; i++) {
+ 		err = mlxsw_sp_port_prio_tc_set(mlxsw_sp_port, i, 0);
 -- 
 2.20.1
 
