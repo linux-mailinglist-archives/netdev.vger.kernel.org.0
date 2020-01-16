@@ -2,36 +2,37 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 406BE13F289
-	for <lists+netdev@lfdr.de>; Thu, 16 Jan 2020 19:36:13 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4B6F013F283
+	for <lists+netdev@lfdr.de>; Thu, 16 Jan 2020 19:36:10 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2407167AbgAPSgH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 16 Jan 2020 13:36:07 -0500
-Received: from mail.kernel.org ([198.145.29.99]:58592 "EHLO mail.kernel.org"
+        id S2388127AbgAPSfz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 16 Jan 2020 13:35:55 -0500
+Received: from mail.kernel.org ([198.145.29.99]:58714 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2391716AbgAPRYS (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 16 Jan 2020 12:24:18 -0500
+        id S2391727AbgAPRYW (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 16 Jan 2020 12:24:22 -0500
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 7A5DC2468E;
-        Thu, 16 Jan 2020 17:24:17 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 101432467E;
+        Thu, 16 Jan 2020 17:24:19 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1579195458;
-        bh=JT9nwQACsDfHp9m+qslIcyuxV13zlD/UkEjN3fwVPkc=;
+        s=default; t=1579195461;
+        bh=gG/HwWFp8pr2JR+qq3nmHA3WtwHWW2tyNI/aRtlJo5U=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=rkVos62bkuImktxEznCBBeJ6BHeDxYUBmBUVOulz+BY7w3o5Bm7VAXCnRMAcsZe84
-         vpvl/mc/PK7nsEFvY/SS5HnUFSTRPYU/YLVqc/Ex2UTOPALKcdWs5s8UDXOhwcrwzR
-         jWEbTyOk8jRCnA9jt23Kch9hMgZE7uiAElg231HY=
+        b=qcu6EeTn7ECe32hIKzKDnTGyreN6bXpOQF8Pgna3gtcxRMyUFYrOFF+Dup6wNcGaL
+         Rv5xy9XKLqkwARg4C1xLK3dK1kh07GOO2UpiaSqMM9QZChVNB298CAwwHz85/xDSga
+         LOIC12cF6Gu6qIDX4TfHMAiqOhxmriFxZra9Hu3Y=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Mordechay Goodstein <mordechay.goodstein@intel.com>,
+Cc:     Johannes Berg <johannes.berg@intel.com>,
+        Danny Alexander <danny.alexander@intel.com>,
         Luca Coelho <luciano.coelho@intel.com>,
         Sasha Levin <sashal@kernel.org>,
         linux-wireless@vger.kernel.org, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.14 067/371] iwlwifi: mvm: avoid possible access out of array.
-Date:   Thu, 16 Jan 2020 12:18:59 -0500
-Message-Id: <20200116172403.18149-10-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 4.14 069/371] iwlwifi: mvm: fix A-MPDU reference assignment
+Date:   Thu, 16 Jan 2020 12:19:01 -0500
+Message-Id: <20200116172403.18149-12-sashal@kernel.org>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20200116172403.18149-1-sashal@kernel.org>
 References: <20200116172403.18149-1-sashal@kernel.org>
@@ -44,64 +45,48 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Mordechay Goodstein <mordechay.goodstein@intel.com>
+From: Johannes Berg <johannes.berg@intel.com>
 
-[ Upstream commit b0d795a9ae558209656b18930c2b4def5f8fdfb8 ]
+[ Upstream commit 1f7698abedeeb3fef3cbcf78e16f925df675a179 ]
 
-The value in txq_id can be out of array scope,
-validate it before accessing the array.
+The current code assigns the reference, and then goes to increment
+it if the toggle bit has changed. That way, we get
 
-Signed-off-by: Mordechay Goodstein <mordechay.goodstein@intel.com>
-Fixes: cf961e16620f ("iwlwifi: mvm: support dqa-mode agg on non-shared queue")
+Toggle  0  0  0  0  1  1  1  1
+ID      1  1  1  1  1  2  2  2
+
+Fix that by assigning the post-toggle ID to get
+
+Toggle  0  0  0  0  1  1  1  1
+ID      1  1  1  1  2  2  2  2
+
+Reported-by: Danny Alexander <danny.alexander@intel.com>
+Signed-off-by: Johannes Berg <johannes.berg@intel.com>
+Fixes: fbe4112791b8 ("iwlwifi: mvm: update mpdu metadata API")
 Signed-off-by: Luca Coelho <luciano.coelho@intel.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/wireless/intel/iwlwifi/mvm/sta.c | 19 +++++++++++++------
- 1 file changed, 13 insertions(+), 6 deletions(-)
+ drivers/net/wireless/intel/iwlwifi/mvm/rxmq.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/net/wireless/intel/iwlwifi/mvm/sta.c b/drivers/net/wireless/intel/iwlwifi/mvm/sta.c
-index 0cfdbaa2af3a..684c0f65a052 100644
---- a/drivers/net/wireless/intel/iwlwifi/mvm/sta.c
-+++ b/drivers/net/wireless/intel/iwlwifi/mvm/sta.c
-@@ -2417,7 +2417,7 @@ int iwl_mvm_sta_tx_agg_start(struct iwl_mvm *mvm, struct ieee80211_vif *vif,
- 	struct iwl_mvm_sta *mvmsta = iwl_mvm_sta_from_mac80211(sta);
- 	struct iwl_mvm_tid_data *tid_data;
- 	u16 normalized_ssn;
--	int txq_id;
-+	u16 txq_id;
- 	int ret;
+diff --git a/drivers/net/wireless/intel/iwlwifi/mvm/rxmq.c b/drivers/net/wireless/intel/iwlwifi/mvm/rxmq.c
+index 7fb8bbaf2142..1a12e829e98b 100644
+--- a/drivers/net/wireless/intel/iwlwifi/mvm/rxmq.c
++++ b/drivers/net/wireless/intel/iwlwifi/mvm/rxmq.c
+@@ -871,12 +871,12 @@ void iwl_mvm_rx_mpdu_mq(struct iwl_mvm *mvm, struct napi_struct *napi,
+ 		bool toggle_bit = phy_info & IWL_RX_MPDU_PHY_AMPDU_TOGGLE;
  
- 	if (WARN_ON_ONCE(tid >= IWL_MAX_TID_COUNT))
-@@ -2452,17 +2452,24 @@ int iwl_mvm_sta_tx_agg_start(struct iwl_mvm *mvm, struct ieee80211_vif *vif,
- 	 */
- 	txq_id = mvmsta->tid_data[tid].txq_id;
- 	if (txq_id == IWL_MVM_INVALID_QUEUE) {
--		txq_id = iwl_mvm_find_free_queue(mvm, mvmsta->sta_id,
--						 IWL_MVM_DQA_MIN_DATA_QUEUE,
--						 IWL_MVM_DQA_MAX_DATA_QUEUE);
--		if (txq_id < 0) {
--			ret = txq_id;
-+		ret = iwl_mvm_find_free_queue(mvm, mvmsta->sta_id,
-+					      IWL_MVM_DQA_MIN_DATA_QUEUE,
-+					      IWL_MVM_DQA_MAX_DATA_QUEUE);
-+		if (ret < 0) {
- 			IWL_ERR(mvm, "Failed to allocate agg queue\n");
- 			goto release_locks;
+ 		rx_status->flag |= RX_FLAG_AMPDU_DETAILS;
+-		rx_status->ampdu_reference = mvm->ampdu_ref;
+ 		/* toggle is switched whenever new aggregation starts */
+ 		if (toggle_bit != mvm->ampdu_toggle) {
+ 			mvm->ampdu_ref++;
+ 			mvm->ampdu_toggle = toggle_bit;
  		}
++		rx_status->ampdu_reference = mvm->ampdu_ref;
+ 	}
  
-+		txq_id = ret;
-+
- 		/* TXQ hasn't yet been enabled, so mark it only as reserved */
- 		mvm->queue_info[txq_id].status = IWL_MVM_QUEUE_RESERVED;
-+	} else if (WARN_ON(txq_id >= IWL_MAX_HW_QUEUES)) {
-+		ret = -ENXIO;
-+		IWL_ERR(mvm, "tid_id %d out of range (0, %d)!\n",
-+			tid, IWL_MAX_HW_QUEUES - 1);
-+		goto out;
-+
- 	} else if (unlikely(mvm->queue_info[txq_id].status ==
- 			    IWL_MVM_QUEUE_SHARED)) {
- 		ret = -ENXIO;
+ 	rcu_read_lock();
 -- 
 2.20.1
 
