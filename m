@@ -2,38 +2,39 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id CCB2013EF5C
-	for <lists+netdev@lfdr.de>; Thu, 16 Jan 2020 19:15:00 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A88A313EF4E
+	for <lists+netdev@lfdr.de>; Thu, 16 Jan 2020 19:14:54 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2392932AbgAPRaB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 16 Jan 2020 12:30:01 -0500
-Received: from mail.kernel.org ([198.145.29.99]:42122 "EHLO mail.kernel.org"
+        id S2395343AbgAPSON (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 16 Jan 2020 13:14:13 -0500
+Received: from mail.kernel.org ([198.145.29.99]:48994 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2392903AbgAPRaB (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 16 Jan 2020 12:30:01 -0500
+        id S2393057AbgAPRe6 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 16 Jan 2020 12:34:58 -0500
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id F1D27246FB;
-        Thu, 16 Jan 2020 17:29:58 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 89C83246A9;
+        Thu, 16 Jan 2020 17:34:56 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1579195800;
-        bh=xZ5RhA1HhqXuwpTnact15uPNMrHUpyZVOTfPrcrCdRs=;
+        s=default; t=1579196097;
+        bh=p2vl7Mx/wmMj0nieC4rH/c5NL1D20ti+nnLoi7u/yHQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=WjbyOZoVjOGle4KFWeRb99xZC88IhQ/krS7DHHTdCAvgOqQYA6MBWIpwkVH97qMAb
-         VmqRKL0S5VqA27IAOzEXyAqHSHNlyVZUU/vxTfzRrOJ8RkNuwX8kgL9l+7lxv6awOP
-         NWVY1OpfqwZe2fGAEueC0IoIhjFzd0ArcXnXllko=
+        b=O4MHospsljrHB6mDidwfuT3TLliebgnrSIm2pXdwNRLK4nxkVO3bi1rGfeHgFUWDR
+         likxh3nn/h9PLsr9e6mPBC0CPdl0d7ZRqh1x1eg3InUCrc8vxl2NKfZh/RV4Puk9nU
+         syUVJguG0X+uJCZ0UzeW9Xn36mHPMuikx15CQins=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Eric Biggers <ebiggers@google.com>,
-        Jakub Kicinski <jakub.kicinski@netronome.com>,
+Cc:     Petr Machata <petrm@mellanox.com>,
+        Ido Schimmel <idosch@mellanox.com>,
+        "David S . Miller" <davem@davemloft.net>,
         Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.14 315/371] llc: fix sk_buff refcounting in llc_conn_state_process()
-Date:   Thu, 16 Jan 2020 12:23:07 -0500
-Message-Id: <20200116172403.18149-258-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 4.9 009/251] mlxsw: reg: QEEC: Add minimum shaper fields
+Date:   Thu, 16 Jan 2020 12:30:43 -0500
+Message-Id: <20200116173445.21385-9-sashal@kernel.org>
 X-Mailer: git-send-email 2.20.1
-In-Reply-To: <20200116172403.18149-1-sashal@kernel.org>
-References: <20200116172403.18149-1-sashal@kernel.org>
+In-Reply-To: <20200116173445.21385-1-sashal@kernel.org>
+References: <20200116173445.21385-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
@@ -43,123 +44,75 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Eric Biggers <ebiggers@google.com>
+From: Petr Machata <petrm@mellanox.com>
 
-[ Upstream commit 36453c852816f19947ca482a595dffdd2efa4965 ]
+[ Upstream commit 8b931821aa04823e2e5df0ae93937baabbd23286 ]
 
-If llc_conn_state_process() sees that llc_conn_service() put the skb on
-a list, it will drop one fewer references to it.  This is wrong because
-the current behavior is that llc_conn_service() never consumes a
-reference to the skb.
+Add QEEC.mise (minimum shaper enable) and QEEC.min_shaper_rate to enable
+configuration of minimum shaper.
 
-The code also makes the number of skb references being dropped
-conditional on which of ind_prim and cfm_prim are nonzero, yet neither
-of these affects how many references are *acquired*.  So there is extra
-code that tries to fix this up by sometimes taking another reference.
+Increase the QEEC length to 0x20 as well: that's the length that the
+register has had for a long time now, but with the configurations that
+mlxsw typically exercises, the firmware tolerated 0x1C-sized packets.
+With mise=true however, FW rejects packets unless they have the full
+required length.
 
-Remove the unnecessary/broken refcounting logic and instead just add an
-skb_get() before the only two places where an extra reference is
-actually consumed.
-
-Fixes: 1da177e4c3f4 ("Linux-2.6.12-rc2")
-Signed-off-by: Eric Biggers <ebiggers@google.com>
-Signed-off-by: Jakub Kicinski <jakub.kicinski@netronome.com>
+Fixes: b9b7cee40579 ("mlxsw: reg: Add QoS ETS Element Configuration register")
+Signed-off-by: Petr Machata <petrm@mellanox.com>
+Signed-off-by: Ido Schimmel <idosch@mellanox.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/llc/llc_conn.c | 33 ++++++---------------------------
- 1 file changed, 6 insertions(+), 27 deletions(-)
+ drivers/net/ethernet/mellanox/mlxsw/reg.h | 22 +++++++++++++++++++++-
+ 1 file changed, 21 insertions(+), 1 deletion(-)
 
-diff --git a/net/llc/llc_conn.c b/net/llc/llc_conn.c
-index 7340f23e16de..7fbc682aff04 100644
---- a/net/llc/llc_conn.c
-+++ b/net/llc/llc_conn.c
-@@ -64,12 +64,6 @@ int llc_conn_state_process(struct sock *sk, struct sk_buff *skb)
- 	struct llc_sock *llc = llc_sk(skb->sk);
- 	struct llc_conn_state_ev *ev = llc_conn_ev(skb);
+diff --git a/drivers/net/ethernet/mellanox/mlxsw/reg.h b/drivers/net/ethernet/mellanox/mlxsw/reg.h
+index b2a745b579fd..fdc69218c8ca 100644
+--- a/drivers/net/ethernet/mellanox/mlxsw/reg.h
++++ b/drivers/net/ethernet/mellanox/mlxsw/reg.h
+@@ -1873,7 +1873,7 @@ static inline void mlxsw_reg_qtct_pack(char *payload, u8 local_port,
+  * Configures the ETS elements.
+  */
+ #define MLXSW_REG_QEEC_ID 0x400D
+-#define MLXSW_REG_QEEC_LEN 0x1C
++#define MLXSW_REG_QEEC_LEN 0x20
  
--	/*
--	 * We have to hold the skb, because llc_conn_service will kfree it in
--	 * the sending path and we need to look at the skb->cb, where we encode
--	 * llc_conn_state_ev.
--	 */
--	skb_get(skb);
- 	ev->ind_prim = ev->cfm_prim = 0;
- 	/*
- 	 * Send event to state machine
-@@ -77,21 +71,12 @@ int llc_conn_state_process(struct sock *sk, struct sk_buff *skb)
- 	rc = llc_conn_service(skb->sk, skb);
- 	if (unlikely(rc != 0)) {
- 		printk(KERN_ERR "%s: llc_conn_service failed\n", __func__);
--		goto out_kfree_skb;
--	}
--
--	if (unlikely(!ev->ind_prim && !ev->cfm_prim)) {
--		/* indicate or confirm not required */
--		if (!skb->next)
--			goto out_kfree_skb;
- 		goto out_skb_put;
- 	}
+ static const struct mlxsw_reg_info mlxsw_reg_qeec = {
+ 	.id = MLXSW_REG_QEEC_ID,
+@@ -1918,6 +1918,15 @@ MLXSW_ITEM32(reg, qeec, element_index, 0x04, 0, 8);
+  */
+ MLXSW_ITEM32(reg, qeec, next_element_index, 0x08, 0, 8);
  
--	if (unlikely(ev->ind_prim && ev->cfm_prim)) /* Paranoia */
--		skb_get(skb);
--
- 	switch (ev->ind_prim) {
- 	case LLC_DATA_PRIM:
-+		skb_get(skb);
- 		llc_save_primitive(sk, skb, LLC_DATA_PRIM);
- 		if (unlikely(sock_queue_rcv_skb(sk, skb))) {
- 			/*
-@@ -108,6 +93,7 @@ int llc_conn_state_process(struct sock *sk, struct sk_buff *skb)
- 		 * skb->sk pointing to the newly created struct sock in
- 		 * llc_conn_handler. -acme
- 		 */
-+		skb_get(skb);
- 		skb_queue_tail(&sk->sk_receive_queue, skb);
- 		sk->sk_state_change(sk);
- 		break;
-@@ -123,7 +109,6 @@ int llc_conn_state_process(struct sock *sk, struct sk_buff *skb)
- 				sk->sk_state_change(sk);
- 			}
- 		}
--		kfree_skb(skb);
- 		sock_put(sk);
- 		break;
- 	case LLC_RESET_PRIM:
-@@ -132,14 +117,11 @@ int llc_conn_state_process(struct sock *sk, struct sk_buff *skb)
- 		 * RESET is not being notified to upper layers for now
- 		 */
- 		printk(KERN_INFO "%s: received a reset ind!\n", __func__);
--		kfree_skb(skb);
- 		break;
- 	default:
--		if (ev->ind_prim) {
-+		if (ev->ind_prim)
- 			printk(KERN_INFO "%s: received unknown %d prim!\n",
- 				__func__, ev->ind_prim);
--			kfree_skb(skb);
--		}
- 		/* No indication */
- 		break;
- 	}
-@@ -181,15 +163,12 @@ int llc_conn_state_process(struct sock *sk, struct sk_buff *skb)
- 		printk(KERN_INFO "%s: received a reset conf!\n", __func__);
- 		break;
- 	default:
--		if (ev->cfm_prim) {
-+		if (ev->cfm_prim)
- 			printk(KERN_INFO "%s: received unknown %d prim!\n",
- 					__func__, ev->cfm_prim);
--			break;
--		}
--		goto out_skb_put; /* No confirmation */
-+		/* No confirmation */
-+		break;
- 	}
--out_kfree_skb:
--	kfree_skb(skb);
- out_skb_put:
- 	kfree_skb(skb);
- 	return rc;
++/* reg_qeec_mise
++ * Min shaper configuration enable. Enables configuration of the min
++ * shaper on this ETS element
++ * 0 - Disable
++ * 1 - Enable
++ * Access: RW
++ */
++MLXSW_ITEM32(reg, qeec, mise, 0x0C, 31, 1);
++
+ enum {
+ 	MLXSW_REG_QEEC_BYTES_MODE,
+ 	MLXSW_REG_QEEC_PACKETS_MODE,
+@@ -1934,6 +1943,17 @@ enum {
+  */
+ MLXSW_ITEM32(reg, qeec, pb, 0x0C, 28, 1);
+ 
++/* The smallest permitted min shaper rate. */
++#define MLXSW_REG_QEEC_MIS_MIN	200000		/* Kbps */
++
++/* reg_qeec_min_shaper_rate
++ * Min shaper information rate.
++ * For CPU port, can only be configured for port hierarchy.
++ * When in bytes mode, value is specified in units of 1000bps.
++ * Access: RW
++ */
++MLXSW_ITEM32(reg, qeec, min_shaper_rate, 0x0C, 0, 28);
++
+ /* reg_qeec_mase
+  * Max shaper configuration enable. Enables configuration of the max
+  * shaper on this ETS element.
 -- 
 2.20.1
 
