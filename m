@@ -2,35 +2,36 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id B0B3713E336
-	for <lists+netdev@lfdr.de>; Thu, 16 Jan 2020 18:00:50 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 598AD13E345
+	for <lists+netdev@lfdr.de>; Thu, 16 Jan 2020 18:01:21 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1733142AbgAPRAr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 16 Jan 2020 12:00:47 -0500
-Received: from mail.kernel.org ([198.145.29.99]:50752 "EHLO mail.kernel.org"
+        id S2387974AbgAPRBA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 16 Jan 2020 12:01:00 -0500
+Received: from mail.kernel.org ([198.145.29.99]:51372 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2387850AbgAPRAo (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 16 Jan 2020 12:00:44 -0500
+        id S2387958AbgAPRA5 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 16 Jan 2020 12:00:57 -0500
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 616A22468D;
-        Thu, 16 Jan 2020 17:00:43 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 5E70920728;
+        Thu, 16 Jan 2020 17:00:56 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1579194044;
-        bh=ITu0OrjqUNi+vDw5iSbQfx+KL7W0/cTHMQM8sZPugLg=;
+        s=default; t=1579194057;
+        bh=Iflmr5KTa4EvWPiyz6L70H0YAyIa2ki7BOgBX+CEbos=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=j3ERuU/AvwZiVopxI/+woGTTsOnl6GXPnCqBlZvZztCLw/Ashy4+Lx34TtXL8NqGj
-         xpqzbvqNXKhhp5aFo+BKB1I1C3+ydMcfBzn6NR6KsIw9EnYNgGvB1irodehTjCI+zX
-         xpy1qZykNqRGhH2yxFQzfY/iSaTFem3v0MXPYUhs=
+        b=1iwxcEN0DCerfTSZ/qxUnYf+cW6kYUjbK+YxpYfC7vN7Rs125cphge3N61Oef4+2N
+         p59XqMAt9Aiho9X3aj4+r2u59e+nXfjM5+hYfadG3SWGJF9xQgUgDWS2W97YBPK5Y/
+         GEysbfl9WXL9kfdlYZfXX6jREvNvrM7kneo+pXgM=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Moritz Fischer <mdf@kernel.org>, Andrew Lunn <andrew@lunn.ch>,
-        "David S . Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.19 160/671] net: phy: fixed_phy: Fix fixed_phy not checking GPIO
-Date:   Thu, 16 Jan 2020 11:51:09 -0500
-Message-Id: <20200116165940.10720-43-sashal@kernel.org>
+Cc:     Magnus Karlsson <magnus.karlsson@intel.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org,
+        bpf@vger.kernel.org
+Subject: [PATCH AUTOSEL 4.19 170/671] xsk: add missing smp_rmb() in xsk_mmap
+Date:   Thu, 16 Jan 2020 11:51:19 -0500
+Message-Id: <20200116165940.10720-53-sashal@kernel.org>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20200116165940.10720-1-sashal@kernel.org>
 References: <20200116165940.10720-1-sashal@kernel.org>
@@ -43,44 +44,50 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Moritz Fischer <mdf@kernel.org>
+From: Magnus Karlsson <magnus.karlsson@intel.com>
 
-[ Upstream commit 8f289805616e81f7c1690931aa8a586c76f4fa88 ]
+[ Upstream commit e6762c8bcf982821935a2b1cb33cf8335d0eefae ]
 
-Fix fixed_phy not checking GPIO if no link_update callback
-is registered.
+All the setup code in AF_XDP is protected by a mutex with the
+exception of the mmap code that cannot use it. To make sure that a
+process banging on the mmap call at the same time as another process
+is setting up the socket, smp_wmb() calls were added in the umem
+registration code and the queue creation code, so that the published
+structures that xsk_mmap needs would be consistent. However, the
+corresponding smp_rmb() calls were not added to the xsk_mmap
+code. This patch adds these calls.
 
-In the original version all users registered a link_update
-callback so the issue was masked.
-
-Fixes: a5597008dbc2 ("phy: fixed_phy: Add gpio to determine link up/down.")
-Reviewed-by: Andrew Lunn <andrew@lunn.ch>
-Signed-off-by: Moritz Fischer <mdf@kernel.org>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+Fixes: 37b076933a8e3 ("xsk: add missing write- and data-dependency barrier")
+Fixes: c0c77d8fb787c ("xsk: add user memory registration support sockopt")
+Signed-off-by: Magnus Karlsson <magnus.karlsson@intel.com>
+Signed-off-by: Alexei Starovoitov <ast@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/phy/fixed_phy.c | 6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
+ net/xdp/xsk.c | 4 ++++
+ 1 file changed, 4 insertions(+)
 
-diff --git a/drivers/net/phy/fixed_phy.c b/drivers/net/phy/fixed_phy.c
-index 67b260877f30..59820164502e 100644
---- a/drivers/net/phy/fixed_phy.c
-+++ b/drivers/net/phy/fixed_phy.c
-@@ -67,11 +67,11 @@ static int fixed_mdio_read(struct mii_bus *bus, int phy_addr, int reg_num)
- 			do {
- 				s = read_seqcount_begin(&fp->seqcount);
- 				/* Issue callback if user registered it. */
--				if (fp->link_update) {
-+				if (fp->link_update)
- 					fp->link_update(fp->phydev->attached_dev,
- 							&fp->status);
--					fixed_phy_update(fp);
--				}
-+				/* Check the GPIO for change in status */
-+				fixed_phy_update(fp);
- 				state = fp->status;
- 			} while (read_seqcount_retry(&fp->seqcount, s));
+diff --git a/net/xdp/xsk.c b/net/xdp/xsk.c
+index ff15207036dc..547fc4554b22 100644
+--- a/net/xdp/xsk.c
++++ b/net/xdp/xsk.c
+@@ -661,6 +661,8 @@ static int xsk_mmap(struct file *file, struct socket *sock,
+ 		if (!umem)
+ 			return -EINVAL;
  
++		/* Matches the smp_wmb() in XDP_UMEM_REG */
++		smp_rmb();
+ 		if (offset == XDP_UMEM_PGOFF_FILL_RING)
+ 			q = READ_ONCE(umem->fq);
+ 		else if (offset == XDP_UMEM_PGOFF_COMPLETION_RING)
+@@ -670,6 +672,8 @@ static int xsk_mmap(struct file *file, struct socket *sock,
+ 	if (!q)
+ 		return -EINVAL;
+ 
++	/* Matches the smp_wmb() in xsk_init_queue */
++	smp_rmb();
+ 	qpg = virt_to_head_page(q->ring);
+ 	if (size > (PAGE_SIZE << compound_order(qpg)))
+ 		return -EINVAL;
 -- 
 2.20.1
 
