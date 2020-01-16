@@ -2,132 +2,129 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 9359C13FBB4
-	for <lists+netdev@lfdr.de>; Thu, 16 Jan 2020 22:51:05 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A7CE013FBC5
+	for <lists+netdev@lfdr.de>; Thu, 16 Jan 2020 22:56:28 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731292AbgAPVvB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 16 Jan 2020 16:51:01 -0500
-Received: from gate2.alliedtelesis.co.nz ([202.36.163.20]:55466 "EHLO
-        gate2.alliedtelesis.co.nz" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729878AbgAPVvA (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 16 Jan 2020 16:51:00 -0500
-Received: from mmarshal3.atlnz.lc (mmarshal3.atlnz.lc [10.32.18.43])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (Client did not present a certificate)
-        by gate2.alliedtelesis.co.nz (Postfix) with ESMTPS id B2B29891A9;
-        Fri, 17 Jan 2020 10:50:55 +1300 (NZDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=alliedtelesis.co.nz;
-        s=mail181024; t=1579211455;
-        bh=nx2SaXORqBh5ieTLt4UGgCaqK0gxn5wHdqBIqJIbqXY=;
-        h=Date:From:To:cc:Subject:In-Reply-To:References;
-        b=1vATGGmrxk9LMx8caWPsw+OFtmdoBwN0C3CAoeCGZaWcEx0p8Q50cm/VLvxbHzqm4
-         cmXRtayFrumVeNwfAgKgEDVPyEV5AO7jjibr5u7oTK6ZTPEbsJ5BEd7hJdet74g3EY
-         peZxLTEbzD/DJ3hWF7nX/VwpuY9039ne9wLwRCaGXlRHETaKbpU3SKGTzs8dfcA3rJ
-         KrtTOOz07YFAo6KDZ4UwDX4ciDxvK0K9hzpaVI9F0T1V/sM47anI17jK+VyjF2SAay
-         F8luKwiknarhhPHTSd6cc9zw9xSkTuVFcRIwW57GnLu+bk8Z6WOZQLNolwb5Z7w6Hj
-         pt5oeasqTtCPw==
-Received: from smtp (Not Verified[10.32.16.33]) by mmarshal3.atlnz.lc with Trustwave SEG (v7,5,8,10121)
-        id <B5e20dabf0000>; Fri, 17 Jan 2020 10:50:55 +1300
-Received: from ridgek-dl.ws.atlnz.lc (ridgek-dl.ws.atlnz.lc [10.33.22.15])
-        by smtp (Postfix) with ESMTP id 5A25313EEFE;
-        Fri, 17 Jan 2020 10:50:55 +1300 (NZDT)
-Received: by ridgek-dl.ws.atlnz.lc (Postfix, from userid 1637)
-        id 98A031405FD; Fri, 17 Jan 2020 10:50:55 +1300 (NZDT)
-Received: from localhost (localhost [127.0.0.1])
-        by ridgek-dl.ws.atlnz.lc (Postfix) with ESMTP id 957B71405F0;
-        Fri, 17 Jan 2020 10:50:55 +1300 (NZDT)
-Date:   Fri, 17 Jan 2020 10:50:55 +1300 (NZDT)
-From:   Ridge Kennedy <ridgek@alliedtelesis.co.nz>
-X-X-Sender: ridgek@ridgek-dl.ws.atlnz.lc
-To:     Tom Parkin <tparkin@katalix.com>
-cc:     Guillaume Nault <gnault@redhat.com>, netdev@vger.kernel.org
-Subject: Re: [PATCH net] l2tp: Allow duplicate session creation with UDP
-In-Reply-To: <20200116212332.GD4028@jackdaw>
-Message-ID: <alpine.DEB.2.21.2001171027090.9038@ridgek-dl.ws.atlnz.lc>
-References: <20200115223446.7420-1-ridge.kennedy@alliedtelesis.co.nz> <20200116123854.GA23974@linux.home> <20200116131223.GB4028@jackdaw> <20200116190556.GA25654@linux.home> <20200116212332.GD4028@jackdaw>
-User-Agent: Alpine 2.21 (DEB 202 2017-01-01)
+        id S1733113AbgAPV4Q (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 16 Jan 2020 16:56:16 -0500
+Received: from mail-qv1-f65.google.com ([209.85.219.65]:46697 "EHLO
+        mail-qv1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729153AbgAPV4P (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 16 Jan 2020 16:56:15 -0500
+Received: by mail-qv1-f65.google.com with SMTP id u1so9818497qvk.13;
+        Thu, 16 Jan 2020 13:56:14 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=uYKEJj/GMP8sSDQFNnAjGhqY9XFCpZEuY6M+a4dSQeU=;
+        b=cJQqdoXQ0CnuvxdB8UKCrMhFl3pfRQmYy0E92RMM7YS3wWK2bpd1cVGG91pnVQXD6D
+         rVVDFwxqb0Bjzruz80mumk7k7PS+s0ClROc1+BN8zTeA5pWi+P+IHdOmLprmEwX7yJAW
+         dqMeWRZ5J5c98Fg6EpqQuCllyNOrZ5bJmWsj6a/IVjGkaQUl14Fe1YIqJ2owcDK2AAo+
+         NAb8l0yhDKmxNbogqSxC9iGP0ExKSRkgv8RGfpbY7V7AEJxEAE0FYhRZbS8mKBW4ZrgV
+         /mKkM8/aWPkiRjp0tHyin5jY8DtO2rosRPOk82GMb/F70zFzicESv+/TzeAw6SkbPDEA
+         y/pg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=uYKEJj/GMP8sSDQFNnAjGhqY9XFCpZEuY6M+a4dSQeU=;
+        b=rY0zitNH7C93O9XTk5wzjKhEB1/Jr+Ft0ZBUENM2v1zMpZI5odnlWlfwsJT4taGwI2
+         XRBfyudTOcovcMbRDAKMIdAn8Lp6Ve4FgJBMxZPeFrzHPVh+KvvmU3O4AGQkvPEx886t
+         uEryrjIVphyzReiP9hA0gUtVXbcc4PFI9EaGssa/wR35G1CdFhN6bKnOMsriaJYFwSIG
+         i1gR9TkxtfAh0Oe3SYusdSPMvzOdLYsD1rd91UmjC/PCF/vwTD4r1DF0ZLKymuY6rKGu
+         vofBtwQta0/amI2+tE6gqgwnMZtcFNtDm8gOe3WJSR1TzbxEZxAechSl5pzz04h152Sd
+         +kHg==
+X-Gm-Message-State: APjAAAWmyajr2ynBx4VB9Q00D7bDNMjIvIrUDfjrdyrG4QpE660+5qjx
+        Pl/JhXENcq8Zwm41inL3uwjZqwytqJs4gc9p5fY=
+X-Google-Smtp-Source: APXvYqwlOZAAm2G/5rmcVaC/i2nVwG0ZnEs5LNd+BqKVMpk8A+zSDsOF78JgY+/NQIXhKjtj4+TM9cz9V/EWM8Z9T/4=
+X-Received: by 2002:ad4:54d3:: with SMTP id j19mr4651801qvx.247.1579211774124;
+ Thu, 16 Jan 2020 13:56:14 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII; format=flowed
-x-atlnz-ls: pat
+References: <157918093154.1357254.7616059374996162336.stgit@toke.dk> <157918093613.1357254.10230277763921623892.stgit@toke.dk>
+In-Reply-To: <157918093613.1357254.10230277763921623892.stgit@toke.dk>
+From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Date:   Thu, 16 Jan 2020 13:56:03 -0800
+Message-ID: <CAEf4BzbJZ7JUyr8p3YKX-Rrth_B7OMbih50xxyt_YNBd--107w@mail.gmail.com>
+Subject: Re: [PATCH bpf-next v3 04/11] tools/runqslower: Use consistent
+ include paths for libbpf
+To:     =?UTF-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <toke@redhat.com>
+Cc:     Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        Andrii Nakryiko <andriin@fb.com>,
+        Doug Ledford <dledford@redhat.com>,
+        Jason Gunthorpe <jgg@ziepe.ca>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Jesper Dangaard Brouer <brouer@redhat.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Ingo Molnar <mingo@redhat.com>,
+        Arnaldo Carvalho de Melo <acme@kernel.org>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
+        Jiri Olsa <jolsa@redhat.com>,
+        Namhyung Kim <namhyung@kernel.org>,
+        Shuah Khan <shuah@kernel.org>,
+        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        open list <linux-kernel@vger.kernel.org>,
+        linux-rdma@vger.kernel.org,
+        "open list:KERNEL SELFTEST FRAMEWORK" 
+        <linux-kselftest@vger.kernel.org>,
+        clang-built-linux@googlegroups.com
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Thu, Jan 16, 2020 at 5:23 AM Toke H=C3=B8iland-J=C3=B8rgensen <toke@redh=
+at.com> wrote:
+>
+> From: Toke H=C3=B8iland-J=C3=B8rgensen <toke@redhat.com>
+>
+> Fix the runqslower tool to include libbpf header files with the bpf/
+> prefix, to be consistent with external users of the library. Also ensure
+> that all includes of exported libbpf header files (those that are exporte=
+d
+> on 'make install' of the library) use bracketed includes instead of quote=
+d.
+>
+> To not break the build, keep the old include path until everything has be=
+en
+> changed to the new one; a subsequent patch will remove that.
+>
+> Fixes: 6910d7d3867a ("selftests/bpf: Ensure bpf_helper_defs.h are taken f=
+rom selftests dir")
+> Signed-off-by: Toke H=C3=B8iland-J=C3=B8rgensen <toke@redhat.com>
+> ---
+>  tools/bpf/runqslower/Makefile         |    5 +++--
+>  tools/bpf/runqslower/runqslower.bpf.c |    2 +-
+>  tools/bpf/runqslower/runqslower.c     |    4 ++--
+>  3 files changed, 6 insertions(+), 5 deletions(-)
+>
+> diff --git a/tools/bpf/runqslower/Makefile b/tools/bpf/runqslower/Makefil=
+e
+> index 89fb7cd30f1a..c0512b830805 100644
+> --- a/tools/bpf/runqslower/Makefile
+> +++ b/tools/bpf/runqslower/Makefile
+> @@ -5,6 +5,7 @@ LLC :=3D llc
+>  LLVM_STRIP :=3D llvm-strip
+>  DEFAULT_BPFTOOL :=3D $(OUTPUT)/sbin/bpftool
+>  BPFTOOL ?=3D $(DEFAULT_BPFTOOL)
+> +LIBBPF_INCLUDE :=3D -I$(abspath ../../lib) -I$(abspath ../../lib/bpf)
 
+I'd probably put all the -I's into single INCLUDES var and include
+that one instead of mixing -I$(OUTPUT) and $(LIBBPF_INCLUDE), but this
+works too.
 
-On Thu, 16 Jan 2020, Tom Parkin wrote:
+Acked-by: Andrii Nakryiko <andriin@fb.com>
 
-> On  Thu, Jan 16, 2020 at 20:05:56 +0100, Guillaume Nault wrote:
->> On Thu, Jan 16, 2020 at 01:12:24PM +0000, Tom Parkin wrote:
->>> I agree with you about the possibility for cross-talk, and I would
->>> welcome l2tp_ip/ip6 doing more validation.  But I don't think we should
->>> ditch the global list.
->>>
->>> As per the RFC, for L2TPv3 the session ID should be a unique
->>> identifier for the LCCE.  So it's reasonable that the kernel should
->>> enforce that when registering sessions.
->>>
->> I had never thought that the session ID could have global significance
->> in L2TPv3, but maybe that's because my experience is mostly about
->> L2TPv2. I haven't read RFC 3931 in detail, but I can't see how
->> restricting the scope of sessions to their parent tunnel would conflict
->> with the RFC.
->
-> Sorry Guillaume, I responded to your other mail without reading this
-> one.
->
-> I gave more detail in my other response: it boils down to how RFC 3931
-> changes the use of IDs in the L2TP header.  Data packets for IP or UDP
-> only contain the 32-bit session ID, and hence this must be unique to
-> the LCCE to allow the destination session to be successfully
-> identified.
->
->>> When you're referring to cross-talk, I wonder whether you have in mind
->>> normal operation or malicious intent?  I suppose it would be possible
->>> for someone to craft session data packets in order to disrupt a
->>> session.
->>>
->> What makes me uneasy is that, as soon as the l2tp_ip or l2tp_ip6 module
->> is loaded, a peer can reach whatever L2TPv3 session exists on the host
->> just by sending an L2TP_IP packet to it.
->> I don't know how practical it is to exploit this fact, but it looks
->> like it's asking for trouble.
->
-> Yes, I agree, although practically it's only a slightly easier
-> "exploit" than L2TP/UDP offers.
->
-> The UDP case requires a rogue packet to be delivered to the correct
-> socket AND have a session ID matching that of one in the associated
-> tunnel.
->
-> It's a slightly more arduous scenario to engineer than the existing
-> L2TPv3/IP case, but only a little.
->
-> I also don't know how practical this would be to leverage to cause
-> problems.
->
->>> For normal operation, you just need to get the wrong packet on the
->>> wrong socket to run into trouble of course.  In such a situation
->>> having a unique session ID for v3 helps you to determine that
->>> something has gone wrong, which is what the UDP encap recv path does
->>> if the session data packet's session ID isn't found in the context of
->>> the socket that receives it.
->> Unique global session IDs might help troubleshooting, but they also
->> break some use cases, as reported by Ridge. At some point, we'll have
->> to make a choice, or even add a knob if necessary.
->
-> I suspect we need to reach agreement on what RFC 3931 implies before
-> making headway on what the kernel should ideally do.
->
-> There is perhaps room for pragmatism given that the kernel
-> used to be more permissive prior to dbdbc73b4478, and we weren't
-> inundated with reports of session ID clashes.
+>  LIBBPF_SRC :=3D $(abspath ../../lib/bpf)
+>  CFLAGS :=3D -g -Wall
 >
 
-A knob (module_param?) to enable the permissive behaviour would certainly
-work for me.
-
-
-
-
+[...]
