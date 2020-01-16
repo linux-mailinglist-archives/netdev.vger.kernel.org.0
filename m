@@ -2,113 +2,101 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 3358713F97D
-	for <lists+netdev@lfdr.de>; Thu, 16 Jan 2020 20:28:47 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3EDE013F99A
+	for <lists+netdev@lfdr.de>; Thu, 16 Jan 2020 20:34:35 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729547AbgAPT2j (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 16 Jan 2020 14:28:39 -0500
-Received: from us-smtp-1.mimecast.com ([205.139.110.61]:40080 "EHLO
-        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1729044AbgAPT2j (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 16 Jan 2020 14:28:39 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1579202918;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=G3MBraSZuHNQVH/nVENUhEPzBqwHjRc6fETDQjXVNy0=;
-        b=NoirPH0gEiYj2jbYTZt5UHTwfik46MEDJs8eHPETH2XtcGqak2mltYJr9f+3rhHTcTeUA6
-        j5PQIFRNjOEVlM/wfusjlLM67Xrn6glmkW+dTI36f6Ew90mj8I214+rgQqdd54peimTxYB
-        Llt5nEPT0Hk6F7bv6VGD7rMCgjzk4mQ=
-Received: from mail-wr1-f71.google.com (mail-wr1-f71.google.com
- [209.85.221.71]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-430-Qf_KvArKNTmVYRGW9RBVew-1; Thu, 16 Jan 2020 14:28:31 -0500
-X-MC-Unique: Qf_KvArKNTmVYRGW9RBVew-1
-Received: by mail-wr1-f71.google.com with SMTP id f15so9692443wrr.2
-        for <netdev@vger.kernel.org>; Thu, 16 Jan 2020 11:28:31 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=G3MBraSZuHNQVH/nVENUhEPzBqwHjRc6fETDQjXVNy0=;
-        b=LuUPisy/Ola5Pj0aLYxztfvr4+/nGgSpWjvYHXziTyGEFma6X6UkDFOwSsZgAkEKfh
-         17PyyTS5SnDcGj8UiQVWvEdWFeIO3XoAMyZ9r8lVdwo8uaeTU/sQFXVgtuTgx8bGAwki
-         oVOg0P0Ma1IOmi+4KtC8E443KpDJYEbdVzT6fdwmMZtLP6aQdqTFLJ9UHp7w8VsptK4c
-         mRV25t12+bhl/A7mCQ1hDBheM4j58CdnMrU3xs5nHV/9KFHBN8xaq+mOBjxMtXa3VvP4
-         l2T7mG5dcbSwBpJwY2A0ZZ2k/ALOFb/layGJBVG8u3gvOKEisnKWkqoj3BdBiFiBrg3t
-         7log==
-X-Gm-Message-State: APjAAAW/OMjOdiihFSdgzmG+f7josS3qtD2Oz4/puCihGgE8vp6PHQHi
-        QUTItX7zipjv3qBrkEDjhcFHpwI4JVUBAqyfl1rvJ1s+GYYUVI9AP02HQLo8Nc+N4b860V789j6
-        1pnv4RzbxgDXdMTIm
-X-Received: by 2002:adf:e6c6:: with SMTP id y6mr4968374wrm.284.1579202910095;
-        Thu, 16 Jan 2020 11:28:30 -0800 (PST)
-X-Google-Smtp-Source: APXvYqzBNvan8X0vIHztsvUw4FY6TIShY2YiTU88xMY8M6dKrMDJFnIJY5MeU6OR9ilEyllxVam03A==
-X-Received: by 2002:adf:e6c6:: with SMTP id y6mr4968350wrm.284.1579202909777;
-        Thu, 16 Jan 2020 11:28:29 -0800 (PST)
-Received: from linux.home (2a01cb058a4e7100d3814d1912515f67.ipv6.abo.wanadoo.fr. [2a01:cb05:8a4e:7100:d381:4d19:1251:5f67])
-        by smtp.gmail.com with ESMTPSA id v14sm30352304wrm.28.2020.01.16.11.28.28
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 16 Jan 2020 11:28:29 -0800 (PST)
-Date:   Thu, 16 Jan 2020 20:28:27 +0100
-From:   Guillaume Nault <gnault@redhat.com>
-To:     Tom Parkin <tparkin@katalix.com>
-Cc:     Ridge Kennedy <ridge.kennedy@alliedtelesis.co.nz>,
-        netdev@vger.kernel.org
-Subject: Re: [PATCH net] l2tp: Allow duplicate session creation with UDP
-Message-ID: <20200116192827.GB25654@linux.home>
-References: <20200115223446.7420-1-ridge.kennedy@alliedtelesis.co.nz>
- <20200116123143.GA4028@jackdaw>
+        id S1730558AbgAPTed (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 16 Jan 2020 14:34:33 -0500
+Received: from aserp2120.oracle.com ([141.146.126.78]:60636 "EHLO
+        aserp2120.oracle.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729044AbgAPTed (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 16 Jan 2020 14:34:33 -0500
+Received: from pps.filterd (aserp2120.oracle.com [127.0.0.1])
+        by aserp2120.oracle.com (8.16.0.27/8.16.0.27) with SMTP id 00GJSBGr087196;
+        Thu, 16 Jan 2020 19:34:22 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=subject : to : cc :
+ references : from : message-id : date : mime-version : in-reply-to :
+ content-type : content-transfer-encoding; s=corp-2019-08-05;
+ bh=zaq5bjuDVHK2Ip36lrM60zZCTffAzRWmgtbay4+XA88=;
+ b=HKRa7mchghmwxpuV+69AGdy4CNUG6bbPJ7Ql3ILDDQwshG/eALUJan7bYeILky4V/hDx
+ TblN1buwNREcgIhCqifpwWoWF9MksdJfgElO5eSkyRif+6ZorpzesBWd5OVjVu6GcMGR
+ /I2ikBtR0rxVOzUFJPGfT0s/k7z5PmZzki6qkb/lb4P1DSG04t8dFzdWM/GqILLz9wRn
+ 7Bjh+79G9mJY1MfYOvg9F/NTwN54uWuJe/2WTVbl41J6OhKAKp2uBpc5RfFSjJbSZ52l
+ CXvN5NzqPM0xu/1NvkNCWiV3LWrW6PnTNDGU3RQj9aE8sL1Uk4hnoQvlRYPMkaYsUiVL LQ== 
+Received: from aserp3020.oracle.com (aserp3020.oracle.com [141.146.126.70])
+        by aserp2120.oracle.com with ESMTP id 2xf73u4jvp-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Thu, 16 Jan 2020 19:34:22 +0000
+Received: from pps.filterd (aserp3020.oracle.com [127.0.0.1])
+        by aserp3020.oracle.com (8.16.0.27/8.16.0.27) with SMTP id 00GJTbHb029781;
+        Thu, 16 Jan 2020 19:34:21 GMT
+Received: from aserv0121.oracle.com (aserv0121.oracle.com [141.146.126.235])
+        by aserp3020.oracle.com with ESMTP id 2xj1ax9f9q-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Thu, 16 Jan 2020 19:34:21 +0000
+Received: from abhmp0001.oracle.com (abhmp0001.oracle.com [141.146.116.7])
+        by aserv0121.oracle.com (8.14.4/8.13.8) with ESMTP id 00GJYKAm017531;
+        Thu, 16 Jan 2020 19:34:20 GMT
+Received: from [10.159.236.118] (/10.159.236.118)
+        by default (Oracle Beehive Gateway v4.0)
+        with ESMTP ; Thu, 16 Jan 2020 11:34:20 -0800
+Subject: Re: [PATCH mlx5-next 00/10] Use ODP MRs for kernel ULPs
+To:     Jason Gunthorpe <jgg@mellanox.com>,
+        Leon Romanovsky <leonro@mellanox.com>
+Cc:     "David S . Miller" <davem@davemloft.net>,
+        Doug Ledford <dledford@redhat.com>,
+        RDMA mailing list <linux-rdma@vger.kernel.org>,
+        Hans Westgaard Ry <hans.westgaard.ry@oracle.com>,
+        Moni Shoua <monis@mellanox.com>,
+        linux-netdev <netdev@vger.kernel.org>
+References: <20200115124340.79108-1-leon@kernel.org>
+ <20200116065926.GD76932@unreal> <20200116135701.GG20978@mellanox.com>
+From:   santosh.shilimkar@oracle.com
+Organization: Oracle Corporation
+Message-ID: <6ef540ae-233f-50cd-d096-3eeae31410cc@oracle.com>
+Date:   Thu, 16 Jan 2020 11:34:18 -0800
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.14; rv:60.0)
+ Gecko/20100101 Thunderbird/60.7.2
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200116123143.GA4028@jackdaw>
+In-Reply-To: <20200116135701.GG20978@mellanox.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9502 signatures=668685
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 suspectscore=0 malwarescore=0
+ phishscore=0 bulkscore=0 spamscore=0 mlxscore=0 mlxlogscore=999
+ adultscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.0.1-1911140001 definitions=main-2001160156
+X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9502 signatures=668685
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 priorityscore=1501 malwarescore=0
+ suspectscore=0 phishscore=0 bulkscore=0 spamscore=0 clxscore=1015
+ lowpriorityscore=0 mlxscore=0 impostorscore=0 mlxlogscore=999 adultscore=0
+ classifier=spam adjust=0 reason=mlx scancount=1 engine=8.0.1-1911140001
+ definitions=main-2001160156
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Jan 16, 2020 at 12:31:43PM +0000, Tom Parkin wrote:
-> On  Thu, Jan 16, 2020 at 11:34:47 +1300, Ridge Kennedy wrote:
-> > In the past it was possible to create multiple L2TPv3 sessions with the
-> > same session id as long as the sessions belonged to different tunnels.
-> > The resulting sessions had issues when used with IP encapsulated tunnels,
-> > but worked fine with UDP encapsulated ones. Some applications began to
-> > rely on this behaviour to avoid having to negotiate unique session ids.
-> > 
-> > Some time ago a change was made to require session ids to be unique across
-> > all tunnels, breaking the applications making use of this "feature".
-> > 
-> > This change relaxes the duplicate session id check to allow duplicates
-> > if both of the colliding sessions belong to UDP encapsulated tunnels.
+On 1/16/20 5:57 AM, Jason Gunthorpe wrote:
+> On Thu, Jan 16, 2020 at 06:59:29AM +0000, Leon Romanovsky wrote:
+>>>   45 files changed, 559 insertions(+), 256 deletions(-)
+>>
+>> Thanks Santosh for your review.
+>>
+>> David,
+>> Is it ok to route those patches through RDMA tree given the fact that
+>> we are touching a lot of files in drivers/infiniband/* ?
+>>
+>> There is no conflict between netdev and RDMA versions of RDS, but to be
+>> on safe side, I'll put all this code to mlx5-next tree.
 > 
-> I appreciate what you're saying with respect to buggy applications,
-> however I think the existing kernel code is consistent with RFC 3931,
-> which makes session IDs unique for a given LCCE.
+> Er, lets not contaminate the mlx5-next with this..
 > 
-> Given how the L2TP data packet headers work for L2TPv3, I'm assuming
-> that sessions in UDP-encapsulated tunnels work even if their session
-> IDs clash because the tunnel sockets are using distinct UDP ports
-> which will effectively separate the data traffic into the "correct"
-> tunnel.  Obviously the same thing doesn't apply for IP-encap.
+> It looks like it applies clean to -rc6 so if it has to be in both
+> trees a clean PR against -rc5/6 is the way to do it.
 > 
-> However, there's nothing to prevent user space from using the same UDP
-> port for multiple tunnels, at which point this relaxation of the RFC
-> rules would break down again.
+> Santos, do you anticipate more RDS patches this cycle?
 > 
-Multiplexing L2TP tunnels on top of non-connected UDP sockets might be
-a nice optimisation for someone using many tunnels (like hundred of
-thouthands), but I'm afraid the rest of the L2TP code is not ready to
-handle such load anyway. And the current implementation only allows
-one tunnel for each UDP socket anyway.
 
-> Since UDP-encap can also be broken in the face of duplicated L2TPv3
-> session IDs, I think its better that the kernel continue to enforce
-> the RFC.
-How is UDP-encap broken with duplicate session IDs (as long as a UDP
-socket can only one have one tunnel associated with it and that no
-duplicate session IDs are allowed inside the same tunnel)?
-
-It all boils down to what's the scope of a session ID. For me it has
-always been the parent tunnel. But if that's in contradiction with
-RFC 3931, I'd be happy to know.
-
+Not for upcoming merge window afaik.
