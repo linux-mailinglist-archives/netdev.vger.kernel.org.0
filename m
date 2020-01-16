@@ -2,149 +2,103 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id D26BF13DDBE
-	for <lists+netdev@lfdr.de>; Thu, 16 Jan 2020 15:44:06 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5193913DDBF
+	for <lists+netdev@lfdr.de>; Thu, 16 Jan 2020 15:44:07 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727023AbgAPOnD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 16 Jan 2020 09:43:03 -0500
-Received: from mail-pl1-f194.google.com ([209.85.214.194]:40605 "EHLO
-        mail-pl1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726084AbgAPOnC (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 16 Jan 2020 09:43:02 -0500
-Received: by mail-pl1-f194.google.com with SMTP id s21so8406885plr.7
-        for <netdev@vger.kernel.org>; Thu, 16 Jan 2020 06:43:02 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=greyhouse-net.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:content-transfer-encoding:in-reply-to;
-        bh=BnkfENlj/NWFL5LsjWpkCCVtvDOh/0c8F8zhP++fGFc=;
-        b=Rh70rYH8N0zyb156RIWtC67c3yDdEuJW8/lre65xCsFGxS7Zy1NdJN7AR/SCw8Chqf
-         7VEbAZAE2wFb6vfypGY7aD4KZwGDQ/Gnqk28NBkkDpU4PQhP/JRKmejjl8xKQ8vgmNjf
-         MwCGQgrkRazu5bjwzGur8gZ5yMVJ0I1w5YMCKJmMYlxb9/zAy/ftsSKNH1xusbHPw7Lf
-         K79hgq2gyad56Q3nLpl1FqT6kLkzKv6Bg+xII/0CkLSwicqDRxYVqxHjbdnHM8I6TsjZ
-         YhRol9gvRtRH7lZigSMJ7+mGLidMMVM8Ow/8xtQSmkqYNJ8fqEMs9WnAG/Kr5cZuziFo
-         g1yg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:content-transfer-encoding
-         :in-reply-to;
-        bh=BnkfENlj/NWFL5LsjWpkCCVtvDOh/0c8F8zhP++fGFc=;
-        b=FBnGanOwBpX31BhzUXxu1wTA2JqT80mZD9luKFWcQWaKMm454ECw+/q0WoN5cQl6rI
-         DSfuJI9+uxw1LzCfOpDDyCFa6V3Iz3r1kaX8SJzr4bNfcZXYIpLTBjNNSmDW8dg2+KWI
-         G0nY6wNR25iGvpKfDjhkpNSemqW2Sf2CxD+/r0GPamDMs2Yf0HFi1v59I6H1/dS7znxZ
-         tNFvbD0amqY5l0OrKBbyOYaOxb4WJ58ULkwF6QAx/2zHdGsuNrFSjOjlwxNnzAtmSAd1
-         jHYiD6PgIT+2DFT7J1GwMJuC4kTj9b3vbeSydqiZv6fGEa+sWeWNBuQRiWB+AxdAmeIV
-         zE4A==
-X-Gm-Message-State: APjAAAUkIZn9Z0UTyH1RoRpUmlwK6CRFQBCYhDabUFg5z5atSNnDO/bJ
-        F55zeODUV2B+G3r3shvuxvDQXw==
-X-Google-Smtp-Source: APXvYqwzaskrQrzAoN2IFl6BioVNDyvnwWocuX1HhidXryeQee6VKGzKjx8Ec4UNbZ30gWDIpPITZA==
-X-Received: by 2002:a17:90b:4398:: with SMTP id in24mr7284448pjb.29.1579185782044;
-        Thu, 16 Jan 2020 06:43:02 -0800 (PST)
-Received: from C02YVCJELVCG ([192.19.231.250])
-        by smtp.gmail.com with ESMTPSA id r14sm25222748pfh.10.2020.01.16.06.42.58
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 16 Jan 2020 06:43:00 -0800 (PST)
-Date:   Thu, 16 Jan 2020 09:42:56 -0500
-From:   Andy Gospodarek <andy@greyhouse.net>
-To:     Jiri Pirko <jiri@resnulli.us>, Maor Gottlieb <maorg@mellanox.com>
-Cc:     Maor Gottlieb <maorg@mellanox.com>,
-        "j.vosburgh@gmail.com" <j.vosburgh@gmail.com>,
-        "vfalico@gmail.com" <vfalico@gmail.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        Saeed Mahameed <saeedm@mellanox.com>,
-        Jason Gunthorpe <jgg@mellanox.com>,
-        Leon Romanovsky <leonro@mellanox.com>,
-        Jiri Pirko <jiri@mellanox.com>,
-        Alex Rosenbaum <alexr@mellanox.com>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        Mark Zhang <markz@mellanox.com>,
-        Parav Pandit <parav@mellanox.com>
-Subject: Re: Expose bond_xmit_hash function
-Message-ID: <20200116144256.GA87583@C02YVCJELVCG>
-References: <03a6dcfc-f3c7-925d-8ed8-3c42777fd03c@mellanox.com>
- <20200115094513.GS2131@nanopsycho>
- <80ad03a2-9926-bf75-d79c-be554c4afaaf@mellanox.com>
- <20200115141535.GT2131@nanopsycho>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
+        id S1726897AbgAPOnf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 16 Jan 2020 09:43:35 -0500
+Received: from mail-eopbgr30121.outbound.protection.outlook.com ([40.107.3.121]:58887
+        "EHLO EUR03-AM5-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1726189AbgAPOne (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 16 Jan 2020 09:43:34 -0500
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=XN5U31trqD/vVP5uxQN/VC416QBtnd9PYw9DjfePTq9WRZbCGJA5G/hXhxGQa4cDujTJkP0ghrQqY14Ndr1iYiv/LdpwKVYidxVDbTrhr2sJR/7eeUTiGgGa5HPOf6QxXWFc5VhQGT/q5O0aubyYx2XEzYz/K+ups0Y0dURsRnfuo7cwWUdDp5Ty1/bjffMNp+9bZmCLC+S4U5oHSoS9RzsB4ol6P4yUIxQcxQCHzV2+sj7aRGjLi1HIr/3DLNpjgmzNhRYB48ZPvq2zpEi1EIQKIpQMxJsPh1L8onI7A4UfggdXA1wj6DXJoD0atrQ6d+mxg4NIVfzgtjdAPFxy8g==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=PSa6nWHGcmv3nzh0xLY41y3CKfM/dExFyQdTJh0iPhE=;
+ b=BIAqxerADgPWJ+Kfd9M9/rPZ1/S3mUAkYhhPAz8HkQD+Q6RQ+LJBZuSTS8qDCqDV3xdPews+tJnZx1OzF9Qx8qgTmQJHFUtKegC1m5jsgSv1wDLWGf0ZpzmfA5Ax5f/CyDfD2FfJiK6WauDhlEc6AyW4pIwG73LiG/97xU9ON3j+k2BdjNs967AJDJj464NBfL/vifnaXYkHVDhHy9RoK7C8/qflG3dLhzLgYchTF6VtKFSg8RZKYVDblFeGic3z0a+8SIo8z/1jJ017+gMgFjkY0fB4EZZiEkILkkYvIoSiLZRF0OsUOTMqZcLFMN38XOl11d7sNmQvSs0ag3tQKw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nokia.com; dmarc=pass action=none header.from=nokia.com;
+ dkim=pass header.d=nokia.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nokia.onmicrosoft.com;
+ s=selector1-nokia-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=PSa6nWHGcmv3nzh0xLY41y3CKfM/dExFyQdTJh0iPhE=;
+ b=lrmcwlxqQSbowlu3l9U3u1c0LmD/0DzeEk+yFSnMECVgvdZf0Me02IKHyVI2DaPdTCsJuf9BBjf+aXVY3R02VSAaUnnXZKuo8cKm4RvjqQrSiIUMTi89g6JeB1tSKggjS0go29SMCO9/9KD9Iu2rTcUnv8KhOEJvgV955y/vjQ4=
+Authentication-Results: spf=none (sender IP is )
+ smtp.mailfrom=niko.kortstrom@nokia.com; 
+Received: from DB7PR07MB6010.eurprd07.prod.outlook.com (20.178.105.146) by
+ DB7PR07MB5578.eurprd07.prod.outlook.com (20.178.45.89) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.2644.10; Thu, 16 Jan 2020 14:43:31 +0000
+Received: from DB7PR07MB6010.eurprd07.prod.outlook.com
+ ([fe80::181a:aaa0:df96:8bf6]) by DB7PR07MB6010.eurprd07.prod.outlook.com
+ ([fe80::181a:aaa0:df96:8bf6%6]) with mapi id 15.20.2644.015; Thu, 16 Jan 2020
+ 14:43:31 +0000
+Subject: Re: [PATCH] net: ip6_gre: fix moving ip6gre between namespaces
+To:     nicolas.dichtel@6wind.com, davem@davemloft.net,
+        kuznet@ms2.inr.ac.ru, yoshfuji@linux-ipv6.org
+Cc:     netdev@vger.kernel.org
+References: <20200116094327.11747-1-niko.kortstrom@nokia.com>
+ <8c5be34b-c201-108e-9701-e51fc31fa3de@6wind.com>
+From:   kortstro <niko.kortstrom@nokia.com>
+Message-ID: <6465a655-2319-c6e6-d3ca-3cf5ba27640f@nokia.com>
+Date:   Thu, 16 Jan 2020 16:43:28 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.3.1
+In-Reply-To: <8c5be34b-c201-108e-9701-e51fc31fa3de@6wind.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <20200115141535.GT2131@nanopsycho>
+Content-Language: en-US
+X-ClientProxiedBy: HE1PR05CA0222.eurprd05.prod.outlook.com
+ (2603:10a6:3:fa::22) To DB7PR07MB6010.eurprd07.prod.outlook.com
+ (2603:10a6:10:86::18)
+MIME-Version: 1.0
+Received: from [10.144.164.64] (131.228.2.26) by HE1PR05CA0222.eurprd05.prod.outlook.com (2603:10a6:3:fa::22) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.2644.19 via Frontend Transport; Thu, 16 Jan 2020 14:43:31 +0000
+X-Originating-IP: [131.228.2.26]
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-HT: Tenant
+X-MS-Office365-Filtering-Correlation-Id: 2e631305-31e3-4ae0-38c3-08d79a927528
+X-MS-TrafficTypeDiagnostic: DB7PR07MB5578:
+X-Microsoft-Antispam-PRVS: <DB7PR07MB557811FEED01E63EF57DF8968F360@DB7PR07MB5578.eurprd07.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:489;
+X-Forefront-PRVS: 02843AA9E0
+X-Forefront-Antispam-Report: SFV:NSPM;SFS:(10019020)(4636009)(376002)(396003)(39860400002)(346002)(136003)(366004)(199004)(189003)(66946007)(66476007)(6486002)(6666004)(66556008)(52116002)(86362001)(81156014)(4744005)(16526019)(53546011)(81166006)(2616005)(956004)(8676002)(5660300002)(31686004)(16576012)(316002)(8936002)(36756003)(2906002)(186003)(26005)(478600001)(4326008)(31696002)(32563001);DIR:OUT;SFP:1102;SCL:1;SRVR:DB7PR07MB5578;H:DB7PR07MB6010.eurprd07.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;A:1;MX:1;
+Received-SPF: None (protection.outlook.com: nokia.com does not designate
+ permitted sender hosts)
+X-MS-Exchange-SenderADCheck: 1
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: nPmY+hz6qBx60Loup/20IDVYAFRLSQTDQGrOqI/+aWGVos63vxMaceNDZ8E5UOjLctFbhoRTi4DKA4TnKLymBnsvqpJ1NauZYoly5x3fgMTjeGkEu+fPUsmMxFweRd9zzl0S3a/uL3yquMQph1yz9RWZY5T06ZISYue3ZTSwfO6DEYoBWPPuU/Ff3vD20jQQi7bxsZNt2vJANgBbqQIwt4xPHhR7XlgXxK2iQaOztyz41FgHISZZ8y8OCRAvIav9yWmn3XcFWDXdMDKzvyn6BjgDY1Pdj+ChfOyYarnkgZJ4LsTJxclCwD1kbGLy7T/gWsXEHEce5fhxhB+NoK9ixpQ5wgf6XJ/O4OopXYnvqoLWGLysLcAdslAuuhhSdMQqI/jzNQjR0Va8waVbD85wQD/3R60KIG5LPOoJ8yt5UU3+fJSa7+yhxPggzkKefV3RplT6llipSXGYjvCxZC5rnRbwCR6bFJ/k/m21o/oH5yKQakQfA+EOMlikZOHJX7us
+X-OriginatorOrg: nokia.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 2e631305-31e3-4ae0-38c3-08d79a927528
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 16 Jan 2020 14:43:31.8846
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 5d471751-9675-428d-917b-70f44f9630b0
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: 9gaEI182z9TEEtiCJGeqryTx8uCCqWrW85xNR9tvNYjzW0QMdAYbQroGhyqeQlvqZLsZmnuNt9ZcW2fVV/+alTvToN+9GT/uE2ew8vHIX5I=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DB7PR07MB5578
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Jan 15, 2020 at 03:15:35PM +0100, Jiri Pirko wrote:
-> Wed, Jan 15, 2020 at 02:04:49PM CET, maorg@mellanox.com wrote:
-> >
-> >On 1/15/2020 11:45 AM, Jiri Pirko wrote:
-> >> Wed, Jan 15, 2020 at 09:01:43AM CET, maorg@mellanox.com wrote:
-> >>> RDMA over Converged Ethernet (RoCE) is a standard protocol which enables
-> >>> RDMA’s efficient data transfer over Ethernet networks allowing transport
-> >>> offload with hardware RDMA engine implementation.
-> >>> The RoCE v2 protocol exists on top of either the UDP/IPv4 or the
-> >>> UDP/IPv6 protocol:
-> >>>
-> >>> --------------------------------------------------------------
-> >>> | L2 | L3 | UDP |IB BTH | Payload| ICRC | FCS |
-> >>> --------------------------------------------------------------
-> >>>
-> >>> When a bond LAG netdev is in use, we would like to have the same hash
-> >>> result for RoCE packets as any other UDP packets, for this purpose we
-> >>> need to expose the bond_xmit_hash function to external modules.
-> >>> If no objection, I will push a patch that export this symbol.
-> >> I don't think it is good idea to do it. It is an internal bond function.
-> >> it even accepts "struct bonding *bond". Do you plan to push netdev
-> >> struct as an arg instead? What about team? What about OVS bonding?
-> >
-> >No, I am planning to pass the bond struct as an arg. Currently, team 
-> 
-> Hmm, that would be ofcourse wrong, as it is internal bonding driver
-> structure.
-> 
-> 
-> >bonding is not supported in RoCE LAG and I don't see how OVS is related.
-> 
-> Should work for all. OVS is related in a sense that you can do bonding
-> there too.
-> 
-> 
-> >
-> >>
-> >> Also, you don't really need a hash, you need a slave that is going to be
-> >> used for a packet xmit.
-> >>
-> >> I think this could work in a generic way:
-> >>
-> >> struct net_device *master_xmit_slave_get(struct net_device *master_dev,
-> >> 					 struct sk_buff *skb);
-> >
-> >The suggestion is to put this function in the bond driver and call it 
-> >instead of bond_xmit_hash? is it still necessary if I have the bond pointer?
-> 
-> No. This should be in a generic code. No direct calls down to bonding
-> driver please. Or do you want to load bonding module every time your
-> module loads?
-> 
-> I thinks this can be implemented with ndo with "master_xmit_slave_get()"
-> as a wrapper. Masters that support this would just implement the ndo.
-
-In general I think this is a good idea (though maybe not with an skb as
-an arg so we can use it easily within BPF), but I'm not sure if solves
-the problem that Maor et al were setting out to solve.
-
-Maor, if you did export bond_xmit_hash() to be used by another driver,
-you would presumably have a check in place so if the RoCE and UDP
-packets had a different hash function output you would make a change and
-be sure that the UDP frames would go out on the same device that the
-RoCE traffic would normally use.  Is this correct?  Would you also send
-the frames directly on the interface using dev_queue_xmit() and bypass
-the bonding driver completely?
-
-I don't think I fundamentally have a problem with this, I just want to
-make sure I understand your proposed code-flow.
-
-Thanks!
-
+On 1/16/20 4:02 PM, Nicolas Dichtel wrote:
+> Le 16/01/2020 à 10:43, Niko Kortstrom a écrit :
+>> Support for moving IPv4 GRE tunnels between namespaces was added in
+>> commit b57708add314 ("gre: add x-netns support"). The respective change
+>> for IPv6 tunnels, commit 22f08069e8b4 ("ip6gre: add x-netns support")
+>> did not drop NETIF_F_NETNS_LOCAL flag so moving them from one netns to
+>> another is still denied in IPv6 case. Drop NETIF_F_NETNS_LOCAL flag from
+>> ip6gre tunnels to allow moving ip6gre tunnel endpoints between network
+>> namespaces.
+>>
+>> Signed-off-by: Niko Kortstrom <niko.kortstrom@nokia.com>
+> LGTM.
+> Acked-by: Nicolas Dichtel <nicolas.dichtel@6wind.com>
+>
+> Did you test real x-vrf cases with the three kinds of gre interfaces
+> (gre/collect_md, gretap and erspan)?
+This was only verified in real use with ip6gretap.
