@@ -2,42 +2,40 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id EB2E013F01F
-	for <lists+netdev@lfdr.de>; Thu, 16 Jan 2020 19:21:07 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 97B3213F02B
+	for <lists+netdev@lfdr.de>; Thu, 16 Jan 2020 19:21:13 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2404164AbgAPR2Q (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 16 Jan 2020 12:28:16 -0500
-Received: from mail.kernel.org ([198.145.29.99]:39028 "EHLO mail.kernel.org"
+        id S2392565AbgAPR21 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 16 Jan 2020 12:28:27 -0500
+Received: from mail.kernel.org ([198.145.29.99]:39450 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2404119AbgAPR2P (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 16 Jan 2020 12:28:15 -0500
+        id S2404213AbgAPR2Y (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 16 Jan 2020 12:28:24 -0500
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 6B414246D7;
-        Thu, 16 Jan 2020 17:28:13 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id E00BB246D3;
+        Thu, 16 Jan 2020 17:28:22 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1579195694;
-        bh=tMVDp8rNj4vWf/qGzy/RdOINQJk3zZMVBehdyYEx/7Y=;
+        s=default; t=1579195704;
+        bh=9jFjZ5bu+tsaBRyIe6orZnczu0wyPfyxbPpkonaWPQQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=IOXRZErkKRRC+8vGQ6gGEHeBXfpaCCsmg+5JluXkOB3gTrvil2fYjAqoNzL0qproB
-         5hzUUQ6KVekNgoszaKPoToOC/Igy6DMZMZ5xBGy9URSdQmI/dIbwKOjH3EU89J/Rnu
-         n3fC5dTsuSsqHbOUsXFNQdLfOXPwFNWCfsRoZRLc=
+        b=iW9/3SYbmECG92M9oSb8Ys1mfai3SOD4mrS2z8/gBbxWHoTzOXJ6rnqMR/WYGgrHu
+         byGtGimaVw8ZoMXTwIQrNX0g/kgcx9TC7dItuvjAnMHF/rhw+Fs2Aogn4kKtzKfXFM
+         dc5vusEknMG8z7cvW9IaNrYJQ+J49s6Tqeecre/Q=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     David Howells <dhowells@redhat.com>,
-        Geert Uytterhoeven <geert@linux-m68k.org>,
-        "David S . Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>, linux-afs@lists.infradead.org,
-        netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.14 244/371] rxrpc: Fix uninitialized error code in rxrpc_send_data_packet()
-Date:   Thu, 16 Jan 2020 12:21:56 -0500
-Message-Id: <20200116172403.18149-187-sashal@kernel.org>
+Cc:     YueHaibing <yuehaibing@huawei.com>, Hulk Robot <hulkci@huawei.com>,
+        Kalle Valo <kvalo@codeaurora.org>,
+        Sasha Levin <sashal@kernel.org>,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 4.14 251/371] libertas_tf: Use correct channel range in lbtf_geo_init
+Date:   Thu, 16 Jan 2020 12:22:03 -0500
+Message-Id: <20200116172403.18149-194-sashal@kernel.org>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20200116172403.18149-1-sashal@kernel.org>
 References: <20200116172403.18149-1-sashal@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 X-stable: review
 X-Patchwork-Hint: Ignore
 Content-Transfer-Encoding: 8bit
@@ -46,47 +44,36 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: David Howells <dhowells@redhat.com>
+From: YueHaibing <yuehaibing@huawei.com>
 
-[ Upstream commit 3427beb6375d04e9627c67343872e79341a684ea ]
+[ Upstream commit 2ec4ad49b98e4a14147d04f914717135eca7c8b1 ]
 
-With gcc 4.1:
+It seems we should use 'range' instead of 'priv->range'
+in lbtf_geo_init(), because 'range' is the corret one
+related to current regioncode.
 
-    net/rxrpc/output.c: In function ‘rxrpc_send_data_packet’:
-    net/rxrpc/output.c:338: warning: ‘ret’ may be used uninitialized in this function
-
-Indeed, if the first jump to the send_fragmentable label is made, and
-the address family is not handled in the switch() statement, ret will be
-used uninitialized.
-
-Fix this by BUG()'ing as is done in other places in rxrpc where internal
-support for future address families will need adding.  It should not be
-possible to reach this normally as the address families are checked
-up-front.
-
-Fixes: 5a924b8951f835b5 ("rxrpc: Don't store the rxrpc header in the Tx queue sk_buffs")
-Reported-by: Geert Uytterhoeven <geert@linux-m68k.org>
-Signed-off-by: David Howells <dhowells@redhat.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+Reported-by: Hulk Robot <hulkci@huawei.com>
+Fixes: 691cdb49388b ("libertas_tf: command helper functions for libertas_tf")
+Signed-off-by: YueHaibing <yuehaibing@huawei.com>
+Signed-off-by: Kalle Valo <kvalo@codeaurora.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/rxrpc/output.c | 3 +++
- 1 file changed, 3 insertions(+)
+ drivers/net/wireless/marvell/libertas_tf/cmd.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/net/rxrpc/output.c b/net/rxrpc/output.c
-index 5b67cb5d47f0..edddbacf33bc 100644
---- a/net/rxrpc/output.c
-+++ b/net/rxrpc/output.c
-@@ -404,6 +404,9 @@ int rxrpc_send_data_packet(struct rxrpc_call *call, struct sk_buff *skb,
+diff --git a/drivers/net/wireless/marvell/libertas_tf/cmd.c b/drivers/net/wireless/marvell/libertas_tf/cmd.c
+index 909ac3685010..2b193f1257a5 100644
+--- a/drivers/net/wireless/marvell/libertas_tf/cmd.c
++++ b/drivers/net/wireless/marvell/libertas_tf/cmd.c
+@@ -69,7 +69,7 @@ static void lbtf_geo_init(struct lbtf_private *priv)
+ 			break;
  		}
- 		break;
- #endif
-+
-+	default:
-+		BUG();
- 	}
  
- 	up_write(&conn->params.local->defrag_sem);
+-	for (ch = priv->range.start; ch < priv->range.end; ch++)
++	for (ch = range->start; ch < range->end; ch++)
+ 		priv->channels[CHAN_TO_IDX(ch)].flags = 0;
+ }
+ 
 -- 
 2.20.1
 
