@@ -2,79 +2,106 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 67D6B13FC0F
-	for <lists+netdev@lfdr.de>; Thu, 16 Jan 2020 23:19:24 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0715513FC19
+	for <lists+netdev@lfdr.de>; Thu, 16 Jan 2020 23:22:24 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2388369AbgAPWTT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 16 Jan 2020 17:19:19 -0500
-Received: from mail-oi1-f195.google.com ([209.85.167.195]:46885 "EHLO
-        mail-oi1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1730287AbgAPWTT (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 16 Jan 2020 17:19:19 -0500
-Received: by mail-oi1-f195.google.com with SMTP id 13so20349051oij.13
-        for <netdev@vger.kernel.org>; Thu, 16 Jan 2020 14:19:18 -0800 (PST)
+        id S2388299AbgAPWVX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 16 Jan 2020 17:21:23 -0500
+Received: from mail-qk1-f193.google.com ([209.85.222.193]:36377 "EHLO
+        mail-qk1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1730287AbgAPWVW (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 16 Jan 2020 17:21:22 -0500
+Received: by mail-qk1-f193.google.com with SMTP id a203so20846246qkc.3;
+        Thu, 16 Jan 2020 14:21:21 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=broadcom.com; s=google;
+        d=gmail.com; s=20161025;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=HQ6NI3hAOyxut0DlXV7SKBOQkWQJgU/ToMDc1sI+DMU=;
-        b=AbMbkqhLxfpe2NSsCNNuHxd9is8Zoq1owDEIMvTiNMIH+y1LqVKd2NmYGStN+VQp33
-         4QsE65raYB4GvPQO42hDIhWi0B2UYm8ycD1xQoR2spQ+qIvXdzIqq2yOxWeQBav08fKQ
-         jKOBgnqd3jgzfSZOJSVpmxqq5mtlstrkhsJeg=
+         :cc:content-transfer-encoding;
+        bh=vpbQOrapjlYcWs3bkrcm05Gp66rOZ9x8yOYklUO+LHY=;
+        b=YrLfshsTZMEaoaurtJbcwzSaoRcapaMk5aQ6Vcf1sdNXNja9QAeeNF8VJykNeVUgZo
+         xlwzKaZakSt5Y9bZy4IKR7MGJ/wOLaZ3+2QmM0lNILTzox9tYpZfca9fg0+M+HlevJFX
+         xzgPEils0QPrNad+MFBheww0mG7T12Yqk0h4nTkLYPtMRRRDQjXS0mJVrw3a9j43ReCZ
+         L92rwv39vWk3qhIze8qmfWjrg5jwEWQuAIftG3eCuafKT9/GgqAiwkQBO0GVo8PkMwVZ
+         NTU9QcrL4KkQEUIYYs960+BeIsImrg+fed1Srq8py9vwMf2x3KljpdXshqJdeSZ7aMYN
+         haTg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=HQ6NI3hAOyxut0DlXV7SKBOQkWQJgU/ToMDc1sI+DMU=;
-        b=cjrHF6VSGWUtLxAggFSrLjekWO1B31EQSC4TlKpVFbTi9CcR83a1t+cA6oCF1oviIj
-         7kO0Fne9VQ/2bZ/oc/4xhuWiodLzxnZ6QcxVDB3jVqkminRnYAOCCfQrFCH/9Nwiia5e
-         05wVpPgQQTZJGECIv4gFsQUY9BLy+sh3N0c+5o5qH1N/MCavXF5SJO99GPD0D69ou6TE
-         KfBzXQRIkzdGy6Qb98gNEPhzJ52Wt3i1/749RPog+3an+PfJOrb47tbs81DaS9MWpQ+G
-         Q4Tabfx2jo95ffQu3z+kePGN9d3X055zwoPW2etMao2EDdAOhkSE6MpzdozUaA+Zga71
-         Oz+w==
-X-Gm-Message-State: APjAAAWXGhebMsBVSqytsGCxZhJfwHso9P1SZy9axSE0MNlHidX7aKfr
-        kyEpRsWftm53sKKp1oZhPqKhY9Y54QE3Wv/yN1Qcp7dV
-X-Google-Smtp-Source: APXvYqyIDz0zv7ZiQP/ySnEkDwrr6l4CCI86+amQBGJKs92paKTVqLQDZGmc0LZV75xDfsQEeaLDbJJzPFU/xTRJILU=
-X-Received: by 2002:aca:dd87:: with SMTP id u129mr1124655oig.14.1579213158511;
- Thu, 16 Jan 2020 14:19:18 -0800 (PST)
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=vpbQOrapjlYcWs3bkrcm05Gp66rOZ9x8yOYklUO+LHY=;
+        b=BD6WgfC4q0UKEpuPlbiSSR6XRBH4sW833wWLL5jdACUtHXh2B3aZZWtnf1xNTGbAw6
+         /qbT8wNCFZbti0CTf5RYGLjNiSPUyvjzZXo/shRRZnaeHGa/gc4hdJin6OThcn9m8yaG
+         aIr3YWg+nWt++JncIfIO+0KzcdHhwxnujezKjvX716mbeC2WZzA9sE/abgVVO6yCIMJA
+         y+0o03rBxPobhwndrfPuk3795WRoeSgtezlxF/R8Z0g6cKy1o7M3nGKLyIsCapwveW/J
+         6/6+HOQNczCDNhC7U2ku26XrU13nYj6xvRJefkJGYLEyjj7cbnJFpguc5r5NKWvyXpvg
+         wqmA==
+X-Gm-Message-State: APjAAAV/CpXdbkZGZc8SkYIHHVHsGwJzaGtCT79JfHHE7pShRvnxxFdY
+        J3JBxx8RmyiL6+0+P/vHL2PV7WK7NjoVCshdzT8=
+X-Google-Smtp-Source: APXvYqz1i/WEP6x/rLAeNoVBbsK0G1LZrffElunve4gOl5pxTl+wMdcs1VSidF8QuuZXFAgkfUU7ExMVAZrIPvhsrL8=
+X-Received: by 2002:a05:620a:5ae:: with SMTP id q14mr31315590qkq.437.1579213281433;
+ Thu, 16 Jan 2020 14:21:21 -0800 (PST)
 MIME-Version: 1.0
-References: <CAH6h+hczhYdCebrXHnVy4tE6bXGhSJg4GZkfJVYEQtjjb-A-EQ@mail.gmail.com>
-In-Reply-To: <CAH6h+hczhYdCebrXHnVy4tE6bXGhSJg4GZkfJVYEQtjjb-A-EQ@mail.gmail.com>
-From:   Michael Chan <michael.chan@broadcom.com>
-Date:   Thu, 16 Jan 2020 14:19:07 -0800
-Message-ID: <CACKFLimgUxTV7Cgg5dYtWtvTsWpOK538UtLmyyxP0tTaYOzL6g@mail.gmail.com>
-Subject: Re: 5.4.12 bnxt_en: Unable do read adapter's DSN
-To:     Marc Smith <msmith626@gmail.com>
-Cc:     Netdev <netdev@vger.kernel.org>
+References: <157918093154.1357254.7616059374996162336.stgit@toke.dk> <157918093839.1357254.16574794899249700991.stgit@toke.dk>
+In-Reply-To: <157918093839.1357254.16574794899249700991.stgit@toke.dk>
+From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Date:   Thu, 16 Jan 2020 14:21:10 -0800
+Message-ID: <CAEf4BzZep26Y50ER5x9FLsxu0_yW-sG5abxE2RZLBT-JhRnqbg@mail.gmail.com>
+Subject: Re: [PATCH bpf-next v3 06/11] bpftool: Use consistent include paths
+ for libbpf
+To:     =?UTF-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <toke@redhat.com>
+Cc:     Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        Andrii Nakryiko <andriin@fb.com>,
+        Doug Ledford <dledford@redhat.com>,
+        Jason Gunthorpe <jgg@ziepe.ca>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Jesper Dangaard Brouer <brouer@redhat.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Ingo Molnar <mingo@redhat.com>,
+        Arnaldo Carvalho de Melo <acme@kernel.org>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
+        Jiri Olsa <jolsa@redhat.com>,
+        Namhyung Kim <namhyung@kernel.org>,
+        Shuah Khan <shuah@kernel.org>,
+        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        open list <linux-kernel@vger.kernel.org>,
+        linux-rdma@vger.kernel.org,
+        "open list:KERNEL SELFTEST FRAMEWORK" 
+        <linux-kselftest@vger.kernel.org>,
+        clang-built-linux@googlegroups.com
 Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Jan 16, 2020 at 2:08 PM Marc Smith <msmith626@gmail.com> wrote:
+On Thu, Jan 16, 2020 at 5:23 AM Toke H=C3=B8iland-J=C3=B8rgensen <toke@redh=
+at.com> wrote:
 >
-> Hi,
+> From: Toke H=C3=B8iland-J=C3=B8rgensen <toke@redhat.com>
 >
-> I'm using the 'bnxt_en' driver with vanilla Linux 5.4.12. I have a
-> Broadcom P225p 10/25 GbE adapter. I previously used this adapter with
-> Linux 4.14.120 with no issues. Now with 5.4.12 I observe the following
-> kernel messages during initialization:
-> ...
-> [    2.605878] Broadcom NetXtreme-C/E driver bnxt_en v1.10.0
-> [    2.618302] bnxt_en 0000:00:03.0 (unnamed net_device)
-> (uninitialized): Unable do read adapter's DSN
-> [    2.622295] bnxt_en: probe of 0000:00:03.0 failed with error -95
-> [    2.632808] bnxt_en 0000:00:0a.0 (unnamed net_device)
-> (uninitialized): Unable do read adapter's DSN
-> [    2.637043] bnxt_en: probe of 0000:00:0a.0 failed with error -95
-> ...
+> Fix bpftool to include libbpf header files with the bpf/ prefix, to be
+> consistent with external users of the library. Also ensure that all
+> includes of exported libbpf header files (those that are exported on 'mak=
+e
+> install' of the library) use bracketed includes instead of quoted.
+>
+> To make sure no new files are introduced that doesn't include the bpf/
+> prefix in its include, remove tools/lib/bpf from the include path entirel=
+y,
+> and use tools/lib instead.
+>
+> Fixes: 6910d7d3867a ("selftests/bpf: Ensure bpf_helper_defs.h are taken f=
+rom selftests dir")
+> Signed-off-by: Toke H=C3=B8iland-J=C3=B8rgensen <toke@redhat.com>
+> ---
 
-I have received a similar report about this issue recently.  I believe
-some kernels are not configured to read extended configuration space
-and so the driver's call to read the DSN would fail on such a kernel.
-This failure should not be considered a fatal error and the driver
-should continue to load.  I will send out a driver patch to fix this
-very shortly.
+Acked-by: Andrii Nakryiko <andriin@fb.com>
 
-Thanks.
+[...]
