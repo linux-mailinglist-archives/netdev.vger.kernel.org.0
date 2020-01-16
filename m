@@ -2,85 +2,106 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 1FB0C13DE32
-	for <lists+netdev@lfdr.de>; Thu, 16 Jan 2020 15:59:17 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id EC2E313DE58
+	for <lists+netdev@lfdr.de>; Thu, 16 Jan 2020 16:13:51 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726832AbgAPO62 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 16 Jan 2020 09:58:28 -0500
-Received: from mail-lj1-f195.google.com ([209.85.208.195]:39877 "EHLO
-        mail-lj1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726160AbgAPO62 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 16 Jan 2020 09:58:28 -0500
-Received: by mail-lj1-f195.google.com with SMTP id l2so22982184lja.6
-        for <netdev@vger.kernel.org>; Thu, 16 Jan 2020 06:58:26 -0800 (PST)
+        id S1726853AbgAPPMy (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 16 Jan 2020 10:12:54 -0500
+Received: from mail-pg1-f195.google.com ([209.85.215.195]:33878 "EHLO
+        mail-pg1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726559AbgAPPMx (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 16 Jan 2020 10:12:53 -0500
+Received: by mail-pg1-f195.google.com with SMTP id r11so10042365pgf.1;
+        Thu, 16 Jan 2020 07:12:53 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=ZlWmpgDyDdsULP1jSOM2LgtaNUde+0xpVc28/QeN14M=;
-        b=qKQapphL2smdPRHFEYTDMipXEH8S5PWvHdfCJxJBciE7QqU9heoLJQqzXAhlOuFABj
-         1RE6y9yM+MbXdk5yFLNkRKXf8e8HkRPfac4G63OlpXv9Y02Xg02FqoU3uQt9fFrVA1YS
-         Evt2fL5WLE6DqJyALOILGGRNgHKTR4Dr/9d7ePxZW2ZuBB2z0KyNKeSE9LnE/TMoiNVq
-         gSqvTB0a31FWG9HiY3I1uNOEc9nTsQzqXb65uj9H5vgx8pqkiFRjLcVtRvi8O4syoAAm
-         3EuzXXW3aZ2/adhB/LwoUYTETn8NZJXGYD0QkFFf26I3eTm+F4PO2KHN6u+F8jSJqgRs
-         s+sQ==
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=umv9beinPPdR7oTlGs1whE/3lML77Q/Kt2Jyq+HV7DA=;
+        b=vH/LJb7AaPc4aD9UJCeA9LweH3nTuF3/zy3RA+L9mrSPaoTIz/VhQUtwSP2bwID4Y/
+         ugqKwW040tGzfzrb2CqQcQ7heJJinJCffZDEYYQT8Pq7Tp+ohanFDD7P7GRGLyRveQGR
+         1ctsNoEUmmCwdkxIIRhXovErGw5Ob1hsWAlzGAQ2yZGE60WFChRx2jP1hJecw0sSi7HO
+         SYXCJAGtDDRqUb6adoF1PNTgMZyCjjKA4cvZZNOJ2j1iTx1UK2TDGIyXBbOSir97xe3o
+         g5xqW/kBTsXfvz8dpjI5Yv+Dhf2A6WgfQ73SNemNma+Aq0PMLe65SOekSQrg3u3pLbYa
+         1S3g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=ZlWmpgDyDdsULP1jSOM2LgtaNUde+0xpVc28/QeN14M=;
-        b=XNjeTWHGfPhsr6/LMu2IC+psfYsiHGU3qIVCcwqlUHlRUKW2rDY/swYBPPh27ci0PF
-         vR3wF0Tn3aLSl4v0C7uk8Z+aBqmvNIuTR8NgPNcB49lQNwTDgV6e7taCMLS9p++k4Mu6
-         bdwAbMh/gMIat9AMDtZmUP2/zhzNGQyTKM2dRwATTvfUfbVJzrRrd3khLfz95IJhobad
-         b17MziaU81MKDTmoQWR0zFHfRE42ntB/9uySMBdYshfGgkl2uQwilIEEYUojN5qrXcCF
-         mIsPXaScIDSiO67UOztVpf6mhUWt1PdpPE6arIRDaz5ry8GcrOJWQ7Zyjc/oCXn0bgh5
-         vYXQ==
-X-Gm-Message-State: APjAAAW7uZlJOgcccf03K5oxDhMI9bWRUbjoDKmu58djM0lCh6Abtaaz
-        FeK7C/ZG4LBToKKuWdPybhQbSPZ5b+U6ZccJU9Y/hIsH
-X-Google-Smtp-Source: APXvYqyqKiFbqkR2bMcQXax2DsEGgcx154Hew2PTocGf9xY5REuUhPXGdurBJV0VaEQS2mpyCMuhhSTPZ/pPOApAjS8=
-X-Received: by 2002:a2e:9d90:: with SMTP id c16mr2348812ljj.264.1579186706060;
- Thu, 16 Jan 2020 06:58:26 -0800 (PST)
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=umv9beinPPdR7oTlGs1whE/3lML77Q/Kt2Jyq+HV7DA=;
+        b=f8gY+yZnp0QbK2b9juwRVMD2n/Rzd9eluXQX+RC8y7FeWV81B4BMizqcq6Zs6crqEN
+         yHwa1aeJzQcYN6HC20uBxzUV/s8tpZZagS8nkUtIY4Y1f0Oi1f3awdvvRfrw/m2cWasY
+         duLTPCL/OoL5fICLWDN/DTdgpc66RtYHz5xbi8caDTbz4xBmvz5wjkN4Xaa6tYfShme7
+         8LUAWeh5Wc3mxW/v9XZW3C8Z1UsMPWl5MZg+dkZyOS7Wq/KkZ0HHewKqMapIegfH4KzK
+         zxnMm1LatOm0vmtlC7xJnXQipsL89sMHKwZrY8ikCkS1BPEVd/3KGkAjNm3YLmuxKwWl
+         ZOAQ==
+X-Gm-Message-State: APjAAAXqnarVWqruSG72ca4DvoAf5monxxvc3c3/Q+ETT6CuZGqr61NC
+        Iq2OKrUOHujB/dlOeEtHwF4=
+X-Google-Smtp-Source: APXvYqwcEz2L4zCJ8EqgoxMNOwCPhZpJp3E5cqx5s7SNcavaIu+fjzuZroiokKwJxCC4lc1VE3MRvA==
+X-Received: by 2002:a62:296:: with SMTP id 144mr38163784pfc.120.1579187573172;
+        Thu, 16 Jan 2020 07:12:53 -0800 (PST)
+Received: from [192.168.86.235] (c-73-241-150-58.hsd1.ca.comcast.net. [73.241.150.58])
+        by smtp.gmail.com with ESMTPSA id p28sm25157336pgb.93.2020.01.16.07.12.51
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 16 Jan 2020 07:12:52 -0800 (PST)
+Subject: Re: [PATCH] net: optimize cmpxchg in ip_idents_reserve
+To:     David Miller <davem@davemloft.net>, zhangshaokun@hisilicon.com
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        jinyuqi@huawei.com, kuznet@ms2.inr.ac.ru, yoshfuji@linux-ipv6.org,
+        edumazet@google.com, guoyang2@huawei.com
+References: <1579058620-26684-1-git-send-email-zhangshaokun@hisilicon.com>
+ <20200116.042722.153124126288244814.davem@davemloft.net>
+From:   Eric Dumazet <eric.dumazet@gmail.com>
+Message-ID: <930faaff-4d18-452d-2e44-ef05b65dc858@gmail.com>
+Date:   Thu, 16 Jan 2020 07:12:50 -0800
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.2.2
 MIME-Version: 1.0
-References: <20200115210238.4107-1-xiyou.wangcong@gmail.com>
-In-Reply-To: <20200115210238.4107-1-xiyou.wangcong@gmail.com>
-From:   Taehee Yoo <ap420073@gmail.com>
-Date:   Thu, 16 Jan 2020 23:58:14 +0900
-Message-ID: <CAMArcTUF0SmMOU+4cdgkrj8taqHwf_QS21bK0-S-V=4pMeyjJg@mail.gmail.com>
-Subject: Re: [Patch net] net: avoid updating qdisc_xmit_lock_key in netdev_update_lockdep_key()
-To:     Cong Wang <xiyou.wangcong@gmail.com>
-Cc:     Netdev <netdev@vger.kernel.org>,
-        syzbot <syzbot+4ec99438ed7450da6272@syzkaller.appspotmail.com>
-Content-Type: text/plain; charset="UTF-8"
+In-Reply-To: <20200116.042722.153124126288244814.davem@davemloft.net>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 16 Jan 2020 at 06:02, Cong Wang <xiyou.wangcong@gmail.com> wrote:
->
-> syzbot reported some bogus lockdep warnings, for example bad unlock
-> balance in sch_direct_xmit(). They are due to a race condition between
-> slow path and fast path, that is qdisc_xmit_lock_key gets re-registered
-> in netdev_update_lockdep_key() on slow path, while we could still
-> acquire the queue->_xmit_lock on fast path in this small window:
->
-> CPU A                                           CPU B
->                                                 __netif_tx_lock();
-> lockdep_unregister_key(qdisc_xmit_lock_key);
->                                                 __netif_tx_unlock();
-> lockdep_register_key(qdisc_xmit_lock_key);
->
-> In fact, unlike the addr_list_lock which has to be reordered when
-> the master/slave device relationship changes, queue->_xmit_lock is
-> only acquired on fast path and only when NETIF_F_LLTX is not set,
-> so there is likely no nested locking for it.
->
-> Therefore, we can just get rid of re-registration of
-> qdisc_xmit_lock_key.
->
-> Reported-by: syzbot+4ec99438ed7450da6272@syzkaller.appspotmail.com
-> Fixes: ab92d68fc22f ("net: core: add generic lockdep keys")
 
-Thank you for fixing this bug!
 
-Acked-by: Taehee Yoo <ap420073@gmail.com>
+On 1/16/20 4:27 AM, David Miller wrote:
+> From: Shaokun Zhang <zhangshaokun@hisilicon.com>
+> Date: Wed, 15 Jan 2020 11:23:40 +0800
+> 
+>> From: Yuqi Jin <jinyuqi@huawei.com>
+>>
+>> atomic_try_cmpxchg is called instead of atomic_cmpxchg that can reduce
+>> the access number of the global variable @p_id in the loop. Let's
+>> optimize it for performance.
+>>
+>> Cc: "David S. Miller" <davem@davemloft.net>
+>> Cc: Alexey Kuznetsov <kuznet@ms2.inr.ac.ru>
+>> Cc: Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>
+>> Cc: Eric Dumazet <edumazet@google.com>
+>> Cc: Yang Guo <guoyang2@huawei.com>
+>> Signed-off-by: Yuqi Jin <jinyuqi@huawei.com>
+>> Signed-off-by: Shaokun Zhang <zhangshaokun@hisilicon.com>
+> 
+> I doubt this makes any measurable improvement in performance.
+> 
+> If you can document a specific measurable improvement under
+> a useful set of circumstances for real usage, then put those
+> details into the commit message and resubmit.
+> 
+> Otherwise, I'm not applying this, sorry.
+> 
+
+
+Real difference that could be made here is to 
+only use this cmpxchg() dance for CONFIG_UBSAN
+
+When CONFIG_UBSAN is not set, atomic_add_return() is just fine.
+
+(Supposedly UBSAN should not warn about that either, but this depends on compiler version)
+
+ 
