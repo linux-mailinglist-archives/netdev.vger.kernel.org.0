@@ -2,35 +2,35 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 31D6F13E8D5
-	for <lists+netdev@lfdr.de>; Thu, 16 Jan 2020 18:34:43 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2A75C13E8D9
+	for <lists+netdev@lfdr.de>; Thu, 16 Jan 2020 18:34:45 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2392950AbgAPRaF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 16 Jan 2020 12:30:05 -0500
-Received: from mail.kernel.org ([198.145.29.99]:42260 "EHLO mail.kernel.org"
+        id S2393001AbgAPReo (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 16 Jan 2020 12:34:44 -0500
+Received: from mail.kernel.org ([198.145.29.99]:42302 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2392903AbgAPRaD (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 16 Jan 2020 12:30:03 -0500
+        id S2392946AbgAPRaE (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 16 Jan 2020 12:30:04 -0500
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id CBC9724718;
-        Thu, 16 Jan 2020 17:30:01 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 56E7424714;
+        Thu, 16 Jan 2020 17:30:03 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1579195802;
-        bh=v3livdS8vM+rdbLAzBYFHtfZ/IqjRpEO2jwm4V2eyJU=;
+        s=default; t=1579195804;
+        bh=tO9+NvN2CHz+pMQCJlzm6srVxp0TIkGcSiB03L9otBA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=hQUhy9HxB5HkhqjgWKOVNDiGZWgGtnDH0/86nuxlR67HeAi8LK+nfsE7uKKRfju4J
-         pCVv9O0fPKDojhJpcMwk5jrz2Q8wBCOa8qwN42SerC49NxZ4vsbevjOcryT8nOc8ef
-         MP/0QdhyIizO4qVD7B3TaILVMQf12C0cyLYEVZXs=
+        b=ZBnNZQ9cAKG0BNNHU6cItUbCcKa8wO0YS4gNDDH2hfF/lTxCrlp0G4cUdhpDA/NGG
+         Om4efV2xfN5nDRuCI4ZTAugI48UC1eWn9jZTPHa+75C7nMf9aAb67Ph1ryNkg6X7eW
+         lvBCIxJxKu052ePwfTT9PEFovjKw7gY/6OC2vBC0=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     YueHaibing <yuehaibing@huawei.com>,
+Cc:     Eric Dumazet <edumazet@google.com>,
         Jakub Kicinski <jakub.kicinski@netronome.com>,
         Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.14 317/371] act_mirred: Fix mirred_init_module error handling
-Date:   Thu, 16 Jan 2020 12:23:09 -0500
-Message-Id: <20200116172403.18149-260-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 4.14 318/371] net: avoid possible false sharing in sk_leave_memory_pressure()
+Date:   Thu, 16 Jan 2020 12:23:10 -0500
+Message-Id: <20200116172403.18149-261-sashal@kernel.org>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20200116172403.18149-1-sashal@kernel.org>
 References: <20200116172403.18149-1-sashal@kernel.org>
@@ -43,38 +43,46 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: YueHaibing <yuehaibing@huawei.com>
+From: Eric Dumazet <edumazet@google.com>
 
-[ Upstream commit 11c9a7d38af524217efb7a176ad322b97ac2f163 ]
+[ Upstream commit 503978aca46124cd714703e180b9c8292ba50ba7 ]
 
-If tcf_register_action failed, mirred_device_notifier
-should be unregistered.
+As mentioned in https://github.com/google/ktsan/wiki/READ_ONCE-and-WRITE_ONCE#it-may-improve-performance
+a C compiler can legally transform :
 
-Fixes: 3b87956ea645 ("net sched: fix race in mirred device removal")
-Signed-off-by: YueHaibing <yuehaibing@huawei.com>
+if (memory_pressure && *memory_pressure)
+        *memory_pressure = 0;
+
+to :
+
+if (memory_pressure)
+        *memory_pressure = 0;
+
+Fixes: 0604475119de ("tcp: add TCPMemoryPressuresChrono counter")
+Fixes: 180d8cd942ce ("foundations of per-cgroup memory pressure controlling.")
+Fixes: 3ab224be6d69 ("[NET] CORE: Introducing new memory accounting interface.")
+Signed-off-by: Eric Dumazet <edumazet@google.com>
 Signed-off-by: Jakub Kicinski <jakub.kicinski@netronome.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/sched/act_mirred.c | 6 +++++-
- 1 file changed, 5 insertions(+), 1 deletion(-)
+ net/core/sock.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/net/sched/act_mirred.c b/net/sched/act_mirred.c
-index 529bb064c4a4..dcfaa4f9c7c5 100644
---- a/net/sched/act_mirred.c
-+++ b/net/sched/act_mirred.c
-@@ -371,7 +371,11 @@ static int __init mirred_init_module(void)
- 		return err;
+diff --git a/net/core/sock.c b/net/core/sock.c
+index 90ccbbf9e6b0..03ca2f638eb4 100644
+--- a/net/core/sock.c
++++ b/net/core/sock.c
+@@ -2165,8 +2165,8 @@ static void sk_leave_memory_pressure(struct sock *sk)
+ 	} else {
+ 		unsigned long *memory_pressure = sk->sk_prot->memory_pressure;
  
- 	pr_info("Mirror/redirect action on\n");
--	return tcf_register_action(&act_mirred_ops, &mirred_net_ops);
-+	err = tcf_register_action(&act_mirred_ops, &mirred_net_ops);
-+	if (err)
-+		unregister_netdevice_notifier(&mirred_device_notifier);
-+
-+	return err;
+-		if (memory_pressure && *memory_pressure)
+-			*memory_pressure = 0;
++		if (memory_pressure && READ_ONCE(*memory_pressure))
++			WRITE_ONCE(*memory_pressure, 0);
+ 	}
  }
  
- static void __exit mirred_cleanup_module(void)
 -- 
 2.20.1
 
