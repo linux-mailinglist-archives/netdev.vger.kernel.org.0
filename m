@@ -2,144 +2,247 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 647AE13D118
-	for <lists+netdev@lfdr.de>; Thu, 16 Jan 2020 01:26:00 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 51A7013D136
+	for <lists+netdev@lfdr.de>; Thu, 16 Jan 2020 01:41:27 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729143AbgAPAZU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 15 Jan 2020 19:25:20 -0500
-Received: from mail-io1-f69.google.com ([209.85.166.69]:51113 "EHLO
-        mail-io1-f69.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1730255AbgAPAZN (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 15 Jan 2020 19:25:13 -0500
-Received: by mail-io1-f69.google.com with SMTP id e13so11490456iob.17
-        for <netdev@vger.kernel.org>; Wed, 15 Jan 2020 16:25:12 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
-        bh=5Q0/s70I04zkYXmwGyibITI228DfglQLra6W2tkH+R4=;
-        b=mv4VvhpmdXO7o+Eq434PhrptlBQKtb/7MFSfnnIaaW3nXwwJmar3DnkhlrNrEQcqqd
-         Tn3mKUS8AyTEtbEPs4jKlu9nsT6clzzz8TguyXQpwb8t4126izqj09ihascYgAt+jjD2
-         qYlpZIXx98MW1joAkgvNxAHx5uMSphi5O5O3JuUa0ymLIsmYAgWrk5wcjwgAYlv7RNlo
-         NUzvEavOjEN2XiECahv6LPkxd8tRCRwyE+Ogh/GanIqWyfxhe3fMIqQyGDNURUdgU2Rw
-         JGE+b34zLeSCdLfvx5/FaKqVo9F7SR/m+ficBk3gYG8Ist1KmvCXULS6h3/oYVpu6dV/
-         HB/w==
-X-Gm-Message-State: APjAAAWUvY9K5cVskt1zMNSUw3AXundJUos8MoB5QfoiMHK7gYiUTqwM
-        BpK21t2uwXNGBGVyU1kJuGXafg4VC6JXKfknycGV3tA+bN7U
-X-Google-Smtp-Source: APXvYqx32xVicDGczPj5NgHpnTvtiGY3C0Z7tUd5DYmqSfMs6r4DbtcZAzA3KPW6BgcJDHTDYRMzlJuhjLjQi7kAMGjaRzj46dU2
+        id S1729463AbgAPAlV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 15 Jan 2020 19:41:21 -0500
+Received: from mx0a-00082601.pphosted.com ([67.231.145.42]:33726 "EHLO
+        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1729112AbgAPAlV (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 15 Jan 2020 19:41:21 -0500
+Received: from pps.filterd (m0044012.ppops.net [127.0.0.1])
+        by mx0a-00082601.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 00G0eTQG004516
+        for <netdev@vger.kernel.org>; Wed, 15 Jan 2020 16:41:20 -0800
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
+ : date : message-id : mime-version : content-type; s=facebook;
+ bh=5fw0EdQWhPregdFqrz5HdcFntTryiFK3a6OZkKg8buA=;
+ b=nKsSRODJgnLzEXWptZjmtc9iaPdyOL5/2mL/tZj3+tlyR0B392Z6EJP0+cTN5JJxUxet
+ sWl+jOsrGGL7qh+JasKuV29q/wCY9e58896ZwTmUiZxAl1fy3mWpXi5YKNCqoWoBwpbF
+ BYohZ98DOJW5Ll9bh7WQBQ+pC7ZjV7jef3w= 
+Received: from maileast.thefacebook.com ([163.114.130.16])
+        by mx0a-00082601.pphosted.com with ESMTP id 2xjc3w8b09-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT)
+        for <netdev@vger.kernel.org>; Wed, 15 Jan 2020 16:41:20 -0800
+Received: from intmgw003.06.prn3.facebook.com (2620:10d:c0a8:1b::d) by
+ mail.thefacebook.com (2620:10d:c0a8:83::4) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.1713.5; Wed, 15 Jan 2020 16:41:18 -0800
+Received: by devbig012.ftw2.facebook.com (Postfix, from userid 137359)
+        id 42F062EC20D3; Wed, 15 Jan 2020 16:41:06 -0800 (PST)
+Smtp-Origin-Hostprefix: devbig
+From:   Andrii Nakryiko <andriin@fb.com>
+Smtp-Origin-Hostname: devbig012.ftw2.facebook.com
+To:     <bpf@vger.kernel.org>, <netdev@vger.kernel.org>, <ast@fb.com>,
+        <daniel@iogearbox.net>
+CC:     <andrii.nakryiko@gmail.com>, <kernel-team@fb.com>,
+        Andrii Nakryiko <andriin@fb.com>, Julia Kartseva <hex@fb.com>
+Smtp-Origin-Cluster: ftw2c04
+Subject: [PATCH bpf-next] selftests/bpf: add whitelist/blacklist of test names to test_progs
+Date:   Wed, 15 Jan 2020 16:41:01 -0800
+Message-ID: <20200116004101.3596474-1-andriin@fb.com>
+X-Mailer: git-send-email 2.17.1
+X-FB-Internal: Safe
 MIME-Version: 1.0
-X-Received: by 2002:a6b:c884:: with SMTP id y126mr486954iof.246.1579134312279;
- Wed, 15 Jan 2020 16:25:12 -0800 (PST)
-Date:   Wed, 15 Jan 2020 16:25:12 -0800
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <000000000000bc757e059c36db18@google.com>
-Subject: BUG: corrupted list in nft_obj_del
-From:   syzbot <syzbot+6ca99af7e70e298bd09d@syzkaller.appspotmail.com>
-To:     coreteam@netfilter.org, davem@davemloft.net, fw@strlen.de,
-        kadlec@netfilter.org, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org, netfilter-devel@vger.kernel.org,
-        pablo@netfilter.org, syzkaller-bugs@googlegroups.com
-Content-Type: text/plain; charset="UTF-8"; format=flowed; delsp=yes
+Content-Type: text/plain
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.138,18.0.572
+ definitions=2020-01-15_03:2020-01-15,2020-01-15 signatures=0
+X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 mlxlogscore=999
+ adultscore=0 malwarescore=0 lowpriorityscore=0 suspectscore=29 mlxscore=0
+ phishscore=0 clxscore=1015 bulkscore=0 spamscore=0 impostorscore=0
+ priorityscore=1501 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-1910280000 definitions=main-2001160002
+X-FB-Internal: deliver
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello,
+Add ability to specify a list of test name substrings for selecting which
+tests to run. So now -t is accepting a comma-separated list of strings,
+similarly to how -n accepts a comma-separated list of test numbers.
 
-syzbot found the following crash on:
+Additionally, add ability to blacklist tests by name. Blacklist takes
+precedence over whitelist. Blacklisting is important for cases where it's
+known that some tests can't pass (e.g., due to perf hardware events that are
+not available within VM). This is going to be used for libbpf testing in
+Travis CI in its Github repo.
 
-HEAD commit:    8b792f84 Merge branch 'mlxsw-Various-fixes'
-git tree:       net
-console output: https://syzkaller.appspot.com/x/log.txt?x=1766b349e00000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=7e89bd00623fe71e
-dashboard link: https://syzkaller.appspot.com/bug?extid=6ca99af7e70e298bd09d
-compiler:       gcc (GCC) 9.0.0 20181231 (experimental)
-syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=168b95e1e00000
-C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=10f29b3ee00000
+Example runs with just whitelist and whitelist + blacklist:
 
-IMPORTANT: if you fix the bug, please add the following tag to the commit:
-Reported-by: syzbot+6ca99af7e70e298bd09d@syzkaller.appspotmail.com
+$ sudo ./test_progs -tattach,core/existence
+Summary: 8/8 PASSED, 0 SKIPPED, 0 FAILED
 
-list_del corruption, ffff8880a46b1500->prev is LIST_POISON2  
-(dead000000000122)
-------------[ cut here ]------------
-kernel BUG at lib/list_debug.c:48!
-invalid opcode: 0000 [#1] PREEMPT SMP KASAN
-CPU: 1 PID: 9787 Comm: syz-executor290 Not tainted 5.5.0-rc5-syzkaller #0
-Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS  
-Google 01/01/2011
-RIP: 0010:__list_del_entry_valid.cold+0x37/0x4f lib/list_debug.c:48
-Code: be fd 0f 0b 4c 89 ea 4c 89 f6 48 c7 c7 a0 65 71 88 e8 a0 bb be fd 0f  
-0b 4c 89 e2 4c 89 f6 48 c7 c7 00 66 71 88 e8 8c bb be fd <0f> 0b 4c 89 f6  
-48 c7 c7 c0 66 71 88 e8 7b bb be fd 0f 0b cc cc cc
-RSP: 0018:ffffc900020e7338 EFLAGS: 00010286
-RAX: 000000000000004e RBX: ffff8880a46b1500 RCX: 0000000000000000
-RDX: 0000000000000000 RSI: ffffffff815e53a6 RDI: fffff5200041ce59
-RBP: ffffc900020e7350 R08: 000000000000004e R09: ffffed1015d26621
-R10: ffffed1015d26620 R11: ffff8880ae933107 R12: dead000000000122
-R13: ffff88809e9c3970 R14: ffff8880a46b1500 R15: ffff8880a46b1508
-FS:  0000000000837880(0000) GS:ffff8880ae900000(0000) knlGS:0000000000000000
-CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-CR2: 0000000020000280 CR3: 000000008f0b6000 CR4: 00000000001406e0
-DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
-DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
-Call Trace:
-  __list_del_entry include/linux/list.h:131 [inline]
-  list_del_rcu include/linux/rculist.h:148 [inline]
-  nft_obj_del+0xcb/0x1f0 net/netfilter/nf_tables_api.c:6970
-  nf_tables_commit+0x1339/0x3b30 net/netfilter/nf_tables_api.c:7171
-  nfnetlink_rcv_batch+0xc78/0x17a0 net/netfilter/nfnetlink.c:485
-  nfnetlink_rcv_skb_batch net/netfilter/nfnetlink.c:543 [inline]
-  nfnetlink_rcv+0x3e7/0x460 net/netfilter/nfnetlink.c:561
-  netlink_unicast_kernel net/netlink/af_netlink.c:1302 [inline]
-  netlink_unicast+0x58c/0x7d0 net/netlink/af_netlink.c:1328
-  netlink_sendmsg+0x91c/0xea0 net/netlink/af_netlink.c:1917
-  sock_sendmsg_nosec net/socket.c:639 [inline]
-  sock_sendmsg+0xd7/0x130 net/socket.c:659
-  ____sys_sendmsg+0x753/0x880 net/socket.c:2330
-  ___sys_sendmsg+0x100/0x170 net/socket.c:2384
-  __sys_sendmsg+0x105/0x1d0 net/socket.c:2417
-  __do_sys_sendmsg net/socket.c:2426 [inline]
-  __se_sys_sendmsg net/socket.c:2424 [inline]
-  __x64_sys_sendmsg+0x78/0xb0 net/socket.c:2424
-  do_syscall_64+0xfa/0x790 arch/x86/entry/common.c:294
-  entry_SYSCALL_64_after_hwframe+0x49/0xbe
-RIP: 0033:0x4406a9
-Code: 18 89 d0 c3 66 2e 0f 1f 84 00 00 00 00 00 0f 1f 00 48 89 f8 48 89 f7  
-48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff  
-ff 0f 83 fb 13 fc ff c3 66 2e 0f 1f 84 00 00 00 00
-RSP: 002b:00007fff37625bc8 EFLAGS: 00000246 ORIG_RAX: 000000000000002e
-RAX: ffffffffffffffda RBX: 00000000004002c8 RCX: 00000000004406a9
-RDX: 0000000000042000 RSI: 0000000020000140 RDI: 0000000000000004
-RBP: 00000000006ca018 R08: 0000000000000001 R09: 00000000004002c8
-R10: 0000000000000009 R11: 0000000000000246 R12: 0000000000401f30
-R13: 0000000000401fc0 R14: 0000000000000000 R15: 0000000000000000
-Modules linked in:
----[ end trace 7b3c7a3aadb229c5 ]---
-RIP: 0010:__list_del_entry_valid.cold+0x37/0x4f lib/list_debug.c:48
-Code: be fd 0f 0b 4c 89 ea 4c 89 f6 48 c7 c7 a0 65 71 88 e8 a0 bb be fd 0f  
-0b 4c 89 e2 4c 89 f6 48 c7 c7 00 66 71 88 e8 8c bb be fd <0f> 0b 4c 89 f6  
-48 c7 c7 c0 66 71 88 e8 7b bb be fd 0f 0b cc cc cc
-RSP: 0018:ffffc900020e7338 EFLAGS: 00010286
-RAX: 000000000000004e RBX: ffff8880a46b1500 RCX: 0000000000000000
-RDX: 0000000000000000 RSI: ffffffff815e53a6 RDI: fffff5200041ce59
-RBP: ffffc900020e7350 R08: 000000000000004e R09: ffffed1015d26621
-R10: ffffed1015d26620 R11: ffff8880ae933107 R12: dead000000000122
-R13: ffff88809e9c3970 R14: ffff8880a46b1500 R15: ffff8880a46b1508
-FS:  0000000000837880(0000) GS:ffff8880ae900000(0000) knlGS:0000000000000000
-CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-CR2: 0000000020000280 CR3: 000000008f0b6000 CR4: 00000000001406e0
-DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
-DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+$ sudo ./test_progs -tattach,core/existence -bcgroup,flow/arr
+Summary: 4/6 PASSED, 0 SKIPPED, 0 FAILED
 
-
+Cc: Julia Kartseva <hex@fb.com>
+Signed-off-by: Andrii Nakryiko <andriin@fb.com>
 ---
-This bug is generated by a bot. It may contain errors.
-See https://goo.gl/tpsmEJ for more information about syzbot.
-syzbot engineers can be reached at syzkaller@googlegroups.com.
+ tools/testing/selftests/bpf/test_progs.c | 83 +++++++++++++++++++++---
+ tools/testing/selftests/bpf/test_progs.h |  8 ++-
+ 2 files changed, 80 insertions(+), 11 deletions(-)
 
-syzbot will keep track of this bug report. See:
-https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
-syzbot can test patches for this bug, for details see:
-https://goo.gl/tpsmEJ#testing-patches
+diff --git a/tools/testing/selftests/bpf/test_progs.c b/tools/testing/selftests/bpf/test_progs.c
+index 7fa7d08a8104..bab1e6f1d8f1 100644
+--- a/tools/testing/selftests/bpf/test_progs.c
++++ b/tools/testing/selftests/bpf/test_progs.c
+@@ -8,7 +8,7 @@
+ #include <string.h>
+ 
+ /* defined in test_progs.h */
+-struct test_env env;
++struct test_env env = {};
+ 
+ struct prog_test_def {
+ 	const char *test_name;
+@@ -29,10 +29,19 @@ struct prog_test_def {
+ 
+ static bool should_run(struct test_selector *sel, int num, const char *name)
+ {
+-	if (sel->name && sel->name[0] && !strstr(name, sel->name))
+-		return false;
++	int i;
++
++	for (i = 0; i < sel->blacklist.cnt; i++) {
++		if (strstr(name, sel->blacklist.strs[i]))
++			return false;
++	}
+ 
+-	if (!sel->num_set)
++	for (i = 0; i < sel->whitelist.cnt; i++) {
++		if (strstr(name, sel->whitelist.strs[i]))
++			return true;
++	}
++
++	if (!sel->whitelist.cnt && !sel->num_set)
+ 		return true;
+ 
+ 	return num < sel->num_set_len && sel->num_set[num];
+@@ -334,6 +343,7 @@ const char argp_program_doc[] = "BPF selftests test runner";
+ enum ARG_KEYS {
+ 	ARG_TEST_NUM = 'n',
+ 	ARG_TEST_NAME = 't',
++	ARG_TEST_NAME_BLACKLIST = 'b',
+ 	ARG_VERIFIER_STATS = 's',
+ 	ARG_VERBOSE = 'v',
+ };
+@@ -341,8 +351,10 @@ enum ARG_KEYS {
+ static const struct argp_option opts[] = {
+ 	{ "num", ARG_TEST_NUM, "NUM", 0,
+ 	  "Run test number NUM only " },
+-	{ "name", ARG_TEST_NAME, "NAME", 0,
+-	  "Run tests with names containing NAME" },
++	{ "name", ARG_TEST_NAME, "NAMES", 0,
++	  "Run tests with names containing any string from NAMES list" },
++	{ "name-blacklist", ARG_TEST_NAME_BLACKLIST, "NAMES", 0,
++	  "Don't run tests with names containing any string from NAMES list" },
+ 	{ "verifier-stats", ARG_VERIFIER_STATS, NULL, 0,
+ 	  "Output verifier statistics", },
+ 	{ "verbose", ARG_VERBOSE, "LEVEL", OPTION_ARG_OPTIONAL,
+@@ -359,6 +371,41 @@ static int libbpf_print_fn(enum libbpf_print_level level,
+ 	return 0;
+ }
+ 
++static int parse_str_list(const char *s, struct str_set *set)
++{
++	char *input, *state = NULL, *next, **tmp, **strs = NULL;
++	int cnt = 0;
++
++	input = strdup(s);
++	if (!input)
++		return -ENOMEM;
++
++	set->cnt = 0;
++	set->strs = NULL;
++
++	while ((next = strtok_r(state ? NULL : input, ",", &state))) {
++		tmp = realloc(strs, sizeof(*strs) * (cnt + 1));
++		if (!tmp)
++			goto err;
++		strs = tmp;
++
++		strs[cnt] = strdup(next);
++		if (!strs[cnt])
++			goto err;
++
++		cnt++;
++	}
++
++	set->cnt = cnt;
++	set->strs = (const char **)strs;
++	free(input);
++	return 0;
++err:
++	free(strs);
++	free(input);
++	return -ENOMEM;
++}
++
+ int parse_num_list(const char *s, struct test_selector *sel)
+ {
+ 	int i, set_len = 0, num, start = 0, end = -1;
+@@ -449,12 +496,24 @@ static error_t parse_arg(int key, char *arg, struct argp_state *state)
+ 
+ 		if (subtest_str) {
+ 			*subtest_str = '\0';
+-			env->subtest_selector.name = strdup(subtest_str + 1);
+-			if (!env->subtest_selector.name)
++			if (parse_str_list(subtest_str + 1,
++					   &env->subtest_selector.whitelist))
++				return -ENOMEM;
++		}
++		if (parse_str_list(arg, &env->test_selector.whitelist))
++			return -ENOMEM;
++		break;
++	}
++	case ARG_TEST_NAME_BLACKLIST: {
++		char *subtest_str = strchr(arg, '/');
++
++		if (subtest_str) {
++			*subtest_str = '\0';
++			if (parse_str_list(subtest_str + 1,
++					   &env->subtest_selector.blacklist))
+ 				return -ENOMEM;
+ 		}
+-		env->test_selector.name = strdup(arg);
+-		if (!env->test_selector.name)
++		if (parse_str_list(arg, &env->test_selector.blacklist))
+ 			return -ENOMEM;
+ 		break;
+ 	}
+@@ -617,7 +676,11 @@ int main(int argc, char **argv)
+ 	printf("Summary: %d/%d PASSED, %d SKIPPED, %d FAILED\n",
+ 	       env.succ_cnt, env.sub_succ_cnt, env.skip_cnt, env.fail_cnt);
+ 
++	free(env.test_selector.blacklist.strs);
++	free(env.test_selector.whitelist.strs);
+ 	free(env.test_selector.num_set);
++	free(env.subtest_selector.blacklist.strs);
++	free(env.subtest_selector.whitelist.strs);
+ 	free(env.subtest_selector.num_set);
+ 
+ 	return env.fail_cnt ? EXIT_FAILURE : EXIT_SUCCESS;
+diff --git a/tools/testing/selftests/bpf/test_progs.h b/tools/testing/selftests/bpf/test_progs.h
+index de1fdaa4e7b4..99933a1857ca 100644
+--- a/tools/testing/selftests/bpf/test_progs.h
++++ b/tools/testing/selftests/bpf/test_progs.h
+@@ -46,8 +46,14 @@ enum verbosity {
+ 	VERBOSE_SUPER,
+ };
+ 
++struct str_set {
++	const char **strs;
++	int cnt;
++};
++
+ struct test_selector {
+-	const char *name;
++	struct str_set whitelist;
++	struct str_set blacklist;
+ 	bool *num_set;
+ 	int num_set_len;
+ };
+-- 
+2.17.1
+
