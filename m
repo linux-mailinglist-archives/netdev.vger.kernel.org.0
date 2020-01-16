@@ -2,98 +2,225 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 666A113DE20
-	for <lists+netdev@lfdr.de>; Thu, 16 Jan 2020 15:55:08 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 435F713DE24
+	for <lists+netdev@lfdr.de>; Thu, 16 Jan 2020 15:55:53 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726965AbgAPOzA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 16 Jan 2020 09:55:00 -0500
-Received: from mail-lj1-f195.google.com ([209.85.208.195]:33457 "EHLO
-        mail-lj1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726160AbgAPOzA (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 16 Jan 2020 09:55:00 -0500
-Received: by mail-lj1-f195.google.com with SMTP id y6so23066339lji.0
-        for <netdev@vger.kernel.org>; Thu, 16 Jan 2020 06:54:58 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=zUc9+k1rcXsy9V4HYiOJ5EEGd0ukDuWJyEuWW7IqVws=;
-        b=FYGWeKjvPVNNBJ3gDLF5gtpSnVvwqzDVVt/wFix70ynRZ5rwG82fcIMMma9wyc8hr5
-         T1QgPohZWRkUl6VxaFsMehzSCpslBUvTaDGqokq2PyfTHaFokMy6Gp9He9IAHGqN75F4
-         3/kR8Qy9agAQZRYSRtFlGOk5kNpuIncJFg/kdCHIzbfXJkM0Eke0utiiYsEyhsvkKM9C
-         FDkvWBORyEXQPDxezArlGMJVaRNNIBy8pdVVQCVa73FIvw6A0ME+OZ4V7cXNJm4wnc5P
-         psJJbKWMLxThmz3RLTmSdvBlmMb4dN/NXkWmzCCpIHdYhCHlRcl8mWVEyW8xjbYh/fib
-         lV0A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=zUc9+k1rcXsy9V4HYiOJ5EEGd0ukDuWJyEuWW7IqVws=;
-        b=c1osDl+CqEnv0VCNKxI/6cxj3JthtGT/4npswm+QMF6LVCuvLXJrZsDPdeXi2wYX3D
-         7FQ+2vxOkRE61niolRqtZVESeImkaVihx7LBKXkFnKwij6IN7pSik9hX187jQFuCJhcB
-         D3kXBHHCqx3Q6j8xx8CDWu4gCeRWU0xiFGfxQYtth8D06klU19ihDGhiVFVj8Tlt/ass
-         K/9lnCuqGv1JhRAiSNrDQlo1T/OjohQTpsp9nt5s/oVzqSXuFDmFWnrTPF09SHAo0Nc1
-         eumhJw4onVOAl8Bzd5EnMlwwKqsmO7rCkwyXjVDc7vM81AmJkTr1ehMmZW2N6M67DOlk
-         eIUA==
-X-Gm-Message-State: APjAAAUufu0Ge00T+YCHa5KXn0oJUtx9CsDcPho8MTlbDLs2zuIKU/UJ
-        xAV7RArlkO3E85+Qqin9axrd6MFIue/qpxh47OY=
-X-Google-Smtp-Source: APXvYqziHB+7XT13sYjQ+wORVQSMMYt9L/38ka+va4DXTYtaBp3077zZNqiigAKHco6G3WNaO+bIEMgC+Vot5oSJfR0=
-X-Received: by 2002:a2e:880a:: with SMTP id x10mr2537589ljh.211.1579186498032;
- Thu, 16 Jan 2020 06:54:58 -0800 (PST)
+        id S1726559AbgAPOzn (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 16 Jan 2020 09:55:43 -0500
+Received: from Chamillionaire.breakpoint.cc ([193.142.43.52]:35466 "EHLO
+        Chamillionaire.breakpoint.cc" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1726160AbgAPOzm (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 16 Jan 2020 09:55:42 -0500
+Received: from fw by Chamillionaire.breakpoint.cc with local (Exim 4.92)
+        (envelope-from <fw@breakpoint.cc>)
+        id 1is6Ye-00063Q-UB; Thu, 16 Jan 2020 15:55:40 +0100
+From:   Florian Westphal <fw@strlen.de>
+To:     <netdev@vger.kernel.org>
+Cc:     Florian Westphal <fw@strlen.de>
+Subject: [PATCH net-next] netlink: make getters tolerate NULL nla arg
+Date:   Thu, 16 Jan 2020 15:55:22 +0100
+Message-Id: <20200116145522.28803-1-fw@strlen.de>
+X-Mailer: git-send-email 2.24.1
 MIME-Version: 1.0
-References: <20200111163723.4260-1-ap420073@gmail.com> <20200112064110.43245268@cakuba>
-In-Reply-To: <20200112064110.43245268@cakuba>
-From:   Taehee Yoo <ap420073@gmail.com>
-Date:   Thu, 16 Jan 2020 23:54:46 +0900
-Message-ID: <CAMArcTUZ476vinLb2f+JfGB209=qYeSWFgAHgb4DJdt4o9OHKw@mail.gmail.com>
-Subject: Re: [PATCH net 3/5] netdevsim: avoid debugfs warning message when
- module is remove
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     David Miller <davem@davemloft.net>, Netdev <netdev@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, 12 Jan 2020 at 23:45, Jakub Kicinski <kuba@kernel.org> wrote:
->
+One recurring bug pattern triggered by syzbot is NULL dereference in
+netlink code paths due to a missing "tb[NL_ARG_FOO] != NULL" test.
 
-Hi Jakub,
-Thank you for catching the problem!
+At least some of these missing checks would not have crashed the kernel if
+the various nla_get_XXX helpers would return 0 in case of missing arg.
 
-> On Sat, 11 Jan 2020 16:37:23 +0000, Taehee Yoo wrote:
-> > When module is being removed, it couldn't be held by try_module_get().
-> > debugfs's open function internally tries to hold file_operation->owner
-> > if .owner is set.
-> > If holding owner operation is failed, it prints a warning message.
->
-> > [  412.227709][ T1720] debugfs file owner did not clean up at exit: ipsec
->
-> > In order to avoid the warning message, this patch makes netdevsim module
-> > does not set .owner. Unsetting .owner is safe because these are protected
-> > by inode_lock().
->
-> So inode_lock will protect from the code getting unloaded/disappearing?
-> At a quick glance at debugs code it doesn't seem that inode_lock would
-> do that. Could you explain a little more to a non-fs developer like
-> myself? :)
->
-> Alternatively should we perhaps hold a module reference for each device
-> created and force user space to clean up the devices? That may require
-> some fixes to the test which use netdevsim.
->
+Make the helpers return 0 instead of crashing when a null nla is provided.
+Even with allyesconfig the .text increase is only about 350 bytes.
 
-Sorry, I misunderstood the debugfs logic.
-inode_lock() is called by debugfs_remove() and debugfs_create_file().
-It doesn't protect read and write operations.
+Signed-off-by: Florian Westphal <fw@strlen.de>
+---
+ include/net/netlink.h | 53 ++++++++++++++++++++-----------------------
+ 1 file changed, 25 insertions(+), 28 deletions(-)
 
-Currently, I have been taking look at debugfs_file_{get/put}() function,
-which increases and decreases the reference counter.
-In the __debugfs_file_removed(), this reference counter is used for
-waiting read and write operations. Unfortunately, the
-__debugfs_file_removed() isn't used because of "dentry->d_flags" value.
-So, I'm looking for a way to use these functions.
+diff --git a/include/net/netlink.h b/include/net/netlink.h
+index 56c365dc6dc7..95da479da113 100644
+--- a/include/net/netlink.h
++++ b/include/net/netlink.h
+@@ -1471,7 +1471,7 @@ static inline int nla_put_in6_addr(struct sk_buff *skb, int attrtype,
+  */
+ static inline u32 nla_get_u32(const struct nlattr *nla)
+ {
+-	return *(u32 *) nla_data(nla);
++	return nla ? *(u32 *) nla_data(nla) : 0u;
+ }
+ 
+ /**
+@@ -1480,7 +1480,7 @@ static inline u32 nla_get_u32(const struct nlattr *nla)
+  */
+ static inline __be32 nla_get_be32(const struct nlattr *nla)
+ {
+-	return *(__be32 *) nla_data(nla);
++	return (__be32)nla_get_u32(nla);
+ }
+ 
+ /**
+@@ -1489,7 +1489,7 @@ static inline __be32 nla_get_be32(const struct nlattr *nla)
+  */
+ static inline __le32 nla_get_le32(const struct nlattr *nla)
+ {
+-	return *(__le32 *) nla_data(nla);
++	return (__le32)nla_get_u32(nla);
+ }
+ 
+ /**
+@@ -1498,7 +1498,7 @@ static inline __le32 nla_get_le32(const struct nlattr *nla)
+  */
+ static inline u16 nla_get_u16(const struct nlattr *nla)
+ {
+-	return *(u16 *) nla_data(nla);
++	return nla ? *(u16 *) nla_data(nla) : 0u;
+ }
+ 
+ /**
+@@ -1507,7 +1507,7 @@ static inline u16 nla_get_u16(const struct nlattr *nla)
+  */
+ static inline __be16 nla_get_be16(const struct nlattr *nla)
+ {
+-	return *(__be16 *) nla_data(nla);
++	return (__be16)nla_get_u16(nla);
+ }
+ 
+ /**
+@@ -1516,7 +1516,7 @@ static inline __be16 nla_get_be16(const struct nlattr *nla)
+  */
+ static inline __le16 nla_get_le16(const struct nlattr *nla)
+ {
+-	return *(__le16 *) nla_data(nla);
++	return (__le16)nla_get_u16(nla);
+ }
+ 
+ /**
+@@ -1525,7 +1525,7 @@ static inline __le16 nla_get_le16(const struct nlattr *nla)
+  */
+ static inline u8 nla_get_u8(const struct nlattr *nla)
+ {
+-	return *(u8 *) nla_data(nla);
++	return nla ? *(u8 *) nla_data(nla) : 0u;
+ }
+ 
+ /**
+@@ -1534,9 +1534,10 @@ static inline u8 nla_get_u8(const struct nlattr *nla)
+  */
+ static inline u64 nla_get_u64(const struct nlattr *nla)
+ {
+-	u64 tmp;
++	u64 tmp = 0;
+ 
+-	nla_memcpy(&tmp, nla, sizeof(tmp));
++	if (nla)
++		nla_memcpy(&tmp, nla, sizeof(tmp));
+ 
+ 	return tmp;
+ }
+@@ -1547,11 +1548,7 @@ static inline u64 nla_get_u64(const struct nlattr *nla)
+  */
+ static inline __be64 nla_get_be64(const struct nlattr *nla)
+ {
+-	__be64 tmp;
+-
+-	nla_memcpy(&tmp, nla, sizeof(tmp));
+-
+-	return tmp;
++	return (__be64)nla_get_u64(nla);
+ }
+ 
+ /**
+@@ -1560,7 +1557,7 @@ static inline __be64 nla_get_be64(const struct nlattr *nla)
+  */
+ static inline __le64 nla_get_le64(const struct nlattr *nla)
+ {
+-	return *(__le64 *) nla_data(nla);
++	return (__le64)nla_get_u64(nla);
+ }
+ 
+ /**
+@@ -1569,7 +1566,7 @@ static inline __le64 nla_get_le64(const struct nlattr *nla)
+  */
+ static inline s32 nla_get_s32(const struct nlattr *nla)
+ {
+-	return *(s32 *) nla_data(nla);
++	return (s32)nla_get_u32(nla);
+ }
+ 
+ /**
+@@ -1578,7 +1575,7 @@ static inline s32 nla_get_s32(const struct nlattr *nla)
+  */
+ static inline s16 nla_get_s16(const struct nlattr *nla)
+ {
+-	return *(s16 *) nla_data(nla);
++	return (s16)nla_get_u16(nla);
+ }
+ 
+ /**
+@@ -1587,7 +1584,7 @@ static inline s16 nla_get_s16(const struct nlattr *nla)
+  */
+ static inline s8 nla_get_s8(const struct nlattr *nla)
+ {
+-	return *(s8 *) nla_data(nla);
++	return (s8)nla_get_u8(nla);
+ }
+ 
+ /**
+@@ -1596,11 +1593,7 @@ static inline s8 nla_get_s8(const struct nlattr *nla)
+  */
+ static inline s64 nla_get_s64(const struct nlattr *nla)
+ {
+-	s64 tmp;
+-
+-	nla_memcpy(&tmp, nla, sizeof(tmp));
+-
+-	return tmp;
++	return (s64)nla_get_u64(nla);
+ }
+ 
+ /**
+@@ -1631,7 +1624,7 @@ static inline unsigned long nla_get_msecs(const struct nlattr *nla)
+  */
+ static inline __be32 nla_get_in_addr(const struct nlattr *nla)
+ {
+-	return *(__be32 *) nla_data(nla);
++	return nla_get_be32(nla);
+ }
+ 
+ /**
+@@ -1640,9 +1633,11 @@ static inline __be32 nla_get_in_addr(const struct nlattr *nla)
+  */
+ static inline struct in6_addr nla_get_in6_addr(const struct nlattr *nla)
+ {
+-	struct in6_addr tmp;
++	struct in6_addr tmp = { 0 };
++
++	if (nla)
++		nla_memcpy(&tmp, nla, sizeof(tmp));
+ 
+-	nla_memcpy(&tmp, nla, sizeof(tmp));
+ 	return tmp;
+ }
+ 
+@@ -1652,9 +1647,11 @@ static inline struct in6_addr nla_get_in6_addr(const struct nlattr *nla)
+  */
+ static inline struct nla_bitfield32 nla_get_bitfield32(const struct nlattr *nla)
+ {
+-	struct nla_bitfield32 tmp;
++	struct nla_bitfield32 tmp = { 0 };
++
++	if (nla)
++		nla_memcpy(&tmp, nla, sizeof(tmp));
+ 
+-	nla_memcpy(&tmp, nla, sizeof(tmp));
+ 	return tmp;
+ }
+ 
+-- 
+2.24.1
 
-Thanks a lot!
-Taehee Yoo
