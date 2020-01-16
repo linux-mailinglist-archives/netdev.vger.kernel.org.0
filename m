@@ -2,36 +2,35 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 9CF3D13EF64
-	for <lists+netdev@lfdr.de>; Thu, 16 Jan 2020 19:15:04 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id CCB2013EF5C
+	for <lists+netdev@lfdr.de>; Thu, 16 Jan 2020 19:15:00 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2395373AbgAPSPC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 16 Jan 2020 13:15:02 -0500
-Received: from mail.kernel.org ([198.145.29.99]:42016 "EHLO mail.kernel.org"
+        id S2392932AbgAPRaB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 16 Jan 2020 12:30:01 -0500
+Received: from mail.kernel.org ([198.145.29.99]:42122 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2392585AbgAPR3w (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 16 Jan 2020 12:29:52 -0500
+        id S2392903AbgAPRaB (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 16 Jan 2020 12:30:01 -0500
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 02E87246FB;
-        Thu, 16 Jan 2020 17:29:50 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id F1D27246FB;
+        Thu, 16 Jan 2020 17:29:58 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1579195792;
-        bh=SDIJYKrcaxCHsyHrfJ79C5x/3Dng5f9PEgcisQhgeBg=;
+        s=default; t=1579195800;
+        bh=xZ5RhA1HhqXuwpTnact15uPNMrHUpyZVOTfPrcrCdRs=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=J09T6e/T684XdpAhaXXFg6cND5yc0u4z85RaeYVgadoenCShavNc5jRiQjyvd6uxI
-         z13b2pF8dnJDzNJb82Uhpc3ShRrd9FF1IrJ4YsIQK7wJIOmjLsfqjJj7TCahA1yUTh
-         cZXx5S+KM2iOfEzmhYc1CbyI6KZWOQtjxK+nQ2hs=
+        b=WjbyOZoVjOGle4KFWeRb99xZC88IhQ/krS7DHHTdCAvgOqQYA6MBWIpwkVH97qMAb
+         VmqRKL0S5VqA27IAOzEXyAqHSHNlyVZUU/vxTfzRrOJ8RkNuwX8kgL9l+7lxv6awOP
+         NWVY1OpfqwZe2fGAEueC0IoIhjFzd0ArcXnXllko=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Johannes Berg <johannes.berg@intel.com>,
-        Luca Coelho <luciano.coelho@intel.com>,
-        Sasha Levin <sashal@kernel.org>,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.14 313/371] mac80211: accept deauth frames in IBSS mode
-Date:   Thu, 16 Jan 2020 12:23:05 -0500
-Message-Id: <20200116172403.18149-256-sashal@kernel.org>
+Cc:     Eric Biggers <ebiggers@google.com>,
+        Jakub Kicinski <jakub.kicinski@netronome.com>,
+        Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 4.14 315/371] llc: fix sk_buff refcounting in llc_conn_state_process()
+Date:   Thu, 16 Jan 2020 12:23:07 -0500
+Message-Id: <20200116172403.18149-258-sashal@kernel.org>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20200116172403.18149-1-sashal@kernel.org>
 References: <20200116172403.18149-1-sashal@kernel.org>
@@ -44,47 +43,123 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Johannes Berg <johannes.berg@intel.com>
+From: Eric Biggers <ebiggers@google.com>
 
-[ Upstream commit 95697f9907bfe3eab0ef20265a766b22e27dde64 ]
+[ Upstream commit 36453c852816f19947ca482a595dffdd2efa4965 ]
 
-We can process deauth frames and all, but we drop them very
-early in the RX path today - this could never have worked.
+If llc_conn_state_process() sees that llc_conn_service() put the skb on
+a list, it will drop one fewer references to it.  This is wrong because
+the current behavior is that llc_conn_service() never consumes a
+reference to the skb.
 
-Fixes: 2cc59e784b54 ("mac80211: reply to AUTH with DEAUTH if sta allocation fails in IBSS")
-Signed-off-by: Johannes Berg <johannes.berg@intel.com>
-Signed-off-by: Luca Coelho <luciano.coelho@intel.com>
-Link: https://lore.kernel.org/r/20191004123706.15768-2-luca@coelho.fi
-Signed-off-by: Johannes Berg <johannes.berg@intel.com>
+The code also makes the number of skb references being dropped
+conditional on which of ind_prim and cfm_prim are nonzero, yet neither
+of these affects how many references are *acquired*.  So there is extra
+code that tries to fix this up by sometimes taking another reference.
+
+Remove the unnecessary/broken refcounting logic and instead just add an
+skb_get() before the only two places where an extra reference is
+actually consumed.
+
+Fixes: 1da177e4c3f4 ("Linux-2.6.12-rc2")
+Signed-off-by: Eric Biggers <ebiggers@google.com>
+Signed-off-by: Jakub Kicinski <jakub.kicinski@netronome.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/mac80211/rx.c | 11 ++++++++++-
- 1 file changed, 10 insertions(+), 1 deletion(-)
+ net/llc/llc_conn.c | 33 ++++++---------------------------
+ 1 file changed, 6 insertions(+), 27 deletions(-)
 
-diff --git a/net/mac80211/rx.c b/net/mac80211/rx.c
-index 4a6b3c7b35e3..31000622376d 100644
---- a/net/mac80211/rx.c
-+++ b/net/mac80211/rx.c
-@@ -3227,9 +3227,18 @@ ieee80211_rx_h_mgmt(struct ieee80211_rx_data *rx)
- 	case cpu_to_le16(IEEE80211_STYPE_PROBE_RESP):
- 		/* process for all: mesh, mlme, ibss */
+diff --git a/net/llc/llc_conn.c b/net/llc/llc_conn.c
+index 7340f23e16de..7fbc682aff04 100644
+--- a/net/llc/llc_conn.c
++++ b/net/llc/llc_conn.c
+@@ -64,12 +64,6 @@ int llc_conn_state_process(struct sock *sk, struct sk_buff *skb)
+ 	struct llc_sock *llc = llc_sk(skb->sk);
+ 	struct llc_conn_state_ev *ev = llc_conn_ev(skb);
+ 
+-	/*
+-	 * We have to hold the skb, because llc_conn_service will kfree it in
+-	 * the sending path and we need to look at the skb->cb, where we encode
+-	 * llc_conn_state_ev.
+-	 */
+-	skb_get(skb);
+ 	ev->ind_prim = ev->cfm_prim = 0;
+ 	/*
+ 	 * Send event to state machine
+@@ -77,21 +71,12 @@ int llc_conn_state_process(struct sock *sk, struct sk_buff *skb)
+ 	rc = llc_conn_service(skb->sk, skb);
+ 	if (unlikely(rc != 0)) {
+ 		printk(KERN_ERR "%s: llc_conn_service failed\n", __func__);
+-		goto out_kfree_skb;
+-	}
+-
+-	if (unlikely(!ev->ind_prim && !ev->cfm_prim)) {
+-		/* indicate or confirm not required */
+-		if (!skb->next)
+-			goto out_kfree_skb;
+ 		goto out_skb_put;
+ 	}
+ 
+-	if (unlikely(ev->ind_prim && ev->cfm_prim)) /* Paranoia */
+-		skb_get(skb);
+-
+ 	switch (ev->ind_prim) {
+ 	case LLC_DATA_PRIM:
++		skb_get(skb);
+ 		llc_save_primitive(sk, skb, LLC_DATA_PRIM);
+ 		if (unlikely(sock_queue_rcv_skb(sk, skb))) {
+ 			/*
+@@ -108,6 +93,7 @@ int llc_conn_state_process(struct sock *sk, struct sk_buff *skb)
+ 		 * skb->sk pointing to the newly created struct sock in
+ 		 * llc_conn_handler. -acme
+ 		 */
++		skb_get(skb);
+ 		skb_queue_tail(&sk->sk_receive_queue, skb);
+ 		sk->sk_state_change(sk);
  		break;
-+	case cpu_to_le16(IEEE80211_STYPE_DEAUTH):
-+		if (is_multicast_ether_addr(mgmt->da) &&
-+		    !is_broadcast_ether_addr(mgmt->da))
-+			return RX_DROP_MONITOR;
-+
-+		/* process only for station/IBSS */
-+		if (sdata->vif.type != NL80211_IFTYPE_STATION &&
-+		    sdata->vif.type != NL80211_IFTYPE_ADHOC)
-+			return RX_DROP_MONITOR;
+@@ -123,7 +109,6 @@ int llc_conn_state_process(struct sock *sk, struct sk_buff *skb)
+ 				sk->sk_state_change(sk);
+ 			}
+ 		}
+-		kfree_skb(skb);
+ 		sock_put(sk);
+ 		break;
+ 	case LLC_RESET_PRIM:
+@@ -132,14 +117,11 @@ int llc_conn_state_process(struct sock *sk, struct sk_buff *skb)
+ 		 * RESET is not being notified to upper layers for now
+ 		 */
+ 		printk(KERN_INFO "%s: received a reset ind!\n", __func__);
+-		kfree_skb(skb);
+ 		break;
+ 	default:
+-		if (ev->ind_prim) {
++		if (ev->ind_prim)
+ 			printk(KERN_INFO "%s: received unknown %d prim!\n",
+ 				__func__, ev->ind_prim);
+-			kfree_skb(skb);
+-		}
+ 		/* No indication */
+ 		break;
+ 	}
+@@ -181,15 +163,12 @@ int llc_conn_state_process(struct sock *sk, struct sk_buff *skb)
+ 		printk(KERN_INFO "%s: received a reset conf!\n", __func__);
+ 		break;
+ 	default:
+-		if (ev->cfm_prim) {
++		if (ev->cfm_prim)
+ 			printk(KERN_INFO "%s: received unknown %d prim!\n",
+ 					__func__, ev->cfm_prim);
+-			break;
+-		}
+-		goto out_skb_put; /* No confirmation */
++		/* No confirmation */
 +		break;
- 	case cpu_to_le16(IEEE80211_STYPE_ASSOC_RESP):
- 	case cpu_to_le16(IEEE80211_STYPE_REASSOC_RESP):
--	case cpu_to_le16(IEEE80211_STYPE_DEAUTH):
- 	case cpu_to_le16(IEEE80211_STYPE_DISASSOC):
- 		if (is_multicast_ether_addr(mgmt->da) &&
- 		    !is_broadcast_ether_addr(mgmt->da))
+ 	}
+-out_kfree_skb:
+-	kfree_skb(skb);
+ out_skb_put:
+ 	kfree_skb(skb);
+ 	return rc;
 -- 
 2.20.1
 
