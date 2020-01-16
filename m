@@ -2,92 +2,89 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 7DF7013EF04
-	for <lists+netdev@lfdr.de>; Thu, 16 Jan 2020 19:12:58 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B317D13EDDD
+	for <lists+netdev@lfdr.de>; Thu, 16 Jan 2020 19:05:54 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2395223AbgAPSMs (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 16 Jan 2020 13:12:48 -0500
-Received: from mail-wr1-f65.google.com ([209.85.221.65]:39285 "EHLO
-        mail-wr1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2405277AbgAPRhD (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 16 Jan 2020 12:37:03 -0500
-Received: by mail-wr1-f65.google.com with SMTP id y11so20028578wrt.6
-        for <netdev@vger.kernel.org>; Thu, 16 Jan 2020 09:37:02 -0800 (PST)
+        id S2407108AbgAPSFh (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 16 Jan 2020 13:05:37 -0500
+Received: from mail-wm1-f68.google.com ([209.85.128.68]:40016 "EHLO
+        mail-wm1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2390828AbgAPRjy (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 16 Jan 2020 12:39:54 -0500
+Received: by mail-wm1-f68.google.com with SMTP id t14so4688013wmi.5
+        for <netdev@vger.kernel.org>; Thu, 16 Jan 2020 09:39:53 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id;
-        bh=V6HTyyyZXgDWP7nZx8wsX6kxnYZJ/8kBbhBhkTS/Kzg=;
-        b=RFbygifpIcMTgbcNDvv0Oz8D2Jvfs+nndyDMJxkdnVDwbUNaMeI6oaU8HWQgDXanoF
-         jabNs9uUfxUrlDreMOxJtd37/UNR/FbHEu27degc2YK/T0l05pW/J6NIZq3DZwGOufg+
-         fDQ4jE5P89D7ei72GXa/yE5wQankfvbmZ990+kGK0w6oX6wEp2yFBsui1qXJjJXmiXpJ
-         xLVtyZcVHGcvT5TtJdXHebn/g+vAHwMirS8Me8y/cgQ6GJ106OLi4vMCaVaFb81y2Nuj
-         0RqRXLIy10xIlZRJlZuLOZh4vydmkTO9FGIzFJTv3eNwY1FvKygxfhswPYYf4qCY1HK9
-         q/mw==
+        bh=5is99BpkG2bxKMbDNNsbXDKVl3CfNLut+2t3w5aK8G8=;
+        b=ps9l1zC/Wer3Qt/zgMtVMieT7O2NLj0eNKQZVQ2CeYgj0gpg0KsmsIMG8G/cTttAc4
+         HyOYe/2cCIJiqkZrF03GtB8LM1YlyL28oQoGTctONq4NqiBUTOqXpb2txvEtp9gDFqmU
+         NcKs3QDGhD2RB1xaA+rAcMhYV9quN8jkWs4+DkCbqEzPjn7VBUK5+x19nsAv4k9jAWlu
+         +o3zvxL+Gnk5i0mAyHdNRXbX7opvdibYs84IYJ8sZw2FiWX8jkIpAWMEtZ95Py3TEJWj
+         1Qy97C+bKrwO6I2nAzWEdow7eZBAEjPezp6exV4mtl8z/5AXWaR1lRXMTXCf6Xmen+WJ
+         Jp+A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id;
-        bh=V6HTyyyZXgDWP7nZx8wsX6kxnYZJ/8kBbhBhkTS/Kzg=;
-        b=PWp9mgT37QPkwidk7+GtlSdW5mYkA0FsFzWLOY4DTQnbTiyLfWARzjyeAbTt3FdfHY
-         y50ib+bMgNJlQ4q6ojtX7qV8OMqKg0fKdRqYMw9fOrZwc5GmkRWEJazWjfx2aBaf64rN
-         PDXGivqWFgX9VUlGqHnYk0Va81LlBss1t03TRfEEwiRcJ77WkUl0FEVn/gmyXlVSsDEE
-         80iUDE75SAFVC+1aW0cuXkPRQ/Ax+Hzgdf4QlugfqrdSMbP08taodEfsJ2XGpjZS52RP
-         CLppfiNx26+AGaO4tVwrFYy4f6RKT7pHmwjD455teKYcBhL5iL4ROSv503bisWkkHkdI
-         bcyQ==
-X-Gm-Message-State: APjAAAWgNQ6vSylO1P7KGuRXdvk0obUv3LtfWpWYUOh+QtAYeZV6v+Xp
-        PN6Rd9OQgCPlJb34EvBYQWY=
-X-Google-Smtp-Source: APXvYqyUmjpTRDpZq+djruYc4LjjsclPt+BPmyQz68KMCJDeq1JGPNuLj8vIspts3BhclvPXafuI5Q==
-X-Received: by 2002:a5d:670a:: with SMTP id o10mr4612073wru.227.1579196221982;
-        Thu, 16 Jan 2020 09:37:01 -0800 (PST)
+        bh=5is99BpkG2bxKMbDNNsbXDKVl3CfNLut+2t3w5aK8G8=;
+        b=HPa9lnigrWsv+SY/ZW9L1EGxF6pDrxUf3zG8wXdTodkHr/JTVNlM1x00/x7ajER0//
+         CvT1QmxccIT5IY5xquWMwEIn2wlhpJeNukQTaLexZqfzMo89z27untfY3+f+Hk9ssU2O
+         u4H4dW6vMjwhagRIhQbI0/2JUiiVINYeF8GCxQRHQaldPtz7r55OZT2iasHvgJl/OuOF
+         ZTF1HXbQVKMzNXkaHWgXh+Pt9vciIbBvcBPb8zSbwuABpzCzwuR6e4MwxtbzSc/cqaIy
+         HXMe0MWNMAOVj39FERisBd0bGYgqBKxLAmj/WDgIpM2G6Fjdq2oUKSDZEuNc9H90mNSa
+         RZ8g==
+X-Gm-Message-State: APjAAAWoR/IUFy5CJoLSbJfXwWAW2nJ1Aa02wDYW25aRJGE6b9Yj+5oq
+        CHrT3V5SLBkpOZ8ElCnl49c=
+X-Google-Smtp-Source: APXvYqyu/+hPKS4RaFS5b1PKCqZtkK3iaqHG51KuIR1N4tlr91JMC1rLkkC0wpPt3ErBDMPfYvoa5g==
+X-Received: by 2002:a1c:9c4c:: with SMTP id f73mr136104wme.125.1579196392752;
+        Thu, 16 Jan 2020 09:39:52 -0800 (PST)
 Received: from localhost.localdomain ([188.25.254.226])
-        by smtp.gmail.com with ESMTPSA id m10sm30224255wrx.19.2020.01.16.09.37.01
+        by smtp.gmail.com with ESMTPSA id l3sm27420316wrt.29.2020.01.16.09.39.51
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 16 Jan 2020 09:37:01 -0800 (PST)
+        Thu, 16 Jan 2020 09:39:52 -0800 (PST)
 From:   Vladimir Oltean <olteanv@gmail.com>
 To:     davem@davemloft.net, linux@armlinux.org.uk, andrew@lunn.ch,
         f.fainelli@gmail.com, hkallweit1@gmail.com
-Cc:     netdev@vger.kernel.org, Vladimir Oltean <vladimir.oltean@nxp.com>
-Subject: [PATCH net-next] net: phylink: Allow 2.5BASE-T, 5GBASE-T and 10GBASE-T for the 10G link modes
-Date:   Thu, 16 Jan 2020 19:36:56 +0200
-Message-Id: <20200116173656.14118-1-olteanv@gmail.com>
+Cc:     netdev@vger.kernel.org,
+        Alex Marginean <alexandru.marginean@nxp.com>,
+        Vladimir Oltean <vladimir.oltean@nxp.com>
+Subject: [PATCH net-next] net: phylink: allow in-band AN for USXGMII
+Date:   Thu, 16 Jan 2020 19:39:30 +0200
+Message-Id: <20200116173930.14775-1-olteanv@gmail.com>
 X-Mailer: git-send-email 2.17.1
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Vladimir Oltean <vladimir.oltean@nxp.com>
+From: Alex Marginean <alexandru.marginean@nxp.com>
 
-For some reason, PHYLINK does not put the copper modes for 802.3bz
-(NBASE-T) and 802.3an-2006 (10GBASE-T) in the PHY's supported mask, when
-the PHY-MAC connection is a 10G-capable one (10GBase-KR, 10GBase-R,
-USXGMII). One possible way through which the cable side can work at the
-lower speed is by having the PHY emit PAUSE frames towards the MAC. So
-fix that omission.
+USXGMII supports passing link information in-band between PHY and MAC PCS,
+add it to the list of protocols that support in-band AN mode.
 
-Also include the 2500Base-X fiber mode in this list while we're at it.
+Being a MAC-PHY protocol that can auto-negotiate link speeds up to 10
+Gbps, we populate the initial supported mask with the entire spectrum of
+link modes up to 10G that PHYLINK supports, and we let the driver reduce
+that mask in its .phylink_validate method.
 
+Signed-off-by: Alex Marginean <alexandru.marginean@nxp.com>
 Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
 ---
-Resent to include netdev@vger.kernel.org in Cc (missed the first time).
-
- drivers/net/phy/phylink.c | 4 ++++
- 1 file changed, 4 insertions(+)
+ drivers/net/phy/phylink.c | 1 +
+ 1 file changed, 1 insertion(+)
 
 diff --git a/drivers/net/phy/phylink.c b/drivers/net/phy/phylink.c
-index f40d92ec32f8..e5a0f9c75042 100644
+index efabbfa4a6d3..f40d92ec32f8 100644
 --- a/drivers/net/phy/phylink.c
 +++ b/drivers/net/phy/phylink.c
-@@ -308,6 +308,10 @@ static int phylink_parse_mode(struct phylink *pl, struct fwnode_handle *fwnode)
- 			phylink_set(pl->supported, 1000baseT_Half);
- 			phylink_set(pl->supported, 1000baseT_Full);
- 			phylink_set(pl->supported, 1000baseX_Full);
-+			phylink_set(pl->supported, 2500baseT_Full);
-+			phylink_set(pl->supported, 2500baseX_Full);
-+			phylink_set(pl->supported, 5000baseT_Full);
-+			phylink_set(pl->supported, 10000baseT_Full);
- 			phylink_set(pl->supported, 10000baseKR_Full);
- 			phylink_set(pl->supported, 10000baseCR_Full);
- 			phylink_set(pl->supported, 10000baseSR_Full);
+@@ -299,6 +299,7 @@ static int phylink_parse_mode(struct phylink *pl, struct fwnode_handle *fwnode)
+ 			break;
+ 
+ 		case PHY_INTERFACE_MODE_10GKR:
++		case PHY_INTERFACE_MODE_USXGMII:
+ 		case PHY_INTERFACE_MODE_10GBASER:
+ 			phylink_set(pl->supported, 10baseT_Half);
+ 			phylink_set(pl->supported, 10baseT_Full);
 -- 
 2.17.1
 
