@@ -2,36 +2,36 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 4345413F4A4
-	for <lists+netdev@lfdr.de>; Thu, 16 Jan 2020 19:53:08 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C2AD313F4AF
+	for <lists+netdev@lfdr.de>; Thu, 16 Jan 2020 19:53:13 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2389056AbgAPRI2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 16 Jan 2020 12:08:28 -0500
-Received: from mail.kernel.org ([198.145.29.99]:42076 "EHLO mail.kernel.org"
+        id S2389494AbgAPRIr (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 16 Jan 2020 12:08:47 -0500
+Received: from mail.kernel.org ([198.145.29.99]:42998 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2389404AbgAPRI0 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 16 Jan 2020 12:08:26 -0500
+        id S2389473AbgAPRIn (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 16 Jan 2020 12:08:43 -0500
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 0191B24680;
-        Thu, 16 Jan 2020 17:08:24 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id B6F4120663;
+        Thu, 16 Jan 2020 17:08:41 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1579194505;
-        bh=URb5oi0uii864bHDgX1XC/e4s9mgbrlqdK3in4NId6o=;
+        s=default; t=1579194522;
+        bh=T+FQIVTKiTyZ3ngH8ZTMP53N4ehYF3Kts2vYdU+aX0E=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=R5eeg/9UqOq/uNs2OVQGZ+yQ1Lj+/6Tp+PjxHhk50jblnl7cTW3YSgBWUEd8q+82x
-         xpSuCLOL3FzR1kCa78K8XGZVDqFaxHrAkBDI5NuFCZYGYULhkh4R80vBThcJCPbZ+C
-         wtc/Lj2c0yS6sXOyVAucjamWo7M73l4DYeId84c8=
+        b=Dh9JizSbMXyvL2Nw8F8btack77CszDSjenm+OBdVk38m96Du4a2N20Aa4eC7zoU71
+         eIiVGB5odaf6m8m61oSGwdJeNkDKjCjc7pExYpHC8Xr8TKepxkwMfdczuJ7h9wqFip
+         HkYrGcwMN1428gWlTLStus0NYdnPtudViItW/XMI=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     George Wilkie <gwilkie@vyatta.att-mail.com>,
-        David Ahern <dsahern@gmail.com>,
+Cc:     Michal Kalderon <michal.kalderon@marvell.com>,
+        Ariel Elior <ariel.elior@marvell.com>,
         "David S . Miller" <davem@davemloft.net>,
         Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.19 401/671] mpls: fix warning with multi-label encap
-Date:   Thu, 16 Jan 2020 12:00:39 -0500
-Message-Id: <20200116170509.12787-138-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 4.19 413/671] qed: iWARP - Use READ_ONCE and smp_store_release to access ep->state
+Date:   Thu, 16 Jan 2020 12:00:51 -0500
+Message-Id: <20200116170509.12787-150-sashal@kernel.org>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20200116170509.12787-1-sashal@kernel.org>
 References: <20200116170509.12787-1-sashal@kernel.org>
@@ -44,43 +44,78 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: George Wilkie <gwilkie@vyatta.att-mail.com>
+From: Michal Kalderon <michal.kalderon@marvell.com>
 
-[ Upstream commit 2f3f7d1fa0d1039b24a55d127ed190f196fc3e79 ]
+[ Upstream commit 6117561e1bb30b2fe7f51e1961f34dbedd0bec8a ]
 
-If you configure a route with multiple labels, e.g.
-  ip route add 10.10.3.0/24 encap mpls 16/100 via 10.10.2.2 dev ens4
-A warning is logged:
-  kernel: [  130.561819] netlink: 'ip': attribute type 1 has an invalid
-  length.
+Destroy QP waits for it's ep object state to be set to CLOSED
+before proceeding. ep->state can be updated from a different
+context. Add smp_store_release/READ_ONCE to synchronize.
 
-This happens because mpls_iptunnel_policy has set the type of
-MPLS_IPTUNNEL_DST to fixed size NLA_U32.
-Change it to a minimum size.
-nla_get_labels() does the remaining validation.
-
-Fixes: e3e4712ec096 ("mpls: ip tunnel support")
-Signed-off-by: George Wilkie <gwilkie@vyatta.att-mail.com>
-Reviewed-by: David Ahern <dsahern@gmail.com>
+Fixes: fc4c6065e661 ("qed: iWARP implement disconnect flows")
+Signed-off-by: Ariel Elior <ariel.elior@marvell.com>
+Signed-off-by: Michal Kalderon <michal.kalderon@marvell.com>
 Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/mpls/mpls_iptunnel.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/net/ethernet/qlogic/qed/qed_iwarp.c | 16 +++++++++++-----
+ 1 file changed, 11 insertions(+), 5 deletions(-)
 
-diff --git a/net/mpls/mpls_iptunnel.c b/net/mpls/mpls_iptunnel.c
-index 94f53a9b7d1a..faf6ef1b6a45 100644
---- a/net/mpls/mpls_iptunnel.c
-+++ b/net/mpls/mpls_iptunnel.c
-@@ -28,7 +28,7 @@
- #include "internal.h"
+diff --git a/drivers/net/ethernet/qlogic/qed/qed_iwarp.c b/drivers/net/ethernet/qlogic/qed/qed_iwarp.c
+index 7002a660b6b4..c77babd0ef95 100644
+--- a/drivers/net/ethernet/qlogic/qed/qed_iwarp.c
++++ b/drivers/net/ethernet/qlogic/qed/qed_iwarp.c
+@@ -532,7 +532,8 @@ int qed_iwarp_destroy_qp(struct qed_hwfn *p_hwfn, struct qed_rdma_qp *qp)
  
- static const struct nla_policy mpls_iptunnel_policy[MPLS_IPTUNNEL_MAX + 1] = {
--	[MPLS_IPTUNNEL_DST]	= { .type = NLA_U32 },
-+	[MPLS_IPTUNNEL_DST]	= { .len = sizeof(u32) },
- 	[MPLS_IPTUNNEL_TTL]	= { .type = NLA_U8 },
- };
+ 	/* Make sure ep is closed before returning and freeing memory. */
+ 	if (ep) {
+-		while (ep->state != QED_IWARP_EP_CLOSED && wait_count++ < 200)
++		while (READ_ONCE(ep->state) != QED_IWARP_EP_CLOSED &&
++		       wait_count++ < 200)
+ 			msleep(100);
  
+ 		if (ep->state != QED_IWARP_EP_CLOSED)
+@@ -1023,8 +1024,6 @@ qed_iwarp_mpa_complete(struct qed_hwfn *p_hwfn,
+ 
+ 	params.ep_context = ep;
+ 
+-	ep->state = QED_IWARP_EP_CLOSED;
+-
+ 	switch (fw_return_code) {
+ 	case RDMA_RETURN_OK:
+ 		ep->qp->max_rd_atomic_req = ep->cm_info.ord;
+@@ -1084,6 +1083,10 @@ qed_iwarp_mpa_complete(struct qed_hwfn *p_hwfn,
+ 		break;
+ 	}
+ 
++	if (fw_return_code != RDMA_RETURN_OK)
++		/* paired with READ_ONCE in destroy_qp */
++		smp_store_release(&ep->state, QED_IWARP_EP_CLOSED);
++
+ 	ep->event_cb(ep->cb_context, &params);
+ 
+ 	/* on passive side, if there is no associated QP (REJECT) we need to
+@@ -2828,7 +2831,9 @@ static void qed_iwarp_qp_in_error(struct qed_hwfn *p_hwfn,
+ 	params.status = (fw_return_code == IWARP_QP_IN_ERROR_GOOD_CLOSE) ?
+ 			 0 : -ECONNRESET;
+ 
+-	ep->state = QED_IWARP_EP_CLOSED;
++	/* paired with READ_ONCE in destroy_qp */
++	smp_store_release(&ep->state, QED_IWARP_EP_CLOSED);
++
+ 	spin_lock_bh(&p_hwfn->p_rdma_info->iwarp.iw_lock);
+ 	list_del(&ep->list_entry);
+ 	spin_unlock_bh(&p_hwfn->p_rdma_info->iwarp.iw_lock);
+@@ -2917,7 +2922,8 @@ qed_iwarp_tcp_connect_unsuccessful(struct qed_hwfn *p_hwfn,
+ 	params.event = QED_IWARP_EVENT_ACTIVE_COMPLETE;
+ 	params.ep_context = ep;
+ 	params.cm_info = &ep->cm_info;
+-	ep->state = QED_IWARP_EP_CLOSED;
++	/* paired with READ_ONCE in destroy_qp */
++	smp_store_release(&ep->state, QED_IWARP_EP_CLOSED);
+ 
+ 	switch (fw_return_code) {
+ 	case IWARP_CONN_ERROR_TCP_CONNECT_INVALID_PACKET:
 -- 
 2.20.1
 
