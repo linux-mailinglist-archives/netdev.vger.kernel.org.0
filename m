@@ -2,43 +2,42 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 539CF13F4BF
-	for <lists+netdev@lfdr.de>; Thu, 16 Jan 2020 19:53:21 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id F155A13F4BA
+	for <lists+netdev@lfdr.de>; Thu, 16 Jan 2020 19:53:18 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2404217AbgAPSvV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 16 Jan 2020 13:51:21 -0500
-Received: from mail.kernel.org ([198.145.29.99]:43304 "EHLO mail.kernel.org"
+        id S2437001AbgAPSvI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 16 Jan 2020 13:51:08 -0500
+Received: from mail.kernel.org ([198.145.29.99]:43530 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2387629AbgAPRIs (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 16 Jan 2020 12:08:48 -0500
+        id S2389514AbgAPRIx (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 16 Jan 2020 12:08:53 -0500
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id E9516205F4;
-        Thu, 16 Jan 2020 17:08:46 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 6187224679;
+        Thu, 16 Jan 2020 17:08:51 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1579194528;
-        bh=+1SbirVJ/IyS3tu9c+GI5RoSNlHihK6fBZBfyPRruwo=;
+        s=default; t=1579194532;
+        bh=NgkfrwC0DyssXCbp8oWV3NAEiuEx3mhWhQdfEZBAqJ4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=HVug6EDA5OYxbISIueoQejRNE15OstowuFGI0Iwb1pv4DstGBlN1oykYafdN+W8z8
-         JmC3TTl5o+xivjpaBYEPyxSu4g7Fk2ydAHc9tcbeQlI5jrHsdu5Z6SOWbbSgROOVcN
-         yz+SgnOWlkgbYC9iJt/rJp8rz0yTRGaYX0CKAf0s=
+        b=0iJsqs1E5zxUZcZ+BAzP4TWqmZ71cRvcDaqcY1HEu7/plYiKNb9rjUoNYENxVmUBY
+         cdUA0yMGowPPyroNJNpDCYR1C+ndK3+GtPDYpaJs06Ad7ov8p/VfZurrpHhO/HYapF
+         o1ITvgj6/xtf9/NXJ/ZU0FvddzPYeqnSC3k2+l9k=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Anton Protopopov <a.s.protopopov@gmail.com>,
-        =?UTF-8?q?Toke=20H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>,
-        David Ahern <dsahern@gmail.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org,
-        bpf@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.19 417/671] bpf: fix the check that forwarding is enabled in bpf_ipv6_fib_lookup
-Date:   Thu, 16 Jan 2020 12:00:55 -0500
-Message-Id: <20200116170509.12787-154-sashal@kernel.org>
+Cc:     Jakub Kicinski <jakub.kicinski@netronome.com>,
+        Dirk van der Merwe <dirk.vandermerwe@netronome.com>,
+        Cong Wang <xiyou.wangcong@gmail.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Sasha Levin <sashal@kernel.org>,
+        netem@lists.linux-foundation.org, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 4.19 420/671] net: netem: fix backlog accounting for corrupted GSO frames
+Date:   Thu, 16 Jan 2020 12:00:58 -0500
+Message-Id: <20200116170509.12787-157-sashal@kernel.org>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20200116170509.12787-1-sashal@kernel.org>
 References: <20200116170509.12787-1-sashal@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 X-stable: review
 X-Patchwork-Hint: Ignore
 Content-Transfer-Encoding: 8bit
@@ -47,38 +46,82 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Anton Protopopov <a.s.protopopov@gmail.com>
+From: Jakub Kicinski <jakub.kicinski@netronome.com>
 
-[ Upstream commit 56f0f84e69c7a7f229dfa524b13b0ceb6ce9b09e ]
+[ Upstream commit 177b8007463c4f36c9a2c7ce7aa9875a4cad9bd5 ]
 
-The bpf_ipv6_fib_lookup function should return BPF_FIB_LKUP_RET_FWD_DISABLED
-when forwarding is disabled for the input device.  However instead of checking
-if forwarding is enabled on the input device, it checked the global
-net->ipv6.devconf_all->forwarding flag.  Change it to behave as expected.
+When GSO frame has to be corrupted netem uses skb_gso_segment()
+to produce the list of frames, and re-enqueues the segments one
+by one.  The backlog length has to be adjusted to account for
+new frames.
 
-Fixes: 87f5fc7e48dd ("bpf: Provide helper to do forwarding lookups in kernel FIB table")
-Signed-off-by: Anton Protopopov <a.s.protopopov@gmail.com>
-Acked-by: Toke Høiland-Jørgensen <toke@redhat.com>
-Reviewed-by: David Ahern <dsahern@gmail.com>
-Signed-off-by: Daniel Borkmann <daniel@iogearbox.net>
+The current calculation is incorrect, leading to wrong backlog
+lengths in the parent qdisc (both bytes and packets), and
+incorrect packet backlog count in netem itself.
+
+Parent backlog goes negative, netem's packet backlog counts
+all non-first segments twice (thus remaining non-zero even
+after qdisc is emptied).
+
+Move the variables used to count the adjustment into local
+scope to make 100% sure they aren't used at any stage in
+backports.
+
+Fixes: 6071bd1aa13e ("netem: Segment GSO packets on enqueue")
+Signed-off-by: Jakub Kicinski <jakub.kicinski@netronome.com>
+Reviewed-by: Dirk van der Merwe <dirk.vandermerwe@netronome.com>
+Acked-by: Cong Wang <xiyou.wangcong@gmail.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/core/filter.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ net/sched/sch_netem.c | 13 ++++++++-----
+ 1 file changed, 8 insertions(+), 5 deletions(-)
 
-diff --git a/net/core/filter.c b/net/core/filter.c
-index 91b950261975..9daf1a4118b5 100644
---- a/net/core/filter.c
-+++ b/net/core/filter.c
-@@ -4367,7 +4367,7 @@ static int bpf_ipv6_fib_lookup(struct net *net, struct bpf_fib_lookup *params,
- 		return -ENODEV;
+diff --git a/net/sched/sch_netem.c b/net/sched/sch_netem.c
+index 15f8f24c190d..1cd7266140e6 100644
+--- a/net/sched/sch_netem.c
++++ b/net/sched/sch_netem.c
+@@ -436,8 +436,7 @@ static int netem_enqueue(struct sk_buff *skb, struct Qdisc *sch,
+ 	struct netem_skb_cb *cb;
+ 	struct sk_buff *skb2;
+ 	struct sk_buff *segs = NULL;
+-	unsigned int len = 0, last_len, prev_len = qdisc_pkt_len(skb);
+-	int nb = 0;
++	unsigned int prev_len = qdisc_pkt_len(skb);
+ 	int count = 1;
+ 	int rc = NET_XMIT_SUCCESS;
+ 	int rc_drop = NET_XMIT_DROP;
+@@ -494,6 +493,7 @@ static int netem_enqueue(struct sk_buff *skb, struct Qdisc *sch,
+ 			segs = netem_segment(skb, sch, to_free);
+ 			if (!segs)
+ 				return rc_drop;
++			qdisc_skb_cb(segs)->pkt_len = segs->len;
+ 		} else {
+ 			segs = skb;
+ 		}
+@@ -583,6 +583,11 @@ static int netem_enqueue(struct sk_buff *skb, struct Qdisc *sch,
  
- 	idev = __in6_dev_get_safely(dev);
--	if (unlikely(!idev || !net->ipv6.devconf_all->forwarding))
-+	if (unlikely(!idev || !idev->cnf.forwarding))
- 		return BPF_FIB_LKUP_RET_FWD_DISABLED;
- 
- 	if (flags & BPF_FIB_LOOKUP_OUTPUT) {
+ finish_segs:
+ 	if (segs) {
++		unsigned int len, last_len;
++		int nb = 0;
++
++		len = skb->len;
++
+ 		while (segs) {
+ 			skb2 = segs->next;
+ 			segs->next = NULL;
+@@ -598,9 +603,7 @@ static int netem_enqueue(struct sk_buff *skb, struct Qdisc *sch,
+ 			}
+ 			segs = skb2;
+ 		}
+-		sch->q.qlen += nb;
+-		if (nb > 1)
+-			qdisc_tree_reduce_backlog(sch, 1 - nb, prev_len - len);
++		qdisc_tree_reduce_backlog(sch, -nb, prev_len - len);
+ 	}
+ 	return NET_XMIT_SUCCESS;
+ }
 -- 
 2.20.1
 
