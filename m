@@ -2,86 +2,123 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 5416013E634
-	for <lists+netdev@lfdr.de>; Thu, 16 Jan 2020 18:19:36 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2172413E735
+	for <lists+netdev@lfdr.de>; Thu, 16 Jan 2020 18:24:29 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2388961AbgAPRTA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 16 Jan 2020 12:19:00 -0500
-Received: from mail-wm1-f65.google.com ([209.85.128.65]:39071 "EHLO
-        mail-wm1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2391518AbgAPRSi (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 16 Jan 2020 12:18:38 -0500
-Received: by mail-wm1-f65.google.com with SMTP id 20so4642032wmj.4
-        for <netdev@vger.kernel.org>; Thu, 16 Jan 2020 09:18:36 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id;
-        bh=Van5iMUPt75Dhp2RA0mDMd4+WxnU2QI6ZEJAQ+mejQs=;
-        b=iMpomwRv1n5m6cC/trOhTKhG0pWracgFeD6R+Xo3/4Ocb5RJOh7SK1LHxmH98TpaQu
-         uNN3uyYZGaUeqEEbqkKex9LUjf/5sUHp2YpBaQ8ud+byMq+696VVVt7/5n9yWjbaJAiM
-         TeI0KrcW/7OUwTxUBYaKPI1vBrA8Pk8UgutPXznm0VjKzXpYCzD2ocwHRdlX0xumYVNF
-         AnntV8WcQyVuexGRFUPGg5PjHPjnvniSCcc6XGF5t2avoN8FDY2Ayqf56wcs8BsFZdOz
-         THFw8SAy0Z66lgQiNC/vHgvdxeMxwBwzdRLmdR0luKsGw3oSsBjUE2MpQ7trCSQmcHl0
-         ksrA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id;
-        bh=Van5iMUPt75Dhp2RA0mDMd4+WxnU2QI6ZEJAQ+mejQs=;
-        b=FrswTNOfEkkHXnb5VpIGwnR7TofP//aB6aTXhExNksr1MWKWtvRkl9cYSjNV8ICRRH
-         cFKuXs2WXnbqerwUuMJSawRrwoduTQwyGm92mOzo61npdzRv3o+KRaUki3yYFtVbRWE7
-         d7au9ia7b5K2EF9yxRJGAN224F54kqmtmB1aSzXF9EFEF4M3mnC2/ojA7MqikDXd9ih4
-         +m4H8w6ibrFhW8hnSSu6U6JazAtmn5KL/QMXF4OdZbN12SXPRl0JJRGr5AEh+QcHCYZt
-         ZZnO6U3RPrFp3+VLDZ4p7U/VToRjw9dNS3FrcNwQQgTGhlNRX8X7mWPUpjpPGnkHaZqI
-         yqwQ==
-X-Gm-Message-State: APjAAAW05gGmA8rGpdcfqBoa8xyOJTeCFCTnWJhIn7mm4m8jGfHSRlsJ
-        B9TRoKZCyPY24kiThHAzUWg=
-X-Google-Smtp-Source: APXvYqxGbFzg1+E3KjvOSAkunWkYSJziwphagJqZy6A+i3OVyXyZ86rgeQsBMNhijAYyIONrTl1/CA==
-X-Received: by 2002:a1c:2504:: with SMTP id l4mr99959wml.134.1579195116155;
-        Thu, 16 Jan 2020 09:18:36 -0800 (PST)
-Received: from localhost.localdomain ([188.25.254.226])
-        by smtp.gmail.com with ESMTPSA id q3sm31279962wrn.33.2020.01.16.09.18.35
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 16 Jan 2020 09:18:35 -0800 (PST)
-From:   Vladimir Oltean <olteanv@gmail.com>
-To:     davem@davemloft.net
-Cc:     netdev@vger.kernel.org, claudiu.manoil@nxp.com, po.liu@nxp.com,
-        Vladimir Oltean <vladimir.oltean@nxp.com>
-Subject: [PATCH net-next] enetc: Don't print from enetc_sched_speed_set when link goes down
-Date:   Thu, 16 Jan 2020 19:18:28 +0200
-Message-Id: <20200116171828.2016-1-olteanv@gmail.com>
-X-Mailer: git-send-email 2.17.1
+        id S2391739AbgAPRYW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 16 Jan 2020 12:24:22 -0500
+Received: from mail.kernel.org ([198.145.29.99]:58640 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S2391723AbgAPRYU (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 16 Jan 2020 12:24:20 -0500
+Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id AB2F524684;
+        Thu, 16 Jan 2020 17:24:18 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1579195459;
+        bh=bYxSH8GfVHB3PUAM4GpW1DZVUUfAFBPIypwps27JDa4=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=A48zrwgnKE3rjMCLJm0Rg3k6arXHHPXzDN1ZiIpQCvX1HIF1VxXlVFwdOKL4uTzrI
+         2GFISlth7txKmuh1/1urBpypByHIpeBhO3a4AnU+1wCY6Z+Q/IKdxpt4d+jyjggXpO
+         DZbNkAFZy5MhD2vCTWRQBQ1tVRf/KsUuTvXKmo+8=
+From:   Sasha Levin <sashal@kernel.org>
+To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
+Cc:     Moni Shoua <monis@mellanox.com>,
+        Leon Romanovsky <leonro@mellanox.com>,
+        Saeed Mahameed <saeedm@mellanox.com>,
+        Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org,
+        linux-rdma@vger.kernel.org
+Subject: [PATCH AUTOSEL 4.14 068/371] net/mlx5: Take lock with IRQs disabled to avoid deadlock
+Date:   Thu, 16 Jan 2020 12:19:00 -0500
+Message-Id: <20200116172403.18149-11-sashal@kernel.org>
+X-Mailer: git-send-email 2.20.1
+In-Reply-To: <20200116172403.18149-1-sashal@kernel.org>
+References: <20200116172403.18149-1-sashal@kernel.org>
+MIME-Version: 1.0
+X-stable: review
+X-Patchwork-Hint: Ignore
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Vladimir Oltean <vladimir.oltean@nxp.com>
+From: Moni Shoua <monis@mellanox.com>
 
-It is not an error to unplug a cable from the ENETC port even with TSN
-offloads, so don't spam the log with link-related messages from the
-tc-taprio offload subsystem, a single notification is sufficient:
+[ Upstream commit 33814e5d127e21f53b52e17b0722c1b57d4f4d29 ]
 
-[10972.351859] fsl_enetc 0000:00:00.0 eno0: Qbv PSPEED set speed link down.
-[10972.360241] fsl_enetc 0000:00:00.0 eno0: Link is Down
+The lock in qp_table might be taken from process context or from
+interrupt context. This may lead to a deadlock unless it is taken with
+IRQs disabled.
 
-Fixes: 2e47cb415f0a ("enetc: update TSN Qbv PSPEED set according to adjust link speed")
-Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
+Discovered by lockdep
+
+================================
+WARNING: inconsistent lock state
+4.20.0-rc6
+--------------------------------
+inconsistent {HARDIRQ-ON-W} -> {IN-HARDIRQ-W}
+
+python/12572 [HC1[1]:SC0[0]:HE0:SE1] takes:
+00000000052a4df4 (&(&table->lock)->rlock#2){?.+.}, /0x50 [mlx5_core]
+{HARDIRQ-ON-W} state was registered at:
+  _raw_spin_lock+0x33/0x70
+  mlx5_get_rsc+0x1a/0x50 [mlx5_core]
+  mlx5_ib_eqe_pf_action+0x493/0x1be0 [mlx5_ib]
+  process_one_work+0x90c/0x1820
+  worker_thread+0x87/0xbb0
+  kthread+0x320/0x3e0
+  ret_from_fork+0x24/0x30
+irq event stamp: 103928
+hardirqs last  enabled at (103927): [] nk+0x1a/0x1c
+hardirqs last disabled at (103928): [] unk+0x1a/0x1c
+softirqs last  enabled at (103924): [] tcp_sendmsg+0x31/0x40
+softirqs last disabled at (103922): [] 80
+
+other info that might help us debug this:
+ Possible unsafe locking scenario:
+
+       CPU0
+       ----
+  lock(&(&table->lock)->rlock#2);
+
+    lock(&(&table->lock)->rlock#2);
+
+ *** DEADLOCK ***
+
+Fixes: 032080ab43ac ("IB/mlx5: Lock QP during page fault handling")
+Signed-off-by: Moni Shoua <monis@mellanox.com>
+Reviewed-by: Leon Romanovsky <leonro@mellanox.com>
+Signed-off-by: Saeed Mahameed <saeedm@mellanox.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/freescale/enetc/enetc_qos.c | 1 -
- 1 file changed, 1 deletion(-)
+ drivers/net/ethernet/mellanox/mlx5/core/qp.c | 5 +++--
+ 1 file changed, 3 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/net/ethernet/freescale/enetc/enetc_qos.c b/drivers/net/ethernet/freescale/enetc/enetc_qos.c
-index 00382b7c5bd8..0c6bf3a55a9a 100644
---- a/drivers/net/ethernet/freescale/enetc/enetc_qos.c
-+++ b/drivers/net/ethernet/freescale/enetc/enetc_qos.c
-@@ -36,7 +36,6 @@ void enetc_sched_speed_set(struct net_device *ndev)
- 	case SPEED_10:
- 	default:
- 		pspeed = ENETC_PMR_PSPEED_10M;
--		netdev_err(ndev, "Qbv PSPEED set speed link down.\n");
- 	}
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/qp.c b/drivers/net/ethernet/mellanox/mlx5/core/qp.c
+index 5f091c6ea049..b92d5690287b 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/qp.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/qp.c
+@@ -44,14 +44,15 @@ static struct mlx5_core_rsc_common *mlx5_get_rsc(struct mlx5_core_dev *dev,
+ {
+ 	struct mlx5_qp_table *table = &dev->priv.qp_table;
+ 	struct mlx5_core_rsc_common *common;
++	unsigned long flags;
  
- 	priv->speed = speed;
+-	spin_lock(&table->lock);
++	spin_lock_irqsave(&table->lock, flags);
+ 
+ 	common = radix_tree_lookup(&table->tree, rsn);
+ 	if (common)
+ 		atomic_inc(&common->refcount);
+ 
+-	spin_unlock(&table->lock);
++	spin_unlock_irqrestore(&table->lock, flags);
+ 
+ 	if (!common) {
+ 		mlx5_core_warn(dev, "Async event for bogus resource 0x%x\n",
 -- 
-2.17.1
+2.20.1
 
