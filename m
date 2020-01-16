@@ -2,38 +2,38 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 82CB513E3B7
-	for <lists+netdev@lfdr.de>; Thu, 16 Jan 2020 18:03:49 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9DE7913E3A3
+	for <lists+netdev@lfdr.de>; Thu, 16 Jan 2020 18:03:25 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2388150AbgAPRDp (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 16 Jan 2020 12:03:45 -0500
-Received: from mail.kernel.org ([198.145.29.99]:56644 "EHLO mail.kernel.org"
+        id S2388590AbgAPRDL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 16 Jan 2020 12:03:11 -0500
+Received: from mail.kernel.org ([198.145.29.99]:57034 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2388527AbgAPRC7 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 16 Jan 2020 12:02:59 -0500
+        id S2388549AbgAPRDI (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 16 Jan 2020 12:03:08 -0500
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 3CFA524653;
-        Thu, 16 Jan 2020 17:02:58 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id E656124684;
+        Thu, 16 Jan 2020 17:03:06 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1579194179;
-        bh=ItdymbY3cxx7Vs0Ay9YoFG4jc2dykjPUgdGqWPKckIA=;
+        s=default; t=1579194187;
+        bh=h6uK8wo0qtyjOiISqKhtgbl/70dLIpaqIJZqKBaqWVI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=MszLItXwG5L0GcAFmi1cAG2mKR4F4y9oB5UFKd0Vsi4wqx1EG1GS6nye0284HIzYP
-         vm70YvLAEBH4USxRqvmpiGvdEgR32jCWD8nZWuqISO1M7x4ZxTlm2atHE96cg3Y0hp
-         z5g/bJFsClZ2kHUVbF/FjhichybVdN9FeDPqUY4U=
+        b=XnViwBo1BUK+lRH+9P86vY3hn6cmUg/T1BuCGFE0xTwovCTgJpvVG31OxG4BU7aAt
+         w1MrIuO1tQnIApipWzvJI5hakvNwRornWUybmGA6y7uZQMLH6apbdHm9v26L02X3RZ
+         fdMrRS1MZAimW921dbCTZFFccp7U4OPs2p0J71KM=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Jon Maloy <jon.maloy@ericsson.com>,
-        Nathan Chancellor <natechancellor@gmail.com>,
+Cc:     Heiner Kallweit <hkallweit1@gmail.com>,
+        Phil Reid <preid@electromag.com.au>,
+        liweihang <liweihang@hisilicon.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
         "David S . Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org,
-        tipc-discussion@lists.sourceforge.net,
-        clang-built-linux@googlegroups.com
-Subject: [PATCH AUTOSEL 4.19 255/671] tipc: tipc clang warning
-Date:   Thu, 16 Jan 2020 11:52:44 -0500
-Message-Id: <20200116165940.10720-138-sashal@kernel.org>
+        Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 4.19 260/671] net: phy: don't clear BMCR in genphy_soft_reset
+Date:   Thu, 16 Jan 2020 11:52:49 -0500
+Message-Id: <20200116165940.10720-143-sashal@kernel.org>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20200116165940.10720-1-sashal@kernel.org>
 References: <20200116165940.10720-1-sashal@kernel.org>
@@ -46,66 +46,43 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Jon Maloy <jon.maloy@ericsson.com>
+From: Heiner Kallweit <hkallweit1@gmail.com>
 
-[ Upstream commit 737889efe9713a0f20a75fd0de952841d9275e6b ]
+[ Upstream commit d29f5aa0bc0c321e1b9e4658a2a7e08e885da52a ]
 
-When checking the code with clang -Wsometimes-uninitialized we get the
-following warning:
+So far we effectively clear the BMCR register. Some PHY's can deal
+with this (e.g. because they reset BMCR to a default as part of a
+soft-reset) whilst on others this causes issues because e.g. the
+autoneg bit is cleared. Marvell is an example, see also thread [0].
+So let's be a little bit more gentle and leave all bits we're not
+interested in as-is. This change is needed for PHY drivers to
+properly deal with the original patch.
 
-if (!tipc_link_is_establishing(l)) {
-    ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-net/tipc/node.c:847:46: note: uninitialized use occurs here
-      tipc_bearer_xmit(n->net, bearer_id, &xmitq, maddr);
+[0] https://marc.info/?t=155264050700001&r=1&w=2
 
-net/tipc/node.c:831:2: note: remove the 'if' if its condition is always
-true
-if (!tipc_link_is_establishing(l)) {
-    ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-net/tipc/node.c:821:31: note: initialize the variable 'maddr' to silence
-this warning
-struct tipc_media_addr *maddr;
-
-We fix this by initializing 'maddr' to NULL. For the matter of clarity,
-we also test if 'xmitq' is non-empty before we use it and 'maddr'
-further down in the  function. It will never happen that 'xmitq' is non-
-empty at the same time as 'maddr' is NULL, so this is a sufficient test.
-
-Fixes: 598411d70f85 ("tipc: make resetting of links non-atomic")
-Reported-by: Nathan Chancellor <natechancellor@gmail.com>
-Signed-off-by: Jon Maloy <jon.maloy@ericsson.com>
+Fixes: 6e2d85ec0559 ("net: phy: Stop with excessive soft reset")
+Tested-by: Phil Reid <preid@electromag.com.au>
+Tested-by: liweihang <liweihang@hisilicon.com>
+Signed-off-by: Heiner Kallweit <hkallweit1@gmail.com>
+Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
 Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/tipc/node.c | 7 ++++---
- 1 file changed, 4 insertions(+), 3 deletions(-)
+ drivers/net/phy/phy_device.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/net/tipc/node.c b/net/tipc/node.c
-index 32556f480a60..e67ffd194927 100644
---- a/net/tipc/node.c
-+++ b/net/tipc/node.c
-@@ -810,10 +810,10 @@ static void __tipc_node_link_down(struct tipc_node *n, int *bearer_id,
- static void tipc_node_link_down(struct tipc_node *n, int bearer_id, bool delete)
+diff --git a/drivers/net/phy/phy_device.c b/drivers/net/phy/phy_device.c
+index 9c7e51443f6b..ae40d8137fd2 100644
+--- a/drivers/net/phy/phy_device.c
++++ b/drivers/net/phy/phy_device.c
+@@ -1657,7 +1657,7 @@ int genphy_soft_reset(struct phy_device *phydev)
  {
- 	struct tipc_link_entry *le = &n->links[bearer_id];
-+	struct tipc_media_addr *maddr = NULL;
- 	struct tipc_link *l = le->link;
--	struct tipc_media_addr *maddr;
--	struct sk_buff_head xmitq;
- 	int old_bearer_id = bearer_id;
-+	struct sk_buff_head xmitq;
+ 	int ret;
  
- 	if (!l)
- 		return;
-@@ -835,7 +835,8 @@ static void tipc_node_link_down(struct tipc_node *n, int bearer_id, bool delete)
- 	tipc_node_write_unlock(n);
- 	if (delete)
- 		tipc_mon_remove_peer(n->net, n->addr, old_bearer_id);
--	tipc_bearer_xmit(n->net, bearer_id, &xmitq, maddr);
-+	if (!skb_queue_empty(&xmitq))
-+		tipc_bearer_xmit(n->net, bearer_id, &xmitq, maddr);
- 	tipc_sk_rcv(n->net, &le->inputq);
- }
+-	ret = phy_write(phydev, MII_BMCR, BMCR_RESET);
++	ret = phy_set_bits(phydev, MII_BMCR, BMCR_RESET);
+ 	if (ret < 0)
+ 		return ret;
  
 -- 
 2.20.1
