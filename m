@@ -2,37 +2,36 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 35A5313EF61
-	for <lists+netdev@lfdr.de>; Thu, 16 Jan 2020 19:15:03 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9CF3D13EF64
+	for <lists+netdev@lfdr.de>; Thu, 16 Jan 2020 19:15:04 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2392891AbgAPR3x (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 16 Jan 2020 12:29:53 -0500
-Received: from mail.kernel.org ([198.145.29.99]:41946 "EHLO mail.kernel.org"
+        id S2395373AbgAPSPC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 16 Jan 2020 13:15:02 -0500
+Received: from mail.kernel.org ([198.145.29.99]:42016 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2392877AbgAPR3v (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 16 Jan 2020 12:29:51 -0500
+        id S2392585AbgAPR3w (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 16 Jan 2020 12:29:52 -0500
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id A21052470B;
-        Thu, 16 Jan 2020 17:29:49 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 02E87246FB;
+        Thu, 16 Jan 2020 17:29:50 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1579195790;
-        bh=YZdU21mzDaK+WJI/FwgjdUyTuis6x0cCU2ExMEgpyCM=;
+        s=default; t=1579195792;
+        bh=SDIJYKrcaxCHsyHrfJ79C5x/3Dng5f9PEgcisQhgeBg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=fO27mGH5sjHcc1L4zQf4ptmLmP1XBloOGniICEODX9J+57aouWNz45fu8lkYBNr3U
-         fN7ykm4Gs8qv03othhtPAvkfuxSxPxTexl1uGqOZvL6kCu2fX17b4RNiJ5OLS8OIMl
-         jill8wMr3Kag7kaDR3Yg2CRTLH6+Vy3PVS/dP/m4=
+        b=J09T6e/T684XdpAhaXXFg6cND5yc0u4z85RaeYVgadoenCShavNc5jRiQjyvd6uxI
+         z13b2pF8dnJDzNJb82Uhpc3ShRrd9FF1IrJ4YsIQK7wJIOmjLsfqjJj7TCahA1yUTh
+         cZXx5S+KM2iOfEzmhYc1CbyI6KZWOQtjxK+nQ2hs=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Jose Abreu <Jose.Abreu@synopsys.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org,
-        linux-stm32@st-md-mailman.stormreply.com,
-        linux-arm-kernel@lists.infradead.org
-Subject: [PATCH AUTOSEL 4.14 312/371] net: stmmac: gmac4+: Not all Unicast addresses may be available
-Date:   Thu, 16 Jan 2020 12:23:04 -0500
-Message-Id: <20200116172403.18149-255-sashal@kernel.org>
+Cc:     Johannes Berg <johannes.berg@intel.com>,
+        Luca Coelho <luciano.coelho@intel.com>,
+        Sasha Levin <sashal@kernel.org>,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 4.14 313/371] mac80211: accept deauth frames in IBSS mode
+Date:   Thu, 16 Jan 2020 12:23:05 -0500
+Message-Id: <20200116172403.18149-256-sashal@kernel.org>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20200116172403.18149-1-sashal@kernel.org>
 References: <20200116172403.18149-1-sashal@kernel.org>
@@ -45,34 +44,47 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Jose Abreu <Jose.Abreu@synopsys.com>
+From: Johannes Berg <johannes.berg@intel.com>
 
-[ Upstream commit 25683bab09a70542b9f8e3e28f79b3369e56701f ]
+[ Upstream commit 95697f9907bfe3eab0ef20265a766b22e27dde64 ]
 
-Some setups may not have all Unicast addresses filters available. Check
-the number of available filters before trying to setup it.
+We can process deauth frames and all, but we drop them very
+early in the RX path today - this could never have worked.
 
-Fixes: 477286b53f55 ("stmmac: add GMAC4 core support")
-Signed-off-by: Jose Abreu <Jose.Abreu@synopsys.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+Fixes: 2cc59e784b54 ("mac80211: reply to AUTH with DEAUTH if sta allocation fails in IBSS")
+Signed-off-by: Johannes Berg <johannes.berg@intel.com>
+Signed-off-by: Luca Coelho <luciano.coelho@intel.com>
+Link: https://lore.kernel.org/r/20191004123706.15768-2-luca@coelho.fi
+Signed-off-by: Johannes Berg <johannes.berg@intel.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/stmicro/stmmac/dwmac4_core.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ net/mac80211/rx.c | 11 ++++++++++-
+ 1 file changed, 10 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/net/ethernet/stmicro/stmmac/dwmac4_core.c b/drivers/net/ethernet/stmicro/stmmac/dwmac4_core.c
-index 8445af580cb6..e5566c121525 100644
---- a/drivers/net/ethernet/stmicro/stmmac/dwmac4_core.c
-+++ b/drivers/net/ethernet/stmicro/stmmac/dwmac4_core.c
-@@ -438,7 +438,7 @@ static void dwmac4_set_filter(struct mac_device_info *hw,
- 	}
- 
- 	/* Handle multiple unicast addresses */
--	if (netdev_uc_count(dev) > GMAC_MAX_PERFECT_ADDRESSES) {
-+	if (netdev_uc_count(dev) > hw->unicast_filter_entries) {
- 		/* Switch to promiscuous mode if more than 128 addrs
- 		 * are required
- 		 */
+diff --git a/net/mac80211/rx.c b/net/mac80211/rx.c
+index 4a6b3c7b35e3..31000622376d 100644
+--- a/net/mac80211/rx.c
++++ b/net/mac80211/rx.c
+@@ -3227,9 +3227,18 @@ ieee80211_rx_h_mgmt(struct ieee80211_rx_data *rx)
+ 	case cpu_to_le16(IEEE80211_STYPE_PROBE_RESP):
+ 		/* process for all: mesh, mlme, ibss */
+ 		break;
++	case cpu_to_le16(IEEE80211_STYPE_DEAUTH):
++		if (is_multicast_ether_addr(mgmt->da) &&
++		    !is_broadcast_ether_addr(mgmt->da))
++			return RX_DROP_MONITOR;
++
++		/* process only for station/IBSS */
++		if (sdata->vif.type != NL80211_IFTYPE_STATION &&
++		    sdata->vif.type != NL80211_IFTYPE_ADHOC)
++			return RX_DROP_MONITOR;
++		break;
+ 	case cpu_to_le16(IEEE80211_STYPE_ASSOC_RESP):
+ 	case cpu_to_le16(IEEE80211_STYPE_REASSOC_RESP):
+-	case cpu_to_le16(IEEE80211_STYPE_DEAUTH):
+ 	case cpu_to_le16(IEEE80211_STYPE_DISASSOC):
+ 		if (is_multicast_ether_addr(mgmt->da) &&
+ 		    !is_broadcast_ether_addr(mgmt->da))
 -- 
 2.20.1
 
