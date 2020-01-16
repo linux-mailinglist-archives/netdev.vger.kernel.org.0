@@ -2,36 +2,36 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id D4E6C13F511
-	for <lists+netdev@lfdr.de>; Thu, 16 Jan 2020 19:54:08 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5136E13F50E
+	for <lists+netdev@lfdr.de>; Thu, 16 Jan 2020 19:54:07 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2389551AbgAPSyC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 16 Jan 2020 13:54:02 -0500
-Received: from mail.kernel.org ([198.145.29.99]:41128 "EHLO mail.kernel.org"
+        id S2389295AbgAPRII (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 16 Jan 2020 12:08:08 -0500
+Received: from mail.kernel.org ([198.145.29.99]:41168 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2389278AbgAPRIF (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 16 Jan 2020 12:08:05 -0500
+        id S2389282AbgAPRIG (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 16 Jan 2020 12:08:06 -0500
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 8CB592192A;
-        Thu, 16 Jan 2020 17:08:03 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id CE60A21D56;
+        Thu, 16 Jan 2020 17:08:04 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1579194484;
-        bh=oLW8bhEuqWvslr3yGFZ5KkqJyKsLCXsxNqmIHwnuDoc=;
+        s=default; t=1579194485;
+        bh=o/vLIVwfHkBmhxUHbHkIUMuS1REF90EwAkADCq6Uy+k=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=RxTH9/OEO6pTnNDPpRW5Ljx++8CFOvHD8pyatmLxZYVowwxb65MY/4cbKYIaF/PFw
-         JeC0/hnN584QHAX3QleO/xI5cBChVotPlj+67f40LURI2w/fVfU5Z5/D1wqZEvQttt
-         wypq/Qepnai5xOp4aSfAbrvrLbUcI9pkVWu6wEXg=
+        b=mTOL3K605iBmV59ksAYhtuH1h/ZB4Ud9PYh5AIi5waSIxnoN4/aOL/nN1HT5m6mF8
+         PIB9NygFhMJcr2lMIhBrXpRMAwxJe4Vb/gDdWoDE+FJxH86drn8P8uLhSgdSWsMCH6
+         6RxZVjhQcnXU97XEf070ce3s6jm0yG3LHVNxSQW8=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Eric Dumazet <edumazet@google.com>,
+Cc:     Huazhong Tan <tanhuazhong@huawei.com>,
+        Peng Li <lipeng321@huawei.com>,
         "David S . Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>, linux-wpan@vger.kernel.org,
-        netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.19 385/671] inet: frags: call inet_frags_fini() after unregister_pernet_subsys()
-Date:   Thu, 16 Jan 2020 12:00:23 -0500
-Message-Id: <20200116170509.12787-122-sashal@kernel.org>
+        Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 4.19 386/671] net: hns3: fix a memory leak issue for hclge_map_unmap_ring_to_vf_vector
+Date:   Thu, 16 Jan 2020 12:00:24 -0500
+Message-Id: <20200116170509.12787-123-sashal@kernel.org>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20200116170509.12787-1-sashal@kernel.org>
 References: <20200116170509.12787-1-sashal@kernel.org>
@@ -44,54 +44,45 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Eric Dumazet <edumazet@google.com>
+From: Huazhong Tan <tanhuazhong@huawei.com>
 
-[ Upstream commit ae7352d384a552d8c799c242e74a934809990a71 ]
+[ Upstream commit 49f971bd308571fe466687227130a7082b662d0e ]
 
-Both IPv6 and 6lowpan are calling inet_frags_fini() too soon.
+When hclge_bind_ring_with_vector() fails,
+hclge_map_unmap_ring_to_vf_vector() returns the error
+directly, so nobody will free the memory allocated by
+hclge_get_ring_chain_from_mbx().
 
-inet_frags_fini() is dismantling a kmem_cache, that might be needed
-later when unregister_pernet_subsys() eventually has to remove
-frags queues from hash tables and free them.
+So hclge_free_vector_ring_chain() should be called no matter
+hclge_bind_ring_with_vector() fails or not.
 
-This fixes potential use-after-free, and is a prereq for the following patch.
-
-Fixes: d4ad4d22e7ac ("inet: frags: use kmem_cache for inet_frag_queue")
-Signed-off-by: Eric Dumazet <edumazet@google.com>
+Fixes: 84e095d64ed9 ("net: hns3: Change PF to add ring-vect binding & resetQ to mailbox")
+Signed-off-by: Huazhong Tan <tanhuazhong@huawei.com>
+Signed-off-by: Peng Li <lipeng321@huawei.com>
 Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/ieee802154/6lowpan/reassembly.c | 2 +-
- net/ipv6/reassembly.c               | 2 +-
- 2 files changed, 2 insertions(+), 2 deletions(-)
+ drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_mbx.c | 4 +---
+ 1 file changed, 1 insertion(+), 3 deletions(-)
 
-diff --git a/net/ieee802154/6lowpan/reassembly.c b/net/ieee802154/6lowpan/reassembly.c
-index e7857a8ac86d..f3074249c6fc 100644
---- a/net/ieee802154/6lowpan/reassembly.c
-+++ b/net/ieee802154/6lowpan/reassembly.c
-@@ -629,7 +629,7 @@ int __init lowpan_net_frag_init(void)
+diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_mbx.c b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_mbx.c
+index e08e82020402..997ca79ed892 100644
+--- a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_mbx.c
++++ b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_mbx.c
+@@ -181,12 +181,10 @@ static int hclge_map_unmap_ring_to_vf_vector(struct hclge_vport *vport, bool en,
+ 		return ret;
  
- void lowpan_net_frag_exit(void)
- {
--	inet_frags_fini(&lowpan_frags);
- 	lowpan_frags_sysctl_unregister();
- 	unregister_pernet_subsys(&lowpan_frags_ops);
-+	inet_frags_fini(&lowpan_frags);
- }
-diff --git a/net/ipv6/reassembly.c b/net/ipv6/reassembly.c
-index 095825f964e2..c6132e39ab16 100644
---- a/net/ipv6/reassembly.c
-+++ b/net/ipv6/reassembly.c
-@@ -593,8 +593,8 @@ int __init ipv6_frag_init(void)
+ 	ret = hclge_bind_ring_with_vector(vport, vector_id, en, &ring_chain);
+-	if (ret)
+-		return ret;
  
- void ipv6_frag_exit(void)
- {
--	inet_frags_fini(&ip6_frags);
- 	ip6_frags_sysctl_unregister();
- 	unregister_pernet_subsys(&ip6_frags_ops);
- 	inet6_del_protocol(&frag_protocol, IPPROTO_FRAGMENT);
-+	inet_frags_fini(&ip6_frags);
+ 	hclge_free_vector_ring_chain(&ring_chain);
+ 
+-	return 0;
++	return ret;
  }
+ 
+ static int hclge_set_vf_promisc_mode(struct hclge_vport *vport,
 -- 
 2.20.1
 
