@@ -2,38 +2,38 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 4B59F13E997
-	for <lists+netdev@lfdr.de>; Thu, 16 Jan 2020 18:39:03 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C071013E9C0
+	for <lists+netdev@lfdr.de>; Thu, 16 Jan 2020 18:40:03 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2391354AbgAPRjC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 16 Jan 2020 12:39:02 -0500
-Received: from mail.kernel.org ([198.145.29.99]:55054 "EHLO mail.kernel.org"
+        id S2393538AbgAPRjs (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 16 Jan 2020 12:39:48 -0500
+Received: from mail.kernel.org ([198.145.29.99]:56354 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2393405AbgAPRjA (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 16 Jan 2020 12:39:00 -0500
+        id S2393526AbgAPRjq (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 16 Jan 2020 12:39:46 -0500
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 988D2246D7;
-        Thu, 16 Jan 2020 17:38:58 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 8A845246FC;
+        Thu, 16 Jan 2020 17:39:44 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1579196340;
-        bh=DpDwZjT5JL55OrFqatMzY1JDV7bYkHQBMDOrDiPxQqg=;
+        s=default; t=1579196385;
+        bh=VVYd60GeUMbZa4auO/I+egFzytr/8s7JdM602idEoxE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=aMCFlnoH6TobdxhxmbUA+/AZAs0CiDnM4sHLEHdmqnapDVdDtI3rhh6I3s7Hybix9
-         I5xIUfW4QLJSOz8pyrN5ghhz2BFFQ9DH5SgC+3HYSbe6PpLLrjhNHcjcTZqHR6xmnZ
-         JKO29sVnRI6tUq6TbTsyt/co/6PUJSR7CpPuUQfM=
+        b=a9Eov1UsFwZbZlakxlCt1HvzxKMUHSgbPP/bIzGqQ7lmprNEisMbcCtLI/c6kqin3
+         VQlIe52j6Em9zbczg+cIWlqQ+8hQQty0HBysFLSiyFgJy8/NA8Ii/mL36zfXs+uPmx
+         irwPHiwIkLFQSVUWquCtnAv7YJvUVUi0j1NgAfhU=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Florian Westphal <fw@strlen.de>,
-        Tetsuo Handa <penguin-kernel@i-love.sakura.ne.jp>,
-        Pablo Neira Ayuso <pablo@netfilter.org>,
-        Sasha Levin <sashal@kernel.org>,
-        netfilter-devel@vger.kernel.org, coreteam@netfilter.org,
-        bridge@lists.linux-foundation.org, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.9 137/251] netfilter: ebtables: CONFIG_COMPAT: reject trailing data after last rule
-Date:   Thu, 16 Jan 2020 12:34:46 -0500
-Message-Id: <20200116173641.22137-97-sashal@kernel.org>
+Cc:     Wen Yang <wen.yang99@zte.com.cn>,
+        "David S. Miller" <davem@davemloft.net>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Luis Chamberlain <mcgrof@kernel.org>,
+        Michael Ellerman <mpe@ellerman.id.au>, netdev@vger.kernel.org,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH AUTOSEL 4.9 167/251] net: pasemi: fix an use-after-free in pasemi_mac_phy_init()
+Date:   Thu, 16 Jan 2020 12:35:16 -0500
+Message-Id: <20200116173641.22137-127-sashal@kernel.org>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20200116173641.22137-1-sashal@kernel.org>
 References: <20200116173641.22137-1-sashal@kernel.org>
@@ -46,41 +46,47 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Florian Westphal <fw@strlen.de>
+From: Wen Yang <wen.yang99@zte.com.cn>
 
-[ Upstream commit 680f6af5337c98d116e4f127cea7845339dba8da ]
+[ Upstream commit faf5577f2498cea23011b5c785ef853ded22700b ]
 
-If userspace provides a rule blob with trailing data after last target,
-we trigger a splat, then convert ruleset to 64bit format (with trailing
-data), then pass that to do_replace_finish() which then returns -EINVAL.
+The phy_dn variable is still being used in of_phy_connect() after the
+of_node_put() call, which may result in use-after-free.
 
-Erroring out right away avoids the splat plus unneeded translation and
-error unwind.
-
-Fixes: 81e675c227ec ("netfilter: ebtables: add CONFIG_COMPAT support")
-Reported-by: Tetsuo Handa <penguin-kernel@i-love.sakura.ne.jp>
-Signed-off-by: Florian Westphal <fw@strlen.de>
-Signed-off-by: Pablo Neira Ayuso <pablo@netfilter.org>
+Fixes: 1dd2d06c0459 ("net: Rework pasemi_mac driver to use of_mdio infrastructure")
+Signed-off-by: Wen Yang <wen.yang99@zte.com.cn>
+Cc: "David S. Miller" <davem@davemloft.net>
+Cc: Thomas Gleixner <tglx@linutronix.de>
+Cc: Luis Chamberlain <mcgrof@kernel.org>
+Cc: Michael Ellerman <mpe@ellerman.id.au>
+Cc: netdev@vger.kernel.org
+Cc: linux-kernel@vger.kernel.org
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/bridge/netfilter/ebtables.c | 4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
+ drivers/net/ethernet/pasemi/pasemi_mac.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/net/bridge/netfilter/ebtables.c b/net/bridge/netfilter/ebtables.c
-index 56b7197f0373..1d850edecd72 100644
---- a/net/bridge/netfilter/ebtables.c
-+++ b/net/bridge/netfilter/ebtables.c
-@@ -2182,7 +2182,9 @@ static int compat_copy_entries(unsigned char *data, unsigned int size_user,
- 	if (ret < 0)
- 		return ret;
+diff --git a/drivers/net/ethernet/pasemi/pasemi_mac.c b/drivers/net/ethernet/pasemi/pasemi_mac.c
+index 2f4a837f0d6a..dcd56ac68748 100644
+--- a/drivers/net/ethernet/pasemi/pasemi_mac.c
++++ b/drivers/net/ethernet/pasemi/pasemi_mac.c
+@@ -1053,7 +1053,6 @@ static int pasemi_mac_phy_init(struct net_device *dev)
  
--	WARN_ON(size_remaining);
-+	if (size_remaining)
-+		return -EINVAL;
-+
- 	return state->buf_kern_offset;
- }
+ 	dn = pci_device_to_OF_node(mac->pdev);
+ 	phy_dn = of_parse_phandle(dn, "phy-handle", 0);
+-	of_node_put(phy_dn);
  
+ 	mac->link = 0;
+ 	mac->speed = 0;
+@@ -1062,6 +1061,7 @@ static int pasemi_mac_phy_init(struct net_device *dev)
+ 	phydev = of_phy_connect(dev, phy_dn, &pasemi_adjust_link, 0,
+ 				PHY_INTERFACE_MODE_SGMII);
+ 
++	of_node_put(phy_dn);
+ 	if (!phydev) {
+ 		printk(KERN_ERR "%s: Could not attach to phy\n", dev->name);
+ 		return -ENODEV;
 -- 
 2.20.1
 
