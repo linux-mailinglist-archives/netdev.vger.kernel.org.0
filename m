@@ -2,38 +2,36 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id F155A13F4BA
-	for <lists+netdev@lfdr.de>; Thu, 16 Jan 2020 19:53:18 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 335A513F4B2
+	for <lists+netdev@lfdr.de>; Thu, 16 Jan 2020 19:53:15 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2437001AbgAPSvI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 16 Jan 2020 13:51:08 -0500
-Received: from mail.kernel.org ([198.145.29.99]:43530 "EHLO mail.kernel.org"
+        id S2389529AbgAPRIz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 16 Jan 2020 12:08:55 -0500
+Received: from mail.kernel.org ([198.145.29.99]:43630 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2389514AbgAPRIx (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 16 Jan 2020 12:08:53 -0500
+        id S2389519AbgAPRIy (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 16 Jan 2020 12:08:54 -0500
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 6187224679;
-        Thu, 16 Jan 2020 17:08:51 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id CFD79217F4;
+        Thu, 16 Jan 2020 17:08:52 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1579194532;
-        bh=NgkfrwC0DyssXCbp8oWV3NAEiuEx3mhWhQdfEZBAqJ4=;
+        s=default; t=1579194533;
+        bh=icTij0F7f80egybZcx7W2o90CPhv3Yys7sg0eCYk/qo=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=0iJsqs1E5zxUZcZ+BAzP4TWqmZ71cRvcDaqcY1HEu7/plYiKNb9rjUoNYENxVmUBY
-         cdUA0yMGowPPyroNJNpDCYR1C+ndK3+GtPDYpaJs06Ad7ov8p/VfZurrpHhO/HYapF
-         o1ITvgj6/xtf9/NXJ/ZU0FvddzPYeqnSC3k2+l9k=
+        b=hjAwLvkPjlFTcXXVYXUm+WGHeiaGK+w1X6NXzJQ3rnw13scCe+b4xriWrKF+JsGG8
+         tHrrtoaMtK/fgks55p/jUVe+7Mx6mbmnbpAHWrCMsRuOybXZuux7uAIFfIvI9/RNwB
+         k0xhRKj++ObswL77WOoovWsNnD9U+06r9Xm6H2NY=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Jakub Kicinski <jakub.kicinski@netronome.com>,
-        Dirk van der Merwe <dirk.vandermerwe@netronome.com>,
-        Cong Wang <xiyou.wangcong@gmail.com>,
+Cc:     Fred Klassen <fklassen@appneta.com>,
+        Willem de Bruijn <willemb@google.com>,
         "David S . Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>,
-        netem@lists.linux-foundation.org, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.19 420/671] net: netem: fix backlog accounting for corrupted GSO frames
-Date:   Thu, 16 Jan 2020 12:00:58 -0500
-Message-Id: <20200116170509.12787-157-sashal@kernel.org>
+        Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 4.19 421/671] net/udp_gso: Allow TX timestamp with UDP GSO
+Date:   Thu, 16 Jan 2020 12:00:59 -0500
+Message-Id: <20200116170509.12787-158-sashal@kernel.org>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20200116170509.12787-1-sashal@kernel.org>
 References: <20200116170509.12787-1-sashal@kernel.org>
@@ -46,82 +44,78 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Jakub Kicinski <jakub.kicinski@netronome.com>
+From: Fred Klassen <fklassen@appneta.com>
 
-[ Upstream commit 177b8007463c4f36c9a2c7ce7aa9875a4cad9bd5 ]
+[ Upstream commit 76e21533a48bb42d1fa894f93f6233bf4554f45e ]
 
-When GSO frame has to be corrupted netem uses skb_gso_segment()
-to produce the list of frames, and re-enqueues the segments one
-by one.  The backlog length has to be adjusted to account for
-new frames.
+Fixes an issue where TX Timestamps are not arriving on the error queue
+when UDP_SEGMENT CMSG type is combined with CMSG type SO_TIMESTAMPING.
+This can be illustrated with an updated updgso_bench_tx program which
+includes the '-T' option to test for this condition. It also introduces
+the '-P' option which will call poll() before reading the error queue.
 
-The current calculation is incorrect, leading to wrong backlog
-lengths in the parent qdisc (both bytes and packets), and
-incorrect packet backlog count in netem itself.
+    ./udpgso_bench_tx -4ucTPv -S 1472 -l2 -D 172.16.120.18
+    poll timeout
+    udp tx:      0 MB/s        1 calls/s      1 msg/s
 
-Parent backlog goes negative, netem's packet backlog counts
-all non-first segments twice (thus remaining non-zero even
-after qdisc is emptied).
+The "poll timeout" message above indicates that TX timestamp never
+arrived.
 
-Move the variables used to count the adjustment into local
-scope to make 100% sure they aren't used at any stage in
-backports.
+This patch preserves tx_flags for the first UDP GSO segment. Only the
+first segment is timestamped, even though in some cases there may be
+benefital in timestamping both the first and last segment.
 
-Fixes: 6071bd1aa13e ("netem: Segment GSO packets on enqueue")
-Signed-off-by: Jakub Kicinski <jakub.kicinski@netronome.com>
-Reviewed-by: Dirk van der Merwe <dirk.vandermerwe@netronome.com>
-Acked-by: Cong Wang <xiyou.wangcong@gmail.com>
+Factors in deciding on first segment timestamp only:
+
+- Timestamping both first and last segmented is not feasible. Hardware
+can only have one outstanding TS request at a time.
+
+- Timestamping last segment may under report network latency of the
+previous segments. Even though the doorbell is suppressed, the ring
+producer counter has been incremented.
+
+- Timestamping the first segment has the upside in that it reports
+timestamps from the application's view, e.g. RTT.
+
+- Timestamping the first segment has the downside that it may
+underreport tx host network latency. It appears that we have to pick
+one or the other. And possibly follow-up with a config flag to choose
+behavior.
+
+v2: Remove tests as noted by Willem de Bruijn <willemb@google.com>
+    Moving tests from net to net-next
+
+v3: Update only relevant tx_flag bits as per
+    Willem de Bruijn <willemb@google.com>
+
+v4: Update comments and commit message as per
+    Willem de Bruijn <willemb@google.com>
+
+Fixes: ee80d1ebe5ba ("udp: add udp gso")
+Signed-off-by: Fred Klassen <fklassen@appneta.com>
+Acked-by: Willem de Bruijn <willemb@google.com>
 Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/sched/sch_netem.c | 13 ++++++++-----
- 1 file changed, 8 insertions(+), 5 deletions(-)
+ net/ipv4/udp_offload.c | 5 +++++
+ 1 file changed, 5 insertions(+)
 
-diff --git a/net/sched/sch_netem.c b/net/sched/sch_netem.c
-index 15f8f24c190d..1cd7266140e6 100644
---- a/net/sched/sch_netem.c
-+++ b/net/sched/sch_netem.c
-@@ -436,8 +436,7 @@ static int netem_enqueue(struct sk_buff *skb, struct Qdisc *sch,
- 	struct netem_skb_cb *cb;
- 	struct sk_buff *skb2;
- 	struct sk_buff *segs = NULL;
--	unsigned int len = 0, last_len, prev_len = qdisc_pkt_len(skb);
--	int nb = 0;
-+	unsigned int prev_len = qdisc_pkt_len(skb);
- 	int count = 1;
- 	int rc = NET_XMIT_SUCCESS;
- 	int rc_drop = NET_XMIT_DROP;
-@@ -494,6 +493,7 @@ static int netem_enqueue(struct sk_buff *skb, struct Qdisc *sch,
- 			segs = netem_segment(skb, sch, to_free);
- 			if (!segs)
- 				return rc_drop;
-+			qdisc_skb_cb(segs)->pkt_len = segs->len;
- 		} else {
- 			segs = skb;
- 		}
-@@ -583,6 +583,11 @@ static int netem_enqueue(struct sk_buff *skb, struct Qdisc *sch,
+diff --git a/net/ipv4/udp_offload.c b/net/ipv4/udp_offload.c
+index 0c0522b79b43..aa343654abfc 100644
+--- a/net/ipv4/udp_offload.c
++++ b/net/ipv4/udp_offload.c
+@@ -227,6 +227,11 @@ struct sk_buff *__udp_gso_segment(struct sk_buff *gso_skb,
+ 	seg = segs;
+ 	uh = udp_hdr(seg);
  
- finish_segs:
- 	if (segs) {
-+		unsigned int len, last_len;
-+		int nb = 0;
++	/* preserve TX timestamp flags and TS key for first segment */
++	skb_shinfo(seg)->tskey = skb_shinfo(gso_skb)->tskey;
++	skb_shinfo(seg)->tx_flags |=
++			(skb_shinfo(gso_skb)->tx_flags & SKBTX_ANY_TSTAMP);
 +
-+		len = skb->len;
-+
- 		while (segs) {
- 			skb2 = segs->next;
- 			segs->next = NULL;
-@@ -598,9 +603,7 @@ static int netem_enqueue(struct sk_buff *skb, struct Qdisc *sch,
- 			}
- 			segs = skb2;
- 		}
--		sch->q.qlen += nb;
--		if (nb > 1)
--			qdisc_tree_reduce_backlog(sch, 1 - nb, prev_len - len);
-+		qdisc_tree_reduce_backlog(sch, -nb, prev_len - len);
- 	}
- 	return NET_XMIT_SUCCESS;
- }
+ 	/* compute checksum adjustment based on old length versus new */
+ 	newlen = htons(sizeof(*uh) + mss);
+ 	check = csum16_add(csum16_sub(uh->check, uh->len), newlen);
 -- 
 2.20.1
 
