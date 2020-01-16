@@ -2,113 +2,78 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id EF80513D247
-	for <lists+netdev@lfdr.de>; Thu, 16 Jan 2020 03:42:37 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id F3EBB13D250
+	for <lists+netdev@lfdr.de>; Thu, 16 Jan 2020 03:52:24 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730088AbgAPCmg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 15 Jan 2020 21:42:36 -0500
-Received: from mail-lf1-f65.google.com ([209.85.167.65]:41487 "EHLO
-        mail-lf1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729012AbgAPCmf (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 15 Jan 2020 21:42:35 -0500
-Received: by mail-lf1-f65.google.com with SMTP id m30so14317337lfp.8;
-        Wed, 15 Jan 2020 18:42:34 -0800 (PST)
+        id S1729346AbgAPCwS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 15 Jan 2020 21:52:18 -0500
+Received: from mail-wr1-f67.google.com ([209.85.221.67]:45301 "EHLO
+        mail-wr1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726552AbgAPCwR (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 15 Jan 2020 21:52:17 -0500
+Received: by mail-wr1-f67.google.com with SMTP id j42so17587888wrj.12;
+        Wed, 15 Jan 2020 18:52:16 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=HI+xV3bsEIgulj7uKMX2W6C7zKygWyvz6NNY/styFTY=;
-        b=BKdjjZNMr7gUJbajEu6uDlpuDWmV+FZ9mX4RTHaaayZxgfW+bvItK+gh4cg6+fKj3J
-         mEe+EsEK8BNBi9iEBBGTqedI2dOtYXcvF4WBbL0eJmN8vFh/LFfeRLz+JzmzkU7fiutt
-         ulUR7gsVyO/fnDA1NuXhsoFz9e7ZDuLkhvsNtOucvc2Wv3t6h8NDweHoiFX1x/kKXRXB
-         ZaOvvA92FuY57ygzSExQXyE870M6VApZlDU7zcg5SSESkdXOaXx3wUXKTB6XoxwP3LTS
-         vFPxqcMFg8wkUqPahqpKF4EZ2XGVM7oQStLRVyazZYEO5SjNfisxkO1kPy0oQ6YR0RMP
-         JK2g==
+        h=date:from:to:cc:subject:message-id:mime-version:content-disposition
+         :user-agent;
+        bh=OSH3RXS+T/dhyzgURBl5qLmzt92xc5WKMppdhPS4Q94=;
+        b=b7DLcl+owfs2QAWAXm37WDQOAc3UWBvxyGPoWQXhPpdrAHFFiKwgcbb3f3lKGMxA0p
+         IvHrQSh/P6XXw3LzQdM2iGIDmKXC0uQXPndJ6Siuquqzrh5n+XQnTdDGde/YoKpKi613
+         +iAc9QYrFIzxsp/qYoFCtavZJVXr+EWMNfkKP7Q5MhaZyUwzM6OawLb/UITInPhs4Q6S
+         tYwuaQGNUpgmzC8RUHe+nqGht1WyDhz8zI2O8Hl+JOO/lOs5li7PgBiHC3I7olyJx3ZZ
+         5CP4694GhMD+S2HFhavMB772xOPsI3ah8vomj1yTeCa04bzHlB2n55FU/8N6EC/dhfDm
+         2ZSg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=HI+xV3bsEIgulj7uKMX2W6C7zKygWyvz6NNY/styFTY=;
-        b=qF3eQ7CYZ7p4L2rvdui9CB8w4bwAClWqJy2YsKsdvwNe3dHsEEeIkRHvZK1wlJ/yzD
-         Ry/DbBum/+xw+J7tuOteOnkiGYIOpAT7F+o8+zHNObZaK4tj2neJjhXEY1amci/6Vc86
-         8ZQYKqiFIVYB9sIDIOQWpPjQFFyunKIOEysuut6ZOmRc3qzn2BH6Zo1dkAoQPdUpu1fK
-         iYC5CJxS+wXNgbK3NY1ciwZDWH2vdDrbh2//2SWTwOYZ3qy4KTmLLXGcdDB2KP2L2zub
-         qBnMbugRwJx234fZUwxgs2uAhNzN4v6w6wN/SE/gmZuBOd/tjOHYdz5+etohSOZJ6/3S
-         p9tw==
-X-Gm-Message-State: APjAAAXY26B8ariyM2skQRLAjw6AZgcmjD4S6avtxF+tCkaiTWxImQYI
-        dsiUfiQv1AHlJa6SGiZED+bG0+P3xJ8d7+Rttt0=
-X-Google-Smtp-Source: APXvYqzcYQG7zGfFpsRr10PuOrm81bu/T9LhblAmPepC32I/97Mxn4kcpZ5yQ0UVii6Vl/pkhkE007k5xX7O8JNe4AY=
-X-Received: by 2002:a19:c80a:: with SMTP id y10mr1027154lff.177.1579142553893;
- Wed, 15 Jan 2020 18:42:33 -0800 (PST)
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:mime-version
+         :content-disposition:user-agent;
+        bh=OSH3RXS+T/dhyzgURBl5qLmzt92xc5WKMppdhPS4Q94=;
+        b=HKfgekQrmNK5DLEm1hzv6rvp2zuEvjiUHni9zTO9Cc/LJVJwUJTf8wqXp4JyAmUhtk
+         NJRlARmkXD7ZMD80IIMVH17f0rr05wYZC8G5qJIDLAl4HcwDTamuUOUQLrG6eF299vbI
+         WTDTgcrh4uFFTEqsO89iunpWkwjLmM67W6hoFnCuACHNF3usbw+K22FcF0DdgM+DPOZ9
+         OUvy8pRJ4rnV/cOLGgllzfr93+EmDI+RHBLvXq2B2xIH60qfYHGLwhtT58m+OflzTSIb
+         JmRZ5KPIZ5R1w1W/hk8qnP5RMfOXhWhfOnyG9wxSD/jcr+1HX2+EyaLNg67xT9d6y2sP
+         UNFQ==
+X-Gm-Message-State: APjAAAVepJvwvIjFSOJVASrH+JDwRXrJAmcg/DRnhB+4LwdFE8DdVkLX
+        2BBLIpt6rEO452ptNpta0SWCKwRt1KTGyQ==
+X-Google-Smtp-Source: APXvYqzv7Wq4m+86b5KLd7Lah3v8Ydg7yCJoK2FsSQh+zsfTvwsrhNI8pPLsTMshap6KP6z1eyWqKg==
+X-Received: by 2002:a05:6000:1142:: with SMTP id d2mr464986wrx.253.1579143135637;
+        Wed, 15 Jan 2020 18:52:15 -0800 (PST)
+Received: from hunterzg-yangtiant6900c-00 ([95.179.219.143])
+        by smtp.gmail.com with ESMTPSA id u24sm2417624wml.10.2020.01.15.18.52.10
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Wed, 15 Jan 2020 18:52:15 -0800 (PST)
+Date:   Thu, 16 Jan 2020 10:52:04 +0800
+From:   Gen Zhang <blackgod016574@gmail.com>
+To:     davem@davemloft.net, tglx@linutronix.de, alexios.zavras@intel.com,
+        allison@lohutok.net
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH] net: nfc: Removing unnecessaey code in nci_open_device()
+Message-ID: <20200116025204.GA20032@hunterzg-yangtiant6900c-00>
 MIME-Version: 1.0
-References: <20200116005549.3644118-1-andriin@fb.com>
-In-Reply-To: <20200116005549.3644118-1-andriin@fb.com>
-From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Date:   Wed, 15 Jan 2020 18:42:22 -0800
-Message-ID: <CAADnVQ++qp83cW_1M4WyD8qiGzyPBDC5a-DJLLwgU97rh_EvSg@mail.gmail.com>
-Subject: Re: [PATCH v2 bpf-next] selftests/bpf: add whitelist/blacklist of
- test names to test_progs
-To:     Andrii Nakryiko <andriin@fb.com>
-Cc:     bpf <bpf@vger.kernel.org>,
-        Network Development <netdev@vger.kernel.org>,
-        Alexei Starovoitov <ast@fb.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii.nakryiko@gmail.com>,
-        Kernel Team <kernel-team@fb.com>, Julia Kartseva <hex@fb.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+User-Agent: Mutt/1.5.24 (2015-08-30)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Jan 15, 2020 at 6:16 PM Andrii Nakryiko <andriin@fb.com> wrote:
->
-> Add ability to specify a list of test name substrings for selecting which
-> tests to run. So now -t is accepting a comma-separated list of strings,
-> similarly to how -n accepts a comma-separated list of test numbers.
->
-> Additionally, add ability to blacklist tests by name. Blacklist takes
-> precedence over whitelist. Blacklisting is important for cases where it's
-> known that some tests can't pass (e.g., due to perf hardware events that are
-> not available within VM). This is going to be used for libbpf testing in
-> Travis CI in its Github repo.
->
-> Example runs with just whitelist and whitelist + blacklist:
->
->   $ sudo ./test_progs -tattach,core/existence
->   #1 attach_probe:OK
->   #6 cgroup_attach_autodetach:OK
->   #7 cgroup_attach_multi:OK
->   #8 cgroup_attach_override:OK
->   #9 core_extern:OK
->   #10/44 existence:OK
->   #10/45 existence___minimal:OK
->   #10/46 existence__err_int_sz:OK
->   #10/47 existence__err_int_type:OK
->   #10/48 existence__err_int_kind:OK
->   #10/49 existence__err_arr_kind:OK
->   #10/50 existence__err_arr_value_type:OK
->   #10/51 existence__err_struct_type:OK
->   #10 core_reloc:OK
->   #19 flow_dissector_reattach:OK
->   #60 tp_attach_query:OK
->   Summary: 8/8 PASSED, 0 SKIPPED, 0 FAILED
->
->   $ sudo ./test_progs -tattach,core/existence -bcgroup,flow/arr
->   #1 attach_probe:OK
->   #9 core_extern:OK
->   #10/44 existence:OK
->   #10/45 existence___minimal:OK
->   #10/46 existence__err_int_sz:OK
->   #10/47 existence__err_int_type:OK
->   #10/48 existence__err_int_kind:OK
->   #10/51 existence__err_struct_type:OK
->   #10 core_reloc:OK
->   #60 tp_attach_query:OK
->   Summary: 4/6 PASSED, 0 SKIPPED, 0 FAILED
->
-> Cc: Julia Kartseva <hex@fb.com>
-> Signed-off-by: Andrii Nakryiko <andriin@fb.com>
+In nci_open_device(), since we already call clear_bit(), so set ndev->flags
+to 0 is not needed.
 
-Nice. Even things like "test_progs -n 11-16 -b exit" work as expected.
-Applied. Thanks!
+Signed-off-by: Gen Zhang <blackgod016574@gmail.com>
+---
+diff --git a/net/nfc/nci/core.c b/net/nfc/nci/core.c
+index 7cd5248..25dae74 100644
+--- a/net/nfc/nci/core.c
++++ b/net/nfc/nci/core.c
+@@ -522,7 +522,6 @@ static int nci_open_device(struct nci_dev *ndev)
+ 		skb_queue_purge(&ndev->tx_q);
+ 
+ 		ndev->ops->close(ndev);
+-		ndev->flags = 0;
+ 	}
+ 
+ done:
