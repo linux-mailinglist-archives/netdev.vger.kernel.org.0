@@ -2,40 +2,39 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 3EE2D13F86B
-	for <lists+netdev@lfdr.de>; Thu, 16 Jan 2020 20:18:33 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6F1FC13F84B
+	for <lists+netdev@lfdr.de>; Thu, 16 Jan 2020 20:18:11 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732351AbgAPTSV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 16 Jan 2020 14:18:21 -0500
-Received: from mail.kernel.org ([198.145.29.99]:39306 "EHLO mail.kernel.org"
+        id S2437639AbgAPTR2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 16 Jan 2020 14:17:28 -0500
+Received: from mail.kernel.org ([198.145.29.99]:40432 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1729903AbgAPQyj (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 16 Jan 2020 11:54:39 -0500
+        id S1731500AbgAPQzT (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 16 Jan 2020 11:55:19 -0500
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 696D220730;
-        Thu, 16 Jan 2020 16:54:37 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id F27CF22525;
+        Thu, 16 Jan 2020 16:55:17 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1579193678;
-        bh=XQKsPWErsPgbw5v5Rfqyy6rs8flD5VJUc1xLev5jRyE=;
+        s=default; t=1579193718;
+        bh=tLL5fviRXm3vOMtOlR4+W3b4zIYYTZ6aRnxayKQc6YI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=YPPiu1fopwVhd3gvBYMlc1XvcK9J0TjuRsv6Q0tJOFPqTe0T26chZ4Abg7F3Rnj90
-         9cNc2SkkkY6Y8ejhdwEGHQ/5p1hTNyxdYXaNgB8U9fcWIPEB9RwNJD4YDlJGmhNFzR
-         q2Uuy2NDU8MdntCzUpVCViK57/ibrUQHbV0JPzRU=
+        b=BcE7/LchsWqt5Bxvn/v2+9sc+Uz7v+N1E4gkrkgttTWqnRM8hj7q0dAtOMzpfFN+C
+         chFF52cqA/74pEohJtUxITetl2GYKNwY6aJnSCpW0Mvj1MBOhC0MBS2E2OXTQcrRJx
+         /Ktd+BDYUaEiZJ2uVM7kR4OwYUyfSEXODocgxRDI=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Tuong Lien <tuong.t.lien@dektech.com.au>,
-        Jon Maloy <jon.maloy@ericsson.com>,
+Cc:     Roopa Prabhu <roopa@cumulusnetworks.com>,
         "David S . Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org,
-        tipc-discussion@lists.sourceforge.net
-Subject: [PATCH AUTOSEL 5.4 202/205] tipc: fix retrans failure due to wrong destination
-Date:   Thu, 16 Jan 2020 11:42:57 -0500
-Message-Id: <20200116164300.6705-202-sashal@kernel.org>
+        Sasha Levin <sashal@kernel.org>,
+        bridge@lists.linux-foundation.org, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 4.19 013/671] bridge: br_arp_nd_proxy: set icmp6_router if neigh has NTF_ROUTER
+Date:   Thu, 16 Jan 2020 11:44:04 -0500
+Message-Id: <20200116165502.8838-13-sashal@kernel.org>
 X-Mailer: git-send-email 2.20.1
-In-Reply-To: <20200116164300.6705-1-sashal@kernel.org>
-References: <20200116164300.6705-1-sashal@kernel.org>
+In-Reply-To: <20200116165502.8838-1-sashal@kernel.org>
+References: <20200116165502.8838-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
@@ -45,102 +44,31 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Tuong Lien <tuong.t.lien@dektech.com.au>
+From: Roopa Prabhu <roopa@cumulusnetworks.com>
 
-[ Upstream commit abc9b4e0549b93fdaff56e9532bc49a2d7b04955 ]
+[ Upstream commit 7aca011f88eb57be1b17b0216247f4e32ac54e29 ]
 
-When a user message is sent, TIPC will check if the socket has faced a
-congestion at link layer. If that happens, it will make a sleep to wait
-for the congestion to disappear. This leaves a gap for other users to
-take over the socket (e.g. multi threads) since the socket is released
-as well. Also, in case of connectionless (e.g. SOCK_RDM), user is free
-to send messages to various destinations (e.g. via 'sendto()'), then
-the socket's preformatted header has to be updated correspondingly
-prior to the actual payload message building.
-
-Unfortunately, the latter action is done before the first action which
-causes a condition issue that the destination of a certain message can
-be modified incorrectly in the middle, leading to wrong destination
-when that message is built. Consequently, when the message is sent to
-the link layer, it gets stuck there forever because the peer node will
-simply reject it. After a number of retransmission attempts, the link
-is eventually taken down and the retransmission failure is reported.
-
-This commit fixes the problem by rearranging the order of actions to
-prevent the race condition from occurring, so the message building is
-'atomic' and its header will not be modified by anyone.
-
-Fixes: 365ad353c256 ("tipc: reduce risk of user starvation during link congestion")
-Acked-by: Jon Maloy <jon.maloy@ericsson.com>
-Signed-off-by: Tuong Lien <tuong.t.lien@dektech.com.au>
+Fixes: ed842faeb2bd ("bridge: suppress nd pkts on BR_NEIGH_SUPPRESS ports")
+Signed-off-by: Roopa Prabhu <roopa@cumulusnetworks.com>
 Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/tipc/socket.c | 32 ++++++++++++++++++--------------
- 1 file changed, 18 insertions(+), 14 deletions(-)
+ net/bridge/br_arp_nd_proxy.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/net/tipc/socket.c b/net/tipc/socket.c
-index 90ace35dbf0f..aea951a1f805 100644
---- a/net/tipc/socket.c
-+++ b/net/tipc/socket.c
-@@ -1306,8 +1306,8 @@ static int __tipc_sendmsg(struct socket *sock, struct msghdr *m, size_t dlen)
- 	struct tipc_msg *hdr = &tsk->phdr;
- 	struct tipc_name_seq *seq;
- 	struct sk_buff_head pkts;
--	u32 dport, dnode = 0;
--	u32 type, inst;
-+	u32 dport = 0, dnode = 0;
-+	u32 type = 0, inst = 0;
- 	int mtu, rc;
- 
- 	if (unlikely(dlen > TIPC_MAX_USER_MSG_SIZE))
-@@ -1360,23 +1360,11 @@ static int __tipc_sendmsg(struct socket *sock, struct msghdr *m, size_t dlen)
- 		type = dest->addr.name.name.type;
- 		inst = dest->addr.name.name.instance;
- 		dnode = dest->addr.name.domain;
--		msg_set_type(hdr, TIPC_NAMED_MSG);
--		msg_set_hdr_sz(hdr, NAMED_H_SIZE);
--		msg_set_nametype(hdr, type);
--		msg_set_nameinst(hdr, inst);
--		msg_set_lookup_scope(hdr, tipc_node2scope(dnode));
- 		dport = tipc_nametbl_translate(net, type, inst, &dnode);
--		msg_set_destnode(hdr, dnode);
--		msg_set_destport(hdr, dport);
- 		if (unlikely(!dport && !dnode))
- 			return -EHOSTUNREACH;
- 	} else if (dest->addrtype == TIPC_ADDR_ID) {
- 		dnode = dest->addr.id.node;
--		msg_set_type(hdr, TIPC_DIRECT_MSG);
--		msg_set_lookup_scope(hdr, 0);
--		msg_set_destnode(hdr, dnode);
--		msg_set_destport(hdr, dest->addr.id.ref);
--		msg_set_hdr_sz(hdr, BASIC_H_SIZE);
- 	} else {
- 		return -EINVAL;
- 	}
-@@ -1387,6 +1375,22 @@ static int __tipc_sendmsg(struct socket *sock, struct msghdr *m, size_t dlen)
- 	if (unlikely(rc))
- 		return rc;
- 
-+	if (dest->addrtype == TIPC_ADDR_NAME) {
-+		msg_set_type(hdr, TIPC_NAMED_MSG);
-+		msg_set_hdr_sz(hdr, NAMED_H_SIZE);
-+		msg_set_nametype(hdr, type);
-+		msg_set_nameinst(hdr, inst);
-+		msg_set_lookup_scope(hdr, tipc_node2scope(dnode));
-+		msg_set_destnode(hdr, dnode);
-+		msg_set_destport(hdr, dport);
-+	} else { /* TIPC_ADDR_ID */
-+		msg_set_type(hdr, TIPC_DIRECT_MSG);
-+		msg_set_lookup_scope(hdr, 0);
-+		msg_set_destnode(hdr, dnode);
-+		msg_set_destport(hdr, dest->addr.id.ref);
-+		msg_set_hdr_sz(hdr, BASIC_H_SIZE);
-+	}
-+
- 	__skb_queue_head_init(&pkts);
- 	mtu = tipc_node_get_mtu(net, dnode, tsk->portid);
- 	rc = tipc_msg_build(hdr, m, 0, dlen, mtu, &pkts);
+diff --git a/net/bridge/br_arp_nd_proxy.c b/net/bridge/br_arp_nd_proxy.c
+index 2cf7716254be..d42e3904b498 100644
+--- a/net/bridge/br_arp_nd_proxy.c
++++ b/net/bridge/br_arp_nd_proxy.c
+@@ -311,7 +311,7 @@ static void br_nd_send(struct net_bridge *br, struct net_bridge_port *p,
+ 	/* Neighbor Advertisement */
+ 	memset(na, 0, sizeof(*na) + na_olen);
+ 	na->icmph.icmp6_type = NDISC_NEIGHBOUR_ADVERTISEMENT;
+-	na->icmph.icmp6_router = 0; /* XXX: should be 1 ? */
++	na->icmph.icmp6_router = (n->flags & NTF_ROUTER) ? 1 : 0;
+ 	na->icmph.icmp6_override = 1;
+ 	na->icmph.icmp6_solicited = 1;
+ 	na->target = ns->target;
 -- 
 2.20.1
 
