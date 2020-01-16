@@ -2,35 +2,40 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 0D3D013E8BD
-	for <lists+netdev@lfdr.de>; Thu, 16 Jan 2020 18:34:20 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E683413E8C1
+	for <lists+netdev@lfdr.de>; Thu, 16 Jan 2020 18:34:21 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2404322AbgAPRaJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 16 Jan 2020 12:30:09 -0500
-Received: from mail.kernel.org ([198.145.29.99]:42384 "EHLO mail.kernel.org"
+        id S2404351AbgAPRaP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 16 Jan 2020 12:30:15 -0500
+Received: from mail.kernel.org ([198.145.29.99]:42620 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2392968AbgAPRaH (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 16 Jan 2020 12:30:07 -0500
+        id S2404339AbgAPRaN (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 16 Jan 2020 12:30:13 -0500
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 1F2B724727;
-        Thu, 16 Jan 2020 17:30:06 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id F30D224714;
+        Thu, 16 Jan 2020 17:30:11 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1579195806;
-        bh=4yi/VfKsIAwD+kVuskrVQiWDYeWK1KPjwiFrid/OIkk=;
+        s=default; t=1579195813;
+        bh=y4H8w1sQ1rzdjJIcSge6scSlXF12nl0/DecHmZsq0b8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Xyx+c/JkDpm2Yh2DH/GvP1NaNKZZ9B8MUK4/ZA7VMGj8Rbdf8LNmQFokpZstVi5/U
-         1pf4C+tNR4w4YUwsPEg+PQs5m5cbX23e1+rV5qa+YGuMO8WSQQWgGVKd88inTeWCco
-         RkdnN0QiNcF1TFugWV3gXpGCrGuUJh2KIFKD2Qww=
+        b=jB9R5GfxHI+GGjRlrZNGLPwXWIraY1WkjW2rPaXlHgzP4c7vdtqlyfjDggNc3/bpL
+         vwk+6yLF+tywjbtXhPhST6r9CqtarnkAz9QD8ous17V5G2j3ZMQaplHJoucSWksJmp
+         Mun3we2ude402T/EqFTFU9tiTGvf4SxV6kTlFLzc=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <jakub.kicinski@netronome.com>,
-        Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.14 320/371] tcp: annotate lockless access to tcp_memory_pressure
-Date:   Thu, 16 Jan 2020 12:23:12 -0500
-Message-Id: <20200116172403.18149-263-sashal@kernel.org>
+Cc:     Jakub Kicinski <jakub.kicinski@netronome.com>,
+        kbuild test robot <lkp@intel.com>,
+        Dan Carpenter <dan.carpenter@oracle.com>,
+        Ben Hutchings <ben@decadent.org.uk>,
+        Simon Horman <simon.horman@netronome.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Sasha Levin <sashal@kernel.org>,
+        netem@lists.linux-foundation.org, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 4.14 324/371] net: netem: fix error path for corrupted GSO frames
+Date:   Thu, 16 Jan 2020 12:23:16 -0500
+Message-Id: <20200116172403.18149-267-sashal@kernel.org>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20200116172403.18149-1-sashal@kernel.org>
 References: <20200116172403.18149-1-sashal@kernel.org>
@@ -43,61 +48,72 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Eric Dumazet <edumazet@google.com>
+From: Jakub Kicinski <jakub.kicinski@netronome.com>
 
-[ Upstream commit 1f142c17d19a5618d5a633195a46f2c8be9bf232 ]
+[ Upstream commit a7fa12d15855904aff1716e1fc723c03ba38c5cc ]
 
-tcp_memory_pressure is read without holding any lock,
-and its value could be changed on other cpus.
+To corrupt a GSO frame we first perform segmentation.  We then
+proceed using the first segment instead of the full GSO skb and
+requeue the rest of the segments as separate packets.
 
-Use READ_ONCE() to annotate these lockless reads.
+If there are any issues with processing the first segment we
+still want to process the rest, therefore we jump to the
+finish_segs label.
 
-The write side is already using atomic ops.
+Commit 177b8007463c ("net: netem: fix backlog accounting for
+corrupted GSO frames") started using the pointer to the first
+segment in the "rest of segments processing", but as mentioned
+above the first segment may had already been freed at this point.
 
-Fixes: b8da51ebb1aa ("tcp: introduce tcp_under_memory_pressure()")
-Signed-off-by: Eric Dumazet <edumazet@google.com>
+Backlog corrections for parent qdiscs have to be adjusted.
+
+Fixes: 177b8007463c ("net: netem: fix backlog accounting for corrupted GSO frames")
+Reported-by: kbuild test robot <lkp@intel.com>
+Reported-by: Dan Carpenter <dan.carpenter@oracle.com>
+Reported-by: Ben Hutchings <ben@decadent.org.uk>
 Signed-off-by: Jakub Kicinski <jakub.kicinski@netronome.com>
+Reviewed-by: Simon Horman <simon.horman@netronome.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- include/net/tcp.h | 2 +-
- net/ipv4/tcp.c    | 4 ++--
- 2 files changed, 3 insertions(+), 3 deletions(-)
+ net/sched/sch_netem.c | 9 ++++++---
+ 1 file changed, 6 insertions(+), 3 deletions(-)
 
-diff --git a/include/net/tcp.h b/include/net/tcp.h
-index 00d10f0e1194..c96302310314 100644
---- a/include/net/tcp.h
-+++ b/include/net/tcp.h
-@@ -289,7 +289,7 @@ static inline bool tcp_under_memory_pressure(const struct sock *sk)
- 	    mem_cgroup_under_socket_pressure(sk->sk_memcg))
- 		return true;
+diff --git a/net/sched/sch_netem.c b/net/sched/sch_netem.c
+index ede0a24e67eb..64c3cfa35736 100644
+--- a/net/sched/sch_netem.c
++++ b/net/sched/sch_netem.c
+@@ -504,6 +504,7 @@ static int netem_enqueue(struct sk_buff *skb, struct Qdisc *sch,
+ 		if (skb->ip_summed == CHECKSUM_PARTIAL &&
+ 		    skb_checksum_help(skb)) {
+ 			qdisc_drop(skb, sch, to_free);
++			skb = NULL;
+ 			goto finish_segs;
+ 		}
  
--	return tcp_memory_pressure;
-+	return READ_ONCE(tcp_memory_pressure);
+@@ -580,9 +581,10 @@ static int netem_enqueue(struct sk_buff *skb, struct Qdisc *sch,
+ finish_segs:
+ 	if (segs) {
+ 		unsigned int len, last_len;
+-		int nb = 0;
++		int nb;
+ 
+-		len = skb->len;
++		len = skb ? skb->len : 0;
++		nb = skb ? 1 : 0;
+ 
+ 		while (segs) {
+ 			skb2 = segs->next;
+@@ -599,7 +601,8 @@ static int netem_enqueue(struct sk_buff *skb, struct Qdisc *sch,
+ 			}
+ 			segs = skb2;
+ 		}
+-		qdisc_tree_reduce_backlog(sch, -nb, prev_len - len);
++		/* Parent qdiscs accounted for 1 skb of size @prev_len */
++		qdisc_tree_reduce_backlog(sch, -(nb - 1), -(len - prev_len));
+ 	}
+ 	return NET_XMIT_SUCCESS;
  }
- /*
-  * The next routines deal with comparing 32 bit unsigned ints
-diff --git a/net/ipv4/tcp.c b/net/ipv4/tcp.c
-index 8f07655718f3..db1eceda2359 100644
---- a/net/ipv4/tcp.c
-+++ b/net/ipv4/tcp.c
-@@ -328,7 +328,7 @@ void tcp_enter_memory_pressure(struct sock *sk)
- {
- 	unsigned long val;
- 
--	if (tcp_memory_pressure)
-+	if (READ_ONCE(tcp_memory_pressure))
- 		return;
- 	val = jiffies;
- 
-@@ -343,7 +343,7 @@ void tcp_leave_memory_pressure(struct sock *sk)
- {
- 	unsigned long val;
- 
--	if (!tcp_memory_pressure)
-+	if (!READ_ONCE(tcp_memory_pressure))
- 		return;
- 	val = xchg(&tcp_memory_pressure, 0);
- 	if (val)
 -- 
 2.20.1
 
