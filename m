@@ -2,35 +2,37 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id DF9F113F33F
-	for <lists+netdev@lfdr.de>; Thu, 16 Jan 2020 19:41:40 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A1C8E13F326
+	for <lists+netdev@lfdr.de>; Thu, 16 Jan 2020 19:41:15 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2390312AbgAPRLs (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 16 Jan 2020 12:11:48 -0500
-Received: from mail.kernel.org ([198.145.29.99]:53152 "EHLO mail.kernel.org"
+        id S2390330AbgAPRLx (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 16 Jan 2020 12:11:53 -0500
+Received: from mail.kernel.org ([198.145.29.99]:53380 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2390016AbgAPRLr (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 16 Jan 2020 12:11:47 -0500
+        id S2390318AbgAPRLv (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 16 Jan 2020 12:11:51 -0500
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id DE65F24692;
-        Thu, 16 Jan 2020 17:11:45 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id EF4E22469F;
+        Thu, 16 Jan 2020 17:11:49 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1579194706;
-        bh=kRTVsw68jnqHvMwBxkC/iTUe78Oj8a1aOpB3PMFyRdo=;
+        s=default; t=1579194710;
+        bh=b7J+PIPCOnyJlaPoNNjY1W5SUVeTIuhTymopR4zUOrE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=YZmdblatR1M9WM/Gq/iVU/EI2uG7kCNTw0pP+ySk8RB2F+g246P1i7C4VJaY7zFrg
-         iEyccrHy09HXQ8l6bDynx1+70VG4yg2kwmlX9NkiV7rcTpovis2h0dKZIJeR/VUXk6
-         JE2A8vunvlMhGwUrvHf6wFu+K4Vz3Gm4nrHGC1YM=
+        b=1ezTIBnm4W5EFU9qx9Ko+rdByuwwBXOiOf99Sn2CQY86pbfautOl4fzsVayMJS+WT
+         yS0NaAdL6P4IPKRmYvrTyur4j09iI0jJLWpi2O2ak0k59pxFC9KFGvZK9eRM24Jgbo
+         HyksPYmMAYBQ0sdar2GO0DjtHw9PHUO0HdSGKFYI=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Mao Wenan <maowenan@huawei.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.19 545/671] net: sonic: replace dev_kfree_skb in sonic_send_packet
-Date:   Thu, 16 Jan 2020 12:03:03 -0500
-Message-Id: <20200116170509.12787-282-sashal@kernel.org>
+Cc:     Nicolas Boichat <drinkcat@chromium.org>,
+        Wen Gong <wgong@codeaurora.org>,
+        Kalle Valo <kvalo@codeaurora.org>,
+        Sasha Levin <sashal@kernel.org>, ath10k@lists.infradead.org,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 4.19 548/671] ath10k: adjust skb length in ath10k_sdio_mbox_rx_packet
+Date:   Thu, 16 Jan 2020 12:03:06 -0500
+Message-Id: <20200116170509.12787-285-sashal@kernel.org>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20200116170509.12787-1-sashal@kernel.org>
 References: <20200116170509.12787-1-sashal@kernel.org>
@@ -43,35 +45,99 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Mao Wenan <maowenan@huawei.com>
+From: Nicolas Boichat <drinkcat@chromium.org>
 
-[ Upstream commit 49f6c90bf6805948b597eabb499e500a47cf24be ]
+[ Upstream commit b7139960832eb56fa15d390a4b5c8c5739bd0d1a ]
 
-sonic_send_packet will be processed in irq or non-irq
-context, so it would better use dev_kfree_skb_any
-instead of dev_kfree_skb.
+When the FW bundles multiple packets, pkt->act_len may be incorrect
+as it refers to the first packet only (however, the FW will only
+bundle packets that fit into the same pkt->alloc_len).
 
-Fixes: d9fb9f384292 ("*sonic/natsemi/ns83829: Move the National Semi-conductor drivers")
-Signed-off-by: Mao Wenan <maowenan@huawei.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+Before this patch, the skb length would be set (incorrectly) to
+pkt->act_len in ath10k_sdio_mbox_rx_packet, and then later manually
+adjusted in ath10k_sdio_mbox_rx_process_packet.
+
+The first problem is that ath10k_sdio_mbox_rx_process_packet does not
+use proper skb_put commands to adjust the length (it directly changes
+skb->len), so we end up with a mismatch between skb->head + skb->tail
+and skb->data + skb->len. This is quite serious, and causes corruptions
+in the TCP stack, as the stack tries to coalesce packets, and relies
+on skb->tail being correct (that is, skb_tail_pointer must point to
+the first byte_after_ the data).
+
+Instead of re-adjusting the size in ath10k_sdio_mbox_rx_process_packet,
+this moves the code to ath10k_sdio_mbox_rx_packet, and also add a
+bounds check, as skb_put would crash the kernel if not enough space is
+available.
+
+Tested with QCA6174 SDIO with firmware
+WLAN.RMH.4.4.1-00007-QCARMSWP-1.
+
+Fixes: 8530b4e7b22bc3b ("ath10k: sdio: set skb len for all rx packets")
+Signed-off-by: Nicolas Boichat <drinkcat@chromium.org>
+Signed-off-by: Wen Gong <wgong@codeaurora.org>
+Signed-off-by: Kalle Valo <kvalo@codeaurora.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/natsemi/sonic.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/net/wireless/ath/ath10k/sdio.c | 29 +++++++++++++++++++-------
+ 1 file changed, 21 insertions(+), 8 deletions(-)
 
-diff --git a/drivers/net/ethernet/natsemi/sonic.c b/drivers/net/ethernet/natsemi/sonic.c
-index be36f7117d48..5f1875fe47cd 100644
---- a/drivers/net/ethernet/natsemi/sonic.c
-+++ b/drivers/net/ethernet/natsemi/sonic.c
-@@ -232,7 +232,7 @@ static int sonic_send_packet(struct sk_buff *skb, struct net_device *dev)
- 	laddr = dma_map_single(lp->device, skb->data, length, DMA_TO_DEVICE);
- 	if (!laddr) {
- 		pr_err_ratelimited("%s: failed to map tx DMA buffer.\n", dev->name);
--		dev_kfree_skb(skb);
-+		dev_kfree_skb_any(skb);
- 		return NETDEV_TX_OK;
- 	}
+diff --git a/drivers/net/wireless/ath/ath10k/sdio.c b/drivers/net/wireless/ath/ath10k/sdio.c
+index 686759b5613f..0ecaba824fb2 100644
+--- a/drivers/net/wireless/ath/ath10k/sdio.c
++++ b/drivers/net/wireless/ath/ath10k/sdio.c
+@@ -392,16 +392,11 @@ static int ath10k_sdio_mbox_rx_process_packet(struct ath10k *ar,
+ 	struct ath10k_htc_hdr *htc_hdr = (struct ath10k_htc_hdr *)skb->data;
+ 	bool trailer_present = htc_hdr->flags & ATH10K_HTC_FLAG_TRAILER_PRESENT;
+ 	enum ath10k_htc_ep_id eid;
+-	u16 payload_len;
+ 	u8 *trailer;
+ 	int ret;
  
+-	payload_len = le16_to_cpu(htc_hdr->len);
+-	skb->len = payload_len + sizeof(struct ath10k_htc_hdr);
+-
+ 	if (trailer_present) {
+-		trailer = skb->data + sizeof(*htc_hdr) +
+-			  payload_len - htc_hdr->trailer_len;
++		trailer = skb->data + skb->len - htc_hdr->trailer_len;
+ 
+ 		eid = pipe_id_to_eid(htc_hdr->eid);
+ 
+@@ -638,13 +633,31 @@ static int ath10k_sdio_mbox_rx_packet(struct ath10k *ar,
+ {
+ 	struct ath10k_sdio *ar_sdio = ath10k_sdio_priv(ar);
+ 	struct sk_buff *skb = pkt->skb;
++	struct ath10k_htc_hdr *htc_hdr;
+ 	int ret;
+ 
+ 	ret = ath10k_sdio_readsb(ar, ar_sdio->mbox_info.htc_addr,
+ 				 skb->data, pkt->alloc_len);
++	if (ret)
++		goto out;
++
++	/* Update actual length. The original length may be incorrect,
++	 * as the FW will bundle multiple packets as long as their sizes
++	 * fit within the same aligned length (pkt->alloc_len).
++	 */
++	htc_hdr = (struct ath10k_htc_hdr *)skb->data;
++	pkt->act_len = le16_to_cpu(htc_hdr->len) + sizeof(*htc_hdr);
++	if (pkt->act_len > pkt->alloc_len) {
++		ath10k_warn(ar, "rx packet too large (%zu > %zu)\n",
++			    pkt->act_len, pkt->alloc_len);
++		ret = -EMSGSIZE;
++		goto out;
++	}
++
++	skb_put(skb, pkt->act_len);
++
++out:
+ 	pkt->status = ret;
+-	if (!ret)
+-		skb_put(skb, pkt->act_len);
+ 
+ 	return ret;
+ }
 -- 
 2.20.1
 
