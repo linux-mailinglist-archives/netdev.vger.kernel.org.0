@@ -2,40 +2,40 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 07C8313E855
-	for <lists+netdev@lfdr.de>; Thu, 16 Jan 2020 18:31:53 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4352713E939
+	for <lists+netdev@lfdr.de>; Thu, 16 Jan 2020 18:36:57 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2404789AbgAPRbs (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 16 Jan 2020 12:31:48 -0500
-Received: from mail.kernel.org ([198.145.29.99]:44368 "EHLO mail.kernel.org"
+        id S2405233AbgAPRgy (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 16 Jan 2020 12:36:54 -0500
+Received: from mail.kernel.org ([198.145.29.99]:51796 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2404729AbgAPRbO (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 16 Jan 2020 12:31:14 -0500
+        id S2405211AbgAPRgv (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 16 Jan 2020 12:36:51 -0500
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 538A9246C3;
-        Thu, 16 Jan 2020 17:31:13 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 59162246C5;
+        Thu, 16 Jan 2020 17:36:50 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1579195874;
-        bh=SrTrD8YtD5BfvhQJJaI0IAtRzrpIvRNHyA98qwSJoM8=;
+        s=default; t=1579196211;
+        bh=LW2F/jHELeJRFD9QL7sp0B9QATRcwZeOVrASKbhON6M=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=1OeUnHcumampfWuA5I50xkDMr9ewJDqzwLgxEmk7yeZpKrj0qYO74CgHndhdoqwZn
-         BKUNBl/NhOzWcwlmb9DDkje+W/W5XhFYLiQdyqBVj1PVEtRhEeUaBC97jb2KUtQ0XP
-         EB32XZBy++mR+NWrGw2DKf39oTgFQ/oN+vVNJVrs=
+        b=Im8+VoS+bdZ5csWX+o0KtkdzgegB0jr3fCQN3ScN5ancrjaPKeh1oIfDbERxlforz
+         VHdfNK3NYtomdeaByE00NZOh4UEUhFfyUWaxWYihcLvLEV8H12Lptj025VORgqaFcU
+         EAS1i1Kz+5GAhR5zV9wz5sf6wgTY2lMtnZxxogsk=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Tung Nguyen <tung.q.nguyen@dektech.com.au>,
-        Jon Maloy <jon.maloy@ericsson.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org,
-        tipc-discussion@lists.sourceforge.net
-Subject: [PATCH AUTOSEL 4.14 368/371] tipc: fix wrong timeout input for tipc_wait_for_cond()
-Date:   Thu, 16 Jan 2020 12:24:00 -0500
-Message-Id: <20200116172403.18149-311-sashal@kernel.org>
+Cc:     Johannes Berg <johannes.berg@intel.com>,
+        Danny Alexander <danny.alexander@intel.com>,
+        Luca Coelho <luciano.coelho@intel.com>,
+        Sasha Levin <sashal@kernel.org>,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 4.9 047/251] iwlwifi: mvm: fix A-MPDU reference assignment
+Date:   Thu, 16 Jan 2020 12:33:16 -0500
+Message-Id: <20200116173641.22137-7-sashal@kernel.org>
 X-Mailer: git-send-email 2.20.1
-In-Reply-To: <20200116172403.18149-1-sashal@kernel.org>
-References: <20200116172403.18149-1-sashal@kernel.org>
+In-Reply-To: <20200116173641.22137-1-sashal@kernel.org>
+References: <20200116173641.22137-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
@@ -45,38 +45,48 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Tung Nguyen <tung.q.nguyen@dektech.com.au>
+From: Johannes Berg <johannes.berg@intel.com>
 
-[ Upstream commit 12db3c8083fcab4270866a88191933f2d9f24f89 ]
+[ Upstream commit 1f7698abedeeb3fef3cbcf78e16f925df675a179 ]
 
-In function __tipc_shutdown(), the timeout value passed to
-tipc_wait_for_cond() is not jiffies.
+The current code assigns the reference, and then goes to increment
+it if the toggle bit has changed. That way, we get
 
-This commit fixes it by converting that value from milliseconds
-to jiffies.
+Toggle  0  0  0  0  1  1  1  1
+ID      1  1  1  1  1  2  2  2
 
-Fixes: 365ad353c256 ("tipc: reduce risk of user starvation during link congestion")
-Signed-off-by: Tung Nguyen <tung.q.nguyen@dektech.com.au>
-Acked-by: Jon Maloy <jon.maloy@ericsson.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+Fix that by assigning the post-toggle ID to get
+
+Toggle  0  0  0  0  1  1  1  1
+ID      1  1  1  1  2  2  2  2
+
+Reported-by: Danny Alexander <danny.alexander@intel.com>
+Signed-off-by: Johannes Berg <johannes.berg@intel.com>
+Fixes: fbe4112791b8 ("iwlwifi: mvm: update mpdu metadata API")
+Signed-off-by: Luca Coelho <luciano.coelho@intel.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/tipc/socket.c | 2 +-
+ drivers/net/wireless/intel/iwlwifi/mvm/rxmq.c | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/net/tipc/socket.c b/net/tipc/socket.c
-index 21929ba196eb..d9ec6335c7dc 100644
---- a/net/tipc/socket.c
-+++ b/net/tipc/socket.c
-@@ -487,7 +487,7 @@ static void __tipc_shutdown(struct socket *sock, int error)
- 	struct sock *sk = sock->sk;
- 	struct tipc_sock *tsk = tipc_sk(sk);
- 	struct net *net = sock_net(sk);
--	long timeout = CONN_TIMEOUT_DEFAULT;
-+	long timeout = msecs_to_jiffies(CONN_TIMEOUT_DEFAULT);
- 	u32 dnode = tsk_peer_node(tsk);
- 	struct sk_buff *skb;
+diff --git a/drivers/net/wireless/intel/iwlwifi/mvm/rxmq.c b/drivers/net/wireless/intel/iwlwifi/mvm/rxmq.c
+index c2bbc8c17beb..bc06d87a0106 100644
+--- a/drivers/net/wireless/intel/iwlwifi/mvm/rxmq.c
++++ b/drivers/net/wireless/intel/iwlwifi/mvm/rxmq.c
+@@ -810,12 +810,12 @@ void iwl_mvm_rx_mpdu_mq(struct iwl_mvm *mvm, struct napi_struct *napi,
+ 		bool toggle_bit = phy_info & IWL_RX_MPDU_PHY_AMPDU_TOGGLE;
  
+ 		rx_status->flag |= RX_FLAG_AMPDU_DETAILS;
+-		rx_status->ampdu_reference = mvm->ampdu_ref;
+ 		/* toggle is switched whenever new aggregation starts */
+ 		if (toggle_bit != mvm->ampdu_toggle) {
+ 			mvm->ampdu_ref++;
+ 			mvm->ampdu_toggle = toggle_bit;
+ 		}
++		rx_status->ampdu_reference = mvm->ampdu_ref;
+ 	}
+ 
+ 	rcu_read_lock();
 -- 
 2.20.1
 
