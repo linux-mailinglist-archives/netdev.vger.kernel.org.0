@@ -2,36 +2,36 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 9239613EAB0
-	for <lists+netdev@lfdr.de>; Thu, 16 Jan 2020 18:45:35 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D296213EB73
+	for <lists+netdev@lfdr.de>; Thu, 16 Jan 2020 18:50:38 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2406213AbgAPRp2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 16 Jan 2020 12:45:28 -0500
-Received: from mail.kernel.org ([198.145.29.99]:37174 "EHLO mail.kernel.org"
+        id S2406515AbgAPRpu (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 16 Jan 2020 12:45:50 -0500
+Received: from mail.kernel.org ([198.145.29.99]:38030 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2406200AbgAPRp1 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 16 Jan 2020 12:45:27 -0500
+        id S2406502AbgAPRpr (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 16 Jan 2020 12:45:47 -0500
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id A5CEF2477B;
-        Thu, 16 Jan 2020 17:45:25 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 0FC32246CC;
+        Thu, 16 Jan 2020 17:45:45 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1579196726;
-        bh=8uzYNrqH8MT9BOmy4okEgOHTDg+zucgYcIhzOp4c0oU=;
+        s=default; t=1579196746;
+        bh=GeZ9ahrBvtnGjnoLOWwGp21KkJjxM/ixIF8ZuTMK604=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=l5zWjx884Qcz6fFvZz8jhCtyguo5w5EkHXJXBHpHbgEbYpOnqEUaKgAI2+W2ZAGv4
-         P9anBELoSv6ctkjZ1y9paYgxjYx5Cd/EKeqPUnbQLaJGWnPRdnOBI8ahiGifnqXL2n
-         6dR294SkaVQAapHGEuzz2mg99YTvzh5UTAiBOYlk=
+        b=BSW4BpNLLRVoyEVpGmITrkcVd14CSshEow+A5ZCkqWs+Oah6XKk9+Q9RwjGRSvREf
+         4XGGdjrNnjTb5eKcOFPWeUNN3e63D2AmBA146a4jsOTyfNhtxYKFKFVME9e54Su+FP
+         FTspr9lIyORYfeOsTnWOzRwx35TNSqXRLEpakv0E=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     YueHaibing <yuehaibing@huawei.com>, Hulk Robot <hulkci@huawei.com>,
-        Kalle Valo <kvalo@codeaurora.org>,
+Cc:     Felix Fietkau <nbd@nbd.name>,
+        Johannes Berg <johannes.berg@intel.com>,
         Sasha Levin <sashal@kernel.org>,
         linux-wireless@vger.kernel.org, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.4 111/174] libertas_tf: Use correct channel range in lbtf_geo_init
-Date:   Thu, 16 Jan 2020 12:41:48 -0500
-Message-Id: <20200116174251.24326-111-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 4.4 125/174] mac80211: minstrel_ht: fix per-group max throughput rate initialization
+Date:   Thu, 16 Jan 2020 12:42:02 -0500
+Message-Id: <20200116174251.24326-125-sashal@kernel.org>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20200116174251.24326-1-sashal@kernel.org>
 References: <20200116174251.24326-1-sashal@kernel.org>
@@ -44,36 +44,35 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: YueHaibing <yuehaibing@huawei.com>
+From: Felix Fietkau <nbd@nbd.name>
 
-[ Upstream commit 2ec4ad49b98e4a14147d04f914717135eca7c8b1 ]
+[ Upstream commit 56dd918ff06e3ee24d8067e93ed12b2a39e71394 ]
 
-It seems we should use 'range' instead of 'priv->range'
-in lbtf_geo_init(), because 'range' is the corret one
-related to current regioncode.
+The group number needs to be multiplied by the number of rates per group
+to get the full rate index
 
-Reported-by: Hulk Robot <hulkci@huawei.com>
-Fixes: 691cdb49388b ("libertas_tf: command helper functions for libertas_tf")
-Signed-off-by: YueHaibing <yuehaibing@huawei.com>
-Signed-off-by: Kalle Valo <kvalo@codeaurora.org>
+Fixes: 5935839ad735 ("mac80211: improve minstrel_ht rate sorting by throughput & probability")
+Signed-off-by: Felix Fietkau <nbd@nbd.name>
+Link: https://lore.kernel.org/r/20190820095449.45255-1-nbd@nbd.name
+Signed-off-by: Johannes Berg <johannes.berg@intel.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/wireless/libertas_tf/cmd.c | 2 +-
+ net/mac80211/rc80211_minstrel_ht.c | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/net/wireless/libertas_tf/cmd.c b/drivers/net/wireless/libertas_tf/cmd.c
-index 909ac3685010..2b193f1257a5 100644
---- a/drivers/net/wireless/libertas_tf/cmd.c
-+++ b/drivers/net/wireless/libertas_tf/cmd.c
-@@ -69,7 +69,7 @@ static void lbtf_geo_init(struct lbtf_private *priv)
- 			break;
- 		}
+diff --git a/net/mac80211/rc80211_minstrel_ht.c b/net/mac80211/rc80211_minstrel_ht.c
+index ff3b28e7dbce..fb44f0107da1 100644
+--- a/net/mac80211/rc80211_minstrel_ht.c
++++ b/net/mac80211/rc80211_minstrel_ht.c
+@@ -546,7 +546,7 @@ minstrel_ht_update_stats(struct minstrel_priv *mp, struct minstrel_ht_sta *mi)
  
--	for (ch = priv->range.start; ch < priv->range.end; ch++)
-+	for (ch = range->start; ch < range->end; ch++)
- 		priv->channels[CHAN_TO_IDX(ch)].flags = 0;
- }
+ 		/* (re)Initialize group rate indexes */
+ 		for(j = 0; j < MAX_THR_RATES; j++)
+-			tmp_group_tp_rate[j] = group;
++			tmp_group_tp_rate[j] = MCS_GROUP_RATES * group;
  
+ 		for (i = 0; i < MCS_GROUP_RATES; i++) {
+ 			if (!(mg->supported & BIT(i)))
 -- 
 2.20.1
 
