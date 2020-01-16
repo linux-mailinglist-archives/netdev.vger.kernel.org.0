@@ -2,52 +2,52 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 0AA0E13FC51
-	for <lists+netdev@lfdr.de>; Thu, 16 Jan 2020 23:44:50 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1E80813FC57
+	for <lists+netdev@lfdr.de>; Thu, 16 Jan 2020 23:44:53 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2389092AbgAPWnz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 16 Jan 2020 17:43:55 -0500
-Received: from mail-qt1-f194.google.com ([209.85.160.194]:40943 "EHLO
-        mail-qt1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1732417AbgAPWny (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 16 Jan 2020 17:43:54 -0500
-Received: by mail-qt1-f194.google.com with SMTP id v25so20322462qto.7;
-        Thu, 16 Jan 2020 14:43:53 -0800 (PST)
+        id S2389767AbgAPWoS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 16 Jan 2020 17:44:18 -0500
+Received: from mail-qt1-f195.google.com ([209.85.160.195]:43215 "EHLO
+        mail-qt1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1732417AbgAPWoS (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 16 Jan 2020 17:44:18 -0500
+Received: by mail-qt1-f195.google.com with SMTP id d18so20308837qtj.10;
+        Thu, 16 Jan 2020 14:44:17 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc:content-transfer-encoding;
-        bh=6V4rDJ8GQ9BDhz/SQaLpqohATNzavITKDId73kmv48o=;
-        b=n2OjqhSJc8YoIFY9twmO5Z5tXsxdcAZh5Qi6fB3j43J3mTV128YZjiL0eGIudHd4d6
-         Ki1uHthOo53TfRpXzq+CASThGj17ABxGtQv7g+CIWOTiI2ap6c6wgFpe6GqtRaZDbvjd
-         IwRHkx0wrLFBV7X4cURvaZXykCQb4ajm+OdLusPqa7zhe2aEucczFNw4TGNZl9Ra4+V7
-         o/NwphiUivETpcDOvRLsGjyv9PQg6HKoogNx4vtI/gQxyk2/wIGt4d8wG6uga6urD+EC
-         36C/t+RYhZ7LK+g/0G11g2YfoadULNmV9hIK1d7Kpld7KxhAJbu7Q8WAlEJc07H0i7zB
-         o5WQ==
+        bh=Z40vm1f2Y9AUyQeVuDM7FK496qjba6pNnZApm+zKg8s=;
+        b=f68nTpVikVudIMyr/yBfNuBVkVtsWEXalZ2/1odpmfSP6Y/jXeBkcpHFDP1HNH0c+7
+         Jv+yz1iEjZNTT3gJ+tG0Lq2ueFEc+5W1cHUwcsiSd6wLUCub0Yp93FNp8vfHKIPBfk0U
+         NV3mkk+yrzGKnMHzGjKbnYOClq5q2keHMLABozbxfq3KYnHz3qKU/HvCfyZVC2pXL4h3
+         cE6siTe9EqdgOqE0EByp1G+/AjLVC6UrHZfbJsfo7f2BdT5Z7Sj1a96vf0ohyT+kfIJW
+         QHEaz80JkVoQqCQpr56HKUH43Yllv2Uzy+0BrujylKsWyza7EEADQ/V5LuYzX6Heq+Mx
+         c6gg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc:content-transfer-encoding;
-        bh=6V4rDJ8GQ9BDhz/SQaLpqohATNzavITKDId73kmv48o=;
-        b=DVpbPx6LCq0rTeE1yQzzKRBsvQ1onUexU54SseEk3BdOv5/SMNnT1G6d5VICyXlX2S
-         DU+KOayFumfAZcLxwFKFvNND/Qmu1/3rqvKmQC4GFQW8NFf2ImR11tpHt8OIGOrRqGqa
-         J5BTRq/W57nEQ2pQZYE/Wc+Lnujd26TU/KKLP+UmevOGlxURwYHg8ppw2kTC/QnKg/lR
-         h5eX62mOaOvOeJlX4vaOcPLjE+PLjTuu/44LZoiBR9B4oLZr7B2XGyZdmZJFslLZJRnR
-         no1lc0fwSTghuHufIBHf1gShDihKrixcMV8HxfJZ9t4TV0hAIujqHJmvf/Z0LKZt2GoB
-         JWBA==
-X-Gm-Message-State: APjAAAVcYfmT1mlP77n1Sh9rIMtSUgbJmqiEwSPS/XOSVRsiWwaYimR3
-        G+u+JIaqDtxUooavJNGwsjqgLCgibHSTq0+PBXk=
-X-Google-Smtp-Source: APXvYqyRayvo4tT12kkQjmEE+9/BQV1hXR5rtzKk0t7oWHkLzEunvItYZ+Yg7d7QGOKguy9IFk/alBlDIDWiuD51Vzk=
-X-Received: by 2002:ac8:140c:: with SMTP id k12mr4780186qtj.117.1579214633217;
- Thu, 16 Jan 2020 14:43:53 -0800 (PST)
+        bh=Z40vm1f2Y9AUyQeVuDM7FK496qjba6pNnZApm+zKg8s=;
+        b=VAyrBkjUh+xxvqepOAS6ulNesX6NDN1+vaEoZ8GNZVdYppoo4EwsnlGbNIDoALsfQH
+         bgs1HSy+Bc+T5QRQqK/KKEUhd5c3Mlk9X6WRBbb9Jv8wOpSuj6716oGduhLVo2ONmJ6z
+         GIBsfBfiwWu26XApSz11z/ElEshahsRvF40CNXxjjVPdWLcIAvD3i5/YOMpS6GRwGfSD
+         xBfepc/dUtI2Dr1hZNMl6a7VolpiNBVV1pyLVreW88WXowQkEm1a887iqltZMr0qz0sZ
+         HgNgfqWtjyTcAjI90ao2cAEpOcOj4MC3ebyXWfbRLrL/cVjErS+2yuyAsB0SzouyQ6gG
+         yUgw==
+X-Gm-Message-State: APjAAAVbSg3Jj+dO4nPgTrx8y0HzmQy6w+aHu/6j/A54ORuSCEhha8mv
+        c7O6L7v88tDkODRJcaIs6ljzA/xhplHM5T61owU=
+X-Google-Smtp-Source: APXvYqz9ZIMD9IfSCRtDvT8wls+18NqfkkAaEjHuBU+FhlxrzVexTBwiv2DXYHpd9IvPMcc0W+U+s2eKOehTkdNj5J0=
+X-Received: by 2002:ac8:4050:: with SMTP id j16mr4681494qtl.171.1579214656952;
+ Thu, 16 Jan 2020 14:44:16 -0800 (PST)
 MIME-Version: 1.0
-References: <157918093154.1357254.7616059374996162336.stgit@toke.dk> <157918094400.1357254.5646603555325507261.stgit@toke.dk>
-In-Reply-To: <157918094400.1357254.5646603555325507261.stgit@toke.dk>
+References: <157918093154.1357254.7616059374996162336.stgit@toke.dk> <157918094293.1357254.438435835284838644.stgit@toke.dk>
+In-Reply-To: <157918094293.1357254.438435835284838644.stgit@toke.dk>
 From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Thu, 16 Jan 2020 14:43:42 -0800
-Message-ID: <CAEf4BzbckO_J=kYQD0MnxD+k-APYvxth_ARuEenyAx73+LhtKw@mail.gmail.com>
-Subject: Re: [PATCH bpf-next v3 11/11] libbpf: Fix include of bpf_helpers.h
- when libbpf is installed on system
+Date:   Thu, 16 Jan 2020 14:44:05 -0800
+Message-ID: <CAEf4BzYm0aqfXW+dTak_4HiZ46AdQGdUf8ZXXJoacRc-eHTP7Q@mail.gmail.com>
+Subject: Re: [PATCH bpf-next v3 10/11] tools/runqslower: Remove tools/lib/bpf
+ from include path
 To:     =?UTF-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <toke@redhat.com>
 Cc:     Alexei Starovoitov <ast@kernel.org>,
         Daniel Borkmann <daniel@iogearbox.net>,
@@ -86,36 +86,32 @@ at.com> wrote:
 >
 > From: Toke H=C3=B8iland-J=C3=B8rgensen <toke@redhat.com>
 >
-> The change to use angled includes for bpf_helper_defs.h breaks compilatio=
-n
-> against libbpf when it is installed in the include path, since the file i=
-s
-> installed in the bpf/ subdirectory of $INCLUDE_PATH. Since we've now fixe=
-d
-> the selftest Makefile to not require this anymore, revert back to
-> double-quoted include so bpf_helpers.h works regardless of include path.
+> Since we are now consistently using the bpf/ prefix on #include directive=
+s,
+> we don't need to include tools/lib/bpf in the include path. Remove it to
+> make sure we don't inadvertently introduce new includes without the prefi=
+x.
 >
-> Fixes: 6910d7d3867a ("selftests/bpf: Ensure bpf_helper_defs.h are taken f=
-rom selftests dir")
 > Signed-off-by: Toke H=C3=B8iland-J=C3=B8rgensen <toke@redhat.com>
 > ---
 
 Acked-by: Andrii Nakryiko <andriin@fb.com>
 
->  tools/lib/bpf/bpf_helpers.h |    2 +-
+>  tools/bpf/runqslower/Makefile |    2 +-
 >  1 file changed, 1 insertion(+), 1 deletion(-)
 >
-> diff --git a/tools/lib/bpf/bpf_helpers.h b/tools/lib/bpf/bpf_helpers.h
-> index 050bb7bf5be6..f69cc208778a 100644
-> --- a/tools/lib/bpf/bpf_helpers.h
-> +++ b/tools/lib/bpf/bpf_helpers.h
-> @@ -2,7 +2,7 @@
->  #ifndef __BPF_HELPERS__
->  #define __BPF_HELPERS__
+> diff --git a/tools/bpf/runqslower/Makefile b/tools/bpf/runqslower/Makefil=
+e
+> index c0512b830805..d474608159f5 100644
+> --- a/tools/bpf/runqslower/Makefile
+> +++ b/tools/bpf/runqslower/Makefile
+> @@ -5,7 +5,7 @@ LLC :=3D llc
+>  LLVM_STRIP :=3D llvm-strip
+>  DEFAULT_BPFTOOL :=3D $(OUTPUT)/sbin/bpftool
+>  BPFTOOL ?=3D $(DEFAULT_BPFTOOL)
+> -LIBBPF_INCLUDE :=3D -I$(abspath ../../lib) -I$(abspath ../../lib/bpf)
+> +LIBBPF_INCLUDE :=3D -I$(abspath ../../lib)
+>  LIBBPF_SRC :=3D $(abspath ../../lib/bpf)
+>  CFLAGS :=3D -g -Wall
 >
-> -#include <bpf_helper_defs.h>
-> +#include "bpf_helper_defs.h"
->
->  #define __uint(name, val) int (*name)[val]
->  #define __type(name, val) typeof(val) *name
 >
