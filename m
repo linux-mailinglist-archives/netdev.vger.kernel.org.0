@@ -2,37 +2,36 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 7FBD513F014
-	for <lists+netdev@lfdr.de>; Thu, 16 Jan 2020 19:21:02 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0500113F01D
+	for <lists+netdev@lfdr.de>; Thu, 16 Jan 2020 19:21:07 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2392533AbgAPR17 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 16 Jan 2020 12:27:59 -0500
-Received: from mail.kernel.org ([198.145.29.99]:38416 "EHLO mail.kernel.org"
+        id S2404140AbgAPR2N (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 16 Jan 2020 12:28:13 -0500
+Received: from mail.kernel.org ([198.145.29.99]:38926 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2392515AbgAPR15 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 16 Jan 2020 12:27:57 -0500
+        id S2404126AbgAPR2L (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 16 Jan 2020 12:28:11 -0500
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 2773A246F7;
-        Thu, 16 Jan 2020 17:27:56 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id D18B8246D7;
+        Thu, 16 Jan 2020 17:28:09 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1579195677;
-        bh=EJVoF4yoDsWrIGRFahRUz/h9EFQOzcUM9CG+TSSpZPo=;
+        s=default; t=1579195691;
+        bh=YLN8h777Z8NE3Opm/rAY2aVdzAenJ+dIpl9mHFPoMCY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=gjaFN2PPqnqVTCJyz/c8YA7vUZYaghkQx2UwuGnij1VdXb9W8TiEkswxLWp3wZyaX
-         OV5hYXmRKJm0J7JL78qssPMRSp5I9vDwhikUVTkD4HqvpdbFAPTK69NZALoNxsZOsE
-         XozWHwh8FFthJ9MSZM4yrX3DFBlOFLufSKJ8Jz4k=
+        b=u0U+kzd2oK3yFao6ie/nB48mJh7DfFjgvo3Mn6OuYAuRzdX/sBmHtr3lzAa0xiCfW
+         BMG5uCt7AcUFI4O/fUwyvbHuKMkWX/3Xns8975E67I1W+c0bgMeCipZIgQfnV13iCx
+         sw7pyXawcKaNSlGAswjzc8T0kkaHRKMcv6WWVfRk=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Julian Wiedmann <jwi@linux.ibm.com>,
-        Ursula Braun <ubraun@linux.ibm.com>,
+Cc:     Michael Chan <michael.chan@broadcom.com>,
+        Somasundaram Krishnasamy <somasundaram.krishnasamy@oracle.com>,
         "David S . Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>, linux-s390@vger.kernel.org,
-        netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.14 232/371] net/af_iucv: always register net_device notifier
-Date:   Thu, 16 Jan 2020 12:21:44 -0500
-Message-Id: <20200116172403.18149-175-sashal@kernel.org>
+        Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 4.14 241/371] bnxt_en: Fix ethtool selftest crash under error conditions.
+Date:   Thu, 16 Jan 2020 12:21:53 -0500
+Message-Id: <20200116172403.18149-184-sashal@kernel.org>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20200116172403.18149-1-sashal@kernel.org>
 References: <20200116172403.18149-1-sashal@kernel.org>
@@ -45,82 +44,49 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Julian Wiedmann <jwi@linux.ibm.com>
+From: Michael Chan <michael.chan@broadcom.com>
 
-[ Upstream commit 06996c1d4088a0d5f3e7789d7f96b4653cc947cc ]
+[ Upstream commit d27e2ca1166aefd54d9c48fb6647dee8115a5dfc ]
 
-Even when running as VM guest (ie pr_iucv != NULL), af_iucv can still
-open HiperTransport-based connections. For robust operation these
-connections require the af_iucv_netdev_notifier, so register it
-unconditionally.
+After ethtool loopback packet tests, we re-open the nic for the next
+IRQ test.  If the open fails, we must not proceed with the IRQ test
+or we will crash with NULL pointer dereference.  Fix it by checking
+the bnxt_open_nic() return code before proceeding.
 
-Also handle any error that register_netdevice_notifier() returns.
-
-Fixes: 9fbd87d41392 ("af_iucv: handle netdev events")
-Signed-off-by: Julian Wiedmann <jwi@linux.ibm.com>
-Reviewed-by: Ursula Braun <ubraun@linux.ibm.com>
+Reported-by: Somasundaram Krishnasamy <somasundaram.krishnasamy@oracle.com>
+Fixes: 67fea463fd87 ("bnxt_en: Add interrupt test to ethtool -t selftest.")
+Signed-off-by: Michael Chan <michael.chan@broadcom.com>
 Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/iucv/af_iucv.c | 27 ++++++++++++++++++++-------
- 1 file changed, 20 insertions(+), 7 deletions(-)
+ drivers/net/ethernet/broadcom/bnxt/bnxt_ethtool.c | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
 
-diff --git a/net/iucv/af_iucv.c b/net/iucv/af_iucv.c
-index ca98276c2709..7a9cbc9502d9 100644
---- a/net/iucv/af_iucv.c
-+++ b/net/iucv/af_iucv.c
-@@ -2446,6 +2446,13 @@ static int afiucv_iucv_init(void)
- 	return err;
- }
+diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt_ethtool.c b/drivers/net/ethernet/broadcom/bnxt/bnxt_ethtool.c
+index fc8e185718a1..963beaa8fabb 100644
+--- a/drivers/net/ethernet/broadcom/bnxt/bnxt_ethtool.c
++++ b/drivers/net/ethernet/broadcom/bnxt/bnxt_ethtool.c
+@@ -2463,7 +2463,7 @@ static void bnxt_self_test(struct net_device *dev, struct ethtool_test *etest,
+ 	bool offline = false;
+ 	u8 test_results = 0;
+ 	u8 test_mask = 0;
+-	int rc, i;
++	int rc = 0, i;
  
-+static void afiucv_iucv_exit(void)
-+{
-+	device_unregister(af_iucv_dev);
-+	driver_unregister(&af_iucv_driver);
-+	pr_iucv->iucv_unregister(&af_iucv_handler, 0);
-+}
-+
- static int __init afiucv_init(void)
- {
- 	int err;
-@@ -2479,11 +2486,18 @@ static int __init afiucv_init(void)
- 		err = afiucv_iucv_init();
- 		if (err)
- 			goto out_sock;
--	} else
--		register_netdevice_notifier(&afiucv_netdev_notifier);
-+	}
-+
-+	err = register_netdevice_notifier(&afiucv_netdev_notifier);
-+	if (err)
-+		goto out_notifier;
-+
- 	dev_add_pack(&iucv_packet_type);
- 	return 0;
- 
-+out_notifier:
-+	if (pr_iucv)
-+		afiucv_iucv_exit();
- out_sock:
- 	sock_unregister(PF_IUCV);
- out_proto:
-@@ -2497,12 +2511,11 @@ static int __init afiucv_init(void)
- static void __exit afiucv_exit(void)
- {
- 	if (pr_iucv) {
--		device_unregister(af_iucv_dev);
--		driver_unregister(&af_iucv_driver);
--		pr_iucv->iucv_unregister(&af_iucv_handler, 0);
-+		afiucv_iucv_exit();
- 		symbol_put(iucv_if);
--	} else
--		unregister_netdevice_notifier(&afiucv_netdev_notifier);
-+	}
-+
-+	unregister_netdevice_notifier(&afiucv_netdev_notifier);
- 	dev_remove_pack(&iucv_packet_type);
- 	sock_unregister(PF_IUCV);
- 	proto_unregister(&iucv_proto);
+ 	if (!bp->num_tests || !BNXT_SINGLE_PF(bp))
+ 		return;
+@@ -2521,9 +2521,9 @@ static void bnxt_self_test(struct net_device *dev, struct ethtool_test *etest,
+ 		}
+ 		bnxt_hwrm_phy_loopback(bp, false);
+ 		bnxt_half_close_nic(bp);
+-		bnxt_open_nic(bp, false, true);
++		rc = bnxt_open_nic(bp, false, true);
+ 	}
+-	if (bnxt_test_irq(bp)) {
++	if (rc || bnxt_test_irq(bp)) {
+ 		buf[BNXT_IRQ_TEST_IDX] = 1;
+ 		etest->flags |= ETH_TEST_FL_FAILED;
+ 	}
 -- 
 2.20.1
 
