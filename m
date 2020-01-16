@@ -2,61 +2,72 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 6310713DC01
-	for <lists+netdev@lfdr.de>; Thu, 16 Jan 2020 14:32:40 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5C8E313DC2D
+	for <lists+netdev@lfdr.de>; Thu, 16 Jan 2020 14:36:23 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727043AbgAPNbi (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 16 Jan 2020 08:31:38 -0500
-Received: from mail.kernel.org ([198.145.29.99]:40130 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726535AbgAPNbi (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 16 Jan 2020 08:31:38 -0500
-Received: from cakuba.hsd1.ca.comcast.net (c-73-93-4-247.hsd1.ca.comcast.net [73.93.4.247])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id C4048207E0;
-        Thu, 16 Jan 2020 13:31:37 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1579181498;
-        bh=crblO558LGiGCWytSCUuU11G0Dyhp4d0qeM7544ApqQ=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=TlffI7oLh12zrTDkNF+oi214C9rfqLFPmOqF43dh47yQxdqzHTfLkEr3FhPE/87em
-         NWATxms/hlOpXG1dz7HBZjRkuYebQ5NbWFMf5L62WUvmdFFvI4NZcXwgmabEF4SvAs
-         lSpJdGzxams3UqMhc3QPQWhgDycKhQVrbmA9nCVQ=
-Date:   Thu, 16 Jan 2020 05:31:37 -0800
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Hongbo Yao <yaohongbo@huawei.com>
-Cc:     <chenzhou10@huawei.com>, <davem@davemloft.net>,
-        <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH v2 -next] drivers/net: netdevsim depends on INET
-Message-ID: <20200116053137.4b9f9ff9@cakuba.hsd1.ca.comcast.net>
-In-Reply-To: <20200116131404.169423-1-yaohongbo@huawei.com>
-References: <20200116131404.169423-1-yaohongbo@huawei.com>
+        id S1729174AbgAPNfw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 16 Jan 2020 08:35:52 -0500
+Received: from szxga07-in.huawei.com ([45.249.212.35]:39616 "EHLO huawei.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1726832AbgAPNfw (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 16 Jan 2020 08:35:52 -0500
+Received: from DGGEMS403-HUB.china.huawei.com (unknown [172.30.72.58])
+        by Forcepoint Email with ESMTP id 0D31D4BFA032F94AF946;
+        Thu, 16 Jan 2020 21:35:49 +0800 (CST)
+Received: from [127.0.0.1] (10.177.131.64) by DGGEMS403-HUB.china.huawei.com
+ (10.3.19.203) with Microsoft SMTP Server id 14.3.439.0; Thu, 16 Jan 2020
+ 21:35:45 +0800
+Subject: Re: [PATCH -next] mac80111: fix build error without
+ CONFIG_ATH11K_DEBUGFS
+To:     Johannes Berg <johannes@sipsolutions.net>, <davem@davemloft.net>
+References: <20200116125155.166749-1-chenzhou10@huawei.com>
+ <d9e0af66e2d8cb26ef595e1a2133f55567f4b5e0.camel@sipsolutions.net>
+CC:     <linux-wireless@vger.kernel.org>, <netdev@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>
+From:   Chen Zhou <chenzhou10@huawei.com>
+Message-ID: <943b570c-48f9-fe5b-1691-37539e3eeec8@huawei.com>
+Date:   Thu, 16 Jan 2020 21:35:44 +0800
+User-Agent: Mozilla/5.0 (Windows NT 6.1; WOW64; rv:45.0) Gecko/20100101
+ Thunderbird/45.7.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+In-Reply-To: <d9e0af66e2d8cb26ef595e1a2133f55567f4b5e0.camel@sipsolutions.net>
+Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.177.131.64]
+X-CFilter-Loop: Reflected
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 16 Jan 2020 21:14:04 +0800, Hongbo Yao wrote:
-> If CONFIG_INET is not set and CONFIG_NETDEVSIM=y.
-> Building drivers/net/netdevsim/fib.o will get the following error:
-> 
-> drivers/net/netdevsim/fib.o: In function `nsim_fib4_rt_hw_flags_set':
-> fib.c:(.text+0x12b): undefined reference to `fib_alias_hw_flags_set'
-> drivers/net/netdevsim/fib.o: In function `nsim_fib4_rt_destroy':
-> fib.c:(.text+0xb11): undefined reference to `free_fib_info'
-> 
-> Correct the Kconfig for netdevsim.
-> 
-> Reported-by: Hulk Robot <hulkci@huawei.com>
-> Fixes: 48bb9eb47b270("netdevsim: fib: Add dummy implementation for FIB offload")
+Hi johannes,
 
-Looks better :) Still missing a space between the hash and the bracket,
-but:
+On 2020/1/16 20:59, Johannes Berg wrote:
+> On Thu, 2020-01-16 at 20:51 +0800, Chen Zhou wrote:
+>> If CONFIG_ATH11K_DEBUGFS is n, build fails:
+>>
+>> drivers/net/wireless/ath/ath11k/debugfs_sta.c: In function ath11k_dbg_sta_open_htt_peer_stats:
+>> drivers/net/wireless/ath/ath11k/debugfs_sta.c:416:4: error: struct ath11k has no member named debug
+>>   ar->debug.htt_stats.stats_req = stats_req;
+>>       ^~
+>> and many more similar messages.
+>>
+>> Select ATH11K_DEBUGFS under config MAC80211_DEBUGFS to fix this.
+> 
+> Heh, no. You need to find a way in ath11 to fix this.
 
-Acked-by: Jakub Kicinski <kuba@kernel.org>
+In file drivers/net/wireless/ath/ath11k/Makefile, "ath11k-$(CONFIG_MAC80211_DEBUGFS) += debugfs_sta.o",
+that is, debugfs_sta only compiled when CONFIG_MAC80211_DEBUGFS is y.
 
-While at it - does mlxsw have the same problem by any chance?
+Any suggestions about this?
+
+Thanks,
+Chen Zhou
+
+> 
+> johannes
+> 
+> 
+> .
+> 
+
