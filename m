@@ -2,98 +2,139 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 9972413FA3D
-	for <lists+netdev@lfdr.de>; Thu, 16 Jan 2020 21:12:12 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1C31513FA6A
+	for <lists+netdev@lfdr.de>; Thu, 16 Jan 2020 21:17:06 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1733211AbgAPUMK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 16 Jan 2020 15:12:10 -0500
-Received: from mail-qt1-f195.google.com ([209.85.160.195]:38396 "EHLO
-        mail-qt1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1730312AbgAPUMK (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 16 Jan 2020 15:12:10 -0500
-Received: by mail-qt1-f195.google.com with SMTP id c24so9186529qtp.5
-        for <netdev@vger.kernel.org>; Thu, 16 Jan 2020 12:12:09 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ziepe.ca; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=alotGpZYwlXUu0wz6O4ZnKvcLvweKG52fSItK24TVD4=;
-        b=VccVR6C+n8xU2WaZGXLoYfWHwf8LM7fVYtXH7wK4jMwYcFZVw/osv1jHz13bYyzNrR
-         akT+kmBaxtv/nYKnLBXWLP50e9BheIiBksy8yWm/QvpwrzoOI7Y/03VEYzfkKwNc6hu0
-         kUSWePpbf1AiwqM+e1zWa/srPr91JLz6gnVorpOut+x3FaEm7Z+9Vk8Pec/hXWbg+Trb
-         RQw7/oJB8LeWRZzp1QmlXTM2xaOn/rvGmg8labbyVwjEy3uuIswmHbQz4PY97x79f1a4
-         ld7ql13Rqt5v6GRJrCc+iESgUptW+M0Ywu6tYG1oBqnLBdw2osrh2NfkfljBXJMEXvld
-         WlBw==
+        id S1732871AbgAPUQy (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 16 Jan 2020 15:16:54 -0500
+Received: from us-smtp-1.mimecast.com ([205.139.110.61]:24333 "EHLO
+        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1729030AbgAPUQx (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 16 Jan 2020 15:16:53 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1579205812;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type;
+        bh=/CytHn2L7KeYF8wQ/geRYrNGxGmK8j4Brp8m4l1SyQA=;
+        b=DOVDRf0vXbYkSu/8Z9aXlwmdxGacooOcAkyMezkAu79aJKYAXtVOnj0tE6EEyEf81NA5N4
+        sSyPuMDaZECWCA6i7Y8yRDiXmUySEN+0F/N/mQRg52GhiziuTJPw3PJhPRKM1qTBeJe8/o
+        iGUu/K7EO58KKEz8G9twIMAOtU4Saww=
+Received: from mail-wr1-f70.google.com (mail-wr1-f70.google.com
+ [209.85.221.70]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-408-N3fzD7lIOQWltK5cuXGpYw-1; Thu, 16 Jan 2020 15:16:50 -0500
+X-MC-Unique: N3fzD7lIOQWltK5cuXGpYw-1
+Received: by mail-wr1-f70.google.com with SMTP id d8so9584464wrq.12
+        for <netdev@vger.kernel.org>; Thu, 16 Jan 2020 12:16:50 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=alotGpZYwlXUu0wz6O4ZnKvcLvweKG52fSItK24TVD4=;
-        b=sEpfJGglVwQiYiipKHcQSSQv/chdv2C2Capv5wKHJAWIFXWemynfcA4cu6Lc8ud3DJ
-         Rq0YJu59yJQSk7t/biVWlSKvSCULCggzQTfeYj3TBvejo9RLPSOn2o87wPdHWk7X/f2D
-         3qdndkngfP8hiD0tVIhdQDn8/jOYXNQHQFKXnZnB3rG92gfbxc+wa5/7yba+eixt9BqJ
-         KoR2wby4GYXxKz1QR2uyxXi5QWMUTiRRLf85O2OenWJ/s0jbJqffggNQmRy4I9+CCx3q
-         P/lNcOUdiIYaNfE3fex0XOD7TH6qLw7RxZ7VDTdDGLNshizQ0h6yLBvTqxr//xw0Y6gN
-         vHLA==
-X-Gm-Message-State: APjAAAVAazsDp3WQivlPdgaZSVTpFUuBkgyDGM8Nf69x98xoO1bCu2An
-        B+iDcSn4gMC4w8t7bNnUQOJsAQ==
-X-Google-Smtp-Source: APXvYqxQo+V/UdImuJnwyZ+95lTBNrK/SAejJARUZli/4cEF6208NJwE1lwRemo562dtfuBdlr7gww==
-X-Received: by 2002:ac8:1730:: with SMTP id w45mr4343430qtj.297.1579205529259;
-        Thu, 16 Jan 2020 12:12:09 -0800 (PST)
-Received: from ziepe.ca (hlfxns017vw-142-68-57-212.dhcp-dynamic.fibreop.ns.bellaliant.net. [142.68.57.212])
-        by smtp.gmail.com with ESMTPSA id b24sm11719685qto.71.2020.01.16.12.12.08
-        (version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
-        Thu, 16 Jan 2020 12:12:08 -0800 (PST)
-Received: from jgg by mlx.ziepe.ca with local (Exim 4.90_1)
-        (envelope-from <jgg@ziepe.ca>)
-        id 1isBUu-0007iz-B6; Thu, 16 Jan 2020 16:12:08 -0400
-Date:   Thu, 16 Jan 2020 16:12:08 -0400
-From:   Jason Gunthorpe <jgg@ziepe.ca>
-To:     Leon Romanovsky <leon@kernel.org>
-Cc:     Doug Ledford <dledford@redhat.com>,
-        RDMA mailing list <linux-rdma@vger.kernel.org>,
-        Avihai Horon <avihaih@mellanox.com>,
-        Maor Gottlieb <maorg@mellanox.com>,
-        Saeed Mahameed <saeedm@mellanox.com>,
-        linux-netdev <netdev@vger.kernel.org>
-Subject: Re: [PATCH rdma-next 0/2] RoCE accelerator counters
-Message-ID: <20200116201208.GI10759@ziepe.ca>
-References: <20200115145459.83280-1-leon@kernel.org>
- <20200115203929.GA26829@ziepe.ca>
- <20200116091430.GA6853@unreal>
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:mime-version
+         :content-disposition;
+        bh=/CytHn2L7KeYF8wQ/geRYrNGxGmK8j4Brp8m4l1SyQA=;
+        b=jMDWHyzdkCsmRPhQ2YYm3/Q6ZScrWegDG3Wq6YyifuJTAtFjYFkciXlT8OAwxFbTC9
+         0nwyahQ8PN/nkAbny2cN79sWa66B/zjaRW97WJvYoqkYqwen/SCwSaTaCm9c9wmxNk5U
+         Q58ofq8LjyKXVsksjsjf5Q5wt4yPJ6FbS2wRATcdA/0HPXX5tjGVvDw/N2JYquBeOw2z
+         HT9471IWnZhzoBTP7Iss6OfkqA3XUEuKPHGDPmiEdGbUWeKuVKSTjNjY9Tzw3qaZLs3i
+         nyWj3b2o8+o0mmw56CPRUAKGbZcWrTgohZjLhUSIwIcL1NpAP8Hdl29APtXtNE/OT+xn
+         ZHHw==
+X-Gm-Message-State: APjAAAWnuSS3rKqk43liBV7DXrwEKPHCdBZZgeEcoOQ1lu1RKKUsOWpN
+        wLLcey6m4LWyt1G81e4Dj2Btq/zHWR2FaqqxA0/Mlqvo4es07PCRSguOnZ/A1vrIbyEspMh1Gpj
+        VmyN+I11sx+R3ArzX
+X-Received: by 2002:adf:b64b:: with SMTP id i11mr4956359wre.58.1579205809253;
+        Thu, 16 Jan 2020 12:16:49 -0800 (PST)
+X-Google-Smtp-Source: APXvYqxqVwjrwdffCiAm/ijqSIT3YVXm0bAEtcLqu1y1hDHTetFVodfuMSQ4TDBBKXOWJy4MrluJ9g==
+X-Received: by 2002:adf:b64b:: with SMTP id i11mr4956339wre.58.1579205808962;
+        Thu, 16 Jan 2020 12:16:48 -0800 (PST)
+Received: from linux.home (2a01cb058a4e7100d3814d1912515f67.ipv6.abo.wanadoo.fr. [2a01:cb05:8a4e:7100:d381:4d19:1251:5f67])
+        by smtp.gmail.com with ESMTPSA id g2sm30848987wrw.76.2020.01.16.12.16.48
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 16 Jan 2020 12:16:48 -0800 (PST)
+Date:   Thu, 16 Jan 2020 21:16:46 +0100
+From:   Guillaume Nault <gnault@redhat.com>
+To:     David Miller <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>
+Cc:     netdev@vger.kernel.org, Nicolas Dichtel <nicolas.dichtel@6wind.com>
+Subject: [PATCH net-next] netns: Constify exported functions
+Message-ID: <a681349038fd0358b304c8b9a744946831e5e5f1.1579205730.git.gnault@redhat.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20200116091430.GA6853@unreal>
-User-Agent: Mutt/1.9.4 (2018-02-28)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Jan 16, 2020 at 11:14:30AM +0200, Leon Romanovsky wrote:
-> On Wed, Jan 15, 2020 at 04:39:29PM -0400, Jason Gunthorpe wrote:
-> > On Wed, Jan 15, 2020 at 04:54:57PM +0200, Leon Romanovsky wrote:
-> > > From: Leon Romanovsky <leonro@mellanox.com>
-> > >
-> > > Hi,
-> > >
-> > > Very small change, separated to two patches due to our shared methodology.
-> > >
-> > > Thanks
-> > >
-> > > Avihai Horon (1):
-> > >   IB/mlx5: Expose RoCE accelerator counters
-> > >
-> > > Leon Romanovsky (1):
-> > >   net/mlx5: Add RoCE accelerator counters
-> >
-> > Looks fine to me, can you update the shared branch?
-> 
-> Thanks, applied
-> 8cbf17c14f9b net/mlx5: Add RoCE accelerator counters
+Mark function parameters as 'const' where possible.
 
-Okay, applied to for-next
+Signed-off-by: Guillaume Nault <gnault@redhat.com>
+Acked-by: Nicolas Dichtel <nicolas.dichtel@6wind.com>
+---
+ include/net/net_namespace.h | 10 +++++-----
+ net/core/net_namespace.c    |  6 +++---
+ 2 files changed, 8 insertions(+), 8 deletions(-)
 
-Thanks,
-Jason
+diff --git a/include/net/net_namespace.h b/include/net/net_namespace.h
+index b8ceaf0cd997..854d39ef1ca3 100644
+--- a/include/net/net_namespace.h
++++ b/include/net/net_namespace.h
+@@ -347,9 +347,9 @@ static inline struct net *read_pnet(const possible_net_t *pnet)
+ #endif
+ 
+ int peernet2id_alloc(struct net *net, struct net *peer, gfp_t gfp);
+-int peernet2id(struct net *net, struct net *peer);
+-bool peernet_has_id(struct net *net, struct net *peer);
+-struct net *get_net_ns_by_id(struct net *net, int id);
++int peernet2id(const struct net *net, struct net *peer);
++bool peernet_has_id(const struct net *net, struct net *peer);
++struct net *get_net_ns_by_id(const struct net *net, int id);
+ 
+ struct pernet_operations {
+ 	struct list_head list;
+@@ -427,7 +427,7 @@ static inline void unregister_net_sysctl_table(struct ctl_table_header *header)
+ }
+ #endif
+ 
+-static inline int rt_genid_ipv4(struct net *net)
++static inline int rt_genid_ipv4(const struct net *net)
+ {
+ 	return atomic_read(&net->ipv4.rt_genid);
+ }
+@@ -459,7 +459,7 @@ static inline void rt_genid_bump_all(struct net *net)
+ 	rt_genid_bump_ipv6(net);
+ }
+ 
+-static inline int fnhe_genid(struct net *net)
++static inline int fnhe_genid(const struct net *net)
+ {
+ 	return atomic_read(&net->fnhe_genid);
+ }
+diff --git a/net/core/net_namespace.c b/net/core/net_namespace.c
+index 6412c1fbfcb5..757cc1d084e7 100644
+--- a/net/core/net_namespace.c
++++ b/net/core/net_namespace.c
+@@ -268,7 +268,7 @@ int peernet2id_alloc(struct net *net, struct net *peer, gfp_t gfp)
+ EXPORT_SYMBOL_GPL(peernet2id_alloc);
+ 
+ /* This function returns, if assigned, the id of a peer netns. */
+-int peernet2id(struct net *net, struct net *peer)
++int peernet2id(const struct net *net, struct net *peer)
+ {
+ 	int id;
+ 
+@@ -283,12 +283,12 @@ EXPORT_SYMBOL(peernet2id);
+ /* This function returns true is the peer netns has an id assigned into the
+  * current netns.
+  */
+-bool peernet_has_id(struct net *net, struct net *peer)
++bool peernet_has_id(const struct net *net, struct net *peer)
+ {
+ 	return peernet2id(net, peer) >= 0;
+ }
+ 
+-struct net *get_net_ns_by_id(struct net *net, int id)
++struct net *get_net_ns_by_id(const struct net *net, int id)
+ {
+ 	struct net *peer;
+ 
+-- 
+2.21.1
+
