@@ -2,43 +2,40 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id C518C13F887
-	for <lists+netdev@lfdr.de>; Thu, 16 Jan 2020 20:19:22 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 238A213F878
+	for <lists+netdev@lfdr.de>; Thu, 16 Jan 2020 20:18:59 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2407317AbgAPTTL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 16 Jan 2020 14:19:11 -0500
-Received: from mail.kernel.org ([198.145.29.99]:38968 "EHLO mail.kernel.org"
+        id S1730550AbgAPQyb (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 16 Jan 2020 11:54:31 -0500
+Received: from mail.kernel.org ([198.145.29.99]:39126 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1731809AbgAPQyZ (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 16 Jan 2020 11:54:25 -0500
+        id S1731921AbgAPQya (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 16 Jan 2020 11:54:30 -0500
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 84BCD214AF;
-        Thu, 16 Jan 2020 16:54:23 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id BDFCF20730;
+        Thu, 16 Jan 2020 16:54:28 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1579193664;
-        bh=Sz4GpaxAPtLgQkYlkXapgikiElCG4XG4t1osKrX0TIc=;
+        s=default; t=1579193669;
+        bh=SyAiXWfVg46pD08w1xZSzZgC3r0KM/T5sI+w/77cPaA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Y/OlTywnOtPqRlM9LcrMQPcE68gnAxp+dHeYJPFa8tx4wXRJjgosH+cj2zWQx89qp
-         iZU9iRtJlSr1A7oUcRH3ZYxc/XorAIm4hZLigagWe3LuAEvaZjXscrOtnsCyH/+pMt
-         6/SWZXaka2WTpJw74HRqP2ifCtXkSxVGb6MIwCb0=
+        b=zqbn4MGnB+/ceJc7SACNTa2lgIP48E9HxKnFn9SeVmRnRT+4WuyyV1HdVo3ptJRK6
+         uDhfoXeLvR47HK1PjyXiAHdDcy4E8nwIgc1FIpJPh6qwMZ8FsMWt6xZ+dryaSWF4ku
+         c1rh87O2vtSbRWwrgjLsATQaG9MijQWSx8Rj3GaM=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Jesper Dangaard Brouer <brouer@redhat.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        =?UTF-8?q?Toke=20H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>,
-        Andrii Nakryiko <andriin@fb.com>,
+Cc:     Roi Dayan <roid@mellanox.com>, Eli Britstein <elibr@mellanox.com>,
+        Saeed Mahameed <saeedm@mellanox.com>,
         Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org,
-        bpf@vger.kernel.org, clang-built-linux@googlegroups.com
-Subject: [PATCH AUTOSEL 5.4 191/205] samples/bpf: Fix broken xdp_rxq_info due to map order assumptions
-Date:   Thu, 16 Jan 2020 11:42:46 -0500
-Message-Id: <20200116164300.6705-191-sashal@kernel.org>
+        linux-rdma@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.4 195/205] net/mlx5e: Fix free peer_flow when refcount is 0
+Date:   Thu, 16 Jan 2020 11:42:50 -0500
+Message-Id: <20200116164300.6705-195-sashal@kernel.org>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20200116164300.6705-1-sashal@kernel.org>
 References: <20200116164300.6705-1-sashal@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 X-stable: review
 X-Patchwork-Hint: Ignore
 Content-Transfer-Encoding: 8bit
@@ -47,61 +44,41 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Jesper Dangaard Brouer <brouer@redhat.com>
+From: Roi Dayan <roid@mellanox.com>
 
-[ Upstream commit edbca120a8cdfa5a5793707e33497aa5185875ca ]
+[ Upstream commit eb252c3a24fc5856fa62140c2f8269ddce6ce4e5 ]
 
-In the days of using bpf_load.c the order in which the 'maps' sections
-were defines in BPF side (*_kern.c) file, were used by userspace side
-to identify the map via using the map order as an index. In effect the
-order-index is created based on the order the maps sections are stored
-in the ELF-object file, by the LLVM compiler.
+It could be neigh update flow took a refcount on peer flow so
+sometimes we cannot release peer flow even if parent flow is
+being freed now.
 
-This have also carried over in libbpf via API bpf_map__next(NULL, obj)
-to extract maps in the order libbpf parsed the ELF-object file.
-
-When BTF based maps were introduced a new section type ".maps" were
-created. I found that the LLVM compiler doesn't create the ".maps"
-sections in the order they are defined in the C-file. The order in the
-ELF file is based on the order the map pointer is referenced in the code.
-
-This combination of changes lead to xdp_rxq_info mixing up the map
-file-descriptors in userspace, resulting in very broken behaviour, but
-without warning the user.
-
-This patch fix issue by instead using bpf_object__find_map_by_name()
-to find maps via their names. (Note, this is the ELF name, which can
-be longer than the name the kernel retains).
-
-Fixes: be5bca44aa6b ("samples: bpf: convert some XDP samples from bpf_load to libbpf")
-Fixes: 451d1dc886b5 ("samples: bpf: update map definition to new syntax BTF-defined map")
-Signed-off-by: Jesper Dangaard Brouer <brouer@redhat.com>
-Signed-off-by: Alexei Starovoitov <ast@kernel.org>
-Acked-by: Toke Høiland-Jørgensen <toke@redhat.com>
-Acked-by: Andrii Nakryiko <andriin@fb.com>
-Link: https://lore.kernel.org/bpf/157529025128.29832.5953245340679936909.stgit@firesoul
+Fixes: 5a7e5bcb663d ("net/mlx5e: Extend tc flow struct with reference counter")
+Signed-off-by: Roi Dayan <roid@mellanox.com>
+Reviewed-by: Eli Britstein <elibr@mellanox.com>
+Signed-off-by: Saeed Mahameed <saeedm@mellanox.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- samples/bpf/xdp_rxq_info_user.c | 6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
+ drivers/net/ethernet/mellanox/mlx5/core/en_tc.c | 7 +++++--
+ 1 file changed, 5 insertions(+), 2 deletions(-)
 
-diff --git a/samples/bpf/xdp_rxq_info_user.c b/samples/bpf/xdp_rxq_info_user.c
-index c7e4e45d824a..b88df17853b8 100644
---- a/samples/bpf/xdp_rxq_info_user.c
-+++ b/samples/bpf/xdp_rxq_info_user.c
-@@ -489,9 +489,9 @@ int main(int argc, char **argv)
- 	if (bpf_prog_load_xattr(&prog_load_attr, &obj, &prog_fd))
- 		return EXIT_FAIL;
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_tc.c b/drivers/net/ethernet/mellanox/mlx5/core/en_tc.c
+index 947122c68493..96711e34d248 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/en_tc.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/en_tc.c
+@@ -1615,8 +1615,11 @@ static void __mlx5e_tc_del_fdb_peer_flow(struct mlx5e_tc_flow *flow)
  
--	map = bpf_map__next(NULL, obj);
--	stats_global_map = bpf_map__next(map, obj);
--	rx_queue_index_map = bpf_map__next(stats_global_map, obj);
-+	map =  bpf_object__find_map_by_name(obj, "config_map");
-+	stats_global_map = bpf_object__find_map_by_name(obj, "stats_global_map");
-+	rx_queue_index_map = bpf_object__find_map_by_name(obj, "rx_queue_index_map");
- 	if (!map || !stats_global_map || !rx_queue_index_map) {
- 		printf("finding a map in obj file failed\n");
- 		return EXIT_FAIL;
+ 	flow_flag_clear(flow, DUP);
+ 
+-	mlx5e_tc_del_fdb_flow(flow->peer_flow->priv, flow->peer_flow);
+-	kfree(flow->peer_flow);
++	if (refcount_dec_and_test(&flow->peer_flow->refcnt)) {
++		mlx5e_tc_del_fdb_flow(flow->peer_flow->priv, flow->peer_flow);
++		kfree(flow->peer_flow);
++	}
++
+ 	flow->peer_flow = NULL;
+ }
+ 
 -- 
 2.20.1
 
