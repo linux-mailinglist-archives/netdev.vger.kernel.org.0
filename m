@@ -2,37 +2,37 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id B8CC913F4FF
-	for <lists+netdev@lfdr.de>; Thu, 16 Jan 2020 19:53:51 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 57DA113F4F6
+	for <lists+netdev@lfdr.de>; Thu, 16 Jan 2020 19:53:47 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2437133AbgAPSx3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 16 Jan 2020 13:53:29 -0500
-Received: from mail.kernel.org ([198.145.29.99]:41432 "EHLO mail.kernel.org"
+        id S2389361AbgAPRIR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 16 Jan 2020 12:08:17 -0500
+Received: from mail.kernel.org ([198.145.29.99]:41538 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1729262AbgAPRIN (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 16 Jan 2020 12:08:13 -0500
+        id S2389352AbgAPRIQ (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 16 Jan 2020 12:08:16 -0500
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 47CC224687;
-        Thu, 16 Jan 2020 17:08:11 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id F11452192A;
+        Thu, 16 Jan 2020 17:08:13 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1579194492;
-        bh=t9t6gy9pWd6c2UzdRr7ngXWkrFc5wXb5Du/woiRoHnE=;
+        s=default; t=1579194494;
+        bh=P2tgffq5is540UJYUH8qV+fPM1TviJzp/s9I/PyPUFI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Yxht9JtTwu4QISo4JeeXgxgGWxHDirrq1B/18c8aq6BZfXmVkF/2V/p3fFrHj5gTU
-         QKm2SRroZk3Vh05JNa8F7BiZMqeXafkMCkZ1P04vx0jzDMK12Rj6zgxNfcoDmKrcUU
-         Ld2SdCDi2w9wWo90DvRNWlU3jvvytphPBwsmswug=
+        b=JS+8Uns+KYbrGqBdoY32UUWrhuGde+JPYFFSYAkvIvAbM8Tbcpo3eMqCCP07EEWAI
+         wg0jmtxddsNHr11eelKbjJLlXvp5UfXqrEI1OtTVsJj3hW5LyxmCuWEGUAKRBlTA1j
+         GonVH68mK/p7syaw4MvQrXTusDqZCHm2Yw7p687g=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Stephen Hemminger <stephen@networkplumber.org>,
-        Stephen Hemminger <sthemmin@microsoft.com>,
+Cc:     Jakub Kicinski <jakub.kicinski@netronome.com>,
+        David Beckett <david.beckett@netronome.com>,
+        Dirk van der Merwe <dirk.vandermerwe@netronome.com>,
         "David S . Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org,
-        bpf@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.19 390/671] net: core: support XDP generic on stacked devices.
-Date:   Thu, 16 Jan 2020 12:00:28 -0500
-Message-Id: <20200116170509.12787-127-sashal@kernel.org>
+        Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 4.19 392/671] net: don't clear sock->sk early to avoid trouble in strparser
+Date:   Thu, 16 Jan 2020 12:00:30 -0500
+Message-Id: <20200116170509.12787-129-sashal@kernel.org>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20200116170509.12787-1-sashal@kernel.org>
 References: <20200116170509.12787-1-sashal@kernel.org>
@@ -45,121 +45,83 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Stephen Hemminger <stephen@networkplumber.org>
+From: Jakub Kicinski <jakub.kicinski@netronome.com>
 
-[ Upstream commit 458bf2f224f04a513b0be972f8708e78ee2c986e ]
+[ Upstream commit 2b81f8161dfeda4017cef4f2498ccb64b13f0d61 ]
 
-When a device is stacked like (team, bonding, failsafe or netvsc) the
-XDP generic program for the parent device was not called.
+af_inet sets sock->sk to NULL which trips strparser over:
 
-Move the call to XDP generic inside __netif_receive_skb_core where
-it can be done multiple times for stacked case.
+BUG: kernel NULL pointer dereference, address: 0000000000000012
+PGD 0 P4D 0
+Oops: 0000 [#1] SMP PTI
+CPU: 7 PID: 0 Comm: swapper/7 Not tainted 5.2.0-rc1-00139-g14629453a6d3 #21
+RIP: 0010:tcp_peek_len+0x10/0x60
+RSP: 0018:ffffc02e41c54b98 EFLAGS: 00010246
+RAX: 0000000000000000 RBX: ffff9cf924c4e030 RCX: 0000000000000051
+RDX: 0000000000000000 RSI: 000000000000000c RDI: ffff9cf97128f480
+RBP: ffff9cf9365e0300 R08: ffff9cf94fe7d2c0 R09: 0000000000000000
+R10: 000000000000036b R11: ffff9cf939735e00 R12: ffff9cf91ad9ae40
+R13: ffff9cf924c4e000 R14: ffff9cf9a8fcbaae R15: 0000000000000020
+FS: 0000000000000000(0000) GS:ffff9cf9af7c0000(0000) knlGS:0000000000000000
+CS: 0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+CR2: 0000000000000012 CR3: 000000013920a003 CR4: 00000000003606e0
+DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+ Call Trace:
+ <IRQ>
+ strp_data_ready+0x48/0x90
+ tls_data_ready+0x22/0xd0 [tls]
+ tcp_rcv_established+0x569/0x620
+ tcp_v4_do_rcv+0x127/0x1e0
+ tcp_v4_rcv+0xad7/0xbf0
+ ip_protocol_deliver_rcu+0x2c/0x1c0
+ ip_local_deliver_finish+0x41/0x50
+ ip_local_deliver+0x6b/0xe0
+ ? ip_protocol_deliver_rcu+0x1c0/0x1c0
+ ip_rcv+0x52/0xd0
+ ? ip_rcv_finish_core.isra.20+0x380/0x380
+ __netif_receive_skb_one_core+0x7e/0x90
+ netif_receive_skb_internal+0x42/0xf0
+ napi_gro_receive+0xed/0x150
+ nfp_net_poll+0x7a2/0xd30 [nfp]
+ ? kmem_cache_free_bulk+0x286/0x310
+ net_rx_action+0x149/0x3b0
+ __do_softirq+0xe3/0x30a
+ ? handle_irq_event_percpu+0x6a/0x80
+ irq_exit+0xe8/0xf0
+ do_IRQ+0x85/0xd0
+ common_interrupt+0xf/0xf
+ </IRQ>
+RIP: 0010:cpuidle_enter_state+0xbc/0x450
 
-Fixes: d445516966dc ("net: xdp: support xdp generic on virtual devices")
-Signed-off-by: Stephen Hemminger <sthemmin@microsoft.com>
+To avoid this issue set sock->sk after sk_prot->close.
+My grepping and testing did not discover any code which
+would depend on the current behaviour.
+
+Fixes: c46234ebb4d1 ("tls: RX path for ktls")
+Reported-by: David Beckett <david.beckett@netronome.com>
+Signed-off-by: Jakub Kicinski <jakub.kicinski@netronome.com>
+Reviewed-by: Dirk van der Merwe <dirk.vandermerwe@netronome.com>
 Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/core/dev.c | 58 +++++++++++---------------------------------------
- 1 file changed, 12 insertions(+), 46 deletions(-)
+ net/ipv4/af_inet.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/net/core/dev.c b/net/core/dev.c
-index a26d87073f71..935fe158cfaf 100644
---- a/net/core/dev.c
-+++ b/net/core/dev.c
-@@ -4465,23 +4465,6 @@ static int netif_rx_internal(struct sk_buff *skb)
- 
- 	trace_netif_rx(skb);
- 
--	if (static_branch_unlikely(&generic_xdp_needed_key)) {
--		int ret;
--
--		preempt_disable();
--		rcu_read_lock();
--		ret = do_xdp_generic(rcu_dereference(skb->dev->xdp_prog), skb);
--		rcu_read_unlock();
--		preempt_enable();
--
--		/* Consider XDP consuming the packet a success from
--		 * the netdev point of view we do not want to count
--		 * this as an error.
--		 */
--		if (ret != XDP_PASS)
--			return NET_RX_SUCCESS;
--	}
--
- #ifdef CONFIG_RPS
- 	if (static_key_false(&rps_needed)) {
- 		struct rps_dev_flow voidflow, *rflow = &voidflow;
-@@ -4815,6 +4798,18 @@ static int __netif_receive_skb_core(struct sk_buff *skb, bool pfmemalloc,
- 
- 	__this_cpu_inc(softnet_data.processed);
- 
-+	if (static_branch_unlikely(&generic_xdp_needed_key)) {
-+		int ret2;
-+
-+		preempt_disable();
-+		ret2 = do_xdp_generic(rcu_dereference(skb->dev->xdp_prog), skb);
-+		preempt_enable();
-+
-+		if (ret2 != XDP_PASS)
-+			return NET_RX_DROP;
-+		skb_reset_mac_len(skb);
-+	}
-+
- 	if (skb->protocol == cpu_to_be16(ETH_P_8021Q) ||
- 	    skb->protocol == cpu_to_be16(ETH_P_8021AD)) {
- 		skb = skb_vlan_untag(skb);
-@@ -5133,19 +5128,6 @@ static int netif_receive_skb_internal(struct sk_buff *skb)
- 	if (skb_defer_rx_timestamp(skb))
- 		return NET_RX_SUCCESS;
- 
--	if (static_branch_unlikely(&generic_xdp_needed_key)) {
--		int ret;
--
--		preempt_disable();
--		rcu_read_lock();
--		ret = do_xdp_generic(rcu_dereference(skb->dev->xdp_prog), skb);
--		rcu_read_unlock();
--		preempt_enable();
--
--		if (ret != XDP_PASS)
--			return NET_RX_DROP;
--	}
--
- 	rcu_read_lock();
- #ifdef CONFIG_RPS
- 	if (static_key_false(&rps_needed)) {
-@@ -5166,7 +5148,6 @@ static int netif_receive_skb_internal(struct sk_buff *skb)
- 
- static void netif_receive_skb_list_internal(struct list_head *head)
- {
--	struct bpf_prog *xdp_prog = NULL;
- 	struct sk_buff *skb, *next;
- 	struct list_head sublist;
- 
-@@ -5179,21 +5160,6 @@ static void netif_receive_skb_list_internal(struct list_head *head)
+diff --git a/net/ipv4/af_inet.c b/net/ipv4/af_inet.c
+index 1fbe2f815474..bbf3b3daa999 100644
+--- a/net/ipv4/af_inet.c
++++ b/net/ipv4/af_inet.c
+@@ -424,8 +424,8 @@ int inet_release(struct socket *sock)
+ 		if (sock_flag(sk, SOCK_LINGER) &&
+ 		    !(current->flags & PF_EXITING))
+ 			timeout = sk->sk_lingertime;
+-		sock->sk = NULL;
+ 		sk->sk_prot->close(sk, timeout);
++		sock->sk = NULL;
  	}
- 	list_splice_init(&sublist, head);
- 
--	if (static_branch_unlikely(&generic_xdp_needed_key)) {
--		preempt_disable();
--		rcu_read_lock();
--		list_for_each_entry_safe(skb, next, head, list) {
--			xdp_prog = rcu_dereference(skb->dev->xdp_prog);
--			skb_list_del_init(skb);
--			if (do_xdp_generic(xdp_prog, skb) == XDP_PASS)
--				list_add_tail(&skb->list, &sublist);
--		}
--		rcu_read_unlock();
--		preempt_enable();
--		/* Put passed packets back on main list */
--		list_splice_init(&sublist, head);
--	}
--
- 	rcu_read_lock();
- #ifdef CONFIG_RPS
- 	if (static_key_false(&rps_needed)) {
+ 	return 0;
+ }
 -- 
 2.20.1
 
