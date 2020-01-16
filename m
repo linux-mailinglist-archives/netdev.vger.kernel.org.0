@@ -2,38 +2,37 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id ED93913F576
-	for <lists+netdev@lfdr.de>; Thu, 16 Jan 2020 19:56:44 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id AB8D413F518
+	for <lists+netdev@lfdr.de>; Thu, 16 Jan 2020 19:54:21 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2389089AbgAPRHR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 16 Jan 2020 12:07:17 -0500
-Received: from mail.kernel.org ([198.145.29.99]:38792 "EHLO mail.kernel.org"
+        id S2436637AbgAPSyO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 16 Jan 2020 13:54:14 -0500
+Received: from mail.kernel.org ([198.145.29.99]:41004 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2389119AbgAPRHP (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 16 Jan 2020 12:07:15 -0500
+        id S2389264AbgAPRIC (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 16 Jan 2020 12:08:02 -0500
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 3766021582;
-        Thu, 16 Jan 2020 17:07:13 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 8071B205F4;
+        Thu, 16 Jan 2020 17:08:00 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1579194434;
-        bh=FyBl76UQeAz82dh9GowjxKLn307tVpqGB2q7gUGV/V8=;
+        s=default; t=1579194481;
+        bh=y/nZ42/FMMXceNUw7WAIY9pg7MUgfngQZU/ejKKMVf0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=GjUaKCH/h3m/sQYDgR+rPSJNxEhwsug5b4BVQA4LdmFof7/wgqa6GqdrsW2q4/+ry
-         DQh9psbfAgO4WWujpb4hX2IPf/oqvw5xC7IMhcCWGB9F9cqjC4itCGakgsY4f5Xya+
-         I2P+67swvzDYgMD12YdeS0ev0fXi5IBPUP42X25U=
+        b=lxkRJdz/Jg0ZVpe+LoRAy28Ehf5LtnGp+nCQ2F3hsLJeeeIH+HEY5Y0zzIG+GhiIM
+         HahhqQt/ycuNTwkS31ps1paXfX5sfkAOcsEe+g032PgfZimBx6DpfN/P8iVEQjpv9e
+         BFhYnGhGyRk/M91POHi9lkPbc8jw7RakF6FLAORg=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Florian Westphal <fw@strlen.de>,
-        Tetsuo Handa <penguin-kernel@i-love.sakura.ne.jp>,
-        Pablo Neira Ayuso <pablo@netfilter.org>,
-        Sasha Levin <sashal@kernel.org>,
-        netfilter-devel@vger.kernel.org, coreteam@netfilter.org,
-        bridge@lists.linux-foundation.org, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.19 349/671] netfilter: ebtables: CONFIG_COMPAT: reject trailing data after last rule
-Date:   Thu, 16 Jan 2020 11:59:47 -0500
-Message-Id: <20200116170509.12787-86-sashal@kernel.org>
+Cc:     "Eric W. Biederman" <ebiederm@xmission.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        "David S . Miller" <davem@davemloft.net>,
+        Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org,
+        bpf@vger.kernel.org
+Subject: [PATCH AUTOSEL 4.19 383/671] signal/bpfilter: Fix bpfilter_kernl to use send_sig not force_sig
+Date:   Thu, 16 Jan 2020 12:00:21 -0500
+Message-Id: <20200116170509.12787-120-sashal@kernel.org>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20200116170509.12787-1-sashal@kernel.org>
 References: <20200116170509.12787-1-sashal@kernel.org>
@@ -46,41 +45,47 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Florian Westphal <fw@strlen.de>
+From: "Eric W. Biederman" <ebiederm@xmission.com>
 
-[ Upstream commit 680f6af5337c98d116e4f127cea7845339dba8da ]
+[ Upstream commit 1dfd1711de2952fd1bfeea7152bd1687a4eea771 ]
 
-If userspace provides a rule blob with trailing data after last target,
-we trigger a splat, then convert ruleset to 64bit format (with trailing
-data), then pass that to do_replace_finish() which then returns -EINVAL.
+The locking in force_sig_info is not prepared to deal with
+a task that exits or execs (as sighand may change).  As force_sig
+is only built to handle synchronous exceptions.
 
-Erroring out right away avoids the splat plus unneeded translation and
-error unwind.
+Further the function force_sig_info changes the signal state if the
+signal is ignored, or blocked or if SIGNAL_UNKILLABLE will prevent the
+delivery of the signal.  The signal SIGKILL can not be ignored and can
+not be blocked and SIGNAL_UNKILLABLE won't prevent it from being
+delivered.
 
-Fixes: 81e675c227ec ("netfilter: ebtables: add CONFIG_COMPAT support")
-Reported-by: Tetsuo Handa <penguin-kernel@i-love.sakura.ne.jp>
-Signed-off-by: Florian Westphal <fw@strlen.de>
-Signed-off-by: Pablo Neira Ayuso <pablo@netfilter.org>
+So using force_sig rather than send_sig for SIGKILL is pointless.
+
+Because it won't impact the sending of the signal and and because
+using force_sig is wrong, replace force_sig with send_sig.
+
+Cc: Alexei Starovoitov <ast@kernel.org>
+Cc: David S. Miller <davem@davemloft.net>
+Fixes: d2ba09c17a06 ("net: add skeleton of bpfilter kernel module")
+Signed-off-by: "Eric W. Biederman" <ebiederm@xmission.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/bridge/netfilter/ebtables.c | 4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
+ net/bpfilter/bpfilter_kern.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/net/bridge/netfilter/ebtables.c b/net/bridge/netfilter/ebtables.c
-index 785e19afd6aa..f59230e4fc29 100644
---- a/net/bridge/netfilter/ebtables.c
-+++ b/net/bridge/netfilter/ebtables.c
-@@ -2165,7 +2165,9 @@ static int compat_copy_entries(unsigned char *data, unsigned int size_user,
- 	if (ret < 0)
- 		return ret;
- 
--	WARN_ON(size_remaining);
-+	if (size_remaining)
-+		return -EINVAL;
-+
- 	return state->buf_kern_offset;
- }
- 
+diff --git a/net/bpfilter/bpfilter_kern.c b/net/bpfilter/bpfilter_kern.c
+index 94e88f510c5b..450b257afa84 100644
+--- a/net/bpfilter/bpfilter_kern.c
++++ b/net/bpfilter/bpfilter_kern.c
+@@ -25,7 +25,7 @@ static void shutdown_umh(struct umh_info *info)
+ 		return;
+ 	tsk = get_pid_task(find_vpid(info->pid), PIDTYPE_PID);
+ 	if (tsk) {
+-		force_sig(SIGKILL, tsk);
++		send_sig(SIGKILL, tsk, 1);
+ 		put_task_struct(tsk);
+ 	}
+ 	fput(info->pipe_to_umh);
 -- 
 2.20.1
 
