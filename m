@@ -2,35 +2,36 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 2A75C13E8D9
-	for <lists+netdev@lfdr.de>; Thu, 16 Jan 2020 18:34:45 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 32FFB13E8CF
+	for <lists+netdev@lfdr.de>; Thu, 16 Jan 2020 18:34:40 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2393001AbgAPReo (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 16 Jan 2020 12:34:44 -0500
-Received: from mail.kernel.org ([198.145.29.99]:42302 "EHLO mail.kernel.org"
+        id S2392979AbgAPRaI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 16 Jan 2020 12:30:08 -0500
+Received: from mail.kernel.org ([198.145.29.99]:42348 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2392946AbgAPRaE (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 16 Jan 2020 12:30:04 -0500
+        id S2392960AbgAPRaG (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 16 Jan 2020 12:30:06 -0500
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 56E7424714;
-        Thu, 16 Jan 2020 17:30:03 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id D303324721;
+        Thu, 16 Jan 2020 17:30:04 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1579195804;
-        bh=tO9+NvN2CHz+pMQCJlzm6srVxp0TIkGcSiB03L9otBA=;
+        s=default; t=1579195805;
+        bh=GqT+VFCz0fjwLD0nspadbZFk3K0CQrDFdoHxecWoKJY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ZBnNZQ9cAKG0BNNHU6cItUbCcKa8wO0YS4gNDDH2hfF/lTxCrlp0G4cUdhpDA/NGG
-         Om4efV2xfN5nDRuCI4ZTAugI48UC1eWn9jZTPHa+75C7nMf9aAb67Ph1ryNkg6X7eW
-         lvBCIxJxKu052ePwfTT9PEFovjKw7gY/6OC2vBC0=
+        b=PeIDTAum8YvyOGvNSCbuMlKUy5AFa40ICcUYOI67uU4Q84F0BEKzwXfbq9iJoX1jM
+         +Rg78qkTTtdpyKDSG/yy0DL+lJFwR8pdH3f7F40GHXUo4vQgt0DzwDQu/0vk87cQ8S
+         Ob1AtOQcePEfcsb0fc2blqrN8moiXuigs+XD6BGE=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
 Cc:     Eric Dumazet <edumazet@google.com>,
         Jakub Kicinski <jakub.kicinski@netronome.com>,
-        Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.14 318/371] net: avoid possible false sharing in sk_leave_memory_pressure()
-Date:   Thu, 16 Jan 2020 12:23:10 -0500
-Message-Id: <20200116172403.18149-261-sashal@kernel.org>
+        Sasha Levin <sashal@kernel.org>,
+        xen-devel@lists.xenproject.org, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 4.14 319/371] net: add {READ|WRITE}_ONCE() annotations on ->rskq_accept_head
+Date:   Thu, 16 Jan 2020 12:23:11 -0500
+Message-Id: <20200116172403.18149-262-sashal@kernel.org>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20200116172403.18149-1-sashal@kernel.org>
 References: <20200116172403.18149-1-sashal@kernel.org>
@@ -45,44 +46,72 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Eric Dumazet <edumazet@google.com>
 
-[ Upstream commit 503978aca46124cd714703e180b9c8292ba50ba7 ]
+[ Upstream commit 60b173ca3d1cd1782bd0096dc17298ec242f6fb1 ]
 
-As mentioned in https://github.com/google/ktsan/wiki/READ_ONCE-and-WRITE_ONCE#it-may-improve-performance
-a C compiler can legally transform :
+reqsk_queue_empty() is called from inet_csk_listen_poll() while
+other cpus might write ->rskq_accept_head value.
 
-if (memory_pressure && *memory_pressure)
-        *memory_pressure = 0;
+Use {READ|WRITE}_ONCE() to avoid compiler tricks
+and potential KCSAN splats.
 
-to :
-
-if (memory_pressure)
-        *memory_pressure = 0;
-
-Fixes: 0604475119de ("tcp: add TCPMemoryPressuresChrono counter")
-Fixes: 180d8cd942ce ("foundations of per-cgroup memory pressure controlling.")
-Fixes: 3ab224be6d69 ("[NET] CORE: Introducing new memory accounting interface.")
+Fixes: fff1f3001cc5 ("tcp: add a spinlock to protect struct request_sock_queue")
 Signed-off-by: Eric Dumazet <edumazet@google.com>
 Signed-off-by: Jakub Kicinski <jakub.kicinski@netronome.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/core/sock.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ drivers/xen/pvcalls-back.c      | 2 +-
+ include/net/request_sock.h      | 4 ++--
+ net/ipv4/inet_connection_sock.c | 2 +-
+ 3 files changed, 4 insertions(+), 4 deletions(-)
 
-diff --git a/net/core/sock.c b/net/core/sock.c
-index 90ccbbf9e6b0..03ca2f638eb4 100644
---- a/net/core/sock.c
-+++ b/net/core/sock.c
-@@ -2165,8 +2165,8 @@ static void sk_leave_memory_pressure(struct sock *sk)
- 	} else {
- 		unsigned long *memory_pressure = sk->sk_prot->memory_pressure;
+diff --git a/drivers/xen/pvcalls-back.c b/drivers/xen/pvcalls-back.c
+index abd6dbc29ac2..58be15c27b6d 100644
+--- a/drivers/xen/pvcalls-back.c
++++ b/drivers/xen/pvcalls-back.c
+@@ -792,7 +792,7 @@ static int pvcalls_back_poll(struct xenbus_device *dev,
+ 	mappass->reqcopy = *req;
+ 	icsk = inet_csk(mappass->sock->sk);
+ 	queue = &icsk->icsk_accept_queue;
+-	data = queue->rskq_accept_head != NULL;
++	data = READ_ONCE(queue->rskq_accept_head) != NULL;
+ 	if (data) {
+ 		mappass->reqcopy.cmd = 0;
+ 		ret = 0;
+diff --git a/include/net/request_sock.h b/include/net/request_sock.h
+index 23e22054aa60..04aa2c7d35c4 100644
+--- a/include/net/request_sock.h
++++ b/include/net/request_sock.h
+@@ -181,7 +181,7 @@ void reqsk_fastopen_remove(struct sock *sk, struct request_sock *req,
  
--		if (memory_pressure && *memory_pressure)
--			*memory_pressure = 0;
-+		if (memory_pressure && READ_ONCE(*memory_pressure))
-+			WRITE_ONCE(*memory_pressure, 0);
- 	}
+ static inline bool reqsk_queue_empty(const struct request_sock_queue *queue)
+ {
+-	return queue->rskq_accept_head == NULL;
++	return READ_ONCE(queue->rskq_accept_head) == NULL;
  }
  
+ static inline struct request_sock *reqsk_queue_remove(struct request_sock_queue *queue,
+@@ -193,7 +193,7 @@ static inline struct request_sock *reqsk_queue_remove(struct request_sock_queue
+ 	req = queue->rskq_accept_head;
+ 	if (req) {
+ 		sk_acceptq_removed(parent);
+-		queue->rskq_accept_head = req->dl_next;
++		WRITE_ONCE(queue->rskq_accept_head, req->dl_next);
+ 		if (queue->rskq_accept_head == NULL)
+ 			queue->rskq_accept_tail = NULL;
+ 	}
+diff --git a/net/ipv4/inet_connection_sock.c b/net/ipv4/inet_connection_sock.c
+index f7224c4fc30f..da55ce62fe50 100644
+--- a/net/ipv4/inet_connection_sock.c
++++ b/net/ipv4/inet_connection_sock.c
+@@ -936,7 +936,7 @@ struct sock *inet_csk_reqsk_queue_add(struct sock *sk,
+ 		req->sk = child;
+ 		req->dl_next = NULL;
+ 		if (queue->rskq_accept_head == NULL)
+-			queue->rskq_accept_head = req;
++			WRITE_ONCE(queue->rskq_accept_head, req);
+ 		else
+ 			queue->rskq_accept_tail->dl_next = req;
+ 		queue->rskq_accept_tail = req;
 -- 
 2.20.1
 
