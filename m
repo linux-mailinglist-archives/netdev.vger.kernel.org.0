@@ -2,126 +2,132 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 317B413FBC8
-	for <lists+netdev@lfdr.de>; Thu, 16 Jan 2020 22:58:06 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9359C13FBB4
+	for <lists+netdev@lfdr.de>; Thu, 16 Jan 2020 22:51:05 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2387539AbgAPV5F (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 16 Jan 2020 16:57:05 -0500
-Received: from gateway23.websitewelcome.com ([192.185.50.108]:46962 "EHLO
-        gateway23.websitewelcome.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1729153AbgAPV5E (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 16 Jan 2020 16:57:04 -0500
-X-Greylist: delayed 1235 seconds by postgrey-1.27 at vger.kernel.org; Thu, 16 Jan 2020 16:57:03 EST
-Received: from cm13.websitewelcome.com (cm13.websitewelcome.com [100.42.49.6])
-        by gateway23.websitewelcome.com (Postfix) with ESMTP id A142794C7
-        for <netdev@vger.kernel.org>; Thu, 16 Jan 2020 15:36:27 -0600 (CST)
-Received: from gator4166.hostgator.com ([108.167.133.22])
-        by cmsmtp with SMTP
-        id sCoVij1MnHiO0sCoVigbF7; Thu, 16 Jan 2020 15:36:27 -0600
-X-Authority-Reason: nr=8
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=embeddedor.com; s=default; h=Content-Type:MIME-Version:Message-ID:Subject:
-        Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
-        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
-        :Resent-Message-ID:In-Reply-To:References:List-Id:List-Help:List-Unsubscribe:
-        List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=eAKpUW4Y8qknkzN4AAowy2Wed9URe9xaFrVdLf7t/EI=; b=vX6fievFaA18QZ1ClygheHbXNM
-        QdTnvyNZ4p1+AAUymuJXsaetAMLpJB8ixy5m3U0VlDqut8iQMCzL8rPbI14J7rDedsJF487gyKOj4
-        jDyiwHjZrCBdOxcPnTHVCjFDY4vyIlXO2roP85bEE1YXax1uR42+DJx6PiGUom0n52ZJNG4CEJnsd
-        pPp/l7A4aiYhaJTzeSVwfqx93xWolfSwpGYZcZTpe7XhWRY/9EIZVkgHSGNMzNXEsklY8O8DniIkS
-        g31CZl/IUyXR3TQI9/4s+pAPu0Ai0SMgYtHWX11Tkw81aViB9LcTi0RAihyoHqbLD2qskeLuZ/CUN
-        lOLKjSnA==;
-Received: from 187-162-252-62.static.axtel.net ([187.162.252.62]:43810 helo=embeddedor)
-        by gator4166.hostgator.com with esmtpa (Exim 4.92)
-        (envelope-from <gustavo@embeddedor.com>)
-        id 1isCoT-000Pu6-Im; Thu, 16 Jan 2020 15:36:25 -0600
-Date:   Thu, 16 Jan 2020 15:36:25 -0600
-From:   "Gustavo A. R. Silva" <gustavo@embeddedor.com>
-To:     Jamal Hadi Salim <jhs@mojatatu.com>,
-        Cong Wang <xiyou.wangcong@gmail.com>,
-        Jiri Pirko <jiri@resnulli.us>,
-        "David S. Miller" <davem@davemloft.net>
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        "Gustavo A. R. Silva" <gustavo@embeddedor.com>
-Subject: [PATCH net-next] net: sched: cls_u32: Use flexible-array member
-Message-ID: <20200116213625.GA9294@embeddedor.com>
+        id S1731292AbgAPVvB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 16 Jan 2020 16:51:01 -0500
+Received: from gate2.alliedtelesis.co.nz ([202.36.163.20]:55466 "EHLO
+        gate2.alliedtelesis.co.nz" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729878AbgAPVvA (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 16 Jan 2020 16:51:00 -0500
+Received: from mmarshal3.atlnz.lc (mmarshal3.atlnz.lc [10.32.18.43])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (Client did not present a certificate)
+        by gate2.alliedtelesis.co.nz (Postfix) with ESMTPS id B2B29891A9;
+        Fri, 17 Jan 2020 10:50:55 +1300 (NZDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=alliedtelesis.co.nz;
+        s=mail181024; t=1579211455;
+        bh=nx2SaXORqBh5ieTLt4UGgCaqK0gxn5wHdqBIqJIbqXY=;
+        h=Date:From:To:cc:Subject:In-Reply-To:References;
+        b=1vATGGmrxk9LMx8caWPsw+OFtmdoBwN0C3CAoeCGZaWcEx0p8Q50cm/VLvxbHzqm4
+         cmXRtayFrumVeNwfAgKgEDVPyEV5AO7jjibr5u7oTK6ZTPEbsJ5BEd7hJdet74g3EY
+         peZxLTEbzD/DJ3hWF7nX/VwpuY9039ne9wLwRCaGXlRHETaKbpU3SKGTzs8dfcA3rJ
+         KrtTOOz07YFAo6KDZ4UwDX4ciDxvK0K9hzpaVI9F0T1V/sM47anI17jK+VyjF2SAay
+         F8luKwiknarhhPHTSd6cc9zw9xSkTuVFcRIwW57GnLu+bk8Z6WOZQLNolwb5Z7w6Hj
+         pt5oeasqTtCPw==
+Received: from smtp (Not Verified[10.32.16.33]) by mmarshal3.atlnz.lc with Trustwave SEG (v7,5,8,10121)
+        id <B5e20dabf0000>; Fri, 17 Jan 2020 10:50:55 +1300
+Received: from ridgek-dl.ws.atlnz.lc (ridgek-dl.ws.atlnz.lc [10.33.22.15])
+        by smtp (Postfix) with ESMTP id 5A25313EEFE;
+        Fri, 17 Jan 2020 10:50:55 +1300 (NZDT)
+Received: by ridgek-dl.ws.atlnz.lc (Postfix, from userid 1637)
+        id 98A031405FD; Fri, 17 Jan 2020 10:50:55 +1300 (NZDT)
+Received: from localhost (localhost [127.0.0.1])
+        by ridgek-dl.ws.atlnz.lc (Postfix) with ESMTP id 957B71405F0;
+        Fri, 17 Jan 2020 10:50:55 +1300 (NZDT)
+Date:   Fri, 17 Jan 2020 10:50:55 +1300 (NZDT)
+From:   Ridge Kennedy <ridgek@alliedtelesis.co.nz>
+X-X-Sender: ridgek@ridgek-dl.ws.atlnz.lc
+To:     Tom Parkin <tparkin@katalix.com>
+cc:     Guillaume Nault <gnault@redhat.com>, netdev@vger.kernel.org
+Subject: Re: [PATCH net] l2tp: Allow duplicate session creation with UDP
+In-Reply-To: <20200116212332.GD4028@jackdaw>
+Message-ID: <alpine.DEB.2.21.2001171027090.9038@ridgek-dl.ws.atlnz.lc>
+References: <20200115223446.7420-1-ridge.kennedy@alliedtelesis.co.nz> <20200116123854.GA23974@linux.home> <20200116131223.GB4028@jackdaw> <20200116190556.GA25654@linux.home> <20200116212332.GD4028@jackdaw>
+User-Agent: Alpine 2.21 (DEB 202 2017-01-01)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-User-Agent: Mutt/1.9.4 (2018-02-28)
-X-AntiAbuse: This header was added to track abuse, please include it with any abuse report
-X-AntiAbuse: Primary Hostname - gator4166.hostgator.com
-X-AntiAbuse: Original Domain - vger.kernel.org
-X-AntiAbuse: Originator/Caller UID/GID - [47 12] / [47 12]
-X-AntiAbuse: Sender Address Domain - embeddedor.com
-X-BWhitelist: no
-X-Source-IP: 187.162.252.62
-X-Source-L: No
-X-Exim-ID: 1isCoT-000Pu6-Im
-X-Source: 
-X-Source-Args: 
-X-Source-Dir: 
-X-Source-Sender: 187-162-252-62.static.axtel.net (embeddedor) [187.162.252.62]:43810
-X-Source-Auth: gustavo@embeddedor.com
-X-Email-Count: 5
-X-Source-Cap: Z3V6aWRpbmU7Z3V6aWRpbmU7Z2F0b3I0MTY2Lmhvc3RnYXRvci5jb20=
-X-Local-Domain: yes
+Content-Type: text/plain; charset=US-ASCII; format=flowed
+x-atlnz-ls: pat
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Old code in the kernel uses 1-byte and 0-byte arrays to indicate the
-presence of a "variable length array":
 
-struct something {
-    int length;
-    u8 data[1];
-};
 
-struct something *instance;
+On Thu, 16 Jan 2020, Tom Parkin wrote:
 
-instance = kmalloc(sizeof(*instance) + size, GFP_KERNEL);
-instance->length = size;
-memcpy(instance->data, source, size);
+> On  Thu, Jan 16, 2020 at 20:05:56 +0100, Guillaume Nault wrote:
+>> On Thu, Jan 16, 2020 at 01:12:24PM +0000, Tom Parkin wrote:
+>>> I agree with you about the possibility for cross-talk, and I would
+>>> welcome l2tp_ip/ip6 doing more validation.  But I don't think we should
+>>> ditch the global list.
+>>>
+>>> As per the RFC, for L2TPv3 the session ID should be a unique
+>>> identifier for the LCCE.  So it's reasonable that the kernel should
+>>> enforce that when registering sessions.
+>>>
+>> I had never thought that the session ID could have global significance
+>> in L2TPv3, but maybe that's because my experience is mostly about
+>> L2TPv2. I haven't read RFC 3931 in detail, but I can't see how
+>> restricting the scope of sessions to their parent tunnel would conflict
+>> with the RFC.
+>
+> Sorry Guillaume, I responded to your other mail without reading this
+> one.
+>
+> I gave more detail in my other response: it boils down to how RFC 3931
+> changes the use of IDs in the L2TP header.  Data packets for IP or UDP
+> only contain the 32-bit session ID, and hence this must be unique to
+> the LCCE to allow the destination session to be successfully
+> identified.
+>
+>>> When you're referring to cross-talk, I wonder whether you have in mind
+>>> normal operation or malicious intent?  I suppose it would be possible
+>>> for someone to craft session data packets in order to disrupt a
+>>> session.
+>>>
+>> What makes me uneasy is that, as soon as the l2tp_ip or l2tp_ip6 module
+>> is loaded, a peer can reach whatever L2TPv3 session exists on the host
+>> just by sending an L2TP_IP packet to it.
+>> I don't know how practical it is to exploit this fact, but it looks
+>> like it's asking for trouble.
+>
+> Yes, I agree, although practically it's only a slightly easier
+> "exploit" than L2TP/UDP offers.
+>
+> The UDP case requires a rogue packet to be delivered to the correct
+> socket AND have a session ID matching that of one in the associated
+> tunnel.
+>
+> It's a slightly more arduous scenario to engineer than the existing
+> L2TPv3/IP case, but only a little.
+>
+> I also don't know how practical this would be to leverage to cause
+> problems.
+>
+>>> For normal operation, you just need to get the wrong packet on the
+>>> wrong socket to run into trouble of course.  In such a situation
+>>> having a unique session ID for v3 helps you to determine that
+>>> something has gone wrong, which is what the UDP encap recv path does
+>>> if the session data packet's session ID isn't found in the context of
+>>> the socket that receives it.
+>> Unique global session IDs might help troubleshooting, but they also
+>> break some use cases, as reported by Ridge. At some point, we'll have
+>> to make a choice, or even add a knob if necessary.
+>
+> I suspect we need to reach agreement on what RFC 3931 implies before
+> making headway on what the kernel should ideally do.
+>
+> There is perhaps room for pragmatism given that the kernel
+> used to be more permissive prior to dbdbc73b4478, and we weren't
+> inundated with reports of session ID clashes.
+>
 
-There is also 0-byte arrays. Both cases pose confusion for things like
-sizeof(), CONFIG_FORTIFY_SOURCE, etc.[1] Instead, the preferred mechanism
-to declare variable-length types such as the one above is a flexible array
-member[2] which need to be the last member of a structure and empty-sized:
+A knob (module_param?) to enable the permissive behaviour would certainly
+work for me.
 
-struct something {
-        int stuff;
-        u8 data[];
-};
 
-Also, by making use of the mechanism above, we will get a compiler warning
-in case the flexible array does not occur last in the structure, which
-will help us prevent some kind of undefined behavior bugs from being
-unadvertenly introduced[3] to the codebase from now on.
 
-[1] https://github.com/KSPP/linux/issues/21
-[2] https://gcc.gnu.org/onlinedocs/gcc/Zero-Length.html
-[3] commit 76497732932f ("cxgb3/l2t: Fix undefined behaviour")
-
-Signed-off-by: Gustavo A. R. Silva <gustavo@embeddedor.com>
----
- net/sched/cls_u32.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/net/sched/cls_u32.c b/net/sched/cls_u32.c
-index a0e6fac613de..5537b5b72ad5 100644
---- a/net/sched/cls_u32.c
-+++ b/net/sched/cls_u32.c
-@@ -79,7 +79,7 @@ struct tc_u_hnode {
- 	/* The 'ht' field MUST be the last field in structure to allow for
- 	 * more entries allocated at end of structure.
- 	 */
--	struct tc_u_knode __rcu	*ht[1];
-+	struct tc_u_knode __rcu	*ht[];
- };
- 
- struct tc_u_common {
--- 
-2.23.0
 
