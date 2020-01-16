@@ -2,133 +2,81 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 3D3A213DE78
-	for <lists+netdev@lfdr.de>; Thu, 16 Jan 2020 16:20:41 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A3B0D13DE7B
+	for <lists+netdev@lfdr.de>; Thu, 16 Jan 2020 16:20:42 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726552AbgAPPTH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 16 Jan 2020 10:19:07 -0500
-Received: from mail-pj1-f67.google.com ([209.85.216.67]:52032 "EHLO
-        mail-pj1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726189AbgAPPTH (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 16 Jan 2020 10:19:07 -0500
-Received: by mail-pj1-f67.google.com with SMTP id d15so1665680pjw.1;
-        Thu, 16 Jan 2020 07:19:07 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:from:to:cc:references:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=Gv/c4WmqGfA4FwM+VUnPA6bgCeuDGypbQgWIA5eSdW4=;
-        b=BdnC5X2ejkNu6VgzVywx16V1MICoF+R7x5yXvrxhs7+K4demvgdXAocEzXP9dNN6tf
-         ALngM0W3ucKlEPjA7RGYNqdUiwrkXVa8/9WO7kukDQicGPWFqPI4lc4hhwQ8kxPWkeTA
-         uii4HQEyjtbDY0ca0MsBV6F/H3eQUS8xY0jLnQxn4U6MKtOlbY+mE+P67VziGut5c2bW
-         oDzRiZtHaYAPl8KfLtuTHnD5LGAm6bDc9wP1G6Innf7Q0kgyz7SIKOS/mB/xX6glorIE
-         zuPxvXwvYL7okIrTR2KM8zVHY+bOlVyU7FMYJGdqS/BAdbdJXAv2yORk2D3QZkTtFC5t
-         D9mg==
+        id S1726890AbgAPPTf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 16 Jan 2020 10:19:35 -0500
+Received: from us-smtp-2.mimecast.com ([207.211.31.81]:29025 "EHLO
+        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1726189AbgAPPTe (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 16 Jan 2020 10:19:34 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1579187973;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=xOLT+/1UXIdWWF7gEPJAwJZur3tvblVQE+iNEzhcMy4=;
+        b=NCipZ7d8vadWo6xk0S2QED6phoGyXh5VLNQ3IRIlJzYlqzlM7GzKoyi88ErbQLtYyWfqrC
+        TrKjkd48YwQ0gq/iCEBWFDhRXKwZfoSmFj66Z9mqOWNCjjZtqx7328f4okL9CnM11ZlYH8
+        hb0+rv26n2i/t2HlHZoYEbso1hKrTTM=
+Received: from mail-lj1-f200.google.com (mail-lj1-f200.google.com
+ [209.85.208.200]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-85-g3-eebQTOCep6d_KUpf3Dg-1; Thu, 16 Jan 2020 10:19:32 -0500
+X-MC-Unique: g3-eebQTOCep6d_KUpf3Dg-1
+Received: by mail-lj1-f200.google.com with SMTP id m1so5262820lji.5
+        for <netdev@vger.kernel.org>; Thu, 16 Jan 2020 07:19:32 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:from:to:cc:references:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=Gv/c4WmqGfA4FwM+VUnPA6bgCeuDGypbQgWIA5eSdW4=;
-        b=Sxx8EgpQvmtNOnBdh9QmtwyFGhs7pmR9v+EbI+sZ8mBovwZkoSjyf/hLVT+UMvxZT3
-         AGtgNYdu15X1trB0Ega3uSs5ZgMp00XYZ83G+iiO0bT/5cQ4axCDseK4esajY93Xybpy
-         WyZY+R+UGyUwt6ScX+Bb2SHnKtiKEWhosQcesvWL9wonFgP24zEDRwcMv2QbRrN4oHtx
-         jDxTQQUoGIxr7sul2DnPLsbfQQJlgBOy+BGossV2c7G9CsD9vxngEmmTpYopUzGiU4Br
-         0FH5Aozw8Re4iRIOEJR/YvhRMoz3a/g8YuyD+6847Li4YpniV5LZO8TWRW5Wk6xUm0Km
-         zv8Q==
-X-Gm-Message-State: APjAAAUJE8lZOfFS6f8crA6eTM4ibqRjjGpd/VO+lZtzCcEgh4kfceGf
-        RcrJXf1dy52dfACnW24mCBM=
-X-Google-Smtp-Source: APXvYqzx+iJdx41eEtxov+lseJBDVi5+Bd+co9P8ndxjrrqLZ4Ks8iLi3tuljWT/UHOJJUjbUZVoTA==
-X-Received: by 2002:a17:90a:9416:: with SMTP id r22mr7531065pjo.2.1579187947145;
-        Thu, 16 Jan 2020 07:19:07 -0800 (PST)
-Received: from [192.168.86.235] (c-73-241-150-58.hsd1.ca.comcast.net. [73.241.150.58])
-        by smtp.gmail.com with ESMTPSA id k9sm4007510pjo.19.2020.01.16.07.19.05
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 16 Jan 2020 07:19:06 -0800 (PST)
-Subject: Re: [PATCH] net: optimize cmpxchg in ip_idents_reserve
-From:   Eric Dumazet <eric.dumazet@gmail.com>
-To:     David Miller <davem@davemloft.net>, zhangshaokun@hisilicon.com
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        jinyuqi@huawei.com, kuznet@ms2.inr.ac.ru, yoshfuji@linux-ipv6.org,
-        edumazet@google.com, guoyang2@huawei.com
-References: <1579058620-26684-1-git-send-email-zhangshaokun@hisilicon.com>
- <20200116.042722.153124126288244814.davem@davemloft.net>
- <930faaff-4d18-452d-2e44-ef05b65dc858@gmail.com>
-Message-ID: <1b3aaddf-22f5-1846-90f1-42e68583c1e4@gmail.com>
-Date:   Thu, 16 Jan 2020 07:19:05 -0800
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.2.2
+        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
+         :message-id:mime-version;
+        bh=xOLT+/1UXIdWWF7gEPJAwJZur3tvblVQE+iNEzhcMy4=;
+        b=BVijoOUxHjaqnhgsqa48Nin1dudlBjpsSbAc4NLBbhsmsWmr/bDt8DLDIDFxF5OfD8
+         ukclq61Wupe8lD9ANdwp2IdxCL2mxwBfTheOoJWf5AVbHIORTqzZCRR/Vms1n0ohAQD7
+         pDSZpitLHKTbd6+9ILufuWymW0hkZlko83483Xxn320MNJjgkYk+w6xzZqaN4uW3QB96
+         0EJAtMtNKOhLd+cMuFwLw6j6EN19iBIBXrIO5xf+kaXTshrEffce9cM3uf3JPfBZK42p
+         ouB0oYYXg49jcqRGeMNQMpFnShTrkcYc+yvJpMu8Z8el3SI6bdnYhyntgnxlM6iOhbT4
+         GDJg==
+X-Gm-Message-State: APjAAAXJCA4fXEbXbbLhw7/I4tKdZ+UyAVfNHknPcF+KpO75hV3LrfBV
+        gudlpJqlTTHJ116QQRJ66ow1hkXyb2v/sQrCuXHXN1EY4dVgy+0X+JhoM1bWNWcRqmSTudIDCbq
+        nXf7v+3zQBNcfbagM
+X-Received: by 2002:a2e:965a:: with SMTP id z26mr152350ljh.104.1579187970485;
+        Thu, 16 Jan 2020 07:19:30 -0800 (PST)
+X-Google-Smtp-Source: APXvYqxTyVUEuAwB3Ol87GzjoUhzFRZCLV6oYpekRyHrM1JUXNJv0RIw2D1X7ZpJVrmmNNQPhiDIVw==
+X-Received: by 2002:a2e:965a:: with SMTP id z26mr152347ljh.104.1579187970372;
+        Thu, 16 Jan 2020 07:19:30 -0800 (PST)
+Received: from alrua-x1.borgediget.toke.dk ([2a0c:4d80:42:443::2])
+        by smtp.gmail.com with ESMTPSA id l7sm10579991lfc.80.2020.01.16.07.19.29
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 16 Jan 2020 07:19:29 -0800 (PST)
+Received: by alrua-x1.borgediget.toke.dk (Postfix, from userid 1000)
+        id 163E11804D8; Thu, 16 Jan 2020 16:19:29 +0100 (CET)
+From:   Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
+To:     Florian Westphal <fw@strlen.de>, netdev@vger.kernel.org
+Cc:     Florian Westphal <fw@strlen.de>
+Subject: Re: [PATCH net-next] netlink: make getters tolerate NULL nla arg
+In-Reply-To: <20200116145522.28803-1-fw@strlen.de>
+References: <20200116145522.28803-1-fw@strlen.de>
+X-Clacks-Overhead: GNU Terry Pratchett
+Date:   Thu, 16 Jan 2020 16:19:29 +0100
+Message-ID: <87eevzsa2m.fsf@toke.dk>
 MIME-Version: 1.0
-In-Reply-To: <930faaff-4d18-452d-2e44-ef05b65dc858@gmail.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Florian Westphal <fw@strlen.de> writes:
 
+> One recurring bug pattern triggered by syzbot is NULL dereference in
+> netlink code paths due to a missing "tb[NL_ARG_FOO] != NULL" test.
+>
+> At least some of these missing checks would not have crashed the kernel if
+> the various nla_get_XXX helpers would return 0 in case of missing arg.
 
-On 1/16/20 7:12 AM, Eric Dumazet wrote:
-> 
-> 
-> On 1/16/20 4:27 AM, David Miller wrote:
->> From: Shaokun Zhang <zhangshaokun@hisilicon.com>
->> Date: Wed, 15 Jan 2020 11:23:40 +0800
->>
->>> From: Yuqi Jin <jinyuqi@huawei.com>
->>>
->>> atomic_try_cmpxchg is called instead of atomic_cmpxchg that can reduce
->>> the access number of the global variable @p_id in the loop. Let's
->>> optimize it for performance.
->>>
->>> Cc: "David S. Miller" <davem@davemloft.net>
->>> Cc: Alexey Kuznetsov <kuznet@ms2.inr.ac.ru>
->>> Cc: Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>
->>> Cc: Eric Dumazet <edumazet@google.com>
->>> Cc: Yang Guo <guoyang2@huawei.com>
->>> Signed-off-by: Yuqi Jin <jinyuqi@huawei.com>
->>> Signed-off-by: Shaokun Zhang <zhangshaokun@hisilicon.com>
->>
->> I doubt this makes any measurable improvement in performance.
->>
->> If you can document a specific measurable improvement under
->> a useful set of circumstances for real usage, then put those
->> details into the commit message and resubmit.
->>
->> Otherwise, I'm not applying this, sorry.
->>
-> 
-> 
-> Real difference that could be made here is to 
-> only use this cmpxchg() dance for CONFIG_UBSAN
-> 
-> When CONFIG_UBSAN is not set, atomic_add_return() is just fine.
-> 
-> (Supposedly UBSAN should not warn about that either, but this depends on compiler version)
+Won't this risk just papering over the issue and lead to subtly wrong
+behaviour instead? At least a crash is somewhat visible :)
 
-I will test something like :
-
-diff --git a/net/ipv4/route.c b/net/ipv4/route.c
-index 2010888e68ca96ae880481973a6d808d6c5612c5..e2fa972f5c78f2aefc801db6a45b2a81141c3028 100644
---- a/net/ipv4/route.c
-+++ b/net/ipv4/route.c
-@@ -495,11 +495,15 @@ u32 ip_idents_reserve(u32 hash, int segs)
-        if (old != now && cmpxchg(p_tstamp, old, now) == old)
-                delta = prandom_u32_max(now - old);
- 
--       /* Do not use atomic_add_return() as it makes UBSAN unhappy */
-+#ifdef CONFIG_UBSAN
-+       /* Do not use atomic_add_return() as it makes old UBSAN versions unhappy */
-        do {
-                old = (u32)atomic_read(p_id);
-                new = old + delta + segs;
-        } while (atomic_cmpxchg(p_id, old, new) != old);
-+#else
-+       new = atomic_add_return(segs + delta, p_id);
-+#endif
- 
-        return new - segs;
- }
+-Toke
 
