@@ -2,36 +2,40 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id DF7FA13E523
-	for <lists+netdev@lfdr.de>; Thu, 16 Jan 2020 18:12:58 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id DA3EC13E72C
+	for <lists+netdev@lfdr.de>; Thu, 16 Jan 2020 18:24:09 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2390603AbgAPRMy (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 16 Jan 2020 12:12:54 -0500
-Received: from mail.kernel.org ([198.145.29.99]:56466 "EHLO mail.kernel.org"
+        id S2390647AbgAPRNH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 16 Jan 2020 12:13:07 -0500
+Received: from mail.kernel.org ([198.145.29.99]:57244 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2390586AbgAPRMw (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 16 Jan 2020 12:12:52 -0500
+        id S1732928AbgAPRNG (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 16 Jan 2020 12:13:06 -0500
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id D630924696;
-        Thu, 16 Jan 2020 17:12:50 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 70C672469A;
+        Thu, 16 Jan 2020 17:13:04 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1579194771;
-        bh=1fFE5iS0h/osjV3rPKtgPo6w7c/71rYCJlFdfhgNAiU=;
+        s=default; t=1579194785;
+        bh=vVBgfAgrUKbiJfJ+p2gwwtvtOIeZjbHCGsOwRk3w3v8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=VkGyH10iHJloPIXZkpdzQK2vZtP+Vi3B3kAilrdsy1lliUM4bFNRvtgq9ltXf5q9Q
-         GawzRQfygTo6DHCDbM/JExP4OuXaQC2VMWwVRfov70E5veUSVddTpLlvwWRzbfIWd9
-         f7sU2yCsHWDTVikMFb/b3qDHIlvPDozoGY6sHN74=
+        b=0DP01mDaPqUKEw9+e+mRDmyE6xKMcA06ktmrz4UKejyIa2yw7OdtmVy2qgx+oJReW
+         UYTxeYo+DW2eqNvLne/2GbiUWwHX0zdJ9ZAS6SpKKsgSgZwqv+dF1smliFz2Zm0dTa
+         l2udGtPgqH5ynPUWD434Q7/Hpda3BqXOO48lNNzk=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <jakub.kicinski@netronome.com>,
+Cc:     Jakub Kicinski <jakub.kicinski@netronome.com>,
+        kbuild test robot <lkp@intel.com>,
+        Dan Carpenter <dan.carpenter@oracle.com>,
+        Ben Hutchings <ben@decadent.org.uk>,
+        Simon Horman <simon.horman@netronome.com>,
+        "David S . Miller" <davem@davemloft.net>,
         Sasha Levin <sashal@kernel.org>,
-        xen-devel@lists.xenproject.org, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.19 590/671] net: add {READ|WRITE}_ONCE() annotations on ->rskq_accept_head
-Date:   Thu, 16 Jan 2020 12:03:48 -0500
-Message-Id: <20200116170509.12787-327-sashal@kernel.org>
+        netem@lists.linux-foundation.org, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 4.19 600/671] net: netem: fix error path for corrupted GSO frames
+Date:   Thu, 16 Jan 2020 12:03:58 -0500
+Message-Id: <20200116170509.12787-337-sashal@kernel.org>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20200116170509.12787-1-sashal@kernel.org>
 References: <20200116170509.12787-1-sashal@kernel.org>
@@ -44,74 +48,72 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Eric Dumazet <edumazet@google.com>
+From: Jakub Kicinski <jakub.kicinski@netronome.com>
 
-[ Upstream commit 60b173ca3d1cd1782bd0096dc17298ec242f6fb1 ]
+[ Upstream commit a7fa12d15855904aff1716e1fc723c03ba38c5cc ]
 
-reqsk_queue_empty() is called from inet_csk_listen_poll() while
-other cpus might write ->rskq_accept_head value.
+To corrupt a GSO frame we first perform segmentation.  We then
+proceed using the first segment instead of the full GSO skb and
+requeue the rest of the segments as separate packets.
 
-Use {READ|WRITE}_ONCE() to avoid compiler tricks
-and potential KCSAN splats.
+If there are any issues with processing the first segment we
+still want to process the rest, therefore we jump to the
+finish_segs label.
 
-Fixes: fff1f3001cc5 ("tcp: add a spinlock to protect struct request_sock_queue")
-Signed-off-by: Eric Dumazet <edumazet@google.com>
+Commit 177b8007463c ("net: netem: fix backlog accounting for
+corrupted GSO frames") started using the pointer to the first
+segment in the "rest of segments processing", but as mentioned
+above the first segment may had already been freed at this point.
+
+Backlog corrections for parent qdiscs have to be adjusted.
+
+Fixes: 177b8007463c ("net: netem: fix backlog accounting for corrupted GSO frames")
+Reported-by: kbuild test robot <lkp@intel.com>
+Reported-by: Dan Carpenter <dan.carpenter@oracle.com>
+Reported-by: Ben Hutchings <ben@decadent.org.uk>
 Signed-off-by: Jakub Kicinski <jakub.kicinski@netronome.com>
+Reviewed-by: Simon Horman <simon.horman@netronome.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/xen/pvcalls-back.c      | 2 +-
- include/net/request_sock.h      | 4 ++--
- net/ipv4/inet_connection_sock.c | 2 +-
- 3 files changed, 4 insertions(+), 4 deletions(-)
+ net/sched/sch_netem.c | 9 ++++++---
+ 1 file changed, 6 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/xen/pvcalls-back.c b/drivers/xen/pvcalls-back.c
-index d4ea33581ac2..b3fbfed28682 100644
---- a/drivers/xen/pvcalls-back.c
-+++ b/drivers/xen/pvcalls-back.c
-@@ -784,7 +784,7 @@ static int pvcalls_back_poll(struct xenbus_device *dev,
- 	mappass->reqcopy = *req;
- 	icsk = inet_csk(mappass->sock->sk);
- 	queue = &icsk->icsk_accept_queue;
--	data = queue->rskq_accept_head != NULL;
-+	data = READ_ONCE(queue->rskq_accept_head) != NULL;
- 	if (data) {
- 		mappass->reqcopy.cmd = 0;
- 		ret = 0;
-diff --git a/include/net/request_sock.h b/include/net/request_sock.h
-index 347015515a7d..1653435f18f5 100644
---- a/include/net/request_sock.h
-+++ b/include/net/request_sock.h
-@@ -183,7 +183,7 @@ void reqsk_fastopen_remove(struct sock *sk, struct request_sock *req,
+diff --git a/net/sched/sch_netem.c b/net/sched/sch_netem.c
+index 1cd7266140e6..7660aa5b80da 100644
+--- a/net/sched/sch_netem.c
++++ b/net/sched/sch_netem.c
+@@ -509,6 +509,7 @@ static int netem_enqueue(struct sk_buff *skb, struct Qdisc *sch,
+ 		if (skb->ip_summed == CHECKSUM_PARTIAL &&
+ 		    skb_checksum_help(skb)) {
+ 			qdisc_drop(skb, sch, to_free);
++			skb = NULL;
+ 			goto finish_segs;
+ 		}
  
- static inline bool reqsk_queue_empty(const struct request_sock_queue *queue)
- {
--	return queue->rskq_accept_head == NULL;
-+	return READ_ONCE(queue->rskq_accept_head) == NULL;
- }
+@@ -584,9 +585,10 @@ static int netem_enqueue(struct sk_buff *skb, struct Qdisc *sch,
+ finish_segs:
+ 	if (segs) {
+ 		unsigned int len, last_len;
+-		int nb = 0;
++		int nb;
  
- static inline struct request_sock *reqsk_queue_remove(struct request_sock_queue *queue,
-@@ -195,7 +195,7 @@ static inline struct request_sock *reqsk_queue_remove(struct request_sock_queue
- 	req = queue->rskq_accept_head;
- 	if (req) {
- 		sk_acceptq_removed(parent);
--		queue->rskq_accept_head = req->dl_next;
-+		WRITE_ONCE(queue->rskq_accept_head, req->dl_next);
- 		if (queue->rskq_accept_head == NULL)
- 			queue->rskq_accept_tail = NULL;
+-		len = skb->len;
++		len = skb ? skb->len : 0;
++		nb = skb ? 1 : 0;
+ 
+ 		while (segs) {
+ 			skb2 = segs->next;
+@@ -603,7 +605,8 @@ static int netem_enqueue(struct sk_buff *skb, struct Qdisc *sch,
+ 			}
+ 			segs = skb2;
+ 		}
+-		qdisc_tree_reduce_backlog(sch, -nb, prev_len - len);
++		/* Parent qdiscs accounted for 1 skb of size @prev_len */
++		qdisc_tree_reduce_backlog(sch, -(nb - 1), -(len - prev_len));
  	}
-diff --git a/net/ipv4/inet_connection_sock.c b/net/ipv4/inet_connection_sock.c
-index 636a11c56cf5..79320858e719 100644
---- a/net/ipv4/inet_connection_sock.c
-+++ b/net/ipv4/inet_connection_sock.c
-@@ -937,7 +937,7 @@ struct sock *inet_csk_reqsk_queue_add(struct sock *sk,
- 		req->sk = child;
- 		req->dl_next = NULL;
- 		if (queue->rskq_accept_head == NULL)
--			queue->rskq_accept_head = req;
-+			WRITE_ONCE(queue->rskq_accept_head, req);
- 		else
- 			queue->rskq_accept_tail->dl_next = req;
- 		queue->rskq_accept_tail = req;
+ 	return NET_XMIT_SUCCESS;
+ }
 -- 
 2.20.1
 
