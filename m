@@ -2,71 +2,113 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 3159B13F722
-	for <lists+netdev@lfdr.de>; Thu, 16 Jan 2020 20:09:41 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3358713F97D
+	for <lists+netdev@lfdr.de>; Thu, 16 Jan 2020 20:28:47 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2437076AbgAPTJi (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 16 Jan 2020 14:09:38 -0500
-Received: from mga06.intel.com ([134.134.136.31]:31244 "EHLO mga06.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2387531AbgAPTJg (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 16 Jan 2020 14:09:36 -0500
-X-Amp-Result: SKIPPED(no attachment in message)
-X-Amp-File-Uploaded: False
-Received: from fmsmga003.fm.intel.com ([10.253.24.29])
-  by orsmga104.jf.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 16 Jan 2020 11:09:35 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.70,327,1574150400"; 
-   d="scan'208";a="274116750"
-Received: from jekeller-mobl1.amr.corp.intel.com (HELO [134.134.177.86]) ([134.134.177.86])
-  by FMSMGA003.fm.intel.com with ESMTP; 16 Jan 2020 11:09:35 -0800
-Subject: Re: [PATCH net-next] Documentation: Fix typo in devlink documentation
-To:     Ido Schimmel <idosch@idosch.org>, netdev@vger.kernel.org
-Cc:     davem@davemloft.net, jiri@mellanox.com, mlxsw@mellanox.com,
-        Ido Schimmel <idosch@mellanox.com>
-References: <20200116175944.1958052-1-idosch@idosch.org>
-From:   Jacob Keller <jacob.e.keller@intel.com>
-Organization: Intel Corporation
-Message-ID: <ce8dc098-cef7-8484-cf19-abec286741a0@intel.com>
-Date:   Thu, 16 Jan 2020 11:09:34 -0800
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
- Thunderbird/68.4.1
+        id S1729547AbgAPT2j (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 16 Jan 2020 14:28:39 -0500
+Received: from us-smtp-1.mimecast.com ([205.139.110.61]:40080 "EHLO
+        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1729044AbgAPT2j (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 16 Jan 2020 14:28:39 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1579202918;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=G3MBraSZuHNQVH/nVENUhEPzBqwHjRc6fETDQjXVNy0=;
+        b=NoirPH0gEiYj2jbYTZt5UHTwfik46MEDJs8eHPETH2XtcGqak2mltYJr9f+3rhHTcTeUA6
+        j5PQIFRNjOEVlM/wfusjlLM67Xrn6glmkW+dTI36f6Ew90mj8I214+rgQqdd54peimTxYB
+        Llt5nEPT0Hk6F7bv6VGD7rMCgjzk4mQ=
+Received: from mail-wr1-f71.google.com (mail-wr1-f71.google.com
+ [209.85.221.71]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-430-Qf_KvArKNTmVYRGW9RBVew-1; Thu, 16 Jan 2020 14:28:31 -0500
+X-MC-Unique: Qf_KvArKNTmVYRGW9RBVew-1
+Received: by mail-wr1-f71.google.com with SMTP id f15so9692443wrr.2
+        for <netdev@vger.kernel.org>; Thu, 16 Jan 2020 11:28:31 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=G3MBraSZuHNQVH/nVENUhEPzBqwHjRc6fETDQjXVNy0=;
+        b=LuUPisy/Ola5Pj0aLYxztfvr4+/nGgSpWjvYHXziTyGEFma6X6UkDFOwSsZgAkEKfh
+         17PyyTS5SnDcGj8UiQVWvEdWFeIO3XoAMyZ9r8lVdwo8uaeTU/sQFXVgtuTgx8bGAwki
+         oVOg0P0Ma1IOmi+4KtC8E443KpDJYEbdVzT6fdwmMZtLP6aQdqTFLJ9UHp7w8VsptK4c
+         mRV25t12+bhl/A7mCQ1hDBheM4j58CdnMrU3xs5nHV/9KFHBN8xaq+mOBjxMtXa3VvP4
+         l2T7mG5dcbSwBpJwY2A0ZZ2k/ALOFb/layGJBVG8u3gvOKEisnKWkqoj3BdBiFiBrg3t
+         7log==
+X-Gm-Message-State: APjAAAW/OMjOdiihFSdgzmG+f7josS3qtD2Oz4/puCihGgE8vp6PHQHi
+        QUTItX7zipjv3qBrkEDjhcFHpwI4JVUBAqyfl1rvJ1s+GYYUVI9AP02HQLo8Nc+N4b860V789j6
+        1pnv4RzbxgDXdMTIm
+X-Received: by 2002:adf:e6c6:: with SMTP id y6mr4968374wrm.284.1579202910095;
+        Thu, 16 Jan 2020 11:28:30 -0800 (PST)
+X-Google-Smtp-Source: APXvYqzBNvan8X0vIHztsvUw4FY6TIShY2YiTU88xMY8M6dKrMDJFnIJY5MeU6OR9ilEyllxVam03A==
+X-Received: by 2002:adf:e6c6:: with SMTP id y6mr4968350wrm.284.1579202909777;
+        Thu, 16 Jan 2020 11:28:29 -0800 (PST)
+Received: from linux.home (2a01cb058a4e7100d3814d1912515f67.ipv6.abo.wanadoo.fr. [2a01:cb05:8a4e:7100:d381:4d19:1251:5f67])
+        by smtp.gmail.com with ESMTPSA id v14sm30352304wrm.28.2020.01.16.11.28.28
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 16 Jan 2020 11:28:29 -0800 (PST)
+Date:   Thu, 16 Jan 2020 20:28:27 +0100
+From:   Guillaume Nault <gnault@redhat.com>
+To:     Tom Parkin <tparkin@katalix.com>
+Cc:     Ridge Kennedy <ridge.kennedy@alliedtelesis.co.nz>,
+        netdev@vger.kernel.org
+Subject: Re: [PATCH net] l2tp: Allow duplicate session creation with UDP
+Message-ID: <20200116192827.GB25654@linux.home>
+References: <20200115223446.7420-1-ridge.kennedy@alliedtelesis.co.nz>
+ <20200116123143.GA4028@jackdaw>
 MIME-Version: 1.0
-In-Reply-To: <20200116175944.1958052-1-idosch@idosch.org>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20200116123143.GA4028@jackdaw>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 1/16/2020 9:59 AM, Ido Schimmel wrote:
-> From: Ido Schimmel <idosch@mellanox.com>
+On Thu, Jan 16, 2020 at 12:31:43PM +0000, Tom Parkin wrote:
+> On  Thu, Jan 16, 2020 at 11:34:47 +1300, Ridge Kennedy wrote:
+> > In the past it was possible to create multiple L2TPv3 sessions with the
+> > same session id as long as the sessions belonged to different tunnels.
+> > The resulting sessions had issues when used with IP encapsulated tunnels,
+> > but worked fine with UDP encapsulated ones. Some applications began to
+> > rely on this behaviour to avoid having to negotiate unique session ids.
+> > 
+> > Some time ago a change was made to require session ids to be unique across
+> > all tunnels, breaking the applications making use of this "feature".
+> > 
+> > This change relaxes the duplicate session id check to allow duplicates
+> > if both of the colliding sessions belong to UDP encapsulated tunnels.
 > 
-> The driver is named "mlxsw", not "mlx5".
+> I appreciate what you're saying with respect to buggy applications,
+> however I think the existing kernel code is consistent with RFC 3931,
+> which makes session IDs unique for a given LCCE.
 > 
-> Fixes: d4255d75856f ("devlink: document info versions for each driver")
-> Signed-off-by: Ido Schimmel <idosch@mellanox.com>
-> ---
->  Documentation/networking/devlink/mlxsw.rst | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
+> Given how the L2TP data packet headers work for L2TPv3, I'm assuming
+> that sessions in UDP-encapsulated tunnels work even if their session
+> IDs clash because the tunnel sockets are using distinct UDP ports
+> which will effectively separate the data traffic into the "correct"
+> tunnel.  Obviously the same thing doesn't apply for IP-encap.
 > 
-> diff --git a/Documentation/networking/devlink/mlxsw.rst b/Documentation/networking/devlink/mlxsw.rst
-> index ccba9769c651..5f9bb0a0616a 100644
-> --- a/Documentation/networking/devlink/mlxsw.rst
-> +++ b/Documentation/networking/devlink/mlxsw.rst
-> @@ -40,7 +40,7 @@ The ``mlxsw`` driver supports reloading via ``DEVLINK_CMD_RELOAD``
->  Info versions
->  =============
->  
-> -The ``mlx5`` driver reports the following versions
-> +The ``mlxsw`` driver reports the following versions
->  
->  .. list-table:: devlink info versions implemented
->     :widths: 5 5 90
+> However, there's nothing to prevent user space from using the same UDP
+> port for multiple tunnels, at which point this relaxation of the RFC
+> rules would break down again.
 > 
+Multiplexing L2TP tunnels on top of non-connected UDP sockets might be
+a nice optimisation for someone using many tunnels (like hundred of
+thouthands), but I'm afraid the rest of the L2TP code is not ready to
+handle such load anyway. And the current implementation only allows
+one tunnel for each UDP socket anyway.
 
-Ah yep. Lot of files being changed/updated here. Makes sense to me.
+> Since UDP-encap can also be broken in the face of duplicated L2TPv3
+> session IDs, I think its better that the kernel continue to enforce
+> the RFC.
+How is UDP-encap broken with duplicate session IDs (as long as a UDP
+socket can only one have one tunnel associated with it and that no
+duplicate session IDs are allowed inside the same tunnel)?
 
-Reviewed-by: Jacob Keller <jacob.e.keller@intel.com>
+It all boils down to what's the scope of a session ID. For me it has
+always been the parent tunnel. But if that's in contradiction with
+RFC 3931, I'd be happy to know.
+
