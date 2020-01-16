@@ -2,38 +2,38 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 40D6B13EE7B
-	for <lists+netdev@lfdr.de>; Thu, 16 Jan 2020 19:10:50 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3D69713EE99
+	for <lists+netdev@lfdr.de>; Thu, 16 Jan 2020 19:11:04 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2393233AbgAPRh5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 16 Jan 2020 12:37:57 -0500
-Received: from mail.kernel.org ([198.145.29.99]:53546 "EHLO mail.kernel.org"
+        id S2395089AbgAPSJs (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 16 Jan 2020 13:09:48 -0500
+Received: from mail.kernel.org ([198.145.29.99]:53790 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2393220AbgAPRhy (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 16 Jan 2020 12:37:54 -0500
+        id S2393263AbgAPRiE (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 16 Jan 2020 12:38:04 -0500
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 4E60B246DD;
-        Thu, 16 Jan 2020 17:37:53 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 9F178246D6;
+        Thu, 16 Jan 2020 17:38:02 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1579196274;
-        bh=CoU9mfn6JpZ2Lmi3xaNgldVIo9L2bmErfOKLD4D/kuI=;
+        s=default; t=1579196283;
+        bh=N5aaNo4Zng70FBypG1Qc1xi1L5HJFoomh2aZrmH0VRo=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=aPoA/XRHRBl9FOhLa9u30NOZ0PL9isO9sSZCMYPhZCrfhDk+RbO+83tHw0nDhv0dQ
-         PCTBalZOFp1GLmp8uaahshbND1VWB8q2IKABWA2SBme14Z/WS1HoTVR7ui+5gWuHrT
-         A1yQqUGWZmzAofh1/j80crxTPJu2/MsrVB4pBkas=
+        b=i+4rR/2mBD6cC4s7Isc3n+RfMzMNCc+ePVtFi9JeFvktbrGFpvzI60lYxC3JGKR1L
+         VjAR2E1fGLz7KGO9gwiSjITzcbPExk+qsCVecah3B2HgYxNNMGoM7si7E12njYDuGV
+         5uc/Hp8HjNskDxa+D+NnP4WdS8q2Wdw6K0pEBG68=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Kangjie Lu <kjlu@umn.edu>,
-        Sergei Shtylyov <sergei.shtylyov@cogentembedded.com>,
-        Geert Uytterhoeven <geert+renesas@glider.be>,
+Cc:     Jon Maloy <jon.maloy@ericsson.com>,
+        Nathan Chancellor <natechancellor@gmail.com>,
         "David S . Miller" <davem@davemloft.net>,
         Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org,
-        linux-renesas-soc@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.9 095/251] net: sh_eth: fix a missing check of of_get_phy_mode
-Date:   Thu, 16 Jan 2020 12:34:04 -0500
-Message-Id: <20200116173641.22137-55-sashal@kernel.org>
+        tipc-discussion@lists.sourceforge.net,
+        clang-built-linux@googlegroups.com
+Subject: [PATCH AUTOSEL 4.9 102/251] tipc: tipc clang warning
+Date:   Thu, 16 Jan 2020 12:34:11 -0500
+Message-Id: <20200116173641.22137-62-sashal@kernel.org>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20200116173641.22137-1-sashal@kernel.org>
 References: <20200116173641.22137-1-sashal@kernel.org>
@@ -46,47 +46,67 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Kangjie Lu <kjlu@umn.edu>
+From: Jon Maloy <jon.maloy@ericsson.com>
 
-[ Upstream commit 035a14e71f27eefa50087963b94cbdb3580d08bf ]
+[ Upstream commit 737889efe9713a0f20a75fd0de952841d9275e6b ]
 
-of_get_phy_mode may fail and return a negative error code;
-the fix checks the return value of of_get_phy_mode and
-returns NULL of it fails.
+When checking the code with clang -Wsometimes-uninitialized we get the
+following warning:
 
-Fixes: b356e978e92f ("sh_eth: add device tree support")
-Signed-off-by: Kangjie Lu <kjlu@umn.edu>
-Reviewed-by: Sergei Shtylyov <sergei.shtylyov@cogentembedded.com>
-Reviewed-by: Geert Uytterhoeven <geert+renesas@glider.be>
-Tested-by: Geert Uytterhoeven <geert+renesas@glider.be>
+if (!tipc_link_is_establishing(l)) {
+    ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+net/tipc/node.c:847:46: note: uninitialized use occurs here
+      tipc_bearer_xmit(n->net, bearer_id, &xmitq, maddr);
+
+net/tipc/node.c:831:2: note: remove the 'if' if its condition is always
+true
+if (!tipc_link_is_establishing(l)) {
+    ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+net/tipc/node.c:821:31: note: initialize the variable 'maddr' to silence
+this warning
+struct tipc_media_addr *maddr;
+
+We fix this by initializing 'maddr' to NULL. For the matter of clarity,
+we also test if 'xmitq' is non-empty before we use it and 'maddr'
+further down in the  function. It will never happen that 'xmitq' is non-
+empty at the same time as 'maddr' is NULL, so this is a sufficient test.
+
+Fixes: 598411d70f85 ("tipc: make resetting of links non-atomic")
+Reported-by: Nathan Chancellor <natechancellor@gmail.com>
+Signed-off-by: Jon Maloy <jon.maloy@ericsson.com>
 Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/renesas/sh_eth.c | 6 +++++-
- 1 file changed, 5 insertions(+), 1 deletion(-)
+ net/tipc/node.c | 7 ++++---
+ 1 file changed, 4 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/net/ethernet/renesas/sh_eth.c b/drivers/net/ethernet/renesas/sh_eth.c
-index 49300194d3f9..6f8d4810ce97 100644
---- a/drivers/net/ethernet/renesas/sh_eth.c
-+++ b/drivers/net/ethernet/renesas/sh_eth.c
-@@ -2929,12 +2929,16 @@ static struct sh_eth_plat_data *sh_eth_parse_dt(struct device *dev)
- 	struct device_node *np = dev->of_node;
- 	struct sh_eth_plat_data *pdata;
- 	const char *mac_addr;
-+	int ret;
+diff --git a/net/tipc/node.c b/net/tipc/node.c
+index db8fbc076e1a..fe7b0ad1d6f3 100644
+--- a/net/tipc/node.c
++++ b/net/tipc/node.c
+@@ -688,10 +688,10 @@ static void __tipc_node_link_down(struct tipc_node *n, int *bearer_id,
+ static void tipc_node_link_down(struct tipc_node *n, int bearer_id, bool delete)
+ {
+ 	struct tipc_link_entry *le = &n->links[bearer_id];
++	struct tipc_media_addr *maddr = NULL;
+ 	struct tipc_link *l = le->link;
+-	struct tipc_media_addr *maddr;
+-	struct sk_buff_head xmitq;
+ 	int old_bearer_id = bearer_id;
++	struct sk_buff_head xmitq;
  
- 	pdata = devm_kzalloc(dev, sizeof(*pdata), GFP_KERNEL);
- 	if (!pdata)
- 		return NULL;
+ 	if (!l)
+ 		return;
+@@ -713,7 +713,8 @@ static void tipc_node_link_down(struct tipc_node *n, int bearer_id, bool delete)
+ 	tipc_node_write_unlock(n);
+ 	if (delete)
+ 		tipc_mon_remove_peer(n->net, n->addr, old_bearer_id);
+-	tipc_bearer_xmit(n->net, bearer_id, &xmitq, maddr);
++	if (!skb_queue_empty(&xmitq))
++		tipc_bearer_xmit(n->net, bearer_id, &xmitq, maddr);
+ 	tipc_sk_rcv(n->net, &le->inputq);
+ }
  
--	pdata->phy_interface = of_get_phy_mode(np);
-+	ret = of_get_phy_mode(np);
-+	if (ret < 0)
-+		return NULL;
-+	pdata->phy_interface = ret;
- 
- 	mac_addr = of_get_mac_address(np);
- 	if (mac_addr)
 -- 
 2.20.1
 
