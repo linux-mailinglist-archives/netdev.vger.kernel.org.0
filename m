@@ -2,58 +2,87 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 2E9C713FAE2
-	for <lists+netdev@lfdr.de>; Thu, 16 Jan 2020 21:52:16 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 77F7013FAE5
+	for <lists+netdev@lfdr.de>; Thu, 16 Jan 2020 21:56:00 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2388201AbgAPUwH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 16 Jan 2020 15:52:07 -0500
-Received: from vps0.lunn.ch ([185.16.172.187]:43154 "EHLO vps0.lunn.ch"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726994AbgAPUwH (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 16 Jan 2020 15:52:07 -0500
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:
-        Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
-        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
-        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
-        List-Post:List-Owner:List-Archive;
-        bh=cL8sSq+085xm0aYn+d1KDCSQUmsQXZOzpRIBQ4nDL+k=; b=uD0iZoJ3OXNAwnBdgI5lG0O99I
-        NXyzsYWMj5m2Zi2RvGWIoTL+DkSfva4SPttKuGydygHsCMFw/NxhW5ob4eXgW8wmuAUbOuI1QNjYX
-        5nHVwb73w+qMawyC6YDTTKKqvTdoxG2rHcebaw/E1ub3qfIrHl8mw/0WJ/35DIU0WFEM=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.93)
-        (envelope-from <andrew@lunn.ch>)
-        id 1isC7Y-0000rC-K2; Thu, 16 Jan 2020 21:52:04 +0100
-Date:   Thu, 16 Jan 2020 21:52:04 +0100
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Vladimir Oltean <olteanv@gmail.com>
-Cc:     davem@davemloft.net, netdev@vger.kernel.org, linux@armlinux.org.uk,
-        f.fainelli@gmail.com, vivien.didelot@gmail.com,
-        claudiu.manoil@nxp.com, alexandru.marginean@nxp.com,
-        Vladimir Oltean <vladimir.oltean@nxp.com>
-Subject: Re: [PATCH v2 net-next] net: dsa: felix: Don't error out on disabled
- ports with no phy-mode
-Message-ID: <20200116205204.GO2475@lunn.ch>
-References: <20200116184153.12301-1-olteanv@gmail.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200116184153.12301-1-olteanv@gmail.com>
+        id S2388212AbgAPUzz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 16 Jan 2020 15:55:55 -0500
+Received: from mail-pg1-f193.google.com ([209.85.215.193]:38385 "EHLO
+        mail-pg1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726994AbgAPUzz (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 16 Jan 2020 15:55:55 -0500
+Received: by mail-pg1-f193.google.com with SMTP id a33so10505697pgm.5;
+        Thu, 16 Jan 2020 12:55:55 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id;
+        bh=+nCilBulwSLVUvM6NtqMw6YwyNgyJgT4OlEUrZgT6CA=;
+        b=lN43DV7LK8i3+NXeGADsv99ZF9HKYnmu8DdaMzDTCxqDQKL8H5XyC61Pmeo8S3wcOB
+         4F21xyz2Y2Uv42Yqu3sRJYkg4UG6HpUTm03p1dCnXlnD1vzErbSHtke3xVSv7WHQ7lnW
+         q0GSV+nHW9SjCZD3dIDVYVAcEPraI+VLQUFyIMQ206UntfYBkeEnLa0clG+q/fZ+tUVl
+         nNP4aEeOO1SzQb6+XKawv118M2982eAx+80u7MVC0AcJ5jDmiw/zlTEX0ZU0h09dz2Vp
+         u4QX8vaue6fiC82oMjnaA/L4GWm6pkqtp8+3zx8y6VKdWOQ1rkviuweMAYze/vaR/Zy1
+         oV/w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=+nCilBulwSLVUvM6NtqMw6YwyNgyJgT4OlEUrZgT6CA=;
+        b=LhZXV7pRazCIS4IH2/FygrxVoL9s9nvHMiHY9MZvfU7WlawvQFyWSLPk73i3+7/iPr
+         fzy0LekDjB3MvmVz/HsMJne7PUkqJFaqmXmZ1fMZVTAV3Z4VootDRNNI/DR2qgmOPeWs
+         HkQxutmVF4om+Lievyw7iKlCMxea/W3VByQ+GhID40iPRufUqnmTyVJ1/m4DwFpZh5d5
+         ouQJwhObWCF/7fnoacEyZxIVQld8m3vjOt3kf9YzJMAj+Ls6xu2ob4O95b9Lfw2nRq8l
+         mjO7xC6V1NCde8Q6xNaGRzIzMhC0GmPSRPCuzMVW+fKVxZV2fzXXB6DB568DHejJ4bCm
+         llOA==
+X-Gm-Message-State: APjAAAXZrIVqHgOSVHunleCQVd86pb1NT2WzralL8Fw+lNTT6F1w3Jd8
+        t97gu4xc/17a4B6/fj7LvQrjeEj6
+X-Google-Smtp-Source: APXvYqyn7OG+Hb4SYnOSjqMni2pSoLLcAsIJ9Gq6Mh7Ln+sZRMIybKzp/iSXWMqNbwt18xU4lVbDjQ==
+X-Received: by 2002:a63:f643:: with SMTP id u3mr39520879pgj.291.1579208154468;
+        Thu, 16 Jan 2020 12:55:54 -0800 (PST)
+Received: from fainelli-desktop.igp.broadcom.net ([192.19.223.252])
+        by smtp.gmail.com with ESMTPSA id u3sm2622614pjv.32.2020.01.16.12.55.53
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 16 Jan 2020 12:55:54 -0800 (PST)
+From:   Florian Fainelli <f.fainelli@gmail.com>
+To:     netdev@vger.kernel.org
+Cc:     Florian Fainelli <f.fainelli@gmail.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        linux-kernel@vger.kernel.org (open list)
+Subject: [PATCH net] net: dsa: bcm_sf2: Configure IMP port for 2Gb/sec
+Date:   Thu, 16 Jan 2020 12:55:48 -0800
+Message-Id: <20200116205549.12353-1-f.fainelli@gmail.com>
+X-Mailer: git-send-email 2.17.1
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Jan 16, 2020 at 08:41:53PM +0200, Vladimir Oltean wrote:
-> From: Vladimir Oltean <vladimir.oltean@nxp.com>
-> 
-> The felix_parse_ports_node function was tested only on device trees
-> where all ports were enabled. Fix this check so that the driver
-> continues to probe only with the ports where status is not "disabled",
-> as expected.
-> 
-> Fixes: bdeced75b13f ("net: dsa: felix: Add PCS operations for PHYLINK")
-> Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
+With the implementation of the system reset controller we lost a setting
+that is currently applied by the bootloader and which configures the IMP
+port for 2Gb/sec, the default is 1Gb/sec. This is needed given the
+number of ports and applications we expect to run so bring back that
+setting.
 
-Reviewed-by: Andrew Lunn <andrew@lunn.ch>
+Fixes: 01b0ac07589e ("net: dsa: bcm_sf2: Add support for optional reset controller line")
+Signed-off-by: Florian Fainelli <f.fainelli@gmail.com>
+---
+ drivers/net/dsa/bcm_sf2.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-    Andrew
+diff --git a/drivers/net/dsa/bcm_sf2.c b/drivers/net/dsa/bcm_sf2.c
+index e43040c9f9ee..3e8635311d0d 100644
+--- a/drivers/net/dsa/bcm_sf2.c
++++ b/drivers/net/dsa/bcm_sf2.c
+@@ -68,7 +68,7 @@ static void bcm_sf2_imp_setup(struct dsa_switch *ds, int port)
+ 
+ 		/* Force link status for IMP port */
+ 		reg = core_readl(priv, offset);
+-		reg |= (MII_SW_OR | LINK_STS);
++		reg |= (MII_SW_OR | LINK_STS | GMII_SPEED_UP_2G);
+ 		core_writel(priv, reg, offset);
+ 
+ 		/* Enable Broadcast, Multicast, Unicast forwarding to IMP port */
+-- 
+2.17.1
+
