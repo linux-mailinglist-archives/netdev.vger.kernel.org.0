@@ -2,38 +2,36 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 9DE7913E3A3
-	for <lists+netdev@lfdr.de>; Thu, 16 Jan 2020 18:03:25 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 92F3413E3AB
+	for <lists+netdev@lfdr.de>; Thu, 16 Jan 2020 18:03:38 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2388590AbgAPRDL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 16 Jan 2020 12:03:11 -0500
-Received: from mail.kernel.org ([198.145.29.99]:57034 "EHLO mail.kernel.org"
+        id S2388160AbgAPRDX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 16 Jan 2020 12:03:23 -0500
+Received: from mail.kernel.org ([198.145.29.99]:57166 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2388549AbgAPRDI (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 16 Jan 2020 12:03:08 -0500
+        id S2388586AbgAPRDL (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 16 Jan 2020 12:03:11 -0500
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id E656124684;
-        Thu, 16 Jan 2020 17:03:06 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 98F5820730;
+        Thu, 16 Jan 2020 17:03:09 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1579194187;
-        bh=h6uK8wo0qtyjOiISqKhtgbl/70dLIpaqIJZqKBaqWVI=;
+        s=default; t=1579194190;
+        bh=QdBoVwWQMq0aqvMeaztun3dghZY+IZ7Q6+kCOypgPlk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=XnViwBo1BUK+lRH+9P86vY3hn6cmUg/T1BuCGFE0xTwovCTgJpvVG31OxG4BU7aAt
-         w1MrIuO1tQnIApipWzvJI5hakvNwRornWUybmGA6y7uZQMLH6apbdHm9v26L02X3RZ
-         fdMrRS1MZAimW921dbCTZFFccp7U4OPs2p0J71KM=
+        b=qsapOdpE39YLN4TQg661R73BwU8mLL9zPZomadHbCuyHs0gLN1mBFcx/RDY3QC7s3
+         7974fOAPHmnRhT7iNDDV4YdT7+vdl48ENgkOxXVqk2HJOGPgWD4zkUnyh3IPYpqMhu
+         Fd+PJArmXgOIL8gYcrHeW42SppzchEB7GRdwSdug=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Heiner Kallweit <hkallweit1@gmail.com>,
-        Phil Reid <preid@electromag.com.au>,
-        liweihang <liweihang@hisilicon.com>,
+Cc:     Vladimir Oltean <olteanv@gmail.com>,
         Florian Fainelli <f.fainelli@gmail.com>,
         "David S . Miller" <davem@davemloft.net>,
         Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.19 260/671] net: phy: don't clear BMCR in genphy_soft_reset
-Date:   Thu, 16 Jan 2020 11:52:49 -0500
-Message-Id: <20200116165940.10720-143-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 4.19 262/671] net: dsa: Avoid null pointer when failing to connect to PHY
+Date:   Thu, 16 Jan 2020 11:52:51 -0500
+Message-Id: <20200116165940.10720-145-sashal@kernel.org>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20200116165940.10720-1-sashal@kernel.org>
 References: <20200116165940.10720-1-sashal@kernel.org>
@@ -46,44 +44,53 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Heiner Kallweit <hkallweit1@gmail.com>
+From: Vladimir Oltean <olteanv@gmail.com>
 
-[ Upstream commit d29f5aa0bc0c321e1b9e4658a2a7e08e885da52a ]
+[ Upstream commit 6146dd453e235c487d85ae4dc6cc08978a1c890f ]
 
-So far we effectively clear the BMCR register. Some PHY's can deal
-with this (e.g. because they reset BMCR to a default as part of a
-soft-reset) whilst on others this causes issues because e.g. the
-autoneg bit is cleared. Marvell is an example, see also thread [0].
-So let's be a little bit more gentle and leave all bits we're not
-interested in as-is. This change is needed for PHY drivers to
-properly deal with the original patch.
+When phylink_of_phy_connect fails, dsa_slave_phy_setup tries to save the
+day by connecting to an alternative PHY, none other than a PHY on the
+switch's internal MDIO bus, at an address equal to the port's index.
 
-[0] https://marc.info/?t=155264050700001&r=1&w=2
+However this does not take into consideration the scenario when the
+switch that failed to probe an external PHY does not have an internal
+MDIO bus at all.
 
-Fixes: 6e2d85ec0559 ("net: phy: Stop with excessive soft reset")
-Tested-by: Phil Reid <preid@electromag.com.au>
-Tested-by: liweihang <liweihang@hisilicon.com>
-Signed-off-by: Heiner Kallweit <hkallweit1@gmail.com>
+Fixes: aab9c4067d23 ("net: dsa: Plug in PHYLINK support")
+Signed-off-by: Vladimir Oltean <olteanv@gmail.com>
 Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
 Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/phy/phy_device.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ net/dsa/slave.c | 8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/net/phy/phy_device.c b/drivers/net/phy/phy_device.c
-index 9c7e51443f6b..ae40d8137fd2 100644
---- a/drivers/net/phy/phy_device.c
-+++ b/drivers/net/phy/phy_device.c
-@@ -1657,7 +1657,7 @@ int genphy_soft_reset(struct phy_device *phydev)
- {
- 	int ret;
+diff --git a/net/dsa/slave.c b/net/dsa/slave.c
+index b39720d0995d..8ee28b6016d8 100644
+--- a/net/dsa/slave.c
++++ b/net/dsa/slave.c
+@@ -1219,9 +1219,9 @@ static int dsa_slave_phy_setup(struct net_device *slave_dev)
+ 		phy_flags = ds->ops->get_phy_flags(ds, dp->index);
  
--	ret = phy_write(phydev, MII_BMCR, BMCR_RESET);
-+	ret = phy_set_bits(phydev, MII_BMCR, BMCR_RESET);
- 	if (ret < 0)
- 		return ret;
+ 	ret = phylink_of_phy_connect(dp->pl, port_dn, phy_flags);
+-	if (ret == -ENODEV) {
+-		/* We could not connect to a designated PHY or SFP, so use the
+-		 * switch internal MDIO bus instead
++	if (ret == -ENODEV && ds->slave_mii_bus) {
++		/* We could not connect to a designated PHY or SFP, so try to
++		 * use the switch internal MDIO bus instead
+ 		 */
+ 		ret = dsa_slave_phy_connect(slave_dev, dp->index);
+ 		if (ret) {
+@@ -1233,7 +1233,7 @@ static int dsa_slave_phy_setup(struct net_device *slave_dev)
+ 		}
+ 	}
  
+-	return 0;
++	return ret;
+ }
+ 
+ static struct lock_class_key dsa_slave_netdev_xmit_lock_key;
 -- 
 2.20.1
 
