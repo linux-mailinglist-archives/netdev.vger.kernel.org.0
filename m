@@ -2,36 +2,36 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 0016413F951
-	for <lists+netdev@lfdr.de>; Thu, 16 Jan 2020 20:24:30 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9584213F948
+	for <lists+netdev@lfdr.de>; Thu, 16 Jan 2020 20:24:26 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730493AbgAPQwx (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 16 Jan 2020 11:52:53 -0500
-Received: from mail.kernel.org ([198.145.29.99]:36168 "EHLO mail.kernel.org"
+        id S2407375AbgAPTX6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 16 Jan 2020 14:23:58 -0500
+Received: from mail.kernel.org ([198.145.29.99]:36372 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1729387AbgAPQwu (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 16 Jan 2020 11:52:50 -0500
+        id S1729590AbgAPQw7 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 16 Jan 2020 11:52:59 -0500
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id CFF48208C3;
-        Thu, 16 Jan 2020 16:52:48 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id E9CDD22464;
+        Thu, 16 Jan 2020 16:52:57 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1579193569;
-        bh=HDJI+cWZbtRLZamgfp2m4CUDmGjhDhsihypHESYsrfw=;
+        s=default; t=1579193578;
+        bh=VTtE4Rn0eBatFxxgtwL7q8hKMpcItccYKxQo+yzmRow=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=wzuu5CWEgBxMecjveow9Ruy+FceQig/qMovGFJYPOzPlBHwoW9cnu64eyyqExR7yG
-         tZkY3hvGuyY93/fRTNVp+lw/LVA5BSHl322ZoCIUdP77bMSzwAwI8+zXTxhubtiOUg
-         wtWel7Gpdh9csTAFupPK90t74hlB3Miq8OVY74w4=
+        b=SWEZNtyOSD1XJ31MswRz1zukg721fEmERTCVyxCj0VWrVfLHf8yykAtsK00Sbizy6
+         9uudMB5VPK5LHWNuB2eQC8p4ckgPs9uXSEpjOAdhK4yod5craiDH6SM4FTsCC8c9ev
+         wnGk2zKP/cp7asxPoWwRYMA8SvCv/JjtbYrJyG/Q=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Andrii Nakryiko <andriin@fb.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org,
-        bpf@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.4 113/205] libbpf: Fix another potential overflow issue in bpf_prog_linfo
-Date:   Thu, 16 Jan 2020 11:41:28 -0500
-Message-Id: <20200116164300.6705-113-sashal@kernel.org>
+Cc:     Eric Dumazet <edumazet@google.com>,
+        Willem de Bruijn <willemb@google.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.4 121/205] packet: fix data-race in fanout_flow_is_huge()
+Date:   Thu, 16 Jan 2020 11:41:36 -0500
+Message-Id: <20200116164300.6705-121-sashal@kernel.org>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20200116164300.6705-1-sashal@kernel.org>
 References: <20200116164300.6705-1-sashal@kernel.org>
@@ -44,65 +44,132 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Andrii Nakryiko <andriin@fb.com>
+From: Eric Dumazet <edumazet@google.com>
 
-[ Upstream commit dd3ab126379ec040b3edab8559f9c72de6ef9d29 ]
+[ Upstream commit b756ad928d98e5ef0b74af7546a6a31a8dadde00 ]
 
-Fix few issues found by Coverity and LGTM.
+KCSAN reported the following data-race [1]
 
-Fixes: b053b439b72a ("bpf: libbpf: bpftool: Print bpf_line_info during prog dump")
-Signed-off-by: Andrii Nakryiko <andriin@fb.com>
-Signed-off-by: Daniel Borkmann <daniel@iogearbox.net>
-Link: https://lore.kernel.org/bpf/20191107020855.3834758-4-andriin@fb.com
+Adding a couple of READ_ONCE()/WRITE_ONCE() should silence it.
+
+Since the report hinted about multiple cpus using the history
+concurrently, I added a test avoiding writing on it if the
+victim slot already contains the desired value.
+
+[1]
+
+BUG: KCSAN: data-race in fanout_demux_rollover / fanout_demux_rollover
+
+read to 0xffff8880b01786cc of 4 bytes by task 18921 on cpu 1:
+ fanout_flow_is_huge net/packet/af_packet.c:1303 [inline]
+ fanout_demux_rollover+0x33e/0x3f0 net/packet/af_packet.c:1353
+ packet_rcv_fanout+0x34e/0x490 net/packet/af_packet.c:1453
+ deliver_skb net/core/dev.c:1888 [inline]
+ dev_queue_xmit_nit+0x15b/0x540 net/core/dev.c:1958
+ xmit_one net/core/dev.c:3195 [inline]
+ dev_hard_start_xmit+0x3f5/0x430 net/core/dev.c:3215
+ __dev_queue_xmit+0x14ab/0x1b40 net/core/dev.c:3792
+ dev_queue_xmit+0x21/0x30 net/core/dev.c:3825
+ neigh_direct_output+0x1f/0x30 net/core/neighbour.c:1530
+ neigh_output include/net/neighbour.h:511 [inline]
+ ip6_finish_output2+0x7a2/0xec0 net/ipv6/ip6_output.c:116
+ __ip6_finish_output net/ipv6/ip6_output.c:142 [inline]
+ __ip6_finish_output+0x2d7/0x330 net/ipv6/ip6_output.c:127
+ ip6_finish_output+0x41/0x160 net/ipv6/ip6_output.c:152
+ NF_HOOK_COND include/linux/netfilter.h:294 [inline]
+ ip6_output+0xf2/0x280 net/ipv6/ip6_output.c:175
+ dst_output include/net/dst.h:436 [inline]
+ ip6_local_out+0x74/0x90 net/ipv6/output_core.c:179
+ ip6_send_skb+0x53/0x110 net/ipv6/ip6_output.c:1795
+ udp_v6_send_skb.isra.0+0x3ec/0xa70 net/ipv6/udp.c:1173
+ udpv6_sendmsg+0x1906/0x1c20 net/ipv6/udp.c:1471
+ inet6_sendmsg+0x6d/0x90 net/ipv6/af_inet6.c:576
+ sock_sendmsg_nosec net/socket.c:637 [inline]
+ sock_sendmsg+0x9f/0xc0 net/socket.c:657
+ ___sys_sendmsg+0x2b7/0x5d0 net/socket.c:2311
+ __sys_sendmmsg+0x123/0x350 net/socket.c:2413
+ __do_sys_sendmmsg net/socket.c:2442 [inline]
+ __se_sys_sendmmsg net/socket.c:2439 [inline]
+ __x64_sys_sendmmsg+0x64/0x80 net/socket.c:2439
+ do_syscall_64+0xcc/0x370 arch/x86/entry/common.c:290
+ entry_SYSCALL_64_after_hwframe+0x44/0xa9
+
+write to 0xffff8880b01786cc of 4 bytes by task 18922 on cpu 0:
+ fanout_flow_is_huge net/packet/af_packet.c:1306 [inline]
+ fanout_demux_rollover+0x3a4/0x3f0 net/packet/af_packet.c:1353
+ packet_rcv_fanout+0x34e/0x490 net/packet/af_packet.c:1453
+ deliver_skb net/core/dev.c:1888 [inline]
+ dev_queue_xmit_nit+0x15b/0x540 net/core/dev.c:1958
+ xmit_one net/core/dev.c:3195 [inline]
+ dev_hard_start_xmit+0x3f5/0x430 net/core/dev.c:3215
+ __dev_queue_xmit+0x14ab/0x1b40 net/core/dev.c:3792
+ dev_queue_xmit+0x21/0x30 net/core/dev.c:3825
+ neigh_direct_output+0x1f/0x30 net/core/neighbour.c:1530
+ neigh_output include/net/neighbour.h:511 [inline]
+ ip6_finish_output2+0x7a2/0xec0 net/ipv6/ip6_output.c:116
+ __ip6_finish_output net/ipv6/ip6_output.c:142 [inline]
+ __ip6_finish_output+0x2d7/0x330 net/ipv6/ip6_output.c:127
+ ip6_finish_output+0x41/0x160 net/ipv6/ip6_output.c:152
+ NF_HOOK_COND include/linux/netfilter.h:294 [inline]
+ ip6_output+0xf2/0x280 net/ipv6/ip6_output.c:175
+ dst_output include/net/dst.h:436 [inline]
+ ip6_local_out+0x74/0x90 net/ipv6/output_core.c:179
+ ip6_send_skb+0x53/0x110 net/ipv6/ip6_output.c:1795
+ udp_v6_send_skb.isra.0+0x3ec/0xa70 net/ipv6/udp.c:1173
+ udpv6_sendmsg+0x1906/0x1c20 net/ipv6/udp.c:1471
+ inet6_sendmsg+0x6d/0x90 net/ipv6/af_inet6.c:576
+ sock_sendmsg_nosec net/socket.c:637 [inline]
+ sock_sendmsg+0x9f/0xc0 net/socket.c:657
+ ___sys_sendmsg+0x2b7/0x5d0 net/socket.c:2311
+ __sys_sendmmsg+0x123/0x350 net/socket.c:2413
+ __do_sys_sendmmsg net/socket.c:2442 [inline]
+ __se_sys_sendmmsg net/socket.c:2439 [inline]
+ __x64_sys_sendmmsg+0x64/0x80 net/socket.c:2439
+ do_syscall_64+0xcc/0x370 arch/x86/entry/common.c:290
+ entry_SYSCALL_64_after_hwframe+0x44/0xa9
+
+Reported by Kernel Concurrency Sanitizer on:
+CPU: 0 PID: 18922 Comm: syz-executor.3 Not tainted 5.4.0-rc6+ #0
+Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
+
+Fixes: 3b3a5b0aab5b ("packet: rollover huge flows before small flows")
+Signed-off-by: Eric Dumazet <edumazet@google.com>
+Cc: Willem de Bruijn <willemb@google.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- tools/lib/bpf/bpf_prog_linfo.c | 14 +++++++-------
- 1 file changed, 7 insertions(+), 7 deletions(-)
+ net/packet/af_packet.c | 12 +++++++++---
+ 1 file changed, 9 insertions(+), 3 deletions(-)
 
-diff --git a/tools/lib/bpf/bpf_prog_linfo.c b/tools/lib/bpf/bpf_prog_linfo.c
-index 8c67561c93b0..3ed1a27b5f7c 100644
---- a/tools/lib/bpf/bpf_prog_linfo.c
-+++ b/tools/lib/bpf/bpf_prog_linfo.c
-@@ -101,6 +101,7 @@ struct bpf_prog_linfo *bpf_prog_linfo__new(const struct bpf_prog_info *info)
+diff --git a/net/packet/af_packet.c b/net/packet/af_packet.c
+index 529d4ce945db..118cd66b7516 100644
+--- a/net/packet/af_packet.c
++++ b/net/packet/af_packet.c
+@@ -1296,15 +1296,21 @@ static void packet_sock_destruct(struct sock *sk)
+ 
+ static bool fanout_flow_is_huge(struct packet_sock *po, struct sk_buff *skb)
  {
- 	struct bpf_prog_linfo *prog_linfo;
- 	__u32 nr_linfo, nr_jited_func;
-+	__u64 data_sz;
+-	u32 rxhash;
++	u32 *history = po->rollover->history;
++	u32 victim, rxhash;
+ 	int i, count = 0;
  
- 	nr_linfo = info->nr_line_info;
+ 	rxhash = skb_get_hash(skb);
+ 	for (i = 0; i < ROLLOVER_HLEN; i++)
+-		if (po->rollover->history[i] == rxhash)
++		if (READ_ONCE(history[i]) == rxhash)
+ 			count++;
  
-@@ -122,11 +123,11 @@ struct bpf_prog_linfo *bpf_prog_linfo__new(const struct bpf_prog_info *info)
- 	/* Copy xlated line_info */
- 	prog_linfo->nr_linfo = nr_linfo;
- 	prog_linfo->rec_size = info->line_info_rec_size;
--	prog_linfo->raw_linfo = malloc(nr_linfo * prog_linfo->rec_size);
-+	data_sz = (__u64)nr_linfo * prog_linfo->rec_size;
-+	prog_linfo->raw_linfo = malloc(data_sz);
- 	if (!prog_linfo->raw_linfo)
- 		goto err_free;
--	memcpy(prog_linfo->raw_linfo, (void *)(long)info->line_info,
--	       nr_linfo * prog_linfo->rec_size);
-+	memcpy(prog_linfo->raw_linfo, (void *)(long)info->line_info, data_sz);
+-	po->rollover->history[prandom_u32() % ROLLOVER_HLEN] = rxhash;
++	victim = prandom_u32() % ROLLOVER_HLEN;
++
++	/* Avoid dirtying the cache line if possible */
++	if (READ_ONCE(history[victim]) != rxhash)
++		WRITE_ONCE(history[victim], rxhash);
++
+ 	return count > (ROLLOVER_HLEN >> 1);
+ }
  
- 	nr_jited_func = info->nr_jited_ksyms;
- 	if (!nr_jited_func ||
-@@ -142,13 +143,12 @@ struct bpf_prog_linfo *bpf_prog_linfo__new(const struct bpf_prog_info *info)
- 	/* Copy jited_line_info */
- 	prog_linfo->nr_jited_func = nr_jited_func;
- 	prog_linfo->jited_rec_size = info->jited_line_info_rec_size;
--	prog_linfo->raw_jited_linfo = malloc(nr_linfo *
--					     prog_linfo->jited_rec_size);
-+	data_sz = (__u64)nr_linfo * prog_linfo->jited_rec_size;
-+	prog_linfo->raw_jited_linfo = malloc(data_sz);
- 	if (!prog_linfo->raw_jited_linfo)
- 		goto err_free;
- 	memcpy(prog_linfo->raw_jited_linfo,
--	       (void *)(long)info->jited_line_info,
--	       nr_linfo * prog_linfo->jited_rec_size);
-+	       (void *)(long)info->jited_line_info, data_sz);
- 
- 	/* Number of jited_line_info per jited func */
- 	prog_linfo->nr_jited_linfo_per_func = malloc(nr_jited_func *
 -- 
 2.20.1
 
