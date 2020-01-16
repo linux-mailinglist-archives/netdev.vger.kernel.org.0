@@ -2,37 +2,36 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 31E3013F329
-	for <lists+netdev@lfdr.de>; Thu, 16 Jan 2020 19:41:17 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2D89113F32B
+	for <lists+netdev@lfdr.de>; Thu, 16 Jan 2020 19:41:18 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2390350AbgAPRL5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 16 Jan 2020 12:11:57 -0500
-Received: from mail.kernel.org ([198.145.29.99]:53582 "EHLO mail.kernel.org"
+        id S2407180AbgAPSks (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 16 Jan 2020 13:40:48 -0500
+Received: from mail.kernel.org ([198.145.29.99]:53728 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2389018AbgAPRLz (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 16 Jan 2020 12:11:55 -0500
+        id S2390348AbgAPRL5 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 16 Jan 2020 12:11:57 -0500
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 940B7246A0;
-        Thu, 16 Jan 2020 17:11:53 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 1631724697;
+        Thu, 16 Jan 2020 17:11:56 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1579194714;
-        bh=VMxSnVGIwtCxxKxJeP4Q7uYMqhofEoA/E2CG4sUyupk=;
+        s=default; t=1579194716;
+        bh=Ykv5Omqbya/PBFt5kO//PlxFzjN08HDOhhu4rRk4zpU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=SS3pvIaWr+Qn337e2vDzM/2ty4g/E64EzKklydR6RvACrWTAtwEuS9cVsAj5Y+Ipl
-         8uIOs607aGyzDEVYSpvPQKSZdho6kwbUJR4EG+Rn3DLerDvVDh0+0kkIA/GHrLtDzv
-         yDaLga0PK34QPBFdWhPlCnYkavfcun8F8UvlHUXI=
+        b=F706h52fC+umY0NE8SqrkycS9SYG2hF17lHoQovdHInH0jkvJqfWBeaVEa5LP3eS0
+         29Qy020E8xJqTyffpC66RXJ8PmMM002HElDJKIVe7yzKbKxSFARJtOvNYqquAPa27a
+         VYm25FRB3pRFSOxN9bzyIM+dsID2Y4Td9mJ0Ww6Y=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Gerd Rausch <gerd.rausch@oracle.com>,
-        Santosh Shilimkar <santosh.shilimkar@oracle.com>,
+Cc:     Vasundhara Volam <vasundhara-v.volam@broadcom.com>,
+        Michael Chan <michael.chan@broadcom.com>,
         "David S . Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org,
-        linux-rdma@vger.kernel.org, rds-devel@oss.oracle.com
-Subject: [PATCH AUTOSEL 4.19 551/671] net/rds: Fix 'ib_evt_handler_call' element in 'rds_ib_stat_names'
-Date:   Thu, 16 Jan 2020 12:03:09 -0500
-Message-Id: <20200116170509.12787-288-sashal@kernel.org>
+        Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 4.19 553/671] bnxt_en: Increase timeout for HWRM_DBG_COREDUMP_XX commands
+Date:   Thu, 16 Jan 2020 12:03:11 -0500
+Message-Id: <20200116170509.12787-290-sashal@kernel.org>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20200116170509.12787-1-sashal@kernel.org>
 References: <20200116170509.12787-1-sashal@kernel.org>
@@ -45,38 +44,48 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Gerd Rausch <gerd.rausch@oracle.com>
+From: Vasundhara Volam <vasundhara-v.volam@broadcom.com>
 
-[ Upstream commit 05a82481a3024b94db00b8c816bb3d526b5209e0 ]
+[ Upstream commit 57a8730b1f7a0be7bf8a0a0bb665329074ba764f ]
 
-All entries in 'rds_ib_stat_names' are stringified versions
-of the corresponding "struct rds_ib_statistics" element
-without the "s_"-prefix.
+Firmware coredump messages take much longer than standard messages,
+so increase the timeout accordingly.
 
-Fix entry 'ib_evt_handler_call' to do the same.
-
-Fixes: f4f943c958a2 ("RDS: IB: ack more receive completions to improve performance")
-Signed-off-by: Gerd Rausch <gerd.rausch@oracle.com>
-Acked-by: Santosh Shilimkar <santosh.shilimkar@oracle.com>
+Fixes: 6c5657d085ae ("bnxt_en: Add support for ethtool get dump.")
+Signed-off-by: Vasundhara Volam <vasundhara-v.volam@broadcom.com>
+Signed-off-by: Michael Chan <michael.chan@broadcom.com>
 Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/rds/ib_stats.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/net/ethernet/broadcom/bnxt/bnxt.h         | 1 +
+ drivers/net/ethernet/broadcom/bnxt/bnxt_ethtool.c | 2 +-
+ 2 files changed, 2 insertions(+), 1 deletion(-)
 
-diff --git a/net/rds/ib_stats.c b/net/rds/ib_stats.c
-index 9252ad126335..ac46d8961b61 100644
---- a/net/rds/ib_stats.c
-+++ b/net/rds/ib_stats.c
-@@ -42,7 +42,7 @@ DEFINE_PER_CPU_SHARED_ALIGNED(struct rds_ib_statistics, rds_ib_stats);
- static const char *const rds_ib_stat_names[] = {
- 	"ib_connect_raced",
- 	"ib_listen_closed_stale",
--	"s_ib_evt_handler_call",
-+	"ib_evt_handler_call",
- 	"ib_tasklet_call",
- 	"ib_tx_cq_event",
- 	"ib_tx_ring_full",
+diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt.h b/drivers/net/ethernet/broadcom/bnxt/bnxt.h
+index f9e253b705ec..585f5aef0a45 100644
+--- a/drivers/net/ethernet/broadcom/bnxt/bnxt.h
++++ b/drivers/net/ethernet/broadcom/bnxt/bnxt.h
+@@ -527,6 +527,7 @@ struct rx_tpa_end_cmp_ext {
+ #define DFLT_HWRM_CMD_TIMEOUT		500
+ #define HWRM_CMD_TIMEOUT		(bp->hwrm_cmd_timeout)
+ #define HWRM_RESET_TIMEOUT		((HWRM_CMD_TIMEOUT) * 4)
++#define HWRM_COREDUMP_TIMEOUT		((HWRM_CMD_TIMEOUT) * 12)
+ #define HWRM_RESP_ERR_CODE_MASK		0xffff
+ #define HWRM_RESP_LEN_OFFSET		4
+ #define HWRM_RESP_LEN_MASK		0xffff0000
+diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt_ethtool.c b/drivers/net/ethernet/broadcom/bnxt/bnxt_ethtool.c
+index cdbb8940a4ae..047024717d65 100644
+--- a/drivers/net/ethernet/broadcom/bnxt/bnxt_ethtool.c
++++ b/drivers/net/ethernet/broadcom/bnxt/bnxt_ethtool.c
+@@ -2833,7 +2833,7 @@ static int bnxt_hwrm_dbg_coredump_initiate(struct bnxt *bp, u16 component_id,
+ 	req.component_id = cpu_to_le16(component_id);
+ 	req.segment_id = cpu_to_le16(segment_id);
+ 
+-	return hwrm_send_message(bp, &req, sizeof(req), HWRM_CMD_TIMEOUT);
++	return hwrm_send_message(bp, &req, sizeof(req), HWRM_COREDUMP_TIMEOUT);
+ }
+ 
+ static int bnxt_hwrm_dbg_coredump_retrieve(struct bnxt *bp, u16 component_id,
 -- 
 2.20.1
 
