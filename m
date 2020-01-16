@@ -2,56 +2,56 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id E770E13F044
-	for <lists+netdev@lfdr.de>; Thu, 16 Jan 2020 19:21:24 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 679E213F045
+	for <lists+netdev@lfdr.de>; Thu, 16 Jan 2020 19:21:25 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2395465AbgAPSTn (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 16 Jan 2020 13:19:43 -0500
-Received: from mail-wm1-f66.google.com ([209.85.128.66]:39274 "EHLO
-        mail-wm1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729567AbgAPSTm (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 16 Jan 2020 13:19:42 -0500
-Received: by mail-wm1-f66.google.com with SMTP id 20so4836712wmj.4
-        for <netdev@vger.kernel.org>; Thu, 16 Jan 2020 10:19:40 -0800 (PST)
+        id S2395477AbgAPSTr (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 16 Jan 2020 13:19:47 -0500
+Received: from mail-wr1-f67.google.com ([209.85.221.67]:33469 "EHLO
+        mail-wr1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2395464AbgAPSTn (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 16 Jan 2020 13:19:43 -0500
+Received: by mail-wr1-f67.google.com with SMTP id b6so20205144wrq.0
+        for <netdev@vger.kernel.org>; Thu, 16 Jan 2020 10:19:41 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=0uvC8fWxSkFRwJ29nnfRK6ReJYlaVRKyfwxI5wncSjE=;
-        b=aiKPr0cYrlcZDRCmTILAUE4GDHwMuaBBuUVBgpoCsc0aAY4DxyCsGFTB01/Hwa9Y57
-         wxfOpJ8NAYH9YdaKV5Tj+qPoiIgP+FiWhkn9+lVWT5YNc4Z3XaqJNtKgCOQqhcnbi+sR
-         wo52IBYd7Xy5N00swwNko3D4FpArbcva6tx7MKGxe50nOZSqH0yUDffsVH3j1J+g9Wyh
-         cZsMQtfp9c0JKnt47ct1VeA/p6OKqnrJXkHEtM2eNZJ/1NX/YwABfz1sMBymdXm5aukl
-         OJreuTUljthBzqXIye/sTF6lMEA7WxriBfLmLmPv8iPcTB/4WKNFOIpNbojliF4xX1fU
-         CWgg==
+        bh=iEG5nDterd5xVIKTUIokYoFGLbHhB+7NE7s1/y1cDo0=;
+        b=K9riOl4PskHRC87P6qaVBgdIT10USn9mFOUbZUa7Cu2byhSFfu3WSLsDduor7AbCo0
+         MKnG9WHZ6dUgelNe8pTs0O8D8iaxLY48t6/lDZidqVONuFVUXGjRE/OXhYr6djt6KPje
+         3tgEYQMsvSfYAhld3hu7JM5dorYQmQPPYGsYgCk6BjvepwtYC3MKsfABTalmfWSUZ4dj
+         GkIHZmTNIogEofy1oZrYm16SIkSwgXnIb9As93v8GLiWr2lUk2VzzfgMwTiKOdLBc98P
+         lpmSYareOSCSJSEyu4bWbZuUQT7wN1e9mKJj9uP0086Rx7yeio6kXAAWbUQTULFh9+j+
+         vdtw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references;
-        bh=0uvC8fWxSkFRwJ29nnfRK6ReJYlaVRKyfwxI5wncSjE=;
-        b=sUDwYZ8jWEDWw1zzxmSqK1MmzXJ/xLJRKK74f5Z6sawhhha6KBAZtJYDwouMEp83Qv
-         hPxnoN7Br6wL7gyHR5wah0l1d+dQW1M7tKrBf9d/1RlYm5hl/Wa/dWGRDyjo1I9+uqiD
-         aOkS5Bn20RZguHC1NEYsct4lRACaJmW3081vUcAEYuixWh/KYkQuPlKFmbDbGkfoGrw1
-         G9Btu2YdeyWZDamGN2jp7Ksv+d9u7s9a7LPNr3gLuuFFqUitnmVNFNTwvh3+b2weRPht
-         APR3Dp1iNsYtaPuetSeMZ5R8F9SZ0vOSE1qXpxSWHorSeNBiNJSwdN/DOk4zBNdzUVjm
-         oFsQ==
-X-Gm-Message-State: APjAAAXSlsvfFi3MoPUOPbGKk6+4GBBdu7LsxHRmBCYQlCu2P1X1Dhc1
-        55/EJEbbxQjGGgb/tgLA1KanBNYtBPo=
-X-Google-Smtp-Source: APXvYqz57VPO+upKUhYkBr9Ya+OaR+rnxtU85lP0frCnVPY+hhiGv15mYnlDbYHju3MUun6QusUZZw==
-X-Received: by 2002:a7b:cf12:: with SMTP id l18mr357684wmg.66.1579198780324;
-        Thu, 16 Jan 2020 10:19:40 -0800 (PST)
+        bh=iEG5nDterd5xVIKTUIokYoFGLbHhB+7NE7s1/y1cDo0=;
+        b=CnkKyZYcwWTJMK22fzKjFfBtY4nB4lAuMX17RapRCfRN4hrb6kwVZP77fhSh+YQdQz
+         ipzZQRy76EyvF0z6Cut5QTNU8RP7Z47V4FU/pA6VOi9lmIaIH5OwX8JoJSXinnx8MT27
+         1AMBGveu+Hphx/IHCVGflsG3763tVzSOBKkzA995I7m1Cs0byOB8G+vqUsOz/i0svmwF
+         BKLyYst6Yfi1Csg3TYDlbjHShKZDDOrSFsN6o1d8n0t+FvasaF0JbUuuVFLPeLPoTja+
+         EtL9MWAtxMGY+u3xpSlB9w30UlEeucQZgybFjOmq/DY0JvdZWmbCM3tfJXaZexD6v0+B
+         Zi0Q==
+X-Gm-Message-State: APjAAAUj4aiV32SRfc/CNcm3H24DBPXleewLkMPO9V4cOgbqwgEn0nf7
+        qcDUEhCACr9sccTUvGNYBUM=
+X-Google-Smtp-Source: APXvYqzw3DnCDkbyKbZWLewEuReEufrxmr3czDA7ou7aBw10C+1pswzyb9v0UFHprF9Wwa+fovFw9g==
+X-Received: by 2002:a5d:6b47:: with SMTP id x7mr4692811wrw.277.1579198781336;
+        Thu, 16 Jan 2020 10:19:41 -0800 (PST)
 Received: from localhost.localdomain ([188.25.254.226])
-        by smtp.gmail.com with ESMTPSA id g25sm1038148wmh.3.2020.01.16.10.19.39
+        by smtp.gmail.com with ESMTPSA id g25sm1038148wmh.3.2020.01.16.10.19.40
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 16 Jan 2020 10:19:39 -0800 (PST)
+        Thu, 16 Jan 2020 10:19:40 -0800 (PST)
 From:   Vladimir Oltean <olteanv@gmail.com>
 To:     davem@davemloft.net, netdev@vger.kernel.org, linux@armlinux.org.uk
 Cc:     andrew@lunn.ch, f.fainelli@gmail.com, vivien.didelot@gmail.com,
         claudiu.manoil@nxp.com,
         Alex Marginean <alexandru.marginean@nxp.com>,
         Vladimir Oltean <vladimir.oltean@nxp.com>
-Subject: [PATCH net-next 1/2] net: dsa: felix: Handle PAUSE RX regardless of AN result
-Date:   Thu, 16 Jan 2020 20:19:32 +0200
-Message-Id: <20200116181933.32765-2-olteanv@gmail.com>
+Subject: [PATCH net-next 2/2] net: dsa: felix: Allow PHY to AN 10/100/1000 with 2500 serdes link
+Date:   Thu, 16 Jan 2020 20:19:33 +0200
+Message-Id: <20200116181933.32765-3-olteanv@gmail.com>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <20200116181933.32765-1-olteanv@gmail.com>
 References: <20200116181933.32765-1-olteanv@gmail.com>
@@ -62,41 +62,37 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Alex Marginean <alexandru.marginean@nxp.com>
 
-Flow control is used with 2500Base-X and AQR PHYs to do rate adaptation
-between line side 100/1000 links and MAC running at 2.5G.
-
-This is independent of the flow control configuration settled on line
-side though AN.
-
-In general, allowing the MAC to handle flow control even if not
-negotiated with the link partner should not be a problem, so the patch
-just enables it in all cases.
+If the serdes link is set to 2500 using interfce type 2500base-X, lower
+link speeds over on the line side should still be supported.
+Rate adaptation is done out of band, in our case using AQR PHYs this is
+done using flow control.
 
 Signed-off-by: Alex Marginean <alexandru.marginean@nxp.com>
 Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
 ---
- drivers/net/dsa/ocelot/felix.c | 8 ++++++--
- 1 file changed, 6 insertions(+), 2 deletions(-)
+ drivers/net/dsa/ocelot/felix.c | 9 ++++-----
+ 1 file changed, 4 insertions(+), 5 deletions(-)
 
 diff --git a/drivers/net/dsa/ocelot/felix.c b/drivers/net/dsa/ocelot/felix.c
-index d6ee089dbfe1..46334436a8fe 100644
+index 46334436a8fe..8108aaef96f8 100644
 --- a/drivers/net/dsa/ocelot/felix.c
 +++ b/drivers/net/dsa/ocelot/felix.c
-@@ -222,8 +222,12 @@ static void felix_phylink_mac_config(struct dsa_switch *ds, int port,
- 	 * specification in incoming pause frames.
- 	 */
- 	mac_fc_cfg = SYS_MAC_FC_CFG_FC_LINK_SPEED(state->speed);
--	if (state->pause & MLO_PAUSE_RX)
--		mac_fc_cfg |= SYS_MAC_FC_CFG_RX_FC_ENA;
+@@ -172,11 +172,10 @@ static void felix_phylink_validate(struct dsa_switch *ds, int port,
+ 	phylink_set(mask, Autoneg);
+ 	phylink_set(mask, Pause);
+ 	phylink_set(mask, Asym_Pause);
+-	if (state->interface != PHY_INTERFACE_MODE_2500BASEX) {
+-		phylink_set(mask, 10baseT_Full);
+-		phylink_set(mask, 100baseT_Full);
+-		phylink_set(mask, 1000baseT_Full);
+-	}
++	phylink_set(mask, 10baseT_Full);
++	phylink_set(mask, 100baseT_Full);
++	phylink_set(mask, 1000baseT_Full);
 +
-+	/* handle Rx pause in all cases, with 2500base-X this is used for rate
-+	 * adaptation.
-+	 */
-+	mac_fc_cfg |= SYS_MAC_FC_CFG_RX_FC_ENA;
-+
- 	if (state->pause & MLO_PAUSE_TX)
- 		mac_fc_cfg |= SYS_MAC_FC_CFG_TX_FC_ENA |
- 			      SYS_MAC_FC_CFG_PAUSE_VAL_CFG(0xffff) |
+ 	/* The internal ports that run at 2.5G are overclocked GMII */
+ 	if (state->interface == PHY_INTERFACE_MODE_GMII ||
+ 	    state->interface == PHY_INTERFACE_MODE_2500BASEX ||
 -- 
 2.17.1
 
