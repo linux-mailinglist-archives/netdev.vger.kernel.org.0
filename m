@@ -2,72 +2,97 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 288D613D82F
-	for <lists+netdev@lfdr.de>; Thu, 16 Jan 2020 11:49:27 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2FBF413D880
+	for <lists+netdev@lfdr.de>; Thu, 16 Jan 2020 12:03:11 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726410AbgAPKtC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 16 Jan 2020 05:49:02 -0500
-Received: from mail-il1-f200.google.com ([209.85.166.200]:54443 "EHLO
-        mail-il1-f200.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725973AbgAPKtC (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 16 Jan 2020 05:49:02 -0500
-Received: by mail-il1-f200.google.com with SMTP id t4so15676831ili.21
-        for <netdev@vger.kernel.org>; Thu, 16 Jan 2020 02:49:01 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:date:in-reply-to:message-id:subject
-         :from:to;
-        bh=vXf7A0NOmOYnzFvw+i/lGTeJq016329/QakV55aUcG0=;
-        b=i7pqX6V4TW/4qGB+nJnhVWBitVx0xKQDnCOH9FB91GtYgX4BV7jeSTFsluXedM/rh8
-         Wd1o+BHtk51720PQlocF0s/UWPD8FI6r78wBFb92W2O0yMSYVXey8Rlj8A7as1S8uf0/
-         nGVVXWq2BYvDPG561eO+o3MT2r5cLeGQpPhrXB7eWp0W1bsyIkF7rRw+VPOV+j68BhO2
-         oEN9Q8scyD9a1miBK9xBZyeC3XSs1kOm/G8iGjKfMn5hfpDjJ3vbu5xwenPh2PTzFeNV
-         axXZ3R495OxD4UZrQDLjshUHInmuP4sy928GxbrCvdTuqjtR8aHU5hKaYSHGx4OlVLkw
-         Mgag==
-X-Gm-Message-State: APjAAAXvQ8SG/ne1J374ktYGBiKQJw3zrWEv3KFYShWIQDBqTk5HdyEb
-        14YkR7qZ2KkLC2cW4UP/qHi4QgGNUYckFHCVjQZJc3ZqKWWp
-X-Google-Smtp-Source: APXvYqxopJ/jpk1yIg/I62PmVhs8FXVnSYmF1TfUZ9VNvmnmuoElsGzQesNp8GprKQ9VNUmhiQEqsoJLXz2GyBosz3vGAuYabDoY
+        id S1726100AbgAPLDJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 16 Jan 2020 06:03:09 -0500
+Received: from Chamillionaire.breakpoint.cc ([193.142.43.52]:33928 "EHLO
+        Chamillionaire.breakpoint.cc" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1725800AbgAPLDI (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 16 Jan 2020 06:03:08 -0500
+Received: from fw by Chamillionaire.breakpoint.cc with local (Exim 4.92)
+        (envelope-from <fw@breakpoint.cc>)
+        id 1is2va-0004LU-In; Thu, 16 Jan 2020 12:03:06 +0100
+From:   Florian Westphal <fw@strlen.de>
+To:     <netfilter-devel@vger.kernel.org>
+Cc:     syzkaller-bugs@googlegroups.com, <netdev@vger.kernel.org>,
+        Florian Westphal <fw@strlen.de>,
+        syzbot+37a6804945a3a13b1572@syzkaller.appspotmail.com
+Subject: [PATCH nf] netfilter: nf_tables: fix flowtable list del corruption
+Date:   Thu, 16 Jan 2020 12:03:01 +0100
+Message-Id: <20200116110301.4875-1-fw@strlen.de>
+X-Mailer: git-send-email 2.24.1
+In-Reply-To: <000000000000b3599c059c36db0d@google.com>
+References: <000000000000b3599c059c36db0d@google.com>
 MIME-Version: 1.0
-X-Received: by 2002:a92:3cd4:: with SMTP id j81mr3015923ilf.77.1579171741688;
- Thu, 16 Jan 2020 02:49:01 -0800 (PST)
-Date:   Thu, 16 Jan 2020 02:49:01 -0800
-In-Reply-To: <000000000000b9fc96059c36db9e@google.com>
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <000000000000b3ea0f059c3f9203@google.com>
-Subject: Re: WARNING in nft_request_module
-From:   syzbot <syzbot+0e63ae76d117ae1c3a01@syzkaller.appspotmail.com>
-To:     coreteam@netfilter.org, davem@davemloft.net, fw@strlen.de,
-        kadlec@blackhole.kfki.hu, kadlec@netfilter.org,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        netfilter-devel@vger.kernel.org, pablo@netfilter.org,
-        syzkaller-bugs@googlegroups.com
-Content-Type: text/plain; charset="UTF-8"; format=flowed; delsp=yes
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-syzbot has bisected this bug to:
+syzbot reported following crash:
 
-commit 452238e8d5ffd8b77f92387519513839d4ca7379
-Author: Florian Westphal <fw@strlen.de>
-Date:   Wed Jul 11 11:45:10 2018 +0000
+  list_del corruption, ffff88808c9bb000->prev is LIST_POISON2 (dead000000000122)
+  [..]
+  Call Trace:
+   __list_del_entry include/linux/list.h:131 [inline]
+   list_del_rcu include/linux/rculist.h:148 [inline]
+   nf_tables_commit+0x1068/0x3b30 net/netfilter/nf_tables_api.c:7183
+   [..]
 
-     netfilter: nf_tables: add and use helper for module autoload
+The commit transaction list has:
 
-bisection log:  https://syzkaller.appspot.com/x/bisect.txt?x=17bb83e1e00000
-start commit:   51d69817 Merge tag 'platform-drivers-x86-v5.5-3' of git://..
-git tree:       upstream
-final crash:    https://syzkaller.appspot.com/x/report.txt?x=147b83e1e00000
-console output: https://syzkaller.appspot.com/x/log.txt?x=107b83e1e00000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=d9290aeb7e6cf1c4
-dashboard link: https://syzkaller.appspot.com/bug?extid=0e63ae76d117ae1c3a01
-syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=16b14421e00000
-C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=138473fee00000
+NFT_MSG_NEWTABLE
+NFT_MSG_NEWFLOWTABLE
+NFT_MSG_DELFLOWTABLE
+NFT_MSG_DELTABLE
 
-Reported-by: syzbot+0e63ae76d117ae1c3a01@syzkaller.appspotmail.com
-Fixes: 452238e8d5ff ("netfilter: nf_tables: add and use helper for module  
-autoload")
+A missing generation check during DELTABLE processing causes it to queue
+the DELFLOWTABLE operation a second time, so we corrupt the list here:
 
-For information about bisection process see: https://goo.gl/tpsmEJ#bisection
+  case NFT_MSG_DELFLOWTABLE:
+     list_del_rcu(&nft_trans_flowtable(trans)->list);
+     nf_tables_flowtable_notify(&trans->ctx,
+
+because we have two different DELFLOWTABLE transactions for the same
+flowtable.  We then call list_del_rcu() twice for the same flowtable->list.
+
+The object handling seems to suffer from the same bug so add a generation
+check too and only queue delete transactions for flowtables/objects that
+are still active in the next generation.
+
+Reported-by: syzbot+37a6804945a3a13b1572@syzkaller.appspotmail.com
+Fixes: 3b49e2e94e6eb ("netfilter: nf_tables: add flow table netlink frontend")
+Signed-off-by: Florian Westphal <fw@strlen.de>
+---
+ net/netfilter/nf_tables_api.c | 6 ++++++
+ 1 file changed, 6 insertions(+)
+
+diff --git a/net/netfilter/nf_tables_api.c b/net/netfilter/nf_tables_api.c
+index 5a1a6632e3a6..9ba1747686ed 100644
+--- a/net/netfilter/nf_tables_api.c
++++ b/net/netfilter/nf_tables_api.c
+@@ -1047,12 +1047,18 @@ static int nft_flush_table(struct nft_ctx *ctx)
+ 	}
+ 
+ 	list_for_each_entry_safe(flowtable, nft, &ctx->table->flowtables, list) {
++		if (!nft_is_active_next(ctx->net, flowtable))
++			continue;
++
+ 		err = nft_delflowtable(ctx, flowtable);
+ 		if (err < 0)
+ 			goto out;
+ 	}
+ 
+ 	list_for_each_entry_safe(obj, ne, &ctx->table->objects, list) {
++		if (!nft_is_active_next(ctx->net, obj))
++			continue;
++
+ 		err = nft_delobj(ctx, obj);
+ 		if (err < 0)
+ 			goto out;
+-- 
+2.24.1
+
