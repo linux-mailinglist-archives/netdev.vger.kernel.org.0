@@ -2,225 +2,85 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 435F713DE24
-	for <lists+netdev@lfdr.de>; Thu, 16 Jan 2020 15:55:53 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1FB0C13DE32
+	for <lists+netdev@lfdr.de>; Thu, 16 Jan 2020 15:59:17 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726559AbgAPOzn (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 16 Jan 2020 09:55:43 -0500
-Received: from Chamillionaire.breakpoint.cc ([193.142.43.52]:35466 "EHLO
-        Chamillionaire.breakpoint.cc" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726160AbgAPOzm (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 16 Jan 2020 09:55:42 -0500
-Received: from fw by Chamillionaire.breakpoint.cc with local (Exim 4.92)
-        (envelope-from <fw@breakpoint.cc>)
-        id 1is6Ye-00063Q-UB; Thu, 16 Jan 2020 15:55:40 +0100
-From:   Florian Westphal <fw@strlen.de>
-To:     <netdev@vger.kernel.org>
-Cc:     Florian Westphal <fw@strlen.de>
-Subject: [PATCH net-next] netlink: make getters tolerate NULL nla arg
-Date:   Thu, 16 Jan 2020 15:55:22 +0100
-Message-Id: <20200116145522.28803-1-fw@strlen.de>
-X-Mailer: git-send-email 2.24.1
+        id S1726832AbgAPO62 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 16 Jan 2020 09:58:28 -0500
+Received: from mail-lj1-f195.google.com ([209.85.208.195]:39877 "EHLO
+        mail-lj1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726160AbgAPO62 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 16 Jan 2020 09:58:28 -0500
+Received: by mail-lj1-f195.google.com with SMTP id l2so22982184lja.6
+        for <netdev@vger.kernel.org>; Thu, 16 Jan 2020 06:58:26 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=ZlWmpgDyDdsULP1jSOM2LgtaNUde+0xpVc28/QeN14M=;
+        b=qKQapphL2smdPRHFEYTDMipXEH8S5PWvHdfCJxJBciE7QqU9heoLJQqzXAhlOuFABj
+         1RE6y9yM+MbXdk5yFLNkRKXf8e8HkRPfac4G63OlpXv9Y02Xg02FqoU3uQt9fFrVA1YS
+         Evt2fL5WLE6DqJyALOILGGRNgHKTR4Dr/9d7ePxZW2ZuBB2z0KyNKeSE9LnE/TMoiNVq
+         gSqvTB0a31FWG9HiY3I1uNOEc9nTsQzqXb65uj9H5vgx8pqkiFRjLcVtRvi8O4syoAAm
+         3EuzXXW3aZ2/adhB/LwoUYTETn8NZJXGYD0QkFFf26I3eTm+F4PO2KHN6u+F8jSJqgRs
+         s+sQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=ZlWmpgDyDdsULP1jSOM2LgtaNUde+0xpVc28/QeN14M=;
+        b=XNjeTWHGfPhsr6/LMu2IC+psfYsiHGU3qIVCcwqlUHlRUKW2rDY/swYBPPh27ci0PF
+         vR3wF0Tn3aLSl4v0C7uk8Z+aBqmvNIuTR8NgPNcB49lQNwTDgV6e7taCMLS9p++k4Mu6
+         bdwAbMh/gMIat9AMDtZmUP2/zhzNGQyTKM2dRwATTvfUfbVJzrRrd3khLfz95IJhobad
+         b17MziaU81MKDTmoQWR0zFHfRE42ntB/9uySMBdYshfGgkl2uQwilIEEYUojN5qrXcCF
+         mIsPXaScIDSiO67UOztVpf6mhUWt1PdpPE6arIRDaz5ry8GcrOJWQ7Zyjc/oCXn0bgh5
+         vYXQ==
+X-Gm-Message-State: APjAAAW7uZlJOgcccf03K5oxDhMI9bWRUbjoDKmu58djM0lCh6Abtaaz
+        FeK7C/ZG4LBToKKuWdPybhQbSPZ5b+U6ZccJU9Y/hIsH
+X-Google-Smtp-Source: APXvYqyqKiFbqkR2bMcQXax2DsEGgcx154Hew2PTocGf9xY5REuUhPXGdurBJV0VaEQS2mpyCMuhhSTPZ/pPOApAjS8=
+X-Received: by 2002:a2e:9d90:: with SMTP id c16mr2348812ljj.264.1579186706060;
+ Thu, 16 Jan 2020 06:58:26 -0800 (PST)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20200115210238.4107-1-xiyou.wangcong@gmail.com>
+In-Reply-To: <20200115210238.4107-1-xiyou.wangcong@gmail.com>
+From:   Taehee Yoo <ap420073@gmail.com>
+Date:   Thu, 16 Jan 2020 23:58:14 +0900
+Message-ID: <CAMArcTUF0SmMOU+4cdgkrj8taqHwf_QS21bK0-S-V=4pMeyjJg@mail.gmail.com>
+Subject: Re: [Patch net] net: avoid updating qdisc_xmit_lock_key in netdev_update_lockdep_key()
+To:     Cong Wang <xiyou.wangcong@gmail.com>
+Cc:     Netdev <netdev@vger.kernel.org>,
+        syzbot <syzbot+4ec99438ed7450da6272@syzkaller.appspotmail.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-One recurring bug pattern triggered by syzbot is NULL dereference in
-netlink code paths due to a missing "tb[NL_ARG_FOO] != NULL" test.
+On Thu, 16 Jan 2020 at 06:02, Cong Wang <xiyou.wangcong@gmail.com> wrote:
+>
+> syzbot reported some bogus lockdep warnings, for example bad unlock
+> balance in sch_direct_xmit(). They are due to a race condition between
+> slow path and fast path, that is qdisc_xmit_lock_key gets re-registered
+> in netdev_update_lockdep_key() on slow path, while we could still
+> acquire the queue->_xmit_lock on fast path in this small window:
+>
+> CPU A                                           CPU B
+>                                                 __netif_tx_lock();
+> lockdep_unregister_key(qdisc_xmit_lock_key);
+>                                                 __netif_tx_unlock();
+> lockdep_register_key(qdisc_xmit_lock_key);
+>
+> In fact, unlike the addr_list_lock which has to be reordered when
+> the master/slave device relationship changes, queue->_xmit_lock is
+> only acquired on fast path and only when NETIF_F_LLTX is not set,
+> so there is likely no nested locking for it.
+>
+> Therefore, we can just get rid of re-registration of
+> qdisc_xmit_lock_key.
+>
+> Reported-by: syzbot+4ec99438ed7450da6272@syzkaller.appspotmail.com
+> Fixes: ab92d68fc22f ("net: core: add generic lockdep keys")
 
-At least some of these missing checks would not have crashed the kernel if
-the various nla_get_XXX helpers would return 0 in case of missing arg.
+Thank you for fixing this bug!
 
-Make the helpers return 0 instead of crashing when a null nla is provided.
-Even with allyesconfig the .text increase is only about 350 bytes.
-
-Signed-off-by: Florian Westphal <fw@strlen.de>
----
- include/net/netlink.h | 53 ++++++++++++++++++++-----------------------
- 1 file changed, 25 insertions(+), 28 deletions(-)
-
-diff --git a/include/net/netlink.h b/include/net/netlink.h
-index 56c365dc6dc7..95da479da113 100644
---- a/include/net/netlink.h
-+++ b/include/net/netlink.h
-@@ -1471,7 +1471,7 @@ static inline int nla_put_in6_addr(struct sk_buff *skb, int attrtype,
-  */
- static inline u32 nla_get_u32(const struct nlattr *nla)
- {
--	return *(u32 *) nla_data(nla);
-+	return nla ? *(u32 *) nla_data(nla) : 0u;
- }
- 
- /**
-@@ -1480,7 +1480,7 @@ static inline u32 nla_get_u32(const struct nlattr *nla)
-  */
- static inline __be32 nla_get_be32(const struct nlattr *nla)
- {
--	return *(__be32 *) nla_data(nla);
-+	return (__be32)nla_get_u32(nla);
- }
- 
- /**
-@@ -1489,7 +1489,7 @@ static inline __be32 nla_get_be32(const struct nlattr *nla)
-  */
- static inline __le32 nla_get_le32(const struct nlattr *nla)
- {
--	return *(__le32 *) nla_data(nla);
-+	return (__le32)nla_get_u32(nla);
- }
- 
- /**
-@@ -1498,7 +1498,7 @@ static inline __le32 nla_get_le32(const struct nlattr *nla)
-  */
- static inline u16 nla_get_u16(const struct nlattr *nla)
- {
--	return *(u16 *) nla_data(nla);
-+	return nla ? *(u16 *) nla_data(nla) : 0u;
- }
- 
- /**
-@@ -1507,7 +1507,7 @@ static inline u16 nla_get_u16(const struct nlattr *nla)
-  */
- static inline __be16 nla_get_be16(const struct nlattr *nla)
- {
--	return *(__be16 *) nla_data(nla);
-+	return (__be16)nla_get_u16(nla);
- }
- 
- /**
-@@ -1516,7 +1516,7 @@ static inline __be16 nla_get_be16(const struct nlattr *nla)
-  */
- static inline __le16 nla_get_le16(const struct nlattr *nla)
- {
--	return *(__le16 *) nla_data(nla);
-+	return (__le16)nla_get_u16(nla);
- }
- 
- /**
-@@ -1525,7 +1525,7 @@ static inline __le16 nla_get_le16(const struct nlattr *nla)
-  */
- static inline u8 nla_get_u8(const struct nlattr *nla)
- {
--	return *(u8 *) nla_data(nla);
-+	return nla ? *(u8 *) nla_data(nla) : 0u;
- }
- 
- /**
-@@ -1534,9 +1534,10 @@ static inline u8 nla_get_u8(const struct nlattr *nla)
-  */
- static inline u64 nla_get_u64(const struct nlattr *nla)
- {
--	u64 tmp;
-+	u64 tmp = 0;
- 
--	nla_memcpy(&tmp, nla, sizeof(tmp));
-+	if (nla)
-+		nla_memcpy(&tmp, nla, sizeof(tmp));
- 
- 	return tmp;
- }
-@@ -1547,11 +1548,7 @@ static inline u64 nla_get_u64(const struct nlattr *nla)
-  */
- static inline __be64 nla_get_be64(const struct nlattr *nla)
- {
--	__be64 tmp;
--
--	nla_memcpy(&tmp, nla, sizeof(tmp));
--
--	return tmp;
-+	return (__be64)nla_get_u64(nla);
- }
- 
- /**
-@@ -1560,7 +1557,7 @@ static inline __be64 nla_get_be64(const struct nlattr *nla)
-  */
- static inline __le64 nla_get_le64(const struct nlattr *nla)
- {
--	return *(__le64 *) nla_data(nla);
-+	return (__le64)nla_get_u64(nla);
- }
- 
- /**
-@@ -1569,7 +1566,7 @@ static inline __le64 nla_get_le64(const struct nlattr *nla)
-  */
- static inline s32 nla_get_s32(const struct nlattr *nla)
- {
--	return *(s32 *) nla_data(nla);
-+	return (s32)nla_get_u32(nla);
- }
- 
- /**
-@@ -1578,7 +1575,7 @@ static inline s32 nla_get_s32(const struct nlattr *nla)
-  */
- static inline s16 nla_get_s16(const struct nlattr *nla)
- {
--	return *(s16 *) nla_data(nla);
-+	return (s16)nla_get_u16(nla);
- }
- 
- /**
-@@ -1587,7 +1584,7 @@ static inline s16 nla_get_s16(const struct nlattr *nla)
-  */
- static inline s8 nla_get_s8(const struct nlattr *nla)
- {
--	return *(s8 *) nla_data(nla);
-+	return (s8)nla_get_u8(nla);
- }
- 
- /**
-@@ -1596,11 +1593,7 @@ static inline s8 nla_get_s8(const struct nlattr *nla)
-  */
- static inline s64 nla_get_s64(const struct nlattr *nla)
- {
--	s64 tmp;
--
--	nla_memcpy(&tmp, nla, sizeof(tmp));
--
--	return tmp;
-+	return (s64)nla_get_u64(nla);
- }
- 
- /**
-@@ -1631,7 +1624,7 @@ static inline unsigned long nla_get_msecs(const struct nlattr *nla)
-  */
- static inline __be32 nla_get_in_addr(const struct nlattr *nla)
- {
--	return *(__be32 *) nla_data(nla);
-+	return nla_get_be32(nla);
- }
- 
- /**
-@@ -1640,9 +1633,11 @@ static inline __be32 nla_get_in_addr(const struct nlattr *nla)
-  */
- static inline struct in6_addr nla_get_in6_addr(const struct nlattr *nla)
- {
--	struct in6_addr tmp;
-+	struct in6_addr tmp = { 0 };
-+
-+	if (nla)
-+		nla_memcpy(&tmp, nla, sizeof(tmp));
- 
--	nla_memcpy(&tmp, nla, sizeof(tmp));
- 	return tmp;
- }
- 
-@@ -1652,9 +1647,11 @@ static inline struct in6_addr nla_get_in6_addr(const struct nlattr *nla)
-  */
- static inline struct nla_bitfield32 nla_get_bitfield32(const struct nlattr *nla)
- {
--	struct nla_bitfield32 tmp;
-+	struct nla_bitfield32 tmp = { 0 };
-+
-+	if (nla)
-+		nla_memcpy(&tmp, nla, sizeof(tmp));
- 
--	nla_memcpy(&tmp, nla, sizeof(tmp));
- 	return tmp;
- }
- 
--- 
-2.24.1
-
+Acked-by: Taehee Yoo <ap420073@gmail.com>
