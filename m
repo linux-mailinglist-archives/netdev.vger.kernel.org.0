@@ -2,36 +2,38 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id B997C13E993
-	for <lists+netdev@lfdr.de>; Thu, 16 Jan 2020 18:39:01 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4B59F13E997
+	for <lists+netdev@lfdr.de>; Thu, 16 Jan 2020 18:39:03 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2393388AbgAPRix (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 16 Jan 2020 12:38:53 -0500
-Received: from mail.kernel.org ([198.145.29.99]:54806 "EHLO mail.kernel.org"
+        id S2391354AbgAPRjC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 16 Jan 2020 12:39:02 -0500
+Received: from mail.kernel.org ([198.145.29.99]:55054 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2393383AbgAPRit (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 16 Jan 2020 12:38:49 -0500
+        id S2393405AbgAPRjA (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 16 Jan 2020 12:39:00 -0500
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id B5AC524708;
-        Thu, 16 Jan 2020 17:38:47 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 988D2246D7;
+        Thu, 16 Jan 2020 17:38:58 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1579196329;
-        bh=ik203C7T/WXo7xNpkBr/BT49DUc3f6ZgvZoYxnQ/4Pk=;
+        s=default; t=1579196340;
+        bh=DpDwZjT5JL55OrFqatMzY1JDV7bYkHQBMDOrDiPxQqg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=zVjPYzfII7Dhtaacu25uIn11nkt0bx0aBV6SnR3tnfkPdm1F+JReXMvq4RqBBj/NY
-         Pn8iW9ssgQk1VFqT7HhF8KjOj+uy9YdHx6ZexfGWTnFrANSWcSM28b/uyq/slFVil2
-         LVBeE55nCryz6HQ60bZhoco7nftq2dotynJj168Y=
+        b=aMCFlnoH6TobdxhxmbUA+/AZAs0CiDnM4sHLEHdmqnapDVdDtI3rhh6I3s7Hybix9
+         I5xIUfW4QLJSOz8pyrN5ghhz2BFFQ9DH5SgC+3HYSbe6PpLLrjhNHcjcTZqHR6xmnZ
+         JKO29sVnRI6tUq6TbTsyt/co/6PUJSR7CpPuUQfM=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Sameeh Jubran <sameehj@amazon.com>,
-        Arthur Kiyanovski <akiyano@amazon.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.9 130/251] net: ena: fix incorrect test of supported hash function
-Date:   Thu, 16 Jan 2020 12:34:39 -0500
-Message-Id: <20200116173641.22137-90-sashal@kernel.org>
+Cc:     Florian Westphal <fw@strlen.de>,
+        Tetsuo Handa <penguin-kernel@i-love.sakura.ne.jp>,
+        Pablo Neira Ayuso <pablo@netfilter.org>,
+        Sasha Levin <sashal@kernel.org>,
+        netfilter-devel@vger.kernel.org, coreteam@netfilter.org,
+        bridge@lists.linux-foundation.org, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 4.9 137/251] netfilter: ebtables: CONFIG_COMPAT: reject trailing data after last rule
+Date:   Thu, 16 Jan 2020 12:34:46 -0500
+Message-Id: <20200116173641.22137-97-sashal@kernel.org>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20200116173641.22137-1-sashal@kernel.org>
 References: <20200116173641.22137-1-sashal@kernel.org>
@@ -44,38 +46,41 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Sameeh Jubran <sameehj@amazon.com>
+From: Florian Westphal <fw@strlen.de>
 
-[ Upstream commit d3cfe7ddbc3dfbb9b201615b7fef8fd66d1b5fe8 ]
+[ Upstream commit 680f6af5337c98d116e4f127cea7845339dba8da ]
 
-ena_com_set_hash_function() tests if a hash function is supported
-by the device before setting it.
-The test returns the opposite result than needed.
-Reverse the condition to return the correct value.
-Also use the BIT macro instead of inline shift.
+If userspace provides a rule blob with trailing data after last target,
+we trigger a splat, then convert ruleset to 64bit format (with trailing
+data), then pass that to do_replace_finish() which then returns -EINVAL.
 
-Fixes: 1738cd3ed342 ("net: ena: Add a driver for Amazon Elastic Network Adapters (ENA)")
-Signed-off-by: Arthur Kiyanovski <akiyano@amazon.com>
-Signed-off-by: Sameeh Jubran <sameehj@amazon.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+Erroring out right away avoids the splat plus unneeded translation and
+error unwind.
+
+Fixes: 81e675c227ec ("netfilter: ebtables: add CONFIG_COMPAT support")
+Reported-by: Tetsuo Handa <penguin-kernel@i-love.sakura.ne.jp>
+Signed-off-by: Florian Westphal <fw@strlen.de>
+Signed-off-by: Pablo Neira Ayuso <pablo@netfilter.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/amazon/ena/ena_com.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ net/bridge/netfilter/ebtables.c | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/net/ethernet/amazon/ena/ena_com.c b/drivers/net/ethernet/amazon/ena/ena_com.c
-index bcd993140f84..2d196d521b83 100644
---- a/drivers/net/ethernet/amazon/ena/ena_com.c
-+++ b/drivers/net/ethernet/amazon/ena/ena_com.c
-@@ -1967,7 +1967,7 @@ int ena_com_set_hash_function(struct ena_com_dev *ena_dev)
- 	if (unlikely(ret))
+diff --git a/net/bridge/netfilter/ebtables.c b/net/bridge/netfilter/ebtables.c
+index 56b7197f0373..1d850edecd72 100644
+--- a/net/bridge/netfilter/ebtables.c
++++ b/net/bridge/netfilter/ebtables.c
+@@ -2182,7 +2182,9 @@ static int compat_copy_entries(unsigned char *data, unsigned int size_user,
+ 	if (ret < 0)
  		return ret;
  
--	if (get_resp.u.flow_hash_func.supported_func & (1 << rss->hash_func)) {
-+	if (!(get_resp.u.flow_hash_func.supported_func & BIT(rss->hash_func))) {
- 		pr_err("Func hash %d isn't supported by device, abort\n",
- 		       rss->hash_func);
- 		return -EPERM;
+-	WARN_ON(size_remaining);
++	if (size_remaining)
++		return -EINVAL;
++
+ 	return state->buf_kern_offset;
+ }
+ 
 -- 
 2.20.1
 
