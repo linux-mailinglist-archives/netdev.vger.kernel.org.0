@@ -2,37 +2,37 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 2FB1213E321
+	by mail.lfdr.de (Postfix) with ESMTP id 99DB113E322
 	for <lists+netdev@lfdr.de>; Thu, 16 Jan 2020 18:00:16 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2387690AbgAPRAL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 16 Jan 2020 12:00:11 -0500
-Received: from mail.kernel.org ([198.145.29.99]:49578 "EHLO mail.kernel.org"
+        id S2387715AbgAPRAO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 16 Jan 2020 12:00:14 -0500
+Received: from mail.kernel.org ([198.145.29.99]:49652 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2387676AbgAPRAJ (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 16 Jan 2020 12:00:09 -0500
+        id S2387702AbgAPRAN (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 16 Jan 2020 12:00:13 -0500
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 7CD6624686;
-        Thu, 16 Jan 2020 17:00:07 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id A455F22525;
+        Thu, 16 Jan 2020 17:00:11 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1579194008;
-        bh=HhTOEnfVPXjkdgMI5j2Rj7f81dghYJkTfY6kVie9fZE=;
+        s=default; t=1579194012;
+        bh=CFG0zw8xGFG5ueKpnGzhAA1T+6jpreofWYPOdc1r7rI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=DhjDfcP4eTcGSP5jAbPvpQSQibbmMz/2JbyYcM2bXtWx598RB7tyL+NMkp2QC9LEH
-         TQL53P+c/angnZ9Izpw3u5E4Po4euHD/PkV5FVffy34n6f6pCBxBT6pSAnM86TZMcn
-         N+67QuqMHr5xKLtEQj0XjL5BrP72vym8Yq5EEniQ=
+        b=Co6IPM50TBIo6LPt5479+u7+ySRP9LRatGghBWrgDJ7CgX1aTu6LFNTQf4VRVhYrA
+         XNnPoLDZHcz4gAtBCBeheyo4THVJz9Jph/w/hmAZube8Fng+j6QjtJtNdrB4efYVuI
+         mJqy6OEFj1c3Zpx6VPzHF1otkkmd0c3NDmMAUYOA=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Moni Shoua <monis@mellanox.com>,
-        Leon Romanovsky <leonro@mellanox.com>,
-        Saeed Mahameed <saeedm@mellanox.com>,
-        Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org,
-        linux-rdma@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.19 133/671] net/mlx5: Take lock with IRQs disabled to avoid deadlock
-Date:   Thu, 16 Jan 2020 11:50:42 -0500
-Message-Id: <20200116165940.10720-16-sashal@kernel.org>
+Cc:     Johannes Berg <johannes.berg@intel.com>,
+        Danny Alexander <danny.alexander@intel.com>,
+        Luca Coelho <luciano.coelho@intel.com>,
+        Sasha Levin <sashal@kernel.org>,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 4.19 136/671] iwlwifi: mvm: fix A-MPDU reference assignment
+Date:   Thu, 16 Jan 2020 11:50:45 -0500
+Message-Id: <20200116165940.10720-19-sashal@kernel.org>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20200116165940.10720-1-sashal@kernel.org>
 References: <20200116165940.10720-1-sashal@kernel.org>
@@ -45,80 +45,50 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Moni Shoua <monis@mellanox.com>
+From: Johannes Berg <johannes.berg@intel.com>
 
-[ Upstream commit 33814e5d127e21f53b52e17b0722c1b57d4f4d29 ]
+[ Upstream commit 1f7698abedeeb3fef3cbcf78e16f925df675a179 ]
 
-The lock in qp_table might be taken from process context or from
-interrupt context. This may lead to a deadlock unless it is taken with
-IRQs disabled.
+The current code assigns the reference, and then goes to increment
+it if the toggle bit has changed. That way, we get
 
-Discovered by lockdep
+Toggle  0  0  0  0  1  1  1  1
+ID      1  1  1  1  1  2  2  2
 
-================================
-WARNING: inconsistent lock state
-4.20.0-rc6
---------------------------------
-inconsistent {HARDIRQ-ON-W} -> {IN-HARDIRQ-W}
+Fix that by assigning the post-toggle ID to get
 
-python/12572 [HC1[1]:SC0[0]:HE0:SE1] takes:
-00000000052a4df4 (&(&table->lock)->rlock#2){?.+.}, /0x50 [mlx5_core]
-{HARDIRQ-ON-W} state was registered at:
-  _raw_spin_lock+0x33/0x70
-  mlx5_get_rsc+0x1a/0x50 [mlx5_core]
-  mlx5_ib_eqe_pf_action+0x493/0x1be0 [mlx5_ib]
-  process_one_work+0x90c/0x1820
-  worker_thread+0x87/0xbb0
-  kthread+0x320/0x3e0
-  ret_from_fork+0x24/0x30
-irq event stamp: 103928
-hardirqs last  enabled at (103927): [] nk+0x1a/0x1c
-hardirqs last disabled at (103928): [] unk+0x1a/0x1c
-softirqs last  enabled at (103924): [] tcp_sendmsg+0x31/0x40
-softirqs last disabled at (103922): [] 80
+Toggle  0  0  0  0  1  1  1  1
+ID      1  1  1  1  2  2  2  2
 
-other info that might help us debug this:
- Possible unsafe locking scenario:
-
-       CPU0
-       ----
-  lock(&(&table->lock)->rlock#2);
-
-    lock(&(&table->lock)->rlock#2);
-
- *** DEADLOCK ***
-
-Fixes: 032080ab43ac ("IB/mlx5: Lock QP during page fault handling")
-Signed-off-by: Moni Shoua <monis@mellanox.com>
-Reviewed-by: Leon Romanovsky <leonro@mellanox.com>
-Signed-off-by: Saeed Mahameed <saeedm@mellanox.com>
+Reported-by: Danny Alexander <danny.alexander@intel.com>
+Signed-off-by: Johannes Berg <johannes.berg@intel.com>
+Fixes: fbe4112791b8 ("iwlwifi: mvm: update mpdu metadata API")
+Signed-off-by: Luca Coelho <luciano.coelho@intel.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/mellanox/mlx5/core/qp.c | 5 +++--
- 1 file changed, 3 insertions(+), 2 deletions(-)
+ drivers/net/wireless/intel/iwlwifi/mvm/rxmq.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/qp.c b/drivers/net/ethernet/mellanox/mlx5/core/qp.c
-index f33707ce8b6b..479ac21cdbc6 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/qp.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/qp.c
-@@ -44,14 +44,15 @@ static struct mlx5_core_rsc_common *mlx5_get_rsc(struct mlx5_core_dev *dev,
- {
- 	struct mlx5_qp_table *table = &dev->priv.qp_table;
- 	struct mlx5_core_rsc_common *common;
-+	unsigned long flags;
+diff --git a/drivers/net/wireless/intel/iwlwifi/mvm/rxmq.c b/drivers/net/wireless/intel/iwlwifi/mvm/rxmq.c
+index 036d1d82d93e..77e369453642 100644
+--- a/drivers/net/wireless/intel/iwlwifi/mvm/rxmq.c
++++ b/drivers/net/wireless/intel/iwlwifi/mvm/rxmq.c
+@@ -1077,7 +1077,6 @@ void iwl_mvm_rx_mpdu_mq(struct iwl_mvm *mvm, struct napi_struct *napi,
+ 			he_phy_data = le64_to_cpu(desc->v1.he_phy_data);
  
--	spin_lock(&table->lock);
-+	spin_lock_irqsave(&table->lock, flags);
+ 		rx_status->flag |= RX_FLAG_AMPDU_DETAILS;
+-		rx_status->ampdu_reference = mvm->ampdu_ref;
+ 		/* toggle is switched whenever new aggregation starts */
+ 		if (toggle_bit != mvm->ampdu_toggle) {
+ 			mvm->ampdu_ref++;
+@@ -1092,6 +1091,7 @@ void iwl_mvm_rx_mpdu_mq(struct iwl_mvm *mvm, struct napi_struct *napi,
+ 						RX_FLAG_AMPDU_EOF_BIT;
+ 			}
+ 		}
++		rx_status->ampdu_reference = mvm->ampdu_ref;
+ 	}
  
- 	common = radix_tree_lookup(&table->tree, rsn);
- 	if (common)
- 		atomic_inc(&common->refcount);
- 
--	spin_unlock(&table->lock);
-+	spin_unlock_irqrestore(&table->lock, flags);
- 
- 	if (!common) {
- 		mlx5_core_warn(dev, "Async event for bogus resource 0x%x\n",
+ 	rcu_read_lock();
 -- 
 2.20.1
 
