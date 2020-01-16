@@ -2,36 +2,37 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 9E29713EAA0
-	for <lists+netdev@lfdr.de>; Thu, 16 Jan 2020 18:45:27 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 257D513EAA3
+	for <lists+netdev@lfdr.de>; Thu, 16 Jan 2020 18:45:29 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2406097AbgAPRpJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 16 Jan 2020 12:45:09 -0500
-Received: from mail.kernel.org ([198.145.29.99]:36650 "EHLO mail.kernel.org"
+        id S2406143AbgAPRpP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 16 Jan 2020 12:45:15 -0500
+Received: from mail.kernel.org ([198.145.29.99]:36822 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2406083AbgAPRpI (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 16 Jan 2020 12:45:08 -0500
+        id S2406125AbgAPRpO (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 16 Jan 2020 12:45:14 -0500
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id DA07C24773;
-        Thu, 16 Jan 2020 17:45:06 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 24A7524782;
+        Thu, 16 Jan 2020 17:45:12 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1579196707;
-        bh=UXa8m6DU4r8Aux3+ktngeVRdN4MC9pFpVAeuu6a93bo=;
+        s=default; t=1579196713;
+        bh=TLRigZLEMBxv/4Ur70nzzxOwCvGXq8R+1qUa6DFFK34=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=FyTXd74eQomhb1X+h1rQrJJlNXkfKCCppJDskBEFHjZlO4Sco3yRDyTOhlh5Gy9SW
-         YTodSFMh4OeexXJxo/Mz19IfE5ALnU2Sae175Qpva0I6E1cBmSHcm+zPBo8j03Xa+y
-         q3CxZhF+KT/z33VlFvF7zHAC917uzEOH85c9QpD0=
+        b=aFbbPCmBW5emEDBq2h46KawHcqJvas2u3omYqjNJ6nClNYDX8qgvNAAk19foA9LMO
+         0CTt8Ph27VHpjUbYOO58ODysvp/1VCeT7eLPpIW0esiitmFw9BwKY/4K18r2fQOjGp
+         xeAiz5RRbsBUfe8fIledD2Wrxd9VFp5gecLxhgGM=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Eric Dumazet <edumazet@google.com>,
+Cc:     Julian Wiedmann <jwi@linux.ibm.com>,
+        Ursula Braun <ubraun@linux.ibm.com>,
         "David S . Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>, linux-wpan@vger.kernel.org,
+        Sasha Levin <sashal@kernel.org>, linux-s390@vger.kernel.org,
         netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.4 098/174] inet: frags: call inet_frags_fini() after unregister_pernet_subsys()
-Date:   Thu, 16 Jan 2020 12:41:35 -0500
-Message-Id: <20200116174251.24326-98-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 4.4 102/174] net/af_iucv: always register net_device notifier
+Date:   Thu, 16 Jan 2020 12:41:39 -0500
+Message-Id: <20200116174251.24326-102-sashal@kernel.org>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20200116174251.24326-1-sashal@kernel.org>
 References: <20200116174251.24326-1-sashal@kernel.org>
@@ -44,54 +45,82 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Eric Dumazet <edumazet@google.com>
+From: Julian Wiedmann <jwi@linux.ibm.com>
 
-[ Upstream commit ae7352d384a552d8c799c242e74a934809990a71 ]
+[ Upstream commit 06996c1d4088a0d5f3e7789d7f96b4653cc947cc ]
 
-Both IPv6 and 6lowpan are calling inet_frags_fini() too soon.
+Even when running as VM guest (ie pr_iucv != NULL), af_iucv can still
+open HiperTransport-based connections. For robust operation these
+connections require the af_iucv_netdev_notifier, so register it
+unconditionally.
 
-inet_frags_fini() is dismantling a kmem_cache, that might be needed
-later when unregister_pernet_subsys() eventually has to remove
-frags queues from hash tables and free them.
+Also handle any error that register_netdevice_notifier() returns.
 
-This fixes potential use-after-free, and is a prereq for the following patch.
-
-Fixes: d4ad4d22e7ac ("inet: frags: use kmem_cache for inet_frag_queue")
-Signed-off-by: Eric Dumazet <edumazet@google.com>
+Fixes: 9fbd87d41392 ("af_iucv: handle netdev events")
+Signed-off-by: Julian Wiedmann <jwi@linux.ibm.com>
+Reviewed-by: Ursula Braun <ubraun@linux.ibm.com>
 Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/ieee802154/6lowpan/reassembly.c | 2 +-
- net/ipv6/reassembly.c               | 2 +-
- 2 files changed, 2 insertions(+), 2 deletions(-)
+ net/iucv/af_iucv.c | 27 ++++++++++++++++++++-------
+ 1 file changed, 20 insertions(+), 7 deletions(-)
 
-diff --git a/net/ieee802154/6lowpan/reassembly.c b/net/ieee802154/6lowpan/reassembly.c
-index 6183730d38db..e728dae467c3 100644
---- a/net/ieee802154/6lowpan/reassembly.c
-+++ b/net/ieee802154/6lowpan/reassembly.c
-@@ -634,7 +634,7 @@ int __init lowpan_net_frag_init(void)
- 
- void lowpan_net_frag_exit(void)
- {
--	inet_frags_fini(&lowpan_frags);
- 	lowpan_frags_sysctl_unregister();
- 	unregister_pernet_subsys(&lowpan_frags_ops);
-+	inet_frags_fini(&lowpan_frags);
+diff --git a/net/iucv/af_iucv.c b/net/iucv/af_iucv.c
+index 5984cc35d508..3edffb7bf2a4 100644
+--- a/net/iucv/af_iucv.c
++++ b/net/iucv/af_iucv.c
+@@ -2392,6 +2392,13 @@ static int afiucv_iucv_init(void)
+ 	return err;
  }
-diff --git a/net/ipv6/reassembly.c b/net/ipv6/reassembly.c
-index ec917f58d105..17e9ed2edb86 100644
---- a/net/ipv6/reassembly.c
-+++ b/net/ipv6/reassembly.c
-@@ -774,8 +774,8 @@ int __init ipv6_frag_init(void)
  
- void ipv6_frag_exit(void)
++static void afiucv_iucv_exit(void)
++{
++	device_unregister(af_iucv_dev);
++	driver_unregister(&af_iucv_driver);
++	pr_iucv->iucv_unregister(&af_iucv_handler, 0);
++}
++
+ static int __init afiucv_init(void)
  {
--	inet_frags_fini(&ip6_frags);
- 	ip6_frags_sysctl_unregister();
- 	unregister_pernet_subsys(&ip6_frags_ops);
- 	inet6_del_protocol(&frag_protocol, IPPROTO_FRAGMENT);
-+	inet_frags_fini(&ip6_frags);
- }
+ 	int err;
+@@ -2425,11 +2432,18 @@ static int __init afiucv_init(void)
+ 		err = afiucv_iucv_init();
+ 		if (err)
+ 			goto out_sock;
+-	} else
+-		register_netdevice_notifier(&afiucv_netdev_notifier);
++	}
++
++	err = register_netdevice_notifier(&afiucv_netdev_notifier);
++	if (err)
++		goto out_notifier;
++
+ 	dev_add_pack(&iucv_packet_type);
+ 	return 0;
+ 
++out_notifier:
++	if (pr_iucv)
++		afiucv_iucv_exit();
+ out_sock:
+ 	sock_unregister(PF_IUCV);
+ out_proto:
+@@ -2443,12 +2457,11 @@ static int __init afiucv_init(void)
+ static void __exit afiucv_exit(void)
+ {
+ 	if (pr_iucv) {
+-		device_unregister(af_iucv_dev);
+-		driver_unregister(&af_iucv_driver);
+-		pr_iucv->iucv_unregister(&af_iucv_handler, 0);
++		afiucv_iucv_exit();
+ 		symbol_put(iucv_if);
+-	} else
+-		unregister_netdevice_notifier(&afiucv_netdev_notifier);
++	}
++
++	unregister_netdevice_notifier(&afiucv_netdev_notifier);
+ 	dev_remove_pack(&iucv_packet_type);
+ 	sock_unregister(PF_IUCV);
+ 	proto_unregister(&iucv_proto);
 -- 
 2.20.1
 
