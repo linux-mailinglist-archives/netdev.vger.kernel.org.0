@@ -2,38 +2,37 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 47CD613F8A0
-	for <lists+netdev@lfdr.de>; Thu, 16 Jan 2020 20:20:04 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9798813F89B
+	for <lists+netdev@lfdr.de>; Thu, 16 Jan 2020 20:19:53 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731598AbgAPQyL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 16 Jan 2020 11:54:11 -0500
-Received: from mail.kernel.org ([198.145.29.99]:38518 "EHLO mail.kernel.org"
+        id S2437556AbgAPTTs (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 16 Jan 2020 14:19:48 -0500
+Received: from mail.kernel.org ([198.145.29.99]:38578 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1731575AbgAPQyK (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 16 Jan 2020 11:54:10 -0500
+        id S1731611AbgAPQyM (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 16 Jan 2020 11:54:12 -0500
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 5014D24656;
-        Thu, 16 Jan 2020 16:54:08 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id E86812176D;
+        Thu, 16 Jan 2020 16:54:10 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1579193649;
-        bh=hzYUfnj+TvROFTnB8URu/LAAbLUAone1jW+IXrnDv94=;
+        s=default; t=1579193651;
+        bh=OzFODw4fgcmPhpz8E8cgdKYNHhUMu9ketHJs8OPWZQA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=rIm7q0EPYvltQ9rP4MnkrxPYwItgW1IYaE4oKqRxy+XbwPl/rGMvMGgmzE2WPg0pn
-         9b2H//x6DMAviMPLRPUUMKCGNU0o2rATwOZAwrQSB0KleGoFeViD0bBnHSzsrUKXxO
-         zmg5pZ+IIBBFuagU+URstqkuNz1JaDLdJcq/c2Zc=
+        b=b7ifsK/NcQq8eYKGbGo/0xDU7rp/wLTiVeRLW/B0Ofg6KoujqKPNzFGY/3z9vSM3R
+         eR6gxRXOEin3hNHlb95Ykf3xySSkexWancXvfpJQ3j8nF4W4YDYCUKbmAOKskOrlR7
+         5CoKFzUR1aQn+Sq8EMvlY+Zik2MpPySEY1txYZso=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Stanislav Fomichev <sdf@google.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Andrii Nakryiko <andriin@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Sasha Levin <sashal@kernel.org>, linux-kbuild@vger.kernel.org,
-        netdev@vger.kernel.org, bpf@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.4 179/205] bpf: Support pre-2.25-binutils objcopy for vmlinux BTF
-Date:   Thu, 16 Jan 2020 11:42:34 -0500
-Message-Id: <20200116164300.6705-179-sashal@kernel.org>
+Cc:     Christian Lamparter <chunkeey@gmail.com>,
+        Kalle Valo <kvalo@codeaurora.org>,
+        Sasha Levin <sashal@kernel.org>,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org
+Subject: [PATCH AUTOSEL 5.4 181/205] ath9k: use iowrite32 over __raw_writel
+Date:   Thu, 16 Jan 2020 11:42:36 -0500
+Message-Id: <20200116164300.6705-181-sashal@kernel.org>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20200116164300.6705-1-sashal@kernel.org>
 References: <20200116164300.6705-1-sashal@kernel.org>
@@ -46,63 +45,37 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Stanislav Fomichev <sdf@google.com>
+From: Christian Lamparter <chunkeey@gmail.com>
 
-[ Upstream commit da5fb18225b49b97bb37c51bcbbb2990a507c364 ]
+[ Upstream commit 22d0d5ae7a089967e9295a06694aa3e8a812b15e ]
 
-If vmlinux BTF generation fails, but CONFIG_DEBUG_INFO_BTF is set,
-.BTF section of vmlinux is empty and kernel will prohibit
-BPF loading and return "in-kernel BTF is malformed".
+This patch changes the ath9k_pci_owl_loader to use the
+same iowrite32 memory accessor that ath9k_pci is using
+to communicate with the PCI(e) chip.
 
---dump-section argument to binutils' objcopy was added in version 2.25.
-When using pre-2.25 binutils, BTF generation silently fails. Convert
-to --only-section which is present on pre-2.25 binutils.
+This will fix endian issues that came up during testing
+with loaned AVM Fritz!Box 7360 (Lantiq MIPS SoCs + AR9287).
 
-Documentation/process/changes.rst states that binutils 2.21+
-is supported, not sure those standards apply to BPF subsystem.
-
-v2:
-* exit and print an error if gen_btf fails (John Fastabend)
-
-v3:
-* resend with Andrii's Acked-by/Tested-by tags
-
-Fixes: 341dfcf8d78ea ("btf: expose BTF info through sysfs")
-Signed-off-by: Stanislav Fomichev <sdf@google.com>
-Signed-off-by: Alexei Starovoitov <ast@kernel.org>
-Tested-by: Andrii Nakryiko <andriin@fb.com>
-Acked-by: Andrii Nakryiko <andriin@fb.com>
-Cc: John Fastabend <john.fastabend@gmail.com>
-Link: https://lore.kernel.org/bpf/20191127161410.57327-1-sdf@google.com
+Fixes: 5a4f2040fd07 ("ath9k: add loader for AR92XX (and older) pci(e)")
+Signed-off-by: Christian Lamparter <chunkeey@gmail.com>
+Signed-off-by: Kalle Valo <kvalo@codeaurora.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- scripts/link-vmlinux.sh | 7 ++++++-
- 1 file changed, 6 insertions(+), 1 deletion(-)
+ drivers/net/wireless/ath/ath9k/ath9k_pci_owl_loader.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/scripts/link-vmlinux.sh b/scripts/link-vmlinux.sh
-index 06495379fcd8..2998ddb323e3 100755
---- a/scripts/link-vmlinux.sh
-+++ b/scripts/link-vmlinux.sh
-@@ -127,7 +127,8 @@ gen_btf()
- 		cut -d, -f1 | cut -d' ' -f2)
- 	bin_format=$(LANG=C ${OBJDUMP} -f ${1} | grep 'file format' | \
- 		awk '{print $4}')
--	${OBJCOPY} --dump-section .BTF=.btf.vmlinux.bin ${1} 2>/dev/null
-+	${OBJCOPY} --set-section-flags .BTF=alloc -O binary \
-+		--only-section=.BTF ${1} .btf.vmlinux.bin 2>/dev/null
- 	${OBJCOPY} -I binary -O ${bin_format} -B ${bin_arch} \
- 		--rename-section .data=.BTF .btf.vmlinux.bin ${2}
- }
-@@ -253,6 +254,10 @@ btf_vmlinux_bin_o=""
- if [ -n "${CONFIG_DEBUG_INFO_BTF}" ]; then
- 	if gen_btf .tmp_vmlinux.btf .btf.vmlinux.bin.o ; then
- 		btf_vmlinux_bin_o=.btf.vmlinux.bin.o
-+	else
-+		echo >&2 "Failed to generate BTF for vmlinux"
-+		echo >&2 "Try to disable CONFIG_DEBUG_INFO_BTF"
-+		exit 1
- 	fi
- fi
+diff --git a/drivers/net/wireless/ath/ath9k/ath9k_pci_owl_loader.c b/drivers/net/wireless/ath/ath9k/ath9k_pci_owl_loader.c
+index 159490f5a111..60731e07f681 100644
+--- a/drivers/net/wireless/ath/ath9k/ath9k_pci_owl_loader.c
++++ b/drivers/net/wireless/ath/ath9k/ath9k_pci_owl_loader.c
+@@ -84,7 +84,7 @@ static int ath9k_pci_fixup(struct pci_dev *pdev, const u16 *cal_data,
+ 			val = swahb32(val);
+ 		}
+ 
+-		__raw_writel(val, mem + reg);
++		iowrite32(val, mem + reg);
+ 		usleep_range(100, 120);
+ 	}
  
 -- 
 2.20.1
