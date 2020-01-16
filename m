@@ -2,60 +2,78 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 63A4513DAFD
-	for <lists+netdev@lfdr.de>; Thu, 16 Jan 2020 14:02:01 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3AAE713DB15
+	for <lists+netdev@lfdr.de>; Thu, 16 Jan 2020 14:06:29 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726957AbgAPNAj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 16 Jan 2020 08:00:39 -0500
-Received: from a.mx.secunet.com ([62.96.220.36]:33798 "EHLO a.mx.secunet.com"
+        id S1726896AbgAPNFI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 16 Jan 2020 08:05:08 -0500
+Received: from mail.kernel.org ([198.145.29.99]:44534 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726018AbgAPNAj (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 16 Jan 2020 08:00:39 -0500
-Received: from localhost (localhost [127.0.0.1])
-        by a.mx.secunet.com (Postfix) with ESMTP id 7E7562006F;
-        Thu, 16 Jan 2020 14:00:37 +0100 (CET)
-X-Virus-Scanned: by secunet
-Received: from a.mx.secunet.com ([127.0.0.1])
-        by localhost (a.mx.secunet.com [127.0.0.1]) (amavisd-new, port 10024)
-        with ESMTP id B6lqxDFMhCzr; Thu, 16 Jan 2020 14:00:37 +0100 (CET)
-Received: from mail-essen-01.secunet.de (mail-essen-01.secunet.de [10.53.40.204])
-        (using TLSv1 with cipher ECDHE-RSA-AES256-SHA (256/256 bits))
+        id S1726378AbgAPNFI (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 16 Jan 2020 08:05:08 -0500
+Received: from cakuba.hsd1.ca.comcast.net (c-73-93-4-247.hsd1.ca.comcast.net [73.93.4.247])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by a.mx.secunet.com (Postfix) with ESMTPS id 5CEBB2027C;
-        Thu, 16 Jan 2020 14:00:34 +0100 (CET)
-Received: from gauss2.secunet.de (10.182.7.193) by mail-essen-01.secunet.de
- (10.53.40.204) with Microsoft SMTP Server id 14.3.439.0; Thu, 16 Jan 2020
- 14:00:34 +0100
-Received: by gauss2.secunet.de (Postfix, from userid 1000)      id E562531801A4;
- Thu, 16 Jan 2020 14:00:33 +0100 (CET)
-Date:   Thu, 16 Jan 2020 14:00:33 +0100
-From:   Steffen Klassert <steffen.klassert@secunet.com>
-To:     Ulrich Weber <ulrich.weber@gmail.com>
-CC:     <netdev@vger.kernel.org>
-Subject: Re: [PATCH v2] xfrm: support output_mark for offload ESP packets
-Message-ID: <20200116130033.GD23018@gauss3.secunet.de>
-References: <20200115095358.GQ8621@gauss3.secunet.de>
- <20200115111128.8671-1-ulrich.weber@gmail.com>
+        by mail.kernel.org (Postfix) with ESMTPSA id 9F0A52075B;
+        Thu, 16 Jan 2020 13:05:07 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1579179907;
+        bh=A3mKxItf9+NyyOg8vXy39/HhGF1QgFXPBdeaDgAToZE=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=NXCW+s+sb8Vx3spg6JExdhswXSE0f+D8d6A/NvhnYXI9YT7lT7VnlsS64gxQklmQE
+         UpdKI7TDPcP/BRnRvvD32O9nMlJqnBUmhgW1txD+hxkmRIm34aPwloSKmM8NNALk8k
+         FHjzalPM0fiBLxpUqo6na+cfnLKcliaClsg6XKlo=
+Date:   Thu, 16 Jan 2020 05:05:06 -0800
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Hongbo Yao <yaohongbo@huawei.com>
+Cc:     <chenzhou10@huawei.com>, <davem@davemloft.net>,
+        <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH -next] drivers/net: netdevsim depends on INET
+Message-ID: <20200116050506.18c2cce3@cakuba.hsd1.ca.comcast.net>
+In-Reply-To: <20200116125219.166830-1-yaohongbo@huawei.com>
+References: <20200116125219.166830-1-yaohongbo@huawei.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Disposition: inline
-In-Reply-To: <20200115111128.8671-1-ulrich.weber@gmail.com>
-User-Agent: Mutt/1.9.4 (2018-02-28)
-X-EXCLAIMER-MD-CONFIG: 2c86f778-e09b-4440-8b15-867914633a10
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Jan 15, 2020 at 12:11:29PM +0100, Ulrich Weber wrote:
-> Commit 9b42c1f179a6 ("xfrm: Extend the output_mark") added output_mark
-> support but missed ESP offload support.
+On Thu, 16 Jan 2020 20:52:19 +0800, Hongbo Yao wrote:
+> If CONFIG_INET is not set and CONFIG_NETDEVSIM=y.
+> Building drivers/net/netdevsim/fib.o will get the following error:
 > 
-> xfrm_smark_get() is not called within xfrm_input() for packets coming
-> from esp4_gro_receive() or esp6_gro_receive(). Therefore call
-> xfrm_smark_get() directly within these functions.
+> drivers/net/netdevsim/fib.o: In function `nsim_fib4_rt_hw_flags_set':
+> fib.c:(.text+0x12b): undefined reference to `fib_alias_hw_flags_set'
+> drivers/net/netdevsim/fib.o: In function `nsim_fib4_rt_destroy':
+> fib.c:(.text+0xb11): undefined reference to `free_fib_info'
 > 
-> Fixes: 9b42c1f179a6 ("xfrm: Extend the output_mark to support input direction and masking.")
-> Signed-off-by: Ulrich Weber <ulrich.weber@gmail.com>
+> Correct the Kconfig for netdevsim.
+> 
+> Reported-by: Hulk Robot <hulkci@huawei.com>
+> Fixes: 83c9e13aa39ae("netdevsim: add software driver for testing
+> offloads")
 
-Applied, thanks Ulrich!
+Please provide a _correct_ Fixes tag, and don't line wrap it.
+The commit you're pointing to doesn't use any of the fib functions 
+so how can it be to blame?
+
+> Signed-off-by: Hongbo Yao <yaohongbo@huawei.com>
+> ---
+>  drivers/net/Kconfig | 1 +
+>  1 file changed, 1 insertion(+)
+> 
+> diff --git a/drivers/net/Kconfig b/drivers/net/Kconfig
+> index 77ee9afad038..25a8f9387d5a 100644
+> --- a/drivers/net/Kconfig
+> +++ b/drivers/net/Kconfig
+> @@ -549,6 +549,7 @@ source "drivers/net/hyperv/Kconfig"
+>  config NETDEVSIM
+>  	tristate "Simulated networking device"
+>  	depends on DEBUG_FS
+> +	depends on INET
+>  	depends on IPV6 || IPV6=n
+>  	select NET_DEVLINK
+>  	help
+
