@@ -2,28 +2,29 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 0AC8E13DAAE
-	for <lists+netdev@lfdr.de>; Thu, 16 Jan 2020 13:58:10 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A967B13DAB4
+	for <lists+netdev@lfdr.de>; Thu, 16 Jan 2020 13:58:12 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726410AbgAPM4n (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 16 Jan 2020 07:56:43 -0500
-Received: from szxga06-in.huawei.com ([45.249.212.32]:41436 "EHLO huawei.com"
+        id S1726871AbgAPM5J (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 16 Jan 2020 07:57:09 -0500
+Received: from szxga07-in.huawei.com ([45.249.212.35]:59844 "EHLO huawei.com"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1726018AbgAPM4n (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 16 Jan 2020 07:56:43 -0500
-Received: from DGGEMS403-HUB.china.huawei.com (unknown [172.30.72.60])
-        by Forcepoint Email with ESMTP id EAAFBB592AAA10E88C27;
-        Thu, 16 Jan 2020 20:56:40 +0800 (CST)
+        id S1726366AbgAPM5J (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 16 Jan 2020 07:57:09 -0500
+Received: from DGGEMS409-HUB.china.huawei.com (unknown [172.30.72.59])
+        by Forcepoint Email with ESMTP id 655FFF404C9401744995;
+        Thu, 16 Jan 2020 20:57:05 +0800 (CST)
 Received: from localhost.localdomain.localdomain (10.175.113.25) by
- DGGEMS403-HUB.china.huawei.com (10.3.19.203) with Microsoft SMTP Server id
- 14.3.439.0; Thu, 16 Jan 2020 20:56:31 +0800
-From:   Chen Zhou <chenzhou10@huawei.com>
-To:     <johannes@sipsolutions.net>, <davem@davemloft.net>
-CC:     <linux-wireless@vger.kernel.org>, <netdev@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>, <chenzhou10@huawei.com>
-Subject: [PATCH -next] mac80111: fix build error without CONFIG_ATH11K_DEBUGFS
-Date:   Thu, 16 Jan 2020 20:51:55 +0800
-Message-ID: <20200116125155.166749-1-chenzhou10@huawei.com>
+ DGGEMS409-HUB.china.huawei.com (10.3.19.209) with Microsoft SMTP Server id
+ 14.3.439.0; Thu, 16 Jan 2020 20:56:54 +0800
+From:   Hongbo Yao <yaohongbo@huawei.com>
+To:     <kuba@kernel.org>
+CC:     <yaohongbo@huawei.com>, <chenzhou10@huawei.com>,
+        <davem@davemloft.net>, <netdev@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>
+Subject: [PATCH -next] drivers/net: netdevsim depends on INET
+Date:   Thu, 16 Jan 2020 20:52:19 +0800
+Message-ID: <20200116125219.166830-1-yaohongbo@huawei.com>
 X-Mailer: git-send-email 2.20.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 7BIT
@@ -35,34 +36,36 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-If CONFIG_ATH11K_DEBUGFS is n, build fails:
+If CONFIG_INET is not set and CONFIG_NETDEVSIM=y.
+Building drivers/net/netdevsim/fib.o will get the following error:
 
-drivers/net/wireless/ath/ath11k/debugfs_sta.c: In function ath11k_dbg_sta_open_htt_peer_stats:
-drivers/net/wireless/ath/ath11k/debugfs_sta.c:416:4: error: struct ath11k has no member named debug
-  ar->debug.htt_stats.stats_req = stats_req;
-      ^~
-and many more similar messages.
+drivers/net/netdevsim/fib.o: In function `nsim_fib4_rt_hw_flags_set':
+fib.c:(.text+0x12b): undefined reference to `fib_alias_hw_flags_set'
+drivers/net/netdevsim/fib.o: In function `nsim_fib4_rt_destroy':
+fib.c:(.text+0xb11): undefined reference to `free_fib_info'
 
-Select ATH11K_DEBUGFS under config MAC80211_DEBUGFS to fix this.
+Correct the Kconfig for netdevsim.
 
 Reported-by: Hulk Robot <hulkci@huawei.com>
-Signed-off-by: Chen Zhou <chenzhou10@huawei.com>
+Fixes: 83c9e13aa39ae("netdevsim: add software driver for testing
+offloads")
+Signed-off-by: Hongbo Yao <yaohongbo@huawei.com>
 ---
- net/mac80211/Kconfig | 1 +
+ drivers/net/Kconfig | 1 +
  1 file changed, 1 insertion(+)
 
-diff --git a/net/mac80211/Kconfig b/net/mac80211/Kconfig
-index 0c93b1b..0f2c2b8 100644
---- a/net/mac80211/Kconfig
-+++ b/net/mac80211/Kconfig
-@@ -77,6 +77,7 @@ config MAC80211_LEDS
- 
- config MAC80211_DEBUGFS
- 	bool "Export mac80211 internals in DebugFS"
-+	select ATH11K_DEBUGFS
- 	depends on MAC80211 && DEBUG_FS
- 	---help---
- 	  Select this to see extensive information about
+diff --git a/drivers/net/Kconfig b/drivers/net/Kconfig
+index 77ee9afad038..25a8f9387d5a 100644
+--- a/drivers/net/Kconfig
++++ b/drivers/net/Kconfig
+@@ -549,6 +549,7 @@ source "drivers/net/hyperv/Kconfig"
+ config NETDEVSIM
+ 	tristate "Simulated networking device"
+ 	depends on DEBUG_FS
++	depends on INET
+ 	depends on IPV6 || IPV6=n
+ 	select NET_DEVLINK
+ 	help
 -- 
-2.7.4
+2.20.1
 
