@@ -2,37 +2,38 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 7F78413E532
-	for <lists+netdev@lfdr.de>; Thu, 16 Jan 2020 18:13:33 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 27C0713E728
+	for <lists+netdev@lfdr.de>; Thu, 16 Jan 2020 18:24:08 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728904AbgAPRNJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 16 Jan 2020 12:13:09 -0500
-Received: from mail.kernel.org ([198.145.29.99]:57298 "EHLO mail.kernel.org"
+        id S1730457AbgAPRXy (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 16 Jan 2020 12:23:54 -0500
+Received: from mail.kernel.org ([198.145.29.99]:57398 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2390646AbgAPRNH (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 16 Jan 2020 12:13:07 -0500
+        id S2390652AbgAPRNI (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 16 Jan 2020 12:13:08 -0500
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id F0EC12469D;
-        Thu, 16 Jan 2020 17:13:05 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 52ADE246A3;
+        Thu, 16 Jan 2020 17:13:07 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1579194786;
-        bh=Pzd0a7Xe9wrKAq2qwT7jhPVjmbyQ/lDkJMOn2OSbZKc=;
+        s=default; t=1579194788;
+        bh=Eq9RVcXC8HyF9NPP1DA4CFc8o7TE6r/C5AI3H7ITmvQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=e9ZGMr0wlHxqo871n1IOEerNVCOTOP2FIW634ukT3FdwPuKMQK2Ml4PL4uYsnCIZx
-         SmFv4Hpn6ZChSBVSk2jH11BRDBMbgF8sAIVz22DulE989W6qB/9Ljyz4RlhUFdwUAk
-         3j3gXbpfL73cZduF7gM604JwTK5K5cpfsrchlZ5o=
+        b=JmLon4rdYPCFqydEoF5rPrOhdfHittVmDJnKQe/mk/MOrCo9tFcRjkutDhzjOwHkB
+         sApDGbD+405nmSKEyGAnLtOC/14TRPbSgV57MuICbats1OnqdQmDIldVL2Dl7Rkb2X
+         PxmaF8uAsZClNaGa/AwTtBxVvve3IiMPPkN0ox6o=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Jakub Kicinski <jakub.kicinski@netronome.com>,
-        Simon Horman <simon.horman@netronome.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>,
-        netem@lists.linux-foundation.org, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.19 601/671] net: netem: correct the parent's backlog when corrupted packet was dropped
-Date:   Thu, 16 Jan 2020 12:03:59 -0500
-Message-Id: <20200116170509.12787-338-sashal@kernel.org>
+Cc:     Magnus Karlsson <magnus.karlsson@intel.com>,
+        Kal Cutter Conley <kal.conley@dectris.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Jonathan Lemon <jonathan.lemon@gmail.com>,
+        Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org,
+        bpf@vger.kernel.org
+Subject: [PATCH AUTOSEL 4.19 602/671] xsk: Fix registration of Rx-only sockets
+Date:   Thu, 16 Jan 2020 12:04:00 -0500
+Message-Id: <20200116170509.12787-339-sashal@kernel.org>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20200116170509.12787-1-sashal@kernel.org>
 References: <20200116170509.12787-1-sashal@kernel.org>
@@ -45,37 +46,58 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Jakub Kicinski <jakub.kicinski@netronome.com>
+From: Magnus Karlsson <magnus.karlsson@intel.com>
 
-[ Upstream commit e0ad032e144731a5928f2d75e91c2064ba1a764c ]
+[ Upstream commit 2afd23f78f39da84937006ecd24aa664a4ab052b ]
 
-If packet corruption failed we jump to finish_segs and return
-NET_XMIT_SUCCESS. Seeing success will make the parent qdisc
-increment its backlog, that's incorrect - we need to return
-NET_XMIT_DROP.
+Having Rx-only AF_XDP sockets can potentially lead to a crash in the
+system by a NULL pointer dereference in xsk_umem_consume_tx(). This
+function iterates through a list of all sockets tied to a umem and
+checks if there are any packets to send on the Tx ring. Rx-only
+sockets do not have a Tx ring, so this will cause a NULL pointer
+dereference. This will happen if you have registered one or more
+Rx-only sockets to a umem and the driver is checking the Tx ring even
+on Rx, or if the XDP_SHARED_UMEM mode is used and there is a mix of
+Rx-only and other sockets tied to the same umem.
 
-Fixes: 6071bd1aa13e ("netem: Segment GSO packets on enqueue")
-Signed-off-by: Jakub Kicinski <jakub.kicinski@netronome.com>
-Reviewed-by: Simon Horman <simon.horman@netronome.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+Fixed by only putting sockets with a Tx component on the list that
+xsk_umem_consume_tx() iterates over.
+
+Fixes: ac98d8aab61b ("xsk: wire upp Tx zero-copy functions")
+Reported-by: Kal Cutter Conley <kal.conley@dectris.com>
+Signed-off-by: Magnus Karlsson <magnus.karlsson@intel.com>
+Signed-off-by: Alexei Starovoitov <ast@kernel.org>
+Acked-by: Jonathan Lemon <jonathan.lemon@gmail.com>
+Link: https://lore.kernel.org/bpf/1571645818-16244-1-git-send-email-magnus.karlsson@intel.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/sched/sch_netem.c | 2 ++
- 1 file changed, 2 insertions(+)
+ net/xdp/xdp_umem.c | 6 ++++++
+ 1 file changed, 6 insertions(+)
 
-diff --git a/net/sched/sch_netem.c b/net/sched/sch_netem.c
-index 7660aa5b80da..014a28d8dd4f 100644
---- a/net/sched/sch_netem.c
-+++ b/net/sched/sch_netem.c
-@@ -607,6 +607,8 @@ static int netem_enqueue(struct sk_buff *skb, struct Qdisc *sch,
- 		}
- 		/* Parent qdiscs accounted for 1 skb of size @prev_len */
- 		qdisc_tree_reduce_backlog(sch, -(nb - 1), -(len - prev_len));
-+	} else if (!skb) {
-+		return NET_XMIT_DROP;
- 	}
- 	return NET_XMIT_SUCCESS;
- }
+diff --git a/net/xdp/xdp_umem.c b/net/xdp/xdp_umem.c
+index d9117ab035f7..556a649512b6 100644
+--- a/net/xdp/xdp_umem.c
++++ b/net/xdp/xdp_umem.c
+@@ -23,6 +23,9 @@ void xdp_add_sk_umem(struct xdp_umem *umem, struct xdp_sock *xs)
+ {
+ 	unsigned long flags;
+ 
++	if (!xs->tx)
++		return;
++
+ 	spin_lock_irqsave(&umem->xsk_list_lock, flags);
+ 	list_add_rcu(&xs->list, &umem->xsk_list);
+ 	spin_unlock_irqrestore(&umem->xsk_list_lock, flags);
+@@ -32,6 +35,9 @@ void xdp_del_sk_umem(struct xdp_umem *umem, struct xdp_sock *xs)
+ {
+ 	unsigned long flags;
+ 
++	if (!xs->tx)
++		return;
++
+ 	spin_lock_irqsave(&umem->xsk_list_lock, flags);
+ 	list_del_rcu(&xs->list);
+ 	spin_unlock_irqrestore(&umem->xsk_list_lock, flags);
 -- 
 2.20.1
 
