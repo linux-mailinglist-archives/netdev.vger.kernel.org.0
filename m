@@ -2,36 +2,35 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 073EC13E5DD
-	for <lists+netdev@lfdr.de>; Thu, 16 Jan 2020 18:18:24 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 80BD613E5E0
+	for <lists+netdev@lfdr.de>; Thu, 16 Jan 2020 18:18:25 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2390870AbgAPRN5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 16 Jan 2020 12:13:57 -0500
-Received: from mail.kernel.org ([198.145.29.99]:60148 "EHLO mail.kernel.org"
+        id S2390891AbgAPRN7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 16 Jan 2020 12:13:59 -0500
+Received: from mail.kernel.org ([198.145.29.99]:60240 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2390862AbgAPRN4 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 16 Jan 2020 12:13:56 -0500
+        id S2390878AbgAPRN6 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 16 Jan 2020 12:13:58 -0500
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 599AF246AB;
-        Thu, 16 Jan 2020 17:13:54 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 123B2246AB;
+        Thu, 16 Jan 2020 17:13:56 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1579194835;
-        bh=YSPCRtvsCh16pjnRFqDXHWPRDtBnQ0mKqnVa4CJxkI4=;
+        s=default; t=1579194837;
+        bh=vTDTnAAIKiPYPr131pc6+8mipPplmDbzj3BDzTdJs80=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Ea+QRb8I9yClZ+PwnvifeCA11uPefyLSQwcOkAYPThAsESq7oDvi9DBjs2B1yUJIR
-         O6LuLUDFs3BbsKGITbAxtEYC2LNIeDKWCDbMtt0NSoP/FxjCJREDV7ci3RVNi2+b1O
-         0JZCRzp8IDqHGIFtnKuhLWw7bwPBNSRJczGPqXXk=
+        b=eDwdbpqbd1uTN9kMawAYgvAit1YRgHlDy7F6agfVGjmiejOrwXOiqM6bzMUcvww5k
+         f6jPwuV4/eXrrUZWwI0w0IC5H+Y1PaYkjzqHZUOZM8Nj4Nwat1Ba76fr/9xRie3/Jz
+         YzG7gMvGF3c5ghN5IpUd/TbgpoDy+E37XfqVVYuk=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Stephen Hemminger <sthemmin@microsoft.com>,
+Cc:     Eric Dumazet <edumazet@google.com>,
         "David S . Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>, linux-hyperv@vger.kernel.org,
-        netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.19 635/671] hv_netvsc: flag software created hash value
-Date:   Thu, 16 Jan 2020 12:04:33 -0500
-Message-Id: <20200116170509.12787-372-sashal@kernel.org>
+        Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 4.19 637/671] net: neigh: use long type to store jiffies delta
+Date:   Thu, 16 Jan 2020 12:04:35 -0500
+Message-Id: <20200116170509.12787-374-sashal@kernel.org>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20200116170509.12787-1-sashal@kernel.org>
 References: <20200116170509.12787-1-sashal@kernel.org>
@@ -44,48 +43,35 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Stephen Hemminger <sthemmin@microsoft.com>
+From: Eric Dumazet <edumazet@google.com>
 
-[ Upstream commit df9f540ca74297a84bafacfa197e9347b20beea5 ]
+[ Upstream commit 9d027e3a83f39b819e908e4e09084277a2e45e95 ]
 
-When the driver needs to create a hash value because it
-was not done at higher level, then the hash should be marked
-as a software not hardware hash.
+A difference of two unsigned long needs long storage.
 
-Fixes: f72860afa2e3 ("hv_netvsc: Exclude non-TCP port numbers from vRSS hashing")
-Signed-off-by: Stephen Hemminger <sthemmin@microsoft.com>
+Fixes: c7fb64db001f ("[NETLINK]: Neighbour table configuration and statistics via rtnetlink")
+Signed-off-by: Eric Dumazet <edumazet@google.com>
 Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/hyperv/netvsc_drv.c | 7 +++----
- 1 file changed, 3 insertions(+), 4 deletions(-)
+ net/core/neighbour.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/net/hyperv/netvsc_drv.c b/drivers/net/hyperv/netvsc_drv.c
-index 54670c9905c7..7ab576d8b622 100644
---- a/drivers/net/hyperv/netvsc_drv.c
-+++ b/drivers/net/hyperv/netvsc_drv.c
-@@ -295,9 +295,9 @@ static inline u32 netvsc_get_hash(
- 		else if (flow.basic.n_proto == htons(ETH_P_IPV6))
- 			hash = jhash2((u32 *)&flow.addrs.v6addrs, 8, hashrnd);
- 		else
--			hash = 0;
-+			return 0;
- 
--		skb_set_hash(skb, hash, PKT_HASH_TYPE_L3);
-+		__skb_set_sw_hash(skb, hash, false);
- 	}
- 
- 	return hash;
-@@ -804,8 +804,7 @@ static struct sk_buff *netvsc_alloc_recv_skb(struct net_device *net,
- 	    skb->protocol == htons(ETH_P_IP))
- 		netvsc_comp_ipcsum(skb);
- 
--	/* Do L4 checksum offload if enabled and present.
--	 */
-+	/* Do L4 checksum offload if enabled and present. */
- 	if (csum_info && (net->features & NETIF_F_RXCSUM)) {
- 		if (csum_info->receive.tcp_checksum_succeeded ||
- 		    csum_info->receive.udp_checksum_succeeded)
+diff --git a/net/core/neighbour.c b/net/core/neighbour.c
+index e260d44ebdca..bf738ec68cb5 100644
+--- a/net/core/neighbour.c
++++ b/net/core/neighbour.c
+@@ -1885,8 +1885,8 @@ static int neightbl_fill_info(struct sk_buff *skb, struct neigh_table *tbl,
+ 		goto nla_put_failure;
+ 	{
+ 		unsigned long now = jiffies;
+-		unsigned int flush_delta = now - tbl->last_flush;
+-		unsigned int rand_delta = now - tbl->last_rand;
++		long flush_delta = now - tbl->last_flush;
++		long rand_delta = now - tbl->last_rand;
+ 		struct neigh_hash_table *nht;
+ 		struct ndt_config ndc = {
+ 			.ndtc_key_len		= tbl->key_len,
 -- 
 2.20.1
 
