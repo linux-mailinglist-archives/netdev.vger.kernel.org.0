@@ -2,118 +2,72 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id B271C13D81C
-	for <lists+netdev@lfdr.de>; Thu, 16 Jan 2020 11:40:42 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 288D613D82F
+	for <lists+netdev@lfdr.de>; Thu, 16 Jan 2020 11:49:27 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726329AbgAPKjk convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Thu, 16 Jan 2020 05:39:40 -0500
-Received: from us-smtp-delivery-1.mimecast.com ([205.139.110.120]:42761 "EHLO
-        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S1726100AbgAPKjk (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 16 Jan 2020 05:39:40 -0500
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-426-bV1XJD5CN_ShKaH12UXmnA-1; Thu, 16 Jan 2020 05:39:37 -0500
-Received: from smtp.corp.redhat.com (int-mx01.intmail.prod.int.phx2.redhat.com [10.5.11.11])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 3FE37DB21;
-        Thu, 16 Jan 2020 10:39:36 +0000 (UTC)
-Received: from localhost.localdomain (ovpn-117-110.ams2.redhat.com [10.36.117.110])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id CCCE0811FD;
-        Thu, 16 Jan 2020 10:39:34 +0000 (UTC)
-From:   Sabrina Dubroca <sd@queasysnail.net>
-To:     netdev@vger.kernel.org
-Cc:     Stephen Hemminger <stephen@networkplumber.org>,
-        David Ahern <dsahern@gmail.com>,
-        Sabrina Dubroca <sd@queasysnail.net>,
-        Herbert Xu <herbert@gondor.apana.org.au>
-Subject: [PATCH iproute2-next] ip: xfrm: add espintcp encapsulation
-Date:   Thu, 16 Jan 2020 11:39:24 +0100
-Message-Id: <0b5baa21f8d0048b5e97f927e801ac2f843bb5e1.1579104430.git.sd@queasysnail.net>
+        id S1726410AbgAPKtC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 16 Jan 2020 05:49:02 -0500
+Received: from mail-il1-f200.google.com ([209.85.166.200]:54443 "EHLO
+        mail-il1-f200.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725973AbgAPKtC (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 16 Jan 2020 05:49:02 -0500
+Received: by mail-il1-f200.google.com with SMTP id t4so15676831ili.21
+        for <netdev@vger.kernel.org>; Thu, 16 Jan 2020 02:49:01 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:date:in-reply-to:message-id:subject
+         :from:to;
+        bh=vXf7A0NOmOYnzFvw+i/lGTeJq016329/QakV55aUcG0=;
+        b=i7pqX6V4TW/4qGB+nJnhVWBitVx0xKQDnCOH9FB91GtYgX4BV7jeSTFsluXedM/rh8
+         Wd1o+BHtk51720PQlocF0s/UWPD8FI6r78wBFb92W2O0yMSYVXey8Rlj8A7as1S8uf0/
+         nGVVXWq2BYvDPG561eO+o3MT2r5cLeGQpPhrXB7eWp0W1bsyIkF7rRw+VPOV+j68BhO2
+         oEN9Q8scyD9a1miBK9xBZyeC3XSs1kOm/G8iGjKfMn5hfpDjJ3vbu5xwenPh2PTzFeNV
+         axXZ3R495OxD4UZrQDLjshUHInmuP4sy928GxbrCvdTuqjtR8aHU5hKaYSHGx4OlVLkw
+         Mgag==
+X-Gm-Message-State: APjAAAXvQ8SG/ne1J374ktYGBiKQJw3zrWEv3KFYShWIQDBqTk5HdyEb
+        14YkR7qZ2KkLC2cW4UP/qHi4QgGNUYckFHCVjQZJc3ZqKWWp
+X-Google-Smtp-Source: APXvYqxopJ/jpk1yIg/I62PmVhs8FXVnSYmF1TfUZ9VNvmnmuoElsGzQesNp8GprKQ9VNUmhiQEqsoJLXz2GyBosz3vGAuYabDoY
 MIME-Version: 1.0
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.11
-X-MC-Unique: bV1XJD5CN_ShKaH12UXmnA-1
-X-Mimecast-Spam-Score: 0
-X-Mimecast-Originator: queasysnail.net
-Content-Type: text/plain; charset=WINDOWS-1252
-Content-Transfer-Encoding: 8BIT
+X-Received: by 2002:a92:3cd4:: with SMTP id j81mr3015923ilf.77.1579171741688;
+ Thu, 16 Jan 2020 02:49:01 -0800 (PST)
+Date:   Thu, 16 Jan 2020 02:49:01 -0800
+In-Reply-To: <000000000000b9fc96059c36db9e@google.com>
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <000000000000b3ea0f059c3f9203@google.com>
+Subject: Re: WARNING in nft_request_module
+From:   syzbot <syzbot+0e63ae76d117ae1c3a01@syzkaller.appspotmail.com>
+To:     coreteam@netfilter.org, davem@davemloft.net, fw@strlen.de,
+        kadlec@blackhole.kfki.hu, kadlec@netfilter.org,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        netfilter-devel@vger.kernel.org, pablo@netfilter.org,
+        syzkaller-bugs@googlegroups.com
+Content-Type: text/plain; charset="UTF-8"; format=flowed; delsp=yes
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This adds support for creating xfrm states with TCP encapsulation,
-similar to the existing UDP encapsulation support.
+syzbot has bisected this bug to:
 
-Co-developed-by: Herbert Xu <herbert@gondor.apana.org.au>
-Signed-off-by: Sabrina Dubroca <sd@queasysnail.net>
----
-The kernel side patches are in ipsec-next/master.
+commit 452238e8d5ffd8b77f92387519513839d4ca7379
+Author: Florian Westphal <fw@strlen.de>
+Date:   Wed Jul 11 11:45:10 2018 +0000
 
- ip/ipxfrm.c        | 5 +++++
- ip/xfrm_state.c    | 2 +-
- man/man8/ip-xfrm.8 | 4 ++--
- 3 files changed, 8 insertions(+), 3 deletions(-)
+     netfilter: nf_tables: add and use helper for module autoload
 
-diff --git a/ip/ipxfrm.c b/ip/ipxfrm.c
-index 32f560933a47..e310860b9f1f 100644
---- a/ip/ipxfrm.c
-+++ b/ip/ipxfrm.c
-@@ -759,6 +759,9 @@ void xfrm_xfrma_print(struct rtattr *tb[], __u16 family,
- 		case 2:
- 			fprintf(fp, "espinudp ");
- 			break;
-+		case 7:
-+			fprintf(fp, "espintcp ");
-+			break;
- 		default:
- 			fprintf(fp, "%u ", e->encap_type);
- 			break;
-@@ -1211,6 +1214,8 @@ int xfrm_encap_type_parse(__u16 *type, int *argcp, char ***argvp)
- 		*type = 1;
- 	else if (strcmp(*argv, "espinudp") == 0)
- 		*type = 2;
-+	else if (strcmp(*argv, "espintcp") == 0)
-+		*type = 7;
- 	else
- 		invarg("ENCAP-TYPE value is invalid", *argv);
- 
-diff --git a/ip/xfrm_state.c b/ip/xfrm_state.c
-index b03ccc5807e9..df2d50c3843b 100644
---- a/ip/xfrm_state.c
-+++ b/ip/xfrm_state.c
-@@ -130,7 +130,7 @@ static void usage(void)
- 		"LIMIT-LIST := [ LIMIT-LIST ] limit LIMIT\n"
- 		"LIMIT := { time-soft | time-hard | time-use-soft | time-use-hard } SECONDS |\n"
- 		"         { byte-soft | byte-hard } SIZE | { packet-soft | packet-hard } COUNT\n"
--		"ENCAP := { espinudp | espinudp-nonike } SPORT DPORT OADDR\n"
-+		"ENCAP := { espinudp | espinudp-nonike | espintcp } SPORT DPORT OADDR\n"
- 		"DIR := in | out\n");
- 
- 	exit(-1);
-diff --git a/man/man8/ip-xfrm.8 b/man/man8/ip-xfrm.8
-index cfce1e40b7f7..f99f30bb448a 100644
---- a/man/man8/ip-xfrm.8
-+++ b/man/man8/ip-xfrm.8
-@@ -207,7 +207,7 @@ ip-xfrm \- transform configuration
- 
- .ti -8
- .IR ENCAP " :="
--.RB "{ " espinudp " | " espinudp-nonike " }"
-+.RB "{ " espinudp " | " espinudp-nonike " | " espintcp " }"
- .IR SPORT " " DPORT " " OADDR
- 
- .ti -8
-@@ -548,7 +548,7 @@ sets limits in seconds, bytes, or numbers of packets.
- .TP
- .I ENCAP
- encapsulates packets with protocol
--.BR espinudp " or " espinudp-nonike ","
-+.BR espinudp ", " espinudp-nonike ", or " espintcp ","
- .RI "using source port " SPORT ", destination port "  DPORT
- .RI ", and original address " OADDR "."
- 
--- 
-2.24.1
+bisection log:  https://syzkaller.appspot.com/x/bisect.txt?x=17bb83e1e00000
+start commit:   51d69817 Merge tag 'platform-drivers-x86-v5.5-3' of git://..
+git tree:       upstream
+final crash:    https://syzkaller.appspot.com/x/report.txt?x=147b83e1e00000
+console output: https://syzkaller.appspot.com/x/log.txt?x=107b83e1e00000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=d9290aeb7e6cf1c4
+dashboard link: https://syzkaller.appspot.com/bug?extid=0e63ae76d117ae1c3a01
+syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=16b14421e00000
+C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=138473fee00000
 
+Reported-by: syzbot+0e63ae76d117ae1c3a01@syzkaller.appspotmail.com
+Fixes: 452238e8d5ff ("netfilter: nf_tables: add and use helper for module  
+autoload")
+
+For information about bisection process see: https://goo.gl/tpsmEJ#bisection
