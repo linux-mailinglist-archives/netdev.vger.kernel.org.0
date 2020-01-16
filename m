@@ -2,36 +2,37 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 9584213F948
-	for <lists+netdev@lfdr.de>; Thu, 16 Jan 2020 20:24:26 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 94D3613F920
+	for <lists+netdev@lfdr.de>; Thu, 16 Jan 2020 20:23:16 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2407375AbgAPTX6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 16 Jan 2020 14:23:58 -0500
-Received: from mail.kernel.org ([198.145.29.99]:36372 "EHLO mail.kernel.org"
+        id S2437751AbgAPTXK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 16 Jan 2020 14:23:10 -0500
+Received: from mail.kernel.org ([198.145.29.99]:37098 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1729590AbgAPQw7 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 16 Jan 2020 11:52:59 -0500
+        id S1730742AbgAPQxT (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 16 Jan 2020 11:53:19 -0500
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id E9CDD22464;
-        Thu, 16 Jan 2020 16:52:57 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 9F84820730;
+        Thu, 16 Jan 2020 16:53:17 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1579193578;
-        bh=VTtE4Rn0eBatFxxgtwL7q8hKMpcItccYKxQo+yzmRow=;
+        s=default; t=1579193598;
+        bh=mEQ/YlD3A4QQywGbZn/iryMQxyRD6r1oKnXwOfcjIB0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=SWEZNtyOSD1XJ31MswRz1zukg721fEmERTCVyxCj0VWrVfLHf8yykAtsK00Sbizy6
-         9uudMB5VPK5LHWNuB2eQC8p4ckgPs9uXSEpjOAdhK4yod5craiDH6SM4FTsCC8c9ev
-         wnGk2zKP/cp7asxPoWwRYMA8SvCv/JjtbYrJyG/Q=
+        b=XS08i3O7QuV3zGhxVSh54U5qxJ631PAJg8uDo96MCIn1qO/TW8LladCJzm5r5i97t
+         ZkXezyuQ/4ZI0YuW2qCZRfpZAbtj570oY3zIg6/YCdlz2Idq/TxoZkkcgFn9Hcre9h
+         uMnFSIOfRelXEkuos6gW3UlrnowNh1DTmi0vv88w=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Eric Dumazet <edumazet@google.com>,
-        Willem de Bruijn <willemb@google.com>,
+Cc:     Hoang Le <hoang.h.le@dektech.com.au>,
+        Jon Maloy <jon.maloy@ericsson.com>,
         "David S . Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.4 121/205] packet: fix data-race in fanout_flow_is_huge()
-Date:   Thu, 16 Jan 2020 11:41:36 -0500
-Message-Id: <20200116164300.6705-121-sashal@kernel.org>
+        Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org,
+        tipc-discussion@lists.sourceforge.net
+Subject: [PATCH AUTOSEL 5.4 137/205] tipc: update mon's self addr when node addr generated
+Date:   Thu, 16 Jan 2020 11:41:52 -0500
+Message-Id: <20200116164300.6705-137-sashal@kernel.org>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20200116164300.6705-1-sashal@kernel.org>
 References: <20200116164300.6705-1-sashal@kernel.org>
@@ -44,132 +45,89 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Eric Dumazet <edumazet@google.com>
+From: Hoang Le <hoang.h.le@dektech.com.au>
 
-[ Upstream commit b756ad928d98e5ef0b74af7546a6a31a8dadde00 ]
+[ Upstream commit 46cb01eeeb86fca6afe24dda1167b0cb95424e29 ]
 
-KCSAN reported the following data-race [1]
+In commit 25b0b9c4e835 ("tipc: handle collisions of 32-bit node address
+hash values"), the 32-bit node address only generated after one second
+trial period expired. However the self's addr in struct tipc_monitor do
+not update according to node address generated. This lead to it is
+always zero as initial value. As result, sorting algorithm using this
+value does not work as expected, neither neighbor monitoring framework.
 
-Adding a couple of READ_ONCE()/WRITE_ONCE() should silence it.
+In this commit, we add a fix to update self's addr when 32-bit node
+address generated.
 
-Since the report hinted about multiple cpus using the history
-concurrently, I added a test avoiding writing on it if the
-victim slot already contains the desired value.
-
-[1]
-
-BUG: KCSAN: data-race in fanout_demux_rollover / fanout_demux_rollover
-
-read to 0xffff8880b01786cc of 4 bytes by task 18921 on cpu 1:
- fanout_flow_is_huge net/packet/af_packet.c:1303 [inline]
- fanout_demux_rollover+0x33e/0x3f0 net/packet/af_packet.c:1353
- packet_rcv_fanout+0x34e/0x490 net/packet/af_packet.c:1453
- deliver_skb net/core/dev.c:1888 [inline]
- dev_queue_xmit_nit+0x15b/0x540 net/core/dev.c:1958
- xmit_one net/core/dev.c:3195 [inline]
- dev_hard_start_xmit+0x3f5/0x430 net/core/dev.c:3215
- __dev_queue_xmit+0x14ab/0x1b40 net/core/dev.c:3792
- dev_queue_xmit+0x21/0x30 net/core/dev.c:3825
- neigh_direct_output+0x1f/0x30 net/core/neighbour.c:1530
- neigh_output include/net/neighbour.h:511 [inline]
- ip6_finish_output2+0x7a2/0xec0 net/ipv6/ip6_output.c:116
- __ip6_finish_output net/ipv6/ip6_output.c:142 [inline]
- __ip6_finish_output+0x2d7/0x330 net/ipv6/ip6_output.c:127
- ip6_finish_output+0x41/0x160 net/ipv6/ip6_output.c:152
- NF_HOOK_COND include/linux/netfilter.h:294 [inline]
- ip6_output+0xf2/0x280 net/ipv6/ip6_output.c:175
- dst_output include/net/dst.h:436 [inline]
- ip6_local_out+0x74/0x90 net/ipv6/output_core.c:179
- ip6_send_skb+0x53/0x110 net/ipv6/ip6_output.c:1795
- udp_v6_send_skb.isra.0+0x3ec/0xa70 net/ipv6/udp.c:1173
- udpv6_sendmsg+0x1906/0x1c20 net/ipv6/udp.c:1471
- inet6_sendmsg+0x6d/0x90 net/ipv6/af_inet6.c:576
- sock_sendmsg_nosec net/socket.c:637 [inline]
- sock_sendmsg+0x9f/0xc0 net/socket.c:657
- ___sys_sendmsg+0x2b7/0x5d0 net/socket.c:2311
- __sys_sendmmsg+0x123/0x350 net/socket.c:2413
- __do_sys_sendmmsg net/socket.c:2442 [inline]
- __se_sys_sendmmsg net/socket.c:2439 [inline]
- __x64_sys_sendmmsg+0x64/0x80 net/socket.c:2439
- do_syscall_64+0xcc/0x370 arch/x86/entry/common.c:290
- entry_SYSCALL_64_after_hwframe+0x44/0xa9
-
-write to 0xffff8880b01786cc of 4 bytes by task 18922 on cpu 0:
- fanout_flow_is_huge net/packet/af_packet.c:1306 [inline]
- fanout_demux_rollover+0x3a4/0x3f0 net/packet/af_packet.c:1353
- packet_rcv_fanout+0x34e/0x490 net/packet/af_packet.c:1453
- deliver_skb net/core/dev.c:1888 [inline]
- dev_queue_xmit_nit+0x15b/0x540 net/core/dev.c:1958
- xmit_one net/core/dev.c:3195 [inline]
- dev_hard_start_xmit+0x3f5/0x430 net/core/dev.c:3215
- __dev_queue_xmit+0x14ab/0x1b40 net/core/dev.c:3792
- dev_queue_xmit+0x21/0x30 net/core/dev.c:3825
- neigh_direct_output+0x1f/0x30 net/core/neighbour.c:1530
- neigh_output include/net/neighbour.h:511 [inline]
- ip6_finish_output2+0x7a2/0xec0 net/ipv6/ip6_output.c:116
- __ip6_finish_output net/ipv6/ip6_output.c:142 [inline]
- __ip6_finish_output+0x2d7/0x330 net/ipv6/ip6_output.c:127
- ip6_finish_output+0x41/0x160 net/ipv6/ip6_output.c:152
- NF_HOOK_COND include/linux/netfilter.h:294 [inline]
- ip6_output+0xf2/0x280 net/ipv6/ip6_output.c:175
- dst_output include/net/dst.h:436 [inline]
- ip6_local_out+0x74/0x90 net/ipv6/output_core.c:179
- ip6_send_skb+0x53/0x110 net/ipv6/ip6_output.c:1795
- udp_v6_send_skb.isra.0+0x3ec/0xa70 net/ipv6/udp.c:1173
- udpv6_sendmsg+0x1906/0x1c20 net/ipv6/udp.c:1471
- inet6_sendmsg+0x6d/0x90 net/ipv6/af_inet6.c:576
- sock_sendmsg_nosec net/socket.c:637 [inline]
- sock_sendmsg+0x9f/0xc0 net/socket.c:657
- ___sys_sendmsg+0x2b7/0x5d0 net/socket.c:2311
- __sys_sendmmsg+0x123/0x350 net/socket.c:2413
- __do_sys_sendmmsg net/socket.c:2442 [inline]
- __se_sys_sendmmsg net/socket.c:2439 [inline]
- __x64_sys_sendmmsg+0x64/0x80 net/socket.c:2439
- do_syscall_64+0xcc/0x370 arch/x86/entry/common.c:290
- entry_SYSCALL_64_after_hwframe+0x44/0xa9
-
-Reported by Kernel Concurrency Sanitizer on:
-CPU: 0 PID: 18922 Comm: syz-executor.3 Not tainted 5.4.0-rc6+ #0
-Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
-
-Fixes: 3b3a5b0aab5b ("packet: rollover huge flows before small flows")
-Signed-off-by: Eric Dumazet <edumazet@google.com>
-Cc: Willem de Bruijn <willemb@google.com>
+Fixes: 25b0b9c4e835 ("tipc: handle collisions of 32-bit node address hash values")
+Acked-by: Jon Maloy <jon.maloy@ericsson.com>
+Signed-off-by: Hoang Le <hoang.h.le@dektech.com.au>
 Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/packet/af_packet.c | 12 +++++++++---
- 1 file changed, 9 insertions(+), 3 deletions(-)
+ net/tipc/monitor.c | 15 +++++++++++++++
+ net/tipc/monitor.h |  1 +
+ net/tipc/net.c     |  2 ++
+ 3 files changed, 18 insertions(+)
 
-diff --git a/net/packet/af_packet.c b/net/packet/af_packet.c
-index 529d4ce945db..118cd66b7516 100644
---- a/net/packet/af_packet.c
-+++ b/net/packet/af_packet.c
-@@ -1296,15 +1296,21 @@ static void packet_sock_destruct(struct sock *sk)
- 
- static bool fanout_flow_is_huge(struct packet_sock *po, struct sk_buff *skb)
- {
--	u32 rxhash;
-+	u32 *history = po->rollover->history;
-+	u32 victim, rxhash;
- 	int i, count = 0;
- 
- 	rxhash = skb_get_hash(skb);
- 	for (i = 0; i < ROLLOVER_HLEN; i++)
--		if (po->rollover->history[i] == rxhash)
-+		if (READ_ONCE(history[i]) == rxhash)
- 			count++;
- 
--	po->rollover->history[prandom_u32() % ROLLOVER_HLEN] = rxhash;
-+	victim = prandom_u32() % ROLLOVER_HLEN;
-+
-+	/* Avoid dirtying the cache line if possible */
-+	if (READ_ONCE(history[victim]) != rxhash)
-+		WRITE_ONCE(history[victim], rxhash);
-+
- 	return count > (ROLLOVER_HLEN >> 1);
+diff --git a/net/tipc/monitor.c b/net/tipc/monitor.c
+index 6a6eae88442f..58708b4c7719 100644
+--- a/net/tipc/monitor.c
++++ b/net/tipc/monitor.c
+@@ -665,6 +665,21 @@ void tipc_mon_delete(struct net *net, int bearer_id)
+ 	kfree(mon);
  }
  
++void tipc_mon_reinit_self(struct net *net)
++{
++	struct tipc_monitor *mon;
++	int bearer_id;
++
++	for (bearer_id = 0; bearer_id < MAX_BEARERS; bearer_id++) {
++		mon = tipc_monitor(net, bearer_id);
++		if (!mon)
++			continue;
++		write_lock_bh(&mon->lock);
++		mon->self->addr = tipc_own_addr(net);
++		write_unlock_bh(&mon->lock);
++	}
++}
++
+ int tipc_nl_monitor_set_threshold(struct net *net, u32 cluster_size)
+ {
+ 	struct tipc_net *tn = tipc_net(net);
+diff --git a/net/tipc/monitor.h b/net/tipc/monitor.h
+index 2a21b93e0d04..ed63d2e650b0 100644
+--- a/net/tipc/monitor.h
++++ b/net/tipc/monitor.h
+@@ -77,6 +77,7 @@ int __tipc_nl_add_monitor(struct net *net, struct tipc_nl_msg *msg,
+ 			  u32 bearer_id);
+ int tipc_nl_add_monitor_peer(struct net *net, struct tipc_nl_msg *msg,
+ 			     u32 bearer_id, u32 *prev_node);
++void tipc_mon_reinit_self(struct net *net);
+ 
+ extern const int tipc_max_domain_size;
+ #endif
+diff --git a/net/tipc/net.c b/net/tipc/net.c
+index 85707c185360..2de3cec9929d 100644
+--- a/net/tipc/net.c
++++ b/net/tipc/net.c
+@@ -42,6 +42,7 @@
+ #include "node.h"
+ #include "bcast.h"
+ #include "netlink.h"
++#include "monitor.h"
+ 
+ /*
+  * The TIPC locking policy is designed to ensure a very fine locking
+@@ -136,6 +137,7 @@ static void tipc_net_finalize(struct net *net, u32 addr)
+ 	tipc_set_node_addr(net, addr);
+ 	tipc_named_reinit(net);
+ 	tipc_sk_reinit(net);
++	tipc_mon_reinit_self(net);
+ 	tipc_nametbl_publish(net, TIPC_CFG_SRV, addr, addr,
+ 			     TIPC_CLUSTER_SCOPE, 0, addr);
+ }
 -- 
 2.20.1
 
