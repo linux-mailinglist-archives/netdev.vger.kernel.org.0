@@ -2,36 +2,35 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 55A0F13EB4F
+	by mail.lfdr.de (Postfix) with ESMTP id D311613EB50
 	for <lists+netdev@lfdr.de>; Thu, 16 Jan 2020 18:49:32 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2406606AbgAPRqO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 16 Jan 2020 12:46:14 -0500
-Received: from mail.kernel.org ([198.145.29.99]:38734 "EHLO mail.kernel.org"
+        id S2406627AbgAPRqR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 16 Jan 2020 12:46:17 -0500
+Received: from mail.kernel.org ([198.145.29.99]:38834 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2406584AbgAPRqM (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 16 Jan 2020 12:46:12 -0500
+        id S2389051AbgAPRqQ (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 16 Jan 2020 12:46:16 -0500
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 78D23246DB;
-        Thu, 16 Jan 2020 17:46:11 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id ABEDB246DB;
+        Thu, 16 Jan 2020 17:46:14 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1579196772;
-        bh=YOIE4NNw0fteHkmepF0f7B4QZv5cJzxsWkK7m3/I6zQ=;
+        s=default; t=1579196775;
+        bh=p3CGdpPou7/LbUDe9us7p2A0bCFcqh+w45MEojVXy/o=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=WIy2oMHHRsivfAaWL3d29+UxuwrlVDv+fAnxWb+9Zlu+9vKpUuhiEDuP7qDtdk77r
-         CZez3125JD+IhXlA/GRic1gykM/FwZN+i+JwI2MP41W3COKQnohBBB1XKR84F5ptim
-         27wtzw56OnhBuHw5GgpnrUNvlSHI5AK6gDSBHMUI=
+        b=MKda9Eo6jOx0c8SjKHc0TIYSl0kwKWFID1ATSkWjc41/M0qaRKzHwrsf2EA4pFbQ9
+         uRO85X5WB48+bnay+DJQ5J2Cj6EyDbtV6kN7ZGAG+G4P20LSAWqpmsADMESulqaIPg
+         8JgbOTnGwrxuNVwsTBjJYgjwXSM/92f+x9Y6to8Q=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Johannes Berg <johannes.berg@intel.com>,
-        Luca Coelho <luciano.coelho@intel.com>,
-        Sasha Levin <sashal@kernel.org>,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.4 143/174] mac80211: accept deauth frames in IBSS mode
-Date:   Thu, 16 Jan 2020 12:42:20 -0500
-Message-Id: <20200116174251.24326-143-sashal@kernel.org>
+Cc:     Eric Biggers <ebiggers@google.com>,
+        Jakub Kicinski <jakub.kicinski@netronome.com>,
+        Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 4.4 144/174] llc: fix another potential sk_buff leak in llc_ui_sendmsg()
+Date:   Thu, 16 Jan 2020 12:42:21 -0500
+Message-Id: <20200116174251.24326-144-sashal@kernel.org>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20200116174251.24326-1-sashal@kernel.org>
 References: <20200116174251.24326-1-sashal@kernel.org>
@@ -44,47 +43,194 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Johannes Berg <johannes.berg@intel.com>
+From: Eric Biggers <ebiggers@google.com>
 
-[ Upstream commit 95697f9907bfe3eab0ef20265a766b22e27dde64 ]
+[ Upstream commit fc8d5db10cbe1338a52ebc74e7feab9276721774 ]
 
-We can process deauth frames and all, but we drop them very
-early in the RX path today - this could never have worked.
+All callers of llc_conn_state_process() except llc_build_and_send_pkt()
+(via llc_ui_sendmsg() -> llc_ui_send_data()) assume that it always
+consumes a reference to the skb.  Fix this caller to do the same.
 
-Fixes: 2cc59e784b54 ("mac80211: reply to AUTH with DEAUTH if sta allocation fails in IBSS")
-Signed-off-by: Johannes Berg <johannes.berg@intel.com>
-Signed-off-by: Luca Coelho <luciano.coelho@intel.com>
-Link: https://lore.kernel.org/r/20191004123706.15768-2-luca@coelho.fi
-Signed-off-by: Johannes Berg <johannes.berg@intel.com>
+Fixes: 1da177e4c3f4 ("Linux-2.6.12-rc2")
+Signed-off-by: Eric Biggers <ebiggers@google.com>
+Signed-off-by: Jakub Kicinski <jakub.kicinski@netronome.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/mac80211/rx.c | 11 ++++++++++-
- 1 file changed, 10 insertions(+), 1 deletion(-)
+ net/llc/af_llc.c   | 34 ++++++++++++++++++++--------------
+ net/llc/llc_conn.c |  2 ++
+ net/llc/llc_if.c   | 12 ++++++++----
+ 3 files changed, 30 insertions(+), 18 deletions(-)
 
-diff --git a/net/mac80211/rx.c b/net/mac80211/rx.c
-index 3b8e2f97d815..2b7975c4dac7 100644
---- a/net/mac80211/rx.c
-+++ b/net/mac80211/rx.c
-@@ -3040,9 +3040,18 @@ ieee80211_rx_h_mgmt(struct ieee80211_rx_data *rx)
- 	case cpu_to_le16(IEEE80211_STYPE_PROBE_RESP):
- 		/* process for all: mesh, mlme, ibss */
- 		break;
-+	case cpu_to_le16(IEEE80211_STYPE_DEAUTH):
-+		if (is_multicast_ether_addr(mgmt->da) &&
-+		    !is_broadcast_ether_addr(mgmt->da))
-+			return RX_DROP_MONITOR;
+diff --git a/net/llc/af_llc.c b/net/llc/af_llc.c
+index c153fc2883a8..69f1558dfcb7 100644
+--- a/net/llc/af_llc.c
++++ b/net/llc/af_llc.c
+@@ -111,22 +111,26 @@ static inline u8 llc_ui_header_len(struct sock *sk, struct sockaddr_llc *addr)
+  *
+  *	Send data via reliable llc2 connection.
+  *	Returns 0 upon success, non-zero if action did not succeed.
++ *
++ *	This function always consumes a reference to the skb.
+  */
+ static int llc_ui_send_data(struct sock* sk, struct sk_buff *skb, int noblock)
+ {
+ 	struct llc_sock* llc = llc_sk(sk);
+-	int rc = 0;
+ 
+ 	if (unlikely(llc_data_accept_state(llc->state) ||
+ 		     llc->remote_busy_flag ||
+ 		     llc->p_flag)) {
+ 		long timeout = sock_sndtimeo(sk, noblock);
++		int rc;
+ 
+ 		rc = llc_ui_wait_for_busy_core(sk, timeout);
++		if (rc) {
++			kfree_skb(skb);
++			return rc;
++		}
+ 	}
+-	if (unlikely(!rc))
+-		rc = llc_build_and_send_pkt(sk, skb);
+-	return rc;
++	return llc_build_and_send_pkt(sk, skb);
+ }
+ 
+ static void llc_ui_sk_init(struct socket *sock, struct sock *sk)
+@@ -896,7 +900,7 @@ static int llc_ui_sendmsg(struct socket *sock, struct msghdr *msg, size_t len)
+ 	DECLARE_SOCKADDR(struct sockaddr_llc *, addr, msg->msg_name);
+ 	int flags = msg->msg_flags;
+ 	int noblock = flags & MSG_DONTWAIT;
+-	struct sk_buff *skb;
++	struct sk_buff *skb = NULL;
+ 	size_t size = 0;
+ 	int rc = -EINVAL, copied = 0, hdrlen;
+ 
+@@ -905,10 +909,10 @@ static int llc_ui_sendmsg(struct socket *sock, struct msghdr *msg, size_t len)
+ 	lock_sock(sk);
+ 	if (addr) {
+ 		if (msg->msg_namelen < sizeof(*addr))
+-			goto release;
++			goto out;
+ 	} else {
+ 		if (llc_ui_addr_null(&llc->addr))
+-			goto release;
++			goto out;
+ 		addr = &llc->addr;
+ 	}
+ 	/* must bind connection to sap if user hasn't done it. */
+@@ -916,7 +920,7 @@ static int llc_ui_sendmsg(struct socket *sock, struct msghdr *msg, size_t len)
+ 		/* bind to sap with null dev, exclusive. */
+ 		rc = llc_ui_autobind(sock, addr);
+ 		if (rc)
+-			goto release;
++			goto out;
+ 	}
+ 	hdrlen = llc->dev->hard_header_len + llc_ui_header_len(sk, addr);
+ 	size = hdrlen + len;
+@@ -925,12 +929,12 @@ static int llc_ui_sendmsg(struct socket *sock, struct msghdr *msg, size_t len)
+ 	copied = size - hdrlen;
+ 	rc = -EINVAL;
+ 	if (copied < 0)
+-		goto release;
++		goto out;
+ 	release_sock(sk);
+ 	skb = sock_alloc_send_skb(sk, size, noblock, &rc);
+ 	lock_sock(sk);
+ 	if (!skb)
+-		goto release;
++		goto out;
+ 	skb->dev      = llc->dev;
+ 	skb->protocol = llc_proto_type(addr->sllc_arphrd);
+ 	skb_reserve(skb, hdrlen);
+@@ -940,29 +944,31 @@ static int llc_ui_sendmsg(struct socket *sock, struct msghdr *msg, size_t len)
+ 	if (sk->sk_type == SOCK_DGRAM || addr->sllc_ua) {
+ 		llc_build_and_send_ui_pkt(llc->sap, skb, addr->sllc_mac,
+ 					  addr->sllc_sap);
++		skb = NULL;
+ 		goto out;
+ 	}
+ 	if (addr->sllc_test) {
+ 		llc_build_and_send_test_pkt(llc->sap, skb, addr->sllc_mac,
+ 					    addr->sllc_sap);
++		skb = NULL;
+ 		goto out;
+ 	}
+ 	if (addr->sllc_xid) {
+ 		llc_build_and_send_xid_pkt(llc->sap, skb, addr->sllc_mac,
+ 					   addr->sllc_sap);
++		skb = NULL;
+ 		goto out;
+ 	}
+ 	rc = -ENOPROTOOPT;
+ 	if (!(sk->sk_type == SOCK_STREAM && !addr->sllc_ua))
+ 		goto out;
+ 	rc = llc_ui_send_data(sk, skb, noblock);
++	skb = NULL;
+ out:
+-	if (rc) {
+-		kfree_skb(skb);
+-release:
++	kfree_skb(skb);
++	if (rc)
+ 		dprintk("%s: failed sending from %02X to %02X: %d\n",
+ 			__func__, llc->laddr.lsap, llc->daddr.lsap, rc);
+-	}
+ 	release_sock(sk);
+ 	return rc ? : copied;
+ }
+diff --git a/net/llc/llc_conn.c b/net/llc/llc_conn.c
+index d861b74ad068..5d653f5261c5 100644
+--- a/net/llc/llc_conn.c
++++ b/net/llc/llc_conn.c
+@@ -55,6 +55,8 @@ int sysctl_llc2_busy_timeout = LLC2_BUSY_TIME * HZ;
+  *	(executing it's actions and changing state), upper layer will be
+  *	indicated or confirmed, if needed. Returns 0 for success, 1 for
+  *	failure. The socket lock has to be held before calling this function.
++ *
++ *	This function always consumes a reference to the skb.
+  */
+ int llc_conn_state_process(struct sock *sk, struct sk_buff *skb)
+ {
+diff --git a/net/llc/llc_if.c b/net/llc/llc_if.c
+index 6daf391b3e84..fc4d2bd8816f 100644
+--- a/net/llc/llc_if.c
++++ b/net/llc/llc_if.c
+@@ -38,6 +38,8 @@
+  *	closed and -EBUSY when sending data is not permitted in this state or
+  *	LLC has send an I pdu with p bit set to 1 and is waiting for it's
+  *	response.
++ *
++ *	This function always consumes a reference to the skb.
+  */
+ int llc_build_and_send_pkt(struct sock *sk, struct sk_buff *skb)
+ {
+@@ -46,20 +48,22 @@ int llc_build_and_send_pkt(struct sock *sk, struct sk_buff *skb)
+ 	struct llc_sock *llc = llc_sk(sk);
+ 
+ 	if (unlikely(llc->state == LLC_CONN_STATE_ADM))
+-		goto out;
++		goto out_free;
+ 	rc = -EBUSY;
+ 	if (unlikely(llc_data_accept_state(llc->state) || /* data_conn_refuse */
+ 		     llc->p_flag)) {
+ 		llc->failed_data_req = 1;
+-		goto out;
++		goto out_free;
+ 	}
+ 	ev = llc_conn_ev(skb);
+ 	ev->type      = LLC_CONN_EV_TYPE_PRIM;
+ 	ev->prim      = LLC_DATA_PRIM;
+ 	ev->prim_type = LLC_PRIM_TYPE_REQ;
+ 	skb->dev      = llc->dev;
+-	rc = llc_conn_state_process(sk, skb);
+-out:
++	return llc_conn_state_process(sk, skb);
 +
-+		/* process only for station/IBSS */
-+		if (sdata->vif.type != NL80211_IFTYPE_STATION &&
-+		    sdata->vif.type != NL80211_IFTYPE_ADHOC)
-+			return RX_DROP_MONITOR;
-+		break;
- 	case cpu_to_le16(IEEE80211_STYPE_ASSOC_RESP):
- 	case cpu_to_le16(IEEE80211_STYPE_REASSOC_RESP):
--	case cpu_to_le16(IEEE80211_STYPE_DEAUTH):
- 	case cpu_to_le16(IEEE80211_STYPE_DISASSOC):
- 		if (is_multicast_ether_addr(mgmt->da) &&
- 		    !is_broadcast_ether_addr(mgmt->da))
++out_free:
++	kfree_skb(skb);
+ 	return rc;
+ }
+ 
 -- 
 2.20.1
 
