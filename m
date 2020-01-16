@@ -2,39 +2,36 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 4BDAB13F12C
-	for <lists+netdev@lfdr.de>; Thu, 16 Jan 2020 19:27:32 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B6D7413F11B
+	for <lists+netdev@lfdr.de>; Thu, 16 Jan 2020 19:27:24 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2436713AbgAPS1E (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 16 Jan 2020 13:27:04 -0500
-Received: from mail.kernel.org ([198.145.29.99]:35372 "EHLO mail.kernel.org"
+        id S2436693AbgAPS01 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 16 Jan 2020 13:26:27 -0500
+Received: from mail.kernel.org ([198.145.29.99]:35712 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2403921AbgAPR0c (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 16 Jan 2020 12:26:32 -0500
+        id S2404007AbgAPR0l (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 16 Jan 2020 12:26:41 -0500
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 7D8EF246BC;
-        Thu, 16 Jan 2020 17:26:30 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 88E11246CA;
+        Thu, 16 Jan 2020 17:26:39 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1579195591;
-        bh=rn4pfLKM3XRU+IxIe6/WS+j0s2MfQwOgjyTvquAUgQk=;
+        s=default; t=1579195600;
+        bh=dtlWM/rdlsoDyqcHy5G+UH3OKt7K9e0UJ2kfXsgMzQo=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=stcOJe6T2M5WSwoPKWQYSpQzu8RCkZvbllZUvZIA4a2YUe5TQMpKuD9pqmk209a+O
-         BWdc0f34pZdvL8kIN7FVYRKl+NdqDTzjPkVri+rgaiHswAzryNc3VSO5wOtbyMgmmG
-         z7ZyKowlUWorkDkw3KAEqDS9D6vigkpq5XYkWhpU=
+        b=jqoCV9roHlXiF/ROxdNUroTdVJonFnJBEvaLbut7N9cWPujE324ytPa7JdiSD+gMW
+         3qFJQP07ieUyEcTTZrIZfrOrf2w3Z3nNydNPvmxJk+X81NxyWOZGD40fTYXnAXDzyH
+         gVFq+xobJ9K4FCdBg7UoReulcugmUU1TStqYjMWM=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Dan Carpenter <dan.carpenter@oracle.com>,
-        Jukka Rissanen <jukka.rissanen@linux.intel.com>,
-        Alexander Aring <aring@mojatatu.com>,
-        Marcel Holtmann <marcel@holtmann.org>,
-        Sasha Levin <sashal@kernel.org>,
-        linux-bluetooth@vger.kernel.org, linux-wpan@vger.kernel.org,
-        netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.14 169/371] 6lowpan: Off by one handling ->nexthdr
-Date:   Thu, 16 Jan 2020 12:20:41 -0500
-Message-Id: <20200116172403.18149-112-sashal@kernel.org>
+Cc:     Willem de Bruijn <willemb@google.com>,
+        David Laight <David.Laight@aculab.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 4.14 176/371] packet: in recvmsg msg_name return at least sizeof sockaddr_ll
+Date:   Thu, 16 Jan 2020 12:20:48 -0500
+Message-Id: <20200116172403.18149-119-sashal@kernel.org>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20200116172403.18149-1-sashal@kernel.org>
 References: <20200116172403.18149-1-sashal@kernel.org>
@@ -47,39 +44,67 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Dan Carpenter <dan.carpenter@oracle.com>
+From: Willem de Bruijn <willemb@google.com>
 
-[ Upstream commit f57c4bbf34439531adccd7d3a4ecc14f409c1399 ]
+[ Upstream commit b2cf86e1563e33a14a1c69b3e508d15dc12f804c ]
 
-NEXTHDR_MAX is 255.  What happens here is that we take a u8 value
-"hdr->nexthdr" from the network and then look it up in
-lowpan_nexthdr_nhcs[].  The problem is that if hdr->nexthdr is 0xff then
-we read one element beyond the end of the array so the array needs to
-be one element larger.
+Packet send checks that msg_name is at least sizeof sockaddr_ll.
+Packet recv must return at least this length, so that its output
+can be passed unmodified to packet send.
 
-Fixes: 92aa7c65d295 ("6lowpan: add generic nhc layer interface")
-Signed-off-by: Dan Carpenter <dan.carpenter@oracle.com>
-Acked-by: Jukka Rissanen <jukka.rissanen@linux.intel.com>
-Acked-by: Alexander Aring <aring@mojatatu.com>
-Signed-off-by: Marcel Holtmann <marcel@holtmann.org>
+This ceased to be true since adding support for lladdr longer than
+sll_addr. Since, the return value uses true address length.
+
+Always return at least sizeof sockaddr_ll, even if address length
+is shorter. Zero the padding bytes.
+
+Change v1->v2: do not overwrite zeroed padding again. use copy_len.
+
+Fixes: 0fb375fb9b93 ("[AF_PACKET]: Allow for > 8 byte hardware addresses.")
+Suggested-by: David Laight <David.Laight@aculab.com>
+Signed-off-by: Willem de Bruijn <willemb@google.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/6lowpan/nhc.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ net/packet/af_packet.c | 13 +++++++++++--
+ 1 file changed, 11 insertions(+), 2 deletions(-)
 
-diff --git a/net/6lowpan/nhc.c b/net/6lowpan/nhc.c
-index 4fa2fdda174d..9e56fb98f33c 100644
---- a/net/6lowpan/nhc.c
-+++ b/net/6lowpan/nhc.c
-@@ -18,7 +18,7 @@
- #include "nhc.h"
+diff --git a/net/packet/af_packet.c b/net/packet/af_packet.c
+index 4e1058159b08..e788f9c7c398 100644
+--- a/net/packet/af_packet.c
++++ b/net/packet/af_packet.c
+@@ -3407,20 +3407,29 @@ static int packet_recvmsg(struct socket *sock, struct msghdr *msg, size_t len,
+ 	sock_recv_ts_and_drops(msg, sk, skb);
  
- static struct rb_root rb_root = RB_ROOT;
--static struct lowpan_nhc *lowpan_nexthdr_nhcs[NEXTHDR_MAX];
-+static struct lowpan_nhc *lowpan_nexthdr_nhcs[NEXTHDR_MAX + 1];
- static DEFINE_SPINLOCK(lowpan_nhc_lock);
+ 	if (msg->msg_name) {
++		int copy_len;
++
+ 		/* If the address length field is there to be filled
+ 		 * in, we fill it in now.
+ 		 */
+ 		if (sock->type == SOCK_PACKET) {
+ 			__sockaddr_check_size(sizeof(struct sockaddr_pkt));
+ 			msg->msg_namelen = sizeof(struct sockaddr_pkt);
++			copy_len = msg->msg_namelen;
+ 		} else {
+ 			struct sockaddr_ll *sll = &PACKET_SKB_CB(skb)->sa.ll;
  
- static int lowpan_nhc_insert(struct lowpan_nhc *nhc)
+ 			msg->msg_namelen = sll->sll_halen +
+ 				offsetof(struct sockaddr_ll, sll_addr);
++			copy_len = msg->msg_namelen;
++			if (msg->msg_namelen < sizeof(struct sockaddr_ll)) {
++				memset(msg->msg_name +
++				       offsetof(struct sockaddr_ll, sll_addr),
++				       0, sizeof(sll->sll_addr));
++				msg->msg_namelen = sizeof(struct sockaddr_ll);
++			}
+ 		}
+-		memcpy(msg->msg_name, &PACKET_SKB_CB(skb)->sa,
+-		       msg->msg_namelen);
++		memcpy(msg->msg_name, &PACKET_SKB_CB(skb)->sa, copy_len);
+ 	}
+ 
+ 	if (pkt_sk(sk)->auxdata) {
 -- 
 2.20.1
 
