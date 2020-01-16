@@ -2,50 +2,50 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 3226C13DACD
-	for <lists+netdev@lfdr.de>; Thu, 16 Jan 2020 14:01:38 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8C36813DABF
+	for <lists+netdev@lfdr.de>; Thu, 16 Jan 2020 14:01:31 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726982AbgAPM73 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 16 Jan 2020 07:59:29 -0500
-Received: from s3.sipsolutions.net ([144.76.43.62]:55164 "EHLO
-        sipsolutions.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726688AbgAPM71 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 16 Jan 2020 07:59:27 -0500
-Received: by sipsolutions.net with esmtpsa (TLS1.3:ECDHE_SECP256R1__RSA_PSS_RSAE_SHA256__AES_256_GCM:256)
-        (Exim 4.93)
-        (envelope-from <johannes@sipsolutions.net>)
-        id 1is4jz-00C8Ha-5U; Thu, 16 Jan 2020 13:59:15 +0100
-Message-ID: <d9e0af66e2d8cb26ef595e1a2133f55567f4b5e0.camel@sipsolutions.net>
-Subject: Re: [PATCH -next] mac80111: fix build error without
- CONFIG_ATH11K_DEBUGFS
-From:   Johannes Berg <johannes@sipsolutions.net>
-To:     Chen Zhou <chenzhou10@huawei.com>, davem@davemloft.net
-Cc:     linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        id S1726440AbgAPM7R (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 16 Jan 2020 07:59:17 -0500
+Received: from shards.monkeyblade.net ([23.128.96.9]:38306 "EHLO
+        shards.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726018AbgAPM7R (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 16 Jan 2020 07:59:17 -0500
+Received: from localhost (82-95-191-104.ip.xs4all.nl [82.95.191.104])
+        (using TLSv1 with cipher AES256-SHA (256/256 bits))
+        (Client did not present a certificate)
+        (Authenticated sender: davem-davemloft)
+        by shards.monkeyblade.net (Postfix) with ESMTPSA id 52F8915B5D399;
+        Thu, 16 Jan 2020 04:59:15 -0800 (PST)
+Date:   Thu, 16 Jan 2020 04:59:14 -0800 (PST)
+Message-Id: <20200116.045914.623230506580275299.davem@davemloft.net>
+To:     alobakin@dlink.ru
+Cc:     hauke@hauke-m.de, andrew@lunn.ch, vivien.didelot@gmail.com,
+        f.fainelli@gmail.com, netdev@vger.kernel.org,
         linux-kernel@vger.kernel.org
-Date:   Thu, 16 Jan 2020 13:59:13 +0100
-In-Reply-To: <20200116125155.166749-1-chenzhou10@huawei.com>
-References: <20200116125155.166749-1-chenzhou10@huawei.com>
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.34.2 (3.34.2-1.fc31) 
-MIME-Version: 1.0
+Subject: Re: [PATCH net] net: dsa: tag_gswip: fix typo in tagger name
+From:   David Miller <davem@davemloft.net>
+In-Reply-To: <20200115085438.11948-1-alobakin@dlink.ru>
+References: <20200115085438.11948-1-alobakin@dlink.ru>
+X-Mailer: Mew version 6.8 on Emacs 26.3
+Mime-Version: 1.0
+Content-Type: Text/Plain; charset=us-ascii
 Content-Transfer-Encoding: 7bit
+X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Thu, 16 Jan 2020 04:59:16 -0800 (PST)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 2020-01-16 at 20:51 +0800, Chen Zhou wrote:
-> If CONFIG_ATH11K_DEBUGFS is n, build fails:
+From: Alexander Lobakin <alobakin@dlink.ru>
+Date: Wed, 15 Jan 2020 11:54:38 +0300
+
+> The correct name is GSWIP (Gigabit Switch IP). Typo was introduced in
+> 875138f81d71a ("dsa: Move tagger name into its ops structure") while
+> moving tagger names to their structures.
 > 
-> drivers/net/wireless/ath/ath11k/debugfs_sta.c: In function ath11k_dbg_sta_open_htt_peer_stats:
-> drivers/net/wireless/ath/ath11k/debugfs_sta.c:416:4: error: struct ath11k has no member named debug
->   ar->debug.htt_stats.stats_req = stats_req;
->       ^~
-> and many more similar messages.
-> 
-> Select ATH11K_DEBUGFS under config MAC80211_DEBUGFS to fix this.
+> Fixes: 875138f81d71a ("dsa: Move tagger name into its ops structure")
+> Reviewed-by: Andrew Lunn <andrew@lunn.ch>
+> Signed-off-by: Alexander Lobakin <alobakin@dlink.ru>
 
-Heh, no. You need to find a way in ath11 to fix this.
-
-johannes
-
+Applied and queued up for -stable, thanks.
