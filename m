@@ -2,59 +2,83 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id DAC2C13D52C
-	for <lists+netdev@lfdr.de>; Thu, 16 Jan 2020 08:44:26 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E9F1213D565
+	for <lists+netdev@lfdr.de>; Thu, 16 Jan 2020 08:54:33 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726935AbgAPHoT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 16 Jan 2020 02:44:19 -0500
-Received: from Chamillionaire.breakpoint.cc ([193.142.43.52]:33046 "EHLO
-        Chamillionaire.breakpoint.cc" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726883AbgAPHoT (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 16 Jan 2020 02:44:19 -0500
-Received: from fw by Chamillionaire.breakpoint.cc with local (Exim 4.92)
-        (envelope-from <fw@breakpoint.cc>)
-        id 1irzpA-0003GY-6p; Thu, 16 Jan 2020 08:44:16 +0100
-From:   Florian Westphal <fw@strlen.de>
-To:     <netfilter-devel@vger.kernel.org>
-Cc:     netdev@vger.kernel.org, syzkaller-bugs@googlegroups.com,
-        Florian Westphal <fw@strlen.de>,
-        syzbot+76d0b80493ac881ff77b@syzkaller.appspotmail.com
-Subject: [PATCH nf] netfilter: nft_tunnel: fix null-attribute check
-Date:   Thu, 16 Jan 2020 08:44:11 +0100
-Message-Id: <20200116074411.19511-1-fw@strlen.de>
-X-Mailer: git-send-email 2.24.1
-In-Reply-To: <000000000000b62bda059c36db7c@google.com>
-References: <000000000000b62bda059c36db7c@google.com>
+        id S1729949AbgAPHxn (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 16 Jan 2020 02:53:43 -0500
+Received: from bilbo.ozlabs.org ([203.11.71.1]:52179 "EHLO ozlabs.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726369AbgAPHxn (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 16 Jan 2020 02:53:43 -0500
+Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (No client certificate requested)
+        by mail.ozlabs.org (Postfix) with ESMTPSA id 47yxK10bmwz9sR0;
+        Thu, 16 Jan 2020 18:53:40 +1100 (AEDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=canb.auug.org.au;
+        s=201702; t=1579161221;
+        bh=2eh+uwNwDvUhUxNLg2JpB3vUs6JgfJkuR1WAnr4xO84=;
+        h=Date:From:To:Cc:Subject:From;
+        b=ThNU31zyY9UYR2aJPCTWjuElV3BvjcLwHIRq7/Upd43isufZ3dzakkH+WLkeoy+Ri
+         F3GOd6EYrnhQJhdlm9M33+QGMPpewLAK30dfeF43Ma1S1mQgFxIdg8iThv06qXlZAM
+         6a5dfxpo3eqY+pxRXNVpB+cKTOI2I9YfYWSRkSN5kTQNphSrymIs6L3OTxfJf/hwaP
+         T9ZpaOjyf3hkGw04rx+S3jl2zekDvolxkajMFpaBU9ofd88Ig3NCkR8J8jtaZaNMHl
+         CfyPdd8cOX9D2Hl63dS94TkGtwXpyI3oSwPrXgd4UTdtzVBcqRu+QseyWeAr9fStKR
+         QQsUTbeTazCTQ==
+Date:   Thu, 16 Jan 2020 18:53:37 +1100
+From:   Stephen Rothwell <sfr@canb.auug.org.au>
+To:     David Miller <davem@davemloft.net>,
+        Networking <netdev@vger.kernel.org>
+Cc:     Linux Next Mailing List <linux-next@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Niu Xilei <niu_xilei@163.com>
+Subject: linux-next: build failure after merge of the net-next tree
+Message-ID: <20200116185337.0fbb9398@canb.auug.org.au>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: multipart/signed; boundary="Sig_/M5mUyOn6EPnpQpaqCW7NB+N";
+ protocol="application/pgp-signature"; micalg=pgp-sha256
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-else we get null deref when one of the attributes is missing, both
-must be non-null.
+--Sig_/M5mUyOn6EPnpQpaqCW7NB+N
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: quoted-printable
 
-Reported-by: syzbot+76d0b80493ac881ff77b@syzkaller.appspotmail.com
-Fixes: aaecfdb5c5dd8ba ("netfilter: nf_tables: match on tunnel metadata")
-Signed-off-by: Florian Westphal <fw@strlen.de>
----
- net/netfilter/nft_tunnel.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+Hi all,
 
-diff --git a/net/netfilter/nft_tunnel.c b/net/netfilter/nft_tunnel.c
-index 3d4c2ae605a8..d89c7c553030 100644
---- a/net/netfilter/nft_tunnel.c
-+++ b/net/netfilter/nft_tunnel.c
-@@ -76,7 +76,7 @@ static int nft_tunnel_get_init(const struct nft_ctx *ctx,
- 	struct nft_tunnel *priv = nft_expr_priv(expr);
- 	u32 len;
- 
--	if (!tb[NFTA_TUNNEL_KEY] &&
-+	if (!tb[NFTA_TUNNEL_KEY] ||
- 	    !tb[NFTA_TUNNEL_DREG])
- 		return -EINVAL;
- 
--- 
-2.24.1
+After merging the net-next tree, today's linux-next build (sparc
+defconfig) failed like this:
 
+ERROR: "__umoddi3" [net/core/pktgen.ko] undefined!
+
+Caused by commit
+
+  7786a1af2a6b ("pktgen: Allow configuration of IPv6 source address range")
+
+I have reverted that commit for today.
+
+--=20
+Cheers,
+Stephen Rothwell
+
+--Sig_/M5mUyOn6EPnpQpaqCW7NB+N
+Content-Type: application/pgp-signature
+Content-Description: OpenPGP digital signature
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAEBCAAdFiEENIC96giZ81tWdLgKAVBC80lX0GwFAl4gFoEACgkQAVBC80lX
+0GzyhAf/eNWy0Osm+D+CO9u8W24eqUApYPrHEG8fpK7bV75sYmP0r0lkA4hzV54O
+MEMf6JE3vAfCXZV6kiUJyrq04NrTD/z7dG47py2JoiNzaniwf9hFg7zj0hUd6aDt
+cE1ObUBjESYFkOkMW95v4mgiJ2AWVf77peboG9M901OVMdZlVdnwkuuQdc78cTXc
+VYwpdZgKN9p96Y+xFGuft+3DmmRcm2n83vdc14I4IOHSn+BNJAIFtW9pqpicMX5o
+8O3I8XvfYUHvVU/hOJkEgwMCLi4qwtMPSDehTZ45b5DkaYFeL2UAxscGhQkM/dL0
+4ICPQbRfHxTOQhy4vWM94aJyOmehKQ==
+=3qld
+-----END PGP SIGNATURE-----
+
+--Sig_/M5mUyOn6EPnpQpaqCW7NB+N--
