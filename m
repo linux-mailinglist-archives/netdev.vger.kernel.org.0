@@ -2,37 +2,37 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 2816B13E7FC
-	for <lists+netdev@lfdr.de>; Thu, 16 Jan 2020 18:29:37 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2764713E806
+	for <lists+netdev@lfdr.de>; Thu, 16 Jan 2020 18:29:54 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2392767AbgAPR3f (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 16 Jan 2020 12:29:35 -0500
-Received: from mail.kernel.org ([198.145.29.99]:41474 "EHLO mail.kernel.org"
+        id S2392868AbgAPR3s (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 16 Jan 2020 12:29:48 -0500
+Received: from mail.kernel.org ([198.145.29.99]:41776 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2392752AbgAPR3e (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 16 Jan 2020 12:29:34 -0500
+        id S2392856AbgAPR3r (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 16 Jan 2020 12:29:47 -0500
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 7785024724;
-        Thu, 16 Jan 2020 17:29:32 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id D64CD24710;
+        Thu, 16 Jan 2020 17:29:45 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1579195773;
-        bh=RIjjSlgXFljZ+ANBVrJotX5XLZbHnKiqcXVztCjBkvM=;
+        s=default; t=1579195786;
+        bh=sqN9Ia28wx00eEWZy/Rnbw2Pe3jh79jsaCmiTr1yRgg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Z+HQbpTDiyrmLJXlUaiqVCAyikJ7dBR+hDIbSQ0lf8Kxa9gGonCiVMq9oOgRVfY5L
-         JBPSdfw5MYJNZbhcZgSSOBV0fGxGJWOZ1d8bwBpnGUsk4QCl+I5Oy51mv69PhPc4pU
-         7btsQ2K+lTLf3o4JqCQ9aQBuW1IOMBqkSNx/mbA0=
+        b=b/nk//GGKvo8XhJ73vgX3NAFtyUnrHOTyRdJfF4wwCjZnZEXpRd+A/Gt3HP0F4NFy
+         H5WMgXm8xY/kUhsWM4UPWY1hvxrQEhxojneZ2IMW6G6F3ENfA9SuRh0sWiWhjr66gc
+         3b9PDesfHXLO1uNpurSwh4vZ0mMDRWcJTUh6IdFg=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Nicolas Boichat <drinkcat@chromium.org>,
-        Wen Gong <wgong@codeaurora.org>,
-        Kalle Valo <kvalo@codeaurora.org>,
-        Sasha Levin <sashal@kernel.org>, ath10k@lists.infradead.org,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.14 299/371] ath10k: adjust skb length in ath10k_sdio_mbox_rx_packet
-Date:   Thu, 16 Jan 2020 12:22:51 -0500
-Message-Id: <20200116172403.18149-242-sashal@kernel.org>
+Cc:     Dan Carpenter <dan.carpenter@oracle.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org,
+        linux-stm32@st-md-mailman.stormreply.com,
+        linux-arm-kernel@lists.infradead.org
+Subject: [PATCH AUTOSEL 4.14 309/371] net: ethernet: stmmac: Fix signedness bug in ipq806x_gmac_of_parse()
+Date:   Thu, 16 Jan 2020 12:23:01 -0500
+Message-Id: <20200116172403.18149-252-sashal@kernel.org>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20200116172403.18149-1-sashal@kernel.org>
 References: <20200116172403.18149-1-sashal@kernel.org>
@@ -45,99 +45,35 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Nicolas Boichat <drinkcat@chromium.org>
+From: Dan Carpenter <dan.carpenter@oracle.com>
 
-[ Upstream commit b7139960832eb56fa15d390a4b5c8c5739bd0d1a ]
+[ Upstream commit 231042181dc9d6122c6faba64e99ccb25f13cc6c ]
 
-When the FW bundles multiple packets, pkt->act_len may be incorrect
-as it refers to the first packet only (however, the FW will only
-bundle packets that fit into the same pkt->alloc_len).
+The "gmac->phy_mode" variable is an enum and in this context GCC will
+treat it as an unsigned int so the error handling will never be
+triggered.
 
-Before this patch, the skb length would be set (incorrectly) to
-pkt->act_len in ath10k_sdio_mbox_rx_packet, and then later manually
-adjusted in ath10k_sdio_mbox_rx_process_packet.
-
-The first problem is that ath10k_sdio_mbox_rx_process_packet does not
-use proper skb_put commands to adjust the length (it directly changes
-skb->len), so we end up with a mismatch between skb->head + skb->tail
-and skb->data + skb->len. This is quite serious, and causes corruptions
-in the TCP stack, as the stack tries to coalesce packets, and relies
-on skb->tail being correct (that is, skb_tail_pointer must point to
-the first byte_after_ the data).
-
-Instead of re-adjusting the size in ath10k_sdio_mbox_rx_process_packet,
-this moves the code to ath10k_sdio_mbox_rx_packet, and also add a
-bounds check, as skb_put would crash the kernel if not enough space is
-available.
-
-Tested with QCA6174 SDIO with firmware
-WLAN.RMH.4.4.1-00007-QCARMSWP-1.
-
-Fixes: 8530b4e7b22bc3b ("ath10k: sdio: set skb len for all rx packets")
-Signed-off-by: Nicolas Boichat <drinkcat@chromium.org>
-Signed-off-by: Wen Gong <wgong@codeaurora.org>
-Signed-off-by: Kalle Valo <kvalo@codeaurora.org>
+Fixes: b1c17215d718 ("stmmac: add ipq806x glue layer")
+Signed-off-by: Dan Carpenter <dan.carpenter@oracle.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/wireless/ath/ath10k/sdio.c | 29 +++++++++++++++++++-------
- 1 file changed, 21 insertions(+), 8 deletions(-)
+ drivers/net/ethernet/stmicro/stmmac/dwmac-ipq806x.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/net/wireless/ath/ath10k/sdio.c b/drivers/net/wireless/ath/ath10k/sdio.c
-index 0a1248ebccf5..f49b21b137c1 100644
---- a/drivers/net/wireless/ath/ath10k/sdio.c
-+++ b/drivers/net/wireless/ath/ath10k/sdio.c
-@@ -392,16 +392,11 @@ static int ath10k_sdio_mbox_rx_process_packet(struct ath10k *ar,
- 	struct ath10k_htc_hdr *htc_hdr = (struct ath10k_htc_hdr *)skb->data;
- 	bool trailer_present = htc_hdr->flags & ATH10K_HTC_FLAG_TRAILER_PRESENT;
- 	enum ath10k_htc_ep_id eid;
--	u16 payload_len;
- 	u8 *trailer;
- 	int ret;
+diff --git a/drivers/net/ethernet/stmicro/stmmac/dwmac-ipq806x.c b/drivers/net/ethernet/stmicro/stmmac/dwmac-ipq806x.c
+index 866444b6c82f..11a4a81b0397 100644
+--- a/drivers/net/ethernet/stmicro/stmmac/dwmac-ipq806x.c
++++ b/drivers/net/ethernet/stmicro/stmmac/dwmac-ipq806x.c
+@@ -203,7 +203,7 @@ static int ipq806x_gmac_of_parse(struct ipq806x_gmac *gmac)
+ 	struct device *dev = &gmac->pdev->dev;
  
--	payload_len = le16_to_cpu(htc_hdr->len);
--	skb->len = payload_len + sizeof(struct ath10k_htc_hdr);
--
- 	if (trailer_present) {
--		trailer = skb->data + sizeof(*htc_hdr) +
--			  payload_len - htc_hdr->trailer_len;
-+		trailer = skb->data + skb->len - htc_hdr->trailer_len;
- 
- 		eid = pipe_id_to_eid(htc_hdr->eid);
- 
-@@ -635,13 +630,31 @@ static int ath10k_sdio_mbox_rx_packet(struct ath10k *ar,
- {
- 	struct ath10k_sdio *ar_sdio = ath10k_sdio_priv(ar);
- 	struct sk_buff *skb = pkt->skb;
-+	struct ath10k_htc_hdr *htc_hdr;
- 	int ret;
- 
- 	ret = ath10k_sdio_readsb(ar, ar_sdio->mbox_info.htc_addr,
- 				 skb->data, pkt->alloc_len);
-+	if (ret)
-+		goto out;
-+
-+	/* Update actual length. The original length may be incorrect,
-+	 * as the FW will bundle multiple packets as long as their sizes
-+	 * fit within the same aligned length (pkt->alloc_len).
-+	 */
-+	htc_hdr = (struct ath10k_htc_hdr *)skb->data;
-+	pkt->act_len = le16_to_cpu(htc_hdr->len) + sizeof(*htc_hdr);
-+	if (pkt->act_len > pkt->alloc_len) {
-+		ath10k_warn(ar, "rx packet too large (%zu > %zu)\n",
-+			    pkt->act_len, pkt->alloc_len);
-+		ret = -EMSGSIZE;
-+		goto out;
-+	}
-+
-+	skb_put(skb, pkt->act_len);
-+
-+out:
- 	pkt->status = ret;
--	if (!ret)
--		skb_put(skb, pkt->act_len);
- 
- 	return ret;
- }
+ 	gmac->phy_mode = of_get_phy_mode(dev->of_node);
+-	if (gmac->phy_mode < 0) {
++	if ((int)gmac->phy_mode < 0) {
+ 		dev_err(dev, "missing phy mode property\n");
+ 		return -EINVAL;
+ 	}
 -- 
 2.20.1
 
