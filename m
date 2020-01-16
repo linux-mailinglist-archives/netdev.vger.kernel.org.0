@@ -2,37 +2,38 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 6EF9013F8E2
-	for <lists+netdev@lfdr.de>; Thu, 16 Jan 2020 20:21:31 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 31A7E13F8C1
+	for <lists+netdev@lfdr.de>; Thu, 16 Jan 2020 20:21:17 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2437791AbgAPTV0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 16 Jan 2020 14:21:26 -0500
-Received: from mail.kernel.org ([198.145.29.99]:37632 "EHLO mail.kernel.org"
+        id S1731193AbgAPQxr (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 16 Jan 2020 11:53:47 -0500
+Received: from mail.kernel.org ([198.145.29.99]:37766 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1729339AbgAPQxl (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 16 Jan 2020 11:53:41 -0500
+        id S1731168AbgAPQxp (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 16 Jan 2020 11:53:45 -0500
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 18DF42464B;
-        Thu, 16 Jan 2020 16:53:39 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id EBCEB20730;
+        Thu, 16 Jan 2020 16:53:43 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1579193620;
-        bh=oUriMmdjKAgjJA7UfRp6wzz4Hoy6yBgLI1byKSxEiV4=;
+        s=default; t=1579193625;
+        bh=YxgnhOYDbT7KSEZFo5YqdsGUEpgMB64qZI0ItoJFqAU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Q60BqtQqZzSQHr2VUTSl+YFnQqQJOAh31b0rqKQM0HLX5rTP2tbhaNRPMP50VfeOi
-         WqzihGbPtbYHxhvJyvEbzqTUgJ+v8kxSWVQArLI38pkPxE2kyRsjA0IdBSA8QLAE/Q
-         Hr+bK2GMZJmfDA7uwOezbmXWBTffT/N66hwjewTg=
+        b=EqTd2bRLA5uYhIELYykjEdLBjucIndSVIo3vxcbhxHaitjisG9Rr3kYsSI3MKMTJA
+         DIZMS+D9tNB2KIBEZ2sfjxkZfralqMzAN3SJlNPBszq7UpC2g1wJJwvZ87a7Fr07WR
+         JrSWNADo4CRwDeQqHMW+kmMcFn1YTdxAxs955by0=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Andrii Nakryiko <andriin@fb.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Yonghong Song <yhs@fb.com>, Sasha Levin <sashal@kernel.org>,
-        netdev@vger.kernel.org, bpf@vger.kernel.org,
-        linux-kselftest@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.4 155/205] libbpf: Fix call relocation offset calculation bug
-Date:   Thu, 16 Jan 2020 11:42:10 -0500
-Message-Id: <20200116164300.6705-155-sashal@kernel.org>
+Cc:     Lorenzo Bianconi <lorenzo@kernel.org>,
+        Zero_Chaos <sidhayn@gmail.com>, Felix Fietkau <nbd@nbd.name>,
+        Sasha Levin <sashal@kernel.org>,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org
+Subject: [PATCH AUTOSEL 5.4 159/205] mt76: mt76u: rely on usb_interface instead of usb_dev
+Date:   Thu, 16 Jan 2020 11:42:14 -0500
+Message-Id: <20200116164300.6705-159-sashal@kernel.org>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20200116164300.6705-1-sashal@kernel.org>
 References: <20200116164300.6705-1-sashal@kernel.org>
@@ -45,236 +46,117 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Andrii Nakryiko <andriin@fb.com>
+From: Lorenzo Bianconi <lorenzo@kernel.org>
 
-[ Upstream commit a0d7da26ce86a25e97ae191cb90574ada6daea98 ]
+[ Upstream commit 80df01f4dc79abbed724bbe0851cab3fe8ad9d99 ]
 
-When relocating subprogram call, libbpf doesn't take into account
-relo->text_off, which comes from symbol's value. This generally works fine for
-subprograms implemented as static functions, but breaks for global functions.
+usb drivers are supposed to communicate using usb_interface instead
+mt76x{0,2}u is now registering through usb_device. Fix it by passing
+usb_intf device to mt76_alloc_device routine.
 
-Taking a simplified test_pkt_access.c as an example:
-
-__attribute__ ((noinline))
-static int test_pkt_access_subprog1(volatile struct __sk_buff *skb)
-{
-        return skb->len * 2;
-}
-
-__attribute__ ((noinline))
-static int test_pkt_access_subprog2(int val, volatile struct __sk_buff *skb)
-{
-        return skb->len + val;
-}
-
-SEC("classifier/test_pkt_access")
-int test_pkt_access(struct __sk_buff *skb)
-{
-        if (test_pkt_access_subprog1(skb) != skb->len * 2)
-                return TC_ACT_SHOT;
-        if (test_pkt_access_subprog2(2, skb) != skb->len + 2)
-                return TC_ACT_SHOT;
-        return TC_ACT_UNSPEC;
-}
-
-When compiled, we get two relocations, pointing to '.text' symbol. .text has
-st_value set to 0 (it points to the beginning of .text section):
-
-0000000000000008  000000050000000a R_BPF_64_32            0000000000000000 .text
-0000000000000040  000000050000000a R_BPF_64_32            0000000000000000 .text
-
-test_pkt_access_subprog1 and test_pkt_access_subprog2 offsets (targets of two
-calls) are encoded within call instruction's imm32 part as -1 and 2,
-respectively:
-
-0000000000000000 test_pkt_access_subprog1:
-       0:       61 10 00 00 00 00 00 00 r0 = *(u32 *)(r1 + 0)
-       1:       64 00 00 00 01 00 00 00 w0 <<= 1
-       2:       95 00 00 00 00 00 00 00 exit
-
-0000000000000018 test_pkt_access_subprog2:
-       3:       61 10 00 00 00 00 00 00 r0 = *(u32 *)(r1 + 0)
-       4:       04 00 00 00 02 00 00 00 w0 += 2
-       5:       95 00 00 00 00 00 00 00 exit
-
-0000000000000000 test_pkt_access:
-       0:       bf 16 00 00 00 00 00 00 r6 = r1
-===>   1:       85 10 00 00 ff ff ff ff call -1
-       2:       bc 01 00 00 00 00 00 00 w1 = w0
-       3:       b4 00 00 00 02 00 00 00 w0 = 2
-       4:       61 62 00 00 00 00 00 00 r2 = *(u32 *)(r6 + 0)
-       5:       64 02 00 00 01 00 00 00 w2 <<= 1
-       6:       5e 21 08 00 00 00 00 00 if w1 != w2 goto +8 <LBB0_3>
-       7:       bf 61 00 00 00 00 00 00 r1 = r6
-===>   8:       85 10 00 00 02 00 00 00 call 2
-       9:       bc 01 00 00 00 00 00 00 w1 = w0
-      10:       61 62 00 00 00 00 00 00 r2 = *(u32 *)(r6 + 0)
-      11:       04 02 00 00 02 00 00 00 w2 += 2
-      12:       b4 00 00 00 ff ff ff ff w0 = -1
-      13:       1e 21 01 00 00 00 00 00 if w1 == w2 goto +1 <LBB0_3>
-      14:       b4 00 00 00 02 00 00 00 w0 = 2
-0000000000000078 LBB0_3:
-      15:       95 00 00 00 00 00 00 00 exit
-
-Now, if we compile example with global functions, the setup changes.
-Relocations are now against specifically test_pkt_access_subprog1 and
-test_pkt_access_subprog2 symbols, with test_pkt_access_subprog2 pointing 24
-bytes into its respective section (.text), i.e., 3 instructions in:
-
-0000000000000008  000000070000000a R_BPF_64_32            0000000000000000 test_pkt_access_subprog1
-0000000000000048  000000080000000a R_BPF_64_32            0000000000000018 test_pkt_access_subprog2
-
-Calls instructions now encode offsets relative to function symbols and are both
-set ot -1:
-
-0000000000000000 test_pkt_access_subprog1:
-       0:       61 10 00 00 00 00 00 00 r0 = *(u32 *)(r1 + 0)
-       1:       64 00 00 00 01 00 00 00 w0 <<= 1
-       2:       95 00 00 00 00 00 00 00 exit
-
-0000000000000018 test_pkt_access_subprog2:
-       3:       61 20 00 00 00 00 00 00 r0 = *(u32 *)(r2 + 0)
-       4:       0c 10 00 00 00 00 00 00 w0 += w1
-       5:       95 00 00 00 00 00 00 00 exit
-
-0000000000000000 test_pkt_access:
-       0:       bf 16 00 00 00 00 00 00 r6 = r1
-===>   1:       85 10 00 00 ff ff ff ff call -1
-       2:       bc 01 00 00 00 00 00 00 w1 = w0
-       3:       b4 00 00 00 02 00 00 00 w0 = 2
-       4:       61 62 00 00 00 00 00 00 r2 = *(u32 *)(r6 + 0)
-       5:       64 02 00 00 01 00 00 00 w2 <<= 1
-       6:       5e 21 09 00 00 00 00 00 if w1 != w2 goto +9 <LBB2_3>
-       7:       b4 01 00 00 02 00 00 00 w1 = 2
-       8:       bf 62 00 00 00 00 00 00 r2 = r6
-===>   9:       85 10 00 00 ff ff ff ff call -1
-      10:       bc 01 00 00 00 00 00 00 w1 = w0
-      11:       61 62 00 00 00 00 00 00 r2 = *(u32 *)(r6 + 0)
-      12:       04 02 00 00 02 00 00 00 w2 += 2
-      13:       b4 00 00 00 ff ff ff ff w0 = -1
-      14:       1e 21 01 00 00 00 00 00 if w1 == w2 goto +1 <LBB2_3>
-      15:       b4 00 00 00 02 00 00 00 w0 = 2
-0000000000000080 LBB2_3:
-      16:       95 00 00 00 00 00 00 00 exit
-
-Thus the right formula to calculate target call offset after relocation should
-take into account relocation's target symbol value (offset within section),
-call instruction's imm32 offset, and (subtracting, to get relative instruction
-offset) instruction index of call instruction itself. All that is shifted by
-number of instructions in main program, given all sub-programs are copied over
-after main program.
-
-Convert few selftests relying on bpf-to-bpf calls to use global functions
-instead of static ones.
-
-Fixes: 48cca7e44f9f ("libbpf: add support for bpf_call")
-Reported-by: Alexei Starovoitov <ast@kernel.org>
-Signed-off-by: Andrii Nakryiko <andriin@fb.com>
-Acked-by: Yonghong Song <yhs@fb.com>
-Signed-off-by: Alexei Starovoitov <ast@kernel.org>
-Link: https://lore.kernel.org/bpf/20191119224447.3781271-1-andriin@fb.com
+Fixes: 112f980ac8926 ("mt76usb: use usb_dev private data")
+Signed-off-by: Lorenzo Bianconi <lorenzo@kernel.org>
+Tested-By: Zero_Chaos <sidhayn@gmail.com>
+Signed-off-by: Felix Fietkau <nbd@nbd.name>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- tools/lib/bpf/libbpf.c                             | 8 ++++++--
- tools/testing/selftests/bpf/progs/test_btf_haskv.c | 4 ++--
- tools/testing/selftests/bpf/progs/test_btf_newkv.c | 4 ++--
- tools/testing/selftests/bpf/progs/test_btf_nokv.c  | 4 ++--
- 4 files changed, 12 insertions(+), 8 deletions(-)
+ drivers/net/wireless/mediatek/mt76/mt76.h       |  3 ++-
+ drivers/net/wireless/mediatek/mt76/mt76x0/usb.c |  2 +-
+ drivers/net/wireless/mediatek/mt76/mt76x2/usb.c |  2 +-
+ drivers/net/wireless/mediatek/mt76/usb.c        | 12 +++++++++---
+ 4 files changed, 13 insertions(+), 6 deletions(-)
 
-diff --git a/tools/lib/bpf/libbpf.c b/tools/lib/bpf/libbpf.c
-index d98838c5820c..de2be6b2a748 100644
---- a/tools/lib/bpf/libbpf.c
-+++ b/tools/lib/bpf/libbpf.c
-@@ -1791,9 +1791,13 @@ bpf_program__collect_reloc(struct bpf_program *prog, GElf_Shdr *shdr,
- 				pr_warning("incorrect bpf_call opcode\n");
- 				return -LIBBPF_ERRNO__RELOC;
- 			}
-+			if (sym.st_value % 8) {
-+				pr_warn("bad call relo offset: %lu\n", sym.st_value);
-+				return -LIBBPF_ERRNO__RELOC;
-+			}
- 			prog->reloc_desc[i].type = RELO_CALL;
- 			prog->reloc_desc[i].insn_idx = insn_idx;
--			prog->reloc_desc[i].text_off = sym.st_value;
-+			prog->reloc_desc[i].text_off = sym.st_value / 8;
- 			obj->has_pseudo_calls = true;
- 			continue;
- 		}
-@@ -3239,7 +3243,7 @@ bpf_program__reloc_text(struct bpf_program *prog, struct bpf_object *obj,
- 			 prog->section_name);
- 	}
- 	insn = &prog->insns[relo->insn_idx];
--	insn->imm += prog->main_prog_cnt - relo->insn_idx;
-+	insn->imm += relo->text_off + prog->main_prog_cnt - relo->insn_idx;
- 	return 0;
- }
- 
-diff --git a/tools/testing/selftests/bpf/progs/test_btf_haskv.c b/tools/testing/selftests/bpf/progs/test_btf_haskv.c
-index e5c79fe0ffdb..d65c61e64df2 100644
---- a/tools/testing/selftests/bpf/progs/test_btf_haskv.c
-+++ b/tools/testing/selftests/bpf/progs/test_btf_haskv.c
-@@ -25,7 +25,7 @@ struct dummy_tracepoint_args {
- };
- 
- __attribute__((noinline))
--static int test_long_fname_2(struct dummy_tracepoint_args *arg)
-+int test_long_fname_2(struct dummy_tracepoint_args *arg)
+diff --git a/drivers/net/wireless/mediatek/mt76/mt76.h b/drivers/net/wireless/mediatek/mt76/mt76.h
+index 8aec7ccf2d79..e8605ae6f8a5 100644
+--- a/drivers/net/wireless/mediatek/mt76/mt76.h
++++ b/drivers/net/wireless/mediatek/mt76/mt76.h
+@@ -799,7 +799,8 @@ static inline int
+ mt76u_bulk_msg(struct mt76_dev *dev, void *data, int len, int *actual_len,
+ 	       int timeout)
  {
- 	struct ipv_counts *counts;
- 	int key = 0;
-@@ -43,7 +43,7 @@ static int test_long_fname_2(struct dummy_tracepoint_args *arg)
- }
+-	struct usb_device *udev = to_usb_device(dev->dev);
++	struct usb_interface *uintf = to_usb_interface(dev->dev);
++	struct usb_device *udev = interface_to_usbdev(uintf);
+ 	struct mt76_usb *usb = &dev->usb;
+ 	unsigned int pipe;
  
- __attribute__((noinline))
--static int test_long_fname_1(struct dummy_tracepoint_args *arg)
-+int test_long_fname_1(struct dummy_tracepoint_args *arg)
- {
- 	return test_long_fname_2(arg);
- }
-diff --git a/tools/testing/selftests/bpf/progs/test_btf_newkv.c b/tools/testing/selftests/bpf/progs/test_btf_newkv.c
-index 5ee3622ddebb..8e83317db841 100644
---- a/tools/testing/selftests/bpf/progs/test_btf_newkv.c
-+++ b/tools/testing/selftests/bpf/progs/test_btf_newkv.c
-@@ -33,7 +33,7 @@ struct dummy_tracepoint_args {
- };
+diff --git a/drivers/net/wireless/mediatek/mt76/mt76x0/usb.c b/drivers/net/wireless/mediatek/mt76/mt76x0/usb.c
+index 00a445d27599..65d404e61404 100644
+--- a/drivers/net/wireless/mediatek/mt76/mt76x0/usb.c
++++ b/drivers/net/wireless/mediatek/mt76/mt76x0/usb.c
+@@ -226,7 +226,7 @@ static int mt76x0u_probe(struct usb_interface *usb_intf,
+ 	u32 mac_rev;
+ 	int ret;
  
- __attribute__((noinline))
--static int test_long_fname_2(struct dummy_tracepoint_args *arg)
-+int test_long_fname_2(struct dummy_tracepoint_args *arg)
- {
- 	struct ipv_counts *counts;
- 	int key = 0;
-@@ -56,7 +56,7 @@ static int test_long_fname_2(struct dummy_tracepoint_args *arg)
- }
+-	mdev = mt76_alloc_device(&usb_dev->dev, sizeof(*dev), &mt76x0u_ops,
++	mdev = mt76_alloc_device(&usb_intf->dev, sizeof(*dev), &mt76x0u_ops,
+ 				 &drv_ops);
+ 	if (!mdev)
+ 		return -ENOMEM;
+diff --git a/drivers/net/wireless/mediatek/mt76/mt76x2/usb.c b/drivers/net/wireless/mediatek/mt76/mt76x2/usb.c
+index da5e0f9a8bae..8b26c6108186 100644
+--- a/drivers/net/wireless/mediatek/mt76/mt76x2/usb.c
++++ b/drivers/net/wireless/mediatek/mt76/mt76x2/usb.c
+@@ -39,7 +39,7 @@ static int mt76x2u_probe(struct usb_interface *intf,
+ 	struct mt76_dev *mdev;
+ 	int err;
  
- __attribute__((noinline))
--static int test_long_fname_1(struct dummy_tracepoint_args *arg)
-+int test_long_fname_1(struct dummy_tracepoint_args *arg)
+-	mdev = mt76_alloc_device(&udev->dev, sizeof(*dev), &mt76x2u_ops,
++	mdev = mt76_alloc_device(&intf->dev, sizeof(*dev), &mt76x2u_ops,
+ 				 &drv_ops);
+ 	if (!mdev)
+ 		return -ENOMEM;
+diff --git a/drivers/net/wireless/mediatek/mt76/usb.c b/drivers/net/wireless/mediatek/mt76/usb.c
+index 20c6fe510e9d..05aa42bd9808 100644
+--- a/drivers/net/wireless/mediatek/mt76/usb.c
++++ b/drivers/net/wireless/mediatek/mt76/usb.c
+@@ -20,7 +20,8 @@ static int __mt76u_vendor_request(struct mt76_dev *dev, u8 req,
+ 				  u8 req_type, u16 val, u16 offset,
+ 				  void *buf, size_t len)
  {
- 	return test_long_fname_2(arg);
- }
-diff --git a/tools/testing/selftests/bpf/progs/test_btf_nokv.c b/tools/testing/selftests/bpf/progs/test_btf_nokv.c
-index 434188c37774..3f4422044759 100644
---- a/tools/testing/selftests/bpf/progs/test_btf_nokv.c
-+++ b/tools/testing/selftests/bpf/progs/test_btf_nokv.c
-@@ -23,7 +23,7 @@ struct dummy_tracepoint_args {
- };
+-	struct usb_device *udev = to_usb_device(dev->dev);
++	struct usb_interface *uintf = to_usb_interface(dev->dev);
++	struct usb_device *udev = interface_to_usbdev(uintf);
+ 	unsigned int pipe;
+ 	int i, ret;
  
- __attribute__((noinline))
--static int test_long_fname_2(struct dummy_tracepoint_args *arg)
-+int test_long_fname_2(struct dummy_tracepoint_args *arg)
- {
- 	struct ipv_counts *counts;
- 	int key = 0;
-@@ -41,7 +41,7 @@ static int test_long_fname_2(struct dummy_tracepoint_args *arg)
- }
+@@ -235,7 +236,8 @@ mt76u_rd_rp(struct mt76_dev *dev, u32 base,
  
- __attribute__((noinline))
--static int test_long_fname_1(struct dummy_tracepoint_args *arg)
-+int test_long_fname_1(struct dummy_tracepoint_args *arg)
+ static bool mt76u_check_sg(struct mt76_dev *dev)
  {
- 	return test_long_fname_2(arg);
- }
+-	struct usb_device *udev = to_usb_device(dev->dev);
++	struct usb_interface *uintf = to_usb_interface(dev->dev);
++	struct usb_device *udev = interface_to_usbdev(uintf);
+ 
+ 	return (!disable_usb_sg && udev->bus->sg_tablesize > 0 &&
+ 		(udev->bus->no_sg_constraint ||
+@@ -370,7 +372,8 @@ mt76u_fill_bulk_urb(struct mt76_dev *dev, int dir, int index,
+ 		    struct urb *urb, usb_complete_t complete_fn,
+ 		    void *context)
+ {
+-	struct usb_device *udev = to_usb_device(dev->dev);
++	struct usb_interface *uintf = to_usb_interface(dev->dev);
++	struct usb_device *udev = interface_to_usbdev(uintf);
+ 	unsigned int pipe;
+ 
+ 	if (dir == USB_DIR_IN)
+@@ -952,6 +955,7 @@ int mt76u_init(struct mt76_dev *dev,
+ 		.rd_rp = mt76u_rd_rp,
+ 		.type = MT76_BUS_USB,
+ 	};
++	struct usb_device *udev = interface_to_usbdev(intf);
+ 	struct mt76_usb *usb = &dev->usb;
+ 
+ 	tasklet_init(&usb->rx_tasklet, mt76u_rx_tasklet, (unsigned long)dev);
+@@ -965,6 +969,8 @@ int mt76u_init(struct mt76_dev *dev,
+ 	dev->bus = &mt76u_ops;
+ 	dev->queue_ops = &usb_queue_ops;
+ 
++	dev_set_drvdata(&udev->dev, dev);
++
+ 	usb->sg_en = mt76u_check_sg(dev);
+ 
+ 	return mt76u_set_endpoints(intf, usb);
 -- 
 2.20.1
 
