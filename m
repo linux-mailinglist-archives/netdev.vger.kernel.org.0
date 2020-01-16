@@ -2,37 +2,38 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id EE87113E19E
-	for <lists+netdev@lfdr.de>; Thu, 16 Jan 2020 17:50:40 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C99C113E18F
+	for <lists+netdev@lfdr.de>; Thu, 16 Jan 2020 17:50:28 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729600AbgAPQrG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 16 Jan 2020 11:47:06 -0500
-Received: from mail.kernel.org ([198.145.29.99]:56646 "EHLO mail.kernel.org"
+        id S1728884AbgAPQrq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 16 Jan 2020 11:47:46 -0500
+Received: from mail.kernel.org ([198.145.29.99]:57526 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1729547AbgAPQrE (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 16 Jan 2020 11:47:04 -0500
+        id S1729972AbgAPQrj (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 16 Jan 2020 11:47:39 -0500
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id D7EBE207FF;
-        Thu, 16 Jan 2020 16:46:59 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 5233E20663;
+        Thu, 16 Jan 2020 16:47:37 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1579193223;
-        bh=dAs/zNG/m+VHy0DYPM6tcOxHAC0qIG1JB0YFDX/OnZw=;
+        s=default; t=1579193258;
+        bh=zGiHIJ/sfrkiEqz3zUsx/+MVHMdK+6Jn2DmDZgbzp7w=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=jLyrxKrUf6JvIKh67lmBcPTEKw/NvUZPci1U67WINGt4UbDmDTDiYPuXH/OcWIixm
-         YG+9WY0Y3g2qNtAW4UNjHGe2ei1fMk0RsGQVqLSB2KjVnelOTcKzJD0WUb/pqkW+Cf
-         dveCKyON+GdWJXN48yCkOjkyRatbKTVRKEhAG6TY=
+        b=iHbXuwmnE1KIZ/uCYX+nEFgv70uNaU1FukP1ZzaxbcavmfMWrMS4tu2rtTkc85ucK
+         9CFxPSfrzqN1qKBHiZd1TF2lu//9JLVAcY6iPUIVN5CGOmQzCZoBPV8lPQKdMGqMfg
+         z0uC47nL17Yn3FAGixEGxHxWlhNxFrC9UThNMa50=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Ilias Apalodimas <ilias.apalodimas@linaro.org>,
-        Jakub Kicinski <jakub.kicinski@netronome.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org,
-        bpf@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.4 049/205] net: netsec: Correct dma sync for XDP_TX frames
-Date:   Thu, 16 Jan 2020 11:40:24 -0500
-Message-Id: <20200116164300.6705-49-sashal@kernel.org>
+Cc:     Nathan Chancellor <natechancellor@gmail.com>,
+        Ping-Ke Shih <pkshih@realtek.com>,
+        Kalle Valo <kvalo@codeaurora.org>,
+        Sasha Levin <sashal@kernel.org>,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        clang-built-linux@googlegroups.com
+Subject: [PATCH AUTOSEL 5.4 057/205] rtlwifi: Remove unnecessary NULL check in rtl_regd_init
+Date:   Thu, 16 Jan 2020 11:40:32 -0500
+Message-Id: <20200116164300.6705-57-sashal@kernel.org>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20200116164300.6705-1-sashal@kernel.org>
 References: <20200116164300.6705-1-sashal@kernel.org>
@@ -45,38 +46,53 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Ilias Apalodimas <ilias.apalodimas@linaro.org>
+From: Nathan Chancellor <natechancellor@gmail.com>
 
-[ Upstream commit d9496f3ecfe4823c1e12aecbcc29220147fa012c ]
+[ Upstream commit 091c6e9c083f7ebaff00b37ad13562d51464d175 ]
 
-bpf_xdp_adjust_head() can change the frame boundaries. Account for the
-potential shift properly by calculating the new offset before
-syncing the buffer to the device for XDP_TX
+When building with Clang + -Wtautological-pointer-compare:
 
-Fixes: ba2b232108d3 ("net: netsec: add XDP support")
-Signed-off-by: Ilias Apalodimas <ilias.apalodimas@linaro.org>
-Reviewed-by: Jakub Kicinski <jakub.kicinski@netronome.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+drivers/net/wireless/realtek/rtlwifi/regd.c:389:33: warning: comparison
+of address of 'rtlpriv->regd' equal to a null pointer is always false
+[-Wtautological-pointer-compare]
+        if (wiphy == NULL || &rtlpriv->regd == NULL)
+                              ~~~~~~~~~^~~~    ~~~~
+1 warning generated.
+
+The address of an array member is never NULL unless it is the first
+struct member so remove the unnecessary check. This was addressed in
+the staging version of the driver in commit f986978b32b3 ("Staging:
+rtlwifi: remove unnecessary NULL check").
+
+While we are here, fix the following checkpatch warning:
+
+CHECK: Comparison to NULL could be written "!wiphy"
+35: FILE: drivers/net/wireless/realtek/rtlwifi/regd.c:389:
++       if (wiphy == NULL)
+
+Fixes: 0c8173385e54 ("rtl8192ce: Add new driver")
+Link:https://github.com/ClangBuiltLinux/linux/issues/750
+Signed-off-by: Nathan Chancellor <natechancellor@gmail.com>
+Acked-by: Ping-Ke Shih <pkshih@realtek.com>
+Signed-off-by: Kalle Valo <kvalo@codeaurora.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/socionext/netsec.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ drivers/net/wireless/realtek/rtlwifi/regd.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/net/ethernet/socionext/netsec.c b/drivers/net/ethernet/socionext/netsec.c
-index f9e6744d8fd6..41ddd8fff2a7 100644
---- a/drivers/net/ethernet/socionext/netsec.c
-+++ b/drivers/net/ethernet/socionext/netsec.c
-@@ -847,8 +847,8 @@ static u32 netsec_xdp_queue_one(struct netsec_priv *priv,
- 		enum dma_data_direction dma_dir =
- 			page_pool_get_dma_dir(rx_ring->page_pool);
+diff --git a/drivers/net/wireless/realtek/rtlwifi/regd.c b/drivers/net/wireless/realtek/rtlwifi/regd.c
+index c10432cd703e..8be31e0ad878 100644
+--- a/drivers/net/wireless/realtek/rtlwifi/regd.c
++++ b/drivers/net/wireless/realtek/rtlwifi/regd.c
+@@ -386,7 +386,7 @@ int rtl_regd_init(struct ieee80211_hw *hw,
+ 	struct wiphy *wiphy = hw->wiphy;
+ 	struct country_code_to_enum_rd *country = NULL;
  
--		dma_handle = page_pool_get_dma_addr(page) +
--			NETSEC_RXBUF_HEADROOM;
-+		dma_handle = page_pool_get_dma_addr(page) + xdpf->headroom +
-+			sizeof(*xdpf);
- 		dma_sync_single_for_device(priv->dev, dma_handle, xdpf->len,
- 					   dma_dir);
- 		tx_desc.buf_type = TYPE_NETSEC_XDP_TX;
+-	if (wiphy == NULL || &rtlpriv->regd == NULL)
++	if (!wiphy)
+ 		return -EINVAL;
+ 
+ 	/* init country_code from efuse channel plan */
 -- 
 2.20.1
 
