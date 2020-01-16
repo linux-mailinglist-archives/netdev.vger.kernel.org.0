@@ -2,196 +2,88 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id B52B913ED87
-	for <lists+netdev@lfdr.de>; Thu, 16 Jan 2020 19:03:40 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0CECB13EDCB
+	for <lists+netdev@lfdr.de>; Thu, 16 Jan 2020 19:05:23 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2405056AbgAPSDf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 16 Jan 2020 13:03:35 -0500
-Received: from foss.arm.com ([217.140.110.172]:56900 "EHLO foss.arm.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2393641AbgAPSDe (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 16 Jan 2020 13:03:34 -0500
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id DF3BD31B;
-        Thu, 16 Jan 2020 10:03:33 -0800 (PST)
-Received: from donnerap.cambridge.arm.com (usa-sjc-imap-foss1.foss.arm.com [10.121.207.14])
-        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id DE2C73F534;
-        Thu, 16 Jan 2020 10:03:32 -0800 (PST)
-Date:   Thu, 16 Jan 2020 18:03:26 +0000
-From:   Andre Przywara <andre.przywara@arm.com>
-To:     Radhey Shyam Pandey <radheys@xilinx.com>
-Cc:     "David S . Miller" <davem@davemloft.net>,
-        Michal Simek <michals@xilinx.com>,
-        Robert Hancock <hancock@sedsystems.ca>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-arm-kernel@lists.infradead.org" 
-        <linux-arm-kernel@lists.infradead.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH 03/14] net: axienet: Fix DMA descriptor cleanup path
-Message-ID: <20200116180326.47c93ce2@donnerap.cambridge.arm.com>
-In-Reply-To: <CH2PR02MB70008D24DA7D1426E8A71013C7380@CH2PR02MB7000.namprd02.prod.outlook.com>
-References: <20200110115415.75683-1-andre.przywara@arm.com>
-        <20200110115415.75683-4-andre.przywara@arm.com>
-        <CH2PR02MB7000F64AB27D352E00DC77A7C7380@CH2PR02MB7000.namprd02.prod.outlook.com>
-        <20200110154328.6676215f@donnerap.cambridge.arm.com>
-        <CH2PR02MB70008D24DA7D1426E8A71013C7380@CH2PR02MB7000.namprd02.prod.outlook.com>
-Organization: ARM
-X-Mailer: Claws Mail 3.17.3 (GTK+ 2.24.32; aarch64-unknown-linux-gnu)
-MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+        id S2393573AbgAPSFU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 16 Jan 2020 13:05:20 -0500
+Received: from mail-wm1-f65.google.com ([209.85.128.65]:34271 "EHLO
+        mail-wm1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2405686AbgAPSFT (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 16 Jan 2020 13:05:19 -0500
+Received: by mail-wm1-f65.google.com with SMTP id w5so7699836wmi.1
+        for <netdev@vger.kernel.org>; Thu, 16 Jan 2020 10:05:18 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id;
+        bh=JAW/siyrdDp3e7Z8Mz8Me9I8vid3/NP/GpT1sgaivtI=;
+        b=kfSJXn2WE7prFzv1IsZiWDkmzVbY4NMbvnNbyrGd8uCbaDjSOE9rThJWWOW1D5vzpT
+         y87UFQSp5nW71EiU5gUtluN0KCa6uabv1wT1BFpM43Bs3FkfxSlwt6dZVjMN3HPQKDbd
+         rhHcYgRsPHPBpueXXy9TMu8ILMLl+p+lrBPJ75cmLGEEJd4R5+IKa5YMJkCOGPxLluFm
+         cfPsdTZLd9tkJba/XFfCNpOiSjGydSENpuDVV7JvluZx10qAZwMig/J6y/admw9sp8Pt
+         J2nR4Amh2M0wb/WtkyI/upkXlRpl+J3IXk0Fl21Sp/0L/YSKGNkHToMYJzcXjiXUs71O
+         a2AA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=JAW/siyrdDp3e7Z8Mz8Me9I8vid3/NP/GpT1sgaivtI=;
+        b=qtFZXLRRfDXuacOqpbf+nEQrOVGyfC2JkaX8o2vpxnajGsKhBKai6WWM4DXSJzcpeC
+         YTv/bxvASWv4B47YiRdJRcKfyi+bLaisM8ZLksUkh8RgxU7NDYwQcAd52FAmU+eXe4tn
+         8EC1lQ8U0d2tLXFWcV6TLIidUKWyabvhLj+kkRvO49V8aLD2V69j7MlWSmZGdXdwvp2r
+         wEP2M7+jA/QUGnGLYdIYJDb5zJ9IZrHxdMY64hOYydtCfCiHSHbSCTUz91U0T76fIUm9
+         zcPU8YOLHA4W6zAMCyUx/qZt+zjpwgHx1gd44zMJGS8E7X/c6o7KRtyC5q+DQ4DQtDuF
+         OYZQ==
+X-Gm-Message-State: APjAAAWi7EWUKUke93paFX2Vf1jngYKsGD1EHzs5VjXZOPj88PHSwgzh
+        ObMLsu1jWUVobjRMiSJED3o=
+X-Google-Smtp-Source: APXvYqw2W+dun8emexgJ3jbUz/oNGhti9K0u1wtYbq1YPoewWIM2AqvGmcSTrdOxCespsH0hPvXApQ==
+X-Received: by 2002:a05:600c:2c0b:: with SMTP id q11mr294132wmg.2.1579197917468;
+        Thu, 16 Jan 2020 10:05:17 -0800 (PST)
+Received: from localhost.localdomain ([188.25.254.226])
+        by smtp.gmail.com with ESMTPSA id d8sm29549927wrx.71.2020.01.16.10.05.16
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 16 Jan 2020 10:05:17 -0800 (PST)
+From:   Vladimir Oltean <olteanv@gmail.com>
+To:     davem@davemloft.net, netdev@vger.kernel.org, linux@armlinux.org.uk
+Cc:     andrew@lunn.ch, f.fainelli@gmail.com, vivien.didelot@gmail.com,
+        claudiu.manoil@nxp.com,
+        Alex Marginean <alexandru.marginean@nxp.com>,
+        Vladimir Oltean <vladimir.oltean@nxp.com>
+Subject: [PATCH net-next] net: dsa: felix: Set USXGMII link based on BMSR, not LPA
+Date:   Thu, 16 Jan 2020 20:05:06 +0200
+Message-Id: <20200116180506.28337-1-olteanv@gmail.com>
+X-Mailer: git-send-email 2.17.1
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, 10 Jan 2020 17:05:45 +0000
-Radhey Shyam Pandey <radheys@xilinx.com> wrote:
+From: Alex Marginean <alexandru.marginean@nxp.com>
 
-Hi,
+At least some PHYs (AQR412) don't advertise copper-side link status
+during system side AN.
 
-> > -----Original Message-----
-> > From: Andre Przywara <andre.przywara@arm.com>
-> > Sent: Friday, January 10, 2020 9:13 PM
-> > To: Radhey Shyam Pandey <radheys@xilinx.com>
-> > Cc: David S . Miller <davem@davemloft.net>; Michal Simek
-> > <michals@xilinx.com>; Robert Hancock <hancock@sedsystems.ca>;
-> > netdev@vger.kernel.org; linux-arm-kernel@lists.infradead.org; linux-
-> > kernel@vger.kernel.org
-> > Subject: Re: [PATCH 03/14] net: axienet: Fix DMA descriptor cleanup path
-> > 
-> > On Fri, 10 Jan 2020 15:14:46 +0000
-> > Radhey Shyam Pandey <radheys@xilinx.com> wrote:
-> > 
-> > Hi Radhey,
-> > 
-> > thanks for having a look!
-> >   
-> > > > -----Original Message-----
-> > > > From: Andre Przywara <andre.przywara@arm.com>
-> > > > Sent: Friday, January 10, 2020 5:24 PM
-> > > > To: David S . Miller <davem@davemloft.net>; Radhey Shyam Pandey
-> > > > <radheys@xilinx.com>
-> > > > Cc: Michal Simek <michals@xilinx.com>; Robert Hancock
-> > > > <hancock@sedsystems.ca>; netdev@vger.kernel.org; linux-arm-
-> > > > kernel@lists.infradead.org; linux-kernel@vger.kernel.org
-> > > > Subject: [PATCH 03/14] net: axienet: Fix DMA descriptor cleanup path
-> > > >
-> > > > When axienet_dma_bd_init() bails out during the initialisation process,
-> > > > it might do so with parts of the structure already allocated and
-> > > > initialised, while other parts have not been touched yet. Before
-> > > > returning in this case, we call axienet_dma_bd_release(), which does not
-> > > > take care of this corner case.
-> > > > This is most obvious by the first loop happily dereferencing
-> > > > lp->rx_bd_v, which we actually check to be non NULL *afterwards*.
-> > > >
-> > > > Make sure we only unmap or free already allocated structures, by:
-> > > > - directly returning with -ENOMEM if nothing has been allocated at all
-> > > > - checking for lp->rx_bd_v to be non-NULL *before* using it
-> > > > - only unmapping allocated DMA RX regions
-> > > >
-> > > > This avoids NULL pointer dereferences when initialisation fails.
-> > > >
-> > > > Signed-off-by: Andre Przywara <andre.przywara@arm.com>
-> > > > ---
-> > > >  .../net/ethernet/xilinx/xilinx_axienet_main.c | 43 ++++++++++++-------
-> > > >  1 file changed, 28 insertions(+), 15 deletions(-)
-> > > >
-> > > > diff --git a/drivers/net/ethernet/xilinx/xilinx_axienet_main.c
-> > > > b/drivers/net/ethernet/xilinx/xilinx_axienet_main.c
-> > > > index 97482cf093ce..7e90044cf2d9 100644
-> > > > --- a/drivers/net/ethernet/xilinx/xilinx_axienet_main.c
-> > > > +++ b/drivers/net/ethernet/xilinx/xilinx_axienet_main.c
-> > > > @@ -160,24 +160,37 @@ static void axienet_dma_bd_release(struct
-> > > > net_device *ndev)
-> > > >  	int i;
-> > > >  	struct axienet_local *lp = netdev_priv(ndev);
-> > > >
-> > > > +	/* If we end up here, tx_bd_v must have been DMA allocated. */
-> > > > +	dma_free_coherent(ndev->dev.parent,
-> > > > +			  sizeof(*lp->tx_bd_v) * lp->tx_bd_num,
-> > > > +			  lp->tx_bd_v,
-> > > > +			  lp->tx_bd_p);
-> > > > +
-> > > > +	if (!lp->rx_bd_v)
-> > > > +		return;
-> > > > +
-> > > >  	for (i = 0; i < lp->rx_bd_num; i++) {
-> > > > -		dma_unmap_single(ndev->dev.parent, lp->rx_bd_v[i].phys,
-> > > > -				 lp->max_frm_size, DMA_FROM_DEVICE);
-> > > > +		/* A NULL skb means this descriptor has not been initialised
-> > > > +		 * at all.
-> > > > +		 */
-> > > > +		if (!lp->rx_bd_v[i].skb)
-> > > > +			break;
-> > > > +
-> > > >  		dev_kfree_skb(lp->rx_bd_v[i].skb);
-> > > > -	}
-> > > >
-> > > > -	if (lp->rx_bd_v) {
-> > > > -		dma_free_coherent(ndev->dev.parent,
-> > > > -				  sizeof(*lp->rx_bd_v) * lp->rx_bd_num,
-> > > > -				  lp->rx_bd_v,
-> > > > -				  lp->rx_bd_p);
-> > > > -	}
-> > > > -	if (lp->tx_bd_v) {
-> > > > -		dma_free_coherent(ndev->dev.parent,
-> > > > -				  sizeof(*lp->tx_bd_v) * lp->tx_bd_num,
-> > > > -				  lp->tx_bd_v,
-> > > > -				  lp->tx_bd_p);
-> > > > +		/* For each descriptor, we programmed cntrl with the (non-
-> > > > zero)
-> > > > +		 * descriptor size, after it had been successfully allocated.
-> > > > +		 * So a non-zero value in there means we need to unmap it.
-> > > > +		 */  
-> > >  
-> > > > +		if (lp->rx_bd_v[i].cntrl)  
-> > >
-> > > I think it should ok to unmap w/o any check?  
-> > 
-> > Do you mean because .phys would be 0 if not initialised? AFAIK 0 can be a
-> > valid DMA address, so there is no special check for that, and unmapping
-> > DMA address 0 will probably go wrong at some point. So it's unlike
-> > kfree(NULL).  
-> 
-> I mean if skb allocation is successful in _dma_bd_init then in release path
-> we can assume .phys is always a valid address and skip rx_bd_v[i].cntrl
-> check.
+So remove this duplicate assignment to pcs->link and rely on the
+previous one for link state: the local indication from the MAC PCS.
 
-I don't think we can assume this. If the skb allocation succeeded, but then the dma_map_single failed (which we check with dma_mapping_error()), we would end up with a valid skb, but an uninitialised phys DMA address in the registers. That's why I set .cntrl only after having checked the dma_map_single() result.
+Fixes: bdeced75b13f ("net: dsa: felix: Add PCS operations for PHYLINK")
+Signed-off-by: Alex Marginean <alexandru.marginean@nxp.com>
+Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
+---
+ drivers/net/dsa/ocelot/felix_vsc9959.c | 1 -
+ 1 file changed, 1 deletion(-)
 
-Or am I missing something?
-
-Cheers,
-Andre
+diff --git a/drivers/net/dsa/ocelot/felix_vsc9959.c b/drivers/net/dsa/ocelot/felix_vsc9959.c
+index 03482616faa7..1e82b0d72058 100644
+--- a/drivers/net/dsa/ocelot/felix_vsc9959.c
++++ b/drivers/net/dsa/ocelot/felix_vsc9959.c
+@@ -892,7 +892,6 @@ static void vsc9959_pcs_link_state_usxgmii(struct phy_device *pcs,
+ 		break;
+ 	}
  
-> > > > +			dma_unmap_single(ndev->dev.parent, lp-  
-> > > > >rx_bd_v[i].phys,  
-> > > > +					 lp->max_frm_size,
-> > > > DMA_FROM_DEVICE);
-> > > >  	}
-> > > > +
-> > > > +	dma_free_coherent(ndev->dev.parent,
-> > > > +			  sizeof(*lp->rx_bd_v) * lp->rx_bd_num,
-> > > > +			  lp->rx_bd_v,
-> > > > +			  lp->rx_bd_p);
-> > > >  }
-> > > >
-> > > >  /**
-> > > > @@ -207,7 +220,7 @@ static int axienet_dma_bd_init(struct net_device
-> > > > *ndev)
-> > > >  					 sizeof(*lp->tx_bd_v) * lp-  
-> > > > >tx_bd_num,  
-> > > >  					 &lp->tx_bd_p, GFP_KERNEL);
-> > > >  	if (!lp->tx_bd_v)
-> > > > -		goto out;
-> > > > +		return -ENOMEM;
-> > > >
-> > > >  	lp->rx_bd_v = dma_alloc_coherent(ndev->dev.parent,
-> > > >  					 sizeof(*lp->rx_bd_v) * lp-  
-> > > > >rx_bd_num,  
-> > > > --
-> > > > 2.17.1  
-> > >  
-> 
+-	pcs->link = USXGMII_LPA_LNKS(lpa);
+ 	if (USXGMII_LPA_DUPLEX(lpa))
+ 		pcs->duplex = DUPLEX_FULL;
+ 	else
+-- 
+2.17.1
 
