@@ -2,36 +2,35 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id F051C13E69B
-	for <lists+netdev@lfdr.de>; Thu, 16 Jan 2020 18:21:44 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 648FD13E6A2
+	for <lists+netdev@lfdr.de>; Thu, 16 Jan 2020 18:21:48 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2391167AbgAPRRl (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 16 Jan 2020 12:17:41 -0500
-Received: from mail.kernel.org ([198.145.29.99]:43268 "EHLO mail.kernel.org"
+        id S2391271AbgAPRRr (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 16 Jan 2020 12:17:47 -0500
+Received: from mail.kernel.org ([198.145.29.99]:43604 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2387616AbgAPRRk (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 16 Jan 2020 12:17:40 -0500
+        id S2391260AbgAPRRq (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 16 Jan 2020 12:17:46 -0500
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id C4D6E2051A;
-        Thu, 16 Jan 2020 17:17:38 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 5545E2075B;
+        Thu, 16 Jan 2020 17:17:45 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1579195059;
-        bh=hOjkk+9ukcJhXI0EqCJJubVofhE0FK+eKaZ29cbr58E=;
+        s=default; t=1579195066;
+        bh=94usrpuvHkK+oqpe26a5HjtKs1zleocJ+1SOwzdpkao=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=s1moj+FaVZxyvVpDwOsbVrKmIGVe2uYaA8rT42AWwPyFL7cbbx2FseqvyBPEJHv6j
-         FOtY5DZ5/FQuXs8+xf6cobsiIghwBNSjJhspwyT1Sbhoie3YiwEMzvWwDN2nHf8YJs
-         4UkOI/yu52Bf+ZisRobaCk428n5/KFAQohvyokF0=
+        b=O/tv+NXqnsX7KUKdEip+w5UuayM0F3hVNalLfb31JqDwgWsoyVRGgaHJ7LoWg5pYV
+         lmxGt7gKQ5u3tLsibYgGr7xDdIyQ5+XzrzHWp5aDFSnTqBw8S2eXM37EdeLYExMKFA
+         HBJ52wULvpva5sB3qoMVYVwGPk/5zVCwSph2c7Uw=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Petr Machata <petrm@mellanox.com>,
-        Ido Schimmel <idosch@mellanox.com>,
+Cc:     Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>,
         "David S . Miller" <davem@davemloft.net>,
         Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.14 015/371] mlxsw: reg: QEEC: Add minimum shaper fields
-Date:   Thu, 16 Jan 2020 12:11:23 -0500
-Message-Id: <20200116171719.16965-15-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 4.14 020/371] net: phy: Fix not to call phy_resume() if PHY is not attached
+Date:   Thu, 16 Jan 2020 12:11:28 -0500
+Message-Id: <20200116171719.16965-20-sashal@kernel.org>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20200116171719.16965-1-sashal@kernel.org>
 References: <20200116171719.16965-1-sashal@kernel.org>
@@ -44,75 +43,66 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Petr Machata <petrm@mellanox.com>
+From: Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>
 
-[ Upstream commit 8b931821aa04823e2e5df0ae93937baabbd23286 ]
+[ Upstream commit ef1b5bf506b1f0ee3edc98533e1f3ecb105eb46a ]
 
-Add QEEC.mise (minimum shaper enable) and QEEC.min_shaper_rate to enable
-configuration of minimum shaper.
+This patch fixes an issue that mdio_bus_phy_resume() doesn't call
+phy_resume() if the PHY is not attached.
 
-Increase the QEEC length to 0x20 as well: that's the length that the
-register has had for a long time now, but with the configurations that
-mlxsw typically exercises, the firmware tolerated 0x1C-sized packets.
-With mise=true however, FW rejects packets unless they have the full
-required length.
-
-Fixes: b9b7cee40579 ("mlxsw: reg: Add QoS ETS Element Configuration register")
-Signed-off-by: Petr Machata <petrm@mellanox.com>
-Signed-off-by: Ido Schimmel <idosch@mellanox.com>
+Fixes: 803dd9c77ac3 ("net: phy: avoid suspending twice a PHY")
+Signed-off-by: Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>
 Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/mellanox/mlxsw/reg.h | 22 +++++++++++++++++++++-
- 1 file changed, 21 insertions(+), 1 deletion(-)
+ drivers/net/phy/phy_device.c | 11 ++++++-----
+ 1 file changed, 6 insertions(+), 5 deletions(-)
 
-diff --git a/drivers/net/ethernet/mellanox/mlxsw/reg.h b/drivers/net/ethernet/mellanox/mlxsw/reg.h
-index 8ab7a4f98a07..e7974ba06432 100644
---- a/drivers/net/ethernet/mellanox/mlxsw/reg.h
-+++ b/drivers/net/ethernet/mellanox/mlxsw/reg.h
-@@ -2452,7 +2452,7 @@ static inline void mlxsw_reg_qtct_pack(char *payload, u8 local_port,
-  * Configures the ETS elements.
-  */
- #define MLXSW_REG_QEEC_ID 0x400D
--#define MLXSW_REG_QEEC_LEN 0x1C
-+#define MLXSW_REG_QEEC_LEN 0x20
+diff --git a/drivers/net/phy/phy_device.c b/drivers/net/phy/phy_device.c
+index a98c227a4c2e..99dae55cd334 100644
+--- a/drivers/net/phy/phy_device.c
++++ b/drivers/net/phy/phy_device.c
+@@ -76,7 +76,7 @@ static LIST_HEAD(phy_fixup_list);
+ static DEFINE_MUTEX(phy_fixup_lock);
  
- MLXSW_REG_DEFINE(qeec, MLXSW_REG_QEEC_ID, MLXSW_REG_QEEC_LEN);
+ #ifdef CONFIG_PM
+-static bool mdio_bus_phy_may_suspend(struct phy_device *phydev)
++static bool mdio_bus_phy_may_suspend(struct phy_device *phydev, bool suspend)
+ {
+ 	struct device_driver *drv = phydev->mdio.dev.driver;
+ 	struct phy_driver *phydrv = to_phy_driver(drv);
+@@ -88,10 +88,11 @@ static bool mdio_bus_phy_may_suspend(struct phy_device *phydev)
+ 	/* PHY not attached? May suspend if the PHY has not already been
+ 	 * suspended as part of a prior call to phy_disconnect() ->
+ 	 * phy_detach() -> phy_suspend() because the parent netdev might be the
+-	 * MDIO bus driver and clock gated at this point.
++	 * MDIO bus driver and clock gated at this point. Also may resume if
++	 * PHY is not attached.
+ 	 */
+ 	if (!netdev)
+-		return !phydev->suspended;
++		return suspend ? !phydev->suspended : phydev->suspended;
  
-@@ -2494,6 +2494,15 @@ MLXSW_ITEM32(reg, qeec, element_index, 0x04, 0, 8);
-  */
- MLXSW_ITEM32(reg, qeec, next_element_index, 0x08, 0, 8);
+ 	/* Don't suspend PHY if the attached netdev parent may wakeup.
+ 	 * The parent may point to a PCI device, as in tg3 driver.
+@@ -121,7 +122,7 @@ static int mdio_bus_phy_suspend(struct device *dev)
+ 	if (phydev->attached_dev && phydev->adjust_link)
+ 		phy_stop_machine(phydev);
  
-+/* reg_qeec_mise
-+ * Min shaper configuration enable. Enables configuration of the min
-+ * shaper on this ETS element
-+ * 0 - Disable
-+ * 1 - Enable
-+ * Access: RW
-+ */
-+MLXSW_ITEM32(reg, qeec, mise, 0x0C, 31, 1);
-+
- enum {
- 	MLXSW_REG_QEEC_BYTES_MODE,
- 	MLXSW_REG_QEEC_PACKETS_MODE,
-@@ -2510,6 +2519,17 @@ enum {
-  */
- MLXSW_ITEM32(reg, qeec, pb, 0x0C, 28, 1);
+-	if (!mdio_bus_phy_may_suspend(phydev))
++	if (!mdio_bus_phy_may_suspend(phydev, true))
+ 		return 0;
  
-+/* The smallest permitted min shaper rate. */
-+#define MLXSW_REG_QEEC_MIS_MIN	200000		/* Kbps */
-+
-+/* reg_qeec_min_shaper_rate
-+ * Min shaper information rate.
-+ * For CPU port, can only be configured for port hierarchy.
-+ * When in bytes mode, value is specified in units of 1000bps.
-+ * Access: RW
-+ */
-+MLXSW_ITEM32(reg, qeec, min_shaper_rate, 0x0C, 0, 28);
-+
- /* reg_qeec_mase
-  * Max shaper configuration enable. Enables configuration of the max
-  * shaper on this ETS element.
+ 	return phy_suspend(phydev);
+@@ -132,7 +133,7 @@ static int mdio_bus_phy_resume(struct device *dev)
+ 	struct phy_device *phydev = to_phy_device(dev);
+ 	int ret;
+ 
+-	if (!mdio_bus_phy_may_suspend(phydev))
++	if (!mdio_bus_phy_may_suspend(phydev, false))
+ 		goto no_resume;
+ 
+ 	ret = phy_resume(phydev);
 -- 
 2.20.1
 
