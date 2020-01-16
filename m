@@ -2,69 +2,85 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id E5BDA13DB4F
-	for <lists+netdev@lfdr.de>; Thu, 16 Jan 2020 14:18:58 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7A5B513DB46
+	for <lists+netdev@lfdr.de>; Thu, 16 Jan 2020 14:16:52 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726832AbgAPNSu (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 16 Jan 2020 08:18:50 -0500
-Received: from szxga07-in.huawei.com ([45.249.212.35]:53656 "EHLO huawei.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1726329AbgAPNSu (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 16 Jan 2020 08:18:50 -0500
-Received: from DGGEMS402-HUB.china.huawei.com (unknown [172.30.72.58])
-        by Forcepoint Email with ESMTP id EA1593EB626CDFB28B09;
-        Thu, 16 Jan 2020 21:18:46 +0800 (CST)
-Received: from localhost.localdomain.localdomain (10.175.113.25) by
- DGGEMS402-HUB.china.huawei.com (10.3.19.202) with Microsoft SMTP Server id
- 14.3.439.0; Thu, 16 Jan 2020 21:18:39 +0800
-From:   Hongbo Yao <yaohongbo@huawei.com>
-To:     <kuba@kernel.org>
-CC:     <yaohongbo@huawei.com>, <chenzhou10@huawei.com>,
-        <davem@davemloft.net>, <netdev@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>
-Subject: [PATCH v2 -next] drivers/net: netdevsim depends on INET
-Date:   Thu, 16 Jan 2020 21:14:04 +0800
-Message-ID: <20200116131404.169423-1-yaohongbo@huawei.com>
-X-Mailer: git-send-email 2.20.1
+        id S1726689AbgAPNQr (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 16 Jan 2020 08:16:47 -0500
+Received: from metis.ext.pengutronix.de ([85.220.165.71]:57407 "EHLO
+        metis.ext.pengutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726406AbgAPNQq (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 16 Jan 2020 08:16:46 -0500
+Received: from dude.hi.pengutronix.de ([2001:67c:670:100:1d::7])
+        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <mgr@pengutronix.de>)
+        id 1is50v-0001BV-1L; Thu, 16 Jan 2020 14:16:45 +0100
+Received: from mgr by dude.hi.pengutronix.de with local (Exim 4.92)
+        (envelope-from <mgr@pengutronix.de>)
+        id 1is50u-0004nD-G7; Thu, 16 Jan 2020 14:16:44 +0100
+From:   Michael Grzeschik <m.grzeschik@pengutronix.de>
+To:     netdev@vger.kernel.org
+Cc:     andrew@lunn.ch, f.fainelli@gmail.com, hkallweit1@gmail.com,
+        kernel@pengutronix.de
+Subject: [PATCH v4] net: phy: dp83867: Set FORCE_LINK_GOOD to default after reset
+Date:   Thu, 16 Jan 2020 14:16:31 +0100
+Message-Id: <20200116131631.31724-1-m.grzeschik@pengutronix.de>
+X-Mailer: git-send-email 2.25.0
+In-Reply-To: <20200116.045753.1672747031363850521.davem@davemloft.net>
+References: <20200116.045753.1672747031363850521.davem@davemloft.net>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [10.175.113.25]
-X-CFilter-Loop: Reflected
+Content-Transfer-Encoding: 8bit
+X-SA-Exim-Connect-IP: 2001:67c:670:100:1d::7
+X-SA-Exim-Mail-From: mgr@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: netdev@vger.kernel.org
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-If CONFIG_INET is not set and CONFIG_NETDEVSIM=y.
-Building drivers/net/netdevsim/fib.o will get the following error:
+According to the Datasheet this bit should be 0 (Normal operation) in
+default. With the FORCE_LINK_GOOD bit set, it is not possible to get a
+link. This patch sets FORCE_LINK_GOOD to the default value after
+resetting the phy.
 
-drivers/net/netdevsim/fib.o: In function `nsim_fib4_rt_hw_flags_set':
-fib.c:(.text+0x12b): undefined reference to `fib_alias_hw_flags_set'
-drivers/net/netdevsim/fib.o: In function `nsim_fib4_rt_destroy':
-fib.c:(.text+0xb11): undefined reference to `free_fib_info'
-
-Correct the Kconfig for netdevsim.
-
-Reported-by: Hulk Robot <hulkci@huawei.com>
-Fixes: 48bb9eb47b270("netdevsim: fib: Add dummy implementation for FIB offload")
-Signed-off-by: Hongbo Yao <yaohongbo@huawei.com>
+Signed-off-by: Michael Grzeschik <m.grzeschik@pengutronix.de>
 ---
- drivers/net/Kconfig | 1 +
- 1 file changed, 1 insertion(+)
+v1 -> v2: - fixed typo in subject line
+	  - used phy_modify instead of read/write
+v2 -> v3: - returned dp83867_phy_reset with phy_modify call
+v3 -> v4: - rebased to net branch
 
-diff --git a/drivers/net/Kconfig b/drivers/net/Kconfig
-index 77ee9afad038..25a8f9387d5a 100644
---- a/drivers/net/Kconfig
-+++ b/drivers/net/Kconfig
-@@ -549,6 +549,7 @@ source "drivers/net/hyperv/Kconfig"
- config NETDEVSIM
- 	tristate "Simulated networking device"
- 	depends on DEBUG_FS
-+	depends on INET
- 	depends on IPV6 || IPV6=n
- 	select NET_DEVLINK
- 	help
+ drivers/net/phy/dp83867.c | 8 +++++++-
+ 1 file changed, 7 insertions(+), 1 deletion(-)
+
+diff --git a/drivers/net/phy/dp83867.c b/drivers/net/phy/dp83867.c
+index 9cd9dcee4eb2e..01cf71358359a 100644
+--- a/drivers/net/phy/dp83867.c
++++ b/drivers/net/phy/dp83867.c
+@@ -97,6 +97,7 @@
+ #define DP83867_PHYCR_FIFO_DEPTH_MAX		0x03
+ #define DP83867_PHYCR_FIFO_DEPTH_MASK		GENMASK(15, 14)
+ #define DP83867_PHYCR_RESERVED_MASK		BIT(11)
++#define DP83867_PHYCR_FORCE_LINK_GOOD		BIT(10)
+ 
+ /* RGMIIDCTL bits */
+ #define DP83867_RGMII_TX_CLK_DELAY_MAX		0xf
+@@ -599,7 +600,12 @@ static int dp83867_phy_reset(struct phy_device *phydev)
+ 
+ 	usleep_range(10, 20);
+ 
+-	return 0;
++	/* After reset FORCE_LINK_GOOD bit is set. Although the
++	 * default value should be unset. Disable FORCE_LINK_GOOD
++	 * for the phy to work properly.
++	 */
++	return phy_modify(phydev, MII_DP83867_PHYCTRL,
++			 DP83867_PHYCR_FORCE_LINK_GOOD, 0);
+ }
+ 
+ static struct phy_driver dp83867_driver[] = {
 -- 
-2.20.1
+2.25.0
 
