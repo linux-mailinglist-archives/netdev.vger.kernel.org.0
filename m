@@ -2,37 +2,39 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 9798813F89B
-	for <lists+netdev@lfdr.de>; Thu, 16 Jan 2020 20:19:53 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3CBDA13F893
+	for <lists+netdev@lfdr.de>; Thu, 16 Jan 2020 20:19:38 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2437556AbgAPTTs (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 16 Jan 2020 14:19:48 -0500
-Received: from mail.kernel.org ([198.145.29.99]:38578 "EHLO mail.kernel.org"
+        id S2404789AbgAPTTg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 16 Jan 2020 14:19:36 -0500
+Received: from mail.kernel.org ([198.145.29.99]:38664 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1731611AbgAPQyM (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 16 Jan 2020 11:54:12 -0500
+        id S1729398AbgAPQyP (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 16 Jan 2020 11:54:15 -0500
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id E86812176D;
-        Thu, 16 Jan 2020 16:54:10 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 8EFD7214AF;
+        Thu, 16 Jan 2020 16:54:13 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1579193651;
-        bh=OzFODw4fgcmPhpz8E8cgdKYNHhUMu9ketHJs8OPWZQA=;
+        s=default; t=1579193654;
+        bh=DI6ICq4HWZ6XHBvN01VGY+os4flBLAgbrVEIZE3MPpc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=b7ifsK/NcQq8eYKGbGo/0xDU7rp/wLTiVeRLW/B0Ofg6KoujqKPNzFGY/3z9vSM3R
-         eR6gxRXOEin3hNHlb95Ykf3xySSkexWancXvfpJQ3j8nF4W4YDYCUKbmAOKskOrlR7
-         5CoKFzUR1aQn+Sq8EMvlY+Zik2MpPySEY1txYZso=
+        b=qjaCEItej3zw/ZngP0YLLXJ+E+z56u49B1iJtdCLh0XWpMkg9tdNDsaVgxW/1MsVJ
+         n47gDKf/kBDuh7mGms3Bpfqv33KTFPG6iDIT9QsYcL1IHymsU5ahJTuLOTp0mp1VxK
+         77ZtcZqrCp+Lijhl+Nbo0r+RhH+ilW67YyE3RQgM=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Christian Lamparter <chunkeey@gmail.com>,
-        Kalle Valo <kvalo@codeaurora.org>,
-        Sasha Levin <sashal@kernel.org>,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org
-Subject: [PATCH AUTOSEL 5.4 181/205] ath9k: use iowrite32 over __raw_writel
-Date:   Thu, 16 Jan 2020 11:42:36 -0500
-Message-Id: <20200116164300.6705-181-sashal@kernel.org>
+Cc:     Tung Nguyen <tung.q.nguyen@dektech.com.au>,
+        Hoang Le <hoang.h.le@dektech.com.au>,
+        Ying Xue <ying.xue@windriver.com>,
+        Jon Maloy <jon.maloy@ericsson.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org,
+        tipc-discussion@lists.sourceforge.net
+Subject: [PATCH AUTOSEL 5.4 183/205] tipc: fix potential memory leak in __tipc_sendmsg()
+Date:   Thu, 16 Jan 2020 11:42:38 -0500
+Message-Id: <20200116164300.6705-183-sashal@kernel.org>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20200116164300.6705-1-sashal@kernel.org>
 References: <20200116164300.6705-1-sashal@kernel.org>
@@ -45,38 +47,45 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Christian Lamparter <chunkeey@gmail.com>
+From: Tung Nguyen <tung.q.nguyen@dektech.com.au>
 
-[ Upstream commit 22d0d5ae7a089967e9295a06694aa3e8a812b15e ]
+[ Upstream commit 2fe97a578d7bad3116a89dc8a6692a51e6fc1d9c ]
 
-This patch changes the ath9k_pci_owl_loader to use the
-same iowrite32 memory accessor that ath9k_pci is using
-to communicate with the PCI(e) chip.
+When initiating a connection message to a server side, the connection
+message is cloned and added to the socket write queue. However, if the
+cloning is failed, only the socket write queue is purged. It causes
+memory leak because the original connection message is not freed.
 
-This will fix endian issues that came up during testing
-with loaned AVM Fritz!Box 7360 (Lantiq MIPS SoCs + AR9287).
+This commit fixes it by purging the list of connection message when
+it cannot be cloned.
 
-Fixes: 5a4f2040fd07 ("ath9k: add loader for AR92XX (and older) pci(e)")
-Signed-off-by: Christian Lamparter <chunkeey@gmail.com>
-Signed-off-by: Kalle Valo <kvalo@codeaurora.org>
+Fixes: 6787927475e5 ("tipc: buffer overflow handling in listener socket")
+Reported-by: Hoang Le <hoang.h.le@dektech.com.au>
+Signed-off-by: Tung Nguyen <tung.q.nguyen@dektech.com.au>
+Acked-by: Ying Xue <ying.xue@windriver.com>
+Acked-by: Jon Maloy <jon.maloy@ericsson.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/wireless/ath/ath9k/ath9k_pci_owl_loader.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ net/tipc/socket.c | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/net/wireless/ath/ath9k/ath9k_pci_owl_loader.c b/drivers/net/wireless/ath/ath9k/ath9k_pci_owl_loader.c
-index 159490f5a111..60731e07f681 100644
---- a/drivers/net/wireless/ath/ath9k/ath9k_pci_owl_loader.c
-+++ b/drivers/net/wireless/ath/ath9k/ath9k_pci_owl_loader.c
-@@ -84,7 +84,7 @@ static int ath9k_pci_fixup(struct pci_dev *pdev, const u16 *cal_data,
- 			val = swahb32(val);
- 		}
+diff --git a/net/tipc/socket.c b/net/tipc/socket.c
+index 4b92b196cfa6..8cbdda3d4503 100644
+--- a/net/tipc/socket.c
++++ b/net/tipc/socket.c
+@@ -1392,8 +1392,10 @@ static int __tipc_sendmsg(struct socket *sock, struct msghdr *m, size_t dlen)
+ 	rc = tipc_msg_build(hdr, m, 0, dlen, mtu, &pkts);
+ 	if (unlikely(rc != dlen))
+ 		return rc;
+-	if (unlikely(syn && !tipc_msg_skb_clone(&pkts, &sk->sk_write_queue)))
++	if (unlikely(syn && !tipc_msg_skb_clone(&pkts, &sk->sk_write_queue))) {
++		__skb_queue_purge(&pkts);
+ 		return -ENOMEM;
++	}
  
--		__raw_writel(val, mem + reg);
-+		iowrite32(val, mem + reg);
- 		usleep_range(100, 120);
- 	}
- 
+ 	trace_tipc_sk_sendmsg(sk, skb_peek(&pkts), TIPC_DUMP_SK_SNDQ, " ");
+ 	rc = tipc_node_xmit(net, &pkts, dnode, tsk->portid);
 -- 
 2.20.1
 
