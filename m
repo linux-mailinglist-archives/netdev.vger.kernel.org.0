@@ -2,39 +2,39 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 5415513F7A0
-	for <lists+netdev@lfdr.de>; Thu, 16 Jan 2020 20:13:11 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6809713F77A
+	for <lists+netdev@lfdr.de>; Thu, 16 Jan 2020 20:12:33 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2387419AbgAPQ5F (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 16 Jan 2020 11:57:05 -0500
-Received: from mail.kernel.org ([198.145.29.99]:43834 "EHLO mail.kernel.org"
+        id S2394392AbgAPTMI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 16 Jan 2020 14:12:08 -0500
+Received: from mail.kernel.org ([198.145.29.99]:49392 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2387407AbgAPQ5D (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 16 Jan 2020 11:57:03 -0500
+        id S2387645AbgAPRAD (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 16 Jan 2020 12:00:03 -0500
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 752A32051A;
-        Thu, 16 Jan 2020 16:57:01 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 8839E2467E;
+        Thu, 16 Jan 2020 17:00:01 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1579193822;
-        bh=2gclll6tXzZYKD51RuoVXGdBGIw4/bnVeEiILD7SeRY=;
+        s=default; t=1579194002;
+        bh=1Fec6hCpa53F8ruqlYEmIEx/ZjvkbUKr0KeKcqP+Fu8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=V5RgCB2dce/jW5FJy7yoH8VuN2aFPNsOpwCtnT11ecK4bUmeOW4sAGicS8ozIACKd
-         vHdQ/UBiJlSEP5DatATOWRAs5mx62pDWteNagkkU4NN8Cjtw/FV5KGbN1pPjwX0kuY
-         M2Nkclvqf2Qi/OJWT5zfM5RxZTiIkb5hCtMi4Gt8=
+        b=SxhkU2UJMNPexjTmPOTh6ljNtrlR+bnDOLzJItraAi9fl4FSfiiSfxzjHV+LAjika
+         E2CnBlJo3lexncx2aRKF8KV+u+GMCfXU65nCQ4T1Ajn4FYQ2e0dtFUwMLg0c5FkWl+
+         XBTnYDisv3NBeJnirEJrpLUkqAS+ZitgfZNq0MSw=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Petr Machata <petrm@mellanox.com>,
-        Roopa Prabhu <roopa@cumulusnetworks.com>,
+Cc:     Huazhong Tan <tanhuazhong@huawei.com>,
+        Peng Li <lipeng321@huawei.com>,
         "David S . Miller" <davem@davemloft.net>,
         Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.19 081/671] vxlan: changelink: Fix handling of default remotes
-Date:   Thu, 16 Jan 2020 11:45:12 -0500
-Message-Id: <20200116165502.8838-81-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 4.19 129/671] net: hns3: fix bug of ethtool_ops.get_channels for VF
+Date:   Thu, 16 Jan 2020 11:50:38 -0500
+Message-Id: <20200116165940.10720-12-sashal@kernel.org>
 X-Mailer: git-send-email 2.20.1
-In-Reply-To: <20200116165502.8838-1-sashal@kernel.org>
-References: <20200116165502.8838-1-sashal@kernel.org>
+In-Reply-To: <20200116165940.10720-1-sashal@kernel.org>
+References: <20200116165940.10720-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
@@ -44,92 +44,49 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Petr Machata <petrm@mellanox.com>
+From: Huazhong Tan <tanhuazhong@huawei.com>
 
-[ Upstream commit ce5e098f7a10b4bf8e948c12fa350320c5c3afad ]
+[ Upstream commit 8be7362186bd5ccb5f6f72be49751ad2778e2636 ]
 
-Default remotes are stored as FDB entries with an Ethernet address of
-00:00:00:00:00:00. When a request is made to change a remote address of
-a VXLAN device, vxlan_changelink() first deletes the existing default
-remote, and then creates a new FDB entry.
+The current code returns the number of all queues that can be used and
+the number of queues that have been allocated, which is incorrect.
+What should be returned is the number of queues allocated for each enabled
+TC and the number of queues that can be allocated.
 
-This works well as long as the list of default remotes matches exactly
-the configuration of a VXLAN remote address. Thus when the VXLAN device
-has a remote of X, there should be exactly one default remote FDB entry
-X. If the VXLAN device has no remote address, there should be no such
-entry.
+This patch fixes it.
 
-Besides using "ip link set", it is possible to manipulate the list of
-default remotes by using the "bridge fdb". It is therefore easy to break
-the above condition. Under such circumstances, the __vxlan_fdb_delete()
-call doesn't delete the FDB entry itself, but just one remote. The
-following vxlan_fdb_create() then creates a new FDB entry, leading to a
-situation where two entries exist for the address 00:00:00:00:00:00,
-each with a different subset of default remotes.
-
-An even more obvious breakage rooted in the same cause can be observed
-when a remote address is configured for a VXLAN device that did not have
-one before. In that case vxlan_changelink() doesn't remove any remote,
-and just creates a new FDB entry for the new address:
-
-$ ip link add name vx up type vxlan id 2000 dstport 4789
-$ bridge fdb ap dev vx 00:00:00:00:00:00 dst 192.0.2.20 self permanent
-$ bridge fdb ap dev vx 00:00:00:00:00:00 dst 192.0.2.30 self permanent
-$ ip link set dev vx type vxlan remote 192.0.2.30
-$ bridge fdb sh dev vx | grep 00:00:00:00:00:00
-00:00:00:00:00:00 dst 192.0.2.30 self permanent <- new entry, 1 rdst
-00:00:00:00:00:00 dst 192.0.2.20 self permanent <- orig. entry, 2 rdsts
-00:00:00:00:00:00 dst 192.0.2.30 self permanent
-
-To fix this, instead of calling vxlan_fdb_create() directly, defer to
-vxlan_fdb_update(). That has logic to handle the duplicates properly.
-Additionally, it also handles notifications, so drop that call from
-changelink as well.
-
-Fixes: 0241b836732f ("vxlan: fix default fdb entry netlink notify ordering during netdev create")
-Signed-off-by: Petr Machata <petrm@mellanox.com>
-Acked-by: Roopa Prabhu <roopa@cumulusnetworks.com>
+Fixes: 849e46077689 ("net: hns3: add ethtool_ops.get_channels support for VF")
+Signed-off-by: Huazhong Tan <tanhuazhong@huawei.com>
+Signed-off-by: Peng Li <lipeng321@huawei.com>
 Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/vxlan.c | 7 +++----
- 1 file changed, 3 insertions(+), 4 deletions(-)
+ drivers/net/ethernet/hisilicon/hns3/hns3vf/hclgevf_main.c | 5 +++--
+ 1 file changed, 3 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/net/vxlan.c b/drivers/net/vxlan.c
-index 613f36681853..df88981e796a 100644
---- a/drivers/net/vxlan.c
-+++ b/drivers/net/vxlan.c
-@@ -3496,7 +3496,6 @@ static int vxlan_changelink(struct net_device *dev, struct nlattr *tb[],
- 	struct vxlan_rdst *dst = &vxlan->default_dst;
- 	struct vxlan_rdst old_dst;
- 	struct vxlan_config conf;
--	struct vxlan_fdb *f = NULL;
- 	int err;
+diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3vf/hclgevf_main.c b/drivers/net/ethernet/hisilicon/hns3/hns3vf/hclgevf_main.c
+index 67db19709dea..fd5375b5991b 100644
+--- a/drivers/net/ethernet/hisilicon/hns3/hns3vf/hclgevf_main.c
++++ b/drivers/net/ethernet/hisilicon/hns3/hns3vf/hclgevf_main.c
+@@ -1957,7 +1957,8 @@ static u32 hclgevf_get_max_channels(struct hclgevf_dev *hdev)
+ 	struct hnae3_handle *nic = &hdev->nic;
+ 	struct hnae3_knic_private_info *kinfo = &nic->kinfo;
  
- 	err = vxlan_nl2conf(tb, data,
-@@ -3522,19 +3521,19 @@ static int vxlan_changelink(struct net_device *dev, struct nlattr *tb[],
- 					   old_dst.remote_ifindex, 0);
+-	return min_t(u32, hdev->rss_size_max * kinfo->num_tc, hdev->num_tqps);
++	return min_t(u32, hdev->rss_size_max,
++		     hdev->num_tqps / kinfo->num_tc);
+ }
  
- 		if (!vxlan_addr_any(&dst->remote_ip)) {
--			err = vxlan_fdb_create(vxlan, all_zeros_mac,
-+			err = vxlan_fdb_update(vxlan, all_zeros_mac,
- 					       &dst->remote_ip,
- 					       NUD_REACHABLE | NUD_PERMANENT,
-+					       NLM_F_APPEND | NLM_F_CREATE,
- 					       vxlan->cfg.dst_port,
- 					       dst->remote_vni,
- 					       dst->remote_vni,
- 					       dst->remote_ifindex,
--					       NTF_SELF, &f);
-+					       NTF_SELF);
- 			if (err) {
- 				spin_unlock_bh(&vxlan->hash_lock);
- 				return err;
- 			}
--			vxlan_fdb_notify(vxlan, f, first_remote_rtnl(f), RTM_NEWNEIGH);
- 		}
- 		spin_unlock_bh(&vxlan->hash_lock);
- 	}
+ /**
+@@ -1978,7 +1979,7 @@ static void hclgevf_get_channels(struct hnae3_handle *handle,
+ 	ch->max_combined = hclgevf_get_max_channels(hdev);
+ 	ch->other_count = 0;
+ 	ch->max_other = 0;
+-	ch->combined_count = hdev->num_tqps;
++	ch->combined_count = handle->kinfo.rss_size;
+ }
+ 
+ static void hclgevf_get_tqps_and_rss_info(struct hnae3_handle *handle,
 -- 
 2.20.1
 
