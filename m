@@ -2,40 +2,39 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 7F34013F661
-	for <lists+netdev@lfdr.de>; Thu, 16 Jan 2020 20:04:00 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 179F813F64D
+	for <lists+netdev@lfdr.de>; Thu, 16 Jan 2020 20:03:51 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2388387AbgAPRC3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 16 Jan 2020 12:02:29 -0500
-Received: from mail.kernel.org ([198.145.29.99]:55228 "EHLO mail.kernel.org"
+        id S2388807AbgAPTCo (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 16 Jan 2020 14:02:44 -0500
+Received: from mail.kernel.org ([198.145.29.99]:34548 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2388375AbgAPRC2 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 16 Jan 2020 12:02:28 -0500
+        id S2388757AbgAPRFf (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 16 Jan 2020 12:05:35 -0500
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 8DBF22073A;
-        Thu, 16 Jan 2020 17:02:26 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 1EE39207FF;
+        Thu, 16 Jan 2020 17:05:34 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1579194147;
-        bh=N/kyBEfQWkq0Pn0UNjKmxITDICB0c0Y8/CBAvgyWKnw=;
+        s=default; t=1579194335;
+        bh=oGGrABFoCE66QEGKz/t3ZELCjP6BGSRD8f8dFyHbJzA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=FO7I9312jQOovwSX213/fzl1PY432guloubZOL2cUKuhKYzvhRwxT9KWWD0I66K+q
-         Nnemh8TT8DRHLoUJLK7KLxPjx1G/VtDc7wKJyO+bmud5pTiHQbAkiCvRtuf7BbPj2q
-         dKPbxXxuurLOAjZnyHVL81uwcOaW01F1G554EgWA=
+        b=FtV9ru17zvXYaT2+yBSPgA9J6FVZubqqhapcYJQ/u+2gYC6NFg5VXsDNfWqM8cg8a
+         SMVKc6xgPi+PDP5Uj6IZFQFI8UmUzJ8kKrG+HuVoaAe1CdnG4ZprbfXVtDKXIKaAuN
+         u+AEt5v8d0jYE5tMU3QB7cwk+PP5LtvdKiQXMPX4=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Igor Russkikh <Igor.Russkikh@aquantia.com>,
-        Nikita Danilov <nikita.danilov@aquantia.com>,
-        Igor Russkikh <igor.russkikh@aquantia.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.19 232/671] net: aquantia: fixed instack structure overflow
-Date:   Thu, 16 Jan 2020 11:52:21 -0500
-Message-Id: <20200116165940.10720-115-sashal@kernel.org>
+Cc:     Andrey Ignatov <rdna@fb.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org,
+        bpf@vger.kernel.org
+Subject: [PATCH AUTOSEL 4.19 280/671] bpf: Add missed newline in verifier verbose log
+Date:   Thu, 16 Jan 2020 11:58:38 -0500
+Message-Id: <20200116170509.12787-17-sashal@kernel.org>
 X-Mailer: git-send-email 2.20.1
-In-Reply-To: <20200116165940.10720-1-sashal@kernel.org>
-References: <20200116165940.10720-1-sashal@kernel.org>
+In-Reply-To: <20200116170509.12787-1-sashal@kernel.org>
+References: <20200116170509.12787-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
@@ -45,56 +44,43 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Igor Russkikh <Igor.Russkikh@aquantia.com>
+From: Andrey Ignatov <rdna@fb.com>
 
-[ Upstream commit 8006e3730b6e900319411e35cee85b4513d298df ]
+[ Upstream commit 1fbd20f8b77b366ea4aeb92ade72daa7f36a7e3b ]
 
-This is a real stack undercorruption found by kasan build.
+check_stack_access() that prints verbose log is used in
+adjust_ptr_min_max_vals() that prints its own verbose log and now they
+stick together, e.g.:
 
-The issue did no harm normally because it only overflowed
-2 bytes after `bitary` array which on most architectures
-were mapped into `err` local.
+  variable stack access var_off=(0xfffffffffffffff0; 0x4) off=-16
+  size=1R2 stack pointer arithmetic goes out of range, prohibited for
+  !root
 
-Fixes: bab6de8fd180 ("net: ethernet: aquantia: Atlantic A0 and B0 specific functions.")
-Signed-off-by: Nikita Danilov <nikita.danilov@aquantia.com>
-Signed-off-by: Igor Russkikh <igor.russkikh@aquantia.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+Add missing newline so that log is more readable:
+  variable stack access var_off=(0xfffffffffffffff0; 0x4) off=-16 size=1
+  R2 stack pointer arithmetic goes out of range, prohibited for !root
+
+Fixes: f1174f77b50c ("bpf/verifier: rework value tracking")
+Signed-off-by: Andrey Ignatov <rdna@fb.com>
+Signed-off-by: Daniel Borkmann <daniel@iogearbox.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/aquantia/atlantic/hw_atl/hw_atl_a0.c | 4 ++--
- drivers/net/ethernet/aquantia/atlantic/hw_atl/hw_atl_b0.c | 4 ++--
- 2 files changed, 4 insertions(+), 4 deletions(-)
+ kernel/bpf/verifier.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/net/ethernet/aquantia/atlantic/hw_atl/hw_atl_a0.c b/drivers/net/ethernet/aquantia/atlantic/hw_atl/hw_atl_a0.c
-index 97addfa6f895..dab5891b9714 100644
---- a/drivers/net/ethernet/aquantia/atlantic/hw_atl/hw_atl_a0.c
-+++ b/drivers/net/ethernet/aquantia/atlantic/hw_atl/hw_atl_a0.c
-@@ -207,8 +207,8 @@ static int hw_atl_a0_hw_rss_set(struct aq_hw_s *self,
- 	u32 i = 0U;
- 	u32 num_rss_queues = max(1U, self->aq_nic_cfg->num_rss_queues);
- 	int err = 0;
--	u16 bitary[(HW_ATL_A0_RSS_REDIRECTION_MAX *
--					HW_ATL_A0_RSS_REDIRECTION_BITS / 16U)];
-+	u16 bitary[1 + (HW_ATL_A0_RSS_REDIRECTION_MAX *
-+		   HW_ATL_A0_RSS_REDIRECTION_BITS / 16U)];
+diff --git a/kernel/bpf/verifier.c b/kernel/bpf/verifier.c
+index 9e72b2f8c3dd..0952049b5ff1 100644
+--- a/kernel/bpf/verifier.c
++++ b/kernel/bpf/verifier.c
+@@ -1253,7 +1253,7 @@ static int check_stack_access(struct bpf_verifier_env *env,
+ 		char tn_buf[48];
  
- 	memset(bitary, 0, sizeof(bitary));
- 
-diff --git a/drivers/net/ethernet/aquantia/atlantic/hw_atl/hw_atl_b0.c b/drivers/net/ethernet/aquantia/atlantic/hw_atl/hw_atl_b0.c
-index 51cd1f98bcf0..c4f914a29c38 100644
---- a/drivers/net/ethernet/aquantia/atlantic/hw_atl/hw_atl_b0.c
-+++ b/drivers/net/ethernet/aquantia/atlantic/hw_atl/hw_atl_b0.c
-@@ -192,8 +192,8 @@ static int hw_atl_b0_hw_rss_set(struct aq_hw_s *self,
- 	u32 i = 0U;
- 	u32 num_rss_queues = max(1U, self->aq_nic_cfg->num_rss_queues);
- 	int err = 0;
--	u16 bitary[(HW_ATL_B0_RSS_REDIRECTION_MAX *
--					HW_ATL_B0_RSS_REDIRECTION_BITS / 16U)];
-+	u16 bitary[1 + (HW_ATL_B0_RSS_REDIRECTION_MAX *
-+		   HW_ATL_B0_RSS_REDIRECTION_BITS / 16U)];
- 
- 	memset(bitary, 0, sizeof(bitary));
- 
+ 		tnum_strn(tn_buf, sizeof(tn_buf), reg->var_off);
+-		verbose(env, "variable stack access var_off=%s off=%d size=%d",
++		verbose(env, "variable stack access var_off=%s off=%d size=%d\n",
+ 			tn_buf, off, size);
+ 		return -EACCES;
+ 	}
 -- 
 2.20.1
 
