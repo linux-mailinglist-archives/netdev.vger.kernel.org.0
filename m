@@ -2,38 +2,37 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id C99C113E18F
-	for <lists+netdev@lfdr.de>; Thu, 16 Jan 2020 17:50:28 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4E33913E193
+	for <lists+netdev@lfdr.de>; Thu, 16 Jan 2020 17:50:30 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728884AbgAPQrq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 16 Jan 2020 11:47:46 -0500
-Received: from mail.kernel.org ([198.145.29.99]:57526 "EHLO mail.kernel.org"
+        id S1729999AbgAPQro (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 16 Jan 2020 11:47:44 -0500
+Received: from mail.kernel.org ([198.145.29.99]:57588 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1729972AbgAPQrj (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 16 Jan 2020 11:47:39 -0500
+        id S1729613AbgAPQrl (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 16 Jan 2020 11:47:41 -0500
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 5233E20663;
-        Thu, 16 Jan 2020 16:47:37 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id DC83821582;
+        Thu, 16 Jan 2020 16:47:38 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1579193258;
-        bh=zGiHIJ/sfrkiEqz3zUsx/+MVHMdK+6Jn2DmDZgbzp7w=;
+        s=default; t=1579193261;
+        bh=UvBSdpWu94Cr/vu/swFwEY05gb5S7dZpvtQ4ZH8wg9Q=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=iHbXuwmnE1KIZ/uCYX+nEFgv70uNaU1FukP1ZzaxbcavmfMWrMS4tu2rtTkc85ucK
-         9CFxPSfrzqN1qKBHiZd1TF2lu//9JLVAcY6iPUIVN5CGOmQzCZoBPV8lPQKdMGqMfg
-         z0uC47nL17Yn3FAGixEGxHxWlhNxFrC9UThNMa50=
+        b=gp3hh562FFufViCb7wQkEBNZAnn6v/3KTBRiBUX95XSgFlpQVNY+5hsDUc18mUdIH
+         gHtvhmjw43U4v6uKRieq0RqujkcW2LzYvkGqZQvjaNwda0z+W8HHmfe2DPdsNAefSK
+         MCi2ZtsF42iV/AoD6dyqzKNIbujVw4V8neZ1HbFs=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Nathan Chancellor <natechancellor@gmail.com>,
-        Ping-Ke Shih <pkshih@realtek.com>,
-        Kalle Valo <kvalo@codeaurora.org>,
-        Sasha Levin <sashal@kernel.org>,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        clang-built-linux@googlegroups.com
-Subject: [PATCH AUTOSEL 5.4 057/205] rtlwifi: Remove unnecessary NULL check in rtl_regd_init
-Date:   Thu, 16 Jan 2020 11:40:32 -0500
-Message-Id: <20200116164300.6705-57-sashal@kernel.org>
+Cc:     Chuck Lever <chuck.lever@oracle.com>,
+        Anna Schumaker <Anna.Schumaker@Netapp.com>,
+        Sasha Levin <sashal@kernel.org>, linux-nfs@vger.kernel.org,
+        netdev@vger.kernel.org, linux-media@vger.kernel.org,
+        dri-devel@lists.freedesktop.org, linaro-mm-sig@lists.linaro.org
+Subject: [PATCH AUTOSEL 5.4 058/205] xprtrdma: Connection becomes unstable after a reconnect
+Date:   Thu, 16 Jan 2020 11:40:33 -0500
+Message-Id: <20200116164300.6705-58-sashal@kernel.org>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20200116164300.6705-1-sashal@kernel.org>
 References: <20200116164300.6705-1-sashal@kernel.org>
@@ -46,53 +45,93 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Nathan Chancellor <natechancellor@gmail.com>
+From: Chuck Lever <chuck.lever@oracle.com>
 
-[ Upstream commit 091c6e9c083f7ebaff00b37ad13562d51464d175 ]
+[ Upstream commit a31b2f939219dd9bffdf01a45bd91f209f8cc369 ]
 
-When building with Clang + -Wtautological-pointer-compare:
+This is because xprt_request_get_cong() is allowing more than one
+RPC Call to be transmitted before the first Receive on the new
+connection. The first Receive fills the Receive Queue based on the
+server's credit grant. Before that Receive, there is only a single
+Receive WR posted because the client doesn't know the server's
+credit grant.
 
-drivers/net/wireless/realtek/rtlwifi/regd.c:389:33: warning: comparison
-of address of 'rtlpriv->regd' equal to a null pointer is always false
-[-Wtautological-pointer-compare]
-        if (wiphy == NULL || &rtlpriv->regd == NULL)
-                              ~~~~~~~~~^~~~    ~~~~
-1 warning generated.
+Solution is to clear rq_cong on all outstanding rpc_rqsts when the
+the cwnd is reset. This is because an RPC/RDMA credit is good for
+one connection instance only.
 
-The address of an array member is never NULL unless it is the first
-struct member so remove the unnecessary check. This was addressed in
-the staging version of the driver in commit f986978b32b3 ("Staging:
-rtlwifi: remove unnecessary NULL check").
-
-While we are here, fix the following checkpatch warning:
-
-CHECK: Comparison to NULL could be written "!wiphy"
-35: FILE: drivers/net/wireless/realtek/rtlwifi/regd.c:389:
-+       if (wiphy == NULL)
-
-Fixes: 0c8173385e54 ("rtl8192ce: Add new driver")
-Link:https://github.com/ClangBuiltLinux/linux/issues/750
-Signed-off-by: Nathan Chancellor <natechancellor@gmail.com>
-Acked-by: Ping-Ke Shih <pkshih@realtek.com>
-Signed-off-by: Kalle Valo <kvalo@codeaurora.org>
+Fixes: 75891f502f5f ("SUNRPC: Support for congestion control ... ")
+Signed-off-by: Chuck Lever <chuck.lever@oracle.com>
+Signed-off-by: Anna Schumaker <Anna.Schumaker@Netapp.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/wireless/realtek/rtlwifi/regd.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ net/sunrpc/xprtrdma/transport.c |  3 +++
+ net/sunrpc/xprtrdma/verbs.c     | 22 ++++++++++++++++++++++
+ 2 files changed, 25 insertions(+)
 
-diff --git a/drivers/net/wireless/realtek/rtlwifi/regd.c b/drivers/net/wireless/realtek/rtlwifi/regd.c
-index c10432cd703e..8be31e0ad878 100644
---- a/drivers/net/wireless/realtek/rtlwifi/regd.c
-+++ b/drivers/net/wireless/realtek/rtlwifi/regd.c
-@@ -386,7 +386,7 @@ int rtl_regd_init(struct ieee80211_hw *hw,
- 	struct wiphy *wiphy = hw->wiphy;
- 	struct country_code_to_enum_rd *country = NULL;
+diff --git a/net/sunrpc/xprtrdma/transport.c b/net/sunrpc/xprtrdma/transport.c
+index 160558b4135e..c67d465dc062 100644
+--- a/net/sunrpc/xprtrdma/transport.c
++++ b/net/sunrpc/xprtrdma/transport.c
+@@ -428,8 +428,11 @@ void xprt_rdma_close(struct rpc_xprt *xprt)
+ 	/* Prepare @xprt for the next connection by reinitializing
+ 	 * its credit grant to one (see RFC 8166, Section 3.3.3).
+ 	 */
++	spin_lock(&xprt->transport_lock);
+ 	r_xprt->rx_buf.rb_credits = 1;
++	xprt->cong = 0;
+ 	xprt->cwnd = RPC_CWNDSHIFT;
++	spin_unlock(&xprt->transport_lock);
  
--	if (wiphy == NULL || &rtlpriv->regd == NULL)
-+	if (!wiphy)
- 		return -EINVAL;
+ out:
+ 	xprt->reestablish_timeout = 0;
+diff --git a/net/sunrpc/xprtrdma/verbs.c b/net/sunrpc/xprtrdma/verbs.c
+index 3a907537e2cf..f4b136504e96 100644
+--- a/net/sunrpc/xprtrdma/verbs.c
++++ b/net/sunrpc/xprtrdma/verbs.c
+@@ -75,6 +75,7 @@
+  * internal functions
+  */
+ static void rpcrdma_sendctx_put_locked(struct rpcrdma_sendctx *sc);
++static void rpcrdma_reqs_reset(struct rpcrdma_xprt *r_xprt);
+ static void rpcrdma_reps_destroy(struct rpcrdma_buffer *buf);
+ static void rpcrdma_mrs_create(struct rpcrdma_xprt *r_xprt);
+ static void rpcrdma_mrs_destroy(struct rpcrdma_buffer *buf);
+@@ -780,6 +781,7 @@ rpcrdma_ep_disconnect(struct rpcrdma_ep *ep, struct rpcrdma_ia *ia)
+ 	trace_xprtrdma_disconnect(r_xprt, rc);
  
- 	/* init country_code from efuse channel plan */
+ 	rpcrdma_xprt_drain(r_xprt);
++	rpcrdma_reqs_reset(r_xprt);
+ }
+ 
+ /* Fixed-size circular FIFO queue. This implementation is wait-free and
+@@ -1042,6 +1044,26 @@ struct rpcrdma_req *rpcrdma_req_create(struct rpcrdma_xprt *r_xprt, size_t size,
+ 	return NULL;
+ }
+ 
++/**
++ * rpcrdma_reqs_reset - Reset all reqs owned by a transport
++ * @r_xprt: controlling transport instance
++ *
++ * ASSUMPTION: the rb_allreqs list is stable for the duration,
++ * and thus can be walked without holding rb_lock. Eg. the
++ * caller is holding the transport send lock to exclude
++ * device removal or disconnection.
++ */
++static void rpcrdma_reqs_reset(struct rpcrdma_xprt *r_xprt)
++{
++	struct rpcrdma_buffer *buf = &r_xprt->rx_buf;
++	struct rpcrdma_req *req;
++
++	list_for_each_entry(req, &buf->rb_allreqs, rl_all) {
++		/* Credits are valid only for one connection */
++		req->rl_slot.rq_cong = 0;
++	}
++}
++
+ static struct rpcrdma_rep *rpcrdma_rep_create(struct rpcrdma_xprt *r_xprt,
+ 					      bool temp)
+ {
 -- 
 2.20.1
 
