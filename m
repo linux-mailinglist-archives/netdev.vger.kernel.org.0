@@ -2,90 +2,97 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id C1EAD13D6A6
-	for <lists+netdev@lfdr.de>; Thu, 16 Jan 2020 10:20:19 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1475313D706
+	for <lists+netdev@lfdr.de>; Thu, 16 Jan 2020 10:38:58 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729138AbgAPJUS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 16 Jan 2020 04:20:18 -0500
-Received: from mail.kernel.org ([198.145.29.99]:45708 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726684AbgAPJUR (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 16 Jan 2020 04:20:17 -0500
-Received: from localhost (unknown [213.57.247.131])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id A75A520748;
-        Thu, 16 Jan 2020 09:20:16 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1579166417;
-        bh=K+yVyVnPlO7hd4U7qSo55sqeMNoALJ9OWNERlyDia4k=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=W1GNQ78CKpj33R/OW4Wvm4DAUFoGxmSHjuJpvMDa5TpdOR+p7gHVWC9sE8WtFx3n1
-         AN9F7hcAu6J6t0A59mgM2OTmHOEMJ1ukYKq/BPfTdUeixFKdsZXK9FcpDbI5HyuQcG
-         SKQBpS+zO3LkRs8d/BmyDAdBuRrBlLK2nIGCIUks=
-Date:   Thu, 16 Jan 2020 11:20:08 +0200
-From:   Leon Romanovsky <leon@kernel.org>
-To:     Jason Gunthorpe <jgg@ziepe.ca>
-Cc:     Yishai Hadas <yishaih@mellanox.com>, linux-rdma@vger.kernel.org,
-        dledford@redhat.com, saeedm@mellanox.com, maorg@mellanox.com,
-        michaelgur@mellanox.com, netdev@vger.kernel.org
-Subject: Re: [PATCH rdma-next 00/10] Relaxed ordering memory regions
-Message-ID: <20200116092008.GB6853@unreal>
-References: <1578506740-22188-1-git-send-email-yishaih@mellanox.com>
- <20200115180848.GA13397@ziepe.ca>
+        id S1731519AbgAPJiS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 16 Jan 2020 04:38:18 -0500
+Received: from bombadil.infradead.org ([198.137.202.133]:47780 "EHLO
+        bombadil.infradead.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726864AbgAPJiR (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 16 Jan 2020 04:38:17 -0500
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=bombadil.20170209; h=In-Reply-To:Content-Type:MIME-Version
+        :References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
+        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
+        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+         bh=/fZtSw8YSFU2Bly7v5Q7x01aJLXfW/w2Sao1/9HMkcI=; b=DExRcwvRtFXUvspwe2EK1pvbk
+        toOxyW/Rr7rvJL9Uo35exr8Cq2wCUokVKVlfAtn576Uwh6C0dDY+T/FqZ4x+sYv+8BDucArp3y1Zx
+        NC96wmTc5QNReYms4V9DkpZ9WP5G7mGeRlC5SUBjQZBvlUl97PM9jLHyv9Mn7tevIOXaJa4Q5iXde
+        bXS+39JbBJRccdS9LFTo+FwnQG+xGELB+IzFC6BcqMnYvzn4K0YbBX5iL1zc87io0r9xxv4FP2Te6
+        65YEWF3mg8LdQoUzSr2qBy1recVwExQ2okF4Q/NYnSTv1qsmEBA+XVmZNwmYaFEgRtYH8E7r4VJTs
+        MW9dAK1TQ==;
+Received: from hch by bombadil.infradead.org with local (Exim 4.92.3 #3 (Red Hat Linux))
+        id 1is1aS-00035V-O1; Thu, 16 Jan 2020 09:37:12 +0000
+Date:   Thu, 16 Jan 2020 01:37:12 -0800
+From:   Christoph Hellwig <hch@infradead.org>
+To:     John Hubbard <jhubbard@nvidia.com>
+Cc:     Christoph Hellwig <hch@infradead.org>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Al Viro <viro@zeniv.linux.org.uk>,
+        Alex Williamson <alex.williamson@redhat.com>,
+        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
+        =?iso-8859-1?Q?Bj=F6rn_T=F6pel?= <bjorn.topel@intel.com>,
+        Dan Williams <dan.j.williams@intel.com>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        Dave Chinner <david@fromorbit.com>,
+        David Airlie <airlied@linux.ie>,
+        "David S . Miller" <davem@davemloft.net>,
+        Ira Weiny <ira.weiny@intel.com>, Jan Kara <jack@suse.cz>,
+        Jason Gunthorpe <jgg@ziepe.ca>, Jens Axboe <axboe@kernel.dk>,
+        Jonathan Corbet <corbet@lwn.net>,
+        =?iso-8859-1?B?Suly9G1l?= Glisse <jglisse@redhat.com>,
+        "Kirill A . Shutemov" <kirill@shutemov.name>,
+        Magnus Karlsson <magnus.karlsson@intel.com>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        Michael Ellerman <mpe@ellerman.id.au>,
+        Michal Hocko <mhocko@suse.com>,
+        Mike Kravetz <mike.kravetz@oracle.com>,
+        Paul Mackerras <paulus@samba.org>,
+        Shuah Khan <shuah@kernel.org>,
+        Vlastimil Babka <vbabka@suse.cz>, bpf@vger.kernel.org,
+        dri-devel@lists.freedesktop.org, kvm@vger.kernel.org,
+        linux-block@vger.kernel.org, linux-doc@vger.kernel.org,
+        linux-fsdevel@vger.kernel.org, linux-kselftest@vger.kernel.org,
+        linux-media@vger.kernel.org, linux-rdma@vger.kernel.org,
+        linuxppc-dev@lists.ozlabs.org, netdev@vger.kernel.org,
+        linux-mm@kvack.org, LKML <linux-kernel@vger.kernel.org>,
+        Christoph Hellwig <hch@lst.de>
+Subject: Re: [PATCH v12 04/22] mm: devmap: refactor 1-based refcounting for
+ ZONE_DEVICE pages
+Message-ID: <20200116093712.GA11011@infradead.org>
+References: <20200107224558.2362728-1-jhubbard@nvidia.com>
+ <20200107224558.2362728-5-jhubbard@nvidia.com>
+ <20200115152306.GA19546@infradead.org>
+ <4707f191-86f8-db4a-c3de-0a84b415b658@nvidia.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20200115180848.GA13397@ziepe.ca>
+In-Reply-To: <4707f191-86f8-db4a-c3de-0a84b415b658@nvidia.com>
+X-SRS-Rewrite: SMTP reverse-path rewritten from <hch@infradead.org> by bombadil.infradead.org. See http://www.infradead.org/rpr.html
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Jan 15, 2020 at 02:08:48PM -0400, Jason Gunthorpe wrote:
-> On Wed, Jan 08, 2020 at 08:05:30PM +0200, Yishai Hadas wrote:
-> > This series adds an ioctl command to allocate an async event file followed by a
-> > new ioctl command to get a device context.
-> >
-> > The get device context command enables reading some core generic capabilities
-> > such as supporting an optional MR access flags by IB core and its related
-> > drivers.
-> >
-> > Once the above is enabled, a new optional MR access flag named
-> > IB_UVERBS_ACCESS_RELAXED_ORDERING is added and is used by mlx5 driver.
-> >
-> > This optional flag allows creation of relaxed ordering memory regions.  Access
-> > through such MRs can improve performance by allowing the system to reorder
-> > certain accesses.
-> >
-> > As relaxed ordering is an optimization, drivers that do not support it can
-> > simply ignore it.
-> >
-> > Note: This series relies on the 'Refactoring FD usage' series [1] that was sent
-> > to rdma-next.
-> > [1] https://patchwork.kernel.org/project/linux-rdma/list/?series=225541
-> >
-> > Yishai
-> >
-> > Jason Gunthorpe (3):
-> >   RDMA/core: Add UVERBS_METHOD_ASYNC_EVENT_ALLOC
-> >   RDMA/core: Remove ucontext_lock from the uverbs_destry_ufile_hw() path
-> >   RDMA/uverbs: Add ioctl command to get a device context
-> >
-> > Michael Guralnik (7):
-> >   net/mlx5: Expose relaxed ordering bits
-> >   RDMA/uverbs: Verify MR access flags
-> >   RDMA/core: Add optional access flags range
-> >   RDMA/efa: Allow passing of optional access flags for MR registration
-> >   RDMA/uverbs: Add new relaxed ordering memory region access flag
-> >   RDMA/core: Add the core support field to METHOD_GET_CONTEXT
-> >   RDMA/mlx5: Set relaxed ordering when requested
->
-> This looks OK, can you update the shared branch please
+On Wed, Jan 15, 2020 at 01:19:41PM -0800, John Hubbard wrote:
+> On 1/15/20 7:23 AM, Christoph Hellwig wrote:
+> ...
+> > 
+> > I'm really not sold on this scheme.  Note that I think it is
+> > particularly bad, but it also doesn't seem any better than what
+> > we had before, and it introduced quite a bit more code.
+> > 
+> 
+> Hi Christoph,
+> 
+> All by itself, yes. But the very next patch (which needs a little 
+> rework for other reasons, so not included here) needs to reuse some of 
+> these functions within __unpin_devmap_managed_user_page():
 
-Thanks, applied
-f4db8e8b0dc3 net/mlx5: Expose relaxed ordering bits
+Well, then combine it with the series that actually does the change.
 
->
-> Thanks,
-> Jason
+Also my vaguely recollection is that we had some idea on how to get rid
+of the off by one refcounting for the zone device pages, which would be
+a much better outcome.
