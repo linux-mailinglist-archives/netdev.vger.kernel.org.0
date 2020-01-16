@@ -2,99 +2,88 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 6E9BC13E764
-	for <lists+netdev@lfdr.de>; Thu, 16 Jan 2020 18:25:42 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7CE8613E671
+	for <lists+netdev@lfdr.de>; Thu, 16 Jan 2020 18:20:36 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2392118AbgAPRZg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 16 Jan 2020 12:25:36 -0500
-Received: from mail.kernel.org ([198.145.29.99]:33356 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2392077AbgAPRZe (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 16 Jan 2020 12:25:34 -0500
-Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id A8398246DA;
-        Thu, 16 Jan 2020 17:25:32 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1579195533;
-        bh=0+8Nn4d6fkT38bReOZ0tZD+AXtiad866uuMNsOV/iTo=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=1MaOyooxPI8WciK4u2FSZIipXVH60YHeUryIKo2thDNtZ5cEmy+Xe4K43aPkfUSQ5
-         b0VPYCxlRxBfX6hUK3WpWLD6RhX35ccHhkL4ZJ86Fl8kWJtoduyTu62oQ7wUzJik0Q
-         lkVmh7seJuy2CWk811GkIcgPs5e9Kxt2P28fJF5U=
-From:   Sasha Levin <sashal@kernel.org>
-To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Igor Russkikh <Igor.Russkikh@aquantia.com>,
-        Nikita Danilov <nikita.danilov@aquantia.com>,
-        Igor Russkikh <igor.russkikh@aquantia.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.14 128/371] net: aquantia: fixed instack structure overflow
-Date:   Thu, 16 Jan 2020 12:20:00 -0500
-Message-Id: <20200116172403.18149-71-sashal@kernel.org>
-X-Mailer: git-send-email 2.20.1
-In-Reply-To: <20200116172403.18149-1-sashal@kernel.org>
-References: <20200116172403.18149-1-sashal@kernel.org>
+        id S2391596AbgAPRUV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 16 Jan 2020 12:20:21 -0500
+Received: from mail-qt1-f195.google.com ([209.85.160.195]:37686 "EHLO
+        mail-qt1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1730120AbgAPRUU (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 16 Jan 2020 12:20:20 -0500
+Received: by mail-qt1-f195.google.com with SMTP id w47so19467765qtk.4;
+        Thu, 16 Jan 2020 09:20:19 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:from:to:cc:references:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=nYqhTNAODcj08o+Iw5Uj38+d+Gjt6QkbVMAo+P0Al6A=;
+        b=gNNdE1xqlQTNxWrzBRp0zxnswM9okuIbuVXGsb5071kCP5DyRGZA8jkE3s9/g0IhHA
+         XcsnzwSrcUYoFgiutn6CN30a6Z5udbC2+y9TxFgeQeIEvJr7TJMuD+3aY/2OH1bP/RjK
+         sT4nisMDrvL1vudi1FmxFWA4TwnZxqA+n0eLUb0nNJKqUG9BWKPu+OTBiOA1XeSATC1e
+         J1pJe2kZatd5+XplVruu4IOImldEVFF0/LQ6JZRmuZa254cgSsDv2KYAj53ufPsoTkGo
+         cgWpEswiSIQtpNx89lpA4a6bd/pfNRhccwQAieQr4LGVbwf9QsskTsG+m+zzRQeZ6fiz
+         dqkg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:from:to:cc:references:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=nYqhTNAODcj08o+Iw5Uj38+d+Gjt6QkbVMAo+P0Al6A=;
+        b=ByoaL/edYtdM707Z6RruKmIiupew6h0khvU8wllppN+X/ot/6KE3p5w5R5yaMfHymm
+         pM00XzByJCsnbQ/ycBP+d4iB0J40iWRu3ljZdCeeKe/+3ywh+Oq+iQi+XykHypp/SjY2
+         /Uz+GwjTDNKej5DuGPFfMr92HhLEJPydmINnMp29zXOH9MridSEkxBG3B7ope8JiidEm
+         Ndy0W4du2Id5BbaNc0wkVV7GWXP0D3jnjGBin/vfpQnJhbkQAI696NfprqO2EDGtFeYd
+         PpKLXAg/lBR8Bl7A0eKhUghekUVHWeRadk9ptWbgxTtwIxT9K0cyZlD2HACGyCgm+iYn
+         0ucQ==
+X-Gm-Message-State: APjAAAXATZ4Ls5D5DHVEiA1jY0/t6rU0KALavBWi1Rb7M6whJOHrygl3
+        RWtkJjVvmi7Hiz/IIWxcCPGmYKDR
+X-Google-Smtp-Source: APXvYqxiWRk5q4Q98cKa8Qbh1r9gtwbt0VekwnFg0yVAUIqxde9eAnRyMN4e9IWsqI1uwB/EMhKGVA==
+X-Received: by 2002:ac8:1206:: with SMTP id x6mr3547501qti.55.1579195219103;
+        Thu, 16 Jan 2020 09:20:19 -0800 (PST)
+Received: from ?IPv6:2601:282:803:7700:5c84:fd9a:6187:58f5? ([2601:282:803:7700:5c84:fd9a:6187:58f5])
+        by smtp.googlemail.com with ESMTPSA id b40sm12099516qta.86.2020.01.16.09.20.17
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 16 Jan 2020 09:20:18 -0800 (PST)
+Subject: Re: [PATCH AUTOSEL 4.19 573/671] ipv6: Handle race in
+ addrconf_dad_work
+From:   David Ahern <dsahern@gmail.com>
+To:     Sasha Levin <sashal@kernel.org>, linux-kernel@vger.kernel.org,
+        stable@vger.kernel.org
+Cc:     Rajendra Dendukuri <rajendra.dendukuri@broadcom.com>,
+        Eric Dumazet <edumazet@google.com>,
+        "David S . Miller" <davem@davemloft.net>, netdev@vger.kernel.org
+References: <20200116170509.12787-1-sashal@kernel.org>
+ <20200116170509.12787-310-sashal@kernel.org>
+ <fc012e53-ccdf-5ac5-6f3f-a2ecdf25bc39@gmail.com>
+Message-ID: <630c6286-2ab4-44ab-693e-0615a2ac690b@gmail.com>
+Date:   Thu, 16 Jan 2020 10:20:16 -0700
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:68.0)
+ Gecko/20100101 Thunderbird/68.3.1
 MIME-Version: 1.0
-X-stable: review
-X-Patchwork-Hint: Ignore
-Content-Transfer-Encoding: 8bit
+In-Reply-To: <fc012e53-ccdf-5ac5-6f3f-a2ecdf25bc39@gmail.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Igor Russkikh <Igor.Russkikh@aquantia.com>
+On 1/16/20 10:18 AM, David Ahern wrote:
+> On 1/16/20 10:03 AM, Sasha Levin wrote:
+>> From: David Ahern <dsahern@gmail.com>
+>>
+>> [ Upstream commit a3ce2a21bb8969ae27917281244fa91bf5f286d7 ]
+>>
+> 
+> That commit was reverted by 8ae72cbf62d2c1879456c0c5872f958e18f53711 and
+> then replaced by 2d819d250a1393a3e725715425ab70a0e0772a71
+> 
 
-[ Upstream commit 8006e3730b6e900319411e35cee85b4513d298df ]
+BTW, the AUTOSEL algorithm should be updated to look for reverts and
+even ones that have already been nack'ed from a backport perspective.
 
-This is a real stack undercorruption found by kasan build.
-
-The issue did no harm normally because it only overflowed
-2 bytes after `bitary` array which on most architectures
-were mapped into `err` local.
-
-Fixes: bab6de8fd180 ("net: ethernet: aquantia: Atlantic A0 and B0 specific functions.")
-Signed-off-by: Nikita Danilov <nikita.danilov@aquantia.com>
-Signed-off-by: Igor Russkikh <igor.russkikh@aquantia.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- drivers/net/ethernet/aquantia/atlantic/hw_atl/hw_atl_a0.c | 4 ++--
- drivers/net/ethernet/aquantia/atlantic/hw_atl/hw_atl_b0.c | 4 ++--
- 2 files changed, 4 insertions(+), 4 deletions(-)
-
-diff --git a/drivers/net/ethernet/aquantia/atlantic/hw_atl/hw_atl_a0.c b/drivers/net/ethernet/aquantia/atlantic/hw_atl/hw_atl_a0.c
-index b0abd187cead..b83ee74d2839 100644
---- a/drivers/net/ethernet/aquantia/atlantic/hw_atl/hw_atl_a0.c
-+++ b/drivers/net/ethernet/aquantia/atlantic/hw_atl/hw_atl_a0.c
-@@ -182,8 +182,8 @@ static int hw_atl_a0_hw_rss_set(struct aq_hw_s *self,
- 	u32 i = 0U;
- 	u32 num_rss_queues = max(1U, self->aq_nic_cfg->num_rss_queues);
- 	int err = 0;
--	u16 bitary[(HW_ATL_A0_RSS_REDIRECTION_MAX *
--					HW_ATL_A0_RSS_REDIRECTION_BITS / 16U)];
-+	u16 bitary[1 + (HW_ATL_A0_RSS_REDIRECTION_MAX *
-+		   HW_ATL_A0_RSS_REDIRECTION_BITS / 16U)];
- 
- 	memset(bitary, 0, sizeof(bitary));
- 
-diff --git a/drivers/net/ethernet/aquantia/atlantic/hw_atl/hw_atl_b0.c b/drivers/net/ethernet/aquantia/atlantic/hw_atl/hw_atl_b0.c
-index 236325f48ec9..1c1bb074f664 100644
---- a/drivers/net/ethernet/aquantia/atlantic/hw_atl/hw_atl_b0.c
-+++ b/drivers/net/ethernet/aquantia/atlantic/hw_atl/hw_atl_b0.c
-@@ -183,8 +183,8 @@ static int hw_atl_b0_hw_rss_set(struct aq_hw_s *self,
- 	u32 i = 0U;
- 	u32 num_rss_queues = max(1U, self->aq_nic_cfg->num_rss_queues);
- 	int err = 0;
--	u16 bitary[(HW_ATL_B0_RSS_REDIRECTION_MAX *
--					HW_ATL_B0_RSS_REDIRECTION_BITS / 16U)];
-+	u16 bitary[1 + (HW_ATL_B0_RSS_REDIRECTION_MAX *
-+		   HW_ATL_B0_RSS_REDIRECTION_BITS / 16U)];
- 
- 	memset(bitary, 0, sizeof(bitary));
- 
--- 
-2.20.1
-
+I felt a bit of deja vu with my response and sure enough this patch was
+selected back in October and I responded then that it should not be
+backported.
