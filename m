@@ -2,37 +2,35 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 99DB113E322
-	for <lists+netdev@lfdr.de>; Thu, 16 Jan 2020 18:00:16 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B0B3713E336
+	for <lists+netdev@lfdr.de>; Thu, 16 Jan 2020 18:00:50 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2387715AbgAPRAO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 16 Jan 2020 12:00:14 -0500
-Received: from mail.kernel.org ([198.145.29.99]:49652 "EHLO mail.kernel.org"
+        id S1733142AbgAPRAr (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 16 Jan 2020 12:00:47 -0500
+Received: from mail.kernel.org ([198.145.29.99]:50752 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2387702AbgAPRAN (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 16 Jan 2020 12:00:13 -0500
+        id S2387850AbgAPRAo (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 16 Jan 2020 12:00:44 -0500
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id A455F22525;
-        Thu, 16 Jan 2020 17:00:11 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 616A22468D;
+        Thu, 16 Jan 2020 17:00:43 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1579194012;
-        bh=CFG0zw8xGFG5ueKpnGzhAA1T+6jpreofWYPOdc1r7rI=;
+        s=default; t=1579194044;
+        bh=ITu0OrjqUNi+vDw5iSbQfx+KL7W0/cTHMQM8sZPugLg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Co6IPM50TBIo6LPt5479+u7+ySRP9LRatGghBWrgDJ7CgX1aTu6LFNTQf4VRVhYrA
-         XNnPoLDZHcz4gAtBCBeheyo4THVJz9Jph/w/hmAZube8Fng+j6QjtJtNdrB4efYVuI
-         mJqy6OEFj1c3Zpx6VPzHF1otkkmd0c3NDmMAUYOA=
+        b=j3ERuU/AvwZiVopxI/+woGTTsOnl6GXPnCqBlZvZztCLw/Ashy4+Lx34TtXL8NqGj
+         xpqzbvqNXKhhp5aFo+BKB1I1C3+ydMcfBzn6NR6KsIw9EnYNgGvB1irodehTjCI+zX
+         xpy1qZykNqRGhH2yxFQzfY/iSaTFem3v0MXPYUhs=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Johannes Berg <johannes.berg@intel.com>,
-        Danny Alexander <danny.alexander@intel.com>,
-        Luca Coelho <luciano.coelho@intel.com>,
-        Sasha Levin <sashal@kernel.org>,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.19 136/671] iwlwifi: mvm: fix A-MPDU reference assignment
-Date:   Thu, 16 Jan 2020 11:50:45 -0500
-Message-Id: <20200116165940.10720-19-sashal@kernel.org>
+Cc:     Moritz Fischer <mdf@kernel.org>, Andrew Lunn <andrew@lunn.ch>,
+        "David S . Miller" <davem@davemloft.net>,
+        Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 4.19 160/671] net: phy: fixed_phy: Fix fixed_phy not checking GPIO
+Date:   Thu, 16 Jan 2020 11:51:09 -0500
+Message-Id: <20200116165940.10720-43-sashal@kernel.org>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20200116165940.10720-1-sashal@kernel.org>
 References: <20200116165940.10720-1-sashal@kernel.org>
@@ -45,50 +43,44 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Johannes Berg <johannes.berg@intel.com>
+From: Moritz Fischer <mdf@kernel.org>
 
-[ Upstream commit 1f7698abedeeb3fef3cbcf78e16f925df675a179 ]
+[ Upstream commit 8f289805616e81f7c1690931aa8a586c76f4fa88 ]
 
-The current code assigns the reference, and then goes to increment
-it if the toggle bit has changed. That way, we get
+Fix fixed_phy not checking GPIO if no link_update callback
+is registered.
 
-Toggle  0  0  0  0  1  1  1  1
-ID      1  1  1  1  1  2  2  2
+In the original version all users registered a link_update
+callback so the issue was masked.
 
-Fix that by assigning the post-toggle ID to get
-
-Toggle  0  0  0  0  1  1  1  1
-ID      1  1  1  1  2  2  2  2
-
-Reported-by: Danny Alexander <danny.alexander@intel.com>
-Signed-off-by: Johannes Berg <johannes.berg@intel.com>
-Fixes: fbe4112791b8 ("iwlwifi: mvm: update mpdu metadata API")
-Signed-off-by: Luca Coelho <luciano.coelho@intel.com>
+Fixes: a5597008dbc2 ("phy: fixed_phy: Add gpio to determine link up/down.")
+Reviewed-by: Andrew Lunn <andrew@lunn.ch>
+Signed-off-by: Moritz Fischer <mdf@kernel.org>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/wireless/intel/iwlwifi/mvm/rxmq.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/net/phy/fixed_phy.c | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/net/wireless/intel/iwlwifi/mvm/rxmq.c b/drivers/net/wireless/intel/iwlwifi/mvm/rxmq.c
-index 036d1d82d93e..77e369453642 100644
---- a/drivers/net/wireless/intel/iwlwifi/mvm/rxmq.c
-+++ b/drivers/net/wireless/intel/iwlwifi/mvm/rxmq.c
-@@ -1077,7 +1077,6 @@ void iwl_mvm_rx_mpdu_mq(struct iwl_mvm *mvm, struct napi_struct *napi,
- 			he_phy_data = le64_to_cpu(desc->v1.he_phy_data);
+diff --git a/drivers/net/phy/fixed_phy.c b/drivers/net/phy/fixed_phy.c
+index 67b260877f30..59820164502e 100644
+--- a/drivers/net/phy/fixed_phy.c
++++ b/drivers/net/phy/fixed_phy.c
+@@ -67,11 +67,11 @@ static int fixed_mdio_read(struct mii_bus *bus, int phy_addr, int reg_num)
+ 			do {
+ 				s = read_seqcount_begin(&fp->seqcount);
+ 				/* Issue callback if user registered it. */
+-				if (fp->link_update) {
++				if (fp->link_update)
+ 					fp->link_update(fp->phydev->attached_dev,
+ 							&fp->status);
+-					fixed_phy_update(fp);
+-				}
++				/* Check the GPIO for change in status */
++				fixed_phy_update(fp);
+ 				state = fp->status;
+ 			} while (read_seqcount_retry(&fp->seqcount, s));
  
- 		rx_status->flag |= RX_FLAG_AMPDU_DETAILS;
--		rx_status->ampdu_reference = mvm->ampdu_ref;
- 		/* toggle is switched whenever new aggregation starts */
- 		if (toggle_bit != mvm->ampdu_toggle) {
- 			mvm->ampdu_ref++;
-@@ -1092,6 +1091,7 @@ void iwl_mvm_rx_mpdu_mq(struct iwl_mvm *mvm, struct napi_struct *napi,
- 						RX_FLAG_AMPDU_EOF_BIT;
- 			}
- 		}
-+		rx_status->ampdu_reference = mvm->ampdu_ref;
- 	}
- 
- 	rcu_read_lock();
 -- 
 2.20.1
 
