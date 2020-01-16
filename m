@@ -2,135 +2,66 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 2740213DF79
-	for <lists+netdev@lfdr.de>; Thu, 16 Jan 2020 17:01:06 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D50EB13DF7F
+	for <lists+netdev@lfdr.de>; Thu, 16 Jan 2020 17:02:57 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727018AbgAPQA7 convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Thu, 16 Jan 2020 11:00:59 -0500
-Received: from youngberry.canonical.com ([91.189.89.112]:43582 "EHLO
-        youngberry.canonical.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726189AbgAPQA7 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 16 Jan 2020 11:00:59 -0500
-Received: from c-67-160-6-8.hsd1.wa.comcast.net ([67.160.6.8] helo=famine.localdomain)
-        by youngberry.canonical.com with esmtpsa (TLS1.2:ECDHE_RSA_AES_128_GCM_SHA256:128)
-        (Exim 4.86_2)
-        (envelope-from <jay.vosburgh@canonical.com>)
-        id 1is7Zl-0004NP-P7; Thu, 16 Jan 2020 16:00:54 +0000
-Received: by famine.localdomain (Postfix, from userid 1000)
-        id CF0AE630E4; Thu, 16 Jan 2020 08:00:51 -0800 (PST)
-Received: from famine (localhost [127.0.0.1])
-        by famine.localdomain (Postfix) with ESMTP id C7E35AC1CC;
-        Thu, 16 Jan 2020 08:00:51 -0800 (PST)
-From:   Jay Vosburgh <jay.vosburgh@canonical.com>
-To:     Maor Gottlieb <maorg@mellanox.com>
-cc:     Andy Gospodarek <andy@greyhouse.net>,
-        Jiri Pirko <jiri@resnulli.us>,
-        "vfalico@gmail.com" <vfalico@gmail.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        Saeed Mahameed <saeedm@mellanox.com>,
-        Jason Gunthorpe <jgg@mellanox.com>,
-        Leon Romanovsky <leonro@mellanox.com>,
-        Jiri Pirko <jiri@mellanox.com>,
-        Alex Rosenbaum <alexr@mellanox.com>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        Mark Zhang <markz@mellanox.com>,
-        Parav Pandit <parav@mellanox.com>
-Subject: Re: Expose bond_xmit_hash function
-In-reply-to: <8e90935b-7485-0969-6fe4-d802d259f778@mellanox.com>
-References: <03a6dcfc-f3c7-925d-8ed8-3c42777fd03c@mellanox.com> <20200115094513.GS2131@nanopsycho> <80ad03a2-9926-bf75-d79c-be554c4afaaf@mellanox.com> <20200115141535.GT2131@nanopsycho> <20200116144256.GA87583@C02YVCJELVCG> <8e90935b-7485-0969-6fe4-d802d259f778@mellanox.com>
-Comments: In-reply-to Maor Gottlieb <maorg@mellanox.com>
-   message dated "Thu, 16 Jan 2020 15:55:50 +0000."
-X-Mailer: MH-E 8.6+git; nmh 1.6; GNU Emacs 27.0.50
+        id S1726915AbgAPQC2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 16 Jan 2020 11:02:28 -0500
+Received: from mail-wm1-f67.google.com ([209.85.128.67]:53323 "EHLO
+        mail-wm1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726689AbgAPQC2 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 16 Jan 2020 11:02:28 -0500
+Received: by mail-wm1-f67.google.com with SMTP id m24so4308622wmc.3
+        for <netdev@vger.kernel.org>; Thu, 16 Jan 2020 08:02:27 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=yFh4a4TRf2WK3B41I3jg0SgDGNYjLTYVpVg06g9RX2w=;
+        b=dL5u5q1mnBUeWXLsaK7LafNzjKn7fXpaBm04iR+pyPeWunLFa3EopalZdwKnVN9XXE
+         GvHwTyeztMwVsm3YO385g1uuvaUY/2BSDayAHhbgAXRhhPChjc1aAeomKRbn470dHBGQ
+         0+flbljiOtRW/g52uFwcsxOyUWC/jTrVB6LaQQZWuDxQPr2x8ZZeTE/3l1opUxvXUjnQ
+         pBfjs3mxgJL7486yiNjilszZm8lYKXtVSj1TZLIh7ngjOqBtxKHIwttThHR0xQxEMtc2
+         ko+JFXfZLLQhesHtYIaIVhETdpBD8UXB6oOcOlRsaC1GcAhZMUPWSpvMraKxkFALeaY7
+         dxKA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=yFh4a4TRf2WK3B41I3jg0SgDGNYjLTYVpVg06g9RX2w=;
+        b=Xwhs+tnJHH9D8HoDr9NDzNKTA20tWKCyIsrblU0lmeniQbmzUnUmOMsaLU3Ud1MWm3
+         eBuf5x/oRO20Uv7AQaXVNDqU8Viv+FwAZjRUbQ1V7N8DptW1whpjf5Er0lA1IaTpZzj5
+         wptYeu2MzW0i/SPYRrCDd2FPi67yJJ6o1BMqUT4J+2HoX+k+Rb8jSE6xuudMs1jGkJiG
+         qi16JrJowpqMkOg3IEF/7Z9H8y1cTFyZFINZxd6692t6KnjMeec6T98qQ0jy1dD4zl8B
+         6kr98xH1ImtN3igAXmYw3Uiwbzbtm1j7gZiOYXvmSjzWpq34T6GJKzPAb3IyQZKJshHv
+         4LTg==
+X-Gm-Message-State: APjAAAVfP3j1hHGGAbBim5nCgFvOxt7q70Mpg6zCOGyp9YIODIb+U3IQ
+        Et3LThIK1VHpDHUdIyjBbR425U2UblxkhxDBGQUR/A==
+X-Google-Smtp-Source: APXvYqyETr3Zwwyzzk8cTG+shk7ZM6thrcV3vE4sz2Gmd576Zad7K3DJimHiaBvQ/J7TXGHTFwabxvkSCOWshXysBTk=
+X-Received: by 2002:a1c:1b41:: with SMTP id b62mr6726745wmb.53.1579190544980;
+ Thu, 16 Jan 2020 08:02:24 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 8BIT
-Date:   Thu, 16 Jan 2020 08:00:51 -0800
-Message-ID: <31666.1579190451@famine>
+References: <20200116155701.6636-1-lesliemonis@gmail.com>
+In-Reply-To: <20200116155701.6636-1-lesliemonis@gmail.com>
+From:   Leslie Monis <lesliemonis@gmail.com>
+Date:   Thu, 16 Jan 2020 21:31:46 +0530
+Message-ID: <CAHv+uoHdHjvFwx99FBb9oP2EhOsyuPNbrKyScY8sXUFxyfk6Vg@mail.gmail.com>
+Subject: Re: [PATCH] tc: parse attributes with NLA_F_NESTED flag
+To:     Linux NetDev <netdev@vger.kernel.org>
+Cc:     David Ahern <dsahern@gmail.com>,
+        Stephen Hemminger <stephen@networkplumber.org>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Maor Gottlieb <maorg@mellanox.com> wrote:
-
+On Thu, Jan 16, 2020 at 9:27 PM Leslie Monis <lesliemonis@gmail.com> wrote:
 >
->On 1/16/2020 4:42 PM, Andy Gospodarek wrote:
->> On Wed, Jan 15, 2020 at 03:15:35PM +0100, Jiri Pirko wrote:
->>> Wed, Jan 15, 2020 at 02:04:49PM CET, maorg@mellanox.com wrote:
->>>> On 1/15/2020 11:45 AM, Jiri Pirko wrote:
->>>>> Wed, Jan 15, 2020 at 09:01:43AM CET, maorg@mellanox.com wrote:
->>>>>> RDMA over Converged Ethernet (RoCE) is a standard protocol which enables
->>>>>> RDMA’s efficient data transfer over Ethernet networks allowing transport
->>>>>> offload with hardware RDMA engine implementation.
->>>>>> The RoCE v2 protocol exists on top of either the UDP/IPv4 or the
->>>>>> UDP/IPv6 protocol:
->>>>>>
->>>>>> --------------------------------------------------------------
->>>>>> | L2 | L3 | UDP |IB BTH | Payload| ICRC | FCS |
->>>>>> --------------------------------------------------------------
->>>>>>
->>>>>> When a bond LAG netdev is in use, we would like to have the same hash
->>>>>> result for RoCE packets as any other UDP packets, for this purpose we
->>>>>> need to expose the bond_xmit_hash function to external modules.
->>>>>> If no objection, I will push a patch that export this symbol.
->>>>> I don't think it is good idea to do it. It is an internal bond function.
->>>>> it even accepts "struct bonding *bond". Do you plan to push netdev
->>>>> struct as an arg instead? What about team? What about OVS bonding?
->>>> No, I am planning to pass the bond struct as an arg. Currently, team
->>> Hmm, that would be ofcourse wrong, as it is internal bonding driver
->>> structure.
->>>
->>>
->>>> bonding is not supported in RoCE LAG and I don't see how OVS is related.
->>> Should work for all. OVS is related in a sense that you can do bonding
->>> there too.
->>>
->>>
->>>>> Also, you don't really need a hash, you need a slave that is going to be
->>>>> used for a packet xmit.
->>>>>
->>>>> I think this could work in a generic way:
->>>>>
->>>>> struct net_device *master_xmit_slave_get(struct net_device *master_dev,
->>>>> 					 struct sk_buff *skb);
->>>> The suggestion is to put this function in the bond driver and call it
->>>> instead of bond_xmit_hash? is it still necessary if I have the bond pointer?
->>> No. This should be in a generic code. No direct calls down to bonding
->>> driver please. Or do you want to load bonding module every time your
->>> module loads?
->>>
->>> I thinks this can be implemented with ndo with "master_xmit_slave_get()"
->>> as a wrapper. Masters that support this would just implement the ndo.
->> In general I think this is a good idea (though maybe not with an skb as
->> an arg so we can use it easily within BPF), but I'm not sure if solves
->> the problem that Maor et al were setting out to solve.
->>
->> Maor, if you did export bond_xmit_hash() to be used by another driver,
->> you would presumably have a check in place so if the RoCE and UDP
->> packets had a different hash function output you would make a change and
->> be sure that the UDP frames would go out on the same device that the
->> RoCE traffic would normally use.  Is this correct?  Would you also send
->> the frames directly on the interface using dev_queue_xmit() and bypass
->> the bonding driver completely?
+> The kernel now requires all new nested attributes to set the
+> NLA_F_NESTED flag. Enable tc {qdisc,class,filter} to parse
+> attributes that have the NLA_F_NESTED flag set.
 >
->RoCE packets are UDP. The idea is that the same UDP header (RoCE as 
->well) will get the same hash result so they will be transmitted from the 
->same port.
->The frames will be sent by using the RDMA send API and bypass the 
->bonding driver completely.
->Is it answer your question?
+> Signed-off-by: Leslie Monis <lesliemonis@gmail.com>
 
-	If the RDMA send bypasses bonding, how will you insure that the
-same hash result maps to the same underlying interface for both bonding
-and RDMA?
-
-	-J
-
->> I don't think I fundamentally have a problem with this, I just want to
->> make sure I understand your proposed code-flow.
->>
->> Thanks!
->>
-
----
-	-Jay Vosburgh, jay.vosburgh@canonical.com
+I apologize. I forgot to add the [iproute2-next] tag.
