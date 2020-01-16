@@ -2,138 +2,135 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id ACABD13DA2B
-	for <lists+netdev@lfdr.de>; Thu, 16 Jan 2020 13:39:07 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B9D1413DA39
+	for <lists+netdev@lfdr.de>; Thu, 16 Jan 2020 13:43:02 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726278AbgAPMjF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 16 Jan 2020 07:39:05 -0500
-Received: from us-smtp-delivery-1.mimecast.com ([207.211.31.120]:47420 "EHLO
+        id S1726785AbgAPMm4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 16 Jan 2020 07:42:56 -0500
+Received: from us-smtp-delivery-1.mimecast.com ([205.139.110.120]:54731 "EHLO
         us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S1726082AbgAPMjF (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 16 Jan 2020 07:39:05 -0500
+        with ESMTP id S1726684AbgAPMm4 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 16 Jan 2020 07:42:56 -0500
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1579178344;
+        s=mimecast20190719; t=1579178575;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=xngfaP2ZROM9Q+2JNWAevdkrcdgN7hk/xC+a878e7tc=;
-        b=CowoZrvPahAyK+d8yOA3HFAjzhgnK7Q+c6ejKHzPF3w6yvECeNgrI2O3bJ9QrSRyH5uV/7
-        ZlhpzWnbe8qMMjQz45w8mgPkgH/eF6E4JG0QT22aIPIJsInpiCicqarbSjpd2Nn22IP/bn
-        t0pismtgxQIkFhvhQ/KvFVSOIXcDKtI=
-Received: from mail-wr1-f71.google.com (mail-wr1-f71.google.com
- [209.85.221.71]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-369-fn6ckMUGN1aVzgTjfjQE4A-1; Thu, 16 Jan 2020 07:38:58 -0500
-X-MC-Unique: fn6ckMUGN1aVzgTjfjQE4A-1
-Received: by mail-wr1-f71.google.com with SMTP id u12so9211564wrt.15
-        for <netdev@vger.kernel.org>; Thu, 16 Jan 2020 04:38:58 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=xngfaP2ZROM9Q+2JNWAevdkrcdgN7hk/xC+a878e7tc=;
-        b=GZmxnIBFjVhTdPjL+ryiinu3V0TW4ERSZz//P6l1WJXXc0INw7vqHXWPD5kZ9F3AnJ
-         HZvADWUFpi7Y1T+Ute8G5+MgzhSy9NfXNjofWPfu53t2uHnbzrznJYUJcSgK7SAaLNKw
-         LNlM2phszqVtIB20BTjGjdIe75zmwIUZVkvn1gIRMUtSSWCf146KZOJJl6S5DlYnek3w
-         jEASd+oPNzgLu2Dq4K99Ib4V4GtQB2mU+AkzMNAR6BUSAromop0m1qOru4b/RsdnjymK
-         e1gH52ipssyS28vtjEyXBMhEv68Ol41rZpYBphvsuPHYeYjawFSEvf+bE3/+FAAt+/dE
-         em7w==
-X-Gm-Message-State: APjAAAXf3GuixihP3M7kJZdDJmddB+hPDi+3A/jvSKn9TJ33+tDfX2Xs
-        +KnXfOEgBNZxaL0Y8cvwARNpqbNa74GfY0GR66CBDxG47/cdeS4PEnENpQBCtXjDeLRnj/HK1Y/
-        Zzq/3u5BMArXqf5A7
-X-Received: by 2002:a05:600c:248:: with SMTP id 8mr6066047wmj.175.1579178337211;
-        Thu, 16 Jan 2020 04:38:57 -0800 (PST)
-X-Google-Smtp-Source: APXvYqyNJGuilI0NOfEiesDJ0M6zEeMMSflKOy1NXyQLkz9BFfAk5eEEY+cDWy45BLdu2JOlK5kMjQ==
-X-Received: by 2002:a05:600c:248:: with SMTP id 8mr6066026wmj.175.1579178336986;
-        Thu, 16 Jan 2020 04:38:56 -0800 (PST)
-Received: from linux.home (2a01cb058a4e7100d3814d1912515f67.ipv6.abo.wanadoo.fr. [2a01:cb05:8a4e:7100:d381:4d19:1251:5f67])
-        by smtp.gmail.com with ESMTPSA id o4sm28800993wrw.97.2020.01.16.04.38.56
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 16 Jan 2020 04:38:56 -0800 (PST)
-Date:   Thu, 16 Jan 2020 13:38:54 +0100
-From:   Guillaume Nault <gnault@redhat.com>
-To:     Ridge Kennedy <ridge.kennedy@alliedtelesis.co.nz>
-Cc:     netdev@vger.kernel.org
-Subject: Re: [PATCH net] l2tp: Allow duplicate session creation with UDP
-Message-ID: <20200116123854.GA23974@linux.home>
-References: <20200115223446.7420-1-ridge.kennedy@alliedtelesis.co.nz>
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=WoZ0K4rRpiCW2qZjV/rJhDzQmCc+LfTgnMm+6gb2PKw=;
+        b=e5PLuWH4GY8a3WNn6r9eqt5OPvBfw2AYbDBHeGNA3NaqiGOL6WvRVpkaHdqGwZLlxJnhGS
+        TE+99FG5MnYzd9rMs2ZHuV6YOYUG8VMvlTdRTSa/tJuHYh/3ymvh2SnADZ/91JfAMMek0J
+        LrImgMgsagkVeGMG7eNlT6uePpzlqrI=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-234-PcWvHHUMNVOFfEm04vtmnQ-1; Thu, 16 Jan 2020 07:42:52 -0500
+X-MC-Unique: PcWvHHUMNVOFfEm04vtmnQ-1
+Received: from smtp.corp.redhat.com (int-mx06.intmail.prod.int.phx2.redhat.com [10.5.11.16])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id A4009DB61;
+        Thu, 16 Jan 2020 12:42:49 +0000 (UTC)
+Received: from jason-ThinkPad-X1-Carbon-6th.redhat.com (ovpn-12-70.pek2.redhat.com [10.72.12.70])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id EBB995C1C3;
+        Thu, 16 Jan 2020 12:42:33 +0000 (UTC)
+From:   Jason Wang <jasowang@redhat.com>
+To:     mst@redhat.com, jasowang@redhat.com, linux-kernel@vger.kernel.org,
+        kvm@vger.kernel.org, virtualization@lists.linux-foundation.org,
+        netdev@vger.kernel.org
+Cc:     tiwei.bie@intel.com, jgg@mellanox.com, maxime.coquelin@redhat.com,
+        cunming.liang@intel.com, zhihong.wang@intel.com,
+        rob.miller@broadcom.com, xiao.w.wang@intel.com,
+        haotian.wang@sifive.com, lingshan.zhu@intel.com,
+        eperezma@redhat.com, lulu@redhat.com, parav@mellanox.com,
+        kevin.tian@intel.com, stefanha@redhat.com, rdunlap@infradead.org,
+        hch@infradead.org, aadam@redhat.com, jakub.kicinski@netronome.com,
+        jiri@mellanox.com, shahafs@mellanox.com, hanand@xilinx.com,
+        mhabets@solarflare.com
+Subject: [PATCH 0/5] vDPA support
+Date:   Thu, 16 Jan 2020 20:42:26 +0800
+Message-Id: <20200116124231.20253-1-jasowang@redhat.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200115223446.7420-1-ridge.kennedy@alliedtelesis.co.nz>
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.16
+Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Jan 16, 2020 at 11:34:47AM +1300, Ridge Kennedy wrote:
-> In the past it was possible to create multiple L2TPv3 sessions with the
-> same session id as long as the sessions belonged to different tunnels.
-> The resulting sessions had issues when used with IP encapsulated tunnels,
-> but worked fine with UDP encapsulated ones. Some applications began to
-> rely on this behaviour to avoid having to negotiate unique session ids.
-> 
-> Some time ago a change was made to require session ids to be unique across
-> all tunnels, breaking the applications making use of this "feature".
-> 
-> This change relaxes the duplicate session id check to allow duplicates
-> if both of the colliding sessions belong to UDP encapsulated tunnels.
-> 
-> Fixes: dbdbc73b4478 ("l2tp: fix duplicate session creation")
-> Signed-off-by: Ridge Kennedy <ridge.kennedy@alliedtelesis.co.nz>
-> ---
->  net/l2tp/l2tp_core.c | 4 +++-
->  1 file changed, 3 insertions(+), 1 deletion(-)
-> 
-> diff --git a/net/l2tp/l2tp_core.c b/net/l2tp/l2tp_core.c
-> index f82ea12bac37..0cc86227c618 100644
-> --- a/net/l2tp/l2tp_core.c
-> +++ b/net/l2tp/l2tp_core.c
-> @@ -323,7 +323,9 @@ int l2tp_session_register(struct l2tp_session *session,
->  		spin_lock_bh(&pn->l2tp_session_hlist_lock);
->  
->  		hlist_for_each_entry(session_walk, g_head, global_hlist)
-> -			if (session_walk->session_id == session->session_id) {
-> +			if (session_walk->session_id == session->session_id &&
-> +			    (session_walk->tunnel->encap == L2TP_ENCAPTYPE_IP ||
-> +			     tunnel->encap == L2TP_ENCAPTYPE_IP)) {
->  				err = -EEXIST;
->  				goto err_tlock_pnlock;
->  			}
-Well, I think we have a more fundamental problem here. By adding
-L2TPoUDP sessions to the global list, we allow cross-talks with L2TPoIP
-sessions. That is, if we have an L2TPv3 session X running over UDP and
-we receive an L2TP_IP packet targetted at session ID X, then
-l2tp_session_get() will return the L2TP_UDP session to l2tp_ip_recv().
+Hi all:
 
-I guess l2tp_session_get() should be dropped and l2tp_ip_recv() should
-look up the session in the context of its socket, like in the UDP case.
+Based on the comments and discussion for mdev based hardware virtio
+offloading support[1]. A different approach to support vDPA device is
+proposed in this series.
 
-But for the moment, what about just not adding L2TP_UDP sessions to the
-global list? That should fix both your problem and the L2TP_UDP/L2TP_IP
-cross-talks.
+Instead of leveraging VFIO/mdev which may not work for some
+vendors. This series tries to introduce a dedicated vDPA bus and
+leverage vhost for userspace drivers. This help for the devices that
+are not fit for VFIO and may reduce the conflict when try to propose a
+bus template for virtual devices in [1].
 
-diff --git a/net/l2tp/l2tp_core.c b/net/l2tp/l2tp_core.c
-index f82ea12bac37..f70fea8d093d 100644
---- a/net/l2tp/l2tp_core.c
-+++ b/net/l2tp/l2tp_core.c
-@@ -316,7 +316,7 @@ int l2tp_session_register(struct l2tp_session *session,
- 			goto err_tlock;
- 		}
- 
--	if (tunnel->version == L2TP_HDR_VER_3) {
-+	if (tunnel->encap == L2TP_ENCAPTYPE_IP) {
- 		pn = l2tp_pernet(tunnel->l2tp_net);
- 		g_head = l2tp_session_id_hash_2(pn, session->session_id);
- 
-@@ -1587,8 +1587,8 @@ void __l2tp_session_unhash(struct l2tp_session *session)
- 		hlist_del_init(&session->hlist);
- 		write_unlock_bh(&tunnel->hlist_lock);
- 
--		/* For L2TPv3 we have a per-net hash: remove from there, too */
--		if (tunnel->version != L2TP_HDR_VER_2) {
-+		/* For IP encap we have a per-net hash: remove from there, too */
-+		if (tunnel->encap == L2TP_ENCAPTYPE_IP) {
- 			struct l2tp_net *pn = l2tp_pernet(tunnel->l2tp_net);
- 			spin_lock_bh(&pn->l2tp_session_hlist_lock);
- 			hlist_del_init_rcu(&session->global_hlist);
+The vDPA support is split into following parts:
+
+1) vDPA core (bus, device and driver abstraction)
+2) virtio vDPA transport for kernel virtio driver to control vDPA
+   device
+3) vhost vDPA bus driver for userspace vhost driver to control vDPA
+   device
+4) vendor vDPA drivers
+5) management API
+
+Both 1) and 2) are included in this series. Tiwei will work on part
+3). For 4), Ling Shan will work and post IFCVF driver. For 5) we leave
+it to vendor to implement, but it's better to come into an agreement
+for management to create/configure/destroy vDPA device.
+
+The sample driver is kept but renamed to vdap_sim. An on-chip IOMMU
+implementation is added to sample device to make it work for both
+kernel virtio driver and userspace vhost driver. It implements a sysfs
+based management API, but it can switch to any other (e.g devlink) if
+necessary.
+
+Please refer each patch for more information.
+
+Comments are welcomed.
+
+[1] https://lkml.org/lkml/2019/11/18/261
+
+Jason Wang (5):
+  vhost: factor out IOTLB
+  vringh: IOTLB support
+  vDPA: introduce vDPA bus
+  virtio: introduce a vDPA based transport
+  vdpasim: vDPA device simulator
+
+ MAINTAINERS                    |   2 +
+ drivers/vhost/Kconfig          |   7 +
+ drivers/vhost/Kconfig.vringh   |   1 +
+ drivers/vhost/Makefile         |   2 +
+ drivers/vhost/net.c            |   2 +-
+ drivers/vhost/vhost.c          | 221 +++------
+ drivers/vhost/vhost.h          |  36 +-
+ drivers/vhost/vhost_iotlb.c    | 171 +++++++
+ drivers/vhost/vringh.c         | 434 +++++++++++++++++-
+ drivers/virtio/Kconfig         |  15 +
+ drivers/virtio/Makefile        |   2 +
+ drivers/virtio/vdpa/Kconfig    |  26 ++
+ drivers/virtio/vdpa/Makefile   |   3 +
+ drivers/virtio/vdpa/vdpa.c     | 141 ++++++
+ drivers/virtio/vdpa/vdpa_sim.c | 796 +++++++++++++++++++++++++++++++++
+ drivers/virtio/virtio_vdpa.c   | 400 +++++++++++++++++
+ include/linux/vdpa.h           | 191 ++++++++
+ include/linux/vhost_iotlb.h    |  45 ++
+ include/linux/vringh.h         |  36 ++
+ 19 files changed, 2327 insertions(+), 204 deletions(-)
+ create mode 100644 drivers/vhost/vhost_iotlb.c
+ create mode 100644 drivers/virtio/vdpa/Kconfig
+ create mode 100644 drivers/virtio/vdpa/Makefile
+ create mode 100644 drivers/virtio/vdpa/vdpa.c
+ create mode 100644 drivers/virtio/vdpa/vdpa_sim.c
+ create mode 100644 drivers/virtio/virtio_vdpa.c
+ create mode 100644 include/linux/vdpa.h
+ create mode 100644 include/linux/vhost_iotlb.h
+
+--=20
+2.19.1
 
