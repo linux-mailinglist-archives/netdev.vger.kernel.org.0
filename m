@@ -2,37 +2,35 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 501A113E243
-	for <lists+netdev@lfdr.de>; Thu, 16 Jan 2020 17:55:12 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0406C13E26C
+	for <lists+netdev@lfdr.de>; Thu, 16 Jan 2020 17:56:13 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732581AbgAPQzJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 16 Jan 2020 11:55:09 -0500
-Received: from mail.kernel.org ([198.145.29.99]:40088 "EHLO mail.kernel.org"
+        id S1733112AbgAPQzy (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 16 Jan 2020 11:55:54 -0500
+Received: from mail.kernel.org ([198.145.29.99]:41622 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1730038AbgAPQzI (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 16 Jan 2020 11:55:08 -0500
+        id S1732543AbgAPQzy (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 16 Jan 2020 11:55:54 -0500
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 7523B2467A;
-        Thu, 16 Jan 2020 16:55:07 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id C2E9722464;
+        Thu, 16 Jan 2020 16:55:52 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1579193708;
-        bh=Dslocvm6ODpusPCVvet1wWvSZrEl0x0UXS983L8p52U=;
+        s=default; t=1579193753;
+        bh=hr+B5uQ0PdzcKcQdS7HasGDltOnY59pKbIhtGDmGYoE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=PqPgYqASOvF6IIgaCAHfqQrhQ39plW94jdAYRPgAzesgXzJB/n1sW2N6V1FJA2r3X
-         92Yy2tLfcO0mwNVZ73Xh+5DHjBzu4fjsVcKdVrjZ2oT+0OqaRa+a9a4OHhCUHJt8oW
-         M6xfq5gnpL3aq4km1LrvQw5dqPgsSnNZSvSdpU40=
+        b=T+IN2WLbDfh4y/fPykt4Q3Xn2OeWSE7ZbLu17brSEZjDTxPkvu9xEVqryu/9hATAo
+         N9+do2MqzVumVTkV4ACUB0TBTYileXXtgkoeG60Rm4wPECD8Go0/AC5LiNkvOvuqhI
+         ojbC9muqpnNFgpdfF3MHJuW09R5aDI+cW+mYaT74=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Shannon Nelson <shannon.nelson@oracle.com>,
-        Andrew Bowers <andrewx.bowers@intel.com>,
-        Jeff Kirsher <jeffrey.t.kirsher@intel.com>,
-        Sasha Levin <sashal@kernel.org>,
-        intel-wired-lan@lists.osuosl.org, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.19 004/671] ixgbe: don't clear IPsec sa counters on HW clearing
-Date:   Thu, 16 Jan 2020 11:43:55 -0500
-Message-Id: <20200116165502.8838-4-sashal@kernel.org>
+Cc:     Huazhong Tan <tanhuazhong@huawei.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 4.19 042/671] net: hns3: add error handler for hns3_nic_init_vector_data()
+Date:   Thu, 16 Jan 2020 11:44:33 -0500
+Message-Id: <20200116165502.8838-42-sashal@kernel.org>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20200116165502.8838-1-sashal@kernel.org>
 References: <20200116165502.8838-1-sashal@kernel.org>
@@ -45,45 +43,56 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Shannon Nelson <shannon.nelson@oracle.com>
+From: Huazhong Tan <tanhuazhong@huawei.com>
 
-[ Upstream commit 9e3f2f5ecee69b0f70003fb3e07639151e91de73 ]
+[ Upstream commit ece4bf46e98c9f3775a488f3932a531508d3b1a2 ]
 
-The software SA record counters should not be cleared when clearing
-the hardware tables.  This causes the counters to be out of sync
-after a driver reset.
+When hns3_nic_init_vector_data() fails to map ring to vector,
+it should cancel the netif_napi_add() that has been successfully
+done and then exits.
 
-Fixes: 63a67fe229ea ("ixgbe: add ipsec offload add and remove SA")
-Signed-off-by: Shannon Nelson <shannon.nelson@oracle.com>
-Tested-by: Andrew Bowers <andrewx.bowers@intel.com>
-Signed-off-by: Jeff Kirsher <jeffrey.t.kirsher@intel.com>
+Fixes: 76ad4f0ee747 ("net: hns3: Add support of HNS3 Ethernet Driver for hip08 SoC")
+Signed-off-by: Huazhong Tan <tanhuazhong@huawei.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/intel/ixgbe/ixgbe_ipsec.c | 4 ----
- 1 file changed, 4 deletions(-)
+ drivers/net/ethernet/hisilicon/hns3/hns3_enet.c | 10 ++++++++--
+ 1 file changed, 8 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/net/ethernet/intel/ixgbe/ixgbe_ipsec.c b/drivers/net/ethernet/intel/ixgbe/ixgbe_ipsec.c
-index b27f7a968820..49e6d66ccf80 100644
---- a/drivers/net/ethernet/intel/ixgbe/ixgbe_ipsec.c
-+++ b/drivers/net/ethernet/intel/ixgbe/ixgbe_ipsec.c
-@@ -114,7 +114,6 @@ static void ixgbe_ipsec_set_rx_ip(struct ixgbe_hw *hw, u16 idx, __be32 addr[])
-  **/
- static void ixgbe_ipsec_clear_hw_tables(struct ixgbe_adapter *adapter)
- {
--	struct ixgbe_ipsec *ipsec = adapter->ipsec;
- 	struct ixgbe_hw *hw = &adapter->hw;
- 	u32 buf[4] = {0, 0, 0, 0};
- 	u16 idx;
-@@ -133,9 +132,6 @@ static void ixgbe_ipsec_clear_hw_tables(struct ixgbe_adapter *adapter)
- 		ixgbe_ipsec_set_tx_sa(hw, idx, buf, 0);
- 		ixgbe_ipsec_set_rx_sa(hw, idx, 0, buf, 0, 0, 0);
+diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3_enet.c b/drivers/net/ethernet/hisilicon/hns3/hns3_enet.c
+index 1aaf6e2a3b39..9df807ec8c84 100644
+--- a/drivers/net/ethernet/hisilicon/hns3/hns3_enet.c
++++ b/drivers/net/ethernet/hisilicon/hns3/hns3_enet.c
+@@ -2642,7 +2642,7 @@ static int hns3_nic_init_vector_data(struct hns3_nic_priv *priv)
+ 	struct hnae3_handle *h = priv->ae_handle;
+ 	struct hns3_enet_tqp_vector *tqp_vector;
+ 	int ret = 0;
+-	u16 i;
++	int i;
+ 
+ 	for (i = 0; i < priv->vector_num; i++) {
+ 		tqp_vector = &priv->tqp_vector[i];
+@@ -2687,13 +2687,19 @@ static int hns3_nic_init_vector_data(struct hns3_nic_priv *priv)
+ 		hns3_free_vector_ring_chain(tqp_vector, &vector_ring_chain);
+ 
+ 		if (ret)
+-			return ret;
++			goto map_ring_fail;
+ 
+ 		netif_napi_add(priv->netdev, &tqp_vector->napi,
+ 			       hns3_nic_common_poll, NAPI_POLL_WEIGHT);
  	}
--
--	ipsec->num_rx_sa = 0;
--	ipsec->num_tx_sa = 0;
+ 
+ 	return 0;
++
++map_ring_fail:
++	while (i--)
++		netif_napi_del(&priv->tqp_vector[i].napi);
++
++	return ret;
  }
  
- /**
+ static int hns3_nic_alloc_vector_data(struct hns3_nic_priv *priv)
 -- 
 2.20.1
 
