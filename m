@@ -2,262 +2,166 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 9F43613DF1C
-	for <lists+netdev@lfdr.de>; Thu, 16 Jan 2020 16:47:12 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B8B2213DF4F
+	for <lists+netdev@lfdr.de>; Thu, 16 Jan 2020 16:55:56 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726752AbgAPPrG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 16 Jan 2020 10:47:06 -0500
-Received: from mail-eopbgr20056.outbound.protection.outlook.com ([40.107.2.56]:9379
-        "EHLO EUR02-VE1-obe.outbound.protection.outlook.com"
+        id S1726689AbgAPPzz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 16 Jan 2020 10:55:55 -0500
+Received: from mail-eopbgr70073.outbound.protection.outlook.com ([40.107.7.73]:26624
+        "EHLO EUR04-HE1-obe.outbound.protection.outlook.com"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1726410AbgAPPrF (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 16 Jan 2020 10:47:05 -0500
+        id S1726406AbgAPPzy (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 16 Jan 2020 10:55:54 -0500
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=eJ7H+M6jMHgN7HMw8x3aDHKaKeetyzEwYeyvHrdeFHDQTQBpHz4PmUkd3tN0zPkaP6GYDmSP/RYuyC8+goggZtge6L9Anzwp6L3KeOJzvHNQz0N/7TWLkHKDFC4AjvmIXVOhL1Drys+zVP7lLlIQpzJoz+/q41RXlwhjcBAbxPunFJCGhj22tdxFjLNRg6Va/v4s1ET0QsicQYprzkeFEgUp2QPVUSJhFMXUzcjynz6GQLmjkWjnOiODvZdY9ZyZf0ur/teCqw8q0a/9BBkGV+f0r2y/ngGS1Ew6mQKwtXuu1/4m+We+7JDmxchm0W16vJQpMY1KNaMFDvYQ2Md89A==
+ b=N8UuYIUrCINDT5mPr3Q39IXW5Za4zUkjKdLuFtTFSmVWJv1JZ+6M5rmD6uDEZyLnN1dUhs2mo8UyL/NyGJ3LqAl3I2YzaDiiiBrP6iMmSxragA5hGiaUE+BDInaC1ctgbG/DFmXqZ9rfqwJq2DN4DIU6ZLhNfpTwB2HVNi0E5xGtKi9w5adHfz5b/UjAq50zBR5F1VpGo6lDqpku37eQJlxCzNkYoRTu7OGjKWXDNJyLDI6Ev539gaH20k2YSNGfx20SpHn7BLXpSeWWiuLWeQOUkg4Lc3X4uz5/WDjHlgERfJri1w2Tc2psCJ4SZrFENaCl5zMGrgllBKeeowYhRA==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=RFLN02G/8QOA4bKdrk5WP0X5vmdssJzpZTT2IG0k9dM=;
- b=nxXDJFOhBHTQMW3YTY7SlEpt8ktHCE/ESw9unXrztQlb0I3+luP0b/2BrCf2HKQEw79HAqDxiZK1QS6fM1pocbhICHJv7a1Y+O2jhlPN/64FJu/ben5fqPb9rhFcb/lFxsJNiqodAwRQdgPuA4AMUBF947If0PGZs7im8E4MQPACfbRZ2F4v35yzIo9sgMl8fcUCf6YBb1pfnSZ3Nv8p+96wfFLBjcM3KLN0KGV2D2XLoxLW70MDraTYHBRLdpBsVExoMw8Xau8aWZ4EVC2PaGLjt/O54YcGRaVGOoNE/+xqEjS/aA+bfTP7FQ3Sc0tJuCfqXAkFpTod2FhAPFu2HA==
+ bh=ZdUyCqPEIOst8dCQzLfD9dYfZLinTdrERGYaURn6d7o=;
+ b=heZ+BqbL23cWj7EVN7CpkuSI0NXhrM3uu1bBuqwNmXVJpcpsz2iOdgRmhKAeL6RU8TJg9FRtY/3TZ1kds/ILGvoFiEl4VrO94rIsCTNjlhPQ+toURCwdsb4rEA87EINtpcWfdWEXgdwSpMWUfNUxQJXxBpPQ2e+AEvyV0U3wKpEozMYxZJGH9c1T0wF+Oec5cLWbbRUxrnslPcsGSDatnum+1Iin/3/yBFpplCu+juK4qhYHjhj32wGmn3snhYF3n4yuEI+y2S1ArOkzWVi9SEWhfg4c2q3XdZ+fjYgP1qGXLFzl9RxBVz3g4e4AVl+DnSZAghjLlzkej3mxuRL27g==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=mellanox.com; dmarc=pass action=none header.from=mellanox.com;
  dkim=pass header.d=mellanox.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Mellanox.com;
  s=selector1;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=RFLN02G/8QOA4bKdrk5WP0X5vmdssJzpZTT2IG0k9dM=;
- b=PqiPiT6qwDrCtI9l3BKfq0+PGKeuryPB+J0cfMkl7yrljZRrLbk5/akf+yfPzX2iODGh7H6MRZxYUaryhElj+9PFCh1zX91QOPnqT3KV4ACmZ/ecNG5y9K1dWb29BFgEwA2bNv1NXHTZr1OdUHReXkJTb5crH3en4Mmd69mIjmY=
-Received: from VI1PR05MB4141.eurprd05.prod.outlook.com (52.133.14.15) by
- VI1PR05MB3408.eurprd05.prod.outlook.com (10.170.239.10) with Microsoft SMTP
+ bh=ZdUyCqPEIOst8dCQzLfD9dYfZLinTdrERGYaURn6d7o=;
+ b=crjJ6mGwSpIAoSU8CYKK/BH0PttBWzf8LVXARgNVZW88oISxA9yAXBoTl2fxeWx2qdeLA1GITNinjeuMQqyQtoHGcN7dWubiTqZhS71YMsrsKuG4NVHdlA7MaHNYicDd7GzEFtc6DWcF/DfQRYqxeR4+6+Cdh82NAWlzGt/4GcA=
+Received: from AM0PR05MB5873.eurprd05.prod.outlook.com (20.178.117.153) by
+ AM0PR05MB4113.eurprd05.prod.outlook.com (52.134.125.155) with Microsoft SMTP
  Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.2623.9; Thu, 16 Jan 2020 15:47:02 +0000
-Received: from VI1PR05MB4141.eurprd05.prod.outlook.com
- ([fe80::1c00:7925:d5c6:d60d]) by VI1PR05MB4141.eurprd05.prod.outlook.com
- ([fe80::1c00:7925:d5c6:d60d%7]) with mapi id 15.20.2644.015; Thu, 16 Jan 2020
- 15:47:02 +0000
-Received: from mlx.ziepe.ca (142.68.57.212) by MN2PR05CA0044.namprd05.prod.outlook.com (2603:10b6:208:236::13) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.2644.14 via Frontend Transport; Thu, 16 Jan 2020 15:47:01 +0000
-Received: from jgg by mlx.ziepe.ca with local (Exim 4.90_1)     (envelope-from <jgg@mellanox.com>)      id 1is7MI-00064B-7W; Thu, 16 Jan 2020 11:46:58 -0400
-From:   Jason Gunthorpe <jgg@mellanox.com>
-To:     Jason Wang <jasowang@redhat.com>
-CC:     "mst@redhat.com" <mst@redhat.com>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
-        "virtualization@lists.linux-foundation.org" 
-        <virtualization@lists.linux-foundation.org>,
+ 15.20.2644.18; Thu, 16 Jan 2020 15:55:50 +0000
+Received: from AM0PR05MB5873.eurprd05.prod.outlook.com
+ ([fe80::a556:1de2:ef6c:9192]) by AM0PR05MB5873.eurprd05.prod.outlook.com
+ ([fe80::a556:1de2:ef6c:9192%4]) with mapi id 15.20.2644.015; Thu, 16 Jan 2020
+ 15:55:50 +0000
+Received: from [10.80.3.21] (193.47.165.251) by AM4PR07CA0008.eurprd07.prod.outlook.com (2603:10a6:205:1::21) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.2644.6 via Frontend Transport; Thu, 16 Jan 2020 15:55:48 +0000
+From:   Maor Gottlieb <maorg@mellanox.com>
+To:     Andy Gospodarek <andy@greyhouse.net>, Jiri Pirko <jiri@resnulli.us>
+CC:     "j.vosburgh@gmail.com" <j.vosburgh@gmail.com>,
+        "vfalico@gmail.com" <vfalico@gmail.com>,
         "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "tiwei.bie@intel.com" <tiwei.bie@intel.com>,
-        "maxime.coquelin@redhat.com" <maxime.coquelin@redhat.com>,
-        "cunming.liang@intel.com" <cunming.liang@intel.com>,
-        "zhihong.wang@intel.com" <zhihong.wang@intel.com>,
-        "rob.miller@broadcom.com" <rob.miller@broadcom.com>,
-        "xiao.w.wang@intel.com" <xiao.w.wang@intel.com>,
-        "haotian.wang@sifive.com" <haotian.wang@sifive.com>,
-        "lingshan.zhu@intel.com" <lingshan.zhu@intel.com>,
-        "eperezma@redhat.com" <eperezma@redhat.com>,
-        "lulu@redhat.com" <lulu@redhat.com>,
-        Parav Pandit <parav@mellanox.com>,
-        "kevin.tian@intel.com" <kevin.tian@intel.com>,
-        "stefanha@redhat.com" <stefanha@redhat.com>,
-        "rdunlap@infradead.org" <rdunlap@infradead.org>,
-        "hch@infradead.org" <hch@infradead.org>,
-        "aadam@redhat.com" <aadam@redhat.com>,
-        "jakub.kicinski@netronome.com" <jakub.kicinski@netronome.com>,
+        Saeed Mahameed <saeedm@mellanox.com>,
+        Jason Gunthorpe <jgg@mellanox.com>,
+        Leon Romanovsky <leonro@mellanox.com>,
         Jiri Pirko <jiri@mellanox.com>,
-        Shahaf Shuler <shahafs@mellanox.com>,
-        "hanand@xilinx.com" <hanand@xilinx.com>,
-        "mhabets@solarflare.com" <mhabets@solarflare.com>
-Subject: Re: [PATCH 5/5] vdpasim: vDPA device simulator
-Thread-Topic: [PATCH 5/5] vdpasim: vDPA device simulator
-Thread-Index: AQHVzGqlRPHVvNcseEuo1k66+tVAdqftb4kA
-Date:   Thu, 16 Jan 2020 15:47:01 +0000
-Message-ID: <20200116154658.GJ20978@mellanox.com>
-References: <20200116124231.20253-1-jasowang@redhat.com>
- <20200116124231.20253-6-jasowang@redhat.com>
-In-Reply-To: <20200116124231.20253-6-jasowang@redhat.com>
+        Alex Rosenbaum <alexr@mellanox.com>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        Mark Zhang <markz@mellanox.com>,
+        Parav Pandit <parav@mellanox.com>
+Subject: Re: Expose bond_xmit_hash function
+Thread-Topic: Expose bond_xmit_hash function
+Thread-Index: AQHVy3oG0EtUwers0UGLm6hc+vG4CqfregOAgABZSAD///JCgIABmfkAgAAUW4A=
+Date:   Thu, 16 Jan 2020 15:55:50 +0000
+Message-ID: <8e90935b-7485-0969-6fe4-d802d259f778@mellanox.com>
+References: <03a6dcfc-f3c7-925d-8ed8-3c42777fd03c@mellanox.com>
+ <20200115094513.GS2131@nanopsycho>
+ <80ad03a2-9926-bf75-d79c-be554c4afaaf@mellanox.com>
+ <20200115141535.GT2131@nanopsycho> <20200116144256.GA87583@C02YVCJELVCG>
+In-Reply-To: <20200116144256.GA87583@C02YVCJELVCG>
 Accept-Language: en-US
 Content-Language: en-US
 X-MS-Has-Attach: 
 X-MS-TNEF-Correlator: 
-x-clientproxiedby: MN2PR05CA0044.namprd05.prod.outlook.com
- (2603:10b6:208:236::13) To VI1PR05MB4141.eurprd05.prod.outlook.com
- (2603:10a6:803:44::15)
+x-originating-ip: [193.47.165.251]
+x-clientproxiedby: AM4PR07CA0008.eurprd07.prod.outlook.com
+ (2603:10a6:205:1::21) To AM0PR05MB5873.eurprd05.prod.outlook.com
+ (2603:10a6:208:125::25)
 authentication-results: spf=none (sender IP is )
- smtp.mailfrom=jgg@mellanox.com; 
+ smtp.mailfrom=maorg@mellanox.com; 
 x-ms-exchange-messagesentrepresentingtype: 1
-x-originating-ip: [142.68.57.212]
 x-ms-publictraffictype: Email
 x-ms-office365-filtering-ht: Tenant
-x-ms-office365-filtering-correlation-id: be6c7c42-ba66-4cfb-61a6-08d79a9b5401
-x-ms-traffictypediagnostic: VI1PR05MB3408:|VI1PR05MB3408:
+x-ms-office365-filtering-correlation-id: 64042003-d9eb-4676-402c-08d79a9c8ef1
+x-ms-traffictypediagnostic: AM0PR05MB4113:|AM0PR05MB4113:
 x-ms-exchange-transport-forked: True
-x-microsoft-antispam-prvs: <VI1PR05MB3408E455B567BAB2EC064A9ACF360@VI1PR05MB3408.eurprd05.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:5797;
+x-microsoft-antispam-prvs: <AM0PR05MB41136B60AE3B64D4AFC42E08D3360@AM0PR05MB4113.eurprd05.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:10000;
 x-forefront-prvs: 02843AA9E0
-x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(4636009)(136003)(376002)(366004)(39860400002)(346002)(396003)(189003)(199004)(9746002)(9786002)(26005)(478600001)(186003)(8936002)(6666004)(316002)(54906003)(1076003)(2906002)(33656002)(7416002)(4326008)(6916009)(8676002)(86362001)(71200400001)(36756003)(52116002)(2616005)(66556008)(64756008)(66446008)(81166006)(66476007)(5660300002)(66946007)(81156014)(24400500001);DIR:OUT;SFP:1101;SCL:1;SRVR:VI1PR05MB3408;H:VI1PR05MB4141.eurprd05.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;MX:1;A:1;
+x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(4636009)(396003)(136003)(39860400002)(346002)(376002)(366004)(199004)(189003)(316002)(16576012)(8676002)(52116002)(66556008)(71200400001)(16526019)(31696002)(26005)(6666004)(81166006)(2616005)(81156014)(8936002)(5660300002)(186003)(956004)(2906002)(86362001)(478600001)(110136005)(107886003)(54906003)(31686004)(7116003)(66946007)(6486002)(64756008)(66476007)(66446008)(4326008)(36756003)(53546011);DIR:OUT;SFP:1101;SCL:1;SRVR:AM0PR05MB4113;H:AM0PR05MB5873.eurprd05.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;A:1;MX:1;
 received-spf: None (protection.outlook.com: mellanox.com does not designate
  permitted sender hosts)
 x-ms-exchange-senderadcheck: 1
 x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: i0zLaRR1spDm8LThUgz4JbVSkwCx9yW68+R6nRGPImfp6jV02OAKkGfrCvfaHdADgSd/5x12/pQM2i7XzMDZ+aaLLlj4ehqiXfgZGNrltpCsOq8gOVv+uANe64IQLYeAdq9+5qjlzDhMheE814QmD3NtfgMCYTSlCJeSEyD15DU15QPcwGTmRx5Jy0F+OtEOC2s16pRMSb/TfCpZbrv+gCFP+HLcmsmi6kGOLmXG81iVZttdNtcQ/VwTji0rpeP8yDayVZBFV58gBHoA8FclT12ufnCUB4GgQbZy06psv2JAH2qrLXE62WcZ1q241hmEH2Ty2DeyPn8feXQozYcC42iRu6yb/htv63eEOAECNEy4UB5qHXDtFho+mJ6lbW8v2W32pPhjj784lbCV5i2ry8YhcKAc3MD2z+spLPDT+O7BnTn3XCTgIHICaF5H5NicWKspV2K2kE9MWKnfq0X//kWoZBGVMHnJMzBQx6Wne9oURZbGrqwHGci8XRnqgbX0
-Content-Type: text/plain; charset="us-ascii"
-Content-ID: <2168E1773A68F84989C86DC2620C0247@eurprd05.prod.outlook.com>
-Content-Transfer-Encoding: quoted-printable
+x-microsoft-antispam-message-info: BXPAhaR2fJw8eaYM7WK1grxFUAuj6JhCVdjSX/UdIe0Uupqsc7mwVVQohUrIdgdtXwmSf6ze1I+x6JPeS8ijxTZADOt7DNoWNQdsDcP3FqsrjgDT12pxz8JKkEoZc0uSAOVWHjnONqYnTzgcLWCNhd3xtucE1M7JFyt2EQ6OQnfrr6dCHngfV2FOQ2PxffwmBEnyMpm7QgXApGMD3zSlVEssF8iYonpmI5NdC9D9W1PNwrcQ1zXJbEV73vrHMKaINLbnJCJ1sEJ7pmDrOPNXikqubENGF/UvwYx0PnA8SY/wOt9+9fywl1+qqELXw2bHnvdqnkvvgZ/HIVXXithyFYMxAt1DNmu1ePmB42mR0P1qga1Pt0JFSspL/fgnxssQA49Wrj7lrEhjVHumO/tvGpUgMOqJPIq7REKUXALRLJ8ccPm8fUFIGowNyQIh67RB
+Content-Type: text/plain; charset="utf-8"
+Content-ID: <712F4A9F56334B4496DEFC6D1680745B@eurprd05.prod.outlook.com>
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
 X-OriginatorOrg: Mellanox.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: be6c7c42-ba66-4cfb-61a6-08d79a9b5401
-X-MS-Exchange-CrossTenant-originalarrivaltime: 16 Jan 2020 15:47:01.8678
+X-MS-Exchange-CrossTenant-Network-Message-Id: 64042003-d9eb-4676-402c-08d79a9c8ef1
+X-MS-Exchange-CrossTenant-originalarrivaltime: 16 Jan 2020 15:55:50.1594
  (UTC)
 X-MS-Exchange-CrossTenant-fromentityheader: Hosted
 X-MS-Exchange-CrossTenant-id: a652971c-7d2e-4d9b-a6a4-d149256f461b
 X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: R8eWo2s7xcND71TcjalQWoar6IsTWNWG+8x6Wv+LFQA+Be65x5E8ah+BZ46ksCkEAoX+a5l4Y242/myE3SIn+w==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR05MB3408
+X-MS-Exchange-CrossTenant-userprincipalname: nouLGtpYYK3JcgzKG/iqDOxXM+n7Z5icrwLFykiUljz/LeE9MmlS3J/ij1deJ0+u6Y9UtNmvIJUf0dZHHZvlpg==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM0PR05MB4113
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Jan 16, 2020 at 08:42:31PM +0800, Jason Wang wrote:
-> This patch implements a software vDPA networking device. The datapath
-> is implemented through vringh and workqueue. The device has an on-chip
-> IOMMU which translates IOVA to PA. For kernel virtio drivers, vDPA
-> simulator driver provides dma_ops. For vhost driers, set_map() methods
-> of vdpa_config_ops is implemented to accept mappings from vhost.
->=20
-> A sysfs based management interface is implemented, devices are
-> created and removed through:
->=20
-> /sys/devices/virtual/vdpa_simulator/netdev/{create|remove}
-
-This is very gross, creating a class just to get a create/remove and
-then not using the class for anything else? Yuk.
-
-> Netlink based lifecycle management could be implemented for vDPA
-> simulator as well.
-
-This is just begging for a netlink based approach.
-
-Certainly netlink driven removal should be an agreeable standard for
-all devices, I think.
-
-> +struct vdpasim_virtqueue {
-> +	struct vringh vring;
-> +	struct vringh_kiov iov;
-> +	unsigned short head;
-> +	bool ready;
-> +	u64 desc_addr;
-> +	u64 device_addr;
-> +	u64 driver_addr;
-> +	u32 num;
-> +	void *private;
-> +	irqreturn_t (*cb)(void *data);
-> +};
-> +
-> +#define VDPASIM_QUEUE_ALIGN PAGE_SIZE
-> +#define VDPASIM_QUEUE_MAX 256
-> +#define VDPASIM_DEVICE_ID 0x1
-> +#define VDPASIM_VENDOR_ID 0
-> +#define VDPASIM_VQ_NUM 0x2
-> +#define VDPASIM_CLASS_NAME "vdpa_simulator"
-> +#define VDPASIM_NAME "netdev"
-> +
-> +u64 vdpasim_features =3D (1ULL << VIRTIO_F_ANY_LAYOUT) |
-> +		       (1ULL << VIRTIO_F_VERSION_1)  |
-> +		       (1ULL << VIRTIO_F_IOMMU_PLATFORM);
-
-Is not using static here intentional?
-
-> +static void vdpasim_release_dev(struct device *_d)
-> +{
-> +	struct vdpa_device *vdpa =3D dev_to_vdpa(_d);
-> +	struct vdpasim *vdpasim =3D vdpa_to_sim(vdpa);
-> +
-> +	sysfs_remove_link(vdpasim_dev->devices_kobj, vdpasim->name);
-> +
-> +	mutex_lock(&vsim_list_lock);
-> +	list_del(&vdpasim->next);
-> +	mutex_unlock(&vsim_list_lock);
-> +
-> +	kfree(vdpasim->buffer);
-> +	kfree(vdpasim);
-> +}
-
-It is again a bit weird to see a realease function in a driver. This
-stuff is usually in the remove remove function.
-
-> +static int vdpasim_create(const guid_t *uuid)
-> +{
-> +	struct vdpasim *vdpasim, *tmp;
-> +	struct virtio_net_config *config;
-> +	struct vdpa_device *vdpa;
-> +	struct device *dev;
-> +	int ret =3D -ENOMEM;
-> +
-> +	mutex_lock(&vsim_list_lock);
-> +	list_for_each_entry(tmp, &vsim_devices_list, next) {
-> +		if (guid_equal(&tmp->uuid, uuid)) {
-> +			mutex_unlock(&vsim_list_lock);
-> +			return -EEXIST;
-> +		}
-> +	}
-> +
-> +	vdpasim =3D kzalloc(sizeof(*vdpasim), GFP_KERNEL);
-> +	if (!vdpasim)
-> +		goto err_vdpa_alloc;
-> +
-> +	vdpasim->buffer =3D kmalloc(PAGE_SIZE, GFP_KERNEL);
-> +	if (!vdpasim->buffer)
-> +		goto err_buffer_alloc;
-> +
-> +	vdpasim->iommu =3D vhost_iotlb_alloc(2048, 0);
-> +	if (!vdpasim->iommu)
-> +		goto err_iotlb;
-> +
-> +	config =3D &vdpasim->config;
-> +	config->mtu =3D 1500;
-> +	config->status =3D VIRTIO_NET_S_LINK_UP;
-> +	eth_random_addr(config->mac);
-> +
-> +	INIT_WORK(&vdpasim->work, vdpasim_work);
-> +	spin_lock_init(&vdpasim->lock);
-> +
-> +	guid_copy(&vdpasim->uuid, uuid);
-> +
-> +	list_add(&vdpasim->next, &vsim_devices_list);
-> +	vdpa =3D &vdpasim->vdpa;
-> +
-> +	mutex_unlock(&vsim_list_lock);
-> +
-> +	vdpa =3D &vdpasim->vdpa;
-> +	vdpa->config =3D &vdpasim_net_config_ops;
-> +	vdpa_set_parent(vdpa, &vdpasim_dev->dev);
-> +	vdpa->dev.release =3D vdpasim_release_dev;
-> +
-> +	vringh_set_iotlb(&vdpasim->vqs[0].vring, vdpasim->iommu);
-> +	vringh_set_iotlb(&vdpasim->vqs[1].vring, vdpasim->iommu);
-> +
-> +	dev =3D &vdpa->dev;
-> +	dev->coherent_dma_mask =3D DMA_BIT_MASK(64);
-> +	set_dma_ops(dev, &vdpasim_dma_ops);
-> +
-> +	ret =3D register_vdpa_device(vdpa);
-> +	if (ret)
-> +		goto err_register;
-> +
-> +	sprintf(vdpasim->name, "%pU", uuid);
->+
-> +	ret =3D sysfs_create_link(vdpasim_dev->devices_kobj, &vdpa->dev.kobj,
-> +				vdpasim->name);
-> +	if (ret)
-> +		goto err_link;
-
-The goto err_link does the wrong unwind, once register is completed
-the error unwind is unregister & put_device, not kfree. This is why I
-recommend to always initalize the device early, and always using
-put_device during error unwinds.
-
-This whole guid thing seems unncessary when the device is immediately
-assigned a vdpa index from the ida. If you were not using syfs you'd
-just return that index from the creation netlink.
-
-Jason
+DQpPbiAxLzE2LzIwMjAgNDo0MiBQTSwgQW5keSBHb3Nwb2RhcmVrIHdyb3RlOg0KPiBPbiBXZWQs
+IEphbiAxNSwgMjAyMCBhdCAwMzoxNTozNVBNICswMTAwLCBKaXJpIFBpcmtvIHdyb3RlOg0KPj4g
+V2VkLCBKYW4gMTUsIDIwMjAgYXQgMDI6MDQ6NDlQTSBDRVQsIG1hb3JnQG1lbGxhbm94LmNvbSB3
+cm90ZToNCj4+PiBPbiAxLzE1LzIwMjAgMTE6NDUgQU0sIEppcmkgUGlya28gd3JvdGU6DQo+Pj4+
+IFdlZCwgSmFuIDE1LCAyMDIwIGF0IDA5OjAxOjQzQU0gQ0VULCBtYW9yZ0BtZWxsYW5veC5jb20g
+d3JvdGU6DQo+Pj4+PiBSRE1BIG92ZXIgQ29udmVyZ2VkIEV0aGVybmV0IChSb0NFKSBpcyBhIHN0
+YW5kYXJkIHByb3RvY29sIHdoaWNoIGVuYWJsZXMNCj4+Pj4+IFJETUHigJlzIGVmZmljaWVudCBk
+YXRhIHRyYW5zZmVyIG92ZXIgRXRoZXJuZXQgbmV0d29ya3MgYWxsb3dpbmcgdHJhbnNwb3J0DQo+
+Pj4+PiBvZmZsb2FkIHdpdGggaGFyZHdhcmUgUkRNQSBlbmdpbmUgaW1wbGVtZW50YXRpb24uDQo+
+Pj4+PiBUaGUgUm9DRSB2MiBwcm90b2NvbCBleGlzdHMgb24gdG9wIG9mIGVpdGhlciB0aGUgVURQ
+L0lQdjQgb3IgdGhlDQo+Pj4+PiBVRFAvSVB2NiBwcm90b2NvbDoNCj4+Pj4+DQo+Pj4+PiAtLS0t
+LS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0t
+LQ0KPj4+Pj4gfCBMMiB8IEwzIHwgVURQIHxJQiBCVEggfCBQYXlsb2FkfCBJQ1JDIHwgRkNTIHwN
+Cj4+Pj4+IC0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0t
+LS0tLS0tLS0tLS0tDQo+Pj4+Pg0KPj4+Pj4gV2hlbiBhIGJvbmQgTEFHIG5ldGRldiBpcyBpbiB1
+c2UsIHdlIHdvdWxkIGxpa2UgdG8gaGF2ZSB0aGUgc2FtZSBoYXNoDQo+Pj4+PiByZXN1bHQgZm9y
+IFJvQ0UgcGFja2V0cyBhcyBhbnkgb3RoZXIgVURQIHBhY2tldHMsIGZvciB0aGlzIHB1cnBvc2Ug
+d2UNCj4+Pj4+IG5lZWQgdG8gZXhwb3NlIHRoZSBib25kX3htaXRfaGFzaCBmdW5jdGlvbiB0byBl
+eHRlcm5hbCBtb2R1bGVzLg0KPj4+Pj4gSWYgbm8gb2JqZWN0aW9uLCBJIHdpbGwgcHVzaCBhIHBh
+dGNoIHRoYXQgZXhwb3J0IHRoaXMgc3ltYm9sLg0KPj4+PiBJIGRvbid0IHRoaW5rIGl0IGlzIGdv
+b2QgaWRlYSB0byBkbyBpdC4gSXQgaXMgYW4gaW50ZXJuYWwgYm9uZCBmdW5jdGlvbi4NCj4+Pj4g
+aXQgZXZlbiBhY2NlcHRzICJzdHJ1Y3QgYm9uZGluZyAqYm9uZCIuIERvIHlvdSBwbGFuIHRvIHB1
+c2ggbmV0ZGV2DQo+Pj4+IHN0cnVjdCBhcyBhbiBhcmcgaW5zdGVhZD8gV2hhdCBhYm91dCB0ZWFt
+PyBXaGF0IGFib3V0IE9WUyBib25kaW5nPw0KPj4+IE5vLCBJIGFtIHBsYW5uaW5nIHRvIHBhc3Mg
+dGhlIGJvbmQgc3RydWN0IGFzIGFuIGFyZy4gQ3VycmVudGx5LCB0ZWFtDQo+PiBIbW0sIHRoYXQg
+d291bGQgYmUgb2Zjb3Vyc2Ugd3JvbmcsIGFzIGl0IGlzIGludGVybmFsIGJvbmRpbmcgZHJpdmVy
+DQo+PiBzdHJ1Y3R1cmUuDQo+Pg0KPj4NCj4+PiBib25kaW5nIGlzIG5vdCBzdXBwb3J0ZWQgaW4g
+Um9DRSBMQUcgYW5kIEkgZG9uJ3Qgc2VlIGhvdyBPVlMgaXMgcmVsYXRlZC4NCj4+IFNob3VsZCB3
+b3JrIGZvciBhbGwuIE9WUyBpcyByZWxhdGVkIGluIGEgc2Vuc2UgdGhhdCB5b3UgY2FuIGRvIGJv
+bmRpbmcNCj4+IHRoZXJlIHRvby4NCj4+DQo+Pg0KPj4+PiBBbHNvLCB5b3UgZG9uJ3QgcmVhbGx5
+IG5lZWQgYSBoYXNoLCB5b3UgbmVlZCBhIHNsYXZlIHRoYXQgaXMgZ29pbmcgdG8gYmUNCj4+Pj4g
+dXNlZCBmb3IgYSBwYWNrZXQgeG1pdC4NCj4+Pj4NCj4+Pj4gSSB0aGluayB0aGlzIGNvdWxkIHdv
+cmsgaW4gYSBnZW5lcmljIHdheToNCj4+Pj4NCj4+Pj4gc3RydWN0IG5ldF9kZXZpY2UgKm1hc3Rl
+cl94bWl0X3NsYXZlX2dldChzdHJ1Y3QgbmV0X2RldmljZSAqbWFzdGVyX2RldiwNCj4+Pj4gCQkJ
+CQkgc3RydWN0IHNrX2J1ZmYgKnNrYik7DQo+Pj4gVGhlIHN1Z2dlc3Rpb24gaXMgdG8gcHV0IHRo
+aXMgZnVuY3Rpb24gaW4gdGhlIGJvbmQgZHJpdmVyIGFuZCBjYWxsIGl0DQo+Pj4gaW5zdGVhZCBv
+ZiBib25kX3htaXRfaGFzaD8gaXMgaXQgc3RpbGwgbmVjZXNzYXJ5IGlmIEkgaGF2ZSB0aGUgYm9u
+ZCBwb2ludGVyPw0KPj4gTm8uIFRoaXMgc2hvdWxkIGJlIGluIGEgZ2VuZXJpYyBjb2RlLiBObyBk
+aXJlY3QgY2FsbHMgZG93biB0byBib25kaW5nDQo+PiBkcml2ZXIgcGxlYXNlLiBPciBkbyB5b3Ug
+d2FudCB0byBsb2FkIGJvbmRpbmcgbW9kdWxlIGV2ZXJ5IHRpbWUgeW91cg0KPj4gbW9kdWxlIGxv
+YWRzPw0KPj4NCj4+IEkgdGhpbmtzIHRoaXMgY2FuIGJlIGltcGxlbWVudGVkIHdpdGggbmRvIHdp
+dGggIm1hc3Rlcl94bWl0X3NsYXZlX2dldCgpIg0KPj4gYXMgYSB3cmFwcGVyLiBNYXN0ZXJzIHRo
+YXQgc3VwcG9ydCB0aGlzIHdvdWxkIGp1c3QgaW1wbGVtZW50IHRoZSBuZG8uDQo+IEluIGdlbmVy
+YWwgSSB0aGluayB0aGlzIGlzIGEgZ29vZCBpZGVhICh0aG91Z2ggbWF5YmUgbm90IHdpdGggYW4g
+c2tiIGFzDQo+IGFuIGFyZyBzbyB3ZSBjYW4gdXNlIGl0IGVhc2lseSB3aXRoaW4gQlBGKSwgYnV0
+IEknbSBub3Qgc3VyZSBpZiBzb2x2ZXMNCj4gdGhlIHByb2JsZW0gdGhhdCBNYW9yIGV0IGFsIHdl
+cmUgc2V0dGluZyBvdXQgdG8gc29sdmUuDQo+DQo+IE1hb3IsIGlmIHlvdSBkaWQgZXhwb3J0IGJv
+bmRfeG1pdF9oYXNoKCkgdG8gYmUgdXNlZCBieSBhbm90aGVyIGRyaXZlciwNCj4geW91IHdvdWxk
+IHByZXN1bWFibHkgaGF2ZSBhIGNoZWNrIGluIHBsYWNlIHNvIGlmIHRoZSBSb0NFIGFuZCBVRFAN
+Cj4gcGFja2V0cyBoYWQgYSBkaWZmZXJlbnQgaGFzaCBmdW5jdGlvbiBvdXRwdXQgeW91IHdvdWxk
+IG1ha2UgYSBjaGFuZ2UgYW5kDQo+IGJlIHN1cmUgdGhhdCB0aGUgVURQIGZyYW1lcyB3b3VsZCBn
+byBvdXQgb24gdGhlIHNhbWUgZGV2aWNlIHRoYXQgdGhlDQo+IFJvQ0UgdHJhZmZpYyB3b3VsZCBu
+b3JtYWxseSB1c2UuICBJcyB0aGlzIGNvcnJlY3Q/ICBXb3VsZCB5b3UgYWxzbyBzZW5kDQo+IHRo
+ZSBmcmFtZXMgZGlyZWN0bHkgb24gdGhlIGludGVyZmFjZSB1c2luZyBkZXZfcXVldWVfeG1pdCgp
+IGFuZCBieXBhc3MNCj4gdGhlIGJvbmRpbmcgZHJpdmVyIGNvbXBsZXRlbHk/DQoNClJvQ0UgcGFj
+a2V0cyBhcmUgVURQLiBUaGUgaWRlYSBpcyB0aGF0IHRoZSBzYW1lIFVEUCBoZWFkZXIgKFJvQ0Ug
+YXMgDQp3ZWxsKSB3aWxsIGdldCB0aGUgc2FtZSBoYXNoIHJlc3VsdCBzbyB0aGV5IHdpbGwgYmUg
+dHJhbnNtaXR0ZWQgZnJvbSB0aGUgDQpzYW1lIHBvcnQuDQpUaGUgZnJhbWVzIHdpbGwgYmUgc2Vu
+dCBieSB1c2luZyB0aGUgUkRNQSBzZW5kIEFQSSBhbmQgYnlwYXNzIHRoZSANCmJvbmRpbmcgZHJp
+dmVyIGNvbXBsZXRlbHkuDQpJcyBpdCBhbnN3ZXIgeW91ciBxdWVzdGlvbj8NCg0KPiBJIGRvbid0
+IHRoaW5rIEkgZnVuZGFtZW50YWxseSBoYXZlIGEgcHJvYmxlbSB3aXRoIHRoaXMsIEkganVzdCB3
+YW50IHRvDQo+IG1ha2Ugc3VyZSBJIHVuZGVyc3RhbmQgeW91ciBwcm9wb3NlZCBjb2RlLWZsb3cu
+DQo+DQo+IFRoYW5rcyENCj4NCg==
