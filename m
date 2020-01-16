@@ -2,125 +2,93 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 3C81313DC67
-	for <lists+netdev@lfdr.de>; Thu, 16 Jan 2020 14:53:14 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A159013DCA1
+	for <lists+netdev@lfdr.de>; Thu, 16 Jan 2020 14:56:59 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726555AbgAPNvr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 16 Jan 2020 08:51:47 -0500
-Received: from us-smtp-2.mimecast.com ([205.139.110.61]:37060 "EHLO
-        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1726366AbgAPNvr (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 16 Jan 2020 08:51:47 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1579182706;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=HSQVRIo5T/T5M3nGFCM1g0cRJLehKx87k0xRn1tRw/I=;
-        b=ZYWAfvKDohGkTHmWZEDryq2LBUc0nRGKlOs0dwL+zqn5bHq8b4hS815INZPq+r1S3u2I2L
-        9HVeaumoxWFfBw4tHh/nhj0Ym7yHWrTIWaex+sVlAH5oQWAkb0AoLHLIMMr4HmKzewB9vY
-        uMbETr2GyVdIvuAsZNQP/5E/xd+3lpw=
-Received: from mail-lj1-f198.google.com (mail-lj1-f198.google.com
- [209.85.208.198]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-206-gec_Vb8gONu6kDKcNF700A-1; Thu, 16 Jan 2020 08:51:45 -0500
-X-MC-Unique: gec_Vb8gONu6kDKcNF700A-1
-Received: by mail-lj1-f198.google.com with SMTP id g10so4239100ljg.8
-        for <netdev@vger.kernel.org>; Thu, 16 Jan 2020 05:51:44 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
-         :message-id:mime-version:content-transfer-encoding;
-        bh=HSQVRIo5T/T5M3nGFCM1g0cRJLehKx87k0xRn1tRw/I=;
-        b=gRHZeEUkIH37WZXmt4pVv2Io7jaQVXiyJfRF5SkdGiB52dNIr/HiV8yEOEiGHP0GZc
-         h22wOlpknFGSuhzCXfYer8T7xHt55rD00zuTV61B4QKVCTE0sDpgXn05UoqpT6q/ZBGG
-         kOMzlh/eFH4sGyvT3bY02E4+jLVYCgtit6v5Xw39IAJ/l3+bLFrRUOtPpH0xUN4Aii87
-         AZcjKGFtVV0Q+eYN6lvo//7LEq85OC2gRjTOJE6o1v0TL3cAIGd5Uct1jaEhMp9fD8zD
-         a4CWEdVg+BLUvIQ/wm7IF85FZdfExpOqjIY8s4kIk/hKoB+P3vjQjuqtovqfqJuRAaEG
-         bweg==
-X-Gm-Message-State: APjAAAW208aO7sFKOmwNy0PlS4qs00pqSc/vzbh9nIwHAcitmsa3j0Oe
-        b/1UbBlQoZGWOxDt0PXl2rTmd8quIqRWHrj97xBybUURaUqs4JLv1FRWTvXgkqDpLxukm0U7/iE
-        ODoS1rCZfzIeq+8Wb
-X-Received: by 2002:a2e:9f17:: with SMTP id u23mr2468600ljk.112.1579182703568;
-        Thu, 16 Jan 2020 05:51:43 -0800 (PST)
-X-Google-Smtp-Source: APXvYqx5xWH2dF5z9n9RENXRXJOekRF4nc4sEZeF/z5EVeEgZaDID+Q1VUd2+8YwPCybuhIS5I/IHQ==
-X-Received: by 2002:a2e:9f17:: with SMTP id u23mr2468585ljk.112.1579182703425;
-        Thu, 16 Jan 2020 05:51:43 -0800 (PST)
-Received: from alrua-x1.borgediget.toke.dk ([2a0c:4d80:42:443::2])
-        by smtp.gmail.com with ESMTPSA id b6sm10570279lfq.11.2020.01.16.05.51.42
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 16 Jan 2020 05:51:42 -0800 (PST)
-Received: by alrua-x1.borgediget.toke.dk (Postfix, from userid 1000)
-        id 375971804D6; Thu, 16 Jan 2020 14:51:41 +0100 (CET)
-From:   Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
-To:     Jesper Dangaard Brouer <brouer@redhat.com>
-Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Alexei Starovoitov <ast@kernel.org>,
-        David Miller <davem@davemloft.net>,
-        =?utf-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@gmail.com>,
-        John Fastabend <john.fastabend@gmail.com>, brouer@redhat.com
-Subject: Re: [PATCH bpf-next v2 1/2] xdp: Move devmap bulk queue into struct net_device
-In-Reply-To: <20200116122400.499c2b1e@carbon>
-References: <157893905455.861394.14341695989510022302.stgit@toke.dk> <157893905569.861394.457637639114847149.stgit@toke.dk> <20200115211734.2dfcffd4@carbon> <87imlctlo6.fsf@toke.dk> <20200116122400.499c2b1e@carbon>
-X-Clacks-Overhead: GNU Terry Pratchett
-Date:   Thu, 16 Jan 2020 14:51:41 +0100
-Message-ID: <87lfq7se4y.fsf@toke.dk>
+        id S1729255AbgAPNyq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 16 Jan 2020 08:54:46 -0500
+Received: from correo.us.es ([193.147.175.20]:58932 "EHLO mail.us.es"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1728982AbgAPNyK (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 16 Jan 2020 08:54:10 -0500
+Received: from antivirus1-rhel7.int (unknown [192.168.2.11])
+        by mail.us.es (Postfix) with ESMTP id 43DB5DA70F
+        for <netdev@vger.kernel.org>; Thu, 16 Jan 2020 14:54:09 +0100 (CET)
+Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
+        by antivirus1-rhel7.int (Postfix) with ESMTP id 344D7DA729
+        for <netdev@vger.kernel.org>; Thu, 16 Jan 2020 14:54:09 +0100 (CET)
+Received: by antivirus1-rhel7.int (Postfix, from userid 99)
+        id 2917CDA711; Thu, 16 Jan 2020 14:54:09 +0100 (CET)
+X-Spam-Checker-Version: SpamAssassin 3.4.1 (2015-04-28) on antivirus1-rhel7.int
+X-Spam-Level: 
+X-Spam-Status: No, score=-108.2 required=7.5 tests=ALL_TRUSTED,BAYES_50,
+        SMTPAUTH_US2,USER_IN_WHITELIST autolearn=disabled version=3.4.1
+Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
+        by antivirus1-rhel7.int (Postfix) with ESMTP id 310ECDA714;
+        Thu, 16 Jan 2020 14:54:07 +0100 (CET)
+Received: from 192.168.1.97 (192.168.1.97)
+ by antivirus1-rhel7.int (F-Secure/fsigk_smtp/550/antivirus1-rhel7.int);
+ Thu, 16 Jan 2020 14:54:07 +0100 (CET)
+X-Virus-Status: clean(F-Secure/fsigk_smtp/550/antivirus1-rhel7.int)
+Received: from us.es (unknown [90.77.255.23])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        (Authenticated sender: 1984lsi)
+        by entrada.int (Postfix) with ESMTPSA id 14AD642EF9E0;
+        Thu, 16 Jan 2020 14:54:07 +0100 (CET)
+Date:   Thu, 16 Jan 2020 14:54:06 +0100
+X-SMTPAUTHUS: auth mail.us.es
+From:   Pablo Neira Ayuso <pablo@netfilter.org>
+To:     Florian Westphal <fw@strlen.de>
+Cc:     netfilter-devel@vger.kernel.org, syzkaller-bugs@googlegroups.com,
+        netdev@vger.kernel.org,
+        syzbot+37a6804945a3a13b1572@syzkaller.appspotmail.com
+Subject: Re: [PATCH nf] netfilter: nf_tables: fix flowtable list del
+ corruption
+Message-ID: <20200116135406.v66tcoxfk6z2xqkc@salvia>
+References: <000000000000b3599c059c36db0d@google.com>
+ <20200116110301.4875-1-fw@strlen.de>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20200116110301.4875-1-fw@strlen.de>
+User-Agent: NeoMutt/20170113 (1.7.2)
+X-Virus-Scanned: ClamAV using ClamSMTP
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Jesper Dangaard Brouer <brouer@redhat.com> writes:
+On Thu, Jan 16, 2020 at 12:03:01PM +0100, Florian Westphal wrote:
+> syzbot reported following crash:
+> 
+>   list_del corruption, ffff88808c9bb000->prev is LIST_POISON2 (dead000000000122)
+>   [..]
+>   Call Trace:
+>    __list_del_entry include/linux/list.h:131 [inline]
+>    list_del_rcu include/linux/rculist.h:148 [inline]
+>    nf_tables_commit+0x1068/0x3b30 net/netfilter/nf_tables_api.c:7183
+>    [..]
+> 
+> The commit transaction list has:
+> 
+> NFT_MSG_NEWTABLE
+> NFT_MSG_NEWFLOWTABLE
+> NFT_MSG_DELFLOWTABLE
+> NFT_MSG_DELTABLE
+> 
+> A missing generation check during DELTABLE processing causes it to queue
+> the DELFLOWTABLE operation a second time, so we corrupt the list here:
+> 
+>   case NFT_MSG_DELFLOWTABLE:
+>      list_del_rcu(&nft_trans_flowtable(trans)->list);
+>      nf_tables_flowtable_notify(&trans->ctx,
+> 
+> because we have two different DELFLOWTABLE transactions for the same
+> flowtable.  We then call list_del_rcu() twice for the same flowtable->list.
+> 
+> The object handling seems to suffer from the same bug so add a generation
+> check too and only queue delete transactions for flowtables/objects that
+> are still active in the next generation.
 
-> On Wed, 15 Jan 2020 23:11:21 +0100
-> Toke H=C3=B8iland-J=C3=B8rgensen <toke@redhat.com> wrote:
->
->> Jesper Dangaard Brouer <brouer@redhat.com> writes:
->>=20
->> > On Mon, 13 Jan 2020 19:10:55 +0100
->> > Toke H=C3=B8iland-J=C3=B8rgensen <toke@redhat.com> wrote:
->> >=20=20
->> >> diff --git a/kernel/bpf/devmap.c b/kernel/bpf/devmap.c
->> >> index da9c832fc5c8..030d125c3839 100644
->> >> --- a/kernel/bpf/devmap.c
->> >> +++ b/kernel/bpf/devmap.c=20=20
->> > [...]=20=20
->> >> @@ -346,8 +340,7 @@ static int bq_xmit_all(struct xdp_bulk_queue *bq,=
- u32 flags)
->> >>  out:
->> >>  	bq->count =3D 0;
->> >>=20=20
->> >> -	trace_xdp_devmap_xmit(&obj->dtab->map, obj->idx,
->> >> -			      sent, drops, bq->dev_rx, dev, err);
->> >> +	trace_xdp_devmap_xmit(NULL, 0, sent, drops, bq->dev_rx, dev, err);=
-=20=20
->> >
->> > Hmm ... I don't like that we lose the map_id and map_index identifier.
->> > This is part of our troubleshooting interface.=20=20
->>=20
->> Hmm, I guess I can take another look at whether there's a way to avoid
->> that. Any ideas?
->
-> Looking at the code and the other tracepoints...
->
-> I will actually suggest to remove these two arguments, because the
-> trace_xdp_redirect_map tracepoint also contains the ifindex'es, and to
-> troubleshoot people can record both tracepoints and do the correlation
-> themselves.
->
-> When changing the tracepoint I would like to keep member 'drops' and
-> 'sent' at the same struct offsets.  As our xdp_monitor example reads
-> these and I hope we can kept it working this way.
->
-> I've coded it up, and tested it.  The new xdp_monitor will work on
-> older kernels, but the old xdp_monitor will fail attaching on newer
-> kernels. I think this is fair enough, as we are backwards compatible.
-
-SGTM - thanks! I'll respin and include this :)
-
--Toke
-
+Applied, thanks.
