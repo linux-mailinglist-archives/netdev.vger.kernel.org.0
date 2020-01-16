@@ -2,36 +2,36 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 8C8DC13F5D4
-	for <lists+netdev@lfdr.de>; Thu, 16 Jan 2020 19:59:26 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 290D813F5BF
+	for <lists+netdev@lfdr.de>; Thu, 16 Jan 2020 19:58:47 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2437218AbgAPS7T (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 16 Jan 2020 13:59:19 -0500
-Received: from mail.kernel.org ([198.145.29.99]:37124 "EHLO mail.kernel.org"
+        id S2405390AbgAPS6c (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 16 Jan 2020 13:58:32 -0500
+Received: from mail.kernel.org ([198.145.29.99]:37624 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2388960AbgAPRGh (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 16 Jan 2020 12:06:37 -0500
+        id S2388991AbgAPRGs (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 16 Jan 2020 12:06:48 -0500
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 3E9E32467C;
-        Thu, 16 Jan 2020 17:06:36 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 4A29D205F4;
+        Thu, 16 Jan 2020 17:06:47 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1579194397;
-        bh=G119LmTMJv1Qr6TBvPOcR64ACHZ5QVcS4KzM4Z6mSc0=;
+        s=default; t=1579194408;
+        bh=s89gvlUNQw6c84NWlJrR+GuuM5pUVH0aoRiLuhCld9w=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ex/JPYY/T8U2o1oTjLQrXC6rojB2JJfZGsd3Cd6mf/SMGnCKFle8+DTyRAVdQBwF2
-         4SxSWFSgeKzxtlqiVNlhD+egu5VW09kpbMO1gqW4wQcvvBn3ctlD2wM7o71eDOT2pH
-         vU/KwdhcNaN0JCPhG+GjU+wH3gBmj1Oy9rEjSalU=
+        b=jEIx+kOseOVB47/JIZ7SMnL5tNxyWEDPlOwtM/rEj+no0YcYadQOHXxdJRNqNPjyz
+         immGd0+apNs5b4pootfVm6m8GbVyuUtLxgLKLycjBvvx4EzfKVF7UBNKuEAL+7sctC
+         gD08KRV4r79/KueRqqQSk7agIFgETiwAgCsjtEmE=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Willem de Bruijn <willemb@google.com>,
-        David Laight <David.Laight@aculab.com>,
+Cc:     Sameeh Jubran <sameehj@amazon.com>,
+        Arthur Kiyanovski <akiyano@amazon.com>,
         "David S . Miller" <davem@davemloft.net>,
         Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.19 323/671] packet: in recvmsg msg_name return at least sizeof sockaddr_ll
-Date:   Thu, 16 Jan 2020 11:59:21 -0500
-Message-Id: <20200116170509.12787-60-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 4.19 331/671] net: ena: fix: Free napi resources when ena_up() fails
+Date:   Thu, 16 Jan 2020 11:59:29 -0500
+Message-Id: <20200116170509.12787-68-sashal@kernel.org>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20200116170509.12787-1-sashal@kernel.org>
 References: <20200116170509.12787-1-sashal@kernel.org>
@@ -44,67 +44,36 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Willem de Bruijn <willemb@google.com>
+From: Sameeh Jubran <sameehj@amazon.com>
 
-[ Upstream commit b2cf86e1563e33a14a1c69b3e508d15dc12f804c ]
+[ Upstream commit b287cdbd1cedfc9606682c6e02b58d00ff3a33ae ]
 
-Packet send checks that msg_name is at least sizeof sockaddr_ll.
-Packet recv must return at least this length, so that its output
-can be passed unmodified to packet send.
+ena_up() calls ena_init_napi() but does not call ena_del_napi() in
+case of failure. This causes a segmentation fault upon rmmod when
+netif_napi_del() is called. Fix this bug by calling ena_del_napi()
+before returning error from ena_up().
 
-This ceased to be true since adding support for lladdr longer than
-sll_addr. Since, the return value uses true address length.
-
-Always return at least sizeof sockaddr_ll, even if address length
-is shorter. Zero the padding bytes.
-
-Change v1->v2: do not overwrite zeroed padding again. use copy_len.
-
-Fixes: 0fb375fb9b93 ("[AF_PACKET]: Allow for > 8 byte hardware addresses.")
-Suggested-by: David Laight <David.Laight@aculab.com>
-Signed-off-by: Willem de Bruijn <willemb@google.com>
+Fixes: 1738cd3ed342 ("net: ena: Add a driver for Amazon Elastic Network Adapters (ENA)")
+Signed-off-by: Arthur Kiyanovski <akiyano@amazon.com>
+Signed-off-by: Sameeh Jubran <sameehj@amazon.com>
 Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/packet/af_packet.c | 13 +++++++++++--
- 1 file changed, 11 insertions(+), 2 deletions(-)
+ drivers/net/ethernet/amazon/ena/ena_netdev.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/net/packet/af_packet.c b/net/packet/af_packet.c
-index ac65e66d1d72..60ba18a4bb0f 100644
---- a/net/packet/af_packet.c
-+++ b/net/packet/af_packet.c
-@@ -3371,20 +3371,29 @@ static int packet_recvmsg(struct socket *sock, struct msghdr *msg, size_t len,
- 	sock_recv_ts_and_drops(msg, sk, skb);
+diff --git a/drivers/net/ethernet/amazon/ena/ena_netdev.c b/drivers/net/ethernet/amazon/ena/ena_netdev.c
+index e26c195fec83..9afb19ebba58 100644
+--- a/drivers/net/ethernet/amazon/ena/ena_netdev.c
++++ b/drivers/net/ethernet/amazon/ena/ena_netdev.c
+@@ -1800,6 +1800,7 @@ static int ena_up(struct ena_adapter *adapter)
+ err_setup_tx:
+ 	ena_free_io_irq(adapter);
+ err_req_irq:
++	ena_del_napi(adapter);
  
- 	if (msg->msg_name) {
-+		int copy_len;
-+
- 		/* If the address length field is there to be filled
- 		 * in, we fill it in now.
- 		 */
- 		if (sock->type == SOCK_PACKET) {
- 			__sockaddr_check_size(sizeof(struct sockaddr_pkt));
- 			msg->msg_namelen = sizeof(struct sockaddr_pkt);
-+			copy_len = msg->msg_namelen;
- 		} else {
- 			struct sockaddr_ll *sll = &PACKET_SKB_CB(skb)->sa.ll;
- 
- 			msg->msg_namelen = sll->sll_halen +
- 				offsetof(struct sockaddr_ll, sll_addr);
-+			copy_len = msg->msg_namelen;
-+			if (msg->msg_namelen < sizeof(struct sockaddr_ll)) {
-+				memset(msg->msg_name +
-+				       offsetof(struct sockaddr_ll, sll_addr),
-+				       0, sizeof(sll->sll_addr));
-+				msg->msg_namelen = sizeof(struct sockaddr_ll);
-+			}
- 		}
--		memcpy(msg->msg_name, &PACKET_SKB_CB(skb)->sa,
--		       msg->msg_namelen);
-+		memcpy(msg->msg_name, &PACKET_SKB_CB(skb)->sa, copy_len);
- 	}
- 
- 	if (pkt_sk(sk)->auxdata) {
+ 	return rc;
+ }
 -- 
 2.20.1
 
