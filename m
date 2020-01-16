@@ -2,39 +2,39 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 36C1A13FD4B
-	for <lists+netdev@lfdr.de>; Fri, 17 Jan 2020 00:24:34 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D70BC13FDCC
+	for <lists+netdev@lfdr.de>; Fri, 17 Jan 2020 00:30:35 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2387510AbgAPXYV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 16 Jan 2020 18:24:21 -0500
-Received: from mail.kernel.org ([198.145.29.99]:53288 "EHLO mail.kernel.org"
+        id S2391279AbgAPX33 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 16 Jan 2020 18:29:29 -0500
+Received: from mail.kernel.org ([198.145.29.99]:35106 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1733295AbgAPXYU (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 16 Jan 2020 18:24:20 -0500
+        id S2391266AbgAPX31 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 16 Jan 2020 18:29:27 -0500
 Received: from localhost (83-86-89-107.cable.dynamic.v4.ziggo.nl [83.86.89.107])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 4D5DD2075B;
-        Thu, 16 Jan 2020 23:24:19 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 295EB2073A;
+        Thu, 16 Jan 2020 23:29:26 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1579217059;
-        bh=+WiKHkloAlLpAzCZp4UZ8FL8lS55nC7i7zkYhXgF1Do=;
+        s=default; t=1579217366;
+        bh=Tv5X94cUn6Cb0NxK31Lnn8p5Qz5H+ux/LUAcJ4MC3k4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=E6I7baYOxq1ZZQRzf/HSvm14CcSLuVGAmF+0vzQLjqT8+SeW63bq9K1VXmxcK6Im9
-         eo8intES3qn8IW26piXa0AJQpmLS+93KQjFrndATsBLDUPBnnE8d0pGNMOPCKZuyq+
-         GCAzH/yvRyljJhcxQoJmSXRTaldmYvqU6Vs06/9g=
+        b=Qd1MX5PWQY9GEi++gSGQLVIvGNFHtZ2JpR220nzjN5aInpW/sF7yTQatH6ip8JN7d
+         xABkIqqbZa+yCnU6+3WSaeuukjDcQZgnFRrdiZvk6lDb7oPobjZkyCynfLUs2UVRdg
+         ZXym3ZtT72/JGWSnKGkbsqByqAIER82+CULM+IRg=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org, Eric Dumazet <edumazet@google.com>,
         netdev@vger.kernel.org, "David S. Miller" <davem@davemloft.net>,
         Arnd Bergmann <arnd@arndb.de>
-Subject: [PATCH 5.4 131/203] compat_ioctl: handle SIOCOUTQNSD
-Date:   Fri, 17 Jan 2020 00:17:28 +0100
-Message-Id: <20200116231756.593290101@linuxfoundation.org>
+Subject: [PATCH 4.19 53/84] compat_ioctl: handle SIOCOUTQNSD
+Date:   Fri, 17 Jan 2020 00:18:27 +0100
+Message-Id: <20200116231720.052194053@linuxfoundation.org>
 X-Mailer: git-send-email 2.25.0
-In-Reply-To: <20200116231745.218684830@linuxfoundation.org>
-References: <20200116231745.218684830@linuxfoundation.org>
+In-Reply-To: <20200116231713.087649517@linuxfoundation.org>
+References: <20200116231713.087649517@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -65,7 +65,7 @@ Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 
 --- a/net/socket.c
 +++ b/net/socket.c
-@@ -3532,6 +3532,7 @@ static int compat_sock_ioctl_trans(struc
+@@ -3240,6 +3240,7 @@ static int compat_sock_ioctl_trans(struc
  	case SIOCSARP:
  	case SIOCGARP:
  	case SIOCDARP:
