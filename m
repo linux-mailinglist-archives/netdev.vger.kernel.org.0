@@ -2,36 +2,36 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id E6CBF13F732
-	for <lists+netdev@lfdr.de>; Thu, 16 Jan 2020 20:10:03 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 210FB13F71D
+	for <lists+netdev@lfdr.de>; Thu, 16 Jan 2020 20:09:36 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732859AbgAPRAh (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 16 Jan 2020 12:00:37 -0500
-Received: from mail.kernel.org ([198.145.29.99]:50390 "EHLO mail.kernel.org"
+        id S2387889AbgAPRAp (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 16 Jan 2020 12:00:45 -0500
+Received: from mail.kernel.org ([198.145.29.99]:50668 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2387852AbgAPRAf (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 16 Jan 2020 12:00:35 -0500
+        id S1732881AbgAPRAo (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 16 Jan 2020 12:00:44 -0500
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id D74A620730;
-        Thu, 16 Jan 2020 17:00:33 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 1208920730;
+        Thu, 16 Jan 2020 17:00:41 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1579194034;
-        bh=bEgqGDvIekdC+jCIEuWqKdDWTz3GB/UQAEQBREeG/W4=;
+        s=default; t=1579194043;
+        bh=3cn6uR4r1i3Inhwez/LWbQO5x28qjVfQFjlcdDRYWq4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=l8uB9lFTiryH7dcqxUsWGMV5lOVJaAsB1hTaPY5a5NorqihW5h44p1nawDeEoQ1qn
-         dSZ6uGM5TE9aksGUNyjn4jgX0yaMsfhbg3FE8dRoyNNuzrDoncj3zY2br7N5UF5Br4
-         XcX1Lae2SCvEtv9S5xu3cgwpSciVwwO5UUjLhio4=
+        b=atkAS5eoehYQRQQHpygFLgSvaOn3leanfnQnA9ufpm+49ztezcaq8w/sA9axWTzuH
+         wGpqfy90AzIHqBU6fOXLS5FQ9VANZawpUwGqXZQ2yG72n9sC27+cAt86C+8xID8NSX
+         Z7xvh9QCP+/jgaVTqJLA+d7hq3tiVF+4VZLTkBV0=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Sara Sharon <sara.sharon@intel.com>,
-        Luca Coelho <luciano.coelho@intel.com>,
-        Sasha Levin <sashal@kernel.org>,
+Cc:     Rakesh Pillai <pillair@codeaurora.org>,
+        Kalle Valo <kvalo@codeaurora.org>,
+        Sasha Levin <sashal@kernel.org>, ath10k@lists.infradead.org,
         linux-wireless@vger.kernel.org, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.19 153/671] iwlwifi: mvm: fix RSS config command
-Date:   Thu, 16 Jan 2020 11:51:02 -0500
-Message-Id: <20200116165940.10720-36-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 4.19 159/671] ath10k: fix dma unmap direction for management frames
+Date:   Thu, 16 Jan 2020 11:51:08 -0500
+Message-Id: <20200116165940.10720-42-sashal@kernel.org>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20200116165940.10720-1-sashal@kernel.org>
 References: <20200116165940.10720-1-sashal@kernel.org>
@@ -44,44 +44,73 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Sara Sharon <sara.sharon@intel.com>
+From: Rakesh Pillai <pillair@codeaurora.org>
 
-[ Upstream commit 608dce95db10b8ee1a26dbce3f60204bb69812a5 ]
+[ Upstream commit 6e8a8991e2103dcb6a9cff28f460390e8e360848 ]
 
-The hash mask is a bitmap, so we should use BIT() on
-the enum values.
+The management frames transmitted are dma mapped with
+direction TO_DEVICE, but incorrectly mapped with
+direction FROM_DEVICE during tx complete and error cases.
 
-Signed-off-by: Sara Sharon <sara.sharon@intel.com>
-Fixes: 43413a975d06 ("iwlwifi: mvm: support rss queues configuration command")
-Signed-off-by: Luca Coelho <luciano.coelho@intel.com>
+Fix the direction of dma during dma unmap of the
+transmitted management frames.
+
+Tested HW: WCN3990
+Tested FW: WLAN.HL.2.0-01188-QCAHLSWMTPLZ-1
+
+Fixes: 38a1390e02b7 ("ath10k: dma unmap mgmt tx buffer if wmi cmd send fails")
+Signed-off-by: Rakesh Pillai <pillair@codeaurora.org>
+Signed-off-by: Kalle Valo <kvalo@codeaurora.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/wireless/intel/iwlwifi/mvm/fw.c | 12 ++++++------
- 1 file changed, 6 insertions(+), 6 deletions(-)
+ drivers/net/wireless/ath/ath10k/mac.c | 4 ++--
+ drivers/net/wireless/ath/ath10k/wmi.c | 4 ++--
+ 2 files changed, 4 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/net/wireless/intel/iwlwifi/mvm/fw.c b/drivers/net/wireless/intel/iwlwifi/mvm/fw.c
-index 9808d954dca2..c7e2b88cd5ab 100644
---- a/drivers/net/wireless/intel/iwlwifi/mvm/fw.c
-+++ b/drivers/net/wireless/intel/iwlwifi/mvm/fw.c
-@@ -110,12 +110,12 @@ static int iwl_send_rss_cfg_cmd(struct iwl_mvm *mvm)
- 	int i;
- 	struct iwl_rss_config_cmd cmd = {
- 		.flags = cpu_to_le32(IWL_RSS_ENABLE),
--		.hash_mask = IWL_RSS_HASH_TYPE_IPV4_TCP |
--			     IWL_RSS_HASH_TYPE_IPV4_UDP |
--			     IWL_RSS_HASH_TYPE_IPV4_PAYLOAD |
--			     IWL_RSS_HASH_TYPE_IPV6_TCP |
--			     IWL_RSS_HASH_TYPE_IPV6_UDP |
--			     IWL_RSS_HASH_TYPE_IPV6_PAYLOAD,
-+		.hash_mask = BIT(IWL_RSS_HASH_TYPE_IPV4_TCP) |
-+			     BIT(IWL_RSS_HASH_TYPE_IPV4_UDP) |
-+			     BIT(IWL_RSS_HASH_TYPE_IPV4_PAYLOAD) |
-+			     BIT(IWL_RSS_HASH_TYPE_IPV6_TCP) |
-+			     BIT(IWL_RSS_HASH_TYPE_IPV6_UDP) |
-+			     BIT(IWL_RSS_HASH_TYPE_IPV6_PAYLOAD),
- 	};
+diff --git a/drivers/net/wireless/ath/ath10k/mac.c b/drivers/net/wireless/ath/ath10k/mac.c
+index 448e3a8c33a6..a09d7a07e90a 100644
+--- a/drivers/net/wireless/ath/ath10k/mac.c
++++ b/drivers/net/wireless/ath/ath10k/mac.c
+@@ -1,7 +1,7 @@
+ /*
+  * Copyright (c) 2005-2011 Atheros Communications Inc.
+  * Copyright (c) 2011-2017 Qualcomm Atheros, Inc.
+- * Copyright (c) 2018, The Linux Foundation. All rights reserved.
++ * Copyright (c) 2018-2019, The Linux Foundation. All rights reserved.
+  *
+  * Permission to use, copy, modify, and/or distribute this software for any
+  * purpose with or without fee is hereby granted, provided that the above
+@@ -3853,7 +3853,7 @@ void ath10k_mgmt_over_wmi_tx_work(struct work_struct *work)
+ 				ath10k_warn(ar, "failed to transmit management frame by ref via WMI: %d\n",
+ 					    ret);
+ 				dma_unmap_single(ar->dev, paddr, skb->len,
+-						 DMA_FROM_DEVICE);
++						 DMA_TO_DEVICE);
+ 				ieee80211_free_txskb(ar->hw, skb);
+ 			}
+ 		} else {
+diff --git a/drivers/net/wireless/ath/ath10k/wmi.c b/drivers/net/wireless/ath/ath10k/wmi.c
+index aefc92d2c09b..0f6ff7a78e49 100644
+--- a/drivers/net/wireless/ath/ath10k/wmi.c
++++ b/drivers/net/wireless/ath/ath10k/wmi.c
+@@ -1,7 +1,7 @@
+ /*
+  * Copyright (c) 2005-2011 Atheros Communications Inc.
+  * Copyright (c) 2011-2017 Qualcomm Atheros, Inc.
+- * Copyright (c) 2018, The Linux Foundation. All rights reserved.
++ * Copyright (c) 2018-2019, The Linux Foundation. All rights reserved.
+  *
+  * Permission to use, copy, modify, and/or distribute this software for any
+  * purpose with or without fee is hereby granted, provided that the above
+@@ -2340,7 +2340,7 @@ static int wmi_process_mgmt_tx_comp(struct ath10k *ar, u32 desc_id,
  
- 	if (mvm->trans->num_rx_queues == 1)
+ 	msdu = pkt_addr->vaddr;
+ 	dma_unmap_single(ar->dev, pkt_addr->paddr,
+-			 msdu->len, DMA_FROM_DEVICE);
++			 msdu->len, DMA_TO_DEVICE);
+ 	info = IEEE80211_SKB_CB(msdu);
+ 
+ 	if (status)
 -- 
 2.20.1
 
