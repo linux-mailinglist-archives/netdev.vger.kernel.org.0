@@ -2,35 +2,38 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 8CF4513EFB0
-	for <lists+netdev@lfdr.de>; Thu, 16 Jan 2020 19:16:58 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 98FD413EF99
+	for <lists+netdev@lfdr.de>; Thu, 16 Jan 2020 19:16:28 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2406758AbgAPSQx (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 16 Jan 2020 13:16:53 -0500
-Received: from mail.kernel.org ([198.145.29.99]:41102 "EHLO mail.kernel.org"
+        id S2405282AbgAPSQU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 16 Jan 2020 13:16:20 -0500
+Received: from mail.kernel.org ([198.145.29.99]:41338 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2392682AbgAPR3U (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 16 Jan 2020 12:29:20 -0500
+        id S2392722AbgAPR32 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 16 Jan 2020 12:29:28 -0500
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id E4DBD246F4;
-        Thu, 16 Jan 2020 17:29:18 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id A5F1824719;
+        Thu, 16 Jan 2020 17:29:26 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1579195759;
-        bh=jwZSOtcnyH391D6AHflOgmp/rHi6EkXxpukUJRG6iAc=;
+        s=default; t=1579195767;
+        bh=ouDOGODEY/dNR0K0ljr0NFswmyk7CBZsCorqDZUqP4Y=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=cXPshjvxT9A3EFhiIljJdMr5zM+Lih73Zkp/StW8zwB20ICIvRQoSl+jNxh83sJAy
-         PkK8EMGB5MYONnr1XLMmpjuL+3hn/QaH0yPlDzDgrNssRixojMen1EipRU7ZentB3I
-         71+wt6gtpG865rmZkEOVcc/z2Oc9r898TNlIrqN0=
+        b=BRnW+1i0yfpCl2JLc3/e5K8GCfirPWT7KScok1/hOHAOUEEYBCLyDFM+meUFjofsa
+         0huc4akveKPD1GaxA006yqafipXTAs1oY0zphdPjAAzroLGNUaQjn76caca9pwszwp
+         /VMDFRORL0Ktz8GFykbVWSmlNsaz+C5IG9VhR8hQ=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Mao Wenan <maowenan@huawei.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.14 289/371] net: sonic: return NETDEV_TX_OK if failed to map buffer
-Date:   Thu, 16 Jan 2020 12:22:41 -0500
-Message-Id: <20200116172403.18149-232-sashal@kernel.org>
+Cc:     Firo Yang <firo.yang@suse.com>,
+        Alexander Duyck <alexander.h.duyck@linux.intel.com>,
+        Andrew Bowers <andrewx.bowers@intel.com>,
+        Jeff Kirsher <jeffrey.t.kirsher@intel.com>,
+        Sasha Levin <sashal@kernel.org>,
+        intel-wired-lan@lists.osuosl.org, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 4.14 295/371] ixgbe: sync the first fragment unconditionally
+Date:   Thu, 16 Jan 2020 12:22:47 -0500
+Message-Id: <20200116172403.18149-238-sashal@kernel.org>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20200116172403.18149-1-sashal@kernel.org>
 References: <20200116172403.18149-1-sashal@kernel.org>
@@ -43,40 +46,76 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Mao Wenan <maowenan@huawei.com>
+From: Firo Yang <firo.yang@suse.com>
 
-[ Upstream commit 6e1cdedcf0362fed3aedfe051d46bd7ee2a85fe1 ]
+[ Upstream commit e7ba676c6188d394a0133fc4b9bcd7ee50d54b7f ]
 
-NETDEV_TX_BUSY really should only be used by drivers that call
-netif_tx_stop_queue() at the wrong moment. If dma_map_single() is
-failed to map tx DMA buffer, it might trigger an infinite loop.
-This patch use NETDEV_TX_OK instead of NETDEV_TX_BUSY, and change
-printk to pr_err_ratelimited.
+In Xen environment, if Xen-swiotlb is enabled, ixgbe driver
+could possibly allocate a page, DMA memory buffer, for the first
+fragment which is not suitable for Xen-swiotlb to do DMA operations.
+Xen-swiotlb have to internally allocate another page for doing DMA
+operations. This mechanism requires syncing the data from the internal
+page to the page which ixgbe sends to upper network stack. However,
+since commit f3213d932173 ("ixgbe: Update driver to make use of DMA
+attributes in Rx path"), the unmap operation is performed with
+DMA_ATTR_SKIP_CPU_SYNC. As a result, the sync is not performed.
+Since the sync isn't performed, the upper network stack could receive
+a incomplete network packet. By incomplete, it means the linear data
+on the first fragment(between skb->head and skb->end) is invalid. So
+we have to copy the data from the internal xen-swiotlb page to the page
+which ixgbe sends to upper network stack through the sync operation.
 
-Fixes: d9fb9f384292 ("*sonic/natsemi/ns83829: Move the National Semi-conductor drivers")
-Signed-off-by: Mao Wenan <maowenan@huawei.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+More details from Alexander Duyck:
+Specifically since we are mapping the frame with
+DMA_ATTR_SKIP_CPU_SYNC we have to unmap with that as well. As a result
+a sync is not performed on an unmap and must be done manually as we
+skipped it for the first frag. As such we need to always sync before
+possibly performing a page unmap operation.
+
+Fixes: f3213d932173 ("ixgbe: Update driver to make use of DMA attributes in Rx path")
+Signed-off-by: Firo Yang <firo.yang@suse.com>
+Reviewed-by: Alexander Duyck <alexander.h.duyck@linux.intel.com>
+Tested-by: Andrew Bowers <andrewx.bowers@intel.com>
+Signed-off-by: Jeff Kirsher <jeffrey.t.kirsher@intel.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/natsemi/sonic.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ drivers/net/ethernet/intel/ixgbe/ixgbe_main.c | 16 +++++++++-------
+ 1 file changed, 9 insertions(+), 7 deletions(-)
 
-diff --git a/drivers/net/ethernet/natsemi/sonic.c b/drivers/net/ethernet/natsemi/sonic.c
-index 23821540ab07..11f472fd5d47 100644
---- a/drivers/net/ethernet/natsemi/sonic.c
-+++ b/drivers/net/ethernet/natsemi/sonic.c
-@@ -221,9 +221,9 @@ static int sonic_send_packet(struct sk_buff *skb, struct net_device *dev)
+diff --git a/drivers/net/ethernet/intel/ixgbe/ixgbe_main.c b/drivers/net/ethernet/intel/ixgbe/ixgbe_main.c
+index 0edfd199937d..e4c1e6345edd 100644
+--- a/drivers/net/ethernet/intel/ixgbe/ixgbe_main.c
++++ b/drivers/net/ethernet/intel/ixgbe/ixgbe_main.c
+@@ -1871,13 +1871,7 @@ static void ixgbe_pull_tail(struct ixgbe_ring *rx_ring,
+ static void ixgbe_dma_sync_frag(struct ixgbe_ring *rx_ring,
+ 				struct sk_buff *skb)
+ {
+-	/* if the page was released unmap it, else just sync our portion */
+-	if (unlikely(IXGBE_CB(skb)->page_released)) {
+-		dma_unmap_page_attrs(rx_ring->dev, IXGBE_CB(skb)->dma,
+-				     ixgbe_rx_pg_size(rx_ring),
+-				     DMA_FROM_DEVICE,
+-				     IXGBE_RX_DMA_ATTR);
+-	} else if (ring_uses_build_skb(rx_ring)) {
++	if (ring_uses_build_skb(rx_ring)) {
+ 		unsigned long offset = (unsigned long)(skb->data) & ~PAGE_MASK;
  
- 	laddr = dma_map_single(lp->device, skb->data, length, DMA_TO_DEVICE);
- 	if (!laddr) {
--		printk(KERN_ERR "%s: failed to map tx DMA buffer.\n", dev->name);
-+		pr_err_ratelimited("%s: failed to map tx DMA buffer.\n", dev->name);
- 		dev_kfree_skb(skb);
--		return NETDEV_TX_BUSY;
-+		return NETDEV_TX_OK;
+ 		dma_sync_single_range_for_cpu(rx_ring->dev,
+@@ -1894,6 +1888,14 @@ static void ixgbe_dma_sync_frag(struct ixgbe_ring *rx_ring,
+ 					      skb_frag_size(frag),
+ 					      DMA_FROM_DEVICE);
  	}
++
++	/* If the page was released, just unmap it. */
++	if (unlikely(IXGBE_CB(skb)->page_released)) {
++		dma_unmap_page_attrs(rx_ring->dev, IXGBE_CB(skb)->dma,
++				     ixgbe_rx_pg_size(rx_ring),
++				     DMA_FROM_DEVICE,
++				     IXGBE_RX_DMA_ATTR);
++	}
+ }
  
- 	sonic_tda_put(dev, entry, SONIC_TD_STATUS, 0);       /* clear status */
+ /**
 -- 
 2.20.1
 
