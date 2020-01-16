@@ -2,232 +2,118 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 5DDCD13D811
-	for <lists+netdev@lfdr.de>; Thu, 16 Jan 2020 11:40:37 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B271C13D81C
+	for <lists+netdev@lfdr.de>; Thu, 16 Jan 2020 11:40:42 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726440AbgAPKic (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 16 Jan 2020 05:38:32 -0500
-Received: from mx2.suse.de ([195.135.220.15]:42464 "EHLO mx2.suse.de"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725800AbgAPKic (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 16 Jan 2020 05:38:32 -0500
-X-Virus-Scanned: by amavisd-new at test-mx.suse.de
-Received: from relay2.suse.de (unknown [195.135.220.254])
-        by mx2.suse.de (Postfix) with ESMTP id 59757AF0D;
-        Thu, 16 Jan 2020 10:38:29 +0000 (UTC)
-References: <0000000000002b81b70590a83ad7@google.com> <20200114143244.20739-1-rpalethorpe@suse.com> <19d5e4c6-72f4-631f-2ccd-b5df660a5ef6@gmail.com>
-User-agent: mu4e 1.2.0; emacs 26.3
-From:   Richard Palethorpe <rpalethorpe@suse.de>
-To:     Eric Dumazet <eric.dumazet@gmail.com>
-Cc:     Richard Palethorpe <rpalethorpe@suse.com>,
-        linux-can@vger.kernel.org,
-        syzbot+017e491ae13c0068598a@syzkaller.appspotmail.com,
-        Wolfgang Grandegger <wg@grandegger.com>,
-        Marc Kleine-Budde <mkl@pengutronix.de>,
-        "David S. Miller" <davem@davemloft.net>,
-        Tyler Hall <tylerwhall@gmail.com>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, syzkaller@googlegroups.com
-Subject: Re: [PATCH] can, slip: Protect tty->disc_data access with RCU
-Reply-To: rpalethorpe@suse.de
-In-reply-to: <19d5e4c6-72f4-631f-2ccd-b5df660a5ef6@gmail.com>
-Date:   Thu, 16 Jan 2020 11:38:28 +0100
-Message-ID: <87v9pbit3v.fsf@our.domain.is.not.set>
+        id S1726329AbgAPKjk convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Thu, 16 Jan 2020 05:39:40 -0500
+Received: from us-smtp-delivery-1.mimecast.com ([205.139.110.120]:42761 "EHLO
+        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+        with ESMTP id S1726100AbgAPKjk (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 16 Jan 2020 05:39:40 -0500
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-426-bV1XJD5CN_ShKaH12UXmnA-1; Thu, 16 Jan 2020 05:39:37 -0500
+Received: from smtp.corp.redhat.com (int-mx01.intmail.prod.int.phx2.redhat.com [10.5.11.11])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 3FE37DB21;
+        Thu, 16 Jan 2020 10:39:36 +0000 (UTC)
+Received: from localhost.localdomain (ovpn-117-110.ams2.redhat.com [10.36.117.110])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id CCCE0811FD;
+        Thu, 16 Jan 2020 10:39:34 +0000 (UTC)
+From:   Sabrina Dubroca <sd@queasysnail.net>
+To:     netdev@vger.kernel.org
+Cc:     Stephen Hemminger <stephen@networkplumber.org>,
+        David Ahern <dsahern@gmail.com>,
+        Sabrina Dubroca <sd@queasysnail.net>,
+        Herbert Xu <herbert@gondor.apana.org.au>
+Subject: [PATCH iproute2-next] ip: xfrm: add espintcp encapsulation
+Date:   Thu, 16 Jan 2020 11:39:24 +0100
+Message-Id: <0b5baa21f8d0048b5e97f927e801ac2f843bb5e1.1579104430.git.sd@queasysnail.net>
 MIME-Version: 1.0
-Content-Type: text/plain
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.11
+X-MC-Unique: bV1XJD5CN_ShKaH12UXmnA-1
+X-Mimecast-Spam-Score: 0
+X-Mimecast-Originator: queasysnail.net
+Content-Type: text/plain; charset=WINDOWS-1252
+Content-Transfer-Encoding: 8BIT
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+This adds support for creating xfrm states with TCP encapsulation,
+similar to the existing UDP encapsulation support.
 
-Eric Dumazet <eric.dumazet@gmail.com> writes:
-
-> On 1/14/20 6:32 AM, Richard Palethorpe wrote:
->> write_wakeup can happen in parallel with close where tty->disc_data is set
->> to NULL. So we a) need to check if tty->disc_data is NULL and b) ensure it
->> is an atomic operation. Otherwise accessing tty->disc_data could result in
->> a NULL pointer deref or access to some random location.
->>
->> This problem was found by Syzkaller on slcan, but the same issue appears to
->> exist in slip where slcan was copied from.
->>
->> A fix which didn't use RCU was posted by Hillf Danton.
->>
->> Fixes: 661f7fda21b1 ("slip: Fix deadlock in write_wakeup")
->> Fixes: a8e83b17536a ("slcan: Port write_wakeup deadlock fix from slip")
->> Reported-by: syzbot+017e491ae13c0068598a@syzkaller.appspotmail.com
->> Signed-off-by: Richard Palethorpe <rpalethorpe@suse.com>
->> Cc: Wolfgang Grandegger <wg@grandegger.com>
->> Cc: Marc Kleine-Budde <mkl@pengutronix.de>
->> Cc: "David S. Miller" <davem@davemloft.net>
->> Cc: Tyler Hall <tylerwhall@gmail.com>
->> Cc: netdev@vger.kernel.org
->> Cc: linux-kernel@vger.kernel.org
->> Cc: syzkaller@googlegroups.com
->> ---
->>
->> Note, that mabye RCU should also applied to receive_buf as that also happens
->> in interrupt context. So if the pointer assignment is split by the compiler
->> then sl may point somewhere unexpected?
->>
->>  drivers/net/can/slcan.c | 11 +++++++++--
->>  drivers/net/slip/slip.c | 11 +++++++++--
->>  2 files changed, 18 insertions(+), 4 deletions(-)
->>
->> diff --git a/drivers/net/can/slcan.c b/drivers/net/can/slcan.c
->> index 2e57122f02fb..ee029aae69d4 100644
->> --- a/drivers/net/can/slcan.c
->> +++ b/drivers/net/can/slcan.c
->> @@ -344,7 +344,14 @@ static void slcan_transmit(struct work_struct *work)
->>   */
->>  static void slcan_write_wakeup(struct tty_struct *tty)
->>  {
->> -	struct slcan *sl = tty->disc_data;
->> +	struct slcan *sl;
->> +
->> +	rcu_read_lock();
->> +	sl = rcu_dereference(tty->disc_data);
->> +	rcu_read_unlock();
->
-> This rcu_read_lock()/rcu_read_unlock() pair is not protecting anything.
->
-> Right after rcu_read_unlock(), sl validity can not be guaranteed.
->
->> +
->> +	if (!sl)
->> +		return;
->>
->>  	schedule_work(&sl->tx_work);
->>  }
->> @@ -644,7 +651,7 @@ static void slcan_close(struct tty_struct *tty)
->>  		return;
->>
->>  	spin_lock_bh(&sl->lock);
->> -	tty->disc_data = NULL;
->> +	rcu_assign_pointer(tty->disc_data, NULL);
->>  	sl->tty = NULL;
->>  	spin_unlock_bh(&sl->lock);
->
->
->
-> Where is the rcu grace period before freeing enforced ?
->
-
-Sorry that was dumb.
-
-I have respun the patch so it now schedules the work inside the RCU read
-lock and it synchronises before freeing the netdev.
-
-However sparse complains about the address space of the pointer. I guess
-if disc_data is to be protected by RCU then it should be marked as
-such...
-
-I suppose that at least the access in slip/slcan_receive_buf should also
-be protected by RCU? It seems like disc_data could be freed from
-underneath it by close.
-
-At any rate below is the updated patch FYI.
-
--- >8 --
-
-Subject: [PATCH v2] can, slip: Protect tty->disc_data access with RCU
-
-write_wakeup can happen in parallel with close where tty->disc_data is set
-to NULL. So we a) need to check if tty->disc_data is NULL and b) ensure it
-is an atomic operation. Otherwise accessing tty->disc_data could result in a
-NULL pointer deref or access to some random location.
-
-This problem was found by Syzkaller on slcan, but the same issue appears to
-exist in slip where slcan was copied from.
-
-A fix which didn't use RCU was posted by Hillf Danton.
-
-Fixes: 661f7fda21b1 ("slip: Fix deadlock in write_wakeup")
-Fixes: a8e83b17536a ("slcan: Port write_wakeup deadlock fix from slip")
-Reported-by: syzbot+017e491ae13c0068598a@syzkaller.appspotmail.com
-Signed-off-by: Richard Palethorpe <rpalethorpe@suse.com>
-Cc: Wolfgang Grandegger <wg@grandegger.com>
-Cc: Marc Kleine-Budde <mkl@pengutronix.de>
-Cc: "David S. Miller" <davem@davemloft.net>
-Cc: Tyler Hall <tylerwhall@gmail.com>
-Cc: linux-can@vger.kernel.org
-Cc: netdev@vger.kernel.org
-Cc: linux-kernel@vger.kernel.org
-Cc: syzkaller@googlegroups.com
+Co-developed-by: Herbert Xu <herbert@gondor.apana.org.au>
+Signed-off-by: Sabrina Dubroca <sd@queasysnail.net>
 ---
- drivers/net/can/slcan.c | 12 ++++++++++--
- drivers/net/slip/slip.c | 12 ++++++++++--
- 2 files changed, 20 insertions(+), 4 deletions(-)
+The kernel side patches are in ipsec-next/master.
 
-diff --git a/drivers/net/can/slcan.c b/drivers/net/can/slcan.c
-index 2e57122f02fb..2f5c287eac95 100644
---- a/drivers/net/can/slcan.c
-+++ b/drivers/net/can/slcan.c
-@@ -344,9 +344,16 @@ static void slcan_transmit(struct work_struct *work)
-  */
- static void slcan_write_wakeup(struct tty_struct *tty)
- {
--	struct slcan *sl = tty->disc_data;
-+	struct slcan *sl;
-+
-+	rcu_read_lock();
-+	sl = rcu_dereference(tty->disc_data);
-+	if (!sl)
-+		goto out;
+ ip/ipxfrm.c        | 5 +++++
+ ip/xfrm_state.c    | 2 +-
+ man/man8/ip-xfrm.8 | 4 ++--
+ 3 files changed, 8 insertions(+), 3 deletions(-)
 
- 	schedule_work(&sl->tx_work);
-+out:
-+	rcu_read_unlock();
- }
+diff --git a/ip/ipxfrm.c b/ip/ipxfrm.c
+index 32f560933a47..e310860b9f1f 100644
+--- a/ip/ipxfrm.c
++++ b/ip/ipxfrm.c
+@@ -759,6 +759,9 @@ void xfrm_xfrma_print(struct rtattr *tb[], __u16 family,
+ 		case 2:
+ 			fprintf(fp, "espinudp ");
+ 			break;
++		case 7:
++			fprintf(fp, "espintcp ");
++			break;
+ 		default:
+ 			fprintf(fp, "%u ", e->encap_type);
+ 			break;
+@@ -1211,6 +1214,8 @@ int xfrm_encap_type_parse(__u16 *type, int *argcp, char ***argvp)
+ 		*type = 1;
+ 	else if (strcmp(*argv, "espinudp") == 0)
+ 		*type = 2;
++	else if (strcmp(*argv, "espintcp") == 0)
++		*type = 7;
+ 	else
+ 		invarg("ENCAP-TYPE value is invalid", *argv);
+ 
+diff --git a/ip/xfrm_state.c b/ip/xfrm_state.c
+index b03ccc5807e9..df2d50c3843b 100644
+--- a/ip/xfrm_state.c
++++ b/ip/xfrm_state.c
+@@ -130,7 +130,7 @@ static void usage(void)
+ 		"LIMIT-LIST := [ LIMIT-LIST ] limit LIMIT\n"
+ 		"LIMIT := { time-soft | time-hard | time-use-soft | time-use-hard } SECONDS |\n"
+ 		"         { byte-soft | byte-hard } SIZE | { packet-soft | packet-hard } COUNT\n"
+-		"ENCAP := { espinudp | espinudp-nonike } SPORT DPORT OADDR\n"
++		"ENCAP := { espinudp | espinudp-nonike | espintcp } SPORT DPORT OADDR\n"
+ 		"DIR := in | out\n");
+ 
+ 	exit(-1);
+diff --git a/man/man8/ip-xfrm.8 b/man/man8/ip-xfrm.8
+index cfce1e40b7f7..f99f30bb448a 100644
+--- a/man/man8/ip-xfrm.8
++++ b/man/man8/ip-xfrm.8
+@@ -207,7 +207,7 @@ ip-xfrm \- transform configuration
+ 
+ .ti -8
+ .IR ENCAP " :="
+-.RB "{ " espinudp " | " espinudp-nonike " }"
++.RB "{ " espinudp " | " espinudp-nonike " | " espintcp " }"
+ .IR SPORT " " DPORT " " OADDR
+ 
+ .ti -8
+@@ -548,7 +548,7 @@ sets limits in seconds, bytes, or numbers of packets.
+ .TP
+ .I ENCAP
+ encapsulates packets with protocol
+-.BR espinudp " or " espinudp-nonike ","
++.BR espinudp ", " espinudp-nonike ", or " espintcp ","
+ .RI "using source port " SPORT ", destination port "  DPORT
+ .RI ", and original address " OADDR "."
+ 
+-- 
+2.24.1
 
- /* Send a can_frame to a TTY queue. */
-@@ -644,10 +651,11 @@ static void slcan_close(struct tty_struct *tty)
- 		return;
-
- 	spin_lock_bh(&sl->lock);
--	tty->disc_data = NULL;
-+	rcu_assign_pointer(tty->disc_data, NULL);
- 	sl->tty = NULL;
- 	spin_unlock_bh(&sl->lock);
-
-+	synchronize_rcu();
- 	flush_work(&sl->tx_work);
-
- 	/* Flush network side */
-diff --git a/drivers/net/slip/slip.c b/drivers/net/slip/slip.c
-index 2a91c192659f..61d7e0d1d77d 100644
---- a/drivers/net/slip/slip.c
-+++ b/drivers/net/slip/slip.c
-@@ -452,9 +452,16 @@ static void slip_transmit(struct work_struct *work)
-  */
- static void slip_write_wakeup(struct tty_struct *tty)
- {
--	struct slip *sl = tty->disc_data;
-+	struct slip *sl;
-+
-+	rcu_read_lock();
-+	sl = rcu_dereference(tty->disc_data);
-+	if (!sl)
-+		goto out;
-
- 	schedule_work(&sl->tx_work);
-+out:
-+	rcu_read_unlock();
- }
-
- static void sl_tx_timeout(struct net_device *dev)
-@@ -882,10 +889,11 @@ static void slip_close(struct tty_struct *tty)
- 		return;
-
- 	spin_lock_bh(&sl->lock);
--	tty->disc_data = NULL;
-+	rcu_assign_pointer(tty->disc_data, NULL);
- 	sl->tty = NULL;
- 	spin_unlock_bh(&sl->lock);
-
-+	synchronize_rcu();
- 	flush_work(&sl->tx_work);
-
- 	/* VSV = very important to remove timers */
---
-2.24.0
