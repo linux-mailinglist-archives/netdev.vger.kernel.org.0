@@ -2,96 +2,52 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 0AB6213DBD5
-	for <lists+netdev@lfdr.de>; Thu, 16 Jan 2020 14:29:34 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4832713DBEC
+	for <lists+netdev@lfdr.de>; Thu, 16 Jan 2020 14:32:30 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726970AbgAPN3G (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 16 Jan 2020 08:29:06 -0500
-Received: from smtp.uniroma2.it ([160.80.6.23]:58437 "EHLO smtp.uniroma2.it"
+        id S1727026AbgAPNaa (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 16 Jan 2020 08:30:30 -0500
+Received: from vps0.lunn.ch ([185.16.172.187]:40984 "EHLO vps0.lunn.ch"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726329AbgAPN3G (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 16 Jan 2020 08:29:06 -0500
-Received: from smtpauth-2019-1.uniroma2.it (smtpauth.uniroma2.it [160.80.5.46])
-        by smtp-2015.uniroma2.it (8.14.4/8.14.4/Debian-8) with ESMTP id 00GDSVjZ012263;
-        Thu, 16 Jan 2020 14:28:38 +0100
-Received: from lubuntu-18.04 (unknown [160.80.103.126])
-        by smtpauth-2019-1.uniroma2.it (Postfix) with ESMTPSA id 6DAC91228FA;
-        Thu, 16 Jan 2020 14:28:39 +0100 (CET)
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=uniroma2.it;
-        s=ed201904; t=1579181319; h=from:from:sender:reply-to:subject:subject:date:date:
-         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
-         content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=ZHTCZ5Bl2oiJKvZCPiMq8xHmMGX8S9jJ3dLQloshk84=;
-        b=A6E+hu/IZDC2rwHm6q+wVBcC4dgBk7RLIZMYRBt0PDSJqLIZrOClAtHbjd4TXyisD7ai3p
-        sOygKbL4coDbD2BQ==
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=uniroma2.it; s=rsa201904;
-        t=1579181319; h=from:from:sender:reply-to:subject:subject:date:date:
-         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
-         content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=ZHTCZ5Bl2oiJKvZCPiMq8xHmMGX8S9jJ3dLQloshk84=;
-        b=hBmptfq6vu+k4pvcWPYsxuorIEYNYeKc04e+cwsrcpdCcnBNJUhdiIYUawlxtBo77i9OyT
-        zCt6E0Fj5aLu/vczyhAWhhFMBrP6uv9VFfSaAQ2WexxwcqxjYU5berh6sMlqglohZ6OO2M
-        giwnYH/NFXH6DA5PzVRwPyOl1Wg2SoHgALx6lcPbflzoDmN82nHskSM5fStBEQCtx9KwDg
-        VCnm6ixWr5tUw6SBHvAwEvEA/tAskCNVbJEYAk1Bh7XujK2UDXQrA8tylvxFU1fwflv6el
-        O+GIqpyfNkP+SFUZyXLyJvQ3q942Jx8peDc1AV6gp0fFP7AYNNY79YX4seUE9Q==
-Date:   Thu, 16 Jan 2020 14:28:39 +0100
-From:   Andrea Mayer <andrea.mayer@uniroma2.it>
-To:     Sabrina Dubroca <sd@queasysnail.net>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Petr Machata <petrm@mellanox.com>,
-        Stefano Brivio <sbrivio@redhat.com>,
-        Eric Dumazet <edumazet@google.com>,
-        Taehee Yoo <ap420073@gmail.com>,
-        Litao jiao <jiaolitao@raisecom.com>,
-        Roopa Prabhu <roopa@cumulusnetworks.com>,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Paolo Lungaroni <paolo.lungaroni@cnit.it>
-Subject: Re: [net] vxlan: fix vxlan6_get_route() adding a call to
- xfrm_lookup_route()
-Message-Id: <20200116142839.98b04af5d16f8ec3ed209288@uniroma2.it>
-In-Reply-To: <20200115211621.GA573446@bistromath.localdomain>
-References: <20200115192231.3005-1-andrea.mayer@uniroma2.it>
-        <20200115211621.GA573446@bistromath.localdomain>
-X-Mailer: Sylpheed 3.5.1 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
-Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-X-Virus-Scanned: clamav-milter 0.100.0 at smtp-2015
-X-Virus-Status: Clean
+        id S1726362AbgAPNaa (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 16 Jan 2020 08:30:30 -0500
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:
+        Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
+        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
+        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
+        List-Post:List-Owner:List-Archive;
+        bh=g1qwtKIRjlBajTodzOst5ddyTTUcuYWbTRPXsMESids=; b=2ECly9xqL7ZjMne7Gw+M+ysy1d
+        /7HZ35Le8voRmEzt+T0tpSwyIwWvia+UREroW3r0qd9euHylc6hvW07tf9i1WAnOMBjG9az1NP8+h
+        jAUuZ5HNpRekdP7lp0ZyAEqbepMWpqGADpnWeBI124VKpmHIdwcsCWDO7eOGAMs9OOrg=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.93)
+        (envelope-from <andrew@lunn.ch>)
+        id 1is5EA-00054x-2R; Thu, 16 Jan 2020 14:30:26 +0100
+Date:   Thu, 16 Jan 2020 14:30:26 +0100
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Alexandru Ardelean <alexandru.ardelean@analog.com>
+Cc:     netdev@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, davem@davemloft.net,
+        f.fainelli@gmail.com, hkallweit1@gmail.com
+Subject: Re: [PATCH 1/4] net: phy: adin: const-ify static data
+Message-ID: <20200116133026.GB19046@lunn.ch>
+References: <20200116091454.16032-1-alexandru.ardelean@analog.com>
+ <20200116091454.16032-2-alexandru.ardelean@analog.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20200116091454.16032-2-alexandru.ardelean@analog.com>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 15 Jan 2020 22:16:21 +0100
-Sabrina Dubroca <sd@queasysnail.net> wrote:
+On Thu, Jan 16, 2020 at 11:14:51AM +0200, Alexandru Ardelean wrote:
+> Some bits of static data should have been made const from the start.
+> This change adds the const qualifier where appropriate.
+> 
+> Signed-off-by: Alexandru Ardelean <alexandru.ardelean@analog.com>
 
-> 2020-01-15, 20:22:31 +0100, Andrea Mayer wrote:
-> > currently IPSEC cannot be used to encrypt/decrypt IPv6 vxlan traffic.
-> > The problem is that the vxlan module uses the vxlan6_get_route()
-> > function to find out the route for transmitting an IPv6 packet, which in
-> > turn uses ip6_dst_lookup() available in ip6_output.c.
-> > Unfortunately ip6_dst_lookup() does not perform any xfrm route lookup,
-> > so the xfrm framework cannot be used with vxlan6.
-> 
-> That's not the case anymore, since commit 6c8991f41546 ("net:
-> ipv6_stub: use ip6_dst_lookup_flow instead of ip6_dst_lookup").
-> 
-> Can you retest on the latest net tree?
-> 
-> Thanks.
-> 
-> -- 
-> Sabrina
-> 
+Reviewed-by: Andrew Lunn <andrew@lunn.ch>
 
-Hi Sabrina,
-thanks for sharing the fix.
-Sorry, my net tree was a bit outdated. I will retest with the fix and let you know.
-
--- 
-Andrea Mayer <andrea.mayer@uniroma2.it>
+    Andrew
