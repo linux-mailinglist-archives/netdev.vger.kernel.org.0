@@ -2,36 +2,39 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 5270713EB30
-	for <lists+netdev@lfdr.de>; Thu, 16 Jan 2020 18:49:00 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4B45213EB34
+	for <lists+netdev@lfdr.de>; Thu, 16 Jan 2020 18:49:02 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2406690AbgAPRqa (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 16 Jan 2020 12:46:30 -0500
-Received: from mail.kernel.org ([198.145.29.99]:39232 "EHLO mail.kernel.org"
+        id S2406700AbgAPRqb (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 16 Jan 2020 12:46:31 -0500
+Received: from mail.kernel.org ([198.145.29.99]:39298 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2406668AbgAPRq1 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 16 Jan 2020 12:46:27 -0500
+        id S2406678AbgAPRq3 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 16 Jan 2020 12:46:29 -0500
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id AD659246B7;
-        Thu, 16 Jan 2020 17:46:25 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 41340246EA;
+        Thu, 16 Jan 2020 17:46:27 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1579196786;
-        bh=FUskxwFtJmB85g2QoWufT+EQlsqoA9fp/l3uqUwyw5s=;
+        s=default; t=1579196788;
+        bh=Vl0mUl3nyA3+imvByviOLU+uQpGETegssy81vreRVno=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=jZ4O0IpYZbRh3/X28IvOTtrgRukS4jcCikzd9DrJWhc8G4zNB8DyWR1SEG29kPJLW
-         IRQ7muT5iInLeK7un9P92iyf8nloG8VS2AlFFAVf2Xw+00h9xzT5ZToSGzu071t4qU
-         cSev6X6sKrMTdMpcqd7jyxd4dgLo+anKXffY8k9Q=
+        b=uOuj/myyekutclpFsBSSmvIfJ7KoYiWS5RXXje10aObPDmj5jA8Rlj/upN5sOhqk9
+         PJWn3g8Os2RErZWxc8lwKikXJng1cPNdu0ZAyGgd/YxYw72N0veLYjW4CI63vV92+v
+         KvN2WNtY/4VTPtspLAV6jDumkkARqDGR03sSmRKE=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Stefan Wahren <stefan.wahren@in-tech.com>,
-        Stefan Wahren <wahrenst@gmx.net>,
-        "David S . Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.4 150/174] net: qca_spi: Move reset_count to struct qcaspi
-Date:   Thu, 16 Jan 2020 12:42:27 -0500
-Message-Id: <20200116174251.24326-150-sashal@kernel.org>
+Cc:     Lorenzo Bianconi <lorenzo@kernel.org>,
+        Jakub Kicinski <kubakici@wp.pl>,
+        Kalle Valo <kvalo@codeaurora.org>,
+        Sasha Levin <sashal@kernel.org>,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org
+Subject: [PATCH AUTOSEL 4.4 151/174] mt7601u: fix bbp version check in mt7601u_wait_bbp_ready
+Date:   Thu, 16 Jan 2020 12:42:28 -0500
+Message-Id: <20200116174251.24326-151-sashal@kernel.org>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20200116174251.24326-1-sashal@kernel.org>
 References: <20200116174251.24326-1-sashal@kernel.org>
@@ -44,66 +47,40 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Stefan Wahren <stefan.wahren@in-tech.com>
+From: Lorenzo Bianconi <lorenzo@kernel.org>
 
-[ Upstream commit bc19c32904e36548335b35fdce6ce734e20afc0a ]
+[ Upstream commit 15e14f76f85f4f0eab3b8146e1cd3c58ce272823 ]
 
-The reset counter is specific for every QCA700x chip. So move this
-into the private driver struct. Otherwise we get unpredictable reset
-behavior in setups with multiple QCA700x chips.
+Fix bbp ready check in mt7601u_wait_bbp_ready. The issue is reported by
+coverity with the following error:
 
-Fixes: 291ab06ecf67 (net: qualcomm: new Ethernet over SPI driver for QCA7000)
-Signed-off-by: Stefan Wahren <stefan.wahren@in-tech.com>
-Signed-off-by: Stefan Wahren <wahrenst@gmx.net>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+Logical vs. bitwise operator
+The expression's value does not depend on the operands; inadvertent use
+of the wrong operator is a likely logic error.
+
+Addresses-Coverity-ID: 1309441 ("Logical vs. bitwise operator")
+Fixes: c869f77d6abb ("add mt7601u driver")
+Acked-by: Jakub Kicinski <kubakici@wp.pl>
+Signed-off-by: Lorenzo Bianconi <lorenzo@kernel.org>
+Signed-off-by: Kalle Valo <kvalo@codeaurora.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/qualcomm/qca_spi.c | 9 ++++-----
- drivers/net/ethernet/qualcomm/qca_spi.h | 1 +
- 2 files changed, 5 insertions(+), 5 deletions(-)
+ drivers/net/wireless/mediatek/mt7601u/phy.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/net/ethernet/qualcomm/qca_spi.c b/drivers/net/ethernet/qualcomm/qca_spi.c
-index 7886a8a5b55b..fb944e65c632 100644
---- a/drivers/net/ethernet/qualcomm/qca_spi.c
-+++ b/drivers/net/ethernet/qualcomm/qca_spi.c
-@@ -438,7 +438,6 @@ qcaspi_qca7k_sync(struct qcaspi *qca, int event)
- 	u16 signature = 0;
- 	u16 spi_config;
- 	u16 wrbuf_space = 0;
--	static u16 reset_count;
+diff --git a/drivers/net/wireless/mediatek/mt7601u/phy.c b/drivers/net/wireless/mediatek/mt7601u/phy.c
+index 1908af6add87..59ed073a8572 100644
+--- a/drivers/net/wireless/mediatek/mt7601u/phy.c
++++ b/drivers/net/wireless/mediatek/mt7601u/phy.c
+@@ -219,7 +219,7 @@ int mt7601u_wait_bbp_ready(struct mt7601u_dev *dev)
  
- 	if (event == QCASPI_EVENT_CPUON) {
- 		/* Read signature twice, if not valid
-@@ -491,13 +490,13 @@ qcaspi_qca7k_sync(struct qcaspi *qca, int event)
+ 	do {
+ 		val = mt7601u_bbp_rr(dev, MT_BBP_REG_VERSION);
+-		if (val && ~val)
++		if (val && val != 0xff)
+ 			break;
+ 	} while (--i);
  
- 		qca->sync = QCASPI_SYNC_RESET;
- 		qca->stats.trig_reset++;
--		reset_count = 0;
-+		qca->reset_count = 0;
- 		break;
- 	case QCASPI_SYNC_RESET:
--		reset_count++;
-+		qca->reset_count++;
- 		netdev_dbg(qca->net_dev, "sync: waiting for CPU on, count %u.\n",
--			   reset_count);
--		if (reset_count >= QCASPI_RESET_TIMEOUT) {
-+			   qca->reset_count);
-+		if (qca->reset_count >= QCASPI_RESET_TIMEOUT) {
- 			/* reset did not seem to take place, try again */
- 			qca->sync = QCASPI_SYNC_UNKNOWN;
- 			qca->stats.reset_timeout++;
-diff --git a/drivers/net/ethernet/qualcomm/qca_spi.h b/drivers/net/ethernet/qualcomm/qca_spi.h
-index 6e31a0e744a4..c48c314ca4df 100644
---- a/drivers/net/ethernet/qualcomm/qca_spi.h
-+++ b/drivers/net/ethernet/qualcomm/qca_spi.h
-@@ -97,6 +97,7 @@ struct qcaspi {
- 
- 	unsigned int intr_req;
- 	unsigned int intr_svc;
-+	u16 reset_count;
- 
- #ifdef CONFIG_DEBUG_FS
- 	struct dentry *device_root;
 -- 
 2.20.1
 
