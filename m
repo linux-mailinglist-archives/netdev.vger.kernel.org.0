@@ -2,99 +2,135 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 886C413DF72
-	for <lists+netdev@lfdr.de>; Thu, 16 Jan 2020 17:00:24 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2740213DF79
+	for <lists+netdev@lfdr.de>; Thu, 16 Jan 2020 17:01:06 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726899AbgAPQAV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 16 Jan 2020 11:00:21 -0500
-Received: from mail-wm1-f65.google.com ([209.85.128.65]:34508 "EHLO
-        mail-wm1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726653AbgAPQAU (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 16 Jan 2020 11:00:20 -0500
-Received: by mail-wm1-f65.google.com with SMTP id w5so7464080wmi.1
-        for <netdev@vger.kernel.org>; Thu, 16 Jan 2020 08:00:18 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=6wind.com; s=google;
-        h=reply-to:subject:to:cc:references:from:organization:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=frQKJNnsPozLzRKyl1EnehWw6S2UfuJ2SMQ56cxf7ws=;
-        b=Hv/4cB+tiiyhEdkUdYxvLXbicAo/2MBZm65ykGIiD/L/6llE4MzWKmy4ZHlCH1yiqZ
-         mf0Uyil9TOM5pibAfeuMgd/x9KX5dMETl5EP3PKOhHASH++j1H8zD04D+c+jJj8C60ts
-         Zj3444VbaVcJYbV0zGV/pg3E2JzJ06M3CvNGVXYolbGVOn8A3WNe6wkBHe/R0CSeyDSl
-         WHTp9KL/xmZfC6FRVwCr9p2k5TjV0a2IG2M5ZlMLSZ4pSHq5GChqu+mAWikFtKef8CEM
-         2mswgif1j5aDfmdMTVhdOqnbPctxEw26t3ilm/mxT9Qrd89/sMb4r81Wg9TKIJWTjVw2
-         DddA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:reply-to:subject:to:cc:references:from
-         :organization:message-id:date:user-agent:mime-version:in-reply-to
-         :content-language:content-transfer-encoding;
-        bh=frQKJNnsPozLzRKyl1EnehWw6S2UfuJ2SMQ56cxf7ws=;
-        b=b0M0nj7BnwtwMST3gMpTb22BMgLAr9TTvWU51t6grMG6NH3QIyAfqrJfuc0Ozw8XEw
-         WbuuZmURZrv4UKBWx7pQEYbF+Yj9fEJdghAK8hjd0xr8Xm4/WQip9IZHNpglKqEyKcRj
-         PxgfDsspfYVBai5DR24MLU4rub4DpKUW1wEXnQm+eTXqhWcl+8NLYEMzXV8Bbz7TmGYZ
-         pm4AWz4Hs5zCE0OpkzCwXc9Omwae+mEkoNOsStsOLvF8aFo8NMIlcpgtY5LAzvko9jFp
-         dZ//PYisfdRw2wdXqS4ezBynO8JyVLkft2DUEDi2RUf70rW1UXgMAWJJIjCqzsHFd9xg
-         OvMA==
-X-Gm-Message-State: APjAAAXw9Nrr6NBo4tVR9cDVS137V0tEnzlnLu5rBNgy3phkJGokg9SH
-        vWDR1ZvK8ek8GB9/ChVNFpJoAQ==
-X-Google-Smtp-Source: APXvYqz4EFmq55o1ZjYRT5TxNFuYSVULEezZWC8r3XY+yuF6lMfTTXyGA1U1RJtcBkRfYpbzMI/54Q==
-X-Received: by 2002:a1c:6755:: with SMTP id b82mr24853wmc.127.1579190418092;
-        Thu, 16 Jan 2020 08:00:18 -0800 (PST)
-Received: from ?IPv6:2a01:e0a:410:bb00:ed9f:e0c6:a41a:de2f? ([2a01:e0a:410:bb00:ed9f:e0c6:a41a:de2f])
-        by smtp.gmail.com with ESMTPSA id h8sm31143398wrx.63.2020.01.16.08.00.16
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 16 Jan 2020 08:00:16 -0800 (PST)
-Reply-To: nicolas.dichtel@6wind.com
-Subject: Re: [PATCH] net: ip6_gre: fix moving ip6gre between namespaces
-To:     kortstro <niko.kortstrom@nokia.com>, davem@davemloft.net,
-        kuznet@ms2.inr.ac.ru, yoshfuji@linux-ipv6.org
-Cc:     netdev@vger.kernel.org, William Tu <u9012063@gmail.com>
-References: <20200116094327.11747-1-niko.kortstrom@nokia.com>
- <8c5be34b-c201-108e-9701-e51fc31fa3de@6wind.com>
- <6465a655-2319-c6e6-d3ca-3cf5ba27640f@nokia.com>
-From:   Nicolas Dichtel <nicolas.dichtel@6wind.com>
-Organization: 6WIND
-Message-ID: <0b180112-5931-36b4-670d-192fd714a14e@6wind.com>
-Date:   Thu, 16 Jan 2020 17:00:15 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.2.2
+        id S1727018AbgAPQA7 convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Thu, 16 Jan 2020 11:00:59 -0500
+Received: from youngberry.canonical.com ([91.189.89.112]:43582 "EHLO
+        youngberry.canonical.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726189AbgAPQA7 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 16 Jan 2020 11:00:59 -0500
+Received: from c-67-160-6-8.hsd1.wa.comcast.net ([67.160.6.8] helo=famine.localdomain)
+        by youngberry.canonical.com with esmtpsa (TLS1.2:ECDHE_RSA_AES_128_GCM_SHA256:128)
+        (Exim 4.86_2)
+        (envelope-from <jay.vosburgh@canonical.com>)
+        id 1is7Zl-0004NP-P7; Thu, 16 Jan 2020 16:00:54 +0000
+Received: by famine.localdomain (Postfix, from userid 1000)
+        id CF0AE630E4; Thu, 16 Jan 2020 08:00:51 -0800 (PST)
+Received: from famine (localhost [127.0.0.1])
+        by famine.localdomain (Postfix) with ESMTP id C7E35AC1CC;
+        Thu, 16 Jan 2020 08:00:51 -0800 (PST)
+From:   Jay Vosburgh <jay.vosburgh@canonical.com>
+To:     Maor Gottlieb <maorg@mellanox.com>
+cc:     Andy Gospodarek <andy@greyhouse.net>,
+        Jiri Pirko <jiri@resnulli.us>,
+        "vfalico@gmail.com" <vfalico@gmail.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        Saeed Mahameed <saeedm@mellanox.com>,
+        Jason Gunthorpe <jgg@mellanox.com>,
+        Leon Romanovsky <leonro@mellanox.com>,
+        Jiri Pirko <jiri@mellanox.com>,
+        Alex Rosenbaum <alexr@mellanox.com>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        Mark Zhang <markz@mellanox.com>,
+        Parav Pandit <parav@mellanox.com>
+Subject: Re: Expose bond_xmit_hash function
+In-reply-to: <8e90935b-7485-0969-6fe4-d802d259f778@mellanox.com>
+References: <03a6dcfc-f3c7-925d-8ed8-3c42777fd03c@mellanox.com> <20200115094513.GS2131@nanopsycho> <80ad03a2-9926-bf75-d79c-be554c4afaaf@mellanox.com> <20200115141535.GT2131@nanopsycho> <20200116144256.GA87583@C02YVCJELVCG> <8e90935b-7485-0969-6fe4-d802d259f778@mellanox.com>
+Comments: In-reply-to Maor Gottlieb <maorg@mellanox.com>
+   message dated "Thu, 16 Jan 2020 15:55:50 +0000."
+X-Mailer: MH-E 8.6+git; nmh 1.6; GNU Emacs 27.0.50
 MIME-Version: 1.0
-In-Reply-To: <6465a655-2319-c6e6-d3ca-3cf5ba27640f@nokia.com>
 Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 8BIT
+Date:   Thu, 16 Jan 2020 08:00:51 -0800
+Message-ID: <31666.1579190451@famine>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-+ William Tu
+Maor Gottlieb <maorg@mellanox.com> wrote:
 
-Le 16/01/2020 à 15:43, kortstro a écrit :
-> On 1/16/20 4:02 PM, Nicolas Dichtel wrote:
->> Le 16/01/2020 à 10:43, Niko Kortstrom a écrit :
->>> Support for moving IPv4 GRE tunnels between namespaces was added in
->>> commit b57708add314 ("gre: add x-netns support"). The respective change
->>> for IPv6 tunnels, commit 22f08069e8b4 ("ip6gre: add x-netns support")
->>> did not drop NETIF_F_NETNS_LOCAL flag so moving them from one netns to
->>> another is still denied in IPv6 case. Drop NETIF_F_NETNS_LOCAL flag from
->>> ip6gre tunnels to allow moving ip6gre tunnel endpoints between network
->>> namespaces.
+>
+>On 1/16/2020 4:42 PM, Andy Gospodarek wrote:
+>> On Wed, Jan 15, 2020 at 03:15:35PM +0100, Jiri Pirko wrote:
+>>> Wed, Jan 15, 2020 at 02:04:49PM CET, maorg@mellanox.com wrote:
+>>>> On 1/15/2020 11:45 AM, Jiri Pirko wrote:
+>>>>> Wed, Jan 15, 2020 at 09:01:43AM CET, maorg@mellanox.com wrote:
+>>>>>> RDMA over Converged Ethernet (RoCE) is a standard protocol which enables
+>>>>>> RDMA’s efficient data transfer over Ethernet networks allowing transport
+>>>>>> offload with hardware RDMA engine implementation.
+>>>>>> The RoCE v2 protocol exists on top of either the UDP/IPv4 or the
+>>>>>> UDP/IPv6 protocol:
+>>>>>>
+>>>>>> --------------------------------------------------------------
+>>>>>> | L2 | L3 | UDP |IB BTH | Payload| ICRC | FCS |
+>>>>>> --------------------------------------------------------------
+>>>>>>
+>>>>>> When a bond LAG netdev is in use, we would like to have the same hash
+>>>>>> result for RoCE packets as any other UDP packets, for this purpose we
+>>>>>> need to expose the bond_xmit_hash function to external modules.
+>>>>>> If no objection, I will push a patch that export this symbol.
+>>>>> I don't think it is good idea to do it. It is an internal bond function.
+>>>>> it even accepts "struct bonding *bond". Do you plan to push netdev
+>>>>> struct as an arg instead? What about team? What about OVS bonding?
+>>>> No, I am planning to pass the bond struct as an arg. Currently, team
+>>> Hmm, that would be ofcourse wrong, as it is internal bonding driver
+>>> structure.
 >>>
->>> Signed-off-by: Niko Kortstrom <niko.kortstrom@nokia.com>
->> LGTM.
->> Acked-by: Nicolas Dichtel <nicolas.dichtel@6wind.com>
+>>>
+>>>> bonding is not supported in RoCE LAG and I don't see how OVS is related.
+>>> Should work for all. OVS is related in a sense that you can do bonding
+>>> there too.
+>>>
+>>>
+>>>>> Also, you don't really need a hash, you need a slave that is going to be
+>>>>> used for a packet xmit.
+>>>>>
+>>>>> I think this could work in a generic way:
+>>>>>
+>>>>> struct net_device *master_xmit_slave_get(struct net_device *master_dev,
+>>>>> 					 struct sk_buff *skb);
+>>>> The suggestion is to put this function in the bond driver and call it
+>>>> instead of bond_xmit_hash? is it still necessary if I have the bond pointer?
+>>> No. This should be in a generic code. No direct calls down to bonding
+>>> driver please. Or do you want to load bonding module every time your
+>>> module loads?
+>>>
+>>> I thinks this can be implemented with ndo with "master_xmit_slave_get()"
+>>> as a wrapper. Masters that support this would just implement the ndo.
+>> In general I think this is a good idea (though maybe not with an skb as
+>> an arg so we can use it easily within BPF), but I'm not sure if solves
+>> the problem that Maor et al were setting out to solve.
 >>
->> Did you test real x-vrf cases with the three kinds of gre interfaces
->> (gre/collect_md, gretap and erspan)?
-> This was only verified in real use with ip6gretap.
-William, did you set this flag on collect_md interfaces because you did not test
-this feature or was it another reason?
+>> Maor, if you did export bond_xmit_hash() to be used by another driver,
+>> you would presumably have a check in place so if the RoCE and UDP
+>> packets had a different hash function output you would make a change and
+>> be sure that the UDP frames would go out on the same device that the
+>> RoCE traffic would normally use.  Is this correct?  Would you also send
+>> the frames directly on the interface using dev_queue_xmit() and bypass
+>> the bonding driver completely?
+>
+>RoCE packets are UDP. The idea is that the same UDP header (RoCE as 
+>well) will get the same hash result so they will be transmitted from the 
+>same port.
+>The frames will be sent by using the RDMA send API and bypass the 
+>bonding driver completely.
+>Is it answer your question?
 
-Note: the flag was added here: 6712abc168eb ("ip6_gre: add ip6 gre and gretap
-collect_md mode").
+	If the RDMA send bypasses bonding, how will you insure that the
+same hash result maps to the same underlying interface for both bonding
+and RDMA?
 
-Regards,
-Nicolas
+	-J
+
+>> I don't think I fundamentally have a problem with this, I just want to
+>> make sure I understand your proposed code-flow.
+>>
+>> Thanks!
+>>
+
+---
+	-Jay Vosburgh, jay.vosburgh@canonical.com
