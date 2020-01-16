@@ -2,37 +2,37 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 69DE113F8B8
-	for <lists+netdev@lfdr.de>; Thu, 16 Jan 2020 20:20:42 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 13CB213F8E3
+	for <lists+netdev@lfdr.de>; Thu, 16 Jan 2020 20:21:32 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731292AbgAPQxz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 16 Jan 2020 11:53:55 -0500
-Received: from mail.kernel.org ([198.145.29.99]:37938 "EHLO mail.kernel.org"
+        id S2437804AbgAPTV2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 16 Jan 2020 14:21:28 -0500
+Received: from mail.kernel.org ([198.145.29.99]:38204 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1731221AbgAPQxv (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 16 Jan 2020 11:53:51 -0500
+        id S1729164AbgAPQx7 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 16 Jan 2020 11:53:59 -0500
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id DB9912464B;
-        Thu, 16 Jan 2020 16:53:49 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 500DC2464B;
+        Thu, 16 Jan 2020 16:53:58 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1579193630;
-        bh=64x82PQuv5pebgDgHhtSr+hFf0pKyR4SaaHfSStuJYU=;
+        s=default; t=1579193639;
+        bh=mUz6qZrJgnd1j+6KAws1RtLn1Uq8ghUFLn08Z1tBoys=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Piat3vyyqytUa/5WiJyI56c9wyzuGNQd5XuC9KHUahU7brCcjE6jtcoAr8r0Gte8D
-         Ysb0g/gPC5++4a+oY76TFmVPaKnL00V9bk5Fyk+CHAECwUcYJ3RjK7ToQRlbqJCdJ/
-         2BQ4dlqr+T5ybTNMQSYa40hTrbIgWZhoiT/LHKbo=
+        b=hVdeG6VHL4BSWLPGmSA0CUNj+AK2ctgOFfijsHNfdmV6QSa8NahQQ6aEeZKQ0F8D3
+         0hFZMPEgVIOhQ4vmhglyuSNh1qmmmkoAPiIImCvRLcWTNSnpcXmcWMRVQm0uPZdImF
+         w0H4Igg2ABAAdVdLeO29/iq4/iJS8MWi0WmSjm3s=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     John Fastabend <john.fastabend@gmail.com>,
-        Dan Carpenter <dan.carpenter@oracle.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org,
-        bpf@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.4 164/205] bpf: skmsg, fix potential psock NULL pointer dereference
-Date:   Thu, 16 Jan 2020 11:42:19 -0500
-Message-Id: <20200116164300.6705-164-sashal@kernel.org>
+Cc:     Jesse Brandeburg <jesse.brandeburg@intel.com>,
+        Andrew Bowers <andrewx.bowers@intel.com>,
+        Jeff Kirsher <jeffrey.t.kirsher@intel.com>,
+        Sasha Levin <sashal@kernel.org>,
+        intel-wired-lan@lists.osuosl.org, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.4 171/205] ice: fix stack leakage
+Date:   Thu, 16 Jan 2020 11:42:26 -0500
+Message-Id: <20200116164300.6705-171-sashal@kernel.org>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20200116164300.6705-1-sashal@kernel.org>
 References: <20200116164300.6705-1-sashal@kernel.org>
@@ -45,64 +45,46 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: John Fastabend <john.fastabend@gmail.com>
+From: Jesse Brandeburg <jesse.brandeburg@intel.com>
 
-[ Upstream commit 8163999db445021f2651a8a47b5632483e8722ea ]
+[ Upstream commit 949375de945f7042df2b6488228a1a2b36e69f35 ]
 
-Report from Dan Carpenter,
+In the case of an invalid virtchannel request the driver
+would return uninitialized data to the VF from the PF stack
+which is a bug.  Fix by initializing the stack variable
+earlier in the function before any return paths can be taken.
 
- net/core/skmsg.c:792 sk_psock_write_space()
- error: we previously assumed 'psock' could be null (see line 790)
-
- net/core/skmsg.c
-   789 psock = sk_psock(sk);
-   790 if (likely(psock && sk_psock_test_state(psock, SK_PSOCK_TX_ENABLED)))
- Check for NULL
-   791 schedule_work(&psock->work);
-   792 write_space = psock->saved_write_space;
-                     ^^^^^^^^^^^^^^^^^^^^^^^^
-   793          rcu_read_unlock();
-   794          write_space(sk);
-
-Ensure psock dereference on line 792 only occurs if psock is not null.
-
-Reported-by: Dan Carpenter <dan.carpenter@oracle.com>
-Fixes: 604326b41a6f ("bpf, sockmap: convert to generic sk_msg interface")
-Signed-off-by: John Fastabend <john.fastabend@gmail.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+Fixes: 1071a8358a28 ("ice: Implement virtchnl commands for AVF support")
+Signed-off-by: Jesse Brandeburg <jesse.brandeburg@intel.com>
+Tested-by: Andrew Bowers <andrewx.bowers@intel.com>
+Signed-off-by: Jeff Kirsher <jeffrey.t.kirsher@intel.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/core/skmsg.c | 13 ++++++++-----
- 1 file changed, 8 insertions(+), 5 deletions(-)
+ drivers/net/ethernet/intel/ice/ice_virtchnl_pf.c | 3 +--
+ 1 file changed, 1 insertion(+), 2 deletions(-)
 
-diff --git a/net/core/skmsg.c b/net/core/skmsg.c
-index 0675d022584e..ded2d5227678 100644
---- a/net/core/skmsg.c
-+++ b/net/core/skmsg.c
-@@ -793,15 +793,18 @@ static void sk_psock_strp_data_ready(struct sock *sk)
- static void sk_psock_write_space(struct sock *sk)
- {
- 	struct sk_psock *psock;
--	void (*write_space)(struct sock *sk);
-+	void (*write_space)(struct sock *sk) = NULL;
+diff --git a/drivers/net/ethernet/intel/ice/ice_virtchnl_pf.c b/drivers/net/ethernet/intel/ice/ice_virtchnl_pf.c
+index c0637a0cbfe8..e92a00a61755 100644
+--- a/drivers/net/ethernet/intel/ice/ice_virtchnl_pf.c
++++ b/drivers/net/ethernet/intel/ice/ice_virtchnl_pf.c
+@@ -1873,8 +1873,8 @@ static int ice_vc_get_stats_msg(struct ice_vf *vf, u8 *msg)
+ 	enum virtchnl_status_code v_ret = VIRTCHNL_STATUS_SUCCESS;
+ 	struct virtchnl_queue_select *vqs =
+ 		(struct virtchnl_queue_select *)msg;
++	struct ice_eth_stats stats = { 0 };
+ 	struct ice_pf *pf = vf->pf;
+-	struct ice_eth_stats stats;
+ 	struct ice_vsi *vsi;
  
- 	rcu_read_lock();
- 	psock = sk_psock(sk);
--	if (likely(psock && sk_psock_test_state(psock, SK_PSOCK_TX_ENABLED)))
--		schedule_work(&psock->work);
--	write_space = psock->saved_write_space;
-+	if (likely(psock)) {
-+		if (sk_psock_test_state(psock, SK_PSOCK_TX_ENABLED))
-+			schedule_work(&psock->work);
-+		write_space = psock->saved_write_space;
-+	}
- 	rcu_read_unlock();
--	write_space(sk);
-+	if (write_space)
-+		write_space(sk);
- }
+ 	if (!test_bit(ICE_VF_STATE_ACTIVE, vf->vf_states)) {
+@@ -1893,7 +1893,6 @@ static int ice_vc_get_stats_msg(struct ice_vf *vf, u8 *msg)
+ 		goto error_param;
+ 	}
  
- int sk_psock_init_strp(struct sock *sk, struct sk_psock *psock)
+-	memset(&stats, 0, sizeof(struct ice_eth_stats));
+ 	ice_update_eth_stats(vsi);
+ 
+ 	stats = vsi->eth_stats;
 -- 
 2.20.1
 
