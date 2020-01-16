@@ -2,87 +2,59 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id ACA0D13D534
-	for <lists+netdev@lfdr.de>; Thu, 16 Jan 2020 08:47:26 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id DAC2C13D52C
+	for <lists+netdev@lfdr.de>; Thu, 16 Jan 2020 08:44:26 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728901AbgAPHpQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 16 Jan 2020 02:45:16 -0500
-Received: from szxga05-in.huawei.com ([45.249.212.191]:8742 "EHLO huawei.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1726653AbgAPHpP (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 16 Jan 2020 02:45:15 -0500
-Received: from DGGEMS407-HUB.china.huawei.com (unknown [172.30.72.58])
-        by Forcepoint Email with ESMTP id A64F24145302815F6FFA;
-        Thu, 16 Jan 2020 15:45:13 +0800 (CST)
-Received: from localhost.localdomain (10.67.165.24) by
- DGGEMS407-HUB.china.huawei.com (10.3.19.207) with Microsoft SMTP Server id
- 14.3.439.0; Thu, 16 Jan 2020 15:45:03 +0800
-From:   Yonglong Liu <liuyonglong@huawei.com>
-To:     <davem@davemloft.net>
-CC:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <linuxarm@huawei.com>, <salil.mehta@huawei.com>,
-        <jakub.kicinski@netronome.com>
-Subject: [PATCH net] net: hns: fix soft lockup when there is not enough memory
-Date:   Thu, 16 Jan 2020 15:41:17 +0800
-Message-ID: <1579160477-31030-1-git-send-email-liuyonglong@huawei.com>
-X-Mailer: git-send-email 2.8.1
+        id S1726935AbgAPHoT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 16 Jan 2020 02:44:19 -0500
+Received: from Chamillionaire.breakpoint.cc ([193.142.43.52]:33046 "EHLO
+        Chamillionaire.breakpoint.cc" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1726883AbgAPHoT (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 16 Jan 2020 02:44:19 -0500
+Received: from fw by Chamillionaire.breakpoint.cc with local (Exim 4.92)
+        (envelope-from <fw@breakpoint.cc>)
+        id 1irzpA-0003GY-6p; Thu, 16 Jan 2020 08:44:16 +0100
+From:   Florian Westphal <fw@strlen.de>
+To:     <netfilter-devel@vger.kernel.org>
+Cc:     netdev@vger.kernel.org, syzkaller-bugs@googlegroups.com,
+        Florian Westphal <fw@strlen.de>,
+        syzbot+76d0b80493ac881ff77b@syzkaller.appspotmail.com
+Subject: [PATCH nf] netfilter: nft_tunnel: fix null-attribute check
+Date:   Thu, 16 Jan 2020 08:44:11 +0100
+Message-Id: <20200116074411.19511-1-fw@strlen.de>
+X-Mailer: git-send-email 2.24.1
+In-Reply-To: <000000000000b62bda059c36db7c@google.com>
+References: <000000000000b62bda059c36db7c@google.com>
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.67.165.24]
-X-CFilter-Loop: Reflected
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-When there is not enough memory and napi_alloc_skb() return NULL,
-the HNS driver will print error message, and than try again, if
-the memory is not enough for a while, huge error message and the
-retry operation will cause soft lockup.
+else we get null deref when one of the attributes is missing, both
+must be non-null.
 
-When napi_alloc_skb() return NULL because of no memory, we can
-get a warn_alloc() call trace, so this patch deletes the error
-message. We already use polling mode to handle irq, but the
-retry operation will render the polling weight inactive, this
-patch just return budget when the rx is not completed to avoid
-dead loop.
-
-Fixes: 36eedfde1a36 ("net: hns: Optimize hns_nic_common_poll for better performance")
-Fixes: b5996f11ea54 ("net: add Hisilicon Network Subsystem basic ethernet support")
-Signed-off-by: Yonglong Liu <liuyonglong@huawei.com>
+Reported-by: syzbot+76d0b80493ac881ff77b@syzkaller.appspotmail.com
+Fixes: aaecfdb5c5dd8ba ("netfilter: nf_tables: match on tunnel metadata")
+Signed-off-by: Florian Westphal <fw@strlen.de>
 ---
- drivers/net/ethernet/hisilicon/hns/hns_enet.c | 4 +---
- 1 file changed, 1 insertion(+), 3 deletions(-)
+ net/netfilter/nft_tunnel.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/net/ethernet/hisilicon/hns/hns_enet.c b/drivers/net/ethernet/hisilicon/hns/hns_enet.c
-index 14ab204..eb69e5c 100644
---- a/drivers/net/ethernet/hisilicon/hns/hns_enet.c
-+++ b/drivers/net/ethernet/hisilicon/hns/hns_enet.c
-@@ -565,7 +565,6 @@ static int hns_nic_poll_rx_skb(struct hns_nic_ring_data *ring_data,
- 	skb = *out_skb = napi_alloc_skb(&ring_data->napi,
- 					HNS_RX_HEAD_SIZE);
- 	if (unlikely(!skb)) {
--		netdev_err(ndev, "alloc rx skb fail\n");
- 		ring->stats.sw_err_cnt++;
- 		return -ENOMEM;
- 	}
-@@ -1056,7 +1055,6 @@ static int hns_nic_common_poll(struct napi_struct *napi, int budget)
- 		container_of(napi, struct hns_nic_ring_data, napi);
- 	struct hnae_ring *ring = ring_data->ring;
+diff --git a/net/netfilter/nft_tunnel.c b/net/netfilter/nft_tunnel.c
+index 3d4c2ae605a8..d89c7c553030 100644
+--- a/net/netfilter/nft_tunnel.c
++++ b/net/netfilter/nft_tunnel.c
+@@ -76,7 +76,7 @@ static int nft_tunnel_get_init(const struct nft_ctx *ctx,
+ 	struct nft_tunnel *priv = nft_expr_priv(expr);
+ 	u32 len;
  
--try_again:
- 	clean_complete += ring_data->poll_one(
- 				ring_data, budget - clean_complete,
- 				ring_data->ex_process);
-@@ -1066,7 +1064,7 @@ static int hns_nic_common_poll(struct napi_struct *napi, int budget)
- 			napi_complete(napi);
- 			ring->q->handle->dev->ops->toggle_ring_irq(ring, 0);
- 		} else {
--			goto try_again;
-+			return budget;
- 		}
- 	}
+-	if (!tb[NFTA_TUNNEL_KEY] &&
++	if (!tb[NFTA_TUNNEL_KEY] ||
+ 	    !tb[NFTA_TUNNEL_DREG])
+ 		return -EINVAL;
  
 -- 
-2.8.1
+2.24.1
 
