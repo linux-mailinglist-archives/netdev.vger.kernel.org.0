@@ -2,78 +2,106 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 8F9D7140434
-	for <lists+netdev@lfdr.de>; Fri, 17 Jan 2020 08:04:37 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1D5AF140440
+	for <lists+netdev@lfdr.de>; Fri, 17 Jan 2020 08:09:26 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728928AbgAQHEf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 17 Jan 2020 02:04:35 -0500
-Received: from a.mx.secunet.com ([62.96.220.36]:37010 "EHLO a.mx.secunet.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726726AbgAQHEf (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 17 Jan 2020 02:04:35 -0500
-Received: from localhost (localhost [127.0.0.1])
-        by a.mx.secunet.com (Postfix) with ESMTP id C64A920411;
-        Fri, 17 Jan 2020 08:04:32 +0100 (CET)
-X-Virus-Scanned: by secunet
-Received: from a.mx.secunet.com ([127.0.0.1])
-        by localhost (a.mx.secunet.com [127.0.0.1]) (amavisd-new, port 10024)
-        with ESMTP id f9YOAIht69iG; Fri, 17 Jan 2020 08:04:32 +0100 (CET)
-Received: from mail-essen-01.secunet.de (mail-essen-01.secunet.de [10.53.40.204])
-        (using TLSv1 with cipher ECDHE-RSA-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by a.mx.secunet.com (Postfix) with ESMTPS id 62956200AC;
-        Fri, 17 Jan 2020 08:04:32 +0100 (CET)
-Received: from gauss2.secunet.de (10.182.7.193) by mail-essen-01.secunet.de
- (10.53.40.204) with Microsoft SMTP Server id 14.3.439.0; Fri, 17 Jan 2020
- 08:04:32 +0100
-Received: by gauss2.secunet.de (Postfix, from userid 1000)      id 1215E31801A7;
- Fri, 17 Jan 2020 08:04:32 +0100 (CET)
-Date:   Fri, 17 Jan 2020 08:04:32 +0100
-From:   Steffen Klassert <steffen.klassert@secunet.com>
-To:     Ayush Sawal <ayush.sawal@asicdesigners.com>
-CC:     Herbert Xu <herbert@gondor.apana.org.au>,
-        <linux-crypto@vger.kernel.org>, <manojmalviya@chelsio.com>,
-        Ayush Sawal <ayush.sawal@chelsio.com>, <netdev@vger.kernel.org>
-Subject: Re: Advertise maximum number of sg supported by driver in single
- request
-Message-ID: <20200117070431.GE23018@gauss3.secunet.de>
-References: <20200115060234.4mm6fsmsrryzpymi@gondor.apana.org.au>
- <9fd07805-8e2e-8c3f-6e5e-026ad2102c5a@chelsio.com>
- <c8d64068-a87b-36dd-910d-fb98e09c7e4b@asicdesigners.com>
- <20200117062300.qfngm2degxvjskkt@gondor.apana.org.au>
- <20d97886-e442-ed47-5685-ff5cd9fcbf1c@asicdesigners.com>
+        id S1729206AbgAQHJT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 17 Jan 2020 02:09:19 -0500
+Received: from mail-pf1-f193.google.com ([209.85.210.193]:40225 "EHLO
+        mail-pf1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726675AbgAQHJT (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 17 Jan 2020 02:09:19 -0500
+Received: by mail-pf1-f193.google.com with SMTP id q8so11498297pfh.7;
+        Thu, 16 Jan 2020 23:09:18 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=Wdv4lG5+idVQ+m2cyNBbBqOOGD1eK0711ACf52RUIc4=;
+        b=aJsOM28dpXZ3E8yQPEOztAAKh0xpxCFLkhTYwaEHs1EcjRoDAExICyUaKCl8eQcgBt
+         lRcGlYh5+dsIp4iz4iwJ2CXT9EZwzAkDdA7hp9dmyl/yK5HoTYtSdRohMolNyBot7Efk
+         bj9xgcy/TOeSmFb0xlOvfjdrGlpTrWH57/UJFrXoytseafv+bkKQF77f3HOQCcY+H+qj
+         PSZsQ/ZOGQiFKF3JzA0OAHfDa0QFFcGemYyADSXY/n3aVaRTR+vidF3hF/NF0n2v1Aaw
+         FdTq38fCusX6btAcYpFwxdc8xqcLiySKC5f3yTeybVCuRsvRL+wygRYr5V2XVDmSreAn
+         6Tlg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=Wdv4lG5+idVQ+m2cyNBbBqOOGD1eK0711ACf52RUIc4=;
+        b=T/bxpF5FOW52pXySmdSJ4Yw+YOohzLAHzHuli1ke7IbmzW33UUCC4V/ZSdKG37yHCH
+         5LMkbO/FZGondGw1N3xpP8Y9g2nDGkjpDYgW1JyZOwVdXouAFjXrNNWvZ3VIVUeCBJim
+         Xc0DcgTzlbvrOqJebLKVNQY28GkDzJhEwRKqIbytf8B8pCNdaop8EJuNw9kEEh66LJdO
+         mVudPxerYwIqMmzTkZgiUqJVXutZc0C+feYUvbRU/3U1WPZ9lG1SBID4h9wX+LZS3fZh
+         2s8ZiF5OBKNwCjHbS9wWB4QbWvJ2km7p+I3vHyd1YARHSp1kOSOWek5IDO8b44rZvwvv
+         XL+Q==
+X-Gm-Message-State: APjAAAWBecQu2vXLzaI40reCPhYHI7StPjhXGGhGm0rNmYZfu7P4YPU1
+        SwC9RQZ/hFpY6fF7iuIPI+s=
+X-Google-Smtp-Source: APXvYqyb3bj9M993s5Sv5HFGu85yqw17yOfL9aJ9YFe1aQO9yygQMB0RMdH04XKyhJ5Yhytjze+r8w==
+X-Received: by 2002:a63:4e06:: with SMTP id c6mr43239499pgb.187.1579244958036;
+        Thu, 16 Jan 2020 23:09:18 -0800 (PST)
+Received: from hpg8-3.kern.oss.ntt.co.jp ([222.151.198.97])
+        by smtp.gmail.com with ESMTPSA id d4sm407499pjg.19.2020.01.16.23.09.15
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 16 Jan 2020 23:09:17 -0800 (PST)
+From:   Yoshiki Komachi <komachi.yoshiki@gmail.com>
+To:     "David S. Miller" <davem@davemloft.net>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        Andrii Nakryiko <andriin@fb.com>,
+        Petar Penkov <ppenkov.kernel@gmail.com>
+Cc:     Yoshiki Komachi <komachi.yoshiki@gmail.com>,
+        netdev@vger.kernel.org, bpf@vger.kernel.org
+Subject: [PATCH v2 bpf 0/2] Fix the classification based on port ranges in bpf hook
+Date:   Fri, 17 Jan 2020 16:05:31 +0900
+Message-Id: <20200117070533.402240-1-komachi.yoshiki@gmail.com>
+X-Mailer: git-send-email 2.23.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset="iso-8859-1"
-Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <20d97886-e442-ed47-5685-ff5cd9fcbf1c@asicdesigners.com>
-User-Agent: Mutt/1.9.4 (2018-02-28)
-X-EXCLAIMER-MD-CONFIG: 2c86f778-e09b-4440-8b15-867914633a10
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Jan 17, 2020 at 12:13:07PM +0530, Ayush Sawal wrote:
-> Hi Herbert,
-> 
-> On 1/17/2020 11:53 AM, Herbert Xu wrote:
-> > On Thu, Jan 16, 2020 at 01:27:24PM +0530, Ayush Sawal wrote:
-> > > The max data limit is 15 sgs where each sg contains data of mtu size .
-> > > we are running a netperf udp stream test over ipsec tunnel .The ipsec tunnel
-> > > is established between two hosts which are directly connected
-> > Are you actually getting 15-element SG lists from IPsec? What is
-> > generating an skb with 15-element SG lists?
-> we have established the ipsec tunnel in transport mode using ip xfrm.
-> and running traffic using netserver and netperf.
-> 
-> In server side we are running
-> netserver -4
-> In client side we are running
-> "netperf -H <serverip> -p <port> -t UDP_STREAM  -Cc -- -m 21k"
-> where the packet size is 21k ,which is then fragmented into 15 ip fragments
-> each of mtu size.
+When I tried a test based on the selftest program for BPF flow dissector
+(test_flow_dissector.sh), I observed unexpected result as below:
 
-I'm lacking a bit of context here, but this should generate 15 IP
-packets that are encrypted one by one.
+$ tc filter add dev lo parent ffff: protocol ip pref 1337 flower ip_proto \
+	udp src_port 8-10 action drop
+$ tools/testing/selftests/bpf/test_flow_dissector -i 4 -f 9 -F
+inner.dest4: 127.0.0.1
+inner.source4: 127.0.0.3
+pkts: tx=10 rx=10
+
+The last rx means the number of received packets. I expected rx=0 in this
+test (i.e., all received packets should have been dropped), but it resulted
+in acceptance.
+
+Although the previous commit 8ffb055beae5 ("cls_flower: Fix the behavior
+using port ranges with hw-offload") added new flag and field toward filtering
+based on port ranges with hw-offload, it missed applying for BPF flow dissector
+then. As a result, BPF flow dissector currently stores data extracted from
+packets in incorrect field used for exact match whenever packets are classified
+by filters based on port ranges. Thus, they never match rules in such cases
+because flow dissector gives rise to generating incorrect flow keys.
+
+This series fixes the issue by replacing incorrect flag and field with new 
+ones in BPF flow dissector, and adds a test for filtering based on specified
+port ranges to the existing selftest program.
+
+Changes in v2:
+ - set key_ports to NULL at the top of __skb_flow_bpf_to_target()
+
+Yoshiki Komachi (2):
+  flow_dissector: Fix to use new variables for port ranges in bpf hook
+  selftests/bpf: Add test based on port range for BPF flow dissector
+
+ net/core/flow_dissector.c                          |  9 ++++++++-
+ tools/testing/selftests/bpf/test_flow_dissector.sh | 14 ++++++++++++++
+ 2 files changed, 22 insertions(+), 1 deletion(-)
+
+-- 
+1.8.3.1
 
