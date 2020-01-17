@@ -2,84 +2,111 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 19D0A140888
-	for <lists+netdev@lfdr.de>; Fri, 17 Jan 2020 11:59:11 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 441DF140940
+	for <lists+netdev@lfdr.de>; Fri, 17 Jan 2020 12:49:36 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726861AbgAQK7J (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 17 Jan 2020 05:59:09 -0500
-Received: from stargate.chelsio.com ([12.32.117.8]:24445 "EHLO
-        stargate.chelsio.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726196AbgAQK7J (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 17 Jan 2020 05:59:09 -0500
-Received: from [10.193.191.49] (ayushsawal.asicdesigners.com [10.193.191.49])
-        by stargate.chelsio.com (8.13.8/8.13.8) with ESMTP id 00HAwurF011014;
-        Fri, 17 Jan 2020 02:58:56 -0800
-Cc:     ayush.sawal@asicdesigners.com,
-        Herbert Xu <herbert@gondor.apana.org.au>,
-        linux-crypto@vger.kernel.org, manojmalviya@chelsio.com,
-        Ayush Sawal <ayush.sawal@chelsio.com>, netdev@vger.kernel.org
-Subject: Re: Advertise maximum number of sg supported by driver in single
- request
-To:     Steffen Klassert <steffen.klassert@secunet.com>
-References: <20200115060234.4mm6fsmsrryzpymi@gondor.apana.org.au>
- <9fd07805-8e2e-8c3f-6e5e-026ad2102c5a@chelsio.com>
- <c8d64068-a87b-36dd-910d-fb98e09c7e4b@asicdesigners.com>
- <20200117062300.qfngm2degxvjskkt@gondor.apana.org.au>
- <20d97886-e442-ed47-5685-ff5cd9fcbf1c@asicdesigners.com>
- <20200117070431.GE23018@gauss3.secunet.de>
-From:   Ayush Sawal <ayush.sawal@asicdesigners.com>
-Message-ID: <318fd818-0135-8387-6695-6f9ba2a6f28e@asicdesigners.com>
-Date:   Fri, 17 Jan 2020 16:28:54 +0530
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
- Thunderbird/68.4.1
+        id S1726933AbgAQLte (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 17 Jan 2020 06:49:34 -0500
+Received: from mail-oi1-f195.google.com ([209.85.167.195]:37998 "EHLO
+        mail-oi1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726864AbgAQLte (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 17 Jan 2020 06:49:34 -0500
+Received: by mail-oi1-f195.google.com with SMTP id l9so21903023oii.5
+        for <netdev@vger.kernel.org>; Fri, 17 Jan 2020 03:49:33 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=raspberrypi.org; s=google;
+        h=mime-version:from:date:message-id:subject:to;
+        bh=4CZYUggXjSVACFUgrFQV4I7E9cPHhzA2Am1eliCYB4U=;
+        b=PBBTEXuLXIPaWaYXk/JJmdHpSvHI2VWOgTB1+P/ZIlCEpou+sCZAozndXtEKu19U8v
+         C9blUFc6pa13Dl7Mm2fBNHQERFhNXw4E9/H7Z/7NHGutZAYRO2R7egZJAjyrimCJn5Ie
+         LWTsW55OX7jT1X+UIBo7xMm0wFmNDQlVbQgWiArID4lcuNRM7taBAuIHGXlGHmZMHpLp
+         m1Cd9NcohOJc9gU0hxh8n1GkGThVjqqlfjpX97rul/jmYAx8pHoKylF52dIQKDUtI7Vr
+         k3zM5cWQFyrFd1hZfzoFSA4G16QUSuQO7KeAt5h0AJ+ajh331CBnK8zYhf487aqO3EPP
+         y3VQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:from:date:message-id:subject:to;
+        bh=4CZYUggXjSVACFUgrFQV4I7E9cPHhzA2Am1eliCYB4U=;
+        b=Xakb0NiOr68bksbrBJEHeWQi6Lx675YYfWdrj9Ter1T0RfPs9/VkeEfCG2Oru4Vi0x
+         7pdK+jqa4UnjlkXNGhhAjeHWyG0xaUTxyR1962+1g61l34quxOa82Gd15jJrtZYZOU0p
+         vuO4Ejq4/7gQL/ONbmwyRG1EtXLH7eA8r8Avi+97ECN2ibgbgAYSZm+iCWW1r7bRdn7X
+         0YyBXCkJsoogUJEpkrTE/NNoaEPbquHQkF/6eQhqpsIqQ9HvHHXcjDYAYXSXjNBUIaKq
+         aWFU9lOasKuAw69j10ZnetZp4ZkD50ERfHCP/At1Aw1aSoQPlydG0rklnD73MbDEoH3V
+         fjJQ==
+X-Gm-Message-State: APjAAAVYZtnFSgvW3IHF8bShn0F7xp9XiRzRbcuvuuwsITaDE2DzuNKB
+        TsFLg9pWrICy/WVWZlPWbfGz6cTsvcSvTDYxCkcQVABhED0=
+X-Google-Smtp-Source: APXvYqye4OnNAjdBk8e3hWYzcZBAo/6qJrNxaE7P7ryB4tzq6B4H/Rmqv/OJVf7GiA3gw1tvwXUfrZiDiHXOcLNKA6k=
+X-Received: by 2002:a05:6808:9b4:: with SMTP id e20mr2908222oig.37.1579261773220;
+ Fri, 17 Jan 2020 03:49:33 -0800 (PST)
 MIME-Version: 1.0
-In-Reply-To: <20200117070431.GE23018@gauss3.secunet.de>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 8bit
-Content-Language: en-US
+From:   James Hughes <james.hughes@raspberrypi.org>
+Date:   Fri, 17 Jan 2020 11:49:23 +0000
+Message-ID: <CAE_XsMLw5xnwGv6vjMqWnHqy7KjsgooujbTz+dEzNCdVrve9Nw@mail.gmail.com>
+Subject: [PATCH net] net: usb: lan78xx : implement .ndo_features_check
+To:     netdev <netdev@vger.kernel.org>,
+        Eric Dumazet <edumazet@google.com>,
+        Woojung Huh <woojung.huh@microchip.com>,
+        Microchip Linux Driver Support <UNGLinuxDriver@microchip.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi steffen,
+As reported by Eric Dumazet, there are still some outstanding
+cases where the driver does not handle TSO correctly when skb's
+are over a certain size. Most cases have been fixed, this patch
+should ensure that forwarded SKB's that are greater than
+MAX_SINGLE_PACKET_SIZE - TX_OVERHEAD are software segmented
+and handled correctly.
 
-On 1/17/2020 12:34 PM, Steffen Klassert wrote:
-> On Fri, Jan 17, 2020 at 12:13:07PM +0530, Ayush Sawal wrote:
->> Hi Herbert,
->>
->> On 1/17/2020 11:53 AM, Herbert Xu wrote:
->>> On Thu, Jan 16, 2020 at 01:27:24PM +0530, Ayush Sawal wrote:
->>>> The max data limit is 15 sgs where each sg contains data of mtu size .
->>>> we are running a netperf udp stream test over ipsec tunnel .The ipsec tunnel
->>>> is established between two hosts which are directly connected
->>> Are you actually getting 15-element SG lists from IPsec? What is
->>> generating an skb with 15-element SG lists?
->> we have established the ipsec tunnel in transport mode using ip xfrm.
->> and running traffic using netserver and netperf.
->>
->> In server side we are running
->> netserver -4
->> In client side we are running
->> "netperf -H <serverip> -p <port> -t UDP_STREAM  -Cc -- -m 21k"
->> where the packet size is 21k ,which is then fragmented into 15 ip fragments
->> each of mtu size.
-> I'm lacking a bit of context here, but this should generate 15 IP
-> packets that are encrypted one by one.
-This is what i observed ,please correct me if i am wrong.
-The packet when reaches esp_output(),is in socket buffer and based on 
-the number of frags ,sg is initialized  using
-sg_init_table(sg,frags),where frags are 15 in our case.
+Signed-off-by: James Hughes <james.hughes@raspberrypi.org>
+Reported-by: Eric Dumazet <edumazet@google.com>
+Cc: Woojung Huh <woojung.huh@microchip.com>
+Cc: Microchip Linux Driver Support <UNGLinuxDriver@microchip.com>
+---
+ drivers/net/usb/lan78xx.c | 15 +++++++++++++++
+ 1 file changed, 15 insertions(+)
 
-The socket buffer data is then copied to this sg and then struct 
-aead_request members are filled.
-After this crypto aead request which contains all data in its sg list 
-goes to hw crypto driver for encryption in a single request.
+diff --git a/drivers/net/usb/lan78xx.c b/drivers/net/usb/lan78xx.c
+index bc572b921fe1..a01c78d8b9a3 100644
+--- a/drivers/net/usb/lan78xx.c
++++ b/drivers/net/usb/lan78xx.c
+@@ -31,6 +31,7 @@
+ #include <linux/mdio.h>
+ #include <linux/phy.h>
+ #include <net/ip6_checksum.h>
++#include <net/vxlan.h>
+ #include <linux/interrupt.h>
+ #include <linux/irqdomain.h>
+ #include <linux/irq.h>
+@@ -3733,6 +3734,19 @@ static void lan78xx_tx_timeout(struct net_device *net)
+  tasklet_schedule(&dev->bh);
+ }
 
-In the crypto driver we are receiving a single aead-request with all 15 
-sgs in that request.
++static netdev_features_t lan78xx_features_check(struct sk_buff *skb,
++ struct net_device *netdev,
++ netdev_features_t features)
++{
++ if (skb->len + TX_OVERHEAD > MAX_SINGLE_PACKET_SIZE)
++ features &= ~NETIF_F_GSO_MASK;
++
++ features = vlan_features_check(skb, features);
++ features = vxlan_features_check(skb, features);
++
++ return features;
++}
++
+ static const struct net_device_ops lan78xx_netdev_ops = {
+  .ndo_open = lan78xx_open,
+  .ndo_stop = lan78xx_stop,
+@@ -3746,6 +3760,7 @@ static const struct net_device_ops lan78xx_netdev_ops = {
+  .ndo_set_features = lan78xx_set_features,
+  .ndo_vlan_rx_add_vid = lan78xx_vlan_rx_add_vid,
+  .ndo_vlan_rx_kill_vid = lan78xx_vlan_rx_kill_vid,
++ .ndo_features_check = lan78xx_features_check,
+ };
 
-Thanks,
-
-Ayush
-
+ static void lan78xx_stat_monitor(struct timer_list *t)
+-- 
+2.17.1
