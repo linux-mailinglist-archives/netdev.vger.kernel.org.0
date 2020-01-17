@@ -2,134 +2,166 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 4B7F5141097
-	for <lists+netdev@lfdr.de>; Fri, 17 Jan 2020 19:16:58 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id AF4671410C5
+	for <lists+netdev@lfdr.de>; Fri, 17 Jan 2020 19:28:28 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729008AbgAQSQs (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 17 Jan 2020 13:16:48 -0500
-Received: from mail-pf1-f193.google.com ([209.85.210.193]:33750 "EHLO
-        mail-pf1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726603AbgAQSQs (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 17 Jan 2020 13:16:48 -0500
-Received: by mail-pf1-f193.google.com with SMTP id z16so12318889pfk.0;
-        Fri, 17 Jan 2020 10:16:47 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=aD0tuQOOzQ4oPbILPoDAiI6G2Z70ung0n+DSdMMnNJM=;
-        b=XAwhFczp0KmF7S4+mP+LKpuEITPW8TFrYJjFMPDvKsfwAhoGkynU29aeT7ZqFXq1u7
-         gVDBjYq8rj1+xwysNNi4G/44MygeUidK4BAC2uI4Ql20Wr2SRsWeirad2G4ygoaU+qIq
-         zQccKK++5t95MmYnFfwAQb8HAZz+3HjAGkOWGyZ6hMfaKAR2MFL690nGCkZZdO56LoSj
-         wjT2dLaloYNNswOOdL322gcruh2L6yUWgp6eL2VohufB2R0dlg9nZUhi+2fpetFEX+Rm
-         GkVJY7CVN2swKSsvPBu0/h4L40vTxHjGYa6t+aAbCILTSKRl3zVO/4W+XhSDCSI7OPrV
-         70ew==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=aD0tuQOOzQ4oPbILPoDAiI6G2Z70ung0n+DSdMMnNJM=;
-        b=R/HclvEcSkKUb6D87T+EuyhpHZ1pad/q8rhHisvrMHSlEwg9IAVgwr5IJsCaXCWDI8
-         +8UFJk65gwu0ReyUoO13flbqhUnsnIMyjSxMiaXn9dpHc6Mc3xSvKilYFJq8MKlV4QI/
-         Tj4i+tbk83IvIYdUn7HOa0E1jXdNs6e8EO+Tj3EvXfhy8TDOEY7aFK/+nMlAM3+Ta7PZ
-         6G1SV609cHK13XPRGXY8UdDbvJGaQEldEhxyvZ43YPQ7sZsbemvO5OOhCR3vZ5fmJT7v
-         G7ii50Gz7GorxshjljFvUESxsHiABnl8qkbzYCntJRWB6w17sTxZWzaioaHLayXnEj2R
-         diCA==
-X-Gm-Message-State: APjAAAUZ2RfkeCdlInVp7sI4yTUKPXHaULeKvpOP6XnlqDgO/TwE2Hxl
-        ZmTRyPNQd2W+fu5MYRZaVE8=
-X-Google-Smtp-Source: APXvYqwmqpjSoPfBdcrHSDgt2evoaybgY+qpc04lufY7AQGAgKNpGRqu1fs3w6huCAqrB5q65VH6hg==
-X-Received: by 2002:a63:1204:: with SMTP id h4mr45519701pgl.288.1579285007532;
-        Fri, 17 Jan 2020 10:16:47 -0800 (PST)
-Received: from [192.168.86.235] (c-73-241-150-58.hsd1.ca.comcast.net. [73.241.150.58])
-        by smtp.gmail.com with ESMTPSA id q63sm30965322pfb.149.2020.01.17.10.16.45
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 17 Jan 2020 10:16:46 -0800 (PST)
-Subject: Re: [PATCH] net: optimize cmpxchg in ip_idents_reserve
-To:     Arvind Sankar <nivedita@alum.mit.edu>,
-        Eric Dumazet <eric.dumazet@gmail.com>
-Cc:     Peter Zijlstra <peterz@infradead.org>,
-        Shaokun Zhang <zhangshaokun@hisilicon.com>,
-        David Miller <davem@davemloft.net>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, jinyuqi@huawei.com,
-        kuznet@ms2.inr.ac.ru, yoshfuji@linux-ipv6.org, edumazet@google.com,
-        guoyang2@huawei.com, Will Deacon <will@kernel.org>
-References: <1579058620-26684-1-git-send-email-zhangshaokun@hisilicon.com>
- <20200116.042722.153124126288244814.davem@davemloft.net>
- <930faaff-4d18-452d-2e44-ef05b65dc858@gmail.com>
- <1b3aaddf-22f5-1846-90f1-42e68583c1e4@gmail.com>
- <430496fc-9f26-8cb4-91d8-505fda9af230@hisilicon.com>
- <20200117123253.GC14879@hirez.programming.kicks-ass.net>
- <7e6c6202-24bb-a532-adde-d53dd6fb14c3@gmail.com>
- <20200117180324.GA2623847@rani.riverdale.lan>
-From:   Eric Dumazet <eric.dumazet@gmail.com>
-Message-ID: <94573cea-a833-9b48-6581-8cc5cdd19b89@gmail.com>
-Date:   Fri, 17 Jan 2020 10:16:45 -0800
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.2.2
+        id S1726973AbgAQS20 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 17 Jan 2020 13:28:26 -0500
+Received: from hqnvemgate24.nvidia.com ([216.228.121.143]:5675 "EHLO
+        hqnvemgate24.nvidia.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726603AbgAQS20 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 17 Jan 2020 13:28:26 -0500
+Received: from hqpgpgate101.nvidia.com (Not Verified[216.228.121.13]) by hqnvemgate24.nvidia.com (using TLS: TLSv1.2, DES-CBC3-SHA)
+        id <B5e21fc8e0000>; Fri, 17 Jan 2020 10:27:26 -0800
+Received: from hqmail.nvidia.com ([172.20.161.6])
+  by hqpgpgate101.nvidia.com (PGP Universal service);
+  Fri, 17 Jan 2020 10:28:24 -0800
+X-PGP-Universal: processed;
+        by hqpgpgate101.nvidia.com on Fri, 17 Jan 2020 10:28:24 -0800
+Received: from HQMAIL101.nvidia.com (172.20.187.10) by HQMAIL105.nvidia.com
+ (172.20.187.12) with Microsoft SMTP Server (TLS) id 15.0.1473.3; Fri, 17 Jan
+ 2020 18:28:23 +0000
+Received: from NAM10-BN7-obe.outbound.protection.outlook.com (104.47.70.105)
+ by HQMAIL101.nvidia.com (172.20.187.10) with Microsoft SMTP Server (TLS) id
+ 15.0.1473.3 via Frontend Transport; Fri, 17 Jan 2020 18:28:23 +0000
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=UtuM+BOdyPmuhKLRnWcxrnmMEEPGuWeAuYwsr3iBWatWFmDxefMA/1PXimMUj7i5AbxWaolsmwGOdelkYK9Z1qpcv1rpx1fu1bv3PW3RAcT70kbuULKfmKIir1gbmI92vy3tInR/Kc5ybcYW28IfpLMLmmn00x1erBfIVhcuGXeKB+Dd715xgaJ50434FgI4kXRrdVQSOVUgtLMn2zLCWaJBQl9TMlVFPVj2EA7dBRKT40gGr+zDbqL6Awjj0O4/jgD3ddw2jReb7sEvB9hWuMPBnKDvCH1xZqDeSSSERfZCWXUSgWwlpxb7jgFNMfRlvJBCs7KaFo1ajbN5iYUD3w==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=t+JkW3G5sFGINhnKJXgxdm54Fg42x0gRZuthtCEM5Qg=;
+ b=OwM8qXzGfMxKrHDbHxtVpN+qEwJWVCmKYUJCcWX3+XnQbRFu8C8/Is+xCFiIpSp7enGn1d6WfcGxng6jKwCOtZGbjh9KL5kHvOaFtAKCIFbNHFQxtwGQFkNyyGRpmgAvKVZUgZc8marACdKaMzFgGUuo8WM0RuHmovp6eg7ClUc19cSkukwyDdXJro2jBrnEsj5JFc2i8SyK2fNer6R+k5APM7QXWcRV6+B0bXA8/MlsvJg2wC8wLclM4VXEAEWPWL+/rkynQn595U8lFhBWlqniF+254HFm9a3/v7rhnFUX/V+erR0R0cSVtab/uR6FL9jGEKa8Dl/RHHeNFhJ60Q==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
+ dkim=pass header.d=nvidia.com; arc=none
+Received: from BYAPR12MB2727.namprd12.prod.outlook.com (20.176.253.214) by
+ BYAPR12MB3591.namprd12.prod.outlook.com (20.178.54.205) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.2644.20; Fri, 17 Jan 2020 18:28:22 +0000
+Received: from BYAPR12MB2727.namprd12.prod.outlook.com
+ ([fe80::9c2:6e7d:37ee:5643]) by BYAPR12MB2727.namprd12.prod.outlook.com
+ ([fe80::9c2:6e7d:37ee:5643%7]) with mapi id 15.20.2623.018; Fri, 17 Jan 2020
+ 18:28:21 +0000
+From:   Ajay Gupta <ajayg@nvidia.com>
+To:     Chen-Yu Tsai <wens@kernel.org>, Ajay Gupta <ajaykuee@gmail.com>
+CC:     David Miller <davem@davemloft.net>,
+        netdev <netdev@vger.kernel.org>,
+        Thierry Reding <treding@nvidia.com>,
+        "peppe.cavallaro@st.com" <peppe.cavallaro@st.com>,
+        "alexandre.torgue@st.com" <alexandre.torgue@st.com>,
+        "joabreu@synopsys.com" <joabreu@synopsys.com>,
+        "mcoquelin.stm32@gmail.com" <mcoquelin.stm32@gmail.com>,
+        "p.zabel@pengutronix.de" <p.zabel@pengutronix.de>
+Subject: RE: [PATCH] net: stmmac: platform: use generic device api
+Thread-Topic: [PATCH] net: stmmac: platform: use generic device api
+Thread-Index: AQHVzJm5YPylWrXNC0OEL/ItEl/L0afuNJIAgAD2q1A=
+Date:   Fri, 17 Jan 2020 18:28:21 +0000
+Message-ID: <BYAPR12MB27279A52D52B5DAB84F47BE3DC310@BYAPR12MB2727.namprd12.prod.outlook.com>
+References: <20200116005645.14026-1-ajayg@nvidia.com>
+ <CAGb2v64hEN5=2FdxzMLfZm7RT68-+YZ70-_3fCPUyZ47C-9m1g@mail.gmail.com>
+In-Reply-To: <CAGb2v64hEN5=2FdxzMLfZm7RT68-+YZ70-_3fCPUyZ47C-9m1g@mail.gmail.com>
+Accept-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+msip_labels: MSIP_Label_6b558183-044c-4105-8d9c-cea02a2a3d86_Enabled=True;
+ MSIP_Label_6b558183-044c-4105-8d9c-cea02a2a3d86_SiteId=43083d15-7273-40c1-b7db-39efd9ccc17a;
+ MSIP_Label_6b558183-044c-4105-8d9c-cea02a2a3d86_Owner=ajayg@nvidia.com;
+ MSIP_Label_6b558183-044c-4105-8d9c-cea02a2a3d86_SetDate=2020-01-17T18:28:20.4100081Z;
+ MSIP_Label_6b558183-044c-4105-8d9c-cea02a2a3d86_Name=Unrestricted;
+ MSIP_Label_6b558183-044c-4105-8d9c-cea02a2a3d86_Application=Microsoft Azure
+ Information Protection;
+ MSIP_Label_6b558183-044c-4105-8d9c-cea02a2a3d86_ActionId=0f110578-5779-4d2f-9d5a-ab0e83c61111;
+ MSIP_Label_6b558183-044c-4105-8d9c-cea02a2a3d86_Extended_MSFT_Method=Automatic
+authentication-results: spf=none (sender IP is )
+ smtp.mailfrom=ajayg@nvidia.com; 
+x-originating-ip: [216.228.112.22]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: dcce6b79-5fde-49ee-f421-08d79b7b0850
+x-ms-traffictypediagnostic: BYAPR12MB3591:|BYAPR12MB3591:
+x-ms-exchange-transport-forked: True
+x-microsoft-antispam-prvs: <BYAPR12MB3591B179B400EB318D45AD20DC310@BYAPR12MB3591.namprd12.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:4941;
+x-forefront-prvs: 0285201563
+x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(396003)(136003)(346002)(39860400002)(366004)(376002)(189003)(199004)(316002)(4326008)(6506007)(71200400001)(54906003)(110136005)(26005)(53546011)(5660300002)(186003)(7696005)(2906002)(81156014)(81166006)(8676002)(9686003)(478600001)(8936002)(55016002)(33656002)(86362001)(66556008)(66476007)(66446008)(64756008)(76116006)(66946007)(966005)(52536014)(41533002)(6606295002);DIR:OUT;SFP:1101;SCL:1;SRVR:BYAPR12MB3591;H:BYAPR12MB2727.namprd12.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;MX:1;A:1;
+received-spf: None (protection.outlook.com: nvidia.com does not designate
+ permitted sender hosts)
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: xlq/TTXk9cHRrPK65nWaxUMCoV9DiW+x1wk1BK6sgvdi2Gge8YnEj1YYD1fY5WUe2MNOXMdKCZM4G5lUExMYp2G43Pft4AZzJZXKYowyoR96gEor/ejeT/kCffj3khft7T7JtNcTf8gDhXnnAoqsEIzfBHvaHM4d89HBqQ2u8FUR8i0fTjJzaSKpkY0JYVVUWPgoBsjZ7W5IQDvigRAyavoCNDK1B0lu6WnrOPISjvkitFdJDtxX9CNdn/FSYJDdXgLIg2RYq5ONEA2+FQhM7b3hGel/160tJ1cL6hFRb3Qb4CL2RxO+5f0YWQ85dysRyFzMMJ1e580xWuXmtO+yels/Hl/WnyE46CBvEoBTOP2G7m5K5qtOoMSM9N6ZA6Mon1sRtYX6E3SColD9OnojQCjaTojMixpB/Z4VmTgiQmaa+d+BiI3IfC+1z6foDO2ZZCC1v2rw3J3wS3AH/sEn0pLbuYBQ8sR/10ZZLypBhDxtANs3ED6VYkLxkVJ4zqoUzQsItRT4O0UWccQ6rZYL8Nz2yXWQQkWFvIKnihfNenH6OsSolAXHfycwxoXyXA2b
 MIME-Version: 1.0
-In-Reply-To: <20200117180324.GA2623847@rani.riverdale.lan>
-Content-Type: text/plain; charset=utf-8
+X-MS-Exchange-CrossTenant-Network-Message-Id: dcce6b79-5fde-49ee-f421-08d79b7b0850
+X-MS-Exchange-CrossTenant-originalarrivaltime: 17 Jan 2020 18:28:21.7601
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: 0An17i2cGhvrgCdXcRVNDSLHiPLtMH+Ess2gKNIV8oVruXFYtIJJsrVAti78ZEIwV/rrxcDGBhViE/HjJbq/NA==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BYAPR12MB3591
+X-OriginatorOrg: Nvidia.com
 Content-Language: en-US
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nvidia.com; s=n1;
+        t=1579285646; bh=t+JkW3G5sFGINhnKJXgxdm54Fg42x0gRZuthtCEM5Qg=;
+        h=X-PGP-Universal:ARC-Seal:ARC-Message-Signature:
+         ARC-Authentication-Results:From:To:CC:Subject:Thread-Topic:
+         Thread-Index:Date:Message-ID:References:In-Reply-To:
+         Accept-Language:X-MS-Has-Attach:X-MS-TNEF-Correlator:msip_labels:
+         authentication-results:x-originating-ip:x-ms-publictraffictype:
+         x-ms-office365-filtering-correlation-id:x-ms-traffictypediagnostic:
+         x-ms-exchange-transport-forked:x-microsoft-antispam-prvs:
+         x-ms-oob-tlc-oobclassifiers:x-forefront-prvs:
+         x-forefront-antispam-report:received-spf:
+         x-ms-exchange-senderadcheck:x-microsoft-antispam:
+         x-microsoft-antispam-message-info:MIME-Version:
+         X-MS-Exchange-CrossTenant-Network-Message-Id:
+         X-MS-Exchange-CrossTenant-originalarrivaltime:
+         X-MS-Exchange-CrossTenant-fromentityheader:
+         X-MS-Exchange-CrossTenant-id:X-MS-Exchange-CrossTenant-mailboxtype:
+         X-MS-Exchange-CrossTenant-userprincipalname:
+         X-MS-Exchange-Transport-CrossTenantHeadersStamped:X-OriginatorOrg:
+         Content-Language:Content-Type:Content-Transfer-Encoding;
+        b=e0ktjh2J+x/kXwlaWWUI9A14lOUCkTM/tP2VPlfEq0N5zXUOEjl+SVSsqSMc2EKs4
+         mbkQUbKxY8oAeTA9ippAkc7bM7m9hctI9lir9Aa1crZcmhFl5iJSXGgMS7WpM0jtUL
+         Z/zz+ChAWNqYI1jBPRHyZvBXPJMYcheMJkQbMj2Et8nqJ86y6MMTAZftiEpC+brmOE
+         erNP9PPVjrpr9DJ87ryIka/hjMy+Thd5FskrCSWlmM2OcfCw4OjsxtIXD9yzMsSj2l
+         NmmsySwq/CmW4gTje/uJe3HoviL+XMs2EnW9B/cbHW1EAU/fmfWSjc30n418+P9GsI
+         qBrjVxfL+EUaQ==
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-
-
-On 1/17/20 10:03 AM, Arvind Sankar wrote:
-> On Fri, Jan 17, 2020 at 08:35:07AM -0800, Eric Dumazet wrote:
->>
->>
->> On 1/17/20 4:32 AM, Peter Zijlstra wrote:
->>
->>>
->>> That's crazy, just accept that UBSAN is taking bonghits and ignore it.
->>> Use atomic_add_return() unconditionally.
->>>
->>
->> Yes, we might simply add a comment so that people do not bug us if
->> their compiler is too old.
->>
->> /* If UBSAN reports an error there, please make sure your compiler
->>  * supports -fno-strict-overflow before reporting it.
->>  */
->> return atomic_add_return(segs + delta, p_id) - segs;
->>
-> 
-> Do we need that comment any more? The flag was apparently introduced in
-> gcc-4.2 and we only support 4.6+ anyway?
-
-Wasńt it the case back in 2016 already for linux-4.8 ?
-
-What will prevent someone to send another report to netdev/lkml ?
-
- -fno-strict-overflow support is not a prereq for CONFIG_UBSAN.
-
-Fact that we kept in lib/ubsan.c and lib/test_ubsan.c code for 
-test_ubsan_add_overflow() and test_ubsan_sub_overflow() is disturbing.
-
-
-commit adb03115f4590baa280ddc440a8eff08a6be0cb7
-Author: Eric Dumazet <edumazet@google.com>
-Date:   Tue Sep 20 18:06:17 2016 -0700
-
-    net: get rid of an signed integer overflow in ip_idents_reserve()
-    
-    Jiri Pirko reported an UBSAN warning happening in ip_idents_reserve()
-    
-    [] UBSAN: Undefined behaviour in ./arch/x86/include/asm/atomic.h:156:11
-    [] signed integer overflow:
-    [] -2117905507 + -695755206 cannot be represented in type 'int'
-    
-    Since we do not have uatomic_add_return() yet, use atomic_cmpxchg()
-    so that the arithmetics can be done using unsigned int.
-    
-    Fixes: 04ca6973f7c1 ("ip: make IP identifiers less predictable")
-    Signed-off-by: Eric Dumazet <edumazet@google.com>
-    Reported-by: Jiri Pirko <jiri@resnulli.us>
-    Signed-off-by: David S. Miller <davem@davemloft.net>
-
- 
+SGkgQ2hlbll1DQoNCj4gLS0tLS1PcmlnaW5hbCBNZXNzYWdlLS0tLS0NCj4gRnJvbTogQ2hlbi1Z
+dSBUc2FpIDx3ZW5zQGtlcm5lbC5vcmc+DQo+IFNlbnQ6IFRodXJzZGF5LCBKYW51YXJ5IDE2LCAy
+MDIwIDc6MzQgUE0NCj4gVG86IEFqYXkgR3VwdGEgPGFqYXlrdWVlQGdtYWlsLmNvbT4NCj4gQ2M6
+IERhdmlkIE1pbGxlciA8ZGF2ZW1AZGF2ZW1sb2Z0Lm5ldD47IG5ldGRldiA8bmV0ZGV2QHZnZXIu
+a2VybmVsLm9yZz47DQo+IFRoaWVycnkgUmVkaW5nIDx0cmVkaW5nQG52aWRpYS5jb20+OyBBamF5
+IEd1cHRhIDxhamF5Z0BudmlkaWEuY29tPg0KPiBTdWJqZWN0OiBSZTogW1BBVENIXSBuZXQ6IHN0
+bW1hYzogcGxhdGZvcm06IHVzZSBnZW5lcmljIGRldmljZSBhcGkNCj4gDQo+IEV4dGVybmFsIGVt
+YWlsOiBVc2UgY2F1dGlvbiBvcGVuaW5nIGxpbmtzIG9yIGF0dGFjaG1lbnRzDQo+IA0KPiANCj4g
+SGksDQo+IA0KPiBPbiBGcmksIEphbiAxNywgMjAyMCBhdCAyOjIxIEFNIEFqYXkgR3VwdGEgPGFq
+YXlrdWVlQGdtYWlsLmNvbT4gd3JvdGU6DQo+ID4NCj4gPiBGcm9tOiBBamF5IEd1cHRhIDxhamF5
+Z0BudmlkaWEuY29tPg0KPiA+DQo+ID4gVXNlIGdlbmVyaWMgZGV2aWNlIGFwaSB0byBhbGxvdyBy
+ZWFkaW5nIG1vcmUgY29uZmlndXJhdGlvbiBwYXJhbWV0ZXINCj4gPiBmcm9tIGJvdGggRFQgb3Ig
+QUNQSSBiYXNlZCBkZXZpY2VzLg0KPiA+DQo+ID4gU2lnbmVkLW9mZi1ieTogQWpheSBHdXB0YSA8
+YWpheWdAbnZpZGlhLmNvbT4NCj4gPiAtLS0NCj4gPiBBQ1BJIHN1cHBvcnQgcmVsYXRlZCBjaGFu
+Z2VzIGZvciBkd2Mgd2VyZSByZWVudGx5IHF1ZXVlZCBbMV0gVGhpcw0KPiA+IHBhdGNoIGlzIHJl
+cXVpcmVkIHRvIHJlYWQgbW9yZSBjb25maWd1cmF0aW9uIHBhcmFtZXRlciB0aHJvdWdoIEFDUEkN
+Cj4gPiB0YWJsZS4NCj4gPg0KPiA+IFsxXSBodHRwczovL21hcmMuaW5mby8/bD1saW51eC1uZXRk
+ZXYmbT0xNTc2NjE5NzQzMDUwMjQmdz0yDQo+ID4NCj4gPiAgLi4uL2V0aGVybmV0L3N0bWljcm8v
+c3RtbWFjL3N0bW1hY19wbGF0Zm9ybS5jIHwgNDkNCj4gPiArKysrKysrKysrKy0tLS0tLS0tDQo+
+IA0KPiBFdmVuIGFmdGVyIHlvdXIgY2hhbmdlcywgdGhlcmUncyBzdGlsbCBhIGxvdCBvZiBEVCBz
+cGVjaWZpYyBjb2RlIGluIHRoZXJlLCBzdWNoIGFzDQo+IHRoZSBNRElPIGRldmljZSBub2RlIHBh
+cnNpbmcuIFBsdXMgdGhlIHdob2xlIHRoaW5nIGlzIHdyYXBwZWQgaW4gIiNpZmRlZg0KPiBDT05G
+SUdfT0YiLg0KPiANCj4gTWF5YmUgaXQgd291bGQgbWFrZSBtb3JlIHNlbnNlIHRvIHNwbGl0IG91
+dCB0aGUgZ2VuZXJpYyBkZXZpY2UgQVBJIHBhcnRzIGludG8NCj4gYSBzZXBhcmF0ZSBmdW5jdGlv
+bj8NCkkgYW0gdGVzdGluZyBBQ1BJIGJhc2VkIGRldmljZSBmb3IgZHdtYWMtZHdjLXFvcy1ldGgg
+Y29udHJvbGxlci4gQWxzbyBmb3VuZA0KdGhhdCAiIHBoeV9ub2RlICIgc3RydWN0dXJlIHVzZWQg
+YWNyb3NzIG90aGVyIGNvbnRyb2xsZXJzIChkd21hYy1yaywgZHdtYWMtc3VuOGkpDQpwbGF0LT5w
+aHlfbm9kZSA9IG9mX3BhcnNlX3BoYW5kbGUobnAsICJwaHktaGFuZGxlIiwgMCk7DQoNCkl0IHdp
+bGwgcmVxdWlyZSBjaGFuZ2VzIGluIG90aGVyIGRyaXZlcnMgIGFuZCB0ZXN0aW5nIHRoZW0uIEkg
+ZG9uJ3QgaGF2ZSBoYXJkd2FyZQ0KZm9yIG90aGVyIGNvbnRyb2xsZXJzLiANCkkgYW0gdHJ5aW5n
+IHRvIGFkZCBtaW5pbWFsIGNoYW5nZSB3aGF0IGNhbiBiZSB0ZXN0ZWQgaW4gY29udGV4dCBvZiBk
+d21hYy1kd2MtcW9zLWV0aC4NCg0KVGhhbmtzDQpBamF5DQo+bnZwdWJsaWMNCj4gDQo+IFJlZ2Fy
+ZHMNCj4gQ2hlbll1DQo=
