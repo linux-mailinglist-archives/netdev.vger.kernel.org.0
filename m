@@ -2,194 +2,391 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id D14BF140A90
-	for <lists+netdev@lfdr.de>; Fri, 17 Jan 2020 14:18:54 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0DE75140AEA
+	for <lists+netdev@lfdr.de>; Fri, 17 Jan 2020 14:37:52 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726975AbgAQNSv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 17 Jan 2020 08:18:51 -0500
-Received: from mail.katalix.com ([3.9.82.81]:36538 "EHLO mail.katalix.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726587AbgAQNSv (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 17 Jan 2020 08:18:51 -0500
-Received: from localhost (82-69-49-219.dsl.in-addr.zen.co.uk [82.69.49.219])
-        (Authenticated sender: tom)
-        by mail.katalix.com (Postfix) with ESMTPSA id 63E3B86ACB;
-        Fri, 17 Jan 2020 13:18:49 +0000 (GMT)
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple; d=katalix.com; s=mail;
-        t=1579267129; bh=QT5gx73gq77Yfnvv9SHZ2TKLPiV3QdDcQggOaKmz388=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=BsDIw1Kg92lXEMAGfhFkrR3J0SjB2zrMzKLB6Qkove+FksNZ+FUXRWoPWSO1OSnD/
-         9fQ90aIOqvNKhVwSvpq5J0xklR1JUHlhLWBw/gHA4W9jDucl1hTtNjkVsfn92CHZwc
-         SkOCPUBKrO5wazQUi7XCjp9Dn8VJEUHCDBB5f8ySATDfc4ccdUnHyep/c0KLBnBHxr
-         KSaLKU8yaRnD4dxDypwX1IF4+cmKRfO32yrn8lfs6ISigbWzXPS4sRp/giU60URy6k
-         Ku1C04dVXo5sZsnYR3af0SkOBpJomyteAdSeCfv4rtuUDGhGA5/eOHnVe3i9ZfiDHE
-         JQoVJ06p6ngow==
-Date:   Fri, 17 Jan 2020 13:18:49 +0000
-From:   Tom Parkin <tparkin@katalix.com>
-To:     Ridge Kennedy <ridgek@alliedtelesis.co.nz>
-Cc:     Guillaume Nault <gnault@redhat.com>, netdev@vger.kernel.org
-Subject: Re: [PATCH net] l2tp: Allow duplicate session creation with UDP
-Message-ID: <20200117131848.GA3405@jackdaw>
-References: <20200115223446.7420-1-ridge.kennedy@alliedtelesis.co.nz>
- <20200116123854.GA23974@linux.home>
- <20200116131223.GB4028@jackdaw>
- <20200116190556.GA25654@linux.home>
- <20200116212332.GD4028@jackdaw>
- <alpine.DEB.2.21.2001171027090.9038@ridgek-dl.ws.atlnz.lc>
+        id S1728668AbgAQNgs (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 17 Jan 2020 08:36:48 -0500
+Received: from us-smtp-1.mimecast.com ([205.139.110.61]:35679 "EHLO
+        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1727123AbgAQNgq (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 17 Jan 2020 08:36:46 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1579268203;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=9UHfRadrERMA1dU8MCwmB7dMaKqgeyt0Vqi49f22blc=;
+        b=cTfpSQgPAi5a08qqHyDqqFCDF6RUC+IqqzNlrU6XAF74EzGARq2KKwZcN6HqbFbgx44uQG
+        cp1oEd8UL5ROciz5I6EZ/4L4qE5Gid5UIuJZQkWd366SVpedH0zz1VOBCI1JRYhpvBMIuU
+        RNU0NNYXGIg91yO8++AWb513RhHpgFk=
+Received: from mail-lf1-f69.google.com (mail-lf1-f69.google.com
+ [209.85.167.69]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-206-gVImuhyXPeyT5-hfuolMJw-1; Fri, 17 Jan 2020 08:36:42 -0500
+X-MC-Unique: gVImuhyXPeyT5-hfuolMJw-1
+Received: by mail-lf1-f69.google.com with SMTP id z3so4363259lfq.22
+        for <netdev@vger.kernel.org>; Fri, 17 Jan 2020 05:36:42 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:from:to:cc:date:message-id:user-agent
+         :mime-version:content-transfer-encoding;
+        bh=9UHfRadrERMA1dU8MCwmB7dMaKqgeyt0Vqi49f22blc=;
+        b=pcVAvyhhurXCABzMGlEFkE+9if4X3r2VlfS6MrP5BjbL+uJKTCxOcN+uXUdQt+msA4
+         3S46NZazQo/cKs4RR3AspvvlgeDaeREHheYt/9L1l6sYbUm+5xRU3K+qu0IW8T98QnDT
+         25CbjO1Fct2Pn3a1f9+IDhpw+Lj/0ZE5AY1Gf6FhZ1JI6BWTTl4tBruDahl16Tmtho1Y
+         AYp5++K29O5w+eX5lLSOd5trMg/9UqyYV6zbAHHaZSHnZ9Z7Xe5m+5/KEf3nyzlTIZkG
+         c++rqIv6Ghpku60S5UD/NWP3x+31zwm2IjGXIyX/MSkjHOXberPpbR1RCQh8suZOEz91
+         nHCA==
+X-Gm-Message-State: APjAAAU8LJSBIYp572pk5X+e5x/C3JRLh3VVyMUi7aPObH62Lctu6f14
+        XGoiAA0zamcyLluF1oV++rHo+BBLXR6qlouoV0VXqx0gQi3HoPhKqNkBv/q4bZomfMPh+zgH92t
+        yuKWSxEX6cOPaEm/o
+X-Received: by 2002:a2e:8316:: with SMTP id a22mr5562702ljh.141.1579268200717;
+        Fri, 17 Jan 2020 05:36:40 -0800 (PST)
+X-Google-Smtp-Source: APXvYqz3yrkOVyuX4zFdp7e3Ukmu9NChlM1OeWzm2a0yJyiWFBPYA3QiZ2IAyc8ifsIuGPXY653WYQ==
+X-Received: by 2002:a2e:8316:: with SMTP id a22mr5562677ljh.141.1579268200380;
+        Fri, 17 Jan 2020 05:36:40 -0800 (PST)
+Received: from alrua-x1.borgediget.toke.dk ([45.145.92.2])
+        by smtp.gmail.com with ESMTPSA id b19sm12450246ljk.25.2020.01.17.05.36.38
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 17 Jan 2020 05:36:39 -0800 (PST)
+Received: by alrua-x1.borgediget.toke.dk (Postfix, from userid 1000)
+        id 2650D1804D6; Fri, 17 Jan 2020 14:36:37 +0100 (CET)
+Subject: [PATCH bpf-next v4 00/10] tools: Use consistent libbpf include paths
+ everywhere
+From:   =?utf-8?q?Toke_H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
+To:     Alexei Starovoitov <ast@kernel.org>
+Cc:     Daniel Borkmann <daniel@iogearbox.net>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        Andrii Nakryiko <andriin@fb.com>,
+        Doug Ledford <dledford@redhat.com>,
+        Jason Gunthorpe <jgg@ziepe.ca>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Jesper Dangaard Brouer <brouer@redhat.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Ingo Molnar <mingo@redhat.com>,
+        Arnaldo Carvalho de Melo <acme@kernel.org>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
+        Jiri Olsa <jolsa@redhat.com>,
+        Namhyung Kim <namhyung@kernel.org>,
+        Shuah Khan <shuah@kernel.org>, netdev@vger.kernel.org,
+        bpf@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-rdma@vger.kernel.org, linux-kselftest@vger.kernel.org,
+        clang-built-linux@googlegroups.com
+Date:   Fri, 17 Jan 2020 14:36:37 +0100
+Message-ID: <157926819690.1555735.10756593211671752826.stgit@toke.dk>
+User-Agent: StGit/0.21
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="x+6KMIRAuhnl3hBn"
-Content-Disposition: inline
-In-Reply-To: <alpine.DEB.2.21.2001171027090.9038@ridgek-dl.ws.atlnz.lc>
-User-Agent: Mutt/1.9.4 (2018-02-28)
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+We are currently being somewhat inconsistent with the libbpf include paths,
+which makes it difficult to move files from the kernel into an external
+libbpf-using project without adjusting include paths.
 
---x+6KMIRAuhnl3hBn
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+Having the bpf/ subdir of $INCLUDEDIR in the include path has never been a
+requirement for building against libbpf before, and indeed the libbpf pkg-config
+file doesn't include it. So let's make all libbpf includes across the kernel
+tree use the bpf/ prefix in their includes. Since bpftool skeleton generation
+emits code with a libbpf include, this also ensures that those can be used in
+existing external projects using the regular pkg-config include path.
 
-On  Fri, Jan 17, 2020 at 10:50:55 +1300, Ridge Kennedy wrote:
-> On Thu, 16 Jan 2020, Tom Parkin wrote:
->=20
-> > On  Thu, Jan 16, 2020 at 20:05:56 +0100, Guillaume Nault wrote:
-> > > On Thu, Jan 16, 2020 at 01:12:24PM +0000, Tom Parkin wrote:
-> > > > I agree with you about the possibility for cross-talk, and I would
-> > > > welcome l2tp_ip/ip6 doing more validation.  But I don't think we sh=
-ould
-> > > > ditch the global list.
-> > > >=20
-> > > > As per the RFC, for L2TPv3 the session ID should be a unique
-> > > > identifier for the LCCE.  So it's reasonable that the kernel should
-> > > > enforce that when registering sessions.
-> > > >=20
-> > > I had never thought that the session ID could have global significance
-> > > in L2TPv3, but maybe that's because my experience is mostly about
-> > > L2TPv2. I haven't read RFC 3931 in detail, but I can't see how
-> > > restricting the scope of sessions to their parent tunnel would confli=
-ct
-> > > with the RFC.
-> >=20
-> > Sorry Guillaume, I responded to your other mail without reading this
-> > one.
-> >=20
-> > I gave more detail in my other response: it boils down to how RFC 3931
-> > changes the use of IDs in the L2TP header.  Data packets for IP or UDP
-> > only contain the 32-bit session ID, and hence this must be unique to
-> > the LCCE to allow the destination session to be successfully
-> > identified.
-> >=20
-> > > > When you're referring to cross-talk, I wonder whether you have in m=
-ind
-> > > > normal operation or malicious intent?  I suppose it would be possib=
-le
-> > > > for someone to craft session data packets in order to disrupt a
-> > > > session.
-> > > >=20
-> > > What makes me uneasy is that, as soon as the l2tp_ip or l2tp_ip6 modu=
-le
-> > > is loaded, a peer can reach whatever L2TPv3 session exists on the host
-> > > just by sending an L2TP_IP packet to it.
-> > > I don't know how practical it is to exploit this fact, but it looks
-> > > like it's asking for trouble.
-> >=20
-> > Yes, I agree, although practically it's only a slightly easier
-> > "exploit" than L2TP/UDP offers.
-> >=20
-> > The UDP case requires a rogue packet to be delivered to the correct
-> > socket AND have a session ID matching that of one in the associated
-> > tunnel.
-> >=20
-> > It's a slightly more arduous scenario to engineer than the existing
-> > L2TPv3/IP case, but only a little.
-> >=20
-> > I also don't know how practical this would be to leverage to cause
-> > problems.
-> >=20
-> > > > For normal operation, you just need to get the wrong packet on the
-> > > > wrong socket to run into trouble of course.  In such a situation
-> > > > having a unique session ID for v3 helps you to determine that
-> > > > something has gone wrong, which is what the UDP encap recv path does
-> > > > if the session data packet's session ID isn't found in the context =
-of
-> > > > the socket that receives it.
-> > > Unique global session IDs might help troubleshooting, but they also
-> > > break some use cases, as reported by Ridge. At some point, we'll have
-> > > to make a choice, or even add a knob if necessary.
-> >=20
-> > I suspect we need to reach agreement on what RFC 3931 implies before
-> > making headway on what the kernel should ideally do.
-> >=20
-> > There is perhaps room for pragmatism given that the kernel
-> > used to be more permissive prior to dbdbc73b4478, and we weren't
-> > inundated with reports of session ID clashes.
-> >=20
->=20
-> A knob (module_param?) to enable the permissive behaviour would certainly
-> work for me.
+This turns out to be a somewhat invasive change in the number of files touched;
+however, the actual changes to files are fairly trivial (most of them are simply
+made with 'sed'). The series is split to make the change for one tool subdir at
+a time, while trying not to break the build along the way. It is structured like
+this:
 
-I think a knob might be the worst of both worlds.  It'd be more to test,
-and more to document.  I think explaining to a user when they'd want
-to use the knob might be quite involved.  So personally I'd sooner
-either make the change or not.
+- Patch 1-3: Trivial fixes to Makefiles for issues I discovered while changing
+  the include paths.
 
-More generally, for v3 having the session ID be unique to the LCCE is
-required to make IP-encap work at all.  We can't reliably obtain the
-tunnel context from the socket because we've only got a 3-tuple
-address to direct an incoming frame to a given socket; and the L2TPv3
-IP-encap data packet header only contains the session ID, so that's
-literally all there is to work with.
+- Patch 4-8: Change the include directives to use the bpf/ prefix, and updates
+  Makefiles to make sure tools/lib/ is part of the include path, but without
+  removing tools/lib/bpf
 
-If we relax the restriction for UDP-encap then it fixes your (Ridge's)
-use case; but it does impose some restrictions:
+- Patch 9-10: Remove tools/lib/bpf from include paths to make sure we don't
+  inadvertently re-introduce includes without the bpf/ prefix.
 
- 1. The l2tp subsystem has an existing bug for UDP encap where
- SO_REUSEADDR is used, as I've mentioned.  Where the 5-tuple address of
- two sockets clashes, frames may be directed to either socket.  So
- determining the tunnel context from the socket isn't valid in this
- situation.
+Changelog:
 
- For L2TPv2 we could fix this by looking the tunnel context up using
- the tunnel ID in the header.
+v4:
+  - Move runqslower error on missing BTF into make rule
+  - Make sure we don't always force a rebuild selftests
+  - Rebase on latest bpf-next (dropping patch 11)
 
- For L2TPv3 there is no tunnel ID in the header.  If we allow
- duplicated session IDs for L2TPv3/UDP, there's no way to fix the
- problem.
+v3:
+  - Don't add the kernel build dir to the runqslower Makefile, pass it in from
+    selftests instead.
+  - Use libbpf's 'make install_headers' in selftests instead of trying to
+    generate bpf_helper_defs.h in-place (to also work on read-only filesystems).
+  - Use a scratch builddir for both libbpf and bpftool when building in selftests.
+  - Revert bpf_helpers.h to quoted include instead of angled include with a bpf/
+    prefix.
+  - Fix a few style nits from Andrii
 
- This sounds like a bit of a corner case, although its surprising how
- many implementations expect all traffic over port 1701, making
- 5-tuple clashes more likely.
+v2:
+  - Do a full cleanup of libbpf includes instead of just changing the
+    bpf_helper_defs.h include.
 
- 2. Part of the rationale for L2TPv3's approach to IDs is that it
- allows the data plane to potentially be more efficient since a
- session can be identified by session ID alone.
-=20
- The kernel hasn't really exploited that fact fully (UDP encap
- still uses the socket to get the tunnel context), but if we make
- this change we'll be restricting the optimisations we might make
- in the future.
+---
 
-Ultimately it comes down to a judgement call.  Being unable to fix
-the SO_REUSEADDR bug would be the biggest practical headache I
-think.
+Toke Høiland-Jørgensen (10):
+      samples/bpf: Don't try to remove user's homedir on clean
+      tools/bpf/runqslower: Fix override option for VMLINUX_BTF
+      selftests: Pass VMLINUX_BTF to runqslower Makefile
+      tools/runqslower: Use consistent include paths for libbpf
+      selftests: Use consistent include paths for libbpf
+      bpftool: Use consistent include paths for libbpf
+      perf: Use consistent include paths for libbpf
+      samples/bpf: Use consistent include paths for libbpf
+      selftests: Remove tools/lib/bpf from include path
+      tools/runqslower: Remove tools/lib/bpf from include path
 
---x+6KMIRAuhnl3hBn
-Content-Type: application/pgp-signature; name="signature.asc"
 
------BEGIN PGP SIGNATURE-----
+ samples/bpf/Makefile                               |    5 +-
+ samples/bpf/cpustat_kern.c                         |    2 -
+ samples/bpf/fds_example.c                          |    2 -
+ samples/bpf/hbm.c                                  |    4 +
+ samples/bpf/hbm_kern.h                             |    4 +
+ samples/bpf/ibumad_kern.c                          |    2 -
+ samples/bpf/ibumad_user.c                          |    2 -
+ samples/bpf/lathist_kern.c                         |    2 -
+ samples/bpf/lwt_len_hist_kern.c                    |    2 -
+ samples/bpf/map_perf_test_kern.c                   |    4 +
+ samples/bpf/offwaketime_kern.c                     |    4 +
+ samples/bpf/offwaketime_user.c                     |    2 -
+ samples/bpf/parse_ldabs.c                          |    2 -
+ samples/bpf/parse_simple.c                         |    2 -
+ samples/bpf/parse_varlen.c                         |    2 -
+ samples/bpf/sampleip_kern.c                        |    4 +
+ samples/bpf/sampleip_user.c                        |    2 -
+ samples/bpf/sock_flags_kern.c                      |    2 -
+ samples/bpf/sockex1_kern.c                         |    2 -
+ samples/bpf/sockex1_user.c                         |    2 -
+ samples/bpf/sockex2_kern.c                         |    2 -
+ samples/bpf/sockex2_user.c                         |    2 -
+ samples/bpf/sockex3_kern.c                         |    2 -
+ samples/bpf/spintest_kern.c                        |    4 +
+ samples/bpf/spintest_user.c                        |    2 -
+ samples/bpf/syscall_tp_kern.c                      |    2 -
+ samples/bpf/task_fd_query_kern.c                   |    2 -
+ samples/bpf/task_fd_query_user.c                   |    2 -
+ samples/bpf/tc_l2_redirect_kern.c                  |    2 -
+ samples/bpf/tcbpf1_kern.c                          |    2 -
+ samples/bpf/tcp_basertt_kern.c                     |    4 +
+ samples/bpf/tcp_bufs_kern.c                        |    4 +
+ samples/bpf/tcp_clamp_kern.c                       |    4 +
+ samples/bpf/tcp_cong_kern.c                        |    4 +
+ samples/bpf/tcp_dumpstats_kern.c                   |    4 +
+ samples/bpf/tcp_iw_kern.c                          |    4 +
+ samples/bpf/tcp_rwnd_kern.c                        |    4 +
+ samples/bpf/tcp_synrto_kern.c                      |    4 +
+ samples/bpf/tcp_tos_reflect_kern.c                 |    4 +
+ samples/bpf/test_cgrp2_tc_kern.c                   |    2 -
+ samples/bpf/test_current_task_under_cgroup_kern.c  |    2 -
+ samples/bpf/test_lwt_bpf.c                         |    2 -
+ samples/bpf/test_map_in_map_kern.c                 |    4 +
+ samples/bpf/test_overhead_kprobe_kern.c            |    4 +
+ samples/bpf/test_overhead_raw_tp_kern.c            |    2 -
+ samples/bpf/test_overhead_tp_kern.c                |    2 -
+ samples/bpf/test_probe_write_user_kern.c           |    4 +
+ samples/bpf/trace_event_kern.c                     |    4 +
+ samples/bpf/trace_event_user.c                     |    2 -
+ samples/bpf/trace_output_kern.c                    |    2 -
+ samples/bpf/trace_output_user.c                    |    2 -
+ samples/bpf/tracex1_kern.c                         |    4 +
+ samples/bpf/tracex2_kern.c                         |    4 +
+ samples/bpf/tracex3_kern.c                         |    4 +
+ samples/bpf/tracex4_kern.c                         |    4 +
+ samples/bpf/tracex5_kern.c                         |    4 +
+ samples/bpf/tracex6_kern.c                         |    2 -
+ samples/bpf/tracex7_kern.c                         |    2 -
+ samples/bpf/xdp1_kern.c                            |    2 -
+ samples/bpf/xdp1_user.c                            |    4 +
+ samples/bpf/xdp2_kern.c                            |    2 -
+ samples/bpf/xdp2skb_meta_kern.c                    |    2 -
+ samples/bpf/xdp_adjust_tail_kern.c                 |    2 -
+ samples/bpf/xdp_adjust_tail_user.c                 |    4 +
+ samples/bpf/xdp_fwd_kern.c                         |    2 -
+ samples/bpf/xdp_fwd_user.c                         |    2 -
+ samples/bpf/xdp_monitor_kern.c                     |    2 -
+ samples/bpf/xdp_redirect_cpu_kern.c                |    2 -
+ samples/bpf/xdp_redirect_cpu_user.c                |    2 -
+ samples/bpf/xdp_redirect_kern.c                    |    2 -
+ samples/bpf/xdp_redirect_map_kern.c                |    2 -
+ samples/bpf/xdp_redirect_map_user.c                |    2 -
+ samples/bpf/xdp_redirect_user.c                    |    2 -
+ samples/bpf/xdp_router_ipv4_kern.c                 |    2 -
+ samples/bpf/xdp_router_ipv4_user.c                 |    2 -
+ samples/bpf/xdp_rxq_info_kern.c                    |    2 -
+ samples/bpf/xdp_rxq_info_user.c                    |    4 +
+ samples/bpf/xdp_sample_pkts_kern.c                 |    2 -
+ samples/bpf/xdp_sample_pkts_user.c                 |    2 -
+ samples/bpf/xdp_tx_iptunnel_kern.c                 |    2 -
+ samples/bpf/xdp_tx_iptunnel_user.c                 |    2 -
+ samples/bpf/xdpsock_kern.c                         |    2 -
+ samples/bpf/xdpsock_user.c                         |    6 +-
+ tools/bpf/bpftool/Documentation/bpftool-gen.rst    |    2 -
+ tools/bpf/bpftool/Makefile                         |    2 -
+ tools/bpf/bpftool/btf.c                            |    8 +--
+ tools/bpf/bpftool/btf_dumper.c                     |    2 -
+ tools/bpf/bpftool/cgroup.c                         |    2 -
+ tools/bpf/bpftool/common.c                         |    4 +
+ tools/bpf/bpftool/feature.c                        |    4 +
+ tools/bpf/bpftool/gen.c                            |   10 ++--
+ tools/bpf/bpftool/jit_disasm.c                     |    2 -
+ tools/bpf/bpftool/main.c                           |    4 +
+ tools/bpf/bpftool/map.c                            |    4 +
+ tools/bpf/bpftool/map_perf_ring.c                  |    4 +
+ tools/bpf/bpftool/net.c                            |    8 +--
+ tools/bpf/bpftool/netlink_dumper.c                 |    4 +
+ tools/bpf/bpftool/perf.c                           |    2 -
+ tools/bpf/bpftool/prog.c                           |    6 +-
+ tools/bpf/bpftool/xlated_dumper.c                  |    2 -
+ tools/bpf/runqslower/Makefile                      |   23 ++++----
+ tools/bpf/runqslower/runqslower.bpf.c              |    2 -
+ tools/bpf/runqslower/runqslower.c                  |    4 +
+ tools/perf/examples/bpf/5sec.c                     |    2 -
+ tools/perf/examples/bpf/empty.c                    |    2 -
+ tools/perf/examples/bpf/sys_enter_openat.c         |    2 -
+ tools/perf/include/bpf/pid_filter.h                |    2 -
+ tools/perf/include/bpf/stdio.h                     |    2 -
+ tools/perf/include/bpf/unistd.h                    |    2 -
+ tools/testing/selftests/bpf/.gitignore             |    2 -
+ tools/testing/selftests/bpf/Makefile               |   57 +++++++++++++-------
+ tools/testing/selftests/bpf/bpf_tcp_helpers.h      |    4 +
+ tools/testing/selftests/bpf/bpf_trace_helpers.h    |    2 -
+ tools/testing/selftests/bpf/bpf_util.h             |    2 -
+ tools/testing/selftests/bpf/prog_tests/cpu_mask.c  |    2 -
+ .../testing/selftests/bpf/prog_tests/perf_buffer.c |    2 -
+ tools/testing/selftests/bpf/progs/bpf_dctcp.c      |    4 +
+ tools/testing/selftests/bpf/progs/bpf_flow.c       |    4 +
+ tools/testing/selftests/bpf/progs/connect4_prog.c  |    4 +
+ tools/testing/selftests/bpf/progs/connect6_prog.c  |    4 +
+ tools/testing/selftests/bpf/progs/dev_cgroup.c     |    2 -
+ tools/testing/selftests/bpf/progs/fentry_test.c    |    2 -
+ tools/testing/selftests/bpf/progs/fexit_bpf2bpf.c  |    2 -
+ .../selftests/bpf/progs/fexit_bpf2bpf_simple.c     |    2 -
+ tools/testing/selftests/bpf/progs/fexit_test.c     |    2 -
+ .../selftests/bpf/progs/get_cgroup_id_kern.c       |    2 -
+ tools/testing/selftests/bpf/progs/kfree_skb.c      |    4 +
+ tools/testing/selftests/bpf/progs/loop1.c          |    4 +
+ tools/testing/selftests/bpf/progs/loop2.c          |    4 +
+ tools/testing/selftests/bpf/progs/loop3.c          |    4 +
+ tools/testing/selftests/bpf/progs/loop4.c          |    2 -
+ tools/testing/selftests/bpf/progs/loop5.c          |    2 -
+ tools/testing/selftests/bpf/progs/netcnt_prog.c    |    2 -
+ tools/testing/selftests/bpf/progs/pyperf.h         |    2 -
+ .../testing/selftests/bpf/progs/sample_map_ret0.c  |    2 -
+ tools/testing/selftests/bpf/progs/sendmsg4_prog.c  |    4 +
+ tools/testing/selftests/bpf/progs/sendmsg6_prog.c  |    4 +
+ .../selftests/bpf/progs/socket_cookie_prog.c       |    4 +
+ .../selftests/bpf/progs/sockmap_parse_prog.c       |    4 +
+ .../selftests/bpf/progs/sockmap_tcp_msg_prog.c     |    4 +
+ .../selftests/bpf/progs/sockmap_verdict_prog.c     |    4 +
+ .../testing/selftests/bpf/progs/sockopt_inherit.c  |    2 -
+ tools/testing/selftests/bpf/progs/sockopt_multi.c  |    2 -
+ tools/testing/selftests/bpf/progs/sockopt_sk.c     |    2 -
+ tools/testing/selftests/bpf/progs/strobemeta.h     |    2 -
+ tools/testing/selftests/bpf/progs/tailcall1.c      |    2 -
+ tools/testing/selftests/bpf/progs/tailcall2.c      |    2 -
+ tools/testing/selftests/bpf/progs/tailcall3.c      |    2 -
+ tools/testing/selftests/bpf/progs/tailcall4.c      |    2 -
+ tools/testing/selftests/bpf/progs/tailcall5.c      |    2 -
+ tools/testing/selftests/bpf/progs/tcp_rtt.c        |    2 -
+ .../testing/selftests/bpf/progs/test_adjust_tail.c |    2 -
+ .../selftests/bpf/progs/test_attach_probe.c        |    2 -
+ tools/testing/selftests/bpf/progs/test_btf_haskv.c |    2 -
+ tools/testing/selftests/bpf/progs/test_btf_newkv.c |    2 -
+ tools/testing/selftests/bpf/progs/test_btf_nokv.c  |    2 -
+ .../testing/selftests/bpf/progs/test_core_extern.c |    2 -
+ .../selftests/bpf/progs/test_core_reloc_arrays.c   |    4 +
+ .../bpf/progs/test_core_reloc_bitfields_direct.c   |    4 +
+ .../bpf/progs/test_core_reloc_bitfields_probed.c   |    4 +
+ .../bpf/progs/test_core_reloc_existence.c          |    4 +
+ .../selftests/bpf/progs/test_core_reloc_flavors.c  |    4 +
+ .../selftests/bpf/progs/test_core_reloc_ints.c     |    4 +
+ .../selftests/bpf/progs/test_core_reloc_kernel.c   |    4 +
+ .../selftests/bpf/progs/test_core_reloc_misc.c     |    4 +
+ .../selftests/bpf/progs/test_core_reloc_mods.c     |    4 +
+ .../selftests/bpf/progs/test_core_reloc_nesting.c  |    4 +
+ .../bpf/progs/test_core_reloc_primitives.c         |    4 +
+ .../bpf/progs/test_core_reloc_ptr_as_arr.c         |    4 +
+ .../selftests/bpf/progs/test_core_reloc_size.c     |    4 +
+ .../selftests/bpf/progs/test_get_stack_rawtp.c     |    2 -
+ .../testing/selftests/bpf/progs/test_global_data.c |    2 -
+ .../selftests/bpf/progs/test_global_func1.c        |    2 -
+ .../selftests/bpf/progs/test_global_func3.c        |    2 -
+ .../selftests/bpf/progs/test_global_func5.c        |    2 -
+ .../selftests/bpf/progs/test_global_func6.c        |    2 -
+ .../selftests/bpf/progs/test_global_func7.c        |    2 -
+ tools/testing/selftests/bpf/progs/test_l4lb.c      |    4 +
+ .../selftests/bpf/progs/test_l4lb_noinline.c       |    4 +
+ .../selftests/bpf/progs/test_lirc_mode2_kern.c     |    2 -
+ .../selftests/bpf/progs/test_lwt_ip_encap.c        |    4 +
+ .../selftests/bpf/progs/test_lwt_seg6local.c       |    4 +
+ .../testing/selftests/bpf/progs/test_map_in_map.c  |    2 -
+ tools/testing/selftests/bpf/progs/test_map_lock.c  |    2 -
+ tools/testing/selftests/bpf/progs/test_mmap.c      |    2 -
+ tools/testing/selftests/bpf/progs/test_obj_id.c    |    2 -
+ tools/testing/selftests/bpf/progs/test_overhead.c  |    4 +
+ .../testing/selftests/bpf/progs/test_perf_buffer.c |    2 -
+ tools/testing/selftests/bpf/progs/test_pinning.c   |    2 -
+ .../selftests/bpf/progs/test_pinning_invalid.c     |    2 -
+ .../testing/selftests/bpf/progs/test_pkt_access.c  |    4 +
+ .../selftests/bpf/progs/test_pkt_md_access.c       |    2 -
+ .../testing/selftests/bpf/progs/test_probe_user.c  |    4 +
+ .../selftests/bpf/progs/test_queue_stack_map.h     |    2 -
+ .../testing/selftests/bpf/progs/test_rdonly_maps.c |    2 -
+ tools/testing/selftests/bpf/progs/test_seg6_loop.c |    4 +
+ .../bpf/progs/test_select_reuseport_kern.c         |    4 +
+ .../selftests/bpf/progs/test_send_signal_kern.c    |    2 -
+ .../selftests/bpf/progs/test_sk_lookup_kern.c      |    4 +
+ .../selftests/bpf/progs/test_skb_cgroup_id_kern.c  |    2 -
+ tools/testing/selftests/bpf/progs/test_skb_ctx.c   |    2 -
+ tools/testing/selftests/bpf/progs/test_skeleton.c  |    2 -
+ .../selftests/bpf/progs/test_sock_fields_kern.c    |    4 +
+ tools/testing/selftests/bpf/progs/test_spin_lock.c |    2 -
+ .../selftests/bpf/progs/test_stacktrace_build_id.c |    2 -
+ .../selftests/bpf/progs/test_stacktrace_map.c      |    2 -
+ .../selftests/bpf/progs/test_sysctl_loop1.c        |    2 -
+ .../selftests/bpf/progs/test_sysctl_loop2.c        |    2 -
+ .../testing/selftests/bpf/progs/test_sysctl_prog.c |    2 -
+ tools/testing/selftests/bpf/progs/test_tc_edt.c    |    4 +
+ tools/testing/selftests/bpf/progs/test_tc_tunnel.c |    4 +
+ .../bpf/progs/test_tcp_check_syncookie_kern.c      |    4 +
+ .../testing/selftests/bpf/progs/test_tcp_estats.c  |    2 -
+ .../testing/selftests/bpf/progs/test_tcpbpf_kern.c |    4 +
+ .../selftests/bpf/progs/test_tcpnotify_kern.c      |    4 +
+ .../testing/selftests/bpf/progs/test_tracepoint.c  |    2 -
+ .../testing/selftests/bpf/progs/test_tunnel_kern.c |    4 +
+ .../selftests/bpf/progs/test_verif_scale1.c        |    2 -
+ .../selftests/bpf/progs/test_verif_scale2.c        |    2 -
+ .../selftests/bpf/progs/test_verif_scale3.c        |    2 -
+ tools/testing/selftests/bpf/progs/test_xdp.c       |    4 +
+ .../testing/selftests/bpf/progs/test_xdp_bpf2bpf.c |    2 -
+ tools/testing/selftests/bpf/progs/test_xdp_loop.c  |    4 +
+ tools/testing/selftests/bpf/progs/test_xdp_meta.c  |    2 -
+ .../selftests/bpf/progs/test_xdp_noinline.c        |    4 +
+ .../selftests/bpf/progs/test_xdp_redirect.c        |    2 -
+ tools/testing/selftests/bpf/progs/test_xdp_vlan.c  |    4 +
+ tools/testing/selftests/bpf/progs/xdp_dummy.c      |    2 -
+ .../testing/selftests/bpf/progs/xdp_redirect_map.c |    2 -
+ tools/testing/selftests/bpf/progs/xdp_tx.c         |    2 -
+ tools/testing/selftests/bpf/progs/xdping_kern.c    |    4 +
+ tools/testing/selftests/bpf/test_cpp.cpp           |    6 +-
+ tools/testing/selftests/bpf/test_hashmap.c         |    2 -
+ tools/testing/selftests/bpf/test_progs.h           |    2 -
+ tools/testing/selftests/bpf/test_sock.c            |    2 -
+ tools/testing/selftests/bpf/test_sockmap_kern.h    |    4 +
+ tools/testing/selftests/bpf/test_sysctl.c          |    2 -
+ tools/testing/selftests/bpf/trace_helpers.h        |    2 -
+ 238 files changed, 388 insertions(+), 369 deletions(-)
 
-iQEzBAABCgAdFiEEsUkgyDzMwrj81nq0lIwGZQq6i9AFAl4htDMACgkQlIwGZQq6
-i9B9swf+J1AixeGWYWxKXRI1kUQVJw6tJUjneD4sPhk4hvMwKEur8sDeL5MY4k5F
-sxlpxzVzg96EwPXQZXlUWR0Ts/U3Er/Ph6qQXGPk7A1czM2QnXNpRxZ53nDr9TyR
-g+bklDyF2GSXzZwBc1M2CZDixEGG/V6GhJ3H+nQnkytB+t1b9rDCI5c/F6NMk6qF
-ss7XSE+N/ecaupJT3PcCZhcWqWIFcBY5i8M8bQJKzvPoSDPx6ODrYUGAqpZtyfv8
-0FSZs8REKoCQmD8Ljr3mOcN3aMnvJxgvkdvtxe4fE+bT/qlAP81C6zoV2Q/gK10I
-pIwzL3LxaQL5N+p8tXC3UKFVyDeutg==
-=Gb80
------END PGP SIGNATURE-----
-
---x+6KMIRAuhnl3hBn--
