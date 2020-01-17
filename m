@@ -2,45 +2,45 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id DAE7B141301
-	for <lists+netdev@lfdr.de>; Fri, 17 Jan 2020 22:28:10 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id BACEE141304
+	for <lists+netdev@lfdr.de>; Fri, 17 Jan 2020 22:28:12 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729437AbgAQV1l (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 17 Jan 2020 16:27:41 -0500
-Received: from mail-pj1-f66.google.com ([209.85.216.66]:38972 "EHLO
-        mail-pj1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729361AbgAQV1i (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 17 Jan 2020 16:27:38 -0500
-Received: by mail-pj1-f66.google.com with SMTP id e11so3891659pjt.4
-        for <netdev@vger.kernel.org>; Fri, 17 Jan 2020 13:27:37 -0800 (PST)
+        id S1726944AbgAQV1u (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 17 Jan 2020 16:27:50 -0500
+Received: from mail-pf1-f194.google.com ([209.85.210.194]:36775 "EHLO
+        mail-pf1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729366AbgAQV1k (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 17 Jan 2020 16:27:40 -0500
+Received: by mail-pf1-f194.google.com with SMTP id x184so12525257pfb.3
+        for <netdev@vger.kernel.org>; Fri, 17 Jan 2020 13:27:40 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=chromium.org; s=google;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=dX/yXK6iGHzCms4pl61rtiy1PGwacxrcd9Tk97W7YsY=;
-        b=Pvg5bZcNdzM5pAw6eZyeKd+iwD+/Wc8Ds4gXDLa8Ait4HAK+v3N6lyvrZIOKc+cA/j
-         OjWx4Q8wrkjDxMo0vwYwjZzlAUuLfKxrSG7T8z75QJ8vU/EXBTUuPSL1gSxr5mLV49hj
-         HCDANuBi9waZGp7+doBXa6E0NNzP3iRSLfNps=
+        bh=SMFgUhjE5DuX/ZmILH/XLg4J+hOnX3LKhYCIhgUW7jY=;
+        b=NO+5sfMP8P5eAEEkYpSdSiZzbZBnA60iiPFDPw8YLu8Ws/cAdADaWCXie4fYxROnjg
+         A66PTW1Wa/o9pY6V/SGJYcY726kc06S4Zl49K72mF9Z+yXzhqJjvylq1bPXWZNcfFADv
+         Ga+DvZOKInUYQzSmHSHuvOqNqkbkZr/JBab90=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=dX/yXK6iGHzCms4pl61rtiy1PGwacxrcd9Tk97W7YsY=;
-        b=hEcOcHn/QNdnsHuto58SjKndxvCpXCPlabRKM3OmJR/VnlLSWSzu50sVs0Ku5QOl+l
-         RQ+LA/4ALM5kfPfUJQy9pS2ZsMUTAeDqvsdaarF1taFewK1UqjXtA2XBnICajiCqRfVg
-         O+HLy7ZlJI1R9zFRT5VWGT4AEze97xBi/ADVl2RO1hfdue8z1lJTpEMNAD4nD9zoDW6/
-         dZdLk3LH7+ET1K7uY15nYjUPisESOzl/tFIoTmj03oBbkkn/vElF+G09Ov7OXMDSYDCV
-         YexYIeWi0U6RzYfUYFRSoqqOkm5fUfcgzND9f2G1gTGnaxztP0B+fGW6XXkdAAzz0qEm
-         6MhQ==
-X-Gm-Message-State: APjAAAX6lZHE8Pdbk7QfDSwTeD2TwVF0XRBTJJlbaUwgenTQMFUVTJRe
-        GlWWJZFMPhEFRK/yEfy/4lw/arTht1Uatg==
-X-Google-Smtp-Source: APXvYqwslGxdRr74On+Vps0DvyMpkZkcdh94uBscad3mS3VPMZeOUdw6vYpCI3buduc19L9K27E8UA==
-X-Received: by 2002:a17:90b:258:: with SMTP id fz24mr7917727pjb.6.1579296457428;
-        Fri, 17 Jan 2020 13:27:37 -0800 (PST)
+        bh=SMFgUhjE5DuX/ZmILH/XLg4J+hOnX3LKhYCIhgUW7jY=;
+        b=FB/Sbn2dy5gZ42iE805xTZaxUbDjQrEi8x+VWsjXp8wqsw/WkDIsxmWwQyO+LCvPci
+         ZRIDLfdOPRyTK2O36tep0M3P0CkM65zpn6wRH05LQACTdFN0nhSRBdFsQBi9BSXsdAQk
+         xh3JiCg8PSWHRW8vaE9UCnHH9MnXf9kfC2enQ2+VlJa2xuJ+1fijKEIwDMCdB4KRVPMB
+         8YRLw4lXT8sAVD0c7LK/W1gnI8/4Jn7ZhgHEMnH6qhD4LHncvw7NLdqMeF1/lCfEWwtr
+         AlN3NIHPTbQ6vsY2fwkEzL1rMTBitNQBNqO3RLrgNNDagzQg144RXmj0TU6WEiJpUNqb
+         NCFQ==
+X-Gm-Message-State: APjAAAWkQVm1aRfTSdnD3l6DlifP6JHA6hpdBEusszzudvI7xVYW+ZBp
+        /C4lKKEE9ErnwovS4CFmqsRjwA==
+X-Google-Smtp-Source: APXvYqzWcSCaXQf+ql6N8hvlo529Z0KhougCV+0BKh4PTgd0aq8nC473W81FkuYejUpiP54RFf5UOQ==
+X-Received: by 2002:a63:1a1c:: with SMTP id a28mr49456538pga.374.1579296459574;
+        Fri, 17 Jan 2020 13:27:39 -0800 (PST)
 Received: from apsdesk.mtv.corp.google.com ([2620:15c:202:1:e09a:8d06:a338:aafb])
-        by smtp.gmail.com with ESMTPSA id k5sm6999655pju.29.2020.01.17.13.27.36
+        by smtp.gmail.com with ESMTPSA id k5sm6999655pju.29.2020.01.17.13.27.38
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 17 Jan 2020 13:27:37 -0800 (PST)
+        Fri, 17 Jan 2020 13:27:39 -0800 (PST)
 From:   Abhishek Pandit-Subedi <abhishekpandit@chromium.org>
 To:     marcel@holtmann.org, luiz.dentz@gmail.com, alainm@chromium.org
 Cc:     linux-bluetooth@vger.kernel.org,
@@ -49,9 +49,9 @@ Cc:     linux-bluetooth@vger.kernel.org,
         "David S. Miller" <davem@davemloft.net>,
         Johan Hedberg <johan.hedberg@gmail.com>,
         netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [RFC PATCH 1/2] Bluetooth: Add mgmt op set_wake_capable
-Date:   Fri, 17 Jan 2020 13:27:04 -0800
-Message-Id: <20200117132623.RFC.1.I797e2f4cb824299043e771f3ab9cef86ee09f4db@changeid>
+Subject: [RFC PATCH 2/2] Bluetooth: Handle PM_SUSPEND_PREPARE and PM_POST_SUSPEND
+Date:   Fri, 17 Jan 2020 13:27:05 -0800
+Message-Id: <20200117132623.RFC.2.I5f47e609ee90484bef06a09e37a66c6569eeb584@changeid>
 X-Mailer: git-send-email 2.25.0.341.g760bfbb309-goog
 In-Reply-To: <20200117212705.57436-1-abhishekpandit@chromium.org>
 References: <20200117212705.57436-1-abhishekpandit@chromium.org>
@@ -62,138 +62,877 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-When the system is suspended, only some connected Bluetooth devices
-cause user input that should wake the system (mostly HID devices). Add
-a list to keep track of devices that can wake the system and add
-a management API to let userspace tell the kernel whether a device is
-wake capable or not.
+Register for PM_SUSPEND_PREPARE and PM_POST_SUSPEND to make sure the
+Bluetooth controller is prepared correctly for suspend/resume. The
+suspend notifier will wait for all tasks to complete before returning.
+
+At a high level, we do the following when entering suspend:
+- Pause any active discovery
+- Pause any active advertising
+- Set the event filter with addresses of wake capable Classic devices
+  and enable Page Scan
+- Update the LE whitelist to only include devices that can wake the
+  system, update the scan parameters and enable passive scanning.
+- Disconnect all devices with a POWER_DOWN reason
+
+On resume, it reverses the above operations:
+- Clear event filters and restore page scan
+- Restore LE whitelist and restore passive scan
+- If advertising was active before suspend, re-enable it
+- If discovery was active before suspend, re-enable it
 
 Signed-off-by: Abhishek Pandit-Subedi <abhishekpandit@chromium.org>
 ---
 
- include/net/bluetooth/hci_core.h |  1 +
- include/net/bluetooth/mgmt.h     |  7 ++++++
- net/bluetooth/hci_core.c         |  1 +
- net/bluetooth/mgmt.c             | 42 ++++++++++++++++++++++++++++++++
- 4 files changed, 51 insertions(+)
+ include/net/bluetooth/hci.h      |  30 +++-
+ include/net/bluetooth/hci_core.h |  45 +++++
+ net/bluetooth/hci_core.c         |  70 ++++++++
+ net/bluetooth/hci_event.c        |  24 ++-
+ net/bluetooth/hci_request.c      | 297 ++++++++++++++++++++++++++++---
+ net/bluetooth/hci_request.h      |   4 +-
+ net/bluetooth/mgmt.c             |  52 +++++-
+ 7 files changed, 486 insertions(+), 36 deletions(-)
 
+diff --git a/include/net/bluetooth/hci.h b/include/net/bluetooth/hci.h
+index 6293bdd7d862..3c85c556e59a 100644
+--- a/include/net/bluetooth/hci.h
++++ b/include/net/bluetooth/hci.h
+@@ -932,10 +932,31 @@ struct hci_cp_sniff_subrate {
+ #define HCI_OP_RESET			0x0c03
+ 
+ #define HCI_OP_SET_EVENT_FLT		0x0c05
+-struct hci_cp_set_event_flt {
++#define HCI_SET_EVENT_FLT_SIZE		9
++struct hci_cp_set_event_filter {
+ 	__u8     flt_type;
+ 	__u8     cond_type;
+-	__u8     condition[0];
++	union {
++		union {
++			struct {
++				__u8 val[3];
++				__u8 mask[3];
++			} __packed dev_class;
++			bdaddr_t addr;
++		} inq;
++		union {
++			__u8 auto_accept_any;
++			struct {
++				__u8 val[3];
++				__u8 mask[3];
++				__u8 auto_accept;
++			} __packed dev_class;
++			struct {
++				bdaddr_t bdaddr;
++				__u8 auto_accept;
++			} __packed addr;
++		} conn;
++	} cond;
+ } __packed;
+ 
+ /* Filter types */
+@@ -949,8 +970,9 @@ struct hci_cp_set_event_flt {
+ #define HCI_CONN_SETUP_ALLOW_BDADDR	0x02
+ 
+ /* CONN_SETUP Conditions */
+-#define HCI_CONN_SETUP_AUTO_OFF	0x01
+-#define HCI_CONN_SETUP_AUTO_ON	0x02
++#define HCI_CONN_SETUP_AUTO_OFF		0x01
++#define HCI_CONN_SETUP_AUTO_ON		0x02
++#define HCI_CONN_SETUP_AUTO_ON_WITH_RS	0x03
+ 
+ #define HCI_OP_READ_STORED_LINK_KEY	0x0c0d
+ struct hci_cp_read_stored_link_key {
 diff --git a/include/net/bluetooth/hci_core.h b/include/net/bluetooth/hci_core.h
-index 89ecf0a80aa1..ce4bebcb0265 100644
+index ce4bebcb0265..963871fca069 100644
 --- a/include/net/bluetooth/hci_core.h
 +++ b/include/net/bluetooth/hci_core.h
-@@ -394,6 +394,7 @@ struct hci_dev {
- 	struct list_head	mgmt_pending;
- 	struct list_head	blacklist;
- 	struct list_head	whitelist;
-+	struct list_head	wakeable;
- 	struct list_head	uuids;
- 	struct list_head	link_keys;
- 	struct list_head	long_term_keys;
-diff --git a/include/net/bluetooth/mgmt.h b/include/net/bluetooth/mgmt.h
-index a90666af05bd..283ba5320bdb 100644
---- a/include/net/bluetooth/mgmt.h
-+++ b/include/net/bluetooth/mgmt.h
-@@ -671,6 +671,13 @@ struct mgmt_cp_set_blocked_keys {
- } __packed;
- #define MGMT_OP_SET_BLOCKED_KEYS_SIZE 2
+@@ -88,6 +88,49 @@ struct discovery_state {
+ 	unsigned long		scan_duration;
+ };
  
-+#define MGMT_OP_SET_WAKE_CAPABLE	0x0047
-+#define MGMT_SET_WAKE_CAPABLE_SIZE	8
-+struct mgmt_cp_set_wake_capable {
-+	struct mgmt_addr_info addr;
-+	u8 wake_capable;
-+} __packed;
++#define SUSPEND_NOTIFIER_TIMEOUT	msecs_to_jiffies(2000) /* 2 seconds */
 +
- #define MGMT_EV_CMD_COMPLETE		0x0001
- struct mgmt_ev_cmd_complete {
- 	__le16	opcode;
++enum suspend_tasks {
++	SUSPEND_PAUSE_DISCOVERY,
++	SUSPEND_UNPAUSE_DISCOVERY,
++
++	SUSPEND_PAUSE_ADVERTISING,
++	SUSPEND_UNPAUSE_ADVERTISING,
++
++	SUSPEND_LE_SET_SCAN_ENABLE,
++	SUSPEND_DISCONNECTING,
++
++	SUSPEND_PREPARE_NOTIFIER,
++	__SUSPEND_NUM_TASKS
++};
++
++enum suspended_state {
++	BT_RUNNING = 0,
++	BT_SUSPENDED,
++};
++
++struct suspend_state {
++	int	discovery_old_state;
++	int	advertising_old_state;
++
++	bool	discovery_paused;
++	bool	advertising_paused;
++
++	int	disconnect_counter;
++
++	/* BREDR: Disallow changing event filters + page scan.
++	 * LE: Disallow changing whitelist, scan params and scan enable.
++	 */
++	bool	freeze_filters;
++
++	DECLARE_BITMAP(tasks, __SUSPEND_NUM_TASKS);
++	wait_queue_head_t	tasks_wait_q;
++
++	struct work_struct	prepare;
++	enum suspended_state	next_state;
++	enum suspended_state	state;
++};
++
+ struct hci_conn_hash {
+ 	struct list_head list;
+ 	unsigned int     acl_num;
+@@ -389,6 +432,8 @@ struct hci_dev {
+ 	void			*smp_bredr_data;
+ 
+ 	struct discovery_state	discovery;
++	struct suspend_state	suspend;
++	struct notifier_block	suspend_notifier;
+ 	struct hci_conn_hash	conn_hash;
+ 
+ 	struct list_head	mgmt_pending;
 diff --git a/net/bluetooth/hci_core.c b/net/bluetooth/hci_core.c
-index 1ca7508b6ca7..7057b9b65173 100644
+index 7057b9b65173..76bd4f376790 100644
 --- a/net/bluetooth/hci_core.c
 +++ b/net/bluetooth/hci_core.c
-@@ -3299,6 +3299,7 @@ struct hci_dev *hci_alloc_dev(void)
- 	INIT_LIST_HEAD(&hdev->mgmt_pending);
- 	INIT_LIST_HEAD(&hdev->blacklist);
- 	INIT_LIST_HEAD(&hdev->whitelist);
-+	INIT_LIST_HEAD(&hdev->wakeable);
- 	INIT_LIST_HEAD(&hdev->uuids);
- 	INIT_LIST_HEAD(&hdev->link_keys);
- 	INIT_LIST_HEAD(&hdev->long_term_keys);
-diff --git a/net/bluetooth/mgmt.c b/net/bluetooth/mgmt.c
-index 0dc610faab70..95092130f16c 100644
---- a/net/bluetooth/mgmt.c
-+++ b/net/bluetooth/mgmt.c
-@@ -106,7 +106,10 @@ static const u16 mgmt_commands[] = {
- 	MGMT_OP_START_LIMITED_DISCOVERY,
- 	MGMT_OP_READ_EXT_INFO,
- 	MGMT_OP_SET_APPEARANCE,
-+	MGMT_OP_GET_PHY_CONFIGURATION,
-+	MGMT_OP_SET_PHY_CONFIGURATION,
- 	MGMT_OP_SET_BLOCKED_KEYS,
-+	MGMT_OP_SET_WAKE_CAPABLE,
- };
+@@ -31,6 +31,8 @@
+ #include <linux/debugfs.h>
+ #include <linux/crypto.h>
+ #include <linux/property.h>
++#include <linux/suspend.h>
++#include <linux/wait.h>
+ #include <asm/unaligned.h>
  
- static const u16 mgmt_events[] = {
-@@ -4663,6 +4666,37 @@ static int set_fast_connectable(struct sock *sk, struct hci_dev *hdev,
- 	return err;
+ #include <net/bluetooth/bluetooth.h>
+@@ -3241,6 +3243,65 @@ void hci_copy_identity_address(struct hci_dev *hdev, bdaddr_t *bdaddr,
+ 	}
  }
  
-+static int set_wake_capable(struct sock *sk, struct hci_dev *hdev, void *data,
-+			    u16 len)
++static int hci_suspend_wait_event(struct hci_dev *hdev)
 +{
-+	int err;
-+	u8 status;
-+	struct mgmt_cp_set_wake_capable *cp = data;
-+	u8 addr_type = cp->addr.type == BDADDR_BREDR ?
-+			       cp->addr.type :
-+			       le_addr_type(cp->addr.type);
++#define WAKE_COND                                                              \
++	(find_first_bit(hdev->suspend.tasks, __SUSPEND_NUM_TASKS) ==           \
++	 __SUSPEND_NUM_TASKS)
 +
-+	BT_DBG("Set wake capable %pMR (type 0x%x) = 0x%x\n", &cp->addr.bdaddr,
-+	       addr_type, cp->wake_capable);
++	int i;
++	int ret = wait_event_timeout(hdev->suspend.tasks_wait_q,
++				     WAKE_COND, SUSPEND_NOTIFIER_TIMEOUT);
 +
-+	if (cp->wake_capable)
-+		err = hci_bdaddr_list_add(&hdev->wakeable, &cp->addr.bdaddr,
-+					  addr_type);
-+	else
-+		err = hci_bdaddr_list_del(&hdev->wakeable, &cp->addr.bdaddr,
-+					  addr_type);
++	if (ret == 0) {
++		BT_DBG("Timed out waiting for suspend");
++		for (i = 0; i < __SUSPEND_NUM_TASKS; ++i) {
++			if (test_bit(i, hdev->suspend.tasks))
++				BT_DBG("Bit %d is set", i);
++			clear_bit(i, hdev->suspend.tasks);
++		}
 +
-+	if (!err || err == -EEXIST || err == -ENOENT)
-+		status = MGMT_STATUS_SUCCESS;
-+	else
-+		status = MGMT_STATUS_FAILED;
++		ret = -ETIMEDOUT;
++	} else {
++		ret = 0;
++	}
 +
-+	err = mgmt_cmd_complete(sk, hdev->id, MGMT_OP_SET_WAKE_CAPABLE, status,
-+				cp, sizeof(*cp));
-+
-+	return err;
++	return ret;
 +}
 +
- static void set_bredr_complete(struct hci_dev *hdev, u8 status, u16 opcode)
- {
- 	struct mgmt_pending_cmd *cmd;
-@@ -5791,6 +5825,13 @@ static int remove_device(struct sock *sk, struct hci_dev *hdev,
- 			err = hci_bdaddr_list_del(&hdev->whitelist,
- 						  &cp->addr.bdaddr,
- 						  cp->addr.type);
++static void hci_prepare_suspend(struct work_struct *work)
++{
++	struct hci_dev *hdev =
++		container_of(work, struct hci_dev, suspend.prepare);
 +
-+			/* Don't check result since it either succeeds or device
-+			 * wasn't there (not wakeable or invalid params as
-+			 * covered by deleting from whitelist).
-+			 */
-+			hci_bdaddr_list_del(&hdev->wakeable, &cp->addr.bdaddr,
-+					    cp->addr.type);
- 			if (err) {
- 				err = mgmt_cmd_complete(sk, hdev->id,
- 							MGMT_OP_REMOVE_DEVICE,
-@@ -6990,6 +7031,7 @@ static const struct hci_mgmt_handler mgmt_handlers[] = {
- 	{ set_phy_configuration,   MGMT_SET_PHY_CONFIGURATION_SIZE },
- 	{ set_blocked_keys,	   MGMT_OP_SET_BLOCKED_KEYS_SIZE,
- 						HCI_MGMT_VAR_LEN },
-+	{ set_wake_capable,	   MGMT_SET_WAKE_CAPABLE_SIZE },
- };
++	hci_dev_lock(hdev);
++	hci_req_prepare_suspend(hdev, hdev->suspend.next_state);
++	hci_dev_unlock(hdev);
++}
++
++static int hci_suspend_notifier(struct notifier_block *nb, unsigned long action,
++				void *data)
++{
++	struct hci_dev *hdev =
++		container_of(nb, struct hci_dev, suspend_notifier);
++	int ret = 0;
++
++	if (action == PM_SUSPEND_PREPARE) {
++		hdev->suspend.next_state = BT_SUSPENDED;
++		set_bit(SUSPEND_PREPARE_NOTIFIER, hdev->suspend.tasks);
++		queue_work(hdev->req_workqueue, &hdev->suspend.prepare);
++
++		ret = hci_suspend_wait_event(hdev);
++	} else if (action == PM_POST_SUSPEND) {
++		hdev->suspend.next_state = BT_RUNNING;
++		set_bit(SUSPEND_PREPARE_NOTIFIER, hdev->suspend.tasks);
++		queue_work(hdev->req_workqueue, &hdev->suspend.prepare);
++
++		ret = hci_suspend_wait_event(hdev);
++	}
++
++	return ret ? notifier_from_errno(-EBUSY) : NOTIFY_STOP;
++}
+ /* Alloc HCI device */
+ struct hci_dev *hci_alloc_dev(void)
+ {
+@@ -3319,6 +3380,7 @@ struct hci_dev *hci_alloc_dev(void)
+ 	INIT_WORK(&hdev->tx_work, hci_tx_work);
+ 	INIT_WORK(&hdev->power_on, hci_power_on);
+ 	INIT_WORK(&hdev->error_reset, hci_error_reset);
++	INIT_WORK(&hdev->suspend.prepare, hci_prepare_suspend);
  
- void mgmt_index_added(struct hci_dev *hdev)
+ 	INIT_DELAYED_WORK(&hdev->power_off, hci_power_off);
+ 
+@@ -3327,6 +3389,7 @@ struct hci_dev *hci_alloc_dev(void)
+ 	skb_queue_head_init(&hdev->raw_q);
+ 
+ 	init_waitqueue_head(&hdev->req_wait_q);
++	init_waitqueue_head(&hdev->suspend.tasks_wait_q);
+ 
+ 	INIT_DELAYED_WORK(&hdev->cmd_timer, hci_cmd_timeout);
+ 
+@@ -3438,6 +3501,11 @@ int hci_register_dev(struct hci_dev *hdev)
+ 	hci_sock_dev_event(hdev, HCI_DEV_REG);
+ 	hci_dev_hold(hdev);
+ 
++	hdev->suspend_notifier.notifier_call = hci_suspend_notifier;
++	error = register_pm_notifier(&hdev->suspend_notifier);
++	if (error)
++		goto err_wqueue;
++
+ 	queue_work(hdev->req_workqueue, &hdev->power_on);
+ 
+ 	return id;
+@@ -3471,6 +3539,8 @@ void hci_unregister_dev(struct hci_dev *hdev)
+ 
+ 	hci_dev_do_close(hdev);
+ 
++	unregister_pm_notifier(&hdev->suspend_notifier);
++
+ 	if (!test_bit(HCI_INIT, &hdev->flags) &&
+ 	    !hci_dev_test_flag(hdev, HCI_SETUP) &&
+ 	    !hci_dev_test_flag(hdev, HCI_CONFIG)) {
+diff --git a/net/bluetooth/hci_event.c b/net/bluetooth/hci_event.c
+index 6ddc4a74a5e4..623eca68afdd 100644
+--- a/net/bluetooth/hci_event.c
++++ b/net/bluetooth/hci_event.c
+@@ -2474,6 +2474,7 @@ static void hci_inquiry_result_evt(struct hci_dev *hdev, struct sk_buff *skb)
+ static void hci_conn_complete_evt(struct hci_dev *hdev, struct sk_buff *skb)
+ {
+ 	struct hci_ev_conn_complete *ev = (void *) skb->data;
++	struct inquiry_entry *ie;
+ 	struct hci_conn *conn;
+ 
+ 	BT_DBG("%s", hdev->name);
+@@ -2482,14 +2483,25 @@ static void hci_conn_complete_evt(struct hci_dev *hdev, struct sk_buff *skb)
+ 
+ 	conn = hci_conn_hash_lookup_ba(hdev, ev->link_type, &ev->bdaddr);
+ 	if (!conn) {
+-		if (ev->link_type != SCO_LINK)
+-			goto unlock;
++		ie = hci_inquiry_cache_lookup(hdev, &ev->bdaddr);
++		if (ie) {
++			conn = hci_conn_add(hdev, ev->link_type, &ev->bdaddr,
++					    HCI_ROLE_SLAVE);
++			if (!conn) {
++				bt_dev_err(hdev, "no memory for new conn");
++				goto unlock;
++			}
++		} else {
++			if (ev->link_type != SCO_LINK)
++				goto unlock;
+ 
+-		conn = hci_conn_hash_lookup_ba(hdev, ESCO_LINK, &ev->bdaddr);
+-		if (!conn)
+-			goto unlock;
++			conn = hci_conn_hash_lookup_ba(hdev, ESCO_LINK,
++						       &ev->bdaddr);
++			if (!conn)
++				goto unlock;
+ 
+-		conn->type = SCO_LINK;
++			conn->type = SCO_LINK;
++		}
+ 	}
+ 
+ 	if (!ev->status) {
+diff --git a/net/bluetooth/hci_request.c b/net/bluetooth/hci_request.c
+index 2a1b64dbf76e..3044d9e1ea2b 100644
+--- a/net/bluetooth/hci_request.c
++++ b/net/bluetooth/hci_request.c
+@@ -447,7 +447,7 @@ static void __hci_update_background_scan(struct hci_request *req)
+ 		if (hci_dev_test_flag(hdev, HCI_LE_SCAN))
+ 			hci_req_add_le_scan_disable(req);
+ 
+-		hci_req_add_le_passive_scan(req);
++		hci_req_add_le_passive_scan(req, false);
+ 
+ 		BT_DBG("%s starting background scanning", hdev->name);
+ 	}
+@@ -654,6 +654,12 @@ void hci_req_add_le_scan_disable(struct hci_request *req)
+ {
+ 	struct hci_dev *hdev = req->hdev;
+ 
++	/* Early exit if we've frozen filters for suspend*/
++	if (hdev->suspend.freeze_filters) {
++		BT_DBG("Filters are frozen for suspend");
++		return;
++	}
++
+ 	if (use_ext_scan(hdev)) {
+ 		struct hci_cp_le_set_ext_scan_enable cp;
+ 
+@@ -681,12 +687,25 @@ static void add_to_white_list(struct hci_request *req,
+ 	hci_req_add(req, HCI_OP_LE_ADD_TO_WHITE_LIST, sizeof(cp), &cp);
+ }
+ 
+-static u8 update_white_list(struct hci_request *req)
++static void del_from_white_list(struct hci_request *req, bdaddr_t *bdaddr,
++				u8 bdaddr_type)
++{
++	struct hci_cp_le_del_from_white_list cp;
++
++	cp.bdaddr_type = bdaddr_type;
++	bacpy(&cp.bdaddr, bdaddr);
++
++	hci_req_add(req, HCI_OP_LE_DEL_FROM_WHITE_LIST, sizeof(cp), &cp);
++}
++
++static u8 update_white_list(struct hci_request *req, bool allow_rpa,
++			    bool remove_nonwakeable)
+ {
+ 	struct hci_dev *hdev = req->hdev;
+ 	struct hci_conn_params *params;
+ 	struct bdaddr_list *b;
+ 	uint8_t white_list_entries = 0;
++	bool wakeable;
+ 
+ 	/* Go through the current white list programmed into the
+ 	 * controller one by one and check if that address is still
+@@ -695,24 +714,37 @@ static u8 update_white_list(struct hci_request *req)
+ 	 * command to remove it from the controller.
+ 	 */
+ 	list_for_each_entry(b, &hdev->le_white_list, list) {
+-		/* If the device is neither in pend_le_conns nor
+-		 * pend_le_reports then remove it from the whitelist.
++		wakeable = !!hci_bdaddr_list_lookup(&hdev->wakeable, &b->bdaddr,
++						    b->bdaddr_type);
++
++		/* If the device is not likely to connect or report, remove it
++		 * from the whitelist. Make an exception for wakeable devices if
++		 * we're removing only non-wakeable devices (we want them to
++		 * stay in whitelist).
+ 		 */
+ 		if (!hci_pend_le_action_lookup(&hdev->pend_le_conns,
+ 					       &b->bdaddr, b->bdaddr_type) &&
+ 		    !hci_pend_le_action_lookup(&hdev->pend_le_reports,
+-					       &b->bdaddr, b->bdaddr_type)) {
+-			struct hci_cp_le_del_from_white_list cp;
+-
+-			cp.bdaddr_type = b->bdaddr_type;
+-			bacpy(&cp.bdaddr, &b->bdaddr);
++					       &b->bdaddr, b->bdaddr_type) &&
++		    (!wakeable && remove_nonwakeable)) {
++			BT_DBG("Removing %pMR (0x%x) - not pending or wakeable",
++			       &b->bdaddr, b->bdaddr_type);
++			del_from_white_list(req, &b->bdaddr, b->bdaddr_type);
++			continue;
++		}
+ 
+-			hci_req_add(req, HCI_OP_LE_DEL_FROM_WHITE_LIST,
+-				    sizeof(cp), &cp);
++		/* If we're removing non wakeable devices and this whitelist
++		 * entry is not wake capable, we remove it from the whitelist.
++		 */
++		if (remove_nonwakeable && !wakeable) {
++			BT_DBG("Removing %pMR (0x%x) - not wake capable",
++			       &b->bdaddr, b->bdaddr_type);
++			del_from_white_list(req, &b->bdaddr, b->bdaddr_type);
+ 			continue;
+ 		}
+ 
+-		if (hci_find_irk_by_addr(hdev, &b->bdaddr, b->bdaddr_type)) {
++		if (!allow_rpa &&
++		    hci_find_irk_by_addr(hdev, &b->bdaddr, b->bdaddr_type)) {
+ 			/* White list can not be used with RPAs */
+ 			return 0x00;
+ 		}
+@@ -740,14 +772,20 @@ static u8 update_white_list(struct hci_request *req)
+ 			return 0x00;
+ 		}
+ 
+-		if (hci_find_irk_by_addr(hdev, &params->addr,
+-					 params->addr_type)) {
++		if (!allow_rpa && hci_find_irk_by_addr(hdev, &params->addr,
++						       params->addr_type)) {
+ 			/* White list can not be used with RPAs */
+ 			return 0x00;
+ 		}
+ 
++		if (remove_nonwakeable &&
++		    !hci_bdaddr_list_lookup(&hdev->wakeable, &b->bdaddr,
++					    b->bdaddr_type))
++			continue;
++
+ 		white_list_entries++;
+ 		add_to_white_list(req, params);
++		BT_DBG("Adding %pMR to whitelist", &params->addr);
+ 	}
+ 
+ 	/* After adding all new pending connections, walk through
+@@ -764,14 +802,20 @@ static u8 update_white_list(struct hci_request *req)
+ 			return 0x00;
+ 		}
+ 
+-		if (hci_find_irk_by_addr(hdev, &params->addr,
+-					 params->addr_type)) {
++		if (!allow_rpa && hci_find_irk_by_addr(hdev, &params->addr,
++						       params->addr_type)) {
+ 			/* White list can not be used with RPAs */
+ 			return 0x00;
+ 		}
+ 
++		if (remove_nonwakeable &&
++		    !hci_bdaddr_list_lookup(&hdev->wakeable, &b->bdaddr,
++					    b->bdaddr_type))
++			continue;
++
+ 		white_list_entries++;
+ 		add_to_white_list(req, params);
++		BT_DBG("Adding %pMR to whitelist", &params->addr);
+ 	}
+ 
+ 	/* Select filter policy to use white list */
+@@ -784,7 +828,8 @@ static bool scan_use_rpa(struct hci_dev *hdev)
+ }
+ 
+ static void hci_req_start_scan(struct hci_request *req, u8 type, u16 interval,
+-			       u16 window, u8 own_addr_type, u8 filter_policy)
++			       u16 window, u8 own_addr_type, u8 filter_policy,
++			       u8 filter_dup)
+ {
+ 	struct hci_dev *hdev = req->hdev;
+ 
+@@ -836,7 +881,7 @@ static void hci_req_start_scan(struct hci_request *req, u8 type, u16 interval,
+ 
+ 		memset(&ext_enable_cp, 0, sizeof(ext_enable_cp));
+ 		ext_enable_cp.enable = LE_SCAN_ENABLE;
+-		ext_enable_cp.filter_dup = LE_SCAN_FILTER_DUP_ENABLE;
++		ext_enable_cp.filter_dup = filter_dup;
+ 
+ 		hci_req_add(req, HCI_OP_LE_SET_EXT_SCAN_ENABLE,
+ 			    sizeof(ext_enable_cp), &ext_enable_cp);
+@@ -855,17 +900,47 @@ static void hci_req_start_scan(struct hci_request *req, u8 type, u16 interval,
+ 
+ 		memset(&enable_cp, 0, sizeof(enable_cp));
+ 		enable_cp.enable = LE_SCAN_ENABLE;
+-		enable_cp.filter_dup = LE_SCAN_FILTER_DUP_ENABLE;
++		enable_cp.filter_dup = filter_dup;
+ 		hci_req_add(req, HCI_OP_LE_SET_SCAN_ENABLE, sizeof(enable_cp),
+ 			    &enable_cp);
+ 	}
+ }
+ 
+-void hci_req_add_le_passive_scan(struct hci_request *req)
++static u16 __hci_get_scan_interval(struct hci_dev *hdev, bool suspending)
++{
++	if (suspending)
++		return 0x0060;
++	else
++		return hdev->le_scan_interval;
++}
++
++static u16 __hci_get_scan_window(struct hci_dev *hdev, bool suspending)
++{
++	if (suspending)
++		return 0x0012;
++	else
++		return hdev->le_scan_window;
++}
++
++void hci_req_add_le_passive_scan(struct hci_request *req, bool suspending)
+ {
+ 	struct hci_dev *hdev = req->hdev;
+ 	u8 own_addr_type;
+ 	u8 filter_policy;
++	u8 filter_dup;
++
++	/* We allow whitelisting even with RPAs in suspend. In the worst case,
++	 * we won't be able to wake from devices that use the privacy1.2
++	 * features. Additionally, once we support privacy1.2 and IRK
++	 * offloading, we can update this to also check for those conditions.
++	 */
++	bool allow_rpa = suspending;
++
++	/* Early exit if we've frozen filters for suspend*/
++	if (hdev->suspend.freeze_filters) {
++		BT_DBG("Filters are frozen for suspend");
++		return;
++	}
+ 
+ 	/* Set require_privacy to false since no SCAN_REQ are send
+ 	 * during passive scanning. Not using an non-resolvable address
+@@ -881,7 +956,8 @@ void hci_req_add_le_passive_scan(struct hci_request *req)
+ 	 * happen before enabling scanning. The controller does
+ 	 * not allow white list modification while scanning.
+ 	 */
+-	filter_policy = update_white_list(req);
++	BT_DBG("Updating white list with suspending = %d", suspending);
++	filter_policy = update_white_list(req, allow_rpa, suspending);
+ 
+ 	/* When the controller is using random resolvable addresses and
+ 	 * with that having LE privacy enabled, then controllers with
+@@ -896,8 +972,14 @@ void hci_req_add_le_passive_scan(struct hci_request *req)
+ 	    (hdev->le_features[0] & HCI_LE_EXT_SCAN_POLICY))
+ 		filter_policy |= 0x02;
+ 
+-	hci_req_start_scan(req, LE_SCAN_PASSIVE, hdev->le_scan_interval,
+-			   hdev->le_scan_window, own_addr_type, filter_policy);
++	filter_dup = suspending ? LE_SCAN_FILTER_DUP_DISABLE :
++				  LE_SCAN_FILTER_DUP_ENABLE;
++
++	BT_DBG("LE passive scan with whitelist = %d", filter_policy);
++	hci_req_start_scan(req, LE_SCAN_PASSIVE,
++			   __hci_get_scan_interval(hdev, suspending),
++			   __hci_get_scan_window(hdev, suspending),
++			   own_addr_type, filter_policy, filter_dup);
+ }
+ 
+ static u8 get_adv_instance_scan_rsp_len(struct hci_dev *hdev, u8 instance)
+@@ -918,6 +1000,170 @@ static u8 get_adv_instance_scan_rsp_len(struct hci_dev *hdev, u8 instance)
+ 	return adv_instance->scan_rsp_len;
+ }
+ 
++static void hci_req_set_event_filter(struct hci_request *req, bool clear)
++{
++	struct bdaddr_list *b;
++	struct hci_cp_set_event_filter f;
++	struct hci_dev *hdev = req->hdev;
++	int filters_updated = 0;
++	u8 scan;
++
++	/* Always clear event filter when starting */
++	memset(&f, 0, sizeof(f));
++	f.flt_type = HCI_FLT_CLEAR_ALL;
++	hci_req_add(req, HCI_OP_SET_EVENT_FLT, 1, &f);
++
++	if (!clear) {
++		list_for_each_entry(b, &hdev->wakeable, list) {
++			if (b->bdaddr_type != BDADDR_BREDR)
++				continue;
++
++			memset(&f, 0, sizeof(f));
++			bacpy(&f.cond.conn.addr.bdaddr, &b->bdaddr);
++			f.flt_type = HCI_FLT_CONN_SETUP;
++			f.cond_type = HCI_CONN_SETUP_ALLOW_BDADDR;
++			f.cond.conn.addr.auto_accept = HCI_CONN_SETUP_AUTO_ON;
++
++			BT_DBG("Adding event filters for %pMR", &b->bdaddr);
++			hci_req_add(req, HCI_OP_SET_EVENT_FLT, sizeof(f), &f);
++
++			filters_updated++;
++		}
++
++		scan = filters_updated ? SCAN_PAGE : SCAN_DISABLED;
++		hci_req_add(req, HCI_OP_WRITE_SCAN_ENABLE, 1, &scan);
++	} else {
++		/* Restore page scan to normal (i.e. there are disconnected
++		 * devices in the whitelist.
++		 */
++		__hci_req_update_scan(req);
++	}
++}
++
++static void hci_req_enable_le_suspend_scan(struct hci_request *req,
++					   bool suspending)
++{
++	/* Can't change params without disabling first */
++	hci_req_add_le_scan_disable(req);
++
++	/* Configure params and enable scanning */
++	hci_req_add_le_passive_scan(req, suspending);
++
++	/* Block suspend notifier on response */
++	set_bit(SUSPEND_LE_SET_SCAN_ENABLE, req->hdev->suspend.tasks);
++}
++
++static void le_suspend_req_complete(struct hci_dev *hdev, u8 status, u16 opcode)
++{
++	BT_DBG("Request complete opcode=0x%x, status=0x%x", opcode, status);
++
++	/* Expecting LE Set scan to return */
++	if (opcode == HCI_OP_LE_SET_SCAN_ENABLE &&
++	    test_and_clear_bit(SUSPEND_LE_SET_SCAN_ENABLE,
++			       hdev->suspend.tasks)) {
++		wake_up(&hdev->suspend.tasks_wait_q);
++	}
++}
++
++/* Call with hci_dev_lock */
++void hci_req_prepare_suspend(struct hci_dev *hdev, enum suspended_state next)
++{
++	int old_state;
++	struct hci_conn *conn;
++	struct hci_request req;
++
++	if (next == hdev->suspend.state) {
++		BT_DBG("Same state before and after: %d", next);
++		goto done;
++	}
++
++	hci_req_init(&req, hdev);
++	if (next == BT_SUSPENDED) {
++		/* Pause discovery if not already stopped */
++		old_state = hdev->discovery.state;
++		if (old_state != DISCOVERY_STOPPED) {
++			set_bit(SUSPEND_PAUSE_DISCOVERY, hdev->suspend.tasks);
++			hci_discovery_set_state(hdev, DISCOVERY_STOPPING);
++			queue_work(hdev->req_workqueue, &hdev->discov_update);
++		}
++
++		hdev->suspend.discovery_paused = true;
++		hdev->suspend.discovery_old_state = old_state;
++
++		/* Stop advertising */
++		old_state = hci_dev_test_flag(hdev, HCI_ADVERTISING);
++		if (old_state) {
++			set_bit(SUSPEND_PAUSE_ADVERTISING, hdev->suspend.tasks);
++			cancel_delayed_work(&hdev->discov_off);
++			queue_delayed_work(hdev->req_workqueue,
++					   &hdev->discov_off, 0);
++		}
++
++		hdev->suspend.advertising_paused = true;
++		hdev->suspend.advertising_old_state = old_state;
++
++		/* Enable event filter for existing devices */
++		hci_req_set_event_filter(&req, false);
++
++		/* Enable passive scan at lower duty cycle */
++		hci_req_enable_le_suspend_scan(&req, true);
++
++		hdev->suspend.freeze_filters = true;
++
++		/* Run commands before disconnecting */
++		hci_req_run(&req, le_suspend_req_complete);
++
++		hdev->suspend.disconnect_counter = 0;
++		/* Soft disconnect everything (power off)*/
++		list_for_each_entry(conn, &hdev->conn_hash.list, list) {
++			hci_disconnect(conn, HCI_ERROR_REMOTE_POWER_OFF);
++			hdev->suspend.disconnect_counter++;
++		}
++
++		if (hdev->suspend.disconnect_counter > 0) {
++			BT_DBG("Had %d disconnects. Will wait on them",
++			       hdev->suspend.disconnect_counter);
++			set_bit(SUSPEND_DISCONNECTING, hdev->suspend.tasks);
++		}
++	} else {
++		hdev->suspend.freeze_filters = false;
++
++		/* Clear event filter */
++		hci_req_set_event_filter(&req, true);
++
++		/* Reset passive/background scanning to normal */
++		hci_req_enable_le_suspend_scan(&req, false);
++
++		/* Unpause advertising */
++		hdev->suspend.advertising_paused = false;
++		if (hdev->suspend.advertising_old_state) {
++			set_bit(SUSPEND_UNPAUSE_ADVERTISING,
++				hdev->suspend.tasks);
++			hci_dev_set_flag(hdev, HCI_ADVERTISING);
++			queue_work(hdev->req_workqueue,
++				   &hdev->discoverable_update);
++			hdev->suspend.advertising_old_state = 0;
++		}
++
++		/* Unpause discovery */
++		hdev->suspend.discovery_paused = false;
++		if (hdev->suspend.discovery_old_state != DISCOVERY_STOPPED &&
++		    hdev->suspend.discovery_old_state != DISCOVERY_STOPPING) {
++			set_bit(SUSPEND_UNPAUSE_DISCOVERY, hdev->suspend.tasks);
++			hci_discovery_set_state(hdev, DISCOVERY_STARTING);
++			queue_work(hdev->req_workqueue, &hdev->discov_update);
++		}
++
++		hci_req_run(&req, le_suspend_req_complete);
++	}
++
++	hdev->suspend.state = next;
++
++done:
++	clear_bit(SUSPEND_PREPARE_NOTIFIER, hdev->suspend.tasks);
++	wake_up(&hdev->suspend.tasks_wait_q);
++}
++
+ static u8 get_cur_adv_instance_scan_rsp_len(struct hci_dev *hdev)
+ {
+ 	u8 instance = hdev->cur_adv_instance;
+@@ -2015,6 +2261,9 @@ void __hci_req_update_scan(struct hci_request *req)
+ 	if (mgmt_powering_down(hdev))
+ 		return;
+ 
++	if (hdev->suspend.freeze_filters)
++		return;
++
+ 	if (hci_dev_test_flag(hdev, HCI_CONNECTABLE) ||
+ 	    disconnected_whitelist_entries(hdev))
+ 		scan = SCAN_PAGE;
+@@ -2538,7 +2787,7 @@ static int active_scan(struct hci_request *req, unsigned long opt)
+ 		own_addr_type = ADDR_LE_DEV_PUBLIC;
+ 
+ 	hci_req_start_scan(req, LE_SCAN_ACTIVE, interval, DISCOV_LE_SCAN_WIN,
+-			   own_addr_type, 0);
++			   own_addr_type, 0, LE_SCAN_FILTER_DUP_DISABLE);
+ 	return 0;
+ }
+ 
+diff --git a/net/bluetooth/hci_request.h b/net/bluetooth/hci_request.h
+index a7019fbeadd3..f555bb789664 100644
+--- a/net/bluetooth/hci_request.h
++++ b/net/bluetooth/hci_request.h
+@@ -66,7 +66,9 @@ void __hci_req_update_name(struct hci_request *req);
+ void __hci_req_update_eir(struct hci_request *req);
+ 
+ void hci_req_add_le_scan_disable(struct hci_request *req);
+-void hci_req_add_le_passive_scan(struct hci_request *req);
++void hci_req_add_le_passive_scan(struct hci_request *req, bool suspending);
++
++void hci_req_prepare_suspend(struct hci_dev *hdev, enum suspended_state next);
+ 
+ void hci_req_reenable_advertising(struct hci_dev *hdev);
+ void __hci_req_enable_advertising(struct hci_request *req);
+diff --git a/net/bluetooth/mgmt.c b/net/bluetooth/mgmt.c
+index 95092130f16c..e5bac060c999 100644
+--- a/net/bluetooth/mgmt.c
++++ b/net/bluetooth/mgmt.c
+@@ -24,6 +24,7 @@
+ 
+ /* Bluetooth HCI Management interface */
+ 
++#include <linux/delay.h>
+ #include <linux/module.h>
+ #include <asm/unaligned.h>
+ 
+@@ -1385,6 +1386,12 @@ static int set_discoverable(struct sock *sk, struct hci_dev *hdev, void *data,
+ 		goto failed;
+ 	}
+ 
++	if (hdev->suspend.advertising_paused) {
++		err = mgmt_cmd_status(sk, hdev->id, MGMT_OP_SET_DISCOVERABLE,
++				      MGMT_STATUS_BUSY);
++		goto failed;
++	}
++
+ 	if (!hdev_is_powered(hdev)) {
+ 		bool changed = false;
+ 
+@@ -3868,6 +3875,13 @@ void mgmt_start_discovery_complete(struct hci_dev *hdev, u8 status)
+ 	}
+ 
+ 	hci_dev_unlock(hdev);
++
++	/* Handle suspend notifier */
++	if (test_and_clear_bit(SUSPEND_UNPAUSE_DISCOVERY,
++			       hdev->suspend.tasks)) {
++		BT_DBG("Unpaused discovery");
++		wake_up(&hdev->suspend.tasks_wait_q);
++	}
+ }
+ 
+ static bool discovery_type_is_valid(struct hci_dev *hdev, uint8_t type,
+@@ -3929,6 +3943,13 @@ static int start_discovery_internal(struct sock *sk, struct hci_dev *hdev,
+ 		goto failed;
+ 	}
+ 
++	/* Can't start discovery when it is paused */
++	if (hdev->suspend.discovery_paused) {
++		err = mgmt_cmd_complete(sk, hdev->id, op, MGMT_STATUS_BUSY,
++					&cp->type, sizeof(cp->type));
++		goto failed;
++	}
++
+ 	/* Clear the discovery filter first to free any previously
+ 	 * allocated memory for the UUID list.
+ 	 */
+@@ -4096,6 +4117,12 @@ void mgmt_stop_discovery_complete(struct hci_dev *hdev, u8 status)
+ 	}
+ 
+ 	hci_dev_unlock(hdev);
++
++	/* Handle suspend notifier */
++	if (test_and_clear_bit(SUSPEND_PAUSE_DISCOVERY, hdev->suspend.tasks)) {
++		BT_DBG("Paused discovery");
++		wake_up(&hdev->suspend.tasks_wait_q);
++	}
+ }
+ 
+ static int stop_discovery(struct sock *sk, struct hci_dev *hdev, void *data,
+@@ -4327,6 +4354,17 @@ static void set_advertising_complete(struct hci_dev *hdev, u8 status,
+ 	if (match.sk)
+ 		sock_put(match.sk);
+ 
++	/* Handle suspend notifier */
++	if (test_and_clear_bit(SUSPEND_PAUSE_ADVERTISING,
++			       hdev->suspend.tasks)) {
++		BT_DBG("Paused advertising");
++		wake_up(&hdev->suspend.tasks_wait_q);
++	} else if (test_and_clear_bit(SUSPEND_UNPAUSE_ADVERTISING,
++				      hdev->suspend.tasks)) {
++		BT_DBG("Unpaused advertising");
++		wake_up(&hdev->suspend.tasks_wait_q);
++	}
++
+ 	/* If "Set Advertising" was just disabled and instance advertising was
+ 	 * set up earlier, then re-enable multi-instance advertising.
+ 	 */
+@@ -4378,6 +4416,10 @@ static int set_advertising(struct sock *sk, struct hci_dev *hdev, void *data,
+ 		return mgmt_cmd_status(sk, hdev->id, MGMT_OP_SET_ADVERTISING,
+ 				       MGMT_STATUS_INVALID_PARAMS);
+ 
++	if (hdev->suspend.advertising_paused)
++		return mgmt_cmd_status(sk, hdev->id, MGMT_OP_SET_ADVERTISING,
++				       MGMT_STATUS_BUSY);
++
+ 	hci_dev_lock(hdev);
+ 
+ 	val = !!cp->val;
+@@ -4557,7 +4599,7 @@ static int set_scan_params(struct sock *sk, struct hci_dev *hdev,
+ 		hci_req_init(&req, hdev);
+ 
+ 		hci_req_add_le_scan_disable(&req);
+-		hci_req_add_le_passive_scan(&req);
++		hci_req_add_le_passive_scan(&req, false);
+ 
+ 		hci_req_run(&req, NULL);
+ 	}
+@@ -7453,6 +7495,14 @@ void mgmt_device_disconnected(struct hci_dev *hdev, bdaddr_t *bdaddr,
+ 
+ 	mgmt_event(MGMT_EV_DEVICE_DISCONNECTED, hdev, &ev, sizeof(ev), sk);
+ 
++	if (hdev->suspend.disconnect_counter > 0) {
++		hdev->suspend.disconnect_counter--;
++		if (hdev->suspend.disconnect_counter <= 0) {
++			clear_bit(SUSPEND_DISCONNECTING, hdev->suspend.tasks);
++			wake_up(&hdev->suspend.tasks_wait_q);
++		}
++	}
++
+ 	if (sk)
+ 		sock_put(sk);
+ 
 -- 
 2.25.0.341.g760bfbb309-goog
 
