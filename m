@@ -2,38 +2,38 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 882DD140617
-	for <lists+netdev@lfdr.de>; Fri, 17 Jan 2020 10:33:48 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A20F714060E
+	for <lists+netdev@lfdr.de>; Fri, 17 Jan 2020 10:33:31 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726741AbgAQJc7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 17 Jan 2020 04:32:59 -0500
-Received: from us-smtp-2.mimecast.com ([205.139.110.61]:24466 "EHLO
-        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1726553AbgAQJc6 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 17 Jan 2020 04:32:58 -0500
+        id S1727580AbgAQJdJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 17 Jan 2020 04:33:09 -0500
+Received: from us-smtp-delivery-1.mimecast.com ([207.211.31.120]:45173 "EHLO
+        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+        with ESMTP id S1726925AbgAQJdF (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 17 Jan 2020 04:33:05 -0500
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1579253576;
+        s=mimecast20190719; t=1579253584;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=GjodTc+NxXpXZK3ZFiQXvOKJvfATQRwDI15WnbNFZWs=;
-        b=Bun+1DGxMtQJfpxe5pzM5vzfgQLvL0cx4U50Z+73bHnw03xdZlkIvKRGRJTtyL6K4qmSub
-        CpUhCBR/GxA0wCRw3mY0rhbvP9YzLUQbDxQizRrnD+vrwelzkqo5JBtPIvniC2YlYA4zOP
-        hk2ozEYWusWN18Bg8cTrNqUrU+jsXko=
+        bh=RHvGcF9xzuVRZeTw2ecPotSnBNnYfAGaG6neQxJf86E=;
+        b=dN35GK7zGCUpG0LFQSUBSG1CgLt1FSOGs6m7zva8+yffm/jwGGI3wr/AylucgVT3ycN/T7
+        GMFGws07c4tYx5RRAdQD8nvBMxjGGaPcti+njxy9BsSHDqnE9JPifItR2VVyvNYZoeNEHW
+        uY4H0fJmi0jE+XgOYZIxVs6kn5qp6UA=
 Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
  [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-130-_HQSAA8RM6efHyvV5nrALA-1; Fri, 17 Jan 2020 04:32:55 -0500
-X-MC-Unique: _HQSAA8RM6efHyvV5nrALA-1
-Received: from smtp.corp.redhat.com (int-mx08.intmail.prod.int.phx2.redhat.com [10.5.11.23])
+ us-mta-139-IavVhmtuNH2UPO5_fDnW7w-1; Fri, 17 Jan 2020 04:33:03 -0500
+X-MC-Unique: IavVhmtuNH2UPO5_fDnW7w-1
+Received: from smtp.corp.redhat.com (int-mx01.intmail.prod.int.phx2.redhat.com [10.5.11.11])
         (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id C9BDD477;
-        Fri, 17 Jan 2020 09:32:52 +0000 (UTC)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 46405107ACC7;
+        Fri, 17 Jan 2020 09:33:00 +0000 (UTC)
 Received: from [10.72.12.168] (ovpn-12-168.pek2.redhat.com [10.72.12.168])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id DD49738B;
-        Fri, 17 Jan 2020 09:32:36 +0000 (UTC)
-Subject: Re: [PATCH 4/5] virtio: introduce a vDPA based transport
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 291178121F;
+        Fri, 17 Jan 2020 09:32:40 +0000 (UTC)
+Subject: Re: [PATCH 5/5] vdpasim: vDPA device simulator
 To:     Jason Gunthorpe <jgg@mellanox.com>
 Cc:     "mst@redhat.com" <mst@redhat.com>,
         "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
@@ -61,20 +61,20 @@ Cc:     "mst@redhat.com" <mst@redhat.com>,
         Jiri Pirko <jiri@mellanox.com>,
         Shahaf Shuler <shahafs@mellanox.com>,
         "hanand@xilinx.com" <hanand@xilinx.com>,
-        "mhabets@solarflare.com" <mhabets@solarflare.com>
+        "mhabets@solarflare.com" <mhabets@solarflare.com>, kuba@kernel.org
 References: <20200116124231.20253-1-jasowang@redhat.com>
- <20200116124231.20253-5-jasowang@redhat.com>
- <20200116153807.GI20978@mellanox.com>
+ <20200116124231.20253-6-jasowang@redhat.com>
+ <20200116154658.GJ20978@mellanox.com>
 From:   Jason Wang <jasowang@redhat.com>
-Message-ID: <8e8aa4b7-4948-5719-9618-e28daffba1a5@redhat.com>
-Date:   Fri, 17 Jan 2020 17:32:35 +0800
+Message-ID: <aea2bff8-82c8-2c0f-19ee-e86db73e199f@redhat.com>
+Date:   Fri, 17 Jan 2020 17:32:39 +0800
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
  Thunderbird/60.8.0
 MIME-Version: 1.0
-In-Reply-To: <20200116153807.GI20978@mellanox.com>
+In-Reply-To: <20200116154658.GJ20978@mellanox.com>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Language: en-US
-X-Scanned-By: MIMEDefang 2.84 on 10.5.11.23
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.11
 Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
@@ -82,274 +82,191 @@ List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 
-On 2020/1/16 =E4=B8=8B=E5=8D=8811:38, Jason Gunthorpe wrote:
-> On Thu, Jan 16, 2020 at 08:42:30PM +0800, Jason Wang wrote:
->> diff --git a/drivers/virtio/virtio_vdpa.c b/drivers/virtio/virtio_vdpa=
-.c
->> new file mode 100644
->> index 000000000000..86936e5e7ec3
->> +++ b/drivers/virtio/virtio_vdpa.c
->> @@ -0,0 +1,400 @@
->> +// SPDX-License-Identifier: GPL-2.0-only
->> +/*
->> + * VIRTIO based driver for vDPA device
->> + *
->> + * Copyright (c) 2020, Red Hat. All rights reserved.
->> + *     Author: Jason Wang <jasowang@redhat.com>
->> + *
->> + */
->> +
->> +#include <linux/init.h>
->> +#include <linux/module.h>
->> +#include <linux/device.h>
->> +#include <linux/kernel.h>
->> +#include <linux/slab.h>
->> +#include <linux/uuid.h>
->> +#include <linux/virtio.h>
->> +#include <linux/vdpa.h>
->> +#include <linux/virtio_config.h>
->> +#include <linux/virtio_ring.h>
->> +
->> +#define MOD_VERSION  "0.1"
->> +#define MOD_AUTHOR   "Jason Wang <jasowang@redhat.com>"
->> +#define MOD_DESC     "vDPA bus driver for virtio devices"
->> +#define MOD_LICENSE  "GPL v2"
->> +
->> +#define to_virtio_vdpa_device(dev) \
->> +	container_of(dev, struct virtio_vdpa_device, vdev)
-> Should be a static function
+On 2020/1/16 =E4=B8=8B=E5=8D=8811:47, Jason Gunthorpe wrote:
+> On Thu, Jan 16, 2020 at 08:42:31PM +0800, Jason Wang wrote:
+>> This patch implements a software vDPA networking device. The datapath
+>> is implemented through vringh and workqueue. The device has an on-chip
+>> IOMMU which translates IOVA to PA. For kernel virtio drivers, vDPA
+>> simulator driver provides dma_ops. For vhost driers, set_map() methods
+>> of vdpa_config_ops is implemented to accept mappings from vhost.
+>>
+>> A sysfs based management interface is implemented, devices are
+>> created and removed through:
+>>
+>> /sys/devices/virtual/vdpa_simulator/netdev/{create|remove}
+> This is very gross, creating a class just to get a create/remove and
+> then not using the class for anything else? Yuk.
 
 
-Ok.
+It includes more information, e.g the devices and the link from vdpa_sim=20
+device and vdpa device.
 
 
 >
->> +struct virtio_vdpa_device {
->> +	struct virtio_device vdev;
->> +	struct vdpa_device *vdpa;
->> +	u64 features;
->> +
->> +	/* The lock to protect virtqueue list */
->> +	spinlock_t lock;
->> +	/* List of virtio_vdpa_vq_info */
->> +	struct list_head virtqueues;
+>> Netlink based lifecycle management could be implemented for vDPA
+>> simulator as well.
+> This is just begging for a netlink based approach.
+>
+> Certainly netlink driven removal should be an agreeable standard for
+> all devices, I think.
+
+
+Well, I think Parav had some proposals during the discussion of mdev=20
+approach. But I'm not sure if he had any RFC codes for me to integrate=20
+it into vdpasim.
+
+Or do you want me to propose the netlink API? If yes, would you prefer=20
+to a new virtio dedicated one or be a subset of devlink?
+
+But it might be better to reach an agreement for all the vendors here.
+
+Rob, Steve, Tiwei, Lingshan, Harpreet, Martin, Jakub, please share your=20
+thoughts about the management API here.
+
+
+>
+>> +struct vdpasim_virtqueue {
+>> +	struct vringh vring;
+>> +	struct vringh_kiov iov;
+>> +	unsigned short head;
+>> +	bool ready;
+>> +	u64 desc_addr;
+>> +	u64 device_addr;
+>> +	u64 driver_addr;
+>> +	u32 num;
+>> +	void *private;
+>> +	irqreturn_t (*cb)(void *data);
 >> +};
 >> +
->> +struct virtio_vdpa_vq_info {
->> +	/* the actual virtqueue */
->> +	struct virtqueue *vq;
+>> +#define VDPASIM_QUEUE_ALIGN PAGE_SIZE
+>> +#define VDPASIM_QUEUE_MAX 256
+>> +#define VDPASIM_DEVICE_ID 0x1
+>> +#define VDPASIM_VENDOR_ID 0
+>> +#define VDPASIM_VQ_NUM 0x2
+>> +#define VDPASIM_CLASS_NAME "vdpa_simulator"
+>> +#define VDPASIM_NAME "netdev"
 >> +
->> +	/* the list node for the virtqueues list */
->> +	struct list_head node;
->> +};
->> +
->> +static struct vdpa_device *vd_get_vdpa(struct virtio_device *vdev)
+>> +u64 vdpasim_features =3D (1ULL << VIRTIO_F_ANY_LAYOUT) |
+>> +		       (1ULL << VIRTIO_F_VERSION_1)  |
+>> +		       (1ULL << VIRTIO_F_IOMMU_PLATFORM);
+> Is not using static here intentional?
+
+
+No, let me fix.
+
+
+>
+>> +static void vdpasim_release_dev(struct device *_d)
 >> +{
->> +	struct virtio_vdpa_device *vd_dev =3D to_virtio_vdpa_device(vdev);
->> +	struct vdpa_device *vdpa =3D vd_dev->vdpa;
+>> +	struct vdpa_device *vdpa =3D dev_to_vdpa(_d);
+>> +	struct vdpasim *vdpasim =3D vdpa_to_sim(vdpa);
 >> +
->> +	return vdpa;
-> Bit of a long way to say
->
->    return to_virtio_vdpa_device(vdev)->vdpa
->
-> ?
-
-
-Right.
-
-
->
->> +err_vq:
->> +	vring_del_virtqueue(vq);
->> +error_new_virtqueue:
->> +	ops->set_vq_ready(vdpa, index, 0);
->> +	WARN_ON(ops->get_vq_ready(vdpa, index));
-> A warn_on during error unwind? Sketchy, deserves a comment I think
-
-
-Yes, it's a hint of bug in the vDPA driver. Will add a comment.
-
-
->
->> +static void virtio_vdpa_release_dev(struct device *_d)
->> +{
->> +	struct virtio_device *vdev =3D
->> +	       container_of(_d, struct virtio_device, dev);
->> +	struct virtio_vdpa_device *vd_dev =3D
->> +	       container_of(vdev, struct virtio_vdpa_device, vdev);
->> +	struct vdpa_device *vdpa =3D vd_dev->vdpa;
+>> +	sysfs_remove_link(vdpasim_dev->devices_kobj, vdpasim->name);
 >> +
->> +	devm_kfree(&vdpa->dev, vd_dev);
+>> +	mutex_lock(&vsim_list_lock);
+>> +	list_del(&vdpasim->next);
+>> +	mutex_unlock(&vsim_list_lock);
+>> +
+>> +	kfree(vdpasim->buffer);
+>> +	kfree(vdpasim);
 >> +}
-> It is unusual for the release function to not be owned by the
-> subsystem, through the class.
-
-
-This is how virtio_pci and virtio_mmio work now. Virtio devices may have=20
-different transports which require different release functions. I think=20
-this is the reason why virtio
-
-
-> I'm not sure there are enough module ref
-> counts to ensure that this function is not unloaded?
-
-
-Let me double check this.
-
-
->
-> Usually to make this all work sanely the subsytem provides some
-> allocation function
->
->   vdpa_dev =3D vdpa_alloc_dev(parent, ops, sizeof(struct virtio_vdpa_de=
-vice))
->   struct virtio_vdpa_device *priv =3D vdpa_priv(vdpa_dev)
->
-> Then the subsystem naturally owns all the memory.
->
-> Otherwise it gets tricky to ensure that the module doesn't unload
-> before all the krefs are put.
-
-
-I see.
-
-
->
->> +
->> +static int virtio_vdpa_probe(struct device *dev)
->> +{
->> +	struct vdpa_device *vdpa =3D dev_to_vdpa(dev);
-> The probe function for a class should accept the classes type already,
-> no casting.
-
-
-Right.
-
-
->
->> +	const struct vdpa_config_ops *ops =3D vdpa->config;
->> +	struct virtio_vdpa_device *vd_dev;
->> +	int rc;
->> +
->> +	vd_dev =3D devm_kzalloc(dev, sizeof(*vd_dev), GFP_KERNEL);
->> +	if (!vd_dev)
->> +		return -ENOMEM;
-> This is not right, the struct device lifetime is controled by a kref,
-> not via devm. If you want to use a devm unwind then the unwind is
-> put_device, not devm_kfree.
-
-
-I'm not sure I get the point here. The lifetime is bound to underlying=20
-vDPA device and devres allow to be freed before the vpda device is=20
-released. But I agree using devres of underlying vdpa device looks wired.
-
-
->
-> In this simple situation I don't see a reason to use devm.
->
->> +	vd_dev->vdev.dev.parent =3D &vdpa->dev;
->> +	vd_dev->vdev.dev.release =3D virtio_vdpa_release_dev;
->> +	vd_dev->vdev.config =3D &virtio_vdpa_config_ops;
->> +	vd_dev->vdpa =3D vdpa;
->> +	INIT_LIST_HEAD(&vd_dev->virtqueues);
->> +	spin_lock_init(&vd_dev->lock);
->> +
->> +	vd_dev->vdev.id.device =3D ops->get_device_id(vdpa);
->> +	if (vd_dev->vdev.id.device =3D=3D 0)
->> +		return -ENODEV;
->> +
->> +	vd_dev->vdev.id.vendor =3D ops->get_vendor_id(vdpa);
->> +	rc =3D register_virtio_device(&vd_dev->vdev);
->> +	if (rc)
->> +		put_device(dev);
-> And a ugly unwind like this is why you want to have device_initialize()
-> exposed to the driver,
-
-
-In this context, which "driver" did you mean here? (Note, virtio-vdpa is=20
-the driver for vDPA bus here).
-
-
->   so there is a clear pairing that calling
-> device_initialize() must be followed by put_device. This should also
-> use the goto unwind style
->
->> +	else
->> +		dev_set_drvdata(dev, vd_dev);
->> +
->> +	return rc;
->> +}
->> +
->> +static void virtio_vdpa_remove(struct device *dev)
->> +{
-> Remove should also already accept the right type
-
-
-Yes.
-
-
->
->> +	struct virtio_vdpa_device *vd_dev =3D dev_get_drvdata(dev);
->> +
->> +	unregister_virtio_device(&vd_dev->vdev);
->> +}
->> +
->> +static struct vdpa_driver virtio_vdpa_driver =3D {
->> +	.drv =3D {
->> +		.name	=3D "virtio_vdpa",
->> +	},
->> +	.probe	=3D virtio_vdpa_probe,
->> +	.remove =3D virtio_vdpa_remove,
->> +};
-> Still a little unclear on binding, is this supposed to bind to all
-> vdpa devices?
-
-
-Yes, it expected to drive all vDPA devices.
-
-
->
-> Where is the various THIS_MODULE's I expect to see in a scheme like
-> this?
->
-> All function pointers must be protected by a held module reference
-> count, ie the above probe/remove and all the pointers in ops.
-
-
-Will double check, since I don't see this in other virtio transport=20
-drivers (PCI or MMIO).
-
-
->
->> +static int __init virtio_vdpa_init(void)
->> +{
->> +	return register_vdpa_driver(&virtio_vdpa_driver);
->> +}
->> +
->> +static void __exit virtio_vdpa_exit(void)
->> +{
->> +	unregister_vdpa_driver(&virtio_vdpa_driver);
->> +}
->> +
->> +module_init(virtio_vdpa_init)
->> +module_exit(virtio_vdpa_exit)
-> Best to provide the usual 'module_pci_driver' like scheme for this
-> boiler plate.
-
-
-Ok.
-
-
->
->> +MODULE_VERSION(MOD_VERSION);
->> +MODULE_LICENSE(MOD_LICENSE);
->> +MODULE_AUTHOR(MOD_AUTHOR);
->> +MODULE_DESCRIPTION(MOD_DESC);
-> Why the indirection with 2nd defines?
+> It is again a bit weird to see a realease function in a driver. This
+> stuff is usually in the remove remove function.
 
 
 Will fix.
+
+
+>
+>> +static int vdpasim_create(const guid_t *uuid)
+>> +{
+>> +	struct vdpasim *vdpasim, *tmp;
+>> +	struct virtio_net_config *config;
+>> +	struct vdpa_device *vdpa;
+>> +	struct device *dev;
+>> +	int ret =3D -ENOMEM;
+>> +
+>> +	mutex_lock(&vsim_list_lock);
+>> +	list_for_each_entry(tmp, &vsim_devices_list, next) {
+>> +		if (guid_equal(&tmp->uuid, uuid)) {
+>> +			mutex_unlock(&vsim_list_lock);
+>> +			return -EEXIST;
+>> +		}
+>> +	}
+>> +
+>> +	vdpasim =3D kzalloc(sizeof(*vdpasim), GFP_KERNEL);
+>> +	if (!vdpasim)
+>> +		goto err_vdpa_alloc;
+>> +
+>> +	vdpasim->buffer =3D kmalloc(PAGE_SIZE, GFP_KERNEL);
+>> +	if (!vdpasim->buffer)
+>> +		goto err_buffer_alloc;
+>> +
+>> +	vdpasim->iommu =3D vhost_iotlb_alloc(2048, 0);
+>> +	if (!vdpasim->iommu)
+>> +		goto err_iotlb;
+>> +
+>> +	config =3D &vdpasim->config;
+>> +	config->mtu =3D 1500;
+>> +	config->status =3D VIRTIO_NET_S_LINK_UP;
+>> +	eth_random_addr(config->mac);
+>> +
+>> +	INIT_WORK(&vdpasim->work, vdpasim_work);
+>> +	spin_lock_init(&vdpasim->lock);
+>> +
+>> +	guid_copy(&vdpasim->uuid, uuid);
+>> +
+>> +	list_add(&vdpasim->next, &vsim_devices_list);
+>> +	vdpa =3D &vdpasim->vdpa;
+>> +
+>> +	mutex_unlock(&vsim_list_lock);
+>> +
+>> +	vdpa =3D &vdpasim->vdpa;
+>> +	vdpa->config =3D &vdpasim_net_config_ops;
+>> +	vdpa_set_parent(vdpa, &vdpasim_dev->dev);
+>> +	vdpa->dev.release =3D vdpasim_release_dev;
+>> +
+>> +	vringh_set_iotlb(&vdpasim->vqs[0].vring, vdpasim->iommu);
+>> +	vringh_set_iotlb(&vdpasim->vqs[1].vring, vdpasim->iommu);
+>> +
+>> +	dev =3D &vdpa->dev;
+>> +	dev->coherent_dma_mask =3D DMA_BIT_MASK(64);
+>> +	set_dma_ops(dev, &vdpasim_dma_ops);
+>> +
+>> +	ret =3D register_vdpa_device(vdpa);
+>> +	if (ret)
+>> +		goto err_register;
+>> +
+>> +	sprintf(vdpasim->name, "%pU", uuid);
+>> +
+>> +	ret =3D sysfs_create_link(vdpasim_dev->devices_kobj, &vdpa->dev.kobj=
+,
+>> +				vdpasim->name);
+>> +	if (ret)
+>> +		goto err_link;
+> The goto err_link does the wrong unwind, once register is completed
+> the error unwind is unregister & put_device, not kfree. This is why I
+> recommend to always initalize the device early, and always using
+> put_device during error unwinds.
+
+
+Will fix.
+
+
+>
+> This whole guid thing seems unncessary when the device is immediately
+> assigned a vdpa index from the ida.
+
+
+The problem here is that user need to know which vdpa_sim is the one=20
+that is just created.
+
+
+> If you were not using syfs you'd
+> just return that index from the creation netlink.
+
+
+Yes it is.
 
 Thanks
 
