@@ -2,52 +2,52 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id BD30A14131E
-	for <lists+netdev@lfdr.de>; Fri, 17 Jan 2020 22:30:58 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 84B6214133E
+	for <lists+netdev@lfdr.de>; Fri, 17 Jan 2020 22:37:15 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729058AbgAQVao (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 17 Jan 2020 16:30:44 -0500
-Received: from mail-qt1-f194.google.com ([209.85.160.194]:35093 "EHLO
-        mail-qt1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726744AbgAQVao (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 17 Jan 2020 16:30:44 -0500
-Received: by mail-qt1-f194.google.com with SMTP id e12so22931397qto.2;
-        Fri, 17 Jan 2020 13:30:43 -0800 (PST)
+        id S1729076AbgAQVhJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 17 Jan 2020 16:37:09 -0500
+Received: from mail-qk1-f193.google.com ([209.85.222.193]:39278 "EHLO
+        mail-qk1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726587AbgAQVhI (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 17 Jan 2020 16:37:08 -0500
+Received: by mail-qk1-f193.google.com with SMTP id c16so24182417qko.6;
+        Fri, 17 Jan 2020 13:37:07 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc:content-transfer-encoding;
-        bh=oKpJrpMP/WbiwVT8VF9eF4TKH+tXOjUsUEulh6dUpSw=;
-        b=ZtisCfjADHKFGS8o8e4KIuHaDJC/xyclaJ5vqDJIXm5Wrpcq2jsu1dpGYrbMc0EiN5
-         aD2ZtqJ5kO3qMGy2kukqbaVq+bN2uyoA+FQK5QZa6GqyLIl5xj9kPoJsXh1NPy9mYWHZ
-         Df7icJ+9GU0YMhkXtCe1sJ9emvzmzIfFi175xOHBsdwgP9zpTU6wtz+lLCkNVWis1/Ih
-         f726gk7Az81OAW+ZSC3XvVr/LS8pJOvy5Da49AyeIuNTq33bDLdxBokHkKfq/XMxnAjn
-         eM4xKe8nxEEl090/fSg4wPNpNHvCXlErB1Q89+KFi+uiVxMszLSLwfvHkeE0rwOd4u3r
-         x8sA==
+        bh=2JWxiBrKzgX6c58K05T7Uj8uthaAPk9I0HG0fUbgl2Q=;
+        b=di2yyj+zUzyiwdu9o+rxLuvbgoB7dTPwpFBNgyLV/RIImJaI/rV3kq41mVzfXGthXL
+         k1CDbjNlUUt1QDOpws4zX7lrQjilnCXze/8/TnDvUM1/xP71VHcg7SO4h20Sk1a9X/iT
+         N9a4P+TocZpdyrrkTlRE3jUOfwnbLa03eUxoolr0+WufJPDYGTKV3QmCl3PBf7aYSf/g
+         65IAMoyo4/wDBpeOpeE52Le9/rMfrWP8Ld3VQlpyrJJqCUY62G8oA9BOz2L2Oqr327RT
+         VUOOrNbOufy8Zz0XF6T2Goh27q6MrvGtMS3UbVfYwjSvdttcblfcaDsEvxBRgC95wISx
+         cD3w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc:content-transfer-encoding;
-        bh=oKpJrpMP/WbiwVT8VF9eF4TKH+tXOjUsUEulh6dUpSw=;
-        b=S2o9JP+sQh8eFZwNW3F7v3DiIre2v4EcRw9BaNYNSfSEdTUokE3ozIBlH8F7H1gxIU
-         FDpgz7maNKsFvn7T4oOx1jzpDAOz5VVRtxSxl8aG/75+qzGJN8g6PfF8LeKWIjs/j2Sk
-         CeyyN32lr8P7O3/uGh3PZnbcKFommoN3kqR8JLezDWEqKCfdbJe5dpzW6Ff10n/3hD2l
-         VXORmKHco7wkPcT0gOOBQwd8vggVDbr6qPmMVquxUd4lmL/zReq7U34uagxVDRsgUz4e
-         /IwHIn/79wtkEl1JadoMyaG2jo6IDLjpTf9hzYytZc2QHj6+231Y/hTd+kxGg7Bm2m13
-         VFTg==
-X-Gm-Message-State: APjAAAXyOPwEfrgbHR9z51YOwiUWob8ltTCIwek+C2XPsbLHrMPbnzIF
-        VHUKuGIimmRn/y8keyf2ex308F7StIEzmjlZmFA=
-X-Google-Smtp-Source: APXvYqzF1gj4bIlwoe5msPiG+wBSblLtJO0oPNeDcVYjXiuMENAAjDDrH5pD8NKfKq+pPDxE8OOJmtbFJoZHeMN2MHQ=
-X-Received: by 2002:ac8:7b29:: with SMTP id l9mr9287898qtu.141.1579296642749;
- Fri, 17 Jan 2020 13:30:42 -0800 (PST)
+        bh=2JWxiBrKzgX6c58K05T7Uj8uthaAPk9I0HG0fUbgl2Q=;
+        b=lj6v6BEegc9yCrvv7XiYz07nBlOIfHzS1VC7yCSJzXWSrVqJfriorzETI+NJfS0ABK
+         8yaqE9ooiUbhkEByOqzGkESqna2HwmBHk1+SRTlyBib1SyrC3m9G6J4JgOR+pcizS6XD
+         6FPvszKksI8y/1OoD3/pieigEJdCZxTOkfFAoqgFYmbKAXz2ah8Z6OYQQTY2YIHfXrpy
+         WIePBfW9wN8Cq/pfCoqRtlY4HXKCHLia7y+FgkBYF7dthcj7BcRZXRcG4usaUWpen+la
+         XKndWe6u3TE5AF++PNFHDInKbj51i1mFze0I4EKa/M8/ZgzHN9VbzV/ebWuuXXidAa+y
+         485g==
+X-Gm-Message-State: APjAAAUUP7UKjXHQcTYdpk00/U+nVmeVZjZ27dTGYWHbfnOe+aUBgNxO
+        jYHEq+O2FGUyl/Celo3H2eOG3HlBjbtRnO9z3hs=
+X-Google-Smtp-Source: APXvYqzDdnFYJ8Lla7yyg06odfjJkmjvFBVnMNmJBo9Ki5bUjMkVb6uWSJ5ot1KuLFxTv46CZx8GfqnvIF9fwOV4eQI=
+X-Received: by 2002:a37:a685:: with SMTP id p127mr37379374qke.449.1579297027145;
+ Fri, 17 Jan 2020 13:37:07 -0800 (PST)
 MIME-Version: 1.0
-References: <157926819690.1555735.10756593211671752826.stgit@toke.dk> <157926819920.1555735.13051810516683828343.stgit@toke.dk>
-In-Reply-To: <157926819920.1555735.13051810516683828343.stgit@toke.dk>
+References: <157926819690.1555735.10756593211671752826.stgit@toke.dk> <157926820025.1555735.5663814379544078154.stgit@toke.dk>
+In-Reply-To: <157926820025.1555735.5663814379544078154.stgit@toke.dk>
 From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Fri, 17 Jan 2020 13:30:31 -0800
-Message-ID: <CAEf4BzY3RM3LS3bvU4dHY+8U27RaezeaC9rfuW1YLAcFQEQKEA@mail.gmail.com>
-Subject: Re: [PATCH bpf-next v4 02/10] tools/bpf/runqslower: Fix override
- option for VMLINUX_BTF
+Date:   Fri, 17 Jan 2020 13:36:55 -0800
+Message-ID: <CAEf4BzafS0FCsjJwG13eCEsE_TSLhg=wNY3RGfUnDwuP1KCz=w@mail.gmail.com>
+Subject: Re: [PATCH bpf-next v4 03/10] selftests: Pass VMLINUX_BTF to
+ runqslower Makefile
 To:     =?UTF-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <toke@redhat.com>
 Cc:     Alexei Starovoitov <ast@kernel.org>,
         Daniel Borkmann <daniel@iogearbox.net>,
@@ -86,75 +86,60 @@ at.com> wrote:
 >
 > From: Toke H=C3=B8iland-J=C3=B8rgensen <toke@redhat.com>
 >
-> The runqslower tool refuses to build without a file to read vmlinux BTF
-> from. The build fails with an error message to override the location by
-> setting the VMLINUX_BTF variable if autodetection fails. However, the
-> Makefile doesn't actually work with that override - the error message is
-> still emitted.
+> Add a VMLINUX_BTF variable with the locally-built path when calling the
+> runqslower Makefile from selftests. This makes sure a simple 'make'
+> invocation in the selftests dir works even when there is no BTF informati=
+on
+> for the running kernel. Do a wildcard expansion and include the same path=
+s
+> for BTF for the running kernel as in the runqslower Makefile, to make it
+> possible to build selftests without having a vmlinux in the local tree.
 >
-> Fix this by including the value of VMLINUX_BTF in the expansion, and only
-> emitting the error message if the *result* is empty. Also permit running
-> 'make clean' even though no VMLINUX_BTF is set.
+> Also fix the make invocation to use $(OUTPUT)/tools as the destination
+> directory instead of $(CURDIR)/tools.
 >
-> Fixes: 9c01546d26d2 ("tools/bpf: Add runqslower tool to tools/bpf")
+> Fixes: 3a0d3092a4ed ("selftests/bpf: Build runqslower from selftests")
 > Signed-off-by: Toke H=C3=B8iland-J=C3=B8rgensen <toke@redhat.com>
 > ---
 
-approach looks good, thanks, few nits below
+With formatting fixes:
 
->  tools/bpf/runqslower/Makefile |   18 +++++++++---------
->  1 file changed, 9 insertions(+), 9 deletions(-)
+Acked-by: Andrii Nakryiko <andriin@fb.com>
+
+>  tools/testing/selftests/bpf/Makefile |    8 ++++++--
+>  1 file changed, 6 insertions(+), 2 deletions(-)
 >
-> diff --git a/tools/bpf/runqslower/Makefile b/tools/bpf/runqslower/Makefil=
-e
-> index cff2fbcd29a8..b62fc9646c39 100644
-> --- a/tools/bpf/runqslower/Makefile
-> +++ b/tools/bpf/runqslower/Makefile
-> @@ -10,13 +10,9 @@ CFLAGS :=3D -g -Wall
+> diff --git a/tools/testing/selftests/bpf/Makefile b/tools/testing/selftes=
+ts/bpf/Makefile
+> index 246d09ffb296..dcc8dbb1510b 100644
+> --- a/tools/testing/selftests/bpf/Makefile
+> +++ b/tools/testing/selftests/bpf/Makefile
+> @@ -124,10 +124,14 @@ $(OUTPUT)/test_stub.o: test_stub.c
+>         $(call msg,CC,,$@)
+>         $(CC) -c $(CFLAGS) -o $@ $<
 >
->  # Try to detect best kernel BTF source
->  KERNEL_REL :=3D $(shell uname -r)
-> -ifneq ("$(wildcard /sys/kernel/btf/vmlinux)","")
-> -VMLINUX_BTF :=3D /sys/kernel/btf/vmlinux
-> -else ifneq ("$(wildcard /boot/vmlinux-$(KERNEL_REL))","")
-> -VMLINUX_BTF :=3D /boot/vmlinux-$(KERNEL_REL)
-> -else
-> -$(error "Can't detect kernel BTF, use VMLINUX_BTF to specify it explicit=
-ly")
-> -endif
-> +VMLINUX_BTF_PATHS :=3D /sys/kernel/btf/vmlinux /boot/vmlinux-$(KERNEL_RE=
-L)
-> +VMLINUX_BTF_PATH :=3D $(abspath $(or $(VMLINUX_BTF),$(firstword \
-> +       $(wildcard $(VMLINUX_BTF_PATHS)))))
+> +VMLINUX_BTF_PATHS :=3D $(abspath ../../../../vmlinux)                   =
+ \
+> +                       /sys/kernel/btf/vmlinux                 \
+> +                       /boot/vmlinux-$(shell uname -r)
 
-you can drop abspath, relative path for VMLINUX_BTF would work just fine
+it's not 100% consistent in this Makefile, unfortunately, but usually
+(and similarly to function arguments) we align items for such
+multi-line statements
 
+> +VMLINUX_BTF:=3D $(firstword $(wildcard $(VMLINUX_BTF_PATHS)))
+>  .PHONY: $(OUTPUT)/runqslower
+>  $(OUTPUT)/runqslower: force
+> -       $(Q)$(MAKE) $(submake_extras) -C $(TOOLSDIR)/bpf/runqslower      =
+     \
+> -                   OUTPUT=3D$(CURDIR)/tools/
+> +       $(Q)$(MAKE) $(submake_extras) -C $(TOOLSDIR)/bpf/runqslower     \
+> +                   OUTPUT=3D$(OUTPUT)/tools/ VMLINUX_BTF=3D$(VMLINUX_BTF=
+)
 >
->  abs_out :=3D $(abspath $(OUTPUT))
->  ifeq ($(V),1)
-> @@ -67,9 +63,13 @@ $(OUTPUT):
->         $(call msg,MKDIR,$@)
->         $(Q)mkdir -p $(OUTPUT)
+
+please, keep \ alignment, it's all over the place
+
+>  BPFOBJ :=3D $(OUTPUT)/libbpf.a
 >
-> -$(OUTPUT)/vmlinux.h: $(VMLINUX_BTF) | $(OUTPUT) $(BPFTOOL)
-> +$(OUTPUT)/vmlinux.h: $(VMLINUX_BTF_PATH) | $(OUTPUT) $(BPFTOOL)
->         $(call msg,GEN,$@)
-> -       $(Q)$(BPFTOOL) btf dump file $(VMLINUX_BTF) format c > $@
-> +       @if [ ! -e "$(VMLINUX_BTF_PATH)" ] ; then \
-
-$(Q), not @
-
-> +               echo "Couldn't find kernel BTF; set VMLINUX_BTF to specif=
-y its location."; \
-> +               exit 1;\
-
-nit: please align \'s (same above for VMLONUX_BTF_PATH) at the right
-edge as it's done everywhere in this Makefile
-
-> +       fi
-> +       $(Q)$(BPFTOOL) btf dump file $(VMLINUX_BTF_PATH) format c > $@
->
->  $(OUTPUT)/libbpf.a: | $(OUTPUT)
->         $(Q)$(MAKE) $(submake_extras) -C $(LIBBPF_SRC)                   =
-      \
 >
