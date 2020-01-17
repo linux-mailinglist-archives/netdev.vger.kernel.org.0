@@ -2,115 +2,94 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 939611402C5
-	for <lists+netdev@lfdr.de>; Fri, 17 Jan 2020 05:07:14 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4E18E1402CA
+	for <lists+netdev@lfdr.de>; Fri, 17 Jan 2020 05:10:25 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729188AbgAQEHJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 16 Jan 2020 23:07:09 -0500
-Received: from mail-lf1-f68.google.com ([209.85.167.68]:33650 "EHLO
-        mail-lf1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727023AbgAQEHJ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 16 Jan 2020 23:07:09 -0500
-Received: by mail-lf1-f68.google.com with SMTP id n25so17315711lfl.0;
-        Thu, 16 Jan 2020 20:07:07 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=lEBxuAjXE4mjedfwAshAydTNhTvcenIHyMzXYSF0Mak=;
-        b=Y87rRn27Bt1zjlsWw9ToQiTj5mu05Qagc1LBhQW6jIs+1FBZPs1VzjUJtXTMDRnr0W
-         U3WnTYFmm3ykFu8hA+COGqHZ6/CC8qL2uu0DE1qOPlycILkdiTH7e/xPzbijKgwnUPfU
-         HuLaFdtP2XKjDfJkDx7Ws85jkl3IBGpxBCKJRE13Tm/gyi7jiB9qLWFfNgep5u0VEyRW
-         temxCHInLHV8AYDUvJ4l1E4WjKkC7r6pEkdFwjX0cUYH8s4EA022N7GwjK8+oI0wSqLt
-         mc7HBziSZ2NPLUdP9+F3mluLtG2ck0XLf340T7nuBek+yG6eGgoREXLBH5p/6lcGap6z
-         2h8A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=lEBxuAjXE4mjedfwAshAydTNhTvcenIHyMzXYSF0Mak=;
-        b=Cl1x+zr3S7btPlEPjXAYLm8ES1eL3iEuKWE7YqjpT6R1mjnq3558K474kOTw9gTcpE
-         IBToboxnb7VqmcXpRHRcvyKyXLsdqqkWH6Uvc/Gmxx9JJZpWzgyogRt6L1n/tws1mAEe
-         a4uLQ8X/n6gfqul8mgdqBeXnlQSe8JQL8nFeuiqmmTEUbS6eOwj95kXVV+VLWnZpW8+7
-         noygI1ppnGZ69rj8MJANaOolIDSlJMmbrdw2/Ef/3yw1wcaU1NBTaTbmxVfsLNyW0LjZ
-         h7VQOKXKKn0MO1T35w1ZSs5xxXh3NStyizEArGXGDR0AoP06B8w6Y9y2vUkyloivnMVd
-         WZBA==
-X-Gm-Message-State: APjAAAXCySg1BC5Ejxhe+q1m2dkGT+HxqwVfTsfFm7W1wm+vXG7AlorX
-        13xb/oCkEjhzaWhhKQWWUlv/IqMiFx+zZAwQ4fiUSQ==
-X-Google-Smtp-Source: APXvYqxwkxDFgWwaY5qXMgK1JBSs8nUHEyKiJtlx1V0L9RR19lmSzxQPDgRJuwgVeImHV9+x1p+k4+m0nNHsU9vz7GU=
-X-Received: by 2002:ac2:5f68:: with SMTP id c8mr4173708lfc.196.1579234026920;
- Thu, 16 Jan 2020 20:07:06 -0800 (PST)
+        id S1729532AbgAQEKT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 16 Jan 2020 23:10:19 -0500
+Received: from bombadil.infradead.org ([198.137.202.133]:39184 "EHLO
+        bombadil.infradead.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729340AbgAQEKT (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 16 Jan 2020 23:10:19 -0500
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=bombadil.20170209; h=Content-Transfer-Encoding:
+        Content-Type:In-Reply-To:MIME-Version:Date:Message-ID:From:References:Cc:To:
+        Subject:Sender:Reply-To:Content-ID:Content-Description:Resent-Date:
+        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
+        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+         bh=KM4jBWrreX7YdYs9/PMtNlfIXwcq6JEXQmTdCdMcdKE=; b=NfiCKMOXXLzXSiHqQtYL6XeHm
+        6mo8pYpAJf3rdBor+acqnZjJX7Zr9BNldK4zJA0RqojzhLXBmPGZ0wGxSrNYlKFsPXJ0wKpTlYhIY
+        xr1rbvYE9DhOL46mm+cT+8PF1z/3yRVwZ8v2MYM5QSMg0Y8eJzoYuJ36bvARy6O7cKMjTA6KjBGj5
+        F/I8Vgc7UDGE7ltMtAPPHSc30BBOPZEyuoj7msXd5G2vOEjIKAhHLzmBTjkmaz1Stt22kRPRbrboD
+        6N3hppDqwXRgqrX4ivw5L1bYyambOTJN1BIrtb52/j/bvAuVka7nV/b6dFwDdIxJ5R4gmY2TYr+CO
+        WWVt7vZOg==;
+Received: from [2601:1c0:6280:3f0::ed68]
+        by bombadil.infradead.org with esmtpsa (Exim 4.92.3 #3 (Red Hat Linux))
+        id 1isIxW-0005LR-JB; Fri, 17 Jan 2020 04:10:10 +0000
+Subject: Re: [PATCH 4/5] virtio: introduce a vDPA based transport
+To:     Jason Wang <jasowang@redhat.com>, mst@redhat.com,
+        linux-kernel@vger.kernel.org, kvm@vger.kernel.org,
+        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org
+Cc:     tiwei.bie@intel.com, jgg@mellanox.com, maxime.coquelin@redhat.com,
+        cunming.liang@intel.com, zhihong.wang@intel.com,
+        rob.miller@broadcom.com, xiao.w.wang@intel.com,
+        haotian.wang@sifive.com, lingshan.zhu@intel.com,
+        eperezma@redhat.com, lulu@redhat.com, parav@mellanox.com,
+        kevin.tian@intel.com, stefanha@redhat.com, hch@infradead.org,
+        aadam@redhat.com, jakub.kicinski@netronome.com, jiri@mellanox.com,
+        shahafs@mellanox.com, hanand@xilinx.com, mhabets@solarflare.com
+References: <20200116124231.20253-1-jasowang@redhat.com>
+ <20200116124231.20253-5-jasowang@redhat.com>
+From:   Randy Dunlap <rdunlap@infradead.org>
+Message-ID: <e71bdbfe-559c-e881-26d4-03080cee42ed@infradead.org>
+Date:   Thu, 16 Jan 2020 20:10:08 -0800
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.3.0
 MIME-Version: 1.0
-References: <157918768284.1458396.8128704597152008763.stgit@toke.dk>
-In-Reply-To: <157918768284.1458396.8128704597152008763.stgit@toke.dk>
-From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Date:   Thu, 16 Jan 2020 20:06:55 -0800
-Message-ID: <CAADnVQJNJ4G2NGGAOe-khAgT2UUE3WxcP2FgT-4Ep9G0afpVfA@mail.gmail.com>
-Subject: Re: [PATCH bpf-next v3 0/3] xdp: Introduce bulking for non-map XDP_REDIRECT
-To:     =?UTF-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <toke@redhat.com>
-Cc:     Network Development <netdev@vger.kernel.org>,
-        bpf <bpf@vger.kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Alexei Starovoitov <ast@kernel.org>,
-        David Miller <davem@davemloft.net>,
-        Jesper Dangaard Brouer <brouer@redhat.com>,
-        =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@gmail.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Maciej Fijalkowski <maciej.fijalkowski@intel.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+In-Reply-To: <20200116124231.20253-5-jasowang@redhat.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Jan 16, 2020 at 7:14 AM Toke H=C3=B8iland-J=C3=B8rgensen <toke@redh=
-at.com> wrote:
->
-> Since commit 96360004b862 ("xdp: Make devmap flush_list common for all ma=
-p
-> instances"), devmap flushing is a global operation instead of tied to a
-> particular map. This means that with a bit of refactoring, we can finally=
- fix
-> the performance delta between the bpf_redirect_map() and bpf_redirect() h=
-elper
-> functions, by introducing bulking for the latter as well.
->
-> This series makes this change by moving the data structure used for the b=
-ulking
-> into struct net_device itself, so we can access it even when there is not
-> devmap. Once this is done, moving the bpf_redirect() helper to use the bu=
-lking
-> mechanism becomes quite trivial, and brings bpf_redirect() up to the same=
- as
-> bpf_redirect_map():
->
->                        Before:   After:
-> 1 CPU:
-> bpf_redirect_map:      8.4 Mpps  8.4 Mpps  (no change)
-> bpf_redirect:          5.0 Mpps  8.4 Mpps  (+68%)
-> 2 CPUs:
-> bpf_redirect_map:     15.9 Mpps  16.1 Mpps  (+1% or ~no change)
-> bpf_redirect:          9.5 Mpps  15.9 Mpps  (+67%)
->
-> After this patch series, the only semantics different between the two var=
-iants
-> of the bpf() helper (apart from the absence of a map argument, obviously)=
- is
-> that the _map() variant will return an error if passed an invalid map ind=
-ex,
-> whereas the bpf_redirect() helper will succeed, but drop packets on
-> xdp_do_redirect(). This is because the helper has no reference to the cal=
-ling
-> netdev, so unfortunately we can't do the ifindex lookup directly in the h=
-elper.
->
-> Changelog:
->
-> v3:
->   - Switch two more fields to avoid a list_head spanning two cache lines
->   - Include Jesper's tracepoint patch
->   - Also rename xdp_do_flush_map()
->   - Fix a few nits from Maciej
+Hi,
 
-Applied. Thanks
+On 1/16/20 4:42 AM, Jason Wang wrote:
+> diff --git a/drivers/virtio/Kconfig b/drivers/virtio/Kconfig
+> index 9c4fdb64d9ac..b4276999d17d 100644
+> --- a/drivers/virtio/Kconfig
+> +++ b/drivers/virtio/Kconfig
+> @@ -43,6 +43,19 @@ config VIRTIO_PCI_LEGACY
+>  
+>  	  If unsure, say Y.
+>  
+> +config VIRTIO_VDPA
+> +	tristate "vDPA driver for virtio devices"
+> +	depends on VDPA && VIRTIO
+> +	default n
+> +	help
+> +	  This driver provides support for virtio based paravirtual
+
+	                                   virtio-based
+
+> +	  device driver over vDPA bus. For this to be useful, you need
+> +	  an appropriate vDPA device implementation that operates on a
+> +          physical device to allow the datapath of virtio to be
+
+use tab + 2 spaces above for indentation, not lots of spaces.
+
+> +	  offloaded to hardware.
+> +
+> +	  If unsure, say M.
+> +
+>  config VIRTIO_PMEM
+>  	tristate "Support for virtio pmem driver"
+>  	depends on VIRTIO
+
+
+-- 
+~Randy
+
