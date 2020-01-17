@@ -2,54 +2,54 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 7529414008B
-	for <lists+netdev@lfdr.de>; Fri, 17 Jan 2020 01:07:29 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id F254114008C
+	for <lists+netdev@lfdr.de>; Fri, 17 Jan 2020 01:07:32 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2388231AbgAQAH0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 16 Jan 2020 19:07:26 -0500
+        id S2388427AbgAQAHb (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 16 Jan 2020 19:07:31 -0500
 Received: from mail-eopbgr70079.outbound.protection.outlook.com ([40.107.7.79]:19560
         "EHLO EUR04-HE1-obe.outbound.protection.outlook.com"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1729047AbgAQAHV (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 16 Jan 2020 19:07:21 -0500
+        id S2387998AbgAQAH0 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 16 Jan 2020 19:07:26 -0500
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=da1CaFk+xhnb5iHq7Xx7hV76zcdj1OXlA+FI/S4fc9dcU+rKuDXjOBTvty9ouKLcBC0E9xkov7VcCGFRpM32gcuvBlYSoTBUzpLubv023FRIZDArcGXONP33QN2CuAysScku8vEzUcOCGLgifF56pG2MUAKe0fo2BGAQ5WagDKtNalLi7aFtPXTmP/fSqH/0COBZDs/1sbQE9UMPtRpnLqOtxyo8r9dbvXnlWVoht7gRNPBErUxDcJCZ4ogM+mhHuABhRKHysnmb6YaBT+9QgH9K+GY4o+07pzl1k3a/MCOjBbgM16DuYtU0EMx3lRTzfexhdRwWmxPapqxFHTZ3zA==
+ b=YcWbCSfzNSS4Hv0nCyT9T2sohNEuHK9kd6hKvU56EcKMZcaQhQdQHeTzcoNElqaNFCIpIXeInaT7YZkM6NqrOp0xtvUm1Blml4OSeEnDCF/9qLYJkeT+UYIf78hleRthzNSy+nm41U34FjQKrmgXPMgrsLOEZCGn4Y3rRlR5jziwmAP9RL5yafpQc2wbQnEVb8ody9hqHYT1w/Rzo8f4KS9raAAeo+lbYyjxw3WpqMHXT9NLWzaH4EkIZj91GmCOzEYICP3j5h6kWRAKuUJZjqYQbn0nNyrv2+dbJch8UwZS5oUOAFhbRdlw+QwIjvote7Ljx9er1flYlr1EdmHNVg==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=mDw9Nk3bazM2uzRgsKfEOE/Mq10w1E2pjFjS+/wO8Ho=;
- b=JWR2fNF+5UUU27DQm1Sl6OSHY0kat1lrnx/rUbm6Us6cNV3tFhaxQonnZjO2vtNXOrX4RasLM2epW/mG9oAcJbZsO1i6iEkdr+ZIYF4O8EPGlmfBH9KLV15zjEYZsj0unJmZSBa2tDhDLzDwxaWQaTgNW7aMXVszJY1poDXhm5J0H4BRYdxxeUYarnTatdGZxtHJSsHwJxYvROsomPEZB/eQPhV56uuwAgU6liunL2S5NchDy82c8LrEiMiTBtAjEX7r7jdAgeU3SWq6+vA+ob+rY3LcggJ0eFrXcZ7B+9zoHMpcZ9E4JJa6Jt5fZl317GVy8dcVEZ99l/QEAoPPgQ==
+ bh=uuSsrTThchLxgpbQD5c3Zq488Vi55cYUKCzbRITDPRY=;
+ b=lLILzFeMgMvArAiBlzOrQ9KNha2/6w+VoyNi1+Ah7kdb/Ww2blArUHyb04Nj2xd1HejzqYa2cz1NAj1aR0+kaUSI9/1I/TSmbV5nOwhjV5gOKiP8G2KzVZn4TIdOk2KGB4HDk56Gi1Sx/EtDhgJuU4YP9I6iVR7eGNokofuabyPvEt6w5KRyHljnApd+2vsOQUHnviFgYxoQJfTFddQuKO5rcUt3q8zSje7n53Qc+mzynofdq9vNLAkNX0IFQrVnN2OIhOpg+YaVl9eLRK71pdGQH4rZ7A3xgUljAc1MMZiLQRKhlbi0832Y/93OGyoG6imzyn1WGZJ39kqpntNXFA==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=mellanox.com; dmarc=pass action=none header.from=mellanox.com;
  dkim=pass header.d=mellanox.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Mellanox.com;
  s=selector1;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=mDw9Nk3bazM2uzRgsKfEOE/Mq10w1E2pjFjS+/wO8Ho=;
- b=FRrqXXdXt2oNCJmJexlkLbo+03kTVS7lJfQHBvxFtcVgJTw8rPl747B5cKCkj841f0c1bDvMmKBg2Kza7ze85c6cQ/Noo17tcDZSPbAJaT7d6uiXQF4fhFZ7X6ERJyRghEvJ7vGD+6g5uO0r1urSdnKDK3ZrkGkfIKI58IYpbw4=
+ bh=uuSsrTThchLxgpbQD5c3Zq488Vi55cYUKCzbRITDPRY=;
+ b=mF3675hchklJs+6FXfQ7YqvZ+R39IRMlRkPvwcT1EFf4LfyAuXl0gCB8uF6EJOElBgqLTG4hYlgn5M5PW0g8hP7jCOYKWWSIYai/4Zpzwjh+ex818MrTKkXGz4qeuktGU2sGQcsZe4xMvCLsQqwPCmbc2+tIToY2XdtRNjjoP7c=
 Received: from VI1PR05MB5102.eurprd05.prod.outlook.com (20.177.51.151) by
  VI1PR05MB4990.eurprd05.prod.outlook.com (20.177.49.211) with Microsoft SMTP
  Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.2623.10; Fri, 17 Jan 2020 00:07:13 +0000
+ 15.20.2623.10; Fri, 17 Jan 2020 00:07:15 +0000
 Received: from VI1PR05MB5102.eurprd05.prod.outlook.com
  ([fe80::d830:96fc:e928:c096]) by VI1PR05MB5102.eurprd05.prod.outlook.com
  ([fe80::d830:96fc:e928:c096%6]) with mapi id 15.20.2644.015; Fri, 17 Jan 2020
- 00:07:13 +0000
-Received: from smtp.office365.com (209.116.155.178) by BYAPR03CA0003.namprd03.prod.outlook.com (2603:10b6:a02:a8::16) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.2644.18 via Frontend Transport; Fri, 17 Jan 2020 00:07:11 +0000
+ 00:07:15 +0000
+Received: from smtp.office365.com (209.116.155.178) by BYAPR03CA0003.namprd03.prod.outlook.com (2603:10b6:a02:a8::16) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.2644.18 via Frontend Transport; Fri, 17 Jan 2020 00:07:14 +0000
 From:   Saeed Mahameed <saeedm@mellanox.com>
 To:     "David S. Miller" <davem@davemloft.net>,
         "kuba@kernel.org" <kuba@kernel.org>
 CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
         Paul Blakey <paulb@mellanox.com>,
-        Roi Dayan <roid@mellanox.com>, Oz Shlomo <ozsh@mellanox.com>,
         Mark Bloch <markb@mellanox.com>,
         Saeed Mahameed <saeedm@mellanox.com>
-Subject: [net-next 10/16] net/mlx5: fs_core: Introduce unmanaged flow tables
-Thread-Topic: [net-next 10/16] net/mlx5: fs_core: Introduce unmanaged flow
- tables
-Thread-Index: AQHVzMoSYHOMJ9DjoE6zfpLWbOACig==
-Date:   Fri, 17 Jan 2020 00:07:13 +0000
-Message-ID: <20200117000619.696775-11-saeedm@mellanox.com>
+Subject: [net-next 11/16] net/mlx5: Add ignore level support fwd to table
+ rules
+Thread-Topic: [net-next 11/16] net/mlx5: Add ignore level support fwd to table
+ rules
+Thread-Index: AQHVzMoT9OuS9xYOFUOXWAmGnCEkdg==
+Date:   Fri, 17 Jan 2020 00:07:15 +0000
+Message-ID: <20200117000619.696775-12-saeedm@mellanox.com>
 References: <20200117000619.696775-1-saeedm@mellanox.com>
 In-Reply-To: <20200117000619.696775-1-saeedm@mellanox.com>
 Accept-Language: en-US
@@ -66,29 +66,29 @@ authentication-results: spf=none (sender IP is )
 x-ms-exchange-messagesentrepresentingtype: 1
 x-ms-publictraffictype: Email
 x-ms-office365-filtering-ht: Tenant
-x-ms-office365-filtering-correlation-id: b6d4fd59-05ab-4028-1e48-08d79ae1344c
+x-ms-office365-filtering-correlation-id: 6dbcd3d0-cfde-4e3b-6e6c-08d79ae135ca
 x-ms-traffictypediagnostic: VI1PR05MB4990:|VI1PR05MB4990:
 x-ms-exchange-transport-forked: True
-x-microsoft-antispam-prvs: <VI1PR05MB499042C0A15BFACB2876024CBE310@VI1PR05MB4990.eurprd05.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:4941;
+x-microsoft-antispam-prvs: <VI1PR05MB49909C2A9B29E5364A434125BE310@VI1PR05MB4990.eurprd05.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:6790;
 x-forefront-prvs: 0285201563
-x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(4636009)(376002)(396003)(366004)(39860400002)(136003)(346002)(189003)(199004)(64756008)(6512007)(52116002)(66476007)(26005)(81166006)(86362001)(16526019)(316002)(81156014)(8676002)(2616005)(66556008)(186003)(6486002)(956004)(71200400001)(36756003)(508600001)(66446008)(54906003)(1076003)(5660300002)(2906002)(6506007)(4326008)(110136005)(8936002)(66946007)(107886003)(54420400002);DIR:OUT;SFP:1101;SCL:1;SRVR:VI1PR05MB4990;H:VI1PR05MB5102.eurprd05.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;MX:1;A:1;
+x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(4636009)(366004)(189003)(199004)(64756008)(6512007)(52116002)(66476007)(26005)(81166006)(86362001)(16526019)(81156014)(8676002)(2616005)(66556008)(186003)(6486002)(956004)(71200400001)(498600001)(36756003)(66446008)(54906003)(1076003)(5660300002)(2906002)(6506007)(4326008)(110136005)(8936002)(66946007)(107886003)(54420400002);DIR:OUT;SFP:1101;SCL:1;SRVR:VI1PR05MB4990;H:VI1PR05MB5102.eurprd05.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;MX:1;A:1;
 received-spf: None (protection.outlook.com: mellanox.com does not designate
  permitted sender hosts)
 x-ms-exchange-senderadcheck: 1
 x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: qWrch60LDq+1v/F3pX/lBNMC+YbGjxbvbRkd4zHYwBovtRxer0q0cn3DXgnEsc/FomcDf2orSxcyqjFD47NX0/qnAVP5tAeosZbdt2mTmGjeIy+rgnQ5jDhDjme0/FsNE8pqAlFMTyCDxWMStLVUjetW0fbWzG5712ruDrhDVM6EA7ySthFmQfiLYI9EAQXo+MuZrmiKwiaOD3/OYKZEMgE/W003Zh/2iiY1qAqNzU3daiBUvonEOw+KL4a5yyc2TZk9Ab4OI0a9rYrY53kLH/je9Dy2eU+YqCpVfMrFEMhU4gCnoyHj8bAkmPjh3ZuO2RQxgNr/DRAChC9iLwkAw6Azo45UpmO43LvVl5Sxk43cXmp1zqxsdk+zxQeZ2wt8Oka3gzQakvwRW1aXKTlC37v/7epCQWVvV6ZHhn+xOvhipZuNxp9xeMYLMhCmUrQdtdr18VuSl5uTTesgzOgAS4sWNi1xSiq3KMW4DXymqOebBCzQM0xvyKXTw+dUxO2SmZtAGaOz92+HZFFisT0U0lT+TjE391cV6SawZ8Ki94k=
+x-microsoft-antispam-message-info: HT2+OOVLucpQQT3CZq03hCIJLaBF7PyXEUgkICz74kXGEkMeRJLc7I5P8+FuhODr1R3esQjTOwcM28RP4tvlojw9+yPHTjo0NEiBeVelQGQPO0HGuWe/XJUz9JZjCwPLNgHuhVt/KD+eiT9uXmbK8Ns1briqv0XIJzer/8DyhFgd7PSqjsQhg3eADYb+zuFdrpgCkGX3i5hNH3mThCOErjEh42kSAq7DoGjbDt3p9hDbqoZmws97KHIAgrEl5perkHp+VuISkX43E4/2j6Vsri9WDrFLtNSUqmPsNTK1Gs5hNeVzOYvDBfXXAljBL3yaqsqRUhEulkIchwUSGPIRaVb9puVlUFTDpoJjyJ4oSmu+8JUaPgvKco34rcglE55awSTvSpw8ZvimoB2pfNQBSq2jTOiTSwRjf+Ng7TbWE3g0ZejGLqdBiuA/RND11zdRe7UQ+vcoHZwLeoF4TGZnDIkg8UsbTFtL3JQr2m9d5yGbG0izTSLYr0NzRP2XvuxpWw0RlI//WuBLFDV0G8sTHjlFDwMbqA3lKM9OwGtudg4=
 Content-Type: text/plain; charset="iso-8859-1"
 Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
 X-OriginatorOrg: Mellanox.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: b6d4fd59-05ab-4028-1e48-08d79ae1344c
-X-MS-Exchange-CrossTenant-originalarrivaltime: 17 Jan 2020 00:07:13.6474
+X-MS-Exchange-CrossTenant-Network-Message-Id: 6dbcd3d0-cfde-4e3b-6e6c-08d79ae135ca
+X-MS-Exchange-CrossTenant-originalarrivaltime: 17 Jan 2020 00:07:15.8701
  (UTC)
 X-MS-Exchange-CrossTenant-fromentityheader: Hosted
 X-MS-Exchange-CrossTenant-id: a652971c-7d2e-4d9b-a6a4-d149256f461b
 X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: zM6WrVmEQS1BkiXQmw8GphjuRH/BHNIg3AdK/56o0XTkY8GfcMEj+jBfLc8nvBOzQcvwl0WHeGRHiTDPMwoSxw==
+X-MS-Exchange-CrossTenant-userprincipalname: SRrz5DBRYhY+X5ipw70utkpxG+ypRHWwYiyk6oz75w2epe0O0ytwTnNdKAEaJhztUgvpkSL/Zo05X9/flQtceg==
 X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR05MB4990
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
@@ -97,139 +97,96 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Paul Blakey <paulb@mellanox.com>
 
-Currently, Most of the steering tree is statically declared ahead of time,
-with steering prios instances allocated for each fdb chain to assign max
-number of levels for each of them. This allows fs_core to manage the
-connections and  levels of the flow tables hierarcy to prevent loops, but
-restricts us with the number of supported chains and priorities.
+If user sets ignore flow level flag on a rule, that rule can point to
+a flow table of any level, including those with levels equal or less
+than the level of the flow table it is added on.
 
-Introduce unmananged flow tables, allowing the user to manage the flow
-table connections. A unamanged table is detached from the fs_core flow
-table hierarcy, and is only connected back to the hierarchy by explicit
-FTEs forward actions.
-
-This will be used together with firmware that supports ignoring the flow
-table levels to increase the number of supported chains and prios.
+This with unamanged tables will be used to create a FDB chain/prio
+hierarchy much larger than currently supported level range.
 
 Signed-off-by: Paul Blakey <paulb@mellanox.com>
-Reviewed-by: Roi Dayan <roid@mellanox.com>
-Reviewed-by: Oz Shlomo <ozsh@mellanox.com>
 Reviewed-by: Mark Bloch <markb@mellanox.com>
 Signed-off-by: Saeed Mahameed <saeedm@mellanox.com>
 ---
- .../net/ethernet/mellanox/mlx5/core/fs_core.c | 41 +++++++++++++------
- include/linux/mlx5/fs.h                       |  2 +
- 2 files changed, 31 insertions(+), 12 deletions(-)
+ .../net/ethernet/mellanox/mlx5/core/fs_cmd.c   |  3 +++
+ .../net/ethernet/mellanox/mlx5/core/fs_core.c  | 18 +++++++++++++++---
+ include/linux/mlx5/fs.h                        |  1 +
+ 3 files changed, 19 insertions(+), 3 deletions(-)
 
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/fs_cmd.c b/drivers/net=
+/ethernet/mellanox/mlx5/core/fs_cmd.c
+index 3c816e81f8d9..b25465d9e030 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/fs_cmd.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/fs_cmd.c
+@@ -432,6 +432,9 @@ static int mlx5_cmd_set_fte(struct mlx5_core_dev *dev,
+ 	MLX5_SET(set_fte_in, in, table_type, ft->type);
+ 	MLX5_SET(set_fte_in, in, table_id,   ft->id);
+ 	MLX5_SET(set_fte_in, in, flow_index, fte->index);
++	MLX5_SET(set_fte_in, in, ignore_flow_level,
++		 !!(fte->action.flags & FLOW_ACT_IGNORE_FLOW_LEVEL));
++
+ 	if (ft->vport) {
+ 		MLX5_SET(set_fte_in, in, vport_number, ft->vport);
+ 		MLX5_SET(set_fte_in, in, other_vport, 1);
 diff --git a/drivers/net/ethernet/mellanox/mlx5/core/fs_core.c b/drivers/ne=
 t/ethernet/mellanox/mlx5/core/fs_core.c
-index 51913e2cde5c..456d3739b166 100644
+index 456d3739b166..355a424f4506 100644
 --- a/drivers/net/ethernet/mellanox/mlx5/core/fs_core.c
 +++ b/drivers/net/ethernet/mellanox/mlx5/core/fs_core.c
-@@ -1006,7 +1006,8 @@ static struct mlx5_flow_table *__mlx5_create_flow_tab=
-le(struct mlx5_flow_namespa
- 							u16 vport)
+@@ -1536,18 +1536,30 @@ static bool counter_is_valid(u32 action)
+ }
+=20
+ static bool dest_is_valid(struct mlx5_flow_destination *dest,
+-			  u32 action,
++			  struct mlx5_flow_act *flow_act,
+ 			  struct mlx5_flow_table *ft)
  {
- 	struct mlx5_flow_root_namespace *root =3D find_root(&ns->node);
--	struct mlx5_flow_table *next_ft =3D NULL;
-+	bool unmanaged =3D ft_attr->flags & MLX5_FLOW_TABLE_UNMANAGED;
-+	struct mlx5_flow_table *next_ft;
- 	struct fs_prio *fs_prio =3D NULL;
- 	struct mlx5_flow_table *ft;
- 	int log_table_sz;
-@@ -1023,14 +1024,21 @@ static struct mlx5_flow_table *__mlx5_create_flow_t=
-able(struct mlx5_flow_namespa
- 		err =3D -EINVAL;
- 		goto unlock_root;
- 	}
--	if (ft_attr->level >=3D fs_prio->num_levels) {
--		err =3D -ENOSPC;
--		goto unlock_root;
-+	if (!unmanaged) {
-+		/* The level is related to the
-+		 * priority level range.
-+		 */
-+		if (ft_attr->level >=3D fs_prio->num_levels) {
-+			err =3D -ENOSPC;
-+			goto unlock_root;
-+		}
++	bool ignore_level =3D flow_act->flags & FLOW_ACT_IGNORE_FLOW_LEVEL;
++	u32 action =3D flow_act->action;
 +
-+		ft_attr->level +=3D fs_prio->start_level;
- 	}
+ 	if (dest && (dest->type =3D=3D MLX5_FLOW_DESTINATION_TYPE_COUNTER))
+ 		return counter_is_valid(action);
+=20
+ 	if (!(action & MLX5_FLOW_CONTEXT_ACTION_FWD_DEST))
+ 		return true;
+=20
++	if (ignore_level) {
++		if (ft->type !=3D FS_FT_FDB)
++			return false;
 +
- 	/* The level is related to the
- 	 * priority level range.
- 	 */
--	ft_attr->level +=3D fs_prio->start_level;
- 	ft =3D alloc_flow_table(ft_attr->level,
- 			      vport,
- 			      ft_attr->max_fte ? roundup_pow_of_two(ft_attr->max_fte) : 0,
-@@ -1043,19 +1051,27 @@ static struct mlx5_flow_table *__mlx5_create_flow_t=
-able(struct mlx5_flow_namespa
-=20
- 	tree_init_node(&ft->node, del_hw_flow_table, del_sw_flow_table);
- 	log_table_sz =3D ft->max_fte ? ilog2(ft->max_fte) : 0;
--	next_ft =3D find_next_chained_ft(fs_prio);
-+	next_ft =3D unmanaged ? ft_attr->next_ft :
-+			      find_next_chained_ft(fs_prio);
- 	ft->def_miss_action =3D ns->def_miss_action;
- 	err =3D root->cmds->create_flow_table(root, ft, log_table_sz, next_ft);
- 	if (err)
- 		goto free_ft;
-=20
--	err =3D connect_flow_table(root->dev, ft, fs_prio);
--	if (err)
--		goto destroy_ft;
-+	if (!unmanaged) {
-+		err =3D connect_flow_table(root->dev, ft, fs_prio);
-+		if (err)
-+			goto destroy_ft;
++		if (dest->type =3D=3D MLX5_FLOW_DESTINATION_TYPE_FLOW_TABLE &&
++		    dest->ft->type !=3D FS_FT_FDB)
++			return false;
 +	}
 +
- 	ft->node.active =3D true;
- 	down_write_ref_node(&fs_prio->node, false);
--	tree_add_node(&ft->node, &fs_prio->node);
--	list_add_flow_table(ft, fs_prio);
-+	if (!unmanaged) {
-+		tree_add_node(&ft->node, &fs_prio->node);
-+		list_add_flow_table(ft, fs_prio);
-+	} else {
-+		ft->node.root =3D fs_prio->node.root;
-+	}
- 	fs_prio->num_ft++;
- 	up_write_ref_node(&fs_prio->node, false);
- 	mutex_unlock(&root->chain_lock);
-@@ -2024,7 +2040,8 @@ int mlx5_destroy_flow_table(struct mlx5_flow_table *f=
-t)
- 	int err =3D 0;
+ 	if (!dest || ((dest->type =3D=3D
+ 	    MLX5_FLOW_DESTINATION_TYPE_FLOW_TABLE) &&
+-	    (dest->ft->level <=3D ft->level)))
++	    (dest->ft->level <=3D ft->level && !ignore_level)))
+ 		return false;
+ 	return true;
+ }
+@@ -1777,7 +1789,7 @@ _mlx5_add_flow_rules(struct mlx5_flow_table *ft,
+ 		return ERR_PTR(-EINVAL);
 =20
- 	mutex_lock(&root->chain_lock);
--	err =3D disconnect_flow_table(ft);
-+	if (!(ft->flags & MLX5_FLOW_TABLE_UNMANAGED))
-+		err =3D disconnect_flow_table(ft);
- 	if (err) {
- 		mutex_unlock(&root->chain_lock);
- 		return err;
+ 	for (i =3D 0; i < dest_num; i++) {
+-		if (!dest_is_valid(&dest[i], flow_act->action, ft))
++		if (!dest_is_valid(&dest[i], flow_act, ft))
+ 			return ERR_PTR(-EINVAL);
+ 	}
+ 	nested_down_read_ref_node(&ft->node, FS_LOCK_GRANDPARENT);
 diff --git a/include/linux/mlx5/fs.h b/include/linux/mlx5/fs.h
-index a3f8b63839de..de2c838bae90 100644
+index de2c838bae90..81f393fb7d96 100644
 --- a/include/linux/mlx5/fs.h
 +++ b/include/linux/mlx5/fs.h
-@@ -48,6 +48,7 @@ enum {
- 	MLX5_FLOW_TABLE_TUNNEL_EN_REFORMAT =3D BIT(0),
- 	MLX5_FLOW_TABLE_TUNNEL_EN_DECAP =3D BIT(1),
- 	MLX5_FLOW_TABLE_TERMINATION =3D BIT(2),
-+	MLX5_FLOW_TABLE_UNMANAGED =3D BIT(3),
+@@ -196,6 +196,7 @@ struct mlx5_fs_vlan {
+=20
+ enum {
+ 	FLOW_ACT_NO_APPEND =3D BIT(0),
++	FLOW_ACT_IGNORE_FLOW_LEVEL =3D BIT(1),
  };
 =20
- #define LEFTOVERS_RULE_NUM	 2
-@@ -150,6 +151,7 @@ struct mlx5_flow_table_attr {
- 	int max_fte;
- 	u32 level;
- 	u32 flags;
-+	struct mlx5_flow_table *next_ft;
-=20
- 	struct {
- 		int max_num_groups;
+ struct mlx5_flow_act {
 --=20
 2.24.1
 
