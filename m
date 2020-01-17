@@ -2,134 +2,188 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 0FB1F1411A7
-	for <lists+netdev@lfdr.de>; Fri, 17 Jan 2020 20:29:17 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 04FC814120D
+	for <lists+netdev@lfdr.de>; Fri, 17 Jan 2020 21:03:23 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729052AbgAQT3P (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 17 Jan 2020 14:29:15 -0500
-Received: from mail.katalix.com ([3.9.82.81]:39654 "EHLO mail.katalix.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726761AbgAQT3O (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 17 Jan 2020 14:29:14 -0500
-Received: from localhost (82-69-49-219.dsl.in-addr.zen.co.uk [82.69.49.219])
-        (Authenticated sender: tom)
-        by mail.katalix.com (Postfix) with ESMTPSA id EADFF86ACB;
-        Fri, 17 Jan 2020 19:29:12 +0000 (GMT)
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple; d=katalix.com; s=mail;
-        t=1579289353; bh=PiPRprrYy5Fh3VJtFZnizSBCkW/pmHwYqHM8xJ13E4o=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=uGbsGTYaSDj3jhZ4PhZSmq5rsg6OtNp0fFDuGd/YtjAZ9xWraUVu5+5K3KJlUIB1d
-         A64YQdwfuRaIU7sXyMYzeu1rYyrPx6d7qfToqx7Jfks6ea4rrBk8se3mJ8MjFbhO+V
-         NzpU/E5u3UF6UxxNmry1n3LU0FnWn6AxaqVYYasQ03XfirE4bbjF46kWCW6BSjJ+9N
-         7rxfdNfwnrduGwV3OUew06QLXD1coctCBWRKlbrDoXH4Oc91JxikpND/ILkRb85feQ
-         ImNh52Oi4ZR6J0z6W7fMV/mScdDTBuVJLd+CFQ5XhHHXiwHK8x2yk89P2xoV3eamI+
-         md/x9KnD/WkjQ==
-Date:   Fri, 17 Jan 2020 19:29:12 +0000
-From:   Tom Parkin <tparkin@katalix.com>
-To:     Guillaume Nault <gnault@redhat.com>
-Cc:     Ridge Kennedy <ridge.kennedy@alliedtelesis.co.nz>,
-        netdev@vger.kernel.org
-Subject: Re: [PATCH net] l2tp: Allow duplicate session creation with UDP
-Message-ID: <20200117192912.GB19201@jackdaw>
-References: <20200115223446.7420-1-ridge.kennedy@alliedtelesis.co.nz>
- <20200116123854.GA23974@linux.home>
- <20200116131223.GB4028@jackdaw>
- <20200116190556.GA25654@linux.home>
- <20200116212332.GD4028@jackdaw>
- <20200117163627.GC2743@linux.home>
+        id S1729580AbgAQUDU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 17 Jan 2020 15:03:20 -0500
+Received: from mo4-p01-ob.smtp.rzone.de ([85.215.255.50]:28836 "EHLO
+        mo4-p01-ob.smtp.rzone.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726897AbgAQUDU (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 17 Jan 2020 15:03:20 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; t=1579291395;
+        s=strato-dkim-0002; d=hartkopp.net;
+        h=In-Reply-To:Date:Message-ID:From:Cc:References:To:Subject:
+        X-RZG-CLASS-ID:X-RZG-AUTH:From:Subject:Sender;
+        bh=QEo/tDgeU262hRs3LehiNBf8B0dTyOdN3vdoJhDFEZw=;
+        b=jBOKDgNFHkVYd7wNpeRjSVw5KdhaGM7axR5ido+47L+9Rb27HQFUdajGXkPAK+B21T
+        nBsCHm0mArDD0hGFlaVipI2/Bj83cAtNgGSHskirn7kglVFg8Xd9HZvugaRyvh2R99pu
+        gEYLn6F4bLL11kWmF4yVBnMXgM3Tojy4lxWklIeVKTa+ot04bgZR9YJ7rT9fjPhRML2O
+        KEToEpTB5tJCtV7CV47SgsLRog7f4miYwYu0xxf2hkhzMUSsMESevObuvlm15ajnkxNw
+        WIHLffXOvxT+w4WRacMVpiacU6RXXQuJhT7VBd7CqzRxYpCD2NRv55Xiw7hXZHjmNHbo
+        24zQ==
+X-RZG-AUTH: ":P2MHfkW8eP4Mre39l357AZT/I7AY/7nT2yrDxb8mjG14FZxedJy6qgO1o3HMbEWKNteTQLYO"
+X-RZG-CLASS-ID: mo00
+Received: from [192.168.40.177]
+        by smtp.strato.de (RZmta 46.1.4 DYNA|AUTH)
+        with ESMTPSA id 3013f9w0HK2sUOF
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256 bits))
+        (Client did not present a certificate);
+        Fri, 17 Jan 2020 21:02:54 +0100 (CET)
+Subject: Re: general protection fault in can_rx_register
+To:     dev.kurt@vandijck-laurijssen.be, mkl@pengutronix.de,
+        o.rempel@pengutronix.de
+References: <00000000000030dddb059c562a3f@google.com>
+Cc:     syzbot <syzbot+c3ea30e1e2485573f953@syzkaller.appspotmail.com>,
+        davem@davemloft.net, linux-can@vger.kernel.org,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        syzkaller-bugs@googlegroups.com
+From:   Oliver Hartkopp <socketcan@hartkopp.net>
+Message-ID: <55ad363b-1723-28aa-78b1-8aba5565247e@hartkopp.net>
+Date:   Fri, 17 Jan 2020 21:02:48 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.3.0
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="z6Eq5LdranGa6ru8"
-Content-Disposition: inline
-In-Reply-To: <20200117163627.GC2743@linux.home>
-User-Agent: Mutt/1.9.4 (2018-02-28)
+In-Reply-To: <00000000000030dddb059c562a3f@google.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Hi Marc, Oleksij, Kurt,
 
---z6Eq5LdranGa6ru8
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+On 17/01/2020 14.46, syzbot wrote:
+> Hello,
+> 
+> syzbot found the following crash on:
+> 
+> HEAD commit:    f5ae2ea6 Fix built-in early-load Intel microcode alignment
+> git tree:       upstream
+> console output: https://syzkaller.appspot.com/x/log.txt?x=1033df15e00000
+> kernel config:  https://syzkaller.appspot.com/x/.config?x=cfbb8fa33f49f9f3
+> dashboard link: 
+> https://syzkaller.appspot.com/bug?extid=c3ea30e1e2485573f953
+> compiler:       clang version 10.0.0 
+> (https://github.com/llvm/llvm-project/ 
+> c2443155a0fb245c8f17f2c1c72b6ea391e86e81)
+> syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=13204f15e00000
+> C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=138f5db9e00000
+> 
+> The bug was bisected to:
+> 
+> commit 9868b5d44f3df9dd75247acd23dddff0a42f79be
+> Author: Kurt Van Dijck <dev.kurt@vandijck-laurijssen.be>
+> Date:   Mon Oct 8 09:48:33 2018 +0000
+> 
+>      can: introduce CAN_REQUIRED_SIZE macro
+> 
+> bisection log:  https://syzkaller.appspot.com/x/bisect.txt?x=129bfdb9e00000
+> final crash:    https://syzkaller.appspot.com/x/report.txt?x=119bfdb9e00000
+> console output: https://syzkaller.appspot.com/x/log.txt?x=169bfdb9e00000
+> 
+> IMPORTANT: if you fix the bug, please add the following tag to the commit:
+> Reported-by: syzbot+c3ea30e1e2485573f953@syzkaller.appspotmail.com
+> Fixes: 9868b5d44f3d ("can: introduce CAN_REQUIRED_SIZE macro")
+> 
+> kasan: CONFIG_KASAN_INLINE enabled
+> kasan: GPF could be caused by NULL-ptr deref or user memory access
+> general protection fault: 0000 [#1] PREEMPT SMP KASAN
+> CPU: 0 PID: 9593 Comm: syz-executor302 Not tainted 5.5.0-rc6-syzkaller #0
+> Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS 
+> Google 01/01/2011
+> RIP: 0010:hlist_add_head_rcu include/linux/rculist.h:528 [inline]
+> RIP: 0010:can_rx_register+0x43b/0x600 net/can/af_can.c:476
 
-On  Fri, Jan 17, 2020 at 17:36:27 +0100, Guillaume Nault wrote:
-> On Thu, Jan 16, 2020 at 09:23:32PM +0000, Tom Parkin wrote:
-> > On  Thu, Jan 16, 2020 at 20:05:56 +0100, Guillaume Nault wrote:
-> > > What makes me uneasy is that, as soon as the l2tp_ip or l2tp_ip6 modu=
-le
-> > > is loaded, a peer can reach whatever L2TPv3 session exists on the host
-> > > just by sending an L2TP_IP packet to it.
-> > > I don't know how practical it is to exploit this fact, but it looks
-> > > like it's asking for trouble.
-> >=20
-> > Yes, I agree, although practically it's only a slightly easier
-> > "exploit" than L2TP/UDP offers.
-> >=20
-> > The UDP case requires a rogue packet to be delivered to the correct
-> > socket AND have a session ID matching that of one in the associated
-> > tunnel.
-> >=20
-> > It's a slightly more arduous scenario to engineer than the existing
-> > L2TPv3/IP case, but only a little.
-> >=20
-> In the UDP case, we have a socket connected to the peer (or at least
-> bound to a local address). That is, some local setup is needed. With
-> l2tp_ip, we don't even need to have an open socket. Everything is
-> triggered remotely. And here, "remotely" means "any host on any IP
-> network the LCCE is connected", because the destination address can
-> be any address assigned to the LCCE, even if it's not configured to
-> handle any kind of L2TP. But well, after thinking more about our L2TPv3
-> discussiong, I guess that's how the designer's of the protocol wanted.
+include/linux/rculist.h:528 is
 
-I note that RFC 3931 provides for a cookie in the data packet header
-to mitigate against data packet spoofing (section 8.2).
+struct hlist_node *first = h->first;
 
-More generally I've not tried to see what could be done to spoof
-session data packets, so I can't really comment further.  It would be
-interesting to try spoofing packets and see if the kernel code could
-do more to limit any potential problems.
+which would mean that 'h' must be NULL.
 
-> > > > For normal operation, you just need to get the wrong packet on the
-> > > > wrong socket to run into trouble of course.  In such a situation
-> > > > having a unique session ID for v3 helps you to determine that
-> > > > something has gone wrong, which is what the UDP encap recv path does
-> > > > if the session data packet's session ID isn't found in the context =
-of
-> > > > the socket that receives it.
-> > > Unique global session IDs might help troubleshooting, but they also
-> > > break some use cases, as reported by Ridge. At some point, we'll have
-> > > to make a choice, or even add a knob if necessary.
-> >=20
-> > I suspect we need to reach agreement on what RFC 3931 implies before
-> > making headway on what the kernel should ideally do.
-> >=20
-> > There is perhaps room for pragmatism given that the kernel
-> > used to be more permissive prior to dbdbc73b4478, and we weren't
-> > inundated with reports of session ID clashes.
-> >=20
-> To summarise, my understanding is that global session IDs would follow
-> the spirit of RFC 3931 and would allow establishing multiple L2TPv3
-> connections (tunnels) over the same 5-tuple (or 3-tuple for IP encap).
-> Per socket session IDs don't, but would allow fixing Ridge's case.
+But the h parameter is rcv_list from
+rcv_list = can_rcv_list_find(&can_id, &mask, dev_rcv_lists);
 
-I'm not 100% certain what "per socket session IDs" means here.  Could
-you clarify?
+Which can not return NULL - at least when dev_rcv_lists is a proper 
+pointer to the dev_rcv_lists provided by can_dev_rcv_lists_find().
 
---z6Eq5LdranGa6ru8
-Content-Type: application/pgp-signature; name="signature.asc"
+So either dev->ml_priv is NULL in the case of having a CAN interface 
+(here vxcan) or we have not allocated net->can.rx_alldev_list in 
+can_pernet_init() properly (which would lead to an -ENOMEM which is 
+reported to whom?).
 
------BEGIN PGP SIGNATURE-----
+Hm. I'm lost. Any ideas?
 
-iQEzBAABCgAdFiEEsUkgyDzMwrj81nq0lIwGZQq6i9AFAl4iCwgACgkQlIwGZQq6
-i9CrQQgApwH89lI+FW64vXejCOC+fHjobX/jvhBMMrcfFa9LPdzhJKpscQDaRd4I
-DK7tfcS/u91QhymXKdKX+XhxZirBjCyN6KzHpYvwdnZBBEjEjTKdV6lKYsqE1VE8
-yU7yNf/F0NPcb/8m7EzOxGvrPAAS7BdbBvZbKQHgcSmzLa35xdrKM57rz7tVQAtM
-osHRsHyOtAjcP7IRhvVwW7xN8LL6ZGXvuYHDbHEaxoBvg8vaCzgzT+YbkP7aWTu5
-TITqgc6pbOPDyS8VrK3mdQD9kg3k9NWi0VPq4Exx1o/e6ahpibRvkxMxhNditu2a
-6IESDRieSvkyfc0iJhqutEydN68R2g==
-=+hqq
------END PGP SIGNATURE-----
+Regards,
+Oliver
 
---z6Eq5LdranGa6ru8--
+
+> Code: 48 89 d8 48 c1 e8 03 42 80 3c 28 00 74 08 48 89 df e8 89 22 8a fa 
+> 4c 89 33 4d 89 e5 49 c1 ed 03 48 b8 00 00 00 00 00 fc ff df <41> 80 7c 
+> 05 00 00 74 08 4c 89 e7 e8 c5 21 8a fa 4d 8b 34 24 4c 89
+> RSP: 0018:ffffc90003e27d00 EFLAGS: 00010202
+> RAX: dffffc0000000000 RBX: ffff8880a77336c8 RCX: ffff88809306a100
+> RDX: 0000000000000000 RSI: 0000000000000000 RDI: ffff8880a77336c0
+> RBP: ffffc90003e27d58 R08: ffffffff87289cd6 R09: fffff520007c4f94
+> R10: fffff520007c4f94 R11: 0000000000000000 R12: 0000000000000008
+> R13: 0000000000000001 R14: ffff88809fbcf000 R15: ffff8880a7733690
+> FS:  00007fb132f26700(0000) GS:ffff8880aec00000(0000) 
+> knlGS:0000000000000000
+> CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+> CR2: 000000000178f590 CR3: 00000000996d6000 CR4: 00000000001406f0
+> DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+> DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+> Call Trace:
+>   raw_enable_filters net/can/raw.c:189 [inline]
+>   raw_enable_allfilters net/can/raw.c:255 [inline]
+>   raw_bind+0x326/0x1230 net/can/raw.c:428
+>   __sys_bind+0x2bd/0x3a0 net/socket.c:1649
+>   __do_sys_bind net/socket.c:1660 [inline]
+>   __se_sys_bind net/socket.c:1658 [inline]
+>   __x64_sys_bind+0x7a/0x90 net/socket.c:1658
+>   do_syscall_64+0xf7/0x1c0 arch/x86/entry/common.c:294
+>   entry_SYSCALL_64_after_hwframe+0x49/0xbe
+> RIP: 0033:0x446ba9
+> Code: e8 0c e8 ff ff 48 83 c4 18 c3 0f 1f 80 00 00 00 00 48 89 f8 48 89 
+> f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 
+> f0 ff ff 0f 83 5b 07 fc ff c3 66 2e 0f 1f 84 00 00 00 00
+> RSP: 002b:00007fb132f25d98 EFLAGS: 00000246 ORIG_RAX: 0000000000000031
+> RAX: ffffffffffffffda RBX: 00000000006dbc88 RCX: 0000000000446ba9
+> RDX: 0000000000000008 RSI: 0000000020000180 RDI: 0000000000000003
+> RBP: 00000000006dbc80 R08: 00007fb132f26700 R09: 0000000000000000
+> R10: 00007fb132f26700 R11: 0000000000000246 R12: 00000000006dbc8c
+> R13: 0000000000000000 R14: 0000000000000000 R15: 068500100000003c
+> Modules linked in:
+> ---[ end trace 0dedabb13ca8e7d7 ]---
+> RIP: 0010:hlist_add_head_rcu include/linux/rculist.h:528 [inline]
+> RIP: 0010:can_rx_register+0x43b/0x600 net/can/af_can.c:476
+> Code: 48 89 d8 48 c1 e8 03 42 80 3c 28 00 74 08 48 89 df e8 89 22 8a fa 
+> 4c 89 33 4d 89 e5 49 c1 ed 03 48 b8 00 00 00 00 00 fc ff df <41> 80 7c 
+> 05 00 00 74 08 4c 89 e7 e8 c5 21 8a fa 4d 8b 34 24 4c 89
+> RSP: 0018:ffffc90003e27d00 EFLAGS: 00010202
+> RAX: dffffc0000000000 RBX: ffff8880a77336c8 RCX: ffff88809306a100
+> RDX: 0000000000000000 RSI: 0000000000000000 RDI: ffff8880a77336c0
+> RBP: ffffc90003e27d58 R08: ffffffff87289cd6 R09: fffff520007c4f94
+> R10: fffff520007c4f94 R11: 0000000000000000 R12: 0000000000000008
+> R13: 0000000000000001 R14: ffff88809fbcf000 R15: ffff8880a7733690
+> FS:  00007fb132f26700(0000) GS:ffff8880aec00000(0000) 
+> knlGS:0000000000000000
+> CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+> CR2: 000000000178f590 CR3: 00000000996d6000 CR4: 00000000001406f0
+> DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+> DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+> 
+> 
+> ---
+> This bug is generated by a bot. It may contain errors.
+> See https://goo.gl/tpsmEJ for more information about syzbot.
+> syzbot engineers can be reached at syzkaller@googlegroups.com.
+> 
+> syzbot will keep track of this bug report. See:
+> https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
+> For information about bisection process see: 
+> https://goo.gl/tpsmEJ#bisection
+> syzbot can test patches for this bug, for details see:
+> https://goo.gl/tpsmEJ#testing-patches
