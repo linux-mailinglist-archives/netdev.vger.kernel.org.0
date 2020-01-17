@@ -2,88 +2,149 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 012B2140B4B
-	for <lists+netdev@lfdr.de>; Fri, 17 Jan 2020 14:45:11 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 646E0140B55
+	for <lists+netdev@lfdr.de>; Fri, 17 Jan 2020 14:46:20 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726970AbgAQNoG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 17 Jan 2020 08:44:06 -0500
-Received: from us-smtp-delivery-1.mimecast.com ([205.139.110.120]:45481 "EHLO
-        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S1726752AbgAQNoG (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 17 Jan 2020 08:44:06 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1579268645;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references:autocrypt:autocrypt;
-        bh=snDQstAj42jtMtoDqSt/QDcFelJMyaziDn2qIbHISRI=;
-        b=Mzbxgt4vYsVCEi59xaZiRfE5+toxgIiqNMRuLJImWdM5yj+evc5sBYNYTyD0dzqV+5x/o+
-        gjsrbcSo92oDMDc0gXfjhjZOOfRe/SQVK811IYO5yGr1IziZnoIv+cPA+ke3kOWJ80ao6G
-        Ak0mDan19BaCJ32E2Dqx9UB1eLhfE/s=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-38-RCfq0exQNKKmCZ0U_0GiTA-1; Fri, 17 Jan 2020 08:44:03 -0500
-X-MC-Unique: RCfq0exQNKKmCZ0U_0GiTA-1
-Received: from smtp.corp.redhat.com (int-mx05.intmail.prod.int.phx2.redhat.com [10.5.11.15])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 38F058D6502
-        for <netdev@vger.kernel.org>; Fri, 17 Jan 2020 13:44:01 +0000 (UTC)
-Received: from lap.dom.ain (dhcp-24-164.fab.redhat.com [10.33.24.164])
-        by smtp.corp.redhat.com (Postfix) with ESMTPS id DF7D280895
-        for <netdev@vger.kernel.org>; Fri, 17 Jan 2020 13:44:00 +0000 (UTC)
-Subject: Re: [PATCH net-next v3] openvswitch: add TTL decrement action
-To:     netdev@vger.kernel.org
-References: <20200115164030.56045-1-mcroce@redhat.com>
-From:   Jeremy Harris <jgh@redhat.com>
-Autocrypt: addr=jgh@redhat.com; prefer-encrypt=mutual; keydata=
- mQENBFWABsQBCADTFfb9EHGGiDel/iFzU0ag1RuoHfL/09z1y7iQlLynOAQTRRNwCWezmqpD
- p6zDFOf1Ldp0EdEQtUXva5g2lm3o56o+mnXrEQr11uZIcsfGIck7yV/y/17I7ApgXMPg/mcj
- ifOTM9C7+Ptghf3jUhj4ErYMFQLelBGEZZifnnAoHLOEAH70DENCI08PfYRRG6lZDB09nPW7
- vVG8RbRUWjQyxQUWwXuq4gQohSFDqF4NE8zDHE/DgPJ/yFy+wFr2ab90DsE7vOYb42y95keK
- tTBp98/Y7/2xbzi8EYrXC+291dwZELMHnYLF5sO/fDcrDdwrde2cbZ+wtpJwtSYPNvVxABEB
- AAG0HkplcmVteSBIYXJyaXMgPGpnaEByZWRoYXQuY29tPokBTgQTAQgAOBYhBKmG86a9Y3fY
- cwlY3rzljIzkHzLfBQJeFjLkAhsDBQsJCAcCBhUKCQgLAgQWAgMBAh4BAheAAAoJELzljIzk
- HzLfAa8IAMbrIA28i3/L3+Wl24vNnO01kM5vgvC+4EFMop2ChBcGF8xJpTHB9Iwrq+oyRhgU
- BH6Z9c7jRivEmre+vA5G12im0bgGXZug8Qr62Eufn+YseX51Mdb0ryRX94jniAheN/CUBZNS
- pQQUUrwywABlD52LhCYQjjeUCS+FWoveQUQqMfH5H56vF61jP9frdza7NjEwHBJhhly0eL70
- inub88WdHoGyqsa87oqr2hgwhkF90I2RBJijIZmOtbPds+CbiRsaEh//d5n9vZyH6abnfmRh
- pxlzt3a8OPFI820X4YrF+o7vnRxza2Xg/sVkIUvU0wUQKqpQ3qxVUsRtkVamqyS5AQ0EVYAG
- xAEIAOmEsdopOhG5H8TtMd6sGIKMNq3AJoRM4o5NjbNEFClpDfan8XZcgYtLwJzbv6CtlIpD
- plfRk3js74AXIUcXwMf3QhdkWklHdFvzOBdPyOctfTwMzfV4QJkedHMWEaU6arpYBSWoHcYo
- I9QJjZzh5NFfKhcu15PGtcJiiPjnL9ia+VmuWicE2M8EDIeI78s3P5Xt9m02w3s39caucttx
- 018135IPUQ2ZssnxG/LKbGC5PIH+Rr0l2MccihAQnovXroHeGF8Iem3yILQY9mS2L0gyXQ2g
- nTb2MmbcmrWoRx4QGfkflAwafoWrriJfBOw7VMw1TClbHymO9XvBUjGMjxkAEQEAAYkBHwQY
- AQIACQUCVYAGxAIbDAAKCRC85YyM5B8y303oB/wJLYJOsxAV2GQYS0FeYviJ8PxQcWQFEEaY
- zxkvZ9ZQFNldPyat1Ew4rq1w+cpZoK9a8qvSSe33vSP8PICAWYfyGA6LfJy2KAV5xUOOOKUB
- 4IkyrfyzW1gpiIsNsF0da12QD24dnCreV93dDFwQQ7dBqZAX507uHyAA5eUb6mjzseb4TTDP
- izAgHz5LfsnOvH267QtIUN8kJMr5MgoZrlSfwvE/HKr1aec0OHvbMrsGJGJ2T+zjQpw2h3zc
- 0zgef+xsZ/ItryxLQXcwTRL6hxIw6K79kcc6LCktg1vBMnuy1nEayuC5Z5P0/5qbFsD9iUr3
- kt52y3C835Zwdnt374Cu
-Message-ID: <f3c001e1-8963-536d-4158-3ce16ad5de69@redhat.com>
-Date:   Fri, 17 Jan 2020 13:43:59 +0000
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.2.2
+        id S1728682AbgAQNqN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 17 Jan 2020 08:46:13 -0500
+Received: from mail-io1-f70.google.com ([209.85.166.70]:33227 "EHLO
+        mail-io1-f70.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726752AbgAQNqN (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 17 Jan 2020 08:46:13 -0500
+Received: by mail-io1-f70.google.com with SMTP id i8so15101135ioi.0
+        for <netdev@vger.kernel.org>; Fri, 17 Jan 2020 05:46:12 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
+        bh=6yTFvZSIUTFje0iuJnrv+aFaKQQ7ngAb+Df8VB7qUuE=;
+        b=DpDJb4Xf7NmALUYL1BjPjBTeRf+iggOtdCVxHTIleDXHPSUyrsSzCPQQtfxRDMJHjD
+         vPdIrjVSD3SAE8fQ4ljN7JoyjXTRN7STPIptvtbhm3nXZ+KBr/jzKy4J9yXSdGEeD3/0
+         E+x5jabOu2PMZIpfXJngqnLcF7/+eXjmyo8jbEEJDvgeqlkiiVozDePc3YcFQLNHAAh3
+         peX5vBXl85jaz/bC4o5doi0QDOpmDKB5qN8XrvFsWwF5ceEIhlYDptNgW3rXJ6IKHwLF
+         LNcMP+5/5I7CrRrWzYrCSiXBbzJoUIySmJD1QnVL01qEfqUQ9VjTx89obBhHvt7HNVZE
+         RLUA==
+X-Gm-Message-State: APjAAAWUjUKTDMRiVCurn0Fldt/7/VURlSGRii6vvG7Un3VP5zi9+kC0
+        KWia5FsDARvfjeGGr9KVsBQHGcB/Y3KJeTYXYdaZBEIG9DlE
+X-Google-Smtp-Source: APXvYqxGuic3bOydwwi/re48vM4+4utcWXYqsSf8/oQciD92zM4NBaFfeVipZ8ahJOjxWMX5uvXia/u/ukkMhiS7X6s2W7BrGeRv
 MIME-Version: 1.0
-In-Reply-To: <20200115164030.56045-1-mcroce@redhat.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-GB
-Content-Transfer-Encoding: 7bit
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.15
+X-Received: by 2002:a5e:dd03:: with SMTP id t3mr30554369iop.128.1579268772517;
+ Fri, 17 Jan 2020 05:46:12 -0800 (PST)
+Date:   Fri, 17 Jan 2020 05:46:12 -0800
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <00000000000030dddb059c562a3f@google.com>
+Subject: general protection fault in can_rx_register
+From:   syzbot <syzbot+c3ea30e1e2485573f953@syzkaller.appspotmail.com>
+To:     davem@davemloft.net, dev.kurt@vandijck-laurijssen.be,
+        linux-can@vger.kernel.org, linux-kernel@vger.kernel.org,
+        mkl@pengutronix.de, netdev@vger.kernel.org,
+        o.rempel@pengutronix.de, socketcan@hartkopp.net,
+        syzkaller-bugs@googlegroups.com
+Content-Type: text/plain; charset="UTF-8"; format=flowed; delsp=yes
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 15/01/2020 16:40, Matteo Croce wrote:
-> New action to decrement TTL instead of setting it to a fixed value.
-> This action will decrement the TTL and, in case of expired TTL, drop it
-> or execute an action passed via a nested attribute.
-> The default TTL expired action is to drop the packet.
+Hello,
 
-On drop, will it emit an ICMP?
--- 
-Cheers,
-  Jeremy
+syzbot found the following crash on:
 
+HEAD commit:    f5ae2ea6 Fix built-in early-load Intel microcode alignment
+git tree:       upstream
+console output: https://syzkaller.appspot.com/x/log.txt?x=1033df15e00000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=cfbb8fa33f49f9f3
+dashboard link: https://syzkaller.appspot.com/bug?extid=c3ea30e1e2485573f953
+compiler:       clang version 10.0.0 (https://github.com/llvm/llvm-project/  
+c2443155a0fb245c8f17f2c1c72b6ea391e86e81)
+syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=13204f15e00000
+C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=138f5db9e00000
+
+The bug was bisected to:
+
+commit 9868b5d44f3df9dd75247acd23dddff0a42f79be
+Author: Kurt Van Dijck <dev.kurt@vandijck-laurijssen.be>
+Date:   Mon Oct 8 09:48:33 2018 +0000
+
+     can: introduce CAN_REQUIRED_SIZE macro
+
+bisection log:  https://syzkaller.appspot.com/x/bisect.txt?x=129bfdb9e00000
+final crash:    https://syzkaller.appspot.com/x/report.txt?x=119bfdb9e00000
+console output: https://syzkaller.appspot.com/x/log.txt?x=169bfdb9e00000
+
+IMPORTANT: if you fix the bug, please add the following tag to the commit:
+Reported-by: syzbot+c3ea30e1e2485573f953@syzkaller.appspotmail.com
+Fixes: 9868b5d44f3d ("can: introduce CAN_REQUIRED_SIZE macro")
+
+kasan: CONFIG_KASAN_INLINE enabled
+kasan: GPF could be caused by NULL-ptr deref or user memory access
+general protection fault: 0000 [#1] PREEMPT SMP KASAN
+CPU: 0 PID: 9593 Comm: syz-executor302 Not tainted 5.5.0-rc6-syzkaller #0
+Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS  
+Google 01/01/2011
+RIP: 0010:hlist_add_head_rcu include/linux/rculist.h:528 [inline]
+RIP: 0010:can_rx_register+0x43b/0x600 net/can/af_can.c:476
+Code: 48 89 d8 48 c1 e8 03 42 80 3c 28 00 74 08 48 89 df e8 89 22 8a fa 4c  
+89 33 4d 89 e5 49 c1 ed 03 48 b8 00 00 00 00 00 fc ff df <41> 80 7c 05 00  
+00 74 08 4c 89 e7 e8 c5 21 8a fa 4d 8b 34 24 4c 89
+RSP: 0018:ffffc90003e27d00 EFLAGS: 00010202
+RAX: dffffc0000000000 RBX: ffff8880a77336c8 RCX: ffff88809306a100
+RDX: 0000000000000000 RSI: 0000000000000000 RDI: ffff8880a77336c0
+RBP: ffffc90003e27d58 R08: ffffffff87289cd6 R09: fffff520007c4f94
+R10: fffff520007c4f94 R11: 0000000000000000 R12: 0000000000000008
+R13: 0000000000000001 R14: ffff88809fbcf000 R15: ffff8880a7733690
+FS:  00007fb132f26700(0000) GS:ffff8880aec00000(0000) knlGS:0000000000000000
+CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+CR2: 000000000178f590 CR3: 00000000996d6000 CR4: 00000000001406f0
+DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+Call Trace:
+  raw_enable_filters net/can/raw.c:189 [inline]
+  raw_enable_allfilters net/can/raw.c:255 [inline]
+  raw_bind+0x326/0x1230 net/can/raw.c:428
+  __sys_bind+0x2bd/0x3a0 net/socket.c:1649
+  __do_sys_bind net/socket.c:1660 [inline]
+  __se_sys_bind net/socket.c:1658 [inline]
+  __x64_sys_bind+0x7a/0x90 net/socket.c:1658
+  do_syscall_64+0xf7/0x1c0 arch/x86/entry/common.c:294
+  entry_SYSCALL_64_after_hwframe+0x49/0xbe
+RIP: 0033:0x446ba9
+Code: e8 0c e8 ff ff 48 83 c4 18 c3 0f 1f 80 00 00 00 00 48 89 f8 48 89 f7  
+48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff  
+ff 0f 83 5b 07 fc ff c3 66 2e 0f 1f 84 00 00 00 00
+RSP: 002b:00007fb132f25d98 EFLAGS: 00000246 ORIG_RAX: 0000000000000031
+RAX: ffffffffffffffda RBX: 00000000006dbc88 RCX: 0000000000446ba9
+RDX: 0000000000000008 RSI: 0000000020000180 RDI: 0000000000000003
+RBP: 00000000006dbc80 R08: 00007fb132f26700 R09: 0000000000000000
+R10: 00007fb132f26700 R11: 0000000000000246 R12: 00000000006dbc8c
+R13: 0000000000000000 R14: 0000000000000000 R15: 068500100000003c
+Modules linked in:
+---[ end trace 0dedabb13ca8e7d7 ]---
+RIP: 0010:hlist_add_head_rcu include/linux/rculist.h:528 [inline]
+RIP: 0010:can_rx_register+0x43b/0x600 net/can/af_can.c:476
+Code: 48 89 d8 48 c1 e8 03 42 80 3c 28 00 74 08 48 89 df e8 89 22 8a fa 4c  
+89 33 4d 89 e5 49 c1 ed 03 48 b8 00 00 00 00 00 fc ff df <41> 80 7c 05 00  
+00 74 08 4c 89 e7 e8 c5 21 8a fa 4d 8b 34 24 4c 89
+RSP: 0018:ffffc90003e27d00 EFLAGS: 00010202
+RAX: dffffc0000000000 RBX: ffff8880a77336c8 RCX: ffff88809306a100
+RDX: 0000000000000000 RSI: 0000000000000000 RDI: ffff8880a77336c0
+RBP: ffffc90003e27d58 R08: ffffffff87289cd6 R09: fffff520007c4f94
+R10: fffff520007c4f94 R11: 0000000000000000 R12: 0000000000000008
+R13: 0000000000000001 R14: ffff88809fbcf000 R15: ffff8880a7733690
+FS:  00007fb132f26700(0000) GS:ffff8880aec00000(0000) knlGS:0000000000000000
+CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+CR2: 000000000178f590 CR3: 00000000996d6000 CR4: 00000000001406f0
+DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+
+
+---
+This bug is generated by a bot. It may contain errors.
+See https://goo.gl/tpsmEJ for more information about syzbot.
+syzbot engineers can be reached at syzkaller@googlegroups.com.
+
+syzbot will keep track of this bug report. See:
+https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
+For information about bisection process see: https://goo.gl/tpsmEJ#bisection
+syzbot can test patches for this bug, for details see:
+https://goo.gl/tpsmEJ#testing-patches
