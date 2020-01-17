@@ -2,148 +2,88 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 11062140B49
-	for <lists+netdev@lfdr.de>; Fri, 17 Jan 2020 14:45:10 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 012B2140B4B
+	for <lists+netdev@lfdr.de>; Fri, 17 Jan 2020 14:45:11 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728977AbgAQNne (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 17 Jan 2020 08:43:34 -0500
-Received: from us-smtp-2.mimecast.com ([207.211.31.81]:29455 "EHLO
-        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1726970AbgAQNne (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 17 Jan 2020 08:43:34 -0500
+        id S1726970AbgAQNoG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 17 Jan 2020 08:44:06 -0500
+Received: from us-smtp-delivery-1.mimecast.com ([205.139.110.120]:45481 "EHLO
+        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+        with ESMTP id S1726752AbgAQNoG (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 17 Jan 2020 08:44:06 -0500
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1579268612;
+        s=mimecast20190719; t=1579268645;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=mTb34bIVH9ntXAekope6u8a3J2IAdR9xFh/VSa4haYQ=;
-        b=bT2Um09Vg2exNIWJZWa60i56WOIicZeUGZtO93kEHEVi+I7yQbqDQIoW5XYgrRRGETaePL
-        CMjV9uStbYcGiqvAXOClCzewtYLLouM7LsT++jdLRBRO6fqCMnXH4WhZQkg028BsYY5hM4
-        HNEIeWrtqE2ppRz910bNIc07QV0tG3M=
-Received: from mail-wr1-f71.google.com (mail-wr1-f71.google.com
- [209.85.221.71]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-263-34dMFG0rNOa-YvrE95dVIA-1; Fri, 17 Jan 2020 08:43:31 -0500
-X-MC-Unique: 34dMFG0rNOa-YvrE95dVIA-1
-Received: by mail-wr1-f71.google.com with SMTP id t3so10472944wrm.23
-        for <netdev@vger.kernel.org>; Fri, 17 Jan 2020 05:43:31 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=mTb34bIVH9ntXAekope6u8a3J2IAdR9xFh/VSa4haYQ=;
-        b=m5CJoffv1aqJUv/89mQCknC3zWN9yp/DCa1d6eH10wKczjCiAONoGSqbYRwqyhFEb5
-         ux5OoFaxjql7njvQ/gAyZf2bs9maxzc+kP2nUHHm0fOM/Hq1c4Md2PcjnHGpVrtmW/s9
-         Z7i9qqq4uAwmLREUmfAeZTZc201mEBkkU33vsay79cMM/B+FBhoi7Mvviea7LTes777E
-         Fi774O2DHSM5vU8v+EOeJPgHyb7N38WfgMaDzDt/3fc2tiBjkKqIcsPtstwXIXpcRDnj
-         JIDR9docm0ojy0cPuDVg7/xW3QYH7FqvzZ/MSvb5XN71BvO3s8GszABK9QhEvVCyIHpE
-         ig1w==
-X-Gm-Message-State: APjAAAUhseBbu2nNeOe9S6XUFHXZiLErI7VVlGhtky1HgP6mlhaS1Uen
-        ycp9VoncpouHzfQYHevDe8Ds10QcExPuc96BYsSCCtae368uXm8K3UCTCHywt+1+yhbXCDHBl1f
-        PPANpEaKwb05Vb5G7
-X-Received: by 2002:a1c:4e03:: with SMTP id g3mr4613643wmh.22.1579268609852;
-        Fri, 17 Jan 2020 05:43:29 -0800 (PST)
-X-Google-Smtp-Source: APXvYqxyvGw5GEhXz8GhythNW7SrNpiCEnWdjAguLYCeIMmhBsgeP8q6AL1vcN69AFULBuoQoNm6Ww==
-X-Received: by 2002:a1c:4e03:: with SMTP id g3mr4613627wmh.22.1579268609613;
-        Fri, 17 Jan 2020 05:43:29 -0800 (PST)
-Received: from linux.home (2a01cb058a4e7100d3814d1912515f67.ipv6.abo.wanadoo.fr. [2a01:cb05:8a4e:7100:d381:4d19:1251:5f67])
-        by smtp.gmail.com with ESMTPSA id e18sm33658501wrw.70.2020.01.17.05.43.28
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 17 Jan 2020 05:43:28 -0800 (PST)
-Date:   Fri, 17 Jan 2020 14:43:27 +0100
-From:   Guillaume Nault <gnault@redhat.com>
-To:     Tom Parkin <tparkin@katalix.com>
-Cc:     Ridge Kennedy <ridge.kennedy@alliedtelesis.co.nz>,
-        netdev@vger.kernel.org
-Subject: Re: [PATCH net] l2tp: Allow duplicate session creation with UDP
-Message-ID: <20200117134327.GA2743@linux.home>
-References: <20200115223446.7420-1-ridge.kennedy@alliedtelesis.co.nz>
- <20200116123143.GA4028@jackdaw>
- <20200116192827.GB25654@linux.home>
- <20200116210501.GC4028@jackdaw>
+         to:to:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references:autocrypt:autocrypt;
+        bh=snDQstAj42jtMtoDqSt/QDcFelJMyaziDn2qIbHISRI=;
+        b=Mzbxgt4vYsVCEi59xaZiRfE5+toxgIiqNMRuLJImWdM5yj+evc5sBYNYTyD0dzqV+5x/o+
+        gjsrbcSo92oDMDc0gXfjhjZOOfRe/SQVK811IYO5yGr1IziZnoIv+cPA+ke3kOWJ80ao6G
+        Ak0mDan19BaCJ32E2Dqx9UB1eLhfE/s=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-38-RCfq0exQNKKmCZ0U_0GiTA-1; Fri, 17 Jan 2020 08:44:03 -0500
+X-MC-Unique: RCfq0exQNKKmCZ0U_0GiTA-1
+Received: from smtp.corp.redhat.com (int-mx05.intmail.prod.int.phx2.redhat.com [10.5.11.15])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 38F058D6502
+        for <netdev@vger.kernel.org>; Fri, 17 Jan 2020 13:44:01 +0000 (UTC)
+Received: from lap.dom.ain (dhcp-24-164.fab.redhat.com [10.33.24.164])
+        by smtp.corp.redhat.com (Postfix) with ESMTPS id DF7D280895
+        for <netdev@vger.kernel.org>; Fri, 17 Jan 2020 13:44:00 +0000 (UTC)
+Subject: Re: [PATCH net-next v3] openvswitch: add TTL decrement action
+To:     netdev@vger.kernel.org
+References: <20200115164030.56045-1-mcroce@redhat.com>
+From:   Jeremy Harris <jgh@redhat.com>
+Autocrypt: addr=jgh@redhat.com; prefer-encrypt=mutual; keydata=
+ mQENBFWABsQBCADTFfb9EHGGiDel/iFzU0ag1RuoHfL/09z1y7iQlLynOAQTRRNwCWezmqpD
+ p6zDFOf1Ldp0EdEQtUXva5g2lm3o56o+mnXrEQr11uZIcsfGIck7yV/y/17I7ApgXMPg/mcj
+ ifOTM9C7+Ptghf3jUhj4ErYMFQLelBGEZZifnnAoHLOEAH70DENCI08PfYRRG6lZDB09nPW7
+ vVG8RbRUWjQyxQUWwXuq4gQohSFDqF4NE8zDHE/DgPJ/yFy+wFr2ab90DsE7vOYb42y95keK
+ tTBp98/Y7/2xbzi8EYrXC+291dwZELMHnYLF5sO/fDcrDdwrde2cbZ+wtpJwtSYPNvVxABEB
+ AAG0HkplcmVteSBIYXJyaXMgPGpnaEByZWRoYXQuY29tPokBTgQTAQgAOBYhBKmG86a9Y3fY
+ cwlY3rzljIzkHzLfBQJeFjLkAhsDBQsJCAcCBhUKCQgLAgQWAgMBAh4BAheAAAoJELzljIzk
+ HzLfAa8IAMbrIA28i3/L3+Wl24vNnO01kM5vgvC+4EFMop2ChBcGF8xJpTHB9Iwrq+oyRhgU
+ BH6Z9c7jRivEmre+vA5G12im0bgGXZug8Qr62Eufn+YseX51Mdb0ryRX94jniAheN/CUBZNS
+ pQQUUrwywABlD52LhCYQjjeUCS+FWoveQUQqMfH5H56vF61jP9frdza7NjEwHBJhhly0eL70
+ inub88WdHoGyqsa87oqr2hgwhkF90I2RBJijIZmOtbPds+CbiRsaEh//d5n9vZyH6abnfmRh
+ pxlzt3a8OPFI820X4YrF+o7vnRxza2Xg/sVkIUvU0wUQKqpQ3qxVUsRtkVamqyS5AQ0EVYAG
+ xAEIAOmEsdopOhG5H8TtMd6sGIKMNq3AJoRM4o5NjbNEFClpDfan8XZcgYtLwJzbv6CtlIpD
+ plfRk3js74AXIUcXwMf3QhdkWklHdFvzOBdPyOctfTwMzfV4QJkedHMWEaU6arpYBSWoHcYo
+ I9QJjZzh5NFfKhcu15PGtcJiiPjnL9ia+VmuWicE2M8EDIeI78s3P5Xt9m02w3s39caucttx
+ 018135IPUQ2ZssnxG/LKbGC5PIH+Rr0l2MccihAQnovXroHeGF8Iem3yILQY9mS2L0gyXQ2g
+ nTb2MmbcmrWoRx4QGfkflAwafoWrriJfBOw7VMw1TClbHymO9XvBUjGMjxkAEQEAAYkBHwQY
+ AQIACQUCVYAGxAIbDAAKCRC85YyM5B8y303oB/wJLYJOsxAV2GQYS0FeYviJ8PxQcWQFEEaY
+ zxkvZ9ZQFNldPyat1Ew4rq1w+cpZoK9a8qvSSe33vSP8PICAWYfyGA6LfJy2KAV5xUOOOKUB
+ 4IkyrfyzW1gpiIsNsF0da12QD24dnCreV93dDFwQQ7dBqZAX507uHyAA5eUb6mjzseb4TTDP
+ izAgHz5LfsnOvH267QtIUN8kJMr5MgoZrlSfwvE/HKr1aec0OHvbMrsGJGJ2T+zjQpw2h3zc
+ 0zgef+xsZ/ItryxLQXcwTRL6hxIw6K79kcc6LCktg1vBMnuy1nEayuC5Z5P0/5qbFsD9iUr3
+ kt52y3C835Zwdnt374Cu
+Message-ID: <f3c001e1-8963-536d-4158-3ce16ad5de69@redhat.com>
+Date:   Fri, 17 Jan 2020 13:43:59 +0000
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.2.2
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200116210501.GC4028@jackdaw>
+In-Reply-To: <20200115164030.56045-1-mcroce@redhat.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-GB
+Content-Transfer-Encoding: 7bit
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.15
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Jan 16, 2020 at 09:05:01PM +0000, Tom Parkin wrote:
-> On  Thu, Jan 16, 2020 at 20:28:27 +0100, Guillaume Nault wrote:
-> > On Thu, Jan 16, 2020 at 12:31:43PM +0000, Tom Parkin wrote:
-> > > However, there's nothing to prevent user space from using the same UDP
-> > > port for multiple tunnels, at which point this relaxation of the RFC
-> > > rules would break down again.
-> > > 
-> > Multiplexing L2TP tunnels on top of non-connected UDP sockets might be
-> > a nice optimisation for someone using many tunnels (like hundred of
-> > thouthands), but I'm afraid the rest of the L2TP code is not ready to
-> > handle such load anyway. And the current implementation only allows
-> > one tunnel for each UDP socket anyway.
-> 
-> TBH I was thinking more of the case where multiple sockets are bound and
-> connected to the same address/port (SO_REUSEADDR).  There's still a
-> 1:1 mapping of tunnel:socket, but it's possible to have packets for tunnel
-> A arrive on tunnel B's socket and vice versa.
-> 
-> It's a bit of a corner case, I grant you.
-> 
-Creating several sockets to handle the same tunnel (as identified by
-its 5-tuple) may be doable with SO_REUSEPORT, with an ebpf program to
-direct the packet to the right socket depending on the session ID. The
-session ID would be local to the so_reuseport group. So I guess that
-even this kind of setup can be achieved with non-global session IDs (I
-haven't tried though, so I might have missed something).
+On 15/01/2020 16:40, Matteo Croce wrote:
+> New action to decrement TTL instead of setting it to a fixed value.
+> This action will decrement the TTL and, in case of expired TTL, drop it
+> or execute an action passed via a nested attribute.
+> The default TTL expired action is to drop the packet.
 
-> > > Since UDP-encap can also be broken in the face of duplicated L2TPv3
-> > > session IDs, I think its better that the kernel continue to enforce
-> > > the RFC.
-> > How is UDP-encap broken with duplicate session IDs (as long as a UDP
-> > socket can only one have one tunnel associated with it and that no
-> > duplicate session IDs are allowed inside the same tunnel)?
-> > 
-> > It all boils down to what's the scope of a session ID. For me it has
-> > always been the parent tunnel. But if that's in contradiction with
-> > RFC 3931, I'd be happy to know.
-> 
-> For RFC 2661 the session ID is scoped to the tunnel.  Section 3.1
-> says:
-> 
->   "Session ID indicates the identifier for a session within a tunnel."
-> 
-> Control and data packets share the same header which includes both the
-> tunnel and session ID with 16 bits allocated to each.  So it's always
-> possible to tell from the data packet header which tunnel the session is
-> associated with.
-> 
-> RFC 3931 changed the scheme.  Control packets now include a 32-bit
-> "Control Connection ID" (analogous to the Tunnel ID).  Data packets
-> have a session header specific to the packet-switching network in use:
-> the RFC describes schemes for both IP and UDP, both of which employ a
-> 32-bit session ID.  Section 4.1 says:
-> 
->   "The Session ID alone provides the necessary context for all further
->   packet processing"
-> 
-> Since neither UDP nor IP encapsulated data packets include the control
-> connection ID, the session ID must be unique to the LCCE to allow
-> identification of the session.
-
-Well my understanding was that the tunnel was implicitely given by the
-UDP and IP headers. I don't think that multiplexing tunnels over the
-same UDP connection made any sense with L2TPv2, and the kernel never
-supported it natively (it might be possible with SO_REUSEPORT). Given
-that the tunnel ID field was redundant with the lower headers, it made
-sense to me that L2TPv3 dropped it (note that the kernel ignores the
-L2TPv2 tunnel ID field on Rx). At least that was my understanding.
-
-But as your quote says, the session ID _alone_ should provide all the
-L2TP context. So I guess the spirit of the RFC is that there's a single
-global namespace for session IDs. Now, practically speaking, I don't
-see how scoped session IDs makes us incompatible, unless we consider
-that a given session can be shared between several remote hosts (the
-cross-talk case in my other email). Also, sharing a session over
-several hosts would mean that L2TPv3 sessions aren't point-to-point,
-which the control plane doesn't seem to take into account.
+On drop, will it emit an ICMP?
+-- 
+Cheers,
+  Jeremy
 
