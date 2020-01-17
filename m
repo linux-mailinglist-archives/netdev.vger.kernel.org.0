@@ -2,73 +2,72 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id B8E6C140319
-	for <lists+netdev@lfdr.de>; Fri, 17 Jan 2020 05:45:59 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C39F714039A
+	for <lists+netdev@lfdr.de>; Fri, 17 Jan 2020 06:33:12 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730260AbgAQEpC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 16 Jan 2020 23:45:02 -0500
-Received: from mail-io1-f72.google.com ([209.85.166.72]:33721 "EHLO
-        mail-io1-f72.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1730153AbgAQEpC (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 16 Jan 2020 23:45:02 -0500
-Received: by mail-io1-f72.google.com with SMTP id i8so14314965ioi.0
-        for <netdev@vger.kernel.org>; Thu, 16 Jan 2020 20:45:01 -0800 (PST)
+        id S1726857AbgAQFdK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 17 Jan 2020 00:33:10 -0500
+Received: from mail-pj1-f65.google.com ([209.85.216.65]:36943 "EHLO
+        mail-pj1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726364AbgAQFdK (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 17 Jan 2020 00:33:10 -0500
+Received: by mail-pj1-f65.google.com with SMTP id m13so2759816pjb.2
+        for <netdev@vger.kernel.org>; Thu, 16 Jan 2020 21:33:09 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=broadcom.com; s=google;
+        h=from:to:cc:subject:date:message-id;
+        bh=btOu7Tr7FFV0vZ9EXQeVo4aIdvMnVyCJ/+AFdZy1O5c=;
+        b=FRC912jAOzBZOBp59Wo1/GT+I0Fc7A71n9GO24mXIR5W/wyFa0SBTVzsVueWenHKSc
+         YFcMQhnjAEKUcG0/K0cFYf8ODbChU1+IHs62usjOdQ2z61hixvNsr5T/oYBEAVtXktlH
+         2W76Q4SOBB7OAzzu/FF39wNd/L/22bXKzfMmg=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:date:in-reply-to:message-id:subject
-         :from:to;
-        bh=1cUAzzk2sNct6oR4gK6sFNSkqIAeXDAPVDj7dr4pJaI=;
-        b=t0CsvXR5JglTPKda11VyE8t8pTdWr/g1TAlACv2fPURGVqdIbLAMzbRr3NquGWVo//
-         mHG4QX+ZHKBm8pBZCk+FsxpLJvUQbuG2SyLzVWS/YKPcGZuo4ApFq8F6kJKFElJ7BQZD
-         iN9mIp02ykG3HqvrXWfl2YXeEwL3XZiHvh/YLppXHveJfpCkPD4PUG/drD8Aw7SaO5VB
-         xMnfMDOOHyPzGgeG9pu6qXfuK24LYHpb3wLbLjjVRV4eMAdubhex9k9lMaBEmCm0EhTb
-         ft/SEdOFV68sEJfuCH9MmDFdd6JRzgKYSgcyGoFL3W2dLClf5i5ZR60YV8bGEc8OH9rw
-         qCLQ==
-X-Gm-Message-State: APjAAAUtCBboEryVdJRNcTTflG6JB4D4vePdszgRUFSfbBEe7FLEYZB1
-        41AU9bmekTKAMGqjR8W7+k47GMRCLDrbwV1b7w0BhrnmOaJ3
-X-Google-Smtp-Source: APXvYqyjD+Biivg/aa5/AT9J3HOCrQyY1dnQuDliyrdfNZIwqOAQb+x2KCj1JtDJEr9CqmN0upuDE/qMamViB/tBFaUwrT2rQYUY
-MIME-Version: 1.0
-X-Received: by 2002:a5d:9694:: with SMTP id m20mr30787857ion.48.1579236301410;
- Thu, 16 Jan 2020 20:45:01 -0800 (PST)
-Date:   Thu, 16 Jan 2020 20:45:01 -0800
-In-Reply-To: <000000000000b3599c059c36db0d@google.com>
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <000000000000c31c6d059c4e9a6c@google.com>
-Subject: Re: BUG: corrupted list in nf_tables_commit
-From:   syzbot <syzbot+37a6804945a3a13b1572@syzkaller.appspotmail.com>
-To:     coreteam@netfilter.org, davem@davemloft.net, fw@strlen.de,
-        kadlec@blackhole.kfki.hu, kadlec@netfilter.org,
-        kuznet@ms2.inr.ac.ru, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org, netfilter-devel@vger.kernel.org,
-        pablo@netfilter.org, syzkaller-bugs@googlegroups.com,
-        yoshfuji@linux-ipv6.org
-Content-Type: text/plain; charset="UTF-8"; format=flowed; delsp=yes
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=btOu7Tr7FFV0vZ9EXQeVo4aIdvMnVyCJ/+AFdZy1O5c=;
+        b=p45CP+zVorcIJ3Bp86sqFApK9jiSpr8wwTFn6Oqo4YN+hHOJfpUdXsf3WlK/CdN58A
+         Bel/2o8NcPijpVE9lYieKvfW6WDi8KYZ2CW/rRYchTQuBrDciQjYfQ76sG7wFopXs/9t
+         FxsvkPsnxGNaBNTi6L7r+ooCGsaIbfeQHPfP/Pgw3tuSEcgPba5UOfxDJVZMR8ZyNWI9
+         GLLJM6/5PSKzmMrk95nACu8aEgXdYRS+ZqD6zdt1sVM4bzvCgfFeFxtV/NDYwRfhgW1P
+         TEDWcumdqXMHVvmSODk6R06F0m9gxiWDx5COg6OTYPSdqe9JU04SRTx3nqS1NYmtXSYl
+         RiDg==
+X-Gm-Message-State: APjAAAWv5+4pEhryyn1/sv0PgNChXLWxMZRg0cB32qK/rXPvWbBHvpD4
+        iMNswoR3G7aiH5BzI3lPh0bSQEKVvCw=
+X-Google-Smtp-Source: APXvYqwf98qm0rrTVjdVrR9/GDwAjJBwMLDfQJZ/EoksKYevzTR3B6LhlrStYt/tX4xJRA+SeEaqHg==
+X-Received: by 2002:a17:90a:d78f:: with SMTP id z15mr3686717pju.36.1579239189598;
+        Thu, 16 Jan 2020 21:33:09 -0800 (PST)
+Received: from localhost.swdvt.lab.broadcom.com ([192.19.223.252])
+        by smtp.gmail.com with ESMTPSA id c188sm1357142pga.83.2020.01.16.21.33.08
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Thu, 16 Jan 2020 21:33:09 -0800 (PST)
+From:   Michael Chan <michael.chan@broadcom.com>
+To:     davem@davemloft.net
+Cc:     netdev@vger.kernel.org
+Subject: [PATCH net 0/3] bnxt_en: Bug fixes.
+Date:   Fri, 17 Jan 2020 00:32:44 -0500
+Message-Id: <1579239167-16362-1-git-send-email-michael.chan@broadcom.com>
+X-Mailer: git-send-email 1.8.3.1
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-syzbot has bisected this bug to:
+3 small bug fix patches.  The 1st two are aRFS fixes and the last one
+fixes a fatal driver load failure on some kernels without PCIe
+extended config space support enabled.
 
-commit 7c23b629a8085b11daccd68c62b5116ff498f84a
-Author: Pablo Neira Ayuso <pablo@netfilter.org>
-Date:   Sun Jan 7 00:04:22 2018 +0000
+Please also queue these for -stable.  Thanks.
 
-     netfilter: flow table support for the mixed IPv4/IPv6 family
+Michael Chan (3):
+  bnxt_en: Fix NTUPLE firmware command failures.
+  bnxt_en: Fix ipv6 RFS filter matching logic.
+  bnxt_en: Do not treat DSN (Digital Serial Number) read failure as
+    fatal.
 
-bisection log:  https://syzkaller.appspot.com/x/bisect.txt?x=146472d1e00000
-start commit:   51d69817 Merge tag 'platform-drivers-x86-v5.5-3' of git://..
-git tree:       upstream
-final crash:    https://syzkaller.appspot.com/x/report.txt?x=166472d1e00000
-console output: https://syzkaller.appspot.com/x/log.txt?x=126472d1e00000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=d9290aeb7e6cf1c4
-dashboard link: https://syzkaller.appspot.com/bug?extid=37a6804945a3a13b1572
-syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=17241c76e00000
-C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=13118315e00000
+ drivers/net/ethernet/broadcom/bnxt/bnxt.c     | 29 ++++++++++++++++++---------
+ drivers/net/ethernet/broadcom/bnxt/bnxt.h     |  4 +---
+ drivers/net/ethernet/broadcom/bnxt/bnxt_vfr.c |  3 +++
+ 3 files changed, 24 insertions(+), 12 deletions(-)
 
-Reported-by: syzbot+37a6804945a3a13b1572@syzkaller.appspotmail.com
-Fixes: 7c23b629a808 ("netfilter: flow table support for the mixed IPv4/IPv6  
-family")
+-- 
+2.5.1
 
-For information about bisection process see: https://goo.gl/tpsmEJ#bisection
