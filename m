@@ -2,52 +2,52 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 84B6214133E
-	for <lists+netdev@lfdr.de>; Fri, 17 Jan 2020 22:37:15 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7AC311413B0
+	for <lists+netdev@lfdr.de>; Fri, 17 Jan 2020 22:52:12 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729076AbgAQVhJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 17 Jan 2020 16:37:09 -0500
-Received: from mail-qk1-f193.google.com ([209.85.222.193]:39278 "EHLO
-        mail-qk1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726587AbgAQVhI (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 17 Jan 2020 16:37:08 -0500
-Received: by mail-qk1-f193.google.com with SMTP id c16so24182417qko.6;
-        Fri, 17 Jan 2020 13:37:07 -0800 (PST)
+        id S1729100AbgAQVwD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 17 Jan 2020 16:52:03 -0500
+Received: from mail-qt1-f196.google.com ([209.85.160.196]:34037 "EHLO
+        mail-qt1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726587AbgAQVwD (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 17 Jan 2020 16:52:03 -0500
+Received: by mail-qt1-f196.google.com with SMTP id 5so22974638qtz.1;
+        Fri, 17 Jan 2020 13:52:02 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc:content-transfer-encoding;
-        bh=2JWxiBrKzgX6c58K05T7Uj8uthaAPk9I0HG0fUbgl2Q=;
-        b=di2yyj+zUzyiwdu9o+rxLuvbgoB7dTPwpFBNgyLV/RIImJaI/rV3kq41mVzfXGthXL
-         k1CDbjNlUUt1QDOpws4zX7lrQjilnCXze/8/TnDvUM1/xP71VHcg7SO4h20Sk1a9X/iT
-         N9a4P+TocZpdyrrkTlRE3jUOfwnbLa03eUxoolr0+WufJPDYGTKV3QmCl3PBf7aYSf/g
-         65IAMoyo4/wDBpeOpeE52Le9/rMfrWP8Ld3VQlpyrJJqCUY62G8oA9BOz2L2Oqr327RT
-         VUOOrNbOufy8Zz0XF6T2Goh27q6MrvGtMS3UbVfYwjSvdttcblfcaDsEvxBRgC95wISx
-         cD3w==
+        bh=LXFr+Oe+DVTEU1iGCR5ab4LZThTsrbbCxkzxMkJjD5c=;
+        b=SCKFYcXAx2pYOkg8sBdmA6UuPGSAN4IeyL1Dz/KSEDe5j/IrkXBa5bXmt6hFX6UhDM
+         2YYiUQFJw+8eXd/z3QSihMEyOYslWrk5vlX3iUsqa28FTs+P7NiNAIdO8+kQMfhKOa5H
+         G7pz4MTfa/UlimYFKtDwhRX73LJsP1FnpKiQhV+JY3QcgfU0G6tLwr57mRjBknDU4y47
+         msMgfAq7oc+VegMblw7Xw8uk64413y5aq2GWD0MMhStKrj5p3zliEbHRu6HeTHyN57wx
+         o2FQQesMgQvTTsSRJew4/ERaY6H8GFbehj5A6j6jBrRm5YSlchBa5enyuQgApmiUP4/y
+         WIcQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc:content-transfer-encoding;
-        bh=2JWxiBrKzgX6c58K05T7Uj8uthaAPk9I0HG0fUbgl2Q=;
-        b=lj6v6BEegc9yCrvv7XiYz07nBlOIfHzS1VC7yCSJzXWSrVqJfriorzETI+NJfS0ABK
-         8yaqE9ooiUbhkEByOqzGkESqna2HwmBHk1+SRTlyBib1SyrC3m9G6J4JgOR+pcizS6XD
-         6FPvszKksI8y/1OoD3/pieigEJdCZxTOkfFAoqgFYmbKAXz2ah8Z6OYQQTY2YIHfXrpy
-         WIePBfW9wN8Cq/pfCoqRtlY4HXKCHLia7y+FgkBYF7dthcj7BcRZXRcG4usaUWpen+la
-         XKndWe6u3TE5AF++PNFHDInKbj51i1mFze0I4EKa/M8/ZgzHN9VbzV/ebWuuXXidAa+y
-         485g==
-X-Gm-Message-State: APjAAAUUP7UKjXHQcTYdpk00/U+nVmeVZjZ27dTGYWHbfnOe+aUBgNxO
-        jYHEq+O2FGUyl/Celo3H2eOG3HlBjbtRnO9z3hs=
-X-Google-Smtp-Source: APXvYqzDdnFYJ8Lla7yyg06odfjJkmjvFBVnMNmJBo9Ki5bUjMkVb6uWSJ5ot1KuLFxTv46CZx8GfqnvIF9fwOV4eQI=
-X-Received: by 2002:a37:a685:: with SMTP id p127mr37379374qke.449.1579297027145;
- Fri, 17 Jan 2020 13:37:07 -0800 (PST)
+        bh=LXFr+Oe+DVTEU1iGCR5ab4LZThTsrbbCxkzxMkJjD5c=;
+        b=IVE0bbXgttmXNRct/wh81V6UOn9dEQmxsO+4cbkPjdklvcBJOAxXdg0Z2NMoDv/zIi
+         RipZWrXV9uRwr5nszgNLdOab6ICUkEfn6vmDSnBzffkNXlnBtonXCYutw1pQGg7LV57F
+         RV0E9fO5VbEvfvFvtGb4cde1gGPbY05lNdsHxLQAB36ed3rSDhNUVDVuew+qXKPSgmEL
+         PxyfCTtUCjEYLRuFw4EbL1O6btZu89SwlC5Lm968Ep8FER2mIMJUexlB2TyPitUXfw+M
+         Mhd1sUS7DYdk1dEJM5HfVKZfFYvpvCeSDPrhxDAXhF/KHS/0aMdC5Jbhnir8crEEdMc4
+         kx9g==
+X-Gm-Message-State: APjAAAVpP+UumZjTsAKAHfNXmm77q7caJ7L13k4Q5leD3DevjikrY+aF
+        U4t+//4Neecmaxoy9fwxxCaKR1G9DjY07JkYnik=
+X-Google-Smtp-Source: APXvYqzPEH9j5BfkpS6SL5DHwqfsDvCoAE4QyeeHElbCapqNYQ1YI48ORniseUuBtLPs6QBmFuL8F8zVKIchHdd54ls=
+X-Received: by 2002:ac8:7b29:: with SMTP id l9mr9364164qtu.141.1579297921555;
+ Fri, 17 Jan 2020 13:52:01 -0800 (PST)
 MIME-Version: 1.0
-References: <157926819690.1555735.10756593211671752826.stgit@toke.dk> <157926820025.1555735.5663814379544078154.stgit@toke.dk>
-In-Reply-To: <157926820025.1555735.5663814379544078154.stgit@toke.dk>
+References: <157926819690.1555735.10756593211671752826.stgit@toke.dk> <157926820131.1555735.1177228853838027248.stgit@toke.dk>
+In-Reply-To: <157926820131.1555735.1177228853838027248.stgit@toke.dk>
 From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Fri, 17 Jan 2020 13:36:55 -0800
-Message-ID: <CAEf4BzafS0FCsjJwG13eCEsE_TSLhg=wNY3RGfUnDwuP1KCz=w@mail.gmail.com>
-Subject: Re: [PATCH bpf-next v4 03/10] selftests: Pass VMLINUX_BTF to
- runqslower Makefile
+Date:   Fri, 17 Jan 2020 13:51:50 -0800
+Message-ID: <CAEf4BzbAV0TmEUL=62jz+RD6SPmu927z-dhGL9JHepcAOGMSJA@mail.gmail.com>
+Subject: Re: [PATCH bpf-next v4 04/10] tools/runqslower: Use consistent
+ include paths for libbpf
 To:     =?UTF-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <toke@redhat.com>
 Cc:     Alexei Starovoitov <ast@kernel.org>,
         Daniel Borkmann <daniel@iogearbox.net>,
@@ -86,60 +86,64 @@ at.com> wrote:
 >
 > From: Toke H=C3=B8iland-J=C3=B8rgensen <toke@redhat.com>
 >
-> Add a VMLINUX_BTF variable with the locally-built path when calling the
-> runqslower Makefile from selftests. This makes sure a simple 'make'
-> invocation in the selftests dir works even when there is no BTF informati=
-on
-> for the running kernel. Do a wildcard expansion and include the same path=
-s
-> for BTF for the running kernel as in the runqslower Makefile, to make it
-> possible to build selftests without having a vmlinux in the local tree.
+> Fix the runqslower tool to include libbpf header files with the bpf/
+> prefix, to be consistent with external users of the library. Also ensure
+> that all includes of exported libbpf header files (those that are exporte=
+d
+> on 'make install' of the library) use bracketed includes instead of quote=
+d.
 >
-> Also fix the make invocation to use $(OUTPUT)/tools as the destination
-> directory instead of $(CURDIR)/tools.
+> To not break the build, keep the old include path until everything has be=
+en
+> changed to the new one; a subsequent patch will remove that.
 >
-> Fixes: 3a0d3092a4ed ("selftests/bpf: Build runqslower from selftests")
+> Fixes: 6910d7d3867a ("selftests/bpf: Ensure bpf_helper_defs.h are taken f=
+rom selftests dir")
+> Acked-by: Andrii Nakryiko <andriin@fb.com>
 > Signed-off-by: Toke H=C3=B8iland-J=C3=B8rgensen <toke@redhat.com>
 > ---
-
-With formatting fixes:
-
-Acked-by: Andrii Nakryiko <andriin@fb.com>
-
->  tools/testing/selftests/bpf/Makefile |    8 ++++++--
->  1 file changed, 6 insertions(+), 2 deletions(-)
+>  tools/bpf/runqslower/Makefile         |    5 +++--
+>  tools/bpf/runqslower/runqslower.bpf.c |    2 +-
+>  tools/bpf/runqslower/runqslower.c     |    4 ++--
+>  3 files changed, 6 insertions(+), 5 deletions(-)
 >
-> diff --git a/tools/testing/selftests/bpf/Makefile b/tools/testing/selftes=
-ts/bpf/Makefile
-> index 246d09ffb296..dcc8dbb1510b 100644
-> --- a/tools/testing/selftests/bpf/Makefile
-> +++ b/tools/testing/selftests/bpf/Makefile
-> @@ -124,10 +124,14 @@ $(OUTPUT)/test_stub.o: test_stub.c
->         $(call msg,CC,,$@)
->         $(CC) -c $(CFLAGS) -o $@ $<
+> diff --git a/tools/bpf/runqslower/Makefile b/tools/bpf/runqslower/Makefil=
+e
+> index b62fc9646c39..9f022f7f2593 100644
+> --- a/tools/bpf/runqslower/Makefile
+> +++ b/tools/bpf/runqslower/Makefile
+> @@ -5,6 +5,7 @@ LLC :=3D llc
+>  LLVM_STRIP :=3D llvm-strip
+>  DEFAULT_BPFTOOL :=3D $(OUTPUT)/sbin/bpftool
+>  BPFTOOL ?=3D $(DEFAULT_BPFTOOL)
+> +INCLUDES :=3D -I$(OUTPUT) -I$(abspath ../../lib) -I$(abspath ../../lib/b=
+pf)
+>  LIBBPF_SRC :=3D $(abspath ../../lib/bpf)
+
+drop LIBBPF_SRC, it's not used anymore
+
+>  CFLAGS :=3D -g -Wall
 >
-> +VMLINUX_BTF_PATHS :=3D $(abspath ../../../../vmlinux)                   =
- \
-> +                       /sys/kernel/btf/vmlinux                 \
-> +                       /boot/vmlinux-$(shell uname -r)
-
-it's not 100% consistent in this Makefile, unfortunately, but usually
-(and similarly to function arguments) we align items for such
-multi-line statements
-
-> +VMLINUX_BTF:=3D $(firstword $(wildcard $(VMLINUX_BTF_PATHS)))
->  .PHONY: $(OUTPUT)/runqslower
->  $(OUTPUT)/runqslower: force
-> -       $(Q)$(MAKE) $(submake_extras) -C $(TOOLSDIR)/bpf/runqslower      =
+> @@ -51,13 +52,13 @@ $(OUTPUT)/%.skel.h: $(OUTPUT)/%.bpf.o | $(BPFTOOL)
+>
+>  $(OUTPUT)/%.bpf.o: %.bpf.c $(OUTPUT)/libbpf.a | $(OUTPUT)
+>         $(call msg,BPF,$@)
+> -       $(Q)$(CLANG) -g -O2 -target bpf -I$(OUTPUT) -I$(LIBBPF_SRC)      =
      \
-> -                   OUTPUT=3D$(CURDIR)/tools/
-> +       $(Q)$(MAKE) $(submake_extras) -C $(TOOLSDIR)/bpf/runqslower     \
-> +                   OUTPUT=3D$(OUTPUT)/tools/ VMLINUX_BTF=3D$(VMLINUX_BTF=
-)
->
+> +       $(Q)$(CLANG) -g -O2 -target bpf $(INCLUDES)           \
 
-please, keep \ alignment, it's all over the place
+please preserve formatting and alignment conventions of a file
 
->  BPFOBJ :=3D $(OUTPUT)/libbpf.a
+>                  -c $(filter %.c,$^) -o $@ &&                            =
+     \
+>         $(LLVM_STRIP) -g $@
 >
+>  $(OUTPUT)/%.o: %.c | $(OUTPUT)
+>         $(call msg,CC,$@)
+> -       $(Q)$(CC) $(CFLAGS) -I$(LIBBPF_SRC) -I$(OUTPUT) -c $(filter %.c,$=
+^) -o $@
+> +       $(Q)$(CC) $(CFLAGS) $(INCLUDES) -c $(filter %.c,$^) -o $@
 >
+>  $(OUTPUT):
+
+[...]
