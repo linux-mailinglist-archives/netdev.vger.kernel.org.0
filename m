@@ -2,92 +2,69 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 26C42140F09
-	for <lists+netdev@lfdr.de>; Fri, 17 Jan 2020 17:35:34 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id AE4DE140F0E
+	for <lists+netdev@lfdr.de>; Fri, 17 Jan 2020 17:35:40 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727115AbgAQQfO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 17 Jan 2020 11:35:14 -0500
-Received: from mail-pj1-f65.google.com ([209.85.216.65]:39533 "EHLO
-        mail-pj1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726506AbgAQQfL (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 17 Jan 2020 11:35:11 -0500
-Received: by mail-pj1-f65.google.com with SMTP id e11so3549058pjt.4;
-        Fri, 17 Jan 2020 08:35:11 -0800 (PST)
+        id S1728835AbgAQQfh (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 17 Jan 2020 11:35:37 -0500
+Received: from mail-pj1-f67.google.com ([209.85.216.67]:36071 "EHLO
+        mail-pj1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726889AbgAQQfh (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 17 Jan 2020 11:35:37 -0500
+Received: by mail-pj1-f67.google.com with SMTP id n59so3548875pjb.1;
+        Fri, 17 Jan 2020 08:35:37 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=mNwIwagSDRdEcritBAJ+cZ+CoMsUw6XeDByiOPsSvGU=;
-        b=c+aoFo0Y+lvtMfvc642gD4QUGha+92uABLZ5MCoEb6aSbIukexfZ+qBQf0fOPRMetG
-         QCvruneRdqQGzLemJ1VBcipcA0GE6Mr2HIIE0kND8DVoHsvfyg2LPR292i+zJsuHO5tR
-         QKH/BgQklyDCGmEO2aaMB0s4Pyn6NBSNawGc3qyju9uuI8aeF4z0oqNsO7jdw8QpItol
-         agtuchvFck9k+uOdKj2mQIC63HNvpSAGNX/RYsK5vF1Un4sKgEQ96G9DjdQzrb/mEXJk
-         acXrq9ecc6qfa7o217OrXNzsHJN5pjIn7JEWiXNi3ePuuH4FBP2bs46N3CAY7bRbkl2b
-         vfaw==
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=Tk6HLdN1zImWu1L0zmIhWUOzNebvVonDSsfb4q+YHz8=;
+        b=Jh/xNtzIiLcsPs6q+FZeQju+kqrSx/KfPbmmB1oGKz2bW5VEfQwt/SrdAetiFzYu6n
+         z7ra4zR+GqaLJ1nCmwqDezn+SwPCAHM+9H2xsglKh5/3Gilq1rP5rq9nBkF62/1EoGRn
+         OhAI8gv+flQ/UiMObrUYDIvJxkx0ZAMzSEFq1jd7VNFls2Pz9LbGVNEHY2fdI6O37NIL
+         mgWUKIPN8L5s2Ti2MuE2r1tT5P/gbmNg5poKasrisNOExERwrpwLRw1Q+lYzSM8S0IDf
+         XBijQXb54RdmR1b2GlSIsbV94e0vD3AFezaqFrXFKxY6sIhmkTvoR+T9zhPG3SNCw+3n
+         Dqeg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=mNwIwagSDRdEcritBAJ+cZ+CoMsUw6XeDByiOPsSvGU=;
-        b=AG4k43d9UXOcrFCwwTSRZ6FtkoFyLvkfzzFgHZQaHmpw3xHtwwaICuIcxzjmemwcJK
-         7KbGDghW18gLSDuF466barsaTOh4kmJwKfjWvfI4YpvzmIjCTBHmTte45hGWV7LOXdsN
-         EGFNFGqQ2OfK9dvF0iCENzu2chBgAS/nkOd1Lm0wwNbKRGPTFjPUeBP5YtlR3YuxstVU
-         VohC4jredhLFGfGXlD0UtybJij8xsTdVep0CnUUwWsU0N/E9KBxKJIfejQvofak9/1Kj
-         bvhZgMXsEuWTL7GmGjRGpLrxdUUn38u88lbLBJ5udtgxkuvb2crxQGyumVvpbcg4B3qD
-         dK2A==
-X-Gm-Message-State: APjAAAVD/mtns8d4pWzdmgq7tv6+m5bomzzloz7kHkINHVDQCvjneaYV
-        Z2brGhnDHl67ODAMMd/j3R0=
-X-Google-Smtp-Source: APXvYqxr2K5JnU80mtYaxoPvReZWPg1BWc2oFawzf55arIJWDZxMg6cD+XMPWE04o2pEsnPrBWWJFQ==
-X-Received: by 2002:a17:902:a617:: with SMTP id u23mr11034698plq.20.1579278910619;
-        Fri, 17 Jan 2020 08:35:10 -0800 (PST)
-Received: from [192.168.86.235] (c-73-241-150-58.hsd1.ca.comcast.net. [73.241.150.58])
-        by smtp.gmail.com with ESMTPSA id v143sm30494035pfc.71.2020.01.17.08.35.08
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 17 Jan 2020 08:35:09 -0800 (PST)
-Subject: Re: [PATCH] net: optimize cmpxchg in ip_idents_reserve
-To:     Peter Zijlstra <peterz@infradead.org>,
-        Shaokun Zhang <zhangshaokun@hisilicon.com>
-Cc:     Eric Dumazet <eric.dumazet@gmail.com>,
-        David Miller <davem@davemloft.net>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, jinyuqi@huawei.com,
-        kuznet@ms2.inr.ac.ru, yoshfuji@linux-ipv6.org, edumazet@google.com,
-        guoyang2@huawei.com, Will Deacon <will@kernel.org>
-References: <1579058620-26684-1-git-send-email-zhangshaokun@hisilicon.com>
- <20200116.042722.153124126288244814.davem@davemloft.net>
- <930faaff-4d18-452d-2e44-ef05b65dc858@gmail.com>
- <1b3aaddf-22f5-1846-90f1-42e68583c1e4@gmail.com>
- <430496fc-9f26-8cb4-91d8-505fda9af230@hisilicon.com>
- <20200117123253.GC14879@hirez.programming.kicks-ass.net>
-From:   Eric Dumazet <eric.dumazet@gmail.com>
-Message-ID: <7e6c6202-24bb-a532-adde-d53dd6fb14c3@gmail.com>
-Date:   Fri, 17 Jan 2020 08:35:07 -0800
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.2.2
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=Tk6HLdN1zImWu1L0zmIhWUOzNebvVonDSsfb4q+YHz8=;
+        b=jj4Cg0uIIKHMrVXksoKKZP2pUcy+JN7dIBXHKJ2DajmTNoZEpFj7Zrk0Hr0ANwNTeM
+         JvTHae3anmb/UQeZJ9DZMLZH4YG9sIfaUbzk9RQZB/mu7nMIpTx3HC2k7wkcm6aGPQWF
+         EUqO6LrCrW/aRrRnoBK6LWRT6jVEI1+LSAKQH7ayFq+yluLp60Ecew6txTpTpoB59eAB
+         jOqz2xoUHmSDq0PbQShX8P2QH2JQXq7AwihUZaxDzJssUA9dLEMnnbG6RwI6I3tbRnVx
+         TZc4XfKApLIUbbgMHXaSkOCcCsjgX9qoVfj4T6g0tE6n8B3CRl4w3ZsYNvclgRyOFVN1
+         VZSQ==
+X-Gm-Message-State: APjAAAXyYJzsnMqBOfeFNn5T9K0kBIYRRWh0bbA+ExxHVYRdG5ay6E4k
+        zovRuGfdWzyV9+0AyJi4Kdw=
+X-Google-Smtp-Source: APXvYqw0v/QeeV9dxrpipz3FQeMY4zLHACy6De7ju/2lpJ9r6AFaOZ4/r9kyXbEyz8nARu8XhqxoOQ==
+X-Received: by 2002:a17:90a:d156:: with SMTP id t22mr6456665pjw.108.1579278936738;
+        Fri, 17 Jan 2020 08:35:36 -0800 (PST)
+Received: from ast-mbp.dhcp.thefacebook.com ([2620:10d:c090:180::ac8c])
+        by smtp.gmail.com with ESMTPSA id v4sm29707789pff.174.2020.01.17.08.35.34
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Fri, 17 Jan 2020 08:35:36 -0800 (PST)
+Date:   Fri, 17 Jan 2020 08:35:23 -0800
+From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
+To:     Andrii Nakryiko <andriin@fb.com>
+Cc:     bpf@vger.kernel.org, netdev@vger.kernel.org, ast@fb.com,
+        daniel@iogearbox.net, andrii.nakryiko@gmail.com, kernel-team@fb.com
+Subject: Re: [PATCH bpf-next 0/4] Fix few unrelated small bugs and issues
+Message-ID: <20200117163520.njanhhs64zy5na6k@ast-mbp.dhcp.thefacebook.com>
+References: <20200117060801.1311525-1-andriin@fb.com>
 MIME-Version: 1.0
-In-Reply-To: <20200117123253.GC14879@hirez.programming.kicks-ass.net>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20200117060801.1311525-1-andriin@fb.com>
+User-Agent: NeoMutt/20180223
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Thu, Jan 16, 2020 at 10:07:57PM -0800, Andrii Nakryiko wrote:
+> Fix few unrelated issues, found by static analysis tools (performed against
+> libbpf's Github repo). Also fix compilation warning in bpftool polluting
+> selftests Makefile output.
 
-
-On 1/17/20 4:32 AM, Peter Zijlstra wrote:
-
-> 
-> That's crazy, just accept that UBSAN is taking bonghits and ignore it.
-> Use atomic_add_return() unconditionally.
-> 
-
-Yes, we might simply add a comment so that people do not bug us if
-their compiler is too old.
-
-/* If UBSAN reports an error there, please make sure your compiler
- * supports -fno-strict-overflow before reporting it.
- */
-return atomic_add_return(segs + delta, p_id) - segs;
-
+Applied first three patches. Thanks
