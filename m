@@ -2,74 +2,128 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 4868514114B
-	for <lists+netdev@lfdr.de>; Fri, 17 Jan 2020 19:58:01 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id ECA9614115B
+	for <lists+netdev@lfdr.de>; Fri, 17 Jan 2020 19:59:35 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729585AbgAQS5k (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 17 Jan 2020 13:57:40 -0500
-Received: from mail-il1-f199.google.com ([209.85.166.199]:40513 "EHLO
-        mail-il1-f199.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729436AbgAQS5j (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 17 Jan 2020 13:57:39 -0500
-Received: by mail-il1-f199.google.com with SMTP id e4so19577406ilm.7
-        for <netdev@vger.kernel.org>; Fri, 17 Jan 2020 10:57:39 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:date:in-reply-to:message-id:subject
-         :from:to;
-        bh=0XaH1mXR999mQNU6K6YWrbLPoIkTydrY/Z5TzvdEIoo=;
-        b=CVuOGJnlomihNMBYz0CEpfSaxR3oh0jTPVja0D+fL1CEh5kdUqmE3YiXBp571ZoayU
-         AvIswjJps7NyFSguXZBpIpYFKlt+4xHW2rKMcDyiBFVA4UzXfmAzY8VlrytX9h73nwAO
-         9hWpaIwMJj6N8D41j5HA31LFeR7fugmMwH4L6ZZ1trfrsgwTY1JhVz9npfd2lJ+twewP
-         D6D47TEvEKaWvU+Dn95AeKI4cxT0/UO0klB2YStMH5svboU/2ffyfEoSNviuKseeN2gK
-         mATYjkyBhjqYPyv+5/9nzzOlL0ZX8i9fuwhUHUgREuuvV79KyF+Rv2QfT50rMfI2oS+M
-         xzPQ==
-X-Gm-Message-State: APjAAAUbD6CmwhTCLurNh+oSmpmIArspj27OxpivQIns64Un2Fw4zldX
-        RiG2EGyd5BvHhrGL2Y+PPC/3WE3l95cujve50McusvcGcgSF
-X-Google-Smtp-Source: APXvYqwdJblA4HS+sQAcyDnaZpEyamvRHPNZVLzTjCRJ1fUtjR6kwtPkrmKO+XSfDHOH8bobb3s8OKTAC0ffD9Ym4OsrWFyRFSsI
+        id S1729297AbgAQS7d (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 17 Jan 2020 13:59:33 -0500
+Received: from mail.katalix.com ([3.9.82.81]:39376 "EHLO mail.katalix.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726603AbgAQS7d (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 17 Jan 2020 13:59:33 -0500
+Received: from localhost (82-69-49-219.dsl.in-addr.zen.co.uk [82.69.49.219])
+        (Authenticated sender: tom)
+        by mail.katalix.com (Postfix) with ESMTPSA id BF1C386ACC;
+        Fri, 17 Jan 2020 18:59:31 +0000 (GMT)
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple; d=katalix.com; s=mail;
+        t=1579287571; bh=ifb2IvEz4BsX1IZ/CE3RlIjT6/DPTiGNq9vf4NwYtFQ=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=h8R6Es8rYFyZOqdp3QqNw9EhRVuztV/BuDPPgrlQjObni4NV0NIMVasxi6SVLpUwP
+         f8SIvsvHnwrv+JX/HlDBKnU5gdyPH/RaxFNW43TBTuPg8WwLkU5k+BKq44jEFczxVI
+         56V14NLuXeLijHmyvEHzM9DXCyBDC4cCtyGqtmRMG53MeTWsJIWF0LkSqBCTtVA6DT
+         jCtAg9r5JkjOK4NYcV2IilOtgmmqrVUPbW1F69ofhyaMO+5SvFPKlmqP4gkRuBicRv
+         CFdyBgKon/HfkvYUDf+i/yAAUp4L9kZMepXxCxn07KeFZkbTP1fWRfWjMCaspTbC0w
+         hFl+xPs/hFENw==
+Date:   Fri, 17 Jan 2020 18:59:31 +0000
+From:   Tom Parkin <tparkin@katalix.com>
+To:     Guillaume Nault <gnault@redhat.com>
+Cc:     Ridge Kennedy <ridge.kennedy@alliedtelesis.co.nz>,
+        netdev@vger.kernel.org
+Subject: Re: [PATCH net] l2tp: Allow duplicate session creation with UDP
+Message-ID: <20200117185931.GA19201@jackdaw>
+References: <20200115223446.7420-1-ridge.kennedy@alliedtelesis.co.nz>
+ <20200116123143.GA4028@jackdaw>
+ <20200116192827.GB25654@linux.home>
+ <20200116210501.GC4028@jackdaw>
+ <20200117134327.GA2743@linux.home>
 MIME-Version: 1.0
-X-Received: by 2002:a92:2907:: with SMTP id l7mr4151886ilg.140.1579287458817;
- Fri, 17 Jan 2020 10:57:38 -0800 (PST)
-Date:   Fri, 17 Jan 2020 10:57:38 -0800
-In-Reply-To: <00000000000074ed27059c33dedc@google.com>
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <000000000000fb2c4f059c5a8309@google.com>
-Subject: Re: general protection fault in nft_chain_parse_hook
-From:   syzbot <syzbot+156a04714799b1d480bc@syzkaller.appspotmail.com>
-To:     bridge@lists.linux-foundation.org, coreteam@netfilter.org,
-        davem@davemloft.net, fw@strlen.de, kadlec@blackhole.kfki.hu,
-        kadlec@netfilter.org, kuznet@ms2.inr.ac.ru,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        netfilter-devel@vger.kernel.org, pablo@netfilter.org,
-        stephen@networkplumber.org, syzkaller-bugs@googlegroups.com,
-        yoshfuji@linux-ipv6.org
-Content-Type: text/plain; charset="UTF-8"; format=flowed; delsp=yes
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="9amGYk9869ThD9tj"
+Content-Disposition: inline
+In-Reply-To: <20200117134327.GA2743@linux.home>
+User-Agent: Mutt/1.9.4 (2018-02-28)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-syzbot has bisected this bug to:
 
-commit 98319cb9089844d76e65a6cce5bfbd165e698735
-Author: Pablo Neira Ayuso <pablo@netfilter.org>
-Date:   Tue Jan 9 01:48:47 2018 +0000
+--9amGYk9869ThD9tj
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-     netfilter: nf_tables: get rid of struct nft_af_info abstraction
+On  Fri, Jan 17, 2020 at 14:43:27 +0100, Guillaume Nault wrote:
+> On Thu, Jan 16, 2020 at 09:05:01PM +0000, Tom Parkin wrote:
+> > On  Thu, Jan 16, 2020 at 20:28:27 +0100, Guillaume Nault wrote:
+> > > How is UDP-encap broken with duplicate session IDs (as long as a UDP
+> > > socket can only one have one tunnel associated with it and that no
+> > > duplicate session IDs are allowed inside the same tunnel)?
+> > >=20
+> > > It all boils down to what's the scope of a session ID. For me it has
+> > > always been the parent tunnel. But if that's in contradiction with
+> > > RFC 3931, I'd be happy to know.
+> >=20
+> > For RFC 2661 the session ID is scoped to the tunnel.  Section 3.1
+> > says:
+> >=20
+> >   "Session ID indicates the identifier for a session within a tunnel."
+> >=20
+> > Control and data packets share the same header which includes both the
+> > tunnel and session ID with 16 bits allocated to each.  So it's always
+> > possible to tell from the data packet header which tunnel the session is
+> > associated with.
+> >=20
+> > RFC 3931 changed the scheme.  Control packets now include a 32-bit
+> > "Control Connection ID" (analogous to the Tunnel ID).  Data packets
+> > have a session header specific to the packet-switching network in use:
+> > the RFC describes schemes for both IP and UDP, both of which employ a
+> > 32-bit session ID.  Section 4.1 says:
+> >=20
+> >   "The Session ID alone provides the necessary context for all further
+> >   packet processing"
+> >=20
+> > Since neither UDP nor IP encapsulated data packets include the control
+> > connection ID, the session ID must be unique to the LCCE to allow
+> > identification of the session.
+>=20
+> Well my understanding was that the tunnel was implicitely given by the
+> UDP and IP headers. I don't think that multiplexing tunnels over the
+> same UDP connection made any sense with L2TPv2, and the kernel never
+> supported it natively (it might be possible with SO_REUSEPORT). Given
+> that the tunnel ID field was redundant with the lower headers, it made
+> sense to me that L2TPv3 dropped it (note that the kernel ignores the
+> L2TPv2 tunnel ID field on Rx). At least that was my understanding.
+>=20
+> But as your quote says, the session ID _alone_ should provide all the
+> L2TP context. So I guess the spirit of the RFC is that there's a single
+> global namespace for session IDs. Now, practically speaking, I don't
+> see how scoped session IDs makes us incompatible, unless we consider
+> that a given session can be shared between several remote hosts (the
+> cross-talk case in my other email). Also, sharing a session over
+> several hosts would mean that L2TPv3 sessions aren't point-to-point,
+> which the control plane doesn't seem to take into account.
 
-bisection log:  https://syzkaller.appspot.com/x/bisect.txt?x=13d38159e00000
-start commit:   f5ae2ea6 Fix built-in early-load Intel microcode alignment
-git tree:       upstream
-final crash:    https://syzkaller.appspot.com/x/report.txt?x=10338159e00000
-console output: https://syzkaller.appspot.com/x/log.txt?x=17d38159e00000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=d9290aeb7e6cf1c4
-dashboard link: https://syzkaller.appspot.com/bug?extid=156a04714799b1d480bc
-syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=15a7e669e00000
-C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=11102356e00000
+I think from your other emails in this thread that we're maybe in
+agreement already.
 
-Reported-by: syzbot+156a04714799b1d480bc@syzkaller.appspotmail.com
-Fixes: 98319cb90898 ("netfilter: nf_tables: get rid of struct nft_af_info  
-abstraction")
+But just in case, I wanted to clarify that the session ID namespace
+is for a given LCCE (LAC or LNS in L2TPv2 parlance) per RFC 3931
+section 4.1 -- it's not truly "global".
 
-For information about bisection process see: https://goo.gl/tpsmEJ#bisection
+--9amGYk9869ThD9tj
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAABCgAdFiEEsUkgyDzMwrj81nq0lIwGZQq6i9AFAl4iBA4ACgkQlIwGZQq6
+i9A85Qf/d33jxFTCQgccYYasXCEP04KGw33SAvgk/1xJwVrUxvyh7dkFlP2SI/t8
+8R9MQ/vBrb/xnh8yt4kYi+f8iPzgFUTzkH2MIRUERKKBSMejGnC/zLWg3iY7E1hc
+q1xhm72robeKF8MM5Ql7LNH5tUdQCLv19iJIzlXvka4FwPG2tyvO5BZXenlpCMTa
+CNVgQqb4UG45sDUsXB+l2dsdWGxOykUShCHeInc3COmuQGhMOA318jsmPc2xVIMf
+z5WkoXL/k6txtF9lGErszTufDa0BvJb2V3n8hQKs+nuwV3vPj4BRQokPbzO3jOfr
+G6LOHiMKQ+Dy7vBW7aw8kltscuCI3w==
+=31i9
+-----END PGP SIGNATURE-----
+
+--9amGYk9869ThD9tj--
