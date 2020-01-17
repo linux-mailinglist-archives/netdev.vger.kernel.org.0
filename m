@@ -2,85 +2,69 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id C9062140D7B
-	for <lists+netdev@lfdr.de>; Fri, 17 Jan 2020 16:11:27 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 72114140E0B
+	for <lists+netdev@lfdr.de>; Fri, 17 Jan 2020 16:41:56 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729078AbgAQPKw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 17 Jan 2020 10:10:52 -0500
-Received: from mail-pf1-f194.google.com ([209.85.210.194]:36667 "EHLO
-        mail-pf1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728512AbgAQPKw (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 17 Jan 2020 10:10:52 -0500
-Received: by mail-pf1-f194.google.com with SMTP id x184so12102505pfb.3;
-        Fri, 17 Jan 2020 07:10:52 -0800 (PST)
+        id S1729075AbgAQPlr (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 17 Jan 2020 10:41:47 -0500
+Received: from mail-qk1-f194.google.com ([209.85.222.194]:34938 "EHLO
+        mail-qk1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728816AbgAQPlr (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 17 Jan 2020 10:41:47 -0500
+Received: by mail-qk1-f194.google.com with SMTP id z76so23074234qka.2
+        for <netdev@vger.kernel.org>; Fri, 17 Jan 2020 07:41:46 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id;
-        bh=DesUuflALP+M7Km3HyTVIX1iNswVs/ME2CU4gzFT4Bg=;
-        b=DWpBvWGBMlKlVcVxGbxODHWtx994uCyaKuHhJXPGKXe0dvuwCzvW/yIJ93SuOIXiDG
-         GBEaabSSZLNcY7B4LCf/yUKKtsvxeVtUDhG2DyC0Z0+16PpUzeerwfDqYfS8gAFgio7Z
-         4fh9yBiql1lnwq7tDPBT+XyYUiH0wwZj+Btjc036QRDyfFl9bs9jDMrAhdhEyWQyO8zh
-         awk7tB05Lbm12vUCZmPwH9I+/0/fL5is3EkI1yeSumPDOEK0ocqTA7TqGSHRxAeFZ8VH
-         CSCc1Q0fBnKaIwkwoDta+nwU6TngMjQoIyiPuOHNG9nMJ1DUsnB8VXRs7ksytmrYUJae
-         IE2A==
+        h=mime-version:reply-to:from:date:message-id:subject:to;
+        bh=gX6YQbm1mftPQOwlKDWY0d6d716B14hqk1uvuL9Awgo=;
+        b=gB68zjrbsXJ3jx4HimNtHA7s+qsHQZgnjpMqoa1Gh0JSHhh+44i4KDRCC3a0aGcFMi
+         V1yrzef85U8yXQfOCSF1Ck4eaUimVnRhURLn7LwcSL4OkqBTbs3k4mmDDblYntJ4/hcf
+         7ISL1PzmIngsHaNsZxkCxoyVpmTtJxraCdbDakm1VjsiPU49o4RC0mb8wq3Qec8SiDkG
+         mo/aWPrMNkkTlRhiN4DmUByhVPgSfdSVz8RXIuKYex4aSDQICHNapUWaJhBk9r1xOZ/M
+         2ajmQbiuh/EL88/nBnt3Z6O0prcB0TWhjSpLwtgkHF0RQD0fK6pjYhRxk3w3lEn85FoA
+         bGAQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id;
-        bh=DesUuflALP+M7Km3HyTVIX1iNswVs/ME2CU4gzFT4Bg=;
-        b=k0PZEQtpv2wS7hw4L6wOWqRzSEbS/uCdkwLuXvefX/FJSWakBAgAeM4Rb27u4RXUgQ
-         IwYioySHHYFAQVMmQkJxh6dpONPAooIzKSBsn33esLRH+lSexNE35Wmbm5bYhjxZHyGP
-         DXYiOcAjORsTLpOATlJh5qp/aAcMnfl7CpPP4AVs6ZkbGBDKFGM9Z7nNjroNgofnMdOx
-         PoUOm/fCdCeVylZue8/N/QSd8WaSrhGDzwyk3+eIL1i5KydKi/NcswcU9i6LjFk4tu7z
-         Y3+3NNyiUzgQImzx7qAfyN8Z0r2O4vQ/3N52U16RcvPMQvn7knYac4qkOkjh65taq1uf
-         m00Q==
-X-Gm-Message-State: APjAAAUOChzuVJ1m/6hB5hDzsXz48VFUHSHzzxBhBWmtwFc7nSIbLns2
-        cTXSw/D56Q4Zx+wZGRO+Ab4=
-X-Google-Smtp-Source: APXvYqz/UbONNd/ImMYq7DVrn/QXiJMSbUBYaajwrveO1mKgOAMGBMufrQEdkzI2nM0yyNgabqSFjA==
-X-Received: by 2002:a63:89c2:: with SMTP id v185mr44627341pgd.135.1579273851867;
-        Fri, 17 Jan 2020 07:10:51 -0800 (PST)
-Received: from localhost (64.64.229.47.16clouds.com. [64.64.229.47])
-        by smtp.gmail.com with ESMTPSA id u13sm7821436pjn.29.2020.01.17.07.10.50
-        (version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
-        Fri, 17 Jan 2020 07:10:51 -0800 (PST)
-From:   Dejin Zheng <zhengdejin5@gmail.com>
-To:     alexaundru.ardelean@analog.com, andrew@lunn.ch,
-        f.fainelli@gmail.com, hkallweit1@gmail.com, davem@davemloft.net,
-        netdev@vger.kernel.org
-Cc:     linux-kernel@vger.kernel.org, Dejin Zheng <zhengdejin5@gmail.com>
-Subject: [PATCH] net: phy: adin: fix a warning about msleep
-Date:   Fri, 17 Jan 2020 23:10:42 +0800
-Message-Id: <20200117151042.28742-1-zhengdejin5@gmail.com>
-X-Mailer: git-send-email 2.17.1
+        h=x-gm-message-state:mime-version:reply-to:from:date:message-id
+         :subject:to;
+        bh=gX6YQbm1mftPQOwlKDWY0d6d716B14hqk1uvuL9Awgo=;
+        b=s8KY+n91yjHfd+WnEid1feNoEK7TnQalc29Wr3WQzJ/j8nlY9vz4R06Y53m4co7aLy
+         Mli3ybcXHxkcG3aRv1GNaVFgZMKeedp1vmfo7f1EF/sjkO1fOrZwv4qA4AMMk2bSgiJb
+         EyjFjBtzfavpWq03O4mehbjWmaER6mmLY0IFrfeT9xbS+LNY9gnMq/ZDEr3oWibaZ21U
+         ef6VeCyj3lxoFmrHWpAe0vHiJ/EOo2nfgjh32QYqvboR0YBLMTphH83lf1pR3nnChhZo
+         zH9ulDsDqlYeBNjSL+iJKvaeeI6w3JJZgcb1ODnqOiXObQvYrMclT14Q/TKobmxh48GE
+         PsvQ==
+X-Gm-Message-State: APjAAAX2cjBNpWYOqiDd2+rA4mwUYm1s2AW7d7VGcF9cRXM1tvKV61f3
+        H27/o4820U/jr7QQEulsa2n0V6DSigBYbwLhHZI=
+X-Google-Smtp-Source: APXvYqx7jUX3ercuRbQUXXevzuW3SjnmC5g7+sAkgbCxhZJd5W4ESpkSLF41LJg+zaInjzF7oEyQqMTslL7MCGLc8Lo=
+X-Received: by 2002:a05:620a:166a:: with SMTP id d10mr37925603qko.37.1579275706532;
+ Fri, 17 Jan 2020 07:41:46 -0800 (PST)
+MIME-Version: 1.0
+Received: by 2002:a05:6214:b23:0:0:0:0 with HTTP; Fri, 17 Jan 2020 07:41:45
+ -0800 (PST)
+Reply-To: umarbelloumar92@gmail.com
+From:   umar <mariamlamins1@gmail.com>
+Date:   Fri, 17 Jan 2020 07:41:45 -0800
+Message-ID: <CAFf3r8kb6xtQ=HcnZVB1pBXsEG-oLDNjojUeVO6kde-qBdjgww@mail.gmail.com>
+Subject: Dear friend
+To:     undisclosed-recipients:;
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-found a warning by the following command:
-./scripts/checkpatch.pl -f drivers/net/phy/adin.c
-
-WARNING: msleep < 20ms can sleep for up to 20ms; see Documentation/timers/timers-howto.rst
- #628: FILE: drivers/net/phy/adin.c:628:
-+	msleep(10);
-
-Signed-off-by: Dejin Zheng <zhengdejin5@gmail.com>
----
- drivers/net/phy/adin.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/drivers/net/phy/adin.c b/drivers/net/phy/adin.c
-index cf5a391c93e6..6de25a2d3a05 100644
---- a/drivers/net/phy/adin.c
-+++ b/drivers/net/phy/adin.c
-@@ -625,7 +625,7 @@ static int adin_soft_reset(struct phy_device *phydev)
- 	if (rc < 0)
- 		return rc;
- 
--	msleep(10);
-+	msleep(20);
- 
- 	/* If we get a read error something may be wrong */
- 	rc = phy_read_mmd(phydev, MDIO_MMD_VEND1,
 -- 
-2.17.1
 
+
+Dear friend
+I am contacting you on a business deal of Gold dust proceed, Crude oil
+shipping and $17.5 Million US Dollars
+ready for transfer into your account
+if we make this claim, we will share it 60%/40%.
+100% risk free and it will be legally backed up with government
+approved If you are interested reply for more details.
+
+Best regards,
+Prince Umar Bello
+ +226 68874958
