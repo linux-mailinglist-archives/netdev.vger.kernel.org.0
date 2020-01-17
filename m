@@ -2,148 +2,138 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 7AC311413B0
-	for <lists+netdev@lfdr.de>; Fri, 17 Jan 2020 22:52:12 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A37861413B4
+	for <lists+netdev@lfdr.de>; Fri, 17 Jan 2020 22:52:43 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729100AbgAQVwD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 17 Jan 2020 16:52:03 -0500
-Received: from mail-qt1-f196.google.com ([209.85.160.196]:34037 "EHLO
-        mail-qt1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726587AbgAQVwD (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 17 Jan 2020 16:52:03 -0500
-Received: by mail-qt1-f196.google.com with SMTP id 5so22974638qtz.1;
-        Fri, 17 Jan 2020 13:52:02 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=LXFr+Oe+DVTEU1iGCR5ab4LZThTsrbbCxkzxMkJjD5c=;
-        b=SCKFYcXAx2pYOkg8sBdmA6UuPGSAN4IeyL1Dz/KSEDe5j/IrkXBa5bXmt6hFX6UhDM
-         2YYiUQFJw+8eXd/z3QSihMEyOYslWrk5vlX3iUsqa28FTs+P7NiNAIdO8+kQMfhKOa5H
-         G7pz4MTfa/UlimYFKtDwhRX73LJsP1FnpKiQhV+JY3QcgfU0G6tLwr57mRjBknDU4y47
-         msMgfAq7oc+VegMblw7Xw8uk64413y5aq2GWD0MMhStKrj5p3zliEbHRu6HeTHyN57wx
-         o2FQQesMgQvTTsSRJew4/ERaY6H8GFbehj5A6j6jBrRm5YSlchBa5enyuQgApmiUP4/y
-         WIcQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=LXFr+Oe+DVTEU1iGCR5ab4LZThTsrbbCxkzxMkJjD5c=;
-        b=IVE0bbXgttmXNRct/wh81V6UOn9dEQmxsO+4cbkPjdklvcBJOAxXdg0Z2NMoDv/zIi
-         RipZWrXV9uRwr5nszgNLdOab6ICUkEfn6vmDSnBzffkNXlnBtonXCYutw1pQGg7LV57F
-         RV0E9fO5VbEvfvFvtGb4cde1gGPbY05lNdsHxLQAB36ed3rSDhNUVDVuew+qXKPSgmEL
-         PxyfCTtUCjEYLRuFw4EbL1O6btZu89SwlC5Lm968Ep8FER2mIMJUexlB2TyPitUXfw+M
-         Mhd1sUS7DYdk1dEJM5HfVKZfFYvpvCeSDPrhxDAXhF/KHS/0aMdC5Jbhnir8crEEdMc4
-         kx9g==
-X-Gm-Message-State: APjAAAVpP+UumZjTsAKAHfNXmm77q7caJ7L13k4Q5leD3DevjikrY+aF
-        U4t+//4Neecmaxoy9fwxxCaKR1G9DjY07JkYnik=
-X-Google-Smtp-Source: APXvYqzPEH9j5BfkpS6SL5DHwqfsDvCoAE4QyeeHElbCapqNYQ1YI48ORniseUuBtLPs6QBmFuL8F8zVKIchHdd54ls=
-X-Received: by 2002:ac8:7b29:: with SMTP id l9mr9364164qtu.141.1579297921555;
- Fri, 17 Jan 2020 13:52:01 -0800 (PST)
+        id S1729850AbgAQVwd (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 17 Jan 2020 16:52:33 -0500
+Received: from mail2.candelatech.com ([208.74.158.173]:43230 "EHLO
+        mail3.candelatech.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726587AbgAQVwd (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 17 Jan 2020 16:52:33 -0500
+Received: from [192.168.100.195] (50-251-239-81-static.hfc.comcastbusiness.net [50.251.239.81])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+        (No client certificate requested)
+        by mail3.candelatech.com (Postfix) with ESMTPSA id 6B4D610FB;
+        Fri, 17 Jan 2020 13:52:32 -0800 (PST)
+DKIM-Filter: OpenDKIM Filter v2.11.0 mail3.candelatech.com 6B4D610FB
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=candelatech.com;
+        s=default; t=1579297952;
+        bh=FT9rU92F18enc8OfMmHG3knsE2lHfpCe6t4/L2jBeRo=;
+        h=Subject:From:To:References:Cc:Date:In-Reply-To:From;
+        b=l8dcxnq/SkbmjuRIo89tnjEKg20FyRxO4uUUFBuX2tSr5/zqjLEYWwQOaFyGYL2ER
+         wX/WglZUPoWORL3KWilLRXwIp1WwcKQc4/3wx6FoVuw9qOYK1/9EpZEwxVgz3b05be
+         dCN7DM4rQ1u/Wo8HBm3jDQ0zrm2Qy8+zD321p8fU=
+Subject: Re: vrf and ipsec xfrm routing problem
+From:   Ben Greear <greearb@candelatech.com>
+To:     netdev <netdev@vger.kernel.org>
+References: <1425d02c-de99-b708-e543-b7fe3f0ef07e@candelatech.com>
+Cc:     David Ahern <dsahern@gmail.com>
+Organization: Candela Technologies
+Message-ID: <9893ae01-18a5-2afd-b485-459423b8adc0@candelatech.com>
+Date:   Fri, 17 Jan 2020 13:52:31 -0800
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.2.2
 MIME-Version: 1.0
-References: <157926819690.1555735.10756593211671752826.stgit@toke.dk> <157926820131.1555735.1177228853838027248.stgit@toke.dk>
-In-Reply-To: <157926820131.1555735.1177228853838027248.stgit@toke.dk>
-From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Fri, 17 Jan 2020 13:51:50 -0800
-Message-ID: <CAEf4BzbAV0TmEUL=62jz+RD6SPmu927z-dhGL9JHepcAOGMSJA@mail.gmail.com>
-Subject: Re: [PATCH bpf-next v4 04/10] tools/runqslower: Use consistent
- include paths for libbpf
-To:     =?UTF-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <toke@redhat.com>
-Cc:     Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        Andrii Nakryiko <andriin@fb.com>,
-        Doug Ledford <dledford@redhat.com>,
-        Jason Gunthorpe <jgg@ziepe.ca>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Jesper Dangaard Brouer <brouer@redhat.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Ingo Molnar <mingo@redhat.com>,
-        Arnaldo Carvalho de Melo <acme@kernel.org>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
-        Jiri Olsa <jolsa@redhat.com>,
-        Namhyung Kim <namhyung@kernel.org>,
-        Shuah Khan <shuah@kernel.org>,
-        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        open list <linux-kernel@vger.kernel.org>,
-        linux-rdma@vger.kernel.org,
-        "open list:KERNEL SELFTEST FRAMEWORK" 
-        <linux-kselftest@vger.kernel.org>,
-        clang-built-linux@googlegroups.com
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+In-Reply-To: <1425d02c-de99-b708-e543-b7fe3f0ef07e@candelatech.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Jan 17, 2020 at 5:37 AM Toke H=C3=B8iland-J=C3=B8rgensen <toke@redh=
-at.com> wrote:
->
-> From: Toke H=C3=B8iland-J=C3=B8rgensen <toke@redhat.com>
->
-> Fix the runqslower tool to include libbpf header files with the bpf/
-> prefix, to be consistent with external users of the library. Also ensure
-> that all includes of exported libbpf header files (those that are exporte=
-d
-> on 'make install' of the library) use bracketed includes instead of quote=
-d.
->
-> To not break the build, keep the old include path until everything has be=
-en
-> changed to the new one; a subsequent patch will remove that.
->
-> Fixes: 6910d7d3867a ("selftests/bpf: Ensure bpf_helper_defs.h are taken f=
-rom selftests dir")
-> Acked-by: Andrii Nakryiko <andriin@fb.com>
-> Signed-off-by: Toke H=C3=B8iland-J=C3=B8rgensen <toke@redhat.com>
-> ---
->  tools/bpf/runqslower/Makefile         |    5 +++--
->  tools/bpf/runqslower/runqslower.bpf.c |    2 +-
->  tools/bpf/runqslower/runqslower.c     |    4 ++--
->  3 files changed, 6 insertions(+), 5 deletions(-)
->
-> diff --git a/tools/bpf/runqslower/Makefile b/tools/bpf/runqslower/Makefil=
-e
-> index b62fc9646c39..9f022f7f2593 100644
-> --- a/tools/bpf/runqslower/Makefile
-> +++ b/tools/bpf/runqslower/Makefile
-> @@ -5,6 +5,7 @@ LLC :=3D llc
->  LLVM_STRIP :=3D llvm-strip
->  DEFAULT_BPFTOOL :=3D $(OUTPUT)/sbin/bpftool
->  BPFTOOL ?=3D $(DEFAULT_BPFTOOL)
-> +INCLUDES :=3D -I$(OUTPUT) -I$(abspath ../../lib) -I$(abspath ../../lib/b=
-pf)
->  LIBBPF_SRC :=3D $(abspath ../../lib/bpf)
+On 1/17/20 9:49 AM, Ben Greear wrote:
+> Hello,
+> 
+> I'm back to mucking with xfrm and vrfs.  I am currently able to get the
+> xfrm interface to connect to the ipsec peer and get an IP address.
+> 
+> But, when I bind a UDP socket to the x_eth4 xfrm device, the packets
+> go out of eth4 instead.
+> 
+> Based on the problems I was having with multicast, I am thinking this might just be some routing problem.
+> 
+> # ip route show vrf _vrf4
+> default via 192.168.5.1 dev eth4
+> 192.168.5.0/24 dev eth4 scope link src 192.168.5.4
+> 
+> # ip addr show dev eth4
+> 7: eth4: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc mq master _vrf4 state UP group default qlen 1000
+>      link/ether 00:30:18:01:63:eb brd ff:ff:ff:ff:ff:ff
+>      inet 192.168.5.4/24 brd 192.168.5.255 scope global eth4
+>         valid_lft forever preferred_lft forever
+> 
+> # ip addr show dev x_eth4
+> 30: x_eth4@eth4: <NOARP,UP,LOWER_UP> mtu 1440 qdisc noqueue master _vrf4 state UNKNOWN group default qlen 1000
+>      link/none 00:30:18:01:63:eb brd ff:ff:ff:ff:ff:ff
+>      inet 192.168.10.101/32 scope global x_eth4
+>         valid_lft forever preferred_lft forever
+>      inet6 fe80::f6ec:3e67:9b7b:60c9/64 scope link stable-privacy
+>         valid_lft forever preferred_lft forever
+> 
+> 
+> I tried adding a route to specify the x_frm as source, but that does not appear to work:
+> 
+> [root@lf0313-63e7 lanforge]# ip route add 192.168.10.0/24 via 192.168.5.1 dev x_eth4 table 4
+> [root@lf0313-63e7 lanforge]# ip route show vrf _vrf4
+> default via 192.168.5.1 dev eth4
+> 192.168.5.0/24 dev eth4 scope link src 192.168.5.4
+> 192.168.10.0/24 via 192.168.5.1 dev eth4
+> 
+> I also tried this, but no luck:
+> 
+> [root@lf0313-63e7 lanforge]# ip route add 192.168.10.0/24 via 192.168.10.1 dev x_eth4 table 4
+> Error: Nexthop has invalid gateway.
 
-drop LIBBPF_SRC, it's not used anymore
+I went looking for why this was failing.  The reason is that this code is hitting the error case
+in the code snippet below (from 5.2.21+ kernel).
 
->  CFLAGS :=3D -g -Wall
->
-> @@ -51,13 +52,13 @@ $(OUTPUT)/%.skel.h: $(OUTPUT)/%.bpf.o | $(BPFTOOL)
->
->  $(OUTPUT)/%.bpf.o: %.bpf.c $(OUTPUT)/libbpf.a | $(OUTPUT)
->         $(call msg,BPF,$@)
-> -       $(Q)$(CLANG) -g -O2 -target bpf -I$(OUTPUT) -I$(LIBBPF_SRC)      =
-     \
-> +       $(Q)$(CLANG) -g -O2 -target bpf $(INCLUDES)           \
+The oif is that of _vrf4, not the x_eth4 device.
 
-please preserve formatting and alignment conventions of a file
+David:  Is this expected behaviour?  Do you know how to tell vrf to use the x_eth4
+xfrm device as oif when routing output to certain destinations?
 
->                  -c $(filter %.c,$^) -o $@ &&                            =
-     \
->         $(LLVM_STRIP) -g $@
->
->  $(OUTPUT)/%.o: %.c | $(OUTPUT)
->         $(call msg,CC,$@)
-> -       $(Q)$(CC) $(CFLAGS) -I$(LIBBPF_SRC) -I$(OUTPUT) -c $(filter %.c,$=
-^) -o $@
-> +       $(Q)$(CC) $(CFLAGS) $(INCLUDES) -c $(filter %.c,$^) -o $@
->
->  $(OUTPUT):
+	rcu_read_lock();
+	{
+		struct fib_table *tbl = NULL;
+		struct flowi4 fl4 = {
+			.daddr = nh->fib_nh_gw4,
+			.flowi4_scope = scope + 1,
+			.flowi4_oif = nh->fib_nh_oif,
+			.flowi4_iif = LOOPBACK_IFINDEX,
+		};
 
-[...]
+		/* It is not necessary, but requires a bit of thinking */
+		if (fl4.flowi4_scope < RT_SCOPE_LINK)
+			fl4.flowi4_scope = RT_SCOPE_LINK;
+
+		if (table)
+			tbl = fib_get_table(net, table);
+
+		if (tbl)
+			err = fib_table_lookup(tbl, &fl4, &res,
+					       FIB_LOOKUP_IGNORE_LINKSTATE |
+					       FIB_LOOKUP_NOREF);
+
+		/* on error or if no table given do full lookup. This
+		 * is needed for example when nexthops are in the local
+		 * table rather than the given table
+		 */
+		if (!tbl || err) {
+			err = fib_lookup(net, &fl4, &res,
+					 FIB_LOOKUP_IGNORE_LINKSTATE);
+		}
+
+		if (err) {
+			pr_err("daddr: 0x%x scope: %d  oif: %d iif: %d table: %d tbl: %p\n",
+			       fl4.daddr, fl4.flowi4_scope, fl4.flowi4_oif, fl4.flowi4_iif, table, tbl);
+			NL_SET_ERR_MSG(extack, "Nexthop has invalid gateway, table lookup");
+			goto out;
+		}
+	}
+
+Thanks,
+Ben
+
