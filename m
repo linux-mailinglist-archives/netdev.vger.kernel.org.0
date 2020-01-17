@@ -2,74 +2,74 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 037FD1401AB
-	for <lists+netdev@lfdr.de>; Fri, 17 Jan 2020 03:03:54 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 85D0C140216
+	for <lists+netdev@lfdr.de>; Fri, 17 Jan 2020 03:45:33 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731972AbgAQCDw convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Thu, 16 Jan 2020 21:03:52 -0500
-Received: from mx24.baidu.com ([111.206.215.185]:59414 "EHLO baidu.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1726726AbgAQCDv (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 16 Jan 2020 21:03:51 -0500
-Received: from BJHW-Mail-Ex14.internal.baidu.com (unknown [10.127.64.37])
-        by Forcepoint Email with ESMTPS id D8A96A90E286FBD58984
-        for <netdev@vger.kernel.org>; Fri, 17 Jan 2020 10:03:45 +0800 (CST)
-Received: from BJHW-Mail-Ex13.internal.baidu.com (10.127.64.36) by
- BJHW-Mail-Ex14.internal.baidu.com (10.127.64.37) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id
- 15.1.1713.5; Fri, 17 Jan 2020 10:03:45 +0800
-Received: from BJHW-Mail-Ex13.internal.baidu.com ([100.100.100.36]) by
- BJHW-Mail-Ex13.internal.baidu.com ([100.100.100.36]) with mapi id
- 15.01.1713.004; Fri, 17 Jan 2020 10:03:45 +0800
-From:   "Li,Rongqing" <lirongqing@baidu.com>
-To:     "edumazet@google.com" <edumazet@google.com>
-CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-Subject: [RFC] tcp: remove BUG_ON in tcp_shifted_skb
-Thread-Topic: [RFC] tcp: remove BUG_ON in tcp_shifted_skb
-Thread-Index: AdXM2Ssb1+KfzfSvTa66zCYc84q1Uw==
-Date:   Fri, 17 Jan 2020 02:03:45 +0000
-Message-ID: <5cfa925ff7394e10bbbf5132e44cbea4@baidu.com>
-Accept-Language: zh-CN, en-US
-Content-Language: zh-CN
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-originating-ip: [172.22.198.32]
-x-baidu-bdmsfe-datecheck: 1_BJHW-Mail-Ex14_2020-01-17 10:03:45:698
-x-baidu-bdmsfe-viruscheck: BJHW-Mail-Ex14_GRAY_Inside_WithoutAtta_2020-01-17
- 10:03:45:682
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 8BIT
+        id S1733166AbgAQCpY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 16 Jan 2020 21:45:24 -0500
+Received: from mail.kernel.org ([198.145.29.99]:36574 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1729067AbgAQCpX (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 16 Jan 2020 21:45:23 -0500
+Received: from localhost (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 2C4F920730;
+        Fri, 17 Jan 2020 02:45:23 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1579229123;
+        bh=dKyqaaGGcB1MEqXs9BPg8uYw+xt+15onKXbpCmYtg4Y=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=AexsPH/wskCzkb4pS2nT3LvFZB4U5CmfvO1tbOlwAmfd1Rs1rv3bPekfFJAR5fOPa
+         Au3WHsZFYfHiNbNL6NdkHnXQrtTALNMarDKuHPbl1Js/orf59bNMpKaiNiW+B4WdMw
+         K/sVKwM5KdYMz2jVOfnearTXlAGR34ko/ivRC6H8=
+Date:   Thu, 16 Jan 2020 21:45:22 -0500
+From:   Sasha Levin <sashal@kernel.org>
+To:     David Ahern <dsahern@gmail.com>
+Cc:     linux-kernel@vger.kernel.org, stable@vger.kernel.org,
+        Rajendra Dendukuri <rajendra.dendukuri@broadcom.com>,
+        Eric Dumazet <edumazet@google.com>,
+        "David S . Miller" <davem@davemloft.net>, netdev@vger.kernel.org
+Subject: Re: [PATCH AUTOSEL 4.19 573/671] ipv6: Handle race in
+ addrconf_dad_work
+Message-ID: <20200117024522.GN1706@sasha-vm>
+References: <20200116170509.12787-1-sashal@kernel.org>
+ <20200116170509.12787-310-sashal@kernel.org>
+ <fc012e53-ccdf-5ac5-6f3f-a2ecdf25bc39@gmail.com>
+ <630c6286-2ab4-44ab-693e-0615a2ac690b@gmail.com>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii; format=flowed
+Content-Disposition: inline
+In-Reply-To: <630c6286-2ab4-44ab-693e-0615a2ac690b@gmail.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-I think this BUG_ON in tcp_shifted_skb maybe be triggered if a GSO skb is 
-sacked, but sack is faked, and not ack the whole mss length, only ack less
-than mss length
+On Thu, Jan 16, 2020 at 10:20:16AM -0700, David Ahern wrote:
+>On 1/16/20 10:18 AM, David Ahern wrote:
+>> On 1/16/20 10:03 AM, Sasha Levin wrote:
+>>> From: David Ahern <dsahern@gmail.com>
+>>>
+>>> [ Upstream commit a3ce2a21bb8969ae27917281244fa91bf5f286d7 ]
+>>>
+>>
+>> That commit was reverted by 8ae72cbf62d2c1879456c0c5872f958e18f53711 and
+>> then replaced by 2d819d250a1393a3e725715425ab70a0e0772a71
+>>
+>
+>BTW, the AUTOSEL algorithm should be updated to look for reverts and
+>even ones that have already been nack'ed from a backport perspective.
+>
+>I felt a bit of deja vu with my response and sure enough this patch was
+>selected back in October and I responded then that it should not be
+>backported.
 
-Is it possible ?
+Sorry about this David. This series is a result of an experimental work
+I did rather than the regular AUTOSEL workflow, so it ended up
+accidentally bubbling a few commits that were previously rejected.
 
-- Li RongQing <lirongqing@baidu.com>
-
----
- net/ipv4/tcp_input.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
-
-diff --git a/net/ipv4/tcp_input.c b/net/ipv4/tcp_input.c
-index 1d1e3493965f..141bc85092b5 100644
---- a/net/ipv4/tcp_input.c
-+++ b/net/ipv4/tcp_input.c
-@@ -1327,7 +1327,8 @@ static bool tcp_shifted_skb(struct sock *sk, struct sk_buff *prev,
-        TCP_SKB_CB(prev)->sacked |= (TCP_SKB_CB(skb)->sacked & TCPCB_EVER_RETRANS);
- 
-        if (skb->len > 0) {
--               BUG_ON(!tcp_skb_pcount(skb));
-                NET_INC_STATS(sock_net(sk), LINUX_MIB_SACKSHIFTED);
-                return false;
-        }
 -- 
-2.16.2
-
-
+Thanks,
+Sasha
