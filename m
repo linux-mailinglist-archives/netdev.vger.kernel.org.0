@@ -2,60 +2,58 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id D62E2141063
-	for <lists+netdev@lfdr.de>; Fri, 17 Jan 2020 19:03:33 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4B7F5141097
+	for <lists+netdev@lfdr.de>; Fri, 17 Jan 2020 19:16:58 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728779AbgAQSDa (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 17 Jan 2020 13:03:30 -0500
-Received: from mail-qk1-f195.google.com ([209.85.222.195]:40338 "EHLO
-        mail-qk1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726603AbgAQSD3 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 17 Jan 2020 13:03:29 -0500
-Received: by mail-qk1-f195.google.com with SMTP id c17so23517156qkg.7;
-        Fri, 17 Jan 2020 10:03:29 -0800 (PST)
+        id S1729008AbgAQSQs (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 17 Jan 2020 13:16:48 -0500
+Received: from mail-pf1-f193.google.com ([209.85.210.193]:33750 "EHLO
+        mail-pf1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726603AbgAQSQs (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 17 Jan 2020 13:16:48 -0500
+Received: by mail-pf1-f193.google.com with SMTP id z16so12318889pfk.0;
+        Fri, 17 Jan 2020 10:16:47 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=sender:from:date:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=xU4VBanglVPXt7ngdr39qz422X3JP6/qDcudzGbwI4E=;
-        b=Ltw0xlbbDd3T6Yq0dSVi4aqLfuk0vFTBHazMFWMSYU8yiqLSSuA0lDb/1xen40XcH0
-         cqOv83k0WRiJqxXhwTJPNZJkmtgbduF1fYpW6H/8PtCLXjM+7SJ3caItDskt8EN0ZIN6
-         o5/tHmOftvWd7Cg+FIC69Yv6fjIhe8VcLA3qiRgRqODaq2oSW5Ef5wqb3iMP52WeZLqI
-         iAzHGocaNXnRyhho0iERF5Clxmxr418Q/nESOJft0SqV4aShORm8SZj1/l5JkfOVHZZc
-         mw1FYoYKH6FBNiq3vB/Nbizzo2k3wbWBjv0DGXIp1yICX6k9/A7nUW4UxvrzcNh0cR5p
-         ilUg==
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=aD0tuQOOzQ4oPbILPoDAiI6G2Z70ung0n+DSdMMnNJM=;
+        b=XAwhFczp0KmF7S4+mP+LKpuEITPW8TFrYJjFMPDvKsfwAhoGkynU29aeT7ZqFXq1u7
+         gVDBjYq8rj1+xwysNNi4G/44MygeUidK4BAC2uI4Ql20Wr2SRsWeirad2G4ygoaU+qIq
+         zQccKK++5t95MmYnFfwAQb8HAZz+3HjAGkOWGyZ6hMfaKAR2MFL690nGCkZZdO56LoSj
+         wjT2dLaloYNNswOOdL322gcruh2L6yUWgp6eL2VohufB2R0dlg9nZUhi+2fpetFEX+Rm
+         GkVJY7CVN2swKSsvPBu0/h4L40vTxHjGYa6t+aAbCILTSKRl3zVO/4W+XhSDCSI7OPrV
+         70ew==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:sender:from:date:to:cc:subject:message-id
-         :references:mime-version:content-disposition:in-reply-to:user-agent;
-        bh=xU4VBanglVPXt7ngdr39qz422X3JP6/qDcudzGbwI4E=;
-        b=An6DJfFAcPoL/RlurF2u8FrMJ9u8xCSg6w8V4ggqRxLICijPI1KtZ0Y0eCQUV5Wbf0
-         hvAeBG2iJ2uor1+n9UpXuYV41VapI9zoe+3j+RB2wvEthDOa7KTT9xfQqrUx+3RJQ8T/
-         58dStQDUB32OnooZhBrB83oYxNBYwNtYt2ydfjv1Y0PmyIcwpQK0REpAGKU12b1LEGga
-         m/8uXQQgyiSt8DEAbh2J9UI6Asy1F6Tx9IsRqDuMNhDSFKqDgXCJ1G+/LyGc21BRT90F
-         Os93JIjETf+dARxcmCzCce/VNwvETC1n9zHBXMVMXcV9Ha6ba/FP9DJqxCH0LceVe9M0
-         awqA==
-X-Gm-Message-State: APjAAAU4EVp4pYMygrIKfBd22a0hqk5czRuADFtFYc9unk6iPcvXMEM2
-        O9aoePs82Cyp30eKKBsDnBM=
-X-Google-Smtp-Source: APXvYqyCPiG09VXkOIjOy2jkrRHpRdY7DZQqsAECIdmiP32K/o24L2Khmyz3qUwMqv7EC7M+coGglw==
-X-Received: by 2002:a37:664d:: with SMTP id a74mr39032122qkc.4.1579284208522;
-        Fri, 17 Jan 2020 10:03:28 -0800 (PST)
-Received: from rani.riverdale.lan ([2001:470:1f07:5f3::b55f])
-        by smtp.gmail.com with ESMTPSA id q35sm13523418qta.19.2020.01.17.10.03.27
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 17 Jan 2020 10:03:28 -0800 (PST)
-From:   Arvind Sankar <nivedita@alum.mit.edu>
-X-Google-Original-From: Arvind Sankar <arvind@rani.riverdale.lan>
-Date:   Fri, 17 Jan 2020 13:03:26 -0500
-To:     Eric Dumazet <eric.dumazet@gmail.com>
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=aD0tuQOOzQ4oPbILPoDAiI6G2Z70ung0n+DSdMMnNJM=;
+        b=R/HclvEcSkKUb6D87T+EuyhpHZ1pad/q8rhHisvrMHSlEwg9IAVgwr5IJsCaXCWDI8
+         +8UFJk65gwu0ReyUoO13flbqhUnsnIMyjSxMiaXn9dpHc6Mc3xSvKilYFJq8MKlV4QI/
+         Tj4i+tbk83IvIYdUn7HOa0E1jXdNs6e8EO+Tj3EvXfhy8TDOEY7aFK/+nMlAM3+Ta7PZ
+         6G1SV609cHK13XPRGXY8UdDbvJGaQEldEhxyvZ43YPQ7sZsbemvO5OOhCR3vZ5fmJT7v
+         G7ii50Gz7GorxshjljFvUESxsHiABnl8qkbzYCntJRWB6w17sTxZWzaioaHLayXnEj2R
+         diCA==
+X-Gm-Message-State: APjAAAUZ2RfkeCdlInVp7sI4yTUKPXHaULeKvpOP6XnlqDgO/TwE2Hxl
+        ZmTRyPNQd2W+fu5MYRZaVE8=
+X-Google-Smtp-Source: APXvYqwmqpjSoPfBdcrHSDgt2evoaybgY+qpc04lufY7AQGAgKNpGRqu1fs3w6huCAqrB5q65VH6hg==
+X-Received: by 2002:a63:1204:: with SMTP id h4mr45519701pgl.288.1579285007532;
+        Fri, 17 Jan 2020 10:16:47 -0800 (PST)
+Received: from [192.168.86.235] (c-73-241-150-58.hsd1.ca.comcast.net. [73.241.150.58])
+        by smtp.gmail.com with ESMTPSA id q63sm30965322pfb.149.2020.01.17.10.16.45
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 17 Jan 2020 10:16:46 -0800 (PST)
+Subject: Re: [PATCH] net: optimize cmpxchg in ip_idents_reserve
+To:     Arvind Sankar <nivedita@alum.mit.edu>,
+        Eric Dumazet <eric.dumazet@gmail.com>
 Cc:     Peter Zijlstra <peterz@infradead.org>,
         Shaokun Zhang <zhangshaokun@hisilicon.com>,
         David Miller <davem@davemloft.net>, netdev@vger.kernel.org,
         linux-kernel@vger.kernel.org, jinyuqi@huawei.com,
         kuznet@ms2.inr.ac.ru, yoshfuji@linux-ipv6.org, edumazet@google.com,
         guoyang2@huawei.com, Will Deacon <will@kernel.org>
-Subject: Re: [PATCH] net: optimize cmpxchg in ip_idents_reserve
-Message-ID: <20200117180324.GA2623847@rani.riverdale.lan>
 References: <1579058620-26684-1-git-send-email-zhangshaokun@hisilicon.com>
  <20200116.042722.153124126288244814.davem@davemloft.net>
  <930faaff-4d18-452d-2e44-ef05b65dc858@gmail.com>
@@ -63,34 +61,75 @@ References: <1579058620-26684-1-git-send-email-zhangshaokun@hisilicon.com>
  <430496fc-9f26-8cb4-91d8-505fda9af230@hisilicon.com>
  <20200117123253.GC14879@hirez.programming.kicks-ass.net>
  <7e6c6202-24bb-a532-adde-d53dd6fb14c3@gmail.com>
+ <20200117180324.GA2623847@rani.riverdale.lan>
+From:   Eric Dumazet <eric.dumazet@gmail.com>
+Message-ID: <94573cea-a833-9b48-6581-8cc5cdd19b89@gmail.com>
+Date:   Fri, 17 Jan 2020 10:16:45 -0800
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.2.2
 MIME-Version: 1.0
+In-Reply-To: <20200117180324.GA2623847@rani.riverdale.lan>
 Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <7e6c6202-24bb-a532-adde-d53dd6fb14c3@gmail.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Jan 17, 2020 at 08:35:07AM -0800, Eric Dumazet wrote:
-> 
-> 
-> On 1/17/20 4:32 AM, Peter Zijlstra wrote:
-> 
-> > 
-> > That's crazy, just accept that UBSAN is taking bonghits and ignore it.
-> > Use atomic_add_return() unconditionally.
-> > 
-> 
-> Yes, we might simply add a comment so that people do not bug us if
-> their compiler is too old.
-> 
-> /* If UBSAN reports an error there, please make sure your compiler
->  * supports -fno-strict-overflow before reporting it.
->  */
-> return atomic_add_return(segs + delta, p_id) - segs;
-> 
 
-Do we need that comment any more? The flag was apparently introduced in
-gcc-4.2 and we only support 4.6+ anyway?
+
+On 1/17/20 10:03 AM, Arvind Sankar wrote:
+> On Fri, Jan 17, 2020 at 08:35:07AM -0800, Eric Dumazet wrote:
+>>
+>>
+>> On 1/17/20 4:32 AM, Peter Zijlstra wrote:
+>>
+>>>
+>>> That's crazy, just accept that UBSAN is taking bonghits and ignore it.
+>>> Use atomic_add_return() unconditionally.
+>>>
+>>
+>> Yes, we might simply add a comment so that people do not bug us if
+>> their compiler is too old.
+>>
+>> /* If UBSAN reports an error there, please make sure your compiler
+>>  * supports -fno-strict-overflow before reporting it.
+>>  */
+>> return atomic_add_return(segs + delta, p_id) - segs;
+>>
+> 
+> Do we need that comment any more? The flag was apparently introduced in
+> gcc-4.2 and we only support 4.6+ anyway?
+
+Wasńt it the case back in 2016 already for linux-4.8 ?
+
+What will prevent someone to send another report to netdev/lkml ?
+
+ -fno-strict-overflow support is not a prereq for CONFIG_UBSAN.
+
+Fact that we kept in lib/ubsan.c and lib/test_ubsan.c code for 
+test_ubsan_add_overflow() and test_ubsan_sub_overflow() is disturbing.
+
+
+commit adb03115f4590baa280ddc440a8eff08a6be0cb7
+Author: Eric Dumazet <edumazet@google.com>
+Date:   Tue Sep 20 18:06:17 2016 -0700
+
+    net: get rid of an signed integer overflow in ip_idents_reserve()
+    
+    Jiri Pirko reported an UBSAN warning happening in ip_idents_reserve()
+    
+    [] UBSAN: Undefined behaviour in ./arch/x86/include/asm/atomic.h:156:11
+    [] signed integer overflow:
+    [] -2117905507 + -695755206 cannot be represented in type 'int'
+    
+    Since we do not have uatomic_add_return() yet, use atomic_cmpxchg()
+    so that the arithmetics can be done using unsigned int.
+    
+    Fixes: 04ca6973f7c1 ("ip: make IP identifiers less predictable")
+    Signed-off-by: Eric Dumazet <edumazet@google.com>
+    Reported-by: Jiri Pirko <jiri@resnulli.us>
+    Signed-off-by: David S. Miller <davem@davemloft.net>
+
+ 
