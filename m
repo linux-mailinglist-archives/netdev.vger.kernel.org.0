@@ -2,252 +2,121 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 8BEAB140EB0
-	for <lists+netdev@lfdr.de>; Fri, 17 Jan 2020 17:10:02 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id AF153140EE2
+	for <lists+netdev@lfdr.de>; Fri, 17 Jan 2020 17:26:08 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729047AbgAQQKA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 17 Jan 2020 11:10:00 -0500
-Received: from mail.dlink.ru ([178.170.168.18]:38884 "EHLO fd.dlink.ru"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727043AbgAQQKA (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 17 Jan 2020 11:10:00 -0500
-Received: by fd.dlink.ru (Postfix, from userid 5000)
-        id 4764D1B209BB; Fri, 17 Jan 2020 19:09:58 +0300 (MSK)
-DKIM-Filter: OpenDKIM Filter v2.11.0 fd.dlink.ru 4764D1B209BB
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=dlink.ru; s=mail;
-        t=1579277398; bh=cTyZHTaULGGA9qLxyq/USVE3FrwcgtB2aCGM7dj6u0Q=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References;
-        b=DzjDz7SF/BbaNOvKaWtDCCUsRkBJkMeu9oRRWI6eh79F9oy8Aqa0QWE3TtR4prfyn
-         aH8smXnPDgLMoAkiGmbv1dUDA9EDlj3TrSTheb5Fh/6FEKkitcOhjLlK+iLMvaLFio
-         fT1ut5A3vxYw2QJ1Om13efASoBevMoPpXpF7Nx6c=
-X-Spam-Checker-Version: SpamAssassin 3.4.2 (2018-09-13) on mail.dlink.ru
-X-Spam-Level: 
-X-Spam-Status: No, score=-99.2 required=7.5 tests=BAYES_50,URIBL_BLOCKED,
-        USER_IN_WHITELIST autolearn=disabled version=3.4.2
-Received: from mail.rzn.dlink.ru (mail.rzn.dlink.ru [178.170.168.13])
-        by fd.dlink.ru (Postfix) with ESMTP id 6C7ED1B2010A;
-        Fri, 17 Jan 2020 19:09:51 +0300 (MSK)
-DKIM-Filter: OpenDKIM Filter v2.11.0 fd.dlink.ru 6C7ED1B2010A
-Received: from mail.rzn.dlink.ru (localhost [127.0.0.1])
-        by mail.rzn.dlink.ru (Postfix) with ESMTP id 46FC81B20AE9;
-        Fri, 17 Jan 2020 19:09:51 +0300 (MSK)
-Received: from mail.rzn.dlink.ru (localhost [127.0.0.1])
-        by mail.rzn.dlink.ru (Postfix) with ESMTPA;
-        Fri, 17 Jan 2020 19:09:51 +0300 (MSK)
+        id S1729121AbgAQQZM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 17 Jan 2020 11:25:12 -0500
+Received: from mail-pf1-f196.google.com ([209.85.210.196]:34135 "EHLO
+        mail-pf1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727043AbgAQQZL (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 17 Jan 2020 11:25:11 -0500
+Received: by mail-pf1-f196.google.com with SMTP id i6so12181291pfc.1
+        for <netdev@vger.kernel.org>; Fri, 17 Jan 2020 08:25:11 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:to:references:from:message-id:date:user-agent:mime-version
+         :in-reply-to:content-language:content-transfer-encoding;
+        bh=RsIY3cPfHMiUzparlKwjQbkw1NkgGh3wBE1/ck320iM=;
+        b=gARwejX/5mL9zXL+gjXu3ozzXYn3nPKeylpP4bAx3l2EUp//itkydV0rV1qGoTz3E/
+         44Qs4cHpvjWI3gXWOhgpe7uT81voRBgWHSLHuiR9Opo6JFijnbtAVCN52j6aZk/6dAle
+         UvB+LUdwsAa/w8zC0mm4uJ+46K1WILXVksLOZc8Di/l4KpEFOXMRi7+TzLiSaL+NBKk0
+         YFNrOv0pcu6V6M/HaV4PyXCz09z2oh988n67rOkY3f3gFDge1QjMLnpbGfPCHl5V9PtN
+         RwWFHeQvCh0tKHtiYdJaOVRRnh7bSp1YMNo6ZASxod7vmH/XCXcYdibh+tI683shTc+l
+         UYbw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=RsIY3cPfHMiUzparlKwjQbkw1NkgGh3wBE1/ck320iM=;
+        b=dW/Svs8fFtkkrDZnZWFvjPzq222bHj2aFcGXfU4JrrMjOBhorJ2U7dt5eqEpo15t0z
+         QxlvLYigK6D89kDJ2VefRpiM0v3O4PiZKm0j/Z3lAxjq3TDBGtLrwrCeNhH6Jg6sVXy+
+         AjRUlTkpKnG7CpMUCYGiUKPHpjMpQW5HYwiyltF+YimvPOZkit0psVensl6eKikJTIiK
+         tHF0VrmhhI+IDLEwbKFqj/LvXBN0iAlPXuOjMcwG1hYO2QhOTqab3Sz0GqfI9IJOgKCX
+         ANe4iMFbQveIfL9lXvTXZcFQ2yrAIB0g4Q9FJ16F+hDZi/xAxF2BeUyITZSWRtbnmMQt
+         Unmw==
+X-Gm-Message-State: APjAAAUng6JRHlXiD/Gyg9HvgTV8IaQkoR8kgEkIEiAUKF1aKoUHeb9X
+        y0IQFgsehHnU6A0OpRYLjCU=
+X-Google-Smtp-Source: APXvYqykTzkWp0Hu0AYF2dtp3ymYoC6cer0ZVpqpRr4a2H/NPeVHzS5ryuttshN2qXcWXF+D62Xmhg==
+X-Received: by 2002:aa7:8f33:: with SMTP id y19mr3564153pfr.47.1579278311334;
+        Fri, 17 Jan 2020 08:25:11 -0800 (PST)
+Received: from [192.168.86.235] (c-73-241-150-58.hsd1.ca.comcast.net. [73.241.150.58])
+        by smtp.gmail.com with ESMTPSA id p5sm28811545pga.69.2020.01.17.08.25.08
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 17 Jan 2020 08:25:10 -0800 (PST)
+Subject: Re: [PATCH net] net: usb: lan78xx : implement .ndo_features_check
+To:     James Hughes <james.hughes@raspberrypi.org>,
+        netdev <netdev@vger.kernel.org>,
+        Eric Dumazet <edumazet@google.com>,
+        Woojung Huh <woojung.huh@microchip.com>,
+        Microchip Linux Driver Support <UNGLinuxDriver@microchip.com>
+References: <CAE_XsMLw5xnwGv6vjMqWnHqy7KjsgooujbTz+dEzNCdVrve9Nw@mail.gmail.com>
+From:   Eric Dumazet <eric.dumazet@gmail.com>
+Message-ID: <e84d3a47-58d5-7971-a62f-9a2295fffbf4@gmail.com>
+Date:   Fri, 17 Jan 2020 08:25:08 -0800
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.2.2
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8;
- format=flowed
-Content-Transfer-Encoding: 8bit
-Date:   Fri, 17 Jan 2020 19:09:51 +0300
-From:   Alexander Lobakin <alobakin@dlink.ru>
-To:     Maxim Mikityanskiy <maximmi@mellanox.com>
-Cc:     Edward Cree <ecree@solarflare.com>, netdev@vger.kernel.org,
-        "David S. Miller" <davem@davemloft.net>,
-        Tariq Toukan <tariqt@mellanox.com>,
-        Jiri Pirko <jiri@mellanox.com>,
-        Eric Dumazet <edumazet@google.com>
-Subject: Re: [PATCH net] net: Fix packet reordering caused by GRO and
- listified RX cooperation
-In-Reply-To: <20200117150913.29302-1-maximmi@mellanox.com>
-References: <20200117150913.29302-1-maximmi@mellanox.com>
-User-Agent: Roundcube Webmail/1.4.0
-Message-ID: <f10c43b5b74cafce3f1b3c336ce85bdb@dlink.ru>
-X-Sender: alobakin@dlink.ru
+In-Reply-To: <CAE_XsMLw5xnwGv6vjMqWnHqy7KjsgooujbTz+dEzNCdVrve9Nw@mail.gmail.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Maxim!
 
-Maxim Mikityanskiy wrote 17.01.2020 18:09:
-> Commit 6570bc79c0df ("net: core: use listified Rx for GRO_NORMAL in
-> napi_gro_receive()") introduces batching of GRO_NORMAL packets in
-> napi_skb_finish. However, dev_gro_receive, that is called just before
-> napi_skb_finish, can also pass skbs to the networking stack: e.g., when
-> the GRO session is flushed, napi_gro_complete is called, which passes 
-> pp
-> directly to netif_receive_skb_internal, skipping napi->rx_list. It 
-> means
-> that the packet stored in pp will be handled by the stack earlier than
-> the packets that arrived before, but are still waiting in 
-> napi->rx_list.
-> It leads to TCP reorderings that can be observed in the TCPOFOQueue
-> counter in netstat.
+
+On 1/17/20 3:49 AM, James Hughes wrote:
+> As reported by Eric Dumazet, there are still some outstanding
+> cases where the driver does not handle TSO correctly when skb's
+> are over a certain size. Most cases have been fixed, this patch
+> should ensure that forwarded SKB's that are greater than
+> MAX_SINGLE_PACKET_SIZE - TX_OVERHEAD are software segmented
+> and handled correctly.
 > 
-> This commit fixes the reordering issue by making napi_gro_complete also
-> use napi->rx_list, so that all packets going through GRO will keep 
-> their
-> order.
-> 
-> Fixes: 6570bc79c0df ("net: core: use listified Rx for GRO_NORMAL in
-> napi_gro_receive()")
-
-I don't think this is correct commit hash to place in "Fixes".
-napi->rx_list was firstly introduced back in 323ebb61e32b
-("net: use listified RX for handling GRO_NORMAL skbs"), but only
-for napi_gro_frags() users. The one that you mentioned just made
-use of listified Rx in napi_gro_receive() too. So I'd better tag
-the first one, as this fix affects both receiving functions.
-
-> Signed-off-by: Maxim Mikityanskiy <maximmi@mellanox.com>
-> Cc: Alexander Lobakin <alobakin@dlink.ru>
-> Cc: Edward Cree <ecree@solarflare.com>
+> Signed-off-by: James Hughes <james.hughes@raspberrypi.org>
+> Reported-by: Eric Dumazet <edumazet@google.com>
+> Cc: Woojung Huh <woojung.huh@microchip.com>
+> Cc: Microchip Linux Driver Support <UNGLinuxDriver@microchip.com>
 > ---
-> Alexander and Edward, please verify the correctness of this patch. If
-> it's necessary to pass that SKB to the networking stack right away, I
-> can change this patch to flush napi->rx_list by calling gro_normal_list
-> first, instead of putting the SKB in the list.
-
-I've just tested it on my usual 4-core MIPS board and got pretty
-impressive results (VLAN NAT, iperf3, gro_normal_batch == 16):
-thoughtput increase up to 40 Mbps (~840 -> ~880) and a huge reduce
-of TCP retransmissions (about 80% of them I think).
-So, from my point of view, the patch is completely correct and
-very important. Thank you for this one!
-
-Tested-by: Alexander Lobakin <alobakin@dlink.ru>
-
-and, if applicable,
-
-Reviewed-by: Alexander Lobakin <alobakin@dlink.ru>
-
->  net/core/dev.c | 55 +++++++++++++++++++++++++-------------------------
->  1 file changed, 28 insertions(+), 27 deletions(-)
+>  drivers/net/usb/lan78xx.c | 15 +++++++++++++++
+>  1 file changed, 15 insertions(+)
 > 
-> diff --git a/net/core/dev.c b/net/core/dev.c
-> index 0ad39c87b7fd..db7a105bbc77 100644
-> --- a/net/core/dev.c
-> +++ b/net/core/dev.c
-> @@ -5491,9 +5491,29 @@ static void flush_all_backlogs(void)
->  	put_online_cpus();
+> diff --git a/drivers/net/usb/lan78xx.c b/drivers/net/usb/lan78xx.c
+> index bc572b921fe1..a01c78d8b9a3 100644
+> --- a/drivers/net/usb/lan78xx.c
+> +++ b/drivers/net/usb/lan78xx.c
+> @@ -31,6 +31,7 @@
+>  #include <linux/mdio.h>
+>  #include <linux/phy.h>
+>  #include <net/ip6_checksum.h>
+> +#include <net/vxlan.h>
+>  #include <linux/interrupt.h>
+>  #include <linux/irqdomain.h>
+>  #include <linux/irq.h>
+> @@ -3733,6 +3734,19 @@ static void lan78xx_tx_timeout(struct net_device *net)
+>   tasklet_schedule(&dev->bh);
 >  }
 > 
-> +/* Pass the currently batched GRO_NORMAL SKBs up to the stack. */
-> +static void gro_normal_list(struct napi_struct *napi)
+> +static netdev_features_t lan78xx_features_check(struct sk_buff *skb,
+> + struct net_device *netdev,
+> + netdev_features_t features)
 > +{
-> +	if (!napi->rx_count)
-> +		return;
-> +	netif_receive_skb_list_internal(&napi->rx_list);
-> +	INIT_LIST_HEAD(&napi->rx_list);
-> +	napi->rx_count = 0;
+> + if (skb->len + TX_OVERHEAD > MAX_SINGLE_PACKET_SIZE)
+> + features &= ~NETIF_F_GSO_MASK;
+> +
+> + features = vlan_features_check(skb, features);
+> + features = vxlan_features_check(skb, features);
+> +
+> + return features;
 > +}
 > +
-> +/* Queue one GRO_NORMAL SKB up for list processing. If batch size 
-> exceeded,
-> + * pass the whole batch up to the stack.
-> + */
-> +static void gro_normal_one(struct napi_struct *napi, struct sk_buff 
-> *skb)
-> +{
-> +	list_add_tail(&skb->list, &napi->rx_list);
-> +	if (++napi->rx_count >= gro_normal_batch)
-> +		gro_normal_list(napi);
-> +}
-> +
->  INDIRECT_CALLABLE_DECLARE(int inet_gro_complete(struct sk_buff *, 
-> int));
->  INDIRECT_CALLABLE_DECLARE(int ipv6_gro_complete(struct sk_buff *, 
-> int));
-> -static int napi_gro_complete(struct sk_buff *skb)
-> +static int napi_gro_complete(struct napi_struct *napi, struct sk_buff 
-> *skb)
->  {
->  	struct packet_offload *ptype;
->  	__be16 type = skb->protocol;
-> @@ -5526,7 +5546,8 @@ static int napi_gro_complete(struct sk_buff *skb)
->  	}
-> 
->  out:
-> -	return netif_receive_skb_internal(skb);
-> +	gro_normal_one(napi, skb);
-> +	return NET_RX_SUCCESS;
->  }
-> 
->  static void __napi_gro_flush_chain(struct napi_struct *napi, u32 
-> index,
-> @@ -5539,7 +5560,7 @@ static void __napi_gro_flush_chain(struct
-> napi_struct *napi, u32 index,
->  		if (flush_old && NAPI_GRO_CB(skb)->age == jiffies)
->  			return;
->  		skb_list_del_init(skb);
-> -		napi_gro_complete(skb);
-> +		napi_gro_complete(napi, skb);
->  		napi->gro_hash[index].count--;
->  	}
-> 
-> @@ -5641,7 +5662,7 @@ static void gro_pull_from_frag0(struct sk_buff
-> *skb, int grow)
->  	}
->  }
-> 
-> -static void gro_flush_oldest(struct list_head *head)
-> +static void gro_flush_oldest(struct napi_struct *napi, struct 
-> list_head *head)
->  {
->  	struct sk_buff *oldest;
-> 
-> @@ -5657,7 +5678,7 @@ static void gro_flush_oldest(struct list_head 
-> *head)
->  	 * SKB to the chain.
->  	 */
->  	skb_list_del_init(oldest);
-> -	napi_gro_complete(oldest);
-> +	napi_gro_complete(napi, oldest);
->  }
-> 
->  INDIRECT_CALLABLE_DECLARE(struct sk_buff *inet_gro_receive(struct 
-> list_head *,
-> @@ -5733,7 +5754,7 @@ static enum gro_result dev_gro_receive(struct
-> napi_struct *napi, struct sk_buff
-> 
->  	if (pp) {
->  		skb_list_del_init(pp);
-> -		napi_gro_complete(pp);
-> +		napi_gro_complete(napi, pp);
->  		napi->gro_hash[hash].count--;
->  	}
-> 
-> @@ -5744,7 +5765,7 @@ static enum gro_result dev_gro_receive(struct
-> napi_struct *napi, struct sk_buff
->  		goto normal;
-> 
->  	if (unlikely(napi->gro_hash[hash].count >= MAX_GRO_SKBS)) {
-> -		gro_flush_oldest(gro_head);
-> +		gro_flush_oldest(napi, gro_head);
->  	} else {
->  		napi->gro_hash[hash].count++;
->  	}
-> @@ -5802,26 +5823,6 @@ struct packet_offload
-> *gro_find_complete_by_type(__be16 type)
->  }
->  EXPORT_SYMBOL(gro_find_complete_by_type);
-> 
-> -/* Pass the currently batched GRO_NORMAL SKBs up to the stack. */
-> -static void gro_normal_list(struct napi_struct *napi)
-> -{
-> -	if (!napi->rx_count)
-> -		return;
-> -	netif_receive_skb_list_internal(&napi->rx_list);
-> -	INIT_LIST_HEAD(&napi->rx_list);
-> -	napi->rx_count = 0;
-> -}
-> -
-> -/* Queue one GRO_NORMAL SKB up for list processing. If batch size 
-> exceeded,
-> - * pass the whole batch up to the stack.
-> - */
-> -static void gro_normal_one(struct napi_struct *napi, struct sk_buff 
-> *skb)
-> -{
-> -	list_add_tail(&skb->list, &napi->rx_list);
-> -	if (++napi->rx_count >= gro_normal_batch)
-> -		gro_normal_list(napi);
-> -}
-> -
->  static void napi_skb_free_stolen_head(struct sk_buff *skb)
->  {
->  	skb_dst_drop(skb);
 
-Regards,
-ᚷ ᛖ ᚢ ᚦ ᚠ ᚱ
+
+Your patch is mangled (tabulations were replaced by one space)
+
+Please fix and resubmit, thanks !
+
