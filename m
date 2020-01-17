@@ -2,99 +2,100 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id DF154140F64
-	for <lists+netdev@lfdr.de>; Fri, 17 Jan 2020 17:54:31 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5506A140F84
+	for <lists+netdev@lfdr.de>; Fri, 17 Jan 2020 18:00:17 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729274AbgAQQyP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 17 Jan 2020 11:54:15 -0500
-Received: from mail-io1-f65.google.com ([209.85.166.65]:36442 "EHLO
-        mail-io1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729248AbgAQQyO (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 17 Jan 2020 11:54:14 -0500
-Received: by mail-io1-f65.google.com with SMTP id d15so26784264iog.3
-        for <netdev@vger.kernel.org>; Fri, 17 Jan 2020 08:54:13 -0800 (PST)
+        id S1729008AbgAQRAO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 17 Jan 2020 12:00:14 -0500
+Received: from mail-wm1-f65.google.com ([209.85.128.65]:50990 "EHLO
+        mail-wm1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726559AbgAQRAN (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 17 Jan 2020 12:00:13 -0500
+Received: by mail-wm1-f65.google.com with SMTP id a5so8158027wmb.0
+        for <netdev@vger.kernel.org>; Fri, 17 Jan 2020 09:00:12 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=uFIUVKsz4aPMvzp5H7zdGJcmUXpH7dHc5gmMJqmLGlg=;
-        b=Ju3I1Jfs9dGT84Iy5fhqRFLUVMNJ2DaIdE+XAgBGJVq2WI7cBhYBPlKCVOfqs4VjMZ
-         5ICq/oE45Eg7QmU2ztU/ugOzLpOvQ2sTLgH4W6CEG5igTtgl1kKoVhX3J3f1sfZ7fO+I
-         JlYaxN8NlIaKixzCZBXnSUCbPBdtD6QReoBvllPp/KtRlRs4nS+7Hm4udEoIrUm8C0m7
-         Bv5BGlkrns50GvcaB7Bf+XmCIptl1fNUe3m5b7HoaXRW5F86S/8vnDbb3AuiE2juhPi+
-         5AJL6a9LVL5rapntmvKmiWEqM1aM55VyhUm/u1S9BHEP0VaaVuXAx4M5wkLazCr15Z/M
-         67ug==
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=fltjnEVwo0kQEcyO6RTVSPdJKBa6lt4GakQHOqsiDbk=;
+        b=vBMoUqBIXKuywfmw6Lw3aSTbNK6QtNuj37GSTtpOp+OAJ0gdNHJIzSuKUP5d0cRiot
+         9Q4YMBz37Eowk6IRMILhS/a7RclgmLB/KWLwk/iJCKZeVjiqj/udQLDSpCc2NuDW25jr
+         y/wRINVEu5TRiU054SliH0NR8t/qdDhOWvvrfDmOkQm9GuJCBnus/0Mvz6ySjbAdJbtw
+         ZX6AVdEtQ5b7RPcLIgu6Y2unjLlOng7GP5x2yz1gmtYshMEfFLyA1sKSxlOqs442EyUB
+         tEg+2RtYQ3+kYReIWOBU9GkBblOqs6DYv56FizKggsaeBiN4JIaNqQCeQrNkHVsIrKIF
+         J1yw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=uFIUVKsz4aPMvzp5H7zdGJcmUXpH7dHc5gmMJqmLGlg=;
-        b=kPv3lqtBUDTS26iXoK5Cb8gmhJIrcJ6z/gXmLwEWJoqcOx3I1OqjX0zH2m6BSYR7m3
-         9KzldzIW6V+MS1IAQJ+scT+zBcZMkgdVpqMjqGjVDwkT54tGmHNsppC+72G4P2QBKXkE
-         BV3vMrLusZOmGQpCMiR2AQdAt2XjXooBxtC/iwyvW7ua9Oa9q64cYUUg87xDEEzU8Rl3
-         bFRkfpk8/clTadKHZOj/MlekMVrBK5fMN2wATRQXCIL4wGM8Im+B+kNwbnmdMWYlqixA
-         xuUZOs2i9qi502h5UgS9TvMPGRGbm8xYkOjS2kD6ab9gZ1kGG/tDgfuPNQ7aec109OuO
-         Lhvw==
-X-Gm-Message-State: APjAAAUojxvSe9hVhrm3KA/BRlrmWyO+6UQfO9IlDxfE/bxjzz5Yajik
-        vQGX7TOx3mPJJo1DGWYgW+uhEw==
-X-Google-Smtp-Source: APXvYqyb7lB/rV1ivpPHirD+5CsQ4f/jRvFS49kUJduVxa9UCt1nkgGP/tUwxXBNpRlOKcvyPaLpjg==
-X-Received: by 2002:a5e:9748:: with SMTP id h8mr23496836ioq.121.1579280053465;
-        Fri, 17 Jan 2020 08:54:13 -0800 (PST)
-Received: from alago.cortijodelrio.net (CableLink-189-219-74-147.Hosts.InterCable.net. [189.219.74.147])
-        by smtp.googlemail.com with ESMTPSA id f16sm8120662ilq.16.2020.01.17.08.54.11
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 17 Jan 2020 08:54:12 -0800 (PST)
-From:   =?UTF-8?q?Daniel=20D=C3=ADaz?= <daniel.diaz@linaro.org>
-To:     shuah@kernel.org
-Cc:     =?UTF-8?q?Daniel=20D=C3=ADaz?= <daniel.diaz@linaro.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        Andrii Nakryiko <andriin@fb.com>,
-        linux-kselftest@vger.kernel.org (open list:KERNEL SELFTEST FRAMEWORK),
-        netdev@vger.kernel.org (open list:BPF (Safe dynamic programs and tools)),
-        bpf@vger.kernel.org (open list:BPF (Safe dynamic programs and tools)),
-        linux-kernel@vger.kernel.org (open list)
-Subject: [PATCH 3/3] selftests/bpf: Build urandom_read with LDFLAGS and LDLIBS
-Date:   Fri, 17 Jan 2020 10:53:28 -0600
-Message-Id: <20200117165330.17015-3-daniel.diaz@linaro.org>
-X-Mailer: git-send-email 2.20.1
-In-Reply-To: <20200117165330.17015-1-daniel.diaz@linaro.org>
-References: <20200117165330.17015-1-daniel.diaz@linaro.org>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=fltjnEVwo0kQEcyO6RTVSPdJKBa6lt4GakQHOqsiDbk=;
+        b=Aqe49i2J6qNJapDsXciz7Phb+hiQubV1le4rLbnjIa4fwPcdgygw7tXP3+EccKkA5/
+         qmh1n5qF7VXOftoLvMaCDXWvVNgsxcg4Ia1WH8ZQs/SpQS1bZPZ8dfrpWBrkprfMxKfT
+         DOK2W0XPX0kCHGvKLyzl6EvW+L4PtvxID6IXisokk/kqPfQdC0AISR+pGGEMtqv0ap43
+         dI1bXCMbtsAcuzOl3ybNX33KIkZsM4FXE/APqyHQy0LYpTdvCs/woiWqOs2ORwWwFUcC
+         JH1cZg2tY19haSiPurqwTC2Sj5fZqkFjXOQmA2g5ssOF0tCZtKKGLnhdTSLEwHz92Jmg
+         CFuA==
+X-Gm-Message-State: APjAAAXZK8dYt6Q3oslfcjIBHdLaOvJjRT8pc1V/K8QTdjHtgPRgcjWM
+        RwKf+2I9NIweriyalWkud535I/FilvZIaK36E+0=
+X-Google-Smtp-Source: APXvYqzm8bZ7al4uwF1KhIwyNQNuuR/LndtA6jMXXTPdlUhrbKYDWLbaNNbLwjaQCUTeltG8dUy45O9kKaVeY2wQdrI=
+X-Received: by 2002:a7b:c5d8:: with SMTP id n24mr5824128wmk.50.1579280411257;
+ Fri, 17 Jan 2020 09:00:11 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+References: <20200117100921.31966-1-gautamramk@gmail.com> <20200117100921.31966-2-gautamramk@gmail.com>
+ <87v9paoz4g.fsf@toke.dk>
+In-Reply-To: <87v9paoz4g.fsf@toke.dk>
+From:   Leslie Monis <lesliemonis@gmail.com>
+Date:   Fri, 17 Jan 2020 22:29:34 +0530
+Message-ID: <CAHv+uoF82nKrFLRKdP+fCVkc9Kay2dBRZz3hXJoRQWy6c387Tg@mail.gmail.com>
+Subject: Re: [PATCH net-next v4 1/2] net: sched: pie: refactor code
+To:     =?UTF-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <toke@redhat.com>
+Cc:     Gautam Ramakrishnan <gautamramk@gmail.com>,
+        Linux NetDev <netdev@vger.kernel.org>,
+        "Mohit P. Tahiliani" <tahiliani@nitk.edu.in>,
+        Jamal Hadi Salim <jhs@mojatatu.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Dave Taht <dave.taht@gmail.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Stephen Hemminger <stephen@networkplumber.org>,
+        "Sachin D . Patil" <sdp.sachin@gmail.com>,
+        "V . Saicharan" <vsaicharan1998@gmail.com>,
+        Mohit Bhasi <mohitbhasi1998@gmail.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-During cross-compilation, it was discovered that LDFLAGS and
-LDLIBS were not being used while building binaries, leading
-to defaults which were not necessarily correct.
+On Fri, Jan 17, 2020 at 9:26 PM Toke H=C3=B8iland-J=C3=B8rgensen <toke@redh=
+at.com> wrote:
+>
+> gautamramk@gmail.com writes:
+>
+> > From: "Mohit P. Tahiliani" <tahiliani@nitk.edu.in>
+> >
+> > This patch is a precursor for the addition of the Flow Queue Proportion=
+al
+> > Integral Controller Enhanced (FQ-PIE) qdisc. The patch removes structur=
+es
+> > and small inline functions common to both PIE and FQ-PIE and moves it t=
+o
+> > the header file include/net/pie.h. It also exports symbols from sch_pie=
+.c
+> > that are to be reused in sch_fq_pie.c.
+>
+> The way this is done means that sch_fq_pie.ko will end up with a module
+> dependency on sch_pie.ko, right?
 
-OpenEmbedded reported this kind of problem:
-  ERROR: QA Issue: No GNU_HASH in the ELF binary [...], didn't pass LDFLAGS?
+Yes, we did make sch_fq_pie.ko dependent on sch_pie.ko in this series.
+We thought of doing this when we started out, but later on decided to
+follow something similar to the codel - fq_codel implementation.
 
-Signed-off-by: Daniel Díaz <daniel.diaz@linaro.org>
----
- tools/testing/selftests/bpf/Makefile | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+> I don't think we have any such
+> dependencies already; not *necessarily* a blocker, but it does strike me
+> as a bit odd.
 
-diff --git a/tools/testing/selftests/bpf/Makefile b/tools/testing/selftests/bpf/Makefile
-index e2fd6f8d579c..f1740113d5dc 100644
---- a/tools/testing/selftests/bpf/Makefile
-+++ b/tools/testing/selftests/bpf/Makefile
-@@ -88,7 +88,7 @@ $(notdir $(TEST_GEN_PROGS)						\
- 	 $(TEST_CUSTOM_PROGS)): %: $(OUTPUT)/% ;
- 
- $(OUTPUT)/urandom_read: urandom_read.c
--	$(CC) -o $@ $< -Wl,--build-id
-+	$(CC) $(LDFLAGS) -o $@ $< $(LDLIBS) -Wl,--build-id
- 
- $(OUTPUT)/test_stub.o: test_stub.c
- 	$(CC) -c $(CFLAGS) -o $@ $<
--- 
-2.20.1
+Yes, no existing qdiscs have dependencies, except for sch_atm and
+sch_ingress.
 
+Leslie
