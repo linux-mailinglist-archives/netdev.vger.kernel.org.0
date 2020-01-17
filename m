@@ -2,613 +2,793 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id BA4EF1413C0
-	for <lists+netdev@lfdr.de>; Fri, 17 Jan 2020 22:55:50 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D6A5E1413C3
+	for <lists+netdev@lfdr.de>; Fri, 17 Jan 2020 22:56:49 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729890AbgAQVzq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 17 Jan 2020 16:55:46 -0500
-Received: from mga03.intel.com ([134.134.136.65]:31461 "EHLO mga03.intel.com"
+        id S1729336AbgAQV4s (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 17 Jan 2020 16:56:48 -0500
+Received: from mga11.intel.com ([192.55.52.93]:18602 "EHLO mga11.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726587AbgAQVzq (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 17 Jan 2020 16:55:46 -0500
-X-Amp-Result: UNKNOWN
-X-Amp-Original-Verdict: FILE UNKNOWN
+        id S1729035AbgAQV4s (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 17 Jan 2020 16:56:48 -0500
+X-Amp-Result: SKIPPED(no attachment in message)
 X-Amp-File-Uploaded: False
-Received: from orsmga001.jf.intel.com ([10.7.209.18])
-  by orsmga103.jf.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 17 Jan 2020 13:55:18 -0800
+Received: from fmsmga006.fm.intel.com ([10.253.24.20])
+  by fmsmga102.fm.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 17 Jan 2020 13:56:46 -0800
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.70,331,1574150400"; 
-   d="gz'50?scan'50,208,50";a="306365426"
-Received: from lkp-server01.sh.intel.com (HELO lkp-server01) ([10.239.97.150])
-  by orsmga001.jf.intel.com with ESMTP; 17 Jan 2020 13:55:12 -0800
-Received: from kbuild by lkp-server01 with local (Exim 4.89)
-        (envelope-from <lkp@intel.com>)
-        id 1isZaB-000GE3-IX; Sat, 18 Jan 2020 05:55:11 +0800
-Date:   Sat, 18 Jan 2020 05:54:45 +0800
-From:   kbuild test robot <lkp@intel.com>
-To:     Jason Wang <jasowang@redhat.com>
-Cc:     kbuild-all@lists.01.org, mst@redhat.com, jasowang@redhat.com,
-        linux-kernel@vger.kernel.org, kvm@vger.kernel.org,
-        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
-        tiwei.bie@intel.com, jgg@mellanox.com, maxime.coquelin@redhat.com,
-        cunming.liang@intel.com, zhihong.wang@intel.com,
-        rob.miller@broadcom.com, xiao.w.wang@intel.com,
-        haotian.wang@sifive.com, lingshan.zhu@intel.com,
-        eperezma@redhat.com, lulu@redhat.com, parav@mellanox.com,
-        kevin.tian@intel.com, stefanha@redhat.com, rdunlap@infradead.org,
-        hch@infradead.org, aadam@redhat.com, jakub.kicinski@netronome.com,
-        jiri@mellanox.com, shahafs@mellanox.com, hanand@xilinx.com,
-        mhabets@solarflare.com
-Subject: Re: [PATCH 2/5] vringh: IOTLB support
-Message-ID: <202001180530.aBwIBNey%lkp@intel.com>
-References: <20200116124231.20253-3-jasowang@redhat.com>
+   d="scan'208";a="426141905"
+Received: from jtkirshe-desk1.jf.intel.com ([134.134.177.74])
+  by fmsmga006.fm.intel.com with ESMTP; 17 Jan 2020 13:56:45 -0800
+From:   Jeff Kirsher <jeffrey.t.kirsher@intel.com>
+To:     davem@davemloft.net
+Cc:     Jeff Kirsher <jeffrey.t.kirsher@intel.com>, netdev@vger.kernel.org
+Subject: [RFC net-next PATCH] ipv6: New define for reoccurring code
+Date:   Fri, 17 Jan 2020 13:56:42 -0800
+Message-Id: <20200117215642.2029945-1-jeffrey.t.kirsher@intel.com>
+X-Mailer: git-send-email 2.24.1
 MIME-Version: 1.0
-Content-Type: multipart/mixed; boundary="qz44lacoijt2l6j4"
-Content-Disposition: inline
-In-Reply-To: <20200116124231.20253-3-jasowang@redhat.com>
-User-Agent: NeoMutt/20170113 (1.7.2)
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Through out the kernel, sizeof() is used to determine the size of the IPv6
+address structure, so create a define for the commonly used code.
 
---qz44lacoijt2l6j4
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+s/sizeof(struct in6_addr)/ipv6_addr_size/g
 
-Hi Jason,
+This is just a portion of the instances in the kernel and before cleaning
+up all the occurrences, wanted to make sure that this was a desired change
+or if this obfuscates the code.
 
-I love your patch! Yet something to improve:
-
-[auto build test ERROR on vhost/linux-next]
-[also build test ERROR on linux/master linus/master v5.5-rc6 next-20200117]
-[if your patch is applied to the wrong git tree, please drop us a note to help
-improve the system. BTW, we also suggest to use '--base' option to specify the
-base tree in git format-patch, please see https://stackoverflow.com/a/37406982]
-
-url:    https://github.com/0day-ci/linux/commits/Jason-Wang/vDPA-support/20200117-170243
-base:   https://git.kernel.org/pub/scm/linux/kernel/git/mst/vhost.git linux-next
-config: nios2-randconfig-a001-20200117 (attached as .config)
-compiler: nios2-linux-gcc (GCC) 7.5.0
-reproduce:
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # save the attached .config to linux build tree
-        GCC_VERSION=7.5.0 make.cross ARCH=nios2 
-
-If you fix the issue, kindly add following tag
-Reported-by: kbuild test robot <lkp@intel.com>
-
-All errors (new ones prefixed by >>):
-
-   drivers/vhost/vringh.o: In function `iotlb_translate':
->> drivers/vhost/vringh.c:1079: undefined reference to `vhost_iotlb_itree_first'
-   drivers/vhost/vringh.c:1079:(.text+0x45c): relocation truncated to fit: R_NIOS2_CALL26 against `vhost_iotlb_itree_first'
-
-vim +1079 drivers/vhost/vringh.c
-
-  1061	
-  1062	static int iotlb_translate(const struct vringh *vrh,
-  1063				   u64 addr, u64 len, struct bio_vec iov[],
-  1064				   int iov_size, u32 perm)
-  1065	{
-  1066		struct vhost_iotlb_map *map;
-  1067		struct vhost_iotlb *iotlb = vrh->iotlb;
-  1068		int ret = 0;
-  1069		u64 s = 0;
-  1070	
-  1071		while (len > s) {
-  1072			u64 size, pa, pfn;
-  1073	
-  1074			if (unlikely(ret >= iov_size)) {
-  1075				ret = -ENOBUFS;
-  1076				break;
-  1077			}
-  1078	
-> 1079			map = vhost_iotlb_itree_first(iotlb, addr,
-  1080						      addr + len - 1);
-  1081			if (!map || map->start > addr) {
-  1082				ret = -EINVAL;
-  1083				break;
-  1084			} else if (!(map->perm & perm)) {
-  1085				ret = -EPERM;
-  1086				break;
-  1087			}
-  1088	
-  1089			size = map->size - addr + map->start;
-  1090			pa = map->addr + addr - map->start;
-  1091			pfn = pa >> PAGE_SHIFT;
-  1092			iov[ret].bv_page = pfn_to_page(pfn);
-  1093			iov[ret].bv_len = min(len - s, size);
-  1094			iov[ret].bv_offset = pa & (PAGE_SIZE - 1);
-  1095			s += size;
-  1096			addr += size;
-  1097			++ret;
-  1098		}
-  1099	
-  1100		return ret;
-  1101	}
-  1102	
-
+Signed-off-by: Jeff Kirsher <jeffrey.t.kirsher@intel.com>
 ---
-0-DAY kernel test infrastructure                 Open Source Technology Center
-https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org Intel Corporation
+ include/uapi/linux/in6.h                       |  1 +
+ net/core/filter.c                              |  2 +-
+ net/core/pktgen.c                              |  2 +-
+ net/ipv6/addrconf.c                            | 14 +++++++-------
+ net/ipv6/addrlabel.c                           |  2 +-
+ net/ipv6/exthdrs.c                             |  4 ++--
+ net/ipv6/fib6_rules.c                          |  6 +++---
+ net/ipv6/ila/ila_lwt.c                         |  2 +-
+ net/ipv6/ip6_gre.c                             | 18 +++++++++---------
+ net/ipv6/ip6_output.c                          |  2 +-
+ net/ipv6/ip6_tunnel.c                          | 14 +++++++-------
+ net/ipv6/ip6_vti.c                             | 14 +++++++-------
+ net/ipv6/ip6mr.c                               | 10 +++++-----
+ net/ipv6/ipcomp6.c                             |  4 ++--
+ net/ipv6/ndisc.c                               |  4 ++--
+ net/ipv6/netfilter/ip6t_rpfilter.c             |  2 +-
+ net/ipv6/netfilter/ip6t_srh.c                  |  4 ++--
+ net/ipv6/netfilter/nft_dup_ipv6.c              |  2 +-
+ net/ipv6/seg6.c                                |  4 ++--
+ net/ipv6/seg6_iptunnel.c                       |  4 ++--
+ net/ipv6/seg6_local.c                          | 12 ++++++------
+ net/ipv6/sit.c                                 |  4 ++--
+ net/openvswitch/conntrack.c                    |  4 ++--
+ net/openvswitch/flow_netlink.c                 |  4 ++--
+ net/sched/cls_flower.c                         | 16 ++++++++--------
+ net/socket.c                                   |  2 +-
+ security/selinux/netnode.c                     |  2 +-
+ tools/lib/traceevent/event-parse.c             |  2 +-
+ tools/testing/selftests/bpf/test_sock_addr.c   |  2 +-
+ .../networking/timestamping/txtimestamp.c      |  2 +-
+ 30 files changed, 83 insertions(+), 82 deletions(-)
 
---qz44lacoijt2l6j4
-Content-Type: application/gzip
-Content-Disposition: attachment; filename=".config.gz"
-Content-Transfer-Encoding: base64
+diff --git a/include/uapi/linux/in6.h b/include/uapi/linux/in6.h
+index 9f2273a08356..24547a51e715 100644
+--- a/include/uapi/linux/in6.h
++++ b/include/uapi/linux/in6.h
+@@ -44,6 +44,7 @@ struct in6_addr {
+ #define s6_addr32		in6_u.u6_addr32
+ #endif
+ };
++#define ipv6_addr_size		sizeof(struct in6_addr)
+ #endif /* __UAPI_DEF_IN6_ADDR */
+ 
+ #if __UAPI_DEF_SOCKADDR_IN6
+diff --git a/net/core/filter.c b/net/core/filter.c
+index ef01c5599501..eabf42893b60 100644
+--- a/net/core/filter.c
++++ b/net/core/filter.c
+@@ -5053,7 +5053,7 @@ BPF_CALL_4(bpf_lwt_seg6_action, struct sk_buff *, skb,
+ 	case SEG6_LOCAL_ACTION_END_X:
+ 		if (!seg6_bpf_has_valid_srh(skb))
+ 			return -EBADMSG;
+-		if (param_len != sizeof(struct in6_addr))
++		if (param_len != ipv6_addr_size)
+ 			return -EINVAL;
+ 		return seg6_lookup_nexthop(skb, (struct in6_addr *)param, 0);
+ 	case SEG6_LOCAL_ACTION_END_T:
+diff --git a/net/core/pktgen.c b/net/core/pktgen.c
+index 890be1b4877e..9d009ce2c19f 100644
+--- a/net/core/pktgen.c
++++ b/net/core/pktgen.c
+@@ -2124,7 +2124,7 @@ static void pktgen_setup_inject(struct pktgen_dev *pkt_dev)
+ 						+ pkt_dev->pkt_overhead;
+ 		}
+ 
+-		for (i = 0; i < sizeof(struct in6_addr); i++)
++		for (i = 0; i < ipv6_addr_size; i++)
+ 			if (pkt_dev->cur_in6_saddr.s6_addr[i]) {
+ 				set = 1;
+ 				break;
+diff --git a/net/ipv6/addrconf.c b/net/ipv6/addrconf.c
+index 39d861d00377..a6f9d5f64373 100644
+--- a/net/ipv6/addrconf.c
++++ b/net/ipv6/addrconf.c
+@@ -3104,7 +3104,7 @@ static void sit_add_v4_addrs(struct inet6_dev *idev)
+ 
+ 	ASSERT_RTNL();
+ 
+-	memset(&addr, 0, sizeof(struct in6_addr));
++	memset(&addr, 0, ipv6_addr_size);
+ 	memcpy(&addr.s6_addr32[3], idev->dev->dev_addr, 4);
+ 
+ 	if (idev->dev->flags&IFF_POINTOPOINT) {
+@@ -4547,8 +4547,8 @@ static struct in6_addr *extract_addr(struct nlattr *addr, struct nlattr *local,
+ }
+ 
+ static const struct nla_policy ifa_ipv6_policy[IFA_MAX+1] = {
+-	[IFA_ADDRESS]		= { .len = sizeof(struct in6_addr) },
+-	[IFA_LOCAL]		= { .len = sizeof(struct in6_addr) },
++	[IFA_ADDRESS]		= { .len = ipv6_addr_size },
++	[IFA_LOCAL]		= { .len = ipv6_addr_size },
+ 	[IFA_CACHEINFO]		= { .len = sizeof(struct ifa_cacheinfo) },
+ 	[IFA_FLAGS]		= { .len = sizeof(u32) },
+ 	[IFA_RT_PRIORITY]	= { .len = sizeof(u32) },
+@@ -5449,7 +5449,7 @@ static inline size_t inet6_ifla6_size(void)
+ 	     + nla_total_size(DEVCONF_MAX * 4) /* IFLA_INET6_CONF */
+ 	     + nla_total_size(IPSTATS_MIB_MAX * 8) /* IFLA_INET6_STATS */
+ 	     + nla_total_size(ICMP6_MIB_MAX * 8) /* IFLA_INET6_ICMP6STATS */
+-	     + nla_total_size(sizeof(struct in6_addr)) /* IFLA_INET6_TOKEN */
++	     + nla_total_size(ipv6_addr_size) /* IFLA_INET6_TOKEN */
+ 	     + nla_total_size(1) /* IFLA_INET6_ADDR_GEN_MODE */
+ 	     + 0;
+ }
+@@ -5549,7 +5549,7 @@ static int inet6_fill_ifla6_attrs(struct sk_buff *skb, struct inet6_dev *idev,
+ 		goto nla_put_failure;
+ 	snmp6_fill_stats(nla_data(nla), idev, IFLA_INET6_ICMP6STATS, nla_len(nla));
+ 
+-	nla = nla_reserve(skb, IFLA_INET6_TOKEN, sizeof(struct in6_addr));
++	nla = nla_reserve(skb, IFLA_INET6_TOKEN, ipv6_addr_size);
+ 	if (!nla)
+ 		goto nla_put_failure;
+ 	read_lock_bh(&idev->lock);
+@@ -5656,7 +5656,7 @@ static int inet6_set_iftoken(struct inet6_dev *idev, struct in6_addr *token)
+ 
+ static const struct nla_policy inet6_af_policy[IFLA_INET6_MAX + 1] = {
+ 	[IFLA_INET6_ADDR_GEN_MODE]	= { .type = NLA_U8 },
+-	[IFLA_INET6_TOKEN]		= { .len = sizeof(struct in6_addr) },
++	[IFLA_INET6_TOKEN]		= { .len = ipv6_addr_size },
+ };
+ 
+ static int check_addr_gen_mode(int mode)
+@@ -5882,7 +5882,7 @@ void inet6_ifinfo_notify(int event, struct inet6_dev *idev)
+ static inline size_t inet6_prefix_nlmsg_size(void)
+ {
+ 	return NLMSG_ALIGN(sizeof(struct prefixmsg))
+-	       + nla_total_size(sizeof(struct in6_addr))
++	       + nla_total_size(ipv6_addr_size)
+ 	       + nla_total_size(sizeof(struct prefix_cacheinfo));
+ }
+ 
+diff --git a/net/ipv6/addrlabel.c b/net/ipv6/addrlabel.c
+index 642fc6ac13d2..c44b257bd5d9 100644
+--- a/net/ipv6/addrlabel.c
++++ b/net/ipv6/addrlabel.c
+@@ -357,7 +357,7 @@ void ipv6_addr_label_cleanup(void)
+ }
+ 
+ static const struct nla_policy ifal_policy[IFAL_MAX+1] = {
+-	[IFAL_ADDRESS]		= { .len = sizeof(struct in6_addr), },
++	[IFAL_ADDRESS]		= { .len = ipv6_addr_size, },
+ 	[IFAL_LABEL]		= { .len = sizeof(u32), },
+ };
+ 
+diff --git a/net/ipv6/exthdrs.c b/net/ipv6/exthdrs.c
+index ab5add0fe6b4..e04b741aa90d 100644
+--- a/net/ipv6/exthdrs.c
++++ b/net/ipv6/exthdrs.c
+@@ -879,7 +879,7 @@ static void ipv6_push_rthdr0(struct sk_buff *skb, u8 *proto,
+ 
+ 	if (hops > 1)
+ 		memcpy(phdr->addr, ihdr->addr + 1,
+-		       (hops - 1) * sizeof(struct in6_addr));
++		       (hops - 1) * ipv6_addr_size);
+ 
+ 	phdr->addr[hops - 1] = **addr_p;
+ 	*addr_p = ihdr->addr;
+@@ -903,7 +903,7 @@ static void ipv6_push_rthdr4(struct sk_buff *skb, u8 *proto,
+ 
+ 	hops = sr_ihdr->first_segment + 1;
+ 	memcpy(sr_phdr->segments + 1, sr_ihdr->segments + 1,
+-	       (hops - 1) * sizeof(struct in6_addr));
++	       (hops - 1) * ipv6_addr_size);
+ 
+ 	sr_phdr->segments[0] = **addr_p;
+ 	*addr_p = &sr_ihdr->segments[sr_ihdr->segments_left];
+diff --git a/net/ipv6/fib6_rules.c b/net/ipv6/fib6_rules.c
+index fafe556d21e0..1f9a0b8ea818 100644
+--- a/net/ipv6/fib6_rules.c
++++ b/net/ipv6/fib6_rules.c
+@@ -403,11 +403,11 @@ static int fib6_rule_compare(struct fib_rule *rule, struct fib_rule_hdr *frh,
+ 		return 0;
+ 
+ 	if (frh->src_len &&
+-	    nla_memcmp(tb[FRA_SRC], &rule6->src.addr, sizeof(struct in6_addr)))
++	    nla_memcmp(tb[FRA_SRC], &rule6->src.addr, ipv6_addr_size))
+ 		return 0;
+ 
+ 	if (frh->dst_len &&
+-	    nla_memcmp(tb[FRA_DST], &rule6->dst.addr, sizeof(struct in6_addr)))
++	    nla_memcmp(tb[FRA_DST], &rule6->dst.addr, ipv6_addr_size))
+ 		return 0;
+ 
+ 	return 1;
+@@ -442,7 +442,7 @@ static size_t fib6_rule_nlmsg_payload(struct fib_rule *rule)
+ static const struct fib_rules_ops __net_initconst fib6_rules_ops_template = {
+ 	.family			= AF_INET6,
+ 	.rule_size		= sizeof(struct fib6_rule),
+-	.addr_size		= sizeof(struct in6_addr),
++	.addr_size		= ipv6_addr_size,
+ 	.action			= fib6_rule_action,
+ 	.match			= fib6_rule_match,
+ 	.suppress		= fib6_rule_suppress,
+diff --git a/net/ipv6/ila/ila_lwt.c b/net/ipv6/ila/ila_lwt.c
+index 422dcc691f71..786a1999a5be 100644
+--- a/net/ipv6/ila/ila_lwt.c
++++ b/net/ipv6/ila/ila_lwt.c
+@@ -246,7 +246,7 @@ static int ila_build_state(struct nlattr *nla,
+ 	newts->flags |= LWTUNNEL_STATE_OUTPUT_REDIRECT |
+ 			LWTUNNEL_STATE_INPUT_REDIRECT;
+ 
+-	if (cfg6->fc_dst_len == 8 * sizeof(struct in6_addr))
++	if (cfg6->fc_dst_len == 8 * ipv6_addr_size)
+ 		ilwt->connected = 1;
+ 
+ 	*ts = newts;
+diff --git a/net/ipv6/ip6_gre.c b/net/ipv6/ip6_gre.c
+index ee968d980746..90c5016a370e 100644
+--- a/net/ipv6/ip6_gre.c
++++ b/net/ipv6/ip6_gre.c
+@@ -1073,8 +1073,8 @@ static void ip6gre_tnl_link_config_common(struct ip6_tnl *t)
+ 	struct flowi6 *fl6 = &t->fl.u.ip6;
+ 
+ 	if (dev->type != ARPHRD_ETHER) {
+-		memcpy(dev->dev_addr, &p->laddr, sizeof(struct in6_addr));
+-		memcpy(dev->broadcast, &p->raddr, sizeof(struct in6_addr));
++		memcpy(dev->dev_addr, &p->laddr, ipv6_addr_size);
++		memcpy(dev->broadcast, &p->raddr, ipv6_addr_size);
+ 	}
+ 
+ 	/* Set up flowi template */
+@@ -1356,9 +1356,9 @@ static int ip6gre_header(struct sk_buff *skb, struct net_device *dev,
+ 	 */
+ 
+ 	if (saddr)
+-		memcpy(&ipv6h->saddr, saddr, sizeof(struct in6_addr));
++		memcpy(&ipv6h->saddr, saddr, ipv6_addr_size);
+ 	if (daddr)
+-		memcpy(&ipv6h->daddr, daddr, sizeof(struct in6_addr));
++		memcpy(&ipv6h->daddr, daddr, ipv6_addr_size);
+ 	if (!ipv6_addr_any(&ipv6h->daddr))
+ 		return t->hlen;
+ 
+@@ -1397,7 +1397,7 @@ static void ip6gre_tunnel_setup(struct net_device *dev)
+ 	dev->type = ARPHRD_IP6GRE;
+ 
+ 	dev->flags |= IFF_NOARP;
+-	dev->addr_len = sizeof(struct in6_addr);
++	dev->addr_len = ipv6_addr_size;
+ 	netif_keep_dst(dev);
+ 	/* This perm addr will be used as interface identifier by IPv6 */
+ 	dev->addr_assign_type = NET_ADDR_RANDOM;
+@@ -1495,8 +1495,8 @@ static int ip6gre_tunnel_init(struct net_device *dev)
+ 	if (tunnel->parms.collect_md)
+ 		return 0;
+ 
+-	memcpy(dev->dev_addr, &tunnel->parms.laddr, sizeof(struct in6_addr));
+-	memcpy(dev->broadcast, &tunnel->parms.raddr, sizeof(struct in6_addr));
++	memcpy(dev->dev_addr, &tunnel->parms.laddr, ipv6_addr_size);
++	memcpy(dev->broadcast, &tunnel->parms.raddr, ipv6_addr_size);
+ 
+ 	if (ipv6_addr_any(&tunnel->parms.raddr))
+ 		dev->header_ops = &ip6gre_header_ops;
+@@ -2075,9 +2075,9 @@ static size_t ip6gre_get_size(const struct net_device *dev)
+ 		/* IFLA_GRE_OKEY */
+ 		nla_total_size(4) +
+ 		/* IFLA_GRE_LOCAL */
+-		nla_total_size(sizeof(struct in6_addr)) +
++		nla_total_size(ipv6_addr_size) +
+ 		/* IFLA_GRE_REMOTE */
+-		nla_total_size(sizeof(struct in6_addr)) +
++		nla_total_size(ipv6_addr_size) +
+ 		/* IFLA_GRE_TTL */
+ 		nla_total_size(1) +
+ 		/* IFLA_GRE_ENCAP_LIMIT */
+diff --git a/net/ipv6/ip6_output.c b/net/ipv6/ip6_output.c
+index 087304427bbb..acb0da52cf83 100644
+--- a/net/ipv6/ip6_output.c
++++ b/net/ipv6/ip6_output.c
+@@ -1090,7 +1090,7 @@ static int ip6_dst_lookup_tail(struct net *net, const struct sock *sk,
+ 			 */
+ 			dst_release(*dst);
+ 			memcpy(&fl_gw6, fl6, sizeof(struct flowi6));
+-			memset(&fl_gw6.daddr, 0, sizeof(struct in6_addr));
++			memset(&fl_gw6.daddr, 0, ipv6_addr_size);
+ 			*dst = ip6_route_output(net, sk, &fl_gw6);
+ 			err = (*dst)->error;
+ 			if (err)
+diff --git a/net/ipv6/ip6_tunnel.c b/net/ipv6/ip6_tunnel.c
+index 2f376dbc37d5..26eb90f9e4b9 100644
+--- a/net/ipv6/ip6_tunnel.c
++++ b/net/ipv6/ip6_tunnel.c
+@@ -1424,8 +1424,8 @@ static void ip6_tnl_link_config(struct ip6_tnl *t)
+ 	struct flowi6 *fl6 = &t->fl.u.ip6;
+ 	int t_hlen;
+ 
+-	memcpy(dev->dev_addr, &p->laddr, sizeof(struct in6_addr));
+-	memcpy(dev->broadcast, &p->raddr, sizeof(struct in6_addr));
++	memcpy(dev->dev_addr, &p->laddr, ipv6_addr_size);
++	memcpy(dev->broadcast, &p->raddr, ipv6_addr_size);
+ 
+ 	/* Set up flowi template */
+ 	fl6->saddr = p->laddr;
+@@ -1802,7 +1802,7 @@ static void ip6_tnl_dev_setup(struct net_device *dev)
+ 
+ 	dev->type = ARPHRD_TUNNEL6;
+ 	dev->flags |= IFF_NOARP;
+-	dev->addr_len = sizeof(struct in6_addr);
++	dev->addr_len = ipv6_addr_size;
+ 	dev->features |= NETIF_F_LLTX;
+ 	netif_keep_dst(dev);
+ 
+@@ -2077,9 +2077,9 @@ static size_t ip6_tnl_get_size(const struct net_device *dev)
+ 		/* IFLA_IPTUN_LINK */
+ 		nla_total_size(4) +
+ 		/* IFLA_IPTUN_LOCAL */
+-		nla_total_size(sizeof(struct in6_addr)) +
++		nla_total_size(ipv6_addr_size) +
+ 		/* IFLA_IPTUN_REMOTE */
+-		nla_total_size(sizeof(struct in6_addr)) +
++		nla_total_size(ipv6_addr_size) +
+ 		/* IFLA_IPTUN_TTL */
+ 		nla_total_size(1) +
+ 		/* IFLA_IPTUN_ENCAP_LIMIT */
+@@ -2147,8 +2147,8 @@ EXPORT_SYMBOL(ip6_tnl_get_link_net);
+ 
+ static const struct nla_policy ip6_tnl_policy[IFLA_IPTUN_MAX + 1] = {
+ 	[IFLA_IPTUN_LINK]		= { .type = NLA_U32 },
+-	[IFLA_IPTUN_LOCAL]		= { .len = sizeof(struct in6_addr) },
+-	[IFLA_IPTUN_REMOTE]		= { .len = sizeof(struct in6_addr) },
++	[IFLA_IPTUN_LOCAL]		= { .len = ipv6_addr_size },
++	[IFLA_IPTUN_REMOTE]		= { .len = ipv6_addr_size },
+ 	[IFLA_IPTUN_TTL]		= { .type = NLA_U8 },
+ 	[IFLA_IPTUN_ENCAP_LIMIT]	= { .type = NLA_U8 },
+ 	[IFLA_IPTUN_FLOWINFO]		= { .type = NLA_U32 },
+diff --git a/net/ipv6/ip6_vti.c b/net/ipv6/ip6_vti.c
+index 6f08b760c2a7..b22960bbdee3 100644
+--- a/net/ipv6/ip6_vti.c
++++ b/net/ipv6/ip6_vti.c
+@@ -622,8 +622,8 @@ static void vti6_link_config(struct ip6_tnl *t, bool keep_mtu)
+ 	struct net_device *tdev = NULL;
+ 	int mtu;
+ 
+-	memcpy(dev->dev_addr, &p->laddr, sizeof(struct in6_addr));
+-	memcpy(dev->broadcast, &p->raddr, sizeof(struct in6_addr));
++	memcpy(dev->dev_addr, &p->laddr, ipv6_addr_size);
++	memcpy(dev->broadcast, &p->raddr, ipv6_addr_size);
+ 
+ 	p->flags &= ~(IP6_TNL_F_CAP_XMIT | IP6_TNL_F_CAP_RCV |
+ 		      IP6_TNL_F_CAP_PER_PACKET);
+@@ -874,7 +874,7 @@ static void vti6_dev_setup(struct net_device *dev)
+ 	dev->min_mtu = IPV4_MIN_MTU;
+ 	dev->max_mtu = IP_MAX_MTU - sizeof(struct ipv6hdr);
+ 	dev->flags |= IFF_NOARP;
+-	dev->addr_len = sizeof(struct in6_addr);
++	dev->addr_len = ipv6_addr_size;
+ 	netif_keep_dst(dev);
+ 	/* This perm addr will be used as interface identifier by IPv6 */
+ 	dev->addr_assign_type = NET_ADDR_RANDOM;
+@@ -1022,9 +1022,9 @@ static size_t vti6_get_size(const struct net_device *dev)
+ 		/* IFLA_VTI_LINK */
+ 		nla_total_size(4) +
+ 		/* IFLA_VTI_LOCAL */
+-		nla_total_size(sizeof(struct in6_addr)) +
++		nla_total_size(ipv6_addr_size) +
+ 		/* IFLA_VTI_REMOTE */
+-		nla_total_size(sizeof(struct in6_addr)) +
++		nla_total_size(ipv6_addr_size) +
+ 		/* IFLA_VTI_IKEY */
+ 		nla_total_size(4) +
+ 		/* IFLA_VTI_OKEY */
+@@ -1054,8 +1054,8 @@ static int vti6_fill_info(struct sk_buff *skb, const struct net_device *dev)
+ 
+ static const struct nla_policy vti6_policy[IFLA_VTI_MAX + 1] = {
+ 	[IFLA_VTI_LINK]		= { .type = NLA_U32 },
+-	[IFLA_VTI_LOCAL]	= { .len = sizeof(struct in6_addr) },
+-	[IFLA_VTI_REMOTE]	= { .len = sizeof(struct in6_addr) },
++	[IFLA_VTI_LOCAL]	= { .len = ipv6_addr_size },
++	[IFLA_VTI_REMOTE]	= { .len = ipv6_addr_size },
+ 	[IFLA_VTI_IKEY]		= { .type = NLA_U32 },
+ 	[IFLA_VTI_OKEY]		= { .type = NLA_U32 },
+ 	[IFLA_VTI_FWMARK]	= { .type = NLA_U32 },
+diff --git a/net/ipv6/ip6mr.c b/net/ipv6/ip6mr.c
+index bfa49ff70531..571ce9d7718a 100644
+--- a/net/ipv6/ip6mr.c
++++ b/net/ipv6/ip6mr.c
+@@ -209,7 +209,7 @@ static int ip6mr_rule_fill(struct fib_rule *rule, struct sk_buff *skb,
+ static const struct fib_rules_ops __net_initconst ip6mr_rules_ops_template = {
+ 	.family		= RTNL_FAMILY_IP6MR,
+ 	.rule_size	= sizeof(struct ip6mr_rule),
+-	.addr_size	= sizeof(struct in6_addr),
++	.addr_size	= ipv6_addr_size,
+ 	.action		= ip6mr_rule_action,
+ 	.match		= ip6mr_rule_match,
+ 	.configure	= ip6mr_rule_configure,
+@@ -2377,8 +2377,8 @@ static int mr6_msgsize(bool unresolved, int maxvif)
+ 	size_t len =
+ 		NLMSG_ALIGN(sizeof(struct rtmsg))
+ 		+ nla_total_size(4)	/* RTA_TABLE */
+-		+ nla_total_size(sizeof(struct in6_addr))	/* RTA_SRC */
+-		+ nla_total_size(sizeof(struct in6_addr))	/* RTA_DST */
++		+ nla_total_size(ipv6_addr_size)	/* RTA_SRC */
++		+ nla_total_size(ipv6_addr_size)	/* RTA_DST */
+ 		;
+ 
+ 	if (!unresolved)
+@@ -2425,9 +2425,9 @@ static size_t mrt6msg_netlink_msgsize(size_t payloadlen)
+ 		+ nla_total_size(1)	/* IP6MRA_CREPORT_MSGTYPE */
+ 		+ nla_total_size(4)	/* IP6MRA_CREPORT_MIF_ID */
+ 					/* IP6MRA_CREPORT_SRC_ADDR */
+-		+ nla_total_size(sizeof(struct in6_addr))
++		+ nla_total_size(ipv6_addr_size)
+ 					/* IP6MRA_CREPORT_DST_ADDR */
+-		+ nla_total_size(sizeof(struct in6_addr))
++		+ nla_total_size(ipv6_addr_size)
+ 					/* IP6MRA_CREPORT_PKT */
+ 		+ nla_total_size(payloadlen)
+ 		;
+diff --git a/net/ipv6/ipcomp6.c b/net/ipv6/ipcomp6.c
+index 3752bd3e92ce..ac5061031112 100644
+--- a/net/ipv6/ipcomp6.c
++++ b/net/ipv6/ipcomp6.c
+@@ -85,11 +85,11 @@ static struct xfrm_state *ipcomp6_tunnel_create(struct xfrm_state *x)
+ 	if (!t->id.spi)
+ 		goto error;
+ 
+-	memcpy(t->id.daddr.a6, x->id.daddr.a6, sizeof(struct in6_addr));
++	memcpy(t->id.daddr.a6, x->id.daddr.a6, ipv6_addr_size);
+ 	memcpy(&t->sel, &x->sel, sizeof(t->sel));
+ 	t->props.family = AF_INET6;
+ 	t->props.mode = x->props.mode;
+-	memcpy(t->props.saddr.a6, x->props.saddr.a6, sizeof(struct in6_addr));
++	memcpy(t->props.saddr.a6, x->props.saddr.a6, ipv6_addr_size);
+ 	memcpy(&t->mark, &x->mark, sizeof(t->mark));
+ 
+ 	if (xfrm_init_state(t))
+diff --git a/net/ipv6/ndisc.c b/net/ipv6/ndisc.c
+index 53caf59c591e..508596a9d734 100644
+--- a/net/ipv6/ndisc.c
++++ b/net/ipv6/ndisc.c
+@@ -107,7 +107,7 @@ static const struct neigh_ops ndisc_direct_ops = {
+ 
+ struct neigh_table nd_tbl = {
+ 	.family =	AF_INET6,
+-	.key_len =	sizeof(struct in6_addr),
++	.key_len =	ipv6_addr_size,
+ 	.protocol =	cpu_to_be16(ETH_P_IPV6),
+ 	.hash =		ndisc_hash,
+ 	.key_eq =	ndisc_key_eq,
+@@ -1128,7 +1128,7 @@ static void ndisc_ra_useropt(struct sk_buff *ra, struct nd_opt_hdr *opt)
+ 	int err;
+ 	int base_size = NLMSG_ALIGN(sizeof(struct nduseroptmsg)
+ 				    + (opt->nd_opt_len << 3));
+-	size_t msg_size = base_size + nla_total_size(sizeof(struct in6_addr));
++	size_t msg_size = base_size + nla_total_size(ipv6_addr_size);
+ 
+ 	skb = nlmsg_new(msg_size, GFP_ATOMIC);
+ 	if (!skb) {
+diff --git a/net/ipv6/netfilter/ip6t_rpfilter.c b/net/ipv6/netfilter/ip6t_rpfilter.c
+index d800801a5dd2..ce2a61bdccfc 100644
+--- a/net/ipv6/netfilter/ip6t_rpfilter.c
++++ b/net/ipv6/netfilter/ip6t_rpfilter.c
+@@ -44,7 +44,7 @@ static bool rpfilter_lookup_reverse6(struct net *net, const struct sk_buff *skb,
+ 	int lookup_flags;
+ 
+ 	if (rpfilter_addr_unicast(&iph->daddr)) {
+-		memcpy(&fl6.saddr, &iph->daddr, sizeof(struct in6_addr));
++		memcpy(&fl6.saddr, &iph->daddr, ipv6_addr_size);
+ 		lookup_flags = RT6_LOOKUP_F_HAS_SADDR;
+ 	} else {
+ 		lookup_flags = 0;
+diff --git a/net/ipv6/netfilter/ip6t_srh.c b/net/ipv6/netfilter/ip6t_srh.c
+index db0fd64d8986..9540d92f28fb 100644
+--- a/net/ipv6/netfilter/ip6t_srh.c
++++ b/net/ipv6/netfilter/ip6t_srh.c
+@@ -204,7 +204,7 @@ static bool srh1_mt6(const struct sk_buff *skb, struct xt_action_param *par)
+ 		if (srh->segments_left == srh->first_segment)
+ 			return false;
+ 		psidoff = srhoff + sizeof(struct ipv6_sr_hdr) +
+-			  ((srh->segments_left + 1) * sizeof(struct in6_addr));
++			  ((srh->segments_left + 1) * ipv6_addr_size);
+ 		psid = skb_header_pointer(skb, psidoff, sizeof(_psid), &_psid);
+ 		if (!psid)
+ 			return false;
+@@ -219,7 +219,7 @@ static bool srh1_mt6(const struct sk_buff *skb, struct xt_action_param *par)
+ 		if (srh->segments_left == 0)
+ 			return false;
+ 		nsidoff = srhoff + sizeof(struct ipv6_sr_hdr) +
+-			  ((srh->segments_left - 1) * sizeof(struct in6_addr));
++			  ((srh->segments_left - 1) * ipv6_addr_size);
+ 		nsid = skb_header_pointer(skb, nsidoff, sizeof(_nsid), &_nsid);
+ 		if (!nsid)
+ 			return false;
+diff --git a/net/ipv6/netfilter/nft_dup_ipv6.c b/net/ipv6/netfilter/nft_dup_ipv6.c
+index 2af32200507d..91ae092f27da 100644
+--- a/net/ipv6/netfilter/nft_dup_ipv6.c
++++ b/net/ipv6/netfilter/nft_dup_ipv6.c
+@@ -39,7 +39,7 @@ static int nft_dup_ipv6_init(const struct nft_ctx *ctx,
+ 		return -EINVAL;
+ 
+ 	priv->sreg_addr = nft_parse_register(tb[NFTA_DUP_SREG_ADDR]);
+-	err = nft_validate_register_load(priv->sreg_addr, sizeof(struct in6_addr));
++	err = nft_validate_register_load(priv->sreg_addr, ipv6_addr_size);
+ 	if (err < 0)
+ 		return err;
+ 
+diff --git a/net/ipv6/seg6.c b/net/ipv6/seg6.c
+index 75421a472d25..32872868823f 100644
+--- a/net/ipv6/seg6.c
++++ b/net/ipv6/seg6.c
+@@ -69,7 +69,7 @@ static struct genl_family seg6_genl_family;
+ 
+ static const struct nla_policy seg6_genl_policy[SEG6_ATTR_MAX + 1] = {
+ 	[SEG6_ATTR_DST]				= { .type = NLA_BINARY,
+-		.len = sizeof(struct in6_addr) },
++		.len = ipv6_addr_size },
+ 	[SEG6_ATTR_DSTLEN]			= { .type = NLA_S32, },
+ 	[SEG6_ATTR_HMACKEYID]		= { .type = NLA_U32, },
+ 	[SEG6_ATTR_SECRET]			= { .type = NLA_BINARY, },
+@@ -210,7 +210,7 @@ static int seg6_genl_get_tunsrc(struct sk_buff *skb, struct genl_info *info)
+ 	rcu_read_lock();
+ 	tun_src = rcu_dereference(seg6_pernet(net)->tun_src);
+ 
+-	if (nla_put(msg, SEG6_ATTR_DST, sizeof(struct in6_addr), tun_src))
++	if (nla_put(msg, SEG6_ATTR_DST, ipv6_addr_size, tun_src))
+ 		goto nla_put_failure;
+ 
+ 	rcu_read_unlock();
+diff --git a/net/ipv6/seg6_iptunnel.c b/net/ipv6/seg6_iptunnel.c
+index ab7f124ff5d7..c3853ee15cf7 100644
+--- a/net/ipv6/seg6_iptunnel.c
++++ b/net/ipv6/seg6_iptunnel.c
+@@ -77,7 +77,7 @@ static void set_tun_src(struct net *net, struct net_device *dev,
+ 	tun_src = rcu_dereference(sdata->tun_src);
+ 
+ 	if (!ipv6_addr_any(tun_src)) {
+-		memcpy(saddr, tun_src, sizeof(struct in6_addr));
++		memcpy(saddr, tun_src, ipv6_addr_size);
+ 	} else {
+ 		ipv6_dev_get_saddr(net, dev, daddr, IPV6_PREFER_SRC_PUBLIC,
+ 				   saddr);
+@@ -407,7 +407,7 @@ static int seg6_build_state(struct nlattr *nla,
+ 	 * the SRH and one segment
+ 	 */
+ 	min_size = sizeof(*tuninfo) + sizeof(struct ipv6_sr_hdr) +
+-		   sizeof(struct in6_addr);
++		   ipv6_addr_size;
+ 	if (tuninfo_len < min_size)
+ 		return -EINVAL;
+ 
+diff --git a/net/ipv6/seg6_local.c b/net/ipv6/seg6_local.c
+index 85a5447a3e8d..359d1ac957f4 100644
+--- a/net/ipv6/seg6_local.c
++++ b/net/ipv6/seg6_local.c
+@@ -650,7 +650,7 @@ static const struct nla_policy seg6_local_policy[SEG6_LOCAL_MAX + 1] = {
+ 	[SEG6_LOCAL_NH4]	= { .type = NLA_BINARY,
+ 				    .len = sizeof(struct in_addr) },
+ 	[SEG6_LOCAL_NH6]	= { .type = NLA_BINARY,
+-				    .len = sizeof(struct in6_addr) },
++				    .len = ipv6_addr_size },
+ 	[SEG6_LOCAL_IIF]	= { .type = NLA_U32 },
+ 	[SEG6_LOCAL_OIF]	= { .type = NLA_U32 },
+ 	[SEG6_LOCAL_BPF]	= { .type = NLA_NESTED },
+@@ -665,7 +665,7 @@ static int parse_nla_srh(struct nlattr **attrs, struct seg6_local_lwt *slwt)
+ 	len = nla_len(attrs[SEG6_LOCAL_SRH]);
+ 
+ 	/* SRH must contain at least one segment */
+-	if (len < sizeof(*srh) + sizeof(struct in6_addr))
++	if (len < sizeof(*srh) + ipv6_addr_size)
+ 		return -EINVAL;
+ 
+ 	if (!seg6_validate_srh(srh, len))
+@@ -760,7 +760,7 @@ static int cmp_nla_nh4(struct seg6_local_lwt *a, struct seg6_local_lwt *b)
+ static int parse_nla_nh6(struct nlattr **attrs, struct seg6_local_lwt *slwt)
+ {
+ 	memcpy(&slwt->nh6, nla_data(attrs[SEG6_LOCAL_NH6]),
+-	       sizeof(struct in6_addr));
++	       ipv6_addr_size);
+ 
+ 	return 0;
+ }
+@@ -769,18 +769,18 @@ static int put_nla_nh6(struct sk_buff *skb, struct seg6_local_lwt *slwt)
+ {
+ 	struct nlattr *nla;
+ 
+-	nla = nla_reserve(skb, SEG6_LOCAL_NH6, sizeof(struct in6_addr));
++	nla = nla_reserve(skb, SEG6_LOCAL_NH6, ipv6_addr_size);
+ 	if (!nla)
+ 		return -EMSGSIZE;
+ 
+-	memcpy(nla_data(nla), &slwt->nh6, sizeof(struct in6_addr));
++	memcpy(nla_data(nla), &slwt->nh6, ipv6_addr_size);
+ 
+ 	return 0;
+ }
+ 
+ static int cmp_nla_nh6(struct seg6_local_lwt *a, struct seg6_local_lwt *b)
+ {
+-	return memcmp(&a->nh6, &b->nh6, sizeof(struct in6_addr));
++	return memcmp(&a->nh6, &b->nh6, ipv6_addr_size);
+ }
+ 
+ static int parse_nla_iif(struct nlattr **attrs, struct seg6_local_lwt *slwt)
+diff --git a/net/ipv6/sit.c b/net/ipv6/sit.c
+index 98954830c40b..def625e97ba4 100644
+--- a/net/ipv6/sit.c
++++ b/net/ipv6/sit.c
+@@ -1675,7 +1675,7 @@ static size_t ipip6_get_size(const struct net_device *dev)
+ 		nla_total_size(1) +
+ #ifdef CONFIG_IPV6_SIT_6RD
+ 		/* IFLA_IPTUN_6RD_PREFIX */
+-		nla_total_size(sizeof(struct in6_addr)) +
++		nla_total_size(ipv6_addr_size) +
+ 		/* IFLA_IPTUN_6RD_RELAY_PREFIX */
+ 		nla_total_size(4) +
+ 		/* IFLA_IPTUN_6RD_PREFIXLEN */
+@@ -1751,7 +1751,7 @@ static const struct nla_policy ipip6_policy[IFLA_IPTUN_MAX + 1] = {
+ 	[IFLA_IPTUN_FLAGS]		= { .type = NLA_U16 },
+ 	[IFLA_IPTUN_PROTO]		= { .type = NLA_U8 },
+ #ifdef CONFIG_IPV6_SIT_6RD
+-	[IFLA_IPTUN_6RD_PREFIX]		= { .len = sizeof(struct in6_addr) },
++	[IFLA_IPTUN_6RD_PREFIX]		= { .len = ipv6_addr_size },
+ 	[IFLA_IPTUN_6RD_RELAY_PREFIX]	= { .type = NLA_U32 },
+ 	[IFLA_IPTUN_6RD_PREFIXLEN]	= { .type = NLA_U16 },
+ 	[IFLA_IPTUN_6RD_RELAY_PREFIXLEN] = { .type = NLA_U16 },
+diff --git a/net/openvswitch/conntrack.c b/net/openvswitch/conntrack.c
+index e726159cfcfa..2347ba47007a 100644
+--- a/net/openvswitch/conntrack.c
++++ b/net/openvswitch/conntrack.c
+@@ -1376,9 +1376,9 @@ static int parse_nat(const struct nlattr *attr,
+ 			[OVS_NAT_ATTR_SRC] = {0, 0},
+ 			[OVS_NAT_ATTR_DST] = {0, 0},
+ 			[OVS_NAT_ATTR_IP_MIN] = {sizeof(struct in_addr),
+-						 sizeof(struct in6_addr)},
++						 ipv6_addr_size},
+ 			[OVS_NAT_ATTR_IP_MAX] = {sizeof(struct in_addr),
+-						 sizeof(struct in6_addr)},
++						 ipv6_addr_size},
+ 			[OVS_NAT_ATTR_PROTO_MIN] = {sizeof(u16), sizeof(u16)},
+ 			[OVS_NAT_ATTR_PROTO_MAX] = {sizeof(u16), sizeof(u16)},
+ 			[OVS_NAT_ATTR_PERSISTENT] = {0, 0},
+diff --git a/net/openvswitch/flow_netlink.c b/net/openvswitch/flow_netlink.c
+index 7da4230627f5..78ed78a8c331 100644
+--- a/net/openvswitch/flow_netlink.c
++++ b/net/openvswitch/flow_netlink.c
+@@ -389,8 +389,8 @@ static const struct ovs_len_tbl ovs_tunnel_key_lens[OVS_TUNNEL_KEY_ATTR_MAX + 1]
+ 	[OVS_TUNNEL_KEY_ATTR_GENEVE_OPTS]   = { .len = OVS_ATTR_VARIABLE },
+ 	[OVS_TUNNEL_KEY_ATTR_VXLAN_OPTS]    = { .len = OVS_ATTR_NESTED,
+ 						.next = ovs_vxlan_ext_key_lens },
+-	[OVS_TUNNEL_KEY_ATTR_IPV6_SRC]      = { .len = sizeof(struct in6_addr) },
+-	[OVS_TUNNEL_KEY_ATTR_IPV6_DST]      = { .len = sizeof(struct in6_addr) },
++	[OVS_TUNNEL_KEY_ATTR_IPV6_SRC]      = { .len = ipv6_addr_size },
++	[OVS_TUNNEL_KEY_ATTR_IPV6_DST]      = { .len = ipv6_addr_size },
+ 	[OVS_TUNNEL_KEY_ATTR_ERSPAN_OPTS]   = { .len = OVS_ATTR_VARIABLE },
+ 	[OVS_TUNNEL_KEY_ATTR_IPV4_INFO_BRIDGE]   = { .len = 0 },
+ };
+diff --git a/net/sched/cls_flower.c b/net/sched/cls_flower.c
+index b0f42e62dd76..60d5ad4110fe 100644
+--- a/net/sched/cls_flower.c
++++ b/net/sched/cls_flower.c
+@@ -610,10 +610,10 @@ static const struct nla_policy fl_policy[TCA_FLOWER_MAX + 1] = {
+ 	[TCA_FLOWER_KEY_IPV4_SRC_MASK]	= { .type = NLA_U32 },
+ 	[TCA_FLOWER_KEY_IPV4_DST]	= { .type = NLA_U32 },
+ 	[TCA_FLOWER_KEY_IPV4_DST_MASK]	= { .type = NLA_U32 },
+-	[TCA_FLOWER_KEY_IPV6_SRC]	= { .len = sizeof(struct in6_addr) },
+-	[TCA_FLOWER_KEY_IPV6_SRC_MASK]	= { .len = sizeof(struct in6_addr) },
+-	[TCA_FLOWER_KEY_IPV6_DST]	= { .len = sizeof(struct in6_addr) },
+-	[TCA_FLOWER_KEY_IPV6_DST_MASK]	= { .len = sizeof(struct in6_addr) },
++	[TCA_FLOWER_KEY_IPV6_SRC]	= { .len = ipv6_addr_size },
++	[TCA_FLOWER_KEY_IPV6_SRC_MASK]	= { .len = ipv6_addr_size },
++	[TCA_FLOWER_KEY_IPV6_DST]	= { .len = ipv6_addr_size },
++	[TCA_FLOWER_KEY_IPV6_DST_MASK]	= { .len = ipv6_addr_size },
+ 	[TCA_FLOWER_KEY_TCP_SRC]	= { .type = NLA_U16 },
+ 	[TCA_FLOWER_KEY_TCP_DST]	= { .type = NLA_U16 },
+ 	[TCA_FLOWER_KEY_UDP_SRC]	= { .type = NLA_U16 },
+@@ -626,10 +626,10 @@ static const struct nla_policy fl_policy[TCA_FLOWER_MAX + 1] = {
+ 	[TCA_FLOWER_KEY_ENC_IPV4_SRC_MASK] = { .type = NLA_U32 },
+ 	[TCA_FLOWER_KEY_ENC_IPV4_DST]	= { .type = NLA_U32 },
+ 	[TCA_FLOWER_KEY_ENC_IPV4_DST_MASK] = { .type = NLA_U32 },
+-	[TCA_FLOWER_KEY_ENC_IPV6_SRC]	= { .len = sizeof(struct in6_addr) },
+-	[TCA_FLOWER_KEY_ENC_IPV6_SRC_MASK] = { .len = sizeof(struct in6_addr) },
+-	[TCA_FLOWER_KEY_ENC_IPV6_DST]	= { .len = sizeof(struct in6_addr) },
+-	[TCA_FLOWER_KEY_ENC_IPV6_DST_MASK] = { .len = sizeof(struct in6_addr) },
++	[TCA_FLOWER_KEY_ENC_IPV6_SRC]	= { .len = ipv6_addr_size },
++	[TCA_FLOWER_KEY_ENC_IPV6_SRC_MASK] = { .len = ipv6_addr_size },
++	[TCA_FLOWER_KEY_ENC_IPV6_DST]	= { .len = ipv6_addr_size },
++	[TCA_FLOWER_KEY_ENC_IPV6_DST_MASK] = { .len = ipv6_addr_size },
+ 	[TCA_FLOWER_KEY_TCP_SRC_MASK]	= { .type = NLA_U16 },
+ 	[TCA_FLOWER_KEY_TCP_DST_MASK]	= { .type = NLA_U16 },
+ 	[TCA_FLOWER_KEY_UDP_SRC_MASK]	= { .type = NLA_U16 },
+diff --git a/net/socket.c b/net/socket.c
+index b79a05de7c6e..e9e2e832b67d 100644
+--- a/net/socket.c
++++ b/net/socket.c
+@@ -3402,7 +3402,7 @@ static int routing_ioctl(struct net *net, struct socket *sock,
+ 	if (sock && sock->sk && sock->sk->sk_family == AF_INET6) { /* ipv6 */
+ 		struct in6_rtmsg32 __user *ur6 = argp;
+ 		ret = copy_from_user(&r6.rtmsg_dst, &(ur6->rtmsg_dst),
+-			3 * sizeof(struct in6_addr));
++			3 * ipv6_addr_size);
+ 		ret |= get_user(r6.rtmsg_type, &(ur6->rtmsg_type));
+ 		ret |= get_user(r6.rtmsg_dst_len, &(ur6->rtmsg_dst_len));
+ 		ret |= get_user(r6.rtmsg_src_len, &(ur6->rtmsg_src_len));
+diff --git a/security/selinux/netnode.c b/security/selinux/netnode.c
+index 9ab84efa46c7..24f1a7b47700 100644
+--- a/security/selinux/netnode.c
++++ b/security/selinux/netnode.c
+@@ -211,7 +211,7 @@ static int sel_netnode_sid_slow(void *addr, u16 family, u32 *sid)
+ 		break;
+ 	case PF_INET6:
+ 		ret = security_node_sid(&selinux_state, PF_INET6,
+-					addr, sizeof(struct in6_addr), sid);
++					addr, ipv6_addr_size, sid);
+ 		if (new)
+ 			new->nsec.addr.ipv6 = *(struct in6_addr *)addr;
+ 		break;
+diff --git a/tools/lib/traceevent/event-parse.c b/tools/lib/traceevent/event-parse.c
+index beaa8b8c08ff..1f96c08eb02d 100644
+--- a/tools/lib/traceevent/event-parse.c
++++ b/tools/lib/traceevent/event-parse.c
+@@ -4581,7 +4581,7 @@ static void print_ip6c_addr(struct trace_seq *s, unsigned char *addr)
+ 	bool useIPv4;
+ 	struct in6_addr in6;
+ 
+-	memcpy(&in6, addr, sizeof(struct in6_addr));
++	memcpy(&in6, addr, ipv6_addr_size);
+ 
+ 	useIPv4 = ipv6_addr_v4mapped(&in6) || ipv6_addr_is_isatap(&in6);
+ 
+diff --git a/tools/testing/selftests/bpf/test_sock_addr.c b/tools/testing/selftests/bpf/test_sock_addr.c
+index 61fd95b89af8..ebc59e758326 100644
+--- a/tools/testing/selftests/bpf/test_sock_addr.c
++++ b/tools/testing/selftests/bpf/test_sock_addr.c
+@@ -1111,7 +1111,7 @@ static int cmp_addr(const struct sockaddr_storage *addr1,
+ 		six2 = (const struct sockaddr_in6 *)addr2;
+ 		return !((six1->sin6_port == six2->sin6_port || !cmp_port) &&
+ 			 !memcmp(&six1->sin6_addr, &six2->sin6_addr,
+-				 sizeof(struct in6_addr)));
++				 ipv6_addr_size));
+ 	}
+ 
+ 	return -1;
+diff --git a/tools/testing/selftests/networking/timestamping/txtimestamp.c b/tools/testing/selftests/networking/timestamping/txtimestamp.c
+index 7e386be47120..f0435578c717 100644
+--- a/tools/testing/selftests/networking/timestamping/txtimestamp.c
++++ b/tools/testing/selftests/networking/timestamping/txtimestamp.c
+@@ -379,7 +379,7 @@ static void fill_header_udp(void *p, bool is_ipv4)
+ 	udph->check  = 0;
+ 
+ 	udph->check  = get_udp_csum(udph, is_ipv4 ? sizeof(struct in_addr) :
+-						    sizeof(struct in6_addr));
++						    ipv6_addr_size);
+ }
+ 
+ static void do_test(int family, unsigned int report_opt)
+-- 
+2.24.1
 
-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
-ld2lSao9Rdj12A5jFakBwC8ZGg7sLvcQVPg/NCwQKUT/5F7NZ/owg5a71WgPLVk63lUJvM2U
-rzlvOXUi7MTHcgMKysWFD368rqU5iiO7w+DKY0pik3peKN9fgtEtoUmewzM2ia+zg60SLpE/
-qhUntn3JtlpEfmMvUBF1eMB++WUqBTgngldyy6LXQh2jLNjuT8LHo2UVkWttZwhmCI8t+yve
-orm/GVnQ4IGmzKrdrKW5ye77+dvHYvPz9fj2+37x+OP4/oHZ937GOmZg3WZ36uuDjqzFs9Wp
-ompweWUYywXbw863aKw23j/uH08vj/oVEHl4OD4d387Pxw+tixPWdezAsXBldkB135mjlyFV
-qkjp5f7p/Mi9aJ0eTx/3T3AswbIyTzeMDOoJg+wY9wLGIEePZz5m5lrCctZG+F+n37+e3o4i
-Qpopk13o6rlU0/tM2uBs9fX+gbG9PBz/Uc3YPj6JMyj08Ox8nsTgDAPyyH4ImP58+fh+fD9p
-GYgj11T/DMK9rhklc9HV8ePf57e/eK39/M/x7b8X+fPr8SvPbmKoBj/WY6wOSf1DYUPP/2Aj
-gX15fHv8ueA9FcZHnqhpZWHk4+UyCxCnN8f38xOc/f6DdnWYxqerykMqn4m53GwjY1xot6/H
-+79+vMJHTNJx8f56PD58Vx4f4BxTBodJSLjam80u5OXr2/n0VSkRd9CGTLC5fC4MjhngsIy7
-chuC+V7GkJA5iVzTHh4ewAqD3wFXOZNFG4LHmwA3ACuDU0ItnPwF2NLQMmxghnl67vBjxgEZ
-bmv8nH7kwbznzZj4UfN1jhq3N5hwER3kKpMpaMqI7/NlCzdI1wvN/eykfbPBT2Kb3HPnnoHX
-9+9/HT8wv3caMgk65EVPDjlU4Qpvh1WeFSnkyXT4vLvFHNRnhxXplHesgsKWvcGG5SJgADKm
-ZrEig0KHpiPYtlkLitLsLetMGvhtLCl2PzNyiJsAsNdpQN3y3BDnyGtQkGjW/fHLj49vkaSV
-resiXeUUf2W4uWX74ko3fBCj/On88NeCnn+8PRznOr54NVtLJqOC0rT1MpMHOSpm/KYkebGs
-5ej2Y/CLciPdq5Cig2gvpWCdxrT4enZifZl5ynKnx5dZw0x+elhwcNHcPx75zcoYVEPpj5+w
-qunwxlxdrJza4/P54wgRItCjJx4SST+/l5aD2cdC6Ovz+yOy32pYH1L2g0DgGjO20+Mgdwax
-htvFviJdLr/XnTEwgo5KOvSYZyVvF80W3u3f5u0UBvz84+XrLVMWJNc7AmB18Sv9+f5xfF7U
-L4vk++n1N1ikHk7fWBukmkL7zJQvRobnlHL1jgsLAovvYNX7avxsjgrnKW/n+68P52fTdygu
-9J5D87/TI8+b81t+YxLyGau4B/yf8mASMMM4ePPj/ollzZh3FJeUArAgzGdzw+H0dHr5W5M5
-zdbwyHCf7OTugX1xUU3+UdNfpgged2jVZjdjnxr+XKzPjPHlLGdmgNgkuB9tF+sqzUpSKbO7
-zNZkLX9EWSWoo1uZE96zq2/dZfgSzBiHG0KpGHdKIWbmYlN5de8D2aFLpjvi7O8PptsNw2ou
-RjAzNTTRfFKMgB7ze6CvKIk9+ShhoOsGPwO5JAfXRQ/dJgZu9DETyIHIQwE1/vdA18N3juSu
-GoKZ6HlruygOXdw2bGChpe+jx9ADPhpBKssQm8zbO2wBkm/42R/9crdayc8zJlqfLFEymM8N
-kbBVfAu6UC+OkSTycHHOVBQsLfGrrO9I38xYeaoUxsOFxZFZ6O3kBmW6fhfA8AFeKVIuxx6N
-H1NohxTSid5IimXSoRC3kCpBj0s/kvGw7cuS/D9nT9bcOI7zX0nN035VMzWWZCnywz7Qkmyr
-rSs6HCcvqkzi6bimc2yO2un99UuQkkyQoLv3e+m0AJDmCYIgDkdd7fxbZp+Zyi/ziC8vYYlA
-J8SLmUu+/MUM5a6Ncy5ionDUAoDewwWIfHvb7psYkQqANWuhxNJd3u6jL1tHj3Ufea5Hxq3P
-2eVcTXQ9APRkcyO4IYPIADZAuRJyFs5VqzcOWPi+M6YvU+sFOF3nQj6RnIhFDgOKG3FM4OJM
-4lzm9+hY/U27DT01vQsAlgyH+/5/qMOmFSl9vOB60TK8Vi8dMsomaMKCQCN1F9SwCATaFvw7
-RN9z1SWEfwcz47tPV/wkm4JEWNDIShnUVUGgfYe9gyHqZoPvhYZXTwrQGqqZP/j3wvW0UViQ
-+bkBofplsn3lzvZwHKLiHBqGAKW11/B+oGOn3b0AtrCuZJXjsVHI+BJ8atskQjaZm5Qfdso+
-2uyRZ1FaMHdvNDBrI3d+SU2zwODnNwEis4BDnvSZi0KLAcixJbWWSPoJF3BeQL2fg59MoPYp
-jyrPVW2EADB30eMdgBZk9NY8KfpbR07PqYqCdZchTlImBQM5FUQ94mazA0FIt2GcEmj3qTbu
-J8zuTKWCgONVh6JYiFx5GU82uYrGLecrw7bYWlHVLHSonxuR6kP1CJs3M9VKWoId1/FCAzgL
-G2dmVOG4YYMskAdw4DSBao4jwLwCx9dhlwssgElo6M3pJFsDOgjpFTb8jjB/thLkXOzcW/Ym
-RBTOormvBbSVFjV8mdKFrrMA0NqO3q0CZ4aX4HDj2Y9r5n99khAZRC4SmWVEEZPqhB9JWULU
-qZQY7sOv3/hlyVA5h15geb44FZAlHg9Pwm1Hvoiqh1Ob8b1UbfomKRq8fpd5EujPMSOnjJqQ
-3MQpu8IJSaHatBZa4nWFYjZUjfq5uw0Hw+xRsaQ3Wb7qHh/GV11QlssIViisGEmgDnveDH1t
-BplG6ieaaiynVKpKvU01lNt0S3LQzSqQON1qP0vj0BGr4YaRHZ565Jr7gGyJYtHQooc/w6lP
-OMQLKCEIEPiw9ueug7/ngfaN5HPfX7hgUd0kBlRrgb/wqLsDYFQTEP4duPNal/D5uecENpcO
-fiYGpDcNVBbi9vNvXaTxg0WA54fDLlV5WHyH+BtnJBMQWqrzdfnHmyH5Jwy1LABV2eqhs07I
-Zj63pDXMA9cjR4Gf2b4awRS+Qxdn0oqq+SUZPRwwCxcfHLxxs9AdHFdUjs0Rvk+KMhJ5iW5L
-AyxwcDpSwYyN/k9vkme2wPRm/vD59DSmIcb8d1AYiUiLxh1XwclbLGVqYFBOt3L0pIeaMESu
-Pvzr8/B8/316Sf0P+IrEcfN7lWVTfD6hWxd66ruPl7ff4+P7x9vxj88pH9C0bha+Sz+mnq1C
-mrM93r0ffss42eHhInt5eb34B2/C/138OTXxXWmiylpWcxSeQQAuHbXz/2vdp0DXZ4cHMcCv
-399e3u9fXg8X78bZJrQIM8zVAISiEI2gQAe5wQxv633dzC1v98t87ZBsdbVnjcvlbpWlnGCY
-1ShwjeXlVefN/Jnlhj8cE+ubuuw9eEkzThCBAqvJM2hwDNLR7dob88xom84cdnk+H+6+fTwq
-YsYIffu4qO8+Dhf5y/PxA8/SKpnPERsUgDliUt7MQbkKJQQ5vZM/oiDVdslWfT4dH44f34mF
-k7uegxhavGlJeWcDUrZ65dm0jasem/Ibz/MA0+Z403Yu9RNNejlDIVr4t4vmxOiIZH58z3+A
-N9rT4e79801mgP3kA2PsEJRLfADpa18ASb3XMk8dFDRcfOMeDzB02K72ZRNeokD6A0TfFQMU
-ld7m+wBdp3ewSQKxSZBeVkVgFZaKsinWhg2SNXkQN3TMzzPjrG4zGELsnKRCTyeHdK0T4b0J
-hvYl7ht0cLK4g7u+OoGZB2FaFEAVNwsPzTFAFniKlxvnkszvDAiVhUa55zqqPwAAPHRuc4jn
-UiqDCFyUfVQ0CHwkfqwrl1W8Q2w2swSxHKXoJnMXM4vWAhORjgYC5ahON18axu/RqkluVc98
-LB1lbe2TqZ+yHWdI80hNmcr2cy3FqoQoUnNRMuxBUFath7LTVrxNwrNcDTySOg4Kfsi/51jZ
-2W49j9Qs89Xc7dJG7fcE0gK+TGC089qo8eYOulQI0CVtVDbORMuH2yf1SAITKt0BwKWq6ueA
-ue+heega3wldyglwFxUZHnYJwfbbuyQX93+qAoFC+d2zQL4aTMVv+TzxaXFIjoB3rzQzvfv6
-fPiQymNiX29xWBvxrd45trPFQt31wyNFztYFCdS57wmhCxZs7dFJvPI88nxXjV4z8EJRDS1H
-jD99Dk2IGeMS2eSRH2K3GQ1lEYB0KhybaEDWuYdkCAzXlj7GjYM2GgJTkymn+fPbx/H12+Fv
-JCoLrUOHtBuIcDiu778dn40VohwzBF4QjD7YF7+B8eDzA78KPR909YUIxFx3VUu93eHjDhxS
-aaqhKfQPIqn89eWDH4NH4q3Pd7ErYdzwrWVRL/tzfK4IkMVjSeJIbTi/ts7UcLoAwKm2OcDX
-ATjjdltlusBp6Ss5DnycPnAYlLxaODNdH2+pWZaW17W3wztIGWiJjIO7rGbBLKfszZZ55eJ3
-T/jW2YSAoc0TV1zcQJxvU9GzVWUOFpklxLJjByQOe1NlnqMqm/PGx+8L4hs3eoDhijjMQ68f
-AwOq6qSh7vGtP8cpjzaVOwtorcttxbi0Q6tdjck5CXPPYNNLzVnjLTzffoygcsMKePn7+ATi
-Pvi7PRzfpVk4UbeQcCzSShpDst60Tfqd+iq7dLBz3Aps0lEcyHqFArntFz6OeQMElLi1y3wv
-m+0nIXwasrO9+Tkr7Im5uM0CXWXAJhvfX39Ql2Soh6dX0JfgbTYJgJG7CD2NLaWQPjGp8zIq
-uyqjLIvybL+YBWrgIAlBTzx5hTJYi29FW9dy3owVhAJCikFwRXZCP1A7T3VskjPVQDP8YwpM
-oIAgN8Kq1ehEFCAPw0TUHKwSFFXCixhtTMyx7TWVF2fA9DKxlTwq6yuRZ9vMb8YxkHJTvQz1
-KzXEM7h81QzokJJOr1DZQxXk81mSMX44N0nAeLdo6zLLVBMbiYE4pSKAy9hwMKVuPv94F7Zw
-p1aPWUk4+lSFAhxyxkv06cIW5f22LBgYLbm6lfY4eLzw4KbHy6PpQBibibdC1KRcfqCNq4AM
-lkaa78P8So9epxDl6T7J6N4Autqz3g2LvN80Kc18ERX0295s8ZavNQVR5KyqNmWR9HmcBwFp
-GAJkZZRkJbzB1HHSIM6FJnMqAkaDKG5Yrtp+8Q++YZQFWbPJpvjkgzEu3iKuyxRZMg6gfpkW
-fCHz1Umrxk3Xi5hRbqEiZolyG4XPaeNLJdn1xcfb3b04hfTd1qisgH/IDDTwAoSiqk8ISAmJ
-oiwC6kyiI45tyq7mi49DmtKS9F0hI8P+KPqeFlISb8gRI/o5KaCqNbbakebqFQy/eJOj1L6Q
-XyNf1xOx9rI34aecHRQyjZK5rjUbcZAqaF+6BFZPnTw0YVUnyW1iYIcGVBCXSB5etVZfnayR
-y0+5ouECGK9wFswB1rMVndd2RWbwybusTXlT9ieVmHJjokzu+f2Kn/fry4VL86gB3zhzi5EB
-EFhCdQIqz7E9PNWciQfkfVmpgbxT1QcCvuBAMQxNmyzN6YNGXN74/wuUEZbPVqFlguGHc3/V
-sTjWg2yOFwtsPSzfoo7gLia4mCLm7BiIiFw85HfBCjxP1FXRgFOEyuOSfetqjjYC0O9Z26IW
-joiqbCAbd0Qd+SNNk0RdjUJscYzX43BJA4iu0KAaq6R/da73YY5q1n52bqsQE51zE+LobVek
-bW+4hQ8kX5axIh/C1xR86jQZ+TLizEB18UhSPmEco3ZnAnLSCEUMnTAi719aWLywlFrlvFLt
-1X70izZ+CliZ3eknAG4fL1EKkkFDfFNqtPby15Vk6AC56sqWZgr7H64boCCzRgGiLCCRdN9E
-dacc8QoGEmWnNUZdsxpl2NpTXR5lwFXjassdci8CjLrjt/XYfw1CTcGEE8tBsJi1Ph0TTd0V
-fcP4Qr0xV6pGbeuLxLKGL6GW/o1kBVkk0xW1OYs0m8ZiXPiuttYEANYHRWZyohFxjhONNNRa
-FTg5eOR0yLLSe6/4wjm3PCyVk88ilNHzlezBzw3zJwmRkY17nGs7zZIewFrcAfCMATvFG0Rh
-OZl7LvjXNxU0nG4mTJc2KCPQug5OFMsu5ad8AcbRBWu7OlHb3+gp2WMdkErAGOVyLMh0OrH9
-1TYKAIQyFN5v4mwF62ZK/odkpgM97Fs5mKgajRtLYMtFLQW2ytt+5+gAVysVteiAYV1brpo5
-vbYkEq9zPg4IEHWqIdYQA0MlKPk8ZOzGAuP7MU4hBX0fqyyMImDZNRPZ3rOsvCZJ4baCfDsV
-XAELba8n56Mo93zKRdd/RJgnfDjLCjGSIVTD/aMahXHVaCfnABBspDHBG370lOua5XjNS6T9
-4BopyiXwgT5LSYdWQQPbUp3ECWYGnVRwU7toIyDZazkC8W91mf8e72Ih+J3kPkVrWC74fZhe
-eF28Gg+ksXK6QqkFL5vfV6z9vWi1H5s2K+bVecNLIMhOJ/mR27TFafr4/hKG/uI3R/GcVkm7
-dkUpLYtW22UCYMyEgNbX5OBbxkDqg94Pnw8vF39SY2PkYBaALbauFTDQMbWZBoRxgfTdKXJK
-EKhok2ZxnSg3N3BoR+meseqvzSsshAjADyQnSWOTE/MkX8V9VPO7utId+Wcc8pOmxRymqZ60
-kQGZZAwKLCrVEOZI1Ea2kMVncCs7LhGHog27sRfkqCrrrOjlmbYuzzTHjvqyMoXF0wv6MrWX
-jDgvsaAafsFsNhbkbm+vM08Lvl4syDI/M26VHXdV7OdnsYEdWxM/Om4Uzk/RRhPfwC4yuBRH
-ZS7ekpAGU5Jkt+WEpnWPI938Z+k20U9RhnP3p+humzYmCTGZ0sfzgzBl+9YJDYJfHg5/frv7
-OPxiEAr1nlHBEPgAA+H0VW54fOPvrEv8zK6pS9vcc8nwuqy3GlsZkfqBAPKsq32j1yEJsVww
-BHKu9gcgzTWryFZL8t4SsxMCtxWW/sp2C5HBigcJMkvWLOLSe0GOzEA0BkApGq2j1EMUF0vA
-s5DL/KUSmg5uHvonjAQaSN2Bq+mKWlWey+9+rS5SDuC3NYD123qJjaIkeZw2bMkvP2khrnWQ
-EyiCvDQWdjcUsgp3UVJt6IUUpVgZAd9SsqRM8wWWgQh9apmcDST0AdV1wrZ9dQ2pg+i4L4Kq
-qyJenR1vO5sF0pQ2Jyj96HLCg0q/4mvEEl5dEv5E+84tVy76MfvZbd31i8qy5dVEWPzjxLEo
-wREIRtmz57InXeGJ5BIbI2DcJR03FRGFpGGmRuLiHigY3/rrof/DxofYTFTDUbYFGol7pjhl
-SaKRzG3dUhMga5jAillYMAvPVmah+jhoZWxDvpjbfie81PrDb1uwvvrQUsBxffv4c6RtAkQ0
-UL3g+GO2QiPepdvo0WBLj3waHNgaRQfFVikox2/ULc/aYdpNCpFQHk9AsC3TsK9xZwSsw7Cc
-RSBRskJvBCCiJGtTyhDqRFC0SVeXZOG6ZG3KKCXcRHJTp1mmPruOmDVLMpzRY8LUSUJmCRvw
-KW+0DKSjI4oubakaRffPN7Tt6m2Kc4oBSr9/n96tMzrsXleksA2ox7Kyv0bWHeiBSzp7Hu4/
-38DmyAjwC6eW2jb47uvkqkuatjeOo1EwTeom5XJiAaHh+EQUa+U0WZ5qHSBt3XHi2PitQds6
-YIjf4eA+3vQl/z0GSllUelRR93GeNMICpa3TiNapnX20GpHkQblhu4T/U8dJwdsJqlfQswmx
-JdL93w0yy/M970skaHI+oZskq8jAMqOm5tRPpuZ9avJ//gK+bg8v/37+9fvd092v317uHl6P
-z7++3/154PUcH36FPCxfYd5/kctge3h7Pny7eLx7ezgIO7vTcpBPzoenl7fvF8fnI/h3HP9z
-NzjejQsNHu5486NtX5QFDpMDKIi6BOOiJPyx2CVIYnigt9KOz850k0a0vUeTk7K+9Mfe7Mta
-PiQo70diPQJLkvrBt++vHy8X9y9vh4uXt4vHw7dX1aVSEvMur5lqkoDArglPWEwCTdJmG6XV
-RlX2awizyAbHmD4BTdJa1e2fYCSheeMdG25tCbM1fltVJvVWNR8Ya4DrtEnKOS5bE/UOcOyX
-I1Gw1yi5HxWcrkniwc+ofr1y3FCmGMKIostooNl08YeY/a7dJEVENNwSCXLAJsU6LSYH+erz
-j2/H+9/+Ony/uBcL9+vb3evjd2O91g0zWhCbiyaJIgJGEtYxUSVnWrvE9X2R71uae31+PIJ1
-9/3dx+HhInkWrYT40v8+fjxesPf3l/ujQMV3H3dGs6MoN+ckyolBizb82GLurCqzG/A1sg8g
-S9YppK0wN1hyle6IqhNeMedeKCarDKko3I6fXh7Ux5axPUtzJKPV0oS15qKOiJWYCPs6vWkZ
-VsdjZLmiilS8ZfYy+7YhyvAj+brGyhpt5W/GcTfXOWQibjtzHiEF2m5cJpu790fbSObMHMoN
-BdxTg76TlKO/wuH9w/yFOvJcYroAbP7InmS3y4xtE5cacIkhNSfT77TOLE5X5lInf8o61Hk8
-J2A+0aY85WtaGKmeWQt1HlPbBMCqJ+wJ7PoB8Vsc4bnUzX7cdhvmmHuR72U/oMC+QzF7jiA9
-MQds7plVwfP1slwTlbXr2ha8f6C4rngzzHfX4+sjMtWfOA61qThUi0qq4YtumZqMgNWROctc
-pLlepeSylAhDyTiuPZYn/EZFcHIGVwFboaY1Vx9AzRmLE7MLK/HXFAc27JYQkxqWNcw1F9zI
-8Qk+nsTUEknqil9ezq2SObUYEirh2Ii8LslhH+CnAZTr4+XpFXxnkHw9jZN4bjBqym5LAxbO
-TbaU3ZqrQjyqGFB4GBlbVN89P7w8XRSfT38c3sYAGlrcjWk5NmkfVXVBmbuMnaiXIsJZZy4D
-wAxMW69Z4qxKXoUoojW5Jwrjd7+kkKIzAd+F6ob4bRASey6y//D3J8JRDP8p4tpidaTTwVXA
-3jNomzBY1O4o345/vN3xe9Lby+fH8Zk4OsHlnhEbUMApPiJ89OV5NbpmnKMhcXJfni0uSWjU
-JEGer0EVNE00xXUAPh6dXB5Ob5N/OudIzv289Qg+9e4kipJElgNuc21unWTXs5azaewSaGCl
-7G7smwkPvzibn2FmQGqmFVKQDVsley1grEkVRcguTG1HnpXrNOrXe/PupOF1izPW3OR5Aroe
-oR+ChywSWXXLbKBpuqWVrK1ymmbvzxZ9lPBBWKURPP/qVuHVNmpCMJnbARbq0CnGuqmSl2PK
-KQsWrn5QGKm80jWol6pEGjMK41Fom2avKBkDBOn4U1y23kUm7/fj12fpCXf/eLj/6/j8VXFs
-kQlNFEVdjUz/THwDmbIwNtm3NVNHzChvUPRi781niwCp48oiZvWN3hxirQ31ch4EWa2b1try
-E4XgoPA/meprNOr6idEafFttjLZmaRz01dVJmzRC+iW/3fMTr0ZG6OBnR/dqmXKBFJJ9KSM4
-esdxWbWIqpt+VZe5ZgmqkmRJYcEWCRh/per7X1TWscrd+JLOk77o8iVkNFe6AwuNoQ0b8T3O
-z1UEcgJMYd5ooj5tux6X0gKqAGDKH0dyGUHAd3iyvAmJohJDP4MMJKy+Zq3luVVQ8ImgfzpA
-5yU+PSPFf5Wzd/NGGSkXKf0KWbMiLnOl6yeUau2CoeDHpMNv4WThggKWJG/liahBVQseDKVq
-Vu14EFSx2sHUZPtUmxwNTNHvbwGsf/d7NcLhABMeiZVJmzJ12gYgq3MK1m746jcQkKjJrHcZ
-fTFgeOpOHerXt6q3roJYcoRLYpA8P25j9QFiXDsJZPIpsxLuGU8UFF5cQroA/KCCWkYb9CEs
-lloRLls1DmJNU0apyLfCR61GKRuZcJpSvS0BFOeKsFdAAzgEXFPFu4iaWkLED48yJsylNkJy
-V3645m2C+kSCSqBdlfUpfP9ZqqjqCBLA8vGu1B87PcpxJAjnNhv/Zp3JGVHaf6UwynVWIn0Q
-fJ/jbkU2OG/os96WeYq5T3bbt0wNslVfgUyq/HhepSgMF/9YqXnhwb0WXBv5uaHM36osWiXZ
-kAoN/1ZZvACBkTrvD3LXa8A5uFQa0nB+irzo4MWuWKu8TokFoZ2z+AFrlF8E9PXt+Pzxl4yn
-8HR4/2q+cgq/hq1I6YSOYAkGqxz6gUCa6UGOsowfyNn0DHJppbjq0v9Wdiy7acTAe78ix1Zq
-oyTKlcOya8oK9tHddQgnRBMUoTYkCiDl8zuPffgx3qQ3sAdjj8fjeXpUM7ntcd/KeN4It8Ms
-qP5oOxUqyCX7hdd5BHs/EpcFMu20QJFXVRXAOhdbi9cgrnqzxP7v7sdp/9wKPkcCfeD2Nx+z
-HADVaqReG6ZM6Fg5tWn63rpcprLD1gBKVlE1k+9xA2rayI+n/UymmK+WloEcLpWTzyfTaOPC
-3CaBDGbA9BTnsV1f3dya1FsCC8QEcjsQuwIdnoaFTjnAV+GzDJgmAlxvKWlRRQnECsIxgCzT
-3Elq4nXXnGKFIeFZ1MRziS85ILQITNZb+8MBa4xVG2mniEuKBPRpEvlilidrD26y+31+omqP
-6eF4ejvj04EGMWUR6nwgstNrFX5j7yzmXZtcvV9LUCD3pqaY2q6vNm8iurAAIQsgEBMX+D0Q
-PV6LcR7UDswfVLOsuzWcgmuji7cnyYGm7tQx6L8z+LQO8X4wg8khowEVCx8gtzPveBTsp0tK
-jpUmVbRI6yIPJcjxMJzTE4gdXeppByYhi/q7VCOXnCmwQCO7lMeG45m0UCpP/NPqjHcnlfJs
-8UkVjigOYUD1IsKNpPEn114AwoBvb95zfE3FVb8J/qJ4eT1+v8D3gM+vfEzm28OTeTFFOZAt
-nNDCyma0mjE1XRsWKu7Eu6zQzeTKwFAxazCgQZd9eY4AfrBzM9dw9zZRLSNx9QuYBbCMxK3P
-2WfWjy2Qo46APTyekScI1Mrb6UXdUjNRiPiv0pDuhiBmFkqVDhmz+o5u2uEgfj2+7g/ouoVF
-PJ9Pu/cdfNidHi4vL7+Zhm8euGrgnmjUfSBwuiUHof6kA/LxINWqVpnkJ+RuFgPhNMEq/YPU
-5riyiVquwN5JgphGC1SCuaihWIPViuc7SGnPhpT2H+jsB8QrCPjQRufongEiYKXXX8iCWU3g
-bP1hrvq4PW0vkJ0+oLXm6O+am3zocsUP+usxXkipt6lTln0Q7IgNbpKoidDGgo8RpoEwp9El
-uf8ag1QFVw3ccbWHmyrW1mkbZJJYUylAb58tiBAx2ECVkz1s9apf4pMG3XNk1vzclQHTYTGk
-EgQQC5JTwOG2Q6VPolt6ZsK62ft3J0LQMFxEb9vb2nu3yShXg/o45LYbmQ7FDIS+MXg5HFc1
-aOz+/A+c7HoRw46OZOpNze54wnOKfDrG4pLbp53hKYpZV47yuLjjTd5YLzfpHFkrYYcLa+fa
-RPBykTSyuEu2bLK+1qGsZwIJ9mIBaJ4QcqER6pyiK3+k37R4BKEoQx4u3c34YHCagEZDFNWp
-6rZ2a652ru4xcWQEHawec4So+IxjC1XH5dqkRvYdQEdTSO8tUDcpnLPBTkSNvYJuDwXNVJE6
-PFWt05Hee7INhfsxk322LOQa3gRRoZm0QaE/DBP021Jvmkj+LqbMRebg4S5ja47dSj5ajOt1
-sVZ6eER3wxwNA3C+zZ2ZpTm+ZdYMLoHQpLry6oY3iXabc5/7v+PvBnOzTiS5RES+52yfZ3ew
-KYwilsnrY69zkRWJR3ggXccRENgYYZPvQ7Sud0PYwjk0uIuriVf7N+Bh/3K8kSROFVXLdWto
-MdU07wcOJxW55j9aipQl8YwBAA==
-
---qz44lacoijt2l6j4--
