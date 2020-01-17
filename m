@@ -2,95 +2,156 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 5BB5A14116B
-	for <lists+netdev@lfdr.de>; Fri, 17 Jan 2020 20:06:03 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A084E14118E
+	for <lists+netdev@lfdr.de>; Fri, 17 Jan 2020 20:19:43 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729375AbgAQTF7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 17 Jan 2020 14:05:59 -0500
-Received: from mail-io1-f65.google.com ([209.85.166.65]:39305 "EHLO
-        mail-io1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726761AbgAQTF7 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 17 Jan 2020 14:05:59 -0500
-Received: by mail-io1-f65.google.com with SMTP id c16so27138781ioh.6;
-        Fri, 17 Jan 2020 11:05:58 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:message-id:in-reply-to:references:subject:mime-version
-         :content-transfer-encoding;
-        bh=fRKHeayYr8iV/cXG+M7lT2xtOTZJWBbVT59Xh8S1MvU=;
-        b=O4ddfGiYLNJyMqHmd9cdLomXshl9mq5RBY/rio3IRZX5qlYNCb5CrZUBjMiiOMKwfx
-         FTuD4iGUfx7qEP4mikji1CnskdXSlioR9eYCsLMnPuQKSLg9QoSoWYXHUqYJ6x4H/wRz
-         lkgIA/01MKdwTcd9z8YbyfG5uJy3Wrtv0OIE2CR6WDNuhkkkkSDkIX6m12n1wWJ8qKce
-         XjEQCtNIP414cXJqd7zm4FmXvZg/OwIYmncqSSme2rCpmIdhToSdxYPvPyCDSBjGSRhO
-         0QtKZUMRY6Hz4ZEi4yJTW8D4dsstxcmYDqWc9ZTU2guydfrUy/atcWLf2GMIazobZu4e
-         VUPw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:message-id:in-reply-to:references
-         :subject:mime-version:content-transfer-encoding;
-        bh=fRKHeayYr8iV/cXG+M7lT2xtOTZJWBbVT59Xh8S1MvU=;
-        b=ecsydvStmcVmQ0k58fW9wtt7hVLaHLAjqYye3kobC0P+x5QJgdrvwmkg3IZVr6UEG6
-         GXnpMXdyf2LzLyndiaxIlWMr+l5+n2sIcG7Rz7fjgDBwRD7ZkxGo1PZEahnbg6RY14Kf
-         tLq7h3xivNf4ywjBUTbvz5Yhejjk+qeKsMJBcMO0Fjb8llpa/laGBO32MBpg+WBkxKaV
-         PH7AXVVEfwYw1t0FqLmXoC6WeLmR0PhFKXIuNz+faMJn/M+5Nl4Ji3CQkeu96q8+knjY
-         iZxET9zm1b4S2tVneNLDW1tvbWWwjwp86NR7CxMekdx15GbhKqESL25pIbS+8SpT2jtv
-         kZEQ==
-X-Gm-Message-State: APjAAAVCkKIfsHyWBii7REkecm/wVVVhJyv1+Lh8ihCtaF54EXrmewOY
-        XbV9y/SeRjIZRZe03rTQQPI=
-X-Google-Smtp-Source: APXvYqxvaEi45NJAUlpGewyDxYkn1hQm+L6k2QrW2Y+cwUJIGg/RBVW5wwMRPnfJJHwUth74BMTpLQ==
-X-Received: by 2002:a6b:4917:: with SMTP id u23mr846824iob.202.1579287958380;
-        Fri, 17 Jan 2020 11:05:58 -0800 (PST)
-Received: from localhost ([184.63.162.180])
-        by smtp.gmail.com with ESMTPSA id w16sm8155740ilq.5.2020.01.17.11.05.56
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 17 Jan 2020 11:05:57 -0800 (PST)
-Date:   Fri, 17 Jan 2020 11:05:48 -0800
-From:   John Fastabend <john.fastabend@gmail.com>
-To:     syzbot <syzbot+d73682fcf7fee6982fe3@syzkaller.appspotmail.com>,
-        andriin@fb.com, ast@kernel.org, bpf@vger.kernel.org,
-        daniel@iogearbox.net, davem@davemloft.net,
-        john.fastabend@gmail.com, kafai@fb.com,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        songliubraving@fb.com, syzkaller-bugs@googlegroups.com, yhs@fb.com
-Message-ID: <5e22058cd468d_1e572abf7dd745bc48@john-XPS-13-9370.notmuch>
-In-Reply-To: <000000000000ffc1f1059c58e648@google.com>
-References: <000000000000ffc1f1059c58e648@google.com>
-Subject: RE: WARNING in sk_psock_drop
-Mime-Version: 1.0
-Content-Type: text/plain;
- charset=utf-8
-Content-Transfer-Encoding: 7bit
+        id S1729174AbgAQTTl (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 17 Jan 2020 14:19:41 -0500
+Received: from mail.katalix.com ([3.9.82.81]:39568 "EHLO mail.katalix.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1727573AbgAQTTl (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 17 Jan 2020 14:19:41 -0500
+Received: from localhost (82-69-49-219.dsl.in-addr.zen.co.uk [82.69.49.219])
+        (Authenticated sender: tom)
+        by mail.katalix.com (Postfix) with ESMTPSA id 7401886AB4;
+        Fri, 17 Jan 2020 19:19:39 +0000 (GMT)
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple; d=katalix.com; s=mail;
+        t=1579288779; bh=74vpcKE0MXpHMmWegpI222oNfdU/BelAhJvUgkL9FI8=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=0pkaZ+tj2K1RJhY5A6ypVj2eVRjCpd/Wfe1igiogFoEisHFaq6sF7qZHl8V0iLdqF
+         id2AZnGP+LqHhD5pJj0gxjtugsbuqXPti4kxHS/BX77M3vWh4oQuLE7iiPHsdNqIY4
+         yKAA1sdoBK5PJ4Ccm8rwlEAG8ZC3kkLNIasCSET7ZTuFn5HiBTB5fvvJTBf8Gxfzef
+         L3ekmn0KGZU3jHlDlYQ3b9najAnB+54Xdh+CbUF3gcN4PMuHR5ibHhjGeV6frnoyKY
+         s3gTefv8pf8RsYvEuj1MbB+/uZOX8wC4aDi6gzJON44HZ6pWw6UCKLcgK74ZLAlOYP
+         mPPB1PApSpzDg==
+Date:   Fri, 17 Jan 2020 19:19:39 +0000
+From:   Tom Parkin <tparkin@katalix.com>
+To:     Guillaume Nault <gnault@redhat.com>
+Cc:     Ridge Kennedy <ridgek@alliedtelesis.co.nz>, netdev@vger.kernel.org
+Subject: Re: [PATCH net] l2tp: Allow duplicate session creation with UDP
+Message-ID: <20200117191939.GB3405@jackdaw>
+References: <20200115223446.7420-1-ridge.kennedy@alliedtelesis.co.nz>
+ <20200116123854.GA23974@linux.home>
+ <20200116131223.GB4028@jackdaw>
+ <20200116190556.GA25654@linux.home>
+ <20200116212332.GD4028@jackdaw>
+ <alpine.DEB.2.21.2001171027090.9038@ridgek-dl.ws.atlnz.lc>
+ <20200117131848.GA3405@jackdaw>
+ <20200117142558.GB2743@linux.home>
+MIME-Version: 1.0
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="neYutvxvOLaeuPCA"
+Content-Disposition: inline
+In-Reply-To: <20200117142558.GB2743@linux.home>
+User-Agent: Mutt/1.9.4 (2018-02-28)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-syzbot wrote:
-> Hello,
-> 
-> syzbot found the following crash on:
-> 
-> HEAD commit:    93ad0f96 net: wan: lapbether.c: Use built-in RCU list chec..
-> git tree:       net
-> console output: https://syzkaller.appspot.com/x/log.txt?x=132caa76e00000
-> kernel config:  https://syzkaller.appspot.com/x/.config?x=7e89bd00623fe71e
-> dashboard link: https://syzkaller.appspot.com/bug?extid=d73682fcf7fee6982fe3
-> compiler:       gcc (GCC) 9.0.0 20181231 (experimental)
-> 
-> Unfortunately, I don't have any reproducer for this crash yet.
-> 
-> IMPORTANT: if you fix the bug, please add the following tag to the commit:
-> Reported-by: syzbot+d73682fcf7fee6982fe3@syzkaller.appspotmail.com
-> 
-> ------------[ cut here ]------------
-> WARNING: CPU: 1 PID: 11793 at include/net/sock.h:1578 sock_owned_by_me  
-> include/net/sock.h:1578 [inline]
-> WARNING: CPU: 1 PID: 11793 at include/net/sock.h:1578  
-> sk_psock_drop+0x5fa/0x7f0 net/core/skmsg.c:597
-> Kernel panic - not syncing: panic_on_warn set ...
-> CPU: 1 PID: 11793 Comm: syz-executor.3 Not tainted 5.5.0-rc5-syzkaller #0
-> Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS  
-> Google 01/01/2011
 
-I recently added this sock_owned_by_me so I'll take a look. Thanks for
-the report. Seems we have a case where its not held.
+--neYutvxvOLaeuPCA
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
+
+On  Fri, Jan 17, 2020 at 15:25:58 +0100, Guillaume Nault wrote:
+> On Fri, Jan 17, 2020 at 01:18:49PM +0000, Tom Parkin wrote:
+> > More generally, for v3 having the session ID be unique to the LCCE is
+> > required to make IP-encap work at all.  We can't reliably obtain the
+> > tunnel context from the socket because we've only got a 3-tuple
+> > address to direct an incoming frame to a given socket; and the L2TPv3
+> > IP-encap data packet header only contains the session ID, so that's
+> > literally all there is to work with.
+> >=20
+> I don't see how that differs from the UDP case. We should still be able
+> to get the corresponding socket and lookup the session ID in that
+> context. Or did I miss something? Sure, that means that the socket is
+> the tunnel, but is there anything wrong with that?
+
+It doesn't fundamentally differ from the UDP case.
+
+The issue is that if you're stashing tunnel context with the socket
+(as UDP currently does), then you're relying on the kernel's ability
+to deliver packets for a given tunnel on that tunnel's socket.
+
+In the UDP case this is normally easily done, assuming each UDP tunnel
+socket has a unique 5-tuple address.  So if peers allow the use of
+ports other than port 1701, it's normally not an issue.
+
+However, if you do get a 5-tuple clash, then packets may start
+arriving on the "wrong" socket.  In general this is a corner case
+assuming peers allow ports other than 1701 to be used, and so we don't
+see it terribly often.
+
+Contrast this with IP-encap.  Because we don't have ports, the 5-tuple
+address now becomes a 3-tuple address.  Suddenly it's quite easy to
+get a clash: two IP-encap tunnels between the same two peers would do
+it.
+
+Since we don't want to arbitrarily limit IP-encap tunnels to on per
+pair of peers, it's not practical to stash tunnel context with the
+socket in the IP-encap data path.
+
+> > If we relax the restriction for UDP-encap then it fixes your (Ridge's)
+> > use case; but it does impose some restrictions:
+> >=20
+> >  1. The l2tp subsystem has an existing bug for UDP encap where
+> >  SO_REUSEADDR is used, as I've mentioned.  Where the 5-tuple address of
+> >  two sockets clashes, frames may be directed to either socket.  So
+> >  determining the tunnel context from the socket isn't valid in this
+> >  situation.
+> >=20
+> >  For L2TPv2 we could fix this by looking the tunnel context up using
+> >  the tunnel ID in the header.
+> >=20
+> >  For L2TPv3 there is no tunnel ID in the header.  If we allow
+> >  duplicated session IDs for L2TPv3/UDP, there's no way to fix the
+> >  problem.
+> >=20
+> >  This sounds like a bit of a corner case, although its surprising how
+> >  many implementations expect all traffic over port 1701, making
+> >  5-tuple clashes more likely.
+> >=20
+> Hum, I think I understand your scenario better. I just wonder why one
+> would establish several tunnels over the same UDP or IP connection (and
+> I've also been surprised by all those implementations forcing 1701 as
+> source port).
+>
+
+Indeed, it's not ideal :-(
+
+> >  2. Part of the rationale for L2TPv3's approach to IDs is that it
+> >  allows the data plane to potentially be more efficient since a
+> >  session can be identified by session ID alone.
+> > =20
+> >  The kernel hasn't really exploited that fact fully (UDP encap
+> >  still uses the socket to get the tunnel context), but if we make
+> >  this change we'll be restricting the optimisations we might make
+> >  in the future.
+> >=20
+> > Ultimately it comes down to a judgement call.  Being unable to fix
+> > the SO_REUSEADDR bug would be the biggest practical headache I
+> > think.
+> And it would be good to have a consistent behaviour between IP and UDP
+> encapsulation. If one does a global session lookup, the other should
+> too.
+
+That would also be my preference.
+
+--neYutvxvOLaeuPCA
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAABCgAdFiEEsUkgyDzMwrj81nq0lIwGZQq6i9AFAl4iCMYACgkQlIwGZQq6
+i9B3Gwf/YTLDKkbhsENqDYa3tTBrno9kF4cjhlvObw5y4gYwHZrsJo96PmpVwy9M
+qzGWuqRwETHGhLmvfBc3mfQL9XRmjFn7jTAF9ZwxThOYRwQ9I+KoPI8apCHxkqzR
+IoroJHIr5M5J4Jw+jhUqVzlFeo4eW2NFbrw3JqwDauKj58iTBZ4k/WpOIoZWRi5D
+HWQRuCPWyBtGD0MvvYJ7b6oEq2+fsvfjl/AvPGSXmW3ps1MFfL6CojVGrea4eMDt
+EubCSs0S5CWzokkA1q0p8a5Lr3lul4DDW0UYVrMGLkIvPLCliKDg8b0cua+KvO0q
+0FVhuNh6qGvaPMVBMVnxgwyQ7GRYUA==
+=3SWH
+-----END PGP SIGNATURE-----
+
+--neYutvxvOLaeuPCA--
