@@ -2,98 +2,95 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 5CBCB14103A
-	for <lists+netdev@lfdr.de>; Fri, 17 Jan 2020 18:51:55 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D62E2141063
+	for <lists+netdev@lfdr.de>; Fri, 17 Jan 2020 19:03:33 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727115AbgAQRvy (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 17 Jan 2020 12:51:54 -0500
-Received: from mail-pl1-f193.google.com ([209.85.214.193]:43610 "EHLO
-        mail-pl1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726603AbgAQRvx (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 17 Jan 2020 12:51:53 -0500
-Received: by mail-pl1-f193.google.com with SMTP id p27so10133459pli.10
-        for <netdev@vger.kernel.org>; Fri, 17 Jan 2020 09:51:53 -0800 (PST)
+        id S1728779AbgAQSDa (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 17 Jan 2020 13:03:30 -0500
+Received: from mail-qk1-f195.google.com ([209.85.222.195]:40338 "EHLO
+        mail-qk1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726603AbgAQSD3 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 17 Jan 2020 13:03:29 -0500
+Received: by mail-qk1-f195.google.com with SMTP id c17so23517156qkg.7;
+        Fri, 17 Jan 2020 10:03:29 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=ogZZw9cGP43NAH71MduMBMD2Lu6DygRhtQl+NTZ7djc=;
-        b=EFkLCw8TrJAaes2D1C8nBgOBqQejvK1P0UbJg1bHFnr6j17TAsd1QBmebS7t6ZCvTO
-         Ij7EovLFYaUnYIJDUWxeH1LlAw5rCFkm0H9mPgNGU/IUn7WIT/hUkmJgiml6FXtkXP17
-         6qiGwB8F5nJM7YURrJ+5QHqnr4tFztt32mfNRjE4r1Xd5U0yngLBuaddnXJvYFLfAkD7
-         NMEDIDcsUPyTSJ/Q7lygjb0XNN5B2vUhu+/lqD10HlRT9ft9u11N8WT5GPTPyo2OPMFy
-         3MscKtnKokjMKfDCwOUX8MM4U3VfSOEHSbfaALwhPjg6iLcAbqnnVpQ+f0T6i6MBWzTB
-         zR5Q==
+        h=sender:from:date:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=xU4VBanglVPXt7ngdr39qz422X3JP6/qDcudzGbwI4E=;
+        b=Ltw0xlbbDd3T6Yq0dSVi4aqLfuk0vFTBHazMFWMSYU8yiqLSSuA0lDb/1xen40XcH0
+         cqOv83k0WRiJqxXhwTJPNZJkmtgbduF1fYpW6H/8PtCLXjM+7SJ3caItDskt8EN0ZIN6
+         o5/tHmOftvWd7Cg+FIC69Yv6fjIhe8VcLA3qiRgRqODaq2oSW5Ef5wqb3iMP52WeZLqI
+         iAzHGocaNXnRyhho0iERF5Clxmxr418Q/nESOJft0SqV4aShORm8SZj1/l5JkfOVHZZc
+         mw1FYoYKH6FBNiq3vB/Nbizzo2k3wbWBjv0DGXIp1yICX6k9/A7nUW4UxvrzcNh0cR5p
+         ilUg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=ogZZw9cGP43NAH71MduMBMD2Lu6DygRhtQl+NTZ7djc=;
-        b=AJTuuQ+r9H0+RtpciooSgvjZ43F6R7Gjq/PT3dpDXVxDHZKHh2tAy2+ZTx54MV89hZ
-         oawzfH/M54kgeAfKpcC5MORiPTrI0Z5Be090PcUVovSaAm4P6n+XcI8ZmGwqumTrUkUq
-         UxDuyXs+RI/R32c0gMxJu1wMKLEVuhWpEe/u/Evq9PHF1bLsoxJTVX13GF6/1nnxZQaK
-         zwbbG1b1xSqgko84u/WuT0chzD/ecufMOU/Zp6jFW6lRdLz0U18aEdj+4W0F+P3u3rEq
-         g/jNEwjAGiPpmimrBEiYpR46uCy8+QydmzQ75DoR1ibUHSCnPRqSBnwyAEdbsvvxkJTQ
-         DSHg==
-X-Gm-Message-State: APjAAAVC7J2/CPExjYQvBZ1Z11ZH/pZO7LXPN2FV0vKHU8WsTalz5YoJ
-        rXmPbU6NskcSER7FbqpkPLhDqGaG
-X-Google-Smtp-Source: APXvYqzps3xdDAL5ZlSLRiSYAd6LE+EfHnzCOo18UA01LjRzXuQBUsWM5IMt57oHeJ+sjMfclPOIAQ==
-X-Received: by 2002:a17:902:aa45:: with SMTP id c5mr182943plr.305.1579283513191;
-        Fri, 17 Jan 2020 09:51:53 -0800 (PST)
-Received: from [192.168.86.235] (c-73-241-150-58.hsd1.ca.comcast.net. [73.241.150.58])
-        by smtp.gmail.com with ESMTPSA id l21sm30062123pff.100.2020.01.17.09.51.52
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 17 Jan 2020 09:51:52 -0800 (PST)
-Subject: Re: [PATCH net 3/3] udp: avoid bulk memory scheduling on memory
- pressure.
-To:     Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Willem de Bruijn <willemdebruijn.kernel@gmail.com>
-References: <cover.1579281705.git.pabeni@redhat.com>
- <749f8a12b2caf634249e7590597f0c53e5b37c7a.1579281705.git.pabeni@redhat.com>
-From:   Eric Dumazet <eric.dumazet@gmail.com>
-Message-ID: <e1417ad9-8c2f-7640-4bed-96aa753f28f3@gmail.com>
-Date:   Fri, 17 Jan 2020 09:51:51 -0800
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.2.2
+        h=x-gm-message-state:sender:from:date:to:cc:subject:message-id
+         :references:mime-version:content-disposition:in-reply-to:user-agent;
+        bh=xU4VBanglVPXt7ngdr39qz422X3JP6/qDcudzGbwI4E=;
+        b=An6DJfFAcPoL/RlurF2u8FrMJ9u8xCSg6w8V4ggqRxLICijPI1KtZ0Y0eCQUV5Wbf0
+         hvAeBG2iJ2uor1+n9UpXuYV41VapI9zoe+3j+RB2wvEthDOa7KTT9xfQqrUx+3RJQ8T/
+         58dStQDUB32OnooZhBrB83oYxNBYwNtYt2ydfjv1Y0PmyIcwpQK0REpAGKU12b1LEGga
+         m/8uXQQgyiSt8DEAbh2J9UI6Asy1F6Tx9IsRqDuMNhDSFKqDgXCJ1G+/LyGc21BRT90F
+         Os93JIjETf+dARxcmCzCce/VNwvETC1n9zHBXMVMXcV9Ha6ba/FP9DJqxCH0LceVe9M0
+         awqA==
+X-Gm-Message-State: APjAAAU4EVp4pYMygrIKfBd22a0hqk5czRuADFtFYc9unk6iPcvXMEM2
+        O9aoePs82Cyp30eKKBsDnBM=
+X-Google-Smtp-Source: APXvYqyCPiG09VXkOIjOy2jkrRHpRdY7DZQqsAECIdmiP32K/o24L2Khmyz3qUwMqv7EC7M+coGglw==
+X-Received: by 2002:a37:664d:: with SMTP id a74mr39032122qkc.4.1579284208522;
+        Fri, 17 Jan 2020 10:03:28 -0800 (PST)
+Received: from rani.riverdale.lan ([2001:470:1f07:5f3::b55f])
+        by smtp.gmail.com with ESMTPSA id q35sm13523418qta.19.2020.01.17.10.03.27
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 17 Jan 2020 10:03:28 -0800 (PST)
+From:   Arvind Sankar <nivedita@alum.mit.edu>
+X-Google-Original-From: Arvind Sankar <arvind@rani.riverdale.lan>
+Date:   Fri, 17 Jan 2020 13:03:26 -0500
+To:     Eric Dumazet <eric.dumazet@gmail.com>
+Cc:     Peter Zijlstra <peterz@infradead.org>,
+        Shaokun Zhang <zhangshaokun@hisilicon.com>,
+        David Miller <davem@davemloft.net>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, jinyuqi@huawei.com,
+        kuznet@ms2.inr.ac.ru, yoshfuji@linux-ipv6.org, edumazet@google.com,
+        guoyang2@huawei.com, Will Deacon <will@kernel.org>
+Subject: Re: [PATCH] net: optimize cmpxchg in ip_idents_reserve
+Message-ID: <20200117180324.GA2623847@rani.riverdale.lan>
+References: <1579058620-26684-1-git-send-email-zhangshaokun@hisilicon.com>
+ <20200116.042722.153124126288244814.davem@davemloft.net>
+ <930faaff-4d18-452d-2e44-ef05b65dc858@gmail.com>
+ <1b3aaddf-22f5-1846-90f1-42e68583c1e4@gmail.com>
+ <430496fc-9f26-8cb4-91d8-505fda9af230@hisilicon.com>
+ <20200117123253.GC14879@hirez.programming.kicks-ass.net>
+ <7e6c6202-24bb-a532-adde-d53dd6fb14c3@gmail.com>
 MIME-Version: 1.0
-In-Reply-To: <749f8a12b2caf634249e7590597f0c53e5b37c7a.1579281705.git.pabeni@redhat.com>
 Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
+In-Reply-To: <7e6c6202-24bb-a532-adde-d53dd6fb14c3@gmail.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-
-
-On 1/17/20 9:27 AM, Paolo Abeni wrote:
-> Williem reported that after commit 0d4a6608f68c ("udp: do rmem bulk
-> free even if the rx sk queue is empty") the memory allocated by
-> an almost idle system with many UDP sockets can grow a lot.
+On Fri, Jan 17, 2020 at 08:35:07AM -0800, Eric Dumazet wrote:
 > 
-> This change addresses the issue enabling memory pressure tracking
-> for UDP and flushing the fwd allocated memory on dequeue if the
-> UDP protocol is under memory pressure.
 > 
-> Note that with this patch applied, the system allocates more
-> liberally memory for UDP sockets while the total memory usage is
-> below udp_mem[1], while the vanilla kernel would allow at most a
-> single page per socket when UDP memory usage goes above udp_mem[0]
-> - see __sk_mem_raise_allocated().
+> On 1/17/20 4:32 AM, Peter Zijlstra wrote:
 > 
-> Reported-and-diagnosed-by: Willem de Bruijn <willemdebruijn.kernel@gmail.com>
-> Fixes: commit 0d4a6608f68c ("udp: do rmem bulk free even if the rx sk queue is empty")
+> > 
+> > That's crazy, just accept that UBSAN is taking bonghits and ignore it.
+> > Use atomic_add_return() unconditionally.
+> > 
+> 
+> Yes, we might simply add a comment so that people do not bug us if
+> their compiler is too old.
+> 
+> /* If UBSAN reports an error there, please make sure your compiler
+>  * supports -fno-strict-overflow before reporting it.
+>  */
+> return atomic_add_return(segs + delta, p_id) - segs;
+> 
 
-Not a proper Fixes: tag
-
-Frankly I would rather revert this patch, unless you show how much things were improved.
-
-Where in the UDP code the forward allocations will be released while udp_memory_pressure
-is hit ?
-
-TCP has many calls to sk_mem_reclaim() and sk_mem_reclaim_partial() to try
-to gracefully exit memory pressure.
-
+Do we need that comment any more? The flag was apparently introduced in
+gcc-4.2 and we only support 4.6+ anyway?
