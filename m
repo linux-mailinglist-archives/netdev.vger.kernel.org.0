@@ -2,132 +2,206 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 02410140C29
-	for <lists+netdev@lfdr.de>; Fri, 17 Jan 2020 15:12:43 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2A183140C66
+	for <lists+netdev@lfdr.de>; Fri, 17 Jan 2020 15:26:07 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727029AbgAQOMl (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 17 Jan 2020 09:12:41 -0500
-Received: from mail-eopbgr130084.outbound.protection.outlook.com ([40.107.13.84]:3056
-        "EHLO EUR01-HE1-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1726587AbgAQOMl (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 17 Jan 2020 09:12:41 -0500
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=ICx4vOUtHhz6uHT6wCqn4J0MssNiHfvJKWJ/d2mn8bDene7LQ5CoZMQaUgBtfFEoRAFYw00L8YnC+A4/Wt1AJPEpUlOO+ePg9OcV4QJp/EYGBjGFXT3AU4ReKRCHFNtQ9CCHD17VeeZsbBppZzGpc/79VrR9BwE/UFUxKuMDksCaM9qgpwL9aSy1Lw8I83am5vXF3bRGkEtJraBcA2GUVx4Mn9jXtj1OexV+V/+v5UcWar6ZV5OdKigEBsJCq8GI3qdlup4ng2XhzcQXbj6zhhep0RUvUA93aDp0TMLvmNEsO78SpR2CX+26g2Lf+4/PAFDCv4KTIO4U3a8d9+pi0A==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=ecJpKM6ZOBTomW7zOQOag7Vn747Fuvk4qAGIeDeK+6Q=;
- b=NRskaMuRO6ueagOqjmC/jk51xyeTo4u2pRl8+xVly5u9S/79ETnUlnp3cmKQ99EmbCu7p3h9e3HMVJEZzodpj75OCajNIjL4n7ZpHFqqGsqut5xyDenQm6cbqcWSBPr7LZz3vHeVHp0ehMBwgftGR+uCpgnhk8Zx9zd2WbqBPJjGgZm9ihCcmBai95wNqJHMsp7xqk14oxXKRVu8bcTeyWQfFIbKtdYC5Z3t1usBLTPoDNdy5fAoxBv0LWlKJucMU4iqysCwbkIuVRj03ZA/WFuSNXIS5XTHzvY1V8wzYLJ98LtRo+EuwTF4S90PMb/zYrLSeCTQ93GQ49rx+MFpWQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=mellanox.com; dmarc=pass action=none header.from=mellanox.com;
- dkim=pass header.d=mellanox.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Mellanox.com;
- s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=ecJpKM6ZOBTomW7zOQOag7Vn747Fuvk4qAGIeDeK+6Q=;
- b=GhoOZhY6WGB9yBKjhfif6bbz/xNsXCy2uxtJ1YPObwJVPuK9QGrFcY2aW0EFjDtSr91QXneTJVIcci7VCKQVUYTUQWDAkcyRxN8m2VEULZ91AQPx0UWKDS+3turtWtdTMcPI+r4NNrKwtJm5zBXIW21grzh0I1VUCxyrTomJMiE=
-Received: from VI1PR05MB4141.eurprd05.prod.outlook.com (52.133.14.15) by
- VI1PR05MB4671.eurprd05.prod.outlook.com (20.176.3.156) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.2644.22; Fri, 17 Jan 2020 14:12:35 +0000
-Received: from VI1PR05MB4141.eurprd05.prod.outlook.com
- ([fe80::1c00:7925:d5c6:d60d]) by VI1PR05MB4141.eurprd05.prod.outlook.com
- ([fe80::1c00:7925:d5c6:d60d%7]) with mapi id 15.20.2644.015; Fri, 17 Jan 2020
- 14:12:35 +0000
-Received: from mlx.ziepe.ca (142.68.57.212) by MN2PR10CA0023.namprd10.prod.outlook.com (2603:10b6:208:120::36) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.2644.20 via Frontend Transport; Fri, 17 Jan 2020 14:12:35 +0000
-Received: from jgg by mlx.ziepe.ca with local (Exim 4.90_1)     (envelope-from <jgg@mellanox.com>)      id 1isSMS-0008Nn-5n; Fri, 17 Jan 2020 10:12:32 -0400
-From:   Jason Gunthorpe <jgg@mellanox.com>
-To:     "santosh.shilimkar@oracle.com" <santosh.shilimkar@oracle.com>,
-        "David S . Miller" <davem@davemloft.net>
-CC:     Leon Romanovsky <leonro@mellanox.com>,
-        Doug Ledford <dledford@redhat.com>,
-        RDMA mailing list <linux-rdma@vger.kernel.org>,
-        Hans Westgaard Ry <hans.westgaard.ry@oracle.com>,
-        Moni Shoua <monis@mellanox.com>,
-        linux-netdev <netdev@vger.kernel.org>
-Subject: Re: [PATCH mlx5-next 00/10] Use ODP MRs for kernel ULPs
-Thread-Topic: [PATCH mlx5-next 00/10] Use ODP MRs for kernel ULPs
-Thread-Index: AQHVy6FvxnMGsXYFhEqsZB6HjluKCafs3buAgAB0qICAAF49AIABOG4A
-Date:   Fri, 17 Jan 2020 14:12:35 +0000
-Message-ID: <20200117141232.GX20978@mellanox.com>
-References: <20200115124340.79108-1-leon@kernel.org>
- <20200116065926.GD76932@unreal> <20200116135701.GG20978@mellanox.com>
- <6ef540ae-233f-50cd-d096-3eeae31410cc@oracle.com>
-In-Reply-To: <6ef540ae-233f-50cd-d096-3eeae31410cc@oracle.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-clientproxiedby: MN2PR10CA0023.namprd10.prod.outlook.com
- (2603:10b6:208:120::36) To VI1PR05MB4141.eurprd05.prod.outlook.com
- (2603:10a6:803:44::15)
-authentication-results: spf=none (sender IP is )
- smtp.mailfrom=jgg@mellanox.com; 
-x-ms-exchange-messagesentrepresentingtype: 1
-x-originating-ip: [142.68.57.212]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-ht: Tenant
-x-ms-office365-filtering-correlation-id: 2afb99ab-a28d-4259-bc36-08d79b574d16
-x-ms-traffictypediagnostic: VI1PR05MB4671:|VI1PR05MB4671:
-x-ms-exchange-transport-forked: True
-x-microsoft-antispam-prvs: <VI1PR05MB46710F2DD77E6D31D858C3B5CF310@VI1PR05MB4671.eurprd05.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:8882;
-x-forefront-prvs: 0285201563
-x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(4636009)(376002)(136003)(39860400002)(396003)(366004)(346002)(189003)(199004)(8676002)(86362001)(66556008)(64756008)(66446008)(66946007)(508600001)(81156014)(8936002)(2906002)(26005)(81166006)(33656002)(4326008)(53546011)(66476007)(5660300002)(71200400001)(316002)(1076003)(9746002)(9786002)(52116002)(36756003)(2616005)(186003)(54906003)(110136005)(24400500001);DIR:OUT;SFP:1101;SCL:1;SRVR:VI1PR05MB4671;H:VI1PR05MB4141.eurprd05.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;MX:1;A:1;
-received-spf: None (protection.outlook.com: mellanox.com does not designate
- permitted sender hosts)
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: RMRThBATWlU6fQ8b9sZ12+ans0JW5ewi6gttuPU51nvjOBDGBLgM2us0QP+eHlkd8+klTIQYUFg2rUGFn8YlYW9UJC0KEPoI8Y9WM8tpwnddMMqZ2rpWop4EZjNN6duqL09RIHeAvvxg0cPV46R0YYvdC00cXbgS7mkDdrEDVZWmSHlkDxkTkBCxCf4JyToQ8KVZO/f5xRJItdVU51lwQDfTk83DLsZ3HlIlwzhlGredVqoRBpEcr6bkF8yDB1vRmiJIXupqZfbWJdOLyoplG1VCQpQibr2HLPdF0B5ejs1W2nvDsqd8ClVuYrmp9w3agOR9E+EfztKzIjVnqObOc4fID0nuhquTkskqPROrdRH6lIqYEnmFBx3I4gNzr13IwJBmMbugvGCVQGXklEZsN6wZlA6N004yLEKq1e8lDB7jLnz/zKgIrSk+jzY8ggGcoydIVQByGhdgQgg2c8HSV2oJE7s/DnGnx4JsQ/T5AG+ckHKVvBCH4FPX2ZSN54dX
-Content-Type: text/plain; charset="us-ascii"
-Content-ID: <566ED0466275DB4FABE2EA49719274FB@eurprd05.prod.outlook.com>
-Content-Transfer-Encoding: quoted-printable
+        id S1727007AbgAQO0F (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 17 Jan 2020 09:26:05 -0500
+Received: from us-smtp-1.mimecast.com ([207.211.31.81]:47917 "EHLO
+        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1726908AbgAQO0F (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 17 Jan 2020 09:26:05 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1579271163;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=5uUBZeJtzrn3w0iibPYR5cr7grsptNEJmjw7fstmemw=;
+        b=RarpSE9JTl2M07ziXAiu2u0QVPERJiBsQGrtrYFlmKaxjuqA3LT3MmGoHVIP8Xq1wYI9qj
+        ZckeZ6LLTYI8khI2lsbxzT8vFLsoXtSbq6wU0t1WjiCEuiYjqNUJzdirf+5329YTaEK1HU
+        JpOvDzlMjbjPy5Ev1tmGmfGfmahCkrQ=
+Received: from mail-wm1-f72.google.com (mail-wm1-f72.google.com
+ [209.85.128.72]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-245-qA7qdIypNV-uZldxT8PWNA-1; Fri, 17 Jan 2020 09:26:02 -0500
+X-MC-Unique: qA7qdIypNV-uZldxT8PWNA-1
+Received: by mail-wm1-f72.google.com with SMTP id f25so2331576wmb.1
+        for <netdev@vger.kernel.org>; Fri, 17 Jan 2020 06:26:02 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=5uUBZeJtzrn3w0iibPYR5cr7grsptNEJmjw7fstmemw=;
+        b=OMHbMaGS+eUQ/WHrbWVUE4cYi/34jKUBxzkh+hF9fjKZ0zfPOgrnIe+qlNmhsOXVkH
+         mN/gffs9cpMH0ddOrJn/Md4UmlVxuO0jlYULfiLCYkKnz+ax8lt62+9pG6Xq9Gw2QSun
+         mOO7p80MpbNHi1got7NdfnWb4IQwdihWuz+io2BiSKR3aY/I92xOGhsAWk6RzH72hzQi
+         w7/0tejnDrl9EDKGZF9XtmHPmUvaEbngUgYP2WV/SDojEUYPMAl0OigonwnaI+KX3P0b
+         79rd39gW8QEN5AGmwezA6e9kvsah6BK67OkmAC2YHZVPlrpzJeU7C0vmD7o61+O+/CIh
+         K0ZA==
+X-Gm-Message-State: APjAAAUH/wVtwMOLJpHd0Nqo8RNdtOQg55DezC4bxOagEaBagPuq0LA8
+        ekPqLgSSdwYMSOyi/OfQhxwcPyW4rvR4BLb1HPj7Mikpc32VIVZIBnFCJ1ayigZaIwP50fV20OY
+        E3ZASEew72elkb/+6
+X-Received: by 2002:adf:f003:: with SMTP id j3mr3379983wro.423.1579271160920;
+        Fri, 17 Jan 2020 06:26:00 -0800 (PST)
+X-Google-Smtp-Source: APXvYqzX1mwztdliCObRcl02kdbMI1gqL0Sdgh+qyJk2W4b0pBG423rCHLjBQTGtlwDqRJl5oC9+hg==
+X-Received: by 2002:adf:f003:: with SMTP id j3mr3379951wro.423.1579271160619;
+        Fri, 17 Jan 2020 06:26:00 -0800 (PST)
+Received: from linux.home (2a01cb058a4e7100d3814d1912515f67.ipv6.abo.wanadoo.fr. [2a01:cb05:8a4e:7100:d381:4d19:1251:5f67])
+        by smtp.gmail.com with ESMTPSA id j12sm34688293wrt.55.2020.01.17.06.25.59
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 17 Jan 2020 06:25:59 -0800 (PST)
+Date:   Fri, 17 Jan 2020 15:25:58 +0100
+From:   Guillaume Nault <gnault@redhat.com>
+To:     Tom Parkin <tparkin@katalix.com>
+Cc:     Ridge Kennedy <ridgek@alliedtelesis.co.nz>, netdev@vger.kernel.org
+Subject: Re: [PATCH net] l2tp: Allow duplicate session creation with UDP
+Message-ID: <20200117142558.GB2743@linux.home>
+References: <20200115223446.7420-1-ridge.kennedy@alliedtelesis.co.nz>
+ <20200116123854.GA23974@linux.home>
+ <20200116131223.GB4028@jackdaw>
+ <20200116190556.GA25654@linux.home>
+ <20200116212332.GD4028@jackdaw>
+ <alpine.DEB.2.21.2001171027090.9038@ridgek-dl.ws.atlnz.lc>
+ <20200117131848.GA3405@jackdaw>
 MIME-Version: 1.0
-X-OriginatorOrg: Mellanox.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 2afb99ab-a28d-4259-bc36-08d79b574d16
-X-MS-Exchange-CrossTenant-originalarrivaltime: 17 Jan 2020 14:12:35.6568
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: a652971c-7d2e-4d9b-a6a4-d149256f461b
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: iZ6XDP0cqUB4mq3j1BzeUHBCEDG34lZf3/Hz0tOpYxqCvNdkICp7F3cSdW/bfwDqMs/5MRuxlcSNjtoNVgdL7A==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR05MB4671
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20200117131848.GA3405@jackdaw>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Jan 16, 2020 at 11:34:18AM -0800, santosh.shilimkar@oracle.com wrot=
-e:
-> On 1/16/20 5:57 AM, Jason Gunthorpe wrote:
-> > On Thu, Jan 16, 2020 at 06:59:29AM +0000, Leon Romanovsky wrote:
-> > > >   45 files changed, 559 insertions(+), 256 deletions(-)
-> > >=20
-> > > Thanks Santosh for your review.
-> > >=20
-> > > David,
-> > > Is it ok to route those patches through RDMA tree given the fact that
-> > > we are touching a lot of files in drivers/infiniband/* ?
-> > >=20
-> > > There is no conflict between netdev and RDMA versions of RDS, but to =
-be
-> > > on safe side, I'll put all this code to mlx5-next tree.
-> >=20
-> > Er, lets not contaminate the mlx5-next with this..
-> >=20
-> > It looks like it applies clean to -rc6 so if it has to be in both
-> > trees a clean PR against -rc5/6 is the way to do it.
-> >=20
-> > Santos, do you anticipate more RDS patches this cycle?
-> >=20
->=20
-> Not for upcoming merge window afaik.
+On Fri, Jan 17, 2020 at 01:18:49PM +0000, Tom Parkin wrote:
+> On  Fri, Jan 17, 2020 at 10:50:55 +1300, Ridge Kennedy wrote:
+> > On Thu, 16 Jan 2020, Tom Parkin wrote:
+> > 
+> > > On  Thu, Jan 16, 2020 at 20:05:56 +0100, Guillaume Nault wrote:
+> > > > On Thu, Jan 16, 2020 at 01:12:24PM +0000, Tom Parkin wrote:
+> > > > > I agree with you about the possibility for cross-talk, and I would
+> > > > > welcome l2tp_ip/ip6 doing more validation.  But I don't think we should
+> > > > > ditch the global list.
+> > > > > 
+> > > > > As per the RFC, for L2TPv3 the session ID should be a unique
+> > > > > identifier for the LCCE.  So it's reasonable that the kernel should
+> > > > > enforce that when registering sessions.
+> > > > > 
+> > > > I had never thought that the session ID could have global significance
+> > > > in L2TPv3, but maybe that's because my experience is mostly about
+> > > > L2TPv2. I haven't read RFC 3931 in detail, but I can't see how
+> > > > restricting the scope of sessions to their parent tunnel would conflict
+> > > > with the RFC.
+> > > 
+> > > Sorry Guillaume, I responded to your other mail without reading this
+> > > one.
+> > > 
+> > > I gave more detail in my other response: it boils down to how RFC 3931
+> > > changes the use of IDs in the L2TP header.  Data packets for IP or UDP
+> > > only contain the 32-bit session ID, and hence this must be unique to
+> > > the LCCE to allow the destination session to be successfully
+> > > identified.
+> > > 
+> > > > > When you're referring to cross-talk, I wonder whether you have in mind
+> > > > > normal operation or malicious intent?  I suppose it would be possible
+> > > > > for someone to craft session data packets in order to disrupt a
+> > > > > session.
+> > > > > 
+> > > > What makes me uneasy is that, as soon as the l2tp_ip or l2tp_ip6 module
+> > > > is loaded, a peer can reach whatever L2TPv3 session exists on the host
+> > > > just by sending an L2TP_IP packet to it.
+> > > > I don't know how practical it is to exploit this fact, but it looks
+> > > > like it's asking for trouble.
+> > > 
+> > > Yes, I agree, although practically it's only a slightly easier
+> > > "exploit" than L2TP/UDP offers.
+> > > 
+> > > The UDP case requires a rogue packet to be delivered to the correct
+> > > socket AND have a session ID matching that of one in the associated
+> > > tunnel.
+> > > 
+> > > It's a slightly more arduous scenario to engineer than the existing
+> > > L2TPv3/IP case, but only a little.
+> > > 
+> > > I also don't know how practical this would be to leverage to cause
+> > > problems.
+> > > 
+> > > > > For normal operation, you just need to get the wrong packet on the
+> > > > > wrong socket to run into trouble of course.  In such a situation
+> > > > > having a unique session ID for v3 helps you to determine that
+> > > > > something has gone wrong, which is what the UDP encap recv path does
+> > > > > if the session data packet's session ID isn't found in the context of
+> > > > > the socket that receives it.
+> > > > Unique global session IDs might help troubleshooting, but they also
+> > > > break some use cases, as reported by Ridge. At some point, we'll have
+> > > > to make a choice, or even add a knob if necessary.
+> > > 
+> > > I suspect we need to reach agreement on what RFC 3931 implies before
+> > > making headway on what the kernel should ideally do.
+> > > 
+> > > There is perhaps room for pragmatism given that the kernel
+> > > used to be more permissive prior to dbdbc73b4478, and we weren't
+> > > inundated with reports of session ID clashes.
+> > > 
+> > 
+> > A knob (module_param?) to enable the permissive behaviour would certainly
+> > work for me.
+> 
+> I think a knob might be the worst of both worlds.  It'd be more to test,
+> and more to document.  I think explaining to a user when they'd want
+> to use the knob might be quite involved.  So personally I'd sooner
+> either make the change or not.
+> 
+Yes, I'd also prefer to not have a knob, if possible.
 
-In this case DaveM, will you ack and we can take it through RDMA?
+> More generally, for v3 having the session ID be unique to the LCCE is
+> required to make IP-encap work at all.  We can't reliably obtain the
+> tunnel context from the socket because we've only got a 3-tuple
+> address to direct an incoming frame to a given socket; and the L2TPv3
+> IP-encap data packet header only contains the session ID, so that's
+> literally all there is to work with.
+> 
+I don't see how that differs from the UDP case. We should still be able
+to get the corresponding socket and lookup the session ID in that
+context. Or did I miss something? Sure, that means that the socket is
+the tunnel, but is there anything wrong with that?
 
-The RDMA pieces look OK to me, like Santos I have reviewed many
-versions of this already..
+> If we relax the restriction for UDP-encap then it fixes your (Ridge's)
+> use case; but it does impose some restrictions:
+> 
+>  1. The l2tp subsystem has an existing bug for UDP encap where
+>  SO_REUSEADDR is used, as I've mentioned.  Where the 5-tuple address of
+>  two sockets clashes, frames may be directed to either socket.  So
+>  determining the tunnel context from the socket isn't valid in this
+>  situation.
+> 
+>  For L2TPv2 we could fix this by looking the tunnel context up using
+>  the tunnel ID in the header.
+> 
+>  For L2TPv3 there is no tunnel ID in the header.  If we allow
+>  duplicated session IDs for L2TPv3/UDP, there's no way to fix the
+>  problem.
+> 
+>  This sounds like a bit of a corner case, although its surprising how
+>  many implementations expect all traffic over port 1701, making
+>  5-tuple clashes more likely.
+> 
+Hum, I think I understand your scenario better. I just wonder why one
+would establish several tunnels over the same UDP or IP connection (and
+I've also been surprised by all those implementations forcing 1701 as
+source port).
 
-Thanks,
-Jason
+>  2. Part of the rationale for L2TPv3's approach to IDs is that it
+>  allows the data plane to potentially be more efficient since a
+>  session can be identified by session ID alone.
+>  
+>  The kernel hasn't really exploited that fact fully (UDP encap
+>  still uses the socket to get the tunnel context), but if we make
+>  this change we'll be restricting the optimisations we might make
+>  in the future.
+> 
+> Ultimately it comes down to a judgement call.  Being unable to fix
+> the SO_REUSEADDR bug would be the biggest practical headache I
+> think.
+And it would be good to have a consistent behaviour between IP and UDP
+encapsulation. If one does a global session lookup, the other should
+too.
+
