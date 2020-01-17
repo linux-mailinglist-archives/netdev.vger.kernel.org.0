@@ -2,135 +2,99 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id C8B87141486
-	for <lists+netdev@lfdr.de>; Fri, 17 Jan 2020 23:56:20 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 27A7C1414DC
+	for <lists+netdev@lfdr.de>; Sat, 18 Jan 2020 00:36:48 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728927AbgAQW4P (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 17 Jan 2020 17:56:15 -0500
-Received: from mail-pj1-f73.google.com ([209.85.216.73]:51692 "EHLO
-        mail-pj1-f73.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729122AbgAQW4P (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 17 Jan 2020 17:56:15 -0500
-Received: by mail-pj1-f73.google.com with SMTP id h2so4930075pji.1
-        for <netdev@vger.kernel.org>; Fri, 17 Jan 2020 14:56:14 -0800 (PST)
+        id S1730191AbgAQXgo (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 17 Jan 2020 18:36:44 -0500
+Received: from mail-lj1-f193.google.com ([209.85.208.193]:43483 "EHLO
+        mail-lj1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729798AbgAQXgn (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 17 Jan 2020 18:36:43 -0500
+Received: by mail-lj1-f193.google.com with SMTP id a13so28118496ljm.10
+        for <netdev@vger.kernel.org>; Fri, 17 Jan 2020 15:36:42 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20161025;
-        h=date:message-id:mime-version:subject:from:to:cc;
-        bh=YjsrWHQk2Ef6EHqeIvIXkz/PqYhiYpHlX5C3YmPgP0Q=;
-        b=mSNZ/egwZMUmNm1xCRqbVDVxIgJ6PFHFMD97bYM6PSRiI0fnVpa/c12S1s1e8l9lw3
-         4kJDr5myZh+2kfmLJaaAEkMEyaQ7kZLp+1occpsd9NPK1bruNXoY8zJc7ak14IL03QZe
-         tQYueFop0SCDJZTSzY7KkD4Cg5Snz5DeVEVNli2apaOIfDqXOylKHzuofDWMjNrZJU8N
-         hUtED5YDA2ThS+KjvTVPVSZ9hp2yCUvcNaBB5hVRNC1Y8D5MByJpTWoP+2uK4ggVt1x8
-         DIfsFSUPEoYc7WqM2Q1f9BmZlW5m8ZrGf39dOPe9VBVxkRcYilUThhxblU6pZgYALu5p
-         SGUQ==
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=9Zh/oE42Sc8HgoSMQcMgWAwsUZfB0qAy7Nb87RVTHFo=;
+        b=Mjq75rshbskU418JaslGmoJ+pQZoUTWzXnF7eoPhMu7S5S6EYHzkrcJ3vzLUBGNG8G
+         ZqpXSpVSyTWQijpbGDyr/CQ2LB6u2BrZuwk6hBXfu8+ol/Mtcrs4UknYFm4bBkFxsKCg
+         AUA02QfQIkj38yJcV9kGauMZqudohXXYajcxfWKXMeeP/sQ+L+iKodUHGKIPeBYW2p10
+         3Y+oUKlwOAME7X4m3jdkLhTRSneNYMsWCT+sWLZ/kBnfXqRQMvt0mbwGSfrhbhYgkWAE
+         /ZLZzZBFYzHo9jCf3pKjTdSKJKtMKbe/AhioAaH76tL9HF/MHuZpwkkmHRddkxGpEyBw
+         Snng==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:message-id:mime-version:subject:from:to:cc;
-        bh=YjsrWHQk2Ef6EHqeIvIXkz/PqYhiYpHlX5C3YmPgP0Q=;
-        b=Cq+7KOe9/N5PwxTDnvjPf/nSc7bfNATwoGAjodkFIhrb3XlD/C5ElB2Od0m1OmzYSY
-         jWOJhDF5E0mtn3ZZ7nxA0G3yngtASYPsOYcLq2+erDqNSok2OqfPc8w66y9C0BZ+cFqh
-         DK/XjKSpSz5tdYjFAoIFc9MJIvPGirYIV52/sgMEjmt6SGsR3T9mZnrNFK/qJy1AjtTN
-         HlbR+Y/h0s2jrKBUEehGvDalNYH+Z/lBGwu7qJng+wBdL3+XZaOpXgP2FrcB1LFmaCZe
-         Ks6Rwowe+mVbUX0rSfth6ZTcczRtnX7uL93++07Y5vA0ibGulx3IZ2MVoAG4x2YGqT6/
-         wU0Q==
-X-Gm-Message-State: APjAAAXgxsKywSmGoB7BlgYc4EP12orV3XdgRPmbKWl3ytARv25ZIDhw
-        PYhtTLYyd0YlSwSlBSElSb6XsGyFW3vd
-X-Google-Smtp-Source: APXvYqyz6Htr5YrcybMBordUJnmC5nMxj+CYUOrxzx3s7H3o4YTtrCUUGDPO0qBaXmphcnbRdVW3Yra5sMzi
-X-Received: by 2002:a63:3f82:: with SMTP id m124mr48101369pga.431.1579301774378;
- Fri, 17 Jan 2020 14:56:14 -0800 (PST)
-Date:   Fri, 17 Jan 2020 14:56:08 -0800
-Message-Id: <20200117225608.220838-1-brianvv@google.com>
-Mime-Version: 1.0
-X-Mailer: git-send-email 2.25.0.341.g760bfbb309-goog
-Subject: [PATCH bpf-next] bpf: Fix memory leaks in generic update/delete batch ops
-From:   Brian Vazquez <brianvv@google.com>
-To:     Brian Vazquez <brianvv.kernel@gmail.com>,
-        Brian Vazquez <brianvv@google.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        "David S . Miller" <davem@davemloft.net>
-Cc:     linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        bpf@vger.kernel.org, Dan Carpenter <dan.carpenter@oracle.com>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=9Zh/oE42Sc8HgoSMQcMgWAwsUZfB0qAy7Nb87RVTHFo=;
+        b=sj9D3SJ1vmzGfxEmiBY6YTGMH8lic+ddQ1husuTeCcdjhd1rsELMarlplU3Mo1aKNj
+         bEASfPDQanZGr5Aa5k+Gm4bsYvtUJid1Vgzdx/DQ6YPyEZ295j1w6JFFFF6sdHra0mMd
+         hJrxH1g4pdkdmxzARQ6/uvYx01h8p9A9KrNCaeQCrsTLcF6fGWVMk22Kd9DciX/4zzU4
+         dYLBiuPlBLWnj7bL/2ZT4qyo6ygvvgFUlhiGOuYdGAr0RAkrrhCiCv88lY9Sb9UfTrrS
+         KcFuihuitaALvDRznl2x8xOi+dO7MvD2CT4dPxGxkpn83/4+3AvpukcbPez9sZVOYeSm
+         KUwQ==
+X-Gm-Message-State: APjAAAWL5TjanUTMFYUggdYr6fngo1mKcXS+aD281MAm1OYbQtyVJKeA
+        eieNd7Zcr6BzwjmJvTYfBjMDJXgf2Zhcx09MCWk1Yg==
+X-Google-Smtp-Source: APXvYqztFiRvMWdIi+v1hLgVUE/daA/nTQlvIkBU8suRJMbN8ZZGavw+e5zopSS2ntmTiZaHNZCkRLsJrncliXdr8cY=
+X-Received: by 2002:a2e:8016:: with SMTP id j22mr6604689ljg.24.1579304201475;
+ Fri, 17 Jan 2020 15:36:41 -0800 (PST)
+MIME-Version: 1.0
+References: <20200117215642.2029945-1-jeffrey.t.kirsher@intel.com> <693b94d6-eece-9334-4157-69f562836f3a@gmail.com>
+In-Reply-To: <693b94d6-eece-9334-4157-69f562836f3a@gmail.com>
+From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Date:   Fri, 17 Jan 2020 15:36:30 -0800
+Message-ID: <CAADnVQ+cnMrDcaGMg4ojawdW_N0Ga1rim2wrFWavbg1FG4GNMA@mail.gmail.com>
+Subject: Re: [RFC net-next PATCH] ipv6: New define for reoccurring code
+To:     Eric Dumazet <eric.dumazet@gmail.com>
+Cc:     Jeff Kirsher <jeffrey.t.kirsher@intel.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Network Development <netdev@vger.kernel.org>
 Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-generic update/delete batch ops functions were using __bpf_copy_key
-without properly freeing the memory. Handle the memory allocation and
-copy_from_user separately.
+On Fri, Jan 17, 2020 at 2:19 PM Eric Dumazet <eric.dumazet@gmail.com> wrote:
+>
+>
+>
+> On 1/17/20 1:56 PM, Jeff Kirsher wrote:
+> > Through out the kernel, sizeof() is used to determine the size of the IPv6
+> > address structure, so create a define for the commonly used code.
+> >
+> > s/sizeof(struct in6_addr)/ipv6_addr_size/g
+> >
+> > This is just a portion of the instances in the kernel and before cleaning
+> > up all the occurrences, wanted to make sure that this was a desired change
+> > or if this obfuscates the code.
+> >
+> > Signed-off-by: Jeff Kirsher <jeffrey.t.kirsher@intel.com>
+> > ---
+> ...
+>
+> >  };
+> > +#define ipv6_addr_size               sizeof(struct in6_addr)
+> >  #endif /* __UAPI_DEF_IN6_ADDR */
+> >
+> >  #if __UAPI_DEF_SOCKADDR_IN6
+> > diff --git a/net/core/filter.c b/net/core/filter.c
+> > index ef01c5599501..eabf42893b60 100644
+> > --- a/net/core/filter.c
+> > +++ b/net/core/filter.c
+> > @@ -5053,7 +5053,7 @@ BPF_CALL_4(bpf_lwt_seg6_action, struct sk_buff *, skb,
+> >       case SEG6_LOCAL_ACTION_END_X:
+> >               if (!seg6_bpf_has_valid_srh(skb))
+> >                       return -EBADMSG;
+> > -             if (param_len != sizeof(struct in6_addr))
+> > +             if (param_len != ipv6_addr_size)
+>
+> Hmm...
+>
+> I vote seeing sizeof(struct in6_addr) rather than dealing
+> with yet another thing to remember and additional backports conflicts.
 
-Reported-by: Dan Carpenter <dan.carpenter@oracle.com>
-Fixes: aa2e93b8e58e ("bpf: Add generic support for update and delete
-batch ops")
-Signed-off-by: Brian Vazquez <brianvv@google.com>
----
- kernel/bpf/syscall.c | 30 +++++++++++++++++++-----------
- 1 file changed, 19 insertions(+), 11 deletions(-)
-
-diff --git a/kernel/bpf/syscall.c b/kernel/bpf/syscall.c
-index c26a71460f02f..9a840c57f6df7 100644
---- a/kernel/bpf/syscall.c
-+++ b/kernel/bpf/syscall.c
-@@ -1239,12 +1239,15 @@ int generic_map_delete_batch(struct bpf_map *map,
- 	if (!max_count)
- 		return 0;
- 
-+	key = kmalloc(map->key_size, GFP_USER | __GFP_NOWARN);
-+	if (!key)
-+		return -ENOMEM;
-+
- 	for (cp = 0; cp < max_count; cp++) {
--		key = __bpf_copy_key(keys + cp * map->key_size, map->key_size);
--		if (IS_ERR(key)) {
--			err = PTR_ERR(key);
-+		err = -EFAULT;
-+		if (copy_from_user(key, keys + cp * map->key_size,
-+				   map->key_size))
- 			break;
--		}
- 
- 		if (bpf_map_is_dev_bound(map)) {
- 			err = bpf_map_offload_delete_elem(map, key);
-@@ -1264,6 +1267,8 @@ int generic_map_delete_batch(struct bpf_map *map,
- 	}
- 	if (copy_to_user(&uattr->batch.count, &cp, sizeof(cp)))
- 		err = -EFAULT;
-+
-+	kfree(key);
- 	return err;
- }
- 
-@@ -1294,18 +1299,21 @@ int generic_map_update_batch(struct bpf_map *map,
- 	if (!max_count)
- 		return 0;
- 
-+	key = kmalloc(map->key_size, GFP_USER | __GFP_NOWARN);
-+	if (!key)
-+		return -ENOMEM;
-+
- 	value = kmalloc(value_size, GFP_USER | __GFP_NOWARN);
--	if (!value)
-+	if (!value) {
-+		kfree(key);
- 		return -ENOMEM;
-+	}
- 
- 	for (cp = 0; cp < max_count; cp++) {
--		key = __bpf_copy_key(keys + cp * map->key_size, map->key_size);
--		if (IS_ERR(key)) {
--			err = PTR_ERR(key);
--			break;
--		}
- 		err = -EFAULT;
--		if (copy_from_user(value, values + cp * value_size, value_size))
-+		if (copy_from_user(key, keys + cp * map->key_size,
-+		    map->key_size) ||
-+		    copy_from_user(value, values + cp * value_size, value_size))
- 			break;
- 
- 		err = bpf_map_update_value(map, f, key, value,
--- 
-2.25.0.341.g760bfbb309-goog
-
++1
+I prefer sizeof() as well.
