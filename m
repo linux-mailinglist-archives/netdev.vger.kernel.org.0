@@ -2,44 +2,44 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id EE085140FDB
-	for <lists+netdev@lfdr.de>; Fri, 17 Jan 2020 18:28:34 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5EFE2140FDD
+	for <lists+netdev@lfdr.de>; Fri, 17 Jan 2020 18:28:40 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729074AbgAQR2d (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 17 Jan 2020 12:28:33 -0500
-Received: from us-smtp-delivery-1.mimecast.com ([205.139.110.120]:41515 "EHLO
+        id S1729126AbgAQR2h (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 17 Jan 2020 12:28:37 -0500
+Received: from us-smtp-delivery-1.mimecast.com ([207.211.31.120]:47521 "EHLO
         us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S1726684AbgAQR2d (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 17 Jan 2020 12:28:33 -0500
+        with ESMTP id S1726684AbgAQR2e (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 17 Jan 2020 12:28:34 -0500
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1579282112;
+        s=mimecast20190719; t=1579282113;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=jcP7hHlWdAUxywMEFD11jicRkgWRTWEbxH+E/kXnY34=;
-        b=hq2KTZOB6IVces0gXKJ1jn6YfbBFSXMj2tsv5Yy6zS1SSNsgYwgBPtrfPLr+d9Ppe5Fw4j
-        zhvJFQjUCoGuIEA/pNMu0qjoDsy3b3JdSELhcsgIqqrL1KKrTI2vyysbbWI0zldjBMD072
-        aGoWFYxq8/w43erc3weznA3ZsiwICAc=
+        bh=XBDtcl9yyAwsU0YycnOUqw4cE1Uy83rNYI+1gtuFE0Y=;
+        b=VzjQ4mG8lBcKGBn+FMIxMTWMeJPLVV5wO4KHAQ1Ka/HUatcYcYoN2B8QKFfN8IyqzhPmjp
+        /K9zpUije2/ZQU+shigNARFpDASkpQpFgXbf/qWwCsiqgW72O5bgPj3ePVhBvIjjJxh4DH
+        ZdbP378ckiXuYshKK3z+oDgxCEO0gXI=
 Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
  [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-34--uNJKsQyOhysMA9aDlbcPw-1; Fri, 17 Jan 2020 12:28:29 -0500
-X-MC-Unique: -uNJKsQyOhysMA9aDlbcPw-1
+ us-mta-27-SOnLulG5ORGnxv1Un_EZ4g-1; Fri, 17 Jan 2020 12:28:30 -0500
+X-MC-Unique: SOnLulG5ORGnxv1Un_EZ4g-1
 Received: from smtp.corp.redhat.com (int-mx04.intmail.prod.int.phx2.redhat.com [10.5.11.14])
         (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 3BBDB107ACC4;
-        Fri, 17 Jan 2020 17:28:28 +0000 (UTC)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 81A20100551A;
+        Fri, 17 Jan 2020 17:28:29 +0000 (UTC)
 Received: from localhost.localdomain.com (unknown [10.36.118.117])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 4AF285D9CD;
-        Fri, 17 Jan 2020 17:28:27 +0000 (UTC)
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 905BA5D9CD;
+        Fri, 17 Jan 2020 17:28:28 +0000 (UTC)
 From:   Paolo Abeni <pabeni@redhat.com>
 To:     netdev@vger.kernel.org
 Cc:     "David S. Miller" <davem@davemloft.net>,
         Willem de Bruijn <willemdebruijn.kernel@gmail.com>
-Subject: [PATCH net 2/3] net: add annotations to memory_pressure lockless access
-Date:   Fri, 17 Jan 2020 18:27:55 +0100
-Message-Id: <95c0cdd32c2fa3bfbd5c00bc7ee8d61985fa9ae6.1579281705.git.pabeni@redhat.com>
+Subject: [PATCH net 3/3] udp: avoid bulk memory scheduling on memory pressure.
+Date:   Fri, 17 Jan 2020 18:27:56 +0100
+Message-Id: <749f8a12b2caf634249e7590597f0c53e5b37c7a.1579281705.git.pabeni@redhat.com>
 In-Reply-To: <cover.1579281705.git.pabeni@redhat.com>
 References: <cover.1579281705.git.pabeni@redhat.com>
 MIME-Version: 1.0
@@ -50,38 +50,108 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The proto memory pressure status is updated without any related lock
-held. This patch adds annotations to document this fact and avoid
-future syzbot complains.
+Williem reported that after commit 0d4a6608f68c ("udp: do rmem bulk
+free even if the rx sk queue is empty") the memory allocated by
+an almost idle system with many UDP sockets can grow a lot.
 
+This change addresses the issue enabling memory pressure tracking
+for UDP and flushing the fwd allocated memory on dequeue if the
+UDP protocol is under memory pressure.
+
+Note that with this patch applied, the system allocates more
+liberally memory for UDP sockets while the total memory usage is
+below udp_mem[1], while the vanilla kernel would allow at most a
+single page per socket when UDP memory usage goes above udp_mem[0]
+- see __sk_mem_raise_allocated().
+
+Reported-and-diagnosed-by: Willem de Bruijn <willemdebruijn.kernel@gmail.=
+com>
+Fixes: commit 0d4a6608f68c ("udp: do rmem bulk free even if the rx sk que=
+ue is empty")
 Signed-off-by: Paolo Abeni <pabeni@redhat.com>
 ---
- include/net/sock.h | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ include/net/udp.h |  2 ++
+ net/ipv4/udp.c    | 13 ++++++++++++-
+ net/ipv6/udp.c    |  2 ++
+ 3 files changed, 16 insertions(+), 1 deletion(-)
 
-diff --git a/include/net/sock.h b/include/net/sock.h
-index 8dff68b4c316..08383624b8cb 100644
---- a/include/net/sock.h
-+++ b/include/net/sock.h
-@@ -1264,7 +1264,7 @@ static inline bool sk_under_memory_pressure(const s=
-truct sock *sk)
- 	    mem_cgroup_under_socket_pressure(sk->sk_memcg))
- 		return true;
+diff --git a/include/net/udp.h b/include/net/udp.h
+index bad74f780831..cff730798291 100644
+--- a/include/net/udp.h
++++ b/include/net/udp.h
+@@ -94,6 +94,8 @@ static inline struct udp_hslot *udp_hashslot2(struct ud=
+p_table *table,
+ extern struct proto udp_prot;
 =20
--	return !!*sk->sk_prot->memory_pressure;
-+	return !!READ_ONCE(*sk->sk_prot->memory_pressure);
- }
+ extern atomic_long_t udp_memory_allocated;
++extern unsigned long udp_memory_pressure;
++extern struct percpu_counter udp_sockets_allocated;
 =20
- static inline long
-@@ -1318,7 +1318,7 @@ proto_memory_pressure(struct proto *prot)
- {
- 	if (!prot->memory_pressure)
- 		return false;
--	return !!*prot->memory_pressure;
-+	return !!READ_ONCE(*prot->memory_pressure);
- }
+ /* sysctl variables for udp */
+ extern long sysctl_udp_mem[3];
+diff --git a/net/ipv4/udp.c b/net/ipv4/udp.c
+index 93a355b6b092..3a68ec6c3410 100644
+--- a/net/ipv4/udp.c
++++ b/net/ipv4/udp.c
+@@ -119,6 +119,12 @@ EXPORT_SYMBOL(udp_table);
+ long sysctl_udp_mem[3] __read_mostly;
+ EXPORT_SYMBOL(sysctl_udp_mem);
 =20
++unsigned long udp_memory_pressure __read_mostly;
++EXPORT_SYMBOL(udp_memory_pressure);
++
++struct percpu_counter udp_sockets_allocated;
++EXPORT_SYMBOL(udp_sockets_allocated);
++
+ atomic_long_t udp_memory_allocated;
+ EXPORT_SYMBOL(udp_memory_allocated);
 =20
+@@ -1368,7 +1374,8 @@ static void udp_rmem_release(struct sock *sk, int s=
+ize, int partial,
+ 	if (likely(partial)) {
+ 		up->forward_deficit +=3D size;
+ 		size =3D up->forward_deficit;
+-		if (size < (sk->sk_rcvbuf >> 2))
++		if (size < (sk->sk_rcvbuf >> 2) &&
++		    !READ_ONCE(udp_memory_pressure))
+ 			return;
+ 	} else {
+ 		size +=3D up->forward_deficit;
+@@ -2789,7 +2796,9 @@ struct proto udp_prot =3D {
+ 	.unhash			=3D udp_lib_unhash,
+ 	.rehash			=3D udp_v4_rehash,
+ 	.get_port		=3D udp_v4_get_port,
++	.memory_pressure	=3D &udp_memory_pressure,
+ 	.memory_allocated	=3D &udp_memory_allocated,
++	.sockets_allocated	=3D &udp_sockets_allocated,
+ 	.sysctl_mem		=3D sysctl_udp_mem,
+ 	.sysctl_wmem_offset	=3D offsetof(struct net, ipv4.sysctl_udp_wmem_min),
+ 	.sysctl_rmem_offset	=3D offsetof(struct net, ipv4.sysctl_udp_rmem_min),
+@@ -3062,6 +3071,8 @@ void __init udp_init(void)
+ 	sysctl_udp_mem[1] =3D limit;
+ 	sysctl_udp_mem[2] =3D sysctl_udp_mem[0] * 2;
+=20
++	percpu_counter_init(&udp_sockets_allocated, 0, GFP_KERNEL);
++
+ 	__udp_sysctl_init(&init_net);
+=20
+ 	/* 16 spinlocks per cpu */
+diff --git a/net/ipv6/udp.c b/net/ipv6/udp.c
+index 9fec580c968e..b29d92574ccc 100644
+--- a/net/ipv6/udp.c
++++ b/net/ipv6/udp.c
+@@ -1670,7 +1670,9 @@ struct proto udpv6_prot =3D {
+ 	.unhash			=3D udp_lib_unhash,
+ 	.rehash			=3D udp_v6_rehash,
+ 	.get_port		=3D udp_v6_get_port,
++	.memory_pressure	=3D &udp_memory_pressure,
+ 	.memory_allocated	=3D &udp_memory_allocated,
++	.sockets_allocated	=3D &udp_sockets_allocated,
+ 	.sysctl_mem		=3D sysctl_udp_mem,
+ 	.sysctl_wmem_offset     =3D offsetof(struct net, ipv4.sysctl_udp_wmem_m=
+in),
+ 	.sysctl_rmem_offset     =3D offsetof(struct net, ipv4.sysctl_udp_rmem_m=
+in),
 --=20
 2.21.0
 
