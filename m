@@ -2,117 +2,85 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 047CD140B35
-	for <lists+netdev@lfdr.de>; Fri, 17 Jan 2020 14:43:05 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B3400140B17
+	for <lists+netdev@lfdr.de>; Fri, 17 Jan 2020 14:39:44 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728600AbgAQNnC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 17 Jan 2020 08:43:02 -0500
-Received: from us-smtp-1.mimecast.com ([207.211.31.81]:53227 "EHLO
-        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1726975AbgAQNnB (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 17 Jan 2020 08:43:01 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1579268580;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=xMnL4G6jmU2OaNfU4L/KK5+b9+BSnKw6V4a/Ssf8Fhg=;
-        b=GyKF/JCKqQ/n1m+wTTamrfY6pkFwl5w1dI3bH2tduNJRHHHvU82T0yL31iR6JChHTOgEgW
-        ujZurFUNOxcMmGtFRoEJYXu9qKgFStw2jcMDrTo5g+Ua9ZTYKcUoArs6ensvlaCTA75Lde
-        FeSlxz3bgK/bdko37zN6gYUOvusdhf8=
-Received: from mail-lf1-f70.google.com (mail-lf1-f70.google.com
- [209.85.167.70]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-193-T8CKYBJGOmKvD3SNIRL6Cg-1; Fri, 17 Jan 2020 08:42:59 -0500
-X-MC-Unique: T8CKYBJGOmKvD3SNIRL6Cg-1
-Received: by mail-lf1-f70.google.com with SMTP id a11so4365308lff.12
-        for <netdev@vger.kernel.org>; Fri, 17 Jan 2020 05:42:59 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:from:to:cc:date:message-id:in-reply-to
-         :references:user-agent:mime-version:content-transfer-encoding;
-        bh=xMnL4G6jmU2OaNfU4L/KK5+b9+BSnKw6V4a/Ssf8Fhg=;
-        b=Kw3MJAYlrFiVpWqBvSYolTgCSkWK19SN0ZAr3iu1K5O74SK/PZ8EG6km4DtM1gYcJ2
-         v4LdqrhHYBjK1MEtY+4QWRpMKkCW8DUS1HxrjvGiTq0rhTa7bkKb8zgR+9aVVcK4wqGE
-         tBddSNO9e8F8H18HNnyJbE+TAsS4pzn+MVzqL50iqAWWBXZwEUfMM1pArEIOyX7wgxyi
-         Fg+9n8ktjN9FXHLFimsH4s20ehs/XroFS849oSx27vGWzSfT8xaGMMr9qPc/Gg0J5+7x
-         eC/5mtxle6/oAAP67yDKn8QeWTc/rg37+VORQAEULwSWzJ5Pb5W1lmbCyT7X3isktdiW
-         XEPA==
-X-Gm-Message-State: APjAAAUgxLCYS+ia3UM11ujYWZtUaOnBKbJSDyt2iedFoWRoWA2D+YbZ
-        GR0kwAJGAAGtosfSbgYksUcvPXiLol3zkIYDGP4pK0iASMX/qabz0zwxL5Pk894gVsXHC0ZGhz6
-        /5j0jv6EHyQm1km4V
-X-Received: by 2002:a2e:b4f6:: with SMTP id s22mr5597171ljm.218.1579268577930;
-        Fri, 17 Jan 2020 05:42:57 -0800 (PST)
-X-Google-Smtp-Source: APXvYqzt3wfXgxOpp/EjUy4KtlwNoojyX+ef3VB3MZN9TMR6dcXGwDFGyY6GF7+SfD2lUiI01/Gy9w==
-X-Received: by 2002:a2e:b4f6:: with SMTP id s22mr5597161ljm.218.1579268577656;
-        Fri, 17 Jan 2020 05:42:57 -0800 (PST)
-Received: from alrua-x1.borgediget.toke.dk ([45.145.92.2])
-        by smtp.gmail.com with ESMTPSA id i13sm12376914ljg.89.2020.01.17.05.42.56
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 17 Jan 2020 05:42:56 -0800 (PST)
-Received: by alrua-x1.borgediget.toke.dk (Postfix, from userid 1000)
-        id F09801804D8; Fri, 17 Jan 2020 14:36:47 +0100 (CET)
-Subject: [PATCH bpf-next v4 10/10] tools/runqslower: Remove tools/lib/bpf from
- include path
-From:   =?utf-8?q?Toke_H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
-To:     Alexei Starovoitov <ast@kernel.org>
-Cc:     Daniel Borkmann <daniel@iogearbox.net>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        Andrii Nakryiko <andriin@fb.com>,
-        Doug Ledford <dledford@redhat.com>,
-        Jason Gunthorpe <jgg@ziepe.ca>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Jesper Dangaard Brouer <brouer@redhat.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Ingo Molnar <mingo@redhat.com>,
-        Arnaldo Carvalho de Melo <acme@kernel.org>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
-        Jiri Olsa <jolsa@redhat.com>,
-        Namhyung Kim <namhyung@kernel.org>,
-        Shuah Khan <shuah@kernel.org>, netdev@vger.kernel.org,
-        bpf@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-rdma@vger.kernel.org, linux-kselftest@vger.kernel.org,
-        clang-built-linux@googlegroups.com
-Date:   Fri, 17 Jan 2020 14:36:47 +0100
-Message-ID: <157926820790.1555735.1100844709479532083.stgit@toke.dk>
-In-Reply-To: <157926819690.1555735.10756593211671752826.stgit@toke.dk>
-References: <157926819690.1555735.10756593211671752826.stgit@toke.dk>
-User-Agent: StGit/0.21
+        id S1728783AbgAQNia (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 17 Jan 2020 08:38:30 -0500
+Received: from stargate.chelsio.com ([12.32.117.8]:17621 "EHLO
+        stargate.chelsio.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726950AbgAQNia (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 17 Jan 2020 08:38:30 -0500
+Received: from [10.193.177.117] (shivaram.asicdesigners.com [10.193.177.117] (may be forged))
+        by stargate.chelsio.com (8.13.8/8.13.8) with ESMTP id 00HDc8Kw012428;
+        Fri, 17 Jan 2020 05:38:11 -0800
+Cc:     ayush.sawal@asicdesigners.com,
+        Herbert Xu <herbert@gondor.apana.org.au>,
+        linux-crypto@vger.kernel.org, manojmalviya@chelsio.com,
+        Ayush Sawal <ayush.sawal@chelsio.com>, netdev@vger.kernel.org
+Subject: Re: Advertise maximum number of sg supported by driver in single
+ request
+To:     Steffen Klassert <steffen.klassert@secunet.com>
+References: <20200115060234.4mm6fsmsrryzpymi@gondor.apana.org.au>
+ <9fd07805-8e2e-8c3f-6e5e-026ad2102c5a@chelsio.com>
+ <c8d64068-a87b-36dd-910d-fb98e09c7e4b@asicdesigners.com>
+ <20200117062300.qfngm2degxvjskkt@gondor.apana.org.au>
+ <20d97886-e442-ed47-5685-ff5cd9fcbf1c@asicdesigners.com>
+ <20200117070431.GE23018@gauss3.secunet.de>
+ <318fd818-0135-8387-6695-6f9ba2a6f28e@asicdesigners.com>
+ <20200117121722.GG26283@gauss3.secunet.de>
+From:   Ayush Sawal <ayush.sawal@asicdesigners.com>
+Message-ID: <179f6f7e-f361-798b-a1c6-30926d8e8bf5@asicdesigners.com>
+Date:   Fri, 17 Jan 2020 19:08:05 +0530
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
+ Thunderbird/68.4.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
+In-Reply-To: <20200117121722.GG26283@gauss3.secunet.de>
+Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Transfer-Encoding: 8bit
+Content-Language: en-US
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Toke Høiland-Jørgensen <toke@redhat.com>
+Hi steffen,
 
-Since we are now consistently using the bpf/ prefix on #include directives,
-we don't need to include tools/lib/bpf in the include path. Remove it to
-make sure we don't inadvertently introduce new includes without the prefix.
+On 1/17/2020 5:47 PM, Steffen Klassert wrote:
+> On Fri, Jan 17, 2020 at 04:28:54PM +0530, Ayush Sawal wrote:
+>> Hi steffen,
+>>
+>> On 1/17/2020 12:34 PM, Steffen Klassert wrote:
+>>> On Fri, Jan 17, 2020 at 12:13:07PM +0530, Ayush Sawal wrote:
+>>>> Hi Herbert,
+>>>>
+>>>> On 1/17/2020 11:53 AM, Herbert Xu wrote:
+>>>>> On Thu, Jan 16, 2020 at 01:27:24PM +0530, Ayush Sawal wrote:
+>>>>>> The max data limit is 15 sgs where each sg contains data of mtu size .
+>>>>>> we are running a netperf udp stream test over ipsec tunnel .The ipsec tunnel
+>>>>>> is established between two hosts which are directly connected
+>>>>> Are you actually getting 15-element SG lists from IPsec? What is
+>>>>> generating an skb with 15-element SG lists?
+>>>> we have established the ipsec tunnel in transport mode using ip xfrm.
+>>>> and running traffic using netserver and netperf.
+>>>>
+>>>> In server side we are running
+>>>> netserver -4
+>>>> In client side we are running
+>>>> "netperf -H <serverip> -p <port> -t UDP_STREAM  -Cc -- -m 21k"
+>>>> where the packet size is 21k ,which is then fragmented into 15 ip fragments
+>>>> each of mtu size.
+>>> I'm lacking a bit of context here, but this should generate 15 IP
+>>> packets that are encrypted one by one.
+>> This is what i observed ,please correct me if i am wrong.
+>> The packet when reaches esp_output(),is in socket buffer and based on the
+>> number of frags ,sg is initialized  using
+>> sg_init_table(sg,frags),where frags are 15 in our case.
+> The packet should be IP fragmented before it enters esp_output()
+> unless this is a UDP GSO packet. What kind of device do you use
+> here? Is it a crypto accelerator or a NIC that can do ESP offloads?
 
-Acked-by: Andrii Nakryiko <andriin@fb.com>
-Signed-off-by: Toke Høiland-Jørgensen <toke@redhat.com>
----
- tools/bpf/runqslower/Makefile |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+We have device which works as a crypto accelerator . It just encrypts 
+the packets and send it back to kernel.
 
-diff --git a/tools/bpf/runqslower/Makefile b/tools/bpf/runqslower/Makefile
-index 9f022f7f2593..0cac6f0ddccf 100644
---- a/tools/bpf/runqslower/Makefile
-+++ b/tools/bpf/runqslower/Makefile
-@@ -5,7 +5,7 @@ LLC := llc
- LLVM_STRIP := llvm-strip
- DEFAULT_BPFTOOL := $(OUTPUT)/sbin/bpftool
- BPFTOOL ?= $(DEFAULT_BPFTOOL)
--INCLUDES := -I$(OUTPUT) -I$(abspath ../../lib) -I$(abspath ../../lib/bpf)
-+INCLUDES := -I$(OUTPUT) -I$(abspath ../../lib)
- LIBBPF_SRC := $(abspath ../../lib/bpf)
- CFLAGS := -g -Wall
- 
 
