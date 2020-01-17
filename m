@@ -2,82 +2,73 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 852B214030D
-	for <lists+netdev@lfdr.de>; Fri, 17 Jan 2020 05:44:12 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B8E6C140319
+	for <lists+netdev@lfdr.de>; Fri, 17 Jan 2020 05:45:59 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729610AbgAQEoI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 16 Jan 2020 23:44:08 -0500
-Received: from mail-ot1-f67.google.com ([209.85.210.67]:44600 "EHLO
-        mail-ot1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726370AbgAQEoH (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 16 Jan 2020 23:44:07 -0500
-Received: by mail-ot1-f67.google.com with SMTP id h9so21470928otj.11;
-        Thu, 16 Jan 2020 20:44:07 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=OdUWGX2M44tSJxq5HwG1zjlZE4dOmKxmhrCev3Miwp8=;
-        b=oatErtAN9cujlGfvxd67rW2u2R6rptLrE6wQw6K3mNaZTjpKcA4rbeoQYE6SoEKm5F
-         qblp13XkNiWSpaYKjK9ihugs5wd2QcMpxBMaBVItSIwaVXQLV66puyeqV9xzGAzNx7H7
-         in4okX31UY4ETYs3WlMX8amPulzy1uReNkdx3PJUqrUVPRE5UGfoimXD2TCQgaF4CTd7
-         PABdOdJ5wt7D3LNOpaU1640xCpDx44gA0tIo2TX2vs7qjfOslMbByc9mLMDqtLFIU7SO
-         6L+tOeQ57OhIbUVd5pby4jnHuyId9BdjkQxqUNkLE4ANQ4gwJawj26ucX4/eLhefR4mb
-         3Tlg==
+        id S1730260AbgAQEpC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 16 Jan 2020 23:45:02 -0500
+Received: from mail-io1-f72.google.com ([209.85.166.72]:33721 "EHLO
+        mail-io1-f72.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1730153AbgAQEpC (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 16 Jan 2020 23:45:02 -0500
+Received: by mail-io1-f72.google.com with SMTP id i8so14314965ioi.0
+        for <netdev@vger.kernel.org>; Thu, 16 Jan 2020 20:45:01 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=OdUWGX2M44tSJxq5HwG1zjlZE4dOmKxmhrCev3Miwp8=;
-        b=em6bWssylOp4kjOf3fmqJ4QBXnPAIWm4XJNTTW7jQbZQnXefEZW5wkLRpPKPz8q2n8
-         mzjLBrAhqNkcHQU/gKdJp6P9lhlDdSjwr3aH9CGz5RRSdTxNZU/kCYOq31cVNOQX5uX0
-         vvcIXLSJR5OOlvgjjUPkv+l09uchPTJlLOZanIrX1hv4XzTxSP4qP6l7WheEC5YJEwOj
-         mgPBwBTV2pOtnlEX42Dwb5XUzkQufwbih2rmN0uy+GG8RF1kWED8xGC6RYHgr42jWVsp
-         uztdznyYn0cyHOYbfBICWolF6J4BpNrnpy6KUjMIhKX3n+xHLPjKAl3zdK3qAo3lHZva
-         oG4g==
-X-Gm-Message-State: APjAAAWH0+8OdXAZvgeuPdXqeaCAnYcPyZDWVN5Emu8XWRQ0iIVV7Tpq
-        zmnBIszHTR6qhhYQWvqF6kaLjecQ3u7HbBUwvj3qWU+Ra7M=
-X-Google-Smtp-Source: APXvYqwVjaXTDchluzQRQuOOm8EBIYP0UCLXeZm5JMVd9PzBDfHiGQPPJL+p2blHDaI2Qm4bojUXdGTy5ru/ivogIXc=
-X-Received: by 2002:a9d:da2:: with SMTP id 31mr4737846ots.319.1579236246676;
- Thu, 16 Jan 2020 20:44:06 -0800 (PST)
+        h=x-gm-message-state:mime-version:date:in-reply-to:message-id:subject
+         :from:to;
+        bh=1cUAzzk2sNct6oR4gK6sFNSkqIAeXDAPVDj7dr4pJaI=;
+        b=t0CsvXR5JglTPKda11VyE8t8pTdWr/g1TAlACv2fPURGVqdIbLAMzbRr3NquGWVo//
+         mHG4QX+ZHKBm8pBZCk+FsxpLJvUQbuG2SyLzVWS/YKPcGZuo4ApFq8F6kJKFElJ7BQZD
+         iN9mIp02ykG3HqvrXWfl2YXeEwL3XZiHvh/YLppXHveJfpCkPD4PUG/drD8Aw7SaO5VB
+         xMnfMDOOHyPzGgeG9pu6qXfuK24LYHpb3wLbLjjVRV4eMAdubhex9k9lMaBEmCm0EhTb
+         ft/SEdOFV68sEJfuCH9MmDFdd6JRzgKYSgcyGoFL3W2dLClf5i5ZR60YV8bGEc8OH9rw
+         qCLQ==
+X-Gm-Message-State: APjAAAUtCBboEryVdJRNcTTflG6JB4D4vePdszgRUFSfbBEe7FLEYZB1
+        41AU9bmekTKAMGqjR8W7+k47GMRCLDrbwV1b7w0BhrnmOaJ3
+X-Google-Smtp-Source: APXvYqyjD+Biivg/aa5/AT9J3HOCrQyY1dnQuDliyrdfNZIwqOAQb+x2KCj1JtDJEr9CqmN0upuDE/qMamViB/tBFaUwrT2rQYUY
 MIME-Version: 1.0
-References: <20200116213625.GA9294@embeddedor.com>
-In-Reply-To: <20200116213625.GA9294@embeddedor.com>
-From:   Cong Wang <xiyou.wangcong@gmail.com>
-Date:   Thu, 16 Jan 2020 20:43:55 -0800
-Message-ID: <CAM_iQpXi6JAOK7bWMazvOEwa=S4U3=5L5cqwKST9FKFfr+GkzQ@mail.gmail.com>
-Subject: Re: [PATCH net-next] net: sched: cls_u32: Use flexible-array member
-To:     "Gustavo A. R. Silva" <gustavo@embeddedor.com>
-Cc:     Jamal Hadi Salim <jhs@mojatatu.com>, Jiri Pirko <jiri@resnulli.us>,
-        "David S. Miller" <davem@davemloft.net>,
-        Linux Kernel Network Developers <netdev@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+X-Received: by 2002:a5d:9694:: with SMTP id m20mr30787857ion.48.1579236301410;
+ Thu, 16 Jan 2020 20:45:01 -0800 (PST)
+Date:   Thu, 16 Jan 2020 20:45:01 -0800
+In-Reply-To: <000000000000b3599c059c36db0d@google.com>
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <000000000000c31c6d059c4e9a6c@google.com>
+Subject: Re: BUG: corrupted list in nf_tables_commit
+From:   syzbot <syzbot+37a6804945a3a13b1572@syzkaller.appspotmail.com>
+To:     coreteam@netfilter.org, davem@davemloft.net, fw@strlen.de,
+        kadlec@blackhole.kfki.hu, kadlec@netfilter.org,
+        kuznet@ms2.inr.ac.ru, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org, netfilter-devel@vger.kernel.org,
+        pablo@netfilter.org, syzkaller-bugs@googlegroups.com,
+        yoshfuji@linux-ipv6.org
+Content-Type: text/plain; charset="UTF-8"; format=flowed; delsp=yes
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Jan 16, 2020 at 1:36 PM Gustavo A. R. Silva
-<gustavo@embeddedor.com> wrote:
->
-> Old code in the kernel uses 1-byte and 0-byte arrays to indicate the
-> presence of a "variable length array":
->
-> struct something {
->     int length;
->     u8 data[1];
-> };
->
-> struct something *instance;
->
-> instance = kmalloc(sizeof(*instance) + size, GFP_KERNEL);
-> instance->length = size;
-> memcpy(instance->data, source, size);
+syzbot has bisected this bug to:
 
-Hmm, your patch is not correct, for u32 it is length+1, so you have
-to allocate size+1 after you switch to zero-length array.
+commit 7c23b629a8085b11daccd68c62b5116ff498f84a
+Author: Pablo Neira Ayuso <pablo@netfilter.org>
+Date:   Sun Jan 7 00:04:22 2018 +0000
 
-Take a look at u32_walk() if you have any doubt.
+     netfilter: flow table support for the mixed IPv4/IPv6 family
 
-Thanks.
+bisection log:  https://syzkaller.appspot.com/x/bisect.txt?x=146472d1e00000
+start commit:   51d69817 Merge tag 'platform-drivers-x86-v5.5-3' of git://..
+git tree:       upstream
+final crash:    https://syzkaller.appspot.com/x/report.txt?x=166472d1e00000
+console output: https://syzkaller.appspot.com/x/log.txt?x=126472d1e00000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=d9290aeb7e6cf1c4
+dashboard link: https://syzkaller.appspot.com/bug?extid=37a6804945a3a13b1572
+syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=17241c76e00000
+C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=13118315e00000
+
+Reported-by: syzbot+37a6804945a3a13b1572@syzkaller.appspotmail.com
+Fixes: 7c23b629a808 ("netfilter: flow table support for the mixed IPv4/IPv6  
+family")
+
+For information about bisection process see: https://goo.gl/tpsmEJ#bisection
