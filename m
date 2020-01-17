@@ -2,100 +2,64 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id B363E14010A
-	for <lists+netdev@lfdr.de>; Fri, 17 Jan 2020 01:41:12 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8856314016C
+	for <lists+netdev@lfdr.de>; Fri, 17 Jan 2020 02:26:49 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729256AbgAQAlJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 16 Jan 2020 19:41:09 -0500
-Received: from mx0a-00082601.pphosted.com ([67.231.145.42]:22638 "EHLO
-        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726925AbgAQAlJ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 16 Jan 2020 19:41:09 -0500
-Received: from pps.filterd (m0044012.ppops.net [127.0.0.1])
-        by mx0a-00082601.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 00H0ekX5013285
-        for <netdev@vger.kernel.org>; Thu, 16 Jan 2020 16:41:09 -0800
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
- : date : message-id : mime-version : content-type :
- content-transfer-encoding; s=facebook;
- bh=OIK0nGQttnwsrA0P1KDa219DcaSHxTSwYYVHr6JOWbc=;
- b=HRI0pKnzvX6oryfGLMR042zlUtyaUHP9DLi1fjIQ6bKAhk+qHVM0BJ0iv0QQCCF0zJAn
- +X7rWyRRHvVn6FAQzzUS1bi2kvEQxS0APsY658Zjbca6y5UZ/fPwkhhARaJvTrW0/ecx
- aY/UlL5iP3/Kluh0UBYP3WYdA/DSrsFSyUM= 
-Received: from mail.thefacebook.com ([163.114.132.120])
-        by mx0a-00082601.pphosted.com with ESMTP id 2xk0sxgdn1-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT)
-        for <netdev@vger.kernel.org>; Thu, 16 Jan 2020 16:41:08 -0800
-Received: from intmgw003.08.frc2.facebook.com (2620:10d:c085:108::8) by
- mail.thefacebook.com (2620:10d:c085:21d::4) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.1779.2; Thu, 16 Jan 2020 16:41:08 -0800
-Received: by devbig012.ftw2.facebook.com (Postfix, from userid 137359)
-        id 7D5012EC18D7; Thu, 16 Jan 2020 16:41:04 -0800 (PST)
-Smtp-Origin-Hostprefix: devbig
-From:   Andrii Nakryiko <andriin@fb.com>
-Smtp-Origin-Hostname: devbig012.ftw2.facebook.com
-To:     <bpf@vger.kernel.org>, <netdev@vger.kernel.org>, <ast@fb.com>,
-        <daniel@iogearbox.net>
-CC:     <andrii.nakryiko@gmail.com>, <kernel-team@fb.com>,
-        Andrii Nakryiko <andriin@fb.com>
-Smtp-Origin-Cluster: ftw2c04
-Subject: [PATCH bpf-next] libbpf: revert bpf_helper_defs.h inclusion regression
-Date:   Thu, 16 Jan 2020 16:41:02 -0800
-Message-ID: <20200117004103.148068-1-andriin@fb.com>
-X-Mailer: git-send-email 2.17.1
+        id S2388092AbgAQB0f (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 16 Jan 2020 20:26:35 -0500
+Received: from mail.kernel.org ([198.145.29.99]:40136 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1729031AbgAQB0f (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 16 Jan 2020 20:26:35 -0500
+Received: from cakuba.hsd1.ca.comcast.net (c-73-93-4-247.hsd1.ca.comcast.net [73.93.4.247])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id BC3B220728;
+        Fri, 17 Jan 2020 01:26:34 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1579224394;
+        bh=1UISYqwUWwwvH3mbOBovGUNJcB5XciuC3YEepxg/Bf8=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=D6cN098tabZVxo7SMVeGKvnnu3yV9fwo+82Qva+iU8PPpY92q3k9BrZfAbVhWvzn7
+         Op/SgR2RlYW5aye0SA/jvykHAbEPtEQ6Z+f+Jvs/iVukJv0B/xa6fi/I3WAFMaYeJc
+         uzQr4zci/ZlQcyIQejISiirGCGwRhav/Fpwng7x0=
+Date:   Thu, 16 Jan 2020 17:26:33 -0800
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Moshe Shemesh <moshe@mellanox.com>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Alexander Duyck <alexander.duyck@gmail.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH net-next RFC 3/3] net/mlx5: Add FW upgrade reset support
+Message-ID: <20200116172633.5d873c17@cakuba.hsd1.ca.comcast.net>
+In-Reply-To: <2f7a4d81-6ed9-7c93-1562-1df4dc7f9578@mellanox.com>
+References: <1579017328-19643-1-git-send-email-moshe@mellanox.com>
+        <1579017328-19643-4-git-send-email-moshe@mellanox.com>
+        <20200115070145.3db10fe4@cakuba.hsd1.ca.comcast.net>
+        <2f7a4d81-6ed9-7c93-1562-1df4dc7f9578@mellanox.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-X-FB-Internal: Safe
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.138,18.0.572
- definitions=2020-01-16_06:2020-01-16,2020-01-16 signatures=0
-X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 bulkscore=0 adultscore=0
- spamscore=0 clxscore=1015 lowpriorityscore=0 impostorscore=0
- mlxlogscore=781 priorityscore=1501 phishscore=0 mlxscore=0 malwarescore=0
- suspectscore=8 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-1910280000 definitions=main-2001170004
-X-FB-Internal: deliver
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Revert bpf_helpers.h's change to include auto-generated bpf_helper_defs.h
-through <> instead of "", which causes it to be searched in include path.=
- This
-can break existing applications that don't have their include path pointi=
-ng
-directly to where libbpf installs its headers.
+On Thu, 16 Jan 2020 14:52:35 +0000, Moshe Shemesh wrote:
+> > If multiple devices under one bridge are a real concern (or otherwise
+> > interdependencies) would it make sense to mark the devices as "reload
+> > pending" and perform the reloads once all devices in the group has this
+> > mark set?  
+> 
+> All mlx5 current devices support PCI - Express only.
+> 
+> PCI-Express device should have its own PCI-Express bridge, it is 1x1 
+> connection.
+> 
+> So the check here is just to verify, all functions found under the 
+> bridge are expected to be the same device functions (PFs and VFs).
 
-There is ongoing work to make all (not just bpf_helper_defs.h) includes m=
-ore
-consistent across libbpf and its consumers, but this unbreaks user code a=
-s is
-right now without any regressions. Selftests still behave sub-optimally
-(taking bpf_helper_defs.h from libbpf's source directory, if it's present
-there), which will be fixed in subsequent patches.
-
-Fixes: 6910d7d3867a ("selftests/bpf: Ensure bpf_helper_defs.h are taken f=
-rom selftests dir")
-Reported-by: Toke H=C3=B8iland-J=C3=B8rgensen <toke@redhat.com>
-Signed-off-by: Andrii Nakryiko <andriin@fb.com>
----
- tools/lib/bpf/bpf_helpers.h | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/tools/lib/bpf/bpf_helpers.h b/tools/lib/bpf/bpf_helpers.h
-index 050bb7bf5be6..f69cc208778a 100644
---- a/tools/lib/bpf/bpf_helpers.h
-+++ b/tools/lib/bpf/bpf_helpers.h
-@@ -2,7 +2,7 @@
- #ifndef __BPF_HELPERS__
- #define __BPF_HELPERS__
-=20
--#include <bpf_helper_defs.h>
-+#include "bpf_helper_defs.h"
-=20
- #define __uint(name, val) int (*name)[val]
- #define __type(name, val) typeof(val) *name
---=20
-2.17.1
-
+Ah, good, I couldn't confirm that PCIe fact with google fast enough :)
+The check sounds good then, with perhaps a small suggestion to add 
+a helper in PCIe core if it's already done by two drivers? Can be as 
+a follow up..
