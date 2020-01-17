@@ -2,74 +2,85 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 85D0C140216
-	for <lists+netdev@lfdr.de>; Fri, 17 Jan 2020 03:45:33 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0FAE2140221
+	for <lists+netdev@lfdr.de>; Fri, 17 Jan 2020 03:59:22 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1733166AbgAQCpY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 16 Jan 2020 21:45:24 -0500
-Received: from mail.kernel.org ([198.145.29.99]:36574 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1729067AbgAQCpX (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 16 Jan 2020 21:45:23 -0500
-Received: from localhost (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 2C4F920730;
-        Fri, 17 Jan 2020 02:45:23 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1579229123;
-        bh=dKyqaaGGcB1MEqXs9BPg8uYw+xt+15onKXbpCmYtg4Y=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=AexsPH/wskCzkb4pS2nT3LvFZB4U5CmfvO1tbOlwAmfd1Rs1rv3bPekfFJAR5fOPa
-         Au3WHsZFYfHiNbNL6NdkHnXQrtTALNMarDKuHPbl1Js/orf59bNMpKaiNiW+B4WdMw
-         K/sVKwM5KdYMz2jVOfnearTXlAGR34ko/ivRC6H8=
-Date:   Thu, 16 Jan 2020 21:45:22 -0500
-From:   Sasha Levin <sashal@kernel.org>
-To:     David Ahern <dsahern@gmail.com>
-Cc:     linux-kernel@vger.kernel.org, stable@vger.kernel.org,
-        Rajendra Dendukuri <rajendra.dendukuri@broadcom.com>,
-        Eric Dumazet <edumazet@google.com>,
-        "David S . Miller" <davem@davemloft.net>, netdev@vger.kernel.org
-Subject: Re: [PATCH AUTOSEL 4.19 573/671] ipv6: Handle race in
- addrconf_dad_work
-Message-ID: <20200117024522.GN1706@sasha-vm>
-References: <20200116170509.12787-1-sashal@kernel.org>
- <20200116170509.12787-310-sashal@kernel.org>
- <fc012e53-ccdf-5ac5-6f3f-a2ecdf25bc39@gmail.com>
- <630c6286-2ab4-44ab-693e-0615a2ac690b@gmail.com>
+        id S2389001AbgAQC7S (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 16 Jan 2020 21:59:18 -0500
+Received: from mail-yb1-f194.google.com ([209.85.219.194]:41696 "EHLO
+        mail-yb1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2388862AbgAQC7S (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 16 Jan 2020 21:59:18 -0500
+Received: by mail-yb1-f194.google.com with SMTP id z15so5571417ybm.8
+        for <netdev@vger.kernel.org>; Thu, 16 Jan 2020 18:59:17 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=tE4RcTCOdy9r/c37ywp8VrJ8G05YUX6hM4fVE5bn9wk=;
+        b=t78sQ1A94BMSu9SUwfWjoDIaiq5rYrd8JGmy7643qtfg+dkP47/dCF6u3tJzSKXYME
+         sKB/bOXi3p9WfvZQNPyr2G6rRg/HXcITCYtT4MFF+RB+9UPeAMQuQcIRTS2IHNVxwhEF
+         g4RxYdw/AoF5r6twsePFkQfRoaiVShn//xy3N4GFhSIdXNksN/cijwlVph+IfLHhTBil
+         JYqDTM8D4kCaHiGmTseBhP5OUN3cf+24Ml3BN/8jiMLf7ZKh0acsJ8ieHLwnmb7njnbN
+         ntYlp1asYd160pvmbius38b/xg2KDuZ8n17t8eG8ufq1ucLtdRg4n3ajupCiR3oGk8TV
+         UrOA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=tE4RcTCOdy9r/c37ywp8VrJ8G05YUX6hM4fVE5bn9wk=;
+        b=NGz+LgCZYCUwDTBN2Kq4BCw0F9K1oXlRi8gPUjH2fckRtUiYr6wmBEJDtMxXWpWpvX
+         eGkk6Z6gVnAgSRtjV6SLpuOeOoCI1jQfy11ueT5RxDIWKbv6gakD8Np9XQl/ENIwcXPd
+         vVzKmQJVt3hxuN41PJGSKzsLOZgyu0+7z5O9Yziz/xBlDA1a9OzX7EkHZwhFjQ8G12Yr
+         AQBgdCBTbIJXtVUKeZ4DG7KatJQzvdXkcuezJs43mjwleZm2+RF5XO3uzD+5cMlZmv1M
+         Q+i9Mz7fRdi4CxQVWYKiHYhKb6kRXQJhT4gdw50C+pfvJDPbyAmDqDY0OTLS1pBxPDpF
+         o2pQ==
+X-Gm-Message-State: APjAAAWZ3MXdR9Vno3jQLYmfdS82gRPHFF7m6ukh+xwLmvvTlk8xvOHK
+        khQqRA9fSIYly7T9nHbW0rRLWEh8NTWPFob/VY1MXg==
+X-Google-Smtp-Source: APXvYqxivm3L4c2JBKkBcmWC3XyL0c/q9KAQ+JkK/qxS5w219GsyexH9hyYsZurMvoD6j9uTAsqVqHXRyioCt0jwlKU=
+X-Received: by 2002:a05:6902:6c4:: with SMTP id m4mr29650958ybt.274.1579229956712;
+ Thu, 16 Jan 2020 18:59:16 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii; format=flowed
-Content-Disposition: inline
-In-Reply-To: <630c6286-2ab4-44ab-693e-0615a2ac690b@gmail.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+References: <5cfa925ff7394e10bbbf5132e44cbea4@baidu.com>
+In-Reply-To: <5cfa925ff7394e10bbbf5132e44cbea4@baidu.com>
+From:   Eric Dumazet <edumazet@google.com>
+Date:   Thu, 16 Jan 2020 18:59:04 -0800
+Message-ID: <CANn89iKyw-xBP8Ao7TRZ0bE++0JP5g7dwkY8SL9JRYB4VY+waQ@mail.gmail.com>
+Subject: Re: [RFC] tcp: remove BUG_ON in tcp_shifted_skb
+To:     "Li,Rongqing" <lirongqing@baidu.com>
+Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Jan 16, 2020 at 10:20:16AM -0700, David Ahern wrote:
->On 1/16/20 10:18 AM, David Ahern wrote:
->> On 1/16/20 10:03 AM, Sasha Levin wrote:
->>> From: David Ahern <dsahern@gmail.com>
->>>
->>> [ Upstream commit a3ce2a21bb8969ae27917281244fa91bf5f286d7 ]
->>>
->>
->> That commit was reverted by 8ae72cbf62d2c1879456c0c5872f958e18f53711 and
->> then replaced by 2d819d250a1393a3e725715425ab70a0e0772a71
->>
+On Thu, Jan 16, 2020 at 6:03 PM Li,Rongqing <lirongqing@baidu.com> wrote:
 >
->BTW, the AUTOSEL algorithm should be updated to look for reverts and
->even ones that have already been nack'ed from a backport perspective.
+> I think this BUG_ON in tcp_shifted_skb maybe be triggered if a GSO skb is
+> sacked, but sack is faked, and not ack the whole mss length, only ack less
+> than mss length
 >
->I felt a bit of deja vu with my response and sure enough this patch was
->selected back in October and I responded then that it should not be
->backported.
+> Is it possible ?
 
-Sorry about this David. This series is a result of an experimental work
-I did rather than the regular AUTOSEL workflow, so it ended up
-accidentally bubbling a few commits that were previously rejected.
+I doubt it. Please provide a packetdrill test if you think otherwise.
 
--- 
-Thanks,
-Sasha
+>
+> - Li RongQing <lirongqing@baidu.com>
+>
+> ---
+>  net/ipv4/tcp_input.c | 3 ++-
+>  1 file changed, 2 insertions(+), 1 deletion(-)
+>
+> diff --git a/net/ipv4/tcp_input.c b/net/ipv4/tcp_input.c
+> index 1d1e3493965f..141bc85092b5 100644
+> --- a/net/ipv4/tcp_input.c
+> +++ b/net/ipv4/tcp_input.c
+> @@ -1327,7 +1327,8 @@ static bool tcp_shifted_skb(struct sock *sk, struct sk_buff *prev,
+>         TCP_SKB_CB(prev)->sacked |= (TCP_SKB_CB(skb)->sacked & TCPCB_EVER_RETRANS);
+>
+>         if (skb->len > 0) {
+> -               BUG_ON(!tcp_skb_pcount(skb));
+
+I understand people can be worried about BUG_ON(), but they serve to
+spot bugs when a patch breaks something horribly.
