@@ -2,63 +2,63 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id E831B1419D8
-	for <lists+netdev@lfdr.de>; Sat, 18 Jan 2020 22:24:50 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 047921419EA
+	for <lists+netdev@lfdr.de>; Sat, 18 Jan 2020 22:51:12 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727178AbgARVYt (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 18 Jan 2020 16:24:49 -0500
-Received: from mail-qt1-f193.google.com ([209.85.160.193]:34689 "EHLO
-        mail-qt1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726957AbgARVYs (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 18 Jan 2020 16:24:48 -0500
-Received: by mail-qt1-f193.google.com with SMTP id 5so24721449qtz.1
-        for <netdev@vger.kernel.org>; Sat, 18 Jan 2020 13:24:48 -0800 (PST)
+        id S1727008AbgARVtN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 18 Jan 2020 16:49:13 -0500
+Received: from mail-qk1-f194.google.com ([209.85.222.194]:36541 "EHLO
+        mail-qk1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726910AbgARVtM (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 18 Jan 2020 16:49:12 -0500
+Received: by mail-qk1-f194.google.com with SMTP id a203so26461815qkc.3
+        for <netdev@vger.kernel.org>; Sat, 18 Jan 2020 13:49:12 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=subject:to:cc:references:from:message-id:date:user-agent
          :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=+eUNtlMyHwd5JzdtRLfxtKvXWpdYtAqoWWzXrqYtZXA=;
-        b=mY6h63CjpenUp+8aNI+RawUveUBT11BGq02aOAs6IBOeVYX0iFCRYvCwypbIfvp8ne
-         ntpSaSwNp2vXOTZ27h1c2JYzg9lDC3A8FKEyfcr23aN5J+qvaBmNRPzkn6q1EkW7BOho
-         /8KkNcQ/2SWyHqnW6634IHWzP26/QdhEF6wPjIQrb/WAcRJhaHGhVNU+/JuLaht2GKoD
-         FUx3YPip4DM2ax97IrNaPg5ncCeOt/dl4RU6bSmk+8redHVXSCJi2sf68ZepCpzcTCk6
-         S2rcr6fhwlvZWENdz6oqBgOa3KLg0LCBdO2kqjSmR7b2AcZCHV87mbbXMGMgxNdu3dpt
-         zUUg==
+        bh=p2kPBvUCLyyMbNmigVa80sF/0tPf9kJCYsNheORe8W8=;
+        b=CqDNZ9dYcSWqmGG+r4d0A6bxCo86uqtkwQ8Xbh+xPKrFPdI4s4293tVpZi3AWhgS40
+         KVGy1d9KK1AJx6klBinc5JcDCdlM0EevvWe6/W4EVIgqWltCxlfP5IODBzMjs+f5t0dF
+         sMAyhJ9xrhwzmKhCtxtRqeG9ZzLvccbmgUeNIsLuXIjSXAU4memtSP48k8EkNZq85Atf
+         LrF4WUS1p2wnC8a+xWbrKLO5nUD4OctGiJ9Wn9NUuYto4WOucvMO4FEhGmwUntSXZMGP
+         4Vi6wFdLXcZzjk8OAacCHBINjNGeFX0CDyebWhZXxtSmhW8Q/G6Jdgbv1WN9kZsEkK6R
+         2oUA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:subject:to:cc:references:from:message-id:date
          :user-agent:mime-version:in-reply-to:content-language
          :content-transfer-encoding;
-        bh=+eUNtlMyHwd5JzdtRLfxtKvXWpdYtAqoWWzXrqYtZXA=;
-        b=mpF1zTFh36dPDZ0ImI6C793nCrZKeNZbP4bsLR3EF7eG4W7/BuHOWtpqWMqIQQHTAo
-         067kpPZqDjKDvZwlfrW9IbeyLVEaoQzcoorzNp9O6ZRzKY0mMq3w8TlY4epDTwe5F02F
-         G2Y662SKDFfvEYLiBXTJZcKUNISJrOrCn1J6b8xraCa+qeqd9mE3KMR2EOQS0duxkBI5
-         HDBzcDz3+vnfah/2Bg0C+pp9cJ9XjNwR48/B3uDHSk2lEepRlChYVDpgLbHn8AddWNBV
-         ownJtOpjUxHd+anw1Hu4vFAojKtC3O7l5AtxvR08Iq75oU3q8YmDwDYDhCl+EnNvvVOM
-         mrag==
-X-Gm-Message-State: APjAAAU7n6ImntahcRoNJvU5mNX8vQ9ZppaFDb+T61GVh4e3dW+xhbNF
-        VplIdItAQRb2XZLSGLV7bEg=
-X-Google-Smtp-Source: APXvYqycex6erVu4KPxiyKWy/DpuFCFcLWosHwifFZv6QzB7XbmrI9Kq4ti54Q67YczIKWhdJ//prw==
-X-Received: by 2002:aed:2ae7:: with SMTP id t94mr13664847qtd.130.1579382687970;
-        Sat, 18 Jan 2020 13:24:47 -0800 (PST)
+        bh=p2kPBvUCLyyMbNmigVa80sF/0tPf9kJCYsNheORe8W8=;
+        b=MTzzZvIx1JGlczVwnQLqu6MPeEXy1oA7MMTyIxKBNfLGSqpNoPBUCf0Lajd4eKzFmP
+         WfHJYYjiRvLSsbGbUuvtXDORbUakJrpXseDO0cZFXueAgdxSrRPuADK2yeBAOenzZIgX
+         bQh7XWZezNxY1wZZxaOR8kyF+EJQrhvtnEvEwyukU1bElvxmdWB8i96JgSZfv4bGpiLI
+         CBC7ZbSz6o1TJZQOFTjRwgWuedPFK7BLm+blpUhOK9tUlLp1yhdeIfG2Xvx7nC54LkFP
+         pIe57kmywyr76bx8XPWmbU48v2+0D7uV2MS1dgGTObMsDU1vugHjwpRrNQfON/uI3ua9
+         qWMg==
+X-Gm-Message-State: APjAAAW15vNt9MJ1UEaUu98eRauDci5xZLxgmypVIf8mEJ01FaJEF9a0
+        drEapsAg28w08NdzYqnvxUg=
+X-Google-Smtp-Source: APXvYqyPbampR2+5hFhtthEOVeqtBy+Fs96c5nYo6i17n4W8mm7C+/iJWglQUki0Rsef0vdyG5OtQw==
+X-Received: by 2002:a05:620a:136e:: with SMTP id d14mr36823556qkl.263.1579384151702;
+        Sat, 18 Jan 2020 13:49:11 -0800 (PST)
 Received: from ?IPv6:2601:282:803:7700:61e3:b62a:f6cf:af56? ([2601:282:803:7700:61e3:b62a:f6cf:af56])
-        by smtp.googlemail.com with ESMTPSA id k62sm13542856qkc.95.2020.01.18.13.24.46
+        by smtp.googlemail.com with ESMTPSA id w1sm15438724qtk.31.2020.01.18.13.49.09
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sat, 18 Jan 2020 13:24:47 -0800 (PST)
-Subject: Re: [PATCH iproute2-next] ip: xfrm: add espintcp encapsulation
-To:     Sabrina Dubroca <sd@queasysnail.net>, netdev@vger.kernel.org
-Cc:     Stephen Hemminger <stephen@networkplumber.org>,
-        David Ahern <dsahern@gmail.com>,
-        Herbert Xu <herbert@gondor.apana.org.au>
-References: <0b5baa21f8d0048b5e97f927e801ac2f843bb5e1.1579104430.git.sd@queasysnail.net>
+        Sat, 18 Jan 2020 13:49:10 -0800 (PST)
+Subject: Re: [PATCH iproute2-next] ip route: Print "rt_offload" and "rt_trap"
+ indication
+To:     Ido Schimmel <idosch@idosch.org>, netdev@vger.kernel.org
+Cc:     dsahern@gmail.com, mlxsw@mellanox.com,
+        Ido Schimmel <idosch@mellanox.com>
+References: <20200116184348.1984324-1-idosch@idosch.org>
 From:   David Ahern <dsahern@gmail.com>
-Message-ID: <2df9df78-0383-c914-596e-1855c69fb170@gmail.com>
-Date:   Sat, 18 Jan 2020 14:24:45 -0700
+Message-ID: <08ac439a-6530-7feb-5eb8-ba60bfa92cda@gmail.com>
+Date:   Sat, 18 Jan 2020 14:49:09 -0700
 User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:68.0)
  Gecko/20100101 Thunderbird/68.4.1
 MIME-Version: 1.0
-In-Reply-To: <0b5baa21f8d0048b5e97f927e801ac2f843bb5e1.1579104430.git.sd@queasysnail.net>
-Content-Type: text/plain; charset=windows-1252
+In-Reply-To: <20200116184348.1984324-1-idosch@idosch.org>
+Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
@@ -66,29 +66,19 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 1/16/20 3:39 AM, Sabrina Dubroca wrote:
-> diff --git a/ip/ipxfrm.c b/ip/ipxfrm.c
-> index 32f560933a47..e310860b9f1f 100644
-> --- a/ip/ipxfrm.c
-> +++ b/ip/ipxfrm.c
-> @@ -759,6 +759,9 @@ void xfrm_xfrma_print(struct rtattr *tb[], __u16 family,
->  		case 2:
->  			fprintf(fp, "espinudp ");
->  			break;
-> +		case 7:
-> +			fprintf(fp, "espintcp ");
-> +			break;
->  		default:
->  			fprintf(fp, "%u ", e->encap_type);
->  			break;
-> @@ -1211,6 +1214,8 @@ int xfrm_encap_type_parse(__u16 *type, int *argcp, char ***argvp)
->  		*type = 1;
->  	else if (strcmp(*argv, "espinudp") == 0)
->  		*type = 2;
-> +	else if (strcmp(*argv, "espintcp") == 0)
-> +		*type = 7;
->  	else
->  		invarg("ENCAP-TYPE value is invalid", *argv);
->  
+On 1/16/20 11:43 AM, Ido Schimmel wrote:
+> From: Ido Schimmel <idosch@mellanox.com>
+> 
+> The kernel now signals the offload state of a route using the
+> 'RTM_F_OFFLOAD' and 'RTM_F_TRAP' flags. Print these to help users
+> understand the offload state of each route. The "rt_" prefix is used in
+> order to distinguish it from the offload state of nexthops.
+> 
+> Signed-off-by: Ido Schimmel <idosch@mellanox.com>
+> ---
+>  ip/iproute.c | 4 ++++
+>  1 file changed, 4 insertions(+)
+> 
 
-are there enums / macros for the magic numbers?
+applied to iproute2-next. Thanks
+
