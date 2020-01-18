@@ -2,59 +2,66 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 7513F1415D7
-	for <lists+netdev@lfdr.de>; Sat, 18 Jan 2020 05:45:54 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E2BAB141647
+	for <lists+netdev@lfdr.de>; Sat, 18 Jan 2020 08:00:02 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726957AbgAREpw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 17 Jan 2020 23:45:52 -0500
-Received: from mail-io1-f45.google.com ([209.85.166.45]:36822 "EHLO
-        mail-io1-f45.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726744AbgAREpw (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 17 Jan 2020 23:45:52 -0500
-Received: by mail-io1-f45.google.com with SMTP id d15so28316651iog.3;
-        Fri, 17 Jan 2020 20:45:52 -0800 (PST)
+        id S1726460AbgARHAB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 18 Jan 2020 02:00:01 -0500
+Received: from mail-io1-f66.google.com ([209.85.166.66]:45128 "EHLO
+        mail-io1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725980AbgARHAA (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 18 Jan 2020 02:00:00 -0500
+Received: by mail-io1-f66.google.com with SMTP id i11so28372640ioi.12;
+        Fri, 17 Jan 2020 23:00:00 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=date:from:to:cc:message-id:in-reply-to:references:subject
          :mime-version:content-transfer-encoding;
-        bh=qhDebGkBzEzfgwo4AOFywLggeVUm1FKDg/bcQQUsutU=;
-        b=ArR7l/gZ2KZ8wXOyMEBfBz78KodvnPMnAusaq/jdKdaX3a6tdXfU5fnqHoMrtMn5lL
-         1NjDVqg9Tat51Nm8Aqcik3z2sSAE2sBM6uARRdsaPOcn0VkfsZ6sI8bAxSv96VHbUjMU
-         juXcd0UmuJgq3PGFWU1B8l7STXF6tOs6tdB1BBoERVevzvqxJcyLtARX+IwqqkWvJwKg
-         swLI2OR1e1zKDkDSSmZ/zcJjGf4rBaVyxmTCyPTbsligYR67hytYjG1pcNkG2fnl1jtn
-         ssCd8J3qbGS3Y2KGMRDXDJgeMDvlPgYAb6iLXp5rU8jN1B6Jz0lnNGM5Io44z8K+t3oR
-         YLUg==
+        bh=in3PaGq/NpVE6pYehQSiATO9al0YHakPSsRs7/ya4xY=;
+        b=Fq9oU05tCl7rhDvw/9cJy9oWF63d4zAPiYh6jQXhaCXb5V96nkf2hlgH4en8WNZxZB
+         otUBrmGHxJAXU2c+jrWyOzEz/HrIYxkVspjWkpn5WdK5Ml1GgXKbHXIVslaY1S7L5PE+
+         SvmdLSCm5iwhGTvdbU7YrPIvn7cHCrvlzipD4vCf2SfHoIEatX1hGK1vQ5PDoEtMOrhB
+         HJ9khmxX9XdqtoqdeF/U1hDICT1vt+OzdvChuVbWzV/S6GUamW//D+wOhkUtMUUIQkcK
+         KE7BbwpLkvcgDo8yxGm4CpP93Y2NIq3tmuNnVwtkHWQEIhVEkw1QlGsYyZ52xXeA3oIN
+         Vt3w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:date:from:to:cc:message-id:in-reply-to
          :references:subject:mime-version:content-transfer-encoding;
-        bh=qhDebGkBzEzfgwo4AOFywLggeVUm1FKDg/bcQQUsutU=;
-        b=V1uVWeVFKhVngYQkdKctd7dHk79a7GxV6dYsG4Z6bH7H5KGXy6FKmEut5/y+JU0Rqk
-         MQtYg3eLjjfOAokn9tYHHjvdurtupDtcGUPMNR1ql1iCi3BsHoKXPWVLZCGMtumLabo7
-         +hV9Kz5y6MLyMWejSkenxa7k8jlN74ZlqhlVKgaI/sMcFnhG6rF23W2OH215GgWne2fo
-         nEfO22Gz9HQDjyg0CUC/wB/+JiqTrClNE2apWMOWEnybZFEB4aRJN0eM9saRcEEg4Pi6
-         0jNCyXVeICRTh+6XjkzBJ6kZbEfQezF4N4/+GZI6AA2B2NEaFB4oQvTqBhOtm1qaIhP1
-         TS0g==
-X-Gm-Message-State: APjAAAUvxxWnO8+ERC2JkSPaDj8llfffjAIyIZea2yk77Ms2o0I9muuW
-        1y2XE/L1REOlIOIxelLFN4g=
-X-Google-Smtp-Source: APXvYqx8Tpl/QxQb2AGlYyTD4UaFh50fqzgD1MccJ1IEs+y6U2BK+slEjypSi0C/zxBNKbvDzSW2+g==
-X-Received: by 2002:a5d:8782:: with SMTP id f2mr32942104ion.53.1579322751689;
-        Fri, 17 Jan 2020 20:45:51 -0800 (PST)
+        bh=in3PaGq/NpVE6pYehQSiATO9al0YHakPSsRs7/ya4xY=;
+        b=NYuBSv7R6QlZsx3qZJi+26rY54thUPn3RXmel5rRmVQwouv0FbzM/TCgBvjTqU6+L5
+         tY8gjyJQ3vQsWMHPgZf7n1uXrzYsrdiWHMyfdtpUbNpZgUaaEH7e1fCD/v/qBylTJW+k
+         +2fh66iA5KQyUKxgT2P9uA3r6wL5yTuPVF6FmNxHW0LWzCtt97x7CzebafVbbg2WKi6N
+         TicNv6go152umGs6RTOsb3NHyDm6fejaHlN0IZv22wVSuo9+Tddzom4iADauVx+06ZiT
+         XXhI0eZrubrwQFwzesafFb0pDhx4Pj9mQF7oXE30IozkNz8BfX3qxij2LdTXU0aTvGJh
+         BfpA==
+X-Gm-Message-State: APjAAAXi0e6rixpi5GRKvp6cV+HVO+8dr6LIIEcCdGhAMGKwQGK3H8tY
+        3Bi+Z+Sp5FYfHnf8Ym40ZHY=
+X-Google-Smtp-Source: APXvYqzr2NNo7zXtAVqrYPtrnor3hBErQdIxqAM4Fiq7PgMqN9enYklbUXgFWG4J0vfn9UKELr5DhA==
+X-Received: by 2002:a02:b808:: with SMTP id o8mr37753092jam.104.1579330799830;
+        Fri, 17 Jan 2020 22:59:59 -0800 (PST)
 Received: from localhost ([184.63.162.180])
-        by smtp.gmail.com with ESMTPSA id t16sm8492361ilh.75.2020.01.17.20.45.49
+        by smtp.gmail.com with ESMTPSA id a9sm8595799ilk.14.2020.01.17.22.59.57
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 17 Jan 2020 20:45:51 -0800 (PST)
-Date:   Fri, 17 Jan 2020 20:45:42 -0800
+        Fri, 17 Jan 2020 22:59:59 -0800 (PST)
+Date:   Fri, 17 Jan 2020 22:59:51 -0800
 From:   John Fastabend <john.fastabend@gmail.com>
-To:     Stanislav Fomichev <sdf@google.com>, netdev@vger.kernel.org,
-        bpf@vger.kernel.org
-Cc:     davem@davemloft.net, ast@kernel.org, daniel@iogearbox.net,
-        Stanislav Fomichev <sdf@google.com>
-Message-ID: <5e228d76ec631_4cb22afa407465c025@john-XPS-13-9370.notmuch>
-In-Reply-To: <20200118010546.74279-1-sdf@google.com>
-References: <20200118010546.74279-1-sdf@google.com>
-Subject: RE: [PATCH bpf-next] selftests/bpf: don't check for btf fd in
- test_btf
+To:     Yoshiki Komachi <komachi.yoshiki@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        Andrii Nakryiko <andriin@fb.com>,
+        Petar Penkov <ppenkov.kernel@gmail.com>
+Cc:     Yoshiki Komachi <komachi.yoshiki@gmail.com>,
+        netdev@vger.kernel.org, bpf@vger.kernel.org
+Message-ID: <5e22ace73625b_33062b1a40ed85c0af@john-XPS-13-9370.notmuch>
+In-Reply-To: <20200117070533.402240-2-komachi.yoshiki@gmail.com>
+References: <20200117070533.402240-1-komachi.yoshiki@gmail.com>
+ <20200117070533.402240-2-komachi.yoshiki@gmail.com>
+Subject: RE: [PATCH v2 bpf 1/2] flow_dissector: Fix to use new variables for
+ port ranges in bpf hook
 Mime-Version: 1.0
 Content-Type: text/plain;
  charset=utf-8
@@ -64,24 +71,20 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Stanislav Fomichev wrote:
-> After commit 0d13bfce023a ("libbpf: Don't require root for
-> bpf_object__open()") we no longer load BTF during bpf_object__open(),
-> so let's remove the expectation from test_btf that the fd is not -1.
-> The test currently fails.
+Yoshiki Komachi wrote:
+> This patch applies new flag (FLOW_DISSECTOR_KEY_PORTS_RANGE) and
+> field (tp_range) to BPF flow dissector to generate appropriate flow
+> keys when classified by specified port ranges.
 > 
-> Before:
-> BTF libbpf test[1] (test_btf_haskv.o): do_test_file:4152:FAIL bpf_object__btf_fd: -1
-> BTF libbpf test[2] (test_btf_newkv.o): do_test_file:4152:FAIL bpf_object__btf_fd: -1
-> BTF libbpf test[3] (test_btf_nokv.o): do_test_file:4152:FAIL bpf_object__btf_fd: -1
-> 
-> After:
-> BTF libbpf test[1] (test_btf_haskv.o): OK
-> BTF libbpf test[2] (test_btf_newkv.o): OK
-> BTF libbpf test[3] (test_btf_nokv.o): OK
-> 
-> Fixes: 0d13bfce023a ("libbpf: Don't require root forbpf_object__open()")
-> Signed-off-by: Stanislav Fomichev <sdf@google.com>
+> Fixes: 8ffb055beae5 ("cls_flower: Fix the behavior using port ranges with hw-offload")
+> Signed-off-by: Yoshiki Komachi <komachi.yoshiki@gmail.com>
 > ---
+>  net/core/flow_dissector.c | 11 +++++++++--
+>  1 file changed, 9 insertions(+), 2 deletions(-)
+> 
+> diff --git a/net/core/flow_dissector.c b/net/core/flow_dissector.c
+> index 2dbbb03..cc32d1d 100644
+
+LGTM
 
 Acked-by: John Fastabend <john.fastabend@gmail.com>
