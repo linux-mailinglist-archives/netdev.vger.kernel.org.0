@@ -2,94 +2,93 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 5D664141555
-	for <lists+netdev@lfdr.de>; Sat, 18 Jan 2020 02:05:52 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2568B141576
+	for <lists+netdev@lfdr.de>; Sat, 18 Jan 2020 02:45:33 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729064AbgARBFu (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 17 Jan 2020 20:05:50 -0500
-Received: from mail-vs1-f74.google.com ([209.85.217.74]:38444 "EHLO
-        mail-vs1-f74.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728778AbgARBFu (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 17 Jan 2020 20:05:50 -0500
-Received: by mail-vs1-f74.google.com with SMTP id o185so2529144vsc.5
-        for <netdev@vger.kernel.org>; Fri, 17 Jan 2020 17:05:50 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20161025;
-        h=date:message-id:mime-version:subject:from:to:cc;
-        bh=h6UZKEGdiRrN83ws0HUMDIaa+g3hnaxBrJoxeBmwwDE=;
-        b=Mqa+GIogWftqv0rXcHjdMD7tacWdZVv08hgfuWoWgOtkku2JFwEJ/bY6Y+brh5ivUD
-         Xd4OU8IVWEKnsf/RN6IUNJMWVVxPrBpCbW67rduGi87B3IiBP6oHN275OPPLJFyppktO
-         +oYzmZ4doRIC8g/Q2hOkILQyBD98bKuGCaUlIPwwsjZslya5hHTWCnUgH9ATeleRGOrB
-         YMCHURy8DRTillA4A3TupVDf/Y4sIF5fZzfubQn4g/KBBgQCg2Hh4y+dtrJhmAmay/xN
-         Dn0cBYvdW19hkJEwKdf2v3DcbL6KhA8b4q9OyTV50odnSk4Pxy0k+JZ66GGF614aVZef
-         iGOw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:message-id:mime-version:subject:from:to:cc;
-        bh=h6UZKEGdiRrN83ws0HUMDIaa+g3hnaxBrJoxeBmwwDE=;
-        b=VO4Xc0w7ntRG2MDQJ8ysghQhZglL+PWrmiEBKqEKbTNFqtqd03d+o4kgWzLF393YYT
-         YR/3om/wnCsiEBgYLPN7L11QTym2rgPc+udkpEwnwAQB2y/VQXlfau8k/SDWu0YCqW+q
-         qM+fnbVWzcsjnjw0T+oEHBNh/D0yrgmdSqqjt9g76/n5zmB1usR40ChW2+arDUXxDu6s
-         4IKrK/TOTRklID986fROCLktJTPIsfluviP9FpBVvNFgbU51fZB9oNCVPWcyRLjnfMEz
-         KIMG3qgc0gROGeIB94UWr5kTUL44o5O2EUBT84eIaJNq+tcJtY7tU4wbXk+pyZafTKVp
-         ydGw==
-X-Gm-Message-State: APjAAAWrGa/3EoVg6J5uNOz5SYf4rIL8HFbqqp1r+OtO+J/Mrrw/s++W
-        vrhpVhAYNC6HxeeLNz1hmA9LzsdZoeskG01RJ6i8NNd89U/rhExmNyqpxclWqvZvgu/8rKkov1H
-        ihcHVQu7Mqf2upC2FC6vyY1mtU9QbeGR7PYNCeqChBcRr79kT1W4Ukg==
-X-Google-Smtp-Source: APXvYqwegHDLxEN8dlTlm36QG9n4noUGaV8D7tdqv+KHgBxvPQ5tU4Qyf8clAtORan9eTdPpIB/VjoA=
-X-Received: by 2002:a1f:8f44:: with SMTP id r65mr4070061vkd.8.1579309549321;
- Fri, 17 Jan 2020 17:05:49 -0800 (PST)
-Date:   Fri, 17 Jan 2020 17:05:46 -0800
-Message-Id: <20200118010546.74279-1-sdf@google.com>
-Mime-Version: 1.0
-X-Mailer: git-send-email 2.25.0.341.g760bfbb309-goog
-Subject: [PATCH bpf-next] selftests/bpf: don't check for btf fd in test_btf
-From:   Stanislav Fomichev <sdf@google.com>
-To:     netdev@vger.kernel.org, bpf@vger.kernel.org
-Cc:     davem@davemloft.net, ast@kernel.org, daniel@iogearbox.net,
-        Stanislav Fomichev <sdf@google.com>
-Content-Type: text/plain; charset="UTF-8"
+        id S1730499AbgARBpa convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Fri, 17 Jan 2020 20:45:30 -0500
+Received: from mx0b-00082601.pphosted.com ([67.231.153.30]:40058 "EHLO
+        mx0b-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1727033AbgARBpa (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 17 Jan 2020 20:45:30 -0500
+Received: from pps.filterd (m0109332.ppops.net [127.0.0.1])
+        by mx0a-00082601.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 00I1jSpH010665
+        for <netdev@vger.kernel.org>; Fri, 17 Jan 2020 17:45:28 -0800
+Received: from maileast.thefacebook.com ([163.114.130.16])
+        by mx0a-00082601.pphosted.com with ESMTP id 2xk0s5wnhc-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT)
+        for <netdev@vger.kernel.org>; Fri, 17 Jan 2020 17:45:28 -0800
+Received: from intmgw003.08.frc2.facebook.com (2620:10d:c0a8:1b::d) by
+ mail.thefacebook.com (2620:10d:c0a8:82::e) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.1779.2; Fri, 17 Jan 2020 17:45:06 -0800
+Received: by devbig007.ftw2.facebook.com (Postfix, from userid 572438)
+        id C9AB3760922; Fri, 17 Jan 2020 16:06:57 -0800 (PST)
+Smtp-Origin-Hostprefix: devbig
+From:   Alexei Starovoitov <ast@kernel.org>
+Smtp-Origin-Hostname: devbig007.ftw2.facebook.com
+To:     <davem@davemloft.net>
+CC:     <daniel@iogearbox.net>, <netdev@vger.kernel.org>,
+        <bpf@vger.kernel.org>, <kernel-team@fb.com>
+Smtp-Origin-Cluster: ftw2c04
+Subject: [PATCH bpf-next 0/3] bpf: Program extensions or dynamic re-linking
+Date:   Fri, 17 Jan 2020 16:06:54 -0800
+Message-ID: <20200118000657.2135859-1-ast@kernel.org>
+X-Mailer: git-send-email 2.23.0
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8BIT
+X-FB-Internal: Safe
+Content-Type: text/plain
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.138,18.0.572
+ definitions=2020-01-17_05:2020-01-16,2020-01-17 signatures=0
+X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 lowpriorityscore=0
+ spamscore=0 impostorscore=0 mlxscore=0 clxscore=1015 adultscore=0
+ malwarescore=0 mlxlogscore=271 suspectscore=1 bulkscore=0
+ priorityscore=1501 phishscore=0 classifier=spam adjust=0 reason=mlx
+ scancount=1 engine=8.12.0-1910280000 definitions=main-2001180012
+X-FB-Internal: deliver
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-After commit 0d13bfce023a ("libbpf: Don't require root for
-bpf_object__open()") we no longer load BTF during bpf_object__open(),
-so let's remove the expectation from test_btf that the fd is not -1.
-The test currently fails.
+The last few month BPF community has been discussing an approach to call
+chaining, since exiting bpt_tail_call() mechanism used in production XDP
+programs has plenty of downsides. The outcome of these discussion was a
+conclusion to implement dynamic re-linking of BPF programs. Where rootlet XDP
+program attached to a netdevice can programmatically define a policy of
+execution of other XDP programs. Such rootlet would be compiled as normal XDP
+program and provide a number of placeholder global functions which later can be
+replaced with future XDP programs. BPF trampoline, function by function
+verification were building blocks towards that goal. The patch 1 is a final
+building block. It introduces dynamic program extensions. A number of
+improvements like more flexible function by function verification and better
+libbpf api will be implemented in future patches.
 
-Before:
-BTF libbpf test[1] (test_btf_haskv.o): do_test_file:4152:FAIL bpf_object__btf_fd: -1
-BTF libbpf test[2] (test_btf_newkv.o): do_test_file:4152:FAIL bpf_object__btf_fd: -1
-BTF libbpf test[3] (test_btf_nokv.o): do_test_file:4152:FAIL bpf_object__btf_fd: -1
+Alexei Starovoitov (3):
+  bpf: Introduce dynamic program extensions
+  libbpf: Add support for program extensions
+  selftests/bpf: Add tests for program extensions
 
-After:
-BTF libbpf test[1] (test_btf_haskv.o): OK
-BTF libbpf test[2] (test_btf_newkv.o): OK
-BTF libbpf test[3] (test_btf_nokv.o): OK
+ include/linux/bpf.h                           |  10 +-
+ include/linux/bpf_types.h                     |   2 +
+ include/linux/btf.h                           |   5 +
+ include/uapi/linux/bpf.h                      |   1 +
+ kernel/bpf/btf.c                              | 152 +++++++++++++++++-
+ kernel/bpf/syscall.c                          |  15 +-
+ kernel/bpf/trampoline.c                       |  38 ++++-
+ kernel/bpf/verifier.c                         |  84 +++++++---
+ tools/include/uapi/linux/bpf.h                |   1 +
+ tools/lib/bpf/bpf.c                           |   3 +-
+ tools/lib/bpf/libbpf.c                        |  14 +-
+ tools/lib/bpf/libbpf.h                        |   2 +
+ tools/lib/bpf/libbpf.map                      |   2 +
+ tools/lib/bpf/libbpf_probes.c                 |   1 +
+ .../selftests/bpf/prog_tests/fexit_bpf2bpf.c  |  20 ++-
+ .../selftests/bpf/progs/fexit_bpf2bpf.c       |  57 +++++++
+ .../selftests/bpf/progs/test_pkt_access.c     |   8 +-
+ 17 files changed, 383 insertions(+), 32 deletions(-)
 
-Fixes: 0d13bfce023a ("libbpf: Don't require root forbpf_object__open()")
-Signed-off-by: Stanislav Fomichev <sdf@google.com>
----
- tools/testing/selftests/bpf/test_btf.c | 4 ----
- 1 file changed, 4 deletions(-)
-
-diff --git a/tools/testing/selftests/bpf/test_btf.c b/tools/testing/selftests/bpf/test_btf.c
-index 3d617e806054..93040ca83e60 100644
---- a/tools/testing/selftests/bpf/test_btf.c
-+++ b/tools/testing/selftests/bpf/test_btf.c
-@@ -4148,10 +4148,6 @@ static int do_test_file(unsigned int test_num)
- 	if (CHECK(IS_ERR(obj), "obj: %ld", PTR_ERR(obj)))
- 		return PTR_ERR(obj);
- 
--	err = bpf_object__btf_fd(obj);
--	if (CHECK(err == -1, "bpf_object__btf_fd: -1"))
--		goto done;
--
- 	prog = bpf_program__next(NULL, obj);
- 	if (CHECK(!prog, "Cannot find bpf_prog")) {
- 		err = -1;
 -- 
-2.25.0.341.g760bfbb309-goog
+2.23.0
 
