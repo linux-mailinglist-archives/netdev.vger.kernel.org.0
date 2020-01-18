@@ -2,60 +2,62 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 0F99D1419F0
-	for <lists+netdev@lfdr.de>; Sat, 18 Jan 2020 22:58:33 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id BA39B1419F7
+	for <lists+netdev@lfdr.de>; Sat, 18 Jan 2020 23:01:42 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727085AbgARV6a (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 18 Jan 2020 16:58:30 -0500
-Received: from mail-qt1-f194.google.com ([209.85.160.194]:33575 "EHLO
-        mail-qt1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726910AbgARV6a (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 18 Jan 2020 16:58:30 -0500
-Received: by mail-qt1-f194.google.com with SMTP id d5so24754417qto.0
-        for <netdev@vger.kernel.org>; Sat, 18 Jan 2020 13:58:29 -0800 (PST)
+        id S1727070AbgARWBl (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 18 Jan 2020 17:01:41 -0500
+Received: from mail-qv1-f67.google.com ([209.85.219.67]:34018 "EHLO
+        mail-qv1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726960AbgARWBk (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 18 Jan 2020 17:01:40 -0500
+Received: by mail-qv1-f67.google.com with SMTP id o18so12380602qvf.1
+        for <netdev@vger.kernel.org>; Sat, 18 Jan 2020 14:01:40 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=subject:to:cc:references:from:message-id:date:user-agent
          :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=LOf5bG921245cnNVP0JdEynakSyVJtkYnXWjmO8t0fM=;
-        b=m+mKSRlGTIaAScJmcVU58wBBj16K63crQYGdkc0fI+3YNjIxPO06jxJH1SCc7EjW1m
-         2E03Ia3d32vE4Uws9lECh5gblnFo4akBYhHgMMsZQ+4p33QU0NVBv3flz8Wlq4RZlemV
-         ct2mG1oe0+31uu0/81KL8YvpxLdQISHcgqLhkp/92pqKX6EzNHW8JzYvOlJOI0mmtsJ4
-         8gYOEG2WSJuH8RfNXlCLeLSp2ZnqiLnQ9FxL+V/D5FXie8wiLp3FKdpE1GqBlIGamDZU
-         u2QV79oagExmpHZR44o0YipdDj57K8q3LCACeyK+usIhFYfe+iNJYjXdbkX4jZKyDdJA
-         l3dw==
+        bh=Eh0e7OZNob2D0Zc1ly478io5jyDjroSxiXTuS7EnmfM=;
+        b=rpBD3gIZhW9F8QQqc8P+itvkRQsDCE/jtfU8SZ/Lz0p/hc32fEvPx4gq/chcNVoual
+         vbedEoA6zCM5YnpPF8Q/lntgDeXfv2NkVAYayg0/JsYnXeT4cam243JPuGa6UGGeK7Lr
+         D5jeAM18RhmSQum704H4cAzy4mq3ACq1zEVcy1Vb3dVZ5ugO9rIhqs5UqT8++PMAa0Je
+         a6cm3IQehKkFo9oBd2+tx2vlKdeqOwbkgqP5pHL5Q8SBNR5qCIcHwVWZ9QhNHnJ0kv5l
+         Z5079f9XyggftNeuQNCLOA0zGv3yChaiJSiRP5JlibbvYjtR8LaKQgBhHrWQS84Y9OQB
+         xXvA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:subject:to:cc:references:from:message-id:date
          :user-agent:mime-version:in-reply-to:content-language
          :content-transfer-encoding;
-        bh=LOf5bG921245cnNVP0JdEynakSyVJtkYnXWjmO8t0fM=;
-        b=f+Ag3UmmFRaEVT4a3EHcuqY2uE8zYArcBMwxQR1mNNPvPlnjH0cyifv9v+S3cOeoey
-         FNL+I237KNjOt/pwABpJuGkUWvrsr8I5ufnNPVe4t/oGJnLSInEXbJjHgXQuEUIHATVt
-         QEN6mLlqxgut7dZLqADyFGk3roAwMClGZW2sLA/vx0JOwKvz32636UlUjwMZzd6W028+
-         UItO8RP3EGlIRiv4QIItz16c3vojtS+dehK0ncT1r5lPmfSt3IP3D4hCIgbRi8P9LV+W
-         3j934cfPZo/RZnxVpqvRlO9eUnVJ+XNe4GgPTl0ux71ZhpB7xru6LJpDK2Xch0YyKEK2
-         lWqA==
-X-Gm-Message-State: APjAAAUyA/IDJM2C+QPa1nNBU+jPWEbMxvmwcG6ForpDmP6ChHImz7e5
-        vqqjfGac1Kcq/924myRdo5KGfnoJ
-X-Google-Smtp-Source: APXvYqwqbO6576Vd1xscxqqWke7yXUUKwwP0FqAraoiX3kujFzir2SzKMC2/kCOBQ/7WkQ9PuK8RfQ==
-X-Received: by 2002:aed:2394:: with SMTP id j20mr13984834qtc.167.1579384709311;
-        Sat, 18 Jan 2020 13:58:29 -0800 (PST)
+        bh=Eh0e7OZNob2D0Zc1ly478io5jyDjroSxiXTuS7EnmfM=;
+        b=JU3gDWHmHihmnLaHL9z1KU9w5n+Hk9doA9+fcZjr3yJtlWB+mGt1Kp7oX06HYQjjxk
+         tcigDNWlf2WeCNpaP7PtvxYPLLYiMpNJfppzoZPkHg6Z6ymQ19hmy/x/w7FGcyQTfwKd
+         Yl3TK46FSC7E1h7MZ2DSiGiujJGTsR8XU2ECvDy7aYquIxoVwaJUJgjkn2UF8jSnDMuW
+         v8vY80Wfh5qtcgmJ2Dimn7WhkLgg+sLhAqem5RAjxPC+ozFaNQNwTFzZm9bWA/m2VII1
+         gnj7TlfsUJWeG7NEAdTpJ+7OZaVDKG2NBWoPLy3p/MHuNMWlFq9i/7TXQG8uLCKWjoAX
+         rK/w==
+X-Gm-Message-State: APjAAAV9GFj9SciRo9tkyMUDJvVgshKJ1Lw0BT8JZGmt7bE0cBLVkyLW
+        w7rtDOpy50PyGMZqkBdHq41xXX0w
+X-Google-Smtp-Source: APXvYqy/z2N37+292nhbsVZbjskRiCHfY4//1Ct4R5SqfOgIDv5vKBVb9AfqkxTR6GvyZT5bxJBpbg==
+X-Received: by 2002:ad4:45ae:: with SMTP id y14mr14060868qvu.158.1579384899947;
+        Sat, 18 Jan 2020 14:01:39 -0800 (PST)
 Received: from ?IPv6:2601:282:803:7700:61e3:b62a:f6cf:af56? ([2601:282:803:7700:61e3:b62a:f6cf:af56])
-        by smtp.googlemail.com with ESMTPSA id b42sm15725555qtb.36.2020.01.18.13.58.27
+        by smtp.googlemail.com with ESMTPSA id s20sm13642601qkj.100.2020.01.18.14.01.38
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sat, 18 Jan 2020 13:58:28 -0800 (PST)
-Subject: Re: [PATCH iproute2-next 0/2] Add support for the ETS Qdisc
-To:     Petr Machata <pmachata@gmail.com>, netdev@vger.kernel.org
-Cc:     David Ahern <dsahern@gmail.com>, Ido Schimmel <idosch@mellanox.com>
-References: <cover.1578924154.git.petrm@mellanox.com>
+        Sat, 18 Jan 2020 14:01:39 -0800 (PST)
+Subject: Re: [PATCH] tc: parse attributes with NLA_F_NESTED flag
+To:     Leslie Monis <lesliemonis@gmail.com>,
+        Linux NetDev <netdev@vger.kernel.org>
+Cc:     David Ahern <dsahern@gmail.com>,
+        Stephen Hemminger <stephen@networkplumber.org>
+References: <20200116155701.6636-1-lesliemonis@gmail.com>
 From:   David Ahern <dsahern@gmail.com>
-Message-ID: <8cd41192-89b1-af30-af14-84bc351e22f6@gmail.com>
-Date:   Sat, 18 Jan 2020 14:58:27 -0700
+Message-ID: <263a272f-770e-6757-916b-49f1036a8954@gmail.com>
+Date:   Sat, 18 Jan 2020 15:01:38 -0700
 User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:68.0)
  Gecko/20100101 Thunderbird/68.4.1
 MIME-Version: 1.0
-In-Reply-To: <cover.1578924154.git.petrm@mellanox.com>
+In-Reply-To: <20200116155701.6636-1-lesliemonis@gmail.com>
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
@@ -64,48 +66,20 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 1/13/20 7:16 AM, Petr Machata wrote:
-> A new Qdisc, "ETS", has been accepted into Linux at kernel commit
-> 6bff00170277 ("Merge branch 'ETS-qdisc'"). Add iproute2 support for this
-> Qdisc.
-> 
-> Patch #1, changes libnetlink to admit NLA_F_NESTED in nested attributes.
-> Patch #2 then adds ETS support as such.
-> 
-> Examples (taken from the kernel patchset):
-> 
-> - Add a Qdisc with 6 bands, 3 strict and 3 ETS with 45%-30%-25% weights:
-> 
->     # tc qdisc add dev swp1 root handle 1: \
-> 	ets strict 3 quanta 4500 3000 2500 priomap 0 1 1 1 2 3 4 5
->     # tc qdisc sh dev swp1
->     qdisc ets 1: root refcnt 2 bands 6 strict 3 quanta 4500 3000 2500 priomap 0 1 1 1 2 3 4 5 5 5 5 5 5 5 5 5 
-> 
-> - Tweak quantum of one of the classes of the previous Qdisc:
-> 
->     # tc class ch dev swp1 classid 1:4 ets quantum 1000
->     # tc qdisc sh dev swp1
->     qdisc ets 1: root refcnt 2 bands 6 strict 3 quanta 1000 3000 2500 priomap 0 1 1 1 2 3 4 5 5 5 5 5 5 5 5 5 
->     # tc class ch dev swp1 classid 1:3 ets quantum 1000
->     Error: Strict bands do not have a configurable quantum.
-> 
-> - Purely strict Qdisc with 1:1 mapping between priorities and TCs:
-> 
->     # tc qdisc add dev swp1 root handle 1: \
-> 	ets strict 8 priomap 7 6 5 4 3 2 1 0
->     # tc qdisc sh dev swp1
->     qdisc ets 1: root refcnt 2 bands 8 strict 8 priomap 7 6 5 4 3 2 1 0 7 7 7 7 7 7 7 7 
-> 
-> - Use "bands" to specify number of bands explicitly. Underspecified bands
->   are implicitly ETS and their quantum is taken from MTU. The following
->   thus gives each band the same weight:
-> 
->     # tc qdisc add dev swp1 root handle 1: \
-> 	ets bands 8 priomap 7 6 5 4 3 2 1 0
->     # tc qdisc sh dev swp1
->     qdisc ets 1: root refcnt 2 bands 8 quanta 1514 1514 1514 1514 1514 1514 1514 1514 priomap 7 6 5 4 3 2 1 0 7 7 7 7 7 7 7 7 
-> 
+On 1/16/20 8:57 AM, Leslie Monis wrote:
 
-applied to iproute2-next. Thanks for putting a lot of examples in the
-cover letter.
+> diff --git a/tc/tc_class.c b/tc/tc_class.c
+> index c7e3cfdf..39bea971 100644
+> --- a/tc/tc_class.c
+> +++ b/tc/tc_class.c
+> @@ -246,8 +246,8 @@ static void graph_cls_show(FILE *fp, char *buf, struct hlist_head *root_list,
+>  			 "+---(%s)", cls_id_str);
+>  		strcat(buf, str);
+>  
+> -		parse_rtattr(tb, TCA_MAX, (struct rtattr *)cls->data,
+> -				cls->data_len);
+> +		parse_rtattr_flags(tb, TCA_MAX, (struct rtattr *)cls->data,
+> +				   cls->data_len, NLA_F_NESTED);
 
+Petr recently sent a patch to update parse_rtattr_nested to add the
+NESTED flag. Can you update this patch to use parse_rtattr_nested?
