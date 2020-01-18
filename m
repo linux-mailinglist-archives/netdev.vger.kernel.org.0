@@ -2,94 +2,78 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 596ED141A0F
-	for <lists+netdev@lfdr.de>; Sat, 18 Jan 2020 23:35:00 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1B4CB141A11
+	for <lists+netdev@lfdr.de>; Sat, 18 Jan 2020 23:37:44 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727031AbgARWen convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Sat, 18 Jan 2020 17:34:43 -0500
-Received: from us-smtp-2.mimecast.com ([205.139.110.61]:40999 "EHLO
-        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1726960AbgARWen (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 18 Jan 2020 17:34:43 -0500
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-174-jIDkwQWgNTC2GZn2PaZ7GA-1; Sat, 18 Jan 2020 17:34:38 -0500
-Received: from smtp.corp.redhat.com (int-mx01.intmail.prod.int.phx2.redhat.com [10.5.11.11])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 6D9DC8017CC;
-        Sat, 18 Jan 2020 22:34:37 +0000 (UTC)
-Received: from bistromath.localdomain (ovpn-117-110.ams2.redhat.com [10.36.117.110])
-        by smtp.corp.redhat.com (Postfix) with ESMTPS id AAAA084BBB;
-        Sat, 18 Jan 2020 22:34:35 +0000 (UTC)
-Date:   Sat, 18 Jan 2020 23:34:33 +0100
-From:   Sabrina Dubroca <sd@queasysnail.net>
-To:     David Ahern <dsahern@gmail.com>
+        id S1727041AbgARWhl (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 18 Jan 2020 17:37:41 -0500
+Received: from mail-qt1-f194.google.com ([209.85.160.194]:39575 "EHLO
+        mail-qt1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727008AbgARWhl (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 18 Jan 2020 17:37:41 -0500
+Received: by mail-qt1-f194.google.com with SMTP id e5so24800246qtm.6
+        for <netdev@vger.kernel.org>; Sat, 18 Jan 2020 14:37:40 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=5aun/jsg/3HG05MaG0eySQM7adj6Tat910ELcVfvxdE=;
+        b=GtvHdsLhe5nBZL8U2Pb9uud4m1F1kMIb3HFsgjiNVeUqdvIZ03gMK5FJkAMH26AiQq
+         nzoVKjru7Gbads/2eN0uXjlC38G3T+Ng4883Qji8/MLbjtJrLrMo9Elk06wR9LhQEh0G
+         iezd7HBuV3tUbC1tHtTNCIqj2XD3lCULLugs3aNMqOeq8hK512gXEFxD//PufH6TImXe
+         6MncuO/fAnCU3A/ARiBd2xcGqyqNjhc7bEF2HPDKbX7rdYzcSNiNj3Fn3tFGlRgcdmtq
+         ixiY5TioBJBGn1tGlxOJsnmV/g+4Pg9GIBkF2g0iRRx+syQR7LRqF2pamlhMMtyvVNCQ
+         J7og==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=5aun/jsg/3HG05MaG0eySQM7adj6Tat910ELcVfvxdE=;
+        b=kxvbXjk4B3G2dI5hzEzcfR8klKhgBlYOHgP8sr7UJmPev/zQYGKXukAluYaRTugT65
+         hB/9zkuQP3UcLT/wL5XLs5kQvNPy/LeAS7bd9dYVfnTRymnBhv6rVfDtrZU7JpzwtlRX
+         b0WYyrjR6y008WlrbiX9iSXOs0j7XLZjs0Zkm4x2N4BbcSSCOqckZyHbpT/X+pJUx+z6
+         sK85I8mhBIMqSKVmyjGw9bG6IaIhtv2F6amBLjw3+S4793oAXcyq7gwwDJWMkziJwrvv
+         9kyJHrOEvVbzDZRGplnNwzPLc4Ro422D0pCmB1x9HQcfr9j25GKrwprC6QtAymPRXP3D
+         IOiA==
+X-Gm-Message-State: APjAAAWNzeklFlYj4Om6eX+dirCsc09QbB2s27eezc0uMxkq0FAs1LP6
+        SeItF4ZJHbx9pm0zpRxEd0B9ETmk
+X-Google-Smtp-Source: APXvYqybSMqXW8ULojPvdRSnbIR2P+FKJ71SLWz5qvygIe8RX2xd0tMZGxblYuLA7B/oAPyEkvqLeg==
+X-Received: by 2002:ac8:140c:: with SMTP id k12mr13943042qtj.117.1579387060211;
+        Sat, 18 Jan 2020 14:37:40 -0800 (PST)
+Received: from ?IPv6:2601:282:803:7700:61e3:b62a:f6cf:af56? ([2601:282:803:7700:61e3:b62a:f6cf:af56])
+        by smtp.googlemail.com with ESMTPSA id h6sm14975983qtr.33.2020.01.18.14.37.38
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Sat, 18 Jan 2020 14:37:39 -0800 (PST)
+Subject: Re: [PATCH iproute2-next] ip: xfrm: add espintcp encapsulation
+To:     Sabrina Dubroca <sd@queasysnail.net>
 Cc:     netdev@vger.kernel.org,
         Stephen Hemminger <stephen@networkplumber.org>,
         Herbert Xu <herbert@gondor.apana.org.au>
-Subject: Re: [PATCH iproute2-next] ip: xfrm: add espintcp encapsulation
-Message-ID: <20200118223433.GA159952@bistromath.localdomain>
 References: <0b5baa21f8d0048b5e97f927e801ac2f843bb5e1.1579104430.git.sd@queasysnail.net>
  <2df9df78-0383-c914-596e-1855c69fb170@gmail.com>
+ <20200118223433.GA159952@bistromath.localdomain>
+From:   David Ahern <dsahern@gmail.com>
+Message-ID: <d57cc9bf-a399-c969-cbd8-35503fbc0cb5@gmail.com>
+Date:   Sat, 18 Jan 2020 15:37:38 -0700
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:68.0)
+ Gecko/20100101 Thunderbird/68.4.1
 MIME-Version: 1.0
-In-Reply-To: <2df9df78-0383-c914-596e-1855c69fb170@gmail.com>
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.11
-X-MC-Unique: jIDkwQWgNTC2GZn2PaZ7GA-1
-X-Mimecast-Spam-Score: 0
-X-Mimecast-Originator: queasysnail.net
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8BIT
-Content-Disposition: inline
+In-Reply-To: <20200118223433.GA159952@bistromath.localdomain>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-2020-01-18, 14:24:45 -0700, David Ahern wrote:
-> On 1/16/20 3:39 AM, Sabrina Dubroca wrote:
-> > diff --git a/ip/ipxfrm.c b/ip/ipxfrm.c
-> > index 32f560933a47..e310860b9f1f 100644
-> > --- a/ip/ipxfrm.c
-> > +++ b/ip/ipxfrm.c
-> > @@ -759,6 +759,9 @@ void xfrm_xfrma_print(struct rtattr *tb[], __u16 family,
-> >  		case 2:
-> >  			fprintf(fp, "espinudp ");
-> >  			break;
-> > +		case 7:
-> > +			fprintf(fp, "espintcp ");
-> > +			break;
-> >  		default:
-> >  			fprintf(fp, "%u ", e->encap_type);
-> >  			break;
-> > @@ -1211,6 +1214,8 @@ int xfrm_encap_type_parse(__u16 *type, int *argcp, char ***argvp)
-> >  		*type = 1;
-> >  	else if (strcmp(*argv, "espinudp") == 0)
-> >  		*type = 2;
-> > +	else if (strcmp(*argv, "espintcp") == 0)
-> > +		*type = 7;
-> >  	else
-> >  		invarg("ENCAP-TYPE value is invalid", *argv);
-> >  
-> 
-> are there enums / macros for the magic numbers?
+On 1/18/20 3:34 PM, Sabrina Dubroca wrote:
+> Since the existing code wasn't using them (no idea why), I did the
 
-Yes, in include/uapi/linux/udp.h:
+I figured.
 
-/* UDP encapsulation types */
-#define UDP_ENCAP_ESPINUDP_NON_IKE	1 /* draft-ietf-ipsec-nat-t-ike-00/01 */
-#define UDP_ENCAP_ESPINUDP	2 /* draft-ietf-ipsec-udp-encaps-06 */
-#define UDP_ENCAP_L2TPINUDP	3 /* rfc2661 */
-#define UDP_ENCAP_GTP0		4 /* GSM TS 09.60 */
-#define UDP_ENCAP_GTP1U		5 /* 3GPP TS 29.060 */
-#define UDP_ENCAP_RXRPC		6
-#define TCP_ENCAP_ESPINTCP	7 /* Yikes, this is really xfrm encap types. */
+> same. I can change that if you prefer (and add udp.h to iproute's
+> include/uapi, since it's currently missing).
 
-
-Since the existing code wasn't using them (no idea why), I did the
-same. I can change that if you prefer (and add udp.h to iproute's
-include/uapi, since it's currently missing).
-
--- 
-Sabrina
-
+I think that makes for readable code, so yes, resubmit with names. Thanks
