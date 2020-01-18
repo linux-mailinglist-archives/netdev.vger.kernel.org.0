@@ -2,78 +2,105 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 1B4CB141A11
-	for <lists+netdev@lfdr.de>; Sat, 18 Jan 2020 23:37:44 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B6F6B141A77
+	for <lists+netdev@lfdr.de>; Sun, 19 Jan 2020 00:34:04 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727041AbgARWhl (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 18 Jan 2020 17:37:41 -0500
-Received: from mail-qt1-f194.google.com ([209.85.160.194]:39575 "EHLO
-        mail-qt1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727008AbgARWhl (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 18 Jan 2020 17:37:41 -0500
-Received: by mail-qt1-f194.google.com with SMTP id e5so24800246qtm.6
-        for <netdev@vger.kernel.org>; Sat, 18 Jan 2020 14:37:40 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=5aun/jsg/3HG05MaG0eySQM7adj6Tat910ELcVfvxdE=;
-        b=GtvHdsLhe5nBZL8U2Pb9uud4m1F1kMIb3HFsgjiNVeUqdvIZ03gMK5FJkAMH26AiQq
-         nzoVKjru7Gbads/2eN0uXjlC38G3T+Ng4883Qji8/MLbjtJrLrMo9Elk06wR9LhQEh0G
-         iezd7HBuV3tUbC1tHtTNCIqj2XD3lCULLugs3aNMqOeq8hK512gXEFxD//PufH6TImXe
-         6MncuO/fAnCU3A/ARiBd2xcGqyqNjhc7bEF2HPDKbX7rdYzcSNiNj3Fn3tFGlRgcdmtq
-         ixiY5TioBJBGn1tGlxOJsnmV/g+4Pg9GIBkF2g0iRRx+syQR7LRqF2pamlhMMtyvVNCQ
-         J7og==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=5aun/jsg/3HG05MaG0eySQM7adj6Tat910ELcVfvxdE=;
-        b=kxvbXjk4B3G2dI5hzEzcfR8klKhgBlYOHgP8sr7UJmPev/zQYGKXukAluYaRTugT65
-         hB/9zkuQP3UcLT/wL5XLs5kQvNPy/LeAS7bd9dYVfnTRymnBhv6rVfDtrZU7JpzwtlRX
-         b0WYyrjR6y008WlrbiX9iSXOs0j7XLZjs0Zkm4x2N4BbcSSCOqckZyHbpT/X+pJUx+z6
-         sK85I8mhBIMqSKVmyjGw9bG6IaIhtv2F6amBLjw3+S4793oAXcyq7gwwDJWMkziJwrvv
-         9kyJHrOEvVbzDZRGplnNwzPLc4Ro422D0pCmB1x9HQcfr9j25GKrwprC6QtAymPRXP3D
-         IOiA==
-X-Gm-Message-State: APjAAAWNzeklFlYj4Om6eX+dirCsc09QbB2s27eezc0uMxkq0FAs1LP6
-        SeItF4ZJHbx9pm0zpRxEd0B9ETmk
-X-Google-Smtp-Source: APXvYqybSMqXW8ULojPvdRSnbIR2P+FKJ71SLWz5qvygIe8RX2xd0tMZGxblYuLA7B/oAPyEkvqLeg==
-X-Received: by 2002:ac8:140c:: with SMTP id k12mr13943042qtj.117.1579387060211;
-        Sat, 18 Jan 2020 14:37:40 -0800 (PST)
-Received: from ?IPv6:2601:282:803:7700:61e3:b62a:f6cf:af56? ([2601:282:803:7700:61e3:b62a:f6cf:af56])
-        by smtp.googlemail.com with ESMTPSA id h6sm14975983qtr.33.2020.01.18.14.37.38
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sat, 18 Jan 2020 14:37:39 -0800 (PST)
-Subject: Re: [PATCH iproute2-next] ip: xfrm: add espintcp encapsulation
-To:     Sabrina Dubroca <sd@queasysnail.net>
-Cc:     netdev@vger.kernel.org,
-        Stephen Hemminger <stephen@networkplumber.org>,
-        Herbert Xu <herbert@gondor.apana.org.au>
-References: <0b5baa21f8d0048b5e97f927e801ac2f843bb5e1.1579104430.git.sd@queasysnail.net>
- <2df9df78-0383-c914-596e-1855c69fb170@gmail.com>
- <20200118223433.GA159952@bistromath.localdomain>
-From:   David Ahern <dsahern@gmail.com>
-Message-ID: <d57cc9bf-a399-c969-cbd8-35503fbc0cb5@gmail.com>
-Date:   Sat, 18 Jan 2020 15:37:38 -0700
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:68.0)
- Gecko/20100101 Thunderbird/68.4.1
+        id S1727043AbgARX2q (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 18 Jan 2020 18:28:46 -0500
+Received: from Chamillionaire.breakpoint.cc ([193.142.43.52]:50764 "EHLO
+        Chamillionaire.breakpoint.cc" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1727012AbgARX2p (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 18 Jan 2020 18:28:45 -0500
+Received: from fw by Chamillionaire.breakpoint.cc with local (Exim 4.92)
+        (envelope-from <fw@strlen.de>)
+        id 1isxWE-0000DE-7U; Sun, 19 Jan 2020 00:28:42 +0100
+Date:   Sun, 19 Jan 2020 00:28:42 +0100
+From:   Florian Westphal <fw@strlen.de>
+To:     Pablo Neira Ayuso <pablo@netfilter.org>
+Cc:     Florian Westphal <fw@strlen.de>, netfilter-devel@vger.kernel.org,
+        netdev@vger.kernel.org, syzkaller-bugs@googlegroups.com,
+        syzbot+156a04714799b1d480bc@syzkaller.appspotmail.com
+Subject: Re: [PATCH nf] netfilter: nf_tables: check for valid chain type
+ pointer before dereference
+Message-ID: <20200118232842.GZ795@breakpoint.cc>
+References: <00000000000074ed27059c33dedc@google.com>
+ <20200116211109.9119-1-fw@strlen.de>
+ <20200118203057.6stoe6axtyoxfcxz@salvia>
 MIME-Version: 1.0
-In-Reply-To: <20200118223433.GA159952@bistromath.localdomain>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20200118203057.6stoe6axtyoxfcxz@salvia>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 1/18/20 3:34 PM, Sabrina Dubroca wrote:
-> Since the existing code wasn't using them (no idea why), I did the
+Pablo Neira Ayuso <pablo@netfilter.org> wrote:
+> On Thu, Jan 16, 2020 at 10:11:09PM +0100, Florian Westphal wrote:
+> > Its possible to create tables in a family that isn't supported/known.
+> > Then, when adding a base chain, the table pointer can be NULL.
+> > 
+> > This gets us a NULL ptr dereference in nf_tables_addchain().
+> > 
+> > Fixes: baae3e62f31618 ("netfilter: nf_tables: fix chain type module reference handling")
+> > Reported-by: syzbot+156a04714799b1d480bc@syzkaller.appspotmail.com
+> > Signed-off-by: Florian Westphal <fw@strlen.de>
+> > ---
+> >  net/netfilter/nf_tables_api.c | 8 ++++++++
+> >  1 file changed, 8 insertions(+)
+> > 
+> > diff --git a/net/netfilter/nf_tables_api.c b/net/netfilter/nf_tables_api.c
+> > index 65f51a2e9c2a..e8976128cdb1 100644
+> > --- a/net/netfilter/nf_tables_api.c
+> > +++ b/net/netfilter/nf_tables_api.c
+> > @@ -953,6 +953,9 @@ static int nf_tables_newtable(struct net *net, struct sock *nlsk,
+> >  	struct nft_ctx ctx;
+> >  	int err;
+> >  
+> > +	if (family >= NFPROTO_NUMPROTO)
+> > +		return -EAFNOSUPPORT;
+> > +
+> >  	lockdep_assert_held(&net->nft.commit_mutex);
+> >  	attr = nla[NFTA_TABLE_NAME];
+> >  	table = nft_table_lookup(net, attr, family, genmask);
+> > @@ -1765,6 +1768,9 @@ static int nft_chain_parse_hook(struct net *net,
+> >  	    ha[NFTA_HOOK_PRIORITY] == NULL)
+> >  		return -EINVAL;
+> >  
+> > +	if (family >= NFPROTO_NUMPROTO)
+> > +		return -EAFNOSUPPORT;
+> > +
+> >  	hook->num = ntohl(nla_get_be32(ha[NFTA_HOOK_HOOKNUM]));
+> >  	hook->priority = ntohl(nla_get_be32(ha[NFTA_HOOK_PRIORITY]));
+> >  
+> > @@ -1774,6 +1780,8 @@ static int nft_chain_parse_hook(struct net *net,
+> >  						   family, autoload);
+> >  		if (IS_ERR(type))
+> >  			return PTR_ERR(type);
+> > +	} else if (!type) {
+> > +		return -EOPNOTSUPP;
+> 
+> I think this check should be enough.
+> 
+> I mean, NFPROTO_NUMPROTO still allows for creating tables for families
+> that don't exist (<= NFPROTO_NUMPROTO) and why bother on creating such
+> table. As long as such table does not crash the kernel, I think it's
+> fine. No changes can be attached anymore anyway.
 
-I figured.
+I had a previous (not-sent) version that added a stronger validation
+of nfproto during table creation but I ditched it because it got ugly
+due to ifdefs.
 
-> same. I can change that if you prefer (and add udp.h to iproute's
-> include/uapi, since it's currently missing).
+As you alrady point out, creating "bogus" family tables is fine,
+base chain registration will fail later on from netfilter core.
 
-I think that makes for readable code, so yes, resubmit with names. Thanks
+The NFPROTO_NUMPROTO range check is needed, we use it as index
+to table[] in nft_chain_parse_hook().
+
+> Otherwise, if a helper function to check for the families that are
+> really supported could be another alternative. But not sure it is
+> worth?
+
+It did not look nice so I did not go for it in the end, but I think
+doing a simple range check doesn't hurt.
