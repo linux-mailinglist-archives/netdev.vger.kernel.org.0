@@ -2,80 +2,64 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 264F6141ECD
-	for <lists+netdev@lfdr.de>; Sun, 19 Jan 2020 16:17:39 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8E331141ED8
+	for <lists+netdev@lfdr.de>; Sun, 19 Jan 2020 16:25:43 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727092AbgASPRe (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 19 Jan 2020 10:17:34 -0500
-Received: from shards.monkeyblade.net ([23.128.96.9]:49144 "EHLO
+        id S1727048AbgASPZl (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 19 Jan 2020 10:25:41 -0500
+Received: from shards.monkeyblade.net ([23.128.96.9]:49242 "EHLO
         shards.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726778AbgASPRe (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 19 Jan 2020 10:17:34 -0500
+        with ESMTP id S1726890AbgASPZl (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 19 Jan 2020 10:25:41 -0500
 Received: from localhost (unknown [62.21.130.100])
         (using TLSv1 with cipher AES256-SHA (256/256 bits))
         (Client did not present a certificate)
         (Authenticated sender: davem-davemloft)
-        by shards.monkeyblade.net (Postfix) with ESMTPSA id D42BE14EC582A;
-        Sun, 19 Jan 2020 07:17:32 -0800 (PST)
-Date:   Sun, 19 Jan 2020 16:17:31 +0100 (CET)
-Message-Id: <20200119.161731.777887504971898393.davem@davemloft.net>
-To:     saeedm@mellanox.com
-Cc:     kuba@kernel.org, netdev@vger.kernel.org
-Subject: Re: [net-next 00/16][pull request] Mellanox, mlx5 E-Switch chains
- and prios
+        by shards.monkeyblade.net (Postfix) with ESMTPSA id 03F9514EF485C;
+        Sun, 19 Jan 2020 07:25:39 -0800 (PST)
+Date:   Sun, 19 Jan 2020 16:25:38 +0100 (CET)
+Message-Id: <20200119.162538.692635075813536925.davem@davemloft.net>
+To:     idosch@idosch.org
+Cc:     netdev@vger.kernel.org, jiri@mellanox.com, amitc@mellanox.com,
+        mlxsw@mellanox.com, idosch@mellanox.com
+Subject: Re: [PATCH net-next 00/15] mlxsw: Add tunnel devlink-trap support
 From:   David Miller <davem@davemloft.net>
-In-Reply-To: <20200117000619.696775-1-saeedm@mellanox.com>
-References: <20200117000619.696775-1-saeedm@mellanox.com>
+In-Reply-To: <20200119130100.3179857-1-idosch@idosch.org>
+References: <20200119130100.3179857-1-idosch@idosch.org>
 X-Mailer: Mew version 6.8 on Emacs 26.3
 Mime-Version: 1.0
 Content-Type: Text/Plain; charset=us-ascii
 Content-Transfer-Encoding: 7bit
-X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Sun, 19 Jan 2020 07:17:33 -0800 (PST)
+X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Sun, 19 Jan 2020 07:25:41 -0800 (PST)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Saeed Mahameed <saeedm@mellanox.com>
-Date: Fri, 17 Jan 2020 00:06:50 +0000
+From: Ido Schimmel <idosch@idosch.org>
+Date: Sun, 19 Jan 2020 15:00:45 +0200
 
-> This series has two parts, 
+> This patch set from Amit adds support in mlxsw for tunnel traps and a
+> few additional layer 3 traps that can report drops and exceptions via
+> devlink-trap.
 > 
-> 1) A merge commit with mlx5-next branch that include updates for mlx5
-> HW layouts needed for this and upcoming submissions. 
+> These traps allow the user to more quickly diagnose problems relating to
+> tunnel decapsulation errors, such as packet being too short to
+> decapsulate or a packet containing wrong GRE key in its GRE header.
 > 
-> 2) From Paul, Increase the number of chains and prios
+> Patch set overview:
 > 
-> Currently the Mellanox driver supports offloading tc rules that
-> are defined on the first 4 chains and the first 16 priorities.
-> The restriction stems from the firmware flow level enforcement
-> requiring a flow table of a certain level to point to a flow
-> table of a higher level. This limitation may be ignored by setting
-> the ignore_flow_level bit when creating flow table entries.
-> Use unmanaged tables and ignore flow level to create more tables than
-> declared by fs_core steering. Manually manage the connections between the
-> tables themselves.
+> Patches #1-#4 add three additional layer 3 traps. Two of which are
+> mlxsw-specific as they relate to hardware-specific errors. The patches
+> include documentation of each trap and selftests.
 > 
-> HW table is instantiated for every tc <chain,prio> tuple. The miss rule
-> of every table either jumps to the next <chain,prio> table, or continues
-> to slow_fdb. This logic is realized by following this sequence:
+> Patches #5-#8 are preparations. They ensure that the correct ECN bits
+> are set in the outer header during IPinIP encapsulation and that packets
+> with an invalid ECN combination in underlay and overlay are trapped to
+> the kernel and not decapsulated in hardware.
 > 
-> 1. Create an auto-grouped flow table for the specified priority with
->     reserved entries
-> 
-> Reserved entries are allocated at the end of the flow table.
-> Flow groups are evaluated in sequence and therefore it is guaranteed
-> that the flow group defined on the last FTEs will be the last to evaluate.
-> 
-> Define a "match all" flow group on the reserved entries, providing
-> the platform to add table miss actions.
-> 
-> 2. Set the miss rule action to jump to the next <chain,prio> table
->     or the slow_fdb.
-> 
-> 3. Link the previous priority table to point to the new table by
->     updating its miss rule.
-> 
-> Please pull and let me know if there's any problem.
+> Patches #9-#15 add support for two tunnel related traps. Each trap is
+> documented and selftested using both VXLAN and IPinIP tunnels, if
+> applicable.
 
-Pulled, thanks Saeed.
+Series applied, thanks Ido.
