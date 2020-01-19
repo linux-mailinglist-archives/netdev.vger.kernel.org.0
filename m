@@ -2,131 +2,98 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 3B6231420B6
-	for <lists+netdev@lfdr.de>; Mon, 20 Jan 2020 00:16:58 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 94B771420BC
+	for <lists+netdev@lfdr.de>; Mon, 20 Jan 2020 00:18:31 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729213AbgASXQu (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 19 Jan 2020 18:16:50 -0500
-Received: from kvm5.telegraphics.com.au ([98.124.60.144]:49798 "EHLO
+        id S1728984AbgASXQc (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 19 Jan 2020 18:16:32 -0500
+Received: from kvm5.telegraphics.com.au ([98.124.60.144]:49724 "EHLO
         kvm5.telegraphics.com.au" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728934AbgASXQd (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 19 Jan 2020 18:16:33 -0500
+        with ESMTP id S1728886AbgASXQb (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 19 Jan 2020 18:16:31 -0500
 Received: by kvm5.telegraphics.com.au (Postfix, from userid 502)
-        id 1FD2829970; Sun, 19 Jan 2020 18:16:31 -0500 (EST)
+        id C34032991A; Sun, 19 Jan 2020 18:16:30 -0500 (EST)
 To:     "David S. Miller" <davem@davemloft.net>
 Cc:     Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
         Chris Zankel <chris@zankel.net>,
         Laurent Vivier <laurent@vivier.eu>, netdev@vger.kernel.org,
         linux-kernel@vger.kernel.org
-Message-Id: <21b148324c22ff4d5c730c3a2ec29bd07beb4fe8.1579474569.git.fthain@telegraphics.com.au>
+Message-Id: <5057d7da0f23a99fb0945bb26e2a0100e7031e75.1579474569.git.fthain@telegraphics.com.au>
 In-Reply-To: <cover.1579474569.git.fthain@telegraphics.com.au>
 References: <cover.1579474569.git.fthain@telegraphics.com.au>
 From:   Finn Thain <fthain@telegraphics.com.au>
-Subject: [PATCH net 07/19] net/sonic: Clear interrupt flags immediately
+Subject: [PATCH net 02/19] net/sonic: Remove redundant next_tx variable
 Date:   Mon, 20 Jan 2020 09:56:09 +1100
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The chip can change a packet's descriptor status flags at any time.
-However, an active interrupt flag gets cleared rather late. This
-allows a race condition that could theoretically lose an interrupt.
-Fix this by clearing asserted interrupt flags immediately.
+The eol_tx variable is the one that matters to the tx algorithm because
+packets are always placed at the end of the list. The next_tx variable
+just confuses things so remove it.
 
-Fixes: efcce839360f ("[PATCH] macsonic/jazzsonic network drivers update")
 Tested-by: Stan Johnson <userm57@yahoo.com>
 Signed-off-by: Finn Thain <fthain@telegraphics.com.au>
 ---
- drivers/net/ethernet/natsemi/sonic.c | 28 ++++++----------------------
- 1 file changed, 6 insertions(+), 22 deletions(-)
+ drivers/net/ethernet/natsemi/sonic.c | 10 ++++++----
+ drivers/net/ethernet/natsemi/sonic.h |  1 -
+ 2 files changed, 6 insertions(+), 5 deletions(-)
 
 diff --git a/drivers/net/ethernet/natsemi/sonic.c b/drivers/net/ethernet/natsemi/sonic.c
-index 84a30928d4e2..2cde692a0602 100644
+index 657b5327baf9..f31cb19ded50 100644
 --- a/drivers/net/ethernet/natsemi/sonic.c
 +++ b/drivers/net/ethernet/natsemi/sonic.c
-@@ -335,10 +335,11 @@ static irqreturn_t sonic_interrupt(int irq, void *dev_id)
+@@ -215,7 +215,7 @@ static int sonic_send_packet(struct sk_buff *skb, struct net_device *dev)
+ 	struct sonic_local *lp = netdev_priv(dev);
+ 	dma_addr_t laddr;
+ 	int length;
+-	int entry = lp->next_tx;
++	int entry;
+ 
+ 	netif_dbg(lp, tx_queued, dev, "%s: skb=%p\n", __func__, skb);
+ 
+@@ -237,6 +237,8 @@ static int sonic_send_packet(struct sk_buff *skb, struct net_device *dev)
+ 		return NETDEV_TX_OK;
  	}
  
- 	do {
-+		SONIC_WRITE(SONIC_ISR, status); /* clear the interrupt(s) */
++	entry = (lp->eol_tx + 1) & SONIC_TDS_MASK;
 +
- 		if (status & SONIC_INT_PKTRX) {
- 			netif_dbg(lp, intr, dev, "%s: packet rx\n", __func__);
- 			sonic_rx(dev);	/* got packet(s) */
--			SONIC_WRITE(SONIC_ISR, SONIC_INT_PKTRX); /* clear the interrupt */
- 		}
+ 	sonic_tda_put(dev, entry, SONIC_TD_STATUS, 0);       /* clear status */
+ 	sonic_tda_put(dev, entry, SONIC_TD_FRAG_COUNT, 1);   /* single fragment */
+ 	sonic_tda_put(dev, entry, SONIC_TD_PKTSIZE, length); /* length of packet */
+@@ -260,8 +262,8 @@ static int sonic_send_packet(struct sk_buff *skb, struct net_device *dev)
+ 				  sonic_tda_get(dev, lp->eol_tx, SONIC_TD_LINK) & ~SONIC_EOL);
+ 	lp->eol_tx = entry;
  
- 		if (status & SONIC_INT_TXDN) {
-@@ -393,7 +394,6 @@ static irqreturn_t sonic_interrupt(int irq, void *dev_id)
- 			if (freed_some || lp->tx_skb[entry] == NULL)
- 				netif_wake_queue(dev);  /* The ring is no longer full */
- 			lp->cur_tx = entry;
--			SONIC_WRITE(SONIC_ISR, SONIC_INT_TXDN); /* clear the interrupt */
- 		}
+-	lp->next_tx = (entry + 1) & SONIC_TDS_MASK;
+-	if (lp->tx_skb[lp->next_tx] != NULL) {
++	entry = (entry + 1) & SONIC_TDS_MASK;
++	if (lp->tx_skb[entry]) {
+ 		/* The ring is full, the ISR has yet to process the next TD. */
+ 		netif_dbg(lp, tx_queued, dev, "%s: stopping queue\n", __func__);
+ 		netif_stop_queue(dev);
+@@ -684,7 +686,7 @@ static int sonic_init(struct net_device *dev)
  
- 		/*
-@@ -403,42 +403,31 @@ static irqreturn_t sonic_interrupt(int irq, void *dev_id)
- 			netif_dbg(lp, rx_err, dev, "%s: rx fifo overrun\n",
- 				  __func__);
- 			lp->stats.rx_fifo_errors++;
--			SONIC_WRITE(SONIC_ISR, SONIC_INT_RFO); /* clear the interrupt */
- 		}
- 		if (status & SONIC_INT_RDE) {
- 			netif_dbg(lp, rx_err, dev, "%s: rx descriptors exhausted\n",
- 				  __func__);
- 			lp->stats.rx_dropped++;
--			SONIC_WRITE(SONIC_ISR, SONIC_INT_RDE); /* clear the interrupt */
- 		}
- 		if (status & SONIC_INT_RBAE) {
- 			netif_dbg(lp, rx_err, dev, "%s: rx buffer area exceeded\n",
- 				  __func__);
- 			lp->stats.rx_dropped++;
--			SONIC_WRITE(SONIC_ISR, SONIC_INT_RBAE); /* clear the interrupt */
- 		}
+ 	SONIC_WRITE(SONIC_UTDA, lp->tda_laddr >> 16);
+ 	SONIC_WRITE(SONIC_CTDA, lp->tda_laddr & 0xffff);
+-	lp->cur_tx = lp->next_tx = 0;
++	lp->cur_tx = 0;
+ 	lp->eol_tx = SONIC_NUM_TDS - 1;
  
- 		/* counter overruns; all counters are 16bit wide */
--		if (status & SONIC_INT_FAE) {
-+		if (status & SONIC_INT_FAE)
- 			lp->stats.rx_frame_errors += 65536;
--			SONIC_WRITE(SONIC_ISR, SONIC_INT_FAE); /* clear the interrupt */
--		}
--		if (status & SONIC_INT_CRC) {
-+		if (status & SONIC_INT_CRC)
- 			lp->stats.rx_crc_errors += 65536;
--			SONIC_WRITE(SONIC_ISR, SONIC_INT_CRC); /* clear the interrupt */
--		}
--		if (status & SONIC_INT_MP) {
-+		if (status & SONIC_INT_MP)
- 			lp->stats.rx_missed_errors += 65536;
--			SONIC_WRITE(SONIC_ISR, SONIC_INT_MP); /* clear the interrupt */
--		}
- 
- 		/* transmit error */
--		if (status & SONIC_INT_TXER) {
-+		if (status & SONIC_INT_TXER)
- 			if (SONIC_READ(SONIC_TCR) & SONIC_TCR_FU)
- 				netif_dbg(lp, tx_err, dev, "%s: tx fifo underrun\n",
- 					  __func__);
--			SONIC_WRITE(SONIC_ISR, SONIC_INT_TXER); /* clear the interrupt */
--		}
- 
- 		/* bus retry */
- 		if (status & SONIC_INT_BR) {
-@@ -447,13 +436,8 @@ static irqreturn_t sonic_interrupt(int irq, void *dev_id)
- 			/* ... to help debug DMA problems causing endless interrupts. */
- 			/* Bounce the eth interface to turn on the interrupt again. */
- 			SONIC_WRITE(SONIC_IMR, 0);
--			SONIC_WRITE(SONIC_ISR, SONIC_INT_BR); /* clear the interrupt */
- 		}
- 
--		/* load CAM done */
--		if (status & SONIC_INT_LCD)
--			SONIC_WRITE(SONIC_ISR, SONIC_INT_LCD); /* clear the interrupt */
--
- 		status = SONIC_READ(SONIC_ISR) & SONIC_IMR_DEFAULT;
- 	} while (status);
- 
+ 	/*
+diff --git a/drivers/net/ethernet/natsemi/sonic.h b/drivers/net/ethernet/natsemi/sonic.h
+index 2b27f7049acb..e402dc29d2aa 100644
+--- a/drivers/net/ethernet/natsemi/sonic.h
++++ b/drivers/net/ethernet/natsemi/sonic.h
+@@ -318,7 +318,6 @@ struct sonic_local {
+ 	unsigned int cur_tx;           /* first unacked transmit packet */
+ 	unsigned int eol_rx;
+ 	unsigned int eol_tx;           /* last unacked transmit packet */
+-	unsigned int next_tx;          /* next free TD */
+ 	int msg_enable;
+ 	struct device *device;         /* generic device */
+ 	struct net_device_stats stats;
 -- 
 2.24.1
 
