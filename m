@@ -2,53 +2,53 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 6F353141DEC
+	by mail.lfdr.de (Postfix) with ESMTP id E7837141DED
 	for <lists+netdev@lfdr.de>; Sun, 19 Jan 2020 14:01:44 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728587AbgASNBm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 19 Jan 2020 08:01:42 -0500
-Received: from out2-smtp.messagingengine.com ([66.111.4.26]:44167 "EHLO
+        id S1728668AbgASNBn (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 19 Jan 2020 08:01:43 -0500
+Received: from out2-smtp.messagingengine.com ([66.111.4.26]:41131 "EHLO
         out2-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1727586AbgASNBk (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 19 Jan 2020 08:01:40 -0500
+        by vger.kernel.org with ESMTP id S1727465AbgASNBl (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 19 Jan 2020 08:01:41 -0500
 Received: from compute3.internal (compute3.nyi.internal [10.202.2.43])
-        by mailout.nyi.internal (Postfix) with ESMTP id E49E621A4B;
-        Sun, 19 Jan 2020 08:01:38 -0500 (EST)
+        by mailout.nyi.internal (Postfix) with ESMTP id 3DF2A210ED;
+        Sun, 19 Jan 2020 08:01:40 -0500 (EST)
 Received: from mailfrontend1 ([10.202.2.162])
-  by compute3.internal (MEProxy); Sun, 19 Jan 2020 08:01:38 -0500
+  by compute3.internal (MEProxy); Sun, 19 Jan 2020 08:01:40 -0500
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
         messagingengine.com; h=cc:content-transfer-encoding:date:from
         :in-reply-to:message-id:mime-version:references:subject:to
         :x-me-proxy:x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=
-        fm1; bh=/oT4AqG70wpqRwqXz2UivkAMO6w2v+Hlvxp1EvBvkiU=; b=CZu8tnOG
-        3Qzm9tv4B9Xm7QEMXPtCClT5hkVl/mX0TZv9DphkfXeyOD8IlmFcCX5kNNHoR8oB
-        N2x0nlSevWWrAg1A/i9jb7ih4Jf3EjMOS/koHZ3u4dF7hgRIplZf5ZTDzSD04PFg
-        7uEuf4U3+zAmsdBxRo3RKIcBplPSu0BXJmxhjFffq22YXaKBaQ0D3iGTJqNTRA59
-        oqBSq+raDIIp1VTMppCYAvHKXYj7FKuRSD0SOMpKCiErn2HtNNQf9VFbCubtOih6
-        CicznjWEcbP4rFhq1sv2tq0SG2oSalCcKC5QvEy3Rq3aCgO5rwQYmOi2LUz8xh7G
-        RduDOOLipiU/jA==
-X-ME-Sender: <xms:MlMkXtgeWMTADQOixLKOQXClB0Dg4QtHFPmbO3iG37P2MnyFZqf7IQ>
+        fm1; bh=h4Y6ygvYh5Ix4xApFusr6ik8cLcv+7AhjYPvo6Lbn5o=; b=sy0MoSmG
+        opfMTVqxpvHLl0DxPziyUmY7FHlVEAs0te4jFQ/wCj3XREleBRKgIvwAYLG/yw5w
+        zuNDvHTVb2ZEMbIn14NQ/j5JCnPjMt4VZk6RTex3hvoaF7ag8dMoKT1KAAH5CQGf
+        cZDZWpBYcaGqYCQWaJpnY3R3cRy3Gi7MgfYzIsvFOllYIHjNVsaljjaEASb3+Gbx
+        KysUNKpsGwSeI+u3kluQH3ceythbzkW5IsP/ji5NJdpHljDxtM//eeqCpPU8gILn
+        exKN4CqwvPjoPWoBPtlznvqB+rtQ1M8c395blE0XZDaRCeuz9y/Ccnn85487iNqC
+        jJG3xGCwfuwObQ==
+X-ME-Sender: <xms:NFMkXszQkpl6_FDbzBv3daoM1efkAmm0TihZIMVsd_3g5W1mlkt6rQ>
 X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedugedrudefgdegiecutefuodetggdotefrodftvf
     curfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfghnecu
     uegrihhlohhuthemuceftddtnecunecujfgurhephffvufffkffojghfggfgsedtkeertd
     ertddtnecuhfhrohhmpefkughoucfutghhihhmmhgvlhcuoehiughoshgthhesihguohhs
     tghhrdhorhhgqeenucfkphepudelfedrgeejrdduieehrddvhedunecurfgrrhgrmhepmh
     grihhlfhhrohhmpehiughoshgthhesihguohhstghhrdhorhhgnecuvehluhhsthgvrhfu
-    ihiivgephe
-X-ME-Proxy: <xmx:MlMkXnOKY-tfLwtC-tZn2gSztPMRPI1-fjfkkVHyWuanHkWrJkqWfA>
-    <xmx:MlMkXtobFp8nZip_bywkGNtA4Y7YaTXang0M1TmfLX621NWSnyS_IA>
-    <xmx:MlMkXtKv2R7uVPTd1IsLJo4UY1cp9fDx8jLkSoY3U03vIaUwZp00tQ>
-    <xmx:MlMkXox3-3mvkYAbGEyQ6RRCITi9IblhFILL0vUA44-QG7kFdHKf4w>
+    ihiivgepuddt
+X-ME-Proxy: <xmx:NFMkXuwbFO_ZXgxl84-r3cMt15PBjsL1Z3NBZfiTKfOtpbKNq92LOg>
+    <xmx:NFMkXmvhK6s52fiGvVPuY7OvAryzvZnRA-_Zkfvp_0NLzlxancnm7w>
+    <xmx:NFMkXsUwHEbc-LioqZkNtwFS7zIhd0jAdy5Lf8ZhAPEDuxL_TlbmeA>
+    <xmx:NFMkXkVhHY8Go9Ht-TT9x9LgW7Q9FgRtg8nt0q1-0GDTLg2xLkSQ3g>
 Received: from splinter.mtl.com (unknown [193.47.165.251])
-        by mail.messagingengine.com (Postfix) with ESMTPA id 945228005A;
-        Sun, 19 Jan 2020 08:01:37 -0500 (EST)
+        by mail.messagingengine.com (Postfix) with ESMTPA id E782B80060;
+        Sun, 19 Jan 2020 08:01:38 -0500 (EST)
 From:   Ido Schimmel <idosch@idosch.org>
 To:     netdev@vger.kernel.org
 Cc:     davem@davemloft.net, jiri@mellanox.com, amitc@mellanox.com,
         mlxsw@mellanox.com, Ido Schimmel <idosch@mellanox.com>
-Subject: [PATCH net-next 10/15] mlxsw: Add tunnel devlink-trap support
-Date:   Sun, 19 Jan 2020 15:00:55 +0200
-Message-Id: <20200119130100.3179857-11-idosch@idosch.org>
+Subject: [PATCH net-next 11/15] selftests: devlink_trap_tunnel_vxlan: Add test case for decap_error
+Date:   Sun, 19 Jan 2020 15:00:56 +0200
+Message-Id: <20200119130100.3179857-12-idosch@idosch.org>
 X-Mailer: git-send-email 2.24.1
 In-Reply-To: <20200119130100.3179857-1-idosch@idosch.org>
 References: <20200119130100.3179857-1-idosch@idosch.org>
@@ -61,114 +61,299 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Amit Cohen <amitc@mellanox.com>
 
-Add the trap IDs and trap group used to report tunnel drops. Register
-tunnel packet traps and associated tunnel trap group with devlink
-during driver initialization.
+Test that the trap is triggered under the right conditions and that
+devlink counters increase.
 
 Signed-off-by: Amit Cohen <amitc@mellanox.com>
 Acked-by: Jiri Pirko <jiri@mellanox.com>
 Signed-off-by: Ido Schimmel <idosch@mellanox.com>
 ---
- drivers/net/ethernet/mellanox/mlxsw/reg.h      |  1 +
- drivers/net/ethernet/mellanox/mlxsw/spectrum.c |  2 --
- .../ethernet/mellanox/mlxsw/spectrum_trap.c    | 18 +++++++++++++++++-
- drivers/net/ethernet/mellanox/mlxsw/trap.h     |  1 +
- 4 files changed, 19 insertions(+), 3 deletions(-)
+ .../net/mlxsw/devlink_trap_tunnel_vxlan.sh    | 276 ++++++++++++++++++
+ 1 file changed, 276 insertions(+)
+ create mode 100755 tools/testing/selftests/drivers/net/mlxsw/devlink_trap_tunnel_vxlan.sh
 
-diff --git a/drivers/net/ethernet/mellanox/mlxsw/reg.h b/drivers/net/ethernet/mellanox/mlxsw/reg.h
-index 47c29776d5d9..0b80e75e87c3 100644
---- a/drivers/net/ethernet/mellanox/mlxsw/reg.h
-+++ b/drivers/net/ethernet/mellanox/mlxsw/reg.h
-@@ -5513,6 +5513,7 @@ enum mlxsw_reg_htgt_discard_trap_group {
- 	MLXSW_REG_HTGT_DISCARD_TRAP_GROUP_BASE = MLXSW_REG_HTGT_TRAP_GROUP_MAX,
- 	MLXSW_REG_HTGT_TRAP_GROUP_SP_L2_DISCARDS,
- 	MLXSW_REG_HTGT_TRAP_GROUP_SP_L3_DISCARDS,
-+	MLXSW_REG_HTGT_TRAP_GROUP_SP_TUNNEL_DISCARDS,
- };
- 
- /* reg_htgt_trap_group
-diff --git a/drivers/net/ethernet/mellanox/mlxsw/spectrum.c b/drivers/net/ethernet/mellanox/mlxsw/spectrum.c
-index 2f0b516ee03f..cc30a69a6df0 100644
---- a/drivers/net/ethernet/mellanox/mlxsw/spectrum.c
-+++ b/drivers/net/ethernet/mellanox/mlxsw/spectrum.c
-@@ -4538,8 +4538,6 @@ static const struct mlxsw_listener mlxsw_sp_listener[] = {
- 			  false),
- 	MLXSW_SP_RXL_MARK(ROUTER_ALERT_IPV4, TRAP_TO_CPU, ROUTER_EXP, false),
- 	MLXSW_SP_RXL_MARK(ROUTER_ALERT_IPV6, TRAP_TO_CPU, ROUTER_EXP, false),
--	MLXSW_SP_RXL_MARK(IPIP_DECAP_ERROR, TRAP_TO_CPU, ROUTER_EXP, false),
--	MLXSW_SP_RXL_MARK(DECAP_ECN0, TRAP_TO_CPU, ROUTER_EXP, false),
- 	MLXSW_SP_RXL_MARK(IPV4_VRRP, TRAP_TO_CPU, VRRP, false),
- 	MLXSW_SP_RXL_MARK(IPV6_VRRP, TRAP_TO_CPU, VRRP, false),
- 	MLXSW_SP_RXL_NO_MARK(DISCARD_ING_ROUTER_SIP_CLASS_E, FORWARD,
-diff --git a/drivers/net/ethernet/mellanox/mlxsw/spectrum_trap.c b/drivers/net/ethernet/mellanox/mlxsw/spectrum_trap.c
-index 5ae60eb11a2d..b03bb3a54fc8 100644
---- a/drivers/net/ethernet/mellanox/mlxsw/spectrum_trap.c
-+++ b/drivers/net/ethernet/mellanox/mlxsw/spectrum_trap.c
-@@ -81,6 +81,7 @@ static struct devlink_trap mlxsw_sp_traps_arr[] = {
- 	MLXSW_SP_TRAP_DRIVER_DROP(IRIF_DISABLED, L3_DROPS),
- 	MLXSW_SP_TRAP_DRIVER_DROP(ERIF_DISABLED, L3_DROPS),
- 	MLXSW_SP_TRAP_DROP(NON_ROUTABLE, L3_DROPS),
-+	MLXSW_SP_TRAP_EXCEPTION(DECAP_ERROR, TUNNEL_DROPS),
- };
- 
- static struct mlxsw_listener mlxsw_sp_listeners_arr[] = {
-@@ -116,6 +117,11 @@ static struct mlxsw_listener mlxsw_sp_listeners_arr[] = {
- 	MLXSW_SP_RXL_DISCARD(ROUTER_IRIF_EN, L3_DISCARDS),
- 	MLXSW_SP_RXL_DISCARD(ROUTER_ERIF_EN, L3_DISCARDS),
- 	MLXSW_SP_RXL_DISCARD(NON_ROUTABLE, L3_DISCARDS),
-+	MLXSW_SP_RXL_EXCEPTION(DECAP_ECN0, ROUTER_EXP, TRAP_EXCEPTION_TO_CPU),
-+	MLXSW_SP_RXL_EXCEPTION(IPIP_DECAP_ERROR, ROUTER_EXP,
-+			       TRAP_EXCEPTION_TO_CPU),
-+	MLXSW_SP_RXL_EXCEPTION(DISCARD_DEC_PKT, TUNNEL_DISCARDS,
-+			       TRAP_EXCEPTION_TO_CPU),
- };
- 
- /* Mapping between hardware trap and devlink trap. Multiple hardware traps can
-@@ -152,6 +158,9 @@ static u16 mlxsw_sp_listener_devlink_map[] = {
- 	DEVLINK_MLXSW_TRAP_ID_IRIF_DISABLED,
- 	DEVLINK_MLXSW_TRAP_ID_ERIF_DISABLED,
- 	DEVLINK_TRAP_GENERIC_ID_NON_ROUTABLE,
-+	DEVLINK_TRAP_GENERIC_ID_DECAP_ERROR,
-+	DEVLINK_TRAP_GENERIC_ID_DECAP_ERROR,
-+	DEVLINK_TRAP_GENERIC_ID_DECAP_ERROR,
- };
- 
- static int mlxsw_sp_rx_listener(struct mlxsw_sp *mlxsw_sp, struct sk_buff *skb,
-@@ -334,7 +343,8 @@ mlxsw_sp_trap_group_policer_init(struct mlxsw_sp *mlxsw_sp,
- 
- 	switch (group->id) {
- 	case DEVLINK_TRAP_GROUP_GENERIC_ID_L2_DROPS: /* fall through */
--	case DEVLINK_TRAP_GROUP_GENERIC_ID_L3_DROPS:
-+	case DEVLINK_TRAP_GROUP_GENERIC_ID_L3_DROPS: /* fall through */
-+	case DEVLINK_TRAP_GROUP_GENERIC_ID_TUNNEL_DROPS:
- 		policer_id = MLXSW_SP_DISCARD_POLICER_ID;
- 		ir_units = MLXSW_REG_QPCR_IR_UNITS_M;
- 		is_bytes = false;
-@@ -371,6 +381,12 @@ __mlxsw_sp_trap_group_init(struct mlxsw_sp *mlxsw_sp,
- 		priority = 0;
- 		tc = 1;
- 		break;
-+	case DEVLINK_TRAP_GROUP_GENERIC_ID_TUNNEL_DROPS:
-+		group_id = MLXSW_REG_HTGT_TRAP_GROUP_SP_TUNNEL_DISCARDS;
-+		policer_id = MLXSW_SP_DISCARD_POLICER_ID;
-+		priority = 0;
-+		tc = 1;
-+		break;
- 	default:
- 		return -EINVAL;
- 	}
-diff --git a/drivers/net/ethernet/mellanox/mlxsw/trap.h b/drivers/net/ethernet/mellanox/mlxsw/trap.h
-index 7d07ec8d440b..24f92b157dfb 100644
---- a/drivers/net/ethernet/mellanox/mlxsw/trap.h
-+++ b/drivers/net/ethernet/mellanox/mlxsw/trap.h
-@@ -93,6 +93,7 @@ enum {
- 	MLXSW_TRAP_ID_DISCARD_ROUTER_ERIF_EN = 0x179,
- 	MLXSW_TRAP_ID_DISCARD_ROUTER_LPM4 = 0x17B,
- 	MLXSW_TRAP_ID_DISCARD_ROUTER_LPM6 = 0x17C,
-+	MLXSW_TRAP_ID_DISCARD_DEC_PKT = 0x188,
- 	MLXSW_TRAP_ID_DISCARD_IPV6_MC_DIP_RESERVED_SCOPE = 0x1B0,
- 	MLXSW_TRAP_ID_DISCARD_IPV6_MC_DIP_INTERFACE_LOCAL_SCOPE = 0x1B1,
- 	MLXSW_TRAP_ID_ACL0 = 0x1C0,
+diff --git a/tools/testing/selftests/drivers/net/mlxsw/devlink_trap_tunnel_vxlan.sh b/tools/testing/selftests/drivers/net/mlxsw/devlink_trap_tunnel_vxlan.sh
+new file mode 100755
+index 000000000000..a699edae8358
+--- /dev/null
++++ b/tools/testing/selftests/drivers/net/mlxsw/devlink_trap_tunnel_vxlan.sh
+@@ -0,0 +1,276 @@
++#!/bin/bash
++# SPDX-License-Identifier: GPL-2.0
++#
++# Test devlink-trap tunnel drops and exceptions functionality over mlxsw.
++# Check all traps to make sure they are triggered under the right
++# conditions.
++
++# +--------------------+
++# | H1 (vrf)           |
++# |    + $h1           |
++# |    | 192.0.2.1/28  |
++# +----|---------------+
++#      |
++# +----|----------------------------------------------------------------------+
++# | SW |                                                                      |
++# | +--|--------------------------------------------------------------------+ |
++# | |  + $swp1                   BR1 (802.1d)                               | |
++# | |                                                                       | |
++# | |  + vx1 (vxlan)                                                        | |
++# | |    local 192.0.2.17                                                   | |
++# | |    id 1000 dstport $VXPORT                                            | |
++# | +-----------------------------------------------------------------------+ |
++# |                                                                           |
++# |    + $rp1                                                                 |
++# |    | 192.0.2.17/28                                                        |
++# +----|----------------------------------------------------------------------+
++#      |
++# +----|--------------------------------------------------------+
++# |    |                                             VRF2       |
++# |    + $rp2                                                   |
++# |      192.0.2.18/28                                          |
++# |                                                             |
++# +-------------------------------------------------------------+
++
++lib_dir=$(dirname $0)/../../../net/forwarding
++
++ALL_TESTS="
++	decap_error_test
++"
++
++NUM_NETIFS=4
++source $lib_dir/lib.sh
++source $lib_dir/tc_common.sh
++source $lib_dir/devlink_lib.sh
++
++: ${VXPORT:=4789}
++export VXPORT
++
++h1_create()
++{
++	simple_if_init $h1 192.0.2.1/28
++}
++
++h1_destroy()
++{
++	simple_if_fini $h1 192.0.2.1/28
++}
++
++switch_create()
++{
++	ip link add name br1 type bridge vlan_filtering 0 mcast_snooping 0
++	# Make sure the bridge uses the MAC address of the local port and not
++	# that of the VxLAN's device.
++	ip link set dev br1 address $(mac_get $swp1)
++	ip link set dev br1 up
++
++	tc qdisc add dev $swp1 clsact
++	ip link set dev $swp1 master br1
++	ip link set dev $swp1 up
++
++	ip link add name vx1 type vxlan id 1000 local 192.0.2.17 \
++		dstport "$VXPORT" nolearning noudpcsum tos inherit ttl 100
++	ip link set dev vx1 master br1
++	ip link set dev vx1 up
++
++	ip address add dev $rp1 192.0.2.17/28
++	ip link set dev $rp1 up
++}
++
++switch_destroy()
++{
++	ip link set dev $rp1 down
++	ip address del dev $rp1 192.0.2.17/28
++
++	ip link set dev vx1 down
++	ip link set dev vx1 nomaster
++	ip link del dev vx1
++
++	ip link set dev $swp1 down
++	ip link set dev $swp1 nomaster
++	tc qdisc del dev $swp1 clsact
++
++	ip link set dev br1 down
++	ip link del dev br1
++}
++
++vrf2_create()
++{
++	simple_if_init $rp2 192.0.2.18/28
++}
++
++vrf2_destroy()
++{
++	simple_if_fini $rp2 192.0.2.18/28
++}
++
++setup_prepare()
++{
++	h1=${NETIFS[p1]}
++	swp1=${NETIFS[p2]}
++
++	rp1=${NETIFS[p3]}
++	rp2=${NETIFS[p4]}
++
++	vrf_prepare
++	forwarding_enable
++	h1_create
++	switch_create
++	vrf2_create
++}
++
++cleanup()
++{
++	pre_cleanup
++
++	vrf2_destroy
++	switch_destroy
++	h1_destroy
++	forwarding_restore
++	vrf_cleanup
++}
++
++ecn_payload_get()
++{
++	dest_mac=$(mac_get $h1)
++	p=$(:
++		)"08:"$(                      : VXLAN flags
++		)"00:00:00:"$(                : VXLAN reserved
++		)"00:03:e8:"$(                : VXLAN VNI : 1000
++		)"00:"$(                      : VXLAN reserved
++		)"$dest_mac:"$(               : ETH daddr
++		)"00:00:00:00:00:00:"$(       : ETH saddr
++		)"08:00:"$(                   : ETH type
++		)"45:"$(                      : IP version + IHL
++		)"00:"$(                      : IP TOS
++		)"00:14:"$(                   : IP total length
++		)"00:00:"$(                   : IP identification
++		)"20:00:"$(                   : IP flags + frag off
++		)"40:"$(                      : IP TTL
++		)"00:"$(                      : IP proto
++		)"D6:E5:"$(                   : IP header csum
++		)"c0:00:02:03:"$(             : IP saddr: 192.0.2.3
++		)"c0:00:02:01:"$(             : IP daddr: 192.0.2.1
++		)
++	echo $p
++}
++
++ecn_decap_test()
++{
++	local trap_name="decap_error"
++	local group_name="tunnel_drops"
++	local desc=$1; shift
++	local ecn_desc=$1; shift
++	local outer_tos=$1; shift
++	local mz_pid
++
++	RET=0
++
++	tc filter add dev $swp1 egress protocol ip pref 1 handle 101 \
++		flower src_ip 192.0.2.3 dst_ip 192.0.2.1 action pass
++
++	rp1_mac=$(mac_get $rp1)
++	payload=$(ecn_payload_get)
++
++	ip vrf exec v$rp2 $MZ $rp2 -c 0 -d 1msec -b $rp1_mac -B 192.0.2.17 \
++		-t udp sp=12345,dp=$VXPORT,tos=$outer_tos,p=$payload -q &
++	mz_pid=$!
++
++	devlink_trap_exception_test $trap_name $group_name
++
++	tc_check_packets "dev $swp1 egress" 101 0
++	check_err $? "Packets were not dropped"
++
++	log_test "$desc: Inner ECN is not ECT and outer is $ecn_desc"
++
++	kill $mz_pid && wait $mz_pid &> /dev/null
++	tc filter del dev $swp1 egress protocol ip pref 1 handle 101 flower
++}
++
++reserved_bits_payload_get()
++{
++	dest_mac=$(mac_get $h1)
++	p=$(:
++		)"08:"$(                      : VXLAN flags
++		)"01:00:00:"$(                : VXLAN reserved
++		)"00:03:e8:"$(                : VXLAN VNI : 1000
++		)"00:"$(                      : VXLAN reserved
++		)"$dest_mac:"$(               : ETH daddr
++		)"00:00:00:00:00:00:"$(       : ETH saddr
++		)"08:00:"$(                   : ETH type
++		)"45:"$(                      : IP version + IHL
++		)"00:"$(                      : IP TOS
++		)"00:14:"$(                   : IP total length
++		)"00:00:"$(                   : IP identification
++		)"20:00:"$(                   : IP flags + frag off
++		)"40:"$(                      : IP TTL
++		)"00:"$(                      : IP proto
++		)"00:00:"$(                   : IP header csum
++		)"c0:00:02:03:"$(             : IP saddr: 192.0.2.3
++		)"c0:00:02:01:"$(             : IP daddr: 192.0.2.1
++		)
++	echo $p
++}
++
++short_payload_get()
++{
++        dest_mac=$(mac_get $h1)
++        p=$(:
++		)"08:"$(                      : VXLAN flags
++		)"01:00:00:"$(                : VXLAN reserved
++		)"00:03:e8:"$(                : VXLAN VNI : 1000
++		)"00:"$(                      : VXLAN reserved
++		)
++        echo $p
++}
++
++corrupted_packet_test()
++{
++	local trap_name="decap_error"
++	local group_name="tunnel_drops"
++	local desc=$1; shift
++	local payload_get=$1; shift
++	local mz_pid
++
++	RET=0
++
++	# In case of too short packet, there is no any inner packet,
++	# so the matching will always succeed
++	tc filter add dev $swp1 egress protocol ip pref 1 handle 101 \
++		flower skip_hw src_ip 192.0.2.3 dst_ip 192.0.2.1 action pass
++
++	rp1_mac=$(mac_get $rp1)
++	payload=$($payload_get)
++	ip vrf exec v$rp2 $MZ $rp2 -c 0 -d 1msec -b $rp1_mac \
++		-B 192.0.2.17 -t udp sp=12345,dp=$VXPORT,p=$payload -q &
++	mz_pid=$!
++
++	devlink_trap_exception_test $trap_name $group_name
++
++	tc_check_packets "dev $swp1 egress" 101 0
++	check_err $? "Packets were not dropped"
++
++	log_test "$desc"
++
++	kill $mz_pid && wait $mz_pid &> /dev/null
++	tc filter del dev $swp1 egress protocol ip pref 1 handle 101 flower
++}
++
++decap_error_test()
++{
++	ecn_decap_test "Decap error" "ECT(1)" 01
++	ecn_decap_test "Decap error" "ECT(0)" 02
++	ecn_decap_test "Decap error" "CE" 03
++
++	corrupted_packet_test "Decap error: Reserved bits in use" \
++		"reserved_bits_payload_get"
++	corrupted_packet_test "Decap error: No L2 header" "short_payload_get"
++}
++
++trap cleanup EXIT
++
++setup_prepare
++setup_wait
++tests_run
++
++exit $EXIT_STATUS
 -- 
 2.24.1
 
