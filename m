@@ -2,112 +2,140 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 2A253141FC4
-	for <lists+netdev@lfdr.de>; Sun, 19 Jan 2020 20:19:13 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3C478141FD3
+	for <lists+netdev@lfdr.de>; Sun, 19 Jan 2020 20:41:08 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728760AbgASTTL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 19 Jan 2020 14:19:11 -0500
-Received: from mail-wm1-f66.google.com ([209.85.128.66]:36219 "EHLO
-        mail-wm1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727123AbgASTTL (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 19 Jan 2020 14:19:11 -0500
-Received: by mail-wm1-f66.google.com with SMTP id p17so12585098wma.1
-        for <netdev@vger.kernel.org>; Sun, 19 Jan 2020 11:19:09 -0800 (PST)
+        id S1728835AbgASTk6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 19 Jan 2020 14:40:58 -0500
+Received: from mail-pj1-f73.google.com ([209.85.216.73]:35453 "EHLO
+        mail-pj1-f73.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728682AbgASTk6 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 19 Jan 2020 14:40:58 -0500
+Received: by mail-pj1-f73.google.com with SMTP id l8so9149123pje.0
+        for <netdev@vger.kernel.org>; Sun, 19 Jan 2020 11:40:58 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=EtsvYv2zKRxmWoCeCVSQhvKN1u2d4HxF1HVR3U0qPZo=;
-        b=EEm0FGmXgfdsgi1/nH74aFEDXGQdNytIVZ5fLail0iS21zsi/B1cWzW1gkTmogb/7F
-         KXl6yHuwRGaGgplOJ6H8mTko14poZgidieuQvxo0vih3urRqPMSjNG/MP3ZBqlU4TEb5
-         uZzney8eMBIbOat59wM2IbcLsBXO2qt/MYn3+cYNLei5RxMUCmu0nkP3991IlGu2v7K8
-         Ccs9Pctmh9Sl09BCku6PYGJMGB58FW5AbasjPaa8kC1Rnt3SQSjPwgwyT0337osrU0rb
-         GmuBKtu0JItb2pfO0E0MvyjebD7znEsBNoM7DM7Bo67m6sFoZLGan5XA7QopoZm4Yvh+
-         zHxQ==
+        d=google.com; s=20161025;
+        h=date:message-id:mime-version:subject:from:to:cc;
+        bh=GYu7/zxMNd86d8ZFJUTXCcQyLaKeKY/49TH/Y+j6Gqg=;
+        b=QlOdTQSL0z+vkc6smWiyAQv9TSrlVmSbT/+AQt+zaKA98cZi+qyrt0DbZ0Xs7MFC20
+         5aamMs9qMUFIv4nItetzHFmLGTOon1t7k/NHKm/1WDKitaeMEIBoRwXp/gbkCHU/iqrr
+         GQRhGd+/iL+Rj4LFLSMeHGRb6GINCcrUFdWgfK2CJgIZk8C2B8kWld7dCCpbzHjeJRD5
+         +Z/Hz23oeNBgx79zWK2FGFUjAj4Jue7OPGOw8u7g4AHGoHZxvk+YO2X9LQAbGhqtOK+F
+         Wv4BH83ZnfubP878cLqqML9UPDyyFiXnac8MW1chjhuLxiIgB4Y+BWtjdr798IKXSmGq
+         vppQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=EtsvYv2zKRxmWoCeCVSQhvKN1u2d4HxF1HVR3U0qPZo=;
-        b=p9keJ7B6LBPMpq00aTwpfy0LNVPLGgZ8LlzJZPir2KD0HZx+t0coQ5scB0Z8HJWBtc
-         WtI2N9Ix4ND2D7KXEKtRR/hU8ukZsLfolEBvzQV/7pkGZ9r2x4XWuCqV21Nayya53PxQ
-         gAbWqiuox7uwdjS1/q1Nu93fH/smvQw0cwZN8lEDLyH0yQ02zu9TjP8FjNfoqjpr/NXB
-         cYIxy+l4HzYuvZumh1h3WfbuOTGhhMYWed4cvC7+J29Gp90V6k43m3FXppEHUZBPXHoj
-         cKu7XrJMpexaDa9BZB7yQ47AzvDoQERZyabR6PJUZ1kwjy4EdmuKrqCE63wAHr9IR+b3
-         7woA==
-X-Gm-Message-State: APjAAAUsIWk1LiUkVYnzhYJOLkOQpifWRWi6PyVKIiKJC+ZYuqD/L2N2
-        1e3nc5e/dfjkLD3kIIE3xMh9NSEK
-X-Google-Smtp-Source: APXvYqzPuPHhz0CquVUmE7U3tVzpWmwhBV8f97wCBVq/b7xQTKhGkAkuItfiJT/1rbhFbkaJ2uBaOA==
-X-Received: by 2002:a1c:3dd5:: with SMTP id k204mr15312820wma.92.1579461548731;
-        Sun, 19 Jan 2020 11:19:08 -0800 (PST)
-Received: from [192.168.178.85] (pD9F901D9.dip0.t-ipconnect.de. [217.249.1.217])
-        by smtp.googlemail.com with ESMTPSA id n14sm19542034wmi.26.2020.01.19.11.19.08
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sun, 19 Jan 2020 11:19:08 -0800 (PST)
-Subject: Re: [PATCH net-next 0/2] net: phy: add generic ndo_do_ioctl handler
- phy_do_ioctl
-To:     Andrew Lunn <andrew@lunn.ch>
-Cc:     Florian Fainelli <f.fainelli@gmail.com>,
-        David Miller <davem@davemloft.net>,
-        Realtek linux nic maintainers <nic_swsd@realtek.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-References: <520c07a1-dd26-1414-0a2f-7f0d491589d1@gmail.com>
- <20200119161240.GA17720@lunn.ch>
- <97389eb0-fc7f-793b-6f84-730e583c00e9@googlemail.com>
- <20200119175109.GB17720@lunn.ch>
- <c1f7d8ce-2bc2-5141-9f28-a659d2af4e10@gmail.com>
- <20200119185035.GC17720@lunn.ch>
-From:   Heiner Kallweit <hkallweit1@gmail.com>
-Message-ID: <82737a2f-b6c1-943e-42a2-d42d87212457@gmail.com>
-Date:   Sun, 19 Jan 2020 20:19:03 +0100
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
- Thunderbird/68.4.1
-MIME-Version: 1.0
-In-Reply-To: <20200119185035.GC17720@lunn.ch>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+        h=x-gm-message-state:date:message-id:mime-version:subject:from:to:cc;
+        bh=GYu7/zxMNd86d8ZFJUTXCcQyLaKeKY/49TH/Y+j6Gqg=;
+        b=MMJVDz6fsEMCplV2OHOR9os0OwmKsVa+Hrgu/V6uQd4oMZCKBwULDpiQs9tym5DL/z
+         9tApA8XI90JJTPXkUjbkjeMMHQki90YYNzPleREZoS5wW3V0AElXWRlGvdaXT/5keNcG
+         XqAH77yr/9McYaWxQktPRc8Eoqav1Ud6FjuB9Hzb4Ckzx3GppmtQWHK+eNDyaRULRV7k
+         2EnpDw6Cand4EykhmIfLXBCK0lycIIJxkwtEUdnU0sLZfWdd3lS7svkbr3KpAv4Jtfvh
+         mrndw/QHW5U/j2pJmNzyOnA+tdyxbRdP/x1R9FkkSidiAO6O3c7xmVsMwUnjaN4ZX7fl
+         h85g==
+X-Gm-Message-State: APjAAAU/E7Uf6GQjQuqBsO7QTFwscHkIhNeQoKcRgnw2rKKOjTnEIPC7
+        Yhh14eGxI3dp/QPdsJSUM2kAVIRZ/N+h
+X-Google-Smtp-Source: APXvYqxuXDpCo3mn2kxa6NMICU35MJWDGVxXH9/az/hajnPP/dt1PwbFij25BEGseYexTQgSbHlar3gYhHgz
+X-Received: by 2002:a63:7311:: with SMTP id o17mr53720220pgc.29.1579462857433;
+ Sun, 19 Jan 2020 11:40:57 -0800 (PST)
+Date:   Sun, 19 Jan 2020 11:40:40 -0800
+Message-Id: <20200119194040.128369-1-brianvv@google.com>
+Mime-Version: 1.0
+X-Mailer: git-send-email 2.25.0.341.g760bfbb309-goog
+Subject: [PATCH v2 bpf-next] bpf: Fix memory leaks in generic update/delete
+ batch ops
+From:   Brian Vazquez <brianvv@google.com>
+To:     Brian Vazquez <brianvv.kernel@gmail.com>,
+        Brian Vazquez <brianvv@google.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        "David S . Miller" <davem@davemloft.net>
+Cc:     linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        bpf@vger.kernel.org, Dan Carpenter <dan.carpenter@oracle.com>,
+        Yonghong Song <yhs@fb.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 19.01.2020 19:50, Andrew Lunn wrote:
->> Also it seems we don't consider situations like runtime PM yet.
->> Then the MDIO bus may not be accessible, but ndev is running
->> and PHY is attached.
-> 
-> I don't think this can happen. If the device is running, the MDIO bus
-> has to work, or phylib is broken.
-> 
+generic update/delete batch ops functions were using __bpf_copy_key
+without properly freeing the memory. Handle the memory allocation and
+copy_from_user separately.
 
-netif_running() checks flag __LINK_STATE_START. Once the network has
-been brought up, this flag is set. Also the comment in the code says:
-"Test if the device has been brought up."
-A driver has no means to clear this flag when runtime-suspending.
-netif_device_detach() however clears flag __LINK_STATE_PRESENT.
-I think it's not completely consistent if a device can be running
-that is not present. IMO naming of netif_running() is misleading.
-It better should be named netif_if_up(), or similar.
+Reported-by: Dan Carpenter <dan.carpenter@oracle.com>
+Fixes: aa2e93b8e58e ("bpf: Add generic support for update and delete batch ops")
+Signed-off-by: Brian Vazquez <brianvv@google.com>
+Acked-by: Yonghong Song <yhs@fb.com>
+---
+v1->v2:
+ - Put Fixes subject in a single line (Yonghong Song)
+---
+ kernel/bpf/syscall.c | 30 +++++++++++++++++++-----------
+ 1 file changed, 19 insertions(+), 11 deletions(-)
 
-So far very few network drivers use runtime PM, this may be the
-reason why such questions didn't come up before.
+diff --git a/kernel/bpf/syscall.c b/kernel/bpf/syscall.c
+index c26a71460f02f..9a840c57f6df7 100644
+--- a/kernel/bpf/syscall.c
++++ b/kernel/bpf/syscall.c
+@@ -1239,12 +1239,15 @@ int generic_map_delete_batch(struct bpf_map *map,
+ 	if (!max_count)
+ 		return 0;
+ 
++	key = kmalloc(map->key_size, GFP_USER | __GFP_NOWARN);
++	if (!key)
++		return -ENOMEM;
++
+ 	for (cp = 0; cp < max_count; cp++) {
+-		key = __bpf_copy_key(keys + cp * map->key_size, map->key_size);
+-		if (IS_ERR(key)) {
+-			err = PTR_ERR(key);
++		err = -EFAULT;
++		if (copy_from_user(key, keys + cp * map->key_size,
++				   map->key_size))
+ 			break;
+-		}
+ 
+ 		if (bpf_map_is_dev_bound(map)) {
+ 			err = bpf_map_offload_delete_elem(map, key);
+@@ -1264,6 +1267,8 @@ int generic_map_delete_batch(struct bpf_map *map,
+ 	}
+ 	if (copy_to_user(&uattr->batch.count, &cp, sizeof(cp)))
+ 		err = -EFAULT;
++
++	kfree(key);
+ 	return err;
+ }
+ 
+@@ -1294,18 +1299,21 @@ int generic_map_update_batch(struct bpf_map *map,
+ 	if (!max_count)
+ 		return 0;
+ 
++	key = kmalloc(map->key_size, GFP_USER | __GFP_NOWARN);
++	if (!key)
++		return -ENOMEM;
++
+ 	value = kmalloc(value_size, GFP_USER | __GFP_NOWARN);
+-	if (!value)
++	if (!value) {
++		kfree(key);
+ 		return -ENOMEM;
++	}
+ 
+ 	for (cp = 0; cp < max_count; cp++) {
+-		key = __bpf_copy_key(keys + cp * map->key_size, map->key_size);
+-		if (IS_ERR(key)) {
+-			err = PTR_ERR(key);
+-			break;
+-		}
+ 		err = -EFAULT;
+-		if (copy_from_user(value, values + cp * value_size, value_size))
++		if (copy_from_user(key, keys + cp * map->key_size,
++		    map->key_size) ||
++		    copy_from_user(value, values + cp * value_size, value_size))
+ 			break;
+ 
+ 		err = bpf_map_update_value(map, f, key, value,
+-- 
+2.25.0.341.g760bfbb309-goog
 
-Speaking for r8169:
-If interface is up and cable detached, then it runtime-suspends
-and goes into PCI D3 (chip and MDIO bus not accessible).
-But ndev is "running" and PHY is attached.
-
-> I have had issue with the FEC, runtime PM and MDIO, but that was when
-> the interface was not running, but an Ethernet switch was using the
-> MDIO bus. MDIO transactions would time out, until i made the MDIO
-> operations PM aware.
-> 
-> But in general, we should keep the running test, just to avoid
-> breakage of assumptions we don't know about.
-> 
-> 	 Andrew
-> 
-
-Heiner
