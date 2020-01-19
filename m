@@ -2,75 +2,67 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id F3D20141FFD
-	for <lists+netdev@lfdr.de>; Sun, 19 Jan 2020 21:21:09 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2911C14200E
+	for <lists+netdev@lfdr.de>; Sun, 19 Jan 2020 21:51:10 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729129AbgASUVB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 19 Jan 2020 15:21:01 -0500
-Received: from mail-il1-f198.google.com ([209.85.166.198]:48244 "EHLO
-        mail-il1-f198.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728709AbgASUVB (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 19 Jan 2020 15:21:01 -0500
-Received: by mail-il1-f198.google.com with SMTP id u14so23662388ilq.15
-        for <netdev@vger.kernel.org>; Sun, 19 Jan 2020 12:21:01 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:date:in-reply-to:message-id:subject
-         :from:to;
-        bh=tB8tVCfxWFIVfqWEsKuHgi0liSe9R1RZ+UBErAfoDaU=;
-        b=KL6ujWghrMHl+0RxuDk6C4thA8x0tqcFFNr7s/Xd3W9JNaT/QMjcwZXEsbEy+HWSvb
-         Go5eg3+EHIYc7MVI35Qzu0vRQophxz/A0lNr6IB/Cix59IZtTrAeiO4xOMNwDXEMxxVx
-         JhDx5adm7vyAkFmfX2GSbl9gAjwHOpUjTUrKUPIoD9q9HXSC5J7JKIWj6QJn9WgLW+V0
-         8fHTmZgeugel1EKP9sj+2rEncXnqd+0SJ1lTry7vZZQEjWTmpzmbpagXD5UhzgtNJjSw
-         PgU8QAgBq2QKlJp3WBHZ6JarW7cJjz7EpE1OoV+lEZPqPw2NhNVFNlFEslDKTPKqk6+q
-         QsLg==
-X-Gm-Message-State: APjAAAVvINipbeMv/qcIkcJbiT2LuX/KdIWfqmiyWGoaH4qqkzSQ8Y8o
-        JFXRxYd3SCw8UA8xOG6OQwQTwLENXSYHrzcekfF0naPv7Buf
-X-Google-Smtp-Source: APXvYqyBW0ANY5otx8x2mkJHYLCBShYafFG9L0jcSxJr3/w8Z3m4XgrA+Nba0kwQlcnkDJsAXjzzdqX7oGV/luxPfoRNInuKbPwk
+        id S1728847AbgASUvH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 19 Jan 2020 15:51:07 -0500
+Received: from vps0.lunn.ch ([185.16.172.187]:46196 "EHLO vps0.lunn.ch"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1728682AbgASUvH (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sun, 19 Jan 2020 15:51:07 -0500
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:
+        Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
+        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
+        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
+        List-Post:List-Owner:List-Archive;
+        bh=LsGWUihwaAVRXCio4bkLWcKVxSomCGiW0iPSq0q6tOQ=; b=w6LKLdRzYTAvT0a1qRIKNHa4rT
+        2plERugGKZC+NB/OP3+RAgcJmy2l31if6nnHqAPA0ivIqNmq1gPSmvatOqRRKn0Mfzy7kvRhrl83Z
+        jD82zCwvDEetkyoOF5QR6YEUKga8J2W4hSgu//xHf9q2rTshTIjk5TTkSnevGX1i9HJg=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.93)
+        (envelope-from <andrew@lunn.ch>)
+        id 1itHXA-0005P9-0a; Sun, 19 Jan 2020 21:51:00 +0100
+Date:   Sun, 19 Jan 2020 21:50:59 +0100
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Heiner Kallweit <hkallweit1@gmail.com>
+Cc:     Florian Fainelli <f.fainelli@gmail.com>,
+        David Miller <davem@davemloft.net>,
+        Realtek linux nic maintainers <nic_swsd@realtek.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+Subject: Re: [PATCH net-next 0/2] net: phy: add generic ndo_do_ioctl handler
+ phy_do_ioctl
+Message-ID: <20200119205059.GD17720@lunn.ch>
+References: <520c07a1-dd26-1414-0a2f-7f0d491589d1@gmail.com>
+ <20200119161240.GA17720@lunn.ch>
+ <97389eb0-fc7f-793b-6f84-730e583c00e9@googlemail.com>
+ <20200119175109.GB17720@lunn.ch>
+ <c1f7d8ce-2bc2-5141-9f28-a659d2af4e10@gmail.com>
+ <20200119185035.GC17720@lunn.ch>
+ <82737a2f-b6c1-943e-42a2-d42d87212457@gmail.com>
 MIME-Version: 1.0
-X-Received: by 2002:a6b:b74a:: with SMTP id h71mr15932229iof.212.1579465260652;
- Sun, 19 Jan 2020 12:21:00 -0800 (PST)
-Date:   Sun, 19 Jan 2020 12:21:00 -0800
-In-Reply-To: <0000000000006d7b1e059c7db653@google.com>
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <000000000000cbfd34059c83e917@google.com>
-Subject: Re: KASAN: use-after-free Read in bitmap_ip_ext_cleanup
-From:   syzbot <syzbot+b554d01b6c7870b17da2@syzkaller.appspotmail.com>
-To:     a@unstable.cc, b.a.t.m.a.n@lists.open-mesh.org,
-        bridge@lists.linux-foundation.org, coreteam@netfilter.org,
-        davem@davemloft.net, florent.fourcot@wifirst.fr, fw@strlen.de,
-        jeremy@azazel.net, johannes.berg@intel.com, kadlec@netfilter.org,
-        linux-kernel@vger.kernel.org, mareklindner@neomailbox.ch,
-        netdev@vger.kernel.org, netfilter-devel@vger.kernel.org,
-        nikolay@cumulusnetworks.com, pablo@netfilter.org,
-        roopa@cumulusnetworks.com, sw@simonwunderlich.de,
-        syzkaller-bugs@googlegroups.com
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <82737a2f-b6c1-943e-42a2-d42d87212457@gmail.com>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-syzbot has bisected this bug to:
+> Speaking for r8169:
+> If interface is up and cable detached, then it runtime-suspends
+> and goes into PCI D3 (chip and MDIO bus not accessible).
+> But ndev is "running" and PHY is attached.
 
-commit 3d26eb8ad1e9b906433903ce05f775cf038e747f
-Author: Nikolay Aleksandrov <nikolay@cumulusnetworks.com>
-Date:   Tue Jul 2 12:00:20 2019 +0000
+Hi Heiner
 
-    net: bridge: don't cache ether dest pointer on input
+And how does it get out of this state? I assume the PHY interrupts
+when the link is established. Is phylib handling this interrupt? If
+so, when phylib accesses the MDIO bus, the bus needs to be runtime PM
+aware. And if the bus is runtime PM aware, the IOCTL handler should
+work, when the device is runtime suspended.  If the MAC is handling
+this interrupt, and it is the MAC interrupt handler which is run-time
+unsuspending, then the ioctl handler is not going to work unless it
+also runtime unsuspends.
 
-bisection log:  https://syzkaller.appspot.com/x/bisect.txt?x=17bb1cc9e00000
-start commit:   9aaa2949 Merge branch '1GbE' of git://git.kernel.org/pub/s..
-git tree:       net-next
-final crash:    https://syzkaller.appspot.com/x/report.txt?x=147b1cc9e00000
-console output: https://syzkaller.appspot.com/x/log.txt?x=107b1cc9e00000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=66d8660c57ff3c98
-dashboard link: https://syzkaller.appspot.com/bug?extid=b554d01b6c7870b17da2
-syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=15db12a5e00000
-C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=15316faee00000
-
-Reported-by: syzbot+b554d01b6c7870b17da2@syzkaller.appspotmail.com
-Fixes: 3d26eb8ad1e9 ("net: bridge: don't cache ether dest pointer on input")
-
-For information about bisection process see: https://goo.gl/tpsmEJ#bisection
+	Andrew
