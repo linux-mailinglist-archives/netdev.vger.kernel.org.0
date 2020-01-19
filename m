@@ -2,198 +2,122 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 40037141DE0
-	for <lists+netdev@lfdr.de>; Sun, 19 Jan 2020 13:57:20 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id CB092141DE4
+	for <lists+netdev@lfdr.de>; Sun, 19 Jan 2020 14:01:28 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726897AbgASM5K (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 19 Jan 2020 07:57:10 -0500
-Received: from mail-il1-f198.google.com ([209.85.166.198]:57037 "EHLO
-        mail-il1-f198.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726843AbgASM5J (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 19 Jan 2020 07:57:09 -0500
-Received: by mail-il1-f198.google.com with SMTP id i68so23036166ill.23
-        for <netdev@vger.kernel.org>; Sun, 19 Jan 2020 04:57:09 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
-        bh=yrkN12Ir9F+vfz2Dvlu3TxsW0aKOP5JdAFcCDbRPRq4=;
-        b=lCHnENRGxNlyDxhk/hXAAaFN8/bgAJjN2rimm/Qb1BqJWaLO+CATIQrCFxN9NH7aB2
-         RIC7X7QklkP232u/r6UZ5+llICRAm+96TLFgrQq3ludMWKZ39H2tnMGwXKYHxsnY7Xl5
-         IJFi2FGeVojp+cZwBqtlIlQA3LnQfXLoFSQIR0PtY8/NmNKRQK1Ec74IUzm9zGYQ+Fgw
-         X8LlZKQvCP8IIxqVJq8psUqLiSrU/bQzPbG4aL7wAxkQe0Eb3pmKtS8kKzEaRa5/q+yB
-         VZZSlItPcxaCUkyF7a4NY6nHqsn/3g8C0TtOQneLn7PGfIYYfHnBP0WbYjeOq+wIxUQ3
-         RQjg==
-X-Gm-Message-State: APjAAAUZ2u9HQse6OWs+rHNx5Pm1Uk46JqgySKoFbjKlUSiKfB+ve7KY
-        Km1IReh4TmigxaSUJ/m8G4hqLDjsKSgKscrm23I6D7ji1p3k
-X-Google-Smtp-Source: APXvYqzXry5dROEGnvmNmukmqlTHlZQ/OaEER9EuMeh1HL4CYRynZXhT77mjwRzsClNwyZydcIRXcGK0/a47cIZJBhm2SuSCkbDe
+        id S1726954AbgASNB1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 19 Jan 2020 08:01:27 -0500
+Received: from out2-smtp.messagingengine.com ([66.111.4.26]:54137 "EHLO
+        out2-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1726867AbgASNB1 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 19 Jan 2020 08:01:27 -0500
+Received: from compute3.internal (compute3.nyi.internal [10.202.2.43])
+        by mailout.nyi.internal (Postfix) with ESMTP id C59FD216C5;
+        Sun, 19 Jan 2020 08:01:25 -0500 (EST)
+Received: from mailfrontend1 ([10.202.2.162])
+  by compute3.internal (MEProxy); Sun, 19 Jan 2020 08:01:25 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+        messagingengine.com; h=cc:content-transfer-encoding:date:from
+        :message-id:mime-version:subject:to:x-me-proxy:x-me-proxy
+        :x-me-sender:x-me-sender:x-sasl-enc; s=fm1; bh=hkvGRVNveik/3uf/2
+        FD2ebaOnUmp85W65OCGZsyKoSE=; b=p0nuCVbQHNlnUOMPV5wpAtWKkJmDyS8Kv
+        4ZzMQZ9DFCzwSVqcyAPzX+/gRkg2Ay74OrBjtaRL7BpNUhUabnvJFAeXax8sFkLg
+        G7nVlrCmFvuQF9KnJTw40GBPjRzaZ4llWCg22IydzdLUq0rjOkwskn4lSbjWzuOa
+        mhqkL0MOmZzz1Rspjsie25UzKM5uZ7k0D+MCWfGXgsPteMc+7Dj4LtfccYWyiO9C
+        cAzFq/NCSLasqIDPV6dpYw88aHkaExxXXB+rtnM0Lxa4D3avsP2j0JFHhIhgSMRI
+        jsGIiMhsiAnPXcyM2+cn2oju+ukg3c/42LxrtzEfCuCN+wVp/rYoA==
+X-ME-Sender: <xms:JVMkXj-I_lKb1RkcOInghN5HMlGn_Y5FjgJEcUtzcfuNWnjXawlqwg>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedugedrudefgdegiecutefuodetggdotefrodftvf
+    curfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfghnecu
+    uegrihhlohhuthemuceftddtnecunecujfgurhephffvufffkffoggfgsedtkeertdertd
+    dtnecuhfhrohhmpefkughoucfutghhihhmmhgvlhcuoehiughoshgthhesihguohhstghh
+    rdhorhhgqeenucfkphepudelfedrgeejrdduieehrddvhedunecurfgrrhgrmhepmhgrih
+    hlfhhrohhmpehiughoshgthhesihguohhstghhrdhorhhgnecuvehluhhsthgvrhfuihii
+    vgeptd
+X-ME-Proxy: <xmx:JVMkXm8DrUV5u6DOGKwUhkkPFJcrbdVTr-5tBf2mXjc9sOmCf3vMaA>
+    <xmx:JVMkXpmSn3bBq5hsfvCyGrNJDQJOrs_OfO5QVXnyfiDzo194HBDG1A>
+    <xmx:JVMkXs2AJpQZVLTOdgg2uSBo_F-DwRaJEP1Dm3lSegFlN6-xX_8vAg>
+    <xmx:JVMkXtBNbPu1N5xRE1hDBe0BvRT4WQHJr9sk0SXFa33z8xtwDitGhA>
+Received: from splinter.mtl.com (unknown [193.47.165.251])
+        by mail.messagingengine.com (Postfix) with ESMTPA id 21ECD80060;
+        Sun, 19 Jan 2020 08:01:24 -0500 (EST)
+From:   Ido Schimmel <idosch@idosch.org>
+To:     netdev@vger.kernel.org
+Cc:     davem@davemloft.net, jiri@mellanox.com, amitc@mellanox.com,
+        mlxsw@mellanox.com, Ido Schimmel <idosch@mellanox.com>
+Subject: [PATCH net-next 00/15] mlxsw: Add tunnel devlink-trap support
+Date:   Sun, 19 Jan 2020 15:00:45 +0200
+Message-Id: <20200119130100.3179857-1-idosch@idosch.org>
+X-Mailer: git-send-email 2.24.1
 MIME-Version: 1.0
-X-Received: by 2002:a6b:b683:: with SMTP id g125mr39422291iof.197.1579438629024;
- Sun, 19 Jan 2020 04:57:09 -0800 (PST)
-Date:   Sun, 19 Jan 2020 04:57:09 -0800
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <0000000000006d7b1e059c7db653@google.com>
-Subject: KASAN: use-after-free Read in bitmap_ip_ext_cleanup
-From:   syzbot <syzbot+b554d01b6c7870b17da2@syzkaller.appspotmail.com>
-To:     coreteam@netfilter.org, davem@davemloft.net,
-        florent.fourcot@wifirst.fr, fw@strlen.de, jeremy@azazel.net,
-        johannes.berg@intel.com, kadlec@netfilter.org,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        netfilter-devel@vger.kernel.org, pablo@netfilter.org,
-        syzkaller-bugs@googlegroups.com
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello,
+From: Ido Schimmel <idosch@mellanox.com>
 
-syzbot found the following crash on:
+This patch set from Amit adds support in mlxsw for tunnel traps and a
+few additional layer 3 traps that can report drops and exceptions via
+devlink-trap.
 
-HEAD commit:    9aaa2949 Merge branch '1GbE' of git://git.kernel.org/pub/s..
-git tree:       net-next
-console output: https://syzkaller.appspot.com/x/log.txt?x=1012b166e00000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=66d8660c57ff3c98
-dashboard link: https://syzkaller.appspot.com/bug?extid=b554d01b6c7870b17da2
-compiler:       gcc (GCC) 9.0.0 20181231 (experimental)
-syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=15db12a5e00000
-C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=15316faee00000
+These traps allow the user to more quickly diagnose problems relating to
+tunnel decapsulation errors, such as packet being too short to
+decapsulate or a packet containing wrong GRE key in its GRE header.
 
-IMPORTANT: if you fix the bug, please add the following tag to the commit:
-Reported-by: syzbot+b554d01b6c7870b17da2@syzkaller.appspotmail.com
+Patch set overview:
 
-==================================================================
-BUG: KASAN: use-after-free in test_bit include/asm-generic/bitops/instrumented-non-atomic.h:110 [inline]
-BUG: KASAN: use-after-free in bitmap_ip_ext_cleanup+0xd8/0x290 net/netfilter/ipset/ip_set_bitmap_gen.h:51
-Read of size 8 at addr ffff8880a7ca67c0 by task syz-executor319/9852
+Patches #1-#4 add three additional layer 3 traps. Two of which are
+mlxsw-specific as they relate to hardware-specific errors. The patches
+include documentation of each trap and selftests.
 
-CPU: 0 PID: 9852 Comm: syz-executor319 Not tainted 5.5.0-rc5-syzkaller #0
-Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
-Call Trace:
- __dump_stack lib/dump_stack.c:77 [inline]
- dump_stack+0x197/0x210 lib/dump_stack.c:118
- print_address_description.constprop.0.cold+0xd4/0x30b mm/kasan/report.c:374
- __kasan_report.cold+0x1b/0x41 mm/kasan/report.c:506
- kasan_report+0x12/0x20 mm/kasan/common.c:639
- check_memory_region_inline mm/kasan/generic.c:185 [inline]
- check_memory_region+0x134/0x1a0 mm/kasan/generic.c:192
- __kasan_check_read+0x11/0x20 mm/kasan/common.c:95
- test_bit include/asm-generic/bitops/instrumented-non-atomic.h:110 [inline]
- bitmap_ip_ext_cleanup+0xd8/0x290 net/netfilter/ipset/ip_set_bitmap_gen.h:51
- bitmap_ip_destroy+0x17c/0x1d0 net/netfilter/ipset/ip_set_bitmap_gen.h:65
- ip_set_create+0xe47/0x1500 net/netfilter/ipset/ip_set_core.c:1165
- nfnetlink_rcv_msg+0xcf2/0xfb0 net/netfilter/nfnetlink.c:229
- netlink_rcv_skb+0x177/0x450 net/netlink/af_netlink.c:2477
- nfnetlink_rcv+0x1ba/0x460 net/netfilter/nfnetlink.c:563
- netlink_unicast_kernel net/netlink/af_netlink.c:1302 [inline]
- netlink_unicast+0x59e/0x7e0 net/netlink/af_netlink.c:1328
- netlink_sendmsg+0x91c/0xea0 net/netlink/af_netlink.c:1917
- sock_sendmsg_nosec net/socket.c:652 [inline]
- sock_sendmsg+0xd7/0x130 net/socket.c:672
- ____sys_sendmsg+0x753/0x880 net/socket.c:2343
- ___sys_sendmsg+0x100/0x170 net/socket.c:2397
- __sys_sendmsg+0x105/0x1d0 net/socket.c:2430
- __do_sys_sendmsg net/socket.c:2439 [inline]
- __se_sys_sendmsg net/socket.c:2437 [inline]
- __x64_sys_sendmsg+0x78/0xb0 net/socket.c:2437
- do_syscall_64+0xfa/0x790 arch/x86/entry/common.c:294
- entry_SYSCALL_64_after_hwframe+0x49/0xbe
-RIP: 0033:0x441459
-Code: e8 fc ab 02 00 48 83 c4 18 c3 0f 1f 80 00 00 00 00 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 0f 83 9b 09 fc ff c3 66 2e 0f 1f 84 00 00 00 00
-RSP: 002b:00007ffe37820b08 EFLAGS: 00000246 ORIG_RAX: 000000000000002e
-RAX: ffffffffffffffda RBX: 0000000000000000 RCX: 0000000000441459
-RDX: 0000000000000000 RSI: 0000000020000300 RDI: 0000000000000003
-RBP: 0000000000012efc R08: 00000000004002c8 R09: 00000000004002c8
-R10: 0000000000000004 R11: 0000000000000246 R12: 0000000000402280
-R13: 0000000000402310 R14: 0000000000000000 R15: 0000000000000000
+Patches #5-#8 are preparations. They ensure that the correct ECN bits
+are set in the outer header during IPinIP encapsulation and that packets
+with an invalid ECN combination in underlay and overlay are trapped to
+the kernel and not decapsulated in hardware.
 
-Allocated by task 9852:
- save_stack+0x23/0x90 mm/kasan/common.c:72
- set_track mm/kasan/common.c:80 [inline]
- __kasan_kmalloc mm/kasan/common.c:513 [inline]
- __kasan_kmalloc.constprop.0+0xcf/0xe0 mm/kasan/common.c:486
- kasan_kmalloc+0x9/0x10 mm/kasan/common.c:527
- __do_kmalloc mm/slab.c:3656 [inline]
- __kmalloc+0x163/0x770 mm/slab.c:3665
- kmalloc include/linux/slab.h:561 [inline]
- kzalloc include/linux/slab.h:670 [inline]
- ip_set_alloc+0x38/0x5e net/netfilter/ipset/ip_set_core.c:255
- init_map_ip net/netfilter/ipset/ip_set_bitmap_ip.c:223 [inline]
- bitmap_ip_create+0x6ec/0xc20 net/netfilter/ipset/ip_set_bitmap_ip.c:327
- ip_set_create+0x6f1/0x1500 net/netfilter/ipset/ip_set_core.c:1111
- nfnetlink_rcv_msg+0xcf2/0xfb0 net/netfilter/nfnetlink.c:229
- netlink_rcv_skb+0x177/0x450 net/netlink/af_netlink.c:2477
- nfnetlink_rcv+0x1ba/0x460 net/netfilter/nfnetlink.c:563
- netlink_unicast_kernel net/netlink/af_netlink.c:1302 [inline]
- netlink_unicast+0x59e/0x7e0 net/netlink/af_netlink.c:1328
- netlink_sendmsg+0x91c/0xea0 net/netlink/af_netlink.c:1917
- sock_sendmsg_nosec net/socket.c:652 [inline]
- sock_sendmsg+0xd7/0x130 net/socket.c:672
- ____sys_sendmsg+0x753/0x880 net/socket.c:2343
- ___sys_sendmsg+0x100/0x170 net/socket.c:2397
- __sys_sendmsg+0x105/0x1d0 net/socket.c:2430
- __do_sys_sendmsg net/socket.c:2439 [inline]
- __se_sys_sendmsg net/socket.c:2437 [inline]
- __x64_sys_sendmsg+0x78/0xb0 net/socket.c:2437
- do_syscall_64+0xfa/0x790 arch/x86/entry/common.c:294
- entry_SYSCALL_64_after_hwframe+0x49/0xbe
+Patches #9-#15 add support for two tunnel related traps. Each trap is
+documented and selftested using both VXLAN and IPinIP tunnels, if
+applicable.
 
-Freed by task 9852:
- save_stack+0x23/0x90 mm/kasan/common.c:72
- set_track mm/kasan/common.c:80 [inline]
- kasan_set_free_info mm/kasan/common.c:335 [inline]
- __kasan_slab_free+0x102/0x150 mm/kasan/common.c:474
- kasan_slab_free+0xe/0x10 mm/kasan/common.c:483
- __cache_free mm/slab.c:3426 [inline]
- kfree+0x10a/0x2c0 mm/slab.c:3757
- kvfree+0x61/0x70 mm/util.c:603
- ip_set_free+0x16/0x20 net/netfilter/ipset/ip_set_core.c:276
- bitmap_ip_destroy+0xae/0x1d0 net/netfilter/ipset/ip_set_bitmap_gen.h:63
- ip_set_create+0xe47/0x1500 net/netfilter/ipset/ip_set_core.c:1165
- nfnetlink_rcv_msg+0xcf2/0xfb0 net/netfilter/nfnetlink.c:229
- netlink_rcv_skb+0x177/0x450 net/netlink/af_netlink.c:2477
- nfnetlink_rcv+0x1ba/0x460 net/netfilter/nfnetlink.c:563
- netlink_unicast_kernel net/netlink/af_netlink.c:1302 [inline]
- netlink_unicast+0x59e/0x7e0 net/netlink/af_netlink.c:1328
- netlink_sendmsg+0x91c/0xea0 net/netlink/af_netlink.c:1917
- sock_sendmsg_nosec net/socket.c:652 [inline]
- sock_sendmsg+0xd7/0x130 net/socket.c:672
- ____sys_sendmsg+0x753/0x880 net/socket.c:2343
- ___sys_sendmsg+0x100/0x170 net/socket.c:2397
- __sys_sendmsg+0x105/0x1d0 net/socket.c:2430
- __do_sys_sendmsg net/socket.c:2439 [inline]
- __se_sys_sendmsg net/socket.c:2437 [inline]
- __x64_sys_sendmsg+0x78/0xb0 net/socket.c:2437
- do_syscall_64+0xfa/0x790 arch/x86/entry/common.c:294
- entry_SYSCALL_64_after_hwframe+0x49/0xbe
+Amit Cohen (15):
+  mlxsw: Add irif and erif disabled traps
+  selftests: devlink_trap_l3_drops: Add test cases of irif and erif
+    disabled
+  devlink: Add non-routable packet trap
+  mlxsw: Add NON_ROUTABLE trap
+  mlxsw: reg: Add Tunneling IPinIP Encapsulation ECN Mapping Register
+  mlxsw: reg: Add Tunneling IPinIP Decapsulation ECN Mapping Register
+  mlxsw: Add ECN configurations with IPinIP tunnels
+  mlxsw: spectrum_trap: Reorder cases according to enum order
+  devlink: Add tunnel generic packet traps
+  mlxsw: Add tunnel devlink-trap support
+  selftests: devlink_trap_tunnel_vxlan: Add test case for decap_error
+  selftests: devlink_trap_tunnel_ipip: Add test case for decap_error
+  devlink: Add overlay source MAC is multicast trap
+  mlxsw: Add OVERLAY_SMAC_MC trap
+  selftests: devlink_trap_tunnel_vxlan: Add test case for
+    overlay_smac_is_mc
 
-The buggy address belongs to the object at ffff8880a7ca67c0
- which belongs to the cache kmalloc-32 of size 32
-The buggy address is located 0 bytes inside of
- 32-byte region [ffff8880a7ca67c0, ffff8880a7ca67e0)
-The buggy address belongs to the page:
-page:ffffea00029f2980 refcount:1 mapcount:0 mapping:ffff8880aa4001c0 index:0xffff8880a7ca6fc1
-raw: 00fffe0000000200 ffffea00026bfc88 ffffea00027d0708 ffff8880aa4001c0
-raw: ffff8880a7ca6fc1 ffff8880a7ca6000 000000010000003f 0000000000000000
-page dumped because: kasan: bad access detected
+ .../networking/devlink/devlink-trap.rst       |  19 +
+ Documentation/networking/devlink/mlxsw.rst    |  22 ++
+ drivers/net/ethernet/mellanox/mlxsw/reg.h     |  89 +++++
+ .../net/ethernet/mellanox/mlxsw/spectrum.c    |   2 -
+ .../ethernet/mellanox/mlxsw/spectrum_ipip.c   |  60 ++++
+ .../ethernet/mellanox/mlxsw/spectrum_router.c |  10 +
+ .../ethernet/mellanox/mlxsw/spectrum_router.h |   3 +
+ .../ethernet/mellanox/mlxsw/spectrum_trap.c   |  52 ++-
+ drivers/net/ethernet/mellanox/mlxsw/trap.h    |   5 +
+ include/net/devlink.h                         |  12 +
+ net/core/devlink.c                            |   4 +
+ .../net/mlxsw/devlink_trap_l3_drops.sh        | 112 ++++++
+ .../net/mlxsw/devlink_trap_tunnel_ipip.sh     | 265 ++++++++++++++
+ .../net/mlxsw/devlink_trap_tunnel_vxlan.sh    | 330 ++++++++++++++++++
+ 14 files changed, 981 insertions(+), 4 deletions(-)
+ create mode 100755 tools/testing/selftests/drivers/net/mlxsw/devlink_trap_tunnel_ipip.sh
+ create mode 100755 tools/testing/selftests/drivers/net/mlxsw/devlink_trap_tunnel_vxlan.sh
 
-Memory state around the buggy address:
- ffff8880a7ca6680: 04 fc fc fc fc fc fc fc fb fb fb fb fc fc fc fc
- ffff8880a7ca6700: fb fb fb fb fc fc fc fc 00 00 fc fc fc fc fc fc
->ffff8880a7ca6780: fb fb fb fb fc fc fc fc fb fb fb fb fc fc fc fc
-                                           ^
- ffff8880a7ca6800: fb fb fb fb fc fc fc fc 00 00 fc fc fc fc fc fc
- ffff8880a7ca6880: fb fb fb fb fc fc fc fc fb fb fb fb fc fc fc fc
-==================================================================
+-- 
+2.24.1
 
-
----
-This bug is generated by a bot. It may contain errors.
-See https://goo.gl/tpsmEJ for more information about syzbot.
-syzbot engineers can be reached at syzkaller@googlegroups.com.
-
-syzbot will keep track of this bug report. See:
-https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
-syzbot can test patches for this bug, for details see:
-https://goo.gl/tpsmEJ#testing-patches
