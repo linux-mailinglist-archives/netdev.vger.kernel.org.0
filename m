@@ -2,64 +2,95 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id CC026141FA8
-	for <lists+netdev@lfdr.de>; Sun, 19 Jan 2020 19:50:43 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3E223141FC1
+	for <lists+netdev@lfdr.de>; Sun, 19 Jan 2020 20:17:29 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727243AbgASSum (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 19 Jan 2020 13:50:42 -0500
-Received: from vps0.lunn.ch ([185.16.172.187]:46122 "EHLO vps0.lunn.ch"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727123AbgASSum (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sun, 19 Jan 2020 13:50:42 -0500
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:
-        Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
-        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
-        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
-        List-Post:List-Owner:List-Archive;
-        bh=+dklvkM+nB0DNACPMHU2f0gGUtyaBW/KLRfkJCSPJIE=; b=efQwYnVJXs7Y+UqbMGlOMDQ26K
-        VMc7Za6REtseAR341ySVgWHhT/fpr7kME2cuItotJjGrEFA/F4gjHHHICGti1GrUfeylCYETPxYiz
-        KzvWJEY35LgZEiX4BLseyEYUXokuISIei7wMbh7L4gk4KW3eMMjPnKen9v73DzPilfrE=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.93)
-        (envelope-from <andrew@lunn.ch>)
-        id 1itFed-00053I-3V; Sun, 19 Jan 2020 19:50:35 +0100
-Date:   Sun, 19 Jan 2020 19:50:35 +0100
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Heiner Kallweit <hkallweit1@gmail.com>
-Cc:     Florian Fainelli <f.fainelli@gmail.com>,
-        David Miller <davem@davemloft.net>,
-        Realtek linux nic maintainers <nic_swsd@realtek.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-Subject: Re: [PATCH net-next 0/2] net: phy: add generic ndo_do_ioctl handler
- phy_do_ioctl
-Message-ID: <20200119185035.GC17720@lunn.ch>
-References: <520c07a1-dd26-1414-0a2f-7f0d491589d1@gmail.com>
- <20200119161240.GA17720@lunn.ch>
- <97389eb0-fc7f-793b-6f84-730e583c00e9@googlemail.com>
- <20200119175109.GB17720@lunn.ch>
- <c1f7d8ce-2bc2-5141-9f28-a659d2af4e10@gmail.com>
+        id S1727586AbgASTRZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 19 Jan 2020 14:17:25 -0500
+Received: from mail-wr1-f65.google.com ([209.85.221.65]:42785 "EHLO
+        mail-wr1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727123AbgASTRZ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 19 Jan 2020 14:17:25 -0500
+Received: by mail-wr1-f65.google.com with SMTP id q6so27280546wro.9
+        for <netdev@vger.kernel.org>; Sun, 19 Jan 2020 11:17:23 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=ve6UVGlA6P+0PAbDeSkNhvuov6+S5Zh07hn/8Vc9zE0=;
+        b=CULJCVH7lWgc9PcLC9gDJl02lpMhQ+R/Fu8q7hg1uPq5GuHAwdr0jyy8TgR7Pu8qZa
+         QnkntFl5jMkvoAOApIsdnjhWNBbazs+PzMoffUzl4gelywTXzEPXDxLV3j7zjiuDwMez
+         Lgs6pvKXZRFhtOfglcApok+PYa1CuIRsS6CsMMF65vgmMY1TkLhJDFZPOdD0cZ6E4F7i
+         Nam1U0q5WnHa8qATEapdRQKvkWnVTUZSM2Hfhn+i7BeQwXc8bjWVVgAUJCaYVmxNnv9N
+         0oyQrYieyvo2vu/z4JWjHuTZhmACZelRGjYACXV4xR2dC3/zEg2KKLVJELd9hiWbPt9Z
+         d0yg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=ve6UVGlA6P+0PAbDeSkNhvuov6+S5Zh07hn/8Vc9zE0=;
+        b=b5IaIuYp9cSMsRDBjrfrrmQvFby+W1dd6T4wzsjKXcTPovLs9esd571cZD9BI594MB
+         Zbd9Lu1FCV9otft8KCe3/lhS3RnmSPJzV82GKEa9j9rsHx4wRvEBPc65dVJI6QZ00yXq
+         f85/ZY8OU/8vxVM7PFa6n9X3Qn6J1qxIE+qJa/vwOhtCAXJ/IgOoMB0T7sIxzCGW83RW
+         tpVcj3nj3AoAOscTOGCLO8YPDL/zZliGA3rtZ7NMSOiRXFD1rKqbHgQm/Nf5+Kxwisnb
+         OMtYgyF9OVf9R5IfWo5tRyMfy7pY55fQB2Z70gHD7QhRIE5MFDMJKvciyixnteop77y1
+         0AwQ==
+X-Gm-Message-State: APjAAAWocN4w/riH6+5gYZZsgbZYc4/8s5O7ws14dUChqX9TdF3kwLtX
+        TAeOXOLYNo/k7m9NGGdF7W+urwfo5ROX4yMJxW4=
+X-Google-Smtp-Source: APXvYqyd5XRO23C1Ar5yM8XuWgQEBS/zHHvk6gVc6P1BIP0aM2Zi85GjXjzrxG1mkc+rRuWAbSNt9KoE/WJNAaqlqNM=
+X-Received: by 2002:adf:fe12:: with SMTP id n18mr15414833wrr.158.1579461443101;
+ Sun, 19 Jan 2020 11:17:23 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <c1f7d8ce-2bc2-5141-9f28-a659d2af4e10@gmail.com>
+References: <20200116155701.6636-1-lesliemonis@gmail.com> <263a272f-770e-6757-916b-49f1036a8954@gmail.com>
+ <CAHv+uoEYa=xNQDLz+-fxnSReSLYX8-ELY8wi4u9Gaa8Qm3h=4w@mail.gmail.com>
+In-Reply-To: <CAHv+uoEYa=xNQDLz+-fxnSReSLYX8-ELY8wi4u9Gaa8Qm3h=4w@mail.gmail.com>
+From:   Leslie Monis <lesliemonis@gmail.com>
+Date:   Mon, 20 Jan 2020 00:46:46 +0530
+Message-ID: <CAHv+uoHnmsT3jg0EgQhhx4oMrpgpd5LSUz0YyLWJQ4q4DWSX5A@mail.gmail.com>
+Subject: Re: [PATCH] tc: parse attributes with NLA_F_NESTED flag
+To:     David Ahern <dsahern@gmail.com>
+Cc:     Linux NetDev <netdev@vger.kernel.org>,
+        Stephen Hemminger <stephen@networkplumber.org>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> Also it seems we don't consider situations like runtime PM yet.
-> Then the MDIO bus may not be accessible, but ndev is running
-> and PHY is attached.
+On Sun, Jan 19, 2020 at 1:12 PM Leslie Monis <lesliemonis@gmail.com> wrote:
+>
+> On Sun, Jan 19, 2020 at 3:31 AM David Ahern <dsahern@gmail.com> wrote:
+> >
+> > On 1/16/20 8:57 AM, Leslie Monis wrote:
+> >
+> > > diff --git a/tc/tc_class.c b/tc/tc_class.c
+> > > index c7e3cfdf..39bea971 100644
+> > > --- a/tc/tc_class.c
+> > > +++ b/tc/tc_class.c
+> > > @@ -246,8 +246,8 @@ static void graph_cls_show(FILE *fp, char *buf, struct hlist_head *root_list,
+> > >                        "+---(%s)", cls_id_str);
+> > >               strcat(buf, str);
+> > >
+> > > -             parse_rtattr(tb, TCA_MAX, (struct rtattr *)cls->data,
+> > > -                             cls->data_len);
+> > > +             parse_rtattr_flags(tb, TCA_MAX, (struct rtattr *)cls->data,
+> > > +                                cls->data_len, NLA_F_NESTED);
+> >
+> > Petr recently sent a patch to update parse_rtattr_nested to add the
+> > NESTED flag. Can you update this patch to use parse_rtattr_nested?
+>
+> Yes, will do.
 
-I don't think this can happen. If the device is running, the MDIO bus
-has to work, or phylib is broken.
+On a second thought, I think this patch should suffice. Using
+parse_rtattr_nested
+does not work in this case as the object that is being parsed is not a nested
+attribute, but a set of attributes placed contiguously in memory.
 
-I have had issue with the FEC, runtime PM and MDIO, but that was when
-the interface was not running, but an Ethernet switch was using the
-MDIO bus. MDIO transactions would time out, until i made the MDIO
-operations PM aware.
+If I'm not mistaken, Petr's patch allows parsing nested attributes
+(with the NLA_F_NESTED flag set) within a nested attribute.
 
-But in general, we should keep the running test, just to avoid
-breakage of assumptions we don't know about.
+Adding the NLA_F_NESTED flag to parse_rtattr_flags() enables the function
+to correctly parse those attributes (among the set of attributes) that happen to
+have the NLA_F_NESTED flag set.
 
-	 Andrew
+Hope I'm making sense.
