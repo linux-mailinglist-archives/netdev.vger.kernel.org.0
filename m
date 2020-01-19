@@ -2,66 +2,90 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id EFF3C141AA6
-	for <lists+netdev@lfdr.de>; Sun, 19 Jan 2020 01:36:37 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4A589141AC3
+	for <lists+netdev@lfdr.de>; Sun, 19 Jan 2020 02:06:18 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727051AbgASAgf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 18 Jan 2020 19:36:35 -0500
-Received: from mail-ot1-f67.google.com ([209.85.210.67]:34794 "EHLO
-        mail-ot1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727012AbgASAge (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 18 Jan 2020 19:36:34 -0500
-Received: by mail-ot1-f67.google.com with SMTP id a15so25763304otf.1
-        for <netdev@vger.kernel.org>; Sat, 18 Jan 2020 16:36:34 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:reply-to:from:date:message-id:subject:to;
-        bh=7PL+gSS/yQfJE0mqAUrHj8Fe63uSCyWxK6WTXD62aBA=;
-        b=cwYgGgbniG6OGRUs9C1br/B2Kzc4y1B+GrThHf2KvpRMJJLFPIPyYD1viwmXjF8EE6
-         zVR0N5m8nZRCW6KAA4xQd8BFDfQY3GLbrTqsJ2QgcM+NxKLZCnmgBsBrL1Ik/w8O4Q+k
-         m813bmrT6aMBLfLzYjUl8GPtB1eKcicmNnDiexT2oPyFVNkXsfkJcNNXXQ0AnqBUQtPA
-         c5utzsphT7O1kMhbAmgEkno/wXZlJj8uH65TXznoVxWLpfREc8PE4pN9JIMTEhjq968e
-         /RsbaPa6YfP+ZZi/eHCA7O9ZnUXiglj/uIX8dYM50fG7t8ygiMNF1DWP+jahs0aqJC6a
-         9y7w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:reply-to:from:date:message-id
-         :subject:to;
-        bh=7PL+gSS/yQfJE0mqAUrHj8Fe63uSCyWxK6WTXD62aBA=;
-        b=kMWLSrBDQ4cN8bTzAXuxarmzCYxiWYST+QDIBbkID5CWPhCt5CkKbLpUwRK0Iib8ab
-         JAHpxAIFBq5aFdeLifkgOTFpHHJdJSz+0NGgNxU4s/c5zBHHFNpm6/0/O8dJouw4TJ1Y
-         faxZU93a0QNowmhNtsOfGK15bocZLoIMbtM5rVg7tD2SQ1iQ2X/5JOVCL2NNkRRQcoZH
-         0RI9HnjxamadCmTtu2VLlz4ZogMQyWvtXV94N7exXXhGEFNoKh7nU1vzC2HQm0NEdmGi
-         PqHS70GU3qntKMb/4DRo+oUr+XD8L6ugcjA9tYo4myzKWHnpCfTOYzBuHi4vrf3vLpT3
-         gQ/A==
-X-Gm-Message-State: APjAAAWvYUN9NiMpD6QCWcaGdnRYQiyyejVXgU6WVq9tj4E+QUhe2VIM
-        tBtE5JbxXBY2d53b/gvvCeTTBw75Ze0wbNc+lVU=
-X-Google-Smtp-Source: APXvYqzChhzE7BTbqsKOkdD4VBBaZ/ezeRx7Gbk4GvRwfEe7XDuWRuZwlPxt+I8o6Bv3WLgH/ruxS8JWeaCeAdegAko=
-X-Received: by 2002:a9d:7e99:: with SMTP id m25mr10860829otp.212.1579394194213;
- Sat, 18 Jan 2020 16:36:34 -0800 (PST)
+        id S1727138AbgASBGJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 18 Jan 2020 20:06:09 -0500
+Received: from bilbo.ozlabs.org ([203.11.71.1]:59575 "EHLO ozlabs.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1727043AbgASBGJ (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sat, 18 Jan 2020 20:06:09 -0500
+Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (No client certificate requested)
+        by mail.ozlabs.org (Postfix) with ESMTPSA id 480c7L6K7fz9sP3;
+        Sun, 19 Jan 2020 12:06:06 +1100 (AEDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=canb.auug.org.au;
+        s=201702; t=1579395967;
+        bh=WB2vHqaSoZLAA5Tp3IIAjL7KxrkZjeK/A4htgKEjG4w=;
+        h=Date:From:To:Cc:Subject:From;
+        b=VSivGPphpDCu4Q0KxR1BvrvEeK1LJPqqWpFU/5d812sWpydkXsYUSalp7dGKmyr58
+         GtAoxqqXaZY26fpML9o4ZBmAsheL6pJJyVKnBJgGR5kdrdS2WRJax3vRat1L9OCvp+
+         gVa9ViHYQYfTBRd0f8l4TZlVKO3/95c0Er6vi4RCR5MgJTwg1XjHAQQciZ6V107Lu5
+         m7sVDsTLVkL5PY+FkegFcvam859+iJma21bTBxdoKgmI5tr7Xk5Ukob4Veeev7y6tQ
+         gw7TV6OnxxGWGMRylzea/pZ6xudOAO55NjXg1NQPxWHpVaLQ6gEwbs1ZNASEH6S3rU
+         Psj3MTgixW9qw==
+Date:   Sun, 19 Jan 2020 12:06:05 +1100
+From:   Stephen Rothwell <sfr@canb.auug.org.au>
+To:     David Miller <davem@davemloft.net>,
+        Networking <netdev@vger.kernel.org>
+Cc:     Linux Next Mailing List <linux-next@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Florian Fainelli <f.fainelli@gmail.com>
+Subject: linux-next: Fixes tag needs some work in the net tree
+Message-ID: <20200119120605.5417fc50@canb.auug.org.au>
 MIME-Version: 1.0
-Received: by 2002:a4a:8ec2:0:0:0:0:0 with HTTP; Sat, 18 Jan 2020 16:36:33
- -0800 (PST)
-Reply-To: lisatofan110@gmail.com
-From:   Lisa Tofan <moffinance32@gmail.com>
-Date:   Sun, 19 Jan 2020 01:36:33 +0100
-Message-ID: <CAE5T1ox9rSL07xFTo94SK+5DXSqVWHeskMJYyYTgVhMb9vGFiA@mail.gmail.com>
-Subject: I NEED YOUR HELP
-To:     undisclosed-recipients:;
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: multipart/signed; boundary="Sig_/_MFy/01xHWYblFpWPCbdiXU";
+ protocol="application/pgp-signature"; micalg=pgp-sha256
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-FROM MISS LISA TOFAN
+--Sig_/_MFy/01xHWYblFpWPCbdiXU
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: quoted-printable
 
-Greetings Dearest Beloved,
+Hi all,
 
-This is Miss Lisa Tofan, How are you today hope all is well with you,
-please I will need your urgent attention
+In commit
 
-regarding this important discussion kindly contact me back here my
-Email: lisatofan110@gmail.com: for more details,
-Thanks,
-Miss Lisa Tofan
+  8f1880cbe8d0 ("net: dsa: bcm_sf2: Configure IMP port for 2Gb/sec")
+
+Fixes tag
+
+  Fixes: 01b0ac07589e ("net: dsa: bcm_sf2: Add support for optional reset c=
+ontroller line")
+
+has these problem(s):
+
+  - Target SHA1 does not exist
+
+Maybe you meant
+
+Fixes: eee87e4377a4 ("net: dsa: bcm_sf2: Add support for optional reset con=
+troller line")
+
+--=20
+Cheers,
+Stephen Rothwell
+
+--Sig_/_MFy/01xHWYblFpWPCbdiXU
+Content-Type: application/pgp-signature
+Content-Description: OpenPGP digital signature
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAEBCAAdFiEENIC96giZ81tWdLgKAVBC80lX0GwFAl4jq30ACgkQAVBC80lX
+0GzFxQf/Wcy8+0nzLxFi7ni6yXKnLjkIUGFrYNj3oCR8jerj+z6uWVMaQxqhMuBj
+4NGpsfulLGT20d47bx/IZix8BjvFOAb+plHwSpHYO5NMKwcbjADoPYJPn5dS553E
+ojubAqbfet8qwAPSMeHjjoeCpEE/TDdBE3nhUNhusOJbrrKsoiXGCItIWvd+taV0
+r4NZ+sFYpzxlFWjbML5o9GgzHW0NYwj75T3C7Z0EML7R0dbtL3Bl1LobQHMhgP+t
+ceVUMBeRQHNTg0PWd3UsbqmbjVDqwveRyylQDOgsGalsA76jy16rr+QEzR9Yq3Kx
+SNPVspKfcsiB51qhnkXRuw12kYS2Aw==
+=P1JM
+-----END PGP SIGNATURE-----
+
+--Sig_/_MFy/01xHWYblFpWPCbdiXU--
