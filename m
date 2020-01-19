@@ -2,32 +2,32 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 00325141DE7
-	for <lists+netdev@lfdr.de>; Sun, 19 Jan 2020 14:01:33 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E06E5141DEB
+	for <lists+netdev@lfdr.de>; Sun, 19 Jan 2020 14:01:43 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727065AbgASNBc (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 19 Jan 2020 08:01:32 -0500
-Received: from out2-smtp.messagingengine.com ([66.111.4.26]:34211 "EHLO
+        id S1727118AbgASNBf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 19 Jan 2020 08:01:35 -0500
+Received: from out2-smtp.messagingengine.com ([66.111.4.26]:50617 "EHLO
         out2-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1727045AbgASNBa (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 19 Jan 2020 08:01:30 -0500
+        by vger.kernel.org with ESMTP id S1726798AbgASNBb (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 19 Jan 2020 08:01:31 -0500
 Received: from compute3.internal (compute3.nyi.internal [10.202.2.43])
-        by mailout.nyi.internal (Postfix) with ESMTP id 733C3210ED;
-        Sun, 19 Jan 2020 08:01:29 -0500 (EST)
+        by mailout.nyi.internal (Postfix) with ESMTP id C947A21B1B;
+        Sun, 19 Jan 2020 08:01:30 -0500 (EST)
 Received: from mailfrontend1 ([10.202.2.162])
-  by compute3.internal (MEProxy); Sun, 19 Jan 2020 08:01:29 -0500
+  by compute3.internal (MEProxy); Sun, 19 Jan 2020 08:01:30 -0500
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
         messagingengine.com; h=cc:content-transfer-encoding:date:from
         :in-reply-to:message-id:mime-version:references:subject:to
         :x-me-proxy:x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=
-        fm1; bh=KfPS3RRSy6ySZIfPZuYotZ76Omv1rzV23MV0jNjifOg=; b=Nlh1qjUy
-        BtRLGUxDu5+nhTquRSAYqByTQmqUJ5txIkEOBc5AQqdYpw12yZPk1icFQ0rpv9WC
-        8tJGzxbJym66zjmgAcZsVeXtCB70xb8AcighXcfrFei+RpcnuKNTuzo2xjwu9Mod
-        w+yzo1puifEIqO18Zl4uLsAmGxQBM3B0k9OXvAPFLi0WNY1ggfH10YFYvM3XnAD/
-        guIqiAt6dAG87JzWVXbwq3HF8Yp1mncTYO9RxQ2K+iEukXQaEqVmchXkMmEcCk56
-        hi4epw1jsIeETNdDRFLpbREFyE3+WylFm9VY+6jzq5sB3lW52SwhxJ2daU8Gv9LO
-        T5Aju6jTvjMa4g==
-X-ME-Sender: <xms:KVMkXmrKidVt379YUj-m0HsC7HIqaHd2cHQkxQT02_dMY3dekwQkQA>
+        fm1; bh=KjlWYAtFtAlPhpkee/rR4vJPIgDlr9nbQyi0WpKw9VY=; b=Rc4LsOpY
+        t0EAubuoIeFAW3huGQ3DE7BizrAjveNqh7vemFzlQkBeqF5QbAFxpAQCE03pBH37
+        bW+khH1c7s9Da9zJDrl5uNvfNySClv2+bY5SQ6hTPz17bvu62JaJfZr6TikaxLjO
+        QjZJ2iF4SY8WBLezNgr3/7Wg9HHrpkogB4eQ5dKJDcggHyZs0GuvepUIRGBOstOO
+        etc/uaMivMU7iy5AwcWIA9xoRmB0Pz3aMeN+js2uYlbjQ9cfKR7MRoUPlrHR7w3p
+        ofBXCGgW3pAlDr53RwIBwkLT7M2377TCuBT99SKhZkG1oTNId906rJd+dJhbCFwB
+        sKGDiyLpP1DzJw==
+X-ME-Sender: <xms:KlMkXpKptkIJm-L3FpLhTEFOZ7Obx79uaChhnv7e4mOwSW0kEhGGnw>
 X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedugedrudefgdegiecutefuodetggdotefrodftvf
     curfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfghnecu
     uegrihhlohhuthemuceftddtnecunecujfgurhephffvufffkffojghfggfgsedtkeertd
@@ -35,20 +35,20 @@ X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedugedrudefgdegiecutefuodetggdote
     tghhrdhorhhgqeenucfkphepudelfedrgeejrdduieehrddvhedunecurfgrrhgrmhepmh
     grihhlfhhrohhmpehiughoshgthhesihguohhstghhrdhorhhgnecuvehluhhsthgvrhfu
     ihiivgepud
-X-ME-Proxy: <xmx:KVMkXsZexOz344xOd_dvnLO9zRwOMqMUlsRJg6wiQs0pYDR2ZVNqfg>
-    <xmx:KVMkXpxkvDK94NXj2X0shcmqDdWKGmVYximbOzO8hNtgkXM4XRtBng>
-    <xmx:KVMkXgMA_t0JWszpqNzF5Hb3eHenkLhiRB-I8062IbWXdqyDfQK2zQ>
-    <xmx:KVMkXo-TpaC5XD4zjMpVAlDpCmeqHfRPIoYPWwaU7hDcK9I7aB7zng>
+X-ME-Proxy: <xmx:KlMkXlgmFr11Hs7Fgyq0crXvdfE_bWWoLM4_Qef9R8tV8gRCqd9fuw>
+    <xmx:KlMkXpkp8hDNkBiZTkOCyjoS56S1CP0JjkYT7GOOXE7PnDYYtSSWEw>
+    <xmx:KlMkXoEMdAR9npLqP07S6KQfzd7_9QGUMW-MoJLLZyH8zEQ72dA3tQ>
+    <xmx:KlMkXlWWxoAv1XPa1MNOcYcOiVV9ahpmtDXFLzbC4MrAOhZmN4SSXA>
 Received: from splinter.mtl.com (unknown [193.47.165.251])
-        by mail.messagingengine.com (Postfix) with ESMTPA id 28C0A8005A;
-        Sun, 19 Jan 2020 08:01:28 -0500 (EST)
+        by mail.messagingengine.com (Postfix) with ESMTPA id 7D0CB80062;
+        Sun, 19 Jan 2020 08:01:29 -0500 (EST)
 From:   Ido Schimmel <idosch@idosch.org>
 To:     netdev@vger.kernel.org
 Cc:     davem@davemloft.net, jiri@mellanox.com, amitc@mellanox.com,
         mlxsw@mellanox.com, Ido Schimmel <idosch@mellanox.com>
-Subject: [PATCH net-next 03/15] devlink: Add non-routable packet trap
-Date:   Sun, 19 Jan 2020 15:00:48 +0200
-Message-Id: <20200119130100.3179857-4-idosch@idosch.org>
+Subject: [PATCH net-next 04/15] mlxsw: Add NON_ROUTABLE trap
+Date:   Sun, 19 Jan 2020 15:00:49 +0200
+Message-Id: <20200119130100.3179857-5-idosch@idosch.org>
 X-Mailer: git-send-email 2.24.1
 In-Reply-To: <20200119130100.3179857-1-idosch@idosch.org>
 References: <20200119130100.3179857-1-idosch@idosch.org>
@@ -61,69 +61,58 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Amit Cohen <amitc@mellanox.com>
 
-Add packet trap that can report packets that reached the router, but are
-non-routable. For example, IGMP queries can be flooded by the device in
-layer 2 and reach the router. Such packets should not be routed and
-instead dropped.
+Add a trap for packets that the device decided to drop because they are
+not supposed to be routed. For example, IGMP queries can be flooded by
+the device in layer 2 and reach the router. Such packets should not be
+routed and instead dropped.
 
 Signed-off-by: Amit Cohen <amitc@mellanox.com>
 Signed-off-by: Ido Schimmel <idosch@mellanox.com>
 ---
- Documentation/networking/devlink/devlink-trap.rst | 6 ++++++
- include/net/devlink.h                             | 3 +++
- net/core/devlink.c                                | 1 +
- 3 files changed, 10 insertions(+)
+ drivers/net/ethernet/mellanox/mlxsw/spectrum_trap.c | 3 +++
+ drivers/net/ethernet/mellanox/mlxsw/trap.h          | 1 +
+ 2 files changed, 4 insertions(+)
 
-diff --git a/Documentation/networking/devlink/devlink-trap.rst b/Documentation/networking/devlink/devlink-trap.rst
-index 68245ea387ad..a62e1d6eb3e4 100644
---- a/Documentation/networking/devlink/devlink-trap.rst
-+++ b/Documentation/networking/devlink/devlink-trap.rst
-@@ -223,6 +223,12 @@ be added to the following table:
-    * - ``ipv6_lpm_miss``
-      - ``exception``
-      - Traps unicast IPv6 packets that did not match any route
-+   * - ``non_routable_packet``
-+     - ``drop``
-+     - Traps packets that the device decided to drop because they are not
-+       supposed to be routed. For example, IGMP queries can be flooded by the
-+       device in layer 2 and reach the router. Such packets should not be
-+       routed and instead dropped
- 
- Driver-specific Packet Traps
- ============================
-diff --git a/include/net/devlink.h b/include/net/devlink.h
-index a6856f1d5d1f..08b757753e1c 100644
---- a/include/net/devlink.h
-+++ b/include/net/devlink.h
-@@ -591,6 +591,7 @@ enum devlink_trap_generic_id {
- 	DEVLINK_TRAP_GENERIC_ID_REJECT_ROUTE,
- 	DEVLINK_TRAP_GENERIC_ID_IPV4_LPM_UNICAST_MISS,
- 	DEVLINK_TRAP_GENERIC_ID_IPV6_LPM_UNICAST_MISS,
-+	DEVLINK_TRAP_GENERIC_ID_NON_ROUTABLE,
- 
- 	/* Add new generic trap IDs above */
- 	__DEVLINK_TRAP_GENERIC_ID_MAX,
-@@ -659,6 +660,8 @@ enum devlink_trap_group_generic_id {
- 	"ipv4_lpm_miss"
- #define DEVLINK_TRAP_GENERIC_NAME_IPV6_LPM_UNICAST_MISS \
- 	"ipv6_lpm_miss"
-+#define DEVLINK_TRAP_GENERIC_NAME_NON_ROUTABLE \
-+	"non_routable_packet"
- 
- #define DEVLINK_TRAP_GROUP_GENERIC_NAME_L2_DROPS \
- 	"l2_drops"
-diff --git a/net/core/devlink.c b/net/core/devlink.c
-index d30aa47052aa..c10e38d724bc 100644
---- a/net/core/devlink.c
-+++ b/net/core/devlink.c
-@@ -7706,6 +7706,7 @@ static const struct devlink_trap devlink_trap_generic[] = {
- 	DEVLINK_TRAP(REJECT_ROUTE, EXCEPTION),
- 	DEVLINK_TRAP(IPV4_LPM_UNICAST_MISS, EXCEPTION),
- 	DEVLINK_TRAP(IPV6_LPM_UNICAST_MISS, EXCEPTION),
-+	DEVLINK_TRAP(NON_ROUTABLE, DROP),
+diff --git a/drivers/net/ethernet/mellanox/mlxsw/spectrum_trap.c b/drivers/net/ethernet/mellanox/mlxsw/spectrum_trap.c
+index 42013fe11131..8706821f5851 100644
+--- a/drivers/net/ethernet/mellanox/mlxsw/spectrum_trap.c
++++ b/drivers/net/ethernet/mellanox/mlxsw/spectrum_trap.c
+@@ -80,6 +80,7 @@ static struct devlink_trap mlxsw_sp_traps_arr[] = {
+ 	MLXSW_SP_TRAP_EXCEPTION(IPV6_LPM_UNICAST_MISS, L3_DROPS),
+ 	MLXSW_SP_TRAP_DRIVER_DROP(IRIF_DISABLED, L3_DROPS),
+ 	MLXSW_SP_TRAP_DRIVER_DROP(ERIF_DISABLED, L3_DROPS),
++	MLXSW_SP_TRAP_DROP(NON_ROUTABLE, L3_DROPS),
  };
  
- #define DEVLINK_TRAP_GROUP(_id)						      \
+ static struct mlxsw_listener mlxsw_sp_listeners_arr[] = {
+@@ -114,6 +115,7 @@ static struct mlxsw_listener mlxsw_sp_listeners_arr[] = {
+ 			       TRAP_EXCEPTION_TO_CPU),
+ 	MLXSW_SP_RXL_DISCARD(ROUTER_IRIF_EN, L3_DISCARDS),
+ 	MLXSW_SP_RXL_DISCARD(ROUTER_ERIF_EN, L3_DISCARDS),
++	MLXSW_SP_RXL_DISCARD(NON_ROUTABLE, L3_DISCARDS),
+ };
+ 
+ /* Mapping between hardware trap and devlink trap. Multiple hardware traps can
+@@ -149,6 +151,7 @@ static u16 mlxsw_sp_listener_devlink_map[] = {
+ 	DEVLINK_TRAP_GENERIC_ID_IPV6_LPM_UNICAST_MISS,
+ 	DEVLINK_MLXSW_TRAP_ID_IRIF_DISABLED,
+ 	DEVLINK_MLXSW_TRAP_ID_ERIF_DISABLED,
++	DEVLINK_TRAP_GENERIC_ID_NON_ROUTABLE,
+ };
+ 
+ static int mlxsw_sp_rx_listener(struct mlxsw_sp *mlxsw_sp, struct sk_buff *skb,
+diff --git a/drivers/net/ethernet/mellanox/mlxsw/trap.h b/drivers/net/ethernet/mellanox/mlxsw/trap.h
+index 8573cc3a0010..7d07ec8d440b 100644
+--- a/drivers/net/ethernet/mellanox/mlxsw/trap.h
++++ b/drivers/net/ethernet/mellanox/mlxsw/trap.h
+@@ -67,6 +67,7 @@ enum {
+ 	MLXSW_TRAP_ID_NVE_ENCAP_ARP = 0xBD,
+ 	MLXSW_TRAP_ID_ROUTER_ALERT_IPV4 = 0xD6,
+ 	MLXSW_TRAP_ID_ROUTER_ALERT_IPV6 = 0xD7,
++	MLXSW_TRAP_ID_DISCARD_NON_ROUTABLE = 0x11A,
+ 	MLXSW_TRAP_ID_DISCARD_ROUTER2 = 0x130,
+ 	MLXSW_TRAP_ID_DISCARD_ROUTER3 = 0x131,
+ 	MLXSW_TRAP_ID_DISCARD_ING_PACKET_SMAC_MC = 0x140,
 -- 
 2.24.1
 
