@@ -2,64 +2,127 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 8E331141ED8
-	for <lists+netdev@lfdr.de>; Sun, 19 Jan 2020 16:25:43 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6D4E4141EDE
+	for <lists+netdev@lfdr.de>; Sun, 19 Jan 2020 16:31:39 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727048AbgASPZl (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 19 Jan 2020 10:25:41 -0500
-Received: from shards.monkeyblade.net ([23.128.96.9]:49242 "EHLO
-        shards.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726890AbgASPZl (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 19 Jan 2020 10:25:41 -0500
-Received: from localhost (unknown [62.21.130.100])
-        (using TLSv1 with cipher AES256-SHA (256/256 bits))
-        (Client did not present a certificate)
-        (Authenticated sender: davem-davemloft)
-        by shards.monkeyblade.net (Postfix) with ESMTPSA id 03F9514EF485C;
-        Sun, 19 Jan 2020 07:25:39 -0800 (PST)
-Date:   Sun, 19 Jan 2020 16:25:38 +0100 (CET)
-Message-Id: <20200119.162538.692635075813536925.davem@davemloft.net>
-To:     idosch@idosch.org
-Cc:     netdev@vger.kernel.org, jiri@mellanox.com, amitc@mellanox.com,
-        mlxsw@mellanox.com, idosch@mellanox.com
-Subject: Re: [PATCH net-next 00/15] mlxsw: Add tunnel devlink-trap support
-From:   David Miller <davem@davemloft.net>
-In-Reply-To: <20200119130100.3179857-1-idosch@idosch.org>
-References: <20200119130100.3179857-1-idosch@idosch.org>
-X-Mailer: Mew version 6.8 on Emacs 26.3
-Mime-Version: 1.0
-Content-Type: Text/Plain; charset=us-ascii
+        id S1727045AbgASPbg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 19 Jan 2020 10:31:36 -0500
+Received: from mail-qt1-f193.google.com ([209.85.160.193]:33779 "EHLO
+        mail-qt1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726860AbgASPbg (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 19 Jan 2020 10:31:36 -0500
+Received: by mail-qt1-f193.google.com with SMTP id d5so25764829qto.0
+        for <netdev@vger.kernel.org>; Sun, 19 Jan 2020 07:31:35 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=UcTI+TlXLyBcW5hP31A1SVUt3vTwZBGcuxRhGd8zG+0=;
+        b=JgDVgp2BZf7AiqCs6wr0cE/24rwJYY+S7swfiymQ1/nx4cViDvSQJhzbQEddeQcLOv
+         ZzW11TxVDQk4aQk4pRO54qSEHCsLqIhBy+PFYnbj8ndJ3H5U/f27Ks+nKHpJgMHsG73A
+         BC2/GmVDda5FIcTEKjltKO7H+RKD/0O2ftn8N6UiUcdi8zHkM77E3mmkvgxHCTFwxgC+
+         seqYH1IufMG4NF96qgfTT+m/oGjENy29axtgWaUC/ey3MGMietiq97ZavAd/rl6kekmd
+         yB7ObWsz5nn8mcCE92zVC/Z9/JvVrcDg4EkCUgGoqOwprinLwmX4tZF0nHNsDFVG9Ssm
+         9vaA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=UcTI+TlXLyBcW5hP31A1SVUt3vTwZBGcuxRhGd8zG+0=;
+        b=IgS3l7jYEfZvPu95xEtPVuwDmNU7jp9YY08ACuufM5CYVJDUAAHjP8R8rtssx03RD5
+         SwJw/ZhEDwpFuvNcOBPTRqiGY7RaFgKUJUGTnOpdMEy0fd4h5omsTJcyjWvuTKYyIdbN
+         rTaYimg/NUQjr7DN40pM+3m8sFoLtAAlTjp4YZ4xp/xNkBkN/lOXcqcPasX8B8Oi0mIj
+         TIcWnIrOt6dwvRTQIyVv54Vkrcowr3w1rBH48yJzGSfhnRxWlbuy8GK01vuLS/xzLs9C
+         gtk3qUFbToL1CkvfWdZz3RL3PmlcUzFdI6D1goaK8A7FhbfZ0oP+RMDjbU3dEcKwj3pJ
+         DPCQ==
+X-Gm-Message-State: APjAAAUAd5v0K9zvZGNVOvX+3+1oExXysttkVlCeq8FBzv+sLc4TWkk3
+        QY6VAuwJ2PrubocBBpTHgT7y+8KX
+X-Google-Smtp-Source: APXvYqy/nxB/EGR6YOamWbA0DmEabbkwIv0AXPZ5xiiFS/sf+XLVTRyoyc5zNOY51ASIBlR8wp41Vw==
+X-Received: by 2002:ac8:6f04:: with SMTP id g4mr16245803qtv.314.1579447895272;
+        Sun, 19 Jan 2020 07:31:35 -0800 (PST)
+Received: from ?IPv6:2601:282:803:7700:2dab:9c0b:8f93:c8be? ([2601:282:803:7700:2dab:9c0b:8f93:c8be])
+        by smtp.googlemail.com with ESMTPSA id x27sm14432579qkx.81.2020.01.19.07.31.33
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Sun, 19 Jan 2020 07:31:34 -0800 (PST)
+Subject: Re: [PATCH iproute2-next v2] ip: xfrm: add espintcp encapsulation
+To:     Sabrina Dubroca <sd@queasysnail.net>, netdev@vger.kernel.org
+Cc:     Stephen Hemminger <stephen@networkplumber.org>,
+        Herbert Xu <herbert@gondor.apana.org.au>
+References: <110d0a77532fcd895597f7087d1f408aadbfeb5d.1579429631.git.sd@queasysnail.net>
+From:   David Ahern <dsahern@gmail.com>
+Message-ID: <b7f74a02-ff87-1cd5-c3cb-7b620bd11fe2@gmail.com>
+Date:   Sun, 19 Jan 2020 08:31:32 -0700
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:68.0)
+ Gecko/20100101 Thunderbird/68.4.1
+MIME-Version: 1.0
+In-Reply-To: <110d0a77532fcd895597f7087d1f408aadbfeb5d.1579429631.git.sd@queasysnail.net>
+Content-Type: text/plain; charset=windows-1252
+Content-Language: en-US
 Content-Transfer-Encoding: 7bit
-X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Sun, 19 Jan 2020 07:25:41 -0800 (PST)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Ido Schimmel <idosch@idosch.org>
-Date: Sun, 19 Jan 2020 15:00:45 +0200
+On 1/19/20 3:32 AM, Sabrina Dubroca wrote:
+> diff --git a/include/uapi/linux/udp.h b/include/uapi/linux/udp.h
+> new file mode 100644
+> index 000000000000..2d1f561b89d2
+> --- /dev/null
+> +++ b/include/uapi/linux/udp.h
+> @@ -0,0 +1,47 @@
+> +/* SPDX-License-Identifier: GPL-2.0+ WITH Linux-syscall-note */
+> +/*
+> + * INET		An implementation of the TCP/IP protocol suite for the LINUX
+> + *		operating system.  INET is implemented using the  BSD Socket
+> + *		interface as the means of communication with the user level.
+> + *
+> + *		Definitions for the UDP protocol.
+> + *
+> + * Version:	@(#)udp.h	1.0.2	04/28/93
+> + *
+> + * Author:	Fred N. van Kempen, <waltje@uWalt.NL.Mugnet.ORG>
+> + *
+> + *		This program is free software; you can redistribute it and/or
+> + *		modify it under the terms of the GNU General Public License
+> + *		as published by the Free Software Foundation; either version
+> + *		2 of the License, or (at your option) any later version.
+> + */
+> +#ifndef _UDP_H
+> +#define _UDP_H
+> +
+> +#include <linux/types.h>
+> +
+> +struct udphdr {
+> +	__be16	source;
+> +	__be16	dest;
+> +	__be16	len;
+> +	__sum16	check;
+> +};
+> +
+> +/* UDP socket options */
+> +#define UDP_CORK	1	/* Never send partially complete segments */
+> +#define UDP_ENCAP	100	/* Set the socket to accept encapsulated packets */
+> +#define UDP_NO_CHECK6_TX 101	/* Disable sending checksum for UDP6X */
+> +#define UDP_NO_CHECK6_RX 102	/* Disable accpeting checksum for UDP6 */
+> +#define UDP_SEGMENT	103	/* Set GSO segmentation size */
+> +#define UDP_GRO		104	/* This socket can receive UDP GRO packets */
+> +
+> +/* UDP encapsulation types */
+> +#define UDP_ENCAP_ESPINUDP_NON_IKE	1 /* draft-ietf-ipsec-nat-t-ike-00/01 */
+> +#define UDP_ENCAP_ESPINUDP	2 /* draft-ietf-ipsec-udp-encaps-06 */
+> +#define UDP_ENCAP_L2TPINUDP	3 /* rfc2661 */
+> +#define UDP_ENCAP_GTP0		4 /* GSM TS 09.60 */
+> +#define UDP_ENCAP_GTP1U		5 /* 3GPP TS 29.060 */
+> +#define UDP_ENCAP_RXRPC		6
+> +#define TCP_ENCAP_ESPINTCP	7 /* Yikes, this is really xfrm encap types. */
+> +
+> +#endif /* _UDP_H */
 
-> This patch set from Amit adds support in mlxsw for tunnel traps and a
-> few additional layer 3 traps that can report drops and exceptions via
-> devlink-trap.
-> 
-> These traps allow the user to more quickly diagnose problems relating to
-> tunnel decapsulation errors, such as packet being too short to
-> decapsulate or a packet containing wrong GRE key in its GRE header.
-> 
-> Patch set overview:
-> 
-> Patches #1-#4 add three additional layer 3 traps. Two of which are
-> mlxsw-specific as they relate to hardware-specific errors. The patches
-> include documentation of each trap and selftests.
-> 
-> Patches #5-#8 are preparations. They ensure that the correct ECN bits
-> are set in the outer header during IPinIP encapsulation and that packets
-> with an invalid ECN combination in underlay and overlay are trapped to
-> the kernel and not decapsulated in hardware.
-> 
-> Patches #9-#15 add support for two tunnel related traps. Each trap is
-> documented and selftested using both VXLAN and IPinIP tunnels, if
-> applicable.
+Hi Sabrina:
 
-Series applied, thanks Ido.
+I am confused about this header file. It is not from the kernel's uapi
+directory, so the kernel does not care about the values and where did
+you get the file?
+
