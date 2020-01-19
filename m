@@ -2,32 +2,32 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 5EBE5141DEF
+	by mail.lfdr.de (Postfix) with ESMTP id D82C8141DF0
 	for <lists+netdev@lfdr.de>; Sun, 19 Jan 2020 14:01:55 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728689AbgASNBp (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 19 Jan 2020 08:01:45 -0500
-Received: from out2-smtp.messagingengine.com ([66.111.4.26]:39511 "EHLO
+        id S1728748AbgASNBr (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 19 Jan 2020 08:01:47 -0500
+Received: from out2-smtp.messagingengine.com ([66.111.4.26]:42497 "EHLO
         out2-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1728655AbgASNBn (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 19 Jan 2020 08:01:43 -0500
+        by vger.kernel.org with ESMTP id S1728712AbgASNBp (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 19 Jan 2020 08:01:45 -0500
 Received: from compute3.internal (compute3.nyi.internal [10.202.2.43])
-        by mailout.nyi.internal (Postfix) with ESMTP id E09BA21E44;
-        Sun, 19 Jan 2020 08:01:42 -0500 (EST)
+        by mailout.nyi.internal (Postfix) with ESMTP id 4D55C21F15;
+        Sun, 19 Jan 2020 08:01:44 -0500 (EST)
 Received: from mailfrontend1 ([10.202.2.162])
-  by compute3.internal (MEProxy); Sun, 19 Jan 2020 08:01:42 -0500
+  by compute3.internal (MEProxy); Sun, 19 Jan 2020 08:01:44 -0500
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
         messagingengine.com; h=cc:content-transfer-encoding:date:from
         :in-reply-to:message-id:mime-version:references:subject:to
         :x-me-proxy:x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=
-        fm1; bh=T2L17+cBZ9CAMA/G0R6PEEzcnfiSHpLcVVj1TBBIkfQ=; b=P1+dGQIq
-        p6gGAA9typAamKaeWINpIo++LeuZrt8v5aJyFO3PY2d//VKigGPiv85HJcBQqKsj
-        ILhevtSIICpOnpM7b09u0qjMk6M+3JcWJ2X4LvsOJFSabf0SHuGswYdraENR31k0
-        5PEyKE3J81iiG0DZygtdz4NQ6T8jJTGRmX5h/3VyoNcriSqzhjAh2H5jUkE0096u
-        jbOlCxCyMpcgLJH3oKvgYRaBnG9p4m1R16+cvdfwrO24mtPBhY2MvRleAKsGyB3u
-        5LdTaSdLu9RpBxqiugt+s7S/yTkuXOJAvYUI4WGZ0lTchqOwOO/3i+6RWoECb4c4
-        gw955yciieo3dQ==
-X-ME-Sender: <xms:NlMkXt8_x5U0tOShOyJBcKz4ywmWCpPlhZ2Qxflx8uZ4edxf5-4HPQ>
+        fm1; bh=JR6BNnbR6bJId6AM12+I9nv/4P+PVj1T1dxd7yl3Y0s=; b=cU42umY5
+        A0ASeLercXvMxhEfseF9lnKta9i9R9EN+FvGC1t/ossRnJbWVe4xTjjFNhLTqti8
+        11LrTVIpVMZcrHtJu8s3SQFYqA+1KZt48tQxi1vM4/DjTofas3Jg2eo/H86jQtmA
+        gtHTURCsQUSRQQTcAa1FzSyP6rGD8lCry0hCSiuK9BI9zAPkjjn7rHJAL83vBmDR
+        dntTSG7wr4zODvLiqRzNT7GsCtGuKZRowg153za6C/5b8g2tOaavEHbvjMGtEBBp
+        rCyHFu701MSYPBwQf9RmZlucurf2CglkU1BLIs4LqqC6BHRiEVc1PCU6X4NlPhtf
+        E6W1NvnrsJxmqg==
+X-ME-Sender: <xms:OFMkXuskJ1AjPDK7wCULm8D9Qj6wwo0MTHgtDhSHvLPsQKd1LWT-uA>
 X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedugedrudefgdegiecutefuodetggdotefrodftvf
     curfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfghnecu
     uegrihhlohhuthemuceftddtnecunecujfgurhephffvufffkffojghfggfgsedtkeertd
@@ -35,20 +35,20 @@ X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedugedrudefgdegiecutefuodetggdote
     tghhrdhorhhgqeenucfkphepudelfedrgeejrdduieehrddvhedunecurfgrrhgrmhepmh
     grihhlfhhrohhmpehiughoshgthhesihguohhstghhrdhorhhgnecuvehluhhsthgvrhfu
     ihiivgepuddt
-X-ME-Proxy: <xmx:NlMkXh6oIcrhP6YjhoVqSdrnLHIlUfNiu-p-s-fpWNNfjuQew2QMcQ>
-    <xmx:NlMkXtrt6qAQ0GJ-tpEOvsT2t8Mw1NOnUIhWMi_GcHjFTCELSAAFFg>
-    <xmx:NlMkXtAYMT2-Mrjg7C7IRD0gPmSD1_ezqwo4dqxFXT2NCyPmXzjX-A>
-    <xmx:NlMkXimhBS78MciEbIFqMbRBiKUXOdxqf19EgCIakEhzoc9wcjUCHQ>
+X-ME-Proxy: <xmx:OFMkXmH6QbqtFhAtmKxbFM780S7xCulQHTxFYpuAo8g8NPHmsm4DQg>
+    <xmx:OFMkXuuGy70gYwj866Zs0evszpM0L_I__i3nWNF8Z9GSZms7QGhVGA>
+    <xmx:OFMkXsLh8keJjyqKaHE95PDbzOQJbQgguX8dGlH-uO-OOPpDMMLS8w>
+    <xmx:OFMkXjC1EyP2DXxmHsj-yvlaaJE62uVN4TnWTHtKdApUfXo_NwKceg>
 Received: from splinter.mtl.com (unknown [193.47.165.251])
-        by mail.messagingengine.com (Postfix) with ESMTPA id 9925480060;
-        Sun, 19 Jan 2020 08:01:41 -0500 (EST)
+        by mail.messagingengine.com (Postfix) with ESMTPA id EEC1A80062;
+        Sun, 19 Jan 2020 08:01:42 -0500 (EST)
 From:   Ido Schimmel <idosch@idosch.org>
 To:     netdev@vger.kernel.org
 Cc:     davem@davemloft.net, jiri@mellanox.com, amitc@mellanox.com,
         mlxsw@mellanox.com, Ido Schimmel <idosch@mellanox.com>
-Subject: [PATCH net-next 13/15] devlink: Add overlay source MAC is multicast trap
-Date:   Sun, 19 Jan 2020 15:00:58 +0200
-Message-Id: <20200119130100.3179857-14-idosch@idosch.org>
+Subject: [PATCH net-next 14/15] mlxsw: Add OVERLAY_SMAC_MC trap
+Date:   Sun, 19 Jan 2020 15:00:59 +0200
+Message-Id: <20200119130100.3179857-15-idosch@idosch.org>
 X-Mailer: git-send-email 2.24.1
 In-Reply-To: <20200119130100.3179857-1-idosch@idosch.org>
 References: <20200119130100.3179857-1-idosch@idosch.org>
@@ -61,66 +61,57 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Amit Cohen <amitc@mellanox.com>
 
-Add packet trap that can report NVE packets that the device decided to
-drop because their overlay source MAC is multicast.
+Add a trap for NVE packets that the device decided to drop because their
+overlay source MAC is multicast.
 
 Signed-off-by: Amit Cohen <amitc@mellanox.com>
 Acked-by: Jiri Pirko <jiri@mellanox.com>
 Signed-off-by: Ido Schimmel <idosch@mellanox.com>
 ---
- Documentation/networking/devlink/devlink-trap.rst | 4 ++++
- include/net/devlink.h                             | 3 +++
- net/core/devlink.c                                | 1 +
- 3 files changed, 8 insertions(+)
+ drivers/net/ethernet/mellanox/mlxsw/spectrum_trap.c | 3 +++
+ drivers/net/ethernet/mellanox/mlxsw/trap.h          | 1 +
+ 2 files changed, 4 insertions(+)
 
-diff --git a/Documentation/networking/devlink/devlink-trap.rst b/Documentation/networking/devlink/devlink-trap.rst
-index 014f0a34c0e4..47a429bb8658 100644
---- a/Documentation/networking/devlink/devlink-trap.rst
-+++ b/Documentation/networking/devlink/devlink-trap.rst
-@@ -234,6 +234,10 @@ be added to the following table:
-      - Traps NVE and IPinIP packets that the device decided to drop because of
-        failure during decapsulation (e.g., packet being too short, reserved
-        bits set in VXLAN header)
-+   * - ``overlay_smac_is_mc``
-+     - ``drop``
-+     - Traps NVE packets that the device decided to drop because their overlay
-+       source MAC is multicast
- 
- Driver-specific Packet Traps
- ============================
-diff --git a/include/net/devlink.h b/include/net/devlink.h
-index 455282a4b714..2813fd06ee89 100644
---- a/include/net/devlink.h
-+++ b/include/net/devlink.h
-@@ -593,6 +593,7 @@ enum devlink_trap_generic_id {
- 	DEVLINK_TRAP_GENERIC_ID_IPV6_LPM_UNICAST_MISS,
- 	DEVLINK_TRAP_GENERIC_ID_NON_ROUTABLE,
- 	DEVLINK_TRAP_GENERIC_ID_DECAP_ERROR,
-+	DEVLINK_TRAP_GENERIC_ID_OVERLAY_SMAC_MC,
- 
- 	/* Add new generic trap IDs above */
- 	__DEVLINK_TRAP_GENERIC_ID_MAX,
-@@ -666,6 +667,8 @@ enum devlink_trap_group_generic_id {
- 	"non_routable_packet"
- #define DEVLINK_TRAP_GENERIC_NAME_DECAP_ERROR \
- 	"decap_error"
-+#define DEVLINK_TRAP_GENERIC_NAME_OVERLAY_SMAC_MC \
-+	"overlay_smac_is_mc"
- 
- #define DEVLINK_TRAP_GROUP_GENERIC_NAME_L2_DROPS \
- 	"l2_drops"
-diff --git a/net/core/devlink.c b/net/core/devlink.c
-index af85fcd9b01e..e5b19bd2cbe2 100644
---- a/net/core/devlink.c
-+++ b/net/core/devlink.c
-@@ -7708,6 +7708,7 @@ static const struct devlink_trap devlink_trap_generic[] = {
- 	DEVLINK_TRAP(IPV6_LPM_UNICAST_MISS, EXCEPTION),
- 	DEVLINK_TRAP(NON_ROUTABLE, DROP),
- 	DEVLINK_TRAP(DECAP_ERROR, EXCEPTION),
-+	DEVLINK_TRAP(OVERLAY_SMAC_MC, DROP),
+diff --git a/drivers/net/ethernet/mellanox/mlxsw/spectrum_trap.c b/drivers/net/ethernet/mellanox/mlxsw/spectrum_trap.c
+index b03bb3a54fc8..60205aa3f6a5 100644
+--- a/drivers/net/ethernet/mellanox/mlxsw/spectrum_trap.c
++++ b/drivers/net/ethernet/mellanox/mlxsw/spectrum_trap.c
+@@ -82,6 +82,7 @@ static struct devlink_trap mlxsw_sp_traps_arr[] = {
+ 	MLXSW_SP_TRAP_DRIVER_DROP(ERIF_DISABLED, L3_DROPS),
+ 	MLXSW_SP_TRAP_DROP(NON_ROUTABLE, L3_DROPS),
+ 	MLXSW_SP_TRAP_EXCEPTION(DECAP_ERROR, TUNNEL_DROPS),
++	MLXSW_SP_TRAP_DROP(OVERLAY_SMAC_MC, TUNNEL_DROPS),
  };
  
- #define DEVLINK_TRAP_GROUP(_id)						      \
+ static struct mlxsw_listener mlxsw_sp_listeners_arr[] = {
+@@ -122,6 +123,7 @@ static struct mlxsw_listener mlxsw_sp_listeners_arr[] = {
+ 			       TRAP_EXCEPTION_TO_CPU),
+ 	MLXSW_SP_RXL_EXCEPTION(DISCARD_DEC_PKT, TUNNEL_DISCARDS,
+ 			       TRAP_EXCEPTION_TO_CPU),
++	MLXSW_SP_RXL_DISCARD(OVERLAY_SMAC_MC, TUNNEL_DISCARDS),
+ };
+ 
+ /* Mapping between hardware trap and devlink trap. Multiple hardware traps can
+@@ -161,6 +163,7 @@ static u16 mlxsw_sp_listener_devlink_map[] = {
+ 	DEVLINK_TRAP_GENERIC_ID_DECAP_ERROR,
+ 	DEVLINK_TRAP_GENERIC_ID_DECAP_ERROR,
+ 	DEVLINK_TRAP_GENERIC_ID_DECAP_ERROR,
++	DEVLINK_TRAP_GENERIC_ID_OVERLAY_SMAC_MC,
+ };
+ 
+ static int mlxsw_sp_rx_listener(struct mlxsw_sp *mlxsw_sp, struct sk_buff *skb,
+diff --git a/drivers/net/ethernet/mellanox/mlxsw/trap.h b/drivers/net/ethernet/mellanox/mlxsw/trap.h
+index 24f92b157dfb..12e1fa998d42 100644
+--- a/drivers/net/ethernet/mellanox/mlxsw/trap.h
++++ b/drivers/net/ethernet/mellanox/mlxsw/trap.h
+@@ -94,6 +94,7 @@ enum {
+ 	MLXSW_TRAP_ID_DISCARD_ROUTER_LPM4 = 0x17B,
+ 	MLXSW_TRAP_ID_DISCARD_ROUTER_LPM6 = 0x17C,
+ 	MLXSW_TRAP_ID_DISCARD_DEC_PKT = 0x188,
++	MLXSW_TRAP_ID_DISCARD_OVERLAY_SMAC_MC = 0x190,
+ 	MLXSW_TRAP_ID_DISCARD_IPV6_MC_DIP_RESERVED_SCOPE = 0x1B0,
+ 	MLXSW_TRAP_ID_DISCARD_IPV6_MC_DIP_INTERFACE_LOCAL_SCOPE = 0x1B1,
+ 	MLXSW_TRAP_ID_ACL0 = 0x1C0,
 -- 
 2.24.1
 
