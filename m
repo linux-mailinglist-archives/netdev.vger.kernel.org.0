@@ -2,53 +2,53 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 591B6141DE6
-	for <lists+netdev@lfdr.de>; Sun, 19 Jan 2020 14:01:33 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5EFDF141DE5
+	for <lists+netdev@lfdr.de>; Sun, 19 Jan 2020 14:01:31 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727005AbgASNB3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        id S1727032AbgASNB3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
         Sun, 19 Jan 2020 08:01:29 -0500
-Received: from out2-smtp.messagingengine.com ([66.111.4.26]:49977 "EHLO
+Received: from out2-smtp.messagingengine.com ([66.111.4.26]:51187 "EHLO
         out2-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726894AbgASNB1 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 19 Jan 2020 08:01:27 -0500
+        by vger.kernel.org with ESMTP id S1726867AbgASNB2 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 19 Jan 2020 08:01:28 -0500
 Received: from compute3.internal (compute3.nyi.internal [10.202.2.43])
-        by mailout.nyi.internal (Postfix) with ESMTP id C7A0B21D2B;
-        Sun, 19 Jan 2020 08:01:26 -0500 (EST)
+        by mailout.nyi.internal (Postfix) with ESMTP id 2BEE521D75;
+        Sun, 19 Jan 2020 08:01:28 -0500 (EST)
 Received: from mailfrontend1 ([10.202.2.162])
-  by compute3.internal (MEProxy); Sun, 19 Jan 2020 08:01:26 -0500
+  by compute3.internal (MEProxy); Sun, 19 Jan 2020 08:01:28 -0500
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
         messagingengine.com; h=cc:content-transfer-encoding:date:from
         :in-reply-to:message-id:mime-version:references:subject:to
         :x-me-proxy:x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=
-        fm1; bh=F8Mrxhn/Nl5UfX3CloXbvpHWcT+fqnJrXWFFeQsxPqk=; b=Kje69Nii
-        SPv8pHXuZeSLUGL25L7OvnY9zX8wym9nSN+vnlM5gIqLRyhuwOZcoGIXDZB0neEP
-        nqLUiBNZ4EceOk/vjCTp7xHacJnYTCcWLzLL/o7Bnwlp3YXEKxNAdL9yr/o5Y9G+
-        /iLo7CcE8VkMwNVmpZv1+AW90UmGBKH37BCJY2bP9mx9N30Jsy+a8X4wJXL+QbeX
-        I0u0ziJHmP5X9eR7F7C59VJHXh0uMwev6Jn4VEVEyo2OB3r0gK8HUnOs+3tm+tpP
-        S8TpOxAr83Uk6ksX09EonipZAqgDhf7ElJLRIm/75WNKjBd+gU7sM/fcY6/fHn4R
-        5UBh6eXi1mRwYg==
-X-ME-Sender: <xms:JlMkXl9qoq0uYSzSCZe6x_ofZylfnI2VsD8VvSDcMZ2owJK0huTiiA>
+        fm1; bh=0D3tdzyD1SGoPdCml0skfejLh094IMzKQT6ACEXUWEM=; b=FmVofdKH
+        5+aUZSDn3Uf/YZy65sRE1VSxTRktLG7rXKdayWp/W60jHHdfYmeX8lBPGQBDIfJZ
+        yRhHSrsAUeUHFWD5+S6c9KueDVrE/b2tdrqPH1eKaJct5A1RbWAFP+T9/c32kPmY
+        IVimI6oNH2PKOtNT2mGTyedKhcwYZt+8LC6njLDECrzbGysc1BiEbiJA70R6oUTN
+        PdC0MN4WMbi2LMhk+4H72orM+NKFEAxQHv5ohqnOKgncqeJtSvnaHpp2FQ4WK+GK
+        emiHPaLgThsvyoQnvW8u4HlXDlrGleHaXxbuOVLtH7Tv8JphCWNSXH9KlhMjb4Ke
+        HkMnZNajXGrHSA==
+X-ME-Sender: <xms:KFMkXhfBxXn4TugZuNxGcA-GyuKQhdDxPHOWXSfxa4at5NlENVd5aA>
 X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedugedrudefgdegiecutefuodetggdotefrodftvf
     curfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfghnecu
     uegrihhlohhuthemuceftddtnecunecujfgurhephffvufffkffojghfggfgsedtkeertd
     ertddtnecuhfhrohhmpefkughoucfutghhihhmmhgvlhcuoehiughoshgthhesihguohhs
     tghhrdhorhhgqeenucfkphepudelfedrgeejrdduieehrddvhedunecurfgrrhgrmhepmh
     grihhlfhhrohhmpehiughoshgthhesihguohhstghhrdhorhhgnecuvehluhhsthgvrhfu
-    ihiivgeptd
-X-ME-Proxy: <xmx:JlMkXtHObmTlRBkbUwmMaaQo5ZMygsgHBMk7ntyJ_h1OtLwroW2DWA>
-    <xmx:JlMkXjd-wy7ZRtL2E8h2LH14RgBeD5l4Izrd19_YOSE6vXByal9Iww>
-    <xmx:JlMkXiPgyAAJW7AtqJop7oq2SeyGdqNCST4xPxHJv_PHkdsEz2jRnQ>
-    <xmx:JlMkXr7FOJ3xg4_-_WWlz7Wh6A1nXghKKIcqgGr4BR5P86IkNzNF0Q>
+    ihiivgepud
+X-ME-Proxy: <xmx:KFMkXsDwj9qm0jRttfop4v3c5Agn50wMta0lFOD1OcVbZ9aetVqQkg>
+    <xmx:KFMkXuuGP5sE5ris-e52z1UR7Z-rfjxvzy3VfnBZHOOMKudzXZuhkA>
+    <xmx:KFMkXpH9hoSnfl73ye8nswEGUSD7ulphIc1FNHEJBiLiOm0EjDnNHg>
+    <xmx:KFMkXmJmdastUbVEiiU_1uxDs2zhfW9SztxCvdUv9CoWwK1S-n5x3g>
 Received: from splinter.mtl.com (unknown [193.47.165.251])
-        by mail.messagingengine.com (Postfix) with ESMTPA id 77D6E80062;
-        Sun, 19 Jan 2020 08:01:25 -0500 (EST)
+        by mail.messagingengine.com (Postfix) with ESMTPA id CB94980060;
+        Sun, 19 Jan 2020 08:01:26 -0500 (EST)
 From:   Ido Schimmel <idosch@idosch.org>
 To:     netdev@vger.kernel.org
 Cc:     davem@davemloft.net, jiri@mellanox.com, amitc@mellanox.com,
         mlxsw@mellanox.com, Ido Schimmel <idosch@mellanox.com>
-Subject: [PATCH net-next 01/15] mlxsw: Add irif and erif disabled traps
-Date:   Sun, 19 Jan 2020 15:00:46 +0200
-Message-Id: <20200119130100.3179857-2-idosch@idosch.org>
+Subject: [PATCH net-next 02/15] selftests: devlink_trap_l3_drops: Add test cases of irif and erif disabled
+Date:   Sun, 19 Jan 2020 15:00:47 +0200
+Message-Id: <20200119130100.3179857-3-idosch@idosch.org>
 X-Mailer: git-send-email 2.24.1
 In-Reply-To: <20200119130100.3179857-1-idosch@idosch.org>
 References: <20200119130100.3179857-1-idosch@idosch.org>
@@ -61,143 +61,147 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Amit Cohen <amitc@mellanox.com>
 
-IRIF_DISABLED and ERIF_DISABLED are driver specific traps. Packets are
-dropped for these reasons when they need to be routed through/from
-existing router interfaces (RIF) which are disabled.
-
-Add devlink driver-specific traps and mlxsw trap IDs used to report
-these traps.
+Add test cases to check that packets routed through disabled RIFs and
+packets routed from disabled RIFs are dropped and devlink counters
+increase when the action is trap.
 
 Signed-off-by: Amit Cohen <amitc@mellanox.com>
 Acked-by: Jiri Pirko <jiri@mellanox.com>
 Signed-off-by: Ido Schimmel <idosch@mellanox.com>
 ---
- .../networking/devlink/devlink-trap.rst       |  1 +
- Documentation/networking/devlink/mlxsw.rst    | 22 ++++++++++++++++
- .../ethernet/mellanox/mlxsw/spectrum_trap.c   | 26 +++++++++++++++++++
- drivers/net/ethernet/mellanox/mlxsw/trap.h    |  2 ++
- 4 files changed, 51 insertions(+)
+ .../net/mlxsw/devlink_trap_l3_drops.sh        | 112 ++++++++++++++++++
+ 1 file changed, 112 insertions(+)
 
-diff --git a/Documentation/networking/devlink/devlink-trap.rst b/Documentation/networking/devlink/devlink-trap.rst
-index cbaa750de37d..68245ea387ad 100644
---- a/Documentation/networking/devlink/devlink-trap.rst
-+++ b/Documentation/networking/devlink/devlink-trap.rst
-@@ -234,6 +234,7 @@ links to the description of driver-specific traps registered by various device
- drivers:
+diff --git a/tools/testing/selftests/drivers/net/mlxsw/devlink_trap_l3_drops.sh b/tools/testing/selftests/drivers/net/mlxsw/devlink_trap_l3_drops.sh
+index b4efb023ae51..d88d8e47d11b 100755
+--- a/tools/testing/selftests/drivers/net/mlxsw/devlink_trap_l3_drops.sh
++++ b/tools/testing/selftests/drivers/net/mlxsw/devlink_trap_l3_drops.sh
+@@ -50,6 +50,8 @@ ALL_TESTS="
+ 	ipv6_mc_dip_reserved_scope_test
+ 	ipv6_mc_dip_interface_local_scope_test
+ 	blackhole_route_test
++	irif_disabled_test
++	erif_disabled_test
+ "
  
-   * :doc:`netdevsim`
-+  * :doc:`mlxsw`
+ NUM_NETIFS=4
+@@ -553,6 +555,116 @@ blackhole_route_test()
+ 	__blackhole_route_test "6" "2001:db8:2::/120" "ipv6" $h2_ipv6 "icmpv6"
+ }
  
- Generic Packet Trap Groups
- ==========================
-diff --git a/Documentation/networking/devlink/mlxsw.rst b/Documentation/networking/devlink/mlxsw.rst
-index 5f9bb0a0616a..cf857cb4ba8f 100644
---- a/Documentation/networking/devlink/mlxsw.rst
-+++ b/Documentation/networking/devlink/mlxsw.rst
-@@ -57,3 +57,25 @@ The ``mlxsw`` driver reports the following versions
-    * - ``fw.version``
-      - running
-      - Three digit firmware version
++irif_disabled_test()
++{
++	local trap_name="irif_disabled"
++	local group_name="l3_drops"
++	local t0_packets t0_bytes
++	local t1_packets t1_bytes
++	local mz_pid
 +
-+Driver-specific Traps
-+=====================
++	RET=0
 +
-+.. list-table:: List of Driver-specific Traps Registered by ``mlxsw``
-+   :widths: 5 5 90
++	ping_check $trap_name
 +
-+   * - Name
-+     - Type
-+     - Description
-+   * - ``irif_disabled``
-+     - ``drop``
-+     - Traps packets that the device decided to drop because they need to be
-+       routed from a disabled router interface (RIF). This can happen during
-+       RIF dismantle, when the RIF is first disabled before being removed
-+       completely
-+   * - ``erif_disabled``
-+     - ``drop``
-+     - Traps packets that the device decided to drop because they need to be
-+       routed through a disabled router interface (RIF). This can happen during
-+       RIF dismantle, when the RIF is first disabled before being removed
-+       completely
-diff --git a/drivers/net/ethernet/mellanox/mlxsw/spectrum_trap.c b/drivers/net/ethernet/mellanox/mlxsw/spectrum_trap.c
-index e0d7c49ffae0..42013fe11131 100644
---- a/drivers/net/ethernet/mellanox/mlxsw/spectrum_trap.c
-+++ b/drivers/net/ethernet/mellanox/mlxsw/spectrum_trap.c
-@@ -9,6 +9,20 @@
- #include "reg.h"
- #include "spectrum.h"
- 
-+/* All driver-specific traps must be documented in
-+ * Documentation/networking/devlink/mlxsw.rst
-+ */
-+enum {
-+	DEVLINK_MLXSW_TRAP_ID_BASE = DEVLINK_TRAP_GENERIC_ID_MAX,
-+	DEVLINK_MLXSW_TRAP_ID_IRIF_DISABLED,
-+	DEVLINK_MLXSW_TRAP_ID_ERIF_DISABLED,
-+};
++	devlink_trap_action_set $trap_name "trap"
 +
-+#define DEVLINK_MLXSW_TRAP_NAME_IRIF_DISABLED \
-+	"irif_disabled"
-+#define DEVLINK_MLXSW_TRAP_NAME_ERIF_DISABLED \
-+	"erif_disabled"
++	# When RIF of a physical port ("Sub-port RIF") is destroyed, we first
++	# block the STP of the {Port, VLAN} so packets cannot get into the RIF.
++	# Using bridge enables us to see this trap because when bridge is
++	# destroyed, there is a small time window that packets can go into the
++	# RIF, while it is disabled.
++	ip link add dev br0 type bridge
++	ip link set dev $rp1 master br0
++	ip address flush dev $rp1
++	__addr_add_del br0 add 192.0.2.2/24
++	ip li set dev br0 up
 +
- #define MLXSW_SP_TRAP_METADATA DEVLINK_TRAP_METADATA_TYPE_F_IN_PORT
- 
- static void mlxsw_sp_rx_drop_listener(struct sk_buff *skb, u8 local_port,
-@@ -21,6 +35,12 @@ static void mlxsw_sp_rx_exception_listener(struct sk_buff *skb, u8 local_port,
- 			     DEVLINK_TRAP_GROUP_GENERIC(_group_id),	      \
- 			     MLXSW_SP_TRAP_METADATA)
- 
-+#define MLXSW_SP_TRAP_DRIVER_DROP(_id, _group_id)			      \
-+	DEVLINK_TRAP_DRIVER(DROP, DROP, DEVLINK_MLXSW_TRAP_ID_##_id,	      \
-+			    DEVLINK_MLXSW_TRAP_NAME_##_id,		      \
-+			    DEVLINK_TRAP_GROUP_GENERIC(_group_id),	      \
-+			    MLXSW_SP_TRAP_METADATA)
++	t0_packets=$(devlink_trap_rx_packets_get $trap_name)
++	t0_bytes=$(devlink_trap_rx_bytes_get $trap_name)
 +
- #define MLXSW_SP_TRAP_EXCEPTION(_id, _group_id)		      \
- 	DEVLINK_TRAP_GENERIC(EXCEPTION, TRAP, _id,			      \
- 			     DEVLINK_TRAP_GROUP_GENERIC(_group_id),	      \
-@@ -58,6 +78,8 @@ static struct devlink_trap mlxsw_sp_traps_arr[] = {
- 	MLXSW_SP_TRAP_EXCEPTION(UNRESOLVED_NEIGH, L3_DROPS),
- 	MLXSW_SP_TRAP_EXCEPTION(IPV4_LPM_UNICAST_MISS, L3_DROPS),
- 	MLXSW_SP_TRAP_EXCEPTION(IPV6_LPM_UNICAST_MISS, L3_DROPS),
-+	MLXSW_SP_TRAP_DRIVER_DROP(IRIF_DISABLED, L3_DROPS),
-+	MLXSW_SP_TRAP_DRIVER_DROP(ERIF_DISABLED, L3_DROPS),
- };
++	# Generate packets to h2 through br0 RIF that will be removed later
++	$MZ $h1 -t udp "sp=54321,dp=12345" -c 0 -p 100 -a own -b $rp1mac \
++		-B $h2_ipv4 -q &
++	mz_pid=$!
++
++	# Wait before removing br0 RIF to allow packets to go into the bridge.
++	sleep 1
++
++	# Flushing address will dismantle the RIF
++	ip address flush dev br0
++
++	t1_packets=$(devlink_trap_rx_packets_get $trap_name)
++	t1_bytes=$(devlink_trap_rx_bytes_get $trap_name)
++
++	if [[ $t0_packets -eq $t1_packets && $t0_bytes -eq $t1_bytes ]]; then
++		check_err 1 "Trap stats idle when packets should be trapped"
++	fi
++
++	log_test "Ingress RIF disabled"
++
++	kill $mz_pid && wait $mz_pid &> /dev/null
++	ip link set dev $rp1 nomaster
++	__addr_add_del $rp1 add 192.0.2.2/24 2001:db8:1::2/64
++	ip link del dev br0 type bridge
++	devlink_trap_action_set $trap_name "drop"
++}
++
++erif_disabled_test()
++{
++	local trap_name="erif_disabled"
++	local group_name="l3_drops"
++	local t0_packets t0_bytes
++	local t1_packets t1_bytes
++	local mz_pid
++
++	RET=0
++
++	ping_check $trap_name
++
++	devlink_trap_action_set $trap_name "trap"
++	ip link add dev br0 type bridge
++	ip add flush dev $rp1
++	ip link set dev $rp1 master br0
++	__addr_add_del br0 add 192.0.2.2/24
++	ip link set dev br0 up
++
++	t0_packets=$(devlink_trap_rx_packets_get $trap_name)
++	t0_bytes=$(devlink_trap_rx_bytes_get $trap_name)
++
++	rp2mac=$(mac_get $rp2)
++
++	# Generate packets that should go out through br0 RIF that will be
++	# removed later
++	$MZ $h2 -t udp "sp=54321,dp=12345" -c 0 -p 100 -a own -b $rp2mac \
++		-B 192.0.2.1 -q &
++	mz_pid=$!
++
++	sleep 5
++	# In order to see this trap we need a route that points to disabled RIF.
++	# When ipv6 address is flushed, there is a delay and the routes are
++	# deleted before the RIF and we cannot get state that we have route
++	# to disabled RIF.
++	# Delete IPv6 address first and then check this trap with flushing IPv4.
++	ip -6 add flush dev br0
++	ip -4 add flush dev br0
++
++	t1_packets=$(devlink_trap_rx_packets_get $trap_name)
++	t1_bytes=$(devlink_trap_rx_bytes_get $trap_name)
++
++	if [[ $t0_packets -eq $t1_packets && $t0_bytes -eq $t1_bytes ]]; then
++		check_err 1 "Trap stats idle when packets should be trapped"
++	fi
++
++	log_test "Egress RIF disabled"
++
++	kill $mz_pid && wait $mz_pid &> /dev/null
++	ip link set dev $rp1 nomaster
++	__addr_add_del $rp1 add 192.0.2.2/24 2001:db8:1::2/64
++	ip link del dev br0 type bridge
++	devlink_trap_action_set $trap_name "drop"
++}
++
+ trap cleanup EXIT
  
- static struct mlxsw_listener mlxsw_sp_listeners_arr[] = {
-@@ -90,6 +112,8 @@ static struct mlxsw_listener mlxsw_sp_listeners_arr[] = {
- 			       TRAP_EXCEPTION_TO_CPU),
- 	MLXSW_SP_RXL_EXCEPTION(DISCARD_ROUTER_LPM6, ROUTER_EXP,
- 			       TRAP_EXCEPTION_TO_CPU),
-+	MLXSW_SP_RXL_DISCARD(ROUTER_IRIF_EN, L3_DISCARDS),
-+	MLXSW_SP_RXL_DISCARD(ROUTER_ERIF_EN, L3_DISCARDS),
- };
- 
- /* Mapping between hardware trap and devlink trap. Multiple hardware traps can
-@@ -123,6 +147,8 @@ static u16 mlxsw_sp_listener_devlink_map[] = {
- 	DEVLINK_TRAP_GENERIC_ID_UNRESOLVED_NEIGH,
- 	DEVLINK_TRAP_GENERIC_ID_IPV4_LPM_UNICAST_MISS,
- 	DEVLINK_TRAP_GENERIC_ID_IPV6_LPM_UNICAST_MISS,
-+	DEVLINK_MLXSW_TRAP_ID_IRIF_DISABLED,
-+	DEVLINK_MLXSW_TRAP_ID_ERIF_DISABLED,
- };
- 
- static int mlxsw_sp_rx_listener(struct mlxsw_sp *mlxsw_sp, struct sk_buff *skb,
-diff --git a/drivers/net/ethernet/mellanox/mlxsw/trap.h b/drivers/net/ethernet/mellanox/mlxsw/trap.h
-index 3d2331be05d8..8573cc3a0010 100644
---- a/drivers/net/ethernet/mellanox/mlxsw/trap.h
-+++ b/drivers/net/ethernet/mellanox/mlxsw/trap.h
-@@ -88,6 +88,8 @@ enum {
- 	MLXSW_TRAP_ID_DISCARD_ING_ROUTER_IPV4_SIP_BC = 0x16A,
- 	MLXSW_TRAP_ID_DISCARD_ING_ROUTER_IPV4_DIP_LOCAL_NET = 0x16B,
- 	MLXSW_TRAP_ID_DISCARD_ING_ROUTER_DIP_LINK_LOCAL = 0x16C,
-+	MLXSW_TRAP_ID_DISCARD_ROUTER_IRIF_EN = 0x178,
-+	MLXSW_TRAP_ID_DISCARD_ROUTER_ERIF_EN = 0x179,
- 	MLXSW_TRAP_ID_DISCARD_ROUTER_LPM4 = 0x17B,
- 	MLXSW_TRAP_ID_DISCARD_ROUTER_LPM6 = 0x17C,
- 	MLXSW_TRAP_ID_DISCARD_IPV6_MC_DIP_RESERVED_SCOPE = 0x1B0,
+ setup_prepare
 -- 
 2.24.1
 
