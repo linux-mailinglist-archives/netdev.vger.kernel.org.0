@@ -2,53 +2,53 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id D82C8141DF0
-	for <lists+netdev@lfdr.de>; Sun, 19 Jan 2020 14:01:55 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id DED58141DF2
+	for <lists+netdev@lfdr.de>; Sun, 19 Jan 2020 14:01:56 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728748AbgASNBr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 19 Jan 2020 08:01:47 -0500
-Received: from out2-smtp.messagingengine.com ([66.111.4.26]:42497 "EHLO
+        id S1728779AbgASNBv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 19 Jan 2020 08:01:51 -0500
+Received: from out2-smtp.messagingengine.com ([66.111.4.26]:33229 "EHLO
         out2-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1728712AbgASNBp (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 19 Jan 2020 08:01:45 -0500
+        by vger.kernel.org with ESMTP id S1728655AbgASNBq (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 19 Jan 2020 08:01:46 -0500
 Received: from compute3.internal (compute3.nyi.internal [10.202.2.43])
-        by mailout.nyi.internal (Postfix) with ESMTP id 4D55C21F15;
-        Sun, 19 Jan 2020 08:01:44 -0500 (EST)
+        by mailout.nyi.internal (Postfix) with ESMTP id B009A21B1B;
+        Sun, 19 Jan 2020 08:01:45 -0500 (EST)
 Received: from mailfrontend1 ([10.202.2.162])
-  by compute3.internal (MEProxy); Sun, 19 Jan 2020 08:01:44 -0500
+  by compute3.internal (MEProxy); Sun, 19 Jan 2020 08:01:45 -0500
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
         messagingengine.com; h=cc:content-transfer-encoding:date:from
         :in-reply-to:message-id:mime-version:references:subject:to
         :x-me-proxy:x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=
-        fm1; bh=JR6BNnbR6bJId6AM12+I9nv/4P+PVj1T1dxd7yl3Y0s=; b=cU42umY5
-        A0ASeLercXvMxhEfseF9lnKta9i9R9EN+FvGC1t/ossRnJbWVe4xTjjFNhLTqti8
-        11LrTVIpVMZcrHtJu8s3SQFYqA+1KZt48tQxi1vM4/DjTofas3Jg2eo/H86jQtmA
-        gtHTURCsQUSRQQTcAa1FzSyP6rGD8lCry0hCSiuK9BI9zAPkjjn7rHJAL83vBmDR
-        dntTSG7wr4zODvLiqRzNT7GsCtGuKZRowg153za6C/5b8g2tOaavEHbvjMGtEBBp
-        rCyHFu701MSYPBwQf9RmZlucurf2CglkU1BLIs4LqqC6BHRiEVc1PCU6X4NlPhtf
-        E6W1NvnrsJxmqg==
-X-ME-Sender: <xms:OFMkXuskJ1AjPDK7wCULm8D9Qj6wwo0MTHgtDhSHvLPsQKd1LWT-uA>
+        fm1; bh=/FaQ+W0jL1SKg58dfuSYu1CSeKXy5jkFLQm9nfUY7JA=; b=olm2DkaX
+        ZXFDEBKuyMF0qKIH21yGQFuoQQStWMeqMy4PlfTbykFUdW9RfVQLWtUzPVJYpZkB
+        RZjhTCw+LfJzeW25BYsHL5Z62uONi6NOfI5oP/Ehy67OjNoySczs2DfxSMXdRJel
+        REwVnxlcLyTBPo+IkOiod6lsrbFzh5fqkKx4NYKB8ltGS2clXA5tCZ2onYvwtuN7
+        dHQapDo/7uZ9Q3mNHjRvv3vOE4gQd0Z4myvgWsQxvcV+n1taVBYAQN6DFvMqnzj/
+        lQdtw3OeCUPtAthxxDzdIl7R16xTkOsGhTJoRZJLzM/1opZj/M/cRkXdzHoqIIUg
+        lIxXpw6xNio3fA==
+X-ME-Sender: <xms:OVMkXgJsddL5nt6Ga5E6TI-m-h-N5tAiaHtNrQQ9ICn9XfdiFVJhjg>
 X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedugedrudefgdegiecutefuodetggdotefrodftvf
     curfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfghnecu
     uegrihhlohhuthemuceftddtnecunecujfgurhephffvufffkffojghfggfgsedtkeertd
     ertddtnecuhfhrohhmpefkughoucfutghhihhmmhgvlhcuoehiughoshgthhesihguohhs
     tghhrdhorhhgqeenucfkphepudelfedrgeejrdduieehrddvhedunecurfgrrhgrmhepmh
     grihhlfhhrohhmpehiughoshgthhesihguohhstghhrdhorhhgnecuvehluhhsthgvrhfu
-    ihiivgepuddt
-X-ME-Proxy: <xmx:OFMkXmH6QbqtFhAtmKxbFM780S7xCulQHTxFYpuAo8g8NPHmsm4DQg>
-    <xmx:OFMkXuuGy70gYwj866Zs0evszpM0L_I__i3nWNF8Z9GSZms7QGhVGA>
-    <xmx:OFMkXsLh8keJjyqKaHE95PDbzOQJbQgguX8dGlH-uO-OOPpDMMLS8w>
-    <xmx:OFMkXjC1EyP2DXxmHsj-yvlaaJE62uVN4TnWTHtKdApUfXo_NwKceg>
+    ihiivgepudeg
+X-ME-Proxy: <xmx:OVMkXmQ4prL_mSQEV_tKm4iNN3oWGk5dUE-zOxd8ZQrPH676zTcpYg>
+    <xmx:OVMkXnr_wYMOH5q1vaExg6dFa0QCmDX93Rxj2knINjZah7R61LUCvg>
+    <xmx:OVMkXkjgv4QS8ZkLpQhccyd0OdsKa_tJvV1qWW2mTQnnoYbMIZ0pSA>
+    <xmx:OVMkXlI_tV8w5vCiILJ2guqR8mKX-AhZsFXpItqM9V34TZeGaMvwQA>
 Received: from splinter.mtl.com (unknown [193.47.165.251])
-        by mail.messagingengine.com (Postfix) with ESMTPA id EEC1A80062;
-        Sun, 19 Jan 2020 08:01:42 -0500 (EST)
+        by mail.messagingengine.com (Postfix) with ESMTPA id 539F880060;
+        Sun, 19 Jan 2020 08:01:44 -0500 (EST)
 From:   Ido Schimmel <idosch@idosch.org>
 To:     netdev@vger.kernel.org
 Cc:     davem@davemloft.net, jiri@mellanox.com, amitc@mellanox.com,
         mlxsw@mellanox.com, Ido Schimmel <idosch@mellanox.com>
-Subject: [PATCH net-next 14/15] mlxsw: Add OVERLAY_SMAC_MC trap
-Date:   Sun, 19 Jan 2020 15:00:59 +0200
-Message-Id: <20200119130100.3179857-15-idosch@idosch.org>
+Subject: [PATCH net-next 15/15] selftests: devlink_trap_tunnel_vxlan: Add test case for overlay_smac_is_mc
+Date:   Sun, 19 Jan 2020 15:01:00 +0200
+Message-Id: <20200119130100.3179857-16-idosch@idosch.org>
 X-Mailer: git-send-email 2.24.1
 In-Reply-To: <20200119130100.3179857-1-idosch@idosch.org>
 References: <20200119130100.3179857-1-idosch@idosch.org>
@@ -61,57 +61,88 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Amit Cohen <amitc@mellanox.com>
 
-Add a trap for NVE packets that the device decided to drop because their
-overlay source MAC is multicast.
+Test that the trap is triggered under the right conditions and that
+devlink counters increase when action is trap.
 
 Signed-off-by: Amit Cohen <amitc@mellanox.com>
 Acked-by: Jiri Pirko <jiri@mellanox.com>
 Signed-off-by: Ido Schimmel <idosch@mellanox.com>
 ---
- drivers/net/ethernet/mellanox/mlxsw/spectrum_trap.c | 3 +++
- drivers/net/ethernet/mellanox/mlxsw/trap.h          | 1 +
- 2 files changed, 4 insertions(+)
+ .../net/mlxsw/devlink_trap_tunnel_vxlan.sh    | 54 +++++++++++++++++++
+ 1 file changed, 54 insertions(+)
 
-diff --git a/drivers/net/ethernet/mellanox/mlxsw/spectrum_trap.c b/drivers/net/ethernet/mellanox/mlxsw/spectrum_trap.c
-index b03bb3a54fc8..60205aa3f6a5 100644
---- a/drivers/net/ethernet/mellanox/mlxsw/spectrum_trap.c
-+++ b/drivers/net/ethernet/mellanox/mlxsw/spectrum_trap.c
-@@ -82,6 +82,7 @@ static struct devlink_trap mlxsw_sp_traps_arr[] = {
- 	MLXSW_SP_TRAP_DRIVER_DROP(ERIF_DISABLED, L3_DROPS),
- 	MLXSW_SP_TRAP_DROP(NON_ROUTABLE, L3_DROPS),
- 	MLXSW_SP_TRAP_EXCEPTION(DECAP_ERROR, TUNNEL_DROPS),
-+	MLXSW_SP_TRAP_DROP(OVERLAY_SMAC_MC, TUNNEL_DROPS),
- };
+diff --git a/tools/testing/selftests/drivers/net/mlxsw/devlink_trap_tunnel_vxlan.sh b/tools/testing/selftests/drivers/net/mlxsw/devlink_trap_tunnel_vxlan.sh
+index a699edae8358..fd19161dd4ec 100755
+--- a/tools/testing/selftests/drivers/net/mlxsw/devlink_trap_tunnel_vxlan.sh
++++ b/tools/testing/selftests/drivers/net/mlxsw/devlink_trap_tunnel_vxlan.sh
+@@ -36,6 +36,7 @@ lib_dir=$(dirname $0)/../../../net/forwarding
  
- static struct mlxsw_listener mlxsw_sp_listeners_arr[] = {
-@@ -122,6 +123,7 @@ static struct mlxsw_listener mlxsw_sp_listeners_arr[] = {
- 			       TRAP_EXCEPTION_TO_CPU),
- 	MLXSW_SP_RXL_EXCEPTION(DISCARD_DEC_PKT, TUNNEL_DISCARDS,
- 			       TRAP_EXCEPTION_TO_CPU),
-+	MLXSW_SP_RXL_DISCARD(OVERLAY_SMAC_MC, TUNNEL_DISCARDS),
- };
+ ALL_TESTS="
+ 	decap_error_test
++	overlay_smac_is_mc_test
+ "
  
- /* Mapping between hardware trap and devlink trap. Multiple hardware traps can
-@@ -161,6 +163,7 @@ static u16 mlxsw_sp_listener_devlink_map[] = {
- 	DEVLINK_TRAP_GENERIC_ID_DECAP_ERROR,
- 	DEVLINK_TRAP_GENERIC_ID_DECAP_ERROR,
- 	DEVLINK_TRAP_GENERIC_ID_DECAP_ERROR,
-+	DEVLINK_TRAP_GENERIC_ID_OVERLAY_SMAC_MC,
- };
+ NUM_NETIFS=4
+@@ -267,6 +268,59 @@ decap_error_test()
+ 	corrupted_packet_test "Decap error: No L2 header" "short_payload_get"
+ }
  
- static int mlxsw_sp_rx_listener(struct mlxsw_sp *mlxsw_sp, struct sk_buff *skb,
-diff --git a/drivers/net/ethernet/mellanox/mlxsw/trap.h b/drivers/net/ethernet/mellanox/mlxsw/trap.h
-index 24f92b157dfb..12e1fa998d42 100644
---- a/drivers/net/ethernet/mellanox/mlxsw/trap.h
-+++ b/drivers/net/ethernet/mellanox/mlxsw/trap.h
-@@ -94,6 +94,7 @@ enum {
- 	MLXSW_TRAP_ID_DISCARD_ROUTER_LPM4 = 0x17B,
- 	MLXSW_TRAP_ID_DISCARD_ROUTER_LPM6 = 0x17C,
- 	MLXSW_TRAP_ID_DISCARD_DEC_PKT = 0x188,
-+	MLXSW_TRAP_ID_DISCARD_OVERLAY_SMAC_MC = 0x190,
- 	MLXSW_TRAP_ID_DISCARD_IPV6_MC_DIP_RESERVED_SCOPE = 0x1B0,
- 	MLXSW_TRAP_ID_DISCARD_IPV6_MC_DIP_INTERFACE_LOCAL_SCOPE = 0x1B1,
- 	MLXSW_TRAP_ID_ACL0 = 0x1C0,
++mc_smac_payload_get()
++{
++	dest_mac=$(mac_get $h1)
++	source_mac=01:02:03:04:05:06
++	p=$(:
++		)"08:"$(                      : VXLAN flags
++		)"00:00:00:"$(                : VXLAN reserved
++		)"00:03:e8:"$(                : VXLAN VNI : 1000
++		)"00:"$(                      : VXLAN reserved
++		)"$dest_mac:"$(               : ETH daddr
++		)"$source_mac:"$(             : ETH saddr
++		)"08:00:"$(                   : ETH type
++		)"45:"$(                      : IP version + IHL
++		)"00:"$(                      : IP TOS
++		)"00:14:"$(                   : IP total length
++		)"00:00:"$(                   : IP identification
++		)"20:00:"$(                   : IP flags + frag off
++		)"40:"$(                      : IP TTL
++		)"00:"$(                      : IP proto
++		)"00:00:"$(                   : IP header csum
++		)"c0:00:02:03:"$(             : IP saddr: 192.0.2.3
++		)"c0:00:02:01:"$(             : IP daddr: 192.0.2.1
++		)
++	echo $p
++}
++
++overlay_smac_is_mc_test()
++{
++	local trap_name="overlay_smac_is_mc"
++	local group_name="tunnel_drops"
++	local mz_pid
++
++	RET=0
++
++	# The matching will be checked on devlink_trap_drop_test()
++	# and the filter will be removed on devlink_trap_drop_cleanup()
++	tc filter add dev $swp1 egress protocol ip pref 1 handle 101 \
++		flower src_mac 01:02:03:04:05:06 action pass
++
++	rp1_mac=$(mac_get $rp1)
++	payload=$(mc_smac_payload_get)
++
++	ip vrf exec v$rp2 $MZ $rp2 -c 0 -d 1msec -b $rp1_mac \
++		-B 192.0.2.17 -t udp sp=12345,dp=$VXPORT,p=$payload -q &
++	mz_pid=$!
++
++	devlink_trap_drop_test $trap_name $group_name $swp1
++
++	log_test "Overlay source MAC is multicast"
++
++	devlink_trap_drop_cleanup $mz_pid $swp1 "ip"
++}
++
+ trap cleanup EXIT
+ 
+ setup_prepare
 -- 
 2.24.1
 
