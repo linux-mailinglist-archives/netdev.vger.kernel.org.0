@@ -2,196 +2,141 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 5D88E141D4D
-	for <lists+netdev@lfdr.de>; Sun, 19 Jan 2020 11:34:13 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E4288141D8F
+	for <lists+netdev@lfdr.de>; Sun, 19 Jan 2020 12:30:06 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726780AbgASKcY convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Sun, 19 Jan 2020 05:32:24 -0500
-Received: from us-smtp-delivery-1.mimecast.com ([205.139.110.120]:53781 "EHLO
-        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S1726744AbgASKcY (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 19 Jan 2020 05:32:24 -0500
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-232-_ttaMflqOxiZA-LFqV1fAw-1; Sun, 19 Jan 2020 05:32:18 -0500
-Received: from smtp.corp.redhat.com (int-mx07.intmail.prod.int.phx2.redhat.com [10.5.11.22])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 6E8F1800D50;
-        Sun, 19 Jan 2020 10:32:17 +0000 (UTC)
-Received: from localhost.localdomain (ovpn-117-110.ams2.redhat.com [10.36.117.110])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id B73F0108438D;
-        Sun, 19 Jan 2020 10:32:15 +0000 (UTC)
-From:   Sabrina Dubroca <sd@queasysnail.net>
-To:     netdev@vger.kernel.org
-Cc:     Stephen Hemminger <stephen@networkplumber.org>,
-        David Ahern <dsahern@gmail.com>,
-        Sabrina Dubroca <sd@queasysnail.net>,
-        Herbert Xu <herbert@gondor.apana.org.au>
-Subject: [PATCH iproute2-next v2] ip: xfrm: add espintcp encapsulation
-Date:   Sun, 19 Jan 2020 11:32:09 +0100
-Message-Id: <110d0a77532fcd895597f7087d1f408aadbfeb5d.1579429631.git.sd@queasysnail.net>
+        id S1726827AbgASL2o (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 19 Jan 2020 06:28:44 -0500
+Received: from mail-lf1-f66.google.com ([209.85.167.66]:36428 "EHLO
+        mail-lf1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726765AbgASL2o (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 19 Jan 2020 06:28:44 -0500
+Received: by mail-lf1-f66.google.com with SMTP id f24so651050lfh.3
+        for <netdev@vger.kernel.org>; Sun, 19 Jan 2020 03:28:43 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=6Ts8qlV6Gn9QGUG97LYwJR+vBwIVRFSsblChTwTFmuQ=;
+        b=JdOeYeOVXcgvo68N2cC1JnOiXS6FHmc7wSnBo3hJ1scu4oyJDCIyxyrE8uMFsSEdm8
+         fafKuzQ91q11iP7TeUXPcQ8zY53R/u0XDg1zlhQsKGThatOckoiWq0/iHGldRBd9P76d
+         SF8wqI2Sm1pxDqGiR0WhxS1C+3NQBLKA9uByjs1FX26ScpdB/mq2P95b50gzmc8M3n7K
+         fiRCopk5q6Qi/kMt2UTnbLRn2W1iMzp7L7cjk6HqFbRf2iYcgKXYGvh42J8diyo8VESb
+         61avPnkQCO04qyABrku4jASuc+dZfBqjvlOLjgV2LpmMdpi/7zb0F6r1JUL5GSFMgA/9
+         YC7g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=6Ts8qlV6Gn9QGUG97LYwJR+vBwIVRFSsblChTwTFmuQ=;
+        b=cQuQdisniu91xbJJ08WEhgwnArZnlwqedlbtkszjtRC3C3HC1LE+tJXZtVTMjpNs1Z
+         4IXPzZsUBrH7mWCGm+pTYkG/NfzmACl3etVtKEI5iUYL1ri68aiKIOWBopvGqB9Kr3z8
+         k3FMDRY8As0ybV2mkOi5x67fZ3byepP3b1ljPJw0Ww8YFYiuDUJDm8Z3KZZ8EQK7WmFP
+         NKicwKkMHOOqSA6UIJAwMx5xk8TUJuLADVSq98mQMd8tM11rH/z7FW575lmbZ7S+vnpD
+         IX3tM98CedYdtOERz7PmklkjOUdh0Ipm7bS5sWyiJg8Prqc7JeZCI+iefm459g/ORGiR
+         8PwA==
+X-Gm-Message-State: APjAAAVpurJHUR97Lhsc6VTiHjuGdAetP8PLlNZ21sA6L7SwIIFDuMbt
+        nbZv1Vnr2S6w/4T8GrM33XiK3CYprf9+wsHgVOGpSvis
+X-Google-Smtp-Source: APXvYqxeotNkUErEO1/u4J6Nv8k7BXEtMdRDZB4OczedOPlB9L7S08xIqdXU4/heM/rwwf5mjEq0eaFc9nDp5c8tdsM=
+X-Received: by 2002:a19:7401:: with SMTP id v1mr10676431lfe.129.1579433322257;
+ Sun, 19 Jan 2020 03:28:42 -0800 (PST)
 MIME-Version: 1.0
-X-Scanned-By: MIMEDefang 2.84 on 10.5.11.22
-X-MC-Unique: _ttaMflqOxiZA-LFqV1fAw-1
-X-Mimecast-Spam-Score: 0
-X-Mimecast-Originator: queasysnail.net
-Content-Type: text/plain; charset=WINDOWS-1252
-Content-Transfer-Encoding: 8BIT
+References: <20200111163723.4260-1-ap420073@gmail.com> <20200112064110.43245268@cakuba>
+ <CAMArcTUZ476vinLb2f+JfGB209=qYeSWFgAHgb4DJdt4o9OHKw@mail.gmail.com>
+In-Reply-To: <CAMArcTUZ476vinLb2f+JfGB209=qYeSWFgAHgb4DJdt4o9OHKw@mail.gmail.com>
+From:   Taehee Yoo <ap420073@gmail.com>
+Date:   Sun, 19 Jan 2020 20:28:30 +0900
+Message-ID: <CAMArcTUAmv2x6bTeLSVK9_3L4v562NpYiKqyu-e8_30PA3uqSg@mail.gmail.com>
+Subject: Re: [PATCH net 3/5] netdevsim: avoid debugfs warning message when
+ module is remove
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     David Miller <davem@davemloft.net>, Netdev <netdev@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-While at it, convert xfrm_xfrma_print and xfrm_encap_type_parse to use
-the UAPI macros for encap_type as suggested by David Ahern, and add the
-UAPI udp.h header (sync'd from ipsec-next to get the TCP_ENCAP_ESPINTCP
-definition).
+On Thu, 16 Jan 2020 at 23:54, Taehee Yoo <ap420073@gmail.com> wrote:
+>
+> On Sun, 12 Jan 2020 at 23:45, Jakub Kicinski <kuba@kernel.org> wrote:
+> >
+>
+> Hi Jakub,
 
-Co-developed-by: Herbert Xu <herbert@gondor.apana.org.au>
-Signed-off-by: Sabrina Dubroca <sd@queasysnail.net>
----
-v2: add udp.h header and use the macros
+Hi again!
 
- include/uapi/linux/udp.h | 47 ++++++++++++++++++++++++++++++++++++++++
- ip/ipxfrm.c              | 14 ++++++++----
- ip/xfrm_state.c          |  2 +-
- man/man8/ip-xfrm.8       |  4 ++--
- 4 files changed, 60 insertions(+), 7 deletions(-)
- create mode 100644 include/uapi/linux/udp.h
+> Thank you for catching the problem!
+>
+> > On Sat, 11 Jan 2020 16:37:23 +0000, Taehee Yoo wrote:
+> > > When module is being removed, it couldn't be held by try_module_get().
+> > > debugfs's open function internally tries to hold file_operation->owner
+> > > if .owner is set.
+> > > If holding owner operation is failed, it prints a warning message.
+> >
+> > > [  412.227709][ T1720] debugfs file owner did not clean up at exit: ipsec
+> >
+> > > In order to avoid the warning message, this patch makes netdevsim module
+> > > does not set .owner. Unsetting .owner is safe because these are protected
+> > > by inode_lock().
+> >
+> > So inode_lock will protect from the code getting unloaded/disappearing?
+> > At a quick glance at debugs code it doesn't seem that inode_lock would
+> > do that. Could you explain a little more to a non-fs developer like
+> > myself? :)
+> >
+> > Alternatively should we perhaps hold a module reference for each device
+> > created and force user space to clean up the devices? That may require
+> > some fixes to the test which use netdevsim.
+> >
+>
+> Sorry, I misunderstood the debugfs logic.
+> inode_lock() is called by debugfs_remove() and debugfs_create_file().
+> It doesn't protect read and write operations.
+>
+> Currently, I have been taking look at debugfs_file_{get/put}() function,
+> which increases and decreases the reference counter.
+> In the __debugfs_file_removed(), this reference counter is used for
+> waiting read and write operations. Unfortunately, the
+> __debugfs_file_removed() isn't used because of "dentry->d_flags" value.
+> So, I'm looking for a way to use these functions.
 
-diff --git a/include/uapi/linux/udp.h b/include/uapi/linux/udp.h
-new file mode 100644
-index 000000000000..2d1f561b89d2
---- /dev/null
-+++ b/include/uapi/linux/udp.h
-@@ -0,0 +1,47 @@
-+/* SPDX-License-Identifier: GPL-2.0+ WITH Linux-syscall-note */
-+/*
-+ * INET		An implementation of the TCP/IP protocol suite for the LINUX
-+ *		operating system.  INET is implemented using the  BSD Socket
-+ *		interface as the means of communication with the user level.
-+ *
-+ *		Definitions for the UDP protocol.
-+ *
-+ * Version:	@(#)udp.h	1.0.2	04/28/93
-+ *
-+ * Author:	Fred N. van Kempen, <waltje@uWalt.NL.Mugnet.ORG>
-+ *
-+ *		This program is free software; you can redistribute it and/or
-+ *		modify it under the terms of the GNU General Public License
-+ *		as published by the Free Software Foundation; either version
-+ *		2 of the License, or (at your option) any later version.
-+ */
-+#ifndef _UDP_H
-+#define _UDP_H
-+
-+#include <linux/types.h>
-+
-+struct udphdr {
-+	__be16	source;
-+	__be16	dest;
-+	__be16	len;
-+	__sum16	check;
-+};
-+
-+/* UDP socket options */
-+#define UDP_CORK	1	/* Never send partially complete segments */
-+#define UDP_ENCAP	100	/* Set the socket to accept encapsulated packets */
-+#define UDP_NO_CHECK6_TX 101	/* Disable sending checksum for UDP6X */
-+#define UDP_NO_CHECK6_RX 102	/* Disable accpeting checksum for UDP6 */
-+#define UDP_SEGMENT	103	/* Set GSO segmentation size */
-+#define UDP_GRO		104	/* This socket can receive UDP GRO packets */
-+
-+/* UDP encapsulation types */
-+#define UDP_ENCAP_ESPINUDP_NON_IKE	1 /* draft-ietf-ipsec-nat-t-ike-00/01 */
-+#define UDP_ENCAP_ESPINUDP	2 /* draft-ietf-ipsec-udp-encaps-06 */
-+#define UDP_ENCAP_L2TPINUDP	3 /* rfc2661 */
-+#define UDP_ENCAP_GTP0		4 /* GSM TS 09.60 */
-+#define UDP_ENCAP_GTP1U		5 /* 3GPP TS 29.060 */
-+#define UDP_ENCAP_RXRPC		6
-+#define TCP_ENCAP_ESPINTCP	7 /* Yikes, this is really xfrm encap types. */
-+
-+#endif /* _UDP_H */
-diff --git a/ip/ipxfrm.c b/ip/ipxfrm.c
-index 32f560933a47..fec206abc1f0 100644
---- a/ip/ipxfrm.c
-+++ b/ip/ipxfrm.c
-@@ -34,6 +34,7 @@
- #include <netdb.h>
- #include <linux/netlink.h>
- #include <linux/rtnetlink.h>
-+#include <linux/udp.h>
- 
- #include "utils.h"
- #include "xfrm.h"
-@@ -753,12 +754,15 @@ void xfrm_xfrma_print(struct rtattr *tb[], __u16 family,
- 
- 		fprintf(fp, "type ");
- 		switch (e->encap_type) {
--		case 1:
-+		case UDP_ENCAP_ESPINUDP_NON_IKE:
- 			fprintf(fp, "espinudp-nonike ");
- 			break;
--		case 2:
-+		case UDP_ENCAP_ESPINUDP:
- 			fprintf(fp, "espinudp ");
- 			break;
-+		case TCP_ENCAP_ESPINTCP:
-+			fprintf(fp, "espintcp ");
-+			break;
- 		default:
- 			fprintf(fp, "%u ", e->encap_type);
- 			break;
-@@ -1208,9 +1212,11 @@ int xfrm_encap_type_parse(__u16 *type, int *argcp, char ***argvp)
- 	char **argv = *argvp;
- 
- 	if (strcmp(*argv, "espinudp-nonike") == 0)
--		*type = 1;
-+		*type = UDP_ENCAP_ESPINUDP_NON_IKE;
- 	else if (strcmp(*argv, "espinudp") == 0)
--		*type = 2;
-+		*type = UDP_ENCAP_ESPINUDP;
-+	else if (strcmp(*argv, "espintcp") == 0)
-+		*type = TCP_ENCAP_ESPINTCP;
- 	else
- 		invarg("ENCAP-TYPE value is invalid", *argv);
- 
-diff --git a/ip/xfrm_state.c b/ip/xfrm_state.c
-index b03ccc5807e9..df2d50c3843b 100644
---- a/ip/xfrm_state.c
-+++ b/ip/xfrm_state.c
-@@ -130,7 +130,7 @@ static void usage(void)
- 		"LIMIT-LIST := [ LIMIT-LIST ] limit LIMIT\n"
- 		"LIMIT := { time-soft | time-hard | time-use-soft | time-use-hard } SECONDS |\n"
- 		"         { byte-soft | byte-hard } SIZE | { packet-soft | packet-hard } COUNT\n"
--		"ENCAP := { espinudp | espinudp-nonike } SPORT DPORT OADDR\n"
-+		"ENCAP := { espinudp | espinudp-nonike | espintcp } SPORT DPORT OADDR\n"
- 		"DIR := in | out\n");
- 
- 	exit(-1);
-diff --git a/man/man8/ip-xfrm.8 b/man/man8/ip-xfrm.8
-index cfce1e40b7f7..f99f30bb448a 100644
---- a/man/man8/ip-xfrm.8
-+++ b/man/man8/ip-xfrm.8
-@@ -207,7 +207,7 @@ ip-xfrm \- transform configuration
- 
- .ti -8
- .IR ENCAP " :="
--.RB "{ " espinudp " | " espinudp-nonike " }"
-+.RB "{ " espinudp " | " espinudp-nonike " | " espintcp " }"
- .IR SPORT " " DPORT " " OADDR
- 
- .ti -8
-@@ -548,7 +548,7 @@ sets limits in seconds, bytes, or numbers of packets.
- .TP
- .I ENCAP
- encapsulates packets with protocol
--.BR espinudp " or " espinudp-nonike ","
-+.BR espinudp ", " espinudp-nonike ", or " espintcp ","
- .RI "using source port " SPORT ", destination port "  DPORT
- .RI ", and original address " OADDR "."
- 
--- 
-2.25.0
+I will drop this patch from this patchset because .owner should be set.
+If I understood debugfs logic correctly, only .owner protect the whole
+.owner module. There are other locks in there, which are "d_lockref"
+and "active_users" counter.
 
+1. "active_users" protects it "temporarily" when operations are
+being executed. So, it doesn't protect the whole .owner module.
+
+static ret_type full_proxy_ ## name(proto)                              \
+{                                                                       \
+        struct dentry *dentry = F_DENTRY(filp);                 \
+        const struct file_operations *real_fops;                        \
+        ret_type r;                                                     \
+                                                                        \
+        r = debugfs_file_get(dentry);                                   \
+        if (unlikely(r))                                                \
+                return r;                                               \
+        real_fops = debugfs_real_fops(filp);                            \
+        r = real_fops->name(args);                                      \
+        debugfs_file_put(dentry);                                       \
+        return r;                                                       \
+}
+
+2. "d_lockref.count" means how many users are using this dentry.
+This is also a counter value.
+This is increased when ->open() is being called.
+And this is decreased when ->released() is being called.
+I think this counter is a good way to protect the .owner module.
+But, debugfs_remove() doesn't wait for ->release() with this value.
+So actually it couldn't protect the module.
+
+So, there is no other way to protect the module disappearing while the
+file is being used.
+I think avoiding a warning message is up to the debugfs code.
+
+So, I will drop this patch from the patchset.
+
+Thanks again for the review.
+Taehee Yoo
