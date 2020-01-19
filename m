@@ -2,105 +2,66 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id B6F6B141A77
-	for <lists+netdev@lfdr.de>; Sun, 19 Jan 2020 00:34:04 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id EFF3C141AA6
+	for <lists+netdev@lfdr.de>; Sun, 19 Jan 2020 01:36:37 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727043AbgARX2q (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 18 Jan 2020 18:28:46 -0500
-Received: from Chamillionaire.breakpoint.cc ([193.142.43.52]:50764 "EHLO
-        Chamillionaire.breakpoint.cc" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1727012AbgARX2p (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 18 Jan 2020 18:28:45 -0500
-Received: from fw by Chamillionaire.breakpoint.cc with local (Exim 4.92)
-        (envelope-from <fw@strlen.de>)
-        id 1isxWE-0000DE-7U; Sun, 19 Jan 2020 00:28:42 +0100
-Date:   Sun, 19 Jan 2020 00:28:42 +0100
-From:   Florian Westphal <fw@strlen.de>
-To:     Pablo Neira Ayuso <pablo@netfilter.org>
-Cc:     Florian Westphal <fw@strlen.de>, netfilter-devel@vger.kernel.org,
-        netdev@vger.kernel.org, syzkaller-bugs@googlegroups.com,
-        syzbot+156a04714799b1d480bc@syzkaller.appspotmail.com
-Subject: Re: [PATCH nf] netfilter: nf_tables: check for valid chain type
- pointer before dereference
-Message-ID: <20200118232842.GZ795@breakpoint.cc>
-References: <00000000000074ed27059c33dedc@google.com>
- <20200116211109.9119-1-fw@strlen.de>
- <20200118203057.6stoe6axtyoxfcxz@salvia>
+        id S1727051AbgASAgf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 18 Jan 2020 19:36:35 -0500
+Received: from mail-ot1-f67.google.com ([209.85.210.67]:34794 "EHLO
+        mail-ot1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727012AbgASAge (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 18 Jan 2020 19:36:34 -0500
+Received: by mail-ot1-f67.google.com with SMTP id a15so25763304otf.1
+        for <netdev@vger.kernel.org>; Sat, 18 Jan 2020 16:36:34 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:reply-to:from:date:message-id:subject:to;
+        bh=7PL+gSS/yQfJE0mqAUrHj8Fe63uSCyWxK6WTXD62aBA=;
+        b=cwYgGgbniG6OGRUs9C1br/B2Kzc4y1B+GrThHf2KvpRMJJLFPIPyYD1viwmXjF8EE6
+         zVR0N5m8nZRCW6KAA4xQd8BFDfQY3GLbrTqsJ2QgcM+NxKLZCnmgBsBrL1Ik/w8O4Q+k
+         m813bmrT6aMBLfLzYjUl8GPtB1eKcicmNnDiexT2oPyFVNkXsfkJcNNXXQ0AnqBUQtPA
+         c5utzsphT7O1kMhbAmgEkno/wXZlJj8uH65TXznoVxWLpfREc8PE4pN9JIMTEhjq968e
+         /RsbaPa6YfP+ZZi/eHCA7O9ZnUXiglj/uIX8dYM50fG7t8ygiMNF1DWP+jahs0aqJC6a
+         9y7w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:reply-to:from:date:message-id
+         :subject:to;
+        bh=7PL+gSS/yQfJE0mqAUrHj8Fe63uSCyWxK6WTXD62aBA=;
+        b=kMWLSrBDQ4cN8bTzAXuxarmzCYxiWYST+QDIBbkID5CWPhCt5CkKbLpUwRK0Iib8ab
+         JAHpxAIFBq5aFdeLifkgOTFpHHJdJSz+0NGgNxU4s/c5zBHHFNpm6/0/O8dJouw4TJ1Y
+         faxZU93a0QNowmhNtsOfGK15bocZLoIMbtM5rVg7tD2SQ1iQ2X/5JOVCL2NNkRRQcoZH
+         0RI9HnjxamadCmTtu2VLlz4ZogMQyWvtXV94N7exXXhGEFNoKh7nU1vzC2HQm0NEdmGi
+         PqHS70GU3qntKMb/4DRo+oUr+XD8L6ugcjA9tYo4myzKWHnpCfTOYzBuHi4vrf3vLpT3
+         gQ/A==
+X-Gm-Message-State: APjAAAWvYUN9NiMpD6QCWcaGdnRYQiyyejVXgU6WVq9tj4E+QUhe2VIM
+        tBtE5JbxXBY2d53b/gvvCeTTBw75Ze0wbNc+lVU=
+X-Google-Smtp-Source: APXvYqzChhzE7BTbqsKOkdD4VBBaZ/ezeRx7Gbk4GvRwfEe7XDuWRuZwlPxt+I8o6Bv3WLgH/ruxS8JWeaCeAdegAko=
+X-Received: by 2002:a9d:7e99:: with SMTP id m25mr10860829otp.212.1579394194213;
+ Sat, 18 Jan 2020 16:36:34 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200118203057.6stoe6axtyoxfcxz@salvia>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+Received: by 2002:a4a:8ec2:0:0:0:0:0 with HTTP; Sat, 18 Jan 2020 16:36:33
+ -0800 (PST)
+Reply-To: lisatofan110@gmail.com
+From:   Lisa Tofan <moffinance32@gmail.com>
+Date:   Sun, 19 Jan 2020 01:36:33 +0100
+Message-ID: <CAE5T1ox9rSL07xFTo94SK+5DXSqVWHeskMJYyYTgVhMb9vGFiA@mail.gmail.com>
+Subject: I NEED YOUR HELP
+To:     undisclosed-recipients:;
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Pablo Neira Ayuso <pablo@netfilter.org> wrote:
-> On Thu, Jan 16, 2020 at 10:11:09PM +0100, Florian Westphal wrote:
-> > Its possible to create tables in a family that isn't supported/known.
-> > Then, when adding a base chain, the table pointer can be NULL.
-> > 
-> > This gets us a NULL ptr dereference in nf_tables_addchain().
-> > 
-> > Fixes: baae3e62f31618 ("netfilter: nf_tables: fix chain type module reference handling")
-> > Reported-by: syzbot+156a04714799b1d480bc@syzkaller.appspotmail.com
-> > Signed-off-by: Florian Westphal <fw@strlen.de>
-> > ---
-> >  net/netfilter/nf_tables_api.c | 8 ++++++++
-> >  1 file changed, 8 insertions(+)
-> > 
-> > diff --git a/net/netfilter/nf_tables_api.c b/net/netfilter/nf_tables_api.c
-> > index 65f51a2e9c2a..e8976128cdb1 100644
-> > --- a/net/netfilter/nf_tables_api.c
-> > +++ b/net/netfilter/nf_tables_api.c
-> > @@ -953,6 +953,9 @@ static int nf_tables_newtable(struct net *net, struct sock *nlsk,
-> >  	struct nft_ctx ctx;
-> >  	int err;
-> >  
-> > +	if (family >= NFPROTO_NUMPROTO)
-> > +		return -EAFNOSUPPORT;
-> > +
-> >  	lockdep_assert_held(&net->nft.commit_mutex);
-> >  	attr = nla[NFTA_TABLE_NAME];
-> >  	table = nft_table_lookup(net, attr, family, genmask);
-> > @@ -1765,6 +1768,9 @@ static int nft_chain_parse_hook(struct net *net,
-> >  	    ha[NFTA_HOOK_PRIORITY] == NULL)
-> >  		return -EINVAL;
-> >  
-> > +	if (family >= NFPROTO_NUMPROTO)
-> > +		return -EAFNOSUPPORT;
-> > +
-> >  	hook->num = ntohl(nla_get_be32(ha[NFTA_HOOK_HOOKNUM]));
-> >  	hook->priority = ntohl(nla_get_be32(ha[NFTA_HOOK_PRIORITY]));
-> >  
-> > @@ -1774,6 +1780,8 @@ static int nft_chain_parse_hook(struct net *net,
-> >  						   family, autoload);
-> >  		if (IS_ERR(type))
-> >  			return PTR_ERR(type);
-> > +	} else if (!type) {
-> > +		return -EOPNOTSUPP;
-> 
-> I think this check should be enough.
-> 
-> I mean, NFPROTO_NUMPROTO still allows for creating tables for families
-> that don't exist (<= NFPROTO_NUMPROTO) and why bother on creating such
-> table. As long as such table does not crash the kernel, I think it's
-> fine. No changes can be attached anymore anyway.
+FROM MISS LISA TOFAN
 
-I had a previous (not-sent) version that added a stronger validation
-of nfproto during table creation but I ditched it because it got ugly
-due to ifdefs.
+Greetings Dearest Beloved,
 
-As you alrady point out, creating "bogus" family tables is fine,
-base chain registration will fail later on from netfilter core.
+This is Miss Lisa Tofan, How are you today hope all is well with you,
+please I will need your urgent attention
 
-The NFPROTO_NUMPROTO range check is needed, we use it as index
-to table[] in nft_chain_parse_hook().
-
-> Otherwise, if a helper function to check for the families that are
-> really supported could be another alternative. But not sure it is
-> worth?
-
-It did not look nice so I did not go for it in the end, but I think
-doing a simple range check doesn't hurt.
+regarding this important discussion kindly contact me back here my
+Email: lisatofan110@gmail.com: for more details,
+Thanks,
+Miss Lisa Tofan
