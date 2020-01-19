@@ -2,32 +2,32 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id E7837141DED
-	for <lists+netdev@lfdr.de>; Sun, 19 Jan 2020 14:01:44 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6667F141DF1
+	for <lists+netdev@lfdr.de>; Sun, 19 Jan 2020 14:01:56 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728668AbgASNBn (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 19 Jan 2020 08:01:43 -0500
-Received: from out2-smtp.messagingengine.com ([66.111.4.26]:41131 "EHLO
+        id S1728765AbgASNBs (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 19 Jan 2020 08:01:48 -0500
+Received: from out2-smtp.messagingengine.com ([66.111.4.26]:39511 "EHLO
         out2-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1727465AbgASNBl (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 19 Jan 2020 08:01:41 -0500
+        by vger.kernel.org with ESMTP id S1727766AbgASNBm (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 19 Jan 2020 08:01:42 -0500
 Received: from compute3.internal (compute3.nyi.internal [10.202.2.43])
-        by mailout.nyi.internal (Postfix) with ESMTP id 3DF2A210ED;
-        Sun, 19 Jan 2020 08:01:40 -0500 (EST)
+        by mailout.nyi.internal (Postfix) with ESMTP id 938E821F1E;
+        Sun, 19 Jan 2020 08:01:41 -0500 (EST)
 Received: from mailfrontend1 ([10.202.2.162])
-  by compute3.internal (MEProxy); Sun, 19 Jan 2020 08:01:40 -0500
+  by compute3.internal (MEProxy); Sun, 19 Jan 2020 08:01:41 -0500
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
         messagingengine.com; h=cc:content-transfer-encoding:date:from
         :in-reply-to:message-id:mime-version:references:subject:to
         :x-me-proxy:x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=
-        fm1; bh=h4Y6ygvYh5Ix4xApFusr6ik8cLcv+7AhjYPvo6Lbn5o=; b=sy0MoSmG
-        opfMTVqxpvHLl0DxPziyUmY7FHlVEAs0te4jFQ/wCj3XREleBRKgIvwAYLG/yw5w
-        zuNDvHTVb2ZEMbIn14NQ/j5JCnPjMt4VZk6RTex3hvoaF7ag8dMoKT1KAAH5CQGf
-        cZDZWpBYcaGqYCQWaJpnY3R3cRy3Gi7MgfYzIsvFOllYIHjNVsaljjaEASb3+Gbx
-        KysUNKpsGwSeI+u3kluQH3ceythbzkW5IsP/ji5NJdpHljDxtM//eeqCpPU8gILn
-        exKN4CqwvPjoPWoBPtlznvqB+rtQ1M8c395blE0XZDaRCeuz9y/Ccnn85487iNqC
-        jJG3xGCwfuwObQ==
-X-ME-Sender: <xms:NFMkXszQkpl6_FDbzBv3daoM1efkAmm0TihZIMVsd_3g5W1mlkt6rQ>
+        fm1; bh=ucNU3IF6e4wCYSY+cvbSttMgZ2/rtIErxyvrabwJJZ0=; b=bYojDyVe
+        Wm0Dn3Ry764eEMH3tJN9Vx7OwvLB0OR9kVkjYc4S+prn9QWnpHK9KfSxJ6Nybo9N
+        NnMhcVlwaJo6wxrnjYVi8Z57ti2SI+A4QfA6fiMHKMZbmsYnJDRYcgFNqKDZloZR
+        fe+aubTZmD7gGhVaaBFahGe7gQ6Wf+EbaSl/Oe0tt59P2p66+8UAftsRxBx9PyZA
+        BXGTiRjVy+Ljf4HtvAzjh+nxo62jmRMhlE/s+tSqQm1viJyKF6WQ4pE4vZDltoDA
+        mYLjkF7MN4BQrmVf4/6XY5vBI26wcKNxEhALVT6Xcy00jBAeVtorMGmsoiiOtdqi
+        Lm1NaszqXVApSg==
+X-ME-Sender: <xms:NVMkXqOp2_1w10OdQ9SbZIN32hVFBYk0Qsd4qmUOs-6ZKbEaNEzmnw>
 X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedugedrudefgdegiecutefuodetggdotefrodftvf
     curfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfghnecu
     uegrihhlohhuthemuceftddtnecunecujfgurhephffvufffkffojghfggfgsedtkeertd
@@ -35,20 +35,20 @@ X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedugedrudefgdegiecutefuodetggdote
     tghhrdhorhhgqeenucfkphepudelfedrgeejrdduieehrddvhedunecurfgrrhgrmhepmh
     grihhlfhhrohhmpehiughoshgthhesihguohhstghhrdhorhhgnecuvehluhhsthgvrhfu
     ihiivgepuddt
-X-ME-Proxy: <xmx:NFMkXuwbFO_ZXgxl84-r3cMt15PBjsL1Z3NBZfiTKfOtpbKNq92LOg>
-    <xmx:NFMkXmvhK6s52fiGvVPuY7OvAryzvZnRA-_Zkfvp_0NLzlxancnm7w>
-    <xmx:NFMkXsUwHEbc-LioqZkNtwFS7zIhd0jAdy5Lf8ZhAPEDuxL_TlbmeA>
-    <xmx:NFMkXkVhHY8Go9Ht-TT9x9LgW7Q9FgRtg8nt0q1-0GDTLg2xLkSQ3g>
+X-ME-Proxy: <xmx:NVMkXvA77nFUiAqHxD9weFTb0OheozTNuBQs4giUcmB_muh6kwXeLg>
+    <xmx:NVMkXkiGEm59QFZjx8jxvNyHYmqinCIAVuBIUSwHM62xlKJptm4LQw>
+    <xmx:NVMkXi10juzwjCQVW6OHdjpb427JGq9rqqZqXXu4ErpO-CYuwqlcEA>
+    <xmx:NVMkXmsWzi2Hh1daxC9XBFAT6fS5oLKkDKQnaaVMq9PF3XgRz7kNgQ>
 Received: from splinter.mtl.com (unknown [193.47.165.251])
-        by mail.messagingengine.com (Postfix) with ESMTPA id E782B80060;
-        Sun, 19 Jan 2020 08:01:38 -0500 (EST)
+        by mail.messagingengine.com (Postfix) with ESMTPA id 46A1F8005A;
+        Sun, 19 Jan 2020 08:01:40 -0500 (EST)
 From:   Ido Schimmel <idosch@idosch.org>
 To:     netdev@vger.kernel.org
 Cc:     davem@davemloft.net, jiri@mellanox.com, amitc@mellanox.com,
         mlxsw@mellanox.com, Ido Schimmel <idosch@mellanox.com>
-Subject: [PATCH net-next 11/15] selftests: devlink_trap_tunnel_vxlan: Add test case for decap_error
-Date:   Sun, 19 Jan 2020 15:00:56 +0200
-Message-Id: <20200119130100.3179857-12-idosch@idosch.org>
+Subject: [PATCH net-next 12/15] selftests: devlink_trap_tunnel_ipip: Add test case for decap_error
+Date:   Sun, 19 Jan 2020 15:00:57 +0200
+Message-Id: <20200119130100.3179857-13-idosch@idosch.org>
 X-Mailer: git-send-email 2.24.1
 In-Reply-To: <20200119130100.3179857-1-idosch@idosch.org>
 References: <20200119130100.3179857-1-idosch@idosch.org>
@@ -68,49 +68,48 @@ Signed-off-by: Amit Cohen <amitc@mellanox.com>
 Acked-by: Jiri Pirko <jiri@mellanox.com>
 Signed-off-by: Ido Schimmel <idosch@mellanox.com>
 ---
- .../net/mlxsw/devlink_trap_tunnel_vxlan.sh    | 276 ++++++++++++++++++
- 1 file changed, 276 insertions(+)
- create mode 100755 tools/testing/selftests/drivers/net/mlxsw/devlink_trap_tunnel_vxlan.sh
+ .../net/mlxsw/devlink_trap_tunnel_ipip.sh     | 265 ++++++++++++++++++
+ 1 file changed, 265 insertions(+)
+ create mode 100755 tools/testing/selftests/drivers/net/mlxsw/devlink_trap_tunnel_ipip.sh
 
-diff --git a/tools/testing/selftests/drivers/net/mlxsw/devlink_trap_tunnel_vxlan.sh b/tools/testing/selftests/drivers/net/mlxsw/devlink_trap_tunnel_vxlan.sh
+diff --git a/tools/testing/selftests/drivers/net/mlxsw/devlink_trap_tunnel_ipip.sh b/tools/testing/selftests/drivers/net/mlxsw/devlink_trap_tunnel_ipip.sh
 new file mode 100755
-index 000000000000..a699edae8358
+index 000000000000..039629bb92a3
 --- /dev/null
-+++ b/tools/testing/selftests/drivers/net/mlxsw/devlink_trap_tunnel_vxlan.sh
-@@ -0,0 +1,276 @@
++++ b/tools/testing/selftests/drivers/net/mlxsw/devlink_trap_tunnel_ipip.sh
+@@ -0,0 +1,265 @@
 +#!/bin/bash
 +# SPDX-License-Identifier: GPL-2.0
 +#
-+# Test devlink-trap tunnel drops and exceptions functionality over mlxsw.
-+# Check all traps to make sure they are triggered under the right
++# Test devlink-trap tunnel exceptions functionality over mlxsw.
++# Check all exception traps to make sure they are triggered under the right
 +# conditions.
 +
-+# +--------------------+
-+# | H1 (vrf)           |
-+# |    + $h1           |
-+# |    | 192.0.2.1/28  |
-+# +----|---------------+
-+#      |
-+# +----|----------------------------------------------------------------------+
-+# | SW |                                                                      |
-+# | +--|--------------------------------------------------------------------+ |
-+# | |  + $swp1                   BR1 (802.1d)                               | |
-+# | |                                                                       | |
-+# | |  + vx1 (vxlan)                                                        | |
-+# | |    local 192.0.2.17                                                   | |
-+# | |    id 1000 dstport $VXPORT                                            | |
-+# | +-----------------------------------------------------------------------+ |
-+# |                                                                           |
-+# |    + $rp1                                                                 |
-+# |    | 192.0.2.17/28                                                        |
-+# +----|----------------------------------------------------------------------+
-+#      |
-+# +----|--------------------------------------------------------+
-+# |    |                                             VRF2       |
-+# |    + $rp2                                                   |
-+# |      192.0.2.18/28                                          |
-+# |                                                             |
-+# +-------------------------------------------------------------+
++# +-------------------------+
++# | H1                      |
++# |               $h1 +     |
++# |      192.0.2.1/28 |     |
++# +-------------------|-----+
++#                     |
++# +-------------------|-----+
++# | SW1               |     |
++# |              $swp1 +    |
++# |      192.0.2.2/28       |
++# |                         |
++# |  + g1a (gre)            |
++# |    loc=192.0.2.65       |
++# |    rem=192.0.2.66       |
++# |    tos=inherit          |
++# |                         |
++# |  + $rp1                 |
++# |  |  198.51.100.1/28     |
++# +--|----------------------+
++#    |
++# +--|----------------------+
++# |  |                 VRF2 |
++# | + $rp2                  |
++# |   198.51.100.2/28       |
++# +-------------------------+
 +
 +lib_dir=$(dirname $0)/../../../net/forwarding
 +
@@ -123,9 +122,6 @@ index 000000000000..a699edae8358
 +source $lib_dir/tc_common.sh
 +source $lib_dir/devlink_lib.sh
 +
-+: ${VXPORT:=4789}
-+export VXPORT
-+
 +h1_create()
 +{
 +	simple_if_init $h1 192.0.2.1/28
@@ -136,52 +132,42 @@ index 000000000000..a699edae8358
 +	simple_if_fini $h1 192.0.2.1/28
 +}
 +
++vrf2_create()
++{
++	simple_if_init $rp2 198.51.100.2/28
++}
++
++vrf2_destroy()
++{
++	simple_if_fini $rp2 198.51.100.2/28
++}
++
 +switch_create()
 +{
-+	ip link add name br1 type bridge vlan_filtering 0 mcast_snooping 0
-+	# Make sure the bridge uses the MAC address of the local port and not
-+	# that of the VxLAN's device.
-+	ip link set dev br1 address $(mac_get $swp1)
-+	ip link set dev br1 up
-+
++	__addr_add_del $swp1 add 192.0.2.2/28
 +	tc qdisc add dev $swp1 clsact
-+	ip link set dev $swp1 master br1
 +	ip link set dev $swp1 up
 +
-+	ip link add name vx1 type vxlan id 1000 local 192.0.2.17 \
-+		dstport "$VXPORT" nolearning noudpcsum tos inherit ttl 100
-+	ip link set dev vx1 master br1
-+	ip link set dev vx1 up
++	tunnel_create g1 gre 192.0.2.65 192.0.2.66 tos inherit
++	__addr_add_del g1 add 192.0.2.65/32
++	ip link set dev g1 up
 +
-+	ip address add dev $rp1 192.0.2.17/28
++	__addr_add_del $rp1 add 198.51.100.1/28
 +	ip link set dev $rp1 up
 +}
 +
 +switch_destroy()
 +{
 +	ip link set dev $rp1 down
-+	ip address del dev $rp1 192.0.2.17/28
++	__addr_add_del $rp1 del 198.51.100.1/28
 +
-+	ip link set dev vx1 down
-+	ip link set dev vx1 nomaster
-+	ip link del dev vx1
++	ip link set dev g1 down
++	__addr_add_del g1 del 192.0.2.65/32
++	tunnel_destroy g1
 +
 +	ip link set dev $swp1 down
-+	ip link set dev $swp1 nomaster
 +	tc qdisc del dev $swp1 clsact
-+
-+	ip link set dev br1 down
-+	ip link del dev br1
-+}
-+
-+vrf2_create()
-+{
-+	simple_if_init $rp2 192.0.2.18/28
-+}
-+
-+vrf2_destroy()
-+{
-+	simple_if_fini $rp2 192.0.2.18/28
++	__addr_add_del $swp1 del 192.0.2.2/28
 +}
 +
 +setup_prepare()
@@ -192,8 +178,8 @@ index 000000000000..a699edae8358
 +	rp1=${NETIFS[p3]}
 +	rp2=${NETIFS[p4]}
 +
-+	vrf_prepare
 +	forwarding_enable
++	vrf_prepare
 +	h1_create
 +	switch_create
 +	vrf2_create
@@ -206,31 +192,27 @@ index 000000000000..a699edae8358
 +	vrf2_destroy
 +	switch_destroy
 +	h1_destroy
-+	forwarding_restore
 +	vrf_cleanup
++	forwarding_restore
 +}
 +
 +ecn_payload_get()
 +{
-+	dest_mac=$(mac_get $h1)
 +	p=$(:
-+		)"08:"$(                      : VXLAN flags
-+		)"00:00:00:"$(                : VXLAN reserved
-+		)"00:03:e8:"$(                : VXLAN VNI : 1000
-+		)"00:"$(                      : VXLAN reserved
-+		)"$dest_mac:"$(               : ETH daddr
-+		)"00:00:00:00:00:00:"$(       : ETH saddr
-+		)"08:00:"$(                   : ETH type
-+		)"45:"$(                      : IP version + IHL
++		)"0"$(		              : GRE flags
++	        )"0:00:"$(                    : Reserved + version
++		)"08:00:"$(		      : ETH protocol type
++		)"4"$(	                      : IP version
++		)"5:"$(                       : IHL
 +		)"00:"$(                      : IP TOS
 +		)"00:14:"$(                   : IP total length
 +		)"00:00:"$(                   : IP identification
 +		)"20:00:"$(                   : IP flags + frag off
-+		)"40:"$(                      : IP TTL
-+		)"00:"$(                      : IP proto
-+		)"D6:E5:"$(                   : IP header csum
-+		)"c0:00:02:03:"$(             : IP saddr: 192.0.2.3
-+		)"c0:00:02:01:"$(             : IP daddr: 192.0.2.1
++		)"30:"$(                      : IP TTL
++		)"01:"$(                      : IP proto
++		)"E7:E6:"$(    	              : IP header csum
++		)"C0:00:01:01:"$(             : IP saddr : 192.0.1.1
++		)"C0:00:02:01:"$(             : IP daddr : 192.0.2.1
 +		)
 +	echo $p
 +}
@@ -247,13 +229,16 @@ index 000000000000..a699edae8358
 +	RET=0
 +
 +	tc filter add dev $swp1 egress protocol ip pref 1 handle 101 \
-+		flower src_ip 192.0.2.3 dst_ip 192.0.2.1 action pass
++		flower src_ip 192.0.1.1 dst_ip 192.0.2.1 action pass
 +
 +	rp1_mac=$(mac_get $rp1)
++	rp2_mac=$(mac_get $rp2)
 +	payload=$(ecn_payload_get)
 +
-+	ip vrf exec v$rp2 $MZ $rp2 -c 0 -d 1msec -b $rp1_mac -B 192.0.2.17 \
-+		-t udp sp=12345,dp=$VXPORT,tos=$outer_tos,p=$payload -q &
++	ip vrf exec v$rp2 $MZ $rp2 -c 0 -d 1msec -a $rp2_mac -b $rp1_mac \
++		-A 192.0.2.66 -B 192.0.2.65 -t ip \
++			len=48,tos=$outer_tos,proto=47,p=$payload -q &
++
 +	mz_pid=$!
 +
 +	devlink_trap_exception_test $trap_name $group_name
@@ -267,62 +252,50 @@ index 000000000000..a699edae8358
 +	tc filter del dev $swp1 egress protocol ip pref 1 handle 101 flower
 +}
 +
-+reserved_bits_payload_get()
++ipip_payload_get()
 +{
-+	dest_mac=$(mac_get $h1)
++	local flags=$1; shift
++	local key=$1; shift
++
 +	p=$(:
-+		)"08:"$(                      : VXLAN flags
-+		)"01:00:00:"$(                : VXLAN reserved
-+		)"00:03:e8:"$(                : VXLAN VNI : 1000
-+		)"00:"$(                      : VXLAN reserved
-+		)"$dest_mac:"$(               : ETH daddr
-+		)"00:00:00:00:00:00:"$(       : ETH saddr
-+		)"08:00:"$(                   : ETH type
-+		)"45:"$(                      : IP version + IHL
++		)"$flags"$(		      : GRE flags
++	        )"0:00:"$(                    : Reserved + version
++		)"08:00:"$(		      : ETH protocol type
++		)"$key"$( 		      : Key
++		)"4"$(	                      : IP version
++		)"5:"$(                       : IHL
 +		)"00:"$(                      : IP TOS
 +		)"00:14:"$(                   : IP total length
 +		)"00:00:"$(                   : IP identification
 +		)"20:00:"$(                   : IP flags + frag off
-+		)"40:"$(                      : IP TTL
-+		)"00:"$(                      : IP proto
-+		)"00:00:"$(                   : IP header csum
-+		)"c0:00:02:03:"$(             : IP saddr: 192.0.2.3
-+		)"c0:00:02:01:"$(             : IP daddr: 192.0.2.1
++		)"30:"$(                      : IP TTL
++		)"01:"$(                      : IP proto
++		)"E7:E6:"$(    	              : IP header csum
++		)"C0:00:01:01:"$(             : IP saddr : 192.0.1.1
++		)"C0:00:02:01:"$(             : IP daddr : 192.0.2.1
 +		)
 +	echo $p
 +}
 +
-+short_payload_get()
-+{
-+        dest_mac=$(mac_get $h1)
-+        p=$(:
-+		)"08:"$(                      : VXLAN flags
-+		)"01:00:00:"$(                : VXLAN reserved
-+		)"00:03:e8:"$(                : VXLAN VNI : 1000
-+		)"00:"$(                      : VXLAN reserved
-+		)
-+        echo $p
-+}
-+
-+corrupted_packet_test()
++no_matching_tunnel_test()
 +{
 +	local trap_name="decap_error"
 +	local group_name="tunnel_drops"
 +	local desc=$1; shift
-+	local payload_get=$1; shift
++	local sip=$1; shift
 +	local mz_pid
 +
 +	RET=0
 +
-+	# In case of too short packet, there is no any inner packet,
-+	# so the matching will always succeed
 +	tc filter add dev $swp1 egress protocol ip pref 1 handle 101 \
-+		flower skip_hw src_ip 192.0.2.3 dst_ip 192.0.2.1 action pass
++		flower src_ip 192.0.1.1 dst_ip 192.0.2.1 action pass
 +
 +	rp1_mac=$(mac_get $rp1)
-+	payload=$($payload_get)
-+	ip vrf exec v$rp2 $MZ $rp2 -c 0 -d 1msec -b $rp1_mac \
-+		-B 192.0.2.17 -t udp sp=12345,dp=$VXPORT,p=$payload -q &
++	rp2_mac=$(mac_get $rp2)
++	payload=$(ipip_payload_get "$@")
++
++	ip vrf exec v$rp2 $MZ $rp2 -c 0 -d 1msec -a $rp2_mac -b $rp1_mac \
++		-A $sip -B 192.0.2.65 -t ip len=48,proto=47,p=$payload -q &
 +	mz_pid=$!
 +
 +	devlink_trap_exception_test $trap_name $group_name
@@ -338,13 +311,29 @@ index 000000000000..a699edae8358
 +
 +decap_error_test()
 +{
++	# Correct source IP - the remote address
++	local sip=192.0.2.66
++
 +	ecn_decap_test "Decap error" "ECT(1)" 01
 +	ecn_decap_test "Decap error" "ECT(0)" 02
 +	ecn_decap_test "Decap error" "CE" 03
 +
-+	corrupted_packet_test "Decap error: Reserved bits in use" \
-+		"reserved_bits_payload_get"
-+	corrupted_packet_test "Decap error: No L2 header" "short_payload_get"
++	no_matching_tunnel_test "Decap error: Source IP check failed" \
++		192.0.2.68 "0"
++	no_matching_tunnel_test \
++		"Decap error: Key exists but was not expected" $sip "2" ":E9:"
++
++	# Destroy the tunnel and create new one with key
++	__addr_add_del g1 del 192.0.2.65/32
++	tunnel_destroy g1
++
++	tunnel_create g1 gre 192.0.2.65 192.0.2.66 tos inherit key 233
++	__addr_add_del g1 add 192.0.2.65/32
++
++	no_matching_tunnel_test \
++		"Decap error: Key does not exist but was expected" $sip "0"
++	no_matching_tunnel_test \
++		"Decap error: Packet has a wrong key field" $sip "2" "E8:"
 +}
 +
 +trap cleanup EXIT
