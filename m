@@ -2,112 +2,245 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 265471420CE
-	for <lists+netdev@lfdr.de>; Mon, 20 Jan 2020 00:18:40 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 371581420DF
+	for <lists+netdev@lfdr.de>; Mon, 20 Jan 2020 00:18:48 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729423AbgASXRe (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 19 Jan 2020 18:17:34 -0500
-Received: from kvm5.telegraphics.com.au ([98.124.60.144]:49810 "EHLO
+        id S1729590AbgASXS1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 19 Jan 2020 18:18:27 -0500
+Received: from kvm5.telegraphics.com.au ([98.124.60.144]:49726 "EHLO
         kvm5.telegraphics.com.au" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729049AbgASXQd (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 19 Jan 2020 18:16:33 -0500
+        with ESMTP id S1728895AbgASXQc (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 19 Jan 2020 18:16:32 -0500
 Received: by kvm5.telegraphics.com.au (Postfix, from userid 502)
-        id 9AEFE29989; Sun, 19 Jan 2020 18:16:31 -0500 (EST)
+        id D252E2991B; Sun, 19 Jan 2020 18:16:30 -0500 (EST)
 To:     "David S. Miller" <davem@davemloft.net>
 Cc:     Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
         Chris Zankel <chris@zankel.net>,
         Laurent Vivier <laurent@vivier.eu>, netdev@vger.kernel.org,
         linux-kernel@vger.kernel.org
-Message-Id: <ef679c41a39f64a495cc7d7953e5e995825ab034.1579474569.git.fthain@telegraphics.com.au>
+Message-Id: <00e21a8e23e5da256ae0088403975447fe7bbffe.1579474569.git.fthain@telegraphics.com.au>
 In-Reply-To: <cover.1579474569.git.fthain@telegraphics.com.au>
 References: <cover.1579474569.git.fthain@telegraphics.com.au>
 From:   Finn Thain <fthain@telegraphics.com.au>
-Subject: [PATCH net 18/19] net/sonic: Fix CAM initialization
+Subject: [PATCH net 03/19] net/sonic: Refactor duplicated code
 Date:   Mon, 20 Jan 2020 09:56:09 +1100
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Section 4.3.1 of the datasheet says,
+No functional change.
 
-    This bit [TXP] must not be set if a Load CAM operation is in
-    progress (LCAM is set). The SONIC will lock up if both bits are
-    set simultaneously.
-
-Testing has shown that the driver sometimes attempts to set LCAM
-while TXP is set. Avoid this by waiting for command completion
-before and after giving the LCAM command.
-
-After issuing the Load CAM command, poll for !SONIC_CR_LCAM rather than
-SONIC_INT_LCD, because the SONIC_CR_TXP bit can't be used until
-!SONIC_CR_LCAM.
-
-When in reset mode, take the opportunity to reset the CAM Enable
-register.
-
-Fixes: 1da177e4c3f4 ("Linux-2.6.12-rc2")
 Tested-by: Stan Johnson <userm57@yahoo.com>
 Signed-off-by: Finn Thain <fthain@telegraphics.com.au>
 ---
- drivers/net/ethernet/natsemi/sonic.c | 21 ++++++++++++---------
- 1 file changed, 12 insertions(+), 9 deletions(-)
+ drivers/net/ethernet/natsemi/jazzsonic.c | 31 ++----------------
+ drivers/net/ethernet/natsemi/macsonic.c  | 29 ++---------------
+ drivers/net/ethernet/natsemi/sonic.c     | 36 +++++++++++++++++++++
+ drivers/net/ethernet/natsemi/sonic.h     |  1 +
+ drivers/net/ethernet/natsemi/xtsonic.c   | 40 ++----------------------
+ 5 files changed, 44 insertions(+), 93 deletions(-)
 
-diff --git a/drivers/net/ethernet/natsemi/sonic.c b/drivers/net/ethernet/natsemi/sonic.c
-index 01055a53517d..1a569df63fde 100644
---- a/drivers/net/ethernet/natsemi/sonic.c
-+++ b/drivers/net/ethernet/natsemi/sonic.c
-@@ -661,6 +661,8 @@ static void sonic_multicast_list(struct net_device *dev)
- 		    (netdev_mc_count(dev) > 15)) {
- 			rcr |= SONIC_RCR_AMC;
- 		} else {
-+			unsigned long flags;
-+
- 			netif_dbg(lp, ifup, dev, "%s: mc_count %d\n", __func__,
- 				  netdev_mc_count(dev));
- 			sonic_set_cam_enable(dev, 1);  /* always enable our own address */
-@@ -674,9 +676,14 @@ static void sonic_multicast_list(struct net_device *dev)
- 				i++;
- 			}
- 			SONIC_WRITE(SONIC_CDC, 16);
--			/* issue Load CAM command */
- 			SONIC_WRITE(SONIC_CDP, lp->cda_laddr & 0xffff);
-+
-+			/* LCAM and TXP commands can't be used simultaneously */
-+			local_irq_save(flags);
-+			sonic_quiesce(dev, SONIC_CR_TXP);
- 			SONIC_WRITE(SONIC_CMD, SONIC_CR_LCAM);
-+			sonic_quiesce(dev, SONIC_CR_LCAM);
-+			local_irq_restore(flags);
- 		}
+diff --git a/drivers/net/ethernet/natsemi/jazzsonic.c b/drivers/net/ethernet/natsemi/jazzsonic.c
+index 51fa82b429a3..bfa0c0d39600 100644
+--- a/drivers/net/ethernet/natsemi/jazzsonic.c
++++ b/drivers/net/ethernet/natsemi/jazzsonic.c
+@@ -147,39 +147,12 @@ static int sonic_probe1(struct net_device *dev)
+ 		dev->dev_addr[i*2+1] = val >> 8;
  	}
  
-@@ -702,6 +709,9 @@ static int sonic_init(struct net_device *dev)
- 	SONIC_WRITE(SONIC_ISR, 0x7fff);
- 	SONIC_WRITE(SONIC_CMD, SONIC_CR_RST);
- 
-+	/* While in reset mode, clear CAM Enable register */
-+	SONIC_WRITE(SONIC_CE, 0);
-+
- 	/*
- 	 * clear software reset flag, disable receiver, clear and
- 	 * enable interrupts, then completely initialize the SONIC
-@@ -812,14 +822,7 @@ static int sonic_init(struct net_device *dev)
- 	 * load the CAM
- 	 */
- 	SONIC_WRITE(SONIC_CMD, SONIC_CR_LCAM);
+-	err = -ENOMEM;
 -
--	i = 0;
--	while (i++ < 100) {
--		if (SONIC_READ(SONIC_ISR) & SONIC_INT_LCD)
--			break;
--	}
--	netif_dbg(lp, ifup, dev, "%s: CMD=%x, ISR=%x, i=%d\n", __func__,
--		  SONIC_READ(SONIC_CMD), SONIC_READ(SONIC_ISR), i);
-+	sonic_quiesce(dev, SONIC_CR_LCAM);
+-	/* Initialize the device structure. */
+-
+ 	lp->dma_bitmode = SONIC_BITMODE32;
  
- 	/*
- 	 * enable receiver, disable loopback
+-	/* Allocate the entire chunk of memory for the descriptors.
+-           Note that this cannot cross a 64K boundary. */
+-	lp->descriptors = dma_alloc_coherent(lp->device,
+-					     SIZEOF_SONIC_DESC *
+-					     SONIC_BUS_SCALE(lp->dma_bitmode),
+-					     &lp->descriptors_laddr,
+-					     GFP_KERNEL);
+-	if (lp->descriptors == NULL)
++	err = sonic_alloc_descriptors(dev);
++	if (err)
+ 		goto out;
+ 
+-	/* Now set up the pointers to point to the appropriate places */
+-	lp->cda = lp->descriptors;
+-	lp->tda = lp->cda + (SIZEOF_SONIC_CDA
+-	                     * SONIC_BUS_SCALE(lp->dma_bitmode));
+-	lp->rda = lp->tda + (SIZEOF_SONIC_TD * SONIC_NUM_TDS
+-	                     * SONIC_BUS_SCALE(lp->dma_bitmode));
+-	lp->rra = lp->rda + (SIZEOF_SONIC_RD * SONIC_NUM_RDS
+-	                     * SONIC_BUS_SCALE(lp->dma_bitmode));
+-
+-	lp->cda_laddr = lp->descriptors_laddr;
+-	lp->tda_laddr = lp->cda_laddr + (SIZEOF_SONIC_CDA
+-	                     * SONIC_BUS_SCALE(lp->dma_bitmode));
+-	lp->rda_laddr = lp->tda_laddr + (SIZEOF_SONIC_TD * SONIC_NUM_TDS
+-	                     * SONIC_BUS_SCALE(lp->dma_bitmode));
+-	lp->rra_laddr = lp->rda_laddr + (SIZEOF_SONIC_RD * SONIC_NUM_RDS
+-	                     * SONIC_BUS_SCALE(lp->dma_bitmode));
+-
+ 	dev->netdev_ops = &sonic_netdev_ops;
+ 	dev->watchdog_timeo = TX_TIMEOUT;
+ 
+diff --git a/drivers/net/ethernet/natsemi/macsonic.c b/drivers/net/ethernet/natsemi/macsonic.c
+index 0937fc2a928e..0f4d0c25d626 100644
+--- a/drivers/net/ethernet/natsemi/macsonic.c
++++ b/drivers/net/ethernet/natsemi/macsonic.c
+@@ -186,33 +186,10 @@ static const struct net_device_ops macsonic_netdev_ops = {
+ static int macsonic_init(struct net_device *dev)
+ {
+ 	struct sonic_local* lp = netdev_priv(dev);
++	int err = sonic_alloc_descriptors(dev);
+ 
+-	/* Allocate the entire chunk of memory for the descriptors.
+-           Note that this cannot cross a 64K boundary. */
+-	lp->descriptors = dma_alloc_coherent(lp->device,
+-					     SIZEOF_SONIC_DESC *
+-					     SONIC_BUS_SCALE(lp->dma_bitmode),
+-					     &lp->descriptors_laddr,
+-					     GFP_KERNEL);
+-	if (lp->descriptors == NULL)
+-		return -ENOMEM;
+-
+-	/* Now set up the pointers to point to the appropriate places */
+-	lp->cda = lp->descriptors;
+-	lp->tda = lp->cda + (SIZEOF_SONIC_CDA
+-	                     * SONIC_BUS_SCALE(lp->dma_bitmode));
+-	lp->rda = lp->tda + (SIZEOF_SONIC_TD * SONIC_NUM_TDS
+-	                     * SONIC_BUS_SCALE(lp->dma_bitmode));
+-	lp->rra = lp->rda + (SIZEOF_SONIC_RD * SONIC_NUM_RDS
+-	                     * SONIC_BUS_SCALE(lp->dma_bitmode));
+-
+-	lp->cda_laddr = lp->descriptors_laddr;
+-	lp->tda_laddr = lp->cda_laddr + (SIZEOF_SONIC_CDA
+-	                     * SONIC_BUS_SCALE(lp->dma_bitmode));
+-	lp->rda_laddr = lp->tda_laddr + (SIZEOF_SONIC_TD * SONIC_NUM_TDS
+-	                     * SONIC_BUS_SCALE(lp->dma_bitmode));
+-	lp->rra_laddr = lp->rda_laddr + (SIZEOF_SONIC_RD * SONIC_NUM_RDS
+-	                     * SONIC_BUS_SCALE(lp->dma_bitmode));
++	if (err)
++		return err;
+ 
+ 	dev->netdev_ops = &macsonic_netdev_ops;
+ 	dev->watchdog_timeo = TX_TIMEOUT;
+diff --git a/drivers/net/ethernet/natsemi/sonic.c b/drivers/net/ethernet/natsemi/sonic.c
+index f31cb19ded50..3cf84de8ad8e 100644
+--- a/drivers/net/ethernet/natsemi/sonic.c
++++ b/drivers/net/ethernet/natsemi/sonic.c
+@@ -50,6 +50,42 @@ static void sonic_msg_init(struct net_device *dev)
+ 		netif_dbg(lp, drv, dev, "%s", version);
+ }
+ 
++static int sonic_alloc_descriptors(struct net_device *dev)
++{
++	struct sonic_local *lp = netdev_priv(dev);
++
++	/* Allocate a chunk of memory for the descriptors. Note that this
++	 * must not cross a 64K boundary. It is smaller than one page which
++	 * means that page alignment is a sufficient condition.
++	 */
++	lp->descriptors =
++		dma_alloc_coherent(lp->device,
++				   SIZEOF_SONIC_DESC *
++				   SONIC_BUS_SCALE(lp->dma_bitmode),
++				   &lp->descriptors_laddr, GFP_KERNEL);
++
++	if (!lp->descriptors)
++		return -ENOMEM;
++
++	lp->cda = lp->descriptors;
++	lp->tda = lp->cda + SIZEOF_SONIC_CDA *
++			    SONIC_BUS_SCALE(lp->dma_bitmode);
++	lp->rda = lp->tda + SIZEOF_SONIC_TD * SONIC_NUM_TDS *
++			    SONIC_BUS_SCALE(lp->dma_bitmode);
++	lp->rra = lp->rda + SIZEOF_SONIC_RD * SONIC_NUM_RDS *
++			    SONIC_BUS_SCALE(lp->dma_bitmode);
++
++	lp->cda_laddr = lp->descriptors_laddr;
++	lp->tda_laddr = lp->cda_laddr + SIZEOF_SONIC_CDA *
++					SONIC_BUS_SCALE(lp->dma_bitmode);
++	lp->rda_laddr = lp->tda_laddr + SIZEOF_SONIC_TD * SONIC_NUM_TDS *
++					SONIC_BUS_SCALE(lp->dma_bitmode);
++	lp->rra_laddr = lp->rda_laddr + SIZEOF_SONIC_RD * SONIC_NUM_RDS *
++					SONIC_BUS_SCALE(lp->dma_bitmode);
++
++	return 0;
++}
++
+ /*
+  * Open/initialize the SONIC controller.
+  *
+diff --git a/drivers/net/ethernet/natsemi/sonic.h b/drivers/net/ethernet/natsemi/sonic.h
+index e402dc29d2aa..f919835a9353 100644
+--- a/drivers/net/ethernet/natsemi/sonic.h
++++ b/drivers/net/ethernet/natsemi/sonic.h
+@@ -337,6 +337,7 @@ static void sonic_multicast_list(struct net_device *dev);
+ static int sonic_init(struct net_device *dev);
+ static void sonic_tx_timeout(struct net_device *dev);
+ static void sonic_msg_init(struct net_device *dev);
++static int sonic_alloc_descriptors(struct net_device *dev);
+ 
+ /* Internal inlines for reading/writing DMA buffers.  Note that bus
+    size and endianness matter here, whereas they don't for registers,
+diff --git a/drivers/net/ethernet/natsemi/xtsonic.c b/drivers/net/ethernet/natsemi/xtsonic.c
+index e1b886e87a76..dda9ec7d9cee 100644
+--- a/drivers/net/ethernet/natsemi/xtsonic.c
++++ b/drivers/net/ethernet/natsemi/xtsonic.c
+@@ -167,47 +167,11 @@ static int __init sonic_probe1(struct net_device *dev)
+ 		dev->dev_addr[i*2+1] = val >> 8;
+ 	}
+ 
+-	/* Initialize the device structure. */
+-
+ 	lp->dma_bitmode = SONIC_BITMODE32;
+ 
+-	/*
+-	 *  Allocate local private descriptor areas in uncached space.
+-	 *  The entire structure must be located within the same 64kb segment.
+-	 *  A simple way to ensure this is to allocate twice the
+-	 *  size of the structure -- given that the structure is
+-	 *  much less than 64 kB, at least one of the halves of
+-	 *  the allocated area will be contained entirely in 64 kB.
+-	 *  We also allocate extra space for a pointer to allow freeing
+-	 *  this structure later on (in xtsonic_cleanup_module()).
+-	 */
+-	lp->descriptors = dma_alloc_coherent(lp->device,
+-					     SIZEOF_SONIC_DESC *
+-					     SONIC_BUS_SCALE(lp->dma_bitmode),
+-					     &lp->descriptors_laddr,
+-					     GFP_KERNEL);
+-	if (lp->descriptors == NULL) {
+-		err = -ENOMEM;
++	err = sonic_alloc_descriptors(dev);
++	if (err)
+ 		goto out;
+-	}
+-
+-	lp->cda = lp->descriptors;
+-	lp->tda = lp->cda + (SIZEOF_SONIC_CDA
+-			     * SONIC_BUS_SCALE(lp->dma_bitmode));
+-	lp->rda = lp->tda + (SIZEOF_SONIC_TD * SONIC_NUM_TDS
+-			     * SONIC_BUS_SCALE(lp->dma_bitmode));
+-	lp->rra = lp->rda + (SIZEOF_SONIC_RD * SONIC_NUM_RDS
+-			     * SONIC_BUS_SCALE(lp->dma_bitmode));
+-
+-	/* get the virtual dma address */
+-
+-	lp->cda_laddr = lp->descriptors_laddr;
+-	lp->tda_laddr = lp->cda_laddr + (SIZEOF_SONIC_CDA
+-				         * SONIC_BUS_SCALE(lp->dma_bitmode));
+-	lp->rda_laddr = lp->tda_laddr + (SIZEOF_SONIC_TD * SONIC_NUM_TDS
+-					 * SONIC_BUS_SCALE(lp->dma_bitmode));
+-	lp->rra_laddr = lp->rda_laddr + (SIZEOF_SONIC_RD * SONIC_NUM_RDS
+-					 * SONIC_BUS_SCALE(lp->dma_bitmode));
+ 
+ 	dev->netdev_ops		= &xtsonic_netdev_ops;
+ 	dev->watchdog_timeo	= TX_TIMEOUT;
 -- 
 2.24.1
 
