@@ -2,193 +2,151 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id AA3CD141CFB
-	for <lists+netdev@lfdr.de>; Sun, 19 Jan 2020 09:27:24 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 79A60141D14
+	for <lists+netdev@lfdr.de>; Sun, 19 Jan 2020 10:07:21 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726915AbgASI1K (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 19 Jan 2020 03:27:10 -0500
-Received: from mail-il1-f200.google.com ([209.85.166.200]:36999 "EHLO
-        mail-il1-f200.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726619AbgASI1K (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 19 Jan 2020 03:27:10 -0500
-Received: by mail-il1-f200.google.com with SMTP id l13so22842183ilj.4
-        for <netdev@vger.kernel.org>; Sun, 19 Jan 2020 00:27:10 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
-        bh=XKy1TYTcaFoKWzXikfNy8Zh/NpwKbKhptMMi53xSYvo=;
-        b=HEsVcJ269fz7TJTJ4RG8TN4M9UvlvY1QPifgZARJnj8VkDhRri9+HdJoqbP/yZapPf
-         IU/KOMLTpOWZe17eNF37vyuYGOfloynGFYKzuyO/H/uLAt8gzPfAfdrc4PpnCaVgj0gq
-         nFTM65WQ/WrpdqTzNKQSgJEoIcfEUSHXmU3szKsKpZVfbJoSpZjrjfFd+8b9UUlrSgzS
-         plyNXhKqFNOmqHxxPBkyBEon8iBpIZtwue57JmaQsUktvYs5N7m1105P+YpGoEs/j9a6
-         67OXyXNtRneNhSMS28N9IHh114VemYv8Dd6XzjjB/8mABkkBL/BwybPYbAeBVMI7pCfv
-         INpA==
-X-Gm-Message-State: APjAAAW5zc8tdHerbdovgxEkNu+0+MnhjuT78FVr7pIbw3UhXfGG6Zkn
-        MF61Dipc1vFInyhAcvyrSKRl7hL9/J/ay6dry//bo+sA3Pjc
-X-Google-Smtp-Source: APXvYqzcuxX+ScbgQBwuWlpX8l+2EFZgEiV7BEUQWi7fLcIhpIsDdlPlgR50TXXaqpe1p1m5XPkzKwgRu7ELFkWy8PtzPmc0XjZp
+        id S1726876AbgASJHQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 19 Jan 2020 04:07:16 -0500
+Received: from mail-eopbgr70043.outbound.protection.outlook.com ([40.107.7.43]:65351
+        "EHLO EUR04-HE1-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1726444AbgASJHQ (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sun, 19 Jan 2020 04:07:16 -0500
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=YRYP/4UoIh7hA/wUlwABwFPPlpGc/lpoWtszW57XDOzs9I/EwXXKvte6E21c3ySs/LDW1hiWRP+74kdp1WqegVMkLgo9HMT908SMBErfgdnoGhP5Kau0B1nO5RmSbkqT9UQ7TD894Xv9HmYxyYBJ2j+HpjnzjjB7rQCF1Y63avs07oI0XleEdle2nYgmgqCftt/AHIc1vVtCFV+q0XCwt8Li67c4TPHZJ4m0K4tSwtt9epBr1I4DtoRSmtpUDUSghAyL0sXwqvMJykA7rEGo42Q8Zxtzwf2UUAFezQV20y8eiqE5ukycGnvbsdfB9WkISAr9sVIVuQfataQYR1Q2bg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=hhTa+yyiJ8Po1xQhXyXUQ/xr1/atu55AK1SdXFLAGxg=;
+ b=Kno/w15220CXJ6nODjd5Z4fB/wusYXtsIu5NnyhFdXnf8B9qXi/g+S2j0GY3Ib50I9Ya5HBqdBTAGy2hbMtlX7KVhVrHztaQVu7987eWLS/h2O/9DRKj1bJDJitlvnxktdbsT6WNE8EYQ7KKuAZ0bCLdpEVj99Z26jvAxJX5nT06Vd9Ferp3QdVuK2gDBLI3TLDKNBW2W3sVXDY66dXpnu+LmNg1oT1nK8cTkFLrySlajZTtQU/B0IGyUnV4ju7JG8C/Ng2dNvXJvGrFhADXT6E5W9ok+Xo20Tjv584I5eSrvD1mwlIQTR5TUAZU9xmCGNGnFJoMIIZwLn8AsvuvNA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=mellanox.com; dmarc=pass action=none header.from=mellanox.com;
+ dkim=pass header.d=mellanox.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Mellanox.com;
+ s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=hhTa+yyiJ8Po1xQhXyXUQ/xr1/atu55AK1SdXFLAGxg=;
+ b=cC2aYa0XIYIS+ZUDuFigQFOy8KDCfgWVAMEAWOWwluKQgXSrjSIZUKsM2qDu9htYbWLjIt8rCcfW99ShjuvGn9t7EdKWwcN3D6u3/Bn3XTKqRe6tSFyBaanhmNjbI/ZdUrblveFM71DBMr0q4uLkyaIa7J6kiFJba+m9wVHf85w=
+Received: from AM0PR0502MB3795.eurprd05.prod.outlook.com (52.133.45.150) by
+ AM0PR0502MB3971.eurprd05.prod.outlook.com (52.133.40.151) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.2644.24; Sun, 19 Jan 2020 09:07:10 +0000
+Received: from AM0PR0502MB3795.eurprd05.prod.outlook.com
+ ([fe80::d862:228a:d87f:99bb]) by AM0PR0502MB3795.eurprd05.prod.outlook.com
+ ([fe80::d862:228a:d87f:99bb%7]) with mapi id 15.20.2644.024; Sun, 19 Jan 2020
+ 09:07:09 +0000
+From:   Shahaf Shuler <shahafs@mellanox.com>
+To:     Rob Miller <rob.miller@broadcom.com>,
+        Jason Wang <jasowang@redhat.com>
+CC:     "Michael S. Tsirkin" <mst@redhat.com>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
+        "virtualization@lists.linux-foundation.org" 
+        <virtualization@lists.linux-foundation.org>,
+        Netdev <netdev@vger.kernel.org>,
+        "Bie, Tiwei" <tiwei.bie@intel.com>,
+        Jason Gunthorpe <jgg@mellanox.com>,
+        "maxime.coquelin@redhat.com" <maxime.coquelin@redhat.com>,
+        "Liang, Cunming" <cunming.liang@intel.com>,
+        "Wang, Zhihong" <zhihong.wang@intel.com>,
+        "Wang, Xiao W" <xiao.w.wang@intel.com>,
+        "haotian.wang@sifive.com" <haotian.wang@sifive.com>,
+        "Zhu, Lingshan" <lingshan.zhu@intel.com>,
+        "eperezma@redhat.com" <eperezma@redhat.com>,
+        "lulu@redhat.com" <lulu@redhat.com>,
+        Parav Pandit <parav@mellanox.com>,
+        "Tian, Kevin" <kevin.tian@intel.com>,
+        "stefanha@redhat.com" <stefanha@redhat.com>,
+        "rdunlap@infradead.org" <rdunlap@infradead.org>,
+        "hch@infradead.org" <hch@infradead.org>,
+        Ariel Adam <aadam@redhat.com>,
+        "jakub.kicinski@netronome.com" <jakub.kicinski@netronome.com>,
+        Jiri Pirko <jiri@mellanox.com>,
+        "hanand@xilinx.com" <hanand@xilinx.com>,
+        "mhabets@solarflare.com" <mhabets@solarflare.com>
+Subject: RE: [PATCH 3/5] vDPA: introduce vDPA bus
+Thread-Topic: [PATCH 3/5] vDPA: introduce vDPA bus
+Thread-Index: AQHVzGqTFJN2iC19r0STv/0Uj4sDPafuxkEAgAAbnwCAAAWygIACyO6w
+Date:   Sun, 19 Jan 2020 09:07:09 +0000
+Message-ID: <AM0PR0502MB379553984D0D55FDE25426F6C3330@AM0PR0502MB3795.eurprd05.prod.outlook.com>
+References: <20200116124231.20253-1-jasowang@redhat.com>
+ <20200116124231.20253-4-jasowang@redhat.com>
+ <20200117070324-mutt-send-email-mst@kernel.org>
+ <239b042c-2d9e-0eec-a1ef-b03b7e2c5419@redhat.com>
+ <CAJPjb1+fG9L3=iKbV4Vn13VwaeDZZdcfBPvarogF_Nzhk+FnKg@mail.gmail.com>
+In-Reply-To: <CAJPjb1+fG9L3=iKbV4Vn13VwaeDZZdcfBPvarogF_Nzhk+FnKg@mail.gmail.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+authentication-results: spf=none (sender IP is )
+ smtp.mailfrom=shahafs@mellanox.com; 
+x-originating-ip: [193.47.165.251]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-ht: Tenant
+x-ms-office365-filtering-correlation-id: 1e7cdedf-da72-499c-7973-08d79cbef711
+x-ms-traffictypediagnostic: AM0PR0502MB3971:|AM0PR0502MB3971:
+x-ms-exchange-transport-forked: True
+x-microsoft-antispam-prvs: <AM0PR0502MB3971E6D23CE8FE4AE5D19A37C3330@AM0PR0502MB3971.eurprd05.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:10000;
+x-forefront-prvs: 0287BBA78D
+x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(4636009)(396003)(376002)(366004)(346002)(136003)(39850400004)(199004)(189003)(66556008)(66446008)(64756008)(6506007)(5660300002)(71200400001)(66476007)(52536014)(76116006)(66946007)(7696005)(86362001)(7416002)(2906002)(110136005)(54906003)(33656002)(4326008)(9686003)(81166006)(26005)(316002)(186003)(81156014)(8676002)(8936002)(478600001)(55016002);DIR:OUT;SFP:1101;SCL:1;SRVR:AM0PR0502MB3971;H:AM0PR0502MB3795.eurprd05.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;A:1;MX:1;
+received-spf: None (protection.outlook.com: mellanox.com does not designate
+ permitted sender hosts)
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: 0wo896bJoeAioK2NKs92JHqTf/gfu22vtVnPGERY32fi2Yl55FTYqO9FhoS8s3KAEjvskuoVW23wc0/ZNfjiuv24ZK69fdfhuZJgZpq52QR4WhDadoU5gyzKKjBkYyK8buRnJ3swxAClFHFj2bUSpBn/ZUXaDCY7BVgNkdEHHUMu+cP1YZzMRAUKAyRUu/9L5pIOK7h1+XrHnl8ldff84RmS3SpDaafAKvAhXnrPvWrEFThEKbUDjwJJ7C3y82p6DHPSgl4pJWMrxcjmeuRs5cBKhygftO815NJAsWt42M2iyirY+oh0LlqUtHiOuZ99bMBnwHdDpPwullTsMbEMwdOZ8Gej+ZQC/Y4akX+pc82cT22eo75zwNAA7NK0SH6lBwxQuSSPexvTJ1AYV5+0ckfe0dZI/E+BphEu7YU5NVMxZq33Z2/f38QugkWRUYji
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-X-Received: by 2002:a92:c686:: with SMTP id o6mr5861523ilg.212.1579422429783;
- Sun, 19 Jan 2020 00:27:09 -0800 (PST)
-Date:   Sun, 19 Jan 2020 00:27:09 -0800
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <000000000000e0ab4c059c79f014@google.com>
-Subject: KASAN: slab-out-of-bounds Read in bitmap_port_ext_cleanup
-From:   syzbot <syzbot+7b6206fb525c1f5ec3f8@syzkaller.appspotmail.com>
-To:     coreteam@netfilter.org, davem@davemloft.net,
-        florent.fourcot@wifirst.fr, fw@strlen.de, jeremy@azazel.net,
-        johannes.berg@intel.com, kadlec@netfilter.org,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        netfilter-devel@vger.kernel.org, pablo@netfilter.org,
-        syzkaller-bugs@googlegroups.com
-Content-Type: text/plain; charset="UTF-8"
+X-OriginatorOrg: Mellanox.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 1e7cdedf-da72-499c-7973-08d79cbef711
+X-MS-Exchange-CrossTenant-originalarrivaltime: 19 Jan 2020 09:07:09.6023
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: a652971c-7d2e-4d9b-a6a4-d149256f461b
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: CHN6Oppv3xTQykWrskAzqSYvE+mayVTl457dDH6DDz4d57q0QuQK4yryWc6FGFaBQE1kpZnz/wPVmeC3ILJpOg==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM0PR0502MB3971
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello,
-
-syzbot found the following crash on:
-
-HEAD commit:    e02d9c4c Merge branch 'bnxt_en-fixes'
-git tree:       net
-console output: https://syzkaller.appspot.com/x/log.txt?x=142f11d1e00000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=7e89bd00623fe71e
-dashboard link: https://syzkaller.appspot.com/bug?extid=7b6206fb525c1f5ec3f8
-compiler:       gcc (GCC) 9.0.0 20181231 (experimental)
-syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=16551cc9e00000
-C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=14a04966e00000
-
-IMPORTANT: if you fix the bug, please add the following tag to the commit:
-Reported-by: syzbot+7b6206fb525c1f5ec3f8@syzkaller.appspotmail.com
-
-==================================================================
-BUG: KASAN: slab-out-of-bounds in test_bit include/asm-generic/bitops/instrumented-non-atomic.h:110 [inline]
-BUG: KASAN: slab-out-of-bounds in bitmap_port_ext_cleanup+0xe6/0x2a0 net/netfilter/ipset/ip_set_bitmap_gen.h:51
-Read of size 8 at addr ffff88809f6c0d00 by task syz-executor172/8965
-
-CPU: 1 PID: 8965 Comm: syz-executor172 Not tainted 5.5.0-rc5-syzkaller #0
-Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
-Call Trace:
- __dump_stack lib/dump_stack.c:77 [inline]
- dump_stack+0x197/0x210 lib/dump_stack.c:118
- print_address_description.constprop.0.cold+0xd4/0x30b mm/kasan/report.c:374
- __kasan_report.cold+0x1b/0x41 mm/kasan/report.c:506
- kasan_report+0x12/0x20 mm/kasan/common.c:639
- check_memory_region_inline mm/kasan/generic.c:185 [inline]
- check_memory_region+0x134/0x1a0 mm/kasan/generic.c:192
- __kasan_check_read+0x11/0x20 mm/kasan/common.c:95
- test_bit include/asm-generic/bitops/instrumented-non-atomic.h:110 [inline]
- bitmap_port_ext_cleanup+0xe6/0x2a0 net/netfilter/ipset/ip_set_bitmap_gen.h:51
- bitmap_port_destroy+0x180/0x1d0 net/netfilter/ipset/ip_set_bitmap_gen.h:64
- ip_set_create+0xe47/0x1500 net/netfilter/ipset/ip_set_core.c:1165
- nfnetlink_rcv_msg+0xcf2/0xfb0 net/netfilter/nfnetlink.c:229
- netlink_rcv_skb+0x177/0x450 net/netlink/af_netlink.c:2477
- nfnetlink_rcv+0x1ba/0x460 net/netfilter/nfnetlink.c:563
- netlink_unicast_kernel net/netlink/af_netlink.c:1302 [inline]
- netlink_unicast+0x58c/0x7d0 net/netlink/af_netlink.c:1328
- netlink_sendmsg+0x91c/0xea0 net/netlink/af_netlink.c:1917
- sock_sendmsg_nosec net/socket.c:639 [inline]
- sock_sendmsg+0xd7/0x130 net/socket.c:659
- ____sys_sendmsg+0x753/0x880 net/socket.c:2330
- ___sys_sendmsg+0x100/0x170 net/socket.c:2384
- __sys_sendmsg+0x105/0x1d0 net/socket.c:2417
- __do_sys_sendmsg net/socket.c:2426 [inline]
- __se_sys_sendmsg net/socket.c:2424 [inline]
- __x64_sys_sendmsg+0x78/0xb0 net/socket.c:2424
- do_syscall_64+0xfa/0x790 arch/x86/entry/common.c:294
- entry_SYSCALL_64_after_hwframe+0x49/0xbe
-RIP: 0033:0x441399
-Code: e8 fc ab 02 00 48 83 c4 18 c3 0f 1f 80 00 00 00 00 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 0f 83 9b 09 fc ff c3 66 2e 0f 1f 84 00 00 00 00
-RSP: 002b:00007ffd3c76f208 EFLAGS: 00000246 ORIG_RAX: 000000000000002e
-RAX: ffffffffffffffda RBX: 0000000000000000 RCX: 0000000000441399
-RDX: 0000000000000000 RSI: 0000000020001080 RDI: 0000000000000003
-RBP: 0000000000015169 R08: 00000000004002c8 R09: 00000000004002c8
-R10: 0000000000000004 R11: 0000000000000246 R12: 00000000004021c0
-R13: 0000000000402250 R14: 0000000000000000 R15: 0000000000000000
-
-Allocated by task 8965:
- save_stack+0x23/0x90 mm/kasan/common.c:72
- set_track mm/kasan/common.c:80 [inline]
- __kasan_kmalloc mm/kasan/common.c:513 [inline]
- __kasan_kmalloc.constprop.0+0xcf/0xe0 mm/kasan/common.c:486
- kasan_kmalloc+0x9/0x10 mm/kasan/common.c:527
- __do_kmalloc mm/slab.c:3656 [inline]
- __kmalloc+0x163/0x770 mm/slab.c:3665
- kmalloc include/linux/slab.h:561 [inline]
- kzalloc include/linux/slab.h:670 [inline]
- ip_set_alloc+0x38/0x5e net/netfilter/ipset/ip_set_core.c:255
- init_map_port net/netfilter/ipset/ip_set_bitmap_port.c:234 [inline]
- bitmap_port_create+0x3dc/0x7c0 net/netfilter/ipset/ip_set_bitmap_port.c:276
- ip_set_create+0x6f1/0x1500 net/netfilter/ipset/ip_set_core.c:1111
- nfnetlink_rcv_msg+0xcf2/0xfb0 net/netfilter/nfnetlink.c:229
- netlink_rcv_skb+0x177/0x450 net/netlink/af_netlink.c:2477
- nfnetlink_rcv+0x1ba/0x460 net/netfilter/nfnetlink.c:563
- netlink_unicast_kernel net/netlink/af_netlink.c:1302 [inline]
- netlink_unicast+0x58c/0x7d0 net/netlink/af_netlink.c:1328
- netlink_sendmsg+0x91c/0xea0 net/netlink/af_netlink.c:1917
- sock_sendmsg_nosec net/socket.c:639 [inline]
- sock_sendmsg+0xd7/0x130 net/socket.c:659
- ____sys_sendmsg+0x753/0x880 net/socket.c:2330
- ___sys_sendmsg+0x100/0x170 net/socket.c:2384
- __sys_sendmsg+0x105/0x1d0 net/socket.c:2417
- __do_sys_sendmsg net/socket.c:2426 [inline]
- __se_sys_sendmsg net/socket.c:2424 [inline]
- __x64_sys_sendmsg+0x78/0xb0 net/socket.c:2424
- do_syscall_64+0xfa/0x790 arch/x86/entry/common.c:294
- entry_SYSCALL_64_after_hwframe+0x49/0xbe
-
-Freed by task 8710:
- save_stack+0x23/0x90 mm/kasan/common.c:72
- set_track mm/kasan/common.c:80 [inline]
- kasan_set_free_info mm/kasan/common.c:335 [inline]
- __kasan_slab_free+0x102/0x150 mm/kasan/common.c:474
- kasan_slab_free+0xe/0x10 mm/kasan/common.c:483
- __cache_free mm/slab.c:3426 [inline]
- kfree+0x10a/0x2c0 mm/slab.c:3757
- tomoyo_check_open_permission+0x19e/0x3e0 security/tomoyo/file.c:786
- tomoyo_file_open security/tomoyo/tomoyo.c:319 [inline]
- tomoyo_file_open+0xa9/0xd0 security/tomoyo/tomoyo.c:314
- security_file_open+0x71/0x300 security/security.c:1497
- do_dentry_open+0x37a/0x1380 fs/open.c:784
- vfs_open+0xa0/0xd0 fs/open.c:914
- do_last fs/namei.c:3420 [inline]
- path_openat+0x10df/0x4500 fs/namei.c:3537
- do_filp_open+0x1a1/0x280 fs/namei.c:3567
- do_sys_open+0x3fe/0x5d0 fs/open.c:1097
- __do_sys_open fs/open.c:1115 [inline]
- __se_sys_open fs/open.c:1110 [inline]
- __x64_sys_open+0x7e/0xc0 fs/open.c:1110
- do_syscall_64+0xfa/0x790 arch/x86/entry/common.c:294
- entry_SYSCALL_64_after_hwframe+0x49/0xbe
-
-The buggy address belongs to the object at ffff88809f6c0d00
- which belongs to the cache kmalloc-32 of size 32
-The buggy address is located 0 bytes inside of
- 32-byte region [ffff88809f6c0d00, ffff88809f6c0d20)
-The buggy address belongs to the page:
-page:ffffea00027db000 refcount:1 mapcount:0 mapping:ffff8880aa4001c0 index:0xffff88809f6c0fc1
-raw: 00fffe0000000200 ffffea00027cca88 ffffea0002a27908 ffff8880aa4001c0
-raw: ffff88809f6c0fc1 ffff88809f6c0000 000000010000003c 0000000000000000
-page dumped because: kasan: bad access detected
-
-Memory state around the buggy address:
- ffff88809f6c0c00: 00 00 00 fc fc fc fc fc 00 fc fc fc fc fc fc fc
- ffff88809f6c0c80: 00 fc fc fc fc fc fc fc fb fb fb fb fc fc fc fc
->ffff88809f6c0d00: 04 fc fc fc fc fc fc fc 00 fc fc fc fc fc fc fc
-                   ^
- ffff88809f6c0d80: 00 fc fc fc fc fc fc fc 00 04 fc fc fc fc fc fc
- ffff88809f6c0e00: 00 04 fc fc fc fc fc fc fb fb fb fb fc fc fc fc
-==================================================================
-
-
----
-This bug is generated by a bot. It may contain errors.
-See https://goo.gl/tpsmEJ for more information about syzbot.
-syzbot engineers can be reached at syzkaller@googlegroups.com.
-
-syzbot will keep track of this bug report. See:
-https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
-syzbot can test patches for this bug, for details see:
-https://goo.gl/tpsmEJ#testing-patches
+RnJpZGF5LCBKYW51YXJ5IDE3LCAyMDIwIDQ6MTMgUE0sIFJvYiBNaWxsZXI6DQpTdWJqZWN0OiBS
+ZTogW1BBVENIIDMvNV0gdkRQQTogaW50cm9kdWNlIHZEUEEgYnVzDQo+Pk9uIDIwMjAvMS8xNyDk
+uIvljYg4OjEzLCBNaWNoYWVsIFMuIFRzaXJraW4gd3JvdGU6DQo+Pj4gT24gVGh1LCBKYW4gMTYs
+IDIwMjAgYXQgMDg6NDI6MjlQTSArMDgwMCwgSmFzb24gV2FuZyB3cm90ZToNCg0KWy4uLl0NCg0K
+Pj4+ICsgKiBAc2V0X21hcDrCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCBTZXQg
+ZGV2aWNlIG1lbW9yeSBtYXBwaW5nLCBvcHRpb25hbA0KPj4+ICsgKsKgIMKgIMKgIMKgIMKgIMKg
+IMKgIMKgIMKgIMKgIMKgIMKgIMKgIGFuZCBvbmx5IG5lZWRlZCBmb3IgZGV2aWNlIHRoYXQgdXNp
+bmcNCj4+PiArICrCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCBkZXZpY2Ug
+c3BlY2lmaWMgRE1BIHRyYW5zbGF0aW9uDQo+Pj4gKyAqwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAg
+wqAgwqAgwqAgwqAgwqAgKG9uLWNoaXAgSU9NTVUpDQo+Pj4gKyAqwqAgwqAgwqAgwqAgwqAgwqAg
+wqAgwqAgwqAgwqAgwqAgwqAgwqAgQHZkZXY6IHZkcGEgZGV2aWNlDQo+Pj4gKyAqwqAgwqAgwqAg
+wqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgQGlvdGxiOiB2aG9zdCBtZW1vcnkgbWFwcGlu
+ZyB0byBiZQ0KPj4+ICsgKsKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIHVz
+ZWQgYnkgdGhlIHZEUEENCj4+PiArICrCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDC
+oCDCoCBSZXR1cm5zIGludGVnZXI6IHN1Y2Nlc3MgKDApIG9yIGVycm9yICg8IDApDQo+PiBPSyBz
+byBhbnkgY2hhbmdlIGp1c3Qgc3dhcHMgaW4gYSBjb21wbGV0ZWx5IG5ldyBtYXBwaW5nPw0KPj4g
+V291bGRuJ3QgdGhpcyBtYWtlIG1pbm9yIGNoYW5nZXMgc3VjaCBhcyBtZW1vcnkgaG90cGx1Zw0K
+Pj4gcXVpdGUgZXhwZW5zaXZlPw0KDQpXaGF0IGlzIHRoZSBjb25jZXJuPyBUcmF2ZXJzaW5nIHRo
+ZSByYiB0cmVlIG9yIGZ1bGx5IHJlcGxhY2UgdGhlIG9uLWNoaXAgSU9NTVUgdHJhbnNsYXRpb25z
+PyANCklmIHRoZSBsYXRlc3QsIHRoZW4gSSB0aGluayB3ZSBjYW4gdGFrZSBzdWNoIG9wdGltaXph
+dGlvbiBvbiB0aGUgZHJpdmVyIGxldmVsIChpLmUuIHRvIHVwZGF0ZSBvbmx5IHRoZSBkaWZmIGJl
+dHdlZW4gdGhlIHR3byBtYXBwaW5nKS4gDQpJZiB0aGUgZmlyc3Qgb25lLCB0aGVuIEkgdGhpbmsg
+bWVtb3J5IGhvdHBsdWcgaXMgYSBoZWF2eSBmbG93IHJlZ2FyZGxlc3MuIERvIHlvdSB0aGluayB0
+aGUgZXh0cmEgY3ljbGVzIGZvciB0aGUgdHJlZSB0cmF2ZXJzZSB3aWxsIGJlIHZpc2libGUgaW4g
+YW55IHdheT8gDQoNCj4NCj5NeSB1bmRlcnN0YW5kaW5nIGlzIHRoYXQgdGhlIGluY3JlbWVudGFs
+IHVwZGF0aW5nIG9mIHRoZSBvbiBjaGlwIElPTU1VIA0KPm1heSBkZWdyYWRlIHRoZcKgIHBlcmZv
+cm1hbmNlLiBTbyB2ZW5kb3IgdkRQQSBkcml2ZXJzIG1heSB3YW50IHRvIGtub3cgDQo+YWxsIHRo
+ZSBtYXBwaW5ncyBhdCBvbmNlLiANCg0KWWVzIGV4YWN0LiBGb3IgTWVsbGFub3ggY2FzZSBmb3Ig
+aW5zdGFuY2UgbWFueSBvcHRpbWl6YXRpb24gY2FuIGJlIHBlcmZvcm1lZCBvbiBhIGdpdmVuIG1l
+bW9yeSBsYXlvdXQuDQoNCj5UZWNobmljYWxseSwgd2UgY2FuIGtlZXAgdGhlIGluY3JlbWVudGFs
+IEFQSSANCj5oZXJlIGFuZCBsZXQgdGhlIHZlbmRvciB2RFBBIGRyaXZlcnMgdG8gcmVjb3JkIHRo
+ZSBmdWxsIG1hcHBpbmcgDQo+aW50ZXJuYWxseSB3aGljaCBtYXkgc2xpZ2h0bHkgaW5jcmVhc2Ug
+dGhlIGNvbXBsZXhpdHkgb2YgdmVuZG9yIGRyaXZlci4gDQoNCldoYXQgd2lsbCBiZSB0aGUgdHJp
+Z2dlciBmb3IgdGhlIGRyaXZlciB0byBrbm93IGl0IHJlY2VpdmVkIHRoZSBsYXN0IG1hcHBpbmcg
+b24gdGhpcyBzZXJpZXMgYW5kIGl0IGNhbiBub3cgcHVzaCBpdCB0byB0aGUgb24tY2hpcCBJT01N
+VT8NCg0KPldlIG5lZWQgbW9yZSBpbnB1dHMgZnJvbSB2ZW5kb3JzIGhlcmUuDQo+DQo+VGhhbmtz
+DQoNCg0K
