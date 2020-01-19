@@ -2,147 +2,68 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id DED58141DF2
-	for <lists+netdev@lfdr.de>; Sun, 19 Jan 2020 14:01:56 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2086E141E2A
+	for <lists+netdev@lfdr.de>; Sun, 19 Jan 2020 14:26:40 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728779AbgASNBv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 19 Jan 2020 08:01:51 -0500
-Received: from out2-smtp.messagingengine.com ([66.111.4.26]:33229 "EHLO
-        out2-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1728655AbgASNBq (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 19 Jan 2020 08:01:46 -0500
-Received: from compute3.internal (compute3.nyi.internal [10.202.2.43])
-        by mailout.nyi.internal (Postfix) with ESMTP id B009A21B1B;
-        Sun, 19 Jan 2020 08:01:45 -0500 (EST)
-Received: from mailfrontend1 ([10.202.2.162])
-  by compute3.internal (MEProxy); Sun, 19 Jan 2020 08:01:45 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-        messagingengine.com; h=cc:content-transfer-encoding:date:from
-        :in-reply-to:message-id:mime-version:references:subject:to
-        :x-me-proxy:x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=
-        fm1; bh=/FaQ+W0jL1SKg58dfuSYu1CSeKXy5jkFLQm9nfUY7JA=; b=olm2DkaX
-        ZXFDEBKuyMF0qKIH21yGQFuoQQStWMeqMy4PlfTbykFUdW9RfVQLWtUzPVJYpZkB
-        RZjhTCw+LfJzeW25BYsHL5Z62uONi6NOfI5oP/Ehy67OjNoySczs2DfxSMXdRJel
-        REwVnxlcLyTBPo+IkOiod6lsrbFzh5fqkKx4NYKB8ltGS2clXA5tCZ2onYvwtuN7
-        dHQapDo/7uZ9Q3mNHjRvv3vOE4gQd0Z4myvgWsQxvcV+n1taVBYAQN6DFvMqnzj/
-        lQdtw3OeCUPtAthxxDzdIl7R16xTkOsGhTJoRZJLzM/1opZj/M/cRkXdzHoqIIUg
-        lIxXpw6xNio3fA==
-X-ME-Sender: <xms:OVMkXgJsddL5nt6Ga5E6TI-m-h-N5tAiaHtNrQQ9ICn9XfdiFVJhjg>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedugedrudefgdegiecutefuodetggdotefrodftvf
-    curfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfghnecu
-    uegrihhlohhuthemuceftddtnecunecujfgurhephffvufffkffojghfggfgsedtkeertd
-    ertddtnecuhfhrohhmpefkughoucfutghhihhmmhgvlhcuoehiughoshgthhesihguohhs
-    tghhrdhorhhgqeenucfkphepudelfedrgeejrdduieehrddvhedunecurfgrrhgrmhepmh
-    grihhlfhhrohhmpehiughoshgthhesihguohhstghhrdhorhhgnecuvehluhhsthgvrhfu
-    ihiivgepudeg
-X-ME-Proxy: <xmx:OVMkXmQ4prL_mSQEV_tKm4iNN3oWGk5dUE-zOxd8ZQrPH676zTcpYg>
-    <xmx:OVMkXnr_wYMOH5q1vaExg6dFa0QCmDX93Rxj2knINjZah7R61LUCvg>
-    <xmx:OVMkXkjgv4QS8ZkLpQhccyd0OdsKa_tJvV1qWW2mTQnnoYbMIZ0pSA>
-    <xmx:OVMkXlI_tV8w5vCiILJ2guqR8mKX-AhZsFXpItqM9V34TZeGaMvwQA>
-Received: from splinter.mtl.com (unknown [193.47.165.251])
-        by mail.messagingengine.com (Postfix) with ESMTPA id 539F880060;
-        Sun, 19 Jan 2020 08:01:44 -0500 (EST)
-From:   Ido Schimmel <idosch@idosch.org>
-To:     netdev@vger.kernel.org
-Cc:     davem@davemloft.net, jiri@mellanox.com, amitc@mellanox.com,
-        mlxsw@mellanox.com, Ido Schimmel <idosch@mellanox.com>
-Subject: [PATCH net-next 15/15] selftests: devlink_trap_tunnel_vxlan: Add test case for overlay_smac_is_mc
-Date:   Sun, 19 Jan 2020 15:01:00 +0200
-Message-Id: <20200119130100.3179857-16-idosch@idosch.org>
-X-Mailer: git-send-email 2.24.1
-In-Reply-To: <20200119130100.3179857-1-idosch@idosch.org>
-References: <20200119130100.3179857-1-idosch@idosch.org>
+        id S1726974AbgASN0f (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 19 Jan 2020 08:26:35 -0500
+Received: from szxga06-in.huawei.com ([45.249.212.32]:44306 "EHLO huawei.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1726798AbgASN0f (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sun, 19 Jan 2020 08:26:35 -0500
+Received: from DGGEMS414-HUB.china.huawei.com (unknown [172.30.72.60])
+        by Forcepoint Email with ESMTP id DDBCC9ECDC1DC337FF24;
+        Sun, 19 Jan 2020 21:26:33 +0800 (CST)
+Received: from localhost.localdomain.localdomain (10.175.113.25) by
+ DGGEMS414-HUB.china.huawei.com (10.3.19.214) with Microsoft SMTP Server id
+ 14.3.439.0; Sun, 19 Jan 2020 21:26:24 +0800
+From:   Chen Zhou <chenzhou10@huawei.com>
+To:     <jeffrey.t.kirsher@intel.com>, <davem@davemloft.net>
+CC:     <intel-wired-lan@lists.osuosl.org>, <netdev@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>, <chenzhou10@huawei.com>
+Subject: [PATCH -next] i40e: remove unnecessary conversions to bool
+Date:   Sun, 19 Jan 2020 21:21:38 +0800
+Message-ID: <20200119132138.37781-1-chenzhou10@huawei.com>
+X-Mailer: git-send-email 2.20.1
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [10.175.113.25]
+X-CFilter-Loop: Reflected
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Amit Cohen <amitc@mellanox.com>
+The conversions to bool are not needed, remove these.
 
-Test that the trap is triggered under the right conditions and that
-devlink counters increase when action is trap.
-
-Signed-off-by: Amit Cohen <amitc@mellanox.com>
-Acked-by: Jiri Pirko <jiri@mellanox.com>
-Signed-off-by: Ido Schimmel <idosch@mellanox.com>
+Signed-off-by: Chen Zhou <chenzhou10@huawei.com>
 ---
- .../net/mlxsw/devlink_trap_tunnel_vxlan.sh    | 54 +++++++++++++++++++
- 1 file changed, 54 insertions(+)
+ drivers/net/ethernet/intel/i40e/i40e_main.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/tools/testing/selftests/drivers/net/mlxsw/devlink_trap_tunnel_vxlan.sh b/tools/testing/selftests/drivers/net/mlxsw/devlink_trap_tunnel_vxlan.sh
-index a699edae8358..fd19161dd4ec 100755
---- a/tools/testing/selftests/drivers/net/mlxsw/devlink_trap_tunnel_vxlan.sh
-+++ b/tools/testing/selftests/drivers/net/mlxsw/devlink_trap_tunnel_vxlan.sh
-@@ -36,6 +36,7 @@ lib_dir=$(dirname $0)/../../../net/forwarding
+diff --git a/drivers/net/ethernet/intel/i40e/i40e_main.c b/drivers/net/ethernet/intel/i40e/i40e_main.c
+index 33912cf..24cacfa 100644
+--- a/drivers/net/ethernet/intel/i40e/i40e_main.c
++++ b/drivers/net/ethernet/intel/i40e/i40e_main.c
+@@ -1630,7 +1630,7 @@ static int i40e_config_rss_aq(struct i40e_vsi *vsi, const u8 *seed,
+ 		}
+ 	}
+ 	if (lut) {
+-		bool pf_lut = vsi->type == I40E_VSI_MAIN ? true : false;
++		bool pf_lut = vsi->type == I40E_VSI_MAIN;
  
- ALL_TESTS="
- 	decap_error_test
-+	overlay_smac_is_mc_test
- "
+ 		ret = i40e_aq_set_rss_lut(hw, vsi->id, pf_lut, lut, lut_size);
+ 		if (ret) {
+@@ -11455,7 +11455,7 @@ static int i40e_get_rss_aq(struct i40e_vsi *vsi, const u8 *seed,
+ 	}
  
- NUM_NETIFS=4
-@@ -267,6 +268,59 @@ decap_error_test()
- 	corrupted_packet_test "Decap error: No L2 header" "short_payload_get"
- }
+ 	if (lut) {
+-		bool pf_lut = vsi->type == I40E_VSI_MAIN ? true : false;
++		bool pf_lut = vsi->type == I40E_VSI_MAIN;
  
-+mc_smac_payload_get()
-+{
-+	dest_mac=$(mac_get $h1)
-+	source_mac=01:02:03:04:05:06
-+	p=$(:
-+		)"08:"$(                      : VXLAN flags
-+		)"00:00:00:"$(                : VXLAN reserved
-+		)"00:03:e8:"$(                : VXLAN VNI : 1000
-+		)"00:"$(                      : VXLAN reserved
-+		)"$dest_mac:"$(               : ETH daddr
-+		)"$source_mac:"$(             : ETH saddr
-+		)"08:00:"$(                   : ETH type
-+		)"45:"$(                      : IP version + IHL
-+		)"00:"$(                      : IP TOS
-+		)"00:14:"$(                   : IP total length
-+		)"00:00:"$(                   : IP identification
-+		)"20:00:"$(                   : IP flags + frag off
-+		)"40:"$(                      : IP TTL
-+		)"00:"$(                      : IP proto
-+		)"00:00:"$(                   : IP header csum
-+		)"c0:00:02:03:"$(             : IP saddr: 192.0.2.3
-+		)"c0:00:02:01:"$(             : IP daddr: 192.0.2.1
-+		)
-+	echo $p
-+}
-+
-+overlay_smac_is_mc_test()
-+{
-+	local trap_name="overlay_smac_is_mc"
-+	local group_name="tunnel_drops"
-+	local mz_pid
-+
-+	RET=0
-+
-+	# The matching will be checked on devlink_trap_drop_test()
-+	# and the filter will be removed on devlink_trap_drop_cleanup()
-+	tc filter add dev $swp1 egress protocol ip pref 1 handle 101 \
-+		flower src_mac 01:02:03:04:05:06 action pass
-+
-+	rp1_mac=$(mac_get $rp1)
-+	payload=$(mc_smac_payload_get)
-+
-+	ip vrf exec v$rp2 $MZ $rp2 -c 0 -d 1msec -b $rp1_mac \
-+		-B 192.0.2.17 -t udp sp=12345,dp=$VXPORT,p=$payload -q &
-+	mz_pid=$!
-+
-+	devlink_trap_drop_test $trap_name $group_name $swp1
-+
-+	log_test "Overlay source MAC is multicast"
-+
-+	devlink_trap_drop_cleanup $mz_pid $swp1 "ip"
-+}
-+
- trap cleanup EXIT
- 
- setup_prepare
+ 		ret = i40e_aq_get_rss_lut(hw, vsi->id, pf_lut, lut, lut_size);
+ 		if (ret) {
 -- 
-2.24.1
+2.7.4
 
