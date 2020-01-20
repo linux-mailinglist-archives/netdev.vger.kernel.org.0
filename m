@@ -2,112 +2,108 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 62BED1424E7
-	for <lists+netdev@lfdr.de>; Mon, 20 Jan 2020 09:19:47 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D4FB0142594
+	for <lists+netdev@lfdr.de>; Mon, 20 Jan 2020 09:29:45 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726876AbgATITl (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 20 Jan 2020 03:19:41 -0500
-Received: from us-smtp-1.mimecast.com ([207.211.31.81]:52449 "EHLO
-        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1726752AbgATITk (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 20 Jan 2020 03:19:40 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1579508379;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=jEiSgvaAAQAeTsd3Se/ZuFf+OWr2upYmR4dY+/WXBIE=;
-        b=ibL7D0nYBdVAuzgQi1hQ4cGrzNLdMMOedSTC7t+QjxuXTyUh3aPc/std25xZPaGIVNqn6T
-        Lc2YbpBakfLwSdIu1X1yH7lMsEPV5HTRRFKzIBE+Lr/AlpQT2tQhTagCxhd6oi0csFDWl1
-        sYha7TiRS13k8k+z1EhpjfL6P40Zn/Y=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-429-P8KSRlF4PzGBmy91vGOhqQ-1; Mon, 20 Jan 2020 03:19:38 -0500
-X-MC-Unique: P8KSRlF4PzGBmy91vGOhqQ-1
-Received: from smtp.corp.redhat.com (int-mx08.intmail.prod.int.phx2.redhat.com [10.5.11.23])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id E91FADB60;
-        Mon, 20 Jan 2020 08:19:34 +0000 (UTC)
-Received: from [10.72.12.173] (ovpn-12-173.pek2.redhat.com [10.72.12.173])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 071CE2857A;
-        Mon, 20 Jan 2020 08:19:11 +0000 (UTC)
-Subject: Re: [PATCH 3/5] vDPA: introduce vDPA bus
-To:     Rob Miller <rob.miller@broadcom.com>
-Cc:     "Michael S. Tsirkin" <mst@redhat.com>,
-        linux-kernel@vger.kernel.org, kvm@vger.kernel.org,
-        virtualization@lists.linux-foundation.org,
-        Netdev <netdev@vger.kernel.org>,
-        "Bie, Tiwei" <tiwei.bie@intel.com>,
-        Jason Gunthorpe <jgg@mellanox.com>, maxime.coquelin@redhat.com,
-        "Liang, Cunming" <cunming.liang@intel.com>,
-        "Wang, Zhihong" <zhihong.wang@intel.com>,
-        "Wang, Xiao W" <xiao.w.wang@intel.com>, haotian.wang@sifive.com,
-        "Zhu, Lingshan" <lingshan.zhu@intel.com>, eperezma@redhat.com,
-        lulu@redhat.com, Parav Pandit <parav@mellanox.com>,
-        "Tian, Kevin" <kevin.tian@intel.com>, stefanha@redhat.com,
-        rdunlap@infradead.org, hch@infradead.org,
-        Ariel Adam <aadam@redhat.com>, jakub.kicinski@netronome.com,
-        Jiri Pirko <jiri@mellanox.com>, shahafs@mellanox.com,
-        hanand@xilinx.com, mhabets@solarflare.com
-References: <20200116124231.20253-1-jasowang@redhat.com>
- <20200116124231.20253-4-jasowang@redhat.com>
- <20200117070324-mutt-send-email-mst@kernel.org>
- <239b042c-2d9e-0eec-a1ef-b03b7e2c5419@redhat.com>
- <CAJPjb1+fG9L3=iKbV4Vn13VwaeDZZdcfBPvarogF_Nzhk+FnKg@mail.gmail.com>
-From:   Jason Wang <jasowang@redhat.com>
-Message-ID: <a4573aa4-f0d6-bb7d-763a-96352fc2c86e@redhat.com>
-Date:   Mon, 20 Jan 2020 16:19:10 +0800
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.8.0
+        id S1726876AbgATI31 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 20 Jan 2020 03:29:27 -0500
+Received: from mail-oi1-f195.google.com ([209.85.167.195]:39110 "EHLO
+        mail-oi1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726148AbgATI31 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 20 Jan 2020 03:29:27 -0500
+Received: by mail-oi1-f195.google.com with SMTP id z2so3823581oih.6;
+        Mon, 20 Jan 2020 00:29:26 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=tFqMTtRLSSI+O8N4QG8hNcWnZ16xdlM9eDNxrV6706I=;
+        b=Ni4dqih2pHK5KtdSs6JX2cEdrng5NUqRigPBK2qTfDPInRjY+Pa2vNpG00Bc4YqtBJ
+         DouV4ilzczYR1wzNowVJgxnrUNi7WW9lCyyojQt6XSQ+zjozamhz7qIKc11EzVbZamqr
+         D34sH477iWtAOcrkFL/0BOFe9YSkLOVZVzEErIqGiMCdGZkDwG4ZTcFyrcmfoicwt6GL
+         0x42vnhdHF9S+/vBFOQef9/BmVtCBPuZqh6S9SI9ChbhDoTobHBH24nKEYfuVQMZYigG
+         wLy15C1pupCq+E/GL2px5UXGxCHkHd4+w393m6TB3KHwbRxSI6AMETCrS4NtNsB12UPZ
+         pw3Q==
+X-Gm-Message-State: APjAAAU9wT6rKPLQTIhIUQ96CaX2E9QMz4kcQRRAbLGjrqw1q570Sm0F
+        4kg1oVuiZddhXhBRVFfXh38Lv/WuMXaAxXnhN/j1Tw==
+X-Google-Smtp-Source: APXvYqwVtDCTbfv44Zscj3VBgtNuG+yGRutOTjquJ+HIEAaRmbCFgSCQTDGmGD10uzPKuyM0U7PMWaKUkATjSMvJbxc=
+X-Received: by 2002:aca:1a06:: with SMTP id a6mr11555422oia.148.1579508966488;
+ Mon, 20 Jan 2020 00:29:26 -0800 (PST)
 MIME-Version: 1.0
-In-Reply-To: <CAJPjb1+fG9L3=iKbV4Vn13VwaeDZZdcfBPvarogF_Nzhk+FnKg@mail.gmail.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-X-Scanned-By: MIMEDefang 2.84 on 10.5.11.23
-Content-Transfer-Encoding: quoted-printable
+References: <cover.1579474569.git.fthain@telegraphics.com.au> <b47662493a776811d4d457e5a75e18a7169aed23.1579474569.git.fthain@telegraphics.com.au>
+In-Reply-To: <b47662493a776811d4d457e5a75e18a7169aed23.1579474569.git.fthain@telegraphics.com.au>
+From:   Geert Uytterhoeven <geert@linux-m68k.org>
+Date:   Mon, 20 Jan 2020 09:29:14 +0100
+Message-ID: <CAMuHMdWvJ975X7zz1C=1Sq=Yuf9nYY1zxWaJ=XCXJukfP=nygg@mail.gmail.com>
+Subject: Re: [PATCH net 04/19] net/sonic: Add mutual exclusion for accessing
+ shared state
+To:     Finn Thain <fthain@telegraphics.com.au>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
+        Chris Zankel <chris@zankel.net>,
+        Laurent Vivier <laurent@vivier.eu>,
+        netdev <netdev@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Hi Finn,
 
-On 2020/1/17 =E4=B8=8B=E5=8D=8810:12, Rob Miller wrote:
+On Mon, Jan 20, 2020 at 12:19 AM Finn Thain <fthain@telegraphics.com.au> wrote:
+> The netif_stop_queue() call in sonic_send_packet() races with the
+> netif_wake_queue() call in sonic_interrupt(). This causes issues
+> like "NETDEV WATCHDOG: eth0 (macsonic): transmit queue 0 timed out".
+> Fix this by disabling interrupts when accessing tx_skb[] and next_tx.
+> Update a comment to clarify the synchronization properties.
 >
+> Fixes: efcce839360f ("[PATCH] macsonic/jazzsonic network drivers update")
+> Tested-by: Stan Johnson <userm57@yahoo.com>
+> Signed-off-by: Finn Thain <fthain@telegraphics.com.au>
+
+Thanks for your patch!
+
+> --- a/drivers/net/ethernet/natsemi/sonic.c
+> +++ b/drivers/net/ethernet/natsemi/sonic.c
+> @@ -242,7 +242,7 @@ static void sonic_tx_timeout(struct net_device *dev)
+>   *   wake the tx queue
+>   * Concurrently with all of this, the SONIC is potentially writing to
+>   * the status flags of the TDs.
+> - * Until some mutual exclusion is added, this code will not work with SMP. However,
+> + * A spin lock is needed to make this work on SMP platforms. However,
+>   * MIPS Jazz machines and m68k Macs were all uni-processor machines.
+>   */
 >
->     >> + * @get_vendor_id:=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 Get id for=
- the vendor that
->     provides this device
->     >> + *=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0=
- =C2=A0 =C2=A0 =C2=A0 =C2=A0 @vdev: vdpa device
->     >> + *=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0=
- =C2=A0 =C2=A0 =C2=A0 =C2=A0 Returns u32: virtio vendor id
->     > what's the idea behind this? userspace normally doesn't interact
->     with
->     > this ... debugging?
+> @@ -252,6 +252,7 @@ static int sonic_send_packet(struct sk_buff *skb, struct net_device *dev)
+>         dma_addr_t laddr;
+>         int length;
+>         int entry;
+> +       unsigned long flags;
 >
+>         netif_dbg(lp, tx_queued, dev, "%s: skb=%p\n", __func__, skb);
 >
->     This allows some vendor specific driver on top of vDPA bus. If
->     this is
->     not interested, I can drop this.
+> @@ -273,6 +274,8 @@ static int sonic_send_packet(struct sk_buff *skb, struct net_device *dev)
+>                 return NETDEV_TX_OK;
+>         }
 >
-> RJM>] wouldn't=C2=A0 usage of get_device_id & get_vendor_id, beyond=20
-> reporting, tend to possibly leading to vendor specific code in the=20
-> framework instead of leaving the framework=C2=A0agnostic and leave the=20
-> vendor specific stuff to the vendor's vDPA device driver?
+> +       local_irq_save(flags);
+> +
 
+Wouldn't it be better to use a spinlock instead?
+It looks like all currently supported platforms (Mac, Jazz, and XT2000)
+do no support SMP, but I'm not 100% sure about the latter.
+And this generic sonic.c core may end up being used on other platforms
+that do support SMP.
 
-For virtio device id, I think it is needed for kernel/userspace to know=20
-which driver to load (e.g loading virtio-net for networking devic).
+Gr{oetje,eeting}s,
 
-For virtio vendor id, it was needed by kernel virtio driver, and virtio=20
-bus can match driver based on virtio vendor id. So it doesn't prevent=20
-3rd vendor specific driver for virtio device.
+                        Geert
 
-Maybe we can report VIRTIO_DEV_ANY_ID as vendor id to forbid vendor=20
-specific stuffs.
+-- 
+Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
 
-Thanks
-
-
+In personal conversations with technical people, I call myself a hacker. But
+when I'm talking to journalists I just say "programmer" or something like that.
+                                -- Linus Torvalds
