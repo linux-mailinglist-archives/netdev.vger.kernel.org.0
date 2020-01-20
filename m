@@ -2,57 +2,57 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id BEE9E1430DC
-	for <lists+netdev@lfdr.de>; Mon, 20 Jan 2020 18:34:31 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 34D161430E5
+	for <lists+netdev@lfdr.de>; Mon, 20 Jan 2020 18:39:38 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728712AbgATReO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 20 Jan 2020 12:34:14 -0500
-Received: from mail-pl1-f195.google.com ([209.85.214.195]:34989 "EHLO
-        mail-pl1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726999AbgATReN (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 20 Jan 2020 12:34:13 -0500
-Received: by mail-pl1-f195.google.com with SMTP id g6so144120plt.2
-        for <netdev@vger.kernel.org>; Mon, 20 Jan 2020 09:34:13 -0800 (PST)
+        id S1727092AbgATRjf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 20 Jan 2020 12:39:35 -0500
+Received: from mail-pg1-f193.google.com ([209.85.215.193]:33566 "EHLO
+        mail-pg1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726642AbgATRjf (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 20 Jan 2020 12:39:35 -0500
+Received: by mail-pg1-f193.google.com with SMTP id 6so41155pgk.0
+        for <netdev@vger.kernel.org>; Mon, 20 Jan 2020 09:39:34 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=networkplumber-org.20150623.gappssmtp.com; s=20150623;
         h=date:from:to:cc:subject:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=Z+QrJanorr9UVl9xK1s8KePFfb6+RvxhEEGhXMh2RWc=;
-        b=fWqIPxB6yDZgEx/XW1vmkftNcmNMPONb6f4njQOoEgEM/BmenOdDvRC+yKzwf35AN3
-         M4Z/jZBQOyTS8+EkxvdNUrMjvM7nLhtcEswQEWqeS2jcPpNWyZA93N27CF7ar7kGmNgc
-         chNWzTR+XtnDK7ZWPXOnHNOFWC2M4TYbFNacm0iSYcwLQrDU26VyAA0IXdOdapapZr+K
-         csZYdrPYttDioBTq3W1FRt6oEQp6QZ/MslIcbkpopbb9KHAl1SYfK5lrSWDE6ZE6g0v6
-         c5+Xg+SijF3adZrhBdIoRma2/FxBFpwSqG8rGdatFG8w77bCiUyNqHp1sodd1apwNxHT
-         /RFA==
+        bh=rESkrE6wbtqjBlbhD/0AjEwSR4uvpy8zo9mhbakE6ZM=;
+        b=F6OA/sOhav3s28PIqcmCAuQEp0Y6pqSsbfTHVS9Z1MGaBrQfTCAlKfj9MGsnOvX4qY
+         +Sb8hAGhFSqOv9HBs6bcleKCpBGtkgnxcM+hNZL1jhBSOIBiDEBr/HuAlYsczr/2tZU8
+         OZpvKhFIbY5PQ0pF+asojEDlVzmdvvNVDGoy0/Xih75kxCXq9RTjVJb1lyicOLMvlLaM
+         Du2OxOeg10TB19TolMvzrLut/LBjWY9LUuNWTg7jeDuYRYURKZR3HqCM4/iMzeeYjB/X
+         neoZLQfvexu+SMFN5cV/StrPkkj05cJ5B63m5EevPTXqY0BCYs1rV9jkR3gzrdx60GFo
+         uZxg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=Z+QrJanorr9UVl9xK1s8KePFfb6+RvxhEEGhXMh2RWc=;
-        b=At0ITQNOGKIh8uR2nYyQDmX21mLnhweZvxSnvcrWIoT6DrnHJJe7CwYnaSzFWsPfbd
-         EMqMDmNUZfNBgzShbI5tkk6qOEWwp2BvJxse9Qgfe/gbxJzMF+euxglNMlwXLIfPUQ9/
-         68gowNUdpxmpumPq8XY4dTmbOGNDUpDzYsclp2f/Hx4LGoreftF4p8o2F5Cxe5db/QiQ
-         /lK0+im4fP/QXmjFtndkWK9XrfLW120IMxhWgQQPA7eTMx4f79cTa+AB4DeTHfpppuBy
-         64GyEdpCC+7y/JwjwHn2Ms/4C/6jc5zA078y1Dp5h8VwcEopa5ej+sc7KwtOZSpwdnuz
-         ICdQ==
-X-Gm-Message-State: APjAAAUDT2Pyd7XDiP4zGXAAxM6wdJFzhmSzKwOp0lP0zZfwlZnyzsbI
-        0ogow9Xp9K5MJlJ9u2VPCa4mwA==
-X-Google-Smtp-Source: APXvYqyhn4daTyL4R3gK2dcVPR+gQluNmWJkuM8JOmX5IeXFHyLb+n/4II6kf5Bnb+zzIWYb9V7/AQ==
-X-Received: by 2002:a17:902:8a8d:: with SMTP id p13mr787946plo.159.1579541653086;
-        Mon, 20 Jan 2020 09:34:13 -0800 (PST)
+        bh=rESkrE6wbtqjBlbhD/0AjEwSR4uvpy8zo9mhbakE6ZM=;
+        b=E/vfVFBVv0JXxZVSSBOZ9EqaMYlrS+K4b6/t8WsoHgvJ7CAArGyyuIs+f+LunsTk6X
+         ZuK3KBlTtcK87ecCtePOADhCGx6sGgoCqA5Klnvv5/OCxQcnpScst0Fk7FcfV9iamsfC
+         yC5F/SA9q7ndly5e0+vBvqGRonqVgVt5crEDCY7ExmvCoVG2gX6NHeFfE7LilaPPgkSn
+         +gEhOT8U4JAm13rGQU5Wafuqkj8O3H/udizEfM+RHxXH3MzPLOGmaOpyk0Oo4asT9cLH
+         s3NG4ItdiwW3XWXDNWbxTMVV2BhKZeaO3R5j+6Zv/0c0nvVc5+3hQTuToAqlCI74sQzY
+         yFbw==
+X-Gm-Message-State: APjAAAV8ieFydU/S2jMJ0VHnWk0Esd2wv6Jp73GQuULPgJLtRXOcutIq
+        Q48SVq1lSmW+z+Q74ZqQ+ctWAA==
+X-Google-Smtp-Source: APXvYqxReTsDCHn6G1vcLRFXDNg1pD4UuA2Jb13gHZ+XuN6zZPuFOEwRlxt+cZVVE+Sbpq45qyprIA==
+X-Received: by 2002:aa7:9edd:: with SMTP id r29mr311046pfq.14.1579541974334;
+        Mon, 20 Jan 2020 09:39:34 -0800 (PST)
 Received: from hermes.lan (204-195-22-127.wavecable.com. [204.195.22.127])
-        by smtp.gmail.com with ESMTPSA id ep12sm76632pjb.7.2020.01.20.09.34.12
+        by smtp.gmail.com with ESMTPSA id d1sm95101pjx.6.2020.01.20.09.39.33
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 20 Jan 2020 09:34:12 -0800 (PST)
-Date:   Mon, 20 Jan 2020 09:34:04 -0800
+        Mon, 20 Jan 2020 09:39:34 -0800 (PST)
+Date:   Mon, 20 Jan 2020 09:39:26 -0800
 From:   Stephen Hemminger <stephen@networkplumber.org>
-To:     Vladis Dronov <vdronov@redhat.com>
+To:     Roi Dayan <roid@mellanox.com>
 Cc:     netdev@vger.kernel.org, David Ahern <dsahern@gmail.com>,
-        George Shuklin <george.shuklin@gmail.com>
-Subject: Re: [PATCH iproute2] ip: fix link type and vlan oneline output
-Message-ID: <20200120093404.172208c2@hermes.lan>
-In-Reply-To: <20200119011251.7153-1-vdronov@redhat.com>
-References: <20200119011251.7153-1-vdronov@redhat.com>
+        Jiri Pirko <jiri@mellanox.com>
+Subject: Re: [PATCH iproute2] tc: flower: fix print with oneline option
+Message-ID: <20200120093926.1bf3ce01@hermes.lan>
+In-Reply-To: <20200107092210.1562-1-roid@mellanox.com>
+References: <20200107092210.1562-1-roid@mellanox.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
@@ -61,46 +61,62 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, 19 Jan 2020 02:12:51 +0100
-Vladis Dronov <vdronov@redhat.com> wrote:
+On Tue,  7 Jan 2020 11:22:10 +0200
+Roi Dayan <roid@mellanox.com> wrote:
 
-> Move link type printing in print_linkinfo() so multiline output does not
-> break link options line. Add oneline support for vlan's ingress and egress
-> qos maps.
+> This commit fix all location in flower to use _SL_ instead of \n for
+> newline to allow support for oneline option.
 > 
-> Before the fix:
+> Example before this commit:
 > 
-> # ip -details link show veth90.4000
-> 5: veth90.4000@veth90: <BROADCAST,MULTICAST,M-DOWN> mtu 1500 qdisc noop state DOWN mode DEFAULT group default qlen 1000
->     link/ether 26:9a:05:af:db:00 brd ff:ff:ff:ff:ff:ff promiscuity 0 minmtu 0 maxmtu 65535
->     vlan protocol 802.1Q id 4000 <REORDER_HDR>               the option line is broken ^^^
->       ingress-qos-map { 1:2 }
->       egress-qos-map { 2:1 } addrgenmode eui64 numtxqueues 1 numrxqueues 1 gso_max_size 65536 gso_max_segs 65535
+> filter protocol ip pref 2 flower chain 0 handle 0x1
+>   indev ens1f0
+>   dst_mac 11:22:33:44:55:66
+>   eth_type ipv4
+>   ip_proto tcp
+>   src_ip 2.2.2.2
+>   src_port 99
+>   dst_port 1-10\  tcp_flags 0x5/5
+>   ip_flags frag
+>   ct_state -trk\  ct_zone 4\  ct_mark 255
+>   ct_label 00000000000000000000000000000000
+>   skip_hw
+>   not_in_hw\    action order 1: ct zone 5 pipe
+>          index 1 ref 1 bind 1 installed 287 sec used 287 sec
+>         Action statistics:\     Sent 0 bytes 0 pkt (dropped 0, overlimits 0 requeues 0)
+>         backlog 0b 0p requeues 0\
 > 
-> # ip -oneline -details link show veth90.4000
-> 5: veth90.4000@veth90: <BROADCAST,MULTICAST,M-DOWN> mtu 1500 qdisc noop state DOWN mode DEFAULT group default qlen 1000\    link/ether 26:9a:05:af:db:00 brd ff:ff:ff:ff:ff:ff promiscuity 0 minmtu 0 maxmtu 65535 \    vlan protocol 802.1Q id 4000 <REORDER_HDR>
->       ingress-qos-map { 1:2 }   <<< a multiline output despite -oneline
->       egress-qos-map { 2:1 } addrgenmode eui64 numtxqueues 1 numrxqueues 1 gso_max_size 65536 gso_max_segs 65535
+> Example output after this commit:
 > 
-> After the fix:
+> filter protocol ip pref 2 flower chain 0 handle 0x1 \  indev ens1f0\  dst_mac 11:22:33:44:55:66\  eth_type ipv4\  ip_proto tcp\  src_ip 2.2.2.2\  src_port 99\  dst_port 1-10\  tcp_flags 0x5/5\  ip_flags frag\  ct_state -trk\  ct_zone 4\  ct_mark 255\  ct_label 00000000000000000000000000000000\  skip_hw\  not_in_hw\action order 1: ct zone 5 pipe
+>          index 1 ref 1 bind 1 installed 346 sec used 346 sec
+>         Action statistics:\     Sent 0 bytes 0 pkt (dropped 0, overlimits 0 requeues 0)
+>         backlog 0b 0p requeues 0\
 > 
-> # ip -details link show veth90.4000
-> 5: veth90.4000@veth90: <BROADCAST,MULTICAST,M-DOWN> mtu 1500 qdisc noop state DOWN mode DEFAULT group default qlen 1000
->     link/ether 26:9a:05:af:db:00 brd ff:ff:ff:ff:ff:ff promiscuity 0 minmtu 0 maxmtu 65535 addrgenmode eui64 numtxqueues 1 numrxqueues 1 gso_max_size 65536 gso_max_segs 65535
->     vlan protocol 802.1Q id 4000 <REORDER_HDR>
->       ingress-qos-map { 1:2 }
->       egress-qos-map { 2:1 }
-> 
-> # ip -oneline -details link show veth90.4000
-> 5: veth90.4000@veth90: <BROADCAST,MULTICAST,M-DOWN> mtu 1500 qdisc noop state DOWN mode DEFAULT group default qlen 1000\    link/ether 26:9a:05:af:db:00 brd ff:ff:ff:ff:ff:ff promiscuity 0 minmtu 0 maxmtu 65535 addrgenmode eui64 numtxqueues 1 numrxqueues 1 gso_max_size 65536 gso_max_segs 65535 \    vlan protocol 802.1Q id 4000 <REORDER_HDR> \      ingress-qos-map { 1:2 } \      egress-qos-map { 2:1 }
-> 
-> Link: https://bugzilla.kernel.org/show_bug.cgi?id=206241
-> Reported-by: George Shuklin <george.shuklin@gmail.com>
-> Signed-off-by: Vladis Dronov <vdronov@redhat.com>
+> Signed-off-by: Roi Dayan <roid@mellanox.com>
+> Acked-by: Jiri Pirko <jiri@mellanox.com>
 
-Applied with changes.
-The change to ipaddress.c was incorrect. You can't change the order of things in the
-output.
+In general this is fine. A couple of small style issues.
+You may have noticed that iproute2 uses kernel formatting style.
+Therefore checkpatch is useful tool to look for these.
 
-Second, you needed to have a Fixes tag. In this case, it went back to original
-vlan support.
+ERROR: space required after that ',' (ctx:VxV)
+#187: FILE: tc/f_flower.c:1898:q
++	sprintf(namefrm,"  %s %%u", name);
+ 	               ^
+
+ERROR: else should follow close brace '}'
+#326: FILE: tc/f_flower.c:2295:
+ 		}
++		else if (flags & TCA_CLS_FLAGS_NOT_IN_HW) {
+
+
+ERROR: space required after that ',' (ctx:VxV)
+#187: FILE: tc/f_flower.c:1898:
++	sprintf(namefrm,"  %s %%u", name);
+ 	               ^
+
+ERROR: else should follow close brace '}'
+#326: FILE: tc/f_flower.c:2295:
+ 		}
++		else if (flags & TCA_CLS_FLAGS_NOT_IN_HW) {
