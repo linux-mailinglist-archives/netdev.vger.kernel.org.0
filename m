@@ -2,158 +2,148 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id BA68D142489
-	for <lists+netdev@lfdr.de>; Mon, 20 Jan 2020 08:54:49 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 267471424AF
+	for <lists+netdev@lfdr.de>; Mon, 20 Jan 2020 09:02:08 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726584AbgATHxw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 20 Jan 2020 02:53:52 -0500
-Received: from out5-smtp.messagingengine.com ([66.111.4.29]:45965 "EHLO
-        out5-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726590AbgATHxu (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 20 Jan 2020 02:53:50 -0500
-Received: from compute3.internal (compute3.nyi.internal [10.202.2.43])
-        by mailout.nyi.internal (Postfix) with ESMTP id 9CBF0218BB;
-        Mon, 20 Jan 2020 02:53:49 -0500 (EST)
-Received: from mailfrontend1 ([10.202.2.162])
-  by compute3.internal (MEProxy); Mon, 20 Jan 2020 02:53:49 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-        messagingengine.com; h=cc:content-transfer-encoding:date:from
-        :in-reply-to:message-id:mime-version:references:subject:to
-        :x-me-proxy:x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=
-        fm1; bh=URDWYDbQk5/VVFN649YYw04SlKZkStLWmnW31bdrx6c=; b=PeSlrPWP
-        R3RF3gS7GBGB/4hNhPy9qUFns9d/Spp9VXkc1eGgk2thw7W455qE1mGQLc4rGgkv
-        8Q9WvWFzL8DAJcTOWHIMNB/WT0rX6tIKM2pNslNQoqOC2OiLg4s2XV64FVVnQRz1
-        UhTd2LpsftyL2cce2caNH0QN8D/o07qH7SlMDNTV0jPfgmCt4fVZT7CsdcHgO+wV
-        m2OLpHIpiBW6UImmqwADH7zPCi6mhf0pA73MNOYy70aJEx158ZA0OAZA7XUdtTFf
-        ELLQGCLITrU3S6OAX5K3yqjrteQEuKJU/QiKHqGgjLsXgWaQDm6fKTUvkJzMOACZ
-        pBjabuJ4rYgMDA==
-X-ME-Sender: <xms:jVwlXmC6VfZOnjmkQQ1AFBiIIo9MMSYV8rciEDoJTj5rvCOaJzgJBQ>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedugedrudeggdduuddvucetufdoteggodetrfdotf
-    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
-    uceurghilhhouhhtmecufedttdenucenucfjughrpefhvffufffkofgjfhgggfestdekre
-    dtredttdenucfhrhhomhepkfguohcuufgthhhimhhmvghluceoihguohhstghhsehiugho
-    shgthhdrohhrgheqnecukfhppeduleefrdegjedrudeihedrvdehudenucfrrghrrghmpe
-    hmrghilhhfrhhomhepihguohhstghhsehiughoshgthhdrohhrghenucevlhhushhtvghr
-    ufhiiigvpedt
-X-ME-Proxy: <xmx:jVwlXs2HHboxjrUkyxxoT2_dLxeKtTMSOXq62G5-u7pz2lc3ati0Rg>
-    <xmx:jVwlXsUJkMziiTCp2jUKDL48ieJ0vci-hPSZMnGXlGiMnwySYo0fog>
-    <xmx:jVwlXmnGSjJEuD-vyYxy1v28Q3CIgkSaQWJOYxJr2vQcLlyAdRhGCw>
-    <xmx:jVwlXmSXmPa_V6S3pJWOe6jUvj9bBM_CHYzqD1ThyUUf9v7LBinNWA>
-Received: from splinter.mtl.com (unknown [193.47.165.251])
-        by mail.messagingengine.com (Postfix) with ESMTPA id 5B7EE80061;
-        Mon, 20 Jan 2020 02:53:48 -0500 (EST)
-From:   Ido Schimmel <idosch@idosch.org>
-To:     netdev@vger.kernel.org
-Cc:     davem@davemloft.net, jiri@mellanox.com, mlxsw@mellanox.com,
-        Ido Schimmel <idosch@mellanox.com>
-Subject: [PATCH net-next 4/4] spectrum: Add a delayed work to update SPAN buffsize according to speed
-Date:   Mon, 20 Jan 2020 09:52:53 +0200
-Message-Id: <20200120075253.3356176-5-idosch@idosch.org>
-X-Mailer: git-send-email 2.24.1
-In-Reply-To: <20200120075253.3356176-1-idosch@idosch.org>
-References: <20200120075253.3356176-1-idosch@idosch.org>
+        id S1726738AbgATIBj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 20 Jan 2020 03:01:39 -0500
+Received: from us-smtp-delivery-1.mimecast.com ([205.139.110.120]:35934 "EHLO
+        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+        with ESMTP id S1725872AbgATIBg (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 20 Jan 2020 03:01:36 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1579507295;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=Iz/qjvodYnEnB5eFL79FzYhZwFSrGU3EpRLL9cwpXcI=;
+        b=EURITZ+SqOjV5q7tLanZ7k6cj3rvCr7qPBFeWkFZ7XF0NeUWzqDey1P9JYPhqooprN6qg6
+        DG4Es+o7q7Z5QtYZ2Pb0BbyUi8g9PVA+eQlYO6u7UjbtwgoN99sw4lVJ5A/8HCnaGlhJv3
+        5ASmLblzD+5ajZwzWH35AFFxwTfTQDk=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-68-gYKPL3i1Oa25naBeSRDvIw-1; Mon, 20 Jan 2020 03:01:33 -0500
+X-MC-Unique: gYKPL3i1Oa25naBeSRDvIw-1
+Received: from smtp.corp.redhat.com (int-mx07.intmail.prod.int.phx2.redhat.com [10.5.11.22])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id CA35A10054E3;
+        Mon, 20 Jan 2020 08:01:30 +0000 (UTC)
+Received: from [10.72.12.173] (ovpn-12-173.pek2.redhat.com [10.72.12.173])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id B046510013A7;
+        Mon, 20 Jan 2020 08:01:11 +0000 (UTC)
+Subject: Re: [PATCH 5/5] vdpasim: vDPA device simulator
+To:     Jason Gunthorpe <jgg@mellanox.com>
+Cc:     "mst@redhat.com" <mst@redhat.com>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
+        "virtualization@lists.linux-foundation.org" 
+        <virtualization@lists.linux-foundation.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "tiwei.bie@intel.com" <tiwei.bie@intel.com>,
+        "maxime.coquelin@redhat.com" <maxime.coquelin@redhat.com>,
+        "cunming.liang@intel.com" <cunming.liang@intel.com>,
+        "zhihong.wang@intel.com" <zhihong.wang@intel.com>,
+        "rob.miller@broadcom.com" <rob.miller@broadcom.com>,
+        "xiao.w.wang@intel.com" <xiao.w.wang@intel.com>,
+        "haotian.wang@sifive.com" <haotian.wang@sifive.com>,
+        "lingshan.zhu@intel.com" <lingshan.zhu@intel.com>,
+        "eperezma@redhat.com" <eperezma@redhat.com>,
+        "lulu@redhat.com" <lulu@redhat.com>,
+        Parav Pandit <parav@mellanox.com>,
+        "kevin.tian@intel.com" <kevin.tian@intel.com>,
+        "stefanha@redhat.com" <stefanha@redhat.com>,
+        "rdunlap@infradead.org" <rdunlap@infradead.org>,
+        "hch@infradead.org" <hch@infradead.org>,
+        "aadam@redhat.com" <aadam@redhat.com>,
+        "jakub.kicinski@netronome.com" <jakub.kicinski@netronome.com>,
+        Jiri Pirko <jiri@mellanox.com>,
+        Shahaf Shuler <shahafs@mellanox.com>,
+        "hanand@xilinx.com" <hanand@xilinx.com>,
+        "mhabets@solarflare.com" <mhabets@solarflare.com>,
+        "kuba@kernel.org" <kuba@kernel.org>
+References: <20200116124231.20253-1-jasowang@redhat.com>
+ <20200116124231.20253-6-jasowang@redhat.com>
+ <20200116154658.GJ20978@mellanox.com>
+ <aea2bff8-82c8-2c0f-19ee-e86db73e199f@redhat.com>
+ <20200117141021.GW20978@mellanox.com>
+From:   Jason Wang <jasowang@redhat.com>
+Message-ID: <cd5477b1-7e41-aeeb-c592-09b2ec81566a@redhat.com>
+Date:   Mon, 20 Jan 2020 16:01:10 +0800
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.8.0
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+In-Reply-To: <20200117141021.GW20978@mellanox.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+X-Scanned-By: MIMEDefang 2.84 on 10.5.11.22
+Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Jiri Pirko <jiri@mellanox.com>
 
-When PUDE event is handled and the link is up, update the port SPAN
-buffer size according to the current speed.
+On 2020/1/17 =E4=B8=8B=E5=8D=8810:10, Jason Gunthorpe wrote:
+> On Fri, Jan 17, 2020 at 05:32:39PM +0800, Jason Wang wrote:
+>> On 2020/1/16 =E4=B8=8B=E5=8D=8811:47, Jason Gunthorpe wrote:
+>>> On Thu, Jan 16, 2020 at 08:42:31PM +0800, Jason Wang wrote:
+>>>> This patch implements a software vDPA networking device. The datapat=
+h
+>>>> is implemented through vringh and workqueue. The device has an on-ch=
+ip
+>>>> IOMMU which translates IOVA to PA. For kernel virtio drivers, vDPA
+>>>> simulator driver provides dma_ops. For vhost driers, set_map() metho=
+ds
+>>>> of vdpa_config_ops is implemented to accept mappings from vhost.
+>>>>
+>>>> A sysfs based management interface is implemented, devices are
+>>>> created and removed through:
+>>>>
+>>>> /sys/devices/virtual/vdpa_simulator/netdev/{create|remove}
+>>> This is very gross, creating a class just to get a create/remove and
+>>> then not using the class for anything else? Yuk.
+>>
+>> It includes more information, e.g the devices and the link from vdpa_s=
+im
+>> device and vdpa device.
+> I feel like regardless of how the device is created there should be a
+> consistent virtio centric management for post-creation tasks, such as
+> introspection and destruction
 
-Signed-off-by: Jiri Pirko <jiri@mellanox.com>
-Signed-off-by: Ido Schimmel <idosch@mellanox.com>
----
- drivers/net/ethernet/mellanox/mlxsw/spectrum.c   |  4 ++++
- drivers/net/ethernet/mellanox/mlxsw/spectrum.h   |  3 +++
- .../net/ethernet/mellanox/mlxsw/spectrum_span.c  | 16 ++++++++++++++++
- .../net/ethernet/mellanox/mlxsw/spectrum_span.h  |  1 +
- 4 files changed, 24 insertions(+)
 
-diff --git a/drivers/net/ethernet/mellanox/mlxsw/spectrum.c b/drivers/net/ethernet/mellanox/mlxsw/spectrum.c
-index f6d2c6f6889f..9eb3ac7669f7 100644
---- a/drivers/net/ethernet/mellanox/mlxsw/spectrum.c
-+++ b/drivers/net/ethernet/mellanox/mlxsw/spectrum.c
-@@ -3908,6 +3908,8 @@ static int mlxsw_sp_port_create(struct mlxsw_sp *mlxsw_sp, u8 local_port,
- 
- 	INIT_DELAYED_WORK(&mlxsw_sp_port->ptp.shaper_dw,
- 			  mlxsw_sp->ptp_ops->shaper_work);
-+	INIT_DELAYED_WORK(&mlxsw_sp_port->span.speed_update_dw,
-+			  mlxsw_sp_span_speed_update_work);
- 
- 	mlxsw_sp->ports[local_port] = mlxsw_sp_port;
- 	err = register_netdev(dev);
-@@ -3964,6 +3966,7 @@ static void mlxsw_sp_port_remove(struct mlxsw_sp *mlxsw_sp, u8 local_port)
- 	struct mlxsw_sp_port *mlxsw_sp_port = mlxsw_sp->ports[local_port];
- 
- 	cancel_delayed_work_sync(&mlxsw_sp_port->periodic_hw_stats.update_dw);
-+	cancel_delayed_work_sync(&mlxsw_sp_port->span.speed_update_dw);
- 	cancel_delayed_work_sync(&mlxsw_sp_port->ptp.shaper_dw);
- 	mlxsw_sp_port_ptp_clear(mlxsw_sp_port);
- 	mlxsw_core_port_clear(mlxsw_sp->core, local_port, mlxsw_sp);
-@@ -4371,6 +4374,7 @@ static void mlxsw_sp_pude_event_func(const struct mlxsw_reg_info *reg,
- 		netdev_info(mlxsw_sp_port->dev, "link up\n");
- 		netif_carrier_on(mlxsw_sp_port->dev);
- 		mlxsw_core_schedule_dw(&mlxsw_sp_port->ptp.shaper_dw, 0);
-+		mlxsw_core_schedule_dw(&mlxsw_sp_port->span.speed_update_dw, 0);
- 	} else {
- 		netdev_info(mlxsw_sp_port->dev, "link down\n");
- 		netif_carrier_off(mlxsw_sp_port->dev);
-diff --git a/drivers/net/ethernet/mellanox/mlxsw/spectrum.h b/drivers/net/ethernet/mellanox/mlxsw/spectrum.h
-index 39c3d3ee79a6..5f3b74360dc8 100644
---- a/drivers/net/ethernet/mellanox/mlxsw/spectrum.h
-+++ b/drivers/net/ethernet/mellanox/mlxsw/spectrum.h
-@@ -294,6 +294,9 @@ struct mlxsw_sp_port {
- 		struct mlxsw_sp_ptp_port_stats stats;
- 	} ptp;
- 	u8 split_base_local_port;
-+	struct {
-+		struct delayed_work speed_update_dw;
-+	} span;
- };
- 
- struct mlxsw_sp_port_type_speed_ops {
-diff --git a/drivers/net/ethernet/mellanox/mlxsw/spectrum_span.c b/drivers/net/ethernet/mellanox/mlxsw/spectrum_span.c
-index 88b8edf14387..0cdd7954a085 100644
---- a/drivers/net/ethernet/mellanox/mlxsw/spectrum_span.c
-+++ b/drivers/net/ethernet/mellanox/mlxsw/spectrum_span.c
-@@ -778,6 +778,22 @@ int mlxsw_sp_span_port_mtu_update(struct mlxsw_sp_port *port, u16 mtu)
- 	return 0;
- }
- 
-+void mlxsw_sp_span_speed_update_work(struct work_struct *work)
-+{
-+	struct delayed_work *dwork = to_delayed_work(work);
-+	struct mlxsw_sp_port *mlxsw_sp_port;
-+
-+	mlxsw_sp_port = container_of(dwork, struct mlxsw_sp_port,
-+				     span.speed_update_dw);
-+
-+	/* If port is egress mirrored, the shared buffer size should be
-+	 * updated according to the speed value.
-+	 */
-+	if (mlxsw_sp_span_is_egress_mirror(mlxsw_sp_port))
-+		mlxsw_sp_span_port_buffsize_update(mlxsw_sp_port,
-+						   mlxsw_sp_port->dev->mtu);
-+}
-+
- static struct mlxsw_sp_span_inspected_port *
- mlxsw_sp_span_entry_bound_port_find(struct mlxsw_sp_span_entry *span_entry,
- 				    enum mlxsw_sp_span_type type,
-diff --git a/drivers/net/ethernet/mellanox/mlxsw/spectrum_span.h b/drivers/net/ethernet/mellanox/mlxsw/spectrum_span.h
-index 5e04252f2a11..59724335525f 100644
---- a/drivers/net/ethernet/mellanox/mlxsw/spectrum_span.h
-+++ b/drivers/net/ethernet/mellanox/mlxsw/spectrum_span.h
-@@ -74,5 +74,6 @@ void mlxsw_sp_span_entry_invalidate(struct mlxsw_sp *mlxsw_sp,
- 				    struct mlxsw_sp_span_entry *span_entry);
- 
- int mlxsw_sp_span_port_mtu_update(struct mlxsw_sp_port *port, u16 mtu);
-+void mlxsw_sp_span_speed_update_work(struct work_struct *work);
- 
- #endif
--- 
-2.24.1
+Right, actually, this is something that could be done by sysfs as well.=20
+Having an intermediate steps as "activate" and introducing attributes=20
+for post-creation tasks.
+
+
+>
+> A virto struct device should already have back pointers to it's parent
+> device, which should be enough to discover the vdpa_sim, none of the
+> extra sysfs munging should be needed.
+>
+>>>> Netlink based lifecycle management could be implemented for vDPA
+>>>> simulator as well.
+>>> This is just begging for a netlink based approach.
+>>>
+>>> Certainly netlink driven removal should be an agreeable standard for
+>>> all devices, I think.
+>>
+>> Well, I think Parav had some proposals during the discussion of mdev
+>> approach. But I'm not sure if he had any RFC codes for me to integrate=
+ it
+>> into vdpasim.
+>>
+>> Or do you want me to propose the netlink API? If yes, would you prefer=
+ to a
+>> new virtio dedicated one or be a subset of devlink?
+> Well, lets see what feed back Parav has
+>
+> Jason
+
+
+Ok.
+
+Thanks
 
