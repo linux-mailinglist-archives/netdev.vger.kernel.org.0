@@ -2,83 +2,108 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id AF760142268
-	for <lists+netdev@lfdr.de>; Mon, 20 Jan 2020 05:45:14 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B8A7C142286
+	for <lists+netdev@lfdr.de>; Mon, 20 Jan 2020 05:51:18 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729096AbgATEpI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 19 Jan 2020 23:45:08 -0500
-Received: from mail-lf1-f65.google.com ([209.85.167.65]:32871 "EHLO
-        mail-lf1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729043AbgATEpI (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 19 Jan 2020 23:45:08 -0500
-Received: by mail-lf1-f65.google.com with SMTP id n25so22942381lfl.0;
-        Sun, 19 Jan 2020 20:45:06 -0800 (PST)
+        id S1729091AbgATEvR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 19 Jan 2020 23:51:17 -0500
+Received: from mail-pf1-f196.google.com ([209.85.210.196]:37518 "EHLO
+        mail-pf1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729043AbgATEvR (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 19 Jan 2020 23:51:17 -0500
+Received: by mail-pf1-f196.google.com with SMTP id p14so15196866pfn.4
+        for <netdev@vger.kernel.org>; Sun, 19 Jan 2020 20:51:16 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=v4gNUzx14wi5Q2LGqxGckShRs7K+FGBFyHDqioJzbu8=;
-        b=kgvrbGR1TUzou0oyefZ/ZcSEKByOLic6u1/cL11Fsc+t6eVsyHyfzVSgRk1Jtw9xTF
-         41gdc+Q8Eug+UpY9hY4Yi9NO8qIDT5yFWFk7YwsaC3g5KWV9tdF+1ZGYl4lFzsch7C6r
-         zItDsoDiVguX+nRP23Bvjsr3xwLhGf6yDjea1pgGoarfLA0xLeyU3APZMSb8OzdADhQ1
-         p2k+Q6b7FJ4+OaMTwz8gq8rzDauLSafXUDgn87jXwVLZbEgbm7dLTKchwIyiSw7PsXQl
-         2ERieycrccayKPn6RFTAEGK81HPdotwjDXFVNTVjVzetRZFe/ndJ1HfQvVidbU+YCnLf
-         MKXQ==
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=XiNQBMy4emzr+DnqvKqpf3nLjG9MXGI38+suTtUz/4o=;
+        b=N6iXYBgMs0M9ErBGWK2gyka9jHGB/uGZmiPPgrUj0fakA4oVHFcFmtJB8M2gGlONXP
+         l96+9/dd97fhCQ6IYInsWIECMmyL3YfOPhaPOyuAcH0FoD3thvJzXJvmnyUkodPgCHiV
+         77Ztb4wOhwnQA5EYA4gyORmgcaG4n5CKea6praHbifHYvWgohjo5sxRSiOHMdbgjHgZ4
+         7t/rXyErTrPyb9WodVxlE+M2A270AeVjFkrx0H+XGM4i6RX0LHidahEH44Qecyb0Gg9K
+         rD56tnJJtpaswbNJLT/l9hsnqeRkL2/8kmLIBJ/tkHY2MV5ruoVv9op2rye4Hn9nvlUE
+         MeAQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=v4gNUzx14wi5Q2LGqxGckShRs7K+FGBFyHDqioJzbu8=;
-        b=gmJYAdoNMlfW38ROR7arodwGHjwvK3rTaQtavbb1zUCvuPEDdAfiybIh+RfHZqWzCX
-         Q95MpHegapVj6bq9EGSPsCesEquHFCoPlJvmc1NcVHlIeI2jg8rak0kErebhiq1k4XYZ
-         6fLzDDb2G2JoygxZnEd1J5ypdBDcQS/rAYLzz4bxaIyRMhe3Gc1uC33kW73Qd5XQDbJl
-         g1KmyZp5ARsxdEOId28BaH9yb4DHr1y4dnsy7sjIotm/iMnlJKq/ysmdBZkqDu/jg+Af
-         kEgr+/NravCU3aGzoESIg3tSJ/J4mKnnN65Tc9n1HLC7FJvbhoZK9ZUgQakegNi+9kdl
-         GkNA==
-X-Gm-Message-State: APjAAAUC+hyuV2RV1+LeRFN8aGoe72OX0VQ4fgM22p8QgFAK/F3NcVOj
-        rjyanawnFRFRMSVon2qvGSeToQoTlSQYD2ohfBGJDF7q
-X-Google-Smtp-Source: APXvYqw2yRksWZ+WJFnHMGInLgk7eBdsHBiSS9/DcGZk4AWnUQgqGdvhA8tOYHcJPcS/cFwuMq4OsOg4bWLsZ+qY6E8=
-X-Received: by 2002:a19:6d13:: with SMTP id i19mr12034062lfc.6.1579495505859;
- Sun, 19 Jan 2020 20:45:05 -0800 (PST)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=XiNQBMy4emzr+DnqvKqpf3nLjG9MXGI38+suTtUz/4o=;
+        b=KdsCe3OsD6VWqRrmbg4/Pfr1ueCkcoUThXDdKyKuuC3cIyHAsKBFkj1Bu61NGV2ZCI
+         MprWttwI1LEyfUxgz/xWGulPV17MGcc8h1b/lG5DTZjW8YAqfcrUqZzahnArqvhsIMX0
+         +UvOsfdIiEgHauOlb6a4YDGWldeGXh4nSj9p1T5z4GZUQbSn0nTzHi6zueHD0IKOUD8p
+         0DVcEqojnBWbJwIWXoEcjkKZvI8JSW/sNL+cjdj+nOz5NsfH/WRJvzSOAYzj1KflRPMc
+         5levFbZ0ZyUn1iM/Gyzrds1H1KKXEpa/w2DAh0iAvCbizsgvBgr9HtPh+vDhZUvniSIK
+         pODg==
+X-Gm-Message-State: APjAAAWIcZR4P1bCrSbU2ABLNane2yxRCvhD8yx8rNuvLYRZG99lcBc+
+        Iwbf6/cOriZJ4IsFIHQ19kQyr9W78Qo=
+X-Google-Smtp-Source: APXvYqz9hvRAO8qbsq5V7fZ6dPWA864URfqHNkrQJkOnBVaF4K7VBvlI3RtcvSFLTrJZJ7Cvw0lcZQ==
+X-Received: by 2002:a63:1502:: with SMTP id v2mr57726216pgl.376.1579495876193;
+        Sun, 19 Jan 2020 20:51:16 -0800 (PST)
+Received: from localhost.localdomain ([203.104.128.122])
+        by smtp.gmail.com with ESMTPSA id b20sm37974212pfi.153.2020.01.19.20.51.14
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Sun, 19 Jan 2020 20:51:15 -0800 (PST)
+From:   Yuki Taguchi <tagyounit@gmail.com>
+To:     netdev@vger.kernel.org
+Cc:     davem@davemloft.net, kuznet@ms2.inr.ac.ru, yoshfuji@linux-ipv6.org,
+        dlebrun@google.com, david.lebrun@uclouvain.be,
+        Yuki Taguchi <tagyounit@gmail.com>
+Subject: [PATCH net] ipv6: sr: remove SKB_GSO_IPXIP6 on End.D* actions
+Date:   Mon, 20 Jan 2020 13:48:37 +0900
+Message-Id: <20200120044837.76789-1-tagyounit@gmail.com>
+X-Mailer: git-send-email 2.20.1 (Apple Git-117)
 MIME-Version: 1.0
-References: <20200120032639.2963-1-xiaofeng.yan2012@gmail.com>
-In-Reply-To: <20200120032639.2963-1-xiaofeng.yan2012@gmail.com>
-From:   Taehee Yoo <ap420073@gmail.com>
-Date:   Mon, 20 Jan 2020 13:44:56 +0900
-Message-ID: <CAMArcTW6YXKjDnxq4bgqQM6aL=ZZ2u+SNVs+NXoA-HSLxaq16g@mail.gmail.com>
-Subject: Re: [PATCH] hsr: Fix a compilation error
-To:     "xiaofeng.yan" <xiaofeng.yan2012@gmail.com>
-Cc:     arvid.brodin@alten.se, David Miller <davem@davemloft.net>,
-        Netdev <netdev@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>, yanxiaofeng7@jd.com
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, 20 Jan 2020 at 12:26, xiaofeng.yan <xiaofeng.yan2012@gmail.com> wrote:
->
-> From: "xiaofeng.yan" <yanxiaofeng7@jd.com>
->
+After LRO/GRO is applied, SRv6 encapsulated packets have
+SKB_GSO_IPXIP6 feature flag, and this flag must be removed right after
+decapulation procedure.
 
-Hi Xiaofeng,
+Currently, SKB_GSO_IPXIP6 flag is not removed on End.D* actions, which
+creates inconsistent packet state, that is, a normal TCP/IP packets
+have the SKB_GSO_IPXIP6 flag. This behavior can cause unexpected
+fallback to GSO on routing to netdevices that do not support
+SKB_GSO_IPXIP6. For example, on inter-VRF forwarding, decapsulated
+packets separated into small packets by GSO because VRF devices do not
+support TSO for packets with SKB_GSO_IPXIP6 flag, and this degrades
+forwarding performance.
 
-> A compliation error happen when building branch 5.5-rc7
->
-> In file included from net/hsr/hsr_main.c:12:0:
-> net/hsr/hsr_main.h:194:20: error: two or more data types in declaration specifiers
->  static inline void void hsr_debugfs_rename(struct net_device *dev)
->
-> So Removed one void.
->
-> Signed-off-by: xiaofeng.yan <yanxiaofeng7@jd.com>
+This patch removes encapsulation related GSO flags from the skb right
+after the End.D* action is applied.
 
-Acked-by: Taehee Yoo <ap420073@gmail.com>
+Fixes: d7a669dd2f8b ("ipv6: sr: add helper functions for seg6local")
+Signed-off-by: Yuki Taguchi <tagyounit@gmail.com>
+---
+ net/ipv6/seg6_local.c | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
 
-I think the Fixes tag is needed.
-You might have to send a v2 patch, which includes this Fixes tag.
-Fixes: 4c2d5e33dcd3 ("hsr: rename debugfs file when interface name is changed")
+diff --git a/net/ipv6/seg6_local.c b/net/ipv6/seg6_local.c
+index 85a5447a3e8d..7cbc19731997 100644
+--- a/net/ipv6/seg6_local.c
++++ b/net/ipv6/seg6_local.c
+@@ -23,6 +23,7 @@
+ #include <net/addrconf.h>
+ #include <net/ip6_route.h>
+ #include <net/dst_cache.h>
++#include <net/ip_tunnels.h>
+ #ifdef CONFIG_IPV6_SEG6_HMAC
+ #include <net/seg6_hmac.h>
+ #endif
+@@ -135,7 +136,8 @@ static bool decap_and_validate(struct sk_buff *skb, int proto)
+ 
+ 	skb_reset_network_header(skb);
+ 	skb_reset_transport_header(skb);
+-	skb->encapsulation = 0;
++	if (iptunnel_pull_offloads(skb))
++		return false;
+ 
+ 	return true;
+ }
+-- 
+2.20.1 (Apple Git-117)
 
-Thank you!
-Taehee Yoo
