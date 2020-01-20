@@ -2,134 +2,137 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id B577E143382
-	for <lists+netdev@lfdr.de>; Mon, 20 Jan 2020 22:49:10 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 039B7143390
+	for <lists+netdev@lfdr.de>; Mon, 20 Jan 2020 22:56:26 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728680AbgATVtJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 20 Jan 2020 16:49:09 -0500
-Received: from us-smtp-1.mimecast.com ([205.139.110.61]:47102 "EHLO
+        id S1728750AbgATV4U (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 20 Jan 2020 16:56:20 -0500
+Received: from us-smtp-2.mimecast.com ([205.139.110.61]:26568 "EHLO
         us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1727312AbgATVtI (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 20 Jan 2020 16:49:08 -0500
+        by vger.kernel.org with ESMTP id S1726752AbgATV4T (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 20 Jan 2020 16:56:19 -0500
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1579556947;
+        s=mimecast20190719; t=1579557378;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          in-reply-to:in-reply-to:references:references;
-        bh=7XraG6j1N/y3xLCXP92Th/VKfxmhRZrdg4uwGLI/Vm4=;
-        b=b/oGc94Ifz3dnXu4d137Zl7ENNiYvuU4emeQUlY3tMmRediIJqph43VyGgpQheQ7O2WUve
-        2+BIvmKqb1SMDRfyLPEVzUmgC12oUxdqkKx0/SCyLTRKbNNcP4LI9pabEQuZ0UScWdrO+b
-        20jI9Fa3fINNxj5I53n2Y+isZpXdVqY=
-Received: from mail-qk1-f197.google.com (mail-qk1-f197.google.com
- [209.85.222.197]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-256-KhDpiAQpPYuy7bNLcqy4VA-1; Mon, 20 Jan 2020 16:49:06 -0500
-X-MC-Unique: KhDpiAQpPYuy7bNLcqy4VA-1
-Received: by mail-qk1-f197.google.com with SMTP id 24so547909qka.16
-        for <netdev@vger.kernel.org>; Mon, 20 Jan 2020 13:49:06 -0800 (PST)
+        bh=62LNkLQMXjSxzZ1qGIQnfYNgDgSpvkpj5nXVuzQSLnI=;
+        b=H1s3SHwKMXbHdsrs8727GxtDJBRc3UVRvqk7noaEDU4g9CCixc398oy1qP/dkG9rObPNg2
+        HCD2ezH1RvDzi/ZVwedN3e+zYcFoKj/AyelWdduT89BkE8mwwYG1Dt2qYTpa4TOy5dwCxV
+        WX6nJ+tJck5zRwcM7rQeaGPwyqO6Rro=
+Received: from mail-qt1-f199.google.com (mail-qt1-f199.google.com
+ [209.85.160.199]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-334-ywA3Uep8MNmMNZIWCJTxWw-1; Mon, 20 Jan 2020 16:56:16 -0500
+X-MC-Unique: ywA3Uep8MNmMNZIWCJTxWw-1
+Received: by mail-qt1-f199.google.com with SMTP id l1so634508qtp.21
+        for <netdev@vger.kernel.org>; Mon, 20 Jan 2020 13:56:16 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:date:from:to:cc:subject:message-id:references
          :mime-version:content-disposition:in-reply-to;
-        bh=7XraG6j1N/y3xLCXP92Th/VKfxmhRZrdg4uwGLI/Vm4=;
-        b=ptoeWEPc+Qeb2HPrtgqAiu6s6dFhTY2br9uh2xa/j+Fu2bggF+s6RnuH5g1E0EsceC
-         JqyTaLDEa8Tcnc9x4ocb3NgxFBBFkuhlEVB+wBpJW8NOBvP7FyZKhpNef54P18vga5wI
-         ikeeedqEPRvSpfs5OC2UuP2eDENhe1nCijOcQAaaMo3BvyqeYdU5K4wcUQAKvQDFR4ic
-         glSXi9fGBbrIcVShAHN8ID8EikNKb2k9iTSntpfyjC7zKJNpzupMd4RVoyPNnIlDrZ/h
-         azkAsCbU6LSP5+2kqI7xTpzydUosXWaKNMNCld13BZ2tPo+mzXqCqmzc4Vh/9Aee82bO
-         zCUw==
-X-Gm-Message-State: APjAAAWw2/orPag73e/dcz9NufI3lGvD/GHa0+ER07nfvzUdSUq8fsUW
-        2vzUDAJIxuEbdaSUJRsYNVZlk3nc2QDaHMtA3ZbYQa2AHcGEdmaPM3FPrpot0Hbf6j6oGUnKgTw
-        O5K+BgotBOlktaNkz
-X-Received: by 2002:ad4:478b:: with SMTP id z11mr1807818qvy.185.1579556945808;
-        Mon, 20 Jan 2020 13:49:05 -0800 (PST)
-X-Google-Smtp-Source: APXvYqxe+TaTURMeMIHCV1YM/fmBzkD8nEfrcjqkwq5BuJERHu3qsEZA9pujZr3ffzD4wXcl90YdAQ==
-X-Received: by 2002:ad4:478b:: with SMTP id z11mr1807796qvy.185.1579556945609;
-        Mon, 20 Jan 2020 13:49:05 -0800 (PST)
+        bh=62LNkLQMXjSxzZ1qGIQnfYNgDgSpvkpj5nXVuzQSLnI=;
+        b=J24hlcJIRImE464BvsTC8oZCDyKKqF0UAzOmyv0AD2Z3oCsb8d5VIc52y/spIwHh+e
+         VPV0sANlfW2bT1ExMu/QXKTVGZyF/Ra7C4RkRanF9Qw4IM1eQCYdJDWAYFaZ9lqMp9cw
+         mQ0MXikJzpjZlOtcMMcPZSyQ8lyn70hPODpycL2R8kbyWcnqOtGZ6zEPlER2Xo+Ueniy
+         0b4fpM3XSrPP90w8cxBZ3czjdZlQM7j8xrkLaNxwFdmvSCsXi3DHe1DpMuvdhIlYTfY8
+         uxZI7dqR3PKaTnI4lpX/AxJs9ad6qJwkfQMo+eBPjAy9Q8GsIBOyxoc0XHJs1cnApn14
+         ELFA==
+X-Gm-Message-State: APjAAAUP7lIMfwWqTog/RUM6NLf+wH/09bpsBM/N3dyocQRLWRrgPFCV
+        03Bd6zpvETiWPbxqpRrCqz6qD+D6CXE1RMhAP/eIvri393PQRNV9vwo4JCWUQyUXkIObpv1kzhz
+        8wY5e1zgWoBlCjSKj
+X-Received: by 2002:aed:27de:: with SMTP id m30mr1474668qtg.151.1579557376425;
+        Mon, 20 Jan 2020 13:56:16 -0800 (PST)
+X-Google-Smtp-Source: APXvYqw38PiLJQwBkH5yonvL8qdp0NwjRgW2RVHdE4B/0tWoQNPZFObTe7mxpwhkFj/2blsxmgzW3w==
+X-Received: by 2002:aed:27de:: with SMTP id m30mr1474647qtg.151.1579557376187;
+        Mon, 20 Jan 2020 13:56:16 -0800 (PST)
 Received: from redhat.com (bzq-79-179-85-180.red.bezeqint.net. [79.179.85.180])
-        by smtp.gmail.com with ESMTPSA id g18sm18570113qtc.83.2020.01.20.13.48.58
+        by smtp.gmail.com with ESMTPSA id z15sm7493120qtv.56.2020.01.20.13.56.09
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 20 Jan 2020 13:49:04 -0800 (PST)
-Date:   Mon, 20 Jan 2020 16:48:55 -0500
+        Mon, 20 Jan 2020 13:56:15 -0800 (PST)
+Date:   Mon, 20 Jan 2020 16:56:06 -0500
 From:   "Michael S. Tsirkin" <mst@redhat.com>
 To:     Jason Gunthorpe <jgg@mellanox.com>
 Cc:     Jason Wang <jasowang@redhat.com>,
-        Shahaf Shuler <shahafs@mellanox.com>,
-        Rob Miller <rob.miller@broadcom.com>,
         "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
         "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
         "virtualization@lists.linux-foundation.org" 
         <virtualization@lists.linux-foundation.org>,
-        Netdev <netdev@vger.kernel.org>,
-        "Bie, Tiwei" <tiwei.bie@intel.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "tiwei.bie@intel.com" <tiwei.bie@intel.com>,
         "maxime.coquelin@redhat.com" <maxime.coquelin@redhat.com>,
-        "Liang, Cunming" <cunming.liang@intel.com>,
-        "Wang, Zhihong" <zhihong.wang@intel.com>,
-        "Wang, Xiao W" <xiao.w.wang@intel.com>,
+        "cunming.liang@intel.com" <cunming.liang@intel.com>,
+        "zhihong.wang@intel.com" <zhihong.wang@intel.com>,
+        "rob.miller@broadcom.com" <rob.miller@broadcom.com>,
+        "xiao.w.wang@intel.com" <xiao.w.wang@intel.com>,
         "haotian.wang@sifive.com" <haotian.wang@sifive.com>,
-        "Zhu, Lingshan" <lingshan.zhu@intel.com>,
+        "lingshan.zhu@intel.com" <lingshan.zhu@intel.com>,
         "eperezma@redhat.com" <eperezma@redhat.com>,
         "lulu@redhat.com" <lulu@redhat.com>,
         Parav Pandit <parav@mellanox.com>,
-        "Tian, Kevin" <kevin.tian@intel.com>,
+        "kevin.tian@intel.com" <kevin.tian@intel.com>,
         "stefanha@redhat.com" <stefanha@redhat.com>,
         "rdunlap@infradead.org" <rdunlap@infradead.org>,
         "hch@infradead.org" <hch@infradead.org>,
-        Ariel Adam <aadam@redhat.com>,
+        "aadam@redhat.com" <aadam@redhat.com>,
         "jakub.kicinski@netronome.com" <jakub.kicinski@netronome.com>,
         Jiri Pirko <jiri@mellanox.com>,
+        Shahaf Shuler <shahafs@mellanox.com>,
         "hanand@xilinx.com" <hanand@xilinx.com>,
         "mhabets@solarflare.com" <mhabets@solarflare.com>
 Subject: Re: [PATCH 3/5] vDPA: introduce vDPA bus
-Message-ID: <20200120164756-mutt-send-email-mst@kernel.org>
+Message-ID: <20200120164916-mutt-send-email-mst@kernel.org>
 References: <20200116124231.20253-1-jasowang@redhat.com>
  <20200116124231.20253-4-jasowang@redhat.com>
- <20200117070324-mutt-send-email-mst@kernel.org>
- <239b042c-2d9e-0eec-a1ef-b03b7e2c5419@redhat.com>
- <CAJPjb1+fG9L3=iKbV4Vn13VwaeDZZdcfBPvarogF_Nzhk+FnKg@mail.gmail.com>
- <AM0PR0502MB379553984D0D55FDE25426F6C3330@AM0PR0502MB3795.eurprd05.prod.outlook.com>
- <d69918ca-8af4-44b2-9652-633530d4c113@redhat.com>
- <20200120174933.GB3891@mellanox.com>
+ <20200116152209.GH20978@mellanox.com>
+ <03cfbcc2-fef0-c9d8-0b08-798b2a293b8c@redhat.com>
+ <20200117135435.GU20978@mellanox.com>
+ <20200120071406-mutt-send-email-mst@kernel.org>
+ <20200120175050.GC3891@mellanox.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20200120174933.GB3891@mellanox.com>
+In-Reply-To: <20200120175050.GC3891@mellanox.com>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Jan 20, 2020 at 05:49:39PM +0000, Jason Gunthorpe wrote:
-> On Mon, Jan 20, 2020 at 04:43:53PM +0800, Jason Wang wrote:
-> > This is similar to the design of platform IOMMU part of vhost-vdpa. We
-> > decide to send diffs to platform IOMMU there. If it's ok to do that in
-> > driver, we can replace set_map with incremental API like map()/unmap().
+On Mon, Jan 20, 2020 at 05:50:55PM +0000, Jason Gunthorpe wrote:
+> On Mon, Jan 20, 2020 at 07:17:26AM -0500, Michael S. Tsirkin wrote:
+> > On Fri, Jan 17, 2020 at 01:54:42PM +0000, Jason Gunthorpe wrote:
+> > > > 1) "virtio" vs "vhost", I implemented matching method for this in mdev
+> > > > series, but it looks unnecessary for vDPA device driver to know about this.
+> > > > Anyway we can use sysfs driver bind/unbind to switch drivers
+> > > > 2) virtio device id and vendor id. I'm not sure we need this consider the
+> > > > two drivers so far (virtio/vhost) are all bus drivers.
+> > > 
+> > > As we seem to be contemplating some dynamic creation of vdpa devices I
+> > > think upon creation time it should be specified what mode they should
+> > > run it and then all driver binding and autoloading should happen
+> > > automatically. Telling the user to bind/unbind is a very poor
+> > > experience.
 > > 
-> > Then driver need to maintain rbtree itself.
+> > Maybe but OTOH it's an existing interface. I think we can reasonably
+> > start with bind/unbind and then add ability to specify
+> > the mode later. bind/unbind come from core so they will be
+> > maintained anyway.
 > 
-> I think we really need to see two modes, one where there is a fixed
-> translation without dynamic vIOMMU driven changes and one that
-> supports vIOMMU.
-> 
-> There are different optimization goals in the drivers for these two
-> configurations.
-> 
-> > > If the first one, then I think memory hotplug is a heavy flow
-> > > regardless. Do you think the extra cycles for the tree traverse
-> > > will be visible in any way?
-> > 
-> > I think if the driver can pause the DMA during the time for setting up new
-> > mapping, it should be fine.
-> 
-> This is very tricky for any driver if the mapping change hits the
-> virtio rings. :(
-> 
-> Even a IOMMU using driver is going to have problems with that..
+> Existing where?
+
+Driver core.
+
+> For vfio? vfio is the only thing I am aware doing
+> that, and this is not vfio..
 > 
 > Jason
 
-I think for starters we can assume this doesn't happen,
-so any change doesn't affect any buffers in use.
-Certainly true e.g. for memory hotplug.
+
+vfio is not doing anything. anyone can use a combination
+of unbind and driver_override to attach a driver to a device.
+
+It's not a great interface but it's there without any code,
+and it will stay there without maintainance overhead
+if we later add a nicer one.
 
 -- 
 MST
