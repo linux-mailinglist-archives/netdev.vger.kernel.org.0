@@ -2,50 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id B64DC1433A5
-	for <lists+netdev@lfdr.de>; Mon, 20 Jan 2020 23:04:39 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id DEB181433A6
+	for <lists+netdev@lfdr.de>; Mon, 20 Jan 2020 23:05:06 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727018AbgATWEh (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 20 Jan 2020 17:04:37 -0500
-Received: from mail-ed1-f68.google.com ([209.85.208.68]:41288 "EHLO
-        mail-ed1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726607AbgATWEh (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 20 Jan 2020 17:04:37 -0500
-Received: by mail-ed1-f68.google.com with SMTP id c26so975083eds.8
-        for <netdev@vger.kernel.org>; Mon, 20 Jan 2020 14:04:35 -0800 (PST)
+        id S1727075AbgATWFF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 20 Jan 2020 17:05:05 -0500
+Received: from mail-ed1-f65.google.com ([209.85.208.65]:43041 "EHLO
+        mail-ed1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726607AbgATWFF (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 20 Jan 2020 17:05:05 -0500
+Received: by mail-ed1-f65.google.com with SMTP id dc19so958877edb.10
+        for <netdev@vger.kernel.org>; Mon, 20 Jan 2020 14:05:03 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=subject:to:cc:references:from:autocrypt:message-id:date:user-agent
          :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=UtcqqUbEg+rY7DrkNwRBT86iXm10W/YOfsgZFTqgjDg=;
-        b=g5DR0Z6zkgTP68sleC4V67ZMz5gbs7u91dkhs9cFyChuI/pwnceL5CIjETl82LjxH3
-         tQTSwke3pJIrz2IwgJKVF2Ui8fXrMQGpY/upSMi+gXUtk0MbmdeZb3lx1sKbG3hbgQC0
-         IZ3o+fQbBsRiC/vzKNDcgQWEcZNIzhOV60n8DLroPoUG+tHkopxKE/uTBaTHVNd+7f9s
-         C4/mX/S7H2aAvX1EzKoY19P1rhzw9hZLnjTE2zKKAcpGhTLhZCwA6lNx2oyERMIfWffq
-         rX82+bDSq/g1Au4op4fMIONHOFxe1IV3YqQEE95EZeprE6SgHkk7iFkpwiRzYaFLzveT
-         k+dA==
+        bh=jDbePEtvYYFxCaf5hAkXCyCYiUXgV+W5Q4DBwC4auVc=;
+        b=tuiiYGm+ateJjhDBskrw4X7P+LgkKNLGXoqXHZVTV853dUQwCZCp9+p6aiVoJth6uM
+         MOurgSpK3uAPFJsYxsiVB7UmaWLImt7A1vT2Pban1vOkyrassXVE3qZ+ed4mZfgyct23
+         ngLa4YdA671vPq0cLDrzHF3rXjwohxz7y5oB+6Ulm5P99fHvuPEPgiEf6/YMhfbmdruI
+         bAA9c2MsuoTUOAAavm3Ankb5ADTkfXB5aJ6gxDnr32rTUyrBKLURLL4erJozIl2UWvgG
+         JbbHdALPgSkKoE8ZSKH8lmTCGW6n8wMJZYbaBn1D7yqpJRN/7KUBe6hqDhbowvl5rKli
+         udBA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:subject:to:cc:references:from:autocrypt
          :message-id:date:user-agent:mime-version:in-reply-to
          :content-language:content-transfer-encoding;
-        bh=UtcqqUbEg+rY7DrkNwRBT86iXm10W/YOfsgZFTqgjDg=;
-        b=Nf6PBXgApFpE0xKTXzGgn/QC7OItVLvLJ/kQ+nvMFC2UHLdHtrTpGsrD+Dg6U3hTzS
-         inn8uLTQ2tYjKHsVxFaI8Tqdn7JvEBqtn7ETX+0y/TDO1AYym9iIc07lDj+CKZwE6udW
-         a6JGAZ+s4bRvF3bjErwdINdwOdPOX5HOo+o2MwpvX5cNF/WzTAp85suMcM+lgPZ63hR9
-         KUa8fVkVaH5kiGgSV7c68Qfo0SuzeFk5ykzb95RhKds4DWXPWsXDl56n86/b0FenfFGa
-         s4tnajTdVJGHCefNT6sP7CSmStivRg7AmPUPSKzVl6p1jR3Knrz7PkIzjqxYOdlT+57h
-         ibbg==
-X-Gm-Message-State: APjAAAWdBN08CmXhwnOkIuh32fE7hBW62aRY+ma6/bTqWptUXctuAEcJ
-        w/i1q9ukjMfbSpe+oFmaw7lIQupN
-X-Google-Smtp-Source: APXvYqxjonSpSwpquo0QlW6zmXOa8UeMGPXpEmQ15JCnggHSYDg2SUyhbTAZ3dGo15gFQdQTdI6yJg==
-X-Received: by 2002:a17:906:1c89:: with SMTP id g9mr1525418ejh.114.1579557874884;
-        Mon, 20 Jan 2020 14:04:34 -0800 (PST)
+        bh=jDbePEtvYYFxCaf5hAkXCyCYiUXgV+W5Q4DBwC4auVc=;
+        b=nNf4FwqYIpXw6NmtrCgZWSsp2Rjhgm7MQp2jtQl+ploAbcGmVhP5NCfWsUlJpP4nU7
+         AvGSdBThXvxk8TRwPxU+Ny/9lvsHuzvWmjBp8P8aUVHlT5v53v3CiTxueAaYFD5+utbb
+         /85fTVirxXFefO8fcH5Zpf/6OCsdQpESbA2VxgqCCpUHLyTeFhONHrl4o8+ef77qrzsP
+         22qHcFgG567Z/9JGf+6QwagNi5kWztLAsn6Yn4GDrp8skTrn3ea2fmfrXA+75RAZzpIj
+         1TGYodMri531MiNXtNUq92EsiaEEewFFyKzPaeqa/ykD8tha0zEB3GNPSdt54vigULQB
+         lvNA==
+X-Gm-Message-State: APjAAAUhjz6lkDWWPRUYxiIzaGd56J7wqmBef+3LKnz+N7BqnpQDQ6TM
+        O0Z79Sc+2IaXmqW4dGYJ/SV49Dgo
+X-Google-Smtp-Source: APXvYqyOhQDJLx8sM7EiWzQPXcgnWok7g0m0d8sMWGJ+yCCOodAgwsTKf/0m5+fxid4IOCixJ6na8g==
+X-Received: by 2002:a17:906:6942:: with SMTP id c2mr1509633ejs.12.1579557902834;
+        Mon, 20 Jan 2020 14:05:02 -0800 (PST)
 Received: from [10.67.50.41] ([192.19.223.252])
-        by smtp.googlemail.com with ESMTPSA id j17sm1063418ejf.83.2020.01.20.14.04.32
+        by smtp.googlemail.com with ESMTPSA id a40sm1368084edf.90.2020.01.20.14.04.58
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 20 Jan 2020 14:04:34 -0800 (PST)
-Subject: Re: [PATCH net-next 2/3] net: phy: add new version of phy_do_ioctl
+        Mon, 20 Jan 2020 14:05:02 -0800 (PST)
+Subject: Re: [PATCH net-next 3/3] net: convert suitable network drivers to use
+ phy_do_ioctl
 To:     Heiner Kallweit <hkallweit1@gmail.com>,
         Andrew Lunn <andrew@lunn.ch>,
         David Miller <davem@davemloft.net>,
@@ -54,7 +55,7 @@ To:     Heiner Kallweit <hkallweit1@gmail.com>,
         Chris Snook <chris.snook@gmail.com>
 Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>
 References: <a7a6dc1f-b4d4-e36f-7408-31e4715d947f@gmail.com>
- <9ed8f7eb-c2b7-ae14-c3b3-83b0aee655c4@gmail.com>
+ <793a9ff0-3fa1-c811-fdd3-4a704d680371@gmail.com>
 From:   Florian Fainelli <f.fainelli@gmail.com>
 Autocrypt: addr=f.fainelli@gmail.com; prefer-encrypt=mutual; keydata=
  xsDiBEjPuBIRBACW9MxSJU9fvEOCTnRNqG/13rAGsj+vJqontvoDSNxRgmafP8d3nesnqPyR
@@ -110,12 +111,12 @@ Autocrypt: addr=f.fainelli@gmail.com; prefer-encrypt=mutual; keydata=
  HvsHIcv4lxCWkFXkwsuWqzEKK6kxVpRDoEQPDj+Oy/ZJ5fYuMbkdHrlegwoQ64LrqdmiVVPC
  TwQYEQIADwIbDAUCVF/S8QUJHlwd3wAKCRBhV5kVtWN2Do+FAJ956xSz2XpDHql+Wg/2qv3b
  G10n8gCguORqNGMsVRxrlLs7/himep7MrCc=
-Message-ID: <7629706a-3b91-e9a8-1605-ebc4eb36a6ca@gmail.com>
-Date:   Mon, 20 Jan 2020 14:04:31 -0800
+Message-ID: <b2ad5831-d8bc-8bb2-f632-5acfed5b9745@gmail.com>
+Date:   Mon, 20 Jan 2020 14:04:56 -0800
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
  Thunderbird/68.2.2
 MIME-Version: 1.0
-In-Reply-To: <9ed8f7eb-c2b7-ae14-c3b3-83b0aee655c4@gmail.com>
+In-Reply-To: <793a9ff0-3fa1-c811-fdd3-4a704d680371@gmail.com>
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
@@ -124,10 +125,8 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 1/20/20 1:17 PM, Heiner Kallweit wrote:
-> Add a new version of phy_do_ioctl that doesn't check whether net_device
-> is running. It will typically be used if suitable drivers attach the
-> PHY in probe already.
+On 1/20/20 1:18 PM, Heiner Kallweit wrote:
+> Convert suitable network drivers to use phy_do_ioctl.
 > 
 > Signed-off-by: Heiner Kallweit <hkallweit1@gmail.com>
 
