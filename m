@@ -2,65 +2,57 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 0C5171433CA
-	for <lists+netdev@lfdr.de>; Mon, 20 Jan 2020 23:16:23 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D4BAE1433CB
+	for <lists+netdev@lfdr.de>; Mon, 20 Jan 2020 23:16:27 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726897AbgATWQV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 20 Jan 2020 17:16:21 -0500
-Received: from www62.your-server.de ([213.133.104.62]:56002 "EHLO
-        www62.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726607AbgATWQU (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 20 Jan 2020 17:16:20 -0500
-Received: from sslproxy03.your-server.de ([88.198.220.132])
-        by www62.your-server.de with esmtpsa (TLSv1.2:DHE-RSA-AES256-GCM-SHA384:256)
-        (Exim 4.89_1)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1itfLE-0008Sm-VD; Mon, 20 Jan 2020 23:16:17 +0100
-Received: from [178.197.248.27] (helo=pc-9.home)
-        by sslproxy03.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1itfLE-000EsU-MB; Mon, 20 Jan 2020 23:16:16 +0100
-Subject: Re: [PATCH bpf-next] selftests/bpf: don't check for btf fd in
- test_btf
-To:     Stanislav Fomichev <sdf@google.com>, netdev@vger.kernel.org,
-        bpf@vger.kernel.org
-Cc:     davem@davemloft.net, ast@kernel.org
-References: <20200118010546.74279-1-sdf@google.com>
-From:   Daniel Borkmann <daniel@iogearbox.net>
-Message-ID: <3eab56a9-2720-b346-2d78-f778cb3e3add@iogearbox.net>
-Date:   Mon, 20 Jan 2020 23:16:15 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.7.2
+        id S1727011AbgATWQ0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 20 Jan 2020 17:16:26 -0500
+Received: from vps0.lunn.ch ([185.16.172.187]:47370 "EHLO vps0.lunn.ch"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726607AbgATWQ0 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 20 Jan 2020 17:16:26 -0500
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:
+        Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
+        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
+        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
+        List-Post:List-Owner:List-Archive;
+        bh=ebd5xcbG02GFcD3EWBAAN8eWKDv0WV9MKarUBbN0Vek=; b=0UCdt0gFcJQS2h+57aMTKq/kWN
+        myEA8ILKPnJM1pocBePZgOlvljLUs3IwPxWleDEcxPDAfYqWbVpC9COe4Lue7r2ZLfblKTgnF9il7
+        cFsSaIf6NZ3+R9mbeWsK3RiMMeyvrY2V6XafCJV6QZJrgXHW2n5LzQPbyGzCZ8ws9gRE=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.93)
+        (envelope-from <andrew@lunn.ch>)
+        id 1itfLJ-0001cb-Ve; Mon, 20 Jan 2020 23:16:22 +0100
+Date:   Mon, 20 Jan 2020 23:16:21 +0100
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Heiner Kallweit <hkallweit1@gmail.com>
+Cc:     Florian Fainelli <f.fainelli@gmail.com>,
+        David Miller <davem@davemloft.net>,
+        Mark Einon <mark.einon@gmail.com>,
+        Jay Cliburn <jcliburn@gmail.com>,
+        Chris Snook <chris.snook@gmail.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+Subject: Re: [PATCH net-next 1/3] net: phy: rename phy_do_ioctl to
+ phy_do_ioctl_running
+Message-ID: <20200120221621.GD1466@lunn.ch>
+References: <a7a6dc1f-b4d4-e36f-7408-31e4715d947f@gmail.com>
+ <b2117c4e-c440-83da-7f73-0ddd3e6887fe@gmail.com>
 MIME-Version: 1.0
-In-Reply-To: <20200118010546.74279-1-sdf@google.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-Authenticated-Sender: daniel@iogearbox.net
-X-Virus-Scanned: Clear (ClamAV 0.101.4/25701/Mon Jan 20 12:41:43 2020)
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <b2117c4e-c440-83da-7f73-0ddd3e6887fe@gmail.com>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 1/18/20 2:05 AM, Stanislav Fomichev wrote:
-> After commit 0d13bfce023a ("libbpf: Don't require root for
-> bpf_object__open()") we no longer load BTF during bpf_object__open(),
-> so let's remove the expectation from test_btf that the fd is not -1.
-> The test currently fails.
+On Mon, Jan 20, 2020 at 10:16:07PM +0100, Heiner Kallweit wrote:
+> We just added phy_do_ioctl, but it turned out that we need another
+> version of this function that doesn't check whether net_device is
+> running. So rename phy_do_ioctl to phy_do_ioctl_running.
 > 
-> Before:
-> BTF libbpf test[1] (test_btf_haskv.o): do_test_file:4152:FAIL bpf_object__btf_fd: -1
-> BTF libbpf test[2] (test_btf_newkv.o): do_test_file:4152:FAIL bpf_object__btf_fd: -1
-> BTF libbpf test[3] (test_btf_nokv.o): do_test_file:4152:FAIL bpf_object__btf_fd: -1
-> 
-> After:
-> BTF libbpf test[1] (test_btf_haskv.o): OK
-> BTF libbpf test[2] (test_btf_newkv.o): OK
-> BTF libbpf test[3] (test_btf_nokv.o): OK
-> 
-> Fixes: 0d13bfce023a ("libbpf: Don't require root forbpf_object__open()")
-> Signed-off-by: Stanislav Fomichev <sdf@google.com>
+> Signed-off-by: Heiner Kallweit <hkallweit1@gmail.com>
 
-Applied, thanks!
+Reviewed-by: Andrew Lunn <andrew@lunn.ch>
+
+    Andrew
