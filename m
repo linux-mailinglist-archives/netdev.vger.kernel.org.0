@@ -2,132 +2,158 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 3F07F142F9B
-	for <lists+netdev@lfdr.de>; Mon, 20 Jan 2020 17:28:53 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id BAFC5143005
+	for <lists+netdev@lfdr.de>; Mon, 20 Jan 2020 17:36:13 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729275AbgATQ2u (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 20 Jan 2020 11:28:50 -0500
-Received: from mail-pf1-f193.google.com ([209.85.210.193]:32886 "EHLO
-        mail-pf1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727573AbgATQ2t (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 20 Jan 2020 11:28:49 -0500
-Received: by mail-pf1-f193.google.com with SMTP id z16so16109785pfk.0;
-        Mon, 20 Jan 2020 08:28:49 -0800 (PST)
+        id S1727573AbgATQgM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 20 Jan 2020 11:36:12 -0500
+Received: from mail-yb1-f196.google.com ([209.85.219.196]:40002 "EHLO
+        mail-yb1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726876AbgATQgL (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 20 Jan 2020 11:36:11 -0500
+Received: by mail-yb1-f196.google.com with SMTP id l197so8233851ybf.7
+        for <netdev@vger.kernel.org>; Mon, 20 Jan 2020 08:36:11 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=GR1APR+Wyd2YLYbRnsV0u2x1C6uwTZZ2OEWNdjnqjo4=;
-        b=S6+Ui0Ryg93xsfEPW/3lRMkkxdRzUj5Lj4DWAsydzFghegwFbHnFn4k4+y4g+3n72x
-         aLHNWwUI48bhXguZbAg7T8bRrfqn+CD+jmkVdCFXplLf/ZegqNFp+Ew4+PciPqsf8fXO
-         2BPK9SKgxQpIhyNCP5UxRci1fAXsIj7TQHQ5KiBuZidvYnf8hRi/jZcgxyg+W8ckdvO+
-         yDKLUjJN5owNIXL43AP60swXX9MhAGAB8/9rcgWpoOfctWcx1kBj+csXRrMnOgfoFyqu
-         AEhRqyShDMoqtf8kGVGOvM20fPC/reJw4pAWJJZB2jh+qVq2w9eb1He8yJ32mbzTIzKi
-         WwEQ==
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=8lDcWJWD6orD5RLXJ735+RhOtwzP7LDJ06KqFK7Wh48=;
+        b=pMxgMTzKo8v6cvbkPsu/MbC+tm/dMv+Yv7bcOr3/nzvk+k+9nnYnBRjywY8QJShP80
+         fGC26LEMTKpArJ7V2Uvs21oIbjzN55Hdg9yPaWBd7s0mA96GU3mCEdSAWU2+jUNMGIIN
+         TP3kTkvi1tOibE9ZErB0CBUvm4rt9J/JO8/r0nzeryiU/XqqsTEwfEoVPEBgU2TBZB3W
+         RpmTSJPcxwbCqvN/Wvu3oQA64jd2KZhZCyEouBanfILT5OpHIb+DMar3DF19e6OuXdlA
+         Z5Q4HX9bKeiCJLx83cuTDiaKLAUZMvBtt83WrF3qIwS5U37oHE7SI70N4xi9YkQm9kp+
+         kxFA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=GR1APR+Wyd2YLYbRnsV0u2x1C6uwTZZ2OEWNdjnqjo4=;
-        b=mNskvxqOWJ5iP9bubcdUuFdHhkMOR6db/7CpHNbH3sui4URrSDGp/AWc4Z1dnmfKG2
-         wPux+1PjC1OyjLYK1CtDP0vcdSfeLToHHh2gQ+rjuWKI2QtyQlS6HhS1Z39bwaHI7kKC
-         0zxAvcJNsIpAht+8Md0YeVmseryUd3LBpT33YKq71kA6RPX56HiGTKKGBDdqlV7gOuCJ
-         BM/IhN5YGE6G6flAE5cQkafVbB3TnYFbft+VgIIglpOZJqecFdPQ+Lkg8r/sBgryAfH9
-         OMrj9js3ZsfE/qR0f8eqBez9iJNvRvO+uuO6pxmCD/bGlEsX3y9BzNpL7cZSBly609Ij
-         GLfA==
-X-Gm-Message-State: APjAAAV2sawsrNSigsHieFIkLko6FsfAHBfKeLMSuOdE1wgtFnKLKKbu
-        9JAAhsin+Jg95q2wjJ0G9/g=
-X-Google-Smtp-Source: APXvYqwsolQ7KdarCdpFxI9kDgOcqi9S5elKUvLwcvNAHuPL+EqeFJc3kZAVTtrTKnyWkVXKShj07w==
-X-Received: by 2002:a63:3dc6:: with SMTP id k189mr453630pga.396.1579537728723;
-        Mon, 20 Jan 2020 08:28:48 -0800 (PST)
-Received: from localhost (64.64.229.47.16clouds.com. [64.64.229.47])
-        by smtp.gmail.com with ESMTPSA id w11sm38347342pfn.4.2020.01.20.08.28.47
-        (version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
-        Mon, 20 Jan 2020 08:28:48 -0800 (PST)
-Date:   Tue, 21 Jan 2020 00:28:45 +0800
-From:   Dejin Zheng <zhengdejin5@gmail.com>
-To:     kbuild test robot <lkp@intel.com>
-Cc:     kbuild-all@lists.01.org, peppe.cavallaro@st.com,
-        alexandre.torgue@st.com, joabreu@synopsys.com, davem@davemloft.net,
-        mcoquelin.stm32@gmail.com, martin.blumenstingl@googlemail.com,
-        treding@nvidia.com, andrew@lunn.ch, weifeng.voon@intel.com,
-        tglx@linutronix.de, netdev@vger.kernel.org,
-        linux-stm32@st-md-mailman.stormreply.com,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2 2/2] net: stmmac: remove the useless member phy_mask
-Message-ID: <20200120162845.GA11480@nuc8i5>
-References: <20200108072550.28613-3-zhengdejin5@gmail.com>
- <202001181542.rImVkJEi%lkp@intel.com>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=8lDcWJWD6orD5RLXJ735+RhOtwzP7LDJ06KqFK7Wh48=;
+        b=bVjENTQKMQMYLYsDrE2B/ljbNnkyq+K/5Fv7FevyDh5/JVCMF/MzzQEznfgLj22oNk
+         5uXQwFXbtGReM6HR4/g0uJx1lJkE0Kg1OmFza+v6QwBzBf4oEy5hcoa0KL/GyKUBIIi3
+         xmrTq+18AGgUckYSuixNjBIvI+Np5Nt3hpGUDdaVDn11/BkzqCOZyjqUR/Ir7jm/CYpf
+         Y1Xc8Tjsq+e9P2nDHRWG6IF2l3qAZylzpf7HqtBtiXAmtytfaGxKFA2rEudQY8B6bFAy
+         26M2X99XstaXgUxh7g2L4p0hlatlmTK+38aF6nVe+SKOH1SyBlCE3G3LGjd/5YWYcGAU
+         o9/Q==
+X-Gm-Message-State: APjAAAVSrOOozcXiK8DiiZ9m2Vb1D/1GvxuzVUuIKueb+fNyeaqu/FAa
+        AkuyetaviVQbtF5sFkZVex+De3e/
+X-Google-Smtp-Source: APXvYqz0bxFOyogIh3HfLlEuthW7vE+VTSaBXvEXXdicnf2fmYQc7OMez/5xapk/lx8eNOHmnK1Yaw==
+X-Received: by 2002:a25:53c4:: with SMTP id h187mr505967ybb.402.1579538170133;
+        Mon, 20 Jan 2020 08:36:10 -0800 (PST)
+Received: from mail-yb1-f176.google.com (mail-yb1-f176.google.com. [209.85.219.176])
+        by smtp.gmail.com with ESMTPSA id p1sm16598611ywh.74.2020.01.20.08.36.08
+        for <netdev@vger.kernel.org>
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 20 Jan 2020 08:36:09 -0800 (PST)
+Received: by mail-yb1-f176.google.com with SMTP id q190so7208ybq.2
+        for <netdev@vger.kernel.org>; Mon, 20 Jan 2020 08:36:08 -0800 (PST)
+X-Received: by 2002:a25:5889:: with SMTP id m131mr416600ybb.89.1579538168358;
+ Mon, 20 Jan 2020 08:36:08 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <202001181542.rImVkJEi%lkp@intel.com>
-User-Agent: Mutt/1.9.4 (2018-02-28)
+References: <20191218133458.14533-1-steffen.klassert@secunet.com>
+ <20191218133458.14533-4-steffen.klassert@secunet.com> <CA+FuTScnux23Gj1WTEXHmZkiFG3RQsgmSz19TOWdWByM4Rd15Q@mail.gmail.com>
+ <20191219082246.GS8621@gauss3.secunet.de> <CA+FuTScKcwyh7rZdDNQsujndrA+ZnYMmtA7Uh7-ji+RM+t6-hQ@mail.gmail.com>
+ <20200113085128.GH8621@gauss3.secunet.de> <CA+FuTSc3sOuPsQ3sJSCudCwZky4FcGF5CopejURmGZUSjXEn3Q@mail.gmail.com>
+ <20200115094733.GP8621@gauss3.secunet.de> <CA+FuTSeF06hJstQBH4eL4L3=yGdiizw_38BUheYyircW8E3cXg@mail.gmail.com>
+ <20200120083518.GL23018@gauss3.secunet.de>
+In-Reply-To: <20200120083518.GL23018@gauss3.secunet.de>
+From:   Willem de Bruijn <willemdebruijn.kernel@gmail.com>
+Date:   Mon, 20 Jan 2020 11:35:30 -0500
+X-Gmail-Original-Message-ID: <CA+FuTScDxBCUtMzfOyuTa3ZjBHJsg7c1QOL1rrTUDeTL5UvOTQ@mail.gmail.com>
+Message-ID: <CA+FuTScDxBCUtMzfOyuTa3ZjBHJsg7c1QOL1rrTUDeTL5UvOTQ@mail.gmail.com>
+Subject: Re: [PATCH net-next 3/4] net: Support GRO/GSO fraglist chaining.
+To:     Steffen Klassert <steffen.klassert@secunet.com>
+Cc:     Willem de Bruijn <willemdebruijn.kernel@gmail.com>,
+        David Miller <davem@davemloft.net>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Subash Abhinov Kasiviswanathan <subashab@codeaurora.org>,
+        Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>,
+        Network Development <netdev@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, Jan 18, 2020 at 03:51:11PM +0800, kbuild test robot wrote:
-> Hi Dejin,
-> 
-> Thank you for the patch! Yet something to improve:
+On Mon, Jan 20, 2020 at 3:36 AM Steffen Klassert
+<steffen.klassert@secunet.com> wrote:
 >
+> On Wed, Jan 15, 2020 at 10:43:08AM -0500, Willem de Bruijn wrote:
+> > > > > Maybe we can be conservative here and do a full
+> > > > > __copy_skb_header for now. The initial version
+> > > > > does not necessarily need to be the most performant
+> > > > > version. We could try to identify the correct subset
+> > > > > of header fields later then.
+> > > >
+> > > > We should probably aim for the right set from the start. If you think
+> > > > this set is it, let's keep it.
+> > >
+> > > I'd prefer to do a full __copy_skb_header for now and think a bit
+> > > longer if that what I chose is really the correct subset.
+> >
+> > Ok
+> >
+> > > > > > > I had to set ip_summed to CHECKSUM_UNNECESSARY on GRO to
+> > > > > > > make sure the noone touches the checksum of the head
+> > > > > > > skb. Otherise netfilter etc. tries to touch the csum.
+> > > > > > >
+> > > > > > > Before chaining I make sure that ip_summed and csum_level is
+> > > > > > > the same for all chained skbs and here I restore the original
+> > > > > > > value from nskb.
+> > > > > >
+> > > > > > This is safe because the skb_gro_checksum_validate will have validated
+> > > > > > already on CHECKSUM_PARTIAL? What happens if there is decap or encap
+> > > > > > in the path? We cannot revert to CHECKSUM_PARTIAL after that, I
+> > > > > > imagine.
+> > > > >
+> > > > > Yes, the checksum is validated with skb_gro_checksum_validate. If the
+> > > > > packets are UDP encapsulated, they are segmented before decapsulation.
+> > > > > Original values are already restored. If an additional encapsulation
+> > > > > happens, the encap checksum will be calculated after segmentation.
+> > > > > Original values are restored before that.
+> > > >
+> > > > I was wondering more about additional other encapsulation protocols.
+> > > >
+> > > > >From a quick read, it seems like csum_level is associated only with
+> > > > CHECKSUM_UNNECESSARY.
+> > > >
+> > > > What if a device returns CHECKSUM_COMPLETE for packets with a tunnel
+> > > > that is decapsulated before forwarding. Say, just VLAN. That gets
+> > > > untagged in __netif_receive_skb_core with skb_vlan_untag calling
+> > > > skb_pull_rcsum. After segmentation the ip_summed is restored, with
+> > > > skb->csum still containing the unmodified csum that includes the VLAN
+> > > > tag?
+> > >
+> > > Hm, that could be really a problem. So setting CHECKSUM_UNNECESSARY
+> > > should be ok, but restoring the old values are not. Our checksum
+> > > magic is rather complex, it's hard to get it right for all possible
+> > > cases. Maybe we can just set CHECKSUM_UNNECESSARY for all packets
+> > > and keep this value after segmentation.
+> >
+> > Note that I'm not 100% sure that the issue can occur. But it seems likely.
+> >
+> > Yes, inverse CHECKSUM_UNNECESSARY conversion after verifying the checksum is
+> > probably the way to go. Inverse, because it is the opposite of
+> > __skb_gro_checksum_convert.
+>
+> I'm not sure if I understand what you mean here.
 
-Thanks for reminding, This patch has been dropped, the patch V3 that replaced
-it no longer contains this content, Please refer to
-https://patchwork.ozlabs.org/patch/1219694/ for details. It should be fine after
-giving up this commit.
+I mean that I agree that it's okay to convert from CHECKSUM_COMPLETE
+to CHECKSUM_UNNECESSARY if the UDP checksum has been validated.
 
-Finally, Thanks a lot for Jose's help (Jose.Abreu@synopsys.com), he told me 
-that the phy_mask is useful and should be kept when I submit this commit.
+> I'd do the following
+> for fraglist GRO in udp4_gro_complete:
+>
+>         if (skb->ip_summed == CHECKSUM_UNNECESSARY) {
+>                 if (skb->csum_level < SKB_MAX_CSUM_LEVEL)
+>                         skb->csum_level++;
+>         } else {
+>                 skb->ip_summed = CHECKSUM_UNNECESSARY;
+>                 skb->csum_level = 0;
+>         }
 
-BR,
-Dejin
-
-> [auto build test ERROR on net-next/master]
-> [also build test ERROR on net/master linus/master v5.5-rc6]
-> [cannot apply to sparc-next/master next-20200117]
-> [if your patch is applied to the wrong git tree, please drop us a note to help
-> improve the system. BTW, we also suggest to use '--base' option to specify the
-> base tree in git format-patch, please see https://stackoverflow.com/a/37406982]
-> 
-> url:    https://github.com/0day-ci/linux/commits/Dejin-Zheng/net-stmmac-remove-useless-code-of-phy_mask/20200110-011131
-> base:   https://git.kernel.org/pub/scm/linux/kernel/git/davem/net-next.git daea5b4dc16c3edc90392a512492dae504f1a37a
-> config: mips-randconfig-a001-20200118 (attached as .config)
-> compiler: mipsel-linux-gcc (GCC) 5.5.0
-> reproduce:
->         wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
->         chmod +x ~/bin/make.cross
->         # save the attached .config to linux build tree
->         GCC_VERSION=5.5.0 make.cross ARCH=mips 
-> 
-> If you fix the issue, kindly add following tag
-> Reported-by: kbuild test robot <lkp@intel.com>
-> 
-> All errors (new ones prefixed by >>):
-> 
-> >> arch/mips//loongson32/common/platform.c:82:2: error: unknown field 'phy_mask' specified in initializer
->      .phy_mask = 0,
->      ^
-> 
-> vim +/phy_mask +82 arch/mips//loongson32/common/platform.c
-> 
-> f29ad10de6c345 arch/mips/loongson1/common/platform.c Kelvin Cheung 2014-10-10  79  
-> ca585cf9fb818b arch/mips/loongson1/common/platform.c Kelvin Cheung 2012-07-25  80  /* Synopsys Ethernet GMAC */
-> f29ad10de6c345 arch/mips/loongson1/common/platform.c Kelvin Cheung 2014-10-10  81  static struct stmmac_mdio_bus_data ls1x_mdio_bus_data = {
-> f29ad10de6c345 arch/mips/loongson1/common/platform.c Kelvin Cheung 2014-10-10 @82  	.phy_mask	= 0,
-> f29ad10de6c345 arch/mips/loongson1/common/platform.c Kelvin Cheung 2014-10-10  83  };
-> f29ad10de6c345 arch/mips/loongson1/common/platform.c Kelvin Cheung 2014-10-10  84  
-> 
-> :::::: The code at line 82 was first introduced by commit
-> :::::: f29ad10de6c345c8ae4cb33a99ba8ff29bdcd751 MIPS: Loongson1B: Some fixes/updates for LS1B
-> 
-> :::::: TO: Kelvin Cheung <keguang.zhang@gmail.com>
-> :::::: CC: Ralf Baechle <ralf@linux-mips.org>
-> 
-> ---
-> 0-DAY kernel test infrastructure                 Open Source Technology Center
-> https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org Intel Corporation
+Akin to __skb_incr_checksum_unnecessary, but applying conversion both
+in the case of CHECKSUM_NONE and CHECKSUM_COMPLETE. Makes sense.
 
 
+> and then copy these values to the segments after segmentation.
