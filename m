@@ -2,135 +2,121 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id B9ADE1432D1
-	for <lists+netdev@lfdr.de>; Mon, 20 Jan 2020 21:18:35 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8CB621432F0
+	for <lists+netdev@lfdr.de>; Mon, 20 Jan 2020 21:35:28 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726915AbgATUSd (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 20 Jan 2020 15:18:33 -0500
-Received: from relay8-d.mail.gandi.net ([217.70.183.201]:51589 "EHLO
-        relay8-d.mail.gandi.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726607AbgATUSa (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 20 Jan 2020 15:18:30 -0500
-X-Originating-IP: 90.76.143.236
-Received: from localhost (lfbn-tou-1-1075-236.w90-76.abo.wanadoo.fr [90.76.143.236])
-        (Authenticated sender: antoine.tenart@bootlin.com)
-        by relay8-d.mail.gandi.net (Postfix) with ESMTPSA id 1ABBE1BF209;
-        Mon, 20 Jan 2020 20:18:28 +0000 (UTC)
-From:   Antoine Tenart <antoine.tenart@bootlin.com>
-To:     dsahern@gmail.com, sd@queasysnail.net
-Cc:     Antoine Tenart <antoine.tenart@bootlin.com>, netdev@vger.kernel.org
-Subject: [PATCH iproute2-next 2/2] macsec: add support for changing the offloading mode
-Date:   Mon, 20 Jan 2020 21:18:23 +0100
-Message-Id: <20200120201823.887937-3-antoine.tenart@bootlin.com>
-X-Mailer: git-send-email 2.24.1
-In-Reply-To: <20200120201823.887937-1-antoine.tenart@bootlin.com>
-References: <20200120201823.887937-1-antoine.tenart@bootlin.com>
+        id S1726954AbgATUfZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 20 Jan 2020 15:35:25 -0500
+Received: from mail-wm1-f66.google.com ([209.85.128.66]:51288 "EHLO
+        mail-wm1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726607AbgATUfZ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 20 Jan 2020 15:35:25 -0500
+Received: by mail-wm1-f66.google.com with SMTP id d73so691693wmd.1
+        for <netdev@vger.kernel.org>; Mon, 20 Jan 2020 12:35:23 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:from:to:cc:references:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=6ascpwJ6ZHVY3raviKXuVMZRcWzjHuL1BM7dNpjnioQ=;
+        b=U978OSVXl6D/+WDe/xYrFvDjFPo9t5+3RE+T27QleK9nXXWU8RD/OzoUXRr+SmKPA+
+         oO+N+tO+OfSSMjpQwcBqL0m/VuxeKTgXzws81e+8FUOjEQIeb/kafOOExoWSmdy28zGI
+         ahv64Ysy7ymm62k+ou5W0z+/6LVNiuTlWf1Va8s5WZQj8q2qciR8V9bVUZ8X8TrjWNnN
+         at8fzjK48yL36BiPTHLIaDNno8A4/2puJSCN326gknWBQymDXztkQ7+9RWhay3+/3u9B
+         JII/46reixXHQfkzCngwaQXh2P5wJ0Wi3SR/T8YbCgSm8B0Mvi9pGmaFf8cbNAj4v0xE
+         R0gA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:from:to:cc:references:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=6ascpwJ6ZHVY3raviKXuVMZRcWzjHuL1BM7dNpjnioQ=;
+        b=Ba0mubokxsWffnoozI5DUA4O/ObaE9dKWBVVR0ioGirR4U5tlVboF2Jhea2gpCB5EL
+         6AVvsywdrJWGabR/cjSfaF8V6CiS2yOLQ6hiZ58+p8Q4fRnNlsEUz0mIE2ykW6/atBts
+         6fMQeeeaavHB4ZvAB46WvNvya54IzWbDSOSk+AQFsSsNSmKyF/62guRGDkC88nPP1JNE
+         f7kKp/tg4qgOL3PePqQsbflTEHHfiA39NSh4R8w+XTy3QC+Bk8eW/anoB0AR41QA+SQq
+         VTbGjMd6kS/Pr+GxbrIDjnVmFgFj75wju83djouk/XR3UcrRFJKK0Ijr/6YKtvzetSAR
+         Y0Mg==
+X-Gm-Message-State: APjAAAVKOVjPF4tFjNCxb7M6LmIQHeMuV8lE23R5cgThX0kcsA6UsVka
+        6skp+CIhfg15LLZoCWZMs+Bb9qG0
+X-Google-Smtp-Source: APXvYqyNyHHTencNtjsdzcUZjTi9dbkwB63mZED5n4fvSn6j3P0ejBFAU0e79WQJCMFt8DruoKYNmA==
+X-Received: by 2002:a1c:22c6:: with SMTP id i189mr605373wmi.15.1579552522810;
+        Mon, 20 Jan 2020 12:35:22 -0800 (PST)
+Received: from [192.168.178.85] (pD9F901D9.dip0.t-ipconnect.de. [217.249.1.217])
+        by smtp.googlemail.com with ESMTPSA id x10sm47822013wrv.60.2020.01.20.12.35.22
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 20 Jan 2020 12:35:22 -0800 (PST)
+Subject: Re: [PATCH net-next 0/2] net: phy: add generic ndo_do_ioctl handler
+ phy_do_ioctl
+From:   Heiner Kallweit <hkallweit1@gmail.com>
+To:     Andrew Lunn <andrew@lunn.ch>
+Cc:     Florian Fainelli <f.fainelli@gmail.com>,
+        David Miller <davem@davemloft.net>,
+        Realtek linux nic maintainers <nic_swsd@realtek.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+References: <520c07a1-dd26-1414-0a2f-7f0d491589d1@gmail.com>
+ <20200119161240.GA17720@lunn.ch>
+ <97389eb0-fc7f-793b-6f84-730e583c00e9@googlemail.com>
+ <20200119175109.GB17720@lunn.ch>
+ <c1f7d8ce-2bc2-5141-9f28-a659d2af4e10@gmail.com>
+ <20200119185035.GC17720@lunn.ch>
+ <82737a2f-b6c1-943e-42a2-d42d87212457@gmail.com>
+ <20200119205059.GD17720@lunn.ch>
+ <154281b8-43c5-ba18-1860-03e4b0c785fd@gmail.com>
+Message-ID: <2b190b5f-5abb-3647-333c-da51d6bab593@gmail.com>
+Date:   Mon, 20 Jan 2020 21:35:13 +0100
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
+ Thunderbird/68.4.1
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+In-Reply-To: <154281b8-43c5-ba18-1860-03e4b0c785fd@gmail.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-MacSEC can now be offloaded to specialized hardware devices. Offloading
-is off by default when creating a new MACsec interface, but the mode can
-be updated at runtime. This patch adds a new subcommand,
-`ip macsec offload`, to allow users to select the offloading mode of a
-MACsec interface. It takes the mode to switch to as an argument, which
-can for now either be 'off' or 'phy':
+On 19.01.2020 23:28, Heiner Kallweit wrote:
+> On 19.01.2020 21:50, Andrew Lunn wrote:
+>>> Speaking for r8169:
+>>> If interface is up and cable detached, then it runtime-suspends
+>>> and goes into PCI D3 (chip and MDIO bus not accessible).
+>>> But ndev is "running" and PHY is attached.
+>>
+>> Hi Heiner
+>>
+> Hi Andrew,
+> 
+Hi Andrew
 
-  # ip macsec offload macsec0 phy
-  # ip macsec offload macsec0 off
+>> And how does it get out of this state? I assume the PHY interrupts
+>> when the link is established. Is phylib handling this interrupt? If
+>> so, when phylib accesses the MDIO bus, the bus needs to be runtime PM
+>> aware. And if the bus is runtime PM aware, the IOCTL handler should
+>> work, when the device is runtime suspended.  If the MAC is handling
+>> this interrupt, and it is the MAC interrupt handler which is run-time
+>> unsuspending, then the ioctl handler is not going to work unless it
+>> also runtime unsuspends.
+>>
+> The chip (wherever the magic happens) generates a PCI PME if WoL
+> config includes detection of physical link-up. The PCI core then
+> runtime-resumes the device.
+> I'd prefer the ioctl to return an error here instead of e.g.
+> 0xffff for a register read.
+> 
+I checked a little further and indeed there's a need to check whether
+net_device is present, but net core (dev_ifsioc) already does this
+check before calling the ndo_do_ioctl handler. So we don't have to
+do it in the handler again.
 
-Signed-off-by: Antoine Tenart <antoine.tenart@bootlin.com>
----
- ip/ipmacsec.c | 45 +++++++++++++++++++++++++++++++++++++++++++++
- 1 file changed, 45 insertions(+)
+I saw that David applied my series already. So I'll send a follow-up
+series that:
+- renames phy_do_ioctl to phy_do_ioctl_running
+- adds phy_do_ioctl (w/o check that netdev is running)
+- converts users to phy_do_ioctl
 
-diff --git a/ip/ipmacsec.c b/ip/ipmacsec.c
-index db7202ceb0a7..28272bc25a19 100644
---- a/ip/ipmacsec.c
-+++ b/ip/ipmacsec.c
-@@ -98,6 +98,7 @@ static void ipmacsec_usage(void)
- 		"       ip macsec del DEV rx SCI sa { 0..3 }\n"
- 		"       ip macsec show\n"
- 		"       ip macsec show DEV\n"
-+		"       ip macsec offload DEV [ off | phy ]\n"
- 		"where  OPTS := [ pn <u32> ] [ on | off ]\n"
- 		"       ID   := 128-bit hex string\n"
- 		"       KEY  := 128-bit or 256-bit hex string\n"
-@@ -359,6 +360,7 @@ enum cmd {
- 	CMD_ADD,
- 	CMD_DEL,
- 	CMD_UPD,
-+	CMD_OFFLOAD,
- 	__CMD_MAX
- };
- 
-@@ -375,6 +377,9 @@ static const enum macsec_nl_commands macsec_commands[__CMD_MAX][2][2] = {
- 		[0] = {-1, MACSEC_CMD_DEL_RXSC},
- 		[1] = {MACSEC_CMD_DEL_TXSA, MACSEC_CMD_DEL_RXSA},
- 	},
-+	[CMD_OFFLOAD] = {
-+		[0] = {-1, MACSEC_CMD_UPD_OFFLOAD },
-+	},
- };
- 
- static int do_modify_nl(enum cmd c, enum macsec_nl_commands cmd, int ifindex,
-@@ -534,6 +539,44 @@ static int do_modify(enum cmd c, int argc, char **argv)
- 	return -1;
- }
- 
-+static int do_offload(enum cmd c, int argc, char **argv)
-+{
-+	enum macsec_offload offload;
-+	struct rtattr *attr;
-+	int ifindex, ret;
-+
-+	if (argc == 0)
-+		ipmacsec_usage();
-+
-+	ifindex = ll_name_to_index(*argv);
-+	if (!ifindex) {
-+		fprintf(stderr, "Device \"%s\" does not exist.\n", *argv);
-+		return -1;
-+	}
-+	argc--; argv++;
-+
-+	if (argc == 0)
-+		ipmacsec_usage();
-+
-+	ret = one_of("offload", *argv, offload_str, ARRAY_SIZE(offload_str),
-+		     (int *)&offload);
-+	if (ret)
-+		ipmacsec_usage();
-+
-+	MACSEC_GENL_REQ(req, MACSEC_BUFLEN, macsec_commands[c][0][1], NLM_F_REQUEST);
-+
-+	addattr32(&req.n, MACSEC_BUFLEN, MACSEC_ATTR_IFINDEX, ifindex);
-+
-+	attr = addattr_nest(&req.n, MACSEC_BUFLEN, MACSEC_ATTR_OFFLOAD);
-+	addattr8(&req.n, MACSEC_BUFLEN, MACSEC_OFFLOAD_ATTR_TYPE, offload);
-+	addattr_nest_end(&req.n, attr);
-+
-+	if (rtnl_talk(&genl_rth, &req.n, NULL) < 0)
-+		return -2;
-+
-+	return 0;
-+}
-+
- /* dump/show */
- static struct {
- 	int ifindex;
-@@ -1086,6 +1129,8 @@ int do_ipmacsec(int argc, char **argv)
- 		return do_modify(CMD_UPD, argc-1, argv+1);
- 	if (matches(*argv, "delete") == 0)
- 		return do_modify(CMD_DEL, argc-1, argv+1);
-+	if (matches(*argv, "offload") == 0)
-+		return do_offload(CMD_OFFLOAD, argc-1, argv+1);
- 
- 	fprintf(stderr, "Command \"%s\" is unknown, try \"ip macsec help\".\n",
- 		*argv);
--- 
-2.24.1
-
+>> 	Andrew
+>>
+> Heiner
+> 
+Heiner
