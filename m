@@ -2,147 +2,170 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 40903143050
-	for <lists+netdev@lfdr.de>; Mon, 20 Jan 2020 17:53:50 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id F13D514305B
+	for <lists+netdev@lfdr.de>; Mon, 20 Jan 2020 18:00:18 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729297AbgATQxr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 20 Jan 2020 11:53:47 -0500
-Received: from us-smtp-delivery-1.mimecast.com ([205.139.110.120]:37783 "EHLO
-        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S1728712AbgATQxr (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 20 Jan 2020 11:53:47 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1579539225;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=z9t8MR+UrzdM1k7Ra8u+CTe/uTutPMJ8BLRkLhrkm60=;
-        b=OBtZBg9hYdjFTD+s6OxWM6MAqfOpoPOCK0BoUesD/oF7S62bRoP2Ge1DEnrrP+luosyzeG
-        C+quOX5cEVteTpRrWKUT1Jgz7ISIwwkYdUM6ZVjMTi2AOW2Czb3YeGQnTvf9kKlxYqeo0H
-        PwoY9XuZmL5jDPOXAPhvB962HRpYxso=
-Received: from mail-wr1-f70.google.com (mail-wr1-f70.google.com
- [209.85.221.70]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-110-fRoFW1IsPzq_IoKXhbR7eA-1; Mon, 20 Jan 2020 11:53:43 -0500
-X-MC-Unique: fRoFW1IsPzq_IoKXhbR7eA-1
-Received: by mail-wr1-f70.google.com with SMTP id z14so66844wrs.4
-        for <netdev@vger.kernel.org>; Mon, 20 Jan 2020 08:53:43 -0800 (PST)
+        id S1726988AbgATRAR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 20 Jan 2020 12:00:17 -0500
+Received: from mail-il1-f196.google.com ([209.85.166.196]:46967 "EHLO
+        mail-il1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726642AbgATRAQ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 20 Jan 2020 12:00:16 -0500
+Received: by mail-il1-f196.google.com with SMTP id t17so19066ilm.13;
+        Mon, 20 Jan 2020 09:00:16 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:message-id:in-reply-to:references:subject
+         :mime-version:content-transfer-encoding;
+        bh=0hF+SQQMzCKRRBNDnvAlt1/TCfoTsNReqxtCw9ixOs0=;
+        b=YOwGI3cydRPghL2Fe1/yFF7medVcsZDJmu4HoMhGTN7JpMZAOCNG6qNUE4JRwwsNRr
+         UOIZkDYWUomT6Z+kp8gGzS22XNBC6gT6zyHmQ2Gf84bB5FuB2j41uBQ9Y10prosgPc7J
+         SR5SCtKltQUTZRa/dLWlp5boPEBrASZPkGDp0qNN6vz/jf1x+V+xIYwv7jgmMM1Xtf9M
+         ld6C2NHG8FwEG+DTjQxXNLYSa+QJNcddGvdhffvePqgMgP7hpsw4/ZP9OKQ1gc2ynIBw
+         bhnAqA/gaMdmQbUrG+r4/nwa//1sOR6sgpaw/8rqdMJT+EgdhK2bSMT3C3As/9UKT9oZ
+         Fz/A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=z9t8MR+UrzdM1k7Ra8u+CTe/uTutPMJ8BLRkLhrkm60=;
-        b=PUL2+aFtkHoZq0F+NFXzFjgpICSqlh4qIKEJrBRWbPgT2jY5MOLn1nZU2rw5mNK+vu
-         FzdC5Oy6cz7W/Da3gxclYuGUhk4PosxrA1hPTSot8c7kWrrujFBvelaMHcBeeh/n0o75
-         4bcXpnylHr0UoShhUeyQDqF6+ClNI8GQT1d0oWegFWU44rApIGPfSJAMgYbFL+EhZ96u
-         38S0N3Ko6B0TWT4xPG85YLJutVDTXJ93/LOapjr2GeIW2HKW386zuvAVrnjv3sjWdg4Z
-         emrLm5O4KoUfZrDo0Mtt8sMZGN+AmyaCywPjxO7FNWeoqfe5Mqtx9Uzfgi1d8j7UOeU8
-         kZ+Q==
-X-Gm-Message-State: APjAAAU9Y0vzZ5abfS5kvymO97BgnUMJ7/uyUfmBPzrJSNdsJ0BmHdHG
-        jXcJZ+Du38LudzFj+BaRTTu+Cvge8sRbWMxkSnMF10DwxxWs4P3F0BP33wu7082nzyF8F/7RG/V
-        yKB3RUN0Bjg+prx4+
-X-Received: by 2002:adf:ea0f:: with SMTP id q15mr440737wrm.324.1579539222679;
-        Mon, 20 Jan 2020 08:53:42 -0800 (PST)
-X-Google-Smtp-Source: APXvYqyNW66fPRfK7FwpLegFkuWKTwV9qDnkpodkOYc0ad9mcsdyNY8eyfpyGVBQ2vBixbwS4shXCg==
-X-Received: by 2002:adf:ea0f:: with SMTP id q15mr440720wrm.324.1579539222372;
-        Mon, 20 Jan 2020 08:53:42 -0800 (PST)
-Received: from steredhat (host84-49-dynamic.31-79-r.retail.telecomitalia.it. [79.31.49.84])
-        by smtp.gmail.com with ESMTPSA id c2sm48389367wrp.46.2020.01.20.08.53.41
+        h=x-gm-message-state:date:from:to:cc:message-id:in-reply-to
+         :references:subject:mime-version:content-transfer-encoding;
+        bh=0hF+SQQMzCKRRBNDnvAlt1/TCfoTsNReqxtCw9ixOs0=;
+        b=Nom0kbjj/fDWtBwJhZzN3K9rjJhhjRaMxTa9mxFv6jgUP/jJaaVCpVUWr3gWxokJ9T
+         s8kwGqYTtZNlYc8u1piobT0+Wa7sOizP0BdgLzowoTI6ONbTgsLNTREhvJjMoiSvy4kB
+         +kAF5MHlfztEH7URjCjKVyIjBKMS2V9Q7owxLQFIB1xPkvBGDlMB+/OsxO/3OjZKVkML
+         DdtwXVMIVEMQBnqIS7LmJh09pTNFXJa8pq1YdqRQrlgmfe4bGkaii0I9tnBbTra8Xo8I
+         6d0BH0Cj8E9yWanHzTUHNuvFefie0F2FH467A+LF2HaQdagdNoSZOiVWL2tXnC/Tswol
+         UkXg==
+X-Gm-Message-State: APjAAAUTPiQXUtcQ7ODC8UNHjm4LEYz68QsfIm2dB9pBU3tOBTJTtoXF
+        DgPT1OSCAyNqj7pAzH+SxWw=
+X-Google-Smtp-Source: APXvYqxa19BPkhWM2YyPRzu/WM3PkVenOI/LBf1/9Ech1xIWu2CF36fI6QJNqIrvpeqFe9mtER3Tow==
+X-Received: by 2002:a92:2907:: with SMTP id l7mr31009ilg.140.1579539615750;
+        Mon, 20 Jan 2020 09:00:15 -0800 (PST)
+Received: from localhost ([184.63.162.180])
+        by smtp.gmail.com with ESMTPSA id n5sm11970880ila.7.2020.01.20.09.00.14
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 20 Jan 2020 08:53:41 -0800 (PST)
-Date:   Mon, 20 Jan 2020 17:53:39 +0100
-From:   Stefano Garzarella <sgarzare@redhat.com>
-To:     "Michael S. Tsirkin" <mst@redhat.com>
-Cc:     David Miller <davem@davemloft.net>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Jorgen Hansen <jhansen@vmware.com>,
-        Jason Wang <jasowang@redhat.com>, kvm <kvm@vger.kernel.org>,
-        Stefan Hajnoczi <stefanha@redhat.com>,
-        virtualization@lists.linux-foundation.org,
-        linux-hyperv@vger.kernel.org, Dexuan Cui <decui@microsoft.com>
-Subject: Re: [PATCH net-next 1/3] vsock: add network namespace support
-Message-ID: <CAGxU2F5=DQJ56sH4BUqp_7rvaXSF9bFHp4QkpLApJQK0bmd4MA@mail.gmail.com>
-References: <20200116172428.311437-1-sgarzare@redhat.com>
- <20200116172428.311437-2-sgarzare@redhat.com>
- <20200120.100610.546818167633238909.davem@davemloft.net>
- <20200120101735.uyh4o64gb4njakw5@steredhat>
- <20200120060601-mutt-send-email-mst@kernel.org>
- <CAGxU2F6VH8Eb5UH_9KjN6MONbZEo1D7EHAiocVVus6jW55BJDg@mail.gmail.com>
- <20200120110319-mutt-send-email-mst@kernel.org>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200120110319-mutt-send-email-mst@kernel.org>
+        Mon, 20 Jan 2020 09:00:15 -0800 (PST)
+Date:   Mon, 20 Jan 2020 09:00:09 -0800
+From:   John Fastabend <john.fastabend@gmail.com>
+To:     Jakub Sitnicki <jakub@cloudflare.com>,
+        John Fastabend <john.fastabend@gmail.com>
+Cc:     bpf@vger.kernel.org, netdev@vger.kernel.org,
+        kernel-team@cloudflare.com, Eric Dumazet <edumazet@google.com>,
+        Lorenz Bauer <lmb@cloudflare.com>,
+        Martin KaFai Lau <kafai@fb.com>
+Message-ID: <5e25dc995d7d_74082aaee6e465b441@john-XPS-13-9370.notmuch>
+In-Reply-To: <87muars890.fsf@cloudflare.com>
+References: <20200110105027.257877-1-jakub@cloudflare.com>
+ <20200110105027.257877-3-jakub@cloudflare.com>
+ <5e1a56e630ee1_1e7f2b0c859c45c0c4@john-XPS-13-9370.notmuch>
+ <87muars890.fsf@cloudflare.com>
+Subject: Re: [PATCH bpf-next v2 02/11] net, sk_msg: Annotate lockless access
+ to sk_prot on clone
+Mime-Version: 1.0
+Content-Type: text/plain;
+ charset=utf-8
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Jan 20, 2020 at 5:04 PM Michael S. Tsirkin <mst@redhat.com> wrote:
-> On Mon, Jan 20, 2020 at 02:58:01PM +0100, Stefano Garzarella wrote:
-> > On Mon, Jan 20, 2020 at 1:03 PM Michael S. Tsirkin <mst@redhat.com> wrote:
-> > > On Mon, Jan 20, 2020 at 11:17:35AM +0100, Stefano Garzarella wrote:
-> > > > On Mon, Jan 20, 2020 at 10:06:10AM +0100, David Miller wrote:
-> > > > > From: Stefano Garzarella <sgarzare@redhat.com>
-> > > > > Date: Thu, 16 Jan 2020 18:24:26 +0100
-> > > > >
-> > > > > > This patch adds 'netns' module param to enable this new feature
-> > > > > > (disabled by default), because it changes vsock's behavior with
-> > > > > > network namespaces and could break existing applications.
-> > > > >
-> > > > > Sorry, no.
-> > > > >
-> > > > > I wonder if you can even design a legitimate, reasonable, use case
-> > > > > where these netns changes could break things.
-> > > >
-> > > > I forgot to mention the use case.
-> > > > I tried the RFC with Kata containers and we found that Kata shim-v1
-> > > > doesn't work (Kata shim-v2 works as is) because there are the following
-> > > > processes involved:
-> > > > - kata-runtime (runs in the init_netns) opens /dev/vhost-vsock and
-> > > >   passes it to qemu
-> > > > - kata-shim (runs in a container) wants to talk with the guest but the
-> > > >   vsock device is assigned to the init_netns and kata-shim runs in a
-> > > >   different netns, so the communication is not allowed
-> > > > But, as you said, this could be a wrong design, indeed they already
-> > > > found a fix, but I was not sure if others could have the same issue.
-> > > >
-> > > > In this case, do you think it is acceptable to make this change in
-> > > > the vsock's behavior with netns and ask the user to change the design?
-> > >
-> > > David's question is what would be a usecase that's broken
-> > > (as opposed to fixed) by enabling this by default.
+Jakub Sitnicki wrote:
+> On Sun, Jan 12, 2020 at 12:14 AM CET, John Fastabend wrote:
+> > Jakub Sitnicki wrote:
+> >> sk_msg and ULP frameworks override protocol callbacks pointer in
+> >> sk->sk_prot, while TCP accesses it locklessly when cloning the listening
+> >> socket.
+> >>
+> >> Once we enable use of listening sockets with sockmap (and hence sk_msg),
+> >> there can be shared access to sk->sk_prot if socket is getting cloned while
+> >> being inserted/deleted to/from the sockmap from another CPU. Mark the
+> >> shared access with READ_ONCE/WRITE_ONCE annotations.
+> >>
+> >> Signed-off-by: Jakub Sitnicki <jakub@cloudflare.com>
 > >
-> > Yes, I got that. Thanks for clarifying.
-> > I just reported a broken example that can be fixed with a different
-> > design (due to the fact that before this series, vsock devices were
-> > accessible to all netns).
-> >
-> > >
-> > > If it does exist, you need a way for userspace to opt-in,
-> > > module parameter isn't that.
-> >
-> > Okay, but I honestly can't find a case that can't be solved.
-> > So I don't know whether to add an option (ioctl, sysfs ?) or wait for
-> > a real case to come up.
-> >
-> > I'll try to see better if there's any particular case where we need
-> > to disable netns in vsock.
-> >
-> > Thanks,
-> > Stefano
->
-> Me neither. so what did you have in mind when you wrote:
-> "could break existing applications"?
+> > In sockmap side I fixed this by wrapping the access in a lock_sock[0]. So
+> > Do you think this is still needed with that in mind? The bpf_clone call
+> > is using sk_prot_creater and also setting the newsk's proto field. Even
+> > if the listening parent sock was being deleted in parallel would that be
+> > a problem? We don't touch sk_prot_creator from the tear down path. I've
+> > only scanned the 3..11 patches so maybe the answer is below. If that is
+> > the case probably an improved commit message would be helpful.
+> 
+> I think it is needed. Not because of tcp_bpf_clone or that we access
+> listener's sk_prot_creator from there, if I'm grasping your question.
+> 
+> Either way I'm glad this came up. Let's go though my reasoning and
+> verify it. tcp stack accesses the listener sk_prot while cloning it:
+> 
+> tcp_v4_rcv
+>   sk = __inet_lookup_skb(...)
+>   tcp_check_req(sk)
+>     inet_csk(sk)->icsk_af_ops->syn_recv_sock
+>       tcp_v4_syn_recv_sock
+>         tcp_create_openreq_child
+>           inet_csk_clone_lock
+>             sk_clone_lock
+>               READ_ONCE(sk->sk_prot)
+> 
+> It grabs a reference to the listener, but doesn't grab the sk_lock.
+> 
+> On another CPU we can be inserting/removing the listener socket from the
+> sockmap and writing to its sk_prot. We have the update and the remove
+> path:
+> 
+> sock_map_ops->map_update_elem
+>   sock_map_update_elem
+>     sock_map_update_common
+>       sock_map_link_no_progs
+>         tcp_bpf_init
+>           tcp_bpf_update_sk_prot
+>             sk_psock_update_proto
+>               WRITE_ONCE(sk->sk_prot, ops)
+> 
+> sock_map_ops->map_delete_elem
+>   sock_map_delete_elem
+>     __sock_map_delete
+>      sock_map_unref
+>        sk_psock_put
+>          sk_psock_drop
+>            sk_psock_restore_proto
+>              tcp_update_ulp
+>                WRITE_ONCE(sk->sk_prot, proto)
+> 
+> Following the guidelines from KTSAN project [0], sk_prot looks like a
+> candidate for annotating it. At least on these 3 call paths.
+> 
+> If that sounds correct, I can add it to the patch description.
+> 
+> Thanks,
+> -jkbs
+> 
+> [0] https://github.com/google/ktsan/wiki/READ_ONCE-and-WRITE_ONCE
 
-I had in mind:
-1. the Kata case. It is fixable (the fix is not merged on kata), but
-   older versions will not work with newer Linux.
+Hi Jakub, can push this to bpf tree as well? There is another case
+already in-kernel where this is needed. If the map is removed while
+a recvmsg is in flight.
 
-2. a single process running on init_netns that wants to communicate with
-   VMs handled by VMMs running in different netns, but this case can be
-   solved opening the /dev/vhost-vsock in the same netns of the process
-   that wants to communicate with the VMs (init_netns in this case), and
-   passig it to the VMM.
+ tcp_bpf_recvmsg()
+  psock = sk_psock_get(sk)                         <- refcnt 2
+  lock_sock(sk);
+  ...                                
+                                  sock_map_free()  <- refcnt 1
+  release_sock(sk)
+  sk_psock_put()                                   <- refcnt 0
 
-These cases can work with vsock+netns, but they require changes because
-I'm modifying the vsock behavior with netns.
+Then can you add this diff as well I got a bit too carried away
+with that. If your busy I can do it as well if you want. Thanks!
 
+diff --git a/net/core/skmsg.c b/net/core/skmsg.c
+index 3866d7e20c07..ded2d5227678 100644
+--- a/net/core/skmsg.c
++++ b/net/core/skmsg.c
+@@ -594,8 +594,6 @@ EXPORT_SYMBOL_GPL(sk_psock_destroy);
+ 
+ void sk_psock_drop(struct sock *sk, struct sk_psock *psock)
+ {
+-       sock_owned_by_me(sk);
+-
+        sk_psock_cork_free(psock);
+        sk_psock_zap_ingress(psock);
