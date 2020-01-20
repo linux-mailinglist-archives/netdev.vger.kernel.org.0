@@ -2,132 +2,169 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 8049C142F2C
-	for <lists+netdev@lfdr.de>; Mon, 20 Jan 2020 17:04:14 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D7D99142F38
+	for <lists+netdev@lfdr.de>; Mon, 20 Jan 2020 17:06:23 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728596AbgATQEL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 20 Jan 2020 11:04:11 -0500
-Received: from us-smtp-1.mimecast.com ([205.139.110.61]:23453 "EHLO
-        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1726819AbgATQEL (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 20 Jan 2020 11:04:11 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1579536249;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=p4ejQ2/oe91bnyA0QOnuHtrCvG5ijZh9PVgfR3T6gU8=;
-        b=ZvszC1JBnuRxVBB4Fnd5io/E71okdLn6h3270qtWx9SH89wxtzhMdtI37cFEKCW6zaonzN
-        tb+YsfqYp61heIhcr2pyptzjkT9n+Iqzk4dKXjswth364rgKSfvTc9zH2xHjhQWYGOzc4C
-        5CMWP7+PV5mvd5zaTx6fKTahI09rZro=
-Received: from mail-qt1-f200.google.com (mail-qt1-f200.google.com
- [209.85.160.200]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-264-lLu9iAeSObme8k2rx8iXHA-1; Mon, 20 Jan 2020 11:04:08 -0500
-X-MC-Unique: lLu9iAeSObme8k2rx8iXHA-1
-Received: by mail-qt1-f200.google.com with SMTP id z11so67676qts.1
-        for <netdev@vger.kernel.org>; Mon, 20 Jan 2020 08:04:08 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=p4ejQ2/oe91bnyA0QOnuHtrCvG5ijZh9PVgfR3T6gU8=;
-        b=fI1eSvxJxb6r8e4cKB1FQZcKoRsYYG0oFJN1xcxqXwWxe2U1FhWhoCNy3rvH/wYAFr
-         7C48kggKAN5Eo1RFqwEMCTEejpfWDnYHK65M3roUx+5OAKPdB2CawGxFBR0+klCHzn/1
-         24rmIc+pAiJTdZW5ZhqdKeSKmFCIfECpr6zY1dnjqoOvvC+IjgIY9a5I/9HWv1LnKNQP
-         P1T4du8WoonYi7Xoj3IdrYyIcpNcF/szgwyfbL68ApaUVZH9VLdVva2fpvI/i17z5wfv
-         K2LyVDCWKAKlvZzdu9/kTrPjO1p8qq123GbqtWXl1EQC0Ga8SaQamLM+dhBzpTmWSHsg
-         iJ8w==
-X-Gm-Message-State: APjAAAWLiQwMSaQERDIxkKnCzZ+xkvWRKcMJw1T4rRo0eLgINfqr6Lm4
-        PkdLY3y93oc2EIN7Gkkq6G1AiM8uotS8fAXDvTn5orriXr8pPrYi/Bx4XEH3jveBs+cuQvjBKEV
-        Jaj9T81ENbUBr6wLx
-X-Received: by 2002:aed:2d67:: with SMTP id h94mr14151qtd.74.1579536247741;
-        Mon, 20 Jan 2020 08:04:07 -0800 (PST)
-X-Google-Smtp-Source: APXvYqyHYHZZeb/F+oSnPwvaj7ijjCP3wY5WXEKtUs5DPKrE69F2FmzJea/xoQ0/lmBxFbbg2H6+0w==
-X-Received: by 2002:aed:2d67:: with SMTP id h94mr14119qtd.74.1579536247441;
-        Mon, 20 Jan 2020 08:04:07 -0800 (PST)
-Received: from redhat.com (bzq-79-179-85-180.red.bezeqint.net. [79.179.85.180])
-        by smtp.gmail.com with ESMTPSA id 68sm16186184qkj.102.2020.01.20.08.04.03
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 20 Jan 2020 08:04:06 -0800 (PST)
-Date:   Mon, 20 Jan 2020 11:04:00 -0500
-From:   "Michael S. Tsirkin" <mst@redhat.com>
-To:     Stefano Garzarella <sgarzare@redhat.com>
-Cc:     David Miller <davem@davemloft.net>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Jorgen Hansen <jhansen@vmware.com>,
-        Jason Wang <jasowang@redhat.com>, kvm <kvm@vger.kernel.org>,
-        Stefan Hajnoczi <stefanha@redhat.com>,
-        virtualization@lists.linux-foundation.org,
-        linux-hyperv@vger.kernel.org, Dexuan Cui <decui@microsoft.com>
-Subject: Re: [PATCH net-next 1/3] vsock: add network namespace support
-Message-ID: <20200120110319-mutt-send-email-mst@kernel.org>
-References: <20200116172428.311437-1-sgarzare@redhat.com>
- <20200116172428.311437-2-sgarzare@redhat.com>
- <20200120.100610.546818167633238909.davem@davemloft.net>
- <20200120101735.uyh4o64gb4njakw5@steredhat>
- <20200120060601-mutt-send-email-mst@kernel.org>
- <CAGxU2F6VH8Eb5UH_9KjN6MONbZEo1D7EHAiocVVus6jW55BJDg@mail.gmail.com>
+        id S1728842AbgATQGW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 20 Jan 2020 11:06:22 -0500
+Received: from metis.ext.pengutronix.de ([85.220.165.71]:43257 "EHLO
+        metis.ext.pengutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726819AbgATQGV (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 20 Jan 2020 11:06:21 -0500
+Received: from gallifrey.ext.pengutronix.de ([2001:67c:670:201:5054:ff:fe8d:eefb] helo=[IPv6:::1])
+        by metis.ext.pengutronix.de with esmtp (Exim 4.92)
+        (envelope-from <a.fatoum@pengutronix.de>)
+        id 1itZZE-0002YP-G7; Mon, 20 Jan 2020 17:06:20 +0100
+From:   Ahmad Fatoum <a.fatoum@pengutronix.de>
+Subject: Re: [BUG] pfifo_fast may cause out-of-order CAN frame transmission
+To:     Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org,
+        linux-can@vger.kernel.org,
+        Pengutronix Kernel Team <kernel@pengutronix.de>
+References: <661cc33a-5f65-2769-cc1a-65791cb4b131@pengutronix.de>
+ <7717e4470f6881bbc92645c72ad7f6ec71360796.camel@redhat.com>
+ <779d3346-0344-9064-15d5-4d565647a556@pengutronix.de>
+ <1b70f56b72943bf5dfd2813565373e8c1b639c31.camel@redhat.com>
+ <53ce1ab4-3346-2367-8aa5-85a89f6897ec@pengutronix.de>
+ <57a2352dfc442ea2aa9cd653f8e09db277bf67c7.camel@redhat.com>
+Message-ID: <b012e914-fc1a-5a45-f28b-e9d4d4dfc0fe@pengutronix.de>
+Date:   Mon, 20 Jan 2020 17:06:20 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.3.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CAGxU2F6VH8Eb5UH_9KjN6MONbZEo1D7EHAiocVVus6jW55BJDg@mail.gmail.com>
+In-Reply-To: <57a2352dfc442ea2aa9cd653f8e09db277bf67c7.camel@redhat.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-SA-Exim-Connect-IP: 2001:67c:670:201:5054:ff:fe8d:eefb
+X-SA-Exim-Mail-From: a.fatoum@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: netdev@vger.kernel.org
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Jan 20, 2020 at 02:58:01PM +0100, Stefano Garzarella wrote:
-> On Mon, Jan 20, 2020 at 1:03 PM Michael S. Tsirkin <mst@redhat.com> wrote:
-> > On Mon, Jan 20, 2020 at 11:17:35AM +0100, Stefano Garzarella wrote:
-> > > On Mon, Jan 20, 2020 at 10:06:10AM +0100, David Miller wrote:
-> > > > From: Stefano Garzarella <sgarzare@redhat.com>
-> > > > Date: Thu, 16 Jan 2020 18:24:26 +0100
-> > > >
-> > > > > This patch adds 'netns' module param to enable this new feature
-> > > > > (disabled by default), because it changes vsock's behavior with
-> > > > > network namespaces and could break existing applications.
-> > > >
-> > > > Sorry, no.
-> > > >
-> > > > I wonder if you can even design a legitimate, reasonable, use case
-> > > > where these netns changes could break things.
-> > >
-> > > I forgot to mention the use case.
-> > > I tried the RFC with Kata containers and we found that Kata shim-v1
-> > > doesn't work (Kata shim-v2 works as is) because there are the following
-> > > processes involved:
-> > > - kata-runtime (runs in the init_netns) opens /dev/vhost-vsock and
-> > >   passes it to qemu
-> > > - kata-shim (runs in a container) wants to talk with the guest but the
-> > >   vsock device is assigned to the init_netns and kata-shim runs in a
-> > >   different netns, so the communication is not allowed
-> > > But, as you said, this could be a wrong design, indeed they already
-> > > found a fix, but I was not sure if others could have the same issue.
-> > >
-> > > In this case, do you think it is acceptable to make this change in
-> > > the vsock's behavior with netns and ask the user to change the design?
-> >
-> > David's question is what would be a usecase that's broken
-> > (as opposed to fixed) by enabling this by default.
-> 
-> Yes, I got that. Thanks for clarifying.
-> I just reported a broken example that can be fixed with a different
-> design (due to the fact that before this series, vsock devices were
-> accessible to all netns).
-> 
-> >
-> > If it does exist, you need a way for userspace to opt-in,
-> > module parameter isn't that.
-> 
-> Okay, but I honestly can't find a case that can't be solved.
-> So I don't know whether to add an option (ioctl, sysfs ?) or wait for
-> a real case to come up.
-> 
-> I'll try to see better if there's any particular case where we need
-> to disable netns in vsock.
-> 
-> Thanks,
-> Stefano
+Hello Paolo,
 
-Me neither. so what did you have in mind when you wrote:
-"could break existing applications"?
+On 1/16/20 1:40 PM, Paolo Abeni wrote:
+> I'm sorry for this trial & error experience. I tried to reproduce the
+> issue on top of the vcan virtual device, but it looks like it requires
+> the timing imposed by a real device, and it's missing here (TL;DR: I
+> can't reproduce the issue locally).
 
+No worries. I don't mind testing.
+
+> 
+> Code wise, the 2nd patch closed a possible race, but it dumbly re-
+> opened the one addressed by the first attempt - the 'empty' field must
+> be cleared prior to the trylock operation, or we may end-up with such
+> field set and the queue not empty.
+> 
+> So, could you please try the following code?
+
+Unfortunately, I still see observe reodering.
+
+Thanks
+Ahmad
+
+> 
+> Many thanks!
+> ---
+> diff --git a/include/net/pkt_sched.h b/include/net/pkt_sched.h
+> index 6a70845bd9ab..fb365fbf65f8 100644
+> --- a/include/net/pkt_sched.h
+> +++ b/include/net/pkt_sched.h
+> @@ -113,7 +113,7 @@ bool sch_direct_xmit(struct sk_buff *skb, struct Qdisc *q,
+>  		     struct net_device *dev, struct netdev_queue *txq,
+>  		     spinlock_t *root_lock, bool validate);
+>  
+> -void __qdisc_run(struct Qdisc *q);
+> +int __qdisc_run(struct Qdisc *q);
+>  
+>  static inline void qdisc_run(struct Qdisc *q)
+>  {
+> diff --git a/include/net/sch_generic.h b/include/net/sch_generic.h
+> index fceddf89592a..df460fe0773a 100644
+> --- a/include/net/sch_generic.h
+> +++ b/include/net/sch_generic.h
+> @@ -158,7 +158,6 @@ static inline bool qdisc_run_begin(struct Qdisc *qdisc)
+>  	if (qdisc->flags & TCQ_F_NOLOCK) {
+>  		if (!spin_trylock(&qdisc->seqlock))
+>  			return false;
+> -		WRITE_ONCE(qdisc->empty, false);
+>  	} else if (qdisc_is_running(qdisc)) {
+>  		return false;
+>  	}
+> diff --git a/net/core/dev.c b/net/core/dev.c
+> index 0ad39c87b7fd..41e89796cc6b 100644
+> --- a/net/core/dev.c
+> +++ b/net/core/dev.c
+> @@ -3624,10 +3624,23 @@ static inline int __dev_xmit_skb(struct sk_buff *skb, struct Qdisc *q,
+>  end_run:
+>  			qdisc_run_end(q);
+>  		} else {
+> +			int quota = 0;
+> +
+>  			rc = q->enqueue(skb, q, &to_free) & NET_XMIT_MASK;
+> -			qdisc_run(q);
+> +			if (READ_ONCE(q->empty))
+> +				WRITE_ONCE(q->empty, false);
+> +			if (!qdisc_run_begin(q))
+> +				goto out;
+> +
+> +			if (likely(!test_bit(__QDISC_STATE_DEACTIVATED,
+> +					     &q->state)))
+> +				quota = __qdisc_run(q);
+> +			if (quota > 0)
+> +				WRITE_ONCE(q->empty, true);
+> +			qdisc_run_end(q);
+>  		}
+>  
+> +out:
+>  		if (unlikely(to_free))
+>  			kfree_skb_list(to_free);
+>  		return rc;
+> diff --git a/net/sched/sch_generic.c b/net/sched/sch_generic.c
+> index 5ab696efca95..1bd2c4e9c4c2 100644
+> --- a/net/sched/sch_generic.c
+> +++ b/net/sched/sch_generic.c
+> @@ -376,7 +376,7 @@ static inline bool qdisc_restart(struct Qdisc *q, int *packets)
+>  	return sch_direct_xmit(skb, q, dev, txq, root_lock, validate);
+>  }
+>  
+> -void __qdisc_run(struct Qdisc *q)
+> +int __qdisc_run(struct Qdisc *q)
+>  {
+>  	int quota = dev_tx_weight;
+>  	int packets;
+> @@ -388,6 +388,7 @@ void __qdisc_run(struct Qdisc *q)
+>  			break;
+>  		}
+>  	}
+> +	return quota;
+>  }
+>  
+>  unsigned long dev_trans_start(struct net_device *dev)
+> @@ -649,12 +650,9 @@ static struct sk_buff *pfifo_fast_dequeue(struct Qdisc *qdisc)
+>  
+>  		skb = __skb_array_consume(q);
+>  	}
+> -	if (likely(skb)) {
+> -		qdisc_update_stats_at_dequeue(qdisc, skb);
+> -	} else {
+> -		WRITE_ONCE(qdisc->empty, true);
+> -	}
+>  
+> +	if (likely(skb))
+> +		qdisc_update_stats_at_dequeue(qdisc, skb);
+>  	return skb;
+>  }
+>  
+> 
+> 
+
+-- 
+Pengutronix e.K.                           |                             |
+Steuerwalder Str. 21                       | http://www.pengutronix.de/  |
+31137 Hildesheim, Germany                  | Phone: +49-5121-206917-0    |
+Amtsgericht Hildesheim, HRA 2686           | Fax:   +49-5121-206917-5555 |
