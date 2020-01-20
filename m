@@ -2,122 +2,151 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id D0A341430EE
-	for <lists+netdev@lfdr.de>; Mon, 20 Jan 2020 18:45:08 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7B3F3143111
+	for <lists+netdev@lfdr.de>; Mon, 20 Jan 2020 18:49:49 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727114AbgATRpE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 20 Jan 2020 12:45:04 -0500
-Received: from userp2130.oracle.com ([156.151.31.86]:36502 "EHLO
-        userp2130.oracle.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726642AbgATRpD (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 20 Jan 2020 12:45:03 -0500
-Received: from pps.filterd (userp2130.oracle.com [127.0.0.1])
-        by userp2130.oracle.com (8.16.0.27/8.16.0.27) with SMTP id 00KHcUYX053676;
-        Mon, 20 Jan 2020 17:42:50 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=date : from : to : cc
- : subject : message-id : references : mime-version : content-type :
- content-transfer-encoding : in-reply-to; s=corp-2019-08-05;
- bh=nsNYTKOD1G7P8637WPTXpEBWnVeiNPIbkuT9jeXT0js=;
- b=oJLiW6I6rOgABwklmW9RSbDKKN73DmHgvRle4GX4iIdpR9TRi2WhOeKw3EeFIF8A8Okc
- vtYm178GxljrTMcuf/SEsEY10tbUxSYvDtC8DpOLslO/imbqvXyMzTVmnh2ZuK+H1F6W
- NGpcF2+hs2tNEb0o6ZoVF09knBVEp8h4Vu93EIM6FyxP5F79psmdFsN9VszA7Ynw2ch5
- btcTrqx+lnTHCATaSCGxm2FwR7qI0PR1qcB688PPPQ66WLz4o+Gykfy/stmom5dZExzx
- 5BkpQL+7X6JjVfmR7yTW1Yz6AhkRkFUhCM0PZ+YENpackQC55jxv0bApXUOsS7jJ0XuA 5Q== 
-Received: from userp3030.oracle.com (userp3030.oracle.com [156.151.31.80])
-        by userp2130.oracle.com with ESMTP id 2xkseu8vmq-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Mon, 20 Jan 2020 17:42:50 +0000
-Received: from pps.filterd (userp3030.oracle.com [127.0.0.1])
-        by userp3030.oracle.com (8.16.0.27/8.16.0.27) with SMTP id 00KHcveQ161458;
-        Mon, 20 Jan 2020 17:42:50 GMT
-Received: from aserv0121.oracle.com (aserv0121.oracle.com [141.146.126.235])
-        by userp3030.oracle.com with ESMTP id 2xmbg8syfn-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Mon, 20 Jan 2020 17:42:50 +0000
-Received: from abhmp0001.oracle.com (abhmp0001.oracle.com [141.146.116.7])
-        by aserv0121.oracle.com (8.14.4/8.13.8) with ESMTP id 00KHgMnn028408;
-        Mon, 20 Jan 2020 17:42:25 GMT
-Received: from kadam (/129.205.23.165)
-        by default (Oracle Beehive Gateway v4.0)
-        with ESMTP ; Mon, 20 Jan 2020 09:42:22 -0800
-Date:   Mon, 20 Jan 2020 20:46:15 +0300
-From:   Dan Carpenter <dan.carpenter@oracle.com>
-To:     Christian Brauner <christian.brauner@ubuntu.com>
-Cc:     syzbot <syzbot+6491ea8f6dddbf04930e@syzkaller.appspotmail.com>,
-        a@unstable.cc, akpm@linux-foundation.org, allison@lohutok.net,
-        arnd@arndb.de, axboe@kernel.dk, b.a.t.m.a.n@lists.open-mesh.org,
-        bp@alien8.de, catalin.marinas@arm.com, chris@zankel.net,
-        christian@brauner.io, coreteam@netfilter.org, davem@davemloft.net,
-        elena.reshetova@intel.com, florent.fourcot@wifirst.fr,
-        fw@strlen.de, geert@linux-m68k.org, hare@suse.com,
-        heiko.carstens@de.ibm.com, hpa@zytor.com, info@metux.net,
-        jcmvbkbc@gmail.com, jeremy@azazel.net, johannes.berg@intel.com,
-        kadlec@netfilter.org, linux-api@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        linux-xtensa@linux-xtensa.org, linux@armlinux.org.uk,
-        mareklindner@neomailbox.ch, mingo@redhat.com,
-        netdev@vger.kernel.org, netfilter-devel@vger.kernel.org,
-        pablo@netfilter.org, peterz@infradead.org, sw@simonwunderlich.de,
-        syzkaller-bugs@googlegroups.com, tglx@linutronix.de,
-        viro@zeniv.linux.org.uk, will@kernel.org, x86@kernel.org
-Subject: Re: KASAN: slab-out-of-bounds Read in bitmap_ip_ext_cleanup
-Message-ID: <20200120174615.GE21151@kadam>
-References: <000000000000bdb5b2059c865f5c@google.com>
- <000000000000c795fa059c884c21@google.com>
- <20200120131930.pbhbsrm4bk4lq3d7@wittgenstein>
+        id S1727665AbgATRtp (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 20 Jan 2020 12:49:45 -0500
+Received: from mail-eopbgr80050.outbound.protection.outlook.com ([40.107.8.50]:18660
+        "EHLO EUR04-VI1-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1726642AbgATRtp (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 20 Jan 2020 12:49:45 -0500
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=kErpxvD0g6ou4wZmwUGdimDeeXxqn8Yx5hqvY6nkBbF2rR+qUKaxKPiJB0QHUBTUBIFVNVdsvllHf6S8o1vV/h0Tzk0+bCE0rkaO9XxWL8h43CNRDhHYQDPE30itfF+H6HxG76MCGyChvCVJiv2FTneBsvbILgynu718aFL8FBSO0S3Y/QdvpfPpAgdZ4+eKnJtZdIc4CLBUiNciORcQbrgvh0spsRWq/dP44oqkXyfGXJfPWs0SmXEOgfMWxKQXam2o6ZylhSAFx7BhTswNRY7Ac/zrVVFkbdVjHdFAklDpcnPQtvmUGxNRMkB8ogRi5eF0HIIQXaP4F20unBxQmA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=Z2yLUhjgddNodTMi+kzecKXqRwdT5XVOpS3BBx9zbUk=;
+ b=SVAxzvFGMpmki9iN9EmYFZWD8NbKVFBLAyaj+jKERESMfqLZaF3iFalm5Yjw12nVaN417JaZD3qk0+qvF7Hr0MppS3gPiARAAFvpdq1H+rfgTaRtMhM72IY8XiVKWVEbqFXI1xhaZx3BtoJxn20eRpfKxMgou1MJHEbUljIzTzqxntLZFjqQBKB0E/oldshbuncREkfg4qMkPH3RSrASpSXPLFBvMS1QylQkmoMKpl+mG0QHQpdw+7y/5WCUSurQAASffj7ImT3sloWS8TaPGd/rTc5gtzH/0R3Hbx+Q+s7JNOasOPTkUCDP/E3unueFsVnLE1GZYLXX8hOSNwWvwQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=mellanox.com; dmarc=pass action=none header.from=mellanox.com;
+ dkim=pass header.d=mellanox.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Mellanox.com;
+ s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=Z2yLUhjgddNodTMi+kzecKXqRwdT5XVOpS3BBx9zbUk=;
+ b=Yk9RZ+qVaIospGrAcJ6b2Kc+COp4l649NUNF3b/foXUckKjVkCcsFjXaRSixE6bjRZBfuMLy/GKq2KEcZsyDC8ZvY9ShWviUUrlh0kV1/wsYNSjwIdpeDSDGE5gpYXxtH9bJVNBbkbY1XRxCPdpCkG+TzOJb/e6/s93mqhzQxK4=
+Received: from VI1PR05MB4141.eurprd05.prod.outlook.com (52.133.14.15) by
+ VI1PR05MB5741.eurprd05.prod.outlook.com (20.178.122.141) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.2644.20; Mon, 20 Jan 2020 17:49:39 +0000
+Received: from VI1PR05MB4141.eurprd05.prod.outlook.com
+ ([fe80::1c00:7925:d5c6:d60d]) by VI1PR05MB4141.eurprd05.prod.outlook.com
+ ([fe80::1c00:7925:d5c6:d60d%7]) with mapi id 15.20.2644.024; Mon, 20 Jan 2020
+ 17:49:39 +0000
+Received: from mlx.ziepe.ca (208.176.44.194) by SN4PR0401CA0044.namprd04.prod.outlook.com (2603:10b6:803:2a::30) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.2644.20 via Frontend Transport; Mon, 20 Jan 2020 17:49:38 +0000
+Received: from jgg by jggl.ziepe.ca with local (Exim 4.90_1)    (envelope-from <jgg@mellanox.com>)      id 1itbB7-0001Iy-Uo; Mon, 20 Jan 2020 13:49:33 -0400
+From:   Jason Gunthorpe <jgg@mellanox.com>
+To:     Jason Wang <jasowang@redhat.com>
+CC:     Shahaf Shuler <shahafs@mellanox.com>,
+        Rob Miller <rob.miller@broadcom.com>,
+        "Michael S. Tsirkin" <mst@redhat.com>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
+        "virtualization@lists.linux-foundation.org" 
+        <virtualization@lists.linux-foundation.org>,
+        Netdev <netdev@vger.kernel.org>,
+        "Bie, Tiwei" <tiwei.bie@intel.com>,
+        "maxime.coquelin@redhat.com" <maxime.coquelin@redhat.com>,
+        "Liang, Cunming" <cunming.liang@intel.com>,
+        "Wang, Zhihong" <zhihong.wang@intel.com>,
+        "Wang, Xiao W" <xiao.w.wang@intel.com>,
+        "haotian.wang@sifive.com" <haotian.wang@sifive.com>,
+        "Zhu, Lingshan" <lingshan.zhu@intel.com>,
+        "eperezma@redhat.com" <eperezma@redhat.com>,
+        "lulu@redhat.com" <lulu@redhat.com>,
+        Parav Pandit <parav@mellanox.com>,
+        "Tian, Kevin" <kevin.tian@intel.com>,
+        "stefanha@redhat.com" <stefanha@redhat.com>,
+        "rdunlap@infradead.org" <rdunlap@infradead.org>,
+        "hch@infradead.org" <hch@infradead.org>,
+        Ariel Adam <aadam@redhat.com>,
+        "jakub.kicinski@netronome.com" <jakub.kicinski@netronome.com>,
+        Jiri Pirko <jiri@mellanox.com>,
+        "hanand@xilinx.com" <hanand@xilinx.com>,
+        "mhabets@solarflare.com" <mhabets@solarflare.com>
+Subject: Re: [PATCH 3/5] vDPA: introduce vDPA bus
+Thread-Topic: [PATCH 3/5] vDPA: introduce vDPA bus
+Thread-Index: AQHVzGqUgTlkW8H4N0+zRVK4Lh0XAKfuxkEAgAAbnwCAAAWygIACz0CAgAGL1YCAAJh1gA==
+Date:   Mon, 20 Jan 2020 17:49:39 +0000
+Message-ID: <20200120174933.GB3891@mellanox.com>
+References: <20200116124231.20253-1-jasowang@redhat.com>
+ <20200116124231.20253-4-jasowang@redhat.com>
+ <20200117070324-mutt-send-email-mst@kernel.org>
+ <239b042c-2d9e-0eec-a1ef-b03b7e2c5419@redhat.com>
+ <CAJPjb1+fG9L3=iKbV4Vn13VwaeDZZdcfBPvarogF_Nzhk+FnKg@mail.gmail.com>
+ <AM0PR0502MB379553984D0D55FDE25426F6C3330@AM0PR0502MB3795.eurprd05.prod.outlook.com>
+ <d69918ca-8af4-44b2-9652-633530d4c113@redhat.com>
+In-Reply-To: <d69918ca-8af4-44b2-9652-633530d4c113@redhat.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-clientproxiedby: SN4PR0401CA0044.namprd04.prod.outlook.com
+ (2603:10b6:803:2a::30) To VI1PR05MB4141.eurprd05.prod.outlook.com
+ (2603:10a6:803:44::15)
+authentication-results: spf=none (sender IP is )
+ smtp.mailfrom=jgg@mellanox.com; 
+x-ms-exchange-messagesentrepresentingtype: 1
+x-originating-ip: [208.176.44.194]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-ht: Tenant
+x-ms-office365-filtering-correlation-id: 2174ad8d-8dab-4fa1-7172-08d79dd11ed6
+x-ms-traffictypediagnostic: VI1PR05MB5741:|VI1PR05MB5741:
+x-ms-exchange-transport-forked: True
+x-microsoft-antispam-prvs: <VI1PR05MB574136C4341C05536C1D3509CF320@VI1PR05MB5741.eurprd05.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:9508;
+x-forefront-prvs: 0288CD37D9
+x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(4636009)(396003)(39860400002)(136003)(366004)(376002)(346002)(199004)(189003)(66946007)(2906002)(6916009)(66446008)(64756008)(33656002)(478600001)(66476007)(66556008)(316002)(2616005)(7416002)(4326008)(81156014)(8676002)(81166006)(26005)(5660300002)(1076003)(71200400001)(8936002)(52116002)(9786002)(4744005)(9746002)(36756003)(86362001)(186003)(54906003)(24400500001);DIR:OUT;SFP:1101;SCL:1;SRVR:VI1PR05MB5741;H:VI1PR05MB4141.eurprd05.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;A:1;MX:1;
+received-spf: None (protection.outlook.com: mellanox.com does not designate
+ permitted sender hosts)
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: snGUpjDYZrm/eUAeYDemX9Ua1Qlza/G4mgGTLencteJRuz6W/VY+bDQYf592ZOmYBtdKUr2S1/D5YfpBjSf0k/NBldSsfOq4QSZ01nSjWz5f+/E57GDB1z5C923AvHhRoA1HDhayYTBFMGif4FGWvGEpBC84iTtB4v7tcexwykRa54pD2SU2Ww15IIuinBcPqlK0wjMBKOxp7VVC+ckVNe0+AADEORCvUxKY5sBYJQ31bPigJ2Ql4UoV4oI1yN+JayiqJHE+BK2zLVzX0N85XeqiXZqoR4XXN8bP8AnsGVcTvX/m79+tED9N6I1p0mQVOqNcyj+CIO1ruqi+sg3xh8BZyPyXtfcyaIp5FWHXxCoGsD5LOIvy901rJAROQLskDPJ7XjCrApRU7yPqDl9fe/mH/dt/jvm8XDFHdKqHboQ52a5L5J4vG2tI0mVne4jeYslQ2RLrK5rxgH9BWBBVEKW3X9OK1eLVO/2CeHCUcInDl2HnQ4aBPKBGEzscNzMu
+Content-Type: text/plain; charset="us-ascii"
+Content-ID: <AAA356A2330DEF40A2E3E29B75A5874E@eurprd05.prod.outlook.com>
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20200120131930.pbhbsrm4bk4lq3d7@wittgenstein>
-User-Agent: Mutt/1.9.4 (2018-02-28)
-X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9506 signatures=668685
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 suspectscore=0 malwarescore=0
- phishscore=0 bulkscore=0 spamscore=0 mlxscore=0 mlxlogscore=999
- adultscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.0.1-1911140001 definitions=main-2001200149
-X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9506 signatures=668685
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 priorityscore=1501 malwarescore=0
- suspectscore=0 phishscore=0 bulkscore=0 spamscore=0 clxscore=1011
- lowpriorityscore=0 mlxscore=0 impostorscore=0 mlxlogscore=999 adultscore=0
- classifier=spam adjust=0 reason=mlx scancount=1 engine=8.0.1-1911140001
- definitions=main-2001200149
+X-OriginatorOrg: Mellanox.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 2174ad8d-8dab-4fa1-7172-08d79dd11ed6
+X-MS-Exchange-CrossTenant-originalarrivaltime: 20 Jan 2020 17:49:39.0958
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: a652971c-7d2e-4d9b-a6a4-d149256f461b
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: OY2YfhTHoiJbJJstF3GsY6GcaES8MqBw2znUf8scA6WytO3hDIEhnhl8Xmnv352mUN2U4OWGfIf9pNvmp42LWA==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR05MB5741
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Jan 20, 2020 at 02:19:31PM +0100, Christian Brauner wrote:
-> On Sun, Jan 19, 2020 at 05:35:01PM -0800, syzbot wrote:
-> > syzbot has bisected this bug to:
-> > 
-> > commit d68dbb0c9ac8b1ff52eb09aa58ce6358400fa939
-> > Author: Christian Brauner <christian@brauner.io>
-> > Date:   Thu Jun 20 23:26:35 2019 +0000
-> > 
-> >     arch: handle arches who do not yet define clone3
-> > 
-> > bisection log:  https://syzkaller.appspot.com/x/bisect.txt?x=1456fed1e00000
-> > start commit:   09d4f10a net: sched: act_ctinfo: fix memory leak
-> > git tree:       net
-> > final crash:    https://syzkaller.appspot.com/x/report.txt?x=1656fed1e00000
-> > console output: https://syzkaller.appspot.com/x/log.txt?x=1256fed1e00000
-> > kernel config:  https://syzkaller.appspot.com/x/.config?x=7e89bd00623fe71e
-> > dashboard link: https://syzkaller.appspot.com/bug?extid=6491ea8f6dddbf04930e
-> > syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=141af959e00000
-> > C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=1067fa85e00000
-> > 
-> > Reported-by: syzbot+6491ea8f6dddbf04930e@syzkaller.appspotmail.com
-> > Fixes: d68dbb0c9ac8 ("arch: handle arches who do not yet define clone3")
-> > 
-> > For information about bisection process see: https://goo.gl/tpsmEJ#bisection
-> 
-> This bisect seems bogus.
-> 
+On Mon, Jan 20, 2020 at 04:43:53PM +0800, Jason Wang wrote:
+> This is similar to the design of platform IOMMU part of vhost-vdpa. We
+> decide to send diffs to platform IOMMU there. If it's ok to do that in
+> driver, we can replace set_map with incremental API like map()/unmap().
+>=20
+> Then driver need to maintain rbtree itself.
 
-Yeah.  József Kadlecsik already fixed the bug in a different thread.  It
-was reported as seven different bugs so there was a bunch of threads for
-it.
+I think we really need to see two modes, one where there is a fixed
+translation without dynamic vIOMMU driven changes and one that
+supports vIOMMU.
 
-regards,
-dan carpenter
+There are different optimization goals in the drivers for these two
+configurations.
+
+> > If the first one, then I think memory hotplug is a heavy flow
+> > regardless. Do you think the extra cycles for the tree traverse
+> > will be visible in any way?
+>=20
+> I think if the driver can pause the DMA during the time for setting up ne=
+w
+> mapping, it should be fine.
+
+This is very tricky for any driver if the mapping change hits the
+virtio rings. :(
+
+Even a IOMMU using driver is going to have problems with that..
+
+Jason
