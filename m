@@ -2,54 +2,103 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 2615E14342A
-	for <lists+netdev@lfdr.de>; Mon, 20 Jan 2020 23:40:28 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 691E914343C
+	for <lists+netdev@lfdr.de>; Mon, 20 Jan 2020 23:51:56 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726894AbgATWk0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 20 Jan 2020 17:40:26 -0500
-Received: from www62.your-server.de ([213.133.104.62]:58856 "EHLO
-        www62.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726752AbgATWk0 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 20 Jan 2020 17:40:26 -0500
-Received: from sslproxy01.your-server.de ([88.198.220.130])
-        by www62.your-server.de with esmtpsa (TLSv1.2:DHE-RSA-AES256-GCM-SHA384:256)
-        (Exim 4.89_1)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1itfia-0002Yv-5F; Mon, 20 Jan 2020 23:40:24 +0100
-Received: from [178.197.248.27] (helo=pc-9.home)
-        by sslproxy01.your-server.de with esmtpsa (TLSv1.2:ECDHE-RSA-AES256-GCM-SHA384:256)
-        (Exim 4.89)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1itfiZ-0003Eh-PX; Mon, 20 Jan 2020 23:40:23 +0100
-Subject: Re: [PATCH bpf] selftests/bpf: skip perf hw events test if the setup
- disabled it
-To:     Hangbin Liu <liuhangbin@gmail.com>, netdev@vger.kernel.org
-Cc:     Song Liu <songliubraving@fb.com>
-References: <20200117100656.10359-1-liuhangbin@gmail.com>
-From:   Daniel Borkmann <daniel@iogearbox.net>
-Message-ID: <c6b602e7-aea8-3128-1d94-4d7fc77a81ce@iogearbox.net>
-Date:   Mon, 20 Jan 2020 23:40:22 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.7.2
+        id S1727009AbgATWvy (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 20 Jan 2020 17:51:54 -0500
+Received: from mail-qk1-f193.google.com ([209.85.222.193]:45160 "EHLO
+        mail-qk1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726607AbgATWvy (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 20 Jan 2020 17:51:54 -0500
+Received: by mail-qk1-f193.google.com with SMTP id x1so831760qkl.12;
+        Mon, 20 Jan 2020 14:51:53 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=ajmJCdZ7vt+VPZfBmrgIG/mA7QlDp5yLMqlTnnsVq9E=;
+        b=EiiNKi1nvvPTzNyaaXRtc2ehPV2mDNpabVjHDtoY+cPoH/8TWnCKvyAjjpgKdryDeW
+         6LFTFLQa1joYMWmkjnrjo1ACVLevEZg86oyBe37jvXO4QSHSJQaaSI5mwRDaBPOPq8Lb
+         EGen7xKj3vqv/zSaAXQzBaVRdP50Sq/8+CGkxTaILronnkDJDCPmKEN9QFUJQgadujQ3
+         ka0B5PMTiFhQ7vSvLiwRciNqWI35TOiAUZ8Czot1YtX/ndxxbkyh4y93fFUH4MEld82e
+         9omb3zUkYyxzAJ9UUK69qq8McwpphUDt7ujIKuM9mLbWakEiRtb+uYiXqvhQaafcaWUG
+         AdKA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=ajmJCdZ7vt+VPZfBmrgIG/mA7QlDp5yLMqlTnnsVq9E=;
+        b=oiYHAaloExMnkZ6PLhZZfQzI9LnhPoP/C38DKRRyHX9XRqBo3kB5ziKmlJimiBvlWg
+         f3bersMoCQT+k1uRwuzJBFSYAehsZeLS+4mLNpa6l+blDVTE7Q7lm4AZQ+7dsbOHvYBB
+         ABRt0NeQUIz7h/FkXNStTM55rtVUjgJx6M/n/YMD9fwXLGnxRuanYEgUNmzYf9ahMYNg
+         g7A7tP5JQkBuhcuSMCu1um1L0RpEiZxMHV103UIgPH9ob6ZqV1+eUu6VNfqRReVB9x/Z
+         CSX0Lwm8Hpcm9hvISU2pYpETaWvolgfNzkbDPg1T6VYk0a0vX/D5GmNk9BHBW/YCda9L
+         VIcw==
+X-Gm-Message-State: APjAAAU1hd7N83KjwPxQXsQYT2ZIrY8mCOyCOYqs7KZOKp3nbEtEpd1H
+        CZJvTa/QepL+Y7age+RFQP4M4FerUOjrL1wma9o=
+X-Google-Smtp-Source: APXvYqxD18ueFvVuZ2bvvxXYgWPW6De71zMBkm10ufJscKWn0NX9aBOiME5ZPt2eFgdewmGG/7fMGuKJ+V2coVDb3Uw=
+X-Received: by 2002:a05:620a:5ae:: with SMTP id q14mr1854964qkq.437.1579560713004;
+ Mon, 20 Jan 2020 14:51:53 -0800 (PST)
 MIME-Version: 1.0
-In-Reply-To: <20200117100656.10359-1-liuhangbin@gmail.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-Authenticated-Sender: daniel@iogearbox.net
-X-Virus-Scanned: Clear (ClamAV 0.101.4/25701/Mon Jan 20 12:41:43 2020)
+References: <20200118000657.2135859-1-ast@kernel.org> <20200118000657.2135859-3-ast@kernel.org>
+In-Reply-To: <20200118000657.2135859-3-ast@kernel.org>
+From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Date:   Mon, 20 Jan 2020 14:51:42 -0800
+Message-ID: <CAEf4BzaOhCqYbznPsnuScJx1qbnLJu+2SQfhMwfdq-tJx9k7gA@mail.gmail.com>
+Subject: Re: [PATCH bpf-next 2/3] libbpf: Add support for program extensions
+To:     Alexei Starovoitov <ast@kernel.org>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        Kernel Team <kernel-team@fb.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 1/17/20 11:06 AM, Hangbin Liu wrote:
-> The same with commit 4e59afbbed96 ("selftests/bpf: skip nmi test when perf
-> hw events are disabled"), it would make more sense to skip the
-> test_stacktrace_build_id_nmi test if the setup (e.g. virtual machines) has
-> disabled hardware perf events.
-> 
-> Fixes: 13790d1cc72c ("bpf: add selftest for stackmap with build_id in NMI context")
-> Signed-off-by: Hangbin Liu <liuhangbin@gmail.com>
+On Fri, Jan 17, 2020 at 4:47 PM Alexei Starovoitov <ast@kernel.org> wrote:
+>
+> Add minimal support for program extensions. bpf_object_open_opts() needs to be
+> called with attach_prog_fd = target_prog_fd and BPF program extension needs to
+> have in .c file section definition like SEC("replace/func_to_be_replaced").
+> libbpf will search for "func_to_be_replaced" in the target_prog_fd's BTF and
+> will pass it in attach_btf_id to the kernel. This approach works for tests, but
+> more compex use case may need to request function name (and attach_btf_id that
+> kernel sees) to be more dynamic. Such API will be added in future patches.
+>
+> Signed-off-by: Alexei Starovoitov <ast@kernel.org>
+> ---
+>  tools/include/uapi/linux/bpf.h |  1 +
+>  tools/lib/bpf/bpf.c            |  3 ++-
+>  tools/lib/bpf/libbpf.c         | 14 +++++++++++---
+>  tools/lib/bpf/libbpf.h         |  2 ++
+>  tools/lib/bpf/libbpf.map       |  2 ++
+>  tools/lib/bpf/libbpf_probes.c  |  1 +
+>  6 files changed, 19 insertions(+), 4 deletions(-)
+>
 
-Applied to bpf-next, thanks!
+[...]
+
+>  enum bpf_attach_type
+>  bpf_program__get_expected_attach_type(struct bpf_program *prog)
+> @@ -6265,6 +6269,10 @@ static const struct bpf_sec_def section_defs[] = {
+>                 .expected_attach_type = BPF_TRACE_FEXIT,
+>                 .is_attach_btf = true,
+>                 .attach_fn = attach_trace),
+> +       SEC_DEF("replace/", EXT,
+
+how about freplace/, similar to fentry/fexit?
+
+> +               .expected_attach_type = 0,
+
+no need, it will be zero, if not specified here
+
+> +               .is_attach_btf = true,
+> +               .attach_fn = attach_trace),
+>         BPF_PROG_SEC("xdp",                     BPF_PROG_TYPE_XDP),
+>         BPF_PROG_SEC("perf_event",              BPF_PROG_TYPE_PERF_EVENT),
+>         BPF_PROG_SEC("lwt_in",                  BPF_PROG_TYPE_LWT_IN),
+
+[...]
