@@ -2,160 +2,153 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 06146142445
-	for <lists+netdev@lfdr.de>; Mon, 20 Jan 2020 08:31:03 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7407D142476
+	for <lists+netdev@lfdr.de>; Mon, 20 Jan 2020 08:50:38 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726861AbgATHa4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 20 Jan 2020 02:30:56 -0500
-Received: from mail.kernel.org ([198.145.29.99]:35488 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726282AbgATHa4 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 20 Jan 2020 02:30:56 -0500
-Received: from localhost (unknown [213.57.247.131])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        id S1726626AbgATHud (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 20 Jan 2020 02:50:33 -0500
+Received: from us-smtp-1.mimecast.com ([207.211.31.81]:34141 "EHLO
+        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1726417AbgATHuc (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 20 Jan 2020 02:50:32 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1579506631;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=U004lfJPbgC8DDvgY0vYrnnQi6voPmz5PbAj1bvuBr0=;
+        b=WHFUwt/1xYWgox8NL8DpKdh7AARRj+DDNhEiPPIqz/4jgUQDy36BRzxOW6+RbOV1SHEqBH
+        ZPj2D2JOg2BXlorJvMwrEIABnl9/kvFqyHDoeKqGKy6MyWzejYbwfJum75Ii0wSFyOFAo8
+        jZReMH4sVGHYQPwCBzAR1gCbNoRpUz0=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-113-8P1DRx1hN7GiWnnH17Bchg-1; Mon, 20 Jan 2020 02:50:28 -0500
+X-MC-Unique: 8P1DRx1hN7GiWnnH17Bchg-1
+Received: from smtp.corp.redhat.com (int-mx01.intmail.prod.int.phx2.redhat.com [10.5.11.11])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 34F0320684;
-        Mon, 20 Jan 2020 07:30:53 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1579505454;
-        bh=QkXqYataShtv5Re4qL9AbP44cpqVaJtkXXP3hf4o0Zc=;
-        h=From:To:Cc:Subject:Date:From;
-        b=zPidTaHSnvgnqAll1EEAUnFhOB5GW8k12cjrMW07cvev9hXP84vzbxR57rjTmucvn
-         m0XIZQ6D2UK6MTtjqYp8tiHZivCZj5hvwl8UijfOTkfBzBw/vZulT+yFmaqoKKM1rj
-         +mDHbH+Mzf01LF+iLvyVk9bJgji3i2y0nIeRVxoQ=
-From:   Leon Romanovsky <leon@kernel.org>
-To:     "David S . Miller" <davem@davemloft.net>,
-        "kuba@kernel.org" <kuba@kernel.org>,
-        Doug Ledford <dledford@redhat.com>,
-        Jason Gunthorpe <jgg@mellanox.com>
-Cc:     Leon Romanovsky <leonro@mellanox.com>,
-        Santosh Shilimkar <santosh.shilimkar@oracle.com>,
-        RDMA mailing list <linux-rdma@vger.kernel.org>,
-        linux-netdev <netdev@vger.kernel.org>
-Subject: [net-next, rdma-next] [pull request] Use ODP MRs for kernel ULPs
-Date:   Mon, 20 Jan 2020 09:30:46 +0200
-Message-Id: <20200120073046.75590-1-leon@kernel.org>
-X-Mailer: git-send-email 2.24.1
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id CCE4F10054E3;
+        Mon, 20 Jan 2020 07:50:25 +0000 (UTC)
+Received: from [10.72.12.173] (ovpn-12-173.pek2.redhat.com [10.72.12.173])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 23C8E84DB4;
+        Mon, 20 Jan 2020 07:50:02 +0000 (UTC)
+Subject: Re: [PATCH 3/5] vDPA: introduce vDPA bus
+To:     Jason Gunthorpe <jgg@mellanox.com>
+Cc:     "mst@redhat.com" <mst@redhat.com>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
+        "virtualization@lists.linux-foundation.org" 
+        <virtualization@lists.linux-foundation.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "tiwei.bie@intel.com" <tiwei.bie@intel.com>,
+        "maxime.coquelin@redhat.com" <maxime.coquelin@redhat.com>,
+        "cunming.liang@intel.com" <cunming.liang@intel.com>,
+        "zhihong.wang@intel.com" <zhihong.wang@intel.com>,
+        "rob.miller@broadcom.com" <rob.miller@broadcom.com>,
+        "xiao.w.wang@intel.com" <xiao.w.wang@intel.com>,
+        "haotian.wang@sifive.com" <haotian.wang@sifive.com>,
+        "lingshan.zhu@intel.com" <lingshan.zhu@intel.com>,
+        "eperezma@redhat.com" <eperezma@redhat.com>,
+        "lulu@redhat.com" <lulu@redhat.com>,
+        Parav Pandit <parav@mellanox.com>,
+        "kevin.tian@intel.com" <kevin.tian@intel.com>,
+        "stefanha@redhat.com" <stefanha@redhat.com>,
+        "rdunlap@infradead.org" <rdunlap@infradead.org>,
+        "hch@infradead.org" <hch@infradead.org>,
+        "aadam@redhat.com" <aadam@redhat.com>,
+        "jakub.kicinski@netronome.com" <jakub.kicinski@netronome.com>,
+        Jiri Pirko <jiri@mellanox.com>,
+        Shahaf Shuler <shahafs@mellanox.com>,
+        "hanand@xilinx.com" <hanand@xilinx.com>,
+        "mhabets@solarflare.com" <mhabets@solarflare.com>
+References: <20200116124231.20253-1-jasowang@redhat.com>
+ <20200116124231.20253-4-jasowang@redhat.com>
+ <20200116152209.GH20978@mellanox.com>
+ <03cfbcc2-fef0-c9d8-0b08-798b2a293b8c@redhat.com>
+ <20200117135435.GU20978@mellanox.com>
+From:   Jason Wang <jasowang@redhat.com>
+Message-ID: <ea4639ba-d991-c95c-8cb1-48588e5b42c0@redhat.com>
+Date:   Mon, 20 Jan 2020 15:50:01 +0800
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.8.0
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+In-Reply-To: <20200117135435.GU20978@mellanox.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.11
+Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Leon Romanovsky <leonro@mellanox.com>
 
-Hi David, Jakub, Doug and Jason
+On 2020/1/17 =E4=B8=8B=E5=8D=889:54, Jason Gunthorpe wrote:
+> On Fri, Jan 17, 2020 at 11:03:12AM +0800, Jason Wang wrote:
+>> On 2020/1/16 =E4=B8=8B=E5=8D=8811:22, Jason Gunthorpe wrote:
+>>> On Thu, Jan 16, 2020 at 08:42:29PM +0800, Jason Wang wrote:
+>>>> vDPA device is a device that uses a datapath which complies with the
+>>>> virtio specifications with vendor specific control path. vDPA device=
+s
+>>>> can be both physically located on the hardware or emulated by
+>>>> software. vDPA hardware devices are usually implemented through PCIE
+>>>> with the following types:
+>>>>
+>>>> - PF (Physical Function) - A single Physical Function
+>>>> - VF (Virtual Function) - Device that supports single root I/O
+>>>>     virtualization (SR-IOV). Its Virtual Function (VF) represents a
+>>>>     virtualized instance of the device that can be assigned to diffe=
+rent
+>>>>     partitions
+>>>> - VDEV (Virtual Device) - With technologies such as Intel Scalable
+>>>>     IOV, a virtual device composed by host OS utilizing one or more
+>>>>     ADIs.
+>>>> - SF (Sub function) - Vendor specific interface to slice the Physica=
+l
+>>>>     Function to multiple sub functions that can be assigned to diffe=
+rent
+>>>>     partitions as virtual devices.
+>>> I really hope we don't end up with two different ways to spell this
+>>> same thing.
+>> I think you meant ADI vs SF. It looks to me that ADI is limited to the=
+ scope
+>> of scalable IOV but SF not.
+> I think if one looks carefully you'd find that SF and ADI are using
+> very similar techiniques. For instance we'd also like to use the code
+> reorg of the MSIX vector setup with SFs that Intel is calling IMS.
+>
+> Really SIOV is simply a bundle of pre-existing stuff under a tidy
+> name, whatever code skeleton we come up with for SFs should be re-used
+> for ADI.
 
-This is pull request to previously posted and reviewed series [1] which touches
-RDMA and netdev subsystems. RDMA part was approved for inclusion by Jason [2]
-and RDS patches were acked by Santosh [3].
 
-For your convenience, the series is based on clean v5.5-rc6 tag and applies
-cleanly to both subsystems.
+Ok, but do you prefer to mention ADI only for the next version?
 
-Please pull and let me know if there's any problem. I'm very rare doing PRs
-and sorry in advance if something is not as expected.
 
-[1] https://lore.kernel.org/linux-rdma/20200115124340.79108-1-leon@kernel.org
-[2] https://lore.kernel.org/linux-rdma/20200117141232.GX20978@mellanox.com
-[3] https://lore.kernel.org/linux-rdma/3c479d8a-f98a-a4c9-bd85-6332e919bf35@oracle.com
+>
+>>> Shouldn't there be a device/driver matching process of some kind?
+>>
+>> The question is what do we want do match here.
+>>
+>> 1) "virtio" vs "vhost", I implemented matching method for this in mdev
+>> series, but it looks unnecessary for vDPA device driver to know about =
+this.
+>> Anyway we can use sysfs driver bind/unbind to switch drivers
+>> 2) virtio device id and vendor id. I'm not sure we need this consider =
+the
+>> two drivers so far (virtio/vhost) are all bus drivers.
+> As we seem to be contemplating some dynamic creation of vdpa devices I
+> think upon creation time it should be specified what mode they should
+> run it and then all driver binding and autoloading should happen
+> automatically. Telling the user to bind/unbind is a very poor
+> experience.
+>
+> Jason
 
-----------------------------------------------------------------
-The following series extends MR creation routines to allow creation of
-user MRs through kernel ULPs as a proxy. The immediate use case is to
-allow RDS to work over FS-DAX, which requires ODP (on-demand-paging)
-MRs to be created and such MRs were not possible to create prior this
-series.
 
-The first part of this patchset extends RDMA to have special verb
-ib_reg_user_mr(). The common use case that uses this function is a
-userspace application that allocates memory for HCA access but the
-responsibility to register the memory at the HCA is on an kernel ULP.
-This ULP acts as an agent for the userspace application.
-
-The second part provides advise MR functionality for ULPs. This is
-integral part of ODP flows and used to trigger pagefaults in advance
-to prepare memory before running working set.
-
-The third part is actual user of those in-kernel APIs.
+Ok, I will add the type (virtio vs vhost) and driver matching method back=
+.
 
 Thanks
-----------------------------------------------------------------
-The following changes since commit b3a987b0264d3ddbb24293ebff10eddfc472f653:
 
-  Linux 5.5-rc6 (2020-01-12 16:55:08 -0800)
-
-are available in the Git repository at:
-
-  https://git.kernel.org/pub/scm/linux/kernel/git/leon/linux-rdma.git tags/rds-odp-for-5.5
-
-for you to fetch changes up to b2dfc6765e45a3154800333234e4952b5412d792:
-
-  net/rds: Use prefetch for On-Demand-Paging MR (2020-01-18 11:48:19 +0200)
-
-----------------------------------------------------------------
-Hans Westgaard Ry (3):
-      net/rds: Detect need of On-Demand-Paging memory registration
-      net/rds: Handle ODP mr registration/unregistration
-      net/rds: Use prefetch for On-Demand-Paging MR
-
-Jason Gunthorpe (1):
-      RDMA/mlx5: Fix handling of IOVA != user_va in ODP paths
-
-Leon Romanovsky (1):
-      RDMA/mlx5: Don't fake udata for kernel path
-
-Moni Shoua (5):
-      IB: Allow calls to ib_umem_get from kernel ULPs
-      IB/core: Introduce ib_reg_user_mr
-      IB/core: Add interface to advise_mr for kernel users
-      IB/mlx5: Add ODP WQE handlers for kernel QPs
-      IB/mlx5: Mask out unsupported ODP capabilities for kernel QPs
-
- drivers/infiniband/core/umem.c                |  27 ++---
- drivers/infiniband/core/umem_odp.c            |  29 ++---
- drivers/infiniband/core/verbs.c               |  41 +++++++
- drivers/infiniband/hw/bnxt_re/ib_verbs.c      |  12 +-
- drivers/infiniband/hw/cxgb4/mem.c             |   2 +-
- drivers/infiniband/hw/efa/efa_verbs.c         |   4 +-
- drivers/infiniband/hw/hns/hns_roce_cq.c       |   2 +-
- drivers/infiniband/hw/hns/hns_roce_db.c       |   3 +-
- drivers/infiniband/hw/hns/hns_roce_mr.c       |   4 +-
- drivers/infiniband/hw/hns/hns_roce_qp.c       |   2 +-
- drivers/infiniband/hw/hns/hns_roce_srq.c      |   5 +-
- drivers/infiniband/hw/i40iw/i40iw_verbs.c     |   5 +-
- drivers/infiniband/hw/mlx4/cq.c               |   2 +-
- drivers/infiniband/hw/mlx4/doorbell.c         |   3 +-
- drivers/infiniband/hw/mlx4/mr.c               |   8 +-
- drivers/infiniband/hw/mlx4/qp.c               |   5 +-
- drivers/infiniband/hw/mlx4/srq.c              |   3 +-
- drivers/infiniband/hw/mlx5/cq.c               |   6 +-
- drivers/infiniband/hw/mlx5/devx.c             |   2 +-
- drivers/infiniband/hw/mlx5/doorbell.c         |   3 +-
- drivers/infiniband/hw/mlx5/main.c             |  51 +++++---
- drivers/infiniband/hw/mlx5/mlx5_ib.h          |  12 +-
- drivers/infiniband/hw/mlx5/mr.c               |  20 +--
- drivers/infiniband/hw/mlx5/odp.c              |  33 +++--
- drivers/infiniband/hw/mlx5/qp.c               | 167 +++++++++++++++++---------
- drivers/infiniband/hw/mlx5/srq.c              |   2 +-
- drivers/infiniband/hw/mthca/mthca_provider.c  |   2 +-
- drivers/infiniband/hw/ocrdma/ocrdma_verbs.c   |   2 +-
- drivers/infiniband/hw/qedr/verbs.c            |   9 +-
- drivers/infiniband/hw/vmw_pvrdma/pvrdma_cq.c  |   2 +-
- drivers/infiniband/hw/vmw_pvrdma/pvrdma_mr.c  |   2 +-
- drivers/infiniband/hw/vmw_pvrdma/pvrdma_qp.c  |   7 +-
- drivers/infiniband/hw/vmw_pvrdma/pvrdma_srq.c |   2 +-
- drivers/infiniband/sw/rdmavt/mr.c             |   2 +-
- drivers/infiniband/sw/rxe/rxe_mr.c            |   2 +-
- include/rdma/ib_umem.h                        |   4 +-
- include/rdma/ib_umem_odp.h                    |   6 +-
- include/rdma/ib_verbs.h                       |   9 ++
- net/rds/ib.c                                  |   7 ++
- net/rds/ib.h                                  |   3 +-
- net/rds/ib_mr.h                               |   7 +-
- net/rds/ib_rdma.c                             |  84 ++++++++++++-
- net/rds/ib_send.c                             |  44 +++++--
- net/rds/rdma.c                                | 157 ++++++++++++++++++------
- net/rds/rds.h                                 |  13 +-
- 45 files changed, 561 insertions(+), 256 deletions(-)
