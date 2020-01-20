@@ -2,108 +2,98 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id B8A7C142286
-	for <lists+netdev@lfdr.de>; Mon, 20 Jan 2020 05:51:18 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 675AA142294
+	for <lists+netdev@lfdr.de>; Mon, 20 Jan 2020 06:04:59 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729091AbgATEvR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 19 Jan 2020 23:51:17 -0500
-Received: from mail-pf1-f196.google.com ([209.85.210.196]:37518 "EHLO
-        mail-pf1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729043AbgATEvR (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 19 Jan 2020 23:51:17 -0500
-Received: by mail-pf1-f196.google.com with SMTP id p14so15196866pfn.4
-        for <netdev@vger.kernel.org>; Sun, 19 Jan 2020 20:51:16 -0800 (PST)
+        id S1725872AbgATFE4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 20 Jan 2020 00:04:56 -0500
+Received: from mail-io1-f65.google.com ([209.85.166.65]:35032 "EHLO
+        mail-io1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725783AbgATFE4 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 20 Jan 2020 00:04:56 -0500
+Received: by mail-io1-f65.google.com with SMTP id h8so32329734iob.2
+        for <netdev@vger.kernel.org>; Sun, 19 Jan 2020 21:04:55 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=XiNQBMy4emzr+DnqvKqpf3nLjG9MXGI38+suTtUz/4o=;
-        b=N6iXYBgMs0M9ErBGWK2gyka9jHGB/uGZmiPPgrUj0fakA4oVHFcFmtJB8M2gGlONXP
-         l96+9/dd97fhCQ6IYInsWIECMmyL3YfOPhaPOyuAcH0FoD3thvJzXJvmnyUkodPgCHiV
-         77Ztb4wOhwnQA5EYA4gyORmgcaG4n5CKea6praHbifHYvWgohjo5sxRSiOHMdbgjHgZ4
-         7t/rXyErTrPyb9WodVxlE+M2A270AeVjFkrx0H+XGM4i6RX0LHidahEH44Qecyb0Gg9K
-         rD56tnJJtpaswbNJLT/l9hsnqeRkL2/8kmLIBJ/tkHY2MV5ruoVv9op2rye4Hn9nvlUE
-         MeAQ==
+        h=date:from:to:cc:message-id:in-reply-to:references:subject
+         :mime-version:content-transfer-encoding;
+        bh=IlXRS2qstI+wHO+Vs4VR8xm8hbOiSW+Xsm6IfWkA0D4=;
+        b=mkDUBjqDIUVzCz5uVBwH/3r/BJKyFzq6h8QX7ump3Ru4zpDgYEcGF5QsS7YN6N5OIT
+         B1ijKj8R93sN5udP3Ono0IYtQ7armKD2h97yHOYXmuS0RJ2qaaUrzXwvoOvyBzi6RFcB
+         5DHFfMkbFP90DXHxtZ0NiN418ypYTmygn0WQSwVYn2YZyrIeyX92dvf0Vv/i8rKwwQ8O
+         BCwTmUrdyuKuc8bCiFi9fQbBEa3PYoN7Fry0XQ1hQIOE7aALbqNYHeBNho+V54NZPJin
+         ZC+fS04hi+riUqbP/jdT8Y71IV4zgxlwHJogDT3bCvBh8zkPNuB2umJPId7+RJXyJyCX
+         Yg1A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=XiNQBMy4emzr+DnqvKqpf3nLjG9MXGI38+suTtUz/4o=;
-        b=KdsCe3OsD6VWqRrmbg4/Pfr1ueCkcoUThXDdKyKuuC3cIyHAsKBFkj1Bu61NGV2ZCI
-         MprWttwI1LEyfUxgz/xWGulPV17MGcc8h1b/lG5DTZjW8YAqfcrUqZzahnArqvhsIMX0
-         +UvOsfdIiEgHauOlb6a4YDGWldeGXh4nSj9p1T5z4GZUQbSn0nTzHi6zueHD0IKOUD8p
-         0DVcEqojnBWbJwIWXoEcjkKZvI8JSW/sNL+cjdj+nOz5NsfH/WRJvzSOAYzj1KflRPMc
-         5levFbZ0ZyUn1iM/Gyzrds1H1KKXEpa/w2DAh0iAvCbizsgvBgr9HtPh+vDhZUvniSIK
-         pODg==
-X-Gm-Message-State: APjAAAWIcZR4P1bCrSbU2ABLNane2yxRCvhD8yx8rNuvLYRZG99lcBc+
-        Iwbf6/cOriZJ4IsFIHQ19kQyr9W78Qo=
-X-Google-Smtp-Source: APXvYqz9hvRAO8qbsq5V7fZ6dPWA864URfqHNkrQJkOnBVaF4K7VBvlI3RtcvSFLTrJZJ7Cvw0lcZQ==
-X-Received: by 2002:a63:1502:: with SMTP id v2mr57726216pgl.376.1579495876193;
-        Sun, 19 Jan 2020 20:51:16 -0800 (PST)
-Received: from localhost.localdomain ([203.104.128.122])
-        by smtp.gmail.com with ESMTPSA id b20sm37974212pfi.153.2020.01.19.20.51.14
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Sun, 19 Jan 2020 20:51:15 -0800 (PST)
-From:   Yuki Taguchi <tagyounit@gmail.com>
-To:     netdev@vger.kernel.org
-Cc:     davem@davemloft.net, kuznet@ms2.inr.ac.ru, yoshfuji@linux-ipv6.org,
-        dlebrun@google.com, david.lebrun@uclouvain.be,
-        Yuki Taguchi <tagyounit@gmail.com>
-Subject: [PATCH net] ipv6: sr: remove SKB_GSO_IPXIP6 on End.D* actions
-Date:   Mon, 20 Jan 2020 13:48:37 +0900
-Message-Id: <20200120044837.76789-1-tagyounit@gmail.com>
-X-Mailer: git-send-email 2.20.1 (Apple Git-117)
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+        h=x-gm-message-state:date:from:to:cc:message-id:in-reply-to
+         :references:subject:mime-version:content-transfer-encoding;
+        bh=IlXRS2qstI+wHO+Vs4VR8xm8hbOiSW+Xsm6IfWkA0D4=;
+        b=lr0FeQj6OFDo4St6EYKFdYuU16SGUpVsY99aXw7QoMwBKHSEghFLSZrwl+JeCxWyHW
+         Z/U4MewYGGBOl54+wbHgeoskn1ciR00vJxit2Gn/bq7aKjjMlxAPkUfdCQXH6K0Iy6Zq
+         qxA3g3emaWdf2OJ/XEX6E7lb35moYGoBQljnnIs0MIqwURCxzL4xPkROzsjStJXl7iZp
+         uqve1nKOAS8ZQGNdXAmN1wrLUo3D3/h0Dva7+o2tAkqT6DEuxGvMTlb5r8lTXAU7jIa2
+         3/1QAtncBcE7NdfnsREb3ddImlTQZGmz8t7Dyu7Ve0M1tG1HHSNHxGze5ehkamIaq/qT
+         dc6g==
+X-Gm-Message-State: APjAAAUf/bk+kCFoVMeY+XUl3rHuTnQN5x2Fk6sbw/5McH4Hqnljy7ja
+        ymrI2l9uM4824ex2T/LSxzA=
+X-Google-Smtp-Source: APXvYqw/bK6UYTPRr6GyPjaL4vPkEswx26WpxZtTJncfnnGTsvI+nTVhcBv06mGqz6ik/7XxaU+m1g==
+X-Received: by 2002:a5d:8146:: with SMTP id f6mr16494454ioo.93.1579496695218;
+        Sun, 19 Jan 2020 21:04:55 -0800 (PST)
+Received: from localhost ([184.63.162.180])
+        by smtp.gmail.com with ESMTPSA id z20sm8170375iof.48.2020.01.19.21.04.52
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sun, 19 Jan 2020 21:04:54 -0800 (PST)
+Date:   Sun, 19 Jan 2020 21:04:46 -0800
+From:   John Fastabend <john.fastabend@gmail.com>
+To:     Hangbin Liu <liuhangbin@gmail.com>, netdev@vger.kernel.org
+Cc:     Song Liu <songliubraving@fb.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Hangbin Liu <liuhangbin@gmail.com>
+Message-ID: <5e2534ee4cf7b_3d922aba572005bc10@john-XPS-13-9370.notmuch>
+In-Reply-To: <20200117100656.10359-1-liuhangbin@gmail.com>
+References: <20200117100656.10359-1-liuhangbin@gmail.com>
+Subject: RE: [PATCH bpf] selftests/bpf: skip perf hw events test if the setup
+ disabled it
+Mime-Version: 1.0
+Content-Type: text/plain;
+ charset=utf-8
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-After LRO/GRO is applied, SRv6 encapsulated packets have
-SKB_GSO_IPXIP6 feature flag, and this flag must be removed right after
-decapulation procedure.
+Hangbin Liu wrote:
+> The same with commit 4e59afbbed96 ("selftests/bpf: skip nmi test when perf
+> hw events are disabled"), it would make more sense to skip the
+> test_stacktrace_build_id_nmi test if the setup (e.g. virtual machines) has
+> disabled hardware perf events.
+> 
+> Fixes: 13790d1cc72c ("bpf: add selftest for stackmap with build_id in NMI context")
+> Signed-off-by: Hangbin Liu <liuhangbin@gmail.com>
+> ---
+>  .../selftests/bpf/prog_tests/stacktrace_build_id_nmi.c    | 8 ++++++--
+>  1 file changed, 6 insertions(+), 2 deletions(-)
+> 
+> diff --git a/tools/testing/selftests/bpf/prog_tests/stacktrace_build_id_nmi.c b/tools/testing/selftests/bpf/prog_tests/stacktrace_build_id_nmi.c
+> index f62aa0eb959b..437cb93e72ac 100644
+> --- a/tools/testing/selftests/bpf/prog_tests/stacktrace_build_id_nmi.c
+> +++ b/tools/testing/selftests/bpf/prog_tests/stacktrace_build_id_nmi.c
+> @@ -49,8 +49,12 @@ void test_stacktrace_build_id_nmi(void)
+>  	pmu_fd = syscall(__NR_perf_event_open, &attr, -1 /* pid */,
+>  			 0 /* cpu 0 */, -1 /* group id */,
+>  			 0 /* flags */);
+> -	if (CHECK(pmu_fd < 0, "perf_event_open",
+> -		  "err %d errno %d. Does the test host support PERF_COUNT_HW_CPU_CYCLES?\n",
+> +	if (pmu_fd < 0 && errno == ENOENT) {
+> +		printf("%s:SKIP:no PERF_COUNT_HW_CPU_CYCLES\n", __func__);
+> +		test__skip();
+> +		goto close_prog;
+> +	}
+> +	if (CHECK(pmu_fd < 0, "perf_event_open", "err %d errno %d\n",
+>  		  pmu_fd, errno))
+>  		goto close_prog;
+>  
 
-Currently, SKB_GSO_IPXIP6 flag is not removed on End.D* actions, which
-creates inconsistent packet state, that is, a normal TCP/IP packets
-have the SKB_GSO_IPXIP6 flag. This behavior can cause unexpected
-fallback to GSO on routing to netdevices that do not support
-SKB_GSO_IPXIP6. For example, on inter-VRF forwarding, decapsulated
-packets separated into small packets by GSO because VRF devices do not
-support TSO for packets with SKB_GSO_IPXIP6 flag, and this degrades
-forwarding performance.
-
-This patch removes encapsulation related GSO flags from the skb right
-after the End.D* action is applied.
-
-Fixes: d7a669dd2f8b ("ipv6: sr: add helper functions for seg6local")
-Signed-off-by: Yuki Taguchi <tagyounit@gmail.com>
----
- net/ipv6/seg6_local.c | 4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
-
-diff --git a/net/ipv6/seg6_local.c b/net/ipv6/seg6_local.c
-index 85a5447a3e8d..7cbc19731997 100644
---- a/net/ipv6/seg6_local.c
-+++ b/net/ipv6/seg6_local.c
-@@ -23,6 +23,7 @@
- #include <net/addrconf.h>
- #include <net/ip6_route.h>
- #include <net/dst_cache.h>
-+#include <net/ip_tunnels.h>
- #ifdef CONFIG_IPV6_SEG6_HMAC
- #include <net/seg6_hmac.h>
- #endif
-@@ -135,7 +136,8 @@ static bool decap_and_validate(struct sk_buff *skb, int proto)
- 
- 	skb_reset_network_header(skb);
- 	skb_reset_transport_header(skb);
--	skb->encapsulation = 0;
-+	if (iptunnel_pull_offloads(skb))
-+		return false;
- 
- 	return true;
- }
--- 
-2.20.1 (Apple Git-117)
-
+Acked-by: John Fastabend <john.fastabend@gmail.com>
