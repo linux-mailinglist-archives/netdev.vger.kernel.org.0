@@ -2,169 +2,132 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id D7D99142F38
-	for <lists+netdev@lfdr.de>; Mon, 20 Jan 2020 17:06:23 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3F07F142F9B
+	for <lists+netdev@lfdr.de>; Mon, 20 Jan 2020 17:28:53 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728842AbgATQGW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 20 Jan 2020 11:06:22 -0500
-Received: from metis.ext.pengutronix.de ([85.220.165.71]:43257 "EHLO
-        metis.ext.pengutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726819AbgATQGV (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 20 Jan 2020 11:06:21 -0500
-Received: from gallifrey.ext.pengutronix.de ([2001:67c:670:201:5054:ff:fe8d:eefb] helo=[IPv6:::1])
-        by metis.ext.pengutronix.de with esmtp (Exim 4.92)
-        (envelope-from <a.fatoum@pengutronix.de>)
-        id 1itZZE-0002YP-G7; Mon, 20 Jan 2020 17:06:20 +0100
-From:   Ahmad Fatoum <a.fatoum@pengutronix.de>
-Subject: Re: [BUG] pfifo_fast may cause out-of-order CAN frame transmission
-To:     Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org,
-        linux-can@vger.kernel.org,
-        Pengutronix Kernel Team <kernel@pengutronix.de>
-References: <661cc33a-5f65-2769-cc1a-65791cb4b131@pengutronix.de>
- <7717e4470f6881bbc92645c72ad7f6ec71360796.camel@redhat.com>
- <779d3346-0344-9064-15d5-4d565647a556@pengutronix.de>
- <1b70f56b72943bf5dfd2813565373e8c1b639c31.camel@redhat.com>
- <53ce1ab4-3346-2367-8aa5-85a89f6897ec@pengutronix.de>
- <57a2352dfc442ea2aa9cd653f8e09db277bf67c7.camel@redhat.com>
-Message-ID: <b012e914-fc1a-5a45-f28b-e9d4d4dfc0fe@pengutronix.de>
-Date:   Mon, 20 Jan 2020 17:06:20 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.3.0
+        id S1729275AbgATQ2u (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 20 Jan 2020 11:28:50 -0500
+Received: from mail-pf1-f193.google.com ([209.85.210.193]:32886 "EHLO
+        mail-pf1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727573AbgATQ2t (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 20 Jan 2020 11:28:49 -0500
+Received: by mail-pf1-f193.google.com with SMTP id z16so16109785pfk.0;
+        Mon, 20 Jan 2020 08:28:49 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=GR1APR+Wyd2YLYbRnsV0u2x1C6uwTZZ2OEWNdjnqjo4=;
+        b=S6+Ui0Ryg93xsfEPW/3lRMkkxdRzUj5Lj4DWAsydzFghegwFbHnFn4k4+y4g+3n72x
+         aLHNWwUI48bhXguZbAg7T8bRrfqn+CD+jmkVdCFXplLf/ZegqNFp+Ew4+PciPqsf8fXO
+         2BPK9SKgxQpIhyNCP5UxRci1fAXsIj7TQHQ5KiBuZidvYnf8hRi/jZcgxyg+W8ckdvO+
+         yDKLUjJN5owNIXL43AP60swXX9MhAGAB8/9rcgWpoOfctWcx1kBj+csXRrMnOgfoFyqu
+         AEhRqyShDMoqtf8kGVGOvM20fPC/reJw4pAWJJZB2jh+qVq2w9eb1He8yJ32mbzTIzKi
+         WwEQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=GR1APR+Wyd2YLYbRnsV0u2x1C6uwTZZ2OEWNdjnqjo4=;
+        b=mNskvxqOWJ5iP9bubcdUuFdHhkMOR6db/7CpHNbH3sui4URrSDGp/AWc4Z1dnmfKG2
+         wPux+1PjC1OyjLYK1CtDP0vcdSfeLToHHh2gQ+rjuWKI2QtyQlS6HhS1Z39bwaHI7kKC
+         0zxAvcJNsIpAht+8Md0YeVmseryUd3LBpT33YKq71kA6RPX56HiGTKKGBDdqlV7gOuCJ
+         BM/IhN5YGE6G6flAE5cQkafVbB3TnYFbft+VgIIglpOZJqecFdPQ+Lkg8r/sBgryAfH9
+         OMrj9js3ZsfE/qR0f8eqBez9iJNvRvO+uuO6pxmCD/bGlEsX3y9BzNpL7cZSBly609Ij
+         GLfA==
+X-Gm-Message-State: APjAAAV2sawsrNSigsHieFIkLko6FsfAHBfKeLMSuOdE1wgtFnKLKKbu
+        9JAAhsin+Jg95q2wjJ0G9/g=
+X-Google-Smtp-Source: APXvYqwsolQ7KdarCdpFxI9kDgOcqi9S5elKUvLwcvNAHuPL+EqeFJc3kZAVTtrTKnyWkVXKShj07w==
+X-Received: by 2002:a63:3dc6:: with SMTP id k189mr453630pga.396.1579537728723;
+        Mon, 20 Jan 2020 08:28:48 -0800 (PST)
+Received: from localhost (64.64.229.47.16clouds.com. [64.64.229.47])
+        by smtp.gmail.com with ESMTPSA id w11sm38347342pfn.4.2020.01.20.08.28.47
+        (version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
+        Mon, 20 Jan 2020 08:28:48 -0800 (PST)
+Date:   Tue, 21 Jan 2020 00:28:45 +0800
+From:   Dejin Zheng <zhengdejin5@gmail.com>
+To:     kbuild test robot <lkp@intel.com>
+Cc:     kbuild-all@lists.01.org, peppe.cavallaro@st.com,
+        alexandre.torgue@st.com, joabreu@synopsys.com, davem@davemloft.net,
+        mcoquelin.stm32@gmail.com, martin.blumenstingl@googlemail.com,
+        treding@nvidia.com, andrew@lunn.ch, weifeng.voon@intel.com,
+        tglx@linutronix.de, netdev@vger.kernel.org,
+        linux-stm32@st-md-mailman.stormreply.com,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v2 2/2] net: stmmac: remove the useless member phy_mask
+Message-ID: <20200120162845.GA11480@nuc8i5>
+References: <20200108072550.28613-3-zhengdejin5@gmail.com>
+ <202001181542.rImVkJEi%lkp@intel.com>
 MIME-Version: 1.0
-In-Reply-To: <57a2352dfc442ea2aa9cd653f8e09db277bf67c7.camel@redhat.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-SA-Exim-Connect-IP: 2001:67c:670:201:5054:ff:fe8d:eefb
-X-SA-Exim-Mail-From: a.fatoum@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: netdev@vger.kernel.org
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <202001181542.rImVkJEi%lkp@intel.com>
+User-Agent: Mutt/1.9.4 (2018-02-28)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello Paolo,
-
-On 1/16/20 1:40 PM, Paolo Abeni wrote:
-> I'm sorry for this trial & error experience. I tried to reproduce the
-> issue on top of the vcan virtual device, but it looks like it requires
-> the timing imposed by a real device, and it's missing here (TL;DR: I
-> can't reproduce the issue locally).
-
-No worries. I don't mind testing.
-
+On Sat, Jan 18, 2020 at 03:51:11PM +0800, kbuild test robot wrote:
+> Hi Dejin,
 > 
-> Code wise, the 2nd patch closed a possible race, but it dumbly re-
-> opened the one addressed by the first attempt - the 'empty' field must
-> be cleared prior to the trylock operation, or we may end-up with such
-> field set and the queue not empty.
+> Thank you for the patch! Yet something to improve:
+>
+
+Thanks for reminding, This patch has been dropped, the patch V3 that replaced
+it no longer contains this content, Please refer to
+https://patchwork.ozlabs.org/patch/1219694/ for details. It should be fine after
+giving up this commit.
+
+Finally, Thanks a lot for Jose's help (Jose.Abreu@synopsys.com), he told me 
+that the phy_mask is useful and should be kept when I submit this commit.
+
+BR,
+Dejin
+
+> [auto build test ERROR on net-next/master]
+> [also build test ERROR on net/master linus/master v5.5-rc6]
+> [cannot apply to sparc-next/master next-20200117]
+> [if your patch is applied to the wrong git tree, please drop us a note to help
+> improve the system. BTW, we also suggest to use '--base' option to specify the
+> base tree in git format-patch, please see https://stackoverflow.com/a/37406982]
 > 
-> So, could you please try the following code?
-
-Unfortunately, I still see observe reodering.
-
-Thanks
-Ahmad
-
+> url:    https://github.com/0day-ci/linux/commits/Dejin-Zheng/net-stmmac-remove-useless-code-of-phy_mask/20200110-011131
+> base:   https://git.kernel.org/pub/scm/linux/kernel/git/davem/net-next.git daea5b4dc16c3edc90392a512492dae504f1a37a
+> config: mips-randconfig-a001-20200118 (attached as .config)
+> compiler: mipsel-linux-gcc (GCC) 5.5.0
+> reproduce:
+>         wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+>         chmod +x ~/bin/make.cross
+>         # save the attached .config to linux build tree
+>         GCC_VERSION=5.5.0 make.cross ARCH=mips 
 > 
-> Many thanks!
+> If you fix the issue, kindly add following tag
+> Reported-by: kbuild test robot <lkp@intel.com>
+> 
+> All errors (new ones prefixed by >>):
+> 
+> >> arch/mips//loongson32/common/platform.c:82:2: error: unknown field 'phy_mask' specified in initializer
+>      .phy_mask = 0,
+>      ^
+> 
+> vim +/phy_mask +82 arch/mips//loongson32/common/platform.c
+> 
+> f29ad10de6c345 arch/mips/loongson1/common/platform.c Kelvin Cheung 2014-10-10  79  
+> ca585cf9fb818b arch/mips/loongson1/common/platform.c Kelvin Cheung 2012-07-25  80  /* Synopsys Ethernet GMAC */
+> f29ad10de6c345 arch/mips/loongson1/common/platform.c Kelvin Cheung 2014-10-10  81  static struct stmmac_mdio_bus_data ls1x_mdio_bus_data = {
+> f29ad10de6c345 arch/mips/loongson1/common/platform.c Kelvin Cheung 2014-10-10 @82  	.phy_mask	= 0,
+> f29ad10de6c345 arch/mips/loongson1/common/platform.c Kelvin Cheung 2014-10-10  83  };
+> f29ad10de6c345 arch/mips/loongson1/common/platform.c Kelvin Cheung 2014-10-10  84  
+> 
+> :::::: The code at line 82 was first introduced by commit
+> :::::: f29ad10de6c345c8ae4cb33a99ba8ff29bdcd751 MIPS: Loongson1B: Some fixes/updates for LS1B
+> 
+> :::::: TO: Kelvin Cheung <keguang.zhang@gmail.com>
+> :::::: CC: Ralf Baechle <ralf@linux-mips.org>
+> 
 > ---
-> diff --git a/include/net/pkt_sched.h b/include/net/pkt_sched.h
-> index 6a70845bd9ab..fb365fbf65f8 100644
-> --- a/include/net/pkt_sched.h
-> +++ b/include/net/pkt_sched.h
-> @@ -113,7 +113,7 @@ bool sch_direct_xmit(struct sk_buff *skb, struct Qdisc *q,
->  		     struct net_device *dev, struct netdev_queue *txq,
->  		     spinlock_t *root_lock, bool validate);
->  
-> -void __qdisc_run(struct Qdisc *q);
-> +int __qdisc_run(struct Qdisc *q);
->  
->  static inline void qdisc_run(struct Qdisc *q)
->  {
-> diff --git a/include/net/sch_generic.h b/include/net/sch_generic.h
-> index fceddf89592a..df460fe0773a 100644
-> --- a/include/net/sch_generic.h
-> +++ b/include/net/sch_generic.h
-> @@ -158,7 +158,6 @@ static inline bool qdisc_run_begin(struct Qdisc *qdisc)
->  	if (qdisc->flags & TCQ_F_NOLOCK) {
->  		if (!spin_trylock(&qdisc->seqlock))
->  			return false;
-> -		WRITE_ONCE(qdisc->empty, false);
->  	} else if (qdisc_is_running(qdisc)) {
->  		return false;
->  	}
-> diff --git a/net/core/dev.c b/net/core/dev.c
-> index 0ad39c87b7fd..41e89796cc6b 100644
-> --- a/net/core/dev.c
-> +++ b/net/core/dev.c
-> @@ -3624,10 +3624,23 @@ static inline int __dev_xmit_skb(struct sk_buff *skb, struct Qdisc *q,
->  end_run:
->  			qdisc_run_end(q);
->  		} else {
-> +			int quota = 0;
-> +
->  			rc = q->enqueue(skb, q, &to_free) & NET_XMIT_MASK;
-> -			qdisc_run(q);
-> +			if (READ_ONCE(q->empty))
-> +				WRITE_ONCE(q->empty, false);
-> +			if (!qdisc_run_begin(q))
-> +				goto out;
-> +
-> +			if (likely(!test_bit(__QDISC_STATE_DEACTIVATED,
-> +					     &q->state)))
-> +				quota = __qdisc_run(q);
-> +			if (quota > 0)
-> +				WRITE_ONCE(q->empty, true);
-> +			qdisc_run_end(q);
->  		}
->  
-> +out:
->  		if (unlikely(to_free))
->  			kfree_skb_list(to_free);
->  		return rc;
-> diff --git a/net/sched/sch_generic.c b/net/sched/sch_generic.c
-> index 5ab696efca95..1bd2c4e9c4c2 100644
-> --- a/net/sched/sch_generic.c
-> +++ b/net/sched/sch_generic.c
-> @@ -376,7 +376,7 @@ static inline bool qdisc_restart(struct Qdisc *q, int *packets)
->  	return sch_direct_xmit(skb, q, dev, txq, root_lock, validate);
->  }
->  
-> -void __qdisc_run(struct Qdisc *q)
-> +int __qdisc_run(struct Qdisc *q)
->  {
->  	int quota = dev_tx_weight;
->  	int packets;
-> @@ -388,6 +388,7 @@ void __qdisc_run(struct Qdisc *q)
->  			break;
->  		}
->  	}
-> +	return quota;
->  }
->  
->  unsigned long dev_trans_start(struct net_device *dev)
-> @@ -649,12 +650,9 @@ static struct sk_buff *pfifo_fast_dequeue(struct Qdisc *qdisc)
->  
->  		skb = __skb_array_consume(q);
->  	}
-> -	if (likely(skb)) {
-> -		qdisc_update_stats_at_dequeue(qdisc, skb);
-> -	} else {
-> -		WRITE_ONCE(qdisc->empty, true);
-> -	}
->  
-> +	if (likely(skb))
-> +		qdisc_update_stats_at_dequeue(qdisc, skb);
->  	return skb;
->  }
->  
-> 
-> 
+> 0-DAY kernel test infrastructure                 Open Source Technology Center
+> https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org Intel Corporation
 
--- 
-Pengutronix e.K.                           |                             |
-Steuerwalder Str. 21                       | http://www.pengutronix.de/  |
-31137 Hildesheim, Germany                  | Phone: +49-5121-206917-0    |
-Amtsgericht Hildesheim, HRA 2686           | Fax:   +49-5121-206917-5555 |
+
