@@ -2,121 +2,153 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 8CB621432F0
-	for <lists+netdev@lfdr.de>; Mon, 20 Jan 2020 21:35:28 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 69E97143311
+	for <lists+netdev@lfdr.de>; Mon, 20 Jan 2020 21:52:49 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726954AbgATUfZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 20 Jan 2020 15:35:25 -0500
-Received: from mail-wm1-f66.google.com ([209.85.128.66]:51288 "EHLO
-        mail-wm1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726607AbgATUfZ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 20 Jan 2020 15:35:25 -0500
-Received: by mail-wm1-f66.google.com with SMTP id d73so691693wmd.1
-        for <netdev@vger.kernel.org>; Mon, 20 Jan 2020 12:35:23 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:from:to:cc:references:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=6ascpwJ6ZHVY3raviKXuVMZRcWzjHuL1BM7dNpjnioQ=;
-        b=U978OSVXl6D/+WDe/xYrFvDjFPo9t5+3RE+T27QleK9nXXWU8RD/OzoUXRr+SmKPA+
-         oO+N+tO+OfSSMjpQwcBqL0m/VuxeKTgXzws81e+8FUOjEQIeb/kafOOExoWSmdy28zGI
-         ahv64Ysy7ymm62k+ou5W0z+/6LVNiuTlWf1Va8s5WZQj8q2qciR8V9bVUZ8X8TrjWNnN
-         at8fzjK48yL36BiPTHLIaDNno8A4/2puJSCN326gknWBQymDXztkQ7+9RWhay3+/3u9B
-         JII/46reixXHQfkzCngwaQXh2P5wJ0Wi3SR/T8YbCgSm8B0Mvi9pGmaFf8cbNAj4v0xE
-         R0gA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:from:to:cc:references:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=6ascpwJ6ZHVY3raviKXuVMZRcWzjHuL1BM7dNpjnioQ=;
-        b=Ba0mubokxsWffnoozI5DUA4O/ObaE9dKWBVVR0ioGirR4U5tlVboF2Jhea2gpCB5EL
-         6AVvsywdrJWGabR/cjSfaF8V6CiS2yOLQ6hiZ58+p8Q4fRnNlsEUz0mIE2ykW6/atBts
-         6fMQeeeaavHB4ZvAB46WvNvya54IzWbDSOSk+AQFsSsNSmKyF/62guRGDkC88nPP1JNE
-         f7kKp/tg4qgOL3PePqQsbflTEHHfiA39NSh4R8w+XTy3QC+Bk8eW/anoB0AR41QA+SQq
-         VTbGjMd6kS/Pr+GxbrIDjnVmFgFj75wju83djouk/XR3UcrRFJKK0Ijr/6YKtvzetSAR
-         Y0Mg==
-X-Gm-Message-State: APjAAAVKOVjPF4tFjNCxb7M6LmIQHeMuV8lE23R5cgThX0kcsA6UsVka
-        6skp+CIhfg15LLZoCWZMs+Bb9qG0
-X-Google-Smtp-Source: APXvYqyNyHHTencNtjsdzcUZjTi9dbkwB63mZED5n4fvSn6j3P0ejBFAU0e79WQJCMFt8DruoKYNmA==
-X-Received: by 2002:a1c:22c6:: with SMTP id i189mr605373wmi.15.1579552522810;
-        Mon, 20 Jan 2020 12:35:22 -0800 (PST)
-Received: from [192.168.178.85] (pD9F901D9.dip0.t-ipconnect.de. [217.249.1.217])
-        by smtp.googlemail.com with ESMTPSA id x10sm47822013wrv.60.2020.01.20.12.35.22
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 20 Jan 2020 12:35:22 -0800 (PST)
-Subject: Re: [PATCH net-next 0/2] net: phy: add generic ndo_do_ioctl handler
- phy_do_ioctl
-From:   Heiner Kallweit <hkallweit1@gmail.com>
-To:     Andrew Lunn <andrew@lunn.ch>
-Cc:     Florian Fainelli <f.fainelli@gmail.com>,
-        David Miller <davem@davemloft.net>,
-        Realtek linux nic maintainers <nic_swsd@realtek.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-References: <520c07a1-dd26-1414-0a2f-7f0d491589d1@gmail.com>
- <20200119161240.GA17720@lunn.ch>
- <97389eb0-fc7f-793b-6f84-730e583c00e9@googlemail.com>
- <20200119175109.GB17720@lunn.ch>
- <c1f7d8ce-2bc2-5141-9f28-a659d2af4e10@gmail.com>
- <20200119185035.GC17720@lunn.ch>
- <82737a2f-b6c1-943e-42a2-d42d87212457@gmail.com>
- <20200119205059.GD17720@lunn.ch>
- <154281b8-43c5-ba18-1860-03e4b0c785fd@gmail.com>
-Message-ID: <2b190b5f-5abb-3647-333c-da51d6bab593@gmail.com>
-Date:   Mon, 20 Jan 2020 21:35:13 +0100
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
- Thunderbird/68.4.1
-MIME-Version: 1.0
-In-Reply-To: <154281b8-43c5-ba18-1860-03e4b0c785fd@gmail.com>
-Content-Type: text/plain; charset=utf-8
+        id S1727403AbgATUw2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 20 Jan 2020 15:52:28 -0500
+Received: from mail-db8eur05on2041.outbound.protection.outlook.com ([40.107.20.41]:61728
+        "EHLO EUR05-DB8-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1726586AbgATUw1 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 20 Jan 2020 15:52:27 -0500
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=GinDkqLvzgbmalXmyMtMefJW3nmjuXcgxT87JPD2KJ8goziWb5dFzfRlYwM2zkKB4yWfNi93Wyu6/Jbk9iXdGtIyd26lOp+UgQqFWZwFaPZr/ise/ceHPG523DfZGA/R27pZdy44hZCA2p1uSMYorM2+C009LWp/l2AAZ1DArFpaFK5JSi1EEx1aVFZ/R7VGK8UuIqsiKKJl5XsINBRyl932+/X1lANfPYrsPUj8/g5uIfI+lpg+ZS06ppb8KHwuezXXF4anFaoigHcAG+1T8IoRJ1uXytAJQGtCg9iqOVrlBdNOEA+ifSd5lUQqB+iNb39HghOHGeMLtS6kpRvShQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=BALKI9NsSM2rAos4Vxt8hfbiMtUUjSbmJC1+NsyQhls=;
+ b=Ue4a3PhX7WPKXOWZIgyx3iFfxeF1a33kZlgn6AeWY8b41pmo6I1+MTem0yG/m2FnGMRSHUAAzwH8WzkTSZKrXOc7yJXSlp80jVc95uC4Rfa8VqXoMFMAKKymU+JjyDskbGupuIBhOhBZQn4vl/yvgEy/FjFNVHBoQnpVa+WJpN8mIaVoTT+5mUI6LFyC4VT3GYRabU4ypd1LVolGmCzKhQRbFywbws0in1dglqxfONgaTfryoHFL/P8N2zf6QXFRzO8DNxIyI/1zhSguu3K/qpvTOQxaApS9oWCnOLT2Q96mcJbRrXRiu8KFQCkT8QfX3UJp5SHq22nexDaTHLGN/Q==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=mellanox.com; dmarc=pass action=none header.from=mellanox.com;
+ dkim=pass header.d=mellanox.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Mellanox.com;
+ s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=BALKI9NsSM2rAos4Vxt8hfbiMtUUjSbmJC1+NsyQhls=;
+ b=ZI4tydE3ozP1fwSmARFAldlRlCa6V0gPoLoUp1EFueDMOXStDOTM5Av0SBCbUCo3RxFanW3wSvJ+btrawdXmdYlU40knGAhAmUr3KDaAKf/JUj6siRQWIcpQ57qPl7aFQ53L7TpqnVPtvap47NTK9NZoAtNwt7q/eaitHHtYIfg=
+Received: from AM0PR0502MB3795.eurprd05.prod.outlook.com (52.133.45.150) by
+ AM0PR0502MB3876.eurprd05.prod.outlook.com (52.133.48.18) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.2644.19; Mon, 20 Jan 2020 20:51:44 +0000
+Received: from AM0PR0502MB3795.eurprd05.prod.outlook.com
+ ([fe80::d862:228a:d87f:99bb]) by AM0PR0502MB3795.eurprd05.prod.outlook.com
+ ([fe80::d862:228a:d87f:99bb%7]) with mapi id 15.20.2644.026; Mon, 20 Jan 2020
+ 20:51:44 +0000
+From:   Shahaf Shuler <shahafs@mellanox.com>
+To:     Jason Gunthorpe <jgg@mellanox.com>,
+        Jason Wang <jasowang@redhat.com>
+CC:     Rob Miller <rob.miller@broadcom.com>,
+        "Michael S. Tsirkin" <mst@redhat.com>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
+        "virtualization@lists.linux-foundation.org" 
+        <virtualization@lists.linux-foundation.org>,
+        Netdev <netdev@vger.kernel.org>,
+        "Bie, Tiwei" <tiwei.bie@intel.com>,
+        "maxime.coquelin@redhat.com" <maxime.coquelin@redhat.com>,
+        "Liang, Cunming" <cunming.liang@intel.com>,
+        "Wang, Zhihong" <zhihong.wang@intel.com>,
+        "Wang, Xiao W" <xiao.w.wang@intel.com>,
+        "haotian.wang@sifive.com" <haotian.wang@sifive.com>,
+        "Zhu, Lingshan" <lingshan.zhu@intel.com>,
+        "eperezma@redhat.com" <eperezma@redhat.com>,
+        "lulu@redhat.com" <lulu@redhat.com>,
+        Parav Pandit <parav@mellanox.com>,
+        "Tian, Kevin" <kevin.tian@intel.com>,
+        "stefanha@redhat.com" <stefanha@redhat.com>,
+        "rdunlap@infradead.org" <rdunlap@infradead.org>,
+        "hch@infradead.org" <hch@infradead.org>,
+        Ariel Adam <aadam@redhat.com>,
+        "jakub.kicinski@netronome.com" <jakub.kicinski@netronome.com>,
+        Jiri Pirko <jiri@mellanox.com>,
+        "hanand@xilinx.com" <hanand@xilinx.com>,
+        "mhabets@solarflare.com" <mhabets@solarflare.com>
+Subject: RE: [PATCH 3/5] vDPA: introduce vDPA bus
+Thread-Topic: [PATCH 3/5] vDPA: introduce vDPA bus
+Thread-Index: AQHVzGqTFJN2iC19r0STv/0Uj4sDPafuxkEAgAAbnwCAAAWygIACyO6wgAGSJ4CAAJh8gIAAMkCQ
+Date:   Mon, 20 Jan 2020 20:51:43 +0000
+Message-ID: <AM0PR0502MB3795C92485338180FC8059CFC3320@AM0PR0502MB3795.eurprd05.prod.outlook.com>
+References: <20200116124231.20253-1-jasowang@redhat.com>
+ <20200116124231.20253-4-jasowang@redhat.com>
+ <20200117070324-mutt-send-email-mst@kernel.org>
+ <239b042c-2d9e-0eec-a1ef-b03b7e2c5419@redhat.com>
+ <CAJPjb1+fG9L3=iKbV4Vn13VwaeDZZdcfBPvarogF_Nzhk+FnKg@mail.gmail.com>
+ <AM0PR0502MB379553984D0D55FDE25426F6C3330@AM0PR0502MB3795.eurprd05.prod.outlook.com>
+ <d69918ca-8af4-44b2-9652-633530d4c113@redhat.com>
+ <20200120174933.GB3891@mellanox.com>
+In-Reply-To: <20200120174933.GB3891@mellanox.com>
+Accept-Language: en-US
 Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+authentication-results: spf=none (sender IP is )
+ smtp.mailfrom=shahafs@mellanox.com; 
+x-originating-ip: [31.154.10.105]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-ht: Tenant
+x-ms-office365-filtering-correlation-id: eb4ec263-5f1e-49ac-f1eb-08d79dea8ee8
+x-ms-traffictypediagnostic: AM0PR0502MB3876:|AM0PR0502MB3876:
+x-ms-exchange-transport-forked: True
+x-microsoft-antispam-prvs: <AM0PR0502MB387684856DB6569E79273B38C3320@AM0PR0502MB3876.eurprd05.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:9508;
+x-forefront-prvs: 0288CD37D9
+x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(4636009)(376002)(396003)(366004)(346002)(39860400002)(136003)(199004)(189003)(81156014)(81166006)(86362001)(478600001)(8676002)(76116006)(66946007)(52536014)(7416002)(33656002)(8936002)(66446008)(64756008)(66476007)(66556008)(26005)(9686003)(7696005)(6506007)(55016002)(2906002)(186003)(4326008)(316002)(110136005)(54906003)(5660300002)(71200400001);DIR:OUT;SFP:1101;SCL:1;SRVR:AM0PR0502MB3876;H:AM0PR0502MB3795.eurprd05.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;A:1;MX:1;
+received-spf: None (protection.outlook.com: mellanox.com does not designate
+ permitted sender hosts)
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: HvYo1urlyLxjeYX7pRDEQ0gytB4zlLC73tpyt2mlGAEcOT7pOrgROhAiDO23XXwimGvk7fquLACm/iwSh2u2UTF64e3obID/6+4hbQdLrUV/f4L0p6/n6XZA2pIMV4HpNBIrvJqDOvZOv3xYtGNF/w92U+8smbeVu40nqkPyy/74Es791dEOVHNLWEug+eHn8ZXpdVhcbiRSXFSQVwKPKF+zYpt2L48tMzHw+KhLS+/i3JObMlafxI0H4hmTRPrLFJuXouEJm+VMj8S01ml7OLwr6NaLlX0alooUM9LhKoRos4IXFrryzSkjrXAUHhWIniEiwdxbUwUQnPqfSAVU1B2Bfw4ZZt7965BvkLAR+XiQe9VhiOUJXY/lVnFzPzCENmQeTKhHQ6zpVcQxMUX1s/QNvAzKUI+XwqRYqOA0XXLZ1dCPkC/0ttuQrR3XHPhr
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
+MIME-Version: 1.0
+X-OriginatorOrg: Mellanox.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: eb4ec263-5f1e-49ac-f1eb-08d79dea8ee8
+X-MS-Exchange-CrossTenant-originalarrivaltime: 20 Jan 2020 20:51:44.1143
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: a652971c-7d2e-4d9b-a6a4-d149256f461b
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: CBU9dbfDpUmSc4YQKFwCKGAo5AuIV7aQVk+gsSwzKrZWWXEZafcNt/pUrypeB5BuLReiVVdRLIRPd3nTQltu4w==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM0PR0502MB3876
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 19.01.2020 23:28, Heiner Kallweit wrote:
-> On 19.01.2020 21:50, Andrew Lunn wrote:
->>> Speaking for r8169:
->>> If interface is up and cable detached, then it runtime-suspends
->>> and goes into PCI D3 (chip and MDIO bus not accessible).
->>> But ndev is "running" and PHY is attached.
->>
->> Hi Heiner
->>
-> Hi Andrew,
-> 
-Hi Andrew
+Monday, January 20, 2020 7:50 PM, Jason Gunthorpe:
+> Subject: Re: [PATCH 3/5] vDPA: introduce vDPA bus
+>=20
+> On Mon, Jan 20, 2020 at 04:43:53PM +0800, Jason Wang wrote:
+> > This is similar to the design of platform IOMMU part of vhost-vdpa. We
+> > decide to send diffs to platform IOMMU there. If it's ok to do that in
+> > driver, we can replace set_map with incremental API like map()/unmap().
+> >
+> > Then driver need to maintain rbtree itself.
+>=20
+> I think we really need to see two modes, one where there is a fixed
+> translation without dynamic vIOMMU driven changes and one that supports
+> vIOMMU.
+>=20
+> There are different optimization goals in the drivers for these two
+> configurations.
 
->> And how does it get out of this state? I assume the PHY interrupts
->> when the link is established. Is phylib handling this interrupt? If
->> so, when phylib accesses the MDIO bus, the bus needs to be runtime PM
->> aware. And if the bus is runtime PM aware, the IOCTL handler should
->> work, when the device is runtime suspended.  If the MAC is handling
->> this interrupt, and it is the MAC interrupt handler which is run-time
->> unsuspending, then the ioctl handler is not going to work unless it
->> also runtime unsuspends.
->>
-> The chip (wherever the magic happens) generates a PCI PME if WoL
-> config includes detection of physical link-up. The PCI core then
-> runtime-resumes the device.
-> I'd prefer the ioctl to return an error here instead of e.g.
-> 0xffff for a register read.
-> 
-I checked a little further and indeed there's a need to check whether
-net_device is present, but net core (dev_ifsioc) already does this
-check before calling the ndo_do_ioctl handler. So we don't have to
-do it in the handler again.
++1.
+It will be best to have one API for static config (i.e. mapping can be set =
+only before virtio device gets active), and one API for dynamic changes tha=
+t can be set after the virtio device is active.=20
 
-I saw that David applied my series already. So I'll send a follow-up
-series that:
-- renames phy_do_ioctl to phy_do_ioctl_running
-- adds phy_do_ioctl (w/o check that netdev is running)
-- converts users to phy_do_ioctl
-
->> 	Andrew
->>
-> Heiner
-> 
-Heiner
+>=20
+> > > If the first one, then I think memory hotplug is a heavy flow
+> > > regardless. Do you think the extra cycles for the tree traverse will
+> > > be visible in any way?
+> >
+> > I think if the driver can pause the DMA during the time for setting up
+> > new mapping, it should be fine.
+>=20
+> This is very tricky for any driver if the mapping change hits the virtio =
+rings. :(
+>=20
+> Even a IOMMU using driver is going to have problems with that..
+>=20
+> Jason
