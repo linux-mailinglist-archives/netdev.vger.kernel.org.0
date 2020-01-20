@@ -2,32 +2,32 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 4CC3D142486
+	by mail.lfdr.de (Postfix) with ESMTP id BF045142487
 	for <lists+netdev@lfdr.de>; Mon, 20 Jan 2020 08:54:48 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726621AbgATHxr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 20 Jan 2020 02:53:47 -0500
-Received: from out5-smtp.messagingengine.com ([66.111.4.29]:49343 "EHLO
+        id S1726780AbgATHxt (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 20 Jan 2020 02:53:49 -0500
+Received: from out5-smtp.messagingengine.com ([66.111.4.29]:45237 "EHLO
         out5-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726584AbgATHxq (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 20 Jan 2020 02:53:46 -0500
+        by vger.kernel.org with ESMTP id S1726590AbgATHxs (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 20 Jan 2020 02:53:48 -0500
 Received: from compute3.internal (compute3.nyi.internal [10.202.2.43])
-        by mailout.nyi.internal (Postfix) with ESMTP id 01CB421ADD;
-        Mon, 20 Jan 2020 02:53:46 -0500 (EST)
+        by mailout.nyi.internal (Postfix) with ESMTP id 1E65A218BB;
+        Mon, 20 Jan 2020 02:53:47 -0500 (EST)
 Received: from mailfrontend1 ([10.202.2.162])
-  by compute3.internal (MEProxy); Mon, 20 Jan 2020 02:53:46 -0500
+  by compute3.internal (MEProxy); Mon, 20 Jan 2020 02:53:47 -0500
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
         messagingengine.com; h=cc:content-transfer-encoding:date:from
         :in-reply-to:message-id:mime-version:references:subject:to
         :x-me-proxy:x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=
-        fm1; bh=GfpPcmFm+xRr0jhVUQW5w+nFRPAzNss0xCzUTLbxtgU=; b=myBoLmCo
-        ug8e1YrDDJw3pDj3Tzgoov/WrQkqkGCBwmYq60QuOI1zm8N74Yg1BL98aR5+XL+O
-        xMfb0jPT78fpyUUbYCU04+vno72iBV1GiEa58XqThTLiAwwwCCJZp86xbPQ6ZcMh
-        BUtZBFf6fXz2imMTbVPoy2NQw08qdOD0lgpaEmo4dL+upJMxCLv6VPFmSB//iZQV
-        KuKuzP/g4+zzOB9OUA+hAGadXB/F+t+4YBB2ArmLWCiW/XZsffZXUtd5y3MAsMdj
-        0eONSgq/k19xcJkbUdFcrFV7l44/skOZjdeN6QNac3qF2+BXK93/rU3/57658A54
-        yugX6Zgr3PQu4Q==
-X-ME-Sender: <xms:iVwlXubO7PZvwLD_DpNUsduTaiPrjJL9lGqGg-TlvJ6G0SWL5PQGLw>
+        fm1; bh=dIWe6zldrKCbYyI8SJaPvhGrrDAntn1U3WuMhjEX0to=; b=uJ7D1z+5
+        mruDpB1Lu+8lJUrZ06LPf4uZaxfItAkMH4rmXe6tA3INW/hlJcow6QOY1+fVjKeU
+        O1kHAIZNxw98JotjezawIR3o69i6x6MsA8SVRFVTYZwr1HCalWoB4cQ+GMvqKhjH
+        MCKEc4s8tUCueDCZK3H1ainDXl8iN7ddr9kLG0V32rPkptRBXmZc+jvZGa7PuFU0
+        Gr2q6hGzzgeE3XmRHs7r27JI7NGF1Y/ZAvt32OpsWgEO8arRmMYLMCoSxC7XZcrG
+        tIMMY2KJ4p3pVl9sKPxfRsaC0S/caLRUtJNnWLkyY4iI4a3hMssOqmpkYzpDRPZM
+        FjEBL0Owy4To7g==
+X-ME-Sender: <xms:i1wlXpD9XsFzAxxuhcbjw2BrpHO0iyqOWUpwJzXLixDqXpsLrdmmjQ>
 X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedugedrudeggdduuddvucetufdoteggodetrfdotf
     fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
     uceurghilhhouhhtmecufedttdenucenucfjughrpefhvffufffkofgjfhgggfestdekre
@@ -35,20 +35,20 @@ X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedugedrudeggdduuddvucetufdoteggod
     shgthhdrohhrgheqnecukfhppeduleefrdegjedrudeihedrvdehudenucfrrghrrghmpe
     hmrghilhhfrhhomhepihguohhstghhsehiughoshgthhdrohhrghenucevlhhushhtvghr
     ufhiiigvpedt
-X-ME-Proxy: <xmx:iVwlXtKlJi7llI85boHHG9qzlTpsaC_mVBros7Byamku3459zDy_tQ>
-    <xmx:iVwlXsh7qOu9GO2OkbtdD9ITiFOhlAuuqT0R_aKFESRICKBufaolVg>
-    <xmx:iVwlXsX5eXcvpsxaowrFnppm5iyLPpYwpMe0gERm3f8KmxkA04hLaw>
-    <xmx:iVwlXhEum2yS-x04wZegGIyqseK09W_DC3lJIcCy8xn4s7PhzmnP_g>
+X-ME-Proxy: <xmx:i1wlXlzJbAO22kWIh7n7N9DoM-rx6lSRd6nPP2Wk56MkcsjaEPU20A>
+    <xmx:i1wlXuvn9qFV39lUstcQ-loRmUKJ59T9toUNuyYY93W6yEsdGzP0vg>
+    <xmx:i1wlXgI8BDEOGyWZRrITsrelkx3suq398BcD-ps7vOnbaBsZqlBpYw>
+    <xmx:i1wlXhnlgqWx_sEro6QuZv4HZjVzhnFwtGAYM1ZUOQQcKbjaPZ5_xA>
 Received: from splinter.mtl.com (unknown [193.47.165.251])
-        by mail.messagingengine.com (Postfix) with ESMTPA id BF8968005A;
-        Mon, 20 Jan 2020 02:53:44 -0500 (EST)
+        by mail.messagingengine.com (Postfix) with ESMTPA id F11258005C;
+        Mon, 20 Jan 2020 02:53:45 -0500 (EST)
 From:   Ido Schimmel <idosch@idosch.org>
 To:     netdev@vger.kernel.org
 Cc:     davem@davemloft.net, jiri@mellanox.com, mlxsw@mellanox.com,
         Ido Schimmel <idosch@mellanox.com>
-Subject: [PATCH net-next 1/4] mlxsw: spectrum: Push code getting port speed into a helper
-Date:   Mon, 20 Jan 2020 09:52:50 +0200
-Message-Id: <20200120075253.3356176-2-idosch@idosch.org>
+Subject: [PATCH net-next 2/4] mlxsw: spectrum_span: Put buffsize update code into helper function
+Date:   Mon, 20 Jan 2020 09:52:51 +0200
+Message-Id: <20200120075253.3356176-3-idosch@idosch.org>
 X-Mailer: git-send-email 2.24.1
 In-Reply-To: <20200120075253.3356176-1-idosch@idosch.org>
 References: <20200120075253.3356176-1-idosch@idosch.org>
@@ -61,97 +61,77 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Jiri Pirko <jiri@mellanox.com>
 
-Currently PTP code queries directly PTYS register for port speed from
-work scheduled upon PUDE event. Since the speed needs to be used for
-SPAN buffer size computation as well, push the code into a separate
-helper.
+Avoid duplication of code that is doing buffsize update and put it into
+a separate helper function.
 
 Signed-off-by: Jiri Pirko <jiri@mellanox.com>
 Signed-off-by: Ido Schimmel <idosch@mellanox.com>
 ---
- .../net/ethernet/mellanox/mlxsw/spectrum.c    | 21 +++++++++++++++++++
- .../net/ethernet/mellanox/mlxsw/spectrum.h    |  1 +
- .../ethernet/mellanox/mlxsw/spectrum_ptp.c    | 14 ++-----------
- 3 files changed, 24 insertions(+), 12 deletions(-)
+ .../ethernet/mellanox/mlxsw/spectrum_span.c   | 37 ++++++++-----------
+ 1 file changed, 15 insertions(+), 22 deletions(-)
 
-diff --git a/drivers/net/ethernet/mellanox/mlxsw/spectrum.c b/drivers/net/ethernet/mellanox/mlxsw/spectrum.c
-index 8639f32ec4d5..1bedf9bc0a57 100644
---- a/drivers/net/ethernet/mellanox/mlxsw/spectrum.c
-+++ b/drivers/net/ethernet/mellanox/mlxsw/spectrum.c
-@@ -3535,6 +3535,27 @@ mlxsw_sp_port_speed_by_width_set(struct mlxsw_sp_port *mlxsw_sp_port)
- 	return mlxsw_reg_write(mlxsw_sp->core, MLXSW_REG(ptys), ptys_pl);
+diff --git a/drivers/net/ethernet/mellanox/mlxsw/spectrum_span.c b/drivers/net/ethernet/mellanox/mlxsw/spectrum_span.c
+index 200d324e6d99..7917c6ea262e 100644
+--- a/drivers/net/ethernet/mellanox/mlxsw/spectrum_span.c
++++ b/drivers/net/ethernet/mellanox/mlxsw/spectrum_span.c
+@@ -754,26 +754,25 @@ static int mlxsw_sp_span_mtu_to_buffsize(const struct mlxsw_sp *mlxsw_sp,
+ 	return mlxsw_sp_bytes_cells(mlxsw_sp, mtu * 5 / 2) + 1;
  }
  
-+int mlxsw_sp_port_speed_get(struct mlxsw_sp_port *mlxsw_sp_port, u32 *speed)
-+{
-+	const struct mlxsw_sp_port_type_speed_ops *port_type_speed_ops;
+-int mlxsw_sp_span_port_mtu_update(struct mlxsw_sp_port *port, u16 mtu)
++static int
++mlxsw_sp_span_port_buffsize_update(struct mlxsw_sp_port *mlxsw_sp_port, u16 mtu)
+ {
+-	struct mlxsw_sp *mlxsw_sp = port->mlxsw_sp;
 +	struct mlxsw_sp *mlxsw_sp = mlxsw_sp_port->mlxsw_sp;
-+	char ptys_pl[MLXSW_REG_PTYS_LEN];
-+	u32 eth_proto_oper;
-+	int err;
-+
-+	port_type_speed_ops = mlxsw_sp->port_type_speed_ops;
-+	port_type_speed_ops->reg_ptys_eth_pack(mlxsw_sp, ptys_pl,
-+					       mlxsw_sp_port->local_port, 0,
-+					       false);
-+	err = mlxsw_reg_query(mlxsw_sp->core, MLXSW_REG(ptys), ptys_pl);
-+	if (err)
-+		return err;
-+	port_type_speed_ops->reg_ptys_eth_unpack(mlxsw_sp, ptys_pl, NULL, NULL,
-+						 &eth_proto_oper);
-+	*speed = port_type_speed_ops->from_ptys_speed(mlxsw_sp, eth_proto_oper);
-+	return 0;
+ 	char sbib_pl[MLXSW_REG_SBIB_LEN];
+-	int err;
++	u32 buffsize;
+ 
++	buffsize = mlxsw_sp_span_mtu_to_buffsize(mlxsw_sp, mtu);
++	mlxsw_reg_sbib_pack(sbib_pl, mlxsw_sp_port->local_port, buffsize);
++	return mlxsw_reg_write(mlxsw_sp->core, MLXSW_REG(sbib), sbib_pl);
 +}
 +
- int mlxsw_sp_port_ets_set(struct mlxsw_sp_port *mlxsw_sp_port,
- 			  enum mlxsw_reg_qeec_hr hr, u8 index, u8 next_index,
- 			  bool dwrr, u8 dwrr_weight)
-diff --git a/drivers/net/ethernet/mellanox/mlxsw/spectrum.h b/drivers/net/ethernet/mellanox/mlxsw/spectrum.h
-index 948ef4720d40..6477b473cad7 100644
---- a/drivers/net/ethernet/mellanox/mlxsw/spectrum.h
-+++ b/drivers/net/ethernet/mellanox/mlxsw/spectrum.h
-@@ -471,6 +471,7 @@ extern struct notifier_block mlxsw_sp_switchdev_notifier;
- /* spectrum.c */
- void mlxsw_sp_rx_listener_no_mark_func(struct sk_buff *skb,
- 				       u8 local_port, void *priv);
-+int mlxsw_sp_port_speed_get(struct mlxsw_sp_port *mlxsw_sp_port, u32 *speed);
- int mlxsw_sp_port_ets_set(struct mlxsw_sp_port *mlxsw_sp_port,
- 			  enum mlxsw_reg_qeec_hr hr, u8 index, u8 next_index,
- 			  bool dwrr, u8 dwrr_weight);
-diff --git a/drivers/net/ethernet/mellanox/mlxsw/spectrum_ptp.c b/drivers/net/ethernet/mellanox/mlxsw/spectrum_ptp.c
-index 4aaaa4937b1a..34f7c3501b08 100644
---- a/drivers/net/ethernet/mellanox/mlxsw/spectrum_ptp.c
-+++ b/drivers/net/ethernet/mellanox/mlxsw/spectrum_ptp.c
-@@ -1016,27 +1016,17 @@ mlxsw_sp1_ptp_port_shaper_set(struct mlxsw_sp_port *mlxsw_sp_port, bool enable)
++int mlxsw_sp_span_port_mtu_update(struct mlxsw_sp_port *port, u16 mtu)
++{
+ 	/* If port is egress mirrored, the shared buffer size should be
+ 	 * updated according to the mtu value
+ 	 */
+-	if (mlxsw_sp_span_is_egress_mirror(port)) {
+-		u32 buffsize = mlxsw_sp_span_mtu_to_buffsize(mlxsw_sp, mtu);
+-
+-		mlxsw_reg_sbib_pack(sbib_pl, port->local_port, buffsize);
+-		err = mlxsw_reg_write(mlxsw_sp->core, MLXSW_REG(sbib), sbib_pl);
+-		if (err) {
+-			netdev_err(port->dev, "Could not update shared buffer for mirroring\n");
+-			return err;
+-		}
+-	}
+-
++	if (mlxsw_sp_span_is_egress_mirror(port))
++		return mlxsw_sp_span_port_buffsize_update(port, mtu);
+ 	return 0;
+ }
  
- static int mlxsw_sp1_ptp_port_shaper_check(struct mlxsw_sp_port *mlxsw_sp_port)
- {
--	const struct mlxsw_sp_port_type_speed_ops *port_type_speed_ops;
--	struct mlxsw_sp *mlxsw_sp = mlxsw_sp_port->mlxsw_sp;
--	char ptys_pl[MLXSW_REG_PTYS_LEN];
--	u32 eth_proto_oper, speed;
- 	bool ptps = false;
- 	int err, i;
-+	u32 speed;
+@@ -836,15 +835,9 @@ mlxsw_sp_span_inspected_port_add(struct mlxsw_sp_port *port,
  
- 	if (!mlxsw_sp1_ptp_hwtstamp_enabled(mlxsw_sp_port))
- 		return mlxsw_sp1_ptp_port_shaper_set(mlxsw_sp_port, false);
+ 	/* if it is an egress SPAN, bind a shared buffer to it */
+ 	if (type == MLXSW_SP_SPAN_EGRESS) {
+-		u32 buffsize = mlxsw_sp_span_mtu_to_buffsize(mlxsw_sp,
+-							     port->dev->mtu);
+-
+-		mlxsw_reg_sbib_pack(sbib_pl, port->local_port, buffsize);
+-		err = mlxsw_reg_write(mlxsw_sp->core, MLXSW_REG(sbib), sbib_pl);
+-		if (err) {
+-			netdev_err(port->dev, "Could not create shared buffer for mirroring\n");
++		err = mlxsw_sp_span_port_buffsize_update(port, port->dev->mtu);
++		if (err)
+ 			return err;
+-		}
+ 	}
  
--	port_type_speed_ops = mlxsw_sp->port_type_speed_ops;
--	port_type_speed_ops->reg_ptys_eth_pack(mlxsw_sp, ptys_pl,
--					       mlxsw_sp_port->local_port, 0,
--					       false);
--	err = mlxsw_reg_query(mlxsw_sp->core, MLXSW_REG(ptys), ptys_pl);
-+	err = mlxsw_sp_port_speed_get(mlxsw_sp_port, &speed);
- 	if (err)
- 		return err;
--	port_type_speed_ops->reg_ptys_eth_unpack(mlxsw_sp, ptys_pl, NULL, NULL,
--						 &eth_proto_oper);
- 
--	speed = port_type_speed_ops->from_ptys_speed(mlxsw_sp, eth_proto_oper);
- 	for (i = 0; i < MLXSW_SP1_PTP_SHAPER_PARAMS_LEN; i++) {
- 		if (mlxsw_sp1_ptp_shaper_params[i].ethtool_speed == speed) {
- 			ptps = true;
+ 	if (bind) {
 -- 
 2.24.1
 
