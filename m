@@ -2,74 +2,234 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 96A2F142DBE
-	for <lists+netdev@lfdr.de>; Mon, 20 Jan 2020 15:39:26 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E9B22142E04
+	for <lists+netdev@lfdr.de>; Mon, 20 Jan 2020 15:50:37 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729127AbgATOjZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 20 Jan 2020 09:39:25 -0500
-Received: from dispatch1-us1.ppe-hosted.com ([148.163.129.52]:44060 "EHLO
-        dispatch1-us1.ppe-hosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726642AbgATOjY (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 20 Jan 2020 09:39:24 -0500
-X-Virus-Scanned: Proofpoint Essentials engine
-Received: from webmail.solarflare.com (uk.solarflare.com [193.34.186.16])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mx1-us5.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTPS id 25F7280067;
-        Mon, 20 Jan 2020 14:39:23 +0000 (UTC)
-Received: from [10.17.20.203] (10.17.20.203) by ukex01.SolarFlarecom.com
- (10.17.10.4) with Microsoft SMTP Server (TLS) id 15.0.1395.4; Mon, 20 Jan
- 2020 14:39:17 +0000
-Subject: Re: [PATCH net] net: Fix packet reordering caused by GRO and
- listified RX cooperation
-To:     Alexander Lobakin <alobakin@dlink.ru>,
-        Saeed Mahameed <saeedm@mellanox.com>
-CC:     Maxim Mikityanskiy <maximmi@mellanox.com>,
-        Jiri Pirko <jiri@mellanox.com>, <edumazet@google.com>,
-        <netdev@vger.kernel.org>, <davem@davemloft.net>,
-        "Tariq Toukan" <tariqt@mellanox.com>
-References: <20200117150913.29302-1-maximmi@mellanox.com>
- <7939223efeb4ed9523a802702874be9b8f37f231.camel@mellanox.com>
- <da13831f11d0141728a96954685fdf40@dlink.ru>
- <5b0519b8640f9f270a9570720986eee7@dlink.ru>
-From:   Edward Cree <ecree@solarflare.com>
-Message-ID: <1b91ee24-1ec0-3aef-9ab7-d58673dc98ae@solarflare.com>
-Date:   Mon, 20 Jan 2020 14:39:14 +0000
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.2.2
+        id S1727688AbgATOud (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 20 Jan 2020 09:50:33 -0500
+Received: from foss.arm.com ([217.140.110.172]:33030 "EHLO foss.arm.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726642AbgATOud (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 20 Jan 2020 09:50:33 -0500
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 2047630E;
+        Mon, 20 Jan 2020 06:50:32 -0800 (PST)
+Received: from donnerap.cambridge.arm.com (usa-sjc-imap-foss1.foss.arm.com [10.121.207.14])
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id DC4A13F52E;
+        Mon, 20 Jan 2020 06:50:30 -0800 (PST)
+Date:   Mon, 20 Jan 2020 14:50:28 +0000
+From:   Andre Przywara <andre.przywara@arm.com>
+To:     Russell King - ARM Linux admin <linux@armlinux.org.uk>
+Cc:     Andrew Lunn <andrew@lunn.ch>, netdev@vger.kernel.org,
+        Radhey Shyam Pandey <radhey.shyam.pandey@xilinx.com>,
+        Michal Simek <michal.simek@xilinx.com>,
+        linux-kernel@vger.kernel.org,
+        Robert Hancock <hancock@sedsystems.ca>,
+        "David S . Miller" <davem@davemloft.net>,
+        linux-arm-kernel@lists.infradead.org
+Subject: Re: [PATCH 07/14] net: axienet: Fix SGMII support
+Message-ID: <3b28dcb4-6e52-9a48-bf9c-ddad4cf5e98a@arm.com>
+In-Reply-To: <20200118112258.GT25745@shell.armlinux.org.uk>
+References: <20200110115415.75683-1-andre.przywara@arm.com>
+ <20200110115415.75683-8-andre.przywara@arm.com>
+ <20200110140415.GE19739@lunn.ch>
+ <20200110142038.2ed094ba@donnerap.cambridge.arm.com>
+ <20200110150409.GD25745@shell.armlinux.org.uk>
+ <20200110152215.GF25745@shell.armlinux.org.uk>
+ <20200110170457.GH25745@shell.armlinux.org.uk>
+ <20200118112258.GT25745@shell.armlinux.org.uk>
+Organization: ARM
+X-Mailer: Claws Mail 3.17.3 (GTK+ 2.24.32; aarch64-unknown-linux-gnu)
 MIME-Version: 1.0
-In-Reply-To: <5b0519b8640f9f270a9570720986eee7@dlink.ru>
-Content-Type: text/plain; charset="utf-8"
-Content-Language: en-GB
+Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.17.20.203]
-X-ClientProxiedBy: ocex03.SolarFlarecom.com (10.20.40.36) To
- ukex01.SolarFlarecom.com (10.17.10.4)
-X-TM-AS-Product-Ver: SMEX-12.5.0.1300-8.5.1010-25178.003
-X-TM-AS-Result: No-2.964500-8.000000-10
-X-TMASE-MatchedRID: +c13yJDs9034ECMHJTM/ufZvT2zYoYOwC/ExpXrHizynRvssirgAKxAF
-        IK5TH5/7RKNWDt5BRjJVjdEnKZ0vVhKovmG69iNrfid4LSHtIAMmKH/Kj46+VYSouYJQSRHXngI
-        gpj8eDcC063Wh9WVqgmWCfbzydb0giCFykZQ+I/rkwjHXXC/4I8prJP8FBOIasvOLFGvwMZt7Ox
-        p499KrIIrqecQqT64dwO6C0Hf3nYSsi79TBRrn6YVyAlz5A0zC7xsmi8libwVi6nHReNJA8sM4V
-        WYqoYnhs+fe0WifpQo=
-X-TM-AS-User-Approved-Sender: Yes
-X-TM-AS-User-Blocked-Sender: No
-X-TMASE-Result: 10--2.964500-8.000000
-X-TMASE-Version: SMEX-12.5.0.1300-8.5.1010-25178.003
-X-MDID: 1579531164-UCF0B_BjRKXM
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 20/01/2020 09:44, Alexander Lobakin wrote:
-> Still need Edward's review. 
-Sorry for delay, didn't have time to catch up with the net-next firehose
- on Friday.
+On 18/01/2020 11:22, Russell King - ARM Linux admin wrote:
+> On Fri, Jan 10, 2020 at 05:04:57PM +0000, Russell King - ARM Linux admin wrote:
+>> Maybe something like the below will help?
+>>
+>> Basically, use phylink_mii_pcs_get_state() instead of
+>> axienet_mac_pcs_get_state(), and setup lp->phylink_config.pcs_mii
+>> to point at the MII bus, and lp->phylink_config.pcs_mii_addr to
+>> access the internal PHY (as per C_PHYADDR parameter.)
+>>
+>> You may have some fuzz (with gnu patch) while trying to apply this,
+>> as you won't have the context for the first and last hunks in this
+>> patch.
+>>
+>> This will probably not be the final version of the patch anyway;
+>> there's some possibility to pull some of the functionality out of
+>> phylib into a more general library which would avoid some of the
+>> functional duplication.
+> 
+> Hi Andre,
+> 
+> Did you have a chance to see whether this helps?
 
-With this change:
-> IV. Patch + gro_normal_list() is placed after napi_gro_flush()
- and the corrected Fixes tag, I agree that the solution is correct, and
- expect to ack v2 when it's posted.
+Sorry, I needed some time to wrap my head around your reply first. Am I am still not fully finished with this process ;-)
+Anyway I observed that when I add 'managed = "in-band-status"' to the DT, it seems to work, because it actually calls axienet_mac_pcs_get_state() to learn the actual negotiated parameters. Then in turn it calls mac_config with the proper speed instead of -1:
+[  151.682532] xilinx_axienet 7fe00000.ethernet eth0: configuring for inband/sgmii link mode
+[  151.710743] axienet_mac_config(config, mode=2, speed=-1, duplex=255, pause=16)
+...
+[  153.818568] axienet_mac_pcs_get_state(config): speed=1000, interface=4, pause=0
+[  153.842244] axienet_mac_config(config, mode=2, speed=1000, duplex=1, pause=0)
 
--Ed
+Without that DT property it never called mac_pcs_get_state(), so never learnt about the actual settings.
+But the actual MAC setting was already right (1 GBps, FD). Whether this was by chance (reset value?) or because this was set by the PHY via SGMII, I don't know.
+So in my case I think I *need* to have the managed = ... property in my DT.
+
+But I was wondering if we need this patch anyway, regardless of the proper way to check for the connection setting in this case. Because at the moment calling mac_config with speed=-1 will *delete* the current MAC speed setting and leave it as 10 Mbps (because this is encoded as 0), when speed is not one of the well-known values. I am not sure that is desired behaviour, or speed=-1 just means: don't touch the speed setting. After all we call mac_config with speed=-1 first, even when later fixing this up (see above).
+
+Thanks,
+Andre.
+
+>>
+>> diff --git a/drivers/net/phy/phylink.c b/drivers/net/phy/phylink.c
+>> index 75a74a16dc3d..44198fdb3c01 100644
+>> --- a/drivers/net/phy/phylink.c
+>> +++ b/drivers/net/phy/phylink.c
+>> @@ -2073,4 +2073,105 @@ phy_interface_t phylink_select_serdes_interface(unsigned long *interfaces,
+>>  }
+>>  EXPORT_SYMBOL_GPL(phylink_select_serdes_interface);
+>>  
+>> +static void phylink_decode_advertisement(struct phylink_link_state *state)
+>> +{
+>> +	__ETHTOOL_DECLARE_LINK_MODE_MASK(u);
+>> +
+>> +	linkmode_and(u, state->lp_advertising, state->advertising);
+>> +
+>> +	if (linkmode_test_bit(ETHTOOL_LINK_MODE_Pause_BIT, u)) {
+>> +		state->pause = MLO_PAUSE_RX | MLO_PAUSE_TX;
+>> +	} else if (linkmode_test_bit(ETHTOOL_LINK_MODE_Asym_Pause_BIT, u)) {
+>> +		if (linkmode_test_bit(ETHTOOL_LINK_MODE_Pause_BIT,
+>> +				      state->lp_advertising))
+>> +			state->pause |= MLO_PAUSE_TX;
+>> +		if (linkmode_test_bit(ETHTOOL_LINK_MODE_Pause_BIT,
+>> +				      state->advertising))
+>> +			state->pause |= MLO_PAUSE_RX;
+>> +	}
+>> +
+>> +	if (linkmode_test_bit(ETHTOOL_LINK_MODE_2500baseX_Full_BIT, u)) {
+>> +		state->speed = SPEED_2500;
+>> +		state->duplex = DUPLEX_FULL;
+>> +	} else if (linkmode_test_bit(ETHTOOL_LINK_MODE_1000baseX_Full_BIT, u)) {
+>> +		state->pause = SPEED_1000;
+>> +		state->duplex = DUPLEX_FULL;
+>> +	} else {
+>> +		state->link = false;
+>> +	}
+>> +}
+>> +
+>> +void phylink_mii_pcs_get_state(struct phylink_config *config,
+>> +			       struct phylink_link_state *state)
+>> +{
+>> +	struct mii_bus *bus = config->pcs_mii;
+>> +	int addr = config->pcs_mii_addr;
+>> +	int bmsr, lpa;
+>> +
+>> +	bmsr = mdiobus_read(bus, addr, MII_BMSR);
+>> +	lpa = mdiobus_read(bus, addr, MII_LPA);
+>> +	if (bmsr < 0 || lpa < 0) {
+>> +		state->link = false;
+>> +		return;
+>> +	}
+>> +
+>> +	state->link = !!(bmsr & BMSR_LSTATUS);
+>> +	state->an_complete = !!(bmsr & BMSR_ANEGCOMPLETE);
+>> +
+>> +	switch (state->interface) {
+>> +	case PHY_INTERFACE_MODE_1000BASEX:
+>> +		if (lpa & LPA_1000XFULL)
+>> +			linkmode_set_bit(ETHTOOL_LINK_MODE_1000baseX_Full_BIT,
+>> +					 state->lp_advertising);
+>> +		goto lpa_8023z;
+>> +
+>> +	case PHY_INTERFACE_MODE_2500BASEX:
+>> +		if (lpa & LPA_1000XFULL)
+>> +			linkmode_set_bit(ETHTOOL_LINK_MODE_2500baseX_Full_BIT,
+>> +					 state->lp_advertising);
+>> +	lpa_8023z:
+>> +		if (lpa & LPA_1000XPAUSE)
+>> +			linkmode_set_bit(ETHTOOL_LINK_MODE_Pause_BIT,
+>> +					 state->lp_advertising);
+>> +		if (lpa & LPA_1000XPAUSE_ASYM)
+>> +			linkmode_set_bit(ETHTOOL_LINK_MODE_Asym_Pause_BIT,
+>> +					 state->lp_advertising);
+>> +		if (lpa & LPA_LPACK)
+>> +			linkmode_set_bit(ETHTOOL_LINK_MODE_Autoneg_BIT,
+>> +					 state->lp_advertising);
+>> +		phylink_decode_advertisement(state);
+>> +		break;
+>> +
+>> +	case PHY_INTERFACE_MODE_SGMII:
+>> +		switch (lpa & 0x8c00) {
+>> +		case 0x8000:
+>> +			state->speed = SPEED_10;
+>> +			break;
+>> +		case 0x8400:
+>> +			state->speed = SPEED_100;
+>> +			break;
+>> +		case 0x8800:
+>> +			state->speed = SPEED_1000;
+>> +			break;
+>> +		default:
+>> +			state->link = false;
+>> +			break;
+>> +		}
+>> +		switch (lpa & 0x9000) {
+>> +		case 0x9000:
+>> +			state->duplex = DUPLEX_FULL;
+>> +			break;
+>> +		case 0x8000:
+>> +			state->duplex = DUPLEX_HALF;
+>> +			break;
+>> +		}
+>> +		break;
+>> +
+>> +	default:
+>> +		state->link = false;
+>> +		break;
+>> +	}
+>> +}
+>> +EXPORT_SYMBOL_GPL(phylink_mii_pcs_get_state);
+>> +
+>>  MODULE_LICENSE("GPL v2");
+>> diff --git a/include/linux/phylink.h b/include/linux/phylink.h
+>> index 4ea76e083847..cf0fa39b4b21 100644
+>> --- a/include/linux/phylink.h
+>> +++ b/include/linux/phylink.h
+>> @@ -65,6 +65,9 @@ enum phylink_op_type {
+>>  struct phylink_config {
+>>  	struct device *dev;
+>>  	enum phylink_op_type type;
+>> +
+>> +	struct mii_bus *pcs_mii;
+>> +	int pcs_mii_addr;
+>>  };
+>>  
+>>  /**
+>> @@ -292,4 +295,7 @@ phy_interface_t phylink_select_serdes_interface(unsigned long *interfaces,
+>>  						const phy_interface_t *pref,
+>>  						size_t nprefs);
+>>  
+>> +void phylink_mii_pcs_get_state(struct phylink_config *config,
+>> +			       struct phylink_link_state *state);
+>> +
+>>  #endif
+>>
+>> -- 
+>> RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
+>> FTTC broadband for 0.8mile line in suburbia: sync at 12.1Mbps down 622kbps up
+>> According to speedtest.net: 11.9Mbps down 500kbps up
+>>
+>> _______________________________________________
+>> linux-arm-kernel mailing list
+>> linux-arm-kernel@lists.infradead.org
+>> http://lists.infradead.org/mailman/listinfo/linux-arm-kernel
+>>
+> 
+
