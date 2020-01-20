@@ -2,108 +2,130 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id D4FB0142594
-	for <lists+netdev@lfdr.de>; Mon, 20 Jan 2020 09:29:45 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 794101425A1
+	for <lists+netdev@lfdr.de>; Mon, 20 Jan 2020 09:35:37 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726876AbgATI31 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 20 Jan 2020 03:29:27 -0500
-Received: from mail-oi1-f195.google.com ([209.85.167.195]:39110 "EHLO
-        mail-oi1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726148AbgATI31 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 20 Jan 2020 03:29:27 -0500
-Received: by mail-oi1-f195.google.com with SMTP id z2so3823581oih.6;
-        Mon, 20 Jan 2020 00:29:26 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=tFqMTtRLSSI+O8N4QG8hNcWnZ16xdlM9eDNxrV6706I=;
-        b=Ni4dqih2pHK5KtdSs6JX2cEdrng5NUqRigPBK2qTfDPInRjY+Pa2vNpG00Bc4YqtBJ
-         DouV4ilzczYR1wzNowVJgxnrUNi7WW9lCyyojQt6XSQ+zjozamhz7qIKc11EzVbZamqr
-         D34sH477iWtAOcrkFL/0BOFe9YSkLOVZVzEErIqGiMCdGZkDwG4ZTcFyrcmfoicwt6GL
-         0x42vnhdHF9S+/vBFOQef9/BmVtCBPuZqh6S9SI9ChbhDoTobHBH24nKEYfuVQMZYigG
-         wLy15C1pupCq+E/GL2px5UXGxCHkHd4+w393m6TB3KHwbRxSI6AMETCrS4NtNsB12UPZ
-         pw3Q==
-X-Gm-Message-State: APjAAAU9wT6rKPLQTIhIUQ96CaX2E9QMz4kcQRRAbLGjrqw1q570Sm0F
-        4kg1oVuiZddhXhBRVFfXh38Lv/WuMXaAxXnhN/j1Tw==
-X-Google-Smtp-Source: APXvYqwVtDCTbfv44Zscj3VBgtNuG+yGRutOTjquJ+HIEAaRmbCFgSCQTDGmGD10uzPKuyM0U7PMWaKUkATjSMvJbxc=
-X-Received: by 2002:aca:1a06:: with SMTP id a6mr11555422oia.148.1579508966488;
- Mon, 20 Jan 2020 00:29:26 -0800 (PST)
+        id S1726819AbgATIf1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 20 Jan 2020 03:35:27 -0500
+Received: from a.mx.secunet.com ([62.96.220.36]:47964 "EHLO a.mx.secunet.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1725872AbgATIf1 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 20 Jan 2020 03:35:27 -0500
+Received: from localhost (localhost [127.0.0.1])
+        by a.mx.secunet.com (Postfix) with ESMTP id D1B972009B;
+        Mon, 20 Jan 2020 09:35:24 +0100 (CET)
+X-Virus-Scanned: by secunet
+Received: from a.mx.secunet.com ([127.0.0.1])
+        by localhost (a.mx.secunet.com [127.0.0.1]) (amavisd-new, port 10024)
+        with ESMTP id mm0pOLf4caNm; Mon, 20 Jan 2020 09:35:24 +0100 (CET)
+Received: from mail-essen-01.secunet.de (mail-essen-01.secunet.de [10.53.40.204])
+        (using TLSv1 with cipher ECDHE-RSA-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by a.mx.secunet.com (Postfix) with ESMTPS id 989A120519;
+        Mon, 20 Jan 2020 09:35:19 +0100 (CET)
+Received: from gauss2.secunet.de (10.182.7.193) by mail-essen-01.secunet.de
+ (10.53.40.204) with Microsoft SMTP Server id 14.3.439.0; Mon, 20 Jan 2020
+ 09:35:19 +0100
+Received: by gauss2.secunet.de (Postfix, from userid 1000)      id 023CF318032D;
+ Mon, 20 Jan 2020 09:35:18 +0100 (CET)
+Date:   Mon, 20 Jan 2020 09:35:18 +0100
+From:   Steffen Klassert <steffen.klassert@secunet.com>
+To:     Willem de Bruijn <willemdebruijn.kernel@gmail.com>
+CC:     David Miller <davem@davemloft.net>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Subash Abhinov Kasiviswanathan <subashab@codeaurora.org>,
+        Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>,
+        Network Development <netdev@vger.kernel.org>
+Subject: Re: [PATCH net-next 3/4] net: Support GRO/GSO fraglist chaining.
+Message-ID: <20200120083518.GL23018@gauss3.secunet.de>
+References: <20191218133458.14533-1-steffen.klassert@secunet.com>
+ <20191218133458.14533-4-steffen.klassert@secunet.com>
+ <CA+FuTScnux23Gj1WTEXHmZkiFG3RQsgmSz19TOWdWByM4Rd15Q@mail.gmail.com>
+ <20191219082246.GS8621@gauss3.secunet.de>
+ <CA+FuTScKcwyh7rZdDNQsujndrA+ZnYMmtA7Uh7-ji+RM+t6-hQ@mail.gmail.com>
+ <20200113085128.GH8621@gauss3.secunet.de>
+ <CA+FuTSc3sOuPsQ3sJSCudCwZky4FcGF5CopejURmGZUSjXEn3Q@mail.gmail.com>
+ <20200115094733.GP8621@gauss3.secunet.de>
+ <CA+FuTSeF06hJstQBH4eL4L3=yGdiizw_38BUheYyircW8E3cXg@mail.gmail.com>
 MIME-Version: 1.0
-References: <cover.1579474569.git.fthain@telegraphics.com.au> <b47662493a776811d4d457e5a75e18a7169aed23.1579474569.git.fthain@telegraphics.com.au>
-In-Reply-To: <b47662493a776811d4d457e5a75e18a7169aed23.1579474569.git.fthain@telegraphics.com.au>
-From:   Geert Uytterhoeven <geert@linux-m68k.org>
-Date:   Mon, 20 Jan 2020 09:29:14 +0100
-Message-ID: <CAMuHMdWvJ975X7zz1C=1Sq=Yuf9nYY1zxWaJ=XCXJukfP=nygg@mail.gmail.com>
-Subject: Re: [PATCH net 04/19] net/sonic: Add mutual exclusion for accessing
- shared state
-To:     Finn Thain <fthain@telegraphics.com.au>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
-        Chris Zankel <chris@zankel.net>,
-        Laurent Vivier <laurent@vivier.eu>,
-        netdev <netdev@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset="us-ascii"
+Content-Disposition: inline
+In-Reply-To: <CA+FuTSeF06hJstQBH4eL4L3=yGdiizw_38BUheYyircW8E3cXg@mail.gmail.com>
+User-Agent: Mutt/1.9.4 (2018-02-28)
+X-EXCLAIMER-MD-CONFIG: 2c86f778-e09b-4440-8b15-867914633a10
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Finn,
+On Wed, Jan 15, 2020 at 10:43:08AM -0500, Willem de Bruijn wrote:
+> > > > Maybe we can be conservative here and do a full
+> > > > __copy_skb_header for now. The initial version
+> > > > does not necessarily need to be the most performant
+> > > > version. We could try to identify the correct subset
+> > > > of header fields later then.
+> > >
+> > > We should probably aim for the right set from the start. If you think
+> > > this set is it, let's keep it.
+> >
+> > I'd prefer to do a full __copy_skb_header for now and think a bit
+> > longer if that what I chose is really the correct subset.
+> 
+> Ok
+> 
+> > > > > > I had to set ip_summed to CHECKSUM_UNNECESSARY on GRO to
+> > > > > > make sure the noone touches the checksum of the head
+> > > > > > skb. Otherise netfilter etc. tries to touch the csum.
+> > > > > >
+> > > > > > Before chaining I make sure that ip_summed and csum_level is
+> > > > > > the same for all chained skbs and here I restore the original
+> > > > > > value from nskb.
+> > > > >
+> > > > > This is safe because the skb_gro_checksum_validate will have validated
+> > > > > already on CHECKSUM_PARTIAL? What happens if there is decap or encap
+> > > > > in the path? We cannot revert to CHECKSUM_PARTIAL after that, I
+> > > > > imagine.
+> > > >
+> > > > Yes, the checksum is validated with skb_gro_checksum_validate. If the
+> > > > packets are UDP encapsulated, they are segmented before decapsulation.
+> > > > Original values are already restored. If an additional encapsulation
+> > > > happens, the encap checksum will be calculated after segmentation.
+> > > > Original values are restored before that.
+> > >
+> > > I was wondering more about additional other encapsulation protocols.
+> > >
+> > > >From a quick read, it seems like csum_level is associated only with
+> > > CHECKSUM_UNNECESSARY.
+> > >
+> > > What if a device returns CHECKSUM_COMPLETE for packets with a tunnel
+> > > that is decapsulated before forwarding. Say, just VLAN. That gets
+> > > untagged in __netif_receive_skb_core with skb_vlan_untag calling
+> > > skb_pull_rcsum. After segmentation the ip_summed is restored, with
+> > > skb->csum still containing the unmodified csum that includes the VLAN
+> > > tag?
+> >
+> > Hm, that could be really a problem. So setting CHECKSUM_UNNECESSARY
+> > should be ok, but restoring the old values are not. Our checksum
+> > magic is rather complex, it's hard to get it right for all possible
+> > cases. Maybe we can just set CHECKSUM_UNNECESSARY for all packets
+> > and keep this value after segmentation.
+> 
+> Note that I'm not 100% sure that the issue can occur. But it seems likely.
+> 
+> Yes, inverse CHECKSUM_UNNECESSARY conversion after verifying the checksum is
+> probably the way to go. Inverse, because it is the opposite of
+> __skb_gro_checksum_convert.
 
-On Mon, Jan 20, 2020 at 12:19 AM Finn Thain <fthain@telegraphics.com.au> wrote:
-> The netif_stop_queue() call in sonic_send_packet() races with the
-> netif_wake_queue() call in sonic_interrupt(). This causes issues
-> like "NETDEV WATCHDOG: eth0 (macsonic): transmit queue 0 timed out".
-> Fix this by disabling interrupts when accessing tx_skb[] and next_tx.
-> Update a comment to clarify the synchronization properties.
->
-> Fixes: efcce839360f ("[PATCH] macsonic/jazzsonic network drivers update")
-> Tested-by: Stan Johnson <userm57@yahoo.com>
-> Signed-off-by: Finn Thain <fthain@telegraphics.com.au>
+I'm not sure if I understand what you mean here. I'd do the following
+for fraglist GRO in udp4_gro_complete:
 
-Thanks for your patch!
+        if (skb->ip_summed == CHECKSUM_UNNECESSARY) {
+                if (skb->csum_level < SKB_MAX_CSUM_LEVEL)
+                        skb->csum_level++;
+        } else {
+                skb->ip_summed = CHECKSUM_UNNECESSARY;
+                skb->csum_level = 0;
+        }
 
-> --- a/drivers/net/ethernet/natsemi/sonic.c
-> +++ b/drivers/net/ethernet/natsemi/sonic.c
-> @@ -242,7 +242,7 @@ static void sonic_tx_timeout(struct net_device *dev)
->   *   wake the tx queue
->   * Concurrently with all of this, the SONIC is potentially writing to
->   * the status flags of the TDs.
-> - * Until some mutual exclusion is added, this code will not work with SMP. However,
-> + * A spin lock is needed to make this work on SMP platforms. However,
->   * MIPS Jazz machines and m68k Macs were all uni-processor machines.
->   */
->
-> @@ -252,6 +252,7 @@ static int sonic_send_packet(struct sk_buff *skb, struct net_device *dev)
->         dma_addr_t laddr;
->         int length;
->         int entry;
-> +       unsigned long flags;
->
->         netif_dbg(lp, tx_queued, dev, "%s: skb=%p\n", __func__, skb);
->
-> @@ -273,6 +274,8 @@ static int sonic_send_packet(struct sk_buff *skb, struct net_device *dev)
->                 return NETDEV_TX_OK;
->         }
->
-> +       local_irq_save(flags);
-> +
+and then copy these values to the segments after segmentation.
 
-Wouldn't it be better to use a spinlock instead?
-It looks like all currently supported platforms (Mac, Jazz, and XT2000)
-do no support SMP, but I'm not 100% sure about the latter.
-And this generic sonic.c core may end up being used on other platforms
-that do support SMP.
-
-Gr{oetje,eeting}s,
-
-                        Geert
-
--- 
-Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
-
-In personal conversations with technical people, I call myself a hacker. But
-when I'm talking to journalists I just say "programmer" or something like that.
-                                -- Linus Torvalds
