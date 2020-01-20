@@ -2,75 +2,56 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id DC15C1427A3
-	for <lists+netdev@lfdr.de>; Mon, 20 Jan 2020 10:50:11 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D11C71427A8
+	for <lists+netdev@lfdr.de>; Mon, 20 Jan 2020 10:50:35 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726951AbgATJuJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 20 Jan 2020 04:50:09 -0500
-Received: from metis.ext.pengutronix.de ([85.220.165.71]:46561 "EHLO
-        metis.ext.pengutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726039AbgATJuI (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 20 Jan 2020 04:50:08 -0500
-Received: from soja.hi.pengutronix.de ([2001:67c:670:100:3ad5:47ff:feaf:13da])
-        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_128_GCM_SHA256:128)
-        (Exim 4.92)
-        (envelope-from <o.rempel@pengutronix.de>)
-        id 1itTh3-0001PY-RY; Mon, 20 Jan 2020 10:50:01 +0100
-Subject: Re: [PATCH v1] ARM i.MX6q: make sure PHY fixup for KSZ9031 is applied
- only on one board
-To:     Andrew Lunn <andrew@lunn.ch>
-Cc:     Fabio Estevam <festevam@gmail.com>, netdev@vger.kernel.org,
-        Sascha Hauer <s.hauer@pengutronix.de>,
-        linux-kernel@vger.kernel.org, linux-imx@nxp.com,
-        kernel@pengutronix.de, Shawn Guo <shawnguo@kernel.org>,
-        linux-arm-kernel@lists.infradead.org
-References: <20191209084430.11107-1-o.rempel@pengutronix.de>
- <20191209171508.GD9099@lunn.ch>
- <20191209173952.qnkzfrbixjgi2jfy@pengutronix.de>
- <20191209175119.GK9099@lunn.ch>
-From:   Oleksij Rempel <o.rempel@pengutronix.de>
-Message-ID: <30b05289-2cd6-6ca9-51fd-0af351506b6e@pengutronix.de>
-Date:   Mon, 20 Jan 2020 10:50:01 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.4.1
-MIME-Version: 1.0
-In-Reply-To: <20191209175119.GK9099@lunn.ch>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
+        id S1727041AbgATJua (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 20 Jan 2020 04:50:30 -0500
+Received: from shards.monkeyblade.net ([23.128.96.9]:55212 "EHLO
+        shards.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726039AbgATJua (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 20 Jan 2020 04:50:30 -0500
+Received: from localhost (82-95-191-104.ip.xs4all.nl [82.95.191.104])
+        (using TLSv1 with cipher AES256-SHA (256/256 bits))
+        (Client did not present a certificate)
+        (Authenticated sender: davem-davemloft)
+        by shards.monkeyblade.net (Postfix) with ESMTPSA id 1716D153D88BE;
+        Mon, 20 Jan 2020 01:50:28 -0800 (PST)
+Date:   Mon, 20 Jan 2020 10:50:27 +0100 (CET)
+Message-Id: <20200120.105027.695127072650482577.davem@davemloft.net>
+To:     moshe@mellanox.com
+Cc:     jiri@mellanox.com, vikas.gupta@broadcom.com,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH net-next] devlink: Add health recover notifications on
+ devlink flows
+From:   David Miller <davem@davemloft.net>
+In-Reply-To: <1579446268-26540-1-git-send-email-moshe@mellanox.com>
+References: <1579446268-26540-1-git-send-email-moshe@mellanox.com>
+X-Mailer: Mew version 6.8 on Emacs 26.3
+Mime-Version: 1.0
+Content-Type: Text/Plain; charset=us-ascii
 Content-Transfer-Encoding: 7bit
-X-SA-Exim-Connect-IP: 2001:67c:670:100:3ad5:47ff:feaf:13da
-X-SA-Exim-Mail-From: o.rempel@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: netdev@vger.kernel.org
+X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Mon, 20 Jan 2020 01:50:30 -0800 (PST)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+From: Moshe Shemesh <moshe@mellanox.com>
+Date: Sun, 19 Jan 2020 17:04:28 +0200
 
-
-On 09.12.19 18:51, Andrew Lunn wrote:
->> Yes. all of them are broken.
->> I just trying to not wake all wasp at one time. Most probably there are
->> board working by accident. So, it will be good to have at least separate
->> patches for each fixup.
+> Devlink health recover notifications were added only on driver direct
+> updates of health_state through devlink_health_reporter_state_update().
+> Add notifications on updates of health_state by devlink flows of report
+> and recover.
 > 
-> I agree about a patch per fixup. Can you try to generate such patches?
-> See if there is enough history in git to determine which boards
-> actually need these fixups?
+> Fixes: 97ff3bd37fac ("devlink: add devink notification when reporter update health state")
+> Signed-off-by: Moshe Shemesh <moshe@mellanox.com>
+> Acked-by: Jiri Pirko <jiri@mellanox.com>
 
-After some attempts to make it and more discussions, I tend to provide a Kconfig to 
-disable/enable this fixups. This will provide an option for users with old devicetree
-and possibility to continue development on clean setup.
+I really dislike forward declarations and almost all of the time they are
+unnecessary.
 
-What do you think about this way and what default state it should be? FIXUPS default on or 
-off?
+Could you please just rearrange the code as needed and resubmit?
 
-Kind regards,
-Oleksij Rempel
-
--- 
-Pengutronix e.K.                           |                             |
-Industrial Linux Solutions                 | http://www.pengutronix.de/  |
-Peiner Str. 6-8, 31137 Hildesheim, Germany | Phone: +49-5121-206917-0    |
-Amtsgericht Hildesheim, HRA 2686           | Fax:   +49-5121-206917-5555 |
+Thank you.
