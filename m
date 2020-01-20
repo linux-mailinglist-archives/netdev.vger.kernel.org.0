@@ -2,96 +2,112 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 0F9DD1424E2
-	for <lists+netdev@lfdr.de>; Mon, 20 Jan 2020 09:19:29 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 62BED1424E7
+	for <lists+netdev@lfdr.de>; Mon, 20 Jan 2020 09:19:47 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726442AbgATITW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 20 Jan 2020 03:19:22 -0500
-Received: from bombadil.infradead.org ([198.137.202.133]:41770 "EHLO
-        bombadil.infradead.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726039AbgATITW (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 20 Jan 2020 03:19:22 -0500
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=bombadil.20170209; h=In-Reply-To:Content-Transfer-Encoding
-        :Content-Type:MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:
-        Sender:Reply-To:Content-ID:Content-Description:Resent-Date:Resent-From:
-        Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:
-        List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=lv6mWV+LyBEpHARixm1MrWLqdXwoOkowEDIcmQHZnc0=; b=K242n6o0jAV2chrAfUWM2qOEKD
-        pFQAkqMOBGF2gB/c3h630UEUAffnHDCcvHqDGASyUzUxxwxVonblqWWaxvJLxo1i9mWVjyV6EXhPA
-        uuJ0WhRJF9qk1mpJr29Wc4Hc7MCk/5Uxiz1/8/RLWNPGOLGa84F+8ITD4QwvLQHFht++tuq1qgIfr
-        yOEGRW5/dfMp3nr6gLe+9Tv9boTVIcYaMzjQnaqslvThV91NI7g2SBBLCgUJAjDk/fM5+GL75tcq6
-        Q8yJi9r7l33dJnKA0zy1gFENHyr2RK4WUdiRw0qik1sGeWRnA24SD9DAWA1GuBMR1jEg+V/hi3mFc
-        kUDCsnVQ==;
-Received: from j217100.upc-j.chello.nl ([24.132.217.100] helo=noisy.programming.kicks-ass.net)
-        by bombadil.infradead.org with esmtpsa (Exim 4.92.3 #3 (Red Hat Linux))
-        id 1itSH2-0007Y6-TP; Mon, 20 Jan 2020 08:19:05 +0000
-Received: from hirez.programming.kicks-ass.net (hirez.programming.kicks-ass.net [192.168.1.225])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (Client did not present a certificate)
-        by noisy.programming.kicks-ass.net (Postfix) with ESMTPS id 634EC3035D4;
-        Mon, 20 Jan 2020 09:17:20 +0100 (CET)
-Received: by hirez.programming.kicks-ass.net (Postfix, from userid 1000)
-        id 936C820983E34; Mon, 20 Jan 2020 09:18:58 +0100 (CET)
-Date:   Mon, 20 Jan 2020 09:18:58 +0100
-From:   Peter Zijlstra <peterz@infradead.org>
-To:     Eric Dumazet <eric.dumazet@gmail.com>
-Cc:     Arvind Sankar <nivedita@alum.mit.edu>,
-        Shaokun Zhang <zhangshaokun@hisilicon.com>,
-        David Miller <davem@davemloft.net>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, jinyuqi@huawei.com,
-        kuznet@ms2.inr.ac.ru, yoshfuji@linux-ipv6.org, edumazet@google.com,
-        guoyang2@huawei.com, Will Deacon <will@kernel.org>
-Subject: Re: [PATCH] net: optimize cmpxchg in ip_idents_reserve
-Message-ID: <20200120081858.GI14879@hirez.programming.kicks-ass.net>
-References: <20200116.042722.153124126288244814.davem@davemloft.net>
- <930faaff-4d18-452d-2e44-ef05b65dc858@gmail.com>
- <1b3aaddf-22f5-1846-90f1-42e68583c1e4@gmail.com>
- <430496fc-9f26-8cb4-91d8-505fda9af230@hisilicon.com>
- <20200117123253.GC14879@hirez.programming.kicks-ass.net>
- <7e6c6202-24bb-a532-adde-d53dd6fb14c3@gmail.com>
- <20200117180324.GA2623847@rani.riverdale.lan>
- <94573cea-a833-9b48-6581-8cc5cdd19b89@gmail.com>
- <20200117183800.GA2649345@rani.riverdale.lan>
- <45224c36-9941-aae5-aca4-e2c8e3723355@gmail.com>
+        id S1726876AbgATITl (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 20 Jan 2020 03:19:41 -0500
+Received: from us-smtp-1.mimecast.com ([207.211.31.81]:52449 "EHLO
+        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1726752AbgATITk (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 20 Jan 2020 03:19:40 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1579508379;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=jEiSgvaAAQAeTsd3Se/ZuFf+OWr2upYmR4dY+/WXBIE=;
+        b=ibL7D0nYBdVAuzgQi1hQ4cGrzNLdMMOedSTC7t+QjxuXTyUh3aPc/std25xZPaGIVNqn6T
+        Lc2YbpBakfLwSdIu1X1yH7lMsEPV5HTRRFKzIBE+Lr/AlpQT2tQhTagCxhd6oi0csFDWl1
+        sYha7TiRS13k8k+z1EhpjfL6P40Zn/Y=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-429-P8KSRlF4PzGBmy91vGOhqQ-1; Mon, 20 Jan 2020 03:19:38 -0500
+X-MC-Unique: P8KSRlF4PzGBmy91vGOhqQ-1
+Received: from smtp.corp.redhat.com (int-mx08.intmail.prod.int.phx2.redhat.com [10.5.11.23])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id E91FADB60;
+        Mon, 20 Jan 2020 08:19:34 +0000 (UTC)
+Received: from [10.72.12.173] (ovpn-12-173.pek2.redhat.com [10.72.12.173])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 071CE2857A;
+        Mon, 20 Jan 2020 08:19:11 +0000 (UTC)
+Subject: Re: [PATCH 3/5] vDPA: introduce vDPA bus
+To:     Rob Miller <rob.miller@broadcom.com>
+Cc:     "Michael S. Tsirkin" <mst@redhat.com>,
+        linux-kernel@vger.kernel.org, kvm@vger.kernel.org,
+        virtualization@lists.linux-foundation.org,
+        Netdev <netdev@vger.kernel.org>,
+        "Bie, Tiwei" <tiwei.bie@intel.com>,
+        Jason Gunthorpe <jgg@mellanox.com>, maxime.coquelin@redhat.com,
+        "Liang, Cunming" <cunming.liang@intel.com>,
+        "Wang, Zhihong" <zhihong.wang@intel.com>,
+        "Wang, Xiao W" <xiao.w.wang@intel.com>, haotian.wang@sifive.com,
+        "Zhu, Lingshan" <lingshan.zhu@intel.com>, eperezma@redhat.com,
+        lulu@redhat.com, Parav Pandit <parav@mellanox.com>,
+        "Tian, Kevin" <kevin.tian@intel.com>, stefanha@redhat.com,
+        rdunlap@infradead.org, hch@infradead.org,
+        Ariel Adam <aadam@redhat.com>, jakub.kicinski@netronome.com,
+        Jiri Pirko <jiri@mellanox.com>, shahafs@mellanox.com,
+        hanand@xilinx.com, mhabets@solarflare.com
+References: <20200116124231.20253-1-jasowang@redhat.com>
+ <20200116124231.20253-4-jasowang@redhat.com>
+ <20200117070324-mutt-send-email-mst@kernel.org>
+ <239b042c-2d9e-0eec-a1ef-b03b7e2c5419@redhat.com>
+ <CAJPjb1+fG9L3=iKbV4Vn13VwaeDZZdcfBPvarogF_Nzhk+FnKg@mail.gmail.com>
+From:   Jason Wang <jasowang@redhat.com>
+Message-ID: <a4573aa4-f0d6-bb7d-763a-96352fc2c86e@redhat.com>
+Date:   Mon, 20 Jan 2020 16:19:10 +0800
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.8.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <45224c36-9941-aae5-aca4-e2c8e3723355@gmail.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+In-Reply-To: <CAJPjb1+fG9L3=iKbV4Vn13VwaeDZZdcfBPvarogF_Nzhk+FnKg@mail.gmail.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+X-Scanned-By: MIMEDefang 2.84 on 10.5.11.23
+Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Jan 17, 2020 at 10:48:19AM -0800, Eric Dumazet wrote:
-> 
-> 
-> On 1/17/20 10:38 AM, Arvind Sankar wrote:
-> > On Fri, Jan 17, 2020 at 10:16:45AM -0800, Eric Dumazet wrote:
-> >> Wasńt it the case back in 2016 already for linux-4.8 ?
-> >>
-> >> What will prevent someone to send another report to netdev/lkml ?
-> >>
-> >>  -fno-strict-overflow support is not a prereq for CONFIG_UBSAN.
-> >>
-> >> Fact that we kept in lib/ubsan.c and lib/test_ubsan.c code for 
-> >> test_ubsan_add_overflow() and test_ubsan_sub_overflow() is disturbing.
-> >>
-> > 
-> > No, it was bumped in 2018 in commit cafa0010cd51 ("Raise the minimum
-> > required gcc version to 4.6"). That raised it from 3.2 -> 4.6.
-> > 
-> 
-> This seems good to me, for gcc at least.
-> 
-> Maybe it is time to enfore -fno-strict-overflow in KBUILD_CFLAGS 
-> instead of making it conditional.
 
-IIRC there was a bug in UBSAN vs -fwrapv/-fno-strict-overflow that was
-only fixed in gcc-8 or 9 or so.
+On 2020/1/17 =E4=B8=8B=E5=8D=8810:12, Rob Miller wrote:
+>
+>
+>     >> + * @get_vendor_id:=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 Get id for=
+ the vendor that
+>     provides this device
+>     >> + *=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0=
+ =C2=A0 =C2=A0 =C2=A0 =C2=A0 @vdev: vdpa device
+>     >> + *=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0=
+ =C2=A0 =C2=A0 =C2=A0 =C2=A0 Returns u32: virtio vendor id
+>     > what's the idea behind this? userspace normally doesn't interact
+>     with
+>     > this ... debugging?
+>
+>
+>     This allows some vendor specific driver on top of vDPA bus. If
+>     this is
+>     not interested, I can drop this.
+>
+> RJM>] wouldn't=C2=A0 usage of get_device_id & get_vendor_id, beyond=20
+> reporting, tend to possibly leading to vendor specific code in the=20
+> framework instead of leaving the framework=C2=A0agnostic and leave the=20
+> vendor specific stuff to the vendor's vDPA device driver?
 
-So while the -fwrapv/-fno-strict-overflow flag has been correctly
-supported since like forever, UBSAN was buggy until quite recent when
-used in conjustion with that flag.
+
+For virtio device id, I think it is needed for kernel/userspace to know=20
+which driver to load (e.g loading virtio-net for networking devic).
+
+For virtio vendor id, it was needed by kernel virtio driver, and virtio=20
+bus can match driver based on virtio vendor id. So it doesn't prevent=20
+3rd vendor specific driver for virtio device.
+
+Maybe we can report VIRTIO_DEV_ANY_ID as vendor id to forbid vendor=20
+specific stuffs.
+
+Thanks
+
+
