@@ -2,55 +2,122 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id EF47114339F
-	for <lists+netdev@lfdr.de>; Mon, 20 Jan 2020 23:02:36 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 42D431433A0
+	for <lists+netdev@lfdr.de>; Mon, 20 Jan 2020 23:03:59 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728767AbgATWCa (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 20 Jan 2020 17:02:30 -0500
-Received: from mo4-p01-ob.smtp.rzone.de ([85.215.255.54]:15330 "EHLO
-        mo4-p01-ob.smtp.rzone.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726816AbgATWCa (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 20 Jan 2020 17:02:30 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; t=1579557747;
-        s=strato-dkim-0002; d=hartkopp.net;
-        h=In-Reply-To:Date:Message-ID:From:References:To:Subject:
-        X-RZG-CLASS-ID:X-RZG-AUTH:From:Subject:Sender;
-        bh=KS6nbdXMdxPhSYhT/Qn6xqeVLbXY1afV2x/oIgHFYZY=;
-        b=eBQUqKNv5eemSRXDGdevQfqOaxJ5QOrf+Y3Rn56VbbS5CAMU7HuimVuIZXxlD+ZXw3
-        CpoYTdNTSGRbSXNqh1N5q4aAXzuLEumqPabM3E/16pRc4idaouHUkPDledSaUdgcMV6v
-        p7Y+iU1d/+n2bZhhx1M03/X0yu9Hq7wVE8i8c2bynjW455N+qfxupWd4T4dT75PUV8TK
-        57baYoflHKTcqhjcevq0BG6QfO1s0BF7IpHCFE0BKK3I/H9hhzJTg8C8yPAn1EiTMnIP
-        V9F7HU1pEAQeCM54CN93yLMVkiZFwmJ3VpvDIIYUOZhEBNa/NotdrzciWNv6U0Y53oJw
-        wY9g==
-X-RZG-AUTH: ":P2MHfkW8eP4Mre39l357AZT/I7AY/7nT2yrDxb8mjG14FZxedJy6qgO1o3PMaViOoLMJVsh5lUkl"
-X-RZG-CLASS-ID: mo00
-Received: from [192.168.40.177]
-        by smtp.strato.de (RZmta 46.1.5 DYNA|AUTH)
-        with ESMTPSA id t040cew0KM2H2Qi
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256 bits))
-        (Client did not present a certificate);
-        Mon, 20 Jan 2020 23:02:17 +0100 (CET)
-Subject: Re: general protection fault in can_rx_register
-To:     Dmitry Vyukov <dvyukov@google.com>,
-        Marc Kleine-Budde <mkl@pengutronix.de>,
-        o.rempel@pengutronix.de,
-        syzbot <syzbot+c3ea30e1e2485573f953@syzkaller.appspotmail.com>,
-        David Miller <davem@davemloft.net>, linux-can@vger.kernel.org,
-        LKML <linux-kernel@vger.kernel.org>,
-        netdev <netdev@vger.kernel.org>,
-        syzkaller-bugs <syzkaller-bugs@googlegroups.com>
-References: <00000000000030dddb059c562a3f@google.com>
- <55ad363b-1723-28aa-78b1-8aba5565247e@hartkopp.net>
- <20200120091146.GD11138@x1.vandijck-laurijssen.be>
- <CACT4Y+a+GusEA1Gs+z67uWjtwBRp_s7P4Wd_SMmgpCREnDu3kg@mail.gmail.com>
-From:   Oliver Hartkopp <socketcan@hartkopp.net>
-Message-ID: <8332ec7f-2235-fdf6-9bda-71f789c57b37@hartkopp.net>
-Date:   Mon, 20 Jan 2020 23:02:11 +0100
+        id S1727011AbgATWD5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 20 Jan 2020 17:03:57 -0500
+Received: from mail-ed1-f65.google.com ([209.85.208.65]:39790 "EHLO
+        mail-ed1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726607AbgATWD5 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 20 Jan 2020 17:03:57 -0500
+Received: by mail-ed1-f65.google.com with SMTP id t17so985861eds.6
+        for <netdev@vger.kernel.org>; Mon, 20 Jan 2020 14:03:56 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:autocrypt:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=WA8k4KZPjeE1LCIaQNzdQQEwzqjwy3LuC/MLeI0aRiY=;
+        b=nOsTV14fr8ynblq6+p5rtYBoIWEnIv6fVQiPKkZ5xNTZ7mE5BhK4wAPh7sZ+XAPEA2
+         qGihaLSFEovu3KqRjJZ5wRwLYBHGZJARkkM7PUk8jbVF47tgqZM+Jh+dEfrOSM/FiQ5J
+         Kq+2fjbcLvYv+yD4u72gQHRlFtd8hjZe3/SwS7VafRDZlP7Z4dWHcx0KNrqve9nM4QpP
+         ktGS6asmsBvqZyJHAE+YOjQvr+iRtDT+7NNyD3LYfmEQNnja30dMtwHDNsMSOTzlKX/4
+         2kuT4dQUqN7UQihh8brvQxjhue2QJRbw23hJSMwWGMpwpqw3GtM8SSIKA/a+OqN9pYTU
+         mSFw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:autocrypt
+         :message-id:date:user-agent:mime-version:in-reply-to
+         :content-language:content-transfer-encoding;
+        bh=WA8k4KZPjeE1LCIaQNzdQQEwzqjwy3LuC/MLeI0aRiY=;
+        b=tZqybdhmQ6NE4OFKv2VtvdwdjCmYFt0TQwi1yQ1FuW/ydyoj2k1kK1+baEpetn5epi
+         +oGWe40jB88rKL9P4Jw3rrtvKqEo4EjREHAAAmgvq+E8TedVZXQ/yUF3T5YTq3m3UPr8
+         VU9JYnc7+0IxaYeCgrSpNWt+GUUmWICuehPEO8SPkZ3NXiUdl2CBfoLpsCqiJg2yOAbB
+         rZ5BPC4YgyIu5bx3QbsFG2BMIHMWXdcFxuoTtbvxV1bH/8ojFtrOdRQNkwfDg6ozLCUd
+         NhNtPzsgCZsdlINCBfpRWzrFj55gAkeH8gY7Xj1M4z/eB3ZQghPkZrqCFkP3vxNSbz3F
+         /rmQ==
+X-Gm-Message-State: APjAAAU+1o4C4NsI4plfhONAWPGs1erxk014CBEsnwvEMKq20WxPKya3
+        ZsAcBShP7RP6/svpBMtUgiE4c4O+
+X-Google-Smtp-Source: APXvYqxW9maEZcsXQvOhEkwVOgNuyKIvnx42y8YumQl0ocmR0ZBcsC8VM9uw53CHseCVx5idglN+tQ==
+X-Received: by 2002:a17:906:1392:: with SMTP id f18mr1522595ejc.280.1579557834784;
+        Mon, 20 Jan 2020 14:03:54 -0800 (PST)
+Received: from [10.67.50.41] ([192.19.223.252])
+        by smtp.googlemail.com with ESMTPSA id ck19sm1135769ejb.48.2020.01.20.14.03.52
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 20 Jan 2020 14:03:54 -0800 (PST)
+Subject: Re: [PATCH net-next 1/3] net: phy: rename phy_do_ioctl to
+ phy_do_ioctl_running
+To:     Heiner Kallweit <hkallweit1@gmail.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        David Miller <davem@davemloft.net>,
+        Mark Einon <mark.einon@gmail.com>,
+        Jay Cliburn <jcliburn@gmail.com>,
+        Chris Snook <chris.snook@gmail.com>
+Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+References: <a7a6dc1f-b4d4-e36f-7408-31e4715d947f@gmail.com>
+ <b2117c4e-c440-83da-7f73-0ddd3e6887fe@gmail.com>
+From:   Florian Fainelli <f.fainelli@gmail.com>
+Autocrypt: addr=f.fainelli@gmail.com; prefer-encrypt=mutual; keydata=
+ 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
+ G10n8gCguORqNGMsVRxrlLs7/himep7MrCc=
+Message-ID: <4c91e234-a236-cb8b-86dc-76a813d54ce7@gmail.com>
+Date:   Mon, 20 Jan 2020 14:03:50 -0800
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.4.1
+ Thunderbird/68.2.2
 MIME-Version: 1.0
-In-Reply-To: <CACT4Y+a+GusEA1Gs+z67uWjtwBRp_s7P4Wd_SMmgpCREnDu3kg@mail.gmail.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
+In-Reply-To: <b2117c4e-c440-83da-7f73-0ddd3e6887fe@gmail.com>
+Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
@@ -58,92 +125,13 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi all,
-
-On 20/01/2020 10.22, Dmitry Vyukov wrote:
-
->> Is this code what triggers the bug?
->>>> C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=138f5db9e00000
+On 1/20/20 1:16 PM, Heiner Kallweit wrote:
+> We just added phy_do_ioctl, but it turned out that we need another
+> version of this function that doesn't check whether net_device is
+> running. So rename phy_do_ioctl to phy_do_ioctl_running.
 > 
-> yes
-> 
+> Signed-off-by: Heiner Kallweit <hkallweit1@gmail.com>
 
-(..)
-
->>>> RIP: 0010:hlist_add_head_rcu include/linux/rculist.h:528 [inline]
->>>> RIP: 0010:can_rx_register+0x43b/0x600 net/can/af_can.c:476
->>>
->>> include/linux/rculist.h:528 is
->>>
->>> struct hlist_node *first = h->first;
->>>
->>> which would mean that 'h' must be NULL.
->>>
->>> But the h parameter is rcv_list from
->>> rcv_list = can_rcv_list_find(&can_id, &mask, dev_rcv_lists);
->>>
->>> Which can not return NULL - at least when dev_rcv_lists is a proper pointer
->>> to the dev_rcv_lists provided by can_dev_rcv_lists_find().
->>>
->>> So either dev->ml_priv is NULL in the case of having a CAN interface (here
->>> vxcan) ...
-
-Added some code to check whether dev->ml_priv is NULL:
-
-~/linux$ git diff
-diff --git a/net/can/af_can.c b/net/can/af_can.c
-index 128d37a4c2e0..6fb4ae4c359e 100644
---- a/net/can/af_can.c
-+++ b/net/can/af_can.c
-@@ -463,6 +463,10 @@ int can_rx_register(struct net *net, struct 
-net_device *dev, canid_t can_id,
-         spin_lock_bh(&net->can.rcvlists_lock);
-
-         dev_rcv_lists = can_dev_rcv_lists_find(net, dev);
-+       if (!dev_rcv_lists) {
-+               pr_err("dev_rcv_lists == NULL! %p\n", dev);
-+               goto out_unlock;
-+       }
-         rcv_list = can_rcv_list_find(&can_id, &mask, dev_rcv_lists);
-
-         rcv->can_id = can_id;
-@@ -479,6 +483,7 @@ int can_rx_register(struct net *net, struct 
-net_device *dev, canid_t can_id,
-         rcv_lists_stats->rcv_entries++;
-         rcv_lists_stats->rcv_entries_max = 
-max(rcv_lists_stats->rcv_entries_max,
- 
-rcv_lists_stats->rcv_entries);
-+out_unlock:
-         spin_unlock_bh(&net->can.rcvlists_lock);
-
-         return err;
-
-And the output (after some time) is:
-
-[  758.505841] netlink: 'crash': attribute type 1 has an invalid length.
-[  758.508045] bond7148: (slave vxcan1): The slave device specified does 
-not support setting the MAC address
-[  758.508057] bond7148: (slave vxcan1): Error -22 calling dev_set_mtu
-[  758.532025] bond10413: (slave vxcan1): The slave device specified 
-does not support setting the MAC address
-[  758.532043] bond10413: (slave vxcan1): Error -22 calling dev_set_mtu
-[  758.532254] dev_rcv_lists == NULL! 000000006b9d257f
-[  758.547392] netlink: 'crash': attribute type 1 has an invalid length.
-[  758.549310] bond7145: (slave vxcan1): The slave device specified does 
-not support setting the MAC address
-[  758.549313] bond7145: (slave vxcan1): Error -22 calling dev_set_mtu
-[  758.550464] netlink: 'crash': attribute type 1 has an invalid length.
-[  758.552301] bond7146: (slave vxcan1): The slave device specified does 
-not support setting the MAC address
-
-So we can see that we get a ml_priv pointer which is NULL which should 
-not be possible due to this:
-
-https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/tree/drivers/net/can/dev.c#n743
-
-Btw. the variable 'size' is set two times at the top of 
-alloc_candev_mqs() depending on echo_skb_max. This looks wrong.
-
-Best regards,
-Oliver
+Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
+-- 
+Florian
