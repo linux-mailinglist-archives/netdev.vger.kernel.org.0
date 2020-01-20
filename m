@@ -2,92 +2,179 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id BD5FF14287A
-	for <lists+netdev@lfdr.de>; Mon, 20 Jan 2020 11:51:00 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 50E851428C1
+	for <lists+netdev@lfdr.de>; Mon, 20 Jan 2020 12:04:25 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726903AbgATKua (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 20 Jan 2020 05:50:30 -0500
-Received: from pandora.armlinux.org.uk ([78.32.30.218]:33164 "EHLO
-        pandora.armlinux.org.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726417AbgATKu3 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 20 Jan 2020 05:50:29 -0500
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
-        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
-        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
-        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-         bh=OCp9nsRDYcWQsrV3GjryqLOSAJxrAWhH+tupDptDjZo=; b=G2Unp/Kt5L8sqcRcZviY2SFcr
-        YPso8Lk+HuRnFhCgRGPkqSajiuXbYlc/M+AW3gxjxO604q0mH71Suv+HduzqpTa+I4BavJ0yCV8fd
-        K9YZSh99KUPq0ix7i2+FrIiEOGQUplA/be98njgBOFTPSXJ7o54X4vNNsisZ6ePdPDlNHEKTznFVq
-        fqyUN7uFkkrXBcnBK5GwzKpvXA17gS+wT8hdp0WZWKQok8EDjyIk7YemEc+prQPVKKuE8/dklRCjY
-        EcpumKNUKaMqnBBC1+IrtgZJxcNscvU+1z8szaDfPYhnvQaE+bUotpT0VoPkcMoXrNhbr7dgKS7hT
-        vnAKfX2/g==;
-Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:40826)
-        by pandora.armlinux.org.uk with esmtpsa (TLSv1.2:ECDHE-RSA-AES256-GCM-SHA384:256)
-        (Exim 4.90_1)
-        (envelope-from <linux@armlinux.org.uk>)
-        id 1itUdT-0005bt-Vi; Mon, 20 Jan 2020 10:50:24 +0000
-Received: from linux by shell.armlinux.org.uk with local (Exim 4.92)
-        (envelope-from <linux@shell.armlinux.org.uk>)
-        id 1itUdQ-0002mK-U8; Mon, 20 Jan 2020 10:50:20 +0000
-Date:   Mon, 20 Jan 2020 10:50:20 +0000
-From:   Russell King - ARM Linux admin <linux@armlinux.org.uk>
-To:     Jose Abreu <Jose.Abreu@synopsys.com>
-Cc:     Andrew Lunn <andrew@lunn.ch>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        Joao Pinto <Joao.Pinto@synopsys.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
+        id S1727009AbgATLEQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 20 Jan 2020 06:04:16 -0500
+Received: from us-smtp-delivery-1.mimecast.com ([207.211.31.120]:25512 "EHLO
+        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+        with ESMTP id S1726148AbgATLEQ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 20 Jan 2020 06:04:16 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1579518255;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=0D2NV9EyT8+bRJWlmQx32SvVPgUYttr3IYvJpCG0gTo=;
+        b=UlzPZXXkfStwOUTOhlmhLUgn8H1x/D1EM04ioleX1smxggN/QOfkA4IFvQnk1Ysf4my3F/
+        sDhm8lZNLzJMUFGBiuRL6tAaQelttCOy7LH1BePcqNiuQ2Gm1hi5d2FK76AB0y/CPJGVyO
+        v9foDTcMzfQjZeR4udPm7juF1/+8JkU=
+Received: from mail-lj1-f200.google.com (mail-lj1-f200.google.com
+ [209.85.208.200]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-91-ypBFXIclOrOZS68fyym2pA-1; Mon, 20 Jan 2020 06:04:14 -0500
+X-MC-Unique: ypBFXIclOrOZS68fyym2pA-1
+Received: by mail-lj1-f200.google.com with SMTP id t11so7448598ljo.13
+        for <netdev@vger.kernel.org>; Mon, 20 Jan 2020 03:04:13 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
+         :message-id:mime-version:content-transfer-encoding;
+        bh=0D2NV9EyT8+bRJWlmQx32SvVPgUYttr3IYvJpCG0gTo=;
+        b=SF9gvMVtIvU0lbpT4Sknw2zE+Z225QPNpSia4AiuX5VPp5hN0Sy13t1E19nDAy6Jf4
+         EtqLgne6YhNFdB0pJ8lAhBnH6LEfHtDaFaIAfW9S3iw3mj/Ak0+Qt4OH/bkldN7pC3xm
+         tcr+q8zqBrXiSmh3+3y2vs8V+KNV/tQ6KFPWxkCTzczURIBpN99PNlS1EN6A1WuHR5gs
+         b49Jw9w4OTgbZiD/bpJ7ujuGznkT/HDR43Tn20iZ2sTBqqpOcW7iqsPUKFWEl2JuoIrW
+         mb234+WoAmhWdD9115FSWmC0d0Qz6HRZZ3wuicU38voRpeRS1a5jOW1KGySFumopLRxV
+         o6Jg==
+X-Gm-Message-State: APjAAAWYVaKzVcytMOfyO+Y8MN7w+0V26O7jvV/JYS1LJF8wsJ6vm5ie
+        9I7Uxq1xlM8IttjSs6CZdczmJZejXpX8IqqGDNEefxmMJZgWEUFy9Qpqznt2bw5NJsVmYFHx4h3
+        P2B10ppDVQb7g6s7B
+X-Received: by 2002:a2e:2c16:: with SMTP id s22mr13113871ljs.248.1579518252322;
+        Mon, 20 Jan 2020 03:04:12 -0800 (PST)
+X-Google-Smtp-Source: APXvYqzXI2yd2Oi5VKXpLVh9lATHnVWtfkEINyqNvSzJ0CGsMQ8EPIgo05xlthJ7jXSiWSfn+eDmEA==
+X-Received: by 2002:a2e:2c16:: with SMTP id s22mr13113829ljs.248.1579518251933;
+        Mon, 20 Jan 2020 03:04:11 -0800 (PST)
+Received: from alrua-x1.borgediget.toke.dk ([85.204.121.218])
+        by smtp.gmail.com with ESMTPSA id z5sm16616586lji.40.2020.01.20.03.04.11
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 20 Jan 2020 03:04:11 -0800 (PST)
+Received: by alrua-x1.borgediget.toke.dk (Postfix, from userid 1000)
+        id 50B871804D6; Mon, 20 Jan 2020 12:04:09 +0100 (CET)
+From:   Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
+To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Cc:     Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        Andrii Nakryiko <andriin@fb.com>,
+        Doug Ledford <dledford@redhat.com>,
+        Jason Gunthorpe <jgg@ziepe.ca>,
         "David S. Miller" <davem@davemloft.net>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: Re: [RFC net-next] net: phy: Add basic support for Synopsys XPCS
- using a PHY driver
-Message-ID: <20200120105020.GB25745@shell.armlinux.org.uk>
-References: <4953fc69a26bee930bccdeb612f1ce740a4294df.1578921062.git.Jose.Abreu@synopsys.com>
- <20200113133845.GD11788@lunn.ch>
- <BN8PR12MB32666F34D45D7881BDD4CAB3D3350@BN8PR12MB3266.namprd12.prod.outlook.com>
- <20200113141817.GN25745@shell.armlinux.org.uk>
- <BN8PR12MB3266EC7870338BA4A65E8A6CD3320@BN8PR12MB3266.namprd12.prod.outlook.com>
+        Jakub Kicinski <kuba@kernel.org>,
+        Jesper Dangaard Brouer <brouer@redhat.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Ingo Molnar <mingo@redhat.com>,
+        Arnaldo Carvalho de Melo <acme@kernel.org>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
+        Jiri Olsa <jolsa@redhat.com>,
+        Namhyung Kim <namhyung@kernel.org>,
+        Shuah Khan <shuah@kernel.org>,
+        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        open list <linux-kernel@vger.kernel.org>,
+        linux-rdma@vger.kernel.org,
+        "open list\:KERNEL SELFTEST FRAMEWORK" 
+        <linux-kselftest@vger.kernel.org>,
+        clang-built-linux@googlegroups.com
+Subject: Re: [PATCH bpf-next v4 02/10] tools/bpf/runqslower: Fix override option for VMLINUX_BTF
+In-Reply-To: <CAEf4BzY3RM3LS3bvU4dHY+8U27RaezeaC9rfuW1YLAcFQEQKEA@mail.gmail.com>
+References: <157926819690.1555735.10756593211671752826.stgit@toke.dk> <157926819920.1555735.13051810516683828343.stgit@toke.dk> <CAEf4BzY3RM3LS3bvU4dHY+8U27RaezeaC9rfuW1YLAcFQEQKEA@mail.gmail.com>
+X-Clacks-Overhead: GNU Terry Pratchett
+Date:   Mon, 20 Jan 2020 12:04:09 +0100
+Message-ID: <87blqypexi.fsf@toke.dk>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <BN8PR12MB3266EC7870338BA4A65E8A6CD3320@BN8PR12MB3266.namprd12.prod.outlook.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Jan 20, 2020 at 10:31:17AM +0000, Jose Abreu wrote:
-> From: Russell King - ARM Linux admin <linux@armlinux.org.uk>
-> Date: Jan/13/2020, 14:18:17 (UTC+00:00)
-> 
-> > I've recently suggested a patch to phylink to add a generic helper to
-> > read the state from a generic 802.3 clause 37 PCS, but I guess that
-> > won't be sufficient for an XPCS.  However, it should give some clues
-> > if you're intending to use phylink.
-> 
-> So, I think for my particular setup (that has no "real" PHY) we can have 
-> something like this in SW PoV:
-> 
-> stmmac -> xpcs -> SW-PHY / Fixed PHY
-> 
-> - stmmac + xpcs state would be handled by phylink (MAC side)
-> - SW-PHY / Fixed PHY state would be handled by phylink (PHY side)
-> 
-> This would need updates for Fixed PHY to support >1G speeds.
+Andrii Nakryiko <andrii.nakryiko@gmail.com> writes:
 
-You don't want to do that if you have 1G SFPs.  Yes, you *can* do it
-and make it work, but you miss out completely on the fact that the
-link is supposed to be negotiated across the SFP link for 1G speeds,
-and then you're into the realms of having to provide users ways to
-edit the DT and reboot if the parameters at the link partner change.
+> On Fri, Jan 17, 2020 at 5:37 AM Toke H=C3=B8iland-J=C3=B8rgensen <toke@re=
+dhat.com> wrote:
+>>
+>> From: Toke H=C3=B8iland-J=C3=B8rgensen <toke@redhat.com>
+>>
+>> The runqslower tool refuses to build without a file to read vmlinux BTF
+>> from. The build fails with an error message to override the location by
+>> setting the VMLINUX_BTF variable if autodetection fails. However, the
+>> Makefile doesn't actually work with that override - the error message is
+>> still emitted.
+>>
+>> Fix this by including the value of VMLINUX_BTF in the expansion, and only
+>> emitting the error message if the *result* is empty. Also permit running
+>> 'make clean' even though no VMLINUX_BTF is set.
+>>
+>> Fixes: 9c01546d26d2 ("tools/bpf: Add runqslower tool to tools/bpf")
+>> Signed-off-by: Toke H=C3=B8iland-J=C3=B8rgensen <toke@redhat.com>
+>> ---
+>
+> approach looks good, thanks, few nits below
+>
+>>  tools/bpf/runqslower/Makefile |   18 +++++++++---------
+>>  1 file changed, 9 insertions(+), 9 deletions(-)
+>>
+>> diff --git a/tools/bpf/runqslower/Makefile b/tools/bpf/runqslower/Makefi=
+le
+>> index cff2fbcd29a8..b62fc9646c39 100644
+>> --- a/tools/bpf/runqslower/Makefile
+>> +++ b/tools/bpf/runqslower/Makefile
+>> @@ -10,13 +10,9 @@ CFLAGS :=3D -g -Wall
+>>
+>>  # Try to detect best kernel BTF source
+>>  KERNEL_REL :=3D $(shell uname -r)
+>> -ifneq ("$(wildcard /sys/kernel/btf/vmlinux)","")
+>> -VMLINUX_BTF :=3D /sys/kernel/btf/vmlinux
+>> -else ifneq ("$(wildcard /boot/vmlinux-$(KERNEL_REL))","")
+>> -VMLINUX_BTF :=3D /boot/vmlinux-$(KERNEL_REL)
+>> -else
+>> -$(error "Can't detect kernel BTF, use VMLINUX_BTF to specify it explici=
+tly")
+>> -endif
+>> +VMLINUX_BTF_PATHS :=3D /sys/kernel/btf/vmlinux /boot/vmlinux-$(KERNEL_R=
+EL)
+>> +VMLINUX_BTF_PATH :=3D $(abspath $(or $(VMLINUX_BTF),$(firstword \
+>> +       $(wildcard $(VMLINUX_BTF_PATHS)))))
+>
+> you can drop abspath, relative path for VMLINUX_BTF would work just fine
 
-Please, avoid fixed-links with SFPs where possible, and let's
-implement things correctly.
+OK.
 
--- 
-RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
-FTTC broadband for 0.8mile line in suburbia: sync at 12.1Mbps down 622kbps up
-According to speedtest.net: 11.9Mbps down 500kbps up
+>>
+>>  abs_out :=3D $(abspath $(OUTPUT))
+>>  ifeq ($(V),1)
+>> @@ -67,9 +63,13 @@ $(OUTPUT):
+>>         $(call msg,MKDIR,$@)
+>>         $(Q)mkdir -p $(OUTPUT)
+>>
+>> -$(OUTPUT)/vmlinux.h: $(VMLINUX_BTF) | $(OUTPUT) $(BPFTOOL)
+>> +$(OUTPUT)/vmlinux.h: $(VMLINUX_BTF_PATH) | $(OUTPUT) $(BPFTOOL)
+>>         $(call msg,GEN,$@)
+>> -       $(Q)$(BPFTOOL) btf dump file $(VMLINUX_BTF) format c > $@
+>> +       @if [ ! -e "$(VMLINUX_BTF_PATH)" ] ; then \
+>
+> $(Q), not @
+
+This was actually deliberate, since I was replacing an $(error) (which
+doesn't show up in V=3D1 output). But OK, I guess we can output the whole
+if statement as well on verbose builds...
+
+>> +               echo "Couldn't find kernel BTF; set VMLINUX_BTF to speci=
+fy its location."; \
+>> +               exit 1;\
+>
+> nit: please align \'s (same above for VMLONUX_BTF_PATH) at the right
+> edge as it's done everywhere in this Makefile
+
+Right, I'll try to fix those up (for the whole series). My emacs is
+being a bit weird with displaying tabstops, so some of these look
+aligned when I'm editing. I'll see if I can figure out how to fix this
+so it becomes obvious while I'm making changes...
+
+-Toke
+
