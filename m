@@ -2,35 +2,35 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 9503514219B
-	for <lists+netdev@lfdr.de>; Mon, 20 Jan 2020 03:37:19 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 652A314219E
+	for <lists+netdev@lfdr.de>; Mon, 20 Jan 2020 03:38:48 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729031AbgATChO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 19 Jan 2020 21:37:14 -0500
-Received: from szxga06-in.huawei.com ([45.249.212.32]:50290 "EHLO huawei.com"
+        id S1729044AbgATCin (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 19 Jan 2020 21:38:43 -0500
+Received: from szxga06-in.huawei.com ([45.249.212.32]:56460 "EHLO huawei.com"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1728874AbgATChO (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sun, 19 Jan 2020 21:37:14 -0500
-Received: from DGGEMS412-HUB.china.huawei.com (unknown [172.30.72.60])
-        by Forcepoint Email with ESMTP id 6196DC053B8285566763;
-        Mon, 20 Jan 2020 10:37:11 +0800 (CST)
-Received: from [127.0.0.1] (10.177.131.64) by DGGEMS412-HUB.china.huawei.com
- (10.3.19.212) with Microsoft SMTP Server id 14.3.439.0; Mon, 20 Jan 2020
- 10:37:02 +0800
+        id S1728874AbgATCin (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sun, 19 Jan 2020 21:38:43 -0500
+Received: from DGGEMS403-HUB.china.huawei.com (unknown [172.30.72.59])
+        by Forcepoint Email with ESMTP id 46703BD5F194AA73C08D;
+        Mon, 20 Jan 2020 10:38:41 +0800 (CST)
+Received: from [127.0.0.1] (10.177.131.64) by DGGEMS403-HUB.china.huawei.com
+ (10.3.19.203) with Microsoft SMTP Server id 14.3.439.0; Mon, 20 Jan 2020
+ 10:38:31 +0800
 Subject: Re: [PATCH -next] net: hns3: replace snprintf with scnprintf in
- hns3_dbg_cmd_read
+ hns3_update_strings
 To:     tanhuazhong <tanhuazhong@huawei.com>, <yisen.zhuang@huawei.com>,
         <salil.mehta@huawei.com>, <davem@davemloft.net>
-References: <20200119124147.30394-1-chenzhou10@huawei.com>
- <2e1ab30a-af35-6bc6-f880-a3051375a6a8@huawei.com>
+References: <20200119124053.30262-1-chenzhou10@huawei.com>
+ <3762cced-2a4a-7d54-787f-751c6fde2148@huawei.com>
 CC:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>
 From:   Chen Zhou <chenzhou10@huawei.com>
-Message-ID: <dbd54fd8-b356-18a2-cb16-ad3aaaa933ca@huawei.com>
-Date:   Mon, 20 Jan 2020 10:37:01 +0800
+Message-ID: <e7ae2607-1464-2268-03f7-244d6a2f2f43@huawei.com>
+Date:   Mon, 20 Jan 2020 10:38:30 +0800
 User-Agent: Mozilla/5.0 (Windows NT 6.1; WOW64; rv:45.0) Gecko/20100101
  Thunderbird/45.7.1
 MIME-Version: 1.0
-In-Reply-To: <2e1ab30a-af35-6bc6-f880-a3051375a6a8@huawei.com>
+In-Reply-To: <3762cced-2a4a-7d54-787f-751c6fde2148@huawei.com>
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
 X-Originating-IP: [10.177.131.64]
@@ -42,39 +42,45 @@ X-Mailing-List: netdev@vger.kernel.org
 
 
 
-On 2020/1/20 9:28, tanhuazhong wrote:
+On 2020/1/20 9:27, tanhuazhong wrote:
 > 
 > 
-> On 2020/1/19 20:41, Chen Zhou wrote:
->> The return value of snprintf may be greater than the size of
->> HNS3_DBG_READ_LEN, use scnprintf instead in hns3_dbg_cmd_read.
+> On 2020/1/19 20:40, Chen Zhou wrote:
+>> snprintf returns the number of bytes that would be written, which may be
+>> greater than the the actual length to be written. Here use extra code to
+>> handle this.
+>>
+>> scnprintf returns the number of bytes that was actually written, just use
+>> scnprintf to simplify the code.
 >>
 >> Signed-off-by: Chen Zhou <chenzhou10@huawei.com>
 >> ---
->>   drivers/net/ethernet/hisilicon/hns3/hns3_debugfs.c | 2 +-
->>   1 file changed, 1 insertion(+), 1 deletion(-)
+>>   drivers/net/ethernet/hisilicon/hns3/hns3_ethtool.c | 3 +--
+>>   1 file changed, 1 insertion(+), 2 deletions(-)
 >>
->> diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3_debugfs.c b/drivers/net/ethernet/hisilicon/hns3/hns3_debugfs.c
->> index 6b328a2..8fad699 100644
->> --- a/drivers/net/ethernet/hisilicon/hns3/hns3_debugfs.c
->> +++ b/drivers/net/ethernet/hisilicon/hns3/hns3_debugfs.c
->> @@ -297,7 +297,7 @@ static ssize_t hns3_dbg_cmd_read(struct file *filp, char __user *buffer,
->>       if (!buf)
->>           return -ENOMEM;
->>   -    len = snprintf(buf, HNS3_DBG_READ_LEN, "%s\n",
->> +    len = scnprintf(buf, HNS3_DBG_READ_LEN, "%s\n",
->>                  "Please echo help to cmd to get help information");
+>> diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3_ethtool.c b/drivers/net/ethernet/hisilicon/hns3/hns3_ethtool.c
+>> index 6e0212b..fa01888 100644
+>> --- a/drivers/net/ethernet/hisilicon/hns3/hns3_ethtool.c
+>> +++ b/drivers/net/ethernet/hisilicon/hns3/hns3_ethtool.c
+>> @@ -423,9 +423,8 @@ static void *hns3_update_strings(u8 *data, const struct hns3_stats *stats,
+>>               data[ETH_GSTRING_LEN - 1] = '\0';
+>>                 /* first, prepend the prefix string */
+>> -            n1 = snprintf(data, MAX_PREFIX_SIZE, "%s%d_",
+>> +            n1 = scnprintf(data, MAX_PREFIX_SIZE, "%s%d_",
+>>                         prefix, i);
 > 
 > not align?
 
-Ok, i will fix in next version.
+Ok, I will fix it in next version.
 
 Thanks,
 Chen Zhou
 
 > 
->>       uncopy_bytes = copy_to_user(buffer, buf, len);
->>  
+>> -            n1 = min_t(uint, n1, MAX_PREFIX_SIZE - 1);
+>>               size_left = (ETH_GSTRING_LEN - 1) - n1;
+>>                 /* now, concatenate the stats string to it */
+>>
 > 
 > 
 > .
