@@ -2,153 +2,148 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id B1CB0143399
-	for <lists+netdev@lfdr.de>; Mon, 20 Jan 2020 23:02:14 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id EF47114339F
+	for <lists+netdev@lfdr.de>; Mon, 20 Jan 2020 23:02:36 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727005AbgATWCN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 20 Jan 2020 17:02:13 -0500
-Received: from us-smtp-delivery-1.mimecast.com ([207.211.31.120]:49196 "EHLO
-        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S1726816AbgATWCN (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 20 Jan 2020 17:02:13 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1579557731;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=aqEmL/GgShVVHjMvVQbxK02T5LT7/TkxslI85eRWNwQ=;
-        b=R6HHob/Oa9awO6E6Z/e+S5TrNem4jCBBH/DsVgbciX+mcbbFTfS6c64QEppnVnwiHwZDwc
-        CV/wUWmeXkl2cSPYu4I1uYQjL5/LMJSzkTTyC2P/2WUBXVOOno7ITwOv5hoiJz4XPCDnO5
-        WEb93WucDiXIsAm7Pkxg1eAF4mrXw3M=
-Received: from mail-qv1-f70.google.com (mail-qv1-f70.google.com
- [209.85.219.70]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-181-ssJIrkWRPESSHdPJLBTOSA-1; Mon, 20 Jan 2020 17:02:10 -0500
-X-MC-Unique: ssJIrkWRPESSHdPJLBTOSA-1
-Received: by mail-qv1-f70.google.com with SMTP id z9so382484qvo.10
-        for <netdev@vger.kernel.org>; Mon, 20 Jan 2020 14:02:10 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=aqEmL/GgShVVHjMvVQbxK02T5LT7/TkxslI85eRWNwQ=;
-        b=T6Q0g1+t+JS900vhqRpOVyxDmeVe32ewpbHU0DoVnuORk6JcgAxtL0XMtJFQgP9lLi
-         VvzMWcn7twho6g0/INk3Sj5P4VAMTvdpoXDn8UsMWgoeCpl2jS9qMKpjaR8NTQl70ycC
-         xzhMF7/R7onpzSG1X2kW+HS6aEqnBE+11ylLdjPx8MuGxEXfd7CY5lHyvU2DfJzanAE/
-         XTEwU+BGV9kw2FafV9nAA75fTDmarIuZ60K2rU8CQPikN9APyCJiysyLFrhBedLcWM/N
-         /68uDEzl1iw6UiCBxE9CojxlOkwq/8fYhgGvlDiDg6SP3XYOVgwVQyva550gQjnjfvi/
-         lgrA==
-X-Gm-Message-State: APjAAAWddVs4hVh18yj6nHgvaTUeOudlCMFv5RwtjxcaYRPij3pAglaK
-        cNw1bcHgXwZS1AdysVDzSKiA+khJGOkjIHhb/jUd1pf/wtm2D2EF19G0QIqUHqnqKNKTUu9dPng
-        rWb1ClXuWt2S67eac
-X-Received: by 2002:ac8:34b4:: with SMTP id w49mr1592070qtb.24.1579557730138;
-        Mon, 20 Jan 2020 14:02:10 -0800 (PST)
-X-Google-Smtp-Source: APXvYqymqhWHdBCdsG0obySehjwIz92dnU8ErB6tNKIxW2hEWyp5GKWcYVwAyPzD6sgL2fT0CICj9w==
-X-Received: by 2002:ac8:34b4:: with SMTP id w49mr1592040qtb.24.1579557729868;
-        Mon, 20 Jan 2020 14:02:09 -0800 (PST)
-Received: from redhat.com (bzq-79-179-85-180.red.bezeqint.net. [79.179.85.180])
-        by smtp.gmail.com with ESMTPSA id s26sm16735731qkj.24.2020.01.20.14.02.05
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 20 Jan 2020 14:02:08 -0800 (PST)
-Date:   Mon, 20 Jan 2020 17:02:03 -0500
-From:   "Michael S. Tsirkin" <mst@redhat.com>
-To:     Stefano Garzarella <sgarzare@redhat.com>
-Cc:     David Miller <davem@davemloft.net>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Jorgen Hansen <jhansen@vmware.com>,
-        Jason Wang <jasowang@redhat.com>, kvm <kvm@vger.kernel.org>,
-        Stefan Hajnoczi <stefanha@redhat.com>,
-        virtualization@lists.linux-foundation.org,
-        linux-hyperv@vger.kernel.org, Dexuan Cui <decui@microsoft.com>
-Subject: Re: [PATCH net-next 1/3] vsock: add network namespace support
-Message-ID: <20200120170120-mutt-send-email-mst@kernel.org>
-References: <20200116172428.311437-1-sgarzare@redhat.com>
- <20200116172428.311437-2-sgarzare@redhat.com>
- <20200120.100610.546818167633238909.davem@davemloft.net>
- <20200120101735.uyh4o64gb4njakw5@steredhat>
- <20200120060601-mutt-send-email-mst@kernel.org>
- <CAGxU2F6VH8Eb5UH_9KjN6MONbZEo1D7EHAiocVVus6jW55BJDg@mail.gmail.com>
- <20200120110319-mutt-send-email-mst@kernel.org>
- <CAGxU2F5=DQJ56sH4BUqp_7rvaXSF9bFHp4QkpLApJQK0bmd4MA@mail.gmail.com>
+        id S1728767AbgATWCa (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 20 Jan 2020 17:02:30 -0500
+Received: from mo4-p01-ob.smtp.rzone.de ([85.215.255.54]:15330 "EHLO
+        mo4-p01-ob.smtp.rzone.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726816AbgATWCa (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 20 Jan 2020 17:02:30 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; t=1579557747;
+        s=strato-dkim-0002; d=hartkopp.net;
+        h=In-Reply-To:Date:Message-ID:From:References:To:Subject:
+        X-RZG-CLASS-ID:X-RZG-AUTH:From:Subject:Sender;
+        bh=KS6nbdXMdxPhSYhT/Qn6xqeVLbXY1afV2x/oIgHFYZY=;
+        b=eBQUqKNv5eemSRXDGdevQfqOaxJ5QOrf+Y3Rn56VbbS5CAMU7HuimVuIZXxlD+ZXw3
+        CpoYTdNTSGRbSXNqh1N5q4aAXzuLEumqPabM3E/16pRc4idaouHUkPDledSaUdgcMV6v
+        p7Y+iU1d/+n2bZhhx1M03/X0yu9Hq7wVE8i8c2bynjW455N+qfxupWd4T4dT75PUV8TK
+        57baYoflHKTcqhjcevq0BG6QfO1s0BF7IpHCFE0BKK3I/H9hhzJTg8C8yPAn1EiTMnIP
+        V9F7HU1pEAQeCM54CN93yLMVkiZFwmJ3VpvDIIYUOZhEBNa/NotdrzciWNv6U0Y53oJw
+        wY9g==
+X-RZG-AUTH: ":P2MHfkW8eP4Mre39l357AZT/I7AY/7nT2yrDxb8mjG14FZxedJy6qgO1o3PMaViOoLMJVsh5lUkl"
+X-RZG-CLASS-ID: mo00
+Received: from [192.168.40.177]
+        by smtp.strato.de (RZmta 46.1.5 DYNA|AUTH)
+        with ESMTPSA id t040cew0KM2H2Qi
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256 bits))
+        (Client did not present a certificate);
+        Mon, 20 Jan 2020 23:02:17 +0100 (CET)
+Subject: Re: general protection fault in can_rx_register
+To:     Dmitry Vyukov <dvyukov@google.com>,
+        Marc Kleine-Budde <mkl@pengutronix.de>,
+        o.rempel@pengutronix.de,
+        syzbot <syzbot+c3ea30e1e2485573f953@syzkaller.appspotmail.com>,
+        David Miller <davem@davemloft.net>, linux-can@vger.kernel.org,
+        LKML <linux-kernel@vger.kernel.org>,
+        netdev <netdev@vger.kernel.org>,
+        syzkaller-bugs <syzkaller-bugs@googlegroups.com>
+References: <00000000000030dddb059c562a3f@google.com>
+ <55ad363b-1723-28aa-78b1-8aba5565247e@hartkopp.net>
+ <20200120091146.GD11138@x1.vandijck-laurijssen.be>
+ <CACT4Y+a+GusEA1Gs+z67uWjtwBRp_s7P4Wd_SMmgpCREnDu3kg@mail.gmail.com>
+From:   Oliver Hartkopp <socketcan@hartkopp.net>
+Message-ID: <8332ec7f-2235-fdf6-9bda-71f789c57b37@hartkopp.net>
+Date:   Mon, 20 Jan 2020 23:02:11 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.4.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CAGxU2F5=DQJ56sH4BUqp_7rvaXSF9bFHp4QkpLApJQK0bmd4MA@mail.gmail.com>
+In-Reply-To: <CACT4Y+a+GusEA1Gs+z67uWjtwBRp_s7P4Wd_SMmgpCREnDu3kg@mail.gmail.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Jan 20, 2020 at 05:53:39PM +0100, Stefano Garzarella wrote:
-> On Mon, Jan 20, 2020 at 5:04 PM Michael S. Tsirkin <mst@redhat.com> wrote:
-> > On Mon, Jan 20, 2020 at 02:58:01PM +0100, Stefano Garzarella wrote:
-> > > On Mon, Jan 20, 2020 at 1:03 PM Michael S. Tsirkin <mst@redhat.com> wrote:
-> > > > On Mon, Jan 20, 2020 at 11:17:35AM +0100, Stefano Garzarella wrote:
-> > > > > On Mon, Jan 20, 2020 at 10:06:10AM +0100, David Miller wrote:
-> > > > > > From: Stefano Garzarella <sgarzare@redhat.com>
-> > > > > > Date: Thu, 16 Jan 2020 18:24:26 +0100
-> > > > > >
-> > > > > > > This patch adds 'netns' module param to enable this new feature
-> > > > > > > (disabled by default), because it changes vsock's behavior with
-> > > > > > > network namespaces and could break existing applications.
-> > > > > >
-> > > > > > Sorry, no.
-> > > > > >
-> > > > > > I wonder if you can even design a legitimate, reasonable, use case
-> > > > > > where these netns changes could break things.
-> > > > >
-> > > > > I forgot to mention the use case.
-> > > > > I tried the RFC with Kata containers and we found that Kata shim-v1
-> > > > > doesn't work (Kata shim-v2 works as is) because there are the following
-> > > > > processes involved:
-> > > > > - kata-runtime (runs in the init_netns) opens /dev/vhost-vsock and
-> > > > >   passes it to qemu
-> > > > > - kata-shim (runs in a container) wants to talk with the guest but the
-> > > > >   vsock device is assigned to the init_netns and kata-shim runs in a
-> > > > >   different netns, so the communication is not allowed
-> > > > > But, as you said, this could be a wrong design, indeed they already
-> > > > > found a fix, but I was not sure if others could have the same issue.
-> > > > >
-> > > > > In this case, do you think it is acceptable to make this change in
-> > > > > the vsock's behavior with netns and ask the user to change the design?
-> > > >
-> > > > David's question is what would be a usecase that's broken
-> > > > (as opposed to fixed) by enabling this by default.
-> > >
-> > > Yes, I got that. Thanks for clarifying.
-> > > I just reported a broken example that can be fixed with a different
-> > > design (due to the fact that before this series, vsock devices were
-> > > accessible to all netns).
-> > >
-> > > >
-> > > > If it does exist, you need a way for userspace to opt-in,
-> > > > module parameter isn't that.
-> > >
-> > > Okay, but I honestly can't find a case that can't be solved.
-> > > So I don't know whether to add an option (ioctl, sysfs ?) or wait for
-> > > a real case to come up.
-> > >
-> > > I'll try to see better if there's any particular case where we need
-> > > to disable netns in vsock.
-> > >
-> > > Thanks,
-> > > Stefano
-> >
-> > Me neither. so what did you have in mind when you wrote:
-> > "could break existing applications"?
+Hi all,
+
+On 20/01/2020 10.22, Dmitry Vyukov wrote:
+
+>> Is this code what triggers the bug?
+>>>> C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=138f5db9e00000
 > 
-> I had in mind:
-> 1. the Kata case. It is fixable (the fix is not merged on kata), but
->    older versions will not work with newer Linux.
+> yes
+> 
 
-meaning they will keep not working, right?
+(..)
 
-> 2. a single process running on init_netns that wants to communicate with
->    VMs handled by VMMs running in different netns, but this case can be
->    solved opening the /dev/vhost-vsock in the same netns of the process
->    that wants to communicate with the VMs (init_netns in this case), and
->    passig it to the VMM.
+>>>> RIP: 0010:hlist_add_head_rcu include/linux/rculist.h:528 [inline]
+>>>> RIP: 0010:can_rx_register+0x43b/0x600 net/can/af_can.c:476
+>>>
+>>> include/linux/rculist.h:528 is
+>>>
+>>> struct hlist_node *first = h->first;
+>>>
+>>> which would mean that 'h' must be NULL.
+>>>
+>>> But the h parameter is rcv_list from
+>>> rcv_list = can_rcv_list_find(&can_id, &mask, dev_rcv_lists);
+>>>
+>>> Which can not return NULL - at least when dev_rcv_lists is a proper pointer
+>>> to the dev_rcv_lists provided by can_dev_rcv_lists_find().
+>>>
+>>> So either dev->ml_priv is NULL in the case of having a CAN interface (here
+>>> vxcan) ...
 
-again right now they just don't work, right?
+Added some code to check whether dev->ml_priv is NULL:
 
-> These cases can work with vsock+netns, but they require changes because
-> I'm modifying the vsock behavior with netns.
+~/linux$ git diff
+diff --git a/net/can/af_can.c b/net/can/af_can.c
+index 128d37a4c2e0..6fb4ae4c359e 100644
+--- a/net/can/af_can.c
++++ b/net/can/af_can.c
+@@ -463,6 +463,10 @@ int can_rx_register(struct net *net, struct 
+net_device *dev, canid_t can_id,
+         spin_lock_bh(&net->can.rcvlists_lock);
 
+         dev_rcv_lists = can_dev_rcv_lists_find(net, dev);
++       if (!dev_rcv_lists) {
++               pr_err("dev_rcv_lists == NULL! %p\n", dev);
++               goto out_unlock;
++       }
+         rcv_list = can_rcv_list_find(&can_id, &mask, dev_rcv_lists);
+
+         rcv->can_id = can_id;
+@@ -479,6 +483,7 @@ int can_rx_register(struct net *net, struct 
+net_device *dev, canid_t can_id,
+         rcv_lists_stats->rcv_entries++;
+         rcv_lists_stats->rcv_entries_max = 
+max(rcv_lists_stats->rcv_entries_max,
+ 
+rcv_lists_stats->rcv_entries);
++out_unlock:
+         spin_unlock_bh(&net->can.rcvlists_lock);
+
+         return err;
+
+And the output (after some time) is:
+
+[  758.505841] netlink: 'crash': attribute type 1 has an invalid length.
+[  758.508045] bond7148: (slave vxcan1): The slave device specified does 
+not support setting the MAC address
+[  758.508057] bond7148: (slave vxcan1): Error -22 calling dev_set_mtu
+[  758.532025] bond10413: (slave vxcan1): The slave device specified 
+does not support setting the MAC address
+[  758.532043] bond10413: (slave vxcan1): Error -22 calling dev_set_mtu
+[  758.532254] dev_rcv_lists == NULL! 000000006b9d257f
+[  758.547392] netlink: 'crash': attribute type 1 has an invalid length.
+[  758.549310] bond7145: (slave vxcan1): The slave device specified does 
+not support setting the MAC address
+[  758.549313] bond7145: (slave vxcan1): Error -22 calling dev_set_mtu
+[  758.550464] netlink: 'crash': attribute type 1 has an invalid length.
+[  758.552301] bond7146: (slave vxcan1): The slave device specified does 
+not support setting the MAC address
+
+So we can see that we get a ml_priv pointer which is NULL which should 
+not be possible due to this:
+
+https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/tree/drivers/net/can/dev.c#n743
+
+Btw. the variable 'size' is set two times at the top of 
+alloc_candev_mqs() depending on echo_skb_max. This looks wrong.
+
+Best regards,
+Oliver
