@@ -2,77 +2,115 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 77ECA1434A4
-	for <lists+netdev@lfdr.de>; Tue, 21 Jan 2020 01:05:51 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 313921434B9
+	for <lists+netdev@lfdr.de>; Tue, 21 Jan 2020 01:24:13 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728093AbgAUAFu (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 20 Jan 2020 19:05:50 -0500
-Received: from mout.kundenserver.de ([217.72.192.75]:55219 "EHLO
-        mout.kundenserver.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727009AbgAUAFt (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 20 Jan 2020 19:05:49 -0500
-Received: from kiste.fritz.box ([88.130.61.11]) by mrelayeu.kundenserver.de
- (mreue109 [212.227.15.183]) with ESMTPSA (Nemesis) id
- 1MxmBc-1jpXcT0Tcs-00zFdE; Tue, 21 Jan 2020 01:05:07 +0100
-From:   Hans Wippel <ndev@hwipl.net>
-To:     kgraul@linux.ibm.com, ubraun@linux.ibm.com, davem@davemloft.net
-Cc:     netdev@vger.kernel.org, Hans Wippel <ndev@hwipl.net>
-Subject: [PATCH net-next] net/smc: allow unprivileged users to read pnet table
-Date:   Tue, 21 Jan 2020 01:04:46 +0100
-Message-Id: <20200121000446.339681-1-ndev@hwipl.net>
-X-Mailer: git-send-email 2.25.0
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Provags-ID: V03:K1:gfd3XISGSqXcNgZHsPK9Pp2/eqxU1kDnmYzvUYAmrIN6x+qXIFD
- gylk1xh19JiuFsERQsAQLGcsdBg6kRLWHgplLedghnAtSOB3H14G3iArnovAy/h3y1ByQbp
- h6lqN/tyXhQXfDRSpzzLeYiVsKrNSaEM3AGyGIdcR2t2REmkNkoQz0rdzZuvWcsMkGp98uj
- HTnthnXJ1ekaODQNH9hIw==
-X-Spam-Flag: NO
-X-UI-Out-Filterresults: notjunk:1;V03:K0:ROMrHL4N5JE=:QW3BUuZajnhUjEjVmdm3Z6
- MIe+XhxJFp9/YdmMj2lakwZCq0cXXOOb1+b+ipjLSECnCpPkR6zNxyVY6z8r4+hafT+7SfVE/
- 4HgvVO0PP+rdn2Khsy6xg3b5M8SX9/FgejAoPbRBOqQMXeVcpBu1e5pPXZn7c7MI1rWpgRzQp
- L/fcConqYx7Im1lUfng+IwS2IO8L37vEad90/Z9BuM2NDZCajpl0c/NuWQUfYYRwn6z4hdHLQ
- T/auE1o3/NIZRKeX26N0Iga5GF57kTz4HlFVOId7+QJSkzx+H+BdhPP1oAebrfPbsHfSmY5J4
- 6wag/BX7PSl4IW/U15qgs63i+VeiY6+QEeX0hpGVrhhKQPK+2fFAe0j2ZvVSIG6C4HFWWY5nM
- 6j+MPjvaCvBOs14WhDa2c7yXpP28Wz+75T/wHAwcPPDb2cXG7lJtInzQtpGywH2vypmD0ahP9
- jvsmueI4RBDObTe263aMwn8TozgrSe8DixsuB3gWr5zTslNseORjtHkkgga2dfUTzYSerfRdU
- SIPk9sJuwpRSQRPI9Xz/YlE6cYXs2KoFP1oU3c2weoV1F/xBW8SfC0WAPwMpUZ/quoll1AaWA
- moAzadRMS3d7FpsCXtmOa8lJfBSDlJY/iWhYxmdiQ3IA1eAhg5SBMAwH4tRWznoPg0UZB5EoL
- lbjS5ctFlGVUuBaqAorzL/+o/hatC4lAJOTj4cRMPIJydsy397vHLEhb6L+RGNaIPGrurfJGq
- 4Z177OOrCebU5hvzCYN0BMpHaLCqSzig7Mf8zxxU3d9MAuUw+Mk3JvqyHxxcQz2WjqMgnCJyc
- ZipG3lMJXuRdClfjBtoPGCoDZ+QLzRht/dAii2/Ay307swoYxw2xygQ9RZbApOUtK7qDsYSio
- 5ZKXQ5Hr4wmV+581BU6g==
+        id S1728682AbgAUAYL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 20 Jan 2020 19:24:11 -0500
+Received: from mail-il1-f196.google.com ([209.85.166.196]:33261 "EHLO
+        mail-il1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727045AbgAUAYL (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 20 Jan 2020 19:24:11 -0500
+Received: by mail-il1-f196.google.com with SMTP id v15so983789iln.0;
+        Mon, 20 Jan 2020 16:24:11 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:message-id:in-reply-to:references:subject
+         :mime-version:content-transfer-encoding;
+        bh=DlcI6bB3XZo+tEJuOk7rJDBEyCbKWyCGb9fvywI64zI=;
+        b=KxRQVaDMzVI5BMv1vFBXcGfF+rNsGV/f+VTGO41NTAAfm/A45sIsb6U5UBdeWs5NpK
+         V/Sc7X+4whayri+cUCcDvji7JcuLur0mxQMBupWXg5DpCknagNCbGM8jRrkbOCIIerr7
+         TVO//pRfgi9H2GminrI6b+jA7yOZhsR/lAXY3OHQXxErnbiLG40JulJC4pMOn8QkobR2
+         b8qmK8+YosUlkZIqYg8HETmMefxz1sW7dQkLrIsKQZeHYskhIJwYHXG5MbzESmVO6NaH
+         Ql3H8HlxO+9uEWciwGoShOLdBue/ryZ5HyFZx0onjJogJzwIHURGziP4X6rUYe4QqoIl
+         ncVQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:message-id:in-reply-to
+         :references:subject:mime-version:content-transfer-encoding;
+        bh=DlcI6bB3XZo+tEJuOk7rJDBEyCbKWyCGb9fvywI64zI=;
+        b=DRK8Tu4fcz0ymWW3YV+7UdMEvID0cKvnErQD6i3MU9TsGmK8mIF5f8+qhwS71k0NAu
+         Oe110MPy8sCa4n74zpxv8Dgx0gpbusWibVpIqrKfcpDPxArSun2pSxBs1V2cav+HWWsR
+         RnbcyC/K7XR3FINKn0ZayILIZrgyvmz7Iz8Mz70gyhs3b8LzEXsmOCYHKGdMdE5Y3zp/
+         YjoLztNDfTk0UbhMc+YYrj/0xa/G97RTJ6MsAxUvuQRtRZ2Nh4mlHJNnNOLEZf4uJEnV
+         15yEWK6o3b8egqPyYhg66odERcHul26E3qm3Mkxlu7OhJwkekSKSTHuML+lu0bY9/NbP
+         fghA==
+X-Gm-Message-State: APjAAAV4qpkTyK5c26Tyc9vOGwkSJOZqk/l9zije7U5BJY0Jaw5ldovJ
+        qMk7N1b18Qv2fnDdaWurZ1lvYibm
+X-Google-Smtp-Source: APXvYqyGlhp/EjZpz2uSIUgyTjB53jaDP/25NMtZI+c56nyddpJQVApVT34dgURVAPC2Wryck381oQ==
+X-Received: by 2002:a92:7606:: with SMTP id r6mr1438271ilc.120.1579566250722;
+        Mon, 20 Jan 2020 16:24:10 -0800 (PST)
+Received: from localhost ([184.63.162.180])
+        by smtp.gmail.com with ESMTPSA id q9sm8976656iod.79.2020.01.20.16.24.07
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 20 Jan 2020 16:24:10 -0800 (PST)
+Date:   Mon, 20 Jan 2020 16:24:01 -0800
+From:   John Fastabend <john.fastabend@gmail.com>
+To:     Jiri Olsa <jolsa@kernel.org>, Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>
+Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org,
+        Andrii Nakryiko <andriin@fb.com>, Yonghong Song <yhs@fb.com>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Jakub Kicinski <jakub.kicinski@netronome.com>,
+        David Miller <davem@redhat.com>,
+        =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@intel.com>
+Message-ID: <5e2644a144e2c_20912afc5c86e5c4cc@john-XPS-13-9370.notmuch>
+In-Reply-To: <20200118134945.493811-2-jolsa@kernel.org>
+References: <20200118134945.493811-1-jolsa@kernel.org>
+ <20200118134945.493811-2-jolsa@kernel.org>
+Subject: RE: [PATCH 1/6] bpf: Allow ctx access for pointers to scalar
+Mime-Version: 1.0
+Content-Type: text/plain;
+ charset=utf-8
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The current flags of the SMC_PNET_GET command only allow privileged
-users to retrieve entries from the pnet table via netlink. The content
-of the pnet table may be useful for all users though, e.g., for
-debugging smc connection problems.
+Jiri Olsa wrote:
+> When accessing the context we allow access to arguments with
+> scalar type and pointer to struct. But we omit pointer to scalar
+> type, which is the case for many functions and same case as
+> when accessing scalar.
+> 
+> Adding the check if the pointer is to scalar type and allow it.
+> 
+> Signed-off-by: Jiri Olsa <jolsa@kernel.org>
+> ---
+>  kernel/bpf/btf.c | 13 ++++++++++++-
+>  1 file changed, 12 insertions(+), 1 deletion(-)
+> 
+> diff --git a/kernel/bpf/btf.c b/kernel/bpf/btf.c
+> index 832b5d7fd892..207ae554e0ce 100644
+> --- a/kernel/bpf/btf.c
+> +++ b/kernel/bpf/btf.c
+> @@ -3668,7 +3668,7 @@ bool btf_ctx_access(int off, int size, enum bpf_access_type type,
+>  		    const struct bpf_prog *prog,
+>  		    struct bpf_insn_access_aux *info)
+>  {
+> -	const struct btf_type *t = prog->aux->attach_func_proto;
+> +	const struct btf_type *tp, *t = prog->aux->attach_func_proto;
+>  	struct bpf_prog *tgt_prog = prog->aux->linked_prog;
+>  	struct btf *btf = bpf_prog_get_target_btf(prog);
+>  	const char *tname = prog->aux->attach_func_name;
+> @@ -3730,6 +3730,17 @@ bool btf_ctx_access(int off, int size, enum bpf_access_type type,
+>  		 */
+>  		return true;
+>  
+> +	tp = btf_type_by_id(btf, t->type);
+> +	/* skip modifiers */
+> +	while (btf_type_is_modifier(tp))
+> +		tp = btf_type_by_id(btf, tp->type);
+> +
+> +	if (btf_type_is_int(tp) || btf_type_is_enum(tp))
+> +		/* This is a pointer scalar.
+> +		 * It is the same as scalar from the verifier safety pov.
+> +		 */
+> +		return true;
+> +
+>  	/* this is a pointer to another type */
+>  	info->reg_type = PTR_TO_BTF_ID;
+>  
 
-This patch removes the GENL_ADMIN_PERM flag so that unprivileged users
-can read the pnet table.
-
-Signed-off-by: Hans Wippel <ndev@hwipl.net>
----
- net/smc/smc_pnet.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/net/smc/smc_pnet.c b/net/smc/smc_pnet.c
-index 82dedf052d86..2a5ed47c3e08 100644
---- a/net/smc/smc_pnet.c
-+++ b/net/smc/smc_pnet.c
-@@ -611,7 +611,7 @@ static const struct genl_ops smc_pnet_ops[] = {
- 	{
- 		.cmd = SMC_PNETID_GET,
- 		.validate = GENL_DONT_VALIDATE_STRICT | GENL_DONT_VALIDATE_DUMP,
--		.flags = GENL_ADMIN_PERM,
-+		/* can be retrieved by unprivileged users */
- 		.doit = smc_pnet_get,
- 		.dumpit = smc_pnet_dump,
- 		.start = smc_pnet_dump_start
--- 
-2.25.0
-
+Acked-by: John Fastabend <john.fastabend@gmail.com>
