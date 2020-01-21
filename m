@@ -2,185 +2,92 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 20001144244
-	for <lists+netdev@lfdr.de>; Tue, 21 Jan 2020 17:36:18 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4D42714424A
+	for <lists+netdev@lfdr.de>; Tue, 21 Jan 2020 17:37:52 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729165AbgAUQfy convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Tue, 21 Jan 2020 11:35:54 -0500
-Received: from coyote.holtmann.net ([212.227.132.17]:58810 "EHLO
-        mail.holtmann.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726714AbgAUQfy (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 21 Jan 2020 11:35:54 -0500
-Received: from marcel-macpro.fritz.box (p4FEFC5A7.dip0.t-ipconnect.de [79.239.197.167])
-        by mail.holtmann.org (Postfix) with ESMTPSA id 00A92CECE3;
-        Tue, 21 Jan 2020 17:45:10 +0100 (CET)
-Content-Type: text/plain;
-        charset=utf-8
-Mime-Version: 1.0 (Mac OS X Mail 13.0 \(3608.40.2.2.4\))
-Subject: Re: [RFC PATCH 1/2] Bluetooth: Add mgmt op set_wake_capable
-From:   Marcel Holtmann <marcel@holtmann.org>
-In-Reply-To: <20200117132623.RFC.1.I797e2f4cb824299043e771f3ab9cef86ee09f4db@changeid>
-Date:   Tue, 21 Jan 2020 17:35:51 +0100
-Cc:     Luiz Augusto von Dentz <luiz.dentz@gmail.com>, alainm@chromium.org,
-        linux-bluetooth@vger.kernel.org,
-        chromeos-bluetooth-upstreaming@chromium.org,
-        "David S. Miller" <davem@davemloft.net>,
-        Johan Hedberg <johan.hedberg@gmail.com>,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Content-Transfer-Encoding: 8BIT
-Message-Id: <ACAE240C-345B-43F9-B6C8-8967AF436CE9@holtmann.org>
-References: <20200117212705.57436-1-abhishekpandit@chromium.org>
- <20200117132623.RFC.1.I797e2f4cb824299043e771f3ab9cef86ee09f4db@changeid>
-To:     Abhishek Pandit-Subedi <abhishekpandit@chromium.org>
-X-Mailer: Apple Mail (2.3608.40.2.2.4)
+        id S1729108AbgAUQht (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 21 Jan 2020 11:37:49 -0500
+Received: from smtp-fw-6002.amazon.com ([52.95.49.90]:32196 "EHLO
+        smtp-fw-6002.amazon.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726968AbgAUQhs (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 21 Jan 2020 11:37:48 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=amazon.com; i=@amazon.com; q=dns/txt; s=amazon201209;
+  t=1579624668; x=1611160668;
+  h=subject:to:cc:references:from:message-id:date:
+   mime-version:in-reply-to:content-transfer-encoding;
+  bh=uowtzUhtMD1h/eN4qCScAmdgoWppOUy0RKbXeqhGk4M=;
+  b=NaggMuibbzV41XQ1A8Ynnti4L61OPC81Y50WW79iH0i3c3Q+DvVande3
+   kwY43cF6YnO8G6QWsWCCvVpIEVynP9uhCCu2L3C+Jd1OsD7U8ttBQ+fjx
+   +Q/WAqQwAAr7F9WBq8ZBYK6igJWm9INFxWFnzq6kz6szEY6tK/oPGEfUh
+   E=;
+IronPort-SDR: exfgzQegItGclssMh1nvFrjMg4tR15SJxEBNt/lv9j9rmmhz9fRH0F85PlvROU7AUa7Fu5+u/q
+ C0WhYhPTa+Zg==
+X-IronPort-AV: E=Sophos;i="5.70,346,1574121600"; 
+   d="scan'208";a="12608833"
+Received: from iad12-co-svc-p1-lb1-vlan3.amazon.com (HELO email-inbound-relay-1d-f273de60.us-east-1.amazon.com) ([10.43.8.6])
+  by smtp-border-fw-out-6002.iad6.amazon.com with ESMTP; 21 Jan 2020 16:37:47 +0000
+Received: from EX13MTAUEA002.ant.amazon.com (iad55-ws-svc-p15-lb9-vlan2.iad.amazon.com [10.40.159.162])
+        by email-inbound-relay-1d-f273de60.us-east-1.amazon.com (Postfix) with ESMTPS id 1E63DA28BB;
+        Tue, 21 Jan 2020 16:37:44 +0000 (UTC)
+Received: from EX13D19EUB003.ant.amazon.com (10.43.166.69) by
+ EX13MTAUEA002.ant.amazon.com (10.43.61.77) with Microsoft SMTP Server (TLS)
+ id 15.0.1236.3; Tue, 21 Jan 2020 16:37:43 +0000
+Received: from 8c85908914bf.ant.amazon.com (10.43.162.95) by
+ EX13D19EUB003.ant.amazon.com (10.43.166.69) with Microsoft SMTP Server (TLS)
+ id 15.0.1367.3; Tue, 21 Jan 2020 16:37:38 +0000
+Subject: Re: [PATCH rdma-next 07/10] RDMA/efa: Allow passing of optional
+ access flags for MR registration
+To:     Yishai Hadas <yishaih@mellanox.com>
+CC:     <linux-rdma@vger.kernel.org>, <jgg@mellanox.com>,
+        <dledford@redhat.com>, <saeedm@mellanox.com>, <maorg@mellanox.com>,
+        <michaelgur@mellanox.com>, <netdev@vger.kernel.org>
+References: <1578506740-22188-1-git-send-email-yishaih@mellanox.com>
+ <1578506740-22188-8-git-send-email-yishaih@mellanox.com>
+From:   Gal Pressman <galpress@amazon.com>
+Message-ID: <6df1dbee-f35e-a5ad-019b-1bf572608974@amazon.com>
+Date:   Tue, 21 Jan 2020 18:37:34 +0200
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.14; rv:68.0)
+ Gecko/20100101 Thunderbird/68.3.1
+MIME-Version: 1.0
+In-Reply-To: <1578506740-22188-8-git-send-email-yishaih@mellanox.com>
+Content-Type: text/plain; charset="utf-8"
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.43.162.95]
+X-ClientProxiedBy: EX13D12UWA003.ant.amazon.com (10.43.160.50) To
+ EX13D19EUB003.ant.amazon.com (10.43.166.69)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Abhishek,
-
-> When the system is suspended, only some connected Bluetooth devices
-> cause user input that should wake the system (mostly HID devices). Add
-> a list to keep track of devices that can wake the system and add
-> a management API to let userspace tell the kernel whether a device is
-> wake capable or not.
+On 08/01/2020 20:05, Yishai Hadas wrote:
+> From: Michael Guralnik <michaelgur@mellanox.com>
 > 
-> Signed-off-by: Abhishek Pandit-Subedi <abhishekpandit@chromium.org>
+> As part of adding a range of optional access flags that drivers need to
+> be able to accept, mask this range inside efa driver.
+> This will prevent the driver from failing when an access flag from
+> that range is passed.
+> 
+> Signed-off-by: Michael Guralnik <michaelgur@mellanox.com>
+> Signed-off-by: Yishai Hadas <yishaih@mellanox.com>
 > ---
+>  drivers/infiniband/hw/efa/efa_verbs.c | 1 +
+>  1 file changed, 1 insertion(+)
 > 
-> include/net/bluetooth/hci_core.h |  1 +
-> include/net/bluetooth/mgmt.h     |  7 ++++++
-> net/bluetooth/hci_core.c         |  1 +
-> net/bluetooth/mgmt.c             | 42 ++++++++++++++++++++++++++++++++
-> 4 files changed, 51 insertions(+)
-> 
-> diff --git a/include/net/bluetooth/hci_core.h b/include/net/bluetooth/hci_core.h
-> index 89ecf0a80aa1..ce4bebcb0265 100644
-> --- a/include/net/bluetooth/hci_core.h
-> +++ b/include/net/bluetooth/hci_core.h
-> @@ -394,6 +394,7 @@ struct hci_dev {
-> 	struct list_head	mgmt_pending;
-> 	struct list_head	blacklist;
-> 	struct list_head	whitelist;
-> +	struct list_head	wakeable;
-> 	struct list_head	uuids;
-> 	struct list_head	link_keys;
-> 	struct list_head	long_term_keys;
-> diff --git a/include/net/bluetooth/mgmt.h b/include/net/bluetooth/mgmt.h
-> index a90666af05bd..283ba5320bdb 100644
-> --- a/include/net/bluetooth/mgmt.h
-> +++ b/include/net/bluetooth/mgmt.h
-> @@ -671,6 +671,13 @@ struct mgmt_cp_set_blocked_keys {
-> } __packed;
-> #define MGMT_OP_SET_BLOCKED_KEYS_SIZE 2
-> 
-> +#define MGMT_OP_SET_WAKE_CAPABLE	0x0047
-> +#define MGMT_SET_WAKE_CAPABLE_SIZE	8
-> +struct mgmt_cp_set_wake_capable {
-> +	struct mgmt_addr_info addr;
-> +	u8 wake_capable;
-> +} __packed;
-> +
+> diff --git a/drivers/infiniband/hw/efa/efa_verbs.c b/drivers/infiniband/hw/efa/efa_verbs.c
+> index 50c2257..b6b936c 100644
+> --- a/drivers/infiniband/hw/efa/efa_verbs.c
+> +++ b/drivers/infiniband/hw/efa/efa_verbs.c
+> @@ -1370,6 +1370,7 @@ struct ib_mr *efa_reg_mr(struct ib_pd *ibpd, u64 start, u64 length,
+>  		IB_ACCESS_LOCAL_WRITE |
+>  		(is_rdma_read_cap(dev) ? IB_ACCESS_REMOTE_READ : 0);
+>  
+> +	access_flags &= ~IB_UVERBS_ACCESS_OPTIONAL_RANGE;
 
-please also send a patch for doc/mgmt-api.txt describing these opcodes. I would also like to have the discussion if it might be better to add an extra Action parameter to Add Device. We want to differentiate between allow incoming connection that allows to wakeup and the one that doesn’t.
+Hi Yishai,
+access_flags should be masked with IB_ACCESS_OPTIONAL instead of
+IB_UVERBS_ACCESS_OPTIONAL_RANGE.
 
-Another option is to create an Add Extended Device command. Main reason here is that I don’t want to end up in the situation where you have to add a device and then send another 10 commands to set its features.
-
-> #define MGMT_EV_CMD_COMPLETE		0x0001
-> struct mgmt_ev_cmd_complete {
-> 	__le16	opcode;
-> diff --git a/net/bluetooth/hci_core.c b/net/bluetooth/hci_core.c
-> index 1ca7508b6ca7..7057b9b65173 100644
-> --- a/net/bluetooth/hci_core.c
-> +++ b/net/bluetooth/hci_core.c
-> @@ -3299,6 +3299,7 @@ struct hci_dev *hci_alloc_dev(void)
-> 	INIT_LIST_HEAD(&hdev->mgmt_pending);
-> 	INIT_LIST_HEAD(&hdev->blacklist);
-> 	INIT_LIST_HEAD(&hdev->whitelist);
-> +	INIT_LIST_HEAD(&hdev->wakeable);
-> 	INIT_LIST_HEAD(&hdev->uuids);
-> 	INIT_LIST_HEAD(&hdev->link_keys);
-> 	INIT_LIST_HEAD(&hdev->long_term_keys);
-> diff --git a/net/bluetooth/mgmt.c b/net/bluetooth/mgmt.c
-> index 0dc610faab70..95092130f16c 100644
-> --- a/net/bluetooth/mgmt.c
-> +++ b/net/bluetooth/mgmt.c
-> @@ -106,7 +106,10 @@ static const u16 mgmt_commands[] = {
-> 	MGMT_OP_START_LIMITED_DISCOVERY,
-> 	MGMT_OP_READ_EXT_INFO,
-> 	MGMT_OP_SET_APPEARANCE,
-> +	MGMT_OP_GET_PHY_CONFIGURATION,
-> +	MGMT_OP_SET_PHY_CONFIGURATION,
-
-These are unrelated to this patch.
-
-> 	MGMT_OP_SET_BLOCKED_KEYS,
-> +	MGMT_OP_SET_WAKE_CAPABLE,
-> };
-> 
-> static const u16 mgmt_events[] = {
-> @@ -4663,6 +4666,37 @@ static int set_fast_connectable(struct sock *sk, struct hci_dev *hdev,
-> 	return err;
-> }
-> 
-> +static int set_wake_capable(struct sock *sk, struct hci_dev *hdev, void *data,
-> +			    u16 len)
-> +{
-> +	int err;
-> +	u8 status;
-> +	struct mgmt_cp_set_wake_capable *cp = data;
-> +	u8 addr_type = cp->addr.type == BDADDR_BREDR ?
-> +			       cp->addr.type :
-> +			       le_addr_type(cp->addr.type);
-> +
-> +	BT_DBG("Set wake capable %pMR (type 0x%x) = 0x%x\n", &cp->addr.bdaddr,
-> +	       addr_type, cp->wake_capable);
-> +
-> +	if (cp->wake_capable)
-> +		err = hci_bdaddr_list_add(&hdev->wakeable, &cp->addr.bdaddr,
-> +					  addr_type);
-> +	else
-> +		err = hci_bdaddr_list_del(&hdev->wakeable, &cp->addr.bdaddr,
-> +					  addr_type);
-> +
-> +	if (!err || err == -EEXIST || err == -ENOENT)
-> +		status = MGMT_STATUS_SUCCESS;
-> +	else
-> +		status = MGMT_STATUS_FAILED;
-> +
-> +	err = mgmt_cmd_complete(sk, hdev->id, MGMT_OP_SET_WAKE_CAPABLE, status,
-> +				cp, sizeof(*cp));
-> +
-> +	return err;
-> +}
-> +
-> static void set_bredr_complete(struct hci_dev *hdev, u8 status, u16 opcode)
-> {
-> 	struct mgmt_pending_cmd *cmd;
-> @@ -5791,6 +5825,13 @@ static int remove_device(struct sock *sk, struct hci_dev *hdev,
-> 			err = hci_bdaddr_list_del(&hdev->whitelist,
-> 						  &cp->addr.bdaddr,
-> 						  cp->addr.type);
-> +
-> +			/* Don't check result since it either succeeds or device
-> +			 * wasn't there (not wakeable or invalid params as
-> +			 * covered by deleting from whitelist).
-> +			 */
-> +			hci_bdaddr_list_del(&hdev->wakeable, &cp->addr.bdaddr,
-> +					    cp->addr.type);
-> 			if (err) {
-> 				err = mgmt_cmd_complete(sk, hdev->id,
-> 							MGMT_OP_REMOVE_DEVICE,
-> @@ -6990,6 +7031,7 @@ static const struct hci_mgmt_handler mgmt_handlers[] = {
-> 	{ set_phy_configuration,   MGMT_SET_PHY_CONFIGURATION_SIZE },
-> 	{ set_blocked_keys,	   MGMT_OP_SET_BLOCKED_KEYS_SIZE,
-> 						HCI_MGMT_VAR_LEN },
-> +	{ set_wake_capable,	   MGMT_SET_WAKE_CAPABLE_SIZE },
-> };
-> 
-
-Regards
-
-Marcel
-
+Also, could you please make sure to CC me to future EFA patches?
