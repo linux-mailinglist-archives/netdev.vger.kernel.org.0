@@ -2,75 +2,98 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 5A2C7143645
-	for <lists+netdev@lfdr.de>; Tue, 21 Jan 2020 05:41:08 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 652D714365E
+	for <lists+netdev@lfdr.de>; Tue, 21 Jan 2020 05:54:45 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728708AbgAUElC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 20 Jan 2020 23:41:02 -0500
-Received: from mail-io1-f71.google.com ([209.85.166.71]:55981 "EHLO
-        mail-io1-f71.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727144AbgAUElB (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 20 Jan 2020 23:41:01 -0500
-Received: by mail-io1-f71.google.com with SMTP id z21so943953iob.22
-        for <netdev@vger.kernel.org>; Mon, 20 Jan 2020 20:41:01 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:date:in-reply-to:message-id:subject
-         :from:to;
-        bh=NCHvuKVSBxRHeizGAyp94YLEyZNHqgNg1esxuxlJg/o=;
-        b=UrkTI2zK1xLxpp/qV9HsPPodMllR1VtRueL7Bw3x4khPltj59XoWmUn2MDAWlDt5J3
-         sRe5heubX73yBTyO3a34G/C9hfV4eMFzV80lhkmOZLpeokkAFwJ0lk7Wd3Ub0KPKpJvn
-         D+fS3nADJhCo4qotU7dTf8QawCp122n/WeILLhfsXgYQFCGgBb4SNYtuMZWEZnR1HKYZ
-         vlkI8kLE6k3Uwg2mc7i8LlUFX6hHnVkxldqQPVFQ8GmuQisgU/ocVI0QBTe3LlxN/l7w
-         LKZ9+BFq2FtogR/os3ec/1n7uD84F0gRNPURVAWu2mZa2PGZ3fqj0nXGMeBK6H8W8Qhg
-         YDdQ==
-X-Gm-Message-State: APjAAAXjbV7BAS9TI/gOHZoX5fpnNBS5lYVP79OU9g4ViLsiJej5/XCl
-        VcAgpSykgRkmvFhqbnrjYZWzewHt5B2OxeSVAHiZQZlKWu4r
-X-Google-Smtp-Source: APXvYqzJrudOM5ZqIhdp6/vUqAJPKgAZHJimMJnIa4tHcx71IDDXqV6DGIP5tIwdhQNRHsKr47nmu6rr4NtsU6zWdZOvYEY4ROX2
+        id S1728733AbgAUEyo (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 20 Jan 2020 23:54:44 -0500
+Received: from mail.kernel.org ([198.145.29.99]:59838 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1728665AbgAUEyo (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 20 Jan 2020 23:54:44 -0500
+Received: from paulmck-ThinkPad-P72.home (50-39-105-78.bvtn.or.frontiernet.net [50.39.105.78])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 247BD24653;
+        Tue, 21 Jan 2020 04:54:43 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1579582483;
+        bh=YQ38mVpjQZHpusPeDpF8uz55Se31rHxLJgTzd+LPI4k=;
+        h=Date:From:To:Cc:Subject:Reply-To:References:In-Reply-To:From;
+        b=UFYnZfeXIVCE7WvV0ESV5me39RbySqfd+AG4s0SLSYnocI8qhKCe9TaEttgLla/FP
+         C5/ykxYVixrA9nWN6/0QG/vbADyj7+o8jxhRloY4beVoTF7NExZ0DeBhwrF0sSLsdn
+         4kLvfK7qvUIoeNLTYPhY1HctNw4H7BUQuOGNf0M4=
+Received: by paulmck-ThinkPad-P72.home (Postfix, from userid 1000)
+        id F3C443520AE0; Mon, 20 Jan 2020 20:54:42 -0800 (PST)
+Date:   Mon, 20 Jan 2020 20:54:42 -0800
+From:   "Paul E. McKenney" <paulmck@kernel.org>
+To:     Alexei Starovoitov <ast@kernel.org>
+Cc:     davem@davemloft.net, daniel@iogearbox.net, jannh@google.com,
+        netdev@vger.kernel.org, bpf@vger.kernel.org, kernel-team@fb.com
+Subject: Re: [PATCH bpf-next] bpf: Fix trampoline usage in preempt
+Message-ID: <20200121045442.GN2935@paulmck-ThinkPad-P72>
+Reply-To: paulmck@kernel.org
+References: <20200121032231.3292185-1-ast@kernel.org>
 MIME-Version: 1.0
-X-Received: by 2002:a05:6e02:4d2:: with SMTP id f18mr2062010ils.54.1579581661230;
- Mon, 20 Jan 2020 20:41:01 -0800 (PST)
-Date:   Mon, 20 Jan 2020 20:41:01 -0800
-In-Reply-To: <000000000000bb0378059c865fdf@google.com>
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <000000000000cfbeb5059c9f036d@google.com>
-Subject: Re: KASAN: use-after-free Read in bitmap_ip_destroy
-From:   syzbot <syzbot+8b5f151de2f35100bbc5@syzkaller.appspotmail.com>
-To:     a@unstable.cc, b.a.t.m.a.n@lists.open-mesh.org,
-        coreteam@netfilter.org, davem@davemloft.net,
-        florent.fourcot@wifirst.fr, fw@strlen.de, jeremy@azazel.net,
-        johannes.berg@intel.com, kadlec@netfilter.org,
-        linux-kernel@vger.kernel.org, lipeng321@huawei.com,
-        mareklindner@neomailbox.ch, netdev@vger.kernel.org,
-        netfilter-devel@vger.kernel.org, pablo@netfilter.org,
-        sw@simonwunderlich.de, syzkaller-bugs@googlegroups.com,
-        tanhuazhong@huawei.com
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20200121032231.3292185-1-ast@kernel.org>
+User-Agent: Mutt/1.9.4 (2018-02-28)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-syzbot has bisected this bug to:
+On Mon, Jan 20, 2020 at 07:22:31PM -0800, Alexei Starovoitov wrote:
+> Though the second half of trampoline page is unused a task could be
+> preempted in the middle of the first half of trampoline and two
+> updates to trampoline would change the code from underneath the
+> preempted task. Hence wait for tasks to voluntarily schedule or go
+> to userspace.
+> Add similar wait before freeing the trampoline.
+> 
+> Fixes: fec56f5890d9 ("bpf: Introduce BPF trampoline")
+> Reported-by: Jann Horn <jannh@google.com>
+> Signed-off-by: Alexei Starovoitov <ast@kernel.org>
+> ---
+>  kernel/bpf/trampoline.c | 10 ++++++++++
+>  1 file changed, 10 insertions(+)
+> 
+> diff --git a/kernel/bpf/trampoline.c b/kernel/bpf/trampoline.c
+> index 79a04417050d..7657ede7aee2 100644
+> --- a/kernel/bpf/trampoline.c
+> +++ b/kernel/bpf/trampoline.c
+> @@ -160,6 +160,14 @@ static int bpf_trampoline_update(struct bpf_trampoline *tr)
+>  	if (fexit_cnt)
+>  		flags = BPF_TRAMP_F_CALL_ORIG | BPF_TRAMP_F_SKIP_FRAME;
+>  
+> +	/* Though the second half of trampoline page is unused a task could be
+> +	 * preempted in the middle of the first half of trampoline and two
+> +	 * updates to trampoline would change the code from underneath the
+> +	 * preempted task. Hence wait for tasks to voluntarily schedule or go
+> +	 * to userspace.
+> +	 */
+> +	synchronize_rcu_tasks();
 
-commit 354d0fab649d47045517cf7cae03d653a4dcb3b8
-Author: Peng Li <lipeng321@huawei.com>
-Date:   Thu Jul 4 14:04:26 2019 +0000
+So in this case, although the trampoline is not freed, it is reused.
+And we need to clear everyone off of the trampoline before reusing it.
 
-    net: hns3: add default value for tc_size and tc_offset
+If this states the situation correctly:
 
-bisection log:  https://syzkaller.appspot.com/x/bisect.txt?x=15cc0685e00000
-start commit:   8f8972a3 Merge tag 'mtd/fixes-for-5.5-rc7' of git://git.ke..
-git tree:       upstream
-final crash:    https://syzkaller.appspot.com/x/report.txt?x=17cc0685e00000
-console output: https://syzkaller.appspot.com/x/log.txt?x=13cc0685e00000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=cfbb8fa33f49f9f3
-dashboard link: https://syzkaller.appspot.com/bug?extid=8b5f151de2f35100bbc5
-syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=12e22559e00000
-C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=16056faee00000
+Acked-by: Paul E. McKenney <paulmck@kernel.org>
 
-Reported-by: syzbot+8b5f151de2f35100bbc5@syzkaller.appspotmail.com
-Fixes: 354d0fab649d ("net: hns3: add default value for tc_size and tc_offset")
-
-For information about bisection process see: https://goo.gl/tpsmEJ#bisection
+>  	err = arch_prepare_bpf_trampoline(new_image, new_image + PAGE_SIZE / 2,
+>  					  &tr->func.model, flags,
+>  					  fentry, fentry_cnt,
+> @@ -251,6 +259,8 @@ void bpf_trampoline_put(struct bpf_trampoline *tr)
+>  		goto out;
+>  	if (WARN_ON_ONCE(!hlist_empty(&tr->progs_hlist[BPF_TRAMP_FEXIT])))
+>  		goto out;
+> +	/* wait for tasks to get out of trampoline before freeing it */
+> +	synchronize_rcu_tasks();
+>  	bpf_jit_free_exec(tr->image);
+>  	hlist_del(&tr->hlist);
+>  	kfree(tr);
+> -- 
+> 2.23.0
+> 
