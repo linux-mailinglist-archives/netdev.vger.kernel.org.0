@@ -2,92 +2,198 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 31BDD143DF2
-	for <lists+netdev@lfdr.de>; Tue, 21 Jan 2020 14:23:03 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C449C143DFB
+	for <lists+netdev@lfdr.de>; Tue, 21 Jan 2020 14:26:26 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729207AbgAUNWs (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 21 Jan 2020 08:22:48 -0500
-Received: from mail-pj1-f67.google.com ([209.85.216.67]:50985 "EHLO
-        mail-pj1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725890AbgAUNWr (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 21 Jan 2020 08:22:47 -0500
-Received: by mail-pj1-f67.google.com with SMTP id r67so1373028pjb.0
-        for <netdev@vger.kernel.org>; Tue, 21 Jan 2020 05:22:47 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=1BpKrcBMrBJdvjjGHMme/i3fw0kA5b5DyyxFveEYRhQ=;
-        b=mcrdwq4rhJPr/vcRu0arhkx91DKk1Wg/wWGiNQYoPj/CKZUdolxZpKi+Pe/FZ1yLhI
-         Tx06hmm04CB5xz7fkGTY48pGSG8wkyG163mLN14fEqakz5gigaBcwUiJcwXpKwjAorQd
-         +fjYWzI98uiM9uBPtYIp8R1RWGHABUoMfLonVoprq//QxRSdLuNJEz1ekxOAeqgsNW9t
-         gJG1hb9ruSeFWrY/hfKCib/1AtwItCKwoM9cyPHcQsFlXha5gzUNKxKlRkd0HrjgVFN9
-         IXWOZziYCT+RaiXN5TR4z8O6koRJRYAZuQSooUJIqAeTrQf3394A0c80Ykfa64mPPRaT
-         m4cw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references;
-        bh=1BpKrcBMrBJdvjjGHMme/i3fw0kA5b5DyyxFveEYRhQ=;
-        b=QuR+/REqLqPTEFiS62S8lsSgkShmwOt0h4pzrOTjGbqooZqXyJFWnUquAxFyphkUfk
-         cI0Xqg4dbuZ4t93Kcor2l8Rpf+XYESofI/ilMFukmKImvw6vIEHXZCrGk7yH3a7Ws/P7
-         qU+vNeh9gcyLdcqsZs/RcXUUCwDkCRBuHL629bSCc9WjPY1JLn4fCq92F0GkeNHOYqmI
-         Yf4YLqdjvfyxh+ptjQH1Q0BMYopi2/5gygtD7juumkF/7/Yk/kd+fquq7DVXZgoagjFo
-         bWFAIbePcxy8huzYI2sZhFMvazeBp26Ul/uCwr4mgqqzayNSFGO0gfb/A+4AoLXk58rp
-         S6KQ==
-X-Gm-Message-State: APjAAAXwt37SmYjj7BNpIjfdnZQJ271nAOHeyrTsZOlY72kkrOPQsnFR
-        h8i7MFnoj5KpVzROj7e6UUnAWgcbCT8=
-X-Google-Smtp-Source: APXvYqzS7n39GIvmPULe5SAGb69V6BrButPDhbAGd5/0L4+Je5Q8Arcbb4XP+mMok04blLTDmDkpTA==
-X-Received: by 2002:a17:902:9a42:: with SMTP id x2mr5710560plv.194.1579612966684;
-        Tue, 21 Jan 2020 05:22:46 -0800 (PST)
-Received: from machine421.marvell.com ([115.113.156.2])
-        by smtp.googlemail.com with ESMTPSA id y21sm43328076pfm.136.2020.01.21.05.22.44
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-SHA bits=128/128);
-        Tue, 21 Jan 2020 05:22:46 -0800 (PST)
-From:   sunil.kovvuri@gmail.com
-To:     netdev@vger.kernel.org
-Cc:     davem@davemloft.net, kubakici@wp.pl, mkubecek@suse.cz,
-        Sunil Goutham <sgoutham@marvell.com>
-Subject: [PATCH v4 17/17] MAINTAINERS: Add entry for Marvell OcteonTX2 Physical Function driver
-Date:   Tue, 21 Jan 2020 18:51:51 +0530
-Message-Id: <1579612911-24497-18-git-send-email-sunil.kovvuri@gmail.com>
-X-Mailer: git-send-email 2.7.4
-In-Reply-To: <1579612911-24497-1-git-send-email-sunil.kovvuri@gmail.com>
-References: <1579612911-24497-1-git-send-email-sunil.kovvuri@gmail.com>
+        id S1728733AbgAUN0Z (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 21 Jan 2020 08:26:25 -0500
+Received: from correo.us.es ([193.147.175.20]:57608 "EHLO mail.us.es"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1727817AbgAUN0Y (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 21 Jan 2020 08:26:24 -0500
+Received: from antivirus1-rhel7.int (unknown [192.168.2.11])
+        by mail.us.es (Postfix) with ESMTP id 39D4BC5154
+        for <netdev@vger.kernel.org>; Tue, 21 Jan 2020 14:26:23 +0100 (CET)
+Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
+        by antivirus1-rhel7.int (Postfix) with ESMTP id 25F35DA7A2
+        for <netdev@vger.kernel.org>; Tue, 21 Jan 2020 14:26:23 +0100 (CET)
+Received: by antivirus1-rhel7.int (Postfix, from userid 99)
+        id 1A814DA79E; Tue, 21 Jan 2020 14:26:23 +0100 (CET)
+X-Spam-Checker-Version: SpamAssassin 3.4.1 (2015-04-28) on antivirus1-rhel7.int
+X-Spam-Level: 
+X-Spam-Status: No, score=-108.2 required=7.5 tests=ALL_TRUSTED,BAYES_50,
+        SMTPAUTH_US2,URIBL_BLOCKED,USER_IN_WHITELIST autolearn=disabled version=3.4.1
+Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
+        by antivirus1-rhel7.int (Postfix) with ESMTP id 128D7DA718;
+        Tue, 21 Jan 2020 14:26:19 +0100 (CET)
+Received: from 192.168.1.97 (192.168.1.97)
+ by antivirus1-rhel7.int (F-Secure/fsigk_smtp/550/antivirus1-rhel7.int);
+ Tue, 21 Jan 2020 14:26:19 +0100 (CET)
+X-Virus-Status: clean(F-Secure/fsigk_smtp/550/antivirus1-rhel7.int)
+Received: from us.es (unknown [90.77.255.23])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        (Authenticated sender: 1984lsi)
+        by entrada.int (Postfix) with ESMTPSA id E95B042EE38E;
+        Tue, 21 Jan 2020 14:26:18 +0100 (CET)
+Date:   Tue, 21 Jan 2020 14:26:18 +0100
+X-SMTPAUTHUS: auth mail.us.es
+From:   Pablo Neira Ayuso <pablo@netfilter.org>
+To:     Florian Westphal <fw@strlen.de>
+Cc:     netfilter-devel@vger.kernel.org, netdev@vger.kernel.org,
+        syzkaller-bugs@googlegroups.com,
+        syzbot+156a04714799b1d480bc@syzkaller.appspotmail.com
+Subject: Re: [PATCH nf] netfilter: nf_tables: check for valid chain type
+ pointer before dereference
+Message-ID: <20200121132618.aykyybudttbxiusx@salvia>
+References: <00000000000074ed27059c33dedc@google.com>
+ <20200116211109.9119-1-fw@strlen.de>
+ <20200118203057.6stoe6axtyoxfcxz@salvia>
+MIME-Version: 1.0
+Content-Type: multipart/mixed; boundary="eyqpjkw3v7d3ikxx"
+Content-Disposition: inline
+In-Reply-To: <20200118203057.6stoe6axtyoxfcxz@salvia>
+User-Agent: NeoMutt/20170113 (1.7.2)
+X-Virus-Scanned: ClamAV using ClamSMTP
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Sunil Goutham <sgoutham@marvell.com>
 
-Added maintainers entry for Marvell OcteonTX2 SOC's physical
-function NIC driver.
+--eyqpjkw3v7d3ikxx
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 
-Signed-off-by: Sunil Goutham <sgoutham@marvell.com>
----
- MAINTAINERS | 9 +++++++++
- 1 file changed, 9 insertions(+)
+On Sat, Jan 18, 2020 at 09:30:57PM +0100, Pablo Neira Ayuso wrote:
+> On Thu, Jan 16, 2020 at 10:11:09PM +0100, Florian Westphal wrote:
+> > Its possible to create tables in a family that isn't supported/known.
+> > Then, when adding a base chain, the table pointer can be NULL.
+> > 
+> > This gets us a NULL ptr dereference in nf_tables_addchain().
+> > 
+> > Fixes: baae3e62f31618 ("netfilter: nf_tables: fix chain type module reference handling")
+> > Reported-by: syzbot+156a04714799b1d480bc@syzkaller.appspotmail.com
+> > Signed-off-by: Florian Westphal <fw@strlen.de>
+> > ---
+> >  net/netfilter/nf_tables_api.c | 8 ++++++++
+> >  1 file changed, 8 insertions(+)
+> > 
+> > diff --git a/net/netfilter/nf_tables_api.c b/net/netfilter/nf_tables_api.c
+> > index 65f51a2e9c2a..e8976128cdb1 100644
+> > --- a/net/netfilter/nf_tables_api.c
+> > +++ b/net/netfilter/nf_tables_api.c
+> > @@ -953,6 +953,9 @@ static int nf_tables_newtable(struct net *net, struct sock *nlsk,
+> >  	struct nft_ctx ctx;
+> >  	int err;
+> >  
+> > +	if (family >= NFPROTO_NUMPROTO)
+> > +		return -EAFNOSUPPORT;
+> > +
+> >  	lockdep_assert_held(&net->nft.commit_mutex);
+> >  	attr = nla[NFTA_TABLE_NAME];
+> >  	table = nft_table_lookup(net, attr, family, genmask);
+> > @@ -1765,6 +1768,9 @@ static int nft_chain_parse_hook(struct net *net,
+> >  	    ha[NFTA_HOOK_PRIORITY] == NULL)
+> >  		return -EINVAL;
+> >  
+> > +	if (family >= NFPROTO_NUMPROTO)
+> > +		return -EAFNOSUPPORT;
+> > +
+> >  	hook->num = ntohl(nla_get_be32(ha[NFTA_HOOK_HOOKNUM]));
+> >  	hook->priority = ntohl(nla_get_be32(ha[NFTA_HOOK_PRIORITY]));
+> >  
+> > @@ -1774,6 +1780,8 @@ static int nft_chain_parse_hook(struct net *net,
+> >  						   family, autoload);
+> >  		if (IS_ERR(type))
+> >  			return PTR_ERR(type);
+> > +	} else if (!type) {
+> > +		return -EOPNOTSUPP;
+> 
+> I think this check should be enough.
+> 
+> I mean, NFPROTO_NUMPROTO still allows for creating tables for families
+> that don't exist (<= NFPROTO_NUMPROTO) and why bother on creating such
+> table. As long as such table does not crash the kernel, I think it's
+> fine. No changes can be attached anymore anyway.
+> 
+> Otherwise, if a helper function to check for the families that are
+> really supported could be another alternative. But not sure it is
+> worth?
 
-diff --git a/MAINTAINERS b/MAINTAINERS
-index fdbb875..51d7876 100644
---- a/MAINTAINERS
-+++ b/MAINTAINERS
-@@ -10002,6 +10002,15 @@ S:	Supported
- F:	drivers/net/ethernet/marvell/octeontx2/af/
- F:	Documentation/networking/device_drivers/marvell/octeontx2.rst
+Not worth.
+
+Probably this patch instead? Just make sure that access to the chain
+type array is safe, no direct access to chain_type[][] anymore.
+
+This includes the check for the default type too, since it cannot be
+assume to always have a filter chain for unsupported families.
+
+Thanks for explaining.
+
+--eyqpjkw3v7d3ikxx
+Content-Type: text/x-diff; charset=us-ascii
+Content-Disposition: attachment; filename="x.patch"
+
+diff --git a/net/netfilter/nf_tables_api.c b/net/netfilter/nf_tables_api.c
+index 65f51a2e9c2a..4aa01c1253b1 100644
+--- a/net/netfilter/nf_tables_api.c
++++ b/net/netfilter/nf_tables_api.c
+@@ -553,14 +553,27 @@ static inline u64 nf_tables_alloc_handle(struct nft_table *table)
+ static const struct nft_chain_type *chain_type[NFPROTO_NUMPROTO][NFT_CHAIN_T_MAX];
  
-+MARVELL OCTEONTX2 PHYSICAL FUNCTION DRIVER
-+M:	Sunil Goutham <sgoutham@marvell.com>
-+M:	Geetha sowjanya <gakula@marvell.com>
-+M:	Subbaraya Sundeep <sbhatta@marvell.com>
-+M:	hariprasad <hkelam@marvell.com>
-+L:	netdev@vger.kernel.org
-+S:	Supported
-+F:	drivers/net/ethernet/marvell/octeontx2/nic/
+ static const struct nft_chain_type *
++__nft_chain_type_get(u8 family, enum nft_chain_types type)
++{
++	if (family >= NFPROTO_NUMPROTO ||
++	    type >= NFT_CHAIN_T_MAX)
++		return NULL;
 +
- MATROX FRAMEBUFFER DRIVER
- L:	linux-fbdev@vger.kernel.org
- S:	Orphan
--- 
-2.7.4
++	return chain_type[family][type];
++}
++
++static const struct nft_chain_type *
+ __nf_tables_chain_type_lookup(const struct nlattr *nla, u8 family)
+ {
++	const struct nft_chain_type *type;
+ 	int i;
+ 
+ 	for (i = 0; i < NFT_CHAIN_T_MAX; i++) {
+-		if (chain_type[family][i] != NULL &&
+-		    !nla_strcmp(nla, chain_type[family][i]->name))
+-			return chain_type[family][i];
++		type = __nft_chain_type_get(family, i);
++		if (!type)
++			continue;
++		if (!nla_strcmp(nla, type->name))
++			return type;
+ 	}
+ 	return NULL;
+ }
+@@ -1162,11 +1175,8 @@ static void nf_tables_table_destroy(struct nft_ctx *ctx)
+ 
+ void nft_register_chain_type(const struct nft_chain_type *ctype)
+ {
+-	if (WARN_ON(ctype->family >= NFPROTO_NUMPROTO))
+-		return;
+-
+ 	nfnl_lock(NFNL_SUBSYS_NFTABLES);
+-	if (WARN_ON(chain_type[ctype->family][ctype->type] != NULL)) {
++	if (WARN_ON(__nft_chain_type_get(ctype->family, ctype->type))) {
+ 		nfnl_unlock(NFNL_SUBSYS_NFTABLES);
+ 		return;
+ 	}
+@@ -1768,7 +1778,10 @@ static int nft_chain_parse_hook(struct net *net,
+ 	hook->num = ntohl(nla_get_be32(ha[NFTA_HOOK_HOOKNUM]));
+ 	hook->priority = ntohl(nla_get_be32(ha[NFTA_HOOK_PRIORITY]));
+ 
+-	type = chain_type[family][NFT_CHAIN_T_DEFAULT];
++	type = __nft_chain_type_get(family, NFT_CHAIN_T_DEFAULT);
++	if (!type)
++		return -EOPNOTSUPP;
++
+ 	if (nla[NFTA_CHAIN_TYPE]) {
+ 		type = nf_tables_chain_type_lookup(net, nla[NFTA_CHAIN_TYPE],
+ 						   family, autoload);
 
+--eyqpjkw3v7d3ikxx--
