@@ -2,82 +2,153 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 6A54F143DD3
-	for <lists+netdev@lfdr.de>; Tue, 21 Jan 2020 14:19:41 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B299F143DDF
+	for <lists+netdev@lfdr.de>; Tue, 21 Jan 2020 14:22:03 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728811AbgAUNTe convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Tue, 21 Jan 2020 08:19:34 -0500
-Received: from rtits2.realtek.com ([211.75.126.72]:55649 "EHLO
-        rtits2.realtek.com.tw" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725890AbgAUNTe (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 21 Jan 2020 08:19:34 -0500
-Authenticated-By: 
-X-SpamFilter-By: BOX Solutions SpamTrap 5.62 with qID 00LDJKrP014884, This message is accepted by code: ctloc85258
-Received: from mail.realtek.com (RTITCAS11.realtek.com.tw[172.21.6.12])
-        by rtits2.realtek.com.tw (8.15.2/2.57/5.78) with ESMTPS id 00LDJKrP014884
-        (version=TLSv1.2 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Tue, 21 Jan 2020 21:19:21 +0800
-Received: from RTEXDAG01.realtek.com.tw (172.21.6.100) by
- RTITCAS11.realtek.com.tw (172.21.6.12) with Microsoft SMTP Server (TLS) id
- 14.3.468.0; Tue, 21 Jan 2020 21:19:20 +0800
-Received: from RTEXMB04.realtek.com.tw (172.21.6.97) by
- RTEXDAG01.realtek.com.tw (172.21.6.100) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.1779.2; Tue, 21 Jan 2020 21:19:20 +0800
-Received: from RTEXMB04.realtek.com.tw ([fe80::d9c5:a079:495e:b999]) by
- RTEXMB04.realtek.com.tw ([fe80::d9c5:a079:495e:b999%6]) with mapi id
- 15.01.1779.005; Tue, 21 Jan 2020 21:19:20 +0800
-From:   Hayes Wang <hayeswang@realtek.com>
-To:     Joe Perches <joe@perches.com>, David Miller <davem@davemloft.net>
-CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        nic_swsd <nic_swsd@realtek.com>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "linux-usb@vger.kernel.org" <linux-usb@vger.kernel.org>,
-        "pmalani@chromium.org" <pmalani@chromium.org>,
-        "grundler@chromium.org" <grundler@chromium.org>
-Subject: RE: [PATCH net 2/9] r8152: reset flow control patch when linking on for RTL8153B
-Thread-Topic: [PATCH net 2/9] r8152: reset flow control patch when linking on
- for RTL8153B
-Thread-Index: AQHV0FhJcCUlEIvyF0ab5Vs8olnDhKf0jRWAgAAB4YCAAInrgA==
-Date:   Tue, 21 Jan 2020 13:19:19 +0000
-Message-ID: <49ab41a04ecf40c3baeed36746166a98@realtek.com>
-References: <1394712342-15778-338-Taiwan-albertk@realtek.com>
-         <1394712342-15778-340-Taiwan-albertk@realtek.com>
-         <20200121.135439.1619270282552230019.davem@davemloft.net>
- <aba420a3be9272236795dbc14380991bbf72c657.camel@perches.com>
-In-Reply-To: <aba420a3be9272236795dbc14380991bbf72c657.camel@perches.com>
-Accept-Language: zh-TW, en-US
-Content-Language: zh-TW
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-originating-ip: [172.21.177.214]
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 8BIT
-MIME-Version: 1.0
+        id S1728792AbgAUNWA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 21 Jan 2020 08:22:00 -0500
+Received: from mail-pl1-f173.google.com ([209.85.214.173]:43401 "EHLO
+        mail-pl1-f173.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725890AbgAUNWA (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 21 Jan 2020 08:22:00 -0500
+Received: by mail-pl1-f173.google.com with SMTP id p27so1326854pli.10
+        for <netdev@vger.kernel.org>; Tue, 21 Jan 2020 05:21:59 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id;
+        bh=uNqCklCBBHt/cbCcuE8LHGMATNwhUO3ifx1cDpfnPg8=;
+        b=bY6/A16X53I9cMN9POTrY3CY1IxYiFKHis6iwKyXllJjOINREmfCS9Ptp8yWngfyuW
+         4ceLIJRyKeCGk0ApeqW5aDkv+pU0fN3fW3VamLKUCSj6tNpyoHworKAhDqK7MQ+5+XOM
+         hrFq3yGyIDCx5Tnifsc2bjL09787/mGNs8plzPoZJyQvLaBPVtW4uYflydDOzOpi6VOy
+         09CHQgUC2WlskiXYFiamCwXAaKMNYp8fv6ChSdW8ru9v+MpLwZxZdTHju5/pxNbJ39iE
+         Hauj2MvS3AhlyF9N7tNrUEtHJ6MBjMRsMf8No6lN/Iw3mrPJzvulN1QHwMthAGnC1Bjd
+         BeZg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=uNqCklCBBHt/cbCcuE8LHGMATNwhUO3ifx1cDpfnPg8=;
+        b=TX3YVrov2KD6yQoyq9LoAIVSyvEJTJUeLOao1GZds287RDwwFIHQDXJhnbianuJC5/
+         qLyvlqe/doeV8uDFtIgtUdxtYOltDRUoOZ3pb2czFhGOIkfr6HE92uiGjVqaUhGgn7RK
+         4MNlquorJThgWjkQ/+HmqcTc0xAg/T9UOlmFd9+6IfzF3Sb2Hvel95z7pov6ea97TuGS
+         NA1tAyHDvxhgF9zcstf2oJFSs2kknDixqH/X/oi9LeRsVe2+NwCaDzQSDLFYEtA7T/Zr
+         DxKCeQqoDYZox2xPnY34NhyplkjfOzvM2UeXeBWoHvcz1mlGxLM1aPmAAyO4S1lI5EjT
+         bPkA==
+X-Gm-Message-State: APjAAAUV3zbNMtt/7P4swCFhENtfuGeLEObCYLz+klSWO65VEFkw0GOr
+        3+u+/gpQCRbiZXMDcNg+kQC6dBXopPw=
+X-Google-Smtp-Source: APXvYqyuCWe6VaQjHsNH5yR/qIDKUZ9uc+bN+iEIB/nWSnIGUJhXsiaDLPSXqvWOC2Lmtur4qPgzeQ==
+X-Received: by 2002:a17:902:7d95:: with SMTP id a21mr5518644plm.198.1579612918777;
+        Tue, 21 Jan 2020 05:21:58 -0800 (PST)
+Received: from machine421.marvell.com ([115.113.156.2])
+        by smtp.googlemail.com with ESMTPSA id y21sm43328076pfm.136.2020.01.21.05.21.56
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-SHA bits=128/128);
+        Tue, 21 Jan 2020 05:21:58 -0800 (PST)
+From:   sunil.kovvuri@gmail.com
+To:     netdev@vger.kernel.org
+Cc:     davem@davemloft.net, kubakici@wp.pl, mkubecek@suse.cz,
+        Sunil Goutham <sgoutham@marvell.com>
+Subject: [PATCH v4 00/17] octeontx2-pf: Add network driver for physical function
+Date:   Tue, 21 Jan 2020 18:51:34 +0530
+Message-Id: <1579612911-24497-1-git-send-email-sunil.kovvuri@gmail.com>
+X-Mailer: git-send-email 2.7.4
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Joe Perches [mailto:joe@perches.com]
-> Sent: Tuesday, January 21, 2020 9:01 PM
-> To: David Miller; Hayes Wang
-[...]
-> > >  static int rtl8153_enable(struct r8152 *tp)
-> > >  {
-> > > +     u32 ocp_data;
-> > >       if (test_bit(RTL8152_UNPLUG, &tp->flags))
-> > >               return -ENODEV;
-> > >
-> >
-> > Please put an empty line after the local variable declarations.
-> 
-> Local scoping is generally better.
-> 
-> Perhaps declare ocp_data inside the if branch
-> where it's used.
+From: Sunil Goutham <sgoutham@marvell.com>
 
-OK. I would move it.
+OcteonTX2 SOC's resource virtualization unit (RVU) supports
+multiple physical and virtual functions. Each of the PF's
+functionality is determined by what kind of resources are attached
+to it. If NPA and NIX blocks are attached to a PF it can function
+as a highly capable network device.
 
-Best Regards,
-Hayes
+This patch series add a network driver for the PF. Initial set of
+patches adds mailbox communication with admin function (RVU AF)
+and configuration of queues. Followed by Rx and tx pkts NAPI
+handler and then support for HW offloads like RSS, TSO, Rxhash etc.
+Ethtool support to extract stats, config RSS, queue sizes, queue
+count is also added.
+
+Added documentation to give a high level overview of HW and
+different drivers which will be upstreamed and how they interact.
+
+Changes from v3:
+   * Fixed receive side scaling reinitialization during interface
+     DOWN and UP to retain user configured settings, if any.
+   * Removed driver version from ethtool.
+   * Fixed otx2_set_rss_hash_opts() to return error incase RSS is
+     not enabled.
+     - Sugested by Jakub Kicinski
+
+Changes from v2:
+   * Removed frames, bytes, dropped packet stats from ethtool to avoid
+     duplication of same stats in netlink and ethtool.
+     - Sugested by Jakub Kicinski
+   * Removed number of channels and ringparam upper bound checking
+     in ethtool support.
+   * Fixed RSS hash option setting to reject unsupported config.
+     - Suggested by Michal Kubecek
+
+Changes from v1:
+   * Made driver dependent on 64bit, to fix build errors related to
+     non availability of writeq/readq APIs for 32bit platforms.
+     - Reported by kbuild test robot
+
+Christina Jacob (1):
+  octeontx2-pf: Add basic ethtool support
+
+Geetha sowjanya (2):
+  octeontx2-pf: Error handling support
+  octeontx2-pf: Add ndo_get_stats64
+
+Linu Cherian (1):
+  octeontx2-pf: Register and handle link notifications
+
+Sunil Goutham (13):
+  octeontx2-pf: Add Marvell OcteonTX2 NIC driver
+  octeontx2-pf: Mailbox communication with AF
+  octeontx2-pf: Attach NIX and NPA block LFs
+  octeontx2-pf: Initialize and config queues
+  octeontx2-pf: Setup interrupts and NAPI handler
+  octeontx2-pf: Receive packet handling support
+  octeontx2-pf: Add packet transmission support
+  octeontx2-pf: MTU, MAC and RX mode config support
+  octeontx2-pf: Receive side scaling support
+  octeontx2-pf: TCP segmentation offload support
+  octeontx2-pf: ethtool RSS config support
+  Documentation: net: octeontx2: Add RVU HW and drivers overview
+  MAINTAINERS: Add entry for Marvell OcteonTX2 Physical Function driver
+
+ Documentation/networking/device_drivers/index.rst  |    1 +
+ .../device_drivers/marvell/octeontx2.rst           |  159 +++
+ MAINTAINERS                                        |   10 +
+ drivers/net/ethernet/marvell/octeontx2/Kconfig     |    8 +
+ drivers/net/ethernet/marvell/octeontx2/Makefile    |    2 +
+ drivers/net/ethernet/marvell/octeontx2/af/common.h |    9 +-
+ drivers/net/ethernet/marvell/octeontx2/af/mbox.h   |    8 +-
+ .../net/ethernet/marvell/octeontx2/af/rvu_nix.c    |   17 +
+ .../net/ethernet/marvell/octeontx2/nic/Makefile    |   10 +
+ .../ethernet/marvell/octeontx2/nic/otx2_common.c   | 1416 ++++++++++++++++++++
+ .../ethernet/marvell/octeontx2/nic/otx2_common.h   |  615 +++++++++
+ .../ethernet/marvell/octeontx2/nic/otx2_ethtool.c  |  662 +++++++++
+ .../net/ethernet/marvell/octeontx2/nic/otx2_pf.c   | 1361 +++++++++++++++++++
+ .../net/ethernet/marvell/octeontx2/nic/otx2_reg.h  |  147 ++
+ .../ethernet/marvell/octeontx2/nic/otx2_struct.h   |  439 ++++++
+ .../net/ethernet/marvell/octeontx2/nic/otx2_txrx.c |  863 ++++++++++++
+ .../net/ethernet/marvell/octeontx2/nic/otx2_txrx.h |  162 +++
+ 17 files changed, 5886 insertions(+), 3 deletions(-)
+ create mode 100644 Documentation/networking/device_drivers/marvell/octeontx2.rst
+ create mode 100644 drivers/net/ethernet/marvell/octeontx2/nic/Makefile
+ create mode 100644 drivers/net/ethernet/marvell/octeontx2/nic/otx2_common.c
+ create mode 100644 drivers/net/ethernet/marvell/octeontx2/nic/otx2_common.h
+ create mode 100644 drivers/net/ethernet/marvell/octeontx2/nic/otx2_ethtool.c
+ create mode 100644 drivers/net/ethernet/marvell/octeontx2/nic/otx2_pf.c
+ create mode 100644 drivers/net/ethernet/marvell/octeontx2/nic/otx2_reg.h
+ create mode 100644 drivers/net/ethernet/marvell/octeontx2/nic/otx2_struct.h
+ create mode 100644 drivers/net/ethernet/marvell/octeontx2/nic/otx2_txrx.c
+ create mode 100644 drivers/net/ethernet/marvell/octeontx2/nic/otx2_txrx.h
+
+-- 
+2.7.4
+
