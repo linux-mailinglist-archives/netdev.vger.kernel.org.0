@@ -2,37 +2,38 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id ECC88144127
-	for <lists+netdev@lfdr.de>; Tue, 21 Jan 2020 17:00:53 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3A43B144131
+	for <lists+netdev@lfdr.de>; Tue, 21 Jan 2020 17:02:04 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729304AbgAUQAk (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 21 Jan 2020 11:00:40 -0500
-Received: from mail.kernel.org ([198.145.29.99]:41330 "EHLO mail.kernel.org"
+        id S1729127AbgAUQBC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 21 Jan 2020 11:01:02 -0500
+Received: from mail.kernel.org ([198.145.29.99]:41478 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728186AbgAUQAk (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 21 Jan 2020 11:00:40 -0500
+        id S1727817AbgAUQBC (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 21 Jan 2020 11:01:02 -0500
 Received: from cakuba (unknown [199.201.64.139])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 99794217F4;
-        Tue, 21 Jan 2020 16:00:39 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 372B321569;
+        Tue, 21 Jan 2020 16:01:01 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1579622439;
-        bh=A+SXT+e2sAcVF3d+bTKfQh+UyMSqSHGPJbWFrbz8m14=;
+        s=default; t=1579622461;
+        bh=3dbhCVeNtCuc8YQbYn1bmqDupP8Gx2N3OakjJc34Xsk=;
         h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=cUARjoCPCzQHmMTN/QRqlZylcFmTD1Ri9piffhzmrmcL2hvPAjJCQMtR7L4ANc/Gd
-         O9+5Q36fqADFwQFb8UdbJ49zptjZRHO1Dw0EoBEu9PG0EI1yya3BOB1j9JU2YBNVSV
-         7EGHJz6p1nuMTHwQTVxIuHe79ffA8Plx6aTeW8pM=
-Date:   Tue, 21 Jan 2020 08:00:38 -0800
+        b=i1teIZ/63aJPR1QxN5NbJUCzyrn1bGc5I1JL8DpaFLqZqV4M/8P+KBc/gPD/zR3gv
+         YklrMaJ79nglAd/RPT7LReElBzdYa2w4r4QBDxcpAHmJc+WTtgmXHLASu4S9BzEM3B
+         nqWKBV4kKX7UFKTsPM3AvsTiQ/SWB6/1+ce7H46k=
+Date:   Tue, 21 Jan 2020 08:00:58 -0800
 From:   Jakub Kicinski <kuba@kernel.org>
 To:     sunil.kovvuri@gmail.com
 Cc:     netdev@vger.kernel.org, davem@davemloft.net, mkubecek@suse.cz,
-        Sunil Goutham <sgoutham@marvell.com>
-Subject: Re: [PATCH v4 03/17] octeontx2-pf: Attach NIX and NPA block LFs
-Message-ID: <20200121080038.0fe6a819@cakuba>
-In-Reply-To: <1579612911-24497-4-git-send-email-sunil.kovvuri@gmail.com>
+        Sunil Goutham <sgoutham@marvell.com>,
+        Geetha sowjanya <gakula@marvell.com>
+Subject: Re: [PATCH v4 04/17] octeontx2-pf: Initialize and config queues
+Message-ID: <20200121080058.42b0c473@cakuba>
+In-Reply-To: <1579612911-24497-5-git-send-email-sunil.kovvuri@gmail.com>
 References: <1579612911-24497-1-git-send-email-sunil.kovvuri@gmail.com>
-        <1579612911-24497-4-git-send-email-sunil.kovvuri@gmail.com>
+        <1579612911-24497-5-git-send-email-sunil.kovvuri@gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
@@ -41,73 +42,41 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 21 Jan 2020 18:51:37 +0530, sunil.kovvuri@gmail.com wrote:
-> +int otx2_config_npa(struct otx2_nic *pfvf)
+On Tue, 21 Jan 2020 18:51:38 +0530, sunil.kovvuri@gmail.com wrote:
+> +dma_addr_t otx2_alloc_rbuf(struct otx2_nic *pfvf, struct otx2_pool *pool,
+> +			   gfp_t gfp)
 > +{
-> +	struct otx2_qset *qset = &pfvf->qset;
-> +	struct npa_lf_alloc_req  *npalf;
-> +	struct otx2_hw *hw = &pfvf->hw;
-> +	int aura_cnt, err;
+> +	dma_addr_t iova;
 > +
-> +	/* Pool - Stack of free buffer pointers
-> +	 * Aura - Alloc/frees pointers from/to pool for NIX DMA.
-> +	 */
-> +
-> +	if (!hw->pool_cnt)
-> +		return -EINVAL;
-> +
-> +	qset->pool = devm_kzalloc(pfvf->dev, sizeof(struct otx2_pool) *
-> +				  hw->pool_cnt, GFP_KERNEL);
-> +	if (!qset->pool)
-> +		return -ENOMEM;
-> +
-> +	/* Get memory to put this msg */
-> +	npalf = otx2_mbox_alloc_msg_npa_lf_alloc(&pfvf->mbox);
-> +	if (!npalf)
-> +		return -ENOMEM;
-> +
-> +	/* Set aura and pool counts */
-> +	npalf->nr_pools = hw->pool_cnt;
-> +	aura_cnt = ilog2(roundup_pow_of_two(hw->pool_cnt));
-> +	npalf->aura_sz = (aura_cnt >= ilog2(128)) ? (aura_cnt - 6) : 1;
-> +
-> +	err = otx2_sync_mbox_msg(&pfvf->mbox);
-> +	if (err)
-> +		return err;
-> +	return 0;
-
-return otx2_sync..
-
-directly
-
-> +}
-
-> +static int otx2_realloc_msix_vectors(struct otx2_nic *pf)
-> +{
-> +	struct otx2_hw *hw = &pf->hw;
-> +	int num_vec, err;
-> +
-> +	/* NPA interrupts are inot registered, so alloc only
-> +	 * upto NIX vector offset.
-> +	 */
-> +	num_vec = hw->nix_msixoff;
-> +#define NIX_LF_CINT_VEC_START			0x40
-> +	num_vec += NIX_LF_CINT_VEC_START + hw->max_queues;
-> +
-> +	otx2_disable_mbox_intr(pf);
-> +	pci_free_irq_vectors(hw->pdev);
-> +	pci_free_irq_vectors(hw->pdev);
-> +	err = pci_alloc_irq_vectors(hw->pdev, num_vec, num_vec, PCI_IRQ_MSIX);
-> +	if (err < 0) {
-> +		dev_err(pf->dev, "%s: Failed to realloc %d IRQ vectors\n",
-> +			__func__, num_vec);
-> +		return err;
+> +	/* Check if request can be accommodated in previous allocated page */
+> +	if (pool->page &&
+> +	    ((pool->page_offset + pool->rbsize) <= PAGE_SIZE)) {
+> +		pool->pageref++;
+> +		goto ret;
 > +	}
 > +
-> +	err = otx2_register_mbox_intr(pf, false);
-> +	if (err)
-> +		return err;
-> +	return 0;
+> +	otx2_get_page(pool);
+> +
+> +	/* Allocate a new page */
+> +	pool->page = alloc_pages(gfp | __GFP_COMP | __GFP_NOWARN,
+> +				 pool->rbpage_order);
+> +	if (unlikely(!pool->page))
+> +		return -ENOMEM;
+> +
+> +	pool->page_offset = 0;
+> +ret:
+> +	iova = (u64)otx2_dma_map_page(pfvf, pool->page, pool->page_offset,
+> +				      pool->rbsize, DMA_FROM_DEVICE);
+> +	if (!iova) {
+> +		if (!pool->page_offset)
+> +			__free_pages(pool->page, pool->rbpage_order);
+> +		pool->page = NULL;
+> +		return -ENOMEM;
+> +	}
+> +	pool->page_offset += pool->rbsize;
+> +	return iova;
 > +}
 
-ditto, please fix this everywhere in the submission
+You don't seem to be doing any page recycling if I'm reading this right.
+Can't you use the standard in-kernel page frag allocator
+(netdev_alloc_frag/napi_alloc_frag)?
