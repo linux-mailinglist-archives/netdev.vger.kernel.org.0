@@ -2,254 +2,108 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 53E6514428C
-	for <lists+netdev@lfdr.de>; Tue, 21 Jan 2020 17:54:30 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7EEA3144298
+	for <lists+netdev@lfdr.de>; Tue, 21 Jan 2020 17:57:49 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729081AbgAUQy2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 21 Jan 2020 11:54:28 -0500
-Received: from mail.kernel.org ([198.145.29.99]:60580 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726555AbgAUQy2 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 21 Jan 2020 11:54:28 -0500
-Received: from cakuba (unknown [199.201.64.139])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 7A06621569;
-        Tue, 21 Jan 2020 16:54:26 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1579625666;
-        bh=n988vk8kzQ+ii9jm1htwTiNDOSpllrsKLfIGi54T3Ww=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=fzWui9d//Os99tK6+r+WbunuVmA/ZGIRTpzh1lXzRkX+5YuAPWfISmRQSYYy9XZqz
-         9FmkuxCMpWaEDXxPha2UZaWuzYEPJC6svIjBWIcpQDp8gtZfn9i6ulX+NX5Y5tD1r8
-         vZvppfswQuVTpJ0d5wFGVEEdMchEayHQ/9bYMApM=
-Date:   Tue, 21 Jan 2020 08:54:25 -0800
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     sunil.kovvuri@gmail.com
-Cc:     netdev@vger.kernel.org, davem@davemloft.net, mkubecek@suse.cz,
-        Sunil Goutham <sgoutham@marvell.com>,
-        Geetha sowjanya <gakula@marvell.com>
-Subject: Re: [PATCH v4 07/17] octeontx2-pf: Add packet transmission support
-Message-ID: <20200121085425.652eae8c@cakuba>
-In-Reply-To: <1579612911-24497-8-git-send-email-sunil.kovvuri@gmail.com>
-References: <1579612911-24497-1-git-send-email-sunil.kovvuri@gmail.com>
-        <1579612911-24497-8-git-send-email-sunil.kovvuri@gmail.com>
+        id S1729122AbgAUQ5r (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 21 Jan 2020 11:57:47 -0500
+Received: from mail-wr1-f66.google.com ([209.85.221.66]:35291 "EHLO
+        mail-wr1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727817AbgAUQ5r (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 21 Jan 2020 11:57:47 -0500
+Received: by mail-wr1-f66.google.com with SMTP id g17so4086593wro.2
+        for <netdev@vger.kernel.org>; Tue, 21 Jan 2020 08:57:45 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=dev-mellanox-co-il.20150623.gappssmtp.com; s=20150623;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=fiRn9DGKJey+BHTDT52ABAY8ODR+BAkXmTGuHK0xeVI=;
+        b=sthT/pQ1MehqIaXdCHqknuRHGIHXTwRZ9wNYJZP8n94qpovVuuDFs6QFIZJ1MFZHLf
+         KcgBqVUdznBmTqJVH1tehqJixO2WNzTYmNNoMYa7a2W6mzvsX2ouJZXyyj+v0Cc6FDDw
+         SvM1WtpiO22A5hZn19bPqZNWC4mVzJlNAI2uTPB0z8rvbHvGbpa4yMalPu6CWxUp7Whs
+         0Ab/sR3e9wFy5o5r31yz8yClbVInwyg/xf+qx4NpTHIRG6BNavyKdb51ZIb0P6EK2Hy2
+         8pZcriSnLHRQQiMHxj1bN52DUgiYzcESEYG7D2ftiOUM+MQeSG1LMg7pa6CO89hFet0K
+         MFbA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=fiRn9DGKJey+BHTDT52ABAY8ODR+BAkXmTGuHK0xeVI=;
+        b=HekCsmElQyc+DreuirINPOiChUYvbAe0U7sqiPL+CUEVNNKYvWCH5epxMbPvG9wrut
+         4XJROpHuWXA/8csVIghxvr0jhphIwxkjdF4LSI6mP79yfqums41SQ4D+yJUVtIIHYI9l
+         VIUqYFY7QjcuXGhqoEHQ3/DoZEvVQxUN7D6M+MY6TSib6jbodR/HEBVdnJZOwJBm2URt
+         Cf86sLn/HJ/zbju+hfUMEVnZklcGP7Ak2onIqKhmT5rrGWeB80jwxePODDDBCUBUWF9V
+         hWKkn9ERuWkbMgSbP55hfcvUHIEvns307Cv/i9Eazswf0D/eJPMfvP20a/N2Pu2TengQ
+         e9xQ==
+X-Gm-Message-State: APjAAAU6J4lKWMjlS5AMaWs8nInh+77hvnM6Bg60LQjW/3tVRsNOoFBm
+        c2zUICswZbqQ3ysTev3ilKWvuiOWzV8=
+X-Google-Smtp-Source: APXvYqxYdNr/nmwIvPcChuc5ERP9a4jxDI+5XJSJ7F6cSUEzxLnirZP0C3k/UG1vkKURQ154V2Bhpg==
+X-Received: by 2002:adf:eb48:: with SMTP id u8mr6081148wrn.283.1579625864813;
+        Tue, 21 Jan 2020 08:57:44 -0800 (PST)
+Received: from [10.80.2.221] ([193.47.165.251])
+        by smtp.googlemail.com with ESMTPSA id p17sm53139462wrx.20.2020.01.21.08.57.40
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 21 Jan 2020 08:57:44 -0800 (PST)
+Subject: Re: [PATCH rdma-next 07/10] RDMA/efa: Allow passing of optional
+ access flags for MR registration
+To:     Gal Pressman <galpress@amazon.com>
+Cc:     Yishai Hadas <yishaih@mellanox.com>, linux-rdma@vger.kernel.org,
+        jgg@mellanox.com, dledford@redhat.com, saeedm@mellanox.com,
+        maorg@mellanox.com, michaelgur@mellanox.com, netdev@vger.kernel.org
+References: <1578506740-22188-1-git-send-email-yishaih@mellanox.com>
+ <1578506740-22188-8-git-send-email-yishaih@mellanox.com>
+ <6df1dbee-f35e-a5ad-019b-1bf572608974@amazon.com>
+From:   Yishai Hadas <yishaih@dev.mellanox.co.il>
+Message-ID: <89ddb3c3-a386-1aa4-e3e4-a4b0531b0978@dev.mellanox.co.il>
+Date:   Tue, 21 Jan 2020 18:57:39 +0200
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
+ Thunderbird/68.3.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+In-Reply-To: <6df1dbee-f35e-a5ad-019b-1bf572608974@amazon.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
 Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 21 Jan 2020 18:51:41 +0530, sunil.kovvuri@gmail.com wrote:
-> From: Sunil Goutham <sgoutham@marvell.com>
+On 1/21/2020 6:37 PM, Gal Pressman wrote:
+> On 08/01/2020 20:05, Yishai Hadas wrote:
+>> From: Michael Guralnik <michaelgur@mellanox.com>
+>>
+>> As part of adding a range of optional access flags that drivers need to
+>> be able to accept, mask this range inside efa driver.
+>> This will prevent the driver from failing when an access flag from
+>> that range is passed.
+>>
+>> Signed-off-by: Michael Guralnik <michaelgur@mellanox.com>
+>> Signed-off-by: Yishai Hadas <yishaih@mellanox.com>
+>> ---
+>>   drivers/infiniband/hw/efa/efa_verbs.c | 1 +
+>>   1 file changed, 1 insertion(+)
+>>
+>> diff --git a/drivers/infiniband/hw/efa/efa_verbs.c b/drivers/infiniband/hw/efa/efa_verbs.c
+>> index 50c2257..b6b936c 100644
+>> --- a/drivers/infiniband/hw/efa/efa_verbs.c
+>> +++ b/drivers/infiniband/hw/efa/efa_verbs.c
+>> @@ -1370,6 +1370,7 @@ struct ib_mr *efa_reg_mr(struct ib_pd *ibpd, u64 start, u64 length,
+>>   		IB_ACCESS_LOCAL_WRITE |
+>>   		(is_rdma_read_cap(dev) ? IB_ACCESS_REMOTE_READ : 0);
+>>   
+>> +	access_flags &= ~IB_UVERBS_ACCESS_OPTIONAL_RANGE;
 > 
-> This patch adds the packet transmission support.
-> For a given skb prepares send queue descriptors (SQEs) and pushes them
-> to HW. Here driver doesn't maintain it's own SQ rings, SQEs are pushed
-> to HW using a silicon specific operations called LMTST. From the
-> instuction HW derives the transmit queue number and queues the SQE to
-> that queue. These LMTST instructions are designed to avoid queue
-> maintenance in SW and lockless behavior ie when multiple cores are trying
-> to add SQEs to same queue then HW will takecare of serialization, no need
-> for SW to hold locks.
+> Hi Yishai,
+> access_flags should be masked with IB_ACCESS_OPTIONAL instead of
+> IB_UVERBS_ACCESS_OPTIONAL_RANGE.
 > 
-> Also supports scatter/gather.
+
+You are talking from namespace point of view, right ? both have same value.
+
+If it's important, can you send some patch to replace ?
+
+> Also, could you please make sure to CC me to future EFA patches?
 > 
-> Co-developed-by: Geetha sowjanya <gakula@marvell.com>
-> Signed-off-by: Geetha sowjanya <gakula@marvell.com>
-> Signed-off-by: Sunil Goutham <sgoutham@marvell.com>
 
-> +static netdev_tx_t otx2_xmit(struct sk_buff *skb, struct net_device *netdev)
-> +
-
-Spurious new line
-
-> +{
-> +	struct otx2_nic *pf = netdev_priv(netdev);
-> +	int qidx = skb_get_queue_mapping(skb);
-> +	struct otx2_snd_queue *sq;
-> +	struct netdev_queue *txq;
-> +
-> +	/* Check for minimum and maximum packet length */
-
-You only check for min
-
-> +	if (skb->len <= ETH_HLEN) {
-> +		dev_kfree_skb(skb);
-> +		return NETDEV_TX_OK;
-> +	}
-> +
-> +	sq = &pf->qset.sq[qidx];
-> +	txq = netdev_get_tx_queue(netdev, qidx);
-> +
-> +	if (netif_tx_queue_stopped(txq)) {
-> +		dev_kfree_skb(skb);
-
-This should never happen.
-
-> +	} else if (!otx2_sq_append_skb(netdev, sq, skb, qidx)) {
-> +		netif_tx_stop_queue(txq);
-> +
-> +		/* Check again, incase SQBs got freed up */
-> +		smp_mb();
-> +		if (((sq->num_sqbs - *sq->aura_fc_addr) * sq->sqe_per_sqb)
-> +							> sq->sqe_thresh)
-> +			netif_tx_wake_queue(txq);
-> +
-> +		return NETDEV_TX_BUSY;
-> +	}
-> +
-> +	return NETDEV_TX_OK;
-> +}
-
-> +/* NIX send memory subdescriptor structure */
-> +struct nix_sqe_mem_s {
-> +#if defined(__BIG_ENDIAN_BITFIELD)  /* W0 */
-> +	u64 subdc         : 4;
-> +	u64 alg           : 4;
-> +	u64 dsz           : 2;
-> +	u64 wmem          : 1;
-> +	u64 rsvd_52_16    : 37;
-> +	u64 offset        : 16;
-> +#else
-> +	u64 offset        : 16;
-> +	u64 rsvd_52_16    : 37;
-> +	u64 wmem          : 1;
-> +	u64 dsz           : 2;
-> +	u64 alg           : 4;
-> +	u64 subdc         : 4;
-> +#endif
-
-Traditionally we prefer to extract the bitfields with masks and shifts
-manually in the kernel, rather than having those (subjectively) ugly
-and finicky bitfield structs. But I guess if nobody else complains this
-can stay :/
-
-> +	u64 addr;
-
-Why do you care about big endian bitfields tho, if you don't care about
-endianness of the data itself? 
-
-> +};
-> +
->  #endif /* OTX2_STRUCT_H */
-> diff --git a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_txrx.c b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_txrx.c
-> index e6be18d..f416603 100644
-> --- a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_txrx.c
-> +++ b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_txrx.c
-> @@ -32,6 +32,78 @@ static struct nix_cqe_hdr_s *otx2_get_next_cqe(struct otx2_cq_queue *cq)
->  	return cqe_hdr;
->  }
->  
-> +static unsigned int frag_num(unsigned int i)
-> +{
-> +#ifdef __BIG_ENDIAN
-> +	return (i & ~3) + 3 - (i & 3);
-> +#else
-> +	return i;
-> +#endif
-> +}
-> +
-> +static dma_addr_t otx2_dma_map_skb_frag(struct otx2_nic *pfvf,
-> +					struct sk_buff *skb, int seg, int *len)
-> +{
-> +	const skb_frag_t *frag;
-> +	struct page *page;
-> +	int offset;
-> +
-> +	/* First segment is always skb->data */
-> +	if (!seg) {
-> +		page = virt_to_page(skb->data);
-> +		offset = offset_in_page(skb->data);
-> +		*len = skb_headlen(skb);
-> +	} else {
-> +		frag = &skb_shinfo(skb)->frags[seg - 1];
-> +		page = skb_frag_page(frag);
-> +		offset = skb_frag_off(frag);
-> +		*len = skb_frag_size(frag);
-> +	}
-> +	return otx2_dma_map_page(pfvf, page, offset, *len, DMA_TO_DEVICE);
-> +}
-> +
-> +static void otx2_dma_unmap_skb_frags(struct otx2_nic *pfvf, struct sg_list *sg)
-> +{
-> +	int seg;
-> +
-> +	for (seg = 0; seg < sg->num_segs; seg++) {
-> +		otx2_dma_unmap_page(pfvf, sg->dma_addr[seg],
-> +				    sg->size[seg], DMA_TO_DEVICE);
-> +	}
-
-no need for parenthesis
-
-> +	sg->num_segs = 0;
-> +}
-> +
-> +static void otx2_snd_pkt_handler(struct otx2_nic *pfvf,
-> +				 struct otx2_cq_queue *cq,
-> +				 struct otx2_snd_queue *sq,
-> +				 struct nix_cqe_tx_s *cqe,
-> +				 int budget, int *tx_pkts, int *tx_bytes)
-> +{
-> +	struct nix_send_comp_s *snd_comp = &cqe->comp;
-> +	struct sk_buff *skb = NULL;
-> +	struct sg_list *sg;
-> +
-> +	if (unlikely(snd_comp->status)) {
-> +		netdev_info(pfvf->netdev,
-> +			    "TX%d: Error in send CQ status:%x\n",
-> +			    cq->cint_idx, snd_comp->status);
-
-This should probably be ratelimitted
-
-> +	}
-
-unnecessary parenthesis
-
-> +
-> +	/* Barrier, so that update to sq by other cpus is visible */
-> +	smp_mb();
-
-Could you please rephrase this comment to explain between what and what
-this barrier is? :S
-
-> +	sg = &sq->sg[snd_comp->sqe_id];
-> +
-> +	skb = (struct sk_buff *)sg->skb;
-> +	if (unlikely(!skb))
-> +		return;
-> +
-> +	*tx_bytes += skb->len;
-> +	(*tx_pkts)++;
-> +	otx2_dma_unmap_skb_frags(pfvf, sg);
-> +	napi_consume_skb(skb, budget);
-> +	sg->skb = (u64)NULL;
-> +}
-> +
-
-> @@ -225,6 +331,169 @@ int otx2_napi_handler(struct napi_struct *napi, int budget)
->  	return workdone;
->  }
->  
-> +static void otx2_sqe_flush(struct otx2_snd_queue *sq, int size)
-> +{
-> +	u64 status;
-> +
-> +	/* Packet data stores should finish before SQE is flushed to HW */
-
-Packet data is synced by the dma operations the barrier shouldn't be
-needed AFAIK (and if it would be, dma_wmb() would not be the one, as it
-only works for iomem AFAIU).
-
-> +	dma_wmb();
-> +
-> +	do {
-> +		memcpy(sq->lmt_addr, sq->sqe_base, size);
-> +		status = otx2_lmt_flush(sq->io_addr);
-> +	} while (status == 0);
-> +
-> +	sq->head++;
-> +	sq->head &= (sq->sqe_cnt - 1);
-> +}
+Sure, thanks.
