@@ -2,155 +2,99 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 8671B143865
-	for <lists+netdev@lfdr.de>; Tue, 21 Jan 2020 09:36:32 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 29823143871
+	for <lists+netdev@lfdr.de>; Tue, 21 Jan 2020 09:40:23 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729045AbgAUIgN convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Tue, 21 Jan 2020 03:36:13 -0500
-Received: from relay-b01.edpnet.be ([212.71.1.221]:33582 "EHLO
-        relay-b01.edpnet.be" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728901AbgAUIgM (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 21 Jan 2020 03:36:12 -0500
-X-ASG-Debug-ID: 1579595768-0a7ff5137c3b1fe50001-BZBGGp
-Received: from zotac.vandijck-laurijssen.be ([77.109.89.38]) by relay-b01.edpnet.be with ESMTP id EJYwLFMUGYbaNCj7; Tue, 21 Jan 2020 09:36:08 +0100 (CET)
-X-Barracuda-Envelope-From: dev.kurt@vandijck-laurijssen.be
-X-Barracuda-Effective-Source-IP: UNKNOWN[77.109.89.38]
-X-Barracuda-Apparent-Source-IP: 77.109.89.38
-Received: from x1.vandijck-laurijssen.be (74.250-240-81.adsl-static.isp.belgacom.be [81.240.250.74])
-        by zotac.vandijck-laurijssen.be (Postfix) with ESMTPSA id 7E2F4C67F07;
-        Tue, 21 Jan 2020 09:36:08 +0100 (CET)
-Date:   Tue, 21 Jan 2020 09:35:59 +0100
-From:   Kurt Van Dijck <dev.kurt@vandijck-laurijssen.be>
-To:     Oliver Hartkopp <socketcan@hartkopp.net>,
-        Dmitry Vyukov <dvyukov@google.com>,
-        Marc Kleine-Budde <mkl@pengutronix.de>,
-        o.rempel@pengutronix.de,
-        syzbot <syzbot+c3ea30e1e2485573f953@syzkaller.appspotmail.com>,
-        David Miller <davem@davemloft.net>, linux-can@vger.kernel.org,
-        LKML <linux-kernel@vger.kernel.org>,
-        netdev <netdev@vger.kernel.org>,
-        syzkaller-bugs <syzkaller-bugs@googlegroups.com>
-Subject: Re: general protection fault in can_rx_register
-Message-ID: <20200121083559.GE14537@x1.vandijck-laurijssen.be>
-X-ASG-Orig-Subj: Re: general protection fault in can_rx_register
-Mail-Followup-To: Oliver Hartkopp <socketcan@hartkopp.net>,
-        Dmitry Vyukov <dvyukov@google.com>,
-        Marc Kleine-Budde <mkl@pengutronix.de>, o.rempel@pengutronix.de,
-        syzbot <syzbot+c3ea30e1e2485573f953@syzkaller.appspotmail.com>,
-        David Miller <davem@davemloft.net>, linux-can@vger.kernel.org,
-        LKML <linux-kernel@vger.kernel.org>,
-        netdev <netdev@vger.kernel.org>,
-        syzkaller-bugs <syzkaller-bugs@googlegroups.com>
-References: <00000000000030dddb059c562a3f@google.com>
- <55ad363b-1723-28aa-78b1-8aba5565247e@hartkopp.net>
- <20200120091146.GD11138@x1.vandijck-laurijssen.be>
- <CACT4Y+a+GusEA1Gs+z67uWjtwBRp_s7P4Wd_SMmgpCREnDu3kg@mail.gmail.com>
- <8332ec7f-2235-fdf6-9bda-71f789c57b37@hartkopp.net>
- <2a676c0e-20f2-61b5-c72b-f51947bafc7d@hartkopp.net>
- <20200121083035.GD14537@x1.vandijck-laurijssen.be>
+        id S1728765AbgAUIjP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 21 Jan 2020 03:39:15 -0500
+Received: from mail-lf1-f66.google.com ([209.85.167.66]:46510 "EHLO
+        mail-lf1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725890AbgAUIjP (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 21 Jan 2020 03:39:15 -0500
+Received: by mail-lf1-f66.google.com with SMTP id z26so1509262lfg.13
+        for <netdev@vger.kernel.org>; Tue, 21 Jan 2020 00:39:14 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=cogentembedded-com.20150623.gappssmtp.com; s=20150623;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=hsNWoes18WxCFqI2xo+zG2UAVBdbnLW1RdahXtCWkN4=;
+        b=ogeQ32MOdjzdgAmxRr2eY6wFvxsdi2q0zPB1rFdofpYEO51IIsVHTP/MpXts48N+Hu
+         4iZtIN1cDXQuFYvBGceJ5W03NNZraJNYMDKMSvJOsV+lneWXcfyzASCoSAqZQihD2yEM
+         QdR/SJOIEFHL8SXJ581I6hl5NpDqF6nH7lxfCZQmjvsmwfc9zvkQiN3Xw/YMv82SD2f2
+         Ev5dOkK0Dl59TsTdsxmED6+cxcIYkHOvcHdM5IM1NU2kwzezkUMm6G8LimxsPNcxSP/d
+         5hJm2EW0ST6IRLKF9J/typuxf8l7gKRBMVHY/PbUh5iEVxcNkVDOrrSBubvTbYNahV9K
+         /Sxw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=hsNWoes18WxCFqI2xo+zG2UAVBdbnLW1RdahXtCWkN4=;
+        b=W2rAaYNOV/XfiJpWp7BDGHk1k42cKdRTX45asVpamtwgrE2YFkIb8sZ9IOBLr8/h7v
+         /ugaeqVge6THHTQBlgNcvXoKegsTtX3kwtG4eRXZ/xpkgiar1mHotsiPm3mulav/fVkC
+         OX6/O+MTHCxR9skBXEQgl0g0BoQw4of9mIUIA3jBbWKXEJAA/glWZERI3S2o9qyf/6mz
+         YGH5cC31/hyHUhPiWk15Ly+IpAqlQpjSntjIiz+Nwp3gGBmj4xVZg5tA0t5OZ/mOHqNq
+         uOBDKqKp9gXUrFlsAhUbOJLoRfjRGBD0r4+K/ZTsUckRuFs8USN0PeGSceNdvEe465xy
+         C4NQ==
+X-Gm-Message-State: APjAAAV5NxKdqWV6K0B84g3UZxdr1LKLvQ/5znFGZbln4x/D+VrI5V/u
+        8mApsIa+Ju95wTQ2E/sfIXVuJw==
+X-Google-Smtp-Source: APXvYqwKhPhYL0ooaJpzntwbDv2rsPpjcDAD4+2ocnxH+WdV/2FygoMaU5dMv0QJe5KSTwUYfqw3Ow==
+X-Received: by 2002:ac2:43c6:: with SMTP id u6mr2027596lfl.191.1579595953303;
+        Tue, 21 Jan 2020 00:39:13 -0800 (PST)
+Received: from ?IPv6:2a00:1fa0:4257:4d38:8de3:4197:be8e:7729? ([2a00:1fa0:4257:4d38:8de3:4197:be8e:7729])
+        by smtp.gmail.com with ESMTPSA id b1sm21197686ljp.72.2020.01.21.00.39.12
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 21 Jan 2020 00:39:12 -0800 (PST)
+Subject: Re: [PATCH -next] drivers: net: declance: fix comparing pointer to 0
+To:     Chen Zhou <chenzhou10@huawei.com>, davem@davemloft.net,
+        mhabets@solarflare.com, kuba@kernel.org
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+References: <20200121013553.15252-1-chenzhou10@huawei.com>
+From:   Sergei Shtylyov <sergei.shtylyov@cogentembedded.com>
+Message-ID: <40eb3815-f677-c2fd-3e67-4b39bb332f48@cogentembedded.com>
+Date:   Tue, 21 Jan 2020 11:39:05 +0300
+User-Agent: Mozilla/5.0 (Windows NT 6.3; WOW64; rv:68.0) Gecko/20100101
+ Thunderbird/68.4.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8BIT
-In-Reply-To: <20200121083035.GD14537@x1.vandijck-laurijssen.be>
-User-Agent: Mutt/1.5.22 (2013-10-16)
-X-Barracuda-Connect: UNKNOWN[77.109.89.38]
-X-Barracuda-Start-Time: 1579595768
-X-Barracuda-URL: https://212.71.1.221:443/cgi-mod/mark.cgi
-X-Virus-Scanned: by bsmtpd at edpnet.be
-X-Barracuda-Scan-Msg-Size: 3533
-X-Barracuda-BRTS-Status: 1
-X-Barracuda-Bayes: SPAM GLOBAL 0.9309 1.0000 3.5604
-X-Barracuda-Spam-Score: 3.56
-X-Barracuda-Spam-Status: No, SCORE=3.56 using global scores of TAG_LEVEL=1000.0 QUARANTINE_LEVEL=1000.0 KILL_LEVEL=7.0 tests=
-X-Barracuda-Spam-Report: Code version 3.2, rules version 3.2.3.79477
-        Rule breakdown below
-         pts rule name              description
-        ---- ---------------------- --------------------------------------------------
+In-Reply-To: <20200121013553.15252-1-chenzhou10@huawei.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On di, 21 jan 2020 09:30:35 +0100, Kurt Van Dijck wrote:
-> On ma, 20 jan 2020 23:35:16 +0100, Oliver Hartkopp wrote:
-> > Answering myself ...
-> > 
-> > On 20/01/2020 23.02, Oliver Hartkopp wrote:
-> > 
-> > >
-> > >Added some code to check whether dev->ml_priv is NULL:
-> > >
-> > >~/linux$ git diff
-> > >diff --git a/net/can/af_can.c b/net/can/af_can.c
-> > >index 128d37a4c2e0..6fb4ae4c359e 100644
-> > >--- a/net/can/af_can.c
-> > >+++ b/net/can/af_can.c
-> > >@@ -463,6 +463,10 @@ int can_rx_register(struct net *net, struct
-> > >net_device *dev, canid_t can_id,
-> > >         spin_lock_bh(&net->can.rcvlists_lock);
-> > >
-> > >         dev_rcv_lists = can_dev_rcv_lists_find(net, dev);
-> > >+       if (!dev_rcv_lists) {
-> > >+               pr_err("dev_rcv_lists == NULL! %p\n", dev);
-> > >+               goto out_unlock;
-> > >+       }
-> > >         rcv_list = can_rcv_list_find(&can_id, &mask, dev_rcv_lists);
-> > >
-> > >         rcv->can_id = can_id;
-> > >@@ -479,6 +483,7 @@ int can_rx_register(struct net *net, struct net_device
-> > >*dev, canid_t can_id,
-> > >         rcv_lists_stats->rcv_entries++;
-> > >         rcv_lists_stats->rcv_entries_max =
-> > >max(rcv_lists_stats->rcv_entries_max,
-> > >
-> > >rcv_lists_stats->rcv_entries);
-> > >+out_unlock:
-> > >         spin_unlock_bh(&net->can.rcvlists_lock);
-> > >
-> > >         return err;
-> > >
-> > >And the output (after some time) is:
-> > >
-> > >[  758.505841] netlink: 'crash': attribute type 1 has an invalid length.
-> > >[  758.508045] bond7148: (slave vxcan1): The slave device specified does
-> > >not support setting the MAC address
-> > >[  758.508057] bond7148: (slave vxcan1): Error -22 calling dev_set_mtu
-> > >[  758.532025] bond10413: (slave vxcan1): The slave device specified does
-> > >not support setting the MAC address
-> > >[  758.532043] bond10413: (slave vxcan1): Error -22 calling dev_set_mtu
-> > >[  758.532254] dev_rcv_lists == NULL! 000000006b9d257f
-> > >[  758.547392] netlink: 'crash': attribute type 1 has an invalid length.
-> > >[  758.549310] bond7145: (slave vxcan1): The slave device specified does
-> > >not support setting the MAC address
-> > >[  758.549313] bond7145: (slave vxcan1): Error -22 calling dev_set_mtu
-> > >[  758.550464] netlink: 'crash': attribute type 1 has an invalid length.
-> > >[  758.552301] bond7146: (slave vxcan1): The slave device specified does
-> > >not support setting the MAC address
-> > >
-> > >So we can see that we get a ml_priv pointer which is NULL which should not
-> > >be possible due to this:
-> > >
-> > >https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/tree/drivers/net/can/dev.c#n743
-> > 
-> > This reference doesn't point to the right code as vxcan has its own handling
-> > do assign ml_priv in vxcan.c .
-> > 
-> > >Btw. the variable 'size' is set two times at the top of alloc_candev_mqs()
-> > >depending on echo_skb_max. This looks wrong.
-> > 
-> > No. It looks right as I did not get behind the ALIGN() macro at first sight.
-> > 
-> > But it is still open why dev->ml_priv is not set correctly in vxcan.c as all
-> > the settings for .priv_size and in vxcan_setup look fine.
-> 
-> Maybe I got completely lost:
-> Shouldn't can_ml_priv and vxcan_priv not be similar?
-> Where is the dev_rcv_lists in the vxcan case?
+Hello!
 
-IMHO, net/can/af_can.c:306 is wrong in the vxcan case.
+On 21.01.2020 4:35, Chen Zhou wrote:
 
+> Fixes coccicheck warning:
 > 
-> > 
-> > Best regards,
-> > Oliver
+> ./drivers/net/ethernet/amd/declance.c:611:14-15:
+> 	WARNING comparing pointer to 0
+> 
+> Compare pointer-typed values to NULL rather than 0.
+
+    I don't see NULL in the patch -- you used ! instead.
+
+> Signed-off-by: Chen Zhou <chenzhou10@huawei.com>
+> ---
+>   drivers/net/ethernet/amd/declance.c | 2 +-
+>   1 file changed, 1 insertion(+), 1 deletion(-)
+> 
+> diff --git a/drivers/net/ethernet/amd/declance.c b/drivers/net/ethernet/amd/declance.c
+> index 6592a2d..7282ce5 100644
+> --- a/drivers/net/ethernet/amd/declance.c
+> +++ b/drivers/net/ethernet/amd/declance.c
+> @@ -608,7 +608,7 @@ static int lance_rx(struct net_device *dev)
+>   			len = (*rds_ptr(rd, mblength, lp->type) & 0xfff) - 4;
+>   			skb = netdev_alloc_skb(dev, len + 2);
+>   
+> -			if (skb == 0) {
+> +			if (!skb) {
+>   				dev->stats.rx_dropped++;
+>   				*rds_ptr(rd, mblength, lp->type) = 0;
+>   				*rds_ptr(rd, rmd1, lp->type) =
+
+MBR, Sergei
