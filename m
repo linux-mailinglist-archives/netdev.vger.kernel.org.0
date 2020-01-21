@@ -2,88 +2,97 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id D9EF11434DC
-	for <lists+netdev@lfdr.de>; Tue, 21 Jan 2020 01:48:07 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id ADAD91434E2
+	for <lists+netdev@lfdr.de>; Tue, 21 Jan 2020 01:54:02 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728712AbgAUAsE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 20 Jan 2020 19:48:04 -0500
-Received: from mail-io1-f42.google.com ([209.85.166.42]:38726 "EHLO
-        mail-io1-f42.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727403AbgAUAsE (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 20 Jan 2020 19:48:04 -0500
-Received: by mail-io1-f42.google.com with SMTP id i7so1000801ioo.5;
-        Mon, 20 Jan 2020 16:48:03 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:message-id:in-reply-to:references:subject
-         :mime-version:content-transfer-encoding;
-        bh=muGQKO5jcbVtHtfxPoG4PyZ3XF34eZZhDHliWSoD5WM=;
-        b=PkTqZ7XfeCblc7He33zGQcrlb2wmjuKLebwQZPxDO01Q9XlzUM5/ABDn7sF3OTp0ws
-         wfX55eCIeKn3ps+CvQwJjDHTcDV0RGtb0dG221T8ExndHur5jcIWzsMCWfa845ZCVaLN
-         +4UbhBNShcLh1Ro4oceNDfTSBiTuP6TSPlhuMRb8H1zMxA9CAae/+8ovwCO/9q4dr4Zk
-         oIY9iyIQYcVaEjXHTzCnXJpYOTQ9ZRRkikZtBIhfGK0m4OmQ6T9Xi17bLN8VTU3y0Ih6
-         224dPUh1wYKx5ztzG7vLZLZesQdajpEjCAnB7yBIEs3Y5rfWRLOisEfRU/NQyEmeXAiO
-         YxrQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:message-id:in-reply-to
-         :references:subject:mime-version:content-transfer-encoding;
-        bh=muGQKO5jcbVtHtfxPoG4PyZ3XF34eZZhDHliWSoD5WM=;
-        b=dBs9M5pHE23iPt40YvJaAXHZf7mBJZBiAWDzs706Ciu7d5EQUps1/5/TuV696Yg8e3
-         QZ8GVdpr0R/hIN4tOY+nDpxKW1722Tb3BVkNcX+2SXcoMHjpojmXwXm7ImwpVku+DJiS
-         abWQjVu5hM89qSsfER9CyIku1IX1rz9NMry0NIl6Zdn3W7rRM9xdnxJw0nVLQeghsHjD
-         h/W+89jexYw3xcV5zsRsyLnn8G1/NabkyHfQJX85J1DDg/El7tnST7mqAxSXk5qyjinE
-         bZkOvuHRUUk3WRHO7S1bQmbYBcwcyxqPrGDThgvlaa4LdgXMRM4NiNyEKtdKwWTamWdy
-         wDsw==
-X-Gm-Message-State: APjAAAU/Img7KfC+ZfjHb8Y86oHawFWgIyRSS+iW+XdNh2vLaWC5hTiO
-        76QQUQ4WF5c1UDYoMOFRHrI=
-X-Google-Smtp-Source: APXvYqzOtFbkyneRwVMD42JhnDwJq1KSFx3XbwWbTQPiIJd/82lOaRVC9QTgY83Q8ig80sjrT2RmiA==
-X-Received: by 2002:a02:c90a:: with SMTP id t10mr1343221jao.25.1579567683413;
-        Mon, 20 Jan 2020 16:48:03 -0800 (PST)
-Received: from localhost ([184.63.162.180])
-        by smtp.gmail.com with ESMTPSA id a6sm12314327iln.87.2020.01.20.16.48.00
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 20 Jan 2020 16:48:02 -0800 (PST)
-Date:   Mon, 20 Jan 2020 16:47:54 -0800
-From:   John Fastabend <john.fastabend@gmail.com>
-To:     =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@gmail.com>,
-        netdev@vger.kernel.org, ast@kernel.org, daniel@iogearbox.net
-Cc:     =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@intel.com>,
-        bpf@vger.kernel.org, magnus.karlsson@intel.com,
-        jonathan.lemon@gmail.com
-Message-ID: <5e264a3a5d5e6_20912afc5c86e5c4b5@john-XPS-13-9370.notmuch>
-In-Reply-To: <20200120092917.13949-1-bjorn.topel@gmail.com>
-References: <20200120092917.13949-1-bjorn.topel@gmail.com>
-Subject: RE: [PATCH bpf-next] xsk, net: make sock_def_readable() have external
- linkage
-Mime-Version: 1.0
-Content-Type: text/plain;
- charset=utf-8
-Content-Transfer-Encoding: quoted-printable
+        id S1728794AbgAUAx6 convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Mon, 20 Jan 2020 19:53:58 -0500
+Received: from mx0a-00082601.pphosted.com ([67.231.145.42]:45304 "EHLO
+        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1728512AbgAUAx6 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 20 Jan 2020 19:53:58 -0500
+Received: from pps.filterd (m0109333.ppops.net [127.0.0.1])
+        by mx0a-00082601.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 00L0qCLB012423
+        for <netdev@vger.kernel.org>; Mon, 20 Jan 2020 16:53:57 -0800
+Received: from mail.thefacebook.com ([163.114.132.120])
+        by mx0a-00082601.pphosted.com with ESMTP id 2xmjeuphar-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT)
+        for <netdev@vger.kernel.org>; Mon, 20 Jan 2020 16:53:57 -0800
+Received: from intmgw001.06.prn3.facebook.com (2620:10d:c085:108::4) by
+ mail.thefacebook.com (2620:10d:c085:11d::5) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.1779.2; Mon, 20 Jan 2020 16:53:56 -0800
+Received: by devbig007.ftw2.facebook.com (Postfix, from userid 572438)
+        id 98D6E760B6E; Mon, 20 Jan 2020 16:53:48 -0800 (PST)
+Smtp-Origin-Hostprefix: devbig
+From:   Alexei Starovoitov <ast@kernel.org>
+Smtp-Origin-Hostname: devbig007.ftw2.facebook.com
+To:     <davem@davemloft.net>
+CC:     <daniel@iogearbox.net>, <netdev@vger.kernel.org>,
+        <bpf@vger.kernel.org>, <kernel-team@fb.com>
+Smtp-Origin-Cluster: ftw2c04
+Subject: [PATCH v2 bpf-next 0/3] bpf: Program extensions or dynamic re-linking
+Date:   Mon, 20 Jan 2020 16:53:45 -0800
+Message-ID: <20200121005348.2769920-1-ast@kernel.org>
+X-Mailer: git-send-email 2.23.0
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8BIT
+X-FB-Internal: Safe
+Content-Type: text/plain
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.138,18.0.572
+ definitions=2020-01-20_10:2020-01-20,2020-01-20 signatures=0
+X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 bulkscore=0 adultscore=0
+ phishscore=0 suspectscore=1 clxscore=1034 mlxlogscore=291
+ lowpriorityscore=0 mlxscore=0 spamscore=0 impostorscore=0 malwarescore=0
+ priorityscore=1501 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-1910280000 definitions=main-2001210004
+X-FB-Internal: deliver
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Bj=C3=B6rn T=C3=B6pel wrote:
-> From: Bj=C3=B6rn T=C3=B6pel <bjorn.topel@intel.com>
-> =
+The last few month BPF community has been discussing an approach to call
+chaining, since exiting bpt_tail_call() mechanism used in production XDP
+programs has plenty of downsides. The outcome of these discussion was a
+conclusion to implement dynamic re-linking of BPF programs. Where rootlet XDP
+program attached to a netdevice can programmatically define a policy of
+execution of other XDP programs. Such rootlet would be compiled as normal XDP
+program and provide a number of placeholder global functions which later can be
+replaced with future XDP programs. BPF trampoline, function by function
+verification were building blocks towards that goal. The patch 1 is a final
+building block. It introduces dynamic program extensions. A number of
+improvements like more flexible function by function verification and better
+libbpf api will be implemented in future patches.
 
-> XDP sockets use the default implementation of struct sock's
-> sk_data_ready callback, which is sock_def_readable(). This function is
-> called in the XDP socket fast-path, and involves a retpoline. By
-> letting sock_def_readable() have external linkage, and being called
-> directly, the retpoline can be avoided.
-> =
+v1->v2:
+- addressed Andrii's comments
+- rebase
 
-> Signed-off-by: Bj=C3=B6rn T=C3=B6pel <bjorn.topel@intel.com>
-> ---
->  include/net/sock.h | 2 ++
->  net/core/sock.c    | 2 +-
->  net/xdp/xsk.c      | 2 +-
->  3 files changed, 4 insertions(+), 2 deletions(-)
-> =
+Alexei Starovoitov (3):
+  bpf: Introduce dynamic program extensions
+  libbpf: Add support for program extensions
+  selftests/bpf: Add tests for program extensions
 
+ include/linux/bpf.h                           |  10 +-
+ include/linux/bpf_types.h                     |   2 +
+ include/linux/btf.h                           |   5 +
+ include/uapi/linux/bpf.h                      |   1 +
+ kernel/bpf/btf.c                              | 152 +++++++++++++++++-
+ kernel/bpf/syscall.c                          |  15 +-
+ kernel/bpf/trampoline.c                       |  41 ++++-
+ kernel/bpf/verifier.c                         |  85 +++++++---
+ tools/include/uapi/linux/bpf.h                |   1 +
+ tools/lib/bpf/bpf.c                           |   3 +-
+ tools/lib/bpf/libbpf.c                        |  13 +-
+ tools/lib/bpf/libbpf.h                        |   2 +
+ tools/lib/bpf/libbpf.map                      |   2 +
+ tools/lib/bpf/libbpf_probes.c                 |   1 +
+ .../selftests/bpf/prog_tests/fexit_bpf2bpf.c  |  20 ++-
+ .../selftests/bpf/progs/fexit_bpf2bpf.c       |  57 +++++++
+ .../selftests/bpf/progs/test_pkt_access.c     |   8 +-
+ 17 files changed, 384 insertions(+), 34 deletions(-)
 
-I think this is fine but curious were you able to measure the
-difference with before/after pps or something?=
+-- 
+2.23.0
+
