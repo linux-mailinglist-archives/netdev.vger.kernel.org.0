@@ -2,124 +2,99 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 86FC91435E2
-	for <lists+netdev@lfdr.de>; Tue, 21 Jan 2020 04:22:45 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E629F1435E4
+	for <lists+netdev@lfdr.de>; Tue, 21 Jan 2020 04:23:25 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728042AbgAUDV4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 20 Jan 2020 22:21:56 -0500
-Received: from mail-qk1-f180.google.com ([209.85.222.180]:36764 "EHLO
-        mail-qk1-f180.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727009AbgAUDVz (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 20 Jan 2020 22:21:55 -0500
-Received: by mail-qk1-f180.google.com with SMTP id a203so1388532qkc.3
-        for <netdev@vger.kernel.org>; Mon, 20 Jan 2020 19:21:55 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:references:from:message-id:date:user-agent:mime-version
-         :in-reply-to:content-language:content-transfer-encoding;
-        bh=61ux2JhjAa2FtTyz00QYnjbVn3GttGHwu1uNCAdhllY=;
-        b=rcs2WwE47CQusHVqEx3ssyL2r9/FDd11Ilo9ewuegcIetm68AmHPleprBuquhh2Q+K
-         lqqWiJYI3R0z+UVf0RXSzH74kecvzaAWgKJb6HdYPUCZkROf9xmKFqHKUftIbfJx6P3b
-         wQX7EElPjGj7CCF+GQGRzAcHaKfX7hbDSuAmrM2NvRa5uVW7cLiNekC42+T7+iru6L7x
-         S+nTlIKxpTN7iV7p1PfZsKw4OthSXOxXoW3+XlbqH2dOkAu6QMEEZ0PpA9nMJoKK2ngU
-         Inxp+NxqVAY79w8Sf5XNN+pStbIFEVZSP1wsd1O/kQ6HzFOW0QAuMshcYAFVJqnlYGB7
-         AFPw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=61ux2JhjAa2FtTyz00QYnjbVn3GttGHwu1uNCAdhllY=;
-        b=pLC0qAfNlTAJE/5LUGzgV0vNRg1XInbtIs3p2y8jeZo/XFQA3iv0UMudZz7ty3wJtL
-         KREHqisqhF3t6robhJ0VBu8tXaM2oJLlxTN9hT2rgXpZWObkYOuzkkXqRpVnDcTFec48
-         TlhX2NtGy3C1VDGzO5PJQWJpvnsGyNAvnJv2aAtBXhp6h/Uj0jGW+ucnWw/dFWHy1fJX
-         1l22+5vsQM+01puNEWEH+3TUO3BsVlCspN3vVCFv55MDeCK+KMOi4Y8zwRmZL7CBuxkX
-         V3NZPRx4wCIrndHrmAmGo6uo3fcqO/isB7qP2OUgw5BhceAvkQqLxijT7kZICDHnbJHe
-         W/Og==
-X-Gm-Message-State: APjAAAXLRGeQZ7umILWboCbJqUJJqizhrsxNfjXgRl0dlX++MSHdQikD
-        7l+1ingWBZdigfniyFj+ExZOSC2E
-X-Google-Smtp-Source: APXvYqzxW0KeDEBqw2aYN8kCsZsg5hDglSz7/6yRWuY5DeAaiMYwlWJ7Vu86lJyLlDEgDlApOV0yXQ==
-X-Received: by 2002:ae9:dc85:: with SMTP id q127mr2723408qkf.460.1579576914530;
-        Mon, 20 Jan 2020 19:21:54 -0800 (PST)
-Received: from ?IPv6:2601:282:803:7700:84c7:af62:d74:e501? ([2601:282:803:7700:84c7:af62:d74:e501])
-        by smtp.googlemail.com with ESMTPSA id d184sm16847472qkb.128.2020.01.20.19.21.52
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 20 Jan 2020 19:21:53 -0800 (PST)
-Subject: Re: vrf and ipsec xfrm routing problem
-To:     Ben Greear <greearb@candelatech.com>,
-        netdev <netdev@vger.kernel.org>
-References: <1425d02c-de99-b708-e543-b7fe3f0ef07e@candelatech.com>
- <9893ae01-18a5-2afd-b485-459423b8adc0@candelatech.com>
-From:   David Ahern <dsahern@gmail.com>
-Message-ID: <ce3ba3f4-b0dd-b3b5-fbb7-095122ed75b3@gmail.com>
-Date:   Mon, 20 Jan 2020 20:21:51 -0700
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:68.0)
- Gecko/20100101 Thunderbird/68.4.1
+        id S1728709AbgAUDW6 convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Mon, 20 Jan 2020 22:22:58 -0500
+Received: from mx0a-00082601.pphosted.com ([67.231.145.42]:50532 "EHLO
+        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1727009AbgAUDW6 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 20 Jan 2020 22:22:58 -0500
+Received: from pps.filterd (m0148461.ppops.net [127.0.0.1])
+        by mx0a-00082601.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 00L3Mud2031331
+        for <netdev@vger.kernel.org>; Mon, 20 Jan 2020 19:22:57 -0800
+Received: from maileast.thefacebook.com ([163.114.130.16])
+        by mx0a-00082601.pphosted.com with ESMTP id 2xmjwcxt54-4
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT)
+        for <netdev@vger.kernel.org>; Mon, 20 Jan 2020 19:22:57 -0800
+Received: from intmgw001.03.ash8.facebook.com (2620:10d:c0a8:1b::d) by
+ mail.thefacebook.com (2620:10d:c0a8:82::f) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.1779.2; Mon, 20 Jan 2020 19:22:42 -0800
+Received: by devbig007.ftw2.facebook.com (Postfix, from userid 572438)
+        id DAB1E760BA4; Mon, 20 Jan 2020 19:22:31 -0800 (PST)
+Smtp-Origin-Hostprefix: devbig
+From:   Alexei Starovoitov <ast@kernel.org>
+Smtp-Origin-Hostname: devbig007.ftw2.facebook.com
+To:     <davem@davemloft.net>
+CC:     <daniel@iogearbox.net>, <jannh@google.com>, <paulmck@kernel.org>,
+        <netdev@vger.kernel.org>, <bpf@vger.kernel.org>,
+        <kernel-team@fb.com>
+Smtp-Origin-Cluster: ftw2c04
+Subject: [PATCH bpf-next] bpf: Fix trampoline usage in preempt
+Date:   Mon, 20 Jan 2020 19:22:31 -0800
+Message-ID: <20200121032231.3292185-1-ast@kernel.org>
+X-Mailer: git-send-email 2.23.0
 MIME-Version: 1.0
-In-Reply-To: <9893ae01-18a5-2afd-b485-459423b8adc0@candelatech.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 8BIT
+X-FB-Internal: Safe
+Content-Type: text/plain
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.138,18.0.572
+ definitions=2020-01-20_10:2020-01-20,2020-01-20 signatures=0
+X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 malwarescore=0
+ lowpriorityscore=0 suspectscore=3 adultscore=0 mlxlogscore=750 mlxscore=0
+ clxscore=1034 impostorscore=0 phishscore=0 bulkscore=0 priorityscore=1501
+ spamscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-1910280000 definitions=main-2001210027
+X-FB-Internal: deliver
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 1/17/20 2:52 PM, Ben Greear wrote:
->> I tried adding a route to specify the x_frm as source, but that does
->> not appear to work:
->>
->> [root@lf0313-63e7 lanforge]# ip route add 192.168.10.0/24 via
->> 192.168.5.1 dev x_eth4 table 4
->> [root@lf0313-63e7 lanforge]# ip route show vrf _vrf4
->> default via 192.168.5.1 dev eth4
->> 192.168.5.0/24 dev eth4 scope link src 192.168.5.4
->> 192.168.10.0/24 via 192.168.5.1 dev eth4
->>
->> I also tried this, but no luck:
->>
->> [root@lf0313-63e7 lanforge]# ip route add 192.168.10.0/24 via
->> 192.168.10.1 dev x_eth4 table 4
->> Error: Nexthop has invalid gateway.
-> 
-> I went looking for why this was failing.  The reason is that this code
-> is hitting the error case
-> in the code snippet below (from 5.2.21+ kernel).
-> 
-> The oif is that of _vrf4, not the x_eth4 device.
-> 
-> David:  Is this expected behaviour?  Do you know how to tell vrf to use
-> the x_eth4
+Though the second half of trampoline page is unused a task could be
+preempted in the middle of the first half of trampoline and two
+updates to trampoline would change the code from underneath the
+preempted task. Hence wait for tasks to voluntarily schedule or go
+to userspace.
+Add similar wait before freeing the trampoline.
 
-It is expected behavior for VRF. l3mdev_update_flow changes the oif to
-the VRF device if the passed in oif is enslaved to a VRF.
+Fixes: fec56f5890d9 ("bpf: Introduce BPF trampoline")
+Reported-by: Jann Horn <jannh@google.com>
+Signed-off-by: Alexei Starovoitov <ast@kernel.org>
+---
+ kernel/bpf/trampoline.c | 10 ++++++++++
+ 1 file changed, 10 insertions(+)
 
-> xfrm device as oif when routing output to certain destinations?
-> 
->     rcu_read_lock();
->     {
->         struct fib_table *tbl = NULL;
->         struct flowi4 fl4 = {
->             .daddr = nh->fib_nh_gw4,
->             .flowi4_scope = scope + 1,
->             .flowi4_oif = nh->fib_nh_oif,
->             .flowi4_iif = LOOPBACK_IFINDEX,
->         };
-> 
->         /* It is not necessary, but requires a bit of thinking */
->         if (fl4.flowi4_scope < RT_SCOPE_LINK)
->             fl4.flowi4_scope = RT_SCOPE_LINK;
+diff --git a/kernel/bpf/trampoline.c b/kernel/bpf/trampoline.c
+index 79a04417050d..7657ede7aee2 100644
+--- a/kernel/bpf/trampoline.c
++++ b/kernel/bpf/trampoline.c
+@@ -160,6 +160,14 @@ static int bpf_trampoline_update(struct bpf_trampoline *tr)
+ 	if (fexit_cnt)
+ 		flags = BPF_TRAMP_F_CALL_ORIG | BPF_TRAMP_F_SKIP_FRAME;
+ 
++	/* Though the second half of trampoline page is unused a task could be
++	 * preempted in the middle of the first half of trampoline and two
++	 * updates to trampoline would change the code from underneath the
++	 * preempted task. Hence wait for tasks to voluntarily schedule or go
++	 * to userspace.
++	 */
++	synchronize_rcu_tasks();
++
+ 	err = arch_prepare_bpf_trampoline(new_image, new_image + PAGE_SIZE / 2,
+ 					  &tr->func.model, flags,
+ 					  fentry, fentry_cnt,
+@@ -251,6 +259,8 @@ void bpf_trampoline_put(struct bpf_trampoline *tr)
+ 		goto out;
+ 	if (WARN_ON_ONCE(!hlist_empty(&tr->progs_hlist[BPF_TRAMP_FEXIT])))
+ 		goto out;
++	/* wait for tasks to get out of trampoline before freeing it */
++	synchronize_rcu_tasks();
+ 	bpf_jit_free_exec(tr->image);
+ 	hlist_del(&tr->hlist);
+ 	kfree(tr);
+-- 
+2.23.0
 
-If you put your debug here, flowi4_oif should be fib_nh_oif per the
-above initialization. It gets changed by the call to fib_lookup.
-
---
-
-Sabrina sent me a short script on using xfrm devices to help me get up
-to speed on that config (much simpler than using any of the *SWAN
-programs). I have incorporated the xfrm device setup into a script of
-other vrf + ipsec tests. A couple of tests are failing the basic setup.
-I have a fix for one of them (as well as the fix for the qdisc on a VRF
-device). I did notice trying to add routes with the xfrm device as the
-nexthop dev was failing but have not had time to dig into it. I have
-busy week but will try to spend some time on this use case this week.
