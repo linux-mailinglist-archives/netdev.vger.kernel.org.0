@@ -2,87 +2,78 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 647DE144433
-	for <lists+netdev@lfdr.de>; Tue, 21 Jan 2020 19:26:44 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 594BD144468
+	for <lists+netdev@lfdr.de>; Tue, 21 Jan 2020 19:38:46 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729240AbgAUS0m (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 21 Jan 2020 13:26:42 -0500
-Received: from mail-yw1-f67.google.com ([209.85.161.67]:41268 "EHLO
-        mail-yw1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728186AbgAUS0m (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 21 Jan 2020 13:26:42 -0500
-Received: by mail-yw1-f67.google.com with SMTP id l22so1895676ywc.8
-        for <netdev@vger.kernel.org>; Tue, 21 Jan 2020 10:26:41 -0800 (PST)
+        id S1729255AbgAUSip (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 21 Jan 2020 13:38:45 -0500
+Received: from mail-il1-f182.google.com ([209.85.166.182]:32946 "EHLO
+        mail-il1-f182.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728901AbgAUSio (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 21 Jan 2020 13:38:44 -0500
+Received: by mail-il1-f182.google.com with SMTP id v15so3196012iln.0;
+        Tue, 21 Jan 2020 10:38:44 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=saSIu8sQwnd3Wuv6FWGZUWJ+4LWuNfIuPazaF7KOw6g=;
-        b=RJyNSGr71SwQw0PlCP014oATyQr0WwvD3D4QicXxu3PUZWCCQI4plTgJ0+ix3O+/Ek
-         JlrpyF6aTncTwqoySOBY8fqNOZaLJKcvBPiKBBqz9Dus6AUGfzgLBQ3Bu0ZmvxQDv6pP
-         2oWebSz2dG5sztyMoKl5nuO7Hg39DQnh3rnud+aC1CeQm7zkUfxsdq3lZNClIGR/XHBr
-         BW8EeOuGs4hZnt+J7xxtLUvDUOF4YwUp4Bu16BvGFd5uDJT6yxE7ensQQtLB2KgdK/X7
-         C97M8DVnZyfKk1CcFfU0HDJsNbB6+qNV6LU3x01CxySXDLcxi/uxyB7wdQZPC/LuKJGX
-         Y/Sg==
+        h=date:from:to:cc:message-id:in-reply-to:references:subject
+         :mime-version:content-transfer-encoding;
+        bh=HVvO29Byv8Rs3N5eik5r8E3uqbkruznhQBAZRbrG7pA=;
+        b=LZT+aumuoKYJRI6kEZ1KE7Y2PQMf6ICj7AIuuGOS7Clb480/O3U4VBNhPZS8+cnVVm
+         pUz2cDbp1OKb2CuItOlTPuLKgvrHTI9boENTTgHSUkMk9hIHMyDXcjpISOyTBtb0SOUv
+         BtnWqpBH5c9Yo3yFg7PFoAXooVf9T6wqagmiR3ZGqf+cR0/g0LyXrFTB9Q7LgTjyPq+d
+         SGhwmGAUQxM0rYeWNAnLilfKn0Cn+Zoo0p8cDND/t9iBCHhkNYiXRpFwWPKDOTXoOHh0
+         hM/4dvgvBe23gpxizGoo+F55Vo3lJD+T99NkeVhAxRYYNMDqjk4GKhGo076mJSF95L0x
+         SZ8A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=saSIu8sQwnd3Wuv6FWGZUWJ+4LWuNfIuPazaF7KOw6g=;
-        b=c3OWI0XUdEGTCha8j3TWFF6WGw9RBrCL4DQjqvhJXBiSQ8Mr9G8WxD1/72JVjJ2XOa
-         gvZ4hTlHPWBvX7VJdl0dBZn+um8NsrxrV6df0J2UtZKsVX1JYoy+iMyltywfxk1zgMpX
-         8jENW/wdSinwAFNGUPbK4B/p4wujxXs4IuHPbUaPaJ5xg4HDKhrVpTvwsY9Zk61BaJ2y
-         iha0ydLVC7ZQdNgWvSLNh0hYG5XrjTDeTBj7+Xm5Wumh1KHk0UfJrD5aZuOW+n5haXSh
-         dgW0wP/qQExTrVpe3P0XbA5qbQgRYuBIKU3SzTbiFajGiilKUhj0onwK/DzCyeTgr4lo
-         6CjQ==
-X-Gm-Message-State: APjAAAVhIgHmg+zQclQe4nJmGwpxnL141n8j7r/PScIOmSBpfizEvYpr
-        5tMyY9W61pOB7V3Kh6OmkMTyLmLy
-X-Google-Smtp-Source: APXvYqwR3fYgoRhZ6DvSbqGnuzmFgn8JlIgxsnb163DVximikyNiHQoUcMGu5K5J/NtIXRxZ1JmWdw==
-X-Received: by 2002:a81:4f4c:: with SMTP id d73mr4421348ywb.279.1579631201027;
-        Tue, 21 Jan 2020 10:26:41 -0800 (PST)
-Received: from mail-yb1-f180.google.com (mail-yb1-f180.google.com. [209.85.219.180])
-        by smtp.gmail.com with ESMTPSA id q124sm17977150ywb.93.2020.01.21.10.26.39
-        for <netdev@vger.kernel.org>
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 21 Jan 2020 10:26:39 -0800 (PST)
-Received: by mail-yb1-f180.google.com with SMTP id f136so1794127ybg.11
-        for <netdev@vger.kernel.org>; Tue, 21 Jan 2020 10:26:39 -0800 (PST)
-X-Received: by 2002:a25:ced4:: with SMTP id x203mr4555273ybe.419.1579631199086;
- Tue, 21 Jan 2020 10:26:39 -0800 (PST)
-MIME-Version: 1.0
-References: <ec4444596ced8bd90da812538198d97703186626.1579615523.git.pabeni@redhat.com>
-In-Reply-To: <ec4444596ced8bd90da812538198d97703186626.1579615523.git.pabeni@redhat.com>
-From:   Willem de Bruijn <willemdebruijn.kernel@gmail.com>
-Date:   Tue, 21 Jan 2020 13:26:02 -0500
-X-Gmail-Original-Message-ID: <CA+FuTScNcdaP4dDmoXesfY1HwE7r1VSiG_SbhbwBNugbv9hAxg@mail.gmail.com>
-Message-ID: <CA+FuTScNcdaP4dDmoXesfY1HwE7r1VSiG_SbhbwBNugbv9hAxg@mail.gmail.com>
-Subject: Re: [PATCH net] Revert "udp: do rmem bulk free even if the rx sk
- queue is empty"
-To:     Paolo Abeni <pabeni@redhat.com>
-Cc:     Network Development <netdev@vger.kernel.org>,
-        Willem de Bruijn <willemdebruijn.kernel@gmail.com>
-Content-Type: text/plain; charset="UTF-8"
+        h=x-gm-message-state:date:from:to:cc:message-id:in-reply-to
+         :references:subject:mime-version:content-transfer-encoding;
+        bh=HVvO29Byv8Rs3N5eik5r8E3uqbkruznhQBAZRbrG7pA=;
+        b=MH5GMDxGOMLN3nyvJAa4fw+eBjqC8PCZYsB6FlMSggq33cSJIkxk9H3r/aYV1aoeHe
+         N/bDKHhDfaos3m7FRF7cSXQn5ydWp/vBL4U+g4tBWDjnwp53YNY8AqruuQbyXaSUFqd9
+         yuPViALGFxSAr07t+dV/gIGE8UqNeAvzv9diC/hyyHbyzLfz0YAlb42LKPdlUr/PHR2M
+         He/lfHhNaeoEKxIeMdgV8n2VXUHpnSS8thiQcHC76x2dIbr5h6kpuW+dERboNjQA5t1g
+         7/LF+lBRPwYxAeAwYi/5TXU9XucTdNrQJDg1a5zhtwMw0j55XW7iTjjkckSPw751kcgV
+         JBLA==
+X-Gm-Message-State: APjAAAVmz455s73Wc0Yqc6jU2SlL4byn0HMXqEV4J/RM2cBezfQ3M4+1
+        CzghgEwZhnpHJiCvWGxdOdM=
+X-Google-Smtp-Source: APXvYqy3JXOHilA9MOfBrxvlfkynjTQlEL7IwLoqnYykgNFDtd5X0w2lsmTWWJDq3Zb9yRyE0FMMAA==
+X-Received: by 2002:a92:84d1:: with SMTP id y78mr4849485ilk.69.1579631924042;
+        Tue, 21 Jan 2020 10:38:44 -0800 (PST)
+Received: from localhost ([184.63.162.180])
+        by smtp.gmail.com with ESMTPSA id t16sm13344368ilh.75.2020.01.21.10.38.41
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 21 Jan 2020 10:38:43 -0800 (PST)
+Date:   Tue, 21 Jan 2020 10:38:34 -0800
+From:   John Fastabend <john.fastabend@gmail.com>
+To:     Alexei Starovoitov <ast@kernel.org>, davem@davemloft.net
+Cc:     daniel@iogearbox.net, netdev@vger.kernel.org, bpf@vger.kernel.org,
+        kernel-team@fb.com
+Message-ID: <5e27452af3157_74b42ad14ee465c075@john-XPS-13-9370.notmuch>
+In-Reply-To: <20200121005348.2769920-3-ast@kernel.org>
+References: <20200121005348.2769920-1-ast@kernel.org>
+ <20200121005348.2769920-3-ast@kernel.org>
+Subject: RE: [PATCH v2 bpf-next 2/3] libbpf: Add support for program
+ extensions
+Mime-Version: 1.0
+Content-Type: text/plain;
+ charset=utf-8
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Jan 21, 2020 at 10:51 AM Paolo Abeni <pabeni@redhat.com> wrote:
->
-> This reverts commit 0d4a6608f68c7532dcbfec2ea1150c9761767d03.
->
-> Williem reported that after commit 0d4a6608f68c ("udp: do rmem bulk
-> free even if the rx sk queue is empty") the memory allocated by
-> an almost idle system with many UDP sockets can grow a lot.
->
-> For stable kernel keep the solution as simple as possible and revert
-> the offending commit.
->
-> Reported-by: Willem de Bruijn <willemdebruijn.kernel@gmail.com>
-> Diagnosed-by: Eric Dumazet <eric.dumazet@gmail.com>
-> Fixes: 0d4a6608f68c ("udp: do rmem bulk free even if the rx sk queue is empty")
-> Signed-off-by: Paolo Abeni <pabeni@redhat.com>
+Alexei Starovoitov wrote:
+> Add minimal support for program extensions. bpf_object_open_opts() needs to be
+> called with attach_prog_fd = target_prog_fd and BPF program extension needs to
+> have in .c file section definition like SEC("freplace/func_to_be_replaced").
+> libbpf will search for "func_to_be_replaced" in the target_prog_fd's BTF and
+> will pass it in attach_btf_id to the kernel. This approach works for tests, but
+> more compex use case may need to request function name (and attach_btf_id that
+> kernel sees) to be more dynamic. Such API will be added in future patches.
+> 
+> Signed-off-by: Alexei Starovoitov <ast@kernel.org>
+> ---
 
-Acked-by: Willem de Bruijn <willemb@google.com>
-
-Thanks Paolo
+Acked-by: John Fastabend <john.fastabend@gmail.com>
