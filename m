@@ -2,150 +2,183 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 3009A14383C
-	for <lists+netdev@lfdr.de>; Tue, 21 Jan 2020 09:31:01 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 402E5143862
+	for <lists+netdev@lfdr.de>; Tue, 21 Jan 2020 09:36:31 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728139AbgAUIas convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Tue, 21 Jan 2020 03:30:48 -0500
-Received: from relay-b01.edpnet.be ([212.71.1.221]:58702 "EHLO
-        relay-b01.edpnet.be" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725890AbgAUIas (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 21 Jan 2020 03:30:48 -0500
-X-ASG-Debug-ID: 1579595444-0a7ff5137c3b1e810001-BZBGGp
-Received: from zotac.vandijck-laurijssen.be ([77.109.89.38]) by relay-b01.edpnet.be with ESMTP id jSHJfcOBIiAaokUu; Tue, 21 Jan 2020 09:30:44 +0100 (CET)
-X-Barracuda-Envelope-From: dev.kurt@vandijck-laurijssen.be
-X-Barracuda-Effective-Source-IP: UNKNOWN[77.109.89.38]
-X-Barracuda-Apparent-Source-IP: 77.109.89.38
-Received: from x1.vandijck-laurijssen.be (74.250-240-81.adsl-static.isp.belgacom.be [81.240.250.74])
-        by zotac.vandijck-laurijssen.be (Postfix) with ESMTPSA id AEFB2C67EEC;
-        Tue, 21 Jan 2020 09:30:44 +0100 (CET)
-Date:   Tue, 21 Jan 2020 09:30:35 +0100
-From:   Kurt Van Dijck <dev.kurt@vandijck-laurijssen.be>
-To:     Oliver Hartkopp <socketcan@hartkopp.net>
-Cc:     Dmitry Vyukov <dvyukov@google.com>,
-        Marc Kleine-Budde <mkl@pengutronix.de>,
-        o.rempel@pengutronix.de,
-        syzbot <syzbot+c3ea30e1e2485573f953@syzkaller.appspotmail.com>,
-        David Miller <davem@davemloft.net>, linux-can@vger.kernel.org,
-        LKML <linux-kernel@vger.kernel.org>,
-        netdev <netdev@vger.kernel.org>,
-        syzkaller-bugs <syzkaller-bugs@googlegroups.com>
-Subject: Re: general protection fault in can_rx_register
-Message-ID: <20200121083035.GD14537@x1.vandijck-laurijssen.be>
-X-ASG-Orig-Subj: Re: general protection fault in can_rx_register
-Mail-Followup-To: Oliver Hartkopp <socketcan@hartkopp.net>,
-        Dmitry Vyukov <dvyukov@google.com>,
-        Marc Kleine-Budde <mkl@pengutronix.de>, o.rempel@pengutronix.de,
-        syzbot <syzbot+c3ea30e1e2485573f953@syzkaller.appspotmail.com>,
-        David Miller <davem@davemloft.net>, linux-can@vger.kernel.org,
-        LKML <linux-kernel@vger.kernel.org>,
-        netdev <netdev@vger.kernel.org>,
-        syzkaller-bugs <syzkaller-bugs@googlegroups.com>
-References: <00000000000030dddb059c562a3f@google.com>
- <55ad363b-1723-28aa-78b1-8aba5565247e@hartkopp.net>
- <20200120091146.GD11138@x1.vandijck-laurijssen.be>
- <CACT4Y+a+GusEA1Gs+z67uWjtwBRp_s7P4Wd_SMmgpCREnDu3kg@mail.gmail.com>
- <8332ec7f-2235-fdf6-9bda-71f789c57b37@hartkopp.net>
- <2a676c0e-20f2-61b5-c72b-f51947bafc7d@hartkopp.net>
+        id S1729037AbgAUIfy (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 21 Jan 2020 03:35:54 -0500
+Received: from us-smtp-delivery-1.mimecast.com ([207.211.31.120]:44655 "EHLO
+        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+        with ESMTP id S1727312AbgAUIfx (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 21 Jan 2020 03:35:53 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1579595751;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=N7dpAEkIwYs7qlTREqwW6WdsBkWtgFDA0vfOaVMiY7c=;
+        b=J90SFnPaoC+Z+0CeBym/O2aFOCBXsUpeCj1zzkIyd7cWux3LPvCrr0ELxh0YCXvD/Q8cnM
+        y823NBaHy0e/4Cn611n/Lm95m2CxKztLoYFaWwS8myKK1EFU9+1J8oGAyoRKdxNCVgfEBL
+        Hj/z6GdsN2gyUlvxoBfNGXTxA57cvsU=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-183-bBs492L5PM6Oe7SbmYwpXw-1; Tue, 21 Jan 2020 03:35:50 -0500
+X-MC-Unique: bBs492L5PM6Oe7SbmYwpXw-1
+Received: from smtp.corp.redhat.com (int-mx06.intmail.prod.int.phx2.redhat.com [10.5.11.16])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 80F95107ACC4;
+        Tue, 21 Jan 2020 08:35:47 +0000 (UTC)
+Received: from [10.72.12.103] (ovpn-12-103.pek2.redhat.com [10.72.12.103])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 0429F63148;
+        Tue, 21 Jan 2020 08:35:28 +0000 (UTC)
+Subject: Re: [PATCH 3/5] vDPA: introduce vDPA bus
+To:     "Michael S. Tsirkin" <mst@redhat.com>
+Cc:     Jason Gunthorpe <jgg@mellanox.com>,
+        Shahaf Shuler <shahafs@mellanox.com>,
+        Rob Miller <rob.miller@broadcom.com>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
+        "virtualization@lists.linux-foundation.org" 
+        <virtualization@lists.linux-foundation.org>,
+        Netdev <netdev@vger.kernel.org>,
+        "Bie, Tiwei" <tiwei.bie@intel.com>,
+        "maxime.coquelin@redhat.com" <maxime.coquelin@redhat.com>,
+        "Liang, Cunming" <cunming.liang@intel.com>,
+        "Wang, Zhihong" <zhihong.wang@intel.com>,
+        "Wang, Xiao W" <xiao.w.wang@intel.com>,
+        "haotian.wang@sifive.com" <haotian.wang@sifive.com>,
+        "Zhu, Lingshan" <lingshan.zhu@intel.com>,
+        "eperezma@redhat.com" <eperezma@redhat.com>,
+        "lulu@redhat.com" <lulu@redhat.com>,
+        Parav Pandit <parav@mellanox.com>,
+        "Tian, Kevin" <kevin.tian@intel.com>,
+        "stefanha@redhat.com" <stefanha@redhat.com>,
+        "rdunlap@infradead.org" <rdunlap@infradead.org>,
+        "hch@infradead.org" <hch@infradead.org>,
+        Ariel Adam <aadam@redhat.com>, Jiri Pirko <jiri@mellanox.com>,
+        "hanand@xilinx.com" <hanand@xilinx.com>,
+        "mhabets@solarflare.com" <mhabets@solarflare.com>
+References: <20200116124231.20253-4-jasowang@redhat.com>
+ <20200117070324-mutt-send-email-mst@kernel.org>
+ <239b042c-2d9e-0eec-a1ef-b03b7e2c5419@redhat.com>
+ <CAJPjb1+fG9L3=iKbV4Vn13VwaeDZZdcfBPvarogF_Nzhk+FnKg@mail.gmail.com>
+ <AM0PR0502MB379553984D0D55FDE25426F6C3330@AM0PR0502MB3795.eurprd05.prod.outlook.com>
+ <d69918ca-8af4-44b2-9652-633530d4c113@redhat.com>
+ <20200120174933.GB3891@mellanox.com>
+ <2a324cec-2863-58f4-c58a-2414ee32c930@redhat.com>
+ <20200121004047-mutt-send-email-mst@kernel.org>
+ <b9ad744e-c4cd-82f9-f56a-1ecc185e9cd7@redhat.com>
+ <20200121031506-mutt-send-email-mst@kernel.org>
+From:   Jason Wang <jasowang@redhat.com>
+Message-ID: <028ed448-a948-79d9-f224-c325029b17ab@redhat.com>
+Date:   Tue, 21 Jan 2020 16:35:27 +0800
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.8.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8BIT
-In-Reply-To: <2a676c0e-20f2-61b5-c72b-f51947bafc7d@hartkopp.net>
-User-Agent: Mutt/1.5.22 (2013-10-16)
-X-Barracuda-Connect: UNKNOWN[77.109.89.38]
-X-Barracuda-Start-Time: 1579595444
-X-Barracuda-URL: https://212.71.1.221:443/cgi-mod/mark.cgi
-X-Virus-Scanned: by bsmtpd at edpnet.be
-X-Barracuda-Scan-Msg-Size: 3259
-X-Barracuda-BRTS-Status: 1
-X-Barracuda-Bayes: SPAM GLOBAL 0.9309 1.0000 3.5604
-X-Barracuda-Spam-Score: 3.56
-X-Barracuda-Spam-Status: No, SCORE=3.56 using global scores of TAG_LEVEL=1000.0 QUARANTINE_LEVEL=1000.0 KILL_LEVEL=7.0 tests=
-X-Barracuda-Spam-Report: Code version 3.2, rules version 3.2.3.79477
-        Rule breakdown below
-         pts rule name              description
-        ---- ---------------------- --------------------------------------------------
+In-Reply-To: <20200121031506-mutt-send-email-mst@kernel.org>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.16
+Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On ma, 20 jan 2020 23:35:16 +0100, Oliver Hartkopp wrote:
-> Answering myself ...
-> 
-> On 20/01/2020 23.02, Oliver Hartkopp wrote:
-> 
-> >
-> >Added some code to check whether dev->ml_priv is NULL:
-> >
-> >~/linux$ git diff
-> >diff --git a/net/can/af_can.c b/net/can/af_can.c
-> >index 128d37a4c2e0..6fb4ae4c359e 100644
-> >--- a/net/can/af_can.c
-> >+++ b/net/can/af_can.c
-> >@@ -463,6 +463,10 @@ int can_rx_register(struct net *net, struct
-> >net_device *dev, canid_t can_id,
-> >         spin_lock_bh(&net->can.rcvlists_lock);
-> >
-> >         dev_rcv_lists = can_dev_rcv_lists_find(net, dev);
-> >+       if (!dev_rcv_lists) {
-> >+               pr_err("dev_rcv_lists == NULL! %p\n", dev);
-> >+               goto out_unlock;
-> >+       }
-> >         rcv_list = can_rcv_list_find(&can_id, &mask, dev_rcv_lists);
-> >
-> >         rcv->can_id = can_id;
-> >@@ -479,6 +483,7 @@ int can_rx_register(struct net *net, struct net_device
-> >*dev, canid_t can_id,
-> >         rcv_lists_stats->rcv_entries++;
-> >         rcv_lists_stats->rcv_entries_max =
-> >max(rcv_lists_stats->rcv_entries_max,
-> >
-> >rcv_lists_stats->rcv_entries);
-> >+out_unlock:
-> >         spin_unlock_bh(&net->can.rcvlists_lock);
-> >
-> >         return err;
-> >
-> >And the output (after some time) is:
-> >
-> >[  758.505841] netlink: 'crash': attribute type 1 has an invalid length.
-> >[  758.508045] bond7148: (slave vxcan1): The slave device specified does
-> >not support setting the MAC address
-> >[  758.508057] bond7148: (slave vxcan1): Error -22 calling dev_set_mtu
-> >[  758.532025] bond10413: (slave vxcan1): The slave device specified does
-> >not support setting the MAC address
-> >[  758.532043] bond10413: (slave vxcan1): Error -22 calling dev_set_mtu
-> >[  758.532254] dev_rcv_lists == NULL! 000000006b9d257f
-> >[  758.547392] netlink: 'crash': attribute type 1 has an invalid length.
-> >[  758.549310] bond7145: (slave vxcan1): The slave device specified does
-> >not support setting the MAC address
-> >[  758.549313] bond7145: (slave vxcan1): Error -22 calling dev_set_mtu
-> >[  758.550464] netlink: 'crash': attribute type 1 has an invalid length.
-> >[  758.552301] bond7146: (slave vxcan1): The slave device specified does
-> >not support setting the MAC address
-> >
-> >So we can see that we get a ml_priv pointer which is NULL which should not
-> >be possible due to this:
-> >
-> >https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/tree/drivers/net/can/dev.c#n743
-> 
-> This reference doesn't point to the right code as vxcan has its own handling
-> do assign ml_priv in vxcan.c .
-> 
-> >Btw. the variable 'size' is set two times at the top of alloc_candev_mqs()
-> >depending on echo_skb_max. This looks wrong.
-> 
-> No. It looks right as I did not get behind the ALIGN() macro at first sight.
-> 
-> But it is still open why dev->ml_priv is not set correctly in vxcan.c as all
-> the settings for .priv_size and in vxcan_setup look fine.
 
-Maybe I got completely lost:
-Shouldn't can_ml_priv and vxcan_priv not be similar?
-Where is the dev_rcv_lists in the vxcan case?
+On 2020/1/21 =E4=B8=8B=E5=8D=884:15, Michael S. Tsirkin wrote:
+> On Tue, Jan 21, 2020 at 04:00:38PM +0800, Jason Wang wrote:
+>> On 2020/1/21 =E4=B8=8B=E5=8D=881:47, Michael S. Tsirkin wrote:
+>>> On Tue, Jan 21, 2020 at 12:00:57PM +0800, Jason Wang wrote:
+>>>> On 2020/1/21 =E4=B8=8A=E5=8D=881:49, Jason Gunthorpe wrote:
+>>>>> On Mon, Jan 20, 2020 at 04:43:53PM +0800, Jason Wang wrote:
+>>>>>> This is similar to the design of platform IOMMU part of vhost-vdpa=
+. We
+>>>>>> decide to send diffs to platform IOMMU there. If it's ok to do tha=
+t in
+>>>>>> driver, we can replace set_map with incremental API like map()/unm=
+ap().
+>>>>>>
+>>>>>> Then driver need to maintain rbtree itself.
+>>>>> I think we really need to see two modes, one where there is a fixed
+>>>>> translation without dynamic vIOMMU driven changes and one that
+>>>>> supports vIOMMU.
+>>>> I think in this case, you meant the method proposed by Shahaf that s=
+ends
+>>>> diffs of "fixed translation" to device?
+>>>>
+>>>> It would be kind of tricky to deal with the following case for examp=
+le:
+>>>>
+>>>> old map [4G, 16G) new map [4G, 8G)
+>>>>
+>>>> If we do
+>>>>
+>>>> 1) flush [4G, 16G)
+>>>> 2) add [4G, 8G)
+>>>>
+>>>> There could be a window between 1) and 2).
+>>>>
+>>>> It requires the IOMMU that can do
+>>>>
+>>>> 1) remove [8G, 16G)
+>>>> 2) flush [8G, 16G)
+>>>> 3) change [4G, 8G)
+>>>>
+>>>> ....
+>>> Basically what I had in mind is something like qemu memory api
+>>>
+>>> 0. begin
+>>> 1. remove [8G, 16G)
+>>> 2. add [4G, 8G)
+>>> 3. commit
+>>
+>> This sounds more flexible e.g driver may choose to implement static ma=
+pping
+>> one through commit. But a question here, it looks to me this still req=
+uires
+>> the DMA to be synced with at least commit here. Otherwise device may g=
+et DMA
+>> fault? Or device is expected to be paused DMA during begin?
+>>
+>> Thanks
+> For example, commit might switch one set of tables for another,
+> without need to pause DMA.
 
-> 
-> Best regards,
-> Oliver
+
+Yes, I think that works but need confirmation from Shahaf or Jason.
+
+Thanks
+
+
+
+>
+>>> Anyway, I'm fine with a one-shot API for now, we can
+>>> improve it later.
+>>>
+>>>>> There are different optimization goals in the drivers for these two
+>>>>> configurations.
+>>>>>
+>>>>>>> If the first one, then I think memory hotplug is a heavy flow
+>>>>>>> regardless. Do you think the extra cycles for the tree traverse
+>>>>>>> will be visible in any way?
+>>>>>> I think if the driver can pause the DMA during the time for settin=
+g up new
+>>>>>> mapping, it should be fine.
+>>>>> This is very tricky for any driver if the mapping change hits the
+>>>>> virtio rings. :(
+>>>>>
+>>>>> Even a IOMMU using driver is going to have problems with that..
+>>>>>
+>>>>> Jason
+>>>> Or I wonder whether ATS/PRI can help here. E.g during I/O page fault=
+,
+>>>> driver/device can wait for the new mapping to be set and then replay=
+ the
+>>>> DMA.
+>>>>
+>>>> Thanks
+>>>>
+
