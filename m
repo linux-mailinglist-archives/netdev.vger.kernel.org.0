@@ -2,87 +2,83 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 99D021440CF
-	for <lists+netdev@lfdr.de>; Tue, 21 Jan 2020 16:46:07 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7538B1440FA
+	for <lists+netdev@lfdr.de>; Tue, 21 Jan 2020 16:51:33 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729137AbgAUPpD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 21 Jan 2020 10:45:03 -0500
-Received: from mail-ed1-f65.google.com ([209.85.208.65]:37013 "EHLO
-        mail-ed1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729052AbgAUPpD (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 21 Jan 2020 10:45:03 -0500
-Received: by mail-ed1-f65.google.com with SMTP id cy15so3440157edb.4
-        for <netdev@vger.kernel.org>; Tue, 21 Jan 2020 07:45:02 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=lYhfEaxk2tZFdTu2sazgJjF9OdRimIzQi/dtbV+yVa8=;
-        b=pQv5/T2IwmoMzQwZXoF2ehPZA0sjJ9GaPhBmfoG8RnP1Mno/L7mQazCYtimkMdLgAe
-         U3d5i6K76pKczm4zJyJLCDv9GQE0EJTUgqFohv9mgO2to7lR15b8XgrI4Tu7NJxnSM83
-         qCjVPx0rJPHxFd7kO9lalGxSiZSi4TyJAFQtu4I6l6tKlURApokDOEyxCTCvl3CKvaSc
-         InzHCxfYkF7tru3T4mOySa9ixJJXuYS6yJZ7wOjoUT1hzeflOmAwoXI+wRFkIi7N6QHx
-         +7UxwsdwXQhNoO8RW8Kfn5Kb8ahtceb9LpgsbzZ4zHQsCQntghO2yp3T1/0KH4OF5ZNa
-         OdMA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=lYhfEaxk2tZFdTu2sazgJjF9OdRimIzQi/dtbV+yVa8=;
-        b=cnj+Rhh3sIUMHkXKc5g9XTAoCNLIBI84lNbhwOo2uic83sRBq03kDopVBRfQBab6Rg
-         cnjbugVTjzNlOOVQw2Ek+gnGI0GvTrqH8eWUOlTVaoXQ6/AbQayxiInMlO+K3Pr7Y6ph
-         CR+SIjX6FzjR5MaDhx+2MO42cRnfA0CZLnT6dEBHXtZ8VnT3lNKB9vqTjtv5L7r/LL3r
-         42zMdmw2CSLK+AQRv5SeTENyx0dIHFOSfuSKWMBl5n55AjEIoQ2tklZSNuyZFlO89xnH
-         QljVX2JNGeca7E5dJ0poKpDiSqkFBGeQeLJyrE4ROHbU7S2aj5+c4K8KfymWEpcbb/P1
-         /EBQ==
-X-Gm-Message-State: APjAAAU7azEa25ehMFplaVhQB6acE/gwO1gzOuMhR6bBOqgRRAIQBtTB
-        nZzInzZFSsYnd9AnkoDAoZzCyldN+gQTEp9ENuM=
-X-Google-Smtp-Source: APXvYqzbYHF5zRW9jGP8bPxw6qvLL5pZMjegsWWCNwfF1hzxxiwtMzj7jGGjuyuabcAom/KasUeogTTwaHgO7sFoPGU=
-X-Received: by 2002:a17:906:4e01:: with SMTP id z1mr5117105eju.46.1579621501483;
- Tue, 21 Jan 2020 07:45:01 -0800 (PST)
+        id S1729240AbgAUPv2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 21 Jan 2020 10:51:28 -0500
+Received: from us-smtp-2.mimecast.com ([207.211.31.81]:52389 "EHLO
+        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1728829AbgAUPv2 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 21 Jan 2020 10:51:28 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1579621887;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=/nUcM4vTCnu2rHce5yQG5m5djPMEq07EL0pdQ4LTGS0=;
+        b=Ud9rQutT6pfoHjdzcXV6u16H/vLdV8PPJC4uWPiQ6gHJlbngia97/Nur5DqJloW62FVygs
+        ZMnUGTtDVGhSDdcz19wmwTIL9tYK4AUUXCQbhjju/34NS46nBNZCdpWqZ4aRDdORT/z+hS
+        dAAXBysFs5IhRXo9lgttxZ93nvSurNI=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-45-wZh746tjPsK-IlW6wE_aag-1; Tue, 21 Jan 2020 10:51:25 -0500
+X-MC-Unique: wZh746tjPsK-IlW6wE_aag-1
+Received: from smtp.corp.redhat.com (int-mx07.intmail.prod.int.phx2.redhat.com [10.5.11.22])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id DC5D6100550E;
+        Tue, 21 Jan 2020 15:51:24 +0000 (UTC)
+Received: from localhost.localdomain.com (unknown [10.34.246.158])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id D3EF21001B05;
+        Tue, 21 Jan 2020 15:51:23 +0000 (UTC)
+From:   Paolo Abeni <pabeni@redhat.com>
+To:     netdev@vger.kernel.org
+Cc:     Willem de Bruijn <willemdebruijn.kernel@gmail.com>
+Subject: [PATCH net] Revert "udp: do rmem bulk free even if the rx sk queue is empty"
+Date:   Tue, 21 Jan 2020 16:50:49 +0100
+Message-Id: <ec4444596ced8bd90da812538198d97703186626.1579615523.git.pabeni@redhat.com>
 MIME-Version: 1.0
-References: <20200121141250.26989-1-gautamramk@gmail.com> <20200121141250.26989-6-gautamramk@gmail.com>
- <20200121.153522.1248409324581446114.davem@davemloft.net>
-In-Reply-To: <20200121.153522.1248409324581446114.davem@davemloft.net>
-From:   Gautam Ramakrishnan <gautamramk@gmail.com>
-Date:   Tue, 21 Jan 2020 21:14:50 +0530
-Message-ID: <CADAms0zvGp4ffqmvZV6RVOTfrosjt6Ht6EkyQ594yJYQFTJBXA@mail.gmail.com>
-Subject: Re: [PATCH net-next v4 05/10] pie: rearrange structure members and
- their initializations
-To:     David Miller <davem@davemloft.net>
-Cc:     Linux Kernel Network Developers <netdev@vger.kernel.org>,
-        "Mohit P. Tahiliani" <tahiliani@nitk.edu.in>,
-        Jamal Hadi Salim <jhs@mojatatu.com>,
-        Dave Taht <dave.taht@gmail.com>,
-        =?UTF-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <toke@redhat.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Stephen Hemminger <stephen@networkplumber.org>,
-        Leslie Monis <lesliemonis@gmail.com>
-Content-Type: text/plain; charset="UTF-8"
+X-Scanned-By: MIMEDefang 2.84 on 10.5.11.22
+Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Jan 21, 2020 at 8:05 PM David Miller <davem@davemloft.net> wrote:
->
-> From: gautamramk@gmail.com
-> Date: Tue, 21 Jan 2020 19:42:44 +0530
->
-> > From: "Mohit P. Tahiliani" <tahiliani@nitk.edu.in>
-> >
-> > Rearrange the members of the structures such that they appear in
-> > order of their types. Also, change the order of their
-> > initializations to match the order in which they appear in the
-> > structures. This improves the code's readability and consistency.
-> >
-> > Signed-off-by: Mohit P. Tahiliani <tahiliani@nitk.edu.in>
-> > Signed-off-by: Leslie Monis <lesliemonis@gmail.com>
-> > Signed-off-by: Gautam Ramakrishnan <gautamramk@gmail.com>
->
-> What matters for structure member ordering is dense packing and
-> grouping commonly-used-together elements for performance.
->
-We shall reorder the variables as per their appearance in the
-structure and re-submit. Could you elaborate a bit on dense packing?
-> "order of their types" are none of those things.
+This reverts commit 0d4a6608f68c7532dcbfec2ea1150c9761767d03.
+
+Williem reported that after commit 0d4a6608f68c ("udp: do rmem bulk
+free even if the rx sk queue is empty") the memory allocated by
+an almost idle system with many UDP sockets can grow a lot.
+
+For stable kernel keep the solution as simple as possible and revert
+the offending commit.
+
+Reported-by: Willem de Bruijn <willemdebruijn.kernel@gmail.com>
+Diagnosed-by: Eric Dumazet <eric.dumazet@gmail.com>
+Fixes: 0d4a6608f68c ("udp: do rmem bulk free even if the rx sk queue is e=
+mpty")
+Signed-off-by: Paolo Abeni <pabeni@redhat.com>
+---
+ net/ipv4/udp.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
+
+diff --git a/net/ipv4/udp.c b/net/ipv4/udp.c
+index 93a355b6b092..030d43c7c957 100644
+--- a/net/ipv4/udp.c
++++ b/net/ipv4/udp.c
+@@ -1368,7 +1368,8 @@ static void udp_rmem_release(struct sock *sk, int s=
+ize, int partial,
+ 	if (likely(partial)) {
+ 		up->forward_deficit +=3D size;
+ 		size =3D up->forward_deficit;
+-		if (size < (sk->sk_rcvbuf >> 2))
++		if (size < (sk->sk_rcvbuf >> 2) &&
++		    !skb_queue_empty(&up->reader_queue))
+ 			return;
+ 	} else {
+ 		size +=3D up->forward_deficit;
+--=20
+2.21.0
+
