@@ -2,179 +2,104 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id B57851435CF
-	for <lists+netdev@lfdr.de>; Tue, 21 Jan 2020 04:04:46 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id AEBE01435DE
+	for <lists+netdev@lfdr.de>; Tue, 21 Jan 2020 04:21:01 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729061AbgAUDEm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 20 Jan 2020 22:04:42 -0500
-Received: from szxga07-in.huawei.com ([45.249.212.35]:51212 "EHLO huawei.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1726890AbgAUDEl (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 20 Jan 2020 22:04:41 -0500
-Received: from DGGEMS409-HUB.china.huawei.com (unknown [172.30.72.60])
-        by Forcepoint Email with ESMTP id B9C9885FE9B03B652C53;
-        Tue, 21 Jan 2020 11:04:39 +0800 (CST)
-Received: from localhost (10.173.223.234) by DGGEMS409-HUB.china.huawei.com
- (10.3.19.209) with Microsoft SMTP Server id 14.3.439.0; Tue, 21 Jan 2020
- 11:04:33 +0800
-From:   YueHaibing <yuehaibing@huawei.com>
-To:     <pkshih@realtek.com>, <kvalo@codeaurora.org>,
-        <davem@davemloft.net>, <bernd.edlinger@hotmail.de>,
-        <yuehaibing@huawei.com>, <Larry.Finger@lwfinger.net>
-CC:     <linux-wireless@vger.kernel.org>, <netdev@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>
-Subject: [PATCH] rtlwifi: rtl8723ae: remove unused variables
-Date:   Tue, 21 Jan 2020 11:04:28 +0800
-Message-ID: <20200121030428.14760-1-yuehaibing@huawei.com>
-X-Mailer: git-send-email 2.10.2.windows.1
+        id S1729091AbgAUDUw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 20 Jan 2020 22:20:52 -0500
+Received: from mail-il1-f196.google.com ([209.85.166.196]:44894 "EHLO
+        mail-il1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728921AbgAUDUw (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 20 Jan 2020 22:20:52 -0500
+Received: by mail-il1-f196.google.com with SMTP id z12so1178455iln.11
+        for <netdev@vger.kernel.org>; Mon, 20 Jan 2020 19:20:50 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=lixom-net.20150623.gappssmtp.com; s=20150623;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=xDcWE9EWGtVID/iKX16rez9xRzd/8Nb913yHk9dAMYM=;
+        b=T5DUMBdxwLNNZ2G6qr8/JwsZn+Orq7oGwZHKldGB2lBt2xpg9AjyfbW2/wzCP9PSdm
+         8CgNcUWgZa9614tn+w5aZLOx8tW88UzdZt/hmnm2yp/VClsrsP4l5QJfsoD6TuMd3dVE
+         fmzAtzVsPouElzps7mYBPOH0HVkeS+xtAjSn/dpf+iG+W6x45PGkjEw3Hlh+8p2QR/fP
+         bY7mC0S/30YPNLxD7TU3rd1Q7DEHzZ2vMbzHTpUOp0LnuxoIcqPaqpj0YWGSEVtJ8sfw
+         KEgK6inoc29l49Yf8u+JVxMYKU030evP3NCibeYe+ThDYnvdckvBF2hhyl/nEY+sNUI2
+         ms2w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=xDcWE9EWGtVID/iKX16rez9xRzd/8Nb913yHk9dAMYM=;
+        b=J4D40zW02v4WyS5BsXx+/HRX4R2XiI/JYQwuy1Q9mj+flcOX0hFnIrZi0AGXHkrZUD
+         7QeHqo1+/b2T0iNrJ2VR+yQzPlSjmrlcCpf5DbtI/NaIDz/YGIvBtW9UTUnPW7S+cQmy
+         B+PUprGO5K/gG1Dho+keFHcNc5Vq37na6zy7HpoO9tO9wHvKjyre5qVGEva5hyvfujP9
+         6a2Cvit0iHgHsMllXCjKI8wFNHv1p0Cw3ZbPyPRi9JBz5bhK7TQXkhjCuA1GnXuX583M
+         4GbwisHQmdICyp0+c87qPsyDKnptAFae/fyyf3c1U1P28dGe5Vs/Hk6S94r9H4iTS+Dw
+         pD1g==
+X-Gm-Message-State: APjAAAUbd/xposbYa4TVjnpS6iVi7i2U9E+Zaqc/qfSYVBPVgRO2zFju
+        /VXcEIZ5hoI7Wsv0P54VSRoIww8YYgmtHxXJoJGggg==
+X-Google-Smtp-Source: APXvYqx9zjbvVKABtdD59999UxaHDFsXuScZSoky+6zJEAyheszYYxPT63r0lZj7p1c8DjDNzhyUxBooXqS0Fhwfkxk=
+X-Received: by 2002:a92:db49:: with SMTP id w9mr1812972ilq.277.1579576849943;
+ Mon, 20 Jan 2020 19:20:49 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.173.223.234]
-X-CFilter-Loop: Reflected
+References: <20191220001517.105297-1-olof@lixom.net> <ff6dc8997083c5d8968df48cc191e5b9e8797618.camel@perches.com>
+ <CAOesGMgxHGBdkdVOoWYpqSF-13iP3itJksCRL8QSiS0diL26dA@mail.gmail.com> <CALzJLG-L+0dgW=5AXAB8eMjAa3jaSHVaDLuDsSBf9ahqM0Ti-A@mail.gmail.com>
+In-Reply-To: <CALzJLG-L+0dgW=5AXAB8eMjAa3jaSHVaDLuDsSBf9ahqM0Ti-A@mail.gmail.com>
+From:   Olof Johansson <olof@lixom.net>
+Date:   Mon, 20 Jan 2020 19:20:38 -0800
+Message-ID: <CAOesGMhXHCz+ahs6whKsS32uECVry9Lk6BQxcvczPXgcoh6b6w@mail.gmail.com>
+Subject: Re: [PATCH] net/mlx5e: Fix printk format warning
+To:     Saeed Mahameed <saeedm@dev.mellanox.co.il>
+Cc:     Joe Perches <joe@perches.com>,
+        Saeed Mahameed <saeedm@mellanox.com>,
+        Leon Romanovsky <leon@kernel.org>,
+        Network Development <netdev@vger.kernel.org>,
+        RDMA mailing list <linux-rdma@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-drivers/net/wireless/realtek/rtlwifi/rtl8723ae/dm.c:16:18:
- warning: ofdmswing_table defined but not used [-Wunused-const-variable=]
-drivers/net/wireless/realtek/rtlwifi/rtl8723ae/dm.c:56:17:
- warning: cckswing_table_ch1ch13 defined but not used [-Wunused-const-variable=]
-drivers/net/wireless/realtek/rtlwifi/rtl8723ae/dm.c:92:17:
- warning: cckswing_table_ch14 defined but not used [-Wunused-const-variable=]
+Hi,
 
-These variable is never used, so remove them.
+On Mon, Dec 30, 2019 at 8:35 PM Saeed Mahameed
+<saeedm@dev.mellanox.co.il> wrote:
+>
+> On Sat, Dec 21, 2019 at 1:19 PM Olof Johansson <olof@lixom.net> wrote:
+> >
+> > On Thu, Dec 19, 2019 at 6:07 PM Joe Perches <joe@perches.com> wrote:
+> > >
+> > > On Thu, 2019-12-19 at 16:15 -0800, Olof Johansson wrote:
+> > > > Use "%zu" for size_t. Seen on ARM allmodconfig:
+> > > []
+> > > > diff --git a/drivers/net/ethernet/mellanox/mlx5/core/wq.c b/drivers/net/ethernet/mellanox/mlx5/core/wq.c
+> > > []
+> > > > @@ -89,7 +89,7 @@ void mlx5_wq_cyc_wqe_dump(struct mlx5_wq_cyc *wq, u16 ix, u8 nstrides)
+> > > >       len = nstrides << wq->fbc.log_stride;
+> > > >       wqe = mlx5_wq_cyc_get_wqe(wq, ix);
+> > > >
+> > > > -     pr_info("WQE DUMP: WQ size %d WQ cur size %d, WQE index 0x%x, len: %ld\n",
+> > > > +     pr_info("WQE DUMP: WQ size %d WQ cur size %d, WQE index 0x%x, len: %zu\n",
+> > > >               mlx5_wq_cyc_get_size(wq), wq->cur_sz, ix, len);
+> > > >       print_hex_dump(KERN_WARNING, "", DUMP_PREFIX_OFFSET, 16, 1, wqe, len, false);
+> > > >  }
+> > >
+> > > One might expect these 2 outputs to be at the same KERN_<LEVEL> too.
+> > > One is KERN_INFO the other KERN_WARNING
+> >
+> > Sure, but I'll leave that up to the driver maintainers to decide/fix
+> > -- I'm just addressing the type warning here.
+>
+> Hi Olof, sorry for the delay, and thanks for the patch,
+>
+> I will apply this to net-next-mlx5 and will submit to net-next myself.
+> we will fixup and address the warning level comment by Joe.
 
-Reported-by: Hulk Robot <hulkci@huawei.com>
-Signed-off-by: YueHaibing <yuehaibing@huawei.com>
----
- .../net/wireless/realtek/rtlwifi/rtl8723ae/dm.c    | 112 ---------------------
- 1 file changed, 112 deletions(-)
-
-diff --git a/drivers/net/wireless/realtek/rtlwifi/rtl8723ae/dm.c b/drivers/net/wireless/realtek/rtlwifi/rtl8723ae/dm.c
-index d8260c7..c61a92d 100644
---- a/drivers/net/wireless/realtek/rtlwifi/rtl8723ae/dm.c
-+++ b/drivers/net/wireless/realtek/rtlwifi/rtl8723ae/dm.c
-@@ -13,118 +13,6 @@
- #include "fw.h"
- #include "hal_btc.h"
- 
--static const u32 ofdmswing_table[OFDM_TABLE_SIZE] = {
--	0x7f8001fe,
--	0x788001e2,
--	0x71c001c7,
--	0x6b8001ae,
--	0x65400195,
--	0x5fc0017f,
--	0x5a400169,
--	0x55400155,
--	0x50800142,
--	0x4c000130,
--	0x47c0011f,
--	0x43c0010f,
--	0x40000100,
--	0x3c8000f2,
--	0x390000e4,
--	0x35c000d7,
--	0x32c000cb,
--	0x300000c0,
--	0x2d4000b5,
--	0x2ac000ab,
--	0x288000a2,
--	0x26000098,
--	0x24000090,
--	0x22000088,
--	0x20000080,
--	0x1e400079,
--	0x1c800072,
--	0x1b00006c,
--	0x19800066,
--	0x18000060,
--	0x16c0005b,
--	0x15800056,
--	0x14400051,
--	0x1300004c,
--	0x12000048,
--	0x11000044,
--	0x10000040,
--};
--
--static const u8 cckswing_table_ch1ch13[CCK_TABLE_SIZE][8] = {
--	{0x36, 0x35, 0x2e, 0x25, 0x1c, 0x12, 0x09, 0x04},
--	{0x33, 0x32, 0x2b, 0x23, 0x1a, 0x11, 0x08, 0x04},
--	{0x30, 0x2f, 0x29, 0x21, 0x19, 0x10, 0x08, 0x03},
--	{0x2d, 0x2d, 0x27, 0x1f, 0x18, 0x0f, 0x08, 0x03},
--	{0x2b, 0x2a, 0x25, 0x1e, 0x16, 0x0e, 0x07, 0x03},
--	{0x28, 0x28, 0x22, 0x1c, 0x15, 0x0d, 0x07, 0x03},
--	{0x26, 0x25, 0x21, 0x1b, 0x14, 0x0d, 0x06, 0x03},
--	{0x24, 0x23, 0x1f, 0x19, 0x13, 0x0c, 0x06, 0x03},
--	{0x22, 0x21, 0x1d, 0x18, 0x11, 0x0b, 0x06, 0x02},
--	{0x20, 0x20, 0x1b, 0x16, 0x11, 0x08, 0x05, 0x02},
--	{0x1f, 0x1e, 0x1a, 0x15, 0x10, 0x0a, 0x05, 0x02},
--	{0x1d, 0x1c, 0x18, 0x14, 0x0f, 0x0a, 0x05, 0x02},
--	{0x1b, 0x1a, 0x17, 0x13, 0x0e, 0x09, 0x04, 0x02},
--	{0x1a, 0x19, 0x16, 0x12, 0x0d, 0x09, 0x04, 0x02},
--	{0x18, 0x17, 0x15, 0x11, 0x0c, 0x08, 0x04, 0x02},
--	{0x17, 0x16, 0x13, 0x10, 0x0c, 0x08, 0x04, 0x02},
--	{0x16, 0x15, 0x12, 0x0f, 0x0b, 0x07, 0x04, 0x01},
--	{0x14, 0x14, 0x11, 0x0e, 0x0b, 0x07, 0x03, 0x02},
--	{0x13, 0x13, 0x10, 0x0d, 0x0a, 0x06, 0x03, 0x01},
--	{0x12, 0x12, 0x0f, 0x0c, 0x09, 0x06, 0x03, 0x01},
--	{0x11, 0x11, 0x0f, 0x0c, 0x09, 0x06, 0x03, 0x01},
--	{0x10, 0x10, 0x0e, 0x0b, 0x08, 0x05, 0x03, 0x01},
--	{0x0f, 0x0f, 0x0d, 0x0b, 0x08, 0x05, 0x03, 0x01},
--	{0x0e, 0x0e, 0x0c, 0x0a, 0x08, 0x05, 0x02, 0x01},
--	{0x0d, 0x0d, 0x0c, 0x0a, 0x07, 0x05, 0x02, 0x01},
--	{0x0d, 0x0c, 0x0b, 0x09, 0x07, 0x04, 0x02, 0x01},
--	{0x0c, 0x0c, 0x0a, 0x09, 0x06, 0x04, 0x02, 0x01},
--	{0x0b, 0x0b, 0x0a, 0x08, 0x06, 0x04, 0x02, 0x01},
--	{0x0b, 0x0a, 0x09, 0x08, 0x06, 0x04, 0x02, 0x01},
--	{0x0a, 0x0a, 0x09, 0x07, 0x05, 0x03, 0x02, 0x01},
--	{0x0a, 0x09, 0x08, 0x07, 0x05, 0x03, 0x02, 0x01},
--	{0x09, 0x09, 0x08, 0x06, 0x05, 0x03, 0x01, 0x01},
--	{0x09, 0x08, 0x07, 0x06, 0x04, 0x03, 0x01, 0x01}
--};
--
--static const u8 cckswing_table_ch14[CCK_TABLE_SIZE][8] = {
--	{0x36, 0x35, 0x2e, 0x1b, 0x00, 0x00, 0x00, 0x00},
--	{0x33, 0x32, 0x2b, 0x19, 0x00, 0x00, 0x00, 0x00},
--	{0x30, 0x2f, 0x29, 0x18, 0x00, 0x00, 0x00, 0x00},
--	{0x2d, 0x2d, 0x17, 0x17, 0x00, 0x00, 0x00, 0x00},
--	{0x2b, 0x2a, 0x25, 0x15, 0x00, 0x00, 0x00, 0x00},
--	{0x28, 0x28, 0x24, 0x14, 0x00, 0x00, 0x00, 0x00},
--	{0x26, 0x25, 0x21, 0x13, 0x00, 0x00, 0x00, 0x00},
--	{0x24, 0x23, 0x1f, 0x12, 0x00, 0x00, 0x00, 0x00},
--	{0x22, 0x21, 0x1d, 0x11, 0x00, 0x00, 0x00, 0x00},
--	{0x20, 0x20, 0x1b, 0x10, 0x00, 0x00, 0x00, 0x00},
--	{0x1f, 0x1e, 0x1a, 0x0f, 0x00, 0x00, 0x00, 0x00},
--	{0x1d, 0x1c, 0x18, 0x0e, 0x00, 0x00, 0x00, 0x00},
--	{0x1b, 0x1a, 0x17, 0x0e, 0x00, 0x00, 0x00, 0x00},
--	{0x1a, 0x19, 0x16, 0x0d, 0x00, 0x00, 0x00, 0x00},
--	{0x18, 0x17, 0x15, 0x0c, 0x00, 0x00, 0x00, 0x00},
--	{0x17, 0x16, 0x13, 0x0b, 0x00, 0x00, 0x00, 0x00},
--	{0x16, 0x15, 0x12, 0x0b, 0x00, 0x00, 0x00, 0x00},
--	{0x14, 0x14, 0x11, 0x0a, 0x00, 0x00, 0x00, 0x00},
--	{0x13, 0x13, 0x10, 0x0a, 0x00, 0x00, 0x00, 0x00},
--	{0x12, 0x12, 0x0f, 0x09, 0x00, 0x00, 0x00, 0x00},
--	{0x11, 0x11, 0x0f, 0x09, 0x00, 0x00, 0x00, 0x00},
--	{0x10, 0x10, 0x0e, 0x08, 0x00, 0x00, 0x00, 0x00},
--	{0x0f, 0x0f, 0x0d, 0x08, 0x00, 0x00, 0x00, 0x00},
--	{0x0e, 0x0e, 0x0c, 0x07, 0x00, 0x00, 0x00, 0x00},
--	{0x0d, 0x0d, 0x0c, 0x07, 0x00, 0x00, 0x00, 0x00},
--	{0x0d, 0x0c, 0x0b, 0x06, 0x00, 0x00, 0x00, 0x00},
--	{0x0c, 0x0c, 0x0a, 0x06, 0x00, 0x00, 0x00, 0x00},
--	{0x0b, 0x0b, 0x0a, 0x06, 0x00, 0x00, 0x00, 0x00},
--	{0x0b, 0x0a, 0x09, 0x05, 0x00, 0x00, 0x00, 0x00},
--	{0x0a, 0x0a, 0x09, 0x05, 0x00, 0x00, 0x00, 0x00},
--	{0x0a, 0x09, 0x08, 0x05, 0x00, 0x00, 0x00, 0x00},
--	{0x09, 0x09, 0x08, 0x05, 0x00, 0x00, 0x00, 0x00},
--	{0x09, 0x08, 0x07, 0x04, 0x00, 0x00, 0x00, 0x00}
--};
--
- static u8 rtl8723e_dm_initial_gain_min_pwdb(struct ieee80211_hw *hw)
- {
- 	struct rtl_priv *rtlpriv = rtl_priv(hw);
--- 
-2.7.4
+This seems to still be pending, and the merge window is soon here. Any
+chance we can see it show up in linux-next soon?
 
 
+Thanks,
+
+-Olof
