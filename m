@@ -2,87 +2,164 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 8F8BE1438E9
-	for <lists+netdev@lfdr.de>; Tue, 21 Jan 2020 10:01:58 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 530D1143915
+	for <lists+netdev@lfdr.de>; Tue, 21 Jan 2020 10:07:29 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728904AbgAUJB4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 21 Jan 2020 04:01:56 -0500
-Received: from mail-lj1-f180.google.com ([209.85.208.180]:43684 "EHLO
-        mail-lj1-f180.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727962AbgAUJBz (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 21 Jan 2020 04:01:55 -0500
-Received: by mail-lj1-f180.google.com with SMTP id a13so1870825ljm.10
-        for <netdev@vger.kernel.org>; Tue, 21 Jan 2020 01:01:54 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=cogentembedded-com.20150623.gappssmtp.com; s=20150623;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=afnx+B71cegV5q+X/wf5E0hqEyBS8gYxOHw2pHAP4kA=;
-        b=gUtEqbH3wrzEHS6VY12SMMG7F1oEFdMbmxOnSmV4lxTFUJt2d5TlLqYNoOFecZufw3
-         a477lxgVbqZX5rkopOK4Zc9Ce8D9w3bbijX36LD91VxAT/0/dMhB1THRgNYBGW/EqNma
-         lCggK0dE6zrfQIfexStSjXp3gfgrJFHEzM+qXfoBqL5X8m25H9NeNOa0wk+O+nN0/DQO
-         2OGq5nkoX+gGJIWoFhx+A6nmMLnmzVt4VcGSsSe2QV+OyUnSyeIISP09DKZYczpHLnFX
-         Pmw/PVCQjRHpOakl2TWxyYhuXsY42mHETBVkoL+b/F7TIC5iBcaR0QNGIAIEc3zDEpAR
-         jtiQ==
+        id S1729127AbgAUJHR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 21 Jan 2020 04:07:17 -0500
+Received: from us-smtp-delivery-1.mimecast.com ([207.211.31.120]:30424 "EHLO
+        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+        with ESMTP id S1725789AbgAUJHR (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 21 Jan 2020 04:07:17 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1579597636;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=aBt9kA8Q3sfLDPWSB6WPSmED3batQYaL6AuEX7S5BEo=;
+        b=gjmhZB8VfzkQCPcB6tXhmtc0C3ToCJfn0qP/12MYn+L+sf360/xHslzZ3HmK8M6zqVUDcY
+        AeMghAzd9q9gynjiLyIeXEyvNJ2E6XQJGuscM+jgi9MqeaaGTQQ1YPSUEbKkotLxKFP8Z6
+        Nj995UiXUQ2C2CBsL7BGdBDBg1Rvc2Y=
+Received: from mail-wr1-f72.google.com (mail-wr1-f72.google.com
+ [209.85.221.72]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-421-qF9iPEF4MBygy2FQxtSh6g-1; Tue, 21 Jan 2020 04:07:11 -0500
+X-MC-Unique: qF9iPEF4MBygy2FQxtSh6g-1
+Received: by mail-wr1-f72.google.com with SMTP id o6so1021710wrp.8
+        for <netdev@vger.kernel.org>; Tue, 21 Jan 2020 01:07:11 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=afnx+B71cegV5q+X/wf5E0hqEyBS8gYxOHw2pHAP4kA=;
-        b=Zb2OB/QzCRb9Wzmut1Vbc7pVjRR9RM4xIYC0PSCs5Lv7xQgN7BvZeh9KUD57alzM2M
-         BokgbyTa/iDygJWpnZnROCi9T7eQNBjOs0C9jdl430wLA+esJBcXZtU+q14+XKxUsMi+
-         VjPOx8FrK7NttfeSDltwbVSKi1zZ2M37l8KX/iT0LtQeKeAmjeqiCfBwy0SW+9ya3q4P
-         6VxrEI/s0FBeBq5ToUN3hbTRZcYXbFuXnIyOYBGQRv8erdatFD81fJkk5cLoqEnzUofU
-         LsbKDWNhsEz4MCbyH6pd3ynKZeLlDIDNo32P8QB3+i/2nuY59YtA+QgengQbQeMJDmMo
-         HVtg==
-X-Gm-Message-State: APjAAAWxR+mAieGbxcl4mgAw/wwSN/UIVWMT6e0PYBIp6rvjsfqtmJzm
-        PyjlLbxeDneAmQddQASkSOPHkQ==
-X-Google-Smtp-Source: APXvYqyMnIQZDBbTNeeLyMo1ILlAA3ZNKrbHRjmpJy1YuY8TagG3jH62uv3BdLWZpWLfJOp8iVr43g==
-X-Received: by 2002:a2e:916:: with SMTP id 22mr15885841ljj.60.1579597312835;
-        Tue, 21 Jan 2020 01:01:52 -0800 (PST)
-Received: from ?IPv6:2a00:1fa0:4257:4d38:8de3:4197:be8e:7729? ([2a00:1fa0:4257:4d38:8de3:4197:be8e:7729])
-        by smtp.gmail.com with ESMTPSA id 195sm18030740ljj.55.2020.01.21.01.01.51
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 21 Jan 2020 01:01:51 -0800 (PST)
-Subject: Re: [PATCH -next] drivers: net: declance: fix comparing pointer to 0
-To:     Chen Zhou <chenzhou10@huawei.com>, davem@davemloft.net,
-        mhabets@solarflare.com, kuba@kernel.org
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-References: <20200121013553.15252-1-chenzhou10@huawei.com>
- <40eb3815-f677-c2fd-3e67-4b39bb332f48@cogentembedded.com>
- <86f4d4a0-627d-84aa-c785-4dac426b7cc6@huawei.com>
-From:   Sergei Shtylyov <sergei.shtylyov@cogentembedded.com>
-Message-ID: <c223c347-4c19-176f-4626-b096c12c0558@cogentembedded.com>
-Date:   Tue, 21 Jan 2020 12:01:45 +0300
-User-Agent: Mozilla/5.0 (Windows NT 6.3; WOW64; rv:68.0) Gecko/20100101
- Thunderbird/68.4.1
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=aBt9kA8Q3sfLDPWSB6WPSmED3batQYaL6AuEX7S5BEo=;
+        b=GdRN4AxnMh3CrjaGXcsG8OsQFlq7jZ/hN+dc4l943dMTR1lv8TmGiReM1paJCYLU5z
+         EF7P5tn6Dk0vSWMKybXWgNhSbF9T3DCSbbr1NacWkMHGWIgFn1MG1faq3kKujpKs0HiH
+         jRD8i5j/b9jSy8NyD6tQkdVRaBuywRtxKcVH5GZkjJTeqUN61vxAloffBOp0WkwWLvjh
+         nB/LfHE70tOPLc7IHvYuUspphq9j6ffs055w4OtBg33Dnc13ANyLohakfbz0ZKWYsAeQ
+         PYLAR5dHBstrsrB71KnmonrU0U++pv3fKLcriKSYX3uWqkLT2pqWkBQ/DyMl9SP9D7Qw
+         6D1Q==
+X-Gm-Message-State: APjAAAWvEj+JLcokoQsTXB9YJq6GvWyX47uOjFGjlslHkWapeaKUQMrC
+        pEfHIDfFzPholAFZu9mA7olkbfeWEys5xRknk5K0bDUihFkitZ3x6uOSSgx7vqY36VL/vYc6TcT
+        0hLbHtnUqLPsO72k/
+X-Received: by 2002:adf:ebc3:: with SMTP id v3mr4130260wrn.280.1579597630114;
+        Tue, 21 Jan 2020 01:07:10 -0800 (PST)
+X-Google-Smtp-Source: APXvYqxU92Hbv50qsDxzXuliKOZgW+eihOR7bXFm+gNzrAyGGjKZoJ+jAUcQspYmZ2eK0Tb6M8FNyA==
+X-Received: by 2002:adf:ebc3:: with SMTP id v3mr4130222wrn.280.1579597629862;
+        Tue, 21 Jan 2020 01:07:09 -0800 (PST)
+Received: from steredhat (host84-49-dynamic.31-79-r.retail.telecomitalia.it. [79.31.49.84])
+        by smtp.gmail.com with ESMTPSA id r68sm2990217wmr.43.2020.01.21.01.07.08
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 21 Jan 2020 01:07:09 -0800 (PST)
+Date:   Tue, 21 Jan 2020 10:07:06 +0100
+From:   Stefano Garzarella <sgarzare@redhat.com>
+To:     "Michael S. Tsirkin" <mst@redhat.com>
+Cc:     David Miller <davem@davemloft.net>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Jorgen Hansen <jhansen@vmware.com>,
+        Jason Wang <jasowang@redhat.com>, kvm <kvm@vger.kernel.org>,
+        Stefan Hajnoczi <stefanha@redhat.com>,
+        virtualization@lists.linux-foundation.org,
+        linux-hyperv@vger.kernel.org, Dexuan Cui <decui@microsoft.com>
+Subject: Re: [PATCH net-next 1/3] vsock: add network namespace support
+Message-ID: <CAGxU2F4uW7FNe5xC0sb3Xxr_GABSXuu1Z9n5M=Ntq==T7MaaVw@mail.gmail.com>
+References: <20200116172428.311437-1-sgarzare@redhat.com>
+ <20200116172428.311437-2-sgarzare@redhat.com>
+ <20200120.100610.546818167633238909.davem@davemloft.net>
+ <20200120101735.uyh4o64gb4njakw5@steredhat>
+ <20200120060601-mutt-send-email-mst@kernel.org>
+ <CAGxU2F6VH8Eb5UH_9KjN6MONbZEo1D7EHAiocVVus6jW55BJDg@mail.gmail.com>
+ <20200120110319-mutt-send-email-mst@kernel.org>
+ <CAGxU2F5=DQJ56sH4BUqp_7rvaXSF9bFHp4QkpLApJQK0bmd4MA@mail.gmail.com>
+ <20200120170120-mutt-send-email-mst@kernel.org>
 MIME-Version: 1.0
-In-Reply-To: <86f4d4a0-627d-84aa-c785-4dac426b7cc6@huawei.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20200120170120-mutt-send-email-mst@kernel.org>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 21.01.2020 11:54, Chen Zhou wrote:
+On Mon, Jan 20, 2020 at 11:02 PM Michael S. Tsirkin <mst@redhat.com> wrote:
+> On Mon, Jan 20, 2020 at 05:53:39PM +0100, Stefano Garzarella wrote:
+> > On Mon, Jan 20, 2020 at 5:04 PM Michael S. Tsirkin <mst@redhat.com> wrote:
+> > > On Mon, Jan 20, 2020 at 02:58:01PM +0100, Stefano Garzarella wrote:
+> > > > On Mon, Jan 20, 2020 at 1:03 PM Michael S. Tsirkin <mst@redhat.com> wrote:
+> > > > > On Mon, Jan 20, 2020 at 11:17:35AM +0100, Stefano Garzarella wrote:
+> > > > > > On Mon, Jan 20, 2020 at 10:06:10AM +0100, David Miller wrote:
+> > > > > > > From: Stefano Garzarella <sgarzare@redhat.com>
+> > > > > > > Date: Thu, 16 Jan 2020 18:24:26 +0100
+> > > > > > >
+> > > > > > > > This patch adds 'netns' module param to enable this new feature
+> > > > > > > > (disabled by default), because it changes vsock's behavior with
+> > > > > > > > network namespaces and could break existing applications.
+> > > > > > >
+> > > > > > > Sorry, no.
+> > > > > > >
+> > > > > > > I wonder if you can even design a legitimate, reasonable, use case
+> > > > > > > where these netns changes could break things.
+> > > > > >
+> > > > > > I forgot to mention the use case.
+> > > > > > I tried the RFC with Kata containers and we found that Kata shim-v1
+> > > > > > doesn't work (Kata shim-v2 works as is) because there are the following
+> > > > > > processes involved:
+> > > > > > - kata-runtime (runs in the init_netns) opens /dev/vhost-vsock and
+> > > > > >   passes it to qemu
+> > > > > > - kata-shim (runs in a container) wants to talk with the guest but the
+> > > > > >   vsock device is assigned to the init_netns and kata-shim runs in a
+> > > > > >   different netns, so the communication is not allowed
+> > > > > > But, as you said, this could be a wrong design, indeed they already
+> > > > > > found a fix, but I was not sure if others could have the same issue.
+> > > > > >
+> > > > > > In this case, do you think it is acceptable to make this change in
+> > > > > > the vsock's behavior with netns and ask the user to change the design?
+> > > > >
+> > > > > David's question is what would be a usecase that's broken
+> > > > > (as opposed to fixed) by enabling this by default.
+> > > >
+> > > > Yes, I got that. Thanks for clarifying.
+> > > > I just reported a broken example that can be fixed with a different
+> > > > design (due to the fact that before this series, vsock devices were
+> > > > accessible to all netns).
+> > > >
+> > > > >
+> > > > > If it does exist, you need a way for userspace to opt-in,
+> > > > > module parameter isn't that.
+> > > >
+> > > > Okay, but I honestly can't find a case that can't be solved.
+> > > > So I don't know whether to add an option (ioctl, sysfs ?) or wait for
+> > > > a real case to come up.
+> > > >
+> > > > I'll try to see better if there's any particular case where we need
+> > > > to disable netns in vsock.
+> > > >
+> > > > Thanks,
+> > > > Stefano
+> > >
+> > > Me neither. so what did you have in mind when you wrote:
+> > > "could break existing applications"?
+> >
+> > I had in mind:
+> > 1. the Kata case. It is fixable (the fix is not merged on kata), but
+> >    older versions will not work with newer Linux.
+>
+> meaning they will keep not working, right?
 
->>> Fixes coccicheck warning:
->>>
->>> ./drivers/net/ethernet/amd/declance.c:611:14-15:
->>>      WARNING comparing pointer to 0
->>>
->>> Compare pointer-typed values to NULL rather than 0.
->>
->>     I don't see NULL in the patch -- you used ! instead.
-> 
-> Yeah, i used ! here.
+Right, I mean without this series they work, with this series they work
+only if the netns support is disabled or with a patch proposed but not
+merged in kata.
 
-    Make the patch description match the diff, please.
+>
+> > 2. a single process running on init_netns that wants to communicate with
+> >    VMs handled by VMMs running in different netns, but this case can be
+> >    solved opening the /dev/vhost-vsock in the same netns of the process
+> >    that wants to communicate with the VMs (init_netns in this case), and
+> >    passig it to the VMM.
+>
+> again right now they just don't work, right?
 
-> Thanks,
-> Chen Zhou
+Right, as above.
 
-MBR, Sergei
+What do you recommend I do?
+
+Thanks,
+Stefano
+
