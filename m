@@ -2,99 +2,118 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id E629F1435E4
-	for <lists+netdev@lfdr.de>; Tue, 21 Jan 2020 04:23:25 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id BC1711435ED
+	for <lists+netdev@lfdr.de>; Tue, 21 Jan 2020 04:33:17 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728709AbgAUDW6 convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Mon, 20 Jan 2020 22:22:58 -0500
-Received: from mx0a-00082601.pphosted.com ([67.231.145.42]:50532 "EHLO
-        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1727009AbgAUDW6 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 20 Jan 2020 22:22:58 -0500
-Received: from pps.filterd (m0148461.ppops.net [127.0.0.1])
-        by mx0a-00082601.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 00L3Mud2031331
-        for <netdev@vger.kernel.org>; Mon, 20 Jan 2020 19:22:57 -0800
-Received: from maileast.thefacebook.com ([163.114.130.16])
-        by mx0a-00082601.pphosted.com with ESMTP id 2xmjwcxt54-4
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT)
-        for <netdev@vger.kernel.org>; Mon, 20 Jan 2020 19:22:57 -0800
-Received: from intmgw001.03.ash8.facebook.com (2620:10d:c0a8:1b::d) by
- mail.thefacebook.com (2620:10d:c0a8:82::f) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.1779.2; Mon, 20 Jan 2020 19:22:42 -0800
-Received: by devbig007.ftw2.facebook.com (Postfix, from userid 572438)
-        id DAB1E760BA4; Mon, 20 Jan 2020 19:22:31 -0800 (PST)
-Smtp-Origin-Hostprefix: devbig
-From:   Alexei Starovoitov <ast@kernel.org>
-Smtp-Origin-Hostname: devbig007.ftw2.facebook.com
-To:     <davem@davemloft.net>
-CC:     <daniel@iogearbox.net>, <jannh@google.com>, <paulmck@kernel.org>,
-        <netdev@vger.kernel.org>, <bpf@vger.kernel.org>,
-        <kernel-team@fb.com>
-Smtp-Origin-Cluster: ftw2c04
-Subject: [PATCH bpf-next] bpf: Fix trampoline usage in preempt
-Date:   Mon, 20 Jan 2020 19:22:31 -0800
-Message-ID: <20200121032231.3292185-1-ast@kernel.org>
-X-Mailer: git-send-email 2.23.0
+        id S1728689AbgAUDdJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 20 Jan 2020 22:33:09 -0500
+Received: from us-smtp-delivery-1.mimecast.com ([205.139.110.120]:21808 "EHLO
+        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+        with ESMTP id S1726935AbgAUDdJ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 20 Jan 2020 22:33:09 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1579577587;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=eZ9hoh4EXoAUSSoaNodF/53MT2MqP0i4YheKRaQPqJ0=;
+        b=jDGbw4I2SK2BgOroGeQINVP4J8nlLqhr6RrJ8fpAMNp3CnjESfEsO5vby4g3jQAcZlNrT2
+        1Ue4uusDG3T6njGq920JYpXTshYHahpgTXl+ORcMC+etJsp3wQq+QVyPjtqXSHQEo+YS6d
+        D/k8J4PhP+K6ZV3ZUnmM/g+qHLYo/H4=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-322-IXrE8Sy2N--LpvrBi-r7Rg-1; Mon, 20 Jan 2020 22:33:05 -0500
+X-MC-Unique: IXrE8Sy2N--LpvrBi-r7Rg-1
+Received: from smtp.corp.redhat.com (int-mx06.intmail.prod.int.phx2.redhat.com [10.5.11.16])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 9F6FD107ACC4;
+        Tue, 21 Jan 2020 03:33:02 +0000 (UTC)
+Received: from [10.72.12.208] (ovpn-12-208.pek2.redhat.com [10.72.12.208])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 3646D5C290;
+        Tue, 21 Jan 2020 03:32:44 +0000 (UTC)
+Subject: Re: [PATCH 3/5] vDPA: introduce vDPA bus
+To:     "Michael S. Tsirkin" <mst@redhat.com>
+Cc:     Shahaf Shuler <shahafs@mellanox.com>,
+        Rob Miller <rob.miller@broadcom.com>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
+        "virtualization@lists.linux-foundation.org" 
+        <virtualization@lists.linux-foundation.org>,
+        Netdev <netdev@vger.kernel.org>,
+        "Bie, Tiwei" <tiwei.bie@intel.com>,
+        Jason Gunthorpe <jgg@mellanox.com>,
+        "maxime.coquelin@redhat.com" <maxime.coquelin@redhat.com>,
+        "Liang, Cunming" <cunming.liang@intel.com>,
+        "Wang, Zhihong" <zhihong.wang@intel.com>,
+        "Wang, Xiao W" <xiao.w.wang@intel.com>,
+        "haotian.wang@sifive.com" <haotian.wang@sifive.com>,
+        "Zhu, Lingshan" <lingshan.zhu@intel.com>,
+        "eperezma@redhat.com" <eperezma@redhat.com>,
+        "lulu@redhat.com" <lulu@redhat.com>,
+        Parav Pandit <parav@mellanox.com>,
+        "Tian, Kevin" <kevin.tian@intel.com>,
+        "stefanha@redhat.com" <stefanha@redhat.com>,
+        "rdunlap@infradead.org" <rdunlap@infradead.org>,
+        "hch@infradead.org" <hch@infradead.org>,
+        Ariel Adam <aadam@redhat.com>,
+        "jakub.kicinski@netronome.com" <jakub.kicinski@netronome.com>,
+        Jiri Pirko <jiri@mellanox.com>,
+        "hanand@xilinx.com" <hanand@xilinx.com>,
+        "mhabets@solarflare.com" <mhabets@solarflare.com>
+References: <20200116124231.20253-1-jasowang@redhat.com>
+ <20200116124231.20253-4-jasowang@redhat.com>
+ <20200117070324-mutt-send-email-mst@kernel.org>
+ <239b042c-2d9e-0eec-a1ef-b03b7e2c5419@redhat.com>
+ <CAJPjb1+fG9L3=iKbV4Vn13VwaeDZZdcfBPvarogF_Nzhk+FnKg@mail.gmail.com>
+ <AM0PR0502MB379553984D0D55FDE25426F6C3330@AM0PR0502MB3795.eurprd05.prod.outlook.com>
+ <20200119045849-mutt-send-email-mst@kernel.org>
+ <d4e7fc56-c9d8-f01f-1504-dd49d5658037@redhat.com>
+ <20200120070710-mutt-send-email-mst@kernel.org>
+From:   Jason Wang <jasowang@redhat.com>
+Message-ID: <f5860f7e-f6c1-5bc7-53f5-c4badddfdfe4@redhat.com>
+Date:   Tue, 21 Jan 2020 11:32:43 +0800
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.8.0
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8BIT
-X-FB-Internal: Safe
-Content-Type: text/plain
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.138,18.0.572
- definitions=2020-01-20_10:2020-01-20,2020-01-20 signatures=0
-X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 malwarescore=0
- lowpriorityscore=0 suspectscore=3 adultscore=0 mlxlogscore=750 mlxscore=0
- clxscore=1034 impostorscore=0 phishscore=0 bulkscore=0 priorityscore=1501
- spamscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-1910280000 definitions=main-2001210027
-X-FB-Internal: deliver
+In-Reply-To: <20200120070710-mutt-send-email-mst@kernel.org>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.16
+Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Though the second half of trampoline page is unused a task could be
-preempted in the middle of the first half of trampoline and two
-updates to trampoline would change the code from underneath the
-preempted task. Hence wait for tasks to voluntarily schedule or go
-to userspace.
-Add similar wait before freeing the trampoline.
 
-Fixes: fec56f5890d9 ("bpf: Introduce BPF trampoline")
-Reported-by: Jann Horn <jannh@google.com>
-Signed-off-by: Alexei Starovoitov <ast@kernel.org>
----
- kernel/bpf/trampoline.c | 10 ++++++++++
- 1 file changed, 10 insertions(+)
+On 2020/1/20 =E4=B8=8B=E5=8D=888:09, Michael S. Tsirkin wrote:
+> On Mon, Jan 20, 2020 at 04:44:34PM +0800, Jason Wang wrote:
+>> On 2020/1/19 =E4=B8=8B=E5=8D=885:59, Michael S. Tsirkin wrote:
+>>> On Sun, Jan 19, 2020 at 09:07:09AM +0000, Shahaf Shuler wrote:
+>>>>> Technically, we can keep the incremental API
+>>>>> here and let the vendor vDPA drivers to record the full mapping
+>>>>> internally which may slightly increase the complexity of vendor dri=
+ver.
+>>>> What will be the trigger for the driver to know it received the last=
+ mapping on this series and it can now push it to the on-chip IOMMU?
+>>> Some kind of invalidate API?
+>>>
+>> The problem is how to deal with the case of vIOMMU. When vIOMMU is ena=
+bling
+>> there's no concept of last mapping.
+>>
+>> Thanks
+> Most IOMMUs have a translation cache so have an invalidate API too.
 
-diff --git a/kernel/bpf/trampoline.c b/kernel/bpf/trampoline.c
-index 79a04417050d..7657ede7aee2 100644
---- a/kernel/bpf/trampoline.c
-+++ b/kernel/bpf/trampoline.c
-@@ -160,6 +160,14 @@ static int bpf_trampoline_update(struct bpf_trampoline *tr)
- 	if (fexit_cnt)
- 		flags = BPF_TRAMP_F_CALL_ORIG | BPF_TRAMP_F_SKIP_FRAME;
- 
-+	/* Though the second half of trampoline page is unused a task could be
-+	 * preempted in the middle of the first half of trampoline and two
-+	 * updates to trampoline would change the code from underneath the
-+	 * preempted task. Hence wait for tasks to voluntarily schedule or go
-+	 * to userspace.
-+	 */
-+	synchronize_rcu_tasks();
-+
- 	err = arch_prepare_bpf_trampoline(new_image, new_image + PAGE_SIZE / 2,
- 					  &tr->func.model, flags,
- 					  fentry, fentry_cnt,
-@@ -251,6 +259,8 @@ void bpf_trampoline_put(struct bpf_trampoline *tr)
- 		goto out;
- 	if (WARN_ON_ONCE(!hlist_empty(&tr->progs_hlist[BPF_TRAMP_FEXIT])))
- 		goto out;
-+	/* wait for tasks to get out of trampoline before freeing it */
-+	synchronize_rcu_tasks();
- 	bpf_jit_free_exec(tr->image);
- 	hlist_del(&tr->hlist);
- 	kfree(tr);
--- 
-2.23.0
+
+Ok, then I get you.
+
+But in this case, when vIOMMU is enabled, each new map became a "last=20
+mapping".
+
+Thanks
+
+>
 
