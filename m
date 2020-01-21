@@ -2,177 +2,216 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 4DC511436CA
-	for <lists+netdev@lfdr.de>; Tue, 21 Jan 2020 06:49:55 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2947E1436E6
+	for <lists+netdev@lfdr.de>; Tue, 21 Jan 2020 07:02:15 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728609AbgAUFr3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 21 Jan 2020 00:47:29 -0500
-Received: from us-smtp-delivery-1.mimecast.com ([207.211.31.120]:20728 "EHLO
-        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S1727817AbgAUFr3 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 21 Jan 2020 00:47:29 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1579585647;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=mRIHR//6+tMI2y6i3aA+ZdSwTH32dw9nU4PtvoJMAts=;
-        b=PcnS9eSGKLvE1veNXRncEDOQBn8o767Za8JsvTy+VbtjiPQ4kLpxKlDYvMkdjkevRcqPFg
-        mTT6+Jcvyc1LWm3OvgHZHzHrngxaGnrTLorWyaNOjlRzc018WllNOmMBue1yuhLzi0N38g
-        ffU+AV4fZE1XlF/aV+CEwGdVCR4QjvE=
-Received: from mail-qk1-f198.google.com (mail-qk1-f198.google.com
- [209.85.222.198]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-69-SW2dk2iBOyGOA_56DrLBNQ-1; Tue, 21 Jan 2020 00:47:26 -0500
-X-MC-Unique: SW2dk2iBOyGOA_56DrLBNQ-1
-Received: by mail-qk1-f198.google.com with SMTP id l7so1113348qke.8
-        for <netdev@vger.kernel.org>; Mon, 20 Jan 2020 21:47:26 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:content-transfer-encoding
-         :in-reply-to;
-        bh=mRIHR//6+tMI2y6i3aA+ZdSwTH32dw9nU4PtvoJMAts=;
-        b=Q314f672HE4Of5+78yGqFtwVVhctoG5Upcb99iH7gY7y3Q8BddGYp1If+arU4OKj4L
-         +1zKldwiWGiOTGcRS2OjcXJDsK3DKWGq9Fhfv3OvUTk4NLE8KW9gGmcJsjGUaRfgS8St
-         h/FGcS4gLjRKq17F187HRBoq/R/HEPGMLzNWpMx4kMNUIUtbW2+VUEE0To9OcdEGfofM
-         tWhgPsSUl5UO5RQfViyNn21IU9l5jXdgwzAeDFpFmuJJwHT/O0FcMrFflfpmlOF1MF7R
-         fyA0vPvYMtHc/Y5C4mmSlr/zbW3ys3GuATiEJ//4A07zRhEt66//XHgY+6x9xusFP4+E
-         JGfQ==
-X-Gm-Message-State: APjAAAWEJIweqDDctRJix/clIlw+EcI3QknD5qgmtCwMMv8vUGanPRbV
-        8v9KW9a6mxy47hBDeJtfxCh/UpeeK9eQjrbA4Soi7zYCoIYZ1Gq03gnMP3g2zmP/lXh6xwgvcRD
-        hPqFdTcqSW0bv2AYQ
-X-Received: by 2002:a37:a3c7:: with SMTP id m190mr3086753qke.212.1579585646172;
-        Mon, 20 Jan 2020 21:47:26 -0800 (PST)
-X-Google-Smtp-Source: APXvYqwfdKT9tkT26VsOESb0T418l/eNKuGfLtPJgnWBbUAbKn1jVX+EvvcLfJEE9PfxETYES/rukQ==
-X-Received: by 2002:a37:a3c7:: with SMTP id m190mr3086726qke.212.1579585645935;
-        Mon, 20 Jan 2020 21:47:25 -0800 (PST)
-Received: from redhat.com (bzq-79-179-85-180.red.bezeqint.net. [79.179.85.180])
-        by smtp.gmail.com with ESMTPSA id x3sm18835929qts.35.2020.01.20.21.47.18
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 20 Jan 2020 21:47:24 -0800 (PST)
-Date:   Tue, 21 Jan 2020 00:47:15 -0500
-From:   "Michael S. Tsirkin" <mst@redhat.com>
-To:     Jason Wang <jasowang@redhat.com>
-Cc:     Jason Gunthorpe <jgg@mellanox.com>,
-        Shahaf Shuler <shahafs@mellanox.com>,
-        Rob Miller <rob.miller@broadcom.com>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
-        "virtualization@lists.linux-foundation.org" 
-        <virtualization@lists.linux-foundation.org>,
-        Netdev <netdev@vger.kernel.org>,
-        "Bie, Tiwei" <tiwei.bie@intel.com>,
-        "maxime.coquelin@redhat.com" <maxime.coquelin@redhat.com>,
-        "Liang, Cunming" <cunming.liang@intel.com>,
-        "Wang, Zhihong" <zhihong.wang@intel.com>,
-        "Wang, Xiao W" <xiao.w.wang@intel.com>,
-        "haotian.wang@sifive.com" <haotian.wang@sifive.com>,
-        "Zhu, Lingshan" <lingshan.zhu@intel.com>,
-        "eperezma@redhat.com" <eperezma@redhat.com>,
-        "lulu@redhat.com" <lulu@redhat.com>,
-        Parav Pandit <parav@mellanox.com>,
-        "Tian, Kevin" <kevin.tian@intel.com>,
-        "stefanha@redhat.com" <stefanha@redhat.com>,
-        "rdunlap@infradead.org" <rdunlap@infradead.org>,
-        "hch@infradead.org" <hch@infradead.org>,
-        Ariel Adam <aadam@redhat.com>,
-        "jakub.kicinski@netronome.com" <jakub.kicinski@netronome.com>,
-        Jiri Pirko <jiri@mellanox.com>,
-        "hanand@xilinx.com" <hanand@xilinx.com>,
-        "mhabets@solarflare.com" <mhabets@solarflare.com>
-Subject: Re: [PATCH 3/5] vDPA: introduce vDPA bus
-Message-ID: <20200121004047-mutt-send-email-mst@kernel.org>
-References: <20200116124231.20253-1-jasowang@redhat.com>
- <20200116124231.20253-4-jasowang@redhat.com>
- <20200117070324-mutt-send-email-mst@kernel.org>
- <239b042c-2d9e-0eec-a1ef-b03b7e2c5419@redhat.com>
- <CAJPjb1+fG9L3=iKbV4Vn13VwaeDZZdcfBPvarogF_Nzhk+FnKg@mail.gmail.com>
- <AM0PR0502MB379553984D0D55FDE25426F6C3330@AM0PR0502MB3795.eurprd05.prod.outlook.com>
- <d69918ca-8af4-44b2-9652-633530d4c113@redhat.com>
- <20200120174933.GB3891@mellanox.com>
- <2a324cec-2863-58f4-c58a-2414ee32c930@redhat.com>
+        id S1727829AbgAUGAo (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 21 Jan 2020 01:00:44 -0500
+Received: from host-88-217-225-28.customer.m-online.net ([88.217.225.28]:21981
+        "EHLO mail.dev.tdt.de" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+        with ESMTP id S1725789AbgAUGAo (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 21 Jan 2020 01:00:44 -0500
+Received: from mschiller01.dev.tdt.de (unknown [10.2.3.20])
+        by mail.dev.tdt.de (Postfix) with ESMTPSA id F3A89200C5;
+        Tue, 21 Jan 2020 06:00:39 +0000 (UTC)
+From:   Martin Schiller <ms@dev.tdt.de>
+To:     kubakici@wp.pl, khc@pm.waw.pl, davem@davemloft.net
+Cc:     linux-x25@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Martin Schiller <ms@dev.tdt.de>
+Subject: [PATCH v4 1/2] wan/hdlc_x25: make lapb params configurable
+Date:   Tue, 21 Jan 2020 07:00:33 +0100
+Message-Id: <20200121060034.30554-1-ms@dev.tdt.de>
+X-Mailer: git-send-email 2.20.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <2a324cec-2863-58f4-c58a-2414ee32c930@redhat.com>
+X-Spam-Status: No, score=-1.0 required=5.0 tests=ALL_TRUSTED autolearn=ham
+        autolearn_force=no version=3.4.2
+X-Spam-Checker-Version: SpamAssassin 3.4.2 (2018-09-13) on mail.dev.tdt.de
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Jan 21, 2020 at 12:00:57PM +0800, Jason Wang wrote:
-> 
-> On 2020/1/21 上午1:49, Jason Gunthorpe wrote:
-> > On Mon, Jan 20, 2020 at 04:43:53PM +0800, Jason Wang wrote:
-> > > This is similar to the design of platform IOMMU part of vhost-vdpa. We
-> > > decide to send diffs to platform IOMMU there. If it's ok to do that in
-> > > driver, we can replace set_map with incremental API like map()/unmap().
-> > > 
-> > > Then driver need to maintain rbtree itself.
-> > I think we really need to see two modes, one where there is a fixed
-> > translation without dynamic vIOMMU driven changes and one that
-> > supports vIOMMU.
-> 
-> 
-> I think in this case, you meant the method proposed by Shahaf that sends
-> diffs of "fixed translation" to device?
-> 
-> It would be kind of tricky to deal with the following case for example:
-> 
-> old map [4G, 16G) new map [4G, 8G)
-> 
-> If we do
-> 
-> 1) flush [4G, 16G)
-> 2) add [4G, 8G)
-> 
-> There could be a window between 1) and 2).
-> 
-> It requires the IOMMU that can do
-> 
-> 1) remove [8G, 16G)
-> 2) flush [8G, 16G)
-> 3) change [4G, 8G)
-> 
-> ....
+This enables you to configure mode (DTE/DCE), Modulo, Window, T1, T2, N2 via
+sethdlc (which needs to be patched as well).
 
-Basically what I had in mind is something like qemu memory api
+Signed-off-by: Martin Schiller <ms@dev.tdt.de>
+---
+ drivers/net/wan/hdlc_x25.c      | 80 +++++++++++++++++++++++++++++++--
+ include/uapi/linux/hdlc/ioctl.h |  9 ++++
+ include/uapi/linux/if.h         |  1 +
+ 3 files changed, 87 insertions(+), 3 deletions(-)
 
-0. begin
-1. remove [8G, 16G)
-2. add [4G, 8G)
-3. commit
-
-Anyway, I'm fine with a one-shot API for now, we can
-improve it later.
-
-> > 
-> > There are different optimization goals in the drivers for these two
-> > configurations.
-> > 
-> > > > If the first one, then I think memory hotplug is a heavy flow
-> > > > regardless. Do you think the extra cycles for the tree traverse
-> > > > will be visible in any way?
-> > > I think if the driver can pause the DMA during the time for setting up new
-> > > mapping, it should be fine.
-> > This is very tricky for any driver if the mapping change hits the
-> > virtio rings. :(
-> > 
-> > Even a IOMMU using driver is going to have problems with that..
-> > 
-> > Jason
-> 
-> 
-> Or I wonder whether ATS/PRI can help here. E.g during I/O page fault,
-> driver/device can wait for the new mapping to be set and then replay the
-> DMA.
-> 
-> Thanks
-> 
-
-
+diff --git a/drivers/net/wan/hdlc_x25.c b/drivers/net/wan/hdlc_x25.c
+index 5643675ff724..688233c2e1ea 100644
+--- a/drivers/net/wan/hdlc_x25.c
++++ b/drivers/net/wan/hdlc_x25.c
+@@ -21,8 +21,17 @@
+ #include <linux/skbuff.h>
+ #include <net/x25device.h>
+ 
++struct x25_state {
++	x25_hdlc_proto settings;
++};
++
+ static int x25_ioctl(struct net_device *dev, struct ifreq *ifr);
+ 
++static struct x25_state *state(hdlc_device *hdlc)
++{
++	return hdlc->state;
++}
++
+ /* These functions are callbacks called by LAPB layer */
+ 
+ static void x25_connect_disconnect(struct net_device *dev, int reason, int code)
+@@ -131,7 +140,6 @@ static netdev_tx_t x25_xmit(struct sk_buff *skb, struct net_device *dev)
+ 
+ static int x25_open(struct net_device *dev)
+ {
+-	int result;
+ 	static const struct lapb_register_struct cb = {
+ 		.connect_confirmation = x25_connected,
+ 		.connect_indication = x25_connected,
+@@ -140,10 +148,33 @@ static int x25_open(struct net_device *dev)
+ 		.data_indication = x25_data_indication,
+ 		.data_transmit = x25_data_transmit,
+ 	};
++	hdlc_device *hdlc = dev_to_hdlc(dev);
++	struct lapb_parms_struct params;
++	int result;
+ 
+ 	result = lapb_register(dev, &cb);
+ 	if (result != LAPB_OK)
+ 		return result;
++
++	result = lapb_getparms(dev, &params);
++	if (result != LAPB_OK)
++		return result;
++
++	if (state(hdlc)->settings.dce)
++		params.mode = params.mode | LAPB_DCE;
++
++	if (state(hdlc)->settings.modulo == 128)
++		params.mode = params.mode | LAPB_EXTENDED;
++
++	params.window = state(hdlc)->settings.window;
++	params.t1 = state(hdlc)->settings.t1;
++	params.t2 = state(hdlc)->settings.t2;
++	params.n2 = state(hdlc)->settings.n2;
++
++	result = lapb_setparms(dev, &params);
++	if (result != LAPB_OK)
++		return result;
++
+ 	return 0;
+ }
+ 
+@@ -186,7 +217,10 @@ static struct hdlc_proto proto = {
+ 
+ static int x25_ioctl(struct net_device *dev, struct ifreq *ifr)
+ {
++	x25_hdlc_proto __user *x25_s = ifr->ifr_settings.ifs_ifsu.x25;
++	const size_t size = sizeof(x25_hdlc_proto);
+ 	hdlc_device *hdlc = dev_to_hdlc(dev);
++	x25_hdlc_proto new_settings;
+ 	int result;
+ 
+ 	switch (ifr->ifr_settings.type) {
+@@ -194,7 +228,13 @@ static int x25_ioctl(struct net_device *dev, struct ifreq *ifr)
+ 		if (dev_to_hdlc(dev)->proto != &proto)
+ 			return -EINVAL;
+ 		ifr->ifr_settings.type = IF_PROTO_X25;
+-		return 0; /* return protocol only, no settable parameters */
++		if (ifr->ifr_settings.size < size) {
++			ifr->ifr_settings.size = size; /* data size wanted */
++			return -ENOBUFS;
++		}
++		if (copy_to_user(x25_s, &state(hdlc)->settings, size))
++			return -EFAULT;
++		return 0;
+ 
+ 	case IF_PROTO_X25:
+ 		if (!capable(CAP_NET_ADMIN))
+@@ -203,12 +243,46 @@ static int x25_ioctl(struct net_device *dev, struct ifreq *ifr)
+ 		if (dev->flags & IFF_UP)
+ 			return -EBUSY;
+ 
++		/* backward compatibility */
++		if (ifr->ifr_settings.size = 0) {
++			new_settings.dce = 0;
++			new_settings.modulo = 8;
++			new_settings.window = 7;
++			new_settings.t1 = 3;
++			new_settings.t2 = 1;
++			new_settings.n2 = 10;
++		}
++		else {
++			if (copy_from_user(&new_settings, x25_s, size))
++				return -EFAULT;
++
++			if ((new_settings.dce != 0 &&
++			new_settings.dce != 1) ||
++			(new_settings.modulo != 8 &&
++			new_settings.modulo != 128) ||
++			new_settings.window < 1 ||
++			(new_settings.modulo == 8 &&
++			new_settings.window > 7) ||
++			(new_settings.modulo == 128 &&
++			new_settings.window > 127) ||
++			new_settings.t1 < 1 ||
++			new_settings.t1 > 255 ||
++			new_settings.t2 < 1 ||
++			new_settings.t2 > 255 ||
++			new_settings.n2 < 1 ||
++			new_settings.n2 > 255)
++				return -EINVAL;
++		}
++
+ 		result=hdlc->attach(dev, ENCODING_NRZ,PARITY_CRC16_PR1_CCITT);
+ 		if (result)
+ 			return result;
+ 
+-		if ((result = attach_hdlc_protocol(dev, &proto, 0)))
++		if ((result = attach_hdlc_protocol(dev, &proto,
++						   sizeof(struct x25_state))))
+ 			return result;
++
++		memcpy(&state(hdlc)->settings, &new_settings, size);
+ 		dev->type = ARPHRD_X25;
+ 		call_netdevice_notifiers(NETDEV_POST_TYPE_CHANGE, dev);
+ 		netif_dormant_off(dev);
+diff --git a/include/uapi/linux/hdlc/ioctl.h b/include/uapi/linux/hdlc/ioctl.h
+index 0fe4238e8246..b06341acab5e 100644
+--- a/include/uapi/linux/hdlc/ioctl.h
++++ b/include/uapi/linux/hdlc/ioctl.h
+@@ -79,6 +79,15 @@ typedef struct {
+     unsigned int timeout;
+ } cisco_proto;
+ 
++typedef struct {
++	unsigned short dce; /* 1 for DCE (network side) operation */
++	unsigned int modulo; /* modulo (8 = basic / 128 = extended) */
++	unsigned int window; /* frame window size */
++	unsigned int t1; /* timeout t1 */
++	unsigned int t2; /* timeout t2 */
++	unsigned int n2; /* frame retry counter */
++} x25_hdlc_proto;
++
+ /* PPP doesn't need any info now - supply length = 0 to ioctl */
+ 
+ #endif /* __ASSEMBLY__ */
+diff --git a/include/uapi/linux/if.h b/include/uapi/linux/if.h
+index 4bf33344aab1..be714cd8c826 100644
+--- a/include/uapi/linux/if.h
++++ b/include/uapi/linux/if.h
+@@ -213,6 +213,7 @@ struct if_settings {
+ 		fr_proto		__user *fr;
+ 		fr_proto_pvc		__user *fr_pvc;
+ 		fr_proto_pvc_info	__user *fr_pvc_info;
++		x25_hdlc_proto		__user *x25;
+ 
+ 		/* interface settings */
+ 		sync_serial_settings	__user *sync;
 -- 
-MST
+2.20.1
 
