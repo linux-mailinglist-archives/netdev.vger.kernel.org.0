@@ -2,65 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 23F1C143A64
-	for <lists+netdev@lfdr.de>; Tue, 21 Jan 2020 11:05:03 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1EA3E143B37
+	for <lists+netdev@lfdr.de>; Tue, 21 Jan 2020 11:40:34 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729399AbgAUKE6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 21 Jan 2020 05:04:58 -0500
-Received: from shards.monkeyblade.net ([23.128.96.9]:35970 "EHLO
+        id S1729567AbgAUKkc (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 21 Jan 2020 05:40:32 -0500
+Received: from shards.monkeyblade.net ([23.128.96.9]:36140 "EHLO
         shards.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728741AbgAUKE6 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 21 Jan 2020 05:04:58 -0500
+        with ESMTP id S1728803AbgAUKka (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 21 Jan 2020 05:40:30 -0500
 Received: from localhost (82-95-191-104.ip.xs4all.nl [82.95.191.104])
         (using TLSv1 with cipher AES256-SHA (256/256 bits))
         (Client did not present a certificate)
         (Authenticated sender: davem-davemloft)
-        by shards.monkeyblade.net (Postfix) with ESMTPSA id C906E15BD84F7;
-        Tue, 21 Jan 2020 02:04:55 -0800 (PST)
-Date:   Tue, 21 Jan 2020 11:04:54 +0100 (CET)
-Message-Id: <20200121.110454.2077433904156411260.davem@davemloft.net>
-To:     haiyangz@microsoft.com
-Cc:     sashal@kernel.org, linux-hyperv@vger.kernel.org,
-        netdev@vger.kernel.org, kys@microsoft.com, sthemmin@microsoft.com,
-        olaf@aepfle.de, vkuznets@redhat.com, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH V2,net-next, 1/2] hv_netvsc: Add XDP support
+        by shards.monkeyblade.net (Postfix) with ESMTPSA id CAF6715C024FA;
+        Tue, 21 Jan 2020 02:40:26 -0800 (PST)
+Date:   Tue, 21 Jan 2020 11:40:22 +0100 (CET)
+Message-Id: <20200121.114022.1894174168297214093.davem@davemloft.net>
+To:     ndev@hwipl.net
+Cc:     kgraul@linux.ibm.com, ubraun@linux.ibm.com, netdev@vger.kernel.org
+Subject: Re: [PATCH net-next] net/smc: allow unprivileged users to read
+ pnet table
 From:   David Miller <davem@davemloft.net>
-In-Reply-To: <1579558957-62496-2-git-send-email-haiyangz@microsoft.com>
-References: <1579558957-62496-1-git-send-email-haiyangz@microsoft.com>
-        <1579558957-62496-2-git-send-email-haiyangz@microsoft.com>
+In-Reply-To: <20200121000446.339681-1-ndev@hwipl.net>
+References: <20200121000446.339681-1-ndev@hwipl.net>
 X-Mailer: Mew version 6.8 on Emacs 26.3
 Mime-Version: 1.0
 Content-Type: Text/Plain; charset=us-ascii
 Content-Transfer-Encoding: 7bit
-X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Tue, 21 Jan 2020 02:04:57 -0800 (PST)
+X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Tue, 21 Jan 2020 02:40:27 -0800 (PST)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Haiyang Zhang <haiyangz@microsoft.com>
-Date: Mon, 20 Jan 2020 14:22:36 -0800
+From: Hans Wippel <ndev@hwipl.net>
+Date: Tue, 21 Jan 2020 01:04:46 +0100
 
-> +u32 netvsc_run_xdp(struct net_device *ndev, struct netvsc_channel *nvchan,
-> +		   struct xdp_buff *xdp)
-> +{
-> +	struct page *page = NULL;
-> +	void *data = nvchan->rsc.data[0];
-> +	u32 len = nvchan->rsc.len[0];
-> +	struct bpf_prog *prog;
-> +	u32 act = XDP_PASS;
+> The current flags of the SMC_PNET_GET command only allow privileged
+> users to retrieve entries from the pnet table via netlink. The content
+> of the pnet table may be useful for all users though, e.g., for
+> debugging smc connection problems.
+> 
+> This patch removes the GENL_ADMIN_PERM flag so that unprivileged users
+> can read the pnet table.
+> 
+> Signed-off-by: Hans Wippel <ndev@hwipl.net>
 
-Please use reverse christmas tree ordering of local variables.
-
-> +	xdp->data_hard_start = page_address(page);
-> +	xdp->data = xdp->data_hard_start + NETVSC_XDP_HDRM;
-> +	xdp_set_data_meta_invalid(xdp);
-> +	xdp->data_end = xdp->data + len;
-> +	xdp->rxq = &nvchan->xdp_rxq;
-> +	xdp->handle = 0;
-> +
-> +	memcpy(xdp->data, data, len);
-
-Why can't the program run directly on nvchan->rsc.data[0]?
-
-This data copy defeats the whole performance gain of using XDP.
+Seems reasonable, applied, thanks.
