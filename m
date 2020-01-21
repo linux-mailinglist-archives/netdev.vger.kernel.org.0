@@ -2,61 +2,65 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 44F9A143960
-	for <lists+netdev@lfdr.de>; Tue, 21 Jan 2020 10:21:25 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8574114397C
+	for <lists+netdev@lfdr.de>; Tue, 21 Jan 2020 10:30:07 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729017AbgAUJVX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 21 Jan 2020 04:21:23 -0500
-Received: from shards.monkeyblade.net ([23.128.96.9]:35738 "EHLO
-        shards.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725789AbgAUJVX (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 21 Jan 2020 04:21:23 -0500
-Received: from localhost (82-95-191-104.ip.xs4all.nl [82.95.191.104])
-        (using TLSv1 with cipher AES256-SHA (256/256 bits))
-        (Client did not present a certificate)
-        (Authenticated sender: davem-davemloft)
-        by shards.monkeyblade.net (Postfix) with ESMTPSA id 8837A15B90CB6;
-        Tue, 21 Jan 2020 01:21:21 -0800 (PST)
-Date:   Tue, 21 Jan 2020 10:19:08 +0100 (CET)
-Message-Id: <20200121.101908.1503286381717753243.davem@davemloft.net>
-To:     tagyounit@gmail.com
-Cc:     netdev@vger.kernel.org, kuznet@ms2.inr.ac.ru,
-        yoshfuji@linux-ipv6.org, dlebrun@google.com,
-        david.lebrun@uclouvain.be
-Subject: Re: [PATCH net] ipv6: sr: remove SKB_GSO_IPXIP6 on End.D* actions
-From:   David Miller <davem@davemloft.net>
-In-Reply-To: <20200120044837.76789-1-tagyounit@gmail.com>
-References: <20200120044837.76789-1-tagyounit@gmail.com>
-X-Mailer: Mew version 6.8 on Emacs 26.3
-Mime-Version: 1.0
-Content-Type: Text/Plain; charset=us-ascii
-Content-Transfer-Encoding: 7bit
-X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Tue, 21 Jan 2020 01:21:22 -0800 (PST)
+        id S1728826AbgAUJaC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 21 Jan 2020 04:30:02 -0500
+Received: from szxga04-in.huawei.com ([45.249.212.190]:10121 "EHLO huawei.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1727220AbgAUJaB (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 21 Jan 2020 04:30:01 -0500
+Received: from DGGEMS413-HUB.china.huawei.com (unknown [172.30.72.58])
+        by Forcepoint Email with ESMTP id 77E63953C003BFDE2BD5;
+        Tue, 21 Jan 2020 17:29:59 +0800 (CST)
+Received: from localhost.localdomain.localdomain (10.175.113.25) by
+ DGGEMS413-HUB.china.huawei.com (10.3.19.213) with Microsoft SMTP Server id
+ 14.3.439.0; Tue, 21 Jan 2020 17:29:48 +0800
+From:   Chen Zhou <chenzhou10@huawei.com>
+To:     <davem@davemloft.net>, <mhabets@solarflare.com>, <kuba@kernel.org>,
+        <sergei.shtylyov@cogentembedded.com>
+CC:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <chenzhou10@huawei.com>
+Subject: [PATCH -next v2] drivers: net: declance: fix comparing pointer to 0
+Date:   Tue, 21 Jan 2020 17:24:55 +0800
+Message-ID: <20200121092455.82983-1-chenzhou10@huawei.com>
+X-Mailer: git-send-email 2.20.1
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [10.175.113.25]
+X-CFilter-Loop: Reflected
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Yuki Taguchi <tagyounit@gmail.com>
-Date: Mon, 20 Jan 2020 13:48:37 +0900
+Fixes coccicheck warning:
 
-> After LRO/GRO is applied, SRv6 encapsulated packets have
-> SKB_GSO_IPXIP6 feature flag, and this flag must be removed right after
-> decapulation procedure.
-> 
-> Currently, SKB_GSO_IPXIP6 flag is not removed on End.D* actions, which
-> creates inconsistent packet state, that is, a normal TCP/IP packets
-> have the SKB_GSO_IPXIP6 flag. This behavior can cause unexpected
-> fallback to GSO on routing to netdevices that do not support
-> SKB_GSO_IPXIP6. For example, on inter-VRF forwarding, decapsulated
-> packets separated into small packets by GSO because VRF devices do not
-> support TSO for packets with SKB_GSO_IPXIP6 flag, and this degrades
-> forwarding performance.
-> 
-> This patch removes encapsulation related GSO flags from the skb right
-> after the End.D* action is applied.
-> 
-> Fixes: d7a669dd2f8b ("ipv6: sr: add helper functions for seg6local")
-> Signed-off-by: Yuki Taguchi <tagyounit@gmail.com>
+./drivers/net/ethernet/amd/declance.c:611:14-15:
+	WARNING comparing pointer to 0
 
-Applied and queued up for -stable, thanks.
+Replace "skb == 0" with "!skb".
+
+Signed-off-by: Chen Zhou <chenzhou10@huawei.com>
+---
+ drivers/net/ethernet/amd/declance.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/drivers/net/ethernet/amd/declance.c b/drivers/net/ethernet/amd/declance.c
+index 6592a2d..7282ce5 100644
+--- a/drivers/net/ethernet/amd/declance.c
++++ b/drivers/net/ethernet/amd/declance.c
+@@ -608,7 +608,7 @@ static int lance_rx(struct net_device *dev)
+ 			len = (*rds_ptr(rd, mblength, lp->type) & 0xfff) - 4;
+ 			skb = netdev_alloc_skb(dev, len + 2);
+ 
+-			if (skb == 0) {
++			if (!skb) {
+ 				dev->stats.rx_dropped++;
+ 				*rds_ptr(rd, mblength, lp->type) = 0;
+ 				*rds_ptr(rd, rmd1, lp->type) =
+-- 
+2.7.4
+
