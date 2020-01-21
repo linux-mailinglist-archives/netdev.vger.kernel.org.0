@@ -2,78 +2,97 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 8F3001441B6
-	for <lists+netdev@lfdr.de>; Tue, 21 Jan 2020 17:09:18 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0EBD51441BC
+	for <lists+netdev@lfdr.de>; Tue, 21 Jan 2020 17:10:04 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729045AbgAUQJM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 21 Jan 2020 11:09:12 -0500
-Received: from shards.monkeyblade.net ([23.128.96.9]:39034 "EHLO
-        shards.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726555AbgAUQJM (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 21 Jan 2020 11:09:12 -0500
-Received: from localhost (unknown [62.21.130.100])
-        (using TLSv1 with cipher AES256-SHA (256/256 bits))
-        (Client did not present a certificate)
-        (Authenticated sender: davem-davemloft)
-        by shards.monkeyblade.net (Postfix) with ESMTPSA id BDAF51585A86D;
-        Tue, 21 Jan 2020 08:09:09 -0800 (PST)
-Date:   Tue, 21 Jan 2020 17:09:05 +0100 (CET)
-Message-Id: <20200121.170905.87149625206286035.davem@davemloft.net>
-To:     gautamramk@gmail.com
-Cc:     netdev@vger.kernel.org, tahiliani@nitk.edu.in, jhs@mojatatu.com,
-        dave.taht@gmail.com, toke@redhat.com, kuba@kernel.org,
-        stephen@networkplumber.org, lesliemonis@gmail.com
-Subject: Re: [PATCH net-next v4 05/10] pie: rearrange structure members and
- their initializations
-From:   David Miller <davem@davemloft.net>
-In-Reply-To: <CADAms0zvGp4ffqmvZV6RVOTfrosjt6Ht6EkyQ594yJYQFTJBXA@mail.gmail.com>
-References: <20200121141250.26989-6-gautamramk@gmail.com>
-        <20200121.153522.1248409324581446114.davem@davemloft.net>
-        <CADAms0zvGp4ffqmvZV6RVOTfrosjt6Ht6EkyQ594yJYQFTJBXA@mail.gmail.com>
-X-Mailer: Mew version 6.8 on Emacs 26.3
-Mime-Version: 1.0
-Content-Type: Text/Plain; charset=us-ascii
+        id S1729255AbgAUQKB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 21 Jan 2020 11:10:01 -0500
+Received: from us-smtp-delivery-1.mimecast.com ([207.211.31.120]:37196 "EHLO
+        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+        with ESMTP id S1726555AbgAUQKB (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 21 Jan 2020 11:10:01 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1579623000;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=UEuuKeMhgB5vy+6HvBEXjxE3sicUJEJgiG6w15sfOoA=;
+        b=I02pHP3rvAXhwrfLsgjW9+c44Yp4IY9H0+lhIiC/rQz04rnn2L35WUweVyQTONFjJCJxNj
+        NrcL60LINSHaHppNd6AWr+SGyfQcZ5tG6VaO1eyOX1tXfXnMBK5fA2KiiW2mHNoYT48P6Q
+        8jV9WPvha0KPEtLoLtixLTONZ3RVXsk=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-381-mdUac1_rNe-HnQX9A1cRhQ-1; Tue, 21 Jan 2020 11:09:58 -0500
+X-MC-Unique: mdUac1_rNe-HnQX9A1cRhQ-1
+Received: from smtp.corp.redhat.com (int-mx04.intmail.prod.int.phx2.redhat.com [10.5.11.14])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 10DD518B5FBE;
+        Tue, 21 Jan 2020 16:09:57 +0000 (UTC)
+Received: from carbon (ovpn-200-26.brq.redhat.com [10.40.200.26])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id AC75B5D9E2;
+        Tue, 21 Jan 2020 16:09:47 +0000 (UTC)
+Date:   Tue, 21 Jan 2020 17:09:45 +0100
+From:   Jesper Dangaard Brouer <brouer@redhat.com>
+To:     Ilias Apalodimas <ilias.apalodimas@linaro.org>,
+        Lorenzo Bianconi <lorenzo.bianconi@redhat.com>
+Cc:     brouer@redhat.com, Saeed Mahameed <saeedm@mellanox.com>,
+        Matteo Croce <mcroce@redhat.com>,
+        Tariq Toukan <tariqt@mellanox.com>,
+        Toke =?UTF-8?B?SMO4aWxhbmQtSsO4cmdlbnNlbg==?= <toke@redhat.com>,
+        Jonathan Lemon <jonathan.lemon@gmail.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+Subject: Created benchmarks modules for page_pool
+Message-ID: <20200121170945.41e58f32@carbon>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
-X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Tue, 21 Jan 2020 08:09:11 -0800 (PST)
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.14
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Gautam Ramakrishnan <gautamramk@gmail.com>
-Date: Tue, 21 Jan 2020 21:14:50 +0530
+Hi Ilias and Lorenzo, (Cc others + netdev)
 
-> On Tue, Jan 21, 2020 at 8:05 PM David Miller <davem@davemloft.net> wrote:
->>
->> From: gautamramk@gmail.com
->> Date: Tue, 21 Jan 2020 19:42:44 +0530
->>
->> > From: "Mohit P. Tahiliani" <tahiliani@nitk.edu.in>
->> >
->> > Rearrange the members of the structures such that they appear in
->> > order of their types. Also, change the order of their
->> > initializations to match the order in which they appear in the
->> > structures. This improves the code's readability and consistency.
->> >
->> > Signed-off-by: Mohit P. Tahiliani <tahiliani@nitk.edu.in>
->> > Signed-off-by: Leslie Monis <lesliemonis@gmail.com>
->> > Signed-off-by: Gautam Ramakrishnan <gautamramk@gmail.com>
->>
->> What matters for structure member ordering is dense packing and
->> grouping commonly-used-together elements for performance.
->>
-> We shall reorder the variables as per their appearance in the
-> structure and re-submit. Could you elaborate a bit on dense packing?
+I've created two benchmarks modules for page_pool.
 
-It means eliminating unnecessary padding in the structure.  F.e. if
-you have:
+[1] https://github.com/netoptimizer/prototype-kernel/blob/master/kernel/lib/bench_page_pool_simple.c
+[2] https://github.com/netoptimizer/prototype-kernel/blob/master/kernel/lib/bench_page_pool_cross_cpu.c
 
-	u32	x;
-	u64	y;
+I think we/you could actually use this as part of your presentation[3]?
 
-Then 32-bits of wasted space will be inserted after 'x' so that
-'y' is properly 64-bit aligned.
+The first benchmark[1] illustrate/measure what happen when page_pool
+alloc and free/return happens on the same CPU.  Here there are 3 modes
+of operations with different performance characteristic.
 
-If in doubt use the 'pahole' tool to see how the structure is
-laid out.  It will show you where unnecessary padding exists as
-well.
+Fast_path NAPI recycle (XDP_DROP use-case)
+ - cost per elem: 15 cycles(tsc) 4.437 ns
+
+Recycle via ptr_ring
+ - cost per elem: 48 cycles(tsc) 13.439 ns
+
+Failed recycle, return to page-allocator
+ - cost per elem: 256 cycles(tsc) 71.169 ns
+
+
+The second benchmark[2] measures what happens cross-CPU.  It is
+primarily the concurrent return-path that I want to capture. As this
+is page_pool's weak spot, that we/I need to improve performance of.
+Hint when SKBs use page_pool return this will happen more often.
+It is a little more tricky to get proper measurement as we want to
+observe the case, where return-path isn't stalling/waiting on pages to
+return.
+
+- 1 CPU returning  , cost per elem: 110 cycles(tsc)   30.709 ns
+- 2 concurrent CPUs, cost per elem: 989 cycles(tsc)  274.861 ns
+- 3 concurrent CPUs, cost per elem: 2089 cycles(tsc) 580.530 ns
+- 4 concurrent CPUs, cost per elem: 2339 cycles(tsc) 649.984 ns
+
+[3] https://netdevconf.info/0x14/session.html?tutorial-add-XDP-support-to-a-NIC-driver
+-- 
+Best regards,
+  Jesper Dangaard Brouer
+  MSc.CS, Principal Kernel Engineer at Red Hat
+  LinkedIn: http://www.linkedin.com/in/brouer
+
