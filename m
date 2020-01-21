@@ -2,106 +2,123 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 4B9A6144516
-	for <lists+netdev@lfdr.de>; Tue, 21 Jan 2020 20:27:18 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2590114451F
+	for <lists+netdev@lfdr.de>; Tue, 21 Jan 2020 20:29:18 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728760AbgAUT1L (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 21 Jan 2020 14:27:11 -0500
-Received: from mail-il1-f198.google.com ([209.85.166.198]:42896 "EHLO
-        mail-il1-f198.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726926AbgAUT1L (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 21 Jan 2020 14:27:11 -0500
-Received: by mail-il1-f198.google.com with SMTP id c5so2967333ilo.9
-        for <netdev@vger.kernel.org>; Tue, 21 Jan 2020 11:27:10 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
-        bh=6/mWzoQ86Fz03Edx8euNWgcBpzefOxUyUkGzVoZMKAA=;
-        b=MrV8FxiXWQDs3wO/+AWrmUAr0tr1NQfmdJw38gL4VNG9wljJDbyf17DGHaLPxWX62+
-         KAEmw+3dyD2jSDA060u2NUaP6JlLmogWYKaYzLqH6nsGYJxnOtJJvApGsBc11WcSLPGa
-         adgo56fxzXw25JOKWRFiaEBIZHEPaMKLxNC0rYrFy3xMgjvKIIOmXctDSeWLOgkjORxT
-         uD1Et+JHjjW6cnzoMCwwmpdd144GTZGajybzXsdGVjL2Drgb6aJ5VUZpLIgiPatXAcr9
-         JZ1JhRMznELOhhw87BY6OjV+tS25yLt/H/x5RoCwTwBAMjq0xtvYdUrIZowEyqccWFmv
-         LR5w==
-X-Gm-Message-State: APjAAAVi8mcv9R8dhYxiEJ7GqychpDTdxpEuTWpZvO6XGntOtkQmCE9J
-        2tygWXgdZkHO7DsBoZZOiO1TtsI+C5/yGzi6RRgnKy4uytyx
-X-Google-Smtp-Source: APXvYqztUkxtfoNFV2y1EkqvsTloZ7oiC2jQMqnjeLX3fhfpItWgaKxP0Io5hhlXKkGvjkyKWQYwW8A3LNhZMzBxE91HjZjstuiC
+        id S1728741AbgAUT3O (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 21 Jan 2020 14:29:14 -0500
+Received: from mo4-p01-ob.smtp.rzone.de ([85.215.255.50]:23612 "EHLO
+        mo4-p01-ob.smtp.rzone.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726926AbgAUT3O (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 21 Jan 2020 14:29:14 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; t=1579634949;
+        s=strato-dkim-0002; d=hartkopp.net;
+        h=In-Reply-To:Date:Message-ID:From:References:To:Subject:
+        X-RZG-CLASS-ID:X-RZG-AUTH:From:Subject:Sender;
+        bh=vPvdJUwPaxhFdaK3SDi9GFlbWcswk6F/jC/SrfgsGSc=;
+        b=b1iFSSOKCN93TIsyFGO5yH0M5cBxN1ZvdBP0ug46xQvJFV9i3pDECxYaay5Jog39v1
+        0F4lYGWIZqf0Ku7C95svG+bDSKh49lDs/X58MDJJ7jYixoDil4R2HxOadvM3pURpgS/d
+        vIUHA5nx8/nzdSx1xpiZ/JiLM2NnnhCUrC19ycmCvUOMCUj+GPhHcYQcbsRaFsDkVcN3
+        vPPOSxmFgzTMjXrxh6JlpPovD0LRuFUsWVRdQznPSliszMGw+g0rA941Zdssq9aPVpyZ
+        TJb3GcnhEfpYrb/kmqRWvLc3xkwSrVhCmJ+ooFCaaTUdmaqLnpORYtSGlsta1/4slzt9
+        8x3Q==
+X-RZG-AUTH: ":P2MHfkW8eP4Mre39l357AZT/I7AY/7nT2yrDxb8mjG14FZxedJy6qgO1o3PMaViOoLMJV8h5kyA="
+X-RZG-CLASS-ID: mo00
+Received: from [192.168.40.177]
+        by smtp.strato.de (RZmta 46.1.5 DYNA|AUTH)
+        with ESMTPSA id t040cew0LJSv5f3
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256 bits))
+        (Client did not present a certificate);
+        Tue, 21 Jan 2020 20:28:57 +0100 (CET)
+Subject: Re: general protection fault in can_rx_register
+To:     Dmitry Vyukov <dvyukov@google.com>,
+        Marc Kleine-Budde <mkl@pengutronix.de>,
+        o.rempel@pengutronix.de,
+        syzbot <syzbot+c3ea30e1e2485573f953@syzkaller.appspotmail.com>,
+        David Miller <davem@davemloft.net>, linux-can@vger.kernel.org,
+        LKML <linux-kernel@vger.kernel.org>,
+        netdev <netdev@vger.kernel.org>,
+        syzkaller-bugs <syzkaller-bugs@googlegroups.com>,
+        Kurt Van Dijck <dev.kurt@vandijck-laurijssen.be>
+References: <00000000000030dddb059c562a3f@google.com>
+ <55ad363b-1723-28aa-78b1-8aba5565247e@hartkopp.net>
+ <20200120091146.GD11138@x1.vandijck-laurijssen.be>
+ <CACT4Y+a+GusEA1Gs+z67uWjtwBRp_s7P4Wd_SMmgpCREnDu3kg@mail.gmail.com>
+ <8332ec7f-2235-fdf6-9bda-71f789c57b37@hartkopp.net>
+ <2a676c0e-20f2-61b5-c72b-f51947bafc7d@hartkopp.net>
+ <20200121083035.GD14537@x1.vandijck-laurijssen.be>
+ <20200121185407.GA13462@x1.vandijck-laurijssen.be>
+From:   Oliver Hartkopp <socketcan@hartkopp.net>
+Message-ID: <a04209c8-747b-6116-d915-21c285f48730@hartkopp.net>
+Date:   Tue, 21 Jan 2020 20:28:51 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.4.1
 MIME-Version: 1.0
-X-Received: by 2002:a5d:8146:: with SMTP id f6mr4134212ioo.93.1579634830562;
- Tue, 21 Jan 2020 11:27:10 -0800 (PST)
-Date:   Tue, 21 Jan 2020 11:27:10 -0800
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <000000000000f35c6a059cab64c5@google.com>
-Subject: memory leak in mrp_request_join
-From:   syzbot <syzbot+5cfab121b54dff775399@syzkaller.appspotmail.com>
-To:     allison@lohutok.net, davem@davemloft.net, keescook@chromium.org,
-        kstewart@linuxfoundation.org, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org, pankaj.laxminarayan.bharadiya@intel.com,
-        syzkaller-bugs@googlegroups.com, tglx@linutronix.de
-Content-Type: text/plain; charset="UTF-8"
+In-Reply-To: <20200121185407.GA13462@x1.vandijck-laurijssen.be>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello,
+Hi Kurt,
 
-syzbot found the following crash on:
-
-HEAD commit:    d96d875e Merge tag 'fixes_for_v5.5-rc8' of git://git.kerne..
-git tree:       upstream
-console output: https://syzkaller.appspot.com/x/log.txt?x=14cd8185e00000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=15478c61c836a72e
-dashboard link: https://syzkaller.appspot.com/bug?extid=5cfab121b54dff775399
-compiler:       gcc (GCC) 9.0.0 20181231 (experimental)
-syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=14dbe201e00000
-C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=13e03cf1e00000
-
-IMPORTANT: if you fix the bug, please add the following tag to the commit:
-Reported-by: syzbot+5cfab121b54dff775399@syzkaller.appspotmail.com
-
-executing program
-BUG: memory leak
-unreferenced object 0xffff888120b85c40 (size 64):
-  comm "syz-executor783", pid 7302, jiffies 4294942613 (age 14.030s)
-  hex dump (first 32 bytes):
-    01 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  ................
-    00 00 00 00 00 00 00 00 01 00 00 00 01 02 00 00  ................
-  backtrace:
-    [<000000000312cb0f>] kmemleak_alloc_recursive include/linux/kmemleak.h:43 [inline]
-    [<000000000312cb0f>] slab_post_alloc_hook mm/slab.h:586 [inline]
-    [<000000000312cb0f>] slab_alloc mm/slab.c:3320 [inline]
-    [<000000000312cb0f>] __do_kmalloc mm/slab.c:3654 [inline]
-    [<000000000312cb0f>] __kmalloc+0x169/0x300 mm/slab.c:3665
-    [<0000000011736472>] kmalloc include/linux/slab.h:561 [inline]
-    [<0000000011736472>] mrp_attr_create net/802/mrp.c:276 [inline]
-    [<0000000011736472>] mrp_request_join+0x13d/0x220 net/802/mrp.c:530
-    [<000000003ff9bf8f>] vlan_mvrp_request_join+0x86/0x90 net/8021q/vlan_mvrp.c:40
-    [<0000000020a13a26>] vlan_dev_open+0x154/0x290 net/8021q/vlan_dev.c:293
-    [<0000000010d96d5d>] __dev_open+0x109/0x1b0 net/core/dev.c:1431
-    [<00000000e9578876>] __dev_change_flags+0x246/0x2c0 net/core/dev.c:8103
-    [<000000002c92e0e1>] rtnl_configure_link+0x57/0x100 net/core/rtnetlink.c:2996
-    [<000000000504898e>] __rtnl_newlink+0x8b9/0xb80 net/core/rtnetlink.c:3323
-    [<00000000eb645fa3>] rtnl_newlink+0x4e/0x80 net/core/rtnetlink.c:3363
-    [<0000000034f28a5d>] rtnetlink_rcv_msg+0x178/0x4b0 net/core/rtnetlink.c:5424
-    [<00000000dc499e73>] netlink_rcv_skb+0x61/0x170 net/netlink/af_netlink.c:2477
-    [<00000000b6cd4d73>] rtnetlink_rcv+0x1d/0x30 net/core/rtnetlink.c:5442
-    [<0000000092a30a6a>] netlink_unicast_kernel net/netlink/af_netlink.c:1302 [inline]
-    [<0000000092a30a6a>] netlink_unicast+0x223/0x310 net/netlink/af_netlink.c:1328
-    [<0000000006ceb85b>] netlink_sendmsg+0x2c0/0x570 net/netlink/af_netlink.c:1917
-    [<000000009199ec36>] sock_sendmsg_nosec net/socket.c:639 [inline]
-    [<000000009199ec36>] sock_sendmsg+0x54/0x70 net/socket.c:659
-    [<000000002acd085e>] ____sys_sendmsg+0x2d0/0x300 net/socket.c:2330
+On 21/01/2020 19.54, Kurt Van Dijck wrote:
+> On di, 21 jan 2020 09:30:35 +0100, Kurt Van Dijck wrote:
+>> On ma, 20 jan 2020 23:35:16 +0100, Oliver Hartkopp wrote:
 
 
+>>> But it is still open why dev->ml_priv is not set correctly in vxcan.c as all
+>>> the settings for .priv_size and in vxcan_setup look fine.
+>>
+>> Maybe I got completely lost:
+>> Shouldn't can_ml_priv and vxcan_priv not be similar?
+>> Where is the dev_rcv_lists in the vxcan case?
+> 
+> I indeed got completely lost. vxcan_priv & can_ml_priv form together the
+> private part. I continue looking
 
----
-This bug is generated by a bot. It may contain errors.
-See https://goo.gl/tpsmEJ for more information about syzbot.
-syzbot engineers can be reached at syzkaller@googlegroups.com.
+I added some more debug output:
 
-syzbot will keep track of this bug report. See:
-https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
-syzbot can test patches for this bug, for details see:
-https://goo.gl/tpsmEJ#testing-patches
+@@ -463,6 +463,10 @@ int can_rx_register(struct net *net, struct 
+net_device *dev, canid_t can_id,
+         spin_lock_bh(&net->can.rcvlists_lock);
+
+         dev_rcv_lists = can_dev_rcv_lists_find(net, dev);
++       if (!dev_rcv_lists) {
++               pr_err("dev_rcv_lists == NULL! %p (%s)\n", dev, dev->name);
++               goto out_unlock;
++       }
+         rcv_list = can_rcv_list_find(&can_id, &mask, dev_rcv_lists);
+
+         rcv->can_id = can_id;
+
+
+and the output becomes:
+
+[ 1814.644087] bond5130: (slave vxcan1): The slave device specified does 
+not support setting the MAC address
+[ 1814.644106] bond5130: (slave vxcan1): Error -22 calling dev_set_mtu
+[ 1814.648867] bond5128: (slave vxcan1): The slave device specified does 
+not support setting the MAC address
+[ 1814.648904] bond5128: (slave vxcan1): Error -22 calling dev_set_mtu
+[ 1814.649124] dev_rcv_lists == NULL! 000000008e41fb06 (bond5128)
+[ 1814.696420] bond5129: (slave vxcan1): The slave device specified does 
+not support setting the MAC address
+[ 1814.696438] bond5129: (slave vxcan1): Error -22 calling dev_set_mtu
+
+So it's not the vxcan1 netdev that causes the issue but (sporadically!!) 
+the bonding netdev.
+
+Interesting enough that the bonding device bond5128 obviously passes the
+
+        if (dev && dev->type != ARPHRD_CAN)
+                 return -ENODEV;
+test.
+
+?!?
+
+Regards,
+Oliver
