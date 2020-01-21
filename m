@@ -2,54 +2,54 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id B2C7C143DF1
-	for <lists+netdev@lfdr.de>; Tue, 21 Jan 2020 14:23:02 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 31BDD143DF2
+	for <lists+netdev@lfdr.de>; Tue, 21 Jan 2020 14:23:03 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729190AbgAUNWp (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 21 Jan 2020 08:22:45 -0500
-Received: from mail-pl1-f194.google.com ([209.85.214.194]:37232 "EHLO
-        mail-pl1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725890AbgAUNWp (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 21 Jan 2020 08:22:45 -0500
-Received: by mail-pl1-f194.google.com with SMTP id c23so1341177plz.4
-        for <netdev@vger.kernel.org>; Tue, 21 Jan 2020 05:22:44 -0800 (PST)
+        id S1729207AbgAUNWs (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 21 Jan 2020 08:22:48 -0500
+Received: from mail-pj1-f67.google.com ([209.85.216.67]:50985 "EHLO
+        mail-pj1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725890AbgAUNWr (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 21 Jan 2020 08:22:47 -0500
+Received: by mail-pj1-f67.google.com with SMTP id r67so1373028pjb.0
+        for <netdev@vger.kernel.org>; Tue, 21 Jan 2020 05:22:47 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=CQwRLZGNeQSZte90+CMBrxp9xi0Q0kckFOa20M1YEHk=;
-        b=YUjFBX/gZcw6/77+fWpe11QBCr9PWDWD83Yw5Zrcqk8qOAXx499NZW0V5sIC9RfQZZ
-         Myz8+XLSfx7i1Q3SgQcn/fkgGtuONETTrZT5qEyaw/JpbisagxR9bhvWR41yy2KKrFzl
-         KKyiL1TZ+AQn4nPnGW+PQx7NjnK3kh7OALZMZMET1g3JO7MY5GtM6UsBIVTayogqZ4ZF
-         SU10tSLr9cQxR8v7Ttv6oWUkhw9FQgBMUiFUN+E/7sOJNXw7YikDFQIFYlHnk8zkB7hm
-         BZptUvlAp3A3S66t7ewiwthR0jA3d0DfNni6KXmM1Bu9A/2h2WXqWoyDm11xX+BDbUOn
-         aGxA==
+        bh=1BpKrcBMrBJdvjjGHMme/i3fw0kA5b5DyyxFveEYRhQ=;
+        b=mcrdwq4rhJPr/vcRu0arhkx91DKk1Wg/wWGiNQYoPj/CKZUdolxZpKi+Pe/FZ1yLhI
+         Tx06hmm04CB5xz7fkGTY48pGSG8wkyG163mLN14fEqakz5gigaBcwUiJcwXpKwjAorQd
+         +fjYWzI98uiM9uBPtYIp8R1RWGHABUoMfLonVoprq//QxRSdLuNJEz1ekxOAeqgsNW9t
+         gJG1hb9ruSeFWrY/hfKCib/1AtwItCKwoM9cyPHcQsFlXha5gzUNKxKlRkd0HrjgVFN9
+         IXWOZziYCT+RaiXN5TR4z8O6koRJRYAZuQSooUJIqAeTrQf3394A0c80Ykfa64mPPRaT
+         m4cw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references;
-        bh=CQwRLZGNeQSZte90+CMBrxp9xi0Q0kckFOa20M1YEHk=;
-        b=MqICQO9PuulgdGQSRIaFumzPjSz/ObJy/XfR62qOLFe83kjK7fBnHG1VOtus1OJ4OB
-         +iLR4A9BXqqfCy7xez+8dnIOyLKzLpozm0zW31R3HKMQs4KygGDGpS6R2J4IeVEk9dl0
-         DtsYu4jknQzu8hEMgXZLWNrl+FPa7A2Mn/Exh9Jj7rKdTmFCV30enbv70Lk+Dmb/lCS+
-         cowmfRG1N5WUuKWG+icTkuC/1pdysjZJr5mIITa/4qjAGVt+/cj74uM+dKcjDmhbiaEi
-         edaQXGXvvJp+1Ur196HVqPoh9sJpyod2noBrcdC9Z8P4MLtqqOw78T84RyHGrVMEOlTt
-         Rmow==
-X-Gm-Message-State: APjAAAXBFKYzpwHmBF9mb7b5yxZ/vtNQOnFW115yXlzAYOExYhohUS9m
-        AVRTa5VFyHZY8skFI4MZ0bp8bL4mKRk=
-X-Google-Smtp-Source: APXvYqyqZ+/0HHW9D+43OKxuvB0IKbwhmLOxgk/Ugy49TsvnFKlfPxTELyHZPY1VQFNFPyXYrX+Scg==
-X-Received: by 2002:a17:902:7291:: with SMTP id d17mr5287534pll.227.1579612964144;
-        Tue, 21 Jan 2020 05:22:44 -0800 (PST)
+        bh=1BpKrcBMrBJdvjjGHMme/i3fw0kA5b5DyyxFveEYRhQ=;
+        b=QuR+/REqLqPTEFiS62S8lsSgkShmwOt0h4pzrOTjGbqooZqXyJFWnUquAxFyphkUfk
+         cI0Xqg4dbuZ4t93Kcor2l8Rpf+XYESofI/ilMFukmKImvw6vIEHXZCrGk7yH3a7Ws/P7
+         qU+vNeh9gcyLdcqsZs/RcXUUCwDkCRBuHL629bSCc9WjPY1JLn4fCq92F0GkeNHOYqmI
+         Yf4YLqdjvfyxh+ptjQH1Q0BMYopi2/5gygtD7juumkF/7/Yk/kd+fquq7DVXZgoagjFo
+         bWFAIbePcxy8huzYI2sZhFMvazeBp26Ul/uCwr4mgqqzayNSFGO0gfb/A+4AoLXk58rp
+         S6KQ==
+X-Gm-Message-State: APjAAAXwt37SmYjj7BNpIjfdnZQJ271nAOHeyrTsZOlY72kkrOPQsnFR
+        h8i7MFnoj5KpVzROj7e6UUnAWgcbCT8=
+X-Google-Smtp-Source: APXvYqzS7n39GIvmPULe5SAGb69V6BrButPDhbAGd5/0L4+Je5Q8Arcbb4XP+mMok04blLTDmDkpTA==
+X-Received: by 2002:a17:902:9a42:: with SMTP id x2mr5710560plv.194.1579612966684;
+        Tue, 21 Jan 2020 05:22:46 -0800 (PST)
 Received: from machine421.marvell.com ([115.113.156.2])
-        by smtp.googlemail.com with ESMTPSA id y21sm43328076pfm.136.2020.01.21.05.22.41
+        by smtp.googlemail.com with ESMTPSA id y21sm43328076pfm.136.2020.01.21.05.22.44
         (version=TLS1_2 cipher=ECDHE-RSA-AES128-SHA bits=128/128);
-        Tue, 21 Jan 2020 05:22:43 -0800 (PST)
+        Tue, 21 Jan 2020 05:22:46 -0800 (PST)
 From:   sunil.kovvuri@gmail.com
 To:     netdev@vger.kernel.org
 Cc:     davem@davemloft.net, kubakici@wp.pl, mkubecek@suse.cz,
         Sunil Goutham <sgoutham@marvell.com>
-Subject: [PATCH v4 16/17] Documentation: net: octeontx2: Add RVU HW and drivers overview
-Date:   Tue, 21 Jan 2020 18:51:50 +0530
-Message-Id: <1579612911-24497-17-git-send-email-sunil.kovvuri@gmail.com>
+Subject: [PATCH v4 17/17] MAINTAINERS: Add entry for Marvell OcteonTX2 Physical Function driver
+Date:   Tue, 21 Jan 2020 18:51:51 +0530
+Message-Id: <1579612911-24497-18-git-send-email-sunil.kovvuri@gmail.com>
 X-Mailer: git-send-email 2.7.4
 In-Reply-To: <1579612911-24497-1-git-send-email-sunil.kovvuri@gmail.com>
 References: <1579612911-24497-1-git-send-email-sunil.kovvuri@gmail.com>
@@ -60,206 +60,34 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Sunil Goutham <sgoutham@marvell.com>
 
-Added high level overview of OcteonTx2 RVU HW and functionality of
-various drivers which will be upstreamed.
+Added maintainers entry for Marvell OcteonTX2 SOC's physical
+function NIC driver.
 
 Signed-off-by: Sunil Goutham <sgoutham@marvell.com>
 ---
- Documentation/networking/device_drivers/index.rst  |   1 +
- .../device_drivers/marvell/octeontx2.rst           | 159 +++++++++++++++++++++
- MAINTAINERS                                        |   1 +
- 3 files changed, 161 insertions(+)
- create mode 100644 Documentation/networking/device_drivers/marvell/octeontx2.rst
+ MAINTAINERS | 9 +++++++++
+ 1 file changed, 9 insertions(+)
 
-diff --git a/Documentation/networking/device_drivers/index.rst b/Documentation/networking/device_drivers/index.rst
-index 4bc6ff2..a191faa 100644
---- a/Documentation/networking/device_drivers/index.rst
-+++ b/Documentation/networking/device_drivers/index.rst
-@@ -22,6 +22,7 @@ Contents:
-    intel/iavf
-    intel/ice
-    google/gve
-+   marvell/octeontx2
-    mellanox/mlx5
-    netronome/nfp
-    pensando/ionic
-diff --git a/Documentation/networking/device_drivers/marvell/octeontx2.rst b/Documentation/networking/device_drivers/marvell/octeontx2.rst
-new file mode 100644
-index 0000000..88f5083
---- /dev/null
-+++ b/Documentation/networking/device_drivers/marvell/octeontx2.rst
-@@ -0,0 +1,159 @@
-+.. SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-+
-+====================================
-+Marvell OcteonTx2 RVU Kernel Drivers
-+====================================
-+
-+Copyright (c) 2020 Marvell International Ltd.
-+
-+Contents
-+========
-+
-+- `Overview`_
-+- `Drivers`_
-+- `Basic packet flow`_
-+
-+Overview
-+========
-+
-+Resource virtualization unit (RVU) on Marvell's OcteonTX2 SOC maps HW
-+resources from the network, crypto and other functional blocks into
-+PCI-compatible physical and virtual functions. Each functional block
-+again has multiple local functions (LFs) for provisioning to PCI devices.
-+RVU supports multiple PCIe SRIOV physical functions (PFs) and virtual
-+functions (VFs). PF0 is called the administrative / admin function (AF)
-+and has privileges to provision RVU functional block's LFs to each of the
-+PF/VF.
-+
-+RVU managed networking functional blocks
-+ - Network pool or buffer allocator (NPA)
-+ - Network interface controller (NIX)
-+ - Network parser CAM (NPC)
-+ - Schedule/Synchronize/Order unit (SSO)
-+ - Loopback interface (LBK)
-+
-+RVU managed non-networking functional blocks
-+ - Crypto accelerator (CPT)
-+ - Scheduled timers unit (TIM)
-+ - Schedule/Synchronize/Order unit (SSO)
-+   Used for both networking and non networking usecases
-+
-+Resource provisioning examples
-+ - A PF/VF with NIX-LF & NPA-LF resources works as a pure network device
-+ - A PF/VF with CPT-LF resource works as a pure crypto offload device.
-+
-+RVU functional blocks are highly configurable as per software requirements.
-+
-+Firmware setups following stuff before kernel boots
-+ - Enables required number of RVU PFs based on number of physical links.
-+ - Number of VFs per PF are either static or configurable at compile time.
-+   Based on config, firmware assigns VFs to each of the PFs.
-+ - Also assigns MSIX vectors to each of PF and VFs.
-+ - These are not changed after kernel boot.
-+
-+Drivers
-+=======
-+
-+Linux kernel will have multiple drivers registering to different PF and VFs
-+of RVU. Wrt networking there will be 3 flavours of drivers.
-+
-+Admin Function driver
-+---------------------
-+
-+As mentioned above RVU PF0 is called the admin function (AF), this driver
-+supports resource provisioning and configuration of functional blocks.
-+Doesn't handle any I/O. It sets up few basic stuff but most of the
-+funcionality is achieved via configuration requests from PFs and VFs.
-+
-+PF/VFs communicates with AF via a shared memory region (mailbox). Upon
-+receiving requests AF does resource provisioning and other HW configuration.
-+AF is always attached to host kernel, but PFs and their VFs may be used by host
-+kernel itself, or attached to VMs or to userspace applications like
-+DPDK etc. So AF has to handle provisioning/configuration requests sent
-+by any device from any domain.
-+
-+AF driver also interacts with underlying firmware to
-+ - Manage physical ethernet links ie CGX LMACs.
-+ - Retrieve information like speed, duplex, autoneg etc
-+ - Retrieve PHY EEPROM and stats.
-+ - Configure FEC, PAM modes
-+ - etc
-+
-+From pure networking side AF driver supports following functionality.
-+ - Map a physical link to a RVU PF to which a netdev is registered.
-+ - Attach NIX and NPA block LFs to RVU PF/VF which provide buffer pools, RQs, SQs
-+   for regular networking functionality.
-+ - Flow control (pause frames) enable/disable/config.
-+ - HW PTP timestamping related config.
-+ - NPC parser profile config, basically how to parse pkt and what info to extract.
-+ - NPC extract profile config, what to extract from the pkt to match data in MCAM entries.
-+ - Manage NPC MCAM entries, upon request can frame and install requested packet forwarding rules.
-+ - Defines receive side scaling (RSS) algorithms.
-+ - Defines segmentation offload algorithms (eg TSO)
-+ - VLAN stripping, capture and insertion config.
-+ - SSO and TIM blocks config which provide packet scheduling support.
-+ - Debugfs support, to check current resource provising, current status of
-+   NPA pools, NIX RQ, SQ and CQs, various stats etc which helps in debugging issues.
-+ - And many more.
-+
-+Physical Function driver
-+------------------------
-+
-+This RVU PF handles IO, is mapped to a physical ethernet link and this
-+driver registers a netdev. This supports SR-IOV. As said above this driver
-+communicates with AF with a mailbox. To retrieve information from physical
-+links this driver talks to AF and AF gets that info from firmware and responds
-+back ie cannot talk to firmware directly.
-+
-+Supports ethtool for configuring links, RSS, queue count, queue size,
-+flow control, ntuple filters, dump PHY EEPROM, config FEC etc.
-+
-+Virtual Function driver
-+-----------------------
-+
-+There are two types VFs, VFs that share the physical link with their parent
-+SR-IOV PF and the VFs which work in pairs using internal HW loopback channels (LBK).
-+
-+Type1:
-+ - These VFs and their parent PF share a physical link and used for outside communication.
-+ - VFs cannot communicate with AF directly, they send mbox message to PF and PF
-+   forwards that to AF. AF after processing, responds back to PF and PF forwards
-+   the reply to VF.
-+ - From functionality point of view there is no difference between PF and VF as same type
-+   HW resources are attached to both. But user would be able to configure few stuff only
-+   from PF as PF is treated as owner/admin of the link.
-+
-+Type2:
-+ - RVU PF0 ie admin function creates these VFs and maps them to loopback block's channels.
-+ - A set of two VFs (VF0 & VF1, VF2 & VF3 .. so on) works as a pair ie pkts sent out of
-+   VF0 will be received by VF1 and viceversa.
-+ - These VFs can be used by applications or virtual machines to communicate between them
-+   without sending traffic outside. There is no switch present in HW, hence the support
-+   for loopback VFs.
-+ - These communicate directly with AF (PF0) via mbox.
-+
-+Except for the IO channels or links used for packet reception and transmission there is
-+no other difference between these VF types. AF driver takes care of IO channel mapping,
-+hence same VF driver works for both types of devices.
-+
-+Basic packet flow
-+=================
-+
-+Ingress
-+-------
-+
-+1. CGX LMAC receives packet.
-+2. Forwards the packet to the NIX block.
-+3. Then submitted to NPC block for parsing and then MCAM lookup to get the destination RVU device.
-+4. NIX LF attached to the destination RVU device allocates a buffer from RQ mapped buffer pool of NPA block LF.
-+5. RQ may be selected by RSS or by configuring MCAM rule with a RQ number.
-+6. Packet is DMA'ed and driver is notified.
-+
-+Egress
-+------
-+
-+1. Driver prepares a send descriptor and submits to SQ for transmission.
-+2. The SQ is already configured (by AF) to transmit on a specific link/channel.
-+3. The SQ descriptor ring is maintained in buffers allocated from SQ mapped pool of NPA block LF.
-+4. NIX block transmits the pkt on the designated channel.
-+5. NPC MCAM entries can be installed to divert pkt onto a different channel.
 diff --git a/MAINTAINERS b/MAINTAINERS
-index 702382b..fdbb875 100644
+index fdbb875..51d7876 100644
 --- a/MAINTAINERS
 +++ b/MAINTAINERS
-@@ -10000,6 +10000,7 @@ M:	Jerin Jacob <jerinj@marvell.com>
- L:	netdev@vger.kernel.org
- S:	Supported
+@@ -10002,6 +10002,15 @@ S:	Supported
  F:	drivers/net/ethernet/marvell/octeontx2/af/
-+F:	Documentation/networking/device_drivers/marvell/octeontx2.rst
+ F:	Documentation/networking/device_drivers/marvell/octeontx2.rst
  
++MARVELL OCTEONTX2 PHYSICAL FUNCTION DRIVER
++M:	Sunil Goutham <sgoutham@marvell.com>
++M:	Geetha sowjanya <gakula@marvell.com>
++M:	Subbaraya Sundeep <sbhatta@marvell.com>
++M:	hariprasad <hkelam@marvell.com>
++L:	netdev@vger.kernel.org
++S:	Supported
++F:	drivers/net/ethernet/marvell/octeontx2/nic/
++
  MATROX FRAMEBUFFER DRIVER
  L:	linux-fbdev@vger.kernel.org
+ S:	Orphan
 -- 
 2.7.4
 
