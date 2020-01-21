@@ -2,132 +2,105 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id D1C9A1446AA
-	for <lists+netdev@lfdr.de>; Tue, 21 Jan 2020 22:51:18 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D99891446FA
+	for <lists+netdev@lfdr.de>; Tue, 21 Jan 2020 23:11:09 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729122AbgAUVvM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 21 Jan 2020 16:51:12 -0500
-Received: from mail-oi1-f194.google.com ([209.85.167.194]:41621 "EHLO
-        mail-oi1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728827AbgAUVvM (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 21 Jan 2020 16:51:12 -0500
-Received: by mail-oi1-f194.google.com with SMTP id i1so4114328oie.8;
-        Tue, 21 Jan 2020 13:51:11 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=AEQJRf11+YL9JXYSw6iHmQvhDVGvtOeS/QzZTm+s+dQ=;
-        b=CjnY07CdXfT6Gm1dCxUDz/1qKHwjnrkOPqO5H+8FjMr/zNErX7oMznmDTH5ok8SpMG
-         UOHgtTXuVMJ6To+BHaRFmZaAlRIbzf1Gy+HvQm3SEXEul8x7l/7ZIn60lSvCrEJamOyK
-         Hg8L1ZDMn2zQnl+axkRme7zYzaioC7Hbl6YfQGg3C8AeL3Ak3yJ/go5f5+O6YUhCOppA
-         EEe136tX7v1sy2Pec4GhDaUMYa+DKdZqLLmcTppZ38YTpUQvCIG+Nkm0Edpo9KZYttJ4
-         8tr9NLqgBYqjLhLeqYh8MKoiw6xhMqb+TXfBZm5ZGKTQiFx1myPzNRSF9Xn9ah2vFd97
-         OOHQ==
-X-Gm-Message-State: APjAAAXsRPx/9aRZ1vcRCp1fCZ7aMulTNAL74rooeSMN0DXtRildiRtl
-        KZoGwLe8018ETbkGGiXZTg==
-X-Google-Smtp-Source: APXvYqxt+cM62E+IOf/zYUPLo7beaXVus7wbv8PxvBfk1MeN6W4PybVQtCjZ0vKTYkCKN5s+jFsOCg==
-X-Received: by 2002:aca:59c2:: with SMTP id n185mr4708096oib.170.1579643471112;
-        Tue, 21 Jan 2020 13:51:11 -0800 (PST)
-Received: from rob-hp-laptop (24-155-109-49.dyn.grandenetworks.net. [24.155.109.49])
-        by smtp.gmail.com with ESMTPSA id k17sm4031953otl.45.2020.01.21.13.51.09
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 21 Jan 2020 13:51:10 -0800 (PST)
-Received: (nullmailer pid 509 invoked by uid 1000);
-        Tue, 21 Jan 2020 21:51:09 -0000
-Date:   Tue, 21 Jan 2020 15:51:09 -0600
-From:   Rob Herring <robh@kernel.org>
-To:     Andre Przywara <andre.przywara@arm.com>
-Cc:     "David S . Miller" <davem@davemloft.net>,
-        Radhey Shyam Pandey <radhey.shyam.pandey@xilinx.com>,
-        Michal Simek <michal.simek@xilinx.com>,
-        Robert Hancock <hancock@sedsystems.ca>, netdev@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        Mark Rutland <mark.rutland@arm.com>, devicetree@vger.kernel.org
-Subject: Re: [PATCH 14/14] net: axienet: Update devicetree binding
- documentation
-Message-ID: <20200121215109.GA26808@bogus>
-References: <20200110115415.75683-1-andre.przywara@arm.com>
- <20200110115415.75683-15-andre.przywara@arm.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200110115415.75683-15-andre.przywara@arm.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+        id S1729212AbgAUWKi (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 21 Jan 2020 17:10:38 -0500
+Received: from kvm5.telegraphics.com.au ([98.124.60.144]:44800 "EHLO
+        kvm5.telegraphics.com.au" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729094AbgAUWKh (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 21 Jan 2020 17:10:37 -0500
+Received: by kvm5.telegraphics.com.au (Postfix, from userid 502)
+        id 62FC022D7F; Tue, 21 Jan 2020 17:10:36 -0500 (EST)
+To:     "David S. Miller" <davem@davemloft.net>
+Cc:     Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
+        Chris Zankel <chris@zankel.net>,
+        Laurent Vivier <laurent@vivier.eu>,
+        Geert Uytterhoeven <geert@linux-m68k.org>,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Message-Id: <0a1ecf29f4d0f876aa3ba2691264e24b026a0732.1579641728.git.fthain@telegraphics.com.au>
+In-Reply-To: <cover.1579641728.git.fthain@telegraphics.com.au>
+References: <cover.1579641728.git.fthain@telegraphics.com.au>
+From:   Finn Thain <fthain@telegraphics.com.au>
+Subject: [PATCH net v2 07/12] net/sonic: Improve receive descriptor status
+ flag check
+Date:   Wed, 22 Jan 2020 08:22:08 +1100
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Jan 10, 2020 at 11:54:15AM +0000, Andre Przywara wrote:
-> This adds documentation about the newly introduced, optional
-> "xlnx,addrwidth" property to the binding documentation.
-> 
-> While at it, clarify the wording on some properties, replace obsolete
-> .txt file references with their new .yaml counterparts, and add a more
-> modern example, using the axistream-connected property.
-> 
-> Cc: Rob Herring <robh+dt@kernel.org>
-> Cc: Mark Rutland <mark.rutland@arm.com>
-> Cc: devicetree@vger.kernel.org
-> Signed-off-by: Andre Przywara <andre.przywara@arm.com>
-> ---
->  .../bindings/net/xilinx_axienet.txt           | 57 ++++++++++++++++---
->  1 file changed, 50 insertions(+), 7 deletions(-)
-> 
-> diff --git a/Documentation/devicetree/bindings/net/xilinx_axienet.txt b/Documentation/devicetree/bindings/net/xilinx_axienet.txt
-> index 7360617cdedb..78c278c5200f 100644
-> --- a/Documentation/devicetree/bindings/net/xilinx_axienet.txt
-> +++ b/Documentation/devicetree/bindings/net/xilinx_axienet.txt
-> @@ -12,7 +12,8 @@ sent and received through means of an AXI DMA controller. This driver
->  includes the DMA driver code, so this driver is incompatible with AXI DMA
->  driver.
->  
-> -For more details about mdio please refer phy.txt file in the same directory.
-> +For more details about mdio please refer to the ethernet-phy.yaml file in
-> +the same directory.
->  
->  Required properties:
->  - compatible	: Must be one of "xlnx,axi-ethernet-1.00.a",
-> @@ -27,14 +28,14 @@ Required properties:
->  		  instead, and only the Ethernet core interrupt is optionally
->  		  specified here.
->  - phy-handle	: Should point to the external phy device.
-> -		  See ethernet.txt file in the same directory.
-> -- xlnx,rxmem	: Set to allocated memory buffer for Rx/Tx in the hardware
-> +		  See the ethernet-controller.yaml file in the same directory.
-> +- xlnx,rxmem	: Size of the RXMEM buffer in the hardware, in bytes.
->  
->  Optional properties:
-> -- phy-mode	: See ethernet.txt
-> +- phy-mode	: See ethernet-controller.yaml.
->  - xlnx,phy-type	: Deprecated, do not use, but still accepted in preference
->  		  to phy-mode.
-> -- xlnx,txcsum	: 0 or empty for disabling TX checksum offload,
-> +- xlnx,txcsum	: 0 for disabling TX checksum offload (default if omitted),
->  		  1 to enable partial TX checksum offload,
->  		  2 to enable full TX checksum offload
->  - xlnx,rxcsum	: Same values as xlnx,txcsum but for RX checksum offload
-> @@ -48,10 +49,20 @@ Optional properties:
->  		       If this is specified, the DMA-related resources from that
->  		       device (DMA registers and DMA TX/RX interrupts) rather
->  		       than this one will be used.
-> - - mdio		: Child node for MDIO bus. Must be defined if PHY access is
-> +- mdio		: Child node for MDIO bus. Must be defined if PHY access is
->  		  required through the core's MDIO interface (i.e. always,
->  		  unless the PHY is accessed through a different bus).
->  
-> +Required properties for axistream-connected subnode:
-> +- reg		: Address and length of the AXI DMA controller MMIO space.
-> +- interrupts	: A list of 2 interrupts: TX DMA and RX DMA, in that order.
-> +
-> +Optional properties for axistream-connected subnode:
-> +- xlnx,addrwidth: Specifies the configured address width of the DMA. Newer
-> +		  versions of the IP allow setting this to a value between
-> +		  32 and 64. Defaults to 32 bits if not specified.
+After sonic_tx_timeout() calls sonic_init(), it can happen that
+sonic_rx() will subsequently encounter a receive descriptor with no
+flags set. Remove the comment that says that this can't happen.
 
-I think this should be expressed using dma-ranges. This is exactly the 
-purpose of dma-ranges and we shouldn't need a device specific property 
-for this sort of thing.
+When giving a receive descriptor to the SONIC, clear the descriptor
+status field. That way, any rx descriptor with flags set can only be
+a newly received packet.
 
-Rob
+Don't process a descriptor without the LPKT bit set. The buffer is
+still in use by the SONIC.
+
+Fixes: 1da177e4c3f4 ("Linux-2.6.12-rc2")
+Tested-by: Stan Johnson <userm57@yahoo.com>
+Signed-off-by: Finn Thain <fthain@telegraphics.com.au>
+---
+ drivers/net/ethernet/natsemi/sonic.c | 16 ++++++----------
+ 1 file changed, 6 insertions(+), 10 deletions(-)
+
+diff --git a/drivers/net/ethernet/natsemi/sonic.c b/drivers/net/ethernet/natsemi/sonic.c
+index 431a6e46c08c..bec06f357011 100644
+--- a/drivers/net/ethernet/natsemi/sonic.c
++++ b/drivers/net/ethernet/natsemi/sonic.c
+@@ -430,7 +430,6 @@ static inline int index_from_addr(struct sonic_local *lp, dma_addr_t addr,
+ static void sonic_rx(struct net_device *dev)
+ {
+ 	struct sonic_local *lp = netdev_priv(dev);
+-	int status;
+ 	int entry = lp->cur_rx;
+ 	int prev_entry = lp->eol_rx;
+ 
+@@ -441,9 +440,11 @@ static void sonic_rx(struct net_device *dev)
+ 		u16 bufadr_l;
+ 		u16 bufadr_h;
+ 		int pkt_len;
++		u16 status = sonic_rda_get(dev, entry, SONIC_RD_STATUS);
++
++		/* If the RD has LPKT set, the chip has finished with the RB */
+ 
+-		status = sonic_rda_get(dev, entry, SONIC_RD_STATUS);
+-		if (status & SONIC_RCR_PRX) {
++		if ((status & SONIC_RCR_PRX) && (status & SONIC_RCR_LPKT)) {
+ 			u32 addr = (sonic_rda_get(dev, entry,
+ 						  SONIC_RD_PKTPTR_H) << 16) |
+ 				   sonic_rda_get(dev, entry, SONIC_RD_PKTPTR_L);
+@@ -491,10 +492,6 @@ static void sonic_rx(struct net_device *dev)
+ 			bufadr_h = (unsigned long)new_laddr >> 16;
+ 			sonic_rra_put(dev, i, SONIC_RR_BUFADR_L, bufadr_l);
+ 			sonic_rra_put(dev, i, SONIC_RR_BUFADR_H, bufadr_h);
+-		} else {
+-			/* This should only happen, if we enable accepting broken packets. */
+-		}
+-		if (status & SONIC_RCR_LPKT) {
+ 			/*
+ 			 * this was the last packet out of the current receive buffer
+ 			 * give the buffer back to the SONIC
+@@ -507,12 +504,11 @@ static void sonic_rx(struct net_device *dev)
+ 					  __func__);
+ 				SONIC_WRITE(SONIC_ISR, SONIC_INT_RBE); /* clear the flag */
+ 			}
+-		} else
+-			printk(KERN_ERR "%s: rx desc without RCR_LPKT. Shouldn't happen !?\n",
+-			     dev->name);
++		}
+ 		/*
+ 		 * give back the descriptor
+ 		 */
++		sonic_rda_put(dev, entry, SONIC_RD_STATUS, 0);
+ 		sonic_rda_put(dev, entry, SONIC_RD_IN_USE, 1);
+ 
+ 		prev_entry = entry;
+-- 
+2.24.1
+
