@@ -2,82 +2,100 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 9FAB2143CAD
-	for <lists+netdev@lfdr.de>; Tue, 21 Jan 2020 13:22:26 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id AFDB5143CE1
+	for <lists+netdev@lfdr.de>; Tue, 21 Jan 2020 13:31:53 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729159AbgAUMWU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 21 Jan 2020 07:22:20 -0500
-Received: from host-88-217-225-28.customer.m-online.net ([88.217.225.28]:56712
-        "EHLO mail.dev.tdt.de" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S1728655AbgAUMWU (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 21 Jan 2020 07:22:20 -0500
-Received: from mail.dev.tdt.de (localhost [IPv6:::1])
-        by mail.dev.tdt.de (Postfix) with ESMTP id DD2552115F;
-        Tue, 21 Jan 2020 12:22:10 +0000 (UTC)
+        id S1729061AbgAUMbw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 21 Jan 2020 07:31:52 -0500
+Received: from mail-wr1-f67.google.com ([209.85.221.67]:32858 "EHLO
+        mail-wr1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727817AbgAUMbv (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 21 Jan 2020 07:31:51 -0500
+Received: by mail-wr1-f67.google.com with SMTP id b6so3029008wrq.0
+        for <netdev@vger.kernel.org>; Tue, 21 Jan 2020 04:31:50 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=cloudflare.com; s=google;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=WURJ7vgVZmGkrqDGit1ay4OfmUl2vEoh8ehwRVPP35E=;
+        b=ahOiuenVWWB3Dtz03h0TPw39sqD41Rfy/KE/+UzQNILFfpuuElAZgQfQA8g1KRDVqW
+         jtVWvdvdYgsHGuhwLIcEcZXjD0qfZyQ69A3gpmL/PRB7Ysl1mVsrnSvPmVZUOvem46X7
+         bnTOLqyFDXFrKvtqE81bIIlbf90g0gDgO+etg=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=WURJ7vgVZmGkrqDGit1ay4OfmUl2vEoh8ehwRVPP35E=;
+        b=iD67hP6rcaXkeq/DGFusCuTf11MLnpvZIb3mkMiRa0jg+J3MDsqb7U5jUWz5hqrLPK
+         idNeySV8KdrEKINr1/tPnqV3Xrz0ZsoH09DHD8Qo4KNaHNtljwbb7kKkUwgHeBs/sxAA
+         xf5rOQLNriljjKSMklVTl8rb6kzod+fK7XNkpUNciALaE11fJMNc+IA+HDCSxN1/SOy1
+         Th2rxz9NK5lpFcWsxdWvJWMn2y8pkBXVDd4CqWBUS42GdP2JRM3U/Vb8IJTHqY9H4S96
+         G0P9Xc6sw55ORfR04sl1f8sVMRjgUmKhQnoOP5SL6j0qXULrzi1YBhxDWBSAlJ190MzL
+         nmdw==
+X-Gm-Message-State: APjAAAXTqquOWJilxKepLup9ZX6SKYnBrmB8csNzK/T4yzD1h8yhOk9Q
+        QUFPbsy2+uennPWI8T8x5ntbVnQ/FuHI5g==
+X-Google-Smtp-Source: APXvYqzxsWVRWpqbcsdDTLGOmT/G4jvT2+S+Y7fduTk2ha2+7bXF/JqQjxtRk/tjOTngCVQVotEhrg==
+X-Received: by 2002:adf:e641:: with SMTP id b1mr5040241wrn.34.1579609909723;
+        Tue, 21 Jan 2020 04:31:49 -0800 (PST)
+Received: from cloudflare.com ([176.221.114.230])
+        by smtp.gmail.com with ESMTPSA id n1sm49685178wrw.52.2020.01.21.04.31.48
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 21 Jan 2020 04:31:49 -0800 (PST)
+From:   Jakub Sitnicki <jakub@cloudflare.com>
+To:     netdev@vger.kernel.org
+Cc:     John Fastabend <john.fastabend@gmail.com>,
+        syzbot+d73682fcf7fee6982fe3@syzkaller.appspotmail.com
+Subject: [PATCH net] net, sk_msg: Don't check if sock is locked when tearing down psock
+Date:   Tue, 21 Jan 2020 13:31:47 +0100
+Message-Id: <20200121123147.706666-1-jakub@cloudflare.com>
+X-Mailer: git-send-email 2.24.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII;
- format=flowed
-Content-Transfer-Encoding: 7bit
-Date:   Tue, 21 Jan 2020 13:22:10 +0100
-From:   Martin Schiller <ms@dev.tdt.de>
-To:     David Miller <davem@davemloft.net>
-Cc:     kubakici@wp.pl, khc@pm.waw.pl, linux-x25@vger.kernel.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v4 1/2] wan/hdlc_x25: make lapb params configurable
-Organization: TDT AG
-In-Reply-To: <20200121.120147.1198296072172480771.davem@davemloft.net>
-References: <20200121060034.30554-1-ms@dev.tdt.de>
- <20200121.114152.532453946458399573.davem@davemloft.net>
- <20200121.120147.1198296072172480771.davem@davemloft.net>
-Message-ID: <19b3ce4b4bdc5f97d38e7880ec40c1ab@dev.tdt.de>
-X-Sender: ms@dev.tdt.de
-User-Agent: Roundcube Webmail/1.1.5
-X-Spam-Status: No, score=-1.0 required=5.0 tests=ALL_TRUSTED autolearn=ham
-        autolearn_force=no version=3.4.2
-X-Spam-Checker-Version: SpamAssassin 3.4.2 (2018-09-13) on mail.dev.tdt.de
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 2020-01-21 12:01, David Miller wrote:
-> From: David Miller <davem@davemloft.net>
-> Date: Tue, 21 Jan 2020 11:41:52 +0100 (CET)
-> 
->> From: Martin Schiller <ms@dev.tdt.de>
->> Date: Tue, 21 Jan 2020 07:00:33 +0100
->> 
->>> This enables you to configure mode (DTE/DCE), Modulo, Window, T1, T2, 
->>> N2 via
->>> sethdlc (which needs to be patched as well).
->>> 
->>> Signed-off-by: Martin Schiller <ms@dev.tdt.de>
->> 
->> Applied to net-next.
-> 
-> I seriously wonder how much you tested this code, because the compiler 
-> warned
-> me about:
-> 
-> diff --git a/drivers/net/wan/hdlc_x25.c b/drivers/net/wan/hdlc_x25.c
-> index 63c9aeed9a34..c84536b03aa8 100644
-> --- a/drivers/net/wan/hdlc_x25.c
-> +++ b/drivers/net/wan/hdlc_x25.c
-> @@ -253,7 +253,7 @@ static int x25_ioctl(struct net_device *dev,
-> struct ifreq *ifr)
->  			return -EBUSY;
-> 
->  		/* backward compatibility */
-> -		if (ifr->ifr_settings.size = 0) {
-> +		if (ifr->ifr_settings.size == 0) {
->  			new_settings.dce = 0;
->  			new_settings.modulo = 8;
->  			new_settings.window = 7;
-> 
-> I'll commit that fix, but this is truly careless especially since the 
-> compiler
-> warns about it.
+As John Fastabend reports [0], psock state tear-down can happen on receive
+path *after* unlocking the socket, if the only other psock user, that is
+sockmap or sockhash, releases its psock reference before tcp_bpf_recvmsg
+does so:
 
-I really want to apologize for that. I am currently working with
-several branches of different kernel versions (mainly 4.19) and I
-have overlooked this error when porting the latest changes.
+ tcp_bpf_recvmsg()
+  psock = sk_psock_get(sk)                         <- refcnt 2
+  lock_sock(sk);
+  ...
+                                  sock_map_free()  <- refcnt 1
+  release_sock(sk)
+  sk_psock_put()                                   <- refcnt 0
+
+Remove the lockdep check for socket lock in psock tear-down that got
+introduced in 7e81a3530206 ("bpf: Sockmap, ensure sock lock held during
+tear down").
+
+[0] https://lore.kernel.org/netdev/5e25dc995d7d_74082aaee6e465b441@john-XPS-13-9370.notmuch/
+
+Fixes: 7e81a3530206 ("bpf: Sockmap, ensure sock lock held during tear down")
+Reported-by: syzbot+d73682fcf7fee6982fe3@syzkaller.appspotmail.com
+Suggested-by: John Fastabend <john.fastabend@gmail.com>
+Signed-off-by: Jakub Sitnicki <jakub@cloudflare.com>
+---
+ net/core/skmsg.c | 2 --
+ 1 file changed, 2 deletions(-)
+
+diff --git a/net/core/skmsg.c b/net/core/skmsg.c
+index 3866d7e20c07..ded2d5227678 100644
+--- a/net/core/skmsg.c
++++ b/net/core/skmsg.c
+@@ -594,8 +594,6 @@ EXPORT_SYMBOL_GPL(sk_psock_destroy);
+ 
+ void sk_psock_drop(struct sock *sk, struct sk_psock *psock)
+ {
+-	sock_owned_by_me(sk);
+-
+ 	sk_psock_cork_free(psock);
+ 	sk_psock_zap_ingress(psock);
+ 
+-- 
+2.24.1
+
