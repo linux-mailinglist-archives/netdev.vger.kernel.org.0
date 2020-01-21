@@ -2,137 +2,119 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id EE8511446F6
-	for <lists+netdev@lfdr.de>; Tue, 21 Jan 2020 23:11:07 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 198D41446F2
+	for <lists+netdev@lfdr.de>; Tue, 21 Jan 2020 23:11:06 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729305AbgAUWKk (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 21 Jan 2020 17:10:40 -0500
-Received: from kvm5.telegraphics.com.au ([98.124.60.144]:44790 "EHLO
+        id S1729240AbgAUWKi (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 21 Jan 2020 17:10:38 -0500
+Received: from kvm5.telegraphics.com.au ([98.124.60.144]:44812 "EHLO
         kvm5.telegraphics.com.au" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729043AbgAUWKh (ORCPT
+        with ESMTP id S1729157AbgAUWKh (ORCPT
         <rfc822;netdev@vger.kernel.org>); Tue, 21 Jan 2020 17:10:37 -0500
 Received: by kvm5.telegraphics.com.au (Postfix, from userid 502)
-        id 4A79029994; Tue, 21 Jan 2020 17:10:36 -0500 (EST)
+        id 8A26C299A5; Tue, 21 Jan 2020 17:10:36 -0500 (EST)
 To:     "David S. Miller" <davem@davemloft.net>
 Cc:     Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
         Chris Zankel <chris@zankel.net>,
         Laurent Vivier <laurent@vivier.eu>,
         Geert Uytterhoeven <geert@linux-m68k.org>,
         netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Message-Id: <e20133bf43ec6f5967a3330dacaf38f653bf3061.1579641728.git.fthain@telegraphics.com.au>
+Message-Id: <d9b11258f36b7b801bb78f32c39c9691f0237551.1579641728.git.fthain@telegraphics.com.au>
 In-Reply-To: <cover.1579641728.git.fthain@telegraphics.com.au>
 References: <cover.1579641728.git.fthain@telegraphics.com.au>
 From:   Finn Thain <fthain@telegraphics.com.au>
-Subject: [PATCH net v2 05/12] net/sonic: Fix receive buffer handling
+Subject: [PATCH net v2 09/12] net/sonic: Quiesce SONIC before re-initializing
+ descriptor memory
 Date:   Wed, 22 Jan 2020 08:22:08 +1100
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The SONIC can sometimes advance its rx buffer pointer (RRP register)
-without advancing its rx descriptor pointer (CRDA register). As a result
-the index of the current rx descriptor may not equal that of the current
-rx buffer. The driver mistakenly assumes that they are always equal.
-This assumption leads to incorrect packet lengths and possible packet
-duplication. Avoid this by calling a new function to locate the buffer
-corresponding to a given descriptor.
+Make sure the SONIC's DMA engine is idle before altering the transmit
+and receive descriptors. Add a helper for this as it will be needed
+again.
 
-Fixes: efcce839360f ("[PATCH] macsonic/jazzsonic network drivers update")
+Fixes: 1da177e4c3f4 ("Linux-2.6.12-rc2")
 Tested-by: Stan Johnson <userm57@yahoo.com>
 Signed-off-by: Finn Thain <fthain@telegraphics.com.au>
 ---
- drivers/net/ethernet/natsemi/sonic.c | 36 ++++++++++++++++++++++++----
- drivers/net/ethernet/natsemi/sonic.h |  5 ++--
- 2 files changed, 34 insertions(+), 7 deletions(-)
+ drivers/net/ethernet/natsemi/sonic.c | 26 ++++++++++++++++++++++++++
+ drivers/net/ethernet/natsemi/sonic.h |  3 +++
+ 2 files changed, 29 insertions(+)
 
 diff --git a/drivers/net/ethernet/natsemi/sonic.c b/drivers/net/ethernet/natsemi/sonic.c
-index 5ba705ad7d4e..3387f7bc1a80 100644
+index 305884fb22fd..6570b9428d12 100644
 --- a/drivers/net/ethernet/natsemi/sonic.c
 +++ b/drivers/net/ethernet/natsemi/sonic.c
-@@ -408,6 +408,22 @@ static irqreturn_t sonic_interrupt(int irq, void *dev_id)
- 	return IRQ_HANDLED;
+@@ -116,6 +116,25 @@ static int sonic_open(struct net_device *dev)
+ 	return 0;
  }
  
-+/* Return the array index corresponding to a given Receive Buffer pointer. */
++/* Wait for the SONIC to become idle. */
 +
-+static inline int index_from_addr(struct sonic_local *lp, dma_addr_t addr,
-+				  unsigned int last)
++static void sonic_quiesce(struct net_device *dev, u16 mask)
 +{
-+	unsigned int i = last;
++	struct sonic_local * __maybe_unused lp = netdev_priv(dev);
++	int i;
++	u16 bits;
 +
-+	do {
-+		i = (i + 1) & SONIC_RRS_MASK;
-+		if (addr == lp->rx_laddr[i])
-+			return i;
-+	} while (i != last);
-+
-+	return -ENOENT;
++	for (i = 0; i < 1000; ++i) {
++		bits = SONIC_READ(SONIC_CMD) & mask;
++		if (!bits)
++			return;
++		if (irqs_disabled() || in_interrupt())
++			udelay(20);
++		else
++			usleep_range(100, 200);
++	}
++	WARN_ONCE(1, "command deadline expired! 0x%04x\n", bits);
 +}
-+
+ 
  /*
-  * We have a good packet(s), pass it/them up the network stack.
-  */
-@@ -427,6 +443,16 @@ static void sonic_rx(struct net_device *dev)
- 
- 		status = sonic_rda_get(dev, entry, SONIC_RD_STATUS);
- 		if (status & SONIC_RCR_PRX) {
-+			u32 addr = (sonic_rda_get(dev, entry,
-+						  SONIC_RD_PKTPTR_H) << 16) |
-+				   sonic_rda_get(dev, entry, SONIC_RD_PKTPTR_L);
-+			int i = index_from_addr(lp, addr, entry);
+  * Close the SONIC device
+@@ -132,6 +151,9 @@ static int sonic_close(struct net_device *dev)
+ 	/*
+ 	 * stop the SONIC, disable interrupts
+ 	 */
++	SONIC_WRITE(SONIC_CMD, SONIC_CR_RXDIS);
++	sonic_quiesce(dev, SONIC_CR_ALL);
 +
-+			if (i < 0) {
-+				WARN_ONCE(1, "failed to find buffer!\n");
-+				break;
-+			}
+ 	SONIC_WRITE(SONIC_IMR, 0);
+ 	SONIC_WRITE(SONIC_ISR, 0x7fff);
+ 	SONIC_WRITE(SONIC_CMD, SONIC_CR_RST);
+@@ -171,6 +193,9 @@ static void sonic_tx_timeout(struct net_device *dev)
+ 	 * put the Sonic into software-reset mode and
+ 	 * disable all interrupts before releasing DMA buffers
+ 	 */
++	SONIC_WRITE(SONIC_CMD, SONIC_CR_RXDIS);
++	sonic_quiesce(dev, SONIC_CR_ALL);
 +
- 			/* Malloc up new buffer. */
- 			new_skb = netdev_alloc_skb(dev, SONIC_RBSIZE + 2);
- 			if (new_skb == NULL) {
-@@ -448,7 +474,7 @@ static void sonic_rx(struct net_device *dev)
+ 	SONIC_WRITE(SONIC_IMR, 0);
+ 	SONIC_WRITE(SONIC_ISR, 0x7fff);
+ 	SONIC_WRITE(SONIC_CMD, SONIC_CR_RST);
+@@ -657,6 +682,7 @@ static int sonic_init(struct net_device *dev)
+ 	 */
+ 	SONIC_WRITE(SONIC_CMD, 0);
+ 	SONIC_WRITE(SONIC_CMD, SONIC_CR_RXDIS);
++	sonic_quiesce(dev, SONIC_CR_ALL);
  
- 			/* now we have a new skb to replace it, pass the used one up the stack */
- 			dma_unmap_single(lp->device, lp->rx_laddr[entry], SONIC_RBSIZE, DMA_FROM_DEVICE);
--			used_skb = lp->rx_skb[entry];
-+			used_skb = lp->rx_skb[i];
- 			pkt_len = sonic_rda_get(dev, entry, SONIC_RD_PKTLEN);
- 			skb_trim(used_skb, pkt_len);
- 			used_skb->protocol = eth_type_trans(used_skb, dev);
-@@ -457,13 +483,13 @@ static void sonic_rx(struct net_device *dev)
- 			lp->stats.rx_bytes += pkt_len;
- 
- 			/* and insert the new skb */
--			lp->rx_laddr[entry] = new_laddr;
--			lp->rx_skb[entry] = new_skb;
-+			lp->rx_laddr[i] = new_laddr;
-+			lp->rx_skb[i] = new_skb;
- 
- 			bufadr_l = (unsigned long)new_laddr & 0xffff;
- 			bufadr_h = (unsigned long)new_laddr >> 16;
--			sonic_rra_put(dev, entry, SONIC_RR_BUFADR_L, bufadr_l);
--			sonic_rra_put(dev, entry, SONIC_RR_BUFADR_H, bufadr_h);
-+			sonic_rra_put(dev, i, SONIC_RR_BUFADR_L, bufadr_l);
-+			sonic_rra_put(dev, i, SONIC_RR_BUFADR_H, bufadr_h);
- 		} else {
- 			/* This should only happen, if we enable accepting broken packets. */
- 		}
+ 	/*
+ 	 * initialize the receive resource area
 diff --git a/drivers/net/ethernet/natsemi/sonic.h b/drivers/net/ethernet/natsemi/sonic.h
-index 9e4ff8dd032d..e6d47e45c5c2 100644
+index cc2f7b4b77e3..1df6d2f06cc4 100644
 --- a/drivers/net/ethernet/natsemi/sonic.h
 +++ b/drivers/net/ethernet/natsemi/sonic.h
-@@ -275,8 +275,9 @@
- #define SONIC_NUM_RDS   SONIC_NUM_RRS /* number of receive descriptors */
- #define SONIC_NUM_TDS   16            /* number of transmit descriptors */
+@@ -110,6 +110,9 @@
+ #define SONIC_CR_TXP            0x0002
+ #define SONIC_CR_HTX            0x0001
  
--#define SONIC_RDS_MASK  (SONIC_NUM_RDS-1)
--#define SONIC_TDS_MASK  (SONIC_NUM_TDS-1)
-+#define SONIC_RRS_MASK  (SONIC_NUM_RRS - 1)
-+#define SONIC_RDS_MASK  (SONIC_NUM_RDS - 1)
-+#define SONIC_TDS_MASK  (SONIC_NUM_TDS - 1)
- 
- #define SONIC_RBSIZE	1520          /* size of one resource buffer */
- 
++#define SONIC_CR_ALL (SONIC_CR_LCAM | SONIC_CR_RRRA | \
++		      SONIC_CR_RXEN | SONIC_CR_TXP)
++
+ /*
+  * SONIC data configuration bits
+  */
 -- 
 2.24.1
 
