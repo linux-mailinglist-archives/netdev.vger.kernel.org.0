@@ -2,138 +2,218 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id A89721440A6
-	for <lists+netdev@lfdr.de>; Tue, 21 Jan 2020 16:39:59 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 550641440C3
+	for <lists+netdev@lfdr.de>; Tue, 21 Jan 2020 16:44:14 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729096AbgAUPj6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 21 Jan 2020 10:39:58 -0500
-Received: from aserp2120.oracle.com ([141.146.126.78]:34476 "EHLO
-        aserp2120.oracle.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727508AbgAUPj6 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 21 Jan 2020 10:39:58 -0500
-Received: from pps.filterd (aserp2120.oracle.com [127.0.0.1])
-        by aserp2120.oracle.com (8.16.0.27/8.16.0.27) with SMTP id 00LFcpUq013067;
-        Tue, 21 Jan 2020 15:39:25 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=date : from : to : cc
- : subject : message-id : references : mime-version : content-type :
- in-reply-to; s=corp-2019-08-05;
- bh=eQ4ik+FTutWCXRnK1enaA7jtow4c1d1i8Ndq/T4zYAI=;
- b=Ndp7Y68gPe+ml2WETz8GRmm7ySYkYQI0NldiFD/VFx3eOhu2KOhRQJ2/rtID7DxKaUiF
- V1hFJQ02DSIO0dBiXRER6K0C+1rw6ALZcMNLl03KL7CUYUmlH3M+2i3srS3GwsUGl9nf
- oS2iPLNMGx1dPrL0JdDQHd+hxwrqeUjLRCmKLacBsoPY3Uypu9HEft9cP4FTQ79m2zHm
- xyT4max28qK6ZvBEl8M0aMENvPC644cSJCL2CCNrEZpo0iZ1xfZoN3q4oNpH5lNp3AQK
- 5DJ+KXsmyYXeE5IzoderN7nI407zhhSvJqSQFWwYfkrRoztrzwkQtdbiCiM5/fY+/qQC lA== 
-Received: from aserp3030.oracle.com (aserp3030.oracle.com [141.146.126.71])
-        by aserp2120.oracle.com with ESMTP id 2xksyq5rv1-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Tue, 21 Jan 2020 15:39:24 +0000
-Received: from pps.filterd (aserp3030.oracle.com [127.0.0.1])
-        by aserp3030.oracle.com (8.16.0.27/8.16.0.27) with SMTP id 00LFcV90056940;
-        Tue, 21 Jan 2020 15:39:24 GMT
-Received: from userv0122.oracle.com (userv0122.oracle.com [156.151.31.75])
-        by aserp3030.oracle.com with ESMTP id 2xnpfp7rte-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Tue, 21 Jan 2020 15:39:24 +0000
-Received: from abhmp0011.oracle.com (abhmp0011.oracle.com [141.146.116.17])
-        by userv0122.oracle.com (8.14.4/8.14.4) with ESMTP id 00LFdFaW019191;
-        Tue, 21 Jan 2020 15:39:17 GMT
-Received: from kadam (/10.175.179.252)
-        by default (Oracle Beehive Gateway v4.0)
-        with ESMTP ; Tue, 21 Jan 2020 07:39:14 -0800
-Date:   Tue, 21 Jan 2020 18:39:04 +0300
-From:   Dan Carpenter <dan.carpenter@oracle.com>
-To:     syzbot <syzbot+3967c1caf256f4d5aefe@syzkaller.appspotmail.com>
-Cc:     alsa-devel@alsa-project.org, davem@davemloft.net,
-        dccp@vger.kernel.org, gerrit@erg.abdn.ac.uk,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        perex@perex.cz, syzkaller-bugs@googlegroups.com, tiwai@suse.com,
-        tiwai@suse.de, Eric Dumazet <edumazet@google.com>
-Subject: Re: KASAN: use-after-free Read in ccid_hc_tx_delete
-Message-ID: <20200121153904.GA9856@kadam>
-References: <000000000000de3c7705746dcbb7@google.com>
- <0000000000002c243a0597dc8d9d@google.com>
- <20191121201433.GD617@kadam>
+        id S1729288AbgAUPnv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 21 Jan 2020 10:43:51 -0500
+Received: from us-smtp-1.mimecast.com ([207.211.31.81]:33901 "EHLO
+        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1729207AbgAUPns (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 21 Jan 2020 10:43:48 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1579621425;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=YcbauX61o7tWuEN+WbxCHxYsM/sg+0p71uHLTvabbzY=;
+        b=cVmk0x7Tq0QJfczu48ekLu8xw3xc5XtrH76Fy3Jekz/4Cl8LiX5m4RjOH03BbfsrqluY1p
+        1meH+I05h8D+ovYVIVQSD/dkXz27XOAcyJsbbd4nTs1YnyGZ+bPE5hVe5VtpN13SbUQKBM
+        OXn0ULSc5JNt9pR015KvOV0ugty8zK0=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-349-LD4l0I28Mgquq2M4QBsksg-1; Tue, 21 Jan 2020 10:43:41 -0500
+X-MC-Unique: LD4l0I28Mgquq2M4QBsksg-1
+Received: from smtp.corp.redhat.com (int-mx07.intmail.prod.int.phx2.redhat.com [10.5.11.22])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id C413618FF667;
+        Tue, 21 Jan 2020 15:43:39 +0000 (UTC)
+Received: from localhost (ovpn-117-223.ams2.redhat.com [10.36.117.223])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 186F210013A7;
+        Tue, 21 Jan 2020 15:43:36 +0000 (UTC)
+Date:   Tue, 21 Jan 2020 15:43:35 +0000
+From:   Stefan Hajnoczi <stefanha@redhat.com>
+To:     "Michael S. Tsirkin" <mst@redhat.com>
+Cc:     Stefano Garzarella <sgarzare@redhat.com>,
+        David Miller <davem@davemloft.net>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Jorgen Hansen <jhansen@vmware.com>,
+        Jason Wang <jasowang@redhat.com>, kvm <kvm@vger.kernel.org>,
+        virtualization@lists.linux-foundation.org,
+        linux-hyperv@vger.kernel.org, Dexuan Cui <decui@microsoft.com>
+Subject: Re: [PATCH net-next 1/3] vsock: add network namespace support
+Message-ID: <20200121154335.GB641751@stefanha-x1.localdomain>
+References: <20200116172428.311437-2-sgarzare@redhat.com>
+ <20200120.100610.546818167633238909.davem@davemloft.net>
+ <20200120101735.uyh4o64gb4njakw5@steredhat>
+ <20200120060601-mutt-send-email-mst@kernel.org>
+ <CAGxU2F6VH8Eb5UH_9KjN6MONbZEo1D7EHAiocVVus6jW55BJDg@mail.gmail.com>
+ <20200120110319-mutt-send-email-mst@kernel.org>
+ <CAGxU2F5=DQJ56sH4BUqp_7rvaXSF9bFHp4QkpLApJQK0bmd4MA@mail.gmail.com>
+ <20200120170120-mutt-send-email-mst@kernel.org>
+ <CAGxU2F4uW7FNe5xC0sb3Xxr_GABSXuu1Z9n5M=Ntq==T7MaaVw@mail.gmail.com>
+ <20200121055403-mutt-send-email-mst@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+In-Reply-To: <20200121055403-mutt-send-email-mst@kernel.org>
+X-Scanned-By: MIMEDefang 2.84 on 10.5.11.22
+X-Mimecast-Spam-Score: 0
+X-Mimecast-Originator: redhat.com
+Content-Type: multipart/signed; micalg=pgp-sha256;
+        protocol="application/pgp-signature"; boundary="uZ3hkaAS1mZxFaxD"
 Content-Disposition: inline
-In-Reply-To: <20191121201433.GD617@kadam>
-User-Agent: Mutt/1.9.4 (2018-02-28)
-X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9506 signatures=668685
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 suspectscore=0 malwarescore=0
- phishscore=0 bulkscore=0 spamscore=0 mlxscore=0 mlxlogscore=999
- adultscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.0.1-1911140001 definitions=main-2001210125
-X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9506 signatures=668685
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 priorityscore=1501 malwarescore=0
- suspectscore=0 phishscore=0 bulkscore=0 spamscore=0 clxscore=1011
- lowpriorityscore=0 mlxscore=0 impostorscore=0 mlxlogscore=999 adultscore=0
- classifier=spam adjust=0 reason=mlx scancount=1 engine=8.0.1-1911140001
- definitions=main-2001210125
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Nov 21, 2019 at 11:14:33PM +0300, Dan Carpenter wrote:
-> On Thu, Nov 21, 2019 at 07:00:00AM -0800, syzbot wrote:
-> > syzbot has bisected this bug to:
-> > 
-> > commit f04684b4d85d6371126f476d3268ebf6a0bd57cf
-> > Author: Dan Carpenter <dan.carpenter@oracle.com>
-> > Date:   Thu Jun 21 08:07:21 2018 +0000
-> > 
-> >     ALSA: lx6464es: Missing error code in snd_lx6464es_create()
-> > 
-> > bisection log:  https://syzkaller.appspot.com/x/bisect.txt?x=10dd11cae00000
-> > start commit:   eb6cf9f8 Merge tag 'arm64-fixes' of git://git.kernel.org/p..
-> > git tree:       upstream
-> > final crash:    https://syzkaller.appspot.com/x/report.txt?x=12dd11cae00000
-> > console output: https://syzkaller.appspot.com/x/log.txt?x=14dd11cae00000
-> > kernel config:  https://syzkaller.appspot.com/x/.config?x=c8970c89a0efbb23
-> > dashboard link: https://syzkaller.appspot.com/bug?extid=3967c1caf256f4d5aefe
-> > syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=11022ccd400000
-> > C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=124581db400000
-> > 
-> > Reported-by: syzbot+3967c1caf256f4d5aefe@syzkaller.appspotmail.com
-> > Fixes: f04684b4d85d ("ALSA: lx6464es: Missing error code in
-> > snd_lx6464es_create()")
-> > 
-> > For information about bisection process see: https://goo.gl/tpsmEJ#bisection
-> 
-> This crash isn't related to my commit, it's seems something specific to
-> DCCP.
-> 
-> My guess is that the fix is probably something like this.  The old sk
-> and the new sk re-use the same newdp->dccps_hc_rx/tx_ccid pointers.
-> The first sk destructor frees it and that causes a use after free when
-> the second destructor tries to free it.
-> 
-> But I don't know DCCP code at all so I might be totally off and I
-> haven't tested this at all...  It was just easier to write a patch than
-> to try to explain in words.  Maybe we should clone the ccid instead of
-> setting it to NULL.  Or I might be completely wrong.
-> 
-> ---
->  net/dccp/minisocks.c | 2 ++
->  1 file changed, 2 insertions(+)
-> 
-> diff --git a/net/dccp/minisocks.c b/net/dccp/minisocks.c
-> index 25187528c308..4cbfcccbbbbb 100644
-> --- a/net/dccp/minisocks.c
-> +++ b/net/dccp/minisocks.c
-> @@ -98,6 +98,8 @@ struct sock *dccp_create_openreq_child(const struct sock *sk,
->  		newdp->dccps_timestamp_echo = dreq->dreq_timestamp_echo;
->  		newdp->dccps_timestamp_time = dreq->dreq_timestamp_time;
->  		newicsk->icsk_rto	    = DCCP_TIMEOUT_INIT;
-> +		newdp->dccps_hc_rx_ccid     = NULL;
-> +		newdp->dccps_hc_tx_ccid     = NULL;
->  
->  		INIT_LIST_HEAD(&newdp->dccps_featneg);
->  		/*
+--uZ3hkaAS1mZxFaxD
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-Could someone take a look at this?  It seem like a pretty serious bug
-but DCCP is not very actively maintained and a lot of distributions
-disable it.
+On Tue, Jan 21, 2020 at 06:14:48AM -0500, Michael S. Tsirkin wrote:
+> On Tue, Jan 21, 2020 at 10:07:06AM +0100, Stefano Garzarella wrote:
+> > On Mon, Jan 20, 2020 at 11:02 PM Michael S. Tsirkin <mst@redhat.com> wr=
+ote:
+> > > On Mon, Jan 20, 2020 at 05:53:39PM +0100, Stefano Garzarella wrote:
+> > > > On Mon, Jan 20, 2020 at 5:04 PM Michael S. Tsirkin <mst@redhat.com>=
+ wrote:
+> > > > > On Mon, Jan 20, 2020 at 02:58:01PM +0100, Stefano Garzarella wrot=
+e:
+> > > > > > On Mon, Jan 20, 2020 at 1:03 PM Michael S. Tsirkin <mst@redhat.=
+com> wrote:
+> > > > > > > On Mon, Jan 20, 2020 at 11:17:35AM +0100, Stefano Garzarella =
+wrote:
+> > > > > > > > On Mon, Jan 20, 2020 at 10:06:10AM +0100, David Miller wrot=
+e:
+> > > > > > > > > From: Stefano Garzarella <sgarzare@redhat.com>
+> > > > > > > > > Date: Thu, 16 Jan 2020 18:24:26 +0100
+> > > > > > > > >
+> > > > > > > > > > This patch adds 'netns' module param to enable this new=
+ feature
+> > > > > > > > > > (disabled by default), because it changes vsock's behav=
+ior with
+> > > > > > > > > > network namespaces and could break existing application=
+s.
+> > > > > > > > >
+> > > > > > > > > Sorry, no.
+> > > > > > > > >
+> > > > > > > > > I wonder if you can even design a legitimate, reasonable,=
+ use case
+> > > > > > > > > where these netns changes could break things.
+> > > > > > > >
+> > > > > > > > I forgot to mention the use case.
+> > > > > > > > I tried the RFC with Kata containers and we found that Kata=
+ shim-v1
+> > > > > > > > doesn't work (Kata shim-v2 works as is) because there are t=
+he following
+> > > > > > > > processes involved:
+> > > > > > > > - kata-runtime (runs in the init_netns) opens /dev/vhost-vs=
+ock and
+> > > > > > > >   passes it to qemu
+> > > > > > > > - kata-shim (runs in a container) wants to talk with the gu=
+est but the
+> > > > > > > >   vsock device is assigned to the init_netns and kata-shim =
+runs in a
+> > > > > > > >   different netns, so the communication is not allowed
+> > > > > > > > But, as you said, this could be a wrong design, indeed they=
+ already
+> > > > > > > > found a fix, but I was not sure if others could have the sa=
+me issue.
+> > > > > > > >
+> > > > > > > > In this case, do you think it is acceptable to make this ch=
+ange in
+> > > > > > > > the vsock's behavior with netns and ask the user to change =
+the design?
+> > > > > > >
+> > > > > > > David's question is what would be a usecase that's broken
+> > > > > > > (as opposed to fixed) by enabling this by default.
+> > > > > >
+> > > > > > Yes, I got that. Thanks for clarifying.
+> > > > > > I just reported a broken example that can be fixed with a diffe=
+rent
+> > > > > > design (due to the fact that before this series, vsock devices =
+were
+> > > > > > accessible to all netns).
+> > > > > >
+> > > > > > >
+> > > > > > > If it does exist, you need a way for userspace to opt-in,
+> > > > > > > module parameter isn't that.
+> > > > > >
+> > > > > > Okay, but I honestly can't find a case that can't be solved.
+> > > > > > So I don't know whether to add an option (ioctl, sysfs ?) or wa=
+it for
+> > > > > > a real case to come up.
+> > > > > >
+> > > > > > I'll try to see better if there's any particular case where we =
+need
+> > > > > > to disable netns in vsock.
+> > > > > >
+> > > > > > Thanks,
+> > > > > > Stefano
+> > > > >
+> > > > > Me neither. so what did you have in mind when you wrote:
+> > > > > "could break existing applications"?
+> > > >
+> > > > I had in mind:
+> > > > 1. the Kata case. It is fixable (the fix is not merged on kata), bu=
+t
+> > > >    older versions will not work with newer Linux.
+> > >
+> > > meaning they will keep not working, right?
+> >=20
+> > Right, I mean without this series they work, with this series they work
+> > only if the netns support is disabled or with a patch proposed but not
+> > merged in kata.
+> >=20
+> > >
+> > > > 2. a single process running on init_netns that wants to communicate=
+ with
+> > > >    VMs handled by VMMs running in different netns, but this case ca=
+n be
+> > > >    solved opening the /dev/vhost-vsock in the same netns of the pro=
+cess
+> > > >    that wants to communicate with the VMs (init_netns in this case)=
+, and
+> > > >    passig it to the VMM.
+> > >
+> > > again right now they just don't work, right?
+> >=20
+> > Right, as above.
+> >=20
+> > What do you recommend I do?
+> >=20
+> > Thanks,
+> > Stefano
+>=20
+> If this breaks userspace, then we need to maintain compatibility.
+> For example, have two devices, /dev/vhost-vsock and /dev/vhost-vsock-netn=
+s?
 
-regards,
-dan carpenter
+/dev/vhost-vsock-netns is cleaner and simpler than my suggestion.  I
+like it!
+
+This is nice for containers (say you want to run QEMU inside a container
+on the host) because you can allow only /dev/vhost-vsock-netns inside
+containers.  This prevents them from opening /dev/vhost-vsock to get
+access to the initial network namespace.
+
+Stefan
+
+--uZ3hkaAS1mZxFaxD
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAEBCAAdFiEEhpWov9P5fNqsNXdanKSrs4Grc8gFAl4nHCcACgkQnKSrs4Gr
+c8iOjAgArNIcauYKdihZzUB/8JJdrIjzQR0bQf9Ul7ERaBhxeb2+BSqx3L/DLkny
+CYL7HXVrKVs+/OXf7pBdalE69qsOfDdBhDhEBOHI515awLF/7xJHwokchC5j/VQv
+Wcvn9CS3zmks9ssJHRtIdraxTBxc04EAp5U+lDUxRLLjB4HcCLc+CwoS/RV75V92
+3RzOQB4CMmV+4heL+gXh3e7UfvNLEfVyKyOYw8qj1yIAnFkv2Rd8pXxNfPTuH0ch
+2iEJxQy8y8vIqEONnMeDMLWiAmssHjzujKry8UOZ+OdMLPSRLgc487jVvoH9UEQP
+53GYRFwYtUGkG7An19ImstKXkcydcA==
+=CVL/
+-----END PGP SIGNATURE-----
+
+--uZ3hkaAS1mZxFaxD--
+
