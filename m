@@ -2,199 +2,125 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id BCE40143C1A
-	for <lists+netdev@lfdr.de>; Tue, 21 Jan 2020 12:35:59 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D7FEB143C4E
+	for <lists+netdev@lfdr.de>; Tue, 21 Jan 2020 12:50:37 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728982AbgAULfw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 21 Jan 2020 06:35:52 -0500
-Received: from userp2130.oracle.com ([156.151.31.86]:53506 "EHLO
-        userp2130.oracle.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726052AbgAULfw (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 21 Jan 2020 06:35:52 -0500
-Received: from pps.filterd (userp2130.oracle.com [127.0.0.1])
-        by userp2130.oracle.com (8.16.0.27/8.16.0.27) with SMTP id 00LBXNBK034296;
-        Tue, 21 Jan 2020 11:35:30 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=date : from : to : cc
- : subject : message-id : references : mime-version : content-type :
- in-reply-to; s=corp-2019-08-05;
- bh=O5LftPvaGtM67EfFxPIbJZyTLJGrdDk4vCyyoTH8rgs=;
- b=H2m6sw8gKZMIJjcwFJ8L4Up2uDvY1FZUjbYrLIzoo0QE3/WrQMP4QRK3pQJzrz8mD5GB
- Ralso39tSUuxT/sTVrTBISgrKdlhwh5oNQAUc0UgGyrKjRejK1+lDK8909OPMvNYRkm7
- W1TSUq20A9ubTEMRgNeKNN640QJ4GIF18YeoLeoS9XiAenPd+pVGbPcpOzFfC/62sdsR
- Vtr+9MYuCv7Q7k5qkBsssPz4xhjhl5lU0fYLmxbxvDb6jSyQNdW413HWNBKVuXv+QV3+
- rijTEHWbninGWsAJfZVRNKfp35Z3DS67crc09zTUZTSjL2Jq84B9zILkfrUh2Mpp3WrS XA== 
-Received: from userp3020.oracle.com (userp3020.oracle.com [156.151.31.79])
-        by userp2130.oracle.com with ESMTP id 2xkseucgkr-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Tue, 21 Jan 2020 11:35:30 +0000
-Received: from pps.filterd (userp3020.oracle.com [127.0.0.1])
-        by userp3020.oracle.com (8.16.0.27/8.16.0.27) with SMTP id 00LBY2BF182316;
-        Tue, 21 Jan 2020 11:35:30 GMT
-Received: from userv0121.oracle.com (userv0121.oracle.com [156.151.31.72])
-        by userp3020.oracle.com with ESMTP id 2xnsj4drrn-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Tue, 21 Jan 2020 11:35:26 +0000
-Received: from abhmp0016.oracle.com (abhmp0016.oracle.com [141.146.116.22])
-        by userv0121.oracle.com (8.14.4/8.13.8) with ESMTP id 00LBWk3f024105;
-        Tue, 21 Jan 2020 11:32:46 GMT
-Received: from kadam (/129.205.23.165)
-        by default (Oracle Beehive Gateway v4.0)
-        with ESMTP ; Tue, 21 Jan 2020 03:32:45 -0800
-Date:   Tue, 21 Jan 2020 14:32:36 +0300
-From:   Dan Carpenter <dan.carpenter@oracle.com>
-To:     syzbot <syzbot+29125d208b3dae9a7019@syzkaller.appspotmail.com>,
-        pablo@netfilter.org
-Cc:     coreteam@netfilter.org, davem@davemloft.net, fw@strlen.de,
-        kadlec@netfilter.org, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org, netfilter-devel@vger.kernel.org,
-        syzkaller-bugs@googlegroups.com
-Subject: Re: KASAN: use-after-free Read in __nf_tables_abort
-Message-ID: <20200121113235.GA1847@kadam>
-References: <000000000000367175059c90b6bf@google.com>
+        id S1729159AbgAULug (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 21 Jan 2020 06:50:36 -0500
+Received: from mail-qt1-f196.google.com ([209.85.160.196]:37649 "EHLO
+        mail-qt1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726052AbgAULuf (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 21 Jan 2020 06:50:35 -0500
+Received: by mail-qt1-f196.google.com with SMTP id w47so2330673qtk.4;
+        Tue, 21 Jan 2020 03:50:35 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=EykHDyTMZ2RRTxjQnla0rNRTWuTEDOFAlnAnxCmjW0g=;
+        b=MByAES9ivUVT1Ta+W3hzl0S11R/cGn36zYGQxj2Cl8VPGV4hEl4ai5Nxrd84Vqc+cB
+         jRLtTG6W2kjlvLkS0cgOzirenm1I5xVPbHM18WlLsrfZ0scTeVFmXC8fzCk98LsLVBzs
+         PjJIeanBEe1zjqAa+nvEapEJZdqIQspP37nbDJA1L0rSniW5TIb/gqdVDpEyygnTAGVq
+         9mnzvGI7iaIRTdZPiV/QVGmGjdODTFCIGvA+0KwVwLlWCsQp2tTVyoEi0gJVPDKVHpLQ
+         vhzC5GnLHugHkeO5rTq2AOW0A9oAHd4aTh/ORya5L+t4Nn/usjCKEJ+h2uNpICRkjH8/
+         yzNw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=EykHDyTMZ2RRTxjQnla0rNRTWuTEDOFAlnAnxCmjW0g=;
+        b=M0MgJmv5iHg9xM5bVSmnzfDa519+hsXrtIdpxfTVJN33WmQcDLF2hxen2zo5OGjaef
+         16w7LqGME90w9mACQCLNmqEDXkexjMc9/+Wy6IjYKwtBtHePe2LILJkchE4mCcembb6+
+         Zv7IhSaSndFXjcNOkpiMkV0Ul3L6urnkDB/LIbDB1sj1E/iT6MUo+jkjsDgw5Sl5IlWD
+         mSVbOXyQmEK6NG3I1QFbfBq2Bu7h57a3+HTBU5dzm7QRTTVsM1h58hpAr1dzk8ErTi2W
+         RK631reVLL4cOFrWyZzPC2qmnO/mzasCgqAbTV77L8xahhBCyJUJXIY+S2T21Yy9OsRv
+         8kVQ==
+X-Gm-Message-State: APjAAAXma916hnNYvQx1fS3nXLq04xrL5LXcTugVPcSMoOk8pno7cnhZ
+        PjH31fzTOEWe6VtXmmS2juwcjQpNzugSl/HSJvY=
+X-Google-Smtp-Source: APXvYqwVdXAYWaERzBlYLX/n/QG79vTGd8ZFu5hS6YGaEpm+ljnpLu7940DZXEDPdxB6wxVp7Jn8b8mFmYhMPeDyV2k=
+X-Received: by 2002:ac8:33a5:: with SMTP id c34mr4017257qtb.359.1579607434836;
+ Tue, 21 Jan 2020 03:50:34 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <000000000000367175059c90b6bf@google.com>
-User-Agent: Mutt/1.9.4 (2018-02-28)
-X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9506 signatures=668685
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 suspectscore=0 malwarescore=0
- phishscore=0 bulkscore=0 spamscore=0 mlxscore=0 mlxlogscore=758
- adultscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.0.1-1911140001 definitions=main-2001210098
-X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9506 signatures=668685
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 priorityscore=1501 malwarescore=0
- suspectscore=0 phishscore=0 bulkscore=0 spamscore=0 clxscore=1011
- lowpriorityscore=0 mlxscore=0 impostorscore=0 mlxlogscore=820 adultscore=0
- classifier=spam adjust=0 reason=mlx scancount=1 engine=8.0.1-1911140001
- definitions=main-2001210098
+References: <20200120092149.13775-1-bjorn.topel@gmail.com> <28b2b6ba-7f43-6cab-9b3a-174fc71d5a62@iogearbox.net>
+In-Reply-To: <28b2b6ba-7f43-6cab-9b3a-174fc71d5a62@iogearbox.net>
+From:   =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@gmail.com>
+Date:   Tue, 21 Jan 2020 12:50:23 +0100
+Message-ID: <CAJ+HfNj6dWLgODuHN82H5pXZgzYjx3cLi5WvGSoMg57TgYuRbg@mail.gmail.com>
+Subject: Re: [PATCH bpf-next] xsk: update rings for load-acquire/store-release semantics
+To:     Daniel Borkmann <daniel@iogearbox.net>,
+        John Fastabend <john.fastabend@gmail.com>
+Cc:     Netdev <netdev@vger.kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@intel.com>,
+        bpf <bpf@vger.kernel.org>,
+        "Karlsson, Magnus" <magnus.karlsson@intel.com>,
+        Jonathan Lemon <jonathan.lemon@gmail.com>,
+        mark.rutland@arm.com, will@kernel.org
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-I think I see the problem, but I'm not sure how you want to fix it...
+On Tue, 21 Jan 2020 at 00:51, Daniel Borkmann <daniel@iogearbox.net> wrote:
+>
+> On 1/20/20 10:21 AM, Bj=C3=B6rn T=C3=B6pel wrote:
+> > From: Bj=C3=B6rn T=C3=B6pel <bjorn.topel@intel.com>
+> >
+> > Currently, the AF_XDP rings uses fences for the kernel-side
+> > produce/consume functions. By updating rings for
+> > load-acquire/store-release semantics, the full barrier (smp_mb()) on
+> > the consumer side can be replaced.
+> >
+> > Signed-off-by: Bj=C3=B6rn T=C3=B6pel <bjorn.topel@intel.com>
+>
+> If I'm not missing something from the ring update scheme, don't you also =
+need
+> to adapt to STORE.rel ->producer with matching barrier in tools/lib/bpf/x=
+sk.h ?
+>
 
-net/netfilter/nf_tables_api.c
-   942  static int nf_tables_newtable(struct net *net, struct sock *nlsk,
-   943                                struct sk_buff *skb, const struct nlmsghdr *nlh,
-   944                                const struct nlattr * const nla[],
-   945                                struct netlink_ext_ack *extack)
-   946  {
-   947          const struct nfgenmsg *nfmsg = nlmsg_data(nlh);
-   948          u8 genmask = nft_genmask_next(net);
-   949          int family = nfmsg->nfgen_family;
-   950          const struct nlattr *attr;
-   951          struct nft_table *table;
-   952          u32 flags = 0;
-   953          struct nft_ctx ctx;
-   954          int err;
-   955  
-   956          lockdep_assert_held(&net->nft.commit_mutex);
-   957          attr = nla[NFTA_TABLE_NAME];
-   958          table = nft_table_lookup(net, attr, family, genmask);
-                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-This is looking up table in net->nft.tables
+Daniel/John,
 
-   959          if (IS_ERR(table)) {
-   960                  if (PTR_ERR(table) != -ENOENT)
-   961                          return PTR_ERR(table);
-   962          } else {
-   963                  if (nlh->nlmsg_flags & NLM_F_EXCL) {
-   964                          NL_SET_BAD_ATTR(extack, attr);
-   965                          return -EEXIST;
-   966                  }
-   967                  if (nlh->nlmsg_flags & NLM_F_REPLACE)
-   968                          return -EOPNOTSUPP;
-   969  
-   970                  nft_ctx_init(&ctx, net, skb, nlh, family, table, NULL, nla);
-   971                  return nf_tables_updtable(&ctx);
-                               ^^^^^^^^^^^^^^^^^^^^^^^
-Then it adds it to &ctx->net->nft.commit_list
+Hmm, I was under the impression that *wasn't* the case. Quoting
+memory-barriers.txt:
 
-   972          }
-   973  
-   974          if (nla[NFTA_TABLE_FLAGS]) {
-   975                  flags = ntohl(nla_get_be32(nla[NFTA_TABLE_FLAGS]));
-   976                  if (flags & ~NFT_TABLE_F_DORMANT)
-   977                          return -EINVAL;
-   978          }
-   979  
-   980          err = -ENOMEM;
-   981          table = kzalloc(sizeof(*table), GFP_KERNEL);
-   982          if (table == NULL)
-   983                  goto err_kzalloc;
-   984  
-   985          table->name = nla_strdup(attr, GFP_KERNEL);
-   986          if (table->name == NULL)
-   987                  goto err_strdup;
-   988  
-   989          err = rhltable_init(&table->chains_ht, &nft_chain_ht_params);
-   990          if (err)
-   991                  goto err_chain_ht;
-   992  
-   993          INIT_LIST_HEAD(&table->chains);
-   994          INIT_LIST_HEAD(&table->sets);
-   995          INIT_LIST_HEAD(&table->objects);
-   996          INIT_LIST_HEAD(&table->flowtables);
-   997          table->family = family;
-   998          table->flags = flags;
-   999          table->handle = ++table_handle;
-  1000  
-  1001          nft_ctx_init(&ctx, net, skb, nlh, family, table, NULL, nla);
-  1002          err = nft_trans_table_add(&ctx, NFT_MSG_NEWTABLE);
-                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-Added to ctx->net->nft.commit_list
+--8<--
+When dealing with CPU-CPU interactions, certain types of memory
+barrier should always be paired.  A lack of appropriate pairing is
+almost certainly an error.
 
-  1003          if (err < 0)
-  1004                  goto err_trans;
-  1005  
-  1006          list_add_tail_rcu(&table->list, &net->nft.tables);
-                                                ^^^^^^^^^^^^^^^^
-Added to net->nft.tables
+General barriers pair with each other, though they also pair with most
+other types of barriers, albeit without multicopy atomicity.  An
+acquire barrier pairs with a release barrier, but both may also pair
+with other barriers, including of course general barriers.  A write
+barrier pairs with a data dependency barrier, a control dependency, an
+acquire barrier, a release barrier, a read barrier, or a general
+barrier.  Similarly a read barrier, control dependency, or a data
+dependency barrier pairs with a write barrier, an acquire barrier, a
+release barrier, or a general barrier:
+-->8--
 
-  1007          return 0;
-  1008  err_trans:
-  1009          rhltable_destroy(&table->chains_ht);
-  1010  err_chain_ht:
-  1011          kfree(table->name);
-  1012  err_strdup:
-  1013          kfree(table);
+(The usual "I'm not an expert, just quoting memory-barriers.txt"
+disclaimer applies...)
 
-net/netfilter/nf_tables_api.c
-  6995  static void nf_tables_commit_release(struct net *net)
-  6996  {
-  6997          struct nft_trans *trans;
-  6998  
-  6999          /* all side effects have to be made visible.
-  7000           * For example, if a chain named 'foo' has been deleted, a
-  7001           * new transaction must not find it anymore.
-  7002           *
-  7003           * Memory reclaim happens asynchronously from work queue
-  7004           * to prevent expensive synchronize_rcu() in commit phase.
-  7005           */
-  7006          if (list_empty(&net->nft.commit_list)) {
-  7007                  mutex_unlock(&net->nft.commit_mutex);
-  7008                  return;
-  7009          }
-  7010  
-  7011          trans = list_last_entry(&net->nft.commit_list,
-  7012                                  struct nft_trans, list);
-  7013          get_net(trans->ctx.net);
-  7014          WARN_ON_ONCE(trans->put_net);
-  7015  
-  7016          trans->put_net = true;
-  7017          spin_lock(&nf_tables_destroy_list_lock);
-  7018          list_splice_tail_init(&net->nft.commit_list, &nf_tables_destroy_list);
-                                       ^^^^^^^^^^^^^^^^^^^^^  ^^^^^^^^^^^^^^^^^^^^^^
-This starts the process of freeing everything from net->nft.commit_list,
-but we need to delete it from the net->nft.tables list as well.
+In libbpf, we already have a "weaker" barrier (libbpf_smp_rwmb()). See
+commit 2c5935f1b2b6 ("libbpf: optimize barrier for XDP socket rings")
+for more information.
 
-  7019          spin_unlock(&nf_tables_destroy_list_lock);
-  7020  
-  7021          mutex_unlock(&net->nft.commit_mutex);
-  7022  
-  7023          schedule_work(&trans_destroy_work);
-  7024  }
+I agree that at some point ld.acq/st.rel barriers should be adopted in
+libbpf at some point, but not that it's broken now. Then again,
+reading Will's (Cc'd) perf-ring comment here [1], makes me a bit
+uneasy even though he says "theoretical". ;-)
 
-regards,
-dan carpenter
+> Btw, alternative model could also be 09d62154f613 ("tools, perf: add and =
+use
+> optimized ring_buffer_{read_head, write_tail} helpers") for the kernel si=
+de
+> in order to get rid of the smp_mb() on x86.
+>
+
+Interesting! I'll have a look!
+
+[1] https://lore.kernel.org/lkml/20180523164234.GJ2983@arm.com/
