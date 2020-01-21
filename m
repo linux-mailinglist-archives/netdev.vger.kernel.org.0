@@ -2,108 +2,127 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 7EEA3144298
-	for <lists+netdev@lfdr.de>; Tue, 21 Jan 2020 17:57:49 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A37431442A5
+	for <lists+netdev@lfdr.de>; Tue, 21 Jan 2020 17:59:24 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729122AbgAUQ5r (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 21 Jan 2020 11:57:47 -0500
-Received: from mail-wr1-f66.google.com ([209.85.221.66]:35291 "EHLO
-        mail-wr1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727817AbgAUQ5r (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 21 Jan 2020 11:57:47 -0500
-Received: by mail-wr1-f66.google.com with SMTP id g17so4086593wro.2
-        for <netdev@vger.kernel.org>; Tue, 21 Jan 2020 08:57:45 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=dev-mellanox-co-il.20150623.gappssmtp.com; s=20150623;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=fiRn9DGKJey+BHTDT52ABAY8ODR+BAkXmTGuHK0xeVI=;
-        b=sthT/pQ1MehqIaXdCHqknuRHGIHXTwRZ9wNYJZP8n94qpovVuuDFs6QFIZJ1MFZHLf
-         KcgBqVUdznBmTqJVH1tehqJixO2WNzTYmNNoMYa7a2W6mzvsX2ouJZXyyj+v0Cc6FDDw
-         SvM1WtpiO22A5hZn19bPqZNWC4mVzJlNAI2uTPB0z8rvbHvGbpa4yMalPu6CWxUp7Whs
-         0Ab/sR3e9wFy5o5r31yz8yClbVInwyg/xf+qx4NpTHIRG6BNavyKdb51ZIb0P6EK2Hy2
-         8pZcriSnLHRQQiMHxj1bN52DUgiYzcESEYG7D2ftiOUM+MQeSG1LMg7pa6CO89hFet0K
-         MFbA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=fiRn9DGKJey+BHTDT52ABAY8ODR+BAkXmTGuHK0xeVI=;
-        b=HekCsmElQyc+DreuirINPOiChUYvbAe0U7sqiPL+CUEVNNKYvWCH5epxMbPvG9wrut
-         4XJROpHuWXA/8csVIghxvr0jhphIwxkjdF4LSI6mP79yfqums41SQ4D+yJUVtIIHYI9l
-         VIUqYFY7QjcuXGhqoEHQ3/DoZEvVQxUN7D6M+MY6TSib6jbodR/HEBVdnJZOwJBm2URt
-         Cf86sLn/HJ/zbju+hfUMEVnZklcGP7Ak2onIqKhmT5rrGWeB80jwxePODDDBCUBUWF9V
-         hWKkn9ERuWkbMgSbP55hfcvUHIEvns307Cv/i9Eazswf0D/eJPMfvP20a/N2Pu2TengQ
-         e9xQ==
-X-Gm-Message-State: APjAAAU6J4lKWMjlS5AMaWs8nInh+77hvnM6Bg60LQjW/3tVRsNOoFBm
-        c2zUICswZbqQ3ysTev3ilKWvuiOWzV8=
-X-Google-Smtp-Source: APXvYqxYdNr/nmwIvPcChuc5ERP9a4jxDI+5XJSJ7F6cSUEzxLnirZP0C3k/UG1vkKURQ154V2Bhpg==
-X-Received: by 2002:adf:eb48:: with SMTP id u8mr6081148wrn.283.1579625864813;
-        Tue, 21 Jan 2020 08:57:44 -0800 (PST)
-Received: from [10.80.2.221] ([193.47.165.251])
-        by smtp.googlemail.com with ESMTPSA id p17sm53139462wrx.20.2020.01.21.08.57.40
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 21 Jan 2020 08:57:44 -0800 (PST)
-Subject: Re: [PATCH rdma-next 07/10] RDMA/efa: Allow passing of optional
- access flags for MR registration
-To:     Gal Pressman <galpress@amazon.com>
-Cc:     Yishai Hadas <yishaih@mellanox.com>, linux-rdma@vger.kernel.org,
-        jgg@mellanox.com, dledford@redhat.com, saeedm@mellanox.com,
-        maorg@mellanox.com, michaelgur@mellanox.com, netdev@vger.kernel.org
-References: <1578506740-22188-1-git-send-email-yishaih@mellanox.com>
- <1578506740-22188-8-git-send-email-yishaih@mellanox.com>
- <6df1dbee-f35e-a5ad-019b-1bf572608974@amazon.com>
-From:   Yishai Hadas <yishaih@dev.mellanox.co.il>
-Message-ID: <89ddb3c3-a386-1aa4-e3e4-a4b0531b0978@dev.mellanox.co.il>
-Date:   Tue, 21 Jan 2020 18:57:39 +0200
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
- Thunderbird/68.3.1
+        id S1729121AbgAUQ7W (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 21 Jan 2020 11:59:22 -0500
+Received: from us-smtp-1.mimecast.com ([205.139.110.61]:33834 "EHLO
+        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1726555AbgAUQ7W (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 21 Jan 2020 11:59:22 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1579625960;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=uMuAJ3TB0mOpbUT+MSY4zWWJKcXu5CKQpuR+2BIRckY=;
+        b=MLmR9u1SKqZ+7aZYRiA7nEyry2sfPRS472PWXF0Jt7U/ZGZW67YWFZN1DbNrKR7mIg3cU4
+        JRRFaXySFwM14AzsSE0sFqCk1jbjSRikVj69I/iSv0wUntNjCpNmbWLiidiqV4oC0eT/TX
+        zIFhvw/DhEKHZIZuo6IwmTe1HK+Yo/c=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-326-YlmaHteSNomdeauex8M1zg-1; Tue, 21 Jan 2020 11:59:16 -0500
+X-MC-Unique: YlmaHteSNomdeauex8M1zg-1
+Received: from smtp.corp.redhat.com (int-mx04.intmail.prod.int.phx2.redhat.com [10.5.11.14])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 0E70119057C5;
+        Tue, 21 Jan 2020 16:59:15 +0000 (UTC)
+Received: from colo-mx.corp.redhat.com (colo-mx02.intmail.prod.int.phx2.redhat.com [10.5.11.21])
+        by smtp.corp.redhat.com (Postfix) with ESMTPS id 045C05D9E2;
+        Tue, 21 Jan 2020 16:59:15 +0000 (UTC)
+Received: from zmail21.collab.prod.int.phx2.redhat.com (zmail21.collab.prod.int.phx2.redhat.com [10.5.83.24])
+        by colo-mx.corp.redhat.com (Postfix) with ESMTP id ED9618197B;
+        Tue, 21 Jan 2020 16:59:14 +0000 (UTC)
+Date:   Tue, 21 Jan 2020 11:59:14 -0500 (EST)
+From:   Vladis Dronov <vdronov@redhat.com>
+To:     Stephen Hemminger <stephen@networkplumber.org>
+Cc:     netdev@vger.kernel.org, David Ahern <dsahern@gmail.com>,
+        George Shuklin <george.shuklin@gmail.com>
+Message-ID: <1671392030.4223005.1579625954850.JavaMail.zimbra@redhat.com>
+In-Reply-To: <20200120093404.172208c2@hermes.lan>
+References: <20200119011251.7153-1-vdronov@redhat.com> <20200120093404.172208c2@hermes.lan>
+Subject: Re: [PATCH iproute2] ip: fix link type and vlan oneline output
 MIME-Version: 1.0
-In-Reply-To: <6df1dbee-f35e-a5ad-019b-1bf572608974@amazon.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
+Content-Type: text/plain; charset=utf-8
 Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.43.2.123, 10.4.195.26]
+Thread-Topic: fix link type and vlan oneline output
+Thread-Index: 4qr13m+2R86IuhIhHioBnqx9aryrhQ==
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.14
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 1/21/2020 6:37 PM, Gal Pressman wrote:
-> On 08/01/2020 20:05, Yishai Hadas wrote:
->> From: Michael Guralnik <michaelgur@mellanox.com>
->>
->> As part of adding a range of optional access flags that drivers need to
->> be able to accept, mask this range inside efa driver.
->> This will prevent the driver from failing when an access flag from
->> that range is passed.
->>
->> Signed-off-by: Michael Guralnik <michaelgur@mellanox.com>
->> Signed-off-by: Yishai Hadas <yishaih@mellanox.com>
->> ---
->>   drivers/infiniband/hw/efa/efa_verbs.c | 1 +
->>   1 file changed, 1 insertion(+)
->>
->> diff --git a/drivers/infiniband/hw/efa/efa_verbs.c b/drivers/infiniband/hw/efa/efa_verbs.c
->> index 50c2257..b6b936c 100644
->> --- a/drivers/infiniband/hw/efa/efa_verbs.c
->> +++ b/drivers/infiniband/hw/efa/efa_verbs.c
->> @@ -1370,6 +1370,7 @@ struct ib_mr *efa_reg_mr(struct ib_pd *ibpd, u64 start, u64 length,
->>   		IB_ACCESS_LOCAL_WRITE |
->>   		(is_rdma_read_cap(dev) ? IB_ACCESS_REMOTE_READ : 0);
->>   
->> +	access_flags &= ~IB_UVERBS_ACCESS_OPTIONAL_RANGE;
+hello,
+
+> The change to ipaddress.c was incorrect. You can't change the order of things
+> in the output.
+
+i still believe it is bad to break a single link layers options line with
+a multi-line piece:
+
+5: veth90.4000@veth90: <BROADCAST,MULTICAST,M-DOWN> mtu 1500 qdisc noop state DOWN mode DEFAULT group default qlen 1000
+    link/ether 26:9a:05:af:db:00 brd ff:ff:ff:ff:ff:ff promiscuity 0 minmtu 0 maxmtu 65535
+    vlan protocol 802.1Q id 4000 <REORDER_HDR>               the option line is broken ^^^ by \n in print_linktype()
+      ingress-qos-map { 1:2 }
+      egress-qos-map { 2:1 } addrgenmode eui64 numtxqueues 1 numrxqueues 1 gso_max_size 65536 gso_max_segs 65535
+                             ^^^ the option line continues here
+
+print_linktype() has an unconditional \n so it always breaks a link layer
+options line. this output is assumed to be human-readable, so i believe,
+proper indentation is more important that an order of fields. a machine-
+readable format is another one, as far as i understand.
+
+i'm not sure how "an order of things" is supposed to be stable, if
+print_linktype() outputs a variable number of variable fields (depending
+on a link type) in the middle of a link layer options.
+
+surely, if an order of things in this understanding is above all, please,
+ignore my rant.
+
+also, with the change a commit message should be different. i understand,
+it is too late to change it, but still. let a proper message be at least
+here, in the mail thread:
+
+>>> begin >>>
+Add oneline support for vlan's ingress and egress qos maps.
+
+Before the fix:
+
+# ip -oneline -details link show veth90.4000
+5: veth90.4000@veth90: ... maxmtu 65535 \    vlan protocol 802.1Q id 4000 <REORDER_HDR>
+      ingress-qos-map { 1:2 }   <<< a multiline output despite -oneline
+      egress-qos-map { 2:1 } addrgenmode eui64 numtxqueues 1 ...
+
+After the fix:
+
+# ip -details link show veth90.4000
+5: veth90.4000@veth90: ... maxmtu 65535 \    vlan protocol 802.1Q id 4000 <REORDER_HDR> \      ingress-qos-map { 1:2 } \      egress-qos-map { 2:1 } addrgenmode eui64 numtxqueues 1 ...
+<<< end <<<
+
+> Second, you needed to have a Fixes tag. In this case, it went back to
+> original vlan support.
+
+indeed, this is my mistake, thank you for correcting this in the patch
+submitted.
+
+Best regards,
+Vladis Dronov | Red Hat, Inc. | The Core Kernel | Senior Software Engineer
+
+----- Original Message -----
+> From: "Stephen Hemminger" <stephen@networkplumber.org>
+> To: "Vladis Dronov" <vdronov@redhat.com>
+> Cc: netdev@vger.kernel.org, "David Ahern" <dsahern@gmail.com>, "George Shuklin" <george.shuklin@gmail.com>
+> Sent: Monday, January 20, 2020 6:34:04 PM
+> Subject: Re: [PATCH iproute2] ip: fix link type and vlan oneline output
+>
+> The change to ipaddress.c was incorrect. You can't change the order of things
+> in the output.
 > 
-> Hi Yishai,
-> access_flags should be masked with IB_ACCESS_OPTIONAL instead of
-> IB_UVERBS_ACCESS_OPTIONAL_RANGE.
-> 
+> Second, you needed to have a Fixes tag. In this case, it went back to
+> original vlan support.
 
-You are talking from namespace point of view, right ? both have same value.
-
-If it's important, can you send some patch to replace ?
-
-> Also, could you please make sure to CC me to future EFA patches?
-> 
-
-Sure, thanks.
