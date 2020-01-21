@@ -2,106 +2,138 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id D51801440A0
-	for <lists+netdev@lfdr.de>; Tue, 21 Jan 2020 16:37:46 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A89721440A6
+	for <lists+netdev@lfdr.de>; Tue, 21 Jan 2020 16:39:59 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729246AbgAUPhk (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 21 Jan 2020 10:37:40 -0500
-Received: from us-smtp-2.mimecast.com ([207.211.31.81]:33937 "EHLO
-        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1727817AbgAUPhj (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 21 Jan 2020 10:37:39 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1579621058;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=KEbtb5iPk+ToPcHf5Qqxgw96P5QADIf6QorZP19ushc=;
-        b=LGWh9SEgWVVTcFN2egblWoWmoNLGC8W2pQDDwIKLF4L5Z0/jLSO3leUdmDfcCg/gSL5vek
-        3fDDIMni8i7pzK9JiMthwOd1GVGcGY8SdAtH9cqpK9GFU6Cq06ExzAAG2K0Yk9VXEH2ID2
-        ivkwGkSP14ZjCnhJ5rcxWeArjeylsmg=
-Received: from mail-lj1-f198.google.com (mail-lj1-f198.google.com
- [209.85.208.198]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-263-onUlVbz6OnK5m4VPK1BN_w-1; Tue, 21 Jan 2020 10:37:35 -0500
-X-MC-Unique: onUlVbz6OnK5m4VPK1BN_w-1
-Received: by mail-lj1-f198.google.com with SMTP id o9so383135ljc.6
-        for <netdev@vger.kernel.org>; Tue, 21 Jan 2020 07:37:35 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
-         :message-id:mime-version:content-transfer-encoding;
-        bh=KEbtb5iPk+ToPcHf5Qqxgw96P5QADIf6QorZP19ushc=;
-        b=M33i1ssIBMnPXX8VKpsVqAUwtQtw6VmRctNDbTvnnP1vZi35f+fhuS98lKTmTBWmHy
-         KAw5IDmmzX8wSu2gVetXIPnUs8dRsP8XIAg0doQqk49hn+rWTWyPZnMjY1SCVp3sW5U3
-         oiQgeYigAvnT4QeoKo48voyBKkfNdYv8G4kUsS6VZY1SNNV9jkz0whxrysosbXO7ACDC
-         o3VeRQdAmPSbEjJI4Sdxx/2FN1R72WbWehhV0z6982FRnu3p2lRdCXAMON/wlopBSV3T
-         zWIVg3t8ijWZK2NE5nuRSB9hGLchiFIT7/P2SYmLoSfGDsmhx8gZfLUri5xm8T/obU6b
-         SjsQ==
-X-Gm-Message-State: APjAAAVK7jrscR8ksKYw8viToqQrJ9T8dObOimvt8YEkW+3GyaPiU0uL
-        RcVGHmtld5wOyR/2AbCmlY2duirxRoCytiVpt3WUx9BVyF9FsMUcdGABCk/pUMfIXT2fvwYeLWk
-        2+UAALYcFxK9L5l2d
-X-Received: by 2002:ac2:5964:: with SMTP id h4mr2950784lfp.213.1579621054189;
-        Tue, 21 Jan 2020 07:37:34 -0800 (PST)
-X-Google-Smtp-Source: APXvYqy6uaYdLVGSTACmkFUIlBWi+Ha5SsSLjiSCZDkG7dr7z3tLFd30yps7dKGbcY0cYUdeEr7ISw==
-X-Received: by 2002:ac2:5964:: with SMTP id h4mr2950770lfp.213.1579621053832;
-        Tue, 21 Jan 2020 07:37:33 -0800 (PST)
-Received: from alrua-x1.borgediget.toke.dk ([2a0c:4d80:42:443::2])
-        by smtp.gmail.com with ESMTPSA id o19sm22699778lji.54.2020.01.21.07.37.32
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 21 Jan 2020 07:37:32 -0800 (PST)
-Received: by alrua-x1.borgediget.toke.dk (Postfix, from userid 1000)
-        id AE53118006B; Tue, 21 Jan 2020 16:37:31 +0100 (CET)
-From:   Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
-To:     Alexei Starovoitov <ast@kernel.org>, davem@davemloft.net
-Cc:     daniel@iogearbox.net, netdev@vger.kernel.org, bpf@vger.kernel.org,
-        kernel-team@fb.com
-Subject: Re: [PATCH v2 bpf-next 0/3] bpf: Program extensions or dynamic re-linking
-In-Reply-To: <20200121005348.2769920-1-ast@kernel.org>
-References: <20200121005348.2769920-1-ast@kernel.org>
-X-Clacks-Overhead: GNU Terry Pratchett
-Date:   Tue, 21 Jan 2020 16:37:31 +0100
-Message-ID: <87k15kbz2c.fsf@toke.dk>
+        id S1729096AbgAUPj6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 21 Jan 2020 10:39:58 -0500
+Received: from aserp2120.oracle.com ([141.146.126.78]:34476 "EHLO
+        aserp2120.oracle.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727508AbgAUPj6 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 21 Jan 2020 10:39:58 -0500
+Received: from pps.filterd (aserp2120.oracle.com [127.0.0.1])
+        by aserp2120.oracle.com (8.16.0.27/8.16.0.27) with SMTP id 00LFcpUq013067;
+        Tue, 21 Jan 2020 15:39:25 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=date : from : to : cc
+ : subject : message-id : references : mime-version : content-type :
+ in-reply-to; s=corp-2019-08-05;
+ bh=eQ4ik+FTutWCXRnK1enaA7jtow4c1d1i8Ndq/T4zYAI=;
+ b=Ndp7Y68gPe+ml2WETz8GRmm7ySYkYQI0NldiFD/VFx3eOhu2KOhRQJ2/rtID7DxKaUiF
+ V1hFJQ02DSIO0dBiXRER6K0C+1rw6ALZcMNLl03KL7CUYUmlH3M+2i3srS3GwsUGl9nf
+ oS2iPLNMGx1dPrL0JdDQHd+hxwrqeUjLRCmKLacBsoPY3Uypu9HEft9cP4FTQ79m2zHm
+ xyT4max28qK6ZvBEl8M0aMENvPC644cSJCL2CCNrEZpo0iZ1xfZoN3q4oNpH5lNp3AQK
+ 5DJ+KXsmyYXeE5IzoderN7nI407zhhSvJqSQFWwYfkrRoztrzwkQtdbiCiM5/fY+/qQC lA== 
+Received: from aserp3030.oracle.com (aserp3030.oracle.com [141.146.126.71])
+        by aserp2120.oracle.com with ESMTP id 2xksyq5rv1-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Tue, 21 Jan 2020 15:39:24 +0000
+Received: from pps.filterd (aserp3030.oracle.com [127.0.0.1])
+        by aserp3030.oracle.com (8.16.0.27/8.16.0.27) with SMTP id 00LFcV90056940;
+        Tue, 21 Jan 2020 15:39:24 GMT
+Received: from userv0122.oracle.com (userv0122.oracle.com [156.151.31.75])
+        by aserp3030.oracle.com with ESMTP id 2xnpfp7rte-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Tue, 21 Jan 2020 15:39:24 +0000
+Received: from abhmp0011.oracle.com (abhmp0011.oracle.com [141.146.116.17])
+        by userv0122.oracle.com (8.14.4/8.14.4) with ESMTP id 00LFdFaW019191;
+        Tue, 21 Jan 2020 15:39:17 GMT
+Received: from kadam (/10.175.179.252)
+        by default (Oracle Beehive Gateway v4.0)
+        with ESMTP ; Tue, 21 Jan 2020 07:39:14 -0800
+Date:   Tue, 21 Jan 2020 18:39:04 +0300
+From:   Dan Carpenter <dan.carpenter@oracle.com>
+To:     syzbot <syzbot+3967c1caf256f4d5aefe@syzkaller.appspotmail.com>
+Cc:     alsa-devel@alsa-project.org, davem@davemloft.net,
+        dccp@vger.kernel.org, gerrit@erg.abdn.ac.uk,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        perex@perex.cz, syzkaller-bugs@googlegroups.com, tiwai@suse.com,
+        tiwai@suse.de, Eric Dumazet <edumazet@google.com>
+Subject: Re: KASAN: use-after-free Read in ccid_hc_tx_delete
+Message-ID: <20200121153904.GA9856@kadam>
+References: <000000000000de3c7705746dcbb7@google.com>
+ <0000000000002c243a0597dc8d9d@google.com>
+ <20191121201433.GD617@kadam>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20191121201433.GD617@kadam>
+User-Agent: Mutt/1.9.4 (2018-02-28)
+X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9506 signatures=668685
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 suspectscore=0 malwarescore=0
+ phishscore=0 bulkscore=0 spamscore=0 mlxscore=0 mlxlogscore=999
+ adultscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.0.1-1911140001 definitions=main-2001210125
+X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9506 signatures=668685
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 priorityscore=1501 malwarescore=0
+ suspectscore=0 phishscore=0 bulkscore=0 spamscore=0 clxscore=1011
+ lowpriorityscore=0 mlxscore=0 impostorscore=0 mlxlogscore=999 adultscore=0
+ classifier=spam adjust=0 reason=mlx scancount=1 engine=8.0.1-1911140001
+ definitions=main-2001210125
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Alexei Starovoitov <ast@kernel.org> writes:
+On Thu, Nov 21, 2019 at 11:14:33PM +0300, Dan Carpenter wrote:
+> On Thu, Nov 21, 2019 at 07:00:00AM -0800, syzbot wrote:
+> > syzbot has bisected this bug to:
+> > 
+> > commit f04684b4d85d6371126f476d3268ebf6a0bd57cf
+> > Author: Dan Carpenter <dan.carpenter@oracle.com>
+> > Date:   Thu Jun 21 08:07:21 2018 +0000
+> > 
+> >     ALSA: lx6464es: Missing error code in snd_lx6464es_create()
+> > 
+> > bisection log:  https://syzkaller.appspot.com/x/bisect.txt?x=10dd11cae00000
+> > start commit:   eb6cf9f8 Merge tag 'arm64-fixes' of git://git.kernel.org/p..
+> > git tree:       upstream
+> > final crash:    https://syzkaller.appspot.com/x/report.txt?x=12dd11cae00000
+> > console output: https://syzkaller.appspot.com/x/log.txt?x=14dd11cae00000
+> > kernel config:  https://syzkaller.appspot.com/x/.config?x=c8970c89a0efbb23
+> > dashboard link: https://syzkaller.appspot.com/bug?extid=3967c1caf256f4d5aefe
+> > syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=11022ccd400000
+> > C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=124581db400000
+> > 
+> > Reported-by: syzbot+3967c1caf256f4d5aefe@syzkaller.appspotmail.com
+> > Fixes: f04684b4d85d ("ALSA: lx6464es: Missing error code in
+> > snd_lx6464es_create()")
+> > 
+> > For information about bisection process see: https://goo.gl/tpsmEJ#bisection
+> 
+> This crash isn't related to my commit, it's seems something specific to
+> DCCP.
+> 
+> My guess is that the fix is probably something like this.  The old sk
+> and the new sk re-use the same newdp->dccps_hc_rx/tx_ccid pointers.
+> The first sk destructor frees it and that causes a use after free when
+> the second destructor tries to free it.
+> 
+> But I don't know DCCP code at all so I might be totally off and I
+> haven't tested this at all...  It was just easier to write a patch than
+> to try to explain in words.  Maybe we should clone the ccid instead of
+> setting it to NULL.  Or I might be completely wrong.
+> 
+> ---
+>  net/dccp/minisocks.c | 2 ++
+>  1 file changed, 2 insertions(+)
+> 
+> diff --git a/net/dccp/minisocks.c b/net/dccp/minisocks.c
+> index 25187528c308..4cbfcccbbbbb 100644
+> --- a/net/dccp/minisocks.c
+> +++ b/net/dccp/minisocks.c
+> @@ -98,6 +98,8 @@ struct sock *dccp_create_openreq_child(const struct sock *sk,
+>  		newdp->dccps_timestamp_echo = dreq->dreq_timestamp_echo;
+>  		newdp->dccps_timestamp_time = dreq->dreq_timestamp_time;
+>  		newicsk->icsk_rto	    = DCCP_TIMEOUT_INIT;
+> +		newdp->dccps_hc_rx_ccid     = NULL;
+> +		newdp->dccps_hc_tx_ccid     = NULL;
+>  
+>  		INIT_LIST_HEAD(&newdp->dccps_featneg);
+>  		/*
 
-> The last few month BPF community has been discussing an approach to call
-> chaining, since exiting bpt_tail_call() mechanism used in production XDP
-> programs has plenty of downsides. The outcome of these discussion was a
-> conclusion to implement dynamic re-linking of BPF programs. Where rootlet=
- XDP
-> program attached to a netdevice can programmatically define a policy of
-> execution of other XDP programs. Such rootlet would be compiled as normal=
- XDP
-> program and provide a number of placeholder global functions which later =
-can be
-> replaced with future XDP programs. BPF trampoline, function by function
-> verification were building blocks towards that goal. The patch 1 is a fin=
-al
-> building block. It introduces dynamic program extensions. A number of
-> improvements like more flexible function by function verification and bet=
-ter
-> libbpf api will be implemented in future patches.
+Could someone take a look at this?  It seem like a pretty serious bug
+but DCCP is not very actively maintained and a lot of distributions
+disable it.
 
-This is great, thank you! I'll go play around with it; couldn't spot
-anything obvious from eye-balling the code, except that yeah, it does
-need a more flexible libbpf api :)
-
-One thing that's not obvious to me: How can userspace tell which
-programs replace which functions after they are loaded? Is this put into
-prog_tags in struct bpf_prog_info, or?
-
-
-For the series:
-Acked-by: Toke H=C3=B8iland-J=C3=B8rgensen <toke@redhat.com>
-
-
--Toke
-
+regards,
+dan carpenter
