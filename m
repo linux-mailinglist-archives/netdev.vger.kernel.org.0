@@ -2,79 +2,46 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 9A8F814416D
-	for <lists+netdev@lfdr.de>; Tue, 21 Jan 2020 17:05:07 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8F3001441B6
+	for <lists+netdev@lfdr.de>; Tue, 21 Jan 2020 17:09:18 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729401AbgAUQDA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 21 Jan 2020 11:03:00 -0500
-Received: from us-smtp-1.mimecast.com ([207.211.31.81]:41852 "EHLO
-        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1729108AbgAUQC6 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 21 Jan 2020 11:02:58 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1579622577;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=pvLMcX87nNXcIHIosOHPLdMsc+VCUVWgqOIanxRYoc8=;
-        b=Cq9ih83IcL8UVReWI7GvlPDJhMtjsuB3ccVWgXdVzA4jHjCjNfNFFhjErd2tE2MmrVmtsH
-        qH1zT4usxS1fjXbnchHd0WJ0Nza1iKUvdjUJ13pvyN9uTwwHFm9YvHVv0i3Fdd3BI87Hv5
-        U0nkPHu1pYbQBfJULVECNS1zRHj977Y=
-Received: from mail-lf1-f70.google.com (mail-lf1-f70.google.com
- [209.85.167.70]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-163-1qNdlKEcOXCKiC_wU5Ro-w-1; Tue, 21 Jan 2020 11:02:53 -0500
-X-MC-Unique: 1qNdlKEcOXCKiC_wU5Ro-w-1
-Received: by mail-lf1-f70.google.com with SMTP id t8so992260lfc.21
-        for <netdev@vger.kernel.org>; Tue, 21 Jan 2020 08:02:53 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
-         :message-id:mime-version;
-        bh=pvLMcX87nNXcIHIosOHPLdMsc+VCUVWgqOIanxRYoc8=;
-        b=N6SxaLPvlnQfP3KTEEr+f8qe6yc689pvonkPiBcTgwQhA2y5KCa6Ml6eFo87tpQp6J
-         2oFxTiygjDKtoKE588pIAqyFwEfoIrYM1DN++k67hhtI7SBDSq3TSSP2TG2BH8kJp9mm
-         ikRqk3m2MKd2hSuGHePydLQtapRCEjv+81bTefT0fIeGKXFArwV668uf2aYVh2oj4G8U
-         2F+aTxj+g0pBxmBIqlt8b7lVkw1W0ITKqKH7ea9UtjjBynYcBa4SRktFHKYnUX6XGkxn
-         W1Yp11vPPriyz7vLjsHhYZPnU6ddXLiWyT1zkY2obQ7ltWmrmGzcb7xLx+LG2hwXH1xx
-         b/eA==
-X-Gm-Message-State: APjAAAVgj8CrtZ7R7ejDMFvGmYqUguZr/NKwDUgeNwwcM4wZrKOMk0/I
-        tML8KXA9r7vAZ4LJ2Ia1qL4GiFoJFQ4jqasqHXhfas2nG4f7jXdY3eXineiu+0N85JBI5apLw9Y
-        E7Pgxy/oO6mbTEDxp
-X-Received: by 2002:a2e:9ad0:: with SMTP id p16mr17420867ljj.111.1579622571876;
-        Tue, 21 Jan 2020 08:02:51 -0800 (PST)
-X-Google-Smtp-Source: APXvYqwcb2IG3VK4lqVUTU3D62aynf/9UnEw85nVi7PkLMNR3i8Lv2ZDTx6IUsam0e569+bUirYxxw==
-X-Received: by 2002:a2e:9ad0:: with SMTP id p16mr17420851ljj.111.1579622571578;
-        Tue, 21 Jan 2020 08:02:51 -0800 (PST)
-Received: from alrua-x1.borgediget.toke.dk ([85.204.121.218])
-        by smtp.gmail.com with ESMTPSA id u15sm1482121lfl.87.2020.01.21.08.02.50
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 21 Jan 2020 08:02:50 -0800 (PST)
-Received: by alrua-x1.borgediget.toke.dk (Postfix, from userid 1000)
-        id AA76818006B; Tue, 21 Jan 2020 17:02:49 +0100 (CET)
-From:   Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
-To:     Gautam Ramakrishnan <gautamramk@gmail.com>,
-        David Miller <davem@davemloft.net>
-Cc:     Linux Kernel Network Developers <netdev@vger.kernel.org>,
-        "Mohit P. Tahiliani" <tahiliani@nitk.edu.in>,
-        Jamal Hadi Salim <jhs@mojatatu.com>,
-        Dave Taht <dave.taht@gmail.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Stephen Hemminger <stephen@networkplumber.org>,
-        Leslie Monis <lesliemonis@gmail.com>
-Subject: Re: [PATCH net-next v4 05/10] pie: rearrange structure members and their initializations
+        id S1729045AbgAUQJM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 21 Jan 2020 11:09:12 -0500
+Received: from shards.monkeyblade.net ([23.128.96.9]:39034 "EHLO
+        shards.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726555AbgAUQJM (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 21 Jan 2020 11:09:12 -0500
+Received: from localhost (unknown [62.21.130.100])
+        (using TLSv1 with cipher AES256-SHA (256/256 bits))
+        (Client did not present a certificate)
+        (Authenticated sender: davem-davemloft)
+        by shards.monkeyblade.net (Postfix) with ESMTPSA id BDAF51585A86D;
+        Tue, 21 Jan 2020 08:09:09 -0800 (PST)
+Date:   Tue, 21 Jan 2020 17:09:05 +0100 (CET)
+Message-Id: <20200121.170905.87149625206286035.davem@davemloft.net>
+To:     gautamramk@gmail.com
+Cc:     netdev@vger.kernel.org, tahiliani@nitk.edu.in, jhs@mojatatu.com,
+        dave.taht@gmail.com, toke@redhat.com, kuba@kernel.org,
+        stephen@networkplumber.org, lesliemonis@gmail.com
+Subject: Re: [PATCH net-next v4 05/10] pie: rearrange structure members and
+ their initializations
+From:   David Miller <davem@davemloft.net>
 In-Reply-To: <CADAms0zvGp4ffqmvZV6RVOTfrosjt6Ht6EkyQ594yJYQFTJBXA@mail.gmail.com>
-References: <20200121141250.26989-1-gautamramk@gmail.com> <20200121141250.26989-6-gautamramk@gmail.com> <20200121.153522.1248409324581446114.davem@davemloft.net> <CADAms0zvGp4ffqmvZV6RVOTfrosjt6Ht6EkyQ594yJYQFTJBXA@mail.gmail.com>
-X-Clacks-Overhead: GNU Terry Pratchett
-Date:   Tue, 21 Jan 2020 17:02:49 +0100
-Message-ID: <87ftg8bxw6.fsf@toke.dk>
-MIME-Version: 1.0
-Content-Type: text/plain
+References: <20200121141250.26989-6-gautamramk@gmail.com>
+        <20200121.153522.1248409324581446114.davem@davemloft.net>
+        <CADAms0zvGp4ffqmvZV6RVOTfrosjt6Ht6EkyQ594yJYQFTJBXA@mail.gmail.com>
+X-Mailer: Mew version 6.8 on Emacs 26.3
+Mime-Version: 1.0
+Content-Type: Text/Plain; charset=us-ascii
+Content-Transfer-Encoding: 7bit
+X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Tue, 21 Jan 2020 08:09:11 -0800 (PST)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Gautam Ramakrishnan <gautamramk@gmail.com> writes:
+From: Gautam Ramakrishnan <gautamramk@gmail.com>
+Date: Tue, 21 Jan 2020 21:14:50 +0530
 
 > On Tue, Jan 21, 2020 at 8:05 PM David Miller <davem@davemloft.net> wrote:
 >>
@@ -98,32 +65,15 @@ Gautam Ramakrishnan <gautamramk@gmail.com> writes:
 > We shall reorder the variables as per their appearance in the
 > structure and re-submit. Could you elaborate a bit on dense packing?
 
-The compiler will align struct member offsets according to their size,
-adding padding as necessary to achieve this.
-So this struct:
+It means eliminating unnecessary padding in the structure.  F.e. if
+you have:
 
-struct s1 {
-       u32 mem32_1;
-       u64 mem64_1;
-       u32 mem32_2;
-       u64 mem64_2;
-};
+	u32	x;
+	u64	y;
 
-will have 4 bytes of padding after both mem32_1 and mem32_2, whereas
-this struct:
+Then 32-bits of wasted space will be inserted after 'x' so that
+'y' is properly 64-bit aligned.
 
-struct s2 {
-       u64 mem64_1;
-       u32 mem32_1;
-       u32 mem32_2;
-       u64 mem64_2;
-};
-
-won't. So sizeof(struct s1) == 32, and sizeof(struct s2) == 24, and we
-say that s2 is densely packed, whereas s1 has holes in it.
-
-The pahole tool is useful to see the layout of compiled structures
-(pahole -C). It will also point out any holes.
-
--Toke
-
+If in doubt use the 'pahole' tool to see how the structure is
+laid out.  It will show you where unnecessary padding exists as
+well.
