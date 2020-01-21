@@ -2,109 +2,125 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 6FE04144124
+	by mail.lfdr.de (Postfix) with ESMTP id EDE93144125
 	for <lists+netdev@lfdr.de>; Tue, 21 Jan 2020 17:00:52 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729262AbgAUQAX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 21 Jan 2020 11:00:23 -0500
-Received: from mail-pf1-f194.google.com ([209.85.210.194]:36912 "EHLO
-        mail-pf1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729240AbgAUQAW (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 21 Jan 2020 11:00:22 -0500
-Received: by mail-pf1-f194.google.com with SMTP id p14so1713895pfn.4;
-        Tue, 21 Jan 2020 08:00:22 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=DiBYNmXcXzLpV1vT3exTVSZVbWSYf4SQdXKVlOWQPJI=;
-        b=W3ymVDlnQNVtZCOKp2Eh6TE37/5Bz94g+01nragD/ut9cwR/XJTvL6vyt+AFjmrbP6
-         Ot6gjD9vnHbI2v07CeDAzHMWDmEBlO4SmsJpNe7jIwnuQlQQi5LDNVqR295GxRXL5YmT
-         jdZ0V+x2c58lzaontIgXHJNVhdyRcd7c25jpEN95sv3tz+UKQROR2cfbM4WPXmjVdGmX
-         OSh6ONgPP1cgnnA78VBOe5wgAydLCcz6w8tOEV/mqi1dy27QJFF95apxwQR/qV+w9fTB
-         pOLUrCAcXcx/B4LtgaNsaf1OjbKpwDwgdf9+PAwF5hLXZAvBMXl7q1t5MQYy4O8YFfLn
-         BhWQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=DiBYNmXcXzLpV1vT3exTVSZVbWSYf4SQdXKVlOWQPJI=;
-        b=G76PTbfdJdj6eZ8/asR9SPe4aqN5JBumYMm7hLDHquHBw0rMO10z3uMH+2zJNrpKcN
-         ArNKArxKTzm4BoGnK9fzr1UEUbjdw5SvV5XQmQxJ9xfGl7oze9YFq8OHPj5FugNK4cCy
-         KbtuKIgXIfnTQG5uV0RDVKbFHkdbw5/4XBuV7GH+03k4C1Eg/5a4r/qb/qD/0Gmrf/ud
-         b3l1Q9478PGp0KC3s3dawAdFARHkjOBRV3bcu36xVQpFV9t/Qm6Mi5tbU4NDSw2Y3UNV
-         pRNzSbsask1pUKPGT5aIQ4qAWAWpZda0OlTp/jy5jAc3P9arzKkfNr/AncbW9Onnym/g
-         iFEw==
-X-Gm-Message-State: APjAAAU2rsBpVDufJ5jGZzlMjDPKKGEfu6RmXvdcWPDA77A+EoO/+erw
-        hexuc6J4ytOpNYzZkLAH2Io=
-X-Google-Smtp-Source: APXvYqwQeo6pAprxZlgMFKBrW7OuTr97rXRoi0L3MNG9QBcZ9VVLPwshA85FOe6JcNbTeNIgyBeRXw==
-X-Received: by 2002:a63:70e:: with SMTP id 14mr6020005pgh.266.1579622421955;
-        Tue, 21 Jan 2020 08:00:21 -0800 (PST)
-Received: from ast-mbp.dhcp.thefacebook.com ([2620:10d:c090:200::3:8f80])
-        by smtp.gmail.com with ESMTPSA id r37sm3854097pjb.7.2020.01.21.08.00.20
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Tue, 21 Jan 2020 08:00:21 -0800 (PST)
-Date:   Tue, 21 Jan 2020 08:00:19 -0800
-From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
-To:     John Fastabend <john.fastabend@gmail.com>
-Cc:     Alexei Starovoitov <ast@kernel.org>, davem@davemloft.net,
-        daniel@iogearbox.net, netdev@vger.kernel.org, bpf@vger.kernel.org,
-        kernel-team@fb.com
-Subject: Re: [PATCH v2 bpf-next 1/3] bpf: Introduce dynamic program extensions
-Message-ID: <20200121160018.2w4o6o5nnhbdqicn@ast-mbp.dhcp.thefacebook.com>
-References: <20200121005348.2769920-1-ast@kernel.org>
- <20200121005348.2769920-2-ast@kernel.org>
- <5e26aa0bc382b_32772acafb17c5b410@john-XPS-13-9370.notmuch>
+        id S1729281AbgAUQAb (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 21 Jan 2020 11:00:31 -0500
+Received: from mail.kernel.org ([198.145.29.99]:41260 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1729274AbgAUQAb (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 21 Jan 2020 11:00:31 -0500
+Received: from cakuba (unknown [199.201.64.139])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id C54F2217F4;
+        Tue, 21 Jan 2020 16:00:29 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1579622430;
+        bh=KmRr1BmiJ18A3rOOV2pfCrBDpSWuANxZsj8qZqxbuoI=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=dGFyfkFmZ6pOqdD+WkouiJUm0XRYGoMDJ/O447c6LCCFhV1yVXtdF5QCcwJbHZYV+
+         uZlj7vW2B1JzrpCzZgF0nrsjA4DIY/2uoHkN4OLSXKBDG3DApyzvZAEo5Q2olkZPQk
+         BT58OLW5s0zQ92HN9aY0KQJAZbRozjFfkJVrf8xQ=
+Date:   Tue, 21 Jan 2020 08:00:29 -0800
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     sunil.kovvuri@gmail.com
+Cc:     netdev@vger.kernel.org, davem@davemloft.net, mkubecek@suse.cz,
+        Sunil Goutham <sgoutham@marvell.com>,
+        Geetha sowjanya <gakula@marvell.com>,
+        Christina Jacob <cjacob@marvell.com>,
+        Subbaraya Sundeep <sbhatta@marvell.com>,
+        Aleksey Makarov <amakarov@marvell.com>
+Subject: Re: [PATCH v4 02/17] octeontx2-pf: Mailbox communication with AF
+Message-ID: <20200121080029.42b6ea7d@cakuba>
+In-Reply-To: <1579612911-24497-3-git-send-email-sunil.kovvuri@gmail.com>
+References: <1579612911-24497-1-git-send-email-sunil.kovvuri@gmail.com>
+        <1579612911-24497-3-git-send-email-sunil.kovvuri@gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <5e26aa0bc382b_32772acafb17c5b410@john-XPS-13-9370.notmuch>
-User-Agent: NeoMutt/20180223
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Jan 20, 2020 at 11:36:43PM -0800, John Fastabend wrote:
+On Tue, 21 Jan 2020 18:51:36 +0530, sunil.kovvuri@gmail.com wrote:
+> From: Sunil Goutham <sgoutham@marvell.com>
 > 
-> > +
-> > +	t1 = btf_type_skip_modifiers(btf1, t1->type, NULL);
-> > +	t2 = btf_type_skip_modifiers(btf2, t2->type, NULL);
+> In the resource virtualization unit (RVU) each of the PF and AF
+> (admin function) share a 64KB of reserved memory region for
+> communication. This patch initializes PF <=> AF mailbox IRQs,
+> registers handlers for processing these communication messages.
+> Also adds support to process these messages in both directions
+> ie responses to PF initiated DOWN (PF => AF) messages and AF
+> initiated UP messages (AF => PF).
 > 
-> Is it really best to skip modifiers? I would expect that if the
-> signature is different including modifiers then we should just reject it.
-> OTOH its not really C code here either so modifiers may not have the same
-> meaning. With just integers and struct it may be ok but if we add pointers
-> to ints then what would we expect from a const int*?
+> Mbox communication APIs and message formats are defined in AF driver
+> (drivers/net/ethernet/marvell/octeontx2/af), mbox.h from AF driver is
+> included here to avoid duplication.
 > 
-> So whats the reasoning for skipping modifiers? Is it purely an argument
-> that its not required for safety so solve it elsewhere? In that case then
-> checking names of functions is also equally not required.
+> Signed-off-by: Geetha sowjanya <gakula@marvell.com>
+> Signed-off-by: Christina Jacob <cjacob@marvell.com>
+> Signed-off-by: Subbaraya Sundeep <sbhatta@marvell.com>
+> Signed-off-by: Aleksey Makarov <amakarov@marvell.com>
+> Signed-off-by: Sunil Goutham <sgoutham@marvell.com>
 
-Function names are not checked by the kernel. It's purely libbpf and bpf_prog.c
-convention. The kernel operates on prog_fd+btf_id only. The names of function
-arguments are not compared either.
+> +struct  mbox {
+         ^^
+> +	struct otx2_mbox	mbox;
+> +	struct work_struct	mbox_wrk;
+> +	struct otx2_mbox	mbox_up;
+> +	struct work_struct	mbox_up_wrk;
+> +	struct otx2_nic		*pfvf;
+> +	void			*bbuf_base; /* Bounce buffer for mbox memory */
+> +	struct mutex		lock;	/* serialize mailbox access */
+> +	int			num_msgs; /*mbox number of messages*/
+                                           ^                       ^
+> +	int			up_num_msgs;/* mbox_up number of messages*/
+                                            ^                            ^
+> +};
+>  
+>  struct otx2_hw {
+>  	struct pci_dev		*pdev;
+>  	u16                     rx_queues;
+>  	u16                     tx_queues;
+>  	u16			max_queues;
+> +
+> +	/* MSI-X*/
+                ^
 
-The code has to skip modifiers. Otherwise the type comparison algorithm will be
-quite complex, since typedef is such modifier. Like 'u32' in original program
-and 'u32' in extension program would have to be recursively checked.
+The white space here is fairly loose 
 
-Another reason to skip modifiers is 'volatile' modifier. I suspect we would
-have to use it from time to time in original placeholder functions. Yet new
-replacement function will be written without volatile. The placeholder may need
-volatile to make sure compiler doesn't optimize things away. I found cases
-where 'noinline' in placeholder was not enough. clang would still inline the
-body of the function and remove call instruction. So far I've been using
-volatile as a workaround. May be we will introduce new function attribute to
-clang.
+> +	char			*irq_name;
+> +	cpumask_var_t           *affinity_mask;
+>  };
+>  
 
-Having said that I share your concern regarding skipping 'const'. For 'const
-int arg' it's totally ok to skip it, since it's meaningless from safety pov,
-but for 'const int *arg' and 'const struct foo *arg' I'm planning to preserve
-it. It will be preserved at the verifier bpf_reg_state level though. Just
-checking that 'const' is present in extension prog's BTF doesn't help safety.
-I'm planing to make the verifier enforce that bpf prog cannot write into
-argument which type is pointer to const struct. That part is still wip. It will
-be implemented for global functions first and then for extension programs.
-Currently the verifier rejects any pointer to struct (other than context), so
-no backward compatibility issues.
+> +static inline void otx2_sync_mbox_bbuf(struct otx2_mbox *mbox, int devid)
+> +{
+> +	u16 msgs_offset = ALIGN(sizeof(struct mbox_hdr), MBOX_MSG_ALIGN);
+> +	void *hw_mbase = mbox->hwbase + (devid * MBOX_SIZE);
+> +	struct otx2_mbox_dev *mdev = &mbox->dev[devid];
+> +	struct mbox_hdr *hdr;
+> +	u64 msg_size;
+> +
+> +	if (mdev->mbase == hw_mbase)
+> +		return;
+> +
+> +	hdr = hw_mbase + mbox->rx_start;
+> +	msg_size = hdr->msg_size;
+> +
+> +	if (msg_size > mbox->rx_size - msgs_offset)
+> +		msg_size = mbox->rx_size - msgs_offset;
+> +
+> +	/* Copy mbox messages from mbox memory to bounce buffer */
+> +	memcpy(mdev->mbase + mbox->rx_start,
+> +	       hw_mbase + mbox->rx_start, msg_size + msgs_offset);
+
+I'm slightly concerned about the use of non-iomem helpers like memset
+and memcpy on what I understand to be IOMEM, and the lack of memory
+barriers. But then again, I don't know much about iomem_wc(), is this
+code definitely correct from memory ordering perspective?
+(The memory barrier in otx2_mbox_msg_send() should probably be just
+wmb(), syncing with HW is unrelated with SMP.)
