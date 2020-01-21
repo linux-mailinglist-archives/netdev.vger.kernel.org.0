@@ -2,41 +2,41 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id BCDC31437F2
-	for <lists+netdev@lfdr.de>; Tue, 21 Jan 2020 08:58:03 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 316671437FA
+	for <lists+netdev@lfdr.de>; Tue, 21 Jan 2020 09:01:07 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728783AbgAUH5y (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 21 Jan 2020 02:57:54 -0500
-Received: from us-smtp-1.mimecast.com ([207.211.31.81]:42495 "EHLO
-        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1728139AbgAUH5x (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 21 Jan 2020 02:57:53 -0500
+        id S1728456AbgAUIBE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 21 Jan 2020 03:01:04 -0500
+Received: from us-smtp-delivery-1.mimecast.com ([205.139.110.120]:44121 "EHLO
+        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+        with ESMTP id S1726729AbgAUIBC (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 21 Jan 2020 03:01:02 -0500
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1579593472;
+        s=mimecast20190719; t=1579593660;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=fHgdj4+QyHLUaUegzU6HDHgoygSNPCN+x1Fke+h7szM=;
-        b=FcoTTLoGB9J5UGg299GDJZMK7IKLIf1/AiGGqvm1xb7K4gZUVsVjplczud2Ji62ohpFS4U
-        ZI8ZT3y8phx+YqKQv7jxHp2hVUl5U2uyIFyTyUq4mv/QpjtKCa5KtNxZK+n/EBTEVru52t
-        MlcuLvuw/zZjMyFpGeX4TkoGzTw6240=
+        bh=LFJhchaBLZH9C5ENtjBAtVm2hXUIBMF4njoRuoiz0/s=;
+        b=ZuU1J5pTWJZmnl+GJZwB4zp05fOvBewgkLJDKfNxnwrX41uhV5VAcpnEcDbfiY+C6TrLBX
+        kDX6yus/mUAjbwqVMzj/6NkXGdvhuTsv65j+gCaf6l+bM51prFIHEsmMFZmvx9nRMwEiUf
+        htqqxKL/2saeLg99hkUugHdRlSenUbw=
 Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
  [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-367-mcFzT5QdNfSlCBvpmZk-Kg-1; Tue, 21 Jan 2020 02:57:50 -0500
-X-MC-Unique: mcFzT5QdNfSlCBvpmZk-Kg-1
-Received: from smtp.corp.redhat.com (int-mx08.intmail.prod.int.phx2.redhat.com [10.5.11.23])
+ us-mta-154-8Kk2CU-6MI2Wx8TUBDCoiA-1; Tue, 21 Jan 2020 03:00:59 -0500
+X-MC-Unique: 8Kk2CU-6MI2Wx8TUBDCoiA-1
+Received: from smtp.corp.redhat.com (int-mx04.intmail.prod.int.phx2.redhat.com [10.5.11.14])
         (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id DE3871005510;
-        Tue, 21 Jan 2020 07:57:46 +0000 (UTC)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id D45E718AAFA4;
+        Tue, 21 Jan 2020 08:00:56 +0000 (UTC)
 Received: from [10.72.12.103] (ovpn-12-103.pek2.redhat.com [10.72.12.103])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id A313319C6A;
-        Tue, 21 Jan 2020 07:57:30 +0000 (UTC)
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 82AF85D9E2;
+        Tue, 21 Jan 2020 08:00:39 +0000 (UTC)
 Subject: Re: [PATCH 3/5] vDPA: introduce vDPA bus
-To:     Shahaf Shuler <shahafs@mellanox.com>,
-        "Michael S. Tsirkin" <mst@redhat.com>
+To:     "Michael S. Tsirkin" <mst@redhat.com>
 Cc:     Jason Gunthorpe <jgg@mellanox.com>,
+        Shahaf Shuler <shahafs@mellanox.com>,
         Rob Miller <rob.miller@broadcom.com>,
         "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
         "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
@@ -62,28 +62,26 @@ Cc:     Jason Gunthorpe <jgg@mellanox.com>,
         Jiri Pirko <jiri@mellanox.com>,
         "hanand@xilinx.com" <hanand@xilinx.com>,
         "mhabets@solarflare.com" <mhabets@solarflare.com>
-References: <20200116124231.20253-4-jasowang@redhat.com>
+References: <20200116124231.20253-1-jasowang@redhat.com>
+ <20200116124231.20253-4-jasowang@redhat.com>
  <20200117070324-mutt-send-email-mst@kernel.org>
  <239b042c-2d9e-0eec-a1ef-b03b7e2c5419@redhat.com>
  <CAJPjb1+fG9L3=iKbV4Vn13VwaeDZZdcfBPvarogF_Nzhk+FnKg@mail.gmail.com>
  <AM0PR0502MB379553984D0D55FDE25426F6C3330@AM0PR0502MB3795.eurprd05.prod.outlook.com>
  <d69918ca-8af4-44b2-9652-633530d4c113@redhat.com>
  <20200120174933.GB3891@mellanox.com>
- <AM0PR0502MB3795C92485338180FC8059CFC3320@AM0PR0502MB3795.eurprd05.prod.outlook.com>
- <20200120162449-mutt-send-email-mst@kernel.org>
- <AM0PR0502MB3795A7BE7F434964D6102517C3320@AM0PR0502MB3795.eurprd05.prod.outlook.com>
- <20200120165640-mutt-send-email-mst@kernel.org>
- <AM0PR0502MB3795940D8E0A269D4A32FF8FC30D0@AM0PR0502MB3795.eurprd05.prod.outlook.com>
+ <2a324cec-2863-58f4-c58a-2414ee32c930@redhat.com>
+ <20200121004047-mutt-send-email-mst@kernel.org>
 From:   Jason Wang <jasowang@redhat.com>
-Message-ID: <ef3ca685-2cbe-ce7c-c9c0-cbb5caa08db2@redhat.com>
-Date:   Tue, 21 Jan 2020 15:57:29 +0800
+Message-ID: <b9ad744e-c4cd-82f9-f56a-1ecc185e9cd7@redhat.com>
+Date:   Tue, 21 Jan 2020 16:00:38 +0800
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
  Thunderbird/60.8.0
 MIME-Version: 1.0
-In-Reply-To: <AM0PR0502MB3795940D8E0A269D4A32FF8FC30D0@AM0PR0502MB3795.eurprd05.prod.outlook.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
+In-Reply-To: <20200121004047-mutt-send-email-mst@kernel.org>
+Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Language: en-US
-X-Scanned-By: MIMEDefang 2.84 on 10.5.11.23
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.14
 Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
@@ -91,65 +89,88 @@ List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 
-On 2020/1/21 =E4=B8=8B=E5=8D=882:01, Shahaf Shuler wrote:
-> Tuesday, January 21, 2020 12:00 AM, Michael S. Tsirkin:
->> Subject: Re: [PATCH 3/5] vDPA: introduce vDPA bus
->>
->> On Mon, Jan 20, 2020 at 09:47:18PM +0000, Shahaf Shuler wrote:
->>> Monday, January 20, 2020 11:25 PM, Michael S. Tsirkin:
->>>> Subject: Re: [PATCH 3/5] vDPA: introduce vDPA bus
+On 2020/1/21 =E4=B8=8B=E5=8D=881:47, Michael S. Tsirkin wrote:
+> On Tue, Jan 21, 2020 at 12:00:57PM +0800, Jason Wang wrote:
+>> On 2020/1/21 =E4=B8=8A=E5=8D=881:49, Jason Gunthorpe wrote:
+>>> On Mon, Jan 20, 2020 at 04:43:53PM +0800, Jason Wang wrote:
+>>>> This is similar to the design of platform IOMMU part of vhost-vdpa. =
+We
+>>>> decide to send diffs to platform IOMMU there. If it's ok to do that =
+in
+>>>> driver, we can replace set_map with incremental API like map()/unmap=
+().
 >>>>
->>>> On Mon, Jan 20, 2020 at 08:51:43PM +0000, Shahaf Shuler wrote:
->>>>> Monday, January 20, 2020 7:50 PM, Jason Gunthorpe:
->>>>>> Subject: Re: [PATCH 3/5] vDPA: introduce vDPA bus
->>>>>>
->>>>>> On Mon, Jan 20, 2020 at 04:43:53PM +0800, Jason Wang wrote:
->>>>>>> This is similar to the design of platform IOMMU part of
->>>>>>> vhost-vdpa. We decide to send diffs to platform IOMMU there.
->>>>>>> If it's ok to do that in driver, we can replace set_map with
->>>>>>> incremental API
->>>> like map()/unmap().
->>>>>>> Then driver need to maintain rbtree itself.
->>>>>> I think we really need to see two modes, one where there is a
->>>>>> fixed translation without dynamic vIOMMU driven changes and one
->>>>>> that supports vIOMMU.
->>>>>>
->>>>>> There are different optimization goals in the drivers for these
->>>>>> two configurations.
->>>>> +1.
->>>>> It will be best to have one API for static config (i.e. mapping
->>>>> can be set only before virtio device gets active), and one API for
->>>>> dynamic changes that can be set after the virtio device is active.
->>>> Frankly I don't see when we'd use the static one.
->>>> Memory hotplug is enabled for most guests...
->>> The fact memory hotplug is enabled doesn't necessarily means there is=
- not
->> cold-plugged memory on the hot plugged slots.
->>> So your claim is majority of guests are deployed w/o any cold-plugged
->> memory?
+>>>> Then driver need to maintain rbtree itself.
+>>> I think we really need to see two modes, one where there is a fixed
+>>> translation without dynamic vIOMMU driven changes and one that
+>>> supports vIOMMU.
 >>
->> Sorry for not being clear. I was merely saying that dynamic one can't =
-be
->> optional, and static one can. So how about we start just with the dyna=
-mic
->> one, then add the static one as a later optimization?
-> Since we have the use case (cold plugged memory to guest, e.g. when pop=
-ulated w/ hugepages) I think we should start w/ both. The static one can =
-be optional for drivers.
+>> I think in this case, you meant the method proposed by Shahaf that sen=
+ds
+>> diffs of "fixed translation" to device?
+>>
+>> It would be kind of tricky to deal with the following case for example=
+:
+>>
+>> old map [4G, 16G) new map [4G, 8G)
+>>
+>> If we do
+>>
+>> 1) flush [4G, 16G)
+>> 2) add [4G, 8G)
+>>
+>> There could be a window between 1) and 2).
+>>
+>> It requires the IOMMU that can do
+>>
+>> 1) remove [8G, 16G)
+>> 2) flush [8G, 16G)
+>> 3) change [4G, 8G)
+>>
+>> ....
+> Basically what I had in mind is something like qemu memory api
 >
-> Moreover am not yet clear about the suggested API for dynamic, can you =
-share the prototype you have in mind?
-> Also will it be :
-> 1. multiple add_map and then flag the driver to set
-> Or
-> 2. each add_map should be set by the driver as stand alone.
+> 0. begin
+> 1. remove [8G, 16G)
+> 2. add [4G, 8G)
+> 3. commit
 
 
-For dynamic one, it looks to me that introducing add_map()/del_map() bus=20
-operations is much more cleaner than reusing current set_map() one.
+This sounds more flexible e.g driver may choose to implement static=20
+mapping one through commit. But a question here, it looks to me this=20
+still requires the DMA to be synced with at least commit here. Otherwise=20
+device may get DMA fault? Or device is expected to be paused DMA during=20
+begin?
 
 Thanks
 
 
+>
+> Anyway, I'm fine with a one-shot API for now, we can
+> improve it later.
+>
+>>> There are different optimization goals in the drivers for these two
+>>> configurations.
+>>>
+>>>>> If the first one, then I think memory hotplug is a heavy flow
+>>>>> regardless. Do you think the extra cycles for the tree traverse
+>>>>> will be visible in any way?
+>>>> I think if the driver can pause the DMA during the time for setting =
+up new
+>>>> mapping, it should be fine.
+>>> This is very tricky for any driver if the mapping change hits the
+>>> virtio rings. :(
+>>>
+>>> Even a IOMMU using driver is going to have problems with that..
+>>>
+>>> Jason
+>>
+>> Or I wonder whether ATS/PRI can help here. E.g during I/O page fault,
+>> driver/device can wait for the new mapping to be set and then replay t=
+he
+>> DMA.
+>>
+>> Thanks
+>>
 >
 
