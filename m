@@ -2,97 +2,126 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 0EBD51441BC
-	for <lists+netdev@lfdr.de>; Tue, 21 Jan 2020 17:10:04 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3653C1441DC
+	for <lists+netdev@lfdr.de>; Tue, 21 Jan 2020 17:17:00 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729255AbgAUQKB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 21 Jan 2020 11:10:01 -0500
-Received: from us-smtp-delivery-1.mimecast.com ([207.211.31.120]:37196 "EHLO
-        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S1726555AbgAUQKB (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 21 Jan 2020 11:10:01 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1579623000;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=UEuuKeMhgB5vy+6HvBEXjxE3sicUJEJgiG6w15sfOoA=;
-        b=I02pHP3rvAXhwrfLsgjW9+c44Yp4IY9H0+lhIiC/rQz04rnn2L35WUweVyQTONFjJCJxNj
-        NrcL60LINSHaHppNd6AWr+SGyfQcZ5tG6VaO1eyOX1tXfXnMBK5fA2KiiW2mHNoYT48P6Q
-        8jV9WPvha0KPEtLoLtixLTONZ3RVXsk=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-381-mdUac1_rNe-HnQX9A1cRhQ-1; Tue, 21 Jan 2020 11:09:58 -0500
-X-MC-Unique: mdUac1_rNe-HnQX9A1cRhQ-1
-Received: from smtp.corp.redhat.com (int-mx04.intmail.prod.int.phx2.redhat.com [10.5.11.14])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 10DD518B5FBE;
-        Tue, 21 Jan 2020 16:09:57 +0000 (UTC)
-Received: from carbon (ovpn-200-26.brq.redhat.com [10.40.200.26])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id AC75B5D9E2;
-        Tue, 21 Jan 2020 16:09:47 +0000 (UTC)
-Date:   Tue, 21 Jan 2020 17:09:45 +0100
-From:   Jesper Dangaard Brouer <brouer@redhat.com>
-To:     Ilias Apalodimas <ilias.apalodimas@linaro.org>,
-        Lorenzo Bianconi <lorenzo.bianconi@redhat.com>
-Cc:     brouer@redhat.com, Saeed Mahameed <saeedm@mellanox.com>,
-        Matteo Croce <mcroce@redhat.com>,
-        Tariq Toukan <tariqt@mellanox.com>,
-        Toke =?UTF-8?B?SMO4aWxhbmQtSsO4cmdlbnNlbg==?= <toke@redhat.com>,
-        Jonathan Lemon <jonathan.lemon@gmail.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-Subject: Created benchmarks modules for page_pool
-Message-ID: <20200121170945.41e58f32@carbon>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.14
+        id S1729441AbgAUQQ6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 21 Jan 2020 11:16:58 -0500
+Received: from mail-il-dmz.mellanox.com ([193.47.165.129]:43487 "EHLO
+        mellanox.co.il" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+        with ESMTP id S1729285AbgAUQQ5 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 21 Jan 2020 11:16:57 -0500
+Received: from Internal Mail-Server by MTLPINE1 (envelope-from paulb@mellanox.com)
+        with ESMTPS (AES256-SHA encrypted); 21 Jan 2020 18:16:53 +0200
+Received: from reg-r-vrt-019-120.mtr.labs.mlnx (reg-r-vrt-019-120.mtr.labs.mlnx [10.213.19.120])
+        by labmailer.mlnx (8.13.8/8.13.8) with ESMTP id 00LGGrWt008966;
+        Tue, 21 Jan 2020 18:16:53 +0200
+From:   Paul Blakey <paulb@mellanox.com>
+To:     Paul Blakey <paulb@mellanox.com>,
+        Saeed Mahameed <saeedm@mellanox.com>,
+        Oz Shlomo <ozsh@mellanox.com>,
+        Jakub Kicinski <jakub.kicinski@netronome.com>,
+        Vlad Buslov <vladbu@mellanox.com>,
+        David Miller <davem@davemloft.net>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        Jiri Pirko <jiri@resnulli.us>
+Subject: [PATCH net-next 00/13] Handle multi chain hardware misses
+Date:   Tue, 21 Jan 2020 18:16:09 +0200
+Message-Id: <1579623382-6934-1-git-send-email-paulb@mellanox.com>
+X-Mailer: git-send-email 1.8.4.3
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Ilias and Lorenzo, (Cc others + netdev)
+Hi David/Jakub/Saeed,
 
-I've created two benchmarks modules for page_pool.
+TC multi chain configuration can cause offloaded tc chains to miss in
+hardware after jumping to some chain. In such cases the software should
+continue from the chain that was missed in hardware, as the hardware may have
+manipulated the packet and updated some counters.
 
-[1] https://github.com/netoptimizer/prototype-kernel/blob/master/kernel/lib/bench_page_pool_simple.c
-[2] https://github.com/netoptimizer/prototype-kernel/blob/master/kernel/lib/bench_page_pool_cross_cpu.c
+The first patch enables tc classification to start from a specified chain by
+re-using the existing TC_SKB_EXT skb extension.
 
-I think we/you could actually use this as part of your presentation[3]?
+The next six patches are the Mellanox driver implementation of the miss path.
+The driver loads the last processed chain from HW register (reg_c0, then flow_tag)
+and stores it on the TC_SKB_EXT skb extension for continued processing
+in software.
 
-The first benchmark[1] illustrate/measure what happen when page_pool
-alloc and free/return happens on the same CPU.  Here there are 3 modes
-of operations with different performance characteristic.
+The final six patches introduce the Mellanox driver implementation for handling
+tunnel restore when the packet was decapsulated on first chain hop.
+Early decapsulation creates two issues:
+1. The outer headers will not be available in later chains
+2. If the HW will miss on later chains, the packet will come up to software
+   without the tunnel header. Therefore, sw matches on the tunnel info will miss.
 
-Fast_path NAPI recycle (XDP_DROP use-case)
- - cost per elem: 15 cycles(tsc) 4.437 ns
+Address these issues by mapping a unique id per tunnel info. The mapping is
+stored on hardware register (c1) when the packet is decapsulated. On miss,
+use the id to restore the tunnel info metadata on the skb.
 
-Recycle via ptr_ring
- - cost per elem: 48 cycles(tsc) 13.439 ns
+Note that miss path handling of multi-chain rules is a required infrastructure
+for connection tracking hardware offload. The connection tracking offload
+series will follow this one.
 
-Failed recycle, return to page-allocator
- - cost per elem: 256 cycles(tsc) 71.169 ns
+Paul Blakey (12):
+  net/mlx5: Add new driver lib for mappings unique ids to data
+  net/mlx5: E-Switch, Move source port on reg_c0 to the upper 16 bits
+  net/mlx5: E-Switch, Get reg_c0 value on CQE
+  net/mlx5: E-Switch, Mark miss packets with new chain id mapping
+  net/mlx5e: Rx, Split rep rx mpwqe handler from nic
+  net/mlx5: E-Switch, Restore chain id on miss
+  net/mlx5e: Allow re-allocating mod header actions
+  net/mlx5e: Move tc tunnel parsing logic with the rest at tc_tun module
+  net/mlx5e: Disallow inserting vxlan/vlan egress rules without
+    decap/pop
+  net/mlx5e: Support inner header rewrite with goto action
+  net/mlx5: E-Switch, Get reg_c1 value on miss
+  net/mlx5e: Restore tunnel metadata on miss
 
+Vlad Buslov (1):
+  net: sched: support skb chain ext in tc classification path
 
-The second benchmark[2] measures what happens cross-CPU.  It is
-primarily the concurrent return-path that I want to capture. As this
-is page_pool's weak spot, that we/I need to improve performance of.
-Hint when SKBs use page_pool return this will happen more often.
-It is a little more tricky to get proper measurement as we want to
-observe the case, where return-path isn't stalling/waiting on pages to
-return.
+ drivers/infiniband/hw/mlx5/main.c                  |   3 +-
+ drivers/net/ethernet/mellanox/mlx5/core/Makefile   |   2 +-
+ .../net/ethernet/mellanox/mlx5/core/en/tc_tun.c    | 112 ++-
+ .../net/ethernet/mellanox/mlx5/core/en/tc_tun.h    |   3 +-
+ drivers/net/ethernet/mellanox/mlx5/core/en_rep.c   |   4 +-
+ drivers/net/ethernet/mellanox/mlx5/core/en_rep.h   |   7 +
+ drivers/net/ethernet/mellanox/mlx5/core/en_rx.c    |  66 ++
+ drivers/net/ethernet/mellanox/mlx5/core/en_tc.c    | 817 ++++++++++++++++-----
+ drivers/net/ethernet/mellanox/mlx5/core/en_tc.h    |  45 ++
+ drivers/net/ethernet/mellanox/mlx5/core/eswitch.h  |  16 +
+ .../ethernet/mellanox/mlx5/core/eswitch_offloads.c | 253 ++++++-
+ .../mellanox/mlx5/core/eswitch_offloads_chains.c   | 130 +++-
+ .../mellanox/mlx5/core/eswitch_offloads_chains.h   |   4 +-
+ drivers/net/ethernet/mellanox/mlx5/core/fs_core.c  |   4 +-
+ .../net/ethernet/mellanox/mlx5/core/lib/mapping.c  | 362 +++++++++
+ .../net/ethernet/mellanox/mlx5/core/lib/mapping.h  |  31 +
+ include/linux/mlx5/eswitch.h                       |  11 +-
+ include/net/pkt_cls.h                              |  17 +-
+ include/net/sch_generic.h                          |   6 +-
+ net/core/dev.c                                     |   6 +-
+ net/sched/cls_api.c                                |  64 +-
+ net/sched/sch_atm.c                                |   2 +-
+ net/sched/sch_cake.c                               |   2 +-
+ net/sched/sch_cbq.c                                |   2 +-
+ net/sched/sch_drr.c                                |   2 +-
+ net/sched/sch_dsmark.c                             |   2 +-
+ net/sched/sch_fq_codel.c                           |   2 +-
+ net/sched/sch_generic.c                            |   3 +-
+ net/sched/sch_hfsc.c                               |   3 +-
+ net/sched/sch_htb.c                                |   3 +-
+ net/sched/sch_ingress.c                            |   5 +-
+ net/sched/sch_multiq.c                             |   2 +-
+ net/sched/sch_prio.c                               |   2 +-
+ net/sched/sch_qfq.c                                |   2 +-
+ net/sched/sch_sfb.c                                |   2 +-
+ net/sched/sch_sfq.c                                |   2 +-
+ 36 files changed, 1742 insertions(+), 257 deletions(-)
+ create mode 100644 drivers/net/ethernet/mellanox/mlx5/core/lib/mapping.c
+ create mode 100644 drivers/net/ethernet/mellanox/mlx5/core/lib/mapping.h
 
-- 1 CPU returning  , cost per elem: 110 cycles(tsc)   30.709 ns
-- 2 concurrent CPUs, cost per elem: 989 cycles(tsc)  274.861 ns
-- 3 concurrent CPUs, cost per elem: 2089 cycles(tsc) 580.530 ns
-- 4 concurrent CPUs, cost per elem: 2339 cycles(tsc) 649.984 ns
-
-[3] https://netdevconf.info/0x14/session.html?tutorial-add-XDP-support-to-a-NIC-driver
 -- 
-Best regards,
-  Jesper Dangaard Brouer
-  MSc.CS, Principal Kernel Engineer at Red Hat
-  LinkedIn: http://www.linkedin.com/in/brouer
+1.8.3.1
 
