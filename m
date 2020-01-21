@@ -2,112 +2,133 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 57E11144701
-	for <lists+netdev@lfdr.de>; Tue, 21 Jan 2020 23:11:44 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8BA331446F3
+	for <lists+netdev@lfdr.de>; Tue, 21 Jan 2020 23:11:06 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729187AbgAUWKi (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 21 Jan 2020 17:10:38 -0500
-Received: from kvm5.telegraphics.com.au ([98.124.60.144]:44810 "EHLO
+        id S1729277AbgAUWKj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 21 Jan 2020 17:10:39 -0500
+Received: from kvm5.telegraphics.com.au ([98.124.60.144]:44768 "EHLO
         kvm5.telegraphics.com.au" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729158AbgAUWKh (ORCPT
+        with ESMTP id S1728767AbgAUWKh (ORCPT
         <rfc822;netdev@vger.kernel.org>); Tue, 21 Jan 2020 17:10:37 -0500
 Received: by kvm5.telegraphics.com.au (Postfix, from userid 502)
-        id 92BA3299A7; Tue, 21 Jan 2020 17:10:36 -0500 (EST)
+        id 389F729989; Tue, 21 Jan 2020 17:10:36 -0500 (EST)
 To:     "David S. Miller" <davem@davemloft.net>
 Cc:     Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
         Chris Zankel <chris@zankel.net>,
         Laurent Vivier <laurent@vivier.eu>,
         Geert Uytterhoeven <geert@linux-m68k.org>,
         netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Message-Id: <882be6a20e004183d9c741fad2673d48aa3e0a9f.1579641728.git.fthain@telegraphics.com.au>
+Message-Id: <13eaaf68af024def18073962a1112be1cc222547.1579641728.git.fthain@telegraphics.com.au>
 In-Reply-To: <cover.1579641728.git.fthain@telegraphics.com.au>
 References: <cover.1579641728.git.fthain@telegraphics.com.au>
 From:   Finn Thain <fthain@telegraphics.com.au>
-Subject: [PATCH net v2 10/12] net/sonic: Fix command register usage
+Subject: [PATCH net v2 04/12] net/sonic: Fix interface error stats collection
 Date:   Wed, 22 Jan 2020 08:22:08 +1100
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-There are several issues relating to command register usage during
-chip initialization.
+The tx_aborted_errors statistic should count packets flagged with EXD,
+EXC, FU, or BCM bits because those bits denote an aborted transmission.
+That corresponds to the bitmask 0x0446, not 0x0642. Use macros for these
+constants to avoid mistakes. Better to leave out FIFO Underruns (FU) as
+there's a separate counter for that purpose.
 
-Firstly, the SONIC sometimes comes out of software reset with the
-Start Timer bit set. This gets logged as,
+Don't lump all these errors in with the general tx_errors counter as
+that's used for tx timeout events.
 
-    macsonic macsonic eth0: sonic_init: status=24, i=101
+On the rx side, don't count RDE and RBAE interrupts as dropped packets.
+These interrupts don't indicate a lost packet, just a lack of resources.
+When a lack of resources results in a lost packet, this gets reported
+in the rx_missed_errors counter (along with RFO events).
 
-Avoid this by giving the Stop Timer command earlier than later.
+Don't double-count rx_frame_errors and rx_crc_errors.
 
-Secondly, the loop that waits for the Read RRA command to complete has
-the break condition inverted. That's why the for loop iterates until
-its termination condition. Call the helper for this instead.
-
-Finally, give the Receiver Enable command after clearing interrupts,
-not before, to avoid the possibility of losing an interrupt.
+Don't use the general rx_errors counter for events that already have
+special counters.
 
 Fixes: 1da177e4c3f4 ("Linux-2.6.12-rc2")
 Tested-by: Stan Johnson <userm57@yahoo.com>
 Signed-off-by: Finn Thain <fthain@telegraphics.com.au>
 ---
- drivers/net/ethernet/natsemi/sonic.c | 18 +++---------------
- 1 file changed, 3 insertions(+), 15 deletions(-)
+ drivers/net/ethernet/natsemi/sonic.c | 21 +++++++--------------
+ drivers/net/ethernet/natsemi/sonic.h |  1 +
+ 2 files changed, 8 insertions(+), 14 deletions(-)
 
 diff --git a/drivers/net/ethernet/natsemi/sonic.c b/drivers/net/ethernet/natsemi/sonic.c
-index 6570b9428d12..55660acf5ccc 100644
+index a2e1d06ebf9f..5ba705ad7d4e 100644
 --- a/drivers/net/ethernet/natsemi/sonic.c
 +++ b/drivers/net/ethernet/natsemi/sonic.c
-@@ -664,7 +664,6 @@ static void sonic_multicast_list(struct net_device *dev)
-  */
- static int sonic_init(struct net_device *dev)
- {
--	unsigned int cmd;
- 	struct sonic_local *lp = netdev_priv(dev);
- 	int i;
+@@ -325,18 +325,19 @@ static irqreturn_t sonic_interrupt(int irq, void *dev_id)
+ 				if ((td_status = sonic_tda_get(dev, entry, SONIC_TD_STATUS)) == 0)
+ 					break;
  
-@@ -681,7 +680,7 @@ static int sonic_init(struct net_device *dev)
- 	 * enable interrupts, then completely initialize the SONIC
- 	 */
- 	SONIC_WRITE(SONIC_CMD, 0);
--	SONIC_WRITE(SONIC_CMD, SONIC_CR_RXDIS);
-+	SONIC_WRITE(SONIC_CMD, SONIC_CR_RXDIS | SONIC_CR_STP);
- 	sonic_quiesce(dev, SONIC_CR_ALL);
+-				if (td_status & 0x0001) {
++				if (td_status & SONIC_TCR_PTX) {
+ 					lp->stats.tx_packets++;
+ 					lp->stats.tx_bytes += sonic_tda_get(dev, entry, SONIC_TD_PKTSIZE);
+ 				} else {
+-					lp->stats.tx_errors++;
+-					if (td_status & 0x0642)
++					if (td_status & (SONIC_TCR_EXD |
++					    SONIC_TCR_EXC | SONIC_TCR_BCM))
+ 						lp->stats.tx_aborted_errors++;
+-					if (td_status & 0x0180)
++					if (td_status &
++					    (SONIC_TCR_NCRS | SONIC_TCR_CRLS))
+ 						lp->stats.tx_carrier_errors++;
+-					if (td_status & 0x0020)
++					if (td_status & SONIC_TCR_OWC)
+ 						lp->stats.tx_window_errors++;
+-					if (td_status & 0x0004)
++					if (td_status & SONIC_TCR_FU)
+ 						lp->stats.tx_fifo_errors++;
+ 				}
  
- 	/*
-@@ -711,14 +710,7 @@ static int sonic_init(struct net_device *dev)
- 	netif_dbg(lp, ifup, dev, "%s: issuing RRRA command\n", __func__);
+@@ -366,17 +367,14 @@ static irqreturn_t sonic_interrupt(int irq, void *dev_id)
+ 		if (status & SONIC_INT_RFO) {
+ 			netif_dbg(lp, rx_err, dev, "%s: rx fifo overrun\n",
+ 				  __func__);
+-			lp->stats.rx_fifo_errors++;
+ 		}
+ 		if (status & SONIC_INT_RDE) {
+ 			netif_dbg(lp, rx_err, dev, "%s: rx descriptors exhausted\n",
+ 				  __func__);
+-			lp->stats.rx_dropped++;
+ 		}
+ 		if (status & SONIC_INT_RBAE) {
+ 			netif_dbg(lp, rx_err, dev, "%s: rx buffer area exceeded\n",
+ 				  __func__);
+-			lp->stats.rx_dropped++;
+ 		}
  
- 	SONIC_WRITE(SONIC_CMD, SONIC_CR_RRRA);
--	i = 0;
--	while (i++ < 100) {
--		if (SONIC_READ(SONIC_CMD) & SONIC_CR_RRRA)
--			break;
--	}
--
--	netif_dbg(lp, ifup, dev, "%s: status=%x, i=%d\n", __func__,
--		  SONIC_READ(SONIC_CMD), i);
-+	sonic_quiesce(dev, SONIC_CR_RRRA);
- 
- 	/*
- 	 * Initialize the receive descriptors so that they
-@@ -806,15 +798,11 @@ static int sonic_init(struct net_device *dev)
- 	 * enable receiver, disable loopback
- 	 * and enable all interrupts
- 	 */
--	SONIC_WRITE(SONIC_CMD, SONIC_CR_RXEN | SONIC_CR_STP);
- 	SONIC_WRITE(SONIC_RCR, SONIC_RCR_DEFAULT);
- 	SONIC_WRITE(SONIC_TCR, SONIC_TCR_DEFAULT);
- 	SONIC_WRITE(SONIC_ISR, 0x7fff);
- 	SONIC_WRITE(SONIC_IMR, SONIC_IMR_DEFAULT);
--
--	cmd = SONIC_READ(SONIC_CMD);
--	if ((cmd & SONIC_CR_RXEN) == 0 || (cmd & SONIC_CR_STP) == 0)
--		printk(KERN_ERR "sonic_init: failed, status=%x\n", cmd);
-+	SONIC_WRITE(SONIC_CMD, SONIC_CR_RXEN);
- 
- 	netif_dbg(lp, ifup, dev, "%s: new status=%x\n", __func__,
- 		  SONIC_READ(SONIC_CMD));
+ 		/* counter overruns; all counters are 16bit wide */
+@@ -468,11 +466,6 @@ static void sonic_rx(struct net_device *dev)
+ 			sonic_rra_put(dev, entry, SONIC_RR_BUFADR_H, bufadr_h);
+ 		} else {
+ 			/* This should only happen, if we enable accepting broken packets. */
+-			lp->stats.rx_errors++;
+-			if (status & SONIC_RCR_FAER)
+-				lp->stats.rx_frame_errors++;
+-			if (status & SONIC_RCR_CRCR)
+-				lp->stats.rx_crc_errors++;
+ 		}
+ 		if (status & SONIC_RCR_LPKT) {
+ 			/*
+diff --git a/drivers/net/ethernet/natsemi/sonic.h b/drivers/net/ethernet/natsemi/sonic.h
+index fb160dfdf4ca..9e4ff8dd032d 100644
+--- a/drivers/net/ethernet/natsemi/sonic.h
++++ b/drivers/net/ethernet/natsemi/sonic.h
+@@ -175,6 +175,7 @@
+ #define SONIC_TCR_NCRS          0x0100
+ #define SONIC_TCR_CRLS          0x0080
+ #define SONIC_TCR_EXC           0x0040
++#define SONIC_TCR_OWC           0x0020
+ #define SONIC_TCR_PMB           0x0008
+ #define SONIC_TCR_FU            0x0004
+ #define SONIC_TCR_BCM           0x0002
 -- 
 2.24.1
 
