@@ -2,66 +2,115 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 352A3143FC3
-	for <lists+netdev@lfdr.de>; Tue, 21 Jan 2020 15:40:28 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B617314401C
+	for <lists+netdev@lfdr.de>; Tue, 21 Jan 2020 16:04:46 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729439AbgAUOk0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 21 Jan 2020 09:40:26 -0500
-Received: from mail-ed1-f67.google.com ([209.85.208.67]:46483 "EHLO
-        mail-ed1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727255AbgAUOk0 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 21 Jan 2020 09:40:26 -0500
-Received: by mail-ed1-f67.google.com with SMTP id m8so3142900edi.13
-        for <netdev@vger.kernel.org>; Tue, 21 Jan 2020 06:40:25 -0800 (PST)
+        id S1729246AbgAUPEh (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 21 Jan 2020 10:04:37 -0500
+Received: from mail-wr1-f68.google.com ([209.85.221.68]:44327 "EHLO
+        mail-wr1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727255AbgAUPEe (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 21 Jan 2020 10:04:34 -0500
+Received: by mail-wr1-f68.google.com with SMTP id q10so3550597wrm.11
+        for <netdev@vger.kernel.org>; Tue, 21 Jan 2020 07:04:33 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:reply-to:in-reply-to:references:from:date:message-id
-         :subject:to;
-        bh=dH1FOtHt9J+9HWGvC612Yz7xr6i8vCMoTVotnPpJq3U=;
-        b=GRDH7MolCl/6fqABEyz3L5NxSAs/CTIzMwPXTaj1PIQRrDAMUKxUObIkcRrQ4LaJFr
-         /HSsiPsW5YyBWF05BQruk5ajcgrl+3pe+pUR0M1qT2J0aNHveC88IRoNWJ4tCY5FXgix
-         taA7oYH+fZBA1WpcYpwh1xZiiNMq1GnoOnKJ3X8OORqDMEafQ+wuKOQFGV5nPSTEiwQV
-         hXNL82fB1Dcq6S0qtNPAie9fTHAMAk2TwCeB48dS8bz83MWB8LM567lymwDJibaCHTeF
-         ZDAA7ntML5yloZQWmCqZThLBaS6u6NVCbGr8BbKos91zgAvZWRaamNDLBOw1FZyHoi0Y
-         3dcg==
+        d=chrisdown.name; s=google;
+        h=date:from:to:cc:subject:message-id:mime-version:content-disposition;
+        bh=3fX8yqVdokeUbIrwEfgnVCmcXTtAwRGxuX8ZNd4rp/U=;
+        b=lqbjIQovQBhxj+xtgVpB8uPL58iOhyecjOyhwTyWj62vfntLi4PpGJ6VfGKjJ2QUnK
+         JMumsdiQl5V6T7LB2vFENkf8ojE07zTSr/3BJxxB/9O7BC4rZwYKSzfyCvx7JknD3GMV
+         Ea2K+iKl2ejNEzovb915Aw97aYSA1UGVo51PM=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:reply-to:in-reply-to:references
-         :from:date:message-id:subject:to;
-        bh=dH1FOtHt9J+9HWGvC612Yz7xr6i8vCMoTVotnPpJq3U=;
-        b=GhNHdhwmZCteO27e5H0QwojS7zUci2zZI3L41WbuiivvuOYt/xz04AHDTBgeJ/RzHl
-         kgz/9AjnmgLUf9br98b5Sb42zKde1mqYWBr5lBtM44NqV1qK3T6oE6SKYKhS0CoJKmFL
-         LBdCULCxwRwk8J8txjR9KVVccGYxNKXzfNjwif0H9WYLYjZ5xLSlPac2cCF0d/S20PVP
-         n3Bs6t0atoKnODcbQEAyRafQmJPF8gxFxi6H2ltBU0QiY4l3YRKTsAS6mACD9SMA60b1
-         Pki8w/dVyZHE0oQKvvBjafEoZ16/o8fio4OH/AdJLItuEzByd8BfDVF8f5wDbMaBhSuY
-         FVFg==
-X-Gm-Message-State: APjAAAVX4tIDL4t3WrA/IKivF8J5o4q1NtbEiNUH+XXFmGMU4Ks6KsWr
-        cPQqTKHN30hWLssLA3+7WTXpv70vr8FvaKbDKtEMHg==
-X-Google-Smtp-Source: APXvYqxC1LZc9TXXcrN2eQBNHgXQ8ei0OESbeVVlY6u8AvtKkOp0DMj3wEXxSMShLs0LZ815TdGdYRfUDxE0VwHsTzQ=
-X-Received: by 2002:a17:906:31c3:: with SMTP id f3mr4600818ejf.239.1579617624457;
- Tue, 21 Jan 2020 06:40:24 -0800 (PST)
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:mime-version
+         :content-disposition;
+        bh=3fX8yqVdokeUbIrwEfgnVCmcXTtAwRGxuX8ZNd4rp/U=;
+        b=GQYLtd9v/1pcdDVUeUTowhJE0+97TFXmdKvtZwuToY5xiwj2CmibPmLTrxr/beEBty
+         KIcupttf6rNrG2pbc8jsCVOZ1DdLGsUDo334qoMEWrQkCsRTWVDS711DPkbQt6BbVzqa
+         /qvWIazcgZmpnOgo/IxrbI8HxCQryKLxlJj/xWJDfQyyZulDZLnDGuzZW0eaUIaLsxsT
+         /L54gE8mUZqEmxN81wSmyHjZHeawLyDjWl35jiyO8dMxWha2eZZV6Da1NihDCOsUzYVr
+         pOv1omrGRTcVKzAmq5Z+kMRi5Z3GUiyCGy/h1NKZ6TttIvWr48sR/Vlmx2roXlT/l2wT
+         ro0g==
+X-Gm-Message-State: APjAAAXzMa5jnAo78FpEBjPioWO+jf0kBmD+sKtkH2OvCyv8qhBKR/0N
+        xojt0mEtvz8m5WvpYEbcinFQxw==
+X-Google-Smtp-Source: APXvYqw/n/eK5Xu7u+qMpNfuL8mmr6BDT1kDRYsC9l5O4JsvXRyvkzv097K0+46FPQDNAoOyCpapCg==
+X-Received: by 2002:a5d:4d8d:: with SMTP id b13mr5816499wru.6.1579619072431;
+        Tue, 21 Jan 2020 07:04:32 -0800 (PST)
+Received: from localhost ([2620:10d:c092:180::1:db6c])
+        by smtp.gmail.com with ESMTPSA id s15sm49352115wrp.4.2020.01.21.07.04.31
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 21 Jan 2020 07:04:31 -0800 (PST)
+Date:   Tue, 21 Jan 2020 15:04:31 +0000
+From:   Chris Down <chris@chrisdown.name>
+To:     bpf@vger.kernel.org, netdev@vger.kernel.org
+Cc:     Stanislav Fomichev <sdf@google.com>,
+        Andrii Nakryiko <andriin@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        linux-kernel@vger.kernel.org, kernel-team@fb.com
+Subject: [PATCH] bpf: btf: Always output invariant hit in pahole DWARF to BTF
+ transform
+Message-ID: <20200121150431.GA240246@chrisdown.name>
 MIME-Version: 1.0
-Received: by 2002:a50:c403:0:0:0:0:0 with HTTP; Tue, 21 Jan 2020 06:40:23
- -0800 (PST)
-Reply-To: miraclegod913@gmail.com
-In-Reply-To: <CADQdqh0gRDofZFfmztQGDqgRyHxCP8WVpcmPs5BTnA_b0O0d_A@mail.gmail.com>
-References: <CADQdqh0gRDofZFfmztQGDqgRyHxCP8WVpcmPs5BTnA_b0O0d_A@mail.gmail.com>
-From:   Christy Ruth Walton <penningerjanet9@gmail.com>
-Date:   Tue, 21 Jan 2020 06:40:23 -0800
-Message-ID: <CADQdqh0zD1KzjXrD6J+viuwvSqb0ZS=gj88iFmJAZ91DVVCpPQ@mail.gmail.com>
-Subject: Fwd: Hi Good Day,
-To:     undisclosed-recipients:;
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-My dear,
+When trying to compile with CONFIG_DEBUG_INFO_BTF enabled, I got this
+error:
 
-I want to open Company and Charity Foundation in your country on your
-behalf is okay???
+    % make -s
+    Failed to generate BTF for vmlinux
+    Try to disable CONFIG_DEBUG_INFO_BTF
+    make[3]: *** [vmlinux] Error 1
 
-Thank you.
+Compiling again without -s shows the true error (that pahole is
+missing), but since this is fatal, we should show the error
+unconditionally on stderr as well, not silence it using the `info`
+function. With this patch:
 
-Christy from America.
+    % make -s
+    BTF: .tmp_vmlinux.btf: pahole (pahole) is not available
+    Failed to generate BTF for vmlinux
+    Try to disable CONFIG_DEBUG_INFO_BTF
+    make[3]: *** [vmlinux] Error 1
+
+Signed-off-by: Chris Down <chris@chrisdown.name>
+Cc: Stanislav Fomichev <sdf@google.com>
+Cc: Andrii Nakryiko <andriin@fb.com>
+Cc: John Fastabend <john.fastabend@gmail.com>
+Cc: linux-kernel@vger.kernel.org
+Cc: netdev@vger.kernel.org
+Cc: bpf@vger.kernel.org
+Cc: kernel-team@fb.com
+---
+ scripts/link-vmlinux.sh | 6 ++++--
+ 1 file changed, 4 insertions(+), 2 deletions(-)
+
+diff --git a/scripts/link-vmlinux.sh b/scripts/link-vmlinux.sh
+index c287ad9b3a67..c8e9f49903a0 100755
+--- a/scripts/link-vmlinux.sh
++++ b/scripts/link-vmlinux.sh
+@@ -108,13 +108,15 @@ gen_btf()
+ 	local bin_arch
+ 
+ 	if ! [ -x "$(command -v ${PAHOLE})" ]; then
+-		info "BTF" "${1}: pahole (${PAHOLE}) is not available"
++		printf 'BTF: %s: pahole (%s) is not available\n' \
++			"${1}" "${PAHOLE}" >&2
+ 		return 1
+ 	fi
+ 
+ 	pahole_ver=$(${PAHOLE} --version | sed -E 's/v([0-9]+)\.([0-9]+)/\1\2/')
+ 	if [ "${pahole_ver}" -lt "113" ]; then
+-		info "BTF" "${1}: pahole version $(${PAHOLE} --version) is too old, need at least v1.13"
++		printf 'BTF: %s: pahole version %s is too old, need at least v1.13\n' \
++			"${1}" "$(${PAHOLE} --version)" >&2
+ 		return 1
+ 	fi
+ 
+-- 
+2.25.0
+
