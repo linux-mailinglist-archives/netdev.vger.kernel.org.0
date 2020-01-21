@@ -2,86 +2,71 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 3A0B3143D5F
-	for <lists+netdev@lfdr.de>; Tue, 21 Jan 2020 13:57:05 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5F292143D94
+	for <lists+netdev@lfdr.de>; Tue, 21 Jan 2020 14:02:31 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728708AbgAUM5D (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 21 Jan 2020 07:57:03 -0500
-Received: from mail-wr1-f68.google.com ([209.85.221.68]:39323 "EHLO
-        mail-wr1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727059AbgAUM5C (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 21 Jan 2020 07:57:02 -0500
-Received: by mail-wr1-f68.google.com with SMTP id y11so3072289wrt.6
-        for <netdev@vger.kernel.org>; Tue, 21 Jan 2020 04:57:01 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=6wind.com; s=google;
-        h=reply-to:subject:to:cc:references:from:organization:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=ppHhJe+cYSe6JY9odSbewA4gghJk+5h6czZIx3erz0E=;
-        b=RD+v+iDD7HTA2HuMwO3NP2FzEKL/bjLkY8nRNdbnUTos/7YfsLpSD/7WZrjJpBs2Pp
-         wKwJI9/OZPs7pS3kMy6CJ+Bif9IX1FvMsV3Kbek0jV6OtDOx3OHAjh7IyG9cv7Pohp5W
-         5ZFY6HuwPbVA/ZTO2dPEfBca7vMp6G1RPpag6PS488N+RLf/2mqlYPTyUdjquxdYGTpP
-         jxWZGxZab8NiwHZBQN82hfReXDAg+Kvmqh7//OX4GSVrWhzbVd5fzqqkL6lwrfifps2V
-         bkYpWFR1od/5/cQfaEQboAFOy/QVpyA0FBPQ4vbPdb3g7YKVfXP+RPvkVRaMuJhBXP20
-         L6kg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:reply-to:subject:to:cc:references:from
-         :organization:message-id:date:user-agent:mime-version:in-reply-to
-         :content-language:content-transfer-encoding;
-        bh=ppHhJe+cYSe6JY9odSbewA4gghJk+5h6czZIx3erz0E=;
-        b=jaeSN1kw87vT1plYkm0l9ZFas0nJ+YGgNLbAq9/fBMOTWKDfoGMSnT3HcZxOUmKxGU
-         TbZlzM4yBNU0M38bK9EX8uZRWCuhUHyB9a4kVmrRF07fspwcvYIOwH6ZKBUWxPtyOg1N
-         5p3fQT9n90jlUGRJEcdrYnK1CCyMXghSNiD+qFFVaiWiLPbwfq7X/rNjeAjjWpXp/iw1
-         3oOW/zwP+fxBPiPi0f99aR6FGC2IG9flT7L1F1avBKl/m16Y7kkhUZi2KI5PbCwi+wPN
-         VGwHJVb/i91m1+XdpVWdLag5EWz9ZrmkCJOspXyit5jtBpRPFI5sTUqW53PrCQNJlP6d
-         zqiA==
-X-Gm-Message-State: APjAAAXJuaxP5WHntp2t0TG1yV2yC640fcrOD9RHd+2CY3OZcjsESo8S
-        O+0kZoEVGz4h/RBfnOw21KM1CxNqFsI=
-X-Google-Smtp-Source: APXvYqzZVG+fwNnRiHV+YAoqmyzzpmEgX8zNb988WoSpHoaEm4NJL2cZbfAXZ3kIgdMwSW/J1YZHlg==
-X-Received: by 2002:a5d:46c1:: with SMTP id g1mr5119222wrs.200.1579611420588;
-        Tue, 21 Jan 2020 04:57:00 -0800 (PST)
-Received: from ?IPv6:2a01:e0a:410:bb00:281e:d905:c078:226c? ([2a01:e0a:410:bb00:281e:d905:c078:226c])
-        by smtp.gmail.com with ESMTPSA id a9sm3596817wmm.15.2020.01.21.04.56.59
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 21 Jan 2020 04:56:59 -0800 (PST)
-Reply-To: nicolas.dichtel@6wind.com
-Subject: Re: [PATCH] net, ip_tunnel: fix namespaces move
-To:     William Dauchy <w.dauchy@criteo.com>, netdev@vger.kernel.org
-Cc:     Pravin B Shelar <pshelar@nicira.com>,
-        William Tu <u9012063@gmail.com>
-References: <20200121123626.35884-1-w.dauchy@criteo.com>
-From:   Nicolas Dichtel <nicolas.dichtel@6wind.com>
-Organization: 6WIND
-Message-ID: <45f8682a-1c72-a1e4-7780-d0bb3bc72af8@6wind.com>
-Date:   Tue, 21 Jan 2020 13:56:59 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.4.1
+        id S1728898AbgAUNC1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 21 Jan 2020 08:02:27 -0500
+Received: from smtprelay0179.hostedemail.com ([216.40.44.179]:34261 "EHLO
+        smtprelay.hostedemail.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1726920AbgAUNC1 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 21 Jan 2020 08:02:27 -0500
+Received: from filter.hostedemail.com (clb03-v110.bra.tucows.net [216.40.38.60])
+        by smtprelay03.hostedemail.com (Postfix) with ESMTP id 6FA62838434A;
+        Tue, 21 Jan 2020 13:02:25 +0000 (UTC)
+X-Session-Marker: 6A6F6540706572636865732E636F6D
+X-Spam-Summary: 2,0,0,,d41d8cd98f00b204,joe@perches.com,:::::::::::::::,RULES_HIT:41:355:379:599:800:960:973:988:989:1260:1277:1311:1313:1314:1345:1359:1437:1515:1516:1518:1534:1539:1593:1594:1711:1730:1747:1777:1792:2194:2199:2393:2553:2559:2562:2828:3138:3139:3140:3141:3142:3352:3622:3865:3866:3867:3871:3872:4321:4605:5007:7576:10004:10400:10848:10967:11026:11232:11658:11914:12043:12296:12297:12438:12740:12760:12895:13069:13255:13311:13357:13439:14181:14659:14721:21080:21627:21740:21990:30054:30070:30090:30091,0,RBL:none,CacheIP:none,Bayesian:0.5,0.5,0.5,Netcheck:none,DomainCache:0,MSF:not bulk,SPF:,MSBL:0,DNSBL:none,Custom_rules:0:0:0,LFtime:2,LUA_SUMMARY:none
+X-HE-Tag: time50_6c45a5c0ebf2e
+X-Filterd-Recvd-Size: 1817
+Received: from XPS-9350.home (unknown [47.151.135.224])
+        (Authenticated sender: joe@perches.com)
+        by omf09.hostedemail.com (Postfix) with ESMTPA;
+        Tue, 21 Jan 2020 13:02:23 +0000 (UTC)
+Message-ID: <aba420a3be9272236795dbc14380991bbf72c657.camel@perches.com>
+Subject: Re: [PATCH net 2/9] r8152: reset flow control patch when linking on
+ for RTL8153B
+From:   Joe Perches <joe@perches.com>
+To:     David Miller <davem@davemloft.net>, hayeswang@realtek.com
+Cc:     netdev@vger.kernel.org, nic_swsd@realtek.com,
+        linux-kernel@vger.kernel.org, linux-usb@vger.kernel.org,
+        pmalani@chromium.org, grundler@chromium.org
+Date:   Tue, 21 Jan 2020 05:01:23 -0800
+In-Reply-To: <20200121.135439.1619270282552230019.davem@davemloft.net>
+References: <1394712342-15778-338-Taiwan-albertk@realtek.com>
+         <1394712342-15778-340-Taiwan-albertk@realtek.com>
+         <20200121.135439.1619270282552230019.davem@davemloft.net>
+Content-Type: text/plain; charset="ISO-8859-1"
+User-Agent: Evolution 3.34.1-2 
 MIME-Version: 1.0
-In-Reply-To: <20200121123626.35884-1-w.dauchy@criteo.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Le 21/01/2020 à 13:36, William Dauchy a écrit :
-> in the same manner as commit 690afc165bb3 ("net: ip6_gre: fix moving
-> ip6gre between namespaces"), fix namespace moving as it was broken since
-> commit 2e15ea390e6f ("ip_gre: Add support to collect tunnel metadata.").
-> Indeed, the ip6_gre commit removed the local flag for collect_md
-> condition, so there is no reason to keep it for ip_gre/ip_tunnel.
+On Tue, 2020-01-21 at 13:54 +0100, David Miller wrote:
+> From: Hayes Wang <hayeswang@realtek.com>
+> Date: Tue, 21 Jan 2020 20:40:28 +0800
 > 
-> this patch will fix both ip_tunnel and ip_gre modules.
+> > When linking ON, the patch of flow control has to be reset. This
+> > makes sure the patch works normally.
+[]
+> > diff --git a/drivers/net/usb/r8152.c b/drivers/net/usb/r8152.c
+[]
+> > @@ -2857,6 +2857,7 @@ static void r8153_set_rx_early_size(struct r8152 *tp)
+> >  
+> >  static int rtl8153_enable(struct r8152 *tp)
+> >  {
+> > +     u32 ocp_data;
+> >       if (test_bit(RTL8152_UNPLUG, &tp->flags))
+> >               return -ENODEV;
+> >  
 > 
-> Signed-off-by: William Dauchy <w.dauchy@criteo.com>
-Acked-by: Nicolas Dichtel <nicolas.dichtel@6wind.com>
+> Please put an empty line after the local variable declarations.
 
-Maybe a proper 'Fixes' tag would be good.
+Local scoping is generally better.
+
+Perhaps declare ocp_data inside the if branch
+where it's used.  
 
 
-Regards,
-Nicolas
