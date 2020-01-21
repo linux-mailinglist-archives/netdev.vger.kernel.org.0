@@ -2,126 +2,77 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 4738A1434B7
-	for <lists+netdev@lfdr.de>; Tue, 21 Jan 2020 01:21:50 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 77ECA1434A4
+	for <lists+netdev@lfdr.de>; Tue, 21 Jan 2020 01:05:51 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728587AbgAUAVt (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 20 Jan 2020 19:21:49 -0500
-Received: from www62.your-server.de ([213.133.104.62]:42716 "EHLO
-        www62.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727045AbgAUAVs (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 20 Jan 2020 19:21:48 -0500
-Received: from sslproxy01.your-server.de ([88.198.220.130])
-        by www62.your-server.de with esmtpsa (TLSv1.2:DHE-RSA-AES256-GCM-SHA384:256)
-        (Exim 4.89_1)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1itgsx-0000kr-5K; Tue, 21 Jan 2020 00:55:11 +0100
-Received: from [178.197.248.27] (helo=pc-9.home)
-        by sslproxy01.your-server.de with esmtpsa (TLSv1.2:ECDHE-RSA-AES256-GCM-SHA384:256)
-        (Exim 4.89)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1itgsw-00016c-NK; Tue, 21 Jan 2020 00:55:10 +0100
-Subject: Re: [PATCH 5/6] bpf: Allow to resolve bpf trampoline and dispatcher
- in unwind
-To:     Jiri Olsa <jolsa@kernel.org>, Alexei Starovoitov <ast@kernel.org>
-Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org,
-        Andrii Nakryiko <andriin@fb.com>, Yonghong Song <yhs@fb.com>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Jakub Kicinski <jakub.kicinski@netronome.com>,
-        David Miller <davem@redhat.com>,
-        =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@intel.com>
-References: <20200118134945.493811-1-jolsa@kernel.org>
- <20200118134945.493811-6-jolsa@kernel.org>
-From:   Daniel Borkmann <daniel@iogearbox.net>
-Message-ID: <133ecb39-c739-02b9-3c83-37ee24846037@iogearbox.net>
-Date:   Tue, 21 Jan 2020 00:55:10 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.7.2
+        id S1728093AbgAUAFu (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 20 Jan 2020 19:05:50 -0500
+Received: from mout.kundenserver.de ([217.72.192.75]:55219 "EHLO
+        mout.kundenserver.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727009AbgAUAFt (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 20 Jan 2020 19:05:49 -0500
+Received: from kiste.fritz.box ([88.130.61.11]) by mrelayeu.kundenserver.de
+ (mreue109 [212.227.15.183]) with ESMTPSA (Nemesis) id
+ 1MxmBc-1jpXcT0Tcs-00zFdE; Tue, 21 Jan 2020 01:05:07 +0100
+From:   Hans Wippel <ndev@hwipl.net>
+To:     kgraul@linux.ibm.com, ubraun@linux.ibm.com, davem@davemloft.net
+Cc:     netdev@vger.kernel.org, Hans Wippel <ndev@hwipl.net>
+Subject: [PATCH net-next] net/smc: allow unprivileged users to read pnet table
+Date:   Tue, 21 Jan 2020 01:04:46 +0100
+Message-Id: <20200121000446.339681-1-ndev@hwipl.net>
+X-Mailer: git-send-email 2.25.0
 MIME-Version: 1.0
-In-Reply-To: <20200118134945.493811-6-jolsa@kernel.org>
-Content-Type: text/plain; charset=windows-1252; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-Authenticated-Sender: daniel@iogearbox.net
-X-Virus-Scanned: Clear (ClamAV 0.101.4/25701/Mon Jan 20 12:41:43 2020)
+Content-Transfer-Encoding: 8bit
+X-Provags-ID: V03:K1:gfd3XISGSqXcNgZHsPK9Pp2/eqxU1kDnmYzvUYAmrIN6x+qXIFD
+ gylk1xh19JiuFsERQsAQLGcsdBg6kRLWHgplLedghnAtSOB3H14G3iArnovAy/h3y1ByQbp
+ h6lqN/tyXhQXfDRSpzzLeYiVsKrNSaEM3AGyGIdcR2t2REmkNkoQz0rdzZuvWcsMkGp98uj
+ HTnthnXJ1ekaODQNH9hIw==
+X-Spam-Flag: NO
+X-UI-Out-Filterresults: notjunk:1;V03:K0:ROMrHL4N5JE=:QW3BUuZajnhUjEjVmdm3Z6
+ MIe+XhxJFp9/YdmMj2lakwZCq0cXXOOb1+b+ipjLSECnCpPkR6zNxyVY6z8r4+hafT+7SfVE/
+ 4HgvVO0PP+rdn2Khsy6xg3b5M8SX9/FgejAoPbRBOqQMXeVcpBu1e5pPXZn7c7MI1rWpgRzQp
+ L/fcConqYx7Im1lUfng+IwS2IO8L37vEad90/Z9BuM2NDZCajpl0c/NuWQUfYYRwn6z4hdHLQ
+ T/auE1o3/NIZRKeX26N0Iga5GF57kTz4HlFVOId7+QJSkzx+H+BdhPP1oAebrfPbsHfSmY5J4
+ 6wag/BX7PSl4IW/U15qgs63i+VeiY6+QEeX0hpGVrhhKQPK+2fFAe0j2ZvVSIG6C4HFWWY5nM
+ 6j+MPjvaCvBOs14WhDa2c7yXpP28Wz+75T/wHAwcPPDb2cXG7lJtInzQtpGywH2vypmD0ahP9
+ jvsmueI4RBDObTe263aMwn8TozgrSe8DixsuB3gWr5zTslNseORjtHkkgga2dfUTzYSerfRdU
+ SIPk9sJuwpRSQRPI9Xz/YlE6cYXs2KoFP1oU3c2weoV1F/xBW8SfC0WAPwMpUZ/quoll1AaWA
+ moAzadRMS3d7FpsCXtmOa8lJfBSDlJY/iWhYxmdiQ3IA1eAhg5SBMAwH4tRWznoPg0UZB5EoL
+ lbjS5ctFlGVUuBaqAorzL/+o/hatC4lAJOTj4cRMPIJydsy397vHLEhb6L+RGNaIPGrurfJGq
+ 4Z177OOrCebU5hvzCYN0BMpHaLCqSzig7Mf8zxxU3d9MAuUw+Mk3JvqyHxxcQz2WjqMgnCJyc
+ ZipG3lMJXuRdClfjBtoPGCoDZ+QLzRht/dAii2/Ay307swoYxw2xygQ9RZbApOUtK7qDsYSio
+ 5ZKXQ5Hr4wmV+581BU6g==
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 1/18/20 2:49 PM, Jiri Olsa wrote:
-> When unwinding the stack we need to identify each address
-> to successfully continue. Adding latch tree to keep trampolines
-> for quick lookup during the unwind.
-> 
-> The patch uses first 48 bytes for latch tree node, leaving 4048
-> bytes from the rest of the page for trampoline or dispatcher
-> generated code.
-> 
-> It's still enough not to affect trampoline and dispatcher progs
-> maximum counts.
-> 
-> Signed-off-by: Jiri Olsa <jolsa@kernel.org>
-> ---
->   include/linux/bpf.h     | 12 ++++++-
->   kernel/bpf/core.c       |  2 ++
->   kernel/bpf/dispatcher.c |  4 +--
->   kernel/bpf/trampoline.c | 76 +++++++++++++++++++++++++++++++++++++----
->   4 files changed, 84 insertions(+), 10 deletions(-)
-> 
-> diff --git a/include/linux/bpf.h b/include/linux/bpf.h
-> index 8e3b8f4ad183..41eb0cf663e8 100644
-> --- a/include/linux/bpf.h
-> +++ b/include/linux/bpf.h
-> @@ -519,7 +519,6 @@ struct bpf_trampoline *bpf_trampoline_lookup(u64 key);
->   int bpf_trampoline_link_prog(struct bpf_prog *prog);
->   int bpf_trampoline_unlink_prog(struct bpf_prog *prog);
->   void bpf_trampoline_put(struct bpf_trampoline *tr);
-> -void *bpf_jit_alloc_exec_page(void);
->   #define BPF_DISPATCHER_INIT(name) {			\
->   	.mutex = __MUTEX_INITIALIZER(name.mutex),	\
->   	.func = &name##func,				\
-> @@ -551,6 +550,13 @@ void *bpf_jit_alloc_exec_page(void);
->   #define BPF_DISPATCHER_PTR(name) (&name)
->   void bpf_dispatcher_change_prog(struct bpf_dispatcher *d, struct bpf_prog *from,
->   				struct bpf_prog *to);
-> +struct bpf_image {
-> +	struct latch_tree_node tnode;
-> +	unsigned char data[];
-> +};
-> +#define BPF_IMAGE_SIZE (PAGE_SIZE - sizeof(struct bpf_image))
-> +bool is_bpf_image(void *addr);
-> +void *bpf_image_alloc(void);
->   #else
->   static inline struct bpf_trampoline *bpf_trampoline_lookup(u64 key)
->   {
-> @@ -572,6 +578,10 @@ static inline void bpf_trampoline_put(struct bpf_trampoline *tr) {}
->   static inline void bpf_dispatcher_change_prog(struct bpf_dispatcher *d,
->   					      struct bpf_prog *from,
->   					      struct bpf_prog *to) {}
-> +static inline bool is_bpf_image(void *addr)
-> +{
-> +	return false;
-> +}
->   #endif
->   
->   struct bpf_func_info_aux {
-> diff --git a/kernel/bpf/core.c b/kernel/bpf/core.c
-> index 29d47aae0dd1..b3299dc9adda 100644
-> --- a/kernel/bpf/core.c
-> +++ b/kernel/bpf/core.c
-> @@ -704,6 +704,8 @@ bool is_bpf_text_address(unsigned long addr)
->   
->   	rcu_read_lock();
->   	ret = bpf_prog_kallsyms_find(addr) != NULL;
-> +	if (!ret)
-> +		ret = is_bpf_image((void *) addr);
->   	rcu_read_unlock();
+The current flags of the SMC_PNET_GET command only allow privileged
+users to retrieve entries from the pnet table via netlink. The content
+of the pnet table may be useful for all users though, e.g., for
+debugging smc connection problems.
 
-Btw, shouldn't this be a separate entity entirely to avoid unnecessary inclusion
-in bpf_arch_text_poke() for the is_bpf_text_address() check there?
+This patch removes the GENL_ADMIN_PERM flag so that unprivileged users
+can read the pnet table.
 
-Did you drop the bpf_{trampoline,dispatcher}_<...> entry addition in kallsyms?
+Signed-off-by: Hans Wippel <ndev@hwipl.net>
+---
+ net/smc/smc_pnet.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-Thanks,
-Daniel
+diff --git a/net/smc/smc_pnet.c b/net/smc/smc_pnet.c
+index 82dedf052d86..2a5ed47c3e08 100644
+--- a/net/smc/smc_pnet.c
++++ b/net/smc/smc_pnet.c
+@@ -611,7 +611,7 @@ static const struct genl_ops smc_pnet_ops[] = {
+ 	{
+ 		.cmd = SMC_PNETID_GET,
+ 		.validate = GENL_DONT_VALIDATE_STRICT | GENL_DONT_VALIDATE_DUMP,
+-		.flags = GENL_ADMIN_PERM,
++		/* can be retrieved by unprivileged users */
+ 		.doit = smc_pnet_get,
+ 		.dumpit = smc_pnet_dump,
+ 		.start = smc_pnet_dump_start
+-- 
+2.25.0
+
