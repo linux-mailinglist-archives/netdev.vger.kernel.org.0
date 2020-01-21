@@ -2,108 +2,182 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 735D8143DA3
-	for <lists+netdev@lfdr.de>; Tue, 21 Jan 2020 14:06:57 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id BF26D143DBB
+	for <lists+netdev@lfdr.de>; Tue, 21 Jan 2020 14:13:25 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727350AbgAUNGz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 21 Jan 2020 08:06:55 -0500
-Received: from mail-eopbgr80132.outbound.protection.outlook.com ([40.107.8.132]:1783
-        "EHLO EUR04-VI1-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1725890AbgAUNGz (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 21 Jan 2020 08:06:55 -0500
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=UtI3b/IanFoQtuJWQizdwHesek9P74hKp5SdWs4d8Icc/5UMheHnV5qgb4bKVReSZa1Or6sOrdbOQI6+p+n2nNX7rnOD9AS+31zj72bQCuyxUupWbZOCwkrODme5NbG754JQDFb6sasSRGGdc9vxoH54TbOTxXfJND3/3PXLBWWSj+FUSfLhQmwZ6OnB5qliNRarX0KlQSNzNWAymKpY485oCXrxnMVE6iUylvcXWmHwFctmQVxSgsfRR1Zp/3F++UWhvfJuFT+ZEsU5BkSNLE7bi4AcGTyvTt/OsJDQZn4n1Hl3cIHF9SVXw/3JfGSUPBVjSgMsAlamKLrrb6Fe2w==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=P4njqZFghVF0DNSdg8jhN753DsFeMZCArhKtHy/PsR0=;
- b=ZMplbWFndIevRruQeDLahHlw8gzk8CH+JtFoZ8uNyDW/FN/TfjKQJ4IISDk6Nb3Av7lAoVEL8tP/E7aWeeSGgpHcmYExJcifIZAD3QkWGE1Na75RShxKOsDYhOrJ+JIHED+i9U4oUiyfk8O4zJzjkTVR5ZVfJv7/VdLPWl53JSuns9C8kBeiu87o8eNwjauU2pwxzW6HEyabrhLL3Zbm6VuH2CdvdOxMJydMS8o01MQL344kMgjNWQpujZtlpDu1qSVMbGdTqap6UYyfxqmnUSqsje4j1PSxtBZMwnrggpCA9ir3hA+3q6wLj0iZO9ljXMOdhyJOqi46pZq2Uk3wDg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=criteo.com; dmarc=pass action=none header.from=criteo.com;
- dkim=pass header.d=criteo.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=criteo.com;
- s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=P4njqZFghVF0DNSdg8jhN753DsFeMZCArhKtHy/PsR0=;
- b=rxBNFGJ36BbUJ7IF3U07aqME713uLoXFHnQ5OOSsQGRn15yL6PHx2IgIUx+sV+2Cmb0lD7FMu52fEp8n4tjldIx/UhR0ukIMUxXKDsIfB14/NnJX3Tqm0R1qepLbNxyzkhKKFqd6/+9Gi23k+V9Zij6hiXbJyoWdu355PRkyTwo=
-Received: from DB3PR0402MB3914.eurprd04.prod.outlook.com (52.134.71.157) by
- DB3PR0402MB3915.eurprd04.prod.outlook.com (52.134.71.30) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.2644.19; Tue, 21 Jan 2020 13:06:48 +0000
-Received: from DB3PR0402MB3914.eurprd04.prod.outlook.com
- ([fe80::917:f0e9:9756:589b]) by DB3PR0402MB3914.eurprd04.prod.outlook.com
- ([fe80::917:f0e9:9756:589b%3]) with mapi id 15.20.2644.027; Tue, 21 Jan 2020
- 13:06:48 +0000
-Received: from mail-lf1-f44.google.com (209.85.167.44) by AM3PR07CA0135.eurprd07.prod.outlook.com (2603:10a6:207:8::21) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.2665.12 via Frontend Transport; Tue, 21 Jan 2020 13:06:47 +0000
-Received: by mail-lf1-f44.google.com with SMTP id 9so2180712lfq.10        for <netdev@vger.kernel.org>; Tue, 21 Jan 2020 05:06:47 -0800 (PST)
-From:   William Dauchy <w.dauchy@criteo.com>
-To:     "nicolas.dichtel@6wind.com" <nicolas.dichtel@6wind.com>
-CC:     William Dauchy <w.dauchy@criteo.com>,
-        NETDEV <netdev@vger.kernel.org>,
-        Pravin B Shelar <pshelar@nicira.com>,
-        William Tu <u9012063@gmail.com>
-Subject: Re: [PATCH] net, ip_tunnel: fix namespaces move
-Thread-Topic: [PATCH] net, ip_tunnel: fix namespaces move
-Thread-Index: AQHV0Fd6evhWdJUqM065nqwxHKnbU6f1E9mAgAACr4A=
-Date:   Tue, 21 Jan 2020 13:06:47 +0000
-Message-ID: <CAJ75kXaAxNh90Qq_FYCKXmMD_Q3w318pTQG6ZB-0K-K3bL=Oag@mail.gmail.com>
-References: <20200121123626.35884-1-w.dauchy@criteo.com>
- <45f8682a-1c72-a1e4-7780-d0bb3bc72af8@6wind.com>
-In-Reply-To: <45f8682a-1c72-a1e4-7780-d0bb3bc72af8@6wind.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-originating-ip: [209.85.167.44]
-x-clientproxiedby: AM3PR07CA0135.eurprd07.prod.outlook.com
- (2603:10a6:207:8::21) To DB3PR0402MB3914.eurprd04.prod.outlook.com
- (2603:10a6:8:f::29)
-authentication-results: spf=none (sender IP is )
- smtp.mailfrom=w.dauchy@criteo.com; 
-x-ms-exchange-messagesentrepresentingtype: 1
-x-gm-message-state: APjAAAVXfOTak186t8NHG8kjtlLeijyIfmgHXFAevYz0RYyPO88VRmwa
-        sVDVxw/+Rt/qbZOSu5bpOktCYix37+F1PMK+58A=
-x-google-smtp-source: APXvYqxKhB8qeo1tBV9nIwCGFtNGRJo3OpCwJ9myGsiXLc48Lk7SPRQloMAd6c0nll9CuqtHqx8anlDNS1vWFXAwW9s=
-x-received: by 2002:a05:6512:15d:: with SMTP id
- m29mr2749412lfo.51.1579612006714; Tue, 21 Jan 2020 05:06:46 -0800 (PST)
-x-gmail-original-message-id: <CAJ75kXaAxNh90Qq_FYCKXmMD_Q3w318pTQG6ZB-0K-K3bL=Oag@mail.gmail.com>
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: 3b1e0100-75c2-44f2-b01e-08d79e72c5bd
-x-ms-traffictypediagnostic: DB3PR0402MB3915:
-x-microsoft-antispam-prvs: <DB3PR0402MB3915F33F0FDB35C937C1C566E80D0@DB3PR0402MB3915.eurprd04.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:9508;
-x-forefront-prvs: 0289B6431E
-x-forefront-antispam-report: SFV:NSPM;SFS:(10019020)(4636009)(136003)(346002)(366004)(39860400002)(376002)(396003)(189003)(199004)(52116002)(4744005)(186003)(107886003)(316002)(26005)(42186006)(53546011)(5660300002)(2906002)(55446002)(66556008)(8676002)(64756008)(66446008)(8936002)(86362001)(71200400001)(478600001)(66476007)(81156014)(4326008)(66946007)(54906003)(6862004)(81166006)(9686003);DIR:OUT;SFP:1102;SCL:1;SRVR:DB3PR0402MB3915;H:DB3PR0402MB3914.eurprd04.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;MX:1;A:1;
-received-spf: None (protection.outlook.com: criteo.com does not designate
- permitted sender hosts)
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: 7pY1ReWEMJKHWZQGHNI0GgGFQe1u+cSR+Vs9Qaxkt8E+0/vGmBv7ZcocYXJqtrYdUcF4Muq1iUJNUDaH9Xxn+1OcNHWBAohQBrQQX43iKaV/c9o48ebgzNw8rQaUmSFQnNJheO4F0zMgIC0m3qfTYZFP6celcC8leeW5eyNxu+5XHa6KqxMvigYqDTXLrIMb/Siu9KuBkmaJu+3eHrUaKqLmFiM+ieUryr6E/SLtjldUsDSlRFVtON75nh2mHmgJt0HuvJFQidvCecbjsdkArzwnjUYbtPiaDnPhBDqy9Al/j+nVC6n5gvO1S6L8gydten7vjrcB7UP+YS9FPIugFRhBO65U9xK5Eg870QuzrR1jTCqxZC9fFcwdMnbvA7WNmMfbkPo2FRVsRlouh/mE1cN0YbaR2cU9pPxDhdneELVHjQvvF2uPWKjBLYVSgasd
-x-ms-exchange-transport-forked: True
-Content-Type: text/plain; charset="utf-8"
-Content-ID: <7C312E1DEFAE364A9DDD938284091F4A@eurprd04.prod.outlook.com>
-Content-Transfer-Encoding: base64
+        id S1728898AbgAUNNU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 21 Jan 2020 08:13:20 -0500
+Received: from us-smtp-1.mimecast.com ([205.139.110.61]:31487 "EHLO
+        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1728829AbgAUNNU (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 21 Jan 2020 08:13:20 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1579612398;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=bm6ddKCO7VQlppCqWI0nKfN86LSegXbIAkNREeCapWU=;
+        b=Hgboj3ghyGNRoU78FsW9CEe+oqSWuh4CInXhJIz/y2+HhRp4A2i4VOUf8FKi+fcSS3kGoV
+        5gfJPAGj0puvOjjJ1pvjCiOFyTn6HwZq40khXyFMMazVnUGNkjnst/Ki1irOSWdrI9Ljmm
+        pfmRJlXjNbp88G5scnmNzKYN+OPfyvU=
+Received: from mail-wm1-f71.google.com (mail-wm1-f71.google.com
+ [209.85.128.71]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-84-lwys-KvXP9uO7QhSKr9MOQ-1; Tue, 21 Jan 2020 08:13:17 -0500
+X-MC-Unique: lwys-KvXP9uO7QhSKr9MOQ-1
+Received: by mail-wm1-f71.google.com with SMTP id m133so373986wmf.2
+        for <netdev@vger.kernel.org>; Tue, 21 Jan 2020 05:13:17 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=bm6ddKCO7VQlppCqWI0nKfN86LSegXbIAkNREeCapWU=;
+        b=MhPYwrHdWYlOVsKoq0XIrDYZMrFTJwfm9L4VIewSiD2pI9drRaQTJCwyfNkEmhlN0o
+         epiRVoaudM8F1e1c2kMsFsA1n97Z4l9DmcXg9KwDQr90x11w2SVc5uSYIyPqHtdLxRzh
+         UdunSLkA9OeFnnDtYnMwl9wgpXD+xuwqPTVQddh2/qTI/rSwzW8llg4rFJT7EG8GGUS5
+         arzZ93iV6PikGst9nVw7l3Djq8POjm5UvK5y+L83Eju3YFvrpRpC4Mh1jlpZcjyvmYp2
+         teGl92AF2OtatplTE/YVIj5U2o66PImP40Gh5ORjC4ZZirNqAO+sWTRzIYWKic/PdS5y
+         a3Qw==
+X-Gm-Message-State: APjAAAXHPRWfHZO6AWgUiK2brujfcyiXwCDjLrIzoW8cEJxuDRr9XICR
+        XnlHwT27JKLfOzikQvuMdbxw0DYLcL/thjrKsmSPivF3zzWfeRBPlddJ0emRC3l6xrLuFht1EVh
+        sKyErBuqqWASWwhAU
+X-Received: by 2002:a5d:5403:: with SMTP id g3mr5445457wrv.302.1579612396252;
+        Tue, 21 Jan 2020 05:13:16 -0800 (PST)
+X-Google-Smtp-Source: APXvYqwymXXQZOjbORIMA0cxvCm/5PHfeqOk5X4LFnVOkEvDpjGvEEDvp8HpuokWl0ML8Wkw3YfvnA==
+X-Received: by 2002:a5d:5403:: with SMTP id g3mr5445417wrv.302.1579612395941;
+        Tue, 21 Jan 2020 05:13:15 -0800 (PST)
+Received: from steredhat (host84-49-dynamic.31-79-r.retail.telecomitalia.it. [79.31.49.84])
+        by smtp.gmail.com with ESMTPSA id o4sm50707386wrx.25.2020.01.21.05.13.14
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 21 Jan 2020 05:13:15 -0800 (PST)
+Date:   Tue, 21 Jan 2020 14:13:12 +0100
+From:   Stefano Garzarella <sgarzare@redhat.com>
+To:     "Michael S. Tsirkin" <mst@redhat.com>
+Cc:     David Miller <davem@davemloft.net>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Jorgen Hansen <jhansen@vmware.com>,
+        Jason Wang <jasowang@redhat.com>, kvm <kvm@vger.kernel.org>,
+        Stefan Hajnoczi <stefanha@redhat.com>,
+        virtualization@lists.linux-foundation.org,
+        linux-hyperv@vger.kernel.org, Dexuan Cui <decui@microsoft.com>
+Subject: Re: [PATCH net-next 1/3] vsock: add network namespace support
+Message-ID: <20200121131312.wcwlsfljunzqopph@steredhat>
+References: <20200116172428.311437-2-sgarzare@redhat.com>
+ <20200120.100610.546818167633238909.davem@davemloft.net>
+ <20200120101735.uyh4o64gb4njakw5@steredhat>
+ <20200120060601-mutt-send-email-mst@kernel.org>
+ <CAGxU2F6VH8Eb5UH_9KjN6MONbZEo1D7EHAiocVVus6jW55BJDg@mail.gmail.com>
+ <20200120110319-mutt-send-email-mst@kernel.org>
+ <CAGxU2F5=DQJ56sH4BUqp_7rvaXSF9bFHp4QkpLApJQK0bmd4MA@mail.gmail.com>
+ <20200120170120-mutt-send-email-mst@kernel.org>
+ <CAGxU2F4uW7FNe5xC0sb3Xxr_GABSXuu1Z9n5M=Ntq==T7MaaVw@mail.gmail.com>
+ <20200121055403-mutt-send-email-mst@kernel.org>
 MIME-Version: 1.0
-X-OriginatorOrg: criteo.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 3b1e0100-75c2-44f2-b01e-08d79e72c5bd
-X-MS-Exchange-CrossTenant-originalarrivaltime: 21 Jan 2020 13:06:47.8886
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 2a35d8fd-574d-48e3-927c-8c398e225a01
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: RJgA0cY6P33V+mAMLYb8xwv/fUKCq1xgfZ8cA8cLH0LaIaDubcUtrWLvOYgnRlKmx5elFG461aaUx+5Y1Cb7sg==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DB3PR0402MB3915
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20200121055403-mutt-send-email-mst@kernel.org>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-SGkgTmljb2xhcywNCg0KVGhhbmsgeW91IGZvciB5b3VyIGFuc3dlci4NCg0KT24gVHVlLCBKYW4g
-MjEsIDIwMjAgYXQgMTo1NyBQTSBOaWNvbGFzIERpY2h0ZWwNCjxuaWNvbGFzLmRpY2h0ZWxANndp
-bmQuY29tPiB3cm90ZToNCj4gQWNrZWQtYnk6IE5pY29sYXMgRGljaHRlbCA8bmljb2xhcy5kaWNo
-dGVsQDZ3aW5kLmNvbT4NCj4NCj4gTWF5YmUgYSBwcm9wZXIgJ0ZpeGVzJyB0YWcgd291bGQgYmUg
-Z29vZC4NCg0KSSBhZ3JlZSwgc2hvdWxkIEkgc2VuZCB2MiBmb3IgdGhpcz8NCkZpeGVzOiAyZTE1
-ZWEzOTBlNmYgKCJpcF9ncmU6IEFkZCBzdXBwb3J0IHRvIGNvbGxlY3QgdHVubmVsIG1ldGFkYXRh
-LiIpDQoNCih3ZSBwcm9iYWJseSBzaG91bGQgaGF2ZSBkb25lIG9uIHRoZSBpcDZfZ3JlIHBhdGNo
-IGFzIHdlbGwpDQotLSANCldpbGxpYW0NCg==
+On Tue, Jan 21, 2020 at 06:14:48AM -0500, Michael S. Tsirkin wrote:
+> On Tue, Jan 21, 2020 at 10:07:06AM +0100, Stefano Garzarella wrote:
+> > On Mon, Jan 20, 2020 at 11:02 PM Michael S. Tsirkin <mst@redhat.com> wrote:
+> > > On Mon, Jan 20, 2020 at 05:53:39PM +0100, Stefano Garzarella wrote:
+> > > > On Mon, Jan 20, 2020 at 5:04 PM Michael S. Tsirkin <mst@redhat.com> wrote:
+> > > > > On Mon, Jan 20, 2020 at 02:58:01PM +0100, Stefano Garzarella wrote:
+> > > > > > On Mon, Jan 20, 2020 at 1:03 PM Michael S. Tsirkin <mst@redhat.com> wrote:
+> > > > > > > On Mon, Jan 20, 2020 at 11:17:35AM +0100, Stefano Garzarella wrote:
+> > > > > > > > On Mon, Jan 20, 2020 at 10:06:10AM +0100, David Miller wrote:
+> > > > > > > > > From: Stefano Garzarella <sgarzare@redhat.com>
+> > > > > > > > > Date: Thu, 16 Jan 2020 18:24:26 +0100
+> > > > > > > > >
+> > > > > > > > > > This patch adds 'netns' module param to enable this new feature
+> > > > > > > > > > (disabled by default), because it changes vsock's behavior with
+> > > > > > > > > > network namespaces and could break existing applications.
+> > > > > > > > >
+> > > > > > > > > Sorry, no.
+> > > > > > > > >
+> > > > > > > > > I wonder if you can even design a legitimate, reasonable, use case
+> > > > > > > > > where these netns changes could break things.
+> > > > > > > >
+> > > > > > > > I forgot to mention the use case.
+> > > > > > > > I tried the RFC with Kata containers and we found that Kata shim-v1
+> > > > > > > > doesn't work (Kata shim-v2 works as is) because there are the following
+> > > > > > > > processes involved:
+> > > > > > > > - kata-runtime (runs in the init_netns) opens /dev/vhost-vsock and
+> > > > > > > >   passes it to qemu
+> > > > > > > > - kata-shim (runs in a container) wants to talk with the guest but the
+> > > > > > > >   vsock device is assigned to the init_netns and kata-shim runs in a
+> > > > > > > >   different netns, so the communication is not allowed
+> > > > > > > > But, as you said, this could be a wrong design, indeed they already
+> > > > > > > > found a fix, but I was not sure if others could have the same issue.
+> > > > > > > >
+> > > > > > > > In this case, do you think it is acceptable to make this change in
+> > > > > > > > the vsock's behavior with netns and ask the user to change the design?
+> > > > > > >
+> > > > > > > David's question is what would be a usecase that's broken
+> > > > > > > (as opposed to fixed) by enabling this by default.
+> > > > > >
+> > > > > > Yes, I got that. Thanks for clarifying.
+> > > > > > I just reported a broken example that can be fixed with a different
+> > > > > > design (due to the fact that before this series, vsock devices were
+> > > > > > accessible to all netns).
+> > > > > >
+> > > > > > >
+> > > > > > > If it does exist, you need a way for userspace to opt-in,
+> > > > > > > module parameter isn't that.
+> > > > > >
+> > > > > > Okay, but I honestly can't find a case that can't be solved.
+> > > > > > So I don't know whether to add an option (ioctl, sysfs ?) or wait for
+> > > > > > a real case to come up.
+> > > > > >
+> > > > > > I'll try to see better if there's any particular case where we need
+> > > > > > to disable netns in vsock.
+> > > > > >
+> > > > > > Thanks,
+> > > > > > Stefano
+> > > > >
+> > > > > Me neither. so what did you have in mind when you wrote:
+> > > > > "could break existing applications"?
+> > > >
+> > > > I had in mind:
+> > > > 1. the Kata case. It is fixable (the fix is not merged on kata), but
+> > > >    older versions will not work with newer Linux.
+> > >
+> > > meaning they will keep not working, right?
+> > 
+> > Right, I mean without this series they work, with this series they work
+> > only if the netns support is disabled or with a patch proposed but not
+> > merged in kata.
+> > 
+> > >
+> > > > 2. a single process running on init_netns that wants to communicate with
+> > > >    VMs handled by VMMs running in different netns, but this case can be
+> > > >    solved opening the /dev/vhost-vsock in the same netns of the process
+> > > >    that wants to communicate with the VMs (init_netns in this case), and
+> > > >    passig it to the VMM.
+> > >
+> > > again right now they just don't work, right?
+> > 
+> > Right, as above.
+> > 
+> > What do you recommend I do?
+> > 
+> > Thanks,
+> > Stefano
+> 
+> If this breaks userspace, then we need to maintain compatibility.
+> For example, have two devices, /dev/vhost-vsock and /dev/vhost-vsock-netns?
+
+Interesting!
+
+So, VMs handled with /dev/vhost-vsock will be reachable from any netns (as
+it happens now) and VMs handled with /dev/vhost-vsock-netns will be
+reachable only from the same netns of the process that opens it.
+
+It requires more changes, but we will preserve the previous behavior,
+adding the new feature!
+
+Thanks a lot for this idea! I'll try to implement it!
+Stefano
+
