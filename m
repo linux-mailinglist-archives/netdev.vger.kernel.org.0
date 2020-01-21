@@ -2,127 +2,99 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id A37431442A5
-	for <lists+netdev@lfdr.de>; Tue, 21 Jan 2020 17:59:24 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 582E81442AF
+	for <lists+netdev@lfdr.de>; Tue, 21 Jan 2020 18:00:06 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729121AbgAUQ7W (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 21 Jan 2020 11:59:22 -0500
-Received: from us-smtp-1.mimecast.com ([205.139.110.61]:33834 "EHLO
-        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1726555AbgAUQ7W (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 21 Jan 2020 11:59:22 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1579625960;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=uMuAJ3TB0mOpbUT+MSY4zWWJKcXu5CKQpuR+2BIRckY=;
-        b=MLmR9u1SKqZ+7aZYRiA7nEyry2sfPRS472PWXF0Jt7U/ZGZW67YWFZN1DbNrKR7mIg3cU4
-        JRRFaXySFwM14AzsSE0sFqCk1jbjSRikVj69I/iSv0wUntNjCpNmbWLiidiqV4oC0eT/TX
-        zIFhvw/DhEKHZIZuo6IwmTe1HK+Yo/c=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-326-YlmaHteSNomdeauex8M1zg-1; Tue, 21 Jan 2020 11:59:16 -0500
-X-MC-Unique: YlmaHteSNomdeauex8M1zg-1
-Received: from smtp.corp.redhat.com (int-mx04.intmail.prod.int.phx2.redhat.com [10.5.11.14])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 0E70119057C5;
-        Tue, 21 Jan 2020 16:59:15 +0000 (UTC)
-Received: from colo-mx.corp.redhat.com (colo-mx02.intmail.prod.int.phx2.redhat.com [10.5.11.21])
-        by smtp.corp.redhat.com (Postfix) with ESMTPS id 045C05D9E2;
-        Tue, 21 Jan 2020 16:59:15 +0000 (UTC)
-Received: from zmail21.collab.prod.int.phx2.redhat.com (zmail21.collab.prod.int.phx2.redhat.com [10.5.83.24])
-        by colo-mx.corp.redhat.com (Postfix) with ESMTP id ED9618197B;
-        Tue, 21 Jan 2020 16:59:14 +0000 (UTC)
-Date:   Tue, 21 Jan 2020 11:59:14 -0500 (EST)
-From:   Vladis Dronov <vdronov@redhat.com>
-To:     Stephen Hemminger <stephen@networkplumber.org>
-Cc:     netdev@vger.kernel.org, David Ahern <dsahern@gmail.com>,
-        George Shuklin <george.shuklin@gmail.com>
-Message-ID: <1671392030.4223005.1579625954850.JavaMail.zimbra@redhat.com>
-In-Reply-To: <20200120093404.172208c2@hermes.lan>
-References: <20200119011251.7153-1-vdronov@redhat.com> <20200120093404.172208c2@hermes.lan>
-Subject: Re: [PATCH iproute2] ip: fix link type and vlan oneline output
+        id S1729164AbgAURAE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 21 Jan 2020 12:00:04 -0500
+Received: from mail-pg1-f196.google.com ([209.85.215.196]:39413 "EHLO
+        mail-pg1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726555AbgAURAE (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 21 Jan 2020 12:00:04 -0500
+Received: by mail-pg1-f196.google.com with SMTP id 4so1809356pgd.6;
+        Tue, 21 Jan 2020 09:00:03 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:content-transfer-encoding:in-reply-to
+         :user-agent;
+        bh=YxAdGehcuaknnMHNzXpLp8sLstU9M2dpQjvG1NuR//U=;
+        b=lRg0grQbeA9l30X0RwgBmEjC3//VETs5RUp5TBfgBA2UvgG+ZAlhS5CnsfvSkiH8IH
+         +DEiyxeL/0q7Wkh1gh4X2qc24GpH+9Wrvc9egg9xxIgLa5MkaNpjtB71LmVT4gdS+HtD
+         rgF0Xp2pEv/DIftXbT5XIN3qOmJ860IQh1yeAhwvvsK4UE2ya8rtZPn1Z6XwGiIt6CV5
+         +Jck2i2YpXSSG5ACr8Dei/PkhTzPap3JfeE9F/+y7i/1+Mycz+aqejfMJfMrq7QZszWC
+         hW1yEp9pedXVCvJ0tw7P6AH5zfS4capOWxh9ARFvLuBvRi1FBu1Znslh9ZQR5APWp4AX
+         UTGQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:content-transfer-encoding
+         :in-reply-to:user-agent;
+        bh=YxAdGehcuaknnMHNzXpLp8sLstU9M2dpQjvG1NuR//U=;
+        b=EuhP/RLWCWtUesk3+LkHtr5QVsxDx73u1UMIVhRu9U5FTRPAmTBcwZgtTnswcco7p2
+         HTy5/8bpW9LvnmG2pzUlKOmxSkqWLunqQOVFAOal/o1cwitlyUJUCFSdp+5ESnbafWdP
+         LAGAA53g06hzWW9y0RUtH+z6gBOC0ORB0kdm44SmYM0B02zKoKk9rGzCyKillpZrVaKZ
+         OnyfCNxy04wLxA1EpmBj1raURqK7FPzPAiid8AQrnlvFj7nYSSRRCa2K97r1lQ4NZRQT
+         NvZunjzXI5hjoCutJWDFG2uaeP4h6/uS5pBsj4Q3ZUDdrOShCVecEaWeZTkuZccbwbdV
+         OdAw==
+X-Gm-Message-State: APjAAAW7H6HpO75F3iYnNa/gTGx4yfmLeTP8TyUigtkwRYLUiQP5fHTy
+        3w95vKtBLSMRd6R4RMFtRROBCkXB
+X-Google-Smtp-Source: APXvYqz9PQw0VwzbBR5Pn5Tmh6/+qvhLRDHK6KKs/E2u9nUB1maRQZwpW3PkNjMdkegqHyjruQ2F5Q==
+X-Received: by 2002:a65:6914:: with SMTP id s20mr6337086pgq.44.1579626003167;
+        Tue, 21 Jan 2020 09:00:03 -0800 (PST)
+Received: from ast-mbp.dhcp.thefacebook.com ([2620:10d:c090:200::3:8f80])
+        by smtp.gmail.com with ESMTPSA id hg11sm4138033pjb.14.2020.01.21.09.00.01
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Tue, 21 Jan 2020 09:00:02 -0800 (PST)
+Date:   Tue, 21 Jan 2020 09:00:01 -0800
+From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
+To:     Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
+Cc:     Alexei Starovoitov <ast@kernel.org>, davem@davemloft.net,
+        daniel@iogearbox.net, netdev@vger.kernel.org, bpf@vger.kernel.org,
+        kernel-team@fb.com
+Subject: Re: [PATCH v2 bpf-next 0/3] bpf: Program extensions or dynamic
+ re-linking
+Message-ID: <20200121165958.zfpvsz7kdcx2dotr@ast-mbp.dhcp.thefacebook.com>
+References: <20200121005348.2769920-1-ast@kernel.org>
+ <87k15kbz2c.fsf@toke.dk>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.43.2.123, 10.4.195.26]
-Thread-Topic: fix link type and vlan oneline output
-Thread-Index: 4qr13m+2R86IuhIhHioBnqx9aryrhQ==
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.14
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <87k15kbz2c.fsf@toke.dk>
+User-Agent: NeoMutt/20180223
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-hello,
-
-> The change to ipaddress.c was incorrect. You can't change the order of things
-> in the output.
-
-i still believe it is bad to break a single link layers options line with
-a multi-line piece:
-
-5: veth90.4000@veth90: <BROADCAST,MULTICAST,M-DOWN> mtu 1500 qdisc noop state DOWN mode DEFAULT group default qlen 1000
-    link/ether 26:9a:05:af:db:00 brd ff:ff:ff:ff:ff:ff promiscuity 0 minmtu 0 maxmtu 65535
-    vlan protocol 802.1Q id 4000 <REORDER_HDR>               the option line is broken ^^^ by \n in print_linktype()
-      ingress-qos-map { 1:2 }
-      egress-qos-map { 2:1 } addrgenmode eui64 numtxqueues 1 numrxqueues 1 gso_max_size 65536 gso_max_segs 65535
-                             ^^^ the option line continues here
-
-print_linktype() has an unconditional \n so it always breaks a link layer
-options line. this output is assumed to be human-readable, so i believe,
-proper indentation is more important that an order of fields. a machine-
-readable format is another one, as far as i understand.
-
-i'm not sure how "an order of things" is supposed to be stable, if
-print_linktype() outputs a variable number of variable fields (depending
-on a link type) in the middle of a link layer options.
-
-surely, if an order of things in this understanding is above all, please,
-ignore my rant.
-
-also, with the change a commit message should be different. i understand,
-it is too late to change it, but still. let a proper message be at least
-here, in the mail thread:
-
->>> begin >>>
-Add oneline support for vlan's ingress and egress qos maps.
-
-Before the fix:
-
-# ip -oneline -details link show veth90.4000
-5: veth90.4000@veth90: ... maxmtu 65535 \    vlan protocol 802.1Q id 4000 <REORDER_HDR>
-      ingress-qos-map { 1:2 }   <<< a multiline output despite -oneline
-      egress-qos-map { 2:1 } addrgenmode eui64 numtxqueues 1 ...
-
-After the fix:
-
-# ip -details link show veth90.4000
-5: veth90.4000@veth90: ... maxmtu 65535 \    vlan protocol 802.1Q id 4000 <REORDER_HDR> \      ingress-qos-map { 1:2 } \      egress-qos-map { 2:1 } addrgenmode eui64 numtxqueues 1 ...
-<<< end <<<
-
-> Second, you needed to have a Fixes tag. In this case, it went back to
-> original vlan support.
-
-indeed, this is my mistake, thank you for correcting this in the patch
-submitted.
-
-Best regards,
-Vladis Dronov | Red Hat, Inc. | The Core Kernel | Senior Software Engineer
-
------ Original Message -----
-> From: "Stephen Hemminger" <stephen@networkplumber.org>
-> To: "Vladis Dronov" <vdronov@redhat.com>
-> Cc: netdev@vger.kernel.org, "David Ahern" <dsahern@gmail.com>, "George Shuklin" <george.shuklin@gmail.com>
-> Sent: Monday, January 20, 2020 6:34:04 PM
-> Subject: Re: [PATCH iproute2] ip: fix link type and vlan oneline output
->
-> The change to ipaddress.c was incorrect. You can't change the order of things
-> in the output.
+On Tue, Jan 21, 2020 at 04:37:31PM +0100, Toke Høiland-Jørgensen wrote:
+> Alexei Starovoitov <ast@kernel.org> writes:
 > 
-> Second, you needed to have a Fixes tag. In this case, it went back to
-> original vlan support.
+> > The last few month BPF community has been discussing an approach to call
+> > chaining, since exiting bpt_tail_call() mechanism used in production XDP
+> > programs has plenty of downsides. The outcome of these discussion was a
+> > conclusion to implement dynamic re-linking of BPF programs. Where rootlet XDP
+> > program attached to a netdevice can programmatically define a policy of
+> > execution of other XDP programs. Such rootlet would be compiled as normal XDP
+> > program and provide a number of placeholder global functions which later can be
+> > replaced with future XDP programs. BPF trampoline, function by function
+> > verification were building blocks towards that goal. The patch 1 is a final
+> > building block. It introduces dynamic program extensions. A number of
+> > improvements like more flexible function by function verification and better
+> > libbpf api will be implemented in future patches.
+> 
+> This is great, thank you! I'll go play around with it; couldn't spot
+> anything obvious from eye-balling the code, except that yeah, it does
+> need a more flexible libbpf api :)
+> 
+> One thing that's not obvious to me: How can userspace tell which
+> programs replace which functions after they are loaded? Is this put into
+> prog_tags in struct bpf_prog_info, or?
 
+good point. Would be good to extend bpf_prog_info. Since prog-to-prog
+connection is unidirectional the bpf_prog_info of extension prog will be able
+to say which original program it's replacing. bpftool prog show will be able to
+print all this data. I think fenry/fexit progs would need the same
+bpf_prog_info extension. attach_prog_id + attach_btf_id would be enough.
+In the mean time I can try to hack drgn script to do the same.
