@@ -2,138 +2,95 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 12783144559
-	for <lists+netdev@lfdr.de>; Tue, 21 Jan 2020 20:48:01 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 37863144570
+	for <lists+netdev@lfdr.de>; Tue, 21 Jan 2020 20:54:24 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729112AbgAUTrU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 21 Jan 2020 14:47:20 -0500
-Received: from relay-b02.edpnet.be ([212.71.1.222]:40773 "EHLO
-        relay-b02.edpnet.be" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729031AbgAUTrQ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 21 Jan 2020 14:47:16 -0500
-X-ASG-Debug-ID: 1579636032-0a7b8d6ce022f8c60001-BZBGGp
-Received: from zotac.vandijck-laurijssen.be ([77.109.89.38]) by relay-b02.edpnet.be with ESMTP id F17EWZrY6NujMrjn; Tue, 21 Jan 2020 20:47:12 +0100 (CET)
-X-Barracuda-Envelope-From: dev.kurt@vandijck-laurijssen.be
-X-Barracuda-Effective-Source-IP: UNKNOWN[77.109.89.38]
-X-Barracuda-Apparent-Source-IP: 77.109.89.38
-Received: from x1.vandijck-laurijssen.be (x1.vandijck-laurijssen.be [IPv6:fd01::1a1d:eaff:fe02:d339])
-        by zotac.vandijck-laurijssen.be (Postfix) with ESMTPSA id A3C57C6ABC7;
-        Tue, 21 Jan 2020 20:47:12 +0100 (CET)
-Date:   Tue, 21 Jan 2020 20:47:11 +0100
-From:   Kurt Van Dijck <dev.kurt@vandijck-laurijssen.be>
-To:     Oliver Hartkopp <socketcan@hartkopp.net>
-Cc:     Dmitry Vyukov <dvyukov@google.com>,
-        Marc Kleine-Budde <mkl@pengutronix.de>,
-        o.rempel@pengutronix.de,
-        syzbot <syzbot+c3ea30e1e2485573f953@syzkaller.appspotmail.com>,
-        David Miller <davem@davemloft.net>, linux-can@vger.kernel.org,
-        LKML <linux-kernel@vger.kernel.org>,
-        netdev <netdev@vger.kernel.org>,
-        syzkaller-bugs <syzkaller-bugs@googlegroups.com>
-Subject: Re: general protection fault in can_rx_register
-Message-ID: <20200121194711.GD13462@x1.vandijck-laurijssen.be>
-X-ASG-Orig-Subj: Re: general protection fault in can_rx_register
-Mail-Followup-To: Oliver Hartkopp <socketcan@hartkopp.net>,
-        Dmitry Vyukov <dvyukov@google.com>,
-        Marc Kleine-Budde <mkl@pengutronix.de>, o.rempel@pengutronix.de,
-        syzbot <syzbot+c3ea30e1e2485573f953@syzkaller.appspotmail.com>,
-        David Miller <davem@davemloft.net>, linux-can@vger.kernel.org,
-        LKML <linux-kernel@vger.kernel.org>,
-        netdev <netdev@vger.kernel.org>,
-        syzkaller-bugs <syzkaller-bugs@googlegroups.com>
-References: <00000000000030dddb059c562a3f@google.com>
- <55ad363b-1723-28aa-78b1-8aba5565247e@hartkopp.net>
- <20200120091146.GD11138@x1.vandijck-laurijssen.be>
- <CACT4Y+a+GusEA1Gs+z67uWjtwBRp_s7P4Wd_SMmgpCREnDu3kg@mail.gmail.com>
- <8332ec7f-2235-fdf6-9bda-71f789c57b37@hartkopp.net>
- <2a676c0e-20f2-61b5-c72b-f51947bafc7d@hartkopp.net>
- <20200121083035.GD14537@x1.vandijck-laurijssen.be>
- <20200121185407.GA13462@x1.vandijck-laurijssen.be>
- <a04209c8-747b-6116-d915-21c285f48730@hartkopp.net>
+        id S1728682AbgAUTyX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 21 Jan 2020 14:54:23 -0500
+Received: from mx0b-00082601.pphosted.com ([67.231.153.30]:6214 "EHLO
+        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1726926AbgAUTyW (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 21 Jan 2020 14:54:22 -0500
+Received: from pps.filterd (m0089730.ppops.net [127.0.0.1])
+        by m0089730.ppops.net (8.16.0.42/8.16.0.42) with SMTP id 00LJqPdr026335
+        for <netdev@vger.kernel.org>; Tue, 21 Jan 2020 11:54:21 -0800
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
+ : date : message-id : mime-version : content-type; s=facebook;
+ bh=M9tKYq5S8olI+roSrIUlCjG3W5Rekg0pHlLXt2E0X4Q=;
+ b=DgIy0B8CAzdXtWxUhYMjqchR8sF//x4nJi9a2/82tCbgt1fYoeGaKKLRdSUFzyDcn2h6
+ lApCq2xHu5OOG8/udfat+SvdWL0l4JynayZZSwNL/L6Xbmw20mgQu0H3bZGCLdB/1yxo
+ q3KiabSi9D7Qa7CH20e/8LaroxJLbBatE84= 
+Received: from maileast.thefacebook.com ([163.114.130.16])
+        by m0089730.ppops.net with ESMTP id 2xp51m0y0v-10
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT)
+        for <netdev@vger.kernel.org>; Tue, 21 Jan 2020 11:54:21 -0800
+Received: from intmgw001.08.frc2.facebook.com (2620:10d:c0a8:1b::d) by
+ mail.thefacebook.com (2620:10d:c0a8:83::4) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.1779.2; Tue, 21 Jan 2020 11:54:10 -0800
+Received: by devbig005.ftw2.facebook.com (Postfix, from userid 6611)
+        id 7254729420B3; Tue, 21 Jan 2020 11:54:08 -0800 (PST)
+Smtp-Origin-Hostprefix: devbig
+From:   Martin KaFai Lau <kafai@fb.com>
+Smtp-Origin-Hostname: devbig005.ftw2.facebook.com
+To:     <bpf@vger.kernel.org>
+CC:     Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        David Miller <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>, <kernel-team@fb.com>,
+        <netdev@vger.kernel.org>
+Smtp-Origin-Cluster: ftw2c04
+Subject: [PATCH bpf-next 0/3] bpf: tcp: Add bpf_cubic example
+Date:   Tue, 21 Jan 2020 11:54:08 -0800
+Message-ID: <20200121195408.3756734-1-kafai@fb.com>
+X-Mailer: git-send-email 2.17.1
+X-FB-Internal: Safe
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <a04209c8-747b-6116-d915-21c285f48730@hartkopp.net>
-User-Agent: Mutt/1.5.22 (2013-10-16)
-X-Barracuda-Connect: UNKNOWN[77.109.89.38]
-X-Barracuda-Start-Time: 1579636032
-X-Barracuda-URL: https://212.71.1.222:443/cgi-mod/mark.cgi
-X-Virus-Scanned: by bsmtpd at edpnet.be
-X-Barracuda-Scan-Msg-Size: 2374
-X-Barracuda-BRTS-Status: 1
-X-Barracuda-Bayes: SPAM GLOBAL 0.9757 1.0000 4.0624
-X-Barracuda-Spam-Score: 4.06
-X-Barracuda-Spam-Status: No, SCORE=4.06 using global scores of TAG_LEVEL=1000.0 QUARANTINE_LEVEL=1000.0 KILL_LEVEL=7.0 tests=
-X-Barracuda-Spam-Report: Code version 3.2, rules version 3.2.3.79488
-        Rule breakdown below
-         pts rule name              description
-        ---- ---------------------- --------------------------------------------------
+Content-Type: text/plain
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.138,18.0.634
+ definitions=2020-01-21_06:2020-01-21,2020-01-21 signatures=0
+X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 adultscore=0
+ mlxlogscore=929 malwarescore=0 suspectscore=1 priorityscore=1501
+ spamscore=0 bulkscore=0 phishscore=0 clxscore=1015 lowpriorityscore=0
+ mlxscore=0 impostorscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-1910280000 definitions=main-2001210147
+X-FB-Internal: deliver
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On di, 21 jan 2020 20:28:51 +0100, Oliver Hartkopp wrote:
-> Hi Kurt,
-> 
-> On 21/01/2020 19.54, Kurt Van Dijck wrote:
-> >On di, 21 jan 2020 09:30:35 +0100, Kurt Van Dijck wrote:
-> >>On ma, 20 jan 2020 23:35:16 +0100, Oliver Hartkopp wrote:
-> 
-> 
-> >>>But it is still open why dev->ml_priv is not set correctly in vxcan.c as all
-> >>>the settings for .priv_size and in vxcan_setup look fine.
-> >>
-> >>Maybe I got completely lost:
-> >>Shouldn't can_ml_priv and vxcan_priv not be similar?
-> >>Where is the dev_rcv_lists in the vxcan case?
-> >
-> >I indeed got completely lost. vxcan_priv & can_ml_priv form together the
-> >private part. I continue looking
-> 
-> I added some more debug output:
-> 
-> @@ -463,6 +463,10 @@ int can_rx_register(struct net *net, struct net_device
-> *dev, canid_t can_id,
->         spin_lock_bh(&net->can.rcvlists_lock);
-> 
->         dev_rcv_lists = can_dev_rcv_lists_find(net, dev);
-> +       if (!dev_rcv_lists) {
-> +               pr_err("dev_rcv_lists == NULL! %p (%s)\n", dev, dev->name);
-> +               goto out_unlock;
-> +       }
->         rcv_list = can_rcv_list_find(&can_id, &mask, dev_rcv_lists);
-> 
->         rcv->can_id = can_id;
-> 
-> 
-> and the output becomes:
-> 
-> [ 1814.644087] bond5130: (slave vxcan1): The slave device specified does not
-> support setting the MAC address
-> [ 1814.644106] bond5130: (slave vxcan1): Error -22 calling dev_set_mtu
-> [ 1814.648867] bond5128: (slave vxcan1): The slave device specified does not
-> support setting the MAC address
-> [ 1814.648904] bond5128: (slave vxcan1): Error -22 calling dev_set_mtu
-> [ 1814.649124] dev_rcv_lists == NULL! 000000008e41fb06 (bond5128)
-> [ 1814.696420] bond5129: (slave vxcan1): The slave device specified does not
-> support setting the MAC address
-> [ 1814.696438] bond5129: (slave vxcan1): Error -22 calling dev_set_mtu
-> 
-> So it's not the vxcan1 netdev that causes the issue but (sporadically!!) the
-> bonding netdev.
-> 
-> Interesting enough that the bonding device bond5128 obviously passes the
-> 
->        if (dev && dev->type != ARPHRD_CAN)
->                 return -ENODEV;
-> test.
-> 
-> ?!?
-Did you consider my hypothesis I sent you (at 20h22 tonight)?
-I don't personally understand all the locks around networking, but your
-observation acks my theory of race condition.
+This set adds bpf_cubic.c example.  It was separated from the
+earlier BPF STRUCT_OPS series.  Some highlights since the
+last post:
 
-> 
-> Regards,
-> Oliver
+1. It is based on EricD recent fixes to the kernel tcp_cubic. [1]
+2. The bpf jiffies reading helper is inlined by the verifier.
+   Different from the earlier version, it only reads jiffies alone
+   and does not do usecs/jiffies conversion.
+3. The bpf .kconfig map is used to read CONFIG_HZ which
+   is then used in the usecs_to_jiffies() conversion.
+
+[1]: https://patchwork.ozlabs.org/cover/1215066/
+
+Martin KaFai Lau (3):
+  bpf: Add BPF_FUNC_jiffies64
+  bpf: Sync uapi bpf.h to tools/
+  bpf: tcp: Add bpf_cubic example
+
+ include/linux/bpf.h                           |   2 +
+ include/uapi/linux/bpf.h                      |   9 +-
+ kernel/bpf/core.c                             |   1 +
+ kernel/bpf/helpers.c                          |  27 +
+ kernel/bpf/verifier.c                         |  18 +
+ net/core/filter.c                             |   2 +
+ tools/include/uapi/linux/bpf.h                |   9 +-
+ tools/testing/selftests/bpf/bpf_tcp_helpers.h |  16 +
+ .../selftests/bpf/prog_tests/bpf_tcp_ca.c     |  25 +
+ tools/testing/selftests/bpf/progs/bpf_cubic.c | 573 ++++++++++++++++++
+ 10 files changed, 680 insertions(+), 2 deletions(-)
+ create mode 100644 tools/testing/selftests/bpf/progs/bpf_cubic.c
+
+-- 
+2.17.1
+
