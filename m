@@ -2,140 +2,185 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 120B3144240
-	for <lists+netdev@lfdr.de>; Tue, 21 Jan 2020 17:35:48 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 20001144244
+	for <lists+netdev@lfdr.de>; Tue, 21 Jan 2020 17:36:18 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728852AbgAUQfo (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 21 Jan 2020 11:35:44 -0500
-Received: from us-smtp-2.mimecast.com ([207.211.31.81]:29055 "EHLO
-        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1726714AbgAUQfo (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 21 Jan 2020 11:35:44 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1579624543;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=4ZtA6wV6ZYeIaJtcu+fv8OOyrPgzQolZBO5iyc9hpPM=;
-        b=Whf5rwenhFAQeM94ZjnnJKh4zohXVQnXGcv4wXXsJAwYRQF9olJcgTCUjoYLGzeVL8H07c
-        ZVBw3HqWJrThJCjbUnHvuIHXR6nstCRnOjV8LhNLZTCfQxWhME4KRWhDkvk/XfgbvKiO3E
-        CuXORQDS5fT5r3lrPTnYxoddFiBphpo=
-Received: from mail-wr1-f71.google.com (mail-wr1-f71.google.com
- [209.85.221.71]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-417-lwyFiJaoPoqVQnaLIDS60w-1; Tue, 21 Jan 2020 11:35:41 -0500
-X-MC-Unique: lwyFiJaoPoqVQnaLIDS60w-1
-Received: by mail-wr1-f71.google.com with SMTP id o6so1570914wrp.8
-        for <netdev@vger.kernel.org>; Tue, 21 Jan 2020 08:35:41 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=4ZtA6wV6ZYeIaJtcu+fv8OOyrPgzQolZBO5iyc9hpPM=;
-        b=erMPB/UwducXcYY9AAt6W4jQwGjrzh2u2s1YZUDubn1ttbStB7JJcs1ysqaxKMdWa3
-         yGlECb6Is27wI9t8LgSAFRYtGBn44hPeQ3UaJoYC9kiahfroNGoXoASimywuCq/Guqlu
-         y4b8RACibGm14ke6kLMEkIk+2n0a70H5Ow+A8t//8bWN0Z5O7kiuiOD8tMNoXFMcDBaa
-         ZlIfFyiXv0YyHMCARUR82rzEj3+ZkoDmS8YhqU2UwWKnyr2ysoYPwlntwwIcq/w00Alk
-         ND2nFcmPzSoxk0HIc964pVZNlqpLHMTX0XmHtcojYzeIkhnYLIa6h2WVEcVdNtkvWWc2
-         wUMg==
-X-Gm-Message-State: APjAAAWIXroKw6MMBPyRrPwNKektXP4mFDgDAReisLZZi1eWO4oFNM+k
-        fN5iYTPZTN9pmd2qh6DJEzDuAQRBFQTk1FR0V7BXr9EW+7nYtz2hLPBGyzKxWWA85e/OsR2FY5F
-        yjqjcjT+0d1SOEL+Q
-X-Received: by 2002:a7b:c775:: with SMTP id x21mr5114767wmk.59.1579624540029;
-        Tue, 21 Jan 2020 08:35:40 -0800 (PST)
-X-Google-Smtp-Source: APXvYqwDGAc/6OuFYGCe6s7rGc5skNciZjsJc36UjxxeY9ndAWlPqNeh7VDWDgyVARYvwxiDSiFjag==
-X-Received: by 2002:a7b:c775:: with SMTP id x21mr5114749wmk.59.1579624539805;
-        Tue, 21 Jan 2020 08:35:39 -0800 (PST)
-Received: from localhost.localdomain (nat-pool-brq-t.redhat.com. [213.175.37.10])
-        by smtp.gmail.com with ESMTPSA id t190sm4617212wmt.44.2020.01.21.08.35.34
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 21 Jan 2020 08:35:39 -0800 (PST)
-Date:   Tue, 21 Jan 2020 17:35:31 +0100
-From:   Guillaume Nault <gnault@redhat.com>
-To:     Tom Parkin <tparkin@katalix.com>
-Cc:     Ridge Kennedy <ridgek@alliedtelesis.co.nz>, netdev@vger.kernel.org
-Subject: Re: [PATCH net] l2tp: Allow duplicate session creation with UDP
-Message-ID: <20200121163531.GA6469@localhost.localdomain>
-References: <20200116123854.GA23974@linux.home>
- <20200116131223.GB4028@jackdaw>
- <20200116190556.GA25654@linux.home>
- <20200116212332.GD4028@jackdaw>
- <alpine.DEB.2.21.2001171027090.9038@ridgek-dl.ws.atlnz.lc>
- <20200117131848.GA3405@jackdaw>
- <20200117142558.GB2743@linux.home>
- <20200117191939.GB3405@jackdaw>
- <20200118191336.GC12036@linux.home>
- <20200120150946.GB4142@jackdaw>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200120150946.GB4142@jackdaw>
+        id S1729165AbgAUQfy convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Tue, 21 Jan 2020 11:35:54 -0500
+Received: from coyote.holtmann.net ([212.227.132.17]:58810 "EHLO
+        mail.holtmann.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726714AbgAUQfy (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 21 Jan 2020 11:35:54 -0500
+Received: from marcel-macpro.fritz.box (p4FEFC5A7.dip0.t-ipconnect.de [79.239.197.167])
+        by mail.holtmann.org (Postfix) with ESMTPSA id 00A92CECE3;
+        Tue, 21 Jan 2020 17:45:10 +0100 (CET)
+Content-Type: text/plain;
+        charset=utf-8
+Mime-Version: 1.0 (Mac OS X Mail 13.0 \(3608.40.2.2.4\))
+Subject: Re: [RFC PATCH 1/2] Bluetooth: Add mgmt op set_wake_capable
+From:   Marcel Holtmann <marcel@holtmann.org>
+In-Reply-To: <20200117132623.RFC.1.I797e2f4cb824299043e771f3ab9cef86ee09f4db@changeid>
+Date:   Tue, 21 Jan 2020 17:35:51 +0100
+Cc:     Luiz Augusto von Dentz <luiz.dentz@gmail.com>, alainm@chromium.org,
+        linux-bluetooth@vger.kernel.org,
+        chromeos-bluetooth-upstreaming@chromium.org,
+        "David S. Miller" <davem@davemloft.net>,
+        Johan Hedberg <johan.hedberg@gmail.com>,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Content-Transfer-Encoding: 8BIT
+Message-Id: <ACAE240C-345B-43F9-B6C8-8967AF436CE9@holtmann.org>
+References: <20200117212705.57436-1-abhishekpandit@chromium.org>
+ <20200117132623.RFC.1.I797e2f4cb824299043e771f3ab9cef86ee09f4db@changeid>
+To:     Abhishek Pandit-Subedi <abhishekpandit@chromium.org>
+X-Mailer: Apple Mail (2.3608.40.2.2.4)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Jan 20, 2020 at 03:09:46PM +0000, Tom Parkin wrote:
-> On  Sat, Jan 18, 2020 at 20:13:36 +0100, Guillaume Nault wrote:
-> > I've never seen that as a problem in practice since establishing more
-> > than one tunnel between two LCCE or LAC/LNS doesn't bring any
-> > advantage.
-> 
-> I think the practical use depends a bit on context -- it might be
-> useful to e.g. segregate sessions with different QoS or security
-> requirements into different tunnels in order to make userspace
-> configuration management easier.
-> 
-That could be useful for L2TPv2. But that's not going to be more
-limitted for L2TPv3 as the tunnel ID isn't visible on the wire.
+Hi Abhishek,
 
-> > > Since we don't want to arbitrarily limit IP-encap tunnels to on per
-> > > pair of peers, it's not practical to stash tunnel context with the
-> > > socket in the IP-encap data path.
-> > > 
-> > Even though l2tp_ip doesn't lookup the session in the context of the
-> > socket, it is limitted to one tunnel for a pair of peers, because it
-> > doesn't support SO_REUSEADDR and SO_REUSEPORT.
+> When the system is suspended, only some connected Bluetooth devices
+> cause user input that should wake the system (mostly HID devices). Add
+> a list to keep track of devices that can wake the system and add
+> a management API to let userspace tell the kernel whether a device is
+> wake capable or not.
 > 
-> This isn't the case.  It is indeed possible to create multiple IP-encap
-> tunnels between the same IP addresses.
+> Signed-off-by: Abhishek Pandit-Subedi <abhishekpandit@chromium.org>
+> ---
 > 
-> l2tp_ip takes tunnel ID into account in struct sockaddr_l2tpip when
-> binding and connecting sockets.
+> include/net/bluetooth/hci_core.h |  1 +
+> include/net/bluetooth/mgmt.h     |  7 ++++++
+> net/bluetooth/hci_core.c         |  1 +
+> net/bluetooth/mgmt.c             | 42 ++++++++++++++++++++++++++++++++
+> 4 files changed, 51 insertions(+)
 > 
-Yes, sorry. I didn't give this enough thinking and mixed the UDP and IP
-transport constraints.
+> diff --git a/include/net/bluetooth/hci_core.h b/include/net/bluetooth/hci_core.h
+> index 89ecf0a80aa1..ce4bebcb0265 100644
+> --- a/include/net/bluetooth/hci_core.h
+> +++ b/include/net/bluetooth/hci_core.h
+> @@ -394,6 +394,7 @@ struct hci_dev {
+> 	struct list_head	mgmt_pending;
+> 	struct list_head	blacklist;
+> 	struct list_head	whitelist;
+> +	struct list_head	wakeable;
+> 	struct list_head	uuids;
+> 	struct list_head	link_keys;
+> 	struct list_head	long_term_keys;
+> diff --git a/include/net/bluetooth/mgmt.h b/include/net/bluetooth/mgmt.h
+> index a90666af05bd..283ba5320bdb 100644
+> --- a/include/net/bluetooth/mgmt.h
+> +++ b/include/net/bluetooth/mgmt.h
+> @@ -671,6 +671,13 @@ struct mgmt_cp_set_blocked_keys {
+> } __packed;
+> #define MGMT_OP_SET_BLOCKED_KEYS_SIZE 2
+> 
+> +#define MGMT_OP_SET_WAKE_CAPABLE	0x0047
+> +#define MGMT_SET_WAKE_CAPABLE_SIZE	8
+> +struct mgmt_cp_set_wake_capable {
+> +	struct mgmt_addr_info addr;
+> +	u8 wake_capable;
+> +} __packed;
+> +
 
-> I think if l2tp_ip were to support SO_REUSEADDR, it would be in the
-> context of struct sockaddr_l2tpip.  In which case reusing the address
-> wouldn't really make any sense.
-> 
-Yes, I think we can just forget about it.
+please also send a patch for doc/mgmt-api.txt describing these opcodes. I would also like to have the discussion if it might be better to add an extra Action parameter to Add Device. We want to differentiate between allow incoming connection that allows to wakeup and the one that doesn’t.
 
-> > Thinking more about the original issue, I think we could restrict the
-> > scope of session IDs to the 3-tuple (for IP encap) or 5-tuple (for UDP
-> > encap) of its parent tunnel. We could do that by adding the IP addresses,
-> > protocol and ports to the hash key in the netns session hash-table.
-> > This way:
-> >  * Sessions would be only accessible from the peer with whom we
-> >    established the tunnel.
-> >  * We could use multiple sockets bound and connected to the same
-> >    address pair, and lookup the right session no matter on which
-> >    socket L2TP messages are received.
-> >  * We would solve Ridge's problem because we could reuse session IDs
-> >    as long as the 3 or 5-tuple of the parent tunnel is different.
-> > 
-> > That would be something for net-next though. For -net, we could get
-> > something like Ridge's patch, which is simpler, since we've never
-> > supported multiple tunnels per session anyway.
+Another option is to create an Add Extended Device command. Main reason here is that I don’t want to end up in the situation where you have to add a device and then send another 10 commands to set its features.
+
+> #define MGMT_EV_CMD_COMPLETE		0x0001
+> struct mgmt_ev_cmd_complete {
+> 	__le16	opcode;
+> diff --git a/net/bluetooth/hci_core.c b/net/bluetooth/hci_core.c
+> index 1ca7508b6ca7..7057b9b65173 100644
+> --- a/net/bluetooth/hci_core.c
+> +++ b/net/bluetooth/hci_core.c
+> @@ -3299,6 +3299,7 @@ struct hci_dev *hci_alloc_dev(void)
+> 	INIT_LIST_HEAD(&hdev->mgmt_pending);
+> 	INIT_LIST_HEAD(&hdev->blacklist);
+> 	INIT_LIST_HEAD(&hdev->whitelist);
+> +	INIT_LIST_HEAD(&hdev->wakeable);
+> 	INIT_LIST_HEAD(&hdev->uuids);
+> 	INIT_LIST_HEAD(&hdev->link_keys);
+> 	INIT_LIST_HEAD(&hdev->long_term_keys);
+> diff --git a/net/bluetooth/mgmt.c b/net/bluetooth/mgmt.c
+> index 0dc610faab70..95092130f16c 100644
+> --- a/net/bluetooth/mgmt.c
+> +++ b/net/bluetooth/mgmt.c
+> @@ -106,7 +106,10 @@ static const u16 mgmt_commands[] = {
+> 	MGMT_OP_START_LIMITED_DISCOVERY,
+> 	MGMT_OP_READ_EXT_INFO,
+> 	MGMT_OP_SET_APPEARANCE,
+> +	MGMT_OP_GET_PHY_CONFIGURATION,
+> +	MGMT_OP_SET_PHY_CONFIGURATION,
+
+These are unrelated to this patch.
+
+> 	MGMT_OP_SET_BLOCKED_KEYS,
+> +	MGMT_OP_SET_WAKE_CAPABLE,
+> };
 > 
-> Yes, I think this would be possible.  I've been thinking of similar
-> schemes.
+> static const u16 mgmt_events[] = {
+> @@ -4663,6 +4666,37 @@ static int set_fast_connectable(struct sock *sk, struct hci_dev *hdev,
+> 	return err;
+> }
 > 
-> I'm struggling with it a bit though.  Wouldn't extending the hash key
-> like this get expensive, especially for IPv6 addresses?
+> +static int set_wake_capable(struct sock *sk, struct hci_dev *hdev, void *data,
+> +			    u16 len)
+> +{
+> +	int err;
+> +	u8 status;
+> +	struct mgmt_cp_set_wake_capable *cp = data;
+> +	u8 addr_type = cp->addr.type == BDADDR_BREDR ?
+> +			       cp->addr.type :
+> +			       le_addr_type(cp->addr.type);
+> +
+> +	BT_DBG("Set wake capable %pMR (type 0x%x) = 0x%x\n", &cp->addr.bdaddr,
+> +	       addr_type, cp->wake_capable);
+> +
+> +	if (cp->wake_capable)
+> +		err = hci_bdaddr_list_add(&hdev->wakeable, &cp->addr.bdaddr,
+> +					  addr_type);
+> +	else
+> +		err = hci_bdaddr_list_del(&hdev->wakeable, &cp->addr.bdaddr,
+> +					  addr_type);
+> +
+> +	if (!err || err == -EEXIST || err == -ENOENT)
+> +		status = MGMT_STATUS_SUCCESS;
+> +	else
+> +		status = MGMT_STATUS_FAILED;
+> +
+> +	err = mgmt_cmd_complete(sk, hdev->id, MGMT_OP_SET_WAKE_CAPABLE, status,
+> +				cp, sizeof(*cp));
+> +
+> +	return err;
+> +}
+> +
+> static void set_bredr_complete(struct hci_dev *hdev, u8 status, u16 opcode)
+> {
+> 	struct mgmt_pending_cmd *cmd;
+> @@ -5791,6 +5825,13 @@ static int remove_device(struct sock *sk, struct hci_dev *hdev,
+> 			err = hci_bdaddr_list_del(&hdev->whitelist,
+> 						  &cp->addr.bdaddr,
+> 						  cp->addr.type);
+> +
+> +			/* Don't check result since it either succeeds or device
+> +			 * wasn't there (not wakeable or invalid params as
+> +			 * covered by deleting from whitelist).
+> +			 */
+> +			hci_bdaddr_list_del(&hdev->wakeable, &cp->addr.bdaddr,
+> +					    cp->addr.type);
+> 			if (err) {
+> 				err = mgmt_cmd_complete(sk, hdev->id,
+> 							MGMT_OP_REMOVE_DEVICE,
+> @@ -6990,6 +7031,7 @@ static const struct hci_mgmt_handler mgmt_handlers[] = {
+> 	{ set_phy_configuration,   MGMT_SET_PHY_CONFIGURATION_SIZE },
+> 	{ set_blocked_keys,	   MGMT_OP_SET_BLOCKED_KEYS_SIZE,
+> 						HCI_MGMT_VAR_LEN },
+> +	{ set_wake_capable,	   MGMT_SET_WAKE_CAPABLE_SIZE },
+> };
 > 
-From what I recall, L2TP performances are already quite low. That's
-certainly not a reason for making things worse, but I believe that
-computing a 3 or 5 tuple hash should be low overhead in comparison.
-But checking with real numbers would be interesting.
+
+Regards
+
+Marcel
 
