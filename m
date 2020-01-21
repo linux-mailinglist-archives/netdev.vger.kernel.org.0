@@ -2,197 +2,142 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 5B8861446C6
-	for <lists+netdev@lfdr.de>; Tue, 21 Jan 2020 23:01:17 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1ADF3144719
+	for <lists+netdev@lfdr.de>; Tue, 21 Jan 2020 23:20:05 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729130AbgAUWBL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 21 Jan 2020 17:01:11 -0500
-Received: from mx0b-00082601.pphosted.com ([67.231.153.30]:5780 "EHLO
-        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1727847AbgAUWBK (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 21 Jan 2020 17:01:10 -0500
-Received: from pps.filterd (m0089730.ppops.net [127.0.0.1])
-        by m0089730.ppops.net (8.16.0.42/8.16.0.42) with SMTP id 00LM0LAu010410;
-        Tue, 21 Jan 2020 14:00:48 -0800
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
- : date : message-id : references : in-reply-to : content-type : content-id
- : content-transfer-encoding : mime-version; s=facebook;
- bh=BhgMeg4v0+wTjX9iErsBFlmjUePxruA26uSd+vltNVQ=;
- b=GQn7fTK0gnzZHNOleRThGhMPKz5JC+wvCCHh37mcKiWQuoyOM2qMWQJCQuX2t7hBSFg5
- aKtb/AIztaWJENtTcYKnqJEFTG4/nMybEjgwUjqxt4hmfp+LXa3N82AbpGcrZNYs0/Sv
- Z3QO0wZWJWPJL5LLSi/Okx3JCSRb7+d/p1E= 
-Received: from mail.thefacebook.com ([163.114.132.120])
-        by m0089730.ppops.net with ESMTP id 2xp8jc0arh-3
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
-        Tue, 21 Jan 2020 14:00:48 -0800
-Received: from NAM10-DM6-obe.outbound.protection.outlook.com (100.104.98.9) by
- o365-in.thefacebook.com (100.104.94.198) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.1779.2; Tue, 21 Jan 2020 14:00:28 -0800
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=TjQjX2GOfDfwlggldge60kiZ/h5EOQBym37V80WfLoV6q/Hv11TneZQO/mVrgGPNN+EoVBsxlgL7tPHae5xR60Zy+RAfUNPJvpPwfa3sl6zW7sv+uHXPH11Lof+IilsajiOC5BSrSBsjGLgl2V+84WbEi0f437u76zYjPajt1VR5ORcoxCJF0YCcUPTi8DCtp2Hdpxg+/AcEUKLEF7EH5SeLZzWRNcjFNlvb81wwNOTKt79QdFLl+A5qmFiHN6jnfaJ9pf2hknd/gGbqqF+RDRpHuLxLluROhBuObBAl7z0gXuDSEyVckhHMTW1Ea0zWxasuep4dwwJEzYwWM0ev2A==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=BhgMeg4v0+wTjX9iErsBFlmjUePxruA26uSd+vltNVQ=;
- b=jM+Y7LALVkYYAwfPPE6CJ8JZOOx4xvn9saSE+ro6sU9hWKvm6lRqxhf0ZkBfstS1gOntlT1aO29Psca2pX9nYlvMRbIvy7Pn+jysBs9mEN2hV62Dk4AU+SFssDFRf67S3QF+kF4ofSJIMgqDQsMED76S7nl1Yy9KJDm5vii13wOmCZKKmn/7230o0wUhURKKTg6kAPR+rGwxnDeYacm1XvxjA5VIkJI9CQ8Ud8ZbRpt3jL8LuQBQeFL+85TjmFSuaHhPXHyLhuPWTgab0qaRchlFDT7FdqW5HCT7rRGqHdqlIYwPCMWpx4aLhzoKTxPz+Ho+8uux/pRk3M9sOwykRw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=fb.com; dmarc=pass action=none header.from=fb.com; dkim=pass
- header.d=fb.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.onmicrosoft.com;
- s=selector2-fb-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=BhgMeg4v0+wTjX9iErsBFlmjUePxruA26uSd+vltNVQ=;
- b=KjpoGXa+eDjW8a0x0H7fWV2QagJY5QfJ3zRZsasRg0OqKdKLsOrsyrPd8rc+BylU77UCLLgz0KGBxdSxGjjsDWQ1mrAOKBmGn9l5saFYBYXNLhFpC+LAoBs9A4WG21RdV4c3HCqG2kn3ij9FXv8rtv87cgjELXh1+jDcYqFfhjU=
-Received: from MN2PR15MB3213.namprd15.prod.outlook.com (20.179.21.76) by
- MN2PR15MB2701.namprd15.prod.outlook.com (20.179.146.204) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.2644.23; Tue, 21 Jan 2020 22:00:25 +0000
-Received: from MN2PR15MB3213.namprd15.prod.outlook.com
- ([fe80::6d1e:f2f7:d36:a42f]) by MN2PR15MB3213.namprd15.prod.outlook.com
- ([fe80::6d1e:f2f7:d36:a42f%4]) with mapi id 15.20.2644.026; Tue, 21 Jan 2020
- 22:00:25 +0000
-Received: from kafai-mbp.dhcp.thefacebook.com (2620:10d:c090:200::aa6d) by MWHPR1201CA0013.namprd12.prod.outlook.com (2603:10b6:301:4a::23) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.2644.19 via Frontend Transport; Tue, 21 Jan 2020 22:00:23 +0000
-From:   Martin Lau <kafai@fb.com>
-To:     Eric Dumazet <eric.dumazet@gmail.com>
-CC:     "bpf@vger.kernel.org" <bpf@vger.kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        David Miller <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Kernel Team <Kernel-team@fb.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-Subject: Re: [PATCH bpf-next 3/3] bpf: tcp: Add bpf_cubic example
-Thread-Topic: [PATCH bpf-next 3/3] bpf: tcp: Add bpf_cubic example
-Thread-Index: AQHV0JkG/xAOEG2KskiDKxfoUGoCoaf1qyYA
-Date:   Tue, 21 Jan 2020 22:00:25 +0000
-Message-ID: <20200121220020.mg6iekrxywnh2nhq@kafai-mbp.dhcp.thefacebook.com>
-References: <20200121195408.3756734-1-kafai@fb.com>
- <20200121195427.3758504-1-kafai@fb.com>
- <7b8770e1-6cac-2e67-fb79-2feb2a35a0e5@gmail.com>
-In-Reply-To: <7b8770e1-6cac-2e67-fb79-2feb2a35a0e5@gmail.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-clientproxiedby: MWHPR1201CA0013.namprd12.prod.outlook.com
- (2603:10b6:301:4a::23) To MN2PR15MB3213.namprd15.prod.outlook.com
- (2603:10b6:208:3d::12)
-x-ms-exchange-messagesentrepresentingtype: 1
-x-originating-ip: [2620:10d:c090:200::aa6d]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: abc35d6e-e41a-4d0f-83e9-08d79ebd5171
-x-ms-traffictypediagnostic: MN2PR15MB2701:
-x-ms-exchange-transport-forked: True
-x-microsoft-antispam-prvs: <MN2PR15MB2701D126716C46136CE18753D50D0@MN2PR15MB2701.namprd15.prod.outlook.com>
-x-fb-source: Internal
-x-ms-oob-tlc-oobclassifiers: OLM:6108;
-x-forefront-prvs: 0289B6431E
-x-forefront-antispam-report: SFV:NSPM;SFS:(10019020)(346002)(396003)(376002)(366004)(136003)(39860400002)(199004)(189003)(7696005)(66446008)(66556008)(71200400001)(66946007)(5660300002)(1076003)(64756008)(66476007)(6916009)(52116002)(8676002)(478600001)(8936002)(81156014)(6506007)(53546011)(316002)(54906003)(16526019)(186003)(86362001)(55016002)(2906002)(4326008)(9686003)(81166006);DIR:OUT;SFP:1102;SCL:1;SRVR:MN2PR15MB2701;H:MN2PR15MB3213.namprd15.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;A:1;MX:1;
-received-spf: None (protection.outlook.com: fb.com does not designate
- permitted sender hosts)
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: m1loqsIQP6y1UNhXUDd1DqbHOWKZ/dhftGfLqNij1u2/uPB1OI43eio5j+GcQfpgBWGBQ6yyWAd/ReJF081mlA0uBdYBnUMCXDFRDK3NKqu2YEp4qpj91NT3kRHT9tke7A1kYvfQTWC5TKEyNNr8isHl7HUaGFUL9m3kEL676YBqzGfu2HXoDIloyNAgNesI4bfAeDIec6M1MCM8opMPFbNC67iLXSQhh82+wZHilL52f4vE1T6tNUh4OW1maFjyLPAdsCrr8f368uW2LsMkwTftlNZssbBANiAenewBgklg4RsJOQOA8qcUGziDUgUJnItkhJze1imcYVtIk9sdtiZPztWffjNz5dJLCuQlyrAx5gI9e80nH/se9sZetAsnvxTJnPgUWyAWsF/vRbl/OjpqQUOTS5k8qXLdnboiF+KfS2e6+Gj+QEtoFX7fjNm6
-Content-Type: text/plain; charset="us-ascii"
-Content-ID: <E520787BC097DE4ABA02F66AC4177943@namprd15.prod.outlook.com>
-Content-Transfer-Encoding: quoted-printable
+        id S1729108AbgAUWT4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 21 Jan 2020 17:19:56 -0500
+Received: from mail-pg1-f195.google.com ([209.85.215.195]:34436 "EHLO
+        mail-pg1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727847AbgAUWTz (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 21 Jan 2020 17:19:55 -0500
+Received: by mail-pg1-f195.google.com with SMTP id r11so2292446pgf.1;
+        Tue, 21 Jan 2020 14:19:55 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=87q9xhoPKVsZRpT7sXkkO2m2/qUarjs1kR3PGeTcCa8=;
+        b=V6+0gFQxv4KVdfOevLuORPsMA0IRumBkHZGOYQyPErMao8SthHHq7cBPYxHBMZjQGI
+         TNZuiJNT4SeYK8K0hdMIqq7jJSaF40Tp7OuUfxFOqlBI+iSSJX63CpbOZS0BcUeIGeoA
+         iVRvlfpR6KCTMSGOZyFpbivijF8HsnSHpmRCRG2298dfJEJmdXkeWIZl4Mz6IMyuebYc
+         5KqCSCfsCnmhYTj4RyLanptRRVWnLmbu/hd3dMZYbxEFVWfms6NurkIlCs2oanVYqAHO
+         Viop3Ydl33vbMniGsD8HecJnNHKeAxPqa1Nmu3bZGcKMAQRrsEP/LsWkBH6TrqNOqSjv
+         G0sQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=87q9xhoPKVsZRpT7sXkkO2m2/qUarjs1kR3PGeTcCa8=;
+        b=hgHab1ttOOuH3FRnCuCAJ1glqxLk4HVJbU827Yy2+GEwzU+qyhX+wNNk25yRxnHbtk
+         cYcHWXNuG8ICDHXRet/rhAEnd5kauhkzJj8b9TDxJaBafpEezRgYjd/tWOGCCc75tWGz
+         CsffxYnFmia1dfBiFPxKGPl+9Ea1zfNwfaVzaV02A+aHHNV07S60iheOSVUMZq1brKmg
+         /FfFnRsi+v4NSqgdgQzEPd0XelKRj1V48bcUu0UxbiK7QrqwSittxuLMAIR8eD8y1RRv
+         vNt7sP9HmPFkc9c8w+OPvmEAUVWlTecShiDlYGgYICb2KdU5aHYqfApx3xrFi+nYIY6+
+         hMnA==
+X-Gm-Message-State: APjAAAU4nxyPF86fhkO/YFJnq0hPuUhnAKpKkn4MdiVd9+8o1QhfIw5q
+        zbZ/6XwfzT7eo7tOur6lZgJHQRmU
+X-Google-Smtp-Source: APXvYqzX+G5EAYzlbOeRoettvDYSWW16bHWnmdXsnq9AUn5obiFNsulAcXmnW6RhQSNdd6qnIwIbQQ==
+X-Received: by 2002:a62:5447:: with SMTP id i68mr6697130pfb.44.1579645194049;
+        Tue, 21 Jan 2020 14:19:54 -0800 (PST)
+Received: from ?IPv6:2620:15c:2c1:200:55c7:81e6:c7d8:94b? ([2620:15c:2c1:200:55c7:81e6:c7d8:94b])
+        by smtp.gmail.com with ESMTPSA id a1sm43969982pfo.68.2020.01.21.14.19.52
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 21 Jan 2020 14:19:53 -0800 (PST)
+Subject: Re: [PATCH net v2 01/12] net/sonic: Add mutual exclusion for
+ accessing shared state
+To:     Finn Thain <fthain@telegraphics.com.au>,
+        "David S. Miller" <davem@davemloft.net>
+Cc:     Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
+        Chris Zankel <chris@zankel.net>,
+        Laurent Vivier <laurent@vivier.eu>,
+        Geert Uytterhoeven <geert@linux-m68k.org>,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+References: <cover.1579641728.git.fthain@telegraphics.com.au>
+ <d7c6081de558e2fe5693a35bb735724411134cb5.1579641728.git.fthain@telegraphics.com.au>
+From:   Eric Dumazet <eric.dumazet@gmail.com>
+Message-ID: <0113c00f-3f77-8324-95a8-31dd6f64fa6a@gmail.com>
+Date:   Tue, 21 Jan 2020 14:19:51 -0800
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.2.2
 MIME-Version: 1.0
-X-MS-Exchange-CrossTenant-Network-Message-Id: abc35d6e-e41a-4d0f-83e9-08d79ebd5171
-X-MS-Exchange-CrossTenant-originalarrivaltime: 21 Jan 2020 22:00:25.3213
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 8ae927fe-1255-47a7-a2af-5f3a069daaa2
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: bdAXHHV6A64jgPDIvlqr8q7gZX/SCtx9+EHkM+/KE0ge4w+i0BSK1cWfQDAEyWl+
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: MN2PR15MB2701
-X-OriginatorOrg: fb.com
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.138,18.0.572
- definitions=2020-01-17_05:2020-01-16,2020-01-17 signatures=0
-X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 adultscore=0 phishscore=0
- lowpriorityscore=0 mlxlogscore=999 suspectscore=0 impostorscore=0
- mlxscore=0 bulkscore=0 malwarescore=0 priorityscore=1501 spamscore=0
- clxscore=1015 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-1910280000 definitions=main-2001210163
-X-FB-Internal: deliver
+In-Reply-To: <d7c6081de558e2fe5693a35bb735724411134cb5.1579641728.git.fthain@telegraphics.com.au>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Jan 21, 2020 at 12:26:07PM -0800, Eric Dumazet wrote:
->=20
->=20
-> On 1/21/20 11:54 AM, Martin KaFai Lau wrote:
-> > This patch adds a bpf_cubic example.  Some highlights:
-> > 1. CONFIG_HZ kconfig is used.  For example, CONFIG_HZ is used in the us=
-ecs
-> >    to jiffies conversion in usecs_to_jiffies().
-> > 2. In bitctcp_update() [under tcp_friendliness], the original
-> >    "while (ca->ack_cnt > delta)" loop is changed to the equivalent
-> >    "ca->ack_cnt / delta" operation
->=20
->=20
-> ...
->=20
-> > +	/* cubic function - calc*/
-> > +	/* calculate c * time^3 / rtt,
-> > +	 *  while considering overflow in calculation of time^3
-> > +	 * (so time^3 is done by using 64 bit)
-> > +	 * and without the support of division of 64bit numbers
-> > +	 * (so all divisions are done by using 32 bit)
-> > +	 *  also NOTE the unit of those veriables
-> > +	 *	  time  =3D (t - K) / 2^bictcp_HZ
-> > +	 *	  c =3D bic_scale >> 10
-> > +	 * rtt  =3D (srtt >> 3) / HZ
-> > +	 * !!! The following code does not have overflow problems,
-> > +	 * if the cwnd < 1 million packets !!!
-> > +	 */
-> > +
-> > +	t =3D (__s32)(tcp_jiffies32 - ca->epoch_start);
-> > +	t +=3D usecs_to_jiffies(ca->delay_min);
-> > +	/* change the unit from HZ to bictcp_HZ */
-> > +	t <<=3D BICTCP_HZ;
-> > +	t /=3D HZ;
-> >
->=20
-> Note that this part could use usec resolution instead of jiffies
-> to avoid all these inlines for {u|n}secs_to_jiffies()=20
->=20
-> 	t =3D (__s32)(tcp_jiffies32 - ca->epoch_start) * (USEC_PER_JIFFY);
-> 	t +=3D ca->delay_min;
-> 	/* change the unit from usec to bictcp_HZ */
-> 	t <<=3D BICTCP_HZ;
-> 	t /=3D USEC_PER_SEC;
->=20
-> ie :
->=20
-> diff --git a/net/ipv4/tcp_cubic.c b/net/ipv4/tcp_cubic.c
-> index 8f8eefd3a3ce116aa8fa2b7ef85c7eb503fa8da7..9ba58e95dbe6b15098bcfd045=
-e1d0bb8874d713f 100644
-> --- a/net/ipv4/tcp_cubic.c
-> +++ b/net/ipv4/tcp_cubic.c
-> @@ -271,11 +271,11 @@ static inline void bictcp_update(struct bictcp *ca,=
- u32 cwnd, u32 acked)
->          * if the cwnd < 1 million packets !!!
->          */
-> =20
-> -       t =3D (s32)(tcp_jiffies32 - ca->epoch_start);
-> -       t +=3D usecs_to_jiffies(ca->delay_min);
-> -       /* change the unit from HZ to bictcp_HZ */
-> +       t =3D (s32)(tcp_jiffies32 - ca->epoch_start) * (USEC_PER_SEC / HZ=
-);
-> +       t +=3D ca->delay_min;
-> +       /* change the unit from usec to bictcp_HZ */
->         t <<=3D BICTCP_HZ;
-> -       do_div(t, HZ);
-> +       do_div(t, USEC_PER_SEC);
-> =20
->         if (t < ca->bic_K)              /* t - K */
->                 offs =3D ca->bic_K - t;
->=20
->=20
-> But this is a minor detail.
-Thanks for the suggestion and the corresponding explanation in tcp_cubic.c
 
-USEC_PER_JIFFY is simpler than my current approach.  I will give it a spin.
+
+On 1/21/20 1:22 PM, Finn Thain wrote:
+> The netif_stop_queue() call in sonic_send_packet() races with the
+> netif_wake_queue() call in sonic_interrupt(). This causes issues
+> like "NETDEV WATCHDOG: eth0 (macsonic): transmit queue 0 timed out".
+> Fix this by disabling interrupts when accessing tx_skb[] and next_tx.
+> Update a comment to clarify the synchronization properties.
+> 
+> Fixes: efcce839360f ("[PATCH] macsonic/jazzsonic network drivers update")
+> Tested-by: Stan Johnson <userm57@yahoo.com>
+> Signed-off-by: Finn Thain <fthain@telegraphics.com.au>
+
+> @@ -284,9 +287,16 @@ static irqreturn_t sonic_interrupt(int irq, void *dev_id)
+>  	struct net_device *dev = dev_id;
+>  	struct sonic_local *lp = netdev_priv(dev);
+>  	int status;
+> +	unsigned long flags;
+> +
+> +	spin_lock_irqsave(&lp->lock, flags);
+
+
+This is a hard irq handler, no need to block hard irqs.
+
+spin_lock() here is enough.
+
+> +
+> +	status = SONIC_READ(SONIC_ISR) & SONIC_IMR_DEFAULT;
+> +	if (!status) {
+> +		spin_unlock_irqrestore(&lp->lock, flags);
+>  
+> -	if (!(status = SONIC_READ(SONIC_ISR) & SONIC_IMR_DEFAULT))
+>  		return IRQ_NONE;
+> +	}
+>  
+>  	do {
+>  		if (status & SONIC_INT_PKTRX) {
+> @@ -300,11 +310,12 @@ static irqreturn_t sonic_interrupt(int irq, void *dev_id)
+>  			int td_status;
+>  			int freed_some = 0;
+>  
+> -			/* At this point, cur_tx is the index of a TD that is one of:
+> -			 *   unallocated/freed                          (status set   & tx_skb[entry] clear)
+> -			 *   allocated and sent                         (status set   & tx_skb[entry] set  )
+> -			 *   allocated and not yet sent                 (status clear & tx_skb[entry] set  )
+> -			 *   still being allocated by sonic_send_packet (status clear & tx_skb[entry] clear)
+> +			/* The state of a Transmit Descriptor may be inferred
+> +			 * from { tx_skb[entry], td_status } as follows.
+> +			 * { clear, clear } => the TD has never been used
+> +			 * { set,   clear } => the TD was handed to SONIC
+> +			 * { set,   set   } => the TD was handed back
+> +			 * { clear, set   } => the TD is available for re-use
+>  			 */
+>  
+>  			netif_dbg(lp, intr, dev, "%s: tx done\n", __func__);
+> @@ -406,7 +417,12 @@ static irqreturn_t sonic_interrupt(int irq, void *dev_id)
+>  		/* load CAM done */
+>  		if (status & SONIC_INT_LCD)
+>  			SONIC_WRITE(SONIC_ISR, SONIC_INT_LCD); /* clear the interrupt */
+> -	} while((status = SONIC_READ(SONIC_ISR) & SONIC_IMR_DEFAULT));
+> +
+> +		status = SONIC_READ(SONIC_ISR) & SONIC_IMR_DEFAULT;
+> +	} while (status);
+> +
+> +	spin_unlock_irqrestore(&lp->lock, flags);
+> +
+>  	return IRQ_HANDLED;
+
+
+
