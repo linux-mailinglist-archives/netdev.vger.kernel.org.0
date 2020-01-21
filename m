@@ -2,326 +2,128 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 19BD414416E
-	for <lists+netdev@lfdr.de>; Tue, 21 Jan 2020 17:05:08 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9A8F814416D
+	for <lists+netdev@lfdr.de>; Tue, 21 Jan 2020 17:05:07 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729253AbgAUQDE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 21 Jan 2020 11:03:04 -0500
-Received: from mail.dlink.ru ([178.170.168.18]:53276 "EHLO fd.dlink.ru"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726968AbgAUQBU (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 21 Jan 2020 11:01:20 -0500
-Received: by fd.dlink.ru (Postfix, from userid 5000)
-        id E59E71B20B06; Tue, 21 Jan 2020 19:01:14 +0300 (MSK)
-DKIM-Filter: OpenDKIM Filter v2.11.0 fd.dlink.ru E59E71B20B06
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=dlink.ru; s=mail;
-        t=1579622474; bh=Y0rhrc2hy1WySoTPM62A65bPBAMqU5jeTXgNrGdiVBs=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References;
-        b=Gak8YW5MGGONFnCP2eMyYBal3Eir85B6yKqeFSMq5OCB3fj1cBbbH+9fkjhRfBeT7
-         0u48X9NnItgZL+4qRhUFhq7ziH72NFJLybDtvks+if36mIN/s5OOTE6DWbGjQv9Dw/
-         DRYQrLyD0Bzyau3BO6xuKC1K4VtSCG84+DzKhmEU=
-X-Spam-Checker-Version: SpamAssassin 3.4.2 (2018-09-13) on mail.dlink.ru
-X-Spam-Level: 
-X-Spam-Status: No, score=-99.2 required=7.5 tests=BAYES_50,URIBL_BLOCKED,
-        USER_IN_WHITELIST autolearn=disabled version=3.4.2
-Received: from mail.rzn.dlink.ru (mail.rzn.dlink.ru [178.170.168.13])
-        by fd.dlink.ru (Postfix) with ESMTP id 5A7F51B2025C;
-        Tue, 21 Jan 2020 19:01:03 +0300 (MSK)
-DKIM-Filter: OpenDKIM Filter v2.11.0 fd.dlink.ru 5A7F51B2025C
-Received: from mail.rzn.dlink.ru (localhost [127.0.0.1])
-        by mail.rzn.dlink.ru (Postfix) with ESMTP id C07E11B2183C;
-        Tue, 21 Jan 2020 19:01:02 +0300 (MSK)
-Received: from mail.rzn.dlink.ru (localhost [127.0.0.1])
-        by mail.rzn.dlink.ru (Postfix) with ESMTPA;
-        Tue, 21 Jan 2020 19:01:02 +0300 (MSK)
+        id S1729401AbgAUQDA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 21 Jan 2020 11:03:00 -0500
+Received: from us-smtp-1.mimecast.com ([207.211.31.81]:41852 "EHLO
+        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1729108AbgAUQC6 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 21 Jan 2020 11:02:58 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1579622577;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=pvLMcX87nNXcIHIosOHPLdMsc+VCUVWgqOIanxRYoc8=;
+        b=Cq9ih83IcL8UVReWI7GvlPDJhMtjsuB3ccVWgXdVzA4jHjCjNfNFFhjErd2tE2MmrVmtsH
+        qH1zT4usxS1fjXbnchHd0WJ0Nza1iKUvdjUJ13pvyN9uTwwHFm9YvHVv0i3Fdd3BI87Hv5
+        U0nkPHu1pYbQBfJULVECNS1zRHj977Y=
+Received: from mail-lf1-f70.google.com (mail-lf1-f70.google.com
+ [209.85.167.70]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-163-1qNdlKEcOXCKiC_wU5Ro-w-1; Tue, 21 Jan 2020 11:02:53 -0500
+X-MC-Unique: 1qNdlKEcOXCKiC_wU5Ro-w-1
+Received: by mail-lf1-f70.google.com with SMTP id t8so992260lfc.21
+        for <netdev@vger.kernel.org>; Tue, 21 Jan 2020 08:02:53 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
+         :message-id:mime-version;
+        bh=pvLMcX87nNXcIHIosOHPLdMsc+VCUVWgqOIanxRYoc8=;
+        b=N6SxaLPvlnQfP3KTEEr+f8qe6yc689pvonkPiBcTgwQhA2y5KCa6Ml6eFo87tpQp6J
+         2oFxTiygjDKtoKE588pIAqyFwEfoIrYM1DN++k67hhtI7SBDSq3TSSP2TG2BH8kJp9mm
+         ikRqk3m2MKd2hSuGHePydLQtapRCEjv+81bTefT0fIeGKXFArwV668uf2aYVh2oj4G8U
+         2F+aTxj+g0pBxmBIqlt8b7lVkw1W0ITKqKH7ea9UtjjBynYcBa4SRktFHKYnUX6XGkxn
+         W1Yp11vPPriyz7vLjsHhYZPnU6ddXLiWyT1zkY2obQ7ltWmrmGzcb7xLx+LG2hwXH1xx
+         b/eA==
+X-Gm-Message-State: APjAAAVgj8CrtZ7R7ejDMFvGmYqUguZr/NKwDUgeNwwcM4wZrKOMk0/I
+        tML8KXA9r7vAZ4LJ2Ia1qL4GiFoJFQ4jqasqHXhfas2nG4f7jXdY3eXineiu+0N85JBI5apLw9Y
+        E7Pgxy/oO6mbTEDxp
+X-Received: by 2002:a2e:9ad0:: with SMTP id p16mr17420867ljj.111.1579622571876;
+        Tue, 21 Jan 2020 08:02:51 -0800 (PST)
+X-Google-Smtp-Source: APXvYqwcb2IG3VK4lqVUTU3D62aynf/9UnEw85nVi7PkLMNR3i8Lv2ZDTx6IUsam0e569+bUirYxxw==
+X-Received: by 2002:a2e:9ad0:: with SMTP id p16mr17420851ljj.111.1579622571578;
+        Tue, 21 Jan 2020 08:02:51 -0800 (PST)
+Received: from alrua-x1.borgediget.toke.dk ([85.204.121.218])
+        by smtp.gmail.com with ESMTPSA id u15sm1482121lfl.87.2020.01.21.08.02.50
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 21 Jan 2020 08:02:50 -0800 (PST)
+Received: by alrua-x1.borgediget.toke.dk (Postfix, from userid 1000)
+        id AA76818006B; Tue, 21 Jan 2020 17:02:49 +0100 (CET)
+From:   Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
+To:     Gautam Ramakrishnan <gautamramk@gmail.com>,
+        David Miller <davem@davemloft.net>
+Cc:     Linux Kernel Network Developers <netdev@vger.kernel.org>,
+        "Mohit P. Tahiliani" <tahiliani@nitk.edu.in>,
+        Jamal Hadi Salim <jhs@mojatatu.com>,
+        Dave Taht <dave.taht@gmail.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Stephen Hemminger <stephen@networkplumber.org>,
+        Leslie Monis <lesliemonis@gmail.com>
+Subject: Re: [PATCH net-next v4 05/10] pie: rearrange structure members and their initializations
+In-Reply-To: <CADAms0zvGp4ffqmvZV6RVOTfrosjt6Ht6EkyQ594yJYQFTJBXA@mail.gmail.com>
+References: <20200121141250.26989-1-gautamramk@gmail.com> <20200121141250.26989-6-gautamramk@gmail.com> <20200121.153522.1248409324581446114.davem@davemloft.net> <CADAms0zvGp4ffqmvZV6RVOTfrosjt6Ht6EkyQ594yJYQFTJBXA@mail.gmail.com>
+X-Clacks-Overhead: GNU Terry Pratchett
+Date:   Tue, 21 Jan 2020 17:02:49 +0100
+Message-ID: <87ftg8bxw6.fsf@toke.dk>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8;
- format=flowed
-Content-Transfer-Encoding: 8bit
-Date:   Tue, 21 Jan 2020 19:01:02 +0300
-From:   Alexander Lobakin <alobakin@dlink.ru>
-To:     Maxim Mikityanskiy <maximmi@mellanox.com>
-Cc:     Edward Cree <ecree@solarflare.com>,
-        Saeed Mahameed <saeedm@mellanox.com>, netdev@vger.kernel.org,
-        "David S. Miller" <davem@davemloft.net>,
-        Johannes Berg <johannes.berg@intel.com>,
-        Emmanuel Grumbach <emmanuel.grumbach@intel.com>,
-        Luca Coelho <luciano.coelho@intel.com>,
-        Tariq Toukan <tariqt@mellanox.com>,
-        Jiri Pirko <jiri@mellanox.com>,
-        Eric Dumazet <edumazet@google.com>
-Subject: Re: [PATCH net v2] net: Fix packet reordering caused by GRO and
- listified RX cooperation
-In-Reply-To: <20200121150917.6279-1-maximmi@mellanox.com>
-References: <20200121150917.6279-1-maximmi@mellanox.com>
-User-Agent: Roundcube Webmail/1.4.0
-Message-ID: <99961e583c3a880454caf7f0eb31b812@dlink.ru>
-X-Sender: alobakin@dlink.ru
+Content-Type: text/plain
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Maxim Mikityanskiy wrote 21.01.2020 18:09:
-> Commit 323ebb61e32b ("net: use listified RX for handling GRO_NORMAL
-> skbs") introduces batching of GRO_NORMAL packets in napi_frags_finish,
-> and commit 6570bc79c0df ("net: core: use listified Rx for GRO_NORMAL in
-> napi_gro_receive()") adds the same to napi_skb_finish. However,
-> dev_gro_receive (that is called just before napi_{frags,skb}_finish) 
-> can
-> also pass skbs to the networking stack: e.g., when the GRO session is
-> flushed, napi_gro_complete is called, which passes pp directly to
-> netif_receive_skb_internal, skipping napi->rx_list. It means that the
-> packet stored in pp will be handled by the stack earlier than the
-> packets that arrived before, but are still waiting in napi->rx_list. It
-> leads to TCP reorderings that can be observed in the TCPOFOQueue 
-> counter
-> in netstat.
-> 
-> This commit fixes the reordering issue by making napi_gro_complete also
-> use napi->rx_list, so that all packets going through GRO will keep 
-> their
-> order. In order to keep napi_gro_flush working properly, 
-> gro_normal_list
-> calls are moved after the flush to clear napi->rx_list.
-> 
-> iwlwifi calls napi_gro_flush directly and does the same thing that is
-> done by gro_normal_list, so the same change is applied there:
-> napi_gro_flush is moved to be before the flush of napi->rx_list.
-> 
-> A few other drivers also use napi_gro_flush (brocade/bna/bnad.c,
-> cortina/gemini.c, hisilicon/hns3/hns3_enet.c). The first two also use
-> napi_complete_done afterwards, which performs the gro_normal_list 
-> flush,
-> so they are fine. The latter calls napi_gro_receive right after
-> napi_gro_flush, so it can end up with non-empty napi->rx_list anyway.
+Gautam Ramakrishnan <gautamramk@gmail.com> writes:
 
-There's a call of napi_complete() at hisilicon/hns3/hns3_enet.c:3331,
-so its polling cannot end with non-empty napi->rx_list.
+> On Tue, Jan 21, 2020 at 8:05 PM David Miller <davem@davemloft.net> wrote:
+>>
+>> From: gautamramk@gmail.com
+>> Date: Tue, 21 Jan 2020 19:42:44 +0530
+>>
+>> > From: "Mohit P. Tahiliani" <tahiliani@nitk.edu.in>
+>> >
+>> > Rearrange the members of the structures such that they appear in
+>> > order of their types. Also, change the order of their
+>> > initializations to match the order in which they appear in the
+>> > structures. This improves the code's readability and consistency.
+>> >
+>> > Signed-off-by: Mohit P. Tahiliani <tahiliani@nitk.edu.in>
+>> > Signed-off-by: Leslie Monis <lesliemonis@gmail.com>
+>> > Signed-off-by: Gautam Ramakrishnan <gautamramk@gmail.com>
+>>
+>> What matters for structure member ordering is dense packing and
+>> grouping commonly-used-together elements for performance.
+>>
+> We shall reorder the variables as per their appearance in the
+> structure and re-submit. Could you elaborate a bit on dense packing?
 
-> Fixes: 323ebb61e32b ("net: use listified RX for handling GRO_NORMAL 
-> skbs")
-> Signed-off-by: Maxim Mikityanskiy <maximmi@mellanox.com>
-> Cc: Alexander Lobakin <alobakin@dlink.ru>
-> Cc: Edward Cree <ecree@solarflare.com>
-> ---
-> v2 changes:
-> 
-> Flush napi->rx_list after napi_gro_flush, not before. Do it in iwlwifi
-> as well.
-> 
-> Please also pay attention that there is gro_flush_oldest that also 
-> calls
-> napi_gro_complete and DOESN'T do gro_normal_list to flush 
-> napi->rx_list.
-> I guess, it's not required in this flow, but if I'm wrong, please tell
-> me.
+The compiler will align struct member offsets according to their size,
+adding padding as necessary to achieve this.
+So this struct:
 
-gro_flush_oldest() is only called inside dev_gro_receive(), so the
-subsequent mandatory napi_complete_done() will sweep all leftovers.
+struct s1 {
+       u32 mem32_1;
+       u64 mem64_1;
+       u32 mem32_2;
+       u64 mem64_2;
+};
 
->  drivers/net/wireless/intel/iwlwifi/pcie/rx.c |  4 +-
->  net/core/dev.c                               | 64 ++++++++++----------
->  2 files changed, 35 insertions(+), 33 deletions(-)
+will have 4 bytes of padding after both mem32_1 and mem32_2, whereas
+this struct:
 
-Acked-by: Alexander Lobakin <alobakin@dlink.ru>
+struct s2 {
+       u64 mem64_1;
+       u32 mem32_1;
+       u32 mem32_2;
+       u64 mem64_2;
+};
 
-> diff --git a/drivers/net/wireless/intel/iwlwifi/pcie/rx.c
-> b/drivers/net/wireless/intel/iwlwifi/pcie/rx.c
-> index 452da44a21e0..f0b8ff67a1bc 100644
-> --- a/drivers/net/wireless/intel/iwlwifi/pcie/rx.c
-> +++ b/drivers/net/wireless/intel/iwlwifi/pcie/rx.c
-> @@ -1529,13 +1529,13 @@ static void iwl_pcie_rx_handle(struct
-> iwl_trans *trans, int queue)
-> 
->  	napi = &rxq->napi;
->  	if (napi->poll) {
-> +		napi_gro_flush(napi, false);
-> +
->  		if (napi->rx_count) {
->  			netif_receive_skb_list(&napi->rx_list);
->  			INIT_LIST_HEAD(&napi->rx_list);
->  			napi->rx_count = 0;
->  		}
-> -
-> -		napi_gro_flush(napi, false);
->  	}
-> 
->  	iwl_pcie_rxq_restock(trans, rxq);
-> diff --git a/net/core/dev.c b/net/core/dev.c
-> index e82e9b82dfd9..cca03914108a 100644
-> --- a/net/core/dev.c
-> +++ b/net/core/dev.c
-> @@ -5491,9 +5491,29 @@ static void flush_all_backlogs(void)
->  	put_online_cpus();
->  }
-> 
-> +/* Pass the currently batched GRO_NORMAL SKBs up to the stack. */
-> +static void gro_normal_list(struct napi_struct *napi)
-> +{
-> +	if (!napi->rx_count)
-> +		return;
-> +	netif_receive_skb_list_internal(&napi->rx_list);
-> +	INIT_LIST_HEAD(&napi->rx_list);
-> +	napi->rx_count = 0;
-> +}
-> +
-> +/* Queue one GRO_NORMAL SKB up for list processing. If batch size 
-> exceeded,
-> + * pass the whole batch up to the stack.
-> + */
-> +static void gro_normal_one(struct napi_struct *napi, struct sk_buff 
-> *skb)
-> +{
-> +	list_add_tail(&skb->list, &napi->rx_list);
-> +	if (++napi->rx_count >= gro_normal_batch)
-> +		gro_normal_list(napi);
-> +}
-> +
->  INDIRECT_CALLABLE_DECLARE(int inet_gro_complete(struct sk_buff *, 
-> int));
->  INDIRECT_CALLABLE_DECLARE(int ipv6_gro_complete(struct sk_buff *, 
-> int));
-> -static int napi_gro_complete(struct sk_buff *skb)
-> +static int napi_gro_complete(struct napi_struct *napi, struct sk_buff 
-> *skb)
->  {
->  	struct packet_offload *ptype;
->  	__be16 type = skb->protocol;
-> @@ -5526,7 +5546,8 @@ static int napi_gro_complete(struct sk_buff *skb)
->  	}
-> 
->  out:
-> -	return netif_receive_skb_internal(skb);
-> +	gro_normal_one(napi, skb);
-> +	return NET_RX_SUCCESS;
->  }
-> 
->  static void __napi_gro_flush_chain(struct napi_struct *napi, u32 
-> index,
-> @@ -5539,7 +5560,7 @@ static void __napi_gro_flush_chain(struct
-> napi_struct *napi, u32 index,
->  		if (flush_old && NAPI_GRO_CB(skb)->age == jiffies)
->  			return;
->  		skb_list_del_init(skb);
-> -		napi_gro_complete(skb);
-> +		napi_gro_complete(napi, skb);
->  		napi->gro_hash[index].count--;
->  	}
-> 
-> @@ -5641,7 +5662,7 @@ static void gro_pull_from_frag0(struct sk_buff
-> *skb, int grow)
->  	}
->  }
-> 
-> -static void gro_flush_oldest(struct list_head *head)
-> +static void gro_flush_oldest(struct napi_struct *napi, struct 
-> list_head *head)
->  {
->  	struct sk_buff *oldest;
-> 
-> @@ -5657,7 +5678,7 @@ static void gro_flush_oldest(struct list_head 
-> *head)
->  	 * SKB to the chain.
->  	 */
->  	skb_list_del_init(oldest);
-> -	napi_gro_complete(oldest);
-> +	napi_gro_complete(napi, oldest);
->  }
-> 
->  INDIRECT_CALLABLE_DECLARE(struct sk_buff *inet_gro_receive(struct 
-> list_head *,
-> @@ -5733,7 +5754,7 @@ static enum gro_result dev_gro_receive(struct
-> napi_struct *napi, struct sk_buff
-> 
->  	if (pp) {
->  		skb_list_del_init(pp);
-> -		napi_gro_complete(pp);
-> +		napi_gro_complete(napi, pp);
->  		napi->gro_hash[hash].count--;
->  	}
-> 
-> @@ -5744,7 +5765,7 @@ static enum gro_result dev_gro_receive(struct
-> napi_struct *napi, struct sk_buff
->  		goto normal;
-> 
->  	if (unlikely(napi->gro_hash[hash].count >= MAX_GRO_SKBS)) {
-> -		gro_flush_oldest(gro_head);
-> +		gro_flush_oldest(napi, gro_head);
->  	} else {
->  		napi->gro_hash[hash].count++;
->  	}
-> @@ -5802,26 +5823,6 @@ struct packet_offload
-> *gro_find_complete_by_type(__be16 type)
->  }
->  EXPORT_SYMBOL(gro_find_complete_by_type);
-> 
-> -/* Pass the currently batched GRO_NORMAL SKBs up to the stack. */
-> -static void gro_normal_list(struct napi_struct *napi)
-> -{
-> -	if (!napi->rx_count)
-> -		return;
-> -	netif_receive_skb_list_internal(&napi->rx_list);
-> -	INIT_LIST_HEAD(&napi->rx_list);
-> -	napi->rx_count = 0;
-> -}
-> -
-> -/* Queue one GRO_NORMAL SKB up for list processing. If batch size 
-> exceeded,
-> - * pass the whole batch up to the stack.
-> - */
-> -static void gro_normal_one(struct napi_struct *napi, struct sk_buff 
-> *skb)
-> -{
-> -	list_add_tail(&skb->list, &napi->rx_list);
-> -	if (++napi->rx_count >= gro_normal_batch)
-> -		gro_normal_list(napi);
-> -}
-> -
->  static void napi_skb_free_stolen_head(struct sk_buff *skb)
->  {
->  	skb_dst_drop(skb);
-> @@ -6200,8 +6201,6 @@ bool napi_complete_done(struct napi_struct *n,
-> int work_done)
->  				 NAPIF_STATE_IN_BUSY_POLL)))
->  		return false;
-> 
-> -	gro_normal_list(n);
-> -
->  	if (n->gro_bitmask) {
->  		unsigned long timeout = 0;
-> 
-> @@ -6217,6 +6216,9 @@ bool napi_complete_done(struct napi_struct *n,
-> int work_done)
->  			hrtimer_start(&n->timer, ns_to_ktime(timeout),
->  				      HRTIMER_MODE_REL_PINNED);
->  	}
-> +
-> +	gro_normal_list(n);
-> +
->  	if (unlikely(!list_empty(&n->poll_list))) {
->  		/* If n->poll_list is not empty, we need to mask irqs */
->  		local_irq_save(flags);
-> @@ -6548,8 +6550,6 @@ static int napi_poll(struct napi_struct *n,
-> struct list_head *repoll)
->  		goto out_unlock;
->  	}
-> 
-> -	gro_normal_list(n);
-> -
->  	if (n->gro_bitmask) {
->  		/* flush too old packets
->  		 * If HZ < 1000, flush all packets.
-> @@ -6557,6 +6557,8 @@ static int napi_poll(struct napi_struct *n,
-> struct list_head *repoll)
->  		napi_gro_flush(n, HZ >= 1000);
->  	}
-> 
-> +	gro_normal_list(n);
-> +
->  	/* Some drivers may have called napi_schedule
->  	 * prior to exhausting their budget.
->  	 */
+won't. So sizeof(struct s1) == 32, and sizeof(struct s2) == 24, and we
+say that s2 is densely packed, whereas s1 has holes in it.
 
-Regards,
-ᚷ ᛖ ᚢ ᚦ ᚠ ᚱ
+The pahole tool is useful to see the layout of compiled structures
+(pahole -C). It will also point out any holes.
+
+-Toke
+
