@@ -2,198 +2,196 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id C449C143DFB
-	for <lists+netdev@lfdr.de>; Tue, 21 Jan 2020 14:26:26 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 54822143E97
+	for <lists+netdev@lfdr.de>; Tue, 21 Jan 2020 14:50:24 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728733AbgAUN0Z (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 21 Jan 2020 08:26:25 -0500
-Received: from correo.us.es ([193.147.175.20]:57608 "EHLO mail.us.es"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727817AbgAUN0Y (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 21 Jan 2020 08:26:24 -0500
-Received: from antivirus1-rhel7.int (unknown [192.168.2.11])
-        by mail.us.es (Postfix) with ESMTP id 39D4BC5154
-        for <netdev@vger.kernel.org>; Tue, 21 Jan 2020 14:26:23 +0100 (CET)
-Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
-        by antivirus1-rhel7.int (Postfix) with ESMTP id 25F35DA7A2
-        for <netdev@vger.kernel.org>; Tue, 21 Jan 2020 14:26:23 +0100 (CET)
-Received: by antivirus1-rhel7.int (Postfix, from userid 99)
-        id 1A814DA79E; Tue, 21 Jan 2020 14:26:23 +0100 (CET)
-X-Spam-Checker-Version: SpamAssassin 3.4.1 (2015-04-28) on antivirus1-rhel7.int
-X-Spam-Level: 
-X-Spam-Status: No, score=-108.2 required=7.5 tests=ALL_TRUSTED,BAYES_50,
-        SMTPAUTH_US2,URIBL_BLOCKED,USER_IN_WHITELIST autolearn=disabled version=3.4.1
-Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
-        by antivirus1-rhel7.int (Postfix) with ESMTP id 128D7DA718;
-        Tue, 21 Jan 2020 14:26:19 +0100 (CET)
-Received: from 192.168.1.97 (192.168.1.97)
- by antivirus1-rhel7.int (F-Secure/fsigk_smtp/550/antivirus1-rhel7.int);
- Tue, 21 Jan 2020 14:26:19 +0100 (CET)
-X-Virus-Status: clean(F-Secure/fsigk_smtp/550/antivirus1-rhel7.int)
-Received: from us.es (unknown [90.77.255.23])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        (Authenticated sender: 1984lsi)
-        by entrada.int (Postfix) with ESMTPSA id E95B042EE38E;
-        Tue, 21 Jan 2020 14:26:18 +0100 (CET)
-Date:   Tue, 21 Jan 2020 14:26:18 +0100
-X-SMTPAUTHUS: auth mail.us.es
-From:   Pablo Neira Ayuso <pablo@netfilter.org>
-To:     Florian Westphal <fw@strlen.de>
-Cc:     netfilter-devel@vger.kernel.org, netdev@vger.kernel.org,
-        syzkaller-bugs@googlegroups.com,
-        syzbot+156a04714799b1d480bc@syzkaller.appspotmail.com
-Subject: Re: [PATCH nf] netfilter: nf_tables: check for valid chain type
- pointer before dereference
-Message-ID: <20200121132618.aykyybudttbxiusx@salvia>
-References: <00000000000074ed27059c33dedc@google.com>
- <20200116211109.9119-1-fw@strlen.de>
- <20200118203057.6stoe6axtyoxfcxz@salvia>
+        id S1729187AbgAUNuT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 21 Jan 2020 08:50:19 -0500
+Received: from us-smtp-delivery-1.mimecast.com ([207.211.31.120]:24927 "EHLO
+        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+        with ESMTP id S1729052AbgAUNuS (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 21 Jan 2020 08:50:18 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1579614617;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=QSA9nedBLY+hJJ/U902gs3UmyLK6X1rNeQVNhq9BcRk=;
+        b=DpBjrrCfpL3ADMet6GmkzlxC3y2FWkxNkrspbkdvVlHQl/kSKsosELnCk/gXcj64Iczrfx
+        8rsqbiGkLjrsLFOcMcEX4l0MXjhBJgzCMmhaHibVEGF+K3Kwb/F7Ywj5yxfTOepQotLMVI
+        eVwEOjNHo280x9GWw9J754ygDx/X/Y8=
+Received: from mail-lf1-f71.google.com (mail-lf1-f71.google.com
+ [209.85.167.71]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-167-P8ERNQS9MJqrn7EKqWlsuA-1; Tue, 21 Jan 2020 08:50:16 -0500
+X-MC-Unique: P8ERNQS9MJqrn7EKqWlsuA-1
+Received: by mail-lf1-f71.google.com with SMTP id y23so559548lfh.7
+        for <netdev@vger.kernel.org>; Tue, 21 Jan 2020 05:50:15 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
+         :message-id:mime-version:content-transfer-encoding;
+        bh=QSA9nedBLY+hJJ/U902gs3UmyLK6X1rNeQVNhq9BcRk=;
+        b=a72riFu5kNJi/kkJj61puZRGTTM0zJHOj/zxfCYnHjYnQXihpvABSyJBb6JoBay0R3
+         dgH/SYRZlimkVTiU8G9K1fWvfD0oGzGhL0X4/E3m/3r9Ad7VdNA0M/QJrkAYk6HNWVRX
+         P0epBCJBQeqGV5vmvBzCMqdwD8RsKmsGlNtB92FtQ+uOE2SW8o+k1PRiD7dYsqnZojnm
+         WO2jpX0L4I+VAKHuze7aVJzc4qtka93l/TsYXGennGdyWa9FjiB5b9brwWpuM8BQJSQ0
+         MwMtaYUMlo7jGgLCuQLjO5mfMEqx2mcNBSSovujgQ6LUFZUtmUGp4P3mSoMG7/XF7W6P
+         VA+Q==
+X-Gm-Message-State: APjAAAWKOm2fahQlDvjh8Wa96pkdRnbtWOkiMK2VuicrN9YUb46rAb0Z
+        SXtZtF26Yj+Xfa1x/wCOAAuv8b1j8nqLJqRUDc1kaWnCzR0jKCN7OvSyKwue8i8q6q0gWhNbWpX
+        dyzu68LiBOg+/jNvR
+X-Received: by 2002:a19:48c5:: with SMTP id v188mr2838249lfa.100.1579614614303;
+        Tue, 21 Jan 2020 05:50:14 -0800 (PST)
+X-Google-Smtp-Source: APXvYqyn5xqRhHmPpySMcmkFZmX06i6ruLvGvbAL8D8ASe1wRGX+vhBALjz8OzpwILxiqeG3ZXt2kA==
+X-Received: by 2002:a19:48c5:: with SMTP id v188mr2838216lfa.100.1579614613963;
+        Tue, 21 Jan 2020 05:50:13 -0800 (PST)
+Received: from alrua-x1.borgediget.toke.dk ([85.204.121.218])
+        by smtp.gmail.com with ESMTPSA id r2sm18840207lfn.13.2020.01.21.05.50.13
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 21 Jan 2020 05:50:13 -0800 (PST)
+Received: by alrua-x1.borgediget.toke.dk (Postfix, from userid 1000)
+        id 1B9471804D6; Tue, 21 Jan 2020 14:33:47 +0100 (CET)
+From:   Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
+To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Cc:     Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        Andrii Nakryiko <andriin@fb.com>,
+        Doug Ledford <dledford@redhat.com>,
+        Jason Gunthorpe <jgg@ziepe.ca>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Jesper Dangaard Brouer <brouer@redhat.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Ingo Molnar <mingo@redhat.com>,
+        Arnaldo Carvalho de Melo <acme@kernel.org>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
+        Jiri Olsa <jolsa@redhat.com>,
+        Namhyung Kim <namhyung@kernel.org>,
+        Shuah Khan <shuah@kernel.org>,
+        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        open list <linux-kernel@vger.kernel.org>,
+        linux-rdma@vger.kernel.org,
+        "open list\:KERNEL SELFTEST FRAMEWORK" 
+        <linux-kselftest@vger.kernel.org>,
+        clang-built-linux@googlegroups.com
+Subject: Re: [PATCH bpf-next v5 00/11] tools: Use consistent libbpf include paths everywhere
+In-Reply-To: <CAEf4BzYNp81_bOFSEZR=AcruC2ms76fCWQGit+=2QZrFAXpGqg@mail.gmail.com>
+References: <157952560001.1683545.16757917515390545122.stgit@toke.dk> <CAEf4BzYNp81_bOFSEZR=AcruC2ms76fCWQGit+=2QZrFAXpGqg@mail.gmail.com>
+X-Clacks-Overhead: GNU Terry Pratchett
+Date:   Tue, 21 Jan 2020 14:33:46 +0100
+Message-ID: <874kwpndc5.fsf@toke.dk>
 MIME-Version: 1.0
-Content-Type: multipart/mixed; boundary="eyqpjkw3v7d3ikxx"
-Content-Disposition: inline
-In-Reply-To: <20200118203057.6stoe6axtyoxfcxz@salvia>
-User-Agent: NeoMutt/20170113 (1.7.2)
-X-Virus-Scanned: ClamAV using ClamSMTP
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Andrii Nakryiko <andrii.nakryiko@gmail.com> writes:
 
---eyqpjkw3v7d3ikxx
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+> On Mon, Jan 20, 2020 at 5:08 AM Toke H=C3=B8iland-J=C3=B8rgensen <toke@re=
+dhat.com> wrote:
+>>
+>> We are currently being somewhat inconsistent with the libbpf include pat=
+hs,
+>> which makes it difficult to move files from the kernel into an external
+>> libbpf-using project without adjusting include paths.
+>>
+>> Having the bpf/ subdir of $INCLUDEDIR in the include path has never been=
+ a
+>> requirement for building against libbpf before, and indeed the libbpf pk=
+g-config
+>> file doesn't include it. So let's make all libbpf includes across the ke=
+rnel
+>> tree use the bpf/ prefix in their includes. Since bpftool skeleton gener=
+ation
+>> emits code with a libbpf include, this also ensures that those can be us=
+ed in
+>> existing external projects using the regular pkg-config include path.
+>>
+>> This turns out to be a somewhat invasive change in the number of files t=
+ouched;
+>> however, the actual changes to files are fairly trivial (most of them ar=
+e simply
+>> made with 'sed'). The series is split to make the change for one tool su=
+bdir at
+>> a time, while trying not to break the build along the way. It is structu=
+red like
+>> this:
+>>
+>> - Patch 1-3: Trivial fixes to Makefiles for issues I discovered while ch=
+anging
+>>   the include paths.
+>>
+>> - Patch 4-8: Change the include directives to use the bpf/ prefix, and u=
+pdates
+>>   Makefiles to make sure tools/lib/ is part of the include path, but wit=
+hout
+>>   removing tools/lib/bpf
+>>
+>> - Patch 9-11: Remove tools/lib/bpf from include paths to make sure we do=
+n't
+>>   inadvertently re-introduce includes without the bpf/ prefix.
+>>
+>> Changelog:
+>>
+>> v5:
+>>   - Combine the libbpf build rules in selftests Makefile (using Andrii's
+>>     suggestion for a make rule).
+>>   - Re-use self-tests libbpf build for runqslower (new patch 10)
+>>   - Formatting fixes
+>>
+>> v4:
+>>   - Move runqslower error on missing BTF into make rule
+>>   - Make sure we don't always force a rebuild selftests
+>>   - Rebase on latest bpf-next (dropping patch 11)
+>>
+>> v3:
+>>   - Don't add the kernel build dir to the runqslower Makefile, pass it i=
+n from
+>>     selftests instead.
+>>   - Use libbpf's 'make install_headers' in selftests instead of trying to
+>>     generate bpf_helper_defs.h in-place (to also work on read-only files=
+ystems).
+>>   - Use a scratch builddir for both libbpf and bpftool when building in =
+selftests.
+>>   - Revert bpf_helpers.h to quoted include instead of angled include wit=
+h a bpf/
+>>     prefix.
+>>   - Fix a few style nits from Andrii
+>>
+>> v2:
+>>   - Do a full cleanup of libbpf includes instead of just changing the
+>>     bpf_helper_defs.h include.
+>>
+>> ---
+>>
+>
+> Looks good, it's a clear improvement on what we had before, thanks!
+>
+> It doesn't re-build bpftool when bpftool sources changes, but I think
+> it was like that even before, so no need to block on that. Would be
+> nice to have a follow up fixing that, though. $(wildcard
+> $(BPFTOOL_DIR)/*.[ch] $(BPFTOOL_DIR)/Makefile) should do it, same as
+> for libbpf.
 
-On Sat, Jan 18, 2020 at 09:30:57PM +0100, Pablo Neira Ayuso wrote:
-> On Thu, Jan 16, 2020 at 10:11:09PM +0100, Florian Westphal wrote:
-> > Its possible to create tables in a family that isn't supported/known.
-> > Then, when adding a base chain, the table pointer can be NULL.
-> > 
-> > This gets us a NULL ptr dereference in nf_tables_addchain().
-> > 
-> > Fixes: baae3e62f31618 ("netfilter: nf_tables: fix chain type module reference handling")
-> > Reported-by: syzbot+156a04714799b1d480bc@syzkaller.appspotmail.com
-> > Signed-off-by: Florian Westphal <fw@strlen.de>
-> > ---
-> >  net/netfilter/nf_tables_api.c | 8 ++++++++
-> >  1 file changed, 8 insertions(+)
-> > 
-> > diff --git a/net/netfilter/nf_tables_api.c b/net/netfilter/nf_tables_api.c
-> > index 65f51a2e9c2a..e8976128cdb1 100644
-> > --- a/net/netfilter/nf_tables_api.c
-> > +++ b/net/netfilter/nf_tables_api.c
-> > @@ -953,6 +953,9 @@ static int nf_tables_newtable(struct net *net, struct sock *nlsk,
-> >  	struct nft_ctx ctx;
-> >  	int err;
-> >  
-> > +	if (family >= NFPROTO_NUMPROTO)
-> > +		return -EAFNOSUPPORT;
-> > +
-> >  	lockdep_assert_held(&net->nft.commit_mutex);
-> >  	attr = nla[NFTA_TABLE_NAME];
-> >  	table = nft_table_lookup(net, attr, family, genmask);
-> > @@ -1765,6 +1768,9 @@ static int nft_chain_parse_hook(struct net *net,
-> >  	    ha[NFTA_HOOK_PRIORITY] == NULL)
-> >  		return -EINVAL;
-> >  
-> > +	if (family >= NFPROTO_NUMPROTO)
-> > +		return -EAFNOSUPPORT;
-> > +
-> >  	hook->num = ntohl(nla_get_be32(ha[NFTA_HOOK_HOOKNUM]));
-> >  	hook->priority = ntohl(nla_get_be32(ha[NFTA_HOOK_PRIORITY]));
-> >  
-> > @@ -1774,6 +1780,8 @@ static int nft_chain_parse_hook(struct net *net,
-> >  						   family, autoload);
-> >  		if (IS_ERR(type))
-> >  			return PTR_ERR(type);
-> > +	} else if (!type) {
-> > +		return -EOPNOTSUPP;
-> 
-> I think this check should be enough.
-> 
-> I mean, NFPROTO_NUMPROTO still allows for creating tables for families
-> that don't exist (<= NFPROTO_NUMPROTO) and why bother on creating such
-> table. As long as such table does not crash the kernel, I think it's
-> fine. No changes can be attached anymore anyway.
-> 
-> Otherwise, if a helper function to check for the families that are
-> really supported could be another alternative. But not sure it is
-> worth?
+Yeah, I did realise there was some potential for improvement for bpftool
+as well, but I got enough of Makefiles for now :)
 
-Not worth.
+I'll see if I can't circle back to this at some point...
 
-Probably this patch instead? Just make sure that access to the chain
-type array is safe, no direct access to chain_type[][] anymore.
+> So, for the series:
+>
+> Acked-by: Andrii Nakryiko <andriin@fb.com>
+> Tested-by: Andrii Nakryiko <andriin@fb.com>
 
-This includes the check for the default type too, since it cannot be
-assume to always have a filter chain for unsupported families.
+Thanks!
 
-Thanks for explaining.
+-Toke
 
---eyqpjkw3v7d3ikxx
-Content-Type: text/x-diff; charset=us-ascii
-Content-Disposition: attachment; filename="x.patch"
-
-diff --git a/net/netfilter/nf_tables_api.c b/net/netfilter/nf_tables_api.c
-index 65f51a2e9c2a..4aa01c1253b1 100644
---- a/net/netfilter/nf_tables_api.c
-+++ b/net/netfilter/nf_tables_api.c
-@@ -553,14 +553,27 @@ static inline u64 nf_tables_alloc_handle(struct nft_table *table)
- static const struct nft_chain_type *chain_type[NFPROTO_NUMPROTO][NFT_CHAIN_T_MAX];
- 
- static const struct nft_chain_type *
-+__nft_chain_type_get(u8 family, enum nft_chain_types type)
-+{
-+	if (family >= NFPROTO_NUMPROTO ||
-+	    type >= NFT_CHAIN_T_MAX)
-+		return NULL;
-+
-+	return chain_type[family][type];
-+}
-+
-+static const struct nft_chain_type *
- __nf_tables_chain_type_lookup(const struct nlattr *nla, u8 family)
- {
-+	const struct nft_chain_type *type;
- 	int i;
- 
- 	for (i = 0; i < NFT_CHAIN_T_MAX; i++) {
--		if (chain_type[family][i] != NULL &&
--		    !nla_strcmp(nla, chain_type[family][i]->name))
--			return chain_type[family][i];
-+		type = __nft_chain_type_get(family, i);
-+		if (!type)
-+			continue;
-+		if (!nla_strcmp(nla, type->name))
-+			return type;
- 	}
- 	return NULL;
- }
-@@ -1162,11 +1175,8 @@ static void nf_tables_table_destroy(struct nft_ctx *ctx)
- 
- void nft_register_chain_type(const struct nft_chain_type *ctype)
- {
--	if (WARN_ON(ctype->family >= NFPROTO_NUMPROTO))
--		return;
--
- 	nfnl_lock(NFNL_SUBSYS_NFTABLES);
--	if (WARN_ON(chain_type[ctype->family][ctype->type] != NULL)) {
-+	if (WARN_ON(__nft_chain_type_get(ctype->family, ctype->type))) {
- 		nfnl_unlock(NFNL_SUBSYS_NFTABLES);
- 		return;
- 	}
-@@ -1768,7 +1778,10 @@ static int nft_chain_parse_hook(struct net *net,
- 	hook->num = ntohl(nla_get_be32(ha[NFTA_HOOK_HOOKNUM]));
- 	hook->priority = ntohl(nla_get_be32(ha[NFTA_HOOK_PRIORITY]));
- 
--	type = chain_type[family][NFT_CHAIN_T_DEFAULT];
-+	type = __nft_chain_type_get(family, NFT_CHAIN_T_DEFAULT);
-+	if (!type)
-+		return -EOPNOTSUPP;
-+
- 	if (nla[NFTA_CHAIN_TYPE]) {
- 		type = nf_tables_chain_type_lookup(net, nla[NFTA_CHAIN_TYPE],
- 						   family, autoload);
-
---eyqpjkw3v7d3ikxx--
