@@ -2,274 +2,74 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 640861441DF
-	for <lists+netdev@lfdr.de>; Tue, 21 Jan 2020 17:17:10 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8CF111441FA
+	for <lists+netdev@lfdr.de>; Tue, 21 Jan 2020 17:19:43 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729451AbgAUQQ7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 21 Jan 2020 11:16:59 -0500
-Received: from mail-il-dmz.mellanox.com ([193.47.165.129]:43530 "EHLO
-        mellanox.co.il" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S1729360AbgAUQQ5 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 21 Jan 2020 11:16:57 -0500
-Received: from Internal Mail-Server by MTLPINE1 (envelope-from paulb@mellanox.com)
-        with ESMTPS (AES256-SHA encrypted); 21 Jan 2020 18:16:54 +0200
-Received: from reg-r-vrt-019-120.mtr.labs.mlnx (reg-r-vrt-019-120.mtr.labs.mlnx [10.213.19.120])
-        by labmailer.mlnx (8.13.8/8.13.8) with ESMTP id 00LGGrX8008966;
-        Tue, 21 Jan 2020 18:16:54 +0200
-From:   Paul Blakey <paulb@mellanox.com>
-To:     Paul Blakey <paulb@mellanox.com>,
-        Saeed Mahameed <saeedm@mellanox.com>,
-        Oz Shlomo <ozsh@mellanox.com>,
-        Jakub Kicinski <jakub.kicinski@netronome.com>,
-        Vlad Buslov <vladbu@mellanox.com>,
-        David Miller <davem@davemloft.net>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        Jiri Pirko <jiri@resnulli.us>
-Subject: [PATCH net-next-mlx5 13/13] net/mlx5e: Restore tunnel metadata on miss
-Date:   Tue, 21 Jan 2020 18:16:22 +0200
-Message-Id: <1579623382-6934-14-git-send-email-paulb@mellanox.com>
-X-Mailer: git-send-email 1.8.4.3
-In-Reply-To: <1579623382-6934-1-git-send-email-paulb@mellanox.com>
-References: <1579623382-6934-1-git-send-email-paulb@mellanox.com>
+        id S1729387AbgAUQTR convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Tue, 21 Jan 2020 11:19:17 -0500
+Received: from coyote.holtmann.net ([212.227.132.17]:58591 "EHLO
+        mail.holtmann.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726555AbgAUQTQ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 21 Jan 2020 11:19:16 -0500
+Received: from marcel-macpro.fritz.box (p4FEFC5A7.dip0.t-ipconnect.de [79.239.197.167])
+        by mail.holtmann.org (Postfix) with ESMTPSA id CF07BCECE3;
+        Tue, 21 Jan 2020 17:28:33 +0100 (CET)
+Content-Type: text/plain;
+        charset=us-ascii
+Mime-Version: 1.0 (Mac OS X Mail 13.0 \(3608.40.2.2.4\))
+Subject: Re: [PATCH] net/bluetooth: remove __get_channel/dir
+From:   Marcel Holtmann <marcel@holtmann.org>
+In-Reply-To: <1579596583-258090-1-git-send-email-alex.shi@linux.alibaba.com>
+Date:   Tue, 21 Jan 2020 17:19:14 +0100
+Cc:     Johan Hedberg <johan.hedberg@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        "Gustavo A. R. Silva" <gustavo@embeddedor.com>,
+        linux-bluetooth@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Content-Transfer-Encoding: 8BIT
+Message-Id: <8CA3EF63-F688-48B2-A21D-16FDBC809EDE@holtmann.org>
+References: <1579596583-258090-1-git-send-email-alex.shi@linux.alibaba.com>
+To:     Alex Shi <alex.shi@linux.alibaba.com>
+X-Mailer: Apple Mail (2.3608.40.2.2.4)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-In tunnel and chains setup, we decapsulate the packets on first chain hop,
-if we miss on later chains, the packet will comes up without tunnel header,
-so it won't be taken by the tunnel device automatically, which fills the
-tunnel metadata, and further tc tunnel matches won't work.
+Hi Alex,
 
-To fix that:
-On miss, we get the tunnel mapping id, which was set on the chain 0 rule
-that decapsulated the packet. This rule matched the tunnel outer
-headers. From the tunnel mapping id, we get to this tunnel matches
-and restore the equivalent tunnel info metadata dst on the skb.
-We also set the skb->dev to the relevant device (tunnel device).
-Now further tc processing can be done on the relevant device.
+> These 2 macros are never used from first git commit Linux-2.6.12-rc2. So
+> better to remove them.
+> 
+> Signed-off-by: Alex Shi <alex.shi@linux.alibaba.com>
+> Cc: Marcel Holtmann <marcel@holtmann.org> 
+> Cc: Johan Hedberg <johan.hedberg@gmail.com> 
+> Cc: "David S. Miller" <davem@davemloft.net> 
+> Cc: "Gustavo A. R. Silva" <gustavo@embeddedor.com> 
+> Cc: linux-bluetooth@vger.kernel.org 
+> Cc: netdev@vger.kernel.org 
+> Cc: linux-kernel@vger.kernel.org 
+> ---
+> net/bluetooth/rfcomm/core.c | 2 --
+> 1 file changed, 2 deletions(-)
+> 
+> diff --git a/net/bluetooth/rfcomm/core.c b/net/bluetooth/rfcomm/core.c
+> index 3a9e9d9670be..825adff79f13 100644
+> --- a/net/bluetooth/rfcomm/core.c
+> +++ b/net/bluetooth/rfcomm/core.c
+> @@ -73,8 +73,6 @@ static struct rfcomm_session *rfcomm_session_create(bdaddr_t *src,
+> 
+> /* ---- RFCOMM frame parsing macros ---- */
+> #define __get_dlci(b)     ((b & 0xfc) >> 2)
+> -#define __get_channel(b)  ((b & 0xf8) >> 3)
+> -#define __get_dir(b)      ((b & 0x04) >> 2)
+> #define __get_type(b)     ((b & 0xef))
+> 
+> #define __test_ea(b)      ((b & 0x01))
 
-Signed-off-by: Paul Blakey <paulb@mellanox.com>
-Reviewed-by: Roi Dayan <roid@mellanox.com>
-Reviewed-by: Oz Shlomo <ozsh@mellanox.com>
-Reviewed-by: Mark Bloch <markb@mellanox.com>
----
- drivers/net/ethernet/mellanox/mlx5/core/en_rx.c |  10 ++-
- drivers/net/ethernet/mellanox/mlx5/core/en_tc.c | 108 ++++++++++++++++++++++--
- drivers/net/ethernet/mellanox/mlx5/core/en_tc.h |   9 +-
- 3 files changed, 115 insertions(+), 12 deletions(-)
+it seems we are also not using __dir macro either.
 
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_rx.c b/drivers/net/ethernet/mellanox/mlx5/core/en_rx.c
-index 4402a53..59d01a8 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en_rx.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en_rx.c
-@@ -1191,6 +1191,7 @@ void mlx5e_handle_rx_cqe_rep(struct mlx5e_rq *rq, struct mlx5_cqe64 *cqe)
- 	struct mlx5e_priv *priv = netdev_priv(netdev);
- 	struct mlx5e_rep_priv *rpriv  = priv->ppriv;
- 	struct mlx5_eswitch_rep *rep = rpriv->rep;
-+	struct mlx5e_tc_update_priv tc_priv = {};
- 	struct mlx5_wq_cyc *wq = &rq->wqe.wq;
- 	struct mlx5e_wqe_frag_info *wi;
- 	struct sk_buff *skb;
-@@ -1223,11 +1224,13 @@ void mlx5e_handle_rx_cqe_rep(struct mlx5e_rq *rq, struct mlx5_cqe64 *cqe)
- 	if (rep->vlan && skb_vlan_tag_present(skb))
- 		skb_vlan_pop(skb);
- 
--	if (!mlx5e_tc_rep_update_skb(cqe, skb))
-+	if (!mlx5e_tc_rep_update_skb(cqe, skb, &tc_priv))
- 		goto free_wqe;
- 
- 	napi_gro_receive(rq->cq.napi, skb);
- 
-+	mlx5_tc_rep_post_napi_receive(&tc_priv);
-+
- free_wqe:
- 	mlx5e_free_rx_wqe(rq, wi, true);
- wq_cyc_pop:
-@@ -1244,6 +1247,7 @@ void mlx5e_handle_rx_cqe_mpwrq_rep(struct mlx5e_rq *rq,
- 	u32 wqe_offset     = stride_ix << rq->mpwqe.log_stride_sz;
- 	u32 head_offset    = wqe_offset & (PAGE_SIZE - 1);
- 	u32 page_idx       = wqe_offset >> PAGE_SHIFT;
-+	struct mlx5e_tc_update_priv tc_priv = {};
- 	struct mlx5e_rx_wqe_ll *wqe;
- 	struct mlx5_wq_ll *wq;
- 	struct sk_buff *skb;
-@@ -1276,11 +1280,13 @@ void mlx5e_handle_rx_cqe_mpwrq_rep(struct mlx5e_rq *rq,
- 
- 	mlx5e_complete_rx_cqe(rq, cqe, cqe_bcnt, skb);
- 
--	if (!mlx5e_tc_rep_update_skb(cqe, skb))
-+	if (!mlx5e_tc_rep_update_skb(cqe, skb, &tc_priv))
- 		goto mpwrq_cqe_out;
- 
- 	napi_gro_receive(rq->cq.napi, skb);
- 
-+	mlx5_tc_rep_post_napi_receive(&tc_priv);
-+
- mpwrq_cqe_out:
- 	if (likely(wi->consumed_strides < rq->mpwqe.num_strides))
- 		return;
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_tc.c b/drivers/net/ethernet/mellanox/mlx5/core/en_tc.c
-index 9f8ff40..d8d028f 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en_tc.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en_tc.c
-@@ -4587,19 +4587,100 @@ void mlx5e_tc_reoffload_flows_work(struct work_struct *work)
- 	mutex_unlock(&rpriv->unready_flows_lock);
- }
- 
-+static bool mlx5e_restore_tunnel(struct mlx5e_priv *priv, struct sk_buff *skb,
-+				 struct mlx5e_tc_update_priv *tc_priv,
-+				 u32 tunnel_id)
-+{
-+	struct mlx5_eswitch *esw = priv->mdev->priv.eswitch;
-+	struct flow_dissector_key_enc_opts enc_opts = {};
-+	struct mlx5_rep_uplink_priv *uplink_priv;
-+	struct mlx5e_rep_priv *uplink_rpriv;
-+	struct metadata_dst *tun_dst;
-+	struct tunnel_match_key key;
-+	u32 tun_id, enc_opts_id;
-+	struct net_device *dev;
-+	int err;
-+
-+	enc_opts_id = tunnel_id & ENC_OPTS_BITS_MASK;
-+	tun_id = tunnel_id >> ENC_OPTS_BITS;
-+
-+	if (!tun_id)
-+		return true;
-+
-+	uplink_rpriv = mlx5_eswitch_get_uplink_priv(esw, REP_ETH);
-+	uplink_priv = &uplink_rpriv->uplink_priv;
-+
-+	err = mapping_find(uplink_priv->tunnel_mapping, tun_id, &key);
-+	if (err) {
-+		WARN_ON_ONCE(true);
-+		netdev_dbg(priv->netdev,
-+			   "Couldn't find tunnel for tun_id: %d, err: %d\n",
-+			   tun_id, err);
-+		return false;
-+	}
-+
-+	if (enc_opts_id) {
-+		err = mapping_find(uplink_priv->tunnel_enc_opts_mapping,
-+				   enc_opts_id, &enc_opts);
-+		if (err) {
-+			netdev_dbg(priv->netdev,
-+				   "Couldn't find tunnel (opts) for tun_id: %d, err: %d\n",
-+				   enc_opts_id, err);
-+			return false;
-+		}
-+	}
-+
-+	tun_dst = tun_rx_dst(enc_opts.len);
-+	if (!tun_dst) {
-+		WARN_ON_ONCE(true);
-+		return false;
-+	}
-+
-+	ip_tunnel_key_init(&tun_dst->u.tun_info.key,
-+			   key.enc_ipv4.src, key.enc_ipv4.dst,
-+			   key.enc_ip.tos, key.enc_ip.ttl,
-+			   0, /* label */
-+			   key.enc_tp.src, key.enc_tp.dst,
-+			   key32_to_tunnel_id(key.enc_key_id.keyid),
-+			   TUNNEL_KEY);
-+
-+	if (enc_opts.len)
-+		ip_tunnel_info_opts_set(&tun_dst->u.tun_info, enc_opts.data,
-+					enc_opts.len, enc_opts.dst_opt_type);
-+
-+	skb_dst_set(skb, (struct dst_entry *)tun_dst);
-+	dev = dev_get_by_index(&init_net, key.filter_ifindex);
-+	if (!dev) {
-+		netdev_dbg(priv->netdev,
-+			   "Couldn't find tunnel device with ifindex: %d\n",
-+			   key.filter_ifindex);
-+		return false;
-+	}
-+
-+	/* Set tun_dev so we do dev_put() after datapath */
-+	tc_priv->tun_dev = dev;
-+
-+	skb->dev = dev;
-+
-+	return true;
-+}
-+
- bool mlx5e_tc_rep_update_skb(struct mlx5_cqe64 *cqe,
--			     struct sk_buff *skb)
-+			     struct sk_buff *skb,
-+			     struct mlx5e_tc_update_priv *tc_priv)
- {
- #if IS_ENABLED(CONFIG_NET_TC_SKB_EXT)
-+	u32 chain = 0, reg_c0, reg_c1, tunnel_id;
- 	struct tc_skb_ext *tc_skb_ext;
- 	struct mlx5_eswitch *esw;
- 	struct mlx5e_priv *priv;
--	u32 chain = 0, reg_c0;
-+	int tunnel_moffset;
- 	int err;
- 
- 	reg_c0 = (be32_to_cpu(cqe->sop_drop_qpn) & MLX5E_TC_FLOW_ID_MASK);
- 	if (reg_c0 == MLX5_FS_DEFAULT_FLOW_TAG)
- 		reg_c0 = 0;
-+	reg_c1 = be32_to_cpu(cqe->imm_inval_pkey);
- 
- 	if (!reg_c0)
- 		return true;
-@@ -4615,17 +4696,26 @@ bool mlx5e_tc_rep_update_skb(struct mlx5_cqe64 *cqe,
- 		return false;
- 	}
- 
--	if (!chain)
--		return true;
-+	if (chain) {
-+		tc_skb_ext = skb_ext_add(skb, TC_SKB_EXT);
-+		if (!tc_skb_ext) {
-+			WARN_ON(1);
-+			return false;
-+		}
- 
--	tc_skb_ext = skb_ext_add(skb, TC_SKB_EXT);
--	if (!tc_skb_ext) {
--		WARN_ON_ONCE(1);
--		return false;
-+		tc_skb_ext->chain = chain;
- 	}
- 
--	tc_skb_ext->chain = chain;
-+	tunnel_moffset = mlx5e_tc_attr_to_reg_mappings[TUNNEL_TO_REG].moffset;
-+	tunnel_id = reg_c1 >> (8 * tunnel_moffset);
-+	return mlx5e_restore_tunnel(priv, skb, tc_priv, tunnel_id);
- #endif /* CONFIG_NET_TC_SKB_EXT */
- 
- 	return true;
- }
-+
-+void mlx5_tc_rep_post_napi_receive(struct mlx5e_tc_update_priv *tc_priv)
-+{
-+	if (tc_priv->tun_dev)
-+		dev_put(tc_priv->tun_dev);
-+}
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_tc.h b/drivers/net/ethernet/mellanox/mlx5/core/en_tc.h
-index 2fab76b..21cbde4 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en_tc.h
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en_tc.h
-@@ -109,7 +109,14 @@ struct mlx5e_tc_attr_to_reg_mapping {
- bool mlx5e_is_valid_eswitch_fwd_dev(struct mlx5e_priv *priv,
- 				    struct net_device *out_dev);
- 
--bool mlx5e_tc_rep_update_skb(struct mlx5_cqe64 *cqe, struct sk_buff *skb);
-+struct mlx5e_tc_update_priv {
-+	struct net_device *tun_dev;
-+};
-+
-+bool mlx5e_tc_rep_update_skb(struct mlx5_cqe64 *cqe, struct sk_buff *skb,
-+			     struct mlx5e_tc_update_priv *tc_priv);
-+
-+void mlx5_tc_rep_post_napi_receive(struct mlx5e_tc_update_priv *tc_priv);
- 
- struct mlx5e_tc_mod_hdr_acts {
- 	int num_actions;
--- 
-1.8.3.1
+Regards
+
+Marcel
 
