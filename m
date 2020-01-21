@@ -2,98 +2,116 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 652D714365E
-	for <lists+netdev@lfdr.de>; Tue, 21 Jan 2020 05:54:45 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2FDA31436BA
+	for <lists+netdev@lfdr.de>; Tue, 21 Jan 2020 06:29:51 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728733AbgAUEyo (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 20 Jan 2020 23:54:44 -0500
-Received: from mail.kernel.org ([198.145.29.99]:59838 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728665AbgAUEyo (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 20 Jan 2020 23:54:44 -0500
-Received: from paulmck-ThinkPad-P72.home (50-39-105-78.bvtn.or.frontiernet.net [50.39.105.78])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        id S1727523AbgAUF3o (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 21 Jan 2020 00:29:44 -0500
+Received: from mail2.candelatech.com ([208.74.158.173]:37214 "EHLO
+        mail3.candelatech.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725789AbgAUF3n (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 21 Jan 2020 00:29:43 -0500
+Received: from [192.168.1.47] (unknown [50.34.171.50])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 247BD24653;
-        Tue, 21 Jan 2020 04:54:43 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1579582483;
-        bh=YQ38mVpjQZHpusPeDpF8uz55Se31rHxLJgTzd+LPI4k=;
-        h=Date:From:To:Cc:Subject:Reply-To:References:In-Reply-To:From;
-        b=UFYnZfeXIVCE7WvV0ESV5me39RbySqfd+AG4s0SLSYnocI8qhKCe9TaEttgLla/FP
-         C5/ykxYVixrA9nWN6/0QG/vbADyj7+o8jxhRloY4beVoTF7NExZ0DeBhwrF0sSLsdn
-         4kLvfK7qvUIoeNLTYPhY1HctNw4H7BUQuOGNf0M4=
-Received: by paulmck-ThinkPad-P72.home (Postfix, from userid 1000)
-        id F3C443520AE0; Mon, 20 Jan 2020 20:54:42 -0800 (PST)
-Date:   Mon, 20 Jan 2020 20:54:42 -0800
-From:   "Paul E. McKenney" <paulmck@kernel.org>
-To:     Alexei Starovoitov <ast@kernel.org>
-Cc:     davem@davemloft.net, daniel@iogearbox.net, jannh@google.com,
-        netdev@vger.kernel.org, bpf@vger.kernel.org, kernel-team@fb.com
-Subject: Re: [PATCH bpf-next] bpf: Fix trampoline usage in preempt
-Message-ID: <20200121045442.GN2935@paulmck-ThinkPad-P72>
-Reply-To: paulmck@kernel.org
-References: <20200121032231.3292185-1-ast@kernel.org>
+        by mail3.candelatech.com (Postfix) with ESMTPSA id C5B342F7539;
+        Mon, 20 Jan 2020 21:29:42 -0800 (PST)
+DKIM-Filter: OpenDKIM Filter v2.11.0 mail3.candelatech.com C5B342F7539
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=candelatech.com;
+        s=default; t=1579584583;
+        bh=x4FWC1VwmcH4cHuFjD0zrAV26YOFnyCLCOFIObRLWwo=;
+        h=Subject:To:References:From:Date:In-Reply-To:From;
+        b=omaVG+VPoBCLec1ey0jVLeqY0O0X3WK/SChmHkf77CHO3FKqyWdJ/0v4+mZSVOnPS
+         27wfeZngbDADlkMHUiWzvSUBNFKoGFQFizS623mR8W3mPDvfzYf7GLFOSOH0Lw6C7d
+         RJ/VZvDb2OMJsow1jnFs/jDH26uvZCB0AIlttvEE=
+Subject: Re: vrf and ipsec xfrm routing problem
+To:     David Ahern <dsahern@gmail.com>, netdev <netdev@vger.kernel.org>
+References: <1425d02c-de99-b708-e543-b7fe3f0ef07e@candelatech.com>
+ <9893ae01-18a5-2afd-b485-459423b8adc0@candelatech.com>
+ <ce3ba3f4-b0dd-b3b5-fbb7-095122ed75b3@gmail.com>
+From:   Ben Greear <greearb@candelatech.com>
+Message-ID: <d6840ae9-bfce-7ea8-9d44-7f8ee99874ab@candelatech.com>
+Date:   Mon, 20 Jan 2020 21:29:41 -0800
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:45.0) Gecko/20100101
+ Thunderbird/45.8.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200121032231.3292185-1-ast@kernel.org>
-User-Agent: Mutt/1.9.4 (2018-02-28)
+In-Reply-To: <ce3ba3f4-b0dd-b3b5-fbb7-095122ed75b3@gmail.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Jan 20, 2020 at 07:22:31PM -0800, Alexei Starovoitov wrote:
-> Though the second half of trampoline page is unused a task could be
-> preempted in the middle of the first half of trampoline and two
-> updates to trampoline would change the code from underneath the
-> preempted task. Hence wait for tasks to voluntarily schedule or go
-> to userspace.
-> Add similar wait before freeing the trampoline.
-> 
-> Fixes: fec56f5890d9 ("bpf: Introduce BPF trampoline")
-> Reported-by: Jann Horn <jannh@google.com>
-> Signed-off-by: Alexei Starovoitov <ast@kernel.org>
-> ---
->  kernel/bpf/trampoline.c | 10 ++++++++++
->  1 file changed, 10 insertions(+)
-> 
-> diff --git a/kernel/bpf/trampoline.c b/kernel/bpf/trampoline.c
-> index 79a04417050d..7657ede7aee2 100644
-> --- a/kernel/bpf/trampoline.c
-> +++ b/kernel/bpf/trampoline.c
-> @@ -160,6 +160,14 @@ static int bpf_trampoline_update(struct bpf_trampoline *tr)
->  	if (fexit_cnt)
->  		flags = BPF_TRAMP_F_CALL_ORIG | BPF_TRAMP_F_SKIP_FRAME;
->  
-> +	/* Though the second half of trampoline page is unused a task could be
-> +	 * preempted in the middle of the first half of trampoline and two
-> +	 * updates to trampoline would change the code from underneath the
-> +	 * preempted task. Hence wait for tasks to voluntarily schedule or go
-> +	 * to userspace.
-> +	 */
-> +	synchronize_rcu_tasks();
 
-So in this case, although the trampoline is not freed, it is reused.
-And we need to clear everyone off of the trampoline before reusing it.
 
-If this states the situation correctly:
+On 01/20/2020 07:21 PM, David Ahern wrote:
+> On 1/17/20 2:52 PM, Ben Greear wrote:
+>>> I tried adding a route to specify the x_frm as source, but that does
+>>> not appear to work:
+>>>
+>>> [root@lf0313-63e7 lanforge]# ip route add 192.168.10.0/24 via
+>>> 192.168.5.1 dev x_eth4 table 4
+>>> [root@lf0313-63e7 lanforge]# ip route show vrf _vrf4
+>>> default via 192.168.5.1 dev eth4
+>>> 192.168.5.0/24 dev eth4 scope link src 192.168.5.4
+>>> 192.168.10.0/24 via 192.168.5.1 dev eth4
+>>>
+>>> I also tried this, but no luck:
+>>>
+>>> [root@lf0313-63e7 lanforge]# ip route add 192.168.10.0/24 via
+>>> 192.168.10.1 dev x_eth4 table 4
+>>> Error: Nexthop has invalid gateway.
+>>
+>> I went looking for why this was failing.  The reason is that this code
+>> is hitting the error case
+>> in the code snippet below (from 5.2.21+ kernel).
+>>
+>> The oif is that of _vrf4, not the x_eth4 device.
+>>
+>> David:  Is this expected behaviour?  Do you know how to tell vrf to use
+>> the x_eth4
+>
+> It is expected behavior for VRF. l3mdev_update_flow changes the oif to
+> the VRF device if the passed in oif is enslaved to a VRF.
+>
+>> xfrm device as oif when routing output to certain destinations?
+>>
+>>     rcu_read_lock();
+>>     {
+>>         struct fib_table *tbl = NULL;
+>>         struct flowi4 fl4 = {
+>>             .daddr = nh->fib_nh_gw4,
+>>             .flowi4_scope = scope + 1,
+>>             .flowi4_oif = nh->fib_nh_oif,
+>>             .flowi4_iif = LOOPBACK_IFINDEX,
+>>         };
+>>
+>>         /* It is not necessary, but requires a bit of thinking */
+>>         if (fl4.flowi4_scope < RT_SCOPE_LINK)
+>>             fl4.flowi4_scope = RT_SCOPE_LINK;
+>
+> If you put your debug here, flowi4_oif should be fib_nh_oif per the
+> above initialization. It gets changed by the call to fib_lookup.
+>
+> --
+>
+> Sabrina sent me a short script on using xfrm devices to help me get up
+> to speed on that config (much simpler than using any of the *SWAN
+> programs). I have incorporated the xfrm device setup into a script of
+> other vrf + ipsec tests. A couple of tests are failing the basic setup.
+> I have a fix for one of them (as well as the fix for the qdisc on a VRF
+> device). I did notice trying to add routes with the xfrm device as the
+> nexthop dev was failing but have not had time to dig into it. I have
+> busy week but will try to spend some time on this use case this week.
 
-Acked-by: Paul E. McKenney <paulmck@kernel.org>
+I dug into the nexthop thing a bit earlier.  It fails because oif is always forced to
+be the VRF device, and then the nexthop is considered unreachable for reasons that
+escape me.
 
->  	err = arch_prepare_bpf_trampoline(new_image, new_image + PAGE_SIZE / 2,
->  					  &tr->func.model, flags,
->  					  fentry, fentry_cnt,
-> @@ -251,6 +259,8 @@ void bpf_trampoline_put(struct bpf_trampoline *tr)
->  		goto out;
->  	if (WARN_ON_ONCE(!hlist_empty(&tr->progs_hlist[BPF_TRAMP_FEXIT])))
->  		goto out;
-> +	/* wait for tasks to get out of trampoline before freeing it */
-> +	synchronize_rcu_tasks();
->  	bpf_jit_free_exec(tr->image);
->  	hlist_del(&tr->hlist);
->  	kfree(tr);
-> -- 
-> 2.23.0
-> 
+Thanks,
+Ben
+
+-- 
+Ben Greear <greearb@candelatech.com>
+Candela Technologies Inc  http://www.candelatech.com
