@@ -2,196 +2,148 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 54822143E97
-	for <lists+netdev@lfdr.de>; Tue, 21 Jan 2020 14:50:24 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E40ED143E62
+	for <lists+netdev@lfdr.de>; Tue, 21 Jan 2020 14:43:42 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729187AbgAUNuT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 21 Jan 2020 08:50:19 -0500
-Received: from us-smtp-delivery-1.mimecast.com ([207.211.31.120]:24927 "EHLO
-        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S1729052AbgAUNuS (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 21 Jan 2020 08:50:18 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1579614617;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=QSA9nedBLY+hJJ/U902gs3UmyLK6X1rNeQVNhq9BcRk=;
-        b=DpBjrrCfpL3ADMet6GmkzlxC3y2FWkxNkrspbkdvVlHQl/kSKsosELnCk/gXcj64Iczrfx
-        8rsqbiGkLjrsLFOcMcEX4l0MXjhBJgzCMmhaHibVEGF+K3Kwb/F7Ywj5yxfTOepQotLMVI
-        eVwEOjNHo280x9GWw9J754ygDx/X/Y8=
-Received: from mail-lf1-f71.google.com (mail-lf1-f71.google.com
- [209.85.167.71]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-167-P8ERNQS9MJqrn7EKqWlsuA-1; Tue, 21 Jan 2020 08:50:16 -0500
-X-MC-Unique: P8ERNQS9MJqrn7EKqWlsuA-1
-Received: by mail-lf1-f71.google.com with SMTP id y23so559548lfh.7
-        for <netdev@vger.kernel.org>; Tue, 21 Jan 2020 05:50:15 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
-         :message-id:mime-version:content-transfer-encoding;
-        bh=QSA9nedBLY+hJJ/U902gs3UmyLK6X1rNeQVNhq9BcRk=;
-        b=a72riFu5kNJi/kkJj61puZRGTTM0zJHOj/zxfCYnHjYnQXihpvABSyJBb6JoBay0R3
-         dgH/SYRZlimkVTiU8G9K1fWvfD0oGzGhL0X4/E3m/3r9Ad7VdNA0M/QJrkAYk6HNWVRX
-         P0epBCJBQeqGV5vmvBzCMqdwD8RsKmsGlNtB92FtQ+uOE2SW8o+k1PRiD7dYsqnZojnm
-         WO2jpX0L4I+VAKHuze7aVJzc4qtka93l/TsYXGennGdyWa9FjiB5b9brwWpuM8BQJSQ0
-         MwMtaYUMlo7jGgLCuQLjO5mfMEqx2mcNBSSovujgQ6LUFZUtmUGp4P3mSoMG7/XF7W6P
-         VA+Q==
-X-Gm-Message-State: APjAAAWKOm2fahQlDvjh8Wa96pkdRnbtWOkiMK2VuicrN9YUb46rAb0Z
-        SXtZtF26Yj+Xfa1x/wCOAAuv8b1j8nqLJqRUDc1kaWnCzR0jKCN7OvSyKwue8i8q6q0gWhNbWpX
-        dyzu68LiBOg+/jNvR
-X-Received: by 2002:a19:48c5:: with SMTP id v188mr2838249lfa.100.1579614614303;
-        Tue, 21 Jan 2020 05:50:14 -0800 (PST)
-X-Google-Smtp-Source: APXvYqyn5xqRhHmPpySMcmkFZmX06i6ruLvGvbAL8D8ASe1wRGX+vhBALjz8OzpwILxiqeG3ZXt2kA==
-X-Received: by 2002:a19:48c5:: with SMTP id v188mr2838216lfa.100.1579614613963;
-        Tue, 21 Jan 2020 05:50:13 -0800 (PST)
-Received: from alrua-x1.borgediget.toke.dk ([85.204.121.218])
-        by smtp.gmail.com with ESMTPSA id r2sm18840207lfn.13.2020.01.21.05.50.13
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 21 Jan 2020 05:50:13 -0800 (PST)
-Received: by alrua-x1.borgediget.toke.dk (Postfix, from userid 1000)
-        id 1B9471804D6; Tue, 21 Jan 2020 14:33:47 +0100 (CET)
-From:   Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
-To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Cc:     Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        Andrii Nakryiko <andriin@fb.com>,
-        Doug Ledford <dledford@redhat.com>,
-        Jason Gunthorpe <jgg@ziepe.ca>,
+        id S1729325AbgAUNnf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 21 Jan 2020 08:43:35 -0500
+Received: from mx2.suse.de ([195.135.220.15]:47976 "EHLO mx2.suse.de"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1729098AbgAUNnf (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 21 Jan 2020 08:43:35 -0500
+X-Virus-Scanned: by amavisd-new at test-mx.suse.de
+Received: from relay2.suse.de (unknown [195.135.220.254])
+        by mx2.suse.de (Postfix) with ESMTP id 415FEAE85;
+        Tue, 21 Jan 2020 13:43:32 +0000 (UTC)
+From:   Richard Palethorpe <rpalethorpe@suse.com>
+To:     linux-can@vger.kernel.org
+Cc:     Richard Palethorpe <rpalethorpe@suse.com>,
+        syzbot+017e491ae13c0068598a@syzkaller.appspotmail.com,
+        Wolfgang Grandegger <wg@grandegger.com>,
+        Marc Kleine-Budde <mkl@pengutronix.de>,
         "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Jesper Dangaard Brouer <brouer@redhat.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Ingo Molnar <mingo@redhat.com>,
-        Arnaldo Carvalho de Melo <acme@kernel.org>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
-        Jiri Olsa <jolsa@redhat.com>,
-        Namhyung Kim <namhyung@kernel.org>,
-        Shuah Khan <shuah@kernel.org>,
-        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        open list <linux-kernel@vger.kernel.org>,
-        linux-rdma@vger.kernel.org,
-        "open list\:KERNEL SELFTEST FRAMEWORK" 
-        <linux-kselftest@vger.kernel.org>,
-        clang-built-linux@googlegroups.com
-Subject: Re: [PATCH bpf-next v5 00/11] tools: Use consistent libbpf include paths everywhere
-In-Reply-To: <CAEf4BzYNp81_bOFSEZR=AcruC2ms76fCWQGit+=2QZrFAXpGqg@mail.gmail.com>
-References: <157952560001.1683545.16757917515390545122.stgit@toke.dk> <CAEf4BzYNp81_bOFSEZR=AcruC2ms76fCWQGit+=2QZrFAXpGqg@mail.gmail.com>
-X-Clacks-Overhead: GNU Terry Pratchett
-Date:   Tue, 21 Jan 2020 14:33:46 +0100
-Message-ID: <874kwpndc5.fsf@toke.dk>
+        Tyler Hall <tylerwhall@gmail.com>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, syzkaller@googlegroups.com
+Subject: [PATCH v3] can, slip: Protect tty->disc_data in write_wakeup and close with RCU
+Date:   Tue, 21 Jan 2020 14:42:58 +0100
+Message-Id: <20200121134258.18013-1-rpalethorpe@suse.com>
+X-Mailer: git-send-email 2.24.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Andrii Nakryiko <andrii.nakryiko@gmail.com> writes:
+write_wakeup can happen in parallel with close/hangup where tty->disc_data
+is set to NULL and the netdevice is freed thus also freeing
+disc_data. write_wakeup accesses disc_data so we must prevent close from
+freeing the netdev while write_wakeup has a non-NULL view of
+tty->disc_data.
 
-> On Mon, Jan 20, 2020 at 5:08 AM Toke H=C3=B8iland-J=C3=B8rgensen <toke@re=
-dhat.com> wrote:
->>
->> We are currently being somewhat inconsistent with the libbpf include pat=
-hs,
->> which makes it difficult to move files from the kernel into an external
->> libbpf-using project without adjusting include paths.
->>
->> Having the bpf/ subdir of $INCLUDEDIR in the include path has never been=
- a
->> requirement for building against libbpf before, and indeed the libbpf pk=
-g-config
->> file doesn't include it. So let's make all libbpf includes across the ke=
-rnel
->> tree use the bpf/ prefix in their includes. Since bpftool skeleton gener=
-ation
->> emits code with a libbpf include, this also ensures that those can be us=
-ed in
->> existing external projects using the regular pkg-config include path.
->>
->> This turns out to be a somewhat invasive change in the number of files t=
-ouched;
->> however, the actual changes to files are fairly trivial (most of them ar=
-e simply
->> made with 'sed'). The series is split to make the change for one tool su=
-bdir at
->> a time, while trying not to break the build along the way. It is structu=
-red like
->> this:
->>
->> - Patch 1-3: Trivial fixes to Makefiles for issues I discovered while ch=
-anging
->>   the include paths.
->>
->> - Patch 4-8: Change the include directives to use the bpf/ prefix, and u=
-pdates
->>   Makefiles to make sure tools/lib/ is part of the include path, but wit=
-hout
->>   removing tools/lib/bpf
->>
->> - Patch 9-11: Remove tools/lib/bpf from include paths to make sure we do=
-n't
->>   inadvertently re-introduce includes without the bpf/ prefix.
->>
->> Changelog:
->>
->> v5:
->>   - Combine the libbpf build rules in selftests Makefile (using Andrii's
->>     suggestion for a make rule).
->>   - Re-use self-tests libbpf build for runqslower (new patch 10)
->>   - Formatting fixes
->>
->> v4:
->>   - Move runqslower error on missing BTF into make rule
->>   - Make sure we don't always force a rebuild selftests
->>   - Rebase on latest bpf-next (dropping patch 11)
->>
->> v3:
->>   - Don't add the kernel build dir to the runqslower Makefile, pass it i=
-n from
->>     selftests instead.
->>   - Use libbpf's 'make install_headers' in selftests instead of trying to
->>     generate bpf_helper_defs.h in-place (to also work on read-only files=
-ystems).
->>   - Use a scratch builddir for both libbpf and bpftool when building in =
-selftests.
->>   - Revert bpf_helpers.h to quoted include instead of angled include wit=
-h a bpf/
->>     prefix.
->>   - Fix a few style nits from Andrii
->>
->> v2:
->>   - Do a full cleanup of libbpf includes instead of just changing the
->>     bpf_helper_defs.h include.
->>
->> ---
->>
->
-> Looks good, it's a clear improvement on what we had before, thanks!
->
-> It doesn't re-build bpftool when bpftool sources changes, but I think
-> it was like that even before, so no need to block on that. Would be
-> nice to have a follow up fixing that, though. $(wildcard
-> $(BPFTOOL_DIR)/*.[ch] $(BPFTOOL_DIR)/Makefile) should do it, same as
-> for libbpf.
+We also need to make sure that accesses to disc_data are atomic. Which can
+all be done with RCU.
 
-Yeah, I did realise there was some potential for improvement for bpftool
-as well, but I got enough of Makefiles for now :)
+This problem was found by Syzkaller on SLCAN, but the same issue is
+reproducible with the SLIP line discipline using an LTP test based on the
+Syzkaller reproducer.
 
-I'll see if I can't circle back to this at some point...
+A fix which didn't use RCU was posted by Hillf Danton.
 
-> So, for the series:
->
-> Acked-by: Andrii Nakryiko <andriin@fb.com>
-> Tested-by: Andrii Nakryiko <andriin@fb.com>
+Fixes: 661f7fda21b1 ("slip: Fix deadlock in write_wakeup")
+Fixes: a8e83b17536a ("slcan: Port write_wakeup deadlock fix from slip")
+Reported-by: syzbot+017e491ae13c0068598a@syzkaller.appspotmail.com
+Signed-off-by: Richard Palethorpe <rpalethorpe@suse.com>
+Cc: Wolfgang Grandegger <wg@grandegger.com>
+Cc: Marc Kleine-Budde <mkl@pengutronix.de>
+Cc: "David S. Miller" <davem@davemloft.net>
+Cc: Tyler Hall <tylerwhall@gmail.com>
+Cc: linux-can@vger.kernel.org
+Cc: netdev@vger.kernel.org
+Cc: linux-kernel@vger.kernel.org
+Cc: syzkaller@googlegroups.com
+---
 
-Thanks!
+V2: Added proper RCU grace period
+V3: Changed commit description
 
--Toke
+This patch creates a Sparse warning concerning the RCU address space. I'm not
+sure what to do about that.
+
+ drivers/net/can/slcan.c | 12 ++++++++++--
+ drivers/net/slip/slip.c | 12 ++++++++++--
+ 2 files changed, 20 insertions(+), 4 deletions(-)
+
+diff --git a/drivers/net/can/slcan.c b/drivers/net/can/slcan.c
+index 2e57122f02fb..2f5c287eac95 100644
+--- a/drivers/net/can/slcan.c
++++ b/drivers/net/can/slcan.c
+@@ -344,9 +344,16 @@ static void slcan_transmit(struct work_struct *work)
+  */
+ static void slcan_write_wakeup(struct tty_struct *tty)
+ {
+-	struct slcan *sl = tty->disc_data;
++	struct slcan *sl;
++
++	rcu_read_lock();
++	sl = rcu_dereference(tty->disc_data);
++	if (!sl)
++		goto out;
+ 
+ 	schedule_work(&sl->tx_work);
++out:
++	rcu_read_unlock();
+ }
+ 
+ /* Send a can_frame to a TTY queue. */
+@@ -644,10 +651,11 @@ static void slcan_close(struct tty_struct *tty)
+ 		return;
+ 
+ 	spin_lock_bh(&sl->lock);
+-	tty->disc_data = NULL;
++	rcu_assign_pointer(tty->disc_data, NULL);
+ 	sl->tty = NULL;
+ 	spin_unlock_bh(&sl->lock);
+ 
++	synchronize_rcu();
+ 	flush_work(&sl->tx_work);
+ 
+ 	/* Flush network side */
+diff --git a/drivers/net/slip/slip.c b/drivers/net/slip/slip.c
+index 2a91c192659f..61d7e0d1d77d 100644
+--- a/drivers/net/slip/slip.c
++++ b/drivers/net/slip/slip.c
+@@ -452,9 +452,16 @@ static void slip_transmit(struct work_struct *work)
+  */
+ static void slip_write_wakeup(struct tty_struct *tty)
+ {
+-	struct slip *sl = tty->disc_data;
++	struct slip *sl;
++
++	rcu_read_lock();
++	sl = rcu_dereference(tty->disc_data);
++	if (!sl)
++		goto out;
+ 
+ 	schedule_work(&sl->tx_work);
++out:
++	rcu_read_unlock();
+ }
+ 
+ static void sl_tx_timeout(struct net_device *dev)
+@@ -882,10 +889,11 @@ static void slip_close(struct tty_struct *tty)
+ 		return;
+ 
+ 	spin_lock_bh(&sl->lock);
+-	tty->disc_data = NULL;
++	rcu_assign_pointer(tty->disc_data, NULL);
+ 	sl->tty = NULL;
+ 	spin_unlock_bh(&sl->lock);
+ 
++	synchronize_rcu();
+ 	flush_work(&sl->tx_work);
+ 
+ 	/* VSV = very important to remove timers */
+-- 
+2.24.0
 
