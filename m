@@ -2,128 +2,91 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 0B5F4143F24
-	for <lists+netdev@lfdr.de>; Tue, 21 Jan 2020 15:15:42 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 08412143F26
+	for <lists+netdev@lfdr.de>; Tue, 21 Jan 2020 15:15:43 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729199AbgAUOPa (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 21 Jan 2020 09:15:30 -0500
-Received: from us-smtp-delivery-1.mimecast.com ([205.139.110.120]:34539 "EHLO
-        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S1728896AbgAUOP3 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 21 Jan 2020 09:15:29 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1579616128;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=W0ISVuuIVoP4ewOzYniLTSVuw4vxN7wzv55HQyIkjTg=;
-        b=h4ZhI6tJ0ZGLNKmQW6E/yqK5rmSiupoPALGx5YeXw9CqjVZgPozJiDncMnjEdg7rx2SHm/
-        x/qsPQKc9c744GuvrO4zKfdYmMlTOsaY+DNXxHV1CmUDx+5sVzFqhAQip7hU1gTWKcO43L
-        uJSoCmOh/RuhYfT5zv/4Oo0oUNlfhgQ=
-Received: from mail-qv1-f70.google.com (mail-qv1-f70.google.com
- [209.85.219.70]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-114-7SBnS4f4OamtAccLdOoLRA-1; Tue, 21 Jan 2020 09:15:25 -0500
-X-MC-Unique: 7SBnS4f4OamtAccLdOoLRA-1
-Received: by mail-qv1-f70.google.com with SMTP id e14so1656314qvr.6
-        for <netdev@vger.kernel.org>; Tue, 21 Jan 2020 06:15:25 -0800 (PST)
+        id S1729346AbgAUOPe (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 21 Jan 2020 09:15:34 -0500
+Received: from mail-wr1-f68.google.com ([209.85.221.68]:34447 "EHLO
+        mail-wr1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729210AbgAUOPc (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 21 Jan 2020 09:15:32 -0500
+Received: by mail-wr1-f68.google.com with SMTP id t2so3415363wrr.1
+        for <netdev@vger.kernel.org>; Tue, 21 Jan 2020 06:15:31 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=6wind.com; s=google;
+        h=reply-to:subject:to:cc:references:from:organization:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=TEEV8zFbbxZsk/JjmG+fwiTrAbjezaUBr3+ikDSIY3A=;
+        b=G9lmy0+iDx14jOHdjUjaELGgY+PoiunjeSvwxEbEi17Pgt7UXh7oTMdfocYcgaNpOz
+         hM8jSbumNMAqOcSzgZe+/93r0PVg5brrxNif7rnw042sICq8RUakGGfFgivORCTpKT07
+         RGY8iuPiYTBy+TV166Zxal3otH6xx4QOTTxbOLyP4fzzPwcT9+yWeetQl2UDezP98lkq
+         suoQGuOzC0HNixuv2NkL3Z78GkOsvj+Bie09PU6hZbZGJNbCXqkHSf8QE4KsYshRJ1O+
+         ovrb1u+u0EDXMX6VhbfqiP3+od3z5VX+qW352IKdeIX+wTs1zQQwluCmwjqwfXNrQMFE
+         S0Gw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=W0ISVuuIVoP4ewOzYniLTSVuw4vxN7wzv55HQyIkjTg=;
-        b=kLjciHtEdVmenG41wstloouZYoVXseh2Cm2FT3ndKODhdm+Te1Tt5v36md5iFJEWXW
-         ZhDEII/OnUaH6KN9oEn86yA0qqUEFJAr4qiXRL3VC5vK07SVTNgC9NxyG/fwgjXZz6EJ
-         9wh4dmHCgqNZ6GVmUdVrlvJFWeb0mmXcM3Ax5GlqnwfSvSE2elPQYLznLViNc3twtAH8
-         x2bo/2bFjdMPioXWWhDRm1grmTRPLp+B9WzVnOsNiYtCx82yJRD2+UwhF73coAY7W9fI
-         KQ01VxfSlqDVovs8Gk6CPug/JX5bs4E87p6jrXsStPHK7tGWmCDST/BUxv6+Km9Ny8qw
-         Bofw==
-X-Gm-Message-State: APjAAAUKey3UM7Wbe9oDh2zpQGLoF9zZ0IRnqArCZh0sgoaD0fujuXu7
-        luhsxQI9WHCzR0ZiMkvgyZfMeZV0gkaqR7KdpslIxfbI7UxiXxEpbnlN2c6OBubc36h5Vh/2zfC
-        gHNrxP86H7UYxP0G+
-X-Received: by 2002:a05:6214:1907:: with SMTP id er7mr4996629qvb.199.1579616125381;
-        Tue, 21 Jan 2020 06:15:25 -0800 (PST)
-X-Google-Smtp-Source: APXvYqy8AFk0N0aDDxiY+h2t6Rh1k1ou2Ux/pEPzCq29EZUwXk9nLKkey+jnpSszBH9mQmuAKQMoKA==
-X-Received: by 2002:a05:6214:1907:: with SMTP id er7mr4996599qvb.199.1579616125108;
-        Tue, 21 Jan 2020 06:15:25 -0800 (PST)
-Received: from redhat.com (bzq-79-179-85-180.red.bezeqint.net. [79.179.85.180])
-        by smtp.gmail.com with ESMTPSA id o16sm17323139qkj.91.2020.01.21.06.15.16
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 21 Jan 2020 06:15:23 -0800 (PST)
-Date:   Tue, 21 Jan 2020 09:15:14 -0500
-From:   "Michael S. Tsirkin" <mst@redhat.com>
-To:     Jason Gunthorpe <jgg@mellanox.com>
-Cc:     Jason Wang <jasowang@redhat.com>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
-        "virtualization@lists.linux-foundation.org" 
-        <virtualization@lists.linux-foundation.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "tiwei.bie@intel.com" <tiwei.bie@intel.com>,
-        "maxime.coquelin@redhat.com" <maxime.coquelin@redhat.com>,
-        "cunming.liang@intel.com" <cunming.liang@intel.com>,
-        "zhihong.wang@intel.com" <zhihong.wang@intel.com>,
-        "rob.miller@broadcom.com" <rob.miller@broadcom.com>,
-        "xiao.w.wang@intel.com" <xiao.w.wang@intel.com>,
-        "haotian.wang@sifive.com" <haotian.wang@sifive.com>,
-        "lingshan.zhu@intel.com" <lingshan.zhu@intel.com>,
-        "eperezma@redhat.com" <eperezma@redhat.com>,
-        "lulu@redhat.com" <lulu@redhat.com>,
-        Parav Pandit <parav@mellanox.com>,
-        "kevin.tian@intel.com" <kevin.tian@intel.com>,
-        "stefanha@redhat.com" <stefanha@redhat.com>,
-        "rdunlap@infradead.org" <rdunlap@infradead.org>,
-        "hch@infradead.org" <hch@infradead.org>,
-        "aadam@redhat.com" <aadam@redhat.com>,
-        "jakub.kicinski@netronome.com" <jakub.kicinski@netronome.com>,
-        Jiri Pirko <jiri@mellanox.com>,
-        Shahaf Shuler <shahafs@mellanox.com>,
-        "hanand@xilinx.com" <hanand@xilinx.com>,
-        "mhabets@solarflare.com" <mhabets@solarflare.com>
-Subject: Re: [PATCH 3/5] vDPA: introduce vDPA bus
-Message-ID: <20200121091456-mutt-send-email-mst@kernel.org>
-References: <20200116124231.20253-1-jasowang@redhat.com>
- <20200116124231.20253-4-jasowang@redhat.com>
- <20200116152209.GH20978@mellanox.com>
- <03cfbcc2-fef0-c9d8-0b08-798b2a293b8c@redhat.com>
- <20200117135435.GU20978@mellanox.com>
- <20200120071406-mutt-send-email-mst@kernel.org>
- <20200120175050.GC3891@mellanox.com>
- <20200120164916-mutt-send-email-mst@kernel.org>
- <20200121141200.GC12330@mellanox.com>
+        h=x-gm-message-state:reply-to:subject:to:cc:references:from
+         :organization:message-id:date:user-agent:mime-version:in-reply-to
+         :content-language:content-transfer-encoding;
+        bh=TEEV8zFbbxZsk/JjmG+fwiTrAbjezaUBr3+ikDSIY3A=;
+        b=t5BjPNYfKzUC86zFChM8xsQ9SrV6LvapZfZoTu+xDC0MCFI2gdVJr05k34ntl9blgR
+         BWtyWhELTPqy5O5Nwgw+gSAmN8MmC1OvB9+ot3AxirAdPB1uARX3otCd7xhrg99Jg1Hi
+         nAgLSSXaQNRGV6kMX3rzN8XcKSqw20PthLeUd/ykvx/Bc7NWQFs5GDVf9NyOO6T9tAfZ
+         JdY/0Z0SlIhbB0PliLX1AYHj+NwXs9vI06KD+BnyrpHvKS1Zc0tn25eDGaIfR/HJKyda
+         Vs2xmHg0pKCpvSY4595U9jtNjvYhg00eA9yHRnEMPYNWIkpyrYyTkN45W17Mr4WbXAcB
+         NNww==
+X-Gm-Message-State: APjAAAXJUss1SDNmBV1VpIWAiiU/GKFhP1cGusKscO1+MYaTgq9+Gy71
+        LQgv7DoWBBT2vpkohiV9suik3Q==
+X-Google-Smtp-Source: APXvYqxF+I4Pp1sWUNhcUvITaZj1JEY5R+oh/Gp6ZPdGhiPkfpNqaF0aalI1TBmmGoGQ92y4R9miGg==
+X-Received: by 2002:adf:eb48:: with SMTP id u8mr5411690wrn.283.1579616130702;
+        Tue, 21 Jan 2020 06:15:30 -0800 (PST)
+Received: from ?IPv6:2a01:e0a:410:bb00:281e:d905:c078:226c? ([2a01:e0a:410:bb00:281e:d905:c078:226c])
+        by smtp.gmail.com with ESMTPSA id z124sm4672197wmc.20.2020.01.21.06.15.29
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 21 Jan 2020 06:15:30 -0800 (PST)
+Reply-To: nicolas.dichtel@6wind.com
+Subject: Re: [PATCH] net, ip_tunnel: fix namespaces move
+To:     William Dauchy <w.dauchy@criteo.com>
+Cc:     NETDEV <netdev@vger.kernel.org>,
+        Pravin B Shelar <pshelar@nicira.com>,
+        William Tu <u9012063@gmail.com>
+References: <20200121123626.35884-1-w.dauchy@criteo.com>
+ <45f8682a-1c72-a1e4-7780-d0bb3bc72af8@6wind.com>
+ <CAJ75kXaAxNh90Qq_FYCKXmMD_Q3w318pTQG6ZB-0K-K3bL=Oag@mail.gmail.com>
+From:   Nicolas Dichtel <nicolas.dichtel@6wind.com>
+Organization: 6WIND
+Message-ID: <8f942c9f-206e-fecc-e2ba-8fa0eaa14464@6wind.com>
+Date:   Tue, 21 Jan 2020 15:15:29 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.4.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200121141200.GC12330@mellanox.com>
+In-Reply-To: <CAJ75kXaAxNh90Qq_FYCKXmMD_Q3w318pTQG6ZB-0K-K3bL=Oag@mail.gmail.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Jan 21, 2020 at 02:12:05PM +0000, Jason Gunthorpe wrote:
-> On Mon, Jan 20, 2020 at 04:56:06PM -0500, Michael S. Tsirkin wrote:
-> > > For vfio? vfio is the only thing I am aware doing
-> > > that, and this is not vfio..
-> > 
-> > vfio is not doing anything. anyone can use a combination
-> > of unbind and driver_override to attach a driver to a device.
-> > 
-> > It's not a great interface but it's there without any code,
-> > and it will stay there without maintainance overhead
-> > if we later add a nicer one.
+Le 21/01/2020 à 14:12, William Dauchy a écrit :
+> Hi Nicolas,
 > 
-> Well, it is not a great interface, and it is only really used in
-> normal cases by vfio.
+> Thank you for your answer.
 > 
-> I don't think it is a good idea to design new subsystems with that
-> idea in mind, particularly since detatching the vdpa driver would not
-> trigger destruction of the underlying dynamic resource (ie the SF).
+> On Tue, Jan 21, 2020 at 1:57 PM Nicolas Dichtel
+> <nicolas.dichtel@6wind.com> wrote:
+>> Acked-by: Nicolas Dichtel <nicolas.dichtel@6wind.com>
+>>
+>> Maybe a proper 'Fixes' tag would be good.
 > 
-> We need a way to trigger that destruction..
-> 
-> Jason 
+> I agree, should I send v2 for this?
+> Fixes: 2e15ea390e6f ("ip_gre: Add support to collect tunnel metadata.")
+Yes please.
 
-You wanted a netlink command for this, right?
-
--- 
-MST
-
+> 
+> (we probably should have done on the ip6_gre patch as well)
+> 
+Yes, I noticed it too late.
