@@ -2,115 +2,107 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id BF93D143C74
-	for <lists+netdev@lfdr.de>; Tue, 21 Jan 2020 13:03:33 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 41420143C7A
+	for <lists+netdev@lfdr.de>; Tue, 21 Jan 2020 13:05:24 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729596AbgAUMDb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 21 Jan 2020 07:03:31 -0500
-Received: from mail-vs1-f67.google.com ([209.85.217.67]:39761 "EHLO
-        mail-vs1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727817AbgAUMDb (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 21 Jan 2020 07:03:31 -0500
-Received: by mail-vs1-f67.google.com with SMTP id y125so1555732vsb.6
-        for <netdev@vger.kernel.org>; Tue, 21 Jan 2020 04:03:31 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=benyossef-com.20150623.gappssmtp.com; s=20150623;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=zFf4dMyDozEW3IOrzotkvaUe/JQt5lueh29UH6I3hws=;
-        b=vfQgaOaLZtpo33lDwt40fN1I3RHm4sLamOHLsoay0xylpktnfLHDGxkj5O+J342auS
-         NNnN+/sERomOnu5HQ6Y3CMDGtHWIZY+R9XnT6X63JtHZ784bTBkoqK7nLU0PwRJWmAIz
-         iSOYYssI/R5vhmyCzMhelFVjqMab9lNcxMSQT2phofYoueo3ue2rU9cPB9qqi9Z5/tpi
-         GXdTqQwnxVAKIacXLuBA8q1/5jTXDx3Y7PhgbV+++uVqR4+c3Vhi4isvRefL+v4bf9Mc
-         H+I2FL31af3mb6ezQGXEgxeHNSI9ckP7qo8nMI+DjN9ri9+LdfMje+nb4DNQZPJPCkZz
-         7NKg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=zFf4dMyDozEW3IOrzotkvaUe/JQt5lueh29UH6I3hws=;
-        b=k8MqqNvqx9fbFbR4xTYZlym3/t0qB4YiCWCSlJeuUquO/HiN5XQoJhQ3lZp19U3HR+
-         Q7VenCNzaYQiKjxin5y6l47/kCE3T9eF6Ri3G4go011CRypd8aqjJA7KP+cNFEfkLm+6
-         08paCS2t9V8HBEWZHbuzyLFmg+MIuYrFVY1QkKkQtoO67sK22DPlbTeH5/EehTAxGyKl
-         E8As+ie+Qq+j9GfMdZ5aZIMpRpZgNLYr3OUi/E/qetvn5z2buXjE+X1GjQedK3w+93KL
-         ayhnY14uI6YcwLZdIX8AwxVmz7PMiLVr7A7gZDyrEfzuCfT99zTyig73mIVAItJnGlOC
-         zM9A==
-X-Gm-Message-State: APjAAAWkHQF78W6plwZDXvj20IA7zGgZBfNQPNQUoYYHTwVB0brGLtnf
-        vIKEBGbCx4+tCeE6EeWoayh6Hak6TLmE5StNcwu58g==
-X-Google-Smtp-Source: APXvYqwNpegnjdQXWB57I9+MexzU6SpifsJySjzeGDMhcylmgvPG2z9xw60aRjIViHzYT1LNqFAhv2P6stEMRo7zERI=
-X-Received: by 2002:a67:6746:: with SMTP id b67mr2173195vsc.193.1579608210362;
- Tue, 21 Jan 2020 04:03:30 -0800 (PST)
+        id S1729159AbgAUMFW convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Tue, 21 Jan 2020 07:05:22 -0500
+Received: from us-smtp-delivery-1.mimecast.com ([207.211.31.120]:25716 "EHLO
+        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+        with ESMTP id S1728829AbgAUMFW (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 21 Jan 2020 07:05:22 -0500
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-71-uFXlhn5TO0--SMKwk1f7_Q-1; Tue, 21 Jan 2020 07:05:17 -0500
+Received: from smtp.corp.redhat.com (int-mx06.intmail.prod.int.phx2.redhat.com [10.5.11.16])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id AB3DE477;
+        Tue, 21 Jan 2020 12:05:15 +0000 (UTC)
+Received: from krava.redhat.com (unknown [10.43.17.48])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 0D6F85C28D;
+        Tue, 21 Jan 2020 12:05:12 +0000 (UTC)
+From:   Jiri Olsa <jolsa@kernel.org>
+To:     Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>
+Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org,
+        Andrii Nakryiko <andriin@fb.com>, Yonghong Song <yhs@fb.com>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Jakub Kicinski <jakub.kicinski@netronome.com>,
+        David Miller <davem@redhat.com>,
+        =?UTF-8?q?Bj=C3=B6rn=20T=C3=B6pel?= <bjorn.topel@intel.com>,
+        John Fastabend <john.fastabend@gmail.com>
+Subject: [PATCHv3 0/6] bpf: Add trampoline helpers
+Date:   Tue, 21 Jan 2020 13:05:06 +0100
+Message-Id: <20200121120512.758929-1-jolsa@kernel.org>
 MIME-Version: 1.0
-References: <20200115060234.4mm6fsmsrryzpymi@gondor.apana.org.au>
- <9fd07805-8e2e-8c3f-6e5e-026ad2102c5a@chelsio.com> <c8d64068-a87b-36dd-910d-fb98e09c7e4b@asicdesigners.com>
- <20200117062300.qfngm2degxvjskkt@gondor.apana.org.au> <20d97886-e442-ed47-5685-ff5cd9fcbf1c@asicdesigners.com>
- <20200117070431.GE23018@gauss3.secunet.de> <318fd818-0135-8387-6695-6f9ba2a6f28e@asicdesigners.com>
- <20200117121722.GG26283@gauss3.secunet.de> <179f6f7e-f361-798b-a1c6-30926d8e8bf5@asicdesigners.com>
- <20200120093712.GM23018@gauss3.secunet.de> <b0b4ba4b-1cdd-ad0b-32e4-2bc9610ff3e1@asicdesigners.com>
-In-Reply-To: <b0b4ba4b-1cdd-ad0b-32e4-2bc9610ff3e1@asicdesigners.com>
-From:   Gilad Ben-Yossef <gilad@benyossef.com>
-Date:   Tue, 21 Jan 2020 14:03:16 +0200
-Message-ID: <CAOtvUMdfxx=-XQMv=aFFjzSnLCL3b5UuvVOMzJVc2odSCZGtXg@mail.gmail.com>
-Subject: Re: Advertise maximum number of sg supported by driver in single request
-To:     Ayush Sawal <ayush.sawal@asicdesigners.com>
-Cc:     Steffen Klassert <steffen.klassert@secunet.com>,
-        Herbert Xu <herbert@gondor.apana.org.au>,
-        Linux Crypto Mailing List <linux-crypto@vger.kernel.org>,
-        manojmalviya@chelsio.com, Ayush Sawal <ayush.sawal@chelsio.com>,
-        netdev@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.16
+X-MC-Unique: uFXlhn5TO0--SMKwk1f7_Q-1
+X-Mimecast-Spam-Score: 0
+X-Mimecast-Originator: kernel.org
+Content-Type: text/plain; charset=WINDOWS-1252
+Content-Transfer-Encoding: 8BIT
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Jan 20, 2020 at 2:35 PM Ayush Sawal
-<ayush.sawal@asicdesigners.com> wrote:
+hi,
+adding helpers for trampolines and 2 other fixes to have kernel
+support for loading trampoline programs in bcc/bpftrace.
 
-> As we have a crypto accelarator as device when the request is send to
-> the crypto driver from esp_output ,
-> the aead_request has all the fragments in its src sg and the problem
-> which we are facing is when this
-> src sg nents becomes greater than 15 ,15 is our crypto driver's max sg
-> limit to handle the request in one shot.
->
-> Does it make sense for a crypto driver to advertise the maximum amount
-> of sg it can handle for a single
-> request and then handling this in crypto framework while forming the
-> crypto request?
->
+Original rfc post [1].
 
-As I maintain the driver of another crypto accelerator I sympathize
-with the need but I question the proposed solution.
-Consider: your specific driver is limited by the number of
-scattergather entries. Another implementation might be limited
-by something else such as the total overall size of the request buffer
-and probably half a dozen other considerations.
-Should we now be passing all this capability information to the crypto
-API core? and what happens if a new driver
-has a limitation in a different quality?
+Speedup output of perf bench while running klockstat.py
+on kprobes vs trampolines:
 
-So no, the solution to advertise the specific capability limitation of
-each implementation does not seem to be a good one.
-We already have a solution to the problem - initiate a fallback TFM
-request and use it if you cannot fulfill the request on your own.
+    Without:
+            $ perf bench sched messaging -l 50000
+            ...
+                 Total time: 18.571 [sec]
 
-I do agree however that having each implementation registering and
-keeping their own fallback tfm request just for these cases has some
-overhead and a redundancy.
+    With current kprobe tracing:
+            $ perf bench sched messaging -l 50000
+            ...
+                 Total time: 183.395 [sec]
 
-Maybe a better solution would be to allow implementation to return to
-the Crypto API core a special return value (maybe -EAGAIN?) that tells
-it that although the request is a valid one, this specific
-implementation cannot fulfil it and let the crypto API core do the
-fallback?
+    With kfunc tracing:
+            $ perf bench sched messaging -l 50000
+            ...
+                 Total time: 39.773 [sec]
 
-It sounds like it can be simpler to the implementation providers AND
-save some redundant code...
+v3 changes:
+  - added ack from John Fastabend for patch 1
+  - move out is_bpf_image_address from is_bpf_text_address call [David]
 
---=20
-Gilad Ben-Yossef
-Chief Coffee Drinker
+v2 changes:
+  - make the unwind work for dispatcher as well
+  - added test for allowed trampolines count
+  - used raw tp pt_regs nest-arrays for trampoline helpers
 
-values of =CE=B2 will give rise to dom!
+thanks,
+jirka
+
+
+[1] https://lore.kernel.org/netdev/20191229143740.29143-1-jolsa@kernel.org/
+---
+Jiri Olsa (6):
+      bpf: Allow ctx access for pointers to scalar
+      bpf: Add bpf_perf_event_output_kfunc
+      bpf: Add bpf_get_stackid_kfunc
+      bpf: Add bpf_get_stack_kfunc
+      bpf: Allow to resolve bpf trampoline and dispatcher in unwind
+      selftest/bpf: Add test for allowed trampolines count
+
+ include/linux/bpf.h                                       |  12 +++++++++++-
+ kernel/bpf/btf.c                                          |  13 ++++++++++++-
+ kernel/bpf/dispatcher.c                                   |   4 ++--
+ kernel/bpf/trampoline.c                                   |  82 +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++-------
+ kernel/extable.c                                          |   7 +++++--
+ kernel/trace/bpf_trace.c                                  |  96 ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+ tools/testing/selftests/bpf/prog_tests/trampoline_count.c | 112 ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+ tools/testing/selftests/bpf/progs/test_trampoline_count.c |  21 +++++++++++++++++++++
+ 8 files changed, 334 insertions(+), 13 deletions(-)
+ create mode 100644 tools/testing/selftests/bpf/prog_tests/trampoline_count.c
+ create mode 100644 tools/testing/selftests/bpf/progs/test_trampoline_count.c
+
