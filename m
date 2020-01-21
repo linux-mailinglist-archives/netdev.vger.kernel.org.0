@@ -2,211 +2,126 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 49FA6143C87
-	for <lists+netdev@lfdr.de>; Tue, 21 Jan 2020 13:05:40 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5F170143C8B
+	for <lists+netdev@lfdr.de>; Tue, 21 Jan 2020 13:07:08 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729579AbgAUMFi convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Tue, 21 Jan 2020 07:05:38 -0500
-Received: from us-smtp-delivery-1.mimecast.com ([207.211.31.120]:39702 "EHLO
-        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S1729417AbgAUMFh (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 21 Jan 2020 07:05:37 -0500
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-383--M6epoTONQa3a_K_FXLkhA-1; Tue, 21 Jan 2020 07:05:33 -0500
-Received: from smtp.corp.redhat.com (int-mx06.intmail.prod.int.phx2.redhat.com [10.5.11.16])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id AD88CDB60;
-        Tue, 21 Jan 2020 12:05:31 +0000 (UTC)
-Received: from krava.redhat.com (unknown [10.43.17.48])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 5AFB85C28D;
-        Tue, 21 Jan 2020 12:05:29 +0000 (UTC)
-From:   Jiri Olsa <jolsa@kernel.org>
-To:     Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>
-Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org,
-        Andrii Nakryiko <andriin@fb.com>, Yonghong Song <yhs@fb.com>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Jakub Kicinski <jakub.kicinski@netronome.com>,
-        David Miller <davem@redhat.com>,
-        =?UTF-8?q?Bj=C3=B6rn=20T=C3=B6pel?= <bjorn.topel@intel.com>,
-        John Fastabend <john.fastabend@gmail.com>
-Subject: [PATCH 6/6] selftest/bpf: Add test for allowed trampolines count
-Date:   Tue, 21 Jan 2020 13:05:12 +0100
-Message-Id: <20200121120512.758929-7-jolsa@kernel.org>
-In-Reply-To: <20200121120512.758929-1-jolsa@kernel.org>
-References: <20200121120512.758929-1-jolsa@kernel.org>
+        id S1729144AbgAUMHG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 21 Jan 2020 07:07:06 -0500
+Received: from mail-qt1-f196.google.com ([209.85.160.196]:33740 "EHLO
+        mail-qt1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728655AbgAUMHG (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 21 Jan 2020 07:07:06 -0500
+Received: by mail-qt1-f196.google.com with SMTP id d5so2384224qto.0;
+        Tue, 21 Jan 2020 04:07:05 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=ocAA4rp2v5LQJFVaUNEJKYBfq6c2iJAFtUbkzCPE/us=;
+        b=LULWTaPl3G2d8XO/3JB02fv1FNweVLIGZVjkDrU6QMYKBirBorQNRBB90525TP2ERQ
+         ZveBTBg3n7f7QNCrpsd+S6QzDMGWrF4I6bL2ffp587cBdKqiUH5JMaS/OsFCTtIaMzyJ
+         +1IWQEbzZo0dSFICI38xjVdi6vVO42bObvX/HsL/Aw+uZr7pGZ0VG05EKctmDRDfUpCg
+         DomZgiXx0zGe2aU7zta2+GBdVs1WYzfDrBrq6MQdnRy6yJhbpjkDWhNlj0Qe+BT3yXqO
+         SFBzMnhdg4sj05KS4KzZNOw3PMVVgjvNHXE/qCFPQjEFx1WDzQ6PAaOxnnXXwUvsCR6h
+         fKsQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=ocAA4rp2v5LQJFVaUNEJKYBfq6c2iJAFtUbkzCPE/us=;
+        b=pe8rG/DOroulxlfOm+nqLXtZyrFyFFJMUsLXJO2EOQGw2jVfjTn90gUY0NJGoJ+W0C
+         HkxqwmhPYy3JRbEmj7xzpvy0ug7kTN1FwVCLQVona/cbQHEyc7Pi5tOvyjT3tGuGVpRg
+         kDPWcu5Xr5EK716P30e+AtMZIxXL4hBq7gXJwuhsx8Q0dlCbwa6Tgq43vUqvl8EEEaRf
+         cfEp08s8oocasSdh883B4JhprN3Bi3lDfLNJzRcncOgd6xCFC7Nx1UQepCMkjdZZTY6Y
+         Q4qDnICD/mbrwGd0WBi6cuA3ceVzoqL43bkuEUfPDAYH8VxLIn+i9XbvttlBemCOvaYi
+         0TFA==
+X-Gm-Message-State: APjAAAXz4fhJP+23M4YU3WFIMQkLc+T2yQrK0rSNdj+/Gg6YY1ZuUiQu
+        DdYwvGbugqritwIPPoiEFZygastZkgTRXCUSxrI6fjDqIX0=
+X-Google-Smtp-Source: APXvYqzGrlydMYeF5hqn2+BNP9po2Kj6BC90GQz9mdCWF6fBoQ5XlK3Tn1LSRtmLohw+yxBeyTFyEdmVjxSlJTTyMUQ=
+X-Received: by 2002:ac8:2310:: with SMTP id a16mr3985386qta.46.1579608425310;
+ Tue, 21 Jan 2020 04:07:05 -0800 (PST)
 MIME-Version: 1.0
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.16
-X-MC-Unique: -M6epoTONQa3a_K_FXLkhA-1
-X-Mimecast-Spam-Score: 0
-X-Mimecast-Originator: kernel.org
-Content-Type: text/plain; charset=WINDOWS-1252
-Content-Transfer-Encoding: 8BIT
+References: <20200120092917.13949-1-bjorn.topel@gmail.com> <5e264a3a5d5e6_20912afc5c86e5c4b5@john-XPS-13-9370.notmuch>
+In-Reply-To: <5e264a3a5d5e6_20912afc5c86e5c4b5@john-XPS-13-9370.notmuch>
+From:   =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@gmail.com>
+Date:   Tue, 21 Jan 2020 13:06:54 +0100
+Message-ID: <CAJ+HfNirBncXGcath_MKpzbcf3JRBRU7ThpapCQh_zMNqQVtxQ@mail.gmail.com>
+Subject: Re: [PATCH bpf-next] xsk, net: make sock_def_readable() have external linkage
+To:     John Fastabend <john.fastabend@gmail.com>
+Cc:     Netdev <netdev@vger.kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@intel.com>,
+        bpf <bpf@vger.kernel.org>,
+        "Karlsson, Magnus" <magnus.karlsson@intel.com>,
+        Jonathan Lemon <jonathan.lemon@gmail.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-There's limit of 40 programs tht can be attached
-to trampoline for one function. Adding test that
-tries to attach that many plus one extra that needs
-to fail.
+On Tue, 21 Jan 2020 at 01:48, John Fastabend <john.fastabend@gmail.com> wro=
+te:
+>
+> Bj=C3=B6rn T=C3=B6pel wrote:
+> > From: Bj=C3=B6rn T=C3=B6pel <bjorn.topel@intel.com>
+> >
+> > XDP sockets use the default implementation of struct sock's
+> > sk_data_ready callback, which is sock_def_readable(). This function is
+> > called in the XDP socket fast-path, and involves a retpoline. By
+> > letting sock_def_readable() have external linkage, and being called
+> > directly, the retpoline can be avoided.
+> >
+> > Signed-off-by: Bj=C3=B6rn T=C3=B6pel <bjorn.topel@intel.com>
+> > ---
+> >  include/net/sock.h | 2 ++
+> >  net/core/sock.c    | 2 +-
+> >  net/xdp/xsk.c      | 2 +-
+> >  3 files changed, 4 insertions(+), 2 deletions(-)
+> >
+>
+> I think this is fine but curious were you able to measure the
+> difference with before/after pps or something?
 
-Signed-off-by: Jiri Olsa <jolsa@kernel.org>
----
- .../bpf/prog_tests/trampoline_count.c         | 112 ++++++++++++++++++
- .../bpf/progs/test_trampoline_count.c         |  21 ++++
- 2 files changed, 133 insertions(+)
- create mode 100644 tools/testing/selftests/bpf/prog_tests/trampoline_count.c
- create mode 100644 tools/testing/selftests/bpf/progs/test_trampoline_count.c
+Ugh, yeah, of course I've should have added that. Sorry for that! Here
+goes; Benchmark is xdpsock rxdrop, NAPI running on core 20:
 
-diff --git a/tools/testing/selftests/bpf/prog_tests/trampoline_count.c b/tools/testing/selftests/bpf/prog_tests/trampoline_count.c
-new file mode 100644
-index 000000000000..1235f3d1cc50
---- /dev/null
-+++ b/tools/testing/selftests/bpf/prog_tests/trampoline_count.c
-@@ -0,0 +1,112 @@
-+// SPDX-License-Identifier: GPL-2.0-only
-+#define _GNU_SOURCE
-+#include <sched.h>
-+#include <sys/prctl.h>
-+#include <test_progs.h>
-+
-+#define MAX_TRAMP_PROGS 40
-+
-+struct inst {
-+	struct bpf_object *obj;
-+	struct bpf_link   *link_fentry;
-+	struct bpf_link   *link_fexit;
-+};
-+
-+static int test_task_rename(void)
-+{
-+	int fd, duration = 0, err;
-+	char buf[] = "test_overhead";
-+
-+	fd = open("/proc/self/comm", O_WRONLY|O_TRUNC);
-+	if (CHECK(fd < 0, "open /proc", "err %d", errno))
-+		return -1;
-+	err = write(fd, buf, sizeof(buf));
-+	if (err < 0) {
-+		CHECK(err < 0, "task rename", "err %d", errno);
-+		close(fd);
-+		return -1;
-+	}
-+	close(fd);
-+	return 0;
-+}
-+
-+static struct bpf_link *load(struct bpf_object *obj, const char *name)
-+{
-+	struct bpf_program *prog;
-+	int duration = 0;
-+
-+	prog = bpf_object__find_program_by_title(obj, name);
-+	if (CHECK(!prog, "find_probe", "prog '%s' not found\n", name))
-+		return ERR_PTR(-EINVAL);
-+	return bpf_program__attach_trace(prog);
-+}
-+
-+void test_trampoline_count(void)
-+{
-+	const char *fentry_name = "fentry/__set_task_comm";
-+	const char *fexit_name = "fexit/__set_task_comm";
-+	const char *object = "test_trampoline_count.o";
-+	struct inst inst[MAX_TRAMP_PROGS] = { 0 };
-+	int err, i = 0, duration = 0;
-+	struct bpf_object *obj;
-+	struct bpf_link *link;
-+	char comm[16] = {};
-+
-+	/* attach 'allowed' 40 trampoline programs */
-+	for (i = 0; i < MAX_TRAMP_PROGS; i++) {
-+		obj = bpf_object__open_file(object, NULL);
-+		if (CHECK(IS_ERR(obj), "obj_open_file", "err %ld\n", PTR_ERR(obj)))
-+			goto cleanup;
-+
-+		err = bpf_object__load(obj);
-+		if (CHECK(err, "obj_load", "err %d\n", err))
-+			goto cleanup;
-+		inst[i].obj = obj;
-+
-+		if (rand() % 2) {
-+			link = load(obj, fentry_name);
-+			if (CHECK(IS_ERR(link), "attach prog", "err %ld\n", PTR_ERR(link)))
-+				goto cleanup;
-+			inst[i].link_fentry = link;
-+		} else {
-+			link = load(obj, fexit_name);
-+			if (CHECK(IS_ERR(link), "attach prog", "err %ld\n", PTR_ERR(link)))
-+				goto cleanup;
-+			inst[i].link_fexit = link;
-+		}
-+	}
-+
-+	/* and try 1 extra.. */
-+	obj = bpf_object__open_file(object, NULL);
-+	if (CHECK(IS_ERR(obj), "obj_open_file", "err %ld\n", PTR_ERR(obj)))
-+		goto cleanup;
-+
-+	err = bpf_object__load(obj);
-+	if (CHECK(err, "obj_load", "err %d\n", err))
-+		goto cleanup_extra;
-+
-+	/* ..that needs to fail */
-+	link = load(obj, fentry_name);
-+	if (CHECK(!IS_ERR(link), "cannot attach over the limit", "err %ld\n", PTR_ERR(link))) {
-+		bpf_link__destroy(link);
-+		goto cleanup_extra;
-+	}
-+
-+	/* with E2BIG error */
-+	CHECK(PTR_ERR(link) != -E2BIG, "proper error check", "err %ld\n", PTR_ERR(link));
-+
-+	/* and finaly execute the probe */
-+	if (CHECK_FAIL(prctl(PR_GET_NAME, comm, 0L, 0L, 0L)))
-+		goto cleanup_extra;
-+	CHECK_FAIL(test_task_rename());
-+	CHECK_FAIL(prctl(PR_SET_NAME, comm, 0L, 0L, 0L));
-+
-+cleanup_extra:
-+	bpf_object__close(obj);
-+cleanup:
-+	while (--i) {
-+		bpf_link__destroy(inst[i].link_fentry);
-+		bpf_link__destroy(inst[i].link_fexit);
-+		bpf_object__close(inst[i].obj);
-+	}
-+}
-diff --git a/tools/testing/selftests/bpf/progs/test_trampoline_count.c b/tools/testing/selftests/bpf/progs/test_trampoline_count.c
-new file mode 100644
-index 000000000000..e51e6e3a81c2
---- /dev/null
-+++ b/tools/testing/selftests/bpf/progs/test_trampoline_count.c
-@@ -0,0 +1,21 @@
-+// SPDX-License-Identifier: GPL-2.0
-+#include <stdbool.h>
-+#include <stddef.h>
-+#include <linux/bpf.h>
-+#include "bpf_trace_helpers.h"
-+
-+struct task_struct;
-+
-+SEC("fentry/__set_task_comm")
-+int BPF_PROG(prog1, struct task_struct *tsk, const char *buf, bool exec)
-+{
-+	return 0;
-+}
-+
-+SEC("fexit/__set_task_comm")
-+int BPF_PROG(prog2, struct task_struct *tsk, const char *buf, bool exec)
-+{
-+	return 0;
-+}
-+
-+char _license[] SEC("license") = "GPL";
--- 
-2.24.1
+**Pre-patch: xdpsock rxdrop: 22.8 Mpps
+ Performance counter stats for 'CPU(s) 20':
 
+         10,000.58 msec cpu-clock                 #    1.000 CPUs
+utilized
+                12      context-switches          #    0.001 K/sec
+                 1      cpu-migrations            #    0.000 K/sec
+                 0      page-faults               #    0.000 K/sec
+    29,931,407,416      cycles                    #    2.993 GHz
+    82,538,852,331      instructions              #    2.76  insn per
+cycle
+    15,894,169,979      branches                  # 1589.324 M/sec
+        30,916,486      branch-misses             #    0.19% of all
+branches
+
+      10.000636027 seconds time elapsed
+
+**Post-patch: xdpsock rxdrop: 23.2 Mpps
+         10,000.90 msec cpu-clock                 #    1.000 CPUs
+utilized
+                12      context-switches          #    0.001 K/sec
+                 1      cpu-migrations            #    0.000 K/sec
+                 0      page-faults               #    0.000 K/sec
+    29,932,353,067      cycles                    #    2.993 GHz
+    84,299,636,827      instructions              #    2.82  insn per
+cycle
+    16,228,795,437      branches                  # 1622.733 M/sec
+        28,113,847      branch-misses             #    0.17% of all
+branches
+
+      10.000596454 seconds time elapsed
+
+This could fall into the category of noise. :-) PPS and IPC is up a
+bit. OTOH, maybe UDP can benefit from this as well?
+
+
+Bj=C3=B6rn
