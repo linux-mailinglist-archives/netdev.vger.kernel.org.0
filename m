@@ -2,116 +2,219 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 33E71144622
-	for <lists+netdev@lfdr.de>; Tue, 21 Jan 2020 21:56:33 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 200C314463A
+	for <lists+netdev@lfdr.de>; Tue, 21 Jan 2020 22:05:46 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729061AbgAUU4W (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 21 Jan 2020 15:56:22 -0500
-Received: from mail-eopbgr130040.outbound.protection.outlook.com ([40.107.13.40]:56022
-        "EHLO EUR01-HE1-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1728741AbgAUU4V (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 21 Jan 2020 15:56:21 -0500
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=KzsmQzaoFlyepaJ2IgIwCe3U7VXo67Bmkfx5vKrfkF61qkCzQsr2a90q7ZNq8EqcxHam9yCzLVCQ/aJ0xcZ1kyOdi+Ri/K9Vz2Clw/F6q5UBrB9zx1y6ZLtqMQxHoKSHYZ8go91uO/kIJJJ8afygFi7THYglwRfqLPgnIAS/VdJuG1E+Xg/97IrXWNzLFQtArO4Wr7+Y4XD/QYMRAs40/YMRxAsxUYPpsd4pW3TNWZbVvkJQXOlYrUn1jxfZxi8tPiKd//Im62kYar2nDLqBsxPU2KolEQGpm5jt7RSzkmngJTeI6MOfq6k9/ONN2Jol06PUEn0vJhFnmhZk8mthyA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=R4UNmPB4cLua+XSwBHaxTbQfqGmpGdCPirDO2vJZr7o=;
- b=aEl/SC4BHxiEVDL9f4JEqB4tYP8ZLdfUhdSxVubcbKnTgQq8kr0PpmA429zAKI09WATpYAk8PRkMpKaowmPxUbpTzV/lTn6837DzP7Yr+X/Amt3kzUaCXeIfq46Lxo0eun9rjsnurmOS0C0Spd9Jhl7ORLSNe0Zt1X0bDkmVdwPfRAdOwUlbQPQ2EClLMEe6M2V4JM/wiql3gHhWpaAL0btgV4Q4GCAv0+YF8jrvtA2DmeMmXZPdbfuRuSM1yV65Zzqv0JzWe6L67eZxxRVuDNYt18oEPwnpP2hr3r0RH8hlAhmO5D0s8jtQBtdaqCclyj+MoCAL+Yndb+AIQUG5bw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=mellanox.com; dmarc=pass action=none header.from=mellanox.com;
- dkim=pass header.d=mellanox.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Mellanox.com;
- s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=R4UNmPB4cLua+XSwBHaxTbQfqGmpGdCPirDO2vJZr7o=;
- b=lXZzeAG/nw0QBc1YR4F/6/uO2Z0y/Q8QI5QGT748HV6kEe3FENz+bpGUPRsZuGpgvTCKxcoQQeaGwQNK2+uWP8JzVHm6ZBzEwjHd8Sd79m8wGNhUu4HcAtjKpdHTgQby6o2iRMnCHs49eGv89xoKyiZg9feAIjOLhmvO9F+VDG0=
-Received: from VI1PR05MB5102.eurprd05.prod.outlook.com (20.177.51.151) by
- VI1PR05MB4768.eurprd05.prod.outlook.com (20.176.7.157) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.2644.19; Tue, 21 Jan 2020 20:56:16 +0000
-Received: from VI1PR05MB5102.eurprd05.prod.outlook.com
- ([fe80::d830:96fc:e928:c096]) by VI1PR05MB5102.eurprd05.prod.outlook.com
- ([fe80::d830:96fc:e928:c096%6]) with mapi id 15.20.2644.027; Tue, 21 Jan 2020
- 20:56:16 +0000
-From:   Saeed Mahameed <saeedm@mellanox.com>
-To:     "wenxu@ucloud.cn" <wenxu@ucloud.cn>, Roi Dayan <roid@mellanox.com>,
-        Mark Bloch <markb@mellanox.com>,
-        Paul Blakey <paulb@mellanox.com>,
-        Vlad Buslov <vladbu@mellanox.com>
-CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-Subject: Re: [PATCH net-next v2] net/mlx5e: Add mlx5e_flower_parse_meta
- support
-Thread-Topic: [PATCH net-next v2] net/mlx5e: Add mlx5e_flower_parse_meta
- support
-Thread-Index: AQHVxTsc0R/oby9wVku6xKhcy3y5W6fqrMyAgAA10oCAAJTOAIAKOI0A
-Date:   Tue, 21 Jan 2020 20:56:16 +0000
-Message-ID: <fac29985c39902b1cb50426da02615285824dd6b.camel@mellanox.com>
-References: <1578388566-27310-1-git-send-email-wenxu@ucloud.cn>
-         <c4d6fe12986bd2b21faf831eb76f0f472ef903d1.camel@mellanox.com>
-         <c6d4c563-f173-9ff6-83e5-95b246d90526@ucloud.cn>
-         <09401ab5-1888-a19b-9e27-bd9c0cf408fe@mellanox.com>
-In-Reply-To: <09401ab5-1888-a19b-9e27-bd9c0cf408fe@mellanox.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-user-agent: Evolution 3.34.3 (3.34.3-1.fc31) 
-authentication-results: spf=none (sender IP is )
- smtp.mailfrom=saeedm@mellanox.com; 
-x-originating-ip: [209.116.155.178]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-ht: Tenant
-x-ms-office365-filtering-correlation-id: 6274e2b0-ae8a-4016-fd8c-08d79eb45b94
-x-ms-traffictypediagnostic: VI1PR05MB4768:|VI1PR05MB4768:
-x-ms-exchange-transport-forked: True
-x-microsoft-antispam-prvs: <VI1PR05MB4768C6843793E6594D201580BE0D0@VI1PR05MB4768.eurprd05.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:6430;
-x-forefront-prvs: 0289B6431E
-x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(4636009)(376002)(136003)(346002)(396003)(39860400002)(366004)(189003)(199004)(86362001)(71200400001)(6486002)(316002)(53546011)(2616005)(26005)(66446008)(66556008)(64756008)(6506007)(91956017)(66946007)(66476007)(76116006)(186003)(478600001)(81156014)(2906002)(8936002)(110136005)(4326008)(6636002)(6512007)(81166006)(5660300002)(8676002)(36756003);DIR:OUT;SFP:1101;SCL:1;SRVR:VI1PR05MB4768;H:VI1PR05MB5102.eurprd05.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;MX:1;A:1;
-received-spf: None (protection.outlook.com: mellanox.com does not designate
- permitted sender hosts)
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: H+0KESQKzvt7QhPsaP93rwyHLpfKDs6wACuDgyVxLNbSxnHcPMeONuYWqMaUVzowemS4teDTDga08nnwZvFRS387TvZouHXizGUzpfYW9VgywoDCq+YznokXKR0AyDQnmGZp/QfKWrbl5qlIOJFwOblEd6pbw79h0g9ZQkjQp1miBMrn7x3p0BuRiyBrwLAYaCDzkai/oLnV5X0Vgn88bEwC4qtWQ60m7j3H8SF61BvskRnOL2d7J9JUDyxPXo34ORxg9NP5FQEm9cl+q5mBSN77MXUN5fdOz380ny57keLnTDX1qi5/o6MJAe+h37TABjw08QlPrZAszNRWAj8dmbkJkvZEx7oHQKC5/feEUU7M1CNGgtJvpOM0gsX4QW9ChfpjW1VFbi7RB+oGN3Rp5dhTSe5f+oNjur96lPhD4j0uhaFNVh0xnHs5Ik4hUFQ9
-Content-Type: text/plain; charset="utf-8"
-Content-ID: <44717B6FDF487C4289204236BAE1F544@eurprd05.prod.outlook.com>
-Content-Transfer-Encoding: base64
+        id S1729127AbgAUVFo (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 21 Jan 2020 16:05:44 -0500
+Received: from mail-wr1-f67.google.com ([209.85.221.67]:46178 "EHLO
+        mail-wr1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728748AbgAUVFn (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 21 Jan 2020 16:05:43 -0500
+Received: by mail-wr1-f67.google.com with SMTP id z7so4877413wrl.13
+        for <netdev@vger.kernel.org>; Tue, 21 Jan 2020 13:05:41 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=to:cc:from:subject:message-id:date:user-agent:mime-version
+         :content-language:content-transfer-encoding;
+        bh=1a7whNnLjAyW18taQMHtOBMrMabH2Uq8ppBihrFjtGg=;
+        b=nuNKSjZF9qfsYAeW0QeuE6bLv+BsaLi19xD+QfEZf3NYDUoeAlr6Vb1VXE+7yqHP5e
+         MMfAYo44j/IwEa/atg7oImPfDJ6Z0coN/e+TnDX+A2OMba3ZiUKLLSVe/GGkBlsSAE5V
+         ne2B5aXGlZ1je7lX8Cp/XwEKqAbch1qXoOJ2VaifJ7p1SOr/NhUcdnT25foDzW2fuHP/
+         wCG1UJJiDHPNmlDYLAJ/FLwb9zROLAGg7sXSXVs8IJVDcLBrzIrD/JF4w9d1DHFtbxE9
+         5W6Fe4CUcTY7acz+U316jRdSbU19gQOR/lpHBqACFXEPcDVmRsKukYUD6wo4DiOS7t34
+         MXEA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:to:cc:from:subject:message-id:date:user-agent
+         :mime-version:content-language:content-transfer-encoding;
+        bh=1a7whNnLjAyW18taQMHtOBMrMabH2Uq8ppBihrFjtGg=;
+        b=M0qR+YV+p2w1+lW2Tdvz703OpAWXzz8njC9dx7vKiAuprEs1twb+ZkYaL5zxZF6we3
+         OTh7iJtnNJ3edOuG2XgcYwQWCmYhjrGupEkXaOI8BKmMmwXQ+EjPnfYbnMQ6n0M/e+QF
+         JulYSge805qOhNWKaVzoo9o5M5J9Xtfl4V99ISGdAnfhAdeaYmKaxUeV27lfGCvkBXVz
+         LARTa1VeHHNYjz8AlW6WVAh0WcBqNlWDMCTX7Rl49Clc70A8M4YtEQqsiOIFdiMJMJIU
+         PRmMCkmhs5P9zbqb1a21kyVDCaRB2WZDY/AMuZvHV6PuWG0BR6wWN4GjVyQbJZCeUmkD
+         uCYw==
+X-Gm-Message-State: APjAAAVeSwlN78UvzvJ1pZy+SID6dyyEY8UN7k2kL0B2qdUWRXb2egIc
+        SMUGZvhJ4n8iCygUZyn/sLVXmNkN
+X-Google-Smtp-Source: APXvYqwGw783urdTm8ISQA2nK66ptg0o91EavYm7/IJ1fNB02M0sJ8njAM+Zit2m9GVVhbbjTUYJSw==
+X-Received: by 2002:adf:ff84:: with SMTP id j4mr7177275wrr.27.1579640740355;
+        Tue, 21 Jan 2020 13:05:40 -0800 (PST)
+Received: from [192.168.178.85] (pD9F901D9.dip0.t-ipconnect.de. [217.249.1.217])
+        by smtp.googlemail.com with ESMTPSA id u7sm861301wmj.3.2020.01.21.13.05.39
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 21 Jan 2020 13:05:39 -0800 (PST)
+To:     Andrew Lunn <andrew@lunn.ch>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        David Miller <davem@davemloft.net>,
+        Byungho An <bh74.an@samsung.com>,
+        Jassi Brar <jaswinder.singh@linaro.org>,
+        Ilias Apalodimas <ilias.apalodimas@linaro.org>
+Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+From:   Heiner Kallweit <hkallweit1@gmail.com>
+Subject: [PATCH net-next] net: convert additional drivers to use phy_do_ioctl
+Message-ID: <cc7396fa-81c6-6a13-0e94-9ac2ca2cab08@gmail.com>
+Date:   Tue, 21 Jan 2020 22:05:14 +0100
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
+ Thunderbird/68.4.1
 MIME-Version: 1.0
-X-OriginatorOrg: Mellanox.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 6274e2b0-ae8a-4016-fd8c-08d79eb45b94
-X-MS-Exchange-CrossTenant-originalarrivaltime: 21 Jan 2020 20:56:16.3497
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: a652971c-7d2e-4d9b-a6a4-d149256f461b
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: s29Sk1rcoOW+ySE3TBzpW19WovDedPf0XPjbKhuWHc5Tn4n+lKganIaS+DJ0TCEf0PsC6x2QZ5C7rnwEhmnk5Q==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR05MB4768
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-T24gV2VkLCAyMDIwLTAxLTE1IGF0IDA4OjUxICswMDAwLCBSb2kgRGF5YW4gd3JvdGU6DQo+IA0K
-PiBPbiAyMDIwLTAxLTE1IDE6NTggQU0sIHdlbnh1IHdyb3RlOg0KPiA+ICAyMDIwLzEvMTUgNDo0
-NiwgU2FlZWQgTWFoYW1lZWQgOg0KPiA+ID4gSGkgV2VueHUsDQo+ID4gPiANCj4gPiA+IEFjY29y
-ZGluZyB0byBvdXIgcmVncmVzc2lvbiBUZWFtLCBUaGlzIGNvbW1pdCBpcyBicmVha2luZyB2eGxh
-bg0KPiA+ID4gb2ZmbG9hZA0KPiA+ID4gQ0MnZWQgUGF1bCwgUm9pIGFuZCBWbGFkLCB0aGV5IHdp
-bGwgYXNzaXN0IHlvdSBpZiB5b3UgbmVlZCBhbnkNCj4gPiA+IGhlbHAuDQo+ID4gPiANCj4gPiA+
-IGNhbiB5b3UgcGxlYXNlIGludmVzdGlnYXRlIHRoZSBmb2xsb3dpbmcgY2FsbCB0cmFjZSA/DQo+
-ID4gDQo+ID4gSGkgU2FlZWQgJiBQYXVsLA0KPiA+IA0KPiA+IA0KPiA+IFRoaXMgcGF0Y2gganVz
-dCBjaGVjayB0aGUgbWV0YSBrZXkgbWF0Y2ggd2l0aCB0aGUgZmlsdGVyX2Rldi4gIElmDQo+ID4g
-dGhpcyBtYXRjaCBmYWlsZWQsDQo+ID4gDQo+ID4gVGhlIG5ldyBmbG93ZXIgaW5zdGFsbCB3aWxs
-IGZhaWxlZCBhbmQgbmV2ZXIgYWxsb2NhdGUgbmV3DQo+ID4gbWx4NV9mc19mdGVzLg0KPiA+IA0K
-PiA+IEhvdyBjYW4gSSByZXByb2R1Y2UgdGhpcyBjYXNlPyBDYW4geW91IHByb3ZpZGUgdGhlIHRl
-c3QgY2FzZQ0KPiA+IHNjcmlwdD8NCj4gPiANCj4gPiANCj4gPiBCUg0KPiA+IA0KPiA+IHdlbnh1
-DQo+IA0KPiBIaSBTYWVlZCwgV2VueHUsDQo+IA0KPiBJIHJldmlld2VkIHRoZSBwYXRjaCBhbmQg
-dmVyaWZpZWQgbWFudWFsbHkganVzdCBpbiBjYXNlLiBTdWNoIGlzc3VlDQo+IHNob3VsZA0KPiBu
-b3QgYmUgcmVwcm9kdWNlZCBmcm9tIHRoaXMgcGF0Y2ggYW5kIGluZGVlZCBJIGRpZCBub3QgcmVw
-cm9kdWNlIGl0Lg0KPiBJJ2xsIHRha2UgdGhlIGlzc3VlIHdpdGggb3VyIHJlZ3Jlc3Npb24gdGVh
-bS4NCj4gSSBhY2tlZCB0aGUgcGF0Y2guIGxvb2tzIGdvb2QgdG8gbWUuDQo+IA0KPiBUaGFua3Ms
-DQo+IFJvaQ0KPiANCj4gDQoNCg0KVGhhbmtzIFJvaSwgDQoNCklmIHRoZSBkaXNjdXNzaW9uIGlz
-IG92ZXIgYW5kIHlvdSBhY2sgdGhlIHBhdGNoLCBwbGVhc2UgcHJvdmlkZSBhDQpmb3JtYWwgIkFj
-a2VkLWJ5IiB0YWcgc28gaSB3aWxsIHB1bGwgdGhpcyBwYXRjaCBpbnRvIG5ldC1uZXh0LW1seDUu
-DQoNClRoYW5rcywNClNhZWVkLg0KDQo=
+The first batch of driver conversions missed a few cases where we can
+use phy_do_ioctl too.
+
+Signed-off-by: Heiner Kallweit <hkallweit1@gmail.com>
+---
+ drivers/net/ethernet/aurora/nb8800.c             |  7 +------
+ drivers/net/ethernet/cavium/octeon/octeon_mgmt.c |  4 +---
+ drivers/net/ethernet/lantiq_etop.c               |  9 +--------
+ drivers/net/ethernet/marvell/pxa168_eth.c        | 11 +----------
+ drivers/net/ethernet/samsung/sxgbe/sxgbe_main.c  |  4 +---
+ drivers/net/ethernet/socionext/netsec.c          |  8 +-------
+ 6 files changed, 6 insertions(+), 37 deletions(-)
+
+diff --git a/drivers/net/ethernet/aurora/nb8800.c b/drivers/net/ethernet/aurora/nb8800.c
+index 30b455013..bc273e0db 100644
+--- a/drivers/net/ethernet/aurora/nb8800.c
++++ b/drivers/net/ethernet/aurora/nb8800.c
+@@ -1005,18 +1005,13 @@ static int nb8800_stop(struct net_device *dev)
+ 	return 0;
+ }
+ 
+-static int nb8800_ioctl(struct net_device *dev, struct ifreq *rq, int cmd)
+-{
+-	return phy_mii_ioctl(dev->phydev, rq, cmd);
+-}
+-
+ static const struct net_device_ops nb8800_netdev_ops = {
+ 	.ndo_open		= nb8800_open,
+ 	.ndo_stop		= nb8800_stop,
+ 	.ndo_start_xmit		= nb8800_xmit,
+ 	.ndo_set_mac_address	= nb8800_set_mac_address,
+ 	.ndo_set_rx_mode	= nb8800_set_rx_mode,
+-	.ndo_do_ioctl		= nb8800_ioctl,
++	.ndo_do_ioctl		= phy_do_ioctl,
+ 	.ndo_validate_addr	= eth_validate_addr,
+ };
+ 
+diff --git a/drivers/net/ethernet/cavium/octeon/octeon_mgmt.c b/drivers/net/ethernet/cavium/octeon/octeon_mgmt.c
+index cdd7e5da4..e9575887a 100644
+--- a/drivers/net/ethernet/cavium/octeon/octeon_mgmt.c
++++ b/drivers/net/ethernet/cavium/octeon/octeon_mgmt.c
+@@ -790,9 +790,7 @@ static int octeon_mgmt_ioctl(struct net_device *netdev,
+ 	case SIOCSHWTSTAMP:
+ 		return octeon_mgmt_ioctl_hwtstamp(netdev, rq, cmd);
+ 	default:
+-		if (netdev->phydev)
+-			return phy_mii_ioctl(netdev->phydev, rq, cmd);
+-		return -EINVAL;
++		return phy_do_ioctl(netdev, rq, cmd);
+ 	}
+ }
+ 
+diff --git a/drivers/net/ethernet/lantiq_etop.c b/drivers/net/ethernet/lantiq_etop.c
+index 1e165ba31..2d0c52f71 100644
+--- a/drivers/net/ethernet/lantiq_etop.c
++++ b/drivers/net/ethernet/lantiq_etop.c
+@@ -509,13 +509,6 @@ ltq_etop_change_mtu(struct net_device *dev, int new_mtu)
+ 	return 0;
+ }
+ 
+-static int
+-ltq_etop_ioctl(struct net_device *dev, struct ifreq *rq, int cmd)
+-{
+-	/* TODO: mii-toll reports "No MII transceiver present!." ?!*/
+-	return phy_mii_ioctl(dev->phydev, rq, cmd);
+-}
+-
+ static int
+ ltq_etop_set_mac_address(struct net_device *dev, void *p)
+ {
+@@ -616,7 +609,7 @@ static const struct net_device_ops ltq_eth_netdev_ops = {
+ 	.ndo_stop = ltq_etop_stop,
+ 	.ndo_start_xmit = ltq_etop_tx,
+ 	.ndo_change_mtu = ltq_etop_change_mtu,
+-	.ndo_do_ioctl = ltq_etop_ioctl,
++	.ndo_do_ioctl = phy_do_ioctl,
+ 	.ndo_set_mac_address = ltq_etop_set_mac_address,
+ 	.ndo_validate_addr = eth_validate_addr,
+ 	.ndo_set_rx_mode = ltq_etop_set_multicast_list,
+diff --git a/drivers/net/ethernet/marvell/pxa168_eth.c b/drivers/net/ethernet/marvell/pxa168_eth.c
+index 1a6877902..7a0d785b8 100644
+--- a/drivers/net/ethernet/marvell/pxa168_eth.c
++++ b/drivers/net/ethernet/marvell/pxa168_eth.c
+@@ -1344,15 +1344,6 @@ static int pxa168_smi_write(struct mii_bus *bus, int phy_addr, int regnum,
+ 	return 0;
+ }
+ 
+-static int pxa168_eth_do_ioctl(struct net_device *dev, struct ifreq *ifr,
+-			       int cmd)
+-{
+-	if (dev->phydev)
+-		return phy_mii_ioctl(dev->phydev, ifr, cmd);
+-
+-	return -EOPNOTSUPP;
+-}
+-
+ #ifdef CONFIG_NET_POLL_CONTROLLER
+ static void pxa168_eth_netpoll(struct net_device *dev)
+ {
+@@ -1387,7 +1378,7 @@ static const struct net_device_ops pxa168_eth_netdev_ops = {
+ 	.ndo_set_rx_mode	= pxa168_eth_set_rx_mode,
+ 	.ndo_set_mac_address	= pxa168_eth_set_mac_address,
+ 	.ndo_validate_addr	= eth_validate_addr,
+-	.ndo_do_ioctl		= pxa168_eth_do_ioctl,
++	.ndo_do_ioctl		= phy_do_ioctl,
+ 	.ndo_change_mtu		= pxa168_eth_change_mtu,
+ 	.ndo_tx_timeout		= pxa168_eth_tx_timeout,
+ #ifdef CONFIG_NET_POLL_CONTROLLER
+diff --git a/drivers/net/ethernet/samsung/sxgbe/sxgbe_main.c b/drivers/net/ethernet/samsung/sxgbe/sxgbe_main.c
+index 7d3a1c0df..c705743d6 100644
+--- a/drivers/net/ethernet/samsung/sxgbe/sxgbe_main.c
++++ b/drivers/net/ethernet/samsung/sxgbe/sxgbe_main.c
+@@ -1939,9 +1939,7 @@ static int sxgbe_ioctl(struct net_device *dev, struct ifreq *rq, int cmd)
+ 	case SIOCGMIIPHY:
+ 	case SIOCGMIIREG:
+ 	case SIOCSMIIREG:
+-		if (!dev->phydev)
+-			return -EINVAL;
+-		ret = phy_mii_ioctl(dev->phydev, rq, cmd);
++		ret = phy_do_ioctl(dev, rq, cmd);
+ 		break;
+ 	default:
+ 		break;
+diff --git a/drivers/net/ethernet/socionext/netsec.c b/drivers/net/ethernet/socionext/netsec.c
+index 6870a6ce7..495f6cfdb 100644
+--- a/drivers/net/ethernet/socionext/netsec.c
++++ b/drivers/net/ethernet/socionext/netsec.c
+@@ -1740,12 +1740,6 @@ static int netsec_netdev_set_features(struct net_device *ndev,
+ 	return 0;
+ }
+ 
+-static int netsec_netdev_ioctl(struct net_device *ndev, struct ifreq *ifr,
+-			       int cmd)
+-{
+-	return phy_mii_ioctl(ndev->phydev, ifr, cmd);
+-}
+-
+ static int netsec_xdp_xmit(struct net_device *ndev, int n,
+ 			   struct xdp_frame **frames, u32 flags)
+ {
+@@ -1830,7 +1824,7 @@ static const struct net_device_ops netsec_netdev_ops = {
+ 	.ndo_set_features	= netsec_netdev_set_features,
+ 	.ndo_set_mac_address    = eth_mac_addr,
+ 	.ndo_validate_addr	= eth_validate_addr,
+-	.ndo_do_ioctl		= netsec_netdev_ioctl,
++	.ndo_do_ioctl		= phy_do_ioctl,
+ 	.ndo_xdp_xmit		= netsec_xdp_xmit,
+ 	.ndo_bpf		= netsec_xdp,
+ };
+-- 
+2.25.0
+
