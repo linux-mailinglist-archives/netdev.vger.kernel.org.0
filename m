@@ -2,155 +2,155 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id D7B9214449E
-	for <lists+netdev@lfdr.de>; Tue, 21 Jan 2020 19:53:39 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B6DE71444A3
+	for <lists+netdev@lfdr.de>; Tue, 21 Jan 2020 19:54:22 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729191AbgAUSxb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 21 Jan 2020 13:53:31 -0500
-Received: from mail-bn7nam10on2131.outbound.protection.outlook.com ([40.107.92.131]:44833
-        "EHLO NAM10-BN7-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1728186AbgAUSxb (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 21 Jan 2020 13:53:31 -0500
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=ndz0PAsRQ6aMPl13iIevxLKTmUmqY45n7IywpwQHFGOcSFZ/szwd6524NR9nOR8MQV1rUVSjakEvUS4sshtofg3paS5V3Fqo7iMzKnGM+2XuNmHbCd4S+3w0+pJYTVHtzCMrh9dz4rOSCn8birAMMRGtZ7jQCcH4CsxgKye4BOi73GdAAJJqVe7xw+m3XVlb1X0Id5B3ZOebSST5MNMn7Fau959BH5mSe6trYQbFz0odYae680Jt7Jm/LjvHtuW1YuLTP5/EQ/Pk1dYP1rX62VDZOzBGUGPxEUjpDUdosRBxJ2a01uPuv6gn4P2OrfAe5LnttEJGQf5y70nr5eRCew==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=fVnLhKneqMBjHIYobMr2XihOEEKNLBp/SG04kIhnofg=;
- b=SnG+WzRBjQhi9EkGQTglgtYIvOOJKk9D489qQHwPiZmPuP4eoyIAEwOLSSvkKxj9N0xtI+QknyS1g3+vui6RywbGvFPs3rMN1+7nlbxT01XWmeie0BjBDozT4lm6Xr1ZiserxkBPa9SUzeU+nX12NykYlTY9qnWLULocr2v0S3HWMZfqXgo4qotdhivJEBEKCDo7AE1KZMh6FHIDCKqLfTDoZS11jRRehEO1+2IVy2flIq1/s5F0+IAxPL0VT+V2LTvee0Nnpj/O/i2p9NDn0hDLnj8FBdpCJYdnuf0VMJR+PAujz1IFtsFvamsBI9HkYWxjRrX3go1sCn2H3gnp1g==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=microsoft.com; dmarc=pass action=none
- header.from=microsoft.com; dkim=pass header.d=microsoft.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=fVnLhKneqMBjHIYobMr2XihOEEKNLBp/SG04kIhnofg=;
- b=DAB6ttPMt8k8kEGGy+GyeatGTIOtVWwyFskamlDWmJgRnkqm7e/mF8/0a5XWsuz7JSjd5Ib7zF5KZ9x2NFis2D7Gz+pgGixFqlOwusLRIlQHgtstUfw4SLq9rCoXJs3B1h5RpkYWFlOEfIWMrksC7RVjpNrpP0g+IFTaaXljXnw=
-Received: from MN2PR21MB1375.namprd21.prod.outlook.com (20.179.23.160) by
- MN2PR21MB1152.namprd21.prod.outlook.com (20.178.255.97) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.2686.3; Tue, 21 Jan 2020 18:53:28 +0000
-Received: from MN2PR21MB1375.namprd21.prod.outlook.com
- ([fe80::5deb:9ab5:f05a:5423]) by MN2PR21MB1375.namprd21.prod.outlook.com
- ([fe80::5deb:9ab5:f05a:5423%6]) with mapi id 15.20.2686.007; Tue, 21 Jan 2020
- 18:53:28 +0000
-From:   Haiyang Zhang <haiyangz@microsoft.com>
-To:     David Miller <davem@davemloft.net>
-CC:     "sashal@kernel.org" <sashal@kernel.org>,
-        "linux-hyperv@vger.kernel.org" <linux-hyperv@vger.kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        KY Srinivasan <kys@microsoft.com>,
-        Stephen Hemminger <sthemmin@microsoft.com>,
-        "olaf@aepfle.de" <olaf@aepfle.de>, vkuznets <vkuznets@redhat.com>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: RE: [PATCH V2,net-next, 1/2] hv_netvsc: Add XDP support
-Thread-Topic: [PATCH V2,net-next, 1/2] hv_netvsc: Add XDP support
-Thread-Index: AQHVz+AvfPSXwM4tmU6pTPdgXF0O8qf05LQAgACQzTA=
-Date:   Tue, 21 Jan 2020 18:53:28 +0000
-Message-ID: <MN2PR21MB1375A6F208BC94CD4CFA016BCA0D0@MN2PR21MB1375.namprd21.prod.outlook.com>
-References: <1579558957-62496-1-git-send-email-haiyangz@microsoft.com>
-        <1579558957-62496-2-git-send-email-haiyangz@microsoft.com>
- <20200121.110454.2077433904156411260.davem@davemloft.net>
-In-Reply-To: <20200121.110454.2077433904156411260.davem@davemloft.net>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-msip_labels: MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_Enabled=True;
- MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_SiteId=72f988bf-86f1-41af-91ab-2d7cd011db47;
- MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_Owner=haiyangz@microsoft.com;
- MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_SetDate=2020-01-21T18:53:26.6616026Z;
- MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_Name=General;
- MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_Application=Microsoft Azure
- Information Protection;
- MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_ActionId=84662424-9a5b-46b7-bab6-1577979d1d9f;
- MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_Extended_MSFT_Method=Automatic
-authentication-results: spf=none (sender IP is )
- smtp.mailfrom=haiyangz@microsoft.com; 
-x-originating-ip: [96.61.92.94]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-ht: Tenant
-x-ms-office365-filtering-correlation-id: cd6ab8e2-d2a7-46f5-7d88-08d79ea333f3
-x-ms-traffictypediagnostic: MN2PR21MB1152:|MN2PR21MB1152:|MN2PR21MB1152:
-x-ms-exchange-transport-forked: True
-x-ld-processed: 72f988bf-86f1-41af-91ab-2d7cd011db47,ExtAddr
-x-microsoft-antispam-prvs: <MN2PR21MB1152B3DC2D98EFA4512E50B4CA0D0@MN2PR21MB1152.namprd21.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:6790;
-x-forefront-prvs: 0289B6431E
-x-forefront-antispam-report: SFV:NSPM;SFS:(10019020)(4636009)(396003)(376002)(366004)(346002)(39860400002)(136003)(189003)(199004)(54906003)(33656002)(2906002)(8990500004)(186003)(10290500003)(8676002)(55016002)(81156014)(9686003)(8936002)(316002)(81166006)(4326008)(478600001)(26005)(76116006)(66476007)(52536014)(66946007)(64756008)(66446008)(71200400001)(5660300002)(53546011)(66556008)(6506007)(86362001)(6916009)(7696005);DIR:OUT;SFP:1102;SCL:1;SRVR:MN2PR21MB1152;H:MN2PR21MB1375.namprd21.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;MX:1;A:1;
-received-spf: None (protection.outlook.com: microsoft.com does not designate
- permitted sender hosts)
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: qhFgS0SAZ4R3bslCMubIi7ZgU7As/VxhNpMHTssm0mrIc9fTeF8JlNpF71gfTmsEkkJ0lzPy09DMfI6uF9laBWvEJz240STkVLYgn1oWOpebA4DNNXZd8y9YsonC/oJ8bvgSaO3hTC807mdVKYVGFXcp3qGIbzYUwmYtwi84SCg9uxJLhMJSnpOr+A1RL3n7++X1V7z7pYL7UMvGHap2wHkotnUK6Qqn/GPf5Sb9g4KWYnG1cmt6Q7wRMwK4Fnwl6LITUR9CxKWx0hkJiTabNpPIPA0g7eih9jRbOeWAD9Vy0ljMgilRRSji13jrxCN+56AZPnjWh4oDyclF7Zlcyy7Sz5hBMQowuli44BCTEmETr6sLBFBlNHflKhs8CeX2j73JH450uE3hamvCaiFGexxRIx94P4ffrQqRgQWvyw6k6iuYHqJq7FPIjXCIUUMD
-x-ms-exchange-antispam-messagedata: JWznWI7B2QKXreXEVKqJaPrJj0NbuswSv/at2unhYVQewV3V6OBCLWEwXcGltOBUSLK6ZCNkECyytNhFGO6YJEvQbsaS9n+bI83VlnrosBcmLzrScXyOsHi1dr8QoEVt3ly/LLghNKLYTxAkHo3suw==
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+        id S1729240AbgAUSyO convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Tue, 21 Jan 2020 13:54:14 -0500
+Received: from relay-b01.edpnet.be ([212.71.1.221]:38250 "EHLO
+        relay-b01.edpnet.be" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728186AbgAUSyN (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 21 Jan 2020 13:54:13 -0500
+X-ASG-Debug-ID: 1579632849-0a7ff5137c3b946a0001-BZBGGp
+Received: from zotac.vandijck-laurijssen.be ([77.109.89.38]) by relay-b01.edpnet.be with ESMTP id WPcdo6D1K3AwHB1G; Tue, 21 Jan 2020 19:54:09 +0100 (CET)
+X-Barracuda-Envelope-From: dev.kurt@vandijck-laurijssen.be
+X-Barracuda-Effective-Source-IP: UNKNOWN[77.109.89.38]
+X-Barracuda-Apparent-Source-IP: 77.109.89.38
+Received: from x1.vandijck-laurijssen.be (x1.vandijck-laurijssen.be [IPv6:fd01::1a1d:eaff:fe02:d339])
+        by zotac.vandijck-laurijssen.be (Postfix) with ESMTPSA id 114C7C6A0E2;
+        Tue, 21 Jan 2020 19:54:09 +0100 (CET)
+Date:   Tue, 21 Jan 2020 19:54:07 +0100
+From:   Kurt Van Dijck <dev.kurt@vandijck-laurijssen.be>
+To:     Oliver Hartkopp <socketcan@hartkopp.net>,
+        Dmitry Vyukov <dvyukov@google.com>,
+        Marc Kleine-Budde <mkl@pengutronix.de>,
+        o.rempel@pengutronix.de,
+        syzbot <syzbot+c3ea30e1e2485573f953@syzkaller.appspotmail.com>,
+        David Miller <davem@davemloft.net>, linux-can@vger.kernel.org,
+        LKML <linux-kernel@vger.kernel.org>,
+        netdev <netdev@vger.kernel.org>,
+        syzkaller-bugs <syzkaller-bugs@googlegroups.com>
+Subject: Re: general protection fault in can_rx_register
+Message-ID: <20200121185407.GA13462@x1.vandijck-laurijssen.be>
+X-ASG-Orig-Subj: Re: general protection fault in can_rx_register
+Mail-Followup-To: Oliver Hartkopp <socketcan@hartkopp.net>,
+        Dmitry Vyukov <dvyukov@google.com>,
+        Marc Kleine-Budde <mkl@pengutronix.de>, o.rempel@pengutronix.de,
+        syzbot <syzbot+c3ea30e1e2485573f953@syzkaller.appspotmail.com>,
+        David Miller <davem@davemloft.net>, linux-can@vger.kernel.org,
+        LKML <linux-kernel@vger.kernel.org>,
+        netdev <netdev@vger.kernel.org>,
+        syzkaller-bugs <syzkaller-bugs@googlegroups.com>
+References: <00000000000030dddb059c562a3f@google.com>
+ <55ad363b-1723-28aa-78b1-8aba5565247e@hartkopp.net>
+ <20200120091146.GD11138@x1.vandijck-laurijssen.be>
+ <CACT4Y+a+GusEA1Gs+z67uWjtwBRp_s7P4Wd_SMmgpCREnDu3kg@mail.gmail.com>
+ <8332ec7f-2235-fdf6-9bda-71f789c57b37@hartkopp.net>
+ <2a676c0e-20f2-61b5-c72b-f51947bafc7d@hartkopp.net>
+ <20200121083035.GD14537@x1.vandijck-laurijssen.be>
 MIME-Version: 1.0
-X-OriginatorOrg: microsoft.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: cd6ab8e2-d2a7-46f5-7d88-08d79ea333f3
-X-MS-Exchange-CrossTenant-originalarrivaltime: 21 Jan 2020 18:53:28.2958
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 72f988bf-86f1-41af-91ab-2d7cd011db47
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: m1gtQqfCl1meZ11Bq4vKUv2t9h2jetuGG78E1qqwWAn0+ULDd5kgSkAhjTq+QlTAyPMnZ9IZGWVS8Qm3XZPLVw==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: MN2PR21MB1152
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8BIT
+In-Reply-To: <20200121083035.GD14537@x1.vandijck-laurijssen.be>
+User-Agent: Mutt/1.5.22 (2013-10-16)
+X-Barracuda-Connect: UNKNOWN[77.109.89.38]
+X-Barracuda-Start-Time: 1579632849
+X-Barracuda-URL: https://212.71.1.221:443/cgi-mod/mark.cgi
+X-Virus-Scanned: by bsmtpd at edpnet.be
+X-Barracuda-Scan-Msg-Size: 3583
+X-Barracuda-BRTS-Status: 1
+X-Barracuda-Bayes: SPAM GLOBAL 0.9924 1.0000 4.2541
+X-Barracuda-Spam-Score: 4.25
+X-Barracuda-Spam-Status: No, SCORE=4.25 using global scores of TAG_LEVEL=1000.0 QUARANTINE_LEVEL=1000.0 KILL_LEVEL=7.0 tests=
+X-Barracuda-Spam-Report: Code version 3.2, rules version 3.2.3.79488
+        Rule breakdown below
+         pts rule name              description
+        ---- ---------------------- --------------------------------------------------
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Sorry I was replying too quickly. See more detailed explanation below.
+On di, 21 jan 2020 09:30:35 +0100, Kurt Van Dijck wrote:
+> On ma, 20 jan 2020 23:35:16 +0100, Oliver Hartkopp wrote:
+> > Answering myself ...
+> > 
+> > On 20/01/2020 23.02, Oliver Hartkopp wrote:
+> > 
+> > >
+> > >Added some code to check whether dev->ml_priv is NULL:
+> > >
+> > >~/linux$ git diff
+> > >diff --git a/net/can/af_can.c b/net/can/af_can.c
+> > >index 128d37a4c2e0..6fb4ae4c359e 100644
+> > >--- a/net/can/af_can.c
+> > >+++ b/net/can/af_can.c
+> > >@@ -463,6 +463,10 @@ int can_rx_register(struct net *net, struct
+> > >net_device *dev, canid_t can_id,
+> > >         spin_lock_bh(&net->can.rcvlists_lock);
+> > >
+> > >         dev_rcv_lists = can_dev_rcv_lists_find(net, dev);
+> > >+       if (!dev_rcv_lists) {
+> > >+               pr_err("dev_rcv_lists == NULL! %p\n", dev);
+> > >+               goto out_unlock;
+> > >+       }
+> > >         rcv_list = can_rcv_list_find(&can_id, &mask, dev_rcv_lists);
+> > >
+> > >         rcv->can_id = can_id;
+> > >@@ -479,6 +483,7 @@ int can_rx_register(struct net *net, struct net_device
+> > >*dev, canid_t can_id,
+> > >         rcv_lists_stats->rcv_entries++;
+> > >         rcv_lists_stats->rcv_entries_max =
+> > >max(rcv_lists_stats->rcv_entries_max,
+> > >
+> > >rcv_lists_stats->rcv_entries);
+> > >+out_unlock:
+> > >         spin_unlock_bh(&net->can.rcvlists_lock);
+> > >
+> > >         return err;
+> > >
+> > >And the output (after some time) is:
+> > >
+> > >[  758.505841] netlink: 'crash': attribute type 1 has an invalid length.
+> > >[  758.508045] bond7148: (slave vxcan1): The slave device specified does
+> > >not support setting the MAC address
+> > >[  758.508057] bond7148: (slave vxcan1): Error -22 calling dev_set_mtu
+> > >[  758.532025] bond10413: (slave vxcan1): The slave device specified does
+> > >not support setting the MAC address
+> > >[  758.532043] bond10413: (slave vxcan1): Error -22 calling dev_set_mtu
+> > >[  758.532254] dev_rcv_lists == NULL! 000000006b9d257f
+> > >[  758.547392] netlink: 'crash': attribute type 1 has an invalid length.
+> > >[  758.549310] bond7145: (slave vxcan1): The slave device specified does
+> > >not support setting the MAC address
+> > >[  758.549313] bond7145: (slave vxcan1): Error -22 calling dev_set_mtu
+> > >[  758.550464] netlink: 'crash': attribute type 1 has an invalid length.
+> > >[  758.552301] bond7146: (slave vxcan1): The slave device specified does
+> > >not support setting the MAC address
+> > >
+> > >So we can see that we get a ml_priv pointer which is NULL which should not
+> > >be possible due to this:
+> > >
+> > >https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/tree/drivers/net/can/dev.c#n743
+> > 
+> > This reference doesn't point to the right code as vxcan has its own handling
+> > do assign ml_priv in vxcan.c .
+> > 
+> > >Btw. the variable 'size' is set two times at the top of alloc_candev_mqs()
+> > >depending on echo_skb_max. This looks wrong.
+> > 
+> > No. It looks right as I did not get behind the ALIGN() macro at first sight.
+> > 
+> > But it is still open why dev->ml_priv is not set correctly in vxcan.c as all
+> > the settings for .priv_size and in vxcan_setup look fine.
+> 
+> Maybe I got completely lost:
+> Shouldn't can_ml_priv and vxcan_priv not be similar?
+> Where is the dev_rcv_lists in the vxcan case?
 
-> -----Original Message-----
-> From: linux-hyperv-owner@vger.kernel.org <linux-hyperv-
-> owner@vger.kernel.org> On Behalf Of David Miller
-> Sent: Tuesday, January 21, 2020 5:05 AM
-> To: Haiyang Zhang <haiyangz@microsoft.com>
-> Cc: sashal@kernel.org; linux-hyperv@vger.kernel.org; netdev@vger.kernel.o=
-rg;
-> KY Srinivasan <kys@microsoft.com>; Stephen Hemminger
-> <sthemmin@microsoft.com>; olaf@aepfle.de; vkuznets
-> <vkuznets@redhat.com>; linux-kernel@vger.kernel.org
-> Subject: Re: [PATCH V2,net-next, 1/2] hv_netvsc: Add XDP support
->=20
-> From: Haiyang Zhang <haiyangz@microsoft.com>
-> Date: Mon, 20 Jan 2020 14:22:36 -0800
->=20
-> > +u32 netvsc_run_xdp(struct net_device *ndev, struct netvsc_channel *nvc=
-han,
-> > +		   struct xdp_buff *xdp)
-> > +{
-> > +	struct page *page =3D NULL;
-> > +	void *data =3D nvchan->rsc.data[0];
-> > +	u32 len =3D nvchan->rsc.len[0];
-> > +	struct bpf_prog *prog;
-> > +	u32 act =3D XDP_PASS;
->=20
-> Please use reverse christmas tree ordering of local variables.
-Will do.
-
->=20
-> > +	xdp->data_hard_start =3D page_address(page);
-> > +	xdp->data =3D xdp->data_hard_start + NETVSC_XDP_HDRM;
-> > +	xdp_set_data_meta_invalid(xdp);
-> > +	xdp->data_end =3D xdp->data + len;
-> > +	xdp->rxq =3D &nvchan->xdp_rxq;
-> > +	xdp->handle =3D 0;
-> > +
-> > +	memcpy(xdp->data, data, len);
->=20
-> Why can't the program run directly on nvchan->rsc.data[0]?
-
-The Azure/Hyper-V synthetic NIC receive buffer doesn't provide headroom=20
-for XDP. We thought about re-use the RNDIS header space, but it's too=20
-small. So we decided to copy the packets to a page buffer for XDP. And,=20
-most of our VMs on Azure have Accelerated  Network (SRIOV) enabled, so=20
-most of the packets run on VF NIC. The synthetic NIC is considered as a=20
-fallback data-path. So the data copy on netvsc won't impact performance=20
-significantly.
-
-Thanks,
-- Haiyang
+I indeed got completely lost. vxcan_priv & can_ml_priv form together the
+private part. I continue looking
+> 
+> > 
+> > Best regards,
+> > Oliver
