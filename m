@@ -2,214 +2,93 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 2B9421434E3
-	for <lists+netdev@lfdr.de>; Tue, 21 Jan 2020 01:54:03 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 80D43143523
+	for <lists+netdev@lfdr.de>; Tue, 21 Jan 2020 02:25:02 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728852AbgAUAx7 convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Mon, 20 Jan 2020 19:53:59 -0500
-Received: from mx0b-00082601.pphosted.com ([67.231.153.30]:26068 "EHLO
-        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1728668AbgAUAx6 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 20 Jan 2020 19:53:58 -0500
-Received: from pps.filterd (m0001303.ppops.net [127.0.0.1])
-        by m0001303.ppops.net (8.16.0.42/8.16.0.42) with SMTP id 00L0qkkH015724
-        for <netdev@vger.kernel.org>; Mon, 20 Jan 2020 16:53:58 -0800
-Received: from maileast.thefacebook.com ([163.114.130.16])
-        by m0001303.ppops.net with ESMTP id 2xkxjt1821-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT)
-        for <netdev@vger.kernel.org>; Mon, 20 Jan 2020 16:53:57 -0800
-Received: from intmgw002.06.prn3.facebook.com (2620:10d:c0a8:1b::d) by
- mail.thefacebook.com (2620:10d:c0a8:82::c) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.1779.2; Mon, 20 Jan 2020 16:53:57 -0800
-Received: by devbig007.ftw2.facebook.com (Postfix, from userid 572438)
-        id B5A25760B6E; Mon, 20 Jan 2020 16:53:54 -0800 (PST)
-Smtp-Origin-Hostprefix: devbig
-From:   Alexei Starovoitov <ast@kernel.org>
-Smtp-Origin-Hostname: devbig007.ftw2.facebook.com
-To:     <davem@davemloft.net>
-CC:     <daniel@iogearbox.net>, <netdev@vger.kernel.org>,
-        <bpf@vger.kernel.org>, <kernel-team@fb.com>
-Smtp-Origin-Cluster: ftw2c04
-Subject: [PATCH v2 bpf-next 3/3] selftests/bpf: Add tests for program extensions
-Date:   Mon, 20 Jan 2020 16:53:48 -0800
-Message-ID: <20200121005348.2769920-4-ast@kernel.org>
-X-Mailer: git-send-email 2.23.0
-In-Reply-To: <20200121005348.2769920-1-ast@kernel.org>
-References: <20200121005348.2769920-1-ast@kernel.org>
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8BIT
-X-FB-Internal: Safe
-Content-Type: text/plain
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.138,18.0.572
- definitions=2020-01-20_10:2020-01-20,2020-01-20 signatures=0
-X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 suspectscore=1
- malwarescore=0 lowpriorityscore=0 clxscore=1015 mlxlogscore=999
- adultscore=0 phishscore=0 bulkscore=0 priorityscore=1501 impostorscore=0
- mlxscore=0 spamscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-1910280000 definitions=main-2001210004
-X-FB-Internal: deliver
+        id S1728921AbgAUBZB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 20 Jan 2020 20:25:01 -0500
+Received: from mail-io1-f68.google.com ([209.85.166.68]:41364 "EHLO
+        mail-io1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728668AbgAUBZB (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 20 Jan 2020 20:25:01 -0500
+Received: by mail-io1-f68.google.com with SMTP id m25so1054915ioo.8;
+        Mon, 20 Jan 2020 17:25:00 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:message-id:in-reply-to:references:subject
+         :mime-version:content-transfer-encoding;
+        bh=UunH37VOr3wHiAzQ1z78FuFG4k7hq/AWUpDbJuZQ/8s=;
+        b=f8/UVN62eI1U9B8baJqhLAzBBRiKpGgMGoD24jeM51EwHpuMPJ9s5FBHF3I2SU++uE
+         EE+SGUKC1b7MtafrXKhaBZamzlA+hM9HP4mtJZkS3wEAevoOFsoTnsawK/M/9uajOYaJ
+         mbfUtSbleweXrO060m/2KO6vveh7joZ7WAwvHk6KOIAxR5hc0YBzW3DUy2LrKZqrF4hL
+         1A41TSA4cOEwpPfh8SROB+cvJ0Lf6AcNKODO1VAN5ScrW8AE9Feg5BZK+vOwwTQMhv/+
+         r1vibdSx/Sy/fdK9skaQtZ99qF9rBtJFoGgnWPokfqs7sLWVcrWbm35pfjSM2jRjw7as
+         9dig==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:message-id:in-reply-to
+         :references:subject:mime-version:content-transfer-encoding;
+        bh=UunH37VOr3wHiAzQ1z78FuFG4k7hq/AWUpDbJuZQ/8s=;
+        b=nXSIfeoJvu9axPhV0Pfzdop3JwtVgzDCxBaHHo8IMtKglx5zo7o0U5C+n5Ff1vfERf
+         Dmj59FiXdP+AS/qoleOQJXdXLvJ+S/Cg1HK1Y4249eC7ui5mE7aDfzbAGpvmqkK0236n
+         CcPl4n0FRLeh7DKWgFKTzaytWm0VMIv+depIfaRdC4sA0QRZ/XxbcJpf5myFfl9pp6Lj
+         8CHi+KmgOxboyw2U39wN5pAUEboUECCOQVRwfHg8fgEZ2h6U/RbIuk1Zhujixrj9+NuF
+         EtkmC4afYF0F9vOKg1Bj9oZpV2teNmGDigDRDBbW1lL4MvO41elSVFvRQ+p1Hsw6Y8jT
+         F0dQ==
+X-Gm-Message-State: APjAAAWR60PRNPtGQ5DuFKiT5D43V2tAb0FC5W1AIkME804hZMaZAEud
+        AMdrW6oe67r+AjQb74bc8/o=
+X-Google-Smtp-Source: APXvYqw8DNLcZzp/P7u6atg+BAJqynOJci3FTqJR+lwPEway5iP/jdFMiJ/GbpHGqon2D/jaODUpag==
+X-Received: by 2002:a6b:e90b:: with SMTP id u11mr1284178iof.14.1579569900080;
+        Mon, 20 Jan 2020 17:25:00 -0800 (PST)
+Received: from localhost ([184.63.162.180])
+        by smtp.gmail.com with ESMTPSA id f76sm12490214ild.82.2020.01.20.17.24.57
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 20 Jan 2020 17:24:59 -0800 (PST)
+Date:   Mon, 20 Jan 2020 17:24:52 -0800
+From:   John Fastabend <john.fastabend@gmail.com>
+To:     =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@gmail.com>,
+        netdev@vger.kernel.org, ast@kernel.org, daniel@iogearbox.net
+Cc:     =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@intel.com>,
+        bpf@vger.kernel.org, magnus.karlsson@intel.com,
+        jonathan.lemon@gmail.com
+Message-ID: <5e2652e4239a8_20912afc5c86e5c49f@john-XPS-13-9370.notmuch>
+In-Reply-To: <20200120092149.13775-1-bjorn.topel@gmail.com>
+References: <20200120092149.13775-1-bjorn.topel@gmail.com>
+Subject: RE: [PATCH bpf-next] xsk: update rings for load-acquire/store-release
+ semantics
+Mime-Version: 1.0
+Content-Type: text/plain;
+ charset=utf-8
+Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add program extension tests that build on top of fexit_bpf2bpf tests.
-Replace three global functions in previously loaded test_pkt_access.c program
-with three new implementations:
-int get_skb_len(struct __sk_buff *skb);
-int get_constant(long val);
-int get_skb_ifindex(int val, struct __sk_buff *skb, int var);
-New function return the same results as original only if arguments match.
+Bj=C3=B6rn T=C3=B6pel wrote:
+> From: Bj=C3=B6rn T=C3=B6pel <bjorn.topel@intel.com>
+> =
 
-new_get_skb_ifindex() demonstrates that 'skb' argument doesn't have to be first
-and only argument of BPF program. All normal skb based accesses are available.
+> Currently, the AF_XDP rings uses fences for the kernel-side
+> produce/consume functions. By updating rings for
+> load-acquire/store-release semantics, the full barrier (smp_mb()) on
+> the consumer side can be replaced.
+> =
 
-Signed-off-by: Alexei Starovoitov <ast@kernel.org>
----
- .../selftests/bpf/prog_tests/fexit_bpf2bpf.c  | 20 ++++++-
- .../selftests/bpf/progs/fexit_bpf2bpf.c       | 57 +++++++++++++++++++
- .../selftests/bpf/progs/test_pkt_access.c     |  8 ++-
- 3 files changed, 83 insertions(+), 2 deletions(-)
+> Signed-off-by: Bj=C3=B6rn T=C3=B6pel <bjorn.topel@intel.com>
+> ---
+>  net/xdp/xsk_queue.h | 31 ++++++++++++++-----------------
+>  1 file changed, 14 insertions(+), 17 deletions(-)
+> =
 
-diff --git a/tools/testing/selftests/bpf/prog_tests/fexit_bpf2bpf.c b/tools/testing/selftests/bpf/prog_tests/fexit_bpf2bpf.c
-index 7d3740d38965..db5c74d2ce6d 100644
---- a/tools/testing/selftests/bpf/prog_tests/fexit_bpf2bpf.c
-+++ b/tools/testing/selftests/bpf/prog_tests/fexit_bpf2bpf.c
-@@ -26,7 +26,7 @@ static void test_fexit_bpf2bpf_common(const char *obj_file,
- 
- 	link = calloc(sizeof(struct bpf_link *), prog_cnt);
- 	prog = calloc(sizeof(struct bpf_program *), prog_cnt);
--	result = malloc(prog_cnt * sizeof(u64));
-+	result = malloc((prog_cnt + 32 /* spare */) * sizeof(u64));
- 	if (CHECK(!link || !prog || !result, "alloc_memory",
- 		  "failed to alloc memory"))
- 		goto close_prog;
-@@ -106,8 +106,26 @@ static void test_target_yes_callees(void)
- 				  prog_name);
- }
- 
-+static void test_func_replace(void)
-+{
-+	const char *prog_name[] = {
-+		"fexit/test_pkt_access",
-+		"fexit/test_pkt_access_subprog1",
-+		"fexit/test_pkt_access_subprog2",
-+		"fexit/test_pkt_access_subprog3",
-+		"freplace/get_skb_len",
-+		"freplace/get_skb_ifindex",
-+		"freplace/get_constant",
-+	};
-+	test_fexit_bpf2bpf_common("./fexit_bpf2bpf.o",
-+				  "./test_pkt_access.o",
-+				  ARRAY_SIZE(prog_name),
-+				  prog_name);
-+}
-+
- void test_fexit_bpf2bpf(void)
- {
- 	test_target_no_callees();
- 	test_target_yes_callees();
-+	test_func_replace();
- }
-diff --git a/tools/testing/selftests/bpf/progs/fexit_bpf2bpf.c b/tools/testing/selftests/bpf/progs/fexit_bpf2bpf.c
-index ec5710767d13..c329fccf9842 100644
---- a/tools/testing/selftests/bpf/progs/fexit_bpf2bpf.c
-+++ b/tools/testing/selftests/bpf/progs/fexit_bpf2bpf.c
-@@ -1,7 +1,10 @@
- // SPDX-License-Identifier: GPL-2.0
- /* Copyright (c) 2019 Facebook */
-+#include <linux/stddef.h>
-+#include <linux/ipv6.h>
- #include <linux/bpf.h>
- #include <bpf/bpf_helpers.h>
-+#include <bpf/bpf_endian.h>
- #include "bpf_trace_helpers.h"
- 
- struct sk_buff {
-@@ -94,4 +97,58 @@ int BPF_PROG(test_subprog3, int val, struct sk_buff *skb, int ret)
- 	test_result_subprog3 = 1;
- 	return 0;
- }
-+
-+__u64 test_get_skb_len = 0;
-+SEC("freplace/get_skb_len")
-+int new_get_skb_len(struct __sk_buff *skb)
-+{
-+	int len = skb->len;
-+
-+	if (len != 74)
-+		return 0;
-+	test_get_skb_len = 1;
-+	return 74; /* original get_skb_len() returns skb->len */
-+}
-+
-+__u64 test_get_skb_ifindex = 0;
-+SEC("freplace/get_skb_ifindex")
-+int new_get_skb_ifindex(int val, struct __sk_buff *skb, int var)
-+{
-+	void *data_end = (void *)(long)skb->data_end;
-+	void *data = (void *)(long)skb->data;
-+	struct ipv6hdr ip6, *ip6p;
-+	int ifindex = skb->ifindex;
-+	__u32 eth_proto;
-+	__u32 nh_off;
-+
-+	/* check that BPF extension can read packet via direct packet access */
-+	if (data + 14 + sizeof(ip6) > data_end)
-+		return 0;
-+	ip6p = data + 14;
-+
-+	if (ip6p->nexthdr != 6 || ip6p->payload_len != __bpf_constant_htons(123))
-+		return 0;
-+
-+	/* check that legacy packet access helper works too */
-+	if (bpf_skb_load_bytes(skb, 14, &ip6, sizeof(ip6)) < 0)
-+		return 0;
-+	ip6p = &ip6;
-+	if (ip6p->nexthdr != 6 || ip6p->payload_len != __bpf_constant_htons(123))
-+		return 0;
-+
-+	if (ifindex != 1 || val != 3 || var != 1)
-+		return 0;
-+	test_get_skb_ifindex = 1;
-+	return 3; /* original get_skb_ifindex() returns val * ifindex * var */
-+}
-+
-+volatile __u64 test_get_constant = 0;
-+SEC("freplace/get_constant")
-+int new_get_constant(long val)
-+{
-+	if (val != 123)
-+		return 0;
-+	test_get_constant = 1;
-+	return test_get_constant; /* original get_constant() returns val - 122 */
-+}
- char _license[] SEC("license") = "GPL";
-diff --git a/tools/testing/selftests/bpf/progs/test_pkt_access.c b/tools/testing/selftests/bpf/progs/test_pkt_access.c
-index 7c9fcfd2b463..e72eba4a93d2 100644
---- a/tools/testing/selftests/bpf/progs/test_pkt_access.c
-+++ b/tools/testing/selftests/bpf/progs/test_pkt_access.c
-@@ -57,12 +57,18 @@ int get_skb_len(struct __sk_buff *skb)
- 	return skb->len;
- }
- 
-+__attribute__ ((noinline))
-+int get_constant(long val)
-+{
-+	return val - 122;
-+}
-+
- int get_skb_ifindex(int, struct __sk_buff *skb, int);
- 
- __attribute__ ((noinline))
- int test_pkt_access_subprog3(int val, struct __sk_buff *skb)
- {
--	return get_skb_len(skb) * get_skb_ifindex(val, skb, 1);
-+	return get_skb_len(skb) * get_skb_ifindex(val, skb, get_constant(123));
- }
- 
- __attribute__ ((noinline))
--- 
-2.23.0
+> diff --git a/net/xdp/xsk_queue.h b/net/xdp/xsk_queue.h
+> index bec2af11853a..2fff80576ee1 100644
+> --- a/net/xdp/xsk_queue.h
+> +++ b/net/xdp/xsk_queue.h
+> @@ -39,19 +39,18 @@ struct xsk_queue {
+>  	u64 invalid_descs;
+>  };
 
+Should the xsk_cons_* libbpf routines also be updated then as well?
+In general my understanding is the userspace and kernel should be
+in sync?=
