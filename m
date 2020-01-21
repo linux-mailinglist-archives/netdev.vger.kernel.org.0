@@ -2,26 +2,26 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 864E1143C83
-	for <lists+netdev@lfdr.de>; Tue, 21 Jan 2020 13:05:34 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 11A13143C84
+	for <lists+netdev@lfdr.de>; Tue, 21 Jan 2020 13:05:37 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729061AbgAUMFd convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Tue, 21 Jan 2020 07:05:33 -0500
-Received: from us-smtp-delivery-1.mimecast.com ([207.211.31.120]:42876 "EHLO
-        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S1728682AbgAUMFc (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 21 Jan 2020 07:05:32 -0500
+        id S1729538AbgAUMFe convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Tue, 21 Jan 2020 07:05:34 -0500
+Received: from us-smtp-1.mimecast.com ([205.139.110.61]:25057 "EHLO
+        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1728748AbgAUMFd (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 21 Jan 2020 07:05:33 -0500
 Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
  [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-187-orDdkHyvM-6b6xH0M7sZfg-1; Tue, 21 Jan 2020 07:05:28 -0500
+ us-mta-204-ptWQy_6NPlOVDMHA4IS2cA-1; Tue, 21 Jan 2020 07:05:30 -0500
 Received: from smtp.corp.redhat.com (int-mx06.intmail.prod.int.phx2.redhat.com [10.5.11.16])
         (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 5FC83107ACC4;
-        Tue, 21 Jan 2020 12:05:26 +0000 (UTC)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 07EB48D40A1;
+        Tue, 21 Jan 2020 12:05:29 +0000 (UTC)
 Received: from krava.redhat.com (unknown [10.43.17.48])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 0C4525C3FD;
-        Tue, 21 Jan 2020 12:05:23 +0000 (UTC)
+        by smtp.corp.redhat.com (Postfix) with ESMTP id AE0845C28D;
+        Tue, 21 Jan 2020 12:05:26 +0000 (UTC)
 From:   Jiri Olsa <jolsa@kernel.org>
 To:     Alexei Starovoitov <ast@kernel.org>,
         Daniel Borkmann <daniel@iogearbox.net>
@@ -32,14 +32,14 @@ Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org,
         David Miller <davem@redhat.com>,
         =?UTF-8?q?Bj=C3=B6rn=20T=C3=B6pel?= <bjorn.topel@intel.com>,
         John Fastabend <john.fastabend@gmail.com>
-Subject: [PATCH 4/6] bpf: Add bpf_get_stack_kfunc
-Date:   Tue, 21 Jan 2020 13:05:10 +0100
-Message-Id: <20200121120512.758929-5-jolsa@kernel.org>
+Subject: [PATCH 5/6] bpf: Allow to resolve bpf trampoline and dispatcher in unwind
+Date:   Tue, 21 Jan 2020 13:05:11 +0100
+Message-Id: <20200121120512.758929-6-jolsa@kernel.org>
 In-Reply-To: <20200121120512.758929-1-jolsa@kernel.org>
 References: <20200121120512.758929-1-jolsa@kernel.org>
 MIME-Version: 1.0
 X-Scanned-By: MIMEDefang 2.79 on 10.5.11.16
-X-MC-Unique: orDdkHyvM-6b6xH0M7sZfg-1
+X-MC-Unique: ptWQy_6NPlOVDMHA4IS2cA-1
 X-Mimecast-Spam-Score: 0
 X-Mimecast-Originator: kernel.org
 Content-Type: text/plain; charset=WINDOWS-1252
@@ -49,60 +49,249 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Adding support to use bpf_get_stack_kfunc in
-BPF_TRACE_FENTRY/BPF_TRACE_FEXIT programs.
+When unwinding the stack we need to identify each address
+to successfully continue. Adding latch tree to keep trampolines
+for quick lookup during the unwind.
+
+The patch uses first 48 bytes for latch tree node, leaving 4048
+bytes from the rest of the page for trampoline or dispatcher
+generated code.
+
+It's still enough not to affect trampoline and dispatcher progs
+maximum counts.
 
 Signed-off-by: Jiri Olsa <jolsa@kernel.org>
 ---
- kernel/trace/bpf_trace.c | 28 ++++++++++++++++++++++++++++
- 1 file changed, 28 insertions(+)
+ include/linux/bpf.h     | 12 +++++-
+ kernel/bpf/dispatcher.c |  4 +-
+ kernel/bpf/trampoline.c | 82 +++++++++++++++++++++++++++++++++++++----
+ kernel/extable.c        |  7 +++-
+ 4 files changed, 93 insertions(+), 12 deletions(-)
 
-diff --git a/kernel/trace/bpf_trace.c b/kernel/trace/bpf_trace.c
-index 18d6e96751c4..5c8edede3ac4 100644
---- a/kernel/trace/bpf_trace.c
-+++ b/kernel/trace/bpf_trace.c
-@@ -1223,6 +1223,32 @@ static const struct bpf_func_proto bpf_get_stackid_proto_kfunc = {
- 	.arg3_type	= ARG_ANYTHING,
- };
- 
-+BPF_CALL_4(bpf_get_stack_kfunc, void*, args,
-+	   void *, buf, u32, size, u64, flags)
+diff --git a/include/linux/bpf.h b/include/linux/bpf.h
+index 8e3b8f4ad183..46b60ed4387b 100644
+--- a/include/linux/bpf.h
++++ b/include/linux/bpf.h
+@@ -519,7 +519,6 @@ struct bpf_trampoline *bpf_trampoline_lookup(u64 key);
+ int bpf_trampoline_link_prog(struct bpf_prog *prog);
+ int bpf_trampoline_unlink_prog(struct bpf_prog *prog);
+ void bpf_trampoline_put(struct bpf_trampoline *tr);
+-void *bpf_jit_alloc_exec_page(void);
+ #define BPF_DISPATCHER_INIT(name) {			\
+ 	.mutex = __MUTEX_INITIALIZER(name.mutex),	\
+ 	.func = &name##func,				\
+@@ -551,6 +550,13 @@ void *bpf_jit_alloc_exec_page(void);
+ #define BPF_DISPATCHER_PTR(name) (&name)
+ void bpf_dispatcher_change_prog(struct bpf_dispatcher *d, struct bpf_prog *from,
+ 				struct bpf_prog *to);
++struct bpf_image {
++	struct latch_tree_node tnode;
++	unsigned char data[];
++};
++#define BPF_IMAGE_SIZE (PAGE_SIZE - sizeof(struct bpf_image))
++bool is_bpf_image_address(unsigned long address);
++void *bpf_image_alloc(void);
+ #else
+ static inline struct bpf_trampoline *bpf_trampoline_lookup(u64 key)
+ {
+@@ -572,6 +578,10 @@ static inline void bpf_trampoline_put(struct bpf_trampoline *tr) {}
+ static inline void bpf_dispatcher_change_prog(struct bpf_dispatcher *d,
+ 					      struct bpf_prog *from,
+ 					      struct bpf_prog *to) {}
++static inline bool is_bpf_image_address(unsigned long address)
 +{
-+	struct pt_regs *regs = get_bpf_raw_tp_regs();
-+	int ret;
++	return false;
++}
+ #endif
+ 
+ struct bpf_func_info_aux {
+diff --git a/kernel/bpf/dispatcher.c b/kernel/bpf/dispatcher.c
+index 204ee61a3904..b3e5b214fed8 100644
+--- a/kernel/bpf/dispatcher.c
++++ b/kernel/bpf/dispatcher.c
+@@ -113,7 +113,7 @@ static void bpf_dispatcher_update(struct bpf_dispatcher *d, int prev_num_progs)
+ 		noff = 0;
+ 	} else {
+ 		old = d->image + d->image_off;
+-		noff = d->image_off ^ (PAGE_SIZE / 2);
++		noff = d->image_off ^ (BPF_IMAGE_SIZE / 2);
+ 	}
+ 
+ 	new = d->num_progs ? d->image + noff : NULL;
+@@ -140,7 +140,7 @@ void bpf_dispatcher_change_prog(struct bpf_dispatcher *d, struct bpf_prog *from,
+ 
+ 	mutex_lock(&d->mutex);
+ 	if (!d->image) {
+-		d->image = bpf_jit_alloc_exec_page();
++		d->image = bpf_image_alloc();
+ 		if (!d->image)
+ 			goto out;
+ 	}
+diff --git a/kernel/bpf/trampoline.c b/kernel/bpf/trampoline.c
+index 79a04417050d..38e2a8a536d3 100644
+--- a/kernel/bpf/trampoline.c
++++ b/kernel/bpf/trampoline.c
+@@ -4,6 +4,7 @@
+ #include <linux/bpf.h>
+ #include <linux/filter.h>
+ #include <linux/ftrace.h>
++#include <linux/rbtree_latch.h>
+ 
+ /* btf_vmlinux has ~22k attachable functions. 1k htab is enough. */
+ #define TRAMPOLINE_HASH_BITS 10
+@@ -14,7 +15,12 @@ static struct hlist_head trampoline_table[TRAMPOLINE_TABLE_SIZE];
+ /* serializes access to trampoline_table */
+ static DEFINE_MUTEX(trampoline_mutex);
+ 
+-void *bpf_jit_alloc_exec_page(void)
++static struct latch_tree_root image_tree __cacheline_aligned;
 +
-+	if (IS_ERR(regs))
-+		return PTR_ERR(regs);
++/* serializes access to image_tree */
++static DEFINE_MUTEX(image_mutex);
 +
-+	perf_fetch_caller_regs(regs);
-+	ret = bpf_get_stack((unsigned long) regs, (unsigned long) buf,
-+			    (unsigned long) size, flags, 0);
-+	put_bpf_raw_tp_regs();
++static void *bpf_jit_alloc_exec_page(void)
+ {
+ 	void *image;
+ 
+@@ -30,6 +36,68 @@ void *bpf_jit_alloc_exec_page(void)
+ 	return image;
+ }
+ 
++static __always_inline bool image_tree_less(struct latch_tree_node *a,
++				      struct latch_tree_node *b)
++{
++	struct bpf_image *ia = container_of(a, struct bpf_image, tnode);
++	struct bpf_image *ib = container_of(b, struct bpf_image, tnode);
++
++	return ia < ib;
++}
++
++static __always_inline int image_tree_comp(void *addr, struct latch_tree_node *n)
++{
++	void *image = container_of(n, struct bpf_image, tnode);
++
++	if (addr < image)
++		return -1;
++	if (addr >= image + PAGE_SIZE)
++		return 1;
++
++	return 0;
++}
++
++static const struct latch_tree_ops image_tree_ops = {
++	.less	= image_tree_less,
++	.comp	= image_tree_comp,
++};
++
++void *bpf_image_alloc(void)
++{
++	struct bpf_image *image;
++
++	image = bpf_jit_alloc_exec_page();
++	if (!image)
++		return NULL;
++
++	mutex_lock(&image_mutex);
++	latch_tree_insert(&image->tnode, &image_tree, &image_tree_ops);
++	mutex_unlock(&image_mutex);
++	return image->data;
++}
++
++void bpf_image_delete(void *ptr)
++{
++	struct bpf_image *image = container_of(ptr, struct bpf_image, data);
++
++	mutex_lock(&image_mutex);
++	latch_tree_erase(&image->tnode, &image_tree, &image_tree_ops);
++	synchronize_rcu();
++	bpf_jit_free_exec(image);
++	mutex_unlock(&image_mutex);
++}
++
++bool is_bpf_image_address(unsigned long addr)
++{
++	bool ret;
++
++	rcu_read_lock();
++	ret = latch_tree_find((void *) addr, &image_tree, &image_tree_ops) != NULL;
++	rcu_read_unlock();
++
 +	return ret;
 +}
 +
-+static const struct bpf_func_proto bpf_get_stack_proto_kfunc = {
-+	.func		= bpf_get_stack_raw_tp,
-+	.gpl_only	= true,
-+	.ret_type	= RET_INTEGER,
-+	.arg1_type	= ARG_PTR_TO_CTX,
-+	.arg2_type	= ARG_PTR_TO_MEM,
-+	.arg3_type	= ARG_CONST_SIZE_OR_ZERO,
-+	.arg4_type	= ARG_ANYTHING,
-+};
-+
- static const struct bpf_func_proto *
- kfunc_prog_func_proto(enum bpf_func_id func_id, const struct bpf_prog *prog)
+ struct bpf_trampoline *bpf_trampoline_lookup(u64 key)
  {
-@@ -1231,6 +1257,8 @@ kfunc_prog_func_proto(enum bpf_func_id func_id, const struct bpf_prog *prog)
- 		return &bpf_perf_event_output_proto_kfunc;
- 	case BPF_FUNC_get_stackid:
- 		return &bpf_get_stackid_proto_kfunc;
-+	case BPF_FUNC_get_stack:
-+		return &bpf_get_stack_proto_kfunc;
- 	default:
- 		return tracing_func_proto(func_id, prog);
- 	}
+ 	struct bpf_trampoline *tr;
+@@ -50,7 +118,7 @@ struct bpf_trampoline *bpf_trampoline_lookup(u64 key)
+ 		goto out;
+ 
+ 	/* is_root was checked earlier. No need for bpf_jit_charge_modmem() */
+-	image = bpf_jit_alloc_exec_page();
++	image = bpf_image_alloc();
+ 	if (!image) {
+ 		kfree(tr);
+ 		tr = NULL;
+@@ -125,14 +193,14 @@ static int register_fentry(struct bpf_trampoline *tr, void *new_addr)
+ }
+ 
+ /* Each call __bpf_prog_enter + call bpf_func + call __bpf_prog_exit is ~50
+- * bytes on x86.  Pick a number to fit into PAGE_SIZE / 2
++ * bytes on x86.  Pick a number to fit into BPF_IMAGE_SIZE / 2
+  */
+ #define BPF_MAX_TRAMP_PROGS 40
+ 
+ static int bpf_trampoline_update(struct bpf_trampoline *tr)
+ {
+-	void *old_image = tr->image + ((tr->selector + 1) & 1) * PAGE_SIZE/2;
+-	void *new_image = tr->image + (tr->selector & 1) * PAGE_SIZE/2;
++	void *old_image = tr->image + ((tr->selector + 1) & 1) * BPF_IMAGE_SIZE/2;
++	void *new_image = tr->image + (tr->selector & 1) * BPF_IMAGE_SIZE/2;
+ 	struct bpf_prog *progs_to_run[BPF_MAX_TRAMP_PROGS];
+ 	int fentry_cnt = tr->progs_cnt[BPF_TRAMP_FENTRY];
+ 	int fexit_cnt = tr->progs_cnt[BPF_TRAMP_FEXIT];
+@@ -160,7 +228,7 @@ static int bpf_trampoline_update(struct bpf_trampoline *tr)
+ 	if (fexit_cnt)
+ 		flags = BPF_TRAMP_F_CALL_ORIG | BPF_TRAMP_F_SKIP_FRAME;
+ 
+-	err = arch_prepare_bpf_trampoline(new_image, new_image + PAGE_SIZE / 2,
++	err = arch_prepare_bpf_trampoline(new_image, new_image + BPF_IMAGE_SIZE / 2,
+ 					  &tr->func.model, flags,
+ 					  fentry, fentry_cnt,
+ 					  fexit, fexit_cnt,
+@@ -251,7 +319,7 @@ void bpf_trampoline_put(struct bpf_trampoline *tr)
+ 		goto out;
+ 	if (WARN_ON_ONCE(!hlist_empty(&tr->progs_hlist[BPF_TRAMP_FEXIT])))
+ 		goto out;
+-	bpf_jit_free_exec(tr->image);
++	bpf_image_delete(tr->image);
+ 	hlist_del(&tr->hlist);
+ 	kfree(tr);
+ out:
+diff --git a/kernel/extable.c b/kernel/extable.c
+index f6920a11e28a..a0024f27d3a1 100644
+--- a/kernel/extable.c
++++ b/kernel/extable.c
+@@ -131,8 +131,9 @@ int kernel_text_address(unsigned long addr)
+ 	 * triggers a stack trace, or a WARN() that happens during
+ 	 * coming back from idle, or cpu on or offlining.
+ 	 *
+-	 * is_module_text_address() as well as the kprobe slots
+-	 * and is_bpf_text_address() require RCU to be watching.
++	 * is_module_text_address() as well as the kprobe slots,
++	 * is_bpf_text_address() and is_bpf_image_address require
++	 * RCU to be watching.
+ 	 */
+ 	no_rcu = !rcu_is_watching();
+ 
+@@ -148,6 +149,8 @@ int kernel_text_address(unsigned long addr)
+ 		goto out;
+ 	if (is_bpf_text_address(addr))
+ 		goto out;
++	if (is_bpf_image_address(addr))
++		goto out;
+ 	ret = 0;
+ out:
+ 	if (no_rcu)
 -- 
 2.24.1
 
