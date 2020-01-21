@@ -2,118 +2,241 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 86C1B1447F7
-	for <lists+netdev@lfdr.de>; Wed, 22 Jan 2020 00:03:23 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 344C714484E
+	for <lists+netdev@lfdr.de>; Wed, 22 Jan 2020 00:31:15 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728853AbgAUXC6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 21 Jan 2020 18:02:58 -0500
-Received: from mail.kernel.org ([198.145.29.99]:46362 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725876AbgAUXC6 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 21 Jan 2020 18:02:58 -0500
-Received: from gandalf.local.home (cpe-66-24-58-225.stny.res.rr.com [66.24.58.225])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 3957C217F4;
-        Tue, 21 Jan 2020 23:02:57 +0000 (UTC)
-Date:   Tue, 21 Jan 2020 18:02:55 -0500
-From:   Steven Rostedt <rostedt@goodmis.org>
-To:     syzbot <syzbot+0c147ca7bd4352547635@syzkaller.appspotmail.com>
-Cc:     linux-kernel@vger.kernel.org, mingo@redhat.com,
-        netdev@vger.kernel.org, syzkaller-bugs@googlegroups.com
-Subject: Re: WARNING in tracing_func_proto
-Message-ID: <20200121180255.1c98b54c@gandalf.local.home>
-In-Reply-To: <0000000000001b2259059c654421@google.com>
-References: <0000000000001b2259059c654421@google.com>
-X-Mailer: Claws Mail 3.17.3 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
+        id S1727816AbgAUXbJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 21 Jan 2020 18:31:09 -0500
+Received: from mail-vk1-f193.google.com ([209.85.221.193]:39229 "EHLO
+        mail-vk1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725876AbgAUXbJ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 21 Jan 2020 18:31:09 -0500
+Received: by mail-vk1-f193.google.com with SMTP id t129so1445778vkg.6
+        for <netdev@vger.kernel.org>; Tue, 21 Jan 2020 15:31:08 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=chromium.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=dp6oasckur6kjovlcP2IlFs4QaVQn/76z7EhwGccLDg=;
+        b=J3TBRnTZI4uUGbi4rWEZghUZesIEtVlTjYCY+rxoMv7hrpLiVTkqnfCSOgVpyvfDXY
+         mQfY3jzVPs186SZW85z37ZcCQuB1+SIhqQ418q9FCsJf4vni2k0iyT1X1a9ZfJKhv1UJ
+         AuyoC8X96dasJ3F2w+r2Z5KdbMr9qmv6uWFEI=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=dp6oasckur6kjovlcP2IlFs4QaVQn/76z7EhwGccLDg=;
+        b=Yu0Nc98Y/sM6X9IDlcM+TlZidQtLKo9gU0G96SwSjHNLeU8ZwkPbaG1rNCwgPmJYKA
+         kRpVHhl4yNAPDWoGogshNoytivtOzQ7tjY5xuzdN6zqrLz0re157xf+FihDjCq3WJuGr
+         6LNX/p/NsmJz5+L/p04qJBM0ZHWDzH3tUFKY5bDXt/pjWP7xIDbV9o0RZC6fXKSUdlKc
+         TOXLHBmPnvMC3/cGeRRvMtIm2aVBfSiuoF9YB/h3bk4JPK/KoIwLSJisQvuaFXTEW5id
+         eA88jhfe5Ag7IrQ/VCEnRE/m6FHF9T6XX0dqvYLvdW/SsoM5mX02QoQ8/JKgMrU2xYwJ
+         6uaQ==
+X-Gm-Message-State: APjAAAWWoIR5krkDGSkmuOpy44zNNBwc67Fc9WNH6lhn7OJxYhqwUD67
+        g/9Or16dCjFSJQKeDycXUivK8wjcQMiZ80FZ0srkiA==
+X-Google-Smtp-Source: APXvYqw8tIdQkMrg0Ci0wzIi38KfztjpuxnmWALDiTnxfOAIqPWBaTzwDW0hVJRBpuNvoYVGQWrBw76xIq4DC6CU1xA=
+X-Received: by 2002:a1f:1144:: with SMTP id 65mr4584579vkr.77.1579649467467;
+ Tue, 21 Jan 2020 15:31:07 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+References: <20200117212705.57436-1-abhishekpandit@chromium.org>
+ <20200117132623.RFC.1.I797e2f4cb824299043e771f3ab9cef86ee09f4db@changeid> <ACAE240C-345B-43F9-B6C8-8967AF436CE9@holtmann.org>
+In-Reply-To: <ACAE240C-345B-43F9-B6C8-8967AF436CE9@holtmann.org>
+From:   Abhishek Pandit-Subedi <abhishekpandit@chromium.org>
+Date:   Tue, 21 Jan 2020 15:30:56 -0800
+Message-ID: <CANFp7mVjR9X=UjPZ5puX1z87NAeOBpvvQM8ASjijKAHz2+Uq8Q@mail.gmail.com>
+Subject: Re: [RFC PATCH 1/2] Bluetooth: Add mgmt op set_wake_capable
+To:     Marcel Holtmann <marcel@holtmann.org>
+Cc:     Luiz Augusto von Dentz <luiz.dentz@gmail.com>,
+        Alain Michaud <alainm@chromium.org>,
+        Bluez mailing list <linux-bluetooth@vger.kernel.org>,
+        chromeos-bluetooth-upstreaming@chromium.org,
+        "David S. Miller" <davem@davemloft.net>,
+        Johan Hedberg <johan.hedberg@gmail.com>,
+        netdev <netdev@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, 17 Jan 2020 23:47:11 -0800
-syzbot <syzbot+0c147ca7bd4352547635@syzkaller.appspotmail.com> wrote:
+On Tue, Jan 21, 2020 at 8:35 AM Marcel Holtmann <marcel@holtmann.org> wrote=
+:
+>
+> Hi Abhishek,
+>
+> > When the system is suspended, only some connected Bluetooth devices
+> > cause user input that should wake the system (mostly HID devices). Add
+> > a list to keep track of devices that can wake the system and add
+> > a management API to let userspace tell the kernel whether a device is
+> > wake capable or not.
+> >
+> > Signed-off-by: Abhishek Pandit-Subedi <abhishekpandit@chromium.org>
+> > ---
+> >
+> > include/net/bluetooth/hci_core.h |  1 +
+> > include/net/bluetooth/mgmt.h     |  7 ++++++
+> > net/bluetooth/hci_core.c         |  1 +
+> > net/bluetooth/mgmt.c             | 42 ++++++++++++++++++++++++++++++++
+> > 4 files changed, 51 insertions(+)
+> >
+> > diff --git a/include/net/bluetooth/hci_core.h b/include/net/bluetooth/h=
+ci_core.h
+> > index 89ecf0a80aa1..ce4bebcb0265 100644
+> > --- a/include/net/bluetooth/hci_core.h
+> > +++ b/include/net/bluetooth/hci_core.h
+> > @@ -394,6 +394,7 @@ struct hci_dev {
+> >       struct list_head        mgmt_pending;
+> >       struct list_head        blacklist;
+> >       struct list_head        whitelist;
+> > +     struct list_head        wakeable;
+> >       struct list_head        uuids;
+> >       struct list_head        link_keys;
+> >       struct list_head        long_term_keys;
+> > diff --git a/include/net/bluetooth/mgmt.h b/include/net/bluetooth/mgmt.=
+h
+> > index a90666af05bd..283ba5320bdb 100644
+> > --- a/include/net/bluetooth/mgmt.h
+> > +++ b/include/net/bluetooth/mgmt.h
+> > @@ -671,6 +671,13 @@ struct mgmt_cp_set_blocked_keys {
+> > } __packed;
+> > #define MGMT_OP_SET_BLOCKED_KEYS_SIZE 2
+> >
+> > +#define MGMT_OP_SET_WAKE_CAPABLE     0x0047
+> > +#define MGMT_SET_WAKE_CAPABLE_SIZE   8
+> > +struct mgmt_cp_set_wake_capable {
+> > +     struct mgmt_addr_info addr;
+> > +     u8 wake_capable;
+> > +} __packed;
+> > +
+>
+> please also send a patch for doc/mgmt-api.txt describing these opcodes. I=
+ would also like to have the discussion if it might be better to add an ext=
+ra Action parameter to Add Device. We want to differentiate between allow i=
+ncoming connection that allows to wakeup and the one that doesn=E2=80=99t.
+>
+> Another option is to create an Add Extended Device command. Main reason h=
+ere is that I don=E2=80=99t want to end up in the situation where you have =
+to add a device and then send another 10 commands to set its features.
 
-> Hello,
-> 
-> syzbot found the following crash on:
-> 
-> HEAD commit:    428cd523 sfc/ethtool_common: Make some function to static
-> git tree:       net-next
-> console output: https://syzkaller.appspot.com/x/log.txt?x=10483421e00000
-> kernel config:  https://syzkaller.appspot.com/x/.config?x=66d8660c57ff3c98
-> dashboard link: https://syzkaller.appspot.com/bug?extid=0c147ca7bd4352547635
-> compiler:       gcc (GCC) 9.0.0 20181231 (experimental)
-> 
-> Unfortunately, I don't have any reproducer for this crash yet.
-> 
-> IMPORTANT: if you fix the bug, please add the following tag to the commit:
-> Reported-by: syzbot+0c147ca7bd4352547635@syzkaller.appspotmail.com
-> 
-> ------------[ cut here ]------------
-> Could not allocate percpu trace_printk buffer
-> WARNING: CPU: 1 PID: 11733 at kernel/trace/trace.c:3112 alloc_percpu_trace_buffer kernel/trace/trace.c:3112 [inline]
-> WARNING: CPU: 1 PID: 11733 at kernel/trace/trace.c:3112 trace_printk_init_buffers+0x5b/0x60 kernel/trace/trace.c:3126
-> Kernel panic - not syncing: panic_on_warn set ...
+Sent an email for doc/mgmt-api.txt. I think adding this to "Add
+Device" would be acceptable. However, it is possible for "wake
+capable" to be modified at runtime so it might be more appropriate on
+some sort of Set Connection Parameters type command.
 
-So it failed to allocate memory for the buffer (must be running low on
-memory, or allocated a really big buffer?), and that triggered a
-warning. As you have "panic_on_warn" set, the warning triggered the
-panic.
+>
+> > #define MGMT_EV_CMD_COMPLETE          0x0001
+> > struct mgmt_ev_cmd_complete {
+> >       __le16  opcode;
+> > diff --git a/net/bluetooth/hci_core.c b/net/bluetooth/hci_core.c
+> > index 1ca7508b6ca7..7057b9b65173 100644
+> > --- a/net/bluetooth/hci_core.c
+> > +++ b/net/bluetooth/hci_core.c
+> > @@ -3299,6 +3299,7 @@ struct hci_dev *hci_alloc_dev(void)
+> >       INIT_LIST_HEAD(&hdev->mgmt_pending);
+> >       INIT_LIST_HEAD(&hdev->blacklist);
+> >       INIT_LIST_HEAD(&hdev->whitelist);
+> > +     INIT_LIST_HEAD(&hdev->wakeable);
+> >       INIT_LIST_HEAD(&hdev->uuids);
+> >       INIT_LIST_HEAD(&hdev->link_keys);
+> >       INIT_LIST_HEAD(&hdev->long_term_keys);
+> > diff --git a/net/bluetooth/mgmt.c b/net/bluetooth/mgmt.c
+> > index 0dc610faab70..95092130f16c 100644
+> > --- a/net/bluetooth/mgmt.c
+> > +++ b/net/bluetooth/mgmt.c
+> > @@ -106,7 +106,10 @@ static const u16 mgmt_commands[] =3D {
+> >       MGMT_OP_START_LIMITED_DISCOVERY,
+> >       MGMT_OP_READ_EXT_INFO,
+> >       MGMT_OP_SET_APPEARANCE,
+> > +     MGMT_OP_GET_PHY_CONFIGURATION,
+> > +     MGMT_OP_SET_PHY_CONFIGURATION,
+>
+> These are unrelated to this patch.
 
-The only solution to this that I can see is to remove the WARN_ON and
-replace it with a pr_warn() message. There's a lot of WARN_ON()s in the
-kernel that need this conversion too, and I will postpone this change
-to that effort.
+They weren't there on tip last time I rebased. Should I create a new
+patch for this?
 
--- Steve
-
-
-> CPU: 1 PID: 11733 Comm: syz-executor.2 Not tainted 5.5.0-rc5-syzkaller #0
-> Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
-> Call Trace:
->  __dump_stack lib/dump_stack.c:77 [inline]
->  dump_stack+0x197/0x210 lib/dump_stack.c:118
->  panic+0x2e3/0x75c kernel/panic.c:221
->  __warn.cold+0x2f/0x3e kernel/panic.c:582
->  report_bug+0x289/0x300 lib/bug.c:195
->  fixup_bug arch/x86/kernel/traps.c:174 [inline]
->  fixup_bug arch/x86/kernel/traps.c:169 [inline]
->  do_error_trap+0x11b/0x200 arch/x86/kernel/traps.c:267
->  do_invalid_op+0x37/0x50 arch/x86/kernel/traps.c:286
->  invalid_op+0x23/0x30 arch/x86/entry/entry_64.S:1027
-> RIP: 0010:alloc_percpu_trace_buffer kernel/trace/trace.c:3112 [inline]
-> RIP: 0010:trace_printk_init_buffers+0x5b/0x60 kernel/trace/trace.c:3126
-> Code: ff be 04 00 00 00 bf 04 10 00 00 e8 3f 84 24 00 48 85 c0 0f 85 e8 37 00 00 e8 d1 57 fb ff 48 c7 c7 e0 92 2f 88 e8 54 07 cc ff <0f> 0b eb c2 90 55 48 89 e5 41 57 49 c7 c7 e0 79 2f 88 41 56 49 89
-> RSP: 0018:ffffc900018e7528 EFLAGS: 00010282
-> RAX: 0000000000000000 RBX: 0000000000000000 RCX: 0000000000000000
-> RDX: 00000000000070cd RSI: ffffffff815e5e56 RDI: fffff5200031ce97
-> RBP: ffffc900018e7538 R08: ffff8880a204c3c0 R09: 0000000000000000
-> R10: 0000000000000000 R11: 0000000000000000 R12: ffffffff88309580
-> R13: ffffffff88309240 R14: 0000000000000006 R15: ffff88805a52c000
->  bpf_get_trace_printk_proto kernel/trace/bpf_trace.c:457 [inline]
->  tracing_func_proto.isra.0+0x150/0x1a0 kernel/trace/bpf_trace.c:794
->  pe_prog_func_proto+0x69/0x90 kernel/trace/bpf_trace.c:1023
->  check_helper_call+0x123/0x48f0 kernel/bpf/verifier.c:4196
->  do_check+0x613a/0x8a40 kernel/bpf/verifier.c:7978
->  bpf_check+0x73d9/0xa9ef kernel/bpf/verifier.c:9777
->  bpf_prog_load+0xe36/0x1960 kernel/bpf/syscall.c:1837
->  __do_sys_bpf+0xa4b/0x3610 kernel/bpf/syscall.c:3073
->  __se_sys_bpf kernel/bpf/syscall.c:3032 [inline]
->  __x64_sys_bpf+0x73/0xb0 kernel/bpf/syscall.c:3032
->  do_syscall_64+0xfa/0x790 arch/x86/entry/common.c:294
->  entry_SYSCALL_64_after_hwframe+0x49/0xbe
-> RIP: 0033:0x45af49
-> Code: ad b6 fb ff c3 66 2e 0f 1f 84 00 00 00 00 00 66 90 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 0f 83 7b b6 fb ff c3 66 2e 0f 1f 84 00 00 00 00
-> RSP: 002b:00007f31faef6c78 EFLAGS: 00000246 ORIG_RAX: 0000000000000141
-> RAX: ffffffffffffffda RBX: 0000000000000003 RCX: 000000000045af49
-> RDX: 0000000000000048 RSI: 0000000020000080 RDI: 0000000000000005
-> RBP: 000000000075bfc8 R08: 0000000000000000 R09: 0000000000000000
-> R10: 0000000000000000 R11: 0000000000000246 R12: 00007f31faef76d4
-> R13: 00000000004c1697 R14: 00000000004d66a0 R15: 00000000ffffffff
-> Kernel Offset: disabled
-> Rebooting in 86400 seconds..
-> 
+>
+> >       MGMT_OP_SET_BLOCKED_KEYS,
+> > +     MGMT_OP_SET_WAKE_CAPABLE,
+> > };
+> >
+> > static const u16 mgmt_events[] =3D {
+> > @@ -4663,6 +4666,37 @@ static int set_fast_connectable(struct sock *sk,=
+ struct hci_dev *hdev,
+> >       return err;
+> > }
+> >
+> > +static int set_wake_capable(struct sock *sk, struct hci_dev *hdev, voi=
+d *data,
+> > +                         u16 len)
+> > +{
+> > +     int err;
+> > +     u8 status;
+> > +     struct mgmt_cp_set_wake_capable *cp =3D data;
+> > +     u8 addr_type =3D cp->addr.type =3D=3D BDADDR_BREDR ?
+> > +                            cp->addr.type :
+> > +                            le_addr_type(cp->addr.type);
+> > +
+> > +     BT_DBG("Set wake capable %pMR (type 0x%x) =3D 0x%x\n", &cp->addr.=
+bdaddr,
+> > +            addr_type, cp->wake_capable);
+> > +
+> > +     if (cp->wake_capable)
+> > +             err =3D hci_bdaddr_list_add(&hdev->wakeable, &cp->addr.bd=
+addr,
+> > +                                       addr_type);
+> > +     else
+> > +             err =3D hci_bdaddr_list_del(&hdev->wakeable, &cp->addr.bd=
+addr,
+> > +                                       addr_type);
+> > +
+> > +     if (!err || err =3D=3D -EEXIST || err =3D=3D -ENOENT)
+> > +             status =3D MGMT_STATUS_SUCCESS;
+> > +     else
+> > +             status =3D MGMT_STATUS_FAILED;
+> > +
+> > +     err =3D mgmt_cmd_complete(sk, hdev->id, MGMT_OP_SET_WAKE_CAPABLE,=
+ status,
+> > +                             cp, sizeof(*cp));
+> > +
+> > +     return err;
+> > +}
+> > +
+> > static void set_bredr_complete(struct hci_dev *hdev, u8 status, u16 opc=
+ode)
+> > {
+> >       struct mgmt_pending_cmd *cmd;
+> > @@ -5791,6 +5825,13 @@ static int remove_device(struct sock *sk, struct=
+ hci_dev *hdev,
+> >                       err =3D hci_bdaddr_list_del(&hdev->whitelist,
+> >                                                 &cp->addr.bdaddr,
+> >                                                 cp->addr.type);
+> > +
+> > +                     /* Don't check result since it either succeeds or=
+ device
+> > +                      * wasn't there (not wakeable or invalid params a=
+s
+> > +                      * covered by deleting from whitelist).
+> > +                      */
+> > +                     hci_bdaddr_list_del(&hdev->wakeable, &cp->addr.bd=
+addr,
+> > +                                         cp->addr.type);
+> >                       if (err) {
+> >                               err =3D mgmt_cmd_complete(sk, hdev->id,
+> >                                                       MGMT_OP_REMOVE_DE=
+VICE,
+> > @@ -6990,6 +7031,7 @@ static const struct hci_mgmt_handler mgmt_handler=
+s[] =3D {
+> >       { set_phy_configuration,   MGMT_SET_PHY_CONFIGURATION_SIZE },
+> >       { set_blocked_keys,        MGMT_OP_SET_BLOCKED_KEYS_SIZE,
+> >                                               HCI_MGMT_VAR_LEN },
+> > +     { set_wake_capable,        MGMT_SET_WAKE_CAPABLE_SIZE },
+> > };
+> >
+>
+> Regards
+>
+> Marcel
+>
