@@ -2,104 +2,124 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id AEBE01435DE
-	for <lists+netdev@lfdr.de>; Tue, 21 Jan 2020 04:21:01 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 86FC91435E2
+	for <lists+netdev@lfdr.de>; Tue, 21 Jan 2020 04:22:45 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729091AbgAUDUw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 20 Jan 2020 22:20:52 -0500
-Received: from mail-il1-f196.google.com ([209.85.166.196]:44894 "EHLO
-        mail-il1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728921AbgAUDUw (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 20 Jan 2020 22:20:52 -0500
-Received: by mail-il1-f196.google.com with SMTP id z12so1178455iln.11
-        for <netdev@vger.kernel.org>; Mon, 20 Jan 2020 19:20:50 -0800 (PST)
+        id S1728042AbgAUDV4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 20 Jan 2020 22:21:56 -0500
+Received: from mail-qk1-f180.google.com ([209.85.222.180]:36764 "EHLO
+        mail-qk1-f180.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727009AbgAUDVz (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 20 Jan 2020 22:21:55 -0500
+Received: by mail-qk1-f180.google.com with SMTP id a203so1388532qkc.3
+        for <netdev@vger.kernel.org>; Mon, 20 Jan 2020 19:21:55 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=lixom-net.20150623.gappssmtp.com; s=20150623;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=xDcWE9EWGtVID/iKX16rez9xRzd/8Nb913yHk9dAMYM=;
-        b=T5DUMBdxwLNNZ2G6qr8/JwsZn+Orq7oGwZHKldGB2lBt2xpg9AjyfbW2/wzCP9PSdm
-         8CgNcUWgZa9614tn+w5aZLOx8tW88UzdZt/hmnm2yp/VClsrsP4l5QJfsoD6TuMd3dVE
-         fmzAtzVsPouElzps7mYBPOH0HVkeS+xtAjSn/dpf+iG+W6x45PGkjEw3Hlh+8p2QR/fP
-         bY7mC0S/30YPNLxD7TU3rd1Q7DEHzZ2vMbzHTpUOp0LnuxoIcqPaqpj0YWGSEVtJ8sfw
-         KEgK6inoc29l49Yf8u+JVxMYKU030evP3NCibeYe+ThDYnvdckvBF2hhyl/nEY+sNUI2
-         ms2w==
+        d=gmail.com; s=20161025;
+        h=subject:to:references:from:message-id:date:user-agent:mime-version
+         :in-reply-to:content-language:content-transfer-encoding;
+        bh=61ux2JhjAa2FtTyz00QYnjbVn3GttGHwu1uNCAdhllY=;
+        b=rcs2WwE47CQusHVqEx3ssyL2r9/FDd11Ilo9ewuegcIetm68AmHPleprBuquhh2Q+K
+         lqqWiJYI3R0z+UVf0RXSzH74kecvzaAWgKJb6HdYPUCZkROf9xmKFqHKUftIbfJx6P3b
+         wQX7EElPjGj7CCF+GQGRzAcHaKfX7hbDSuAmrM2NvRa5uVW7cLiNekC42+T7+iru6L7x
+         S+nTlIKxpTN7iV7p1PfZsKw4OthSXOxXoW3+XlbqH2dOkAu6QMEEZ0PpA9nMJoKK2ngU
+         Inxp+NxqVAY79w8Sf5XNN+pStbIFEVZSP1wsd1O/kQ6HzFOW0QAuMshcYAFVJqnlYGB7
+         AFPw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=xDcWE9EWGtVID/iKX16rez9xRzd/8Nb913yHk9dAMYM=;
-        b=J4D40zW02v4WyS5BsXx+/HRX4R2XiI/JYQwuy1Q9mj+flcOX0hFnIrZi0AGXHkrZUD
-         7QeHqo1+/b2T0iNrJ2VR+yQzPlSjmrlcCpf5DbtI/NaIDz/YGIvBtW9UTUnPW7S+cQmy
-         B+PUprGO5K/gG1Dho+keFHcNc5Vq37na6zy7HpoO9tO9wHvKjyre5qVGEva5hyvfujP9
-         6a2Cvit0iHgHsMllXCjKI8wFNHv1p0Cw3ZbPyPRi9JBz5bhK7TQXkhjCuA1GnXuX583M
-         4GbwisHQmdICyp0+c87qPsyDKnptAFae/fyyf3c1U1P28dGe5Vs/Hk6S94r9H4iTS+Dw
-         pD1g==
-X-Gm-Message-State: APjAAAUbd/xposbYa4TVjnpS6iVi7i2U9E+Zaqc/qfSYVBPVgRO2zFju
-        /VXcEIZ5hoI7Wsv0P54VSRoIww8YYgmtHxXJoJGggg==
-X-Google-Smtp-Source: APXvYqx9zjbvVKABtdD59999UxaHDFsXuScZSoky+6zJEAyheszYYxPT63r0lZj7p1c8DjDNzhyUxBooXqS0Fhwfkxk=
-X-Received: by 2002:a92:db49:: with SMTP id w9mr1812972ilq.277.1579576849943;
- Mon, 20 Jan 2020 19:20:49 -0800 (PST)
+        h=x-gm-message-state:subject:to:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=61ux2JhjAa2FtTyz00QYnjbVn3GttGHwu1uNCAdhllY=;
+        b=pLC0qAfNlTAJE/5LUGzgV0vNRg1XInbtIs3p2y8jeZo/XFQA3iv0UMudZz7ty3wJtL
+         KREHqisqhF3t6robhJ0VBu8tXaM2oJLlxTN9hT2rgXpZWObkYOuzkkXqRpVnDcTFec48
+         TlhX2NtGy3C1VDGzO5PJQWJpvnsGyNAvnJv2aAtBXhp6h/Uj0jGW+ucnWw/dFWHy1fJX
+         1l22+5vsQM+01puNEWEH+3TUO3BsVlCspN3vVCFv55MDeCK+KMOi4Y8zwRmZL7CBuxkX
+         V3NZPRx4wCIrndHrmAmGo6uo3fcqO/isB7qP2OUgw5BhceAvkQqLxijT7kZICDHnbJHe
+         W/Og==
+X-Gm-Message-State: APjAAAXLRGeQZ7umILWboCbJqUJJqizhrsxNfjXgRl0dlX++MSHdQikD
+        7l+1ingWBZdigfniyFj+ExZOSC2E
+X-Google-Smtp-Source: APXvYqzxW0KeDEBqw2aYN8kCsZsg5hDglSz7/6yRWuY5DeAaiMYwlWJ7Vu86lJyLlDEgDlApOV0yXQ==
+X-Received: by 2002:ae9:dc85:: with SMTP id q127mr2723408qkf.460.1579576914530;
+        Mon, 20 Jan 2020 19:21:54 -0800 (PST)
+Received: from ?IPv6:2601:282:803:7700:84c7:af62:d74:e501? ([2601:282:803:7700:84c7:af62:d74:e501])
+        by smtp.googlemail.com with ESMTPSA id d184sm16847472qkb.128.2020.01.20.19.21.52
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 20 Jan 2020 19:21:53 -0800 (PST)
+Subject: Re: vrf and ipsec xfrm routing problem
+To:     Ben Greear <greearb@candelatech.com>,
+        netdev <netdev@vger.kernel.org>
+References: <1425d02c-de99-b708-e543-b7fe3f0ef07e@candelatech.com>
+ <9893ae01-18a5-2afd-b485-459423b8adc0@candelatech.com>
+From:   David Ahern <dsahern@gmail.com>
+Message-ID: <ce3ba3f4-b0dd-b3b5-fbb7-095122ed75b3@gmail.com>
+Date:   Mon, 20 Jan 2020 20:21:51 -0700
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:68.0)
+ Gecko/20100101 Thunderbird/68.4.1
 MIME-Version: 1.0
-References: <20191220001517.105297-1-olof@lixom.net> <ff6dc8997083c5d8968df48cc191e5b9e8797618.camel@perches.com>
- <CAOesGMgxHGBdkdVOoWYpqSF-13iP3itJksCRL8QSiS0diL26dA@mail.gmail.com> <CALzJLG-L+0dgW=5AXAB8eMjAa3jaSHVaDLuDsSBf9ahqM0Ti-A@mail.gmail.com>
-In-Reply-To: <CALzJLG-L+0dgW=5AXAB8eMjAa3jaSHVaDLuDsSBf9ahqM0Ti-A@mail.gmail.com>
-From:   Olof Johansson <olof@lixom.net>
-Date:   Mon, 20 Jan 2020 19:20:38 -0800
-Message-ID: <CAOesGMhXHCz+ahs6whKsS32uECVry9Lk6BQxcvczPXgcoh6b6w@mail.gmail.com>
-Subject: Re: [PATCH] net/mlx5e: Fix printk format warning
-To:     Saeed Mahameed <saeedm@dev.mellanox.co.il>
-Cc:     Joe Perches <joe@perches.com>,
-        Saeed Mahameed <saeedm@mellanox.com>,
-        Leon Romanovsky <leon@kernel.org>,
-        Network Development <netdev@vger.kernel.org>,
-        RDMA mailing list <linux-rdma@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+In-Reply-To: <9893ae01-18a5-2afd-b485-459423b8adc0@candelatech.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi,
+On 1/17/20 2:52 PM, Ben Greear wrote:
+>> I tried adding a route to specify the x_frm as source, but that does
+>> not appear to work:
+>>
+>> [root@lf0313-63e7 lanforge]# ip route add 192.168.10.0/24 via
+>> 192.168.5.1 dev x_eth4 table 4
+>> [root@lf0313-63e7 lanforge]# ip route show vrf _vrf4
+>> default via 192.168.5.1 dev eth4
+>> 192.168.5.0/24 dev eth4 scope link src 192.168.5.4
+>> 192.168.10.0/24 via 192.168.5.1 dev eth4
+>>
+>> I also tried this, but no luck:
+>>
+>> [root@lf0313-63e7 lanforge]# ip route add 192.168.10.0/24 via
+>> 192.168.10.1 dev x_eth4 table 4
+>> Error: Nexthop has invalid gateway.
+> 
+> I went looking for why this was failing.  The reason is that this code
+> is hitting the error case
+> in the code snippet below (from 5.2.21+ kernel).
+> 
+> The oif is that of _vrf4, not the x_eth4 device.
+> 
+> David:  Is this expected behaviour?  Do you know how to tell vrf to use
+> the x_eth4
 
-On Mon, Dec 30, 2019 at 8:35 PM Saeed Mahameed
-<saeedm@dev.mellanox.co.il> wrote:
->
-> On Sat, Dec 21, 2019 at 1:19 PM Olof Johansson <olof@lixom.net> wrote:
-> >
-> > On Thu, Dec 19, 2019 at 6:07 PM Joe Perches <joe@perches.com> wrote:
-> > >
-> > > On Thu, 2019-12-19 at 16:15 -0800, Olof Johansson wrote:
-> > > > Use "%zu" for size_t. Seen on ARM allmodconfig:
-> > > []
-> > > > diff --git a/drivers/net/ethernet/mellanox/mlx5/core/wq.c b/drivers/net/ethernet/mellanox/mlx5/core/wq.c
-> > > []
-> > > > @@ -89,7 +89,7 @@ void mlx5_wq_cyc_wqe_dump(struct mlx5_wq_cyc *wq, u16 ix, u8 nstrides)
-> > > >       len = nstrides << wq->fbc.log_stride;
-> > > >       wqe = mlx5_wq_cyc_get_wqe(wq, ix);
-> > > >
-> > > > -     pr_info("WQE DUMP: WQ size %d WQ cur size %d, WQE index 0x%x, len: %ld\n",
-> > > > +     pr_info("WQE DUMP: WQ size %d WQ cur size %d, WQE index 0x%x, len: %zu\n",
-> > > >               mlx5_wq_cyc_get_size(wq), wq->cur_sz, ix, len);
-> > > >       print_hex_dump(KERN_WARNING, "", DUMP_PREFIX_OFFSET, 16, 1, wqe, len, false);
-> > > >  }
-> > >
-> > > One might expect these 2 outputs to be at the same KERN_<LEVEL> too.
-> > > One is KERN_INFO the other KERN_WARNING
-> >
-> > Sure, but I'll leave that up to the driver maintainers to decide/fix
-> > -- I'm just addressing the type warning here.
->
-> Hi Olof, sorry for the delay, and thanks for the patch,
->
-> I will apply this to net-next-mlx5 and will submit to net-next myself.
-> we will fixup and address the warning level comment by Joe.
+It is expected behavior for VRF. l3mdev_update_flow changes the oif to
+the VRF device if the passed in oif is enslaved to a VRF.
 
-This seems to still be pending, and the merge window is soon here. Any
-chance we can see it show up in linux-next soon?
+> xfrm device as oif when routing output to certain destinations?
+> 
+>     rcu_read_lock();
+>     {
+>         struct fib_table *tbl = NULL;
+>         struct flowi4 fl4 = {
+>             .daddr = nh->fib_nh_gw4,
+>             .flowi4_scope = scope + 1,
+>             .flowi4_oif = nh->fib_nh_oif,
+>             .flowi4_iif = LOOPBACK_IFINDEX,
+>         };
+> 
+>         /* It is not necessary, but requires a bit of thinking */
+>         if (fl4.flowi4_scope < RT_SCOPE_LINK)
+>             fl4.flowi4_scope = RT_SCOPE_LINK;
 
+If you put your debug here, flowi4_oif should be fib_nh_oif per the
+above initialization. It gets changed by the call to fib_lookup.
 
-Thanks,
+--
 
--Olof
+Sabrina sent me a short script on using xfrm devices to help me get up
+to speed on that config (much simpler than using any of the *SWAN
+programs). I have incorporated the xfrm device setup into a script of
+other vrf + ipsec tests. A couple of tests are failing the basic setup.
+I have a fix for one of them (as well as the fix for the qdisc on a VRF
+device). I did notice trying to add routes with the xfrm device as the
+nexthop dev was failing but have not had time to dig into it. I have
+busy week but will try to spend some time on this use case this week.
