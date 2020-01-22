@@ -2,116 +2,136 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id AF6B71452B3
-	for <lists+netdev@lfdr.de>; Wed, 22 Jan 2020 11:35:33 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7805B1452A6
+	for <lists+netdev@lfdr.de>; Wed, 22 Jan 2020 11:31:59 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729130AbgAVKfb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 22 Jan 2020 05:35:31 -0500
-Received: from mail.thelounge.net ([91.118.73.15]:36627 "EHLO
-        mail.thelounge.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728931AbgAVKfb (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 22 Jan 2020 05:35:31 -0500
-X-Greylist: delayed 1073 seconds by postgrey-1.27 at vger.kernel.org; Wed, 22 Jan 2020 05:35:31 EST
-Received: from srv-rhsoft.rhsoft.net  (Authenticated sender: h.reindl@thelounge.net) by mail.thelounge.net (THELOUNGE MTA) with ESMTPSA id 482hDJ0lrlzXTK
-        for <netdev@vger.kernel.org>; Wed, 22 Jan 2020 11:17:36 +0100 (CET)
-To:     network dev <netdev@vger.kernel.org>
-From:   Reindl Harald <h.reindl@thelounge.net>
-Subject: NETDEV WATCHDOG: lan-pci (r8169): transmit queue 0 timed out
-Organization: the lounge interactive design
-Message-ID: <1cc7a2e0-4697-c155-fe9c-1548ccdca504@thelounge.net>
-Date:   Wed, 22 Jan 2020 11:17:35 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.4.1
-MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+        id S1729316AbgAVKbw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 22 Jan 2020 05:31:52 -0500
+Received: from smtprelay-out1.synopsys.com ([149.117.73.133]:48998 "EHLO
+        smtprelay-out1.synopsys.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1729260AbgAVKbv (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 22 Jan 2020 05:31:51 -0500
+Received: from mailhost.synopsys.com (badc-mailhost1.synopsys.com [10.192.0.17])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits))
+        (No client certificate requested)
+        by smtprelay-out1.synopsys.com (Postfix) with ESMTPS id DC1494064D;
+        Wed, 22 Jan 2020 10:31:49 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=synopsys.com; s=mail;
+        t=1579689111; bh=TpBvhcq0e0QKCHbKp1nIql75IZbIWHuxSSbnqHbX4kM=;
+        h=From:To:CC:Subject:Date:References:In-Reply-To:From;
+        b=lh2oKx9ajk7oQABBOSuPkzB9JjmRvQiv4OnO8qaxevkuxFqnQBX/U0bqIKLaGmEBa
+         OJjYlUldIK8dUzDUGnnXZ36u9Bkq+jZ3I/ztXxPzkW+ZaaOFWH2iupdu2goz3qa9xp
+         yXEeHzwoCQ0D+V5Mk3GdHmvNSEgrbmPbp6fAccf/J8bU1vsMZqk3dquJFRinm68hRn
+         dfcZezdPNDjd8URlovToJ5TId0qST/KnpKc7cbVqOTZ799NPgm5kH7OuHusljtxPlb
+         iuqsjv3fTaImMYI07/QxvOia6bPAQd4p2oDBF8KCyStlaorSbnwk6qWI+bvycI3ASK
+         XDZBszDgbEzEA==
+Received: from US01WEHTC3.internal.synopsys.com (us01wehtc3.internal.synopsys.com [10.15.84.232])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mailhost.synopsys.com (Postfix) with ESMTPS id 13BFAA0083;
+        Wed, 22 Jan 2020 10:31:49 +0000 (UTC)
+Received: from US01HYBRID2.internal.synopsys.com (10.15.246.24) by
+ US01WEHTC3.internal.synopsys.com (10.15.84.232) with Microsoft SMTP Server
+ (TLS) id 14.3.408.0; Wed, 22 Jan 2020 02:31:37 -0800
+Received: from NAM04-BN3-obe.outbound.protection.outlook.com (10.202.3.67) by
+ mrs.synopsys.com (10.15.246.24) with Microsoft SMTP Server (TLS) id
+ 14.3.408.0; Wed, 22 Jan 2020 02:31:37 -0800
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=PMvOLMuk+dY8rMG8n+fr/t0XCeFbh82666kFbW5cFJ3UZxu8XBuB0DTqf1mR9O0AB3PTCB6ayVwK0NgNTEUy9VI+H9DxGxQxwdDqZmjPGT1x5em6DaTlKMpBzl/X9nWhcWOWhIHni4FBiV5U8DDDFvD6ibN1KGbsqTPb89vEoMA9B1L8e7Ag/pmOY6N1Rz7RQ2osN5HOGNqtxdZqeXIuoPt4foNz3PkkGrqkErClEsL2OXjc2dIHQPqZBxyAFwAxBjGjNuC1mJ1sOyDeZlHUmYKFT9CP72uwmESXocw5FF7vND+3vk7FWMHWixX85B1Kgu6XAoaxG1tDT8fGhqkuQg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=TpBvhcq0e0QKCHbKp1nIql75IZbIWHuxSSbnqHbX4kM=;
+ b=c44Kv4my60hqA9wa2Q8YkHgEPcawTr4SKjVoCm049mxkzo8t98MsmlL/U6XG2EUZfC3RDjv91X8IdV9VDqubY8UlAksEhM1tb4+HYAentzfv+n7M63kCG3oMqMgYbBWE+zu+BiKvhznmLciP9GB01bcKlTcJthkQ02nR4LSZqpj7UakWMLUevlKkHyMPSN2cfp3efck+DiMtNBvb+L9DabSfmZBHSRRch0RBuBZLomNYlhkt4M8z37jJB9wjFyF1xjHUpRpzX+aE5C+XZM5kqYdmagwpltre/tHlv7XJs1D8TZ/Ffhp5akX6c2H0s7KZCq90M7qnCUqRXhCs0Bfz5g==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=synopsys.com; dmarc=pass action=none header.from=synopsys.com;
+ dkim=pass header.d=synopsys.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=synopsys.onmicrosoft.com; s=selector2-synopsys-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=TpBvhcq0e0QKCHbKp1nIql75IZbIWHuxSSbnqHbX4kM=;
+ b=gU8NPLYybKICL2jPOjbhSqJ7GX7NS00dc1LLOuel2squ1EAkwbUzwhYeJSoTrV8pPQ5ZXn+ClzdYow/yz8lApPYrhodrcG0tbWdgT7tPvKm1sN9KmQCgogmswZ8VfdYmwd/MaCBn6JJK24svGTlov8eR354Y9iXJASgULkMJ7zU=
+Received: from BN8PR12MB3266.namprd12.prod.outlook.com (20.179.67.145) by
+ BN8PR12MB3332.namprd12.prod.outlook.com (20.178.209.138) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.2644.20; Wed, 22 Jan 2020 10:31:36 +0000
+Received: from BN8PR12MB3266.namprd12.prod.outlook.com
+ ([fe80::c62:b247:6963:9da2]) by BN8PR12MB3266.namprd12.prod.outlook.com
+ ([fe80::c62:b247:6963:9da2%6]) with mapi id 15.20.2644.027; Wed, 22 Jan 2020
+ 10:31:35 +0000
+From:   Jose Abreu <Jose.Abreu@synopsys.com>
+To:     Ong Boon Leong <boon.leong.ong@intel.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+CC:     Tan Tee Min <tee.min.tan@intel.com>,
+        Voon Weifeng <weifeng.voon@intel.com>,
+        Giuseppe Cavallaro <peppe.cavallaro@st.com>,
+        Alexandre TORGUE <alexandre.torgue@st.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+        "Joao Pinto" <Joao.Pinto@synopsys.com>,
+        Arnd Bergmann <arnd@arndb.de>,
+        "Alexandru Ardelean" <alexandru.ardelean@analog.com>,
+        "linux-stm32@st-md-mailman.stormreply.com" 
+        <linux-stm32@st-md-mailman.stormreply.com>,
+        "linux-arm-kernel@lists.infradead.org" 
+        <linux-arm-kernel@lists.infradead.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Subject: RE: [PATCH net v3 2/5] net: stmmac: fix incorrect GMAC_VLAN_TAG
+ register writting in GMAC4+
+Thread-Topic: [PATCH net v3 2/5] net: stmmac: fix incorrect GMAC_VLAN_TAG
+ register writting in GMAC4+
+Thread-Index: AQHV0QPeIdIQkFuhA0e0QyofmiZPfqf2e+IA
+Date:   Wed, 22 Jan 2020 10:31:35 +0000
+Message-ID: <BN8PR12MB326699D4E4CD49804F2E5097D30C0@BN8PR12MB3266.namprd12.prod.outlook.com>
+References: <20200122090936.28555-1-boon.leong.ong@intel.com>
+ <20200122090936.28555-3-boon.leong.ong@intel.com>
+In-Reply-To: <20200122090936.28555-3-boon.leong.ong@intel.com>
+Accept-Language: en-US
 Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+authentication-results: spf=none (sender IP is )
+ smtp.mailfrom=joabreu@synopsys.com; 
+x-originating-ip: [83.174.63.141]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: adcf4088-de43-4ba8-97ec-08d79f2641e6
+x-ms-traffictypediagnostic: BN8PR12MB3332:
+x-ms-exchange-transport-forked: True
+x-microsoft-antispam-prvs: <BN8PR12MB3332C4ECB31FA0BECAF5DB08D30C0@BN8PR12MB3332.namprd12.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:6108;
+x-forefront-prvs: 029097202E
+x-forefront-antispam-report: SFV:NSPM;SFS:(10019020)(346002)(39860400002)(396003)(136003)(366004)(376002)(199004)(189003)(6506007)(8676002)(81166006)(81156014)(7696005)(55016002)(66476007)(71200400001)(66556008)(186003)(86362001)(64756008)(26005)(9686003)(478600001)(4326008)(33656002)(66446008)(7416002)(8936002)(66946007)(76116006)(5660300002)(52536014)(54906003)(110136005)(4744005)(2906002)(316002);DIR:OUT;SFP:1102;SCL:1;SRVR:BN8PR12MB3332;H:BN8PR12MB3266.namprd12.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;A:1;MX:1;
+received-spf: None (protection.outlook.com: synopsys.com does not designate
+ permitted sender hosts)
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: kgu80RqPPncafBNpBGXNnH/9+34arbsEKVMdpvkFqS9QS1RD3VY6WoRL29+BaQnI54xJDtrP+w6Smn4W56/zdfWupgt3FsoIkb7kJKzWW3ZD3btnyM1rzd63YTvrwqbmS5mAhrQDvwCi6bHjOKKZq7mJ55W9VyJaIH5JGFx8OHIZyb9Gz9oX7EhpJSDo/cNCMqOPrI8q5XsVUbbpG+tf6Fgc+1OgSoCcgkiYdvshEsR4UpfDGveA3aQuR8tkHElqx40cdYDJP59qn61nfEwMjAQx9FjLGKCbXe8K8kBPU2NulkeWiMBCOCCS110fHqwj5pzqSXwGUa/f/hWwJW3r1TsA+P1ZEPX6ms5umNgdS2HBGMaUgXKaDa/zBTeFNx6GCLoPE+Oibql+5HMzbMOmuXL5ClUQEl3ntU7w2psAKlrquB9CSgq1xiWTlFj80Vmh
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
+MIME-Version: 1.0
+X-MS-Exchange-CrossTenant-Network-Message-Id: adcf4088-de43-4ba8-97ec-08d79f2641e6
+X-MS-Exchange-CrossTenant-originalarrivaltime: 22 Jan 2020 10:31:35.7760
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: c33c9f88-1eb7-4099-9700-16013fd9e8aa
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: SrcGpDgnxDzqFii3kxN/pbL3RyILjBGNy9wzOXuDtczcFu8esfmC6Sk4TPj89DIMiFcgg31cFkZiT3tINBsZRA==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BN8PR12MB3332
+X-OriginatorOrg: synopsys.com
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-this started with 5.4 and happens at least one time afetr reboot, the
-machine cats as router and internal server
+From: Ong Boon Leong <boon.leong.ong@intel.com>
+Date: Jan/22/2020, 09:09:33 (UTC+00:00)
 
-Jan 21 13:43:25 localhost kernel: ------------[ cut here ]------------
-Jan 21 13:43:25 localhost kernel: NETDEV WATCHDOG: lan-pci (r8169):
-transmit queue 0 timed out
-Jan 21 13:43:25 localhost kernel: WARNING: CPU: 6 PID: 0 at
-net/sched/sch_generic.c:447 dev_watchdog+0x248/0x250
-Jan 21 13:43:25 localhost kernel: Modules linked in: tun cls_u32 sch_htb
-bridge stp llc nfnetlink_log xt_NFLOG ipt_REJECT nf_reject_ipv4 xt_limit
-xt_iprange xt_multiport iptable_filter xt_set xt_tcpmss xt_conntrack
-iptable_mangle xt_MASQUERADE xt_nat iptable_nat nf_nat nf_conntrack
-nf_defrag_ipv6 nf_defrag_ipv4 libcrc32c iptable_raw ip_set_hash_net
-ip_set_bitmap_port ip_set nfnetlink i915 intel_rapl_msr
-intel_rapl_common video i2c_algo_bit drm_kms_helper x86_pkg_temp_thermal
-drm r8169 intel_powerclamp i2c_i801 libarc4 wmi_bmof iTCO_wdt
-iTCO_vendor_support gpio_ich e1000e coretemp lpc_ich intel_cstate
-intel_uncore pcspkr intel_rapl_perf ip_tables raid1 crct10dif_pclmul
-crc32_pclmul crc32c_intel ghash_clmulni_intel serio_raw wmi
-Jan 21 13:43:25 localhost kernel: CPU: 6 PID: 0 Comm: swapper/6 Not
-tainted 5.4.12-100.fc30.x86_64 #1
-Jan 21 13:43:25 localhost kernel: Hardware name: Hewlett-Packard HP
-Compaq 8200 Elite CMT PC/1494, BIOS J01 v02.15 11/10/2011
-Jan 21 13:43:25 localhost kernel: RIP: 0010:dev_watchdog+0x248/0x250
-Jan 21 13:43:25 localhost kernel: Code: 85 c0 75 e5 eb 9f 4c 89 ef c6 05
-0d 7b f2 00 01 e8 4d e8 fa ff 44 89 e1 4c 89 ee 48 c7 c7 d0 70 40 9e 48
-89 c2 e8 76 4b 81 ff <0f> 0b eb 80 0f 1f 40 00 66 66 66 66 90 41 57 41
-56 49 89 d6 41 55
-Jan 21 13:43:25 localhost kernel: RSP: 0018:ffffb20c401c0e60 EFLAGS:
-00010286
-Jan 21 13:43:25 localhost kernel: RAX: 0000000000000000 RBX:
-ffff8f71dd775600 RCX: 0000000000000000
-Jan 21 13:43:25 localhost kernel: RDX: ffff8f71e61a57c0 RSI:
-ffff8f71e6197908 RDI: 0000000000000300
-Jan 21 13:43:25 localhost kernel: RBP: ffff8f71e1f9245c R08:
-ffff8f71e6197908 R09: 0000000000000003
-Jan 21 13:43:25 localhost kernel: R10: 0000000000000000 R11:
-0000000000000001 R12: 0000000000000000
-Jan 21 13:43:25 localhost kernel: R13: ffff8f71e1f92000 R14:
-ffff8f71e1f92480 R15: 0000000000000001
-Jan 21 13:43:25 localhost kernel: FS:  0000000000000000(0000)
-GS:ffff8f71e6180000(0000) knlGS:0000000000000000
-Jan 21 13:43:25 localhost kernel: CS:  0010 DS: 0000 ES: 0000 CR0:
-0000000080050033
-Jan 21 13:43:25 localhost kernel: CR2: 00007fe61d76a000 CR3:
-00000000a860a005 CR4: 00000000000606e0
-Jan 21 13:43:25 localhost kernel: Call Trace:
-Jan 21 13:43:25 localhost kernel: <IRQ>
-Jan 21 13:43:25 localhost kernel: ? pfifo_fast_enqueue+0x150/0x150
-Jan 21 13:43:25 localhost kernel: call_timer_fn+0x2d/0x130
-Jan 21 13:43:25 localhost kernel: __run_timers.part.0+0x16f/0x260
-Jan 21 13:43:25 localhost kernel: ? tick_sched_handle+0x22/0x60
-Jan 21 13:43:25 localhost kernel: ? tick_sched_timer+0x38/0x80
-Jan 21 13:43:25 localhost kernel: ? tick_sched_do_timer+0x60/0x60
-Jan 21 13:43:25 localhost kernel: run_timer_softirq+0x26/0x50
-Jan 21 13:43:25 localhost kernel: __do_softirq+0xee/0x2ff
-Jan 21 13:43:25 localhost kernel: irq_exit+0xe9/0xf0
-Jan 21 13:43:25 localhost kernel: smp_apic_timer_interrupt+0x76/0x130
-Jan 21 13:43:25 localhost kernel: apic_timer_interrupt+0xf/0x20
-Jan 21 13:43:25 localhost kernel: </IRQ>
-Jan 21 13:43:25 localhost kernel: RIP: 0010:cpuidle_enter_state+0xc1/0x450
-Jan 21 13:43:25 localhost kernel: Code: 90 31 ff e8 51 6b 90 ff 80 7c 24
-0f 00 74 17 9c 58 66 66 90 66 90 f6 c4 02 0f 85 61 03 00 00 31 ff e8 93
-a3 96 ff fb 66 66 90 <66> 66 90 45 85 e4 0f 88 8c 02 00 00 49 63 cc 4c
-2b 6c 24 10 48 8d
-Jan 21 13:43:25 localhost kernel: RSP: 0018:ffffb20c400abe68 EFLAGS:
-00000246 ORIG_RAX: ffffffffffffff13
-Jan 21 13:43:25 localhost kernel: RAX: ffff8f71e61a89c0 RBX:
-ffffffff9e74a480 RCX: 000000000000001f
-Jan 21 13:43:25 localhost kernel: RDX: 0000000000000000 RSI:
-0000000025bb8b00 RDI: 0000000000000000
-Jan 21 13:43:25 localhost kernel: RBP: ffff8f71e61b2f00 R08:
-000016eebbe8fa2b R09: 000000000000abc0
-Jan 21 13:43:25 localhost kernel: R10: ffff8f71e61a77a0 R11:
-ffff8f71e61a7780 R12: 0000000000000004
-Jan 21 13:43:25 localhost kernel: R13: 000016eebbe8fa2b R14:
-0000000000000004 R15: ffff8f71e5290000
-Jan 21 13:43:25 localhost kernel: ? cpuidle_enter_state+0x9f/0x450
-Jan 21 13:43:25 localhost kernel: cpuidle_enter+0x29/0x40
-Jan 21 13:43:25 localhost kernel: do_idle+0x1dc/0x270
-Jan 21 13:43:25 localhost kernel: cpu_startup_entry+0x19/0x20
-Jan 21 13:43:25 localhost kernel: start_secondary+0x162/0x1b0
-Jan 21 13:43:25 localhost kernel: secondary_startup_64+0xb6/0xc0
-Jan 21 13:43:25 localhost kernel: ---[ end trace efed542e1b43685e ]---
+> It should always do a read of current value of GMAC_VLAN_TAG instead of
+> directly overwriting the register value.
+
+Thanks for adding patch 4/5 but I meant in previous reply that this patch=20
+should also go for XGMAC cores ...
+
+---
+Thanks,
+Jose Miguel Abreu
