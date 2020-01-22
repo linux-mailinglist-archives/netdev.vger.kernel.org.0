@@ -2,80 +2,73 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 774941458CA
-	for <lists+netdev@lfdr.de>; Wed, 22 Jan 2020 16:29:23 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9D5171458E4
+	for <lists+netdev@lfdr.de>; Wed, 22 Jan 2020 16:38:27 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726054AbgAVP3S (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 22 Jan 2020 10:29:18 -0500
-Received: from mail.kernel.org ([198.145.29.99]:60520 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725836AbgAVP3R (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 22 Jan 2020 10:29:17 -0500
-Received: from cakuba (c-73-93-4-247.hsd1.ca.comcast.net [73.93.4.247])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 1160F2071E;
-        Wed, 22 Jan 2020 15:29:17 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1579706957;
-        bh=XkqGwInSEuHlbrqD/5bGG9oHRFoSfMje7fCvTxH8xKQ=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=oyC7CsZrvgv+twcdSYBCHcUcSVl/LJwBtEw3uxIHMIg44c3o/H6SdGorBzI4QoUD2
-         a6Hp/wKySozQUpj3U9+2vZo2/avubqNqcgeD0nycIbLnWBTVXMPllkQ3yg21oVTMqq
-         4v/LHsyEaJY1BroX4U/e+hUepYkSy63hPaSA4mWk=
-Date:   Wed, 22 Jan 2020 07:29:16 -0800
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Paul Blakey <paulb@mellanox.com>
-Cc:     Saeed Mahameed <saeedm@mellanox.com>,
-        Oz Shlomo <ozsh@mellanox.com>,
-        Jakub Kicinski <jakub.kicinski@netronome.com>,
-        Vlad Buslov <vladbu@mellanox.com>,
-        David Miller <davem@davemloft.net>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        Jiri Pirko <jiri@resnulli.us>, Roi Dayan <roid@mellanox.com>
-Subject: Re: [PATCH net-next v2 01/13] net: sched: support skb chain ext in
- tc classification path
-Message-ID: <20200122072916.23fc3416@cakuba>
-In-Reply-To: <1579701178-24624-2-git-send-email-paulb@mellanox.com>
-References: <1579701178-24624-1-git-send-email-paulb@mellanox.com>
-        <1579701178-24624-2-git-send-email-paulb@mellanox.com>
+        id S1727893AbgAVPiX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 22 Jan 2020 10:38:23 -0500
+Received: from lelv0143.ext.ti.com ([198.47.23.248]:34142 "EHLO
+        lelv0143.ext.ti.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725802AbgAVPiM (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 22 Jan 2020 10:38:12 -0500
+Received: from lelv0265.itg.ti.com ([10.180.67.224])
+        by lelv0143.ext.ti.com (8.15.2/8.15.2) with ESMTP id 00MFc64N053401;
+        Wed, 22 Jan 2020 09:38:06 -0600
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
+        s=ti-com-17Q1; t=1579707486;
+        bh=gptPn5JV0Z9r0tllS+JsI3igBFadtomuQS48o3mt75o=;
+        h=From:To:CC:Subject:Date;
+        b=MRr4wQvgeZTvo2zA937SdJ4I1Rur0kKWbAWWDJ3f6R/JFCcVzuxCbGjCOZQFS73pW
+         DJdRitcbHxA8oE8VptSWWfqdMSbAzzGMojvXpUHEizqf+jx7IKWQht3O0pdXxUiZO8
+         lkC1/nxYoXf2Y9UNSFK3weA+dOFh4sCwYPbqEKJw=
+Received: from DLEE114.ent.ti.com (dlee114.ent.ti.com [157.170.170.25])
+        by lelv0265.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 00MFc65d108189
+        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
+        Wed, 22 Jan 2020 09:38:06 -0600
+Received: from DLEE104.ent.ti.com (157.170.170.34) by DLEE114.ent.ti.com
+ (157.170.170.25) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1847.3; Wed, 22
+ Jan 2020 09:38:05 -0600
+Received: from fllv0040.itg.ti.com (10.64.41.20) by DLEE104.ent.ti.com
+ (157.170.170.34) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1847.3 via
+ Frontend Transport; Wed, 22 Jan 2020 09:38:05 -0600
+Received: from localhost (ileax41-snat.itg.ti.com [10.172.224.153])
+        by fllv0040.itg.ti.com (8.15.2/8.15.2) with ESMTP id 00MFc5EU062026;
+        Wed, 22 Jan 2020 09:38:05 -0600
+From:   Dan Murphy <dmurphy@ti.com>
+To:     <andrew@lunn.ch>, <f.fainelli@gmail.com>, <hkallweit1@gmail.com>,
+        <bunk@kernel.org>
+CC:     <netdev@vger.kernel.org>, <devicetree@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>, Dan Murphy <dmurphy@ti.com>
+Subject: [PATCH net-next 0/2] Add PHY IDs for DP83825/6
+Date:   Wed, 22 Jan 2020 09:34:53 -0600
+Message-ID: <20200122153455.8777-1-dmurphy@ti.com>
+X-Mailer: git-send-email 2.25.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 22 Jan 2020 15:52:46 +0200, Paul Blakey wrote:
-> +int tcf_classify_ingress(struct sk_buff *skb,
-> +			 const struct tcf_block *ingress_block,
-> +			 const struct tcf_proto *tp, struct tcf_result *res,
-> +			 bool compat_mode)
-> +{
-> +	const struct tcf_proto *orig_tp = tp;
-> +
-> +#if IS_ENABLED(CONFIG_NET_TC_SKB_EXT)
-> +	{
-> +		struct tc_skb_ext *ext = skb_ext_find(skb, TC_SKB_EXT);
-> +
-> +		if (ext && ext->chain && ingress_block) {
-> +			struct tcf_chain *fchain;
-> +
-> +			fchain = tcf_chain_lookup_rcu(ingress_block,
-> +						      ext->chain);
-> +			if (!fchain)
-> +				return TC_ACT_UNSPEC;
-> +
-> +			tp = rcu_dereference_bh(fchain->filter_chain);
-> +		}
+Hello
 
-Doesn't this skb ext have to be somehow "consumed" by the first lookup?
-What if the skb finds its way to an ingress of another device?
+Adding new PHY IDs for the DP83825 and DP83826 TI Ethernet PHYs to the DP83822
+PHY driver.
 
-> +	}
-> +#endif
-> +
-> +	return tcf_classify(skb, tp, orig_tp, res, compat_mode);
-> +}
-> +EXPORT_SYMBOL(tcf_classify_ingress);
+Dan
+
+Dan Murphy (2):
+  phy: dp83826: Add phy IDs for DP83826N and 826NC
+  net: phy: DP83822: Add support for additional DP83825 devices
+
+ drivers/net/phy/Kconfig   |  5 +++--
+ drivers/net/phy/dp83822.c | 18 ++++++++++++++++--
+ 2 files changed, 19 insertions(+), 4 deletions(-)
+
+-- 
+2.25.0
+
