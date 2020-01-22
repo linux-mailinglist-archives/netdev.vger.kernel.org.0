@@ -2,83 +2,70 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 307571459B2
-	for <lists+netdev@lfdr.de>; Wed, 22 Jan 2020 17:23:08 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 232521459C0
+	for <lists+netdev@lfdr.de>; Wed, 22 Jan 2020 17:24:09 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728609AbgAVQXD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 22 Jan 2020 11:23:03 -0500
-Received: from www62.your-server.de ([213.133.104.62]:38948 "EHLO
-        www62.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726761AbgAVQXB (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 22 Jan 2020 11:23:01 -0500
-Received: from sslproxy05.your-server.de ([78.46.172.2])
-        by www62.your-server.de with esmtpsa (TLSv1.2:DHE-RSA-AES256-GCM-SHA384:256)
-        (Exim 4.89_1)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1iuImN-0007V9-ET; Wed, 22 Jan 2020 17:22:55 +0100
-Received: from [2001:1620:665:0:5795:5b0a:e5d5:5944] (helo=linux-3.fritz.box)
-        by sslproxy05.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1iuImN-000Kpj-1L; Wed, 22 Jan 2020 17:22:55 +0100
-Subject: Re: [PATCH v3] [net]: Fix skb->csum update in
- inet_proto_csum_replace16().
-To:     Florian Westphal <fw@strlen.de>
-Cc:     Praveen Chaudhary <praveen5582@gmail.com>, pablo@netfilter.org,
-        davem@davemloft.net, kadlec@netfilter.org,
-        netfilter-devel@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Zhenggen Xu <zxu@linkedin.com>,
-        Andy Stracner <astracner@linkedin.com>
-References: <1573080729-3102-1-git-send-email-pchaudhary@linkedin.com>
- <1573080729-3102-2-git-send-email-pchaudhary@linkedin.com>
- <16d56ee6-53bc-1124-3700-bc0a78f927d6@iogearbox.net>
- <20200122114333.GQ795@breakpoint.cc>
-From:   Daniel Borkmann <daniel@iogearbox.net>
-Message-ID: <daf995db-37c6-a2f7-4d12-5c1a29e1c59b@iogearbox.net>
-Date:   Wed, 22 Jan 2020 17:22:54 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.7.2
+        id S1726061AbgAVQYC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 22 Jan 2020 11:24:02 -0500
+Received: from mail-il1-f199.google.com ([209.85.166.199]:41450 "EHLO
+        mail-il1-f199.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726081AbgAVQYC (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 22 Jan 2020 11:24:02 -0500
+Received: by mail-il1-f199.google.com with SMTP id k9so110042ili.8
+        for <netdev@vger.kernel.org>; Wed, 22 Jan 2020 08:24:02 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:date:in-reply-to:message-id:subject
+         :from:to;
+        bh=zJCuXAAGGfmdn3xKT3mw1EQTFOCTjnZ0M4GP0MOAhHQ=;
+        b=cHGY/VGQ+yNi+l91n/uSCxO6qHxfxrng2ItWZncbtjQY1PvpJFkcNrR1WuHpX9+xnE
+         DYAlTYTUkZCH5XPq8JXlaWZ9P0KPtpnFScbRcLQDWAj2M/kTk3oxJNluDb359+etvPiE
+         rR6it1vQqWBZ+TXGkDY76zBwu97Lh+a5m46z1Sltp6ddWgedeqPgCgrDRJ2RAFpV+8Zb
+         h3OL/MQbobxKuAZ1Rtd71bK5mrbID8E8eWcvRQYCLzFcjTZY5fBEb5UnbTmAHetelsNv
+         +WaZQY0weJxRPsnSBd0gq3LnfHeIa/W/aJkMWjTPYPRk9rgyUOIG/cTa3eFiieFjigI7
+         8T9A==
+X-Gm-Message-State: APjAAAU0ANex+7vt/ooSvmqV6U8U32rnUQhu3qtRlSNbQuB/zd931B/3
+        qSxnxYRGEtbwRUgd1bP9Tkez226vtJxfqtqipi7Snd+wJ6+7
+X-Google-Smtp-Source: APXvYqyJNUTQllpzChKWI3nNnvCCMcKFDK8FOmsX5mlgK8LQmSBOogF54plRyAyGRd+Lr8Pp2HjGvCwNo5+7ENt5YVZMH92fGi8/
 MIME-Version: 1.0
-In-Reply-To: <20200122114333.GQ795@breakpoint.cc>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-Authenticated-Sender: daniel@iogearbox.net
-X-Virus-Scanned: Clear (ClamAV 0.101.4/25703/Wed Jan 22 12:37:53 2020)
+X-Received: by 2002:a6b:8e47:: with SMTP id q68mr7385399iod.274.1579710241804;
+ Wed, 22 Jan 2020 08:24:01 -0800 (PST)
+Date:   Wed, 22 Jan 2020 08:24:01 -0800
+In-Reply-To: <000000000000b6da7b059c8110c4@google.com>
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <000000000000cf992f059cbcf362@google.com>
+Subject: Re: general protection fault in nf_flow_table_offload_setup
+From:   syzbot <syzbot+e93c1d9ae19a0236289c@syzkaller.appspotmail.com>
+To:     coreteam@netfilter.org, davem@davemloft.net, fw@strlen.de,
+        kadlec@netfilter.org, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org, netfilter-devel@vger.kernel.org,
+        pablo@netfilter.org, syzkaller-bugs@googlegroups.com
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 1/22/20 12:43 PM, Florian Westphal wrote:
-> Daniel Borkmann <daniel@iogearbox.net> wrote:
->>> @@ -449,9 +464,6 @@ void inet_proto_csum_replace16(__sum16 *sum, struct sk_buff *skb,
->>>    	if (skb->ip_summed != CHECKSUM_PARTIAL) {
->>>    		*sum = csum_fold(csum_partial(diff, sizeof(diff),
->>>    				 ~csum_unfold(*sum)));
->>> -		if (skb->ip_summed == CHECKSUM_COMPLETE && pseudohdr)
->>> -			skb->csum = ~csum_partial(diff, sizeof(diff),
->>> -						  ~skb->csum);
->>
->> What is the technical rationale in removing this here but not in any of the
->> other inet_proto_csum_replace*() functions? You changelog has zero analysis
->> on why here but not elsewhere this change would be needed?
-> 
-> Right, I think it could be dropped everywhere BUT there is a major caveat:
-> 
-> At least for the nf_nat case ipv4 header manipulation (which uses the other
-> helpers froum utils.c) will eventually also update iph->checksum field
-> to account for the changed ip addresses.
-> 
-> And that update doesn't touch skb->csum.
-> 
-> So in a way the update of skb->csum in the other helpers indirectly account
-> for later ip header checksum update.
-> 
-> At least that was my conclusion when reviewing the earlier incarnation
-> of the patch.
+syzbot has bisected this bug to:
 
-Mainly asking because not inet_proto_csum_replace16() but the other ones are
-exposed via BPF and they are all in no way fundamentally different to each
-other, but my concern is that depending on how the BPF prog updates the csums
-things could start to break. :/
+commit a7965d58ddab0253ddfae58bd5c7d2de46ef0f76
+Author: Pablo Neira Ayuso <pablo@netfilter.org>
+Date:   Mon Jan 13 18:02:22 2020 +0000
+
+    netfilter: flowtable: add nf_flow_table_offload_cmd()
+
+bisection log:  https://syzkaller.appspot.com/x/bisect.txt?x=17ea59c9e00000
+start commit:   4f2c17e0 Merge branch 'master' of git://git.kernel.org/pub..
+git tree:       net-next
+final crash:    https://syzkaller.appspot.com/x/report.txt?x=141a59c9e00000
+console output: https://syzkaller.appspot.com/x/log.txt?x=101a59c9e00000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=7f93900a7904130d
+dashboard link: https://syzkaller.appspot.com/bug?extid=e93c1d9ae19a0236289c
+syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=166fea6ee00000
+C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=108d6185e00000
+
+Reported-by: syzbot+e93c1d9ae19a0236289c@syzkaller.appspotmail.com
+Fixes: a7965d58ddab ("netfilter: flowtable: add nf_flow_table_offload_cmd()")
+
+For information about bisection process see: https://goo.gl/tpsmEJ#bisection
