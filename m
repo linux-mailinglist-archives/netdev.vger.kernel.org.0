@@ -2,105 +2,123 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id D69D71452C8
-	for <lists+netdev@lfdr.de>; Wed, 22 Jan 2020 11:41:34 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1DACA1452CB
+	for <lists+netdev@lfdr.de>; Wed, 22 Jan 2020 11:42:13 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729299AbgAVKld (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 22 Jan 2020 05:41:33 -0500
-Received: from mail-pl1-f195.google.com ([209.85.214.195]:45555 "EHLO
-        mail-pl1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729095AbgAVKld (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 22 Jan 2020 05:41:33 -0500
-Received: by mail-pl1-f195.google.com with SMTP id b22so2778817pls.12
-        for <netdev@vger.kernel.org>; Wed, 22 Jan 2020 02:41:32 -0800 (PST)
+        id S1728992AbgAVKmL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 22 Jan 2020 05:42:11 -0500
+Received: from mail-wm1-f49.google.com ([209.85.128.49]:37811 "EHLO
+        mail-wm1-f49.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726094AbgAVKmL (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 22 Jan 2020 05:42:11 -0500
+Received: by mail-wm1-f49.google.com with SMTP id f129so6626074wmf.2
+        for <netdev@vger.kernel.org>; Wed, 22 Jan 2020 02:42:09 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=broadcom.com; s=google;
-        h=from:to:cc:subject:date:message-id;
-        bh=dAVnQSTBZvk8T7JsVRXarrGTByGGE+qwObO5zK8rmZA=;
-        b=JEt6Xd+kquRlo7HoIL8TDOFAAlvHDse7O8SK3b5KrfxDowM0XREQSZNmuI5k2rV2Wg
-         GmuT3CPney/IzBpBmRKU8CAnIWWwGmlJvmr6AOnPmlRkwAfqh/0nEWEp/dwLImnLIOkZ
-         Xv20E++DpCC4LXumx1rockm75EssOo5FU6D/M=
+        d=linaro.org; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=AIjdbnwnNK2/SCQ9Jb0UeLy/gm1BfTK32TagA23gRBM=;
+        b=q3mavHJKJ9U+zmc0DpEm++y+hxVFsvaTdPdXAHeWd3O4ptBF+6BkQNsiCWJPFT7tdc
+         99LEpYdoq+xIzCNvxBd40p1q1zonbazDD///GcSRLfsSWpwoToHoMmVftp6tDRQTKHh5
+         kONMu3/8Vocho77+gLZB0V7NTwuiEOt2uVxCz1WBuYNJZDQ4QUDOiyLKs4P9pmoNAH3Q
+         QG83HP5VKToINsrNqN5nydDeQpanrZsFUwHYgEXVAfXsfBO30NRBMIQuazgMJGlim0Se
+         wjAunA0SqSVu+Skbz4KnSsalG4tcRU9sr/84Pj8zqBEui6F19Ai4tA6pjuq/0hXMCKnb
+         JpnQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id;
-        bh=dAVnQSTBZvk8T7JsVRXarrGTByGGE+qwObO5zK8rmZA=;
-        b=Kjpf9Zfyf2GSIkK966cmApZmnSGnqX8rfmI6eU/B7n00BBy8kr03mLrzTFuEaM7WCh
-         MqSzE1f7WMYUKkerVnPqKM68z7n/0pfBJViNyZpCVPTNlGWsdReydUaJ60/CTyiE4vnY
-         JhDbf2r8kfNeuB9iob/dMgz2sZNmt8qKtnTgR6fQCPfQnWAExRaX7Qr6XUYBK1NFW+6A
-         Hmmsq02mk3kEjf32TzSGMTW8sb3OIoiLh9XtwT197ivvl7tjRATfh9pJZd6MHtF6G6S2
-         pQ9vBtufu21WvPT7+VjF3LB62kNGVUpoz5TpePS7fOuf83RM2Vz7Gh/7UPM98wgpJa1V
-         s2zw==
-X-Gm-Message-State: APjAAAXgLtkk7sj9MW0CROz9v6fcrrkf2OGtbmFUdAcTDFEOljL/ojHS
-        4QDbSZTUZHjspnp1QLTcHHWt2Q==
-X-Google-Smtp-Source: APXvYqwAl3mlpm9PPbNTY8Fc+EJwL5lr3C/5EaxRdnuEbGeuNWrbq5sx2ZsLFoIvNxXVxbzTJrfDQQ==
-X-Received: by 2002:a17:902:9009:: with SMTP id a9mr10150394plp.124.1579689692088;
-        Wed, 22 Jan 2020 02:41:32 -0800 (PST)
-Received: from dhcp-10-123-153-81.dhcp.broadcom.net ([192.19.234.250])
-        by smtp.gmail.com with ESMTPSA id r14sm45014321pfh.10.2020.01.22.02.41.29
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Wed, 22 Jan 2020 02:41:31 -0800 (PST)
-From:   Pavan Chebbi <pavan.chebbi@broadcom.com>
-To:     davem@davemloft.net
-Cc:     michael.chan@broadcom.com, vasundhara-v.volam@broadcom.com,
-        netdev@vger.kernel.org, jiri@mellanox.com,
-        Pavan Chebbi <pavan.chebbi@broadcom.com>
-Subject: [PATCH] devlink: Add enable_ecn boolean generic parameter
-Date:   Wed, 22 Jan 2020 16:10:46 +0530
-Message-Id: <1579689646-13123-1-git-send-email-pavan.chebbi@broadcom.com>
-X-Mailer: git-send-email 1.8.3.1
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=AIjdbnwnNK2/SCQ9Jb0UeLy/gm1BfTK32TagA23gRBM=;
+        b=Bq8AIJ7CXgQQsZikChHmCcsnTTyYDTPdIipQhlpjdCkX3h0BEWOkcfjBnGVCwifE2R
+         7ZYErwNydIR1EpvJ9tSW0kneP0BMF/hWWuKzOQv5lV4cMPOPXxE9JWt7wn6xuuUlJl6d
+         MXD4UOc3oKPygAWBo17Prpff8UZbyv9SKFLow+xFMHSQs3MouEXbt+CURKm/e7xVB+a0
+         YluOrmNj6TqBCYMJ43WVa8lqaE2iIJvQbY32ZOS68liBMsRrWgxVukryqBmx2JTaEidf
+         XddEMmq5AWoyFJyhc3l7TQf2qBiOumQ+xTP0b2IWTI8lG99M4kqvIlYqvH3hRlJeX7Ic
+         Rpcw==
+X-Gm-Message-State: APjAAAUmKOy8Bi+FalBznwJzO6I8PXY1wocRuDIY0ynMZhLX+2sxBMd3
+        dcDFUBtCKUtspPX29rPv+mZ1CA==
+X-Google-Smtp-Source: APXvYqyj9ZPe/lVtcUydlXbf8ydHeHX8xKFtEv9XvXQ+CUdOs/fjn3apPMz/aRI5DbdG2VpLcUOGUg==
+X-Received: by 2002:a05:600c:108a:: with SMTP id e10mr2264954wmd.38.1579689728763;
+        Wed, 22 Jan 2020 02:42:08 -0800 (PST)
+Received: from apalos.home (ppp-94-66-201-28.home.otenet.gr. [94.66.201.28])
+        by smtp.gmail.com with ESMTPSA id x16sm3355695wmk.35.2020.01.22.02.42.07
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 22 Jan 2020 02:42:08 -0800 (PST)
+Date:   Wed, 22 Jan 2020 12:42:05 +0200
+From:   Ilias Apalodimas <ilias.apalodimas@linaro.org>
+To:     Jesper Dangaard Brouer <brouer@redhat.com>
+Cc:     Lorenzo Bianconi <lorenzo.bianconi@redhat.com>,
+        Saeed Mahameed <saeedm@mellanox.com>,
+        Matteo Croce <mcroce@redhat.com>,
+        Tariq Toukan <tariqt@mellanox.com>,
+        Toke =?iso-8859-1?Q?H=F8iland-J=F8rgensen?= <toke@redhat.com>,
+        Jonathan Lemon <jonathan.lemon@gmail.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+Subject: Re: Created benchmarks modules for page_pool
+Message-ID: <20200122104205.GA569175@apalos.home>
+References: <20200121170945.41e58f32@carbon>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20200121170945.41e58f32@carbon>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-enable_ecn - Enables Explicit Congestion Notification
-characteristic of the device.
+Hi Jesper, 
 
-Cc: Jiri Pirko <jiri@mellanox.com>
-Signed-off-by: Pavan Chebbi <pavan.chebbi@broadcom.com>
----
- include/net/devlink.h | 4 ++++
- net/core/devlink.c    | 5 +++++
- 2 files changed, 9 insertions(+)
+On Tue, Jan 21, 2020 at 05:09:45PM +0100, Jesper Dangaard Brouer wrote:
+> Hi Ilias and Lorenzo, (Cc others + netdev)
+> 
+> I've created two benchmarks modules for page_pool.
+> 
+> [1] https://github.com/netoptimizer/prototype-kernel/blob/master/kernel/lib/bench_page_pool_simple.c
+> [2] https://github.com/netoptimizer/prototype-kernel/blob/master/kernel/lib/bench_page_pool_cross_cpu.c
+> 
+> I think we/you could actually use this as part of your presentation[3]?
 
-diff --git a/include/net/devlink.h b/include/net/devlink.h
-index 5e46c24..52315dd 100644
---- a/include/net/devlink.h
-+++ b/include/net/devlink.h
-@@ -403,6 +403,7 @@ enum devlink_param_generic_id {
- 	DEVLINK_PARAM_GENERIC_ID_FW_LOAD_POLICY,
- 	DEVLINK_PARAM_GENERIC_ID_RESET_DEV_ON_DRV_PROBE,
- 	DEVLINK_PARAM_GENERIC_ID_ENABLE_ROCE,
-+	DEVLINK_PARAM_GENERIC_ID_ENABLE_ECN,
- 
- 	/* add new param generic ids above here*/
- 	__DEVLINK_PARAM_GENERIC_ID_MAX,
-@@ -440,6 +441,9 @@ enum devlink_param_generic_id {
- #define DEVLINK_PARAM_GENERIC_ENABLE_ROCE_NAME "enable_roce"
- #define DEVLINK_PARAM_GENERIC_ENABLE_ROCE_TYPE DEVLINK_PARAM_TYPE_BOOL
- 
-+#define DEVLINK_PARAM_GENERIC_ENABLE_ECN_NAME "enable_ecn"
-+#define DEVLINK_PARAM_GENERIC_ENABLE_ECN_TYPE DEVLINK_PARAM_TYPE_BOOL
-+
- #define DEVLINK_PARAM_GENERIC(_id, _cmodes, _get, _set, _validate)	\
- {									\
- 	.id = DEVLINK_PARAM_GENERIC_ID_##_id,				\
-diff --git a/net/core/devlink.c b/net/core/devlink.c
-index 64367ee..298dcd1 100644
---- a/net/core/devlink.c
-+++ b/net/core/devlink.c
-@@ -3011,6 +3011,11 @@ static int devlink_nl_cmd_flash_update(struct sk_buff *skb,
- 		.name = DEVLINK_PARAM_GENERIC_ENABLE_ROCE_NAME,
- 		.type = DEVLINK_PARAM_GENERIC_ENABLE_ROCE_TYPE,
- 	},
-+	{
-+		.id = DEVLINK_PARAM_GENERIC_ID_ENABLE_ECN,
-+		.name = DEVLINK_PARAM_GENERIC_ENABLE_ECN_NAME,
-+		.type = DEVLINK_PARAM_GENERIC_ENABLE_ECN_TYPE,
-+	},
- };
- 
- static int devlink_param_generic_verify(const struct devlink_param *param)
--- 
-1.8.3.1
+I think we can mention this as part of the improvements we can offer, alongside
+with native SKB recycling.
 
+> 
+> The first benchmark[1] illustrate/measure what happen when page_pool
+> alloc and free/return happens on the same CPU.  Here there are 3 modes
+> of operations with different performance characteristic.
+> 
+> Fast_path NAPI recycle (XDP_DROP use-case)
+>  - cost per elem: 15 cycles(tsc) 4.437 ns
+> 
+> Recycle via ptr_ring
+>  - cost per elem: 48 cycles(tsc) 13.439 ns
+> 
+> Failed recycle, return to page-allocator
+>  - cost per elem: 256 cycles(tsc) 71.169 ns
+> 
+> 
+> The second benchmark[2] measures what happens cross-CPU.  It is
+> primarily the concurrent return-path that I want to capture. As this
+> is page_pool's weak spot, that we/I need to improve performance of.
+> Hint when SKBs use page_pool return this will happen more often.
+> It is a little more tricky to get proper measurement as we want to
+> observe the case, where return-path isn't stalling/waiting on pages to
+> return.
+> 
+> - 1 CPU returning  , cost per elem: 110 cycles(tsc)   30.709 ns
+> - 2 concurrent CPUs, cost per elem: 989 cycles(tsc)  274.861 ns
+> - 3 concurrent CPUs, cost per elem: 2089 cycles(tsc) 580.530 ns
+> - 4 concurrent CPUs, cost per elem: 2339 cycles(tsc) 649.984 ns
+
+Interesting, i'll try having a look at the code and maybe run then on my armv8
+board.
+
+Thanks!
+/Ilias
+> 
+> [3] https://netdevconf.info/0x14/session.html?tutorial-add-XDP-support-to-a-NIC-driver
+> -- 
+> Best regards,
+>   Jesper Dangaard Brouer
+>   MSc.CS, Principal Kernel Engineer at Red Hat
+>   LinkedIn: http://www.linkedin.com/in/brouer
+> 
