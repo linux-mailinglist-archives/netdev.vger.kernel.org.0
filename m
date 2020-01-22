@@ -2,78 +2,81 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 67199145ABE
-	for <lists+netdev@lfdr.de>; Wed, 22 Jan 2020 18:24:08 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 968A8145AF5
+	for <lists+netdev@lfdr.de>; Wed, 22 Jan 2020 18:40:29 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729019AbgAVRYE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 22 Jan 2020 12:24:04 -0500
-Received: from www62.your-server.de ([213.133.104.62]:50054 "EHLO
-        www62.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725802AbgAVRYE (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 22 Jan 2020 12:24:04 -0500
-Received: from sslproxy03.your-server.de ([88.198.220.132])
-        by www62.your-server.de with esmtpsa (TLSv1.2:DHE-RSA-AES256-GCM-SHA384:256)
-        (Exim 4.89_1)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1iuJjW-0004We-30; Wed, 22 Jan 2020 18:24:02 +0100
-Received: from [2001:1620:665:0:5795:5b0a:e5d5:5944] (helo=linux-3.fritz.box)
-        by sslproxy03.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1iuJjV-000RE1-PV; Wed, 22 Jan 2020 18:24:01 +0100
-Subject: Re: [PATCH v2] bpf: btf: Always output invariant hit in pahole DWARF
- to BTF transform
-To:     Chris Down <chris@chrisdown.name>, bpf@vger.kernel.org,
-        netdev@vger.kernel.org
-Cc:     Stanislav Fomichev <sdf@google.com>,
-        Andrii Nakryiko <andriin@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        linux-kernel@vger.kernel.org, kernel-team@fb.com
-References: <20200122000110.GA310073@chrisdown.name>
-From:   Daniel Borkmann <daniel@iogearbox.net>
-Message-ID: <fcea8bd9-2bea-ddb2-449e-8640e772c487@iogearbox.net>
-Date:   Wed, 22 Jan 2020 18:24:01 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.7.2
+        id S1728709AbgAVRkX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 22 Jan 2020 12:40:23 -0500
+Received: from mail-ed1-f67.google.com ([209.85.208.67]:42179 "EHLO
+        mail-ed1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725802AbgAVRkW (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 22 Jan 2020 12:40:22 -0500
+Received: by mail-ed1-f67.google.com with SMTP id e10so384590edv.9
+        for <netdev@vger.kernel.org>; Wed, 22 Jan 2020 09:40:21 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=yLiFtIkboeeZLFFTLCIQwVHL4bA4hu4oT7Vy4K7O4WY=;
+        b=Jp/ZmEx+sEg/5WZDuoXqtsi0E/D9rIWSaXpd9njf1uoCugDIHOxzwcgzIuJdfCxzG2
+         LkGatrk0FvmQWaFIxFZs4MLhjDZAAgaZ3wh/ZRKVa9niJTgz77oWnpFh3rjL88buDn9e
+         Ik1E8ogtTP/BeD1cgnf706WZd7YXZV4MBqZWZUxTbo0XA/WVQ3/7c57i3rVUxBTub2L8
+         B5oBL3Ok4e4mm6VWu3rhfz9PW6HaFOZTlSc9RUC4tp/83QMlUraThwL8tTVLJENIkKgH
+         YfCsWJTyO3bKHL9ZNz892csvmcc51ySTkTADNLGjVQYdSYbcf/SBCCZMM6Jnx3i2HDqt
+         eucQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=yLiFtIkboeeZLFFTLCIQwVHL4bA4hu4oT7Vy4K7O4WY=;
+        b=s3aNcxdV2Q2dnab2Yc6fggrupDmwBshK6Kky/FEAR4piTVLQlgy9soIZraBldgd2dQ
+         n4ZjP4e2IOy6aeaT3LwiuMwzQbljsg65cdUlPz5WBH3zCsp8+Qj4VJqCEybq4ew4Po/C
+         8bqkIkppqB5sXT0A9LdOCCwQTNhO/DjREyDfJsgpnm0ApgFtYFG3SxyQUMu7QKGLx38b
+         f95oNKQ4zioNu+G+c1FG3F9sCSqn0/kqbrOWeSGtJh4R+/MIlS6mrMdSnMWc12zqWT7L
+         arQE1UvPykbCr2qsilqjNfbdsjg05BBZnvJVnZDx1b7CmD7OK00eeRkfVnzTYo0DeWSn
+         trfw==
+X-Gm-Message-State: APjAAAXB4qehpO3j5VvIbzhBmZYgq2e2ww18fVXopuXGDqjx8KefR2HO
+        vSbWlzTOdFWEEyoPsf8RgOZHL4FhOd0amZFOuBs=
+X-Google-Smtp-Source: APXvYqwphvpvo7oidP4gICHEEh+MHriMzlOAYaRDjZnGA1U5o7kdKcEWqR/Vvv/iQPk3L2ps/RymTsYG//X2VFY74jc=
+X-Received: by 2002:a05:6402:1764:: with SMTP id da4mr3828457edb.24.1579714821250;
+ Wed, 22 Jan 2020 09:40:21 -0800 (PST)
 MIME-Version: 1.0
-In-Reply-To: <20200122000110.GA310073@chrisdown.name>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-Authenticated-Sender: daniel@iogearbox.net
-X-Virus-Scanned: Clear (ClamAV 0.101.4/25703/Wed Jan 22 12:37:53 2020)
+References: <20200122113533.28128-1-gautamramk@gmail.com> <20200122113533.28128-11-gautamramk@gmail.com>
+ <20200122074203.00566700@cakuba>
+In-Reply-To: <20200122074203.00566700@cakuba>
+From:   Gautam Ramakrishnan <gautamramk@gmail.com>
+Date:   Wed, 22 Jan 2020 23:10:10 +0530
+Message-ID: <CADAms0ync3s6sOtH5ywwC6yWAK9P73d6+D+FqhtvUMyBwSVqEQ@mail.gmail.com>
+Subject: Re: [PATCH net-next v6 10/10] net: sched: add Flow Queue PIE packet scheduler
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     Linux Kernel Network Developers <netdev@vger.kernel.org>,
+        "Mohit P. Tahiliani" <tahiliani@nitk.edu.in>,
+        Jamal Hadi Salim <jhs@mojatatu.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Dave Taht <dave.taht@gmail.com>,
+        =?UTF-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <toke@redhat.com>,
+        Stephen Hemminger <stephen@networkplumber.org>,
+        Leslie Monis <lesliemonis@gmail.com>,
+        "Sachin D . Patil" <sdp.sachin@gmail.com>,
+        "V . Saicharan" <vsaicharan1998@gmail.com>,
+        Mohit Bhasi <mohitbhasi1998@gmail.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 1/22/20 1:01 AM, Chris Down wrote:
-> When trying to compile with CONFIG_DEBUG_INFO_BTF enabled, I got this
-> error:
-> 
->      % make -s
->      Failed to generate BTF for vmlinux
->      Try to disable CONFIG_DEBUG_INFO_BTF
->      make[3]: *** [vmlinux] Error 1
-> 
-> Compiling again without -s shows the true error (that pahole is
-> missing), but since this is fatal, we should show the error
-> unconditionally on stderr as well, not silence it using the `info`
-> function. With this patch:
-> 
->      % make -s
->      BTF: .tmp_vmlinux.btf: pahole (pahole) is not available
->      Failed to generate BTF for vmlinux
->      Try to disable CONFIG_DEBUG_INFO_BTF
->      make[3]: *** [vmlinux] Error 1
-> 
-> Signed-off-by: Chris Down <chris@chrisdown.name>
-> Cc: Stanislav Fomichev <sdf@google.com>
-> Cc: Andrii Nakryiko <andriin@fb.com>
-> Cc: John Fastabend <john.fastabend@gmail.com>
-> Cc: linux-kernel@vger.kernel.org
-> Cc: netdev@vger.kernel.org
-> Cc: bpf@vger.kernel.org
-> Cc: kernel-team@fb.com
+On Wed, Jan 22, 2020 at 9:12 PM Jakub Kicinski <kuba@kernel.org> wrote:
+>
+> On Wed, 22 Jan 2020 17:05:33 +0530, gautamramk@gmail.com wrote:
+> > +     err = tcf_block_get(&q->block, &q->filter_list, sch, extack);
+> > +     if (err)
+> > +             goto init_failure;
+>
+> I think you're missing a tcf_block_put() call or equivalent.
+Thanks for pointing it out. I shall make the change and resubmit.
 
-Applied, thanks!
+
+-- 
+-------------
+Gautam |
