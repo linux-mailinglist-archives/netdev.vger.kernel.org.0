@@ -2,36 +2,38 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 55BBD144AB2
-	for <lists+netdev@lfdr.de>; Wed, 22 Jan 2020 05:07:47 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 46008144AB4
+	for <lists+netdev@lfdr.de>; Wed, 22 Jan 2020 05:07:48 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729012AbgAVEHd (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 21 Jan 2020 23:07:33 -0500
-Received: from bilbo.ozlabs.org ([203.11.71.1]:54233 "EHLO ozlabs.org"
+        id S1729076AbgAVEHe (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 21 Jan 2020 23:07:34 -0500
+Received: from ozlabs.org ([203.11.71.1]:45803 "EHLO ozlabs.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727022AbgAVEHc (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 21 Jan 2020 23:07:32 -0500
+        id S1727141AbgAVEHd (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 21 Jan 2020 23:07:33 -0500
 Received: by ozlabs.org (Postfix, from userid 1034)
-        id 482X1G3C2cz9sRR; Wed, 22 Jan 2020 15:07:30 +1100 (AEDT)
+        id 482X1G5HCbz9sRd; Wed, 22 Jan 2020 15:07:30 +1100 (AEDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=ellerman.id.au;
         s=201909; t=1579666050;
-        bh=G7bbOYoKRp6jrs8GgGQz2ON95U4owgnlnz579hK3u2o=;
-        h=From:To:Cc:Subject:Date:From;
-        b=iva23+yXgpPhxd556QpzNZZ+YheLIZT1526j5B6Xr00lqX1DY/UcF1y5QwLPPn1Nq
-         /bM0KMZARUT6MVYuFgJL7fN9GvAbN/S4x5yFX24I2MT0+mVb9JOGIbs+x8szKg6d11
-         XF+S07HUyPH6JC+lQaSM8MQzZzyEmMmeWXvoXbhkG/0zngeCeNnzyV3KfTFjZYrwJj
-         fCn8kGzeCWPu/Rr6TCLRnJ53944/tlpZkTDFyZ3uEqKCBIHxH/PiFOFlvqFgjRXmOA
-         Pf2dRKCaV9rmzMs9JY/pUhHRTpWkr258ul1XfEtFLMkcN6zm4gTHCw1JYWMlgt6yDU
-         HnIIBz0I+A6Zg==
+        bh=iagcn4dvwH0XRZXprwATFUQJb7S42Syhw+4ZaH4ZbW0=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=SnPSq9Yv4SxusxlR0Wyx4BPy/peuvB6oNW9q+mhTISFnQ+DGSPP6ei81tZ4jAi7Sc
+         YHA3BqYtgXuK3HrBOur0WHM2Ig9QmxJgqmMGRhOtOFxf30dbBVPr0SBFs9Epz4Ciql
+         8LzfecaMGBxo9W1ReH+VF6NZDS0YgR8JQ9cdB/wq61chMJhtWs4BX3RdXpny1RXIIg
+         noTX9flkQ5d2eQyqhaA06sBGzCf+mLkjdh4fHbMLwIPa57QHYo17Sza4veBr+LDbdA
+         74BffuJbuScuiMx6Wl+YO0cCRMFEhRNyZTotU/DPYEX7548ZRBqN40LRFnkljNGb7d
+         zGTiNcwh2fvBQ==
 From:   Michael Ellerman <mpe@ellerman.id.au>
 To:     netdev@vger.kernel.org
 Cc:     linux-wireless@vger.kernel.org, kvalo@codeaurora.org,
         davem@davemloft.net, linux-kernel@vger.kernel.org,
         security@kernel.org, ivansprundel@ioactive.com
-Subject: [PATCH 1/2] airo: Fix possible info leak in AIROOLDIOCTL/SIOCDEVPRIVATE
-Date:   Wed, 22 Jan 2020 15:07:27 +1100
-Message-Id: <20200122040728.8437-1-mpe@ellerman.id.au>
+Subject: [PATCH 2/2] airo: Add missing CAP_NET_ADMIN check in AIROOLDIOCTL/SIOCDEVPRIVATE
+Date:   Wed, 22 Jan 2020 15:07:28 +1100
+Message-Id: <20200122040728.8437-2-mpe@ellerman.id.au>
 X-Mailer: git-send-email 2.21.1
+In-Reply-To: <20200122040728.8437-1-mpe@ellerman.id.au>
+References: <20200122040728.8437-1-mpe@ellerman.id.au>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
@@ -43,35 +45,25 @@ The driver for Cisco Aironet 4500 and 4800 series cards (airo.c),
 implements AIROOLDIOCTL/SIOCDEVPRIVATE in airo_ioctl().
 
 The ioctl handler copies an aironet_ioctl struct from userspace, which
-includes a command and a length. Some of the commands are handled in
-readrids(), which kmalloc()'s a buffer of RIDSIZE (2048) bytes.
+includes a command. Some of the commands are handled in readrids(),
+where the user controlled command is converted into a driver-internal
+value called "ridcode".
 
-That buffer is then passed to PC4500_readrid(), which has two cases.
-The else case does some setup and then reads up to RIDSIZE bytes from
-the hardware into the kmalloc()'ed buffer.
+There are two command values, AIROGWEPKTMP and AIROGWEPKNV, which
+correspond to ridcode values of RID_WEP_TEMP and RID_WEP_PERM
+respectively. These commands both have checks that the user has
+CAP_NET_ADMIN, with the comment that "Only super-user can read WEP
+keys", otherwise they return -EPERM.
 
-Here len == RIDSIZE, pBuf is the kmalloc()'ed buffer:
+However there is another command value, AIRORRID, that lets the user
+specify the ridcode value directly, with no other checks. This means
+the user can bypass the CAP_NET_ADMIN check on AIROGWEPKTMP and
+AIROGWEPKNV.
 
-	// read the rid length field
-	bap_read(ai, pBuf, 2, BAP1);
-	// length for remaining part of rid
-	len = min(len, (int)le16_to_cpu(*(__le16*)pBuf)) - 2;
-	...
-	// read remainder of the rid
-	rc = bap_read(ai, ((__le16*)pBuf)+1, len, BAP1);
-
-PC4500_readrid() then returns to readrids() which does:
-
-	len = comp->len;
-	if (copy_to_user(comp->data, iobuf, min(len, (int)RIDSIZE))) {
-
-Where comp->len is the user controlled length field.
-
-So if the "rid length field" returned by the hardware is < 2048, and
-the user requests 2048 bytes in comp->len, we will leak the previous
-contents of the kmalloc()'ed buffer to userspace.
-
-Fix it by kzalloc()'ing the buffer.
+Fix it by moving the CAP_NET_ADMIN check out of the command handling
+and instead do it later based on the ridcode. That way regardless of
+whether the ridcode is set via AIROGWEPKTMP or AIROGWEPKNV, or passed
+in using AIRORID, we always do the CAP_NET_ADMIN check.
 
 Found by Ilja by code inspection, not tested as I don't have the
 required hardware.
@@ -79,22 +71,45 @@ required hardware.
 Reported-by: Ilja Van Sprundel <ivansprundel@ioactive.com>
 Signed-off-by: Michael Ellerman <mpe@ellerman.id.au>
 ---
- drivers/net/wireless/cisco/airo.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/net/wireless/cisco/airo.c | 18 ++++++++----------
+ 1 file changed, 8 insertions(+), 10 deletions(-)
 
 diff --git a/drivers/net/wireless/cisco/airo.c b/drivers/net/wireless/cisco/airo.c
-index f43c06569ea1..d69c2ee7e206 100644
+index d69c2ee7e206..c4c8f1b62e1e 100644
 --- a/drivers/net/wireless/cisco/airo.c
 +++ b/drivers/net/wireless/cisco/airo.c
-@@ -7813,7 +7813,7 @@ static int readrids(struct net_device *dev, aironet_ioctl *comp) {
+@@ -7790,16 +7790,8 @@ static int readrids(struct net_device *dev, aironet_ioctl *comp) {
+ 	case AIROGVLIST:    ridcode = RID_APLIST;       break;
+ 	case AIROGDRVNAM:   ridcode = RID_DRVNAME;      break;
+ 	case AIROGEHTENC:   ridcode = RID_ETHERENCAP;   break;
+-	case AIROGWEPKTMP:  ridcode = RID_WEP_TEMP;
+-		/* Only super-user can read WEP keys */
+-		if (!capable(CAP_NET_ADMIN))
+-			return -EPERM;
+-		break;
+-	case AIROGWEPKNV:   ridcode = RID_WEP_PERM;
+-		/* Only super-user can read WEP keys */
+-		if (!capable(CAP_NET_ADMIN))
+-			return -EPERM;
+-		break;
++	case AIROGWEPKTMP:  ridcode = RID_WEP_TEMP;	break;
++	case AIROGWEPKNV:   ridcode = RID_WEP_PERM;	break;
+ 	case AIROGSTAT:     ridcode = RID_STATUS;       break;
+ 	case AIROGSTATSD32: ridcode = RID_STATSDELTA;   break;
+ 	case AIROGSTATSC32: ridcode = RID_STATS;        break;
+@@ -7813,6 +7805,12 @@ static int readrids(struct net_device *dev, aironet_ioctl *comp) {
  		return -EINVAL;
  	}
  
--	if ((iobuf = kmalloc(RIDSIZE, GFP_KERNEL)) == NULL)
-+	if ((iobuf = kzalloc(RIDSIZE, GFP_KERNEL)) == NULL)
++	if (ridcode == RID_WEP_TEMP || ridcode == RID_WEP_PERM) {
++		/* Only super-user can read WEP keys */
++		if (!capable(CAP_NET_ADMIN))
++			return -EPERM;
++	}
++
+ 	if ((iobuf = kzalloc(RIDSIZE, GFP_KERNEL)) == NULL)
  		return -ENOMEM;
  
- 	PC4500_readrid(ai,ridcode,iobuf,RIDSIZE, 1);
 -- 
 2.21.1
 
