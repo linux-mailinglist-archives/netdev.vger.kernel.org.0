@@ -2,116 +2,124 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id C18C614525F
-	for <lists+netdev@lfdr.de>; Wed, 22 Jan 2020 11:16:55 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D875C145265
+	for <lists+netdev@lfdr.de>; Wed, 22 Jan 2020 11:17:24 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729074AbgAVKQy (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 22 Jan 2020 05:16:54 -0500
-Received: from dispatch1-us1.ppe-hosted.com ([148.163.129.52]:47890 "EHLO
-        dispatch1-us1.ppe-hosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726191AbgAVKQy (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 22 Jan 2020 05:16:54 -0500
-X-Virus-Scanned: Proofpoint Essentials engine
-Received: from webmail.solarflare.com (uk.solarflare.com [193.34.186.16])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mx1-us3.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTPS id 4802E48005F;
-        Wed, 22 Jan 2020 10:16:52 +0000 (UTC)
-Received: from [10.17.20.203] (10.17.20.203) by ukex01.SolarFlarecom.com
- (10.17.10.4) with Microsoft SMTP Server (TLS) id 15.0.1395.4; Wed, 22 Jan
- 2020 10:16:45 +0000
-Subject: Re: [PATCH net v2] net: Fix packet reordering caused by GRO and
- listified RX cooperation
-To:     Maxim Mikityanskiy <maximmi@mellanox.com>,
-        Alexander Lobakin <alobakin@dlink.ru>,
-        Saeed Mahameed <saeedm@mellanox.com>
-CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Johannes Berg <johannes.berg@intel.com>,
-        "Emmanuel Grumbach" <emmanuel.grumbach@intel.com>,
-        Luca Coelho <luciano.coelho@intel.com>,
-        Tariq Toukan <tariqt@mellanox.com>,
-        Jiri Pirko <jiri@mellanox.com>,
-        Eric Dumazet <edumazet@google.com>
-References: <20200121150917.6279-1-maximmi@mellanox.com>
-From:   Edward Cree <ecree@solarflare.com>
-Message-ID: <df97177e-0b73-8173-584a-54643c6cac6f@solarflare.com>
-Date:   Wed, 22 Jan 2020 10:16:41 +0000
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.2.2
+        id S1729273AbgAVKRO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 22 Jan 2020 05:17:14 -0500
+Received: from www62.your-server.de ([213.133.104.62]:50544 "EHLO
+        www62.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726191AbgAVKRO (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 22 Jan 2020 05:17:14 -0500
+Received: from sslproxy03.your-server.de ([88.198.220.132])
+        by www62.your-server.de with esmtpsa (TLSv1.2:DHE-RSA-AES256-GCM-SHA384:256)
+        (Exim 4.89_1)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1iuD4J-00074X-Mm; Wed, 22 Jan 2020 11:17:03 +0100
+Received: from [2001:1620:665:0:5795:5b0a:e5d5:5944] (helo=linux-3.fritz.box)
+        by sslproxy03.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1iuD4J-000GIS-BX; Wed, 22 Jan 2020 11:17:03 +0100
+Subject: Re: [PATCH v3] [net]: Fix skb->csum update in
+ inet_proto_csum_replace16().
+To:     Praveen Chaudhary <praveen5582@gmail.com>, fw@strlen.de,
+        pablo@netfilter.org, davem@davemloft.net, kadlec@netfilter.org,
+        netfilter-devel@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Cc:     Zhenggen Xu <zxu@linkedin.com>,
+        Andy Stracner <astracner@linkedin.com>
+References: <1573080729-3102-1-git-send-email-pchaudhary@linkedin.com>
+ <1573080729-3102-2-git-send-email-pchaudhary@linkedin.com>
+From:   Daniel Borkmann <daniel@iogearbox.net>
+Message-ID: <16d56ee6-53bc-1124-3700-bc0a78f927d6@iogearbox.net>
+Date:   Wed, 22 Jan 2020 11:17:02 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.7.2
 MIME-Version: 1.0
-In-Reply-To: <20200121150917.6279-1-maximmi@mellanox.com>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-Content-Language: en-GB
-X-Originating-IP: [10.17.20.203]
-X-ClientProxiedBy: ocex03.SolarFlarecom.com (10.20.40.36) To
- ukex01.SolarFlarecom.com (10.17.10.4)
-X-TM-AS-Product-Ver: SMEX-12.5.0.1300-8.5.1010-25182.003
-X-TM-AS-Result: No-9.683200-8.000000-10
-X-TMASE-MatchedRID: UuaOI1zLN1j4ECMHJTM/ufZvT2zYoYOwC/ExpXrHizwZFDQxUvPcmHHU
-        HCqTYbHtYAIccCx167ZNO6zg+DuNub0kF91WvsxyHC7hAz/oKnIGchEhVwJY3+/B4+w4rEIoXbc
-        3p8FzfQ9ptlksWquS/bmfJmowNGYSiMZbbAaMrx6a+cpJvTbSHOdppbZRNp/ISg8ufp5n3T7Ljq
-        rNNKG3t2CgtpuqkYfNslpqQqeaW5whI43itsPGuSD3NF+wUeO9fglgnB0nDhOExk6c4qzx8ognL
-        dHU7oiOj7s+B55MfTuk0VYTefV9UGThjzEdM4lcoxjrap5AGQs5iooXtStiHlAoBBK61BhcWl4l
-        rHxOiZQGS8HOsupFLgN9nYxBzliar78SC5iivxyDGx/OQ1GV8rHlqZYrZqdI+gtHj7OwNO2+Szu
-        wiNJ7e7BpPzUcDsR0bcSd9+Q1VxCPGv3NCL5uToTfQzyJaFyAVlxr1FJij9s=
-X-TM-AS-User-Approved-Sender: Yes
-X-TM-AS-User-Blocked-Sender: No
-X-TMASE-Result: 10--9.683200-8.000000
-X-TMASE-Version: SMEX-12.5.0.1300-8.5.1010-25182.003
-X-MDID: 1579688213-wsPgfQ1bjfxL
+In-Reply-To: <1573080729-3102-2-git-send-email-pchaudhary@linkedin.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-Authenticated-Sender: daniel@iogearbox.net
+X-Virus-Scanned: Clear (ClamAV 0.101.4/25702/Tue Jan 21 12:39:19 2020)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 21/01/2020 15:09, Maxim Mikityanskiy wrote:
-> Commit 323ebb61e32b ("net: use listified RX for handling GRO_NORMAL
-> skbs") introduces batching of GRO_NORMAL packets in napi_frags_finish,
-> and commit 6570bc79c0df ("net: core: use listified Rx for GRO_NORMAL in
-> napi_gro_receive()") adds the same to napi_skb_finish. However,
-> dev_gro_receive (that is called just before napi_{frags,skb}_finish) can
-> also pass skbs to the networking stack: e.g., when the GRO session is
-> flushed, napi_gro_complete is called, which passes pp directly to
-> netif_receive_skb_internal, skipping napi->rx_list. It means that the
-> packet stored in pp will be handled by the stack earlier than the
-> packets that arrived before, but are still waiting in napi->rx_list. It
-> leads to TCP reorderings that can be observed in the TCPOFOQueue counter
-> in netstat.
->
-> This commit fixes the reordering issue by making napi_gro_complete also
-> use napi->rx_list, so that all packets going through GRO will keep their
-> order. In order to keep napi_gro_flush working properly, gro_normal_list
-> calls are moved after the flush to clear napi->rx_list.
->
-> iwlwifi calls napi_gro_flush directly and does the same thing that is
-> done by gro_normal_list, so the same change is applied there:
-> napi_gro_flush is moved to be before the flush of napi->rx_list.
->
-> A few other drivers also use napi_gro_flush (brocade/bna/bnad.c,
-> cortina/gemini.c, hisilicon/hns3/hns3_enet.c). The first two also use
-> napi_complete_done afterwards, which performs the gro_normal_list flush,
-> so they are fine. The latter calls napi_gro_receive right after
-> napi_gro_flush, so it can end up with non-empty napi->rx_list anyway.
->
-> Fixes: 323ebb61e32b ("net: use listified RX for handling GRO_NORMAL skbs")
-> Signed-off-by: Maxim Mikityanskiy <maximmi@mellanox.com>
-> Cc: Alexander Lobakin <alobakin@dlink.ru>
-> Cc: Edward Cree <ecree@solarflare.com>
+On 11/6/19 11:52 PM, Praveen Chaudhary wrote:
+> skb->csum is updated incorrectly, when manipulation for NF_NAT_MANIP_SRC\DST
+> is done on IPV6 packet.
+> 
+> Fix:
+> No need to update skb->csum in function inet_proto_csum_replace16(), even if
+> skb->ip_summed == CHECKSUM_COMPLETE, because change in L4 header checksum field
+> and change in IPV6 header cancels each other for skb->csum calculation.
+> 
+> Signed-off-by: Praveen Chaudhary <pchaudhary@linkedin.com>
+> Signed-off-by: Zhenggen Xu <zxu@linkedin.com>
+> Signed-off-by: Andy Stracner <astracner@linkedin.com>
+> 
+> Reviewed-by: Florian Westphal <fw@strlen.de>
 > ---
-> v2 changes:
->
-> Flush napi->rx_list after napi_gro_flush, not before. Do it in iwlwifi
-> as well.
-I believe David prefers for patch change logs to go in the commit message,
- not below the line.
-> Please also pay attention that there is gro_flush_oldest that also calls
-> napi_gro_complete and DOESN'T do gro_normal_list to flush napi->rx_list.
-> I guess, it's not required in this flow, but if I'm wrong, please tell
-> me.
->
->  drivers/net/wireless/intel/iwlwifi/pcie/rx.c |  4 +-
->  net/core/dev.c                               | 64 ++++++++++----------
->  2 files changed, 35 insertions(+), 33 deletions(-)
-Acked-by: Edward Cree <ecree@solarflare.com>
+> Changes in V2.
+> 1.) Updating diff as per email discussion with Florian Westphal.
+>      Since inet_proto_csum_replace16() does incorrect calculation
+>      for skb->csum in all cases.
+> 2.) Change in Commmit logs.
+> ---
+> 
+> ---
+> Changes in V3.
+> Addressing Pablo`s Suggesion.
+> 1.) Updated Subject and description
+> 2.) Added full documentation of function.
+> ---
+> ---
+>   net/core/utils.c | 18 +++++++++++++++---
+>   1 file changed, 15 insertions(+), 3 deletions(-)
+> 
+> diff --git a/net/core/utils.c b/net/core/utils.c
+> index 6b6e51d..af3b5cb 100644
+> --- a/net/core/utils.c
+> +++ b/net/core/utils.c
+> @@ -438,6 +438,21 @@ void inet_proto_csum_replace4(__sum16 *sum, struct sk_buff *skb,
+>   }
+>   EXPORT_SYMBOL(inet_proto_csum_replace4);
+>   
+> +/**
+> + * inet_proto_csum_replace16 - update L4 header checksum field as per the
+> + * update in IPv6 Header. Note, there is no need to update skb->csum in this
+> + * function, even if skb->ip_summed == CHECKSUM_COMPLETE, because change in L4
+> + * header checksum field and change in IPV6 header cancels each other for
+> + * skb->csum calculation.
+> + *
+> + * @sum: L4 header checksum field
+> + * @skb: sk_buff for the packet
+> + * @from: old IPv6 address
+> + * @to: new IPv6 address
+> + * @pseudohdr: True if L4 header checksum includes pseudoheader
+> + *
+> + * Return void
+> + */
+>   void inet_proto_csum_replace16(__sum16 *sum, struct sk_buff *skb,
+>   			       const __be32 *from, const __be32 *to,
+>   			       bool pseudohdr)
+> @@ -449,9 +464,6 @@ void inet_proto_csum_replace16(__sum16 *sum, struct sk_buff *skb,
+>   	if (skb->ip_summed != CHECKSUM_PARTIAL) {
+>   		*sum = csum_fold(csum_partial(diff, sizeof(diff),
+>   				 ~csum_unfold(*sum)));
+> -		if (skb->ip_summed == CHECKSUM_COMPLETE && pseudohdr)
+> -			skb->csum = ~csum_partial(diff, sizeof(diff),
+> -						  ~skb->csum);
+
+What is the technical rationale in removing this here but not in any of the
+other inet_proto_csum_replace*() functions? You changelog has zero analysis
+on why here but not elsewhere this change would be needed?
+
+>   	} else if (pseudohdr)
+>   		*sum = ~csum_fold(csum_partial(diff, sizeof(diff),
+>   				  csum_unfold(*sum)));
+> 
+
