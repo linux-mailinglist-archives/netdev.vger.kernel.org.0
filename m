@@ -2,722 +2,231 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 5C524144BDF
-	for <lists+netdev@lfdr.de>; Wed, 22 Jan 2020 07:42:27 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 72B91144BF2
+	for <lists+netdev@lfdr.de>; Wed, 22 Jan 2020 07:48:28 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1725911AbgAVGmS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 22 Jan 2020 01:42:18 -0500
-Received: from mx0a-00082601.pphosted.com ([67.231.145.42]:24454 "EHLO
-        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1725862AbgAVGmR (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 22 Jan 2020 01:42:17 -0500
-Received: from pps.filterd (m0109333.ppops.net [127.0.0.1])
-        by mx0a-00082601.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 00M6aPTe007084
-        for <netdev@vger.kernel.org>; Tue, 21 Jan 2020 22:42:16 -0800
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
- : date : message-id : in-reply-to : references : mime-version :
- content-type; s=facebook; bh=HTRLJ+PrUgMBelCyPyHm1CaKctQcIV4b26TZV4mTUFU=;
- b=kbOFHhS0XIpvBAqYYeCfrAFBKmv2Tueq7N81ao8r4rQOaqSPXN8QGSz4zNt14dTu4q2q
- 1Yt6fYuAw8scrm7qNdmMXFXqjUEIQ3hfbKCJbn7Dd7YByperr05tUtUoLiuZ5eA3e+M2
- +6OQV6NzlBgc0sLQau1CpZpF0AFDSatEj98= 
-Received: from maileast.thefacebook.com ([163.114.130.16])
-        by mx0a-00082601.pphosted.com with ESMTP id 2xp9a4ssfn-5
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT)
-        for <netdev@vger.kernel.org>; Tue, 21 Jan 2020 22:42:15 -0800
-Received: from intmgw004.06.prn3.facebook.com (2620:10d:c0a8:1b::d) by
- mail.thefacebook.com (2620:10d:c0a8:83::4) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.1779.2; Tue, 21 Jan 2020 22:42:14 -0800
-Received: by devbig005.ftw2.facebook.com (Postfix, from userid 6611)
-        id 097B82944F3E; Tue, 21 Jan 2020 22:42:11 -0800 (PST)
-Smtp-Origin-Hostprefix: devbig
-From:   Martin KaFai Lau <kafai@fb.com>
-Smtp-Origin-Hostname: devbig005.ftw2.facebook.com
-To:     <bpf@vger.kernel.org>
-CC:     Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        David Miller <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>, <kernel-team@fb.com>,
-        <netdev@vger.kernel.org>
-Smtp-Origin-Cluster: ftw2c04
-Subject: [PATCH v2 bpf-next 3/3] bpf: tcp: Add bpf_cubic example
-Date:   Tue, 21 Jan 2020 22:42:10 -0800
-Message-ID: <20200122064210.1834848-1-kafai@fb.com>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20200122064152.1833564-1-kafai@fb.com>
-References: <20200122064152.1833564-1-kafai@fb.com>
-X-FB-Internal: Safe
-MIME-Version: 1.0
-Content-Type: text/plain
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.138,18.0.572
- definitions=2020-01-17_05:2020-01-16,2020-01-17 signatures=0
-X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 spamscore=0
- priorityscore=1501 impostorscore=0 lowpriorityscore=0 bulkscore=0
- mlxlogscore=999 mlxscore=0 phishscore=0 clxscore=1015 suspectscore=13
- adultscore=0 malwarescore=0 classifier=spam adjust=0 reason=mlx
- scancount=1 engine=8.12.0-1910280000 definitions=main-2001220059
-X-FB-Internal: deliver
+        id S1726234AbgAVGsQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 22 Jan 2020 01:48:16 -0500
+Received: from mail-qv1-f74.google.com ([209.85.219.74]:36582 "EHLO
+        mail-qv1-f74.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725884AbgAVGsO (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 22 Jan 2020 01:48:14 -0500
+Received: by mail-qv1-f74.google.com with SMTP id di5so3306286qvb.3
+        for <netdev@vger.kernel.org>; Tue, 21 Jan 2020 22:48:13 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20161025;
+        h=date:message-id:mime-version:subject:from:to:cc;
+        bh=iH5+h48UBSmXocaCPt5407yjYUbPsm8qgVvL4/WTOXE=;
+        b=owthOAXy8cJ3rV3RcXaf2E295m1e3GFwFOvLaOVD0pUtA5LiCmBNUYhgMT1/OD6cyT
+         3byZfoAWp2QwHBBpxF2eXxylJMLzCLbWjY7l9ZrzwhyVMQwHRrG1gdGAEX3rAEiXM4Fp
+         iS7CyWzEdYqgbu2Gk47ADB3umQnLFi8/Qb8leBh6OukagBmWz+q8RMA4mDCnJm+y9R0e
+         VJyHx5dXISfkeR56A6PvWfOumPIV5l+mC5IWVMZN+thVHCICXjhufvm0B4o34jH6daYe
+         jDoR1nJpED5ppFJP02fbPvKtW3BKa1TDpIUkwoii6oiqTXip+Y2k79T4Afl4a/6oZfQI
+         AYSQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:message-id:mime-version:subject:from:to:cc;
+        bh=iH5+h48UBSmXocaCPt5407yjYUbPsm8qgVvL4/WTOXE=;
+        b=GRJmOylpmV1EyQfRgDqpzjmOgk+4brqixJ5oz/fyKqhLCSo+VK24L7jdIlE4UG5gop
+         wFtmJYbSMXH90tTvvv3zYazHrASmpI2/UJCpObS6mmapXhp/tUaL+OJk1R06ddIH2ZVB
+         xvNZJVLEofCbtXodRJGtvlujoctv3ObQzW5h0R82+Xwd+nY5I1thJgCpqgg+sj5s4JgY
+         IVU1xggFagyWCS1ZGzfx0SDi7OSZIZqgVqFnWFrBpktnLOPLXDBfaiKSLCG3bf6125dF
+         1fq1mypzCUt32VLW7yWariMEJKwHMZDw98q1bJO+km9Ile8I8Lm1XDnnEnRx6b3EYnxh
+         +j5g==
+X-Gm-Message-State: APjAAAXlaIWReOeK/VM6HcnWcj96HJVC+lp0hSYzgcASRFASlXtkygXh
+        Lnx91blpxBa5sF9W2FMKFs+moTdQVJPZSw==
+X-Google-Smtp-Source: APXvYqz66fokxmATyWNhdqxg4vdXPf06uhLXUp372+8lyQ98PJKa/K5iqrs9s5QGA4PPuZKIGmWHV3H+vou/kw==
+X-Received: by 2002:a05:620a:16bb:: with SMTP id s27mr8983621qkj.368.1579675692799;
+ Tue, 21 Jan 2020 22:48:12 -0800 (PST)
+Date:   Tue, 21 Jan 2020 22:47:29 -0800
+Message-Id: <20200122064729.117730-1-edumazet@google.com>
+Mime-Version: 1.0
+X-Mailer: git-send-email 2.25.0.341.g760bfbb309-goog
+Subject: [PATCH net] net: rtnetlink: validate IFLA_MTU attribute in rtnl_create_link()
+From:   Eric Dumazet <edumazet@google.com>
+To:     "David S . Miller" <davem@davemloft.net>
+Cc:     netdev <netdev@vger.kernel.org>,
+        Eric Dumazet <edumazet@google.com>,
+        Eric Dumazet <eric.dumazet@gmail.com>,
+        syzbot <syzkaller@googlegroups.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This patch adds a bpf_cubic example.  Some highlights:
-1. CONFIG_HZ .kconfig map is used.
-2. In bictcp_update(), calculation is changed to use usec
-   resolution (i.e. USEC_PER_JIFFY) instead of using jiffies.
-   Thus, usecs_to_jiffies() is not used in the bpf_cubic.c.
-3. In bitctcp_update() [under tcp_friendliness], the original
-   "while (ca->ack_cnt > delta)" loop is changed to the equivalent
-   "ca->ack_cnt / delta" operation.
+rtnl_create_link() needs to apply dev->min_mtu and dev->max_mtu
+checks that we apply in do_setlink()
 
-Signed-off-by: Martin KaFai Lau <kafai@fb.com>
+Otherwise malicious users can crash the kernel, for example after
+an integer overflow :
+
+BUG: KASAN: use-after-free in memset include/linux/string.h:365 [inline]
+BUG: KASAN: use-after-free in __alloc_skb+0x37b/0x5e0 net/core/skbuff.c:238
+Write of size 32 at addr ffff88819f20b9c0 by task swapper/0/0
+
+CPU: 0 PID: 0 Comm: swapper/0 Not tainted 5.5.0-rc1-syzkaller #0
+Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
+Call Trace:
+ <IRQ>
+ __dump_stack lib/dump_stack.c:77 [inline]
+ dump_stack+0x197/0x210 lib/dump_stack.c:118
+ print_address_description.constprop.0.cold+0xd4/0x30b mm/kasan/report.c:374
+ __kasan_report.cold+0x1b/0x41 mm/kasan/report.c:506
+ kasan_report+0x12/0x20 mm/kasan/common.c:639
+ check_memory_region_inline mm/kasan/generic.c:185 [inline]
+ check_memory_region+0x134/0x1a0 mm/kasan/generic.c:192
+ memset+0x24/0x40 mm/kasan/common.c:108
+ memset include/linux/string.h:365 [inline]
+ __alloc_skb+0x37b/0x5e0 net/core/skbuff.c:238
+ alloc_skb include/linux/skbuff.h:1049 [inline]
+ alloc_skb_with_frags+0x93/0x590 net/core/skbuff.c:5664
+ sock_alloc_send_pskb+0x7ad/0x920 net/core/sock.c:2242
+ sock_alloc_send_skb+0x32/0x40 net/core/sock.c:2259
+ mld_newpack+0x1d7/0x7f0 net/ipv6/mcast.c:1609
+ add_grhead.isra.0+0x299/0x370 net/ipv6/mcast.c:1713
+ add_grec+0x7db/0x10b0 net/ipv6/mcast.c:1844
+ mld_send_cr net/ipv6/mcast.c:1970 [inline]
+ mld_ifc_timer_expire+0x3d3/0x950 net/ipv6/mcast.c:2477
+ call_timer_fn+0x1ac/0x780 kernel/time/timer.c:1404
+ expire_timers kernel/time/timer.c:1449 [inline]
+ __run_timers kernel/time/timer.c:1773 [inline]
+ __run_timers kernel/time/timer.c:1740 [inline]
+ run_timer_softirq+0x6c3/0x1790 kernel/time/timer.c:1786
+ __do_softirq+0x262/0x98c kernel/softirq.c:292
+ invoke_softirq kernel/softirq.c:373 [inline]
+ irq_exit+0x19b/0x1e0 kernel/softirq.c:413
+ exiting_irq arch/x86/include/asm/apic.h:536 [inline]
+ smp_apic_timer_interrupt+0x1a3/0x610 arch/x86/kernel/apic/apic.c:1137
+ apic_timer_interrupt+0xf/0x20 arch/x86/entry/entry_64.S:829
+ </IRQ>
+RIP: 0010:native_safe_halt+0xe/0x10 arch/x86/include/asm/irqflags.h:61
+Code: 98 6b ea f9 eb 8a cc cc cc cc cc cc e9 07 00 00 00 0f 00 2d 44 1c 60 00 f4 c3 66 90 e9 07 00 00 00 0f 00 2d 34 1c 60 00 fb f4 <c3> cc 55 48 89 e5 41 57 41 56 41 55 41 54 53 e8 4e 5d 9a f9 e8 79
+RSP: 0018:ffffffff89807ce8 EFLAGS: 00000286 ORIG_RAX: ffffffffffffff13
+RAX: 1ffffffff13266ae RBX: ffffffff8987a1c0 RCX: 0000000000000000
+RDX: dffffc0000000000 RSI: 0000000000000006 RDI: ffffffff8987aa54
+RBP: ffffffff89807d18 R08: ffffffff8987a1c0 R09: 0000000000000000
+R10: 0000000000000000 R11: 0000000000000000 R12: dffffc0000000000
+R13: ffffffff8a799980 R14: 0000000000000000 R15: 0000000000000000
+ arch_cpu_idle+0xa/0x10 arch/x86/kernel/process.c:690
+ default_idle_call+0x84/0xb0 kernel/sched/idle.c:94
+ cpuidle_idle_call kernel/sched/idle.c:154 [inline]
+ do_idle+0x3c8/0x6e0 kernel/sched/idle.c:269
+ cpu_startup_entry+0x1b/0x20 kernel/sched/idle.c:361
+ rest_init+0x23b/0x371 init/main.c:451
+ arch_call_rest_init+0xe/0x1b
+ start_kernel+0x904/0x943 init/main.c:784
+ x86_64_start_reservations+0x29/0x2b arch/x86/kernel/head64.c:490
+ x86_64_start_kernel+0x77/0x7b arch/x86/kernel/head64.c:471
+ secondary_startup_64+0xa4/0xb0 arch/x86/kernel/head_64.S:242
+
+The buggy address belongs to the page:
+page:ffffea00067c82c0 refcount:0 mapcount:0 mapping:0000000000000000 index:0x0
+raw: 057ffe0000000000 ffffea00067c82c8 ffffea00067c82c8 0000000000000000
+raw: 0000000000000000 0000000000000000 00000000ffffffff 0000000000000000
+page dumped because: kasan: bad access detected
+
+Memory state around the buggy address:
+ ffff88819f20b880: ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff
+ ffff88819f20b900: ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff
+>ffff88819f20b980: ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff
+                                           ^
+ ffff88819f20ba00: ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff
+ ffff88819f20ba80: ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff
+
+Fixes: 61e84623ace3 ("net: centralize net_device min/max MTU checking")
+Signed-off-by: Eric Dumazet <edumazet@google.com>
+Reported-by: syzbot <syzkaller@googlegroups.com>
 ---
- tools/testing/selftests/bpf/bpf_tcp_helpers.h |  16 +
- .../selftests/bpf/prog_tests/bpf_tcp_ca.c     |  25 +
- tools/testing/selftests/bpf/progs/bpf_cubic.c | 544 ++++++++++++++++++
- 3 files changed, 585 insertions(+)
- create mode 100644 tools/testing/selftests/bpf/progs/bpf_cubic.c
+ include/linux/netdevice.h |  2 ++
+ net/core/dev.c            | 29 +++++++++++++++++++----------
+ net/core/rtnetlink.c      | 13 +++++++++++--
+ 3 files changed, 32 insertions(+), 12 deletions(-)
 
-diff --git a/tools/testing/selftests/bpf/bpf_tcp_helpers.h b/tools/testing/selftests/bpf/bpf_tcp_helpers.h
-index 6fee732f0297..8f21965ffc6c 100644
---- a/tools/testing/selftests/bpf/bpf_tcp_helpers.h
-+++ b/tools/testing/selftests/bpf/bpf_tcp_helpers.h
-@@ -6,13 +6,28 @@
- #include <linux/types.h>
- #include <bpf/bpf_helpers.h>
- #include <bpf/bpf_core_read.h>
-+#include "bpf_trace_helpers.h"
-+
-+#define BPF_STRUCT_OPS(name, args...) \
-+SEC("struct_ops/"#name) \
-+BPF_PROG(name, args)
-+
-+#define tcp_jiffies32 ((__u32)bpf_jiffies64())
- 
- struct sock_common {
- 	unsigned char	skc_state;
- } __attribute__((preserve_access_index));
- 
-+enum sk_pacing {
-+	SK_PACING_NONE		= 0,
-+	SK_PACING_NEEDED	= 1,
-+	SK_PACING_FQ		= 2,
-+};
-+
- struct sock {
- 	struct sock_common	__sk_common;
-+	unsigned long		sk_pacing_rate;
-+	__u32			sk_pacing_status; /* see enum sk_pacing */
- } __attribute__((preserve_access_index));
- 
- struct inet_sock {
-@@ -54,6 +69,7 @@ struct tcp_sock {
- 	__u32	max_packets_out;
- 	__u32	lsndtime;
- 	__u32	prior_cwnd;
-+	__u64	tcp_mstamp;	/* most recent packet received/sent */
- } __attribute__((preserve_access_index));
- 
- static __always_inline struct inet_connection_sock *inet_csk(const struct sock *sk)
-diff --git a/tools/testing/selftests/bpf/prog_tests/bpf_tcp_ca.c b/tools/testing/selftests/bpf/prog_tests/bpf_tcp_ca.c
-index 517318f05b1d..8482bbc67eec 100644
---- a/tools/testing/selftests/bpf/prog_tests/bpf_tcp_ca.c
-+++ b/tools/testing/selftests/bpf/prog_tests/bpf_tcp_ca.c
-@@ -4,6 +4,7 @@
- #include <linux/err.h>
- #include <test_progs.h>
- #include "bpf_dctcp.skel.h"
-+#include "bpf_cubic.skel.h"
- 
- #define min(a, b) ((a) < (b) ? (a) : (b))
- 
-@@ -158,6 +159,28 @@ static void do_test(const char *tcp_ca)
- 	close(fd);
+diff --git a/include/linux/netdevice.h b/include/linux/netdevice.h
+index ae5e260911e289a2f9b20db71268ac0a0755f9fc..cac56fb59af85cf25c3e3b3e18faae58248c801d 100644
+--- a/include/linux/netdevice.h
++++ b/include/linux/netdevice.h
+@@ -3698,6 +3698,8 @@ int dev_set_alias(struct net_device *, const char *, size_t);
+ int dev_get_alias(const struct net_device *, char *, size_t);
+ int dev_change_net_namespace(struct net_device *, struct net *, const char *);
+ int __dev_set_mtu(struct net_device *, int);
++int dev_validate_mtu(struct net_device *dev, int mtu,
++		     struct netlink_ext_ack *extack);
+ int dev_set_mtu_ext(struct net_device *dev, int mtu,
+ 		    struct netlink_ext_ack *extack);
+ int dev_set_mtu(struct net_device *, int);
+diff --git a/net/core/dev.c b/net/core/dev.c
+index e82e9b82dfd93f28ebbdb64b11a86ab7ab473a99..767456b66eb76085dafd60bc93a4759c63481338 100644
+--- a/net/core/dev.c
++++ b/net/core/dev.c
+@@ -8194,6 +8194,22 @@ int __dev_set_mtu(struct net_device *dev, int new_mtu)
  }
+ EXPORT_SYMBOL(__dev_set_mtu);
  
-+static void test_cubic(void)
++int dev_validate_mtu(struct net_device *dev, int new_mtu,
++		     struct netlink_ext_ack *extack)
 +{
-+	struct bpf_cubic *cubic_skel;
-+	struct bpf_link *link;
-+
-+	cubic_skel = bpf_cubic__open_and_load();
-+	if (CHECK(!cubic_skel, "bpf_cubic__open_and_load", "failed\n"))
-+		return;
-+
-+	link = bpf_map__attach_struct_ops(cubic_skel->maps.cubic);
-+	if (CHECK(IS_ERR(link), "bpf_map__attach_struct_ops", "err:%ld\n",
-+		  PTR_ERR(link))) {
-+		bpf_cubic__destroy(cubic_skel);
-+		return;
++	/* MTU must be positive, and in range */
++	if (new_mtu < 0 || new_mtu < dev->min_mtu) {
++		NL_SET_ERR_MSG(extack, "mtu less than device minimum");
++		return -EINVAL;
 +	}
 +
-+	do_test("bpf_cubic");
-+
-+	bpf_link__destroy(link);
-+	bpf_cubic__destroy(cubic_skel);
-+}
-+
- static void test_dctcp(void)
- {
- 	struct bpf_dctcp *dctcp_skel;
-@@ -184,4 +207,6 @@ void test_bpf_tcp_ca(void)
- {
- 	if (test__start_subtest("dctcp"))
- 		test_dctcp();
-+	if (test__start_subtest("cubic"))
-+		test_cubic();
- }
-diff --git a/tools/testing/selftests/bpf/progs/bpf_cubic.c b/tools/testing/selftests/bpf/progs/bpf_cubic.c
-new file mode 100644
-index 000000000000..61e1b99ab793
---- /dev/null
-+++ b/tools/testing/selftests/bpf/progs/bpf_cubic.c
-@@ -0,0 +1,544 @@
-+// SPDX-License-Identifier: GPL-2.0-only
-+
-+/* WARNING: This implemenation is not necessarily the same
-+ * as the tcp_cubic.c.  The purpose is mainly for testing
-+ * the kernel BPF logic.
-+ *
-+ * Highlights:
-+ * 1. CONFIG_HZ .kconfig map is used.
-+ * 2. In bictcp_update(), calculation is changed to use usec
-+ *    resolution (i.e. USEC_PER_JIFFY) instead of using jiffies.
-+ *    Thus, usecs_to_jiffies() is not used in the bpf_cubic.c.
-+ * 3. In bitctcp_update() [under tcp_friendliness], the original
-+ *    "while (ca->ack_cnt > delta)" loop is changed to the equivalent
-+ *    "ca->ack_cnt / delta" operation.
-+ */
-+
-+#include <linux/bpf.h>
-+#include "bpf_tcp_helpers.h"
-+
-+char _license[] SEC("license") = "GPL";
-+
-+#define clamp(val, lo, hi) min((typeof(val))max(val, lo), hi)
-+
-+#define BICTCP_BETA_SCALE    1024	/* Scale factor beta calculation
-+					 * max_cwnd = snd_cwnd * beta
-+					 */
-+#define	BICTCP_HZ		10	/* BIC HZ 2^10 = 1024 */
-+
-+/* Two methods of hybrid slow start */
-+#define HYSTART_ACK_TRAIN	0x1
-+#define HYSTART_DELAY		0x2
-+
-+/* Number of delay samples for detecting the increase of delay */
-+#define HYSTART_MIN_SAMPLES	8
-+#define HYSTART_DELAY_MIN	(4000U)	/* 4ms */
-+#define HYSTART_DELAY_MAX	(16000U)	/* 16 ms */
-+#define HYSTART_DELAY_THRESH(x)	clamp(x, HYSTART_DELAY_MIN, HYSTART_DELAY_MAX)
-+
-+static int fast_convergence = 1;
-+static const int beta = 717;	/* = 717/1024 (BICTCP_BETA_SCALE) */
-+static int initial_ssthresh;
-+static const int bic_scale = 41;
-+static int tcp_friendliness = 1;
-+
-+static int hystart = 1;
-+static int hystart_detect = HYSTART_ACK_TRAIN | HYSTART_DELAY;
-+static int hystart_low_window = 16;
-+static int hystart_ack_delta_us = 2000;
-+
-+static const __u32 cube_rtt_scale = (bic_scale * 10);	/* 1024*c/rtt */
-+static const __u32 beta_scale = 8*(BICTCP_BETA_SCALE+beta) / 3
-+				/ (BICTCP_BETA_SCALE - beta);
-+/* calculate the "K" for (wmax-cwnd) = c/rtt * K^3
-+ *  so K = cubic_root( (wmax-cwnd)*rtt/c )
-+ * the unit of K is bictcp_HZ=2^10, not HZ
-+ *
-+ *  c = bic_scale >> 10
-+ *  rtt = 100ms
-+ *
-+ * the following code has been designed and tested for
-+ * cwnd < 1 million packets
-+ * RTT < 100 seconds
-+ * HZ < 1,000,00  (corresponding to 10 nano-second)
-+ */
-+
-+/* 1/c * 2^2*bictcp_HZ * srtt, 2^40 */
-+static const __u64 cube_factor = (__u64)(1ull << (10+3*BICTCP_HZ))
-+				/ (bic_scale * 10);
-+
-+/* BIC TCP Parameters */
-+struct bictcp {
-+	__u32	cnt;		/* increase cwnd by 1 after ACKs */
-+	__u32	last_max_cwnd;	/* last maximum snd_cwnd */
-+	__u32	last_cwnd;	/* the last snd_cwnd */
-+	__u32	last_time;	/* time when updated last_cwnd */
-+	__u32	bic_origin_point;/* origin point of bic function */
-+	__u32	bic_K;		/* time to origin point
-+				   from the beginning of the current epoch */
-+	__u32	delay_min;	/* min delay (usec) */
-+	__u32	epoch_start;	/* beginning of an epoch */
-+	__u32	ack_cnt;	/* number of acks */
-+	__u32	tcp_cwnd;	/* estimated tcp cwnd */
-+	__u16	unused;
-+	__u8	sample_cnt;	/* number of samples to decide curr_rtt */
-+	__u8	found;		/* the exit point is found? */
-+	__u32	round_start;	/* beginning of each round */
-+	__u32	end_seq;	/* end_seq of the round */
-+	__u32	last_ack;	/* last time when the ACK spacing is close */
-+	__u32	curr_rtt;	/* the minimum rtt of current round */
-+};
-+
-+static inline void bictcp_reset(struct bictcp *ca)
-+{
-+	ca->cnt = 0;
-+	ca->last_max_cwnd = 0;
-+	ca->last_cwnd = 0;
-+	ca->last_time = 0;
-+	ca->bic_origin_point = 0;
-+	ca->bic_K = 0;
-+	ca->delay_min = 0;
-+	ca->epoch_start = 0;
-+	ca->ack_cnt = 0;
-+	ca->tcp_cwnd = 0;
-+	ca->found = 0;
-+}
-+
-+extern unsigned long CONFIG_HZ __kconfig __weak;
-+#define HZ CONFIG_HZ
-+#define USEC_PER_MSEC	1000UL
-+#define USEC_PER_SEC	1000000UL
-+#define USEC_PER_JIFFY	(USEC_PER_SEC / HZ)
-+
-+static __always_inline __u64 div64_u64(__u64 dividend, __u64 divisor)
-+{
-+	return dividend / divisor;
-+}
-+
-+#define div64_ul div64_u64
-+
-+#define BITS_PER_U64 (sizeof(__u64) * 8)
-+static __always_inline int fls64(__u64 x)
-+{
-+	int num = BITS_PER_U64 - 1;
-+
-+	if (x == 0)
-+		return 0;
-+
-+	if (!(x & (~0ull << (BITS_PER_U64-32)))) {
-+		num -= 32;
-+		x <<= 32;
++	if (dev->max_mtu > 0 && new_mtu > dev->max_mtu) {
++		NL_SET_ERR_MSG(extack, "mtu greater than device maximum");
++		return -EINVAL;
 +	}
-+	if (!(x & (~0ull << (BITS_PER_U64-16)))) {
-+		num -= 16;
-+		x <<= 16;
-+	}
-+	if (!(x & (~0ull << (BITS_PER_U64-8)))) {
-+		num -= 8;
-+		x <<= 8;
-+	}
-+	if (!(x & (~0ull << (BITS_PER_U64-4)))) {
-+		num -= 4;
-+		x <<= 4;
-+	}
-+	if (!(x & (~0ull << (BITS_PER_U64-2)))) {
-+		num -= 2;
-+		x <<= 2;
-+	}
-+	if (!(x & (~0ull << (BITS_PER_U64-1))))
-+		num -= 1;
-+
-+	return num + 1;
++	return 0;
 +}
 +
-+static __always_inline __u32 bictcp_clock_us(const struct sock *sk)
-+{
-+	return tcp_sk(sk)->tcp_mstamp;
-+}
+ /**
+  *	dev_set_mtu_ext - Change maximum transfer unit
+  *	@dev: device
+@@ -8210,16 +8226,9 @@ int dev_set_mtu_ext(struct net_device *dev, int new_mtu,
+ 	if (new_mtu == dev->mtu)
+ 		return 0;
+ 
+-	/* MTU must be positive, and in range */
+-	if (new_mtu < 0 || new_mtu < dev->min_mtu) {
+-		NL_SET_ERR_MSG(extack, "mtu less than device minimum");
+-		return -EINVAL;
+-	}
+-
+-	if (dev->max_mtu > 0 && new_mtu > dev->max_mtu) {
+-		NL_SET_ERR_MSG(extack, "mtu greater than device maximum");
+-		return -EINVAL;
+-	}
++	err = dev_validate_mtu(dev, new_mtu, extack);
++	if (err)
++		return err;
+ 
+ 	if (!netif_device_present(dev))
+ 		return -ENODEV;
+diff --git a/net/core/rtnetlink.c b/net/core/rtnetlink.c
+index 02916f43bf63cdbdd7d2c7e030776d7203421232..d9001b5c48eb4e1af583f2d186451be592622e9d 100644
+--- a/net/core/rtnetlink.c
++++ b/net/core/rtnetlink.c
+@@ -3048,8 +3048,17 @@ struct net_device *rtnl_create_link(struct net *net, const char *ifname,
+ 	dev->rtnl_link_ops = ops;
+ 	dev->rtnl_link_state = RTNL_LINK_INITIALIZING;
+ 
+-	if (tb[IFLA_MTU])
+-		dev->mtu = nla_get_u32(tb[IFLA_MTU]);
++	if (tb[IFLA_MTU]) {
++		u32 mtu = nla_get_u32(tb[IFLA_MTU]);
++		int err;
 +
-+static __always_inline void bictcp_hystart_reset(struct sock *sk)
-+{
-+	struct tcp_sock *tp = tcp_sk(sk);
-+	struct bictcp *ca = inet_csk_ca(sk);
-+
-+	ca->round_start = ca->last_ack = bictcp_clock_us(sk);
-+	ca->end_seq = tp->snd_nxt;
-+	ca->curr_rtt = ~0U;
-+	ca->sample_cnt = 0;
-+}
-+
-+/* "struct_ops/" prefix is not a requirement
-+ * It will be recognized as BPF_PROG_TYPE_STRUCT_OPS
-+ * as long as it is used in one of the func ptr
-+ * under SEC(".struct_ops").
-+ */
-+SEC("struct_ops/bictcp_init")
-+void BPF_PROG(bictcp_init, struct sock *sk)
-+{
-+	struct bictcp *ca = inet_csk_ca(sk);
-+
-+	bictcp_reset(ca);
-+
-+	if (hystart)
-+		bictcp_hystart_reset(sk);
-+
-+	if (!hystart && initial_ssthresh)
-+		tcp_sk(sk)->snd_ssthresh = initial_ssthresh;
-+}
-+
-+/* No prefix in SEC will also work.
-+ * The remaining tcp-cubic functions have an easier way.
-+ */
-+SEC("no-sec-prefix-bictcp_cwnd_event")
-+void BPF_PROG(bictcp_cwnd_event, struct sock *sk, enum tcp_ca_event event)
-+{
-+	if (event == CA_EVENT_TX_START) {
-+		struct bictcp *ca = inet_csk_ca(sk);
-+		__u32 now = tcp_jiffies32;
-+		__s32 delta;
-+
-+		delta = now - tcp_sk(sk)->lsndtime;
-+
-+		/* We were application limited (idle) for a while.
-+		 * Shift epoch_start to keep cwnd growth to cubic curve.
-+		 */
-+		if (ca->epoch_start && delta > 0) {
-+			ca->epoch_start += delta;
-+			if (after(ca->epoch_start, now))
-+				ca->epoch_start = now;
++		err = dev_validate_mtu(dev, mtu, extack);
++		if (err) {
++			free_netdev(dev);
++			return ERR_PTR(err);
 +		}
-+		return;
++		dev->mtu = mtu;
 +	}
-+}
-+
-+/*
-+ * cbrt(x) MSB values for x MSB values in [0..63].
-+ * Precomputed then refined by hand - Willy Tarreau
-+ *
-+ * For x in [0..63],
-+ *   v = cbrt(x << 18) - 1
-+ *   cbrt(x) = (v[x] + 10) >> 6
-+ */
-+static const __u8 v[] = {
-+	/* 0x00 */    0,   54,   54,   54,  118,  118,  118,  118,
-+	/* 0x08 */  123,  129,  134,  138,  143,  147,  151,  156,
-+	/* 0x10 */  157,  161,  164,  168,  170,  173,  176,  179,
-+	/* 0x18 */  181,  185,  187,  190,  192,  194,  197,  199,
-+	/* 0x20 */  200,  202,  204,  206,  209,  211,  213,  215,
-+	/* 0x28 */  217,  219,  221,  222,  224,  225,  227,  229,
-+	/* 0x30 */  231,  232,  234,  236,  237,  239,  240,  242,
-+	/* 0x38 */  244,  245,  246,  248,  250,  251,  252,  254,
-+};
-+
-+/* calculate the cubic root of x using a table lookup followed by one
-+ * Newton-Raphson iteration.
-+ * Avg err ~= 0.195%
-+ */
-+static __always_inline __u32 cubic_root(__u64 a)
-+{
-+	__u32 x, b, shift;
-+
-+	if (a < 64) {
-+		/* a in [0..63] */
-+		return ((__u32)v[(__u32)a] + 35) >> 6;
-+	}
-+
-+	b = fls64(a);
-+	b = ((b * 84) >> 8) - 1;
-+	shift = (a >> (b * 3));
-+
-+	/* it is needed for verifier's bound check on v */
-+	if (shift >= 64)
-+		return 0;
-+
-+	x = ((__u32)(((__u32)v[shift] + 10) << b)) >> 6;
-+
-+	/*
-+	 * Newton-Raphson iteration
-+	 *                         2
-+	 * x    = ( 2 * x  +  a / x  ) / 3
-+	 *  k+1          k         k
-+	 */
-+	x = (2 * x + (__u32)div64_u64(a, (__u64)x * (__u64)(x - 1)));
-+	x = ((x * 341) >> 10);
-+	return x;
-+}
-+
-+/*
-+ * Compute congestion window to use.
-+ */
-+static __always_inline void bictcp_update(struct bictcp *ca, __u32 cwnd,
-+					  __u32 acked)
-+{
-+	__u32 delta, bic_target, max_cnt;
-+	__u64 offs, t;
-+
-+	ca->ack_cnt += acked;	/* count the number of ACKed packets */
-+
-+	if (ca->last_cwnd == cwnd &&
-+	    (__s32)(tcp_jiffies32 - ca->last_time) <= HZ / 32)
-+		return;
-+
-+	/* The CUBIC function can update ca->cnt at most once per jiffy.
-+	 * On all cwnd reduction events, ca->epoch_start is set to 0,
-+	 * which will force a recalculation of ca->cnt.
-+	 */
-+	if (ca->epoch_start && tcp_jiffies32 == ca->last_time)
-+		goto tcp_friendliness;
-+
-+	ca->last_cwnd = cwnd;
-+	ca->last_time = tcp_jiffies32;
-+
-+	if (ca->epoch_start == 0) {
-+		ca->epoch_start = tcp_jiffies32;	/* record beginning */
-+		ca->ack_cnt = acked;			/* start counting */
-+		ca->tcp_cwnd = cwnd;			/* syn with cubic */
-+
-+		if (ca->last_max_cwnd <= cwnd) {
-+			ca->bic_K = 0;
-+			ca->bic_origin_point = cwnd;
-+		} else {
-+			/* Compute new K based on
-+			 * (wmax-cwnd) * (srtt>>3 / HZ) / c * 2^(3*bictcp_HZ)
-+			 */
-+			ca->bic_K = cubic_root(cube_factor
-+					       * (ca->last_max_cwnd - cwnd));
-+			ca->bic_origin_point = ca->last_max_cwnd;
-+		}
-+	}
-+
-+	/* cubic function - calc*/
-+	/* calculate c * time^3 / rtt,
-+	 *  while considering overflow in calculation of time^3
-+	 * (so time^3 is done by using 64 bit)
-+	 * and without the support of division of 64bit numbers
-+	 * (so all divisions are done by using 32 bit)
-+	 *  also NOTE the unit of those veriables
-+	 *	  time  = (t - K) / 2^bictcp_HZ
-+	 *	  c = bic_scale >> 10
-+	 * rtt  = (srtt >> 3) / HZ
-+	 * !!! The following code does not have overflow problems,
-+	 * if the cwnd < 1 million packets !!!
-+	 */
-+
-+	t = (__s32)(tcp_jiffies32 - ca->epoch_start) * USEC_PER_JIFFY;
-+	t += ca->delay_min;
-+	/* change the unit from usec to bictcp_HZ */
-+	t <<= BICTCP_HZ;
-+	t /= USEC_PER_SEC;
-+
-+	if (t < ca->bic_K)		/* t - K */
-+		offs = ca->bic_K - t;
-+	else
-+		offs = t - ca->bic_K;
-+
-+	/* c/rtt * (t-K)^3 */
-+	delta = (cube_rtt_scale * offs * offs * offs) >> (10+3*BICTCP_HZ);
-+	if (t < ca->bic_K)                            /* below origin*/
-+		bic_target = ca->bic_origin_point - delta;
-+	else                                          /* above origin*/
-+		bic_target = ca->bic_origin_point + delta;
-+
-+	/* cubic function - calc bictcp_cnt*/
-+	if (bic_target > cwnd) {
-+		ca->cnt = cwnd / (bic_target - cwnd);
-+	} else {
-+		ca->cnt = 100 * cwnd;              /* very small increment*/
-+	}
-+
-+	/*
-+	 * The initial growth of cubic function may be too conservative
-+	 * when the available bandwidth is still unknown.
-+	 */
-+	if (ca->last_max_cwnd == 0 && ca->cnt > 20)
-+		ca->cnt = 20;	/* increase cwnd 5% per RTT */
-+
-+tcp_friendliness:
-+	/* TCP Friendly */
-+	if (tcp_friendliness) {
-+		__u32 scale = beta_scale;
-+		__u32 n;
-+
-+		/* update tcp cwnd */
-+		delta = (cwnd * scale) >> 3;
-+		if (ca->ack_cnt > delta && delta) {
-+			n = ca->ack_cnt / delta;
-+			ca->ack_cnt -= n * delta;
-+			ca->tcp_cwnd += n;
-+		}
-+
-+		if (ca->tcp_cwnd > cwnd) {	/* if bic is slower than tcp */
-+			delta = ca->tcp_cwnd - cwnd;
-+			max_cnt = cwnd / delta;
-+			if (ca->cnt > max_cnt)
-+				ca->cnt = max_cnt;
-+		}
-+	}
-+
-+	/* The maximum rate of cwnd increase CUBIC allows is 1 packet per
-+	 * 2 packets ACKed, meaning cwnd grows at 1.5x per RTT.
-+	 */
-+	ca->cnt = max(ca->cnt, 2U);
-+}
-+
-+/* Or simply use the BPF_STRUCT_OPS to avoid the SEC boiler plate. */
-+void BPF_STRUCT_OPS(bictcp_cong_avoid, struct sock *sk, __u32 ack, __u32 acked)
-+{
-+	struct tcp_sock *tp = tcp_sk(sk);
-+	struct bictcp *ca = inet_csk_ca(sk);
-+
-+	if (!tcp_is_cwnd_limited(sk))
-+		return;
-+
-+	if (tcp_in_slow_start(tp)) {
-+		if (hystart && after(ack, ca->end_seq))
-+			bictcp_hystart_reset(sk);
-+		acked = tcp_slow_start(tp, acked);
-+		if (!acked)
-+			return;
-+	}
-+	bictcp_update(ca, tp->snd_cwnd, acked);
-+	tcp_cong_avoid_ai(tp, ca->cnt, acked);
-+}
-+
-+__u32 BPF_STRUCT_OPS(bictcp_recalc_ssthresh, struct sock *sk)
-+{
-+	const struct tcp_sock *tp = tcp_sk(sk);
-+	struct bictcp *ca = inet_csk_ca(sk);
-+
-+	ca->epoch_start = 0;	/* end of epoch */
-+
-+	/* Wmax and fast convergence */
-+	if (tp->snd_cwnd < ca->last_max_cwnd && fast_convergence)
-+		ca->last_max_cwnd = (tp->snd_cwnd * (BICTCP_BETA_SCALE + beta))
-+			/ (2 * BICTCP_BETA_SCALE);
-+	else
-+		ca->last_max_cwnd = tp->snd_cwnd;
-+
-+	return max((tp->snd_cwnd * beta) / BICTCP_BETA_SCALE, 2U);
-+}
-+
-+void BPF_STRUCT_OPS(bictcp_state, struct sock *sk, __u8 new_state)
-+{
-+	if (new_state == TCP_CA_Loss) {
-+		bictcp_reset(inet_csk_ca(sk));
-+		bictcp_hystart_reset(sk);
-+	}
-+}
-+
-+#define GSO_MAX_SIZE		65536
-+
-+/* Account for TSO/GRO delays.
-+ * Otherwise short RTT flows could get too small ssthresh, since during
-+ * slow start we begin with small TSO packets and ca->delay_min would
-+ * not account for long aggregation delay when TSO packets get bigger.
-+ * Ideally even with a very small RTT we would like to have at least one
-+ * TSO packet being sent and received by GRO, and another one in qdisc layer.
-+ * We apply another 100% factor because @rate is doubled at this point.
-+ * We cap the cushion to 1ms.
-+ */
-+static __always_inline __u32 hystart_ack_delay(struct sock *sk)
-+{
-+	unsigned long rate;
-+
-+	rate = sk->sk_pacing_rate;
-+	if (!rate)
-+		return 0;
-+	return min((__u64)USEC_PER_MSEC,
-+		   div64_ul((__u64)GSO_MAX_SIZE * 4 * USEC_PER_SEC, rate));
-+}
-+
-+static __always_inline void hystart_update(struct sock *sk, __u32 delay)
-+{
-+	struct tcp_sock *tp = tcp_sk(sk);
-+	struct bictcp *ca = inet_csk_ca(sk);
-+	__u32 threshold;
-+
-+	if (hystart_detect & HYSTART_ACK_TRAIN) {
-+		__u32 now = bictcp_clock_us(sk);
-+
-+		/* first detection parameter - ack-train detection */
-+		if ((__s32)(now - ca->last_ack) <= hystart_ack_delta_us) {
-+			ca->last_ack = now;
-+
-+			threshold = ca->delay_min + hystart_ack_delay(sk);
-+
-+			/* Hystart ack train triggers if we get ack past
-+			 * ca->delay_min/2.
-+			 * Pacing might have delayed packets up to RTT/2
-+			 * during slow start.
-+			 */
-+			if (sk->sk_pacing_status == SK_PACING_NONE)
-+				threshold >>= 1;
-+
-+			if ((__s32)(now - ca->round_start) > threshold) {
-+				ca->found = 1;
-+				tp->snd_ssthresh = tp->snd_cwnd;
-+			}
-+		}
-+	}
-+
-+	if (hystart_detect & HYSTART_DELAY) {
-+		/* obtain the minimum delay of more than sampling packets */
-+		if (ca->sample_cnt < HYSTART_MIN_SAMPLES) {
-+			if (ca->curr_rtt > delay)
-+				ca->curr_rtt = delay;
-+
-+			ca->sample_cnt++;
-+		} else {
-+			if (ca->curr_rtt > ca->delay_min +
-+			    HYSTART_DELAY_THRESH(ca->delay_min >> 3)) {
-+				ca->found = 1;
-+				tp->snd_ssthresh = tp->snd_cwnd;
-+			}
-+		}
-+	}
-+}
-+
-+void BPF_STRUCT_OPS(bictcp_acked, struct sock *sk,
-+		    const struct ack_sample *sample)
-+{
-+	const struct tcp_sock *tp = tcp_sk(sk);
-+	struct bictcp *ca = inet_csk_ca(sk);
-+	__u32 delay;
-+
-+	/* Some calls are for duplicates without timetamps */
-+	if (sample->rtt_us < 0)
-+		return;
-+
-+	/* Discard delay samples right after fast recovery */
-+	if (ca->epoch_start && (__s32)(tcp_jiffies32 - ca->epoch_start) < HZ)
-+		return;
-+
-+	delay = sample->rtt_us;
-+	if (delay == 0)
-+		delay = 1;
-+
-+	/* first time call or link delay decreases */
-+	if (ca->delay_min == 0 || ca->delay_min > delay)
-+		ca->delay_min = delay;
-+
-+	/* hystart triggers when cwnd is larger than some threshold */
-+	if (!ca->found && tcp_in_slow_start(tp) && hystart &&
-+	    tp->snd_cwnd >= hystart_low_window)
-+		hystart_update(sk, delay);
-+}
-+
-+__u32 BPF_STRUCT_OPS(tcp_reno_undo_cwnd, struct sock *sk)
-+{
-+	const struct tcp_sock *tp = tcp_sk(sk);
-+
-+	return max(tp->snd_cwnd, tp->prior_cwnd);
-+}
-+
-+SEC(".struct_ops")
-+struct tcp_congestion_ops cubic = {
-+	.init		= (void *)bictcp_init,
-+	.ssthresh	= (void *)bictcp_recalc_ssthresh,
-+	.cong_avoid	= (void *)bictcp_cong_avoid,
-+	.set_state	= (void *)bictcp_state,
-+	.undo_cwnd	= (void *)tcp_reno_undo_cwnd,
-+	.cwnd_event	= (void *)bictcp_cwnd_event,
-+	.pkts_acked     = (void *)bictcp_acked,
-+	.name		= "bpf_cubic",
-+};
+ 	if (tb[IFLA_ADDRESS]) {
+ 		memcpy(dev->dev_addr, nla_data(tb[IFLA_ADDRESS]),
+ 				nla_len(tb[IFLA_ADDRESS]));
 -- 
-2.17.1
+2.25.0.341.g760bfbb309-goog
 
