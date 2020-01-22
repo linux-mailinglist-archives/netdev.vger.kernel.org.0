@@ -2,47 +2,47 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 7CEEC1453E4
-	for <lists+netdev@lfdr.de>; Wed, 22 Jan 2020 12:36:06 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7C9A31453E5
+	for <lists+netdev@lfdr.de>; Wed, 22 Jan 2020 12:36:11 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729148AbgAVLgE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 22 Jan 2020 06:36:04 -0500
-Received: from mail-pj1-f66.google.com ([209.85.216.66]:56286 "EHLO
-        mail-pj1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726194AbgAVLgE (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 22 Jan 2020 06:36:04 -0500
-Received: by mail-pj1-f66.google.com with SMTP id d5so3048172pjz.5
-        for <netdev@vger.kernel.org>; Wed, 22 Jan 2020 03:36:03 -0800 (PST)
+        id S1729180AbgAVLgK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 22 Jan 2020 06:36:10 -0500
+Received: from mail-pf1-f196.google.com ([209.85.210.196]:35565 "EHLO
+        mail-pf1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726194AbgAVLgK (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 22 Jan 2020 06:36:10 -0500
+Received: by mail-pf1-f196.google.com with SMTP id i23so3259891pfo.2
+        for <netdev@vger.kernel.org>; Wed, 22 Jan 2020 03:36:10 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=JS/s9j8U9IeQ6/b6RxEgOuCmaH0wVa5WX2YOp3bYvgI=;
-        b=aNaXY6JreA7wDkWpXWMrAiCUPOxG6v7MmuntJ61rX4ruM7FSukc++6L9QH+I3OxuhJ
-         zezacT3VnhZbQmycw53BD2ptIAEDOnpd+wJo2QRPYtok32cgRL6+T/V7G9sWa9aljPHc
-         VqH8t7FO48CnABjcA7IJ4mBV90NO5KBwZwFjELyzo9apSfIqLJE9l8DozKMF14xjYkKX
-         sTvE2vFQt84vOuwSDLaOeV7s5eaq9r/lPyjLOJUwAZrGtpfzOQ/Pfg9iNJPT8Phc9SA8
-         cBYLCp5bPcUOKyyrC11h61EiZZU4eSeFas/y/A5ORpnmiOo6a9sJoFndKCzhyvYVGdkn
-         dHJw==
+        bh=lLPfkaHUdJk91hEn7ISh5HhzYqtAwjmDshBoNiXJGwM=;
+        b=Tcdashgpi4sxLpbc07DW2t5OskG1oCjEwAXNEoHAUKaT2AOb7j3TTonT5ubptlSffM
+         nZHSCILCmLziyIaCr0gKO5zEfVNKz/REs5XiMOIG/lU37PAPMQGbHxLn2Bk/QU4qt4K/
+         Ce7YOKw+b6hDGql5yaS/cLZ09o5u7b3h3CAD5vLVKnID8halGbbprKFHEh4s+IDBuAla
+         qXOcAWIvwbZplhYjFuxb4mVrkCD3cE4TjszxGZofCpz+P35o0wvDzjcyaLmXYDXnuht7
+         g4bnFw6YHPr82fXYii4OjUhemObM3KcHx2pTpFwz1Gpo6W9mjtxnTKuOTBlH0V4tbu5O
+         LCmg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references;
-        bh=JS/s9j8U9IeQ6/b6RxEgOuCmaH0wVa5WX2YOp3bYvgI=;
-        b=s6pIJtZoXkfHWNHe3vpbpRdAbg3pYqbkdETS+4gh1mORi4duvGrxamGVcX5iIKxrjr
-         5Lj9/E+bTzsaruwOoOYNRQJ4uaB/Hm8cgdT3kXj4/a8I7PdVOHBUFIYTttVAY0BS46x0
-         lg/2eUSJ4Z5qdEWgWckhPtOcnNX22je5xTaTaEdMZn1/nuSVYKtNsT7TqokttUVyj1PM
-         0Bpyn6/v5iVxN/gXRxFxtGctrmzGJ+raexXWDZaiSTEdwex7p7oJRUmUWUsXItsXNzEc
-         R3CiDIHliXIGf54vswbvrdKHYmiWTWyw4e9psfSkMuWrwdVjP9u6BpVjiS18IO+6512Z
-         YaNw==
-X-Gm-Message-State: APjAAAXIim91oomt1/TItp/F1x+2DM1AV/9iGb06kZKlLIhzTgJrd4uD
-        jGDm5MjafF4UODM4Syhia1p6NODCrUGqcx0V
-X-Google-Smtp-Source: APXvYqxBX+EGx3Q/J+D668qSPp6TwewATEFVY4ZK1kwet+tj4AxQIj1sXz5ehSFWM/XeR9KxANmT1A==
-X-Received: by 2002:a17:90a:bf0c:: with SMTP id c12mr2439361pjs.112.1579692963352;
-        Wed, 22 Jan 2020 03:36:03 -0800 (PST)
+        bh=lLPfkaHUdJk91hEn7ISh5HhzYqtAwjmDshBoNiXJGwM=;
+        b=CF4SXSCvk8WMpZOagF3Yz+rqxQPmNOlv+A+wXtBKYTJsedZce5AoBsCVJLXpINtbhY
+         fZPIG4b+7PjgM9uyCuf/cJLBl89IVWkmZiXX7odPushiLVhby9t6xWfkkSWA1oluqUKi
+         zO8KBPiaapURKML1ck/nSlCuy7sP054bPnsuYf525ZxhqRFOyRTiRdNxRF7KsDgAl3tb
+         H8nXo6uGWI29FjwqcuC6/zQjSGoUh2l86zC6Yjv25ZDXu65SnxtpBwtoqnhy4dWrlRiF
+         JvSN31rpEUSoAs82SlnfxVgn+TIOSxi6EEzjmz5KcCg9b2m47cPuH4fPNxxQu98uEYcV
+         DRvw==
+X-Gm-Message-State: APjAAAV1nIQZTcGmMJmIXq+OT9s5bTVXCb/f86tuI/33kWtn00slE1uS
+        soCDw+LnvKiZ0t2RBqayVbViETqmche7L0ER
+X-Google-Smtp-Source: APXvYqwX2QGOUiJ/5No35WRqbwTOlVJn7DgUAh3uqG0xvbjYPzdtLGQJailOT0RcssKK8L1OwqfiQg==
+X-Received: by 2002:a63:5fca:: with SMTP id t193mr10728874pgb.28.1579692969091;
+        Wed, 22 Jan 2020 03:36:09 -0800 (PST)
 Received: from localhost.localdomain ([223.186.203.82])
-        by smtp.gmail.com with ESMTPSA id c6sm2145962pgk.78.2020.01.22.03.35.58
+        by smtp.gmail.com with ESMTPSA id c6sm2145962pgk.78.2020.01.22.03.36.03
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 22 Jan 2020 03:36:02 -0800 (PST)
+        Wed, 22 Jan 2020 03:36:08 -0800 (PST)
 From:   gautamramk@gmail.com
 To:     netdev@vger.kernel.org
 Cc:     "Mohit P. Tahiliani" <tahiliani@nitk.edu.in>,
@@ -54,9 +54,9 @@ Cc:     "Mohit P. Tahiliani" <tahiliani@nitk.edu.in>,
         Stephen Hemminger <stephen@networkplumber.org>,
         Leslie Monis <lesliemonis@gmail.com>,
         Gautam Ramakrishnan <gautamramk@gmail.com>
-Subject: [PATCH net-next v6 03/10] pie: rearrange macros in order of length
-Date:   Wed, 22 Jan 2020 17:05:26 +0530
-Message-Id: <20200122113533.28128-4-gautamramk@gmail.com>
+Subject: [PATCH net-next v6 04/10] pie: use u8 instead of bool in pie_vars
+Date:   Wed, 22 Jan 2020 17:05:27 +0530
+Message-Id: <20200122113533.28128-5-gautamramk@gmail.com>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <20200122113533.28128-1-gautamramk@gmail.com>
 References: <20200122113533.28128-1-gautamramk@gmail.com>
@@ -67,37 +67,31 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: "Mohit P. Tahiliani" <tahiliani@nitk.edu.in>
 
-Rearrange macros in order of length and align the values to
-improve readability.
+Linux best practice recommends using u8 for true/false values in
+structures.
 
 Signed-off-by: Mohit P. Tahiliani <tahiliani@nitk.edu.in>
 Signed-off-by: Leslie Monis <lesliemonis@gmail.com>
 Signed-off-by: Gautam Ramakrishnan <gautamramk@gmail.com>
 ---
- include/net/pie.h | 10 +++++-----
- 1 file changed, 5 insertions(+), 5 deletions(-)
+ include/net/pie.h | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
 diff --git a/include/net/pie.h b/include/net/pie.h
-index 7ef375db5bab..397c7abf0879 100644
+index 397c7abf0879..f9c6a44bdb0c 100644
 --- a/include/net/pie.h
 +++ b/include/net/pie.h
-@@ -8,11 +8,11 @@
- #include <net/inet_ecn.h>
- #include <net/pkt_sched.h>
+@@ -21,8 +21,8 @@ struct pie_params {
+ 	u32 limit;		/* number of packets that can be enqueued */
+ 	u32 alpha;		/* alpha and beta are between 0 and 32 */
+ 	u32 beta;		/* and are used for shift relative to 1 */
+-	bool ecn;		/* true if ecn is enabled */
+-	bool bytemode;		/* to scale drop early prob based on pkt size */
++	u8 ecn;			/* true if ecn is enabled */
++	u8 bytemode;		/* to scale drop early prob based on pkt size */
+ 	u8 dq_rate_estimator;	/* to calculate delay using Little's law */
+ };
  
--#define QUEUE_THRESHOLD 16384
--#define DQCOUNT_INVALID -1
--#define DTIME_INVALID U64_MAX
--#define MAX_PROB U64_MAX
--#define PIE_SCALE 8
-+#define MAX_PROB	U64_MAX
-+#define DTIME_INVALID	U64_MAX
-+#define QUEUE_THRESHOLD	16384
-+#define DQCOUNT_INVALID	-1
-+#define PIE_SCALE	8
- 
- /* parameters used */
- struct pie_params {
 -- 
 2.17.1
 
