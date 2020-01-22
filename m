@@ -2,42 +2,43 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id D875C145265
-	for <lists+netdev@lfdr.de>; Wed, 22 Jan 2020 11:17:24 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A57AD14529A
+	for <lists+netdev@lfdr.de>; Wed, 22 Jan 2020 11:29:14 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729273AbgAVKRO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 22 Jan 2020 05:17:14 -0500
-Received: from www62.your-server.de ([213.133.104.62]:50544 "EHLO
+        id S1729117AbgAVK3M (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 22 Jan 2020 05:29:12 -0500
+Received: from www62.your-server.de ([213.133.104.62]:53456 "EHLO
         www62.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726191AbgAVKRO (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 22 Jan 2020 05:17:14 -0500
-Received: from sslproxy03.your-server.de ([88.198.220.132])
+        with ESMTP id S1728931AbgAVK3M (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 22 Jan 2020 05:29:12 -0500
+Received: from sslproxy02.your-server.de ([78.47.166.47])
         by www62.your-server.de with esmtpsa (TLSv1.2:DHE-RSA-AES256-GCM-SHA384:256)
         (Exim 4.89_1)
         (envelope-from <daniel@iogearbox.net>)
-        id 1iuD4J-00074X-Mm; Wed, 22 Jan 2020 11:17:03 +0100
+        id 1iuDFt-0000Qo-GA; Wed, 22 Jan 2020 11:29:02 +0100
 Received: from [2001:1620:665:0:5795:5b0a:e5d5:5944] (helo=linux-3.fritz.box)
-        by sslproxy03.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
+        by sslproxy02.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
         (Exim 4.92)
         (envelope-from <daniel@iogearbox.net>)
-        id 1iuD4J-000GIS-BX; Wed, 22 Jan 2020 11:17:03 +0100
-Subject: Re: [PATCH v3] [net]: Fix skb->csum update in
- inet_proto_csum_replace16().
-To:     Praveen Chaudhary <praveen5582@gmail.com>, fw@strlen.de,
-        pablo@netfilter.org, davem@davemloft.net, kadlec@netfilter.org,
-        netfilter-devel@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Cc:     Zhenggen Xu <zxu@linkedin.com>,
-        Andy Stracner <astracner@linkedin.com>
-References: <1573080729-3102-1-git-send-email-pchaudhary@linkedin.com>
- <1573080729-3102-2-git-send-email-pchaudhary@linkedin.com>
+        id 1iuDFt-000LOf-57; Wed, 22 Jan 2020 11:29:01 +0100
+Subject: Re: [PATCH v2 bpf 0/2] Fix the classification based on port ranges in
+ bpf hook
+To:     Yoshiki Komachi <komachi.yoshiki@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        Andrii Nakryiko <andriin@fb.com>,
+        Petar Penkov <ppenkov.kernel@gmail.com>
+Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org
+References: <20200117070533.402240-1-komachi.yoshiki@gmail.com>
 From:   Daniel Borkmann <daniel@iogearbox.net>
-Message-ID: <16d56ee6-53bc-1124-3700-bc0a78f927d6@iogearbox.net>
-Date:   Wed, 22 Jan 2020 11:17:02 +0100
+Message-ID: <d2c7815c-22a0-0004-5151-f3a43941af0a@iogearbox.net>
+Date:   Wed, 22 Jan 2020 11:29:00 +0100
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
  Thunderbird/60.7.2
 MIME-Version: 1.0
-In-Reply-To: <1573080729-3102-2-git-send-email-pchaudhary@linkedin.com>
+In-Reply-To: <20200117070533.402240-1-komachi.yoshiki@gmail.com>
 Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
@@ -48,78 +49,43 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 11/6/19 11:52 PM, Praveen Chaudhary wrote:
-> skb->csum is updated incorrectly, when manipulation for NF_NAT_MANIP_SRC\DST
-> is done on IPV6 packet.
+On 1/17/20 8:05 AM, Yoshiki Komachi wrote:
+> When I tried a test based on the selftest program for BPF flow dissector
+> (test_flow_dissector.sh), I observed unexpected result as below:
 > 
-> Fix:
-> No need to update skb->csum in function inet_proto_csum_replace16(), even if
-> skb->ip_summed == CHECKSUM_COMPLETE, because change in L4 header checksum field
-> and change in IPV6 header cancels each other for skb->csum calculation.
+> $ tc filter add dev lo parent ffff: protocol ip pref 1337 flower ip_proto \
+> 	udp src_port 8-10 action drop
+> $ tools/testing/selftests/bpf/test_flow_dissector -i 4 -f 9 -F
+> inner.dest4: 127.0.0.1
+> inner.source4: 127.0.0.3
+> pkts: tx=10 rx=10
 > 
-> Signed-off-by: Praveen Chaudhary <pchaudhary@linkedin.com>
-> Signed-off-by: Zhenggen Xu <zxu@linkedin.com>
-> Signed-off-by: Andy Stracner <astracner@linkedin.com>
+> The last rx means the number of received packets. I expected rx=0 in this
+> test (i.e., all received packets should have been dropped), but it resulted
+> in acceptance.
 > 
-> Reviewed-by: Florian Westphal <fw@strlen.de>
-> ---
-> Changes in V2.
-> 1.) Updating diff as per email discussion with Florian Westphal.
->      Since inet_proto_csum_replace16() does incorrect calculation
->      for skb->csum in all cases.
-> 2.) Change in Commmit logs.
-> ---
+> Although the previous commit 8ffb055beae5 ("cls_flower: Fix the behavior
+> using port ranges with hw-offload") added new flag and field toward filtering
+> based on port ranges with hw-offload, it missed applying for BPF flow dissector
+> then. As a result, BPF flow dissector currently stores data extracted from
+> packets in incorrect field used for exact match whenever packets are classified
+> by filters based on port ranges. Thus, they never match rules in such cases
+> because flow dissector gives rise to generating incorrect flow keys.
 > 
-> ---
-> Changes in V3.
-> Addressing Pablo`s Suggesion.
-> 1.) Updated Subject and description
-> 2.) Added full documentation of function.
-> ---
-> ---
->   net/core/utils.c | 18 +++++++++++++++---
->   1 file changed, 15 insertions(+), 3 deletions(-)
+> This series fixes the issue by replacing incorrect flag and field with new
+> ones in BPF flow dissector, and adds a test for filtering based on specified
+> port ranges to the existing selftest program.
 > 
-> diff --git a/net/core/utils.c b/net/core/utils.c
-> index 6b6e51d..af3b5cb 100644
-> --- a/net/core/utils.c
-> +++ b/net/core/utils.c
-> @@ -438,6 +438,21 @@ void inet_proto_csum_replace4(__sum16 *sum, struct sk_buff *skb,
->   }
->   EXPORT_SYMBOL(inet_proto_csum_replace4);
->   
-> +/**
-> + * inet_proto_csum_replace16 - update L4 header checksum field as per the
-> + * update in IPv6 Header. Note, there is no need to update skb->csum in this
-> + * function, even if skb->ip_summed == CHECKSUM_COMPLETE, because change in L4
-> + * header checksum field and change in IPV6 header cancels each other for
-> + * skb->csum calculation.
-> + *
-> + * @sum: L4 header checksum field
-> + * @skb: sk_buff for the packet
-> + * @from: old IPv6 address
-> + * @to: new IPv6 address
-> + * @pseudohdr: True if L4 header checksum includes pseudoheader
-> + *
-> + * Return void
-> + */
->   void inet_proto_csum_replace16(__sum16 *sum, struct sk_buff *skb,
->   			       const __be32 *from, const __be32 *to,
->   			       bool pseudohdr)
-> @@ -449,9 +464,6 @@ void inet_proto_csum_replace16(__sum16 *sum, struct sk_buff *skb,
->   	if (skb->ip_summed != CHECKSUM_PARTIAL) {
->   		*sum = csum_fold(csum_partial(diff, sizeof(diff),
->   				 ~csum_unfold(*sum)));
-> -		if (skb->ip_summed == CHECKSUM_COMPLETE && pseudohdr)
-> -			skb->csum = ~csum_partial(diff, sizeof(diff),
-> -						  ~skb->csum);
-
-What is the technical rationale in removing this here but not in any of the
-other inet_proto_csum_replace*() functions? You changelog has zero analysis
-on why here but not elsewhere this change would be needed?
-
->   	} else if (pseudohdr)
->   		*sum = ~csum_fold(csum_partial(diff, sizeof(diff),
->   				  csum_unfold(*sum)));
+> Changes in v2:
+>   - set key_ports to NULL at the top of __skb_flow_bpf_to_target()
+> 
+> Yoshiki Komachi (2):
+>    flow_dissector: Fix to use new variables for port ranges in bpf hook
+>    selftests/bpf: Add test based on port range for BPF flow dissector
+> 
+>   net/core/flow_dissector.c                          |  9 ++++++++-
+>   tools/testing/selftests/bpf/test_flow_dissector.sh | 14 ++++++++++++++
+>   2 files changed, 22 insertions(+), 1 deletion(-)
 > 
 
+Applied, thanks!
