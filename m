@@ -2,259 +2,124 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 93853145E0A
-	for <lists+netdev@lfdr.de>; Wed, 22 Jan 2020 22:30:14 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id BBF32145E31
+	for <lists+netdev@lfdr.de>; Wed, 22 Jan 2020 22:38:39 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729467AbgAVV3y (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 22 Jan 2020 16:29:54 -0500
-Received: from mail-lf1-f68.google.com ([209.85.167.68]:41906 "EHLO
-        mail-lf1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729456AbgAVV3y (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 22 Jan 2020 16:29:54 -0500
-Received: by mail-lf1-f68.google.com with SMTP id m30so715246lfp.8
-        for <netdev@vger.kernel.org>; Wed, 22 Jan 2020 13:29:52 -0800 (PST)
+        id S1728205AbgAVVid (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 22 Jan 2020 16:38:33 -0500
+Received: from mail-pl1-f195.google.com ([209.85.214.195]:34661 "EHLO
+        mail-pl1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725827AbgAVVid (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 22 Jan 2020 16:38:33 -0500
+Received: by mail-pl1-f195.google.com with SMTP id c9so385955plo.1;
+        Wed, 22 Jan 2020 13:38:33 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=paul-moore-com.20150623.gappssmtp.com; s=20150623;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=QtzDsuL2wxUZ5ywGO+m8auB4mvm7TddMdWO8k2uItsM=;
-        b=KbqShNWEjgiFyu/5p615XDnhjKT0jZHGFWQpOKnIJKJXmSWLcMLndJwYe8W2HBj6H0
-         sFS2xlDnSp0XL1KiHGn3m8Lum8rwkQjyq5MwiCxHxNRlo8b1OG7qwG4G9TnyW2m5LsSa
-         fFKpmjgQpyPe0OCJsMnh5d+hq7cbUTmwLfrETpTvCMbhZi9mgGgUb6qx5h6hm6B5+ZYn
-         vp6991kA33cRxkdb7IkPfjYCdbTz/D4btQ7Agf5tt0/kGsSDNhPH9U2foSYivHJ+xdt7
-         M2cUIrtb3K5GmWVE9CAm6LlgjZvSd8Errsk4aUhRiBWDQ31saOR7WC6O0Z6deGJw1OYN
-         r+1A==
+        d=gmail.com; s=20161025;
+        h=subject:to:references:from:message-id:date:user-agent:mime-version
+         :in-reply-to:content-language:content-transfer-encoding;
+        bh=3E7X73xg9mVGaMBnkhjdZyGK2FJzEs1xLTciPJX8yqs=;
+        b=pa2tb7KnasOh43I8SlVKHjE4RJcrp4TyCwnWXBrxcGZYgPLp14T5JWpdXGn5M6VO1u
+         GoLh3xEBIHBfO+1YEoUbnW73Kucn0Qt5hmvC8Rac0MO01Vb977u/WF6fl2d9RWXgi9g2
+         yjbTW3UOuLNM1A3B8L41dGna69sNlVwSNJOrWSkH/A0d+rrKWC1inwz4eTztyUsXNZNG
+         2bUv1ThZELHeMcM44iq+xmjJ89I0O0Gtkl3Op2+vrC4G294fRWA2EBevagAJWgIfOjaI
+         xz4eSzd4uYrJYjoeHQOkgmrTVMsbBfgcRE6f6zPUwdlvSfupRMtOICVRLP+Z+kERbGvZ
+         +YSA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=QtzDsuL2wxUZ5ywGO+m8auB4mvm7TddMdWO8k2uItsM=;
-        b=QW7WIeBGp4ohgtiQsVaWnGWR8umDa0gZTN/pMvqYsQOkpO3n+oDqVyaQLUukgrsBrG
-         NzIJ9roTq6q15lXYxcUoqbAmxmfveERVBh7d/Oh7g3sm8Gzhll+048Wk13AgDnBzHYTR
-         KCyF6QiQaqpt14P7PJ77dL3DTJtTOTMNNfOsIj3ho7FlcLy9JYQBURH94ICJ4CqPS2L7
-         jParY1BLk1+Y2G8Nr3u6NNvamx68GVOXcm1h4jq179WmKlQJWyEOji5srAwFqN5h9Se7
-         RGkokwTgF5C0jm31ygI1bPTmYXfPh/50UxNPd+2f/vRlOA98ckW4BXEC4N3dksLJgjg0
-         6daQ==
-X-Gm-Message-State: APjAAAXym2tTURqiN55K2RYHtLefJFfKj2vzAgByOAHO2JF1Uam+0kIE
-        pFHDYS37dYilI0WK3500ivTkMh442IkBq/hDYknB
-X-Google-Smtp-Source: APXvYqy5NenDRP+GLKo9J8quNnfqfhyEzEl8NSpHCWF7mi5ljohn5db2MdvAsLqzUXcY1Lu1XrqhV/m/a9rdNNnHFD8=
-X-Received: by 2002:a19:7515:: with SMTP id y21mr2766879lfe.45.1579728591582;
- Wed, 22 Jan 2020 13:29:51 -0800 (PST)
+        h=x-gm-message-state:subject:to:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=3E7X73xg9mVGaMBnkhjdZyGK2FJzEs1xLTciPJX8yqs=;
+        b=F4FlivY4hHqnbZSLLQ66CZ+ezppFdUzJTRU7JGqa+iLhSJ1Pg0FcUIXE9TmnScWSxf
+         B2lKxaufRO0wtQ9pEDViClK8iwUiEiJlB5sd+Lzj3zCr89wAVot6pIcJqRLL+nQW1odl
+         NGNSAh5ZGLqGPOwM4yVSHHs6QygS28bgq2KWXh9ND09GdPhV7yRGElqorb2YFaD9C7C6
+         6bvp1D/64+nJr8rsiqacculD4SAdJVlyyltqPD6xX9lFUQo4PZXCCHshGOPfNe6Qcx8Z
+         5T38Vp6jCxgb0w+LtLggllPuxmnvNW8gzff0g86jGK9F605OWFlWmt036JbmK/GRccxD
+         Svbg==
+X-Gm-Message-State: APjAAAW/hYU4JE218oTUdVvBfcMP/Dtjf4oVwumYsyImCogiclWG5lUw
+        9MJ0lI4KIRLXCV3nagkqnHM=
+X-Google-Smtp-Source: APXvYqxcZGNwvvRY8VEPC9PavXKK8gJ8+C5l6iOd8jtUFlCzq2HvJ7etDB1yuD8lnaAt+GvyP53rSg==
+X-Received: by 2002:a17:90a:191a:: with SMTP id 26mr559479pjg.111.1579729112842;
+        Wed, 22 Jan 2020 13:38:32 -0800 (PST)
+Received: from ?IPv6:2620:15c:2c1:200:55c7:81e6:c7d8:94b? ([2620:15c:2c1:200:55c7:81e6:c7d8:94b])
+        by smtp.gmail.com with ESMTPSA id y76sm49645547pfc.87.2020.01.22.13.38.31
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 22 Jan 2020 13:38:32 -0800 (PST)
+Subject: Re: WARNING in bpf_warn_invalid_xdp_action
+To:     syzbot <syzbot+8ce4113dadc4789fac74@syzkaller.appspotmail.com>,
+        andriin@fb.com, ast@kernel.org, bpf@vger.kernel.org,
+        corbet@lwn.net, daniel@iogearbox.net, davem@davemloft.net,
+        dsahern@gmail.com, hawk@kernel.org, john.fastabend@gmail.com,
+        kafai@fb.com, kuba@kernel.org, linux-doc@vger.kernel.org,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        songliubraving@fb.com, syzkaller-bugs@googlegroups.com, yhs@fb.com
+References: <00000000000068843f059cc0d214@google.com>
+From:   Eric Dumazet <eric.dumazet@gmail.com>
+Message-ID: <a10a25dd-fa53-0e7f-d394-d0123bc95df9@gmail.com>
+Date:   Wed, 22 Jan 2020 13:38:30 -0800
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.2.2
 MIME-Version: 1.0
-References: <cover.1577736799.git.rgb@redhat.com> <5941671b6b6b5de28ab2cc80e72f288cf83291d5.1577736799.git.rgb@redhat.com>
-In-Reply-To: <5941671b6b6b5de28ab2cc80e72f288cf83291d5.1577736799.git.rgb@redhat.com>
-From:   Paul Moore <paul@paul-moore.com>
-Date:   Wed, 22 Jan 2020 16:29:39 -0500
-Message-ID: <CAHC9VhQYXQp+C0EHwLuW50yUenfH4KF1xKQdS=bn_OzHfnFmmg@mail.gmail.com>
-Subject: Re: [PATCH ghak90 V8 16/16] audit: add capcontid to set contid
- outside init_user_ns
-To:     Richard Guy Briggs <rgb@redhat.com>
-Cc:     containers@lists.linux-foundation.org, linux-api@vger.kernel.org,
-        Linux-Audit Mailing List <linux-audit@redhat.com>,
-        linux-fsdevel@vger.kernel.org, LKML <linux-kernel@vger.kernel.org>,
-        netdev@vger.kernel.org, netfilter-devel@vger.kernel.org,
-        sgrubb@redhat.com, omosnace@redhat.com, dhowells@redhat.com,
-        simo@redhat.com, Eric Paris <eparis@parisplace.org>,
-        Serge Hallyn <serge@hallyn.com>, ebiederm@xmission.com,
-        nhorman@tuxdriver.com, Dan Walsh <dwalsh@redhat.com>,
-        mpatel@redhat.com
-Content-Type: text/plain; charset="UTF-8"
+In-Reply-To: <00000000000068843f059cc0d214@google.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Dec 31, 2019 at 2:51 PM Richard Guy Briggs <rgb@redhat.com> wrote:
->
-> Provide a mechanism similar to CAP_AUDIT_CONTROL to explicitly give a
-> process in a non-init user namespace the capability to set audit
-> container identifiers.
->
-> Provide /proc/$PID/audit_capcontid interface to capcontid.
-> Valid values are: 1==enabled, 0==disabled
 
-It would be good to be more explicit about "enabled" and "disabled" in
-the commit description.  For example, which setting allows the target
-task to set audit container IDs of it's children processes?
 
-> Report this action in message type AUDIT_SET_CAPCONTID 1022 with fields
-> opid= capcontid= old-capcontid=
->
-> Signed-off-by: Richard Guy Briggs <rgb@redhat.com>
-> ---
->  fs/proc/base.c             | 55 ++++++++++++++++++++++++++++++++++++++++++++++
->  include/linux/audit.h      | 14 ++++++++++++
->  include/uapi/linux/audit.h |  1 +
->  kernel/audit.c             | 35 +++++++++++++++++++++++++++++
->  4 files changed, 105 insertions(+)
+On 1/22/20 1:01 PM, syzbot wrote:
+> syzbot has bisected this bug to:
+> 
+> commit 58956317c8de52009d1a38a721474c24aef74fe7
+> Author: David Ahern <dsahern@gmail.com>
+> Date:   Fri Dec 7 20:24:57 2018 +0000
+> 
+>     neighbor: Improve garbage collection
+> 
+> bisection log:  https://syzkaller.appspot.com/x/bisect.txt?x=124a5985e00000
+> start commit:   d0f41851 net, ip_tunnel: fix namespaces move
+> git tree:       net
+> final crash:    https://syzkaller.appspot.com/x/report.txt?x=114a5985e00000
+> console output: https://syzkaller.appspot.com/x/log.txt?x=164a5985e00000
+> kernel config:  https://syzkaller.appspot.com/x/.config?x=d9290aeb7e6cf1c4
+> dashboard link: https://syzkaller.appspot.com/bug?extid=8ce4113dadc4789fac74
+> syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=11f99369e00000
+> C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=13d85601e00000
+> 
+> Reported-by: syzbot+8ce4113dadc4789fac74@syzkaller.appspotmail.com
+> Fixes: 58956317c8de ("neighbor: Improve garbage collection")
+> 
+> For information about bisection process see: https://goo.gl/tpsmEJ#bisection
+> 
 
-...
+bisection looks bogus...
 
-> diff --git a/fs/proc/base.c b/fs/proc/base.c
-> index 26091800180c..283ef8e006e7 100644
-> --- a/fs/proc/base.c
-> +++ b/fs/proc/base.c
-> @@ -1360,6 +1360,59 @@ static ssize_t proc_contid_write(struct file *file, const char __user *buf,
->         .write          = proc_contid_write,
->         .llseek         = generic_file_llseek,
->  };
-> +
-> +static ssize_t proc_capcontid_read(struct file *file, char __user *buf,
-> +                                 size_t count, loff_t *ppos)
-> +{
-> +       struct inode *inode = file_inode(file);
-> +       struct task_struct *task = get_proc_task(inode);
-> +       ssize_t length;
-> +       char tmpbuf[TMPBUFLEN];
-> +
-> +       if (!task)
-> +               return -ESRCH;
-> +       /* if we don't have caps, reject */
-> +       if (!capable(CAP_AUDIT_CONTROL) && !audit_get_capcontid(current))
-> +               return -EPERM;
-> +       length = scnprintf(tmpbuf, TMPBUFLEN, "%u", audit_get_capcontid(task));
-> +       put_task_struct(task);
-> +       return simple_read_from_buffer(buf, count, ppos, tmpbuf, length);
-> +}
-> +
-> +static ssize_t proc_capcontid_write(struct file *file, const char __user *buf,
-> +                                  size_t count, loff_t *ppos)
-> +{
-> +       struct inode *inode = file_inode(file);
-> +       u32 capcontid;
-> +       int rv;
-> +       struct task_struct *task = get_proc_task(inode);
-> +
-> +       if (!task)
-> +               return -ESRCH;
-> +       if (*ppos != 0) {
-> +               /* No partial writes. */
-> +               put_task_struct(task);
-> +               return -EINVAL;
-> +       }
-> +
-> +       rv = kstrtou32_from_user(buf, count, 10, &capcontid);
-> +       if (rv < 0) {
-> +               put_task_struct(task);
-> +               return rv;
-> +       }
-> +
-> +       rv = audit_set_capcontid(task, capcontid);
-> +       put_task_struct(task);
-> +       if (rv < 0)
-> +               return rv;
-> +       return count;
-> +}
-> +
-> +static const struct file_operations proc_capcontid_operations = {
-> +       .read           = proc_capcontid_read,
-> +       .write          = proc_capcontid_write,
-> +       .llseek         = generic_file_llseek,
-> +};
->  #endif
->
->  #ifdef CONFIG_FAULT_INJECTION
-> @@ -3121,6 +3174,7 @@ static int proc_stack_depth(struct seq_file *m, struct pid_namespace *ns,
->         REG("loginuid",   S_IWUSR|S_IRUGO, proc_loginuid_operations),
->         REG("sessionid",  S_IRUGO, proc_sessionid_operations),
->         REG("audit_containerid", S_IWUSR|S_IRUSR, proc_contid_operations),
-> +       REG("audit_capcontainerid", S_IWUSR|S_IRUSR|S_IRUSR, proc_capcontid_operations),
->  #endif
->  #ifdef CONFIG_FAULT_INJECTION
->         REG("make-it-fail", S_IRUGO|S_IWUSR, proc_fault_inject_operations),
-> @@ -3522,6 +3576,7 @@ static int proc_tid_comm_permission(struct inode *inode, int mask)
->         REG("loginuid",  S_IWUSR|S_IRUGO, proc_loginuid_operations),
->         REG("sessionid",  S_IRUGO, proc_sessionid_operations),
->         REG("audit_containerid", S_IWUSR|S_IRUSR, proc_contid_operations),
-> +       REG("audit_capcontainerid", S_IWUSR|S_IRUSR|S_IRUSR, proc_capcontid_operations),
->  #endif
->  #ifdef CONFIG_FAULT_INJECTION
->         REG("make-it-fail", S_IRUGO|S_IWUSR, proc_fault_inject_operations),
-> diff --git a/include/linux/audit.h b/include/linux/audit.h
-> index 28b9c7cd86a6..62c453306c2a 100644
-> --- a/include/linux/audit.h
-> +++ b/include/linux/audit.h
-> @@ -116,6 +116,7 @@ struct audit_task_info {
->         kuid_t                  loginuid;
->         unsigned int            sessionid;
->         struct audit_contobj    *cont;
-> +       u32                     capcontid;
+It would be nice to have alternative helpers to conveniently replace some WARN_ON/WARN_ONCE/...
+and not having to hand-code stuff like :
 
-Where is the code change that actually uses this to enforce the
-described policy on setting an audit container ID?
-
-> diff --git a/include/uapi/linux/audit.h b/include/uapi/linux/audit.h
-> index 2844d78cd7af..01251e6dcec0 100644
-> --- a/include/uapi/linux/audit.h
-> +++ b/include/uapi/linux/audit.h
-> @@ -73,6 +73,7 @@
->  #define AUDIT_GET_FEATURE      1019    /* Get which features are enabled */
->  #define AUDIT_CONTAINER_OP     1020    /* Define the container id and info */
->  #define AUDIT_SIGNAL_INFO2     1021    /* Get info auditd signal sender */
-> +#define AUDIT_SET_CAPCONTID    1022    /* Set cap_contid of a task */
->
->  #define AUDIT_FIRST_USER_MSG   1100    /* Userspace messages mostly uninteresting to kernel */
->  #define AUDIT_USER_AVC         1107    /* We filter this differently */
-> diff --git a/kernel/audit.c b/kernel/audit.c
-> index 1287f0b63757..1c22dd084ae8 100644
-> --- a/kernel/audit.c
-> +++ b/kernel/audit.c
-> @@ -2698,6 +2698,41 @@ static bool audit_contid_isowner(struct task_struct *tsk)
->         return false;
->  }
->
-> +int audit_set_capcontid(struct task_struct *task, u32 enable)
-> +{
-> +       u32 oldcapcontid;
-> +       int rc = 0;
-> +       struct audit_buffer *ab;
-> +
-> +       if (!task->audit)
-> +               return -ENOPROTOOPT;
-> +       oldcapcontid = audit_get_capcontid(task);
-> +       /* if task is not descendant, block */
-> +       if (task == current)
-> +               rc = -EBADSLT;
-> +       else if (!task_is_descendant(current, task))
-> +               rc = -EXDEV;
-
-See my previous comments about error code sanity.
-
-> +       else if (current_user_ns() == &init_user_ns) {
-> +               if (!capable(CAP_AUDIT_CONTROL) && !audit_get_capcontid(current))
-> +                       rc = -EPERM;
-
-I think we just want to use ns_capable() in the context of the current
-userns to check CAP_AUDIT_CONTROL, yes?  Something like this ...
-
-  if (current_user_ns() != &init_user_ns) {
-    if (!ns_capable(CAP_AUDIT_CONTROL) || !audit_get_capcontid())
-      rc = -EPERM;
-  } else if (!capable(CAP_AUDIT_CONTROL))
-    rc = -EPERM;
-
-> +       }
-> +       if (!rc)
-> +               task->audit->capcontid = enable;
-> +
-> +       if (!audit_enabled)
-> +               return rc;
-> +
-> +       ab = audit_log_start(audit_context(), GFP_KERNEL, AUDIT_SET_CAPCONTID);
-> +       if (!ab)
-> +               return rc;
-> +
-> +       audit_log_format(ab,
-> +                        "opid=%d capcontid=%u old-capcontid=%u",
-> +                        task_tgid_nr(task), enable, oldcapcontid);
-> +       audit_log_end(ab);
-
-My prior comments about recording the success/failure, or not emitting
-the record on failure, seem relevant here too.
-
-> +       return rc;
-> +}
-
---
-paul moore
-www.paul-moore.com
+diff --git a/net/core/filter.c b/net/core/filter.c
+index 538f6a735a19f017df8e10149cb578107ddc8cbb..633988f7c81b3b4f015d827ccb485e8b227ad20b 100644
+--- a/net/core/filter.c
++++ b/net/core/filter.c
+@@ -6913,11 +6913,15 @@ static bool xdp_is_valid_access(int off, int size,
+ 
+ void bpf_warn_invalid_xdp_action(u32 act)
+ {
++       static bool __section(.data.once) warned;
+        const u32 act_max = XDP_REDIRECT;
+ 
+-       WARN_ONCE(1, "%s XDP return value %u, expect packet loss!\n",
+-                 act > act_max ? "Illegal" : "Driver unsupported",
+-                 act);
++       if (!warned) {
++               warned = true;
++               pr_err("%s XDP return value %u, expect packet loss!\n",
++                      act > act_max ? "Illegal" : "Driver unsupported", act);
++               dump_stack();
++       }
+ }
+ EXPORT_SYMBOL_GPL(bpf_warn_invalid_xdp_action);
