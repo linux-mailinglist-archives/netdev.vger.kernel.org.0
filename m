@@ -2,141 +2,170 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id D47E5145A09
-	for <lists+netdev@lfdr.de>; Wed, 22 Jan 2020 17:41:16 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A4E98145A33
+	for <lists+netdev@lfdr.de>; Wed, 22 Jan 2020 17:47:16 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728927AbgAVQlO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 22 Jan 2020 11:41:14 -0500
-Received: from mx0a-0016f401.pphosted.com ([67.231.148.174]:39184 "EHLO
-        mx0b-0016f401.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1725970AbgAVQlO (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 22 Jan 2020 11:41:14 -0500
-Received: from pps.filterd (m0045849.ppops.net [127.0.0.1])
-        by mx0a-0016f401.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 00MGeS8k010490;
-        Wed, 22 Jan 2020 08:41:13 -0800
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=marvell.com; h=from : to : cc :
- subject : date : message-id : references : in-reply-to : content-type :
- content-transfer-encoding : mime-version; s=pfpt0818;
- bh=xn4cmqT6i918SH/43A5ZbWrCfLcsc4fbxU6eHa13d5s=;
- b=VHl1kqNW2om+z7tYXxVAQlS+XQ9MhokETWKQ2WRVProZoCZK903ZtvHIrJyKgSakijKk
- HDnSHcdUI+mqqOxV3iFnR0+K8ZXBm0L5oKFz3Mf5e4AyVICICP4QhqbEcKOdmDYM557z
- iUTmHCWH25tAwOgE6SmGeyVwa4XECkQK4rPhqe04MFMOdnLJeiW6Y7V5VJVP7ro8MaHy
- XOkYt7e/OfsAhOqZuDhx70OR7M8iYo1v5GeweaxQE2/2QErpstC5PYXPfkyF518pTPC4
- 5AUMkL7OzQPyxPJsiHXAcSxAk8K3n0gLMPEFuZEz8NXNGKWUFhhOYHVK2M3ZbQm/SMDX Hw== 
-Received: from sc-exch04.marvell.com ([199.233.58.184])
-        by mx0a-0016f401.pphosted.com with ESMTP id 2xpm901fve-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT);
-        Wed, 22 Jan 2020 08:41:13 -0800
-Received: from SC-EXCH01.marvell.com (10.93.176.81) by SC-EXCH04.marvell.com
- (10.93.176.84) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Wed, 22 Jan
- 2020 08:41:11 -0800
-Received: from NAM11-CO1-obe.outbound.protection.outlook.com (104.47.56.174)
- by SC-EXCH01.marvell.com (10.93.176.81) with Microsoft SMTP Server (TLS) id
- 15.0.1497.2 via Frontend Transport; Wed, 22 Jan 2020 08:41:11 -0800
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=g+KL4E3BoL68sJiaU1skUobQN05EdRnV0f/fJta+qoAa0wK6yuL2oHENA56awujRnIK1OEu98xM/9uAp5WKQkwN9COTmlj580JCySY2raDwfmvAd06C28+Lc9PcUIzr5ReRNmt+7w5gS71emmLepyrhacPvC2sbdl/6qHlcJKRKOsESjb4QTJvZBA0bAxZPaO9U94GQDR649hnSRlrTFJ0KaPN2QKvRkI9iNVv/MEeyoszryWdoyV38fXhFyq99/7zdK33K/ggcjrOEUeT4Q+EvgF87NLd5aJyIzFQUY3kY4hIVC0zGnGu0MAH+lCclOtgMUUbHGzUZ0O9jN71ko3Q==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=xn4cmqT6i918SH/43A5ZbWrCfLcsc4fbxU6eHa13d5s=;
- b=aUeGZhDxL6JR0Eg+TMIhSdGJv8frKw3ZE7WCipO4xaJe2jwdn0k/VS3qVLprWT2AEblc64+NgmZd5Depg+tZLVSoVn/pCV37N5/RlxgBCvee6yJKYsGFdEQaNA9Y3fqtzJhFzYYOVycg6PPXl4uh5TWYe3cDT2zJzi3OHpCKuBLVhSh0G0uM19O2ewmpF+E9g1kxVCwW41HFUdbxlk6/+J1zAgVVdYbnbJ/XyAlTJwFzL7XP0eG0r6bwgk2BUnixadd7WfwHReyfyRe1sBx0ZDzWIkBg2iIBpM2k2Qluuy22dpfpZ+3+5yES6ojtRXn3UCuevGIN6Uv/7i4a0fCSWw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=marvell.com; dmarc=pass action=none header.from=marvell.com;
- dkim=pass header.d=marvell.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=marvell.onmicrosoft.com; s=selector1-marvell-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=xn4cmqT6i918SH/43A5ZbWrCfLcsc4fbxU6eHa13d5s=;
- b=jbRbmLC9+BojLIZshxWghOR5QgBG1BoSCCxdQfv7N35U4Y6+559FIk6ta5sWkpf3oAq7oV9cpl3JA5uqFvrYVnYjdXF8OK1XOKcjdg4DWrhoQN++2bopEKjtF54xD9FqtEopQFWMd43bw3velcxQ8S1ul5y05cnOylc0okrFFVY=
-Received: from MN2PR18MB3182.namprd18.prod.outlook.com (10.255.236.143) by
- MN2PR18MB3214.namprd18.prod.outlook.com (10.255.236.215) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.2644.19; Wed, 22 Jan 2020 16:41:10 +0000
-Received: from MN2PR18MB3182.namprd18.prod.outlook.com
- ([fe80::703e:1571:8bb7:5f8f]) by MN2PR18MB3182.namprd18.prod.outlook.com
- ([fe80::703e:1571:8bb7:5f8f%6]) with mapi id 15.20.2644.027; Wed, 22 Jan 2020
- 16:41:10 +0000
-From:   Michal Kalderon <mkalderon@marvell.com>
-To:     Leon Romanovsky <leon@kernel.org>
-CC:     Jakub Kicinski <kuba@kernel.org>, Ariel Elior <aelior@marvell.com>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-rdma@vger.kernel.org" <linux-rdma@vger.kernel.org>,
-        "linux-scsi@vger.kernel.org" <linux-scsi@vger.kernel.org>
-Subject: RE: [EXT] Re: [PATCH net-next 13/14] qed: FW 8.42.2.0 debug features
-Thread-Topic: [EXT] Re: [PATCH net-next 13/14] qed: FW 8.42.2.0 debug features
-Thread-Index: AQHV0ThpeYgDXoJ9UkGGsegwjBX5+6f21fUAgAACP4CAAAOBgIAABuTQ
-Date:   Wed, 22 Jan 2020 16:41:10 +0000
-Message-ID: <MN2PR18MB318296DAE2E98F3BD34B3675A10C0@MN2PR18MB3182.namprd18.prod.outlook.com>
-References: <20200122152627.14903-1-michal.kalderon@marvell.com>
- <20200122152627.14903-14-michal.kalderon@marvell.com>
- <20200122075416.608979b2@cakuba>
- <MN2PR18MB3182F7A15298B22C7CC5B64FA10C0@MN2PR18MB3182.namprd18.prod.outlook.com>
- <20200122161451.GH7018@unreal>
-In-Reply-To: <20200122161451.GH7018@unreal>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-originating-ip: [199.203.130.254]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: 7ce29020-4399-4366-891f-08d79f59e324
-x-ms-traffictypediagnostic: MN2PR18MB3214:
-x-ms-exchange-transport-forked: True
-x-microsoft-antispam-prvs: <MN2PR18MB32145ADB83C7D53FDE50C9BCA10C0@MN2PR18MB3214.namprd18.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:9508;
-x-forefront-prvs: 029097202E
-x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(4636009)(39860400002)(366004)(136003)(396003)(346002)(376002)(189003)(199004)(2906002)(81166006)(81156014)(8936002)(8676002)(4326008)(86362001)(186003)(33656002)(6506007)(26005)(7696005)(6916009)(64756008)(66946007)(66446008)(76116006)(66556008)(66476007)(478600001)(316002)(54906003)(52536014)(9686003)(71200400001)(55016002)(5660300002);DIR:OUT;SFP:1101;SCL:1;SRVR:MN2PR18MB3214;H:MN2PR18MB3182.namprd18.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;MX:1;A:1;
-received-spf: None (protection.outlook.com: marvell.com does not designate
- permitted sender hosts)
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: k3B9PCZNMBs4/rjybX/J8IGSX0FnzbQHl6k3aFCgyw/zZJTl4J1MLeHoImMwsFTZOv80PK/naJFWinRSeg82uHBBJ3BxbcIV6XAohj6JW66Ls9ClGOzFrGA5tTe/ADXKR4FtvxuvuzGytFQvdeMYsMI0EjRD1fRteV871xBQ7S+IdZFl3BhF6XGYT8YfQipisgvASHc+LwtwDF512/+5fo9Via72xx1g3KvHgV+MiQpjObmC0HoEbzxh+rPloCiA0BGNRXXruMGl8WngPvG7+KTJWD9uvDcMbf0QtNagDmWiTWOM5TCZ0lgVCB37WVTHpi34CdNDLfO369/1raGUdoZFq3qjY7KJO2UzvjtcPr0HgVjwbCtL9HV50YX1T6zLpQm5f57JQKLSDFDW+IapyTtSFne5NOZ6/+xr95IHoOVjzBlzhMEd+wPsekiQ2hQY
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+        id S1729222AbgAVQrM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 22 Jan 2020 11:47:12 -0500
+Received: from mail-il1-f197.google.com ([209.85.166.197]:46436 "EHLO
+        mail-il1-f197.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729203AbgAVQrM (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 22 Jan 2020 11:47:12 -0500
+Received: by mail-il1-f197.google.com with SMTP id a2so157520ill.13
+        for <netdev@vger.kernel.org>; Wed, 22 Jan 2020 08:47:11 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
+        bh=teBxDbGtJLSkRwAQpel7T4qzq+TrAgnWL1RicUMKLg8=;
+        b=i8yPQFienm77wXb/KZ4SOKB6sxei+/alDyofYSV4UkeFwG/7yNd4gqF42vjeAfkkiC
+         diuN5BFFP4aq01UUbWAyMZLQpGXLcTIRUSJDLZnX79rHzzkJEVrcV+w10NmG3xRhFaF2
+         6ZlsWAzdgBEHDJNULbAfOj6mj4CvhuHy3nAeK6ZLjTyThaHsm9/ZW3X0GWRTvTGSvPEm
+         TIZmD4v6JWvIfvy2/lHhUP3inv+6qm3AQMhf1ZBD5C8WXYfJMatRqwqIbWgiCth51KHc
+         ls1QoJJuJsqx8bejaV7FlPyduqgMnPHvywaEHc1BrSCR2nsQbrpP81dfL6xUgt2YIVVc
+         6OJA==
+X-Gm-Message-State: APjAAAXs610E36dbx0G7bZLnfA+iil3Lr4qZSacVDVEILCQX6BnVyl0+
+        UlSatGHEk/X7Gt4LwzF3VmTdi0XWB9KzmaYahzgniS48GYWI
+X-Google-Smtp-Source: APXvYqyepTjvIEchX4OnEENJBtOJ+Wn+kE8d4zCxfakBrZgSmYIz45pPBOHOdoHc02imOru2L7cptC1hhM5osy5/ztCTAcM0H5Pc
 MIME-Version: 1.0
-X-MS-Exchange-CrossTenant-Network-Message-Id: 7ce29020-4399-4366-891f-08d79f59e324
-X-MS-Exchange-CrossTenant-originalarrivaltime: 22 Jan 2020 16:41:10.6103
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 70e1fb47-1155-421d-87fc-2e58f638b6e0
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: RYlMaTf+ittt1d6R26GBbqcI9Dm9d/o0szaCdD0gUy8Nv1hwRVaugyAfpGjfW5YaE9hP/5Ajon0+1eAB3zwU7w==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: MN2PR18MB3214
-X-OriginatorOrg: marvell.com
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.138,18.0.572
- definitions=2020-01-17_05:2020-01-16,2020-01-17 signatures=0
+X-Received: by 2002:a92:730d:: with SMTP id o13mr6578598ilc.174.1579711631042;
+ Wed, 22 Jan 2020 08:47:11 -0800 (PST)
+Date:   Wed, 22 Jan 2020 08:47:11 -0800
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <0000000000009db040059cbd46a4@google.com>
+Subject: KMSAN: uninit-value in eth_type_trans (2)
+From:   syzbot <syzbot+0901d0cc75c3d716a3a3@syzkaller.appspotmail.com>
+To:     daniel@iogearbox.net, davem@davemloft.net, edumazet@google.com,
+        glider@google.com, hkallweit1@gmail.com,
+        linux-kernel@vger.kernel.org, maximmi@mellanox.com,
+        netdev@vger.kernel.org, sdf@google.com,
+        syzkaller-bugs@googlegroups.com, tglx@linutronix.de
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> From: Leon Romanovsky <leon@kernel.org>
-> Sent: Wednesday, January 22, 2020 6:15 PM
->=20
-> External Email
->=20
-> ----------------------------------------------------------------------
-> On Wed, Jan 22, 2020 at 04:03:04PM +0000, Michal Kalderon wrote:
-> > > From: linux-rdma-owner@vger.kernel.org <linux-rdma-
-> > > owner@vger.kernel.org> On Behalf Of Jakub Kicinski
-> > >
-> > > On Wed, 22 Jan 2020 17:26:26 +0200, Michal Kalderon wrote:
-> > > > Add to debug dump more information on the platform it was
-> > > > collected from (kernel version, epoch, pci func, path id).
-> > >
-> > > Kernel version and epoch don't belong in _device_ debug dump.
-> > This is actually very useful when customers provide us with a debug-dum=
-p
-> using the ethtool-d option.
-> > We can immediately verify the linux kernel version used.
->=20
-> Why can't they give you "uname -a" output?
-Unfortunately, history has shown us that in many cases even though requeste=
-d uname -a is not
-Provided, or worse, provided but does not match the actual kernel run on.=20
-Having this information in the dump helps us and provides us with more conf=
-idence than uname -a output.
+Hello,
 
->=20
-> Thanks
+syzbot found the following crash on:
+
+HEAD commit:    686a4f77 kmsan: don't compile memmove
+git tree:       https://github.com/google/kmsan.git master
+console output: https://syzkaller.appspot.com/x/log.txt?x=104b74c9e00000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=e10654781bc1f11c
+dashboard link: https://syzkaller.appspot.com/bug?extid=0901d0cc75c3d716a3a3
+compiler:       clang version 10.0.0 (https://github.com/llvm/llvm-project/ c2443155a0fb245c8f17f2c1c72b6ea391e86e81)
+syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=14c91cc9e00000
+C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=136a6faee00000
+
+IMPORTANT: if you fix the bug, please add the following tag to the commit:
+Reported-by: syzbot+0901d0cc75c3d716a3a3@syzkaller.appspotmail.com
+
+=====================================================
+BUG: KMSAN: uninit-value in eth_type_trans+0x356/0xa90 net/ethernet/eth.c:167
+CPU: 0 PID: 0 Comm: swapper/0 Not tainted 5.5.0-rc5-syzkaller #0
+Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
+Call Trace:
+ <IRQ>
+ __dump_stack lib/dump_stack.c:77 [inline]
+ dump_stack+0x1c9/0x220 lib/dump_stack.c:118
+ kmsan_report+0xf7/0x1e0 mm/kmsan/kmsan_report.c:118
+ __msan_warning+0x58/0xa0 mm/kmsan/kmsan_instr.c:215
+ eth_type_trans+0x356/0xa90 net/ethernet/eth.c:167
+ __dev_forward_skb+0x3ec/0x990 net/core/dev.c:2074
+ veth_forward_skb drivers/net/veth.c:231 [inline]
+ veth_xmit+0x3fe/0xb70 drivers/net/veth.c:262
+ __netdev_start_xmit include/linux/netdevice.h:4447 [inline]
+ netdev_start_xmit include/linux/netdevice.h:4461 [inline]
+ xmit_one net/core/dev.c:3420 [inline]
+ dev_hard_start_xmit+0x531/0xab0 net/core/dev.c:3436
+ __dev_queue_xmit+0x37de/0x4220 net/core/dev.c:4013
+ dev_queue_xmit+0x4b/0x60 net/core/dev.c:4046
+ hsr_xmit net/hsr/hsr_forward.c:228 [inline]
+ hsr_forward_do net/hsr/hsr_forward.c:285 [inline]
+ hsr_forward_skb+0x2614/0x30d0 net/hsr/hsr_forward.c:361
+ hsr_handle_frame+0x385/0x4b0 net/hsr/hsr_slave.c:43
+ __netif_receive_skb_core+0x21de/0x5840 net/core/dev.c:5051
+ __netif_receive_skb_one_core net/core/dev.c:5148 [inline]
+ __netif_receive_skb net/core/dev.c:5264 [inline]
+ process_backlog+0x936/0x1410 net/core/dev.c:6095
+ napi_poll net/core/dev.c:6532 [inline]
+ net_rx_action+0x786/0x1ab0 net/core/dev.c:6600
+ __do_softirq+0x311/0x83d kernel/softirq.c:293
+ invoke_softirq kernel/softirq.c:375 [inline]
+ irq_exit+0x230/0x280 kernel/softirq.c:416
+ exiting_irq+0xe/0x10 arch/x86/include/asm/apic.h:536
+ smp_apic_timer_interrupt+0x48/0x70 arch/x86/kernel/apic/apic.c:1140
+ apic_timer_interrupt+0x2e/0x40 arch/x86/entry/entry_64.S:834
+ </IRQ>
+RIP: 0010:default_idle+0x53/0x90 arch/x86/kernel/process.c:700
+Code: 13 f9 d6 f2 44 8b 35 64 54 d8 01 48 c7 c7 38 b7 22 be e8 50 1d a2 f3 83 38 00 75 31 45 85 f6 7e 07 0f 00 2d 27 fe 56 00 fb f4 <65> 8b 35 46 c0 b6 43 c7 03 00 00 00 00 c7 43 08 00 00 00 00 bf ff
+RSP: 0018:ffffffffbd603d88 EFLAGS: 00000246 ORIG_RAX: ffffffffffffff13
+RAX: ffff912c3d81e738 RBX: ffffffffbd62cb90 RCX: fffffa5d46130d70
+RDX: ffff912c35c11738 RSI: 0000000000000000 RDI: ffffffffbe22b738
+RBP: ffffffffbd603d98 R08: fffffa5d4000000f R09: ffff912b67bfb000
+R10: 0000000000000004 R11: ffffffffbc4a62a0 R12: ffffffffbd62c1c0
+R13: 0000000000000000 R14: 0000000000000000 R15: ffffffffbd62cb90
+ arch_cpu_idle+0x25/0x30 arch/x86/kernel/process.c:690
+ default_idle_call kernel/sched/idle.c:94 [inline]
+ cpuidle_idle_call kernel/sched/idle.c:154 [inline]
+ do_idle+0x26c/0x7b0 kernel/sched/idle.c:269
+ cpu_startup_entry+0x45/0x50 kernel/sched/idle.c:361
+ rest_init+0x1be/0x1f0 init/main.c:452
+ arch_call_rest_init+0x13/0x15
+ start_kernel+0x975/0xb3e init/main.c:787
+ x86_64_start_reservations+0x18/0x28 arch/x86/kernel/head64.c:490
+ x86_64_start_kernel+0x83/0x86 arch/x86/kernel/head64.c:471
+ secondary_startup_64+0xa4/0xb0 arch/x86/kernel/head_64.S:242
+
+Uninit was stored to memory at:
+ kmsan_save_stack_with_flags mm/kmsan/kmsan.c:144 [inline]
+ kmsan_internal_chain_origin+0xad/0x130 mm/kmsan/kmsan.c:310
+ kmsan_memcpy_memmove_metadata+0x272/0x2e0 mm/kmsan/kmsan.c:247
+ kmsan_memcpy_metadata+0xb/0x10 mm/kmsan/kmsan.c:267
+ __msan_memcpy+0x43/0x50 mm/kmsan/kmsan_instr.c:116
+ pskb_expand_head+0x38b/0x1b00 net/core/skbuff.c:1637
+ __skb_pad+0x47f/0x900 net/core/skbuff.c:1805
+ __skb_put_padto include/linux/skbuff.h:3193 [inline]
+ skb_put_padto include/linux/skbuff.h:3212 [inline]
+ send_hsr_supervision_frame+0x122d/0x1500 net/hsr/hsr_device.c:310
+ hsr_announce+0x1e2/0x370 net/hsr/hsr_device.c:341
+ call_timer_fn+0x218/0x510 kernel/time/timer.c:1404
+ expire_timers kernel/time/timer.c:1449 [inline]
+ __run_timers+0xcff/0x1210 kernel/time/timer.c:1773
+ run_timer_softirq+0x2d/0x50 kernel/time/timer.c:1786
+ __do_softirq+0x311/0x83d kernel/softirq.c:293
+
+Uninit was created at:
+ kmsan_save_stack_with_flags+0x3c/0x90 mm/kmsan/kmsan.c:144
+ kmsan_internal_alloc_meta_for_pages mm/kmsan/kmsan_shadow.c:307 [inline]
+ kmsan_alloc_page+0x12a/0x310 mm/kmsan/kmsan_shadow.c:336
+ __alloc_pages_nodemask+0x57f2/0x5f60 mm/page_alloc.c:4800
+ __alloc_pages include/linux/gfp.h:498 [inline]
+ __alloc_pages_node include/linux/gfp.h:511 [inline]
+ alloc_pages_node include/linux/gfp.h:525 [inline]
+ __page_frag_cache_refill mm/page_alloc.c:4875 [inline]
+ page_frag_alloc+0x3ae/0x910 mm/page_alloc.c:4905
+ __napi_alloc_skb+0x193/0xa60 net/core/skbuff.c:519
+ napi_alloc_skb include/linux/skbuff.h:2825 [inline]
+ page_to_skb+0x19f/0x1100 drivers/net/virtio_net.c:384
+ receive_mergeable drivers/net/virtio_net.c:924 [inline]
+ receive_buf+0xe57/0x8ac0 drivers/net/virtio_net.c:1033
+ virtnet_receive drivers/net/virtio_net.c:1323 [inline]
+ virtnet_poll+0x64b/0x19f0 drivers/net/virtio_net.c:1428
+ napi_poll net/core/dev.c:6532 [inline]
+ net_rx_action+0x786/0x1ab0 net/core/dev.c:6600
+ __do_softirq+0x311/0x83d kernel/softirq.c:293
+=====================================================
+
+
+---
+This bug is generated by a bot. It may contain errors.
+See https://goo.gl/tpsmEJ for more information about syzbot.
+syzbot engineers can be reached at syzkaller@googlegroups.com.
+
+syzbot will keep track of this bug report. See:
+https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
+syzbot can test patches for this bug, for details see:
+https://goo.gl/tpsmEJ#testing-patches
