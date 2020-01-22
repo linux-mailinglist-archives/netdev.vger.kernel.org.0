@@ -2,163 +2,102 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 9BCBC144BCC
-	for <lists+netdev@lfdr.de>; Wed, 22 Jan 2020 07:36:56 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 24ADC144BDB
+	for <lists+netdev@lfdr.de>; Wed, 22 Jan 2020 07:42:13 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726094AbgAVGgg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 22 Jan 2020 01:36:36 -0500
-Received: from us-smtp-delivery-1.mimecast.com ([207.211.31.120]:47504 "EHLO
-        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S1725836AbgAVGgg (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 22 Jan 2020 01:36:36 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1579674994;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=1AgtjhKHd4/5av8ia9uDpc8Nq+RQASbmRf/YcZZFxw0=;
-        b=QYJXMx2YSaxyYhDL6QAe2rLHrxcOmYZyfQNnz9WbczYnVWu+ZcWAIRSnHXui2pwRovAf0Y
-        1L1TOOLqftjlJndi+fCEuy5mVyAIYCFiEjL0LxRF4Sj+s1p0fruttDaaeb1vtWZaTxnInl
-        gWTX51D8+/0pqIVSr27xwILKNekjckA=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-429-BXbVLD1vPGycxmPEZeguXQ-1; Wed, 22 Jan 2020 01:36:33 -0500
-X-MC-Unique: BXbVLD1vPGycxmPEZeguXQ-1
-Received: from smtp.corp.redhat.com (int-mx02.intmail.prod.int.phx2.redhat.com [10.5.11.12])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 305F11005502;
-        Wed, 22 Jan 2020 06:36:30 +0000 (UTC)
-Received: from [10.72.12.103] (ovpn-12-103.pek2.redhat.com [10.72.12.103])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id A0F3D60BE0;
-        Wed, 22 Jan 2020 06:36:12 +0000 (UTC)
-Subject: Re: [PATCH 3/5] vDPA: introduce vDPA bus
-To:     Shahaf Shuler <shahafs@mellanox.com>,
-        "Michael S. Tsirkin" <mst@redhat.com>
-Cc:     Jason Gunthorpe <jgg@mellanox.com>,
-        Rob Miller <rob.miller@broadcom.com>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
-        "virtualization@lists.linux-foundation.org" 
-        <virtualization@lists.linux-foundation.org>,
-        Netdev <netdev@vger.kernel.org>,
-        "Bie, Tiwei" <tiwei.bie@intel.com>,
-        "maxime.coquelin@redhat.com" <maxime.coquelin@redhat.com>,
-        "Liang, Cunming" <cunming.liang@intel.com>,
-        "Wang, Zhihong" <zhihong.wang@intel.com>,
-        "Wang, Xiao W" <xiao.w.wang@intel.com>,
-        "haotian.wang@sifive.com" <haotian.wang@sifive.com>,
-        "Zhu, Lingshan" <lingshan.zhu@intel.com>,
-        "eperezma@redhat.com" <eperezma@redhat.com>,
-        "lulu@redhat.com" <lulu@redhat.com>,
-        Parav Pandit <parav@mellanox.com>,
-        "Tian, Kevin" <kevin.tian@intel.com>,
-        "stefanha@redhat.com" <stefanha@redhat.com>,
-        "rdunlap@infradead.org" <rdunlap@infradead.org>,
-        "hch@infradead.org" <hch@infradead.org>,
-        Ariel Adam <aadam@redhat.com>, Jiri Pirko <jiri@mellanox.com>,
-        "hanand@xilinx.com" <hanand@xilinx.com>,
-        "mhabets@solarflare.com" <mhabets@solarflare.com>
-References: <20200116124231.20253-4-jasowang@redhat.com>
- <20200117070324-mutt-send-email-mst@kernel.org>
- <239b042c-2d9e-0eec-a1ef-b03b7e2c5419@redhat.com>
- <CAJPjb1+fG9L3=iKbV4Vn13VwaeDZZdcfBPvarogF_Nzhk+FnKg@mail.gmail.com>
- <AM0PR0502MB379553984D0D55FDE25426F6C3330@AM0PR0502MB3795.eurprd05.prod.outlook.com>
- <d69918ca-8af4-44b2-9652-633530d4c113@redhat.com>
- <20200120174933.GB3891@mellanox.com>
- <2a324cec-2863-58f4-c58a-2414ee32c930@redhat.com>
- <20200121004047-mutt-send-email-mst@kernel.org>
- <b9ad744e-c4cd-82f9-f56a-1ecc185e9cd7@redhat.com>
- <20200121031506-mutt-send-email-mst@kernel.org>
- <028ed448-a948-79d9-f224-c325029b17ab@redhat.com>
- <AM0PR0502MB37956A8D6690B190EEA713A5C30D0@AM0PR0502MB3795.eurprd05.prod.outlook.com>
-From:   Jason Wang <jasowang@redhat.com>
-Message-ID: <d0f5e232-0649-4863-4b8d-13875d1a9e26@redhat.com>
-Date:   Wed, 22 Jan 2020 14:36:10 +0800
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.8.0
+        id S1726194AbgAVGmE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 22 Jan 2020 01:42:04 -0500
+Received: from mx0b-00082601.pphosted.com ([67.231.153.30]:34852 "EHLO
+        mx0b-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1726083AbgAVGmE (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 22 Jan 2020 01:42:04 -0500
+Received: from pps.filterd (m0148460.ppops.net [127.0.0.1])
+        by mx0a-00082601.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 00M6ditW026462
+        for <netdev@vger.kernel.org>; Tue, 21 Jan 2020 22:42:03 -0800
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
+ : date : message-id : mime-version : content-type; s=facebook;
+ bh=K5W4ZYysKPs9X0/w3Q/NZdUH+IJdmsuBPP507CnHIpQ=;
+ b=Y4wYlaT0BBLZLICRnPJyi9Rnp7n0034uhvv6yiMkjWQGxXP2aoKbzUKKed2zoK4tmDTm
+ Hcz7QBjNZQF4Y0w/qEXiaVz8XAcXnB4B0mFMbEhmYMyHvrPertbioJBptv9U3KIjuRvv
+ ilCMsLkCXh3OSzi4vTbuxmhCKSb8qYHyNRs= 
+Received: from mail.thefacebook.com ([163.114.132.120])
+        by mx0a-00082601.pphosted.com with ESMTP id 2xnwtvn19t-3
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT)
+        for <netdev@vger.kernel.org>; Tue, 21 Jan 2020 22:42:02 -0800
+Received: from intmgw001.08.frc2.facebook.com (2620:10d:c085:108::4) by
+ mail.thefacebook.com (2620:10d:c085:21d::4) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.1779.2; Tue, 21 Jan 2020 22:42:00 -0800
+Received: by devbig005.ftw2.facebook.com (Postfix, from userid 6611)
+        id 49BF72944F3E; Tue, 21 Jan 2020 22:41:52 -0800 (PST)
+Smtp-Origin-Hostprefix: devbig
+From:   Martin KaFai Lau <kafai@fb.com>
+Smtp-Origin-Hostname: devbig005.ftw2.facebook.com
+To:     <bpf@vger.kernel.org>
+CC:     Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        David Miller <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>, <kernel-team@fb.com>,
+        <netdev@vger.kernel.org>
+Smtp-Origin-Cluster: ftw2c04
+Subject: [PATCH v2 bpf-next 0/3] bpf: tcp: Add bpf_cubic example
+Date:   Tue, 21 Jan 2020 22:41:52 -0800
+Message-ID: <20200122064152.1833564-1-kafai@fb.com>
+X-Mailer: git-send-email 2.17.1
+X-FB-Internal: Safe
 MIME-Version: 1.0
-In-Reply-To: <AM0PR0502MB37956A8D6690B190EEA713A5C30D0@AM0PR0502MB3795.eurprd05.prod.outlook.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.12
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.138,18.0.572
+ definitions=2020-01-17_05:2020-01-16,2020-01-17 signatures=0
+X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 bulkscore=0 mlxscore=0
+ adultscore=0 clxscore=1015 suspectscore=1 priorityscore=1501 phishscore=0
+ impostorscore=0 malwarescore=0 spamscore=0 mlxlogscore=872
+ lowpriorityscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-1910280000 definitions=main-2001220059
+X-FB-Internal: deliver
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+This set adds bpf_cubic.c example.  It was separated from the
+earlier BPF STRUCT_OPS series.  Some highlights since the
+last post:
 
-On 2020/1/21 =E4=B8=8B=E5=8D=887:09, Shahaf Shuler wrote:
-> Tuesday, January 21, 2020 10:35 AM, Jason Wang:
->> Subject: Re: [PATCH 3/5] vDPA: introduce vDPA bus
->>
->>
->> On 2020/1/21 =E4=B8=8B=E5=8D=884:15, Michael S. Tsirkin wrote:
->>> On Tue, Jan 21, 2020 at 04:00:38PM +0800, Jason Wang wrote:
->>>> On 2020/1/21 =E4=B8=8B=E5=8D=881:47, Michael S. Tsirkin wrote:
->>>>> On Tue, Jan 21, 2020 at 12:00:57PM +0800, Jason Wang wrote:
->>>>>> On 2020/1/21 =E4=B8=8A=E5=8D=881:49, Jason Gunthorpe wrote:
->>>>>>> On Mon, Jan 20, 2020 at 04:43:53PM +0800, Jason Wang wrote:
->>>>>>>> This is similar to the design of platform IOMMU part of
->>>>>>>> vhost-vdpa. We decide to send diffs to platform IOMMU there. If
->>>>>>>> it's ok to do that in driver, we can replace set_map with increm=
-ental
->> API like map()/unmap().
->>>>>>>> Then driver need to maintain rbtree itself.
->>>>>>> I think we really need to see two modes, one where there is a
->>>>>>> fixed translation without dynamic vIOMMU driven changes and one
->>>>>>> that supports vIOMMU.
->>>>>> I think in this case, you meant the method proposed by Shahaf that
->>>>>> sends diffs of "fixed translation" to device?
->>>>>>
->>>>>> It would be kind of tricky to deal with the following case for exa=
-mple:
->>>>>>
->>>>>> old map [4G, 16G) new map [4G, 8G)
->>>>>>
->>>>>> If we do
->>>>>>
->>>>>> 1) flush [4G, 16G)
->>>>>> 2) add [4G, 8G)
->>>>>>
->>>>>> There could be a window between 1) and 2).
->>>>>>
->>>>>> It requires the IOMMU that can do
->>>>>>
->>>>>> 1) remove [8G, 16G)
->>>>>> 2) flush [8G, 16G)
->>>>>> 3) change [4G, 8G)
->>>>>>
->>>>>> ....
->>>>> Basically what I had in mind is something like qemu memory api
->>>>>
->>>>> 0. begin
->>>>> 1. remove [8G, 16G)
->>>>> 2. add [4G, 8G)
->>>>> 3. commit
->>>> This sounds more flexible e.g driver may choose to implement static
->>>> mapping one through commit. But a question here, it looks to me this
->>>> still requires the DMA to be synced with at least commit here.
->>>> Otherwise device may get DMA fault? Or device is expected to be paus=
-ed
->> DMA during begin?
->>>> Thanks
->>> For example, commit might switch one set of tables for another,
->>> without need to pause DMA.
->> Yes, I think that works but need confirmation from Shahaf or Jason.
->  From my side, as I wrote, I would like to see the suggested function p=
-rototype along w/ the definition of the expectation from driver upon call=
-ing those.
-> It is not 100% clear to me what should be the outcome of remove/flush/c=
-hange/commit
+1. It is based on EricD recent fixes to the kernel tcp_cubic. [1]
+2. The bpf jiffies reading helper is inlined by the verifier.
+   Different from the earlier version, it only reads jiffies alone
+   and does not do usecs/jiffies conversion.
+3. The bpf .kconfig map is used to read CONFIG_HZ.
 
+[1]: https://patchwork.ozlabs.org/cover/1215066/
 
-Right, I can do this in next version after the discussion is converged.
+v2:
+- Move inlining to fixup_bpf_calls() in patch 1. (Daniel)
+- It is inlined for 64 BITS_PER_LONG and jit_requested
+  as the map_gen_lookup().  Other cases could be
+  considered together with map_gen_lookup() if needed.
+- Use usec resolution in bictcp_update() calculation in patch 3.
+  usecs_to_jiffies() is then removed().  (Eric)
 
-Thanks
+Martin KaFai Lau (3):
+  bpf: Add BPF_FUNC_jiffies64
+  bpf: Sync uapi bpf.h to tools/
+  bpf: tcp: Add bpf_cubic example
 
+ include/linux/bpf.h                           |   1 +
+ include/uapi/linux/bpf.h                      |   9 +-
+ kernel/bpf/core.c                             |   1 +
+ kernel/bpf/helpers.c                          |  12 +
+ kernel/bpf/verifier.c                         |  24 +
+ net/core/filter.c                             |   2 +
+ tools/include/uapi/linux/bpf.h                |   9 +-
+ tools/testing/selftests/bpf/bpf_tcp_helpers.h |  16 +
+ .../selftests/bpf/prog_tests/bpf_tcp_ca.c     |  25 +
+ tools/testing/selftests/bpf/progs/bpf_cubic.c | 544 ++++++++++++++++++
+ 10 files changed, 641 insertions(+), 2 deletions(-)
+ create mode 100644 tools/testing/selftests/bpf/progs/bpf_cubic.c
 
->
+-- 
+2.17.1
 
