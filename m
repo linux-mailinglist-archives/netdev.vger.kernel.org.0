@@ -2,47 +2,47 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id AD3F31453E7
-	for <lists+netdev@lfdr.de>; Wed, 22 Jan 2020 12:36:22 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9E4731453E8
+	for <lists+netdev@lfdr.de>; Wed, 22 Jan 2020 12:36:27 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729213AbgAVLgU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 22 Jan 2020 06:36:20 -0500
-Received: from mail-pj1-f65.google.com ([209.85.216.65]:37724 "EHLO
-        mail-pj1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729012AbgAVLgU (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 22 Jan 2020 06:36:20 -0500
-Received: by mail-pj1-f65.google.com with SMTP id m13so3389518pjb.2
-        for <netdev@vger.kernel.org>; Wed, 22 Jan 2020 03:36:19 -0800 (PST)
+        id S1729242AbgAVLgZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 22 Jan 2020 06:36:25 -0500
+Received: from mail-pg1-f196.google.com ([209.85.215.196]:36871 "EHLO
+        mail-pg1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729012AbgAVLgZ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 22 Jan 2020 06:36:25 -0500
+Received: by mail-pg1-f196.google.com with SMTP id q127so3357859pga.4
+        for <netdev@vger.kernel.org>; Wed, 22 Jan 2020 03:36:25 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=NdDugV4RVuZnDJNXT9PvRvUKCb7vnZ8wbK7a4Kfzijc=;
-        b=amNlVe/nfFUnk7dZUvrMYVGKtfiuupjyUi8G+zAJde7RJMPj+zzl+63D/xqyOqwzEp
-         9HzndPjqvM0ziDPqXnFTbHigulv9TCTDg9RdkPKCzN8xbGQHQ6RldowvAhCzXXTiztgq
-         uA8jWMmd5RLJjCWAXmsw+VvJ+V/pVAigsezoa9mmWkH54JoiSPArfyUwd6Uuv9Y5eMaq
-         SDkZagCOWQ9Jj2b1V7r5/Naff6OflDAT0xNMxcF9CyLga96lO+mENFPfBgsfbG7T3o4B
-         id7yEzUJvmawmaxXfLMlTQnpOhUdQ5PaITj2ORRJMS8Y9kY5KBDZfkO8Ct5zjSK5o7kG
-         QNKQ==
+        bh=7QJ7r6VCbJ5yiJne5YJbfLdcih0PR3cC3oHUxUnk3EU=;
+        b=nBz5U6MkGQghgoM+/oianKmyfUEMUS9qGHuEOJDad1hkeuTM77VhajN4G/XcT5Cd+7
+         ldBzcit8wYIdMLFLeUJ8foKReqmEG2aOsTUoK8+IEJyN1F76Dnx8mpb05SFU7OwN6EM5
+         KxkrVNX8UX7baeNRC15WO4QlIzYeT9kCwkJdJUlc3/2O4TUvhrscplEhR0WNzcHpHSwT
+         bcrSRRT1oAeHCU0jeyTeQfjqDnwR4wKNGX0CIkUnVN1pLZagC1kUHjIxogJ2rHKZlQ5c
+         wT/N8FE2i9uAFM8X3IacfZQ4Ie7V2VqkzY1VCR9n2vEuyhb8zZyVet9TuXWhuOyB+QS1
+         oK7w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references;
-        bh=NdDugV4RVuZnDJNXT9PvRvUKCb7vnZ8wbK7a4Kfzijc=;
-        b=NmWoRhf0sCPsWRFyFMEhkkpm8HyYZI2XcWZlxxx2YT64xMjYJajgnWlzaEfm5rwRJO
-         2PwI6KCwx/Qd++mYRJsYEeGBUZhznTz6b5VdZQJIaMfgQNxhrqFWy3LQRLg/S/NXgXGe
-         2FHOaOzNJIgzLK3m3K8PAYlB7NfYBq8cA19xtBMIj0bTy1wLL3wqsqSgX4U6f3b4FrLt
-         j6wx5vigDjJPBoNVbhTSLAHEJh2GC8ocxhmKfr11n1dnyTqdn7DXTEdgnAuwe/YqK+IL
-         xi7KWtxgy1I8P53VdbdDk2TRwmvVMQF1IRqlK0CwyyXkAQSPu2jPPN/3hsxFdrTW1Tc7
-         PCoQ==
-X-Gm-Message-State: APjAAAUGVBpmoEemc3IHMkVwbsRom6C4UCg6wE6FEqnPEDFxt2X4fYnA
-        VUDIketl8K422MqFtqWmRas8YroVfQFHx2o3
-X-Google-Smtp-Source: APXvYqxicRp8mbT+2rFWOuGKhF9VCaySrmGhCNNhE06lOMgc9bgjekfu36MOq6areiXSpdB+ZuN/qw==
-X-Received: by 2002:a17:90a:d78f:: with SMTP id z15mr2603247pju.36.1579692979120;
-        Wed, 22 Jan 2020 03:36:19 -0800 (PST)
+        bh=7QJ7r6VCbJ5yiJne5YJbfLdcih0PR3cC3oHUxUnk3EU=;
+        b=qGKsAUi00vctK0EfOVUdo20PMXG6A7b89ARrgShVUvw1yHAeOlqbnmPHcOM3mehXVJ
+         xCMiLGVHBFb2ag4ZeV+VZoxdkUVWBCk6lQ+MDN7AeP4vu/9SPt4vRfS5GAFWWqR8Zajn
+         nEvQxPKVVZRSFpXHDGa9wtcD+278/GW5lW6+cw7ac1JXiSwMovrxT5LsfjOOxRLo6by0
+         tclQu9lT19CUVIpFyWw3scpH2FQa4Z0bG8PiSjSAU/ohYuNzJ0W1bMhd5SkKdvZFATaG
+         flX5eWnmdTR4XyMZo4KuKT8ZXfHtbx6nSLxAp/i4lPNeLolQgB3Gh3QivdzvG/3NPAK3
+         qNjg==
+X-Gm-Message-State: APjAAAWOa6jS0YMu8Mahbcom5moSZNWywo+q5esY3trmyVOW5+KFqyKG
+        EConSeGivDNXe9SIccqL5T4/HAh41VSkkNfD
+X-Google-Smtp-Source: APXvYqysON5fujS33cj6T4u0xP/S0KBmqxkmcm8hjyJYODMzLrIHF8qDcsK7HL0+7tRTh4gRq6/Wrg==
+X-Received: by 2002:aa7:92c7:: with SMTP id k7mr2234096pfa.8.1579692984412;
+        Wed, 22 Jan 2020 03:36:24 -0800 (PST)
 Received: from localhost.localdomain ([223.186.203.82])
-        by smtp.gmail.com with ESMTPSA id c6sm2145962pgk.78.2020.01.22.03.36.14
+        by smtp.gmail.com with ESMTPSA id c6sm2145962pgk.78.2020.01.22.03.36.19
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 22 Jan 2020 03:36:18 -0800 (PST)
+        Wed, 22 Jan 2020 03:36:23 -0800 (PST)
 From:   gautamramk@gmail.com
 To:     netdev@vger.kernel.org
 Cc:     "Mohit P. Tahiliani" <tahiliani@nitk.edu.in>,
@@ -54,9 +54,9 @@ Cc:     "Mohit P. Tahiliani" <tahiliani@nitk.edu.in>,
         Stephen Hemminger <stephen@networkplumber.org>,
         Leslie Monis <lesliemonis@gmail.com>,
         Gautam Ramakrishnan <gautamramk@gmail.com>
-Subject: [PATCH net-next v6 06/10] pie: improve comments and commenting style
-Date:   Wed, 22 Jan 2020 17:05:29 +0530
-Message-Id: <20200122113533.28128-7-gautamramk@gmail.com>
+Subject: [PATCH net-next v6 07/10] net: sched: pie: fix commenting
+Date:   Wed, 22 Jan 2020 17:05:30 +0530
+Message-Id: <20200122113533.28128-8-gautamramk@gmail.com>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <20200122113533.28128-1-gautamramk@gmail.com>
 References: <20200122113533.28128-1-gautamramk@gmail.com>
@@ -67,139 +67,48 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: "Mohit P. Tahiliani" <tahiliani@nitk.edu.in>
 
-Improve the comments along with the commenting style used to
-describe the members of the structures and their initial values
-in the init functions.
+Fix punctuation and logical mistakes in the comments. The
+logical mistake was that "dequeue_rate" is no longer the default
+way to calculate queuing delay and is not needed. The default
+way to calculate queue delay was changed in commit cec2975f2b70
+("net: sched: pie: enable timestamp based delay calculation").
 
 Signed-off-by: Mohit P. Tahiliani <tahiliani@nitk.edu.in>
 Signed-off-by: Leslie Monis <lesliemonis@gmail.com>
 Signed-off-by: Gautam Ramakrishnan <gautamramk@gmail.com>
 ---
- include/net/pie.h | 85 ++++++++++++++++++++++++++++++++---------------
- 1 file changed, 58 insertions(+), 27 deletions(-)
+ net/sched/sch_pie.c | 10 +++++-----
+ 1 file changed, 5 insertions(+), 5 deletions(-)
 
-diff --git a/include/net/pie.h b/include/net/pie.h
-index ec0fbe98ec2f..51a1984c2dce 100644
---- a/include/net/pie.h
-+++ b/include/net/pie.h
-@@ -14,42 +14,74 @@
- #define DQCOUNT_INVALID	-1
- #define PIE_SCALE	8
+diff --git a/net/sched/sch_pie.c b/net/sched/sch_pie.c
+index 0c583cc148f3..024f55569a38 100644
+--- a/net/sched/sch_pie.c
++++ b/net/sched/sch_pie.c
+@@ -248,10 +248,10 @@ static void pie_process_dequeue(struct Qdisc *sch, struct sk_buff *skb)
+ 		q->vars.dq_count = 0;
+ 	}
  
--/* parameters used */
-+/**
-+ * struct pie_params - contains pie parameters
-+ * @target:		target delay in pschedtime
-+ * @tudpate:		interval at which drop probability is calculated
-+ * @limit:		total number of packets that can be in the queue
-+ * @alpha:		parameter to control drop probability
-+ * @beta:		parameter to control drop probability
-+ * @ecn:		is ECN marking of packets enabled
-+ * @bytemode:		is drop probability scaled based on pkt size
-+ * @dq_rate_estimator:	is Little's law used for qdelay calculation
-+ */
- struct pie_params {
--	psched_time_t target;	/* user specified target delay in pschedtime */
--	u32 tupdate;		/* timer frequency (in jiffies) */
--	u32 limit;		/* number of packets that can be enqueued */
--	u32 alpha;		/* alpha and beta are between 0 and 32 */
--	u32 beta;		/* and are used for shift relative to 1 */
--	u8 ecn;			/* true if ecn is enabled */
--	u8 bytemode;		/* to scale drop early prob based on pkt size */
--	u8 dq_rate_estimator;	/* to calculate delay using Little's law */
-+	psched_time_t target;
-+	u32 tupdate;
-+	u32 limit;
-+	u32 alpha;
-+	u32 beta;
-+	u8 ecn;
-+	u8 bytemode;
-+	u8 dq_rate_estimator;
- };
+-	/* Calculate the average drain rate from this value.  If queue length
+-	 * has receded to a small value viz., <= QUEUE_THRESHOLD bytes,reset
++	/* Calculate the average drain rate from this value. If queue length
++	 * has receded to a small value viz., <= QUEUE_THRESHOLD bytes, reset
+ 	 * the dq_count to -1 as we don't have enough packets to calculate the
+-	 * drain rate anymore The following if block is entered only when we
++	 * drain rate anymore. The following if block is entered only when we
+ 	 * have a substantial queue built up (QUEUE_THRESHOLD bytes or more)
+ 	 * and we calculate the drain rate for the threshold here.  dq_count is
+ 	 * in bytes, time difference in psched_time, hence rate is in
+@@ -329,8 +329,8 @@ static void calculate_probability(struct Qdisc *sch)
+ 		qdelay_old = q->vars.qdelay_old;
+ 	}
  
--/* variables used */
-+/**
-+ * struct pie_vars - contains pie variables
-+ * @qdelay:			current queue delay
-+ * @qdelay_old:			queue delay in previous qdelay calculation
-+ * @burst_time:			burst time allowance
-+ * @dq_tstamp:			timestamp at which dq rate was last calculated
-+ * @prob:			drop probability
-+ * @accu_prob:			accumulated drop probability
-+ * @dq_count:			number of bytes dequeued in a measurement cycle
-+ * @avg_dq_rate:		calculated average dq rate
-+ * @qlen_old:			queue length during previous qdelay calculation
-+ * @accu_prob_overflows:	number of times accu_prob overflows
-+ */
- struct pie_vars {
- 	psched_time_t qdelay;
- 	psched_time_t qdelay_old;
- 	psched_time_t burst_time;
--	psched_time_t dq_tstamp;	/* drain rate */
--	u64 prob;		/* probability but scaled by u64 limit. */
--	u64 accu_prob;		/* accumulated drop probability */
--	u64 dq_count;		/* measured in bytes */
--	u32 avg_dq_rate;	/* bytes per pschedtime tick,scaled */
--	u32 qlen_old;		/* in bytes */
--	u8 accu_prob_overflows;	/* overflows of accu_prob */
-+	psched_time_t dq_tstamp;
-+	u64 prob;
-+	u64 accu_prob;
-+	u64 dq_count;
-+	u32 avg_dq_rate;
-+	u32 qlen_old;
-+	u8 accu_prob_overflows;
- };
- 
--/* statistics gathering */
-+/**
-+ * struct pie_stats - contains pie stats
-+ * @packets_in:	total number of packets enqueued
-+ * @dropped:	packets dropped due to pie action
-+ * @overlimit:	packets dropped due to lack of space in queue
-+ * @ecn_mark:	packets marked with ECN
-+ * @maxq:	maximum queue size
-+ */
- struct pie_stats {
--	u32 packets_in;		/* total number of packets enqueued */
--	u32 dropped;		/* packets dropped due to pie_action */
--	u32 overlimit;		/* dropped due to lack of space in queue */
--	u32 ecn_mark;		/* packets marked with ECN */
--	u32 maxq;		/* maximum queue size */
-+	u32 packets_in;
-+	u32 dropped;
-+	u32 overlimit;
-+	u32 ecn_mark;
-+	u32 maxq;
- };
- 
--/* private skb vars */
-+/**
-+ * struct pie_skb_cb - contains private skb vars
-+ * @enqueue_time:	timestamp when the packet is enqueued
-+ */
- struct pie_skb_cb {
- 	psched_time_t enqueue_time;
- };
-@@ -58,7 +90,7 @@ static inline void pie_params_init(struct pie_params *params)
- {
- 	params->target = PSCHED_NS2TICKS(15 * NSEC_PER_MSEC);	/* 15 ms */
- 	params->tupdate = usecs_to_jiffies(15 * USEC_PER_MSEC);	/* 15 ms */
--	params->limit = 1000;	/* default of 1000 packets */
-+	params->limit = 1000;
- 	params->alpha = 2;
- 	params->beta = 20;
- 	params->ecn = false;
-@@ -68,8 +100,7 @@ static inline void pie_params_init(struct pie_params *params)
- 
- static inline void pie_vars_init(struct pie_vars *vars)
- {
--	/* default of 150 ms in pschedtime */
--	vars->burst_time = PSCHED_NS2TICKS(150 * NSEC_PER_MSEC);
-+	vars->burst_time = PSCHED_NS2TICKS(150 * NSEC_PER_MSEC); /* 150 ms */
- 	vars->dq_tstamp = DTIME_INVALID;
- 	vars->accu_prob = 0;
- 	vars->dq_count = DQCOUNT_INVALID;
+-	/* If qdelay is zero and qlen is not, it means qlen is very small, less
+-	 * than dequeue_rate, so we do not update probabilty in this round
++	/* If qdelay is zero and qlen is not, it means qlen is very small,
++	 * so we do not update probabilty in this round.
+ 	 */
+ 	if (qdelay == 0 && qlen != 0)
+ 		update_prob = false;
 -- 
 2.17.1
 
