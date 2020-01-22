@@ -2,149 +2,128 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id DC62D145CB5
-	for <lists+netdev@lfdr.de>; Wed, 22 Jan 2020 20:51:54 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id DE703145CD7
+	for <lists+netdev@lfdr.de>; Wed, 22 Jan 2020 21:05:40 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728779AbgAVTvu (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 22 Jan 2020 14:51:50 -0500
-Received: from us-smtp-delivery-1.mimecast.com ([205.139.110.120]:52884 "EHLO
-        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S1726442AbgAVTvu (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 22 Jan 2020 14:51:50 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1579722709;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=FPcSthSbcM7Vuq6oiRu0G4FuI4CgyKFmAIFuX7y1w4I=;
-        b=EFEv++onxd68uYf7thn1Z4c9KXjsAdtxYe5e22DUs4n/Sg6Bv8/WY/CaXQuYXtS0B4PNeW
-        uVhZvLsUFeQNA1zYOSJ7VhDYlmUdmprb9ERMmQHUuMpqPPvgWMLp4vzZ/XedgCBKjVqH2Q
-        03Maec12Yh0ibvZu4rRMK+OCoO2bmsg=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-348-F0leqwevPne0Cf6QkgNcbA-1; Wed, 22 Jan 2020 14:51:46 -0500
-X-MC-Unique: F0leqwevPne0Cf6QkgNcbA-1
-Received: from smtp.corp.redhat.com (int-mx07.intmail.prod.int.phx2.redhat.com [10.5.11.22])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 4981E800D41;
-        Wed, 22 Jan 2020 19:51:44 +0000 (UTC)
-Received: from carbon (ovpn-200-26.brq.redhat.com [10.40.200.26])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 87F061001925;
-        Wed, 22 Jan 2020 19:51:34 +0000 (UTC)
-Date:   Wed, 22 Jan 2020 20:51:33 +0100
-From:   Jesper Dangaard Brouer <brouer@redhat.com>
-To:     Haiyang Zhang <haiyangz@microsoft.com>
-Cc:     brouer@redhat.com, sashal@kernel.org, linux-hyperv@vger.kernel.org,
-        netdev@vger.kernel.org, kys@microsoft.com, sthemmin@microsoft.com,
-        olaf@aepfle.de, vkuznets@redhat.com, davem@davemloft.net,
-        linux-kernel@vger.kernel.org,
-        Ilias Apalodimas <ilias.apalodimas@linaro.org>
-Subject: Re: [PATCH V3,net-next, 1/2] hv_netvsc: Add XDP support
-Message-ID: <20200122205133.00688f7c@carbon>
-In-Reply-To: <1579713814-36061-2-git-send-email-haiyangz@microsoft.com>
-References: <1579713814-36061-1-git-send-email-haiyangz@microsoft.com>
-        <1579713814-36061-2-git-send-email-haiyangz@microsoft.com>
+        id S1728809AbgAVUFj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 22 Jan 2020 15:05:39 -0500
+Received: from mail-wr1-f68.google.com ([209.85.221.68]:40103 "EHLO
+        mail-wr1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725827AbgAVUFj (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 22 Jan 2020 15:05:39 -0500
+Received: by mail-wr1-f68.google.com with SMTP id c14so436103wrn.7
+        for <netdev@vger.kernel.org>; Wed, 22 Jan 2020 12:05:38 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=zYMmTihlnk1DMWT7gkXqp5LvgiIFpZWKlcqvO6b0Q7s=;
+        b=hVT0L/VTiNwY2CF6UAj5Q+u9wUnYLRrRZE3Il9PTvtiyEo1BH7qXAeocxlCpWlJl1j
+         HEqRLKtIs5jrnL9ajbpiutrdq6CWBriBfw525fqW1SPKEE4aftF4EohDcp216NsOLA6L
+         5Sm4jGnRsoPi71hspy6J5ERqjxah6Gdset9RN0sznA/p2Q0XfyUB1KF3p3jMbTYjrpBY
+         xfE2BThIsmvuwHo6zxIJ5wlJry6zMrLkIaKi57QPtikv5yoTyepYw9O6HbItPaFYIu/V
+         51Z4LYUaHN9Y+lvaNKXDFRUUp5qObH7h3gxktCCX1JrZZfMxdYjVEnbZPVuOdI6LQ8+/
+         BL7Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=zYMmTihlnk1DMWT7gkXqp5LvgiIFpZWKlcqvO6b0Q7s=;
+        b=hZz9m8GDm/KiJ20VL422PN6BsFFo/TPscELy6oemFLJP35YASu7kG+DvWtUT6g86U5
+         4Wnzea8GGu7xPM3Slx95mmlI7U+XhufKTethAt9U+nlIujstt4mpz1Bcy9tz6wamcneZ
+         RFoFq+OY8HFVswFRCucrzWry3/VYKSWYPyU7ul8qWxGrqXcsy3t4wNCJ0xa93OY1WL2j
+         n2xsGQY564ADmFEER+7+oINya0Jrbtl5GhR6wHc6ImzgiWbfjk7c3nqMqNF3YYAXbS9x
+         /s9q9BsjVt4OeCIn5dL6qiW8htdf0MKE5ql4J+p4hYphAL32pPP6rMYBNRBpueonsW/y
+         LE1Q==
+X-Gm-Message-State: APjAAAUbKZHBpwK/XnIPOG4nf8O8xO7D04wWjB9wX56RbE6ibsWsXoHt
+        rGuH9RGcnTZ/nq3aIMzCrEw=
+X-Google-Smtp-Source: APXvYqwVY4dRl0m6xJN9+3hba3spc0QijH5jCHbJ3WaLSOy5DAvxLi6ANUB2VR5WW1sVZCHfNcGXsg==
+X-Received: by 2002:a5d:4386:: with SMTP id i6mr12841032wrq.63.1579723537343;
+        Wed, 22 Jan 2020 12:05:37 -0800 (PST)
+Received: from ?IPv6:2003:ea:8f36:6800:550a:88ee:b6b9:8233? (p200300EA8F366800550A88EEB6B98233.dip0.t-ipconnect.de. [2003:ea:8f36:6800:550a:88ee:b6b9:8233])
+        by smtp.googlemail.com with ESMTPSA id z6sm59230643wrw.36.2020.01.22.12.05.36
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 22 Jan 2020 12:05:36 -0800 (PST)
+Subject: Re: [PATCH net-next 2/2] dpaa_eth: support all modes with rate
+ adapting PHYs
+To:     madalin.bucur@oss.nxp.com, davem@davemloft.net
+Cc:     andrew@lunn.ch, f.fainelli@gmail.com, netdev@vger.kernel.org,
+        ykaukab@suse.de
+References: <1579701573-6609-1-git-send-email-madalin.bucur@oss.nxp.com>
+ <1579701573-6609-3-git-send-email-madalin.bucur@oss.nxp.com>
+From:   Heiner Kallweit <hkallweit1@gmail.com>
+Message-ID: <eaaf792f-c590-a0df-824f-c28a85b1887c@gmail.com>
+Date:   Wed, 22 Jan 2020 21:05:31 +0100
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
+ Thunderbird/68.4.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+In-Reply-To: <1579701573-6609-3-git-send-email-madalin.bucur@oss.nxp.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
 Content-Transfer-Encoding: 7bit
-X-Scanned-By: MIMEDefang 2.84 on 10.5.11.22
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 22 Jan 2020 09:23:33 -0800
-Haiyang Zhang <haiyangz@microsoft.com> wrote:
+On 22.01.2020 14:59, Madalin Bucur wrote:
+> Stop removing modes that are not supported on the system interface
+> when the connected PHY is capable of rate adaptation. This addresses
+> an issue with the LS1046ARDB board 10G interface no longer working
+> with an 1G link partner after autonegotiation support was added
+> for the Aquantia PHY on board in
+> 
+> commit 09c4c57f7bc4 ("net: phy: aquantia: add support for auto-negotiation configuration")
+> 
+> As it only worked in other modes besides 10G because the PHY
+> was not configured by its driver to remove them, this is not
+> really a bug fix but more of a feature add.
+> 
 
-> +u32 netvsc_run_xdp(struct net_device *ndev, struct netvsc_channel *nvchan,
-> +		   struct xdp_buff *xdp)
-> +{
-> +	void *data = nvchan->rsc.data[0];
-> +	u32 len = nvchan->rsc.len[0];
-> +	struct page *page = NULL;
-> +	struct bpf_prog *prog;
-> +	u32 act = XDP_PASS;
-> +
-> +	xdp->data_hard_start = NULL;
-> +
-> +	rcu_read_lock();
-> +	prog = rcu_dereference(nvchan->bpf_prog);
-> +
-> +	if (!prog)
-> +		goto out;
-> +
-> +	/* allocate page buffer for data */
-> +	page = alloc_page(GFP_ATOMIC);
+I understand the issue, however the description may be a little misleading.
+mac_dev->if_support doesn't include 1Gbps mode, therefore this mode is
+removed from phydev->supported. What happens:
+- before referenced commit: aqr_config_aneg() basically is a
+  no-op and doesn't touch the advertised modes in the chip.
+  Therefore 1Gbps is advertised and aneg succeeds.
+- after referenced commit: 1Gbps is removed from modes advertised by the
+  PHY, therefore aneg doesn't succeed.
 
-The alloc_page() + __free_page() alone[1] cost 231 cycles(tsc) 64.395 ns.
-Thus, the XDP_DROP case will already be limited to just around 10Gbit/s
-14.88 Mpps (67.2ns).
+Maybe in the context of this change the interface mode should be fixed.
+These Aquantia PHY's don't support XGMII, they support USXGMII.
+USXGMII support was added to phylib not too long ago, therefore older
+drivers use value PHY_INTERFACE_MODE_XGMII. For the same compatibility
+reason the Aquantia PHY driver still accepts PHY_INTERFACE_MODE_XGMII.
 
-XDP is suppose to be done for performance reasons. This looks like a
-slowdown.
+Heiner
 
-Measurement tool:
-[1] https://github.com/netoptimizer/prototype-kernel/blob/master/kernel/mm/bench/page_bench01.c
-
-> +	if (!page) {
-> +		act = XDP_DROP;
-> +		goto out;
+> Reported-by: Mian Yousaf Kaukab <ykaukab@suse.de>
+> Signed-off-by: Madalin Bucur <madalin.bucur@oss.nxp.com>
+> ---
+>  drivers/net/ethernet/freescale/dpaa/dpaa_eth.c | 10 +++++++---
+>  1 file changed, 7 insertions(+), 3 deletions(-)
+> 
+> diff --git a/drivers/net/ethernet/freescale/dpaa/dpaa_eth.c b/drivers/net/ethernet/freescale/dpaa/dpaa_eth.c
+> index a301f0095223..d3eb235450e5 100644
+> --- a/drivers/net/ethernet/freescale/dpaa/dpaa_eth.c
+> +++ b/drivers/net/ethernet/freescale/dpaa/dpaa_eth.c
+> @@ -2471,9 +2471,13 @@ static int dpaa_phy_init(struct net_device *net_dev)
+>  		return -ENODEV;
+>  	}
+>  
+> -	/* Remove any features not supported by the controller */
+> -	ethtool_convert_legacy_u32_to_link_mode(mask, mac_dev->if_support);
+> -	linkmode_and(phy_dev->supported, phy_dev->supported, mask);
+> +	if (mac_dev->phy_if != PHY_INTERFACE_MODE_XGMII ||
+> +	    !phy_dev->rate_adaptation) {
+> +		/* Remove any features not supported by the controller */
+> +		ethtool_convert_legacy_u32_to_link_mode(mask,
+> +							mac_dev->if_support);
+> +		linkmode_and(phy_dev->supported, phy_dev->supported, mask);
 > +	}
-> +
-> +	xdp->data_hard_start = page_address(page);
-> +	xdp->data = xdp->data_hard_start + NETVSC_XDP_HDRM;
-> +	xdp_set_data_meta_invalid(xdp);
-> +	xdp->data_end = xdp->data + len;
-> +	xdp->rxq = &nvchan->xdp_rxq;
-> +	xdp->handle = 0;
-> +
-> +	memcpy(xdp->data, data, len);
-
-And a memcpy.
-
-> +
-> +	act = bpf_prog_run_xdp(prog, xdp);
-> +
-> +	switch (act) {
-> +	case XDP_PASS:
-> +	case XDP_TX:
-> +	case XDP_DROP:
-> +		break;
-> +
-> +	case XDP_ABORTED:
-> +		trace_xdp_exception(ndev, prog, act);
-> +		break;
-> +
-> +	default:
-> +		bpf_warn_invalid_xdp_action(act);
-> +	}
-> +
-> +out:
-> +	rcu_read_unlock();
-> +
-> +	if (page && act != XDP_PASS && act != XDP_TX) {
-> +		__free_page(page);
-
-Given this runs under NAPI you could optimize this easily for XDP_DROP
-(and XDP_ABORTED) by recycling the page in a driver local cache. (The
-page_pool also have a driver local cache build in, but it might be
-overkill to use page_pool in this simple case).
-
-You could do this in a followup patch.
-
-> +		xdp->data_hard_start = NULL;
-> +	}
-> +
-> +	return act;
-> +}
-
-
-
--- 
-Best regards,
-  Jesper Dangaard Brouer
-  MSc.CS, Principal Kernel Engineer at Red Hat
-  LinkedIn: http://www.linkedin.com/in/brouer
+>  
+>  	phy_support_asym_pause(phy_dev);
+>  
+> 
 
