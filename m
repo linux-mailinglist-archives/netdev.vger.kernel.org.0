@@ -2,143 +2,210 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id A1394145D8F
-	for <lists+netdev@lfdr.de>; Wed, 22 Jan 2020 22:18:53 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D12BF145DD3
+	for <lists+netdev@lfdr.de>; Wed, 22 Jan 2020 22:28:24 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729066AbgAVVSv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 22 Jan 2020 16:18:51 -0500
-Received: from us-smtp-2.mimecast.com ([207.211.31.81]:46144 "EHLO
-        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1725827AbgAVVSv (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 22 Jan 2020 16:18:51 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1579727931;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=MElVa5JpgF25TjRdpyZNYMF3CvuryfMi3Vab8+75XZ4=;
-        b=RGQ3MoFdl1d47ccdbSHER9C6LBQrtCzdQFEtQ6Y/5X7hBMuJwF6tmDRJGcLFuBJ17MCrab
-        t8AGiJl2Wm+DdiC7o7aHz/HIuDt8vAaTY5cPfwwQ6QPdFh0zaDfrIJ20W93VdI94eMjg2M
-        Pm32sflxXq2o708GR2zanTbZ1Rll1bQ=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-173-J3zpqVKwOtWTpMVyGFbVXQ-1; Wed, 22 Jan 2020 16:18:47 -0500
-X-MC-Unique: J3zpqVKwOtWTpMVyGFbVXQ-1
-Received: from smtp.corp.redhat.com (int-mx08.intmail.prod.int.phx2.redhat.com [10.5.11.23])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id AFE3A1012676;
-        Wed, 22 Jan 2020 21:18:44 +0000 (UTC)
-Received: from krava (ovpn-204-34.brq.redhat.com [10.40.204.34])
-        by smtp.corp.redhat.com (Postfix) with ESMTPS id 1620D19C69;
-        Wed, 22 Jan 2020 21:18:40 +0000 (UTC)
-Date:   Wed, 22 Jan 2020 22:18:38 +0100
-From:   Jiri Olsa <jolsa@redhat.com>
-To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Cc:     Yonghong Song <yhs@fb.com>, Jiri Olsa <jolsa@kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Network Development <netdev@vger.kernel.org>,
-        bpf <bpf@vger.kernel.org>, Andrii Nakryiko <andriin@fb.com>,
-        Martin Lau <kafai@fb.com>,
-        Jakub Kicinski <jakub.kicinski@netronome.com>,
-        David Miller <davem@redhat.com>,
-        =?iso-8859-1?Q?Bj=F6rn_T=F6pel?= <bjorn.topel@intel.com>
-Subject: Re: [PATCH 1/6] bpf: Allow ctx access for pointers to scalar
-Message-ID: <20200122211838.GA828118@krava>
-References: <20200121120512.758929-1-jolsa@kernel.org>
- <20200121120512.758929-2-jolsa@kernel.org>
- <CAADnVQKeR1VFEaRGY7Zy=P7KF8=TKshEy2inhFfi9qis9osS3A@mail.gmail.com>
- <0e114cc9-421d-a30d-db40-91ec7a2a7a34@fb.com>
- <20200122091336.GE801240@krava>
- <20200122160957.igyl2i4ybvbdfoiq@ast-mbp>
+        id S1726811AbgAVV2U (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 22 Jan 2020 16:28:20 -0500
+Received: from mail-lf1-f66.google.com ([209.85.167.66]:37063 "EHLO
+        mail-lf1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725928AbgAVV2Q (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 22 Jan 2020 16:28:16 -0500
+Received: by mail-lf1-f66.google.com with SMTP id b15so734415lfc.4
+        for <netdev@vger.kernel.org>; Wed, 22 Jan 2020 13:28:14 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=paul-moore-com.20150623.gappssmtp.com; s=20150623;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=UlbIRxeN9Q76SjfgK7QR1Vwr+MWjG4ms1YscK+m3ZzA=;
+        b=sjR3KohyzTMBY/tFrzlS/cG22yQtz+Kj0wlR28uWlOMMS98+mdyhDRY4wdLlRbRBWQ
+         4VlXyQi9Pw2NSmQ8fvwn9NxitppXBQTEWwjARvDbpiJhj/K0Y2i1EITeGLzwZ9AH5V63
+         j8XDebSAcj8dY4OSKlnr8BS/HvXVTvkfh1v1rMq9jtjpDyFdJqJ5TCN1NW8CiCsvMp5t
+         Xhb80Ol0PeyJlSg/G7BNimSobNlNwIOJ510Xic8jSS7FVl0FfJkgEVDeG1eadjiSlAeb
+         Czd8yw50v5cUx1XPONGfCW8/GGWBMBpXhutQp8L57JTt9oNAhGO4n84vU5u8OGXSD6G4
+         ZanA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=UlbIRxeN9Q76SjfgK7QR1Vwr+MWjG4ms1YscK+m3ZzA=;
+        b=joflQpHWoGVFXl2ExzyG0U0m8p2jMbCYQgMCHtPYrUnULigGQyQF0hGeJlWtwjep3Y
+         cxsWXjvTuIXjsQZmf9uyt61PPjalbQJBqrc1oZ9nZlb8ti4WdF7+w68IiYMaPIbUkUsx
+         ibGQjk3hlmEIRmhtmnWmGUVDM0kbIpD8yb5xIs1PrfrVQ1V1fpR2BJxyO2SG5yxZf0rb
+         vDjvLxZj/6VyQ60MCNC5Y3PMLRkbgQba9KXNIENVgUPIjkhL/kOkMcB1E9D5BC1Q9tWC
+         2B2QKJkfUP33WJyzO3XzB9c8YxechJMWPJAtNMAd9s3c47Nll6OsPr4VlAuv0TmScVMe
+         MMUg==
+X-Gm-Message-State: APjAAAXDpW7IQGqIrzmcoyyGwwtnKCxeo7gMAVzckY81wafq3Pk0XqSg
+        EbD+0KtKtUISaYaCft3lMVJyZ2u02KrcxTNnUUZ/
+X-Google-Smtp-Source: APXvYqzmCy0bZf7U/H8d37zLwqEk/uVU9XMfs5fLgp38rC119ErDsvdLgD7EkL0RZ3pxjNI9STqxXeIxXnoeDiUoytM=
+X-Received: by 2002:a19:dc1e:: with SMTP id t30mr2878129lfg.34.1579728493389;
+ Wed, 22 Jan 2020 13:28:13 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200122160957.igyl2i4ybvbdfoiq@ast-mbp>
-X-Scanned-By: MIMEDefang 2.84 on 10.5.11.23
+References: <cover.1577736799.git.rgb@redhat.com> <70ad50e69185c50843d5e14462f1c4f03655d503.1577736799.git.rgb@redhat.com>
+In-Reply-To: <70ad50e69185c50843d5e14462f1c4f03655d503.1577736799.git.rgb@redhat.com>
+From:   Paul Moore <paul@paul-moore.com>
+Date:   Wed, 22 Jan 2020 16:28:02 -0500
+Message-ID: <CAHC9VhTKE_3bOXs+UcpKDQhatKH92uY3Hy=JA4sXXVGOC0ek8A@mail.gmail.com>
+Subject: Re: [PATCH ghak90 V8 02/16] audit: add container id
+To:     Richard Guy Briggs <rgb@redhat.com>
+Cc:     containers@lists.linux-foundation.org, linux-api@vger.kernel.org,
+        Linux-Audit Mailing List <linux-audit@redhat.com>,
+        linux-fsdevel@vger.kernel.org, LKML <linux-kernel@vger.kernel.org>,
+        netdev@vger.kernel.org, netfilter-devel@vger.kernel.org,
+        sgrubb@redhat.com, omosnace@redhat.com, dhowells@redhat.com,
+        simo@redhat.com, Eric Paris <eparis@parisplace.org>,
+        Serge Hallyn <serge@hallyn.com>, ebiederm@xmission.com,
+        nhorman@tuxdriver.com, Dan Walsh <dwalsh@redhat.com>,
+        mpatel@redhat.com
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Jan 22, 2020 at 08:09:59AM -0800, Alexei Starovoitov wrote:
+On Tue, Dec 31, 2019 at 2:49 PM Richard Guy Briggs <rgb@redhat.com> wrote:
+>
+> Implement the proc fs write to set the audit container identifier of a
+> process, emitting an AUDIT_CONTAINER_OP record to document the event.
+>
+> This is a write from the container orchestrator task to a proc entry of
+> the form /proc/PID/audit_containerid where PID is the process ID of the
+> newly created task that is to become the first task in a container, or
+> an additional task added to a container.
+>
+> The write expects up to a u64 value (unset: 18446744073709551615).
+>
+> The writer must have capability CAP_AUDIT_CONTROL.
+>
+> This will produce a record such as this:
+>   type=CONTAINER_OP msg=audit(2018-06-06 12:39:29.636:26949) : op=set opid=2209 contid=123456 old-contid=18446744073709551615
+>
+> The "op" field indicates an initial set.  The "opid" field is the
+> object's PID, the process being "contained".  New and old audit
+> container identifier values are given in the "contid" fields.
+>
+> It is not permitted to unset the audit container identifier.
+> A child inherits its parent's audit container identifier.
+>
+> Please see the github audit kernel issue for the main feature:
+>   https://github.com/linux-audit/audit-kernel/issues/90
+> Please see the github audit userspace issue for supporting additions:
+>   https://github.com/linux-audit/audit-userspace/issues/51
+> Please see the github audit testsuiite issue for the test case:
+>   https://github.com/linux-audit/audit-testsuite/issues/64
+> Please see the github audit wiki for the feature overview:
+>   https://github.com/linux-audit/audit-kernel/wiki/RFE-Audit-Container-ID
+>
+> Signed-off-by: Richard Guy Briggs <rgb@redhat.com>
+> Acked-by: Serge Hallyn <serge@hallyn.com>
+> Acked-by: Steve Grubb <sgrubb@redhat.com>
+> Acked-by: Neil Horman <nhorman@tuxdriver.com>
+> Reviewed-by: Ondrej Mosnacek <omosnace@redhat.com>
+> Signed-off-by: Richard Guy Briggs <rgb@redhat.com>
+> ---
+>  fs/proc/base.c             | 36 ++++++++++++++++++++++++++++
+>  include/linux/audit.h      | 25 ++++++++++++++++++++
+>  include/uapi/linux/audit.h |  2 ++
+>  kernel/audit.c             | 58 ++++++++++++++++++++++++++++++++++++++++++++++
+>  kernel/audit.h             |  1 +
+>  kernel/auditsc.c           |  4 ++++
+>  6 files changed, 126 insertions(+)
 
-SNIP
+...
 
-> > > > It cannot dereference it. Use it as what?
-> > > 
-> > > If this is from original bcc code, it will use bpf_probe_read for 
-> > > dereference. This is what I understand when I first reviewed this patch.
-> > > But it will be good to get Jiri's confirmation.
-> > 
-> > it blocked me from accessing 'filename' argument when I probed
-> > do_sys_open via trampoline in bcc, like:
-> > 
-> > 	KRETFUNC_PROBE(do_sys_open)
-> > 	{
-> > 	    const char *filename = (const char *) args[1];
-> > 
-> > AFAICS the current code does not allow for trampoline arguments
-> > being other pointers than to void or struct, the patch should
-> > detect that the argument is pointer to scalar type and let it
-> > pass
-> 
-> Got it. I've looked up your bcc patches and I agree that there is no way to
-> workaround. BTF type argument of that kernel function is 'const char *' and the
-> verifier will enforce that if bpf program tries to cast it the verifier will
-> still see 'const char *'. (It's done this way by design). How about we special
-> case 'char *' in the verifier? Then my concern regarding future extensibility
-> of 'int *' and 'long *' will go away.
-> Compilers have a long history special casing 'char *'. In particular signed
-> char because it's a pointer to null terminated string. I think it's still a
-> special pointer from pointer aliasing point of view. I think the verifier can
-> treat it as scalar here too. In the future the verifier will get smarter and
-> will recognize it as PTR_TO_NULL_STRING while 'u8 *', 'u32 *' will be
-> PTR_TO_BTF_ID. I think it will solve this particular issue. I like conservative
-> approach to the verifier improvements: start with strict checking and relax it
-> on case-by-case. Instead of accepting wide range of cases and cause potential
-> compatibility issues.
+> diff --git a/kernel/audit.c b/kernel/audit.c
+> index 397f8fb4836a..2d7707426b7d 100644
+> --- a/kernel/audit.c
+> +++ b/kernel/audit.c
+> @@ -2356,6 +2358,62 @@ int audit_signal_info(int sig, struct task_struct *t)
+>         return audit_signal_info_syscall(t);
+>  }
+>
+> +/*
+> + * audit_set_contid - set current task's audit contid
+> + * @task: target task
+> + * @contid: contid value
+> + *
+> + * Returns 0 on success, -EPERM on permission failure.
+> + *
+> + * Called (set) from fs/proc/base.c::proc_contid_write().
+> + */
+> +int audit_set_contid(struct task_struct *task, u64 contid)
+> +{
+> +       u64 oldcontid;
+> +       int rc = 0;
+> +       struct audit_buffer *ab;
+> +
+> +       task_lock(task);
+> +       /* Can't set if audit disabled */
+> +       if (!task->audit) {
+> +               task_unlock(task);
+> +               return -ENOPROTOOPT;
+> +       }
+> +       oldcontid = audit_get_contid(task);
+> +       read_lock(&tasklist_lock);
+> +       /* Don't allow the audit containerid to be unset */
+> +       if (!audit_contid_valid(contid))
+> +               rc = -EINVAL;
+> +       /* if we don't have caps, reject */
+> +       else if (!capable(CAP_AUDIT_CONTROL))
+> +               rc = -EPERM;
+> +       /* if task has children or is not single-threaded, deny */
+> +       else if (!list_empty(&task->children))
+> +               rc = -EBUSY;
+> +       else if (!(thread_group_leader(task) && thread_group_empty(task)))
+> +               rc = -EALREADY;
 
-ok, so something like below?
+[NOTE: there is a bigger issue below which I think is going to require
+a respin/fixup of this patch so I'm going to take the opportunity to
+do a bit more bikeshedding ;)]
 
-jirka
+It seems like we could combine both the thread/children checks under a
+single -EBUSY return value.  In both cases the caller should be able
+to determine if the target process is multi-threaded for has spawned
+children, yes?  FWIW, my motivation for this question is that
+-EALREADY seems like a poor choice here.
+
+> +       /* if contid is already set, deny */
+> +       else if (audit_contid_set(task))
+> +               rc = -ECHILD;
+
+Does -EEXIST make more sense here?
+
+> +       read_unlock(&tasklist_lock);
+> +       if (!rc)
+> +               task->audit->contid = contid;
+> +       task_unlock(task);
+> +
+> +       if (!audit_enabled)
+> +               return rc;
+> +
+> +       ab = audit_log_start(audit_context(), GFP_KERNEL, AUDIT_CONTAINER_OP);
+> +       if (!ab)
+> +               return rc;
+> +
+> +       audit_log_format(ab,
+> +                        "op=set opid=%d contid=%llu old-contid=%llu",
+> +                        task_tgid_nr(task), contid, oldcontid);
+> +       audit_log_end(ab);
+
+Assuming audit is enabled we always emit the record above, even if we
+were not actually able to set the Audit Container ID (ACID); this
+seems wrong to me.  I think the proper behavior would be to either add
+a "res=" field to indicate success/failure or only emit the record
+when we actually change a task's ACID.  Considering the impact that
+the ACID value will potentially have on the audit stream, it seems
+like always logging the record and including a "res=" field may be the
+safer choice.
 
 
----
-diff --git a/kernel/bpf/btf.c b/kernel/bpf/btf.c
-index 832b5d7fd892..dd678b8e00b7 100644
---- a/kernel/bpf/btf.c
-+++ b/kernel/bpf/btf.c
-@@ -3664,6 +3664,19 @@ struct btf *bpf_prog_get_target_btf(const struct bpf_prog *prog)
- 	}
- }
- 
-+static bool is_string_ptr(struct btf *btf, const struct btf_type *t)
-+{
-+	/* t comes in already as a pointer */
-+	t = btf_type_by_id(btf, t->type);
-+
-+	/* allow const */
-+	if (BTF_INFO_KIND(t->info) == BTF_KIND_CONST)
-+		t = btf_type_by_id(btf, t->type);
-+
-+	/* char, signed char, unsigned char */
-+	return btf_type_is_int(t) && t->size == 1;
-+}
-+
- bool btf_ctx_access(int off, int size, enum bpf_access_type type,
- 		    const struct bpf_prog *prog,
- 		    struct bpf_insn_access_aux *info)
-@@ -3730,6 +3743,9 @@ bool btf_ctx_access(int off, int size, enum bpf_access_type type,
- 		 */
- 		return true;
- 
-+	if (is_string_ptr(btf, t))
-+		return true;
-+
- 	/* this is a pointer to another type */
- 	info->reg_type = PTR_TO_BTF_ID;
- 
+> +       return rc;
+> +}
+> +
+>  /**
+>   * audit_log_end - end one audit record
+>   * @ab: the audit_buffer
 
+--
+paul moore
+www.paul-moore.com
