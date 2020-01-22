@@ -2,128 +2,219 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id DE703145CD7
-	for <lists+netdev@lfdr.de>; Wed, 22 Jan 2020 21:05:40 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E082C145CDF
+	for <lists+netdev@lfdr.de>; Wed, 22 Jan 2020 21:07:58 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728809AbgAVUFj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 22 Jan 2020 15:05:39 -0500
-Received: from mail-wr1-f68.google.com ([209.85.221.68]:40103 "EHLO
-        mail-wr1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725827AbgAVUFj (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 22 Jan 2020 15:05:39 -0500
-Received: by mail-wr1-f68.google.com with SMTP id c14so436103wrn.7
-        for <netdev@vger.kernel.org>; Wed, 22 Jan 2020 12:05:38 -0800 (PST)
+        id S1729027AbgAVUHw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 22 Jan 2020 15:07:52 -0500
+Received: from smtp-fw-33001.amazon.com ([207.171.190.10]:2928 "EHLO
+        smtp-fw-33001.amazon.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725911AbgAVUHv (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 22 Jan 2020 15:07:51 -0500
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=zYMmTihlnk1DMWT7gkXqp5LvgiIFpZWKlcqvO6b0Q7s=;
-        b=hVT0L/VTiNwY2CF6UAj5Q+u9wUnYLRrRZE3Il9PTvtiyEo1BH7qXAeocxlCpWlJl1j
-         HEqRLKtIs5jrnL9ajbpiutrdq6CWBriBfw525fqW1SPKEE4aftF4EohDcp216NsOLA6L
-         5Sm4jGnRsoPi71hspy6J5ERqjxah6Gdset9RN0sznA/p2Q0XfyUB1KF3p3jMbTYjrpBY
-         xfE2BThIsmvuwHo6zxIJ5wlJry6zMrLkIaKi57QPtikv5yoTyepYw9O6HbItPaFYIu/V
-         51Z4LYUaHN9Y+lvaNKXDFRUUp5qObH7h3gxktCCX1JrZZfMxdYjVEnbZPVuOdI6LQ8+/
-         BL7Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=zYMmTihlnk1DMWT7gkXqp5LvgiIFpZWKlcqvO6b0Q7s=;
-        b=hZz9m8GDm/KiJ20VL422PN6BsFFo/TPscELy6oemFLJP35YASu7kG+DvWtUT6g86U5
-         4Wnzea8GGu7xPM3Slx95mmlI7U+XhufKTethAt9U+nlIujstt4mpz1Bcy9tz6wamcneZ
-         RFoFq+OY8HFVswFRCucrzWry3/VYKSWYPyU7ul8qWxGrqXcsy3t4wNCJ0xa93OY1WL2j
-         n2xsGQY564ADmFEER+7+oINya0Jrbtl5GhR6wHc6ImzgiWbfjk7c3nqMqNF3YYAXbS9x
-         /s9q9BsjVt4OeCIn5dL6qiW8htdf0MKE5ql4J+p4hYphAL32pPP6rMYBNRBpueonsW/y
-         LE1Q==
-X-Gm-Message-State: APjAAAUbKZHBpwK/XnIPOG4nf8O8xO7D04wWjB9wX56RbE6ibsWsXoHt
-        rGuH9RGcnTZ/nq3aIMzCrEw=
-X-Google-Smtp-Source: APXvYqwVY4dRl0m6xJN9+3hba3spc0QijH5jCHbJ3WaLSOy5DAvxLi6ANUB2VR5WW1sVZCHfNcGXsg==
-X-Received: by 2002:a5d:4386:: with SMTP id i6mr12841032wrq.63.1579723537343;
-        Wed, 22 Jan 2020 12:05:37 -0800 (PST)
-Received: from ?IPv6:2003:ea:8f36:6800:550a:88ee:b6b9:8233? (p200300EA8F366800550A88EEB6B98233.dip0.t-ipconnect.de. [2003:ea:8f36:6800:550a:88ee:b6b9:8233])
-        by smtp.googlemail.com with ESMTPSA id z6sm59230643wrw.36.2020.01.22.12.05.36
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 22 Jan 2020 12:05:36 -0800 (PST)
-Subject: Re: [PATCH net-next 2/2] dpaa_eth: support all modes with rate
- adapting PHYs
-To:     madalin.bucur@oss.nxp.com, davem@davemloft.net
-Cc:     andrew@lunn.ch, f.fainelli@gmail.com, netdev@vger.kernel.org,
-        ykaukab@suse.de
-References: <1579701573-6609-1-git-send-email-madalin.bucur@oss.nxp.com>
- <1579701573-6609-3-git-send-email-madalin.bucur@oss.nxp.com>
-From:   Heiner Kallweit <hkallweit1@gmail.com>
-Message-ID: <eaaf792f-c590-a0df-824f-c28a85b1887c@gmail.com>
-Date:   Wed, 22 Jan 2020 21:05:31 +0100
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
- Thunderbird/68.4.1
+  d=amazon.com; i=@amazon.com; q=dns/txt; s=amazon201209;
+  t=1579723670; x=1611259670;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=ueX0G7wIXquYs+8WYX9TErA6JaqRVAVxKMvnUG5/Yoo=;
+  b=v1xYN1bPyC5cz1TbYFPOfCBYM768otq+bT7flChWwEvx1LZjSKOE2OiW
+   Q+FhgzlsR41fm98TImfN9yNxiuQ82zybWur+mCfFKleiqM1An58OBEvhM
+   VXFxid9Kk4Q5wX9IyD0W3SSgO3D9CoVA2XQh7xuVg6xyGb5dv2rgld4/c
+   8=;
+IronPort-SDR: Xn8mshXB0Ao/qFRS4wJxFHAsfw6z7a6GBgtyZHvuY4eA8gMw2T1rrcekTeYFCht0KkS6ClcY/i
+ qeTvoquzNZiA==
+X-IronPort-AV: E=Sophos;i="5.70,350,1574121600"; 
+   d="scan'208";a="21818317"
+Received: from sea32-co-svc-lb4-vlan3.sea.corp.amazon.com (HELO email-inbound-relay-2a-c5104f52.us-west-2.amazon.com) ([10.47.23.38])
+  by smtp-border-fw-out-33001.sea14.amazon.com with ESMTP; 22 Jan 2020 20:07:28 +0000
+Received: from EX13MTAUEB002.ant.amazon.com (pdx4-ws-svc-p6-lb7-vlan3.pdx.amazon.com [10.170.41.166])
+        by email-inbound-relay-2a-c5104f52.us-west-2.amazon.com (Postfix) with ESMTPS id BEDB6A1E0B;
+        Wed, 22 Jan 2020 20:07:26 +0000 (UTC)
+Received: from EX13D08UEB002.ant.amazon.com (10.43.60.107) by
+ EX13MTAUEB002.ant.amazon.com (10.43.60.12) with Microsoft SMTP Server (TLS)
+ id 15.0.1367.3; Wed, 22 Jan 2020 20:07:10 +0000
+Received: from EX13MTAUEA001.ant.amazon.com (10.43.61.82) by
+ EX13D08UEB002.ant.amazon.com (10.43.60.107) with Microsoft SMTP Server (TLS)
+ id 15.0.1367.3; Wed, 22 Jan 2020 20:07:10 +0000
+Received: from dev-dsk-anchalag-2a-9c2d1d96.us-west-2.amazon.com
+ (172.22.96.68) by mail-relay.amazon.com (10.43.61.243) with Microsoft SMTP
+ Server id 15.0.1367.3 via Frontend Transport; Wed, 22 Jan 2020 20:07:10 +0000
+Received: by dev-dsk-anchalag-2a-9c2d1d96.us-west-2.amazon.com (Postfix, from userid 4335130)
+        id 3816740F17; Wed, 22 Jan 2020 20:07:10 +0000 (UTC)
+Date:   Wed, 22 Jan 2020 20:07:10 +0000
+From:   Anchal Agarwal <anchalag@amazon.com>
+To:     "Rafael J. Wysocki" <rafael@kernel.org>
+CC:     Peter Zijlstra <peterz@infradead.org>,
+        "Singh, Balbir" <sblbir@amazon.com>,
+        "Valentin, Eduardo" <eduval@amazon.com>,
+        "boris.ostrovsky@oracle.com" <boris.ostrovsky@oracle.com>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "Woodhouse, David" <dwmw@amazon.co.uk>,
+        "vkuznets@redhat.com" <vkuznets@redhat.com>,
+        "sstabellini@kernel.org" <sstabellini@kernel.org>,
+        "tglx@linutronix.de" <tglx@linutronix.de>,
+        "linux-pm@vger.kernel.org" <linux-pm@vger.kernel.org>,
+        "linux-mm@kvack.org" <linux-mm@kvack.org>,
+        "pavel@ucw.cz" <pavel@ucw.cz>, "axboe@kernel.dk" <axboe@kernel.dk>,
+        "x86@kernel.org" <x86@kernel.org>,
+        "roger.pau@citrix.com" <roger.pau@citrix.com>,
+        "hpa@zytor.com" <hpa@zytor.com>,
+        "rjw@rjwysocki.net" <rjw@rjwysocki.net>,
+        "mingo@redhat.com" <mingo@redhat.com>,
+        "Kamata, Munehisa" <kamatam@amazon.com>,
+        "bp@alien8.de" <bp@alien8.de>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "konrad.wilk@oracle.co" <konrad.wilk@oracle.com>,
+        "len.brown@intel.com" <len.brown@intel.com>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "fllinden@amaozn.com" <fllinden@amazon.com>,
+        "xen-devel@lists.xenproject.org" <xen-devel@lists.xenproject.org>,
+        <anchalag@amazon.com>
+Subject: Re: [RFC PATCH V2 11/11] x86: tsc: avoid system instability in
+ hibernation
+Message-ID: <20200122200710.GA3071@dev-dsk-anchalag-2a-9c2d1d96.us-west-2.amazon.com>
+References: <20200107234526.GA19034@dev-dsk-anchalag-2a-9c2d1d96.us-west-2.amazon.com>
+ <20200108105011.GY2827@hirez.programming.kicks-ass.net>
+ <20200110153520.GC8214@u40b0340c692b58f6553c.ant.amazon.com>
+ <20200113101609.GT2844@hirez.programming.kicks-ass.net>
+ <857b42b2e86b2ae09a23f488daada3b1b2836116.camel@amazon.com>
+ <20200113124247.GG2827@hirez.programming.kicks-ass.net>
+ <CAJZ5v0jv+5aLY3N4wFSitu61o9S8tJWEWGGn1Xyw-P82_TwFdQ@mail.gmail.com>
+ <CAJZ5v0imNbbch=NWAdgVKf_hjwRrEiWAL8SFNwe6rW_SjgYzrw@mail.gmail.com>
+ <20200114192952.GA26755@dev-dsk-anchalag-2a-9c2d1d96.us-west-2.amazon.com>
 MIME-Version: 1.0
-In-Reply-To: <1579701573-6609-3-git-send-email-madalin.bucur@oss.nxp.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="us-ascii"
+Content-Disposition: inline
+In-Reply-To: <20200114192952.GA26755@dev-dsk-anchalag-2a-9c2d1d96.us-west-2.amazon.com>
+User-Agent: Mutt/1.5.21 (2010-09-15)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 22.01.2020 14:59, Madalin Bucur wrote:
-> Stop removing modes that are not supported on the system interface
-> when the connected PHY is capable of rate adaptation. This addresses
-> an issue with the LS1046ARDB board 10G interface no longer working
-> with an 1G link partner after autonegotiation support was added
-> for the Aquantia PHY on board in
+On Tue, Jan 14, 2020 at 07:29:52PM +0000, Anchal Agarwal wrote:
+> On Tue, Jan 14, 2020 at 12:30:02AM +0100, Rafael J. Wysocki wrote:
+> > On Mon, Jan 13, 2020 at 10:50 PM Rafael J. Wysocki <rafael@kernel.org> wrote:
+> > >
+> > > On Mon, Jan 13, 2020 at 1:43 PM Peter Zijlstra <peterz@infradead.org> wrote:
+> > > >
+> > > > On Mon, Jan 13, 2020 at 11:43:18AM +0000, Singh, Balbir wrote:
+> > > > > For your original comment, just wanted to clarify the following:
+> > > > >
+> > > > > 1. After hibernation, the machine can be resumed on a different but compatible
+> > > > > host (these are VM images hibernated)
+> > > > > 2. This means the clock between host1 and host2 can/will be different
+> > > > >
+> > > > > In your comments are you making the assumption that the host(s) is/are the
+> > > > > same? Just checking the assumptions being made and being on the same page with
+> > > > > them.
+> > > >
+> > > > I would expect this to be the same problem we have as regular suspend,
+> > > > after power off the TSC will have been reset, so resume will have to
+> > > > somehow bridge that gap. I've no idea if/how it does that.
+> > >
+> > > In general, this is done by timekeeping_resume() and the only special
+> > > thing done for the TSC appears to be the tsc_verify_tsc_adjust(true)
+> > > call in tsc_resume().
+> > 
+> > And I forgot about tsc_restore_sched_clock_state() that gets called
+> > via restore_processor_state() on x86, before calling
+> > timekeeping_resume().
+> >
+> In this case tsc_verify_tsc_adjust(true) this does nothing as
+> feature bit X86_FEATURE_TSC_ADJUST is not available to guest. 
+> I am no expert in this area, but could this be messing things up?
 > 
-> commit 09c4c57f7bc4 ("net: phy: aquantia: add support for auto-negotiation configuration")
-> 
-> As it only worked in other modes besides 10G because the PHY
-> was not configured by its driver to remove them, this is not
-> really a bug fix but more of a feature add.
-> 
+> Thanks,
+> Anchal
+Gentle nudge on this. I will add more data here in case that helps.
 
-I understand the issue, however the description may be a little misleading.
-mac_dev->if_support doesn't include 1Gbps mode, therefore this mode is
-removed from phydev->supported. What happens:
-- before referenced commit: aqr_config_aneg() basically is a
-  no-op and doesn't touch the advertised modes in the chip.
-  Therefore 1Gbps is advertised and aneg succeeds.
-- after referenced commit: 1Gbps is removed from modes advertised by the
-  PHY, therefore aneg doesn't succeed.
+1. Before this patch, tsc is stable but hibernation does not work
+100% of the time. I agree if tsc is stable it should not be marked
+unstable however, in this case if I run a cpu intensive workload
+in the background and trigger reboot-hibernation loop I see a 
+workqueue lockup. 
 
-Maybe in the context of this change the interface mode should be fixed.
-These Aquantia PHY's don't support XGMII, they support USXGMII.
-USXGMII support was added to phylib not too long ago, therefore older
-drivers use value PHY_INTERFACE_MODE_XGMII. For the same compatibility
-reason the Aquantia PHY driver still accepts PHY_INTERFACE_MODE_XGMII.
+2. The lockup does not hose the system completely,
+the reboot-hibernation carries out and system recovers. 
+However, as mentioned in the commit message system does 
+become unreachable for couple of seconds.
 
-Heiner
+3. Xen suspend/resume seems to save/restore time_memory area in its
+xen_arch_pre_suspend and xen_arch_post_suspend. The xen clock value
+is saved. xen_sched_clock_offset is set at resume time to ensure a
+monotonic clock value
 
-> Reported-by: Mian Yousaf Kaukab <ykaukab@suse.de>
-> Signed-off-by: Madalin Bucur <madalin.bucur@oss.nxp.com>
-> ---
->  drivers/net/ethernet/freescale/dpaa/dpaa_eth.c | 10 +++++++---
->  1 file changed, 7 insertions(+), 3 deletions(-)
-> 
-> diff --git a/drivers/net/ethernet/freescale/dpaa/dpaa_eth.c b/drivers/net/ethernet/freescale/dpaa/dpaa_eth.c
-> index a301f0095223..d3eb235450e5 100644
-> --- a/drivers/net/ethernet/freescale/dpaa/dpaa_eth.c
-> +++ b/drivers/net/ethernet/freescale/dpaa/dpaa_eth.c
-> @@ -2471,9 +2471,13 @@ static int dpaa_phy_init(struct net_device *net_dev)
->  		return -ENODEV;
->  	}
->  
-> -	/* Remove any features not supported by the controller */
-> -	ethtool_convert_legacy_u32_to_link_mode(mask, mac_dev->if_support);
-> -	linkmode_and(phy_dev->supported, phy_dev->supported, mask);
-> +	if (mac_dev->phy_if != PHY_INTERFACE_MODE_XGMII ||
-> +	    !phy_dev->rate_adaptation) {
-> +		/* Remove any features not supported by the controller */
-> +		ethtool_convert_legacy_u32_to_link_mode(mask,
-> +							mac_dev->if_support);
-> +		linkmode_and(phy_dev->supported, phy_dev->supported, mask);
-> +	}
->  
->  	phy_support_asym_pause(phy_dev);
->  
-> 
+4. Also, the instances do not have InvariantTSC exposed. Feature bit
+X86_FEATURE_TSC_ADJUST is not available to guest and xen clocksource
+is used by guests.
+
+I am not sure if something needs to be fixed on hibernate path itself
+or its very much ties to time handling on xen guest hibernation
+
+Here is a part of log from last hibernation exit to next hibernation
+entry. The loop was running for a while so boot to lockup log will be
+huge. I am specifically including the timestamps.
+
+...
+01h 57m 15.627s(  16ms): [    5.822701] OOM killer enabled.
+01h 57m 15.627s(   0ms): [    5.824981] Restarting tasks ... done.
+01h 57m 15.627s(   0ms): [    5.836397] PM: hibernation exit
+01h 57m 17.636s(2009ms): [    7.844471] PM: hibernation entry
+01h 57m 52.725s(35089ms): [   42.934542] BUG: workqueue lockup - pool cpus=0
+node=0 flags=0x0 nice=0 stuck for 37s!
+01h 57m 52.730s(   5ms): [   42.941468] Showing busy workqueues and worker
+pools:
+01h 57m 52.734s(   4ms): [   42.945088] workqueue events: flags=0x0
+01h 57m 52.737s(   3ms): [   42.948385]   pwq 0: cpus=0 node=0 flags=0x0 nice=0
+active=2/256
+01h 57m 52.742s(   5ms): [   42.952838]     pending: vmstat_shepherd,
+check_corruption
+01h 57m 52.746s(   4ms): [   42.956927] workqueue events_power_efficient:
+flags=0x80
+01h 57m 52.749s(   3ms): [   42.960731]   pwq 0: cpus=0 node=0 flags=0x0 nice=0
+active=4/256
+01h 57m 52.754s(   5ms): [   42.964835]     pending: neigh_periodic_work,
+do_cache_clean [sunrpc], neigh_periodic_work, check_lifetime
+01h 57m 52.781s(  27ms): [   42.971419] workqueue mm_percpu_wq: flags=0x8
+01h 57m 52.781s(   0ms): [   42.974628]   pwq 0: cpus=0 node=0 flags=0x0 nice=0
+active=1/256
+01h 57m 52.781s(   0ms): [   42.978901]     pending: vmstat_update
+01h 57m 52.781s(   0ms): [   42.981822] workqueue ipv6_addrconf: flags=0x40008
+01h 57m 52.781s(   0ms): [   42.985524]   pwq 0: cpus=0 node=0 flags=0x0 nice=0
+active=1/1
+01h 57m 52.781s(   0ms): [   42.989670]     pending: addrconf_verify_work [ipv6]
+01h 57m 52.782s(   1ms): [   42.993282] workqueue xfs-conv/xvda1: flags=0xc
+01h 57m 52.786s(   4ms): [   42.996708]   pwq 0: cpus=0 node=0 flags=0x0 nice=0
+active=3/256
+01h 57m 52.790s(   4ms): [   43.000954]     pending: xfs_end_io [xfs],
+xfs_end_io [xfs], xfs_end_io [xfs]
+01h 57m 52.795s(   5ms): [   43.005610] workqueue xfs-reclaim/xvda1: flags=0xc
+01h 57m 52.798s(   3ms): [   43.008945]   pwq 0: cpus=0 node=0 flags=0x0 nice=0
+active=1/256
+01h 57m 52.802s(   4ms): [   43.012675]     pending: xfs_reclaim_worker [xfs]
+01h 57m 52.805s(   3ms): [   43.015741] workqueue xfs-sync/xvda1: flags=0x4
+01h 57m 52.808s(   3ms): [   43.018723]   pwq 0: cpus=0 node=0 flags=0x0 nice=0
+active=1/256
+01h 57m 52.811s(   3ms): [   43.022436]     pending: xfs_log_worker [xfs]
+01h 57m 52.814s(   3ms): [   43.043519] Filesystems sync: 35.234 seconds
+01h 57m 52.837s(  23ms): [   43.048133] Freezing user space processes ...
+(elapsed 0.001 seconds) done.
+01h 57m 52.844s(   7ms): [   43.055996] OOM killer disabled.
+01h 57m 53.838s( 994ms): [   43.061512] PM: Preallocating image memory... done
+(allocated 385859 pages)
+01h 57m 53.843s(   5ms): [   44.054720] PM: Allocated 1543436 kbytes in 1.06
+seconds (1456.07 MB/s)
+01h 57m 53.861s(  18ms): [   44.060885] Freezing remaining freezable tasks ...
+(elapsed 0.001 seconds) done.
+01h 57m 53.861s(   0ms): [   44.069715] printk: Suspending console(s) (use
+no_console_suspend to debug)
+01h 57m 56.278s(2417ms): [   44.116601] Disabling non-boot CPUs ...
+.....
+hibernate-resume loop continues after this. As mentioned above, I loose
+connectivity for a while.
+
+
+Thanks,
+Anchal
 
