@@ -2,121 +2,165 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 77F78145943
-	for <lists+netdev@lfdr.de>; Wed, 22 Jan 2020 17:03:21 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 79ED1145975
+	for <lists+netdev@lfdr.de>; Wed, 22 Jan 2020 17:09:23 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726232AbgAVQDM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 22 Jan 2020 11:03:12 -0500
-Received: from mx0b-0016f401.pphosted.com ([67.231.156.173]:49796 "EHLO
-        mx0b-0016f401.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1725802AbgAVQDM (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 22 Jan 2020 11:03:12 -0500
-Received: from pps.filterd (m0045851.ppops.net [127.0.0.1])
-        by mx0b-0016f401.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 00MFkPun013702;
-        Wed, 22 Jan 2020 08:03:08 -0800
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=marvell.com; h=from : to : cc :
- subject : date : message-id : references : in-reply-to : content-type :
- content-transfer-encoding : mime-version; s=pfpt0818;
- bh=MyqnLFW3whCEC8O+o/1S8PztiVouufW4DJu6d0i22g8=;
- b=YKMsApi9ufINHO4iybLjvxphG4K39augkbsg+ztLmRYi+1sSinkDQzYpaSbaK3ZQGnVs
- lQrhNVsYQykoj9k3NLqIcNMO/eKIB+LAzTjNL48q4iSgevBRWHDYUjxypeS2IWzdR5JP
- AXq943ln3UmuFwty7L1vRd3NYvF1OJwzSektYIvNUMpxATqvSFFkDrwQWSzNSZCauFCt
- WS+x1mnyH6xQ1bpmkFtUtM9z+Nvcox8MnzeUTCjZoRT0OoOX5DsflpbP28uGZoqbNDCk
- ayaPX5QF5/4Akpba74YVgc2G1SU4H3jxf8shV4uIG73L0gluF2BC4iVXPm1pGnp652iJ QQ== 
-Received: from sc-exch02.marvell.com ([199.233.58.182])
-        by mx0b-0016f401.pphosted.com with ESMTP id 2xm2dt7na6-2
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT);
-        Wed, 22 Jan 2020 08:03:08 -0800
-Received: from SC-EXCH03.marvell.com (10.93.176.83) by SC-EXCH02.marvell.com
- (10.93.176.82) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Wed, 22 Jan
- 2020 08:03:06 -0800
-Received: from NAM12-MW2-obe.outbound.protection.outlook.com (104.47.66.45) by
- SC-EXCH03.marvell.com (10.93.176.83) with Microsoft SMTP Server (TLS) id
- 15.0.1497.2 via Frontend Transport; Wed, 22 Jan 2020 08:03:05 -0800
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=oZg2x1sxUxPntVCyr1rAoZmPI7YbBctai6eOQNa7DsLXLrK8d9QqL+DXMZ/z1f4SXqW7BK1aR3u/RT9KE1RTzk+2Nc5g4GlwsuYL/Jt6P3PKEJS78XrQZC4AOoRpECQYnjG5UIhyfXHkPkqfrdIr+3hNFoA2nWXC1yre90bf4+PQGmP2tvXJWQHnbas0NGenV/f9AvD6vgb90gBmm6wmiCDQiTcUSiQflaeoJSB/Sv02evFq3y0vexhn1XUWXtbYWTrVszVnvgpcwhitMu28VdYXJ6+E3YaLM6ZUsRkjtPuoszEExYgHpNvM/GVemi0stfM6BS3ug3YwLLVlc6osow==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=MyqnLFW3whCEC8O+o/1S8PztiVouufW4DJu6d0i22g8=;
- b=VfJ7jL3uXHAvbFLkjzhHIStejX4yqqZPKXu+iCMxCmc1tjv0kcON4cA3OTq2G2yGr/mhPsDWgTruL8DMplXSRyHewjh7+mtpZOkvzMIljDl8fwfcbLvS4iqRrnZF5T5nWDyaXtcCw7Zoxcg+vCqNZChjbQ8Jbs6VFBJIARgN3i2fDQD505S9FqeXQJXWSWgpjmeAyDttpPZZaMRFqdoxRDdb5gRC0072+cJzU7nu9wvFJFpIfqp8enwCRmJpwxul8Qt1uTfVE2JcPY10GVhowYxBqpAm6r9lzMxvD05E+PjAE7d1ZvO4LOSI5IteTxTZ8IEXBul3503TPEeSXrHSuw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=marvell.com; dmarc=pass action=none header.from=marvell.com;
- dkim=pass header.d=marvell.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=marvell.onmicrosoft.com; s=selector1-marvell-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=MyqnLFW3whCEC8O+o/1S8PztiVouufW4DJu6d0i22g8=;
- b=hLsKr5jtD94Zabm9XCAa6/B2+oF3nqS8rK1dml8ICqETi/22Vzpl5q4/PEkXyn8eKPoAgIPkCFPJuNmxCnmAmZ3zj6Dh4erwA0L/7HhzTeif2aar++7yrxAoZfL1gPW9SFRDZLTOTJwzZejYZ+rIGR4sH/S/PjdOG5Zm3oyuxDA=
-Received: from MN2PR18MB3182.namprd18.prod.outlook.com (10.255.236.143) by
- MN2PR18MB3341.namprd18.prod.outlook.com (10.255.238.210) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.2644.23; Wed, 22 Jan 2020 16:03:04 +0000
-Received: from MN2PR18MB3182.namprd18.prod.outlook.com
- ([fe80::703e:1571:8bb7:5f8f]) by MN2PR18MB3182.namprd18.prod.outlook.com
- ([fe80::703e:1571:8bb7:5f8f%6]) with mapi id 15.20.2644.027; Wed, 22 Jan 2020
- 16:03:04 +0000
-From:   Michal Kalderon <mkalderon@marvell.com>
-To:     Jakub Kicinski <kuba@kernel.org>
-CC:     Ariel Elior <aelior@marvell.com>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-rdma@vger.kernel.org" <linux-rdma@vger.kernel.org>,
-        "linux-scsi@vger.kernel.org" <linux-scsi@vger.kernel.org>
-Subject: RE: [PATCH net-next 13/14] qed: FW 8.42.2.0 debug features
-Thread-Topic: [PATCH net-next 13/14] qed: FW 8.42.2.0 debug features
-Thread-Index: AQHV0ThpeYgDXoJ9UkGGsegwjBX5+6f21fUAgAACP4A=
-Date:   Wed, 22 Jan 2020 16:03:04 +0000
-Message-ID: <MN2PR18MB3182F7A15298B22C7CC5B64FA10C0@MN2PR18MB3182.namprd18.prod.outlook.com>
-References: <20200122152627.14903-1-michal.kalderon@marvell.com>
-        <20200122152627.14903-14-michal.kalderon@marvell.com>
- <20200122075416.608979b2@cakuba>
-In-Reply-To: <20200122075416.608979b2@cakuba>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-originating-ip: [199.203.130.254]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: f4cd5c16-d4f3-4969-b13b-08d79f549052
-x-ms-traffictypediagnostic: MN2PR18MB3341:
-x-ms-exchange-transport-forked: True
-x-microsoft-antispam-prvs: <MN2PR18MB3341A856D6B6A6649E61D6C5A10C0@MN2PR18MB3341.namprd18.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:6790;
-x-forefront-prvs: 029097202E
-x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(4636009)(376002)(366004)(136003)(396003)(39850400004)(346002)(199004)(189003)(6506007)(33656002)(5660300002)(7696005)(316002)(54906003)(26005)(6916009)(4744005)(8676002)(186003)(2906002)(71200400001)(478600001)(4326008)(81156014)(81166006)(66556008)(66946007)(64756008)(66476007)(66446008)(55016002)(76116006)(52536014)(9686003)(86362001)(8936002);DIR:OUT;SFP:1101;SCL:1;SRVR:MN2PR18MB3341;H:MN2PR18MB3182.namprd18.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;A:1;MX:1;
-received-spf: None (protection.outlook.com: marvell.com does not designate
- permitted sender hosts)
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: 8nPRpS4Et7OOwjBIAaz8khsOqvCtGtVKTZ8zP4pTdQIBMmo3MXNEwgFqmYpSxMc1mHXB9yT6hasLv65tc+yK8CsPRKr//9M05zkvZUWnTKn3qEhIvEHFnYIefryO4w4fo1JkvHrYR88AvpxdS20fRaXDRdFitRz1D5HN6NEDn8QbXeldUGTs5oFHLdxoJTVmZ337CMkxklIz4cqEhAMvtrQBppgEgl3q15rGHtzgdXhVObSXDFvc4xBnpBeQ5BW0CxViRs08vX3k+NSh6M2tyFwdrYVFv3JAfazzulnaUCLrNk815rFVtM6QmkZN4+Xzq/BEvUKKHfR3f17Kr2QOhWK39U3GNkSPFstiR49udvTF/nwtxCqqLogd8n1nxkUrt+E0LDjHB5+d8PbwHateDby0pNPORXr6ZCGLbKrbjNwDnP79qV9O7ySOoxWen6d+
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+        id S1729122AbgAVQJK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 22 Jan 2020 11:09:10 -0500
+Received: from mail-io1-f70.google.com ([209.85.166.70]:54802 "EHLO
+        mail-io1-f70.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725827AbgAVQJK (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 22 Jan 2020 11:09:10 -0500
+Received: by mail-io1-f70.google.com with SMTP id k25so2143435ios.21
+        for <netdev@vger.kernel.org>; Wed, 22 Jan 2020 08:09:09 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
+        bh=GI2UC+EvXROYNmjkTcEuNtASvZJIsELjrqLPTni5rAA=;
+        b=t+VmvRTXc3SelUms/Z1da+yqPp9POZ1GaspYVFXS/idc8wdNs20d0W4IsEgVzlTw/s
+         bp20LloDSZVnSYs76hnKdggk0MxBCo0lashKlJvHE/cmoxCeSmVb4ls2nd4uHnSaweID
+         WAc21CDH+lK71450u+DchNzihhLdPtRbU2Vm7NLg9QOcBiUU9RuaoufcPgM/erMPkfP7
+         myZtFgEb60EY4gaKtUY2XKpDNac5SVcAYIx/c724aWs8yfXozgMj77aUEwFAalf5qEgN
+         1XcvwHLaS7AzoFo+rrDyujny1norF6ZHcEsnf333bWHibDEXHZBxd+gy0FcoGveH/jVI
+         /1CA==
+X-Gm-Message-State: APjAAAVjXzsIhABRSTWS9hMax4qrxAY/lF3SwTdYxV4Lyg9xukZRJ0MK
+        NERsIfOgD16H4218jXj/aKt587aOTlEuyF5dnhFV2cY6/Rc3
+X-Google-Smtp-Source: APXvYqwy96Pw21+yzNQcbf6JHU7+E1XD4Vfq/3emwqiLloiSvNJ1sFs3swAMB/QgCSwXx5GSnMq/N+CNpQ4nTzKOfrQXkwPIOX0N
 MIME-Version: 1.0
-X-MS-Exchange-CrossTenant-Network-Message-Id: f4cd5c16-d4f3-4969-b13b-08d79f549052
-X-MS-Exchange-CrossTenant-originalarrivaltime: 22 Jan 2020 16:03:04.1963
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 70e1fb47-1155-421d-87fc-2e58f638b6e0
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: i3rFt+CL7yV6Pz6Ep08PwqHQMLrbO48+Sc3PNF2FBDiecb/m7TKegzRbvF+F40VhJDBYM8Y9ojk216Sdd1LYbQ==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: MN2PR18MB3341
-X-OriginatorOrg: marvell.com
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.138,18.0.572
- definitions=2020-01-17_05:2020-01-16,2020-01-17 signatures=0
+X-Received: by 2002:a05:6e02:10d1:: with SMTP id s17mr8898273ilj.198.1579709349585;
+ Wed, 22 Jan 2020 08:09:09 -0800 (PST)
+Date:   Wed, 22 Jan 2020 08:09:09 -0800
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <000000000000a16ad7059cbcbe43@google.com>
+Subject: WARNING in bpf_warn_invalid_xdp_action
+From:   syzbot <syzbot+8ce4113dadc4789fac74@syzkaller.appspotmail.com>
+To:     andriin@fb.com, ast@kernel.org, bpf@vger.kernel.org,
+        daniel@iogearbox.net, davem@davemloft.net, hawk@kernel.org,
+        john.fastabend@gmail.com, kafai@fb.com, kuba@kernel.org,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        songliubraving@fb.com, syzkaller-bugs@googlegroups.com, yhs@fb.com
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> From: linux-rdma-owner@vger.kernel.org <linux-rdma-
-> owner@vger.kernel.org> On Behalf Of Jakub Kicinski
->=20
-> On Wed, 22 Jan 2020 17:26:26 +0200, Michal Kalderon wrote:
-> > Add to debug dump more information on the platform it was collected
-> > from (kernel version, epoch, pci func, path id).
->=20
-> Kernel version and epoch don't belong in _device_ debug dump.
-This is actually very useful when customers provide us with a debug-dump us=
-ing the ethtool-d option.=20
-We can immediately verify the linux kernel version used.
+Hello,
+
+syzbot found the following crash on:
+
+HEAD commit:    d0f41851 net, ip_tunnel: fix namespaces move
+git tree:       net
+console output: https://syzkaller.appspot.com/x/log.txt?x=10e94d85e00000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=d9290aeb7e6cf1c4
+dashboard link: https://syzkaller.appspot.com/bug?extid=8ce4113dadc4789fac74
+compiler:       gcc (GCC) 9.0.0 20181231 (experimental)
+syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=11f99369e00000
+C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=13d85601e00000
+
+IMPORTANT: if you fix the bug, please add the following tag to the commit:
+Reported-by: syzbot+8ce4113dadc4789fac74@syzkaller.appspotmail.com
+
+------------[ cut here ]------------
+Illegal XDP return value 4294967274, expect packet loss!
+WARNING: CPU: 0 PID: 9780 at net/core/filter.c:6918 bpf_warn_invalid_xdp_action net/core/filter.c:6918 [inline]
+WARNING: CPU: 0 PID: 9780 at net/core/filter.c:6918 bpf_warn_invalid_xdp_action+0x77/0x90 net/core/filter.c:6914
+Kernel panic - not syncing: panic_on_warn set ...
+CPU: 0 PID: 9780 Comm: syz-executor429 Not tainted 5.5.0-rc6-syzkaller #0
+Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
+Call Trace:
+ <IRQ>
+ __dump_stack lib/dump_stack.c:77 [inline]
+ dump_stack+0x197/0x210 lib/dump_stack.c:118
+ panic+0x2e3/0x75c kernel/panic.c:221
+ __warn.cold+0x2f/0x3e kernel/panic.c:582
+ report_bug+0x289/0x300 lib/bug.c:195
+ fixup_bug arch/x86/kernel/traps.c:174 [inline]
+ fixup_bug arch/x86/kernel/traps.c:169 [inline]
+ do_error_trap+0x11b/0x200 arch/x86/kernel/traps.c:267
+ do_invalid_op+0x37/0x50 arch/x86/kernel/traps.c:286
+ invalid_op+0x23/0x30 arch/x86/entry/entry_64.S:1027
+RIP: 0010:bpf_warn_invalid_xdp_action net/core/filter.c:6918 [inline]
+RIP: 0010:bpf_warn_invalid_xdp_action+0x77/0x90 net/core/filter.c:6914
+Code: 00 f9 d6 88 41 83 fc 04 48 c7 c6 40 f9 d6 88 4c 0f 46 ee e8 2b 9e 49 fb 44 89 e2 48 c7 c7 80 f9 d6 88 4c 89 ee e8 18 4e 1a fb <0f> 0b e8 12 9e 49 fb 5b 41 5c 41 5d 5d c3 90 66 2e 0f 1f 84 00 00
+RSP: 0018:ffffc900000079a8 EFLAGS: 00010286
+RAX: 0000000000000000 RBX: 0000000000000000 RCX: 0000000000000000
+RDX: 0000000000000100 RSI: ffffffff815e5326 RDI: fffff52000000f27
+RBP: ffffc900000079c0 R08: ffff88809ff963c0 R09: ffffed1015d045c9
+R10: ffffed1015d045c8 R11: ffff8880ae822e43 R12: 00000000ffffffea
+R13: ffffffff88d6f900 R14: ffff8880927ea110 R15: ffff88809e257180
+ netif_receive_generic_xdp net/core/dev.c:4564 [inline]
+ do_xdp_generic.part.0+0xebb/0x1790 net/core/dev.c:4613
+ do_xdp_generic net/core/dev.c:4985 [inline]
+ __netif_receive_skb_core+0x68b/0x30b0 net/core/dev.c:4985
+ __netif_receive_skb_one_core+0xa8/0x1a0 net/core/dev.c:5148
+ __netif_receive_skb+0x2c/0x1d0 net/core/dev.c:5264
+ process_backlog+0x206/0x750 net/core/dev.c:6095
+ napi_poll net/core/dev.c:6532 [inline]
+ net_rx_action+0x508/0x1120 net/core/dev.c:6600
+ __do_softirq+0x262/0x98c kernel/softirq.c:292
+ invoke_softirq kernel/softirq.c:373 [inline]
+ irq_exit+0x19b/0x1e0 kernel/softirq.c:413
+ exiting_irq arch/x86/include/asm/apic.h:536 [inline]
+ smp_apic_timer_interrupt+0x1a3/0x610 arch/x86/kernel/apic/apic.c:1137
+ apic_timer_interrupt+0xf/0x20 arch/x86/entry/entry_64.S:829
+ </IRQ>
+RIP: 0010:arch_local_irq_restore arch/x86/include/asm/paravirt.h:752 [inline]
+RIP: 0010:console_unlock+0xbb8/0xf00 kernel/printk/printk.c:2481
+Code: 93 89 48 c1 e8 03 42 80 3c 30 00 0f 85 e4 02 00 00 48 83 3d c1 43 35 08 00 0f 84 91 01 00 00 e8 3e 05 17 00 48 8b 7d 98 57 9d <0f> 1f 44 00 00 e9 6d ff ff ff e8 29 05 17 00 48 8b 7d 08 c7 05 1b
+RSP: 0018:ffffc90001f26b38 EFLAGS: 00000293 ORIG_RAX: ffffffffffffff13
+RAX: ffff88809ff963c0 RBX: 0000000000000200 RCX: 0000000000000006
+RDX: 0000000000000000 RSI: ffffffff815defe2 RDI: 0000000000000293
+RBP: ffffc90001f26bc0 R08: 1ffffffff165e79c R09: fffffbfff165e79d
+R10: fffffbfff165e79c R11: ffffffff8b2f3ce7 R12: 0000000000000000
+R13: ffffffff84b35860 R14: dffffc0000000000 R15: ffffffff8a0fc990
+ vprintk_emit+0x2a0/0x700 kernel/printk/printk.c:1996
+ vprintk_default+0x28/0x30 kernel/printk/printk.c:2023
+ vprintk_func+0x7e/0x189 kernel/printk/printk_safe.c:386
+ printk+0xba/0xed kernel/printk/printk.c:2056
+ validate_nla lib/nlattr.c:178 [inline]
+ __nla_validate_parse.cold+0x4d/0x60 lib/nlattr.c:381
+ __nla_parse+0x43/0x60 lib/nlattr.c:478
+ nla_parse_nested_deprecated include/net/netlink.h:1166 [inline]
+ do_setlink+0x2ca2/0x3720 net/core/rtnetlink.c:2773
+ rtnl_group_changelink net/core/rtnetlink.c:3089 [inline]
+ __rtnl_newlink+0xdd2/0x1790 net/core/rtnetlink.c:3243
+ rtnl_newlink+0x69/0xa0 net/core/rtnetlink.c:3363
+ rtnetlink_rcv_msg+0x45e/0xaf0 net/core/rtnetlink.c:5424
+ netlink_rcv_skb+0x177/0x450 net/netlink/af_netlink.c:2477
+ rtnetlink_rcv+0x1d/0x30 net/core/rtnetlink.c:5442
+ netlink_unicast_kernel net/netlink/af_netlink.c:1302 [inline]
+ netlink_unicast+0x58c/0x7d0 net/netlink/af_netlink.c:1328
+ netlink_sendmsg+0x91c/0xea0 net/netlink/af_netlink.c:1917
+ sock_sendmsg_nosec net/socket.c:639 [inline]
+ sock_sendmsg+0xd7/0x130 net/socket.c:659
+ ____sys_sendmsg+0x753/0x880 net/socket.c:2330
+ ___sys_sendmsg+0x100/0x170 net/socket.c:2384
+ __sys_sendmsg+0x105/0x1d0 net/socket.c:2417
+ __do_sys_sendmsg net/socket.c:2426 [inline]
+ __se_sys_sendmsg net/socket.c:2424 [inline]
+ __x64_sys_sendmsg+0x78/0xb0 net/socket.c:2424
+ do_syscall_64+0xfa/0x790 arch/x86/entry/common.c:294
+ entry_SYSCALL_64_after_hwframe+0x49/0xbe
+RIP: 0033:0x442af9
+Code: 18 89 d0 c3 66 2e 0f 1f 84 00 00 00 00 00 0f 1f 00 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 0f 83 7b 10 fc ff c3 66 2e 0f 1f 84 00 00 00 00
+RSP: 002b:00007ffd3ded00a8 EFLAGS: 00000246 ORIG_RAX: 000000000000002e
+RAX: ffffffffffffffda RBX: 0000000000000003 RCX: 0000000000442af9
+RDX: 0000000000000000 RSI: 0000000020000140 RDI: 0000000000000003
+RBP: 00007ffd3ded00c0 R08: 0000000001bbbbbb R09: 0000000001bbbbbb
+R10: 0000000001bbbbbb R11: 0000000000000246 R12: 0000000000000000
+R13: 0000000000404090 R14: 0000000000000000 R15: 0000000000000000
+Kernel Offset: disabled
+Rebooting in 86400 seconds..
+
+
+---
+This bug is generated by a bot. It may contain errors.
+See https://goo.gl/tpsmEJ for more information about syzbot.
+syzbot engineers can be reached at syzkaller@googlegroups.com.
+
+syzbot will keep track of this bug report. See:
+https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
+syzbot can test patches for this bug, for details see:
+https://goo.gl/tpsmEJ#testing-patches
