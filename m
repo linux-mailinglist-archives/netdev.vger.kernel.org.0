@@ -2,47 +2,47 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 9E4731453E8
-	for <lists+netdev@lfdr.de>; Wed, 22 Jan 2020 12:36:27 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id AE9551453E9
+	for <lists+netdev@lfdr.de>; Wed, 22 Jan 2020 12:36:34 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729242AbgAVLgZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 22 Jan 2020 06:36:25 -0500
-Received: from mail-pg1-f196.google.com ([209.85.215.196]:36871 "EHLO
-        mail-pg1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729012AbgAVLgZ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 22 Jan 2020 06:36:25 -0500
-Received: by mail-pg1-f196.google.com with SMTP id q127so3357859pga.4
-        for <netdev@vger.kernel.org>; Wed, 22 Jan 2020 03:36:25 -0800 (PST)
+        id S1729256AbgAVLgc (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 22 Jan 2020 06:36:32 -0500
+Received: from mail-pj1-f67.google.com ([209.85.216.67]:34219 "EHLO
+        mail-pj1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729012AbgAVLgc (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 22 Jan 2020 06:36:32 -0500
+Received: by mail-pj1-f67.google.com with SMTP id s94so2026486pjc.1
+        for <netdev@vger.kernel.org>; Wed, 22 Jan 2020 03:36:32 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=7QJ7r6VCbJ5yiJne5YJbfLdcih0PR3cC3oHUxUnk3EU=;
-        b=nBz5U6MkGQghgoM+/oianKmyfUEMUS9qGHuEOJDad1hkeuTM77VhajN4G/XcT5Cd+7
-         ldBzcit8wYIdMLFLeUJ8foKReqmEG2aOsTUoK8+IEJyN1F76Dnx8mpb05SFU7OwN6EM5
-         KxkrVNX8UX7baeNRC15WO4QlIzYeT9kCwkJdJUlc3/2O4TUvhrscplEhR0WNzcHpHSwT
-         bcrSRRT1oAeHCU0jeyTeQfjqDnwR4wKNGX0CIkUnVN1pLZagC1kUHjIxogJ2rHKZlQ5c
-         wT/N8FE2i9uAFM8X3IacfZQ4Ie7V2VqkzY1VCR9n2vEuyhb8zZyVet9TuXWhuOyB+QS1
-         oK7w==
+        bh=anPHFBLNPdadjSGekrzr3WCtJamEsDr9v8sySIJaS0w=;
+        b=Kh9uPNg65KKfdUb14FASBwrszeM+6XUrwfTkcSXulUz7JtSs6gSsIqAVUaMxYL5U01
+         QNZr54whRWf8ily/IMTpoY30w/CQ1Elp5lfDAaeyFJKx5meMFI8bFMDrcqBekWkzVqSp
+         YxCOansBldy193kdAQ6ahyZUuONLqfW5KVHtvkfAJMwCEAtuVN/qosyltCWKV9RGgC8O
+         OjMUtI8Uxlantl/tdtCc7Hg/859aidkWIK2DDiYQiQUhL2h8m3iqIZ945i9fk2WU3MZY
+         0GgUdOLiMWtGHv05vEs+41r4GrRBn6MLdG7rIMkmKNCjh/somFXO4sRCHHMgdwlHvCwB
+         RtAQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references;
-        bh=7QJ7r6VCbJ5yiJne5YJbfLdcih0PR3cC3oHUxUnk3EU=;
-        b=qGKsAUi00vctK0EfOVUdo20PMXG6A7b89ARrgShVUvw1yHAeOlqbnmPHcOM3mehXVJ
-         xCMiLGVHBFb2ag4ZeV+VZoxdkUVWBCk6lQ+MDN7AeP4vu/9SPt4vRfS5GAFWWqR8Zajn
-         nEvQxPKVVZRSFpXHDGa9wtcD+278/GW5lW6+cw7ac1JXiSwMovrxT5LsfjOOxRLo6by0
-         tclQu9lT19CUVIpFyWw3scpH2FQa4Z0bG8PiSjSAU/ohYuNzJ0W1bMhd5SkKdvZFATaG
-         flX5eWnmdTR4XyMZo4KuKT8ZXfHtbx6nSLxAp/i4lPNeLolQgB3Gh3QivdzvG/3NPAK3
-         qNjg==
-X-Gm-Message-State: APjAAAWOa6jS0YMu8Mahbcom5moSZNWywo+q5esY3trmyVOW5+KFqyKG
-        EConSeGivDNXe9SIccqL5T4/HAh41VSkkNfD
-X-Google-Smtp-Source: APXvYqysON5fujS33cj6T4u0xP/S0KBmqxkmcm8hjyJYODMzLrIHF8qDcsK7HL0+7tRTh4gRq6/Wrg==
-X-Received: by 2002:aa7:92c7:: with SMTP id k7mr2234096pfa.8.1579692984412;
-        Wed, 22 Jan 2020 03:36:24 -0800 (PST)
+        bh=anPHFBLNPdadjSGekrzr3WCtJamEsDr9v8sySIJaS0w=;
+        b=tfuApZ56xkrB6dUvzznxmN0nVdTRQL01GMrGYE14NUNjXvsH7PjTv4FfZJqEGkuI3i
+         s94iGAFt1hyhewEyShh7dWdMc4/UHYw8sxgKxk9aepom2claHg0yIZxNyXQ6i0SjXbE3
+         MzHzs9SQBLWHV98NqS4tsdpgppY/tCikFT1I/ORmAwph5p9VJUZlqjrz8+8/CHndon1Y
+         syC95jTEcOZQ6bXElihIRO7ngYIJmLBloJlrukP5a07FDEA81M7BfB+wumNg56B2yxgt
+         bKozxVgYYY7Qpwb4T9kWKYvtb+Ii2uD7hj7xNV0LFiBcvk40MIRr+MBUjNU6PRUvMHmB
+         3vjQ==
+X-Gm-Message-State: APjAAAURT1ODE0B38VZOtO6R+//fuEz5Vmqj4TF989m14ruOYbmgTbQn
+        1DfI/xjqI40+ibpwwwVOPg4C0t2Ix+nWaiiX
+X-Google-Smtp-Source: APXvYqwzbyZCJhk8PEr8//D95o3If/YXQ9TZk7XwxYm3OSPeejCGVvaN2orYwoMDRAl40alk55T2rg==
+X-Received: by 2002:a17:90a:e98d:: with SMTP id v13mr2603017pjy.89.1579692991829;
+        Wed, 22 Jan 2020 03:36:31 -0800 (PST)
 Received: from localhost.localdomain ([223.186.203.82])
-        by smtp.gmail.com with ESMTPSA id c6sm2145962pgk.78.2020.01.22.03.36.19
+        by smtp.gmail.com with ESMTPSA id c6sm2145962pgk.78.2020.01.22.03.36.24
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 22 Jan 2020 03:36:23 -0800 (PST)
+        Wed, 22 Jan 2020 03:36:31 -0800 (PST)
 From:   gautamramk@gmail.com
 To:     netdev@vger.kernel.org
 Cc:     "Mohit P. Tahiliani" <tahiliani@nitk.edu.in>,
@@ -54,9 +54,9 @@ Cc:     "Mohit P. Tahiliani" <tahiliani@nitk.edu.in>,
         Stephen Hemminger <stephen@networkplumber.org>,
         Leslie Monis <lesliemonis@gmail.com>,
         Gautam Ramakrishnan <gautamramk@gmail.com>
-Subject: [PATCH net-next v6 07/10] net: sched: pie: fix commenting
-Date:   Wed, 22 Jan 2020 17:05:30 +0530
-Message-Id: <20200122113533.28128-8-gautamramk@gmail.com>
+Subject: [PATCH net-next v6 08/10] net: sched: pie: fix alignment in struct instances
+Date:   Wed, 22 Jan 2020 17:05:31 +0530
+Message-Id: <20200122113533.28128-9-gautamramk@gmail.com>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <20200122113533.28128-1-gautamramk@gmail.com>
 References: <20200122113533.28128-1-gautamramk@gmail.com>
@@ -67,48 +67,52 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: "Mohit P. Tahiliani" <tahiliani@nitk.edu.in>
 
-Fix punctuation and logical mistakes in the comments. The
-logical mistake was that "dequeue_rate" is no longer the default
-way to calculate queuing delay and is not needed. The default
-way to calculate queue delay was changed in commit cec2975f2b70
-("net: sched: pie: enable timestamp based delay calculation").
+Make the alignment in the initialization of the struct instances
+consistent in the file.
 
 Signed-off-by: Mohit P. Tahiliani <tahiliani@nitk.edu.in>
 Signed-off-by: Leslie Monis <lesliemonis@gmail.com>
 Signed-off-by: Gautam Ramakrishnan <gautamramk@gmail.com>
 ---
- net/sched/sch_pie.c | 10 +++++-----
- 1 file changed, 5 insertions(+), 5 deletions(-)
+ net/sched/sch_pie.c | 18 +++++++++---------
+ 1 file changed, 9 insertions(+), 9 deletions(-)
 
 diff --git a/net/sched/sch_pie.c b/net/sched/sch_pie.c
-index 0c583cc148f3..024f55569a38 100644
+index 024f55569a38..c65164659bca 100644
 --- a/net/sched/sch_pie.c
 +++ b/net/sched/sch_pie.c
-@@ -248,10 +248,10 @@ static void pie_process_dequeue(struct Qdisc *sch, struct sk_buff *skb)
- 		q->vars.dq_count = 0;
- 	}
+@@ -132,14 +132,14 @@ static int pie_qdisc_enqueue(struct sk_buff *skb, struct Qdisc *sch,
+ }
  
--	/* Calculate the average drain rate from this value.  If queue length
--	 * has receded to a small value viz., <= QUEUE_THRESHOLD bytes,reset
-+	/* Calculate the average drain rate from this value. If queue length
-+	 * has receded to a small value viz., <= QUEUE_THRESHOLD bytes, reset
- 	 * the dq_count to -1 as we don't have enough packets to calculate the
--	 * drain rate anymore The following if block is entered only when we
-+	 * drain rate anymore. The following if block is entered only when we
- 	 * have a substantial queue built up (QUEUE_THRESHOLD bytes or more)
- 	 * and we calculate the drain rate for the threshold here.  dq_count is
- 	 * in bytes, time difference in psched_time, hence rate is in
-@@ -329,8 +329,8 @@ static void calculate_probability(struct Qdisc *sch)
- 		qdelay_old = q->vars.qdelay_old;
- 	}
+ static const struct nla_policy pie_policy[TCA_PIE_MAX + 1] = {
+-	[TCA_PIE_TARGET] = {.type = NLA_U32},
+-	[TCA_PIE_LIMIT] = {.type = NLA_U32},
+-	[TCA_PIE_TUPDATE] = {.type = NLA_U32},
+-	[TCA_PIE_ALPHA] = {.type = NLA_U32},
+-	[TCA_PIE_BETA] = {.type = NLA_U32},
+-	[TCA_PIE_ECN] = {.type = NLA_U32},
+-	[TCA_PIE_BYTEMODE] = {.type = NLA_U32},
+-	[TCA_PIE_DQ_RATE_ESTIMATOR] = {.type = NLA_U32},
++	[TCA_PIE_TARGET]		= {.type = NLA_U32},
++	[TCA_PIE_LIMIT]			= {.type = NLA_U32},
++	[TCA_PIE_TUPDATE]		= {.type = NLA_U32},
++	[TCA_PIE_ALPHA]			= {.type = NLA_U32},
++	[TCA_PIE_BETA]			= {.type = NLA_U32},
++	[TCA_PIE_ECN]			= {.type = NLA_U32},
++	[TCA_PIE_BYTEMODE]		= {.type = NLA_U32},
++	[TCA_PIE_DQ_RATE_ESTIMATOR]	= {.type = NLA_U32},
+ };
  
--	/* If qdelay is zero and qlen is not, it means qlen is very small, less
--	 * than dequeue_rate, so we do not update probabilty in this round
-+	/* If qdelay is zero and qlen is not, it means qlen is very small,
-+	 * so we do not update probabilty in this round.
- 	 */
- 	if (qdelay == 0 && qlen != 0)
- 		update_prob = false;
+ static int pie_change(struct Qdisc *sch, struct nlattr *opt,
+@@ -549,7 +549,7 @@ static void pie_destroy(struct Qdisc *sch)
+ }
+ 
+ static struct Qdisc_ops pie_qdisc_ops __read_mostly = {
+-	.id = "pie",
++	.id		= "pie",
+ 	.priv_size	= sizeof(struct pie_sched_data),
+ 	.enqueue	= pie_qdisc_enqueue,
+ 	.dequeue	= pie_qdisc_dequeue,
 -- 
 2.17.1
 
