@@ -2,65 +2,66 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 7FE441449F0
-	for <lists+netdev@lfdr.de>; Wed, 22 Jan 2020 03:39:17 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B21DD1449F6
+	for <lists+netdev@lfdr.de>; Wed, 22 Jan 2020 03:40:23 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728927AbgAVCjP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 21 Jan 2020 21:39:15 -0500
-Received: from nwk-aaemail-lapp02.apple.com ([17.151.62.67]:47344 "EHLO
-        nwk-aaemail-lapp02.apple.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1727141AbgAVCjP (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 21 Jan 2020 21:39:15 -0500
-Received: from pps.filterd (nwk-aaemail-lapp02.apple.com [127.0.0.1])
-        by nwk-aaemail-lapp02.apple.com (8.16.0.27/8.16.0.27) with SMTP id 00M0v2eL020009;
-        Tue, 21 Jan 2020 16:57:04 -0800
+        id S1728912AbgAVCkV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 21 Jan 2020 21:40:21 -0500
+Received: from ma1-aaemail-dr-lapp03.apple.com ([17.171.2.72]:46340 "EHLO
+        ma1-aaemail-dr-lapp03.apple.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1728809AbgAVCkV (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 21 Jan 2020 21:40:21 -0500
+Received: from pps.filterd (ma1-aaemail-dr-lapp03.apple.com [127.0.0.1])
+        by ma1-aaemail-dr-lapp03.apple.com (8.16.0.27/8.16.0.27) with SMTP id 00M0uwKM005654;
+        Tue, 21 Jan 2020 16:57:10 -0800
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=apple.com; h=sender : from : to :
  cc : subject : date : message-id : in-reply-to : references : mime-version
  : content-transfer-encoding; s=20180706;
- bh=ZhG+UGDhCdTsG2sDTCZShDaAkDWJx+7R0dzdMclbDMM=;
- b=T4J5d3c/5Jx9yS+GiIQj6QjUA3R2JuWRE40fyy1EcrJpNiUtJ5w2XlaLSOZxT7EzXc3k
- EmDtvV7u2YqZjv4OTeg+Ikmpxocy08gtZisdiW5+K6NVxAzoXIy/Z5yLPrie8p2LcnnL
- eVj2OD//7PpFajcaFjkDg5RC/VthbWDHsItXBOVPO5rK3lsrz+AKwTFgHyCMpyxXLOwm
- z8RwN40/Jz+cFm8y/btzRcJumULU2/ofJKKnNT73v1VwPODYrtNJBdpWl5hOdTyFY+1t
- v9vh9tqk2ghOrvLvifb2Xuo1AKwP+Df7BttLpj/m4PDxplX0yP6Vc1Qdzcqi93O8f1/A +w== 
-Received: from ma1-mtap-s03.corp.apple.com (ma1-mtap-s03.corp.apple.com [17.40.76.7])
-        by nwk-aaemail-lapp02.apple.com with ESMTP id 2xkyfq8e4a-8
+ bh=jHbtYPKB02MDk+pZNa5Dv3MTI48aEjsOJLrfLpW7Be0=;
+ b=PghATJ3u9imfdmg/mFLvZoL4TPRyXUIOt5ZK9I2Xm9UNk14LK2LZQWB7YT7iVQ8bu7/2
+ 8GULynEI19Ty6lL88dXP1ZswHbLNcFaK6Nr6GiYCMbZnZTo1aefQaxjm3cvJDpPljNSz
+ MyxegpNIAs0xr/cfS4PFuavCPUxbjunLKVuOdeUh9luOMWaujvG6Soir9tLscJ5d5W/O
+ Oo/9BZ3Q++Ielpw3wVeJhavGvCt1NAPBwerrf39IJrZjl8VWzhpecy+NBf93XbnGifKX
+ pSWQFrToNxWUg1emPP0zx7bv6gokfMilBK4zFol/YkMFdtHVpYwH032RVM2gjuw/p7bK WA== 
+Received: from ma1-mtap-s02.corp.apple.com (ma1-mtap-s02.corp.apple.com [17.40.76.6])
+        by ma1-aaemail-dr-lapp03.apple.com with ESMTP id 2xm1w0q03h-3
         (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NO);
-        Tue, 21 Jan 2020 16:57:04 -0800
+        Tue, 21 Jan 2020 16:57:10 -0800
 Received: from nwk-mmpp-sz13.apple.com
- (nwk-mmpp-sz13.apple.com [17.128.115.216]) by ma1-mtap-s03.corp.apple.com
+ (nwk-mmpp-sz13.apple.com [17.128.115.216]) by ma1-mtap-s02.corp.apple.com
  (Oracle Communications Messaging Server 8.0.2.4.20190507 64bit (built May  7
- 2019)) with ESMTPS id <0Q4H00064HAZD600@ma1-mtap-s03.corp.apple.com>; Tue,
- 21 Jan 2020 16:57:03 -0800 (PST)
+ 2019)) with ESMTPS id <0Q4H0018HHB4F030@ma1-mtap-s02.corp.apple.com>; Tue,
+ 21 Jan 2020 16:57:05 -0800 (PST)
 Received: from process_milters-daemon.nwk-mmpp-sz13.apple.com by
  nwk-mmpp-sz13.apple.com
  (Oracle Communications Messaging Server 8.0.2.4.20190507 64bit (built May  7
  2019)) id <0Q4H00F00F5G4K00@nwk-mmpp-sz13.apple.com>; Tue,
- 21 Jan 2020 16:57:02 -0800 (PST)
+ 21 Jan 2020 16:57:05 -0800 (PST)
 X-Va-A: 
 X-Va-T-CD: 4b1e0bf36502e052fc75ad21b706ed24
-X-Va-E-CD: 8e11cccf87192e4df3f407d43544ff16
-X-Va-R-CD: b9324b3a4efeb48edefc2f9dfbbde0b0
+X-Va-E-CD: f18f4596b6dc374f82180780baaa769d
+X-Va-R-CD: 66696f38f2e4b6d938193453d7cca073
 X-Va-CD: 0
-X-Va-ID: 37a035fe-7ae2-475d-81be-617b25350902
+X-Va-ID: a3f0620d-6318-4a19-8ca2-bdaf196f6b8d
 X-V-A:  
 X-V-T-CD: 4b1e0bf36502e052fc75ad21b706ed24
-X-V-E-CD: 8e11cccf87192e4df3f407d43544ff16
-X-V-R-CD: b9324b3a4efeb48edefc2f9dfbbde0b0
+X-V-E-CD: f18f4596b6dc374f82180780baaa769d
+X-V-R-CD: 66696f38f2e4b6d938193453d7cca073
 X-V-CD: 0
-X-V-ID: 1c722b40-b1c9-43de-a0c6-1197564082b4
+X-V-ID: cdf826c6-bf5c-474d-a051-a9ebc3155ec5
 X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:,,
  definitions=2020-01-17_05:,, signatures=0
 Received: from localhost ([17.192.155.241]) by nwk-mmpp-sz13.apple.com
  (Oracle Communications Messaging Server 8.0.2.4.20190507 64bit (built May  7
- 2019)) with ESMTPSA id <0Q4H00DSWHB1DC30@nwk-mmpp-sz13.apple.com>; Tue,
+ 2019)) with ESMTPSA id <0Q4H0012HHB14Y50@nwk-mmpp-sz13.apple.com>; Tue,
  21 Jan 2020 16:57:01 -0800 (PST)
 From:   Christoph Paasch <cpaasch@apple.com>
 To:     netdev@vger.kernel.org
-Cc:     mptcp@lists.01.org, Paolo Abeni <pabeni@redhat.com>
-Subject: [PATCH net-next v3 16/19] mptcp: move from sha1 (v0) to sha256 (v1)
-Date:   Tue, 21 Jan 2020 16:56:30 -0800
-Message-id: <20200122005633.21229-17-cpaasch@apple.com>
+Cc:     mptcp@lists.01.org
+Subject: [PATCH net-next v3 17/19] mptcp: parse and emit MP_CAPABLE option
+ according to v1 spec
+Date:   Tue, 21 Jan 2020 16:56:31 -0800
+Message-id: <20200122005633.21229-18-cpaasch@apple.com>
 X-Mailer: git-send-email 2.23.0
 In-reply-to: <20200122005633.21229-1-cpaasch@apple.com>
 References: <20200122005633.21229-1-cpaasch@apple.com>
@@ -73,286 +74,456 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Paolo Abeni <pabeni@redhat.com>
+This implements MP_CAPABLE options parsing and writing according
+to RFC 6824 bis / RFC 8684: MPTCP v1.
 
-For simplicity's sake use directly sha256 primitives (and pull them
-as a required build dep).
-Add optional, boot-time self-tests for the hmac function.
+Local key is sent on syn/ack, and both keys are sent on 3rd ack.
+MP_CAPABLE messages len are updated accordingly. We need the skbuff to
+correctly emit the above, so we push the skbuff struct as an argument
+all the way from tcp code to the relevant mptcp callbacks.
 
-Signed-off-by: Paolo Abeni <pabeni@redhat.com>
+When processing incoming MP_CAPABLE + data, build a full blown DSS-like
+map info, to simplify later processing.  On child socket creation, we
+need to record the remote key, if available.
+
 Signed-off-by: Christoph Paasch <cpaasch@apple.com>
 ---
- net/mptcp/Kconfig    |  10 ++++
- net/mptcp/crypto.c   | 140 ++++++++++++++++++++++++++-----------------
- net/mptcp/options.c  |   9 ++-
- net/mptcp/protocol.h |   4 +-
- 4 files changed, 104 insertions(+), 59 deletions(-)
+ include/linux/tcp.h   |   3 +-
+ include/net/mptcp.h   |  17 +++--
+ net/ipv4/tcp_input.c  |   2 +-
+ net/ipv4/tcp_output.c |   2 +-
+ net/mptcp/options.c   | 162 +++++++++++++++++++++++++++++++++---------
+ net/mptcp/protocol.h  |   6 +-
+ net/mptcp/subflow.c   |  14 +++-
+ 7 files changed, 160 insertions(+), 46 deletions(-)
 
-diff --git a/net/mptcp/Kconfig b/net/mptcp/Kconfig
-index c1a99f07a4cd..5db56d2218c5 100644
---- a/net/mptcp/Kconfig
-+++ b/net/mptcp/Kconfig
-@@ -3,6 +3,7 @@ config MPTCP
- 	bool "MPTCP: Multipath TCP"
- 	depends on INET
- 	select SKB_EXTENSIONS
-+	select CRYPTO_LIB_SHA256
- 	help
- 	  Multipath TCP (MPTCP) connections send and receive data over multiple
- 	  subflows in order to utilize multiple network paths. Each subflow
-@@ -14,3 +15,12 @@ config MPTCP_IPV6
- 	depends on MPTCP
- 	select IPV6
- 	default y
-+
-+config MPTCP_HMAC_TEST
-+	bool "Tests for MPTCP HMAC implementation"
-+	default n
-+	help
-+	  This option enable boot time self-test for the HMAC implementation
-+	  used by the MPTCP code
-+
-+	  Say N if you are unsure.
-diff --git a/net/mptcp/crypto.c b/net/mptcp/crypto.c
-index bbd6d01af211..40d1bb18fd60 100644
---- a/net/mptcp/crypto.c
-+++ b/net/mptcp/crypto.c
-@@ -21,67 +21,36 @@
-  */
+diff --git a/include/linux/tcp.h b/include/linux/tcp.h
+index 0d00dad4b85d..4e2124607d32 100644
+--- a/include/linux/tcp.h
++++ b/include/linux/tcp.h
+@@ -94,7 +94,8 @@ struct mptcp_options_received {
+ 		data_fin:1,
+ 		use_ack:1,
+ 		ack64:1,
+-		__unused:3;
++		mpc_map:1,
++		__unused:2;
+ };
+ #endif
  
- #include <linux/kernel.h>
--#include <linux/cryptohash.h>
-+#include <crypto/sha.h>
- #include <asm/unaligned.h>
+diff --git a/include/net/mptcp.h b/include/net/mptcp.h
+index 8619c1fca741..27627e2d1bc2 100644
+--- a/include/net/mptcp.h
++++ b/include/net/mptcp.h
+@@ -23,7 +23,8 @@ struct mptcp_ext {
+ 			data_fin:1,
+ 			use_ack:1,
+ 			ack64:1,
+-			__unused:3;
++			mpc_map:1,
++			__unused:2;
+ 	/* one byte hole */
+ };
  
- #include "protocol.h"
- 
--struct sha1_state {
--	u32 workspace[SHA_WORKSPACE_WORDS];
--	u32 digest[SHA_DIGEST_WORDS];
--	unsigned int count;
--};
--
--static void sha1_init(struct sha1_state *state)
--{
--	sha_init(state->digest);
--	state->count = 0;
--}
--
--static void sha1_update(struct sha1_state *state, u8 *input)
--{
--	sha_transform(state->digest, input, state->workspace);
--	state->count += SHA_MESSAGE_BYTES;
--}
--
--static void sha1_pad_final(struct sha1_state *state, u8 *input,
--			   unsigned int length, __be32 *mptcp_hashed_key)
--{
--	int i;
--
--	input[length] = 0x80;
--	memset(&input[length + 1], 0, SHA_MESSAGE_BYTES - length - 9);
--	put_unaligned_be64((length + state->count) << 3,
--			   &input[SHA_MESSAGE_BYTES - 8]);
--
--	sha_transform(state->digest, input, state->workspace);
--	for (i = 0; i < SHA_DIGEST_WORDS; ++i)
--		put_unaligned_be32(state->digest[i], &mptcp_hashed_key[i]);
--
--	memzero_explicit(state->workspace, SHA_WORKSPACE_WORDS << 2);
--}
-+#define SHA256_DIGEST_WORDS (SHA256_DIGEST_SIZE / 4)
- 
- void mptcp_crypto_key_sha(u64 key, u32 *token, u64 *idsn)
- {
--	__be32 mptcp_hashed_key[SHA_DIGEST_WORDS];
--	u8 input[SHA_MESSAGE_BYTES];
--	struct sha1_state state;
-+	__be32 mptcp_hashed_key[SHA256_DIGEST_WORDS];
-+	__be64 input = cpu_to_be64(key);
-+	struct sha256_state state;
- 
--	sha1_init(&state);
--	put_unaligned_be64(key, input);
--	sha1_pad_final(&state, input, 8, mptcp_hashed_key);
-+	sha256_init(&state);
-+	sha256_update(&state, (__force u8 *)&input, sizeof(input));
-+	sha256_final(&state, (u8 *)mptcp_hashed_key);
- 
- 	if (token)
- 		*token = be32_to_cpu(mptcp_hashed_key[0]);
- 	if (idsn)
--		*idsn = be64_to_cpu(*((__be64 *)&mptcp_hashed_key[3]));
-+		*idsn = be64_to_cpu(*((__be64 *)&mptcp_hashed_key[6]));
+@@ -50,10 +51,10 @@ static inline bool rsk_is_mptcp(const struct request_sock *req)
+ 	return tcp_rsk(req)->is_mptcp;
  }
  
- void mptcp_crypto_hmac_sha(u64 key1, u64 key2, u32 nonce1, u32 nonce2,
--			   u32 *hash_out)
-+			   void *hmac)
- {
--	u8 input[SHA_MESSAGE_BYTES * 2];
--	struct sha1_state state;
-+	u8 input[SHA256_BLOCK_SIZE + SHA256_DIGEST_SIZE];
-+	__be32 mptcp_hashed_key[SHA256_DIGEST_WORDS];
-+	__be32 *hash_out = (__force __be32 *)hmac;
-+	struct sha256_state state;
- 	u8 key1be[8];
- 	u8 key2be[8];
- 	int i;
-@@ -96,17 +65,16 @@ void mptcp_crypto_hmac_sha(u64 key1, u64 key2, u32 nonce1, u32 nonce2,
- 	for (i = 0; i < 8; i++)
- 		input[i + 8] ^= key2be[i];
- 
--	put_unaligned_be32(nonce1, &input[SHA_MESSAGE_BYTES]);
--	put_unaligned_be32(nonce2, &input[SHA_MESSAGE_BYTES + 4]);
-+	put_unaligned_be32(nonce1, &input[SHA256_BLOCK_SIZE]);
-+	put_unaligned_be32(nonce2, &input[SHA256_BLOCK_SIZE + 4]);
- 
--	sha1_init(&state);
--	sha1_update(&state, input);
-+	sha256_init(&state);
-+	sha256_update(&state, input, SHA256_BLOCK_SIZE + 8);
- 
- 	/* emit sha256(K1 || msg) on the second input block, so we can
- 	 * reuse 'input' for the last hashing
- 	 */
--	sha1_pad_final(&state, &input[SHA_MESSAGE_BYTES], 8,
--		       (__force __be32 *)&input[SHA_MESSAGE_BYTES]);
-+	sha256_final(&state, &input[SHA256_BLOCK_SIZE]);
- 
- 	/* Prepare second part of hmac */
- 	memset(input, 0x5C, SHA_MESSAGE_BYTES);
-@@ -115,8 +83,70 @@ void mptcp_crypto_hmac_sha(u64 key1, u64 key2, u32 nonce1, u32 nonce2,
- 	for (i = 0; i < 8; i++)
- 		input[i + 8] ^= key2be[i];
- 
--	sha1_init(&state);
--	sha1_update(&state, input);
--	sha1_pad_final(&state, &input[SHA_MESSAGE_BYTES], SHA_DIGEST_WORDS << 2,
--		       (__be32 *)hash_out);
-+	sha256_init(&state);
-+	sha256_update(&state, input, SHA256_BLOCK_SIZE + SHA256_DIGEST_SIZE);
-+	sha256_final(&state, (u8 *)mptcp_hashed_key);
-+
-+	/* takes only first 160 bits */
-+	for (i = 0; i < 5; i++)
-+		hash_out[i] = mptcp_hashed_key[i];
-+}
-+
-+#ifdef CONFIG_MPTCP_HMAC_TEST
-+struct test_cast {
-+	char *key;
-+	char *msg;
-+	char *result;
-+};
-+
-+/* we can't reuse RFC 4231 test vectors, as we have constraint on the
-+ * input and key size, and we truncate the output.
-+ */
-+static struct test_cast tests[] = {
-+	{
-+		.key = "0b0b0b0b0b0b0b0b",
-+		.msg = "48692054",
-+		.result = "8385e24fb4235ac37556b6b886db106284a1da67",
-+	},
-+	{
-+		.key = "aaaaaaaaaaaaaaaa",
-+		.msg = "dddddddd",
-+		.result = "2c5e219164ff1dca1c4a92318d847bb6b9d44492",
-+	},
-+	{
-+		.key = "0102030405060708",
-+		.msg = "cdcdcdcd",
-+		.result = "e73b9ba9969969cefb04aa0d6df18ec2fcc075b6",
-+	},
-+};
-+
-+static int __init test_mptcp_crypto(void)
-+{
-+	char hmac[20], hmac_hex[41];
-+	u32 nonce1, nonce2;
-+	u64 key1, key2;
-+	int i, j;
-+
-+	for (i = 0; i < ARRAY_SIZE(tests); ++i) {
-+		/* mptcp hmap will convert to be before computing the hmac */
-+		key1 = be64_to_cpu(*((__be64 *)&tests[i].key[0]));
-+		key2 = be64_to_cpu(*((__be64 *)&tests[i].key[8]));
-+		nonce1 = be32_to_cpu(*((__be32 *)&tests[i].msg[0]));
-+		nonce2 = be32_to_cpu(*((__be32 *)&tests[i].msg[4]));
-+
-+		mptcp_crypto_hmac_sha(key1, key2, nonce1, nonce2, hmac);
-+		for (j = 0; j < 20; ++j)
-+			sprintf(&hmac_hex[j << 1], "%02x", hmac[j] & 0xff);
-+		hmac_hex[40] = 0;
-+
-+		if (memcmp(hmac_hex, tests[i].result, 40))
-+			pr_err("test %d failed, got %s expected %s", i,
-+			       hmac_hex, tests[i].result);
-+		else
-+			pr_info("test %d [ ok ]", i);
-+	}
-+	return 0;
+-void mptcp_parse_option(const unsigned char *ptr, int opsize,
+-			struct tcp_options_received *opt_rx);
+-bool mptcp_syn_options(struct sock *sk, unsigned int *size,
+-		       struct mptcp_out_options *opts);
++void mptcp_parse_option(const struct sk_buff *skb, const unsigned char *ptr,
++			int opsize, struct tcp_options_received *opt_rx);
++bool mptcp_syn_options(struct sock *sk, const struct sk_buff *skb,
++		       unsigned int *size, struct mptcp_out_options *opts);
+ void mptcp_rcv_synsent(struct sock *sk);
+ bool mptcp_synack_options(const struct request_sock *req, unsigned int *size,
+ 			  struct mptcp_out_options *opts);
+@@ -121,12 +122,14 @@ static inline bool rsk_is_mptcp(const struct request_sock *req)
+ 	return false;
  }
-+
-+late_initcall(test_mptcp_crypto);
-+#endif
+ 
+-static inline void mptcp_parse_option(const unsigned char *ptr, int opsize,
++static inline void mptcp_parse_option(const struct sk_buff *skb,
++				      const unsigned char *ptr, int opsize,
+ 				      struct tcp_options_received *opt_rx)
+ {
+ }
+ 
+-static inline bool mptcp_syn_options(struct sock *sk, unsigned int *size,
++static inline bool mptcp_syn_options(struct sock *sk, const struct sk_buff *skb,
++				     unsigned int *size,
+ 				     struct mptcp_out_options *opts)
+ {
+ 	return false;
+diff --git a/net/ipv4/tcp_input.c b/net/ipv4/tcp_input.c
+index 28d31f2c1422..2f475b897c11 100644
+--- a/net/ipv4/tcp_input.c
++++ b/net/ipv4/tcp_input.c
+@@ -3926,7 +3926,7 @@ void tcp_parse_options(const struct net *net,
+ 				break;
+ #endif
+ 			case TCPOPT_MPTCP:
+-				mptcp_parse_option(ptr, opsize, opt_rx);
++				mptcp_parse_option(skb, ptr, opsize, opt_rx);
+ 				break;
+ 
+ 			case TCPOPT_FASTOPEN:
+diff --git a/net/ipv4/tcp_output.c b/net/ipv4/tcp_output.c
+index c6797a388921..213729ebf323 100644
+--- a/net/ipv4/tcp_output.c
++++ b/net/ipv4/tcp_output.c
+@@ -685,7 +685,7 @@ static unsigned int tcp_syn_options(struct sock *sk, struct sk_buff *skb,
+ 	if (sk_is_mptcp(sk)) {
+ 		unsigned int size;
+ 
+-		if (mptcp_syn_options(sk, &size, &opts->mptcp)) {
++		if (mptcp_syn_options(sk, skb, &size, &opts->mptcp)) {
+ 			opts->options |= OPTION_MPTCP;
+ 			remaining -= size;
+ 		}
 diff --git a/net/mptcp/options.c b/net/mptcp/options.c
-index 1fa8496f3551..1aec742ca8e1 100644
+index 1aec742ca8e1..8f82ff9a5a8e 100644
 --- a/net/mptcp/options.c
 +++ b/net/mptcp/options.c
-@@ -9,6 +9,11 @@
- #include <net/mptcp.h>
- #include "protocol.h"
- 
-+static bool mptcp_cap_flag_sha256(u8 flags)
-+{
-+	return (flags & MPTCP_CAP_FLAG_MASK) == MPTCP_CAP_HMAC_SHA256;
-+}
-+
- void mptcp_parse_option(const unsigned char *ptr, int opsize,
- 			struct tcp_options_received *opt_rx)
- {
-@@ -29,7 +34,7 @@ void mptcp_parse_option(const unsigned char *ptr, int opsize,
- 			break;
- 
- 		flags = *ptr++;
--		if (!((flags & MPTCP_CAP_FLAG_MASK) == MPTCP_CAP_HMAC_SHA1) ||
-+		if (!mptcp_cap_flag_sha256(flags) ||
- 		    (flags & MPTCP_CAP_EXTENSIBILITY))
- 			break;
- 
-@@ -399,7 +404,7 @@ void mptcp_write_options(__be32 *ptr, struct mptcp_out_options *opts)
- 		*ptr++ = htonl((TCPOPT_MPTCP << 24) | (len << 16) |
- 			       (MPTCPOPT_MP_CAPABLE << 12) |
- 			       (MPTCP_SUPPORTED_VERSION << 8) |
--			       MPTCP_CAP_HMAC_SHA1);
-+			       MPTCP_CAP_HMAC_SHA256);
- 		put_unaligned_be64(opts->sndr_key, ptr);
- 		ptr += 2;
- 		if (OPTION_MPTCP_MPC_ACK & opts->suboptions) {
-diff --git a/net/mptcp/protocol.h b/net/mptcp/protocol.h
-index a8fad7d78565..a355bb1cf31b 100644
---- a/net/mptcp/protocol.h
-+++ b/net/mptcp/protocol.h
-@@ -43,7 +43,7 @@
- #define MPTCP_VERSION_MASK	(0x0F)
- #define MPTCP_CAP_CHECKSUM_REQD	BIT(7)
- #define MPTCP_CAP_EXTENSIBILITY	BIT(6)
--#define MPTCP_CAP_HMAC_SHA1	BIT(0)
-+#define MPTCP_CAP_HMAC_SHA256	BIT(0)
- #define MPTCP_CAP_FLAG_MASK	(0x3F)
- 
- /* MPTCP DSS flags */
-@@ -216,7 +216,7 @@ static inline void mptcp_crypto_key_gen_sha(u64 *key, u32 *token, u64 *idsn)
+@@ -14,8 +14,8 @@ static bool mptcp_cap_flag_sha256(u8 flags)
+ 	return (flags & MPTCP_CAP_FLAG_MASK) == MPTCP_CAP_HMAC_SHA256;
  }
  
- void mptcp_crypto_hmac_sha(u64 key1, u64 key2, u32 nonce1, u32 nonce2,
--			   u32 *hash_out);
-+			   void *hash_out);
- 
- static inline struct mptcp_ext *mptcp_get_ext(struct sk_buff *skb)
+-void mptcp_parse_option(const unsigned char *ptr, int opsize,
+-			struct tcp_options_received *opt_rx)
++void mptcp_parse_option(const struct sk_buff *skb, const unsigned char *ptr,
++			int opsize, struct tcp_options_received *opt_rx)
  {
+ 	struct mptcp_options_received *mp_opt = &opt_rx->mptcp;
+ 	u8 subtype = *ptr >> 4;
+@@ -25,13 +25,29 @@ void mptcp_parse_option(const unsigned char *ptr, int opsize,
+ 
+ 	switch (subtype) {
+ 	case MPTCPOPT_MP_CAPABLE:
+-		if (opsize != TCPOLEN_MPTCP_MPC_SYN &&
+-		    opsize != TCPOLEN_MPTCP_MPC_ACK)
++		/* strict size checking */
++		if (!(TCP_SKB_CB(skb)->tcp_flags & TCPHDR_SYN)) {
++			if (skb->len > tcp_hdr(skb)->doff << 2)
++				expected_opsize = TCPOLEN_MPTCP_MPC_ACK_DATA;
++			else
++				expected_opsize = TCPOLEN_MPTCP_MPC_ACK;
++		} else {
++			if (TCP_SKB_CB(skb)->tcp_flags & TCPHDR_ACK)
++				expected_opsize = TCPOLEN_MPTCP_MPC_SYNACK;
++			else
++				expected_opsize = TCPOLEN_MPTCP_MPC_SYN;
++		}
++		if (opsize != expected_opsize)
+ 			break;
+ 
++		/* try to be gentle vs future versions on the initial syn */
+ 		version = *ptr++ & MPTCP_VERSION_MASK;
+-		if (version != MPTCP_SUPPORTED_VERSION)
++		if (opsize != TCPOLEN_MPTCP_MPC_SYN) {
++			if (version != MPTCP_SUPPORTED_VERSION)
++				break;
++		} else if (version < MPTCP_SUPPORTED_VERSION) {
+ 			break;
++		}
+ 
+ 		flags = *ptr++;
+ 		if (!mptcp_cap_flag_sha256(flags) ||
+@@ -55,23 +71,40 @@ void mptcp_parse_option(const unsigned char *ptr, int opsize,
+ 			break;
+ 
+ 		mp_opt->mp_capable = 1;
+-		mp_opt->sndr_key = get_unaligned_be64(ptr);
+-		ptr += 8;
+-
+-		if (opsize == TCPOLEN_MPTCP_MPC_ACK) {
++		if (opsize >= TCPOLEN_MPTCP_MPC_SYNACK) {
++			mp_opt->sndr_key = get_unaligned_be64(ptr);
++			ptr += 8;
++		}
++		if (opsize >= TCPOLEN_MPTCP_MPC_ACK) {
+ 			mp_opt->rcvr_key = get_unaligned_be64(ptr);
+ 			ptr += 8;
+-			pr_debug("MP_CAPABLE sndr=%llu, rcvr=%llu",
+-				 mp_opt->sndr_key, mp_opt->rcvr_key);
+-		} else {
+-			pr_debug("MP_CAPABLE sndr=%llu", mp_opt->sndr_key);
+ 		}
++		if (opsize == TCPOLEN_MPTCP_MPC_ACK_DATA) {
++			/* Section 3.1.:
++			 * "the data parameters in a MP_CAPABLE are semantically
++			 * equivalent to those in a DSS option and can be used
++			 * interchangeably."
++			 */
++			mp_opt->dss = 1;
++			mp_opt->use_map = 1;
++			mp_opt->mpc_map = 1;
++			mp_opt->data_len = get_unaligned_be16(ptr);
++			ptr += 2;
++		}
++		pr_debug("MP_CAPABLE version=%x, flags=%x, optlen=%d sndr=%llu, rcvr=%llu len=%d",
++			 version, flags, opsize, mp_opt->sndr_key,
++			 mp_opt->rcvr_key, mp_opt->data_len);
+ 		break;
+ 
+ 	case MPTCPOPT_DSS:
+ 		pr_debug("DSS");
+ 		ptr++;
+ 
++		/* we must clear 'mpc_map' be able to detect MP_CAPABLE
++		 * map vs DSS map in mptcp_incoming_options(), and reconstruct
++		 * map info accordingly
++		 */
++		mp_opt->mpc_map = 0;
+ 		flags = (*ptr++) & MPTCP_DSS_FLAG_MASK;
+ 		mp_opt->data_fin = (flags & MPTCP_DSS_DATA_FIN) != 0;
+ 		mp_opt->dsn64 = (flags & MPTCP_DSS_DSN64) != 0;
+@@ -176,18 +209,22 @@ void mptcp_get_options(const struct sk_buff *skb,
+ 			if (opsize > length)
+ 				return;	/* don't parse partial options */
+ 			if (opcode == TCPOPT_MPTCP)
+-				mptcp_parse_option(ptr, opsize, opt_rx);
++				mptcp_parse_option(skb, ptr, opsize, opt_rx);
+ 			ptr += opsize - 2;
+ 			length -= opsize;
+ 		}
+ 	}
+ }
+ 
+-bool mptcp_syn_options(struct sock *sk, unsigned int *size,
+-		       struct mptcp_out_options *opts)
++bool mptcp_syn_options(struct sock *sk, const struct sk_buff *skb,
++		       unsigned int *size, struct mptcp_out_options *opts)
+ {
+ 	struct mptcp_subflow_context *subflow = mptcp_subflow_ctx(sk);
+ 
++	/* we will use snd_isn to detect first pkt [re]transmission
++	 * in mptcp_established_options_mp()
++	 */
++	subflow->snd_isn = TCP_SKB_CB(skb)->end_seq;
+ 	if (subflow->request_mptcp) {
+ 		pr_debug("local_key=%llu", subflow->local_key);
+ 		opts->suboptions = OPTION_MPTCP_MPC_SYN;
+@@ -212,20 +249,52 @@ void mptcp_rcv_synsent(struct sock *sk)
+ 	}
+ }
+ 
+-static bool mptcp_established_options_mp(struct sock *sk, unsigned int *size,
++static bool mptcp_established_options_mp(struct sock *sk, struct sk_buff *skb,
++					 unsigned int *size,
+ 					 unsigned int remaining,
+ 					 struct mptcp_out_options *opts)
+ {
+ 	struct mptcp_subflow_context *subflow = mptcp_subflow_ctx(sk);
++	struct mptcp_ext *mpext;
++	unsigned int data_len;
++
++	pr_debug("subflow=%p fourth_ack=%d seq=%x:%x remaining=%d", subflow,
++		 subflow->fourth_ack, subflow->snd_isn,
++		 skb ? TCP_SKB_CB(skb)->seq : 0, remaining);
++
++	if (subflow->mp_capable && !subflow->fourth_ack && skb &&
++	    subflow->snd_isn == TCP_SKB_CB(skb)->seq) {
++		/* When skb is not available, we better over-estimate the
++		 * emitted options len. A full DSS option is longer than
++		 * TCPOLEN_MPTCP_MPC_ACK_DATA, so let's the caller try to fit
++		 * that.
++		 */
++		mpext = mptcp_get_ext(skb);
++		data_len = mpext ? mpext->data_len : 0;
+ 
+-	if (!subflow->fourth_ack) {
++		/* we will check ext_copy.data_len in mptcp_write_options() to
++		 * discriminate between TCPOLEN_MPTCP_MPC_ACK_DATA and
++		 * TCPOLEN_MPTCP_MPC_ACK
++		 */
++		opts->ext_copy.data_len = data_len;
+ 		opts->suboptions = OPTION_MPTCP_MPC_ACK;
+ 		opts->sndr_key = subflow->local_key;
+ 		opts->rcvr_key = subflow->remote_key;
+-		*size = TCPOLEN_MPTCP_MPC_ACK;
+-		subflow->fourth_ack = 1;
+-		pr_debug("subflow=%p, local_key=%llu, remote_key=%llu",
+-			 subflow, subflow->local_key, subflow->remote_key);
++
++		/* Section 3.1.
++		 * The MP_CAPABLE option is carried on the SYN, SYN/ACK, and ACK
++		 * packets that start the first subflow of an MPTCP connection,
++		 * as well as the first packet that carries data
++		 */
++		if (data_len > 0)
++			*size = ALIGN(TCPOLEN_MPTCP_MPC_ACK_DATA, 4);
++		else
++			*size = TCPOLEN_MPTCP_MPC_ACK;
++
++		pr_debug("subflow=%p, local_key=%llu, remote_key=%llu map_len=%d",
++			 subflow, subflow->local_key, subflow->remote_key,
++			 data_len);
++
+ 		return true;
+ 	}
+ 	return false;
+@@ -319,7 +388,7 @@ bool mptcp_established_options(struct sock *sk, struct sk_buff *skb,
+ 	unsigned int opt_size = 0;
+ 	bool ret = false;
+ 
+-	if (mptcp_established_options_mp(sk, &opt_size, remaining, opts))
++	if (mptcp_established_options_mp(sk, skb, &opt_size, remaining, opts))
+ 		ret = true;
+ 	else if (mptcp_established_options_dss(sk, skb, &opt_size, remaining,
+ 					       opts))
+@@ -371,11 +440,26 @@ void mptcp_incoming_options(struct sock *sk, struct sk_buff *skb,
+ 	memset(mpext, 0, sizeof(*mpext));
+ 
+ 	if (mp_opt->use_map) {
+-		mpext->data_seq = mp_opt->data_seq;
+-		mpext->subflow_seq = mp_opt->subflow_seq;
++		if (mp_opt->mpc_map) {
++			struct mptcp_subflow_context *subflow =
++				mptcp_subflow_ctx(sk);
++
++			/* this is an MP_CAPABLE carrying MPTCP data
++			 * we know this map the first chunk of data
++			 */
++			mptcp_crypto_key_sha(subflow->remote_key, NULL,
++					     &mpext->data_seq);
++			mpext->data_seq++;
++			mpext->subflow_seq = 1;
++			mpext->dsn64 = 1;
++			mpext->mpc_map = 1;
++		} else {
++			mpext->data_seq = mp_opt->data_seq;
++			mpext->subflow_seq = mp_opt->subflow_seq;
++			mpext->dsn64 = mp_opt->dsn64;
++		}
+ 		mpext->data_len = mp_opt->data_len;
+ 		mpext->use_map = 1;
+-		mpext->dsn64 = mp_opt->dsn64;
+ 	}
+ 
+ 	if (mp_opt->use_ack) {
+@@ -389,8 +473,7 @@ void mptcp_incoming_options(struct sock *sk, struct sk_buff *skb,
+ 
+ void mptcp_write_options(__be32 *ptr, struct mptcp_out_options *opts)
+ {
+-	if ((OPTION_MPTCP_MPC_SYN |
+-	     OPTION_MPTCP_MPC_SYNACK |
++	if ((OPTION_MPTCP_MPC_SYN | OPTION_MPTCP_MPC_SYNACK |
+ 	     OPTION_MPTCP_MPC_ACK) & opts->suboptions) {
+ 		u8 len;
+ 
+@@ -398,6 +481,8 @@ void mptcp_write_options(__be32 *ptr, struct mptcp_out_options *opts)
+ 			len = TCPOLEN_MPTCP_MPC_SYN;
+ 		else if (OPTION_MPTCP_MPC_SYNACK & opts->suboptions)
+ 			len = TCPOLEN_MPTCP_MPC_SYNACK;
++		else if (opts->ext_copy.data_len)
++			len = TCPOLEN_MPTCP_MPC_ACK_DATA;
+ 		else
+ 			len = TCPOLEN_MPTCP_MPC_ACK;
+ 
+@@ -405,14 +490,27 @@ void mptcp_write_options(__be32 *ptr, struct mptcp_out_options *opts)
+ 			       (MPTCPOPT_MP_CAPABLE << 12) |
+ 			       (MPTCP_SUPPORTED_VERSION << 8) |
+ 			       MPTCP_CAP_HMAC_SHA256);
++
++		if (!((OPTION_MPTCP_MPC_SYNACK | OPTION_MPTCP_MPC_ACK) &
++		    opts->suboptions))
++			goto mp_capable_done;
++
+ 		put_unaligned_be64(opts->sndr_key, ptr);
+ 		ptr += 2;
+-		if (OPTION_MPTCP_MPC_ACK & opts->suboptions) {
+-			put_unaligned_be64(opts->rcvr_key, ptr);
+-			ptr += 2;
+-		}
++		if (!((OPTION_MPTCP_MPC_ACK) & opts->suboptions))
++			goto mp_capable_done;
++
++		put_unaligned_be64(opts->rcvr_key, ptr);
++		ptr += 2;
++		if (!opts->ext_copy.data_len)
++			goto mp_capable_done;
++
++		put_unaligned_be32(opts->ext_copy.data_len << 16 |
++				   TCPOPT_NOP << 8 | TCPOPT_NOP, ptr);
++		ptr += 1;
+ 	}
+ 
++mp_capable_done:
+ 	if (opts->ext_copy.use_ack || opts->ext_copy.use_map) {
+ 		struct mptcp_ext *mpext = &opts->ext_copy;
+ 		u8 len = TCPOLEN_MPTCP_DSS_BASE;
+diff --git a/net/mptcp/protocol.h b/net/mptcp/protocol.h
+index a355bb1cf31b..36b90024d34d 100644
+--- a/net/mptcp/protocol.h
++++ b/net/mptcp/protocol.h
+@@ -11,7 +11,7 @@
+ #include <net/tcp.h>
+ #include <net/inet_connection_sock.h>
+ 
+-#define MPTCP_SUPPORTED_VERSION	0
++#define MPTCP_SUPPORTED_VERSION	1
+ 
+ /* MPTCP option bits */
+ #define OPTION_MPTCP_MPC_SYN	BIT(0)
+@@ -29,9 +29,10 @@
+ #define MPTCPOPT_MP_FASTCLOSE	7
+ 
+ /* MPTCP suboption lengths */
+-#define TCPOLEN_MPTCP_MPC_SYN		12
++#define TCPOLEN_MPTCP_MPC_SYN		4
+ #define TCPOLEN_MPTCP_MPC_SYNACK	12
+ #define TCPOLEN_MPTCP_MPC_ACK		20
++#define TCPOLEN_MPTCP_MPC_ACK_DATA	22
+ #define TCPOLEN_MPTCP_DSS_BASE		4
+ #define TCPOLEN_MPTCP_DSS_ACK32		4
+ #define TCPOLEN_MPTCP_DSS_ACK64		8
+@@ -106,6 +107,7 @@ struct mptcp_subflow_context {
+ 	u64	remote_key;
+ 	u64	idsn;
+ 	u64	map_seq;
++	u32	snd_isn;
+ 	u32	token;
+ 	u32	rel_write_seq;
+ 	u32	map_subflow_seq;
+diff --git a/net/mptcp/subflow.c b/net/mptcp/subflow.c
+index 9fb3eb87a20f..8892855f4f52 100644
+--- a/net/mptcp/subflow.c
++++ b/net/mptcp/subflow.c
+@@ -77,7 +77,6 @@ static void subflow_init_req(struct request_sock *req,
+ 		if (err == 0)
+ 			subflow_req->mp_capable = 1;
+ 
+-		subflow_req->remote_key = rx_opt.mptcp.sndr_key;
+ 		subflow_req->ssn_offset = TCP_SKB_CB(skb)->seq;
+ 	}
+ }
+@@ -180,11 +179,22 @@ static struct sock *subflow_syn_recv_sock(const struct sock *sk,
+ 					  bool *own_req)
+ {
+ 	struct mptcp_subflow_context *listener = mptcp_subflow_ctx(sk);
++	struct mptcp_subflow_request_sock *subflow_req;
++	struct tcp_options_received opt_rx;
+ 	struct sock *child;
+ 
+ 	pr_debug("listener=%p, req=%p, conn=%p", listener, req, listener->conn);
+ 
+-	/* if the sk is MP_CAPABLE, we already received the client key */
++	/* if the sk is MP_CAPABLE, we need to fetch the client key */
++	subflow_req = mptcp_subflow_rsk(req);
++	if (subflow_req->mp_capable) {
++		opt_rx.mptcp.mp_capable = 0;
++		mptcp_get_options(skb, &opt_rx);
++		if (!opt_rx.mptcp.mp_capable)
++			subflow_req->mp_capable = 0;
++		else
++			subflow_req->remote_key = opt_rx.mptcp.sndr_key;
++	}
+ 
+ 	child = listener->icsk_af_ops->syn_recv_sock(sk, skb, req, dst,
+ 						     req_unhash, own_req);
 -- 
 2.23.0
 
