@@ -2,254 +2,271 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id DEBFA145B5F
-	for <lists+netdev@lfdr.de>; Wed, 22 Jan 2020 19:10:23 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5E3B1145B4E
+	for <lists+netdev@lfdr.de>; Wed, 22 Jan 2020 19:04:15 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726442AbgAVSKU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 22 Jan 2020 13:10:20 -0500
-Received: from out1-smtp.messagingengine.com ([66.111.4.25]:36395 "EHLO
-        out1-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1725802AbgAVSKU (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 22 Jan 2020 13:10:20 -0500
-Received: from compute3.internal (compute3.nyi.internal [10.202.2.43])
-        by mailout.nyi.internal (Postfix) with ESMTP id E1C9C220EB;
-        Wed, 22 Jan 2020 13:10:18 -0500 (EST)
-Received: from mailfrontend2 ([10.202.2.163])
-  by compute3.internal (MEProxy); Wed, 22 Jan 2020 13:10:18 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-        messagingengine.com; h=cc:content-transfer-encoding:date:from
-        :message-id:mime-version:subject:to:x-me-proxy:x-me-proxy
-        :x-me-sender:x-me-sender:x-sasl-enc; s=fm1; bh=xPYsiTLag6zXqIah4
-        aHgQWRJt2QFp3rWNv7fCh1ywUY=; b=Sl/1WEqLNNuON5oXlGrlZTEeJqN7AV1EI
-        sF9DOYoL0vmhFKap59ZewovTRSRytuy7bmauWB/AqVgC64GsNhm69/UL4edatowD
-        spqmwUNbWxQyAbJJhLqsOn0o6hoTsh+m5Nxat6i64qC/hJlY9gmJ60Uwbj7tJ9bT
-        pxXzb02oZI6GeLv/pmFVrjnR3teHgUcGSFkYiDg2uKxFBVWWwjGDj6YDDfiMpIE+
-        dmNSU4twC+5r79xsgvzFu6jJ++DRh5oO3m/SiExnPh4CmtsP0ZTsFqL0sGnEm4vT
-        yWKhYaXqu53ZRZo2hO3lAqIXDpuvSE2Dwx5IbwYiJCfwRXtPeVDdA==
-X-ME-Sender: <xms:CpAoXuXq0OArA-Ou901UFK1QHZPDJC999RFpDRWYj75yp-LOshRrCw>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedugedrvddtgddutdegucetufdoteggodetrfdotf
-    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
-    uceurghilhhouhhtmecufedttdenucenucfjughrpefhvffufffkofgggfestdekredtre
-    dttdenucfhrhhomhepkfguohcuufgthhhimhhmvghluceoihguohhstghhsehiughoshgt
-    hhdrohhrgheqnecukfhppeduleefrdegjedrudeihedrvdehudenucevlhhushhtvghruf
-    hiiigvpedtnecurfgrrhgrmhepmhgrihhlfhhrohhmpehiughoshgthhesihguohhstghh
-    rdhorhhg
-X-ME-Proxy: <xmx:CpAoXluoMC2Nmoa4foB62Tm14DhRyqykpHMrdIU5d8L5GtPEaAohEQ>
-    <xmx:CpAoXpRUU1NebjY7NlMY_EhxqAH7raHEDDGWsVAGKvt_7NWejETKOQ>
-    <xmx:CpAoXqopa3qwjlQhQzYDwYT5iiHHYkQuhFlm7je8NDRp79V0Rd6_QQ>
-    <xmx:CpAoXlEBexzkVCLkRtYFgrxLUsC3yxdGv-tc5LfbyjFc-0SYFA7WgQ>
-Received: from splinter.mtl.com (unknown [193.47.165.251])
-        by mail.messagingengine.com (Postfix) with ESMTPA id BE08A30602DE;
-        Wed, 22 Jan 2020 13:10:17 -0500 (EST)
-From:   Ido Schimmel <idosch@idosch.org>
-To:     netdev@vger.kernel.org
-Cc:     davem@davemloft.net, jiri@mellanox.com, mlxsw@mellanox.com,
-        Ido Schimmel <idosch@mellanox.com>
-Subject: [PATCH net] mlxsw: spectrum_acl: Fix use-after-free during reload
-Date:   Wed, 22 Jan 2020 20:09:52 +0200
-Message-Id: <20200122180952.262582-1-idosch@idosch.org>
-X-Mailer: git-send-email 2.24.1
+        id S1726083AbgAVSEK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 22 Jan 2020 13:04:10 -0500
+Received: from fllv0015.ext.ti.com ([198.47.19.141]:44166 "EHLO
+        fllv0015.ext.ti.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725802AbgAVSEJ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 22 Jan 2020 13:04:09 -0500
+Received: from lelv0266.itg.ti.com ([10.180.67.225])
+        by fllv0015.ext.ti.com (8.15.2/8.15.2) with ESMTP id 00MI3K5X119400;
+        Wed, 22 Jan 2020 12:03:20 -0600
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
+        s=ti-com-17Q1; t=1579716200;
+        bh=+z/nBp5AZOV+zwEI+CSuqzfzPjfcbX5qgF2oJgMn8hs=;
+        h=Subject:To:CC:References:From:Date:In-Reply-To;
+        b=aOmDNrSM419XdFPVXOV+68wugT8QM6hPaAdpMWjldpw84tBqsSRh/m0BTBfP8IKYV
+         sgEaOw9ljB76JysadaqqeqXvxSlJ+dWaeddxK4iH4HsGRTUa57rek0jZt4mpPySBF+
+         FmBKGatHw9ajb62BnVAioaUJBtIw65KxJWs6kt3Q=
+Received: from DLEE107.ent.ti.com (dlee107.ent.ti.com [157.170.170.37])
+        by lelv0266.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 00MI3K8v004928
+        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
+        Wed, 22 Jan 2020 12:03:20 -0600
+Received: from DLEE110.ent.ti.com (157.170.170.21) by DLEE107.ent.ti.com
+ (157.170.170.37) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1847.3; Wed, 22
+ Jan 2020 12:03:20 -0600
+Received: from lelv0327.itg.ti.com (10.180.67.183) by DLEE110.ent.ti.com
+ (157.170.170.21) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1847.3 via
+ Frontend Transport; Wed, 22 Jan 2020 12:03:20 -0600
+Received: from [158.218.117.45] (ileax41-snat.itg.ti.com [10.172.224.153])
+        by lelv0327.itg.ti.com (8.15.2/8.15.2) with ESMTP id 00MI3Htj114002;
+        Wed, 22 Jan 2020 12:03:18 -0600
+Subject: Re: [v1,net-next, 1/2] ethtool: add setting frame preemption of
+ traffic classes
+To:     Vinicius Costa Gomes <vinicius.gomes@intel.com>,
+        Po Liu <po.liu@nxp.com>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "hauke.mehrtens@intel.com" <hauke.mehrtens@intel.com>,
+        "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>,
+        "allison@lohutok.net" <allison@lohutok.net>,
+        "tglx@linutronix.de" <tglx@linutronix.de>,
+        "hkallweit1@gmail.com" <hkallweit1@gmail.com>,
+        "saeedm@mellanox.com" <saeedm@mellanox.com>,
+        "andrew@lunn.ch" <andrew@lunn.ch>,
+        "f.fainelli@gmail.com" <f.fainelli@gmail.com>,
+        "alexandru.ardelean@analog.com" <alexandru.ardelean@analog.com>,
+        "jiri@mellanox.com" <jiri@mellanox.com>,
+        "ayal@mellanox.com" <ayal@mellanox.com>,
+        "pablo@netfilter.org" <pablo@netfilter.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+CC:     "simon.horman@netronome.com" <simon.horman@netronome.com>,
+        Claudiu Manoil <claudiu.manoil@nxp.com>,
+        Vladimir Oltean <vladimir.oltean@nxp.com>,
+        Alexandru Marginean <alexandru.marginean@nxp.com>,
+        Xiaoliang Yang <xiaoliang.yang_1@nxp.com>,
+        Roy Zang <roy.zang@nxp.com>, Mingkai Hu <mingkai.hu@nxp.com>,
+        Jerry Huang <jerry.huang@nxp.com>, Leo Li <leoyang.li@nxp.com>
+References: <20191127094517.6255-1-Po.Liu@nxp.com>
+ <87v9p93a2s.fsf@linux.intel.com>
+From:   Murali Karicheri <m-karicheri2@ti.com>
+Message-ID: <9b13a47e-8ca3-66b0-063c-798a5fa71149@ti.com>
+Date:   Wed, 22 Jan 2020 13:10:36 -0500
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:52.0) Gecko/20100101
+ Thunderbird/52.7.0
 MIME-Version: 1.0
+In-Reply-To: <87v9p93a2s.fsf@linux.intel.com>
+Content-Type: text/plain; charset="utf-8"; format=flowed
+Content-Language: en-US
 Content-Transfer-Encoding: 8bit
+X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Ido Schimmel <idosch@mellanox.com>
+Hi, Vinicius,
 
-During reload (or module unload), the router block is de-initialized.
-Among other things, this results in the removal of a default multicast
-route from each active virtual router (VRF). These default routes are
-configured during initialization to trap packets to the CPU. In
-Spectrum-2, unlike Spectrum-1, multicast routes are implemented using
-ACL rules.
+On 01/17/2020 07:03 PM, Vinicius Costa Gomes wrote:
+> Hi,
+> 
+> Po Liu <po.liu@nxp.com> writes:
+> 
+>> IEEE Std 802.1Qbu standard defined the frame preemption of port
+>> traffic classes. This patch introduce a method to set traffic
+>> classes preemption. Add a parameter 'preemption' in struct
+>> ethtool_link_settings. The value will be translated to a binary,
+>> each bit represent a traffic class. Bit "1" means preemptable
+>> traffic class. Bit "0" means express traffic class.  MSB represent
+>> high number traffic class.
+> 
+> I think that we should keep the concept of 'traffic classes' outside of
+> ethtool. Ethtool should only care about queues (or similar concepts).
+> And unless I am missing something here, what you mean by 'traffic class'
+> here is really a hardware queue.
+> 
+Agree.
 
-Since the router block is de-initialized before the ACL block, it is
-possible that the ACL rules corresponding to the default routes are
-deleted while being accessed by the ACL delayed work that queries rules'
-activity from the device. This can result in a rare use-after-free [1].
+So this is my understanding..
 
-Fix this by protecting the rules list accessed by the delayed work with
-a lock. We cannot use a spinlock as the activity read operation is
-blocking.
+Once driver support FPE, then drive accepts tc gate operation,
+Set-And-Hold MAC & Set-And-Release-MAC. Otherwise it can only offload
+SetGateStates.
 
-[1]
-[  123.331662] ==================================================================
-[  123.339920] BUG: KASAN: use-after-free in mlxsw_sp_acl_rule_activity_update_work+0x330/0x3b0
-[  123.349381] Read of size 8 at addr ffff8881f3bb4520 by task kworker/0:2/78
-[  123.357080]
-[  123.358773] CPU: 0 PID: 78 Comm: kworker/0:2 Not tainted 5.5.0-rc5-custom-33108-gf5df95d3ef41 #2209
-[  123.368898] Hardware name: Mellanox Technologies Ltd. MSN3700C/VMOD0008, BIOS 5.11 10/10/2018
-[  123.378456] Workqueue: mlxsw_core mlxsw_sp_acl_rule_activity_update_work
-[  123.385970] Call Trace:
-[  123.388734]  dump_stack+0xc6/0x11e
-[  123.392568]  print_address_description.constprop.4+0x21/0x340
-[  123.403236]  __kasan_report.cold.8+0x76/0xb1
-[  123.414884]  kasan_report+0xe/0x20
-[  123.418716]  mlxsw_sp_acl_rule_activity_update_work+0x330/0x3b0
-[  123.444034]  process_one_work+0xb06/0x19a0
-[  123.453731]  worker_thread+0x91/0xe90
-[  123.467348]  kthread+0x348/0x410
-[  123.476847]  ret_from_fork+0x24/0x30
-[  123.480863]
-[  123.482545] Allocated by task 73:
-[  123.486273]  save_stack+0x19/0x80
-[  123.490000]  __kasan_kmalloc.constprop.6+0xc1/0xd0
-[  123.495379]  mlxsw_sp_acl_rule_create+0xa7/0x230
-[  123.500566]  mlxsw_sp2_mr_tcam_route_create+0xf6/0x3e0
-[  123.506334]  mlxsw_sp_mr_tcam_route_create+0x5b4/0x820
-[  123.512102]  mlxsw_sp_mr_table_create+0x3b5/0x690
-[  123.517389]  mlxsw_sp_vr_get+0x289/0x4d0
-[  123.521797]  mlxsw_sp_fib_node_get+0xa2/0x990
-[  123.526692]  mlxsw_sp_router_fib4_event_work+0x54c/0x2d60
-[  123.532752]  process_one_work+0xb06/0x19a0
-[  123.537352]  worker_thread+0x91/0xe90
-[  123.541471]  kthread+0x348/0x410
-[  123.545103]  ret_from_fork+0x24/0x30
-[  123.549113]
-[  123.550795] Freed by task 518:
-[  123.554231]  save_stack+0x19/0x80
-[  123.557958]  __kasan_slab_free+0x125/0x170
-[  123.562556]  kfree+0xd7/0x3a0
-[  123.565895]  mlxsw_sp_acl_rule_destroy+0x63/0xd0
-[  123.571081]  mlxsw_sp2_mr_tcam_route_destroy+0xd5/0x130
-[  123.576946]  mlxsw_sp_mr_tcam_route_destroy+0xba/0x260
-[  123.582714]  mlxsw_sp_mr_table_destroy+0x1ab/0x290
-[  123.588091]  mlxsw_sp_vr_put+0x1db/0x350
-[  123.592496]  mlxsw_sp_fib_node_put+0x298/0x4c0
-[  123.597486]  mlxsw_sp_vr_fib_flush+0x15b/0x360
-[  123.602476]  mlxsw_sp_router_fib_flush+0xba/0x470
-[  123.607756]  mlxsw_sp_vrs_fini+0xaa/0x120
-[  123.612260]  mlxsw_sp_router_fini+0x137/0x384
-[  123.617152]  mlxsw_sp_fini+0x30a/0x4a0
-[  123.621374]  mlxsw_core_bus_device_unregister+0x159/0x600
-[  123.627435]  mlxsw_devlink_core_bus_device_reload_down+0x7e/0xb0
-[  123.634176]  devlink_reload+0xb4/0x380
-[  123.638391]  devlink_nl_cmd_reload+0x610/0x700
-[  123.643382]  genl_rcv_msg+0x6a8/0xdc0
-[  123.647497]  netlink_rcv_skb+0x134/0x3a0
-[  123.651904]  genl_rcv+0x29/0x40
-[  123.655436]  netlink_unicast+0x4d4/0x700
-[  123.659843]  netlink_sendmsg+0x7c0/0xc70
-[  123.664251]  __sys_sendto+0x265/0x3c0
-[  123.668367]  __x64_sys_sendto+0xe2/0x1b0
-[  123.672773]  do_syscall_64+0xa0/0x530
-[  123.676892]  entry_SYSCALL_64_after_hwframe+0x49/0xbe
-[  123.682552]
-[  123.684238] The buggy address belongs to the object at ffff8881f3bb4500
-[  123.684238]  which belongs to the cache kmalloc-128 of size 128
-[  123.698261] The buggy address is located 32 bytes inside of
-[  123.698261]  128-byte region [ffff8881f3bb4500, ffff8881f3bb4580)
-[  123.711303] The buggy address belongs to the page:
-[  123.716682] page:ffffea0007ceed00 refcount:1 mapcount:0 mapping:ffff888236403500 index:0x0
-[  123.725958] raw: 0200000000000200 dead000000000100 dead000000000122 ffff888236403500
-[  123.734646] raw: 0000000000000000 0000000000100010 00000001ffffffff 0000000000000000
-[  123.743315] page dumped because: kasan: bad access detected
-[  123.749562]
-[  123.751241] Memory state around the buggy address:
-[  123.756620]  ffff8881f3bb4400: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
-[  123.764716]  ffff8881f3bb4480: fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc
-[  123.772812] >ffff8881f3bb4500: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
-[  123.780904]                                ^
-[  123.785697]  ffff8881f3bb4580: fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc
-[  123.793793]  ffff8881f3bb4600: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
-[  123.801883] ==================================================================
+So candidates for ethtool command.
 
-Fixes: cf7221a4f5a5 ("mlxsw: spectrum_router: Add Multicast routing support for Spectrum-2")
-Signed-off-by: Ido Schimmel <idosch@mellanox.com>
-Acked-by: Jiri Pirko <jiri@mellanox.com>
----
- .../net/ethernet/mellanox/mlxsw/spectrum_acl.c   | 16 ++++++++++++----
- 1 file changed, 12 insertions(+), 4 deletions(-)
+Set
 
-diff --git a/drivers/net/ethernet/mellanox/mlxsw/spectrum_acl.c b/drivers/net/ethernet/mellanox/mlxsw/spectrum_acl.c
-index 150b3a144b83..3d3cca596116 100644
---- a/drivers/net/ethernet/mellanox/mlxsw/spectrum_acl.c
-+++ b/drivers/net/ethernet/mellanox/mlxsw/spectrum_acl.c
-@@ -8,6 +8,7 @@
- #include <linux/string.h>
- #include <linux/rhashtable.h>
- #include <linux/netdevice.h>
-+#include <linux/mutex.h>
- #include <net/net_namespace.h>
- #include <net/tc_act/tc_vlan.h>
- 
-@@ -25,6 +26,7 @@ struct mlxsw_sp_acl {
- 	struct mlxsw_sp_fid *dummy_fid;
- 	struct rhashtable ruleset_ht;
- 	struct list_head rules;
-+	struct mutex rules_lock; /* Protects rules list */
- 	struct {
- 		struct delayed_work dw;
- 		unsigned long interval;	/* ms */
-@@ -701,7 +703,9 @@ int mlxsw_sp_acl_rule_add(struct mlxsw_sp *mlxsw_sp,
- 			goto err_ruleset_block_bind;
- 	}
- 
-+	mutex_lock(&mlxsw_sp->acl->rules_lock);
- 	list_add_tail(&rule->list, &mlxsw_sp->acl->rules);
-+	mutex_unlock(&mlxsw_sp->acl->rules_lock);
- 	block->rule_count++;
- 	block->egress_blocker_rule_count += rule->rulei->egress_bind_blocker;
- 	return 0;
-@@ -723,7 +727,9 @@ void mlxsw_sp_acl_rule_del(struct mlxsw_sp *mlxsw_sp,
- 
- 	block->egress_blocker_rule_count -= rule->rulei->egress_bind_blocker;
- 	ruleset->ht_key.block->rule_count--;
-+	mutex_lock(&mlxsw_sp->acl->rules_lock);
- 	list_del(&rule->list);
-+	mutex_unlock(&mlxsw_sp->acl->rules_lock);
- 	if (!ruleset->ht_key.chain_index &&
- 	    mlxsw_sp_acl_ruleset_is_singular(ruleset))
- 		mlxsw_sp_acl_ruleset_block_unbind(mlxsw_sp, ruleset,
-@@ -783,19 +789,18 @@ static int mlxsw_sp_acl_rules_activity_update(struct mlxsw_sp_acl *acl)
- 	struct mlxsw_sp_acl_rule *rule;
- 	int err;
- 
--	/* Protect internal structures from changes */
--	rtnl_lock();
-+	mutex_lock(&acl->rules_lock);
- 	list_for_each_entry(rule, &acl->rules, list) {
- 		err = mlxsw_sp_acl_rule_activity_update(acl->mlxsw_sp,
- 							rule);
- 		if (err)
- 			goto err_rule_update;
- 	}
--	rtnl_unlock();
-+	mutex_unlock(&acl->rules_lock);
- 	return 0;
- 
- err_rule_update:
--	rtnl_unlock();
-+	mutex_unlock(&acl->rules_lock);
- 	return err;
- }
- 
-@@ -880,6 +885,7 @@ int mlxsw_sp_acl_init(struct mlxsw_sp *mlxsw_sp)
- 	acl->dummy_fid = fid;
- 
- 	INIT_LIST_HEAD(&acl->rules);
-+	mutex_init(&acl->rules_lock);
- 	err = mlxsw_sp_acl_tcam_init(mlxsw_sp, &acl->tcam);
- 	if (err)
- 		goto err_acl_ops_init;
-@@ -892,6 +898,7 @@ int mlxsw_sp_acl_init(struct mlxsw_sp *mlxsw_sp)
- 	return 0;
- 
- err_acl_ops_init:
-+	mutex_destroy(&acl->rules_lock);
- 	mlxsw_sp_fid_put(fid);
- err_fid_get:
- 	rhashtable_destroy(&acl->ruleset_ht);
-@@ -908,6 +915,7 @@ void mlxsw_sp_acl_fini(struct mlxsw_sp *mlxsw_sp)
- 
- 	cancel_delayed_work_sync(&mlxsw_sp->acl->rule_activity_update.dw);
- 	mlxsw_sp_acl_tcam_fini(mlxsw_sp, &acl->tcam);
-+	mutex_destroy(&acl->rules_lock);
- 	WARN_ON(!list_empty(&acl->rules));
- 	mlxsw_sp_fid_put(acl->dummy_fid);
- 	rhashtable_destroy(&acl->ruleset_ht);
+- FPE enable/disable
+- framePreemptionStatusTable of Table 12-30—Frame Preemption Parameter
+table of 802.1Q 2018 which are defined as Read/Write. This is an array 
+of Hw queues and if they are preemptible or express.
+- Additionally 802.3br defines Min fragment size that is a candidate
+   for ethtool command.
+
+Show the following:-
+
+  -  holdAdvance
+  -  releaseAdvance
+  -  preemptionActive
+  -  holdRequest
+
+There is also Table 12-29—The Gate Parameter Table for taprio. These
+related to taprio schedule is already part of tc command. However there
+are below parameters that requires configuration by user as well.
+Can we use ethtool for the same as this
+  - queueMaxSDUTable
+
+Below is what I read about this which is also for hw queues AFAIK.
+
+==== from 802.1Q====================================================
+A per-traffic class queue queueMaxSDU parameter defines the maximum
+service data unit size for each queue; frames that exceed queueMaxSDU 
+are discarded. The value of queueMaxSDU for each queue is configurable
+by management its default value is the maximum SDU size supported by the
+MAC procedures employed on the LAN to which the frame is to be relayed
+=======================================================================
+
+I have question about the below parameters in The Gate Parameter Table
+that are not currently supported by tc command. Looks like they need to
+be shown to user for management.
+
+     - ConfigChange - Looks like this needs to be controlled by
+       user. After sending admin command, user send this trigger to start
+       copying admin schedule to operation schedule. Is this getting
+       added to tc command?
+     - ConfigChangeTime - The time at which the administrative variables
+       that determine the cycle are to be copied across to the
+       corresponding operational variables, expressed as a PTP timescale
+     - TickGranularity - the management parameters specified in Gate
+       Parameter Table allow a management station to discover the
+       characteristics of an implementation’s cycle timer clock
+       (TickGranularity) and to set the parameters for the gating cycle
+       accordingly.
+     - ConfigPending - A Boolean variable, set TRUE to indicate that
+       there is a new cycle configuration awaiting installation.
+     - ConfigChangeError - Error in configuration (AdminBaseTime <
+       CurrentTime)
+     - SupportedListMax - Maximum supported Admin/Open shed list.
+
+Is there a plan to export these from driver through tc show or such
+command? The reason being, there would be applications developed to
+manage configuration/schedule of TSN nodes that would requires these
+information from the node. So would need a support either in tc or
+some other means to retrieve them from hardware or driver. That is my
+understanding...
+
+Regards,
+
+Murali
+>>
+>> If hardware support the frame preemption, driver could set the
+>> ethernet device with hw_features and features with NETIF_F_PREEMPTION
+>> when initializing the port driver.
+>>
+>> User can check the feature 'tx-preemption' by command 'ethtool -k
+>> devname'. If hareware set preemption feature. The property would
+>> be a fixed value 'on' if hardware support the frame preemption.
+>> Feature would show a fixed value 'off' if hardware don't support
+>> the frame preemption.
+>>
+>> Command 'ethtool devname' and 'ethtool -s devname preemption N'
+>> would show/set which traffic classes are frame preemptable.
+>>
+>> Port driver would implement the frame preemption in the function
+>> get_link_ksettings() and set_link_ksettings() in the struct ethtool_ops.
+>>
+>> Signed-off-by: Po Liu <Po.Liu@nxp.com>
+>> ---
+>>   include/linux/netdev_features.h | 5 ++++-
+>>   include/uapi/linux/ethtool.h    | 5 ++++-
+>>   net/core/ethtool.c              | 1 +
+>>   3 files changed, 9 insertions(+), 2 deletions(-)
+>>
+>> diff --git a/include/linux/netdev_features.h b/include/linux/netdev_features.h
+>> index 4b19c544c59a..299750a8b414 100644
+>> --- a/include/linux/netdev_features.h
+>> +++ b/include/linux/netdev_features.h
+>> @@ -80,6 +80,7 @@ enum {
+>>   
+>>   	NETIF_F_GRO_HW_BIT,		/* Hardware Generic receive offload */
+>>   	NETIF_F_HW_TLS_RECORD_BIT,	/* Offload TLS record */
+>> +	NETIF_F_HW_PREEMPTION_BIT,	/* Hardware TC frame preemption */
+>>   
+>>   	/*
+>>   	 * Add your fresh new feature above and remember to update
+>> @@ -150,6 +151,7 @@ enum {
+>>   #define NETIF_F_GSO_UDP_L4	__NETIF_F(GSO_UDP_L4)
+>>   #define NETIF_F_HW_TLS_TX	__NETIF_F(HW_TLS_TX)
+>>   #define NETIF_F_HW_TLS_RX	__NETIF_F(HW_TLS_RX)
+>> +#define NETIF_F_PREEMPTION	__NETIF_F(HW_PREEMPTION)
+>>   
+>>   /* Finds the next feature with the highest number of the range of start till 0.
+>>    */
+>> @@ -175,7 +177,8 @@ static inline int find_next_netdev_feature(u64 feature, unsigned long start)
+>>   /* Features valid for ethtool to change */
+>>   /* = all defined minus driver/device-class-related */
+>>   #define NETIF_F_NEVER_CHANGE	(NETIF_F_VLAN_CHALLENGED | \
+>> -				 NETIF_F_LLTX | NETIF_F_NETNS_LOCAL)
+>> +				 NETIF_F_LLTX | NETIF_F_NETNS_LOCAL | \
+>> +				 NETIF_F_PREEMPTION)
+>>   
+>>   /* remember that ((t)1 << t_BITS) is undefined in C99 */
+>>   #define NETIF_F_ETHTOOL_BITS	((__NETIF_F_BIT(NETDEV_FEATURE_COUNT - 1) | \
+>> diff --git a/include/uapi/linux/ethtool.h b/include/uapi/linux/ethtool.h
+>> index d4591792f0b4..12ffb34afbfa 100644
+>> --- a/include/uapi/linux/ethtool.h
+>> +++ b/include/uapi/linux/ethtool.h
+>> @@ -1776,6 +1776,8 @@ enum ethtool_reset_flags {
+>>   };
+>>   #define ETH_RESET_SHARED_SHIFT	16
+>>   
+>> +/* Disable preemtion. */
+>> +#define PREEMPTION_DISABLE     0x0
+>>   
+>>   /**
+>>    * struct ethtool_link_settings - link control and status
+>> @@ -1886,7 +1888,8 @@ struct ethtool_link_settings {
+>>   	__s8	link_mode_masks_nwords;
+>>   	__u8	transceiver;
+>>   	__u8	reserved1[3];
+>> -	__u32	reserved[7];
+>> +	__u32	preemption;
+>> +	__u32	reserved[6];
+>>   	__u32	link_mode_masks[0];
+>>   	/* layout of link_mode_masks fields:
+>>   	 * __u32 map_supported[link_mode_masks_nwords];
+>> diff --git a/net/core/ethtool.c b/net/core/ethtool.c
+>> index cd9bc67381b2..6ffcd8a602b8 100644
+>> --- a/net/core/ethtool.c
+>> +++ b/net/core/ethtool.c
+>> @@ -111,6 +111,7 @@ static const char netdev_features_strings[NETDEV_FEATURE_COUNT][ETH_GSTRING_LEN]
+>>   	[NETIF_F_HW_TLS_RECORD_BIT] =	"tls-hw-record",
+>>   	[NETIF_F_HW_TLS_TX_BIT] =	 "tls-hw-tx-offload",
+>>   	[NETIF_F_HW_TLS_RX_BIT] =	 "tls-hw-rx-offload",
+>> +	[NETIF_F_HW_PREEMPTION_BIT] =	 "tx-preemption",
+>>   };
+>>   
+>>   static const char
+>> -- 
+>> 2.17.1
+> 
+
 -- 
-2.24.1
-
+Murali Karicheri
+Texas Instruments
