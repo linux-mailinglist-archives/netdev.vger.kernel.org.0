@@ -2,77 +2,97 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 2262D1448C1
-	for <lists+netdev@lfdr.de>; Wed, 22 Jan 2020 01:10:42 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6D02E144907
+	for <lists+netdev@lfdr.de>; Wed, 22 Jan 2020 01:40:25 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728760AbgAVAKk (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 21 Jan 2020 19:10:40 -0500
-Received: from mail-lf1-f68.google.com ([209.85.167.68]:40378 "EHLO
-        mail-lf1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726876AbgAVAKk (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 21 Jan 2020 19:10:40 -0500
-Received: by mail-lf1-f68.google.com with SMTP id i23so3864381lfo.7;
-        Tue, 21 Jan 2020 16:10:38 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=Nal9yB7kJdeVk99Y/sDFy1uRo1yz7MQUPvmQCEZ0ElM=;
-        b=Giz2AQrCksTENgILThu/eIDptpz5MHByvJtnNtPpgbusYplW7OpyyfqVXKnuEwb/Yx
-         zNJXCwlm+zD5NcS/pkho4i/RdpYATPfsSrxUtqKS+Cn/Ietp7Yg/ImAgQnYKT4N6geyo
-         Oyr7luiMt9eqZAv8y1lIJMEhz6U5jID6G+xQUiCB+d4BSz9WFRP6WauG22EVX9ZFe2cA
-         D4l6vnCRLyIh9owO4n2Ztr8Puoea6qV1sGfKOTvlalD9HgOK5HkWfEPmgvRf6u23IbD/
-         3ic/cJ9Wn8PSEKENkM/cLnHcmVk5XXHFgw5lG0wLqN3psUnVWjIF5wDIo21WMiZgv+5P
-         +NTg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=Nal9yB7kJdeVk99Y/sDFy1uRo1yz7MQUPvmQCEZ0ElM=;
-        b=Nda5oWuKWXhS7qZJVf1NkeUYQmGKViegAXZsGhoo0JBsCL3BwNlX9FRRYRO+OdK0U8
-         horVp1oYEwfNcyIS957xwSA2dXvrEZtSraeqWeEaqUGDPqlpyys0d1fYC9jtwshZ//O6
-         7yV7SiNi49AYXAUyTtHdZtJuwfCtueeULyqe31Bly2KtM2b34iIXiv1pxXEednGEOpuV
-         QlYQENQLhdE/6JHdsnElqCP7m3PrhccwsFIWIwt2hDOjalNUcdJ7oawGb1hVJ80Z+SME
-         7neNnfakMMPU4IL+3JBb8LrdJE3dd260uS1FNWs1x97+f93nRmk1fAIx2hwuYbSITcMg
-         xTZQ==
-X-Gm-Message-State: APjAAAWI3XF8SQS44PGQ1KHYZlg7bw/dCcZ40tob0gbZGEOceu/3PyAM
-        jeRz+GbPEeQr7MhcX50kqv4IiUOh2I1bEOHqwOwnI+28y8A=
-X-Google-Smtp-Source: APXvYqymnQKgwkPlRb6K55b1YURfAkzYb2cdFDS+SI/kLRf4TPiacfhHblMLiqUcF1u+UO4D0SlhHAzQ40X7zRgnXiM=
-X-Received: by 2002:ac2:592e:: with SMTP id v14mr175421lfi.73.1579651837910;
- Tue, 21 Jan 2020 16:10:37 -0800 (PST)
+        id S1729028AbgAVAkP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 21 Jan 2020 19:40:15 -0500
+Received: from kvm5.telegraphics.com.au ([98.124.60.144]:47524 "EHLO
+        kvm5.telegraphics.com.au" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728665AbgAVAkP (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 21 Jan 2020 19:40:15 -0500
+Received: from localhost (localhost.localdomain [127.0.0.1])
+        by kvm5.telegraphics.com.au (Postfix) with ESMTP id 31A0222D7F;
+        Tue, 21 Jan 2020 19:40:11 -0500 (EST)
+Date:   Wed, 22 Jan 2020 11:40:09 +1100 (AEDT)
+From:   Finn Thain <fthain@telegraphics.com.au>
+To:     Eric Dumazet <eric.dumazet@gmail.com>
+cc:     "David S. Miller" <davem@davemloft.net>,
+        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
+        Chris Zankel <chris@zankel.net>,
+        Laurent Vivier <laurent@vivier.eu>,
+        Geert Uytterhoeven <geert@linux-m68k.org>,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH net v2 01/12] net/sonic: Add mutual exclusion for accessing
+ shared state
+In-Reply-To: <1b8d9cbe-94cf-2eb6-de44-2a2f9cb0a084@gmail.com>
+Message-ID: <alpine.LNX.2.21.1.2001221139480.8@nippy.intranet>
+References: <cover.1579641728.git.fthain@telegraphics.com.au> <d7c6081de558e2fe5693a35bb735724411134cb5.1579641728.git.fthain@telegraphics.com.au> <0113c00f-3f77-8324-95a8-31dd6f64fa6a@gmail.com> <alpine.LNX.2.21.1.2001221021590.8@nippy.intranet>
+ <1b8d9cbe-94cf-2eb6-de44-2a2f9cb0a084@gmail.com>
 MIME-Version: 1.0
-References: <20200121120512.758929-1-jolsa@kernel.org> <20200121120512.758929-7-jolsa@kernel.org>
-In-Reply-To: <20200121120512.758929-7-jolsa@kernel.org>
-From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Date:   Tue, 21 Jan 2020 16:10:26 -0800
-Message-ID: <CAADnVQJO7cObUhqLbEB6+hKaPj1SStNfuhzXShC1XmAt217y8g@mail.gmail.com>
-Subject: Re: [PATCH 6/6] selftest/bpf: Add test for allowed trampolines count
-To:     Jiri Olsa <jolsa@kernel.org>
-Cc:     Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Network Development <netdev@vger.kernel.org>,
-        bpf <bpf@vger.kernel.org>, Andrii Nakryiko <andriin@fb.com>,
-        Yonghong Song <yhs@fb.com>, Martin KaFai Lau <kafai@fb.com>,
-        Jakub Kicinski <jakub.kicinski@netronome.com>,
-        David Miller <davem@redhat.com>,
-        =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@intel.com>,
-        John Fastabend <john.fastabend@gmail.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=US-ASCII
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Jan 21, 2020 at 4:05 AM Jiri Olsa <jolsa@kernel.org> wrote:
->
-> There's limit of 40 programs tht can be attached
-> to trampoline for one function. Adding test that
-> tries to attach that many plus one extra that needs
-> to fail.
->
-> Signed-off-by: Jiri Olsa <jolsa@kernel.org>
+On Tue, 21 Jan 2020, Eric Dumazet wrote:
 
-I don't mind another test. Just pointing out that there is one
-for this purpose already :)
-prog_tests/fexit_stress.c
-Yours is better. Mine wasn't that sophisticated. :)
+> On 1/21/20 3:33 PM, Finn Thain wrote:
+> > On Tue, 21 Jan 2020, Eric Dumazet wrote:
+> > 
+> >> On 1/21/20 1:22 PM, Finn Thain wrote:
+> >>> The netif_stop_queue() call in sonic_send_packet() races with the
+> >>> netif_wake_queue() call in sonic_interrupt(). This causes issues
+> >>> like "NETDEV WATCHDOG: eth0 (macsonic): transmit queue 0 timed out".
+> >>> Fix this by disabling interrupts when accessing tx_skb[] and next_tx.
+> >>> Update a comment to clarify the synchronization properties.
+> >>>
+> >>> Fixes: efcce839360f ("[PATCH] macsonic/jazzsonic network drivers update")
+> >>> Tested-by: Stan Johnson <userm57@yahoo.com>
+> >>> Signed-off-by: Finn Thain <fthain@telegraphics.com.au>
+> >>
+> >>> @@ -284,9 +287,16 @@ static irqreturn_t sonic_interrupt(int irq, void *dev_id)
+> >>>  	struct net_device *dev = dev_id;
+> >>>  	struct sonic_local *lp = netdev_priv(dev);
+> >>>  	int status;
+> >>> +	unsigned long flags;
+> >>> +
+> >>> +	spin_lock_irqsave(&lp->lock, flags);
+> >>
+> >>
+> >> This is a hard irq handler, no need to block hard irqs.
+> >>
+> >> spin_lock() here is enough.
+> >>
+> > 
+> > Well, yes, assuming we're dealing with SMP [1]. Probably just disabling 
+> > pre-emption is all that will ever be needed.
+> > 
+> > Anyway, the real problem solved by disabling irqs is that macsonic must 
+> > avoid re-entrance of sonic_interrupt(). [2]
+> > 
+> > [1]
+> > https://lore.kernel.org/netdev/alpine.LNX.2.21.1.2001211026190.8@nippy.intranet/T/#m0523c8b2a26a410ed56889d9230c37ba1160d40a
+> > 
+> > [2]
+> > https://lore.kernel.org/netdev/alpine.LNX.2.21.1.2001211026190.8@nippy.intranet/T/#m1c8ca580d2b45e61a628d17839978d0bd5aaf061
+> > 
+> 
+
+I was overlooking the fact that sonic_send_packet() really does have to 
+exclude sonic_interrupt(). So disabling irqs is mandatory here, right?
+
+> Oh well... 
+> 
+> I would rather keep the m68k specific wrapper...
+> 
+
+If disabling irqs is unavoidable, the wrapper is redundant.
+
+> Please add a fat comment of why spin_lock_irqsave() is used, to avoid a 
+> future 'cleanup', since average network developer wont be aware of m68k 
+> oddities.
+> 
+
+OK.
