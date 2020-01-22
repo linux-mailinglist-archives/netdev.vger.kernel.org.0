@@ -2,69 +2,117 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 3B77C144C9D
-	for <lists+netdev@lfdr.de>; Wed, 22 Jan 2020 08:50:29 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5573F144C9F
+	for <lists+netdev@lfdr.de>; Wed, 22 Jan 2020 08:51:36 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729028AbgAVHuX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 22 Jan 2020 02:50:23 -0500
-Received: from rtits2.realtek.com ([211.75.126.72]:60629 "EHLO
-        rtits2.realtek.com.tw" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726083AbgAVHuX (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 22 Jan 2020 02:50:23 -0500
-Authenticated-By: 
-X-SpamFilter-By: BOX Solutions SpamTrap 5.62 with qID 00M7oJeR005548, This message is accepted by code: ctloc85258
-Received: from mail.realtek.com (smtpsrv.realtek.com[172.21.6.99])
-        by rtits2.realtek.com.tw (8.15.2/2.57/5.78) with ESMTPS id 00M7oJeR005548
-        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=NOT);
-        Wed, 22 Jan 2020 15:50:19 +0800
-Received: from RTEXMB05.realtek.com.tw (172.21.6.98) by
- RTEXMB06.realtek.com.tw (172.21.6.99) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.1779.2; Wed, 22 Jan 2020 15:50:19 +0800
-Received: from RTEXMB04.realtek.com.tw (172.21.6.97) by
- RTEXMB05.realtek.com.tw (172.21.6.98) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.1779.2; Wed, 22 Jan 2020 15:50:18 +0800
-Received: from RTEXMB04.realtek.com.tw ([fe80::d9c5:a079:495e:b999]) by
- RTEXMB04.realtek.com.tw ([fe80::d9c5:a079:495e:b999%6]) with mapi id
- 15.01.1779.005; Wed, 22 Jan 2020 15:50:18 +0800
-From:   Hayes Wang <hayeswang@realtek.com>
-To:     Grant Grundler <grundler@chromium.org>
-CC:     netdev <netdev@vger.kernel.org>, nic_swsd <nic_swsd@realtek.com>,
-        LKML <linux-kernel@vger.kernel.org>,
-        "linux-usb@vger.kernel.org" <linux-usb@vger.kernel.org>,
-        Prashant Malani <pmalani@chromium.org>
-Subject: RE: [PATCH net 9/9] r8152: disable DelayPhyPwrChg
-Thread-Topic: [PATCH net 9/9] r8152: disable DelayPhyPwrChg
-Thread-Index: AQHV0FhSIZuQmjh3PESNf3BKmFZCOqf1vQeAgACPtwA=
-Date:   Wed, 22 Jan 2020 07:50:18 +0000
-Message-ID: <fdd1b5e0538347698f0ca88aaef26617@realtek.com>
-References: <1394712342-15778-338-Taiwan-albertk@realtek.com>
- <1394712342-15778-347-Taiwan-albertk@realtek.com>
- <CANEJEGs+K9rFqzFG_4cPaQvi9FV3L5jMdCi4KYtcfpg1x+nwjw@mail.gmail.com>
-In-Reply-To: <CANEJEGs+K9rFqzFG_4cPaQvi9FV3L5jMdCi4KYtcfpg1x+nwjw@mail.gmail.com>
-Accept-Language: zh-TW, en-US
-Content-Language: zh-TW
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-originating-ip: [172.21.177.214]
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+        id S1726167AbgAVHve (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 22 Jan 2020 02:51:34 -0500
+Received: from us-smtp-delivery-1.mimecast.com ([207.211.31.120]:42871 "EHLO
+        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+        with ESMTP id S1725883AbgAVHve (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 22 Jan 2020 02:51:34 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1579679493;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=ZidysynA2t0TjHonfp4kkvTRVsqXyi0UzzW9qMz3Zig=;
+        b=SXkHYokt/IGIaxO9yKLyP7hGtDiOGZHIocCgJbItSsOW76mjU2g2JwgZxOfly/3pMWqAky
+        Kmk5f43a9xmJzDmnIGp/C8YyM+5Za3X9zZ0p+QbMX0wxgumRwZhXYG1JKG4REdiGfzRp4T
+        5rnna7vEBtd41n9WD3nCMPYnM4RQZ3g=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-27-B-l5Xh6zMUue72oWXga7pQ-1; Wed, 22 Jan 2020 02:51:31 -0500
+X-MC-Unique: B-l5Xh6zMUue72oWXga7pQ-1
+Received: from smtp.corp.redhat.com (int-mx01.intmail.prod.int.phx2.redhat.com [10.5.11.11])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id C30B28017CC;
+        Wed, 22 Jan 2020 07:51:29 +0000 (UTC)
+Received: from krava (ovpn-204-206.brq.redhat.com [10.40.204.206])
+        by smtp.corp.redhat.com (Postfix) with ESMTPS id B0CC385780;
+        Wed, 22 Jan 2020 07:51:26 +0000 (UTC)
+Date:   Wed, 22 Jan 2020 08:51:24 +0100
+From:   Jiri Olsa <jolsa@redhat.com>
+To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Cc:     Jiri Olsa <jolsa@kernel.org>, Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>, netdev@vger.kernel.org,
+        bpf@vger.kernel.org, Andrii Nakryiko <andriin@fb.com>,
+        Yonghong Song <yhs@fb.com>, Martin KaFai Lau <kafai@fb.com>,
+        Jakub Kicinski <jakub.kicinski@netronome.com>,
+        David Miller <davem@redhat.com>,
+        =?iso-8859-1?Q?Bj=F6rn_T=F6pel?= <bjorn.topel@intel.com>,
+        John Fastabend <john.fastabend@gmail.com>
+Subject: Re: [PATCH 2/6] bpf: Add bpf_perf_event_output_kfunc
+Message-ID: <20200122075124.GD801240@krava>
+References: <20200121120512.758929-1-jolsa@kernel.org>
+ <20200121120512.758929-3-jolsa@kernel.org>
+ <20200122000322.ogarpgwv3xut75m3@ast-mbp.dhcp.thefacebook.com>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20200122000322.ogarpgwv3xut75m3@ast-mbp.dhcp.thefacebook.com>
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.11
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-R3JhbnQgR3J1bmRsZXIgW21haWx0bzpncnVuZGxlckBjaHJvbWl1bS5vcmddDQo+IFNlbnQ6IFdl
-ZG5lc2RheSwgSmFudWFyeSAyMiwgMjAyMCAzOjAzIFBNDQpbLi4uXQ0KPiBEaWQgeW91IG1lYW4g
-ImRvbid0IGFsbG93IHRoZSBwaHkgdG8gZW50ZXIgUDMgcG93ZXIgc2F2aW5nIG1vZGUiPw0KPiBJ
-ZiBQMyBwb3dlciBzYXZpbmcgbW9kZSBpcyBicm9rZW4sIHdoYXQgaXMgdGhlIHN5bXB0b20/DQoN
-Clllcy4NCkl0IGluY3JlYXNlcyBwb3dlciBjb25zdW1wdGlvbi4NCg0KUFMuIHRoZSAicGh5IiBp
-cyBmb3IgVVNCLCBub3QgZm9yIEV0aGVybmV0Lg0KDQo+IEhvdyBsb25nIGlzIHRoZSBkZWxheSB3
-aGVuIHRoaXMgaXMgc3RpbGwgZW5hYmxlZD8gKHRvIGhlbHAgaWRlbnRpZnkNCj4gZmFpbHVyZXMg
-d2hlbiB0aGlzIGlzIHN0aWxsIGVuYWJsZWQpDQoNCldoZW4gdGhpcyBpcyBlbmFibGUsIHRoZSBk
-ZXZpY2Ugd291bGQgd2FpdCBhbiBpbnRlcm5hbCBzaWduYWwgd2hpY2gNCndvdWxkbid0IGJlIHRy
-aWdnZXJlZC4gVGhlbiwgdGhlIGRldmljZSBjb3VsZG4ndCBlbnRlciBQMyBtb2RlLCBzbyB0aGUN
-CnBvd2VyIGNvbnN1bXB0aW9uIGlzIGluY3JlYXNlZC4NCg0KQmVzdCBSZWdhcmRzLA0KSGF5ZXMN
-Cg==
+On Tue, Jan 21, 2020 at 04:03:23PM -0800, Alexei Starovoitov wrote:
+> On Tue, Jan 21, 2020 at 01:05:08PM +0100, Jiri Olsa wrote:
+> > Adding support to use perf_event_output in
+> > BPF_TRACE_FENTRY/BPF_TRACE_FEXIT programs.
+> > 
+> > Using nesting regs array from raw tracepoint helpers.
+> > 
+> > Signed-off-by: Jiri Olsa <jolsa@kernel.org>
+> > ---
+> >  kernel/trace/bpf_trace.c | 41 ++++++++++++++++++++++++++++++++++++++++
+> >  1 file changed, 41 insertions(+)
+> > 
+> > diff --git a/kernel/trace/bpf_trace.c b/kernel/trace/bpf_trace.c
+> > index 19e793aa441a..6a18e2ae6e30 100644
+> > --- a/kernel/trace/bpf_trace.c
+> > +++ b/kernel/trace/bpf_trace.c
+> > @@ -1172,6 +1172,43 @@ raw_tp_prog_func_proto(enum bpf_func_id func_id, const struct bpf_prog *prog)
+> >  	}
+> >  }
+> >  
+> > +BPF_CALL_5(bpf_perf_event_output_kfunc, void *, ctx, struct bpf_map *, map,
+> > +	   u64, flags, void *, data, u64, size)
+> > +{
+> > +	struct pt_regs *regs = get_bpf_raw_tp_regs();
+> > +	int ret;
+> > +
+> > +	if (IS_ERR(regs))
+> > +		return PTR_ERR(regs);
+> > +
+> > +	perf_fetch_caller_regs(regs);
+> > +	ret = ____bpf_perf_event_output(regs, map, flags, data, size);
+> > +	put_bpf_raw_tp_regs();
+> > +	return ret;
+> > +}
+> 
+> I'm not sure why copy paste bpf_perf_event_output_raw_tp() into new function.
+> 
+> > @@ -1181,6 +1218,10 @@ tracing_prog_func_proto(enum bpf_func_id func_id, const struct bpf_prog *prog)
+> >  		return &bpf_skb_output_proto;
+> >  #endif
+> >  	default:
+> > +		if (prog->expected_attach_type == BPF_TRACE_FENTRY ||
+> > +		    prog->expected_attach_type == BPF_TRACE_FEXIT)
+> > +			return kfunc_prog_func_proto(func_id, prog);
+> > +
+> >  		return raw_tp_prog_func_proto(func_id, prog);
+> 
+> Are you saying bpf_perf_event_output_raw_tp() for some reason
+> didn't work for fentry/fexit?
+> But above is exact copy-paste and it somehow worked?
+> 
+> Ditto for patches 3,4.
+
+ugh right.. did not realize that after switching to the rawtp
+regs nest arrays it's identical and we don't need that
+
+jirka
+
