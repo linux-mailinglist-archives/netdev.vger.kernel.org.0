@@ -2,48 +2,47 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 3B9C01458DF
-	for <lists+netdev@lfdr.de>; Wed, 22 Jan 2020 16:38:25 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2D8601458E1
+	for <lists+netdev@lfdr.de>; Wed, 22 Jan 2020 16:38:26 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726194AbgAVPiM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 22 Jan 2020 10:38:12 -0500
-Received: from fllv0015.ext.ti.com ([198.47.19.141]:56344 "EHLO
+        id S1726796AbgAVPiR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 22 Jan 2020 10:38:17 -0500
+Received: from fllv0015.ext.ti.com ([198.47.19.141]:56346 "EHLO
         fllv0015.ext.ti.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726083AbgAVPiM (ORCPT
+        with ESMTP id S1726049AbgAVPiM (ORCPT
         <rfc822;netdev@vger.kernel.org>); Wed, 22 Jan 2020 10:38:12 -0500
-Received: from lelv0266.itg.ti.com ([10.180.67.225])
-        by fllv0015.ext.ti.com (8.15.2/8.15.2) with ESMTP id 00MFc6tR077651;
+Received: from fllv0035.itg.ti.com ([10.64.41.0])
+        by fllv0015.ext.ti.com (8.15.2/8.15.2) with ESMTP id 00MFc6A4077656;
         Wed, 22 Jan 2020 09:38:06 -0600
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
         s=ti-com-17Q1; t=1579707486;
-        bh=kob/UwlpiIAVRmzihXWH6e8kyXhag43yFDizmSZHPjI=;
+        bh=olm+bSOr7+k/3oDNurxPY/t/nOe+OgFg1ZjDwTThz2I=;
         h=From:To:CC:Subject:Date:In-Reply-To:References;
-        b=iTr76a5sWaVHRjDaaRoVYUV2SFCQNgSFlLNz2pKoTE2OBgMMdNiqw+ChnfyHfsHu7
-         hlyPKGgVx3lP+twLBYVQza8cZO5N+e9Bk2YCWTf2oKO2PtdQPs5hpCueYqpP/orjfh
-         ZfoZADPIsNMwiNksp55/CMdNCVYr53gU/O7wX9Hc=
-Received: from DFLE109.ent.ti.com (dfle109.ent.ti.com [10.64.6.30])
-        by lelv0266.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 00MFc6IE049569
-        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
+        b=R4wu5V7sTjUeS0eKpzr8qTvO3zI8TKwnXu43UW918mryMDQEA7WQ5XUzXHdexQIun
+         yWqLeXRLrhie0gY1pkPndYezIDVxaaWTWBF4m4sc+/Ugut0A1Jc3BOIcVOBXR3jClK
+         ahmN55X+B/NBwEcL25zSLgr96sXObub426ZXTYgA=
+Received: from DFLE113.ent.ti.com (dfle113.ent.ti.com [10.64.6.34])
+        by fllv0035.itg.ti.com (8.15.2/8.15.2) with ESMTP id 00MFc6jX058017;
         Wed, 22 Jan 2020 09:38:06 -0600
-Received: from DFLE105.ent.ti.com (10.64.6.26) by DFLE109.ent.ti.com
- (10.64.6.30) with Microsoft SMTP Server (version=TLS1_2,
+Received: from DFLE112.ent.ti.com (10.64.6.33) by DFLE113.ent.ti.com
+ (10.64.6.34) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1847.3; Wed, 22
  Jan 2020 09:38:06 -0600
-Received: from lelv0327.itg.ti.com (10.180.67.183) by DFLE105.ent.ti.com
- (10.64.6.26) with Microsoft SMTP Server (version=TLS1_2,
+Received: from lelv0326.itg.ti.com (10.180.67.84) by DFLE112.ent.ti.com
+ (10.64.6.33) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1847.3 via
  Frontend Transport; Wed, 22 Jan 2020 09:38:06 -0600
 Received: from localhost (ileax41-snat.itg.ti.com [10.172.224.153])
-        by lelv0327.itg.ti.com (8.15.2/8.15.2) with ESMTP id 00MFc5da114332;
-        Wed, 22 Jan 2020 09:38:05 -0600
+        by lelv0326.itg.ti.com (8.15.2/8.15.2) with ESMTP id 00MFc6Q3019489;
+        Wed, 22 Jan 2020 09:38:06 -0600
 From:   Dan Murphy <dmurphy@ti.com>
 To:     <andrew@lunn.ch>, <f.fainelli@gmail.com>, <hkallweit1@gmail.com>,
         <bunk@kernel.org>
 CC:     <netdev@vger.kernel.org>, <devicetree@vger.kernel.org>,
         <linux-kernel@vger.kernel.org>, Dan Murphy <dmurphy@ti.com>
-Subject: [PATCH net-next 1/2] phy: dp83826: Add phy IDs for DP83826N and 826NC
-Date:   Wed, 22 Jan 2020 09:34:54 -0600
-Message-ID: <20200122153455.8777-2-dmurphy@ti.com>
+Subject: [PATCH net-next 2/2] net: phy: DP83822: Add support for additional DP83825 devices
+Date:   Wed, 22 Jan 2020 09:34:55 -0600
+Message-ID: <20200122153455.8777-3-dmurphy@ti.com>
 X-Mailer: git-send-email 2.25.0
 In-Reply-To: <20200122153455.8777-1-dmurphy@ti.com>
 References: <20200122153455.8777-1-dmurphy@ti.com>
@@ -56,59 +55,69 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add phy IDs to the DP83822 phy driver for the DP83826N
-and the DP83826NC devices.  The register map and features
-are the same for basic enablement.
+Add PHY IDs for the DP83825CS, DP83825CM and the DP83825S devices to the
+DP83822 driver.
 
 Signed-off-by: Dan Murphy <dmurphy@ti.com>
 ---
- drivers/net/phy/Kconfig   | 4 ++--
- drivers/net/phy/dp83822.c | 6 ++++++
- 2 files changed, 8 insertions(+), 2 deletions(-)
+ drivers/net/phy/Kconfig   |  3 ++-
+ drivers/net/phy/dp83822.c | 12 ++++++++++--
+ 2 files changed, 12 insertions(+), 3 deletions(-)
 
 diff --git a/drivers/net/phy/Kconfig b/drivers/net/phy/Kconfig
-index 6b5ee26795a2..cc677ddd2719 100644
+index cc677ddd2719..71fc778ce398 100644
 --- a/drivers/net/phy/Kconfig
 +++ b/drivers/net/phy/Kconfig
-@@ -346,9 +346,9 @@ config DAVICOM_PHY
- 	  Currently supports dm9161e and dm9131
- 
+@@ -348,7 +348,8 @@ config DAVICOM_PHY
  config DP83822_PHY
--	tristate "Texas Instruments DP83822/825 PHYs"
-+	tristate "Texas Instruments DP83822/825/826 PHYs"
+ 	tristate "Texas Instruments DP83822/825/826 PHYs"
  	---help---
--	  Supports the DP83822 and DP83825I PHYs.
-+	  Supports the DP83822, DP83825I, DP83826C and DP83826NC PHYs.
+-	  Supports the DP83822, DP83825I, DP83826C and DP83826NC PHYs.
++	  Supports the DP83822, DP83825I, DP83825CM, DP83825CS, DP83825S,
++	  DP83826C and DP83826NC PHYs.
  
  config DP83TC811_PHY
  	tristate "Texas Instruments DP83TC811 PHY"
 diff --git a/drivers/net/phy/dp83822.c b/drivers/net/phy/dp83822.c
-index 8a4b1d167ce2..5159b28baa0f 100644
+index 5159b28baa0f..fe9aa3ad52a7 100644
 --- a/drivers/net/phy/dp83822.c
 +++ b/drivers/net/phy/dp83822.c
-@@ -16,6 +16,8 @@
+@@ -1,6 +1,5 @@
+ // SPDX-License-Identifier: GPL-2.0
+-/*
+- * Driver for the Texas Instruments DP83822 PHY
++/* Driver for the Texas Instruments DP83822, DP83825 and DP83826 PHYs.
+  *
+  * Copyright (C) 2017 Texas Instruments Inc.
+  */
+@@ -15,7 +14,10 @@
+ #include <linux/netdevice.h>
  
  #define DP83822_PHY_ID	        0x2000a240
++#define DP83825S_PHY_ID		0x2000a140
  #define DP83825I_PHY_ID		0x2000a150
-+#define DP83826C_PHY_ID		0x2000a130
-+#define DP83826NC_PHY_ID	0x2000a110
++#define DP83825CM_PHY_ID	0x2000a160
++#define DP83825CS_PHY_ID	0x2000a170
+ #define DP83826C_PHY_ID		0x2000a130
+ #define DP83826NC_PHY_ID	0x2000a110
  
- #define DP83822_DEVADDR		0x1f
- 
-@@ -319,12 +321,16 @@ static int dp83822_resume(struct phy_device *phydev)
- static struct phy_driver dp83822_driver[] = {
- 	DP83822_PHY_DRIVER(DP83822_PHY_ID, "TI DP83822"),
+@@ -323,6 +325,9 @@ static struct phy_driver dp83822_driver[] = {
  	DP83822_PHY_DRIVER(DP83825I_PHY_ID, "TI DP83825I"),
-+	DP83822_PHY_DRIVER(DP83826C_PHY_ID, "TI DP83826C"),
-+	DP83822_PHY_DRIVER(DP83826NC_PHY_ID, "TI DP83826NC"),
+ 	DP83822_PHY_DRIVER(DP83826C_PHY_ID, "TI DP83826C"),
+ 	DP83822_PHY_DRIVER(DP83826NC_PHY_ID, "TI DP83826NC"),
++	DP83822_PHY_DRIVER(DP83825S_PHY_ID, "TI DP83825S"),
++	DP83822_PHY_DRIVER(DP83825CM_PHY_ID, "TI DP83825M"),
++	DP83822_PHY_DRIVER(DP83825CS_PHY_ID, "TI DP83825CS"),
  };
  module_phy_driver(dp83822_driver);
  
- static struct mdio_device_id __maybe_unused dp83822_tbl[] = {
- 	{ DP83822_PHY_ID, 0xfffffff0 },
+@@ -331,6 +336,9 @@ static struct mdio_device_id __maybe_unused dp83822_tbl[] = {
  	{ DP83825I_PHY_ID, 0xfffffff0 },
-+	{ DP83826C_PHY_ID, 0xfffffff0 },
-+	{ DP83826NC_PHY_ID, 0xfffffff0 },
+ 	{ DP83826C_PHY_ID, 0xfffffff0 },
+ 	{ DP83826NC_PHY_ID, 0xfffffff0 },
++	{ DP83825S_PHY_ID, 0xfffffff0 },
++	{ DP83825CM_PHY_ID, 0xfffffff0 },
++	{ DP83825CS_PHY_ID, 0xfffffff0 },
  	{ },
  };
  MODULE_DEVICE_TABLE(mdio, dp83822_tbl);
