@@ -2,123 +2,128 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 1DACA1452CB
-	for <lists+netdev@lfdr.de>; Wed, 22 Jan 2020 11:42:13 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 76A781452D6
+	for <lists+netdev@lfdr.de>; Wed, 22 Jan 2020 11:45:12 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728992AbgAVKmL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 22 Jan 2020 05:42:11 -0500
-Received: from mail-wm1-f49.google.com ([209.85.128.49]:37811 "EHLO
-        mail-wm1-f49.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726094AbgAVKmL (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 22 Jan 2020 05:42:11 -0500
-Received: by mail-wm1-f49.google.com with SMTP id f129so6626074wmf.2
-        for <netdev@vger.kernel.org>; Wed, 22 Jan 2020 02:42:09 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=AIjdbnwnNK2/SCQ9Jb0UeLy/gm1BfTK32TagA23gRBM=;
-        b=q3mavHJKJ9U+zmc0DpEm++y+hxVFsvaTdPdXAHeWd3O4ptBF+6BkQNsiCWJPFT7tdc
-         99LEpYdoq+xIzCNvxBd40p1q1zonbazDD///GcSRLfsSWpwoToHoMmVftp6tDRQTKHh5
-         kONMu3/8Vocho77+gLZB0V7NTwuiEOt2uVxCz1WBuYNJZDQ4QUDOiyLKs4P9pmoNAH3Q
-         QG83HP5VKToINsrNqN5nydDeQpanrZsFUwHYgEXVAfXsfBO30NRBMIQuazgMJGlim0Se
-         wjAunA0SqSVu+Skbz4KnSsalG4tcRU9sr/84Pj8zqBEui6F19Ai4tA6pjuq/0hXMCKnb
-         JpnQ==
+        id S1729299AbgAVKpK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 22 Jan 2020 05:45:10 -0500
+Received: from us-smtp-delivery-1.mimecast.com ([207.211.31.120]:60715 "EHLO
+        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+        with ESMTP id S1727453AbgAVKpK (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 22 Jan 2020 05:45:10 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1579689909;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=7+qR5+2XnS/Jvtx+SCAflUuxRNQSv388iVEOgrKyFko=;
+        b=SEpzPEQ3BkeRmKI+Z3vCsK5Pb5QdDy6qoezuH6DWpWZSRmtIqekqR5EqKE5/cLzwfrDhOr
+        PoE0t26K9LEpizOjdR+9QdTYQsHd/FoEpY0TdBwVF3hvO8iZToLWZBji6jknp1cj5QOwDM
+        80PdAf6Ol2QGFS6FhN2ZNHd8ivUFJA4=
+Received: from mail-lf1-f69.google.com (mail-lf1-f69.google.com
+ [209.85.167.69]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-19-ppr4N5DZPiSROf-AX0pwFA-1; Wed, 22 Jan 2020 05:45:07 -0500
+X-MC-Unique: ppr4N5DZPiSROf-AX0pwFA-1
+Received: by mail-lf1-f69.google.com with SMTP id b22so2012333lfa.16
+        for <netdev@vger.kernel.org>; Wed, 22 Jan 2020 02:45:06 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=AIjdbnwnNK2/SCQ9Jb0UeLy/gm1BfTK32TagA23gRBM=;
-        b=Bq8AIJ7CXgQQsZikChHmCcsnTTyYDTPdIipQhlpjdCkX3h0BEWOkcfjBnGVCwifE2R
-         7ZYErwNydIR1EpvJ9tSW0kneP0BMF/hWWuKzOQv5lV4cMPOPXxE9JWt7wn6xuuUlJl6d
-         MXD4UOc3oKPygAWBo17Prpff8UZbyv9SKFLow+xFMHSQs3MouEXbt+CURKm/e7xVB+a0
-         YluOrmNj6TqBCYMJ43WVa8lqaE2iIJvQbY32ZOS68liBMsRrWgxVukryqBmx2JTaEidf
-         XddEMmq5AWoyFJyhc3l7TQf2qBiOumQ+xTP0b2IWTI8lG99M4kqvIlYqvH3hRlJeX7Ic
-         Rpcw==
-X-Gm-Message-State: APjAAAUmKOy8Bi+FalBznwJzO6I8PXY1wocRuDIY0ynMZhLX+2sxBMd3
-        dcDFUBtCKUtspPX29rPv+mZ1CA==
-X-Google-Smtp-Source: APXvYqyj9ZPe/lVtcUydlXbf8ydHeHX8xKFtEv9XvXQ+CUdOs/fjn3apPMz/aRI5DbdG2VpLcUOGUg==
-X-Received: by 2002:a05:600c:108a:: with SMTP id e10mr2264954wmd.38.1579689728763;
-        Wed, 22 Jan 2020 02:42:08 -0800 (PST)
-Received: from apalos.home (ppp-94-66-201-28.home.otenet.gr. [94.66.201.28])
-        by smtp.gmail.com with ESMTPSA id x16sm3355695wmk.35.2020.01.22.02.42.07
+        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
+         :message-id:mime-version:content-transfer-encoding;
+        bh=7+qR5+2XnS/Jvtx+SCAflUuxRNQSv388iVEOgrKyFko=;
+        b=ndv3aXcT+wUk5cGvPVQeObtJI8awCy663x2QRP47gMDP72kflJTKfvghXPiJGuIQF8
+         tADt7mIt/0/m3vEYMmIEZf7QHYVeiofgapjp+q00jIP4xdJYcOesHF5uC8p6cOsusS4F
+         fqHonMQ3auL8Fd2fLKS8IrbsLvKn4Dl17KqVDnq4QjC5ToFP8zWi281vXG5XMWJ8KZB9
+         yEdpJdRaH6eZ2ITbKTN4YvWKNS+5980fvxXu7niIVROxIe1xJ07M7jiPbHoEsGdu7N3D
+         dq04yHZEH596NNBEGeRz4OONfYF2rnd0J8BOsfdc1wMTbjeLtZ+pdQ2jf2f0MxCjsUmn
+         OfMA==
+X-Gm-Message-State: APjAAAUak5Cxlx8frup3+RZ5TN8mn2m1SNAq8df9bqigH2jl7a8lr2PE
+        1bG2xcxPk2EEAKCPlyV8xBAJ6SVVu8t2PJgh5xdadlNvrp2Sv/9gBWUncg+R6FhOLB2sPry1sbh
+        x+PAdQaECSXpUif6h
+X-Received: by 2002:a2e:9b12:: with SMTP id u18mr19902709lji.274.1579689905176;
+        Wed, 22 Jan 2020 02:45:05 -0800 (PST)
+X-Google-Smtp-Source: APXvYqzoqSkStv/Ank9kut/W15i+iPFFZac/FxhESW/HCEnKQJ2MEbh0ocOFsM0TBUJACkC692mEVg==
+X-Received: by 2002:a2e:9b12:: with SMTP id u18mr19902684lji.274.1579689904736;
+        Wed, 22 Jan 2020 02:45:04 -0800 (PST)
+Received: from alrua-x1.borgediget.toke.dk ([85.204.121.218])
+        by smtp.gmail.com with ESMTPSA id d24sm19936365lja.82.2020.01.22.02.45.03
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 22 Jan 2020 02:42:08 -0800 (PST)
-Date:   Wed, 22 Jan 2020 12:42:05 +0200
-From:   Ilias Apalodimas <ilias.apalodimas@linaro.org>
-To:     Jesper Dangaard Brouer <brouer@redhat.com>
-Cc:     Lorenzo Bianconi <lorenzo.bianconi@redhat.com>,
-        Saeed Mahameed <saeedm@mellanox.com>,
-        Matteo Croce <mcroce@redhat.com>,
-        Tariq Toukan <tariqt@mellanox.com>,
-        Toke =?iso-8859-1?Q?H=F8iland-J=F8rgensen?= <toke@redhat.com>,
-        Jonathan Lemon <jonathan.lemon@gmail.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-Subject: Re: Created benchmarks modules for page_pool
-Message-ID: <20200122104205.GA569175@apalos.home>
-References: <20200121170945.41e58f32@carbon>
+        Wed, 22 Jan 2020 02:45:04 -0800 (PST)
+Received: by alrua-x1.borgediget.toke.dk (Postfix, from userid 1000)
+        id 498AE180075; Wed, 22 Jan 2020 11:45:03 +0100 (CET)
+From:   Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
+To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Cc:     Alexei Starovoitov <ast@kernel.org>, davem@davemloft.net,
+        daniel@iogearbox.net, netdev@vger.kernel.org, bpf@vger.kernel.org,
+        kernel-team@fb.com
+Subject: Re: [PATCH v2 bpf-next 0/3] bpf: Program extensions or dynamic re-linking
+In-Reply-To: <20200121165958.zfpvsz7kdcx2dotr@ast-mbp.dhcp.thefacebook.com>
+References: <20200121005348.2769920-1-ast@kernel.org> <87k15kbz2c.fsf@toke.dk> <20200121165958.zfpvsz7kdcx2dotr@ast-mbp.dhcp.thefacebook.com>
+X-Clacks-Overhead: GNU Terry Pratchett
+Date:   Wed, 22 Jan 2020 11:45:03 +0100
+Message-ID: <87blqvbwi8.fsf@toke.dk>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200121170945.41e58f32@carbon>
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Jesper, 
+Alexei Starovoitov <alexei.starovoitov@gmail.com> writes:
 
-On Tue, Jan 21, 2020 at 05:09:45PM +0100, Jesper Dangaard Brouer wrote:
-> Hi Ilias and Lorenzo, (Cc others + netdev)
-> 
-> I've created two benchmarks modules for page_pool.
-> 
-> [1] https://github.com/netoptimizer/prototype-kernel/blob/master/kernel/lib/bench_page_pool_simple.c
-> [2] https://github.com/netoptimizer/prototype-kernel/blob/master/kernel/lib/bench_page_pool_cross_cpu.c
-> 
-> I think we/you could actually use this as part of your presentation[3]?
+> On Tue, Jan 21, 2020 at 04:37:31PM +0100, Toke H=C3=B8iland-J=C3=B8rgense=
+n wrote:
+>> Alexei Starovoitov <ast@kernel.org> writes:
+>>=20
+>> > The last few month BPF community has been discussing an approach to ca=
+ll
+>> > chaining, since exiting bpt_tail_call() mechanism used in production X=
+DP
+>> > programs has plenty of downsides. The outcome of these discussion was a
+>> > conclusion to implement dynamic re-linking of BPF programs. Where root=
+let XDP
+>> > program attached to a netdevice can programmatically define a policy of
+>> > execution of other XDP programs. Such rootlet would be compiled as nor=
+mal XDP
+>> > program and provide a number of placeholder global functions which lat=
+er can be
+>> > replaced with future XDP programs. BPF trampoline, function by function
+>> > verification were building blocks towards that goal. The patch 1 is a =
+final
+>> > building block. It introduces dynamic program extensions. A number of
+>> > improvements like more flexible function by function verification and =
+better
+>> > libbpf api will be implemented in future patches.
+>>=20
+>> This is great, thank you! I'll go play around with it; couldn't spot
+>> anything obvious from eye-balling the code, except that yeah, it does
+>> need a more flexible libbpf api :)
+>>=20
+>> One thing that's not obvious to me: How can userspace tell which
+>> programs replace which functions after they are loaded? Is this put into
+>> prog_tags in struct bpf_prog_info, or?
+>
+> good point. Would be good to extend bpf_prog_info. Since prog-to-prog
+> connection is unidirectional the bpf_prog_info of extension prog will be =
+able
+> to say which original program it's replacing.
 
-I think we can mention this as part of the improvements we can offer, alongside
-with native SKB recycling.
+Yeah, that'll do. I can live with having to enumerate all programs and
+backtrack to the attached XDP program to figure out its component parts.
 
-> 
-> The first benchmark[1] illustrate/measure what happen when page_pool
-> alloc and free/return happens on the same CPU.  Here there are 3 modes
-> of operations with different performance characteristic.
-> 
-> Fast_path NAPI recycle (XDP_DROP use-case)
->  - cost per elem: 15 cycles(tsc) 4.437 ns
-> 
-> Recycle via ptr_ring
->  - cost per elem: 48 cycles(tsc) 13.439 ns
-> 
-> Failed recycle, return to page-allocator
->  - cost per elem: 256 cycles(tsc) 71.169 ns
-> 
-> 
-> The second benchmark[2] measures what happens cross-CPU.  It is
-> primarily the concurrent return-path that I want to capture. As this
-> is page_pool's weak spot, that we/I need to improve performance of.
-> Hint when SKBs use page_pool return this will happen more often.
-> It is a little more tricky to get proper measurement as we want to
-> observe the case, where return-path isn't stalling/waiting on pages to
-> return.
-> 
-> - 1 CPU returning  , cost per elem: 110 cycles(tsc)   30.709 ns
-> - 2 concurrent CPUs, cost per elem: 989 cycles(tsc)  274.861 ns
-> - 3 concurrent CPUs, cost per elem: 2089 cycles(tsc) 580.530 ns
-> - 4 concurrent CPUs, cost per elem: 2339 cycles(tsc) 649.984 ns
+> bpftool prog show will be able to print all this data. I think
+> fenry/fexit progs would need the same bpf_prog_info extension.
+> attach_prog_id + attach_btf_id would be enough.
 
-Interesting, i'll try having a look at the code and maybe run then on my armv8
-board.
+Yes, please. I actually assumed this was already there for fentry/fexit,
+which is why I was puzzled I couldn't find where this series hooked into
+that. I'll just wait for such an extension to show up, then :)
 
-Thanks!
-/Ilias
-> 
-> [3] https://netdevconf.info/0x14/session.html?tutorial-add-XDP-support-to-a-NIC-driver
-> -- 
-> Best regards,
->   Jesper Dangaard Brouer
->   MSc.CS, Principal Kernel Engineer at Red Hat
->   LinkedIn: http://www.linkedin.com/in/brouer
-> 
+> In the mean time I can try to hack drgn script to do the same.
+
+That would be great, thanks!
+
+-Toke
+
