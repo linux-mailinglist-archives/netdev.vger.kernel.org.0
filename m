@@ -2,121 +2,123 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id C706C1448AB
-	for <lists+netdev@lfdr.de>; Wed, 22 Jan 2020 01:03:28 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0BF421448B2
+	for <lists+netdev@lfdr.de>; Wed, 22 Jan 2020 01:06:11 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727022AbgAVAD1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 21 Jan 2020 19:03:27 -0500
-Received: from mail-pf1-f196.google.com ([209.85.210.196]:33523 "EHLO
-        mail-pf1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726876AbgAVAD0 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 21 Jan 2020 19:03:26 -0500
-Received: by mail-pf1-f196.google.com with SMTP id z16so2358979pfk.0;
-        Tue, 21 Jan 2020 16:03:26 -0800 (PST)
+        id S1728842AbgAVAGG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 21 Jan 2020 19:06:06 -0500
+Received: from mail-qk1-f195.google.com ([209.85.222.195]:41721 "EHLO
+        mail-qk1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726876AbgAVAGF (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 21 Jan 2020 19:06:05 -0500
+Received: by mail-qk1-f195.google.com with SMTP id x129so4690564qke.8;
+        Tue, 21 Jan 2020 16:06:05 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=BTyeweeyeIFU8C/r6JAMXAKnmGdLmEgNkN2spf9BFoI=;
-        b=babe4ezVJrG2aZVAnqFzOBy/dDAcob7eJDD+ErVjmRQ63dVn93xUhfLt+ojJmLPR/N
-         QbxSbcfORaA9pbHhqE5vF+J0fFE839FHBQGuwqRls/euFNpNChLz0AwWsxMqw5Vwf0Z/
-         wd3TLhmladZ5XPHJmK0hdbyA8UmUr60PP+tELXXw51xiYv5HsscI/pnaVEl1blIzjW0b
-         9M9f4TSKo4/XXkNFFxADkw1Au+iLgfkKdUjLJQ7zXrZ4xymJcCiThIPMMpplty3FkjRg
-         Cb/DpFWpNARcTrc7c4816LD6c/kq8x/TlBbeKi7oCbParwV3O2DR4oQ1ZNMjblCz28Gp
-         tHUg==
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=dLQ+QI++eCjlyAt/BPhwKj9mJwMzoHkPG5/0tL6ZnQU=;
+        b=NkUmJmAS/2iCKF4LmTItJ92DYd5DIifuu7d47SeBDHxG7VcscD/iFZprmsKSaYsPGW
+         IGj/AWfp0fFt1lPWNoFcMyuOMcbRapp8qLEdY/3BY5naJqorz2dkOBsccg9wHs+k6zq5
+         wuXwAG2pIPFJuWwMf5ORAS68nKz7eJkVuFhvd09Xi6AK7Bgt1JyaEc7kbyi2ub023Jqq
+         2zmBYQWZR8B7y+l1uM2TuqblpMTtpPSmEjacnV4eW1nxbNxi2Ceh7EX2aBmmOrwFvUSW
+         emH3tQ6H+XZYSpxgEJ3aWMrJL7dLtfPGTKPRjlJJDEGn2A+slUOEHMrkhMsdUNTyKj9P
+         LK5w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=BTyeweeyeIFU8C/r6JAMXAKnmGdLmEgNkN2spf9BFoI=;
-        b=YC/RxnmB5RD5HGFouCwXXjvvFPIAoNndSiuqbscVGNdhtHczPQo2bJ0fi4dIW3/Lnk
-         1nFVjA7anzDBDkmVTuIuOghaTi59k/sbr/aXcz9qeKkOrotKWVg6wWU7ljPEMU1xKFBw
-         gAMEd7zQGRdSr5SXXwtwxtS3tOQ98azko+Xz6FiMl61CQtrmuvgGyVhJseB9oKOn9Pmk
-         kOpOCzeGBqe2Y9PzO65kUhiPYfDluWZsJniS5v/K8luqXKi/B0+577cPC9blSkWL1Qrd
-         8C8huYb4mBPF9UqpQCEqz3DBvdzfZzql6vYuyMnhDmF29jZClkXYC9gkOB72PLhCmTHS
-         z74g==
-X-Gm-Message-State: APjAAAWabz2P3tsoR7wAQQ3gRBAi+NJUTvRSdA8RFP8PCGT2YDZ7GLL8
-        1h+QzORL3jnpO9JZ7sJ6tga9vbXMmDo=
-X-Google-Smtp-Source: APXvYqyqBbMaTb02mS4S4BBN+Ch4wG0sPXZpJrbOay1T/avKMwSktjxGwhHRzfAmdyTf/1pHqR0jsw==
-X-Received: by 2002:a63:e649:: with SMTP id p9mr8253180pgj.15.1579651406003;
-        Tue, 21 Jan 2020 16:03:26 -0800 (PST)
-Received: from ast-mbp.dhcp.thefacebook.com ([2620:10d:c090:200::3:3806])
-        by smtp.gmail.com with ESMTPSA id l14sm553908pjq.5.2020.01.21.16.03.24
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Tue, 21 Jan 2020 16:03:25 -0800 (PST)
-Date:   Tue, 21 Jan 2020 16:03:23 -0800
-From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
-To:     Jiri Olsa <jolsa@kernel.org>
-Cc:     Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>, netdev@vger.kernel.org,
-        bpf@vger.kernel.org, Andrii Nakryiko <andriin@fb.com>,
-        Yonghong Song <yhs@fb.com>, Martin KaFai Lau <kafai@fb.com>,
-        Jakub Kicinski <jakub.kicinski@netronome.com>,
-        David Miller <davem@redhat.com>,
-        =?utf-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@intel.com>,
-        John Fastabend <john.fastabend@gmail.com>
-Subject: Re: [PATCH 2/6] bpf: Add bpf_perf_event_output_kfunc
-Message-ID: <20200122000322.ogarpgwv3xut75m3@ast-mbp.dhcp.thefacebook.com>
-References: <20200121120512.758929-1-jolsa@kernel.org>
- <20200121120512.758929-3-jolsa@kernel.org>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=dLQ+QI++eCjlyAt/BPhwKj9mJwMzoHkPG5/0tL6ZnQU=;
+        b=da9y9qF8QAVUEt3Wfc8koNG79psGjERwt7gcMxM/fxPKTphyJDxJjfHcRLFJEU3D7R
+         +1vawcziaXU9I5urlLFk/QxOSjT4vtmmcSIS//+7Fuz5eoS4MeAvYmolC/aM6pabKxn/
+         PgJa3TB/2P/DJmZ7XJ8E8IkDnaS1MUI7BGz8o7fyI5vjKZW9GqiddJY/OCmKcNPMgpC5
+         YOamN27NrLfZnCqotD6L2vXbDFOewFCg4Nx+Ndo+/tNzftwJngzp7a7ZOTg/sDk2D9Tp
+         66dAu1u1IuoF0ENFKupPWtKq8AtSZDyQSPS335s6HwagXjzO+tIj5oNxHNGKxGn7PAhX
+         nu9g==
+X-Gm-Message-State: APjAAAUoavMcQGB9HkP0cscmA1JodQKZEZkEoYFhAIeT7Al0yC4Xkpai
+        LGVWiP1Tc4CmPmXrQCUQ9s86ZL6ZhODcU+JBabd8Wg==
+X-Google-Smtp-Source: APXvYqzJ8OTfF01CvmYbMSUlDK0hU2AW4rw/a991qNolBkJLBm7yY/VmVPA6ZpEmHTyJ6GmmwIKrLdrsZCX0CLdBXFk=
+X-Received: by 2002:a05:620a:5ae:: with SMTP id q14mr7456752qkq.437.1579651564807;
+ Tue, 21 Jan 2020 16:06:04 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200121120512.758929-3-jolsa@kernel.org>
-User-Agent: NeoMutt/20180223
+References: <20200122000110.GA310073@chrisdown.name>
+In-Reply-To: <20200122000110.GA310073@chrisdown.name>
+From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Date:   Tue, 21 Jan 2020 16:05:53 -0800
+Message-ID: <CAEf4BzZnOFfw102XiG4yJNTR63fT-_QHFU7QSu2apvrz=i_TWQ@mail.gmail.com>
+Subject: Re: [PATCH v2] bpf: btf: Always output invariant hit in pahole DWARF
+ to BTF transform
+To:     Chris Down <chris@chrisdown.name>
+Cc:     bpf <bpf@vger.kernel.org>, Networking <netdev@vger.kernel.org>,
+        Stanislav Fomichev <sdf@google.com>,
+        Andrii Nakryiko <andriin@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        open list <linux-kernel@vger.kernel.org>,
+        Kernel Team <kernel-team@fb.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Jan 21, 2020 at 01:05:08PM +0100, Jiri Olsa wrote:
-> Adding support to use perf_event_output in
-> BPF_TRACE_FENTRY/BPF_TRACE_FEXIT programs.
-> 
-> Using nesting regs array from raw tracepoint helpers.
-> 
-> Signed-off-by: Jiri Olsa <jolsa@kernel.org>
+On Tue, Jan 21, 2020 at 4:01 PM Chris Down <chris@chrisdown.name> wrote:
+>
+> When trying to compile with CONFIG_DEBUG_INFO_BTF enabled, I got this
+> error:
+>
+>     % make -s
+>     Failed to generate BTF for vmlinux
+>     Try to disable CONFIG_DEBUG_INFO_BTF
+>     make[3]: *** [vmlinux] Error 1
+>
+> Compiling again without -s shows the true error (that pahole is
+> missing), but since this is fatal, we should show the error
+> unconditionally on stderr as well, not silence it using the `info`
+> function. With this patch:
+>
+>     % make -s
+>     BTF: .tmp_vmlinux.btf: pahole (pahole) is not available
+>     Failed to generate BTF for vmlinux
+>     Try to disable CONFIG_DEBUG_INFO_BTF
+>     make[3]: *** [vmlinux] Error 1
+>
+> Signed-off-by: Chris Down <chris@chrisdown.name>
+> Cc: Stanislav Fomichev <sdf@google.com>
+> Cc: Andrii Nakryiko <andriin@fb.com>
+> Cc: John Fastabend <john.fastabend@gmail.com>
+> Cc: linux-kernel@vger.kernel.org
+> Cc: netdev@vger.kernel.org
+> Cc: bpf@vger.kernel.org
+> Cc: kernel-team@fb.com
 > ---
->  kernel/trace/bpf_trace.c | 41 ++++++++++++++++++++++++++++++++++++++++
->  1 file changed, 41 insertions(+)
-> 
-> diff --git a/kernel/trace/bpf_trace.c b/kernel/trace/bpf_trace.c
-> index 19e793aa441a..6a18e2ae6e30 100644
-> --- a/kernel/trace/bpf_trace.c
-> +++ b/kernel/trace/bpf_trace.c
-> @@ -1172,6 +1172,43 @@ raw_tp_prog_func_proto(enum bpf_func_id func_id, const struct bpf_prog *prog)
->  	}
->  }
->  
-> +BPF_CALL_5(bpf_perf_event_output_kfunc, void *, ctx, struct bpf_map *, map,
-> +	   u64, flags, void *, data, u64, size)
-> +{
-> +	struct pt_regs *regs = get_bpf_raw_tp_regs();
-> +	int ret;
-> +
-> +	if (IS_ERR(regs))
-> +		return PTR_ERR(regs);
-> +
-> +	perf_fetch_caller_regs(regs);
-> +	ret = ____bpf_perf_event_output(regs, map, flags, data, size);
-> +	put_bpf_raw_tp_regs();
-> +	return ret;
-> +}
+>  scripts/link-vmlinux.sh | 4 ++--
+>  1 file changed, 2 insertions(+), 2 deletions(-)
+>
 
-I'm not sure why copy paste bpf_perf_event_output_raw_tp() into new function.
+Looks great, thanks!
 
-> @@ -1181,6 +1218,10 @@ tracing_prog_func_proto(enum bpf_func_id func_id, const struct bpf_prog *prog)
->  		return &bpf_skb_output_proto;
->  #endif
->  	default:
-> +		if (prog->expected_attach_type == BPF_TRACE_FENTRY ||
-> +		    prog->expected_attach_type == BPF_TRACE_FEXIT)
-> +			return kfunc_prog_func_proto(func_id, prog);
-> +
->  		return raw_tp_prog_func_proto(func_id, prog);
+Acked-by: Andrii Nakryiko <andriin@fb.com>
 
-Are you saying bpf_perf_event_output_raw_tp() for some reason
-didn't work for fentry/fexit?
-But above is exact copy-paste and it somehow worked?
-
-Ditto for patches 3,4.
+> diff --git a/scripts/link-vmlinux.sh b/scripts/link-vmlinux.sh
+> index c287ad9b3a67..bbe9be2bf5ff 100755
+> --- a/scripts/link-vmlinux.sh
+> +++ b/scripts/link-vmlinux.sh
+> @@ -108,13 +108,13 @@ gen_btf()
+>         local bin_arch
+>
+>         if ! [ -x "$(command -v ${PAHOLE})" ]; then
+> -               info "BTF" "${1}: pahole (${PAHOLE}) is not available"
+> +               echo >&2 "BTF: ${1}: pahole (${PAHOLE}) is not available"
+>                 return 1
+>         fi
+>
+>         pahole_ver=$(${PAHOLE} --version | sed -E 's/v([0-9]+)\.([0-9]+)/\1\2/')
+>         if [ "${pahole_ver}" -lt "113" ]; then
+> -               info "BTF" "${1}: pahole version $(${PAHOLE} --version) is too old, need at least v1.13"
+> +               echo >&2 "BTF: ${1}: pahole version $(${PAHOLE} --version) is too old, need at least v1.13"
+>                 return 1
+>         fi
+>
+> --
+> 2.25.0
+>
