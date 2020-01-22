@@ -2,159 +2,94 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 50CB8145D27
-	for <lists+netdev@lfdr.de>; Wed, 22 Jan 2020 21:33:01 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6AE27145D2A
+	for <lists+netdev@lfdr.de>; Wed, 22 Jan 2020 21:33:25 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728767AbgAVUc7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 22 Jan 2020 15:32:59 -0500
-Received: from mail-pl1-f202.google.com ([209.85.214.202]:36242 "EHLO
-        mail-pl1-f202.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725827AbgAVUc7 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 22 Jan 2020 15:32:59 -0500
-Received: by mail-pl1-f202.google.com with SMTP id d4so213781pll.3
-        for <netdev@vger.kernel.org>; Wed, 22 Jan 2020 12:32:59 -0800 (PST)
+        id S1729021AbgAVUdV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 22 Jan 2020 15:33:21 -0500
+Received: from mail-pg1-f169.google.com ([209.85.215.169]:34136 "EHLO
+        mail-pg1-f169.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725827AbgAVUdV (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 22 Jan 2020 15:33:21 -0500
+Received: by mail-pg1-f169.google.com with SMTP id r11so142131pgf.1;
+        Wed, 22 Jan 2020 12:33:21 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20161025;
-        h=date:message-id:mime-version:subject:from:to:cc;
-        bh=786oVqFM1vNXl5lNoTIaLWcA1Q1xTS09JT4dv7j0HYo=;
-        b=Nzuq+1ItC6Q/Qxk+y88vI7g8GcHZzmetjw2Eox1PoPHhHY7nK367srSyXWvcq/lGP7
-         1eV2aofwOExy2iDMlr5GBEI1/MYszuA3FoJGugQTj1CBAXLtZ26mhSX6qhe0uZ+kE6iC
-         EnFID3kWtQQ7hTxANWWXbeOWBSMoRfv6jiuhWE3axHfAXl/Gu08kfsysQ17Jn01qE8mu
-         k18YWtFxD4CmqlA+j/RnFuQ39QjGpLGxwqeqemncJFSJ1z2xPGL2hl0eITRGacGRdYfg
-         OwynBFMahF/hQWt7cIS3OK4KLjYpJD84RqrQIZJeFqeu4vpn+szYVq45Q77QEADRiRXS
-         Kj9w==
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=4RP6BcTlBjQVMXjM1GbOC5Sm/jYQcEi+Bbz9d5dA2B0=;
+        b=SHddluSyHGBijvAyXP2Hl4SqgWNTFVJat4Eje1NChQ2CFi4qtOgkNm708l8ZIhS7wz
+         1mEg6VXWsGVxlJ637VDf1037qp0/lqMa8ArtU132uKr4YWUJiwtpiQdM0VpCkdpdUGtl
+         Cmh4dPreds6MkLI8FFjl+dKuHqQzn1k5mFDrWCOTVS3fHl6dORWZwzHJYsyAXvqrJMNu
+         Y7lqJv2O5YmZWKuakuybUPb5GIyr7G5yb+e0JZjd1uBAbEiOAcW9cKpir1BID3ZX7MdX
+         lq7g4pet5hiSzLNQcxIdbLLGJzihfpW2UgDf+Tva6kLOJVNBEMOFBs2BbD2QT9bny/RZ
+         eDRw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:message-id:mime-version:subject:from:to:cc;
-        bh=786oVqFM1vNXl5lNoTIaLWcA1Q1xTS09JT4dv7j0HYo=;
-        b=W6112A3DPwpuZxCMkjWMWCXAm6QSLkjbvlL+ne1GOwhG96l+yu4exBitfiJINvvRCK
-         Mwh1/qxi+Zor2Z6TsW5E5nBQJZhx05TRhJ02AFVnqlfKk+lRHTNeSOtyrOHGv/xB7QiK
-         tTBwtgp3r2iwEtt4jQqsHq28/kEw4+sPX+T93jY647YmwYmglp/lwtsc/MhJs0GTngiL
-         QxRBrod6MVtdB/yL8FGQWyKXulNSrU3LUlvRujrydFXJhDP91SVoI4xfK4eKwFAvtzug
-         mpZOz/UjpvQ8r+rkwfZyTDtrz2E4RtIZfpCymtfxA/tQ1wq647nimM2e/0bz6Wj7LyHI
-         7NnA==
-X-Gm-Message-State: APjAAAUJDhtd5ONh+hTe6fpFp+slQ250RUbXrYoMvjl8DUTyDg2eR/FP
-        uwYbSosOBIZi/xDlZ2G2xASgLrcfdiuMTVm0hW7Gqm4NZxjVJOC8g9IrT7w3kD2HieBqBFCMvqd
-        xRCmgzTKMS+151zWVouP1DyWxFgBaNDK+b6MNIzc7rg+48lGnkkUYdS8Bc/JKTw==
-X-Google-Smtp-Source: APXvYqwBb7xyBA1GbSIq2+eI/rYB6qX2AKcwiFY8fyuTTs63VzeowwJrBkAMFGTpnSUTw95Nzl4tBXYyxP8=
-X-Received: by 2002:a63:4185:: with SMTP id o127mr68976pga.284.1579725178501;
- Wed, 22 Jan 2020 12:32:58 -0800 (PST)
-Date:   Wed, 22 Jan 2020 12:32:53 -0800
-Message-Id: <20200122203253.20652-1-lrizzo@google.com>
-Mime-Version: 1.0
-X-Mailer: git-send-email 2.25.0.341.g760bfbb309-goog
-Subject: [PATCH] net-xdp: netdev attribute to control xdpgeneric skb linearization
-From:   Luigi Rizzo <lrizzo@google.com>
-To:     netdev@vger.kernel.org
-Cc:     Jesper Dangaard Brouer <hawk@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>, sameehj@amazon.com,
-        Luigi Rizzo <lrizzo@google.com>
-Content-Type: text/plain; charset="UTF-8"
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=4RP6BcTlBjQVMXjM1GbOC5Sm/jYQcEi+Bbz9d5dA2B0=;
+        b=EC1AEQQI6BbR1pZpMEmSh13ifJPl+k1l5aPcVOj7s0g62uR84l+wyjen6IGD/MXaPz
+         dAIe2JlPHua/jd8+jdVU0HUTGlN9fxeTThEkgAMHkLhTwZ2jexQrPqb8WyGz5oMgPuus
+         gqX6RMChEADfRkK1KJ8pwE75hahcf0tm3S32a5Lb1YhC4yEyhVLsQMiqrBVrB4HREXUo
+         MJH+1hxgeF5WG4R1c5R3u3yhj8H0bOUipt3VU1fUfIk+EAYSx6wAtf7PyaieaPcwyEUr
+         5yDam+EY75HRR91+A6ySgE3MobydQ2WGZ6KLWHA8uU0s74i3lI4ScD/mg4BEYcgsVaXP
+         hZRQ==
+X-Gm-Message-State: APjAAAWDBIESDW8H5KjnWrLO8QPRpSlnlPcKeAk7zPU/mhme3S19jaf3
+        BneTsf02QjaeGHEPd0wpvQM=
+X-Google-Smtp-Source: APXvYqzlV5lkAnjIz1BAKafCf0OTzYSWs59fCfLYXg7BESa+BX/CtvsckclFy7mTfQTBDw4KMt3vFQ==
+X-Received: by 2002:aa7:800e:: with SMTP id j14mr4400945pfi.174.1579725200636;
+        Wed, 22 Jan 2020 12:33:20 -0800 (PST)
+Received: from ?IPv6:2620:15c:2c1:200:55c7:81e6:c7d8:94b? ([2620:15c:2c1:200:55c7:81e6:c7d8:94b])
+        by smtp.gmail.com with ESMTPSA id fa21sm4353738pjb.17.2020.01.22.12.33.18
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 22 Jan 2020 12:33:19 -0800 (PST)
+Subject: Re: KASAN: slab-out-of-bounds Read in __nla_put_nohdr
+To:     Cong Wang <xiyou.wangcong@gmail.com>,
+        Eric Dumazet <eric.dumazet@gmail.com>
+Cc:     syzbot <syzbot+5af9a90dad568aa9f611@syzkaller.appspotmail.com>,
+        David Miller <davem@davemloft.net>,
+        Jamal Hadi Salim <jhs@mojatatu.com>,
+        Jiri Pirko <jiri@resnulli.us>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Linux Kernel Network Developers <netdev@vger.kernel.org>,
+        syzkaller-bugs <syzkaller-bugs@googlegroups.com>
+References: <0000000000006370ef059cabac14@google.com>
+ <50239085-ff0f-f797-99af-1a0e58bc5e2e@gmail.com>
+ <CAM_iQpXqh1ucVST199c72V22zLPujZy-54p=c5ar=Q9bWNq7OA@mail.gmail.com>
+From:   Eric Dumazet <eric.dumazet@gmail.com>
+Message-ID: <7056f971-8fae-ce88-7e9a-7983e4f57bb2@gmail.com>
+Date:   Wed, 22 Jan 2020 12:33:17 -0800
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.2.2
+MIME-Version: 1.0
+In-Reply-To: <CAM_iQpXqh1ucVST199c72V22zLPujZy-54p=c5ar=Q9bWNq7OA@mail.gmail.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add a netdevice flag to control skb linearization in generic xdp mode.
-Among the various mechanism to control the flag, the sysfs
-interface seems sufficiently simple and self-contained.
-The attribute can be modified through
-	/sys/class/net/<DEVICE>/xdp_linearize
-The default is 1 (on)
 
-On a kernel instrumented to grab timestamps around the linearization
-code in netif_receive_generic_xdp, and heavy netperf traffic with 1500b
-mtu, I see the following times (nanoseconds/pkt)
 
-The receiver generally sees larger packets so the difference is more
-significant.
+On 1/22/20 12:27 PM, Cong Wang wrote:
+> On Tue, Jan 21, 2020 at 11:55 AM Eric Dumazet <eric.dumazet@gmail.com> wrote:
+>> em_nbyte_change() sets
+>> em->datalen = sizeof(*nbyte) + nbyte->len;
+>>
+>> But later tcf_em_validate() overwrites em->datalen with the user provide value (em->datalen = data_len; )
+>> which can be bigger than the allocated (kmemdup) space in em_nbyte_change()
+>>
+>> Should net/sched/em_nbyte.c() provide a dump() handler to avoid this issue ?
+> 
+> I think for those who implement ->change() we should leave
+> ->datalen untouched to respect their choices. I don't see why
+> we have to set it twice.
+> 
+>
 
-ns/pkt                   RECEIVER                 SENDER
-
-                    p50     p90     p99       p50   p90    p99
-
-LINEARIZATION:    600ns  1090ns  4900ns     149ns 249ns  460ns
-NO LINEARIZATION:  40ns    59ns    90ns      40ns  50ns  100ns
-
-Tested: run tests on an instrumented kernel
-Change-Id: I69884661167ab86347c50bdece8cae1afa821956
-Signed-off-by: Luigi Rizzo <lrizzo@google.com>
----
- include/linux/netdevice.h |  3 ++-
- net/core/dev.c            |  5 +++--
- net/core/net-sysfs.c      | 15 +++++++++++++++
- 3 files changed, 20 insertions(+), 3 deletions(-)
-
-diff --git a/include/linux/netdevice.h b/include/linux/netdevice.h
-index 2741aa35bec6..ae873fb5ec3c 100644
---- a/include/linux/netdevice.h
-+++ b/include/linux/netdevice.h
-@@ -1958,7 +1958,8 @@ struct net_device {
- 
- 	struct netdev_rx_queue	*_rx;
- 	unsigned int		num_rx_queues;
--	unsigned int		real_num_rx_queues;
-+	unsigned int		real_num_rx_queues:31;
-+	unsigned int		xdp_linearize : 1;
- 
- 	struct bpf_prog __rcu	*xdp_prog;
- 	unsigned long		gro_flush_timeout;
-diff --git a/net/core/dev.c b/net/core/dev.c
-index 6368c94c9e0a..04c7c8ed1b4a 100644
---- a/net/core/dev.c
-+++ b/net/core/dev.c
-@@ -4484,8 +4484,8 @@ static u32 netif_receive_generic_xdp(struct sk_buff *skb,
- 	 * of XDP_PACKET_HEADROOM bytes. This is the guarantee that also
- 	 * native XDP provides, thus we need to do it here as well.
- 	 */
--	if (skb_is_nonlinear(skb) ||
--	    skb_headroom(skb) < XDP_PACKET_HEADROOM) {
-+	if (skb->dev->xdp_linearize && (skb_is_nonlinear(skb) ||
-+	    skb_headroom(skb) < XDP_PACKET_HEADROOM)) {
- 		int hroom = XDP_PACKET_HEADROOM - skb_headroom(skb);
- 		int troom = skb->tail + skb->data_len - skb->end;
- 
-@@ -9756,6 +9756,7 @@ struct net_device *alloc_netdev_mqs(int sizeof_priv, const char *name,
- 	dev->gso_max_segs = GSO_MAX_SEGS;
- 	dev->upper_level = 1;
- 	dev->lower_level = 1;
-+	dev->xdp_linearize = 1;
- 
- 	INIT_LIST_HEAD(&dev->napi_list);
- 	INIT_LIST_HEAD(&dev->unreg_list);
-diff --git a/net/core/net-sysfs.c b/net/core/net-sysfs.c
-index 4c826b8bf9b1..ec59aa296664 100644
---- a/net/core/net-sysfs.c
-+++ b/net/core/net-sysfs.c
-@@ -442,6 +442,20 @@ static ssize_t proto_down_store(struct device *dev,
- }
- NETDEVICE_SHOW_RW(proto_down, fmt_dec);
- 
-+static int change_xdp_linearize(struct net_device *dev, unsigned long val)
-+{
-+	dev->xdp_linearize = !!val;
-+	return 0;
-+}
-+
-+static ssize_t xdp_linearize_store(struct device *dev,
-+				   struct device_attribute *attr,
-+				   const char *buf, size_t len)
-+{
-+	return netdev_store(dev, attr, buf, len, change_xdp_linearize);
-+}
-+NETDEVICE_SHOW_RW(xdp_linearize, fmt_dec);
-+
- static ssize_t phys_port_id_show(struct device *dev,
- 				 struct device_attribute *attr, char *buf)
- {
-@@ -536,6 +550,7 @@ static struct attribute *net_class_attrs[] __ro_after_init = {
- 	&dev_attr_phys_port_name.attr,
- 	&dev_attr_phys_switch_id.attr,
- 	&dev_attr_proto_down.attr,
-+	&dev_attr_xdp_linearize.attr,
- 	&dev_attr_carrier_up_count.attr,
- 	&dev_attr_carrier_down_count.attr,
- 	NULL,
--- 
-2.25.0.341.g760bfbb309-goog
+Agreed, but we need to audit them to make sure all of them are setting ->datalen
 
