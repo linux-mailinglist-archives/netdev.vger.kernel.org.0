@@ -2,89 +2,109 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id B7988145180
-	for <lists+netdev@lfdr.de>; Wed, 22 Jan 2020 10:54:40 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5CAC5145073
+	for <lists+netdev@lfdr.de>; Wed, 22 Jan 2020 10:47:48 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730692AbgAVJdw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 22 Jan 2020 04:33:52 -0500
-Received: from youngberry.canonical.com ([91.189.89.112]:36079 "EHLO
-        youngberry.canonical.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729668AbgAVJdt (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 22 Jan 2020 04:33:49 -0500
-Received: from 1.general.cking.uk.vpn ([10.172.193.212] helo=localhost)
-        by youngberry.canonical.com with esmtpsa (TLS1.2:ECDHE_RSA_AES_128_GCM_SHA256:128)
-        (Exim 4.86_2)
-        (envelope-from <colin.king@canonical.com>)
-        id 1iuCOK-0003Me-Dh; Wed, 22 Jan 2020 09:33:40 +0000
-From:   Colin King <colin.king@canonical.com>
-To:     Ping-Ke Shih <pkshih@realtek.com>,
-        Kalle Valo <kvalo@codeaurora.org>,
-        "David S . Miller" <davem@davemloft.net>,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org
-Cc:     kernel-janitors@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH] rtlwifi: btcoex: fix spelling mistake "initilized" -> "initialized"
-Date:   Wed, 22 Jan 2020 09:33:40 +0000
-Message-Id: <20200122093340.2800226-1-colin.king@canonical.com>
-X-Mailer: git-send-email 2.24.0
+        id S2387938AbgAVJnr (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 22 Jan 2020 04:43:47 -0500
+Received: from mx0b-0016f401.pphosted.com ([67.231.156.173]:48450 "EHLO
+        mx0b-0016f401.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S2387769AbgAVJnq (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 22 Jan 2020 04:43:46 -0500
+Received: from pps.filterd (m0045851.ppops.net [127.0.0.1])
+        by mx0b-0016f401.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 00M9eqDY015237;
+        Wed, 22 Jan 2020 01:43:43 -0800
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=marvell.com; h=from : to : cc :
+ subject : date : message-id : mime-version : content-type; s=pfpt0818;
+ bh=Hw+jQFnSqpOEA8dohIC3ojSBr5j/92Lw59zTAsp3zXg=;
+ b=yqqlI7RXfMeHY7i+CH/ol2q2Gp0vdjIX97ZZyd0fsqE1kBziEwygmEUWwofJ8Z77wwY2
+ hAHnLlYL48eae5tHFFCzmN1peNps2L1O84TVM3cqPMV0qRJwuROu7ZBIWxser/804fVR
+ 6GHM6jxtPzH0BxplPWJ/vtSd3BpJqzxGyBqMs5IdVH/q2fmvb/O4Vu5i2KlEAKo2GcuB
+ faK4neQmuizraOhsMnrQ7SPK69mmXZVib19b5jjDjsJqku4Ug8RK4+8DJbNo4D3Rl1Vl
+ hyOq9d5dNc2ZyWE9Rb+e18B+5yR2tb5nR8cW0hArYcg0mN5uyBh5djoA1lQkoBxK81kv XA== 
+Received: from sc-exch03.marvell.com ([199.233.58.183])
+        by mx0b-0016f401.pphosted.com with ESMTP id 2xm2dt6a40-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT);
+        Wed, 22 Jan 2020 01:43:43 -0800
+Received: from SC-EXCH03.marvell.com (10.93.176.83) by SC-EXCH03.marvell.com
+ (10.93.176.83) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Wed, 22 Jan
+ 2020 01:43:41 -0800
+Received: from maili.marvell.com (10.93.176.43) by SC-EXCH03.marvell.com
+ (10.93.176.83) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
+ Transport; Wed, 22 Jan 2020 01:43:41 -0800
+Received: from dut1171.mv.qlogic.com (unknown [10.112.88.18])
+        by maili.marvell.com (Postfix) with ESMTP id 243903F703F;
+        Wed, 22 Jan 2020 01:43:41 -0800 (PST)
+Received: from dut1171.mv.qlogic.com (localhost [127.0.0.1])
+        by dut1171.mv.qlogic.com (8.14.7/8.14.7) with ESMTP id 00M9heV3014199;
+        Wed, 22 Jan 2020 01:43:40 -0800
+Received: (from root@localhost)
+        by dut1171.mv.qlogic.com (8.14.7/8.14.7/Submit) id 00M9heGS014198;
+        Wed, 22 Jan 2020 01:43:40 -0800
+From:   Manish Chopra <manishc@marvell.com>
+To:     <davem@davemloft.net>
+CC:     <netdev@vger.kernel.org>, <GR-Linux-NIC-Dev@marvell.com>
+Subject: [PATCH net 1/1] qlcnic: Fix CPU soft lockup while collecting firmware dump
+Date:   Wed, 22 Jan 2020 01:43:38 -0800
+Message-ID: <20200122094338.14153-1-manishc@marvell.com>
+X-Mailer: git-send-email 2.12.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.138,18.0.572
+ definitions=2020-01-17_05:2020-01-16,2020-01-17 signatures=0
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Colin Ian King <colin.king@canonical.com>
+Driver while collecting firmware dump takes longer time to
+collect/process some of the firmware dump entries/memories.
+Bigger capture masks makes it worse as it results in larger
+amount of data being collected and results in CPU soft lockup.
+Place cond_resched() in some of the driver flows that are
+expectedly time consuming to relinquish the CPU to avoid CPU
+soft lockup panic.
 
-There is a spelling mistake in one of the fields in the btc_coexist struct,
-fix it.
-
-Signed-off-by: Colin Ian King <colin.king@canonical.com>
+Signed-off-by: Shahed Shaikh <shshaikh@marvell.com>
+Tested-by: Yonggen Xu <Yonggen.Xu@dell.com>
+Signed-off-by: Manish Chopra <manishc@marvell.com>
 ---
- .../net/wireless/realtek/rtlwifi/btcoexist/halbtc8192e2ant.c    | 2 +-
- drivers/net/wireless/realtek/rtlwifi/btcoexist/halbtcoutsrc.c   | 2 +-
- drivers/net/wireless/realtek/rtlwifi/btcoexist/halbtcoutsrc.h   | 2 +-
- 3 files changed, 3 insertions(+), 3 deletions(-)
+ drivers/net/ethernet/qlogic/qlcnic/qlcnic_83xx_init.c | 1 +
+ drivers/net/ethernet/qlogic/qlcnic/qlcnic_minidump.c  | 2 ++
+ 2 files changed, 3 insertions(+)
 
-diff --git a/drivers/net/wireless/realtek/rtlwifi/btcoexist/halbtc8192e2ant.c b/drivers/net/wireless/realtek/rtlwifi/btcoexist/halbtc8192e2ant.c
-index 3c96c320236c..658ff425c256 100644
---- a/drivers/net/wireless/realtek/rtlwifi/btcoexist/halbtc8192e2ant.c
-+++ b/drivers/net/wireless/realtek/rtlwifi/btcoexist/halbtc8192e2ant.c
-@@ -862,7 +862,7 @@ static void btc8192e2ant_set_sw_rf_rx_lpf_corner(struct btc_coexist *btcoexist,
- 		/* Resume RF Rx LPF corner
- 		 * After initialized, we can use coex_dm->btRf0x1eBackup
- 		 */
--		if (btcoexist->initilized) {
-+		if (btcoexist->initialized) {
- 			RT_TRACE(rtlpriv, COMP_BT_COEXIST, DBG_LOUD,
- 				 "[BTCoex], Resume RF Rx LPF corner!!\n");
- 			btcoexist->btc_set_rf_reg(btcoexist, BTC_RF_A, 0x1e,
-diff --git a/drivers/net/wireless/realtek/rtlwifi/btcoexist/halbtcoutsrc.c b/drivers/net/wireless/realtek/rtlwifi/btcoexist/halbtcoutsrc.c
-index 191dafd03189..a4940a3842de 100644
---- a/drivers/net/wireless/realtek/rtlwifi/btcoexist/halbtcoutsrc.c
-+++ b/drivers/net/wireless/realtek/rtlwifi/btcoexist/halbtcoutsrc.c
-@@ -1461,7 +1461,7 @@ void exhalbtc_init_coex_dm(struct btc_coexist *btcoexist)
- 			ex_btc8192e2ant_init_coex_dm(btcoexist);
+diff --git a/drivers/net/ethernet/qlogic/qlcnic/qlcnic_83xx_init.c b/drivers/net/ethernet/qlogic/qlcnic/qlcnic_83xx_init.c
+index a496390b8632..07f9067affc6 100644
+--- a/drivers/net/ethernet/qlogic/qlcnic/qlcnic_83xx_init.c
++++ b/drivers/net/ethernet/qlogic/qlcnic/qlcnic_83xx_init.c
+@@ -2043,6 +2043,7 @@ static void qlcnic_83xx_exec_template_cmd(struct qlcnic_adapter *p_dev,
+ 			break;
+ 		}
+ 		entry += p_hdr->size;
++		cond_resched();
+ 	}
+ 	p_dev->ahw->reset.seq_index = index;
+ }
+diff --git a/drivers/net/ethernet/qlogic/qlcnic/qlcnic_minidump.c b/drivers/net/ethernet/qlogic/qlcnic/qlcnic_minidump.c
+index afa10a163da1..f34ae8c75bc5 100644
+--- a/drivers/net/ethernet/qlogic/qlcnic/qlcnic_minidump.c
++++ b/drivers/net/ethernet/qlogic/qlcnic/qlcnic_minidump.c
+@@ -703,6 +703,7 @@ static u32 qlcnic_read_memory_test_agent(struct qlcnic_adapter *adapter,
+ 		addr += 16;
+ 		reg_read -= 16;
+ 		ret += 16;
++		cond_resched();
+ 	}
+ out:
+ 	mutex_unlock(&adapter->ahw->mem_lock);
+@@ -1383,6 +1384,7 @@ int qlcnic_dump_fw(struct qlcnic_adapter *adapter)
+ 		buf_offset += entry->hdr.cap_size;
+ 		entry_offset += entry->hdr.offset;
+ 		buffer = fw_dump->data + buf_offset;
++		cond_resched();
  	}
  
--	btcoexist->initilized = true;
-+	btcoexist->initialized = true;
- }
- 
- void exhalbtc_ips_notify(struct btc_coexist *btcoexist, u8 type)
-diff --git a/drivers/net/wireless/realtek/rtlwifi/btcoexist/halbtcoutsrc.h b/drivers/net/wireless/realtek/rtlwifi/btcoexist/halbtcoutsrc.h
-index 8c0a7fdbf200..a96a995dd850 100644
---- a/drivers/net/wireless/realtek/rtlwifi/btcoexist/halbtcoutsrc.h
-+++ b/drivers/net/wireless/realtek/rtlwifi/btcoexist/halbtcoutsrc.h
-@@ -679,7 +679,7 @@ struct btc_coexist {
- 	bool auto_report_2ant;
- 	bool dbg_mode_1ant;
- 	bool dbg_mode_2ant;
--	bool initilized;
-+	bool initialized;
- 	bool stop_coex_dm;
- 	bool manual_control;
- 	struct btc_statistics statistics;
+ 	fw_dump->clr = 1;
 -- 
-2.24.0
+2.18.1
 
