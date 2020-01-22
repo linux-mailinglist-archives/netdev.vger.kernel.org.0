@@ -2,109 +2,84 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 5CAC5145073
-	for <lists+netdev@lfdr.de>; Wed, 22 Jan 2020 10:47:48 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id AEA2114509E
+	for <lists+netdev@lfdr.de>; Wed, 22 Jan 2020 10:48:08 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2387938AbgAVJnr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 22 Jan 2020 04:43:47 -0500
-Received: from mx0b-0016f401.pphosted.com ([67.231.156.173]:48450 "EHLO
-        mx0b-0016f401.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S2387769AbgAVJnq (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 22 Jan 2020 04:43:46 -0500
-Received: from pps.filterd (m0045851.ppops.net [127.0.0.1])
-        by mx0b-0016f401.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 00M9eqDY015237;
-        Wed, 22 Jan 2020 01:43:43 -0800
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=marvell.com; h=from : to : cc :
- subject : date : message-id : mime-version : content-type; s=pfpt0818;
- bh=Hw+jQFnSqpOEA8dohIC3ojSBr5j/92Lw59zTAsp3zXg=;
- b=yqqlI7RXfMeHY7i+CH/ol2q2Gp0vdjIX97ZZyd0fsqE1kBziEwygmEUWwofJ8Z77wwY2
- hAHnLlYL48eae5tHFFCzmN1peNps2L1O84TVM3cqPMV0qRJwuROu7ZBIWxser/804fVR
- 6GHM6jxtPzH0BxplPWJ/vtSd3BpJqzxGyBqMs5IdVH/q2fmvb/O4Vu5i2KlEAKo2GcuB
- faK4neQmuizraOhsMnrQ7SPK69mmXZVib19b5jjDjsJqku4Ug8RK4+8DJbNo4D3Rl1Vl
- hyOq9d5dNc2ZyWE9Rb+e18B+5yR2tb5nR8cW0hArYcg0mN5uyBh5djoA1lQkoBxK81kv XA== 
-Received: from sc-exch03.marvell.com ([199.233.58.183])
-        by mx0b-0016f401.pphosted.com with ESMTP id 2xm2dt6a40-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT);
-        Wed, 22 Jan 2020 01:43:43 -0800
-Received: from SC-EXCH03.marvell.com (10.93.176.83) by SC-EXCH03.marvell.com
- (10.93.176.83) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Wed, 22 Jan
- 2020 01:43:41 -0800
-Received: from maili.marvell.com (10.93.176.43) by SC-EXCH03.marvell.com
- (10.93.176.83) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Wed, 22 Jan 2020 01:43:41 -0800
-Received: from dut1171.mv.qlogic.com (unknown [10.112.88.18])
-        by maili.marvell.com (Postfix) with ESMTP id 243903F703F;
-        Wed, 22 Jan 2020 01:43:41 -0800 (PST)
-Received: from dut1171.mv.qlogic.com (localhost [127.0.0.1])
-        by dut1171.mv.qlogic.com (8.14.7/8.14.7) with ESMTP id 00M9heV3014199;
-        Wed, 22 Jan 2020 01:43:40 -0800
-Received: (from root@localhost)
-        by dut1171.mv.qlogic.com (8.14.7/8.14.7/Submit) id 00M9heGS014198;
-        Wed, 22 Jan 2020 01:43:40 -0800
-From:   Manish Chopra <manishc@marvell.com>
-To:     <davem@davemloft.net>
-CC:     <netdev@vger.kernel.org>, <GR-Linux-NIC-Dev@marvell.com>
-Subject: [PATCH net 1/1] qlcnic: Fix CPU soft lockup while collecting firmware dump
-Date:   Wed, 22 Jan 2020 01:43:38 -0800
-Message-ID: <20200122094338.14153-1-manishc@marvell.com>
-X-Mailer: git-send-email 2.12.0
+        id S1732464AbgAVJr6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 22 Jan 2020 04:47:58 -0500
+Received: from mail-lj1-f193.google.com ([209.85.208.193]:40978 "EHLO
+        mail-lj1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1730748AbgAVJr5 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 22 Jan 2020 04:47:57 -0500
+Received: by mail-lj1-f193.google.com with SMTP id h23so6044139ljc.8
+        for <netdev@vger.kernel.org>; Wed, 22 Jan 2020 01:47:56 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=cogentembedded-com.20150623.gappssmtp.com; s=20150623;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=UZA8MvhgTjR1Db93Kl8ZE7I1AjnzSwS3ydOzQHANga8=;
+        b=wC0p0y6lCM/wUPS/IfTODzcD7cUkMCgxGcO/Ls1M4lnxeAF25AhC2C4Vq95flX9Cqq
+         xswljYa8WRGoOcWSXm2W6pX2i6tbrYZl/tb8PK/KF9zkamDnl/8pfd8ewgUZPz+/5fUN
+         96AHMmL0Xyt0c2MJApHZI/9syXmJZFx4J7GGEUVjJGKldYUqhWiheRD41HKTG6nv1vZ5
+         Un8WBaJ9FkkGTQC6qxUyq7cuVinhs2Dm1yIk1WWhjGE+FZDGLeYEP5xap+gN/v6mU1v2
+         ErTBn5SK/sVESEgcAgTGOTxhVZ6ZhyvAtPn6ooVjh7EqlhaL+k0gItHCbJzd4la/PwJk
+         2nyQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=UZA8MvhgTjR1Db93Kl8ZE7I1AjnzSwS3ydOzQHANga8=;
+        b=Eg47u7qQXdmNVkwGqYAV1w/TRxjjthVFdwrWZ9YeWgZFTSGHx2HLwM1NwA39bPCaRl
+         B8X4cS6JTbK9T2WFuqFFqznEoui66HIv+xyJCjfk5Esvc5SvOFr0fph3OuTR7kgUeCKP
+         TNuyhmRdUclxjpOYPOwMfyBU+tQ6D0ugboR9kOtmOr97gtK6mzxjGI5kfkxEx5T8YMeQ
+         +gXd0Gia7uDrzehTCSHtoqdtm85uSSS48XZS/axkpYLBcDa1w21hQemBakEw9aM0h7iy
+         TYc8tXJ2sw7olWnyQY7sKifbwoIhnfQbPFXAFHAv97iXSAvl/7EMgk5NMZoqs6rZ4rOt
+         zBvA==
+X-Gm-Message-State: APjAAAWu4W3J7ze7NoKTQbS3CxD5tg9/Vuvf1qfqwsLa07zzW0hLAWMH
+        ozvL+19Z+sU5iyv/se8fKuY0/g==
+X-Google-Smtp-Source: APXvYqyLk8hqyXbvO8Cs28biGHLs880vO3AoEuMqCtu7rpPoP/AP/GFODe0/mn2xfn4dxkEXiyQ0Mw==
+X-Received: by 2002:a2e:5357:: with SMTP id t23mr19259412ljd.227.1579686475289;
+        Wed, 22 Jan 2020 01:47:55 -0800 (PST)
+Received: from ?IPv6:2a00:1fa0:468a:1e6d:e8e4:fead:7539:293d? ([2a00:1fa0:468a:1e6d:e8e4:fead:7539:293d])
+        by smtp.gmail.com with ESMTPSA id r9sm23922473lfc.72.2020.01.22.01.47.54
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 22 Jan 2020 01:47:54 -0800 (PST)
+Subject: Re: [PATCH net 1/9] r8152: fix runtime resume for linking change
+To:     Hayes Wang <hayeswang@realtek.com>, netdev@vger.kernel.org
+Cc:     nic_swsd@realtek.com, linux-kernel@vger.kernel.org,
+        linux-usb@vger.kernel.org, pmalani@chromium.org,
+        grundler@chromium.org
+References: <1394712342-15778-338-Taiwan-albertk@realtek.com>
+ <1394712342-15778-339-Taiwan-albertk@realtek.com>
+From:   Sergei Shtylyov <sergei.shtylyov@cogentembedded.com>
+Message-ID: <62c3af7b-0e94-c069-0d35-4b5f41031a4e@cogentembedded.com>
+Date:   Wed, 22 Jan 2020 12:47:44 +0300
+User-Agent: Mozilla/5.0 (Windows NT 6.3; WOW64; rv:68.0) Gecko/20100101
+ Thunderbird/68.4.1
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.138,18.0.572
- definitions=2020-01-17_05:2020-01-16,2020-01-17 signatures=0
+In-Reply-To: <1394712342-15778-339-Taiwan-albertk@realtek.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Driver while collecting firmware dump takes longer time to
-collect/process some of the firmware dump entries/memories.
-Bigger capture masks makes it worse as it results in larger
-amount of data being collected and results in CPU soft lockup.
-Place cond_resched() in some of the driver flows that are
-expectedly time consuming to relinquish the CPU to avoid CPU
-soft lockup panic.
+Hello!
 
-Signed-off-by: Shahed Shaikh <shshaikh@marvell.com>
-Tested-by: Yonggen Xu <Yonggen.Xu@dell.com>
-Signed-off-by: Manish Chopra <manishc@marvell.com>
----
- drivers/net/ethernet/qlogic/qlcnic/qlcnic_83xx_init.c | 1 +
- drivers/net/ethernet/qlogic/qlcnic/qlcnic_minidump.c  | 2 ++
- 2 files changed, 3 insertions(+)
+On 21.01.2020 15:40, Hayes Wang wrote:
 
-diff --git a/drivers/net/ethernet/qlogic/qlcnic/qlcnic_83xx_init.c b/drivers/net/ethernet/qlogic/qlcnic/qlcnic_83xx_init.c
-index a496390b8632..07f9067affc6 100644
---- a/drivers/net/ethernet/qlogic/qlcnic/qlcnic_83xx_init.c
-+++ b/drivers/net/ethernet/qlogic/qlcnic/qlcnic_83xx_init.c
-@@ -2043,6 +2043,7 @@ static void qlcnic_83xx_exec_template_cmd(struct qlcnic_adapter *p_dev,
- 			break;
- 		}
- 		entry += p_hdr->size;
-+		cond_resched();
- 	}
- 	p_dev->ahw->reset.seq_index = index;
- }
-diff --git a/drivers/net/ethernet/qlogic/qlcnic/qlcnic_minidump.c b/drivers/net/ethernet/qlogic/qlcnic/qlcnic_minidump.c
-index afa10a163da1..f34ae8c75bc5 100644
---- a/drivers/net/ethernet/qlogic/qlcnic/qlcnic_minidump.c
-+++ b/drivers/net/ethernet/qlogic/qlcnic/qlcnic_minidump.c
-@@ -703,6 +703,7 @@ static u32 qlcnic_read_memory_test_agent(struct qlcnic_adapter *adapter,
- 		addr += 16;
- 		reg_read -= 16;
- 		ret += 16;
-+		cond_resched();
- 	}
- out:
- 	mutex_unlock(&adapter->ahw->mem_lock);
-@@ -1383,6 +1384,7 @@ int qlcnic_dump_fw(struct qlcnic_adapter *adapter)
- 		buf_offset += entry->hdr.cap_size;
- 		entry_offset += entry->hdr.offset;
- 		buffer = fw_dump->data + buf_offset;
-+		cond_resched();
- 	}
- 
- 	fw_dump->clr = 1;
--- 
-2.18.1
+> Fix the runtime resume doesn't work normally for linking change.
 
+    s/doesn't work/not working/?
+
+> 1. Reset the settings and status of runtime suspend.
+> 2. Sync the linking status.
+> 3. Poll the linking change.
+> 
+> Signed-off-by: Hayes Wang <hayeswang@realtek.com>
+[...]
+
+MBR, Sergei
