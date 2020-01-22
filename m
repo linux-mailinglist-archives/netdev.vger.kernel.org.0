@@ -2,102 +2,92 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id BD9F7145F42
-	for <lists+netdev@lfdr.de>; Thu, 23 Jan 2020 00:42:34 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8A1EB145F52
+	for <lists+netdev@lfdr.de>; Thu, 23 Jan 2020 00:45:39 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726004AbgAVXmd (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 22 Jan 2020 18:42:33 -0500
-Received: from mail-pj1-f68.google.com ([209.85.216.68]:36653 "EHLO
-        mail-pj1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725911AbgAVXmc (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 22 Jan 2020 18:42:32 -0500
-Received: by mail-pj1-f68.google.com with SMTP id n59so313940pjb.1
-        for <netdev@vger.kernel.org>; Wed, 22 Jan 2020 15:42:32 -0800 (PST)
+        id S1726234AbgAVXph (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 22 Jan 2020 18:45:37 -0500
+Received: from mail-pf1-f179.google.com ([209.85.210.179]:37956 "EHLO
+        mail-pf1-f179.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725911AbgAVXph (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 22 Jan 2020 18:45:37 -0500
+Received: by mail-pf1-f179.google.com with SMTP id x185so593475pfc.5
+        for <netdev@vger.kernel.org>; Wed, 22 Jan 2020 15:45:37 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=JRm1capTgZQGh1d9fhFaNGFYKROBRUsvaby6BKtEmWQ=;
-        b=d3UvMFJwHrqo8cymGybBWeh46XGRf5PCYZfBi/3ksl1legpV5v20TWVNDhwfIUBBDT
-         bSG87Xn0UFkcZqy0ToI7IvKUK3ckbAZCclL6riEDQ98/z625YYHp+pTwHX09/Wi5NfSF
-         cZG+nMPuDNqqNSCtimIu0jZ5neMm5Wj4tuVawdQ5x2kzFBVetaPbuTIzp9w8XBF4sUeo
-         DVmgdV8htHv9sRAkA1nq4y7rTgot8mKcY0h0oIHgQQ8/ClGk0S/S0owbQBhTMeHeBr2k
-         1usDKD8hCAbpwplTAaIEtwx0ROoL2uBCWPVpjiZ+qG11ei+yEr2JNvkc2zgrzZNII3og
-         DlsQ==
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=BsgFl0ZNFiD73iCKTJQPfPLfGgrqLNO0kJzFDpfi5rw=;
+        b=NKu3MVBP4tv7QI7UHUo8YwSEIiROh1W1O21fs6umX9359qBnybevWLoDOhBsLHKIER
+         KQ8M3HevaIBBvTE80H2VvgQGAWJwUEMuDU3s2fFp8JWsmS+l4JtXjHeZB6RJ6rs94FXZ
+         S/2wtx5BYyHffZ/qE9p/VSDRttw064W3vlAXSq3q2R5rtP7dYrsYOQMA5Wgk2AZ8CKlH
+         UrNn9PDMw5FyyiE39oNPYQNyckD2YBBe5Hbw1u9AGc0lblO5Y7UQvt76Vw6+ZU8iUGzl
+         FG/J4JysYq+VZUWa7qawakGdQlgKMOoXAy/JPxjG0OmUMzU0dBl/p8TCSGKhL64ZqFvE
+         sJAQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
          :content-transfer-encoding;
-        bh=JRm1capTgZQGh1d9fhFaNGFYKROBRUsvaby6BKtEmWQ=;
-        b=uCi0tX+1l5EaseYTIVNx+QFN/e0yztAGVbIydpoDPnBkEIYwknOOETh/+YbtHCjIMW
-         7pX5KftO27ykSP/ln9q6M23OiAa7iHWa5ORLFQjQgbLFB0D+6oBrOfHJlhIwR7pbS0m2
-         kLYA5pMijPlm//obP+EbRcELLGPqShaR99I6/Kkc+RFBaP42Sj0htVV9VTJQZYw03tvP
-         L3GHTpeEPddgRoJ7938epvSrtv9TsQDuVINz0cEYeBOw4tz+YORxzay4CjX5zUpFTq6r
-         wPUiV2AtaqtNqHLgkY94sE9Pf7ZknGOlpjGzPvluWtMViEZKrMeUWLheElFieYFwYL4t
-         +S0A==
-X-Gm-Message-State: APjAAAXgO0N8vQol3ue6/mGvF6k4y7/YlX8MUKNy5F7POsoVaeryDLz1
-        rqGHuTq8ASgQ0mWh2aonccn+EXdxRmY=
-X-Google-Smtp-Source: APXvYqwSUTWYc0/h86V5pYOpqI5JOtdN/DQQg5SOeHs8WxEu07JQ95hT2vq2auR2hlubwyjOXDQ/iQ==
-X-Received: by 2002:a17:90a:ac0f:: with SMTP id o15mr1079461pjq.133.1579736551684;
-        Wed, 22 Jan 2020 15:42:31 -0800 (PST)
-Received: from tw-172-25-31-76.office.twttr.net ([8.25.197.24])
-        by smtp.gmail.com with ESMTPSA id h6sm36576pfo.175.2020.01.22.15.42.30
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 22 Jan 2020 15:42:31 -0800 (PST)
-From:   Cong Wang <xiyou.wangcong@gmail.com>
-To:     netdev@vger.kernel.org
-Cc:     Cong Wang <xiyou.wangcong@gmail.com>,
-        syzbot+5af9a90dad568aa9f611@syzkaller.appspotmail.com,
+        bh=BsgFl0ZNFiD73iCKTJQPfPLfGgrqLNO0kJzFDpfi5rw=;
+        b=l/6MhJcLXCgzbKPoBFZi5uSr7OjXJ/HI4QHdmm6rE2l7rR2ve5jD1eMR1SNnCfJ31I
+         N1+2gr2z8XQFPGXtIBc0U7l1O6fRbCv9sMrkxuvDHlBoJWBiCAquyCH/q+jR2YyA3ptJ
+         ODMq9rATk+OLLpR4QBEPy1Dn6WAGPc7HyVQvtwOljE1Oddu4lP+wV8H5eiMcYw6pE12E
+         3MStkMktaSLb5ytsDFfJnhEjRwnJcpQwtBNgrK5Cw7QROP7mL+fNawLjZqKU08ygmW1f
+         F0vpqwmPDhWKIYrTPiMQH0HqeDGiyYiRwRATT73Ja44r0j0cLrorlauzN2o4ga/yEJ+X
+         JOAQ==
+X-Gm-Message-State: APjAAAVA97Amrb0wWy71PNMRg+m5nCqgpj0N0Y6+fwhw21QGGlSD2JLx
+        sFaQ17Jf9t/yQRuoJpthnak=
+X-Google-Smtp-Source: APXvYqzK+i1yLSTifNBusAkg2T4wfsbHkYws0Ff4/O86aUuYFRky+tbglLvmKuHq8lk7cuGunjxIeA==
+X-Received: by 2002:a63:dc4f:: with SMTP id f15mr754863pgj.300.1579736736933;
+        Wed, 22 Jan 2020 15:45:36 -0800 (PST)
+Received: from ?IPv6:2620:15c:2c1:200:55c7:81e6:c7d8:94b? ([2620:15c:2c1:200:55c7:81e6:c7d8:94b])
+        by smtp.gmail.com with ESMTPSA id i17sm54570pfr.67.2020.01.22.15.45.35
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 22 Jan 2020 15:45:36 -0800 (PST)
+Subject: Re: [Patch net] net_sched: fix datalen for ematch
+To:     Cong Wang <xiyou.wangcong@gmail.com>, netdev@vger.kernel.org
+Cc:     syzbot+5af9a90dad568aa9f611@syzkaller.appspotmail.com,
         syzbot+2f07903a5b05e7f36410@syzkaller.appspotmail.com,
         Eric Dumazet <eric.dumazet@gmail.com>
-Subject: [Patch net] net_sched: fix datalen for ematch
-Date:   Wed, 22 Jan 2020 15:42:02 -0800
-Message-Id: <20200122234203.15441-1-xiyou.wangcong@gmail.com>
-X-Mailer: git-send-email 2.21.1
+References: <20200122234203.15441-1-xiyou.wangcong@gmail.com>
+From:   Eric Dumazet <eric.dumazet@gmail.com>
+Message-ID: <317521e6-07f5-c32a-66dd-8aa499ae80d7@gmail.com>
+Date:   Wed, 22 Jan 2020 15:45:34 -0800
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.2.2
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+In-Reply-To: <20200122234203.15441-1-xiyou.wangcong@gmail.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-syzbot reported an out-of-bound access in em_nbyte. As initially
-analyzed by Eric, this is because em_nbyte sets its own em->datalen
-in em_nbyte_change() other than the one specified by user, but this
-value gets overwritten later by its caller tcf_em_validate().
-We should leave em->datalen untouched to respect their choices.
 
-I audit all the in-tree ematch users, all of those implement
-->change() set em->datalen, so we can just avoid setting it twice
-in this case.
 
-Reported-and-tested-by: syzbot+5af9a90dad568aa9f611@syzkaller.appspotmail.com
-Reported-by: syzbot+2f07903a5b05e7f36410@syzkaller.appspotmail.com
-Fixes: 1da177e4c3f4 ("Linux-2.6.12-rc2")
-Cc: Eric Dumazet <eric.dumazet@gmail.com>
-Signed-off-by: Cong Wang <xiyou.wangcong@gmail.com>
----
- net/sched/ematch.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+On 1/22/20 3:42 PM, Cong Wang wrote:
+> syzbot reported an out-of-bound access in em_nbyte. As initially
+> analyzed by Eric, this is because em_nbyte sets its own em->datalen
+> in em_nbyte_change() other than the one specified by user, but this
+> value gets overwritten later by its caller tcf_em_validate().
+> We should leave em->datalen untouched to respect their choices.
+> 
+> I audit all the in-tree ematch users, all of those implement
+> ->change() set em->datalen, so we can just avoid setting it twice
+> in this case.
+> 
+> Reported-and-tested-by: syzbot+5af9a90dad568aa9f611@syzkaller.appspotmail.com
+> Reported-by: syzbot+2f07903a5b05e7f36410@syzkaller.appspotmail.com
+> Fixes: 1da177e4c3f4 ("Linux-2.6.12-rc2")
+> Cc: Eric Dumazet <eric.dumazet@gmail.com>
+> Signed-off-by: Cong Wang <xiyou.wangcong@gmail.com>
+> ---
+>
 
-diff --git a/net/sched/ematch.c b/net/sched/ematch.c
-index 8f2ad706784d..d0140a92694a 100644
---- a/net/sched/ematch.c
-+++ b/net/sched/ematch.c
-@@ -263,12 +263,12 @@ static int tcf_em_validate(struct tcf_proto *tp,
- 				}
- 				em->data = (unsigned long) v;
- 			}
-+			em->datalen = data_len;
- 		}
- 	}
- 
- 	em->matchid = em_hdr->matchid;
- 	em->flags = em_hdr->flags;
--	em->datalen = data_len;
- 	em->net = net;
- 
- 	err = 0;
--- 
-2.21.1
+SGTM, thanks.
+
+Reviewed-by: Eric Dumazet <edumazet@google.com>
 
