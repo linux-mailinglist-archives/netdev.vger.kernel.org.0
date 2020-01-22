@@ -2,55 +2,122 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 89BF2145F59
-	for <lists+netdev@lfdr.de>; Thu, 23 Jan 2020 00:47:58 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 58A85145F8B
+	for <lists+netdev@lfdr.de>; Thu, 23 Jan 2020 00:56:11 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726118AbgAVXr4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 22 Jan 2020 18:47:56 -0500
-Received: from vps0.lunn.ch ([185.16.172.187]:50734 "EHLO vps0.lunn.ch"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725911AbgAVXr4 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 22 Jan 2020 18:47:56 -0500
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:
-        Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
-        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
-        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
-        List-Post:List-Owner:List-Archive;
-        bh=c7KvBsdgUtN0++kEbgF75xA9hdBSrsxPPPPaLMNB2m0=; b=In0xdwlgg0n2uolrIuJSHS85Nn
-        +3SK8do7ILaWgHGzTkYfrYTRGubo20CXF6/oZgYfcK8VL5CNDRp5Se/U2pskhQSCGGWaJkAdWfkUx
-        1BbX+zHqbjT3LdGTrXq7BoCsKsec6OdlD3BeKNEBzejwd9VMWRc6T1YrQ2e7dOwGJHrY=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.93)
-        (envelope-from <andrew@lunn.ch>)
-        id 1iuPiz-0004I7-D4; Thu, 23 Jan 2020 00:47:53 +0100
-Date:   Thu, 23 Jan 2020 00:47:53 +0100
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Luigi Rizzo <lrizzo@google.com>
-Cc:     netdev@vger.kernel.org, "David S. Miller" <davem@davemloft.net>,
-        Michal Kubecek <mkubecek@suse.cz>
-Subject: Re: [PATCH] net-core: remove unnecessary ETHTOOL_GCHANNELS
- initialization
-Message-ID: <20200122234753.GA13647@lunn.ch>
-References: <20200122223326.187954-1-lrizzo@google.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200122223326.187954-1-lrizzo@google.com>
+        id S1728609AbgAVX4H (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 22 Jan 2020 18:56:07 -0500
+Received: from mail-pf1-f196.google.com ([209.85.210.196]:43261 "EHLO
+        mail-pf1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725911AbgAVX4H (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 22 Jan 2020 18:56:07 -0500
+Received: by mail-pf1-f196.google.com with SMTP id x6so592487pfo.10
+        for <netdev@vger.kernel.org>; Wed, 22 Jan 2020 15:56:06 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20161025;
+        h=date:from:subject:cc:to:in-reply-to:references:message-id
+         :mime-version:content-transfer-encoding;
+        bh=cCUsdj/fZYwNN192nrue22afyzRZAQtb0Bq+RK6T7n8=;
+        b=Ri0IcXw57gZiaEwAVrFx7No5+7en+4TehQHRwWbKCEqldQbtMfnfW6EZuTtGgX5Cb3
+         Lm1a+PGl5BLXa1r+5rjTW5oHFJ0JVM0AgfndPlja0Ep8PEtTtzk6WVzuvKaqn7P87Gku
+         wiEz3wygmiAFEk73UezHVlySvHjepgfqzgehaaRIjD0UifT3IWYxkfY49gobkruN+4gY
+         CIt55fHrJjz1ugrqp/mCP8ZZDRZLePBXBo+Xm2NdUHgrh3AH40LGUue67Y8AVIWDuPhk
+         b1qIKKZXY5Xl5I/2EzwU28A2gLoqXrwDWPwZdPJIVsVH5XLgO+tIj8+c9Tdth9J/D56f
+         XmIg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:subject:cc:to:in-reply-to:references
+         :message-id:mime-version:content-transfer-encoding;
+        bh=cCUsdj/fZYwNN192nrue22afyzRZAQtb0Bq+RK6T7n8=;
+        b=AdHDWoCvkAnWTdiefE4T5vUDSS63hu/we0OvWmupcgB7i+e9SC31zjcPFooarhve2J
+         vGRF8W2u+wLqo5ltEvYRpXo0M/JVBZ71Jd5iX5dK260mj5sB+8xVrfRGWZ4RiXla7E6m
+         koY13HJFm+TCYVTL3ERewe66pXDMWzTk/cx0il/Uwe1wC1s+IJfoKojzfJwf+cSU1WA7
+         gkwB+Boy0PnJdkKIOnkdnmTqQqPjtF//phdUdDhsoFkZG4dHgMpbUlatRTHB5QTShY46
+         ngv8BhLMhuyH8v+FWHCd2Z176QsxpatAg2Kwi3l2hwWmuRGmNF+4N6Q3YAPUAPLUGaMw
+         OV4g==
+X-Gm-Message-State: APjAAAXtcKueLMl0ARqTaB1gOaQRyQ/2aJ7Awlnp9ApR68jFrmrDeK+4
+        b5GQbvSDF8k9byggU+vIruG+EA==
+X-Google-Smtp-Source: APXvYqwdwBCzqkc4UQB3eGdqOHqI/e4q1PdOcvp33Okdte4nGO+ldcr3OcZHs74ztieN7MdlwUJSYg==
+X-Received: by 2002:a63:4824:: with SMTP id v36mr855635pga.343.1579737366177;
+        Wed, 22 Jan 2020 15:56:06 -0800 (PST)
+Received: from localhost ([2620:0:1000:2514:7f69:cd98:a2a2:a03d])
+        by smtp.gmail.com with ESMTPSA id b1sm69151pfp.44.2020.01.22.15.56.05
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 22 Jan 2020 15:56:05 -0800 (PST)
+Date:   Wed, 22 Jan 2020 15:56:05 -0800 (PST)
+X-Google-Original-Date: Wed, 22 Jan 2020 15:54:50 PST (-0800)
+From:   Palmer Dabbelt <palmerdabbelt@google.com>
+X-Google-Original-From: Palmer Dabbelt <palmer@dabbelt.com>
+Subject:     Re: [PATCH] macb: Don't unregister clks unconditionally
+CC:     davem@davemloft.net, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org, nicolas.ferre@microchip.com,
+        yash.shah@sifive.com, linux@roeck-us.net
+To:     sboyd@kernel.org
+In-Reply-To: <20200104001921.225529-1-sboyd@kernel.org>
+References: <20200104001921.225529-1-sboyd@kernel.org>
+Message-ID: <mhng-f3191662-fd7d-4bd4-8179-0338fb742dc2@palmerdabbelt-glaptop>
+Mime-Version: 1.0 (MHng)
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Jan 22, 2020 at 02:33:26PM -0800, Luigi Rizzo wrote:
-> struct ethtool_channels does not need .cmd to be set when calling the
-> driver's ethtool methods. Just zero-initialize it.
-> 
-> Tested: run ethtool -l and ethtool -L
+On Fri, 03 Jan 2020 16:19:21 PST (-0800), sboyd@kernel.org wrote:
+> The only clk init function in this driver that register a clk is
+> fu540_c000_clk_init(), and thus we need to unregister the clk when this
+> driver is removed on that platform. Other init functions, for example
+> macb_clk_init(), don't register clks and therefore we shouldn't
+> unregister the clks when this driver is removed. Convert this
+> registration path to devm so it gets auto-unregistered when this driver
+> is removed and drop the clk_unregister() calls in driver remove (and
+> error paths) so that we don't erroneously remove a clk from the system
+> that isn't registered by this driver.
+>
+> Otherwise we get strange crashes with a use-after-free when the
+> devm_clk_get() call in macb_clk_init() calls clk_put() on a clk pointer
+> that has become invalid because it is freed in clk_unregister().
+>
+> Cc: Nicolas Ferre <nicolas.ferre@microchip.com>
+> Cc: Yash Shah <yash.shah@sifive.com>
+> Reported-by: Guenter Roeck <linux@roeck-us.net>
+> Fixes: c218ad559020 ("macb: Add support for SiFive FU540-C000")
+> Signed-off-by: Stephen Boyd <sboyd@kernel.org>
+> ---
+>  drivers/net/ethernet/cadence/macb_main.c | 4 +---
+>  1 file changed, 1 insertion(+), 3 deletions(-)
+>
+> diff --git a/drivers/net/ethernet/cadence/macb_main.c b/drivers/net/ethernet/cadence/macb_main.c
+> index 9c767ee252ac..7dce403fd27c 100644
+> --- a/drivers/net/ethernet/cadence/macb_main.c
+> +++ b/drivers/net/ethernet/cadence/macb_main.c
+> @@ -4069,7 +4069,7 @@ static int fu540_c000_clk_init(struct platform_device *pdev, struct clk **pclk,
+>  	mgmt->rate = 0;
+>  	mgmt->hw.init = &init;
+>
+> -	*tx_clk = clk_register(NULL, &mgmt->hw);
+> +	*tx_clk = devm_clk_register(&pdev->dev, &mgmt->hw);
+>  	if (IS_ERR(*tx_clk))
+>  		return PTR_ERR(*tx_clk);
+>
+> @@ -4397,7 +4397,6 @@ static int macb_probe(struct platform_device *pdev)
+>
+>  err_disable_clocks:
+>  	clk_disable_unprepare(tx_clk);
+> -	clk_unregister(tx_clk);
+>  	clk_disable_unprepare(hclk);
+>  	clk_disable_unprepare(pclk);
+>  	clk_disable_unprepare(rx_clk);
+> @@ -4427,7 +4426,6 @@ static int macb_remove(struct platform_device *pdev)
+>  		pm_runtime_dont_use_autosuspend(&pdev->dev);
+>  		if (!pm_runtime_suspended(&pdev->dev)) {
+>  			clk_disable_unprepare(bp->tx_clk);
+> -			clk_unregister(bp->tx_clk);
+>  			clk_disable_unprepare(bp->hclk);
+>  			clk_disable_unprepare(bp->pclk);
+>  			clk_disable_unprepare(bp->rx_clk);
 
-Hi Luigi
+Reviewed-by: Palmer Dabbelt <palmerdabbelt@google.com>
 
-This seems pretty risky. You are assuming ethtool is the only user of
-this API. What is actually wrong with putting a sane cmd value, rather
-than the undefined value 0.
-
-     Andrew
+Thanks!
