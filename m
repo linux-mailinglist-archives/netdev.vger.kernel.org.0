@@ -2,19 +2,19 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id BB8FE14572D
-	for <lists+netdev@lfdr.de>; Wed, 22 Jan 2020 14:53:13 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A324B14572F
+	for <lists+netdev@lfdr.de>; Wed, 22 Jan 2020 14:53:29 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728655AbgAVNxL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 22 Jan 2020 08:53:11 -0500
-Received: from mail-il-dmz.mellanox.com ([193.47.165.129]:41220 "EHLO
+        id S1728855AbgAVNxN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 22 Jan 2020 08:53:13 -0500
+Received: from mail-il-dmz.mellanox.com ([193.47.165.129]:41229 "EHLO
         mellanox.co.il" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S1726442AbgAVNxK (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 22 Jan 2020 08:53:10 -0500
+        with ESMTP id S1726590AbgAVNxL (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 22 Jan 2020 08:53:11 -0500
 Received: from Internal Mail-Server by MTLPINE1 (envelope-from paulb@mellanox.com)
-        with ESMTPS (AES256-SHA encrypted); 22 Jan 2020 15:53:05 +0200
+        with ESMTPS (AES256-SHA encrypted); 22 Jan 2020 15:53:06 +0200
 Received: from reg-r-vrt-019-120.mtr.labs.mlnx (reg-r-vrt-019-120.mtr.labs.mlnx [10.213.19.120])
-        by labmailer.mlnx (8.13.8/8.13.8) with ESMTP id 00MDr4fJ013119;
+        by labmailer.mlnx (8.13.8/8.13.8) with ESMTP id 00MDr4fK013119;
         Wed, 22 Jan 2020 15:53:05 +0200
 From:   Paul Blakey <paulb@mellanox.com>
 To:     Paul Blakey <paulb@mellanox.com>,
@@ -25,9 +25,9 @@ To:     Paul Blakey <paulb@mellanox.com>,
         David Miller <davem@davemloft.net>,
         "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
         Jiri Pirko <jiri@resnulli.us>, Roi Dayan <roid@mellanox.com>
-Subject: [PATCH net-next-mlx5 v2 12/13] net/mlx5: E-Switch, Get reg_c1 value on miss
-Date:   Wed, 22 Jan 2020 15:52:57 +0200
-Message-Id: <1579701178-24624-13-git-send-email-paulb@mellanox.com>
+Subject: [PATCH net-next-mlx5 v2 13/13] net/mlx5e: Restore tunnel metadata on miss
+Date:   Wed, 22 Jan 2020 15:52:58 +0200
+Message-Id: <1579701178-24624-14-git-send-email-paulb@mellanox.com>
 X-Mailer: git-send-email 1.8.4.3
 In-Reply-To: <1579701178-24624-1-git-send-email-paulb@mellanox.com>
 References: <1579701178-24624-1-git-send-email-paulb@mellanox.com>
@@ -36,114 +36,246 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The HW model implicitly decapsulates tunnels on chain 0 and sets reg_c1
-with the mapped tunnel id. On miss, the packet does not have the outer
-header and the driver restores the tunnel information from the tunnel id.
+In tunnel and chains setup, we decapsulate the packets on first chain hop,
+if we miss on later chains, the packet will comes up without tunnel header,
+so it won't be taken by the tunnel device automatically, which fills the
+tunnel metadata, and further tc tunnel matches won't work.
 
-Getting reg_c1 value in software requires enabling reg_c1 loopback and
-copying reg_c1 to reg_b. reg_b comes up on CQE as cqe->imm_inval_pkey.
-
-Use the reg_c0 restoration rules to also copy reg_c1 to reg_B.
+On miss, we get the tunnel mapping id, which was set on the chain 0 rule
+that decapsulated the packet. This rule matched the tunnel outer
+headers. From the tunnel mapping id, we get to this tunnel matches
+and restore the equivalent tunnel info metadata dst on the skb.
+We also set the skb->dev to the relevant device (tunnel device).
+Now further tc processing can be done on the relevant device.
 
 Signed-off-by: Paul Blakey <paulb@mellanox.com>
+Reviewed-by: Roi Dayan <roid@mellanox.com>
 Reviewed-by: Oz Shlomo <ozsh@mellanox.com>
 Reviewed-by: Mark Bloch <markb@mellanox.com>
 ---
- drivers/net/ethernet/mellanox/mlx5/core/eswitch.h  |  1 +
- .../ethernet/mellanox/mlx5/core/eswitch_offloads.c | 31 +++++++++++++++++++---
- 2 files changed, 29 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/eswitch.h b/drivers/net/ethernet/mellanox/mlx5/core/eswitch.h
-index cc446ba..1597cfe 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/eswitch.h
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/eswitch.h
-@@ -191,6 +191,7 @@ struct mlx5_eswitch_fdb {
- struct mlx5_esw_offload {
- 	struct mlx5_flow_table *ft_offloads_restore;
- 	struct mlx5_flow_group *restore_group;
-+	struct mlx5_modify_hdr *restore_copy_hdr_id;
+Changelog:
+	V1->V2:
+	   Guarded unused mlx5e_restore_tunnel if CONFIG_NET_TC_SKB_EXT isn't enabled
+
+ drivers/net/ethernet/mellanox/mlx5/core/en_rx.c |  10 ++-
+ drivers/net/ethernet/mellanox/mlx5/core/en_tc.c | 110 ++++++++++++++++++++++--
+ drivers/net/ethernet/mellanox/mlx5/core/en_tc.h |   9 +-
+ 3 files changed, 117 insertions(+), 12 deletions(-)
+
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_rx.c b/drivers/net/ethernet/mellanox/mlx5/core/en_rx.c
+index 4402a53..59d01a8 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/en_rx.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/en_rx.c
+@@ -1191,6 +1191,7 @@ void mlx5e_handle_rx_cqe_rep(struct mlx5e_rq *rq, struct mlx5_cqe64 *cqe)
+ 	struct mlx5e_priv *priv = netdev_priv(netdev);
+ 	struct mlx5e_rep_priv *rpriv  = priv->ppriv;
+ 	struct mlx5_eswitch_rep *rep = rpriv->rep;
++	struct mlx5e_tc_update_priv tc_priv = {};
+ 	struct mlx5_wq_cyc *wq = &rq->wqe.wq;
+ 	struct mlx5e_wqe_frag_info *wi;
+ 	struct sk_buff *skb;
+@@ -1223,11 +1224,13 @@ void mlx5e_handle_rx_cqe_rep(struct mlx5e_rq *rq, struct mlx5_cqe64 *cqe)
+ 	if (rep->vlan && skb_vlan_tag_present(skb))
+ 		skb_vlan_pop(skb);
  
- 	struct mlx5_flow_table *ft_offloads;
- 	struct mlx5_flow_group *vport_rx_group;
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/eswitch_offloads.c b/drivers/net/ethernet/mellanox/mlx5/core/eswitch_offloads.c
-index 8f12780..be2dacb 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/eswitch_offloads.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/eswitch_offloads.c
-@@ -598,9 +598,11 @@ static int esw_set_passing_vport_metadata(struct mlx5_eswitch *esw, bool enable)
- 					 esw_vport_context.fdb_to_vport_reg_c_id);
+-	if (!mlx5e_tc_rep_update_skb(cqe, skb))
++	if (!mlx5e_tc_rep_update_skb(cqe, skb, &tc_priv))
+ 		goto free_wqe;
  
- 	if (enable)
--		fdb_to_vport_reg_c_id |= MLX5_FDB_TO_VPORT_REG_C_0;
-+		fdb_to_vport_reg_c_id |= MLX5_FDB_TO_VPORT_REG_C_0 |
-+					 MLX5_FDB_TO_VPORT_REG_C_1;
- 	else
--		fdb_to_vport_reg_c_id &= ~MLX5_FDB_TO_VPORT_REG_C_0;
-+		fdb_to_vport_reg_c_id &= ~(MLX5_FDB_TO_VPORT_REG_C_0 |
-+					   MLX5_FDB_TO_VPORT_REG_C_1);
+ 	napi_gro_receive(rq->cq.napi, skb);
  
- 	MLX5_SET(modify_esw_vport_context_in, in,
- 		 esw_vport_context.fdb_to_vport_reg_c_id, fdb_to_vport_reg_c_id);
-@@ -861,7 +863,9 @@ struct mlx5_flow_handle *
- 			    misc_parameters_2);
- 	MLX5_SET(fte_match_set_misc2, misc, metadata_reg_c_0, tag);
- 	spec->match_criteria_enable = MLX5_MATCH_MISC_PARAMETERS_2;
--	flow_act.action = MLX5_FLOW_CONTEXT_ACTION_FWD_DEST;
-+	flow_act.action = MLX5_FLOW_CONTEXT_ACTION_FWD_DEST |
-+			  MLX5_FLOW_CONTEXT_ACTION_MOD_HDR;
-+	flow_act.modify_hdr = esw->offloads.restore_copy_hdr_id;
++	mlx5_tc_rep_post_napi_receive(&tc_priv);
++
+ free_wqe:
+ 	mlx5e_free_rx_wqe(rq, wi, true);
+ wq_cyc_pop:
+@@ -1244,6 +1247,7 @@ void mlx5e_handle_rx_cqe_mpwrq_rep(struct mlx5e_rq *rq,
+ 	u32 wqe_offset     = stride_ix << rq->mpwqe.log_stride_sz;
+ 	u32 head_offset    = wqe_offset & (PAGE_SIZE - 1);
+ 	u32 page_idx       = wqe_offset >> PAGE_SHIFT;
++	struct mlx5e_tc_update_priv tc_priv = {};
+ 	struct mlx5e_rx_wqe_ll *wqe;
+ 	struct mlx5_wq_ll *wq;
+ 	struct sk_buff *skb;
+@@ -1276,11 +1280,13 @@ void mlx5e_handle_rx_cqe_mpwrq_rep(struct mlx5e_rq *rq,
  
- 	flow_context = &spec->flow_context;
- 	flow_context->flags |= FLOW_CONTEXT_HAS_TAG;
-@@ -1217,16 +1221,19 @@ static void esw_destroy_restore_table(struct mlx5_eswitch *esw)
- {
- 	struct mlx5_esw_offload *offloads = &esw->offloads;
+ 	mlx5e_complete_rx_cqe(rq, cqe, cqe_bcnt, skb);
  
-+	mlx5_modify_header_dealloc(esw->dev, offloads->restore_copy_hdr_id);
- 	mlx5_destroy_flow_group(offloads->restore_group);
- 	mlx5_destroy_flow_table(offloads->ft_offloads_restore);
+-	if (!mlx5e_tc_rep_update_skb(cqe, skb))
++	if (!mlx5e_tc_rep_update_skb(cqe, skb, &tc_priv))
+ 		goto mpwrq_cqe_out;
+ 
+ 	napi_gro_receive(rq->cq.napi, skb);
+ 
++	mlx5_tc_rep_post_napi_receive(&tc_priv);
++
+ mpwrq_cqe_out:
+ 	if (likely(wi->consumed_strides < rq->mpwqe.num_strides))
+ 		return;
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_tc.c b/drivers/net/ethernet/mellanox/mlx5/core/en_tc.c
+index 841147c..f130afc 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/en_tc.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/en_tc.c
+@@ -4587,19 +4587,102 @@ void mlx5e_tc_reoffload_flows_work(struct work_struct *work)
+ 	mutex_unlock(&rpriv->unready_flows_lock);
  }
  
- static int esw_create_restore_table(struct mlx5_eswitch *esw)
- {
-+	u8 modact[MLX5_UN_SZ_BYTES(set_action_in_add_action_in_auto)] = {};
- 	int inlen = MLX5_ST_SZ_BYTES(create_flow_group_in);
- 	struct mlx5_flow_table_attr ft_attr = {};
- 	struct mlx5_core_dev *dev = esw->dev;
- 	struct mlx5_flow_namespace *ns;
-+	struct mlx5_modify_hdr *mod_hdr;
- 	void *match_criteria, *misc;
- 	struct mlx5_flow_table *ft;
- 	struct mlx5_flow_group *g;
-@@ -1275,11 +1282,29 @@ static int esw_create_restore_table(struct mlx5_eswitch *esw)
- 		goto err_group;
- 	}
- 
-+	MLX5_SET(copy_action_in, modact, action_type, MLX5_ACTION_TYPE_COPY);
-+	MLX5_SET(copy_action_in, modact, src_field,
-+		 MLX5_ACTION_IN_FIELD_METADATA_REG_C_1);
-+	MLX5_SET(copy_action_in, modact, dst_field,
-+		 MLX5_ACTION_IN_FIELD_METADATA_REG_B);
-+	mod_hdr = mlx5_modify_header_alloc(esw->dev,
-+					   MLX5_FLOW_NAMESPACE_KERNEL, 1,
-+					   modact);
-+	if (IS_ERR(mod_hdr)) {
-+		esw_warn(dev, "Failed to create restore mod header, err: %d\n",
-+			 err);
-+		err = PTR_ERR(mod_hdr);
-+		goto err_mod_hdr;
++#if IS_ENABLED(CONFIG_NET_TC_SKB_EXT)
++static bool mlx5e_restore_tunnel(struct mlx5e_priv *priv, struct sk_buff *skb,
++				 struct mlx5e_tc_update_priv *tc_priv,
++				 u32 tunnel_id)
++{
++	struct mlx5_eswitch *esw = priv->mdev->priv.eswitch;
++	struct flow_dissector_key_enc_opts enc_opts = {};
++	struct mlx5_rep_uplink_priv *uplink_priv;
++	struct mlx5e_rep_priv *uplink_rpriv;
++	struct metadata_dst *tun_dst;
++	struct tunnel_match_key key;
++	u32 tun_id, enc_opts_id;
++	struct net_device *dev;
++	int err;
++
++	enc_opts_id = tunnel_id & ENC_OPTS_BITS_MASK;
++	tun_id = tunnel_id >> ENC_OPTS_BITS;
++
++	if (!tun_id)
++		return true;
++
++	uplink_rpriv = mlx5_eswitch_get_uplink_priv(esw, REP_ETH);
++	uplink_priv = &uplink_rpriv->uplink_priv;
++
++	err = mapping_find(uplink_priv->tunnel_mapping, tun_id, &key);
++	if (err) {
++		WARN_ON_ONCE(true);
++		netdev_dbg(priv->netdev,
++			   "Couldn't find tunnel for tun_id: %d, err: %d\n",
++			   tun_id, err);
++		return false;
 +	}
 +
- 	esw->offloads.ft_offloads_restore = ft;
- 	esw->offloads.restore_group = g;
-+	esw->offloads.restore_copy_hdr_id = mod_hdr;
++	if (enc_opts_id) {
++		err = mapping_find(uplink_priv->tunnel_enc_opts_mapping,
++				   enc_opts_id, &enc_opts);
++		if (err) {
++			netdev_dbg(priv->netdev,
++				   "Couldn't find tunnel (opts) for tun_id: %d, err: %d\n",
++				   enc_opts_id, err);
++			return false;
++		}
++	}
++
++	tun_dst = tun_rx_dst(enc_opts.len);
++	if (!tun_dst) {
++		WARN_ON_ONCE(true);
++		return false;
++	}
++
++	ip_tunnel_key_init(&tun_dst->u.tun_info.key,
++			   key.enc_ipv4.src, key.enc_ipv4.dst,
++			   key.enc_ip.tos, key.enc_ip.ttl,
++			   0, /* label */
++			   key.enc_tp.src, key.enc_tp.dst,
++			   key32_to_tunnel_id(key.enc_key_id.keyid),
++			   TUNNEL_KEY);
++
++	if (enc_opts.len)
++		ip_tunnel_info_opts_set(&tun_dst->u.tun_info, enc_opts.data,
++					enc_opts.len, enc_opts.dst_opt_type);
++
++	skb_dst_set(skb, (struct dst_entry *)tun_dst);
++	dev = dev_get_by_index(&init_net, key.filter_ifindex);
++	if (!dev) {
++		netdev_dbg(priv->netdev,
++			   "Couldn't find tunnel device with ifindex: %d\n",
++			   key.filter_ifindex);
++		return false;
++	}
++
++	/* Set tun_dev so we do dev_put() after datapath */
++	tc_priv->tun_dev = dev;
++
++	skb->dev = dev;
++
++	return true;
++}
++#endif /* CONFIG_NET_TC_SKB_EXT */
++
+ bool mlx5e_tc_rep_update_skb(struct mlx5_cqe64 *cqe,
+-			     struct sk_buff *skb)
++			     struct sk_buff *skb,
++			     struct mlx5e_tc_update_priv *tc_priv)
+ {
+ #if IS_ENABLED(CONFIG_NET_TC_SKB_EXT)
++	u32 chain = 0, reg_c0, reg_c1, tunnel_id;
+ 	struct tc_skb_ext *tc_skb_ext;
+ 	struct mlx5_eswitch *esw;
+ 	struct mlx5e_priv *priv;
+-	u32 chain = 0, reg_c0;
++	int tunnel_moffset;
+ 	int err;
  
- 	return 0;
+ 	reg_c0 = (be32_to_cpu(cqe->sop_drop_qpn) & MLX5E_TC_FLOW_ID_MASK);
+ 	if (reg_c0 == MLX5_FS_DEFAULT_FLOW_TAG)
+ 		reg_c0 = 0;
++	reg_c1 = be32_to_cpu(cqe->imm_inval_pkey);
  
-+err_mod_hdr:
-+	mlx5_destroy_flow_group(g);
- err_group:
- 	mlx5_destroy_flow_table(ft);
- out_free:
+ 	if (!reg_c0)
+ 		return true;
+@@ -4615,17 +4698,26 @@ bool mlx5e_tc_rep_update_skb(struct mlx5_cqe64 *cqe,
+ 		return false;
+ 	}
+ 
+-	if (!chain)
+-		return true;
++	if (chain) {
++		tc_skb_ext = skb_ext_add(skb, TC_SKB_EXT);
++		if (!tc_skb_ext) {
++			WARN_ON(1);
++			return false;
++		}
+ 
+-	tc_skb_ext = skb_ext_add(skb, TC_SKB_EXT);
+-	if (!tc_skb_ext) {
+-		WARN_ON_ONCE(1);
+-		return false;
++		tc_skb_ext->chain = chain;
+ 	}
+ 
+-	tc_skb_ext->chain = chain;
++	tunnel_moffset = mlx5e_tc_attr_to_reg_mappings[TUNNEL_TO_REG].moffset;
++	tunnel_id = reg_c1 >> (8 * tunnel_moffset);
++	return mlx5e_restore_tunnel(priv, skb, tc_priv, tunnel_id);
+ #endif /* CONFIG_NET_TC_SKB_EXT */
+ 
+ 	return true;
+ }
++
++void mlx5_tc_rep_post_napi_receive(struct mlx5e_tc_update_priv *tc_priv)
++{
++	if (tc_priv->tun_dev)
++		dev_put(tc_priv->tun_dev);
++}
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_tc.h b/drivers/net/ethernet/mellanox/mlx5/core/en_tc.h
+index 2fab76b..21cbde4 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/en_tc.h
++++ b/drivers/net/ethernet/mellanox/mlx5/core/en_tc.h
+@@ -109,7 +109,14 @@ struct mlx5e_tc_attr_to_reg_mapping {
+ bool mlx5e_is_valid_eswitch_fwd_dev(struct mlx5e_priv *priv,
+ 				    struct net_device *out_dev);
+ 
+-bool mlx5e_tc_rep_update_skb(struct mlx5_cqe64 *cqe, struct sk_buff *skb);
++struct mlx5e_tc_update_priv {
++	struct net_device *tun_dev;
++};
++
++bool mlx5e_tc_rep_update_skb(struct mlx5_cqe64 *cqe, struct sk_buff *skb,
++			     struct mlx5e_tc_update_priv *tc_priv);
++
++void mlx5_tc_rep_post_napi_receive(struct mlx5e_tc_update_priv *tc_priv);
+ 
+ struct mlx5e_tc_mod_hdr_acts {
+ 	int num_actions;
 -- 
 1.8.3.1
 
