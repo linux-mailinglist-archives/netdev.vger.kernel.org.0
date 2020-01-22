@@ -2,52 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 4D9B5145DE8
-	for <lists+netdev@lfdr.de>; Wed, 22 Jan 2020 22:29:14 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3A943145DF4
+	for <lists+netdev@lfdr.de>; Wed, 22 Jan 2020 22:29:43 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729277AbgAVV3K (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 22 Jan 2020 16:29:10 -0500
-Received: from mail-lj1-f196.google.com ([209.85.208.196]:39983 "EHLO
-        mail-lj1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725933AbgAVV3K (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 22 Jan 2020 16:29:10 -0500
-Received: by mail-lj1-f196.google.com with SMTP id n18so708543ljo.7
-        for <netdev@vger.kernel.org>; Wed, 22 Jan 2020 13:29:08 -0800 (PST)
+        id S1729251AbgAVV3T (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 22 Jan 2020 16:29:19 -0500
+Received: from mail-lj1-f193.google.com ([209.85.208.193]:39994 "EHLO
+        mail-lj1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729099AbgAVV3S (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 22 Jan 2020 16:29:18 -0500
+Received: by mail-lj1-f193.google.com with SMTP id n18so708940ljo.7
+        for <netdev@vger.kernel.org>; Wed, 22 Jan 2020 13:29:17 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=paul-moore-com.20150623.gappssmtp.com; s=20150623;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=znKmNqKr9gQDPfmrmtDejwJ1HslDiuzLboL4qUqmh40=;
-        b=TP5mJnA7Gm0zdUG0OehnvyJWts/xMVo/mJxSurXzDTUcBQIzgsR1ns3H1p5rCpwp/o
-         o5WEcw4A9HNc0n06O9ImPfjXjQS6Nxh19LC0d4tgDt1Av2slE1y47OS6cviu0l1oIqGb
-         nh2EDlHL5wynTTB5yhFbFZDoa5TkK67zq9GykjlOT7s5XEF58dYNcPell0+CauOKp+XT
-         nLFr9NOTwYPXWpaLNMfgFzqUgIZQ4EPNmzDpdQRueK1UtfBk0Xs1bWMty7FyANkkTdvm
-         VpHNDh0cBO2f65tpkygyfW6HPpO5AJZ4qHWFD4baSKueZohLmEzK207pMLwN5wsHnsWU
-         4+wg==
+        bh=0IWzoSHaF7JN7KzmRnEKXue37+ElHpTL6tvjAuEiiiE=;
+        b=vdbmKD+yNje7jhxOhco/lhYmf+3Q1q+XjGe74FJCrmQXQ5t6WJS+kdh6i9Krkm3ZTB
+         zeqWO82x5b2dbahES4hr2RG0xoDgGanxYKm5yUIzlxfqnQXUOlyeGElCDg9Y2F956m+q
+         7kLbk3H8VsgEX4YrYWvAKFyp0xFcpC5Fr974FOn9rnivaLGIufkBpu/uJeqfZEuV1WFE
+         eABuXY7Ss5Si7RevcqYhdcQvJRfuH38hsWHMgIpSxxvws5XSUZZim12h+5uAeW2p966k
+         3WcllzOlzMcPtleAH4Pm/M/kBtjWAsBD+u3/IbIpQgJo0Ocqw42SsFkzXbUoEtD7rVvM
+         CRlQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=znKmNqKr9gQDPfmrmtDejwJ1HslDiuzLboL4qUqmh40=;
-        b=OiBiJy7ZAfC7Rq2HGKJPBRtn5syyJJSk141tUkAgh38xVSzlDFuHuiszfjkVZkaHsB
-         7hQMOgrvAD9lkzRjfVoRZCB6mUsuaSaW1jAZerzEJ71aXBEsRL/8sws/hRx2DwkFnc/+
-         hGOmytQVyvlXyJ45e1uzI+xx+Iq232+hZXYxDEqp0uJuxEIrx+2RXl807/gNLW38s2LF
-         iuROnjd700cL6aBzghd7SMA6x3QS1/3EcaDxG+VsS4pZZofFD1fhkotq7PaFAF6SW8sZ
-         CAvlbbEg+vy9MpDsBKfHMPYE9MtHIU/8C9ffMpH0qA8wIiiRFN8Imu0+XjAKgs4TQca4
-         feMg==
-X-Gm-Message-State: APjAAAX/KIE+tXJ8jxoY2ApQ6NyfbVhG0nH8s+zOV5wy918Bu3F9wATZ
-        IcArQxPX8mSE65d7EsvjQ0toV0EDEKBYHnOJFPIK
-X-Google-Smtp-Source: APXvYqwNba8ProlqYi+98kL7VZ17yOmxtTEHhSWsRlLym5CCBD8UqFSuw3B9hkfCZhhRvoe+Scem/yZ0v/+v52re61A=
-X-Received: by 2002:a2e:9196:: with SMTP id f22mr21784742ljg.18.1579728548032;
- Wed, 22 Jan 2020 13:29:08 -0800 (PST)
+        bh=0IWzoSHaF7JN7KzmRnEKXue37+ElHpTL6tvjAuEiiiE=;
+        b=RvCDjSfEWp98c+PZ7kk6p50UpLuw5iMlqjXHypiqzRBhIQL2zkzU9DjznDNA9eoXuK
+         lOnfktX30zOOLL1JoQeNVUQPVPuY/Eqr5ib9YK9wu+OFrq78AsbO2DKitzMXTgHkM7e1
+         bzcE/TII8SZustcM89AYA80pwEso9n5MuDibU9nMe46Y2CiHxrJ5vmco3yjUZIdC3Snw
+         fMMjZovp2fD8dgHjLBnu2e5B9CcQb4GAt6sbADZ7gas2X2vuTlhDXk4P5Q06ZsRQK/qO
+         ns7FHfVf9qJDQ58gF0d2+3Ao6Vg/y9oirMyEnhfik491V/u5e2xHGSVwK3dI8GpFj+Oh
+         fJUA==
+X-Gm-Message-State: APjAAAWJYEj37jNNVx3e19/Ygzg0OarxQ5A5XHEvzeVLMhaIuuyrULEm
+        cLP/gXkD0Tzio7oCmuleldqAEFKg2bhCKbRtGQVv
+X-Google-Smtp-Source: APXvYqyJPHhr26PhrZ+pA9b8pTPEHYf1WFuy5Ob3gcESY7hxuJ6vYnDhzK5W1Ro4odt+SPVTOx5x/cd75TN9sGtuTYo=
+X-Received: by 2002:a2e:5357:: with SMTP id t23mr21086243ljd.227.1579728556739;
+ Wed, 22 Jan 2020 13:29:16 -0800 (PST)
 MIME-Version: 1.0
-References: <cover.1577736799.git.rgb@redhat.com> <2954ed671a7622ddf3abdb8854dbba2ad13e9f33.1577736799.git.rgb@redhat.com>
-In-Reply-To: <2954ed671a7622ddf3abdb8854dbba2ad13e9f33.1577736799.git.rgb@redhat.com>
+References: <cover.1577736799.git.rgb@redhat.com> <cfbb80a08fc770dd0dcf6dac6ff307a80d877c3f.1577736799.git.rgb@redhat.com>
+In-Reply-To: <cfbb80a08fc770dd0dcf6dac6ff307a80d877c3f.1577736799.git.rgb@redhat.com>
 From:   Paul Moore <paul@paul-moore.com>
-Date:   Wed, 22 Jan 2020 16:28:57 -0500
-Message-ID: <CAHC9VhRw3Fj9-hi+Vj8JJb_GXM4B9N5hRXa9H6aQkuuFqJJ15w@mail.gmail.com>
-Subject: Re: [PATCH ghak90 V8 11/16] audit: add support for containerid to
- network namespaces
+Date:   Wed, 22 Jan 2020 16:29:05 -0500
+Message-ID: <CAHC9VhT1+mx_tVzyXD=UBqagqYgAFjZ=X1A6oBiMvjVCn8=V-w@mail.gmail.com>
+Subject: Re: [PATCH ghak90 V8 12/16] audit: contid check descendancy and nesting
 To:     Richard Guy Briggs <rgb@redhat.com>
 Cc:     containers@lists.linux-foundation.org, linux-api@vger.kernel.org,
         Linux-Audit Mailing List <linux-audit@redhat.com>,
@@ -66,192 +65,92 @@ X-Mailing-List: netdev@vger.kernel.org
 
 On Tue, Dec 31, 2019 at 2:51 PM Richard Guy Briggs <rgb@redhat.com> wrote:
 >
-> This also adds support to qualify NETFILTER_PKT records.
+> Require the target task to be a descendant of the container
+> orchestrator/engine.
 >
-> Audit events could happen in a network namespace outside of a task
-> context due to packets received from the net that trigger an auditing
-> rule prior to being associated with a running task.  The network
-> namespace could be in use by multiple containers by association to the
-> tasks in that network namespace.  We still want a way to attribute
-> these events to any potential containers.  Keep a list per network
-> namespace to track these audit container identifiiers.
+> You would only change the audit container ID from one set or inherited
+> value to another if you were nesting containers.
 >
-> Add/increment the audit container identifier on:
-> - initial setting of the audit container identifier via /proc
-> - clone/fork call that inherits an audit container identifier
-> - unshare call that inherits an audit container identifier
-> - setns call that inherits an audit container identifier
-> Delete/decrement the audit container identifier on:
-> - an inherited audit container identifier dropped when child set
-> - process exit
-> - unshare call that drops a net namespace
-> - setns call that drops a net namespace
+> If changing the contid, the container orchestrator/engine must be a
+> descendant and not same orchestrator as the one that set it so it is not
+> possible to change the contid of another orchestrator's container.
 >
-> Add audit container identifier auxiliary record(s) to NETFILTER_PKT
-> event standalone records.  Iterate through all potential audit container
-> identifiers associated with a network namespace.
+> Since the task_is_descendant() function is used in YAMA and in audit,
+> remove the duplication and pull the function into kernel/core/sched.c
 >
-> Please see the github audit kernel issue for contid net support:
->   https://github.com/linux-audit/audit-kernel/issues/92
-> Please see the github audit testsuiite issue for the test case:
->   https://github.com/linux-audit/audit-testsuite/issues/64
-> Please see the github audit wiki for the feature overview:
->   https://github.com/linux-audit/audit-kernel/wiki/RFE-Audit-Container-ID
 > Signed-off-by: Richard Guy Briggs <rgb@redhat.com>
-> Acked-by: Neil Horman <nhorman@tuxdriver.com>
-> Reviewed-by: Ondrej Mosnacek <omosnace@redhat.com>
 > ---
->  include/linux/audit.h    |  24 +++++++++
->  kernel/audit.c           | 132 ++++++++++++++++++++++++++++++++++++++++++++++-
->  kernel/nsproxy.c         |   4 ++
->  net/netfilter/nft_log.c  |  11 +++-
->  net/netfilter/xt_AUDIT.c |  11 +++-
->  5 files changed, 176 insertions(+), 6 deletions(-)
+>  include/linux/sched.h    |  3 +++
+>  kernel/audit.c           | 44 ++++++++++++++++++++++++++++++++++++--------
+>  kernel/sched/core.c      | 33 +++++++++++++++++++++++++++++++++
+>  security/yama/yama_lsm.c | 33 ---------------------------------
+>  4 files changed, 72 insertions(+), 41 deletions(-)
 
 ...
 
-> diff --git a/include/linux/audit.h b/include/linux/audit.h
-> index 5531d37a4226..ed8d5b74758d 100644
-> --- a/include/linux/audit.h
-> +++ b/include/linux/audit.h
-> @@ -12,6 +12,7 @@
->  #include <linux/sched.h>
->  #include <linux/ptrace.h>
->  #include <uapi/linux/audit.h>
-> +#include <linux/refcount.h>
->
->  #define AUDIT_INO_UNSET ((unsigned long)-1)
->  #define AUDIT_DEV_UNSET ((dev_t)-1)
-> @@ -121,6 +122,13 @@ struct audit_task_info {
->
->  extern struct audit_task_info init_struct_audit;
->
-> +struct audit_contobj_netns {
-> +       struct list_head        list;
-> +       u64                     id;
-
-Since we now track audit container IDs in their own structure, why not
-link directly to the audit container ID object (and bump the
-refcount)?
-
-> +       refcount_t              refcount;
-> +       struct rcu_head         rcu;
-> +};
-> +
->  extern int is_audit_feature_set(int which);
->
->  extern int __init audit_register_class(int class, unsigned *list);
-> @@ -225,6 +233,12 @@ static inline u64 audit_get_contid(struct task_struct *tsk)
->  }
->
->  extern void audit_log_container_id(struct audit_context *context, u64 contid);
-> +extern void audit_netns_contid_add(struct net *net, u64 contid);
-> +extern void audit_netns_contid_del(struct net *net, u64 contid);
-> +extern void audit_switch_task_namespaces(struct nsproxy *ns,
-> +                                        struct task_struct *p);
-> +extern void audit_log_netns_contid_list(struct net *net,
-> +                                       struct audit_context *context);
->
->  extern u32 audit_enabled;
->
-> @@ -297,6 +311,16 @@ static inline u64 audit_get_contid(struct task_struct *tsk)
->
->  static inline void audit_log_container_id(struct audit_context *context, u64 contid)
->  { }
-> +static inline void audit_netns_contid_add(struct net *net, u64 contid)
-> +{ }
-> +static inline void audit_netns_contid_del(struct net *net, u64 contid)
-> +{ }
-> +static inline void audit_switch_task_namespaces(struct nsproxy *ns,
-> +                                               struct task_struct *p)
-> +{ }
-> +static inline void audit_log_netns_contid_list(struct net *net,
-> +                                              struct audit_context *context)
-> +{ }
->
->  #define audit_enabled AUDIT_OFF
->
 > diff --git a/kernel/audit.c b/kernel/audit.c
-> index d4e6eafe5644..f7a8d3288ca0 100644
+> index f7a8d3288ca0..ef8e07524c46 100644
 > --- a/kernel/audit.c
 > +++ b/kernel/audit.c
-> @@ -59,6 +59,7 @@
->  #include <linux/freezer.h>
->  #include <linux/pid_namespace.h>
->  #include <net/netns/generic.h>
-> +#include <net/net_namespace.h>
->
->  #include "audit.h"
->
-> @@ -86,9 +87,13 @@
->  /**
->   * struct audit_net - audit private network namespace data
->   * @sk: communication socket
-> + * @contid_list: audit container identifier list
-> + * @contid_list_lock audit container identifier list lock
->   */
->  struct audit_net {
->         struct sock *sk;
-> +       struct list_head contid_list;
-> +       spinlock_t contid_list_lock;
->  };
->
->  /**
-> @@ -305,8 +310,11 @@ struct audit_task_info init_struct_audit = {
->  void audit_free(struct task_struct *tsk)
->  {
->         struct audit_task_info *info = tsk->audit;
-> +       struct nsproxy *ns = tsk->nsproxy;
->
->         audit_free_syscall(tsk);
-> +       if (ns)
-> +               audit_netns_contid_del(ns->net_ns, audit_get_contid(tsk));
->         /* Freeing the audit_task_info struct must be performed after
->          * audit_log_exit() due to need for loginuid and sessionid.
->          */
-> @@ -409,6 +417,120 @@ static struct sock *audit_get_sk(const struct net *net)
->         return aunet->sk;
->  }
->
-> +void audit_netns_contid_add(struct net *net, u64 contid)
-> +{
-> +       struct audit_net *aunet;
-> +       struct list_head *contid_list;
-> +       struct audit_contobj_netns *cont;
-> +
-> +       if (!net)
-> +               return;
-> +       if (!audit_contid_valid(contid))
-> +               return;
-> +       aunet = net_generic(net, audit_net_id);
-> +       if (!aunet)
-> +               return;
-> +       contid_list = &aunet->contid_list;
-> +       rcu_read_lock();
-> +       list_for_each_entry_rcu(cont, contid_list, list)
-> +               if (cont->id == contid) {
-> +                       spin_lock(&aunet->contid_list_lock);
-> +                       refcount_inc(&cont->refcount);
-> +                       spin_unlock(&aunet->contid_list_lock);
-> +                       goto out;
-> +               }
-> +       cont = kmalloc(sizeof(*cont), GFP_ATOMIC);
-> +       if (cont) {
-> +               INIT_LIST_HEAD(&cont->list);
-> +               cont->id = contid;
-> +               refcount_set(&cont->refcount, 1);
-> +               spin_lock(&aunet->contid_list_lock);
-> +               list_add_rcu(&cont->list, contid_list);
-> +               spin_unlock(&aunet->contid_list_lock);
+> @@ -2603,22 +2610,43 @@ int audit_set_contid(struct task_struct *task, u64 contid)
+>         oldcontid = audit_get_contid(task);
+>         read_lock(&tasklist_lock);
+>         /* Don't allow the contid to be unset */
+> -       if (!audit_contid_valid(contid))
+> +       if (!audit_contid_valid(contid)) {
+>                 rc = -EINVAL;
+> +               goto unlock;
 > +       }
-> +out:
-> +       rcu_read_unlock();
-> +}
+>         /* Don't allow the contid to be set to the same value again */
+> -       else if (contid == oldcontid) {
+> +       if (contid == oldcontid) {
+>                 rc = -EADDRINUSE;
+> +               goto unlock;
+> +       }
+>         /* if we don't have caps, reject */
+> -       else if (!capable(CAP_AUDIT_CONTROL))
+> +       if (!capable(CAP_AUDIT_CONTROL)) {
+>                 rc = -EPERM;
+> -       /* if task has children or is not single-threaded, deny */
+> -       else if (!list_empty(&task->children))
+> +               goto unlock;
+> +       }
+> +       /* if task has children, deny */
+> +       if (!list_empty(&task->children)) {
+>                 rc = -EBUSY;
+> -       else if (!(thread_group_leader(task) && thread_group_empty(task)))
+> +               goto unlock;
+> +       }
+> +       /* if task is not single-threaded, deny */
+> +       if (!(thread_group_leader(task) && thread_group_empty(task))) {
+>                 rc = -EALREADY;
+> -       /* if contid is already set, deny */
+> -       else if (audit_contid_set(task))
+> +               goto unlock;
+> +       }
 
-See my comments about refcount_t, spinlocks, and list manipulation
-races from earlier in the patchset; the same thing applies to the
-function above.
+It seems like the if/else-if conversion above should be part of an
+earlier patchset.
 
+> +       /* if task is not descendant, block */
+> +       if (task == current) {
+> +               rc = -EBADSLT;
+> +               goto unlock;
+> +       }
+> +       if (!task_is_descendant(current, task)) {
+> +               rc = -EXDEV;
+> +               goto unlock;
+> +       }
+
+I understand you are trying to provide a unique error code for each
+failure case, but this is getting silly.  Let's group the descendent
+checks under the same error code.
+
+> +       /* only allow contid setting again if nesting */
+> +       if (audit_contid_set(task) && audit_contid_isowner(task))
+>                 rc = -ECHILD;
+
+Should that be "!audit_contid_isowner()"?
 
 --
 paul moore
