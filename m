@@ -2,67 +2,67 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 68EEE1449D6
-	for <lists+netdev@lfdr.de>; Wed, 22 Jan 2020 03:33:59 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C7AFB1449F1
+	for <lists+netdev@lfdr.de>; Wed, 22 Jan 2020 03:39:24 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728809AbgAVCd6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 21 Jan 2020 21:33:58 -0500
-Received: from ma1-aaemail-dr-lapp03.apple.com ([17.171.2.72]:57456 "EHLO
-        ma1-aaemail-dr-lapp03.apple.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726407AbgAVCd5 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 21 Jan 2020 21:33:57 -0500
-Received: from pps.filterd (ma1-aaemail-dr-lapp03.apple.com [127.0.0.1])
-        by ma1-aaemail-dr-lapp03.apple.com (8.16.0.27/8.16.0.27) with SMTP id 00M0uwKK005654;
-        Tue, 21 Jan 2020 16:57:09 -0800
+        id S1729014AbgAVCjW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 21 Jan 2020 21:39:22 -0500
+Received: from nwk-aaemail-lapp02.apple.com ([17.151.62.67]:47704 "EHLO
+        nwk-aaemail-lapp02.apple.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1727141AbgAVCjW (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 21 Jan 2020 21:39:22 -0500
+Received: from pps.filterd (nwk-aaemail-lapp02.apple.com [127.0.0.1])
+        by nwk-aaemail-lapp02.apple.com (8.16.0.27/8.16.0.27) with SMTP id 00M0v2eK020009;
+        Tue, 21 Jan 2020 16:57:04 -0800
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=apple.com; h=sender : from : to :
  cc : subject : date : message-id : in-reply-to : references : mime-version
  : content-transfer-encoding; s=20180706;
- bh=9DpUkEE1hQqMvpowGbm9a1ANRZcsZC2me7f7WEkKvHA=;
- b=a/QvTUbtr874c+U53ccyvGTiqCWy+aCxlrkt/+WHGafVAVL5oIQA7gaq7VgOwX/1EIgW
- 6QZHt9MVPERQmRwnfWk4yojFgSRJ0RDbTS/vlLLWPCSW/p/vEf15i72BdRR/GsyQluBZ
- WN/WeS/LKWmTK1eElxtbUgFbYmK+2iu/DHwM5SQ/shROGuM6dguFGrZoNptjkExF8Y6D
- 2bM+Gi1J3YKOpxVs+C491Jv/f8WzIqbQkfqF5fJmSWnMoL18kIZQAnI8KA6aGVprCXf4
- 0mHoZXDzh4gs+Dt1rjAh7QmzP+qKC5gRHhJ7GPYQnSogGjaNiVWxhMvruQdxvXPtEfzv Jw== 
-Received: from ma1-mtap-s02.corp.apple.com (ma1-mtap-s02.corp.apple.com [17.40.76.6])
-        by ma1-aaemail-dr-lapp03.apple.com with ESMTP id 2xm1w0q03h-1
+ bh=/vHaqNOJUr6x7jbpQRexD3xzVPYtFNp5ZrzV4FKpNbs=;
+ b=uG0UpVKmAeXBjVknsYpISDuhA1tJo2tb8JDWXsi2/p4DjCNdOxbq6ysIiWFxmfJM3zPC
+ 8yH1KUtRT8iIkHDhKZHhVfSiTSF1UVmgu7IyedkGqeYyaRC6Xvp8FnV7bJnxyNqHF0PY
+ GRMAcz+GffzLrfHXTkR7emlC7sr29r507WqowI+ZrnhdO9/IpLWJBIz7KKoaoH3Te+wu
+ rTZMQC8ERW6OHQcigpSJ4frcCoAkNo9MRsl5fBQjZYjxS8Fsdn6rtSiizKhhn823wNqF
+ ggWHg1USankggiSQtwhh9fUtUUj58lfr3sxXXssBDNcOWn94N3OkeT7OV2MdA9ThCaaa Yg== 
+Received: from ma1-mtap-s03.corp.apple.com (ma1-mtap-s03.corp.apple.com [17.40.76.7])
+        by nwk-aaemail-lapp02.apple.com with ESMTP id 2xkyfq8e4a-7
         (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NO);
-        Tue, 21 Jan 2020 16:57:09 -0800
+        Tue, 21 Jan 2020 16:57:04 -0800
 Received: from nwk-mmpp-sz13.apple.com
- (nwk-mmpp-sz13.apple.com [17.128.115.216]) by ma1-mtap-s02.corp.apple.com
+ (nwk-mmpp-sz13.apple.com [17.128.115.216]) by ma1-mtap-s03.corp.apple.com
  (Oracle Communications Messaging Server 8.0.2.4.20190507 64bit (built May  7
- 2019)) with ESMTPS id <0Q4H0018HHB4F030@ma1-mtap-s02.corp.apple.com>; Tue,
- 21 Jan 2020 16:57:04 -0800 (PST)
+ 2019)) with ESMTPS id <0Q4H00064HAZD600@ma1-mtap-s03.corp.apple.com>; Tue,
+ 21 Jan 2020 16:57:03 -0800 (PST)
 Received: from process_milters-daemon.nwk-mmpp-sz13.apple.com by
  nwk-mmpp-sz13.apple.com
  (Oracle Communications Messaging Server 8.0.2.4.20190507 64bit (built May  7
- 2019)) id <0Q4H00500GU2WL00@nwk-mmpp-sz13.apple.com>; Tue,
- 21 Jan 2020 16:57:04 -0800 (PST)
+ 2019)) id <0Q4H00F00F5G4K00@nwk-mmpp-sz13.apple.com>; Tue,
+ 21 Jan 2020 16:57:02 -0800 (PST)
 X-Va-A: 
 X-Va-T-CD: 4b1e0bf36502e052fc75ad21b706ed24
-X-Va-E-CD: a2fb2f7069aca739eb7b193888fb8781
-X-Va-R-CD: 28d5f2ab3b4ba4452e361aa80a15662e
+X-Va-E-CD: d36fbbd85c5e341840c93f4d915021fa
+X-Va-R-CD: e0a733c2d42bf462324452628d481b4c
 X-Va-CD: 0
-X-Va-ID: 2b96e8d1-09a9-4ba9-8f74-78dcfe1b64df
+X-Va-ID: d6e559b7-cd00-46c0-b556-0f45292c19a4
 X-V-A:  
 X-V-T-CD: 4b1e0bf36502e052fc75ad21b706ed24
-X-V-E-CD: a2fb2f7069aca739eb7b193888fb8781
-X-V-R-CD: 28d5f2ab3b4ba4452e361aa80a15662e
+X-V-E-CD: d36fbbd85c5e341840c93f4d915021fa
+X-V-R-CD: e0a733c2d42bf462324452628d481b4c
 X-V-CD: 0
-X-V-ID: 98c092a9-5d96-42b8-a0d7-346ad2619ca9
+X-V-ID: 94ad6a18-3510-47dc-952e-7043d38af389
 X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:,,
  definitions=2020-01-17_05:,, signatures=0
 Received: from localhost ([17.192.155.241]) by nwk-mmpp-sz13.apple.com
  (Oracle Communications Messaging Server 8.0.2.4.20190507 64bit (built May  7
- 2019)) with ESMTPSA id <0Q4H00127HB04Y50@nwk-mmpp-sz13.apple.com>; Tue,
+ 2019)) with ESMTPSA id <0Q4H00DSSHB0DC30@nwk-mmpp-sz13.apple.com>; Tue,
  21 Jan 2020 16:57:00 -0800 (PST)
 From:   Christoph Paasch <cpaasch@apple.com>
 To:     netdev@vger.kernel.org
-Cc:     mptcp@lists.01.org, Florian Westphal <fw@strlen.de>,
+Cc:     mptcp@lists.01.org, Matthieu Baerts <matthieu.baerts@tessares.net>,
         Peter Krystad <peter.krystad@linux.intel.com>
-Subject: [PATCH net-next v3 11/19] mptcp: add subflow write space signalling
- and mptcp_poll
-Date:   Tue, 21 Jan 2020 16:56:25 -0800
-Message-id: <20200122005633.21229-12-cpaasch@apple.com>
+Subject: [PATCH net-next v3 14/19] mptcp: new sysctl to control the activation
+ per NS
+Date:   Tue, 21 Jan 2020 16:56:28 -0800
+Message-id: <20200122005633.21229-15-cpaasch@apple.com>
 X-Mailer: git-send-email 2.23.0
 In-reply-to: <20200122005633.21229-1-cpaasch@apple.com>
 References: <20200122005633.21229-1-cpaasch@apple.com>
@@ -75,155 +75,245 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Florian Westphal <fw@strlen.de>
+From: Matthieu Baerts <matthieu.baerts@tessares.net>
 
-Add new SEND_SPACE flag to indicate that a subflow has enough space to
-accept more data for transmission.
+New MPTCP sockets will return -ENOPROTOOPT if MPTCP support is disabled
+for the current net namespace.
 
-It gets cleared at the end of mptcp_sendmsg() in case ssk has run
-below the free watermark.
+We are providing here a way to control access to the feature for those
+that need to turn it on or off.
 
-It is (re-set) from the wspace callback.
-
-This allows us to use msk->flags to determine the poll mask.
+The value of this new sysctl can be different per namespace. We can then
+restrict the usage of MPTCP to the selected NS. In case of serious
+issues with MPTCP, administrators can now easily turn MPTCP off.
 
 Co-developed-by: Peter Krystad <peter.krystad@linux.intel.com>
 Signed-off-by: Peter Krystad <peter.krystad@linux.intel.com>
-Signed-off-by: Florian Westphal <fw@strlen.de>
+Signed-off-by: Matthieu Baerts <matthieu.baerts@tessares.net>
 Signed-off-by: Christoph Paasch <cpaasch@apple.com>
 ---
- net/mptcp/protocol.c | 53 ++++++++++++++++++++++++++++++++++++++++++++
- net/mptcp/protocol.h |  1 +
- net/mptcp/subflow.c  |  3 +++
- 3 files changed, 57 insertions(+)
+ net/mptcp/Makefile   |   2 +-
+ net/mptcp/ctrl.c     | 130 +++++++++++++++++++++++++++++++++++++++++++
+ net/mptcp/protocol.c |  16 ++++--
+ net/mptcp/protocol.h |   3 +
+ 4 files changed, 146 insertions(+), 5 deletions(-)
+ create mode 100644 net/mptcp/ctrl.c
 
+diff --git a/net/mptcp/Makefile b/net/mptcp/Makefile
+index 178ae81d8b66..4e98d9edfd0a 100644
+--- a/net/mptcp/Makefile
++++ b/net/mptcp/Makefile
+@@ -1,4 +1,4 @@
+ # SPDX-License-Identifier: GPL-2.0
+ obj-$(CONFIG_MPTCP) += mptcp.o
+ 
+-mptcp-y := protocol.o subflow.o options.o token.o crypto.o
++mptcp-y := protocol.o subflow.o options.o token.o crypto.o ctrl.o
+diff --git a/net/mptcp/ctrl.c b/net/mptcp/ctrl.c
+new file mode 100644
+index 000000000000..8e39585d37f3
+--- /dev/null
++++ b/net/mptcp/ctrl.c
+@@ -0,0 +1,130 @@
++// SPDX-License-Identifier: GPL-2.0
++/* Multipath TCP
++ *
++ * Copyright (c) 2019, Tessares SA.
++ */
++
++#include <linux/sysctl.h>
++
++#include <net/net_namespace.h>
++#include <net/netns/generic.h>
++
++#include "protocol.h"
++
++#define MPTCP_SYSCTL_PATH "net/mptcp"
++
++static int mptcp_pernet_id;
++struct mptcp_pernet {
++	struct ctl_table_header *ctl_table_hdr;
++
++	int mptcp_enabled;
++};
++
++static struct mptcp_pernet *mptcp_get_pernet(struct net *net)
++{
++	return net_generic(net, mptcp_pernet_id);
++}
++
++int mptcp_is_enabled(struct net *net)
++{
++	return mptcp_get_pernet(net)->mptcp_enabled;
++}
++
++static struct ctl_table mptcp_sysctl_table[] = {
++	{
++		.procname = "enabled",
++		.maxlen = sizeof(int),
++		.mode = 0644,
++		/* users with CAP_NET_ADMIN or root (not and) can change this
++		 * value, same as other sysctl or the 'net' tree.
++		 */
++		.proc_handler = proc_dointvec,
++	},
++	{}
++};
++
++static void mptcp_pernet_set_defaults(struct mptcp_pernet *pernet)
++{
++	pernet->mptcp_enabled = 1;
++}
++
++static int mptcp_pernet_new_table(struct net *net, struct mptcp_pernet *pernet)
++{
++	struct ctl_table_header *hdr;
++	struct ctl_table *table;
++
++	table = mptcp_sysctl_table;
++	if (!net_eq(net, &init_net)) {
++		table = kmemdup(table, sizeof(mptcp_sysctl_table), GFP_KERNEL);
++		if (!table)
++			goto err_alloc;
++	}
++
++	table[0].data = &pernet->mptcp_enabled;
++
++	hdr = register_net_sysctl(net, MPTCP_SYSCTL_PATH, table);
++	if (!hdr)
++		goto err_reg;
++
++	pernet->ctl_table_hdr = hdr;
++
++	return 0;
++
++err_reg:
++	if (!net_eq(net, &init_net))
++		kfree(table);
++err_alloc:
++	return -ENOMEM;
++}
++
++static void mptcp_pernet_del_table(struct mptcp_pernet *pernet)
++{
++	struct ctl_table *table = pernet->ctl_table_hdr->ctl_table_arg;
++
++	unregister_net_sysctl_table(pernet->ctl_table_hdr);
++
++	kfree(table);
++}
++
++static int __net_init mptcp_net_init(struct net *net)
++{
++	struct mptcp_pernet *pernet = mptcp_get_pernet(net);
++
++	mptcp_pernet_set_defaults(pernet);
++
++	return mptcp_pernet_new_table(net, pernet);
++}
++
++/* Note: the callback will only be called per extra netns */
++static void __net_exit mptcp_net_exit(struct net *net)
++{
++	struct mptcp_pernet *pernet = mptcp_get_pernet(net);
++
++	mptcp_pernet_del_table(pernet);
++}
++
++static struct pernet_operations mptcp_pernet_ops = {
++	.init = mptcp_net_init,
++	.exit = mptcp_net_exit,
++	.id = &mptcp_pernet_id,
++	.size = sizeof(struct mptcp_pernet),
++};
++
++void __init mptcp_init(void)
++{
++	mptcp_proto_init();
++
++	if (register_pernet_subsys(&mptcp_pernet_ops) < 0)
++		panic("Failed to register MPTCP pernet subsystem.\n");
++}
++
++#if IS_ENABLED(CONFIG_MPTCP_IPV6)
++int __init mptcpv6_init(void)
++{
++	int err;
++
++	err = mptcp_proto_v6_init();
++
++	return err;
++}
++#endif
 diff --git a/net/mptcp/protocol.c b/net/mptcp/protocol.c
-index 71250149180b..408efbe34753 100644
+index 0b21ae25bd0f..45e482864a19 100644
 --- a/net/mptcp/protocol.c
 +++ b/net/mptcp/protocol.c
-@@ -176,6 +176,23 @@ static int mptcp_sendmsg_frag(struct sock *sk, struct sock *ssk,
- 	return ret;
- }
- 
-+static void ssk_check_wmem(struct mptcp_sock *msk, struct sock *ssk)
-+{
-+	struct socket *sock;
-+
-+	if (likely(sk_stream_is_writeable(ssk)))
-+		return;
-+
-+	sock = READ_ONCE(ssk->sk_socket);
-+
-+	if (sock) {
-+		clear_bit(MPTCP_SEND_SPACE, &msk->flags);
-+		smp_mb__after_atomic();
-+		/* set NOSPACE only after clearing SEND_SPACE flag */
-+		set_bit(SOCK_NOSPACE, &sock->flags);
-+	}
-+}
-+
- static int mptcp_sendmsg(struct sock *sk, struct msghdr *msg, size_t len)
- {
- 	struct mptcp_sock *msk = mptcp_sk(sk);
-@@ -219,6 +236,7 @@ static int mptcp_sendmsg(struct sock *sk, struct msghdr *msg, size_t len)
- 	if (copied > 0)
- 		ret = copied;
- 
-+	ssk_check_wmem(msk, ssk);
- 	release_sock(ssk);
- 	release_sock(sk);
- 	return ret;
-@@ -315,6 +333,7 @@ static int mptcp_init_sock(struct sock *sk)
- 	struct mptcp_sock *msk = mptcp_sk(sk);
- 
- 	INIT_LIST_HEAD(&msk->conn_list);
-+	__set_bit(MPTCP_SEND_SPACE, &msk->flags);
- 
- 	return 0;
- }
-@@ -576,6 +595,13 @@ static void mptcp_sock_graft(struct sock *sk, struct socket *parent)
- 	write_unlock_bh(&sk->sk_callback_lock);
- }
- 
-+static bool mptcp_memory_free(const struct sock *sk, int wake)
-+{
-+	struct mptcp_sock *msk = mptcp_sk(sk);
-+
-+	return wake ? test_bit(MPTCP_SEND_SPACE, &msk->flags) : true;
-+}
-+
- static struct proto mptcp_prot = {
- 	.name		= "MPTCP",
- 	.owner		= THIS_MODULE,
-@@ -591,6 +617,7 @@ static struct proto mptcp_prot = {
- 	.hash		= inet_hash,
- 	.unhash		= inet_unhash,
- 	.get_port	= mptcp_get_port,
-+	.stream_memory_free	= mptcp_memory_free,
- 	.obj_size	= sizeof(struct mptcp_sock),
- 	.no_autobind	= true,
- };
-@@ -767,8 +794,34 @@ static int mptcp_stream_accept(struct socket *sock, struct socket *newsock,
- static __poll_t mptcp_poll(struct file *file, struct socket *sock,
- 			   struct poll_table_struct *wait)
- {
-+	const struct mptcp_sock *msk;
-+	struct sock *sk = sock->sk;
-+	struct socket *ssock;
- 	__poll_t mask = 0;
- 
-+	msk = mptcp_sk(sk);
-+	lock_sock(sk);
-+	ssock = __mptcp_nmpc_socket(msk);
-+	if (ssock) {
-+		mask = ssock->ops->poll(file, ssock, wait);
-+		release_sock(sk);
-+		return mask;
-+	}
-+
-+	release_sock(sk);
-+	sock_poll_wait(file, sock, wait);
-+	lock_sock(sk);
-+
-+	if (test_bit(MPTCP_DATA_READY, &msk->flags))
-+		mask = EPOLLIN | EPOLLRDNORM;
-+	if (sk_stream_is_writeable(sk) &&
-+	    test_bit(MPTCP_SEND_SPACE, &msk->flags))
-+		mask |= EPOLLOUT | EPOLLWRNORM;
-+	if (sk->sk_shutdown & RCV_SHUTDOWN)
-+		mask |= EPOLLIN | EPOLLRDNORM | EPOLLRDHUP;
-+
-+	release_sock(sk);
-+
- 	return mask;
- }
- 
-diff --git a/net/mptcp/protocol.h b/net/mptcp/protocol.h
-index c6d8217e24d4..59a83eb64d37 100644
---- a/net/mptcp/protocol.h
-+++ b/net/mptcp/protocol.h
-@@ -56,6 +56,7 @@
- 
- /* MPTCP socket flags */
- #define MPTCP_DATA_READY	BIT(0)
-+#define MPTCP_SEND_SPACE	BIT(1)
- 
- /* MPTCP connection sock */
- struct mptcp_sock {
-diff --git a/net/mptcp/subflow.c b/net/mptcp/subflow.c
-index 528351e26371..9fb3eb87a20f 100644
---- a/net/mptcp/subflow.c
-+++ b/net/mptcp/subflow.c
-@@ -529,6 +529,9 @@ static void subflow_write_space(struct sock *sk)
- 
- 	sk_stream_write_space(sk);
- 	if (parent && sk_stream_is_writeable(sk)) {
-+		set_bit(MPTCP_SEND_SPACE, &mptcp_sk(parent)->flags);
-+		smp_mb__after_atomic();
-+		/* set SEND_SPACE before sk_stream_write_space clears NOSPACE */
- 		sk_stream_write_space(parent);
+@@ -522,7 +522,7 @@ static void __mptcp_close_ssk(struct sock *sk, struct sock *ssk,
  	}
  }
+ 
+-static int mptcp_init_sock(struct sock *sk)
++static int __mptcp_init_sock(struct sock *sk)
+ {
+ 	struct mptcp_sock *msk = mptcp_sk(sk);
+ 
+@@ -532,6 +532,14 @@ static int mptcp_init_sock(struct sock *sk)
+ 	return 0;
+ }
+ 
++static int mptcp_init_sock(struct sock *sk)
++{
++	if (!mptcp_is_enabled(sock_net(sk)))
++		return -ENOPROTOOPT;
++
++	return __mptcp_init_sock(sk);
++}
++
+ static void mptcp_subflow_shutdown(struct sock *ssk, int how)
+ {
+ 	lock_sock(ssk);
+@@ -640,7 +648,7 @@ static struct sock *mptcp_accept(struct sock *sk, int flags, int *err,
+ 			return NULL;
+ 		}
+ 
+-		mptcp_init_sock(new_mptcp_sock);
++		__mptcp_init_sock(new_mptcp_sock);
+ 
+ 		msk = mptcp_sk(new_mptcp_sock);
+ 		msk->remote_key = subflow->remote_key;
+@@ -1078,7 +1086,7 @@ static struct inet_protosw mptcp_protosw = {
+ 	.flags		= INET_PROTOSW_ICSK,
+ };
+ 
+-void __init mptcp_init(void)
++void mptcp_proto_init(void)
+ {
+ 	mptcp_prot.h.hashinfo = tcp_prot.h.hashinfo;
+ 	mptcp_stream_ops = inet_stream_ops;
+@@ -1116,7 +1124,7 @@ static struct inet_protosw mptcp_v6_protosw = {
+ 	.flags		= INET_PROTOSW_ICSK,
+ };
+ 
+-int mptcpv6_init(void)
++int mptcp_proto_v6_init(void)
+ {
+ 	int err;
+ 
+diff --git a/net/mptcp/protocol.h b/net/mptcp/protocol.h
+index 59a83eb64d37..a8fad7d78565 100644
+--- a/net/mptcp/protocol.h
++++ b/net/mptcp/protocol.h
+@@ -179,6 +179,9 @@ extern const struct inet_connection_sock_af_ops ipv6_specific;
+ #endif
+ 
+ void mptcp_proto_init(void);
++#if IS_ENABLED(CONFIG_MPTCP_IPV6)
++int mptcp_proto_v6_init(void);
++#endif
+ 
+ struct mptcp_read_arg {
+ 	struct msghdr *msg;
 -- 
 2.23.0
 
