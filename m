@@ -2,47 +2,47 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 6E8D0145B7F
-	for <lists+netdev@lfdr.de>; Wed, 22 Jan 2020 19:22:59 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2DD99145B80
+	for <lists+netdev@lfdr.de>; Wed, 22 Jan 2020 19:23:04 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728709AbgAVSW4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 22 Jan 2020 13:22:56 -0500
-Received: from mail-pl1-f196.google.com ([209.85.214.196]:38878 "EHLO
-        mail-pl1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725883AbgAVSW4 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 22 Jan 2020 13:22:56 -0500
-Received: by mail-pl1-f196.google.com with SMTP id t6so114162plj.5
-        for <netdev@vger.kernel.org>; Wed, 22 Jan 2020 10:22:56 -0800 (PST)
+        id S1728809AbgAVSXB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 22 Jan 2020 13:23:01 -0500
+Received: from mail-pg1-f196.google.com ([209.85.215.196]:42154 "EHLO
+        mail-pg1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725883AbgAVSXB (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 22 Jan 2020 13:23:01 -0500
+Received: by mail-pg1-f196.google.com with SMTP id s64so3936260pgb.9
+        for <netdev@vger.kernel.org>; Wed, 22 Jan 2020 10:23:00 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=R8o/e98Y1o4b0t9zPieroZgdORNBdpNL7fXG7tccg/Q=;
-        b=BsqcFup7gaCa4lLtBZcFGZLTZ7VGBqmIW1xpOtICll3LlHz77YGtXZW0Jong932lB7
-         +gvv+b4ZoWZ91ckKtSNL5W+eZvC5tRXjoXx5A0mcXQv+JmR5bDCmNcGgIePivlLrO/sH
-         Mt8agSyXeaPRcDFo1rn5dQRI2qOKePyi7sc/ILpmt1Sy41DKdwXMTY2xptRN1zjy4TGt
-         cP+dFzovq3DNl6uxcZ7nhV+ndfXJlP8LlblQZ8tzVVOTrrZK4ujS377AzBo20m+3B9d4
-         9VdZMjLiLz+GWPTJiMFAl6WbAYK+nUA5tWiWpf6EkL6E568PHckpYjh4PcewwVsqfpp/
-         29VQ==
+        bh=JS/s9j8U9IeQ6/b6RxEgOuCmaH0wVa5WX2YOp3bYvgI=;
+        b=kxfxaxXXufadb3b7T/OH3vwbKBvgG/qTRABmxJlowEEbHWjsJEaur2G7CkzEgDXkN9
+         t+npb+dguR/QqhNMlgI7cKtKVJEQbFYofd3Hk44UxaJRNk9iO7Ze0z2kjPQ4sNfgoCZC
+         q3WYoIzqPwJg47d4EinysVmJ11SoOVoCrq0EP5oNST+JQQxd6gLE+REENoIJm2EYRt4b
+         GV1IkmqWsIWkrrFritGWI/ZD0qU6BXEATyjA780t0ARGuc5f3g0/sjxqw1mAlffJ1/9v
+         2xBKW66hdQceM0vpA0BOLJdeH2dhWaPlxs6Nw2zYYMR9HINIMfoiNFEwEimrlo+f/TcA
+         NJIg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references;
-        bh=R8o/e98Y1o4b0t9zPieroZgdORNBdpNL7fXG7tccg/Q=;
-        b=NxtD5jVQlzYBJDjIM4ys35I0CgOogGco84WqFPA8PoVAlsEkX9Vi/pHFo3+7xtZZ/M
-         y1PkFEiKE/YqJQTcK4dVU7QxKl7INdQSCMGoGqJuCGuYQbnGoGAEhiplPv6akq303SJ4
-         q/jyY/FYKEEvKdxaFdEIEu+wcTE8SEOZFb+svz8c6ZtcgI6uqefA4MvFpbxTSCLB7z9V
-         bY9zyCIc41swQsPyBCaNp2S1rD6gby1/ScIkzvn6W/jhmLQxJN1pKOn49mFAlXsptsOH
-         wAyOL/mvJKd1RpjmguAgtoeMJUHz24ruhbePMgifXI4t5/55ruNcy8w01MFtPmi8sx/9
-         4yGQ==
-X-Gm-Message-State: APjAAAVCNuBhF7+gZocjwBMBEHHznoRmfZ2TRWhbEuIguzroDqa78qIY
-        NeVS6PHP1guexlrX/TrJtJZhp7t34xtaq7qf
-X-Google-Smtp-Source: APXvYqxXNyY/8ORF2JeKK7wqSh/ftTmntjOTq7YgxMlIKKHiDaSqtdK2+mNNzxXLu0qyYjnRMrK90A==
-X-Received: by 2002:a17:90b:11d7:: with SMTP id gv23mr4527265pjb.94.1579717375510;
-        Wed, 22 Jan 2020 10:22:55 -0800 (PST)
+        bh=JS/s9j8U9IeQ6/b6RxEgOuCmaH0wVa5WX2YOp3bYvgI=;
+        b=Y2BFQN2YwVqjcQa+T3OROi5V1N6K5IVG8bsM7YhTKRTs5BvFajqzkbzSykEkmH7AYN
+         dC9ye4G9RWASFCkXvmcWHDML4QLHWsFGVxWbb2s4E1hdTO1sdOze/Xc59+AvWfpt4SYP
+         Ft83wRNX0jaZrTj4vCj6mxQe47MCWO09DdOXk/njyJHHmGEsnXnHupm48AMOtaluIPxV
+         fBRJaYek/D6Qrzc0HfZNj/ci5V5uSwnu9sdZpJi6svG75gIzuDswqjBfVm2uch2hhVli
+         YZZ4D97+fECdI4K+rodDyCzNfJkiL2ITU8p3uqersGExr5ZSQW7seBhtwmxigHbFO2tT
+         0giA==
+X-Gm-Message-State: APjAAAW+AujL0kkUy0d4TWcCGFfVniwtdMJqbxU/UFkWG1h/cmoq+0nq
+        FVwlQvvyz7jZPDA29Z2xDOnjgq0taRTmAeVk
+X-Google-Smtp-Source: APXvYqw8M0j3Bp5QQqtgxqR+JT1xeViQvW9HyC2D46/nu3mJm/Xhw3W6V0rfTRnM7yF6g2ODBAmoRQ==
+X-Received: by 2002:a65:484d:: with SMTP id i13mr1502pgs.32.1579717380231;
+        Wed, 22 Jan 2020 10:23:00 -0800 (PST)
 Received: from localhost.localdomain ([223.186.203.82])
-        by smtp.gmail.com with ESMTPSA id o17sm3996532pjq.1.2020.01.22.10.22.51
+        by smtp.gmail.com with ESMTPSA id o17sm3996532pjq.1.2020.01.22.10.22.55
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 22 Jan 2020 10:22:55 -0800 (PST)
+        Wed, 22 Jan 2020 10:22:59 -0800 (PST)
 From:   gautamramk@gmail.com
 To:     netdev@vger.kernel.org
 Cc:     "Mohit P. Tahiliani" <tahiliani@nitk.edu.in>,
@@ -54,9 +54,9 @@ Cc:     "Mohit P. Tahiliani" <tahiliani@nitk.edu.in>,
         Stephen Hemminger <stephen@networkplumber.org>,
         Leslie Monis <lesliemonis@gmail.com>,
         Gautam Ramakrishnan <gautamramk@gmail.com>
-Subject: [PATCH net-next v7 02/10] pie: use U64_MAX to denote (2^64 - 1)
-Date:   Wed, 22 Jan 2020 23:52:25 +0530
-Message-Id: <20200122182233.3940-3-gautamramk@gmail.com>
+Subject: [PATCH net-next v7 03/10] pie: rearrange macros in order of length
+Date:   Wed, 22 Jan 2020 23:52:26 +0530
+Message-Id: <20200122182233.3940-4-gautamramk@gmail.com>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <20200122182233.3940-1-gautamramk@gmail.com>
 References: <20200122182233.3940-1-gautamramk@gmail.com>
@@ -67,30 +67,37 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: "Mohit P. Tahiliani" <tahiliani@nitk.edu.in>
 
-Use the U64_MAX macro to denote the constant (2^64 - 1).
+Rearrange macros in order of length and align the values to
+improve readability.
 
 Signed-off-by: Mohit P. Tahiliani <tahiliani@nitk.edu.in>
 Signed-off-by: Leslie Monis <lesliemonis@gmail.com>
 Signed-off-by: Gautam Ramakrishnan <gautamramk@gmail.com>
 ---
- include/net/pie.h | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ include/net/pie.h | 10 +++++-----
+ 1 file changed, 5 insertions(+), 5 deletions(-)
 
 diff --git a/include/net/pie.h b/include/net/pie.h
-index 440213ec83eb..7ef375db5bab 100644
+index 7ef375db5bab..397c7abf0879 100644
 --- a/include/net/pie.h
 +++ b/include/net/pie.h
-@@ -10,8 +10,8 @@
+@@ -8,11 +8,11 @@
+ #include <net/inet_ecn.h>
+ #include <net/pkt_sched.h>
  
- #define QUEUE_THRESHOLD 16384
- #define DQCOUNT_INVALID -1
--#define DTIME_INVALID 0xffffffffffffffff
--#define MAX_PROB 0xffffffffffffffff
-+#define DTIME_INVALID U64_MAX
-+#define MAX_PROB U64_MAX
- #define PIE_SCALE 8
+-#define QUEUE_THRESHOLD 16384
+-#define DQCOUNT_INVALID -1
+-#define DTIME_INVALID U64_MAX
+-#define MAX_PROB U64_MAX
+-#define PIE_SCALE 8
++#define MAX_PROB	U64_MAX
++#define DTIME_INVALID	U64_MAX
++#define QUEUE_THRESHOLD	16384
++#define DQCOUNT_INVALID	-1
++#define PIE_SCALE	8
  
  /* parameters used */
+ struct pie_params {
 -- 
 2.17.1
 
