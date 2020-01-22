@@ -2,125 +2,58 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 2D8601458E1
-	for <lists+netdev@lfdr.de>; Wed, 22 Jan 2020 16:38:26 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 087961458EA
+	for <lists+netdev@lfdr.de>; Wed, 22 Jan 2020 16:42:07 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726796AbgAVPiR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 22 Jan 2020 10:38:17 -0500
-Received: from fllv0015.ext.ti.com ([198.47.19.141]:56346 "EHLO
-        fllv0015.ext.ti.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726049AbgAVPiM (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 22 Jan 2020 10:38:12 -0500
-Received: from fllv0035.itg.ti.com ([10.64.41.0])
-        by fllv0015.ext.ti.com (8.15.2/8.15.2) with ESMTP id 00MFc6A4077656;
-        Wed, 22 Jan 2020 09:38:06 -0600
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
-        s=ti-com-17Q1; t=1579707486;
-        bh=olm+bSOr7+k/3oDNurxPY/t/nOe+OgFg1ZjDwTThz2I=;
-        h=From:To:CC:Subject:Date:In-Reply-To:References;
-        b=R4wu5V7sTjUeS0eKpzr8qTvO3zI8TKwnXu43UW918mryMDQEA7WQ5XUzXHdexQIun
-         yWqLeXRLrhie0gY1pkPndYezIDVxaaWTWBF4m4sc+/Ugut0A1Jc3BOIcVOBXR3jClK
-         ahmN55X+B/NBwEcL25zSLgr96sXObub426ZXTYgA=
-Received: from DFLE113.ent.ti.com (dfle113.ent.ti.com [10.64.6.34])
-        by fllv0035.itg.ti.com (8.15.2/8.15.2) with ESMTP id 00MFc6jX058017;
-        Wed, 22 Jan 2020 09:38:06 -0600
-Received: from DFLE112.ent.ti.com (10.64.6.33) by DFLE113.ent.ti.com
- (10.64.6.34) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1847.3; Wed, 22
- Jan 2020 09:38:06 -0600
-Received: from lelv0326.itg.ti.com (10.180.67.84) by DFLE112.ent.ti.com
- (10.64.6.33) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1847.3 via
- Frontend Transport; Wed, 22 Jan 2020 09:38:06 -0600
-Received: from localhost (ileax41-snat.itg.ti.com [10.172.224.153])
-        by lelv0326.itg.ti.com (8.15.2/8.15.2) with ESMTP id 00MFc6Q3019489;
-        Wed, 22 Jan 2020 09:38:06 -0600
-From:   Dan Murphy <dmurphy@ti.com>
-To:     <andrew@lunn.ch>, <f.fainelli@gmail.com>, <hkallweit1@gmail.com>,
-        <bunk@kernel.org>
-CC:     <netdev@vger.kernel.org>, <devicetree@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>, Dan Murphy <dmurphy@ti.com>
-Subject: [PATCH net-next 2/2] net: phy: DP83822: Add support for additional DP83825 devices
-Date:   Wed, 22 Jan 2020 09:34:55 -0600
-Message-ID: <20200122153455.8777-3-dmurphy@ti.com>
-X-Mailer: git-send-email 2.25.0
-In-Reply-To: <20200122153455.8777-1-dmurphy@ti.com>
-References: <20200122153455.8777-1-dmurphy@ti.com>
+        id S1725924AbgAVPmF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 22 Jan 2020 10:42:05 -0500
+Received: from mail.kernel.org ([198.145.29.99]:37010 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1725802AbgAVPmF (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 22 Jan 2020 10:42:05 -0500
+Received: from cakuba (c-73-93-4-247.hsd1.ca.comcast.net [73.93.4.247])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 1ECD7217F4;
+        Wed, 22 Jan 2020 15:42:04 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1579707724;
+        bh=Sp347QtjZN1Z0zySpBaOxoH6I8NgHQVnUNe7iuXyDSU=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=IM0KM0ZCEcrcZEhz3iIaZUbZLx3toaC1RMNDiKzU90kuhmeB9p7UIUPDofbbpZ1ms
+         vYtAi+wGfkEdM20PVC58qS0T4XyCBY3RHZsEr7kxrzcM9fMZoWZFfeBaK7E76SdWV7
+         GBuJjVgwmwDUbU10petg8lO2gcOF/zralhqWCncg=
+Date:   Wed, 22 Jan 2020 07:42:03 -0800
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     gautamramk@gmail.com
+Cc:     netdev@vger.kernel.org,
+        "Mohit P. Tahiliani" <tahiliani@nitk.edu.in>,
+        Jamal Hadi Salim <jhs@mojatatu.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Dave Taht <dave.taht@gmail.com>,
+        Toke =?UTF-8?B?SMO4aWxhbmQtSsO4cmdlbnNlbg==?= <toke@redhat.com>,
+        Stephen Hemminger <stephen@networkplumber.org>,
+        Leslie Monis <lesliemonis@gmail.com>,
+        "Sachin D . Patil" <sdp.sachin@gmail.com>,
+        "V . Saicharan" <vsaicharan1998@gmail.com>,
+        Mohit Bhasi <mohitbhasi1998@gmail.com>
+Subject: Re: [PATCH net-next v6 10/10] net: sched: add Flow Queue PIE packet
+ scheduler
+Message-ID: <20200122074203.00566700@cakuba>
+In-Reply-To: <20200122113533.28128-11-gautamramk@gmail.com>
+References: <20200122113533.28128-1-gautamramk@gmail.com>
+        <20200122113533.28128-11-gautamramk@gmail.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add PHY IDs for the DP83825CS, DP83825CM and the DP83825S devices to the
-DP83822 driver.
+On Wed, 22 Jan 2020 17:05:33 +0530, gautamramk@gmail.com wrote:
+> +	err = tcf_block_get(&q->block, &q->filter_list, sch, extack);
+> +	if (err)
+> +		goto init_failure;
 
-Signed-off-by: Dan Murphy <dmurphy@ti.com>
----
- drivers/net/phy/Kconfig   |  3 ++-
- drivers/net/phy/dp83822.c | 12 ++++++++++--
- 2 files changed, 12 insertions(+), 3 deletions(-)
-
-diff --git a/drivers/net/phy/Kconfig b/drivers/net/phy/Kconfig
-index cc677ddd2719..71fc778ce398 100644
---- a/drivers/net/phy/Kconfig
-+++ b/drivers/net/phy/Kconfig
-@@ -348,7 +348,8 @@ config DAVICOM_PHY
- config DP83822_PHY
- 	tristate "Texas Instruments DP83822/825/826 PHYs"
- 	---help---
--	  Supports the DP83822, DP83825I, DP83826C and DP83826NC PHYs.
-+	  Supports the DP83822, DP83825I, DP83825CM, DP83825CS, DP83825S,
-+	  DP83826C and DP83826NC PHYs.
- 
- config DP83TC811_PHY
- 	tristate "Texas Instruments DP83TC811 PHY"
-diff --git a/drivers/net/phy/dp83822.c b/drivers/net/phy/dp83822.c
-index 5159b28baa0f..fe9aa3ad52a7 100644
---- a/drivers/net/phy/dp83822.c
-+++ b/drivers/net/phy/dp83822.c
-@@ -1,6 +1,5 @@
- // SPDX-License-Identifier: GPL-2.0
--/*
-- * Driver for the Texas Instruments DP83822 PHY
-+/* Driver for the Texas Instruments DP83822, DP83825 and DP83826 PHYs.
-  *
-  * Copyright (C) 2017 Texas Instruments Inc.
-  */
-@@ -15,7 +14,10 @@
- #include <linux/netdevice.h>
- 
- #define DP83822_PHY_ID	        0x2000a240
-+#define DP83825S_PHY_ID		0x2000a140
- #define DP83825I_PHY_ID		0x2000a150
-+#define DP83825CM_PHY_ID	0x2000a160
-+#define DP83825CS_PHY_ID	0x2000a170
- #define DP83826C_PHY_ID		0x2000a130
- #define DP83826NC_PHY_ID	0x2000a110
- 
-@@ -323,6 +325,9 @@ static struct phy_driver dp83822_driver[] = {
- 	DP83822_PHY_DRIVER(DP83825I_PHY_ID, "TI DP83825I"),
- 	DP83822_PHY_DRIVER(DP83826C_PHY_ID, "TI DP83826C"),
- 	DP83822_PHY_DRIVER(DP83826NC_PHY_ID, "TI DP83826NC"),
-+	DP83822_PHY_DRIVER(DP83825S_PHY_ID, "TI DP83825S"),
-+	DP83822_PHY_DRIVER(DP83825CM_PHY_ID, "TI DP83825M"),
-+	DP83822_PHY_DRIVER(DP83825CS_PHY_ID, "TI DP83825CS"),
- };
- module_phy_driver(dp83822_driver);
- 
-@@ -331,6 +336,9 @@ static struct mdio_device_id __maybe_unused dp83822_tbl[] = {
- 	{ DP83825I_PHY_ID, 0xfffffff0 },
- 	{ DP83826C_PHY_ID, 0xfffffff0 },
- 	{ DP83826NC_PHY_ID, 0xfffffff0 },
-+	{ DP83825S_PHY_ID, 0xfffffff0 },
-+	{ DP83825CM_PHY_ID, 0xfffffff0 },
-+	{ DP83825CS_PHY_ID, 0xfffffff0 },
- 	{ },
- };
- MODULE_DEVICE_TABLE(mdio, dp83822_tbl);
--- 
-2.25.0
-
+I think you're missing a tcf_block_put() call or equivalent.
