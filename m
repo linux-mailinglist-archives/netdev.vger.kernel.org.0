@@ -2,161 +2,133 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 56538145EEA
-	for <lists+netdev@lfdr.de>; Thu, 23 Jan 2020 00:04:25 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3F040145EF5
+	for <lists+netdev@lfdr.de>; Thu, 23 Jan 2020 00:09:11 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726054AbgAVXEX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 22 Jan 2020 18:04:23 -0500
-Received: from us-smtp-delivery-1.mimecast.com ([205.139.110.120]:31265 "EHLO
-        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S1725884AbgAVXEX (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 22 Jan 2020 18:04:23 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1579734260;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=P+MJG+OZaVB0yjo1uw2mRwO7Fl5AZR6hRQgx7iWFyRM=;
-        b=TV+1xhYuPGvdFmlfL3ERef5V2iDCAnCHelRG0w0VhGbfkBwFbZP2LYZi1AyE+Z3QDq5O+P
-        i2VGraOn8ORVt0wv1drt65G+GFCGtwKpgnDiLyPr456LVht8iznN4M4rQXNjTMg16tOCyY
-        LDLMSUBrSWxJyDOWNxvTwUuxvHAGsF4=
-Received: from mail-wr1-f69.google.com (mail-wr1-f69.google.com
- [209.85.221.69]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-54-SjB-cQEUNaKmhNW8-rAHFA-1; Wed, 22 Jan 2020 18:04:19 -0500
-X-MC-Unique: SjB-cQEUNaKmhNW8-rAHFA-1
-Received: by mail-wr1-f69.google.com with SMTP id f10so793955wro.14
-        for <netdev@vger.kernel.org>; Wed, 22 Jan 2020 15:04:18 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=P+MJG+OZaVB0yjo1uw2mRwO7Fl5AZR6hRQgx7iWFyRM=;
-        b=EuVRoh7O0M42nMs7Ru4ULWZMsr9IvbefJr89W91Izl3u2sivVLQAUJUIvhgl3A0hCU
-         3IbVilPiDoJpNc9CGl1SF9V6YUQ1RTRZX12KuH72rwfnxP8x+MkwjIV0P9vDAsy6cnOS
-         nXCNcLsLmwb5LGOGmyNzjeDAvXQymiS/zllQyyzGTD51rUejj1I84uHR1vukQ3Z54Lj8
-         hRf+/1jaQ0XcbTGSfF7RnImCUSFG2SVQOYXSurKv0oREduW252YIKMuqgr6bZu68AdSP
-         Zr154weMETTXwXEgt3E+G56JGfHSlUxynQ4P7EK9tPcy6623OMAHmW2oX/p0ijSfmPpb
-         ILHA==
-X-Gm-Message-State: APjAAAXfdGz4NWtT1ibcJqdCWGJaaD3vhDpq0kOhJxWH3aGsXdha6TBR
-        gd4/jxGEPeCiioeE3G0pFNcHzSt08KfLI+lf8dGnhjQ3tfefqjzm8994mbJ4cO0XApopkSFRDvv
-        /mBIRnv504F2r0s8C
-X-Received: by 2002:adf:f64b:: with SMTP id x11mr13475603wrp.355.1579734257078;
-        Wed, 22 Jan 2020 15:04:17 -0800 (PST)
-X-Google-Smtp-Source: APXvYqyyTafVKoH0HcvD3HNJ3RWAGwn2z7XPqZTMXiFp6FtPobJWH3esDIM82sbMm8/igZZ8kHe3ig==
-X-Received: by 2002:adf:f64b:: with SMTP id x11mr13475582wrp.355.1579734256808;
-        Wed, 22 Jan 2020 15:04:16 -0800 (PST)
-Received: from localhost.localdomain ([85.93.125.228])
-        by smtp.gmail.com with ESMTPSA id p17sm432076wrx.20.2020.01.22.15.04.15
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 22 Jan 2020 15:04:16 -0800 (PST)
-Date:   Thu, 23 Jan 2020 00:04:15 +0100
-From:   Lorenzo Bianconi <lorenzo.bianconi@redhat.com>
-To:     Sven Auhagen <sven.auhagen@voleatech.de>
-Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "thomas.petazzoni@bootlin.com" <thomas.petazzoni@bootlin.com>,
-        "brouer@redhat.com" <brouer@redhat.com>,
-        "ilias.apalodimas@linaro.org" <ilias.apalodimas@linaro.org>,
-        "matteo.croce@redhat.com" <matteo.croce@redhat.com>,
-        "mw@semihalf.com" <mw@semihalf.com>,
-        "jakub.kicinski@netronome.com" <jakub.kicinski@netronome.com>
-Subject: Re: [PATCH] mvneta driver disallow XDP program on hardware buffer
- management
-Message-ID: <20200122230415.GB3384@localhost.localdomain>
-References: <581AE616-51FA-41F0-B4F1-E0CA761D68F2@voleatech.de>
+        id S1726103AbgAVXJJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 22 Jan 2020 18:09:09 -0500
+Received: from mx0a-00082601.pphosted.com ([67.231.145.42]:11460 "EHLO
+        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1725884AbgAVXJI (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 22 Jan 2020 18:09:08 -0500
+Received: from pps.filterd (m0044012.ppops.net [127.0.0.1])
+        by mx0a-00082601.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 00MMq4U7022469;
+        Wed, 22 Jan 2020 15:08:55 -0800
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
+ : date : message-id : references : in-reply-to : content-type : content-id
+ : content-transfer-encoding : mime-version; s=facebook;
+ bh=fgjQerNf3TIOCOU0Ra+DB+R3kNGZDhpEOJXRpZd7Tkw=;
+ b=L0x2kRc51AnfD7awE1T9NR2IXwQvHSoAIgSiRYWV25swBnIUk/4BbLEosPnIWTqRlpey
+ dvZp8tA2TshgCjCc97DsLLaY56EPazlY3W7l5DPN1zcRAomlMexDvKkMcK45dK4Ew1wC
+ SCwTsYN3hP7Jnz1QY4ABdWAfCKml8IWQ5uc= 
+Received: from maileast.thefacebook.com ([163.114.130.16])
+        by mx0a-00082601.pphosted.com with ESMTP id 2xpyher2jd-5
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
+        Wed, 22 Jan 2020 15:08:55 -0800
+Received: from NAM11-DM6-obe.outbound.protection.outlook.com (100.104.31.183)
+ by o365-in.thefacebook.com (100.104.36.103) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.1779.2; Wed, 22 Jan 2020 15:08:49 -0800
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=kUDfRcSNR5CNo8ZP9brqf1uVukZW2wb6h6OaKmFo6wLD1MpTdEyc/2btIT5jX0YGRHc0gKERL8shC092Q5dZZmzgjGvoE+uI43nW/lECULylxuo9MZfgibBle1MTU1vW+FDoDnZs3zDpe98U+WICTHuThfgvmaH98Rus3TOPD1QOqULtgoCFynLmKhfFervvO05b/ZYZDEYDwA9K9wdHzXdN3V+cbnph5IX4ILouB737Md/S5ju3AZPM8Tf0R9cdUNByB2c/FmMtfok7pzK+tntzfkW5tF+hDle8kSEX0OrHeGxpflO/wIxPQOuguSl1AFpwf5zLgDqo2bAAeQ6Dwg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=fgjQerNf3TIOCOU0Ra+DB+R3kNGZDhpEOJXRpZd7Tkw=;
+ b=WLTl9S+UWERBvtq9A+I99DWCB7zzzvDG0JCj+NEpLvRVUs54UeZDj5FXALZ7ryKLGuSI5Qz4kF6cmUZgdcFh6zcgUBob8xzmyl0CmkXdkfvhmAWigcvt2rTS0nfr4sBsbamPYshttzhdoktuD2MPADtyiWdHr96xIik3FIZM/KvGq0srVoFxyy9NxWqXIS2I/imu/5UekY2zmjj2lOKCaPkAD6HEHFMAXukSK8YhqLwfN/DS0JpiB1vlSytN3pomfNDDxH8dGfGtMsw7GNjBfGz4U/Xi2HbcjkaG6qXadJUK/b4gbGpeqZlBoLgrvB1qyEPSNS7b36okobqmD8IQgw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=fb.com; dmarc=pass action=none header.from=fb.com; dkim=pass
+ header.d=fb.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.onmicrosoft.com;
+ s=selector2-fb-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=fgjQerNf3TIOCOU0Ra+DB+R3kNGZDhpEOJXRpZd7Tkw=;
+ b=JsxE8PouGYhIf2XMq4frh8/7Zzx2TBXBtHdMLhARUXOp8wJ2BF/42iSYMW7ds3yeDYcr2wTwpMIu8/ujTAVxrfeK7ab89ZXgbou7+sINWEzjKOk6p1BMVggI+1ImTa31VjJ2roE+0W2MEQ9peUDnb80g4D4JnD/Uk2y6MoaN/40=
+Received: from MN2PR15MB3213.namprd15.prod.outlook.com (20.179.21.76) by
+ MN2PR15MB3519.namprd15.prod.outlook.com (20.179.21.81) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.2644.20; Wed, 22 Jan 2020 23:08:49 +0000
+Received: from MN2PR15MB3213.namprd15.prod.outlook.com
+ ([fe80::6d1e:f2f7:d36:a42f]) by MN2PR15MB3213.namprd15.prod.outlook.com
+ ([fe80::6d1e:f2f7:d36:a42f%4]) with mapi id 15.20.2644.027; Wed, 22 Jan 2020
+ 23:08:49 +0000
+Received: from kafai-mbp.dhcp.thefacebook.com (2620:10d:c090:180::ccdf) by MWHPR04CA0051.namprd04.prod.outlook.com (2603:10b6:300:6c::13) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.2644.20 via Frontend Transport; Wed, 22 Jan 2020 23:08:47 +0000
+From:   Martin Lau <kafai@fb.com>
+To:     Jakub Sitnicki <jakub@cloudflare.com>
+CC:     "bpf@vger.kernel.org" <bpf@vger.kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "kernel-team@cloudflare.com" <kernel-team@cloudflare.com>,
+        Alexei Starovoitov <alexei.starovoitov@gmail.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        "John Fastabend" <john.fastabend@gmail.com>,
+        Lorenz Bauer <lmb@cloudflare.com>
+Subject: Re: [PATCH bpf-next v3 09/12] bpf: Allow selecting reuseport socket
+ from a SOCKMAP
+Thread-Topic: [PATCH bpf-next v3 09/12] bpf: Allow selecting reuseport socket
+ from a SOCKMAP
+Thread-Index: AQHV0SS5qCMuoeFlqkeyqm80aQ3P0Kf3T0YA
+Date:   Wed, 22 Jan 2020 23:08:49 +0000
+Message-ID: <20200122230756.qgrv4riuxrb2drh3@kafai-mbp.dhcp.thefacebook.com>
+References: <20200122130549.832236-1-jakub@cloudflare.com>
+ <20200122130549.832236-10-jakub@cloudflare.com>
+In-Reply-To: <20200122130549.832236-10-jakub@cloudflare.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-clientproxiedby: MWHPR04CA0051.namprd04.prod.outlook.com
+ (2603:10b6:300:6c::13) To MN2PR15MB3213.namprd15.prod.outlook.com
+ (2603:10b6:208:3d::12)
+x-ms-exchange-messagesentrepresentingtype: 1
+x-originating-ip: [2620:10d:c090:180::ccdf]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: ff26418b-20f3-436f-09d2-08d79f900a0a
+x-ms-traffictypediagnostic: MN2PR15MB3519:
+x-microsoft-antispam-prvs: <MN2PR15MB3519FC08C623537FCC6EA137D50C0@MN2PR15MB3519.namprd15.prod.outlook.com>
+x-fb-source: Internal
+x-ms-oob-tlc-oobclassifiers: OLM:8882;
+x-forefront-prvs: 029097202E
+x-forefront-antispam-report: SFV:NSPM;SFS:(10019020)(376002)(366004)(346002)(39860400002)(136003)(396003)(199004)(189003)(478600001)(6916009)(316002)(9686003)(4326008)(66446008)(66476007)(64756008)(54906003)(86362001)(7696005)(52116002)(55016002)(4744005)(66556008)(81156014)(81166006)(8676002)(71200400001)(1076003)(8936002)(2906002)(6506007)(5660300002)(186003)(16526019)(66946007);DIR:OUT;SFP:1102;SCL:1;SRVR:MN2PR15MB3519;H:MN2PR15MB3213.namprd15.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;A:1;MX:1;
+received-spf: None (protection.outlook.com: fb.com does not designate
+ permitted sender hosts)
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: tdvw3dQm+be5N5t5qgWxcKQLKr8ldSimKUMBTypymXS5RGqaZj2fWOylUVRH3UeomMWSlv4WaMKgOg9az0uH67yldZgGsct9QYLZEUTxDjR7U/UXCWCmC9mtlsvmEmQ5l+OenN2UKsjmdOb7YJYY1UaVyzF0W0qhwbRhk3P51pnjjG62TVxK77beEZLteSVoX4ALtUgpiZwBXZhnsMvVjhOKi1/0fo4PkV5apvpQCa5EKWoctZtzhuWRIdDc8/raSZ7MP9VDKYZ8ul5yBI2yj5EFFs24xB9qBg98mWt51OM1qq3kAnQd9AbrT6nB0I1NidcgFHWr7fm6Q7KNiFM3rNI66VvJXlh6FFG+fCjxTvMTLYwnMNYBdgcQ/j/5VuJrbvas8P1V/8kTtZ+fcjlVgqvd7E/c0HAtVzb0kNS0nQkENmMw7ptJdF4TSH80fRNt
+x-ms-exchange-transport-forked: True
+Content-Type: text/plain; charset="us-ascii"
+Content-ID: <026149D3F60B7244BA719FFD236082A1@namprd15.prod.outlook.com>
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha256;
-        protocol="application/pgp-signature"; boundary="7ZAtKRhVyVSsbBD2"
-Content-Disposition: inline
-In-Reply-To: <581AE616-51FA-41F0-B4F1-E0CA761D68F2@voleatech.de>
+X-MS-Exchange-CrossTenant-Network-Message-Id: ff26418b-20f3-436f-09d2-08d79f900a0a
+X-MS-Exchange-CrossTenant-originalarrivaltime: 22 Jan 2020 23:08:49.1110
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 8ae927fe-1255-47a7-a2af-5f3a069daaa2
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: EFrNqMi++TCRPXl+c0Y2TK/lpWCT6SiY+/PwSt3FM/vNGd6itWrxQDxEFKFi1wUM
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: MN2PR15MB3519
+X-OriginatorOrg: fb.com
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.138,18.0.572
+ definitions=2020-01-22_08:2020-01-22,2020-01-22 signatures=0
+X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 clxscore=1015 mlxscore=0
+ impostorscore=0 adultscore=0 bulkscore=0 lowpriorityscore=0 malwarescore=0
+ phishscore=0 priorityscore=1501 spamscore=0 mlxlogscore=531 suspectscore=0
+ classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-1910280000
+ definitions=main-2001220192
+X-FB-Internal: deliver
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-
---7ZAtKRhVyVSsbBD2
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
-
-> Recently XDP Support was added to the mvneta driver for software buffer m=
-anagement only.
-> It is still possible to attach an XDP program if hardware buffer manageme=
-nt is used.
-> It is not doing anything at that point.
+On Wed, Jan 22, 2020 at 02:05:46PM +0100, Jakub Sitnicki wrote:
+> SOCKMAP now supports storing references to listening sockets. Nothing kee=
+ps
+> us from using it as an array of sockets to select from in BPF reuseport
+> programs. Whitelist the map type with the bpf_sk_select_reuseport helper.
 >=20
-> The patch disallows attaching XDP programs to mvneta if hardware buffer m=
-anagement is used.
->=20
-> Signed-off-by: Sven Auhagen <sven.auhagen@voleatech.de>
->=20
-> --- drivers/net/ethernet/marvell/mvneta.c            2020-01-22 08:44:05.=
-611395960 +0000
-> +++ drivers/net/ethernet/marvell/mvneta.c         2020-01-22 08:45:23.472=
-263795 +0000
-> @@ -4225,6 +4225,11 @@ static int mvneta_xdp_setup(struct net_d
->                                 return -EOPNOTSUPP;
->                 }
->=20
-> +              if (pp->bm_priv) {
-> +                              NL_SET_ERR_MSG_MOD(extack, "Hardware Buffe=
-r Management not supported on XDP");
-> +                              return -EOPNOTSUPP;
-> +              }
-> +
-
-This patch is logically correct since we do not support XDP for hw buffer
-devices for the moment. Could you please fix the errors reported by checkpa=
-tch?
-
-Regards,
-Lorenzo
-
->                 need_update =3D !!pp->xdp_prog !=3D !!prog;
->                 if (running && need_update)
->                                 mvneta_stop(dev);
->=20
->=20
->=20
-> +++ Voleatech auf der E-World, 11. bis 13. Februar 2020, Halle 5, Stand 5=
-21 +++
->=20
-> Beste Gr=FC=DFe/Best regards
->=20
-> Sven Auhagen
-> Dipl. Math. oec., M.Sc.
-> Voleatech GmbH
-> HRB: B 754643
-> USTID: DE303643180
-> Grathwohlstr. 5
-> 72762 Reutlingen
-> Tel: +49 7121539550
-> Fax: +49 7121539551
-> E-Mail: sven.auhagen@voleatech.de
-> www.voleatech.de<https://www.voleatech.de>
-> Diese Information ist ausschlie=DFlich f=FCr den Adressaten bestimmt und =
-kann vertraulich oder gesetzlich gesch=FCtzte Informationen enthalten. Wenn=
- Sie nicht der bestimmungsgem=E4=DFe Adressat sind, unterrichten Sie bitte =
-den Absender und vernichten Sie diese Mail. Anderen als dem bestimmungsgem=
-=E4=DFen Adressaten ist es untersagt, diese E-Mail zu lesen, zu speichern, =
-weiterzuleiten oder ihren Inhalt auf welche Weise auch immer zu verwenden. =
-F=FCr den Adressaten sind die Informationen in dieser Mail nur zum pers=F6n=
-lichen Gebrauch. Eine Weiterleitung darf nur nach R=FCcksprache mit dem Abs=
-ender erfolgen. Wir verwenden aktuelle Virenschutzprogramme. F=FCr Sch=E4de=
-n, die dem Empf=E4nger gleichwohl durch von uns zugesandte mit Viren befall=
-ene E-Mails entstehen, schlie=DFen wir jede Haftung aus.
-
---7ZAtKRhVyVSsbBD2
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iHUEABYIAB0WIQTquNwa3Txd3rGGn7Y6cBh0uS2trAUCXijU7AAKCRA6cBh0uS2t
-rKtJAQCDZ5/UqfTSG2Kbh6gWrPelPJV5yGYO3cIfUFLN7A3VqQEAnvXNKxpZ8RZZ
-u5QZPhEmOBv1Z02tSBUyZkWyhD/Khw4=
-=ELlc
------END PGP SIGNATURE-----
-
---7ZAtKRhVyVSsbBD2--
-
+> The restriction that the socket has to be a member of a reuseport group
+> still applies. Socket from a SOCKMAP that does not have sk_reuseport_cb s=
+et
+> is not a valid target and we signal it with -EINVAL.
+Acked-by: Martin KaFai Lau <kafai@fb.com>
