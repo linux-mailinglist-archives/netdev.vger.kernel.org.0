@@ -2,71 +2,72 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 878B9145D5A
-	for <lists+netdev@lfdr.de>; Wed, 22 Jan 2020 21:54:45 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C9B61145D6C
+	for <lists+netdev@lfdr.de>; Wed, 22 Jan 2020 22:01:05 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729133AbgAVUym (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 22 Jan 2020 15:54:42 -0500
-Received: from mail-wm1-f68.google.com ([209.85.128.68]:54000 "EHLO
-        mail-wm1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725827AbgAVUym (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 22 Jan 2020 15:54:42 -0500
-Received: by mail-wm1-f68.google.com with SMTP id m24so161075wmc.3
-        for <netdev@vger.kernel.org>; Wed, 22 Jan 2020 12:54:41 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:reply-to:from:date:message-id:subject:to;
-        bh=9zVso/y+l9fYJUWFKEx22kJ6EV7m4O/L863RKKWXIL0=;
-        b=dIRm4d5+O1a2gInMhKzr9tafcQWTzTejEXvhO00awFjKHW/UZt/8UjkU8X8X27XS3H
-         gXbmq8/mtfaxyw5xLZ6jceuQXE1nLuGYZQ5dDSFamo0VfIgRzuLYVczVwX+YB+TNLAMe
-         2lK99IYIblayDPh2f4Ww2o4uCuiMjLPSGGgSZY2aCaXU+7aZvcQDn/Zs2j1V25jc+M+D
-         miB0anVnepDJwHQf5XBY2GDngUDrDP4hV8mJxZ/c25MgPwsDdI3bY9YSIGXI1wEAGf62
-         DCQzBm34ANaA4HL5ido08S/UrN7QPxQbx6bLfNL3dYaVEFWzx0JcJpeOTiUPlm8mEFci
-         TI8Q==
+        id S1729129AbgAVVBC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 22 Jan 2020 16:01:02 -0500
+Received: from mail-io1-f69.google.com ([209.85.166.69]:35686 "EHLO
+        mail-io1-f69.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727590AbgAVVBB (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 22 Jan 2020 16:01:01 -0500
+Received: by mail-io1-f69.google.com with SMTP id x10so592961iob.2
+        for <netdev@vger.kernel.org>; Wed, 22 Jan 2020 13:01:01 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:reply-to:from:date:message-id
-         :subject:to;
-        bh=9zVso/y+l9fYJUWFKEx22kJ6EV7m4O/L863RKKWXIL0=;
-        b=G8VXlXlOM4bGqf8zsJqjmVKbpC7WEr6zRdRGmiadXhnOYaauFxSQO5D8RGYZLdWH7d
-         H1hob1Y1NuaRvksI7vGuL3zB0LMH8w0rUtuC/MQPHJdrCA4JspJzvDF9nGZ38bKwZwtb
-         ryeNE3zJw+wUhpeNlT/5XKfCIrw027FPBuPUGcnqviD02owefEt0OZtas9gkBesolVzP
-         aIFSJmTfQAKy7RnJEZfgm1nFf/PnX0Zs9RTiugVdOMdKTrtYqDK987aJjZ12EZMIA+9g
-         0yqwDsftE/Er+fHqSkMtUCPQmXIiakXdc1K8IdNia8NkUp1zIPcP4403YErBE7B0IRsa
-         Et4w==
-X-Gm-Message-State: APjAAAXKOiQQ77kFncspwBUnhEBuRVqXOAkxF8XO6K5oAbO8Urd7LVQr
-        tlKc4sQgZZ472tH74GUQPx+yPIpub15FZ0qyEBI=
-X-Google-Smtp-Source: APXvYqzOrB+zFxYHuIDm8brFMZvlYrvCUqfWSpSuZJwXB5G31KRnzHhIomJ70Dj87tHMrm9qMazH1pw833yGz3ZlaEY=
-X-Received: by 2002:a05:600c:20f:: with SMTP id 15mr82895wmi.128.1579726480457;
- Wed, 22 Jan 2020 12:54:40 -0800 (PST)
+        h=x-gm-message-state:mime-version:date:in-reply-to:message-id:subject
+         :from:to;
+        bh=lYr3VEa0Huaaj5cr2eT5ZYbboOtwrfmYEjzqbnc0FyU=;
+        b=IqJs+TK4Ni7Ks2SLkbLV2p7jFp0Bf99ymApGLhKS/v+O2W19GdQzksbSkzOefyso2f
+         IbJ48kv7oPrNR+n5KPDvjEV/iEyqujSJVgaZK55+gcyLXyLS4cRdg+33ikZgEdfprU71
+         fZIvjLu6uk0xNKx902XYfA0YgWssI+WVVTLMJraF0Zoo5H3htkOJwRuxYuCTctkwNbLp
+         Jd/Rowzf3ZtuAtEvh096jL3Rf5SJYKtsgjb+gOE/hj8aYHbGJLeibqzSy4x6U474k9on
+         4UQWyIX/W8Xx8dy7uFuN7ihTqni6qfmHh14H3lQPfc/NnF77aub560mcWgw3HxL8IXrM
+         vf/A==
+X-Gm-Message-State: APjAAAUHOvRgMNpXmz5knuULfpqydC3u316Sz+uqun2vVViNvqxJVQrP
+        rtQY3mdXltx0MFeKSWLyWSfxqTlcPGDjiJ0cJbAbFwLkdrmH
+X-Google-Smtp-Source: APXvYqy98tfXila0SvcgGKr7oS77gUHB1tW0UiRvSHV2F9dhjQ09YKNKJt8UX6JmXLfF/xJtAX4wfwJJc78t2tikEEKrLfVlGsr1
 MIME-Version: 1.0
-Received: by 2002:a7b:c10c:0:0:0:0:0 with HTTP; Wed, 22 Jan 2020 12:54:39
- -0800 (PST)
-Reply-To: missaminaibrahim47@gmail.com
-From:   "miss.amina ibrahim" <kamalrita139@gmail.com>
-Date:   Wed, 22 Jan 2020 20:54:39 +0000
-Message-ID: <CAFN1RxTM1LfN_XbCiArwhvyzZX_iptDJo+ybaEKhieiHN2j9BA@mail.gmail.com>
-Subject: My Name is Miss Amina Ibrahim from Libya,I am 22 years old
-To:     undisclosed-recipients:;
+X-Received: by 2002:a5e:924c:: with SMTP id z12mr8598447iop.296.1579726861270;
+ Wed, 22 Jan 2020 13:01:01 -0800 (PST)
+Date:   Wed, 22 Jan 2020 13:01:01 -0800
+In-Reply-To: <000000000000a16ad7059cbcbe43@google.com>
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <00000000000068843f059cc0d214@google.com>
+Subject: Re: WARNING in bpf_warn_invalid_xdp_action
+From:   syzbot <syzbot+8ce4113dadc4789fac74@syzkaller.appspotmail.com>
+To:     andriin@fb.com, ast@kernel.org, bpf@vger.kernel.org,
+        corbet@lwn.net, daniel@iogearbox.net, davem@davemloft.net,
+        dsahern@gmail.com, hawk@kernel.org, john.fastabend@gmail.com,
+        kafai@fb.com, kuba@kernel.org, linux-doc@vger.kernel.org,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        songliubraving@fb.com, syzkaller-bugs@googlegroups.com, yhs@fb.com
 Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-My Name is Miss Amina Ibrahim from Libya, I am 22 years old, I am in
-St.Christopher's Parish for refugee in Burkina Faso under United
-Nations High commission for Refugee ,I lost my parents in the recent
-war in  Libya, right now am in Burkina Faso, please save my life i am
-in danger need your help in transferring my inheritance my father left
-behind for me in a Bank in Burkina Faso here, I have every document
-for the transfer, all i need is a foreigner who will stand as the
-foreign partner to my father and beneficiary of the fund. The money
-deposited in the Bank is US10.5 MILLION UNITED STATES DOLLAR) I just
-need this fund to be transfer to your account so that I will come over
-to your country and complete my education as you know that my country
-have been in deep crisis due to the war .and I cannot go back there
-again because I have nobody again all of my family were killed in the
-war. If you are interested to save me and help me receive my
-inheritance fund Please get back to me
-Miss Amina IBRAHIM.
+syzbot has bisected this bug to:
+
+commit 58956317c8de52009d1a38a721474c24aef74fe7
+Author: David Ahern <dsahern@gmail.com>
+Date:   Fri Dec 7 20:24:57 2018 +0000
+
+    neighbor: Improve garbage collection
+
+bisection log:  https://syzkaller.appspot.com/x/bisect.txt?x=124a5985e00000
+start commit:   d0f41851 net, ip_tunnel: fix namespaces move
+git tree:       net
+final crash:    https://syzkaller.appspot.com/x/report.txt?x=114a5985e00000
+console output: https://syzkaller.appspot.com/x/log.txt?x=164a5985e00000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=d9290aeb7e6cf1c4
+dashboard link: https://syzkaller.appspot.com/bug?extid=8ce4113dadc4789fac74
+syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=11f99369e00000
+C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=13d85601e00000
+
+Reported-by: syzbot+8ce4113dadc4789fac74@syzkaller.appspotmail.com
+Fixes: 58956317c8de ("neighbor: Improve garbage collection")
+
+For information about bisection process see: https://goo.gl/tpsmEJ#bisection
