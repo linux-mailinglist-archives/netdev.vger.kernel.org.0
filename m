@@ -2,342 +2,122 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 4C189144CA7
-	for <lists+netdev@lfdr.de>; Wed, 22 Jan 2020 08:53:07 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B493B144C7E
+	for <lists+netdev@lfdr.de>; Wed, 22 Jan 2020 08:32:38 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728912AbgAVHxF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 22 Jan 2020 02:53:05 -0500
-Received: from nwk-aaemail-lapp03.apple.com ([17.151.62.68]:43860 "EHLO
-        nwk-aaemail-lapp03.apple.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726083AbgAVHxF (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 22 Jan 2020 02:53:05 -0500
-Received: from pps.filterd (nwk-aaemail-lapp03.apple.com [127.0.0.1])
-        by nwk-aaemail-lapp03.apple.com (8.16.0.27/8.16.0.27) with SMTP id 00M0urnW013197;
-        Tue, 21 Jan 2020 16:57:05 -0800
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=apple.com; h=sender : from : to :
- cc : subject : date : message-id : in-reply-to : references : mime-version
- : content-transfer-encoding; s=20180706;
- bh=FF49Fb9RtWXZBsApzlxTuyZuf2p3VUaT3kxHzi0eDgE=;
- b=De5+OqOM+5xjiZ0JVE6IwulVnSKr/zcPnGCyxygYACkjPLfI4q44Olwyvt/3LbXPDIrS
- MJHzajdZ+Bql1ywUIIKDzXGXq8uqdA2aQuU5iRTMeqcvHn6dRyySQF9qPyQtiTBDidpB
- 0Xxc5tXm9W57xFtATQff9AiTePWt8pULYTY2a0uiIa6Y48WqwKgBggoZG52atW4nGZWy
- ECNRUPvcvypPnQ2l42mttba8nb53Ui98grJqsV1+MGeTC0DG/5uBB81wSgPpElcUmF2i
- WKxICRQEZ8iflwREKw2erQPjxlcmS4CRilEmd3hjVvVEzV4TTX3j2JnW6salQDnVgOSw Tw== 
-Received: from ma1-mtap-s01.corp.apple.com (ma1-mtap-s01.corp.apple.com [17.40.76.5])
-        by nwk-aaemail-lapp03.apple.com with ESMTP id 2xmk4p1699-3
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NO);
-        Tue, 21 Jan 2020 16:57:05 -0800
-Received: from nwk-mmpp-sz13.apple.com
- (nwk-mmpp-sz13.apple.com [17.128.115.216]) by ma1-mtap-s01.corp.apple.com
- (Oracle Communications Messaging Server 8.0.2.4.20190507 64bit (built May  7
- 2019)) with ESMTPS id <0Q4H00HWQHAUJ720@ma1-mtap-s01.corp.apple.com>; Tue,
- 21 Jan 2020 16:57:02 -0800 (PST)
-Received: from process_milters-daemon.nwk-mmpp-sz13.apple.com by
- nwk-mmpp-sz13.apple.com
- (Oracle Communications Messaging Server 8.0.2.4.20190507 64bit (built May  7
- 2019)) id <0Q4H00F00F5G4K00@nwk-mmpp-sz13.apple.com>; Tue,
- 21 Jan 2020 16:57:02 -0800 (PST)
-X-Va-A: 
-X-Va-T-CD: 4b1e0bf36502e052fc75ad21b706ed24
-X-Va-E-CD: 61e38c1bbc7fdb1247ea00964b0bc440
-X-Va-R-CD: 3afddc4f4a9cd05e809fcf9591776af4
-X-Va-CD: 0
-X-Va-ID: b4a56e74-af19-4d30-9986-16dc7a389bdf
-X-V-A:  
-X-V-T-CD: 4b1e0bf36502e052fc75ad21b706ed24
-X-V-E-CD: 61e38c1bbc7fdb1247ea00964b0bc440
-X-V-R-CD: 3afddc4f4a9cd05e809fcf9591776af4
-X-V-CD: 0
-X-V-ID: 77619e81-b082-4c5f-a6a1-831e82c3bfaf
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:,,
- definitions=2020-01-17_05:,, signatures=0
-Received: from localhost ([17.192.155.241]) by nwk-mmpp-sz13.apple.com
- (Oracle Communications Messaging Server 8.0.2.4.20190507 64bit (built May  7
- 2019)) with ESMTPSA id <0Q4H00DSOHB0DC30@nwk-mmpp-sz13.apple.com>; Tue,
- 21 Jan 2020 16:57:00 -0800 (PST)
-From:   Christoph Paasch <cpaasch@apple.com>
-To:     netdev@vger.kernel.org
-Cc:     mptcp@lists.01.org, Paolo Abeni <pabeni@redhat.com>,
-        Peter Krystad <peter.krystad@linux.intel.com>,
-        Davide Caratti <dcaratti@redhat.com>,
-        Matthieu Baerts <matthieu.baerts@tessares.net>,
-        Mat Martineau <mathew.j.martineau@linux.intel.com>,
-        Florian Westphal <fw@strlen.de>
-Subject: [PATCH net-next v3 12/19] mptcp: recvmsg() can drain data from
- multiple subflows
-Date:   Tue, 21 Jan 2020 16:56:26 -0800
-Message-id: <20200122005633.21229-13-cpaasch@apple.com>
-X-Mailer: git-send-email 2.23.0
-In-reply-to: <20200122005633.21229-1-cpaasch@apple.com>
-References: <20200122005633.21229-1-cpaasch@apple.com>
-MIME-version: 1.0
-Content-transfer-encoding: 8bit
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:,, definitions=2020-01-17_05:,,
- signatures=0
+        id S1726204AbgAVHcg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 22 Jan 2020 02:32:36 -0500
+Received: from mail-wm1-f66.google.com ([209.85.128.66]:54353 "EHLO
+        mail-wm1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725883AbgAVHcg (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 22 Jan 2020 02:32:36 -0500
+Received: by mail-wm1-f66.google.com with SMTP id b19so5682292wmj.4;
+        Tue, 21 Jan 2020 23:32:35 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=fm/bzorqFXGRjSleITF9pD+r1ENd6CB0azL8igPUALM=;
+        b=VDzeQxeEhDd8ZKku1Vsa6Rm+0dEX0MsSrnfFkdfeGLwJy/mHgwEerx7eS8/YGXEbxr
+         fyEL+uolSK2w7xtim5NpnRib0fMpIpzzD4fTzsPKUkHpTmHE2AJMShtmpCJAYDJkeJfi
+         V9M2aHfVdu8ai4eNZ8fDRxLyX+uaMPI3rK/B5Dv5n6RV0aIWB2x6tFbIRGtF93S+yJD7
+         P4Km/plRniTRmu24NArSI3NaiO9WS4KR483rANpvgUlGIQ/eFZh9G5TaKcRj/x4m86MZ
+         yWIy330NA0EvuDPtSQ2KQbJIFWWKPn32Q6b3HiCm6rvGSriyBRD4L3WquLLdMYnW+ei2
+         hV3Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=fm/bzorqFXGRjSleITF9pD+r1ENd6CB0azL8igPUALM=;
+        b=glXZx9tBqWzQV8e5dxs0Q3m6plOiWkbBHYmubFfqtXgy/Ie5c9IhG+Lt/tJKdmBjgj
+         HyCcABnvB+ZJoEgRRkie7ai+PJD2OmgBr/62lw00Qq9FZ9W6C0937NyfUft6eFIZZtEo
+         WKNFPxHa1SBvaDPO+zMuoOQN/XecCFN1Tvn+OeO98w+VMs+RUKV3WLKaPwVf7BTg9rze
+         jWea9lx+1/dbBCYuikRkKSilKsEgodzjxGSekTz6grrMksUS3KGln0wyoIJFIeIRibvE
+         zi6dkFDljcweW+iANLMhP3N8fPWzSi5wwahWCjmQB6+Zs/uPD+yvqpbqYi16ewYVnHq7
+         f+LQ==
+X-Gm-Message-State: APjAAAUDMHIXp1qHxqA55Bda7lXyiwy6IA/BDaPeANMWovS36puYbIw+
+        45b1vg1BG7VqNql9+N20EdEjpAWT
+X-Google-Smtp-Source: APXvYqxsj7I9WlzOG+WOoPFUiCwN4qWOvJotIYRZmaWyfy5/ihC4mSOyzoLZoK6R3hu9TVPC7u6gzA==
+X-Received: by 2002:a7b:cf0d:: with SMTP id l13mr1458811wmg.13.1579678354144;
+        Tue, 21 Jan 2020 23:32:34 -0800 (PST)
+Received: from ?IPv6:2003:ea:8f36:6800:9425:8dfb:676f:4467? (p200300EA8F36680094258DFB676F4467.dip0.t-ipconnect.de. [2003:ea:8f36:6800:9425:8dfb:676f:4467])
+        by smtp.googlemail.com with ESMTPSA id a132sm2495983wme.3.2020.01.21.23.32.33
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 21 Jan 2020 23:32:33 -0800 (PST)
+Subject: Re: [PATCH v2 net-next] net: convert suitable drivers to use
+ phy_do_ioctl_running
+To:     Florian Fainelli <f.fainelli@gmail.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        David Miller <davem@davemloft.net>,
+        Maxime Ripard <mripard@kernel.org>,
+        Chen-Yu Tsai <wens@csie.org>, Doug Berger <opendmb@gmail.com>,
+        Pantelis Antoniou <pantelis.antoniou@gmail.com>,
+        Yisen Zhuang <yisen.zhuang@huawei.com>,
+        Salil Mehta <salil.mehta@huawei.com>,
+        Vladimir Zapolskiy <vz@mleia.com>,
+        Sylvain Lemieux <slemieux.tyco@gmail.com>,
+        Timur Tabi <timur@kernel.org>,
+        Sergei Shtylyov <sergei.shtylyov@cogentembedded.com>,
+        Steve Glendinning <steve.glendinning@shawell.net>,
+        Michal Simek <michal.simek@xilinx.com>,
+        Woojung Huh <woojung.huh@microchip.com>,
+        Microchip Linux Driver Support <UNGLinuxDriver@microchip.com>
+Cc:     "linux-arm-kernel@lists.infradead.org" 
+        <linux-arm-kernel@lists.infradead.org>,
+        bcm-kernel-feedback-list@broadcom.com,
+        "linuxppc-dev@lists.ozlabs.org" <linuxppc-dev@lists.ozlabs.org>,
+        linux-renesas-soc@vger.kernel.org,
+        Linux USB Mailing List <linux-usb@vger.kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+References: <2db5d899-a550-456d-a725-f7cf009f53a3@gmail.com>
+ <9d2dbcc0-7e22-601a-35f6-135f2a9e6f99@gmail.com>
+From:   Heiner Kallweit <hkallweit1@gmail.com>
+Message-ID: <ec2a401d-e504-da38-8bc7-1826f5de7941@gmail.com>
+Date:   Wed, 22 Jan 2020 08:28:06 +0100
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
+ Thunderbird/68.4.1
+MIME-Version: 1.0
+In-Reply-To: <9d2dbcc0-7e22-601a-35f6-135f2a9e6f99@gmail.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Paolo Abeni <pabeni@redhat.com>
+On 22.01.2020 05:04, Florian Fainelli wrote:
+> 
+> 
+> On 1/21/2020 1:09 PM, Heiner Kallweit wrote:
+>> Convert suitable drivers to use new helper phy_do_ioctl_running.
+>>
+>> Signed-off-by: Heiner Kallweit <hkallweit1@gmail.com>
+> The vast majority of drivers that you are converting use the following
+> convention:
+> 
+> - !netif_running -> return -EINVAL
+> - !dev->phydev -> return -ENODEV
+> 
+> so it may make sense to change the helper to accommodate the majority
+> here, not that I believe this is going to make much practical
+> difference, but if there were test cases that were specifically looking
+> for such an error code, they could be failing after this changeset.
+> 
+Right, I also stumbled across the different error codes, mainly as you
+say -EINVAL. However there is no "wrong value", if netdev isn't running,
+then typically the PHY is not attached, and from a netdev point of view
+it's not there. So ENODEV seems to be best suited.
+In kernel code the changed return code doesn't make a difference,
+but yes, in theory there could be userspace programs checking for
+-EINVAL. However such userspace programs should check for ENODEV too
+anyway to cover the second check that already returns -ENODEV.
 
-With the previous patch in place, the msk can detect which subflow
-has the current map with a simple walk, let's update the main
-loop to always select the 'current' subflow. The exit conditions now
-closely mirror tcp_recvmsg() to get expected timeout and signal
-behavior.
-
-Co-developed-by: Peter Krystad <peter.krystad@linux.intel.com>
-Signed-off-by: Peter Krystad <peter.krystad@linux.intel.com>
-Co-developed-by: Davide Caratti <dcaratti@redhat.com>
-Signed-off-by: Davide Caratti <dcaratti@redhat.com>
-Co-developed-by: Matthieu Baerts <matthieu.baerts@tessares.net>
-Signed-off-by: Matthieu Baerts <matthieu.baerts@tessares.net>
-Co-developed-by: Mat Martineau <mathew.j.martineau@linux.intel.com>
-Signed-off-by: Mat Martineau <mathew.j.martineau@linux.intel.com>
-Co-developed-by: Florian Westphal <fw@strlen.de>
-Signed-off-by: Florian Westphal <fw@strlen.de>
-Signed-off-by: Paolo Abeni <pabeni@redhat.com>
-Signed-off-by: Christoph Paasch <cpaasch@apple.com>
----
- net/mptcp/protocol.c | 178 ++++++++++++++++++++++++++++++++++++++++---
- 1 file changed, 168 insertions(+), 10 deletions(-)
-
-diff --git a/net/mptcp/protocol.c b/net/mptcp/protocol.c
-index 408efbe34753..ad9c73cc20e1 100644
---- a/net/mptcp/protocol.c
-+++ b/net/mptcp/protocol.c
-@@ -9,6 +9,8 @@
- #include <linux/kernel.h>
- #include <linux/module.h>
- #include <linux/netdevice.h>
-+#include <linux/sched/signal.h>
-+#include <linux/atomic.h>
- #include <net/sock.h>
- #include <net/inet_common.h>
- #include <net/inet_hashtables.h>
-@@ -105,6 +107,21 @@ static bool mptcp_ext_cache_refill(struct mptcp_sock *msk)
- 	return !!msk->cached_ext;
- }
- 
-+static struct sock *mptcp_subflow_recv_lookup(const struct mptcp_sock *msk)
-+{
-+	struct mptcp_subflow_context *subflow;
-+	struct sock *sk = (struct sock *)msk;
-+
-+	sock_owned_by_me(sk);
-+
-+	mptcp_for_each_subflow(msk, subflow) {
-+		if (subflow->data_avail)
-+			return mptcp_subflow_tcp_sock(subflow);
-+	}
-+
-+	return NULL;
-+}
-+
- static int mptcp_sendmsg_frag(struct sock *sk, struct sock *ssk,
- 			      struct msghdr *msg, long *timeo)
- {
-@@ -269,13 +286,37 @@ int mptcp_read_actor(read_descriptor_t *desc, struct sk_buff *skb,
- 	return copy_len;
- }
- 
-+static void mptcp_wait_data(struct sock *sk, long *timeo)
-+{
-+	DEFINE_WAIT_FUNC(wait, woken_wake_function);
-+	struct mptcp_sock *msk = mptcp_sk(sk);
-+
-+	add_wait_queue(sk_sleep(sk), &wait);
-+	sk_set_bit(SOCKWQ_ASYNC_WAITDATA, sk);
-+
-+	sk_wait_event(sk, timeo,
-+		      test_and_clear_bit(MPTCP_DATA_READY, &msk->flags), &wait);
-+
-+	sk_clear_bit(SOCKWQ_ASYNC_WAITDATA, sk);
-+	remove_wait_queue(sk_sleep(sk), &wait);
-+}
-+
- static int mptcp_recvmsg(struct sock *sk, struct msghdr *msg, size_t len,
- 			 int nonblock, int flags, int *addr_len)
- {
- 	struct mptcp_sock *msk = mptcp_sk(sk);
-+	struct mptcp_subflow_context *subflow;
-+	bool more_data_avail = false;
-+	struct mptcp_read_arg arg;
-+	read_descriptor_t desc;
-+	bool wait_data = false;
- 	struct socket *ssock;
-+	struct tcp_sock *tp;
-+	bool done = false;
- 	struct sock *ssk;
- 	int copied = 0;
-+	int target;
-+	long timeo;
- 
- 	if (msg->msg_flags & ~(MSG_WAITALL | MSG_DONTWAIT))
- 		return -EOPNOTSUPP;
-@@ -290,16 +331,124 @@ static int mptcp_recvmsg(struct sock *sk, struct msghdr *msg, size_t len,
- 		return copied;
- 	}
- 
--	ssk = mptcp_subflow_get(msk);
--	if (!ssk) {
--		release_sock(sk);
--		return -ENOTCONN;
-+	arg.msg = msg;
-+	desc.arg.data = &arg;
-+	desc.error = 0;
-+
-+	timeo = sock_rcvtimeo(sk, nonblock);
-+
-+	len = min_t(size_t, len, INT_MAX);
-+	target = sock_rcvlowat(sk, flags & MSG_WAITALL, len);
-+
-+	while (!done) {
-+		u32 map_remaining;
-+		int bytes_read;
-+
-+		ssk = mptcp_subflow_recv_lookup(msk);
-+		pr_debug("msk=%p ssk=%p", msk, ssk);
-+		if (!ssk)
-+			goto wait_for_data;
-+
-+		subflow = mptcp_subflow_ctx(ssk);
-+		tp = tcp_sk(ssk);
-+
-+		lock_sock(ssk);
-+		do {
-+			/* try to read as much data as available */
-+			map_remaining = subflow->map_data_len -
-+					mptcp_subflow_get_map_offset(subflow);
-+			desc.count = min_t(size_t, len - copied, map_remaining);
-+			pr_debug("reading %zu bytes, copied %d", desc.count,
-+				 copied);
-+			bytes_read = tcp_read_sock(ssk, &desc,
-+						   mptcp_read_actor);
-+			if (bytes_read < 0) {
-+				if (!copied)
-+					copied = bytes_read;
-+				done = true;
-+				goto next;
-+			}
-+
-+			pr_debug("msk ack_seq=%llx -> %llx", msk->ack_seq,
-+				 msk->ack_seq + bytes_read);
-+			msk->ack_seq += bytes_read;
-+			copied += bytes_read;
-+			if (copied >= len) {
-+				done = true;
-+				goto next;
-+			}
-+			if (tp->urg_data && tp->urg_seq == tp->copied_seq) {
-+				pr_err("Urgent data present, cannot proceed");
-+				done = true;
-+				goto next;
-+			}
-+next:
-+			more_data_avail = mptcp_subflow_data_available(ssk);
-+		} while (more_data_avail && !done);
-+		release_sock(ssk);
-+		continue;
-+
-+wait_for_data:
-+		more_data_avail = false;
-+
-+		/* only the master socket status is relevant here. The exit
-+		 * conditions mirror closely tcp_recvmsg()
-+		 */
-+		if (copied >= target)
-+			break;
-+
-+		if (copied) {
-+			if (sk->sk_err ||
-+			    sk->sk_state == TCP_CLOSE ||
-+			    (sk->sk_shutdown & RCV_SHUTDOWN) ||
-+			    !timeo ||
-+			    signal_pending(current))
-+				break;
-+		} else {
-+			if (sk->sk_err) {
-+				copied = sock_error(sk);
-+				break;
-+			}
-+
-+			if (sk->sk_shutdown & RCV_SHUTDOWN)
-+				break;
-+
-+			if (sk->sk_state == TCP_CLOSE) {
-+				copied = -ENOTCONN;
-+				break;
-+			}
-+
-+			if (!timeo) {
-+				copied = -EAGAIN;
-+				break;
-+			}
-+
-+			if (signal_pending(current)) {
-+				copied = sock_intr_errno(timeo);
-+				break;
-+			}
-+		}
-+
-+		pr_debug("block timeout %ld", timeo);
-+		wait_data = true;
-+		mptcp_wait_data(sk, &timeo);
- 	}
- 
--	copied = sock_recvmsg(ssk->sk_socket, msg, flags);
-+	if (more_data_avail) {
-+		if (!test_bit(MPTCP_DATA_READY, &msk->flags))
-+			set_bit(MPTCP_DATA_READY, &msk->flags);
-+	} else if (!wait_data) {
-+		clear_bit(MPTCP_DATA_READY, &msk->flags);
- 
--	release_sock(sk);
-+		/* .. race-breaker: ssk might get new data after last
-+		 * data_available() returns false.
-+		 */
-+		ssk = mptcp_subflow_recv_lookup(msk);
-+		if (unlikely(ssk))
-+			set_bit(MPTCP_DATA_READY, &msk->flags);
-+	}
- 
-+	release_sock(sk);
- 	return copied;
- }
- 
-@@ -460,10 +609,6 @@ static struct sock *mptcp_accept(struct sock *sk, int flags, int *err,
- 		msk->write_seq = subflow->idsn + 1;
- 		ack_seq++;
- 		msk->ack_seq = ack_seq;
--		subflow->map_seq = ack_seq;
--		subflow->map_subflow_seq = 1;
--		subflow->rel_write_seq = 1;
--		subflow->tcp_sock = ssk;
- 		newsk = new_mptcp_sock;
- 		mptcp_copy_inaddrs(newsk, ssk);
- 		list_add(&subflow->node, &msk->conn_list);
-@@ -475,6 +620,19 @@ static struct sock *mptcp_accept(struct sock *sk, int flags, int *err,
- 		bh_unlock_sock(new_mptcp_sock);
- 		local_bh_enable();
- 		release_sock(sk);
-+
-+		/* the subflow can already receive packet, avoid racing with
-+		 * the receive path and process the pending ones
-+		 */
-+		lock_sock(ssk);
-+		subflow->map_seq = ack_seq;
-+		subflow->map_subflow_seq = 1;
-+		subflow->rel_write_seq = 1;
-+		subflow->tcp_sock = ssk;
-+		subflow->conn = new_mptcp_sock;
-+		if (unlikely(!skb_queue_empty(&ssk->sk_receive_queue)))
-+			mptcp_subflow_data_available(ssk);
-+		release_sock(ssk);
- 	}
- 
- 	return newsk;
--- 
-2.23.0
-
+> For bgmac.c, bcmgenet.c and cpmac.c:
+> 
+> Acked-by: Florian Fainelli <f.fainelli@gmail.com>
+> 
+> Whether you decide to spin another version or not.
+> 
+Heiner
