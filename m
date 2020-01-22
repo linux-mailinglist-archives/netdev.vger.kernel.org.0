@@ -2,47 +2,47 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 25A2E145B82
-	for <lists+netdev@lfdr.de>; Wed, 22 Jan 2020 19:23:15 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3E8A0145B83
+	for <lists+netdev@lfdr.de>; Wed, 22 Jan 2020 19:23:21 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728890AbgAVSXL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 22 Jan 2020 13:23:11 -0500
-Received: from mail-pl1-f195.google.com ([209.85.214.195]:32792 "EHLO
-        mail-pl1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725883AbgAVSXL (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 22 Jan 2020 13:23:11 -0500
-Received: by mail-pl1-f195.google.com with SMTP id ay11so125725plb.0
-        for <netdev@vger.kernel.org>; Wed, 22 Jan 2020 10:23:11 -0800 (PST)
+        id S1728904AbgAVSXR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 22 Jan 2020 13:23:17 -0500
+Received: from mail-pj1-f66.google.com ([209.85.216.66]:54219 "EHLO
+        mail-pj1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725883AbgAVSXR (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 22 Jan 2020 13:23:17 -0500
+Received: by mail-pj1-f66.google.com with SMTP id n96so267760pjc.3
+        for <netdev@vger.kernel.org>; Wed, 22 Jan 2020 10:23:16 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=75GYGZCutiLRlVt9f9TBFKtlqNdfsesUvmoWR+mvNZE=;
-        b=asbJKXx6kpUO5Bur7RqmjUfcEE9MnGnGsuIMxuwFd4VUwBRL9pjPK6ZAP7SLTuI/Cg
-         dFshv3P/GMVb/+wM2nBkvZ/07IlYEtb6h5p0786B2XDPM5Ve3Cru5bCkasZZx3Kc4U62
-         NE1eilHYBxBi9qo42OSYEdaIp7pzYjN3WBLi4X7TCc3ZWiYMUL+rRzTZqlrBH3OdYpR8
-         wXju6RZeRxYTlSXTTixmnlbUTd4A6WRXfFx6Y43sAEOxe0qFnp/B4NSsrekyijhO4Qyi
-         8NfB1qgrajAZTnGCTZTAwMmGdppZQSo0FC7sEV3vj94/ogPZkzYzG8P9wwUMN3Mh7KnS
-         IldQ==
+        bh=NdDugV4RVuZnDJNXT9PvRvUKCb7vnZ8wbK7a4Kfzijc=;
+        b=j0CM85Il7/7gnEnFxVOX8/xlAknRb6C4ejzmVsOD/RG02DdKaUQFDl+mAmsjywfENg
+         duFyH4Jq916RiSV/4VrVAZi251uPM+TOU8Ld/YBLxVKQeN7IPBUJeMVLuqNSJzwbfxpe
+         wFsfyaTH3lViqsBNc6fG+1eO0J5f8PeAzau5c+e68uYzOYg9KV/XzzFdKzba2613+CWY
+         j9CFmCRmd8sVK9Lz2X8mNifJgRFOtGfGZ92FNdABJ1xn3Y8m3d2U2uk5D8SLREs9Prrx
+         s1cTEoKc25OKxznfoI1sevLRU3z6kwgfqk1Z/rvk8mp1Bda9vSX5KpiiQ93MV99+UNuL
+         yMhQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references;
-        bh=75GYGZCutiLRlVt9f9TBFKtlqNdfsesUvmoWR+mvNZE=;
-        b=jS0+7/deJnA7ePqQLmfSDtUA6TyIe2JU9UZ2eiKvg+Yhjw0ZAi9x11q2JyIrB+O2S6
-         S5J8122v/5KiRv88AN1ms2hsk1268glNUEu4RfQcwFkH/pqBe0TS8v3OqaEjHkX2EqKB
-         JeUomdTU1lqIKE4oaAKX7LM8Zu17YSTetZo750RwxQjwn9X0UDWmqcKbMNCrJR4d1jTe
-         8EeY40gZxasjQru6/0rYdrkHVggLYFhTpWT9iFYZb3cJ879hRpej5elNw5a0KnX+H6cJ
-         AD8feP4SBIGmwIc6Qyryx6gKZRKurphUzYBdPeiRHbLiUiiYIdlTACXxUyMI7yFyczU+
-         TSmw==
-X-Gm-Message-State: APjAAAVcK3L1EJYb2+hDGVYe0EupINvha0I9T+ItusAUliyE835GRbKY
-        0irr1wAJ3WgEt3TznxtIVlyNIi7ulPnUnEGu
-X-Google-Smtp-Source: APXvYqy05SDSg3iYMpd2d6I9TeQqXjLBF1sYUN3LdSCtY/LQk+frVisdYWqCucys1N8mKtbA+0v8yA==
-X-Received: by 2002:a17:902:6b8a:: with SMTP id p10mr12141590plk.47.1579717390494;
-        Wed, 22 Jan 2020 10:23:10 -0800 (PST)
+        bh=NdDugV4RVuZnDJNXT9PvRvUKCb7vnZ8wbK7a4Kfzijc=;
+        b=W8ZsUr6pyO3mNPM6QQUvhEUX8Pxn6XCF2AR5EVl7VxMpOHrY0lOVxgySzO1olNfEso
+         vgGO4ucEbnS3CmQQ3QepzgnJldcwHAdLhaZCrrx14gKf9o4BCNOyL44UONMLY9IKjtNp
+         VHyeTM28w+FpUTeEDx3QN+Wlk/Eb/yD8fXvSmFcdg4v2PyN+V0oL6RrGXDziSovZRDnW
+         HUyzMHciGPVvj0Gm+P/O0IIHpHM5LhQgDi274BQlsd7SWwfsLB4sgF+C8uPUTd1QkzRm
+         6+UY4MV/v9EN5h80fP+WFrJl2xcLzjE+tWMvfNVXHgiv20DlkcDofaKnaHxa/YJuKKSp
+         7QbA==
+X-Gm-Message-State: APjAAAUPoPWy1Q9W1oL2vz1UDLselEtCLPjuH9kjYpWn3NaYsucmBMwn
+        Uoqaahc+E5YqJvQdXYbCg83CyIAgDHBCdr2F
+X-Google-Smtp-Source: APXvYqySkYuOyIaFRc4GKOmt71847Ja0N0cmr56Z8fNpBAFhbaKCWF5gTG+a72Ms+R6GdrUtHZtCqQ==
+X-Received: by 2002:a17:90a:cb16:: with SMTP id z22mr4533098pjt.122.1579717396001;
+        Wed, 22 Jan 2020 10:23:16 -0800 (PST)
 Received: from localhost.localdomain ([223.186.203.82])
-        by smtp.gmail.com with ESMTPSA id o17sm3996532pjq.1.2020.01.22.10.23.05
+        by smtp.gmail.com with ESMTPSA id o17sm3996532pjq.1.2020.01.22.10.23.11
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 22 Jan 2020 10:23:10 -0800 (PST)
+        Wed, 22 Jan 2020 10:23:15 -0800 (PST)
 From:   gautamramk@gmail.com
 To:     netdev@vger.kernel.org
 Cc:     "Mohit P. Tahiliani" <tahiliani@nitk.edu.in>,
@@ -54,9 +54,9 @@ Cc:     "Mohit P. Tahiliani" <tahiliani@nitk.edu.in>,
         Stephen Hemminger <stephen@networkplumber.org>,
         Leslie Monis <lesliemonis@gmail.com>,
         Gautam Ramakrishnan <gautamramk@gmail.com>
-Subject: [PATCH net-next v7 05/10] pie: rearrange structure members and their initializations
-Date:   Wed, 22 Jan 2020 23:52:28 +0530
-Message-Id: <20200122182233.3940-6-gautamramk@gmail.com>
+Subject: [PATCH net-next v7 06/10] pie: improve comments and commenting style
+Date:   Wed, 22 Jan 2020 23:52:29 +0530
+Message-Id: <20200122182233.3940-7-gautamramk@gmail.com>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <20200122182233.3940-1-gautamramk@gmail.com>
 References: <20200122182233.3940-1-gautamramk@gmail.com>
@@ -67,95 +67,139 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: "Mohit P. Tahiliani" <tahiliani@nitk.edu.in>
 
-Rearrange the members of the structure such that closely
-referenced members appear together and/or fit in the same
-cacheline. Also, change the order of their initializations to
-match the order in which they appear in the structure.
+Improve the comments along with the commenting style used to
+describe the members of the structures and their initial values
+in the init functions.
 
 Signed-off-by: Mohit P. Tahiliani <tahiliani@nitk.edu.in>
 Signed-off-by: Leslie Monis <lesliemonis@gmail.com>
 Signed-off-by: Gautam Ramakrishnan <gautamramk@gmail.com>
 ---
- include/net/pie.h   | 20 ++++++++++----------
- net/sched/sch_pie.c |  2 +-
- 2 files changed, 11 insertions(+), 11 deletions(-)
+ include/net/pie.h | 85 ++++++++++++++++++++++++++++++++---------------
+ 1 file changed, 58 insertions(+), 27 deletions(-)
 
 diff --git a/include/net/pie.h b/include/net/pie.h
-index f9c6a44bdb0c..ec0fbe98ec2f 100644
+index ec0fbe98ec2f..51a1984c2dce 100644
 --- a/include/net/pie.h
 +++ b/include/net/pie.h
-@@ -28,13 +28,13 @@ struct pie_params {
+@@ -14,42 +14,74 @@
+ #define DQCOUNT_INVALID	-1
+ #define PIE_SCALE	8
  
- /* variables used */
- struct pie_vars {
--	u64 prob;		/* probability but scaled by u64 limit. */
--	psched_time_t burst_time;
- 	psched_time_t qdelay;
- 	psched_time_t qdelay_old;
--	u64 dq_count;		/* measured in bytes */
-+	psched_time_t burst_time;
- 	psched_time_t dq_tstamp;	/* drain rate */
-+	u64 prob;		/* probability but scaled by u64 limit. */
- 	u64 accu_prob;		/* accumulated drop probability */
-+	u64 dq_count;		/* measured in bytes */
- 	u32 avg_dq_rate;	/* bytes per pschedtime tick,scaled */
- 	u32 qlen_old;		/* in bytes */
- 	u8 accu_prob_overflows;	/* overflows of accu_prob */
-@@ -45,8 +45,8 @@ struct pie_stats {
- 	u32 packets_in;		/* total number of packets enqueued */
- 	u32 dropped;		/* packets dropped due to pie_action */
- 	u32 overlimit;		/* dropped due to lack of space in queue */
--	u32 maxq;		/* maximum queue size */
- 	u32 ecn_mark;		/* packets marked with ECN */
-+	u32 maxq;		/* maximum queue size */
+-/* parameters used */
++/**
++ * struct pie_params - contains pie parameters
++ * @target:		target delay in pschedtime
++ * @tudpate:		interval at which drop probability is calculated
++ * @limit:		total number of packets that can be in the queue
++ * @alpha:		parameter to control drop probability
++ * @beta:		parameter to control drop probability
++ * @ecn:		is ECN marking of packets enabled
++ * @bytemode:		is drop probability scaled based on pkt size
++ * @dq_rate_estimator:	is Little's law used for qdelay calculation
++ */
+ struct pie_params {
+-	psched_time_t target;	/* user specified target delay in pschedtime */
+-	u32 tupdate;		/* timer frequency (in jiffies) */
+-	u32 limit;		/* number of packets that can be enqueued */
+-	u32 alpha;		/* alpha and beta are between 0 and 32 */
+-	u32 beta;		/* and are used for shift relative to 1 */
+-	u8 ecn;			/* true if ecn is enabled */
+-	u8 bytemode;		/* to scale drop early prob based on pkt size */
+-	u8 dq_rate_estimator;	/* to calculate delay using Little's law */
++	psched_time_t target;
++	u32 tupdate;
++	u32 limit;
++	u32 alpha;
++	u32 beta;
++	u8 ecn;
++	u8 bytemode;
++	u8 dq_rate_estimator;
  };
  
- /* private skb vars */
-@@ -56,11 +56,11 @@ struct pie_skb_cb {
+-/* variables used */
++/**
++ * struct pie_vars - contains pie variables
++ * @qdelay:			current queue delay
++ * @qdelay_old:			queue delay in previous qdelay calculation
++ * @burst_time:			burst time allowance
++ * @dq_tstamp:			timestamp at which dq rate was last calculated
++ * @prob:			drop probability
++ * @accu_prob:			accumulated drop probability
++ * @dq_count:			number of bytes dequeued in a measurement cycle
++ * @avg_dq_rate:		calculated average dq rate
++ * @qlen_old:			queue length during previous qdelay calculation
++ * @accu_prob_overflows:	number of times accu_prob overflows
++ */
+ struct pie_vars {
+ 	psched_time_t qdelay;
+ 	psched_time_t qdelay_old;
+ 	psched_time_t burst_time;
+-	psched_time_t dq_tstamp;	/* drain rate */
+-	u64 prob;		/* probability but scaled by u64 limit. */
+-	u64 accu_prob;		/* accumulated drop probability */
+-	u64 dq_count;		/* measured in bytes */
+-	u32 avg_dq_rate;	/* bytes per pschedtime tick,scaled */
+-	u32 qlen_old;		/* in bytes */
+-	u8 accu_prob_overflows;	/* overflows of accu_prob */
++	psched_time_t dq_tstamp;
++	u64 prob;
++	u64 accu_prob;
++	u64 dq_count;
++	u32 avg_dq_rate;
++	u32 qlen_old;
++	u8 accu_prob_overflows;
+ };
  
- static inline void pie_params_init(struct pie_params *params)
+-/* statistics gathering */
++/**
++ * struct pie_stats - contains pie stats
++ * @packets_in:	total number of packets enqueued
++ * @dropped:	packets dropped due to pie action
++ * @overlimit:	packets dropped due to lack of space in queue
++ * @ecn_mark:	packets marked with ECN
++ * @maxq:	maximum queue size
++ */
+ struct pie_stats {
+-	u32 packets_in;		/* total number of packets enqueued */
+-	u32 dropped;		/* packets dropped due to pie_action */
+-	u32 overlimit;		/* dropped due to lack of space in queue */
+-	u32 ecn_mark;		/* packets marked with ECN */
+-	u32 maxq;		/* maximum queue size */
++	u32 packets_in;
++	u32 dropped;
++	u32 overlimit;
++	u32 ecn_mark;
++	u32 maxq;
+ };
+ 
+-/* private skb vars */
++/**
++ * struct pie_skb_cb - contains private skb vars
++ * @enqueue_time:	timestamp when the packet is enqueued
++ */
+ struct pie_skb_cb {
+ 	psched_time_t enqueue_time;
+ };
+@@ -58,7 +90,7 @@ static inline void pie_params_init(struct pie_params *params)
  {
--	params->alpha = 2;
--	params->beta = 20;
-+	params->target = PSCHED_NS2TICKS(15 * NSEC_PER_MSEC);	/* 15 ms */
+ 	params->target = PSCHED_NS2TICKS(15 * NSEC_PER_MSEC);	/* 15 ms */
  	params->tupdate = usecs_to_jiffies(15 * USEC_PER_MSEC);	/* 15 ms */
- 	params->limit = 1000;	/* default of 1000 packets */
--	params->target = PSCHED_NS2TICKS(15 * NSEC_PER_MSEC);	/* 15 ms */
-+	params->alpha = 2;
-+	params->beta = 20;
+-	params->limit = 1000;	/* default of 1000 packets */
++	params->limit = 1000;
+ 	params->alpha = 2;
+ 	params->beta = 20;
  	params->ecn = false;
- 	params->bytemode = false;
- 	params->dq_rate_estimator = false;
-@@ -68,12 +68,12 @@ static inline void pie_params_init(struct pie_params *params)
+@@ -68,8 +100,7 @@ static inline void pie_params_init(struct pie_params *params)
  
  static inline void pie_vars_init(struct pie_vars *vars)
  {
--	vars->dq_count = DQCOUNT_INVALID;
-+	/* default of 150 ms in pschedtime */
-+	vars->burst_time = PSCHED_NS2TICKS(150 * NSEC_PER_MSEC);
- 	vars->dq_tstamp = DTIME_INVALID;
- 	vars->accu_prob = 0;
-+	vars->dq_count = DQCOUNT_INVALID;
- 	vars->avg_dq_rate = 0;
 -	/* default of 150 ms in pschedtime */
 -	vars->burst_time = PSCHED_NS2TICKS(150 * NSEC_PER_MSEC);
- 	vars->accu_prob_overflows = 0;
- }
- 
-diff --git a/net/sched/sch_pie.c b/net/sched/sch_pie.c
-index 7197bcaa14ba..0c583cc148f3 100644
---- a/net/sched/sch_pie.c
-+++ b/net/sched/sch_pie.c
-@@ -23,8 +23,8 @@
- 
- /* private data for the Qdisc */
- struct pie_sched_data {
--	struct pie_params params;
- 	struct pie_vars vars;
-+	struct pie_params params;
- 	struct pie_stats stats;
- 	struct timer_list adapt_timer;
- 	struct Qdisc *sch;
++	vars->burst_time = PSCHED_NS2TICKS(150 * NSEC_PER_MSEC); /* 150 ms */
+ 	vars->dq_tstamp = DTIME_INVALID;
+ 	vars->accu_prob = 0;
+ 	vars->dq_count = DQCOUNT_INVALID;
 -- 
 2.17.1
 
