@@ -2,48 +2,57 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 9C630145912
-	for <lists+netdev@lfdr.de>; Wed, 22 Jan 2020 16:54:19 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 16216145916
+	for <lists+netdev@lfdr.de>; Wed, 22 Jan 2020 16:55:44 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726081AbgAVPyS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 22 Jan 2020 10:54:18 -0500
-Received: from mail.kernel.org ([198.145.29.99]:39956 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725911AbgAVPyR (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 22 Jan 2020 10:54:17 -0500
-Received: from cakuba (c-73-93-4-247.hsd1.ca.comcast.net [73.93.4.247])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 03AAD21835;
-        Wed, 22 Jan 2020 15:54:16 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1579708457;
-        bh=5ANYAe8H7x9Ef6asGH9m5aEld7J9uE/DB5mYKoBzAKc=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=kxsLCCxsXu4bIIFFC5KJqmps4FD4NrXBn6VPVtwRB4v98cLirPozE//RzBDM9Ec51
-         zNIcgdSzR54vnwkT7j+zUEu+cb2iDG5hXta6mSAmAL8b0UZRTZeWHQMMdWFsg/MGlM
-         ZpvMhA9vVxCYXHfYUdRYU7j61tZrxv/zQn0dPNDk=
-Date:   Wed, 22 Jan 2020 07:54:16 -0800
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Michal Kalderon <michal.kalderon@marvell.com>
-Cc:     <ariel.elior@marvell.com>, <davem@davemloft.net>,
-        <netdev@vger.kernel.org>, <linux-rdma@vger.kernel.org>,
-        <linux-scsi@vger.kernel.org>
-Subject: Re: [PATCH net-next 13/14] qed: FW 8.42.2.0 debug features
-Message-ID: <20200122075416.608979b2@cakuba>
-In-Reply-To: <20200122152627.14903-14-michal.kalderon@marvell.com>
-References: <20200122152627.14903-1-michal.kalderon@marvell.com>
-        <20200122152627.14903-14-michal.kalderon@marvell.com>
+        id S1726049AbgAVPzm (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 22 Jan 2020 10:55:42 -0500
+Received: from www62.your-server.de ([213.133.104.62]:33548 "EHLO
+        www62.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725924AbgAVPzl (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 22 Jan 2020 10:55:41 -0500
+Received: from sslproxy03.your-server.de ([88.198.220.132])
+        by www62.your-server.de with esmtpsa (TLSv1.2:DHE-RSA-AES256-GCM-SHA384:256)
+        (Exim 4.89_1)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1iuILv-0004Kh-96; Wed, 22 Jan 2020 16:55:35 +0100
+Received: from [2001:1620:665:0:5795:5b0a:e5d5:5944] (helo=linux-3.fritz.box)
+        by sslproxy03.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1iuILv-000HJ3-0O; Wed, 22 Jan 2020 16:55:35 +0100
+Subject: Re: [PATCH bpf-next] bpf: Fix trampoline usage in preempt
+To:     Alexei Starovoitov <ast@kernel.org>, davem@davemloft.net
+Cc:     jannh@google.com, paulmck@kernel.org, netdev@vger.kernel.org,
+        bpf@vger.kernel.org, kernel-team@fb.com
+References: <20200121032231.3292185-1-ast@kernel.org>
+From:   Daniel Borkmann <daniel@iogearbox.net>
+Message-ID: <1ab7d6f3-fc97-cb29-cf77-7d0d9b70e9ca@iogearbox.net>
+Date:   Wed, 22 Jan 2020 16:55:34 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.7.2
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+In-Reply-To: <20200121032231.3292185-1-ast@kernel.org>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
 Content-Transfer-Encoding: 7bit
+X-Authenticated-Sender: daniel@iogearbox.net
+X-Virus-Scanned: Clear (ClamAV 0.101.4/25703/Wed Jan 22 12:37:53 2020)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 22 Jan 2020 17:26:26 +0200, Michal Kalderon wrote:
-> Add to debug dump more information on the platform it was collected
-> from (kernel version, epoch, pci func, path id).
+On 1/21/20 4:22 AM, Alexei Starovoitov wrote:
+> Though the second half of trampoline page is unused a task could be
+> preempted in the middle of the first half of trampoline and two
+> updates to trampoline would change the code from underneath the
+> preempted task. Hence wait for tasks to voluntarily schedule or go
+> to userspace.
+> Add similar wait before freeing the trampoline.
+> 
+> Fixes: fec56f5890d9 ("bpf: Introduce BPF trampoline")
+> Reported-by: Jann Horn <jannh@google.com>
+> Signed-off-by: Alexei Starovoitov <ast@kernel.org>
 
-Kernel version and epoch don't belong in _device_ debug dump.
+Applied, thanks!
