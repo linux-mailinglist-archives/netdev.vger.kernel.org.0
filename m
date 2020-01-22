@@ -2,40 +2,40 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 03918144CE0
-	for <lists+netdev@lfdr.de>; Wed, 22 Jan 2020 09:05:26 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D94BA144CE4
+	for <lists+netdev@lfdr.de>; Wed, 22 Jan 2020 09:05:27 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726083AbgAVIDh (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 22 Jan 2020 03:03:37 -0500
-Received: from rtits2.realtek.com ([211.75.126.72]:33442 "EHLO
+        id S1729353AbgAVIDk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 22 Jan 2020 03:03:40 -0500
+Received: from rtits2.realtek.com ([211.75.126.72]:33444 "EHLO
         rtits2.realtek.com.tw" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729353AbgAVIDg (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 22 Jan 2020 03:03:36 -0500
+        with ESMTP id S1729393AbgAVIDi (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 22 Jan 2020 03:03:38 -0500
 Authenticated-By: 
-X-SpamFilter-By: BOX Solutions SpamTrap 5.62 with qID 00M83XF1009793, This message is accepted by code: ctloc85258
-Received: from mail.realtek.com (RTEXMB06.realtek.com.tw[172.21.6.99])
-        by rtits2.realtek.com.tw (8.15.2/2.57/5.78) with ESMTPS id 00M83XF1009793
+X-SpamFilter-By: BOX Solutions SpamTrap 5.62 with qID 00M83ZAA009797, This message is accepted by code: ctloc85258
+Received: from mail.realtek.com (smtpsrv.realtek.com[172.21.6.99])
+        by rtits2.realtek.com.tw (8.15.2/2.57/5.78) with ESMTPS id 00M83ZAA009797
         (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=NOT);
-        Wed, 22 Jan 2020 16:03:33 +0800
+        Wed, 22 Jan 2020 16:03:35 +0800
 Received: from RTEXMB06.realtek.com.tw (172.21.6.99) by
  RTEXMB06.realtek.com.tw (172.21.6.99) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.1779.2; Wed, 22 Jan 2020 16:03:33 +0800
+ 15.1.1779.2; Wed, 22 Jan 2020 16:03:34 +0800
 Received: from RTITCASV01.realtek.com.tw (172.21.6.18) by
  RTEXMB06.realtek.com.tw (172.21.6.99) with Microsoft SMTP Server
  (version=TLS1_0, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA) id 15.1.1779.2
- via Frontend Transport; Wed, 22 Jan 2020 16:03:33 +0800
+ via Frontend Transport; Wed, 22 Jan 2020 16:03:34 +0800
 Received: from fc30.localdomain (172.21.177.138) by RTITCASV01.realtek.com.tw
  (172.21.6.18) with Microsoft SMTP Server id 14.3.468.0; Wed, 22 Jan 2020
- 16:03:31 +0800
+ 16:03:33 +0800
 From:   Hayes Wang <hayeswang@realtek.com>
 To:     <netdev@vger.kernel.org>
 CC:     <nic_swsd@realtek.com>, <linux-kernel@vger.kernel.org>,
         <linux-usb@vger.kernel.org>, <pmalani@chromium.org>,
         <grundler@chromium.org>, Hayes Wang <hayeswang@realtek.com>
-Subject: [PATCH net v3 8/9] r8152: avoid the MCU to clear the lanwake
-Date:   Wed, 22 Jan 2020 16:02:12 +0800
-Message-ID: <1394712342-15778-366-Taiwan-albertk@realtek.com>
+Subject: [PATCH net v3 9/9] r8152: disable DelayPhyPwrChg
+Date:   Wed, 22 Jan 2020 16:02:13 +0800
+Message-ID: <1394712342-15778-367-Taiwan-albertk@realtek.com>
 X-Mailer: Microsoft Office Outlook 11
 In-Reply-To: <1394712342-15778-358-Taiwan-albertk@realtek.com>
 References: <1394712342-15778-338-Taiwan-albertk@realtek.com>
@@ -49,113 +49,57 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Avoid the MCU to clear the lanwake after suspending. It may cause the
-WOL fail. Disable LANWAKE_CLR_EN before suspending. Besides,enable it
-and reset the lanwake status when resuming or initializing.
+When enabling this, the device would wait an internal signal which
+wouldn't be triggered. Then, the device couldn't enter P3 mode, so
+the power consumption is increased.
 
 Signed-off-by: Hayes Wang <hayeswang@realtek.com>
 ---
- drivers/net/usb/r8152.c | 33 +++++++++++++++++++++++++++++++++
- 1 file changed, 33 insertions(+)
+ drivers/net/usb/r8152.c | 10 +++++++++-
+ 1 file changed, 9 insertions(+), 1 deletion(-)
 
 diff --git a/drivers/net/usb/r8152.c b/drivers/net/usb/r8152.c
-index b1a00f29455b..c037fc7adcea 100644
+index c037fc7adcea..3f425f974d03 100644
 --- a/drivers/net/usb/r8152.c
 +++ b/drivers/net/usb/r8152.c
-@@ -68,6 +68,7 @@
- #define PLA_LED_FEATURE		0xdd92
- #define PLA_PHYAR		0xde00
- #define PLA_BOOT_CTRL		0xe004
-+#define PLA_LWAKE_CTRL_REG	0xe007
- #define PLA_GPHY_INTR_IMR	0xe022
- #define PLA_EEE_CR		0xe040
- #define PLA_EEEP_CR		0xe080
-@@ -95,6 +96,7 @@
- #define PLA_TALLYCNT		0xe890
- #define PLA_SFF_STS_7		0xe8de
- #define PLA_PHYSTATUS		0xe908
-+#define PLA_CONFIG6		0xe90a /* CONFIG6 */
- #define PLA_BP_BA		0xfc26
- #define PLA_BP_0		0xfc28
- #define PLA_BP_1		0xfc2a
-@@ -300,6 +302,9 @@
- #define LINK_ON_WAKE_EN		0x0010
- #define LINK_OFF_WAKE_EN	0x0008
+@@ -31,7 +31,7 @@
+ #define NETNEXT_VERSION		"11"
  
-+/* PLA_CONFIG6 */
-+#define LANWAKE_CLR_EN		BIT(0)
-+
- /* PLA_CONFIG5 */
- #define BWF_EN			0x0040
- #define MWF_EN			0x0020
-@@ -356,6 +361,9 @@
- /* PLA_BOOT_CTRL */
- #define AUTOLOAD_DONE		0x0002
+ /* Information for net */
+-#define NET_VERSION		"10"
++#define NET_VERSION		"11"
  
-+/* PLA_LWAKE_CTRL_REG */
-+#define LANWAKE_PIN		BIT(7)
-+
- /* PLA_SUSPEND_FLAG */
- #define LINK_CHG_EVENT		BIT(0)
+ #define DRIVER_VERSION		"v1." NETNEXT_VERSION "." NET_VERSION
+ #define DRIVER_AUTHOR "Realtek linux nic maintainers <nic_swsd@realtek.com>"
+@@ -109,6 +109,7 @@
+ #define PLA_BP_EN		0xfc38
  
-@@ -4968,6 +4976,8 @@ static void rtl8152_down(struct r8152 *tp)
+ #define USB_USB2PHY		0xb41e
++#define USB_SSPHYLINK1		0xb426
+ #define USB_SSPHYLINK2		0xb428
+ #define USB_U2P3_CTRL		0xb460
+ #define USB_CSR_DUMMY1		0xb464
+@@ -384,6 +385,9 @@
+ #define USB2PHY_SUSPEND		0x0001
+ #define USB2PHY_L1		0x0002
  
- static void rtl8153_up(struct r8152 *tp)
- {
-+	u32 ocp_data;
++/* USB_SSPHYLINK1 */
++#define DELAY_PHY_PWR_CHG	BIT(1)
 +
- 	if (test_bit(RTL8152_UNPLUG, &tp->flags))
- 		return;
+ /* USB_SSPHYLINK2 */
+ #define pwd_dn_scale_mask	0x3ffe
+ #define pwd_dn_scale(x)		((x) << 1)
+@@ -4994,6 +4998,10 @@ static void rtl8153_up(struct r8152 *tp)
+ 	ocp_data &= ~LANWAKE_PIN;
+ 	ocp_write_byte(tp, MCU_TYPE_PLA, PLA_LWAKE_CTRL_REG, ocp_data);
  
-@@ -4975,6 +4985,15 @@ static void rtl8153_up(struct r8152 *tp)
- 	r8153_u2p3en(tp, false);
- 	r8153_aldps_en(tp, false);
- 	r8153_first_init(tp);
-+
-+	ocp_data = ocp_read_byte(tp, MCU_TYPE_PLA, PLA_CONFIG6);
-+	ocp_data |= LANWAKE_CLR_EN;
-+	ocp_write_byte(tp, MCU_TYPE_PLA, PLA_CONFIG6, ocp_data);
-+
-+	ocp_data = ocp_read_byte(tp, MCU_TYPE_PLA, PLA_LWAKE_CTRL_REG);
-+	ocp_data &= ~LANWAKE_PIN;
-+	ocp_write_byte(tp, MCU_TYPE_PLA, PLA_LWAKE_CTRL_REG, ocp_data);
++	ocp_data = ocp_read_word(tp, MCU_TYPE_USB, USB_SSPHYLINK1);
++	ocp_data &= ~DELAY_PHY_PWR_CHG;
++	ocp_write_word(tp, MCU_TYPE_USB, USB_SSPHYLINK1, ocp_data);
 +
  	r8153_aldps_en(tp, true);
  
  	switch (tp->version) {
-@@ -4993,11 +5012,17 @@ static void rtl8153_up(struct r8152 *tp)
- 
- static void rtl8153_down(struct r8152 *tp)
- {
-+	u32 ocp_data;
-+
- 	if (test_bit(RTL8152_UNPLUG, &tp->flags)) {
- 		rtl_drop_queued_tx(tp);
- 		return;
- 	}
- 
-+	ocp_data = ocp_read_byte(tp, MCU_TYPE_PLA, PLA_CONFIG6);
-+	ocp_data &= ~LANWAKE_CLR_EN;
-+	ocp_write_byte(tp, MCU_TYPE_PLA, PLA_CONFIG6, ocp_data);
-+
- 	r8153_u1u2en(tp, false);
- 	r8153_u2p3en(tp, false);
- 	r8153_power_cut_en(tp, false);
-@@ -5458,6 +5483,14 @@ static void r8153_init(struct r8152 *tp)
- 	r8153_mac_clk_spd(tp, false);
- 	usb_enable_lpm(tp->udev);
- 
-+	ocp_data = ocp_read_byte(tp, MCU_TYPE_PLA, PLA_CONFIG6);
-+	ocp_data |= LANWAKE_CLR_EN;
-+	ocp_write_byte(tp, MCU_TYPE_PLA, PLA_CONFIG6, ocp_data);
-+
-+	ocp_data = ocp_read_byte(tp, MCU_TYPE_PLA, PLA_LWAKE_CTRL_REG);
-+	ocp_data &= ~LANWAKE_PIN;
-+	ocp_write_byte(tp, MCU_TYPE_PLA, PLA_LWAKE_CTRL_REG, ocp_data);
-+
- 	/* rx aggregation */
- 	ocp_data = ocp_read_word(tp, MCU_TYPE_USB, USB_USB_CTRL);
- 	ocp_data &= ~(RX_AGG_DISABLE | RX_ZERO_EN);
 -- 
 2.21.0
 
