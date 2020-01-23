@@ -2,106 +2,80 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 6DF2E146F67
-	for <lists+netdev@lfdr.de>; Thu, 23 Jan 2020 18:18:14 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id AE395146F6A
+	for <lists+netdev@lfdr.de>; Thu, 23 Jan 2020 18:18:29 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729112AbgAWRSK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 23 Jan 2020 12:18:10 -0500
-Received: from mail-pf1-f193.google.com ([209.85.210.193]:38293 "EHLO
-        mail-pf1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727296AbgAWRSK (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 23 Jan 2020 12:18:10 -0500
-Received: by mail-pf1-f193.google.com with SMTP id x185so1837218pfc.5;
-        Thu, 23 Jan 2020 09:18:09 -0800 (PST)
+        id S1729337AbgAWRSY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 23 Jan 2020 12:18:24 -0500
+Received: from mail-oi1-f193.google.com ([209.85.167.193]:43758 "EHLO
+        mail-oi1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727296AbgAWRSY (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 23 Jan 2020 12:18:24 -0500
+Received: by mail-oi1-f193.google.com with SMTP id p125so3582236oif.10
+        for <netdev@vger.kernel.org>; Thu, 23 Jan 2020 09:18:24 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=J1JTF63Y6CzMxj8f1LiDzyUrvtnW4rRNEJCmiTqTTc0=;
-        b=UDgwVBzZnhcvQaZx0mH//TdPlf3Gt4jyCzwd+rkzyX903/m4za7IhsqXAAQsQI3EBE
-         THeC36+wxa5si4l/zbzlCngfI1/v/lXgk45ujsDWmJ3e9D2V+Y7mnHJ3YDEDWal64BF8
-         Uk0folij7LXBqGQ//PcYaX7bVLorg82w9p5jXg4+xi7ykcDAH089kK/vBzB5oys/KdCY
-         9Sp9iZByzaGLsfLlOROKHuM7lfcHaFzuh4SRY+O3hPYvE3IYjMfzoQkO5F6XMN7y4S8C
-         CCZuAp6yS/bc3hM7Qq1oNI/aN2fn079sAhVOcRzOrIAeIYYW2Dp5tq8Mh8bdR8srVQr9
-         NodQ==
+        d=cloudflare.com; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=XnQrSbFLZoFzkSjXwKmxPlg8vAGR4Rz7FX09nL1MowQ=;
+        b=hc21+PStvyHAkZivbzfWmA/5ihjJevnx3O/tdQzDwujLUH2jxifbQNtwgbRO76pWhB
+         Il8sLvHmktBy4VkGrH/ej+5PuXOlCziFAsmd69uOrq3Byko2073ruAuvZCWqvGzTQMlI
+         r4BULczhgrkpj2ln6AC+idZbtEaXPsqmIDleo=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=J1JTF63Y6CzMxj8f1LiDzyUrvtnW4rRNEJCmiTqTTc0=;
-        b=cGkCIFwOaV+waL8H5SuUO08heyP+qU0y8lThtcwf0r+4ZRqIu7ePhNy/ruA1/Wvktf
-         kCgf8MijngkIoKyhwqhMMWYWCtg5CPMgQ3893h0B3rHpJ5PFkO8ukxdrxVfhBwR+4vHz
-         C8ipAi5ujxuvgYN9PwT+GQ0dvSVbH4esxIm3FMZ4/tw3m7n/cGcHKdom0ejcgH4jK6Nb
-         kAQIt56GM3nK3DvmRZixlM2ZSEuQ2k6PBG1ehg+pmcB0DKu2CgXZYOj4dPM7e0rTMjIA
-         X1GOY7OWmdWSkzwdPJLoXPhDOyDUXwqajDTCtGgxHw9HMs0j6vKPZuIUuRapuM90lmSa
-         Oi5Q==
-X-Gm-Message-State: APjAAAUHMbzcvjFL+lIWhNGAgxAhe960wASFY7Ni37pABPlqszwxEmcq
-        b3zw7sRdL2jM4ZLi3m9e3Tc=
-X-Google-Smtp-Source: APXvYqz7qTAcmw9UEgNAfy3malI6VgsOZj09ScBH7BYVJLdSqEWfjSTC8UICf4Yfm6wS7weR9FOztg==
-X-Received: by 2002:a63:950c:: with SMTP id p12mr5161358pgd.85.1579799889566;
-        Thu, 23 Jan 2020 09:18:09 -0800 (PST)
-Received: from workstation-portable ([103.211.17.138])
-        by smtp.gmail.com with ESMTPSA id j9sm3338554pfn.152.2020.01.23.09.18.04
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 23 Jan 2020 09:18:09 -0800 (PST)
-Date:   Thu, 23 Jan 2020 22:48:00 +0530
-From:   Amol Grover <frextrite@gmail.com>
-To:     Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jesper Dangaard Brouer <hawk@kernel.org>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        Andrii Nakryiko <andriin@fb.com>, brouer@redhat.com,
-        toke@redhat.com
-Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        linux-kernel-mentees@lists.linuxfoundation.org,
-        Joel Fernandes <joel@joelfernandes.org>,
-        Madhuparna Bhowmik <madhuparnabhowmik04@gmail.com>,
-        "Paul E . McKenney" <paulmck@kernel.org>
-Subject: Re: [PATCH] bpf: devmap: Pass lockdep expression to RCU lists
-Message-ID: <20200123171800.GC4484@workstation-portable>
-References: <20200123120437.26506-1-frextrite@gmail.com>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=XnQrSbFLZoFzkSjXwKmxPlg8vAGR4Rz7FX09nL1MowQ=;
+        b=WXzmgTQGBid51JpvjA7sLJNn4tXpQZAJLPSUnO2uKDfruQ3kIiMzVZzoowLbsrqQjZ
+         MqM7rCpjym4FOTgpQHhjfsUmSkNd0PEAGpusyCxHHfDneWvkj1sMgRcXA3ef3MWnW2H5
+         Xx19sVaumu6GcRz8Ws9GMBvMFlCpANKnaW1PmzL6wtB2rApXWRV8wLgPAn9geGuphRK3
+         oTu8FaRlHz6qDYOi0zTCHBG70AYP8upO5026olUh/mVbj/HT17+D3BROlI5d9DBV9z+s
+         221/pGNqAHGRRRcXc+2naGiLyw4zGSrFKjbeMacplyzzklsTYSjV1LbrA6sZdSye8sVS
+         74Rg==
+X-Gm-Message-State: APjAAAWGpA+Ok3JtC8PI/sMpY8qfqT893lXM9PJ7lYo+XUS7FXc+kvSj
+        VxMIuwBXIMkZxeXBK3McO3sgyABBV5SVbxWXIohdaMTs6Q4=
+X-Google-Smtp-Source: APXvYqzalvtZo7H5iCHOLugbV07Wh+3lDL0ZFS+9bcfQzmkeyCF3b8BK8no3VDOS4OA6O0SMek4Z40BUq4KlKxXKVtk=
+X-Received: by 2002:aca:b60a:: with SMTP id g10mr10878162oif.102.1579799903847;
+ Thu, 23 Jan 2020 09:18:23 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200123120437.26506-1-frextrite@gmail.com>
-User-Agent: Mutt/1.12.2 (2019-09-21)
+References: <20200123165934.9584-1-lmb@cloudflare.com> <20200123165934.9584-3-lmb@cloudflare.com>
+ <20200123171612.stdwtlpqibkydz2s@kafai-mbp.dhcp.thefacebook.com>
+In-Reply-To: <20200123171612.stdwtlpqibkydz2s@kafai-mbp.dhcp.thefacebook.com>
+From:   Lorenz Bauer <lmb@cloudflare.com>
+Date:   Thu, 23 Jan 2020 17:18:12 +0000
+Message-ID: <CACAyw999DErydNaDVgczYtqzSP09hnXtmwwJ0kocjisfRdVhxQ@mail.gmail.com>
+Subject: Re: [PATCH bpf 2/4] selftests: bpf: ignore RST packets for reuseport tests
+To:     Martin Lau <kafai@fb.com>
+Cc:     Shuah Khan <shuah@kernel.org>, Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        Andrii Nakryiko <andriin@fb.com>,
+        "linux-kselftest@vger.kernel.org" <linux-kselftest@vger.kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "bpf@vger.kernel.org" <bpf@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Jan 23, 2020 at 05:34:38PM +0530, Amol Grover wrote:
-> head is traversed using hlist_for_each_entry_rcu outside an
-> RCU read-side critical section but under the protection
-> of dtab->index_lock.
-> 
-> Hence, add corresponding lockdep expression to silence false-positive
-> lockdep warnings, and harden RCU lists.
-> 
-Fixes: 6f9d451ab1a3 ("xdp: Add devmap_hash map type for looking up devices by hashed index")
-> Signed-off-by: Amol Grover <frextrite@gmail.com>
-> ---
->  kernel/bpf/devmap.c | 3 ++-
->  1 file changed, 2 insertions(+), 1 deletion(-)
-> 
-> diff --git a/kernel/bpf/devmap.c b/kernel/bpf/devmap.c
-> index 3d3d61b5985b..b4b6b77f309c 100644
-> --- a/kernel/bpf/devmap.c
-> +++ b/kernel/bpf/devmap.c
-> @@ -293,7 +293,8 @@ struct bpf_dtab_netdev *__dev_map_hash_lookup_elem(struct bpf_map *map, u32 key)
->  	struct hlist_head *head = dev_map_index_hash(dtab, key);
->  	struct bpf_dtab_netdev *dev;
->  
-> -	hlist_for_each_entry_rcu(dev, head, index_hlist)
-> +	hlist_for_each_entry_rcu(dev, head, index_hlist,
-> +				 lockdep_is_held(&dtab->index_lock))
->  		if (dev->idx == key)
->  			return dev;
->  
-> -- 
-> 2.24.1
-> 
+On Thu, 23 Jan 2020 at 17:16, Martin Lau <kafai@fb.com> wrote:
+>
+> On Thu, Jan 23, 2020 at 04:59:31PM +0000, Lorenz Bauer wrote:
+> > The reuseport tests currently suffer from a race condition: RST
+> > packets count towards DROP_ERR_SKB_DATA, since they don't contain
+> > a valid struct cmd. Tests will spuriously fail depending on whether
+> > check_results is called before or after the RST is processed.
+> >
+> > Exit the BPF program early if FIN is set.
+> Make sense.
+> Is it a RST or FIN?  The earlier commit message said RST.
+
+FIN, sorry. I'll update in a follow up.
+
+-- 
+Lorenz Bauer  |  Systems Engineer
+6th Floor, County Hall/The Riverside Building, SE1 7PB, UK
+
+www.cloudflare.com
