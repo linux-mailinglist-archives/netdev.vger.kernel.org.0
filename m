@@ -2,131 +2,90 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 854641467A8
-	for <lists+netdev@lfdr.de>; Thu, 23 Jan 2020 13:12:13 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id DB59B1467CC
+	for <lists+netdev@lfdr.de>; Thu, 23 Jan 2020 13:20:24 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728779AbgAWMMK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 23 Jan 2020 07:12:10 -0500
-Received: from mail.kernel.org ([198.145.29.99]:60468 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726026AbgAWMMK (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 23 Jan 2020 07:12:10 -0500
-Received: from localhost (unknown [193.47.165.251])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 05027206A2;
-        Thu, 23 Jan 2020 12:12:08 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1579781529;
-        bh=R7uMm+UHhjCYHSjldNpA0eQkWxcp2RP7lAFVxMKcHlQ=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=bk7fhSUCEnOjtlGY4anE5W2hycTxp3Rm3g2zwqT0J4MEFPUVhN2S0H+FClT0fPmCo
-         AFXTklSZnKfhQufbK/gYW0Aj+ush0mTY1dpwO0OSfYTD68iV47rRUyJogtDwZHIgMo
-         71r75gJ12mGEixpXp3rLTpHavoqdkGQlwVsHnVyc=
-Date:   Thu, 23 Jan 2020 14:12:03 +0200
-From:   Leon Romanovsky <leon@kernel.org>
-To:     Michal Kalderon <mkalderon@marvell.com>
-Cc:     "davem@davemloft.net" <davem@davemloft.net>,
-        Ariel Elior <aelior@marvell.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-rdma@vger.kernel.org" <linux-rdma@vger.kernel.org>,
-        "linux-scsi@vger.kernel.org" <linux-scsi@vger.kernel.org>
-Subject: Re: [EXT] Re: [PATCH net-next 14/14] qed: bump driver version
-Message-ID: <20200123121203.GL7018@unreal>
-References: <20200122152627.14903-1-michal.kalderon@marvell.com>
- <20200122152627.14903-15-michal.kalderon@marvell.com>
- <20200122161353.GG7018@unreal>
- <MN2PR18MB31821C711CBB377437F3EECCA10C0@MN2PR18MB3182.namprd18.prod.outlook.com>
- <20200122182107.GI7018@unreal>
- <MN2PR18MB31829FA8377460DDB9675596A10F0@MN2PR18MB3182.namprd18.prod.outlook.com>
+        id S1728831AbgAWMUX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 23 Jan 2020 07:20:23 -0500
+Received: from mail-wr1-f68.google.com ([209.85.221.68]:38253 "EHLO
+        mail-wr1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726026AbgAWMUW (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 23 Jan 2020 07:20:22 -0500
+Received: by mail-wr1-f68.google.com with SMTP id y17so2842966wrh.5
+        for <netdev@vger.kernel.org>; Thu, 23 Jan 2020 04:20:21 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=Lejqf24rosAsJKxrkKfL3dppqbpQPGWnzYp9MFYaWW0=;
+        b=P+vxxUhlNsWfHCUEGguW11Qe/Pmp+uGaCdkiNx23Kzvqzd02brVaVlzoMesBhx6c3D
+         Rz3LhmNbb+bVmlqoH6tbLxc5My6WMdeo0Q0zUpioYANkmo6pJ8HBEDBbB/TqwTC4KFZT
+         Z+wx6yrk/prwq63YyVrNTKTgDDrxwki4pOyaZHRa71N/KNxtpdGlhtEXbYtB1mev23j4
+         FRUCaCW0GNZmciO+di8giYn+VRD0ov5RGaG9OyXlDNTQB5qpVqtOxrQ/fWYX2wUkcNjl
+         /jVeEBRVdZ2ZFmn7ZvL/wjc9ImPTWbbGxJe39zwhe9K/UTFtFtF/Rid+vb36W6YhEOhw
+         TB1g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=Lejqf24rosAsJKxrkKfL3dppqbpQPGWnzYp9MFYaWW0=;
+        b=MvbaY+lERXWtQoq0UFQjkIVMAEx5Y5132Azkh7lGKwGKyW7jeSKRVihbU9q64SyQv8
+         xw95GzOA5W70DRFDTZqo/VKzXcAvPvbXTAkPdQtzGzSeMziTvv4+bskrJ9RFAWK92xKY
+         CS8i7+3laoDzzsQoGOL8Zpsqy+WEYNIhqQRG1vyGf08tfhTwjS/nLydOlfu2PMJQXt2c
+         xuObe9BgFF6bp4e9fsupZc/neoWB6utZoe5j5u8HQxzKnU0mpVWbRoFuG1d5kn0EFMW9
+         HZwD8Wh6HVyb9NlXEXj+mx/do2ENirUkyYEVhKWAb4wfKwm90CfPRw6c20FHgGvthLjf
+         RMGg==
+X-Gm-Message-State: APjAAAWfy1k8yy/UXKfN3ng2CMVHUYc8sJFq7JXK9Suh5uzweEMXYI+f
+        81aS7x7YlVURr25VRSYJivdie1PU
+X-Google-Smtp-Source: APXvYqxr8vE9E7Dbn5Ep+XsdyqnSmZ/Fqh+F8zCAgCSilhqVY3IxXt6nY4IBM3t07AEo0khoypskxQ==
+X-Received: by 2002:a5d:6441:: with SMTP id d1mr16829295wrw.93.1579782020711;
+        Thu, 23 Jan 2020 04:20:20 -0800 (PST)
+Received: from kristrev-XPS-15-9570.lan ([193.213.155.210])
+        by smtp.gmail.com with ESMTPSA id q6sm2992320wrx.72.2020.01.23.04.20.19
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 23 Jan 2020 04:20:20 -0800 (PST)
+From:   Kristian Evensen <kristian.evensen@gmail.com>
+To:     netdev@vger.kernel.org, dvyukov@google.com
+Cc:     Kristian Evensen <kristian.evensen@gmail.com>
+Subject: [PATCH net] fou: Fix IPv6 netlink policy
+Date:   Thu, 23 Jan 2020 13:20:18 +0100
+Message-Id: <20200123122018.27805-1-kristian.evensen@gmail.com>
+X-Mailer: git-send-email 2.20.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <MN2PR18MB31829FA8377460DDB9675596A10F0@MN2PR18MB3182.namprd18.prod.outlook.com>
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Jan 23, 2020 at 08:18:08AM +0000, Michal Kalderon wrote:
-> > From: linux-rdma-owner@vger.kernel.org <linux-rdma-
-> > owner@vger.kernel.org> On Behalf Of Leon Romanovsky
-> > Sent: Wednesday, January 22, 2020 8:21 PM
-> > To: Michal Kalderon <mkalderon@marvell.com>
-> > Cc: Ariel Elior <aelior@marvell.com>; davem@davemloft.net;
-> > netdev@vger.kernel.org; linux-rdma@vger.kernel.org; linux-
-> > scsi@vger.kernel.org
-> > Subject: Re: [EXT] Re: [PATCH net-next 14/14] qed: bump driver version
-> >
-> > On Wed, Jan 22, 2020 at 04:39:26PM +0000, Michal Kalderon wrote:
-> > > > From: Leon Romanovsky <leon@kernel.org>
-> > > > Sent: Wednesday, January 22, 2020 6:14 PM
-> > > >
-> > > > --------------------------------------------------------------------
-> > > > -- On Wed, Jan 22, 2020 at 05:26:27PM +0200, Michal Kalderon wrote:
-> > > > > The FW brings along a large set of fixes and features which will
-> > > > > be added at a later phase. This is an adaquete point to bump the
-> > > > > driver
-> > > > version.
-> > > > >
-> > > > > Signed-off-by: Ariel Elior <ariel.elior@marvell.com>
-> > > > > Signed-off-by: Michal Kalderon <michal.kalderon@marvell.com>
-> > > > > ---
-> > > > >  drivers/net/ethernet/qlogic/qed/qed.h | 2 +-
-> > > > >  1 file changed, 1 insertion(+), 1 deletion(-)
-> > > > >
-> > > >
-> > > > We discussed this a lot, those driver version bumps are stupid and
-> > > > have nothing close to the reality. Distro kernels are based on some
-> > > > kernel version with extra patches on top, in RedHat world this "extra"
-> > > > is a lot. For them your driver version say nothing. For users who
-> > > > run vanilla kernel, those versions are not relevant too, because
-> > > > running such kernels requires knowledge and understanding.
-> > > >
-> > > > You definitely should stop this enterprise cargo cult of "releasing
-> > software"
-> > > > by updating versions in non-controlled by you distribution chain.
-> > > >
-> > > > Thanks
-> > > Due to past discussions on this topic, qedr driver version was not added
-> > and not bumped.
-> > > However, customers are used to seeing a driver version for qed/qede We
-> > > only bump major version changes (37 -> 42)  and not the minor versions
-> > anymore.
-> > > This does give a high-level understanding of the driver supports, helps us
-> > and the customers.
-> >
-> > It is worth to talk with customers instead of adding useless work for
-> > everyone involved here.
-> Hi Leon,
->
-> I understand your arguments, and for new drivers I agree it is best to start without a driver version, having said that
-> Customers are used to what is already out there.
->
-> Ethtool displays a driver version, and  customers go by driver version, not kernel version.
-> Mlx drivers haven't bumped the driver version, but it is still displayed when running ethtool.
+When submitting v2 of "fou: Support binding FoU socket" (1713cb37bf67),
+I accidentally sent the wrong version of the patch and one fix was
+missing. In the initial version of the patch, as well as the version 2
+that I submitted, I incorrectly used ".type" for the two V6-attributes.
+The correct is to use ".len".
 
-Yes, it is needed to be fixed.
+Reported-by: Dmitry Vyukov <dvyukov@google.com>
+Fixes: 1713cb37bf67 ("fou: Support binding FoU socket")
+Signed-off-by: Kristian Evensen <kristian.evensen@gmail.com>
+---
+ net/ipv4/fou.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
->
-> Having this version in upstream driver also helps us to understand the level of changes in the inbox driver.
-> As you mentioned, in some distributions like RHEL, kernel version has no meaning as they backport much newer functionality from upstream.
-> It is difficult to know based on RedHat kernel/driver, how the driver compares with the upstream driver or what functionality is there.
-> We have seen that the driver version greatly helps customers here.
->
-> Of course if a decision is taken to remove all ethernet driver versions from all vendors and remove the version display from ethtool
-> We won't object, but since it is still there, and the driver version until now does correlate in the high-level sense to functionality,
-> I don't see the harm in this single patch.
->
-> Dave, what is your take on this ?
+diff --git a/net/ipv4/fou.c b/net/ipv4/fou.c
+index 30fa771d382a..dcc79ff54b41 100644
+--- a/net/ipv4/fou.c
++++ b/net/ipv4/fou.c
+@@ -662,8 +662,8 @@ static const struct nla_policy fou_nl_policy[FOU_ATTR_MAX + 1] = {
+ 	[FOU_ATTR_REMCSUM_NOPARTIAL]	= { .type = NLA_FLAG, },
+ 	[FOU_ATTR_LOCAL_V4]		= { .type = NLA_U32, },
+ 	[FOU_ATTR_PEER_V4]		= { .type = NLA_U32, },
+-	[FOU_ATTR_LOCAL_V6]		= { .type = sizeof(struct in6_addr), },
+-	[FOU_ATTR_PEER_V6]		= { .type = sizeof(struct in6_addr), },
++	[FOU_ATTR_LOCAL_V6]		= { .len = sizeof(struct in6_addr), },
++	[FOU_ATTR_PEER_V6]		= { .len = sizeof(struct in6_addr), },
+ 	[FOU_ATTR_PEER_PORT]		= { .type = NLA_U16, },
+ 	[FOU_ATTR_IFINDEX]		= { .type = NLA_S32, },
+ };
+-- 
+2.20.1
 
-Dave was clear about it.
-https://lore.kernel.org/linux-rdma/20200122.201241.1054821076123160712.davem@davemloft.net
-
-> Thanks,
-> Michal
->
-> >
-> > Thanks
-> >
-> > >
