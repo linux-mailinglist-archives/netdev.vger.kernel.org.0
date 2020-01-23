@@ -2,27 +2,27 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id B9C9D146087
-	for <lists+netdev@lfdr.de>; Thu, 23 Jan 2020 02:43:01 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 634BE14607F
+	for <lists+netdev@lfdr.de>; Thu, 23 Jan 2020 02:42:28 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726219AbgAWBmj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 22 Jan 2020 20:42:39 -0500
-Received: from mail.kernel.org ([198.145.29.99]:59626 "EHLO mail.kernel.org"
+        id S1729027AbgAWBmX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 22 Jan 2020 20:42:23 -0500
+Received: from mail.kernel.org ([198.145.29.99]:59658 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728981AbgAWBmU (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 22 Jan 2020 20:42:20 -0500
+        id S1729019AbgAWBmV (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 22 Jan 2020 20:42:21 -0500
 Received: from C02YQ0RWLVCF.internal.digitalocean.com (c-73-181-34-237.hsd1.co.comcast.net [73.181.34.237])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 8C23E24673;
-        Thu, 23 Jan 2020 01:42:19 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 903F02468A;
+        Thu, 23 Jan 2020 01:42:20 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1579743740;
-        bh=so29wlnT+j3VmOWq+H8zOVS6CfrmWIRdMsvZ9KITKLQ=;
+        s=default; t=1579743741;
+        bh=U8ODLYj/sLyLWIq6KpacW6tlw57pEYxVZ7AXnwitXFs=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=C3WL/kU2U9iFxdIQenexTltWB6O7ReZyaBpwVBQlxa71bwEze/WNaBOk2AknnDKEe
-         VaTJZHl/mnHpQTZGjNo3xVqGZH9FhzV/NnnOOUirIAl9IY2FUwARdJYM4mP5cinGbx
-         9zcCFuuHhevrx86SrjzZJRJIydMnMMmLxwqgJRCU=
+        b=AbClA1KP3XmNt0irt6qORORmC/f/kXMqTDzqGNk7hki+Ntw8kn4uhmceBL4zsy+4D
+         z05yMpgEsvu86opgCS3GO0tvTVy1q18o/6/zqhUCDxkg0nzyWnmnzCVUmEnuAYflxV
+         M1MAT8vDMcncktntNS//63NWqO3Hxq23qVd+UbZk=
 From:   David Ahern <dsahern@kernel.org>
 To:     netdev@vger.kernel.org
 Cc:     prashantbhole.linux@gmail.com, jasowang@redhat.com,
@@ -32,9 +32,9 @@ Cc:     prashantbhole.linux@gmail.com, jasowang@redhat.com,
         john.fastabend@gmail.com, ast@kernel.org, kafai@fb.com,
         songliubraving@fb.com, yhs@fb.com, andriin@fb.com,
         dsahern@gmail.com
-Subject: [PATCH bpf-next 04/12] net: core: rename netif_receive_generic_xdp() to do_generic_xdp_core()
-Date:   Wed, 22 Jan 2020 18:42:02 -0700
-Message-Id: <20200123014210.38412-5-dsahern@kernel.org>
+Subject: [PATCH bpf-next 05/12] tuntap: check tun_msg_ctl type at necessary places
+Date:   Wed, 22 Jan 2020 18:42:03 -0700
+Message-Id: <20200123014210.38412-6-dsahern@kernel.org>
 X-Mailer: git-send-email 2.21.1 (Apple Git-122.3)
 In-Reply-To: <20200123014210.38412-1-dsahern@kernel.org>
 References: <20200123014210.38412-1-dsahern@kernel.org>
@@ -45,70 +45,67 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Jason Wang <jasowang@redhat.com>
+From: Prashant Bhole <prashantbhole.linux@gmail.com>
 
-In skb generic path, we need a way to run XDP program on skb but
-to have customized handling of XDP actions. netif_receive_generic_xdp
-will be more helpful in such cases than do_xdp_generic.
+tun_msg_ctl is used by vhost_net to communicate with tuntap. We will
+introduce another type in soon. As a preparation this patch adds
+conditions to check tun_msg_ctl type at necessary places.
 
-This patch prepares netif_receive_generic_xdp() to be used as general
-purpose function by renaming it and exporting as a general purpose
-function. It will just run XDP program on skb but will not handle XDP
-actions.
-
-Signed-off-by: Jason Wang <jasowang@redhat.com>
 Signed-off-by: Prashant Bhole <prashantbhole.linux@gmail.com>
 ---
- include/linux/netdevice.h | 2 ++
- net/core/dev.c            | 8 ++++----
- 2 files changed, 6 insertions(+), 4 deletions(-)
+ drivers/net/tap.c | 7 +++++--
+ drivers/net/tun.c | 6 +++++-
+ 2 files changed, 10 insertions(+), 3 deletions(-)
 
-diff --git a/include/linux/netdevice.h b/include/linux/netdevice.h
-index e9cc326086f4..9c219796691c 100644
---- a/include/linux/netdevice.h
-+++ b/include/linux/netdevice.h
-@@ -3665,6 +3665,8 @@ static inline void dev_consume_skb_any(struct sk_buff *skb)
+diff --git a/drivers/net/tap.c b/drivers/net/tap.c
+index a6d63665ad03..a0a5dc18109a 100644
+--- a/drivers/net/tap.c
++++ b/drivers/net/tap.c
+@@ -1203,6 +1203,7 @@ static int tap_sendmsg(struct socket *sock, struct msghdr *m,
+ 	struct tap_queue *q = container_of(sock, struct tap_queue, sock);
+ 	struct tun_msg_ctl *ctl = m->msg_control;
+ 	struct xdp_buff *xdp;
++	void *ptr = NULL;
+ 	int i;
  
- void generic_xdp_tx(struct sk_buff *skb, struct bpf_prog *xdp_prog);
- int do_xdp_generic(struct bpf_prog *xdp_prog, struct sk_buff *skb);
-+u32 do_xdp_generic_core(struct sk_buff *skb, struct xdp_buff *xdp,
-+			struct bpf_prog *xdp_prog);
- int netif_rx(struct sk_buff *skb);
- int netif_rx_ni(struct sk_buff *skb);
- int netif_receive_skb(struct sk_buff *skb);
-diff --git a/net/core/dev.c b/net/core/dev.c
-index bf76dbee9d2a..3ba207b4ed79 100644
---- a/net/core/dev.c
-+++ b/net/core/dev.c
-@@ -4461,9 +4461,8 @@ static struct netdev_rx_queue *netif_get_rxqueue(struct sk_buff *skb)
- 	return rxqueue;
+ 	if (ctl && (ctl->type == TUN_MSG_PTR)) {
+@@ -1213,8 +1214,10 @@ static int tap_sendmsg(struct socket *sock, struct msghdr *m,
+ 		return 0;
+ 	}
+ 
+-	return tap_get_user(q, ctl ? ctl->ptr : NULL, &m->msg_iter,
+-			    m->msg_flags & MSG_DONTWAIT);
++	if (ctl && ctl->type == TUN_MSG_UBUF)
++		ptr = ctl->ptr;
++
++	return tap_get_user(q, ptr, &m->msg_iter, m->msg_flags & MSG_DONTWAIT);
  }
  
--static u32 netif_receive_generic_xdp(struct sk_buff *skb,
--				     struct xdp_buff *xdp,
--				     struct bpf_prog *xdp_prog)
-+u32 do_xdp_generic_core(struct sk_buff *skb, struct xdp_buff *xdp,
-+			struct bpf_prog *xdp_prog)
- {
- 	struct netdev_rx_queue *rxqueue;
- 	void *orig_data, *orig_data_end;
-@@ -4574,6 +4573,7 @@ static u32 netif_receive_generic_xdp(struct sk_buff *skb,
+ static int tap_recvmsg(struct socket *sock, struct msghdr *m,
+diff --git a/drivers/net/tun.c b/drivers/net/tun.c
+index 3a5a6c655dda..c3155bc3fc7f 100644
+--- a/drivers/net/tun.c
++++ b/drivers/net/tun.c
+@@ -2529,6 +2529,7 @@ static int tun_sendmsg(struct socket *sock, struct msghdr *m, size_t total_len)
+ 	struct tun_struct *tun = tun_get(tfile);
+ 	struct tun_msg_ctl *ctl = m->msg_control;
+ 	struct xdp_buff *xdp;
++	void *ptr = NULL;
  
- 	return act;
- }
-+EXPORT_SYMBOL_GPL(do_xdp_generic_core);
+ 	if (!tun)
+ 		return -EBADFD;
+@@ -2560,7 +2561,10 @@ static int tun_sendmsg(struct socket *sock, struct msghdr *m, size_t total_len)
+ 		goto out;
+ 	}
  
- /* When doing generic XDP we have to bypass the qdisc layer and the
-  * network taps in order to match in-driver-XDP behavior.
-@@ -4610,7 +4610,7 @@ int do_xdp_generic(struct bpf_prog *xdp_prog, struct sk_buff *skb)
- 		u32 act;
- 		int err;
- 
--		act = netif_receive_generic_xdp(skb, &xdp, xdp_prog);
-+		act = do_xdp_generic_core(skb, &xdp, xdp_prog);
- 		if (act != XDP_PASS) {
- 			switch (act) {
- 			case XDP_REDIRECT:
+-	ret = tun_get_user(tun, tfile, ctl ? ctl->ptr : NULL, &m->msg_iter,
++	if (ctl && ctl->type == TUN_MSG_UBUF)
++		ptr = ctl->ptr;
++
++	ret = tun_get_user(tun, tfile, ptr, &m->msg_iter,
+ 			   m->msg_flags & MSG_DONTWAIT,
+ 			   m->msg_flags & MSG_MORE);
+ out:
 -- 
 2.21.1 (Apple Git-122.3)
 
