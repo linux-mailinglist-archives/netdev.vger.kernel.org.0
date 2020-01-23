@@ -2,58 +2,47 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 75B6C147289
-	for <lists+netdev@lfdr.de>; Thu, 23 Jan 2020 21:25:08 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 23382147291
+	for <lists+netdev@lfdr.de>; Thu, 23 Jan 2020 21:27:55 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729222AbgAWUY7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 23 Jan 2020 15:24:59 -0500
-Received: from shards.monkeyblade.net ([23.128.96.9]:33778 "EHLO
+        id S1727296AbgAWU1x (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 23 Jan 2020 15:27:53 -0500
+Received: from shards.monkeyblade.net ([23.128.96.9]:33814 "EHLO
         shards.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726167AbgAWUY6 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 23 Jan 2020 15:24:58 -0500
+        with ESMTP id S1726167AbgAWU1x (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 23 Jan 2020 15:27:53 -0500
 Received: from localhost (unknown [62.209.224.147])
         (using TLSv1 with cipher AES256-SHA (256/256 bits))
         (Client did not present a certificate)
         (Authenticated sender: davem-davemloft)
-        by shards.monkeyblade.net (Postfix) with ESMTPSA id 3403F14EACBEA;
-        Thu, 23 Jan 2020 12:24:56 -0800 (PST)
-Date:   Thu, 23 Jan 2020 21:24:54 +0100 (CET)
-Message-Id: <20200123.212454.218301597333582741.davem@davemloft.net>
-To:     fthain@telegraphics.com.au
-Cc:     tsbogend@alpha.franken.de, chris@zankel.net, laurent@vivier.eu,
-        geert@linux-m68k.org, eric.dumazet@gmail.com,
-        stephen@networkplumber.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH net v3 00/12] Fixes for SONIC ethernet driver
+        by shards.monkeyblade.net (Postfix) with ESMTPSA id F330214EAD04B;
+        Thu, 23 Jan 2020 12:27:51 -0800 (PST)
+Date:   Thu, 23 Jan 2020 21:27:50 +0100 (CET)
+Message-Id: <20200123.212750.1668203540290678607.davem@davemloft.net>
+To:     saeedm@mellanox.com
+Cc:     netdev@vger.kernel.org
+Subject: Re: [pull request][net-next 00/15] Mellanox, mlx5
+ mlx5-updates-2020-01-22
 From:   David Miller <davem@davemloft.net>
-In-Reply-To: <cover.1579730846.git.fthain@telegraphics.com.au>
-References: <cover.1579730846.git.fthain@telegraphics.com.au>
+In-Reply-To: <20200123063827.685230-1-saeedm@mellanox.com>
+References: <20200123063827.685230-1-saeedm@mellanox.com>
 X-Mailer: Mew version 6.8 on Emacs 26.3
 Mime-Version: 1.0
 Content-Type: Text/Plain; charset=us-ascii
 Content-Transfer-Encoding: 7bit
-X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Thu, 23 Jan 2020 12:24:58 -0800 (PST)
+X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Thu, 23 Jan 2020 12:27:52 -0800 (PST)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Finn Thain <fthain@telegraphics.com.au>
-Date: Thu, 23 Jan 2020 09:07:26 +1100
+From: Saeed Mahameed <saeedm@mellanox.com>
+Date: Thu, 23 Jan 2020 06:39:35 +0000
 
-> Various SONIC driver problems have become apparent over the years,
-> including tx watchdog timeouts, lost packets and duplicated packets.
+> This series adds misc updates to mlx5 driver, and the support for full
+> ethtool statistics for the uplink representor netdev.
+> For more information please see tag log below.
 > 
-> The problems are mostly caused by bugs in buffer handling, locking and
-> (re-)initialization code.
-> 
-> This patch series resolves these problems.
-> 
-> This series has been tested on National Semiconductor hardware (macsonic),
-> qemu-system-m68k (macsonic) and qemu-system-mips64el (jazzsonic).
-> 
-> The emulated dp8393x device used in QEMU also has bugs.
-> I have fixed the bugs that I know of in a series of patches at,
-> https://github.com/fthain/qemu/commits/sonic
+> Please pull and let me know if there is any problem.
 
-Series applied, thank you.
+Pulled, thanks Saeed.
