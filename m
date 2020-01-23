@@ -2,47 +2,47 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 935F0146616
-	for <lists+netdev@lfdr.de>; Thu, 23 Jan 2020 11:59:11 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9053C146614
+	for <lists+netdev@lfdr.de>; Thu, 23 Jan 2020 11:59:10 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729014AbgAWK7D (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 23 Jan 2020 05:59:03 -0500
-Received: from mx0b-0016f401.pphosted.com ([67.231.156.173]:60996 "EHLO
-        mx0b-0016f401.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726219AbgAWK7B (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 23 Jan 2020 05:59:01 -0500
-Received: from pps.filterd (m0045851.ppops.net [127.0.0.1])
-        by mx0b-0016f401.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 00NAuoNS005434;
-        Thu, 23 Jan 2020 02:58:58 -0800
+        id S1728988AbgAWK7C (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 23 Jan 2020 05:59:02 -0500
+Received: from mx0a-0016f401.pphosted.com ([67.231.148.174]:28576 "EHLO
+        mx0b-0016f401.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1727307AbgAWK7A (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 23 Jan 2020 05:59:00 -0500
+Received: from pps.filterd (m0045849.ppops.net [127.0.0.1])
+        by mx0a-0016f401.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 00NAwsNC023278;
+        Thu, 23 Jan 2020 02:58:59 -0800
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=marvell.com; h=from : to : cc :
  subject : date : message-id : in-reply-to : references : mime-version :
- content-type; s=pfpt0818; bh=gDu7KcqiGexp16hOS/xYf8HRsKMOOw7uxAxTckSmwtc=;
- b=PDgcLgYrNA/n2n10OGpJ/v+UyL78vwgabGAjpTCSKAcnjXhcwxcVh/43+YD/bwW6S4cc
- vFBeqqynG/5Y+hrrGlqlyFFZ2zNbe2mtm36k4WxF8w4iztahXIJnIPfz0EGTuHQAATMT
- OxTqoL477uKPI7hOy6gAEGay1Dh0n+3H5TUu/9SsDnFv/IXMTAOcBti1fG+WK9lBh2KX
- jILE4uGlc11/NTjhnh7m2jVZ+3IxwcCFQVv0vNBZ/bhbQ/VTPYywyJ3RIFuCjvHCm3Ui
- gwW39G2cFoaenJyLFwOFuxPXP8aO1iq87UG9z/M5QqomKbEhMauhMqhHncbd033/jtcb gw== 
-Received: from sc-exch02.marvell.com ([199.233.58.182])
-        by mx0b-0016f401.pphosted.com with ESMTP id 2xm2dtbd37-1
+ content-type; s=pfpt0818; bh=p3gTDjPZ/+fCryOek3cQyILqX/pp7CB+qzDU7FIuyVg=;
+ b=RCu0EBOOXHYC2PSswP1ixyN+111O4LLqT9x2+VPRNmatsPbZh/7e78Nvw+DaYbnzFL6t
+ I125HM4w7B4p2o2soU1goPgp3LbujkWVRzDDINxnkjt2U/1XhVCpyV8E7PAt2kxZ3ryb
+ FCkslocgU6ZUrl8447wFZ8Qf1GKihVCbYLTxX1oox2tPR+EF0Qxkuuc1Ih/j/0H10otN
+ zIem3EmDMBCXCtZiqFEHacjmDP5iMHDzxrtZ4cF2zORAfAA4sJdSfo4thRrMa5ZtfFPa
+ 8kJuQ2mMz4x6fqvcPPAJiUDmlFCI70o8uZ8K6uAKDobapAtVHG/6MDV63++J/MCs/eN6 MA== 
+Received: from sc-exch01.marvell.com ([199.233.58.181])
+        by mx0a-0016f401.pphosted.com with ESMTP id 2xq4x4h2yj-1
         (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT);
-        Thu, 23 Jan 2020 02:58:57 -0800
-Received: from SC-EXCH03.marvell.com (10.93.176.83) by SC-EXCH02.marvell.com
- (10.93.176.82) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Thu, 23 Jan
- 2020 02:58:55 -0800
-Received: from maili.marvell.com (10.93.176.43) by SC-EXCH03.marvell.com
- (10.93.176.83) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Thu, 23 Jan 2020 02:58:55 -0800
+        Thu, 23 Jan 2020 02:58:59 -0800
+Received: from SC-EXCH01.marvell.com (10.93.176.81) by SC-EXCH01.marvell.com
+ (10.93.176.81) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Thu, 23 Jan
+ 2020 02:58:57 -0800
+Received: from maili.marvell.com (10.93.176.43) by SC-EXCH01.marvell.com
+ (10.93.176.81) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
+ Transport; Thu, 23 Jan 2020 02:58:57 -0800
 Received: from lb-tlvb-michal.il.qlogic.org (unknown [10.5.220.215])
-        by maili.marvell.com (Postfix) with ESMTP id AB97D3F7040;
-        Thu, 23 Jan 2020 02:58:53 -0800 (PST)
+        by maili.marvell.com (Postfix) with ESMTP id D5CA33F7041;
+        Thu, 23 Jan 2020 02:58:55 -0800 (PST)
 From:   Michal Kalderon <michal.kalderon@marvell.com>
 To:     <michal.kalderon@marvell.com>, <ariel.elior@marvell.com>,
         <davem@davemloft.net>
 CC:     <netdev@vger.kernel.org>, <linux-rdma@vger.kernel.org>,
         <linux-scsi@vger.kernel.org>
-Subject: [PATCH v2 net-next 05/13] qed: Use dmae to write to widebus registers in fw_funcs
-Date:   Thu, 23 Jan 2020 12:58:28 +0200
-Message-ID: <20200123105836.15090-6-michal.kalderon@marvell.com>
+Subject: [PATCH v2 net-next 06/13] qed: FW 8.42.2.0 Additional ll2 type
+Date:   Thu, 23 Jan 2020 12:58:29 +0200
+Message-ID: <20200123105836.15090-7-michal.kalderon@marvell.com>
 X-Mailer: git-send-email 2.14.5
 In-Reply-To: <20200123105836.15090-1-michal.kalderon@marvell.com>
 References: <20200123105836.15090-1-michal.kalderon@marvell.com>
@@ -55,407 +55,661 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-There are several wide-bus registers written to by the fw_funcs
-that require using the dmae for atomicity. Therefore using the dmae
-channel functionality was added to the fw_funcs file, since the code
-is very similar to the previously used code, the structures used were
-moved to qed_hsi. Due to FW conventions, the names of the flags in the
-struct changed. Since this required slight modification in the places
-that set the flags the code was modified to use GET/SET FIELD macros.
+LL2 queues were a limited resource due to FW constraints.
+This FW introduced a new resource which is a context based ll2 queue
+(memory on host). The additional ll2 queues are required for RDMA SRIOV.
+The code refers to the previous ll2 queues as ram-based or legacy, and the
+new queues as ctx-based.
+This change decreased the "legacy" ram-based queues therefore the first ll2
+queue used for iWARP was converted to the ctx-based ll2 queue.
+This feature also exposed a bug in the DIRECT_REG_WR64 macro implementation
+which didn't have an effect in other use cases.
 
 Signed-off-by: Ariel Elior <ariel.elior@marvell.com>
 Signed-off-by: Michal Kalderon <michal.kalderon@marvell.com>
 ---
- drivers/net/ethernet/qlogic/qed/qed_dev.c          |  2 +-
- drivers/net/ethernet/qlogic/qed/qed_dev_api.h      | 24 ------
- drivers/net/ethernet/qlogic/qed/qed_hsi.h          | 41 ++++++++++-
- drivers/net/ethernet/qlogic/qed/qed_hw.c           | 67 ++++++++---------
- .../net/ethernet/qlogic/qed/qed_init_fw_funcs.c    | 86 ++++++++++++++++------
- drivers/net/ethernet/qlogic/qed/qed_init_ops.c     |  2 +-
- drivers/net/ethernet/qlogic/qed/qed_sriov.c        | 11 +--
- 7 files changed, 142 insertions(+), 91 deletions(-)
+ drivers/net/ethernet/qlogic/qed/qed.h       |   3 +-
+ drivers/net/ethernet/qlogic/qed/qed_dev.c   |  20 ++--
+ drivers/net/ethernet/qlogic/qed/qed_hsi.h   |  42 +++++++-
+ drivers/net/ethernet/qlogic/qed/qed_iscsi.c |   5 +-
+ drivers/net/ethernet/qlogic/qed/qed_iwarp.c |   8 +-
+ drivers/net/ethernet/qlogic/qed/qed_ll2.c   | 149 ++++++++++++++++++++++++----
+ drivers/net/ethernet/qlogic/qed/qed_ll2.h   |  14 +++
+ drivers/net/ethernet/qlogic/qed/qed_mcp.c   |   5 +-
+ include/linux/qed/common_hsi.h              |  15 ++-
+ include/linux/qed/qed_if.h                  |   4 +-
+ include/linux/qed/qed_ll2_if.h              |   7 ++
+ 11 files changed, 235 insertions(+), 37 deletions(-)
 
+diff --git a/drivers/net/ethernet/qlogic/qed/qed.h b/drivers/net/ethernet/qlogic/qed/qed.h
+index 8ec46bf409c2..cfa45fb9a5a4 100644
+--- a/drivers/net/ethernet/qlogic/qed/qed.h
++++ b/drivers/net/ethernet/qlogic/qed/qed.h
+@@ -253,7 +253,8 @@ enum qed_resources {
+ 	QED_VLAN,
+ 	QED_RDMA_CNQ_RAM,
+ 	QED_ILT,
+-	QED_LL2_QUEUE,
++	QED_LL2_RAM_QUEUE,
++	QED_LL2_CTX_QUEUE,
+ 	QED_CMDQS_CQS,
+ 	QED_RDMA_STATS_QUEUE,
+ 	QED_BDQ,
 diff --git a/drivers/net/ethernet/qlogic/qed/qed_dev.c b/drivers/net/ethernet/qlogic/qed/qed_dev.c
-index 249fcc3dc138..479d98e6187a 100644
+index 479d98e6187a..898c1f8d1530 100644
 --- a/drivers/net/ethernet/qlogic/qed/qed_dev.c
 +++ b/drivers/net/ethernet/qlogic/qed/qed_dev.c
-@@ -907,7 +907,7 @@ qed_llh_access_filter(struct qed_hwfn *p_hwfn,
- 	/* Filter value */
- 	addr = NIG_REG_LLH_FUNC_FILTER_VALUE + 2 * filter_idx * 0x4;
+@@ -3565,8 +3565,10 @@ const char *qed_hw_get_resc_name(enum qed_resources res_id)
+ 		return "RDMA_CNQ_RAM";
+ 	case QED_ILT:
+ 		return "ILT";
+-	case QED_LL2_QUEUE:
+-		return "LL2_QUEUE";
++	case QED_LL2_RAM_QUEUE:
++		return "LL2_RAM_QUEUE";
++	case QED_LL2_CTX_QUEUE:
++		return "LL2_CTX_QUEUE";
+ 	case QED_CMDQS_CQS:
+ 		return "CMDQS_CQS";
+ 	case QED_RDMA_STATS_QUEUE:
+@@ -3615,8 +3617,11 @@ qed_hw_set_soft_resc_size(struct qed_hwfn *p_hwfn, struct qed_ptt *p_ptt)
  
--	params.flags = QED_DMAE_FLAG_PF_DST;
-+	SET_FIELD(params.flags, QED_DMAE_PARAMS_DST_PF_VALID, 0x1);
- 	params.dst_pfid = pfid;
- 	rc = qed_dmae_host2grc(p_hwfn,
- 			       p_ptt,
-diff --git a/drivers/net/ethernet/qlogic/qed/qed_dev_api.h b/drivers/net/ethernet/qlogic/qed/qed_dev_api.h
-index 47376d4d071f..eb4808b3bf67 100644
---- a/drivers/net/ethernet/qlogic/qed/qed_dev_api.h
-+++ b/drivers/net/ethernet/qlogic/qed/qed_dev_api.h
-@@ -230,30 +230,6 @@ enum qed_dmae_address_type_t {
- 	QED_DMAE_ADDRESS_GRC
- };
- 
--/* value of flags If QED_DMAE_FLAG_RW_REPL_SRC flag is set and the
-- * source is a block of length DMAE_MAX_RW_SIZE and the
-- * destination is larger, the source block will be duplicated as
-- * many times as required to fill the destination block. This is
-- * used mostly to write a zeroed buffer to destination address
-- * using DMA
-- */
--#define QED_DMAE_FLAG_RW_REPL_SRC	0x00000001
--#define QED_DMAE_FLAG_VF_SRC		0x00000002
--#define QED_DMAE_FLAG_VF_DST		0x00000004
--#define QED_DMAE_FLAG_COMPLETION_DST	0x00000008
--#define QED_DMAE_FLAG_PORT		0x00000010
--#define QED_DMAE_FLAG_PF_SRC		0x00000020
--#define QED_DMAE_FLAG_PF_DST		0x00000040
--
--struct qed_dmae_params {
--	u32 flags; /* consists of QED_DMAE_FLAG_* values */
--	u8 src_vfid;
--	u8 dst_vfid;
--	u8 port_id;
--	u8 src_pfid;
--	u8 dst_pfid;
--};
--
- /**
-  * @brief qed_dmae_host2grc - copy data from source addr to
-  * dmae registers using the given ptt
+ 	for (res_id = 0; res_id < QED_MAX_RESC; res_id++) {
+ 		switch (res_id) {
+-		case QED_LL2_QUEUE:
+-			resc_max_val = MAX_NUM_LL2_RX_QUEUES;
++		case QED_LL2_RAM_QUEUE:
++			resc_max_val = MAX_NUM_LL2_RX_RAM_QUEUES;
++			break;
++		case QED_LL2_CTX_QUEUE:
++			resc_max_val = MAX_NUM_LL2_RX_CTX_QUEUES;
+ 			break;
+ 		case QED_RDMA_CNQ_RAM:
+ 			/* No need for a case for QED_CMDQS_CQS since
+@@ -3691,8 +3696,11 @@ int qed_hw_get_dflt_resc(struct qed_hwfn *p_hwfn,
+ 		*p_resc_num = (b_ah ? PXP_NUM_ILT_RECORDS_K2 :
+ 			       PXP_NUM_ILT_RECORDS_BB) / num_funcs;
+ 		break;
+-	case QED_LL2_QUEUE:
+-		*p_resc_num = MAX_NUM_LL2_RX_QUEUES / num_funcs;
++	case QED_LL2_RAM_QUEUE:
++		*p_resc_num = MAX_NUM_LL2_RX_RAM_QUEUES / num_funcs;
++		break;
++	case QED_LL2_CTX_QUEUE:
++		*p_resc_num = MAX_NUM_LL2_RX_CTX_QUEUES / num_funcs;
+ 		break;
+ 	case QED_RDMA_CNQ_RAM:
+ 	case QED_CMDQS_CQS:
 diff --git a/drivers/net/ethernet/qlogic/qed/qed_hsi.h b/drivers/net/ethernet/qlogic/qed/qed_hsi.h
-index fb4c0de44aaa..565ab12fa87c 100644
+index 565ab12fa87c..8cec6dc179d6 100644
 --- a/drivers/net/ethernet/qlogic/qed/qed_hsi.h
 +++ b/drivers/net/ethernet/qlogic/qed/qed_hsi.h
-@@ -1435,7 +1435,11 @@ struct dmae_cmd {
- 	__le16 crc16;
- 	__le16 crc16_c;
- 	__le16 crc10;
--	__le16 reserved;
-+	__le16 error_bit_reserved;
-+#define DMAE_CMD_ERROR_BIT_MASK        0x1
-+#define DMAE_CMD_ERROR_BIT_SHIFT       0
-+#define DMAE_CMD_RESERVED_MASK	       0x7FFF
-+#define DMAE_CMD_RESERVED_SHIFT        1
- 	__le16 xsum16;
- 	__le16 xsum8;
- };
-@@ -1566,6 +1570,41 @@ struct e4_ystorm_core_conn_ag_ctx {
- 	__le32 reg3;
+@@ -98,6 +98,7 @@ enum core_event_opcode {
+ 	CORE_EVENT_RX_QUEUE_STOP,
+ 	CORE_EVENT_RX_QUEUE_FLUSH,
+ 	CORE_EVENT_TX_QUEUE_UPDATE,
++	CORE_EVENT_QUEUE_STATS_QUERY,
+ 	MAX_CORE_EVENT_OPCODE
  };
  
-+/* DMAE parameters */
-+struct qed_dmae_params {
-+	__le32 flags;
-+/* If QED_DMAE_PARAMS_RW_REPL_SRC flag is set and the
-+ * source is a block of length DMAE_MAX_RW_SIZE and the
-+ * destination is larger, the source block will be duplicated as
-+ * many times as required to fill the destination block. This is
-+ * used mostly to write a zeroed buffer to destination address
-+ * using DMA
-+ */
-+#define QED_DMAE_PARAMS_RW_REPL_SRC_MASK	0x1
-+#define QED_DMAE_PARAMS_RW_REPL_SRC_SHIFT	0
-+#define QED_DMAE_PARAMS_SRC_VF_VALID_MASK	0x1
-+#define QED_DMAE_PARAMS_SRC_VF_VALID_SHIFT	1
-+#define QED_DMAE_PARAMS_DST_VF_VALID_MASK	0x1
-+#define QED_DMAE_PARAMS_DST_VF_VALID_SHIFT	2
-+#define QED_DMAE_PARAMS_COMPLETION_DST_MASK	0x1
-+#define QED_DMAE_PARAMS_COMPLETION_DST_SHIFT	3
-+#define QED_DMAE_PARAMS_PORT_VALID_MASK		0x1
-+#define QED_DMAE_PARAMS_PORT_VALID_SHIFT	4
-+#define QED_DMAE_PARAMS_SRC_PF_VALID_MASK	0x1
-+#define QED_DMAE_PARAMS_SRC_PF_VALID_SHIFT	5
-+#define QED_DMAE_PARAMS_DST_PF_VALID_MASK	0x1
-+#define QED_DMAE_PARAMS_DST_PF_VALID_SHIFT	6
-+#define QED_DMAE_PARAMS_RESERVED_MASK		0x1FFFFFF
-+#define QED_DMAE_PARAMS_RESERVED_SHIFT		7
-+	u8 src_vfid;
-+	u8 dst_vfid;
-+	u8 port_id;
-+	u8 src_pfid;
-+	u8 dst_pfid;
-+	u8 reserved1;
-+	__le16 reserved2;
+@@ -116,7 +117,7 @@ struct core_ll2_port_stats {
+ 	struct regpair gsi_crcchksm_error;
+ };
+ 
+-/* Ethernet TX Per Queue Stats */
++/* LL2 TX Per Queue Stats */
+ struct core_ll2_pstorm_per_queue_stat {
+ 	struct regpair sent_ucast_bytes;
+ 	struct regpair sent_mcast_bytes;
+@@ -124,13 +125,13 @@ struct core_ll2_pstorm_per_queue_stat {
+ 	struct regpair sent_ucast_pkts;
+ 	struct regpair sent_mcast_pkts;
+ 	struct regpair sent_bcast_pkts;
++	struct regpair error_drop_pkts;
+ };
+ 
+ /* Light-L2 RX Producers in Tstorm RAM */
+ struct core_ll2_rx_prod {
+ 	__le16 bd_prod;
+ 	__le16 cqe_prod;
+-	__le32 reserved;
+ };
+ 
+ struct core_ll2_tstorm_per_queue_stat {
+@@ -147,6 +148,18 @@ struct core_ll2_ustorm_per_queue_stat {
+ 	struct regpair rcv_bcast_pkts;
+ };
+ 
++/* Structure for doorbell data, in PWM mode, for RX producers update. */
++struct core_pwm_prod_update_data {
++	__le16 icid; /* internal CID */
++	u8 reserved0;
++	u8 params;
++#define CORE_PWM_PROD_UPDATE_DATA_AGG_CMD_MASK	  0x3
++#define CORE_PWM_PROD_UPDATE_DATA_AGG_CMD_SHIFT   0
++#define CORE_PWM_PROD_UPDATE_DATA_RESERVED1_MASK  0x3F	/* Set 0 */
++#define CORE_PWM_PROD_UPDATE_DATA_RESERVED1_SHIFT 2
++	struct core_ll2_rx_prod prod; /* Producers */
 +};
 +
- /* IGU cleanup command */
- struct igu_cleanup {
- 	__le32 sb_id_and_flags;
-diff --git a/drivers/net/ethernet/qlogic/qed/qed_hw.c b/drivers/net/ethernet/qlogic/qed/qed_hw.c
-index a4de9e3ef72c..4ab8cfaf63d1 100644
---- a/drivers/net/ethernet/qlogic/qed/qed_hw.c
-+++ b/drivers/net/ethernet/qlogic/qed/qed_hw.c
-@@ -393,7 +393,7 @@ u32 qed_vfid_to_concrete(struct qed_hwfn *p_hwfn, u8 vfid)
+ /* Core Ramrod Command IDs (light L2) */
+ enum core_ramrod_cmd_id {
+ 	CORE_RAMROD_UNUSED,
+@@ -156,6 +169,7 @@ enum core_ramrod_cmd_id {
+ 	CORE_RAMROD_TX_QUEUE_STOP,
+ 	CORE_RAMROD_RX_QUEUE_FLUSH,
+ 	CORE_RAMROD_TX_QUEUE_UPDATE,
++	CORE_RAMROD_QUEUE_STATS_QUERY,
+ 	MAX_CORE_RAMROD_CMD_ID
+ };
  
- /* DMAE */
- #define QED_DMAE_FLAGS_IS_SET(params, flag) \
--	((params) != NULL && ((params)->flags & QED_DMAE_FLAG_##flag))
-+	((params) != NULL && GET_FIELD((params)->flags, QED_DMAE_PARAMS_##flag))
+@@ -274,8 +288,11 @@ struct core_rx_start_ramrod_data {
+ 	u8 mf_si_mcast_accept_all;
+ 	struct core_rx_action_on_error action_on_error;
+ 	u8 gsi_offload_flag;
++	u8 vport_id_valid;
++	u8 vport_id;
++	u8 zero_prod_flg;
+ 	u8 wipe_inner_vlan_pri_en;
+-	u8 reserved[5];
++	u8 reserved[2];
+ };
  
- static void qed_dmae_opcode(struct qed_hwfn *p_hwfn,
- 			    const u8 is_src_type_grc,
-@@ -408,62 +408,55 @@ static void qed_dmae_opcode(struct qed_hwfn *p_hwfn,
- 	 * 0- The source is the PCIe
- 	 * 1- The source is the GRC.
- 	 */
--	opcode |= (is_src_type_grc ? DMAE_CMD_SRC_MASK_GRC
--				   : DMAE_CMD_SRC_MASK_PCIE) <<
--		   DMAE_CMD_SRC_SHIFT;
--	src_pfid = QED_DMAE_FLAGS_IS_SET(p_params, PF_SRC) ?
--		   p_params->src_pfid : p_hwfn->rel_pf_id;
--	opcode |= ((src_pfid & DMAE_CMD_SRC_PF_ID_MASK) <<
--		   DMAE_CMD_SRC_PF_ID_SHIFT);
-+	SET_FIELD(opcode, DMAE_CMD_SRC,
-+		  (is_src_type_grc ? dmae_cmd_src_grc : dmae_cmd_src_pcie));
-+	src_pfid = QED_DMAE_FLAGS_IS_SET(p_params, SRC_PF_VALID) ?
-+	    p_params->src_pfid : p_hwfn->rel_pf_id;
-+	SET_FIELD(opcode, DMAE_CMD_SRC_PF_ID, src_pfid);
+ /* Ramrod data for rx queue stop ramrod */
+@@ -352,8 +369,11 @@ struct core_tx_start_ramrod_data {
+ 	__le16 pbl_size;
+ 	__le16 qm_pq_id;
+ 	u8 gsi_offload_flag;
++	u8 ctx_stats_en;
++	u8 vport_id_valid;
+ 	u8 vport_id;
+-	u8 resrved[2];
++	u8 enforce_security_flag;
++	u8 reserved[7];
+ };
  
- 	/* The destination of the DMA can be: 0-None 1-PCIe 2-GRC 3-None */
--	opcode |= (is_dst_type_grc ? DMAE_CMD_DST_MASK_GRC
--				   : DMAE_CMD_DST_MASK_PCIE) <<
--		   DMAE_CMD_DST_SHIFT;
--	dst_pfid = QED_DMAE_FLAGS_IS_SET(p_params, PF_DST) ?
--		   p_params->dst_pfid : p_hwfn->rel_pf_id;
--	opcode |= ((dst_pfid & DMAE_CMD_DST_PF_ID_MASK) <<
--		   DMAE_CMD_DST_PF_ID_SHIFT);
-+	SET_FIELD(opcode, DMAE_CMD_DST,
-+		  (is_dst_type_grc ? dmae_cmd_dst_grc : dmae_cmd_dst_pcie));
-+	dst_pfid = QED_DMAE_FLAGS_IS_SET(p_params, DST_PF_VALID) ?
-+	    p_params->dst_pfid : p_hwfn->rel_pf_id;
-+	SET_FIELD(opcode, DMAE_CMD_DST_PF_ID, dst_pfid);
+ /* Ramrod data for tx queue stop ramrod */
+@@ -761,7 +781,7 @@ struct e4_tstorm_core_conn_ag_ctx {
+ 	__le16 word1;
+ 	__le16 word2;
+ 	__le16 word3;
+-	__le32 reg9;
++	__le32 ll2_rx_prod;
+ 	__le32 reg10;
+ };
+ 
+@@ -844,6 +864,11 @@ struct ustorm_core_conn_st_ctx {
+ 	__le32 reserved[4];
+ };
+ 
++/* The core storm context for the Tstorm */
++struct tstorm_core_conn_st_ctx {
++	__le32 reserved[4];
++};
 +
+ /* core connection context */
+ struct e4_core_conn_context {
+ 	struct ystorm_core_conn_st_ctx ystorm_st_context;
+@@ -857,6 +882,8 @@ struct e4_core_conn_context {
+ 	struct mstorm_core_conn_st_ctx mstorm_st_context;
+ 	struct ustorm_core_conn_st_ctx ustorm_st_context;
+ 	struct regpair ustorm_st_padding[2];
++	struct tstorm_core_conn_st_ctx tstorm_st_context;
++	struct regpair tstorm_st_padding[2];
+ };
  
- 	/* Whether to write a completion word to the completion destination:
- 	 * 0-Do not write a completion word
- 	 * 1-Write the completion word
- 	 */
--	opcode |= (DMAE_CMD_COMP_WORD_EN_MASK << DMAE_CMD_COMP_WORD_EN_SHIFT);
--	opcode |= (DMAE_CMD_SRC_ADDR_RESET_MASK <<
--		   DMAE_CMD_SRC_ADDR_RESET_SHIFT);
-+	SET_FIELD(opcode, DMAE_CMD_COMP_WORD_EN, 1);
-+	SET_FIELD(opcode, DMAE_CMD_SRC_ADDR_RESET, 1);
+ struct eth_mstorm_per_pf_stat {
+@@ -12484,6 +12511,11 @@ enum resource_id_enum {
+ 	RESOURCE_LL2_QUEUE_E = 15,
+ 	RESOURCE_RDMA_STATS_QUEUE_E = 16,
+ 	RESOURCE_BDQ_E = 17,
++	RESOURCE_QCN_E = 18,
++	RESOURCE_LLH_FILTER_E = 19,
++	RESOURCE_VF_MAC_ADDR = 20,
++	RESOURCE_LL2_CQS_E = 21,
++	RESOURCE_VF_CNQS = 22,
+ 	RESOURCE_MAX_NUM,
+ 	RESOURCE_NUM_INVALID = 0xFFFFFFFF
+ };
+diff --git a/drivers/net/ethernet/qlogic/qed/qed_iscsi.c b/drivers/net/ethernet/qlogic/qed/qed_iscsi.c
+index 5585c18053ec..8ee668d66b4b 100644
+--- a/drivers/net/ethernet/qlogic/qed/qed_iscsi.c
++++ b/drivers/net/ethernet/qlogic/qed/qed_iscsi.c
+@@ -213,8 +213,9 @@ qed_sp_iscsi_func_start(struct qed_hwfn *p_hwfn,
+ 	p_init->num_sq_pages_in_ring = p_params->num_sq_pages_in_ring;
+ 	p_init->num_r2tq_pages_in_ring = p_params->num_r2tq_pages_in_ring;
+ 	p_init->num_uhq_pages_in_ring = p_params->num_uhq_pages_in_ring;
+-	p_init->ll2_rx_queue_id = p_hwfn->hw_info.resc_start[QED_LL2_QUEUE] +
+-				  p_params->ll2_ooo_queue_id;
++	p_init->ll2_rx_queue_id =
++	    p_hwfn->hw_info.resc_start[QED_LL2_RAM_QUEUE] +
++	    p_params->ll2_ooo_queue_id;
  
- 	if (QED_DMAE_FLAGS_IS_SET(p_params, COMPLETION_DST))
--		opcode |= (1 << DMAE_CMD_COMP_FUNC_SHIFT);
-+		SET_FIELD(opcode, DMAE_CMD_COMP_FUNC, 1);
+ 	p_init->func_params.log_page_size = p_params->log_page_size;
+ 	val = p_params->num_tasks;
+diff --git a/drivers/net/ethernet/qlogic/qed/qed_iwarp.c b/drivers/net/ethernet/qlogic/qed/qed_iwarp.c
+index 65ec16a31658..d2fe61a5cf56 100644
+--- a/drivers/net/ethernet/qlogic/qed/qed_iwarp.c
++++ b/drivers/net/ethernet/qlogic/qed/qed_iwarp.c
+@@ -137,8 +137,8 @@ qed_iwarp_init_fw_ramrod(struct qed_hwfn *p_hwfn,
+ 			 struct iwarp_init_func_ramrod_data *p_ramrod)
+ {
+ 	p_ramrod->iwarp.ll2_ooo_q_index =
+-		RESC_START(p_hwfn, QED_LL2_QUEUE) +
+-		p_hwfn->p_rdma_info->iwarp.ll2_ooo_handle;
++	    RESC_START(p_hwfn, QED_LL2_RAM_QUEUE) +
++	    p_hwfn->p_rdma_info->iwarp.ll2_ooo_handle;
  
--	opcode |= (DMAE_CMD_ENDIANITY << DMAE_CMD_ENDIANITY_MODE_SHIFT);
-+	/* swapping mode 3 - big endian */
-+	SET_FIELD(opcode, DMAE_CMD_ENDIANITY_MODE, DMAE_CMD_ENDIANITY);
+ 	p_ramrod->tcp.max_fin_rt = QED_IWARP_MAX_FIN_RT_DEFAULT;
  
--	port_id = (QED_DMAE_FLAGS_IS_SET(p_params, PORT)) ?
--		   p_params->port_id : p_hwfn->port_id;
--	opcode |= (port_id << DMAE_CMD_PORT_ID_SHIFT);
-+	port_id = (QED_DMAE_FLAGS_IS_SET(p_params, PORT_VALID)) ?
-+	    p_params->port_id : p_hwfn->port_id;
-+	SET_FIELD(opcode, DMAE_CMD_PORT_ID, port_id);
+@@ -2651,6 +2651,8 @@ qed_iwarp_ll2_start(struct qed_hwfn *p_hwfn,
  
- 	/* reset source address in next go */
--	opcode |= (DMAE_CMD_SRC_ADDR_RESET_MASK <<
--		   DMAE_CMD_SRC_ADDR_RESET_SHIFT);
-+	SET_FIELD(opcode, DMAE_CMD_SRC_ADDR_RESET, 1);
+ 	memset(&data, 0, sizeof(data));
+ 	data.input.conn_type = QED_LL2_TYPE_IWARP;
++	/* SYN will use ctx based queues */
++	data.input.rx_conn_type = QED_LL2_RX_TYPE_CTX;
+ 	data.input.mtu = params->max_mtu;
+ 	data.input.rx_num_desc = QED_IWARP_LL2_SYN_RX_SIZE;
+ 	data.input.tx_num_desc = QED_IWARP_LL2_SYN_TX_SIZE;
+@@ -2683,6 +2685,8 @@ qed_iwarp_ll2_start(struct qed_hwfn *p_hwfn,
  
- 	/* reset dest address in next go */
--	opcode |= (DMAE_CMD_DST_ADDR_RESET_MASK <<
--		   DMAE_CMD_DST_ADDR_RESET_SHIFT);
-+	SET_FIELD(opcode, DMAE_CMD_DST_ADDR_RESET, 1);
+ 	/* Start OOO connection */
+ 	data.input.conn_type = QED_LL2_TYPE_OOO;
++	/* OOO/unaligned will use legacy ll2 queues (ram based) */
++	data.input.rx_conn_type = QED_LL2_RX_TYPE_LEGACY;
+ 	data.input.mtu = params->max_mtu;
  
- 	/* SRC/DST VFID: all 1's - pf, otherwise VF id */
--	if (QED_DMAE_FLAGS_IS_SET(p_params, VF_SRC)) {
--		opcode |= 1 << DMAE_CMD_SRC_VF_ID_VALID_SHIFT;
--		opcode_b |= p_params->src_vfid << DMAE_CMD_SRC_VF_ID_SHIFT;
-+	if (QED_DMAE_FLAGS_IS_SET(p_params, SRC_VF_VALID)) {
-+		SET_FIELD(opcode, DMAE_CMD_SRC_VF_ID_VALID, 1);
-+		SET_FIELD(opcode_b, DMAE_CMD_SRC_VF_ID, p_params->src_vfid);
- 	} else {
--		opcode_b |= DMAE_CMD_SRC_VF_ID_MASK <<
--			    DMAE_CMD_SRC_VF_ID_SHIFT;
-+		SET_FIELD(opcode_b, DMAE_CMD_SRC_VF_ID, 0xFF);
- 	}
+ 	n_ooo_bufs = (QED_IWARP_MAX_OOO * rcv_wnd_size) /
+diff --git a/drivers/net/ethernet/qlogic/qed/qed_ll2.c b/drivers/net/ethernet/qlogic/qed/qed_ll2.c
+index 19a1a58d60f8..037e5978787e 100644
+--- a/drivers/net/ethernet/qlogic/qed/qed_ll2.c
++++ b/drivers/net/ethernet/qlogic/qed/qed_ll2.c
+@@ -962,7 +962,7 @@ static int qed_sp_ll2_rx_queue_start(struct qed_hwfn *p_hwfn,
+ 		return rc;
+ 
+ 	p_ramrod = &p_ent->ramrod.core_rx_queue_start;
 -
--	if (QED_DMAE_FLAGS_IS_SET(p_params, VF_DST)) {
--		opcode |= 1 << DMAE_CMD_DST_VF_ID_VALID_SHIFT;
--		opcode_b |= p_params->dst_vfid << DMAE_CMD_DST_VF_ID_SHIFT;
-+	if (QED_DMAE_FLAGS_IS_SET(p_params, DST_VF_VALID)) {
-+		SET_FIELD(opcode, DMAE_CMD_DST_VF_ID_VALID, 1);
-+		SET_FIELD(opcode_b, DMAE_CMD_DST_VF_ID, p_params->dst_vfid);
- 	} else {
--		opcode_b |= DMAE_CMD_DST_VF_ID_MASK << DMAE_CMD_DST_VF_ID_SHIFT;
-+		SET_FIELD(opcode_b, DMAE_CMD_DST_VF_ID, 0xFF);
- 	}
++	memset(p_ramrod, 0, sizeof(*p_ramrod));
+ 	p_ramrod->sb_id = cpu_to_le16(qed_int_get_sp_sb_id(p_hwfn));
+ 	p_ramrod->sb_index = p_rx->rx_sb_index;
+ 	p_ramrod->complete_event_flg = 1;
+@@ -996,6 +996,8 @@ static int qed_sp_ll2_rx_queue_start(struct qed_hwfn *p_hwfn,
  
- 	p_hwfn->dmae_info.p_dmae_cmd->opcode = cpu_to_le32(opcode);
-diff --git a/drivers/net/ethernet/qlogic/qed/qed_init_fw_funcs.c b/drivers/net/ethernet/qlogic/qed/qed_init_fw_funcs.c
-index a816fb5411b7..e09e6ce74705 100644
---- a/drivers/net/ethernet/qlogic/qed/qed_init_fw_funcs.c
-+++ b/drivers/net/ethernet/qlogic/qed/qed_init_fw_funcs.c
-@@ -1022,6 +1022,56 @@ bool qed_send_qm_stop_cmd(struct qed_hwfn *p_hwfn,
- #define PRS_ETH_TUNN_OUTPUT_FORMAT     0xF4DAB910
- #define PRS_ETH_OUTPUT_FORMAT          0xFFFF4910
- 
-+#define ARR_REG_WR(dev, ptt, addr, arr,	arr_size) \
-+	do { \
-+		u32 i; \
-+		\
-+		for (i = 0; i < (arr_size); i++) \
-+			qed_wr(dev, ptt, \
-+			       ((addr) + (4 * i)), \
-+			       ((u32 *)&(arr))[i]); \
-+	} while (0)
+ 	p_ramrod->action_on_error.error_type = action_on_error;
+ 	p_ramrod->gsi_offload_flag = p_ll2_conn->input.gsi_enable;
++	p_ramrod->zero_prod_flg = 1;
 +
-+/**
-+ * @brief qed_dmae_to_grc - is an internal function - writes from host to
-+ * wide-bus registers (split registers are not supported yet)
-+ *
-+ * @param p_hwfn - HW device data
-+ * @param p_ptt - ptt window used for writing the registers.
-+ * @param p_data - pointer to source data.
-+ * @param addr - Destination register address.
-+ * @param len_in_dwords - data length in DWARDS (u32)
-+ */
-+static int qed_dmae_to_grc(struct qed_hwfn *p_hwfn,
-+			   struct qed_ptt *p_ptt,
-+			   u32 *p_data, u32 addr, u32 len_in_dwords)
-+{
-+	struct qed_dmae_params params = {};
-+	int rc;
-+
-+	if (!p_data)
-+		return -1;
-+
-+	/* Set DMAE params */
-+	SET_FIELD(params.flags, QED_DMAE_PARAMS_COMPLETION_DST, 1);
-+
-+	/* Execute DMAE command */
-+	rc = qed_dmae_host2grc(p_hwfn, p_ptt,
-+			       (u64)(uintptr_t)(p_data),
-+			       addr, len_in_dwords, &params);
-+
-+	/* If not read using DMAE, read using GRC */
-+	if (rc) {
-+		DP_VERBOSE(p_hwfn,
-+			   QED_MSG_DEBUG,
-+			   "Failed writing to chip using DMAE, using GRC instead\n");
-+		/* write to registers using GRC */
-+		ARR_REG_WR(p_hwfn, p_ptt, addr, p_data, len_in_dwords);
-+	}
-+
-+	return len_in_dwords;
-+}
-+
- void qed_set_vxlan_dest_port(struct qed_hwfn *p_hwfn,
- 			     struct qed_ptt *p_ptt, u16 dest_port)
- {
-@@ -1206,6 +1256,8 @@ void qed_set_vxlan_no_l2_enable(struct qed_hwfn *p_hwfn,
- 
- void qed_gft_disable(struct qed_hwfn *p_hwfn, struct qed_ptt *p_ptt, u16 pf_id)
- {
-+	struct regpair ram_line = { };
-+
- 	/* Disable gft search for PF */
- 	qed_wr(p_hwfn, p_ptt, PRS_REG_SEARCH_GFT, 0);
- 
-@@ -1215,12 +1267,9 @@ void qed_gft_disable(struct qed_hwfn *p_hwfn, struct qed_ptt *p_ptt, u16 pf_id)
- 	qed_wr(p_hwfn, p_ptt, PRS_REG_GFT_CAM + CAM_LINE_SIZE * pf_id, 0);
- 
- 	/* Zero ramline */
--	qed_wr(p_hwfn,
--	       p_ptt, PRS_REG_GFT_PROFILE_MASK_RAM + RAM_LINE_SIZE * pf_id, 0);
--	qed_wr(p_hwfn,
--	       p_ptt,
--	       PRS_REG_GFT_PROFILE_MASK_RAM + RAM_LINE_SIZE * pf_id + REG_SIZE,
--	       0);
-+	qed_dmae_to_grc(p_hwfn, p_ptt, (u32 *)&ram_line,
-+			PRS_REG_GFT_PROFILE_MASK_RAM + RAM_LINE_SIZE * pf_id,
-+			sizeof(ram_line) / REG_SIZE);
+ 	return qed_spq_post(p_hwfn, p_ent, NULL);
  }
  
- void qed_gft_config(struct qed_hwfn *p_hwfn,
-@@ -1331,24 +1380,17 @@ void qed_gft_config(struct qed_hwfn *p_hwfn,
+@@ -1317,6 +1319,25 @@ qed_ll2_set_cbs(struct qed_ll2_info *p_ll2_info, const struct qed_ll2_cbs *cbs)
+ 	return 0;
+ }
  
- 	qed_wr(p_hwfn,
- 	       p_ptt, PRS_REG_SEARCH_NON_IP_AS_GFT, search_non_ip_as_gft);
--	qed_wr(p_hwfn,
--	       p_ptt,
--	       PRS_REG_GFT_PROFILE_MASK_RAM + RAM_LINE_SIZE * pf_id,
--	       ram_line.lo);
--	qed_wr(p_hwfn,
--	       p_ptt,
--	       PRS_REG_GFT_PROFILE_MASK_RAM + RAM_LINE_SIZE * pf_id + REG_SIZE,
--	       ram_line.hi);
-+	qed_dmae_to_grc(p_hwfn, p_ptt, (u32 *)&ram_line,
-+			PRS_REG_GFT_PROFILE_MASK_RAM + RAM_LINE_SIZE * pf_id,
-+			sizeof(ram_line) / REG_SIZE);
++static void _qed_ll2_calc_allowed_conns(struct qed_hwfn *p_hwfn,
++					struct qed_ll2_acquire_data *data,
++					u8 *start_idx, u8 *last_idx)
++{
++	/* LL2 queues handles will be split as follows:
++	 * First will be the legacy queues, and then the ctx based.
++	 */
++	if (data->input.rx_conn_type == QED_LL2_RX_TYPE_LEGACY) {
++		*start_idx = QED_LL2_LEGACY_CONN_BASE_PF;
++		*last_idx = *start_idx +
++			QED_MAX_NUM_OF_LEGACY_LL2_CONNS_PF;
++	} else {
++		/* QED_LL2_RX_TYPE_CTX */
++		*start_idx = QED_LL2_CTX_CONN_BASE_PF;
++		*last_idx = *start_idx +
++			QED_MAX_NUM_OF_CTX_LL2_CONNS_PF;
++	}
++}
++
+ static enum core_error_handle
+ qed_ll2_get_error_choice(enum qed_ll2_error_handle err)
+ {
+@@ -1337,14 +1358,16 @@ int qed_ll2_acquire_connection(void *cxt, struct qed_ll2_acquire_data *data)
+ 	struct qed_hwfn *p_hwfn = cxt;
+ 	qed_int_comp_cb_t comp_rx_cb, comp_tx_cb;
+ 	struct qed_ll2_info *p_ll2_info = NULL;
+-	u8 i, *p_tx_max;
++	u8 i, first_idx, last_idx, *p_tx_max;
+ 	int rc;
  
- 	/* Set default profile so that no filter match will happen */
--	qed_wr(p_hwfn,
--	       p_ptt,
--	       PRS_REG_GFT_PROFILE_MASK_RAM + RAM_LINE_SIZE *
--	       PRS_GFT_CAM_LINES_NO_MATCH, 0xffffffff);
--	qed_wr(p_hwfn,
--	       p_ptt,
--	       PRS_REG_GFT_PROFILE_MASK_RAM + RAM_LINE_SIZE *
--	       PRS_GFT_CAM_LINES_NO_MATCH + REG_SIZE, 0x3ff);
-+	ram_line.lo = 0xffffffff;
-+	ram_line.hi = 0x3ff;
-+	qed_dmae_to_grc(p_hwfn, p_ptt, (u32 *)&ram_line,
-+			PRS_REG_GFT_PROFILE_MASK_RAM + RAM_LINE_SIZE *
-+			PRS_GFT_CAM_LINES_NO_MATCH,
-+			sizeof(ram_line) / REG_SIZE);
- 
- 	/* Enable gft search */
- 	qed_wr(p_hwfn, p_ptt, PRS_REG_SEARCH_GFT, 1);
-diff --git a/drivers/net/ethernet/qlogic/qed/qed_init_ops.c b/drivers/net/ethernet/qlogic/qed/qed_init_ops.c
-index ef22a3596295..31222b3e3936 100644
---- a/drivers/net/ethernet/qlogic/qed/qed_init_ops.c
-+++ b/drivers/net/ethernet/qlogic/qed/qed_init_ops.c
-@@ -215,7 +215,7 @@ static int qed_init_fill_dmae(struct qed_hwfn *p_hwfn,
- 	 * 3. p_hwfb->temp_data,
- 	 * 4. fill_count
- 	 */
--	params.flags = QED_DMAE_FLAG_RW_REPL_SRC;
-+	SET_FIELD(params.flags, QED_DMAE_PARAMS_RW_REPL_SRC, 0x1);
- 	return qed_dmae_host2grc(p_hwfn, p_ptt,
- 				 (uintptr_t)(&zero_buffer[0]),
- 				 addr, fill_count, &params);
-diff --git a/drivers/net/ethernet/qlogic/qed/qed_sriov.c b/drivers/net/ethernet/qlogic/qed/qed_sriov.c
-index fe4b740de14c..66876af814c4 100644
---- a/drivers/net/ethernet/qlogic/qed/qed_sriov.c
-+++ b/drivers/net/ethernet/qlogic/qed/qed_sriov.c
-@@ -352,7 +352,7 @@ static int qed_iov_post_vf_bulletin(struct qed_hwfn *p_hwfn,
- 
- 	/* propagate bulletin board via dmae to vm memory */
- 	memset(&params, 0, sizeof(params));
--	params.flags = QED_DMAE_FLAG_VF_DST;
-+	SET_FIELD(params.flags, QED_DMAE_PARAMS_DST_VF_VALID, 0x1);
- 	params.dst_vfid = p_vf->abs_vf_id;
- 	return qed_dmae_host2host(p_hwfn, p_ptt, p_vf->bulletin.phys,
- 				  p_vf->vf_bulletin, p_vf->bulletin.size / 4,
-@@ -1225,8 +1225,8 @@ static void qed_iov_send_response(struct qed_hwfn *p_hwfn,
- 
- 	eng_vf_id = p_vf->abs_vf_id;
- 
--	memset(&params, 0, sizeof(struct qed_dmae_params));
--	params.flags = QED_DMAE_FLAG_VF_DST;
-+	memset(&params, 0, sizeof(params));
-+	SET_FIELD(params.flags, QED_DMAE_PARAMS_DST_VF_VALID, 0x1);
- 	params.dst_vfid = eng_vf_id;
- 
- 	qed_dmae_host2host(p_hwfn, p_ptt, mbx->reply_phys + sizeof(u64),
-@@ -4103,8 +4103,9 @@ static int qed_iov_copy_vf_msg(struct qed_hwfn *p_hwfn, struct qed_ptt *ptt,
- 	if (!vf_info)
+ 	if (!data->p_connection_handle || !p_hwfn->p_ll2_info)
  		return -EINVAL;
  
--	memset(&params, 0, sizeof(struct qed_dmae_params));
--	params.flags = QED_DMAE_FLAG_VF_SRC | QED_DMAE_FLAG_COMPLETION_DST;
-+	memset(&params, 0, sizeof(params));
-+	SET_FIELD(params.flags, QED_DMAE_PARAMS_SRC_VF_VALID, 0x1);
-+	SET_FIELD(params.flags, QED_DMAE_PARAMS_COMPLETION_DST, 0x1);
- 	params.src_vfid = vf_info->abs_vf_id;
++	_qed_ll2_calc_allowed_conns(p_hwfn, data, &first_idx, &last_idx);
++
+ 	/* Find a free connection to be used */
+-	for (i = 0; (i < QED_MAX_NUM_OF_LL2_CONNECTIONS); i++) {
++	for (i = first_idx; i < last_idx; i++) {
+ 		mutex_lock(&p_hwfn->p_ll2_info[i].mutex);
+ 		if (p_hwfn->p_ll2_info[i].b_active) {
+ 			mutex_unlock(&p_hwfn->p_ll2_info[i].mutex);
+@@ -1448,6 +1471,7 @@ static int qed_ll2_establish_connection_rx(struct qed_hwfn *p_hwfn,
+ 	enum qed_ll2_error_handle error_input;
+ 	enum core_error_handle error_mode;
+ 	u8 action_on_error = 0;
++	int rc;
  
- 	if (qed_dmae_host2host(p_hwfn, ptt,
+ 	if (!QED_LL2_RX_REGISTERED(p_ll2_conn))
+ 		return 0;
+@@ -1461,7 +1485,18 @@ static int qed_ll2_establish_connection_rx(struct qed_hwfn *p_hwfn,
+ 	error_mode = qed_ll2_get_error_choice(error_input);
+ 	SET_FIELD(action_on_error, CORE_RX_ACTION_ON_ERROR_NO_BUFF, error_mode);
+ 
+-	return qed_sp_ll2_rx_queue_start(p_hwfn, p_ll2_conn, action_on_error);
++	rc = qed_sp_ll2_rx_queue_start(p_hwfn, p_ll2_conn, action_on_error);
++	if (rc)
++		return rc;
++
++	if (p_ll2_conn->rx_queue.ctx_based) {
++		rc = qed_db_recovery_add(p_hwfn->cdev,
++					 p_ll2_conn->rx_queue.set_prod_addr,
++					 &p_ll2_conn->rx_queue.db_data,
++					 DB_REC_WIDTH_64B, DB_REC_KERNEL);
++	}
++
++	return rc;
+ }
+ 
+ static void
+@@ -1475,13 +1510,41 @@ qed_ll2_establish_connection_ooo(struct qed_hwfn *p_hwfn,
+ 	qed_ooo_submit_rx_buffers(p_hwfn, p_ll2_conn);
+ }
+ 
++static inline u8 qed_ll2_handle_to_queue_id(struct qed_hwfn *p_hwfn,
++					    u8 handle,
++					    u8 ll2_queue_type)
++{
++	u8 qid;
++
++	if (ll2_queue_type == QED_LL2_RX_TYPE_LEGACY)
++		return p_hwfn->hw_info.resc_start[QED_LL2_RAM_QUEUE] + handle;
++
++	/* QED_LL2_RX_TYPE_CTX
++	 * FW distinguishes between the legacy queues (ram based) and the
++	 * ctx based queues by the queue_id.
++	 * The first MAX_NUM_LL2_RX_RAM_QUEUES queues are legacy
++	 * and the queue ids above that are ctx base.
++	 */
++	qid = p_hwfn->hw_info.resc_start[QED_LL2_CTX_QUEUE] +
++	      MAX_NUM_LL2_RX_RAM_QUEUES;
++
++	/* See comment on the acquire connection for how the ll2
++	 * queues handles are divided.
++	 */
++	qid += (handle - QED_MAX_NUM_OF_LEGACY_LL2_CONNS_PF);
++
++	return qid;
++}
++
+ int qed_ll2_establish_connection(void *cxt, u8 connection_handle)
+ {
+-	struct qed_hwfn *p_hwfn = cxt;
+-	struct qed_ll2_info *p_ll2_conn;
++	struct e4_core_conn_context *p_cxt;
+ 	struct qed_ll2_tx_packet *p_pkt;
++	struct qed_ll2_info *p_ll2_conn;
++	struct qed_hwfn *p_hwfn = cxt;
+ 	struct qed_ll2_rx_queue *p_rx;
+ 	struct qed_ll2_tx_queue *p_tx;
++	struct qed_cxt_info cxt_info;
+ 	struct qed_ptt *p_ptt;
+ 	int rc = -EINVAL;
+ 	u32 i, capacity;
+@@ -1539,13 +1602,46 @@ int qed_ll2_establish_connection(void *cxt, u8 connection_handle)
+ 	rc = qed_cxt_acquire_cid(p_hwfn, PROTOCOLID_CORE, &p_ll2_conn->cid);
+ 	if (rc)
+ 		goto out;
++	cxt_info.iid = p_ll2_conn->cid;
++	rc = qed_cxt_get_cid_info(p_hwfn, &cxt_info);
++	if (rc) {
++		DP_NOTICE(p_hwfn, "Cannot find context info for cid=%d\n",
++			  p_ll2_conn->cid);
++		goto out;
++	}
++
++	p_cxt = cxt_info.p_cxt;
++
++	memset(p_cxt, 0, sizeof(*p_cxt));
+ 
+-	qid = p_hwfn->hw_info.resc_start[QED_LL2_QUEUE] + connection_handle;
++	qid = qed_ll2_handle_to_queue_id(p_hwfn, connection_handle,
++					 p_ll2_conn->input.rx_conn_type);
+ 	p_ll2_conn->queue_id = qid;
+ 	p_ll2_conn->tx_stats_id = qid;
+-	p_rx->set_prod_addr = (u8 __iomem *)p_hwfn->regview +
+-					    GTT_BAR0_MAP_REG_TSDM_RAM +
+-					    TSTORM_LL2_RX_PRODS_OFFSET(qid);
++
++	DP_VERBOSE(p_hwfn, QED_MSG_LL2,
++		   "Establishing ll2 queue. PF %d ctx_based=%d abs qid=%d\n",
++		   p_hwfn->rel_pf_id, p_ll2_conn->input.rx_conn_type, qid);
++
++	if (p_ll2_conn->input.rx_conn_type == QED_LL2_RX_TYPE_LEGACY) {
++		p_rx->set_prod_addr = p_hwfn->regview +
++		    GTT_BAR0_MAP_REG_TSDM_RAM + TSTORM_LL2_RX_PRODS_OFFSET(qid);
++	} else {
++		/* QED_LL2_RX_TYPE_CTX - using doorbell */
++		p_rx->ctx_based = 1;
++
++		p_rx->set_prod_addr = p_hwfn->doorbells +
++			p_hwfn->dpi_start_offset +
++			DB_ADDR_SHIFT(DQ_PWM_OFFSET_TCM_LL2_PROD_UPDATE);
++
++		/* prepare db data */
++		p_rx->db_data.icid = cpu_to_le16((u16)p_ll2_conn->cid);
++		SET_FIELD(p_rx->db_data.params,
++			  CORE_PWM_PROD_UPDATE_DATA_AGG_CMD, DB_AGG_CMD_SET);
++		SET_FIELD(p_rx->db_data.params,
++			  CORE_PWM_PROD_UPDATE_DATA_RESERVED1, 0);
++	}
++
+ 	p_tx->doorbell_addr = (u8 __iomem *)p_hwfn->doorbells +
+ 					    qed_db_addr(p_ll2_conn->cid,
+ 							DQ_DEMS_LEGACY);
+@@ -1556,7 +1652,6 @@ int qed_ll2_establish_connection(void *cxt, u8 connection_handle)
+ 		  DQ_XCM_CORE_TX_BD_PROD_CMD);
+ 	p_tx->db_msg.agg_flags = DQ_XCM_CORE_DQ_CF_CMD;
+ 
+-
+ 	rc = qed_ll2_establish_connection_rx(p_hwfn, p_ll2_conn);
+ 	if (rc)
+ 		goto out;
+@@ -1590,7 +1685,7 @@ static void qed_ll2_post_rx_buffer_notify_fw(struct qed_hwfn *p_hwfn,
+ 					     struct qed_ll2_rx_packet *p_curp)
+ {
+ 	struct qed_ll2_rx_packet *p_posting_packet = NULL;
+-	struct core_ll2_rx_prod rx_prod = { 0, 0, 0 };
++	struct core_ll2_rx_prod rx_prod = { 0, 0 };
+ 	bool b_notify_fw = false;
+ 	u16 bd_prod, cq_prod;
+ 
+@@ -1615,13 +1710,27 @@ static void qed_ll2_post_rx_buffer_notify_fw(struct qed_hwfn *p_hwfn,
+ 
+ 	bd_prod = qed_chain_get_prod_idx(&p_rx->rxq_chain);
+ 	cq_prod = qed_chain_get_prod_idx(&p_rx->rcq_chain);
+-	rx_prod.bd_prod = cpu_to_le16(bd_prod);
+-	rx_prod.cqe_prod = cpu_to_le16(cq_prod);
++	if (p_rx->ctx_based) {
++		/* update producer by giving a doorbell */
++		p_rx->db_data.prod.bd_prod = cpu_to_le16(bd_prod);
++		p_rx->db_data.prod.cqe_prod = cpu_to_le16(cq_prod);
++		/* Make sure chain element is updated before ringing the
++		 * doorbell
++		 */
++		dma_wmb();
++		DIRECT_REG_WR64(p_rx->set_prod_addr,
++				*((u64 *)&p_rx->db_data));
++	} else {
++		rx_prod.bd_prod = cpu_to_le16(bd_prod);
++		rx_prod.cqe_prod = cpu_to_le16(cq_prod);
+ 
+-	/* Make sure chain element is updated before ringing the doorbell */
+-	dma_wmb();
++		/* Make sure chain element is updated before ringing the
++		 * doorbell
++		 */
++		dma_wmb();
+ 
+-	DIRECT_REG_WR(p_rx->set_prod_addr, *((u32 *)&rx_prod));
++		DIRECT_REG_WR(p_rx->set_prod_addr, *((u32 *)&rx_prod));
++	}
+ }
+ 
+ int qed_ll2_post_rx_buffer(void *cxt,
+@@ -1965,6 +2074,12 @@ int qed_ll2_terminate_connection(void *cxt, u8 connection_handle)
+ 	if (QED_LL2_RX_REGISTERED(p_ll2_conn)) {
+ 		p_ll2_conn->rx_queue.b_cb_registered = false;
+ 		smp_wmb(); /* Make sure this is seen by ll2_lb_rxq_completion */
++
++		if (p_ll2_conn->rx_queue.ctx_based)
++			qed_db_recovery_del(p_hwfn->cdev,
++					    p_ll2_conn->rx_queue.set_prod_addr,
++					    &p_ll2_conn->rx_queue.db_data);
++
+ 		rc = qed_sp_ll2_rx_queue_stop(p_hwfn, p_ll2_conn);
+ 		if (rc)
+ 			goto out;
+diff --git a/drivers/net/ethernet/qlogic/qed/qed_ll2.h b/drivers/net/ethernet/qlogic/qed/qed_ll2.h
+index 5f01fbd3c073..288642d526b7 100644
+--- a/drivers/net/ethernet/qlogic/qed/qed_ll2.h
++++ b/drivers/net/ethernet/qlogic/qed/qed_ll2.h
+@@ -46,6 +46,18 @@
+ #include "qed_sp.h"
+ 
+ #define QED_MAX_NUM_OF_LL2_CONNECTIONS                    (4)
++/* LL2 queues handles will be split as follows:
++ * first will be legacy queues, and then the ctx based queues.
++ */
++#define QED_MAX_NUM_OF_LL2_CONNS_PF            (4)
++#define QED_MAX_NUM_OF_LEGACY_LL2_CONNS_PF   (3)
++
++#define QED_MAX_NUM_OF_CTX_LL2_CONNS_PF	\
++	(QED_MAX_NUM_OF_LL2_CONNS_PF - QED_MAX_NUM_OF_LEGACY_LL2_CONNS_PF)
++
++#define QED_LL2_LEGACY_CONN_BASE_PF     0
++#define QED_LL2_CTX_CONN_BASE_PF        QED_MAX_NUM_OF_LEGACY_LL2_CONNS_PF
++
+ 
+ struct qed_ll2_rx_packet {
+ 	struct list_head list_entry;
+@@ -79,6 +91,7 @@ struct qed_ll2_rx_queue {
+ 	struct qed_chain rxq_chain;
+ 	struct qed_chain rcq_chain;
+ 	u8 rx_sb_index;
++	u8 ctx_based;
+ 	bool b_cb_registered;
+ 	__le16 *p_fw_cons;
+ 	struct list_head active_descq;
+@@ -86,6 +99,7 @@ struct qed_ll2_rx_queue {
+ 	struct list_head posting_descq;
+ 	struct qed_ll2_rx_packet *descq_array;
+ 	void __iomem *set_prod_addr;
++	struct core_pwm_prod_update_data db_data;
+ };
+ 
+ struct qed_ll2_tx_queue {
+diff --git a/drivers/net/ethernet/qlogic/qed/qed_mcp.c b/drivers/net/ethernet/qlogic/qed/qed_mcp.c
+index 36ddb89856a8..aeac359941de 100644
+--- a/drivers/net/ethernet/qlogic/qed/qed_mcp.c
++++ b/drivers/net/ethernet/qlogic/qed/qed_mcp.c
+@@ -3261,9 +3261,12 @@ static enum resource_id_enum qed_mcp_get_mfw_res_id(enum qed_resources res_id)
+ 	case QED_ILT:
+ 		mfw_res_id = RESOURCE_ILT_E;
+ 		break;
+-	case QED_LL2_QUEUE:
++	case QED_LL2_RAM_QUEUE:
+ 		mfw_res_id = RESOURCE_LL2_QUEUE_E;
+ 		break;
++	case QED_LL2_CTX_QUEUE:
++		mfw_res_id = RESOURCE_LL2_CQS_E;
++		break;
+ 	case QED_RDMA_CNQ_RAM:
+ 	case QED_CMDQS_CQS:
+ 		/* CNQ/CMDQS are the same resource */
+diff --git a/include/linux/qed/common_hsi.h b/include/linux/qed/common_hsi.h
+index 03f59a28fefd..358566f1ff64 100644
+--- a/include/linux/qed/common_hsi.h
++++ b/include/linux/qed/common_hsi.h
+@@ -105,8 +105,15 @@
+ 
+ #define CORE_SPQE_PAGE_SIZE_BYTES	4096
+ 
+-#define MAX_NUM_LL2_RX_QUEUES		48
+-#define MAX_NUM_LL2_TX_STATS_COUNTERS	48
++/* Number of LL2 RAM based queues */
++#define MAX_NUM_LL2_RX_RAM_QUEUES 32
++
++/* Number of LL2 context based queues */
++#define MAX_NUM_LL2_RX_CTX_QUEUES 208
++#define MAX_NUM_LL2_RX_QUEUES \
++	(MAX_NUM_LL2_RX_RAM_QUEUES + MAX_NUM_LL2_RX_CTX_QUEUES)
++
++#define MAX_NUM_LL2_TX_STATS_COUNTERS  48
+ 
+ #define FW_MAJOR_VERSION	8
+ #define FW_MINOR_VERSION        37
+@@ -340,6 +347,10 @@
+ #define DQ_PWM_OFFSET_TCM_ROCE_RQ_PROD		(DQ_PWM_OFFSET_TCM16_BASE + 1)
+ #define DQ_PWM_OFFSET_TCM_IWARP_RQ_PROD		(DQ_PWM_OFFSET_TCM16_BASE + 3)
+ 
++/* DQ_DEMS_AGG_VAL_BASE */
++#define DQ_PWM_OFFSET_TCM_LL2_PROD_UPDATE \
++	(DQ_PWM_OFFSET_TCM32_BASE + DQ_TCM_AGG_VAL_SEL_REG9 - 4)
++
+ #define	DQ_REGION_SHIFT			(12)
+ 
+ /* DPM */
+diff --git a/include/linux/qed/qed_if.h b/include/linux/qed/qed_if.h
+index b5db1ee96d78..9bcb2f419004 100644
+--- a/include/linux/qed/qed_if.h
++++ b/include/linux/qed/qed_if.h
+@@ -463,7 +463,7 @@ enum qed_db_rec_space {
+ 
+ #define DIRECT_REG_RD(reg_addr) readl((void __iomem *)(reg_addr))
+ 
+-#define DIRECT_REG_WR64(reg_addr, val) writeq((u32)val,	\
++#define DIRECT_REG_WR64(reg_addr, val) writeq((u64)val,	\
+ 					      (void __iomem *)(reg_addr))
+ 
+ #define QED_COALESCE_MAX 0x1FF
+@@ -1177,6 +1177,8 @@ struct qed_common_ops {
+ #define GET_FIELD(value, name) \
+ 	(((value) >> (name ## _SHIFT)) & name ## _MASK)
+ 
++#define DB_ADDR_SHIFT(addr) ((addr) << DB_PWM_ADDR_OFFSET_SHIFT)
++
+ /* Debug print definitions */
+ #define DP_ERR(cdev, fmt, ...)					\
+ 	do {							\
+diff --git a/include/linux/qed/qed_ll2_if.h b/include/linux/qed/qed_ll2_if.h
+index 5eb022953aca..1313c34d9a68 100644
+--- a/include/linux/qed/qed_ll2_if.h
++++ b/include/linux/qed/qed_ll2_if.h
+@@ -52,6 +52,12 @@ enum qed_ll2_conn_type {
+ 	QED_LL2_TYPE_ROCE,
+ 	QED_LL2_TYPE_IWARP,
+ 	QED_LL2_TYPE_RESERVED3,
++	MAX_QED_LL2_CONN_TYPE
++};
++
++enum qed_ll2_rx_conn_type {
++	QED_LL2_RX_TYPE_LEGACY,
++	QED_LL2_RX_TYPE_CTX,
+ 	MAX_QED_LL2_RX_CONN_TYPE
+ };
+ 
+@@ -165,6 +171,7 @@ struct qed_ll2_cbs {
+ };
+ 
+ struct qed_ll2_acquire_data_inputs {
++	enum qed_ll2_rx_conn_type rx_conn_type;
+ 	enum qed_ll2_conn_type conn_type;
+ 	u16 mtu;
+ 	u16 rx_num_desc;
 -- 
 2.14.5
 
