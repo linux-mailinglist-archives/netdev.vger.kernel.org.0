@@ -2,150 +2,191 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 60A7C14663E
-	for <lists+netdev@lfdr.de>; Thu, 23 Jan 2020 12:00:13 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8DEBF146655
+	for <lists+netdev@lfdr.de>; Thu, 23 Jan 2020 12:09:56 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729208AbgAWK7t (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 23 Jan 2020 05:59:49 -0500
-Received: from mail-wr1-f67.google.com ([209.85.221.67]:35622 "EHLO
-        mail-wr1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726191AbgAWK7s (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 23 Jan 2020 05:59:48 -0500
-Received: by mail-wr1-f67.google.com with SMTP id g17so2583923wro.2
-        for <netdev@vger.kernel.org>; Thu, 23 Jan 2020 02:59:48 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=cloudflare.com; s=google;
-        h=references:user-agent:from:to:cc:subject:in-reply-to:date
-         :message-id:mime-version;
-        bh=FJwE81HpA84lwzOusct7pS7KFJL6gUrNtfHJutZ9uzk=;
-        b=LmlbEG15fxTH+EZCc4MvonGzBsLLALHaHWY63qyFwRjj1CmatoUXajjC9WE+SS0Oj/
-         ZgXmAKPPVNDwxSGHjxesqkmABZZhxlG64rZ2DfDlcgY9cV8fPg+TCz1YbVHutgtyQbHj
-         aEkgX7r1ryj1R7Mx6229GJXWiiikvKby6+lfo=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:references:user-agent:from:to:cc:subject
-         :in-reply-to:date:message-id:mime-version;
-        bh=FJwE81HpA84lwzOusct7pS7KFJL6gUrNtfHJutZ9uzk=;
-        b=gREXYVWDM+8N3JudV4UsXXZ0/KHlXXib4wjmStIK51tpz5B0f6BoY+uBATtOcXMGjH
-         QwSV68aXJRSoqmqmILxGdBD0PaSX9LGubP4H0ZYWFGfw5PXhGf+MgADj+WZhmL35w7W5
-         jpcQPpHoDUdvbqwCkC/xdercK4cEO9NMQ0XbbugWbek5dxU5/T5O6QJub5DCygiiX493
-         EgthpgqEUKqFzrt4IE7IGfrKA2XXM681lrWl2au/J0OjJIf38WBNNHEqze1V5Ecm40PH
-         b+Up376LVSDT2FdiA1PW6kOSNk0dDcVqJsacGT8R7gBFBXNnQThLa/qfC8QcBOJwHW8m
-         8rmQ==
-X-Gm-Message-State: APjAAAVdnWUnhZCBDi0/e5vEN4W7VLOoKSu8MydSfXK4hrXdCAOFQ6G6
-        o+bd9ABBGBmntyZRw5N19DOFVQ==
-X-Google-Smtp-Source: APXvYqxid25417v8hQ2sSme55LT5quaEd6yJ7JAaEFNKzPFWdKDJTNYVrrOW7hWgUg8CafqZZ+3aeQ==
-X-Received: by 2002:adf:9c8f:: with SMTP id d15mr17712629wre.390.1579777187279;
-        Thu, 23 Jan 2020 02:59:47 -0800 (PST)
-Received: from cloudflare.com ([176.221.114.230])
-        by smtp.gmail.com with ESMTPSA id z8sm2539183wrq.22.2020.01.23.02.59.46
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 23 Jan 2020 02:59:46 -0800 (PST)
-References: <20200122130549.832236-1-jakub@cloudflare.com> <20200122130549.832236-11-jakub@cloudflare.com> <20200122225351.hajnt4u7au24mj5g@kafai-mbp.dhcp.thefacebook.com>
-User-agent: mu4e 1.1.0; emacs 26.3
-From:   Jakub Sitnicki <jakub@cloudflare.com>
-To:     Martin Lau <kafai@fb.com>
-Cc:     "bpf\@vger.kernel.org" <bpf@vger.kernel.org>,
-        "netdev\@vger.kernel.org" <netdev@vger.kernel.org>,
-        "kernel-team\@cloudflare.com" <kernel-team@cloudflare.com>,
-        Alexei Starovoitov <alexei.starovoitov@gmail.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        "John Fastabend" <john.fastabend@gmail.com>,
-        Lorenz Bauer <lmb@cloudflare.com>
-Subject: Re: [PATCH bpf-next v3 10/12] net: Generate reuseport group ID on group creation
-In-reply-to: <20200122225351.hajnt4u7au24mj5g@kafai-mbp.dhcp.thefacebook.com>
-Date:   Thu, 23 Jan 2020 11:59:46 +0100
-Message-ID: <875zh230bh.fsf@cloudflare.com>
+        id S1726911AbgAWLJx (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 23 Jan 2020 06:09:53 -0500
+Received: from mail25.static.mailgun.info ([104.130.122.25]:49368 "EHLO
+        mail25.static.mailgun.info" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1726194AbgAWLJw (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 23 Jan 2020 06:09:52 -0500
+DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org; q=dns/txt;
+ s=smtp; t=1579777791; h=Date: Message-Id: Cc: To: Subject: From:
+ Content-Transfer-Encoding: MIME-Version: Content-Type: Sender;
+ bh=jIU99pv6hOFOAlASDfRIFhdKALyIOfG4UkdYz7zOhzM=; b=sSg/nFjNiClnEFki4TZBgGG31X23i02Hxtu0ZoF46oM+CfYOU9nbzGt0IUFcPXXrgmyehMjC
+ J8RVPin/gXL23f7Ym1anADKdM/7wwSmcBjxYmVt+WkiuepYenyEb2MJsg2so2VVfOs/Ar9ar
+ ALlR+tQUogTaWWx/umSw9GVZugU=
+X-Mailgun-Sending-Ip: 104.130.122.25
+X-Mailgun-Sid: WyJiZjI2MiIsICJuZXRkZXZAdmdlci5rZXJuZWwub3JnIiwgImJlOWU0YSJd
+Received: from smtp.codeaurora.org (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171])
+ by mxa.mailgun.org with ESMTP id 5e297efe.7f0700ec5e68-smtp-out-n01;
+ Thu, 23 Jan 2020 11:09:50 -0000 (UTC)
+Received: by smtp.codeaurora.org (Postfix, from userid 1001)
+        id 31AF8C433CB; Thu, 23 Jan 2020 11:09:49 +0000 (UTC)
+X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
+        aws-us-west-2-caf-mail-1.web.codeaurora.org
+X-Spam-Level: 
+X-Spam-Status: No, score=0.5 required=2.0 tests=ALL_TRUSTED,MISSING_DATE,
+        MISSING_MID,SPF_NONE autolearn=no autolearn_force=no version=3.4.0
+Received: from potku.adurom.net (88-114-240-156.elisa-laajakaista.fi [88.114.240.156])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        (Authenticated sender: kvalo)
+        by smtp.codeaurora.org (Postfix) with ESMTPSA id 351D8C43383;
+        Thu, 23 Jan 2020 11:09:47 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org 351D8C43383
+Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
+Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; spf=none smtp.mailfrom=kvalo@codeaurora.org
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Content-Type: text/plain
+Content-Transfer-Encoding: 7bit
+From:   Kalle Valo <kvalo@codeaurora.org>
+Subject: pull-request: wireless-drivers-2020-01-23
+To:     netdev@vger.kernel.org
+Cc:     linux-wireless@vger.kernel.org
+Message-Id: <20200123110949.31AF8C433CB@smtp.codeaurora.org>
+Date:   Thu, 23 Jan 2020 11:09:49 +0000 (UTC)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Jan 22, 2020 at 11:53 PM CET, Martin Lau wrote:
-> On Wed, Jan 22, 2020 at 02:05:47PM +0100, Jakub Sitnicki wrote:
->> Commit 736b46027eb4 ("net: Add ID (if needed) to sock_reuseport and expose
->> reuseport_lock") has introduced lazy generation of reuseport group IDs that
->> survive group resize.
->> 
->> By comparing the identifier we check if BPF reuseport program is not trying
->> to select a socket from a BPF map that belongs to a different reuseport
->> group than the one the packet is for.
->> 
->> Because SOCKARRAY used to be the only BPF map type that can be used with
->> reuseport BPF, it was possible to delay the generation of reuseport group
->> ID until a socket from the group was inserted into BPF map for the first
->> time.
->> 
->> Now that SOCKMAP can be used with reuseport BPF we have two options, either
->> generate the reuseport ID on map update, like SOCKARRAY does, or allocate
->> an ID from the start when reuseport group gets created.
->> 
->> This patch goes the latter approach to keep SOCKMAP free of calls into
->> reuseport code. This streamlines the reuseport_id access as its lifetime
->> now matches the longevity of reuseport object.
->> 
->> The cost of this simplification, however, is that we allocate reuseport IDs
->> for all SO_REUSEPORT users. Even those that don't use SOCKARRAY in their
->> setups. With the way identifiers are currently generated, we can have at
->> most S32_MAX reuseport groups, which hopefully is sufficient.
-> Not sure if it would be a concern.  I think it is good as is.
-> For TCP, that would mean billion different ip:port listening socks
-> in inet_hashinfo.
->
-> If it came to that, another idea is to use a 64bit reuseport_id which
-> practically won't wrap around.  It could use the very first sk->sk_cookie
-> as the reuseport_id.  All the ida logic will go away also in the expense
-> of +4 bytes.
+Hi,
 
-Thanks for the idea. I'll add it to the patch description.
+here's a pull request to net tree, more info below. Please let me know if there
+are any problems.
 
->
->> 
->> Another change is that we now always call into SOCKARRAY logic to unlink
->> the socket from the map when unhashing or closing the socket. Previously we
->> did it only when at least one socket from the group was in a BPF map.
->> 
->> It is worth noting that this doesn't conflict with SOCKMAP tear-down in
->> case a socket is in a SOCKMAP and belongs to a reuseport group. SOCKMAP
->> tear-down happens first:
->> 
->>   prot->unhash
->>   `- tcp_bpf_unhash
->>      |- tcp_bpf_remove
->>      |  `- while (sk_psock_link_pop(psock))
->>      |     `- sk_psock_unlink
->>      |        `- sock_map_delete_from_link
->>      |           `- __sock_map_delete
->>      |              `- sock_map_unref
->>      |                 `- sk_psock_put
->>      |                    `- sk_psock_drop
->>      |                       `- rcu_assign_sk_user_data(sk, NULL)
->>      `- inet_unhash
->>         `- reuseport_detach_sock
->>            `- bpf_sk_reuseport_detach
->>               `- WRITE_ONCE(sk->sk_user_data, NULL)
-> Thanks for the details.
->
-> [ ... ]
->
->> @@ -200,12 +189,10 @@ void reuseport_detach_sock(struct sock *sk)
->>  	reuse = rcu_dereference_protected(sk->sk_reuseport_cb,
->>  					  lockdep_is_held(&reuseport_lock));
->>  
->> -	/* At least one of the sk in this reuseport group is added to
->> -	 * a bpf map.  Notify the bpf side.  The bpf map logic will
->> -	 * remove the sk if it is indeed added to a bpf map.
->> +	/* Notify the bpf side. The sk may be added to bpf map. The
->> +	 * bpf map logic will remove the sk from the map if indeed.
-> s/indeed/needed/ ?
->
-> I think it will be good to have a few words here like, that is needed
-> by sockarray but not necessary for sockmap which has its own ->unhash
-> to remove itself from the map.
+Kalle
 
+The following changes since commit ddd9b5e3e765d8ed5a35786a6cb00111713fe161:
 
-Yeah, I didn't do it justice. Will expand the comment.
+  net-sysfs: Call dev_hold always in rx_queue_add_kobject (2019-12-17 22:57:11 -0800)
 
-[...]
+are available in the git repository at:
+
+  git://git.kernel.org/pub/scm/linux/kernel/git/kvalo/wireless-drivers.git tags/wireless-drivers-2020-01-23
+
+for you to fetch changes up to d829229e35f302fd49c052b5c5906c90ecf9911d:
+
+  iwlwifi: mvm: don't send the IWL_MVM_RXQ_NSSN_SYNC notif to Rx queues (2020-01-22 19:13:28 +0200)
+
+----------------------------------------------------------------
+wireless-drivers fixes for v5.5
+
+Second set of fixes for v5.5. There are quite a few patches,
+especially on iwlwifi, due to me being on a long break. Libertas also
+has a security fix and mt76 a build fix.
+
+iwlwifi
+
+* don't send the PPAG command when PPAG is disabled, since it can cause problems
+
+* a few fixes for a HW bug
+
+* a fix for RS offload;
+
+* a fix for 3168 devices where the NVM tables where the wrong tables were being read
+
+* fix a couple of potential memory leaks in TXQ code
+
+* disable L0S states in all hardware since our hardware doesn't
+ officially support them anymore (and older versions of the hardware
+ had instability in these states)
+
+* remove lar_disable parameter since it has been causing issues for
+  some people who erroneously disable it
+
+* force the debug monitor HW to stop also when debug is disabled,
+  since it sometimes stays on and prevents low system power states
+
+* don't send IWL_MVM_RXQ_NSSN_SYNC notification due to DMA problems
+
+libertas
+
+* fix two buffer overflows
+
+mt76
+
+* build fix related to CONFIG_MT76_LEDS
+
+* fix off by one in bitrates handling
+
+----------------------------------------------------------------
+Arnd Bergmann (1):
+      mt76: fix LED link time failure
+
+Dan Carpenter (1):
+      mt76: Off by one in mt76_calc_rx_airtime()
+
+Emmanuel Grumbach (1):
+      iwlwifi: mvm: don't send the IWL_MVM_RXQ_NSSN_SYNC notif to Rx queues
+
+Gil Adam (1):
+      iwlwifi: don't send PPAG command if disabled
+
+Haim Dreyfuss (1):
+      iwlwifi: Don't ignore the cap field upon mcc update
+
+Johannes Berg (8):
+      iwlwifi: pcie: move page tracking into get_page_hdr()
+      iwlwifi: pcie: work around DMA hardware bug
+      iwlwifi: pcie: detect the DMA bug and warn if it happens
+      iwlwifi: pcie: allocate smaller dev_cmd for TX headers
+      iwlwifi: mvm: report TX rate to mac80211 directly for RS offload
+      iwlwifi: pcie: extend hardware workaround to context-info
+      iwlwifi: mvm: fix SKB leak on invalid queue
+      iwlwifi: mvm: fix potential SKB leak on TXQ TX
+
+Kalle Valo (1):
+      Merge tag 'iwlwifi-for-kalle-2020-01-11' of git://git.kernel.org/.../iwlwifi/iwlwifi-fixes
+
+Luca Coelho (6):
+      iwlwifi: fix TLV fragment allocation loop
+      iwlwifi: mvm: fix NVM check for 3168 devices
+      iwlwifi: pcie: rename L0S_ENABLED bit to L0S_DISABLED
+      iwlwifi: pcie: always disable L0S states
+      iwlwifi: remove lar_disable module parameter
+      iwlwifi: fw: make pos static in iwl_sar_get_ewrd_table() loop
+
+Mehmet Akif Tasova (1):
+      Revert "iwlwifi: mvm: fix scan config command size"
+
+Shahar S Matityahu (1):
+      iwlwifi: dbg: force stop the debug monitor HW
+
+Stanislaw Gruszka (1):
+      MAINTAINERS: change Gruszka's email address
+
+Wen Huang (1):
+      libertas: Fix two buffer overflows at parsing bss descriptor
+
+ MAINTAINERS                                        |   4 +-
+ drivers/net/wireless/intel/iwlwifi/dvm/tx.c        |   3 +-
+ drivers/net/wireless/intel/iwlwifi/fw/acpi.c       |  10 +-
+ drivers/net/wireless/intel/iwlwifi/fw/dbg.c        |   7 +-
+ drivers/net/wireless/intel/iwlwifi/iwl-csr.h       |   2 +-
+ drivers/net/wireless/intel/iwlwifi/iwl-dbg-tlv.c   |   9 +-
+ drivers/net/wireless/intel/iwlwifi/iwl-drv.c       |   3 -
+ drivers/net/wireless/intel/iwlwifi/iwl-modparams.h |   2 -
+ drivers/net/wireless/intel/iwlwifi/iwl-nvm-parse.c |  61 +++++-
+ drivers/net/wireless/intel/iwlwifi/iwl-nvm-parse.h |   9 +-
+ drivers/net/wireless/intel/iwlwifi/iwl-trans.c     |  10 +-
+ drivers/net/wireless/intel/iwlwifi/iwl-trans.h     |  26 ++-
+ drivers/net/wireless/intel/iwlwifi/mvm/constants.h |   1 +
+ drivers/net/wireless/intel/iwlwifi/mvm/fw.c        |   8 +-
+ drivers/net/wireless/intel/iwlwifi/mvm/mac80211.c  | 157 ++++++++++++++--
+ drivers/net/wireless/intel/iwlwifi/mvm/mvm.h       |   7 +-
+ drivers/net/wireless/intel/iwlwifi/mvm/nvm.c       |  12 +-
+ drivers/net/wireless/intel/iwlwifi/mvm/rxmq.c      |  19 +-
+ drivers/net/wireless/intel/iwlwifi/mvm/scan.c      |   2 +-
+ drivers/net/wireless/intel/iwlwifi/mvm/tx.c        |  21 +--
+ .../net/wireless/intel/iwlwifi/pcie/ctxt-info.c    |  45 ++++-
+ drivers/net/wireless/intel/iwlwifi/pcie/internal.h |  19 +-
+ drivers/net/wireless/intel/iwlwifi/pcie/trans.c    |  47 +++--
+ drivers/net/wireless/intel/iwlwifi/pcie/tx-gen2.c  | 208 +++++++++++++++++----
+ drivers/net/wireless/intel/iwlwifi/pcie/tx.c       |  68 ++++---
+ drivers/net/wireless/marvell/libertas/cfg.c        |  16 +-
+ drivers/net/wireless/mediatek/mt76/airtime.c       |   2 +-
+ drivers/net/wireless/mediatek/mt76/mac80211.c      |   3 +-
+ 28 files changed, 596 insertions(+), 185 deletions(-)
