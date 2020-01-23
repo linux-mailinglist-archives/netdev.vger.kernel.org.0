@@ -2,82 +2,79 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 0AB0E146002
-	for <lists+netdev@lfdr.de>; Thu, 23 Jan 2020 01:40:14 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1A30A146005
+	for <lists+netdev@lfdr.de>; Thu, 23 Jan 2020 01:41:09 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726170AbgAWAkH convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Wed, 22 Jan 2020 19:40:07 -0500
-Received: from mga14.intel.com ([192.55.52.115]:30110 "EHLO mga14.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725911AbgAWAkH (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 22 Jan 2020 19:40:07 -0500
-X-Amp-Result: SKIPPED(no attachment in message)
-X-Amp-File-Uploaded: False
-Received: from fmsmga002.fm.intel.com ([10.253.24.26])
-  by fmsmga103.fm.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 22 Jan 2020 16:40:06 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.70,351,1574150400"; 
-   d="scan'208";a="259665393"
-Received: from fmsmsx105.amr.corp.intel.com ([10.18.124.203])
-  by fmsmga002.fm.intel.com with ESMTP; 22 Jan 2020 16:40:06 -0800
-Received: from fmsmsx603.amr.corp.intel.com (10.18.126.83) by
- FMSMSX105.amr.corp.intel.com (10.18.124.203) with Microsoft SMTP Server (TLS)
- id 14.3.439.0; Wed, 22 Jan 2020 16:40:06 -0800
-Received: from fmsmsx602.amr.corp.intel.com (10.18.126.82) by
- fmsmsx603.amr.corp.intel.com (10.18.126.83) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.1713.5; Wed, 22 Jan 2020 16:40:05 -0800
-Received: from fmsmsx602.amr.corp.intel.com ([10.18.126.82]) by
- fmsmsx602.amr.corp.intel.com ([10.18.126.82]) with mapi id 15.01.1713.004;
- Wed, 22 Jan 2020 16:40:05 -0800
-From:   "Bowers, AndrewX" <andrewx.bowers@intel.com>
-To:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "intel-wired-lan@lists.osuosl.org" <intel-wired-lan@lists.osuosl.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: RE: [Intel-wired-lan] [PATCH -next] i40e: remove unnecessary
- conversions to bool
-Thread-Topic: [Intel-wired-lan] [PATCH -next] i40e: remove unnecessary
- conversions to bool
-Thread-Index: AQHVzswZrtP2LQT+HE+virtMr9uRkaf3bZqQ
-Date:   Thu, 23 Jan 2020 00:40:05 +0000
-Message-ID: <e1fd238f66684cc1a70fe498467177e2@intel.com>
-References: <20200119132138.37781-1-chenzhou10@huawei.com>
-In-Reply-To: <20200119132138.37781-1-chenzhou10@huawei.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-dlp-product: dlpe-windows
-x-ctpclassification: CTP_NT
-x-titus-metadata-40: eyJDYXRlZ29yeUxhYmVscyI6IiIsIk1ldGFkYXRhIjp7Im5zIjoiaHR0cDpcL1wvd3d3LnRpdHVzLmNvbVwvbnNcL0ludGVsMyIsImlkIjoiYTU4NDY1ZTAtYmFkZC00ZWIwLWJmMDMtZjQyNThiYTQwZjRjIiwicHJvcHMiOlt7Im4iOiJDVFBDbGFzc2lmaWNhdGlvbiIsInZhbHMiOlt7InZhbHVlIjoiQ1RQX05UIn1dfV19LCJTdWJqZWN0TGFiZWxzIjpbXSwiVE1DVmVyc2lvbiI6IjE3LjEwLjE4MDQuNDkiLCJUcnVzdGVkTGFiZWxIYXNoIjoiZG9pQU5RWE4yU2xCRWVmTjdKNFVxSmJDMnFUZ05DQlJKNEozZU1WSFZBSThuNHpIWFwvWm1vV1ZvK2dRSFVENUIifQ==
-dlp-reaction: no-action
-dlp-version: 11.0.400.15
-x-originating-ip: [10.22.254.132]
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 8BIT
+        id S1727022AbgAWAlH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 22 Jan 2020 19:41:07 -0500
+Received: from mail-lj1-f194.google.com ([209.85.208.194]:38893 "EHLO
+        mail-lj1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725911AbgAWAlH (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 22 Jan 2020 19:41:07 -0500
+Received: by mail-lj1-f194.google.com with SMTP id w1so1206661ljh.5;
+        Wed, 22 Jan 2020 16:41:05 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=0QBEXCnWugFPxvxg/FY6E4hQni5i1IE/AZyhiO8JFt8=;
+        b=Ke78RNhOpFWziu/Jz39ig6DJG3rz6VC25pOVAWgjIqDO3nWH8sqawCMALgqWzo8jW9
+         UCd6YzkDRJweFhyXDofFkmes5arwCrmu9HREl3fvkzHkA29bnX9XQGX3O4uVYqbpYpd4
+         OzWCIpE56XDkUnQCAXYe9+7Ik2amm3HeQIphdi4e8PQtUGdhFkIf6YlVlSj1GBzMR469
+         BkdhDC8p4Z7oBS840WL6t6vqvh4nurEaeA9zPV5HJCNnGv5loyRnVqHMFPbNndCojaz2
+         zQeGTHARxAFCfw6Pvy832qHIgEY2PoPUcH/bOBUv9cbwfkE3CPLGjaEtK6jyqxh0IbBd
+         gzHQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=0QBEXCnWugFPxvxg/FY6E4hQni5i1IE/AZyhiO8JFt8=;
+        b=h682OK4YXl9Dlw7xEisEQuBlcXpcMipW67JfNlhgw/7vk0DqrrubkFXpVSFRMYAKnS
+         fskQSgBX6dVKH0mIWXWgKPvnhXgQf7+e5RWSdTDXHP1EWZZXg6RnbsX8/dEZW7RA60oR
+         fYV455BUP3GGaUOn6EDYnuKAqcjP9baJ0xVRJ6D0nq9TJJxuIPD2ZViy256I1jymYKCq
+         qoE5Gb2p6Tjm19sdX1duyngdO6TTkghW/tlAqyTrTojVSwVbghg3XqooFRkUDHqOv2Sx
+         E5knKxbK/f48gXadviDx2GFtVVz9x8Y0a3I4crE/IpLHYvMl7RmudsT0BJkEFASrad+Z
+         mF8A==
+X-Gm-Message-State: APjAAAUxkteSHb+36eiAM5kURWpcmzaFwnJ5hJJSajDxV24GZLczN75h
+        ECKOMP+jPYF8ch2ULutUiu+DMm5EQeQepuBw/tI=
+X-Google-Smtp-Source: APXvYqzIAO0p6YxnVjwGhOIGTQ7CAJ7k7GuUytPbAXvrSLNeySMowBXzrmDymKV+iw102cdMLBib6htqknNWe63eOj0=
+X-Received: by 2002:a2e:990e:: with SMTP id v14mr20056638lji.23.1579740064770;
+ Wed, 22 Jan 2020 16:41:04 -0800 (PST)
 MIME-Version: 1.0
+References: <20200122233639.903041-1-kafai@fb.com>
+In-Reply-To: <20200122233639.903041-1-kafai@fb.com>
+From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Date:   Wed, 22 Jan 2020 16:40:53 -0800
+Message-ID: <CAADnVQJ1EWCJEiPRMMYF-m57FEGCTjPmzkx3XtF6gC=sDeNg1A@mail.gmail.com>
+Subject: Re: [PATCH v3 bpf-next 0/3] bpf: tcp: Add bpf_cubic example
+To:     Martin KaFai Lau <kafai@fb.com>
+Cc:     bpf <bpf@vger.kernel.org>, Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        David Miller <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Kernel Team <kernel-team@fb.com>,
+        Network Development <netdev@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> -----Original Message-----
-> From: Intel-wired-lan [mailto:intel-wired-lan-bounces@osuosl.org] On
-> Behalf Of Chen Zhou
-> Sent: Sunday, January 19, 2020 5:22 AM
-> To: Kirsher, Jeffrey T <jeffrey.t.kirsher@intel.com>; davem@davemloft.net
-> Cc: chenzhou10@huawei.com; netdev@vger.kernel.org; intel-wired-
-> lan@lists.osuosl.org; linux-kernel@vger.kernel.org
-> Subject: [Intel-wired-lan] [PATCH -next] i40e: remove unnecessary
-> conversions to bool
-> 
-> The conversions to bool are not needed, remove these.
-> 
-> Signed-off-by: Chen Zhou <chenzhou10@huawei.com>
-> ---
->  drivers/net/ethernet/intel/i40e/i40e_main.c | 4 ++--
->  1 file changed, 2 insertions(+), 2 deletions(-)
+On Wed, Jan 22, 2020 at 3:37 PM Martin KaFai Lau <kafai@fb.com> wrote:
+>
+> This set adds bpf_cubic.c example.  It was separated from the
+> earlier BPF STRUCT_OPS series.  Some highlights since the
+> last post:
+>
+> 1. It is based on EricD recent fixes to the kernel tcp_cubic. [1]
+> 2. The bpf jiffies reading helper is inlined by the verifier.
+>    Different from the earlier version, it only reads jiffies alone
+>    and does not do usecs/jiffies conversion.
+> 3. The bpf .kconfig map is used to read CONFIG_HZ.
+>
+> [1]: https://patchwork.ozlabs.org/cover/1215066/
+>
+> v3:
+> - Remove __weak from CONFIG_HZ in patch 3. (Andrii)
 
-Tested-by: Andrew Bowers <andrewx.bowers@intel.com>
-
-
+Applied. Thanks
