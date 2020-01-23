@@ -2,185 +2,171 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id DD11E1472EC
-	for <lists+netdev@lfdr.de>; Thu, 23 Jan 2020 22:03:18 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 14AFF1472F9
+	for <lists+netdev@lfdr.de>; Thu, 23 Jan 2020 22:09:36 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729339AbgAWVDE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 23 Jan 2020 16:03:04 -0500
-Received: from us-smtp-2.mimecast.com ([205.139.110.61]:31557 "EHLO
-        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1729342AbgAWVDD (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 23 Jan 2020 16:03:03 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1579813381;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=YZjD8aqaGH6JNDHX+A7tsAQo+cl/H8KbJHBmNjl1CAs=;
-        b=AL+8uFF+N9owvQ37LFmYwnD7fBbJkvTjCFZFoMX63i47bouTzEgAQ/diB80WmxGLXY12Fl
-        sjLXqcCJj+VwaYqRaWdnFSaH+BhrWxxjlCjBDhHV64H5C3naOTRfjmU+N1OHh0WI4FzepD
-        5nmDerGdr/RS3oxceCs0UG+/D5ATX3M=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-312-HDmQ2MhAMA6cXpt_V3B92g-1; Thu, 23 Jan 2020 16:02:57 -0500
-X-MC-Unique: HDmQ2MhAMA6cXpt_V3B92g-1
-Received: from smtp.corp.redhat.com (int-mx01.intmail.prod.int.phx2.redhat.com [10.5.11.11])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id D398B8024E5;
-        Thu, 23 Jan 2020 21:02:54 +0000 (UTC)
-Received: from madcap2.tricolour.ca (ovpn-112-12.phx2.redhat.com [10.3.112.12])
-        by smtp.corp.redhat.com (Postfix) with ESMTPS id 467D281207;
-        Thu, 23 Jan 2020 21:02:43 +0000 (UTC)
-Date:   Thu, 23 Jan 2020 16:02:40 -0500
-From:   Richard Guy Briggs <rgb@redhat.com>
-To:     Paul Moore <paul@paul-moore.com>
-Cc:     containers@lists.linux-foundation.org, linux-api@vger.kernel.org,
-        Linux-Audit Mailing List <linux-audit@redhat.com>,
-        linux-fsdevel@vger.kernel.org, LKML <linux-kernel@vger.kernel.org>,
-        netdev@vger.kernel.org, netfilter-devel@vger.kernel.org,
-        sgrubb@redhat.com, omosnace@redhat.com, dhowells@redhat.com,
-        simo@redhat.com, Eric Paris <eparis@parisplace.org>,
-        Serge Hallyn <serge@hallyn.com>, ebiederm@xmission.com,
-        nhorman@tuxdriver.com, Dan Walsh <dwalsh@redhat.com>,
-        mpatel@redhat.com
-Subject: Re: [PATCH ghak90 V8 12/16] audit: contid check descendancy and
- nesting
-Message-ID: <20200123210240.sq64tptjm3ds7xss@madcap2.tricolour.ca>
-References: <cover.1577736799.git.rgb@redhat.com>
- <cfbb80a08fc770dd0dcf6dac6ff307a80d877c3f.1577736799.git.rgb@redhat.com>
- <CAHC9VhT1+mx_tVzyXD=UBqagqYgAFjZ=X1A6oBiMvjVCn8=V-w@mail.gmail.com>
+        id S1729339AbgAWVJe (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 23 Jan 2020 16:09:34 -0500
+Received: from mail-ed1-f67.google.com ([209.85.208.67]:34572 "EHLO
+        mail-ed1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727816AbgAWVJd (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 23 Jan 2020 16:09:33 -0500
+Received: by mail-ed1-f67.google.com with SMTP id r18so2718781edl.1;
+        Thu, 23 Jan 2020 13:09:32 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:autocrypt:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=hEBAG4fDTiHb1CUuqH1+YkiWEoF+8TQHC0fCvFmUfu4=;
+        b=tdIhn9qaGhTlHuk3+ArU3kcIjWXALBTRlgZnVlF/uu4/Pjy2KZYdc8oZDSupCviyr6
+         5SU9zwGSEBFI0B62Zxndgc9H6q3uQwu+m9Gyw3g4ZeX85fNlaOx5lForMaJJLXlCJl0p
+         +Geq75e8cag+JOXLGf5lKlnM6Q870IpRvs2lQB5Xw/g/hK9KleIqbKX9hNgqwQkkOepk
+         LBaRTPcY+lIQ36dryZvizsA4Gq/jjnzLugh+ZsElC0NrisHGwMsq6AhY5nuhzPFpuy+i
+         HPiPIEvQtBuOFuikdRydPFa0EEuiCuzY5pc6vgFIMso6LQQzZzfPKzQr8jJOgop3qfa3
+         ee5Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:autocrypt
+         :message-id:date:user-agent:mime-version:in-reply-to
+         :content-language:content-transfer-encoding;
+        bh=hEBAG4fDTiHb1CUuqH1+YkiWEoF+8TQHC0fCvFmUfu4=;
+        b=sDTzhIIsZB02iWmWDpLHRucUAZ7uBkp+kbWK7rrLwNPtKVsSG/3XJEvmiJOKXw3ztx
+         jFDa0dsZi7lHEJu6Lf3RmQPD+i02kG8VvAxxbeCMipWt3bwFvos+eBxsrGQPkJpeNSl+
+         mCHBaNf5XxoEtx6af9QpRXLqeShm88Ftabr3pqNw/oFsgNAtMufWIpCZHfnmzbFNuvdV
+         MEE0hV25Q2inbdqjNju7x+I/2XgDgiy7ULshPih7ZFEIyyfHWBjVZvbXMAoSBlXx9yLk
+         cDeRNfxA1ciQnus71EJB0lo/f/QrFqkIFr49IItgVf1YX55oMw5Jnz5c9fkGCzNjSYs5
+         jJgQ==
+X-Gm-Message-State: APjAAAV7d183T38RrETsyxtbWxO6Uqq1Fw0TGYoMIv4gsDOt+dyvgxY4
+        Pq0tXjFqmSV/7vmpr30wPO7Qq9QR
+X-Google-Smtp-Source: APXvYqxetYngxa5SNTC99OZGe8MMb9THxAMqY8VKJcASmUZJ5t7CtduX0SsiSZuIvy1sf23MdCkZoQ==
+X-Received: by 2002:aa7:db55:: with SMTP id n21mr8566350edt.31.1579813771222;
+        Thu, 23 Jan 2020 13:09:31 -0800 (PST)
+Received: from [10.67.50.115] ([192.19.223.252])
+        by smtp.googlemail.com with ESMTPSA id dc5sm52750edb.61.2020.01.23.13.09.27
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 23 Jan 2020 13:09:30 -0800 (PST)
+Subject: Re: [PATCH net 0/3] net: fsl/fman: address erratum A011043
+To:     madalin.bucur@oss.nxp.com, davem@davemloft.net,
+        netdev@vger.kernel.org
+Cc:     robh+dt@kernel.org, mark.rutland@arm.com,
+        devicetree@vger.kernel.org
+References: <1579699229-5948-1-git-send-email-madalin.bucur@oss.nxp.com>
+From:   Florian Fainelli <f.fainelli@gmail.com>
+Autocrypt: addr=f.fainelli@gmail.com; prefer-encrypt=mutual; keydata=
+ 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
+ G10n8gCguORqNGMsVRxrlLs7/himep7MrCc=
+Message-ID: <34f22df7-409a-43d1-3c59-52e6a32fbf17@gmail.com>
+Date:   Thu, 23 Jan 2020 13:09:22 -0800
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.2.2
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CAHC9VhT1+mx_tVzyXD=UBqagqYgAFjZ=X1A6oBiMvjVCn8=V-w@mail.gmail.com>
-User-Agent: NeoMutt/20180716
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.11
+In-Reply-To: <1579699229-5948-1-git-send-email-madalin.bucur@oss.nxp.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 2020-01-22 16:29, Paul Moore wrote:
-> On Tue, Dec 31, 2019 at 2:51 PM Richard Guy Briggs <rgb@redhat.com> wrote:
-> >
-> > Require the target task to be a descendant of the container
-> > orchestrator/engine.
-> >
-> > You would only change the audit container ID from one set or inherited
-> > value to another if you were nesting containers.
-> >
-> > If changing the contid, the container orchestrator/engine must be a
-> > descendant and not same orchestrator as the one that set it so it is not
-> > possible to change the contid of another orchestrator's container.
-> >
-> > Since the task_is_descendant() function is used in YAMA and in audit,
-> > remove the duplication and pull the function into kernel/core/sched.c
-> >
-> > Signed-off-by: Richard Guy Briggs <rgb@redhat.com>
-> > ---
-> >  include/linux/sched.h    |  3 +++
-> >  kernel/audit.c           | 44 ++++++++++++++++++++++++++++++++++++--------
-> >  kernel/sched/core.c      | 33 +++++++++++++++++++++++++++++++++
-> >  security/yama/yama_lsm.c | 33 ---------------------------------
-> >  4 files changed, 72 insertions(+), 41 deletions(-)
+On 1/22/20 5:20 AM, Madalin Bucur wrote:
+> This addresses a HW erratum on some QorIQ DPAA devices.
 > 
-> ...
+> MDIO reads to internal PCS registers may result in having
+> the MDIO_CFG[MDIO_RD_ER] bit set, even when there is no
+> error and read data (MDIO_DATA[MDIO_DATA]) is correct.
+> Software may get false read error when reading internal
+> PCS registers through MDIO. As a workaround, all internal
+> MDIO accesses should ignore the MDIO_CFG[MDIO_RD_ER] bit.
+> When the issue was present, one could see such errors
+> during boot:
 > 
-> > diff --git a/kernel/audit.c b/kernel/audit.c
-> > index f7a8d3288ca0..ef8e07524c46 100644
-> > --- a/kernel/audit.c
-> > +++ b/kernel/audit.c
-> > @@ -2603,22 +2610,43 @@ int audit_set_contid(struct task_struct *task, u64 contid)
-> >         oldcontid = audit_get_contid(task);
-> >         read_lock(&tasklist_lock);
-> >         /* Don't allow the contid to be unset */
-> > -       if (!audit_contid_valid(contid))
-> > +       if (!audit_contid_valid(contid)) {
-> >                 rc = -EINVAL;
-> > +               goto unlock;
-> > +       }
-> >         /* Don't allow the contid to be set to the same value again */
-> > -       else if (contid == oldcontid) {
-> > +       if (contid == oldcontid) {
-> >                 rc = -EADDRINUSE;
-> > +               goto unlock;
-> > +       }
-> >         /* if we don't have caps, reject */
-> > -       else if (!capable(CAP_AUDIT_CONTROL))
-> > +       if (!capable(CAP_AUDIT_CONTROL)) {
-> >                 rc = -EPERM;
-> > -       /* if task has children or is not single-threaded, deny */
-> > -       else if (!list_empty(&task->children))
-> > +               goto unlock;
-> > +       }
-> > +       /* if task has children, deny */
-> > +       if (!list_empty(&task->children)) {
-> >                 rc = -EBUSY;
-> > -       else if (!(thread_group_leader(task) && thread_group_empty(task)))
-> > +               goto unlock;
-> > +       }
-> > +       /* if task is not single-threaded, deny */
-> > +       if (!(thread_group_leader(task) && thread_group_empty(task))) {
-> >                 rc = -EALREADY;
-> > -       /* if contid is already set, deny */
-> > -       else if (audit_contid_set(task))
-> > +               goto unlock;
-> > +       }
+>   mdio_bus ffe4e5000: Error while reading PHY0 reg at 3.3
+
+Did you consider using the standard broken-turn-around property/support
+and set your mii_bus::phy_ignore_ta_mask to all relevant bits?
+
+
 > 
-> It seems like the if/else-if conversion above should be part of an
-> earlier patchset.
-
-I had considered that, but it wasn't obvious where that conversion
-should happen since it wasn't necessary earlier and is now.  I can move
-it earlier if you feel strongly about it.
-
-> > +       /* if task is not descendant, block */
-> > +       if (task == current) {
-> > +               rc = -EBADSLT;
-> > +               goto unlock;
-> > +       }
-> > +       if (!task_is_descendant(current, task)) {
-> > +               rc = -EXDEV;
-> > +               goto unlock;
-> > +       }
+> Madalin Bucur (3):
+>   dt-bindings: net: add fsl,erratum-a011043
+>   powerpc/fsl/dts: add fsl,erratum-a011043
+>   net/fsl: treat fsl,erratum-a011043
 > 
-> I understand you are trying to provide a unique error code for each
-> failure case, but this is getting silly.  Let's group the descendent
-> checks under the same error code.
-
-Ok.  I was trying to provide more information for debugging for me and
-for users.
-
-> > +       /* only allow contid setting again if nesting */
-> > +       if (audit_contid_set(task) && audit_contid_isowner(task))
-> >                 rc = -ECHILD;
+>  Documentation/devicetree/bindings/net/fsl-fman.txt          | 13 +++++++++++++
+>  .../boot/dts/fsl/qoriq-fman3-0-10g-0-best-effort.dtsi       |  1 +
+>  arch/powerpc/boot/dts/fsl/qoriq-fman3-0-10g-0.dtsi          |  1 +
+>  .../boot/dts/fsl/qoriq-fman3-0-10g-1-best-effort.dtsi       |  1 +
+>  arch/powerpc/boot/dts/fsl/qoriq-fman3-0-10g-1.dtsi          |  1 +
+>  arch/powerpc/boot/dts/fsl/qoriq-fman3-0-1g-0.dtsi           |  1 +
+>  arch/powerpc/boot/dts/fsl/qoriq-fman3-0-1g-1.dtsi           |  1 +
+>  arch/powerpc/boot/dts/fsl/qoriq-fman3-0-1g-2.dtsi           |  1 +
+>  arch/powerpc/boot/dts/fsl/qoriq-fman3-0-1g-3.dtsi           |  1 +
+>  arch/powerpc/boot/dts/fsl/qoriq-fman3-0-1g-4.dtsi           |  1 +
+>  arch/powerpc/boot/dts/fsl/qoriq-fman3-0-1g-5.dtsi           |  1 +
+>  arch/powerpc/boot/dts/fsl/qoriq-fman3-1-10g-0.dtsi          |  1 +
+>  arch/powerpc/boot/dts/fsl/qoriq-fman3-1-10g-1.dtsi          |  1 +
+>  arch/powerpc/boot/dts/fsl/qoriq-fman3-1-1g-0.dtsi           |  1 +
+>  arch/powerpc/boot/dts/fsl/qoriq-fman3-1-1g-1.dtsi           |  1 +
+>  arch/powerpc/boot/dts/fsl/qoriq-fman3-1-1g-2.dtsi           |  1 +
+>  arch/powerpc/boot/dts/fsl/qoriq-fman3-1-1g-3.dtsi           |  1 +
+>  arch/powerpc/boot/dts/fsl/qoriq-fman3-1-1g-4.dtsi           |  1 +
+>  arch/powerpc/boot/dts/fsl/qoriq-fman3-1-1g-5.dtsi           |  1 +
+>  drivers/net/ethernet/freescale/xgmac_mdio.c                 |  7 ++++++-
+>  20 files changed, 37 insertions(+), 1 deletion(-)
 > 
-> Should that be "!audit_contid_isowner()"?
 
-No.  If the contid is already set on this task and if it is the same
-orchestrator that already owns this one, then block it since the same
-orchestrator is not allowed to set it again.  Another orchestrator that
-has been shown by previous tests to be a descendant of the orchestrator
-that already owns this one would be permitted.
 
-Now that I say this explicitly, it appears I need another test to check:
-
-	/* only allow contid setting again if nesting */
-	if (audit_contid_set(task) && ( audit_contid_isowner(task) || !task_is_descendant(_audit_contobj(task)->owner, current) ))
-		rc = -ECHILD;
-
-So we're back to audit_contobj_owner() like in the previous patchset
-that would make this cleaner.
-
-> paul moore
-
-- RGB
-
---
-Richard Guy Briggs <rgb@redhat.com>
-Sr. S/W Engineer, Kernel Security, Base Operating Systems
-Remote, Ottawa, Red Hat Canada
-IRC: rgb, SunRaycer
-Voice: +1.647.777.2635, Internal: (81) 32635
-
+-- 
+Florian
