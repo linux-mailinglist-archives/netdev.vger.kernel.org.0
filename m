@@ -2,163 +2,132 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 9FDF8146F49
-	for <lists+netdev@lfdr.de>; Thu, 23 Jan 2020 18:14:50 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2C5CB146F58
+	for <lists+netdev@lfdr.de>; Thu, 23 Jan 2020 18:16:35 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729093AbgAWROq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 23 Jan 2020 12:14:46 -0500
-Received: from mail-mw2nam12on2098.outbound.protection.outlook.com ([40.107.244.98]:29594
-        "EHLO NAM12-MW2-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1726605AbgAWROp (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 23 Jan 2020 12:14:45 -0500
+        id S1729219AbgAWRQd (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 23 Jan 2020 12:16:33 -0500
+Received: from mx0b-00082601.pphosted.com ([67.231.153.30]:64498 "EHLO
+        mx0b-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1728731AbgAWRQc (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 23 Jan 2020 12:16:32 -0500
+Received: from pps.filterd (m0109331.ppops.net [127.0.0.1])
+        by mx0a-00082601.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 00NH8eQA000441;
+        Thu, 23 Jan 2020 09:16:18 -0800
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
+ : date : message-id : references : in-reply-to : content-type : content-id
+ : content-transfer-encoding : mime-version; s=facebook;
+ bh=39vetacuAforZk3W+3gRyQFZuI0sX037sOEZQwB4roY=;
+ b=TwaUUSakuw1ccW0MJ+ixLvwmoIUOlotBLnG5rP+ibxadZkAuWutV1pg1Q3J2oVdtgYkE
+ Wq+QZNeQWBKbWETtvHZGdjYazO+LY2wYrn6XmHP/23DJQeislEtiHErxSFbptTvE3hip
+ jc7QiQ2FnGjOrPbpIaby8WQKrWE5hDUqd2Y= 
+Received: from maileast.thefacebook.com ([163.114.130.16])
+        by mx0a-00082601.pphosted.com with ESMTP id 2xpr4ke2d7-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
+        Thu, 23 Jan 2020 09:16:18 -0800
+Received: from NAM10-BN7-obe.outbound.protection.outlook.com (100.104.31.183)
+ by o365-in.thefacebook.com (100.104.35.174) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.1779.2; Thu, 23 Jan 2020 09:16:17 -0800
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=ndoTCQ8Uc8NYkHv1AMI5+2xkFpUQbMNHMavtyK1iHeAV93Kl3U5OVJMmaHFI+tTd2lG8spbA/PlyKIyH/yOXU+vxMjEcataAeNz9IfFlI5IU8vSGjJ4xwQK4f7tgK4ObwasK9kzwWoc+5Hbl0S6WkdXIXiUur7haIq0XO0383fXmNEtyztwI4QrH+GujGydRSgvVc4JjJyP5yZoVoyBW8Iotzgf/J2SBhAX5L9We/J6w2FO3BP0frtN1OBWq0mc8QWSGIzwz6vnNtkB/FY0goigolUk/DMmzyjSKkniafCQuswTVwQbDR4u1RfeCK2oTtmLJBhNe1xQ6LWTIzot+JA==
+ b=Td+6jsvrap4VdaOvca3Dtk+67FKPHlXMJv3CJDIofQb/sq1+tY4X2tE/lTGgHsqQ/26gAPjerPQpzgr8eQhMtUBFDPuygCwDkORLfjQjkpbsQthyzYMyom4RKejYgb/jSZ/WgCpm6kEE/DeHJgXSm6Bb/etek8koQqJQagWykX+ixD1jI/uL4X5cJ/8FMcQzfY/n85KUZidCxanmodMpRXGNf1rQXeY2sYqqEwMf0K3w7eLGsElGv8Y7RLdr8pBq4PtZoJDSNsBqzcwDwJ9tWUk8YPqM2gPVKjFEsHD9RlxQbicjFA4FoLbSSUQml7tCYg9kIvOLx3GdQsh0+BLXHw==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=HB+iH21jeXyRhNQ4j7mA5U7GRWbyMqWWqC0Y7HEG3Po=;
- b=DVoQRwUhajGn/0udBLTVwp09EvgyGz5M+uL+D0uQkdfM6DAwzzULXX1YVxOfzSQS+sPR4Wug2L33QG/ryGb+wpBEnK4uEszOeNLZURcDGpHQ+PB7iBSUoeDWfY67hEctNRVe4hPYMx6TiKfQdEytSaxRIVq3Rdn3aFzgkvziA0/wqz6biZg9hiIGUVRLBQnkNJsJjJLCR/s/Bctb4YsQv8MjDj90y9qIA1+ieVRn46uCJ6Y137rQmOygJ/9vS9FG2JaTyPu4+QfNlPP25So95qSTxi1xpYVUxJd5SiWX9t+Z0r7pDezefbHhAaaSLCfDdyzraIWw06iJF6HdolFrAw==
+ bh=39vetacuAforZk3W+3gRyQFZuI0sX037sOEZQwB4roY=;
+ b=FbYWIS3XWEeLCr/JSVJI32HmNAcomrPgKfPlYRZEsRD1h7u3JBoI/WQ4V2DAtThkyIl473chXEaFBeX3XJbppTw/deDLyI5OSjqE2G9ojul0kaGhr9sPImja0V/b8zQfY9EnyUnVvFMPhXNzC2qWOd/wjVeZR+CF018+fDsOkoPeUk0ibHxTQK/kWxdBsU6hEcclvMGGzBpwvQDmhAWbt+WIiLbLmc5f/cBEiwnD79NiOuhnocRvRbZ4pm+U6BH3KePNm6+iMrVmJ/4ZlgRYeOu4fXu6DW2yxTt3XS5N5x8AWI462TBqDRIG0waQgeK1758QkuWSbBH4w6uQahoyyw==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=microsoft.com; dmarc=pass action=none
- header.from=microsoft.com; dkim=pass header.d=microsoft.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=selector2;
+ smtp.mailfrom=fb.com; dmarc=pass action=none header.from=fb.com; dkim=pass
+ header.d=fb.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.onmicrosoft.com;
+ s=selector2-fb-onmicrosoft-com;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=HB+iH21jeXyRhNQ4j7mA5U7GRWbyMqWWqC0Y7HEG3Po=;
- b=PrdJAnxXEMK2jEUnwiA+3I+MhHNJeneiUqHtuzFNP8+yIIAcpQzFEBZLpQMlbOQeAE7fZgl8dplNGYTdIkoWjZtmVKord/8NfpGf+SuUJd2aryMIlA+XrSmIyctBMLtSIZxKMsWFhyxQH2l3AZC70zCVWxlPTxiPaTFB9g05oDI=
-Received: from MN2PR21MB1375.namprd21.prod.outlook.com (20.179.23.160) by
- MN2PR21MB1213.namprd21.prod.outlook.com (20.179.20.141) with Microsoft SMTP
+ bh=39vetacuAforZk3W+3gRyQFZuI0sX037sOEZQwB4roY=;
+ b=NUy+7rALW9zj649FYkOTzkWfcstHUt1q0ldWio8AI5SmraEy8rX23W6VwEUhkmKUVMvhzozTRce/qKuW8nndVGaV8IxdNBC+GtlUhqonVsg96pCCd7ioXMFER2XMblm9DQUdjkDwEJIPODpiRP1+PziDe8WZvpXorjLxqPsdoLo=
+Received: from MN2PR15MB3213.namprd15.prod.outlook.com (20.179.21.76) by
+ MN2PR15MB3311.namprd15.prod.outlook.com (20.179.23.88) with Microsoft SMTP
  Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.2686.3; Thu, 23 Jan 2020 17:14:06 +0000
-Received: from MN2PR21MB1375.namprd21.prod.outlook.com
- ([fe80::5deb:9ab5:f05a:5423]) by MN2PR21MB1375.namprd21.prod.outlook.com
- ([fe80::5deb:9ab5:f05a:5423%6]) with mapi id 15.20.2686.013; Thu, 23 Jan 2020
- 17:14:06 +0000
-From:   Haiyang Zhang <haiyangz@microsoft.com>
-To:     Jakub Kicinski <kuba@kernel.org>
-CC:     "sashal@kernel.org" <sashal@kernel.org>,
-        "linux-hyperv@vger.kernel.org" <linux-hyperv@vger.kernel.org>,
+ 15.20.2644.19; Thu, 23 Jan 2020 17:16:16 +0000
+Received: from MN2PR15MB3213.namprd15.prod.outlook.com
+ ([fe80::6d1e:f2f7:d36:a42f]) by MN2PR15MB3213.namprd15.prod.outlook.com
+ ([fe80::6d1e:f2f7:d36:a42f%4]) with mapi id 15.20.2644.027; Thu, 23 Jan 2020
+ 17:16:16 +0000
+Received: from kafai-mbp.dhcp.thefacebook.com (2620:10d:c090:200::2:d66d) by CO2PR04CA0058.namprd04.prod.outlook.com (2603:10b6:102:1::26) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.2644.19 via Frontend Transport; Thu, 23 Jan 2020 17:16:14 +0000
+From:   Martin Lau <kafai@fb.com>
+To:     Lorenz Bauer <lmb@cloudflare.com>
+CC:     Shuah Khan <shuah@kernel.org>, Alexei Starovoitov <ast@kernel.org>,
+        "Daniel Borkmann" <daniel@iogearbox.net>,
+        Song Liu <songliubraving@fb.com>, "Yonghong Song" <yhs@fb.com>,
+        Andrii Nakryiko <andriin@fb.com>,
+        "linux-kselftest@vger.kernel.org" <linux-kselftest@vger.kernel.org>,
         "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        KY Srinivasan <kys@microsoft.com>,
-        Stephen Hemminger <sthemmin@microsoft.com>,
-        "olaf@aepfle.de" <olaf@aepfle.de>, vkuznets <vkuznets@redhat.com>,
-        "davem@davemloft.net" <davem@davemloft.net>,
+        "bpf@vger.kernel.org" <bpf@vger.kernel.org>,
         "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: RE: [PATCH V3,net-next, 1/2] hv_netvsc: Add XDP support
-Thread-Topic: [PATCH V3,net-next, 1/2] hv_netvsc: Add XDP support
-Thread-Index: AQHV0UjdH1AVu+KRP0+E0p14Je7IQaf4ekYAgAABksA=
-Date:   Thu, 23 Jan 2020 17:14:06 +0000
-Message-ID: <MN2PR21MB13757F7D19C11EC175FD9F98CA0F0@MN2PR21MB1375.namprd21.prod.outlook.com>
-References: <1579713814-36061-1-git-send-email-haiyangz@microsoft.com>
-        <1579713814-36061-2-git-send-email-haiyangz@microsoft.com>
- <20200123085906.20608707@cakuba>
-In-Reply-To: <20200123085906.20608707@cakuba>
+Subject: Re: [PATCH bpf 2/4] selftests: bpf: ignore RST packets for reuseport
+ tests
+Thread-Topic: [PATCH bpf 2/4] selftests: bpf: ignore RST packets for reuseport
+ tests
+Thread-Index: AQHV0g6NwgtJo3iSuUOeG+lkP8Lweqf4fYEA
+Date:   Thu, 23 Jan 2020 17:16:16 +0000
+Message-ID: <20200123171612.stdwtlpqibkydz2s@kafai-mbp.dhcp.thefacebook.com>
+References: <20200123165934.9584-1-lmb@cloudflare.com>
+ <20200123165934.9584-3-lmb@cloudflare.com>
+In-Reply-To: <20200123165934.9584-3-lmb@cloudflare.com>
 Accept-Language: en-US
 Content-Language: en-US
 X-MS-Has-Attach: 
 X-MS-TNEF-Correlator: 
-msip_labels: MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_Enabled=True;
- MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_SiteId=72f988bf-86f1-41af-91ab-2d7cd011db47;
- MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_Owner=haiyangz@microsoft.com;
- MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_SetDate=2020-01-23T17:14:05.1118734Z;
- MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_Name=General;
- MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_Application=Microsoft Azure
- Information Protection;
- MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_ActionId=89d18603-f9b3-41e8-9366-578ace4c86c5;
- MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_Extended_MSFT_Method=Automatic
-authentication-results: spf=none (sender IP is )
- smtp.mailfrom=haiyangz@microsoft.com; 
-x-originating-ip: [96.61.92.94]
+x-clientproxiedby: CO2PR04CA0058.namprd04.prod.outlook.com
+ (2603:10b6:102:1::26) To MN2PR15MB3213.namprd15.prod.outlook.com
+ (2603:10b6:208:3d::12)
+x-ms-exchange-messagesentrepresentingtype: 1
+x-originating-ip: [2620:10d:c090:200::2:d66d]
 x-ms-publictraffictype: Email
-x-ms-office365-filtering-ht: Tenant
-x-ms-office365-filtering-correlation-id: ec8e38f4-3006-4598-60bf-08d7a027a74f
-x-ms-traffictypediagnostic: MN2PR21MB1213:|MN2PR21MB1213:|MN2PR21MB1213:
+x-ms-office365-filtering-correlation-id: fe21180c-3d8b-4811-28d5-08d7a027f4bc
+x-ms-traffictypediagnostic: MN2PR15MB3311:
 x-ms-exchange-transport-forked: True
-x-ld-processed: 72f988bf-86f1-41af-91ab-2d7cd011db47,ExtAddr
-x-microsoft-antispam-prvs: <MN2PR21MB12131A118CDE325FA15969F7CA0F0@MN2PR21MB1213.namprd21.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:6430;
+x-microsoft-antispam-prvs: <MN2PR15MB33119E72CED3C530C16F895ED50F0@MN2PR15MB3311.namprd15.prod.outlook.com>
+x-fb-source: Internal
+x-ms-oob-tlc-oobclassifiers: OLM:820;
 x-forefront-prvs: 029174C036
-x-forefront-antispam-report: SFV:NSPM;SFS:(10019020)(4636009)(136003)(346002)(366004)(376002)(396003)(39860400002)(199004)(189003)(6916009)(52536014)(8990500004)(10290500003)(33656002)(478600001)(2906002)(71200400001)(54906003)(5660300002)(64756008)(66556008)(26005)(66946007)(66476007)(9686003)(76116006)(186003)(8676002)(81166006)(81156014)(8936002)(66446008)(55016002)(7696005)(86362001)(6506007)(53546011)(316002)(4326008);DIR:OUT;SFP:1102;SCL:1;SRVR:MN2PR21MB1213;H:MN2PR21MB1375.namprd21.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;A:1;MX:1;
-received-spf: None (protection.outlook.com: microsoft.com does not designate
+x-forefront-antispam-report: SFV:NSPM;SFS:(10019020)(136003)(376002)(346002)(396003)(366004)(39860400002)(199004)(189003)(1076003)(4744005)(2906002)(86362001)(6916009)(54906003)(9686003)(7696005)(52116002)(55016002)(5660300002)(6506007)(478600001)(4326008)(8936002)(316002)(81156014)(81166006)(8676002)(66946007)(71200400001)(16526019)(64756008)(186003)(66446008)(66556008)(66476007);DIR:OUT;SFP:1102;SCL:1;SRVR:MN2PR15MB3311;H:MN2PR15MB3213.namprd15.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;A:1;MX:1;
+received-spf: None (protection.outlook.com: fb.com does not designate
  permitted sender hosts)
 x-ms-exchange-senderadcheck: 1
 x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: XSST0RuEG/XUT17iYJkSc390C9z8Z6E1QYkUIPGEPDiUHNv5PhGLnNbGmIkrzPhG/05Gd+LOUxR00BSQHJdiRHUsYrcTC3qaOKVJ289VNL/Jjik6+nXIfbJuTWgT5vFfPpyJhHjcAXsjkypC3inVb1k8gKAxJWuQVwp/6nUsMT1/vtBz554sDYN4E1AaVzzGZcITNYgPAymMlokwW3SdNaUozi32RqKpFyQfz+3xxNTQBL+Reom835MHpNi7m6oBHHR5pPtP5iFD7JaX/GoeKvVw2FQwt4ryOQy4O14NzYYSWCp1GNSq5FhmFvIN3YuoJylCNYoCvZldQRv6m+n/+VZhAvfmkbnZxybtXtZnudkuLrHsSrheMF6l58j9bdK6Rc0fASLQXiPQF0g/+t3nkcr4KRlwyF7UIcZ9TUV8t31izyqwGo9D0ZPf3c8N1A3B
-x-ms-exchange-antispam-messagedata: q4oxD6GEZZ08clxCvVd4mQFVXkxjcfgO3BhEi+KEcL93yswvqeLK7AgQPQGSIKK4I3ogcpPWMaiKd6Gdxwf7aO+wfL4OdN39uo2q2Catd5i/aEFNb2T8P6HXsTf9JH4H+hInhEY9stQpjs532NpRpw==
+x-microsoft-antispam-message-info: h9sZqhlDdh03cRqb+VWUtIKerG4A04sFM6hhnhJz9Of8Hm04m7JrL7VlA+WD2ZFsqhuFPz75yGia10L3auufwJjzixBISbqz4PrJRBr34kRs9RZMjG29JGu4bphl9/aN14wAdNKMaA5FW+4SRIpQWTJ5XuSEFIku9i+u0TDe+W66SM6yI/CB7S3x82VeiogAuHLI3dnF0jSOjdlxVbpF0fBtEOv47I5I7lcfi/3pL9yP8zY6utdRNEKdpn7vvLVkfI0WCqxPqvEDB39tO3lTWV3Phlg609YpquMkrut74Fm4pWjTzx95dhJNScR7AmXWiktQQCWAPToRSiCNGBv5Mvi4bRhI4yGnk5Euue+lnzgI0HTR2Ns2t+VvSsUegkyiWG1w0a2Rotd6vrEWjyn132tF7ojwTrxGsXTrmv1ztJMl39zPpNq1OjcX+T3r3j3U
 Content-Type: text/plain; charset="us-ascii"
+Content-ID: <6D75503A71A72A41AA7EF4EC3FF92E32@namprd15.prod.outlook.com>
 Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-X-OriginatorOrg: microsoft.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: ec8e38f4-3006-4598-60bf-08d7a027a74f
-X-MS-Exchange-CrossTenant-originalarrivaltime: 23 Jan 2020 17:14:06.5341
+X-MS-Exchange-CrossTenant-Network-Message-Id: fe21180c-3d8b-4811-28d5-08d7a027f4bc
+X-MS-Exchange-CrossTenant-originalarrivaltime: 23 Jan 2020 17:16:16.7954
  (UTC)
 X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 72f988bf-86f1-41af-91ab-2d7cd011db47
+X-MS-Exchange-CrossTenant-id: 8ae927fe-1255-47a7-a2af-5f3a069daaa2
 X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: 0qDG3Oxo/fRFAYxS2nOkvuVgj2TRU7MQohCmbvkkNrV5Qm+yuh4fUb9sRB4+ifVo2g+1Wr28y9ck1EG28YgkfA==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: MN2PR21MB1213
+X-MS-Exchange-CrossTenant-userprincipalname: PJ1ST79cX6QlYsF9ucsTC/NuYXRh3YOSoDv3U50qZIVkllYKr84PWVUEdwU8WBPm
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: MN2PR15MB3311
+X-OriginatorOrg: fb.com
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.138,18.0.572
+ definitions=2020-01-23_10:2020-01-23,2020-01-23 signatures=0
+X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 bulkscore=0 mlxscore=0
+ phishscore=0 priorityscore=1501 spamscore=0 clxscore=1011 impostorscore=0
+ malwarescore=0 mlxlogscore=661 lowpriorityscore=0 suspectscore=0
+ adultscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-1910280000 definitions=main-2001230134
+X-FB-Internal: deliver
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-
-
-> -----Original Message-----
-> From: Jakub Kicinski <kuba@kernel.org>
-> Sent: Thursday, January 23, 2020 11:59 AM
-> To: Haiyang Zhang <haiyangz@microsoft.com>
-> Cc: sashal@kernel.org; linux-hyperv@vger.kernel.org; netdev@vger.kernel.o=
-rg;
-> KY Srinivasan <kys@microsoft.com>; Stephen Hemminger
-> <sthemmin@microsoft.com>; olaf@aepfle.de; vkuznets
-> <vkuznets@redhat.com>; davem@davemloft.net; linux-kernel@vger.kernel.org
-> Subject: Re: [PATCH V3,net-next, 1/2] hv_netvsc: Add XDP support
+On Thu, Jan 23, 2020 at 04:59:31PM +0000, Lorenz Bauer wrote:
+> The reuseport tests currently suffer from a race condition: RST
+> packets count towards DROP_ERR_SKB_DATA, since they don't contain
+> a valid struct cmd. Tests will spuriously fail depending on whether
+> check_results is called before or after the RST is processed.
 >=20
-> On Wed, 22 Jan 2020 09:23:33 -0800, Haiyang Zhang wrote:
-> > This patch adds support of XDP in native mode for hv_netvsc driver,
-> > and transparently sets the XDP program on the associated VF NIC as well=
-.
-> >
-> > Setting / unsetting XDP program on synthetic NIC (netvsc) propagates
-> > to VF NIC automatically. Setting / unsetting XDP program on VF NIC
-> > directly is not recommended, also not propagated to synthetic NIC, and
-> > may be overwritten by setting of synthetic NIC.
-> >
-> > The Azure/Hyper-V synthetic NIC receive buffer doesn't provide
-> > headroom for XDP. We thought about re-use the RNDIS header space, but
-> > it's too small. So we decided to copy the packets to a page buffer for
-> > XDP. And, most of our VMs on Azure have Accelerated  Network (SRIOV)
-> > enabled, so most of the packets run on VF NIC. The synthetic NIC is
-> > considered as a fallback data-path. So the data copy on netvsc won't
-> > impact performance significantly.
-> >
-> > XDP program cannot run with LRO (RSC) enabled, so you need to disable
-> > LRO before running XDP:
-> >         ethtool -K eth0 lro off
-> >
-> > XDP actions not yet supported:
-> >         XDP_REDIRECT
-> >
-> > Signed-off-by: Haiyang Zhang <haiyangz@microsoft.com>
-> >
-> > ---
-> > Changes:
-> > 	v3: Minor code and comment updates.
-> >         v2: Added XDP_TX support. Addressed review comments.
->=20
-> How does the locking of the TX path work? You seem to be just calling the
-> normal xmit method, but you don't hold the xmit queue lock, so the stack =
-can
-> start xmit concurrently, no?
-
-The netvsc and vmbus can handle concurrent transmits, except the msd=20
-(Multi-Send Data) field which can only be used by one queue.=20
-
-I already added a new flag to netvsc_send(), so packets from XDP_TX won't u=
-se=20
-the msd.
-
-Thanks,
-- Haiyang
+> Exit the BPF program early if FIN is set.
+Make sense.
+Is it a RST or FIN?  The earlier commit message said RST.
