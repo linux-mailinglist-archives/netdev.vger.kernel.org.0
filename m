@@ -2,80 +2,152 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id AE395146F6A
-	for <lists+netdev@lfdr.de>; Thu, 23 Jan 2020 18:18:29 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1EB78146F6E
+	for <lists+netdev@lfdr.de>; Thu, 23 Jan 2020 18:18:44 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729337AbgAWRSY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 23 Jan 2020 12:18:24 -0500
-Received: from mail-oi1-f193.google.com ([209.85.167.193]:43758 "EHLO
-        mail-oi1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727296AbgAWRSY (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 23 Jan 2020 12:18:24 -0500
-Received: by mail-oi1-f193.google.com with SMTP id p125so3582236oif.10
-        for <netdev@vger.kernel.org>; Thu, 23 Jan 2020 09:18:24 -0800 (PST)
+        id S1729151AbgAWRSm (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 23 Jan 2020 12:18:42 -0500
+Received: from mail-pj1-f65.google.com ([209.85.216.65]:50901 "EHLO
+        mail-pj1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727194AbgAWRSl (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 23 Jan 2020 12:18:41 -0500
+Received: by mail-pj1-f65.google.com with SMTP id r67so1494540pjb.0;
+        Thu, 23 Jan 2020 09:18:41 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=cloudflare.com; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=XnQrSbFLZoFzkSjXwKmxPlg8vAGR4Rz7FX09nL1MowQ=;
-        b=hc21+PStvyHAkZivbzfWmA/5ihjJevnx3O/tdQzDwujLUH2jxifbQNtwgbRO76pWhB
-         Il8sLvHmktBy4VkGrH/ej+5PuXOlCziFAsmd69uOrq3Byko2073ruAuvZCWqvGzTQMlI
-         r4BULczhgrkpj2ln6AC+idZbtEaXPsqmIDleo=
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=nxx5unrQ+dpzFU606H47zaLtZOuGy3CKKngWO6U1V/Q=;
+        b=JPYAj+NtrlwAR6+4Kc+mM6OdVkAVRUZd93UivgJ1bbdYxjfuWNDmY1r6QYTA+3qjD/
+         B+9h4PvEu2KossTmmTKV+hQuC2zGUqyRFHM2lnlNGATU7bWJO/50ziIGjG8UPpOVZYC9
+         pPkUEuQ26tymD3Einv0KGFWzcNDECkUXnCuh3Jv4iqt5Mad8lRA9jxH8lys8KckUhKbA
+         1LV+xvtbp4szU/7tmSWBhB1pk2wWBW6INTYFzJs5ywmTGlUMAaYEr+hIzai2LVkPfpB8
+         1JtNfvjz+gz3WPTr2hMltTTTdtbxytOt5+ERceHV1mHfWvlAzTxudFeozgq/khE4fgdI
+         9KDg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=XnQrSbFLZoFzkSjXwKmxPlg8vAGR4Rz7FX09nL1MowQ=;
-        b=WXzmgTQGBid51JpvjA7sLJNn4tXpQZAJLPSUnO2uKDfruQ3kIiMzVZzoowLbsrqQjZ
-         MqM7rCpjym4FOTgpQHhjfsUmSkNd0PEAGpusyCxHHfDneWvkj1sMgRcXA3ef3MWnW2H5
-         Xx19sVaumu6GcRz8Ws9GMBvMFlCpANKnaW1PmzL6wtB2rApXWRV8wLgPAn9geGuphRK3
-         oTu8FaRlHz6qDYOi0zTCHBG70AYP8upO5026olUh/mVbj/HT17+D3BROlI5d9DBV9z+s
-         221/pGNqAHGRRRcXc+2naGiLyw4zGSrFKjbeMacplyzzklsTYSjV1LbrA6sZdSye8sVS
-         74Rg==
-X-Gm-Message-State: APjAAAWGpA+Ok3JtC8PI/sMpY8qfqT893lXM9PJ7lYo+XUS7FXc+kvSj
-        VxMIuwBXIMkZxeXBK3McO3sgyABBV5SVbxWXIohdaMTs6Q4=
-X-Google-Smtp-Source: APXvYqzalvtZo7H5iCHOLugbV07Wh+3lDL0ZFS+9bcfQzmkeyCF3b8BK8no3VDOS4OA6O0SMek4Z40BUq4KlKxXKVtk=
-X-Received: by 2002:aca:b60a:: with SMTP id g10mr10878162oif.102.1579799903847;
- Thu, 23 Jan 2020 09:18:23 -0800 (PST)
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=nxx5unrQ+dpzFU606H47zaLtZOuGy3CKKngWO6U1V/Q=;
+        b=S8UC4qkwxvNEeO34k/GXqmKjC8osabncwAs/t7UDzAZ3UHxQqL/G1FdIdyYeN6BPXo
+         yPZJODJlM3j4EAd6MCBUyhwpdqXj0YiH5pFAARi3Oy3GeWzRyK+GrP2AECxHBFnbAVov
+         yERicEV6f2A8yezoZgCO1xeBC+eozGQE5velurXKgbnj+D0A0Ub9Ib900XOfj6HJbhm4
+         UWbknJI/WX3DfIZVWZV6Hn4H/hiAfqElf4Ce0MjnYXr6nlWvZelkniWXSC8s926nSKuf
+         7b44m6RP/lZ3GzlCBJRTOkR+EwpEjLzhuolJ+ybwlZPJADc+ER6wXdbvz0sUPncHqrTW
+         ry7w==
+X-Gm-Message-State: APjAAAWq2SGMyh/1Pc7SIBx/193sHcxCwJB9Lioldwwa8liJklN565kA
+        xVJi89EmxILh8LtNVeivij4=
+X-Google-Smtp-Source: APXvYqz6xQmDP5LCut3w4LoNTLTsP5ELddtUYcap0D31AdDlji4jaBXFGI15QIXbjE7AsEooiSt29g==
+X-Received: by 2002:a17:90a:804a:: with SMTP id e10mr5701058pjw.41.1579799921188;
+        Thu, 23 Jan 2020 09:18:41 -0800 (PST)
+Received: from ?IPv6:2620:15c:2c1:200:55c7:81e6:c7d8:94b? ([2620:15c:2c1:200:55c7:81e6:c7d8:94b])
+        by smtp.gmail.com with ESMTPSA id s18sm3347075pfh.179.2020.01.23.09.18.40
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 23 Jan 2020 09:18:40 -0800 (PST)
+Subject: Re: [PATCH bpf-next v4 02/12] net, sk_msg: Annotate lockless access
+ to sk_prot on clone
+To:     Jakub Sitnicki <jakub@cloudflare.com>, bpf@vger.kernel.org
+Cc:     netdev@vger.kernel.org, kernel-team@cloudflare.com,
+        John Fastabend <john.fastabend@gmail.com>,
+        Lorenz Bauer <lmb@cloudflare.com>, Martin Lau <kafai@fb.com>
+References: <20200123155534.114313-1-jakub@cloudflare.com>
+ <20200123155534.114313-3-jakub@cloudflare.com>
+From:   Eric Dumazet <eric.dumazet@gmail.com>
+Message-ID: <a6bf279e-a998-84ab-4371-cd6c1ccbca5d@gmail.com>
+Date:   Thu, 23 Jan 2020 09:18:39 -0800
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.2.2
 MIME-Version: 1.0
-References: <20200123165934.9584-1-lmb@cloudflare.com> <20200123165934.9584-3-lmb@cloudflare.com>
- <20200123171612.stdwtlpqibkydz2s@kafai-mbp.dhcp.thefacebook.com>
-In-Reply-To: <20200123171612.stdwtlpqibkydz2s@kafai-mbp.dhcp.thefacebook.com>
-From:   Lorenz Bauer <lmb@cloudflare.com>
-Date:   Thu, 23 Jan 2020 17:18:12 +0000
-Message-ID: <CACAyw999DErydNaDVgczYtqzSP09hnXtmwwJ0kocjisfRdVhxQ@mail.gmail.com>
-Subject: Re: [PATCH bpf 2/4] selftests: bpf: ignore RST packets for reuseport tests
-To:     Martin Lau <kafai@fb.com>
-Cc:     Shuah Khan <shuah@kernel.org>, Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        Andrii Nakryiko <andriin@fb.com>,
-        "linux-kselftest@vger.kernel.org" <linux-kselftest@vger.kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "bpf@vger.kernel.org" <bpf@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+In-Reply-To: <20200123155534.114313-3-jakub@cloudflare.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 23 Jan 2020 at 17:16, Martin Lau <kafai@fb.com> wrote:
->
-> On Thu, Jan 23, 2020 at 04:59:31PM +0000, Lorenz Bauer wrote:
-> > The reuseport tests currently suffer from a race condition: RST
-> > packets count towards DROP_ERR_SKB_DATA, since they don't contain
-> > a valid struct cmd. Tests will spuriously fail depending on whether
-> > check_results is called before or after the RST is processed.
-> >
-> > Exit the BPF program early if FIN is set.
-> Make sense.
-> Is it a RST or FIN?  The earlier commit message said RST.
 
-FIN, sorry. I'll update in a follow up.
 
--- 
-Lorenz Bauer  |  Systems Engineer
-6th Floor, County Hall/The Riverside Building, SE1 7PB, UK
+On 1/23/20 7:55 AM, Jakub Sitnicki wrote:
+> sk_msg and ULP frameworks override protocol callbacks pointer in
+> sk->sk_prot, while tcp accesses it locklessly when cloning the listening
+> socket, that is with neither sk_lock nor sk_callback_lock held.
+> 
+> Once we enable use of listening sockets with sockmap (and hence sk_msg),
+> there will be shared access to sk->sk_prot if socket is getting cloned
+> while being inserted/deleted to/from the sockmap from another CPU:
+> 
+> Read side:
+> 
+> tcp_v4_rcv
+>   sk = __inet_lookup_skb(...)
+>   tcp_check_req(sk)
+>     inet_csk(sk)->icsk_af_ops->syn_recv_sock
+>       tcp_v4_syn_recv_sock
+>         tcp_create_openreq_child
+>           inet_csk_clone_lock
+>             sk_clone_lock
+>               READ_ONCE(sk->sk_prot)
+> 
+> Write side:
+> 
+> sock_map_ops->map_update_elem
+>   sock_map_update_elem
+>     sock_map_update_common
+>       sock_map_link_no_progs
+>         tcp_bpf_init
+>           tcp_bpf_update_sk_prot
+>             sk_psock_update_proto
+>               WRITE_ONCE(sk->sk_prot, ops)
+> 
+> sock_map_ops->map_delete_elem
+>   sock_map_delete_elem
+>     __sock_map_delete
+>      sock_map_unref
+>        sk_psock_put
+>          sk_psock_drop
+>            sk_psock_restore_proto
+>              tcp_update_ulp
+>                WRITE_ONCE(sk->sk_prot, proto)
+> 
+> Mark the shared access with READ_ONCE/WRITE_ONCE annotations.
+> 
+> Acked-by: Martin KaFai Lau <kafai@fb.com>
+> Signed-off-by: Jakub Sitnicki <jakub@cloudflare.com>
+> ---
+>  include/linux/skmsg.h | 3 ++-
+>  net/core/sock.c       | 5 +++--
+>  net/ipv4/tcp_bpf.c    | 4 +++-
+>  net/ipv4/tcp_ulp.c    | 3 ++-
+>  net/tls/tls_main.c    | 3 ++-
+>  5 files changed, 12 insertions(+), 6 deletions(-)
+> 
+> diff --git a/include/linux/skmsg.h b/include/linux/skmsg.h
+> index 41ea1258d15e..55c834a5c25e 100644
+> --- a/include/linux/skmsg.h
+> +++ b/include/linux/skmsg.h
+> @@ -352,7 +352,8 @@ static inline void sk_psock_update_proto(struct sock *sk,
+>  	psock->saved_write_space = sk->sk_write_space;
+>  
+>  	psock->sk_proto = sk->sk_prot;
+> -	sk->sk_prot = ops;
+> +	/* Pairs with lockless read in sk_clone_lock() */
+> +	WRITE_ONCE(sk->sk_prot, ops);
 
-www.cloudflare.com
+
+Note there are dozens of calls like
+
+if (sk->sk_prot->handler)
+    sk->sk_prot->handler(...);
+
+Some of them being done lockless.
+
+I know it is painful, but presumably we need
+
+const struct proto *ops = READ_ONCE(sk->sk_prot);
+
+if (ops->handler)
+    ops->handler(....);
+
