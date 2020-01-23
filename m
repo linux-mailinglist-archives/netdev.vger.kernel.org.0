@@ -2,142 +2,148 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 6AB9E146FEB
-	for <lists+netdev@lfdr.de>; Thu, 23 Jan 2020 18:42:11 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0E21C146FF2
+	for <lists+netdev@lfdr.de>; Thu, 23 Jan 2020 18:45:00 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728797AbgAWRmJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 23 Jan 2020 12:42:09 -0500
-Received: from mail-ed1-f44.google.com ([209.85.208.44]:43937 "EHLO
-        mail-ed1-f44.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727022AbgAWRmJ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 23 Jan 2020 12:42:09 -0500
-Received: by mail-ed1-f44.google.com with SMTP id dc19so4136421edb.10
-        for <netdev@vger.kernel.org>; Thu, 23 Jan 2020 09:42:07 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:from:to:cc:references:autocrypt:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=T3ZI3kb1KbUeZorZe5rgEqzTns7bpkZOxhQjRvnhKiU=;
-        b=m/ZfQlDNppiKb7G+wUF6xFLFqcUqxrLdIRHiJ+Z+MivI2xiskm4J2v9ZQUmUCPnFT3
-         hKTyFy+dD4OTN4xRWtCXsY32UqPKYnQMt0nrHq7AaGIUFoLg3hQ2KJbsk/wkhZDA2owP
-         cp5r2aUeJ0CmFp5MlxToIkuEbzRBRRdo7zRt/lG6XEwjFVibtvaCfNljPwq7rVTYFwXf
-         viQqU25/hFQ0DHdjiobEHCgLDwhZrUNRHgAEcAM/5NJE3aOaVZF2mgkjucwVCrUpV470
-         w65qfM5XNz/C5LhuqNlp1eDW3mXIM2mG+3Mey7cDelCx7GP/sRLxedBtkPzQ8tFqqmey
-         jqSA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:from:to:cc:references:autocrypt
-         :message-id:date:user-agent:mime-version:in-reply-to
-         :content-language:content-transfer-encoding;
-        bh=T3ZI3kb1KbUeZorZe5rgEqzTns7bpkZOxhQjRvnhKiU=;
-        b=Rl0hIOy9mHgds3Ly5R0vZAu4KPLTC4dONsF0zKcXFadZk3s06TDc9Q6+s9jb63yz4Z
-         wHxdVx5843CaOB/ySn4tkyvLIDRQ6ZH/A8FHxqPtNQdsPkzJbeTzAKCEY2sm1p8KwR2D
-         ADLkFS1No6PpVxfbz3aaf0UEoorvFMmRIulV0ScBdYJqsyXoRWwrlqfL9yrFvUAGZiQw
-         BaMcUIwMX2Cuk2Ez/NKlp4xaQ2q1yg4dYPgyevklcurlPwIcpT9hoMlvvZ/CkIfsxMjq
-         itS2GFs0nr6JcblDWxA5LA/cBXi3Vk9abAVPjoYyRNZlTwdLr/2cbIiTdTIGEBPIFXR4
-         WihQ==
-X-Gm-Message-State: APjAAAWy2tdB3DVvCzmVS7oQsxk4w2chMoUJ2WxRLvg0smDepl6UhmEY
-        IONGsy/ftFXPasLy4RsDc61N5CIA
-X-Google-Smtp-Source: APXvYqzqbaKSF2ia53STvDcu0BNvYLf8TgJd6HH/glBmIKARyjce5QirPsZh8NlEHC+G9dVGMWfy2A==
-X-Received: by 2002:a50:83a7:: with SMTP id 36mr8089301edi.173.1579801327098;
-        Thu, 23 Jan 2020 09:42:07 -0800 (PST)
-Received: from [10.67.50.115] ([192.19.223.252])
-        by smtp.googlemail.com with ESMTPSA id dd20sm79807ejb.59.2020.01.23.09.42.03
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 23 Jan 2020 09:42:05 -0800 (PST)
-Subject: Re: Request to back port "net: phy: Keep reporting transceiver type"
- to stable-4.9
-From:   Florian Fainelli <f.fainelli@gmail.com>
-To:     Sasha Levin <sashal@kernel.org>,
-        Greg KH <gregkh@linuxfoundation.org>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Heiner Kallweit <hkallweit1@gmail.com>
-Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        David Miller <davem@davemloft.net>
-References: <163b5dc9-1b09-cc29-6dfb-f40bafee8270@gmail.com>
-Autocrypt: addr=f.fainelli@gmail.com; prefer-encrypt=mutual; keydata=
- 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
- G10n8gCguORqNGMsVRxrlLs7/himep7MrCc=
-Message-ID: <714709aa-48f4-ae6c-21db-7bed220ce3a7@gmail.com>
-Date:   Thu, 23 Jan 2020 09:42:02 -0800
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.2.2
-MIME-Version: 1.0
-In-Reply-To: <163b5dc9-1b09-cc29-6dfb-f40bafee8270@gmail.com>
-Content-Type: text/plain; charset=utf-8
+        id S1728998AbgAWRo4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 23 Jan 2020 12:44:56 -0500
+Received: from mail-mw2nam12on2136.outbound.protection.outlook.com ([40.107.244.136]:17249
+        "EHLO NAM12-MW2-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1727022AbgAWRo4 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 23 Jan 2020 12:44:56 -0500
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=Byiy23TprH0nIHP54kYALTEODvoHLm/SXvU8x2Bj4SmCUpBZsVq302rb3MnV7oNetibW0lWlPNNhzu4uhZsI3tjob9Dl9mpbK0OVOkMqaFsLkZAYBYDaoAEuXViQzDzsznUdbrRvS8/RgPXse7Lcpuq5wQd4wF5BE95vMDEAxg81N7jf7fQDQeFckSffhq2J3mYs9mjInbzOPlmTPFm6m093GioC7wuMbD9WEeoylV6mABSviAnAPeSBCPPALZP/zFy2K1JAkKBWswlu+MzXgOBQtBtf21HV9fcE+nKY5MnbzGcAokVE9RBpVJfuhsjXl2LqKRYN7nHntP5GFu897Q==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=dcRI9beZse0lG11RbrUH9ml+lntYvkWI0aF0F52XeO8=;
+ b=d2TQdaEs3d4GOV8Pcff7POiR1G0tCthgkI/qv362xICe0HcLcx840VnUPMTATezcEnzgVJdZ4Ix0S/dmZnxpr9ewEDImlq56Szo8n46x6wyywLtqVz0/M5e0dNGGxJSnZT8/9Qibc1ArgLNHMAbfSaFHt/Basgv2PHrjpjeEs3NQUvsZWH3fm/qcYXr3IyGD28PO1itiITrM1Q8opJ8u91ohn1sdY2MRKUdK9Yx15wk1jrQnNCCSRqxFOdl0B3fj1Nio5B+hVkEgRW5VawURxpXfGfBF1yJQSKAIBoK1TojGRA/m/W20KfwlT4RX0CIgYgn/zgLbAAlNlXylXQi5Og==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=microsoft.com; dmarc=pass action=none
+ header.from=microsoft.com; dkim=pass header.d=microsoft.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=dcRI9beZse0lG11RbrUH9ml+lntYvkWI0aF0F52XeO8=;
+ b=ER31gEbTq2a3FjLp+b68dWfLmXhdA/EYpnLOdcqwNZj0KmU/o/6Jxp1bahqz6PTn0aumZbB4AgEwbsiGETPeqUPBjcAzCvUeksgpnOHCEcZ1z/mVIUfs17TmgyB7zQHjkCtP8pvwviEgdchjCstZzPmuTSHqTpo+B+TT/QCXGJ8=
+Received: from MN2PR21MB1375.namprd21.prod.outlook.com (20.179.23.160) by
+ MN2PR21MB1216.namprd21.prod.outlook.com (20.179.20.144) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.2686.3; Thu, 23 Jan 2020 17:44:53 +0000
+Received: from MN2PR21MB1375.namprd21.prod.outlook.com
+ ([fe80::5deb:9ab5:f05a:5423]) by MN2PR21MB1375.namprd21.prod.outlook.com
+ ([fe80::5deb:9ab5:f05a:5423%6]) with mapi id 15.20.2686.013; Thu, 23 Jan 2020
+ 17:44:53 +0000
+From:   Haiyang Zhang <haiyangz@microsoft.com>
+To:     Jakub Kicinski <kuba@kernel.org>
+CC:     "sashal@kernel.org" <sashal@kernel.org>,
+        "linux-hyperv@vger.kernel.org" <linux-hyperv@vger.kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        KY Srinivasan <kys@microsoft.com>,
+        Stephen Hemminger <sthemmin@microsoft.com>,
+        "olaf@aepfle.de" <olaf@aepfle.de>, vkuznets <vkuznets@redhat.com>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Subject: RE: [PATCH V3,net-next, 1/2] hv_netvsc: Add XDP support
+Thread-Topic: [PATCH V3,net-next, 1/2] hv_netvsc: Add XDP support
+Thread-Index: AQHV0UjdH1AVu+KRP0+E0p14Je7IQaf4ekYAgAABksCAAAcfgIAAAh5w
+Date:   Thu, 23 Jan 2020 17:44:52 +0000
+Message-ID: <MN2PR21MB1375147709E57BA25F661505CA0F0@MN2PR21MB1375.namprd21.prod.outlook.com>
+References: <1579713814-36061-1-git-send-email-haiyangz@microsoft.com>
+        <1579713814-36061-2-git-send-email-haiyangz@microsoft.com>
+        <20200123085906.20608707@cakuba>
+        <MN2PR21MB13757F7D19C11EC175FD9F98CA0F0@MN2PR21MB1375.namprd21.prod.outlook.com>
+ <20200123093013.53d78485@cakuba>
+In-Reply-To: <20200123093013.53d78485@cakuba>
+Accept-Language: en-US
 Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+msip_labels: MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_Enabled=True;
+ MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_SiteId=72f988bf-86f1-41af-91ab-2d7cd011db47;
+ MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_Owner=haiyangz@microsoft.com;
+ MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_SetDate=2020-01-23T17:44:51.4844806Z;
+ MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_Name=General;
+ MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_Application=Microsoft Azure
+ Information Protection;
+ MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_ActionId=c8d5ad5b-c76c-4ac7-8c93-e15f6f73f981;
+ MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_Extended_MSFT_Method=Automatic
+authentication-results: spf=none (sender IP is )
+ smtp.mailfrom=haiyangz@microsoft.com; 
+x-originating-ip: [96.61.92.94]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-ht: Tenant
+x-ms-office365-filtering-correlation-id: a6ab1373-e798-478b-e5a1-08d7a02bf3ce
+x-ms-traffictypediagnostic: MN2PR21MB1216:|MN2PR21MB1216:|MN2PR21MB1216:
+x-ms-exchange-transport-forked: True
+x-ld-processed: 72f988bf-86f1-41af-91ab-2d7cd011db47,ExtAddr
+x-microsoft-antispam-prvs: <MN2PR21MB1216054B92E92061FE6C7CC3CA0F0@MN2PR21MB1216.namprd21.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:8882;
+x-forefront-prvs: 029174C036
+x-forefront-antispam-report: SFV:NSPM;SFS:(10019020)(4636009)(396003)(366004)(136003)(346002)(376002)(39860400002)(199004)(189003)(316002)(54906003)(86362001)(8990500004)(5660300002)(10290500003)(9686003)(2906002)(55016002)(478600001)(26005)(33656002)(53546011)(6506007)(81166006)(66476007)(66556008)(76116006)(6916009)(4326008)(186003)(81156014)(8936002)(64756008)(66946007)(66446008)(71200400001)(52536014)(7696005)(8676002);DIR:OUT;SFP:1102;SCL:1;SRVR:MN2PR21MB1216;H:MN2PR21MB1375.namprd21.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;A:1;MX:1;
+received-spf: None (protection.outlook.com: microsoft.com does not designate
+ permitted sender hosts)
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: 9FM5qUROSyz4BaCxeY8Mm1T828mGE3YyKoPjCQttDtOXkYhVAeI5jcYphlz/FS5H8H0AhS5VCG5fDLl+Epu9XsNAK4j5B04wPzKj0+rpZOmIwD7d9co/G5OnJ9aSTtzsHGdroV5rsmBxDX4bwFvDYKPhuVwm9YKwNzNZNkI1w2EEePQL9J75mMDnfCZ6FObiquqzdzw4Tnol9XSBmkU6XCkFVIgwlil2Wbi0Phawh5zaSE2ERhqk2x/7YAEIjRN+yw8rIlt3Zkxif9cm31md7gB1KJlUn+YJr1Y6IA9AvEWa3FFHTj7ZZUE0omYaTQp2vtzYGxPbkP4N8+BW43//VbqJtxzO8jKCNJPXj1oD08HE3lqc20l0Vj4fFSmg8rqkCGFi0hOukObhYVwg+aUeqsOcFi16MP+YksPmjJIluW/BC7iwrVwgf79CFdgRiITt
+x-ms-exchange-antispam-messagedata: o7rx8mdXSco3ESnKw9YeOX+RJ9hukRDD6wEnmPgJwGPdEGCIYVqmAY/MePxJqkpd/IAWAFaO4xxpK41Jubqj/1EHgbx2U6zWXvAX1vlJERtw+UF7VpnKQUH/v2Q2PVtmkTz+n4rFOxYHsSlrdS0mXw==
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
+MIME-Version: 1.0
+X-OriginatorOrg: microsoft.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: a6ab1373-e798-478b-e5a1-08d7a02bf3ce
+X-MS-Exchange-CrossTenant-originalarrivaltime: 23 Jan 2020 17:44:52.8696
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 72f988bf-86f1-41af-91ab-2d7cd011db47
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: v+blLINXE1BiQT62jxYFEucNvFV7itQRi/GTX3VwRhKxVJ2JW77Ci7teocgBHaaUdUWcuQy4hQfcrW5rNDbo4A==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: MN2PR21MB1216
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-And you will need to back port 19cab8872692960535aa6d12e3a295ac51d1a648
-("net: ethtool: Add back transceiver type") before in order for the
-requested commit to build.
-
-On 1/22/20 4:37 PM, Florian Fainelli wrote:
-> Hi Sascha, Greg,
-> 
-> Commit ceb628134a75564d7bfa8e4ef902e6e588339e11 ("net: phy: Keep
-> reporting transceiver type") should be back ported to the 4.9 stable
-> tree, you should be able to cherry-pick without conflicts. That commit
-> is already in 4.14 and newer.
-> 
-> Thank you!
-> 
 
 
--- 
-Florian
+> -----Original Message-----
+> From: Jakub Kicinski <kuba@kernel.org>
+> Sent: Thursday, January 23, 2020 12:30 PM
+> To: Haiyang Zhang <haiyangz@microsoft.com>
+> Cc: sashal@kernel.org; linux-hyperv@vger.kernel.org; netdev@vger.kernel.o=
+rg;
+> KY Srinivasan <kys@microsoft.com>; Stephen Hemminger
+> <sthemmin@microsoft.com>; olaf@aepfle.de; vkuznets
+> <vkuznets@redhat.com>; davem@davemloft.net; linux-kernel@vger.kernel.org
+> Subject: Re: [PATCH V3,net-next, 1/2] hv_netvsc: Add XDP support
+>=20
+> On Thu, 23 Jan 2020 17:14:06 +0000, Haiyang Zhang wrote:
+> > > > Changes:
+> > > > 	v3: Minor code and comment updates.
+> > > >         v2: Added XDP_TX support. Addressed review comments.
+> > >
+> > > How does the locking of the TX path work? You seem to be just
+> > > calling the normal xmit method, but you don't hold the xmit queue
+> > > lock, so the stack can start xmit concurrently, no?
+> >
+> > The netvsc and vmbus can handle concurrent transmits, except the msd
+> > (Multi-Send Data) field which can only be used by one queue.
+> >
+> > I already added a new flag to netvsc_send(), so packets from XDP_TX
+> > won't use the msd.
+>=20
+> I see, there's a few non-atomic counters there, but maybe that's not a bi=
+g deal.
+Yes, those error counters are used less frequently, and not necessary to be=
+ precise.
+
+> What frees the skb if the ring is full, and netvsc_send_pkt() returns -EA=
+GAIN?
+> Nothing checks the return value from netvsc_xdp_xmit().
+Good catch! I will add skb free when -EAGAIN is returned for XDP_TX.
+I will update the patch.
+
+Thanks,
+- Haiyang
+
