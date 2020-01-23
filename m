@@ -2,102 +2,131 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id C13FB146784
-	for <lists+netdev@lfdr.de>; Thu, 23 Jan 2020 13:06:05 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 854641467A8
+	for <lists+netdev@lfdr.de>; Thu, 23 Jan 2020 13:12:13 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727022AbgAWMFw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 23 Jan 2020 07:05:52 -0500
-Received: from mail-pf1-f195.google.com ([209.85.210.195]:43306 "EHLO
-        mail-pf1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726026AbgAWMFw (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 23 Jan 2020 07:05:52 -0500
-Received: by mail-pf1-f195.google.com with SMTP id x6so1438447pfo.10;
-        Thu, 23 Jan 2020 04:05:51 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=CqY9YB2wAiI/Wp57Yy4bkMwCyRsVGvnd5+giEA8fZSk=;
-        b=pkl7+p+1Dr0758k+BCjkzs4ph/iqSiSuLUHgd/o8DCTfZPM1Xa0HUXTPlF7BDRUC4P
-         MO4SZ7wblivWzi/UgguYV0RSwHelwC6Zs71MY4RsjjHDBGvvoQhXHyaEgn3xwGmx6Laj
-         HSZTs/TaoMqLoG5tkLHtAMM7whbKuvEhl+iIABEFWkuknY9qMLd5eVd9EQQirj5kv3wY
-         k0tAGHXKlzbNIHNO8YMEGWfzfvvmwVZ/Q1SNJUOi1DQoOUpWDXQoXDq7DslZcDbhSPZm
-         F7dm1bZzKHYKG+rMTiRTxHzo+avb44OE8E1qsbFsN+44v22bINxc/DUSfnS4obhHPd5H
-         A2Ag==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=CqY9YB2wAiI/Wp57Yy4bkMwCyRsVGvnd5+giEA8fZSk=;
-        b=JJhDjdkaFYdAzX28DVAVRms45BYMQ61kgrfFALli2HyDOb40IAolF810Rr5dk7hCUI
-         xhsCy03alWg9q0N/0+dO+a5yzjdw3b5K1w1sBW07rnmuSi8sMeBwIiipb2uqQF2Wcp5w
-         FbwcbyuqDsBQ6csWoQ/t/zHR8QWm07Mmc6WgjGuSQ77rlu6BllE+UW4+d9gRrXfSnrr9
-         ShEdbruddKJugkdsgGpRj38zzUS9cMNRX9Hn4gVywri7HqvQcMA9g26ar49JUxX1VJId
-         HAYkX+XPhU8oveULLwWO3VZqPIJ4fLWl3pI7CiHb/cSwpPvM/FjqWuKwj1PHln7r8XZN
-         zhEg==
-X-Gm-Message-State: APjAAAWUaEBq+vTE1qfNj0OVisgtoiyLvsvLagHyeQrsKkMO48p2FNU4
-        CD7KOBOFAX3NEdv+RLq+lXQ=
-X-Google-Smtp-Source: APXvYqyyH5J0GupMgirTs+5mSj6AqYDWZ14SFy5qG7Ze2gsIZwMDdoS6reaTPzuQVkr8hVKTy8aekw==
-X-Received: by 2002:a63:e954:: with SMTP id q20mr3792032pgj.204.1579781151245;
-        Thu, 23 Jan 2020 04:05:51 -0800 (PST)
-Received: from localhost.localdomain ([103.211.17.138])
-        by smtp.googlemail.com with ESMTPSA id x18sm2643381pfr.26.2020.01.23.04.05.46
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 23 Jan 2020 04:05:50 -0800 (PST)
-From:   Amol Grover <frextrite@gmail.com>
-To:     Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <jakub.kicinski@netronome.com>,
-        Jesper Dangaard Brouer <hawk@kernel.org>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        Andrii Nakryiko <andriin@fb.com>
-Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        linux-kernel-mentees@lists.linuxfoundation.org,
-        Joel Fernandes <joel@joelfernandes.org>,
-        Madhuparna Bhowmik <madhuparnabhowmik04@gmail.com>,
-        "Paul E . McKenney" <paulmck@kernel.org>,
-        Amol Grover <frextrite@gmail.com>
-Subject: [PATCH] bpf: devmap: Pass lockdep expression to RCU lists
-Date:   Thu, 23 Jan 2020 17:34:38 +0530
-Message-Id: <20200123120437.26506-1-frextrite@gmail.com>
-X-Mailer: git-send-email 2.24.1
+        id S1728779AbgAWMMK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 23 Jan 2020 07:12:10 -0500
+Received: from mail.kernel.org ([198.145.29.99]:60468 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726026AbgAWMMK (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 23 Jan 2020 07:12:10 -0500
+Received: from localhost (unknown [193.47.165.251])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 05027206A2;
+        Thu, 23 Jan 2020 12:12:08 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1579781529;
+        bh=R7uMm+UHhjCYHSjldNpA0eQkWxcp2RP7lAFVxMKcHlQ=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=bk7fhSUCEnOjtlGY4anE5W2hycTxp3Rm3g2zwqT0J4MEFPUVhN2S0H+FClT0fPmCo
+         AFXTklSZnKfhQufbK/gYW0Aj+ush0mTY1dpwO0OSfYTD68iV47rRUyJogtDwZHIgMo
+         71r75gJ12mGEixpXp3rLTpHavoqdkGQlwVsHnVyc=
+Date:   Thu, 23 Jan 2020 14:12:03 +0200
+From:   Leon Romanovsky <leon@kernel.org>
+To:     Michal Kalderon <mkalderon@marvell.com>
+Cc:     "davem@davemloft.net" <davem@davemloft.net>,
+        Ariel Elior <aelior@marvell.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-rdma@vger.kernel.org" <linux-rdma@vger.kernel.org>,
+        "linux-scsi@vger.kernel.org" <linux-scsi@vger.kernel.org>
+Subject: Re: [EXT] Re: [PATCH net-next 14/14] qed: bump driver version
+Message-ID: <20200123121203.GL7018@unreal>
+References: <20200122152627.14903-1-michal.kalderon@marvell.com>
+ <20200122152627.14903-15-michal.kalderon@marvell.com>
+ <20200122161353.GG7018@unreal>
+ <MN2PR18MB31821C711CBB377437F3EECCA10C0@MN2PR18MB3182.namprd18.prod.outlook.com>
+ <20200122182107.GI7018@unreal>
+ <MN2PR18MB31829FA8377460DDB9675596A10F0@MN2PR18MB3182.namprd18.prod.outlook.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <MN2PR18MB31829FA8377460DDB9675596A10F0@MN2PR18MB3182.namprd18.prod.outlook.com>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-head is traversed using hlist_for_each_entry_rcu outside an
-RCU read-side critical section but under the protection
-of dtab->index_lock.
+On Thu, Jan 23, 2020 at 08:18:08AM +0000, Michal Kalderon wrote:
+> > From: linux-rdma-owner@vger.kernel.org <linux-rdma-
+> > owner@vger.kernel.org> On Behalf Of Leon Romanovsky
+> > Sent: Wednesday, January 22, 2020 8:21 PM
+> > To: Michal Kalderon <mkalderon@marvell.com>
+> > Cc: Ariel Elior <aelior@marvell.com>; davem@davemloft.net;
+> > netdev@vger.kernel.org; linux-rdma@vger.kernel.org; linux-
+> > scsi@vger.kernel.org
+> > Subject: Re: [EXT] Re: [PATCH net-next 14/14] qed: bump driver version
+> >
+> > On Wed, Jan 22, 2020 at 04:39:26PM +0000, Michal Kalderon wrote:
+> > > > From: Leon Romanovsky <leon@kernel.org>
+> > > > Sent: Wednesday, January 22, 2020 6:14 PM
+> > > >
+> > > > --------------------------------------------------------------------
+> > > > -- On Wed, Jan 22, 2020 at 05:26:27PM +0200, Michal Kalderon wrote:
+> > > > > The FW brings along a large set of fixes and features which will
+> > > > > be added at a later phase. This is an adaquete point to bump the
+> > > > > driver
+> > > > version.
+> > > > >
+> > > > > Signed-off-by: Ariel Elior <ariel.elior@marvell.com>
+> > > > > Signed-off-by: Michal Kalderon <michal.kalderon@marvell.com>
+> > > > > ---
+> > > > >  drivers/net/ethernet/qlogic/qed/qed.h | 2 +-
+> > > > >  1 file changed, 1 insertion(+), 1 deletion(-)
+> > > > >
+> > > >
+> > > > We discussed this a lot, those driver version bumps are stupid and
+> > > > have nothing close to the reality. Distro kernels are based on some
+> > > > kernel version with extra patches on top, in RedHat world this "extra"
+> > > > is a lot. For them your driver version say nothing. For users who
+> > > > run vanilla kernel, those versions are not relevant too, because
+> > > > running such kernels requires knowledge and understanding.
+> > > >
+> > > > You definitely should stop this enterprise cargo cult of "releasing
+> > software"
+> > > > by updating versions in non-controlled by you distribution chain.
+> > > >
+> > > > Thanks
+> > > Due to past discussions on this topic, qedr driver version was not added
+> > and not bumped.
+> > > However, customers are used to seeing a driver version for qed/qede We
+> > > only bump major version changes (37 -> 42)  and not the minor versions
+> > anymore.
+> > > This does give a high-level understanding of the driver supports, helps us
+> > and the customers.
+> >
+> > It is worth to talk with customers instead of adding useless work for
+> > everyone involved here.
+> Hi Leon,
+>
+> I understand your arguments, and for new drivers I agree it is best to start without a driver version, having said that
+> Customers are used to what is already out there.
+>
+> Ethtool displays a driver version, and  customers go by driver version, not kernel version.
+> Mlx drivers haven't bumped the driver version, but it is still displayed when running ethtool.
 
-Hence, add corresponding lockdep expression to silence false-positive
-lockdep warnings, and harden RCU lists.
+Yes, it is needed to be fixed.
 
-Signed-off-by: Amol Grover <frextrite@gmail.com>
----
- kernel/bpf/devmap.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+>
+> Having this version in upstream driver also helps us to understand the level of changes in the inbox driver.
+> As you mentioned, in some distributions like RHEL, kernel version has no meaning as they backport much newer functionality from upstream.
+> It is difficult to know based on RedHat kernel/driver, how the driver compares with the upstream driver or what functionality is there.
+> We have seen that the driver version greatly helps customers here.
+>
+> Of course if a decision is taken to remove all ethernet driver versions from all vendors and remove the version display from ethtool
+> We won't object, but since it is still there, and the driver version until now does correlate in the high-level sense to functionality,
+> I don't see the harm in this single patch.
+>
+> Dave, what is your take on this ?
 
-diff --git a/kernel/bpf/devmap.c b/kernel/bpf/devmap.c
-index 3d3d61b5985b..b4b6b77f309c 100644
---- a/kernel/bpf/devmap.c
-+++ b/kernel/bpf/devmap.c
-@@ -293,7 +293,8 @@ struct bpf_dtab_netdev *__dev_map_hash_lookup_elem(struct bpf_map *map, u32 key)
- 	struct hlist_head *head = dev_map_index_hash(dtab, key);
- 	struct bpf_dtab_netdev *dev;
- 
--	hlist_for_each_entry_rcu(dev, head, index_hlist)
-+	hlist_for_each_entry_rcu(dev, head, index_hlist,
-+				 lockdep_is_held(&dtab->index_lock))
- 		if (dev->idx == key)
- 			return dev;
- 
--- 
-2.24.1
+Dave was clear about it.
+https://lore.kernel.org/linux-rdma/20200122.201241.1054821076123160712.davem@davemloft.net
 
+> Thanks,
+> Michal
+>
+> >
+> > Thanks
+> >
+> > >
