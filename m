@@ -2,26 +2,26 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 171EA146E19
-	for <lists+netdev@lfdr.de>; Thu, 23 Jan 2020 17:15:20 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 59ED3146E1B
+	for <lists+netdev@lfdr.de>; Thu, 23 Jan 2020 17:15:22 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728779AbgAWQPS convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Thu, 23 Jan 2020 11:15:18 -0500
-Received: from us-smtp-delivery-1.mimecast.com ([207.211.31.120]:38433 "EHLO
+        id S1728925AbgAWQPV convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Thu, 23 Jan 2020 11:15:21 -0500
+Received: from us-smtp-delivery-1.mimecast.com ([207.211.31.120]:29983 "EHLO
         us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S1727278AbgAWQPS (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 23 Jan 2020 11:15:18 -0500
+        with ESMTP id S1728900AbgAWQPU (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 23 Jan 2020 11:15:20 -0500
 Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
  [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-213-onMQTVHKOymPH9UNaIfdvw-1; Thu, 23 Jan 2020 11:15:13 -0500
+ us-mta-37-2_-BmaSIPwWwU-gy9_OI8w-1; Thu, 23 Jan 2020 11:15:15 -0500
 Received: from smtp.corp.redhat.com (int-mx01.intmail.prod.int.phx2.redhat.com [10.5.11.11])
         (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 4041B800D55;
-        Thu, 23 Jan 2020 16:15:11 +0000 (UTC)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id BAE281005513;
+        Thu, 23 Jan 2020 16:15:13 +0000 (UTC)
 Received: from krava.redhat.com (unknown [10.43.17.48])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id C63EB85732;
-        Thu, 23 Jan 2020 16:15:08 +0000 (UTC)
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 6D46685750;
+        Thu, 23 Jan 2020 16:15:11 +0000 (UTC)
 From:   Jiri Olsa <jolsa@kernel.org>
 To:     Alexei Starovoitov <ast@kernel.org>,
         Daniel Borkmann <daniel@iogearbox.net>
@@ -32,12 +32,14 @@ Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org,
         David Miller <davem@redhat.com>,
         =?UTF-8?q?Bj=C3=B6rn=20T=C3=B6pel?= <bjorn.topel@intel.com>,
         John Fastabend <john.fastabend@gmail.com>
-Subject: [PATCHv4 0/3] bpf: trampoline fixes
-Date:   Thu, 23 Jan 2020 17:15:05 +0100
-Message-Id: <20200123161508.915203-1-jolsa@kernel.org>
+Subject: [PATCH 1/3] bpf: Allow BTF ctx access for string pointers
+Date:   Thu, 23 Jan 2020 17:15:06 +0100
+Message-Id: <20200123161508.915203-2-jolsa@kernel.org>
+In-Reply-To: <20200123161508.915203-1-jolsa@kernel.org>
+References: <20200123161508.915203-1-jolsa@kernel.org>
 MIME-Version: 1.0
 X-Scanned-By: MIMEDefang 2.79 on 10.5.11.11
-X-MC-Unique: onMQTVHKOymPH9UNaIfdvw-1
+X-MC-Unique: 2_-BmaSIPwWwU-gy9_OI8w-1
 X-Mimecast-Spam-Score: 0
 X-Mimecast-Originator: kernel.org
 Content-Type: text/plain; charset=WINDOWS-1252
@@ -47,65 +49,66 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-hi,
-sending 2 fixes to fix kernel support for loading
-trampoline programs in bcc/bpftrace and allow to
-unwind through trampoline/dispatcher.
+When accessing the context we allow access to arguments with
+scalar type and pointer to struct. But we deny access for
+pointer to scalar type, which is the case for many functions.
 
-Original rfc post [1].
+Alexei suggested to take conservative approach and allow
+currently only string pointer access, which is the case
+for most functions now:
 
-Speedup output of perf bench while running klockstat.py
-on kprobes vs trampolines:
+> Compilers have a long history special casing 'char *'. In particular signed
+> char because it's a pointer to null terminated string. I think it's still a
+> special pointer from pointer aliasing point of view. I think the verifier can
+> treat it as scalar here too. In the future the verifier will get smarter and
+> will recognize it as PTR_TO_NULL_STRING while 'u8 *', 'u32 *' will be
+> PTR_TO_BTF_ID. I think it will solve this particular issue. I like conservative
+> approach to the verifier improvements: start with strict checking and relax it
+> on case-by-case. Instead of accepting wide range of cases and cause potential
+> compatibility issues.
 
-    Without:
-            $ perf bench sched messaging -l 50000
-            ...
-                 Total time: 18.571 [sec]
+Adding check if the pointer is to string type and allow access to it.
 
-    With current kprobe tracing:
-            $ perf bench sched messaging -l 50000
-            ...
-                 Total time: 183.395 [sec]
-
-    With kfunc tracing:
-            $ perf bench sched messaging -l 50000
-            ...
-                 Total time: 39.773 [sec]
-
-v4 changes:
-  - rebased on latest bpf-next/master
-  - removed image tree mutex and use trampoline_mutex instead
-  - checking directly for string pointer in patch 1 [Alexei]
-  - skipped helpers patches, as they are no longer needed [Alexei]
-
-v3 changes:
-  - added ack from John Fastabend for patch 1
-  - move out is_bpf_image_address from is_bpf_text_address call [David]
-
-v2 changes:
-  - make the unwind work for dispatcher as well
-  - added test for allowed trampolines count
-  - used raw tp pt_regs nest-arrays for trampoline helpers
-
-thanks,
-jirka
-
-
-[1] https://lore.kernel.org/netdev/20191229143740.29143-1-jolsa@kernel.org/
+Suggested-by: Alexei Starovoitov <ast@kernel.org>
+Signed-off-by: Jiri Olsa <jolsa@kernel.org>
 ---
-Jiri Olsa (3):
-      bpf: Allow BTF ctx access for string pointers
-      bpf: Allow to resolve bpf trampoline and dispatcher in unwind
-      selftest/bpf: Add test for allowed trampolines count
+ kernel/bpf/btf.c | 16 ++++++++++++++++
+ 1 file changed, 16 insertions(+)
 
- include/linux/bpf.h                                       |  12 +++++++++++-
- kernel/bpf/btf.c                                          |  16 ++++++++++++++++
- kernel/bpf/dispatcher.c                                   |   4 ++--
- kernel/bpf/trampoline.c                                   |  82 +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++-------
- kernel/extable.c                                          |   7 +++++--
- tools/testing/selftests/bpf/prog_tests/trampoline_count.c | 112 ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
- tools/testing/selftests/bpf/progs/test_trampoline_count.c |  21 +++++++++++++++++++++
- 7 files changed, 242 insertions(+), 12 deletions(-)
- create mode 100644 tools/testing/selftests/bpf/prog_tests/trampoline_count.c
- create mode 100644 tools/testing/selftests/bpf/progs/test_trampoline_count.c
+diff --git a/kernel/bpf/btf.c b/kernel/bpf/btf.c
+index 32963b6d5a9c..b7c1660fb594 100644
+--- a/kernel/bpf/btf.c
++++ b/kernel/bpf/btf.c
+@@ -3669,6 +3669,19 @@ struct btf *bpf_prog_get_target_btf(const struct bpf_prog *prog)
+ 	}
+ }
+ 
++static bool is_string_ptr(struct btf *btf, const struct btf_type *t)
++{
++	/* t comes in already as a pointer */
++	t = btf_type_by_id(btf, t->type);
++
++	/* allow const */
++	if (BTF_INFO_KIND(t->info) == BTF_KIND_CONST)
++		t = btf_type_by_id(btf, t->type);
++
++	/* char, signed char, unsigned char */
++	return btf_type_is_int(t) && t->size == 1;
++}
++
+ bool btf_ctx_access(int off, int size, enum bpf_access_type type,
+ 		    const struct bpf_prog *prog,
+ 		    struct bpf_insn_access_aux *info)
+@@ -3735,6 +3748,9 @@ bool btf_ctx_access(int off, int size, enum bpf_access_type type,
+ 		 */
+ 		return true;
+ 
++	if (is_string_ptr(btf, t))
++		return true;
++
+ 	/* this is a pointer to another type */
+ 	info->reg_type = PTR_TO_BTF_ID;
+ 
+-- 
+2.24.1
 
