@@ -2,87 +2,82 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id F0987146153
-	for <lists+netdev@lfdr.de>; Thu, 23 Jan 2020 06:19:42 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2F1681461CB
+	for <lists+netdev@lfdr.de>; Thu, 23 Jan 2020 07:08:38 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726204AbgAWFTi (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 23 Jan 2020 00:19:38 -0500
-Received: from mail-pf1-f194.google.com ([209.85.210.194]:40825 "EHLO
-        mail-pf1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725535AbgAWFTh (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 23 Jan 2020 00:19:37 -0500
-Received: by mail-pf1-f194.google.com with SMTP id q8so965061pfh.7;
-        Wed, 22 Jan 2020 21:19:37 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=5KoYChdrAVEnywaOk6umNrkcUxLVAh4soDP+1zybkIw=;
-        b=MAMt+hkx8kzQYK1bOTg3zO+yF9aTna1Dcsqc0k92EN2yS8jbzTX3mSI7l+3pFrszLI
-         GnpGabhLZLfTd0xzKwhk6ZYNsO6mysVSQP4UOXRBLv/TK0tpRmmp6T6XzTWonWB2dW/w
-         y1C26tyLD1TTaCQQhJU4pE6dx1dPUwdjtBGQSBWPP1SOZWw7cYZ1XA4b7t88mxT2RsLi
-         QQbVDDlOHzCNZ5PtACMXX5CSlvFWPFjf2Myrj1fb8C73TXFawcsLB9qlPJiF0ukc4Cef
-         AlROAkT9dC+3mcjD2luCZwAGM2ZBly/dYZuLH4XRbEVpCrfFtic+2Px+kRQDdYo7gMEG
-         UoVg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=5KoYChdrAVEnywaOk6umNrkcUxLVAh4soDP+1zybkIw=;
-        b=M3QWPsQKg79c6SDQ1atYyAU0GMsoaREzbE1KG4mPTppVobY9qMagmT/OMHBtfXR/E8
-         hMtQ5LmCZ4GvrVVvueZe+seX9TjcnikmN4CHdjuXwukd60QzZvoipwKVBuhrZa/hLzdz
-         RfJZYeQa4sfy3J9GN8TKES0Q3gDqgFZ4VTjg4WtEXhyqi+gatlKipgwQzDAxsE7zzQLT
-         1R7KEMrypgIUuSYqlh8qa6AltMIHjWuDZrrVlzTTON7ozR2hBeOrsHiYtQWwHEtrv6g1
-         oGlDCl8E5nz3RcsVIS/9pKX63jOsVVJ+0s+ITUFmsJAU5Lg6Xt0TAscMtIKJhxP88CgQ
-         ddPg==
-X-Gm-Message-State: APjAAAX+oVtDfWkwMs3SGUqmpcG5C+/g5cq0hvrINl+60gG88HUgE9D7
-        JEoWgP52wBOZvqSVM4cb3ieE13FJ
-X-Google-Smtp-Source: APXvYqx0UXNrAGRj0IpnERWcVQq9uWc0hjJ6AOHNdPe6nyGIjSs+HDemstFt0YMAjdcjSkqYMdC48Q==
-X-Received: by 2002:a63:ba45:: with SMTP id l5mr2044688pgu.380.1579756777148;
-        Wed, 22 Jan 2020 21:19:37 -0800 (PST)
-Received: from f3 (ag119225.dynamic.ppp.asahi-net.or.jp. [157.107.119.225])
-        by smtp.gmail.com with ESMTPSA id e16sm817911pgk.77.2020.01.22.21.19.34
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 22 Jan 2020 21:19:36 -0800 (PST)
-Date:   Thu, 23 Jan 2020 14:19:31 +0900
-From:   Benjamin Poirier <benjamin.poirier@gmail.com>
-To:     Colin King <colin.king@canonical.com>
-Cc:     Manish Chopra <manishc@marvell.com>, GR-Linux-NIC-Dev@marvell.com,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        netdev@vger.kernel.org, devel@driverdev.osuosl.org,
-        kernel-janitors@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] staging: qlge: fix spelling mistake "to" -> "too"
-Message-ID: <20200123051931.GA419949@f3>
-References: <20200123000707.2831321-1-colin.king@canonical.com>
+        id S1726181AbgAWGId (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 23 Jan 2020 01:08:33 -0500
+Received: from foss.arm.com ([217.140.110.172]:35352 "EHLO foss.arm.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1725930AbgAWGId (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 23 Jan 2020 01:08:33 -0500
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id B7BBA1FB;
+        Wed, 22 Jan 2020 22:08:32 -0800 (PST)
+Received: from mammon-tx2.austin.arm.com (mammon-tx2.austin.arm.com [10.118.28.62])
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPA id AD7813F68E;
+        Wed, 22 Jan 2020 22:08:32 -0800 (PST)
+From:   Jeremy Linton <jeremy.linton@arm.com>
+To:     netdev@vger.kernel.org
+Cc:     opendmb@gmail.com, f.fainelli@gmail.com, davem@davemloft.net,
+        bcm-kernel-feedback-list@broadcom.com,
+        linux-kernel@vger.kernel.org, wahrenst@gmx.net,
+        Jeremy Linton <jeremy.linton@arm.com>
+Subject: [RFC 0/2] Add ACPI bindings to the genet
+Date:   Thu, 23 Jan 2020 00:08:21 -0600
+Message-Id: <20200123060823.1902366-1-jeremy.linton@arm.com>
+X-Mailer: git-send-email 2.24.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200123000707.2831321-1-colin.king@canonical.com>
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 2020/01/23 00:07 +0000, Colin King wrote:
-> From: Colin Ian King <colin.king@canonical.com>
-> 
-> There is a spelling mistake in a netif_printk message. Fix it.
-> 
-> Signed-off-by: Colin Ian King <colin.king@canonical.com>
-> ---
->  drivers/staging/qlge/qlge_main.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
-> 
-> diff --git a/drivers/staging/qlge/qlge_main.c b/drivers/staging/qlge/qlge_main.c
-> index ef8037d0b52e..115dfa2ffabd 100644
-> --- a/drivers/staging/qlge/qlge_main.c
-> +++ b/drivers/staging/qlge/qlge_main.c
-> @@ -1758,7 +1758,7 @@ static struct sk_buff *ql_build_rx_skb(struct ql_adapter *qdev,
->  	} else if (ib_mac_rsp->flags3 & IB_MAC_IOCB_RSP_DL) {
->  		if (ib_mac_rsp->flags4 & IB_MAC_IOCB_RSP_HS) {
->  			netif_printk(qdev, rx_status, KERN_DEBUG, qdev->ndev,
-> -				     "Header in small, %d bytes in large. Chain large to small!\n",
-> +				     "Header in small, %d bytes in large. Chain large too small!\n",
+This patch series allows the BCM GENET, as used on the RPi4,
+to attach when booted in an ACPI enviroment. The DSDT entry to trigger
+this is seen below. The second patch in the set retrieves the MAC
+address from the umac registers rather than carrying it directly in
+the DSDT. This of course requires the firmware to pre-program it, so
+we continue to fall back to a random one if it appears to be garbage.
 
-The "to" is correct here.
-~chaining a large buffer to a small buffer~
++    Device (ETH0)
++    {
++      Name (_HID, "BCM6E4E")
++      Name (_CID, "BCM6E4E")
++      Name (_UID, 0)
++      Name (_CCA, 0x0)
++      Method (_STA)
++      {
++        Return (0xf)
++      }
++      Method (_CRS, 0x0, Serialized)
++      {
++        Name (RBUF, ResourceTemplate ()
++        {
++          Memory32Fixed (ReadWrite, 0xFd580000, 0x10000, )
++          Interrupt (ResourceConsumer, Level, ActiveHigh, Exclusive) { 0xBD }
++          Interrupt (ResourceConsumer, Level, ActiveHigh, Exclusive) { 0xBE }
++        })
++        Return (RBUF)
++      }
++      Name (_DSD, Package () {
++        ToUUID("daffd814-6eba-4d8c-8a91-bc9bbf4aa301"),
++          Package () {
++          Package () { "phy-mode", "rgmii" },
++        }
++      })
++    }
++
+
+Jeremy Linton (2):
+  net: bcmgenet: Initial bcmgenet ACPI support
+  net: bcmgenet: Fetch MAC address from the adapter
+
+ .../net/ethernet/broadcom/genet/bcmgenet.c    | 64 ++++++++++++----
+ drivers/net/ethernet/broadcom/genet/bcmmii.c  | 76 ++++++++++++-------
+ 2 files changed, 98 insertions(+), 42 deletions(-)
+
+-- 
+2.24.1
+
