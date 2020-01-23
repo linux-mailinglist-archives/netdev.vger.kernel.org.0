@@ -2,90 +2,70 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id DB59B1467CC
-	for <lists+netdev@lfdr.de>; Thu, 23 Jan 2020 13:20:24 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 23B831467F7
+	for <lists+netdev@lfdr.de>; Thu, 23 Jan 2020 13:30:11 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728831AbgAWMUX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 23 Jan 2020 07:20:23 -0500
-Received: from mail-wr1-f68.google.com ([209.85.221.68]:38253 "EHLO
-        mail-wr1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726026AbgAWMUW (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 23 Jan 2020 07:20:22 -0500
-Received: by mail-wr1-f68.google.com with SMTP id y17so2842966wrh.5
-        for <netdev@vger.kernel.org>; Thu, 23 Jan 2020 04:20:21 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=Lejqf24rosAsJKxrkKfL3dppqbpQPGWnzYp9MFYaWW0=;
-        b=P+vxxUhlNsWfHCUEGguW11Qe/Pmp+uGaCdkiNx23Kzvqzd02brVaVlzoMesBhx6c3D
-         Rz3LhmNbb+bVmlqoH6tbLxc5My6WMdeo0Q0zUpioYANkmo6pJ8HBEDBbB/TqwTC4KFZT
-         Z+wx6yrk/prwq63YyVrNTKTgDDrxwki4pOyaZHRa71N/KNxtpdGlhtEXbYtB1mev23j4
-         FRUCaCW0GNZmciO+di8giYn+VRD0ov5RGaG9OyXlDNTQB5qpVqtOxrQ/fWYX2wUkcNjl
-         /jVeEBRVdZ2ZFmn7ZvL/wjc9ImPTWbbGxJe39zwhe9K/UTFtFtF/Rid+vb36W6YhEOhw
-         TB1g==
+        id S1727141AbgAWMaB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 23 Jan 2020 07:30:01 -0500
+Received: from mail-io1-f69.google.com ([209.85.166.69]:47358 "EHLO
+        mail-io1-f69.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726191AbgAWMaB (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 23 Jan 2020 07:30:01 -0500
+Received: by mail-io1-f69.google.com with SMTP id 13so1874571iof.14
+        for <netdev@vger.kernel.org>; Thu, 23 Jan 2020 04:30:00 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=Lejqf24rosAsJKxrkKfL3dppqbpQPGWnzYp9MFYaWW0=;
-        b=MvbaY+lERXWtQoq0UFQjkIVMAEx5Y5132Azkh7lGKwGKyW7jeSKRVihbU9q64SyQv8
-         xw95GzOA5W70DRFDTZqo/VKzXcAvPvbXTAkPdQtzGzSeMziTvv4+bskrJ9RFAWK92xKY
-         CS8i7+3laoDzzsQoGOL8Zpsqy+WEYNIhqQRG1vyGf08tfhTwjS/nLydOlfu2PMJQXt2c
-         xuObe9BgFF6bp4e9fsupZc/neoWB6utZoe5j5u8HQxzKnU0mpVWbRoFuG1d5kn0EFMW9
-         HZwD8Wh6HVyb9NlXEXj+mx/do2ENirUkyYEVhKWAb4wfKwm90CfPRw6c20FHgGvthLjf
-         RMGg==
-X-Gm-Message-State: APjAAAWfy1k8yy/UXKfN3ng2CMVHUYc8sJFq7JXK9Suh5uzweEMXYI+f
-        81aS7x7YlVURr25VRSYJivdie1PU
-X-Google-Smtp-Source: APXvYqxr8vE9E7Dbn5Ep+XsdyqnSmZ/Fqh+F8zCAgCSilhqVY3IxXt6nY4IBM3t07AEo0khoypskxQ==
-X-Received: by 2002:a5d:6441:: with SMTP id d1mr16829295wrw.93.1579782020711;
-        Thu, 23 Jan 2020 04:20:20 -0800 (PST)
-Received: from kristrev-XPS-15-9570.lan ([193.213.155.210])
-        by smtp.gmail.com with ESMTPSA id q6sm2992320wrx.72.2020.01.23.04.20.19
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 23 Jan 2020 04:20:20 -0800 (PST)
-From:   Kristian Evensen <kristian.evensen@gmail.com>
-To:     netdev@vger.kernel.org, dvyukov@google.com
-Cc:     Kristian Evensen <kristian.evensen@gmail.com>
-Subject: [PATCH net] fou: Fix IPv6 netlink policy
-Date:   Thu, 23 Jan 2020 13:20:18 +0100
-Message-Id: <20200123122018.27805-1-kristian.evensen@gmail.com>
-X-Mailer: git-send-email 2.20.1
+        h=x-gm-message-state:mime-version:date:in-reply-to:message-id:subject
+         :from:to;
+        bh=4SmMbABkY6ThQPONYy6cypBPBR0TLA6ap0ik5lnKxP8=;
+        b=CtIzHU0gHz6+hili1PnHRqLLH6WzWgAG6h2Br+eAw+Y7SmVk3VazwF1vh019R0ZviR
+         44TsWmRNH7jiaozqlpNQ+zHILYkbJAKVl10XXf7S20vlqTweaRAyStiAYIht/UACNeX9
+         LvInTglKKxmwdKUdFygGdED7RIxYdnFBG+y5yjRLqmy1ZuIBxGeTbJpvmC+gnVx49UHh
+         31jYlSlRzeJZzpr+v86lXsBE45CRZk3I41ywpep+7LBarCdfl6AgeyK9Qulj0nRgUmlw
+         C49Td7tNYvRkG57i6u9PO4F1Hk/HhCzLGTcqQWwSHSi+1ybPgzproF7lT73eyN9LoLti
+         mlSQ==
+X-Gm-Message-State: APjAAAXW1/U9AvXGJXfGaFlhEfzZ1L+HXeb7kWiwM0CEuO9beRGpHuRb
+        bZFnUwo4sSGPYtiDBDJVT37kZPenTe9sKbotHZNEycaFMbGU
+X-Google-Smtp-Source: APXvYqxSAwAGR1DUOhT8OmC+2lHPf8M7QnvokXyKxJl/MwEFN5SFQHJSUSrgtfrCq2Tq9CKYo7cWSjIffVV6IYpiJW39NHXvxpk0
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+X-Received: by 2002:a5e:aa12:: with SMTP id s18mr10205269ioe.182.1579782600551;
+ Thu, 23 Jan 2020 04:30:00 -0800 (PST)
+Date:   Thu, 23 Jan 2020 04:30:00 -0800
+In-Reply-To: <00000000000014b040059c654481@google.com>
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <000000000000ba7772059ccdcc7b@google.com>
+Subject: Re: WARNING in nf_tables_table_destroy
+From:   syzbot <syzbot+2a3b1b28cad90c608e20@syzkaller.appspotmail.com>
+To:     coreteam@netfilter.org, davem@davemloft.net, fw@strlen.de,
+        kadlec@netfilter.org, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org, netfilter-devel@vger.kernel.org,
+        pablo@netfilter.org, syzkaller-bugs@googlegroups.com
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-When submitting v2 of "fou: Support binding FoU socket" (1713cb37bf67),
-I accidentally sent the wrong version of the patch and one fix was
-missing. In the initial version of the patch, as well as the version 2
-that I submitted, I incorrectly used ".type" for the two V6-attributes.
-The correct is to use ".len".
+syzbot has bisected this bug to:
 
-Reported-by: Dmitry Vyukov <dvyukov@google.com>
-Fixes: 1713cb37bf67 ("fou: Support binding FoU socket")
-Signed-off-by: Kristian Evensen <kristian.evensen@gmail.com>
----
- net/ipv4/fou.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+commit ec7470b834fe7b5d7eff11b6677f5d7fdf5e9a91
+Author: Pablo Neira Ayuso <pablo@netfilter.org>
+Date:   Mon Jan 13 17:09:58 2020 +0000
 
-diff --git a/net/ipv4/fou.c b/net/ipv4/fou.c
-index 30fa771d382a..dcc79ff54b41 100644
---- a/net/ipv4/fou.c
-+++ b/net/ipv4/fou.c
-@@ -662,8 +662,8 @@ static const struct nla_policy fou_nl_policy[FOU_ATTR_MAX + 1] = {
- 	[FOU_ATTR_REMCSUM_NOPARTIAL]	= { .type = NLA_FLAG, },
- 	[FOU_ATTR_LOCAL_V4]		= { .type = NLA_U32, },
- 	[FOU_ATTR_PEER_V4]		= { .type = NLA_U32, },
--	[FOU_ATTR_LOCAL_V6]		= { .type = sizeof(struct in6_addr), },
--	[FOU_ATTR_PEER_V6]		= { .type = sizeof(struct in6_addr), },
-+	[FOU_ATTR_LOCAL_V6]		= { .len = sizeof(struct in6_addr), },
-+	[FOU_ATTR_PEER_V6]		= { .len = sizeof(struct in6_addr), },
- 	[FOU_ATTR_PEER_PORT]		= { .type = NLA_U16, },
- 	[FOU_ATTR_IFINDEX]		= { .type = NLA_S32, },
- };
--- 
-2.20.1
+    netfilter: nf_tables: store transaction list locally while requesting module
 
+bisection log:  https://syzkaller.appspot.com/x/bisect.txt?x=12c2ef59e00000
+start commit:   5a9ef194 net: systemport: Fixed queue mapping in internal ..
+git tree:       net
+final crash:    https://syzkaller.appspot.com/x/report.txt?x=11c2ef59e00000
+console output: https://syzkaller.appspot.com/x/log.txt?x=16c2ef59e00000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=7e89bd00623fe71e
+dashboard link: https://syzkaller.appspot.com/bug?extid=2a3b1b28cad90c608e20
+syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=15338966e00000
+C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=1667d8d6e00000
+
+Reported-by: syzbot+2a3b1b28cad90c608e20@syzkaller.appspotmail.com
+Fixes: ec7470b834fe ("netfilter: nf_tables: store transaction list locally while requesting module")
+
+For information about bisection process see: https://goo.gl/tpsmEJ#bisection
