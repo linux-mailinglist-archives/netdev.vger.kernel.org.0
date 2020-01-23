@@ -2,79 +2,99 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 4D3F5147496
-	for <lists+netdev@lfdr.de>; Fri, 24 Jan 2020 00:21:43 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0F5A41474BE
+	for <lists+netdev@lfdr.de>; Fri, 24 Jan 2020 00:25:02 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729765AbgAWXVl (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 23 Jan 2020 18:21:41 -0500
-Received: from mail-pg1-f202.google.com ([209.85.215.202]:54741 "EHLO
-        mail-pg1-f202.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729277AbgAWXVl (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 23 Jan 2020 18:21:41 -0500
-Received: by mail-pg1-f202.google.com with SMTP id i21so210841pgm.21
-        for <netdev@vger.kernel.org>; Thu, 23 Jan 2020 15:21:41 -0800 (PST)
+        id S1729613AbgAWXY7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 23 Jan 2020 18:24:59 -0500
+Received: from mail-pj1-f68.google.com ([209.85.216.68]:52063 "EHLO
+        mail-pj1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729238AbgAWXY7 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 23 Jan 2020 18:24:59 -0500
+Received: by mail-pj1-f68.google.com with SMTP id d15so183248pjw.1
+        for <netdev@vger.kernel.org>; Thu, 23 Jan 2020 15:24:58 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20161025;
-        h=date:message-id:mime-version:subject:from:to:cc;
-        bh=TN+/5KknFZAUnST37tMeBssMvLKEjSgJv9HzOQGI/KM=;
-        b=VNZeeBoDgXX3uIJMTX6BbhK9CXqLTzo47HYVX6hcSY5kkJuuIPYj/n0+rTy2qIQaSJ
-         H5pqgQxVwKegrgqL2dXfn34ALAVGqXgA5J6lgtWp1FMztIRxBgdwfy24ook+IF4x2awa
-         fJBjPEfdxZj7qSaGxrcqj9ltpx+lBtk5/+Xxb8oZpaGx6fcEsFWtBnkpuZyydqgHhpH8
-         oOudRY4JsPNhAooq9Y+f7BU0LfCzvtkZdP+UrAlZY8OkothdEUHiKEt7Bd5XjQQWv/V0
-         my5XOGPGuoK4juxnnaYJuiiNu1hez8Y/7V5LaV2pz9VhUL8bMZU65O718kKmSp9wDbqw
-         4WPA==
+        d=chromium.org; s=google;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=4aX5l/dML5eau8GIuNAKI55XbIc1iZhh7nAnGo45frU=;
+        b=fIOS/1qVRkjNyhx3V73sope4wo1BXA5gIGf2pMh9gjTD90sZUTga2GQxpqKojDByNR
+         vM8uII6xaga31QKDa3gsfws/qchBWSUnFcIjCytJoWPwM9JAsYPeQtvJLyZ1m/iYGg8D
+         i5H8kY81G1W1AyK1MldthNgzwsAaLJemjl1wM=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:message-id:mime-version:subject:from:to:cc;
-        bh=TN+/5KknFZAUnST37tMeBssMvLKEjSgJv9HzOQGI/KM=;
-        b=fzr0U+ob06xldb3VswGqDa9TNVgtQj7fkLweSKLALV+1rb5a/La/+ShoynioIAKsT8
-         DqBGrzGJsLwX32NXm0V4wcsUZWjZR/wjLqIFoV1Xym0oGogqartYwRhKKAyOUvbuX9xB
-         +p1u/9TFuo4fyIxZqBDP5pnwuE72oc5Kirax7PDrZVcPNJeh7D3L4KRebtQzoEJRume/
-         Nr2h7Jj61zdO4yz2Lh3JhOFqo7TX2AfPABdk7wC2lsdNuU53B4AbBr86dLIf9C4qsAf5
-         AYlmMmIed0ByoFg1algdmoEm4OB3UN6o5qInTB+Yg3x/oxkCj/kznV9d571DBxIhEiG8
-         Sf3g==
-X-Gm-Message-State: APjAAAVVcgjhZl6FCv1ur0566rKH3WO42bXmYIs9BAGRuLUN1VQTWpA5
-        XRdDvk3SSM4cubqLttPCTtVSahZFg2UKEkVcYa8WfKwwuK4vqT+RmU7ABOFFWUxDcFul1Yz/cKb
-        xOaLBMwjqRNzCOaOGoJOzIxwJzVuk6jvqBOkO5ShyEHyFJma6EJd9bjnAlcuZ0Q==
-X-Google-Smtp-Source: APXvYqzFd/5uR4a5NIPBxtQSRoz+1jf1xPdMqgylN5/gUZ+Hy484GmChuTv6kx954PJzQdjwVhGAr9HHcwQ=
-X-Received: by 2002:a63:5b59:: with SMTP id l25mr886858pgm.382.1579821700372;
- Thu, 23 Jan 2020 15:21:40 -0800 (PST)
-Date:   Thu, 23 Jan 2020 15:21:36 -0800
-Message-Id: <20200123232136.184906-1-lrizzo@google.com>
-Mime-Version: 1.0
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=4aX5l/dML5eau8GIuNAKI55XbIc1iZhh7nAnGo45frU=;
+        b=tii93NQ0LzM1MV3JNqIPwi4zZGo0gdjL3LwYCgY21KuNwtyHfRwWRMf3aCMseZ7OxZ
+         aDAM9M2KMicmnAuMJRGqyamEyZmHPnCci3oxIJaysjnr8vDg7N/DxzJbJtCplGIgROsj
+         63q+Vw1d5tZnfdw/uaWMHBOFNuliNHNIHBiWjAC+1loC+3uIYPkIPYtc1OcXv1ZAjrsT
+         ilnAsO08CuB0hHKRO++ncOtocmzuw+MLuA3LvoxPUu5sKikrfnN/9qw9HjO1zWVnU/gJ
+         3n1FpTqdv1yBJGxNWwSSqglyEJC54hiDIPhb1KYQkXwBEqhBJb88IlQKBhG3zGrAy9kn
+         DUAA==
+X-Gm-Message-State: APjAAAUHw9MZysOlN+hdHmf66IPNu2N86dNHma0Ipc+qEkJd+oBelrvs
+        W/JAn0tZk3AlRnF70pv3oJR+EQ==
+X-Google-Smtp-Source: APXvYqzyIxhJ9N7AmSY8hYmSpeu53DPs0ZzjqEnLgPK9rcHArpPdcPqUrGEPOiU5PX5ysoAwh/+z1g==
+X-Received: by 2002:a17:902:aa41:: with SMTP id c1mr568850plr.105.1579821898215;
+        Thu, 23 Jan 2020 15:24:58 -0800 (PST)
+Received: from smtp.gmail.com ([2620:15c:202:1:fa53:7765:582b:82b9])
+        by smtp.gmail.com with ESMTPSA id c19sm4085849pfc.144.2020.01.23.15.24.57
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 23 Jan 2020 15:24:57 -0800 (PST)
+From:   Stephen Boyd <swboyd@chromium.org>
+To:     Kalle Valo <kvalo@codeaurora.org>
+Cc:     linux-kernel@vger.kernel.org, ath10k@lists.infradead.org,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org
+Subject: [PATCH] ath10k: Add newlines to printk messages
+Date:   Thu, 23 Jan 2020 15:24:56 -0800
+Message-Id: <20200123232456.36197-1-swboyd@chromium.org>
 X-Mailer: git-send-email 2.25.0.341.g760bfbb309-goog
-Subject: [PATCH net-next] net-xdp: document xdp_linearize
-From:   Luigi Rizzo <lrizzo@google.com>
-To:     netdev@vger.kernel.org
-Cc:     Jesper Dangaard Brouer <hawk@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>, sameehj@amazon.com,
-        Luigi Rizzo <lrizzo@google.com>
-Content-Type: text/plain; charset="UTF-8"
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
----
- Documentation/ABI/testing/sysfs-class-net | 8 ++++++++
- 1 file changed, 8 insertions(+)
+Some printks in here don't have newlines at the end, meaning the log
+will be sort of hard to read. Add newlines.
 
-diff --git a/Documentation/ABI/testing/sysfs-class-net b/Documentation/ABI/testing/sysfs-class-net
-index 664a8f6a634f..5917af789c53 100644
---- a/Documentation/ABI/testing/sysfs-class-net
-+++ b/Documentation/ABI/testing/sysfs-class-net
-@@ -301,3 +301,11 @@ Contact:	netdev@vger.kernel.org
- Description:
- 		32-bit unsigned integer counting the number of times the link has
- 		been down
-+
-+What:		/sys/class/net/<iface>/xdp_linearize
-+Date:		Jan 2020
-+KernelVersion:	5.6
-+Contact:	netdev@vger.kernel.org
-+Description:
-+		boolean controlling whether skb should be linearized in
-+		netif_receive_generic_xdp. Defaults to 1 (true).
+Signed-off-by: Stephen Boyd <swboyd@chromium.org>
+---
+ drivers/net/wireless/ath/ath10k/snoc.c | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
+
+diff --git a/drivers/net/wireless/ath/ath10k/snoc.c b/drivers/net/wireless/ath/ath10k/snoc.c
+index 7e85c4916e7f..19a4d053d1de 100644
+--- a/drivers/net/wireless/ath/ath10k/snoc.c
++++ b/drivers/net/wireless/ath/ath10k/snoc.c
+@@ -582,7 +582,7 @@ static void ath10k_snoc_process_rx_cb(struct ath10k_ce_pipe *ce_state,
+ 				 max_nbytes, DMA_FROM_DEVICE);
+ 
+ 		if (unlikely(max_nbytes < nbytes)) {
+-			ath10k_warn(ar, "rxed more than expected (nbytes %d, max %d)",
++			ath10k_warn(ar, "rxed more than expected (nbytes %d, max %d)\n",
+ 				    nbytes, max_nbytes);
+ 			dev_kfree_skb_any(skb);
+ 			continue;
+@@ -1201,7 +1201,7 @@ static int ath10k_snoc_request_irq(struct ath10k *ar)
+ 				  irqflags, ce_name[id], ar);
+ 		if (ret) {
+ 			ath10k_err(ar,
+-				   "failed to register IRQ handler for CE %d: %d",
++				   "failed to register IRQ handler for CE %d: %d\n",
+ 				   id, ret);
+ 			goto err_irq;
+ 		}
+@@ -1485,7 +1485,7 @@ static int ath10k_snoc_probe(struct platform_device *pdev)
+ 
+ 	ret = dma_set_mask_and_coherent(dev, drv_data->dma_mask);
+ 	if (ret) {
+-		dev_err(dev, "failed to set dma mask: %d", ret);
++		dev_err(dev, "failed to set dma mask: %d\n", ret);
+ 		return ret;
+ 	}
+ 
 -- 
-2.25.0.341.g760bfbb309-goog
+Sent by a computer, using git, on the internet
 
