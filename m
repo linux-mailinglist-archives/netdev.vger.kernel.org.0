@@ -2,182 +2,319 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id F1621146675
-	for <lists+netdev@lfdr.de>; Thu, 23 Jan 2020 12:18:27 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id EF03A14669D
+	for <lists+netdev@lfdr.de>; Thu, 23 Jan 2020 12:20:14 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727480AbgAWLSX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 23 Jan 2020 06:18:23 -0500
-Received: from metis.ext.pengutronix.de ([85.220.165.71]:35283 "EHLO
-        metis.ext.pengutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726771AbgAWLSW (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 23 Jan 2020 06:18:22 -0500
-Received: from gallifrey.ext.pengutronix.de ([2001:67c:670:201:5054:ff:fe8d:eefb] helo=bjornoya.blackshift.org)
-        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <mkl@pengutronix.de>)
-        id 1iuaUt-0002lI-UB; Thu, 23 Jan 2020 12:18:04 +0100
-Received: from [IPv6:2a03:f580:87bc:d400:197e:2d9b:882c:b51d] (unknown [IPv6:2a03:f580:87bc:d400:197e:2d9b:882c:b51d])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-384) server-signature RSA-PSS (4096 bits)
-         client-signature RSA-PSS (4096 bits))
-        (Client CN "mkl@blackshift.org", Issuer "StartCom Class 1 Client CA" (not verified))
-        (Authenticated sender: mkl@blackshift.org)
-        by smtp.blackshift.org (Postfix) with ESMTPSA id 897304A8DB2;
-        Thu, 23 Jan 2020 11:17:56 +0000 (UTC)
-Subject: Re: [PATCH 0/3] Add Support for MCAN in AM654x-idk
-To:     Faiz Abbas <faiz_abbas@ti.com>,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        devicetree@vger.kernel.org, netdev@vger.kernel.org,
-        linux-can@vger.kernel.org
-Cc:     catalin.marinas@arm.com, mark.rutland@arm.com, robh+dt@kernel.org,
-        davem@davemloft.net, wg@grandegger.com, sriram.dash@samsung.com,
-        dmurphy@ti.com, nm@ti.com, t-kristo@ti.com
-References: <20200122080310.24653-1-faiz_abbas@ti.com>
-From:   Marc Kleine-Budde <mkl@pengutronix.de>
-Openpgp: preference=signencrypt
-Autocrypt: addr=mkl@pengutronix.de; prefer-encrypt=mutual; keydata=
- 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
-Message-ID: <e3025ab6-04b5-3eba-5e0d-70caabee26fb@pengutronix.de>
-Date:   Thu, 23 Jan 2020 12:17:52 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.9.0
-MIME-Version: 1.0
-In-Reply-To: <20200122080310.24653-1-faiz_abbas@ti.com>
-Content-Type: multipart/signed; micalg=pgp-sha512;
- protocol="application/pgp-signature";
- boundary="NYPXrD8dZpuBhFWGBbPAmL2QzBA7ljtTf"
-X-SA-Exim-Connect-IP: 2001:67c:670:201:5054:ff:fe8d:eefb
-X-SA-Exim-Mail-From: mkl@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: netdev@vger.kernel.org
+        id S1729012AbgAWLTh (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 23 Jan 2020 06:19:37 -0500
+Received: from mail-pf1-f196.google.com ([209.85.210.196]:40581 "EHLO
+        mail-pf1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729327AbgAWLTg (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 23 Jan 2020 06:19:36 -0500
+Received: by mail-pf1-f196.google.com with SMTP id q8so1392936pfh.7
+        for <netdev@vger.kernel.org>; Thu, 23 Jan 2020 03:19:35 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references;
+        bh=Ukx4iY1w5PIZZr/tp1rLHRN10AfBkKKAjf4yqGYrtY8=;
+        b=XzteJ0McGxr8yGC69FvIg6tDYBJaUR1ljvQl4iGMJhAcD1Ik4DCamYe8lNeBO7IUdE
+         hZ/sSgaD3meyWQuaGjQeAaLSa4tlTnTNjDOUKQwlJIoiGePebKH/1PKyLyivohuQtMWR
+         CNrtmp1Of0QAGg5qhxN17uErIzJf8svvojHxNMezTHzLet/N3iq3k70MYpMRBa+OWd5b
+         Vimeeg7QmjF2gXHVlz8iSbtqScbkY37e9YRsny6eoRAqHeN67OMHjSS55DDByLnxsWZg
+         ROQq+IOBcFPXm66/jVrY9hoJtzyCTgCROODA0bwcVSWJwOv3NoUd2r6DZzkM/0VTo5BA
+         P0aw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references;
+        bh=Ukx4iY1w5PIZZr/tp1rLHRN10AfBkKKAjf4yqGYrtY8=;
+        b=oJjSNDy4FGyc3bms94B9FCO4ZgI2dQRYVYuOA7yqTNGNP+WXmm3R4fwRcRy7RkbidV
+         6kPFs9Gic9L8AYd9pSD6HlLmYDxE+e7Mer58EtJdH+HKmG6+6vYofTOofhV55hG9gg0E
+         HdNeICKv9bEPsrkZ3AGa262BnMzDVlACgk/0xeKOV7zyUD+YMjEjtKrqJ7WGJySYrO4d
+         a/KQR0697bUPc5/geoIKGMOS7rbrXlPq8dAhmP9ZDLSesfcHX6Kcs55I8elAHq+K2/AZ
+         py8+9i/qKWMs62fbgkWsDVOi8Eg+Wq0oLIWQ0oQdiM3fzI1ML+DYoMMc9Yf3TDaTZ8po
+         zpIw==
+X-Gm-Message-State: APjAAAW0GKAEPZ6bKaSq3qEf2NIfEDCy9LADAlmV7MhQH0vDSf8c+Xbu
+        LId8QuRpbv10OuD83rROqdOu
+X-Google-Smtp-Source: APXvYqxafqul6E4O9BXwlF3ZthPhBMm6khKx+XLokgdHv+MLUPODxAaz93qM3QZENaefduFbbQDaWg==
+X-Received: by 2002:a63:28a:: with SMTP id 132mr3365730pgc.165.1579778375131;
+        Thu, 23 Jan 2020 03:19:35 -0800 (PST)
+Received: from localhost.localdomain ([103.59.133.81])
+        by smtp.googlemail.com with ESMTPSA id y6sm2627559pgc.10.2020.01.23.03.19.31
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 23 Jan 2020 03:19:33 -0800 (PST)
+From:   Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
+To:     gregkh@linuxfoundation.org, arnd@arndb.de
+Cc:     smohanad@codeaurora.org, jhugo@codeaurora.org,
+        kvalo@codeaurora.org, bjorn.andersson@linaro.org,
+        hemantk@codeaurora.org, linux-arm-msm@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>,
+        "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org
+Subject: [PATCH 14/16] net: qrtr: Add MHI transport layer
+Date:   Thu, 23 Jan 2020 16:48:34 +0530
+Message-Id: <20200123111836.7414-15-manivannan.sadhasivam@linaro.org>
+X-Mailer: git-send-email 2.17.1
+In-Reply-To: <20200123111836.7414-1-manivannan.sadhasivam@linaro.org>
+References: <20200123111836.7414-1-manivannan.sadhasivam@linaro.org>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
---NYPXrD8dZpuBhFWGBbPAmL2QzBA7ljtTf
-Content-Type: multipart/mixed; boundary="QyFCGrPkezEuEBS1nbpXxyDGG5wrx8uVJ";
- protected-headers="v1"
-From: Marc Kleine-Budde <mkl@pengutronix.de>
-To: Faiz Abbas <faiz_abbas@ti.com>, linux-arm-kernel@lists.infradead.org,
- linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
- netdev@vger.kernel.org, linux-can@vger.kernel.org
-Cc: catalin.marinas@arm.com, mark.rutland@arm.com, robh+dt@kernel.org,
- davem@davemloft.net, wg@grandegger.com, sriram.dash@samsung.com,
- dmurphy@ti.com, nm@ti.com, t-kristo@ti.com
-Message-ID: <e3025ab6-04b5-3eba-5e0d-70caabee26fb@pengutronix.de>
-Subject: Re: [PATCH 0/3] Add Support for MCAN in AM654x-idk
-References: <20200122080310.24653-1-faiz_abbas@ti.com>
-In-Reply-To: <20200122080310.24653-1-faiz_abbas@ti.com>
+MHI is the transport layer used for communicating to the external modems.
+Hence, this commit adds MHI transport layer support to QRTR for
+transferring the QMI messages over IPC Router.
 
---QyFCGrPkezEuEBS1nbpXxyDGG5wrx8uVJ
-Content-Type: text/plain; charset=utf-8
-Content-Language: de-DE
-Content-Transfer-Encoding: quoted-printable
+Cc: "David S. Miller" <davem@davemloft.net>
+Cc: netdev@vger.kernel.org
+Signed-off-by: Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
+---
+ net/qrtr/Kconfig  |   7 ++
+ net/qrtr/Makefile |   2 +
+ net/qrtr/mhi.c    | 207 ++++++++++++++++++++++++++++++++++++++++++++++
+ 3 files changed, 216 insertions(+)
+ create mode 100644 net/qrtr/mhi.c
 
-On 1/22/20 9:03 AM, Faiz Abbas wrote:
-> This series adds driver patches to support MCAN in TI's AM654x-idk.
->=20
-> Faiz Abbas (3):
->   dt-bindings: net: can: m_can: Add Documentation for stb-gpios
->   can: m_can: m_can_platform: Add support for enabling transceiver
->     through the STB line
->   arm64: defconfig: Add Support for Bosch M_CAN controllers
->=20
->  Documentation/devicetree/bindings/net/can/m_can.txt |  2 ++
->  arch/arm64/configs/defconfig                        |  3 +++
->  drivers/net/can/m_can/m_can_platform.c              | 12 ++++++++++++
->  3 files changed, 17 insertions(+)
+diff --git a/net/qrtr/Kconfig b/net/qrtr/Kconfig
+index 63f89cc6e82c..8eb876471564 100644
+--- a/net/qrtr/Kconfig
++++ b/net/qrtr/Kconfig
+@@ -29,4 +29,11 @@ config QRTR_TUN
+ 	  implement endpoints of QRTR, for purpose of tunneling data to other
+ 	  hosts or testing purposes.
+ 
++config QRTR_MHI
++	tristate "MHI IPC Router channels"
++	depends on MHI_BUS
++	help
++	  Say Y here to support MHI based ipcrouter channels. MHI is the
++	  transport used for communicating to external modems.
++
+ endif # QRTR
+diff --git a/net/qrtr/Makefile b/net/qrtr/Makefile
+index 1c6d6c120fb7..3dc0a7c9d455 100644
+--- a/net/qrtr/Makefile
++++ b/net/qrtr/Makefile
+@@ -5,3 +5,5 @@ obj-$(CONFIG_QRTR_SMD) += qrtr-smd.o
+ qrtr-smd-y	:= smd.o
+ obj-$(CONFIG_QRTR_TUN) += qrtr-tun.o
+ qrtr-tun-y	:= tun.o
++obj-$(CONFIG_QRTR_MHI) += qrtr-mhi.o
++qrtr-mhi-y	:= mhi.o
+diff --git a/net/qrtr/mhi.c b/net/qrtr/mhi.c
+new file mode 100644
+index 000000000000..c85041a22f85
+--- /dev/null
++++ b/net/qrtr/mhi.c
+@@ -0,0 +1,207 @@
++// SPDX-License-Identifier: GPL-2.0
++/*
++ * Copyright (c) 2018-2020, The Linux Foundation. All rights reserved.
++ */
++
++#include <linux/mhi.h>
++#include <linux/mod_devicetable.h>
++#include <linux/module.h>
++#include <linux/skbuff.h>
++#include <net/sock.h>
++
++#include "qrtr.h"
++
++struct qrtr_mhi_dev {
++	struct qrtr_endpoint ep;
++	struct mhi_device *mhi_dev;
++	struct device *dev;
++	spinlock_t ul_lock;		/* lock to protect ul_pkts */
++	struct list_head ul_pkts;
++	atomic_t in_reset;
++};
++
++struct qrtr_mhi_pkt {
++	struct list_head node;
++	struct sk_buff *skb;
++	struct kref refcount;
++	struct completion done;
++};
++
++static void qrtr_mhi_pkt_release(struct kref *ref)
++{
++	struct qrtr_mhi_pkt *pkt = container_of(ref, struct qrtr_mhi_pkt,
++						refcount);
++	struct sock *sk = pkt->skb->sk;
++
++	consume_skb(pkt->skb);
++	if (sk)
++		sock_put(sk);
++
++	kfree(pkt);
++}
++
++/* From MHI to QRTR */
++static void qcom_mhi_qrtr_dl_callback(struct mhi_device *mhi_dev,
++				      struct mhi_result *mhi_res)
++{
++	struct qrtr_mhi_dev *qdev = dev_get_drvdata(&mhi_dev->dev);
++	int rc;
++
++	if (!qdev || mhi_res->transaction_status)
++		return;
++
++	rc = qrtr_endpoint_post(&qdev->ep, mhi_res->buf_addr,
++				mhi_res->bytes_xferd);
++	if (rc == -EINVAL)
++		dev_err(qdev->dev, "invalid ipcrouter packet\n");
++}
++
++/* From QRTR to MHI */
++static void qcom_mhi_qrtr_ul_callback(struct mhi_device *mhi_dev,
++				      struct mhi_result *mhi_res)
++{
++	struct qrtr_mhi_dev *qdev = dev_get_drvdata(&mhi_dev->dev);
++	struct qrtr_mhi_pkt *pkt;
++	unsigned long flags;
++
++	spin_lock_irqsave(&qdev->ul_lock, flags);
++	pkt = list_first_entry(&qdev->ul_pkts, struct qrtr_mhi_pkt, node);
++	list_del(&pkt->node);
++	complete_all(&pkt->done);
++
++	kref_put(&pkt->refcount, qrtr_mhi_pkt_release);
++	spin_unlock_irqrestore(&qdev->ul_lock, flags);
++}
++
++static void qcom_mhi_qrtr_status_callback(struct mhi_device *mhi_dev,
++					  enum mhi_callback mhi_cb)
++{
++	struct qrtr_mhi_dev *qdev = dev_get_drvdata(&mhi_dev->dev);
++	struct qrtr_mhi_pkt *pkt;
++	unsigned long flags;
++
++	if (mhi_cb != MHI_CB_FATAL_ERROR)
++		return;
++
++	atomic_inc(&qdev->in_reset);
++	spin_lock_irqsave(&qdev->ul_lock, flags);
++	list_for_each_entry(pkt, &qdev->ul_pkts, node)
++		complete_all(&pkt->done);
++	spin_unlock_irqrestore(&qdev->ul_lock, flags);
++}
++
++/* Send data over MHI */
++static int qcom_mhi_qrtr_send(struct qrtr_endpoint *ep, struct sk_buff *skb)
++{
++	struct qrtr_mhi_dev *qdev = container_of(ep, struct qrtr_mhi_dev, ep);
++	struct qrtr_mhi_pkt *pkt;
++	int rc;
++
++	rc = skb_linearize(skb);
++	if (rc) {
++		kfree_skb(skb);
++		return rc;
++	}
++
++	pkt = kzalloc(sizeof(*pkt), GFP_KERNEL);
++	if (!pkt) {
++		kfree_skb(skb);
++		return -ENOMEM;
++	}
++
++	init_completion(&pkt->done);
++	kref_init(&pkt->refcount);
++	kref_get(&pkt->refcount);
++	pkt->skb = skb;
++
++	spin_lock_bh(&qdev->ul_lock);
++	list_add_tail(&pkt->node, &qdev->ul_pkts);
++	rc = mhi_queue_transfer(qdev->mhi_dev, DMA_TO_DEVICE, skb, skb->len,
++				MHI_EOT);
++	if (rc) {
++		list_del(&pkt->node);
++		kfree_skb(skb);
++		kfree(pkt);
++		spin_unlock_bh(&qdev->ul_lock);
++		return rc;
++	}
++
++	spin_unlock_bh(&qdev->ul_lock);
++	if (skb->sk)
++		sock_hold(skb->sk);
++
++	rc = wait_for_completion_interruptible_timeout(&pkt->done, HZ * 5);
++	if (atomic_read(&qdev->in_reset))
++		rc = -ECONNRESET;
++	else if (rc == 0)
++		rc = -ETIMEDOUT;
++	else if (rc > 0)
++		rc = 0;
++
++	kref_put(&pkt->refcount, qrtr_mhi_pkt_release);
++
++	return rc;
++}
++
++static int qcom_mhi_qrtr_probe(struct mhi_device *mhi_dev,
++			       const struct mhi_device_id *id)
++{
++	struct qrtr_mhi_dev *qdev;
++	u32 net_id;
++	int rc;
++
++	qdev = devm_kzalloc(&mhi_dev->dev, sizeof(*qdev), GFP_KERNEL);
++	if (!qdev)
++		return -ENOMEM;
++
++	qdev->mhi_dev = mhi_dev;
++	qdev->dev = &mhi_dev->dev;
++	qdev->ep.xmit = qcom_mhi_qrtr_send;
++	atomic_set(&qdev->in_reset, 0);
++
++	net_id = QRTR_EP_NID_AUTO;
++
++	INIT_LIST_HEAD(&qdev->ul_pkts);
++	spin_lock_init(&qdev->ul_lock);
++
++	dev_set_drvdata(&mhi_dev->dev, qdev);
++	rc = qrtr_endpoint_register(&qdev->ep, net_id);
++	if (rc)
++		return rc;
++
++	dev_dbg(qdev->dev, "Qualcomm MHI QRTR driver probed\n");
++
++	return 0;
++}
++
++static void qcom_mhi_qrtr_remove(struct mhi_device *mhi_dev)
++{
++	struct qrtr_mhi_dev *qdev = dev_get_drvdata(&mhi_dev->dev);
++
++	qrtr_endpoint_unregister(&qdev->ep);
++	dev_set_drvdata(&mhi_dev->dev, NULL);
++}
++
++static const struct mhi_device_id qcom_mhi_qrtr_id_table[] = {
++	{ .chan = "IPCR" },
++	{}
++};
++MODULE_DEVICE_TABLE(mhi, qcom_mhi_qrtr_id_table);
++
++static struct mhi_driver qcom_mhi_qrtr_driver = {
++	.probe = qcom_mhi_qrtr_probe,
++	.remove = qcom_mhi_qrtr_remove,
++	.dl_xfer_cb = qcom_mhi_qrtr_dl_callback,
++	.ul_xfer_cb = qcom_mhi_qrtr_ul_callback,
++	.status_cb = qcom_mhi_qrtr_status_callback,
++	.id_table = qcom_mhi_qrtr_id_table,
++	.driver = {
++		.name = "qcom_mhi_qrtr",
++	},
++};
++
++module_driver(qcom_mhi_qrtr_driver, mhi_driver_register,
++	      mhi_driver_unregister);
++
++MODULE_DESCRIPTION("Qualcomm IPC-Router MHI interface driver");
++MODULE_LICENSE("GPL v2");
+-- 
+2.17.1
 
-What about adding support for xceiver-supply as done in several other
-drivers (ti_hecc.c, flexcan.c, mcp251x.c)? And using this for the stb lin=
-e?
-
-Marc
-
---=20
-Pengutronix e.K.                 | Marc Kleine-Budde           |
-Embedded Linux                   | https://www.pengutronix.de  |
-Vertretung West/Dortmund         | Phone: +49-231-2826-924     |
-Amtsgericht Hildesheim, HRA 2686 | Fax:   +49-5121-206917-5555 |
-
-
---QyFCGrPkezEuEBS1nbpXxyDGG5wrx8uVJ--
-
---NYPXrD8dZpuBhFWGBbPAmL2QzBA7ljtTf
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAEBCgAdFiEEmvEkXzgOfc881GuFWsYho5HknSAFAl4pgOAACgkQWsYho5Hk
-nSC/egf/eNjB8/lL8muUSORGL2cgcDJIY77iCCdmjkPckQ0gG//AAseZ6T8y/rph
-I66pOuysdn2ON8V1N5aeFefGwxF9T9bNvjJe1vsSHqIdLNUmpstuHMKs7jgKQxPE
-ublvNPRh/XtrQ2/ERSFApv55CqA2+9VwSSKAPFKmhrmyUHuZCVlPPWCF06AkuLac
-sZaFffTh0ZCNuq5XoGiZPJWDJ8IjLN//nH/eBrCZpd9omTqC84EUFBW8aV7F2gZa
-quhtzwoufrEFUUAqdkQlFHvTOeiMnHmJhSx0PLetoscDBc7dVoajELf9pUmaAGBt
-/fa70dou1CkvLPpdYxpUUrrzi/3qRw==
-=0YB1
------END PGP SIGNATURE-----
-
---NYPXrD8dZpuBhFWGBbPAmL2QzBA7ljtTf--
