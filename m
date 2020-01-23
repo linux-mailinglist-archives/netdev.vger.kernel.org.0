@@ -2,130 +2,180 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id B91491461F1
-	for <lists+netdev@lfdr.de>; Thu, 23 Jan 2020 07:19:36 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id BCBB5146203
+	for <lists+netdev@lfdr.de>; Thu, 23 Jan 2020 07:39:45 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726099AbgAWGTd (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 23 Jan 2020 01:19:33 -0500
-Received: from mail-qk1-f196.google.com ([209.85.222.196]:43322 "EHLO
-        mail-qk1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725828AbgAWGTc (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 23 Jan 2020 01:19:32 -0500
-Received: by mail-qk1-f196.google.com with SMTP id j20so2334958qka.10
-        for <netdev@vger.kernel.org>; Wed, 22 Jan 2020 22:19:32 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=DWVey0Ru8uHUhBHg8Dq4pq0wh0KSnHnAOppPY8DxmvU=;
-        b=X0x8Mx1GQQoi5Ka3UtfcpeAY5E4aDhEqT+TuUQUE4s4eVdr5cEE4EMIQqggQyK52xE
-         0vUx0ixeD065Hv3EPwWBpdLAbLOtB8keJnW0Q8FEOuYbO57iEAmBiimqIPor8v3TLPkI
-         8Rv5WQ+COSZU9IJR3oGGMSt9Jaik4Xm5epJZ6oMJBdVMe4OOp0J8aAiig66avSrHTGFU
-         ZMLxS/MrvuVnwkonxQyV/Wm/TCgWBgbXEwnJB0ygjDFFi8BgLJnxoAgUvk9cE2LvfS6Y
-         y5wPGj98K15pRk3uydwUXLqAvwc/Me84ubXumKr8AL4l/YjQO/gKURXnIYIb3w17DuZS
-         XgRA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=DWVey0Ru8uHUhBHg8Dq4pq0wh0KSnHnAOppPY8DxmvU=;
-        b=GLjkI0cZJBTzAgksIVNxMsdogpSNmwstDPuFxmHT76KoD413ZbsiBeIudx5AKJFF2Y
-         UXoj+zyVnHxr7xffCgXTZHe/Kr5GgLJsUgJEU5+M6KTaAXzuwo1CVWyNrzuEUtHhDV8N
-         CkkvTClw6XLB1/sg6Rl/w5y8zBYqUt/epEMYnx/4kb/hqC2eS1plo21BLDSrouNHhyiy
-         q2WvcPAx8MsjHPGnf6j1/sWG5yiqzbeJtRnajuUWygtMTA+3CHpvCkoLlTGEivret1JC
-         YCVeIvU8ccpE8c+mbZ2vMIB0rLmhDAMRmZV9HxJ7TDCYxjq2DZ1NQkUQJ/rujbLX+yj1
-         8E+A==
-X-Gm-Message-State: APjAAAWFHl+lN2tHFjccMSBXxi6YpZF1mEHVMw5QBZSCbZQ2eGyo7GvQ
-        945lDc11uNk+FoSawOvwLhGpO0xEfpgz2auRAmr9Lw==
-X-Google-Smtp-Source: APXvYqxPvFH2hb6DQNRFIML+u3GiHl/lpT3X039n8YspVHHtYOZyKKhAOruNUuna2r9SfobzTbU0HZvlMO0v6W4uyDQ=
-X-Received: by 2002:a05:620a:4d:: with SMTP id t13mr11125976qkt.43.1579760371377;
- Wed, 22 Jan 2020 22:19:31 -0800 (PST)
+        id S1725991AbgAWGjj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 23 Jan 2020 01:39:39 -0500
+Received: from mail-eopbgr80081.outbound.protection.outlook.com ([40.107.8.81]:52999
+        "EHLO EUR04-VI1-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1725818AbgAWGji (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 23 Jan 2020 01:39:38 -0500
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=Fg5b5JMcMNAPZ8quruZhTxxzKFmfFkYUWHK4Xzb2ESh3J3umzsytfNmPx0L0uUR9Om5hnyzekhQj+Q/BCZSLdrEGUc5uqzF5uVdKxdZHz/FIWacrss81q0to2cwsqjr7juYa7Lf3DODytDym7fywp8LMCiVuqT+VFGQdMvF32g1zeiaKeRWNbytyGOeLtrVuO/fBBqBq0FhNCt1kknR6U1s8r/leb2EE+AEtqr985LgMXJCgI5Hp+bpk7rA0LgLWx6g4WbTsGzpXd2BJ/dGdF4p3KsTGf2aUTtVpzLrsmKbIKuUKv6Mwds/3HY/YjUZjG9mdYnSGgTABwRY2829mDg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=ygTc1E5m2FF+xc4T6tDMXzC1TsytDGuos4zNUVPk4Ho=;
+ b=oYLTsafx5pA0UurZ716Q6pewI4VEzwZ5MjRa4KHjfzAfIcLlO/nqGW2MVrQt0mUgUr2PvhAWN89yC6YP1vvzIuNLscwa/8YNxfohHtyy8sKIxmLR5UKp/f98D/hSF0iLkfDVC9T1ARWANOq6CjPNvihcBxiCr7lHqjgslrRtv1GfzFYRJiMXvIpZTnPTsK/6uw1CRjGVWyvbQ8bE2XblXyULZNUBo5NpISCNdsbNjscX+8L9h2sV4EgbDTNjDnIOTuqoZfLjefiz1iciPWXR85Dix3RD/q/ndp5Ses2ruo2pL9reIy08j9EUYtfu3XQYDWO7izVcZgpU9geE5ksUnw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=mellanox.com; dmarc=pass action=none header.from=mellanox.com;
+ dkim=pass header.d=mellanox.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Mellanox.com;
+ s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=ygTc1E5m2FF+xc4T6tDMXzC1TsytDGuos4zNUVPk4Ho=;
+ b=MukWXff+hvzKZNYvRglLBezSOIQAFJXzoWSuefS9TFKJzudroS7AWEGRN7K42yhbsdZzX83kcj3Imr0kXX7gyd3Hj1/Ui1t+vEjDKFcWOh9MpxLUYfEXzdhtxbe5le3qgg7AK84FZK2BOE9SZ1I3rIUFuhyuiLVtNCvzK61Px10=
+Received: from VI1PR05MB5102.eurprd05.prod.outlook.com (20.177.51.151) by
+ VI1PR05MB4941.eurprd05.prod.outlook.com (20.177.48.140) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.2644.20; Thu, 23 Jan 2020 06:39:35 +0000
+Received: from VI1PR05MB5102.eurprd05.prod.outlook.com
+ ([fe80::d830:96fc:e928:c096]) by VI1PR05MB5102.eurprd05.prod.outlook.com
+ ([fe80::d830:96fc:e928:c096%6]) with mapi id 15.20.2644.027; Thu, 23 Jan 2020
+ 06:39:35 +0000
+Received: from smtp.office365.com (73.15.39.150) by BYAPR21CA0027.namprd21.prod.outlook.com (2603:10b6:a03:114::37) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.2686.5 via Frontend Transport; Thu, 23 Jan 2020 06:39:34 +0000
+From:   Saeed Mahameed <saeedm@mellanox.com>
+To:     "David S. Miller" <davem@davemloft.net>
+CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        Saeed Mahameed <saeedm@mellanox.com>
+Subject: [pull request][net-next 00/15] Mellanox, mlx5 mlx5-updates-2020-01-22
+Thread-Topic: [pull request][net-next 00/15] Mellanox, mlx5
+ mlx5-updates-2020-01-22
+Thread-Index: AQHV0bfgitHZhgAMNkCq8s3k7xundw==
+Date:   Thu, 23 Jan 2020 06:39:35 +0000
+Message-ID: <20200123063827.685230-1-saeedm@mellanox.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-mailer: git-send-email 2.24.1
+x-originating-ip: [73.15.39.150]
+x-clientproxiedby: BYAPR21CA0027.namprd21.prod.outlook.com
+ (2603:10b6:a03:114::37) To VI1PR05MB5102.eurprd05.prod.outlook.com
+ (2603:10a6:803:5e::23)
+authentication-results: spf=none (sender IP is )
+ smtp.mailfrom=saeedm@mellanox.com; 
+x-ms-exchange-messagesentrepresentingtype: 1
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-ht: Tenant
+x-ms-office365-filtering-correlation-id: f588991e-dd5a-4596-fc9a-08d79fcf02e9
+x-ms-traffictypediagnostic: VI1PR05MB4941:|VI1PR05MB4941:
+x-ms-exchange-transport-forked: True
+x-microsoft-antispam-prvs: <VI1PR05MB4941BD5295219253E64E7C36BE0F0@VI1PR05MB4941.eurprd05.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:10000;
+x-forefront-prvs: 029174C036
+x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(4636009)(136003)(396003)(39860400002)(376002)(346002)(366004)(199004)(189003)(5660300002)(107886003)(8936002)(6916009)(81166006)(81156014)(8676002)(186003)(6512007)(6486002)(4326008)(86362001)(1076003)(16526019)(71200400001)(26005)(36756003)(52116002)(6506007)(2906002)(66946007)(2616005)(66556008)(15650500001)(956004)(64756008)(66446008)(316002)(478600001)(54906003)(66476007)(54420400002);DIR:OUT;SFP:1101;SCL:1;SRVR:VI1PR05MB4941;H:VI1PR05MB5102.eurprd05.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;A:1;MX:1;
+received-spf: None (protection.outlook.com: mellanox.com does not designate
+ permitted sender hosts)
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: Lf4YlsU46EQFp+/rbP+iey2lHZhcDXXsAInmOwG82ZmVS+BuoKlIPOUQ6lDE7eZ+YmdeQp/rLztf7Y91V03Gd8x57NTOt6iEAoTZUooOHwzLmTDzucj3JpdX3swVrqpjcfpvkBznFx/rUP+PKB60pOsCo5ML77GUccAWBz+rxrvyGCAjvBAdiIW3TGPgfpLUgH+T9PdxEhDQwEInJyL53M1UUm6lzA9DdZGI6zzkMTeFsghjuZeNvZ+gmB5NnxcLoVQkzAb2ye7yld9rmGnWbmatwgXhQj/O8mu+4XZtBOdWMeCAH5XBPR8A3O8cg6hveW5ynSCGmlsavoQf4RLiLPP6WcUaRU+WOYDKh0ldEMviuhRYxLrsXPfFfSj7xxWt5ayv/BVIeaNpBjN4G4iz+MaMHOLfUnl7Tu/I1yqaxZoMWp2rAGqDv3B1ip9v7CQZ6QgbJblxMzpTLpu+n8132D3/j9TN29zVaotyBO8rYLHcVVNSo9IZinamA0m9qNg71IgzUwUAoWOMOyjhz2J9+G+0w5pGzuEo1jb6qjogZAM=
+Content-Type: text/plain; charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-References: <00000000000068843f059cc0d214@google.com> <a10a25dd-fa53-0e7f-d394-d0123bc95df9@gmail.com>
-In-Reply-To: <a10a25dd-fa53-0e7f-d394-d0123bc95df9@gmail.com>
-From:   Dmitry Vyukov <dvyukov@google.com>
-Date:   Thu, 23 Jan 2020 07:19:19 +0100
-Message-ID: <CACT4Y+bHhqdsYdDrU+Wq4cA1iu6NbhAE2vjJKWAqfnH5EtQ3mA@mail.gmail.com>
-Subject: Re: WARNING in bpf_warn_invalid_xdp_action
-To:     Eric Dumazet <eric.dumazet@gmail.com>
-Cc:     syzbot <syzbot+8ce4113dadc4789fac74@syzkaller.appspotmail.com>,
-        Andrii Nakryiko <andriin@fb.com>,
-        Alexei Starovoitov <ast@kernel.org>, bpf <bpf@vger.kernel.org>,
-        Jonathan Corbet <corbet@lwn.net>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        David Miller <davem@davemloft.net>,
-        David Ahern <dsahern@gmail.com>, hawk@kernel.org,
-        John Fastabend <john.fastabend@gmail.com>,
-        Martin KaFai Lau <kafai@fb.com>, kuba@kernel.org,
-        "open list:DOCUMENTATION" <linux-doc@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        netdev <netdev@vger.kernel.org>,
-        Song Liu <songliubraving@fb.com>,
-        syzkaller-bugs <syzkaller-bugs@googlegroups.com>,
-        Yonghong Song <yhs@fb.com>
-Content-Type: text/plain; charset="UTF-8"
+X-OriginatorOrg: Mellanox.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: f588991e-dd5a-4596-fc9a-08d79fcf02e9
+X-MS-Exchange-CrossTenant-originalarrivaltime: 23 Jan 2020 06:39:35.3759
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: a652971c-7d2e-4d9b-a6a4-d149256f461b
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: mIvL37awmk12p0mNJnXNMxNjKBkssFux+3kAeqsDc3KF7Slf8bN5H+in1dXR12cm7StWXdq/3aoDWX97QLCbmw==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR05MB4941
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Jan 22, 2020 at 10:38 PM Eric Dumazet <eric.dumazet@gmail.com> wrote:
->
->
->
-> On 1/22/20 1:01 PM, syzbot wrote:
-> > syzbot has bisected this bug to:
-> >
-> > commit 58956317c8de52009d1a38a721474c24aef74fe7
-> > Author: David Ahern <dsahern@gmail.com>
-> > Date:   Fri Dec 7 20:24:57 2018 +0000
-> >
-> >     neighbor: Improve garbage collection
-> >
-> > bisection log:  https://syzkaller.appspot.com/x/bisect.txt?x=124a5985e00000
-> > start commit:   d0f41851 net, ip_tunnel: fix namespaces move
-> > git tree:       net
-> > final crash:    https://syzkaller.appspot.com/x/report.txt?x=114a5985e00000
-> > console output: https://syzkaller.appspot.com/x/log.txt?x=164a5985e00000
-> > kernel config:  https://syzkaller.appspot.com/x/.config?x=d9290aeb7e6cf1c4
-> > dashboard link: https://syzkaller.appspot.com/bug?extid=8ce4113dadc4789fac74
-> > syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=11f99369e00000
-> > C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=13d85601e00000
-> >
-> > Reported-by: syzbot+8ce4113dadc4789fac74@syzkaller.appspotmail.com
-> > Fixes: 58956317c8de ("neighbor: Improve garbage collection")
-> >
-> > For information about bisection process see: https://goo.gl/tpsmEJ#bisection
-> >
->
-> bisection looks bogus...
->
-> It would be nice to have alternative helpers to conveniently replace some WARN_ON/WARN_ONCE/...
-> and not having to hand-code stuff like :
->
-> diff --git a/net/core/filter.c b/net/core/filter.c
-> index 538f6a735a19f017df8e10149cb578107ddc8cbb..633988f7c81b3b4f015d827ccb485e8b227ad20b 100644
-> --- a/net/core/filter.c
-> +++ b/net/core/filter.c
-> @@ -6913,11 +6913,15 @@ static bool xdp_is_valid_access(int off, int size,
->
->  void bpf_warn_invalid_xdp_action(u32 act)
->  {
-> +       static bool __section(.data.once) warned;
->         const u32 act_max = XDP_REDIRECT;
->
-> -       WARN_ONCE(1, "%s XDP return value %u, expect packet loss!\n",
-> -                 act > act_max ? "Illegal" : "Driver unsupported",
-> -                 act);
-> +       if (!warned) {
-> +               warned = true;
-> +               pr_err("%s XDP return value %u, expect packet loss!\n",
-> +                      act > act_max ? "Illegal" : "Driver unsupported", act);
-> +               dump_stack();
-> +       }
->  }
->  EXPORT_SYMBOL_GPL(bpf_warn_invalid_xdp_action);
+Hi Dave,
 
-If a single caller of this function would be enough (or maybe grand
-caller with a macro), then we could use pr_err_once/ratelimited and
-print 1 line with error and caller function.
+This series adds misc updates to mlx5 driver, and the support for full
+ethtool statistics for the uplink representor netdev.
+For more information please see tag log below.
+
+Please pull and let me know if there is any problem.
+
+Thanks,
+Saeed.
+
+---
+The following changes since commit c5d19a6ecfce72d0352191d75f03eea4748a8c45=
+:
+
+  net: convert additional drivers to use phy_do_ioctl (2020-01-22 21:16:32 =
++0100)
+
+are available in the Git repository at:
+
+  git://git.kernel.org/pub/scm/linux/kernel/git/saeed/linux.git tags/mlx5-u=
+pdates-2020-01-22
+
+for you to fetch changes up to 7c453526dc50460c63ff28df7673570dd057c5d0:
+
+  net/mlx5e: Enable all available stats for uplink reps (2020-01-22 22:30:1=
+2 -0800)
+
+----------------------------------------------------------------
+mlx5-updates-2020-01-22
+
+This series provides updates to mlx5 driver.
+1) Misc small cleanups
+2) Some SW steering updates including header copy support
+3) Full ethtool statistics support for E-Switch uplink representor
+Some refactoring was required to share the bare-metal NIC ethtool
+stats with the Uplink representor. On Top of this Vlad converts the
+ethtool stats support in E-Swtich vports representors to use the mlx5e
+"stats groups" infrastructure and then applied all applicable stats
+to the uplink representor netdev.
+
+----------------------------------------------------------------
+Chen Wandun (1):
+      net/mlx5: make the symbol 'ESW_POOLS' static
+
+Davide Caratti (1):
+      net/mlx5e: allow TSO on VXLAN over VLAN topologies
+
+Hamdan Igbaria (2):
+      net/mlx5: DR, Modify set action limitation extension
+      net/mlx5: DR, Modify header copy support
+
+Olof Johansson (1):
+      net/mlx5e: Fix printk format warning
+
+Roi Dayan (1):
+      net/mlx5e: Move uplink rep init/cleanup code into own functions
+
+Saeed Mahameed (4):
+      net/mlx5e: Profile specific stats groups
+      net/mlx5e: Declare stats groups via macro
+      net/mlx5e: Convert stats groups array to array of group pointers
+      net/mlx5e: IPoIB, use separate stats groups
+
+Vlad Buslov (3):
+      net/mlx5e: Convert rep stats to mlx5e_stats_grp-based infra
+      net/mlx5e: Create q counters on uplink representors
+      net/mlx5e: Enable all available stats for uplink reps
+
+Yevgeny Kliteynik (1):
+      net/mlx5: DR, Allow connecting flow table to a lower/same level table
+
+wenxu (1):
+      net/mlx5e: Add mlx5e_flower_parse_meta support
+
+ drivers/net/ethernet/mellanox/mlx5/core/en.h       |   3 +-
+ .../net/ethernet/mellanox/mlx5/core/en_ethtool.c   |  23 +-
+ drivers/net/ethernet/mellanox/mlx5/core/en_main.c  |  19 +-
+ drivers/net/ethernet/mellanox/mlx5/core/en_rep.c   | 277 +++++++++++-----
+ drivers/net/ethernet/mellanox/mlx5/core/en_stats.c | 342 +++++++++--------=
+--
+ drivers/net/ethernet/mellanox/mlx5/core/en_stats.h |  83 ++++-
+ drivers/net/ethernet/mellanox/mlx5/core/en_tc.c    |  39 +++
+ .../mellanox/mlx5/core/eswitch_offloads_chains.c   |   8 +-
+ .../net/ethernet/mellanox/mlx5/core/ipoib/ipoib.c  |  24 ++
+ .../mellanox/mlx5/core/steering/dr_action.c        | 367 +++++++++++++++++=
+----
+ .../mellanox/mlx5/core/steering/mlx5_ifc_dr.h      |  16 +
+ drivers/net/ethernet/mellanox/mlx5/core/wq.c       |   2 +-
+ 12 files changed, 805 insertions(+), 398 deletions(-)
