@@ -2,142 +2,266 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id F07F8147024
-	for <lists+netdev@lfdr.de>; Thu, 23 Jan 2020 18:57:12 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id DB60714702A
+	for <lists+netdev@lfdr.de>; Thu, 23 Jan 2020 18:58:05 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729045AbgAWR5G (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 23 Jan 2020 12:57:06 -0500
-Received: from mx0a-00082601.pphosted.com ([67.231.145.42]:12716 "EHLO
-        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1728760AbgAWR5F (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 23 Jan 2020 12:57:05 -0500
-Received: from pps.filterd (m0109333.ppops.net [127.0.0.1])
-        by mx0a-00082601.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 00NHukcF009571;
-        Thu, 23 Jan 2020 09:56:49 -0800
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
- : date : message-id : references : in-reply-to : content-type : content-id
- : content-transfer-encoding : mime-version; s=facebook;
- bh=JFvD0shaGY2HvJ7Gqrji+2IYQLtSoq+CHdYPM+wq1rQ=;
- b=A1IhVSZtA8sd/ywtaND8CULVSrLii0Iiios0z9e8tM3S58fpZEiUYNkokcfBjwXuZDec
- gAtcpsfFGypJ2vie5pa9JBKjCZ2dPVtKjknKrJyWggQKZOH5UNDAeTCZmUrNPZzymfN/
- ZIKNjeij/7SaLLVJLVUI09z4TKylJ8UWnP8= 
-Received: from mail.thefacebook.com ([163.114.132.120])
-        by mx0a-00082601.pphosted.com with ESMTP id 2xqc881a54-13
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
-        Thu, 23 Jan 2020 09:56:49 -0800
-Received: from NAM11-CO1-obe.outbound.protection.outlook.com (100.104.98.9) by
- o365-in.thefacebook.com (100.104.94.199) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.1779.2; Thu, 23 Jan 2020 09:56:48 -0800
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=QGI5Gz2mXN5HyWQ8uFKRocY5z0vLWMQDgZtxBlo6s+obY9+TTP9fqc26qsCAjI3xjtCOwHRUOg/OmtBolzNtja9Inzlv8XD6eKSxBMa1B00pt4oPlrFpfdvonIcRAZcJ4rumPTlEJpz6fEP9dQLrJi0YgDWvqlepPOlXtI5bFa+6i4adMMS35yxvfK7WNy84/zOtj9q88z2Gu27FQndgSR2AwpTyMPqYc668k4ljOJzc328mjC7EoS8N4GYS7aQ7EZirSgJLF5NNxWyWoB21MO09QyFVBIiPYBHUabXxYv4PchMkDXoJkMJvNhx7wTXf5dVMNBdfgFk1LbOxfX7BIg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=JFvD0shaGY2HvJ7Gqrji+2IYQLtSoq+CHdYPM+wq1rQ=;
- b=n3GP0RlT9Fshv9Okg4oveQUvMuzQnEOBVKfB6MDnvI/gVswcgxaJjQGdbVLpWQbX4dbncTqlyUJlvJ6t0xoHNMwQxD7AOYTeGir5HZYj65/COR051wgr6o98d2knUSjT2lULmHrSr2IcQJhPZsvD/2DugixtNXHVB10kut1c2JSSkkO3pAnsB5ZdosaEqSsP/P9DEfU33ae+zlqwvNgmqf0LCN/GEF/QyL8NL+nFRt8glWAw+lTMdchb1XwBIVMEToGtf/Mcobg8mcBDxPAyfgLO7tthjLtUPRS3avr4+A3fVAiLLExfSwzk7F1rak0UdqvdWCwPqoP6ate28+AHmQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=fb.com; dmarc=pass action=none header.from=fb.com; dkim=pass
- header.d=fb.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.onmicrosoft.com;
- s=selector2-fb-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=JFvD0shaGY2HvJ7Gqrji+2IYQLtSoq+CHdYPM+wq1rQ=;
- b=bfwm8n350p2bucIrwFhQCbpH7GMf/sWL+fsP+BzQdEBdVLkEULAopdjhDChKD5ibBmaTpwJkAZ+EJm28tkldIMAgcIcCwUxgI3Z8j5gic2hY09i60fg6XoyqoqYVcC3stsTOD/k9/18VPIHUVj+L0Ashfi5RCdg4En5lg0COOhE=
-Received: from MN2PR15MB3213.namprd15.prod.outlook.com (20.179.21.76) by
- MN2PR15MB2719.namprd15.prod.outlook.com (20.179.146.160) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.2644.23; Thu, 23 Jan 2020 17:56:47 +0000
-Received: from MN2PR15MB3213.namprd15.prod.outlook.com
- ([fe80::6d1e:f2f7:d36:a42f]) by MN2PR15MB3213.namprd15.prod.outlook.com
- ([fe80::6d1e:f2f7:d36:a42f%4]) with mapi id 15.20.2644.027; Thu, 23 Jan 2020
- 17:56:47 +0000
-Received: from kafai-mbp.dhcp.thefacebook.com (2620:10d:c090:200::2:d66d) by CO2PR18CA0045.namprd18.prod.outlook.com (2603:10b6:104:2::13) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.2665.20 via Frontend Transport; Thu, 23 Jan 2020 17:56:46 +0000
-From:   Martin Lau <kafai@fb.com>
-To:     Lorenz Bauer <lmb@cloudflare.com>
-CC:     Shuah Khan <shuah@kernel.org>, Alexei Starovoitov <ast@kernel.org>,
-        "Daniel Borkmann" <daniel@iogearbox.net>,
-        Song Liu <songliubraving@fb.com>, "Yonghong Song" <yhs@fb.com>,
-        Andrii Nakryiko <andriin@fb.com>,
-        "linux-kselftest@vger.kernel.org" <linux-kselftest@vger.kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "bpf@vger.kernel.org" <bpf@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH bpf 4/4] selftests: bpf: reset global state between
- reuseport test runs
-Thread-Topic: [PATCH bpf 4/4] selftests: bpf: reset global state between
- reuseport test runs
-Thread-Index: AQHV0g6SqqQcnu2MV0ypmzGJv4yvkaf4iNUA
-Date:   Thu, 23 Jan 2020 17:56:47 +0000
-Message-ID: <20200123175644.x3j7jhl5owi34fdo@kafai-mbp.dhcp.thefacebook.com>
-References: <20200123165934.9584-1-lmb@cloudflare.com>
- <20200123165934.9584-5-lmb@cloudflare.com>
-In-Reply-To: <20200123165934.9584-5-lmb@cloudflare.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-clientproxiedby: CO2PR18CA0045.namprd18.prod.outlook.com
- (2603:10b6:104:2::13) To MN2PR15MB3213.namprd15.prod.outlook.com
- (2603:10b6:208:3d::12)
-x-ms-exchange-messagesentrepresentingtype: 1
-x-originating-ip: [2620:10d:c090:200::2:d66d]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: a64cff7e-a7b2-4861-06bd-08d7a02d9da2
-x-ms-traffictypediagnostic: MN2PR15MB2719:
-x-ms-exchange-transport-forked: True
-x-microsoft-antispam-prvs: <MN2PR15MB27191905A2F83AC95DE0B941D50F0@MN2PR15MB2719.namprd15.prod.outlook.com>
-x-fb-source: Internal
-x-ms-oob-tlc-oobclassifiers: OLM:7219;
-x-forefront-prvs: 029174C036
-x-forefront-antispam-report: SFV:NSPM;SFS:(10019020)(396003)(136003)(376002)(39860400002)(366004)(346002)(189003)(199004)(9686003)(186003)(6506007)(52116002)(16526019)(2906002)(4326008)(7696005)(55016002)(86362001)(4744005)(5660300002)(66476007)(66556008)(64756008)(66946007)(1076003)(66446008)(81166006)(81156014)(8676002)(8936002)(6916009)(54906003)(478600001)(316002)(71200400001);DIR:OUT;SFP:1102;SCL:1;SRVR:MN2PR15MB2719;H:MN2PR15MB3213.namprd15.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;MX:1;A:1;
-received-spf: None (protection.outlook.com: fb.com does not designate
- permitted sender hosts)
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: LCrlu9bZA5ID+161CfQRBUBTJrVhvjYvGPutXunDJ0LuFLDqA/WzmHq0WEZOEC+3xV710JRm8o8AU8SruEojDKWVINTwkFBF4NMaU64ISoTzgPELr04kgUjMCwIc6Ky67LjxiSzw473RASu1Hf3EcY3v4lXSU9nWv4QcVaXT9KGa786irsQ38UTZEp1qxaHAGJc5u1hxHT94i7w0tavOTbrYRCyoj6dKzuT9XLrT0Ebnc3Bi05bcZlantGIdM4Zvm8kYx/ZjUmoQOcN8g7Nb1NgIfgYUI/kn5JEmHC7U25Di7R9Iqx20iSUtkoR10aEpvWM0cRoxxTNX7TvlnHwp5lt++ZHmtbqlruZD1ozwwOeePfYk+8L+pHTFhH6kB0HIQ/J6tzQAVYb1GEqQ7+zgTRtYhLoqXDStyQHPfpSVmAkmk1MeI5hrltdrEOHBlOV/
-Content-Type: text/plain; charset="us-ascii"
-Content-ID: <501BAC2656A9BD4B9D7F9D55BC72CCD5@namprd15.prod.outlook.com>
-Content-Transfer-Encoding: quoted-printable
-MIME-Version: 1.0
-X-MS-Exchange-CrossTenant-Network-Message-Id: a64cff7e-a7b2-4861-06bd-08d7a02d9da2
-X-MS-Exchange-CrossTenant-originalarrivaltime: 23 Jan 2020 17:56:47.6877
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 8ae927fe-1255-47a7-a2af-5f3a069daaa2
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: /3DhYisfttcQUHTL2uzzM1g1UqWyD+prGxpofRMT8w/OQCyuToQQSwoQnknYlbOp
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: MN2PR15MB2719
-X-OriginatorOrg: fb.com
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.138,18.0.572
- definitions=2020-01-23_11:2020-01-23,2020-01-23 signatures=0
-X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 mlxlogscore=861
- spamscore=0 priorityscore=1501 impostorscore=0 suspectscore=0 phishscore=0
- adultscore=0 lowpriorityscore=0 mlxscore=0 malwarescore=0 bulkscore=0
- clxscore=1015 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-1910280000 definitions=main-2001230139
-X-FB-Internal: deliver
+        id S1729098AbgAWR6B (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 23 Jan 2020 12:58:01 -0500
+Received: from mail-il-dmz.mellanox.com ([193.47.165.129]:42834 "EHLO
+        mellanox.co.il" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+        with ESMTP id S1728731AbgAWR56 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 23 Jan 2020 12:57:58 -0500
+Received: from Internal Mail-Server by MTLPINE2 (envelope-from moshe@mellanox.com)
+        with ESMTPS (AES256-SHA encrypted); 23 Jan 2020 19:57:55 +0200
+Received: from dev-l-vrt-136.mtl.labs.mlnx (dev-l-vrt-136.mtl.labs.mlnx [10.134.136.1])
+        by labmailer.mlnx (8.13.8/8.13.8) with ESMTP id 00NHvtqD024477;
+        Thu, 23 Jan 2020 19:57:55 +0200
+Received: from dev-l-vrt-136.mtl.labs.mlnx (localhost [127.0.0.1])
+        by dev-l-vrt-136.mtl.labs.mlnx (8.14.7/8.14.7) with ESMTP id 00NHvtkn027292;
+        Thu, 23 Jan 2020 19:57:55 +0200
+Received: (from moshe@localhost)
+        by dev-l-vrt-136.mtl.labs.mlnx (8.14.7/8.14.7/Submit) id 00NHvsUM027291;
+        Thu, 23 Jan 2020 19:57:54 +0200
+From:   Moshe Shemesh <moshe@mellanox.com>
+To:     "David S. Miller" <davem@davemloft.net>
+Cc:     Jiri Pirko <jiri@mellanox.com>,
+        Vikas Gupta <vikas.gupta@broadcom.com>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Moshe Shemesh <moshe@mellanox.com>
+Subject: [PATCH net-next v2] devlink: Add health recover notifications on devlink flows
+Date:   Thu, 23 Jan 2020 19:57:13 +0200
+Message-Id: <1579802233-27224-1-git-send-email-moshe@mellanox.com>
+X-Mailer: git-send-email 1.8.4.3
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Jan 23, 2020 at 04:59:33PM +0000, Lorenz Bauer wrote:
-> Currently, there is a lot of false positives if a single reuseport test
-> fails. This is because expected_results and the result map are not cleare=
-d.
-Ah, right.  An earlier test failure has ripple effect on the following test=
-s.
+Devlink health recover notifications were added only on driver direct
+updates of health_state through devlink_health_reporter_state_update().
+Add notifications on updates of health_state by devlink flows of report
+and recover.
 
-I notice another embarrassing typo.  Can you also make this change in this =
-fix?
+Moved functions devlink_nl_health_reporter_fill() and
+devlink_recover_notify() to avoid forward declaration.
 
--static enum result expected_results[NR_RESULTS];
-+static __u32 expected_results[NR_RESULTS];
+Fixes: 97ff3bd37fac ("devlink: add devink notification when reporter update health state")
+Signed-off-by: Moshe Shemesh <moshe@mellanox.com>
+---
 
->=20
-> Zero both after individual test runs, which fixes the mentioned false
-> positives.
-Thanks for the fix!
+v2 changes:
+ - Move functions to avoid forward declaration
+---
+ net/core/devlink.c | 176 +++++++++++++++++++++++----------------------
+ 1 file changed, 89 insertions(+), 87 deletions(-)
 
-Acked-by: Martin KaFai Lau <kafai@fb.com>
+diff --git a/net/core/devlink.c b/net/core/devlink.c
+index 64367eeb21e6..ca1df0ec3c97 100644
+--- a/net/core/devlink.c
++++ b/net/core/devlink.c
+@@ -4843,6 +4843,93 @@ devlink_health_reporter_destroy(struct devlink_health_reporter *reporter)
+ }
+ EXPORT_SYMBOL_GPL(devlink_health_reporter_destroy);
+ 
++static int
++devlink_nl_health_reporter_fill(struct sk_buff *msg,
++				struct devlink *devlink,
++				struct devlink_health_reporter *reporter,
++				enum devlink_command cmd, u32 portid,
++				u32 seq, int flags)
++{
++	struct nlattr *reporter_attr;
++	void *hdr;
++
++	hdr = genlmsg_put(msg, portid, seq, &devlink_nl_family, flags, cmd);
++	if (!hdr)
++		return -EMSGSIZE;
++
++	if (devlink_nl_put_handle(msg, devlink))
++		goto genlmsg_cancel;
++
++	reporter_attr = nla_nest_start_noflag(msg,
++					      DEVLINK_ATTR_HEALTH_REPORTER);
++	if (!reporter_attr)
++		goto genlmsg_cancel;
++	if (nla_put_string(msg, DEVLINK_ATTR_HEALTH_REPORTER_NAME,
++			   reporter->ops->name))
++		goto reporter_nest_cancel;
++	if (nla_put_u8(msg, DEVLINK_ATTR_HEALTH_REPORTER_STATE,
++		       reporter->health_state))
++		goto reporter_nest_cancel;
++	if (nla_put_u64_64bit(msg, DEVLINK_ATTR_HEALTH_REPORTER_ERR_COUNT,
++			      reporter->error_count, DEVLINK_ATTR_PAD))
++		goto reporter_nest_cancel;
++	if (nla_put_u64_64bit(msg, DEVLINK_ATTR_HEALTH_REPORTER_RECOVER_COUNT,
++			      reporter->recovery_count, DEVLINK_ATTR_PAD))
++		goto reporter_nest_cancel;
++	if (reporter->ops->recover &&
++	    nla_put_u64_64bit(msg, DEVLINK_ATTR_HEALTH_REPORTER_GRACEFUL_PERIOD,
++			      reporter->graceful_period,
++			      DEVLINK_ATTR_PAD))
++		goto reporter_nest_cancel;
++	if (reporter->ops->recover &&
++	    nla_put_u8(msg, DEVLINK_ATTR_HEALTH_REPORTER_AUTO_RECOVER,
++		       reporter->auto_recover))
++		goto reporter_nest_cancel;
++	if (reporter->dump_fmsg &&
++	    nla_put_u64_64bit(msg, DEVLINK_ATTR_HEALTH_REPORTER_DUMP_TS,
++			      jiffies_to_msecs(reporter->dump_ts),
++			      DEVLINK_ATTR_PAD))
++		goto reporter_nest_cancel;
++	if (reporter->dump_fmsg &&
++	    nla_put_u64_64bit(msg, DEVLINK_ATTR_HEALTH_REPORTER_DUMP_TS_NS,
++			      reporter->dump_real_ts, DEVLINK_ATTR_PAD))
++		goto reporter_nest_cancel;
++
++	nla_nest_end(msg, reporter_attr);
++	genlmsg_end(msg, hdr);
++	return 0;
++
++reporter_nest_cancel:
++	nla_nest_end(msg, reporter_attr);
++genlmsg_cancel:
++	genlmsg_cancel(msg, hdr);
++	return -EMSGSIZE;
++}
++
++static void devlink_recover_notify(struct devlink_health_reporter *reporter,
++				   enum devlink_command cmd)
++{
++	struct sk_buff *msg;
++	int err;
++
++	WARN_ON(cmd != DEVLINK_CMD_HEALTH_REPORTER_RECOVER);
++
++	msg = nlmsg_new(NLMSG_DEFAULT_SIZE, GFP_KERNEL);
++	if (!msg)
++		return;
++
++	err = devlink_nl_health_reporter_fill(msg, reporter->devlink,
++					      reporter, cmd, 0, 0, 0);
++	if (err) {
++		nlmsg_free(msg);
++		return;
++	}
++
++	genlmsg_multicast_netns(&devlink_nl_family,
++				devlink_net(reporter->devlink),
++				msg, 0, DEVLINK_MCGRP_CONFIG, GFP_KERNEL);
++}
++
+ void
+ devlink_health_reporter_recovery_done(struct devlink_health_reporter *reporter)
+ {
+@@ -4869,6 +4956,7 @@ devlink_health_reporter_recover(struct devlink_health_reporter *reporter,
+ 
+ 	devlink_health_reporter_recovery_done(reporter);
+ 	reporter->health_state = DEVLINK_HEALTH_REPORTER_STATE_HEALTHY;
++	devlink_recover_notify(reporter, DEVLINK_CMD_HEALTH_REPORTER_RECOVER);
+ 
+ 	return 0;
+ }
+@@ -4935,6 +5023,7 @@ int devlink_health_report(struct devlink_health_reporter *reporter,
+ 	reporter->error_count++;
+ 	prev_health_state = reporter->health_state;
+ 	reporter->health_state = DEVLINK_HEALTH_REPORTER_STATE_ERROR;
++	devlink_recover_notify(reporter, DEVLINK_CMD_HEALTH_REPORTER_RECOVER);
+ 
+ 	/* abort if the previous error wasn't recovered */
+ 	if (reporter->auto_recover &&
+@@ -5017,93 +5106,6 @@ devlink_health_reporter_put(struct devlink_health_reporter *reporter)
+ 	refcount_dec(&reporter->refcount);
+ }
+ 
+-static int
+-devlink_nl_health_reporter_fill(struct sk_buff *msg,
+-				struct devlink *devlink,
+-				struct devlink_health_reporter *reporter,
+-				enum devlink_command cmd, u32 portid,
+-				u32 seq, int flags)
+-{
+-	struct nlattr *reporter_attr;
+-	void *hdr;
+-
+-	hdr = genlmsg_put(msg, portid, seq, &devlink_nl_family, flags, cmd);
+-	if (!hdr)
+-		return -EMSGSIZE;
+-
+-	if (devlink_nl_put_handle(msg, devlink))
+-		goto genlmsg_cancel;
+-
+-	reporter_attr = nla_nest_start_noflag(msg,
+-					      DEVLINK_ATTR_HEALTH_REPORTER);
+-	if (!reporter_attr)
+-		goto genlmsg_cancel;
+-	if (nla_put_string(msg, DEVLINK_ATTR_HEALTH_REPORTER_NAME,
+-			   reporter->ops->name))
+-		goto reporter_nest_cancel;
+-	if (nla_put_u8(msg, DEVLINK_ATTR_HEALTH_REPORTER_STATE,
+-		       reporter->health_state))
+-		goto reporter_nest_cancel;
+-	if (nla_put_u64_64bit(msg, DEVLINK_ATTR_HEALTH_REPORTER_ERR_COUNT,
+-			      reporter->error_count, DEVLINK_ATTR_PAD))
+-		goto reporter_nest_cancel;
+-	if (nla_put_u64_64bit(msg, DEVLINK_ATTR_HEALTH_REPORTER_RECOVER_COUNT,
+-			      reporter->recovery_count, DEVLINK_ATTR_PAD))
+-		goto reporter_nest_cancel;
+-	if (reporter->ops->recover &&
+-	    nla_put_u64_64bit(msg, DEVLINK_ATTR_HEALTH_REPORTER_GRACEFUL_PERIOD,
+-			      reporter->graceful_period,
+-			      DEVLINK_ATTR_PAD))
+-		goto reporter_nest_cancel;
+-	if (reporter->ops->recover &&
+-	    nla_put_u8(msg, DEVLINK_ATTR_HEALTH_REPORTER_AUTO_RECOVER,
+-		       reporter->auto_recover))
+-		goto reporter_nest_cancel;
+-	if (reporter->dump_fmsg &&
+-	    nla_put_u64_64bit(msg, DEVLINK_ATTR_HEALTH_REPORTER_DUMP_TS,
+-			      jiffies_to_msecs(reporter->dump_ts),
+-			      DEVLINK_ATTR_PAD))
+-		goto reporter_nest_cancel;
+-	if (reporter->dump_fmsg &&
+-	    nla_put_u64_64bit(msg, DEVLINK_ATTR_HEALTH_REPORTER_DUMP_TS_NS,
+-			      reporter->dump_real_ts, DEVLINK_ATTR_PAD))
+-		goto reporter_nest_cancel;
+-
+-	nla_nest_end(msg, reporter_attr);
+-	genlmsg_end(msg, hdr);
+-	return 0;
+-
+-reporter_nest_cancel:
+-	nla_nest_end(msg, reporter_attr);
+-genlmsg_cancel:
+-	genlmsg_cancel(msg, hdr);
+-	return -EMSGSIZE;
+-}
+-
+-static void devlink_recover_notify(struct devlink_health_reporter *reporter,
+-				   enum devlink_command cmd)
+-{
+-	struct sk_buff *msg;
+-	int err;
+-
+-	WARN_ON(cmd != DEVLINK_CMD_HEALTH_REPORTER_RECOVER);
+-
+-	msg = nlmsg_new(NLMSG_DEFAULT_SIZE, GFP_KERNEL);
+-	if (!msg)
+-		return;
+-
+-	err = devlink_nl_health_reporter_fill(msg, reporter->devlink,
+-					      reporter, cmd, 0, 0, 0);
+-	if (err) {
+-		nlmsg_free(msg);
+-		return;
+-	}
+-
+-	genlmsg_multicast_netns(&devlink_nl_family,
+-				devlink_net(reporter->devlink),
+-				msg, 0, DEVLINK_MCGRP_CONFIG, GFP_KERNEL);
+-}
+-
+ void
+ devlink_health_reporter_state_update(struct devlink_health_reporter *reporter,
+ 				     enum devlink_health_reporter_state state)
+-- 
+2.17.1
+
