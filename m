@@ -2,136 +2,116 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id BAAE41468E2
-	for <lists+netdev@lfdr.de>; Thu, 23 Jan 2020 14:17:23 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 436C11468BD
+	for <lists+netdev@lfdr.de>; Thu, 23 Jan 2020 14:10:43 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728205AbgAWNRQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 23 Jan 2020 08:17:16 -0500
-Received: from rnd-relay.smtp.broadcom.com ([192.19.229.170]:41776 "EHLO
-        rnd-relay.smtp.broadcom.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726026AbgAWNRP (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 23 Jan 2020 08:17:15 -0500
-X-Greylist: delayed 527 seconds by postgrey-1.27 at vger.kernel.org; Thu, 23 Jan 2020 08:17:13 EST
-Received: from mail-irv-17.broadcom.com (mail-irv-17.lvn.broadcom.net [10.75.242.48])
-        by rnd-relay.smtp.broadcom.com (Postfix) with ESMTP id C21C330C123;
-        Thu, 23 Jan 2020 05:01:47 -0800 (PST)
-DKIM-Filter: OpenDKIM Filter v2.10.3 rnd-relay.smtp.broadcom.com C21C330C123
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=broadcom.com;
-        s=dkimrelay; t=1579784507;
-        bh=GRbeVqWsXvHOOBiyzIBZ+swPrvzsE9qungb3Sc5kCHg=;
-        h=From:To:Cc:Subject:Date:From;
-        b=AaKLcq1HqgI96Pla0Fz4E2OjsKquCk2SOU1wtq/cyl3xZlgQixYJJT2a8zgQ5U7u2
-         HbWSE0aVgxBGr1mJ6hhaV6Ge93zaEfARcs1vWj25PDGaOOsQDlKCNM7eRKPxiSYmuK
-         VSg6ixTSxTkLzudFyFR7Ew/1NLW1BlRdqJj63rHc=
-Received: from lvnvde3894.broadcom.com (lvnvde3894.lvn.broadcom.net [10.175.127.104])
-        by mail-irv-17.broadcom.com (Postfix) with ESMTP id 5F78E140069;
-        Thu, 23 Jan 2020 05:08:25 -0800 (PST)
-Received: by lvnvde3894.broadcom.com (Postfix, from userid 55335)
-        id 58086220AF8; Thu, 23 Jan 2020 05:08:25 -0800 (PST)
-From:   Kalimuthu Velappan <kalimuthu.velappan@broadcom.com>
-To:     kalimuthu.velappan@broadcom.com
-Cc:     Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        Andrii Nakryiko <andriin@fb.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Stanislav Fomichev <sdf@google.com>,
-        Quentin Monnet <quentin.monnet@netronome.com>,
-        Andrey Ignatov <rdna@fb.com>,
-        netdev@vger.kernel.org (open list:BPF (Safe dynamic programs and tools)),
-        bpf@vger.kernel.org (open list:BPF (Safe dynamic programs and tools)),
-        linux-kernel@vger.kernel.org (open list)
-Subject: [PATCH] Support for nlattr and nested_nlattr attribute search in EBPF filter
-Date:   Thu, 23 Jan 2020 05:08:12 -0800
-Message-Id: <20200123130816.24815-1-kalimuthu.velappan@broadcom.com>
-X-Mailer: git-send-email 2.18.0
+        id S1728708AbgAWNKi (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 23 Jan 2020 08:10:38 -0500
+Received: from mail.kernel.org ([198.145.29.99]:48274 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726605AbgAWNKi (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 23 Jan 2020 08:10:38 -0500
+Received: from localhost (unknown [193.47.165.251])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 2AF9224655;
+        Thu, 23 Jan 2020 13:10:36 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1579785037;
+        bh=FSWKZcFA/Vwq3RHRtlC1Whegf88VRvThrppzMK9KEO0=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=auTB68Zjup0xQteHO53gPvevArx6EJLGzPr5BHUQDkFJj6oWC+v7aAZAgZ2/vdviI
+         uFFa0RXGWjI2ls2xrFvYcE1X1RNJxsKOlXzXGgESDtQuogfgkeWqfcgasuRBK0c9bm
+         yS+GxaFTYIfHyR5scNYA2qyDimmN9rt6y1wva1uU=
+Date:   Thu, 23 Jan 2020 15:10:34 +0200
+From:   Leon Romanovsky <leon@kernel.org>
+To:     Michal Kalderon <mkalderon@marvell.com>
+Cc:     "davem@davemloft.net" <davem@davemloft.net>,
+        Ariel Elior <aelior@marvell.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-rdma@vger.kernel.org" <linux-rdma@vger.kernel.org>,
+        "linux-scsi@vger.kernel.org" <linux-scsi@vger.kernel.org>
+Subject: Re: [EXT] Re: [PATCH net-next 14/14] qed: bump driver version
+Message-ID: <20200123131034.GM7018@unreal>
+References: <20200122152627.14903-1-michal.kalderon@marvell.com>
+ <20200122152627.14903-15-michal.kalderon@marvell.com>
+ <20200122161353.GG7018@unreal>
+ <MN2PR18MB31821C711CBB377437F3EECCA10C0@MN2PR18MB3182.namprd18.prod.outlook.com>
+ <20200122182107.GI7018@unreal>
+ <MN2PR18MB31829FA8377460DDB9675596A10F0@MN2PR18MB3182.namprd18.prod.outlook.com>
+ <20200123121203.GL7018@unreal>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20200123121203.GL7018@unreal>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Added attribute search and nested attribute support in EBPF filter
-functionality.
+On Thu, Jan 23, 2020 at 02:12:03PM +0200, Leon Romanovsky wrote:
+> On Thu, Jan 23, 2020 at 08:18:08AM +0000, Michal Kalderon wrote:
+> > > From: linux-rdma-owner@vger.kernel.org <linux-rdma-
+> > > owner@vger.kernel.org> On Behalf Of Leon Romanovsky
+> > > Sent: Wednesday, January 22, 2020 8:21 PM
+> > > To: Michal Kalderon <mkalderon@marvell.com>
+> > > Cc: Ariel Elior <aelior@marvell.com>; davem@davemloft.net;
+> > > netdev@vger.kernel.org; linux-rdma@vger.kernel.org; linux-
+> > > scsi@vger.kernel.org
+> > > Subject: Re: [EXT] Re: [PATCH net-next 14/14] qed: bump driver version
+> > >
+> > > On Wed, Jan 22, 2020 at 04:39:26PM +0000, Michal Kalderon wrote:
+> > > > > From: Leon Romanovsky <leon@kernel.org>
+> > > > > Sent: Wednesday, January 22, 2020 6:14 PM
+> > > > >
+> > > > > --------------------------------------------------------------------
+> > > > > -- On Wed, Jan 22, 2020 at 05:26:27PM +0200, Michal Kalderon wrote:
+> > > > > > The FW brings along a large set of fixes and features which will
+> > > > > > be added at a later phase. This is an adaquete point to bump the
+> > > > > > driver
+> > > > > version.
+> > > > > >
+> > > > > > Signed-off-by: Ariel Elior <ariel.elior@marvell.com>
+> > > > > > Signed-off-by: Michal Kalderon <michal.kalderon@marvell.com>
+> > > > > > ---
+> > > > > >  drivers/net/ethernet/qlogic/qed/qed.h | 2 +-
+> > > > > >  1 file changed, 1 insertion(+), 1 deletion(-)
+> > > > > >
+> > > > >
+> > > > > We discussed this a lot, those driver version bumps are stupid and
+> > > > > have nothing close to the reality. Distro kernels are based on some
+> > > > > kernel version with extra patches on top, in RedHat world this "extra"
+> > > > > is a lot. For them your driver version say nothing. For users who
+> > > > > run vanilla kernel, those versions are not relevant too, because
+> > > > > running such kernels requires knowledge and understanding.
+> > > > >
+> > > > > You definitely should stop this enterprise cargo cult of "releasing
+> > > software"
+> > > > > by updating versions in non-controlled by you distribution chain.
+> > > > >
+> > > > > Thanks
+> > > > Due to past discussions on this topic, qedr driver version was not added
+> > > and not bumped.
+> > > > However, customers are used to seeing a driver version for qed/qede We
+> > > > only bump major version changes (37 -> 42)  and not the minor versions
+> > > anymore.
+> > > > This does give a high-level understanding of the driver supports, helps us
+> > > and the customers.
+> > >
+> > > It is worth to talk with customers instead of adding useless work for
+> > > everyone involved here.
+> > Hi Leon,
+> >
+> > I understand your arguments, and for new drivers I agree it is best to start without a driver version, having said that
+> > Customers are used to what is already out there.
+> >
+> > Ethtool displays a driver version, and  customers go by driver version, not kernel version.
+> > Mlx drivers haven't bumped the driver version, but it is still displayed when running ethtool.
+>
+> Yes, it is needed to be fixed.
 
-Signed-off-by: Kalimuthu Velappan <kalimuthu.velappan@broadcom.com>
----
- include/uapi/linux/bpf.h       |  5 ++++-
- net/core/filter.c              | 22 ++++++++++++++++++++++
- tools/include/uapi/linux/bpf.h |  4 +++-
- 3 files changed, 29 insertions(+), 2 deletions(-)
+Done.
 
-diff --git a/include/uapi/linux/bpf.h b/include/uapi/linux/bpf.h
-index dbbcf0b..ac9794c 100644
---- a/include/uapi/linux/bpf.h
-+++ b/include/uapi/linux/bpf.h
-@@ -2938,7 +2938,10 @@ union bpf_attr {
- 	FN(probe_read_user),		\
- 	FN(probe_read_kernel),		\
- 	FN(probe_read_user_str),	\
--	FN(probe_read_kernel_str),
-+	FN(probe_read_kernel_str),  \
-+	FN(skb_get_nlattr),     \
-+	FN(skb_get_nlattr_nest),
-+
- 
- /* integer value in 'imm' field of BPF_CALL instruction selects which helper
-  * function eBPF program intends to call
-diff --git a/net/core/filter.c b/net/core/filter.c
-index 538f6a7..56a87e1 100644
---- a/net/core/filter.c
-+++ b/net/core/filter.c
-@@ -2699,6 +2699,24 @@ static const struct bpf_func_proto bpf_set_hash_invalid_proto = {
- 	.arg1_type	= ARG_PTR_TO_CTX,
- };
- 
-+static const struct bpf_func_proto bpf_skb_get_nlattr_proto = {
-+	.func		= bpf_skb_get_nlattr,
-+	.gpl_only	= false,
-+	.ret_type	= RET_INTEGER,
-+	.arg1_type	= ARG_PTR_TO_CTX,
-+	.arg2_type  = ARG_ANYTHING,
-+	.arg3_type  = ARG_ANYTHING,
-+};
-+
-+static const struct bpf_func_proto skb_get_nlattr_nest_proto = {
-+	.func		= bpf_skb_get_nlattr_nest,
-+	.gpl_only	= false,
-+	.ret_type	= RET_INTEGER,
-+	.arg1_type	= ARG_PTR_TO_CTX,
-+	.arg2_type  = ARG_ANYTHING,
-+	.arg3_type  = ARG_ANYTHING,
-+};
-+
- BPF_CALL_2(bpf_set_hash, struct sk_buff *, skb, u32, hash)
- {
- 	/* Set user specified hash as L4(+), so that it gets returned
-@@ -6091,6 +6109,10 @@ sk_filter_func_proto(enum bpf_func_id func_id, const struct bpf_prog *prog)
- 		return &bpf_get_socket_uid_proto;
- 	case BPF_FUNC_perf_event_output:
- 		return &bpf_skb_event_output_proto;
-+	case BPF_FUNC_skb_get_nlattr:
-+		return &bpf_skb_get_nlattr_proto;
-+	case BPF_FUNC_skb_get_nlattr_nest:
-+		return &skb_get_nlattr_nest_proto;
- 	default:
- 		return bpf_base_func_proto(func_id);
- 	}
-diff --git a/tools/include/uapi/linux/bpf.h b/tools/include/uapi/linux/bpf.h
-index dbbcf0b..3bfbc0e 100644
---- a/tools/include/uapi/linux/bpf.h
-+++ b/tools/include/uapi/linux/bpf.h
-@@ -2938,7 +2938,9 @@ union bpf_attr {
- 	FN(probe_read_user),		\
- 	FN(probe_read_kernel),		\
- 	FN(probe_read_user_str),	\
--	FN(probe_read_kernel_str),
-+	FN(probe_read_kernel_str),  \
-+	FN(skb_get_nlattr),     \
-+	FN(skb_get_nlattr_nest),
- 
- /* integer value in 'imm' field of BPF_CALL instruction selects which helper
-  * function eBPF program intends to call
--- 
-2.7.4
+https://patchwork.ozlabs.org/patch/1227912/
 
+Thanks
