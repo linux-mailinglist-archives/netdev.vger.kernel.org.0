@@ -2,54 +2,56 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 4F2C6146905
-	for <lists+netdev@lfdr.de>; Thu, 23 Jan 2020 14:28:19 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id CA3B5146906
+	for <lists+netdev@lfdr.de>; Thu, 23 Jan 2020 14:28:21 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727453AbgAWN2R (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 23 Jan 2020 08:28:17 -0500
-Received: from mail-lf1-f66.google.com ([209.85.167.66]:44255 "EHLO
-        mail-lf1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726590AbgAWN2R (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 23 Jan 2020 08:28:17 -0500
-Received: by mail-lf1-f66.google.com with SMTP id v201so2246214lfa.11
-        for <netdev@vger.kernel.org>; Thu, 23 Jan 2020 05:28:16 -0800 (PST)
+        id S1728139AbgAWN2T (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 23 Jan 2020 08:28:19 -0500
+Received: from mail-lf1-f67.google.com ([209.85.167.67]:37876 "EHLO
+        mail-lf1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727194AbgAWN2S (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 23 Jan 2020 08:28:18 -0500
+Received: by mail-lf1-f67.google.com with SMTP id b15so2286316lfc.4
+        for <netdev@vger.kernel.org>; Thu, 23 Jan 2020 05:28:17 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=cumulusnetworks.com; s=google;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=lW472399iAATdZUH6brslOgK+ubydfGqN4ZbFSeA9SE=;
-        b=LYDkLAitkc8jMhqsrjA/I9/1TucWGtQXhpZVkc+yfh8sywXR9dU9JnFjDA9RW82LSN
-         9xtQ3jsSaLQ4UN/a7ho6Gtj8kitQIA6bdfmQHaFbXxj2DiMZgOcz9v69Oa0azfHKVO4B
-         nyDB8+0P81BIZROb5p8Lcy34i/JcAH52mdnZI=
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=mtj5BWUVGyinNX7wvC73dcZuNmbbOVj5imGPpnqwC7s=;
+        b=UZd2c5nyGY2rKI/2SUt5BXQqvmIHkkRf+jsPzmIMbnYtgP5mjuvoRKkMSiclljwFWD
+         8nH8mAzPwXXUk5Eg3xbzAcJmiUdIgN9NOiJPCkTfk+6TLJ8v21c15H+ymNSKNQDy2oPW
+         O7tnKIJ5jSJMkKsN07BcWhSod4qIB/lo1+deE=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=lW472399iAATdZUH6brslOgK+ubydfGqN4ZbFSeA9SE=;
-        b=VZHsPXV7dwJwjyanKWvpujBDZhI17SxOAIbuQST/YW47Z7axrUtNppRQydKLzLLlTJ
-         lIpzu5J1hRdj93RB++XTxx0/u4LC9zxBpCrVU0K9o3oP7Nsfk2cKMezaY7lN4HAdkZU2
-         03wAZNrM4RBLS8tp2G5Q3z9+ZF9CXkh0z+iM7hLbQNkT/XeJz/kI9qZVNAzHplaH72as
-         khGLJWDMTTC7TGhhZ2xm6CWnrMz732loqQv9d7kcUwaMAXJ0HjAmJBuUDTGflo5ZiARz
-         p7nx31V82RQkv7wzuLLbl9YelP0WOTSxBJPy+tjGbI5goOQOXmrIUz4jX+jb4cCEUIiW
-         dsMg==
-X-Gm-Message-State: APjAAAVuWnYWUv+4DBkJmLEGVp5Kyw1+h/bZYWrlKQ2e1jCww20tQWNk
-        f9fQx/4IRAn4A4VFjEhYYzXz9NNTwss=
-X-Google-Smtp-Source: APXvYqyyZL6p7TqB1v8mg80ofb9yoPWpaLKaUXsFgwiPUdCf4gkixbCaPH7sHipLBYLhIRwG6Vyr9Q==
-X-Received: by 2002:ac2:5ec3:: with SMTP id d3mr286789lfq.176.1579786095266;
-        Thu, 23 Jan 2020 05:28:15 -0800 (PST)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=mtj5BWUVGyinNX7wvC73dcZuNmbbOVj5imGPpnqwC7s=;
+        b=RM3NmIaGBMjjXjueiiQwVRMlRwJYH3Vtq1PX5lV8HyjIQJZFfjdZZNM4HGFiZgD2Sg
+         1351HalJnMmTtDpZKJRmFC0NJr9JJ2SqpZRXmEsMV82pe3FFQiqnBAwZOtVzi7i47b7N
+         fsDExxh6jc0toqTueWfXMCp8ws2wpIYor162MMfLfpTRhc4c8AQm2wPboMsXkRImsfXK
+         PYmkRS/GfNDJqInXcHYxudHnclM855KpzVeujER2ebJKZgoH2u0wW+Sh28roolcEvRJf
+         t340CJ9H6tCiZ15YXETKRbKeVMcSxMxscJBvptv7T0OgmimSX56eFa+2sudwCIOUNwE5
+         MuNA==
+X-Gm-Message-State: APjAAAUsD4dtZ2b/xs7c3SP1w2r4cWUU5VCsSDasDmpo/OPfZZfvFrFl
+        roUzzBOkORYJKUn5Qyouu3ri0+6UPeM=
+X-Google-Smtp-Source: APXvYqyGSQMTA1c6s5oE1M0N0X8tb3IVqAOnwYf4Iapt4+LKCWPHBlrTKq5oaLfD4IhvG/8vbOgfxA==
+X-Received: by 2002:a19:4849:: with SMTP id v70mr4779278lfa.30.1579786096460;
+        Thu, 23 Jan 2020 05:28:16 -0800 (PST)
 Received: from localhost.localdomain (84-238-136-197.ip.btc-net.bg. [84.238.136.197])
-        by smtp.gmail.com with ESMTPSA id b20sm1238571ljp.20.2020.01.23.05.28.13
+        by smtp.gmail.com with ESMTPSA id b20sm1238571ljp.20.2020.01.23.05.28.15
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 23 Jan 2020 05:28:14 -0800 (PST)
+        Thu, 23 Jan 2020 05:28:15 -0800 (PST)
 From:   Nikolay Aleksandrov <nikolay@cumulusnetworks.com>
 To:     netdev@vger.kernel.org
 Cc:     roopa@cumulusnetworks.com, davem@davemloft.net,
         bridge@lists.linux-foundation.org,
         Nikolay Aleksandrov <nikolay@cumulusnetworks.com>
-Subject: [PATCH net-next 0/4] net: bridge: add per-vlan state option
-Date:   Thu, 23 Jan 2020 15:28:03 +0200
-Message-Id: <20200123132807.613-1-nikolay@cumulusnetworks.com>
+Subject: [PATCH net-next 1/4] net: bridge: check port state before br_allowed_egress
+Date:   Thu, 23 Jan 2020 15:28:04 +0200
+Message-Id: <20200123132807.613-2-nikolay@cumulusnetworks.com>
 X-Mailer: git-send-email 2.21.0
+In-Reply-To: <20200123132807.613-1-nikolay@cumulusnetworks.com>
+References: <20200123132807.613-1-nikolay@cumulusnetworks.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
@@ -57,37 +59,28 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi,
-This set adds the first per-vlan option - state, which uses the new vlan
-infrastructure that was recently added. It gives us forwarding control on
-per-vlan basis. The first 3 patches prepare the vlan code to support option
-dumping and modification. We still compress vlan ranges which have equal
-options, each new option will have to add its own equality check to
-br_vlan_opts_eq(). The vlans are created in forwarding state by default to
-be backwards compatible and vlan state is considered only when the port
-state is forwarding (more info in patch 4).
-I'll send the selftest for the vlan state with the iproute2 patch-set.
+If we make sure that br_allowed_egress is called only when we have
+BR_STATE_FORWARDING state then we can avoid a test later when we add
+per-vlan state.
 
-Thanks,
- Nik
+Signed-off-by: Nikolay Aleksandrov <nikolay@cumulusnetworks.com>
+---
+ net/bridge/br_forward.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-Nikolay Aleksandrov (4):
-  net: bridge: check port state before br_allowed_egress
-  net: bridge: vlan: add basic option dumping support
-  net: bridge: vlan: add basic option setting support
-  net: bridge: vlan: add per-vlan state
-
- include/uapi/linux/if_bridge.h |   2 +
- net/bridge/Makefile            |   2 +-
- net/bridge/br_device.c         |   3 +-
- net/bridge/br_forward.c        |   2 +-
- net/bridge/br_input.c          |   7 +-
- net/bridge/br_private.h        |  58 +++++++++++++-
- net/bridge/br_vlan.c           |  99 ++++++++++++++++++-----
- net/bridge/br_vlan_options.c   | 142 +++++++++++++++++++++++++++++++++
- 8 files changed, 287 insertions(+), 28 deletions(-)
- create mode 100644 net/bridge/br_vlan_options.c
-
+diff --git a/net/bridge/br_forward.c b/net/bridge/br_forward.c
+index 86637000f275..7629b63f6f30 100644
+--- a/net/bridge/br_forward.c
++++ b/net/bridge/br_forward.c
+@@ -25,7 +25,7 @@ static inline int should_deliver(const struct net_bridge_port *p,
+ 
+ 	vg = nbp_vlan_group_rcu(p);
+ 	return ((p->flags & BR_HAIRPIN_MODE) || skb->dev != p->dev) &&
+-		br_allowed_egress(vg, skb) && p->state == BR_STATE_FORWARDING &&
++		p->state == BR_STATE_FORWARDING && br_allowed_egress(vg, skb) &&
+ 		nbp_switchdev_allowed_egress(p, skb) &&
+ 		!br_skb_isolated(p, skb);
+ }
 -- 
 2.21.0
 
