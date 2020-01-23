@@ -2,60 +2,72 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 9E807146C78
-	for <lists+netdev@lfdr.de>; Thu, 23 Jan 2020 16:18:15 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5AD7B146D48
+	for <lists+netdev@lfdr.de>; Thu, 23 Jan 2020 16:48:59 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728831AbgAWPSN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 23 Jan 2020 10:18:13 -0500
-Received: from mx4.wp.pl ([212.77.101.11]:44384 "EHLO mx4.wp.pl"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726605AbgAWPSN (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 23 Jan 2020 10:18:13 -0500
-Received: (wp-smtpd smtp.wp.pl 1361 invoked from network); 23 Jan 2020 16:18:10 +0100
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=wp.pl; s=1024a;
-          t=1579792690; bh=HVebdqs4jjVJLiwEy7GWNt82L4WsqWx3d6tHegSCug0=;
-          h=Subject:To:CC:From;
-          b=nZ9u77Zk0CgC8gYFwBOLt5WyALlx2Q0aTTDjGlVjEk6erf8aUgyX/KaO552nYpWTt
-           /3JJj7/o9AlfQa46sk3QmN5qVacvyLjVDPTMHIDpAPPP1swYTTu9uu3C8MImWJQUM7
-           AZzOKKDuPqQShfv355bUdrZ1ZbT9mBGKw9Y2t1D8=
-Received: from unknown (HELO [IPv6:2607:fb90:4a9:9af8:7bb0:36a1:c5f0:bff9]) (kubakici@wp.pl@[172.58.38.244])
-          (envelope-sender <kubakici@wp.pl>)
-          by smtp.wp.pl (WP-SMTPD) with ECDHE-RSA-AES256-GCM-SHA384 encrypted SMTP
-          for <leon@kernel.org>; 23 Jan 2020 16:18:10 +0100
-Date:   Thu, 23 Jan 2020 07:17:54 -0800
-User-Agent: K-9 Mail for Android
-In-Reply-To: <20200123145442.GP7018@unreal>
-References: <20200123130541.30473-1-leon@kernel.org> <20200123064006.2012fb0b@cakuba> <20200123145442.GP7018@unreal>
+        id S1727296AbgAWPs5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 23 Jan 2020 10:48:57 -0500
+Received: from www62.your-server.de ([213.133.104.62]:35474 "EHLO
+        www62.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726231AbgAWPs5 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 23 Jan 2020 10:48:57 -0500
+Received: from sslproxy02.your-server.de ([78.47.166.47])
+        by www62.your-server.de with esmtpsa (TLSv1.2:DHE-RSA-AES256-GCM-SHA384:256)
+        (Exim 4.89_1)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1iueiu-0001kT-QX; Thu, 23 Jan 2020 16:48:48 +0100
+Received: from [2001:1620:665:0:5795:5b0a:e5d5:5944] (helo=linux-3.fritz.box)
+        by sslproxy02.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1iueiu-0008pC-I4; Thu, 23 Jan 2020 16:48:48 +0100
+Subject: Re: [PATCH] net-xdp: netdev attribute to control xdpgeneric skb
+ linearization
+To:     =?UTF-8?Q?Toke_H=c3=b8iland-J=c3=b8rgensen?= <toke@redhat.com>,
+        Luigi Rizzo <lrizzo@google.com>, netdev@vger.kernel.org
+Cc:     Jesper Dangaard Brouer <hawk@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>, sameehj@amazon.com
+References: <20200122203253.20652-1-lrizzo@google.com>
+ <875zh2bis0.fsf@toke.dk>
+From:   Daniel Borkmann <daniel@iogearbox.net>
+Message-ID: <953c8fee-91f0-85e7-6c7b-b9a2f8df5aa6@iogearbox.net>
+Date:   Thu, 23 Jan 2020 16:48:48 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.7.2
 MIME-Version: 1.0
-Content-Type: text/plain;
- charset=utf-8
-Content-Transfer-Encoding: quoted-printable
-Subject: Re: [PATCH net-next] net/core: Replace driver version to be kernel version
-To:     Leon Romanovsky <leon@kernel.org>, Jakub Kicinski <kuba@kernel.org>
-CC:     "David S . Miller" <davem@davemloft.net>,
-        Michal Kalderon <michal.kalderon@marvell.com>,
-        linux-netdev <netdev@vger.kernel.org>,
-        RDMA mailing list <linux-rdma@vger.kernel.org>
-From:   Jakub Kicinski <kubakici@wp.pl>
-Message-ID: <035D6EB1-B1CB-4285-97F8-534B10D9C01E@wp.pl>
-X-WP-MailID: f9657610267c0eccae14476658ee131e
-X-WP-AV: skaner antywirusowy Poczty Wirtualnej Polski
-X-WP-SPAM: NO 0000000 [AROy]                               
+In-Reply-To: <875zh2bis0.fsf@toke.dk>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
+X-Authenticated-Sender: daniel@iogearbox.net
+X-Virus-Scanned: Clear (ClamAV 0.101.4/25704/Thu Jan 23 12:37:43 2020)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On 1/23/20 10:53 AM, Toke Høiland-Jørgensen wrote:
+> Luigi Rizzo <lrizzo@google.com> writes:
+> 
+>> Add a netdevice flag to control skb linearization in generic xdp mode.
+>> Among the various mechanism to control the flag, the sysfs
+>> interface seems sufficiently simple and self-contained.
+>> The attribute can be modified through
+>> 	/sys/class/net/<DEVICE>/xdp_linearize
+>> The default is 1 (on)
 
+Needs documentation in Documentation/ABI/testing/sysfs-class-net.
 
-On January 23, 2020 6:54:42 AM PST, Leon Romanovsky <leon@kernel=2Eorg> wr=
-ote:
->> Anyway, you gotta rebase on net-next, the ethtool code got moved
->around
->> :)
->
->I tried it now and It applies cleanly on top of commit
->6d9f6e6790e7 Merge branch
->'net-sched-add-Flow-Queue-PIE-packet-scheduler'
+> Erm, won't turning off linearization break the XDP program's ability to
+> do direct packet access?
 
-Git is magic=2E
+Yes, in the worst case you only have eth header pulled into linear section. :/
+In tc/BPF for direct packet access we have bpf_skb_pull_data() helper which can
+pull in up to X bytes into linear section on demand. I guess something like this
+could be done for XDP context as well, e.g. generic XDP would pull when non-linear
+and native XDP would have nothing todo (though in this case you end up writing the
+prog specifically for generic XDP with slowdown when you'd load it on native XDP
+where it's linear anyway, but that could/should be documented if so).
+
+Thanks,
+Daniel
