@@ -2,89 +2,89 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 8FC5014708B
-	for <lists+netdev@lfdr.de>; Thu, 23 Jan 2020 19:14:56 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 495781470EF
+	for <lists+netdev@lfdr.de>; Thu, 23 Jan 2020 19:40:34 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729014AbgAWSOx (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 23 Jan 2020 13:14:53 -0500
-Received: from mail-ot1-f65.google.com ([209.85.210.65]:42500 "EHLO
-        mail-ot1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727278AbgAWSOx (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 23 Jan 2020 13:14:53 -0500
-Received: by mail-ot1-f65.google.com with SMTP id 66so3624011otd.9;
-        Thu, 23 Jan 2020 10:14:52 -0800 (PST)
+        id S1728760AbgAWSkc (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 23 Jan 2020 13:40:32 -0500
+Received: from mail-pl1-f194.google.com ([209.85.214.194]:35082 "EHLO
+        mail-pl1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727590AbgAWSkc (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 23 Jan 2020 13:40:32 -0500
+Received: by mail-pl1-f194.google.com with SMTP id g6so1718511plt.2
+        for <netdev@vger.kernel.org>; Thu, 23 Jan 2020 10:40:31 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=QiY1d7i7CA5Tav17hx32IsMyqd7CfjaBpQNb7C5kBuw=;
-        b=fsfzk5mArV7ZcorT1o9PQKB9wdAMbgqF6PRn/aUZfOx0XfSoa3hebW2GJvaUPHnJP2
-         63jLNVbDZ+5I8xqjdLwD084Egu3c6rzhpxHGBgodeNT2HDUefNDKE5J0zSTBSpSSu3ix
-         YS6Sj5oLLAqy+7WRO16x7Iwptqrqzp2B19IveaCXaXHhd7e5kicoyfmr3EN6MbvvGeYx
-         oRHLceJV6ZtGa61JTf1hV+UzCzkqwUXLY7Fei/8aUeRerbdPPaVa4vnLwH3TmufPwrU6
-         gvd8quYw2cqDyLkOJ2NAZumi+0J6hBSEorjkDLovPFv6QFsQxV2FkJCWjxzh0nunCZ9g
-         5WNw==
+        h=from:to:cc:subject:date:message-id;
+        bh=8oIccJIlTUC1Dw8HRnjTRBBSu6QGk0ZS+OG3ES7yvzM=;
+        b=egL0/5SHTVAQdpE5LVDaEklnRWCn3BfgW8CtGiXnZWyQ1vHVKDxEQ32safKLKvWjb8
+         NZ/uPHGXteStFJ0Gr11yL3vFdeTWUsKpVnlP/jErH1vI85LaP9g0WcVMmAhfeRxUVDmb
+         KTUuEorx71cVFyBRxRbjNMFOMCIsLW8verMbaszf32WdyAvdsBiww8EJRICNqDSeRxLX
+         +xHu6qqulz1y8lhJvGrFQj4wQVYbQSZYEJ5A8ceCg3KQ0S186lSwUYd1gkar1yo7rrk2
+         eN+hZ2tV1mHp5acqOMxn4YaFrQREEmZPczuAp3fmFDoKNnTiE0lMGIv1NAqNQML5k/9I
+         1wkQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=QiY1d7i7CA5Tav17hx32IsMyqd7CfjaBpQNb7C5kBuw=;
-        b=iuU+AnRVMd3Rs+kBfnOIG25PiWKikK6LeDM0cuOIgT2fdVTVMpd4+I4QfBfPAqFyto
-         ++J4Fi69yyyq+h6+wYshT3rs7chA0WVXDjrX4onRtfIrekqt619jGfn38TFm79OhKnAV
-         CDANbr8HxtcCsblvYC5ItLZ6234/b8YZshoNNSDLAPcgz0tVf/P1cCtmdpNmGgB3KONA
-         MjDGxHwpUlOGqtZdaaPpEWw5ykxgxpP61+90ThUObz61uAW6zY92JDysALkyn9XUdymt
-         Hw7rkrPmSZc4oRxIBueKRrxPAK4wPhYTdjqe+abvH9+TPP1Ik1EaW8Oes375GC4hXD4h
-         z+ag==
-X-Gm-Message-State: APjAAAWCWcMdN4Xh9un7DQM/R57ceVBagWlqMl90Ip+BQxiiDgIT8hgx
-        eSyqP/lqlz8OoRz4DJKKlS03A58Y5P76fs8QrNk=
-X-Google-Smtp-Source: APXvYqwJjFmJNIjrARE0noxL4rB+Lw5AseD4BssMsVsC+uhiQLAVzM103SDmmU7/8SdHCFKnOl0AwIGP0+ZPEj6keBo=
-X-Received: by 2002:a9d:da2:: with SMTP id 31mr11837551ots.319.1579803291997;
- Thu, 23 Jan 2020 10:14:51 -0800 (PST)
-MIME-Version: 1.0
-References: <0000000000007c3ba2059cb50843@google.com>
-In-Reply-To: <0000000000007c3ba2059cb50843@google.com>
-From:   Cong Wang <xiyou.wangcong@gmail.com>
-Date:   Thu, 23 Jan 2020 10:14:41 -0800
-Message-ID: <CAM_iQpUHHmJGQfVFf2C=b_-QNwLG7WMK=z=PpiEtVHvX7HkzGA@mail.gmail.com>
-Subject: Re: WARNING in cbq_destroy
-To:     syzbot <syzbot+63bdb6006961d8c917c6@syzkaller.appspotmail.com>
-Cc:     David Miller <davem@davemloft.net>,
-        Jamal Hadi Salim <jhs@mojatatu.com>,
-        Jiri Pirko <jiri@resnulli.us>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Linux Kernel Network Developers <netdev@vger.kernel.org>,
-        syzkaller-bugs <syzkaller-bugs@googlegroups.com>
-Content-Type: text/plain; charset="UTF-8"
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=8oIccJIlTUC1Dw8HRnjTRBBSu6QGk0ZS+OG3ES7yvzM=;
+        b=jaBs0sJ8zYljT9xdYJqbosfjefvSfqDFPOpvP6YWCXrPe8BX2kvuJHganI/fqpCFUC
+         qfntTcqzhn3XBNfcKHiM7WNe9+0J6VKqqeL8dSoNOIwUe+av9u063LAdG2AcmjzAgHht
+         jX2rj0gjQhLj+YEnKPgK+lzrgEloGnJ2U6y9BwQL2/n2sdJYpj9alt9ArmfzUgHg7j9Q
+         LrlLRfaNHHmtBIGx1bMpJkEB8dRZiBKprR2jXL+QS1vZFJsxvNA/MUeaKlhd5Ubb51yW
+         BYKhg+wUYk91WaujF+QFd6Wg2tPgKgJFfxNE6+bp1AbzCUcVMf3JRyN3BSQImwxtSrKK
+         L9FA==
+X-Gm-Message-State: APjAAAV/sfr6BAdL7rP2Q2DbAUC00JNnA0p1NAvg8eTItEyycJct9v60
+        z3w1350SRp1t+MabjWdGdn0=
+X-Google-Smtp-Source: APXvYqxxdBSOClT/cmFiST/Ewom/ihbWthLHMzUrDpl2Yiy9XZfV+LD1R1dWGiRFB+OBcxRjzza1HA==
+X-Received: by 2002:a17:902:407:: with SMTP id 7mr17065329ple.226.1579804831351;
+        Thu, 23 Jan 2020 10:40:31 -0800 (PST)
+Received: from ajayg.nvidia.com (searspoint.nvidia.com. [216.228.112.21])
+        by smtp.gmail.com with ESMTPSA id 71sm3675782pfb.123.2020.01.23.10.40.30
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 23 Jan 2020 10:40:30 -0800 (PST)
+From:   Ajay Gupta <ajaykuee@gmail.com>
+X-Google-Original-From: Ajay Gupta <ajayg@nvidia.com>
+To:     davem@davemloft.net, mcoquelin.stm32@gmail.com
+Cc:     netdev@vger.kernel.org, joabreu@synopsys.com,
+        peppe.cavallaro@st.com, alexandre.torgue@st.com,
+        Ajay Gupta <ajayg@nvidia.com>
+Subject: [PATCH] net: stmmac: platform: fix probe for ACPI devices
+Date:   Wed, 22 Jan 2020 17:16:35 -0800
+Message-Id: <20200123011635.15137-1-ajayg@nvidia.com>
+X-Mailer: git-send-email 2.17.1
+X-NVConfidentiality: public
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Jan 21, 2020 at 10:57 PM syzbot
-<syzbot+63bdb6006961d8c917c6@syzkaller.appspotmail.com> wrote:
->
-> Hello,
->
-> syzbot found the following crash on:
->
-> HEAD commit:    d96d875e Merge tag 'fixes_for_v5.5-rc8' of git://git.kerne..
-> git tree:       upstream
-> console output: https://syzkaller.appspot.com/x/log.txt?x=144f7601e00000
-> kernel config:  https://syzkaller.appspot.com/x/.config?x=83c00afca9cf5153
-> dashboard link: https://syzkaller.appspot.com/bug?extid=63bdb6006961d8c917c6
-> compiler:       clang version 10.0.0 (https://github.com/llvm/llvm-project/ c2443155a0fb245c8f17f2c1c72b6ea391e86e81)
-> syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=17a1a721e00000
-> C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=11a91a95e00000
->
-> IMPORTANT: if you fix the bug, please add the following tag to the commit:
-> Reported-by: syzbot+63bdb6006961d8c917c6@syzkaller.appspotmail.com
->
-> netlink: 96 bytes leftover after parsing attributes in process `syz-executor899'.
-> ------------[ cut here ]------------
-> WARNING: CPU: 1 PID: 8828 at net/sched/sch_cbq.c:1437 cbq_destroy_class net/sched/sch_cbq.c:1437 [inline]
-> WARNING: CPU: 1 PID: 8828 at net/sched/sch_cbq.c:1437 cbq_destroy+0x324/0x400 net/sched/sch_cbq.c:1471
+From: Ajay Gupta <ajayg@nvidia.com>
 
+Use generic device API to get phy mode to fix probe failure
+with ACPI based devices.
 
-Just FYI: I am still working on a fix, which is more complicated than I thought.
+Signed-off-by: Ajay Gupta <ajayg@nvidia.com>
+---
+ drivers/net/ethernet/stmicro/stmmac/stmmac_platform.c | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
 
-Thanks.
+diff --git a/drivers/net/ethernet/stmicro/stmmac/stmmac_platform.c b/drivers/net/ethernet/stmicro/stmmac/stmmac_platform.c
+index 4775f49d7f3b..d10ac54bf385 100644
+--- a/drivers/net/ethernet/stmicro/stmmac/stmmac_platform.c
++++ b/drivers/net/ethernet/stmicro/stmmac/stmmac_platform.c
+@@ -412,9 +412,9 @@ stmmac_probe_config_dt(struct platform_device *pdev, const char **mac)
+ 		*mac = NULL;
+ 	}
+ 
+-	rc = of_get_phy_mode(np, &plat->phy_interface);
+-	if (rc)
+-		return ERR_PTR(rc);
++	plat->phy_interface = device_get_phy_mode(&pdev->dev);
++	if (plat->phy_interface < 0)
++		return ERR_PTR(plat->phy_interface);
+ 
+ 	plat->interface = stmmac_of_get_mac_mode(np);
+ 	if (plat->interface < 0)
+-- 
+2.17.1
+
