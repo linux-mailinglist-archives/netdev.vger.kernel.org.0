@@ -2,56 +2,56 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 097CD148D34
-	for <lists+netdev@lfdr.de>; Fri, 24 Jan 2020 18:46:36 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 32092148D35
+	for <lists+netdev@lfdr.de>; Fri, 24 Jan 2020 18:46:42 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2390889AbgAXRqd (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 24 Jan 2020 12:46:33 -0500
-Received: from mail-pf1-f195.google.com ([209.85.210.195]:43188 "EHLO
-        mail-pf1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2390583AbgAXRqd (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 24 Jan 2020 12:46:33 -0500
-Received: by mail-pf1-f195.google.com with SMTP id s1so860370pfh.10
-        for <netdev@vger.kernel.org>; Fri, 24 Jan 2020 09:46:32 -0800 (PST)
+        id S2390892AbgAXRqg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 24 Jan 2020 12:46:36 -0500
+Received: from mail-pf1-f193.google.com ([209.85.210.193]:38029 "EHLO
+        mail-pf1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2390583AbgAXRqg (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 24 Jan 2020 12:46:36 -0500
+Received: by mail-pf1-f193.google.com with SMTP id x185so1466518pfc.5
+        for <netdev@vger.kernel.org>; Fri, 24 Jan 2020 09:46:35 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=/IufV2ZyWcYWLz9nu/aTmWlLpzzvz9dA/IrSq0xiKzg=;
-        b=QCiWpdLeblJNNfTnIb8i8qzA5xyZxuteVeamm0BJOa0Y9JiZnQPquRcQxafMhEw3mI
-         LNvC49BmN0v9UImloi+5Vx64X0onkSDNUhEH+ltZofnaqfCTunTVIwIEfa52J7fMUQS0
-         MnN8ew7/hY9n3Hli9z26n9RnKhk5yPVw9bIuPf2KlZI9na1l+jcCsHQNXB/egNiYQ4Bk
-         BZCl2HMKH+kFo473nG6d7oy03+RfuBeDDZL/m3mBSzIoLwwArjhbhLWU/3wbK8afdAs5
-         gjnLyhGBHA4FOdAsXXmocobF5dP1ma+rp9i1vpqlKDknK09OAbNdGfWZ7nrhfKe/YUBI
-         EtCw==
+        bh=DI55oXYMsb9xRiQPEOr3CAW/CsmguG2EFhsx4VLw3mo=;
+        b=Ru4wo4l57K/4spPw2mKoviH4x8yzf0zHvwREfZEEIvz5kNgOaKGiJ570ZSi0F68U/R
+         zwxYQrKVgUWkSfDOD5p/pk3zs6KR8m/NW+leCO2Xi1kz8T1Lo0LcyAne3nZKb0tTfypK
+         ZIUoh6Xq8K4cjSETcZFGY2Htwm4L8VWjMKN8GOghqm/8OreP4ezgwuOzu1S5ELZQ4StG
+         VHfFWk67NaaTExQ7qyWcxjvdCRqOMR2ZsKVV+Yy7fJaTmbgnWLpm0x5gs+IXAvIHT3kj
+         0rmcOrbPo9wtWj1kI0hERFg7hBRRar9dRZ0ltFuymkB9bQNWu3neFzXNs8srU22247Xb
+         HR2g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references;
-        bh=/IufV2ZyWcYWLz9nu/aTmWlLpzzvz9dA/IrSq0xiKzg=;
-        b=FzHmIOae6dak0MG3GTivTzGcCme14lVFaWQsCffuiJrNkXt5r4npNzbi9Lk6Z1P2iE
-         Uzfguba2xk2yfaIad1TdFONFbGdDHDzyADCz5rBbRwOXiQOqo5OmUjAObM2xZSEqAcMd
-         ZEp/LlV2eGdawHbPXdW/y6hvldyuVPuNpT2B5Rn/Esnu+o4fVWmeoM/ngUb41hb9t42l
-         0mI0pR0g4k4YAP7S3Mhu4oIxC6drfan3mUZH9NSnMFSZY1HMrnZ0xuxnd7qkbA05Hn3m
-         pcCCIv2BRPZY9RVX2s1/tjqSb8gdy6fXHQ8uZnO4gSHA+DX8W0MV+JCRecNVmBtGe+R+
-         kzdQ==
-X-Gm-Message-State: APjAAAWywHsgcb95cn4sXdxoK0b3+ofly7H6YW31pGQCpkbgN4lnwZP5
-        9DN0cnxI1zxjW1HDYjNlw1sYLCgSSUc=
-X-Google-Smtp-Source: APXvYqxG/Ufi7nHxsIRm7XNqFw0c/aPPM3bg8RZ3yN0rEoJl+uoRk8Tx6WEarDuiPEVDCfRIwR6+7g==
-X-Received: by 2002:a63:465b:: with SMTP id v27mr5454747pgk.257.1579887991460;
-        Fri, 24 Jan 2020 09:46:31 -0800 (PST)
+        bh=DI55oXYMsb9xRiQPEOr3CAW/CsmguG2EFhsx4VLw3mo=;
+        b=p6Qxtn7EB0yE7i1Uw/Cwb3Gyp/48idLg8EKm8C0yPIyFF32O6VlY/Sq+hH9B4tEg68
+         G8U2PRW2P3sDPezg9f1t3jy87PlaTasmbXdCCdN1RtgB75cljEp2g1dmyVVYZn/9BUjP
+         fBwNJAJie+OG9yOcHh22Qo2RcVoxJL/p0zD0IJ3rXCYqyT40QlfC4TrhOG5+CWr+Ag6w
+         9RDRc6n7QOyyYEa3IbxkjOGPaK8d8I3/cPocvemBpFogjy6ctJv+dQWbTX9hXrVjM+u2
+         /Tm3dg4sRqLIMg+Mz9am0Wsww3N5olsratplNXn6PoCWF9aNpOEPIdv73d7mhUHCNVXb
+         RUfA==
+X-Gm-Message-State: APjAAAWlH63bzIj+0SPGt/U+fSF2bMwdm2AbYEYYYT538aKSFIxWl9mF
+        LRi/e4wltV0As7sInLNeackeHtYtzkY=
+X-Google-Smtp-Source: APXvYqxZIy7/OR9l1jrFQbuex2AdpXL4o4HwUboZoPaxd1FfVx1dZbTslA7KFE87iWdeGGyw/bSgmg==
+X-Received: by 2002:a62:5343:: with SMTP id h64mr4105326pfb.171.1579887994916;
+        Fri, 24 Jan 2020 09:46:34 -0800 (PST)
 Received: from machine421.marvell.com ([115.113.156.2])
-        by smtp.googlemail.com with ESMTPSA id w11sm7310849pgs.60.2020.01.24.09.46.27
+        by smtp.googlemail.com with ESMTPSA id w11sm7310849pgs.60.2020.01.24.09.46.31
         (version=TLS1_2 cipher=ECDHE-RSA-AES128-SHA bits=128/128);
-        Fri, 24 Jan 2020 09:46:30 -0800 (PST)
+        Fri, 24 Jan 2020 09:46:34 -0800 (PST)
 From:   sunil.kovvuri@gmail.com
 To:     netdev@vger.kernel.org
 Cc:     davem@davemloft.net, kubakici@wp.pl, mkubecek@suse.cz,
-        maciej.fijalkowski@intel.com, Sunil Goutham <sgoutham@marvell.com>,
-        Tomasz Duszynski <tduszynski@marvell.com>,
-        Subbaraya Sundeep <sbhatta@marvell.com>
-Subject: [PATCH v5 09/17] octeontx2-pf: MTU, MAC and RX mode config support
-Date:   Fri, 24 Jan 2020 23:15:47 +0530
-Message-Id: <1579887955-22172-10-git-send-email-sunil.kovvuri@gmail.com>
+        maciej.fijalkowski@intel.com, Geetha sowjanya <gakula@marvell.com>,
+        Aleksey Makarov <amakarov@marvell.com>,
+        Sunil Goutham <sgoutham@marvell.com>
+Subject: [PATCH v5 10/17] octeontx2-pf: Error handling support
+Date:   Fri, 24 Jan 2020 23:15:48 +0530
+Message-Id: <1579887955-22172-11-git-send-email-sunil.kovvuri@gmail.com>
 X-Mailer: git-send-email 2.7.4
 In-Reply-To: <1579887955-22172-1-git-send-email-sunil.kovvuri@gmail.com>
 References: <1579887955-22172-1-git-send-email-sunil.kovvuri@gmail.com>
@@ -60,441 +60,487 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Sunil Goutham <sgoutham@marvell.com>
+From: Geetha sowjanya <gakula@marvell.com>
 
-This patch addes support to change interface MTU, MAC address
-retrieval and config, RX mode ie unicast, multicast and promiscuous.
-Also added link loopback support
+HW reports many errors on the receive and transmit paths.
+Such as incorrect queue configuration, pkt transmission errors,
+LMTST instruction errors, transmit queue full etc. These are reported
+via QINT interrupt. Most of the errors are fatal and needs
+reinitialization.
 
-Signed-off-by: Tomasz Duszynski <tduszynski@marvell.com>
-Signed-off-by: Subbaraya Sundeep <sbhatta@marvell.com>
+Also added support to allocate receive buffers in non-atomic context
+when allocation fails in NAPI context.
+
+Signed-off-by: Geetha sowjanya <gakula@marvell.com>
+Signed-off-by: Aleksey Makarov <amakarov@marvell.com>
 Signed-off-by: Sunil Goutham <sgoutham@marvell.com>
 ---
- drivers/net/ethernet/marvell/octeontx2/af/mbox.h   |   8 +-
- .../net/ethernet/marvell/octeontx2/af/rvu_nix.c    |  17 ++++
- .../ethernet/marvell/octeontx2/nic/otx2_common.c   | 108 +++++++++++++++++++++
- .../ethernet/marvell/octeontx2/nic/otx2_common.h   |   8 +-
- .../net/ethernet/marvell/octeontx2/nic/otx2_pf.c   | 103 +++++++++++++++++++-
- .../net/ethernet/marvell/octeontx2/nic/otx2_txrx.h |   4 +
- 6 files changed, 242 insertions(+), 6 deletions(-)
+ .../ethernet/marvell/octeontx2/nic/otx2_common.c   |  63 ++++++++++
+ .../ethernet/marvell/octeontx2/nic/otx2_common.h   |  13 ++
+ .../net/ethernet/marvell/octeontx2/nic/otx2_pf.c   | 133 ++++++++++++++++++++-
+ .../ethernet/marvell/octeontx2/nic/otx2_struct.h   |  28 +++++
+ .../net/ethernet/marvell/octeontx2/nic/otx2_txrx.c |  20 +++-
+ .../net/ethernet/marvell/octeontx2/nic/otx2_txrx.h |   1 +
+ 6 files changed, 255 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/net/ethernet/marvell/octeontx2/af/mbox.h b/drivers/net/ethernet/marvell/octeontx2/af/mbox.h
-index a589748..8bbc1f1 100644
---- a/drivers/net/ethernet/marvell/octeontx2/af/mbox.h
-+++ b/drivers/net/ethernet/marvell/octeontx2/af/mbox.h
-@@ -210,7 +210,8 @@ M(NIX_SET_RX_CFG,	0x8010, nix_set_rx_cfg, nix_rx_cfg, msg_rsp)	\
- M(NIX_LSO_FORMAT_CFG,	0x8011, nix_lso_format_cfg,			\
- 				 nix_lso_format_cfg,			\
- 				 nix_lso_format_cfg_rsp)		\
--M(NIX_RXVLAN_ALLOC,	0x8012, nix_rxvlan_alloc, msg_req, msg_rsp)
-+M(NIX_RXVLAN_ALLOC,	0x8012, nix_rxvlan_alloc, msg_req, msg_rsp)	\
-+M(NIX_GET_MAC_ADDR, 0x8018, nix_get_mac_addr, msg_req, nix_get_mac_addr_rsp) \
- 
- /* Messages initiated by AF (range 0xC00 - 0xDFF) */
- #define MBOX_UP_CGX_MESSAGES						\
-@@ -618,6 +619,11 @@ struct nix_set_mac_addr {
- 	u8 mac_addr[ETH_ALEN]; /* MAC address to be set for this pcifunc */
- };
- 
-+struct nix_get_mac_addr_rsp {
-+	struct mbox_msghdr hdr;
-+	u8 mac_addr[ETH_ALEN];
-+};
-+
- struct nix_mark_format_cfg {
- 	struct mbox_msghdr hdr;
- 	u8 offset;
-diff --git a/drivers/net/ethernet/marvell/octeontx2/af/rvu_nix.c b/drivers/net/ethernet/marvell/octeontx2/af/rvu_nix.c
-index 8a59f7d..eb5e542 100644
---- a/drivers/net/ethernet/marvell/octeontx2/af/rvu_nix.c
-+++ b/drivers/net/ethernet/marvell/octeontx2/af/rvu_nix.c
-@@ -2546,6 +2546,23 @@ int rvu_mbox_handler_nix_set_mac_addr(struct rvu *rvu,
- 	return 0;
- }
- 
-+int rvu_mbox_handler_nix_get_mac_addr(struct rvu *rvu,
-+				      struct msg_req *req,
-+				      struct nix_get_mac_addr_rsp *rsp)
-+{
-+	u16 pcifunc = req->hdr.pcifunc;
-+	struct rvu_pfvf *pfvf;
-+
-+	if (!is_nixlf_attached(rvu, pcifunc))
-+		return NIX_AF_ERR_AF_LF_INVALID;
-+
-+	pfvf = rvu_get_pfvf(rvu, pcifunc);
-+
-+	ether_addr_copy(rsp->mac_addr, pfvf->mac_addr);
-+
-+	return 0;
-+}
-+
- int rvu_mbox_handler_nix_set_rx_mode(struct rvu *rvu, struct nix_rx_mode *req,
- 				     struct msg_rsp *rsp)
- {
 diff --git a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_common.c b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_common.c
-index e9bd2d6..836b3c8 100644
+index 836b3c8..2b50306 100644
 --- a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_common.c
 +++ b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_common.c
-@@ -15,6 +15,97 @@
- #include "otx2_common.h"
- #include "otx2_struct.h"
- 
-+/* Sync MAC address with RVU AF */
-+static int otx2_hw_set_mac_addr(struct otx2_nic *pfvf, u8 *mac)
-+{
-+	struct nix_set_mac_addr *req;
-+	int err;
-+
-+	otx2_mbox_lock(&pfvf->mbox);
-+	req = otx2_mbox_alloc_msg_nix_set_mac_addr(&pfvf->mbox);
-+	if (!req) {
-+		otx2_mbox_unlock(&pfvf->mbox);
-+		return -ENOMEM;
-+	}
-+
-+	ether_addr_copy(req->mac_addr, mac);
-+
-+	err = otx2_sync_mbox_msg(&pfvf->mbox);
-+	otx2_mbox_unlock(&pfvf->mbox);
-+	return err;
-+}
-+
-+static int otx2_hw_get_mac_addr(struct otx2_nic *pfvf,
-+				struct net_device *netdev)
-+{
-+	struct nix_get_mac_addr_rsp *rsp;
-+	struct mbox_msghdr *msghdr;
-+	struct msg_req *req;
-+	int err;
-+
-+	otx2_mbox_lock(&pfvf->mbox);
-+	req = otx2_mbox_alloc_msg_nix_get_mac_addr(&pfvf->mbox);
-+	if (!req) {
-+		otx2_mbox_unlock(&pfvf->mbox);
-+		return -ENOMEM;
-+	}
-+
-+	err = otx2_sync_mbox_msg(&pfvf->mbox);
-+	if (err) {
-+		otx2_mbox_unlock(&pfvf->mbox);
-+		return err;
-+	}
-+
-+	msghdr = otx2_mbox_get_rsp(&pfvf->mbox.mbox, 0, &req->hdr);
-+	if (!msghdr) {
-+		otx2_mbox_unlock(&pfvf->mbox);
-+		return -ENOMEM;
-+	}
-+	rsp = (struct nix_get_mac_addr_rsp *)msghdr;
-+	ether_addr_copy(netdev->dev_addr, rsp->mac_addr);
-+	otx2_mbox_unlock(&pfvf->mbox);
-+
-+	return 0;
-+}
-+
-+int otx2_set_mac_address(struct net_device *netdev, void *p)
-+{
-+	struct otx2_nic *pfvf = netdev_priv(netdev);
-+	struct sockaddr *addr = p;
-+
-+	if (!is_valid_ether_addr(addr->sa_data))
-+		return -EADDRNOTAVAIL;
-+
-+	if (!otx2_hw_set_mac_addr(pfvf, addr->sa_data))
-+		memcpy(netdev->dev_addr, addr->sa_data, netdev->addr_len);
-+	else
-+		return -EPERM;
-+
-+	return 0;
-+}
-+
-+int otx2_hw_set_mtu(struct otx2_nic *pfvf, int mtu)
-+{
-+	struct nix_frs_cfg *req;
-+	int err;
-+
-+	otx2_mbox_lock(&pfvf->mbox);
-+	req = otx2_mbox_alloc_msg_nix_set_hw_frs(&pfvf->mbox);
-+	if (!req) {
-+		otx2_mbox_unlock(&pfvf->mbox);
-+		return -ENOMEM;
-+	}
-+
-+	/* SMQ config limits maximum pkt size that can be transmitted */
-+	req->update_smq = true;
-+	pfvf->max_frs = mtu +  OTX2_ETH_HLEN;
-+	req->maxlen = pfvf->max_frs;
-+
-+	err = otx2_sync_mbox_msg(&pfvf->mbox);
-+	otx2_mbox_unlock(&pfvf->mbox);
-+	return err;
-+}
-+
- void otx2_config_irq_coalescing(struct otx2_nic *pfvf, int qidx)
- {
- 	/* Configure CQE interrupt coalescing parameters
-@@ -63,6 +154,20 @@ dma_addr_t otx2_alloc_rbuf(struct otx2_nic *pfvf, struct otx2_pool *pool,
+@@ -154,6 +154,13 @@ dma_addr_t otx2_alloc_rbuf(struct otx2_nic *pfvf, struct otx2_pool *pool,
  	return iova;
  }
  
-+void otx2_get_mac_from_af(struct net_device *netdev)
++void otx2_tx_timeout(struct net_device *netdev, unsigned int txq)
 +{
 +	struct otx2_nic *pfvf = netdev_priv(netdev);
-+	int err;
 +
-+	err = otx2_hw_get_mac_addr(pfvf, netdev);
-+	if (err)
-+		dev_warn(pfvf->dev, "Failed to read mac from hardware\n");
-+
-+	/* If AF doesn't provide a valid MAC, generate a random one */
-+	if (!is_valid_ether_addr(netdev->dev_addr))
-+		eth_hw_addr_random(netdev);
++	schedule_work(&pfvf->reset_task);
 +}
 +
- static int otx2_get_link(struct otx2_nic *pfvf)
+ void otx2_get_mac_from_af(struct net_device *netdev)
  {
- 	int link = 0;
-@@ -97,6 +202,9 @@ int otx2_txschq_config(struct otx2_nic *pfvf, int lvl)
- 	/* Set topology e.t.c configuration */
- 	if (lvl == NIX_TXSCH_LVL_SMQ) {
- 		req->reg[0] = NIX_AF_SMQX_CFG(schq);
-+		req->regval[0] = ((pfvf->netdev->mtu  + OTX2_ETH_HLEN) << 8) |
-+				   OTX2_MIN_MTU;
+ 	struct otx2_nic *pfvf = netdev_priv(netdev);
+@@ -362,6 +369,7 @@ static int otx2_rq_init(struct otx2_nic *pfvf, u16 qidx, u16 lpb_aura)
+ 	aq->rq.lpb_sizem1 = (DMA_BUFFER_LEN(pfvf->rbsize) / 8) - 1;
+ 	aq->rq.xqe_imm_size = 0; /* Copying of packet to CQE not needed */
+ 	aq->rq.flow_tagw = 32; /* Copy full 32bit flow_tag to CQE header */
++	aq->rq.qint_idx = 0;
+ 	aq->rq.lpb_drop_ena = 1; /* Enable RED dropping for AURA */
+ 	aq->rq.xqe_drop_ena = 1; /* Enable RED dropping for CQ/SSO */
+ 	aq->rq.xqe_pass = RQ_PASS_LVL_CQ(pfvf->hw.rq_skid, qset->rqe_cnt);
+@@ -424,6 +432,8 @@ static int otx2_sq_init(struct otx2_nic *pfvf, u16 qidx, u16 sqb_aura)
+ 	aq->sq.default_chan = pfvf->hw.tx_chan_base;
+ 	aq->sq.sqe_stype = NIX_STYPE_STF; /* Cache SQB */
+ 	aq->sq.sqb_aura = sqb_aura;
++	aq->sq.sq_int_ena = NIX_SQINT_BITS;
++	aq->sq.qint_idx = 0;
+ 	/* Due pipelining impact minimum 2000 unused SQ CQE's
+ 	 * need to maintain to avoid CQ overflow.
+ 	 */
+@@ -470,6 +480,7 @@ static int otx2_cq_init(struct otx2_nic *pfvf, u16 qidx)
+ 	pool_id = ((cq->cq_type == CQ_RX) &&
+ 		   (pfvf->hw.rqpool_cnt != pfvf->hw.rx_queues)) ? 0 : qidx;
+ 	cq->rbpool = &qset->pool[pool_id];
++	cq->refill_task_sched = false;
+ 
+ 	/* Get memory to put this msg */
+ 	aq = otx2_mbox_alloc_msg_nix_aq_enq(&pfvf->mbox);
+@@ -481,6 +492,8 @@ static int otx2_cq_init(struct otx2_nic *pfvf, u16 qidx)
+ 	aq->cq.caching = 1;
+ 	aq->cq.base = cq->cqe->iova;
+ 	aq->cq.cint_idx = cq->cint_idx;
++	aq->cq.cq_err_int_ena = NIX_CQERRINT_BITS;
++	aq->cq.qint_idx = 0;
+ 	aq->cq.avg_level = 255;
+ 
+ 	if (qidx < pfvf->hw.rx_queues) {
+@@ -496,6 +509,45 @@ static int otx2_cq_init(struct otx2_nic *pfvf, u16 qidx)
+ 	return otx2_sync_mbox_msg(&pfvf->mbox);
+ }
+ 
++static void otx2_pool_refill_task(struct work_struct *work)
++{
++	struct otx2_cq_queue *cq;
++	struct otx2_pool *rbpool;
++	struct refill_work *wrk;
++	int qidx, free_ptrs = 0;
++	struct otx2_nic *pfvf;
++	s64 bufptr;
 +
- 		req->regval[0] |= (0x20ULL << 51) | (0x80ULL << 39) |
- 				  (0x2ULL << 36);
- 		req->num_regs++;
++	wrk = container_of(work, struct refill_work, pool_refill_work.work);
++	pfvf = wrk->pf;
++	qidx = wrk - pfvf->refill_wrk;
++	cq = &pfvf->qset.cq[qidx];
++	rbpool = cq->rbpool;
++	free_ptrs = cq->pool_ptrs;
++
++	while (cq->pool_ptrs) {
++		bufptr = otx2_alloc_rbuf(pfvf, rbpool, GFP_KERNEL);
++		if (bufptr <= 0) {
++			/* Schedule a WQ if we fails to free atleast half of the
++			 * pointers else enable napi for this RQ.
++			 */
++			if (!((free_ptrs - cq->pool_ptrs) > free_ptrs / 2)) {
++				struct delayed_work *dwork;
++
++				dwork = &wrk->pool_refill_work;
++				schedule_delayed_work(dwork,
++						      msecs_to_jiffies(100));
++			} else {
++				cq->refill_task_sched = false;
++			}
++			return;
++		}
++		otx2_aura_freeptr(pfvf, qidx, bufptr + OTX2_HEAD_ROOM);
++		cq->pool_ptrs--;
++	}
++	cq->refill_task_sched = false;
++}
++
+ int otx2_config_nix_queues(struct otx2_nic *pfvf)
+ {
+ 	int qidx, err;
+@@ -525,6 +577,17 @@ int otx2_config_nix_queues(struct otx2_nic *pfvf)
+ 			return err;
+ 	}
+ 
++	/* Initialize work queue for receive buffer refill */
++	pfvf->refill_wrk = devm_kcalloc(pfvf->dev, pfvf->qset.cq_cnt,
++					sizeof(struct refill_work), GFP_KERNEL);
++	if (!pfvf->refill_wrk)
++		return -ENOMEM;
++
++	for (qidx = 0; qidx < pfvf->qset.cq_cnt; qidx++) {
++		pfvf->refill_wrk[qidx].pf = pfvf;
++		INIT_DELAYED_WORK(&pfvf->refill_wrk[qidx].pool_refill_work,
++				  otx2_pool_refill_task);
++	}
+ 	return 0;
+ }
+ 
 diff --git a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_common.h b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_common.h
-index e764da9..c13001c 100644
+index c13001c..762c1ce 100644
 --- a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_common.h
 +++ b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_common.h
-@@ -133,6 +133,7 @@ struct otx2_nic {
- 	void __iomem		*reg_base;
- 	struct net_device	*netdev;
- 	void			*iommu_domain;
-+	u16			max_frs;
- 	u16			rbsize; /* Receive buffer size */
- 
- #define OTX2_FLAG_INTF_DOWN			BIT_ULL(2)
-@@ -469,7 +470,9 @@ static inline void otx2_dma_unmap_page(struct otx2_nic *pfvf,
- /* MSI-X APIs */
- void otx2_free_cints(struct otx2_nic *pfvf, int n);
- void otx2_set_cints_affinity(struct otx2_nic *pfvf);
--
-+int otx2_set_mac_address(struct net_device *netdev, void *p);
-+int otx2_hw_set_mtu(struct otx2_nic *pfvf, int mtu);
-+void otx2_get_mac_from_af(struct net_device *netdev);
- void otx2_config_irq_coalescing(struct otx2_nic *pfvf, int qidx);
- 
- /* RVU block related APIs */
-@@ -503,4 +506,7 @@ void mbox_handler_nix_lf_alloc(struct otx2_nic *pfvf,
- 			       struct nix_lf_alloc_rsp *rsp);
- void mbox_handler_nix_txsch_alloc(struct otx2_nic *pf,
- 				  struct nix_txsch_alloc_rsp *rsp);
-+
-+int otx2_open(struct net_device *netdev);
-+int otx2_stop(struct net_device *netdev);
- #endif /* OTX2_COMMON_H */
-diff --git a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_pf.c b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_pf.c
-index 8cb1cf5..60a67b9 100644
---- a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_pf.c
-+++ b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_pf.c
-@@ -43,6 +43,24 @@ enum {
- 	TYPE_PFVF,
+@@ -129,6 +129,11 @@ struct otx2_hw {
+ 	struct otx2_drv_stats	drv_stats;
  };
  
-+static int otx2_change_mtu(struct net_device *netdev, int new_mtu)
-+{
-+	bool if_up = netif_running(netdev);
-+	int err = 0;
++struct refill_work {
++	struct delayed_work pool_refill_work;
++	struct otx2_nic *pf;
++};
 +
-+	if (if_up)
-+		otx2_stop(netdev);
+ struct otx2_nic {
+ 	void __iomem		*reg_base;
+ 	struct net_device	*netdev;
+@@ -151,6 +156,10 @@ struct otx2_nic {
+ 	u16			pcifunc; /* RVU PF_FUNC */
+ 	struct cgx_link_user_info linfo;
+ 
++	u64			reset_count;
++	struct work_struct	reset_task;
++	struct refill_work	*refill_wrk;
 +
-+	netdev_info(netdev, "Changing MTU from %d to %d\n",
-+		    netdev->mtu, new_mtu);
-+	netdev->mtu = new_mtu;
+ 	/* Block address of NIX either BLKADDR_NIX0 or BLKADDR_NIX1 */
+ 	int			nix_blkaddr;
+ };
+@@ -435,6 +444,9 @@ otx2_mbox_up_handler_ ## _fn_name(struct otx2_nic *pfvf,		\
+ MBOX_UP_CGX_MESSAGES
+ #undef M
+ 
++/* Time to wait before watchdog kicks off */
++#define OTX2_TX_TIMEOUT		(100 * HZ)
 +
-+	if (if_up)
-+		err = otx2_open(netdev);
-+
-+	return err;
-+}
-+
- static void otx2_queue_work(struct mbox *mw, struct workqueue_struct *mbox_wq,
- 			    int first, int mdevs, u64 intr, int type)
- {
-@@ -420,6 +438,27 @@ static int otx2_cgx_config_linkevents(struct otx2_nic *pf, bool enable)
+ #define	RVU_PFVF_PF_SHIFT	10
+ #define	RVU_PFVF_PF_MASK	0x3F
+ #define	RVU_PFVF_FUNC_SHIFT	0
+@@ -472,6 +484,7 @@ void otx2_free_cints(struct otx2_nic *pfvf, int n);
+ void otx2_set_cints_affinity(struct otx2_nic *pfvf);
+ int otx2_set_mac_address(struct net_device *netdev, void *p);
+ int otx2_hw_set_mtu(struct otx2_nic *pfvf, int mtu);
++void otx2_tx_timeout(struct net_device *netdev, unsigned int txq);
+ void otx2_get_mac_from_af(struct net_device *netdev);
+ void otx2_config_irq_coalescing(struct otx2_nic *pfvf, int qidx);
+ 
+diff --git a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_pf.c b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_pf.c
+index 60a67b9..171bab0 100644
+--- a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_pf.c
++++ b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_pf.c
+@@ -478,6 +478,85 @@ static int otx2_set_real_num_queues(struct net_device *netdev,
  	return err;
  }
  
-+static int otx2_cgx_config_loopback(struct otx2_nic *pf, bool enable)
++static irqreturn_t otx2_q_intr_handler(int irq, void *data)
 +{
-+	struct msg_req *msg;
-+	int err;
++	struct otx2_nic *pf = data;
++	u64 val, *ptr;
++	u64 qidx = 0;
 +
-+	otx2_mbox_lock(&pf->mbox);
-+	if (enable)
-+		msg = otx2_mbox_alloc_msg_cgx_intlbk_enable(&pf->mbox);
-+	else
-+		msg = otx2_mbox_alloc_msg_cgx_intlbk_disable(&pf->mbox);
++	/* CQ */
++	for (qidx = 0; qidx < pf->qset.cq_cnt; qidx++) {
++		ptr = otx2_get_regaddr(pf, NIX_LF_CQ_OP_INT);
++		val = otx2_atomic64_add((qidx << 44), ptr);
 +
-+	if (!msg) {
-+		otx2_mbox_unlock(&pf->mbox);
-+		return -ENOMEM;
++		otx2_write64(pf, NIX_LF_CQ_OP_INT, (qidx << 44) |
++			     (val & NIX_CQERRINT_BITS));
++		if (!(val & (NIX_CQERRINT_BITS | BIT_ULL(42))))
++			continue;
++
++		if (val & BIT_ULL(42)) {
++			netdev_err(pf->netdev, "CQ%lld: error reading NIX_LF_CQ_OP_INT, NIX_LF_ERR_INT 0x%llx\n",
++				   qidx, otx2_read64(pf, NIX_LF_ERR_INT));
++		} else {
++			if (val & BIT_ULL(NIX_CQERRINT_DOOR_ERR))
++				netdev_err(pf->netdev, "CQ%lld: Doorbell error",
++					   qidx);
++			if (val & BIT_ULL(NIX_CQERRINT_CQE_FAULT))
++				netdev_err(pf->netdev, "CQ%lld: Memory fault on CQE write to LLC/DRAM",
++					   qidx);
++		}
++
++		schedule_work(&pf->reset_task);
 +	}
 +
-+	err = otx2_sync_mbox_msg(&pf->mbox);
-+	otx2_mbox_unlock(&pf->mbox);
-+	return err;
++	/* SQ */
++	for (qidx = 0; qidx < pf->hw.tx_queues; qidx++) {
++		ptr = otx2_get_regaddr(pf, NIX_LF_SQ_OP_INT);
++		val = otx2_atomic64_add((qidx << 44), ptr);
++		otx2_write64(pf, NIX_LF_SQ_OP_INT, (qidx << 44) |
++			     (val & NIX_SQINT_BITS));
++
++		if (!(val & (NIX_SQINT_BITS | BIT_ULL(42))))
++			continue;
++
++		if (val & BIT_ULL(42)) {
++			netdev_err(pf->netdev, "SQ%lld: error reading NIX_LF_SQ_OP_INT, NIX_LF_ERR_INT 0x%llx\n",
++				   qidx, otx2_read64(pf, NIX_LF_ERR_INT));
++		} else {
++			if (val & BIT_ULL(NIX_SQINT_LMT_ERR)) {
++				netdev_err(pf->netdev, "SQ%lld: LMT store error NIX_LF_SQ_OP_ERR_DBG:0x%llx",
++					   qidx,
++					   otx2_read64(pf,
++						       NIX_LF_SQ_OP_ERR_DBG));
++				otx2_write64(pf, NIX_LF_SQ_OP_ERR_DBG,
++					     BIT_ULL(44));
++			}
++			if (val & BIT_ULL(NIX_SQINT_MNQ_ERR)) {
++				netdev_err(pf->netdev, "SQ%lld: Meta-descriptor enqueue error NIX_LF_MNQ_ERR_DGB:0x%llx\n",
++					   qidx,
++					   otx2_read64(pf, NIX_LF_MNQ_ERR_DBG));
++				otx2_write64(pf, NIX_LF_MNQ_ERR_DBG,
++					     BIT_ULL(44));
++			}
++			if (val & BIT_ULL(NIX_SQINT_SEND_ERR)) {
++				netdev_err(pf->netdev, "SQ%lld: Send error, NIX_LF_SEND_ERR_DBG 0x%llx",
++					   qidx,
++					   otx2_read64(pf,
++						       NIX_LF_SEND_ERR_DBG));
++				otx2_write64(pf, NIX_LF_SEND_ERR_DBG,
++					     BIT_ULL(44));
++			}
++			if (val & BIT_ULL(NIX_SQINT_SQB_ALLOC_FAIL))
++				netdev_err(pf->netdev, "SQ%lld: SQB allocation failed",
++					   qidx);
++		}
++
++		schedule_work(&pf->reset_task);
++	}
++
++	return IRQ_HANDLED;
 +}
 +
- static int otx2_set_real_num_queues(struct net_device *netdev,
- 				    int tx_queues, int rx_queues)
+ static irqreturn_t otx2_cq_intr_handler(int irq, void *cq_irq)
  {
-@@ -519,7 +558,7 @@ static int otx2_init_hw_resources(struct otx2_nic *pf)
- 	hw->pool_cnt = hw->rqpool_cnt + hw->sqpool_cnt;
+ 	struct otx2_cq_poll *cq_poll = (struct otx2_cq_poll *)cq_irq;
+@@ -759,6 +838,24 @@ int otx2_open(struct net_device *netdev)
+ 	if (err)
+ 		goto err_disable_napi;
  
- 	/* Get the size of receive buffers to allocate */
--	pf->rbsize = RCV_FRAG_LEN(pf->netdev->mtu);
-+	pf->rbsize = RCV_FRAG_LEN(pf->netdev->mtu + OTX2_ETH_HLEN);
- 
- 	otx2_mbox_lock(mbox);
- 	/* NPA init */
-@@ -658,7 +697,7 @@ static void otx2_free_hw_resources(struct otx2_nic *pf)
- 	otx2_mbox_unlock(mbox);
- }
- 
--static int otx2_open(struct net_device *netdev)
-+int otx2_open(struct net_device *netdev)
- {
- 	struct otx2_nic *pf = netdev_priv(netdev);
- 	struct otx2_cq_poll *cq_poll = NULL;
-@@ -715,6 +754,11 @@ static int otx2_open(struct net_device *netdev)
- 		napi_enable(&cq_poll->napi);
- 	}
- 
-+	/* Set maximum frame size allowed in HW */
-+	err = otx2_hw_set_mtu(pf, netdev->mtu);
-+	if (err)
++	/* Register Queue IRQ handlers */
++	vec = pf->hw.nix_msixoff + NIX_LF_QINT_VEC_START;
++	irq_name = &pf->hw.irq_name[vec * NAME_SIZE];
++
++	snprintf(irq_name, NAME_SIZE, "%s-qerr", pf->netdev->name);
++
++	err = request_irq(pci_irq_vector(pf->pdev, vec),
++			  otx2_q_intr_handler, 0, irq_name, pf);
++	if (err) {
++		dev_err(pf->dev,
++			"RVUPF%d: IRQ registration failed for QERR\n",
++			rvu_get_pf(pf->pcifunc));
 +		goto err_disable_napi;
++	}
++
++	/* Enable QINT IRQ */
++	otx2_write64(pf, NIX_LF_QINTX_ENA_W1S(0), BIT_ULL(0));
 +
  	/* Register CQ IRQ handlers */
  	vec = pf->hw.nix_msixoff + NIX_LF_CINT_VEC_START;
  	for (qidx = 0; qidx < pf->hw.cint_cnt; qidx++) {
-@@ -759,6 +803,7 @@ static int otx2_open(struct net_device *netdev)
+@@ -803,6 +900,11 @@ int otx2_open(struct net_device *netdev)
  
  err_free_cints:
  	otx2_free_cints(pf, qidx);
-+err_disable_napi:
++	vec = pci_irq_vector(pf->pdev,
++			     pf->hw.nix_msixoff + NIX_LF_QINT_VEC_START);
++	otx2_write64(pf, NIX_LF_QINTX_ENA_W1C(0), BIT_ULL(0));
++	synchronize_irq(vec);
++	free_irq(vec, pf);
+ err_disable_napi:
  	otx2_disable_napi(pf);
  	otx2_free_hw_resources(pf);
- err_free_mem:
-@@ -768,7 +813,7 @@ static int otx2_open(struct net_device *netdev)
- 	return err;
- }
- 
--static int otx2_stop(struct net_device *netdev)
-+int otx2_stop(struct net_device *netdev)
- {
+@@ -818,7 +920,7 @@ int otx2_stop(struct net_device *netdev)
  	struct otx2_nic *pf = netdev_priv(netdev);
  	struct otx2_cq_poll *cq_poll = NULL;
-@@ -847,10 +892,53 @@ static netdev_tx_t otx2_xmit(struct sk_buff *skb, struct net_device *netdev)
- 	return NETDEV_TX_OK;
+ 	struct otx2_qset *qset = &pf->qset;
+-	int qidx, vec;
++	int qidx, vec, wrk;
+ 
+ 	netif_carrier_off(netdev);
+ 	netif_tx_stop_all_queues(netdev);
+@@ -830,6 +932,13 @@ int otx2_stop(struct net_device *netdev)
+ 	/* First stop packet Rx/Tx */
+ 	otx2_rxtx_enable(pf, false);
+ 
++	/* Cleanup Queue IRQ */
++	vec = pci_irq_vector(pf->pdev,
++			     pf->hw.nix_msixoff + NIX_LF_QINT_VEC_START);
++	otx2_write64(pf, NIX_LF_QINTX_ENA_W1C(0), BIT_ULL(0));
++	synchronize_irq(vec);
++	free_irq(vec, pf);
++
+ 	/* Cleanup CQ NAPI and IRQ */
+ 	vec = pf->hw.nix_msixoff + NIX_LF_CINT_VEC_START;
+ 	for (qidx = 0; qidx < pf->hw.cint_cnt; qidx++) {
+@@ -852,6 +961,10 @@ int otx2_stop(struct net_device *netdev)
+ 	for (qidx = 0; qidx < netdev->num_tx_queues; qidx++)
+ 		netdev_tx_reset_queue(netdev_get_tx_queue(netdev, qidx));
+ 
++	for (wrk = 0; wrk < pf->qset.cq_cnt; wrk++)
++		cancel_delayed_work_sync(&pf->refill_wrk[wrk].pool_refill_work);
++	devm_kfree(pf->dev, pf->refill_wrk);
++
+ 	kfree(qset->sq);
+ 	kfree(qset->cq);
+ 	kfree(qset->napi);
+@@ -931,6 +1044,19 @@ static int otx2_set_features(struct net_device *netdev,
+ 	return 0;
  }
  
-+static void otx2_set_rx_mode(struct net_device *netdev)
++static void otx2_reset_task(struct work_struct *work)
 +{
-+	struct otx2_nic *pf = netdev_priv(netdev);
-+	struct nix_rx_mode *req;
++	struct otx2_nic *pf = container_of(work, struct otx2_nic, reset_task);
 +
-+	if (!(netdev->flags & IFF_UP))
++	if (!netif_running(pf->netdev))
 +		return;
 +
-+	otx2_mbox_lock(&pf->mbox);
-+	req = otx2_mbox_alloc_msg_nix_set_rx_mode(&pf->mbox);
-+	if (!req) {
-+		otx2_mbox_unlock(&pf->mbox);
-+		return;
-+	}
-+
-+	req->mode = NIX_RX_MODE_UCAST;
-+
-+	/* We don't support MAC address filtering yet */
-+	if (netdev->flags & IFF_PROMISC)
-+		req->mode |= NIX_RX_MODE_PROMISC;
-+	else if (netdev->flags & (IFF_ALLMULTI | IFF_MULTICAST))
-+		req->mode |= NIX_RX_MODE_ALLMULTI;
-+
-+	otx2_sync_mbox_msg(&pf->mbox);
-+	otx2_mbox_unlock(&pf->mbox);
-+}
-+
-+static int otx2_set_features(struct net_device *netdev,
-+			     netdev_features_t features)
-+{
-+	netdev_features_t changed = features ^ netdev->features;
-+	struct otx2_nic *pf = netdev_priv(netdev);
-+
-+	if ((changed & NETIF_F_LOOPBACK) && netif_running(netdev))
-+		return otx2_cgx_config_loopback(pf,
-+						features & NETIF_F_LOOPBACK);
-+	return 0;
++	otx2_stop(pf->netdev);
++	pf->reset_count++;
++	otx2_open(pf->netdev);
++	netif_trans_update(pf->netdev);
 +}
 +
  static const struct net_device_ops otx2_netdev_ops = {
  	.ndo_open		= otx2_open,
  	.ndo_stop		= otx2_stop,
- 	.ndo_start_xmit		= otx2_xmit,
-+	.ndo_set_mac_address    = otx2_set_mac_address,
-+	.ndo_change_mtu		= otx2_change_mtu,
-+	.ndo_set_rx_mode	= otx2_set_rx_mode,
-+	.ndo_set_features	= otx2_set_features,
+@@ -939,6 +1065,7 @@ static const struct net_device_ops otx2_netdev_ops = {
+ 	.ndo_change_mtu		= otx2_change_mtu,
+ 	.ndo_set_rx_mode	= otx2_set_rx_mode,
+ 	.ndo_set_features	= otx2_set_features,
++	.ndo_tx_timeout		= otx2_tx_timeout,
  };
  
  static int otx2_check_pf_usable(struct otx2_nic *nic)
-@@ -1005,6 +1093,9 @@ static int otx2_probe(struct pci_dev *pdev, const struct pci_device_id *id)
+@@ -1115,12 +1242,16 @@ static int otx2_probe(struct pci_dev *pdev, const struct pci_device_id *id)
  
- 	otx2_setup_dev_hw_settings(pf);
+ 	netdev->hw_features |= NETIF_F_LOOPBACK | NETIF_F_RXALL;
  
-+	/* Assign default mac address */
-+	otx2_get_mac_from_af(netdev);
++	netdev->watchdog_timeo = OTX2_TX_TIMEOUT;
 +
- 	/* NPA's pool is a stack to which SW frees buffer pointers via Aura.
- 	 * HW allocates buffer pointer from stack and uses it for DMA'ing
- 	 * ingress packet. In some scenarios HW can free back allocated buffer
-@@ -1022,10 +1113,14 @@ static int otx2_probe(struct pci_dev *pdev, const struct pci_device_id *id)
- 			       NETIF_F_IPV6_CSUM | NETIF_F_SG);
- 	netdev->features |= netdev->hw_features;
- 
--	netdev->hw_features |= NETIF_F_RXALL;
-+	netdev->hw_features |= NETIF_F_LOOPBACK | NETIF_F_RXALL;
- 
  	netdev->netdev_ops = &otx2_netdev_ops;
  
-+	/* MTU range: 64 - 9190 */
-+	netdev->min_mtu = OTX2_MIN_MTU;
-+	netdev->max_mtu = OTX2_MAX_MTU;
+ 	/* MTU range: 64 - 9190 */
+ 	netdev->min_mtu = OTX2_MIN_MTU;
+ 	netdev->max_mtu = OTX2_MAX_MTU;
+ 
++	INIT_WORK(&pf->reset_task, otx2_reset_task);
 +
  	err = register_netdev(netdev);
  	if (err) {
  		dev_err(dev, "Failed to register netdevice\n");
+diff --git a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_struct.h b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_struct.h
+index 04a9f12..cba59ddf 100644
+--- a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_struct.h
++++ b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_struct.h
+@@ -245,4 +245,32 @@ struct nix_sqe_mem_s {
+ 	u64 addr; /* W1 */
+ };
+ 
++enum nix_cqerrint_e {
++	NIX_CQERRINT_DOOR_ERR = 0,
++	NIX_CQERRINT_WR_FULL = 1,
++	NIX_CQERRINT_CQE_FAULT = 2,
++};
++
++#define NIX_CQERRINT_BITS (BIT_ULL(NIX_CQERRINT_DOOR_ERR) | \
++			   BIT_ULL(NIX_CQERRINT_CQE_FAULT))
++
++enum nix_rqint_e {
++	NIX_RQINT_DROP = 0,
++	NIX_RQINT_RED = 1,
++};
++
++#define NIX_RQINT_BITS (BIT_ULL(NIX_RQINT_DROP) | BIT_ULL(NIX_RQINT_RED))
++
++enum nix_sqint_e {
++	NIX_SQINT_LMT_ERR = 0,
++	NIX_SQINT_MNQ_ERR = 1,
++	NIX_SQINT_SEND_ERR = 2,
++	NIX_SQINT_SQB_ALLOC_FAIL = 3,
++};
++
++#define NIX_SQINT_BITS (BIT_ULL(NIX_SQINT_LMT_ERR) | \
++			BIT_ULL(NIX_SQINT_MNQ_ERR) | \
++			BIT_ULL(NIX_SQINT_SEND_ERR) | \
++			BIT_ULL(NIX_SQINT_SQB_ALLOC_FAIL))
++
+ #endif /* OTX2_STRUCT_H */
+diff --git a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_txrx.c b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_txrx.c
+index 87b579a..94dac84 100644
+--- a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_txrx.c
++++ b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_txrx.c
+@@ -237,12 +237,23 @@ static int otx2_rx_napi_handler(struct otx2_nic *pfvf,
+ 	/* Refill pool with new buffers */
+ 	while (cq->pool_ptrs) {
+ 		bufptr = otx2_alloc_rbuf(pfvf, cq->rbpool, GFP_ATOMIC);
+-		if (unlikely(bufptr <= 0))
++		if (unlikely(bufptr <= 0)) {
++			struct refill_work *work;
++			struct delayed_work *dwork;
++
++			work = &pfvf->refill_wrk[cq->cq_idx];
++			dwork = &work->pool_refill_work;
++			/* Schedule a task if no other task is running */
++			if (!cq->refill_task_sched) {
++				cq->refill_task_sched = true;
++				schedule_delayed_work(dwork,
++						      msecs_to_jiffies(100));
++			}
+ 			break;
++		}
+ 		otx2_aura_freeptr(pfvf, cq->cq_idx, bufptr + OTX2_HEAD_ROOM);
+ 		cq->pool_ptrs--;
+ 	}
+-	otx2_get_page(cq->rbpool);
+ 
+ 	return processed_cqe;
+ }
+@@ -304,6 +315,11 @@ int otx2_napi_handler(struct napi_struct *napi, int budget)
+ 			continue;
+ 		cq = &qset->cq[cq_idx];
+ 		if (cq->cq_type == CQ_RX) {
++			/* If the RQ refill WQ task is running, skip napi
++			 * scheduler for this queue.
++			 */
++			if (cq->refill_task_sched)
++				continue;
+ 			workdone += otx2_rx_napi_handler(pfvf, napi,
+ 							 cq, budget);
+ 		} else {
 diff --git a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_txrx.h b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_txrx.h
-index d9683c3..bad2259 100644
+index bad2259..a889b49 100644
 --- a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_txrx.h
 +++ b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_txrx.h
-@@ -22,6 +22,10 @@
- #define OTX2_DATA_ALIGN(X)	ALIGN(X, OTX2_ALIGN)
- #define OTX2_HEAD_ROOM		OTX2_ALIGN
- 
-+#define	OTX2_ETH_HLEN		(VLAN_ETH_HLEN + VLAN_HLEN)
-+#define	OTX2_MIN_MTU		64
-+#define	OTX2_MAX_MTU		(9212 - OTX2_ETH_HLEN)
-+
- #define OTX2_MAX_FRAGS_IN_SQE	9
- 
- /* Rx buffer size should be in multiples of 128bytes */
+@@ -112,6 +112,7 @@ struct otx2_cq_queue {
+ 	u8			cq_idx;
+ 	u8			cq_type;
+ 	u8			cint_idx; /* CQ interrupt id */
++	u8			refill_task_sched;
+ 	u16			cqe_size;
+ 	u16			pool_ptrs;
+ 	u32			cqe_cnt;
 -- 
 2.7.4
 
