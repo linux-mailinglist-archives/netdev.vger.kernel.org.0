@@ -2,37 +2,37 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 40CB31487E6
-	for <lists+netdev@lfdr.de>; Fri, 24 Jan 2020 15:26:11 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 294241487CB
+	for <lists+netdev@lfdr.de>; Fri, 24 Jan 2020 15:26:00 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2389593AbgAXOZZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 24 Jan 2020 09:25:25 -0500
-Received: from mail.kernel.org ([198.145.29.99]:43798 "EHLO mail.kernel.org"
+        id S2388762AbgAXOVx (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 24 Jan 2020 09:21:53 -0500
+Received: from mail.kernel.org ([198.145.29.99]:43884 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2392233AbgAXOVu (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 24 Jan 2020 09:21:50 -0500
+        id S2392244AbgAXOVw (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 24 Jan 2020 09:21:52 -0500
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id A08C8222C2;
-        Fri, 24 Jan 2020 14:21:48 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id C946321556;
+        Fri, 24 Jan 2020 14:21:50 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1579875709;
-        bh=w0CFkfqbG6EaSlOzx/NhcXmF5pjsbQME2xrR3kTJoPA=;
+        s=default; t=1579875711;
+        bh=JacYCh+mGWW/F/w+j0QpaISIlwxB72yrB1+Wv1wznAU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=MhWUXTnm12u4BdxACy9CMo8J7EmmKTO1DZ/4sS5eLu/a0BCdK6dss+bnMmb5qd6bi
-         IS4P7t/6B0Ao9E0mcYkmbJuBLL/oDBagT+fNfnIuFemFhlUC/j5pgk+CEIXgr9faIH
-         0FhgtNG6aIrmE0frL20dP745WNx83Q0JmS2wEEnQ=
+        b=1YALEhSrm+7/TqfiGbiZLaOgOUYtYmFnOXevbzK16AHkYPexjjKpgpHJj3+ZWx5s8
+         3LTsJ0H0qYSxF4ZMKzjTzExHPOn/ygEiZYK7MxNisbsIBVllgnHU067ZYkjypOrXZu
+         aMDpWi+lBb/WjYuiev+91jh8ad0y0+9TvjV2Jd0A=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Johannes Berg <johannes.berg@intel.com>,
-        syzbot+e8a797964a4180eb57d5@syzkaller.appspotmail.com,
-        syzbot+34b582cf32c1db008f8e@syzkaller.appspotmail.com,
-        Sasha Levin <sashal@kernel.org>,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.14 25/32] cfg80211: check for set_wiphy_params
-Date:   Fri, 24 Jan 2020 09:21:12 -0500
-Message-Id: <20200124142119.30484-25-sashal@kernel.org>
+Cc:     Mohammed Gamal <mgamal@redhat.com>,
+        Haiyang Zhang <haiyangz@microsoft.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Sasha Levin <sashal@kernel.org>, devel@linuxdriverproject.org,
+        netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 4.14 27/32] hv_netvsc: Fix memory leak when removing rndis device
+Date:   Fri, 24 Jan 2020 09:21:14 -0500
+Message-Id: <20200124142119.30484-27-sashal@kernel.org>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20200124142119.30484-1-sashal@kernel.org>
 References: <20200124142119.30484-1-sashal@kernel.org>
@@ -45,39 +45,64 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Johannes Berg <johannes.berg@intel.com>
+From: Mohammed Gamal <mgamal@redhat.com>
 
-[ Upstream commit 24953de0a5e31dcca7e82c8a3c79abc2dfe8fb6e ]
+[ Upstream commit 536dc5df2808efbefc5acee334d3c4f701790ec0 ]
 
-Check if set_wiphy_params is assigned and return an error if not,
-some drivers (e.g. virt_wifi where syzbot reported it) don't have
-it.
+kmemleak detects the following memory leak when hot removing
+a network device:
 
-Reported-by: syzbot+e8a797964a4180eb57d5@syzkaller.appspotmail.com
-Reported-by: syzbot+34b582cf32c1db008f8e@syzkaller.appspotmail.com
-Signed-off-by: Johannes Berg <johannes.berg@intel.com>
-Link: https://lore.kernel.org/r/20200113125358.ac07f276efff.Ibd85ee1b12e47b9efb00a2adc5cd3fac50da791a@changeid
-Signed-off-by: Johannes Berg <johannes.berg@intel.com>
+unreferenced object 0xffff888083f63600 (size 256):
+  comm "kworker/0:1", pid 12, jiffies 4294831717 (age 1113.676s)
+  hex dump (first 32 bytes):
+    00 40 c7 33 80 88 ff ff 00 00 00 00 10 00 00 00  .@.3............
+    00 00 00 00 ad 4e ad de ff ff ff ff 00 00 00 00  .....N..........
+  backtrace:
+    [<00000000d4a8f5be>] rndis_filter_device_add+0x117/0x11c0 [hv_netvsc]
+    [<000000009c02d75b>] netvsc_probe+0x5e7/0xbf0 [hv_netvsc]
+    [<00000000ddafce23>] vmbus_probe+0x74/0x170 [hv_vmbus]
+    [<00000000046e64f1>] really_probe+0x22f/0xb50
+    [<000000005cc35eb7>] driver_probe_device+0x25e/0x370
+    [<0000000043c642b2>] bus_for_each_drv+0x11f/0x1b0
+    [<000000005e3d09f0>] __device_attach+0x1c6/0x2f0
+    [<00000000a72c362f>] bus_probe_device+0x1a6/0x260
+    [<0000000008478399>] device_add+0x10a3/0x18e0
+    [<00000000cf07b48c>] vmbus_device_register+0xe7/0x1e0 [hv_vmbus]
+    [<00000000d46cf032>] vmbus_add_channel_work+0x8ab/0x1770 [hv_vmbus]
+    [<000000002c94bb64>] process_one_work+0x919/0x17d0
+    [<0000000096de6781>] worker_thread+0x87/0xb40
+    [<00000000fbe7397e>] kthread+0x333/0x3f0
+    [<000000004f844269>] ret_from_fork+0x3a/0x50
+
+rndis_filter_device_add() allocates an instance of struct rndis_device
+which never gets deallocated as rndis_filter_device_remove() sets
+net_device->extension which points to the rndis_device struct to NULL,
+leaving the rndis_device dangling.
+
+Since net_device->extension is eventually freed in free_netvsc_device(),
+we refrain from setting it to NULL inside rndis_filter_device_remove()
+
+Signed-off-by: Mohammed Gamal <mgamal@redhat.com>
+Reviewed-by: Haiyang Zhang <haiyangz@microsoft.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/wireless/rdev-ops.h | 4 ++++
- 1 file changed, 4 insertions(+)
+ drivers/net/hyperv/rndis_filter.c | 2 --
+ 1 file changed, 2 deletions(-)
 
-diff --git a/net/wireless/rdev-ops.h b/net/wireless/rdev-ops.h
-index 96849357dd907..4077bb3af440c 100644
---- a/net/wireless/rdev-ops.h
-+++ b/net/wireless/rdev-ops.h
-@@ -537,6 +537,10 @@ static inline int
- rdev_set_wiphy_params(struct cfg80211_registered_device *rdev, u32 changed)
- {
- 	int ret;
-+
-+	if (!rdev->ops->set_wiphy_params)
-+		return -EOPNOTSUPP;
-+
- 	trace_rdev_set_wiphy_params(&rdev->wiphy, changed);
- 	ret = rdev->ops->set_wiphy_params(&rdev->wiphy, changed);
- 	trace_rdev_return_int(&rdev->wiphy, ret);
+diff --git a/drivers/net/hyperv/rndis_filter.c b/drivers/net/hyperv/rndis_filter.c
+index b19557c035f25..aa0bbffe49005 100644
+--- a/drivers/net/hyperv/rndis_filter.c
++++ b/drivers/net/hyperv/rndis_filter.c
+@@ -1331,8 +1331,6 @@ void rndis_filter_device_remove(struct hv_device *dev,
+ 	/* Halt and release the rndis device */
+ 	rndis_filter_halt_device(rndis_dev);
+ 
+-	net_dev->extension = NULL;
+-
+ 	netvsc_device_remove(dev);
+ }
+ 
 -- 
 2.20.1
 
