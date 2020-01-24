@@ -2,123 +2,102 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 2AE76148F51
-	for <lists+netdev@lfdr.de>; Fri, 24 Jan 2020 21:26:53 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1AC1B148F54
+	for <lists+netdev@lfdr.de>; Fri, 24 Jan 2020 21:27:26 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2388980AbgAXU0v (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 24 Jan 2020 15:26:51 -0500
-Received: from mail-eopbgr150058.outbound.protection.outlook.com ([40.107.15.58]:12927
-        "EHLO EUR01-DB5-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S2387548AbgAXU0v (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 24 Jan 2020 15:26:51 -0500
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=ZYmLnWhcCJn2Lh9ZrxEu9ExB0WnX4Pj+z2ihb7MYkAZ2KnKZG8OsyEcd8olpX7QwPHTv2gCoQUAxz60WGstNtNs18I5jfkJJAqmOaxpv+r4PJTKvSrqes7k7b1pvMiGqqJhcb4Z5OCYr45j6k7rVaLXw8iFlB3KHIgTkcLNJUiIlGhccYr/uyYGdtaMtS0nJGjpQLMHBMr3kGfItYrP2aGz9PAsbFcDCblAtnUZ5B1c08uegyixuHgYlT/8TaRfYI0gOHHXbM8bk41K4dnJVoPqggzZ8I39ckXqaeaO8ncR7/ILRxjKSGyVIRm7HaUH/Kiwqq5iwXK2CR8/un1vlmA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=JZW9y7VIN19E/FBv0TCbqSo5q/C1XG6Jf//01H9CGow=;
- b=aFA1xdxacxuEjtfl63jWRGsTrtE0ab17rigfoIGDaMO7We+P9p9QduuFty8yfxaFN9+UTjjehSslHvW59Gk1USuEnC0xLEF0VFacMGNlPDsZZ8R8EEfWJ6XmJMinm0hYHwdvkpqAhO1vW63VinLtfF4q1jEM8d9qWNs5zTAiX9L/T7nMbSCl53jYBpB2VlMc15/jzVLbwQ/bYjg6q2n1xc4p6YeVHBj/IPkemggUnIJPw/4B8W5hs/8eNffa/Qy1bT/oF2AKJnzQ0wF2Zw2p91Ha3luYa5IZj/FQqecXMRjAY5NWCpGZ8TpKsgrtiXVqh2Xp+JL97TID2qC/RZ1TpQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=mellanox.com; dmarc=pass action=none header.from=mellanox.com;
- dkim=pass header.d=mellanox.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Mellanox.com;
- s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=JZW9y7VIN19E/FBv0TCbqSo5q/C1XG6Jf//01H9CGow=;
- b=f91Bzy59v6v5rSvLy2kfBnNP4OCLfr+rI7xevuqye8FDsjNDss9EER79WYsR1bitYAcfD7Dl48L3dvgnvVAaCwI4ki9s46yonwXA+pfXzObv9+yiVmXrbJn236lhNzkTtRypAqu3VlxbHIu+dCGVh8Nd1Dc5nz84m6sFJ9pmc+c=
-Received: from VI1PR05MB5102.eurprd05.prod.outlook.com (20.177.51.151) by
- VI1PR05MB5552.eurprd05.prod.outlook.com (20.177.202.20) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.2665.20; Fri, 24 Jan 2020 20:26:47 +0000
-Received: from VI1PR05MB5102.eurprd05.prod.outlook.com
- ([fe80::d830:96fc:e928:c096]) by VI1PR05MB5102.eurprd05.prod.outlook.com
- ([fe80::d830:96fc:e928:c096%6]) with mapi id 15.20.2644.027; Fri, 24 Jan 2020
- 20:26:47 +0000
-From:   Saeed Mahameed <saeedm@mellanox.com>
-To:     "davem@davemloft.net" <davem@davemloft.net>,
-        "kuba@kernel.org" <kuba@kernel.org>
-CC:     Oz Shlomo <ozsh@mellanox.com>,
-        "jiri@resnulli.us" <jiri@resnulli.us>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        Vlad Buslov <vladbu@mellanox.com>,
-        Paul Blakey <paulb@mellanox.com>
-Subject: Re: [PATCH net-next 00/13] Handle multi chain hardware misses
-Thread-Topic: [PATCH net-next 00/13] Handle multi chain hardware misses
-Thread-Index: AQHV0HY4DifryuDZx0aVaDBxGBwzoqf1n68AgAJloQCAAkL0gA==
-Date:   Fri, 24 Jan 2020 20:26:47 +0000
-Message-ID: <9ee545fca21031d4fbd82fe204be5323c9f9f7cd.camel@mellanox.com>
-References: <1579623382-6934-1-git-send-email-paulb@mellanox.com>
-         <4b0bcbf60537bcdfe8d184531788a9b6084be8f6.camel@mellanox.com>
-         <20200123.105436.515913650694137847.davem@davemloft.net>
-In-Reply-To: <20200123.105436.515913650694137847.davem@davemloft.net>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-user-agent: Evolution 3.34.3 (3.34.3-1.fc31) 
-authentication-results: spf=none (sender IP is )
- smtp.mailfrom=saeedm@mellanox.com; 
-x-originating-ip: [209.116.155.178]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-ht: Tenant
-x-ms-office365-filtering-correlation-id: bc322403-a875-4af8-3558-08d7a10bbc86
-x-ms-traffictypediagnostic: VI1PR05MB5552:|VI1PR05MB5552:
-x-ms-exchange-transport-forked: True
-x-microsoft-antispam-prvs: <VI1PR05MB555268D3C33DFAB9EE91FA2CBE0E0@VI1PR05MB5552.eurprd05.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:9508;
-x-forefront-prvs: 02929ECF07
-x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(4636009)(136003)(39860400002)(376002)(366004)(346002)(396003)(199004)(189003)(64756008)(66446008)(76116006)(66946007)(4326008)(66476007)(107886003)(66556008)(91956017)(110136005)(316002)(6512007)(71200400001)(54906003)(186003)(26005)(6486002)(6506007)(2616005)(2906002)(478600001)(5660300002)(86362001)(36756003)(81156014)(81166006)(8936002)(8676002);DIR:OUT;SFP:1101;SCL:1;SRVR:VI1PR05MB5552;H:VI1PR05MB5102.eurprd05.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;A:1;MX:1;
-received-spf: None (protection.outlook.com: mellanox.com does not designate
- permitted sender hosts)
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: uBCnyc9pKVu6LndL6J4SZWfnk1k3rKsdaLcifPYDEtLnhoU5fBdAT4DG/NLnnOdLa2dIFuhAUlPa7mmhtGMpYt2VROQRW3/HCV8jlKGtEaDPbKr4PC6ZcszyJd5SgUarme3utB4POiLBaehA5N+/N/YeWoqvGU638TNi80q/ySZBxKWqayaqC6BAh+qBVmsqmKHqILE59g/lCT8qVclL3EvrxD043ExjDrFrUrN7QtmJts3IskwqYyuWPEm4U790rOFslRPBQLNeZe3gp84pWSfVQhhXe1OU/cY6Nt6wa9vUFzmKqjs7mAIq4MXXAzI9/MjyyEodNkQTQS8rq28MUHMJhsHiVdp+KGwGedcVGwhGXiUjZ1b9X3mfaaSO3BXmsIxxNsFSTB9hFy+qDyx/Ho7BwoZ8PjnWUZg6BzONajS+nqBDmRJgBmKRyMvdmBQi
-x-ms-exchange-antispam-messagedata: Iasdosqz79L4xDsQg6SIO3PjBOyK0XcVkpgssrRQ6k0Q0v1jCRaOZHxuD6t9z5J5lKVd5yPzy6cnGONHGWGpLVzCy2DKbmVrKrtUgyBcERaKnUN+GsM7tkmeDRTuaer+2gPjoPlP662obDp+Y+R9Bw==
-Content-Type: text/plain; charset="utf-8"
-Content-ID: <9E289330549A2841BD7D6318D2C98354@eurprd05.prod.outlook.com>
-Content-Transfer-Encoding: base64
+        id S2404318AbgAXU1V (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 24 Jan 2020 15:27:21 -0500
+Received: from us-smtp-1.mimecast.com ([205.139.110.61]:24053 "EHLO
+        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S2389021AbgAXU1V (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 24 Jan 2020 15:27:21 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1579897638;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=Pn41gsoJ7Prz9D2Chq8+4st2brwhG+QxzipNPoNENGo=;
+        b=EBV9p5LEBRNMMKcf7LDLxKN7MXpWjZxV9EOFETtbiYgJdI1KOSza/TCgSF7tuQEHcYy1jn
+        6ORjurgJ4RN5afvkOGlRDvDucCyT8TRErXO/TvwqfiBjZIDOgq6doKfLr6iPSr9a+4St4O
+        USTdUocQ4sYPVlgwJkMlRYl2CIENpV4=
+Received: from mail-lf1-f71.google.com (mail-lf1-f71.google.com
+ [209.85.167.71]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-230-T9frnd9GNV26vQgFTgUvaw-1; Fri, 24 Jan 2020 15:27:15 -0500
+X-MC-Unique: T9frnd9GNV26vQgFTgUvaw-1
+Received: by mail-lf1-f71.google.com with SMTP id l2so605867lfk.23
+        for <netdev@vger.kernel.org>; Fri, 24 Jan 2020 12:27:15 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
+         :message-id:mime-version;
+        bh=Pn41gsoJ7Prz9D2Chq8+4st2brwhG+QxzipNPoNENGo=;
+        b=qUgTnir6gitTkji+9YckxVWfFuVL0So5iQCUNObL9F11xcGr8sMh+txJRcM9h/5LSo
+         1Twh12c236G1gPLtGoeFRk5QIG93NMbJL2E01/XxsicwK3m9Q7jBDe1XOQ1y81p0U79w
+         AvYdtkXHxEuwoCjDPsSLftFje/HcoEYrcYR+8Mg0999pZSs2YutX/f91xAY7Mnbs8rAn
+         DpH7ZfoWIj86k8tdB9SYmrE/Vv1pk62OY6GGu4ZxIN1ISCDIOY/iJqT54XY4EYbtD8/u
+         pI+wOMiw5XJ9fCae/LEFIHiBDTBYZfx3AeOIQk0BJMvZkm8ZuknGbAoKQTdpgVwza8zD
+         2Imw==
+X-Gm-Message-State: APjAAAWvV3451d8AxBVylQROaam1cHOrNXKBUcbxNAasEeAAHPuPMXKX
+        0w7Bf9MffH39hxthUHU4r/JwlKA0WPkRQcS+AaJ68G+MTANhHs6jfqHLFWNlvH3Pqx0+L7ZRsb5
+        UpCKr+siEp8W9zsJq
+X-Received: by 2002:ac2:515b:: with SMTP id q27mr2115394lfd.119.1579897633632;
+        Fri, 24 Jan 2020 12:27:13 -0800 (PST)
+X-Google-Smtp-Source: APXvYqx9hrO0z4pTMXfCFGI/ExgfB5vQ/R1c2J8bnz5equSvHLWgIR8YUpPBbv8gpOUT2OWeI+Wb0Q==
+X-Received: by 2002:ac2:515b:: with SMTP id q27mr2115388lfd.119.1579897633361;
+        Fri, 24 Jan 2020 12:27:13 -0800 (PST)
+Received: from alrua-x1.borgediget.toke.dk ([85.204.121.218])
+        by smtp.gmail.com with ESMTPSA id q26sm3308753lfp.85.2020.01.24.12.27.11
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 24 Jan 2020 12:27:12 -0800 (PST)
+Received: by alrua-x1.borgediget.toke.dk (Postfix, from userid 1000)
+        id 476A5180073; Fri, 24 Jan 2020 21:27:11 +0100 (CET)
+From:   Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
+To:     Palmer Dabbelt <palmerdabbelt@google.com>,
+        linux-kselftest@vger.kernel.org, netdev@vger.kernel.org,
+        bpf@vger.kernel.org
+Cc:     shuah@kernel.org, ast@kernel.org, daniel@iogearbox.net,
+        kafai@fb.com, songliubraving@fb.com, yhs@fb.com, andriin@fb.com,
+        john.fastabend@gmail.com,
+        Palmer Dabbelt <palmerdabbelt@google.com>,
+        linux-kernel@vger.kernel.org, clang-built-linux@googlegroups.com,
+        kernel-team@android.com, Jesper Dangaard Brouer <brouer@redhat.com>
+Subject: Re: [PATCH] selftests/bpf: Elide a check for LLVM versions that can't compile it
+In-Reply-To: <20200124180839.185837-1-palmerdabbelt@google.com>
+References: <20200124180839.185837-1-palmerdabbelt@google.com>
+X-Clacks-Overhead: GNU Terry Pratchett
+Date:   Fri, 24 Jan 2020 21:27:11 +0100
+Message-ID: <87ftg4fvmo.fsf@toke.dk>
 MIME-Version: 1.0
-X-OriginatorOrg: Mellanox.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: bc322403-a875-4af8-3558-08d7a10bbc86
-X-MS-Exchange-CrossTenant-originalarrivaltime: 24 Jan 2020 20:26:47.4759
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: a652971c-7d2e-4d9b-a6a4-d149256f461b
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: Ti0VRXgQKT/J1avjNkTyE14cmzQmVuJOXtorUjuKuOa0PCJeDcvuOAwgrSuPnmHXZ+S+PwGkkl9HgGY2oyNN7w==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR05MB5552
+Content-Type: text/plain
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-T24gVGh1LCAyMDIwLTAxLTIzIGF0IDEwOjU0ICswMTAwLCBEYXZpZCBNaWxsZXIgd3JvdGU6DQo+
-IEZyb206IFNhZWVkIE1haGFtZWVkIDxzYWVlZG1AbWVsbGFub3guY29tPg0KPiBEYXRlOiBUdWUs
-IDIxIEphbiAyMDIwIDIxOjE4OjIxICswMDAwDQo+IA0KPiA+IE9uIFR1ZSwgMjAyMC0wMS0yMSBh
-dCAxODoxNiArMDIwMCwgUGF1bCBCbGFrZXkgd3JvdGU6DQo+ID4+IE5vdGUgdGhhdCBtaXNzIHBh
-dGggaGFuZGxpbmcgb2YgbXVsdGktY2hhaW4gcnVsZXMgaXMgYSByZXF1aXJlZA0KPiA+PiBpbmZy
-YXN0cnVjdHVyZQ0KPiA+PiBmb3IgY29ubmVjdGlvbiB0cmFja2luZyBoYXJkd2FyZSBvZmZsb2Fk
-LiBUaGUgY29ubmVjdGlvbiB0cmFja2luZw0KPiA+PiBvZmZsb2FkDQo+ID4+IHNlcmllcyB3aWxs
-IGZvbGxvdyB0aGlzIG9uZS4NCj4gPiANCj4gPiBIaSBEYXZlIGFuZCBKYWt1YiwNCj4gPiANCj4g
-PiBBcyBQYXVsIGV4cGxhaW5lZCB0aGlzIGlzIHBhcnQgb25lIG9mIHR3byBwYXJ0cyBzZXJpZXMs
-DQo+ID4gDQo+ID4gQXNzdW1pbmcgdGhlIHJldmlldyB3aWxsIGdvIHdpdGggbm8gaXNzdWVzIGkg
-d291bGQgbGlrZSB0byBzdWdnZXN0DQo+IHRoZQ0KPiA+IGZvbGxvd2luZyBhY2NlcHRhbmNlIG9w
-dGlvbnM6DQo+ID4gDQo+ID4gb3B0aW9uIDEpIEkgY2FuIGNyZWF0ZSBhIHNlcGFyYXRlIHNpZGUg
-YnJhbmNoIGZvciBjb25uZWN0aW9uDQo+IHRyYWNraW5nDQo+ID4gb2ZmbG9hZCBhbmQgb25jZSBQ
-YXVsIHN1Ym1pdHMgdGhlIGZpbmFsIHBhdGNoIG9mIHRoaXMgZmVhdHVyZSBhbmQNCj4gdGhlDQo+
-ID4gbWFpbGluZyBsaXN0IHJldmlldyBpcyBjb21wbGV0ZSwgaSBjYW4gc2VuZCB0byB5b3UgZnVs
-bCBwdWxsDQo+IHJlcXVlc3QNCj4gPiB3aXRoIGV2ZXJ5dGhpbmcgaW5jbHVkZWQgLi4gDQo+ID4g
-DQo+ID4gb3B0aW9uIDIpIHlvdSB0byBhcHBseSBkaXJlY3RseSB0byBuZXQtbmV4dCBib3RoIHBh
-dGNoc2V0cw0KPiA+IGluZGl2aWR1YWxseS4gKHRoZSBub3JtYWwgcHJvY2VzcykNCj4gPiANCj4g
-PiBQbGVhc2UgbGV0IG1lIGtub3cgd2hhdCB3b3JrcyBiZXR0ZXIgZm9yIHlvdS4NCj4gPiANCj4g
-PiBQZXJzb25hbGx5IEkgcHJlZmVyIG9wdGlvbiAxKSBzbyB3ZSB3b24ndCBlbmR1cCBzdHVjayB3
-aXRoIG9ubHkgb25lDQo+ID4gaGFsZiBvZiB0aGUgY29ubmVjdGlvbiB0cmFja2luZyBzZXJpZXMg
-aWYgdGhlIHJldmlldyBvZiB0aGUgMm5kDQo+IHBhcnQNCj4gPiBkb2Vzbid0IGdvIGFzIHBsYW5u
-ZWQuDQo+IA0KPiBJJ20gZmluZSB3aXRoIG9wdGlvbiAjMSBhbmQgd2lsbCB3YWl0IGZvciB0aGF0
-IHRvIGFwcGVhciBpbiBvbmUgb2YNCg0KQ29vbCwgd2lsbCBkbyBvcHRpb24gIzEgdGhlbi4uIA0K
-DQo+IHlvdXIgZnV0dXJlIHB1bGwgcmVxdWVzdHMuICBJdCBsb29rcyBsaWtlIHBhdGNoICMxIGdv
-dCBzb21lIGZlZWRiYWNrDQo+IGFuZCBuZWVkcyBzb21lIG1vZGlmaWNhdGlvbnMgZmlyc3QgdGhv
-dWdoLg0KPiANCg0KWWVzLCBQYXVsIHdpbGwgc2VuZCBWMyBhbmQgSSB3aWxsIHdhaXQgZm9yIGFs
-bCB0aGUgbmVlZGVkIEFDS3MgYW5kDQpSZXZpZXdzLCBmb3IgdGhpcyBwYXRjaHNldCBhbmQgdGhl
-IG9uZXMgdG8gZm9sbG93Lg0KDQpUaGFua3MsDQpTYWVlZC4NCg==
+Palmer Dabbelt <palmerdabbelt@google.com> writes:
+
+> The current stable LLVM BPF backend fails to compile the BPF selftests
+> due to a compiler bug.  The bug has been fixed in trunk, but that fix
+> hasn't landed in the binary packages I'm using yet (Fedora arm64).
+> Without this workaround the tests don't compile for me.
+>
+> This patch triggers a preprocessor warning on LLVM versions that
+> definitely have the bug.  The test may be conservative (ie, I'm not sure
+> if 9.1 will have the fix), but it should at least make the current set
+> of stable releases work together.
+>
+> See https://reviews.llvm.org/D69438 for more information on the fix.  I
+> obtained the workaround from
+> https://lore.kernel.org/linux-kselftest/aed8eda7-df20-069b-ea14-f06628984566@gmail.com/T/
+>
+> Fixes: 20a9ad2e7136 ("selftests/bpf: add CO-RE relocs array tests")
+> Signed-off-by: Palmer Dabbelt <palmerdabbelt@google.com>
+
+Having to depend on the latest trunk llvm to compile the selftests is
+definitely unfortunate. I believe there are some tests that won't work
+at all without trunk llvm (the fentry/fexit stuff comes to mind;
+although I'm not sure if they'll fail to compile, just fail to run?).
+Could we extend this type of checking to any such case?
+
+-Toke
+
