@@ -2,103 +2,133 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 4C0E0149223
-	for <lists+netdev@lfdr.de>; Sat, 25 Jan 2020 00:49:21 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E532B149235
+	for <lists+netdev@lfdr.de>; Sat, 25 Jan 2020 00:59:40 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729578AbgAXXtT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 24 Jan 2020 18:49:19 -0500
-Received: from mail-pj1-f48.google.com ([209.85.216.48]:55372 "EHLO
-        mail-pj1-f48.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729147AbgAXXtT (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 24 Jan 2020 18:49:19 -0500
-Received: by mail-pj1-f48.google.com with SMTP id d5so484091pjz.5;
-        Fri, 24 Jan 2020 15:49:18 -0800 (PST)
+        id S2387449AbgAXX7h (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 24 Jan 2020 18:59:37 -0500
+Received: from mail-pg1-f196.google.com ([209.85.215.196]:41116 "EHLO
+        mail-pg1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729236AbgAXX7h (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 24 Jan 2020 18:59:37 -0500
+Received: by mail-pg1-f196.google.com with SMTP id x8so1924508pgk.8;
+        Fri, 24 Jan 2020 15:59:36 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=moF1ZyovcBBfBqfEzcD3uJdsfAd0Eoiy0NYti5D6FQc=;
-        b=Q1qOuG3k6bI3d/sCC2ZVVn2pJoWJtNLYmP4OXgGSr0giyUBORK+Am55nXdFYPsUEI9
-         cp3Ln8GxX6LtYRthuR5vHomz/0FbeRaCrXI9pXVa4+4LPoSUjdgQ1IbIeXt7ludyQzEF
-         WhBX7nDOza8c6kIYutDlnpgLkccWeNg+Q+ayiBF77/KyCXToQ6mlEi0x2NZDoXlCJLPZ
-         7zQwekXBfHDL17IMF2bwullqv/DRGlxPQvZ77GiVqdEE/kYlT/+DZpAIqQUbJMJGGwEg
-         QlIl0f6LmtHNR2ikhPnM7Gw4oSjKld57n3IQYRN3CCc8OsrimRjAhT3Ke74FiasQg58z
-         uEgA==
+        h=from:to:cc:subject:date:message-id;
+        bh=JUzqmVJFhWwG8HFditFQcO6aapkFWx5TjN8Oa2FhIrM=;
+        b=F1e/egivRVdyTOIgkP8CkoPKuL7Q9M71wcKl7ClErYRfa1GDI9I76QTYf+ygljM75L
+         A4p4dRCsSEsvQJWuYZfpg1sG5Epv1ehn08bNXuaY6ViHLqURPQ06NVfs3acqN6+CnlnF
+         IskPUTPnGZQFmutMrOCI0T/c1mXlEQ38PK2e6XvWc7Mq60VR9Kimi40c+490PF7gB4Qo
+         dCRNpPR7y/0YWyr5hjJcc6ibw2rY/GMTjJjbMsPf+8s9i0/vFjamNYA3iqAyIRBhE/uk
+         nBmMoGoqF+pNZUd9xka3D5vpEB4TcVXDqmcYWzAyRd7MTBImqzHkX4qM5Xkwkxz2nnJ8
+         8rXA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=moF1ZyovcBBfBqfEzcD3uJdsfAd0Eoiy0NYti5D6FQc=;
-        b=LRz0qekEZYPkjv3119TI7dzfqwZepO/7F/s9j/+NfXdHLQGcwRqHho6nwPRPhp9zlF
-         9tf3jM9pwm6kvqMmu4yleod1LEaSUhcvaXXnfI8YHSh647fyZEroX2r3wHG3liXLbrSo
-         MZxrZMDJoyZLB5IhMgX05jYK7B7Ks65z4S7E1MbiGhmQG43iS2LK86Qjf90P9k4bmLR9
-         5N67b3Xk7OidUep4ypchVQw6SlQ0lk2YP0to1B+ruznN91I5zz/mABHJ7KLPSEmWaSpH
-         f5+ZQuDgSHUqjLC6Gf77N4PVrTqkV/juRFtO62g/csTOpuR10Q175OZ4GhKOPzCjU4If
-         TAlw==
-X-Gm-Message-State: APjAAAUFXjPHg9+Qeo5SvSAYoVNUlllWDQqv5jgQagJywXYgO0Y1bi3v
-        NdQwGi/NrDkOUNfq+57CkbHnXd6m
-X-Google-Smtp-Source: APXvYqxTW0slf51CuFlMiJmQhPi96oNyuyV7QrWsyHdag6d6GXN16mePt8TkbLB82ynjoale57lz4A==
-X-Received: by 2002:a17:90a:fe8:: with SMTP id 95mr1938251pjz.98.1579909758046;
-        Fri, 24 Jan 2020 15:49:18 -0800 (PST)
-Received: from ?IPv6:2620:15c:2c1:200:55c7:81e6:c7d8:94b? ([2620:15c:2c1:200:55c7:81e6:c7d8:94b])
-        by smtp.gmail.com with ESMTPSA id e16sm7577660pgk.77.2020.01.24.15.49.16
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 24 Jan 2020 15:49:17 -0800 (PST)
-Subject: Re: debugging TCP stalls on high-speed wifi
-To:     Johannes Berg <johannes@sipsolutions.net>,
-        Krishna Chaitanya <chaitanya.mgit@gmail.com>
-Cc:     Neal Cardwell <ncardwell@google.com>,
-        =?UTF-8?Q?Toke_H=c3=b8iland-J=c3=b8rgensen?= <toke@redhat.com>,
-        linux-wireless <linux-wireless@vger.kernel.org>,
-        Netdev <netdev@vger.kernel.org>
-References: <14cedbb9300f887fecc399ebcdb70c153955f876.camel@sipsolutions.net>
- <CADVnQym_CNktZ917q0-9dVY9dhtiJVRRotGTrPNdZUpkjd3vyw@mail.gmail.com>
- <f4670ce0f4399fe82e7168fb9c491d8eb718e8d8.camel@sipsolutions.net>
- <99748db5-7898-534b-d407-ed819f07f939@gmail.com>
- <ff6b35ad589d7cf0710cb9fca4c799538da2e653.camel@sipsolutions.net>
- <CABPxzYJZLHBvtjN7=-hPiUK1XU_b60m8Wpw4tHsT7zOQwZWRVw@mail.gmail.com>
- <ef348261c1edd9892b09ed017a59be23aa2be688.camel@sipsolutions.net>
-From:   Eric Dumazet <eric.dumazet@gmail.com>
-Message-ID: <9f984cda-2209-fa07-569e-2555ef2aa78d@gmail.com>
-Date:   Fri, 24 Jan 2020 15:49:15 -0800
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.2.2
-MIME-Version: 1.0
-In-Reply-To: <ef348261c1edd9892b09ed017a59be23aa2be688.camel@sipsolutions.net>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=JUzqmVJFhWwG8HFditFQcO6aapkFWx5TjN8Oa2FhIrM=;
+        b=SOgKuXsdAlOR1u9MfucYhkrBDmi/l0xCQ8OK3MDdz5YIJlGaAmCpg5QJLJ4eI2Rgki
+         ua/xbSMctwlP7dTk9zjzDiRM1UMT6sEiBVT8ujXPswhHmgAKer3NesvLSvuJp/UlZePV
+         ck6E/l3vc2v+U7amNLImEm+DDOJdDYdUbeHg2Zqq1ZZp2KEaimSIy5A2nwl8llSGi7bu
+         m2qNCgLAk/a8VS3wwCNDHPIP/0k0B9XVQScG8DM89y100BS5OCVhd88YIdBoaUkOEKjX
+         mmiIt8PPWi3njm54918yLZmCC4XmLM2fXFhvWWLeTWFJ8JyM0t8eMKjPi5vC9cJKU6y0
+         Fjyw==
+X-Gm-Message-State: APjAAAU1Xmhxr0lQMwuROYWGR2242MuJ1A1LX00kR2km3Bk0kPqDdxYj
+        ox1iZ/rlEd/tEnuvMnigxAKP+jQ9
+X-Google-Smtp-Source: APXvYqxvCowj6sS9W6qTOnidLRAzEdDePooYHcIK4YgYovq0XHgK1Ppz4ODLY66MbvlKJVmFxzAG3A==
+X-Received: by 2002:a62:1bc5:: with SMTP id b188mr5698687pfb.113.1579910375806;
+        Fri, 24 Jan 2020 15:59:35 -0800 (PST)
+Received: from fainelli-desktop.igp.broadcom.net ([192.19.223.252])
+        by smtp.gmail.com with ESMTPSA id l9sm7407244pgh.34.2020.01.24.15.59.34
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 24 Jan 2020 15:59:35 -0800 (PST)
+From:   Florian Fainelli <f.fainelli@gmail.com>
+To:     netdev@vger.kernel.org
+Cc:     kuba@kernel.org, edumazet@google.com,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        bcm-kernel-feedback-list@broadcom.com (open list:BROADCOM SYSTEMPORT
+        ETHERNET DRIVER), linux-kernel@vger.kernel.org (open list)
+Subject: [PATCH net-next] net: systemport: Do not block interrupts in TX reclaim
+Date:   Fri, 24 Jan 2020 15:59:30 -0800
+Message-Id: <20200124235930.640-1-f.fainelli@gmail.com>
+X-Mailer: git-send-email 2.17.1
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+There is no need to disable interrupts with a spin_lock_irqsave() in
+bcm_sysport_tx_poll() since we are in softIRQ context already. Leave
+interrupts enabled, thus giving a chance for the RX interrupts to be
+processed.
 
+This now makes bcm_sysport_tx_reclaim() equivalent to
+bcm_sysport_tx_clean(), thus remove the former, and make
+bcm_sysport_tx_reclaim_all() to use the latter.
 
-On 1/24/20 2:34 AM, Johannes Berg wrote:
-> On Fri, 2019-12-13 at 14:40 +0530, Krishna Chaitanya wrote:
->>
->> Maybe try 'reno' instead of 'cubic' to see if congestion control is
->> being too careful?
-> 
-> I played around with this a bit now, but apart from a few outliers, the
-> congestion control algorithm doesn't have much effect. The outliers are
-> 
->  * vegas with ~120 Mbps
->  * nv with ~300 Mbps
->  * cdg with ~600 Mbps
-> 
-> All the others from my list (reno cubic bbr bic cdg dctcp highspeed htcp
-> hybla illinois lp nv scalable vegas veno westwood yeah) are within 50
-> Mbps or so from each other (around 1.45Gbps).
-> 
+Signed-off-by: Florian Fainelli <f.fainelli@gmail.com>
+---
+ drivers/net/ethernet/broadcom/bcmsysport.c | 30 ++++++----------------
+ 1 file changed, 8 insertions(+), 22 deletions(-)
 
-When the stalls happens, what is causing TCP to resume the xmit ?
-
-Some tcpdump traces could help.
-
-(-s 100 to only capture headers)
-
-
+diff --git a/drivers/net/ethernet/broadcom/bcmsysport.c b/drivers/net/ethernet/broadcom/bcmsysport.c
+index f07ac0e0af59..dfff0657ce8f 100644
+--- a/drivers/net/ethernet/broadcom/bcmsysport.c
++++ b/drivers/net/ethernet/broadcom/bcmsysport.c
+@@ -925,26 +925,6 @@ static unsigned int __bcm_sysport_tx_reclaim(struct bcm_sysport_priv *priv,
+ 	return pkts_compl;
+ }
+ 
+-/* Locked version of the per-ring TX reclaim routine */
+-static unsigned int bcm_sysport_tx_reclaim(struct bcm_sysport_priv *priv,
+-					   struct bcm_sysport_tx_ring *ring)
+-{
+-	struct netdev_queue *txq;
+-	unsigned int released;
+-	unsigned long flags;
+-
+-	txq = netdev_get_tx_queue(priv->netdev, ring->index);
+-
+-	spin_lock_irqsave(&ring->lock, flags);
+-	released = __bcm_sysport_tx_reclaim(priv, ring);
+-	if (released)
+-		netif_tx_wake_queue(txq);
+-
+-	spin_unlock_irqrestore(&ring->lock, flags);
+-
+-	return released;
+-}
+-
+ /* Locked version of the per-ring TX reclaim, but does not wake the queue */
+ static void bcm_sysport_tx_clean(struct bcm_sysport_priv *priv,
+ 				 struct bcm_sysport_tx_ring *ring)
+@@ -960,9 +940,15 @@ static int bcm_sysport_tx_poll(struct napi_struct *napi, int budget)
+ {
+ 	struct bcm_sysport_tx_ring *ring =
+ 		container_of(napi, struct bcm_sysport_tx_ring, napi);
++	struct bcm_sysport_priv *priv = ring->priv;
+ 	unsigned int work_done = 0;
+ 
+-	work_done = bcm_sysport_tx_reclaim(ring->priv, ring);
++	spin_lock(&ring->lock);
++	work_done = __bcm_sysport_tx_reclaim(priv, ring);
++	if (work_done)
++		netif_tx_wake_queue(netdev_get_tx_queue(priv->netdev,
++							ring->index));
++	spin_unlock(&ring->lock);
+ 
+ 	if (work_done == 0) {
+ 		napi_complete(napi);
+@@ -984,7 +970,7 @@ static void bcm_sysport_tx_reclaim_all(struct bcm_sysport_priv *priv)
+ 	unsigned int q;
+ 
+ 	for (q = 0; q < priv->netdev->num_tx_queues; q++)
+-		bcm_sysport_tx_reclaim(priv, &priv->tx_rings[q]);
++		bcm_sysport_tx_clean(priv, &priv->tx_rings[q]);
+ }
+ 
+ static int bcm_sysport_poll(struct napi_struct *napi, int budget)
+-- 
+2.17.1
 
