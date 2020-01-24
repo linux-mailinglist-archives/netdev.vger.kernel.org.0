@@ -2,37 +2,36 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 3DC7A148954
-	for <lists+netdev@lfdr.de>; Fri, 24 Jan 2020 15:34:24 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 79EE4148969
+	for <lists+netdev@lfdr.de>; Fri, 24 Jan 2020 15:35:51 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2392112AbgAXOTt (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 24 Jan 2020 09:19:49 -0500
-Received: from mail.kernel.org ([198.145.29.99]:40306 "EHLO mail.kernel.org"
+        id S2404688AbgAXOeY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 24 Jan 2020 09:34:24 -0500
+Received: from mail.kernel.org ([198.145.29.99]:40384 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2392033AbgAXOTq (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 24 Jan 2020 09:19:46 -0500
+        id S2392094AbgAXOTs (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 24 Jan 2020 09:19:48 -0500
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id F043B208C4;
-        Fri, 24 Jan 2020 14:19:44 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 5A5192087E;
+        Fri, 24 Jan 2020 14:19:47 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1579875585;
-        bh=uMac/Qb35WZ/wjQxYtUQWcywMiZSB3Xt5amfKApo7qU=;
+        s=default; t=1579875588;
+        bh=Sz1Bppt4O5QqjzjUK9DivHQnbtFIzPAdJJy0YWOi9Uc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=A2LSGj/bCfUkHFbc72UkigUMwQQNz3yrDiresyIkSqlqudvV2Vtl1JnJvlmEuuQtZ
-         fBD8sPbyO/F6K6DqvtredJBvD+PeejKDA7vsndR1BWb9QE7Q1S0EHIstBjvHVT4Oi3
-         n8lrbXWBs8uQt132jvucbfUJzCXyutU8kMSBie8k=
+        b=j9npbap8JtdfJQ9yqmNnWQwAfNo3vNzD1Km1pIStwroGo1U1DWAGPBaPB6u4N3s/z
+         RIWiNqfpDeWK3ahZf6G1sTJZ/hEifVCgxYg2JPuDkgkG9QonBxC/4NOVKcVNcpEBcp
+         Zh5UdUDDEnokzuoEWb+Xcw+pUfH0jMns0TJVQJls=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Ido Schimmel <idosch@mellanox.com>,
-        Shalom Toledo <shalomt@mellanox.com>,
-        Jiri Pirko <jiri@mellanox.com>,
+Cc:     Petr Machata <petrm@mellanox.com>, Jiri Pirko <jiri@mellanox.com>,
+        Ido Schimmel <idosch@mellanox.com>,
         "David S . Miller" <davem@davemloft.net>,
         Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.4 076/107] mlxsw: switchx2: Do not modify cloned SKBs during xmit
-Date:   Fri, 24 Jan 2020 09:17:46 -0500
-Message-Id: <20200124141817.28793-76-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 5.4 078/107] mlxsw: spectrum: Wipe xstats.backlog of down ports
+Date:   Fri, 24 Jan 2020 09:17:48 -0500
+Message-Id: <20200124141817.28793-78-sashal@kernel.org>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20200124141817.28793-1-sashal@kernel.org>
 References: <20200124141817.28793-1-sashal@kernel.org>
@@ -45,85 +44,69 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Ido Schimmel <idosch@mellanox.com>
+From: Petr Machata <petrm@mellanox.com>
 
-[ Upstream commit 63963d0f9d17be83d0e419e03282847ecc2c3715 ]
+[ Upstream commit ca7609ff3680c51d6c29897f3117aa2ad904f92a ]
 
-The driver needs to prepend a Tx header to each packet it is
-transmitting. The header includes information such as the egress port
-and traffic class.
+Per-port counter cache used by Qdiscs is updated periodically, unless the
+port is down. The fact that the cache is not updated for down ports is no
+problem for most counters, which are relative in nature. However, backlog
+is absolute in nature, and if there is a non-zero value in the cache around
+the time that the port goes down, that value just stays there. This value
+then leaks to offloaded Qdiscs that report non-zero backlog even if
+there (obviously) is no traffic.
 
-The addition of the header requires the driver to modify the SKB's
-header and therefore it must not be shared. Otherwise, we risk hitting
-various race conditions.
+The HW does not keep backlog of a downed port, so do likewise: as the port
+goes down, wipe the backlog value from xstats.
 
-For example, when a packet is flooded (cloned) by the bridge driver to
-two switch ports swp1 and swp2:
-
-t0 - mlxsw_sp_port_xmit() is called for swp1. Tx header is prepended with
-     swp1's port number
-t1 - mlxsw_sp_port_xmit() is called for swp2. Tx header is prepended with
-     swp2's port number, overwriting swp1's port number
-t2 - The device processes data buffer from t0. Packet is transmitted via
-     swp2
-t3 - The device processes data buffer from t1. Packet is transmitted via
-     swp2
-
-Usually, the device is fast enough and transmits the packet before its
-Tx header is overwritten, but this is not the case in emulated
-environments.
-
-Fix this by making sure the SKB's header is writable by calling
-skb_cow_head(). Since the function ensures we have headroom to push the
-Tx header, the check further in the function can be removed.
-
-v2:
-* Use skb_cow_head() instead of skb_unshare() as suggested by Jakub
-* Remove unnecessary check regarding headroom
-
-Fixes: 31557f0f9755 ("mlxsw: Introduce Mellanox SwitchX-2 ASIC support")
-Signed-off-by: Ido Schimmel <idosch@mellanox.com>
-Reported-by: Shalom Toledo <shalomt@mellanox.com>
+Fixes: 075ab8adaf4e ("mlxsw: spectrum: Collect tclass related stats periodically")
+Signed-off-by: Petr Machata <petrm@mellanox.com>
 Acked-by: Jiri Pirko <jiri@mellanox.com>
+Signed-off-by: Ido Schimmel <idosch@mellanox.com>
 Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/mellanox/mlxsw/switchx2.c | 17 ++++++-----------
- 1 file changed, 6 insertions(+), 11 deletions(-)
+ drivers/net/ethernet/mellanox/mlxsw/spectrum.c | 13 +++++++++++++
+ 1 file changed, 13 insertions(+)
 
-diff --git a/drivers/net/ethernet/mellanox/mlxsw/switchx2.c b/drivers/net/ethernet/mellanox/mlxsw/switchx2.c
-index 1c14c051ee525..63e7a058b7c6a 100644
---- a/drivers/net/ethernet/mellanox/mlxsw/switchx2.c
-+++ b/drivers/net/ethernet/mellanox/mlxsw/switchx2.c
-@@ -299,22 +299,17 @@ static netdev_tx_t mlxsw_sx_port_xmit(struct sk_buff *skb,
- 	u64 len;
- 	int err;
+diff --git a/drivers/net/ethernet/mellanox/mlxsw/spectrum.c b/drivers/net/ethernet/mellanox/mlxsw/spectrum.c
+index 45f6836fcc629..a806c6190bb1e 100644
+--- a/drivers/net/ethernet/mellanox/mlxsw/spectrum.c
++++ b/drivers/net/ethernet/mellanox/mlxsw/spectrum.c
+@@ -1161,6 +1161,9 @@ static void update_stats_cache(struct work_struct *work)
+ 			     periodic_hw_stats.update_dw.work);
  
-+	if (skb_cow_head(skb, MLXSW_TXHDR_LEN)) {
-+		this_cpu_inc(mlxsw_sx_port->pcpu_stats->tx_dropped);
-+		dev_kfree_skb_any(skb);
-+		return NETDEV_TX_OK;
-+	}
+ 	if (!netif_carrier_ok(mlxsw_sp_port->dev))
++		/* Note: mlxsw_sp_port_down_wipe_counters() clears the cache as
++		 * necessary when port goes down.
++		 */
+ 		goto out;
+ 
+ 	mlxsw_sp_port_get_hw_stats(mlxsw_sp_port->dev,
+@@ -4170,6 +4173,15 @@ static int mlxsw_sp_port_unsplit(struct mlxsw_core *mlxsw_core, u8 local_port,
+ 	return 0;
+ }
+ 
++static void
++mlxsw_sp_port_down_wipe_counters(struct mlxsw_sp_port *mlxsw_sp_port)
++{
++	int i;
 +
- 	memset(skb->cb, 0, sizeof(struct mlxsw_skb_cb));
++	for (i = 0; i < TC_MAX_QUEUE; i++)
++		mlxsw_sp_port->periodic_hw_stats.xstats.backlog[i] = 0;
++}
++
+ static void mlxsw_sp_pude_event_func(const struct mlxsw_reg_info *reg,
+ 				     char *pude_pl, void *priv)
+ {
+@@ -4191,6 +4203,7 @@ static void mlxsw_sp_pude_event_func(const struct mlxsw_reg_info *reg,
+ 	} else {
+ 		netdev_info(mlxsw_sp_port->dev, "link down\n");
+ 		netif_carrier_off(mlxsw_sp_port->dev);
++		mlxsw_sp_port_down_wipe_counters(mlxsw_sp_port);
+ 	}
+ }
  
- 	if (mlxsw_core_skb_transmit_busy(mlxsw_sx->core, &tx_info))
- 		return NETDEV_TX_BUSY;
- 
--	if (unlikely(skb_headroom(skb) < MLXSW_TXHDR_LEN)) {
--		struct sk_buff *skb_orig = skb;
--
--		skb = skb_realloc_headroom(skb, MLXSW_TXHDR_LEN);
--		if (!skb) {
--			this_cpu_inc(mlxsw_sx_port->pcpu_stats->tx_dropped);
--			dev_kfree_skb_any(skb_orig);
--			return NETDEV_TX_OK;
--		}
--		dev_consume_skb_any(skb_orig);
--	}
- 	mlxsw_sx_txhdr_construct(skb, &tx_info);
- 	/* TX header is consumed by HW on the way so we shouldn't count its
- 	 * bytes as being sent.
 -- 
 2.20.1
 
