@@ -2,34 +2,34 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id E6BDC14783A
-	for <lists+netdev@lfdr.de>; Fri, 24 Jan 2020 06:42:08 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id AB1C6147845
+	for <lists+netdev@lfdr.de>; Fri, 24 Jan 2020 06:43:28 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730351AbgAXFmG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 24 Jan 2020 00:42:06 -0500
-Received: from mx0a-00082601.pphosted.com ([67.231.145.42]:12698 "EHLO
+        id S1730492AbgAXFn0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 24 Jan 2020 00:43:26 -0500
+Received: from mx0a-00082601.pphosted.com ([67.231.145.42]:19546 "EHLO
         mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1730222AbgAXFmG (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 24 Jan 2020 00:42:06 -0500
+        by vger.kernel.org with ESMTP id S1730222AbgAXFn0 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 24 Jan 2020 00:43:26 -0500
 Received: from pps.filterd (m0109334.ppops.net [127.0.0.1])
-        by mx0a-00082601.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 00O5diOv014298
-        for <netdev@vger.kernel.org>; Thu, 23 Jan 2020 21:42:05 -0800
+        by mx0a-00082601.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 00O5dPLM013928
+        for <netdev@vger.kernel.org>; Thu, 23 Jan 2020 21:43:25 -0800
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
  : date : message-id : mime-version : content-type; s=facebook;
- bh=z6s3h17AdBFhJYV46iNnioJ79bYFwSTm//wxVeY/sb8=;
- b=Xrg6f42qADGVwNloovRANqCKcEUmtXdgr7q0G3z2q6e0ETIzGz/9CKbys8m3Gf8J2Heh
- T/7p3zy+N1uiWlkyaOUWowQ2n9AOH8DK4VerC5jAgVycWBJ/jAck8DQpEC7W8sh3mv3o
- IcD3HO4haPIgAApXyiRn/xoG4+5kHBq6EiU= 
+ bh=2G4lXtcToFB2NdopEStSCnKLTLVCre0jAHe0BamVmkM=;
+ b=fJnW9pu4JIwulrG+iP6KyDdELGyweOr58m64QZi1Rwy4l7gETSZEc3sYkiaVaDtQZ7eY
+ Sv69bXsnqgZcU0U9LjsRAMZjwu66xfVnGk6GPoi5nRoy6TNwITyoFtxzRtDzyrCdImfJ
+ PWm28I0ISurx2bBSNcDkr2I3diko3el4O34= 
 Received: from maileast.thefacebook.com ([163.114.130.16])
-        by mx0a-00082601.pphosted.com with ESMTP id 2xpu2180bv-4
+        by mx0a-00082601.pphosted.com with ESMTP id 2xpu2180h0-1
         (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT)
-        for <netdev@vger.kernel.org>; Thu, 23 Jan 2020 21:42:04 -0800
-Received: from intmgw001.08.frc2.facebook.com (2620:10d:c0a8:1b::d) by
- mail.thefacebook.com (2620:10d:c0a8:82::c) with Microsoft SMTP Server
+        for <netdev@vger.kernel.org>; Thu, 23 Jan 2020 21:43:25 -0800
+Received: from intmgw001.41.prn1.facebook.com (2620:10d:c0a8:1b::d) by
+ mail.thefacebook.com (2620:10d:c0a8:83::4) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.1779.2; Thu, 23 Jan 2020 21:42:02 -0800
+ 15.1.1779.2; Thu, 23 Jan 2020 21:43:24 -0800
 Received: by devbig012.ftw2.facebook.com (Postfix, from userid 137359)
-        id DC8B62EC1D16; Thu, 23 Jan 2020 21:41:52 -0800 (PST)
+        id 44F6A2EC1D16; Thu, 23 Jan 2020 21:43:19 -0800 (PST)
 Smtp-Origin-Hostprefix: devbig
 From:   Andrii Nakryiko <andriin@fb.com>
 Smtp-Origin-Hostname: devbig012.ftw2.facebook.com
@@ -38,9 +38,9 @@ To:     <bpf@vger.kernel.org>, <netdev@vger.kernel.org>, <ast@fb.com>,
 CC:     <andrii.nakryiko@gmail.com>, <kernel-team@fb.com>,
         Andrii Nakryiko <andriin@fb.com>
 Smtp-Origin-Cluster: ftw2c04
-Subject: [PATCH bpf-next] selftests/bpf: improve bpftool changes detection
-Date:   Thu, 23 Jan 2020 21:41:48 -0800
-Message-ID: <20200124054148.2455060-1-andriin@fb.com>
+Subject: [PATCH bpf-next] bpftool: print function linkage in BTF dump
+Date:   Thu, 23 Jan 2020 21:43:17 -0800
+Message-ID: <20200124054317.2459436-1-andriin@fb.com>
 X-Mailer: git-send-email 2.17.1
 X-FB-Internal: Safe
 MIME-Version: 1.0
@@ -58,41 +58,60 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Detect when bpftool source code changes and trigger rebuild within
-selftests/bpf Makefile. Also fix few small formatting problems.
+Add printing out BTF_KIND_FUNC's linkage.
 
 Signed-off-by: Andrii Nakryiko <andriin@fb.com>
 ---
- tools/testing/selftests/bpf/Makefile | 11 ++++++-----
- 1 file changed, 6 insertions(+), 5 deletions(-)
+ tools/bpf/bpftool/btf.c | 27 +++++++++++++++++++++++----
+ 1 file changed, 23 insertions(+), 4 deletions(-)
 
-diff --git a/tools/testing/selftests/bpf/Makefile b/tools/testing/selftests/bpf/Makefile
-index 5f41f5bd8033..257a1aaaa37d 100644
---- a/tools/testing/selftests/bpf/Makefile
-+++ b/tools/testing/selftests/bpf/Makefile
-@@ -155,16 +155,17 @@ $(OUTPUT)/test_sysctl: cgroup_helpers.c
+diff --git a/tools/bpf/bpftool/btf.c b/tools/bpf/bpftool/btf.c
+index 4ba90d81b6a1..b3745ed711ba 100644
+--- a/tools/bpf/bpftool/btf.c
++++ b/tools/bpf/bpftool/btf.c
+@@ -77,6 +77,20 @@ static const char *btf_var_linkage_str(__u32 linkage)
+ 	}
+ }
  
- DEFAULT_BPFTOOL := $(SCRATCH_DIR)/sbin/bpftool
- BPFTOOL ?= $(DEFAULT_BPFTOOL)
--$(DEFAULT_BPFTOOL): $(BPFOBJ) | $(BUILD_DIR)/bpftool
--	$(Q)$(MAKE) $(submake_extras)  -C $(BPFTOOLDIR)			\
--		    OUTPUT=$(BUILD_DIR)/bpftool/			\
-+$(DEFAULT_BPFTOOL): $(wildcard $(BPFTOOLDIR)/*.[ch] $(BPFTOOLDIR)/Makefile)    \
-+		    $(BPFOBJ) | $(BUILD_DIR)/bpftool
-+	$(Q)$(MAKE) $(submake_extras)  -C $(BPFTOOLDIR)			       \
-+		    OUTPUT=$(BUILD_DIR)/bpftool/			       \
- 		    prefix= DESTDIR=$(SCRATCH_DIR)/ install
- 
--$(BPFOBJ): $(wildcard $(BPFDIR)/*.c $(BPFDIR)/*.h $(BPFDIR)/Makefile)          \
-+$(BPFOBJ): $(wildcard $(BPFDIR)/*.[ch] $(BPFDIR)/Makefile)		       \
- 	   ../../../include/uapi/linux/bpf.h                                   \
- 	   | $(INCLUDE_DIR) $(BUILD_DIR)/libbpf
- 	$(Q)$(MAKE) $(submake_extras) -C $(BPFDIR) OUTPUT=$(BUILD_DIR)/libbpf/ \
--		DESTDIR=$(SCRATCH_DIR) prefix= all install_headers
-+		    DESTDIR=$(SCRATCH_DIR) prefix= all install_headers
- 
- $(BUILD_DIR)/libbpf $(BUILD_DIR)/bpftool $(INCLUDE_DIR):
- 	$(call msg,MKDIR,,$@)
++static const char *btf_func_linkage_str(const struct btf_type *t)
++{
++	switch (btf_vlen(t)) {
++	case BTF_FUNC_STATIC:
++		return "static";
++	case BTF_FUNC_GLOBAL:
++		return "global";
++	case BTF_FUNC_EXTERN:
++		return "extern";
++	default:
++		return "(unknown)";
++	}
++}
++
+ static const char *btf_str(const struct btf *btf, __u32 off)
+ {
+ 	if (!off)
+@@ -231,12 +245,17 @@ static int dump_btf_type(const struct btf *btf, __u32 id,
+ 			printf(" fwd_kind=%s", fwd_kind);
+ 		break;
+ 	}
+-	case BTF_KIND_FUNC:
+-		if (json_output)
++	case BTF_KIND_FUNC: {
++		const char *linkage = btf_func_linkage_str(t);
++
++		if (json_output) {
+ 			jsonw_uint_field(w, "type_id", t->type);
+-		else
+-			printf(" type_id=%u", t->type);
++			jsonw_string_field(w, "linkage", linkage);
++		} else {
++			printf(" type_id=%u linkage=%s", t->type, linkage);
++		}
+ 		break;
++	}
+ 	case BTF_KIND_FUNC_PROTO: {
+ 		const struct btf_param *p = (const void *)(t + 1);
+ 		__u16 vlen = BTF_INFO_VLEN(t->info);
 -- 
 2.17.1
 
