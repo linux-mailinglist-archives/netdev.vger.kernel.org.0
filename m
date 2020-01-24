@@ -2,347 +2,124 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 8731D14794A
-	for <lists+netdev@lfdr.de>; Fri, 24 Jan 2020 09:22:45 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 670DC147992
+	for <lists+netdev@lfdr.de>; Fri, 24 Jan 2020 09:46:30 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729652AbgAXIW3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 24 Jan 2020 03:22:29 -0500
-Received: from a.mx.secunet.com ([62.96.220.36]:47446 "EHLO a.mx.secunet.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1729442AbgAXIW2 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 24 Jan 2020 03:22:28 -0500
-Received: from localhost (localhost [127.0.0.1])
-        by a.mx.secunet.com (Postfix) with ESMTP id 892FC204FD;
-        Fri, 24 Jan 2020 09:22:25 +0100 (CET)
-X-Virus-Scanned: by secunet
-Received: from a.mx.secunet.com ([127.0.0.1])
-        by localhost (a.mx.secunet.com [127.0.0.1]) (amavisd-new, port 10024)
-        with ESMTP id JitVFdnR9mtq; Fri, 24 Jan 2020 09:22:24 +0100 (CET)
-Received: from mail-essen-01.secunet.de (mail-essen-01.secunet.de [10.53.40.204])
-        (using TLSv1 with cipher ECDHE-RSA-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by a.mx.secunet.com (Postfix) with ESMTPS id 932AB2056D;
-        Fri, 24 Jan 2020 09:22:23 +0100 (CET)
-Received: from gauss2.secunet.de (10.182.7.193) by mail-essen-01.secunet.de
- (10.53.40.204) with Microsoft SMTP Server id 14.3.439.0; Fri, 24 Jan 2020
- 09:22:23 +0100
-Received: by gauss2.secunet.de (Postfix, from userid 1000)      id 3277C3180136;
- Fri, 24 Jan 2020 09:22:23 +0100 (CET)
-From:   Steffen Klassert <steffen.klassert@secunet.com>
-To:     David Miller <davem@davemloft.net>
-CC:     Steffen Klassert <steffen.klassert@secunet.com>,
-        Willem de Bruijn <willemb@google.com>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Subash Abhinov Kasiviswanathan <subashab@codeaurora.org>,
-        Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>,
-        <netdev@vger.kernel.org>
-Subject: [PATCH net-next v2 4/4] udp: Support UDP fraglist GRO/GSO.
-Date:   Fri, 24 Jan 2020 09:22:18 +0100
-Message-ID: <20200124082218.2572-5-steffen.klassert@secunet.com>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20200124082218.2572-1-steffen.klassert@secunet.com>
-References: <20200124082218.2572-1-steffen.klassert@secunet.com>
+        id S1729593AbgAXIq2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 24 Jan 2020 03:46:28 -0500
+Received: from mail-eopbgr60074.outbound.protection.outlook.com ([40.107.6.74]:13952
+        "EHLO EUR04-DB3-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1727520AbgAXIq2 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 24 Jan 2020 03:46:28 -0500
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=MeEUbpztHQauHe+73n3aibbRq391GWWPfJJ9naVUJebXG4JRJB9PNQXW+KqBBHSXT6++iq7xstdzmLQDFJaRfws+fw9mYYPlrbjIYW6ltupQ24noh0nbBHeTF2aUJRDfl1MKZWp6EOUwO2OhFJLCVMwr0sfpf2Qc+lPs+pSvC9pY222wowtxhHVVzP0Rm4xe3/mkG8g5+1HBX5t7N+P/ZdDvy9Pt44PS5UOSGraJkfGUM6FJ2JT0poG17pvPtZk5sUg1DYcQU2vCuB3g2lEqxV4ptAQfneSJ5W5DmgT8sAKYQ9Pa+Rv93k4KdeOM0xAXBovO3ibqsz83SiU4u2MiiA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=jGpiu0jsJ1SAF/Q/L3tW3gMQOmIwFGRNDQL2GOaneEQ=;
+ b=MLIo9EP29++2zi5x1aUGDIf+AiCNky5ounW84O1hjeqxjMrzLzQzBh/1g/wDd6b4x956oHT8XyBQvz8MY6CFLRPx+6BdWqIckk6Hg59qbIpr4Ph4zixaB2rX1FaDtRH4g7Y8toYKxBwHIAAWUA9Hs+6Yus5Lb7O9Ji9DPQlD9e5Ov+wBf5U6XAj8n6yndtE4F8uGwSr4w91/R+3B+2hwsjqRa9qs0gVp7aN7Qn4jDAaCUeLvYZ8eD/FDN5HA54QD6ivWrDr5Zuim4mkw/v/wwicq4lCIcfdvGDfF84f99y1rs7jbdFhMgCMBUnwW+acbMl5Zh71C1LWHtCYvjOd+5w==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=mellanox.com; dmarc=pass action=none header.from=mellanox.com;
+ dkim=pass header.d=mellanox.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Mellanox.com;
+ s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=jGpiu0jsJ1SAF/Q/L3tW3gMQOmIwFGRNDQL2GOaneEQ=;
+ b=dC0izRhiN9m8YQeDBcKoexbdmYw/xCFRrv/z+bvi7VPckOK6QqcvUdleVSHNvB26RINNnCtMST48cpcnx/BH6VUb0C3cYe252p5HkPnUi719VIDCqY0HtXx9vMszSgy1EVKq0aJeaYOyinMDxR+8o1jOp5SgbaMB+7Z4/zxoWvQ=
+Received: from AM6PR05MB5096.eurprd05.prod.outlook.com (20.177.36.78) by
+ AM6PR05MB4999.eurprd05.prod.outlook.com (20.177.32.205) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.2644.24; Fri, 24 Jan 2020 08:46:22 +0000
+Received: from AM6PR05MB5096.eurprd05.prod.outlook.com
+ ([fe80::b826:4acc:6d53:6eea]) by AM6PR05MB5096.eurprd05.prod.outlook.com
+ ([fe80::b826:4acc:6d53:6eea%6]) with mapi id 15.20.2644.028; Fri, 24 Jan 2020
+ 08:46:22 +0000
+Received: from [192.168.50.105] (77.138.239.18) by PR0P264CA0055.FRAP264.PROD.OUTLOOK.COM (2603:10a6:100:1d::19) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.2665.20 via Frontend Transport; Fri, 24 Jan 2020 08:46:21 +0000
+From:   Paul Blakey <paulb@mellanox.com>
+To:     Jakub Kicinski <kuba@kernel.org>
+CC:     Saeed Mahameed <saeedm@mellanox.com>,
+        Oz Shlomo <ozsh@mellanox.com>,
+        Jakub Kicinski <jakub.kicinski@netronome.com>,
+        Vlad Buslov <vladbu@mellanox.com>,
+        David Miller <davem@davemloft.net>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        Jiri Pirko <jiri@resnulli.us>, Roi Dayan <roid@mellanox.com>
+Subject: Re: [PATCH net-next v2 01/13] net: sched: support skb chain ext in tc
+ classification path
+Thread-Topic: [PATCH net-next v2 01/13] net: sched: support skb chain ext in
+ tc classification path
+Thread-Index: AQHV0StRd72ZLaR5uUeXxUCz59wH16f2zxMAgAK0FQA=
+Date:   Fri, 24 Jan 2020 08:46:22 +0000
+Message-ID: <ca08ea10-cf6a-e8ed-afda-54ac301660ad@mellanox.com>
+References: <1579701178-24624-1-git-send-email-paulb@mellanox.com>
+ <1579701178-24624-2-git-send-email-paulb@mellanox.com>
+ <20200122072916.23fc3416@cakuba>
+In-Reply-To: <20200122072916.23fc3416@cakuba>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-clientproxiedby: PR0P264CA0055.FRAP264.PROD.OUTLOOK.COM
+ (2603:10a6:100:1d::19) To AM6PR05MB5096.eurprd05.prod.outlook.com
+ (2603:10a6:20b:11::14)
+authentication-results: spf=none (sender IP is )
+ smtp.mailfrom=paulb@mellanox.com; 
+x-ms-exchange-messagesentrepresentingtype: 1
+x-originating-ip: [77.138.239.18]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-ht: Tenant
+x-ms-office365-filtering-correlation-id: 1fb9bbec-abfb-489f-179a-08d7a0a9e389
+x-ms-traffictypediagnostic: AM6PR05MB4999:|AM6PR05MB4999:
+x-ms-exchange-transport-forked: True
+x-microsoft-antispam-prvs: <AM6PR05MB49999CC43592D3EE5F7825E6CF0E0@AM6PR05MB4999.eurprd05.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:7219;
+x-forefront-prvs: 02929ECF07
+x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(4636009)(396003)(136003)(346002)(366004)(376002)(39860400002)(189003)(199004)(2616005)(956004)(478600001)(31686004)(64756008)(186003)(16526019)(31696002)(66556008)(66946007)(26005)(66476007)(4326008)(86362001)(66446008)(52116002)(53546011)(5660300002)(107886003)(54906003)(71200400001)(6486002)(81156014)(36756003)(8936002)(2906002)(16576012)(8676002)(316002)(6916009)(81166006);DIR:OUT;SFP:1101;SCL:1;SRVR:AM6PR05MB4999;H:AM6PR05MB5096.eurprd05.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;MX:1;A:1;
+received-spf: None (protection.outlook.com: mellanox.com does not designate
+ permitted sender hosts)
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: 0SV6Z3lJXFH2jgmW1l73ZO+tzPsW6tC14oJQFdPc9+RFl/Nmg28rvyHPTtq9wgyYsghOLyLpcX9Uzz0M6IcQvT2Kk0bTwFn/gyz1C89CzG/07sfinXfT286pH8dLlo0jwiwnxFN0QAmn+iwK5We5ftqwo36DjjaDYSSqoAvCcpCZVFQ3hO8oSE4HkdM4L7K98AUgZBTyzRNpsW1ZMf2cYRWTFDLM5YAweq6ml9IQ8D17ejU+oM5h0/nnZztM6DHKVjvz+EpmQpO/q5YLyGTSExD5iuXSt9rCJJvowxr5dwpfwDD6ikPow2xU80cQVt/JvdZG0oUPiPTHYvA8uYVMV/gxDhigF64Adcdl2A4nTm+DU2YGmYg8t6SJ90uCsWHlq3ZakgAhPm/umw+lrcTVrVHPLwfOpwaW04/F7UZJBWEIIO1DU9SFHcaGkDqvYgQK
+Content-Type: text/plain; charset="utf-8"
+Content-ID: <D374E5E74FA90646AB5F05ADB623D50C@eurprd05.prod.outlook.com>
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-Content-Type: text/plain
-X-EXCLAIMER-MD-CONFIG: 2c86f778-e09b-4440-8b15-867914633a10
+X-OriginatorOrg: Mellanox.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 1fb9bbec-abfb-489f-179a-08d7a0a9e389
+X-MS-Exchange-CrossTenant-originalarrivaltime: 24 Jan 2020 08:46:22.5253
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: a652971c-7d2e-4d9b-a6a4-d149256f461b
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: SogNR34UXnogT/ylxEJyPdKrRqTqsN3+g8n8+prCzXTeVwJ/AsNj9rtM450oW3RMleiiE8efSbvtUHcIigX+Ug==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM6PR05MB4999
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This patch extends UDP GRO to support fraglist GRO/GSO
-by using the previously introduced infrastructure.
-If the feature is enabled, all UDP packets are going to
-fraglist GRO (local input and forward).
-
-After validating the csum,  we mark ip_summed as
-CHECKSUM_UNNECESSARY for fraglist GRO packets to
-make sure that the csum is not touched.
-
-Signed-off-by: Steffen Klassert <steffen.klassert@secunet.com>
----
- include/net/udp.h      |   2 +-
- net/ipv4/udp_offload.c | 104 ++++++++++++++++++++++++++++++++---------
- net/ipv6/udp_offload.c |  22 ++++++++-
- 3 files changed, 102 insertions(+), 26 deletions(-)
-
-diff --git a/include/net/udp.h b/include/net/udp.h
-index bad74f780831..44e0e52b585c 100644
---- a/include/net/udp.h
-+++ b/include/net/udp.h
-@@ -167,7 +167,7 @@ typedef struct sock *(*udp_lookup_t)(struct sk_buff *skb, __be16 sport,
- 				     __be16 dport);
- 
- struct sk_buff *udp_gro_receive(struct list_head *head, struct sk_buff *skb,
--				struct udphdr *uh, udp_lookup_t lookup);
-+				struct udphdr *uh, struct sock *sk);
- int udp_gro_complete(struct sk_buff *skb, int nhoff, udp_lookup_t lookup);
- 
- struct sk_buff *__udp_gso_segment(struct sk_buff *gso_skb,
-diff --git a/net/ipv4/udp_offload.c b/net/ipv4/udp_offload.c
-index b25e42100ceb..1a98583a79f4 100644
---- a/net/ipv4/udp_offload.c
-+++ b/net/ipv4/udp_offload.c
-@@ -184,6 +184,20 @@ struct sk_buff *skb_udp_tunnel_segment(struct sk_buff *skb,
- }
- EXPORT_SYMBOL(skb_udp_tunnel_segment);
- 
-+static struct sk_buff *__udp_gso_segment_list(struct sk_buff *skb,
-+					      netdev_features_t features)
-+{
-+	unsigned int mss = skb_shinfo(skb)->gso_size;
-+
-+	skb = skb_segment_list(skb, features, skb_mac_header_len(skb));
-+	if (IS_ERR(skb))
-+		return skb;
-+
-+	udp_hdr(skb)->len = htons(sizeof(struct udphdr) + mss);
-+
-+	return skb;
-+}
-+
- struct sk_buff *__udp_gso_segment(struct sk_buff *gso_skb,
- 				  netdev_features_t features)
- {
-@@ -196,6 +210,9 @@ struct sk_buff *__udp_gso_segment(struct sk_buff *gso_skb,
- 	__sum16 check;
- 	__be16 newlen;
- 
-+	if (skb_shinfo(gso_skb)->gso_type & SKB_GSO_FRAGLIST)
-+		return __udp_gso_segment_list(gso_skb, features);
-+
- 	mss = skb_shinfo(gso_skb)->gso_size;
- 	if (gso_skb->len <= sizeof(*uh) + mss)
- 		return ERR_PTR(-EINVAL);
-@@ -354,6 +371,7 @@ static struct sk_buff *udp_gro_receive_segment(struct list_head *head,
- 	struct udphdr *uh2;
- 	struct sk_buff *p;
- 	unsigned int ulen;
-+	int ret = 0;
- 
- 	/* requires non zero csum, for symmetry with GSO */
- 	if (!uh->check) {
-@@ -369,7 +387,6 @@ static struct sk_buff *udp_gro_receive_segment(struct list_head *head,
- 	}
- 	/* pull encapsulating udp header */
- 	skb_gro_pull(skb, sizeof(struct udphdr));
--	skb_gro_postpull_rcsum(skb, uh, sizeof(struct udphdr));
- 
- 	list_for_each_entry(p, head, list) {
- 		if (!NAPI_GRO_CB(p)->same_flow)
-@@ -383,14 +400,40 @@ static struct sk_buff *udp_gro_receive_segment(struct list_head *head,
- 			continue;
- 		}
- 
-+		if (NAPI_GRO_CB(skb)->is_flist != NAPI_GRO_CB(p)->is_flist) {
-+			NAPI_GRO_CB(skb)->flush = 1;
-+			return p;
-+		}
-+
- 		/* Terminate the flow on len mismatch or if it grow "too much".
- 		 * Under small packet flood GRO count could elsewhere grow a lot
- 		 * leading to excessive truesize values.
- 		 * On len mismatch merge the first packet shorter than gso_size,
- 		 * otherwise complete the GRO packet.
- 		 */
--		if (ulen > ntohs(uh2->len) || skb_gro_receive(p, skb) ||
--		    ulen != ntohs(uh2->len) ||
-+		if (ulen > ntohs(uh2->len)) {
-+			pp = p;
-+		} else {
-+			if (NAPI_GRO_CB(skb)->is_flist) {
-+				if (!pskb_may_pull(skb, skb_gro_offset(skb))) {
-+					NAPI_GRO_CB(skb)->flush = 1;
-+					return NULL;
-+				}
-+				if ((skb->ip_summed != p->ip_summed) ||
-+				    (skb->csum_level != p->csum_level)) {
-+					NAPI_GRO_CB(skb)->flush = 1;
-+					return NULL;
-+				}
-+				ret = skb_gro_receive_list(p, skb);
-+			} else {
-+				skb_gro_postpull_rcsum(skb, uh,
-+						       sizeof(struct udphdr));
-+
-+				ret = skb_gro_receive(p, skb);
-+			}
-+		}
-+
-+		if (ret || ulen != ntohs(uh2->len) ||
- 		    NAPI_GRO_CB(p)->count >= UDP_GRO_CNT_MAX)
- 			pp = p;
- 
-@@ -401,36 +444,29 @@ static struct sk_buff *udp_gro_receive_segment(struct list_head *head,
- 	return NULL;
- }
- 
--INDIRECT_CALLABLE_DECLARE(struct sock *udp6_lib_lookup_skb(struct sk_buff *skb,
--						   __be16 sport, __be16 dport));
- struct sk_buff *udp_gro_receive(struct list_head *head, struct sk_buff *skb,
--				struct udphdr *uh, udp_lookup_t lookup)
-+				struct udphdr *uh, struct sock *sk)
- {
- 	struct sk_buff *pp = NULL;
- 	struct sk_buff *p;
- 	struct udphdr *uh2;
- 	unsigned int off = skb_gro_offset(skb);
- 	int flush = 1;
--	struct sock *sk;
- 
--	rcu_read_lock();
--	sk = INDIRECT_CALL_INET(lookup, udp6_lib_lookup_skb,
--				udp4_lib_lookup_skb, skb, uh->source, uh->dest);
--	if (!sk)
--		goto out_unlock;
-+	if (skb->dev->features & NETIF_F_GRO_FRAGLIST)
-+		NAPI_GRO_CB(skb)->is_flist = sk ? !udp_sk(sk)->gro_enabled: 1;
- 
--	if (udp_sk(sk)->gro_enabled) {
-+	if ((sk && udp_sk(sk)->gro_enabled) || NAPI_GRO_CB(skb)->is_flist) {
- 		pp = call_gro_receive(udp_gro_receive_segment, head, skb);
--		rcu_read_unlock();
- 		return pp;
- 	}
- 
--	if (NAPI_GRO_CB(skb)->encap_mark ||
-+	if (!sk || NAPI_GRO_CB(skb)->encap_mark ||
- 	    (skb->ip_summed != CHECKSUM_PARTIAL &&
- 	     NAPI_GRO_CB(skb)->csum_cnt == 0 &&
- 	     !NAPI_GRO_CB(skb)->csum_valid) ||
- 	    !udp_sk(sk)->gro_receive)
--		goto out_unlock;
-+		goto out;
- 
- 	/* mark that this skb passed once through the tunnel gro layer */
- 	NAPI_GRO_CB(skb)->encap_mark = 1;
-@@ -457,8 +493,7 @@ struct sk_buff *udp_gro_receive(struct list_head *head, struct sk_buff *skb,
- 	skb_gro_postpull_rcsum(skb, uh, sizeof(struct udphdr));
- 	pp = call_gro_receive_sk(udp_sk(sk)->gro_receive, sk, head, skb);
- 
--out_unlock:
--	rcu_read_unlock();
-+out:
- 	skb_gro_flush_final(skb, pp, flush);
- 	return pp;
- }
-@@ -468,8 +503,10 @@ INDIRECT_CALLABLE_SCOPE
- struct sk_buff *udp4_gro_receive(struct list_head *head, struct sk_buff *skb)
- {
- 	struct udphdr *uh = udp_gro_udphdr(skb);
-+	struct sk_buff *pp;
-+	struct sock *sk;
- 
--	if (unlikely(!uh) || !static_branch_unlikely(&udp_encap_needed_key))
-+	if (unlikely(!uh))
- 		goto flush;
- 
- 	/* Don't bother verifying checksum if we're going to flush anyway. */
-@@ -484,7 +521,11 @@ struct sk_buff *udp4_gro_receive(struct list_head *head, struct sk_buff *skb)
- 					     inet_gro_compute_pseudo);
- skip:
- 	NAPI_GRO_CB(skb)->is_ipv6 = 0;
--	return udp_gro_receive(head, skb, uh, udp4_lib_lookup_skb);
-+	rcu_read_lock();
-+	sk = static_branch_unlikely(&udp_encap_needed_key) ? udp4_lib_lookup_skb(skb, uh->source, uh->dest) : NULL;
-+	pp = udp_gro_receive(head, skb, uh, sk);
-+	rcu_read_unlock();
-+	return pp;
- 
- flush:
- 	NAPI_GRO_CB(skb)->flush = 1;
-@@ -517,9 +558,7 @@ int udp_gro_complete(struct sk_buff *skb, int nhoff,
- 	rcu_read_lock();
- 	sk = INDIRECT_CALL_INET(lookup, udp6_lib_lookup_skb,
- 				udp4_lib_lookup_skb, skb, uh->source, uh->dest);
--	if (sk && udp_sk(sk)->gro_enabled) {
--		err = udp_gro_complete_segment(skb);
--	} else if (sk && udp_sk(sk)->gro_complete) {
-+	if (sk && udp_sk(sk)->gro_complete) {
- 		skb_shinfo(skb)->gso_type = uh->check ? SKB_GSO_UDP_TUNNEL_CSUM
- 					: SKB_GSO_UDP_TUNNEL;
- 
-@@ -529,6 +568,8 @@ int udp_gro_complete(struct sk_buff *skb, int nhoff,
- 		skb->encapsulation = 1;
- 		err = udp_sk(sk)->gro_complete(sk, skb,
- 				nhoff + sizeof(struct udphdr));
-+	} else {
-+		err = udp_gro_complete_segment(skb);
- 	}
- 	rcu_read_unlock();
- 
-@@ -544,6 +585,23 @@ INDIRECT_CALLABLE_SCOPE int udp4_gro_complete(struct sk_buff *skb, int nhoff)
- 	const struct iphdr *iph = ip_hdr(skb);
- 	struct udphdr *uh = (struct udphdr *)(skb->data + nhoff);
- 
-+	if (NAPI_GRO_CB(skb)->is_flist) {
-+		uh->len = htons(skb->len - nhoff);
-+
-+		skb_shinfo(skb)->gso_type |= (SKB_GSO_FRAGLIST|SKB_GSO_UDP_L4);
-+		skb_shinfo(skb)->gso_segs = NAPI_GRO_CB(skb)->count;
-+
-+		if (skb->ip_summed == CHECKSUM_UNNECESSARY) {
-+			if (skb->csum_level < SKB_MAX_CSUM_LEVEL)
-+				skb->csum_level++;
-+		} else {
-+			skb->ip_summed = CHECKSUM_UNNECESSARY;
-+			skb->csum_level = 0;
-+		}
-+
-+		return 0;
-+	}
-+
- 	if (uh->check)
- 		uh->check = ~udp_v4_check(skb->len - nhoff, iph->saddr,
- 					  iph->daddr, 0);
-diff --git a/net/ipv6/udp_offload.c b/net/ipv6/udp_offload.c
-index f0d5fc27d0b5..4c55b0efe0cb 100644
---- a/net/ipv6/udp_offload.c
-+++ b/net/ipv6/udp_offload.c
-@@ -115,8 +115,10 @@ INDIRECT_CALLABLE_SCOPE
- struct sk_buff *udp6_gro_receive(struct list_head *head, struct sk_buff *skb)
- {
- 	struct udphdr *uh = udp_gro_udphdr(skb);
-+	struct sk_buff *pp;
-+	struct sock *sk;
- 
--	if (unlikely(!uh) || !static_branch_unlikely(&udpv6_encap_needed_key))
-+	if (unlikely(!uh))
- 		goto flush;
- 
- 	/* Don't bother verifying checksum if we're going to flush anyway. */
-@@ -132,7 +134,11 @@ struct sk_buff *udp6_gro_receive(struct list_head *head, struct sk_buff *skb)
- 
- skip:
- 	NAPI_GRO_CB(skb)->is_ipv6 = 1;
--	return udp_gro_receive(head, skb, uh, udp6_lib_lookup_skb);
-+	rcu_read_lock();
-+	sk = static_branch_unlikely(&udpv6_encap_needed_key) ? udp6_lib_lookup_skb(skb, uh->source, uh->dest) : NULL;
-+	pp = udp_gro_receive(head, skb, uh, sk);
-+	rcu_read_unlock();
-+	return pp;
- 
- flush:
- 	NAPI_GRO_CB(skb)->flush = 1;
-@@ -144,6 +150,18 @@ INDIRECT_CALLABLE_SCOPE int udp6_gro_complete(struct sk_buff *skb, int nhoff)
- 	const struct ipv6hdr *ipv6h = ipv6_hdr(skb);
- 	struct udphdr *uh = (struct udphdr *)(skb->data + nhoff);
- 
-+	if (NAPI_GRO_CB(skb)->is_flist) {
-+		uh->len = htons(skb->len - nhoff);
-+
-+		skb_shinfo(skb)->gso_type |= (SKB_GSO_FRAGLIST|SKB_GSO_UDP_L4);
-+		skb_shinfo(skb)->gso_segs = NAPI_GRO_CB(skb)->count;
-+
-+		skb->ip_summed = CHECKSUM_UNNECESSARY;
-+		skb->csum_level = ~0;
-+
-+		return 0;
-+	}
-+
- 	if (uh->check)
- 		uh->check = ~udp_v6_check(skb->len - nhoff, &ipv6h->saddr,
- 					  &ipv6h->daddr, 0);
--- 
-2.17.1
-
+DQpPbiAyMi8wMS8yMDIwIDE3OjI5LCBKYWt1YiBLaWNpbnNraSB3cm90ZToNCj4gT24gV2VkLCAy
+MiBKYW4gMjAyMCAxNTo1Mjo0NiArMDIwMCwgUGF1bCBCbGFrZXkgd3JvdGU6DQo+PiAraW50IHRj
+Zl9jbGFzc2lmeV9pbmdyZXNzKHN0cnVjdCBza19idWZmICpza2IsDQo+PiArCQkJIGNvbnN0IHN0
+cnVjdCB0Y2ZfYmxvY2sgKmluZ3Jlc3NfYmxvY2ssDQo+PiArCQkJIGNvbnN0IHN0cnVjdCB0Y2Zf
+cHJvdG8gKnRwLCBzdHJ1Y3QgdGNmX3Jlc3VsdCAqcmVzLA0KPj4gKwkJCSBib29sIGNvbXBhdF9t
+b2RlKQ0KPj4gK3sNCj4+ICsJY29uc3Qgc3RydWN0IHRjZl9wcm90byAqb3JpZ190cCA9IHRwOw0K
+Pj4gKw0KPj4gKyNpZiBJU19FTkFCTEVEKENPTkZJR19ORVRfVENfU0tCX0VYVCkNCj4+ICsJew0K
+Pj4gKwkJc3RydWN0IHRjX3NrYl9leHQgKmV4dCA9IHNrYl9leHRfZmluZChza2IsIFRDX1NLQl9F
+WFQpOw0KPj4gKw0KPj4gKwkJaWYgKGV4dCAmJiBleHQtPmNoYWluICYmIGluZ3Jlc3NfYmxvY2sp
+IHsNCj4+ICsJCQlzdHJ1Y3QgdGNmX2NoYWluICpmY2hhaW47DQo+PiArDQo+PiArCQkJZmNoYWlu
+ID0gdGNmX2NoYWluX2xvb2t1cF9yY3UoaW5ncmVzc19ibG9jaywNCj4+ICsJCQkJCQkgICAgICBl
+eHQtPmNoYWluKTsNCj4+ICsJCQlpZiAoIWZjaGFpbikNCj4+ICsJCQkJcmV0dXJuIFRDX0FDVF9V
+TlNQRUM7DQo+PiArDQo+PiArCQkJdHAgPSByY3VfZGVyZWZlcmVuY2VfYmgoZmNoYWluLT5maWx0
+ZXJfY2hhaW4pOw0KPj4gKwkJfQ0KPiBEb2Vzbid0IHRoaXMgc2tiIGV4dCBoYXZlIHRvIGJlIHNv
+bWVob3cgImNvbnN1bWVkIiBieSB0aGUgZmlyc3QgbG9va3VwPw0KPiBXaGF0IGlmIHRoZSBza2Ig
+ZmluZHMgaXRzIHdheSB0byBhbiBpbmdyZXNzIG9mIGFub3RoZXIgZGV2aWNlPw0KW1Jlc2VuZGlu
+ZyB0aGlzIHJlcGx5IGFnYWluLCBhcyBvcmlnaW5hbCByZXBseSB3YXMgcmVqZWN0ZWRdDQoNCkdv
+b2QgcG9pbnQsIFRoaXMgYWxzbyBhcHBsaWVzIHRvIHJlY2xhc3NpZnkuDQpTaW1wbHkgY29uc3Vt
+aW5nIHRoZSBza2IgZXh0ZW5zaW9uIHdpbGwgbm90IGhhbmRsZSB0aGUgdGMgbWlzcyBwYXRoIHRv
+IG92cy4NCg0KSSB3aWxsIHBvc3QgYSB2MyB3aGVyZSB0aGUgc2tiIGV4dGVuc2lvbiB3aWxsIGJl
+IGluaXRpYWxpemVkIHdpdGggdGhlIGxhc3QgcHJvY2Vzc2VkIGNoYWluLg0KDQo+DQo+PiArCX0N
+Cj4+ICsjZW5kaWYNCj4+ICsNCj4+ICsJcmV0dXJuIHRjZl9jbGFzc2lmeShza2IsIHRwLCBvcmln
+X3RwLCByZXMsIGNvbXBhdF9tb2RlKTsNCj4+ICt9DQo+PiArRVhQT1JUX1NZTUJPTCh0Y2ZfY2xh
+c3NpZnlfaW5ncmVzcyk7DQo=
