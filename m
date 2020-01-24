@@ -2,342 +2,176 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 1D7DA148B8B
-	for <lists+netdev@lfdr.de>; Fri, 24 Jan 2020 16:56:11 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 26E21148BE8
+	for <lists+netdev@lfdr.de>; Fri, 24 Jan 2020 17:20:35 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2389474AbgAXP4G (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 24 Jan 2020 10:56:06 -0500
-Received: from mx08-00178001.pphosted.com ([91.207.212.93]:48946 "EHLO
-        mx07-00178001.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S2389209AbgAXP4G (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 24 Jan 2020 10:56:06 -0500
-Received: from pps.filterd (m0046661.ppops.net [127.0.0.1])
-        by mx07-00178001.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 00OFsA3K021731;
-        Fri, 24 Jan 2020 16:55:48 +0100
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=st.com; h=from : to : cc : subject
- : date : message-id : mime-version : content-type; s=STMicroelectronics;
- bh=RIPX9tQ6Lx1BfiUExNjFXUscs7twuO2vNYhbgRvSd8U=;
- b=POqUkIjbaAIZKnAXw27HwWxHmjXMk5M6Pg4DQW2WacPV7XVy9iUvsurAVVJLYALPIzcY
- RNBNcKF0ENVJsLh8UTQSn8zhk+5HiuNOshc3gBm++YicbOx//trDoFbNThtqrbFAvhQM
- lJ85TbLOd3MyCCXdursG097wN3wQ6wToLEaCpd6UQGZdx3OQpUP3JKQ/OXh/4quxpdVG
- Gd7dWWHx5CyUqitEnHrabQrIto/IeQhF0M07f/xS5Swsn1QHc98y1EGehOrZtrEztJWm
- q7NgNjgBtkltPwEWDHOEBNacHz9x1s7Nw2HlHDH3OW5pnTZqAnj9lonTz6On0q+rkwEH lw== 
-Received: from beta.dmz-eu.st.com (beta.dmz-eu.st.com [164.129.1.35])
-        by mx07-00178001.pphosted.com with ESMTP id 2xksspgksj-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Fri, 24 Jan 2020 16:55:48 +0100
-Received: from euls16034.sgp.st.com (euls16034.sgp.st.com [10.75.44.20])
-        by beta.dmz-eu.st.com (STMicroelectronics) with ESMTP id 4936910002A;
-        Fri, 24 Jan 2020 16:55:45 +0100 (CET)
-Received: from Webmail-eu.st.com (sfhdag3node3.st.com [10.75.127.9])
-        by euls16034.sgp.st.com (STMicroelectronics) with ESMTP id E8D702B1867;
-        Fri, 24 Jan 2020 16:55:44 +0100 (CET)
-Received: from localhost (10.75.127.47) by SFHDAG3NODE3.st.com (10.75.127.9)
- with Microsoft SMTP Server (TLS) id 15.0.1347.2; Fri, 24 Jan 2020 16:55:44
- +0100
-From:   Benjamin Gaignard <benjamin.gaignard@st.com>
-To:     <wg@grandegger.com>, <mkl@pengutronix.de>, <davem@davemloft.net>,
-        <robh+dt@kernel.org>, <mark.rutland@arm.com>,
-        <sriram.dash@samsung.com>
-CC:     <linux-can@vger.kernel.org>, <netdev@vger.kernel.org>,
-        <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        Benjamin Gaignard <benjamin.gaignard@st.com>
-Subject: [PATCH] dt-bindings: net: can: Convert M_CAN to json-schema
-Date:   Fri, 24 Jan 2020 16:55:42 +0100
-Message-ID: <20200124155542.2053-1-benjamin.gaignard@st.com>
-X-Mailer: git-send-email 2.15.0
+        id S2389629AbgAXQTc (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 24 Jan 2020 11:19:32 -0500
+Received: from esa6.microchip.iphmx.com ([216.71.154.253]:25554 "EHLO
+        esa6.microchip.iphmx.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2387404AbgAXQTa (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 24 Jan 2020 11:19:30 -0500
+Received-SPF: Pass (esa6.microchip.iphmx.com: domain of
+  Horatiu.Vultur@microchip.com designates 198.175.253.82 as
+  permitted sender) identity=mailfrom;
+  client-ip=198.175.253.82; receiver=esa6.microchip.iphmx.com;
+  envelope-from="Horatiu.Vultur@microchip.com";
+  x-sender="Horatiu.Vultur@microchip.com";
+  x-conformance=spf_only; x-record-type="v=spf1";
+  x-record-text="v=spf1 mx a:ushub1.microchip.com
+  a:smtpout.microchip.com -exists:%{i}.spf.microchip.iphmx.com
+  include:servers.mcsv.net include:mktomail.com
+  include:spf.protection.outlook.com ~all"
+Received-SPF: None (esa6.microchip.iphmx.com: no sender
+  authenticity information available from domain of
+  postmaster@email.microchip.com) identity=helo;
+  client-ip=198.175.253.82; receiver=esa6.microchip.iphmx.com;
+  envelope-from="Horatiu.Vultur@microchip.com";
+  x-sender="postmaster@email.microchip.com";
+  x-conformance=spf_only
+Authentication-Results: esa6.microchip.iphmx.com; dkim=none (message not signed) header.i=none; spf=Pass smtp.mailfrom=Horatiu.Vultur@microchip.com; spf=None smtp.helo=postmaster@email.microchip.com; dmarc=pass (p=none dis=none) d=microchip.com
+IronPort-SDR: l8CyMfs9VCFSVcsvvQzBglwOP4WuxccVIKygyaKACruS/fEFc6/ZHLzLuWRZcj3hOx+JQvqLM7
+ FGTuaME6+iwR1EPmOlVkp76SZlCSVz44V8wi9u3fRuXGuHBdlORxGoCNtKx/ZTVbUzPybz10+f
+ 0vgzt4VyNZfIT/IhCT10ycWei3Su4l+odEsg0CzviTbKAayKNu9nKxkYEXxFTugIJgjGan9uyS
+ 9RKPtWYt9Or+NEfZ3WBshrw2X9u0dVbR8rAs+iQy/FYY1KMI2UPs8fvnHP9lfB6GynNx4JGwl3
+ 78w=
+X-IronPort-AV: E=Sophos;i="5.70,358,1574146800"; 
+   d="scan'208";a="19285"
+Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
+  by esa6.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 24 Jan 2020 09:19:28 -0700
+Received: from chn-vm-ex01.mchp-main.com (10.10.85.143) by
+ chn-vm-ex01.mchp-main.com (10.10.85.143) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.1713.5; Fri, 24 Jan 2020 09:19:28 -0700
+Received: from soft-dev3.microsemi.net (10.10.85.251) by
+ chn-vm-ex01.mchp-main.com (10.10.85.143) with Microsoft SMTP Server id
+ 15.1.1713.5 via Frontend Transport; Fri, 24 Jan 2020 09:19:26 -0700
+From:   Horatiu Vultur <horatiu.vultur@microchip.com>
+To:     <linux-kernel@vger.kernel.org>, <netdev@vger.kernel.org>,
+        <bridge@lists.linux-foundation.org>, <jiri@resnulli.us>,
+        <ivecera@redhat.com>, <davem@davemloft.net>,
+        <roopa@cumulusnetworks.com>, <nikolay@cumulusnetworks.com>,
+        <anirudh.venkataramanan@intel.com>, <olteanv@gmail.com>,
+        <andrew@lunn.ch>, <jeffrey.t.kirsher@intel.com>,
+        <UNGLinuxDriver@microchip.com>
+CC:     Horatiu Vultur <horatiu.vultur@microchip.com>
+Subject: [RFC net-next v3 00/10]  net: bridge: mrp: Add support for Media Redundancy Protocol (MRP)
+Date:   Fri, 24 Jan 2020 17:18:18 +0100
+Message-ID: <20200124161828.12206-1-horatiu.vultur@microchip.com>
+X-Mailer: git-send-email 2.17.1
 MIME-Version: 1.0
 Content-Type: text/plain
-X-Originating-IP: [10.75.127.47]
-X-ClientProxiedBy: SFHDAG5NODE3.st.com (10.75.127.15) To SFHDAG3NODE3.st.com
- (10.75.127.9)
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.138,18.0.572
- definitions=2020-01-24_05:2020-01-24,2020-01-24 signatures=0
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Convert M_CAN bindings to json-schema
+Media Redundancy Protocol is a data network protocol standardized by
+International Electrotechnical Commission as IEC 62439-2. It allows rings of
+Ethernet switches to overcome any single failure with recovery time faster than
+STP. It is primarily used in Industrial Ethernet applications.
 
-Signed-off-by: Benjamin Gaignard <benjamin.gaignard@st.com>
----
- .../bindings/net/can/can-transceiver.txt           |  24 ----
- .../devicetree/bindings/net/can/m_can.txt          |  75 ----------
- .../devicetree/bindings/net/can/m_can.yaml         | 151 +++++++++++++++++++++
- 3 files changed, 151 insertions(+), 99 deletions(-)
- delete mode 100644 Documentation/devicetree/bindings/net/can/can-transceiver.txt
- delete mode 100644 Documentation/devicetree/bindings/net/can/m_can.txt
- create mode 100644 Documentation/devicetree/bindings/net/can/m_can.yaml
+Based on the previous RFC[1][2], the MRP state machine and all the
+timers were moved to userspace. A generic netlink interface is added to
+allow configuring the HW, and logic added to to implement the MRP
+specific forwarding rules.
 
-diff --git a/Documentation/devicetree/bindings/net/can/can-transceiver.txt b/Documentation/devicetree/bindings/net/can/can-transceiver.txt
-deleted file mode 100644
-index 0011f53ff159..000000000000
---- a/Documentation/devicetree/bindings/net/can/can-transceiver.txt
-+++ /dev/null
-@@ -1,24 +0,0 @@
--Generic CAN transceiver Device Tree binding
--------------------------------
--
--CAN transceiver typically limits the max speed in standard CAN and CAN FD
--modes. Typically these limitations are static and the transceivers themselves
--provide no way to detect this limitation at runtime. For this situation,
--the "can-transceiver" node can be used.
--
--Required Properties:
-- max-bitrate:	a positive non 0 value that determines the max
--		speed that CAN/CAN-FD can run. Any other value
--		will be ignored.
--
--Examples:
--
--Based on Texas Instrument's TCAN1042HGV CAN Transceiver
--
--m_can0 {
--	....
--	can-transceiver {
--		max-bitrate = <5000000>;
--	};
--	...
--};
-diff --git a/Documentation/devicetree/bindings/net/can/m_can.txt b/Documentation/devicetree/bindings/net/can/m_can.txt
-deleted file mode 100644
-index ed614383af9c..000000000000
---- a/Documentation/devicetree/bindings/net/can/m_can.txt
-+++ /dev/null
-@@ -1,75 +0,0 @@
--Bosch MCAN controller Device Tree Bindings
---------------------------------------------------
--
--Required properties:
--- compatible		: Should be "bosch,m_can" for M_CAN controllers
--- reg			: physical base address and size of the M_CAN
--			  registers map and Message RAM
--- reg-names		: Should be "m_can" and "message_ram"
--- interrupts		: Should be the interrupt number of M_CAN interrupt
--			  line 0 and line 1, could be same if sharing
--			  the same interrupt.
--- interrupt-names	: Should contain "int0" and "int1"
--- clocks		: Clocks used by controller, should be host clock
--			  and CAN clock.
--- clock-names		: Should contain "hclk" and "cclk"
--- pinctrl-<n>		: Pinctrl states as described in bindings/pinctrl/pinctrl-bindings.txt
--- pinctrl-names 	: Names corresponding to the numbered pinctrl states
--- bosch,mram-cfg	: Message RAM configuration data.
--			  Multiple M_CAN instances can share the same Message
--			  RAM and each element(e.g Rx FIFO or Tx Buffer and etc)
--			  number in Message RAM is also configurable,
--			  so this property is telling driver how the shared or
--			  private Message RAM are used by this M_CAN controller.
--
--			  The format should be as follows:
--			  <offset sidf_elems xidf_elems rxf0_elems rxf1_elems
--			   rxb_elems txe_elems txb_elems>
--			  The 'offset' is an address offset of the Message RAM
--			  where the following elements start from. This is
--			  usually set to 0x0 if you're using a private Message
--			  RAM. The remain cells are used to specify how many
--			  elements are used for each FIFO/Buffer.
--
--			  M_CAN includes the following elements according to user manual:
--			  11-bit Filter	0-128 elements / 0-128 words
--			  29-bit Filter	0-64 elements / 0-128 words
--			  Rx FIFO 0	0-64 elements / 0-1152 words
--			  Rx FIFO 1	0-64 elements / 0-1152 words
--			  Rx Buffers	0-64 elements / 0-1152 words
--			  Tx Event FIFO	0-32 elements / 0-64 words
--			  Tx Buffers	0-32 elements / 0-576 words
--
--			  Please refer to 2.4.1 Message RAM Configuration in
--			  Bosch M_CAN user manual for details.
--
--Optional Subnode:
--- can-transceiver	: Can-transceiver subnode describing maximum speed
--			  that can be used for CAN/CAN-FD modes. See
--			  Documentation/devicetree/bindings/net/can/can-transceiver.txt
--			  for details.
--Example:
--SoC dtsi:
--m_can1: can@20e8000 {
--	compatible = "bosch,m_can";
--	reg = <0x020e8000 0x4000>, <0x02298000 0x4000>;
--	reg-names = "m_can", "message_ram";
--	interrupts = <0 114 0x04>,
--		     <0 114 0x04>;
--	interrupt-names = "int0", "int1";
--	clocks = <&clks IMX6SX_CLK_CANFD>,
--		 <&clks IMX6SX_CLK_CANFD>;
--	clock-names = "hclk", "cclk";
--	bosch,mram-cfg = <0x0 0 0 32 0 0 0 1>;
--};
--
--Board dts:
--&m_can1 {
--	pinctrl-names = "default";
--	pinctrl-0 = <&pinctrl_m_can1>;
--	status = "enabled";
--
--	can-transceiver {
--		max-bitrate = <5000000>;
--	};
--};
-diff --git a/Documentation/devicetree/bindings/net/can/m_can.yaml b/Documentation/devicetree/bindings/net/can/m_can.yaml
-new file mode 100644
-index 000000000000..efdbed81af29
---- /dev/null
-+++ b/Documentation/devicetree/bindings/net/can/m_can.yaml
-@@ -0,0 +1,151 @@
-+# SPDX-License-Identifier: GPL-2.0
-+%YAML 1.2
-+---
-+$id: http://devicetree.org/schemas/net/can/m_can.yaml#
-+$schema: http://devicetree.org/meta-schemas/core.yaml#
-+
-+title: Bosch MCAN controller Bindings
-+
-+description: Bosch MCAN controller for CAN bus
-+
-+maintainers:
-+  -  Sriram Dash <sriram.dash@samsung.com>
-+
-+properties:
-+  compatible:
-+    const: bosch,m_can
-+
-+  reg:
-+    items:
-+      - description: M_CAN registers map
-+      - description: message RAM
-+
-+  reg-names:
-+    items:
-+      - const: m_can
-+      - const: message_ram
-+
-+  interrupts:
-+    items:
-+      - description: interrupt line0
-+      - description: interrupt line1
-+    minItems: 1
-+    maxItems: 2
-+
-+  interrupt-names:
-+    items:
-+      - const: int0
-+      - const: int1
-+    minItems: 1
-+    maxItems: 2
-+
-+  clocks:
-+    items:
-+      - description: peripheral clock
-+      - description: bus clock
-+
-+  clock-names:
-+    items:
-+      - const: hclk
-+      - const: cclk
-+
-+  bosch,mram-cfg:
-+    description: |
-+                 Message RAM configuration data.
-+                 Multiple M_CAN instances can share the same Message RAM
-+                 and each element(e.g Rx FIFO or Tx Buffer and etc) number
-+                 in Message RAM is also configurable, so this property is
-+                 telling driver how the shared or private Message RAM are
-+                 used by this M_CAN controller.
-+
-+                 The format should be as follows:
-+                 <offset sidf_elems xidf_elems rxf0_elems rxf1_elems rxb_elems txe_elems txb_elems>
-+                 The 'offset' is an address offset of the Message RAM where
-+                 the following elements start from. This is usually set to
-+                 0x0 if you're using a private Message RAM. The remain cells
-+                 are used to specify how many elements are used for each FIFO/Buffer.
-+
-+                 M_CAN includes the following elements according to user manual:
-+                 11-bit Filter	0-128 elements / 0-128 words
-+                 29-bit Filter	0-64 elements / 0-128 words
-+                 Rx FIFO 0	0-64 elements / 0-1152 words
-+                 Rx FIFO 1	0-64 elements / 0-1152 words
-+                 Rx Buffers	0-64 elements / 0-1152 words
-+                 Tx Event FIFO	0-32 elements / 0-64 words
-+                 Tx Buffers	0-32 elements / 0-576 words
-+
-+                 Please refer to 2.4.1 Message RAM Configuration in Bosch
-+                 M_CAN user manual for details.
-+    allOf:
-+      - $ref: /schemas/types.yaml#/definitions/int32-matrix
-+      - items:
-+         items:
-+           - description: The 'offset' is an address offset of the Message RAM
-+                          where the following elements start from. This is usually
-+                          set to 0x0 if you're using a private Message RAM.
-+             default: 0
-+           - description: 11-bit Filter 0-128 elements / 0-128 words
-+             minimum: 0
-+             maximum: 128
-+           - description: 29-bit Filter 0-64 elements / 0-128 words
-+             minimum: 0
-+             maximum: 64
-+           - description: Rx FIFO 0 0-64 elements / 0-1152 words
-+             minimum: 0
-+             maximum: 64
-+           - description: Rx FIFO 1 0-64 elements / 0-1152 words
-+             minimum: 0
-+             maximum: 64
-+           - description: Rx Buffers 0-64 elements / 0-1152 words
-+             minimum: 0
-+             maximum: 64
-+           - description: Tx Event FIFO 0-32 elements / 0-64 words
-+             minimum: 0
-+             maximum: 32
-+           - description: Tx Buffers 0-32 elements / 0-576 words
-+             minimum: 0
-+             maximum: 32
-+        maxItems: 1
-+
-+  can-transceiver:
-+    type: object
-+
-+    properties:
-+      max-bitrate:
-+        $ref: /schemas/types.yaml#/definitions/uint32
-+        description: a positive non 0 value that determines the max speed that
-+                     CAN/CAN-FD can run.
-+        minimum: 1
-+
-+required:
-+  - compatible
-+  - reg
-+  - reg-names
-+  - interrupts
-+  - interrupt-names
-+  - clocks
-+  - clock-names
-+  - bosch,mram-cfg
-+
-+additionalProperties: false
-+
-+examples:
-+  - |
-+    #include <dt-bindings/clock/imx6sx-clock.h>
-+    can@20e8000 {
-+      compatible = "bosch,m_can";
-+      reg = <0x020e8000 0x4000>, <0x02298000 0x4000>;
-+      reg-names = "m_can", "message_ram";
-+      interrupts = <0 114 0x04>, <0 114 0x04>;
-+      interrupt-names = "int0", "int1";
-+      clocks = <&clks IMX6SX_CLK_CANFD>,
-+               <&clks IMX6SX_CLK_CANFD>;
-+      clock-names = "hclk", "cclk";
-+      bosch,mram-cfg = <0x0 0 0 32 0 0 0 1>;
-+
-+      can-transceiver {
-+        max-bitrate = <5000000>;
-+      };
-+    };
-+
-+...
+The userspace application that is using the new netlink can be found here[3].
+
+The current implementation both in kernel and userspace supports only 2 roles:
+
+  MRM - this one is responsible to send MRP_Test and MRP_Topo frames on both
+  ring ports. It needs to process MRP_Test to know if the ring is open or
+  closed. This operation is desired to be offloaded to the HW because it
+  requires to generate and process up to 4000 frames per second. Whenever it
+  detects that the ring open it sends MRP_Topo frames to notify all MRC about
+  changes in the topology. MRM needs also to process MRP_LinkChange frames,
+  these frames are generated by the MRC. When the ring is open the the state
+  of both ports is to forward frames and when the ring is closed then the
+  secondary port is blocked.
+
+  MRC - this one is responsible to forward MRP frames between the ring ports.
+  In case one of the ring ports gets a link down or up, then MRC will generate
+  a MRP_LinkChange frames. This node should also process MRP_Topo frames and to
+  clear its FDB when it receives this frame.
+
+ Userspace
+               Deamon +----------+ Client
+                +
+                |
+ +--------------|-----------------------------------------+
+  Kernel        |
+                + Netlink
+
+                |                              + Interrupt
+                |                              |
+ +--------------|------------------------------|----------+
+  HW            | Switchdev                    |
+                +                              |
+
+The user interacts using the client (called 'mrp'), the client talks to the
+deamon (called 'mrp_server'), which talks with the kernel using netlink. The
+kernel will try to offload the requests to the HW via switchdev API. For this a
+new generic netlink interface was added to the bridge.
+
+If the kernel cannot offload MRP to HW (maybe it does not have a switchdev
+driver, or it is just not supported), then all the netlink calls will return
+-EOPNOTSUPP. In this case the user-space deamon fallback to SW only
+implementation.
+
+There are required changes to the SW bridge to be able to run the MRP. First the
+bridge needs to initialize the netlink interface. And second it needs to know if
+a MRP frame was received on a MRP ring port. In case it was received the SW
+bridge should not forward the frame it needs to redirected to upper layes. In
+case it was not received on a ring port then it just forwards it as usual.
+
+To be able to offload this to the HW, it was required to extend the switchdev
+API.
+
+If this will be accepted then in the future the netlink interface can be
+expended with multiple attributes which are required by different roles of the
+MRP. Like Media Redundancy Automanager(MRA), Media Interconnect Manager(MIM) and
+Media Interconnect Client(MIC).
+
+[1] https://www.spinics.net/lists/netdev/msg623647.html
+[2] https://www.spinics.net/lists/netdev/msg624378.html
+[3] https://github.com/microchip-ung/mrp/tree/patch-v3
+
+Horatiu Vultur (10):
+  net: bridge: mrp: Expose mrp attributes.
+  net: bridge: mrp: Expose function br_mrp_port_open
+  net: bridge: mrp: Add MRP interface used by netlink
+  net: bridge: mrp: Add generic netlink interface to configure MRP
+  net: bridge: mrp: Update MRP interface to add switchdev support
+  net: bridge: mrp: switchdev: Extend switchdev API to offload MRP
+  net: bridge: mrp: switchdev: Implement MRP API for switchdev
+  net: bridge: mrp: Connect MRP api with the switchev API
+  net: bridge: mrp: Integrate MRP into the bridge
+  net: bridge: mrp: Update Kconfig and Makefile
+
+ include/linux/mrp_bridge.h      |  25 ++
+ include/net/switchdev.h         |  51 +++
+ include/uapi/linux/if_ether.h   |   1 +
+ include/uapi/linux/mrp_bridge.h | 118 ++++++
+ net/bridge/Kconfig              |  12 +
+ net/bridge/Makefile             |   2 +
+ net/bridge/br.c                 |  11 +
+ net/bridge/br_device.c          |   3 +
+ net/bridge/br_if.c              |   6 +
+ net/bridge/br_input.c           |  14 +
+ net/bridge/br_mrp.c             | 193 ++++++++++
+ net/bridge/br_mrp_netlink.c     | 655 ++++++++++++++++++++++++++++++++
+ net/bridge/br_mrp_switchdev.c   | 147 +++++++
+ net/bridge/br_private.h         |  14 +
+ net/bridge/br_private_mrp.h     |  58 +++
+ 15 files changed, 1310 insertions(+)
+ create mode 100644 include/linux/mrp_bridge.h
+ create mode 100644 include/uapi/linux/mrp_bridge.h
+ create mode 100644 net/bridge/br_mrp.c
+ create mode 100644 net/bridge/br_mrp_netlink.c
+ create mode 100644 net/bridge/br_mrp_switchdev.c
+ create mode 100644 net/bridge/br_private_mrp.h
+
 -- 
-2.15.0
+2.17.1
 
