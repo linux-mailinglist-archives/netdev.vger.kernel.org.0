@@ -2,84 +2,80 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 2F9D0148C54
-	for <lists+netdev@lfdr.de>; Fri, 24 Jan 2020 17:37:57 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B0D47148CE5
+	for <lists+netdev@lfdr.de>; Fri, 24 Jan 2020 18:26:04 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2389003AbgAXQhz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 24 Jan 2020 11:37:55 -0500
-Received: from dispatch1-us1.ppe-hosted.com ([67.231.154.164]:44134 "EHLO
-        dispatch1-us1.ppe-hosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S2387687AbgAXQhz (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 24 Jan 2020 11:37:55 -0500
-X-Virus-Scanned: Proofpoint Essentials engine
-Received: from webmail.solarflare.com (uk.solarflare.com [193.34.186.16])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mx1-us2.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTPS id E4EE530006E;
-        Fri, 24 Jan 2020 16:37:49 +0000 (UTC)
-Received: from [10.17.20.62] (10.17.20.62) by ukex01.SolarFlarecom.com
- (10.17.10.4) with Microsoft SMTP Server (TLS) id 15.0.1395.4; Fri, 24 Jan
- 2020 16:37:46 +0000
-Subject: Re: [PATCH v2 net-next 0/3] sfc: refactor mcdi filtering code
-To:     "Alex Maftei (amaftei)" <amaftei@solarflare.com>,
-        <netdev@vger.kernel.org>, <davem@davemloft.net>
-CC:     <linux-net-drivers@solarflare.com>, <scrum-linux@solarflare.com>
-References: <bd446796-af44-148d-5cc2-23b0cd770494@solarflare.com>
-From:   Martin Habets <mhabets@solarflare.com>
-Message-ID: <095b9db9-4bdf-cf01-7d3a-94acb9eaa494@solarflare.com>
-Date:   Fri, 24 Jan 2020 16:37:45 +0000
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.2.2
+        id S2389083AbgAXR0C (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 24 Jan 2020 12:26:02 -0500
+Received: from mga18.intel.com ([134.134.136.126]:44285 "EHLO mga18.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S2388028AbgAXR0C (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 24 Jan 2020 12:26:02 -0500
+X-Amp-Result: UNKNOWN
+X-Amp-Original-Verdict: FILE UNKNOWN
+X-Amp-File-Uploaded: False
+Received: from fmsmga003.fm.intel.com ([10.253.24.29])
+  by orsmga106.jf.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 24 Jan 2020 09:22:33 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.70,358,1574150400"; 
+   d="scan'208";a="276373468"
+Received: from ranger.igk.intel.com ([10.102.21.164])
+  by FMSMGA003.fm.intel.com with ESMTP; 24 Jan 2020 09:22:31 -0800
+Date:   Fri, 24 Jan 2020 11:14:16 +0100
+From:   Maciej Fijalkowski <maciej.fijalkowski@intel.com>
+To:     sunil.kovvuri@gmail.com
+Cc:     netdev@vger.kernel.org, davem@davemloft.net, kubakici@wp.pl,
+        mkubecek@suse.cz, Sunil Goutham <sgoutham@marvell.com>
+Subject: Re: [PATCH v4 06/17] octeontx2-pf: Receive packet handling support
+Message-ID: <20200124101416.GA33242@ranger.igk.intel.com>
+References: <1579612911-24497-1-git-send-email-sunil.kovvuri@gmail.com>
+ <1579612911-24497-7-git-send-email-sunil.kovvuri@gmail.com>
 MIME-Version: 1.0
-In-Reply-To: <bd446796-af44-148d-5cc2-23b0cd770494@solarflare.com>
-Content-Type: text/plain; charset="windows-1252"
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.17.20.62]
-X-ClientProxiedBy: ukex01.SolarFlarecom.com (10.17.10.4) To
- ukex01.SolarFlarecom.com (10.17.10.4)
-X-TM-AS-Product-Ver: SMEX-12.5.0.1300-8.5.1010-25186.003
-X-TM-AS-Result: No-9.141700-8.000000-10
-X-TMASE-MatchedRID: cgbqQT5W8hfmLzc6AOD8DfHkpkyUphL9oPPOu2yMJlMda1Vk3RqxOGUs
-        fNazqaz0f1xSt/ApHHOQ5EOn6ZDjFeeiDxJcK5MJuZBZOg7RfX9ZbM2hfH4YXrEJXf7wJ5WFBzW
-        QqFQdsUiLrhTfkxEO5Baynp4lvsDbofaD2zI+zzzwqDryy7bDITDoUQeQv/CPmyiLZetSf8nJ4y
-        0wP1A6AESNmwM0HlDFjaPj0W1qn0TGVuWouVipcjP05R40HU5axeOLeSrYaaOrpACW0+ATj7RNV
-        qs2Jza4htmVfJnYnBbJNR995LyDy8ln7BH1nvJgDWgPwEWqGjv8/EYLL7FME4VyAlz5A0zC7xsm
-        i8libwVi6nHReNJA8sM4VWYqoYnham2pp47lr+A=
-X-TM-AS-User-Approved-Sender: Yes
-X-TM-AS-User-Blocked-Sender: No
-X-TMASE-Result: 10--9.141700-8.000000
-X-TMASE-Version: SMEX-12.5.0.1300-8.5.1010-25186.003
-X-MDID: 1579883870-X6BtCw9SXkzw
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <1579612911-24497-7-git-send-email-sunil.kovvuri@gmail.com>
+User-Agent: Mutt/1.12.1 (2019-06-15)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 24/01/2020 16:33, Alex Maftei (amaftei) wrote:
-> Splitting final bits of the driver code into different files, which
-> will later be used in another driver for a new product.
+On Tue, Jan 21, 2020 at 06:51:40PM +0530, sunil.kovvuri@gmail.com wrote:
+> From: Sunil Goutham <sgoutham@marvell.com>
 > 
-> This is a continuation to my previous patch series. (three of them)
-> Refactoring will be concluded with this series, for now.
+> Added receive packet handling (NAPI) support, error stats, RX_ALL
+> capability config option to passon error pkts to stack upon user request.
 > 
-> As instructed, split the renaming and moving into different patches.
-> Minor refactoring was done with the renaming, as explained in the
-> patch.
+> In subsequent patches these error stats will be added to ethttool.
 > 
-> Alexandru-Mihai Maftei (3):
->   sfc: rename mcdi filtering functions/structs
->   sfc: create header for mcdi filtering code
->   sfc: move mcdi filtering code
+> Signed-off-by: Sunil Goutham <sgoutham@marvell.com>
+> ---
+>  .../ethernet/marvell/octeontx2/nic/otx2_common.c   |   2 +
+>  .../ethernet/marvell/octeontx2/nic/otx2_common.h   |  44 +++++
+>  .../net/ethernet/marvell/octeontx2/nic/otx2_pf.c   |  16 +-
+>  .../ethernet/marvell/octeontx2/nic/otx2_struct.h   | 195 +++++++++++++++++++++
+>  .../net/ethernet/marvell/octeontx2/nic/otx2_txrx.c | 185 ++++++++++++++++++-
+>  .../net/ethernet/marvell/octeontx2/nic/otx2_txrx.h |   2 +
+>  6 files changed, 441 insertions(+), 3 deletions(-)
+> 
+<snip>
 
-For the series:
-Reviewed-by: Martin Habets <mhabets@solarflare.com>
+> +static void otx2_skb_add_frag(struct otx2_nic *pfvf, struct sk_buff *skb,
+> +			      u64 iova, int len, struct nix_rx_parse_s *parse)
 
->  drivers/net/ethernet/sfc/Makefile       |    2 +-
->  drivers/net/ethernet/sfc/ef10.c         | 2476 +----------------------
->  drivers/net/ethernet/sfc/mcdi_filters.c | 2270 +++++++++++++++++++++
->  drivers/net/ethernet/sfc/mcdi_filters.h |  159 ++
->  4 files changed, 2505 insertions(+), 2402 deletions(-)
->  create mode 100644 drivers/net/ethernet/sfc/mcdi_filters.c
->  create mode 100644 drivers/net/ethernet/sfc/mcdi_filters.h
-> 
+Nit: 'parse' is unused in this function.
+
+> +{
+> +	struct page *page;
+> +	void *va;
+> +
+> +	va = phys_to_virt(otx2_iova_to_phys(pfvf->iommu_domain, iova));
+> +	page = virt_to_page(va);
+> +	skb_add_rx_frag(skb, skb_shinfo(skb)->nr_frags, page,
+> +			va - page_address(page), len, pfvf->rbsize);
+> +
+> +	otx2_dma_unmap_page(pfvf, iova - OTX2_HEAD_ROOM,
+> +			    pfvf->rbsize, DMA_FROM_DEVICE);
+> +}
+
+<snip>
