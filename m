@@ -2,37 +2,37 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id F1115148781
-	for <lists+netdev@lfdr.de>; Fri, 24 Jan 2020 15:24:28 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 70344148782
+	for <lists+netdev@lfdr.de>; Fri, 24 Jan 2020 15:24:29 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2392260AbgAXOWK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 24 Jan 2020 09:22:10 -0500
-Received: from mail.kernel.org ([198.145.29.99]:44184 "EHLO mail.kernel.org"
+        id S2392307AbgAXOWL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 24 Jan 2020 09:22:11 -0500
+Received: from mail.kernel.org ([198.145.29.99]:44198 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1731659AbgAXOWJ (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 24 Jan 2020 09:22:09 -0500
+        id S2388230AbgAXOWL (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 24 Jan 2020 09:22:11 -0500
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 904CA22522;
-        Fri, 24 Jan 2020 14:22:07 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id BDAE222464;
+        Fri, 24 Jan 2020 14:22:08 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1579875728;
-        bh=3g3AmL0smK5k2ro0GWmuOvyeISP09J/EW7MoapXOXvE=;
+        s=default; t=1579875729;
+        bh=hwOzeRmZcPdvnDRK6bOH7ZDXX8B+7+SkU/US5GJJKtc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=eUap8ly9lO37tvLsJkPz9FhmBlX78QLXdUOAgMNqdAUy3CXv939hcQvTyW3AmQ6R9
-         Ivf7w8v1TctpdUna9fX4hxqEXrUuOr1xGHmm8Ja8dXaOdU5bFAivlIVkhmxjoL2vuj
-         kndZCfoDM1mU9U9wDfvEkEh+RBQM85o16HsR3yh0=
+        b=nbH/IxW5aqqfqXNAwJgWHN2Svw/hR8LxkpII78h9EBeMhNnEBSQ0wxq3NCsNOe13N
+         t3VaU63spuz0+oOrj2had/3sjMEO8eBxyba5qW191gdFdCGaPjd7K6JsgTVMDFcdZ6
+         j5aDsyRWBv3HTFbIgSR72zwyP2XkpUQ8xspZmMJ4=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Radoslaw Tyl <radoslawx.tyl@intel.com>,
-        Paul Menzel <pmenzel@molgen.mpg.de>,
+Cc:     Cambda Zhu <cambda@linux.alibaba.com>,
+        Andrew Bowers <andrewx.bowers@intel.com>,
         Jeff Kirsher <jeffrey.t.kirsher@intel.com>,
         Sasha Levin <sashal@kernel.org>,
         intel-wired-lan@lists.osuosl.org, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.9 08/18] ixgbevf: Remove limit of 10 entries for unicast filter list
-Date:   Fri, 24 Jan 2020 09:21:47 -0500
-Message-Id: <20200124142157.30931-8-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 4.9 09/18] ixgbe: Fix calculation of queue with VFs and flow director on interface flap
+Date:   Fri, 24 Jan 2020 09:21:48 -0500
+Message-Id: <20200124142157.30931-9-sashal@kernel.org>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20200124142157.30931-1-sashal@kernel.org>
 References: <20200124142157.30931-1-sashal@kernel.org>
@@ -45,40 +45,81 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Radoslaw Tyl <radoslawx.tyl@intel.com>
+From: Cambda Zhu <cambda@linux.alibaba.com>
 
-[ Upstream commit aa604651d523b1493988d0bf6710339f3ee60272 ]
+[ Upstream commit 4fad78ad6422d9bca62135bbed8b6abc4cbb85b8 ]
 
-Currently, though the FDB entry is added to VF, it does not appear in
-RAR filters. VF driver only allows to add 10 entries. Attempting to add
-another causes an error. This patch removes limitation and allows use of
-all free RAR entries for the FDB if needed.
+This patch fixes the calculation of queue when we restore flow director
+filters after resetting adapter. In ixgbe_fdir_filter_restore(), filter's
+vf may be zero which makes the queue outside of the rx_ring array.
 
-Fixes: 46ec20ff7d ("ixgbevf: Add macvlan support in the set rx mode op")
-Signed-off-by: Radoslaw Tyl <radoslawx.tyl@intel.com>
-Acked-by: Paul Menzel <pmenzel@molgen.mpg.de>
+The calculation is changed to the same as ixgbe_add_ethtool_fdir_entry().
+
+Signed-off-by: Cambda Zhu <cambda@linux.alibaba.com>
+Tested-by: Andrew Bowers <andrewx.bowers@intel.com>
 Signed-off-by: Jeff Kirsher <jeffrey.t.kirsher@intel.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/intel/ixgbevf/ixgbevf_main.c | 5 -----
- 1 file changed, 5 deletions(-)
+ drivers/net/ethernet/intel/ixgbe/ixgbe_main.c | 37 ++++++++++++++-----
+ 1 file changed, 27 insertions(+), 10 deletions(-)
 
-diff --git a/drivers/net/ethernet/intel/ixgbevf/ixgbevf_main.c b/drivers/net/ethernet/intel/ixgbevf/ixgbevf_main.c
-index 75607267e656f..7a763e85ff27e 100644
---- a/drivers/net/ethernet/intel/ixgbevf/ixgbevf_main.c
-+++ b/drivers/net/ethernet/intel/ixgbevf/ixgbevf_main.c
-@@ -1885,11 +1885,6 @@ static int ixgbevf_write_uc_addr_list(struct net_device *netdev)
+diff --git a/drivers/net/ethernet/intel/ixgbe/ixgbe_main.c b/drivers/net/ethernet/intel/ixgbe/ixgbe_main.c
+index 8ad20b7852ed7..4c729faeb7132 100644
+--- a/drivers/net/ethernet/intel/ixgbe/ixgbe_main.c
++++ b/drivers/net/ethernet/intel/ixgbe/ixgbe_main.c
+@@ -4804,7 +4804,7 @@ static void ixgbe_fdir_filter_restore(struct ixgbe_adapter *adapter)
  	struct ixgbe_hw *hw = &adapter->hw;
- 	int count = 0;
+ 	struct hlist_node *node2;
+ 	struct ixgbe_fdir_filter *filter;
+-	u64 action;
++	u8 queue;
  
--	if ((netdev_uc_count(netdev)) > 10) {
--		pr_err("Too many unicast filters - No Space\n");
--		return -ENOSPC;
--	}
--
- 	if (!netdev_uc_empty(netdev)) {
- 		struct netdev_hw_addr *ha;
+ 	spin_lock(&adapter->fdir_perfect_lock);
  
+@@ -4813,17 +4813,34 @@ static void ixgbe_fdir_filter_restore(struct ixgbe_adapter *adapter)
+ 
+ 	hlist_for_each_entry_safe(filter, node2,
+ 				  &adapter->fdir_filter_list, fdir_node) {
+-		action = filter->action;
+-		if (action != IXGBE_FDIR_DROP_QUEUE && action != 0)
+-			action =
+-			(action >> ETHTOOL_RX_FLOW_SPEC_RING_VF_OFF) - 1;
++		if (filter->action == IXGBE_FDIR_DROP_QUEUE) {
++			queue = IXGBE_FDIR_DROP_QUEUE;
++		} else {
++			u32 ring = ethtool_get_flow_spec_ring(filter->action);
++			u8 vf = ethtool_get_flow_spec_ring_vf(filter->action);
++
++			if (!vf && (ring >= adapter->num_rx_queues)) {
++				e_err(drv, "FDIR restore failed without VF, ring: %u\n",
++				      ring);
++				continue;
++			} else if (vf &&
++				   ((vf > adapter->num_vfs) ||
++				     ring >= adapter->num_rx_queues_per_pool)) {
++				e_err(drv, "FDIR restore failed with VF, vf: %hhu, ring: %u\n",
++				      vf, ring);
++				continue;
++			}
++
++			/* Map the ring onto the absolute queue index */
++			if (!vf)
++				queue = adapter->rx_ring[ring]->reg_idx;
++			else
++				queue = ((vf - 1) *
++					adapter->num_rx_queues_per_pool) + ring;
++		}
+ 
+ 		ixgbe_fdir_write_perfect_filter_82599(hw,
+-				&filter->filter,
+-				filter->sw_idx,
+-				(action == IXGBE_FDIR_DROP_QUEUE) ?
+-				IXGBE_FDIR_DROP_QUEUE :
+-				adapter->rx_ring[action]->reg_idx);
++				&filter->filter, filter->sw_idx, queue);
+ 	}
+ 
+ 	spin_unlock(&adapter->fdir_perfect_lock);
 -- 
 2.20.1
 
