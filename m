@@ -2,73 +2,84 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 45EDC1479CF
-	for <lists+netdev@lfdr.de>; Fri, 24 Jan 2020 09:57:06 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C67231479E4
+	for <lists+netdev@lfdr.de>; Fri, 24 Jan 2020 09:59:38 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729260AbgAXI5A convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Fri, 24 Jan 2020 03:57:00 -0500
-Received: from mga11.intel.com ([192.55.52.93]:6017 "EHLO mga11.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725787AbgAXI5A (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 24 Jan 2020 03:57:00 -0500
-X-Amp-Result: SKIPPED(no attachment in message)
-X-Amp-File-Uploaded: False
-Received: from fmsmga002.fm.intel.com ([10.253.24.26])
-  by fmsmga102.fm.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 24 Jan 2020 00:57:00 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.70,357,1574150400"; 
-   d="scan'208";a="260174253"
-Received: from pgsmsx104.gar.corp.intel.com ([10.221.44.91])
-  by fmsmga002.fm.intel.com with ESMTP; 24 Jan 2020 00:56:57 -0800
-Received: from pgsmsx114.gar.corp.intel.com ([169.254.4.192]) by
- PGSMSX104.gar.corp.intel.com ([169.254.3.14]) with mapi id 14.03.0439.000;
- Fri, 24 Jan 2020 16:56:56 +0800
-From:   "Ong, Boon Leong" <boon.leong.ong@intel.com>
-To:     Jose Abreu <Jose.Abreu@synopsys.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-CC:     "Tan, Tee Min" <tee.min.tan@intel.com>,
-        "Voon, Weifeng" <weifeng.voon@intel.com>,
-        Giuseppe Cavallaro <peppe.cavallaro@st.com>,
-        Alexandre TORGUE <alexandre.torgue@st.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
-        "Joao Pinto" <Joao.Pinto@synopsys.com>,
-        Arnd Bergmann <arnd@arndb.de>,
-        "Alexandru Ardelean" <alexandru.ardelean@analog.com>,
-        "linux-stm32@st-md-mailman.stormreply.com" 
-        <linux-stm32@st-md-mailman.stormreply.com>,
-        "linux-arm-kernel@lists.infradead.org" 
-        <linux-arm-kernel@lists.infradead.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: RE: [PATCH net v3 2/5] net: stmmac: fix incorrect GMAC_VLAN_TAG
- register writting in GMAC4+
-Thread-Topic: [PATCH net v3 2/5] net: stmmac: fix incorrect GMAC_VLAN_TAG
- register writting in GMAC4+
-Thread-Index: AQHV0QSDmNiamEvEckGAHFcP1jevNaf19hiAgAOQN5A=
-Date:   Fri, 24 Jan 2020 08:56:56 +0000
-Message-ID: <AF233D1473C1364ABD51D28909A1B1B75C488EF5@pgsmsx114.gar.corp.intel.com>
-References: <20200122090936.28555-1-boon.leong.ong@intel.com>
- <20200122090936.28555-3-boon.leong.ong@intel.com>
- <BN8PR12MB326699D4E4CD49804F2E5097D30C0@BN8PR12MB3266.namprd12.prod.outlook.com>
-In-Reply-To: <BN8PR12MB326699D4E4CD49804F2E5097D30C0@BN8PR12MB3266.namprd12.prod.outlook.com>
-Accept-Language: en-GB, en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-dlp-product: dlpe-windows
-dlp-version: 11.2.0.6
-dlp-reaction: no-action
-x-originating-ip: [172.30.20.205]
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 8BIT
+        id S1729789AbgAXI7e (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 24 Jan 2020 03:59:34 -0500
+Received: from mail-lj1-f193.google.com ([209.85.208.193]:38183 "EHLO
+        mail-lj1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725843AbgAXI7e (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 24 Jan 2020 03:59:34 -0500
+Received: by mail-lj1-f193.google.com with SMTP id w1so1606124ljh.5
+        for <netdev@vger.kernel.org>; Fri, 24 Jan 2020 00:59:33 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=cogentembedded-com.20150623.gappssmtp.com; s=20150623;
+        h=subject:to:references:from:message-id:date:user-agent:mime-version
+         :in-reply-to:content-language:content-transfer-encoding;
+        bh=kXJCcZwQ4bDTEt7nA7d+aRHc6CGt2LLfVcuLvvHZl/w=;
+        b=SnP/e24CSQOPdfuiIYdoNW77jKNm7c9TJWlm1LmQ+lOqniwP4+0jh8l0wz8C5esjSN
+         cwLmJbMUe+KviajPKlTcpkLa+w+LkiBoXq58GMLlI0UgL7FHgh62tRq10cj8DLZrIzAE
+         FGJiouN130TE4Yjb9C93vYyAvKVggxHcLBonnqi8wTCuF6KqOD2+sIfrFCNVMYipkwqC
+         NfmNAOu+Ph8QB1truFuJZF6LaKSv+GFIb/U2yco7zj6hJiL81Pqz86qkq5qYkuJzRO02
+         jJv310UcMKtYe/0HsI2hBZuLsFmfSq9xEuNhrzYGIDC9Qkrq0y58Old7WW9ihTwaJJlu
+         uwfg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=kXJCcZwQ4bDTEt7nA7d+aRHc6CGt2LLfVcuLvvHZl/w=;
+        b=gHRFqMisQsgvqcAl6uQi8HemUPtRpu5LWfX2APosZRd+M+dJlDJL1crytrIU/CL85n
+         RfZf2S5PTgtf1DztpVeIEcw8Hj6fzEW+IUJIC2ddB6bejmluDi+Q70//88YSdEjvKie4
+         C7rZTLVKoMn/YEKsDKYoIAnV8orAdOl9NQPJfUGDQ2Kf6/16j+7bZ1xDdISnJzkfSwWK
+         hy/Ka62Ca+tUEf0FSOg3xmyxjZvDZvFREVrv5WGylGPAvE3sq/t3rt7auyR6JLYVWWTI
+         9mlYiLfPFCyHed4x1IhpaXobDCtmZRK2FstiZHJvDItOEAv3AfoXcGTXpsd6aq//EZWN
+         b+QQ==
+X-Gm-Message-State: APjAAAUwI27V/UXIjyq9VBV4OYfLAnYEx9QtRkw5NYwTxlJ4hBJfnDx5
+        Jivw2reX66L62oh+rRXM3i796Q==
+X-Google-Smtp-Source: APXvYqxTBmC7gLP7OKCLVTzJmGKjpaOCqfXk4fhdvyp4FY7rdD2w161kwavFm9P08Lske+A/dtieLg==
+X-Received: by 2002:a2e:8916:: with SMTP id d22mr1705513lji.19.1579856372500;
+        Fri, 24 Jan 2020 00:59:32 -0800 (PST)
+Received: from ?IPv6:2a00:1fa0:42e2:c9dd:80a5:7c8e:61b8:822e? ([2a00:1fa0:42e2:c9dd:80a5:7c8e:61b8:822e])
+        by smtp.gmail.com with ESMTPSA id o69sm2383608lff.14.2020.01.24.00.59.31
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 24 Jan 2020 00:59:31 -0800 (PST)
+Subject: Re: [PATCH net] fou: Fix IPv6 netlink policy
+To:     Kristian Evensen <kristian.evensen@gmail.com>,
+        netdev@vger.kernel.org, dvyukov@google.com
+References: <20200123122018.27805-1-kristian.evensen@gmail.com>
+From:   Sergei Shtylyov <sergei.shtylyov@cogentembedded.com>
+Message-ID: <7b55a1b9-f065-d740-833d-c1fd2bb6c484@cogentembedded.com>
+Date:   Fri, 24 Jan 2020 11:59:17 +0300
+User-Agent: Mozilla/5.0 (Windows NT 6.3; WOW64; rv:68.0) Gecko/20100101
+ Thunderbird/68.4.1
 MIME-Version: 1.0
+In-Reply-To: <20200123122018.27805-1-kristian.evensen@gmail.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
->Thanks for adding patch 4/5 but I meant in previous reply that this patch
->should also go for XGMAC cores ...
->
-Noted. We will add tis in v4. 
- 
+Hello!
+
+On 23.01.2020 15:20, Kristian Evensen wrote:
+
+> When submitting v2 of "fou: Support binding FoU socket" (1713cb37bf67),
+
+    1713cb37bf67 ("fou: Support binding FoU socket"), like in the Fixes: tag.
+
+> I accidentally sent the wrong version of the patch and one fix was
+> missing. In the initial version of the patch, as well as the version 2
+> that I submitted, I incorrectly used ".type" for the two V6-attributes.
+> The correct is to use ".len".
+> 
+> Reported-by: Dmitry Vyukov <dvyukov@google.com>
+> Fixes: 1713cb37bf67 ("fou: Support binding FoU socket")
+> Signed-off-by: Kristian Evensen <kristian.evensen@gmail.com>
+[...]
+
+MBR, Sergei
