@@ -2,120 +2,94 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id D2B15147EF2
-	for <lists+netdev@lfdr.de>; Fri, 24 Jan 2020 11:44:33 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 792A9148239
+	for <lists+netdev@lfdr.de>; Fri, 24 Jan 2020 12:26:47 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731616AbgAXKo0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 24 Jan 2020 05:44:26 -0500
-Received: from mail-qk1-f196.google.com ([209.85.222.196]:41284 "EHLO
-        mail-qk1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725843AbgAXKo0 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 24 Jan 2020 05:44:26 -0500
-Received: by mail-qk1-f196.google.com with SMTP id s187so1539960qke.8
-        for <netdev@vger.kernel.org>; Fri, 24 Jan 2020 02:44:25 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=V97jUf+bWpjoq1UnX/MqEvf1aslGGrvEAvh2eN6ByfY=;
-        b=F9rbuxvJausgVIyNlYGX5CZhEBcw/vXq8/jPLn0g1Z9Rgv+kfxtsslCWk0j+VOX54S
-         D0v6wZ2aWE/QMboSrmC4V7dFsX/+dpFmt7eb3HQr9y7qlxM7iNdC7HVVRPkw5MSzePar
-         2OpH3q/MT6Y6qZxiubcft6PkVii0D9N7eDc1uR1coSqSqfeMhoi6qLTSzkfqjDOGU1vW
-         8nhmz959kCmQweACAKFCyrgHxhk8D9E5tSGWIva5ZQ90zFQPXpWRmCpIGcUBQYHjEW4d
-         3Gbte9+Cj95H78d19T9ZrGyKcoBlfC89jWazrVaUVjauEbCLCNmg+Nh3Yh96x3NzMxQQ
-         UA0g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=V97jUf+bWpjoq1UnX/MqEvf1aslGGrvEAvh2eN6ByfY=;
-        b=lPEXZkLJsn9/e/qRe1vvyloQBgn5EOO7YfS5XqZgDs+1ERR9uEZ3f9Bt3r/qxSS6Dl
-         04KFQ/MD0ew1VAeV3NT2qI+I7v/Ze0IU+suIJjahk/vw2ZhVam6f9aHK2Th4dlykAFbA
-         5wbU7drcxHDt6jR2bhlWqriF0W4MGgv5cS1r8MrSSmQbMtvY+ugwHl/e1Hw5E6dYU1d6
-         HcHXEXyEuFpm1EKd3IwC8PKC5tGtxbznH47CjPEp7HkVuJ6PF0gQtK4n0sxt2zYvOqKD
-         uREPUfS/twC4hYRBMeUYTXV1K9rVz6/DhqOxbHHZs9IRJaKQBjI9Hp+FnP9KlCBMl87q
-         zlfw==
-X-Gm-Message-State: APjAAAX85iaBoUIlxTP0UFCRcJFq/zAKhaSannpw4IzJb9vR+/0RzFL9
-        oj5j2c5UC3cWYg8IzSiXPSuCxK9lO93f/PjS99yPAQ==
-X-Google-Smtp-Source: APXvYqwb6/QOg4tOSE7XM1J/vLzeU2KOG/13MZFwVCAp7btlGEz5Ger1ejK9QvSdeczBxSt226fUJJZC4K5KYzKhOS0=
-X-Received: by 2002:ae9:e50c:: with SMTP id w12mr1684238qkf.407.1579862664841;
- Fri, 24 Jan 2020 02:44:24 -0800 (PST)
+        id S2403930AbgAXL0O (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 24 Jan 2020 06:26:14 -0500
+Received: from mail.kernel.org ([198.145.29.99]:40764 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S2403921AbgAXL0N (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 24 Jan 2020 06:26:13 -0500
+Received: from localhost (ip-213-127-102-57.ip.prioritytelecom.net [213.127.102.57])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 1062C20838;
+        Fri, 24 Jan 2020 11:26:11 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1579865172;
+        bh=TzowKccvI55mtIGH0oD/xZt9s53+e4QQyQqrJGl7Uro=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=m6ag9tUvkkrCvTQAAKfm3RtwbzMvqgPA759tl10s1cJsjaBeU/abH4LiMCxjvoHHN
+         SaCRi7AFYblWDuFrv2b0pncjZAL43wGK6/9sUykzgxTSAEdocalSX7sVjJVNoZzgDA
+         6thiYol3Oj8Q7VP0WQuHxYsMwd946AlHZhTciiEc=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Wen Yang <wen.yang99@zte.com.cn>,
+        "David S. Miller" <davem@davemloft.net>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Luis Chamberlain <mcgrof@kernel.org>,
+        Michael Ellerman <mpe@ellerman.id.au>, netdev@vger.kernel.org,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 4.19 473/639] net: pasemi: fix an use-after-free in pasemi_mac_phy_init()
+Date:   Fri, 24 Jan 2020 10:30:43 +0100
+Message-Id: <20200124093147.032938762@linuxfoundation.org>
+X-Mailer: git-send-email 2.25.0
+In-Reply-To: <20200124093047.008739095@linuxfoundation.org>
+References: <20200124093047.008739095@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-References: <0000000000001b2259059c654421@google.com> <20200121180255.1c98b54c@gandalf.local.home>
- <20200122055314.GD1847@kadam>
-In-Reply-To: <20200122055314.GD1847@kadam>
-From:   Dmitry Vyukov <dvyukov@google.com>
-Date:   Fri, 24 Jan 2020 11:44:13 +0100
-Message-ID: <CACT4Y+ZP-7np20GVRu3p+eZys9GPtbu+JpfV+HtsufAzvTgJrg@mail.gmail.com>
-Subject: Re: WARNING in tracing_func_proto
-To:     Dan Carpenter <dan.carpenter@oracle.com>
-Cc:     Steven Rostedt <rostedt@goodmis.org>,
-        syzbot <syzbot+0c147ca7bd4352547635@syzkaller.appspotmail.com>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Ingo Molnar <mingo@redhat.com>,
-        netdev <netdev@vger.kernel.org>,
-        syzkaller-bugs <syzkaller-bugs@googlegroups.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Jan 22, 2020 at 6:54 AM Dan Carpenter <dan.carpenter@oracle.com> wrote:
->
-> On Tue, Jan 21, 2020 at 06:02:55PM -0500, Steven Rostedt wrote:
-> > On Fri, 17 Jan 2020 23:47:11 -0800
-> > syzbot <syzbot+0c147ca7bd4352547635@syzkaller.appspotmail.com> wrote:
-> >
-> > > Hello,
-> > >
-> > > syzbot found the following crash on:
-> > >
-> > > HEAD commit:    428cd523 sfc/ethtool_common: Make some function to static
-> > > git tree:       net-next
-> > > console output: https://syzkaller.appspot.com/x/log.txt?x=10483421e00000
-> > > kernel config:  https://syzkaller.appspot.com/x/.config?x=66d8660c57ff3c98
-> > > dashboard link: https://syzkaller.appspot.com/bug?extid=0c147ca7bd4352547635
-> > > compiler:       gcc (GCC) 9.0.0 20181231 (experimental)
-> > >
-> > > Unfortunately, I don't have any reproducer for this crash yet.
-> > >
-> > > IMPORTANT: if you fix the bug, please add the following tag to the commit:
-> > > Reported-by: syzbot+0c147ca7bd4352547635@syzkaller.appspotmail.com
-> > >
-> > > ------------[ cut here ]------------
-> > > Could not allocate percpu trace_printk buffer
-> > > WARNING: CPU: 1 PID: 11733 at kernel/trace/trace.c:3112 alloc_percpu_trace_buffer kernel/trace/trace.c:3112 [inline]
-> > > WARNING: CPU: 1 PID: 11733 at kernel/trace/trace.c:3112 trace_printk_init_buffers+0x5b/0x60 kernel/trace/trace.c:3126
-> > > Kernel panic - not syncing: panic_on_warn set ...
-> >
-> > So it failed to allocate memory for the buffer (must be running low on
-> > memory, or allocated a really big buffer?), and that triggered a
-> > warning. As you have "panic_on_warn" set, the warning triggered the
-> > panic.
-> >
-> > The only solution to this that I can see is to remove the WARN_ON and
-> > replace it with a pr_warn() message. There's a lot of WARN_ON()s in the
-> > kernel that need this conversion too, and I will postpone this change
-> > to that effort.
-> >
->
-> I bet the syzbot folk have changed to lot of WARN_ON()s.  Maybe they
-> just comment them out on their local tree?
+From: Wen Yang <wen.yang99@zte.com.cn>
 
-FWIW this is invalid use of WARN macros:
-https://elixir.bootlin.com/linux/v5.5-rc7/source/include/asm-generic/bug.h#L72
-This should be replaced with pr_err (if really necessary, kernel does
-not generally spew stacks on every ENOMEM/EINVAL).
+[ Upstream commit faf5577f2498cea23011b5c785ef853ded22700b ]
 
-There are no _lots_ such wrong uses of WARN in the kernel. There were
-some, all get fixed over time, we are still discovering long tail, but
-it's like one per months at most. Note: syzbot reports each and every
-WARNING. If there were lots, you would notice :)
+The phy_dn variable is still being used in of_phy_connect() after the
+of_node_put() call, which may result in use-after-free.
 
-Sorting this out is critical for just any kernel testing. Otherwise no
-testing system will be able to say if a test triggers something bad in
-kernel or not.
+Fixes: 1dd2d06c0459 ("net: Rework pasemi_mac driver to use of_mdio infrastructure")
+Signed-off-by: Wen Yang <wen.yang99@zte.com.cn>
+Cc: "David S. Miller" <davem@davemloft.net>
+Cc: Thomas Gleixner <tglx@linutronix.de>
+Cc: Luis Chamberlain <mcgrof@kernel.org>
+Cc: Michael Ellerman <mpe@ellerman.id.au>
+Cc: netdev@vger.kernel.org
+Cc: linux-kernel@vger.kernel.org
+Signed-off-by: David S. Miller <davem@davemloft.net>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ drivers/net/ethernet/pasemi/pasemi_mac.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-FWIW there are no local trees for syzbot. It only tests public trees
-as is. Doing otherwise would not work/scale as a process.
+diff --git a/drivers/net/ethernet/pasemi/pasemi_mac.c b/drivers/net/ethernet/pasemi/pasemi_mac.c
+index 8a31a02c9f47f..65f69e562618a 100644
+--- a/drivers/net/ethernet/pasemi/pasemi_mac.c
++++ b/drivers/net/ethernet/pasemi/pasemi_mac.c
+@@ -1053,7 +1053,6 @@ static int pasemi_mac_phy_init(struct net_device *dev)
+ 
+ 	dn = pci_device_to_OF_node(mac->pdev);
+ 	phy_dn = of_parse_phandle(dn, "phy-handle", 0);
+-	of_node_put(phy_dn);
+ 
+ 	mac->link = 0;
+ 	mac->speed = 0;
+@@ -1062,6 +1061,7 @@ static int pasemi_mac_phy_init(struct net_device *dev)
+ 	phydev = of_phy_connect(dev, phy_dn, &pasemi_adjust_link, 0,
+ 				PHY_INTERFACE_MODE_SGMII);
+ 
++	of_node_put(phy_dn);
+ 	if (!phydev) {
+ 		printk(KERN_ERR "%s: Could not attach to phy\n", dev->name);
+ 		return -ENODEV;
+-- 
+2.20.1
+
+
+
