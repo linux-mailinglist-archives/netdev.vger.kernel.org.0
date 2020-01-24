@@ -2,38 +2,37 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 31F05148793
-	for <lists+netdev@lfdr.de>; Fri, 24 Jan 2020 15:24:38 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7E14014875A
+	for <lists+netdev@lfdr.de>; Fri, 24 Jan 2020 15:23:07 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731830AbgAXOXc (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 24 Jan 2020 09:23:32 -0500
-Received: from mail.kernel.org ([198.145.29.99]:44384 "EHLO mail.kernel.org"
+        id S2405054AbgAXOWY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 24 Jan 2020 09:22:24 -0500
+Received: from mail.kernel.org ([198.145.29.99]:44462 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2392349AbgAXOWT (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 24 Jan 2020 09:22:19 -0500
+        id S2392334AbgAXOWX (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 24 Jan 2020 09:22:23 -0500
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 6CE13222C2;
-        Fri, 24 Jan 2020 14:22:18 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 6280222464;
+        Fri, 24 Jan 2020 14:22:22 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1579875739;
-        bh=CqyUUQOsG1vja+xfEZ2xn9DYS2Ct3ww+k0x674ao23g=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=zYyHIltVHwMICKBflrM9AqPCyrqk+KjeVCOW31qJLcpZv+BeKXgFDOxvH1Xg6MPhQ
-         gDYlvFCmAcWDN8y/IDPNlqZiJQloz4o8WKeLvsZXaRqVwfDgV7952G0r0Xm9a011Cz
-         D7jeH5WPtMTlUhgNqE1GaPHde0NNOOBpi2aeISUw=
+        s=default; t=1579875743;
+        bh=JndqAaWRMQuy3nm1R4jhkd9XYrsf/vtVro7uCNEVFKM=;
+        h=From:To:Cc:Subject:Date:From;
+        b=KI/GcPLd6KfqXV9yU5S80WXJbymr8HUI7P/pB1VyFJM3NuPllbY6Lc/0NAhhrw3MI
+         vRFRz5KND5iBuTf0b88ErKMfHU+wtPDnF0AtEDdNPFa9OiY0Of/RJ3C3ECYgpBcfTA
+         c0PNvEWIespWB5mK+7IDIbbcjktTEendDzmkPPWo=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Colin Ian King <colin.king@canonical.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.9 17/18] net/wan/fsl_ucc_hdlc: fix out of bounds write on array utdm_info
-Date:   Fri, 24 Jan 2020 09:21:56 -0500
-Message-Id: <20200124142157.30931-17-sashal@kernel.org>
+Cc:     Sven Eckelmann <sven@narfation.org>,
+        Simon Wunderlich <sw@simonwunderlich.de>,
+        Sasha Levin <sashal@kernel.org>,
+        b.a.t.m.a.n@lists.open-mesh.org, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 4.4 1/9] batman-adv: Fix DAT candidate selection on little endian systems
+Date:   Fri, 24 Jan 2020 09:22:13 -0500
+Message-Id: <20200124142221.31201-1-sashal@kernel.org>
 X-Mailer: git-send-email 2.20.1
-In-Reply-To: <20200124142157.30931-1-sashal@kernel.org>
-References: <20200124142157.30931-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
@@ -43,38 +42,51 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Colin Ian King <colin.king@canonical.com>
+From: Sven Eckelmann <sven@narfation.org>
 
-[ Upstream commit ddf420390526ede3b9ff559ac89f58cb59d9db2f ]
+[ Upstream commit 4cc4a1708903f404d2ca0dfde30e71e052c6cbc9 ]
 
-Array utdm_info is declared as an array of MAX_HDLC_NUM (4) elements
-however up to UCC_MAX_NUM (8) elements are potentially being written
-to it.  Currently we have an array out-of-bounds write error on the
-last 4 elements. Fix this by making utdm_info UCC_MAX_NUM elements in
-size.
+The distributed arp table is using a DHT to store and retrieve MAC address
+information for an IP address. This is done using unicast messages to
+selected peers. The potential peers are looked up using the IP address and
+the VID.
 
-Addresses-Coverity: ("Out-of-bounds write")
-Fixes: c19b6d246a35 ("drivers/net: support hdlc function for QE-UCC")
-Signed-off-by: Colin Ian King <colin.king@canonical.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+While the IP address is always stored in big endian byte order, this is not
+the case of the VID. It can (depending on the host system) either be big
+endian or little endian. The host must therefore always convert it to big
+endian to ensure that all devices calculate the same peers for the same
+lookup data.
+
+Fixes: be1db4f6615b ("batman-adv: make the Distributed ARP Table vlan aware")
+Signed-off-by: Sven Eckelmann <sven@narfation.org>
+Signed-off-by: Simon Wunderlich <sw@simonwunderlich.de>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/wan/fsl_ucc_hdlc.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ net/batman-adv/distributed-arp-table.c | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/net/wan/fsl_ucc_hdlc.c b/drivers/net/wan/fsl_ucc_hdlc.c
-index b2c1e872d5ed5..af85a1b3135e2 100644
---- a/drivers/net/wan/fsl_ucc_hdlc.c
-+++ b/drivers/net/wan/fsl_ucc_hdlc.c
-@@ -77,7 +77,7 @@ static struct ucc_tdm_info utdm_primary_info = {
- 	},
- };
+diff --git a/net/batman-adv/distributed-arp-table.c b/net/batman-adv/distributed-arp-table.c
+index c2dff7c6e9607..76808c5e81836 100644
+--- a/net/batman-adv/distributed-arp-table.c
++++ b/net/batman-adv/distributed-arp-table.c
+@@ -226,6 +226,7 @@ static u32 batadv_hash_dat(const void *data, u32 size)
+ 	u32 hash = 0;
+ 	const struct batadv_dat_entry *dat = data;
+ 	const unsigned char *key;
++	__be16 vid;
+ 	u32 i;
  
--static struct ucc_tdm_info utdm_info[MAX_HDLC_NUM];
-+static struct ucc_tdm_info utdm_info[UCC_MAX_NUM];
+ 	key = (const unsigned char *)&dat->ip;
+@@ -235,7 +236,8 @@ static u32 batadv_hash_dat(const void *data, u32 size)
+ 		hash ^= (hash >> 6);
+ 	}
  
- static int uhdlc_init(struct ucc_hdlc_private *priv)
- {
+-	key = (const unsigned char *)&dat->vid;
++	vid = htons(dat->vid);
++	key = (__force const unsigned char *)&vid;
+ 	for (i = 0; i < sizeof(dat->vid); i++) {
+ 		hash += key[i];
+ 		hash += (hash << 10);
 -- 
 2.20.1
 
