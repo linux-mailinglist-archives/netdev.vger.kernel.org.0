@@ -2,49 +2,49 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 7E33B148ED5
-	for <lists+netdev@lfdr.de>; Fri, 24 Jan 2020 20:45:50 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 56D19148EDE
+	for <lists+netdev@lfdr.de>; Fri, 24 Jan 2020 20:46:43 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2403897AbgAXTpf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 24 Jan 2020 14:45:35 -0500
-Received: from mail-pf1-f196.google.com ([209.85.210.196]:33349 "EHLO
-        mail-pf1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2391381AbgAXTpc (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 24 Jan 2020 14:45:32 -0500
-Received: by mail-pf1-f196.google.com with SMTP id n7so1582275pfn.0;
-        Fri, 24 Jan 2020 11:45:32 -0800 (PST)
+        id S2392305AbgAXTqh (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 24 Jan 2020 14:46:37 -0500
+Received: from mail-pf1-f193.google.com ([209.85.210.193]:42657 "EHLO
+        mail-pf1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2388136AbgAXTqg (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 24 Jan 2020 14:46:36 -0500
+Received: by mail-pf1-f193.google.com with SMTP id 4so1596823pfz.9;
+        Fri, 24 Jan 2020 11:46:36 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=date:from:to:cc:message-id:in-reply-to:references:subject
          :mime-version:content-transfer-encoding;
-        bh=uAtf8UFoE+PN3UiSFGJxqL2LItMWe3zK1JG/WM0xK54=;
-        b=U5MIHpAYiYl1tN/v3wBtlCpWWQexc2PBHipYhnlZY01BU1nYEXQcem3ktSO8CCb+WL
-         3TyytFB9d6FN7CCayl/+jR9ywTrykenI1ObFjcmwvX2G8+5TiPFtBE5VqaWogzcezRG1
-         xd83kKQH/yoFyC5twgYIAozwljhO4ujvci1eDn/6P2Wzv4G8QyoOegB/ZOFmhQuh7NDj
-         L9PEu6s6QeuVUrhPJhR1bNCsODFJWMX/5kTtkF6Yj//lvXHmSrHV4BZVM7Zmx5lIm2TL
-         OkdhRFXMHkx3sZVPG1u2ekg1OXTwB5m47H/8fhGGuFZfSq7DL1T/5xlby2E3oMNcAsRv
-         e8QA==
+        bh=Gm6lkD9sgLgV2qomq3AVkOddktzWkFTVKTvDd8uS+fY=;
+        b=gbjNskUVs0oggd3PuIth0/LTXovEQWs0mr9H826lTDiDQ5sP7y1S0343j9NYv2mGlQ
+         Hl0xhETQzmCexNNWGioPLcRr2u7hWxgNnuT76C8FjjwpvXPOxCmMH7Qr6HZMyCMmHbUX
+         2sUFtPJV6FqPN0gIf437fBc+lehyOD3O8s7v2BNE57ItfYIeaR9l7AL4WWSE7oDoupJ1
+         xie2TSJkSEnoRPgwd4Kt/6zXn+UB53KmznPkPtj99M5lA0v0Y+5189Dy/s+PJKU7CwBa
+         ekczY6SR2sJa0cBo9YVP9a6Jg988v7t5PLTu7Hn2MXW4astkbKzLqoOwg2BapYXRHBdW
+         vQ3Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:date:from:to:cc:message-id:in-reply-to
          :references:subject:mime-version:content-transfer-encoding;
-        bh=uAtf8UFoE+PN3UiSFGJxqL2LItMWe3zK1JG/WM0xK54=;
-        b=RcmoA+p36Ir2uLEy6UqRRvYX6pSqHrDsBBoujz2rtEiFHbfUp+Fv60sd3KA75IEe/r
-         XsK4kJg0Bb0ZZVfjeBVZ+ThuDioj3lKd1wYsKuy7BaIx0+YAUCLuF16Nd25EygdED/3m
-         QqWG2yst6cn9WUvwEmJGMlj7vQDgs91VzZXqLY6Hj8N1Cckuj/GeG/wxQhNrFaCjxqF/
-         SsH/C5hyENL6YyTcM2XlFYWC7ZUtsE3m5YLLi1IwxvOwSEJX/OxigxS8eDdPHAzy+di4
-         x0jBvKiEk8g8QuyG8SisjqN6VY8+edA3WfJ+sp7ZjLmxHc2q91pNfy66mNPwKADLZTlg
-         rNVA==
-X-Gm-Message-State: APjAAAV/eqOeFjiP7BD4p6Gw3q0HakWC8SnQxaXipDz9xdFbrXMv2rO8
-        MfMhDmsJXKiITpnn/rDxbw49C11F
-X-Google-Smtp-Source: APXvYqx/gD/MSaVKp9vFpCooVWOq+vZEktSonTpjCqs1EQsClDOZoYp4KvvGpzmHryLBmoNbVaG/ow==
-X-Received: by 2002:a63:b50a:: with SMTP id y10mr5898440pge.104.1579895131757;
-        Fri, 24 Jan 2020 11:45:31 -0800 (PST)
+        bh=Gm6lkD9sgLgV2qomq3AVkOddktzWkFTVKTvDd8uS+fY=;
+        b=QYxUWz5GXON5KYn5a+aujtrvMW0GIr2DFMfe69XcoZai+aFx3yoGTMQKSdHpN/5Yd1
+         CsTAZ5LHNdb09FjotjgT20iFZ/+uZnYFbFR8+26PEq85dHhZE9XrpFYotAaKQkSzc5En
+         S/6UibScLkEcOx7BVJFXQrgKiU/4bJy8BvD0/RVikQBhHGNX0ZdGUFfod8qB1PUpa/od
+         WaQbaVPhqtYaY81Gr6Ggq/nSVN4mmrs7p2FAieDky0ry36F4KW+u+BX/3O6vLFEoQJP3
+         7CrTzS5tQqaNKTLPWUk7J3THCPDdRxrGu+1i5vtxQSQ+xUCpW9kj85Hr8Sab6maZ3CjL
+         f0xw==
+X-Gm-Message-State: APjAAAWupYlneuX+ytPvmvzwSabzqiIIsQFSrHJq3SpE3z5ONcCEFNlT
+        CCvh7DHbh5rYY7f5yH1e/h8=
+X-Google-Smtp-Source: APXvYqxU/J6koi+2oe+gS6t+6wkUR/gjAJhREb+DoZ0/U1bRN0AUcRz2isrWa1VYAkPFrMGjz7AuCg==
+X-Received: by 2002:a62:8247:: with SMTP id w68mr4852040pfd.2.1579895195986;
+        Fri, 24 Jan 2020 11:46:35 -0800 (PST)
 Received: from localhost ([184.63.162.180])
-        by smtp.gmail.com with ESMTPSA id u127sm7268053pfc.95.2020.01.24.11.45.30
+        by smtp.gmail.com with ESMTPSA id x21sm7125201pfn.164.2020.01.24.11.46.34
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 24 Jan 2020 11:45:31 -0800 (PST)
-Date:   Fri, 24 Jan 2020 11:45:24 -0800
+        Fri, 24 Jan 2020 11:46:35 -0800 (PST)
+Date:   Fri, 24 Jan 2020 11:46:27 -0800
 From:   John Fastabend <john.fastabend@gmail.com>
 To:     Lorenz Bauer <lmb@cloudflare.com>, Shuah Khan <shuah@kernel.org>,
         Alexei Starovoitov <ast@kernel.org>,
@@ -55,12 +55,12 @@ To:     Lorenz Bauer <lmb@cloudflare.com>, Shuah Khan <shuah@kernel.org>,
 Cc:     Lorenz Bauer <lmb@cloudflare.com>, linux-kselftest@vger.kernel.org,
         netdev@vger.kernel.org, bpf@vger.kernel.org,
         linux-kernel@vger.kernel.org
-Message-ID: <5e2b495476333_551b2aaf5fbda5b85d@john-XPS-13-9370.notmuch>
-In-Reply-To: <20200123165934.9584-3-lmb@cloudflare.com>
+Message-ID: <5e2b4993c633c_551b2aaf5fbda5b826@john-XPS-13-9370.notmuch>
+In-Reply-To: <20200123165934.9584-4-lmb@cloudflare.com>
 References: <20200123165934.9584-1-lmb@cloudflare.com>
- <20200123165934.9584-3-lmb@cloudflare.com>
-Subject: RE: [PATCH bpf 2/4] selftests: bpf: ignore RST packets for reuseport
- tests
+ <20200123165934.9584-4-lmb@cloudflare.com>
+Subject: RE: [PATCH bpf 3/4] selftests: bpf: make reuseport test output more
+ legible
 Mime-Version: 1.0
 Content-Type: text/plain;
  charset=utf-8
@@ -71,35 +71,68 @@ List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 Lorenz Bauer wrote:
-> The reuseport tests currently suffer from a race condition: RST
-> packets count towards DROP_ERR_SKB_DATA, since they don't contain
-> a valid struct cmd. Tests will spuriously fail depending on whether
-> check_results is called before or after the RST is processed.
+> Include the name of the mismatching result in human readable format
+> when reporting an error. The new output looks like the following:
 > 
-> Exit the BPF program early if FIN is set.
+>   unexpected result
+>    result: [1, 0, 0, 0, 0, 0]
+>   expected: [0, 0, 0, 0, 0, 0]
+>   mismatch on DROP_ERR_INNER_MAP (bpf_prog_linum:153)
+>   check_results:FAIL:382
 > 
 > Signed-off-by: Lorenz Bauer <lmb@cloudflare.com>
 > ---
->  .../selftests/bpf/progs/test_select_reuseport_kern.c        | 6 ++++++
->  1 file changed, 6 insertions(+)
+>  .../bpf/prog_tests/select_reuseport.c         | 30 ++++++++++++++++---
+>  1 file changed, 26 insertions(+), 4 deletions(-)
 > 
-> diff --git a/tools/testing/selftests/bpf/progs/test_select_reuseport_kern.c b/tools/testing/selftests/bpf/progs/test_select_reuseport_kern.c
-> index d69a1f2bbbfd..26e77dcc7e91 100644
-> --- a/tools/testing/selftests/bpf/progs/test_select_reuseport_kern.c
-> +++ b/tools/testing/selftests/bpf/progs/test_select_reuseport_kern.c
-> @@ -113,6 +113,12 @@ int _select_by_skb_data(struct sk_reuseport_md *reuse_md)
->  		data_check.skb_ports[0] = th->source;
->  		data_check.skb_ports[1] = th->dest;
+> diff --git a/tools/testing/selftests/bpf/prog_tests/select_reuseport.c b/tools/testing/selftests/bpf/prog_tests/select_reuseport.c
+> index 2c37ae7dc214..09a536af139a 100644
+> --- a/tools/testing/selftests/bpf/prog_tests/select_reuseport.c
+> +++ b/tools/testing/selftests/bpf/prog_tests/select_reuseport.c
+> @@ -316,6 +316,28 @@ static void check_data(int type, sa_family_t family, const struct cmd *cmd,
+>  		       expected.len, result.len, get_linum());
+>  }
 >  
-> +		if (th->fin)
-> +			/* The connection is being torn down at the end of a
-> +			 * test. It can't contain a cmd, so return early.
-> +			 */
-> +			return SK_PASS;
+> +static const char *result_to_str(enum result res)
+> +{
+> +	switch (res) {
+> +	case DROP_ERR_INNER_MAP:
+> +		return "DROP_ERR_INNER_MAP";
+> +	case DROP_ERR_SKB_DATA:
+> +		return "DROP_ERR_SKB_DATA";
+> +	case DROP_ERR_SK_SELECT_REUSEPORT:
+> +		return "DROP_ERR_SK_SELECT_REUSEPORT";
+> +	case DROP_MISC:
+> +		return "DROP_MISC";
+> +	case PASS:
+> +		return "PASS";
+> +	case PASS_ERR_SK_SELECT_REUSEPORT:
+> +		return "PASS_ERR_SK_SELECT_REUSEPORT";
+> +	case NR_RESULTS:
+> +		return "NR_RESULTS";
+> +	default:
+> +		return "UNKNOWN";
+> +	}
+> +}
 > +
->  		if ((th->doff << 2) + sizeof(*cmd) > data_check.len)
->  			GOTO_DONE(DROP_ERR_SKB_DATA);
->  		if (bpf_skb_load_bytes(reuse_md, th->doff << 2, &cmd_copy,
+>  static void check_results(void)
+>  {
+>  	__u32 results[NR_RESULTS];
+> @@ -351,10 +373,10 @@ static void check_results(void)
+>  		printf(", %u", expected_results[i]);
+>  	printf("]\n");
+>  
+> -	RET_IF(expected_results[broken] != results[broken],
+> -	       "unexpected result",
+> -	       "expected_results[%u] != results[%u] bpf_prog_linum:%ld\n",
+> -	       broken, broken, get_linum());
+> +	printf("mismatch on %s (bpf_prog_linum:%ld)\n", result_to_str(broken),
+> +	       get_linum());
+> +
+> +	CHECK_FAIL(true);
+>  }
+>  
+>  static int send_data(int type, sa_family_t family, void *data, size_t len,
 > -- 
 > 2.20.1
 > 
