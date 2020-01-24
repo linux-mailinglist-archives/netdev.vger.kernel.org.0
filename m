@@ -2,156 +2,201 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 2C91D14908E
-	for <lists+netdev@lfdr.de>; Fri, 24 Jan 2020 22:56:09 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id AFE0A14907C
+	for <lists+netdev@lfdr.de>; Fri, 24 Jan 2020 22:54:55 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729213AbgAXV4A (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 24 Jan 2020 16:56:00 -0500
-Received: from mail-yw1-f66.google.com ([209.85.161.66]:34625 "EHLO
-        mail-yw1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726612AbgAXV4A (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 24 Jan 2020 16:56:00 -0500
-Received: by mail-yw1-f66.google.com with SMTP id b186so1612735ywc.1
-        for <netdev@vger.kernel.org>; Fri, 24 Jan 2020 13:56:00 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=cumulusnetworks.com; s=google;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=BJxvwwOnDkL3pWsXr9peLas4v7SNnU0KOKhL/dhULAs=;
-        b=GgUzBHeG2HEfdWkFVF2nEkguMV0QrUka5l8ulmn6I6GCqfdEDZymAXu/Yx5EnztuDh
-         1Y/W1SZ9tN7AzTg28kVWD//38Bk4KrWxGt6GAN4MYMA1EVaDAvUW3rwCtkiR7s4sWPYO
-         erndkEvfjNisSfUgHMHBgicFptUIVmaNM+okE=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=BJxvwwOnDkL3pWsXr9peLas4v7SNnU0KOKhL/dhULAs=;
-        b=lCoPy57KstgFLVbR1VkI/g8GHfdh0xWx3V7Km5/jOR24lRsMtxe7V8Y+JU6WxmLa0q
-         rSPUlGX68rBhmOe7Oocmy5RPxLVcJZ2R86tmPs5hDIln6iFtvEmzk6BFjc6e6vbZd2lG
-         fPEbOg3hOmfzQ6PmHCALRW+hOf5tTEfoT44Tn6vJHUu6Z9pDF09m7+yyD2STKxsDe5ot
-         v820HJgvGlHID5nT1Y3IoCZ5rsCy6GKIv9WsHc/iJq8j1ndDRaQ8PSxgzOgj9YsUNuyq
-         dEfgPEnp49HBW/vN0AfElXswSP9Ls8KAwOE9831qS6Ht4esprr3u86OxTc+V99XAu3va
-         47Og==
-X-Gm-Message-State: APjAAAVM0Cz3p9WoRECtbsPCz+c1neTnr5T3Nhz6DIjH55b4B6W80alR
-        4YUqe5Y5mZprmOLkpJuPS5myeOqE1Bc=
-X-Google-Smtp-Source: APXvYqxiogxhCkc+1pjZc+3wWtaX5BiasQQehjJZT2QB/7MAq+5iFJ22BCjaoSkX6aPJmjklW0Abhg==
-X-Received: by 2002:a81:a190:: with SMTP id y138mr3543932ywg.343.1579902959338;
-        Fri, 24 Jan 2020 13:55:59 -0800 (PST)
-Received: from alfred.rdu.cumulusnetworks.com ([2620:11f:a008:12:33:c558:f7d7:8628])
-        by smtp.gmail.com with ESMTPSA id s68sm2829040ywg.69.2020.01.24.13.55.58
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 24 Jan 2020 13:55:58 -0800 (PST)
-From:   Stephen Worley <sworley@cumulusnetworks.com>
-To:     netdev@vger.kernel.org
-Cc:     dsahern@gmail.com, davem@davemloft.net, sharpd@cumulusnetworks.com,
-        roopa@cumulusnetworks.com,
-        Stephen Worley <sworley@cumulusnetworks.com>
-Subject: [PATCH] net: include struct nhmsg size in nh nlmsg size
-Date:   Fri, 24 Jan 2020 16:53:27 -0500
-Message-Id: <20200124215327.430193-1-sworley@cumulusnetworks.com>
-X-Mailer: git-send-email 2.24.1
+        id S1727264AbgAXVyx (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 24 Jan 2020 16:54:53 -0500
+Received: from mail-am6eur05on2040.outbound.protection.outlook.com ([40.107.22.40]:49114
+        "EHLO EUR05-AM6-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1726545AbgAXVyx (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 24 Jan 2020 16:54:53 -0500
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=dppLM/zKDb7Z/A7vilY8NO5S7ZFKydUp0fRzErLUPe2fWCkmJV7sJYbjCeWY1dFLAEAth9u97fUaLA6yf/pyYDj8tE+B+McZqKXZ2V9aNLwlVmiS/CH8RkM71Kcnl1C9mSRwm/U5ycaFncNYhDnt46zVustoNbxaYR9FuV64qt+XEElGeOsm6ky9emoQbqtyFIDOHVNvBL0pr8jaaKYRew9ygl9x2RbzDHw9Ude4Nlp363Cml5d959Cx1E4rz4ktMOLsnLLgD7s6wQNCc0YWMb2oFVKSfzoDhq+VYCH997/RrGKunkjh5c79CMylZ48Re3QMko6jVku3vYd0AviqEg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=RdRj3rWrSG81qSU2NT0+6D6s9m8kcTQ2dROSAY1q/JU=;
+ b=BKjVrkzgkmvXTR9FZ7U2DGQnWN20NV9quICSVp42CccE+6zoTTbTgljDXzb+UPylBDf0BJpP3s/8taVYa1H7AZBczrr/osNGgLyhSUH9LkGHdQc128EjcBtz60UISMnv4Yc7YMIb4X9/aCFuOGVsBBQmZMbhTVzVUc+uVEzB9zY6BhtFN+Rj4GkMuDkvSV2FzuF/mcv2JdXjbIJUMYjf+YGbKa/VC6rXl//ct9TIc/Kph6GYGCwcQoGak22e+MZRLU49TZVyLhgDt8ESMfc0ZdpNEkeai7y1Qt1AaTXcgnZ7edVkG0LjK/+N1GcA5YTRMbbuJWyb8sazSUCoFlQ+ug==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=mellanox.com; dmarc=pass action=none header.from=mellanox.com;
+ dkim=pass header.d=mellanox.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Mellanox.com;
+ s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=RdRj3rWrSG81qSU2NT0+6D6s9m8kcTQ2dROSAY1q/JU=;
+ b=jjGM1PXUlI/Na2CnLz6PG+SLkpu9M/nb1wPkfTiJR9GZrkCxqz0uoeHheq50X25MiwL+nQiSILlAZiGGDYkaPmwGoEAG5gnlB9Od8Sm4qBY0fqhQ0nZjzwcmaTJpqDElNvZ8A7Bcg6wviGNpug/hgNiZ+7xR8g1TdK7u6ufRoyo=
+Received: from VI1PR05MB5102.eurprd05.prod.outlook.com (20.177.51.151) by
+ VI1PR05MB5456.eurprd05.prod.outlook.com (20.177.201.11) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.2644.19; Fri, 24 Jan 2020 21:54:49 +0000
+Received: from VI1PR05MB5102.eurprd05.prod.outlook.com
+ ([fe80::d830:96fc:e928:c096]) by VI1PR05MB5102.eurprd05.prod.outlook.com
+ ([fe80::d830:96fc:e928:c096%6]) with mapi id 15.20.2644.027; Fri, 24 Jan 2020
+ 21:54:49 +0000
+Received: from smtp.office365.com (209.116.155.178) by BY5PR17CA0038.namprd17.prod.outlook.com (2603:10b6:a03:167::15) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.2665.21 via Frontend Transport; Fri, 24 Jan 2020 21:54:47 +0000
+From:   Saeed Mahameed <saeedm@mellanox.com>
+To:     "David S. Miller" <davem@davemloft.net>
+CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        Saeed Mahameed <saeedm@mellanox.com>
+Subject: [pull request][net-next 00/14] Mellanox, mlx5 updates 2020-01-24
+Thread-Topic: [pull request][net-next 00/14] Mellanox, mlx5 updates 2020-01-24
+Thread-Index: AQHV0wDlg/u/9A/ce0S/DBPeRuzQAA==
+Date:   Fri, 24 Jan 2020 21:54:48 +0000
+Message-ID: <20200124215431.47151-1-saeedm@mellanox.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-mailer: git-send-email 2.24.1
+x-originating-ip: [209.116.155.178]
+x-clientproxiedby: BY5PR17CA0038.namprd17.prod.outlook.com
+ (2603:10b6:a03:167::15) To VI1PR05MB5102.eurprd05.prod.outlook.com
+ (2603:10a6:803:5e::23)
+authentication-results: spf=none (sender IP is )
+ smtp.mailfrom=saeedm@mellanox.com; 
+x-ms-exchange-messagesentrepresentingtype: 1
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-ht: Tenant
+x-ms-office365-filtering-correlation-id: f402e6e7-61ba-4e4f-0161-08d7a1180813
+x-ms-traffictypediagnostic: VI1PR05MB5456:|VI1PR05MB5456:
+x-ms-exchange-transport-forked: True
+x-microsoft-antispam-prvs: <VI1PR05MB5456ABD4D13D98E9ADCA842BBE0E0@VI1PR05MB5456.eurprd05.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:10000;
+x-forefront-prvs: 02929ECF07
+x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(4636009)(346002)(396003)(366004)(376002)(136003)(39860400002)(199004)(189003)(956004)(4326008)(107886003)(5660300002)(316002)(54906003)(478600001)(8936002)(2616005)(6916009)(26005)(52116002)(6506007)(36756003)(8676002)(81166006)(81156014)(86362001)(16526019)(186003)(1076003)(66946007)(66476007)(66556008)(64756008)(66446008)(15650500001)(2906002)(6486002)(71200400001)(6512007)(54420400002);DIR:OUT;SFP:1101;SCL:1;SRVR:VI1PR05MB5456;H:VI1PR05MB5102.eurprd05.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;A:1;MX:1;
+received-spf: None (protection.outlook.com: mellanox.com does not designate
+ permitted sender hosts)
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: +JvgWldqfskiU/CADI5MMFhYqZGSQych6U9mPYsGxzjFjjULjyuyp8zfDKP5NMy+QjghjciQd64XkY4QBZS17Y9noxTYbJ3AIhl8RbrTZdkwOuBycK7Af5FwaiUNG5FNkfzwwhQP7OBkxVvkGA11wIMAfmSTSBZr/UxWfayXhtkO4knT4Q/I3MAKu0/Zph+hHeC+gKtTpYC9E5BxlYVBm3RBK7eOtLCsWpvobJYY7cxhvBJWCqC7IcqfGGh/OBy4YJ/lwpT36/tFVU3FlgKWbA5xBR/QxEWHqlM0YyGU+qoJTV9/yZ6uj3HC6nuoY6hr7QiKnpQOBtKpLyMFUhq0UOvcqRBUCT7KTbsRqCstRF4aqptqHtFkBjRi8n2LpOoMlBcSaIay07eiv8+fZSPbJZgZ+BEmSglUHuHqwOzYdUAMp244l0YN3C0Hq1dgep74W5VnTdyF8PdlZLvQ5FZFVJu7idHMdeZkpl2M2qyfllwgzSabQtZLZvN2t6jjBLBe33NDcaJyF+R1qQ7kky4dyoTbXpOM8kUq/NX8fOwd9QU=
+Content-Type: text/plain; charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+X-OriginatorOrg: Mellanox.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: f402e6e7-61ba-4e4f-0161-08d7a1180813
+X-MS-Exchange-CrossTenant-originalarrivaltime: 24 Jan 2020 21:54:49.0890
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: a652971c-7d2e-4d9b-a6a4-d149256f461b
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: R+6QlrjdhL3arEx1eXFd57CGNxnfUnI4+UGAd730fBwozwvFWJff+/KRRNuKNIfIAkWOa5BNB8apAbBJ0JtKog==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR05MB5456
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Include the size of struct nhmsg size when calculating
-how much of a payload to allocate in a new netlink nexthop
-notification message.
+Hi Dave,
 
-Without this, we will fail to fill the skbuff at certain nexthop
-group sizes.
+This series adds some updates to mlx5 driver
+1) Devlink health dump support for both rx and tx health reporters.
+2) FEC modes supports.
+3) misc small patches.
 
-You can reproduce the failure with the following iproute2 commands:
+For more information please see tag log below.
 
-ip link add dummy1 type dummy
-ip link add dummy2 type dummy
-ip link add dummy3 type dummy
-ip link add dummy4 type dummy
-ip link add dummy5 type dummy
-ip link add dummy6 type dummy
-ip link add dummy7 type dummy
-ip link add dummy8 type dummy
-ip link add dummy9 type dummy
-ip link add dummy10 type dummy
-ip link add dummy11 type dummy
-ip link add dummy12 type dummy
-ip link add dummy13 type dummy
-ip link add dummy14 type dummy
-ip link add dummy15 type dummy
-ip link add dummy16 type dummy
-ip link add dummy17 type dummy
-ip link add dummy18 type dummy
-ip link add dummy19 type dummy
+Please pull and let me know if there is any problem.
 
-ip ro add 1.1.1.1/32 dev dummy1
-ip ro add 1.1.1.2/32 dev dummy2
-ip ro add 1.1.1.3/32 dev dummy3
-ip ro add 1.1.1.4/32 dev dummy4
-ip ro add 1.1.1.5/32 dev dummy5
-ip ro add 1.1.1.6/32 dev dummy6
-ip ro add 1.1.1.7/32 dev dummy7
-ip ro add 1.1.1.8/32 dev dummy8
-ip ro add 1.1.1.9/32 dev dummy9
-ip ro add 1.1.1.10/32 dev dummy10
-ip ro add 1.1.1.11/32 dev dummy11
-ip ro add 1.1.1.12/32 dev dummy12
-ip ro add 1.1.1.13/32 dev dummy13
-ip ro add 1.1.1.14/32 dev dummy14
-ip ro add 1.1.1.15/32 dev dummy15
-ip ro add 1.1.1.16/32 dev dummy16
-ip ro add 1.1.1.17/32 dev dummy17
-ip ro add 1.1.1.18/32 dev dummy18
-ip ro add 1.1.1.19/32 dev dummy19
+Please note that the series starts with a merge of mlx5-next branch,
+to resolve and avoid dependency with rdma tree.
 
-ip next add id 1 via 1.1.1.1 dev dummy1
-ip next add id 2 via 1.1.1.2 dev dummy2
-ip next add id 3 via 1.1.1.3 dev dummy3
-ip next add id 4 via 1.1.1.4 dev dummy4
-ip next add id 5 via 1.1.1.5 dev dummy5
-ip next add id 6 via 1.1.1.6 dev dummy6
-ip next add id 7 via 1.1.1.7 dev dummy7
-ip next add id 8 via 1.1.1.8 dev dummy8
-ip next add id 9 via 1.1.1.9 dev dummy9
-ip next add id 10 via 1.1.1.10 dev dummy10
-ip next add id 11 via 1.1.1.11 dev dummy11
-ip next add id 12 via 1.1.1.12 dev dummy12
-ip next add id 13 via 1.1.1.13 dev dummy13
-ip next add id 14 via 1.1.1.14 dev dummy14
-ip next add id 15 via 1.1.1.15 dev dummy15
-ip next add id 16 via 1.1.1.16 dev dummy16
-ip next add id 17 via 1.1.1.17 dev dummy17
-ip next add id 18 via 1.1.1.18 dev dummy18
-ip next add id 19 via 1.1.1.19 dev dummy19
+Note about non-mlx5 change:
+For the FEC link modes support, Aya added the define for
+low latency Reed Solomon FEC as LLRS, in: include/uapi/linux/ethtool.h
 
-ip next add id 1111 group 1/2/3/4/5/6/7/8/9/10/11/12/13/14/15/16/17/18/19
-ip next del id 1111
+Thanks,
+Saeed.
 
-Fixes: 430a049190de ("nexthop: Add support for nexthop groups")
-Signed-off-by: Stephen Worley <sworley@cumulusnetworks.com>
 ---
- net/ipv4/nexthop.c | 4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
+The following changes since commit e445332491ad62fc2da29f9e88bd1548295bab9c=
+:
 
-diff --git a/net/ipv4/nexthop.c b/net/ipv4/nexthop.c
-index 511eaa94e2d1..d072c326dd64 100644
---- a/net/ipv4/nexthop.c
-+++ b/net/ipv4/nexthop.c
-@@ -321,7 +321,9 @@ static size_t nh_nlmsg_size_single(struct nexthop *nh)
- 
- static size_t nh_nlmsg_size(struct nexthop *nh)
- {
--	size_t sz = nla_total_size(4);    /* NHA_ID */
-+	size_t sz = NLMSG_ALIGN(sizeof(struct nhmsg));
-+
-+	sz += nla_total_size(4); /* NHA_ID */
- 
- 	if (nh->is_group)
- 		sz += nh_nlmsg_size_grp(nh);
+  Merge branch 'mlx5-next' of git://git.kernel.org/pub/scm/linux/kernel/git=
+/mellanox/linux (2020-01-24 13:41:23 -0800)
 
-base-commit: 623c8d5c74c69a41573da5a38bb59e8652113f56
--- 
-2.24.1
+are available in the Git repository at:
 
+  git://git.kernel.org/pub/scm/linux/kernel/git/saeed/linux.git tags/mlx5-u=
+pdates-2020-01-24
+
+for you to fetch changes up to c80672aa66ca56b860ae831b0e095222d6991e47:
+
+  net/mlx5: Fix lowest FDB pool size (2020-01-24 13:41:36 -0800)
+
+----------------------------------------------------------------
+mlx5-updates-2020-01-24
+
+This series adds two moderate updates and some misc small patches to
+mlx5 driver.
+
+1) From Aya, Add the missing devlink health dump callbacks support for
+both rx and tx health reporters.
+
+First patch of the series is extending devlink API to set binary fmsg
+data.
+
+All others patches in the series are adding the mlx5 devlink health
+callbacks support and the needed FW commands.
+
+2) Also from Aya, Support for FEC modes based on 50G per lane links.
+Part of this series, Aya adds one missing link mode define "FEC_LLRS"
+to include/uapi/linux/ethtool.h.
+
+3) Erez handles the reformat capability in SW steerig
+
+4) From Joe, Use proper logging and tracing line terminations
+
+5) Paul, Fix lowest FDB pool size, which got lost due to code re-placement
+in net-next.
+
+----------------------------------------------------------------
+Aya Levin (11):
+      devlink: Force enclosing array on binary fmsg data
+      net/mlx5: Add support for resource dump
+      net/mlx5e: Gather reporters APIs together
+      net/mlx5e: Support dump callback in TX reporter
+      net/mlx5e: Support dump callback in RX reporter
+      net/mlx5e: Set FEC to auto when configured mode is not supported
+      net/mlx5e: Enforce setting of a single FEC mode
+      net/mlx5e: Advertise globaly supported FEC modes
+      net/mlxe5: Separate between FEC and current speed
+      ethtool: Add support for low latency RS FEC
+      net/mlx5e: Add support for FEC modes based on 50G per lane links
+
+Erez Shitrit (1):
+      net/mlx5: DR, Handle reformat capability over sw-steering tables
+
+Joe Perches (1):
+      mlx5: Use proper logging and tracing line terminations
+
+Paul Blakey (1):
+      net/mlx5: Fix lowest FDB pool size
+
+ drivers/net/ethernet/mellanox/mlx5/core/Makefile   |   2 +-
+ .../ethernet/mellanox/mlx5/core/diag/rsc_dump.c    | 286 +++++++++++++++++=
+++++
+ .../ethernet/mellanox/mlx5/core/diag/rsc_dump.h    |  58 +++++
+ .../net/ethernet/mellanox/mlx5/core/en/health.c    | 107 +++++++-
+ .../net/ethernet/mellanox/mlx5/core/en/health.h    |   8 +-
+ drivers/net/ethernet/mellanox/mlx5/core/en/port.c  | 253 ++++++++++-------=
+-
+ drivers/net/ethernet/mellanox/mlx5/core/en/port.h  |   8 +-
+ .../ethernet/mellanox/mlx5/core/en/reporter_rx.c   | 266 ++++++++++++++++-=
+--
+ .../ethernet/mellanox/mlx5/core/en/reporter_tx.c   | 181 ++++++++++---
+ .../net/ethernet/mellanox/mlx5/core/en_ethtool.c   |  71 ++---
+ .../mellanox/mlx5/core/eswitch_offloads_chains.c   |   2 +-
+ drivers/net/ethernet/mellanox/mlx5/core/main.c     |  12 +
+ .../ethernet/mellanox/mlx5/core/steering/fs_dr.c   |   9 +-
+ drivers/net/phy/phy-core.c                         |   2 +-
+ include/linux/mlx5/driver.h                        |   1 +
+ include/net/devlink.h                              |   5 +
+ include/uapi/linux/ethtool.h                       |   4 +-
+ net/core/devlink.c                                 |  94 ++++++-
+ net/ethtool/common.c                               |   1 +
+ net/ethtool/linkmodes.c                            |   1 +
+ 20 files changed, 1144 insertions(+), 227 deletions(-)
+ create mode 100644 drivers/net/ethernet/mellanox/mlx5/core/diag/rsc_dump.c
+ create mode 100644 drivers/net/ethernet/mellanox/mlx5/core/diag/rsc_dump.h
