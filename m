@@ -2,137 +2,354 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 80854148FE5
-	for <lists+netdev@lfdr.de>; Fri, 24 Jan 2020 22:04:47 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4F476148FF3
+	for <lists+netdev@lfdr.de>; Fri, 24 Jan 2020 22:13:58 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2387420AbgAXVEj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 24 Jan 2020 16:04:39 -0500
-Received: from mga06.intel.com ([134.134.136.31]:16364 "EHLO mga06.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2387394AbgAXVEj (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 24 Jan 2020 16:04:39 -0500
-X-Amp-Result: SKIPPED(no attachment in message)
-X-Amp-File-Uploaded: False
-Received: from fmsmga006.fm.intel.com ([10.253.24.20])
-  by orsmga104.jf.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 24 Jan 2020 13:04:34 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.70,358,1574150400"; 
-   d="scan'208";a="428408414"
-Received: from vcostago-desk1.jf.intel.com (HELO vcostago-desk1) ([10.54.70.26])
-  by fmsmga006.fm.intel.com with ESMTP; 24 Jan 2020 13:04:33 -0800
-From:   Vinicius Costa Gomes <vinicius.gomes@intel.com>
-To:     "Allan W. Nielsen" <allan.nielsen@microchip.com>,
-        Horatiu Vultur <horatiu.vultur@microchip.com>
-Cc:     linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        bridge@lists.linux-foundation.org, jiri@resnulli.us,
-        ivecera@redhat.com, davem@davemloft.net, roopa@cumulusnetworks.com,
-        nikolay@cumulusnetworks.com, anirudh.venkataramanan@intel.com,
-        olteanv@gmail.com, andrew@lunn.ch, jeffrey.t.kirsher@intel.com,
-        UNGLinuxDriver@microchip.com
-Subject: Re: [RFC net-next v3 00/10]  net: bridge: mrp: Add support for Media Redundancy Protocol (MRP)
-In-Reply-To: <20200124203406.2ci7w3w6zzj6yibz@lx-anielsen.microsemi.net>
-References: <20200124161828.12206-1-horatiu.vultur@microchip.com> <20200124203406.2ci7w3w6zzj6yibz@lx-anielsen.microsemi.net>
-Date:   Fri, 24 Jan 2020 13:05:45 -0800
-Message-ID: <87zhecimza.fsf@linux.intel.com>
+        id S1727295AbgAXVN4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 24 Jan 2020 16:13:56 -0500
+Received: from mail-ed1-f67.google.com ([209.85.208.67]:38498 "EHLO
+        mail-ed1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725747AbgAXVN4 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 24 Jan 2020 16:13:56 -0500
+Received: by mail-ed1-f67.google.com with SMTP id i16so4050063edr.5
+        for <netdev@vger.kernel.org>; Fri, 24 Jan 2020 13:13:54 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=oGW7m7efQWNFvyT1nHFGAp1aEXzlL/nq7vz1zM2nhAg=;
+        b=N4pAUZH1P2xyjBo44ngHmOdD6Sp3rhGpWzALcdosC6DRejVG8EH6VUjDDGuuiTdZkC
+         LMTFVU7qSZcr3GVQTOH8bAxI+aR9ygZsG7J1SRUdIjw+PskzSadSNo2eXjr9BnVxDYIY
+         qTUqPEd0iqOlcI2/fJwqLOk1pVDsb748BuC1rCtD/IYKViLiIaKdHt+mz8d62g11yf/1
+         Zxea5PJ06pmW/ZkyZEomh8zR0e91pAyuP03HkMgfqmh7J61jeSVOOWhTp7Pkv6CLSC6f
+         QbnSKXT5ldF8m2Dm/uP8+B2H3GSnZ/nLZX+LBnW1jMG3Qrqpx5o5b7/UEqmQnU/yAqDh
+         Mz0Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=oGW7m7efQWNFvyT1nHFGAp1aEXzlL/nq7vz1zM2nhAg=;
+        b=h1YJ8gaEAiYkhizPg4DXG2ZAx7Ou4HoF4O2WyThQOOAAj7sStJDBsl7kv3rQHhMRYX
+         gK6roxClsgs8xls05ui0J1PfzIRuymuuxIBFMrT/nvo99cFzPG5lwwi5NnYbtFLk9fBc
+         rS1g08rXK/8/dvMYrxb9GufsYm1/tredUqzKs305HMFKRHJ6BIqtMy17HYeO1wV7rQPf
+         z9rwtIqn2n2hIfnIqF5muyYRLN7flKLcnftyRl87AxR80v84ITe+hX61TG8sCbeTGF2e
+         GI2zhryQdncYBN3/97cVnaWcfEMy1X6UKxeIlO5BAk48k68lLCmBptvjsskSQdDrefv9
+         dKIw==
+X-Gm-Message-State: APjAAAUcApsqlni0GIQwpATLsW5+XqbpexihovMnXV+eJK0AbrpbTisW
+        E0q5hXEvJEA+n3CJWfmIvUcvo4PvxEVNIZmuTaxa3g==
+X-Google-Smtp-Source: APXvYqxC6bd8qu9jKIX2yj7gY4yljfnIeuanmyBvxRIgYZk41ODmervbrUBqUg8aKcNbme7NN1Du2vEq74qW+rVuIc0=
+X-Received: by 2002:a17:906:3798:: with SMTP id n24mr4498637ejc.15.1579900433812;
+ Fri, 24 Jan 2020 13:13:53 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain
+References: <20200124082218.2572-1-steffen.klassert@secunet.com> <20200124082218.2572-5-steffen.klassert@secunet.com>
+In-Reply-To: <20200124082218.2572-5-steffen.klassert@secunet.com>
+From:   Willem de Bruijn <willemdebruijn.kernel@gmail.com>
+Date:   Fri, 24 Jan 2020 16:13:17 -0500
+Message-ID: <CAF=yD-JmKdDmKs5W8YeLOc2L81av8SrS1nR=chAAre2z=ALepw@mail.gmail.com>
+Subject: Re: [PATCH net-next v2 4/4] udp: Support UDP fraglist GRO/GSO.
+To:     Steffen Klassert <steffen.klassert@secunet.com>
+Cc:     David Miller <davem@davemloft.net>,
+        Willem de Bruijn <willemb@google.com>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Subash Abhinov Kasiviswanathan <subashab@codeaurora.org>,
+        Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>,
+        Network Development <netdev@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi,
-
-"Allan W. Nielsen" <allan.nielsen@microchip.com> writes:
-
-> On 24.01.2020 17:18, Horatiu Vultur wrote:
->>Media Redundancy Protocol is a data network protocol standardized by
->>International Electrotechnical Commission as IEC 62439-2. It allows rings of
->>Ethernet switches to overcome any single failure with recovery time faster than
->>STP. It is primarily used in Industrial Ethernet applications.
->>
->>Based on the previous RFC[1][2], the MRP state machine and all the
->>timers were moved to userspace. A generic netlink interface is added to
->>allow configuring the HW, and logic added to to implement the MRP
->>specific forwarding rules.
->>
->>The userspace application that is using the new netlink can be found here[3].
->>
->>The current implementation both in kernel and userspace supports only 2 roles:
->>
->>  MRM - this one is responsible to send MRP_Test and MRP_Topo frames on both
->>  ring ports. It needs to process MRP_Test to know if the ring is open or
->>  closed. This operation is desired to be offloaded to the HW because it
->>  requires to generate and process up to 4000 frames per second. Whenever it
->>  detects that the ring open it sends MRP_Topo frames to notify all MRC about
->>  changes in the topology. MRM needs also to process MRP_LinkChange frames,
->>  these frames are generated by the MRC. When the ring is open the the state
->>  of both ports is to forward frames and when the ring is closed then the
->>  secondary port is blocked.
->>
->>  MRC - this one is responsible to forward MRP frames between the ring ports.
->>  In case one of the ring ports gets a link down or up, then MRC will generate
->>  a MRP_LinkChange frames. This node should also process MRP_Topo frames and to
->>  clear its FDB when it receives this frame.
->>
->> Userspace
->>               Deamon +----------+ Client
->>                +
->>                |
->> +--------------|-----------------------------------------+
->>  Kernel        |
->>                + Netlink
->>
->>                |                              + Interrupt
->>                |                              |
->> +--------------|------------------------------|----------+
->>  HW            | Switchdev                    |
->>                +                              |
->>
->>The user interacts using the client (called 'mrp'), the client talks to the
->>deamon (called 'mrp_server'), which talks with the kernel using netlink. The
->>kernel will try to offload the requests to the HW via switchdev API. For this a
->>new generic netlink interface was added to the bridge.
->>
->>If the kernel cannot offload MRP to HW (maybe it does not have a switchdev
->>driver, or it is just not supported), then all the netlink calls will return
->>-EOPNOTSUPP. In this case the user-space deamon fallback to SW only
->>implementation.
-> Horatiu and I have spend a bit of time discussing what you be best here.
-> An alternative to this would be to do the SW fallback in the kernel,
-> instead of user-land. This would mean that the user application does not
-> need to know if the function is offloaded (or partly offloaded) to HW.
+On Fri, Jan 24, 2020 at 3:24 AM Steffen Klassert
+<steffen.klassert@secunet.com> wrote:
 >
-> We went with this approch to make the kernel part as simple as possible.
-> The alternative would still be much simpler than the first version
-> posted - but it would require a bit more.
+> This patch extends UDP GRO to support fraglist GRO/GSO
+> by using the previously introduced infrastructure.
+> If the feature is enabled, all UDP packets are going to
+> fraglist GRO (local input and forward).
 >
-> Both options has pros and cons, and we looking forward to the
-> community's view on this.
+> After validating the csum,  we mark ip_summed as
+> CHECKSUM_UNNECESSARY for fraglist GRO packets to
+> make sure that the csum is not touched.
+>
+> Signed-off-by: Steffen Klassert <steffen.klassert@secunet.com>
+> ---
+>  include/net/udp.h      |   2 +-
+>  net/ipv4/udp_offload.c | 104 ++++++++++++++++++++++++++++++++---------
+>  net/ipv6/udp_offload.c |  22 ++++++++-
+>  3 files changed, 102 insertions(+), 26 deletions(-)
+>
+> diff --git a/include/net/udp.h b/include/net/udp.h
+> index bad74f780831..44e0e52b585c 100644
+> --- a/include/net/udp.h
+> +++ b/include/net/udp.h
+> @@ -167,7 +167,7 @@ typedef struct sock *(*udp_lookup_t)(struct sk_buff *skb, __be16 sport,
+>                                      __be16 dport);
+>
+>  struct sk_buff *udp_gro_receive(struct list_head *head, struct sk_buff *skb,
+> -                               struct udphdr *uh, udp_lookup_t lookup);
+> +                               struct udphdr *uh, struct sock *sk);
+>  int udp_gro_complete(struct sk_buff *skb, int nhoff, udp_lookup_t lookup);
+>
+>  struct sk_buff *__udp_gso_segment(struct sk_buff *gso_skb,
+> diff --git a/net/ipv4/udp_offload.c b/net/ipv4/udp_offload.c
+> index b25e42100ceb..1a98583a79f4 100644
+> --- a/net/ipv4/udp_offload.c
+> +++ b/net/ipv4/udp_offload.c
+> @@ -184,6 +184,20 @@ struct sk_buff *skb_udp_tunnel_segment(struct sk_buff *skb,
+>  }
+>  EXPORT_SYMBOL(skb_udp_tunnel_segment);
+>
+> +static struct sk_buff *__udp_gso_segment_list(struct sk_buff *skb,
+> +                                             netdev_features_t features)
+> +{
+> +       unsigned int mss = skb_shinfo(skb)->gso_size;
+> +
+> +       skb = skb_segment_list(skb, features, skb_mac_header_len(skb));
+> +       if (IS_ERR(skb))
+> +               return skb;
+> +
+> +       udp_hdr(skb)->len = htons(sizeof(struct udphdr) + mss);
+> +
+> +       return skb;
+> +}
+> +
+>  struct sk_buff *__udp_gso_segment(struct sk_buff *gso_skb,
+>                                   netdev_features_t features)
+>  {
+> @@ -196,6 +210,9 @@ struct sk_buff *__udp_gso_segment(struct sk_buff *gso_skb,
+>         __sum16 check;
+>         __be16 newlen;
+>
+> +       if (skb_shinfo(gso_skb)->gso_type & SKB_GSO_FRAGLIST)
+> +               return __udp_gso_segment_list(gso_skb, features);
+> +
+>         mss = skb_shinfo(gso_skb)->gso_size;
+>         if (gso_skb->len <= sizeof(*uh) + mss)
+>                 return ERR_PTR(-EINVAL);
+> @@ -354,6 +371,7 @@ static struct sk_buff *udp_gro_receive_segment(struct list_head *head,
+>         struct udphdr *uh2;
+>         struct sk_buff *p;
+>         unsigned int ulen;
+> +       int ret = 0;
+>
+>         /* requires non zero csum, for symmetry with GSO */
+>         if (!uh->check) {
+> @@ -369,7 +387,6 @@ static struct sk_buff *udp_gro_receive_segment(struct list_head *head,
+>         }
+>         /* pull encapsulating udp header */
+>         skb_gro_pull(skb, sizeof(struct udphdr));
+> -       skb_gro_postpull_rcsum(skb, uh, sizeof(struct udphdr));
+>
+>         list_for_each_entry(p, head, list) {
+>                 if (!NAPI_GRO_CB(p)->same_flow)
+> @@ -383,14 +400,40 @@ static struct sk_buff *udp_gro_receive_segment(struct list_head *head,
+>                         continue;
+>                 }
+>
+> +               if (NAPI_GRO_CB(skb)->is_flist != NAPI_GRO_CB(p)->is_flist) {
+> +                       NAPI_GRO_CB(skb)->flush = 1;
+> +                       return p;
+> +               }
+> +
+>                 /* Terminate the flow on len mismatch or if it grow "too much".
+>                  * Under small packet flood GRO count could elsewhere grow a lot
+>                  * leading to excessive truesize values.
+>                  * On len mismatch merge the first packet shorter than gso_size,
+>                  * otherwise complete the GRO packet.
+>                  */
+> -               if (ulen > ntohs(uh2->len) || skb_gro_receive(p, skb) ||
+> -                   ulen != ntohs(uh2->len) ||
+> +               if (ulen > ntohs(uh2->len)) {
+> +                       pp = p;
+> +               } else {
+> +                       if (NAPI_GRO_CB(skb)->is_flist) {
+> +                               if (!pskb_may_pull(skb, skb_gro_offset(skb))) {
+> +                                       NAPI_GRO_CB(skb)->flush = 1;
+> +                                       return NULL;
+> +                               }
+> +                               if ((skb->ip_summed != p->ip_summed) ||
+> +                                   (skb->csum_level != p->csum_level)) {
+> +                                       NAPI_GRO_CB(skb)->flush = 1;
+> +                                       return NULL;
+> +                               }
+> +                               ret = skb_gro_receive_list(p, skb);
+> +                       } else {
+> +                               skb_gro_postpull_rcsum(skb, uh,
+> +                                                      sizeof(struct udphdr));
+> +
+> +                               ret = skb_gro_receive(p, skb);
+> +                       }
+> +               }
+> +
+> +               if (ret || ulen != ntohs(uh2->len) ||
+>                     NAPI_GRO_CB(p)->count >= UDP_GRO_CNT_MAX)
+>                         pp = p;
+>
+> @@ -401,36 +444,29 @@ static struct sk_buff *udp_gro_receive_segment(struct list_head *head,
+>         return NULL;
+>  }
+>
+> -INDIRECT_CALLABLE_DECLARE(struct sock *udp6_lib_lookup_skb(struct sk_buff *skb,
+> -                                                  __be16 sport, __be16 dport));
+>  struct sk_buff *udp_gro_receive(struct list_head *head, struct sk_buff *skb,
+> -                               struct udphdr *uh, udp_lookup_t lookup)
+> +                               struct udphdr *uh, struct sock *sk)
+>  {
+>         struct sk_buff *pp = NULL;
+>         struct sk_buff *p;
+>         struct udphdr *uh2;
+>         unsigned int off = skb_gro_offset(skb);
+>         int flush = 1;
+> -       struct sock *sk;
+>
+> -       rcu_read_lock();
+> -       sk = INDIRECT_CALL_INET(lookup, udp6_lib_lookup_skb,
+> -                               udp4_lib_lookup_skb, skb, uh->source, uh->dest);
+> -       if (!sk)
+> -               goto out_unlock;
+> +       if (skb->dev->features & NETIF_F_GRO_FRAGLIST)
+> +               NAPI_GRO_CB(skb)->is_flist = sk ? !udp_sk(sk)->gro_enabled: 1;
+>
+> -       if (udp_sk(sk)->gro_enabled) {
+> +       if ((sk && udp_sk(sk)->gro_enabled) || NAPI_GRO_CB(skb)->is_flist) {
+>                 pp = call_gro_receive(udp_gro_receive_segment, head, skb);
+> -               rcu_read_unlock();
+>                 return pp;
+>         }
+>
+> -       if (NAPI_GRO_CB(skb)->encap_mark ||
+> +       if (!sk || NAPI_GRO_CB(skb)->encap_mark ||
+>             (skb->ip_summed != CHECKSUM_PARTIAL &&
+>              NAPI_GRO_CB(skb)->csum_cnt == 0 &&
+>              !NAPI_GRO_CB(skb)->csum_valid) ||
+>             !udp_sk(sk)->gro_receive)
+> -               goto out_unlock;
+> +               goto out;
+>
+>         /* mark that this skb passed once through the tunnel gro layer */
+>         NAPI_GRO_CB(skb)->encap_mark = 1;
+> @@ -457,8 +493,7 @@ struct sk_buff *udp_gro_receive(struct list_head *head, struct sk_buff *skb,
+>         skb_gro_postpull_rcsum(skb, uh, sizeof(struct udphdr));
+>         pp = call_gro_receive_sk(udp_sk(sk)->gro_receive, sk, head, skb);
+>
+> -out_unlock:
+> -       rcu_read_unlock();
+> +out:
+>         skb_gro_flush_final(skb, pp, flush);
+>         return pp;
+>  }
+> @@ -468,8 +503,10 @@ INDIRECT_CALLABLE_SCOPE
+>  struct sk_buff *udp4_gro_receive(struct list_head *head, struct sk_buff *skb)
+>  {
+>         struct udphdr *uh = udp_gro_udphdr(skb);
+> +       struct sk_buff *pp;
+> +       struct sock *sk;
+>
+> -       if (unlikely(!uh) || !static_branch_unlikely(&udp_encap_needed_key))
+> +       if (unlikely(!uh))
+>                 goto flush;
+>
+>         /* Don't bother verifying checksum if we're going to flush anyway. */
+> @@ -484,7 +521,11 @@ struct sk_buff *udp4_gro_receive(struct list_head *head, struct sk_buff *skb)
+>                                              inet_gro_compute_pseudo);
+>  skip:
+>         NAPI_GRO_CB(skb)->is_ipv6 = 0;
+> -       return udp_gro_receive(head, skb, uh, udp4_lib_lookup_skb);
+> +       rcu_read_lock();
+> +       sk = static_branch_unlikely(&udp_encap_needed_key) ? udp4_lib_lookup_skb(skb, uh->source, uh->dest) : NULL;
+> +       pp = udp_gro_receive(head, skb, uh, sk);
+> +       rcu_read_unlock();
+> +       return pp;
+>
+>  flush:
+>         NAPI_GRO_CB(skb)->flush = 1;
+> @@ -517,9 +558,7 @@ int udp_gro_complete(struct sk_buff *skb, int nhoff,
+>         rcu_read_lock();
+>         sk = INDIRECT_CALL_INET(lookup, udp6_lib_lookup_skb,
+>                                 udp4_lib_lookup_skb, skb, uh->source, uh->dest);
+> -       if (sk && udp_sk(sk)->gro_enabled) {
+> -               err = udp_gro_complete_segment(skb);
+> -       } else if (sk && udp_sk(sk)->gro_complete) {
+> +       if (sk && udp_sk(sk)->gro_complete) {
+>                 skb_shinfo(skb)->gso_type = uh->check ? SKB_GSO_UDP_TUNNEL_CSUM
+>                                         : SKB_GSO_UDP_TUNNEL;
+>
+> @@ -529,6 +568,8 @@ int udp_gro_complete(struct sk_buff *skb, int nhoff,
+>                 skb->encapsulation = 1;
+>                 err = udp_sk(sk)->gro_complete(sk, skb,
+>                                 nhoff + sizeof(struct udphdr));
+> +       } else {
+> +               err = udp_gro_complete_segment(skb);
+>         }
+>         rcu_read_unlock();
+>
+> @@ -544,6 +585,23 @@ INDIRECT_CALLABLE_SCOPE int udp4_gro_complete(struct sk_buff *skb, int nhoff)
+>         const struct iphdr *iph = ip_hdr(skb);
+>         struct udphdr *uh = (struct udphdr *)(skb->data + nhoff);
+>
+> +       if (NAPI_GRO_CB(skb)->is_flist) {
+> +               uh->len = htons(skb->len - nhoff);
+> +
+> +               skb_shinfo(skb)->gso_type |= (SKB_GSO_FRAGLIST|SKB_GSO_UDP_L4);
+> +               skb_shinfo(skb)->gso_segs = NAPI_GRO_CB(skb)->count;
+> +
+> +               if (skb->ip_summed == CHECKSUM_UNNECESSARY) {
+> +                       if (skb->csum_level < SKB_MAX_CSUM_LEVEL)
+> +                               skb->csum_level++;
+> +               } else {
+> +                       skb->ip_summed = CHECKSUM_UNNECESSARY;
+> +                       skb->csum_level = 0;
+> +               }
+> +
+> +               return 0;
+> +       }
+> +
+>         if (uh->check)
+>                 uh->check = ~udp_v4_check(skb->len - nhoff, iph->saddr,
+>                                           iph->daddr, 0);
+> diff --git a/net/ipv6/udp_offload.c b/net/ipv6/udp_offload.c
+> index f0d5fc27d0b5..4c55b0efe0cb 100644
+> --- a/net/ipv6/udp_offload.c
+> +++ b/net/ipv6/udp_offload.c
+> @@ -115,8 +115,10 @@ INDIRECT_CALLABLE_SCOPE
+>  struct sk_buff *udp6_gro_receive(struct list_head *head, struct sk_buff *skb)
+>  {
+>         struct udphdr *uh = udp_gro_udphdr(skb);
+> +       struct sk_buff *pp;
+> +       struct sock *sk;
+>
+> -       if (unlikely(!uh) || !static_branch_unlikely(&udpv6_encap_needed_key))
+> +       if (unlikely(!uh))
+>                 goto flush;
+>
+>         /* Don't bother verifying checksum if we're going to flush anyway. */
+> @@ -132,7 +134,11 @@ struct sk_buff *udp6_gro_receive(struct list_head *head, struct sk_buff *skb)
+>
+>  skip:
+>         NAPI_GRO_CB(skb)->is_ipv6 = 1;
+> -       return udp_gro_receive(head, skb, uh, udp6_lib_lookup_skb);
+> +       rcu_read_lock();
+> +       sk = static_branch_unlikely(&udpv6_encap_needed_key) ? udp6_lib_lookup_skb(skb, uh->source, uh->dest) : NULL;
+> +       pp = udp_gro_receive(head, skb, uh, sk);
+> +       rcu_read_unlock();
+> +       return pp;
+>
+>  flush:
+>         NAPI_GRO_CB(skb)->flush = 1;
+> @@ -144,6 +150,18 @@ INDIRECT_CALLABLE_SCOPE int udp6_gro_complete(struct sk_buff *skb, int nhoff)
+>         const struct ipv6hdr *ipv6h = ipv6_hdr(skb);
+>         struct udphdr *uh = (struct udphdr *)(skb->data + nhoff);
+>
+> +       if (NAPI_GRO_CB(skb)->is_flist) {
+> +               uh->len = htons(skb->len - nhoff);
+> +
+> +               skb_shinfo(skb)->gso_type |= (SKB_GSO_FRAGLIST|SKB_GSO_UDP_L4);
+> +               skb_shinfo(skb)->gso_segs = NAPI_GRO_CB(skb)->count;
+> +
+> +               skb->ip_summed = CHECKSUM_UNNECESSARY;
+> +               skb->csum_level = ~0;
 
-I have one idea and one question.
+This probably needs to be the same change as in udp4_gro_complete.
 
-The idea is:
-
-'net/hsr' already has a software implementation of the HSR replication
-tag (and some of the handling necessary). So what came to mind is to
-add the necessary switchdev functions to the master HSR device. If
-that's done, then it sounds that the rest will mostly work.
-
-For the user the flow would be something like:
-
- - User takes two (or more interfaces) and set them as slaves of the HSR
-   master device, say 'hsr0';
-
- - 'hsr0' implements some of the switchdev functionality so we can use
-   the MRP userspace components on it;
-
-Does it look like something that could work?
-
-The question that I have is: what's the relation of IEC 62439-2 to IEEE
-802.1CB? 
-
-
-Cheers,
---
-Vinicius
+Otherwise patch set looks great to me based on a git range-diff to v1.
