@@ -2,64 +2,65 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 617EB14863E
-	for <lists+netdev@lfdr.de>; Fri, 24 Jan 2020 14:36:21 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id CFEE614864F
+	for <lists+netdev@lfdr.de>; Fri, 24 Jan 2020 14:44:53 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2388568AbgAXNgT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 24 Jan 2020 08:36:19 -0500
-Received: from mail-pf1-f195.google.com ([209.85.210.195]:43260 "EHLO
-        mail-pf1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2387847AbgAXNgT (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 24 Jan 2020 08:36:19 -0500
-Received: by mail-pf1-f195.google.com with SMTP id s1so510491pfh.10
-        for <netdev@vger.kernel.org>; Fri, 24 Jan 2020 05:36:18 -0800 (PST)
+        id S2390011AbgAXNov (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 24 Jan 2020 08:44:51 -0500
+Received: from mail-pg1-f196.google.com ([209.85.215.196]:42800 "EHLO
+        mail-pg1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2387812AbgAXNou (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 24 Jan 2020 08:44:50 -0500
+Received: by mail-pg1-f196.google.com with SMTP id s64so1067054pgb.9
+        for <netdev@vger.kernel.org>; Fri, 24 Jan 2020 05:44:50 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=subject:to:cc:references:from:message-id:date:user-agent
          :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=0uBGLEj921E9Pm4+tQgPIwE71cUPiNXUxNvf73v2fb8=;
-        b=uG177/Eh6v+mzyPOUO94O97b5a4/kfeHbVkHEBIM3gq+feL5hqfHKaacppNN+Cy9Zr
-         Ck2hPZrzdhGRVCQ9AAmNpUvVY9Y44ZKCQM1wgUncehFivCL5UnQkg5Fy99Ke3l6WS9iX
-         xwWDV2y+BC9u9SCb4SAWM0lQB/nS92EFKPpb3MPyXFDXht34iJsdhodzMGB/qaCQBZjL
-         kiWRB8Z/tf7HBLmqFBMnU1aOW1rK3kr6pMUynwjYUWEI/tz7b5UwvQQAbNI5bqZo1OoY
-         QvmTdNH9Yuz8H6FkWgp1ZiQOe1x+7qOk18mfTO14dp3oKZgodltV+BdGgucJg6Krm3Rq
-         H3Lw==
+        bh=s6PxGpsdei4mPSsKIa+9lDhkJAUuwFK7YQ3iWXGAzYk=;
+        b=G0LzhxHaiiOVSEMdMyzTAdyeor3HVzhIkykf4d0umLakriDN5Dq8U/c22Zg0CpKccx
+         LHe1uuZl5rXSGXkeQsMMFM5s6hZ0t9bcMrURwIdHElIBC3FxoUJ9T2HdKx6MEyJbJ88b
+         HIZ9t51c+zGvMOIlJ0VDDLbdoCI+91UqDRjn3sh4yw9xFFhIXDgygzjyjz/ARLtq7lUI
+         EhPv83kqn21kDDSgsNiegM1wtqfRfn/D3frw76lI5n1+NGRQ27k3ogaa21kvnpKpyKJn
+         yHMTta8cThsq/JbK+u6FkWuhb7UBWearBxNiAq9KOW/ZN6nHdQ3PQe2mgsKAMpkB2prn
+         Ytig==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:subject:to:cc:references:from:message-id:date
          :user-agent:mime-version:in-reply-to:content-language
          :content-transfer-encoding;
-        bh=0uBGLEj921E9Pm4+tQgPIwE71cUPiNXUxNvf73v2fb8=;
-        b=pY/vbNhb6o3XA/mkCl4SQmLhVY4Ew7XXw0AvmjGbHiEKf5+Tuhi/5VFaFtoE28FVA6
-         YN1pSPyTrv1tN7uXNrrB+I+OsVOWVaBdUwrljUhtSbCfXZsCxCibyXt9zbMVancdzrs3
-         COJN4lwDT1KSlZ/30TsuziWdXf/6poKv0Hxuuy1qyFUvTIavGDThJnyfzznx8/RVM+WN
-         /L2upU/wFvOQl0E9hDYiZiRmiHnxgl847UcX4szq9SzadVUmie/ubfW1UZqKBZHYy04r
-         nMdjnPbrsDL4OKHrgl6DQN1ZN3QK477cwG+CAemk0CbhZ+3uVyDZDlIqHleI3X5tAUcL
-         TM9Q==
-X-Gm-Message-State: APjAAAWlSz+gXfYoXCMAI15Qyt4+eUDd7RTEtCub1FGw1A2SjJL7H9TB
-        Yyhkf0JPnlHYXAwNKwD53W4=
-X-Google-Smtp-Source: APXvYqy/nQJKW216pYSF3UUDCGCP8Ro7t92YbXITQi/fTgpandV74f0BIUKb/r9hhuwr+6HaA7+gHw==
-X-Received: by 2002:a63:9d0f:: with SMTP id i15mr4079476pgd.240.1579872978385;
-        Fri, 24 Jan 2020 05:36:18 -0800 (PST)
+        bh=s6PxGpsdei4mPSsKIa+9lDhkJAUuwFK7YQ3iWXGAzYk=;
+        b=DurWWm9KhN396aaBLzIrTAZxEc8OhJe22vIi54LVZOtOjnGIQinvi6xoPEsau+bopw
+         k7BF6zdMGPS7PgirKdYzz72R1LnYTkqyxGKEMGgXifn3UXWHUWeb3tFBX+myrSHu0hKX
+         Rr+9xwwhe8H/4iCBOgo+Dym7tJPaXoDS1IoPh88DkyhvuXO53LRHyRLHfV0uGNr09kA7
+         R4ieWIeorpgXw0K1tyvazgEIGPTlAhXrD/C0GlZDIo2+nDK25VYJHXirFOl2fuBO8f48
+         U94nhf0NPBd+TmH7xjBhSOPXeI/L7ruMOOze4j1VcbHY8q6fHafRk/OEwJwJy0nL+n+q
+         Ql1A==
+X-Gm-Message-State: APjAAAU+NeCSyulaLb8cbx7BN2qXCcFHbljWGup5SaBLs6m69sdjawS7
+        UNoadjmI8Ah17Mi1gOHFGow=
+X-Google-Smtp-Source: APXvYqxYcdZclbMiDnscuxt3jznPM9Z1acVIuR6pApoa/GEO6d5JslsPqlElABCdCOclWkw6OGL82A==
+X-Received: by 2002:a63:cf14:: with SMTP id j20mr4145897pgg.430.1579873490195;
+        Fri, 24 Jan 2020 05:44:50 -0800 (PST)
 Received: from [192.168.1.56] (KD124211219252.ppp-bb.dion.ne.jp. [124.211.219.252])
-        by smtp.gmail.com with ESMTPSA id 7sm6525892pfx.52.2020.01.24.05.36.12
+        by smtp.gmail.com with ESMTPSA id j14sm6668124pgs.57.2020.01.24.05.44.45
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 24 Jan 2020 05:36:17 -0800 (PST)
+        Fri, 24 Jan 2020 05:44:49 -0800 (PST)
 Subject: Re: [PATCH bpf-next 10/12] tun: run XDP program in tx path
 To:     "Michael S. Tsirkin" <mst@redhat.com>,
         David Ahern <dsahern@kernel.org>
-Cc:     netdev@vger.kernel.org, jasowang@redhat.com, davem@davemloft.net,
+Cc:     netdev@vger.kernel.org, prashantbhole.linux@gmail.com,
+        jasowang@redhat.com, davem@davemloft.net,
         jakub.kicinski@netronome.com, jbrouer@redhat.com, toke@redhat.com,
         toshiaki.makita1@gmail.com, daniel@iogearbox.net,
         john.fastabend@gmail.com, ast@kernel.org, kafai@fb.com,
         songliubraving@fb.com, yhs@fb.com, andriin@fb.com,
-        dsahern@gmail.com, Prashant Bhole <prashantbhole.linux@gmail.com>
+        dsahern@gmail.com
 References: <20200123014210.38412-1-dsahern@kernel.org>
  <20200123014210.38412-11-dsahern@kernel.org>
  <20200123032154-mutt-send-email-mst@kernel.org>
 From:   Prashant Bhole <bholeprashant.oss@gmail.com>
-Message-ID: <ffbc0df2-f65f-d4f8-3ff8-45ca129276d3@gmail.com>
-Date:   Fri, 24 Jan 2020 22:36:11 +0900
+Message-ID: <7b57f755-604a-5e23-0c83-6b80cd913b3c@gmail.com>
+Date:   Fri, 24 Jan 2020 22:44:43 +0900
 User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
  Thunderbird/68.4.1
 MIME-Version: 1.0
@@ -90,137 +91,9 @@ On 1/23/2020 5:23 PM, Michael S. Tsirkin wrote:
 >>   1 file changed, 150 insertions(+), 3 deletions(-)
 >>
 >> diff --git a/drivers/net/tun.c b/drivers/net/tun.c
->> index b6bac773f2a0..71bcd4ec2571 100644
->> --- a/drivers/net/tun.c
->> +++ b/drivers/net/tun.c
->> @@ -130,6 +130,7 @@ struct tap_filter {
->>   /* MAX_TAP_QUEUES 256 is chosen to allow rx/tx queues to be equal
->>    * to max number of VCPUs in guest. */
->>   #define MAX_TAP_QUEUES 256
->> +#define MAX_TAP_BATCH 64
->>   #define MAX_TAP_FLOWS  4096
->>   
->>   #define TUN_FLOW_EXPIRE (3 * HZ)
->> @@ -175,6 +176,7 @@ struct tun_file {
->>   	struct tun_struct *detached;
->>   	struct ptr_ring tx_ring;
->>   	struct xdp_rxq_info xdp_rxq;
->> +	void *pkt_ptrs[MAX_TAP_BATCH];
->>   };
->>   
->>   struct tun_page {
->> @@ -2140,6 +2142,107 @@ static ssize_t tun_put_user(struct tun_struct *tun,
->>   	return total;
->>   }
->>   
->> +static struct sk_buff *tun_prepare_xdp_skb(struct sk_buff *skb)
->> +{
->> +	struct sk_buff *nskb;
->> +
->> +	if (skb_shared(skb) || skb_cloned(skb)) {
->> +		nskb = skb_copy(skb, GFP_ATOMIC);
->> +		consume_skb(skb);
->> +		return nskb;
->> +	}
->> +
->> +	return skb;
->> +}
->> +
->> +static u32 tun_do_xdp_tx_generic(struct tun_struct *tun,
->> +				 struct sk_buff *skb)
->> +{
->> +	struct bpf_prog *xdp_prog;
->> +	struct xdp_buff xdp;
->> +	u32 act = XDP_PASS;
->> +
->> +	xdp_prog = rcu_dereference(tun->xdp_egress_prog);
->> +	if (xdp_prog) {
->> +		skb = tun_prepare_xdp_skb(skb);
->> +		if (!skb) {
->> +			act = XDP_DROP;
->> +			kfree_skb(skb);
->> +			goto drop;
->> +		}
->> +
->> +		act = do_xdp_generic_core(skb, &xdp, xdp_prog);
->> +		switch (act) {
->> +		case XDP_TX:
->> +			/* Rx path generic XDP will be called in this path
->> +			 */
->> +			local_bh_disable();
->> +			netif_receive_skb(skb);
->> +			local_bh_enable();
->> +			break;
->> +		case XDP_PASS:
->> +			break;
->> +		case XDP_REDIRECT:
->> +			/* Since we are not handling this case yet, let's free
->> +			 * skb here. In case of XDP_DROP/XDP_ABORTED, the skb
->> +			 * was already freed in do_xdp_generic_core()
->> +			 */
->> +			kfree_skb(skb);
->> +			/* fall through */
->> +		default:
->> +			bpf_warn_invalid_xdp_action(act);
->> +			/* fall through */
->> +		case XDP_ABORTED:
->> +			trace_xdp_exception(tun->dev, xdp_prog, act);
->> +			/* fall through */
->> +		case XDP_DROP:
->> +			goto drop;
->> +		}
->> +	}
->> +
->> +	return act;
->> +drop:
->> +	this_cpu_inc(tun->pcpu_stats->tx_dropped);
->> +	return act;
->> +}
->> +
->> +static u32 tun_do_xdp_tx(struct tun_struct *tun, struct tun_file *tfile,
->> +			 struct xdp_frame *frame)
->> +{
->> +	struct bpf_prog *xdp_prog;
->> +	struct xdp_buff xdp;
->> +	u32 act = XDP_PASS;
->> +
->> +	xdp_prog = rcu_dereference(tun->xdp_egress_prog);
->> +	if (xdp_prog) {
->> +		xdp.data_hard_start = frame->data - frame->headroom;
->> +		xdp.data = frame->data;
->> +		xdp.data_end = xdp.data + frame->len;
->> +		xdp.data_meta = xdp.data - frame->metasize;
->> +
->> +		act = bpf_prog_run_xdp(xdp_prog, &xdp);
->> +		switch (act) {
->> +		case XDP_PASS:
->> +			break;
->> +		case XDP_TX:
->> +			/* fall through */
->> +		case XDP_REDIRECT:
->> +			/* fall through */
->> +		default:
->> +			bpf_warn_invalid_xdp_action(act);
->> +			/* fall through */
->> +		case XDP_ABORTED:
->> +			trace_xdp_exception(tun->dev, xdp_prog, act);
->> +			/* fall through */
->> +		case XDP_DROP:
->> +			xdp_return_frame_rx_napi(frame);
->> +			break;
->> +		}
->> +	}
->> +
->> +	return act;
->> +}
->> +
->>   static void *tun_ring_recv(struct tun_file *tfile, int noblock, int *err)
->>   {
->>   	DECLARE_WAITQUEUE(wait, current);
->> @@ -2557,6 +2660,52 @@ static int tun_sendmsg(struct socket *sock, struct msghdr *m, size_t total_len)
->>   	return ret;
->>   }
->>   
+
+[...]
+
 >> +static int tun_consume_packets(struct tun_file *tfile, void **ptr_array, int n)
 >> +{
 >> +	void **pkts = tfile->pkt_ptrs;
@@ -256,40 +129,3 @@ On 1/23/2020 5:23 PM, Michael S. Tsirkin wrote:
 That's doable. Thanks.
 
 Prashant
-> 
-> 
->> +		for (i = 0; i < num_ptrs; i++) {
->> +			ptr = pkts[i];
->> +			if (tun_is_xdp_frame(ptr)) {
->> +				frame = tun_ptr_to_xdp(ptr);
->> +				act = tun_do_xdp_tx(tun, tfile, frame);
->> +			} else {
->> +				act = tun_do_xdp_tx_generic(tun, ptr);
->> +			}
->> +
->> +			if (act == XDP_PASS)
->> +				ptr_array[pkt_cnt++] = ptr;
->> +		}
->> +	}
->> +
->> +	rcu_read_unlock();
->> +	return pkt_cnt;
->> +}
->> +
->>   static int tun_recvmsg(struct socket *sock, struct msghdr *m, size_t total_len,
->>   		       int flags)
->>   {
->> @@ -2577,9 +2726,7 @@ static int tun_recvmsg(struct socket *sock, struct msghdr *m, size_t total_len,
->>   			ptr = ctl->ptr;
->>   			break;
->>   		case TUN_MSG_CONSUME_PKTS:
->> -			ret = ptr_ring_consume_batched(&tfile->tx_ring,
->> -						       ctl->ptr,
->> -						       ctl->num);
->> +			ret = tun_consume_packets(tfile, ctl->ptr, ctl->num);
->>   			goto out;
->>   		case TUN_MSG_UNCONSUME_PKTS:
->>   			ptr_ring_unconsume(&tfile->tx_ring, ctl->ptr,
->> -- 
->> 2.21.1 (Apple Git-122.3)
-> 
