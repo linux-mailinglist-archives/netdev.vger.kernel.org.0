@@ -2,95 +2,72 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 6B5701477B0
-	for <lists+netdev@lfdr.de>; Fri, 24 Jan 2020 05:34:50 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 64DAE1477C1
+	for <lists+netdev@lfdr.de>; Fri, 24 Jan 2020 05:55:10 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730255AbgAXEen (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 23 Jan 2020 23:34:43 -0500
-Received: from mail-pj1-f66.google.com ([209.85.216.66]:36824 "EHLO
-        mail-pj1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728799AbgAXEen (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 23 Jan 2020 23:34:43 -0500
-Received: by mail-pj1-f66.google.com with SMTP id gv17so242331pjb.1;
-        Thu, 23 Jan 2020 20:34:42 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:mime-version:content-disposition
-         :user-agent;
-        bh=slaKvzH5vQEl55keAvrBKgGVpQ4RBWEB5cwMnx6Pme4=;
-        b=VybEWHw4xyxxvRIZISN0/Cxmn+9as/TDFmdhVj2TLkFlgOPIT3y4mZXrwFacxNd4ms
-         qEE1wNonid1KEcI18FWUbHfwUN9jd+s2vlK7JJC/0UFCKM5w5ofGjA9oyqqneJLjQVVw
-         G1QEBxLQkudxLrKqeQGRk2eih8w8UZ9wVO5CrdFwTDDLzaFotzNvk5f4EM7PVh0Nweqx
-         whMPyEDxACinCyJJTLyk9+v5v52h1dnW2ecHHt8KZ1g4SPoW7sYdDfVmLmoisiNkHs3R
-         j2LGLespV2gJ63aTGq8dDOCGR5cYwPgrLBl4ArcMOQn75Z6WaDBq7nfVOZY0gSNcGDB+
-         mEtg==
+        id S1730348AbgAXEzC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 23 Jan 2020 23:55:02 -0500
+Received: from mail-il1-f197.google.com ([209.85.166.197]:33979 "EHLO
+        mail-il1-f197.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729497AbgAXEzB (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 23 Jan 2020 23:55:01 -0500
+Received: by mail-il1-f197.google.com with SMTP id l13so672210ils.1
+        for <netdev@vger.kernel.org>; Thu, 23 Jan 2020 20:55:01 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:mime-version
-         :content-disposition:user-agent;
-        bh=slaKvzH5vQEl55keAvrBKgGVpQ4RBWEB5cwMnx6Pme4=;
-        b=CPEARsSY/E+aJ76tLm8sXdACv4PzXAPn/GG8ZZSZAo0mN3dw4X0UoCGbPjtUAVTWXH
-         fXd0T5OQnj0K4i8B3toN4VyM3vpOaZB4C/mVNZQierLzgiNvCvtRu0DNPwawvYT3y4HH
-         slTqc9+ujhwRIZTEJXHYWNMEtm8Dl5S5VvqQRxxxXRvHu9OalvpD8Z8w5AjfaWcY0eCZ
-         oUhrBbQjBF/pQz8ogRJNlwdINlR68rsM92JAuCpdkXuqdm+HcAMQON3DULgTxIWaxNO0
-         3ertsX3mp/fZj5hUNfhDx/5lbvNPH9UwIwiFmJWhS9pDvQTpK8FtQTlKgmdXD3XJ35Wl
-         dQZQ==
-X-Gm-Message-State: APjAAAW19Za3H7uqTfOjHT3krvtWsetljvBvxULtDK2g+8oqLdpw/Zd6
-        RXpOVpSEgZXukKn+2aTlWvg=
-X-Google-Smtp-Source: APXvYqzQcZRkU0QraWfKb9QtgdwqU0GN0/ZJHa/SD87sHtzFuRJqNGn31wFmKx+UNcy33LBo7GEFbQ==
-X-Received: by 2002:a17:902:7b94:: with SMTP id w20mr1649872pll.257.1579840482165;
-        Thu, 23 Jan 2020 20:34:42 -0800 (PST)
-Received: from google.com ([123.201.77.6])
-        by smtp.gmail.com with ESMTPSA id z26sm4356895pfa.90.2020.01.23.20.34.39
-        (version=TLS1_2 cipher=AES128-SHA bits=128/128);
-        Thu, 23 Jan 2020 20:34:41 -0800 (PST)
-Date:   Fri, 24 Jan 2020 10:04:33 +0530
-From:   Saurav Girepunje <saurav.girepunje@gmail.com>
-To:     pkshih@realtek.com, kvalo@codeaurora.org, davem@davemloft.net,
-        Larry.Finger@lwfinger.net, saurav.girepunje@gmail.com,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Cc:     saurav.girepunje@hotmail.com
-Subject: [PATCH] net: wireless: realtek: rtlwifi: fix spelling mistake
-Message-ID: <20200124043433.GA3024@google.com>
+        h=x-gm-message-state:mime-version:date:in-reply-to:message-id:subject
+         :from:to;
+        bh=wqIW1GSh96dKBLUXIwcBCdzQGnE7BxtkVO3LYYJlVQE=;
+        b=cNyKUMYd1pTa5K6+I5NgaRR87bacM51d4DDTLT9M3sabOLawNY4n2uJeJQT5nMhKrV
+         TobdL0DiyN3d6AdwDfvvHh3sBsASxmEfmf8irNJSWiwppofR6tMOLCp7Rgtme42Zbak+
+         nnsOwb4EJIydDVf2qoM6s494bT3dFsf4gvNhwKcNsBjlFzLh9aMaMEaoTxyMfE37S341
+         VJcOvtm2Lo+CTWvLte7BNPKgq+ioI3/lnPd7NylGQsR0F18Pkq8z32UtNOJhAC7W6W88
+         SE/V4p/T4X6S8Qn9kodP9+ultLEDcTt5bVFNGu1NIqfmwvr/NrHIdH/8l+ZwJfuMx1G1
+         iIXg==
+X-Gm-Message-State: APjAAAXYoa/mqB+iprApQYdTYkHjW93Jf2kpJhK8zeZsTye/BHFv0z+T
+        /IjRArmx+xtEtqSobeXHRSdCbzRC/utrlsN5FUZqhw1ybq3g
+X-Google-Smtp-Source: APXvYqxrBcPP1lod4jQ5x9Z+3r0zQv4PBuVpX/irM3rH1cFEkIinSrYxZh5p5QiT0thS8XZ7XZ8TETunB7YSrXzC5GGeknq9swin
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii; format=flowed
-Content-Disposition: inline
-User-Agent: Mutt/1.6.2-neo (NetBSD/sparc64)
+X-Received: by 2002:a92:7903:: with SMTP id u3mr1546730ilc.254.1579841700988;
+ Thu, 23 Jan 2020 20:55:00 -0800 (PST)
+Date:   Thu, 23 Jan 2020 20:55:00 -0800
+In-Reply-To: <000000000000204b4d059cd6d766@google.com>
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <000000000000638fae059cdb8fe8@google.com>
+Subject: Re: KASAN: slab-out-of-bounds Read in bitmap_port_destroy
+From:   syzbot <syzbot+b96275fd6ad891076ced@syzkaller.appspotmail.com>
+To:     arvid.brodin@alten.se, coreteam@netfilter.org, davem@davemloft.net,
+        florent.fourcot@wifirst.fr, fw@strlen.de, jeremy@azazel.net,
+        johannes.berg@intel.com, kadlec@netfilter.org,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        netfilter-devel@vger.kernel.org, pablo@netfilter.org,
+        syzkaller-bugs@googlegroups.com, xiyou.wangcong@gmail.com
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-fix spelling mistake reported by checkpatch in trx.c .
+syzbot has bisected this bug to:
 
-Signed-off-by: Saurav Girepunje <saurav.girepunje@gmail.com>
----
-  drivers/net/wireless/realtek/rtlwifi/rtl8192se/trx.c | 4 ++--
-  1 file changed, 2 insertions(+), 2 deletions(-)
+commit b9a1e627405d68d475a3c1f35e685ccfb5bbe668
+Author: Cong Wang <xiyou.wangcong@gmail.com>
+Date:   Thu Jul 4 00:21:13 2019 +0000
 
-diff --git a/drivers/net/wireless/realtek/rtlwifi/rtl8192se/trx.c b/drivers/net/wireless/realtek/rtlwifi/rtl8192se/trx.c
-index 9eaa534..cad4c9f 100644
---- a/drivers/net/wireless/realtek/rtlwifi/rtl8192se/trx.c
-+++ b/drivers/net/wireless/realtek/rtlwifi/rtl8192se/trx.c
-@@ -276,7 +276,7 @@ bool rtl92se_rx_query_desc(struct ieee80211_hw *hw, struct rtl_stats *stats,
-  
-  	/* hw will set stats->decrypted true, if it finds the
-  	 * frame is open data frame or mgmt frame,
--	 * hw will not decrypt robust managment frame
-+	 * hw will not decrypt robust management frame
-  	 * for IEEE80211w but still set stats->decrypted
-  	 * true, so here we should set it back to undecrypted
-  	 * for IEEE80211w frame, and mac80211 sw will help
-@@ -466,7 +466,7 @@ void rtl92se_tx_fill_desc(struct ieee80211_hw *hw,
-  		/* Alwasy enable all rate fallback range */
-  		set_tx_desc_data_rate_fb_limit(pdesc, 0x1F);
-  
--		/* Fix: I don't kown why hw use 6.5M to tx when set it */
-+		/* Fix: I don't know why hw use 6.5M to tx when set it */
-  		set_tx_desc_user_rate(pdesc,
-  				      ptcb_desc->use_driver_rate ? 1 : 0);
-  
--- 
-1.9.1
+    hsr: implement dellink to clean up resources
 
+bisection log:  https://syzkaller.appspot.com/x/bisect.txt?x=17d0c611e00000
+start commit:   131701c6 Merge tag 'leds-5.5-rc8' of git://git.kernel.org/..
+git tree:       upstream
+final crash:    https://syzkaller.appspot.com/x/report.txt?x=1430c611e00000
+console output: https://syzkaller.appspot.com/x/log.txt?x=1030c611e00000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=83c00afca9cf5153
+dashboard link: https://syzkaller.appspot.com/bug?extid=b96275fd6ad891076ced
+syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=15fba721e00000
+C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=1339726ee00000
+
+Reported-by: syzbot+b96275fd6ad891076ced@syzkaller.appspotmail.com
+Fixes: b9a1e627405d ("hsr: implement dellink to clean up resources")
+
+For information about bisection process see: https://goo.gl/tpsmEJ#bisection
