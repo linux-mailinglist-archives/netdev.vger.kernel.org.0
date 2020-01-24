@@ -2,15 +2,15 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 92064148BDA
-	for <lists+netdev@lfdr.de>; Fri, 24 Jan 2020 17:20:28 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 101AC148BDB
+	for <lists+netdev@lfdr.de>; Fri, 24 Jan 2020 17:20:29 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2390030AbgAXQTv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 24 Jan 2020 11:19:51 -0500
-Received: from esa6.microchip.iphmx.com ([216.71.154.253]:25637 "EHLO
+        id S2390126AbgAXQTy (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 24 Jan 2020 11:19:54 -0500
+Received: from esa6.microchip.iphmx.com ([216.71.154.253]:25653 "EHLO
         esa6.microchip.iphmx.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2387946AbgAXQTt (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 24 Jan 2020 11:19:49 -0500
+        with ESMTP id S2390009AbgAXQTv (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 24 Jan 2020 11:19:51 -0500
 Received-SPF: Pass (esa6.microchip.iphmx.com: domain of
   Horatiu.Vultur@microchip.com designates 198.175.253.82 as
   permitted sender) identity=mailfrom;
@@ -30,22 +30,22 @@ Received-SPF: None (esa6.microchip.iphmx.com: no sender
   x-sender="postmaster@email.microchip.com";
   x-conformance=spf_only
 Authentication-Results: esa6.microchip.iphmx.com; dkim=none (message not signed) header.i=none; spf=Pass smtp.mailfrom=Horatiu.Vultur@microchip.com; spf=None smtp.helo=postmaster@email.microchip.com; dmarc=pass (p=none dis=none) d=microchip.com
-IronPort-SDR: tfc21+y1/AjHeE9A8ZBn7JKa51YtnCkYJTTm5hM3LWtsyREheCRTaNONltMYXQHcHp41HEVF2m
- +yu+tQmLoh7EPLm9CQs+IeU5bTVI7f2t0WSf/zLh7raUZRBFQ9J57PRbvuAyHvUHBKsXOuvzt2
- WAFbckxHfZ3BQ/BrGJqCn820PrpIXNq4VLgyIoCjoloIl5Cgq/aSW2eFay5e4AQ1tAM4CQI5Ru
- hAEP8Ozi2Tv9WLIjkQaP4h4TYAoXtSSzZDTf+sfgDtUoVjPJQ3f7lEBwrT83c4vVgmM5aJJ8M8
- KMY=
+IronPort-SDR: +FvT4PgZPtezS7ktZ8vSBz8QMBMmu+d3HeOyBatLVnYR+EW9Hy5f2RdavxgWP6475FlQVtwMxv
+ pDslQDOyYtajI8V9nk+8aeebVzLvSUV26xYz6cM8fPRRz0iuWZgEs3xKVLxK7A4TnO8LBENbwd
+ gpt07RX3p+RSZY1T7XX6nOkl/DsdizrSX0DI56pm7UUWx79nvC/vArvy91fVJS+Go6EpwPCo8w
+ LbxzcNLAWSIMJlL20Hsto4D3Oh2tpn+WsQjx44UwZTV6XizZOdp/tIvhQceUneTRrZ74x1xLtb
+ Hqw=
 X-IronPort-AV: E=Sophos;i="5.70,358,1574146800"; 
-   d="scan'208";a="19406"
+   d="scan'208";a="19415"
 Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
-  by esa6.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 24 Jan 2020 09:19:47 -0700
+  by esa6.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 24 Jan 2020 09:19:49 -0700
 Received: from chn-vm-ex01.mchp-main.com (10.10.85.143) by
  chn-vm-ex04.mchp-main.com (10.10.85.152) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.1713.5; Fri, 24 Jan 2020 09:19:43 -0700
+ 15.1.1713.5; Fri, 24 Jan 2020 09:19:46 -0700
 Received: from soft-dev3.microsemi.net (10.10.85.251) by
  chn-vm-ex01.mchp-main.com (10.10.85.143) with Microsoft SMTP Server id
- 15.1.1713.5 via Frontend Transport; Fri, 24 Jan 2020 09:19:40 -0700
+ 15.1.1713.5 via Frontend Transport; Fri, 24 Jan 2020 09:19:44 -0700
 From:   Horatiu Vultur <horatiu.vultur@microchip.com>
 To:     <linux-kernel@vger.kernel.org>, <netdev@vger.kernel.org>,
         <bridge@lists.linux-foundation.org>, <jiri@resnulli.us>,
@@ -55,9 +55,9 @@ To:     <linux-kernel@vger.kernel.org>, <netdev@vger.kernel.org>,
         <andrew@lunn.ch>, <jeffrey.t.kirsher@intel.com>,
         <UNGLinuxDriver@microchip.com>
 CC:     Horatiu Vultur <horatiu.vultur@microchip.com>
-Subject: [RFC net-next v3 05/10] net: bridge: mrp: Update MRP interface to add switchdev support
-Date:   Fri, 24 Jan 2020 17:18:23 +0100
-Message-ID: <20200124161828.12206-6-horatiu.vultur@microchip.com>
+Subject: [RFC net-next v3 06/10] net: bridge: mrp: switchdev: Extend switchdev API to offload MRP
+Date:   Fri, 24 Jan 2020 17:18:24 +0100
+Message-ID: <20200124161828.12206-7-horatiu.vultur@microchip.com>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <20200124161828.12206-1-horatiu.vultur@microchip.com>
 References: <20200124161828.12206-1-horatiu.vultur@microchip.com>
@@ -68,67 +68,120 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Extend the MRP interface to allow switchdev support. The following functions are
-added:
+Extend switchdev API to add support for MRP. The HW is notified in
+following cases:
 
-br_mrp_port_switchdev_add - this corresponds to the function br_mrp_add_port,
-  and will notify the HW that a port is added to a MRP ring. The function gets
-  as parameter the port and the ID of the ring.
+SWITCHDEV_OBJ_ID_PORT_MRP: This is used when a port is added/removed from the
+  mrp ring.
 
-br_mrp_port_switchdev_del - this corresponds to the function br_mrp_del_port
-  and will notify the HW that a port is removed from a MRP ring. The function
-  gets as parameter the port and the ID of the ring.
+SWITCHDEV_OBJ_ID_RING_ROLE_MRP: This is used when the role of the node
+  changes. The current supported roles are Media Redundancy Manager and Media
+  Redundancy Client.
 
-br_mrp_port_switchdev_set_state - this corresponds to the function
-  br_mrp_port_state. It would notify the HW if it should block or not non-MRP
-  frames.
+SWITCHDEV_OBJ_ID_RING_TEST_MRP: This is used when to start/stop sending
+  MRP_Test frames on the mrp ring ports. This is called only on nodes that have
+  the role Media Redundancy Manager.
 
-br_mrp_port_switchdev_set_port - this corresponds to the function
-  br_mrp_port_role. It would set the port role, primary or secondary.
+SWITCHDEV_ATTR_ID_MRP_PORT_STATE: This is used when the port's state is
+  changed. It can be in blocking/forwarding mode.
 
-br_mrp_switchdev_set_role - this corresponds to the function br_mrp_ring_role
-  and would set one of the role MRM or MRC.
+SWITCHDEV_ATTR_ID_MRP_PORT_ROLE: This is used when port's role changes. The
+  roles of the port can be primary/secondary. This is required to notify HW
+  because the MRP_Test frame contains the field MRP_PortRole that contains this
+  information.
 
-br_mrp_switchdev_set_ring_state - this corresponds to the function
-  br_mrp_ring_state and would set the ring to be open or closed.
-
-br_mrp_switchdev_send_ring_test - this corresponds to the function
-  br_mrp_start_test. This will notify the HW to start or stop generating
-  MRP_Test frames. Value 0 for the interval parameter means to stop generating
-  the frames.
+SWITCHDEV_ATTR_ID_MRP_RING_STATE: This is used when the ring changes it states
+  to open or closed. This is required to notify HW because the MRP_Test frame
+  contains the field MRP_InState which contains this information.
 
 Signed-off-by: Horatiu Vultur <horatiu.vultur@microchip.com>
 ---
- net/bridge/br_private_mrp.h | 16 ++++++++++++++++
- 1 file changed, 16 insertions(+)
+ include/net/switchdev.h | 51 +++++++++++++++++++++++++++++++++++++++++
+ 1 file changed, 51 insertions(+)
 
-diff --git a/net/bridge/br_private_mrp.h b/net/bridge/br_private_mrp.h
-index bea4ece4411c..de5ba7f730f6 100644
---- a/net/bridge/br_private_mrp.h
-+++ b/net/bridge/br_private_mrp.h
-@@ -35,6 +35,22 @@ int br_mrp_start_test(struct net_bridge *br, u32 ring_nr, u32 interval,
- 		      u8 max_miss);
- int br_mrp_flush(struct net_bridge *br, u32 ring_nr);
+diff --git a/include/net/switchdev.h b/include/net/switchdev.h
+index aee86a189432..b1ed170fc01d 100644
+--- a/include/net/switchdev.h
++++ b/include/net/switchdev.h
+@@ -40,6 +40,11 @@ enum switchdev_attr_id {
+ 	SWITCHDEV_ATTR_ID_BRIDGE_VLAN_FILTERING,
+ 	SWITCHDEV_ATTR_ID_BRIDGE_MC_DISABLED,
+ 	SWITCHDEV_ATTR_ID_BRIDGE_MROUTER,
++#ifdef CONFIG_BRIDGE_MRP
++	SWITCHDEV_ATTR_ID_MRP_PORT_STATE,
++	SWITCHDEV_ATTR_ID_MRP_PORT_ROLE,
++	SWITCHDEV_ATTR_ID_MRP_RING_STATE,
++#endif
+ };
  
-+/* br_mrp_switchdev.c */
-+int br_mrp_port_switchdev_add(struct net_bridge_port *p, u32 ring_nr);
-+int br_mrp_port_switchdev_del(struct net_bridge_port *p, u32 ring_nr);
-+int br_mrp_port_switchdev_set_state(struct net_bridge_port *p,
-+				    enum br_mrp_port_state_type state);
-+int br_mrp_port_switchdev_set_role(struct net_bridge_port *p,
-+				   enum br_mrp_port_role_type role);
-+
-+int br_mrp_switchdev_set_ring_role(struct br_mrp *mrp,
-+				   enum br_mrp_ring_role_type role);
-+int br_mrp_switchdev_set_ring_state(struct br_mrp *mrp,
-+				    enum br_mrp_ring_state_type state);
-+
-+int br_mrp_switchdev_send_ring_test(struct br_mrp *mrp, u32 interval,
-+				    u8 max_miss);
-+
- /* br_mrp_netlink.c */
- void br_mrp_port_open(struct net_device *dev, u8 loc);
+ struct switchdev_attr {
+@@ -55,6 +60,11 @@ struct switchdev_attr {
+ 		clock_t ageing_time;			/* BRIDGE_AGEING_TIME */
+ 		bool vlan_filtering;			/* BRIDGE_VLAN_FILTERING */
+ 		bool mc_disabled;			/* MC_DISABLED */
++#ifdef CONFIG_BRIDGE_MRP
++		u8 mrp_port_state;			/* MRP_PORT_STATE */
++		u8 mrp_port_role;			/* MRP_PORT_ROLE */
++		u8 mrp_ring_state;			/* MRP_RING_STATE */
++#endif
+ 	} u;
+ };
  
+@@ -63,6 +73,11 @@ enum switchdev_obj_id {
+ 	SWITCHDEV_OBJ_ID_PORT_VLAN,
+ 	SWITCHDEV_OBJ_ID_PORT_MDB,
+ 	SWITCHDEV_OBJ_ID_HOST_MDB,
++#ifdef CONFIG_BRIDGE_MRP
++	SWITCHDEV_OBJ_ID_PORT_MRP,
++	SWITCHDEV_OBJ_ID_RING_TEST_MRP,
++	SWITCHDEV_OBJ_ID_RING_ROLE_MRP,
++#endif
+ };
+ 
+ struct switchdev_obj {
+@@ -94,6 +109,42 @@ struct switchdev_obj_port_mdb {
+ #define SWITCHDEV_OBJ_PORT_MDB(OBJ) \
+ 	container_of((OBJ), struct switchdev_obj_port_mdb, obj)
+ 
++
++#ifdef CONFIG_BRIDGE_MRP
++/* SWITCHDEV_OBJ_ID_PORT_MRP */
++struct switchdev_obj_port_mrp {
++	struct switchdev_obj obj;
++	struct net_device *port;
++	u32 ring_nr;
++};
++
++#define SWITCHDEV_OBJ_PORT_MRP(OBJ) \
++	container_of((OBJ), struct switchdev_obj_port_mrp, obj)
++
++/* SWITCHDEV_OBJ_ID_RING_TEST_MRP */
++struct switchdev_obj_ring_test_mrp {
++	struct switchdev_obj obj;
++	/* The value is in us and a value of 0 represents to stop */
++	u32 interval;
++	u8 max_miss;
++	u32 ring_nr;
++};
++
++#define SWITCHDEV_OBJ_RING_TEST_MRP(OBJ) \
++	container_of((OBJ), struct switchdev_obj_ring_test_mrp, obj)
++
++/* SWICHDEV_OBJ_ID_RING_ROLE_MRP */
++struct switchdev_obj_ring_role_mrp {
++	struct switchdev_obj obj;
++	u8 ring_role;
++	u32 ring_nr;
++};
++
++#define SWITCHDEV_OBJ_RING_ROLE_MRP(OBJ) \
++	container_of((OBJ), struct switchdev_obj_ring_role_mrp, obj)
++
++#endif
++
+ typedef int switchdev_obj_dump_cb_t(struct switchdev_obj *obj);
+ 
+ enum switchdev_notifier_type {
 -- 
 2.17.1
 
