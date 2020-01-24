@@ -2,151 +2,155 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 06DE1147932
-	for <lists+netdev@lfdr.de>; Fri, 24 Jan 2020 09:14:13 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 140C4147949
+	for <lists+netdev@lfdr.de>; Fri, 24 Jan 2020 09:22:45 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727493AbgAXIOL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 24 Jan 2020 03:14:11 -0500
-Received: from us-smtp-2.mimecast.com ([205.139.110.61]:48576 "EHLO
-        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1726695AbgAXIOK (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 24 Jan 2020 03:14:10 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1579853648;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=X+EFnGJpGD7BOakillThs59qTAXDMWK8v3DfAIAXlWo=;
-        b=UXCRsAkZN07vYULHM/HbV49r6Zeyp9xtjNLZ4y+B/lE1nAHc06Bx7qdvcCeZVLBcfph0ez
-        JKBom0rZi3txVgJIfgqH0FJS7V1T3i9y3SH84rRAO1c/Aw9DYV9/KhnpqsyQ9HGiOkpJ5Z
-        C0StdPlAotB4EVWLYwefrqAJBTiOtt0=
-Received: from mail-vk1-f197.google.com (mail-vk1-f197.google.com
- [209.85.221.197]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-258-b3k_VVdCOPyETMDvLhQClA-1; Fri, 24 Jan 2020 03:14:05 -0500
-X-MC-Unique: b3k_VVdCOPyETMDvLhQClA-1
-Received: by mail-vk1-f197.google.com with SMTP id m25so475559vko.19
-        for <netdev@vger.kernel.org>; Fri, 24 Jan 2020 00:14:04 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=X+EFnGJpGD7BOakillThs59qTAXDMWK8v3DfAIAXlWo=;
-        b=aol/ETmHf9rGlAwK3xpThcYoR4oql1Z65E+wD/TMZi2HzYeIMOO/J3mD7pZMtxeuaj
-         Ss23qL5oxM1zvWm5ZTz+9cfM3Pkky9aVMFV9itosqiS0ST6zbksccAZDRycbJaCdn6mJ
-         EDbG2KoKEKjb21+w6Y4KQqg1wJM81aIqF4gqv7YH/uNm/ezI7O/ZJN/UHN/D0mijTRh9
-         aVgq9TPfO5DeDoS3+wJRYQDUrAN0p6ZgEhV+kcgy5Kh6ZZR1CGoJ6ekYNkZm+aZmJlMa
-         h8ZwR/M6BzYrvMRaf4HlgHln/bEq/5WpMqYpbl2Ldyesqqw4AbikAqsNjWYQUGxT/dpQ
-         glIA==
-X-Gm-Message-State: APjAAAUw6vauiPKro7bpGZj1y2zSKx0A7KWLfCQApsnemmwFyKG7NA6N
-        yMVfwSRPNurKERwHIQCFAtF9Jh7EiXJcKCIOIGhlUJSTMWFKrhl98LQNW0WvgcET015k7N6mVqj
-        y8INbWLKb/Rw5q1OyD+cmvm2HilUFP2CW
-X-Received: by 2002:ab0:2408:: with SMTP id f8mr1078772uan.126.1579853644344;
-        Fri, 24 Jan 2020 00:14:04 -0800 (PST)
-X-Google-Smtp-Source: APXvYqxr1tOLHfYUb+zS7CrQ2MSGRfW8uY3H6Cj5hdVp+YnPv9EKGcFY+4gFbLn6ZSNkULpi/bIZPglUU2TbtCfeWUE=
-X-Received: by 2002:ab0:2408:: with SMTP id f8mr1078760uan.126.1579853643804;
- Fri, 24 Jan 2020 00:14:03 -0800 (PST)
+        id S1729619AbgAXIW2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 24 Jan 2020 03:22:28 -0500
+Received: from a.mx.secunet.com ([62.96.220.36]:47458 "EHLO a.mx.secunet.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1729551AbgAXIW1 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 24 Jan 2020 03:22:27 -0500
+Received: from localhost (localhost [127.0.0.1])
+        by a.mx.secunet.com (Postfix) with ESMTP id A783E2052E;
+        Fri, 24 Jan 2020 09:22:25 +0100 (CET)
+X-Virus-Scanned: by secunet
+Received: from a.mx.secunet.com ([127.0.0.1])
+        by localhost (a.mx.secunet.com [127.0.0.1]) (amavisd-new, port 10024)
+        with ESMTP id rS_doAvz5j1c; Fri, 24 Jan 2020 09:22:24 +0100 (CET)
+Received: from mail-essen-01.secunet.de (mail-essen-01.secunet.de [10.53.40.204])
+        (using TLSv1 with cipher ECDHE-RSA-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by a.mx.secunet.com (Postfix) with ESMTPS id 60C0020561;
+        Fri, 24 Jan 2020 09:22:23 +0100 (CET)
+Received: from gauss2.secunet.de (10.182.7.193) by mail-essen-01.secunet.de
+ (10.53.40.204) with Microsoft SMTP Server id 14.3.439.0; Fri, 24 Jan 2020
+ 09:22:23 +0100
+Received: by gauss2.secunet.de (Postfix, from userid 1000)      id 1224831800E0;
+ Fri, 24 Jan 2020 09:22:23 +0100 (CET)
+From:   Steffen Klassert <steffen.klassert@secunet.com>
+To:     David Miller <davem@davemloft.net>
+CC:     Steffen Klassert <steffen.klassert@secunet.com>,
+        Willem de Bruijn <willemb@google.com>,
+        Paolo Abeni <pabeni@redhat.com>,
+        "Subash Abhinov Kasiviswanathan" <subashab@codeaurora.org>,
+        Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>,
+        <netdev@vger.kernel.org>
+Subject: [PATCH net-next v2 0/4] Support fraglist GRO/GSO
+Date:   Fri, 24 Jan 2020 09:22:14 +0100
+Message-ID: <20200124082218.2572-1-steffen.klassert@secunet.com>
+X-Mailer: git-send-email 2.17.1
 MIME-Version: 1.0
-References: <20200124072338.75163-1-sven.auhagen@voleatech.de>
-In-Reply-To: <20200124072338.75163-1-sven.auhagen@voleatech.de>
-From:   Lorenzo Bianconi <lorenzo.bianconi@redhat.com>
-Date:   Fri, 24 Jan 2020 09:13:52 +0100
-Message-ID: <CAJ0CqmXf1Hw0rTkDiY=4Joyt0m9apFZ0y0+KwZhWSRixnBhhew@mail.gmail.com>
-Subject: Re: [PATCH v3] mvneta driver disallow XDP program on hardware buffer management
-To:     Sven Auhagen <sven.auhagen@voleatech.de>
-Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "thomas.petazzoni@bootlin.com" <thomas.petazzoni@bootlin.com>,
-        "brouer@redhat.com" <brouer@redhat.com>,
-        "ilias.apalodimas@linaro.org" <ilias.apalodimas@linaro.org>,
-        "matteo.croce@redhat.com" <matteo.croce@redhat.com>,
-        "jakub.kicinski@netronome.com" <jakub.kicinski@netronome.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain
+X-EXCLAIMER-MD-CONFIG: 2c86f778-e09b-4440-8b15-867914633a10
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
->
-> Recently XDP Support was added to the mvneta driver
-> for software buffer management only.
-> It is still possible to attach an XDP program if
-> hardware buffer management is used.
-> It is not doing anything at that point.
->
-> The patch disallows attaching XDP programs to mvneta
-> if hardware buffer management is used.
->
-> Signed-off-by: Sven Auhagen <sven.auhagen@voleatech.de>
->
-> diff --git a/drivers/net/ethernet/marvell/mvneta.c b/drivers/net/ethernet=
-/marvell/mvneta.c
-> index 71a872d46bc4..a2e9ba9b918f 100644
-> --- a/drivers/net/ethernet/marvell/mvneta.c
-> +++ b/drivers/net/ethernet/marvell/mvneta.c
-> @@ -2158,7 +2158,7 @@ mvneta_swbm_rx_frame(struct mvneta_port *pp,
->  prefetch(data);
->
->  xdp->data_hard_start =3D data;
-> -xdp->data =3D data + pp->rx_offset_correction + MVNETA_MH_SIZE;
-> +xdp->data =3D data + pp->rx_offset_correction;
+This patchset adds support to do GRO/GSO by chaining packets
+of the same flow at the SKB frag_list pointer. This avoids
+the overhead to merge payloads into one big packet, and
+on the other end, if GSO is needed it avoids the overhead
+of splitting the big packet back to the native form.
 
-Hi Sven,
+Patch 1 adds netdev feature flags to enable fraglist GRO,
+this implements one of the configuration options discussed
+at netconf 2019.
 
-I think this is going to break XDP support for marvell espressobin (sw
-buffer management).
-I guess we need to identify when MH header is inserted.
+Patch 2 adds a netdev software feature set that defaults to off
+and assigns the new fraglist GRO feature flag to it.
 
-Regards,
-Lorenzo
+Patch 3 adds the core infrastructure to do fraglist GRO/GSO.
 
->  xdp->data_end =3D xdp->data + data_len;
->  xdp_set_data_meta_invalid(xdp);
->
-> @@ -4960,9 +4960,10 @@ static int mvneta_probe(struct platform_device *pd=
-ev)
->   * NET_SKB_PAD, exceeds 64B. It should be 64B for 64-bit
->   * platforms and 0B for 32-bit ones.
->   */
-> -pp->rx_offset_correction =3D max(0,
-> -       NET_SKB_PAD -
-> -       MVNETA_RX_PKT_OFFSET_CORRECTION);
-> +if (pp->bm_priv)
-> +pp->rx_offset_correction =3D max(0,
-> +       NET_SKB_PAD -
-> +       MVNETA_RX_PKT_OFFSET_CORRECTION);
->  }
->  of_node_put(bm_node);
->
->
-> +++ Voleatech auf der E-World, 11. bis 13. Februar 2020, Halle 5, Stand 5=
-21 +++
->
-> Beste Gr=C3=BC=C3=9Fe/Best regards
->
-> Sven Auhagen
-> Dipl. Math. oec., M.Sc.
-> Voleatech GmbH
-> HRB: B 754643
-> USTID: DE303643180
-> Grathwohlstr. 5
-> 72762 Reutlingen
-> Tel: +49 7121539550
-> Fax: +49 7121539551
-> E-Mail: sven.auhagen@voleatech.de
-> www.voleatech.de<https://www.voleatech.de>
-> Diese Information ist ausschlie=C3=9Flich f=C3=BCr den Adressaten bestimm=
-t und kann vertraulich oder gesetzlich gesch=C3=BCtzte Informationen enthal=
-ten. Wenn Sie nicht der bestimmungsgem=C3=A4=C3=9Fe Adressat sind, unterric=
-hten Sie bitte den Absender und vernichten Sie diese Mail. Anderen als dem =
-bestimmungsgem=C3=A4=C3=9Fen Adressaten ist es untersagt, diese E-Mail zu l=
-esen, zu speichern, weiterzuleiten oder ihren Inhalt auf welche Weise auch =
-immer zu verwenden. F=C3=BCr den Adressaten sind die Informationen in diese=
-r Mail nur zum pers=C3=B6nlichen Gebrauch. Eine Weiterleitung darf nur nach=
- R=C3=BCcksprache mit dem Absender erfolgen. Wir verwenden aktuelle Virensc=
-hutzprogramme. F=C3=BCr Sch=C3=A4den, die dem Empf=C3=A4nger gleichwohl dur=
-ch von uns zugesandte mit Viren befallene E-Mails entstehen, schlie=C3=9Fen=
- wir jede Haftung aus.
->
+Patch 4 enables UDP to use fraglist GRO/GSO if configured.
 
+I have only meaningful forwarding performance measurements.
+I did some tests for the local receive path with netperf and iperf,
+but in this case the sender that generates the packets is the
+bottleneck. So the benchmarks are not that meaningful for the
+receive path.
+
+Paolo Abeni did some benchmarks of the local receive path for the
+RFC v2 version of this pachset, results can be found here:
+
+https://www.spinics.net/lists/netdev/msg551158.html
+
+I used my IPsec forwarding test setup for the performance measurements:
+
+           ------------         ------------
+        -->| router 1 |-------->| router 2 |--
+        |  ------------         ------------  |
+        |                                     |
+        |       --------------------          |
+        --------|Spirent Testcenter|<----------
+                --------------------
+
+net-next (September 7th 2019):
+
+Single stream UDP frame size 1460 Bytes: 1.161.000 fps (13.5 Gbps).
+
+----------------------------------------------------------------------
+
+net-next (September 7th 2019) + standard UDP GRO/GSO (not implemented
+in this patchset):
+
+Single stream UDP frame size 1460 Bytes: 1.801.000 fps (21 Gbps).
+
+----------------------------------------------------------------------
+
+net-next (September 7th 2019) + fraglist UDP GRO/GSO:
+
+Single stream UDP frame size 1460 Bytes: 2.860.000 fps (33.4 Gbps).
+
+=======================================================================
+
+net-next (January 23th 2020):
+
+Single stream UDP frame size 1460 Bytes: 919.000 fps (10.73 Gbps).
+
+----------------------------------------------------------------------
+
+net-next (January 23th 2020) + fraglist UDP GRO/GSO:
+
+Single stream UDP frame size 1460 Bytes: 2.430.000 fps (28.38 Gbps).
+
+-----------------------------------------------------------------------
+
+Changes from RFC v1:
+
+- Add IPv6 support.
+- Split patchset to enable UDP GRO by default before adding
+  fraglist GRO support.
+- Mark fraglist GRO packets as CHECKSUM_NONE.
+- Take a refcount on the first segment skb when doing fraglist
+  segmentation. With this we can use the same error handling
+  path as with standard segmentation.
+
+Changes from RFC v2:
+
+- Add a netdev feature flag to configure listifyed GRO.
+- Fix UDP GRO enabling for IPv6.
+- Fix a rcu_read_lock() imbalance.
+- Fix error path in skb_segment_list().
+
+Changes from RFC v3:
+
+- Rename NETIF_F_GRO_LIST to NETIF_F_GRO_FRAGLIST and add
+  NETIF_F_GSO_FRAGLIST.
+- Move introduction of SKB_GSO_FRAGLIST to patch 2.
+- Use udpv6_encap_needed_key instead of udp_encap_needed_key in IPv6.
+- Move some missplaced code from patch 5 to patch 1 where it belongs to.
+
+Changes from RFC v4:
+
+- Drop the 'UDP: enable GRO by default' patch for now. Standard UDP GRO
+  is not changed with this patchset.
+- Rebase to net-next current.
+
+Changes fom v1 (December 18th):
+
+- Do a full __copy_skb_header instead of tryng to find the really
+  needed subset header fields. Thisa can be done later.
+- Mark all fraglist GRO packets with CHECKSUM_UNNECESSARY.
+- Rebase to net-next current.
