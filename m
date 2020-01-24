@@ -2,78 +2,91 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 72AE614880D
-	for <lists+netdev@lfdr.de>; Fri, 24 Jan 2020 15:27:03 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A3E45148A01
+	for <lists+netdev@lfdr.de>; Fri, 24 Jan 2020 15:41:27 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2390112AbgAXO01 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 24 Jan 2020 09:26:27 -0500
-Received: from mail-wr1-f68.google.com ([209.85.221.68]:34884 "EHLO
-        mail-wr1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2389922AbgAXO0Y (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 24 Jan 2020 09:26:24 -0500
-Received: by mail-wr1-f68.google.com with SMTP id g17so2209238wro.2
-        for <netdev@vger.kernel.org>; Fri, 24 Jan 2020 06:26:23 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=resnulli-us.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=BnZjIIvKaXICAHgm0VY7qyY+9Va/Nq8cYpe2P1E7G7M=;
-        b=hJHTN0jBIGxbyS81SlrfTBoyTT+wZAuQcQzwyuAkycsXBqGRh8DB5aLKD2B1YY1MA6
-         D+vZw3uy/Uo15np5vNGYsQnR/178qxgeGiIHHl3P8Qtc440+u+aa4CrtuiWcx4LaBdUt
-         CiGgLt9b7XtVjowgAI9wywQqZn9wAwpeDesW9wQDvcQBsXiQIWXPjlg0K6t7te/UiQKB
-         LKesgIxAId7TC6hwUjLK+sws8T+fgrmFLorWOa7qECResgeFygnC3DAx1Po/9s+bwwZS
-         aVSp0Jf2guRr8BesYfUad4Pg3UhVww68f0YBh6kkYIVzSpCM+Z5XlJeMfGeiOldWc/GX
-         872Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=BnZjIIvKaXICAHgm0VY7qyY+9Va/Nq8cYpe2P1E7G7M=;
-        b=dhF1lqctrRzZWASsQzFHEB/mXUR6592vCVeoFCR1rys6o7tTIvyd375uwQAlXe6pa5
-         vM71pl5bifs0d1xTpKnFy8/SUIiVeLC0zdPCSbmMwheS5yD00l7+s8HGxRGC9+DRoDQf
-         48D69BsPbm/dhBzekL0tAEn779he3FVTaym/TM1W0doBueMuE+W05phxcHaz2KwOo08u
-         eZ/dT+01ArwTifYqkyguCLfXbboWukXKzndORId+IPfhp8bjcc4PLqS8mQq9XOaP4oYH
-         DG1Sf7tqwV5cFpARGgyCo0u4NMuJboJee5fSuMr9PE6wLYj3kwsQAy1KZZMtVjkKnx5p
-         rUSQ==
-X-Gm-Message-State: APjAAAVAt9iSwVd6yaX+OYrn8yMsBSSPbbfdrqkgG4Mcs9sdZzpRmBQ4
-        K1irxNfmEzJK5CZRSrd+W/Cv8A==
-X-Google-Smtp-Source: APXvYqyavfSM/SVJFUAAjMsCnHqOJa4dUF7X9JlJkKhBgHH6HBwSKdPedMBAclkRUlMNUGEkRdZ2xQ==
-X-Received: by 2002:adf:e3d0:: with SMTP id k16mr4693240wrm.241.1579875982846;
-        Fri, 24 Jan 2020 06:26:22 -0800 (PST)
-Received: from localhost (jirka.pirko.cz. [84.16.102.26])
-        by smtp.gmail.com with ESMTPSA id u14sm7162549wrm.51.2020.01.24.06.26.22
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 24 Jan 2020 06:26:22 -0800 (PST)
-Date:   Fri, 24 Jan 2020 15:26:21 +0100
-From:   Jiri Pirko <jiri@resnulli.us>
-To:     Ido Schimmel <idosch@idosch.org>
-Cc:     netdev@vger.kernel.org, davem@davemloft.net, jiri@mellanox.com,
-        jhs@mojatatu.com, xiyou.wangcong@gmail.com, petrm@mellanox.com,
-        mlxsw@mellanox.com, Ido Schimmel <idosch@mellanox.com>
-Subject: Re: [PATCH net-next 04/14] mlxsw: spectrum_qdisc: Add
- mlxsw_sp_qdisc_get_class_stats()
-Message-ID: <20200124142621.GB2254@nanopsycho.orion>
-References: <20200124132318.712354-1-idosch@idosch.org>
- <20200124132318.712354-5-idosch@idosch.org>
+        id S2390416AbgAXOSU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 24 Jan 2020 09:18:20 -0500
+Received: from mail.kernel.org ([198.145.29.99]:37602 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S2388527AbgAXOSU (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 24 Jan 2020 09:18:20 -0500
+Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 988E72075D;
+        Fri, 24 Jan 2020 14:18:18 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1579875499;
+        bh=AB1xvZl4mEWRoSuHzIzu9aEpPe2Jj7wwkyBuGd+AJD8=;
+        h=From:To:Cc:Subject:Date:From;
+        b=WVynWYLHQvx9fOTdiIrOO+E8+1qemsPUGm3WaLsN/i8dFq6vf/rcaYQAZ0KkH2btt
+         ZqN4Pk2A5c10SxvM1WXOEzif3DlLQQLxTk++zY6gAwxB/V82J4wVkhnHjUiRrlDGu+
+         DV0Y/QGEDuUPc/g0Au+Opnx4VCmjv2PTh9guTdX0=
+From:   Sasha Levin <sashal@kernel.org>
+To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
+Cc:     Sven Eckelmann <sven@narfation.org>,
+        Simon Wunderlich <sw@simonwunderlich.de>,
+        Sasha Levin <sashal@kernel.org>,
+        b.a.t.m.a.n@lists.open-mesh.org, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.4 001/107] batman-adv: Fix DAT candidate selection on little endian systems
+Date:   Fri, 24 Jan 2020 09:16:31 -0500
+Message-Id: <20200124141817.28793-1-sashal@kernel.org>
+X-Mailer: git-send-email 2.20.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200124132318.712354-5-idosch@idosch.org>
+X-stable: review
+X-Patchwork-Hint: Ignore
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Fri, Jan 24, 2020 at 02:23:08PM CET, idosch@idosch.org wrote:
->From: Petr Machata <petrm@mellanox.com>
->
->Add a wrapper around mlxsw_sp_qdisc_collect_tc_stats() and
->mlxsw_sp_qdisc_update_stats() for the simple case of doing both in one go:
->mlxsw_sp_qdisc_get_class_stats(). Dispatch to that function from
->mlxsw_sp_qdisc_get_red_stats(). This new function will be useful for other
->leaf Qdiscs as well.
->
->Signed-off-by: Petr Machata <petrm@mellanox.com>
->Signed-off-by: Ido Schimmel <idosch@mellanox.com>
+From: Sven Eckelmann <sven@narfation.org>
 
-Acked-by: Jiri Pirko <jiri@mellanox.com>
+[ Upstream commit 4cc4a1708903f404d2ca0dfde30e71e052c6cbc9 ]
+
+The distributed arp table is using a DHT to store and retrieve MAC address
+information for an IP address. This is done using unicast messages to
+selected peers. The potential peers are looked up using the IP address and
+the VID.
+
+While the IP address is always stored in big endian byte order, this is not
+the case of the VID. It can (depending on the host system) either be big
+endian or little endian. The host must therefore always convert it to big
+endian to ensure that all devices calculate the same peers for the same
+lookup data.
+
+Fixes: be1db4f6615b ("batman-adv: make the Distributed ARP Table vlan aware")
+Signed-off-by: Sven Eckelmann <sven@narfation.org>
+Signed-off-by: Simon Wunderlich <sw@simonwunderlich.de>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ net/batman-adv/distributed-arp-table.c | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
+
+diff --git a/net/batman-adv/distributed-arp-table.c b/net/batman-adv/distributed-arp-table.c
+index b0af3a11d4069..ec7bf5a4a9fc7 100644
+--- a/net/batman-adv/distributed-arp-table.c
++++ b/net/batman-adv/distributed-arp-table.c
+@@ -285,6 +285,7 @@ static u32 batadv_hash_dat(const void *data, u32 size)
+ 	u32 hash = 0;
+ 	const struct batadv_dat_entry *dat = data;
+ 	const unsigned char *key;
++	__be16 vid;
+ 	u32 i;
+ 
+ 	key = (const unsigned char *)&dat->ip;
+@@ -294,7 +295,8 @@ static u32 batadv_hash_dat(const void *data, u32 size)
+ 		hash ^= (hash >> 6);
+ 	}
+ 
+-	key = (const unsigned char *)&dat->vid;
++	vid = htons(dat->vid);
++	key = (__force const unsigned char *)&vid;
+ 	for (i = 0; i < sizeof(dat->vid); i++) {
+ 		hash += key[i];
+ 		hash += (hash << 10);
+-- 
+2.20.1
+
