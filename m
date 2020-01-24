@@ -2,40 +2,40 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id B55E5149080
-	for <lists+netdev@lfdr.de>; Fri, 24 Jan 2020 22:55:19 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2E59B149081
+	for <lists+netdev@lfdr.de>; Fri, 24 Jan 2020 22:55:27 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729050AbgAXVzS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 24 Jan 2020 16:55:18 -0500
-Received: from mail-am6eur05on2040.outbound.protection.outlook.com ([40.107.22.40]:49114
-        "EHLO EUR05-AM6-obe.outbound.protection.outlook.com"
+        id S1729014AbgAXVzU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 24 Jan 2020 16:55:20 -0500
+Received: from mail-eopbgr40047.outbound.protection.outlook.com ([40.107.4.47]:56737
+        "EHLO EUR03-DB5-obe.outbound.protection.outlook.com"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1729014AbgAXVzR (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 24 Jan 2020 16:55:17 -0500
+        id S1726612AbgAXVzT (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 24 Jan 2020 16:55:19 -0500
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=Q4IMHf7Izj5BvLMqxlyPSjgYrZlAyw2yApvltDitmDmbTyZu3Kh419ZnvR1nvo6gEsJzH2k42Uw6ps1nbYp7eIR88hqZuyijAC3vt2qFKSE5XnQzHLbH25LRoyksxtr67v4/edp2+bC5iAIdQpj4ovwj3QA/IKiLq3MW8BiBchZpC2K9pP4g7h6OEwZQov0ywDhI5q4oZEZ+oVBtXkVuTfy+wsAUq42hGR4+/5IfsSfjlhqBExjLyb3LAL2s3fs4BIuJjwuXVZklZ54XV/P8881snCS7m8UjMvmrzcrRUawr7sjhPFL6BgMYlmqUbT4Y7PM2J2nGs1Rx5luLyMDuHQ==
+ b=gbhjpGrakDLkBYVVUudyJXZebvmINJQdDqbHzBndIGsw/Db6IS3irGiCTxw2UD88yzbCTB2WyWDYoj0xNN13zOMvCliBfsw3PGUEfxhxvILX8caBqHe+QfL67OSD+BdyfdIXgksJ8ziF6ZHhxN7m5vPe9CB8YjyQ17LGOg51jkHIm1bUsmjpigrvp2m9Db4xGfjOUWkFRVnjg54hHzEAaJNywPbAFN5srKbO5E53ADvqpoaBp4XA7gE1eHweRUAj2AdIfmOHiBDeOYusBvKnk2byIXdf50vOs12AU1NhUM0rXqLrWV1xVZLGhtF4T+wwDO2plWj5uqgXM3rIfGUWmg==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=yZZT/45EZ/A8khfgBe/w/cbnAOPkUMjdATZYtzUDJyw=;
- b=f/v4TuEJlNd65SC6TpKqEWMTB9iFLSptj8hVkdi/GW/a/P7WbZnEUNgybQAhf5xG5c0e5+5yOBKFPK+LwDXnIwt0vc+0JAToO7PK0S4TpMo9bGIHcr95Vw0t1o7gb8QwALCNLXctfvkKPr/klp88YOMr62GKytxP9ifLqyIyMT0m+ga+jTsdiLO8/QgtDwCqxn/+Dnrki2M7BUA4/QvJqdG5qo37Usz1mDDgdUnk46w0c3RuiUiCp9hub1yUmiisAElq2zlAHSmtLpUL8zymrcwDjtS8CkLcRgeSyeENo5vekipW1UFhRRVYBCZdpuSflU3C5p7utVt/7xVIfJZ/qg==
+ bh=bxE7iF7C3IfQGdb9HviTHfIjVaTbe02XyCgjrh774dE=;
+ b=MJtNfcyyY3ji5jAkE6EPjD4Qff7za2d2s+Jg84/hZv36hCAFFn9JtZmKGutdC6SdOjxRZovw2idxug2R6dfaWLNsLZvDe5+cd4X4QJHsTSfBNbt5tHjwuQyTNvOtnWyvXqOldh8vs3emyggWg2fwmDjcU6eEtUrcW9bVR7Wg9xTvRezqJ+vrjhhyy7vZxT2hYBYeVHLOqXUS1laPHqk/ZyWhqvTYHy4lK2+NbpHlRvomnPcZ0JVUw3R6DhKE1IK8V2bYA9j6l6jsbmOGJKYGqRU8NjmiNbdMTZAsW2asgcUeGZ82b2nCfmIVd/M6KWpyixq91V+c0LMjIdXYU2E3pg==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=mellanox.com; dmarc=pass action=none header.from=mellanox.com;
  dkim=pass header.d=mellanox.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Mellanox.com;
  s=selector1;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=yZZT/45EZ/A8khfgBe/w/cbnAOPkUMjdATZYtzUDJyw=;
- b=hdyEMhlp0uyw9CxhNPiAjGyjrgpaHlm0WzGw58kYXalPgWNhBIZkqmLgqxP7PRcLjrINiAUKaYGh2ARihsxAz3Rt1GG2StE3Y0nn//qVdx6VrnZL6zAWs+ktq2FezN9y3eoCrNfshErewyTg+keCEAL35DuRYuWICHbITZZ8ZuY=
+ bh=bxE7iF7C3IfQGdb9HviTHfIjVaTbe02XyCgjrh774dE=;
+ b=rdo4CSclmmxLlQwEibyJZ7zMmqpQJ0Bq9QFG/5TTzM8wNWS1LXXqXp68wcjYrUjHBN0qd0ZVV5tEXkRxULGp+ff9kL834ODYF9flVIlkBhov5OMm9UXChUZ5VthP2p0D5YD6b395IncgNA6urZlAEKU7x+zbd8D/NVX9u+UsjF4=
 Received: from VI1PR05MB5102.eurprd05.prod.outlook.com (20.177.51.151) by
  VI1PR05MB5456.eurprd05.prod.outlook.com (20.177.201.11) with Microsoft SMTP
  Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.2644.19; Fri, 24 Jan 2020 21:55:03 +0000
+ 15.20.2644.19; Fri, 24 Jan 2020 21:55:07 +0000
 Received: from VI1PR05MB5102.eurprd05.prod.outlook.com
  ([fe80::d830:96fc:e928:c096]) by VI1PR05MB5102.eurprd05.prod.outlook.com
  ([fe80::d830:96fc:e928:c096%6]) with mapi id 15.20.2644.027; Fri, 24 Jan 2020
- 21:55:03 +0000
-Received: from smtp.office365.com (209.116.155.178) by BY5PR17CA0038.namprd17.prod.outlook.com (2603:10b6:a03:167::15) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.2665.21 via Frontend Transport; Fri, 24 Jan 2020 21:54:56 +0000
+ 21:55:07 +0000
+Received: from smtp.office365.com (209.116.155.178) by BY5PR17CA0038.namprd17.prod.outlook.com (2603:10b6:a03:167::15) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.2665.21 via Frontend Transport; Fri, 24 Jan 2020 21:55:03 +0000
 From:   Saeed Mahameed <saeedm@mellanox.com>
 To:     "David S. Miller" <davem@davemloft.net>
 CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
@@ -43,11 +43,11 @@ CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
         Moshe Shemesh <moshe@mellanox.com>,
         Jiri Pirko <jiri@mellanox.com>,
         Saeed Mahameed <saeedm@mellanox.com>
-Subject: [net-next 04/14] net/mlx5e: Support dump callback in TX reporter
-Thread-Topic: [net-next 04/14] net/mlx5e: Support dump callback in TX reporter
-Thread-Index: AQHV0wDugSRpncmKRkCjOT0kyCHxaw==
-Date:   Fri, 24 Jan 2020 21:55:03 +0000
-Message-ID: <20200124215431.47151-5-saeedm@mellanox.com>
+Subject: [net-next 05/14] net/mlx5e: Support dump callback in RX reporter
+Thread-Topic: [net-next 05/14] net/mlx5e: Support dump callback in RX reporter
+Thread-Index: AQHV0wDvXRfuqDUeh0CYI7L4bErl9A==
+Date:   Fri, 24 Jan 2020 21:55:05 +0000
+Message-ID: <20200124215431.47151-6-saeedm@mellanox.com>
 References: <20200124215431.47151-1-saeedm@mellanox.com>
 In-Reply-To: <20200124215431.47151-1-saeedm@mellanox.com>
 Accept-Language: en-US
@@ -64,29 +64,29 @@ authentication-results: spf=none (sender IP is )
 x-ms-exchange-messagesentrepresentingtype: 1
 x-ms-publictraffictype: Email
 x-ms-office365-filtering-ht: Tenant
-x-ms-office365-filtering-correlation-id: 1046f684-269c-478d-5c20-08d7a1181083
+x-ms-office365-filtering-correlation-id: aed94169-95b9-4e29-33c1-08d7a118121e
 x-ms-traffictypediagnostic: VI1PR05MB5456:|VI1PR05MB5456:
 x-ms-exchange-transport-forked: True
-x-microsoft-antispam-prvs: <VI1PR05MB545680C3C36D3A4E7377EE9ABE0E0@VI1PR05MB5456.eurprd05.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:849;
+x-microsoft-antispam-prvs: <VI1PR05MB54561123FA87B3DC9A359E48BE0E0@VI1PR05MB5456.eurprd05.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:4941;
 x-forefront-prvs: 02929ECF07
-x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(4636009)(346002)(396003)(366004)(376002)(136003)(39860400002)(199004)(189003)(956004)(4326008)(107886003)(5660300002)(316002)(54906003)(478600001)(6666004)(8936002)(2616005)(6916009)(26005)(52116002)(6506007)(36756003)(8676002)(81166006)(81156014)(86362001)(16526019)(186003)(1076003)(66946007)(66476007)(66556008)(64756008)(66446008)(30864003)(2906002)(6486002)(71200400001)(6512007)(54420400002)(505234006);DIR:OUT;SFP:1101;SCL:1;SRVR:VI1PR05MB5456;H:VI1PR05MB5102.eurprd05.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;A:1;MX:1;
+x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(4636009)(346002)(396003)(366004)(376002)(136003)(39860400002)(199004)(189003)(956004)(4326008)(107886003)(5660300002)(316002)(54906003)(478600001)(8936002)(2616005)(6916009)(26005)(52116002)(6506007)(36756003)(8676002)(81166006)(81156014)(86362001)(16526019)(186003)(1076003)(66946007)(66476007)(66556008)(64756008)(66446008)(30864003)(2906002)(6486002)(71200400001)(6512007)(54420400002)(505234006);DIR:OUT;SFP:1101;SCL:1;SRVR:VI1PR05MB5456;H:VI1PR05MB5102.eurprd05.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;A:1;MX:1;
 received-spf: None (protection.outlook.com: mellanox.com does not designate
  permitted sender hosts)
 x-ms-exchange-senderadcheck: 1
 x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: cjCiqT714OcJxI0gKYlQwP7VdlkdkdbxbTfudR0Jc3vwx0rwsXBXTCFSwF6ilOSYTH7l1KhiogvRCIYl8EvC636Oohqu9XOuSbFpzcwP6h2KI7FYjKoQ9bhwEHQKrYt7QhBSScw/HTjr1W9+2JwMqvRL2UBZbO2jDIyNtFHVVsHsXLvo6M2Xnl8qIWU5iK4/gy/6UylL3mSxo2n0W7aeEVW1vtGtuNo8VsLPNWcGh4/uauUnEizNDBNz6Ww07zjv1XHPeRQN/lqok1dGj7zmsE74tGCb/0tV7Mr9UMsg9oVgSSmldznCeec2DpattFOxCBLPxHmgwbeyAKkXjasaFwbRyYyXTj/HYPrIXpETAWkelbq3/CuNjMspL0zYxyyvFHXtP/lQHRT/t5IgoYkNVGmtJFj6IQ0AOOfj3OwUFVHZAGfl8uG7xh44RLdxUUIyJ5LMDz8fUqINS9IoL2aptHEIpoboWfFtDvZZhYf0m7fyGsyp9RArXFRGSOW9FlEW76VaSugUq1y3Xq5FnjkFFKzsHUfFcCR8YXRiR/9cjOZPMHjQltR9OhlDAenHraD1
+x-microsoft-antispam-message-info: piFVl3oNB59EiB3dUB6GNd+LFWVuHxCA4TJB0SKS8vbdXuDmVRiDJUWtY9oRXMUupCAReBA31VfQonRtriPN43HW8B9AyGTLp0nqYXqumJ3m4aX+HcIVbV0qKu1Gl8ZhaCcBN7mgQRU/ZIIGurjGUSnLc98JdLb4LlUejKlLwNFXEF1Y/K1uZyQ9w13qkV2P81Fsfjk8piBDi5G3qXgu0Ez3gsXe04RXz/wJAk5tGjZ7k1expkNHknJ5eMI7qw1JPZSne2CLEDwUTygZKexEqZIZYC2AlvGQkB2QDOh1ArD3PxBIyt8Qc4Prgen9qxIal+uKDPE5/7HAPZZaBdxkftQV7eJKFKWG4+Tko2yRwrC0xX5SWimODXNTE5QYIyUQmjQUbd4arLxYcXA4mTeymvQvORebEIuhspjQ+LoGzczI/McGS0Hg+9N+q6AQfnoKK4h5qA0Yx/cUWAgaCO5lnxUwcXwioeCtB5FRLNKBvYfwUTOywM2pI8SIWa1B1e0fHvR5zVTtQDwPMYK/LdLebwM1PEdbkL8RReIoOcleynBNZrL8bBUqdNp3/k9oDV9f
 Content-Type: text/plain; charset="iso-8859-1"
 Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
 X-OriginatorOrg: Mellanox.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 1046f684-269c-478d-5c20-08d7a1181083
-X-MS-Exchange-CrossTenant-originalarrivaltime: 24 Jan 2020 21:55:03.5439
+X-MS-Exchange-CrossTenant-Network-Message-Id: aed94169-95b9-4e29-33c1-08d7a118121e
+X-MS-Exchange-CrossTenant-originalarrivaltime: 24 Jan 2020 21:55:05.5398
  (UTC)
 X-MS-Exchange-CrossTenant-fromentityheader: Hosted
 X-MS-Exchange-CrossTenant-id: a652971c-7d2e-4d9b-a6a4-d149256f461b
 X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: F1DwpjoMO5fug/sQ4v82ZnbFeByCQRx870/ZwL2P1HvWvHM6iCSPRl6/jPkQSAfQ3QEv9xUCqVpkYVevJdaczQ==
+X-MS-Exchange-CrossTenant-userprincipalname: 8BOdkulzCUgBcKpmVfMmSG8kzStvnEGpyLki/VmFQfND9BIelBnep9aGEE1cDZSwuZ8hOKiVP5Hig7/DmlN36g==
 X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR05MB5456
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
@@ -95,77 +95,94 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Aya Levin <ayal@mellanox.com>
 
-Add support for SQ's FW dump on TX reporter's events. Use Resource dump
-API to retrieve the relevant data: SX slice, SQ dump and SQ buffer. Wrap
-it in formatted messages and store the binary output in devlink core.
+Add support for SQ's FW dump on RX reporter's events. Use Resource dump
+API to retrieve the relevant data: RX slice, RQ dump, RX buffer and
+ICOSQ dump (depends on the error). Wrap it in formatted messages and
+store the binary output in devlink core.
 
 Example:
-$ devlink health dump show pci/0000:00:0b.0 reporter tx
-SX Slice:
+$ devlink health dump show pci/0000:00:0b.0 reporter rx
+RX Slice:
    data:
      00 00 00 00 00 00 00 80 00 01 00 00 00 00 ad de
      22 01 00 00 00 00 ad de 00 00 00 00 00 00 00 00
      00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
      ff ff ff ff 01 00 00 00 00 00 00 00 00 00 00 00
-     00 02 01 00 00 00 00 80 00 01 00 00 00 00 ad de
-     22 01 00 00 00 00 ad de 00 20 40 90 81 88 ff ff
-     00 00 00 00 00 00 00 00 15 00 15 00 00 00 00 00
+     00 00 00 00 00 00 00 80 00 01 00 00 00 00 ad de
+     22 01 00 00 00 00 ad de 00 00 00 00 00 00 00 00
+     00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
      ff ff ff ff 01 00 00 00 00 00 00 00 00 00 00 00
-     00 00 00 00 00 00 00 80 81 ae 41 06 00 ea ff ff
-  SQs:
-    SQ:
-      index: 1511
+     00 00 00 00 00 00 00 80 00 01 00 00 00 00 ad de
+  RQs:
+    RQ:
+      rqn: 1512
       data:
         00 00 00 00 00 00 00 80 00 01 00 00 00 00 ad de
         22 01 00 00 00 00 ad de 00 00 00 00 00 00 00 00
         00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
         ff ff ff ff 01 00 00 00 00 00 00 00 00 00 00 00
-        00 02 01 00 00 00 00 80 00 01 00 00 00 00 ad de
-        22 01 00 00 00 00 ad de 00 20 40 90 81 88 ff ff
-        00 00 00 00 00 00 00 00 15 00 15 00 00 00 00 00
+        00 00 00 00 00 00 00 80 00 01 00 00 00 00 ad de
+        22 01 00 00 00 00 ad de 00 00 00 00 00 00 00 00
+        00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
         ff ff ff ff 01 00 00 00 00 00 00 00 00 00 00 00
-        00 00 00 00 00 00 00 80 81 ae 41 06 00 ea ff ff
-    SQ:
-      index: 1516
+        00 00 00 00 00 00 00 80 00 01 00 00 00 00 ad de
+    RQ:
+      rqn: 1517
       data:
         00 00 00 00 00 00 00 80 00 01 00 00 00 00 ad de
         22 01 00 00 00 00 ad de 00 00 00 00 00 00 00 00
         00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
         ff ff ff ff 01 00 00 00 00 00 00 00 00 00 00 00
-        00 02 01 00 00 00 00 80 00 01 00 00 00 00 ad de
-        22 01 00 00 00 00 ad de 00 20 40 90 81 88 ff ff
-        00 00 00 00 00 00 00 00 15 00 15 00 00 00 00 00
+        00 00 00 00 00 00 00 80 00 01 00 00 00 00 ad de
+        22 01 00 00 00 00 ad de 00 00 00 00 00 00 00 00
+        00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
         ff ff ff ff 01 00 00 00 00 00 00 00 00 00 00 00
-        00 00 00 00 00 00 00 80 81 ae 41 06 00 ea ff ff
+        00 00 00 00 00 00 00 80 00 01 00 00 00 00 ad de
 
-$ devlink health dump show pci/0000:00:0b.0 reporter tx -jp
+$ devlink health dump show pci/0000:00:0b.0 reporter rx -jp
 {
-    "SX Slice": {
-    	"data": [ 0,0,0,0,0,0,0,128,0,1,0,0,0,0,173,222,34,1,0,0,0,0,173,222,0=
-,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,255,255,255,255,1,0,0,0,0,0,=
-0,0,0,0,0,0,0,2,1,0,0,0,0,128,0,1,0,0,0,0,173,222,34,1,0,0,0,0,173,222,0,32=
-,64,144,129,136,255,255,0,0,0,0,0,0,0,0,21,0,21,0,0,0,0,0,255,255,255,255,1=
-,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,128,129,174,65,6,0,234,255,255],
-    	},
-    "SQs": [ {
-            "SQ": {
-                "index": 1511,
+    "RX Slice": {
+    	"data":[ 0,0,0,0,0,0,0,128,0,1,0,0,0,0,173,222,34,1,0,0,0,0,173,222,0,=
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,255,255,255,255,1,0,0,0,0,0,0=
+,0,0,0,0,0,0,0,0,0,0,0,0,128,0,1,0,0,0,0,173,222,34,1,0,0,0,0,173,222,0,0,0=
+,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,255,255,255,255,1,0,0,0,0,0,0,0,=
+0,0,0,0,0,0,0,0,0,0,0,128,0,1,0,0,0,0,173,222,34,1,0,0,0,0,173,222,0,0,0,0,=
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,255,255,255,255,1,0,0,0,0,0,0,0,0,0=
+,0,0,0,0,0,0,0,0,0,128,0,1,0,0,0,0,173,222,34,1,0,0,0,0,173,222,0,0,0,0,0,0=
+,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,255,255,255,255,1,0,0,0,0,0,0,0,0,0,0,=
+0,0,0,0,0,0,0,0,128,0,1,0,0,0,0,173,222,34,1,0,0,0,0,173,222,0,0,0,0,0,0,0,=
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,255,255,255,255,1,0,0,0,0,0,0,0,0,0,0,0,0=
+,2,1,0,0,0,0,128,0,1,0,0,0,0,173,222]
+    },
+    "RQs": [ {
+            "RQ": {
+                "index": 1512,
                 "data": [ 0,0,0,0,0,0,0,128,0,1,0,0,0,0,173,222,34,1,0,0,0,=
 0,173,222,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,255,255,255,255,1=
-,0,0,0,0,0,0,0,0,0,0,0,0,2,1,0,0,0,0,128,0,1,0,0,0,0,173,222,34,1,0,0,0,0,1=
-73,222,0,32,64,144,129,136,255,255,0,0,0,0,0,0,0,0,21,0,21,0,0,0,0,0,255,25=
-5,255,255,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,128,129,174,65,6,0,234,255,=
-255]
+,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,128,0,1,0,0,0,0,173,222,34,1,0,0,0,0,1=
+73,222,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,255,255,255,255,1,0,=
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,128,0,1,0,0,0,0,173,222,34,1,0,0,0,0,173,=
+222,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,255,255,255,255,1,0,0,0=
+,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,128,0,1,0,0,0,0,173,222,34,1,0,0,0,0,173,222=
+,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,255,255,255,255,1,0,0,0,0,=
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,128,0,1,0,0,0,0,173,222,34,1,0,0,0,0,173,222,0,=
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,255,255,255,255,1,0,0,0,0,0,0=
+,0,0,0,0,0,0,2,1,0,0,0,0,128,0,1,0,0,0,0,173,222]
             }
         },{
-            "SQ": {
-                "index": 1516,
+            "RQ": {
+                "index": 1517,
                 "data": [ 0,0,0,0,0,0,0,128,0,1,0,0,0,0,173,222,34,1,0,0,0,=
 0,173,222,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,255,255,255,255,1=
-,0,0,0,0,0,0,0,0,0,0,0,0,2,1,0,0,0,0,128,0,1,0,0,0,0,173,222,34,1,0,0,0,0,1=
-73,222,0,32,64,144,129,136,255,255,0,0,0,0,0,0,0,0,21,0,21,0,0,0,0,0,255,25=
-5,255,255,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,128,129,174,65,6,0,234,255,=
-255]
+,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,128,0,1,0,0,0,0,173,222,34,1,0,0,0,0,1=
+73,222,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,255,255,255,255,1,0,=
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,128,0,1,0,0,0,0,173,222,34,1,0,0,0,0,173,=
+222,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,255,255,255,255,1,0,0,0=
+,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,128,0,1,0,0,0,0,173,222,34,1,0,0,0,0,173,222=
+,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,255,255,255,255,1,0,0,0,0,=
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,128,0,1,0,0,0,0,173,222,34,1,0,0,0,0,173,222,0,=
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,255,255,255,255,1,0,0,0,0,0,0=
+,0,0,0,0,0,0,2,1,0,0,0,0,128,0,1,0,0,0,0,173]
             }
         } ]
 }
@@ -175,187 +192,25 @@ Reviewed-by: Moshe Shemesh <moshe@mellanox.com>
 Acked-by: Jiri Pirko <jiri@mellanox.com>
 Signed-off-by: Saeed Mahameed <saeedm@mellanox.com>
 ---
- .../ethernet/mellanox/mlx5/core/en/health.c   | 105 +++++++++++++++
- .../ethernet/mellanox/mlx5/core/en/health.h   |   8 +-
- .../mellanox/mlx5/core/en/reporter_tx.c       | 123 ++++++++++++++++++
- 3 files changed, 234 insertions(+), 2 deletions(-)
+ .../mellanox/mlx5/core/en/reporter_rx.c       | 183 ++++++++++++++++++
+ 1 file changed, 183 insertions(+)
 
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en/health.c b/drivers/=
-net/ethernet/mellanox/mlx5/core/en/health.c
-index 3a975641f902..7178f421d2cb 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en/health.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en/health.c
-@@ -3,6 +3,7 @@
-=20
- #include "health.h"
- #include "lib/eq.h"
-+#include "lib/mlx5.h"
-=20
- int mlx5e_reporter_named_obj_nest_start(struct devlink_fmsg *fmsg, char *n=
-ame)
- {
-@@ -204,3 +205,107 @@ int mlx5e_health_report(struct mlx5e_priv *priv,
-=20
- 	return devlink_health_report(reporter, err_str, err_ctx);
- }
-+
-+#define MLX5_HEALTH_DEVLINK_MAX_SIZE 1024
-+static int mlx5e_health_rsc_fmsg_binary(struct devlink_fmsg *fmsg,
-+					const void *value, u32 value_len)
-+
-+{
-+	u32 data_size;
-+	u32 offset;
-+	int err;
-+
-+	for (offset =3D 0; offset < value_len; offset +=3D data_size) {
-+		data_size =3D value_len - offset;
-+		if (data_size > MLX5_HEALTH_DEVLINK_MAX_SIZE)
-+			data_size =3D MLX5_HEALTH_DEVLINK_MAX_SIZE;
-+		err =3D devlink_fmsg_binary_put(fmsg, value + offset, data_size);
-+		if (err)
-+			break;
-+	}
-+	return err;
-+}
-+
-+int mlx5e_health_rsc_fmsg_dump(struct mlx5e_priv *priv, struct mlx5_rsc_ke=
-y *key,
-+			       struct devlink_fmsg *fmsg)
-+{
-+	struct mlx5_core_dev *mdev =3D priv->mdev;
-+	struct mlx5_rsc_dump_cmd *cmd;
-+	struct page *page;
-+	int cmd_err, err;
-+	int end_err;
-+	int size;
-+
-+	if (IS_ERR_OR_NULL(mdev->rsc_dump))
-+		return -EOPNOTSUPP;
-+
-+	page =3D alloc_page(GFP_KERNEL);
-+	if (!page)
-+		return -ENOMEM;
-+
-+	err =3D devlink_fmsg_binary_pair_nest_start(fmsg, "data");
-+	if (err)
-+		return err;
-+
-+	cmd =3D mlx5_rsc_dump_cmd_create(mdev, key);
-+	if (IS_ERR(cmd)) {
-+		err =3D PTR_ERR(cmd);
-+		goto free_page;
-+	}
-+
-+	do {
-+		cmd_err =3D mlx5_rsc_dump_next(mdev, cmd, page, &size);
-+		if (cmd_err < 0) {
-+			err =3D cmd_err;
-+			goto destroy_cmd;
-+		}
-+
-+		err =3D mlx5e_health_rsc_fmsg_binary(fmsg, page_address(page), size);
-+		if (err)
-+			goto destroy_cmd;
-+
-+	} while (cmd_err > 0);
-+
-+destroy_cmd:
-+	mlx5_rsc_dump_cmd_destroy(cmd);
-+	end_err =3D devlink_fmsg_binary_pair_nest_end(fmsg);
-+	if (end_err)
-+		err =3D end_err;
-+free_page:
-+	__free_page(page);
-+	return err;
-+}
-+
-+int mlx5e_health_queue_dump(struct mlx5e_priv *priv, struct devlink_fmsg *=
-fmsg,
-+			    int queue_idx, char *lbl)
-+{
-+	struct mlx5_rsc_key key =3D {};
-+	int err;
-+
-+	key.rsc =3D MLX5_SGMT_TYPE_FULL_QPC;
-+	key.index1 =3D queue_idx;
-+	key.size =3D PAGE_SIZE;
-+	key.num_of_obj1 =3D 1;
-+
-+	err =3D devlink_fmsg_obj_nest_start(fmsg);
-+	if (err)
-+		return err;
-+
-+	err =3D mlx5e_reporter_named_obj_nest_start(fmsg, lbl);
-+	if (err)
-+		return err;
-+
-+	err =3D devlink_fmsg_u32_pair_put(fmsg, "index", queue_idx);
-+	if (err)
-+		return err;
-+
-+	err =3D mlx5e_health_rsc_fmsg_dump(priv, &key, fmsg);
-+	if (err)
-+		return err;
-+
-+	err =3D mlx5e_reporter_named_obj_nest_end(fmsg);
-+	if (err)
-+		return err;
-+
-+	return devlink_fmsg_obj_nest_end(fmsg);
-+}
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en/health.h b/drivers/=
-net/ethernet/mellanox/mlx5/core/en/health.h
-index d3693fa547ac..e90e3aec422f 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en/health.h
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en/health.h
-@@ -5,6 +5,7 @@
- #define __MLX5E_EN_HEALTH_H
-=20
- #include "en.h"
-+#include "diag/rsc_dump.h"
-=20
- #define MLX5E_RX_ERR_CQE(cqe) (get_cqe_opcode(cqe) !=3D MLX5_CQE_RESP_SEND=
-)
-=20
-@@ -36,6 +37,7 @@ void mlx5e_reporter_rx_timeout(struct mlx5e_rq *rq);
-=20
- struct mlx5e_err_ctx {
- 	int (*recover)(void *ctx);
-+	int (*dump)(struct mlx5e_priv *priv, struct devlink_fmsg *fmsg, void *ctx=
-);
- 	void *ctx;
- };
-=20
-@@ -48,6 +50,8 @@ int mlx5e_health_report(struct mlx5e_priv *priv,
- int mlx5e_health_create_reporters(struct mlx5e_priv *priv);
- void mlx5e_health_destroy_reporters(struct mlx5e_priv *priv);
- void mlx5e_health_channels_update(struct mlx5e_priv *priv);
--
--
-+int mlx5e_health_rsc_fmsg_dump(struct mlx5e_priv *priv, struct mlx5_rsc_ke=
-y *key,
-+			       struct devlink_fmsg *fmsg);
-+int mlx5e_health_queue_dump(struct mlx5e_priv *priv, struct devlink_fmsg *=
-fmsg,
-+			    int queue_idx, char *lbl);
- #endif
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en/reporter_tx.c b/dri=
-vers/net/ethernet/mellanox/mlx5/core/en/reporter_tx.c
-index 623c949db54c..1772c9ce3938 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en/reporter_tx.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en/reporter_tx.c
-@@ -246,6 +246,126 @@ static int mlx5e_tx_reporter_diagnose(struct devlink_=
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en/reporter_rx.c b/dri=
+vers/net/ethernet/mellanox/mlx5/core/en/reporter_rx.c
+index cfa6941fca6b..9599fdd620a8 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/en/reporter_rx.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/en/reporter_rx.c
+@@ -330,6 +330,185 @@ static int mlx5e_rx_reporter_diagnose(struct devlink_=
 health_reporter *reporter,
  	return err;
  }
 =20
-+static int mlx5e_tx_reporter_dump_sq(struct mlx5e_priv *priv, struct devli=
-nk_fmsg *fmsg,
-+				     void *ctx)
++static int mlx5e_rx_reporter_dump_icosq(struct mlx5e_priv *priv, struct de=
+vlink_fmsg *fmsg,
++					void *ctx)
 +{
++	struct mlx5e_txqsq *icosq =3D ctx;
 +	struct mlx5_rsc_key key =3D {};
-+	struct mlx5e_txqsq *sq =3D ctx;
 +	int err;
 +
 +	if (!test_bit(MLX5E_STATE_OPENED, &priv->state))
@@ -375,7 +230,7 @@ nk_fmsg *fmsg,
 +	if (err)
 +		return err;
 +
-+	err =3D mlx5e_reporter_named_obj_nest_start(fmsg, "SQ");
++	err =3D mlx5e_reporter_named_obj_nest_start(fmsg, "ICOSQ");
 +	if (err)
 +		return err;
 +
@@ -384,7 +239,7 @@ nk_fmsg *fmsg,
 +		return err;
 +
 +	key.rsc =3D MLX5_SGMT_TYPE_FULL_QPC;
-+	key.index1 =3D sq->sqn;
++	key.index1 =3D icosq->sqn;
 +	key.num_of_obj1 =3D 1;
 +
 +	err =3D mlx5e_health_rsc_fmsg_dump(priv, &key, fmsg);
@@ -401,6 +256,7 @@ nk_fmsg *fmsg,
 +
 +	key.rsc =3D MLX5_SGMT_TYPE_SND_BUFF;
 +	key.num_of_obj2 =3D MLX5_RSC_DUMP_ALL;
++
 +	err =3D mlx5e_health_rsc_fmsg_dump(priv, &key, fmsg);
 +	if (err)
 +		return err;
@@ -412,21 +268,23 @@ nk_fmsg *fmsg,
 +	return mlx5e_reporter_named_obj_nest_end(fmsg);
 +}
 +
-+static int mlx5e_tx_reporter_dump_all_sqs(struct mlx5e_priv *priv,
-+					  struct devlink_fmsg *fmsg)
++static int mlx5e_rx_reporter_dump_rq(struct mlx5e_priv *priv, struct devli=
+nk_fmsg *fmsg,
++				     void *ctx)
 +{
 +	struct mlx5_rsc_key key =3D {};
-+	int i, tc, err;
++	struct mlx5e_rq *rq =3D ctx;
++	int err;
 +
 +	if (!test_bit(MLX5E_STATE_OPENED, &priv->state))
 +		return 0;
 +
-+	err =3D mlx5e_reporter_named_obj_nest_start(fmsg, "SX Slice");
++	err =3D mlx5e_reporter_named_obj_nest_start(fmsg, "RX Slice");
 +	if (err)
 +		return err;
 +
 +	key.size =3D PAGE_SIZE;
-+	key.rsc =3D MLX5_SGMT_TYPE_SX_SLICE_ALL;
++	key.rsc =3D MLX5_SGMT_TYPE_RX_SLICE_ALL;
 +	err =3D mlx5e_health_rsc_fmsg_dump(priv, &key, fmsg);
 +	if (err)
 +		return err;
@@ -435,32 +293,89 @@ nk_fmsg *fmsg,
 +	if (err)
 +		return err;
 +
-+	err =3D devlink_fmsg_arr_pair_nest_start(fmsg, "SQs");
++	err =3D mlx5e_reporter_named_obj_nest_start(fmsg, "RQ");
++	if (err)
++		return err;
++
++	err =3D mlx5e_reporter_named_obj_nest_start(fmsg, "QPC");
++	if (err)
++		return err;
++
++	key.rsc =3D MLX5_SGMT_TYPE_FULL_QPC;
++	key.index1 =3D rq->rqn;
++	key.num_of_obj1 =3D 1;
++
++	err =3D mlx5e_health_rsc_fmsg_dump(priv, &key, fmsg);
++	if (err)
++		return err;
++
++	err =3D mlx5e_reporter_named_obj_nest_end(fmsg);
++	if (err)
++		return err;
++
++	err =3D mlx5e_reporter_named_obj_nest_start(fmsg, "receive_buff");
++	if (err)
++		return err;
++
++	key.rsc =3D MLX5_SGMT_TYPE_RCV_BUFF;
++	key.num_of_obj2 =3D MLX5_RSC_DUMP_ALL;
++	err =3D mlx5e_health_rsc_fmsg_dump(priv, &key, fmsg);
++	if (err)
++		return err;
++
++	err =3D mlx5e_reporter_named_obj_nest_end(fmsg);
++	if (err)
++		return err;
++
++	return mlx5e_reporter_named_obj_nest_end(fmsg);
++}
++
++static int mlx5e_rx_reporter_dump_all_rqs(struct mlx5e_priv *priv,
++					  struct devlink_fmsg *fmsg)
++{
++	struct mlx5_rsc_key key =3D {};
++	int i, err;
++
++	if (!test_bit(MLX5E_STATE_OPENED, &priv->state))
++		return 0;
++
++	err =3D mlx5e_reporter_named_obj_nest_start(fmsg, "RX Slice");
++	if (err)
++		return err;
++
++	key.size =3D PAGE_SIZE;
++	key.rsc =3D MLX5_SGMT_TYPE_RX_SLICE_ALL;
++	err =3D mlx5e_health_rsc_fmsg_dump(priv, &key, fmsg);
++	if (err)
++		return err;
++
++	err =3D mlx5e_reporter_named_obj_nest_end(fmsg);
++	if (err)
++		return err;
++
++	err =3D devlink_fmsg_arr_pair_nest_start(fmsg, "RQs");
 +	if (err)
 +		return err;
 +
 +	for (i =3D 0; i < priv->channels.num; i++) {
-+		struct mlx5e_channel *c =3D priv->channels.c[i];
++		struct mlx5e_rq *rq =3D &priv->channels.c[i]->rq;
 +
-+		for (tc =3D 0; tc < priv->channels.params.num_tc; tc++) {
-+			struct mlx5e_txqsq *sq =3D &c->sq[tc];
-+
-+			err =3D mlx5e_health_queue_dump(priv, fmsg, sq->sqn, "SQ");
-+			if (err)
-+				return err;
-+		}
++		err =3D mlx5e_health_queue_dump(priv, fmsg, rq->rqn, "RQ");
++		if (err)
++			return err;
 +	}
++
 +	return devlink_fmsg_arr_pair_nest_end(fmsg);
 +}
 +
-+static int mlx5e_tx_reporter_dump_from_ctx(struct mlx5e_priv *priv,
++static int mlx5e_rx_reporter_dump_from_ctx(struct mlx5e_priv *priv,
 +					   struct mlx5e_err_ctx *err_ctx,
 +					   struct devlink_fmsg *fmsg)
 +{
 +	return err_ctx->dump(priv, fmsg, err_ctx->ctx);
 +}
 +
-+static int mlx5e_tx_reporter_dump(struct devlink_health_reporter *reporter=
++static int mlx5e_rx_reporter_dump(struct devlink_health_reporter *reporter=
 ,
 +				  struct devlink_fmsg *fmsg, void *context,
 +				  struct netlink_ext_ack *extack)
@@ -468,39 +383,48 @@ nk_fmsg *fmsg,
 +	struct mlx5e_priv *priv =3D devlink_health_reporter_priv(reporter);
 +	struct mlx5e_err_ctx *err_ctx =3D context;
 +
-+	return err_ctx ? mlx5e_tx_reporter_dump_from_ctx(priv, err_ctx, fmsg) :
-+			 mlx5e_tx_reporter_dump_all_sqs(priv, fmsg);
++	return err_ctx ? mlx5e_rx_reporter_dump_from_ctx(priv, err_ctx, fmsg) :
++			 mlx5e_rx_reporter_dump_all_rqs(priv, fmsg);
 +}
 +
- void mlx5e_reporter_tx_err_cqe(struct mlx5e_txqsq *sq)
+ void mlx5e_reporter_rx_timeout(struct mlx5e_rq *rq)
  {
- 	struct mlx5e_priv *priv =3D sq->channel->priv;
-@@ -254,6 +374,7 @@ void mlx5e_reporter_tx_err_cqe(struct mlx5e_txqsq *sq)
+ 	struct mlx5e_icosq *icosq =3D &rq->channel->icosq;
+@@ -339,6 +518,7 @@ void mlx5e_reporter_rx_timeout(struct mlx5e_rq *rq)
 =20
- 	err_ctx.ctx =3D sq;
- 	err_ctx.recover =3D mlx5e_tx_reporter_err_cqe_recover;
-+	err_ctx.dump =3D mlx5e_tx_reporter_dump_sq;
- 	sprintf(err_str, "ERR CQE on SQ: 0x%x", sq->sqn);
+ 	err_ctx.ctx =3D rq;
+ 	err_ctx.recover =3D mlx5e_rx_reporter_timeout_recover;
++	err_ctx.dump =3D mlx5e_rx_reporter_dump_rq;
+ 	sprintf(err_str, "RX timeout on channel: %d, ICOSQ: 0x%x RQ: 0x%x, CQ: 0x=
+%x\n",
+ 		icosq->channel->ix, icosq->sqn, rq->rqn, rq->cq.mcq.cqn);
 =20
- 	mlx5e_health_report(priv, priv->tx_reporter, err_str, &err_ctx);
-@@ -267,6 +388,7 @@ int mlx5e_reporter_tx_timeout(struct mlx5e_txqsq *sq)
+@@ -353,6 +533,7 @@ void mlx5e_reporter_rq_cqe_err(struct mlx5e_rq *rq)
 =20
- 	err_ctx.ctx =3D sq;
- 	err_ctx.recover =3D mlx5e_tx_reporter_timeout_recover;
-+	err_ctx.dump =3D mlx5e_tx_reporter_dump_sq;
- 	sprintf(err_str,
- 		"TX timeout on queue: %d, SQ: 0x%x, CQ: 0x%x, SQ Cons: 0x%x SQ Prod: 0x%=
-x, usecs since last trans: %u\n",
- 		sq->channel->ix, sq->sqn, sq->cq.mcq.cqn, sq->cc, sq->pc,
-@@ -279,6 +401,7 @@ static const struct devlink_health_reporter_ops mlx5_tx=
+ 	err_ctx.ctx =3D rq;
+ 	err_ctx.recover =3D mlx5e_rx_reporter_err_rq_cqe_recover;
++	err_ctx.dump =3D mlx5e_rx_reporter_dump_rq;
+ 	sprintf(err_str, "ERR CQE on RQ: 0x%x", rq->rqn);
+=20
+ 	mlx5e_health_report(priv, priv->rx_reporter, err_str, &err_ctx);
+@@ -366,6 +547,7 @@ void mlx5e_reporter_icosq_cqe_err(struct mlx5e_icosq *i=
+cosq)
+=20
+ 	err_ctx.ctx =3D icosq;
+ 	err_ctx.recover =3D mlx5e_rx_reporter_err_icosq_cqe_recover;
++	err_ctx.dump =3D mlx5e_rx_reporter_dump_icosq;
+ 	sprintf(err_str, "ERR CQE on ICOSQ: 0x%x", icosq->sqn);
+=20
+ 	mlx5e_health_report(priv, priv->rx_reporter, err_str, &err_ctx);
+@@ -375,6 +557,7 @@ static const struct devlink_health_reporter_ops mlx5_rx=
 _reporter_ops =3D {
- 		.name =3D "tx",
- 		.recover =3D mlx5e_tx_reporter_recover,
- 		.diagnose =3D mlx5e_tx_reporter_diagnose,
-+		.dump =3D mlx5e_tx_reporter_dump,
+ 	.name =3D "rx",
+ 	.recover =3D mlx5e_rx_reporter_recover,
+ 	.diagnose =3D mlx5e_rx_reporter_diagnose,
++	.dump =3D mlx5e_rx_reporter_dump,
  };
 =20
- #define MLX5_REPORTER_TX_GRACEFUL_PERIOD 500
+ #define MLX5E_REPORTER_RX_GRACEFUL_PERIOD 500
 --=20
 2.24.1
 
