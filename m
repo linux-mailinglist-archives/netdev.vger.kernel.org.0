@@ -2,101 +2,77 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id BECC3148AE0
-	for <lists+netdev@lfdr.de>; Fri, 24 Jan 2020 16:05:05 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D645D148AE3
+	for <lists+netdev@lfdr.de>; Fri, 24 Jan 2020 16:05:23 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2388128AbgAXPFE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 24 Jan 2020 10:05:04 -0500
-Received: from mail-ed1-f66.google.com ([209.85.208.66]:44213 "EHLO
-        mail-ed1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2387432AbgAXPFD (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 24 Jan 2020 10:05:03 -0500
-Received: by mail-ed1-f66.google.com with SMTP id bx28so2581460edb.11
-        for <netdev@vger.kernel.org>; Fri, 24 Jan 2020 07:05:02 -0800 (PST)
+        id S2388266AbgAXPFU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 24 Jan 2020 10:05:20 -0500
+Received: from mail-wm1-f68.google.com ([209.85.128.68]:51492 "EHLO
+        mail-wm1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2387432AbgAXPFU (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 24 Jan 2020 10:05:20 -0500
+Received: by mail-wm1-f68.google.com with SMTP id t23so1959432wmi.1
+        for <netdev@vger.kernel.org>; Fri, 24 Jan 2020 07:05:19 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=w/FhJxGgaFV+qQRXwKyWClg+6DX1t7PErintQbMkPTE=;
-        b=ITuH2JVg25jJFBIWxbd4DZ9wxh+U/VXvXAOjcQrWbTyhBtgRk7QWo0WY+5iilpSbCg
-         G762pLa5GqZ7GNC+Wex+2QmNPSh4iueqFJCjIl+LtUMGZZb99mQy9zidclRUsTld/v9u
-         T1yLNyH8kG/ekx4GJxDysz/VcfFbJ1zM/9RkStGOBuvf0DwwcJxGcWk3Ewoj5ervbU6y
-         VcMn6wi7+zvFte4FB8m2/uMENurMfvogBvqOYvD7Z9HxqQ0mpnU5DATZHmrJ/K2EqM2v
-         inpy9QOMZ0HqpcVLtDW8VpmZemlYh+ZVgTxD2rj5nmiVrVvmM+t8sNZZujaGMhMrDG/Y
-         lqYw==
+        d=resnulli-us.20150623.gappssmtp.com; s=20150623;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=cL4l7aG441iKVN0B9Fvf8lOPKoUdyBrLLhNkbllIVa8=;
+        b=TKL3YBIAqfrHPTkFyEH04a4ZqUyZWIaW0mhH9BlGj7p/JL0ylX6gkNcXDQgQy4TRcP
+         UIxTgZvv77AE58ONlicBi6JbxDUfhzxrCCapAKnBzQVqntC93i8cIZuQQLyqFT0FoxNz
+         YsNjCRJNt53XisK45KbUdBHewUD6z3ZmAUTpXKjCYok18wyPM+B9GvyjZR50JQPWdeeo
+         Q23J4WV4xt29u1ezDEii8N/DBCZMhgcRSF07nT5fdL2yldOgyn2KCUXNAZpdvJ78z2+d
+         tUfyogTuDd81DspUmCTLEYYeNnv0PSwTLUMrNZFmTVnDnoCNrYeg3Oz2QPhfLp480RKG
+         F6YA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=w/FhJxGgaFV+qQRXwKyWClg+6DX1t7PErintQbMkPTE=;
-        b=k3FeYJZcmDJTFkAUVtN9KIcOJqD1wHBt/bBjGqFT8e390z5/chTkTAWx4embayosz+
-         3N7fd/JSItcE+chkQWmO0oyaY5iIs9z8lvR9GPTijxoJWnanPc6+2F6HujhUaKciH+c5
-         Bvib1eUJVKEqgP9rloNIPove8QaQsskjNUm8s5QTKr3/PK/GhS71z59yYgpiXD7vR/JZ
-         NaH77lK+AnwBUsLRJQL5Pa3diWpYwhT7JYXSp12kZnTTG+F4cqU8PLJvyI6LpVhUTPHT
-         wlQfQGDSjGltUV5wp4j1Kju2sG6Us6e9xUrviiiEy3Urue6x891uKHjADhz7jaXj621j
-         0Azg==
-X-Gm-Message-State: APjAAAUVEGAPs6zuqxC26HUQXftVaubHjdwrXUCaULxeyiCDGH8y9eC9
-        gSz+QGA/uy4vR3YXApHM3lCxH32xQ6HmhC7qHKKBWA==
-X-Google-Smtp-Source: APXvYqyN7GQb+MoTAr3/7AxxEw7g1HePA4G7XkPvsJ2rFpsS/3UDeX+v6QMSGcuIlkO7XdlV9LhuMPOxhphMRRXd+Yo=
-X-Received: by 2002:a05:6402:1694:: with SMTP id a20mr2854841edv.211.1579878301239;
- Fri, 24 Jan 2020 07:05:01 -0800 (PST)
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=cL4l7aG441iKVN0B9Fvf8lOPKoUdyBrLLhNkbllIVa8=;
+        b=kTd8BOmW9L4jEwo9Z+5/tpVY3zj13lSGl02k2HW+byRDf3k3eo8gHPLpXPWaWu1MrB
+         1+Z24hNso2++4OfAsiCfeAk3eqbl3bbg4XqKya2NSKvHqGVnRGLPrJy5JWFfnWnDJI3x
+         4tyJgrZK8W5iyIlOE2hX7lCtHK6WkhtkHW2j3mAZ/Fvpcu3uyZDvtI9GgMAZ3RoHyaJD
+         /hE4GTGZUssUD8ttreKSQcs8rz2CYWHU73AZVNaWbL7PoMr1r5QmZ+a2E7f64hdSTfzS
+         hG4VWwcZuS54rSiud1vGkJTDELFA3l1JEw1qZtuvrHqFUNPBDtcJNSf0kP4Dwa7pb/1G
+         Z/uw==
+X-Gm-Message-State: APjAAAX6guvhCB8tB+vpUS87R7/77lN31+NuS403TDvNn8PMa6I4qTUD
+        NM7gvKcVvN56X0KOGe284cKvdw==
+X-Google-Smtp-Source: APXvYqwq9jXViy+ZGtW9+jHaeU/yrnIymqXG46im4Qa1n6nYGr600Yt+zVd/xxDrny0f3BELGDYu3Q==
+X-Received: by 2002:a1c:ddc3:: with SMTP id u186mr3557044wmg.103.1579878318584;
+        Fri, 24 Jan 2020 07:05:18 -0800 (PST)
+Received: from localhost (jirka.pirko.cz. [84.16.102.26])
+        by smtp.gmail.com with ESMTPSA id w17sm7629914wrt.89.2020.01.24.07.05.17
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 24 Jan 2020 07:05:18 -0800 (PST)
+Date:   Fri, 24 Jan 2020 16:05:17 +0100
+From:   Jiri Pirko <jiri@resnulli.us>
+To:     Ido Schimmel <idosch@idosch.org>
+Cc:     netdev@vger.kernel.org, davem@davemloft.net, jiri@mellanox.com,
+        jhs@mojatatu.com, xiyou.wangcong@gmail.com, petrm@mellanox.com,
+        mlxsw@mellanox.com, Ido Schimmel <idosch@mellanox.com>
+Subject: Re: [PATCH net-next 07/14] mlxsw: reg: Increase
+ MLXSW_REG_QEEC_MAS_DIS
+Message-ID: <20200124150517.GE2254@nanopsycho.orion>
+References: <20200124132318.712354-1-idosch@idosch.org>
+ <20200124132318.712354-8-idosch@idosch.org>
 MIME-Version: 1.0
-References: <20200123232054.183436-1-lrizzo@google.com> <3a7e66da-7506-47a0-8733-8d48674176f9@iogearbox.net>
- <20200124065244.4cafef68@cakuba>
-In-Reply-To: <20200124065244.4cafef68@cakuba>
-From:   Luigi Rizzo <lrizzo@google.com>
-Date:   Fri, 24 Jan 2020 07:04:50 -0800
-Message-ID: <CAMOZA0+R6GK1GGCb=mij7uffso5K_Db5wkWq-URwCsTYoqkxEg@mail.gmail.com>
-Subject: Re: [PATCH net-next] v2 net-xdp: netdev attribute to control
- xdpgeneric skb linearization
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     Daniel Borkmann <daniel@iogearbox.net>, netdev@vger.kernel.org,
-        Jesper Dangaard Brouer <hawk@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>, sameehj@amazon.com,
-        =?UTF-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <toke@redhat.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20200124132318.712354-8-idosch@idosch.org>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Jan 24, 2020 at 6:52 AM Jakub Kicinski <kuba@kernel.org> wrote:
+Fri, Jan 24, 2020 at 02:23:11PM CET, idosch@idosch.org wrote:
+>From: Petr Machata <petrm@mellanox.com>
 >
-> On Fri, 24 Jan 2020 10:55:19 +0100, Daniel Borkmann wrote:
-> > > diff --git a/net/core/dev.c b/net/core/dev.c
-> > > index 4dcc1b390667..13a671e45b61 100644
-> > > --- a/net/core/dev.c
-> > > +++ b/net/core/dev.c
-> > > @@ -4484,8 +4484,8 @@ static u32 netif_receive_generic_xdp(struct sk_buff *skb,
-> > >      * of XDP_PACKET_HEADROOM bytes. This is the guarantee that also
-> > >      * native XDP provides, thus we need to do it here as well.
-> > >      */
-> > > -   if (skb_is_nonlinear(skb) ||
-> > > -       skb_headroom(skb) < XDP_PACKET_HEADROOM) {
-> > > +   if (skb->dev->xdp_linearize && (skb_is_nonlinear(skb) ||
-> > > +       skb_headroom(skb) < XDP_PACKET_HEADROOM)) {
-> > >             int hroom = XDP_PACKET_HEADROOM - skb_headroom(skb);
-> > >             int troom = skb->tail + skb->data_len - skb->end;
-> >
-> > I still think in order for this knob to be generally useful, we would need to
-> > provide an equivalent of bpf_skb_pull_data() helper, which in generic XDP would then
-> > pull in more data from non-linear section, and in native XDP would be a "no-op" since
-> > the frame is already linear. Otherwise, as mentioned in previous thread, users would
-> > have no chance to examine headers if they are not pre-pulled by the driver.
+>As the port speeds grow, the current value of "unlimited shaper",
+>200000000Kbps, might become lower than the actually supported speeds. Bump
+>it to the maximum value that fits in the corresponding QEEC field, which is
+>about 2.1Tbps.
 >
-> Which takes us to the point of the ongoing work to allow multi-buffer
-> frames in native mode. Sorry if this was already mentioned but this
-> seems like the other side of the same coin, once we have multi-buffer
-> semantics in native mode we can likely just replicate them for skbs, no?
+>Signed-off-by: Petr Machata <petrm@mellanox.com>
+>Signed-off-by: Ido Schimmel <idosch@mellanox.com>
 
-Yes I am aware of that discussion (I posted links to it in some of the
-previous messages).
-My understanding is that there is no satisfactory solution, and the one effort
-I am aware of seems to be "only pass the header".
-
-My feeling is also that by implementing full multi-buffer support we end up
-replicating the expensive part of the skb (dmasync, sg handling etc.),
-at which point the benefits of a custom solution are largely gone.
-
-cheers
-luigi
+Acked-by: Jiri Pirko <jiri@mellanox.com>
