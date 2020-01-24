@@ -2,76 +2,101 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 42F3F148ADD
-	for <lists+netdev@lfdr.de>; Fri, 24 Jan 2020 16:04:49 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id BECC3148AE0
+	for <lists+netdev@lfdr.de>; Fri, 24 Jan 2020 16:05:05 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2387948AbgAXPEr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 24 Jan 2020 10:04:47 -0500
-Received: from mail-wm1-f67.google.com ([209.85.128.67]:55687 "EHLO
-        mail-wm1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2387432AbgAXPEr (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 24 Jan 2020 10:04:47 -0500
-Received: by mail-wm1-f67.google.com with SMTP id q9so1940353wmj.5
-        for <netdev@vger.kernel.org>; Fri, 24 Jan 2020 07:04:46 -0800 (PST)
+        id S2388128AbgAXPFE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 24 Jan 2020 10:05:04 -0500
+Received: from mail-ed1-f66.google.com ([209.85.208.66]:44213 "EHLO
+        mail-ed1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2387432AbgAXPFD (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 24 Jan 2020 10:05:03 -0500
+Received: by mail-ed1-f66.google.com with SMTP id bx28so2581460edb.11
+        for <netdev@vger.kernel.org>; Fri, 24 Jan 2020 07:05:02 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=resnulli-us.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=t0us1egyJN/IQkR4VwHHKMwizOggcRQJO2AHleYRg4U=;
-        b=VXUC50YGvdOkI+i639fqtKHyYgh+EhrZ6qiXdyoqWD9PY4A9kZBIhxnWjedQiBikrA
-         TICGV/XdziUTwNZ7tgje8Rn+emnboi0+m1PbJOxnH7tK9jnEGJPUSLc2McTsf8UFfeqa
-         +x50yTz6a5RLNloQVIkfK68XbhZunEsI/wA6e6VcM2hOc+obwngzFVwc7AFYOIDQzRdr
-         FSL8QxjPdgGQwkjGDac26sv4cYXQd7tyIbunypIEZx6H8MKEFoICnYZsSBnQovntzTrU
-         ogcBbyJXN0iKXii++BeeAvkyjq0NcGS8wck3jkQyXxZMHbwMX9GwOJCiDHBeApTSzpwv
-         41bA==
+        d=google.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=w/FhJxGgaFV+qQRXwKyWClg+6DX1t7PErintQbMkPTE=;
+        b=ITuH2JVg25jJFBIWxbd4DZ9wxh+U/VXvXAOjcQrWbTyhBtgRk7QWo0WY+5iilpSbCg
+         G762pLa5GqZ7GNC+Wex+2QmNPSh4iueqFJCjIl+LtUMGZZb99mQy9zidclRUsTld/v9u
+         T1yLNyH8kG/ekx4GJxDysz/VcfFbJ1zM/9RkStGOBuvf0DwwcJxGcWk3Ewoj5ervbU6y
+         VcMn6wi7+zvFte4FB8m2/uMENurMfvogBvqOYvD7Z9HxqQ0mpnU5DATZHmrJ/K2EqM2v
+         inpy9QOMZ0HqpcVLtDW8VpmZemlYh+ZVgTxD2rj5nmiVrVvmM+t8sNZZujaGMhMrDG/Y
+         lqYw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=t0us1egyJN/IQkR4VwHHKMwizOggcRQJO2AHleYRg4U=;
-        b=UyyaOcSxAO56k8yahX1mCA0NRBDeIugVttFbWvpgcqEEUO1uzSWitK9THmKb3Aqb1P
-         YPdS0440GVxKRArjekNkGIkDzupEkIuJdhTTUQSj6mtJ2K/5efYvAAL/vxy1uFF3Ay9v
-         bfgAib9jTafF8fEgJlaD3XuX2TQXi1EyiALNKmNMEp6oce+6iLowwRblLn1YMoOMOvwD
-         0GrDx45cQDyaWj3ubkztOd8/cy10N1s3nKgCBKoLv9RFNldApSTs5dSm9j8YggG/OcfR
-         AM9zEYuyivxykZm1nhfsi2ZnZQ/tp7Pp5HJbyp/pvn0Y8fL2siQ4TNVuRBEro95GR7e/
-         1VQg==
-X-Gm-Message-State: APjAAAXWwjZGUVSG+cIei8LM/TZpCzV30rH18LN2w2RhZE3gQIErwBEM
-        Mo+nf7pUS00PZU+I3tANKhoXvg==
-X-Google-Smtp-Source: APXvYqxkNQAimdFidRnq/I5M3hAhKg+ntnP/lAawmQApi9NVOU/R8jyKayFvAvsK3gNZt+6PfZhnbg==
-X-Received: by 2002:a1c:6485:: with SMTP id y127mr3793720wmb.11.1579878285610;
-        Fri, 24 Jan 2020 07:04:45 -0800 (PST)
-Received: from localhost (jirka.pirko.cz. [84.16.102.26])
-        by smtp.gmail.com with ESMTPSA id l17sm7702462wro.77.2020.01.24.07.04.44
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 24 Jan 2020 07:04:45 -0800 (PST)
-Date:   Fri, 24 Jan 2020 16:04:44 +0100
-From:   Jiri Pirko <jiri@resnulli.us>
-To:     Ido Schimmel <idosch@idosch.org>
-Cc:     netdev@vger.kernel.org, davem@davemloft.net, jiri@mellanox.com,
-        jhs@mojatatu.com, xiyou.wangcong@gmail.com, petrm@mellanox.com,
-        mlxsw@mellanox.com, Ido Schimmel <idosch@mellanox.com>
-Subject: Re: [PATCH net-next 06/14] mlxsw: reg: Add max_shaper_bs to QoS ETS
- Element Configuration
-Message-ID: <20200124150444.GD2254@nanopsycho.orion>
-References: <20200124132318.712354-1-idosch@idosch.org>
- <20200124132318.712354-7-idosch@idosch.org>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=w/FhJxGgaFV+qQRXwKyWClg+6DX1t7PErintQbMkPTE=;
+        b=k3FeYJZcmDJTFkAUVtN9KIcOJqD1wHBt/bBjGqFT8e390z5/chTkTAWx4embayosz+
+         3N7fd/JSItcE+chkQWmO0oyaY5iIs9z8lvR9GPTijxoJWnanPc6+2F6HujhUaKciH+c5
+         Bvib1eUJVKEqgP9rloNIPove8QaQsskjNUm8s5QTKr3/PK/GhS71z59yYgpiXD7vR/JZ
+         NaH77lK+AnwBUsLRJQL5Pa3diWpYwhT7JYXSp12kZnTTG+F4cqU8PLJvyI6LpVhUTPHT
+         wlQfQGDSjGltUV5wp4j1Kju2sG6Us6e9xUrviiiEy3Urue6x891uKHjADhz7jaXj621j
+         0Azg==
+X-Gm-Message-State: APjAAAUVEGAPs6zuqxC26HUQXftVaubHjdwrXUCaULxeyiCDGH8y9eC9
+        gSz+QGA/uy4vR3YXApHM3lCxH32xQ6HmhC7qHKKBWA==
+X-Google-Smtp-Source: APXvYqyN7GQb+MoTAr3/7AxxEw7g1HePA4G7XkPvsJ2rFpsS/3UDeX+v6QMSGcuIlkO7XdlV9LhuMPOxhphMRRXd+Yo=
+X-Received: by 2002:a05:6402:1694:: with SMTP id a20mr2854841edv.211.1579878301239;
+ Fri, 24 Jan 2020 07:05:01 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200124132318.712354-7-idosch@idosch.org>
+References: <20200123232054.183436-1-lrizzo@google.com> <3a7e66da-7506-47a0-8733-8d48674176f9@iogearbox.net>
+ <20200124065244.4cafef68@cakuba>
+In-Reply-To: <20200124065244.4cafef68@cakuba>
+From:   Luigi Rizzo <lrizzo@google.com>
+Date:   Fri, 24 Jan 2020 07:04:50 -0800
+Message-ID: <CAMOZA0+R6GK1GGCb=mij7uffso5K_Db5wkWq-URwCsTYoqkxEg@mail.gmail.com>
+Subject: Re: [PATCH net-next] v2 net-xdp: netdev attribute to control
+ xdpgeneric skb linearization
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     Daniel Borkmann <daniel@iogearbox.net>, netdev@vger.kernel.org,
+        Jesper Dangaard Brouer <hawk@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>, sameehj@amazon.com,
+        =?UTF-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <toke@redhat.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Fri, Jan 24, 2020 at 02:23:10PM CET, idosch@idosch.org wrote:
->From: Petr Machata <petrm@mellanox.com>
+On Fri, Jan 24, 2020 at 6:52 AM Jakub Kicinski <kuba@kernel.org> wrote:
 >
->The QEEC register configures scheduling elements. One of the bits of
->configuration is the burst size to use for the shaper installed on the
->element. Add the necessary fields to support this configuration.
+> On Fri, 24 Jan 2020 10:55:19 +0100, Daniel Borkmann wrote:
+> > > diff --git a/net/core/dev.c b/net/core/dev.c
+> > > index 4dcc1b390667..13a671e45b61 100644
+> > > --- a/net/core/dev.c
+> > > +++ b/net/core/dev.c
+> > > @@ -4484,8 +4484,8 @@ static u32 netif_receive_generic_xdp(struct sk_buff *skb,
+> > >      * of XDP_PACKET_HEADROOM bytes. This is the guarantee that also
+> > >      * native XDP provides, thus we need to do it here as well.
+> > >      */
+> > > -   if (skb_is_nonlinear(skb) ||
+> > > -       skb_headroom(skb) < XDP_PACKET_HEADROOM) {
+> > > +   if (skb->dev->xdp_linearize && (skb_is_nonlinear(skb) ||
+> > > +       skb_headroom(skb) < XDP_PACKET_HEADROOM)) {
+> > >             int hroom = XDP_PACKET_HEADROOM - skb_headroom(skb);
+> > >             int troom = skb->tail + skb->data_len - skb->end;
+> >
+> > I still think in order for this knob to be generally useful, we would need to
+> > provide an equivalent of bpf_skb_pull_data() helper, which in generic XDP would then
+> > pull in more data from non-linear section, and in native XDP would be a "no-op" since
+> > the frame is already linear. Otherwise, as mentioned in previous thread, users would
+> > have no chance to examine headers if they are not pre-pulled by the driver.
 >
->Signed-off-by: Petr Machata <petrm@mellanox.com>
->Signed-off-by: Ido Schimmel <idosch@mellanox.com>
+> Which takes us to the point of the ongoing work to allow multi-buffer
+> frames in native mode. Sorry if this was already mentioned but this
+> seems like the other side of the same coin, once we have multi-buffer
+> semantics in native mode we can likely just replicate them for skbs, no?
 
-Acked-by: Jiri Pirko <jiri@mellanox.com>
+Yes I am aware of that discussion (I posted links to it in some of the
+previous messages).
+My understanding is that there is no satisfactory solution, and the one effort
+I am aware of seems to be "only pass the header".
+
+My feeling is also that by implementing full multi-buffer support we end up
+replicating the expensive part of the skb (dmasync, sg handling etc.),
+at which point the benefits of a custom solution are largely gone.
+
+cheers
+luigi
