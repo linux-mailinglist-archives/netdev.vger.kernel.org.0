@@ -2,37 +2,38 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 577AE148859
-	for <lists+netdev@lfdr.de>; Fri, 24 Jan 2020 15:28:49 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2C32214884C
+	for <lists+netdev@lfdr.de>; Fri, 24 Jan 2020 15:28:43 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2390874AbgAXO2Z (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 24 Jan 2020 09:28:25 -0500
-Received: from mail.kernel.org ([198.145.29.99]:42634 "EHLO mail.kernel.org"
+        id S2405238AbgAXOVL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 24 Jan 2020 09:21:11 -0500
+Received: from mail.kernel.org ([198.145.29.99]:42658 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2405203AbgAXOVK (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S2405223AbgAXOVK (ORCPT <rfc822;netdev@vger.kernel.org>);
         Fri, 24 Jan 2020 09:21:10 -0500
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 398BB214DB;
-        Fri, 24 Jan 2020 14:21:08 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 635C721556;
+        Fri, 24 Jan 2020 14:21:09 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1579875669;
-        bh=nyhqYZ2PKnkSJHtAEF+tZFuupg870oMZtfArp2fKPAc=;
+        s=default; t=1579875670;
+        bh=tk6Byy/9gnS9TvzqixnbCarFVB/TnhObViSxEp0c7KE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=RoFnPRFlyTT6Mv7Gn7dubIQ0qz/t7yvapYzc1+jPAdHX/5ITGqG4YFfDjBwAC4rNy
-         CNykTBu4YsRVPNu2frD3+mlPabPsC5PQO2Zj02TAP0wAnG0QeDJmy2AtNktNTciSXU
-         buozRHgHZKH1AENmIrsNoNuV350dwo3NtGh6Oi9k=
+        b=BjraEXxyOKUvg1F+QBpe5KYK2k6DvJeIwEcrdfSjUYgHC5juywnGVYuQkjX22hXl0
+         vz3oN4nd3HQQIKvCPT6I9X1I+3XPJt3fNPy9mqITONzQlXQrX64jvCUw1wj28XrbYq
+         C5itHxiFtOp2TcY9qhFE7iDW/IKyO2KNvJu7FNDI=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Pablo Neira Ayuso <pablo@netfilter.org>,
-        Marco Oliverio <marco.oliverio@tanaza.com>,
+Cc:     Florian Westphal <fw@strlen.de>,
+        syzbot+76d0b80493ac881ff77b@syzkaller.appspotmail.com,
+        Pablo Neira Ayuso <pablo@netfilter.org>,
         Sasha Levin <sashal@kernel.org>,
         netfilter-devel@vger.kernel.org, coreteam@netfilter.org,
         netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.19 48/56] netfilter: nf_tables: store transaction list locally while requesting module
-Date:   Fri, 24 Jan 2020 09:20:04 -0500
-Message-Id: <20200124142012.29752-48-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 4.19 49/56] netfilter: nft_tunnel: fix null-attribute check
+Date:   Fri, 24 Jan 2020 09:20:05 -0500
+Message-Id: <20200124142012.29752-49-sashal@kernel.org>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20200124142012.29752-1-sashal@kernel.org>
 References: <20200124142012.29752-1-sashal@kernel.org>
@@ -45,99 +46,34 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Pablo Neira Ayuso <pablo@netfilter.org>
+From: Florian Westphal <fw@strlen.de>
 
-[ Upstream commit ec7470b834fe7b5d7eff11b6677f5d7fdf5e9a91 ]
+[ Upstream commit 1c702bf902bd37349f6d91cd7f4b372b1e46d0ed ]
 
-This patch fixes a WARN_ON in nft_set_destroy() due to missing
-set reference count drop from the preparation phase. This is triggered
-by the module autoload path. Do not exercise the abort path from
-nft_request_module() while preparation phase cleaning up is still
-pending.
+else we get null deref when one of the attributes is missing, both
+must be non-null.
 
- WARNING: CPU: 3 PID: 3456 at net/netfilter/nf_tables_api.c:3740 nft_set_destroy+0x45/0x50 [nf_tables]
- [...]
- CPU: 3 PID: 3456 Comm: nft Not tainted 5.4.6-arch3-1 #1
- RIP: 0010:nft_set_destroy+0x45/0x50 [nf_tables]
- Code: e8 30 eb 83 c6 48 8b 85 80 00 00 00 48 8b b8 90 00 00 00 e8 dd 6b d7 c5 48 8b 7d 30 e8 24 dd eb c5 48 89 ef 5d e9 6b c6 e5 c5 <0f> 0b c3 0f 1f 84 00 00 00 00 00 0f 1f 44 00 00 48 8b 7f 10 e9 52
- RSP: 0018:ffffac4f43e53700 EFLAGS: 00010202
- RAX: 0000000000000001 RBX: ffff99d63a154d80 RCX: 0000000001f88e03
- RDX: 0000000001f88c03 RSI: ffff99d6560ef0c0 RDI: ffff99d63a101200
- RBP: ffff99d617721de0 R08: 0000000000000000 R09: 0000000000000318
- R10: 00000000f0000000 R11: 0000000000000001 R12: ffffffff880fabf0
- R13: dead000000000122 R14: dead000000000100 R15: ffff99d63a154d80
- FS:  00007ff3dbd5b740(0000) GS:ffff99d6560c0000(0000) knlGS:0000000000000000
- CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
- CR2: 00001cb5de6a9000 CR3: 000000016eb6a004 CR4: 00000000001606e0
- Call Trace:
-  __nf_tables_abort+0x3e3/0x6d0 [nf_tables]
-  nft_request_module+0x6f/0x110 [nf_tables]
-  nft_expr_type_request_module+0x28/0x50 [nf_tables]
-  nf_tables_expr_parse+0x198/0x1f0 [nf_tables]
-  nft_expr_init+0x3b/0xf0 [nf_tables]
-  nft_dynset_init+0x1e2/0x410 [nf_tables]
-  nf_tables_newrule+0x30a/0x930 [nf_tables]
-  nfnetlink_rcv_batch+0x2a0/0x640 [nfnetlink]
-  nfnetlink_rcv+0x125/0x171 [nfnetlink]
-  netlink_unicast+0x179/0x210
-  netlink_sendmsg+0x208/0x3d0
-  sock_sendmsg+0x5e/0x60
-  ____sys_sendmsg+0x21b/0x290
-
-Update comment on the code to describe the new behaviour.
-
-Reported-by: Marco Oliverio <marco.oliverio@tanaza.com>
-Fixes: 452238e8d5ff ("netfilter: nf_tables: add and use helper for module autoload")
+Reported-by: syzbot+76d0b80493ac881ff77b@syzkaller.appspotmail.com
+Fixes: aaecfdb5c5dd8ba ("netfilter: nf_tables: match on tunnel metadata")
+Signed-off-by: Florian Westphal <fw@strlen.de>
 Signed-off-by: Pablo Neira Ayuso <pablo@netfilter.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/netfilter/nf_tables_api.c | 19 ++++++++++---------
- 1 file changed, 10 insertions(+), 9 deletions(-)
+ net/netfilter/nft_tunnel.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/net/netfilter/nf_tables_api.c b/net/netfilter/nf_tables_api.c
-index 4711a8b56f32f..f7d1f66b29483 100644
---- a/net/netfilter/nf_tables_api.c
-+++ b/net/netfilter/nf_tables_api.c
-@@ -483,23 +483,21 @@ __nf_tables_chain_type_lookup(const struct nlattr *nla, u8 family)
- }
+diff --git a/net/netfilter/nft_tunnel.c b/net/netfilter/nft_tunnel.c
+index 3a15f219e4e7f..09441bbb0166f 100644
+--- a/net/netfilter/nft_tunnel.c
++++ b/net/netfilter/nft_tunnel.c
+@@ -56,7 +56,7 @@ static int nft_tunnel_get_init(const struct nft_ctx *ctx,
+ 	struct nft_tunnel *priv = nft_expr_priv(expr);
+ 	u32 len;
  
- /*
-- * Loading a module requires dropping mutex that guards the
-- * transaction.
-- * We first need to abort any pending transactions as once
-- * mutex is unlocked a different client could start a new
-- * transaction.  It must not see any 'future generation'
-- * changes * as these changes will never happen.
-+ * Loading a module requires dropping mutex that guards the transaction.
-+ * A different client might race to start a new transaction meanwhile. Zap the
-+ * list of pending transaction and then restore it once the mutex is grabbed
-+ * again. Users of this function return EAGAIN which implicitly triggers the
-+ * transaction abort path to clean up the list of pending transactions.
-  */
- #ifdef CONFIG_MODULES
--static int __nf_tables_abort(struct net *net);
--
- static void nft_request_module(struct net *net, const char *fmt, ...)
- {
- 	char module_name[MODULE_NAME_LEN];
-+	LIST_HEAD(commit_list);
- 	va_list args;
- 	int ret;
- 
--	__nf_tables_abort(net);
-+	list_splice_init(&net->nft.commit_list, &commit_list);
- 
- 	va_start(args, fmt);
- 	ret = vsnprintf(module_name, MODULE_NAME_LEN, fmt, args);
-@@ -510,6 +508,9 @@ static void nft_request_module(struct net *net, const char *fmt, ...)
- 	mutex_unlock(&net->nft.commit_mutex);
- 	request_module("%s", module_name);
- 	mutex_lock(&net->nft.commit_mutex);
-+
-+	WARN_ON_ONCE(!list_empty(&net->nft.commit_list));
-+	list_splice(&commit_list, &net->nft.commit_list);
- }
- #endif
+-	if (!tb[NFTA_TUNNEL_KEY] &&
++	if (!tb[NFTA_TUNNEL_KEY] ||
+ 	    !tb[NFTA_TUNNEL_DREG])
+ 		return -EINVAL;
  
 -- 
 2.20.1
