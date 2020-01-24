@@ -2,172 +2,241 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id A408B148EF5
-	for <lists+netdev@lfdr.de>; Fri, 24 Jan 2020 20:57:37 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 14599148F2B
+	for <lists+netdev@lfdr.de>; Fri, 24 Jan 2020 21:13:39 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2392401AbgAXT5W (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 24 Jan 2020 14:57:22 -0500
-Received: from mail-io1-f70.google.com ([209.85.166.70]:42924 "EHLO
-        mail-io1-f70.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2391837AbgAXT5M (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 24 Jan 2020 14:57:12 -0500
-Received: by mail-io1-f70.google.com with SMTP id e7so2013592iog.9
-        for <netdev@vger.kernel.org>; Fri, 24 Jan 2020 11:57:11 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
-        bh=sAFaEA+BSTQ/YzFzmKO41vTV+JAzWArpZYlyNlcrVNU=;
-        b=p4phKoLjrKbPdR7+QU04PPtOG/hfvwM4IdcaUmotAAu5Y9ZWAMoIC5KXbLse0byp72
-         p/ShAj0HqmGuwBnotKMHUKzNT+Ou8vhkJzI6fsb+mJ27F1iXCqQe9UuyHwHYVqQgjv6N
-         bxgrvcJidouFi3dkKfrU4fH0o+WnzTEH3uGISah2gzfZFV7S9gZvAprkmyHhxIYJnzra
-         FcBcm7yuDHsex9vDwbr+sJJ0v3r890RYTn5y6YWKbAdfMJoN0dhOLRZZjkI2qOZtrrve
-         Qvj4Aie8hCZ5iKuBxzkWzObwrg7fuUL8dcye52IbfzCOC1hITOVLPpE3rnUpTd6dGsUY
-         yt4g==
-X-Gm-Message-State: APjAAAXbUHhIVdh/EF0P9sGJu6HqcUDlNBZki1sYNlMfLOlk8S9dgmDZ
-        iAht19PBjXKwYMX+KW545Jy+0wElR78mzUDNrjpm7PlITdSf
-X-Google-Smtp-Source: APXvYqxiWj5tK6sdcHHza+l+o2ho3rTONj9Vt3Seh562PbEf40PrbIq7n1PqXAvyKaEOMJDkbg0yYPPjOSNHZ0TmEXGKih4mKAsb
+        id S2404259AbgAXUNh (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 24 Jan 2020 15:13:37 -0500
+Received: from mx0b-00082601.pphosted.com ([67.231.153.30]:53902 "EHLO
+        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S2387535AbgAXUNg (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 24 Jan 2020 15:13:36 -0500
+Received: from pps.filterd (m0001303.ppops.net [127.0.0.1])
+        by m0001303.ppops.net (8.16.0.42/8.16.0.42) with SMTP id 00OKDOmj011190;
+        Fri, 24 Jan 2020 12:13:24 -0800
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
+ : date : message-id : references : in-reply-to : content-type : content-id
+ : content-transfer-encoding : mime-version; s=facebook;
+ bh=38WSE+glkFZRFrwcPSlI69oHzKL+PJJJzmTPaKJHKIQ=;
+ b=l1fL+zFkAfr8mqZef74L2V2eE908FMRT8+WJdqLAaPFd6zEWioGWdfox8hOMQ8WCovmL
+ AZiHb1PlYjnE/u1OnmK3A4aYcXOw9S/csD6/VzmpF074NFItuGKOTp50zY4M0/onLwkl
+ YOyi7/KsHjyOYWyUyBQFtHIZbpVSMObkJCs= 
+Received: from maileast.thefacebook.com ([163.114.130.16])
+        by m0001303.ppops.net with ESMTP id 2xr61ngdyc-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
+        Fri, 24 Jan 2020 12:13:24 -0800
+Received: from NAM10-BN7-obe.outbound.protection.outlook.com (100.104.31.183)
+ by o365-in.thefacebook.com (100.104.35.172) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.1779.2; Fri, 24 Jan 2020 12:12:46 -0800
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=J7BVPu3qZF5aIB/d4B4AsYuHB9ldIgzZ0mK2QhuRKxjULcaFJTS9iiSxMresvKO8HYlhB12m9XLV6FGOsp0l0xwvyV9/xRiLqUp5vtfdpS0CZushQLhm2f0FHtSzFiGr2GnWkKEPOgJ0dHoLuQok58fLkwV2prTHeap1MomeIMPpcQbosR91zblgiJ4Wx9bEa4G/D0upNthuy7pvtJTIFRXWvy80jeZZDThYZ1DC+5iRPI3j3CzHVtgoUT/7AQkMGFSY/3MsL0igFemHcTppe28GyTrMBUz9g7k6h8XUtbtktsGx6B4vosLZ+OB1I3OSD7xenE/HA3kVIuuTn9WNXA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=38WSE+glkFZRFrwcPSlI69oHzKL+PJJJzmTPaKJHKIQ=;
+ b=EUuY4RlYGM3Yt6TGyrUUTxQm+KfgLb9KsnIgzes/8DeVo0BIG+6Kl6ApstHEecJDd735CfYLLzOgNCiReBsPF3dpPUlUpswaIj9VEeb4Swi1FNUyv1Wiu5b+2cspJnf7hsJPRcs2p9ykm7bEAFPvQ2eRZZ9csaTntZtixvc4UvKfx8l6CKdqEKjWIPtfxCsIYaf3eyECDoSjz6Zg+hK75hjMa/mL0Y509AU3EaQmKMHrNsO+WXTs57HlH9Kh2M0XYi9K0R0hRSxpkMZAXBqyZZXWc5hnvQpDihHl7/GmHEVjTZXQmvkm4aNBiY9Br9k9aJ4HVgDjnr/Q1pi8LPfTTw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=fb.com; dmarc=pass action=none header.from=fb.com; dkim=pass
+ header.d=fb.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.onmicrosoft.com;
+ s=selector2-fb-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=38WSE+glkFZRFrwcPSlI69oHzKL+PJJJzmTPaKJHKIQ=;
+ b=eWA2pfiuDQk8zdDkoJPxR75StN+0RqeTy+wROcO9bcxjdLT1Ps3qIhDGxWjifeL4JkREbR7ZV3qI7Um0ZxC/aAnSWQlJaSggPwU4IUiuXQ73LEkrxuK2v00kjub6z4PU6bNRKCmvxEYaZZxq7jLy/yifqvD99cilVGJxUHFCMCk=
+Received: from MN2PR15MB3213.namprd15.prod.outlook.com (20.179.21.76) by
+ MN2PR15MB2896.namprd15.prod.outlook.com (20.178.251.138) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.2665.22; Fri, 24 Jan 2020 20:12:45 +0000
+Received: from MN2PR15MB3213.namprd15.prod.outlook.com
+ ([fe80::6d1e:f2f7:d36:a42f]) by MN2PR15MB3213.namprd15.prod.outlook.com
+ ([fe80::6d1e:f2f7:d36:a42f%4]) with mapi id 15.20.2644.028; Fri, 24 Jan 2020
+ 20:12:45 +0000
+Received: from kafai-mbp.dhcp.thefacebook.com (2620:10d:c090:180::beb1) by CO2PR07CA0075.namprd07.prod.outlook.com (2603:10b6:100::43) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.2665.20 via Frontend Transport; Fri, 24 Jan 2020 20:12:44 +0000
+From:   Martin Lau <kafai@fb.com>
+To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
+CC:     Andrii Nakryiko <andriin@fb.com>,
+        "bpf@vger.kernel.org" <bpf@vger.kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        Alexei Starovoitov <ast@fb.com>,
+        "daniel@iogearbox.net" <daniel@iogearbox.net>,
+        Kernel Team <Kernel-team@fb.com>
+Subject: Re: [Potential Spoof] [PATCH bpf-next] libbpf: improve handling of
+ failed CO-RE relocations
+Thread-Topic: [Potential Spoof] [PATCH bpf-next] libbpf: improve handling of
+ failed CO-RE relocations
+Thread-Index: AQHV0niPDYdGIcPm+U6Ab9Oo5xV7Xqf5aK8AgAC7AACAAByigA==
+Date:   Fri, 24 Jan 2020 20:12:45 +0000
+Message-ID: <20200124201241.722pbppudaiw4cz4@kafai-mbp.dhcp.thefacebook.com>
+References: <20200124053837.2434679-1-andriin@fb.com>
+ <20200124072054.2kr25erckbclkwgv@kafai-mbp.dhcp.thefacebook.com>
+ <CAEf4BzbM7s8JWM8bPq=JdFX-ujkbYUifD7hNUQOGSJpJ7x5NJw@mail.gmail.com>
+In-Reply-To: <CAEf4BzbM7s8JWM8bPq=JdFX-ujkbYUifD7hNUQOGSJpJ7x5NJw@mail.gmail.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-clientproxiedby: CO2PR07CA0075.namprd07.prod.outlook.com (2603:10b6:100::43)
+ To MN2PR15MB3213.namprd15.prod.outlook.com (2603:10b6:208:3d::12)
+x-ms-exchange-messagesentrepresentingtype: 1
+x-originating-ip: [2620:10d:c090:180::beb1]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: c41a1e0e-8221-427c-cb83-08d7a109c68b
+x-ms-traffictypediagnostic: MN2PR15MB2896:
+x-ms-exchange-transport-forked: True
+x-microsoft-antispam-prvs: <MN2PR15MB28967554FC6DFE6EC7325527D50E0@MN2PR15MB2896.namprd15.prod.outlook.com>
+x-fb-source: Internal
+x-ms-oob-tlc-oobclassifiers: OLM:8882;
+x-forefront-prvs: 02929ECF07
+x-forefront-antispam-report: SFV:NSPM;SFS:(10019020)(366004)(39860400002)(376002)(136003)(396003)(346002)(199004)(189003)(5660300002)(66446008)(64756008)(6916009)(66476007)(66556008)(66946007)(186003)(52116002)(7696005)(55016002)(6506007)(16526019)(53546011)(9686003)(54906003)(2906002)(316002)(8676002)(81166006)(81156014)(71200400001)(86362001)(1076003)(8936002)(4326008)(478600001);DIR:OUT;SFP:1102;SCL:1;SRVR:MN2PR15MB2896;H:MN2PR15MB3213.namprd15.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;A:1;MX:1;
+received-spf: None (protection.outlook.com: fb.com does not designate
+ permitted sender hosts)
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: y0ld7/UyTdvfyHX69sGyGPXjsiTv7VEItCP+kDyrweWxP7qBTkhoWzABiDHQl9RCP94pT1pZsCuOYIa+qJBaxQuhusUYt+ijL1Xi3kQ+MTaoDw4/B+MkkomqKZsaXXp3rtp3vrXUe+griQ2nMRkiemHHdha3IoR5QtmNQSJjB35UDzyRqsCAikcOsvwz1BzS1SVGA4iZf+xwtPShM1sv6JomcwtFQrShOEeBATXN1RSLeABWuAGFUcnecMOv/TKmlPf6T4f+XziNmXB/+M0gW7G64AzZPRhqtZcDev66GwRrXr/0AE2UcBZ0/4Tk45zB22XMUK+rwHWPj37EQPCUMgTZLvzTkGxJr2grECA5ugqCvr4exzT2p1Vw6g8SEH8HkhGyn98okquD384vNVlIR6p2+vFw6V2InimOfIvNts9gJ6rIPUX9aSW5xqeD9Blw
+x-ms-exchange-antispam-messagedata: DulbWp7d3QmrrsuV+q69chTxoaGLhkXCLM8lo7YQjD18TZ3bMzT2h2+R+uhW3UR1Ie6KQbo6tudnIzh5427PYSr+5hMw9lQpo2cFF+vRXIi0ITZOVT30X482s7rMsTa/VyNDxriOQUG5a4uN2KVHivXGL5yeZROC/8ByoEbGxtw=
+Content-Type: text/plain; charset="us-ascii"
+Content-ID: <360B2441AA2F4F4493C0D5122A9F95BC@namprd15.prod.outlook.com>
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-X-Received: by 2002:a6b:8ecd:: with SMTP id q196mr3438032iod.136.1579895831247;
- Fri, 24 Jan 2020 11:57:11 -0800 (PST)
-Date:   Fri, 24 Jan 2020 11:57:11 -0800
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <000000000000cdbe79059ce82948@google.com>
-Subject: KASAN: slab-out-of-bounds Read in bitmap_ipmac_destroy
-From:   syzbot <syzbot+a85062dec5d65617cc1c@syzkaller.appspotmail.com>
-To:     coreteam@netfilter.org, davem@davemloft.net,
-        florent.fourcot@wifirst.fr, fw@strlen.de, jeremy@azazel.net,
-        johannes.berg@intel.com, kadlec@netfilter.org,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        netfilter-devel@vger.kernel.org, pablo@netfilter.org,
-        syzkaller-bugs@googlegroups.com
-Content-Type: text/plain; charset="UTF-8"
+X-MS-Exchange-CrossTenant-Network-Message-Id: c41a1e0e-8221-427c-cb83-08d7a109c68b
+X-MS-Exchange-CrossTenant-originalarrivaltime: 24 Jan 2020 20:12:45.6890
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 8ae927fe-1255-47a7-a2af-5f3a069daaa2
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: ycrZI/lDGp1LqrYEkbvrIFyggH+KYaEvgTJSn4s5ass/PclddH43Jpo33Rafe3CV
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: MN2PR15MB2896
+X-OriginatorOrg: fb.com
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.138,18.0.572
+ definitions=2020-01-24_06:2020-01-24,2020-01-24 signatures=0
+X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 adultscore=0
+ impostorscore=0 bulkscore=0 phishscore=0 lowpriorityscore=0 malwarescore=0
+ mlxscore=0 suspectscore=0 mlxlogscore=999 priorityscore=1501 spamscore=0
+ clxscore=1015 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-1911200001 definitions=main-2001240166
+X-FB-Internal: deliver
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello,
+On Fri, Jan 24, 2020 at 10:30:12AM -0800, Andrii Nakryiko wrote:
+> On Thu, Jan 23, 2020 at 11:21 PM Martin Lau <kafai@fb.com> wrote:
+> >
+> > On Thu, Jan 23, 2020 at 09:38:37PM -0800, Andrii Nakryiko wrote:
+> > > Previously, if libbpf failed to resolve CO-RE relocation for some
+> > > instructions, it would either return error immediately, or, if
+> > > .relaxed_core_relocs option was set, would replace relocatable offset=
+/imm part
+> > > of an instruction with a bogus value (-1). Neither approach is good, =
+because
+> > > there are many possible scenarios where relocation is expected to fai=
+l (e.g.,
+> > > when some field knowingly can be missing on specific kernel versions)=
+. On the
+> > > other hand, replacing offset with invalid one can hide programmer err=
+ors, if
+> > > this relocation failue wasn't anticipated.
+> > >
+> > > This patch deprecates .relaxed_core_relocs option and changes the app=
+roach to
+> > > always replacing instruction, for which relocation failed, with inval=
+id BPF
+> > > helper call instruction. For cases where this is expected, BPF progra=
+m should
+> > > already ensure that that instruction is unreachable, in which case th=
+is
+> > > invalid instruction is going to be silently ignored. But if instructi=
+on wasn't
+> > > guarded, BPF program will be rejected at verification step with verif=
+ier log
+> > > pointing precisely to the place in assembly where the problem is.
+> > >
+> > > Signed-off-by: Andrii Nakryiko <andriin@fb.com>
+> > > ---
+> > >  tools/lib/bpf/libbpf.c | 95 +++++++++++++++++++++++++---------------=
+--
+> > >  tools/lib/bpf/libbpf.h |  6 ++-
+> > >  2 files changed, 61 insertions(+), 40 deletions(-)
+> > >
+> > > diff --git a/tools/lib/bpf/libbpf.c b/tools/lib/bpf/libbpf.c
+> > > index ae34b681ae82..39f1b7633a7c 100644
+> > > --- a/tools/lib/bpf/libbpf.c
+> > > +++ b/tools/lib/bpf/libbpf.c
+> > > @@ -345,7 +345,6 @@ struct bpf_object {
+> > >
+> > >       bool loaded;
+> > >       bool has_pseudo_calls;
+> > > -     bool relaxed_core_relocs;
+> > >
+> > >       /*
+> > >        * Information when doing elf related work. Only valid if fd
+> > > @@ -4238,25 +4237,38 @@ static int bpf_core_calc_field_relo(const str=
+uct bpf_program *prog,
+> > >   */
+> > >  static int bpf_core_reloc_insn(struct bpf_program *prog,
+> > >                              const struct bpf_field_reloc *relo,
+> > > +                            int relo_idx,
+> > >                              const struct bpf_core_spec *local_spec,
+> > >                              const struct bpf_core_spec *targ_spec)
+> > >  {
+> > > -     bool failed =3D false, validate =3D true;
+> > >       __u32 orig_val, new_val;
+> > >       struct bpf_insn *insn;
+> > > +     bool validate =3D true;
+> > >       int insn_idx, err;
+> > >       __u8 class;
+> > >
+> > >       if (relo->insn_off % sizeof(struct bpf_insn))
+> > >               return -EINVAL;
+> > >       insn_idx =3D relo->insn_off / sizeof(struct bpf_insn);
+> > > +     insn =3D &prog->insns[insn_idx];
+> > > +     class =3D BPF_CLASS(insn->code);
+> > >
+> > >       if (relo->kind =3D=3D BPF_FIELD_EXISTS) {
+> > >               orig_val =3D 1; /* can't generate EXISTS relo w/o local=
+ field */
+> > >               new_val =3D targ_spec ? 1 : 0;
+> > >       } else if (!targ_spec) {
+> > > -             failed =3D true;
+> > > -             new_val =3D (__u32)-1;
+> > > +             pr_debug("prog '%s': relo #%d: substituting insn #%d w/=
+ invalid insn\n",
+> > > +                      bpf_program__title(prog, false), relo_idx, ins=
+n_idx);
+> > > +             insn->code =3D BPF_JMP | BPF_CALL;
+> > > +             insn->dst_reg =3D 0;
+> > > +             insn->src_reg =3D 0;
+> > > +             insn->off =3D 0;
+> > > +             /* if this instruction is reachable (not a dead code),
+> > > +              * verifier will complain with the following message:
+> > > +              * invalid func unknown#195896080
+> > > +              */
+> > > +             insn->imm =3D 195896080; /* =3D> 0xbad2310 =3D> "bad re=
+lo" */
+> > Should this value become a binded contract in uapi/bpf.h so
+> > that the verifier can print a more meaningful name than "unknown#195896=
+080"?
+> >
+>=20
+> It feels a bit premature to fix this in kernel. It's one of many ways
+> we can do this, e.g., alternative would be using invalid opcode
+> altogether. It's not yet clear what's the best way to report this from
+> kernel. Maybe in the future verifier will have some better way to
+> pinpoint where and what problem there is in user's program through
+> some more structured approach than current free-form log.
+>=20
+> So what I'm trying to say is that we should probably get a bit more
+> experience using these features first and understand what
+> kernel/userspace interface should be for reporting issues like this,
+> before setting anything in stone in verifier. For now, this
+> "unknown#195896080" should be a pretty unique search term :)
+Sure.  I think this value will never be used for real in the life time.
+I was mostly worry this message will be confusing.  May be the loader
+could be improved to catch this and interpret it in a more meaningful
+way.
 
-syzbot found the following crash on:
+The change lgtm,
 
-HEAD commit:    4703d911 Merge tag 'xarray-5.5' of git://git.infradead.org..
-git tree:       upstream
-console output: https://syzkaller.appspot.com/x/log.txt?x=11601611e00000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=83c00afca9cf5153
-dashboard link: https://syzkaller.appspot.com/bug?extid=a85062dec5d65617cc1c
-compiler:       clang version 10.0.0 (https://github.com/llvm/llvm-project/ c2443155a0fb245c8f17f2c1c72b6ea391e86e81)
-syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=1301ed85e00000
-C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=14b7b79ee00000
-
-IMPORTANT: if you fix the bug, please add the following tag to the commit:
-Reported-by: syzbot+a85062dec5d65617cc1c@syzkaller.appspotmail.com
-
-==================================================================
-BUG: KASAN: slab-out-of-bounds in test_bit include/asm-generic/bitops/instrumented-non-atomic.h:110 [inline]
-BUG: KASAN: slab-out-of-bounds in bitmap_ipmac_ext_cleanup net/netfilter/ipset/ip_set_bitmap_gen.h:51 [inline]
-BUG: KASAN: slab-out-of-bounds in bitmap_ipmac_destroy+0x1d2/0x3c0 net/netfilter/ipset/ip_set_bitmap_gen.h:64
-Read of size 8 at addr ffff8880a71e5e00 by task syz-executor455/8657
-
-CPU: 1 PID: 8657 Comm: syz-executor455 Not tainted 5.5.0-rc7-syzkaller #0
-Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
-Call Trace:
- __dump_stack lib/dump_stack.c:77 [inline]
- dump_stack+0x1fb/0x318 lib/dump_stack.c:118
- print_address_description+0x74/0x5c0 mm/kasan/report.c:374
- __kasan_report+0x149/0x1c0 mm/kasan/report.c:506
- kasan_report+0x26/0x50 mm/kasan/common.c:639
- check_memory_region_inline mm/kasan/generic.c:182 [inline]
- check_memory_region+0x2b6/0x2f0 mm/kasan/generic.c:192
- __kasan_check_read+0x11/0x20 mm/kasan/common.c:95
- test_bit include/asm-generic/bitops/instrumented-non-atomic.h:110 [inline]
- bitmap_ipmac_ext_cleanup net/netfilter/ipset/ip_set_bitmap_gen.h:51 [inline]
- bitmap_ipmac_destroy+0x1d2/0x3c0 net/netfilter/ipset/ip_set_bitmap_gen.h:64
- ip_set_create+0xae0/0xfd0 net/netfilter/ipset/ip_set_core.c:1165
- nfnetlink_rcv_msg+0x9ae/0xcd0 net/netfilter/nfnetlink.c:229
- netlink_rcv_skb+0x19e/0x3e0 net/netlink/af_netlink.c:2477
- nfnetlink_rcv+0x1e0/0x1e50 net/netfilter/nfnetlink.c:563
- netlink_unicast_kernel net/netlink/af_netlink.c:1302 [inline]
- netlink_unicast+0x767/0x920 net/netlink/af_netlink.c:1328
- netlink_sendmsg+0xa2c/0xd50 net/netlink/af_netlink.c:1917
- sock_sendmsg_nosec net/socket.c:639 [inline]
- sock_sendmsg net/socket.c:659 [inline]
- ____sys_sendmsg+0x4f7/0x7f0 net/socket.c:2330
- ___sys_sendmsg net/socket.c:2384 [inline]
- __sys_sendmsg+0x1ed/0x290 net/socket.c:2417
- __do_sys_sendmsg net/socket.c:2426 [inline]
- __se_sys_sendmsg net/socket.c:2424 [inline]
- __x64_sys_sendmsg+0x7f/0x90 net/socket.c:2424
- do_syscall_64+0xf7/0x1c0 arch/x86/entry/common.c:294
- entry_SYSCALL_64_after_hwframe+0x49/0xbe
-RIP: 0033:0x4413f9
-Code: e8 fc ab 02 00 48 83 c4 18 c3 0f 1f 80 00 00 00 00 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 0f 83 9b 09 fc ff c3 66 2e 0f 1f 84 00 00 00 00
-RSP: 002b:00007ffdcc88fa08 EFLAGS: 00000246 ORIG_RAX: 000000000000002e
-RAX: ffffffffffffffda RBX: 0000000000000000 RCX: 00000000004413f9
-RDX: 0000000000000000 RSI: 0000000020000300 RDI: 0000000000000003
-RBP: 00000000000100d9 R08: 00000000004002c8 R09: 00000000004002c8
-R10: 0000000000000004 R11: 0000000000000246 R12: 0000000000402220
-R13: 00000000004022b0 R14: 0000000000000000 R15: 0000000000000000
-
-Allocated by task 8657:
- save_stack mm/kasan/common.c:72 [inline]
- set_track mm/kasan/common.c:80 [inline]
- __kasan_kmalloc+0x118/0x1c0 mm/kasan/common.c:513
- kasan_kmalloc+0x9/0x10 mm/kasan/common.c:527
- __do_kmalloc mm/slab.c:3656 [inline]
- __kmalloc+0x254/0x340 mm/slab.c:3665
- kmalloc include/linux/slab.h:561 [inline]
- kzalloc+0x21/0x40 include/linux/slab.h:670
- ip_set_alloc+0x32/0x60 net/netfilter/ipset/ip_set_core.c:255
- init_map_ipmac net/netfilter/ipset/ip_set_bitmap_ipmac.c:302 [inline]
- bitmap_ipmac_create+0x3d9/0x840 net/netfilter/ipset/ip_set_bitmap_ipmac.c:365
- ip_set_create+0x421/0xfd0 net/netfilter/ipset/ip_set_core.c:1111
- nfnetlink_rcv_msg+0x9ae/0xcd0 net/netfilter/nfnetlink.c:229
- netlink_rcv_skb+0x19e/0x3e0 net/netlink/af_netlink.c:2477
- nfnetlink_rcv+0x1e0/0x1e50 net/netfilter/nfnetlink.c:563
- netlink_unicast_kernel net/netlink/af_netlink.c:1302 [inline]
- netlink_unicast+0x767/0x920 net/netlink/af_netlink.c:1328
- netlink_sendmsg+0xa2c/0xd50 net/netlink/af_netlink.c:1917
- sock_sendmsg_nosec net/socket.c:639 [inline]
- sock_sendmsg net/socket.c:659 [inline]
- ____sys_sendmsg+0x4f7/0x7f0 net/socket.c:2330
- ___sys_sendmsg net/socket.c:2384 [inline]
- __sys_sendmsg+0x1ed/0x290 net/socket.c:2417
- __do_sys_sendmsg net/socket.c:2426 [inline]
- __se_sys_sendmsg net/socket.c:2424 [inline]
- __x64_sys_sendmsg+0x7f/0x90 net/socket.c:2424
- do_syscall_64+0xf7/0x1c0 arch/x86/entry/common.c:294
- entry_SYSCALL_64_after_hwframe+0x49/0xbe
-
-Freed by task 0:
-(stack is not available)
-
-The buggy address belongs to the object at ffff8880a71e4000
- which belongs to the cache kmalloc-8k of size 8192
-The buggy address is located 7680 bytes inside of
- 8192-byte region [ffff8880a71e4000, ffff8880a71e6000)
-The buggy address belongs to the page:
-page:ffffea00029c7900 refcount:1 mapcount:0 mapping:ffff8880aa8021c0 index:0x0 compound_mapcount: 0
-raw: 00fffe0000010200 ffffea000230b908 ffff8880aa801b48 ffff8880aa8021c0
-raw: 0000000000000000 ffff8880a71e4000 0000000100000001 0000000000000000
-page dumped because: kasan: bad access detected
-
-Memory state around the buggy address:
- ffff8880a71e5d00: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
- ffff8880a71e5d80: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
->ffff8880a71e5e00: 04 fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc
-                   ^
- ffff8880a71e5e80: fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc
- ffff8880a71e5f00: fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc
-==================================================================
-
-
----
-This bug is generated by a bot. It may contain errors.
-See https://goo.gl/tpsmEJ for more information about syzbot.
-syzbot engineers can be reached at syzkaller@googlegroups.com.
-
-syzbot will keep track of this bug report. See:
-https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
-syzbot can test patches for this bug, for details see:
-https://goo.gl/tpsmEJ#testing-patches
+Acked-by: Martin KaFai Lau <kafai@fb.com>
