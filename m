@@ -2,84 +2,74 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id C29B314855D
-	for <lists+netdev@lfdr.de>; Fri, 24 Jan 2020 13:46:03 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 36415148597
+	for <lists+netdev@lfdr.de>; Fri, 24 Jan 2020 14:05:18 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2388732AbgAXMqA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 24 Jan 2020 07:46:00 -0500
-Received: from mail-lj1-f193.google.com ([209.85.208.193]:40901 "EHLO
-        mail-lj1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2388692AbgAXMqA (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 24 Jan 2020 07:46:00 -0500
-Received: by mail-lj1-f193.google.com with SMTP id n18so2340515ljo.7
-        for <netdev@vger.kernel.org>; Fri, 24 Jan 2020 04:45:59 -0800 (PST)
+        id S2387504AbgAXNFQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 24 Jan 2020 08:05:16 -0500
+Received: from mail-ot1-f67.google.com ([209.85.210.67]:42646 "EHLO
+        mail-ot1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2387464AbgAXNFQ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 24 Jan 2020 08:05:16 -0500
+Received: by mail-ot1-f67.google.com with SMTP id 66so1504013otd.9
+        for <netdev@vger.kernel.org>; Fri, 24 Jan 2020 05:05:15 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=cloudflare.com; s=google;
-        h=references:user-agent:from:to:cc:subject:in-reply-to:date
-         :message-id:mime-version;
-        bh=4XkP3XLOh0nhayuHg8yQANWqL4XcErc8i0KEhWGVI5w=;
-        b=pJ2traqMIEBz89vTlCvmqNCjxA0dgLCemW0DuwXv7HCJPmpmz4D6FQXOIJuwcmkWVN
-         ZBsAd3wxZtIAiDigSmxi4/m2a+Ck2JgKflDV1wiFmhJ5b4QMcPRMfoBaO6bthqhrYYyE
-         xbxi52IMmgUdz4EX8iXPFUp9Yl2u6w3xkBHCk=
+        d=gmail.com; s=20161025;
+        h=mime-version:reply-to:sender:from:date:message-id:subject:to;
+        bh=cH/N+UUamhZcb2NR7MNOmszGkWH23+wvbjOq4+ZH0A8=;
+        b=L5P1MU7S0Gyxkk9K98KwcGoXV+4ccPha1Et3sMTfixwC42yLBliE3wdgrI23rxFCQB
+         mqD098LRTyjiZl/i38dpVVI0CIePZeYkwJ0OIKUKlAXJysP8fwhroRSQigvLZCOn7WE4
+         m2p3X4+EaofxCu0Sh99BE8A1ynK3P76RtNnNTuRwjGPFwRwFhvyZif5/G86sw9L0uBe2
+         ul+s5IetE92XYmZBmN2gu5q8IEDBTbX0mr/51ducOnBzsMYtGnehCqsP7qdEDG+fz+VC
+         IQb0Wat2Nmo42/Kh/8gapgxtZS/FkYDhvHRYgIKJEiuEwBMyJgMSTKjrmsZU9NgyDRch
+         lAEA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:references:user-agent:from:to:cc:subject
-         :in-reply-to:date:message-id:mime-version;
-        bh=4XkP3XLOh0nhayuHg8yQANWqL4XcErc8i0KEhWGVI5w=;
-        b=FvzP/hvW14Bx3DUIhCQtqQW9bdpj5zgOukqt+gdclKERM8Z/MA1Z+zI3COqynr4DDG
-         ufC46+7f8H47gsWdbUEwuuNFmv+cq0fWqJGicLE2Aw4qyAWbSzkOX32NtObWA+KCGFjb
-         6m6BrTn7OT0q0VJ/PJKnEwZhdvTGcYA4DU9fKAIvYajFpNjJPJr4ILnNGl4AokVhfURF
-         YmQFD9pbB04/EPyHTB2H/wkS7qlrK5hZqTSkNNAIJF54V9TJHt/VBGoePy/crvZdBdph
-         6CvzhCBadR0ieu9Pj715ts5/ZdqROwqfjACleVU1M/AubRWO5xZP60iFyQuuH5hL+/9V
-         qqaA==
-X-Gm-Message-State: APjAAAXmxwICKLRrrbRZ9oZXfbjCbf77AJ1kdTYqljq2AKrbhms8zGL7
-        stJRRFP9jcj1x6knwABJvAcEtQ==
-X-Google-Smtp-Source: APXvYqxSA7g27hjTyBey14Cy6XKoiAAJfwkh7rb8FJPBpBaJm+8bvoRFgntL7BvazURh9RFylGJtng==
-X-Received: by 2002:a2e:9804:: with SMTP id a4mr2011803ljj.10.1579869957666;
-        Fri, 24 Jan 2020 04:45:57 -0800 (PST)
-Received: from cloudflare.com ([2a02:a310:c262:aa00:b35e:8938:2c2a:ba8b])
-        by smtp.gmail.com with ESMTPSA id s2sm3001343lji.53.2020.01.24.04.45.56
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 24 Jan 2020 04:45:56 -0800 (PST)
-References: <20200123165934.9584-1-lmb@cloudflare.com> <20200124112754.19664-1-lmb@cloudflare.com>
-User-agent: mu4e 1.1.0; emacs 26.3
-From:   Jakub Sitnicki <jakub@cloudflare.com>
-To:     Lorenz Bauer <lmb@cloudflare.com>
-Cc:     Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        Andrii Nakryiko <andriin@fb.com>, netdev@vger.kernel.org,
-        bpf@vger.kernel.org
-Subject: Re: [PATCH bpf-next v2 0/4] Various fixes for sockmap and reuseport tests
-In-reply-to: <20200124112754.19664-1-lmb@cloudflare.com>
-Date:   Fri, 24 Jan 2020 13:45:55 +0100
-Message-ID: <871rrp2fb0.fsf@cloudflare.com>
+        h=x-gm-message-state:mime-version:reply-to:sender:from:date
+         :message-id:subject:to;
+        bh=cH/N+UUamhZcb2NR7MNOmszGkWH23+wvbjOq4+ZH0A8=;
+        b=a1c5fA/hBEinxNkIBe+Ssyig6nQnCtUWOBxKPXRjeTK3jJ7xYdIoiWQllNUD9TTVt2
+         PdE7uuVv3/7JNSaIVQfYoSFFb5JVgv+ISABFZGinTbIX62ewm6EYvazLphIKii/NnqI5
+         NOL++iDOpzjY6piB5D8I7e/4cvzp/rNGn4vyncsJt2FSOIahtsDY6Z0Qq0ZMtoLrMQPX
+         3/WO7u35CheZhojEpfMwZSaZGWR5ng+RSlIV+Wp+O+QoTgiLre2sykN6DGeqNArI2xB+
+         uLo8x4G9dK/JHbs9y0HTphA14Bewc+ULDgcPfK/wuHyog91KAkqMmLdFFuC6eoquUPN8
+         rdiA==
+X-Gm-Message-State: APjAAAW2pcaL6A/+/++CBuvBRrvH+lIn/YqMdHmoT1511mLJ/udPDiox
+        dPD50K/5+hGbcWjVqEsPDFsgduCxpqCGsXD+n0g=
+X-Google-Smtp-Source: APXvYqzy2O962LeG/ivGE246FSV6BijRuHnNVsYOK2FPP6syg3k2IKTLOgr08+i/GolV9VNvJzitspOESWOsquIKPJQ=
+X-Received: by 2002:a9d:6b12:: with SMTP id g18mr2489396otp.211.1579871115343;
+ Fri, 24 Jan 2020 05:05:15 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain
+Reply-To: kzakari04@gmail.com
+Received: by 2002:a9d:6552:0:0:0:0:0 with HTTP; Fri, 24 Jan 2020 05:05:14
+ -0800 (PST)
+From:   Karim Zakari <kariim1960z@gmail.com>
+Date:   Fri, 24 Jan 2020 14:05:14 +0100
+X-Google-Sender-Auth: CvcdKKG8p6X-Ee7_tPye51jhSlE
+Message-ID: <CAP7UGYg42tyLzaE7sW=vNQf3X8a5W2iRs-R5A5QzWiEPPTvSZQ@mail.gmail.com>
+Subject: Urgent Reply.
+To:     undisclosed-recipients:;
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Jan 24, 2020 at 12:27 PM CET, Lorenz Bauer wrote:
-> I've fixed the commit messages, added Fixes tags and am submitting to bpf-next instead
-> of the bpf tree.
->
-> There is still the question whether patch #1 needs to preserve O_RDONLY, which John
-> can hopefully answer.
->
-> Lorenz Bauer (4):
->   selftests: bpf: use a temporary file in test_sockmap
->   selftests: bpf: ignore FIN packets for reuseport tests
->   selftests: bpf: make reuseport test output more legible
->   selftests: bpf: reset global state between reuseport test runs
->
->  .../bpf/prog_tests/select_reuseport.c         | 44 ++++++++++++++++---
->  .../bpf/progs/test_select_reuseport_kern.c    |  6 +++
->  tools/testing/selftests/bpf/test_sockmap.c    | 15 +++----
->  3 files changed, 49 insertions(+), 16 deletions(-)
+-- 
+Dear Friend,
 
-For the series:
+ I know that this letter will come to you as surprise, I got your
+contact address while I am searching for foreign partner to assist me
+in this business transaction that is present in our favor, My name is
+Mr. KARIM ZAKARI, I am the Bill and Exchange (assistant) Manager (BOA)
+BANK OF AFRICA. I'm proposing to lift in your name (US$16.5 Million
+Dollars) that belong to our later customer, MR. GORPUN VLADIMIR From
+Saratov Oblast Russia who died in Siber airline that crashed into sea
+at Isreal on 4th October 2001.
 
-Reviewed-by: Jakub Sitnicki <jakub@cloudflare.com>
+I want to present you to my bank here as the beneficiary to this fund
+and I Am waiting for your response for more details, As you are
+willing to execute this business appointunity with me.
+
+Yours Sincerely,
+Mr. Karim Zakari.
