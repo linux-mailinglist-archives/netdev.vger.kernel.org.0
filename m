@@ -2,153 +2,94 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id E49ED147CE9
-	for <lists+netdev@lfdr.de>; Fri, 24 Jan 2020 10:56:06 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id AEA02147D83
+	for <lists+netdev@lfdr.de>; Fri, 24 Jan 2020 11:02:32 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2388473AbgAXJz1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 24 Jan 2020 04:55:27 -0500
-Received: from www62.your-server.de ([213.133.104.62]:49370 "EHLO
-        www62.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726701AbgAXJz0 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 24 Jan 2020 04:55:26 -0500
-Received: from sslproxy02.your-server.de ([78.47.166.47])
-        by www62.your-server.de with esmtpsa (TLSv1.2:DHE-RSA-AES256-GCM-SHA384:256)
-        (Exim 4.89_1)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1iuvgO-00084A-EU; Fri, 24 Jan 2020 10:55:20 +0100
-Received: from [2001:1620:665:0:5795:5b0a:e5d5:5944] (helo=linux-3.fritz.box)
-        by sslproxy02.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1iuvgO-000SAy-6H; Fri, 24 Jan 2020 10:55:20 +0100
-Subject: Re: [PATCH net-next] v2 net-xdp: netdev attribute to control
- xdpgeneric skb linearization
-To:     Luigi Rizzo <lrizzo@google.com>, netdev@vger.kernel.org
-Cc:     Jesper Dangaard Brouer <hawk@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>, sameehj@amazon.com,
-        toke@redhat.com
-References: <20200123232054.183436-1-lrizzo@google.com>
-From:   Daniel Borkmann <daniel@iogearbox.net>
-Message-ID: <3a7e66da-7506-47a0-8733-8d48674176f9@iogearbox.net>
-Date:   Fri, 24 Jan 2020 10:55:19 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.7.2
+        id S2387509AbgAXKBR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 24 Jan 2020 05:01:17 -0500
+Received: from mail.kernel.org ([198.145.29.99]:36676 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1727215AbgAXKBQ (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 24 Jan 2020 05:01:16 -0500
+Received: from localhost (unknown [145.15.244.15])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 88D97214DB;
+        Fri, 24 Jan 2020 10:01:15 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1579860076;
+        bh=Dv5aHDA25DzakiqjJ0W1I+IMiL5AgHDRLEhxG7fXrGM=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=GdMLAt7uIuuWAN26LtyiAEVzKP9cqZRtlOEykn7zcr8nYj8lcSFW4vwNteKBZB+wl
+         zgV9lakbUUkR0I+rZKAPt+C4oksVQ2r1zc+lOnj5df0dYHRpiHWowacKTKSkl9aQpl
+         X2b0RtKn4aMGTF0h9tZjj6WbDdNmqUUa8DLLBR1U=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Wen Yang <wen.yang99@zte.com.cn>,
+        "David S. Miller" <davem@davemloft.net>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Luis Chamberlain <mcgrof@kernel.org>,
+        Michael Ellerman <mpe@ellerman.id.au>, netdev@vger.kernel.org,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 4.14 253/343] net: pasemi: fix an use-after-free in pasemi_mac_phy_init()
+Date:   Fri, 24 Jan 2020 10:31:11 +0100
+Message-Id: <20200124092953.342615997@linuxfoundation.org>
+X-Mailer: git-send-email 2.25.0
+In-Reply-To: <20200124092919.490687572@linuxfoundation.org>
+References: <20200124092919.490687572@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-In-Reply-To: <20200123232054.183436-1-lrizzo@google.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-Authenticated-Sender: daniel@iogearbox.net
-X-Virus-Scanned: Clear (ClamAV 0.101.4/25704/Thu Jan 23 12:37:43 2020)
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 1/24/20 12:20 AM, Luigi Rizzo wrote:
-> Add a netdevice flag to control skb linearization in generic xdp mode.
-> Among the various mechanism to control the flag, the sysfs
-> interface seems sufficiently simple and self-contained.
-> The attribute can be modified through
-> 	/sys/class/net/<DEVICE>/xdp_linearize
-> The default is 1 (on)
-> 
-> On a kernel instrumented to grab timestamps around the linearization
-> code in netif_receive_generic_xdp, and heavy netperf traffic with 1500b
-> mtu, I see the following times (nanoseconds/pkt)
-> 
-> The receiver generally sees larger packets so the difference is more
-> significant.
-> 
-> ns/pkt                   RECEIVER                 SENDER
-> 
->                      p50     p90     p99       p50   p90    p99
-> 
-> LINEARIZATION:    600ns  1090ns  4900ns     149ns 249ns  460ns
-> NO LINEARIZATION:  40ns    59ns    90ns      40ns  50ns  100ns
-> 
-> Signed-off-by: Luigi Rizzo <lrizzo@google.com>
-> ---
->   include/linux/netdevice.h |  3 ++-
->   net/core/dev.c            |  5 +++--
->   net/core/net-sysfs.c      | 15 +++++++++++++++
->   3 files changed, 20 insertions(+), 3 deletions(-)
-> 
-> diff --git a/include/linux/netdevice.h b/include/linux/netdevice.h
-> index 5ec3537fbdb1..b182f3cb0bf0 100644
-> --- a/include/linux/netdevice.h
-> +++ b/include/linux/netdevice.h
-> @@ -1959,7 +1959,8 @@ struct net_device {
->   
->   	struct netdev_rx_queue	*_rx;
->   	unsigned int		num_rx_queues;
-> -	unsigned int		real_num_rx_queues;
-> +	unsigned int		real_num_rx_queues:31;
-> +	unsigned int		xdp_linearize : 1;
->   
->   	struct bpf_prog __rcu	*xdp_prog;
->   	unsigned long		gro_flush_timeout;
-> diff --git a/net/core/dev.c b/net/core/dev.c
-> index 4dcc1b390667..13a671e45b61 100644
-> --- a/net/core/dev.c
-> +++ b/net/core/dev.c
-> @@ -4484,8 +4484,8 @@ static u32 netif_receive_generic_xdp(struct sk_buff *skb,
->   	 * of XDP_PACKET_HEADROOM bytes. This is the guarantee that also
->   	 * native XDP provides, thus we need to do it here as well.
->   	 */
-> -	if (skb_is_nonlinear(skb) ||
-> -	    skb_headroom(skb) < XDP_PACKET_HEADROOM) {
-> +	if (skb->dev->xdp_linearize && (skb_is_nonlinear(skb) ||
-> +	    skb_headroom(skb) < XDP_PACKET_HEADROOM)) {
->   		int hroom = XDP_PACKET_HEADROOM - skb_headroom(skb);
->   		int troom = skb->tail + skb->data_len - skb->end;
+From: Wen Yang <wen.yang99@zte.com.cn>
 
-I still think in order for this knob to be generally useful, we would need to
-provide an equivalent of bpf_skb_pull_data() helper, which in generic XDP would then
-pull in more data from non-linear section, and in native XDP would be a "no-op" since
-the frame is already linear. Otherwise, as mentioned in previous thread, users would
-have no chance to examine headers if they are not pre-pulled by the driver.
+[ Upstream commit faf5577f2498cea23011b5c785ef853ded22700b ]
 
-> @@ -9756,6 +9756,7 @@ struct net_device *alloc_netdev_mqs(int sizeof_priv, const char *name,
->   	dev->gso_max_segs = GSO_MAX_SEGS;
->   	dev->upper_level = 1;
->   	dev->lower_level = 1;
-> +	dev->xdp_linearize = 1;
->   
->   	INIT_LIST_HEAD(&dev->napi_list);
->   	INIT_LIST_HEAD(&dev->unreg_list);
-> diff --git a/net/core/net-sysfs.c b/net/core/net-sysfs.c
-> index 4c826b8bf9b1..ec59aa296664 100644
-> --- a/net/core/net-sysfs.c
-> +++ b/net/core/net-sysfs.c
-> @@ -442,6 +442,20 @@ static ssize_t proto_down_store(struct device *dev,
->   }
->   NETDEVICE_SHOW_RW(proto_down, fmt_dec);
->   
-> +static int change_xdp_linearize(struct net_device *dev, unsigned long val)
-> +{
-> +	dev->xdp_linearize = !!val;
-> +	return 0;
-> +}
-> +
-> +static ssize_t xdp_linearize_store(struct device *dev,
-> +				   struct device_attribute *attr,
-> +				   const char *buf, size_t len)
-> +{
-> +	return netdev_store(dev, attr, buf, len, change_xdp_linearize);
-> +}
-> +NETDEVICE_SHOW_RW(xdp_linearize, fmt_dec);
-> +
->   static ssize_t phys_port_id_show(struct device *dev,
->   				 struct device_attribute *attr, char *buf)
->   {
-> @@ -536,6 +550,7 @@ static struct attribute *net_class_attrs[] __ro_after_init = {
->   	&dev_attr_phys_port_name.attr,
->   	&dev_attr_phys_switch_id.attr,
->   	&dev_attr_proto_down.attr,
-> +	&dev_attr_xdp_linearize.attr,
->   	&dev_attr_carrier_up_count.attr,
->   	&dev_attr_carrier_down_count.attr,
->   	NULL,
-> 
+The phy_dn variable is still being used in of_phy_connect() after the
+of_node_put() call, which may result in use-after-free.
+
+Fixes: 1dd2d06c0459 ("net: Rework pasemi_mac driver to use of_mdio infrastructure")
+Signed-off-by: Wen Yang <wen.yang99@zte.com.cn>
+Cc: "David S. Miller" <davem@davemloft.net>
+Cc: Thomas Gleixner <tglx@linutronix.de>
+Cc: Luis Chamberlain <mcgrof@kernel.org>
+Cc: Michael Ellerman <mpe@ellerman.id.au>
+Cc: netdev@vger.kernel.org
+Cc: linux-kernel@vger.kernel.org
+Signed-off-by: David S. Miller <davem@davemloft.net>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ drivers/net/ethernet/pasemi/pasemi_mac.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/drivers/net/ethernet/pasemi/pasemi_mac.c b/drivers/net/ethernet/pasemi/pasemi_mac.c
+index 49591d9c2e1b9..c9b4ac9d3330a 100644
+--- a/drivers/net/ethernet/pasemi/pasemi_mac.c
++++ b/drivers/net/ethernet/pasemi/pasemi_mac.c
+@@ -1053,7 +1053,6 @@ static int pasemi_mac_phy_init(struct net_device *dev)
+ 
+ 	dn = pci_device_to_OF_node(mac->pdev);
+ 	phy_dn = of_parse_phandle(dn, "phy-handle", 0);
+-	of_node_put(phy_dn);
+ 
+ 	mac->link = 0;
+ 	mac->speed = 0;
+@@ -1062,6 +1061,7 @@ static int pasemi_mac_phy_init(struct net_device *dev)
+ 	phydev = of_phy_connect(dev, phy_dn, &pasemi_adjust_link, 0,
+ 				PHY_INTERFACE_MODE_SGMII);
+ 
++	of_node_put(phy_dn);
+ 	if (!phydev) {
+ 		printk(KERN_ERR "%s: Could not attach to phy\n", dev->name);
+ 		return -ENODEV;
+-- 
+2.20.1
+
+
 
