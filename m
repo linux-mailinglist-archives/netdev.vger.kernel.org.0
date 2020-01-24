@@ -2,36 +2,37 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 5E9A714886B
-	for <lists+netdev@lfdr.de>; Fri, 24 Jan 2020 15:29:25 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id AFA7214885E
+	for <lists+netdev@lfdr.de>; Fri, 24 Jan 2020 15:28:51 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2405157AbgAXOVE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 24 Jan 2020 09:21:04 -0500
-Received: from mail.kernel.org ([198.145.29.99]:42516 "EHLO mail.kernel.org"
+        id S2405176AbgAXOVF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 24 Jan 2020 09:21:05 -0500
+Received: from mail.kernel.org ([198.145.29.99]:42528 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2392177AbgAXOVD (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 24 Jan 2020 09:21:03 -0500
+        id S2405162AbgAXOVE (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 24 Jan 2020 09:21:04 -0500
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 16FA42077C;
-        Fri, 24 Jan 2020 14:21:02 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 471642087E;
+        Fri, 24 Jan 2020 14:21:03 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1579875662;
-        bh=nszOQlWLNn/SKVu+on/hSsf4EZcpBiQzfO0wSwc/1Nc=;
+        s=default; t=1579875664;
+        bh=Lm4TMMTrCrjyhWS8DD1qBTELzqdN6Jn68xYLu48n62M=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=WBGnJZaUCulJ8b9C6qRsQl0MdLC1Rd4BEToIvVBli0J+6uAL1gCRgq1uQgtjku2D2
-         6dNNGdBlctRbl51tsFL9+1QekuAUqmVRiMvN6agD0+wweTEP0CRB0e+scbujgji2oD
-         d6SJc2nKCs37c0hFGdz+Td/mQh0WoUVrdDmsC2oU=
+        b=u0pvxSWzUiF5z5Z2+cQOk4v83iIbQA29hItLbMoWpZcU4ekPWibA+4wJnN8j38UiX
+         s+uSdXdta/O/8DdCS7H7bCJuThcSV72otMRbHBSkIAefAp/cVDtvF2FkuaLQ4xcCt/
+         pzBZ/36jI0Ok12Q59Y7TX9umDSDC/SUQ90nPh/zA=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Petr Machata <petrm@mellanox.com>, Jiri Pirko <jiri@mellanox.com>,
-        Ido Schimmel <idosch@mellanox.com>,
+Cc:     Mohammed Gamal <mgamal@redhat.com>,
+        Haiyang Zhang <haiyangz@microsoft.com>,
         "David S . Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.19 43/56] mlxsw: spectrum: Wipe xstats.backlog of down ports
-Date:   Fri, 24 Jan 2020 09:19:59 -0500
-Message-Id: <20200124142012.29752-43-sashal@kernel.org>
+        Sasha Levin <sashal@kernel.org>, devel@linuxdriverproject.org,
+        netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 4.19 44/56] hv_netvsc: Fix memory leak when removing rndis device
+Date:   Fri, 24 Jan 2020 09:20:00 -0500
+Message-Id: <20200124142012.29752-44-sashal@kernel.org>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20200124142012.29752-1-sashal@kernel.org>
 References: <20200124142012.29752-1-sashal@kernel.org>
@@ -44,67 +45,62 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Petr Machata <petrm@mellanox.com>
+From: Mohammed Gamal <mgamal@redhat.com>
 
-[ Upstream commit ca7609ff3680c51d6c29897f3117aa2ad904f92a ]
+[ Upstream commit 536dc5df2808efbefc5acee334d3c4f701790ec0 ]
 
-Per-port counter cache used by Qdiscs is updated periodically, unless the
-port is down. The fact that the cache is not updated for down ports is no
-problem for most counters, which are relative in nature. However, backlog
-is absolute in nature, and if there is a non-zero value in the cache around
-the time that the port goes down, that value just stays there. This value
-then leaks to offloaded Qdiscs that report non-zero backlog even if
-there (obviously) is no traffic.
+kmemleak detects the following memory leak when hot removing
+a network device:
 
-The HW does not keep backlog of a downed port, so do likewise: as the port
-goes down, wipe the backlog value from xstats.
+unreferenced object 0xffff888083f63600 (size 256):
+  comm "kworker/0:1", pid 12, jiffies 4294831717 (age 1113.676s)
+  hex dump (first 32 bytes):
+    00 40 c7 33 80 88 ff ff 00 00 00 00 10 00 00 00  .@.3............
+    00 00 00 00 ad 4e ad de ff ff ff ff 00 00 00 00  .....N..........
+  backtrace:
+    [<00000000d4a8f5be>] rndis_filter_device_add+0x117/0x11c0 [hv_netvsc]
+    [<000000009c02d75b>] netvsc_probe+0x5e7/0xbf0 [hv_netvsc]
+    [<00000000ddafce23>] vmbus_probe+0x74/0x170 [hv_vmbus]
+    [<00000000046e64f1>] really_probe+0x22f/0xb50
+    [<000000005cc35eb7>] driver_probe_device+0x25e/0x370
+    [<0000000043c642b2>] bus_for_each_drv+0x11f/0x1b0
+    [<000000005e3d09f0>] __device_attach+0x1c6/0x2f0
+    [<00000000a72c362f>] bus_probe_device+0x1a6/0x260
+    [<0000000008478399>] device_add+0x10a3/0x18e0
+    [<00000000cf07b48c>] vmbus_device_register+0xe7/0x1e0 [hv_vmbus]
+    [<00000000d46cf032>] vmbus_add_channel_work+0x8ab/0x1770 [hv_vmbus]
+    [<000000002c94bb64>] process_one_work+0x919/0x17d0
+    [<0000000096de6781>] worker_thread+0x87/0xb40
+    [<00000000fbe7397e>] kthread+0x333/0x3f0
+    [<000000004f844269>] ret_from_fork+0x3a/0x50
 
-Fixes: 075ab8adaf4e ("mlxsw: spectrum: Collect tclass related stats periodically")
-Signed-off-by: Petr Machata <petrm@mellanox.com>
-Acked-by: Jiri Pirko <jiri@mellanox.com>
-Signed-off-by: Ido Schimmel <idosch@mellanox.com>
+rndis_filter_device_add() allocates an instance of struct rndis_device
+which never gets deallocated as rndis_filter_device_remove() sets
+net_device->extension which points to the rndis_device struct to NULL,
+leaving the rndis_device dangling.
+
+Since net_device->extension is eventually freed in free_netvsc_device(),
+we refrain from setting it to NULL inside rndis_filter_device_remove()
+
+Signed-off-by: Mohammed Gamal <mgamal@redhat.com>
+Reviewed-by: Haiyang Zhang <haiyangz@microsoft.com>
 Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/mellanox/mlxsw/spectrum.c | 13 +++++++++++++
- 1 file changed, 13 insertions(+)
+ drivers/net/hyperv/rndis_filter.c | 2 --
+ 1 file changed, 2 deletions(-)
 
-diff --git a/drivers/net/ethernet/mellanox/mlxsw/spectrum.c b/drivers/net/ethernet/mellanox/mlxsw/spectrum.c
-index e498ee95bacab..30ef318b3d68d 100644
---- a/drivers/net/ethernet/mellanox/mlxsw/spectrum.c
-+++ b/drivers/net/ethernet/mellanox/mlxsw/spectrum.c
-@@ -1061,6 +1061,9 @@ static void update_stats_cache(struct work_struct *work)
- 			     periodic_hw_stats.update_dw.work);
+diff --git a/drivers/net/hyperv/rndis_filter.c b/drivers/net/hyperv/rndis_filter.c
+index f47e36ac42a7f..dd91834f841d5 100644
+--- a/drivers/net/hyperv/rndis_filter.c
++++ b/drivers/net/hyperv/rndis_filter.c
+@@ -1375,8 +1375,6 @@ void rndis_filter_device_remove(struct hv_device *dev,
+ 	/* Halt and release the rndis device */
+ 	rndis_filter_halt_device(net_dev, rndis_dev);
  
- 	if (!netif_carrier_ok(mlxsw_sp_port->dev))
-+		/* Note: mlxsw_sp_port_down_wipe_counters() clears the cache as
-+		 * necessary when port goes down.
-+		 */
- 		goto out;
- 
- 	mlxsw_sp_port_get_hw_stats(mlxsw_sp_port->dev,
-@@ -3309,6 +3312,15 @@ static int mlxsw_sp_port_unsplit(struct mlxsw_core *mlxsw_core, u8 local_port,
- 	return 0;
- }
- 
-+static void
-+mlxsw_sp_port_down_wipe_counters(struct mlxsw_sp_port *mlxsw_sp_port)
-+{
-+	int i;
-+
-+	for (i = 0; i < TC_MAX_QUEUE; i++)
-+		mlxsw_sp_port->periodic_hw_stats.xstats.backlog[i] = 0;
-+}
-+
- static void mlxsw_sp_pude_event_func(const struct mlxsw_reg_info *reg,
- 				     char *pude_pl, void *priv)
- {
-@@ -3329,6 +3341,7 @@ static void mlxsw_sp_pude_event_func(const struct mlxsw_reg_info *reg,
- 	} else {
- 		netdev_info(mlxsw_sp_port->dev, "link down\n");
- 		netif_carrier_off(mlxsw_sp_port->dev);
-+		mlxsw_sp_port_down_wipe_counters(mlxsw_sp_port);
- 	}
+-	net_dev->extension = NULL;
+-
+ 	netvsc_device_remove(dev);
  }
  
 -- 
