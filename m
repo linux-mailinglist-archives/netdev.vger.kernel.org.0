@@ -2,130 +2,80 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 3E32B14901F
-	for <lists+netdev@lfdr.de>; Fri, 24 Jan 2020 22:29:20 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A070A149027
+	for <lists+netdev@lfdr.de>; Fri, 24 Jan 2020 22:30:53 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727233AbgAXV3S (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 24 Jan 2020 16:29:18 -0500
-Received: from mx0a-00082601.pphosted.com ([67.231.145.42]:22892 "EHLO
-        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1725747AbgAXV3S (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 24 Jan 2020 16:29:18 -0500
-Received: from pps.filterd (m0109334.ppops.net [127.0.0.1])
-        by mx0a-00082601.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 00OLNf4U029505;
-        Fri, 24 Jan 2020 13:29:05 -0800
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
- : date : message-id : references : in-reply-to : content-type : content-id
- : content-transfer-encoding : mime-version; s=facebook;
- bh=NnnhwtDFKYYdsTrgckuhQkL+DnWqSc8bnxrpNuQ+axo=;
- b=E398gRUnAULgH1hKRkVbr3Q4pStCbqwgTPiZk59eTPpPmRfBIoWanrs5KZoiA/9BXYp3
- ZLDNQTCv5vbisbJpp6fFOI/9u5ZTURdy7E6CNZhKNQAGTn08EPC4cwy3ASOw93Of3qR5
- Hr6BlmhPie0Y/cFLD/n9Y4rPHLz2tLBCjP8= 
-Received: from maileast.thefacebook.com ([163.114.130.16])
-        by mx0a-00082601.pphosted.com with ESMTP id 2xr62rrqy9-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
-        Fri, 24 Jan 2020 13:29:05 -0800
-Received: from NAM12-MW2-obe.outbound.protection.outlook.com (100.104.31.183)
- by o365-in.thefacebook.com (100.104.35.175) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.1779.2; Fri, 24 Jan 2020 13:29:04 -0800
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=M3X3pr3MBAQk+V/Bl5VIf1h4OLzFJI3/0is13JVOntqkTLpLVNiHyyt357uJl0VwPrQ9Ml/XLUehjheYJPGXKTIMXEp6ffwcoehddUd341felXdra2/E1Ngh08rUlolb94nw3FEvKZLhCFOa33+7k1Da7sIvBTQsQUHoGIPmxsYujVB0oQQ7zTRINSHF+u/rBVqgc08VSr3bxNFHXQFtPE1ZUh5v4SNQHVaxmJgQV/G4Tg+mGxjpN2I8BYyXIbdZo5cRXlP/vhHeA3QgbGBjJnde9jhFuN1WmbPHVT6ZYeGy+SoWw/HOmCWkFpWjkOEgHOKrDbqK8EeK/aLWgqZaQg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=NnnhwtDFKYYdsTrgckuhQkL+DnWqSc8bnxrpNuQ+axo=;
- b=MvfV+IOWfQi4v2dJrF8Ie4nR28LlJWKBnE8eafJZJcnPnpRp5LU7FjjMGggCnvRKyTzBnIsLJmbjYQl53Jdv+Hu/i6/zMqCiJ/IsAZAwikvXX4EE+gwZcr7C+EBdNZpFoL2O3kiF65UwlGHrw7fondX35VlkBVGSYiBaFlNpxRRdJ7eqNA3rRZUeqCc5BAepxyRMPQIQYpTx6P2AVEdI0zJiRWOd4KgB6CjahH63aeDY3rTR3xkc3rAfBQGWaiDzuMkw68fVX2g45MGcW4dSbsetgHRJQtUgKaufkgmlukdQBESbzAAK4jGgmZBH1/0qfjHprER8HGUuGzmqAGOkEA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=fb.com; dmarc=pass action=none header.from=fb.com; dkim=pass
- header.d=fb.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.onmicrosoft.com;
- s=selector2-fb-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=NnnhwtDFKYYdsTrgckuhQkL+DnWqSc8bnxrpNuQ+axo=;
- b=Fsun2XVuSJBsL/P6WLr6uI/OPd+oEW70NBYa/xqzW5nr/e+qil2r+mC//cWBTeA1Udk/omGxL8rrXdZwq9jNmK0A+W2Oh85iPVitaJuo51UfKxGuSve0RLEGBa3ThdPV0CaSk9NsGiNT8griFI4CC8912xzhcfOIM9CEziBSXn0=
-Received: from DM6PR15MB3001.namprd15.prod.outlook.com (20.178.231.16) by
- DM6PR15MB2857.namprd15.prod.outlook.com (20.178.229.211) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.2644.18; Fri, 24 Jan 2020 21:28:55 +0000
-Received: from DM6PR15MB3001.namprd15.prod.outlook.com
- ([fe80::1d74:b392:183e:c8c2]) by DM6PR15MB3001.namprd15.prod.outlook.com
- ([fe80::1d74:b392:183e:c8c2%6]) with mapi id 15.20.2644.028; Fri, 24 Jan 2020
- 21:28:55 +0000
-Received: from MacBook-Pro-52.local (2620:10d:c090:200::bdf3) by MWHPR08CA0039.namprd08.prod.outlook.com (2603:10b6:300:c0::13) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.2665.22 via Frontend Transport; Fri, 24 Jan 2020 21:28:54 +0000
-From:   Yonghong Song <yhs@fb.com>
-To:     Andrii Nakryiko <andriin@fb.com>,
-        "bpf@vger.kernel.org" <bpf@vger.kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        Alexei Starovoitov <ast@fb.com>,
-        "daniel@iogearbox.net" <daniel@iogearbox.net>,
-        William Smith <williampsmith@fb.com>
-CC:     "andrii.nakryiko@gmail.com" <andrii.nakryiko@gmail.com>,
-        Kernel Team <Kernel-team@fb.com>
-Subject: Re: [PATCH bpf-next] libbpf: fix realloc usage in bpf_core_find_cands
-Thread-Topic: [PATCH bpf-next] libbpf: fix realloc usage in
- bpf_core_find_cands
-Thread-Index: AQHV0v1HZm9bNnoDcEu5M3+eHyP+Mw==
-Date:   Fri, 24 Jan 2020 21:28:55 +0000
-Message-ID: <7fdde53d-2d49-7e04-c2e6-51e4285b994e@fb.com>
-References: <20200124201847.212528-1-andriin@fb.com>
-In-Reply-To: <20200124201847.212528-1-andriin@fb.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-clientproxiedby: MWHPR08CA0039.namprd08.prod.outlook.com
- (2603:10b6:300:c0::13) To DM6PR15MB3001.namprd15.prod.outlook.com
- (2603:10b6:5:13c::16)
-x-ms-exchange-messagesentrepresentingtype: 1
-x-originating-ip: [2620:10d:c090:200::bdf3]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: 32444638-4b87-4411-cfef-08d7a1146a40
-x-ms-traffictypediagnostic: DM6PR15MB2857:
-x-ms-exchange-transport-forked: True
-x-microsoft-antispam-prvs: <DM6PR15MB2857AB543BE9E069A914DBDFD30E0@DM6PR15MB2857.namprd15.prod.outlook.com>
-x-fb-source: Internal
-x-ms-oob-tlc-oobclassifiers: OLM:331;
-x-forefront-prvs: 02929ECF07
-x-forefront-antispam-report: SFV:NSPM;SFS:(10019020)(396003)(39860400002)(346002)(366004)(136003)(376002)(189003)(199004)(2906002)(4744005)(86362001)(66946007)(16526019)(54906003)(66556008)(110136005)(66476007)(66446008)(64756008)(316002)(31696002)(5660300002)(71200400001)(52116002)(8936002)(6506007)(478600001)(81166006)(6636002)(81156014)(53546011)(6512007)(4326008)(6486002)(186003)(8676002)(2616005)(31686004)(36756003);DIR:OUT;SFP:1102;SCL:1;SRVR:DM6PR15MB2857;H:DM6PR15MB3001.namprd15.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;MX:1;A:1;
-received-spf: None (protection.outlook.com: fb.com does not designate
- permitted sender hosts)
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: 0NCZMOilfyYfQGtu0WoXzOAq49RqKJ6jFwjarV9dikeYnw1qY6w874hJoSR2tNhNgjwq/TTlwvcSH2+PupUcoVBtgDFbf3HHP6W3+si/r52BHLUjiUccRli9mmOxo3IoDJK0x5+Nzlj3NijqLbKFxgK4ZiLdp0nTXBNhEsHXGFzJbnWo4XqB0I9F+U9bRhh/OeUeFdaFmANUp/7m4s6f8ne53mAz+r31DnyKFYGZ6jIhcPlOItq6Rgk098LTq7JpxAzqAjOf5LnjgKeK1uWZ/K9JKVuGXBedeweilPr9V8nUGZ4ox9SxhjzHfuVebmHOOQN94FUUDF3gUnsvVm/yKKoiulhIT62Wavd80cG13f4rIJbSSXckwYm6zez9Ush/g14DJSJDTjgAg6ArHK/1qBAbqrXOSuAJtoQf3PUZ9D5h2Ha5TtflLBkNVdKbrcyR
-Content-Type: text/plain; charset="utf-8"
-Content-ID: <9EA99DDC0124F1419ADB2B367757E6EB@namprd15.prod.outlook.com>
-Content-Transfer-Encoding: base64
+        id S1728797AbgAXVav (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 24 Jan 2020 16:30:51 -0500
+Received: from a.mx.secunet.com ([62.96.220.36]:49802 "EHLO a.mx.secunet.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1725747AbgAXVav (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 24 Jan 2020 16:30:51 -0500
+Received: from localhost (localhost [127.0.0.1])
+        by a.mx.secunet.com (Postfix) with ESMTP id 5BD82201AA;
+        Fri, 24 Jan 2020 22:30:49 +0100 (CET)
+X-Virus-Scanned: by secunet
+Received: from a.mx.secunet.com ([127.0.0.1])
+        by localhost (a.mx.secunet.com [127.0.0.1]) (amavisd-new, port 10024)
+        with ESMTP id LUIkhj4g2DSB; Fri, 24 Jan 2020 22:30:48 +0100 (CET)
+Received: from mail-essen-01.secunet.de (mail-essen-01.secunet.de [10.53.40.204])
+        (using TLSv1 with cipher ECDHE-RSA-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by a.mx.secunet.com (Postfix) with ESMTPS id E503F201A0;
+        Fri, 24 Jan 2020 22:30:48 +0100 (CET)
+Received: from gauss2.secunet.de (10.182.7.193) by mail-essen-01.secunet.de
+ (10.53.40.204) with Microsoft SMTP Server id 14.3.439.0; Fri, 24 Jan 2020
+ 22:30:48 +0100
+Received: by gauss2.secunet.de (Postfix, from userid 1000)      id 89EF431800F8;
+ Fri, 24 Jan 2020 22:30:48 +0100 (CET)
+Date:   Fri, 24 Jan 2020 22:30:48 +0100
+From:   Steffen Klassert <steffen.klassert@secunet.com>
+To:     Willem de Bruijn <willemdebruijn.kernel@gmail.com>
+CC:     David Miller <davem@davemloft.net>,
+        Willem de Bruijn <willemb@google.com>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Subash Abhinov Kasiviswanathan <subashab@codeaurora.org>,
+        Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>,
+        Network Development <netdev@vger.kernel.org>
+Subject: Re: [PATCH net-next v2 4/4] udp: Support UDP fraglist GRO/GSO.
+Message-ID: <20200124213048.GB18684@gauss3.secunet.de>
+References: <20200124082218.2572-1-steffen.klassert@secunet.com>
+ <20200124082218.2572-5-steffen.klassert@secunet.com>
+ <CAF=yD-JmKdDmKs5W8YeLOc2L81av8SrS1nR=chAAre2z=ALepw@mail.gmail.com>
 MIME-Version: 1.0
-X-MS-Exchange-CrossTenant-Network-Message-Id: 32444638-4b87-4411-cfef-08d7a1146a40
-X-MS-Exchange-CrossTenant-originalarrivaltime: 24 Jan 2020 21:28:55.2403
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 8ae927fe-1255-47a7-a2af-5f3a069daaa2
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: NePcZvjANpyEKu9+YyesAPZfmXSoUf+wak0Fae/8AkwdqAZj3ZKFEQEX8NrxTwPP
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM6PR15MB2857
-X-OriginatorOrg: fb.com
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.138,18.0.572
- definitions=2020-01-24_07:2020-01-24,2020-01-24 signatures=0
-X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 malwarescore=0
- spamscore=0 impostorscore=0 mlxlogscore=766 bulkscore=0 priorityscore=1501
- phishscore=0 lowpriorityscore=0 mlxscore=0 adultscore=0 clxscore=1015
- suspectscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-1911200001 definitions=main-2001240175
-X-FB-Internal: deliver
+Content-Type: text/plain; charset="us-ascii"
+Content-Disposition: inline
+In-Reply-To: <CAF=yD-JmKdDmKs5W8YeLOc2L81av8SrS1nR=chAAre2z=ALepw@mail.gmail.com>
+User-Agent: Mutt/1.9.4 (2018-02-28)
+X-EXCLAIMER-MD-CONFIG: 2c86f778-e09b-4440-8b15-867914633a10
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-DQoNCk9uIDEvMjQvMjAgMTI6MTggUE0sIEFuZHJpaSBOYWtyeWlrbyB3cm90ZToNCj4gRml4IGJ1
-ZyByZXF1ZXN0aW5nIGludmFsaWQgc2l6ZSBvZiByZWFsbG9jYXRlZCBhcnJheSB3aGVuIGNvbnN0
-cnVjdGluZyBDTy1SRQ0KPiByZWxvY2F0aW9uIGNhbmRpZGF0ZSBsaXN0LiBUaGlzIGNhbiBjYXVz
-ZSBwcm9ibGVtcyBpZiB0aGVyZSBhcmUgbWFueSBwb3RlbnRpYWwNCj4gY2FuZGlkYXRlcyBhbmQg
-YSB2ZXJ5IGZpbmUtZ3JhaW5lZCBtZW1vcnkgYWxsb2NhdG9yIGJ1Y2tldCBzaXplcyBhcmUgdXNl
-ZC4NCj4gDQo+IEZpeGVzOiBkZGM3YzMwNDI2MTQgKCJsaWJicGY6IGltcGxlbWVudCBCUEYgQ08t
-UkUgb2Zmc2V0IHJlbG9jYXRpb24gYWxnb3JpdGhtIikNCj4gUmVwb3J0ZWQtYnk6IFdpbGxpYW0g
-U21pdGggPHdpbGxpYW1wc21pdGhAZmIuY29tPg0KPiBTaWduZWQtb2ZmLWJ5OiBBbmRyaWkgTmFr
-cnlpa28gPGFuZHJpaW5AZmIuY29tPg0KDQpBY2tlZC1ieTogWW9uZ2hvbmcgU29uZyA8eWhzQGZi
-LmNvbT4NCg==
+On Fri, Jan 24, 2020 at 04:13:17PM -0500, Willem de Bruijn wrote:
+> On Fri, Jan 24, 2020 at 3:24 AM Steffen Klassert
+> <steffen.klassert@secunet.com> wrote:
+> >         NAPI_GRO_CB(skb)->flush = 1;
+> > @@ -144,6 +150,18 @@ INDIRECT_CALLABLE_SCOPE int udp6_gro_complete(struct sk_buff *skb, int nhoff)
+> >         const struct ipv6hdr *ipv6h = ipv6_hdr(skb);
+> >         struct udphdr *uh = (struct udphdr *)(skb->data + nhoff);
+> >
+> > +       if (NAPI_GRO_CB(skb)->is_flist) {
+> > +               uh->len = htons(skb->len - nhoff);
+> > +
+> > +               skb_shinfo(skb)->gso_type |= (SKB_GSO_FRAGLIST|SKB_GSO_UDP_L4);
+> > +               skb_shinfo(skb)->gso_segs = NAPI_GRO_CB(skb)->count;
+> > +
+> > +               skb->ip_summed = CHECKSUM_UNNECESSARY;
+> > +               skb->csum_level = ~0;
+> 
+> This probably needs to be the same change as in udp4_gro_complete.
+> 
+> Otherwise patch set looks great to me based on a git range-diff to v1.
+
+Uhm, yes absolutely.
+
+I'll do a v3 tomorrow.
+
+Thanks for your review Willem!
