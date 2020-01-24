@@ -2,127 +2,167 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 9AE67147664
-	for <lists+netdev@lfdr.de>; Fri, 24 Jan 2020 02:19:47 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7E8151476B2
+	for <lists+netdev@lfdr.de>; Fri, 24 Jan 2020 02:27:38 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730545AbgAXBTm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 23 Jan 2020 20:19:42 -0500
-Received: from mail.kernel.org ([198.145.29.99]:60818 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1730676AbgAXBRl (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 23 Jan 2020 20:17:41 -0500
-Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 20D122071E;
-        Fri, 24 Jan 2020 01:17:39 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1579828660;
-        bh=vVzGl/1LrNLQUWSDodjDFOxHqfKPOheroeyONEUOIAo=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=e8EQcUWGSbyccxY7DXmqvaj1pE2kAvlhoUwCU3/UdBA2sxD9SlJTCXoFHH8xOmJ8d
-         bZGtNQ91o1uMfx6MPNiYjd5xij9xPiqG99vaKuJcZRHopmRL/EIEfSIlyxJfD3hXNI
-         rvPrDYR5DGMDCuf+i52+sdvoeTArA16so9gepLUQ=
-From:   Sasha Levin <sashal@kernel.org>
-To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Marcel Holtmann <marcel@holtmann.org>,
-        Andre Heider <a.heider@gmail.com>,
-        Johan Hedberg <johan.hedberg@intel.com>,
-        Sasha Levin <sashal@kernel.org>,
-        linux-bluetooth@vger.kernel.org, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.4 27/33] Bluetooth: Allow combination of BDADDR_PROPERTY and INVALID_BDADDR quirks
-Date:   Thu, 23 Jan 2020 20:17:02 -0500
-Message-Id: <20200124011708.18232-27-sashal@kernel.org>
-X-Mailer: git-send-email 2.20.1
-In-Reply-To: <20200124011708.18232-1-sashal@kernel.org>
-References: <20200124011708.18232-1-sashal@kernel.org>
+        id S1729151AbgAXB1g (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 23 Jan 2020 20:27:36 -0500
+Received: from mail-pg1-f178.google.com ([209.85.215.178]:35454 "EHLO
+        mail-pg1-f178.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728655AbgAXB1g (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 23 Jan 2020 20:27:36 -0500
+Received: by mail-pg1-f178.google.com with SMTP id l24so174645pgk.2
+        for <netdev@vger.kernel.org>; Thu, 23 Jan 2020 17:27:36 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=MLd0TngETuF+k/i9ZKsW3IlnygR78+Xw8lqSEx/L63Q=;
+        b=F6LZH8Ub49A1BjDrsxvRLck8sBZiM7EO2iFvdZvZWahz+sADdn2nZnF8BhrnrFyS9P
+         0i5WLqrYL78ej7r00Aii3DwtvHLzjvfWZ8NdVHgONFBO4a5FYydq2vijR1X9uoctXlu6
+         apuwBiP1bmEU0A7nkRhNxHW/PcV2rdhNuvgw0nQbKGB36zvJ54Zf/aYfbTb4LyAgQODq
+         IAwI2aJWS5QYlMLdzl7npyzSbWR5ZPSV84S1aOz78NHk5dEoDu3DOBCEPWhI0+vcpq28
+         rRbETCvkWD+ZigcyNF19ORRQtqYnGW+KyVkktTUYzgRFf32YS/DVqon6delfeP8YXGIm
+         W3uQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=MLd0TngETuF+k/i9ZKsW3IlnygR78+Xw8lqSEx/L63Q=;
+        b=hYq8rkRON5g2WB+5ZpxXFfedoPRub6jo1Vnglzbr/tpdNZ9nX5dm8flfF4M3GK5u3V
+         C0bD9LKjl3VnL8WLoasdBrf8TRXcjCjhfGaIm7zHx7Om212/tM1Ie9xf9bghmz6V9SH6
+         hngnC0tHYaxRdxCaY9n7ziW75TxzMnqNTTOi8AUvPL3e6zNQNQgL3f8P8qB3YPuz9NTR
+         AfV8Wr0YVeKXeL9NvQA0ocZadlUWaK8/Csv0DCYxfLQJym2DeqeTMGat3HapQzAdRyMY
+         B5/4TXp7gpuaeMDoa6eAwJZIbScwaeyE8Jxqt0CePfPAXmVlclhQGnHqAino52CUZgJ8
+         VOLw==
+X-Gm-Message-State: APjAAAX4ckNKlWydPO+ig0AAZmCSKQYeIDGQpJ/6pOctssvwIbYdPXqg
+        nLd2woWREgdL26XLDCmiWkGuLkxsvTg=
+X-Google-Smtp-Source: APXvYqxPp4Mzr8CMy3SMjx7c9s0XrgtM880j/A1omLke/t0fKXVSAcGfwmoeJoutVQBSEcp4M0poiA==
+X-Received: by 2002:a65:4d0b:: with SMTP id i11mr1392901pgt.340.1579829255418;
+        Thu, 23 Jan 2020 17:27:35 -0800 (PST)
+Received: from tw-172-25-31-76.office.twttr.net ([8.25.197.24])
+        by smtp.gmail.com with ESMTPSA id a1sm3996361pfo.68.2020.01.23.17.27.34
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 23 Jan 2020 17:27:34 -0800 (PST)
+From:   Cong Wang <xiyou.wangcong@gmail.com>
+To:     netdev@vger.kernel.org
+Cc:     Cong Wang <xiyou.wangcong@gmail.com>,
+        Jamal Hadi Salim <jhs@mojatatu.com>,
+        Jiri Pirko <jiri@resnulli.us>
+Subject: [Patch net] net_sched: walk through all child classes in tc_bind_tclass()
+Date:   Thu, 23 Jan 2020 17:27:08 -0800
+Message-Id: <20200124012708.29366-1-xiyou.wangcong@gmail.com>
+X-Mailer: git-send-email 2.21.1
 MIME-Version: 1.0
-X-stable: review
-X-Patchwork-Hint: Ignore
 Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Marcel Holtmann <marcel@holtmann.org>
+In a complex TC class hierarchy like this:
 
-[ Upstream commit 7fdf6c6a0d0e032aac2aa4537a23af1e04a397ce ]
+tc qdisc add dev eth0 root handle 1:0 cbq bandwidth 100Mbit         \
+  avpkt 1000 cell 8
+tc class add dev eth0 parent 1:0 classid 1:1 cbq bandwidth 100Mbit  \
+  rate 6Mbit weight 0.6Mbit prio 8 allot 1514 cell 8 maxburst 20      \
+  avpkt 1000 bounded
 
-When utilizing BDADDR_PROPERTY and INVALID_BDADDR quirks together it
-results in an unconfigured controller even if the bootloader provides
-a valid address. Fix this by allowing a bootloader provided address
-to mark the controller as configured.
+tc filter add dev eth0 parent 1:0 protocol ip prio 1 u32 match ip \
+  sport 80 0xffff flowid 1:3
+tc filter add dev eth0 parent 1:0 protocol ip prio 1 u32 match ip \
+  sport 25 0xffff flowid 1:4
 
-Signed-off-by: Marcel Holtmann <marcel@holtmann.org>
-Tested-by: Andre Heider <a.heider@gmail.com>
-Signed-off-by: Johan Hedberg <johan.hedberg@intel.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+tc class add dev eth0 parent 1:1 classid 1:3 cbq bandwidth 100Mbit  \
+  rate 5Mbit weight 0.5Mbit prio 5 allot 1514 cell 8 maxburst 20      \
+  avpkt 1000
+tc class add dev eth0 parent 1:1 classid 1:4 cbq bandwidth 100Mbit  \
+  rate 3Mbit weight 0.3Mbit prio 5 allot 1514 cell 8 maxburst 20      \
+  avpkt 1000
+
+where filters are installed on qdisc 1:0, so we can't merely
+search from class 1:1 when creating class 1:3 and class 1:4. We have
+to walk through all the child classes of the direct parent qdisc.
+Otherwise we would miss filters those need reverse binding.
+
+Fixes: 07d79fc7d94e ("net_sched: add reverse binding for tc class")
+Cc: Jamal Hadi Salim <jhs@mojatatu.com>
+Cc: Jiri Pirko <jiri@resnulli.us>
+Signed-off-by: Cong Wang <xiyou.wangcong@gmail.com>
 ---
- net/bluetooth/hci_core.c | 26 ++++++++++++++++++++++++--
- 1 file changed, 24 insertions(+), 2 deletions(-)
+ net/sched/sch_api.c | 41 ++++++++++++++++++++++++++++++-----------
+ 1 file changed, 30 insertions(+), 11 deletions(-)
 
-diff --git a/net/bluetooth/hci_core.c b/net/bluetooth/hci_core.c
-index 0cc9ce9172229..9e19d5a3aac87 100644
---- a/net/bluetooth/hci_core.c
-+++ b/net/bluetooth/hci_core.c
-@@ -1444,11 +1444,20 @@ static int hci_dev_do_open(struct hci_dev *hdev)
+diff --git a/net/sched/sch_api.c b/net/sched/sch_api.c
+index 943ad3425380..50794125bf02 100644
+--- a/net/sched/sch_api.c
++++ b/net/sched/sch_api.c
+@@ -1910,22 +1910,24 @@ static int tcf_node_bind(struct tcf_proto *tp, void *n, struct tcf_walker *arg)
+ 	return 0;
+ }
  
- 	if (hci_dev_test_flag(hdev, HCI_SETUP) ||
- 	    test_bit(HCI_QUIRK_NON_PERSISTENT_SETUP, &hdev->quirks)) {
-+		bool invalid_bdaddr;
+-static void tc_bind_tclass(struct Qdisc *q, u32 portid, u32 clid,
+-			   unsigned long new_cl)
++struct tc_bind_class_args {
++	struct qdisc_walker w;
++	unsigned long new_cl;
++	u32 portid;
++	u32 clid;
++};
 +
- 		hci_sock_dev_event(hdev, HCI_DEV_SETUP);
++static int tc_bind_class_walker(struct Qdisc *q, unsigned long cl,
++				struct qdisc_walker *w)
+ {
++	struct tc_bind_class_args *a = (struct tc_bind_class_args *)w;
+ 	const struct Qdisc_class_ops *cops = q->ops->cl_ops;
+ 	struct tcf_block *block;
+ 	struct tcf_chain *chain;
+-	unsigned long cl;
  
- 		if (hdev->setup)
- 			ret = hdev->setup(hdev);
+-	cl = cops->find(q, portid);
+-	if (!cl)
+-		return;
+-	if (!cops->tcf_block)
+-		return;
+ 	block = cops->tcf_block(q, cl, NULL);
+ 	if (!block)
+-		return;
++		return 0;
+ 	for (chain = tcf_get_next_chain(block, NULL);
+ 	     chain;
+ 	     chain = tcf_get_next_chain(block, chain)) {
+@@ -1936,12 +1938,29 @@ static void tc_bind_tclass(struct Qdisc *q, u32 portid, u32 clid,
+ 			struct tcf_bind_args arg = {};
  
-+		/* The transport driver can set the quirk to mark the
-+		 * BD_ADDR invalid before creating the HCI device or in
-+		 * its setup callback.
-+		 */
-+		invalid_bdaddr = test_bit(HCI_QUIRK_INVALID_BDADDR,
-+					  &hdev->quirks);
-+
- 		if (ret)
- 			goto setup_failed;
- 
-@@ -1457,20 +1466,33 @@ static int hci_dev_do_open(struct hci_dev *hdev)
- 				hci_dev_get_bd_addr_from_property(hdev);
- 
- 			if (bacmp(&hdev->public_addr, BDADDR_ANY) &&
--			    hdev->set_bdaddr)
-+			    hdev->set_bdaddr) {
- 				ret = hdev->set_bdaddr(hdev,
- 						       &hdev->public_addr);
-+
-+				/* If setting of the BD_ADDR from the device
-+				 * property succeeds, then treat the address
-+				 * as valid even if the invalid BD_ADDR
-+				 * quirk indicates otherwise.
-+				 */
-+				if (!ret)
-+					invalid_bdaddr = false;
-+			}
+ 			arg.w.fn = tcf_node_bind;
+-			arg.classid = clid;
++			arg.classid = a->clid;
+ 			arg.base = cl;
+-			arg.cl = new_cl;
++			arg.cl = a->new_cl;
+ 			tp->ops->walk(tp, &arg.w, true);
  		}
+ 	}
++
++	return 0;
++}
++
++static void tc_bind_tclass(struct Qdisc *q, u32 portid, u32 clid,
++			   unsigned long new_cl)
++{
++	const struct Qdisc_class_ops *cops = q->ops->cl_ops;
++	struct tc_bind_class_args args = {};
++
++	if (!cops->tcf_block)
++		return;
++	args.portid = portid;
++	args.clid = clid;
++	args.new_cl = new_cl;
++	args.w.fn = tc_bind_class_walker;
++	q->ops->cl_ops->walk(q, &args.w);
+ }
  
- setup_failed:
- 		/* The transport driver can set these quirks before
- 		 * creating the HCI device or in its setup callback.
- 		 *
-+		 * For the invalid BD_ADDR quirk it is possible that
-+		 * it becomes a valid address if the bootloader does
-+		 * provide it (see above).
-+		 *
- 		 * In case any of them is set, the controller has to
- 		 * start up as unconfigured.
- 		 */
- 		if (test_bit(HCI_QUIRK_EXTERNAL_CONFIG, &hdev->quirks) ||
--		    test_bit(HCI_QUIRK_INVALID_BDADDR, &hdev->quirks))
-+		    invalid_bdaddr)
- 			hci_dev_set_flag(hdev, HCI_UNCONFIGURED);
- 
- 		/* For an unconfigured controller it is required to
+ #else
 -- 
-2.20.1
+2.21.1
 
