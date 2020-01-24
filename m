@@ -2,759 +2,168 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 5A445148B62
-	for <lists+netdev@lfdr.de>; Fri, 24 Jan 2020 16:44:41 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id AB643148B44
+	for <lists+netdev@lfdr.de>; Fri, 24 Jan 2020 16:31:05 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2388880AbgAXPoj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 24 Jan 2020 10:44:39 -0500
-Received: from mga07.intel.com ([134.134.136.100]:21064 "EHLO mga07.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2388413AbgAXPoj (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 24 Jan 2020 10:44:39 -0500
-X-Amp-Result: UNKNOWN
-X-Amp-Original-Verdict: FILE UNKNOWN
-X-Amp-File-Uploaded: False
-Received: from fmsmga004.fm.intel.com ([10.253.24.48])
-  by orsmga105.jf.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 24 Jan 2020 07:41:33 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.70,358,1574150400"; 
-   d="scan'208";a="251316779"
-Received: from ranger.igk.intel.com ([10.102.21.164])
-  by fmsmga004.fm.intel.com with ESMTP; 24 Jan 2020 07:41:30 -0800
-Date:   Fri, 24 Jan 2020 09:33:15 +0100
-From:   Maciej Fijalkowski <maciej.fijalkowski@intel.com>
-To:     sunil.kovvuri@gmail.com
-Cc:     netdev@vger.kernel.org, davem@davemloft.net, kubakici@wp.pl,
-        mkubecek@suse.cz, Sunil Goutham <sgoutham@marvell.com>,
-        Geetha sowjanya <gakula@marvell.com>,
-        Christina Jacob <cjacob@marvell.com>,
-        Subbaraya Sundeep <sbhatta@marvell.com>,
-        Aleksey Makarov <amakarov@marvell.com>
-Subject: Re: [PATCH v4 02/17] octeontx2-pf: Mailbox communication with AF
-Message-ID: <20200124083315.GC32191@ranger.igk.intel.com>
-References: <1579612911-24497-1-git-send-email-sunil.kovvuri@gmail.com>
- <1579612911-24497-3-git-send-email-sunil.kovvuri@gmail.com>
+        id S2388032AbgAXPbE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 24 Jan 2020 10:31:04 -0500
+Received: from us-smtp-1.mimecast.com ([205.139.110.61]:36477 "EHLO
+        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S2387599AbgAXPbE (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 24 Jan 2020 10:31:04 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1579879862;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=7h5WWYpXM0AhhqzCXx3HLitAXt17+79fmo2qQPvwnK4=;
+        b=C2o3b9BOknM4nj5J5thdUDkwsjAv1KFAhbTdZLIba/M5jv32YQ+HO1C3G0zh+Sm8iPRPug
+        Nsa0D26Rv3GmEyeIe/L4zYDXaQN0s06+hzLuc4iUeajLTkEy8VUM9fUjDWi3xc4nSANjvB
+        JxC7mf+tnPfFcv4Y+Tg5db6m+V5ETkk=
+Received: from mail-lf1-f70.google.com (mail-lf1-f70.google.com
+ [209.85.167.70]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-36-fXLAgzWQMXi4QH677PeD3Q-1; Fri, 24 Jan 2020 10:30:55 -0500
+X-MC-Unique: fXLAgzWQMXi4QH677PeD3Q-1
+Received: by mail-lf1-f70.google.com with SMTP id v19so352671lfg.2
+        for <netdev@vger.kernel.org>; Fri, 24 Jan 2020 07:30:55 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
+         :message-id:mime-version:content-transfer-encoding;
+        bh=7h5WWYpXM0AhhqzCXx3HLitAXt17+79fmo2qQPvwnK4=;
+        b=mb+1NyQOfE8BUwH6T5C8URJY+fUCAjq8Bse3XLCtvKmSyhcx7nrnhveqGtlQRKktaa
+         8cC2nUUwPwDhosC+BYijR7MMhiMrnayOzX/v4Kk2DgGHQ5hodq9PFK5/PI4q4uTVVkWk
+         q3bbDbpHD6YWT8kgSwsstW9zyeBr/fOcv5dwTaQPlWje9K1MSa9JCT0DX0DyazIS6GSJ
+         DeJbTKV73MkabhIboWSbrkbPBtDJOGTSCbi8835ByjJ/QJ/mtQUQ19WE1j7Xb83vT9ez
+         MrTd3d4Kpwd3guMfUTrqEKUFaHUS/gPhwkWvTcM3po7omPACsASdJAVMeXgtwZuCnYdb
+         m0RQ==
+X-Gm-Message-State: APjAAAVRvz5ZhOpSGA8FUhHWvlgMDzJOSrWDFwLYs/ujIiXmfn6hRKK+
+        /HRtOk1JS9jWO6Toj6QDKCYSud3qPxK+Hry2JsiWylW9kEaBVtitK5K+dwRzMsr0kho0jky74/F
+        OoJ9/3K9xYC8aS+Rw
+X-Received: by 2002:a2e:7812:: with SMTP id t18mr2669635ljc.289.1579879853884;
+        Fri, 24 Jan 2020 07:30:53 -0800 (PST)
+X-Google-Smtp-Source: APXvYqxsaUBPnOaFMegKrVMDPjpOsDoWTWZc2Icnpi+kKG4aDBmCkSxuBZ57z0F8tlH+zfN7GZSy0w==
+X-Received: by 2002:a2e:7812:: with SMTP id t18mr2669625ljc.289.1579879853600;
+        Fri, 24 Jan 2020 07:30:53 -0800 (PST)
+Received: from alrua-x1.borgediget.toke.dk ([2a0c:4d80:42:443::2])
+        by smtp.gmail.com with ESMTPSA id 144sm2955991lfi.67.2020.01.24.07.30.52
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 24 Jan 2020 07:30:52 -0800 (PST)
+Received: by alrua-x1.borgediget.toke.dk (Postfix, from userid 1000)
+        id 5A3D8180073; Fri, 24 Jan 2020 16:30:52 +0100 (CET)
+From:   Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
+To:     Luigi Rizzo <lrizzo@google.com>
+Cc:     Daniel Borkmann <daniel@iogearbox.net>, netdev@vger.kernel.org,
+        Jesper Dangaard Brouer <hawk@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>, sameehj@amazon.com
+Subject: Re: [PATCH] net-xdp: netdev attribute to control xdpgeneric skb linearization
+In-Reply-To: <CAMOZA0+neBeXKDyQYxwP0MqC9TqGWV-d3S83z_EACH=iOEb6mw@mail.gmail.com>
+References: <20200122203253.20652-1-lrizzo@google.com> <875zh2bis0.fsf@toke.dk> <953c8fee-91f0-85e7-6c7b-b9a2f8df5aa6@iogearbox.net> <87blqui1zu.fsf@toke.dk> <CAMOZA0Kmf1=ULJnbBUVKKjUyzqj2JKfp5ub769SNav5=B7VA5Q@mail.gmail.com> <875zh2hx20.fsf@toke.dk> <CAMOZA0JSZ2iDBk4NOUyNLVE_KmRzYHyEBmQWF+etnpcp=fe0kQ@mail.gmail.com> <b22e86ef-e4dd-14a3-fb1b-477d9e61fefa@iogearbox.net> <87r1zpgosp.fsf@toke.dk> <CAMOZA0+neBeXKDyQYxwP0MqC9TqGWV-d3S83z_EACH=iOEb6mw@mail.gmail.com>
+X-Clacks-Overhead: GNU Terry Pratchett
+Date:   Fri, 24 Jan 2020 16:30:52 +0100
+Message-ID: <87r1zog9cj.fsf@toke.dk>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <1579612911-24497-3-git-send-email-sunil.kovvuri@gmail.com>
-User-Agent: Mutt/1.12.1 (2019-06-15)
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Jan 21, 2020 at 06:51:36PM +0530, sunil.kovvuri@gmail.com wrote:
-> From: Sunil Goutham <sgoutham@marvell.com>
-> 
-> In the resource virtualization unit (RVU) each of the PF and AF
-> (admin function) share a 64KB of reserved memory region for
-> communication. This patch initializes PF <=> AF mailbox IRQs,
-> registers handlers for processing these communication messages.
-> Also adds support to process these messages in both directions
-> ie responses to PF initiated DOWN (PF => AF) messages and AF
-> initiated UP messages (AF => PF).
-> 
-> Mbox communication APIs and message formats are defined in AF driver
-> (drivers/net/ethernet/marvell/octeontx2/af), mbox.h from AF driver is
-> included here to avoid duplication.
-> 
-> Signed-off-by: Geetha sowjanya <gakula@marvell.com>
-> Signed-off-by: Christina Jacob <cjacob@marvell.com>
-> Signed-off-by: Subbaraya Sundeep <sbhatta@marvell.com>
-> Signed-off-by: Aleksey Makarov <amakarov@marvell.com>
-> Signed-off-by: Sunil Goutham <sgoutham@marvell.com>
-> ---
->  .../net/ethernet/marvell/octeontx2/nic/Makefile    |   2 +-
->  .../ethernet/marvell/octeontx2/nic/otx2_common.c   |  28 ++
->  .../ethernet/marvell/octeontx2/nic/otx2_common.h   | 166 ++++++++++
->  .../net/ethernet/marvell/octeontx2/nic/otx2_pf.c   | 359 ++++++++++++++++++++-
->  4 files changed, 552 insertions(+), 3 deletions(-)
->  create mode 100644 drivers/net/ethernet/marvell/octeontx2/nic/otx2_common.c
-> 
-> diff --git a/drivers/net/ethernet/marvell/octeontx2/nic/Makefile b/drivers/net/ethernet/marvell/octeontx2/nic/Makefile
-> index 622b803..339fde8 100644
-> --- a/drivers/net/ethernet/marvell/octeontx2/nic/Makefile
-> +++ b/drivers/net/ethernet/marvell/octeontx2/nic/Makefile
-> @@ -5,6 +5,6 @@
->  
->  obj-$(CONFIG_OCTEONTX2_PF) += octeontx2_nicpf.o
->  
-> -octeontx2_nicpf-y := otx2_pf.o
-> +octeontx2_nicpf-y := otx2_pf.o otx2_common.o
->  
->  ccflags-y += -I$(srctree)/drivers/net/ethernet/marvell/octeontx2/af
-> diff --git a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_common.c b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_common.c
-> new file mode 100644
-> index 0000000..cbab325
-> --- /dev/null
-> +++ b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_common.c
-> @@ -0,0 +1,28 @@
-> +// SPDX-License-Identifier: GPL-2.0
-> +/* Marvell OcteonTx2 RVU Ethernet driver
-> + *
-> + * Copyright (C) 2020 Marvell International Ltd.
-> + *
-> + * This program is free software; you can redistribute it and/or modify
-> + * it under the terms of the GNU General Public License version 2 as
-> + * published by the Free Software Foundation.
-> + */
-> +
-> +#include <linux/interrupt.h>
-> +#include <linux/pci.h>
-> +
-> +#include "otx2_reg.h"
-> +#include "otx2_common.h"
-> +
-> +#define M(_name, _id, _fn_name, _req_type, _rsp_type)			\
-> +int __weak								\
-> +otx2_mbox_up_handler_ ## _fn_name(struct otx2_nic *pfvf,		\
-> +				struct _req_type *req,			\
-> +				struct _rsp_type *rsp)			\
-> +{									\
-> +	/* Nothing to do here */					\
-> +	return 0;							\
-> +}									\
-> +EXPORT_SYMBOL(otx2_mbox_up_handler_ ## _fn_name);
-> +MBOX_UP_CGX_MESSAGES
-> +#undef M
-> diff --git a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_common.h b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_common.h
-> index 9d52ab3..f194082 100644
-> --- a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_common.h
-> +++ b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_common.h
-> @@ -13,6 +13,7 @@
->  
->  #include <linux/pci.h>
->  
-> +#include <mbox.h>
->  #include "otx2_reg.h"
->  
->  /* PCI device IDs */
-> @@ -20,12 +21,31 @@
->  
->  /* PCI BAR nos */
->  #define PCI_CFG_REG_BAR_NUM                     2
-> +#define PCI_MBOX_BAR_NUM                        4
-> +
-> +#define NAME_SIZE                               32
-> +
-> +struct  mbox {
-> +	struct otx2_mbox	mbox;
-> +	struct work_struct	mbox_wrk;
-> +	struct otx2_mbox	mbox_up;
-> +	struct work_struct	mbox_up_wrk;
-> +	struct otx2_nic		*pfvf;
-> +	void			*bbuf_base; /* Bounce buffer for mbox memory */
-> +	struct mutex		lock;	/* serialize mailbox access */
-> +	int			num_msgs; /*mbox number of messages*/
-> +	int			up_num_msgs;/* mbox_up number of messages*/
-> +};
->  
->  struct otx2_hw {
->  	struct pci_dev		*pdev;
->  	u16                     rx_queues;
->  	u16                     tx_queues;
->  	u16			max_queues;
-> +
-> +	/* MSI-X*/
-> +	char			*irq_name;
-> +	cpumask_var_t           *affinity_mask;
->  };
->  
->  struct otx2_nic {
-> @@ -35,6 +55,12 @@ struct otx2_nic {
->  	struct otx2_hw		hw;
->  	struct pci_dev		*pdev;
->  	struct device		*dev;
-> +
-> +	/* Mbox */
-> +	struct mbox		mbox;
-> +	struct workqueue_struct *mbox_wq;
-> +
-> +	u16			pcifunc; /* RVU PF_FUNC */
->  };
->  
->  /* Register read/write APIs */
-> @@ -74,4 +100,144 @@ static inline u64 otx2_read64(struct otx2_nic *nic, u64 offset)
->  	return readq(addr);
->  }
->  
-> +/* Mbox bounce buffer APIs */
-> +static inline int otx2_mbox_bbuf_init(struct mbox *mbox, struct pci_dev *pdev)
-> +{
-> +	struct otx2_mbox *otx2_mbox;
-> +	struct otx2_mbox_dev *mdev;
-> +
-> +	mbox->bbuf_base = devm_kmalloc(&pdev->dev, MBOX_SIZE, GFP_KERNEL);
-> +	if (!mbox->bbuf_base)
-> +		return -ENOMEM;
-> +
-> +	/* Overwrite mbox mbase to point to bounce buffer, so that PF/VF
-> +	 * prepare all mbox messages in bounce buffer instead of directly
-> +	 * in hw mbox memory.
-> +	 */
-> +	otx2_mbox = &mbox->mbox;
-> +	mdev = &otx2_mbox->dev[0];
-> +	mdev->mbase = mbox->bbuf_base;
-> +
-> +	otx2_mbox = &mbox->mbox_up;
-> +	mdev = &otx2_mbox->dev[0];
-> +	mdev->mbase = mbox->bbuf_base;
-> +	return 0;
-> +}
-> +
-> +static inline void otx2_sync_mbox_bbuf(struct otx2_mbox *mbox, int devid)
-> +{
-> +	u16 msgs_offset = ALIGN(sizeof(struct mbox_hdr), MBOX_MSG_ALIGN);
-> +	void *hw_mbase = mbox->hwbase + (devid * MBOX_SIZE);
-> +	struct otx2_mbox_dev *mdev = &mbox->dev[devid];
-> +	struct mbox_hdr *hdr;
-> +	u64 msg_size;
-> +
-> +	if (mdev->mbase == hw_mbase)
-> +		return;
-> +
-> +	hdr = hw_mbase + mbox->rx_start;
-> +	msg_size = hdr->msg_size;
-> +
-> +	if (msg_size > mbox->rx_size - msgs_offset)
-> +		msg_size = mbox->rx_size - msgs_offset;
+Luigi Rizzo <lrizzo@google.com> writes:
 
-msg_size = min(msg_size, (mbox->rx_size - msgs_offset)); ?
-But can stay as is I guess.
+> On Fri, Jan 24, 2020 at 1:57 AM Toke H=C3=B8iland-J=C3=B8rgensen <toke@re=
+dhat.com> wrote:
+>>
+>> Daniel Borkmann <daniel@iogearbox.net> writes:
+>>
+>> > On 1/23/20 7:06 PM, Luigi Rizzo wrote:
+>> >> On Thu, Jan 23, 2020 at 10:01 AM Toke H=C3=B8iland-J=C3=B8rgensen <to=
+ke@redhat.com> wrote:
+>> >>> Luigi Rizzo <lrizzo@google.com> writes:
+>> >>>> On Thu, Jan 23, 2020 at 8:14 AM Toke H=C3=B8iland-J=C3=B8rgensen <t=
+oke@redhat.com> wrote:
+>> >>>>> Daniel Borkmann <daniel@iogearbox.net> writes:
+>> >>>>>> On 1/23/20 10:53 AM, Toke H=C3=B8iland-J=C3=B8rgensen wrote:
+>> >>>>>>> Luigi Rizzo <lrizzo@google.com> writes:
+>> >>>>>>>
+>> >>>>>>>> Add a netdevice flag to control skb linearization in generic xd=
+p mode.
+>> >>>>>>>> Among the various mechanism to control the flag, the sysfs
+>> >>>>>>>> interface seems sufficiently simple and self-contained.
+>> >>>>>>>> The attribute can be modified through
+>> >>>>>>>>      /sys/class/net/<DEVICE>/xdp_linearize
+>> >>>>>>>> The default is 1 (on)
+>> >>>>>>
+>> >>>>>> Needs documentation in Documentation/ABI/testing/sysfs-class-net.
+>> >>>>>>
+>> >>>>>>> Erm, won't turning off linearization break the XDP program's abi=
+lity to
+>> >>>>>>> do direct packet access?
+>> >>>>>>
+>> >>>>>> Yes, in the worst case you only have eth header pulled into linear
+>> >>>>>> section. :/
+>> >>>>>
+>> >>>>> In which case an eBPF program could read/write out of bounds since=
+ the
+>> >>>>> verifier only verifies checks against xdp->data_end. Right?
+>> >>>>
+>> >>>> Why out of bounds? Without linearization we construct xdp_buff as f=
+ollows:
+>> >>>>
+>> >>>> mac_len =3D skb->data - skb_mac_header(skb);
+>> >>>> hlen =3D skb_headlen(skb) + mac_len;
+>> >>>> xdp->data =3D skb->data - mac_len;
+>> >>>> xdp->data_end =3D xdp->data + hlen;
+>> >>>> xdp->data_hard_start =3D skb->data - skb_headroom(skb);
+>> >>>>
+>> >>>> so we shouldn't go out of bounds.
+>> >>>
+>> >>> Hmm, right, as long as it's guaranteed that the bit up to hlen is
+>> >>> already linear; is it? :)
+>> >>
+>> >> honest question: that would be skb->len - skb->data_len, isn't that
+>> >> the linear part by definition ?
+>> >
+>> > Yep, that's the linear part by definition. Generic XDP with ->data/->d=
+ata_end is in
+>> > this aspect no different from tc/BPF where we operate on skb context. =
+Only linear part
+>> > can be covered from skb (unless you pull in more via helper for the
+>> > latter).
+>>
+>> OK, but then why are we linearising in the first place? Just to get
+>> sufficient headroom?
+>
+> Looking at the condition in the if() it is both to make sufficient
+> headroom available and have linear data so the bpf code can access all
+> the packet data.
 
-> +
-> +	/* Copy mbox messages from mbox memory to bounce buffer */
-> +	memcpy(mdev->mbase + mbox->rx_start,
-> +	       hw_mbase + mbox->rx_start, msg_size + msgs_offset);
-> +}
-> +
-> +static inline void otx2_mbox_lock_init(struct mbox *mbox)
-> +{
-> +	mutex_init(&mbox->lock);
-> +}
-> +
-> +static inline void otx2_mbox_lock(struct mbox *mbox)
-> +{
-> +	mutex_lock(&mbox->lock);
-> +}
-> +
-> +static inline void otx2_mbox_unlock(struct mbox *mbox)
-> +{
-> +	mutex_unlock(&mbox->lock);
-> +}
-> +
-> +/* Mbox APIs */
-> +static inline int otx2_sync_mbox_msg(struct mbox *mbox)
-> +{
-> +	int err;
-> +
-> +	if (!otx2_mbox_nonempty(&mbox->mbox, 0))
-> +		return 0;
-> +	otx2_mbox_msg_send(&mbox->mbox, 0);
-> +	err = otx2_mbox_wait_for_rsp(&mbox->mbox, 0);
-> +	if (err)
-> +		return err;
-> +
-> +	return otx2_mbox_check_rsp_msgs(&mbox->mbox, 0);
-> +}
-> +
-> +static inline int otx2_sync_mbox_up_msg(struct mbox *mbox, int devid)
-> +{
-> +	int err;
-> +
-> +	if (!otx2_mbox_nonempty(&mbox->mbox_up, devid))
-> +		return 0;
-> +	otx2_mbox_msg_send(&mbox->mbox_up, devid);
-> +	err = otx2_mbox_wait_for_rsp(&mbox->mbox_up, devid);
-> +	if (err)
-> +		return err;
-> +
-> +	return otx2_mbox_check_rsp_msgs(&mbox->mbox_up, devid);
-> +}
-> +
-> +/* Use this API to send mbox msgs in atomic context
-> + * where sleeping is not allowed
-> + */
-> +static inline int otx2_sync_mbox_msg_busy_poll(struct mbox *mbox)
-> +{
-> +	int err;
-> +
-> +	if (!otx2_mbox_nonempty(&mbox->mbox, 0))
-> +		return 0;
-> +	otx2_mbox_msg_send(&mbox->mbox, 0);
-> +	err = otx2_mbox_busy_poll_for_rsp(&mbox->mbox, 0);
-> +	if (err)
-> +		return err;
-> +
-> +	return otx2_mbox_check_rsp_msgs(&mbox->mbox, 0);
-> +}
-> +
-> +#define M(_name, _id, _fn_name, _req_type, _rsp_type)                   \
-> +static struct _req_type __maybe_unused					\
-> +*otx2_mbox_alloc_msg_ ## _fn_name(struct mbox *mbox)                    \
-> +{									\
-> +	struct _req_type *req;						\
-> +									\
-> +	req = (struct _req_type *)otx2_mbox_alloc_msg_rsp(		\
-> +		&mbox->mbox, 0, sizeof(struct _req_type),		\
-> +		sizeof(struct _rsp_type));				\
-> +	if (!req)							\
-> +		return NULL;						\
-> +	req->hdr.sig = OTX2_MBOX_REQ_SIG;				\
-> +	req->hdr.id = _id;						\
-> +	return req;							\
-> +}
-> +
-> +MBOX_MESSAGES
-> +#undef M
-> +
-> +#define M(_name, _id, _fn_name, _req_type, _rsp_type)			\
-> +int									\
-> +otx2_mbox_up_handler_ ## _fn_name(struct otx2_nic *pfvf,		\
-> +				struct _req_type *req,			\
-> +				struct _rsp_type *rsp);			\
-> +
-> +MBOX_UP_CGX_MESSAGES
-> +#undef M
-> +
-> +#define	RVU_PFVF_PF_SHIFT	10
-> +#define	RVU_PFVF_PF_MASK	0x3F
-> +#define	RVU_PFVF_FUNC_SHIFT	0
-> +#define	RVU_PFVF_FUNC_MASK	0x3FF
-> +
->  #endif /* OTX2_COMMON_H */
-> diff --git a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_pf.c b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_pf.c
-> index cf60efa..eb8cf20 100644
-> --- a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_pf.c
-> +++ b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_pf.c
-> @@ -35,6 +35,322 @@ MODULE_LICENSE("GPL v2");
->  MODULE_VERSION(DRV_VERSION);
->  MODULE_DEVICE_TABLE(pci, otx2_pf_id_table);
->  
-> +enum {
-> +	TYPE_PFAF,
-> +	TYPE_PFVF,
-> +};
-> +
-> +static void otx2_queue_work(struct mbox *mw, struct workqueue_struct *mbox_wq,
-> +			    int first, int mdevs, u64 intr, int type)
-> +{
-> +	struct otx2_mbox_dev *mdev;
-> +	struct otx2_mbox *mbox;
-> +	struct mbox_hdr *hdr;
-> +	int i;
-> +
-> +	for (i = first; i < mdevs; i++) {
-> +		/* start from 0 */
-> +		if (!(intr & BIT_ULL(i - first)))
-> +			continue;
-> +
-> +		mbox = &mw->mbox;
-> +		mdev = &mbox->dev[i];
-> +		if (type == TYPE_PFAF)
-> +			otx2_sync_mbox_bbuf(mbox, i);
-> +		hdr = mdev->mbase + mbox->rx_start;
-> +		/* The hdr->num_msgs is set to zero immediately in the interrupt
-> +		 * handler to  ensure that it holds a correct value next time
-> +		 * when the interrupt handler is called.
-> +		 * pf->mbox.num_msgs holds the data for use in pfaf_mbox_handler
-> +		 * pf>mbox.up_num_msgs holds the data for use in
-> +		 * pfaf_mbox_up_handler.
-> +		 */
-> +		if (hdr->num_msgs) {
-> +			mw[i].num_msgs = hdr->num_msgs;
-> +			hdr->num_msgs = 0;
-> +			if (type == TYPE_PFAF)
-> +				memset(mbox->hwbase + mbox->rx_start, 0,
-> +				       ALIGN(sizeof(struct mbox_hdr),
-> +					     sizeof(u64)));
-> +
-> +			queue_work(mbox_wq, &mw[i].mbox_wrk);
-> +		}
-> +
-> +		mbox = &mw->mbox_up;
+Ohhh, didn't realise that linearising also changes skb_headlen() - makes
+so much more sense now :)
 
-You could have a two separate stack variables for these two mboxes instead
-of flipping the single variable on each loop iteration.
+> My motivation for this change is that enforcing those guarantees has
+> significant cost (even for native xdp in the cases I mentioned - mtu >
+> 1 page, hw LRO, header split), and this is an interim solution to make
+> generic skb usable without too much penalty.
 
-> +		mdev = &mbox->dev[i];
-> +		if (type == TYPE_PFAF)
-> +			otx2_sync_mbox_bbuf(mbox, i);
-> +		hdr = mdev->mbase + mbox->rx_start;
-> +		if (hdr->num_msgs) {
-> +			mw[i].up_num_msgs = hdr->num_msgs;
-> +			hdr->num_msgs = 0;
-> +			if (type == TYPE_PFAF)
-> +				memset(mbox->hwbase + mbox->rx_start, 0,
-> +				       ALIGN(sizeof(struct mbox_hdr),
-> +					     sizeof(u64)));
-> +
-> +			queue_work(mbox_wq, &mw[i].mbox_up_wrk);
-> +		}
+Sure, that part I understand; I just don't like that this "interim"
+solution makes generic and native XDP diverge further in their
+semantics...
 
-Does it make sense to pull out the logic above onto separate function?
+> In the long term I think it would be good if the xdp program could
+> express its requirements at load time ("i just need header, I need at
+> least 18 bytes of headroom..") and have the netdev or nic driver
+> reconfigure as appropriate.
 
-> +	}
-> +}
-> +
-> +static void otx2_process_pfaf_mbox_msg(struct otx2_nic *pf,
-> +				       struct mbox_msghdr *msg)
-> +{
-> +	if (msg->id >= MBOX_MSG_MAX) {
-> +		dev_err(pf->dev,
-> +			"Mbox msg with unknown ID 0x%x\n", msg->id);
-> +		return;
-> +	}
-> +
-> +	if (msg->sig != OTX2_MBOX_RSP_SIG) {
-> +		dev_err(pf->dev,
-> +			"Mbox msg with wrong signature %x, ID 0x%x\n",
-> +			 msg->sig, msg->id);
-> +		return;
-> +	}
-> +
-> +	switch (msg->id) {
-> +	case MBOX_MSG_READY:
-> +		pf->pcifunc = msg->pcifunc;
-> +		break;
-> +	default:
-> +		if (msg->rc)
-> +			dev_err(pf->dev,
-> +				"Mbox msg response has err %d, ID 0x%x\n",
-> +				msg->rc, msg->id);
-> +		break;
-> +	}
-> +}
-> +
-> +static void otx2_pfaf_mbox_handler(struct work_struct *work)
-> +{
-> +	struct otx2_mbox_dev *mdev;
-> +	struct mbox_hdr *rsp_hdr;
-> +	struct mbox_msghdr *msg;
-> +	struct otx2_mbox *mbox;
-> +	struct mbox *af_mbox;
-> +	struct otx2_nic *pf;
-> +	int offset, id;
-> +
-> +	af_mbox = container_of(work, struct mbox, mbox_wrk);
-> +	mbox = &af_mbox->mbox;
-> +	mdev = &mbox->dev[0];
-> +	rsp_hdr = (struct mbox_hdr *)(mdev->mbase + mbox->rx_start);
-> +
-> +	offset = mbox->rx_start + ALIGN(sizeof(*rsp_hdr), MBOX_MSG_ALIGN);
-> +	pf = af_mbox->pfvf;
-> +
-> +	for (id = 0; id < af_mbox->num_msgs; id++) {
-> +		msg = (struct mbox_msghdr *)(mdev->mbase + offset);
-> +		otx2_process_pfaf_mbox_msg(pf, msg);
-> +		offset = mbox->rx_start + msg->next_msgoff;
-> +		mdev->msgs_acked++;
-> +	}
-> +
-> +	otx2_mbox_reset(mbox, 0);
-> +}
-> +
-> +static int otx2_process_mbox_msg_up(struct otx2_nic *pf,
-> +				    struct mbox_msghdr *req)
-> +{
-> +	/* Check if valid, if not reply with a invalid msg */
-> +	if (req->sig != OTX2_MBOX_REQ_SIG) {
-> +		otx2_reply_invalid_msg(&pf->mbox.mbox_up, 0, 0, req->id);
-> +		return -ENODEV;
-> +	}
-> +
-> +	switch (req->id) {
-> +#define M(_name, _id, _fn_name, _req_type, _rsp_type)			\
-> +	case _id: {							\
-> +		struct _rsp_type *rsp;					\
-> +		int err;						\
-> +									\
-> +		rsp = (struct _rsp_type *)otx2_mbox_alloc_msg(		\
-> +			&pf->mbox.mbox_up, 0,				\
-> +			sizeof(struct _rsp_type));			\
-> +		if (!rsp)						\
-> +			return -ENOMEM;					\
-> +									\
-> +		rsp->hdr.id = _id;					\
-> +		rsp->hdr.sig = OTX2_MBOX_RSP_SIG;			\
-> +		rsp->hdr.pcifunc = 0;					\
-> +		rsp->hdr.rc = 0;					\
-> +									\
-> +		err = otx2_mbox_up_handler_ ## _fn_name(		\
-> +			pf, (struct _req_type *)req, rsp);		\
-> +		return err;						\
-> +	}
-> +MBOX_UP_CGX_MESSAGES
-> +#undef M
-> +		break;
-> +	default:
-> +		otx2_reply_invalid_msg(&pf->mbox.mbox_up, 0, 0, req->id);
-> +		return -ENODEV;
-> +	}
-> +	return 0;
-> +}
-> +
-> +static void otx2_pfaf_mbox_up_handler(struct work_struct *work)
-> +{
-> +	struct mbox *af_mbox = container_of(work, struct mbox, mbox_up_wrk);
-> +	struct otx2_mbox *mbox = &af_mbox->mbox_up;
-> +	struct otx2_mbox_dev *mdev = &mbox->dev[0];
-> +	struct otx2_nic *pf = af_mbox->pfvf;
-> +	int offset, id, devid = 0;
-> +	struct mbox_hdr *rsp_hdr;
-> +	struct mbox_msghdr *msg;
-> +
-> +	rsp_hdr = (struct mbox_hdr *)(mdev->mbase + mbox->rx_start);
-> +
-> +	offset = mbox->rx_start + ALIGN(sizeof(*rsp_hdr), MBOX_MSG_ALIGN);
-> +
-> +	for (id = 0; id < af_mbox->up_num_msgs; id++) {
-> +		msg = (struct mbox_msghdr *)(mdev->mbase + offset);
-> +
-> +		devid = msg->pcifunc & RVU_PFVF_FUNC_MASK;
-> +		/* Skip processing VF's messages */
-> +		if (!devid)
-> +			otx2_process_mbox_msg_up(pf, msg);
-> +		offset = mbox->rx_start + msg->next_msgoff;
-> +	}
-> +
-> +	otx2_mbox_msg_send(mbox, 0);
-> +}
-> +
-> +static irqreturn_t otx2_pfaf_mbox_intr_handler(int irq, void *pf_irq)
-> +{
-> +	struct otx2_nic *pf = (struct otx2_nic *)pf_irq;
-> +	struct mbox *mbox;
-> +
-> +	/* Clear the IRQ */
-> +	otx2_write64(pf, RVU_PF_INT, BIT_ULL(0));
-> +
-> +	mbox = &pf->mbox;
-> +	otx2_queue_work(mbox, pf->mbox_wq, 0, 1, 1, TYPE_PFAF);
-> +
-> +	return IRQ_HANDLED;
-> +}
-> +
-> +static void otx2_disable_mbox_intr(struct otx2_nic *pf)
-> +{
-> +	int vector = pci_irq_vector(pf->pdev, RVU_PF_INT_VEC_AFPF_MBOX);
-> +
-> +	/* Disable AF => PF mailbox IRQ */
-> +	otx2_write64(pf, RVU_PF_INT_ENA_W1C, BIT_ULL(0));
-> +	free_irq(vector, pf);
-> +}
-> +
-> +static int otx2_register_mbox_intr(struct otx2_nic *pf, bool probe_af)
-> +{
-> +	struct otx2_hw *hw = &pf->hw;
-> +	struct msg_req *req;
-> +	char *irq_name;
-> +	int err;
-> +
-> +	/* Register mailbox interrupt handler */
-> +	irq_name = &hw->irq_name[RVU_PF_INT_VEC_AFPF_MBOX * NAME_SIZE];
-> +	snprintf(irq_name, NAME_SIZE, "RVUPFAF Mbox");
-> +	err = request_irq(pci_irq_vector(pf->pdev, RVU_PF_INT_VEC_AFPF_MBOX),
-> +			  otx2_pfaf_mbox_intr_handler, 0, irq_name, pf);
-> +	if (err) {
-> +		dev_err(pf->dev,
-> +			"RVUPF: IRQ registration failed for PFAF mbox irq\n");
-> +		return err;
-> +	}
-> +
-> +	/* Enable mailbox interrupt for msgs coming from AF.
-> +	 * First clear to avoid spurious interrupts, if any.
-> +	 */
-> +	otx2_write64(pf, RVU_PF_INT, BIT_ULL(0));
-> +	otx2_write64(pf, RVU_PF_INT_ENA_W1S, BIT_ULL(0));
-> +
-> +	if (!probe_af)
-> +		return 0;
-> +
-> +	/* Check mailbox communication with AF */
-> +	req = otx2_mbox_alloc_msg_ready(&pf->mbox);
-> +	if (!req) {
-> +		otx2_disable_mbox_intr(pf);
-> +		return -ENOMEM;
-> +	}
-> +	err = otx2_sync_mbox_msg(&pf->mbox);
-> +	if (err) {
-> +		dev_warn(pf->dev,
-> +			 "AF not responding to mailbox, deferring probe\n");
-> +		otx2_disable_mbox_intr(pf);
-> +		return -EPROBE_DEFER;
-> +	}
-> +
-> +	return 0;
-> +}
-> +
-> +static void otx2_pfaf_mbox_destroy(struct otx2_nic *pf)
-> +{
-> +	struct mbox *mbox = &pf->mbox;
-> +
-> +	if (pf->mbox_wq) {
-> +		flush_workqueue(pf->mbox_wq);
-> +		destroy_workqueue(pf->mbox_wq);
-> +		pf->mbox_wq = NULL;
-> +	}
-> +
-> +	if (mbox->mbox.hwbase)
-> +		iounmap((void __iomem *)mbox->mbox.hwbase);
-> +
-> +	otx2_mbox_destroy(&mbox->mbox);
-> +	otx2_mbox_destroy(&mbox->mbox_up);
-> +}
-> +
-> +static int otx2_pfaf_mbox_init(struct otx2_nic *pf)
-> +{
-> +	struct mbox *mbox = &pf->mbox;
-> +	void __iomem *hwbase;
-> +	int err;
-> +
-> +	mbox->pfvf = pf;
-> +	pf->mbox_wq = alloc_workqueue("otx2_pfaf_mailbox",
-> +				      WQ_UNBOUND | WQ_HIGHPRI |
-> +				      WQ_MEM_RECLAIM, 1);
-> +	if (!pf->mbox_wq)
-> +		return -ENOMEM;
-> +
-> +	/* Mailbox is a reserved memory (in RAM) region shared between
-> +	 * admin function (i.e AF) and this PF, shouldn't be mapped as
-> +	 * device memory to allow unaligned accesses.
-> +	 */
-> +	hwbase = ioremap_wc(pci_resource_start(pf->pdev, PCI_MBOX_BAR_NUM),
-> +			    pci_resource_len(pf->pdev, PCI_MBOX_BAR_NUM));
-> +	if (!hwbase) {
-> +		dev_err(pf->dev, "Unable to map PFAF mailbox region\n");
-> +		err = -ENOMEM;
-> +		goto exit;
-> +	}
-> +
-> +	err = otx2_mbox_init(&mbox->mbox, hwbase, pf->pdev, pf->reg_base,
-> +			     MBOX_DIR_PFAF, 1);
-> +	if (err)
-> +		goto exit;
-> +
-> +	err = otx2_mbox_init(&mbox->mbox_up, hwbase, pf->pdev, pf->reg_base,
-> +			     MBOX_DIR_PFAF_UP, 1);
+This may be interesting to include in the XDP feature detection
+capabilities we've been discussing for some time. Our current thinking
+is that the verifier should detect what a program does, rather than the
+program having to explicitly declare what features it needs. See
+https://github.com/xdp-project/xdp-project/blob/master/xdp-project.org#note=
+s-implementation-plan
+for some notes on this :)
 
-There is a chance that the first otx2_mbox_init succeeded and second one
-failed. In that case you will be leaking the mbox->dev that otx2_mbox_init
-is internally allocating as the caller of otx2_pfaf_mbox_init in case of
-error has a 'goto err_free_irq_vectors', so otx2_mbox_destroy won't be
-called for the mbox->mbox. Furthermore the iounmap() would be skipped as
-well.
+-Toke
 
-I'm not sure whether PCI subsystem will call the remove() callback in case
-when probe() failed?
-
-> +	if (err)
-> +		goto exit;
-> +
-> +	err = otx2_mbox_bbuf_init(mbox, pf->pdev);
-> +	if (err)
-> +		goto exit;
-> +
-> +	INIT_WORK(&mbox->mbox_wrk, otx2_pfaf_mbox_handler);
-> +	INIT_WORK(&mbox->mbox_up_wrk, otx2_pfaf_mbox_up_handler);
-> +	otx2_mbox_lock_init(&pf->mbox);
-> +
-> +	return 0;
-> +exit:
-> +	destroy_workqueue(pf->mbox_wq);
-> +	return err;
-> +}
-> +
->  static int otx2_set_real_num_queues(struct net_device *netdev,
->  				    int tx_queues, int rx_queues)
->  {
-> @@ -96,6 +412,7 @@ static int otx2_probe(struct pci_dev *pdev, const struct pci_device_id *id)
->  	struct otx2_nic *pf;
->  	struct otx2_hw *hw;
->  	int err, qcount;
-> +	int num_vec;
->  
->  	err = pcim_enable_device(pdev);
->  	if (err) {
-> @@ -145,6 +462,17 @@ static int otx2_probe(struct pci_dev *pdev, const struct pci_device_id *id)
->  	hw->tx_queues = qcount;
->  	hw->max_queues = qcount;
->  
-> +	num_vec = pci_msix_vec_count(pdev);
-> +	hw->irq_name = devm_kmalloc_array(&hw->pdev->dev, num_vec, NAME_SIZE,
-> +					  GFP_KERNEL);
-> +	if (!hw->irq_name)
-> +		goto err_free_netdev;
-> +
-> +	hw->affinity_mask = devm_kcalloc(&hw->pdev->dev, num_vec,
-> +					 sizeof(cpumask_var_t), GFP_KERNEL);
-> +	if (!hw->affinity_mask)
-> +		goto err_free_netdev;
-> +
->  	/* Map CSRs */
->  	pf->reg_base = pcim_iomap(pdev, PCI_CFG_REG_BAR_NUM, 0);
->  	if (!pf->reg_base) {
-> @@ -157,20 +485,44 @@ static int otx2_probe(struct pci_dev *pdev, const struct pci_device_id *id)
->  	if (err)
->  		goto err_free_netdev;
->  
-> +	err = pci_alloc_irq_vectors(hw->pdev, RVU_PF_INT_VEC_CNT,
-> +				    RVU_PF_INT_VEC_CNT, PCI_IRQ_MSIX);
-> +	if (err < 0) {
-> +		dev_err(dev, "%s: Failed to alloc %d IRQ vectors\n",
-> +			__func__, num_vec);
-> +		goto err_free_netdev;
-> +	}
-> +
-> +	/* Init PF <=> AF mailbox stuff */
-> +	err = otx2_pfaf_mbox_init(pf);
-> +	if (err)
-> +		goto err_free_irq_vectors;
-> +
-> +	/* Register mailbox interrupt */
-> +	err = otx2_register_mbox_intr(pf, true);
-> +	if (err)
-> +		goto err_mbox_destroy;
-> +
->  	err = otx2_set_real_num_queues(netdev, hw->tx_queues, hw->rx_queues);
->  	if (err)
-> -		goto err_free_netdev;
-> +		goto err_disable_mbox_intr;
->  
->  	netdev->netdev_ops = &otx2_netdev_ops;
->  
->  	err = register_netdev(netdev);
->  	if (err) {
->  		dev_err(dev, "Failed to register netdevice\n");
-> -		goto err_free_netdev;
-> +		goto err_disable_mbox_intr;
->  	}
->  
->  	return 0;
->  
-> +err_disable_mbox_intr:
-> +	otx2_disable_mbox_intr(pf);
-> +err_mbox_destroy:
-> +	otx2_pfaf_mbox_destroy(pf);
-> +err_free_irq_vectors:
-> +	pci_free_irq_vectors(hw->pdev);
->  err_free_netdev:
->  	pci_set_drvdata(pdev, NULL);
->  	free_netdev(netdev);
-> @@ -190,9 +542,12 @@ static void otx2_remove(struct pci_dev *pdev)
->  	pf = netdev_priv(netdev);
->  
->  	unregister_netdev(netdev);
-> +	otx2_disable_mbox_intr(pf);
-> +	otx2_pfaf_mbox_destroy(pf);
->  	pci_free_irq_vectors(pf->pdev);
->  	pci_set_drvdata(pdev, NULL);
->  	free_netdev(netdev);
-> +
->  	pci_release_regions(pdev);
->  }
->  
-> -- 
-> 2.7.4
-> 
