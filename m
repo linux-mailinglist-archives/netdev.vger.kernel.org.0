@@ -2,37 +2,40 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 7E14014875A
-	for <lists+netdev@lfdr.de>; Fri, 24 Jan 2020 15:23:07 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 85E28148770
+	for <lists+netdev@lfdr.de>; Fri, 24 Jan 2020 15:23:17 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2405054AbgAXOWY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 24 Jan 2020 09:22:24 -0500
-Received: from mail.kernel.org ([198.145.29.99]:44462 "EHLO mail.kernel.org"
+        id S2392380AbgAXOW2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 24 Jan 2020 09:22:28 -0500
+Received: from mail.kernel.org ([198.145.29.99]:44516 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2392334AbgAXOWX (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 24 Jan 2020 09:22:23 -0500
+        id S2405445AbgAXOW0 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 24 Jan 2020 09:22:26 -0500
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 6280222464;
-        Fri, 24 Jan 2020 14:22:22 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 940DA24676;
+        Fri, 24 Jan 2020 14:22:24 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1579875743;
-        bh=JndqAaWRMQuy3nm1R4jhkd9XYrsf/vtVro7uCNEVFKM=;
-        h=From:To:Cc:Subject:Date:From;
-        b=KI/GcPLd6KfqXV9yU5S80WXJbymr8HUI7P/pB1VyFJM3NuPllbY6Lc/0NAhhrw3MI
-         vRFRz5KND5iBuTf0b88ErKMfHU+wtPDnF0AtEDdNPFa9OiY0Of/RJ3C3ECYgpBcfTA
-         c0PNvEWIespWB5mK+7IDIbbcjktTEendDzmkPPWo=
+        s=default; t=1579875745;
+        bh=IIUnMaUqh3pkUmL/O720khsx3RBbmq2tEFSIgjjRU10=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=uCDxqItY1T3fTamCmB0EyOrvmXDNjxWjJApd1QTrLvrAK3RdjViCRfygMVBMUCotg
+         rM8eVnm18R5scLyb5EE+sX+DcPn/cJPs8kkm7nXMpcOinrvIXsDeHJfhk6HDO58OAA
+         lwxeBzvBPUj99rulzpt/nQs5aYniWaeBvLtFDY4k=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Sven Eckelmann <sven@narfation.org>,
-        Simon Wunderlich <sw@simonwunderlich.de>,
+Cc:     Radoslaw Tyl <radoslawx.tyl@intel.com>,
+        Paul Menzel <pmenzel@molgen.mpg.de>,
+        Jeff Kirsher <jeffrey.t.kirsher@intel.com>,
         Sasha Levin <sashal@kernel.org>,
-        b.a.t.m.a.n@lists.open-mesh.org, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.4 1/9] batman-adv: Fix DAT candidate selection on little endian systems
-Date:   Fri, 24 Jan 2020 09:22:13 -0500
-Message-Id: <20200124142221.31201-1-sashal@kernel.org>
+        intel-wired-lan@lists.osuosl.org, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 4.4 3/9] ixgbevf: Remove limit of 10 entries for unicast filter list
+Date:   Fri, 24 Jan 2020 09:22:15 -0500
+Message-Id: <20200124142221.31201-3-sashal@kernel.org>
 X-Mailer: git-send-email 2.20.1
+In-Reply-To: <20200124142221.31201-1-sashal@kernel.org>
+References: <20200124142221.31201-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
@@ -42,51 +45,40 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Sven Eckelmann <sven@narfation.org>
+From: Radoslaw Tyl <radoslawx.tyl@intel.com>
 
-[ Upstream commit 4cc4a1708903f404d2ca0dfde30e71e052c6cbc9 ]
+[ Upstream commit aa604651d523b1493988d0bf6710339f3ee60272 ]
 
-The distributed arp table is using a DHT to store and retrieve MAC address
-information for an IP address. This is done using unicast messages to
-selected peers. The potential peers are looked up using the IP address and
-the VID.
+Currently, though the FDB entry is added to VF, it does not appear in
+RAR filters. VF driver only allows to add 10 entries. Attempting to add
+another causes an error. This patch removes limitation and allows use of
+all free RAR entries for the FDB if needed.
 
-While the IP address is always stored in big endian byte order, this is not
-the case of the VID. It can (depending on the host system) either be big
-endian or little endian. The host must therefore always convert it to big
-endian to ensure that all devices calculate the same peers for the same
-lookup data.
-
-Fixes: be1db4f6615b ("batman-adv: make the Distributed ARP Table vlan aware")
-Signed-off-by: Sven Eckelmann <sven@narfation.org>
-Signed-off-by: Simon Wunderlich <sw@simonwunderlich.de>
+Fixes: 46ec20ff7d ("ixgbevf: Add macvlan support in the set rx mode op")
+Signed-off-by: Radoslaw Tyl <radoslawx.tyl@intel.com>
+Acked-by: Paul Menzel <pmenzel@molgen.mpg.de>
+Signed-off-by: Jeff Kirsher <jeffrey.t.kirsher@intel.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/batman-adv/distributed-arp-table.c | 4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
+ drivers/net/ethernet/intel/ixgbevf/ixgbevf_main.c | 5 -----
+ 1 file changed, 5 deletions(-)
 
-diff --git a/net/batman-adv/distributed-arp-table.c b/net/batman-adv/distributed-arp-table.c
-index c2dff7c6e9607..76808c5e81836 100644
---- a/net/batman-adv/distributed-arp-table.c
-+++ b/net/batman-adv/distributed-arp-table.c
-@@ -226,6 +226,7 @@ static u32 batadv_hash_dat(const void *data, u32 size)
- 	u32 hash = 0;
- 	const struct batadv_dat_entry *dat = data;
- 	const unsigned char *key;
-+	__be16 vid;
- 	u32 i;
+diff --git a/drivers/net/ethernet/intel/ixgbevf/ixgbevf_main.c b/drivers/net/ethernet/intel/ixgbevf/ixgbevf_main.c
+index 723bda33472a7..0fa94ebf0411b 100644
+--- a/drivers/net/ethernet/intel/ixgbevf/ixgbevf_main.c
++++ b/drivers/net/ethernet/intel/ixgbevf/ixgbevf_main.c
+@@ -1861,11 +1861,6 @@ static int ixgbevf_write_uc_addr_list(struct net_device *netdev)
+ 	struct ixgbe_hw *hw = &adapter->hw;
+ 	int count = 0;
  
- 	key = (const unsigned char *)&dat->ip;
-@@ -235,7 +236,8 @@ static u32 batadv_hash_dat(const void *data, u32 size)
- 		hash ^= (hash >> 6);
- 	}
+-	if ((netdev_uc_count(netdev)) > 10) {
+-		pr_err("Too many unicast filters - No Space\n");
+-		return -ENOSPC;
+-	}
+-
+ 	if (!netdev_uc_empty(netdev)) {
+ 		struct netdev_hw_addr *ha;
  
--	key = (const unsigned char *)&dat->vid;
-+	vid = htons(dat->vid);
-+	key = (__force const unsigned char *)&vid;
- 	for (i = 0; i < sizeof(dat->vid); i++) {
- 		hash += key[i];
- 		hash += (hash << 10);
 -- 
 2.20.1
 
