@@ -2,145 +2,135 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id F15E71488F7
-	for <lists+netdev@lfdr.de>; Fri, 24 Jan 2020 15:32:16 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id AB2EE148A66
+	for <lists+netdev@lfdr.de>; Fri, 24 Jan 2020 15:47:24 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2392641AbgAXOcA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 24 Jan 2020 09:32:00 -0500
-Received: from mail-ed1-f66.google.com ([209.85.208.66]:41209 "EHLO
-        mail-ed1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2392623AbgAXOb7 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 24 Jan 2020 09:31:59 -0500
-Received: by mail-ed1-f66.google.com with SMTP id c26so2477831eds.8
-        for <netdev@vger.kernel.org>; Fri, 24 Jan 2020 06:31:58 -0800 (PST)
+        id S2389365AbgAXOrW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 24 Jan 2020 09:47:22 -0500
+Received: from mail-pl1-f195.google.com ([209.85.214.195]:42655 "EHLO
+        mail-pl1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2389914AbgAXOrU (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 24 Jan 2020 09:47:20 -0500
+Received: by mail-pl1-f195.google.com with SMTP id p9so865841plk.9
+        for <netdev@vger.kernel.org>; Fri, 24 Jan 2020 06:47:20 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=SlkMNqBX85gDf9V5bDVS9pSkjWiCCWHI2OfvHB05OIo=;
-        b=CEo/G2Fs/xex2x4Y2zWM9P7r9Fru29Oqer2hP6FA4UGkXW4v7SxJPZNOfzSy2H+ofn
-         e6h2PgEX3fSK5m+eFysi+HuyBNOphrE74RFeiSS/bm394PBnEhazL6lMsLns8j4mXHFE
-         IzrGsH4gzeRmtQ/oKPWqCVlVJTLhoOfzNA6pgGckrETBSciwgjy6fz246kMH1y8EFIyK
-         lyOvENnjAFLiGrPsJ0wABiCatLADMi3ic4TgnExd9wWvQhuf9ApYb3evQsK9N/p9lHAp
-         bpFMcOCl5QEzl6k7uSIO2G/w00s7cRlnF8EvpwjqJ2Bm4ihznZBl9x27mt3S520j5ofG
-         qr5w==
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=ZoYv+bzovQuSOXb+w5Rac2L2fPdV1EgC6IGdHhnQB5s=;
+        b=DwmTTLRsI8kyAFQNqq5bBadClrgikux3E72iZkvz1myzhGbmFRetQEgVMNiR/yHi4r
+         Xri0Agf9m/kkoEcXkzsA80mz+weqxHJTLg9ZsAlr+p4qzR76K2hCn7r0ouzQNiOJmDhV
+         qw8/X1l2kSh4IeQUUBvDjTspHRJ5ts+FUfLi0NLRheSMIEBxpClEc8UKBjpXWgGLGsRE
+         7OSadFn2fu4lTkq2zXU4KcxnFxWQNfwYKjuxZbjgs4rtaUPFoLHyjnvQ5YQ42lQjDmvk
+         doojc4YGf1TqnowjJHjcKt2SJ2ZjbZZ/bjSraUdTk0MHrqPGmWKL66fmnv95GAcpI9Hb
+         eTcQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=SlkMNqBX85gDf9V5bDVS9pSkjWiCCWHI2OfvHB05OIo=;
-        b=Z8D2f8ogTR+1XixT2E9kBjXvEAQofE6wiP8Ok8jVWX9/51sYvHLEg0XsjcI01uxiH1
-         zp1EFi9V5PzBstbqRcq6K1iNXgVaNj55PBXW6/M+04wbWMFX8+m31sIbSpdkr9F2Hltj
-         na3QQd9iRBjQOYxMs3k/L3rwlje1VnlpZa/UYObLtDy9JSOJ1VBLPAMTB8vQIbYnT2YI
-         bSuINzIbFZcVzSOn3zytHYrd9qusG2lh1p/rHxlWD/SI0BMv+M7nCZLEly2TVbb3Ul8z
-         OJkJaZeTW6mQJMZ4QeUrd3EqRxzEE6oa/KtkK/7m3O8OlvkgQEUKDQU2LMHk/TI55HCt
-         66Pw==
-X-Gm-Message-State: APjAAAXqWDVvMYqLKEajsF3W1frzFMLIPH9Vr0fAbZ0i4JH5nXQC+2Ld
-        mkar6GGOe90ahnbF1hKSwY6zDxFxzy19w1cU3L1BvHfC
-X-Google-Smtp-Source: APXvYqy0MQmSWWJrAos6yHHVr/W4QLZ6MKwgRIlJWfdAS47LHsd1cS5ak3e2dOc1e1PR7XWxY8g5OVJBcFJ0n6kRl1w=
-X-Received: by 2002:a50:eb95:: with SMTP id y21mr2774082edr.212.1579876316852;
- Fri, 24 Jan 2020 06:31:56 -0800 (PST)
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=ZoYv+bzovQuSOXb+w5Rac2L2fPdV1EgC6IGdHhnQB5s=;
+        b=Fmxpoe/c47qJIcoPEMB+SxaO3584gcWkPFohy2hD1O+HTl/lgkJcN5dr4tzQ1fVJnI
+         5N7SZi4C8xkc8RC4nK5/LOSrnRa/bgFg16pZSvN50esmFyt+oq54fKFAKROKEELRNHK9
+         FIEwLPrBsmvgc8iDPwf16xH0fWH6UINlfso08hewUoW1KfEV9OjfqqJCOjWZ0zR2oRXW
+         6yCMqxncRBpQfZjC5pIjJCZM2BUcXmkpkRPpUKmsmUlMiFEywBkQ1UEXZ//rD4acfRbu
+         fiuhVVc6cXdspz0Si5feM2xOW/iZUAZ3XwqLRGUH/+wzMcvBReTETpstUqfTtAN2u67J
+         c9Nw==
+X-Gm-Message-State: APjAAAUIhauEgdHPtpsSHJdo22TSaeYQhs5O0GkLBcQxQ0FqkyOtCAgm
+        NNVV/dIY6/wtXKTOQC7J5K0=
+X-Google-Smtp-Source: APXvYqwSZcmVjOJtxt0guGwUyDxRvmynQYGZTv9Qw9zPVLeOGA83If4uQVP0C/g9ez+vF6ftZimupg==
+X-Received: by 2002:a17:90b:258:: with SMTP id fz24mr3469267pjb.6.1579877239986;
+        Fri, 24 Jan 2020 06:47:19 -0800 (PST)
+Received: from martin-VirtualBox ([122.178.219.138])
+        by smtp.gmail.com with ESMTPSA id s131sm7122675pfs.135.2020.01.24.06.47.18
+        (version=TLS1 cipher=ECDHE-RSA-AES128-SHA bits=128/128);
+        Fri, 24 Jan 2020 06:47:19 -0800 (PST)
+Date:   Fri, 24 Jan 2020 20:17:11 +0530
+From:   Martin Varghese <martinvarghesenokia@gmail.com>
+To:     Willem de Bruijn <willemdebruijn.kernel@gmail.com>
+Cc:     Network Development <netdev@vger.kernel.org>,
+        David Miller <davem@davemloft.net>, corbet@lwn.net,
+        Alexey Kuznetsov <kuznet@ms2.inr.ac.ru>,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        scott.drennan@nokia.com, Jiri Benc <jbenc@redhat.com>,
+        martin.varghese@nokia.com
+Subject: Re: [PATCH net-next v5 1/2] net: UDP tunnel encapsulation module for
+ tunnelling different protocols like MPLS,IP,NSH etc.
+Message-ID: <20200124144711.GA8532@martin-VirtualBox>
+References: <cover.1579798999.git.martin.varghese@nokia.com>
+ <f1805f7c981d74d8611dd19329765a1f7308cbaf.1579798999.git.martin.varghese@nokia.com>
+ <CA+FuTSccdUY3Z4d9wznbjysacs=OAD4mfRsPP4N84NTEVhOSAQ@mail.gmail.com>
 MIME-Version: 1.0
-References: <20200122203253.20652-1-lrizzo@google.com> <875zh2bis0.fsf@toke.dk>
- <953c8fee-91f0-85e7-6c7b-b9a2f8df5aa6@iogearbox.net> <87blqui1zu.fsf@toke.dk>
- <CAMOZA0Kmf1=ULJnbBUVKKjUyzqj2JKfp5ub769SNav5=B7VA5Q@mail.gmail.com>
- <875zh2hx20.fsf@toke.dk> <CAMOZA0JSZ2iDBk4NOUyNLVE_KmRzYHyEBmQWF+etnpcp=fe0kQ@mail.gmail.com>
- <b22e86ef-e4dd-14a3-fb1b-477d9e61fefa@iogearbox.net> <87r1zpgosp.fsf@toke.dk>
-In-Reply-To: <87r1zpgosp.fsf@toke.dk>
-From:   Luigi Rizzo <lrizzo@google.com>
-Date:   Fri, 24 Jan 2020 06:31:45 -0800
-Message-ID: <CAMOZA0+neBeXKDyQYxwP0MqC9TqGWV-d3S83z_EACH=iOEb6mw@mail.gmail.com>
-Subject: Re: [PATCH] net-xdp: netdev attribute to control xdpgeneric skb linearization
-To:     =?UTF-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <toke@redhat.com>
-Cc:     Daniel Borkmann <daniel@iogearbox.net>, netdev@vger.kernel.org,
-        Jesper Dangaard Brouer <hawk@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>, sameehj@amazon.com
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CA+FuTSccdUY3Z4d9wznbjysacs=OAD4mfRsPP4N84NTEVhOSAQ@mail.gmail.com>
+User-Agent: Mutt/1.5.21 (2010-09-15)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Jan 24, 2020 at 1:57 AM Toke H=C3=B8iland-J=C3=B8rgensen <toke@redh=
-at.com> wrote:
->
-> Daniel Borkmann <daniel@iogearbox.net> writes:
->
-> > On 1/23/20 7:06 PM, Luigi Rizzo wrote:
-> >> On Thu, Jan 23, 2020 at 10:01 AM Toke H=C3=B8iland-J=C3=B8rgensen <tok=
-e@redhat.com> wrote:
-> >>> Luigi Rizzo <lrizzo@google.com> writes:
-> >>>> On Thu, Jan 23, 2020 at 8:14 AM Toke H=C3=B8iland-J=C3=B8rgensen <to=
-ke@redhat.com> wrote:
-> >>>>> Daniel Borkmann <daniel@iogearbox.net> writes:
-> >>>>>> On 1/23/20 10:53 AM, Toke H=C3=B8iland-J=C3=B8rgensen wrote:
-> >>>>>>> Luigi Rizzo <lrizzo@google.com> writes:
-> >>>>>>>
-> >>>>>>>> Add a netdevice flag to control skb linearization in generic xdp=
- mode.
-> >>>>>>>> Among the various mechanism to control the flag, the sysfs
-> >>>>>>>> interface seems sufficiently simple and self-contained.
-> >>>>>>>> The attribute can be modified through
-> >>>>>>>>      /sys/class/net/<DEVICE>/xdp_linearize
-> >>>>>>>> The default is 1 (on)
-> >>>>>>
-> >>>>>> Needs documentation in Documentation/ABI/testing/sysfs-class-net.
-> >>>>>>
-> >>>>>>> Erm, won't turning off linearization break the XDP program's abil=
-ity to
-> >>>>>>> do direct packet access?
-> >>>>>>
-> >>>>>> Yes, in the worst case you only have eth header pulled into linear
-> >>>>>> section. :/
-> >>>>>
-> >>>>> In which case an eBPF program could read/write out of bounds since =
-the
-> >>>>> verifier only verifies checks against xdp->data_end. Right?
-> >>>>
-> >>>> Why out of bounds? Without linearization we construct xdp_buff as fo=
-llows:
-> >>>>
-> >>>> mac_len =3D skb->data - skb_mac_header(skb);
-> >>>> hlen =3D skb_headlen(skb) + mac_len;
-> >>>> xdp->data =3D skb->data - mac_len;
-> >>>> xdp->data_end =3D xdp->data + hlen;
-> >>>> xdp->data_hard_start =3D skb->data - skb_headroom(skb);
-> >>>>
-> >>>> so we shouldn't go out of bounds.
-> >>>
-> >>> Hmm, right, as long as it's guaranteed that the bit up to hlen is
-> >>> already linear; is it? :)
-> >>
-> >> honest question: that would be skb->len - skb->data_len, isn't that
-> >> the linear part by definition ?
+On Thu, Jan 23, 2020 at 05:42:25PM -0500, Willem de Bruijn wrote:
+> On Thu, Jan 23, 2020 at 1:04 PM Martin Varghese
+> <martinvarghesenokia@gmail.com> wrote:
 > >
-> > Yep, that's the linear part by definition. Generic XDP with ->data/->da=
-ta_end is in
-> > this aspect no different from tc/BPF where we operate on skb context. O=
-nly linear part
-> > can be covered from skb (unless you pull in more via helper for the
-> > latter).
->
-> OK, but then why are we linearising in the first place? Just to get
-> sufficient headroom?
+> > From: Martin Varghese <martin.varghese@nokia.com>
+> >
+> > The Bareudp tunnel module provides a generic L3 encapsulation
+> > tunnelling module for tunnelling different protocols like MPLS,
+> > IP,NSH etc inside a UDP tunnel.
+> >
+> > Signed-off-by: Martin Varghese <martin.varghese@nokia.com>
+> 
+> > diff --git a/include/net/ip6_tunnel.h b/include/net/ip6_tunnel.h
+> > index 028eaea..8215d1b 100644
+> > --- a/include/net/ip6_tunnel.h
+> > +++ b/include/net/ip6_tunnel.h
+> > @@ -165,5 +165,55 @@ static inline void ip6tunnel_xmit(struct sock *sk, struct sk_buff *skb,
+> >                 iptunnel_xmit_stats(dev, pkt_len);
+> >         }
+> >  }
+> > +
+> > +static inline struct dst_entry *ip6tunnel_get_dst(struct sk_buff *skb,
+> > +                                                 struct net_device *dev,
+> > +                                                 struct net *net,
+> > +                                                 struct socket *sock,
+> > +                                                 struct flowi6 *fl6,
+> > +                                                 const struct ip_tunnel_info *info,
+> > +                                                 bool use_cache)
+> > +{
+> > +       struct dst_entry *dst = NULL;
+> > +#ifdef CONFIG_DST_CACHE
+> > +       struct dst_cache *dst_cache;
+> > +#endif
+> 
+> I just noticed these ifdefs are absent in Geneve. On closer look,
+> CONFIG_NET_UDP_TUNNEL selects CONFIG_NET_IP_TUNNEL selects
+> CONFIG_DST_CACHE. So they are indeed not needed.
+> 
+> Sorry, should have noticed that in v4. It could conceivably be fixed
+> up later, but seems worth one more round to get it right from the
+> start.
+> 
+But unlike geneve i have placed this definition in ip_tunnels.h &
+ip6_tunnels.h which doesnt come under NET_IP_TUNNEL.Hence build 
+will fail in cases where NET_UDP_TUNNEL is disabled
+Kbuild robot has shown that in v3.
 
-Looking at the condition in the if() it is both to make sufficient
-headroom available and have
-linear data so the bpf code can access all the packet data.
+Even with  #ifdef CONFIG_DST_CACHE Kbuild robot reported another issue.
+when ip6_tunnel.h included in ip4_tunnel_core.c.
+dst_cache_get_ipv6 comes under ipv6 flag  and hence the compilation of 
+ip4_tunnel_core.c fails when IPV6 is disabled.
 
-My motivation for this change is that enforcing those guarantees has
-significant cost
-(even for native xdp in the cases I mentioned - mtu > 1 page, hw LRO,
-header split),
-and this is an interim solution to make generic skb usable without too
-much penalty.
+Ideally this functions should be defined in ip_tunnel.c & ip6_tunnel.c
+as these function has no significance if IP Tunnel is disabled.
 
-In the long term I think it would be good if the xdp program could
-express its requirements
-at load time ("i just need header, I need at least 18 bytes of
-headroom..") and have the
-netdev or nic driver reconfigure as appropriate.
 
-cheers
-luigi
+> Glad you found the previous reviews helpful. I will also miss a lot.
+> For more assurance and also as regression test, it might be
+> worth looking into adding a bareudp mode to
+> tools/testing/selftests/net/pmtu.sh. That looks like it exercises a
+> variety of tunnel types already. Extending it might be little work
+> (once ip supports bareudp).
+> 
+> To be clear, not for this patch set. Let's not delay that further.
+> Just a thought.
