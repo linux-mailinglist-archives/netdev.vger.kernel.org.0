@@ -2,37 +2,36 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 56E1E148870
-	for <lists+netdev@lfdr.de>; Fri, 24 Jan 2020 15:29:27 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5E9A714886B
+	for <lists+netdev@lfdr.de>; Fri, 24 Jan 2020 15:29:25 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2391154AbgAXO3E (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 24 Jan 2020 09:29:04 -0500
-Received: from mail.kernel.org ([198.145.29.99]:42430 "EHLO mail.kernel.org"
+        id S2405157AbgAXOVE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 24 Jan 2020 09:21:04 -0500
+Received: from mail.kernel.org ([198.145.29.99]:42516 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2392165AbgAXOVB (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 24 Jan 2020 09:21:01 -0500
+        id S2392177AbgAXOVD (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 24 Jan 2020 09:21:03 -0500
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id E496B2087E;
-        Fri, 24 Jan 2020 14:20:59 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 16FA42077C;
+        Fri, 24 Jan 2020 14:21:02 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1579875660;
-        bh=Le2GyrE1tocvcCAb0URGRUi/5wyXZGjo2SaBa3UdYrs=;
+        s=default; t=1579875662;
+        bh=nszOQlWLNn/SKVu+on/hSsf4EZcpBiQzfO0wSwc/1Nc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=dwQviSC/bMjWep0Q8i62Z2OxO35skdVTFYgId82ID0tBYvLY41g2H2jn66MABFS68
-         Ple5qvOoJ1IV01CYKk0SUmdWH9TQ+kMaIXRuqzcah7fMbxDrVYOkbtUquOlLD2+JXR
-         Fga39KKb5lSquSnX37Q3Uxe+U1YCxJJk+KVuJiMY=
+        b=WBGnJZaUCulJ8b9C6qRsQl0MdLC1Rd4BEToIvVBli0J+6uAL1gCRgq1uQgtjku2D2
+         6dNNGdBlctRbl51tsFL9+1QekuAUqmVRiMvN6agD0+wweTEP0CRB0e+scbujgji2oD
+         d6SJc2nKCs37c0hFGdz+Td/mQh0WoUVrdDmsC2oU=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Johannes Berg <johannes.berg@intel.com>,
-        syzbot+e8a797964a4180eb57d5@syzkaller.appspotmail.com,
-        syzbot+34b582cf32c1db008f8e@syzkaller.appspotmail.com,
-        Sasha Levin <sashal@kernel.org>,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.19 41/56] cfg80211: check for set_wiphy_params
-Date:   Fri, 24 Jan 2020 09:19:57 -0500
-Message-Id: <20200124142012.29752-41-sashal@kernel.org>
+Cc:     Petr Machata <petrm@mellanox.com>, Jiri Pirko <jiri@mellanox.com>,
+        Ido Schimmel <idosch@mellanox.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 4.19 43/56] mlxsw: spectrum: Wipe xstats.backlog of down ports
+Date:   Fri, 24 Jan 2020 09:19:59 -0500
+Message-Id: <20200124142012.29752-43-sashal@kernel.org>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20200124142012.29752-1-sashal@kernel.org>
 References: <20200124142012.29752-1-sashal@kernel.org>
@@ -45,39 +44,69 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Johannes Berg <johannes.berg@intel.com>
+From: Petr Machata <petrm@mellanox.com>
 
-[ Upstream commit 24953de0a5e31dcca7e82c8a3c79abc2dfe8fb6e ]
+[ Upstream commit ca7609ff3680c51d6c29897f3117aa2ad904f92a ]
 
-Check if set_wiphy_params is assigned and return an error if not,
-some drivers (e.g. virt_wifi where syzbot reported it) don't have
-it.
+Per-port counter cache used by Qdiscs is updated periodically, unless the
+port is down. The fact that the cache is not updated for down ports is no
+problem for most counters, which are relative in nature. However, backlog
+is absolute in nature, and if there is a non-zero value in the cache around
+the time that the port goes down, that value just stays there. This value
+then leaks to offloaded Qdiscs that report non-zero backlog even if
+there (obviously) is no traffic.
 
-Reported-by: syzbot+e8a797964a4180eb57d5@syzkaller.appspotmail.com
-Reported-by: syzbot+34b582cf32c1db008f8e@syzkaller.appspotmail.com
-Signed-off-by: Johannes Berg <johannes.berg@intel.com>
-Link: https://lore.kernel.org/r/20200113125358.ac07f276efff.Ibd85ee1b12e47b9efb00a2adc5cd3fac50da791a@changeid
-Signed-off-by: Johannes Berg <johannes.berg@intel.com>
+The HW does not keep backlog of a downed port, so do likewise: as the port
+goes down, wipe the backlog value from xstats.
+
+Fixes: 075ab8adaf4e ("mlxsw: spectrum: Collect tclass related stats periodically")
+Signed-off-by: Petr Machata <petrm@mellanox.com>
+Acked-by: Jiri Pirko <jiri@mellanox.com>
+Signed-off-by: Ido Schimmel <idosch@mellanox.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/wireless/rdev-ops.h | 4 ++++
- 1 file changed, 4 insertions(+)
+ drivers/net/ethernet/mellanox/mlxsw/spectrum.c | 13 +++++++++++++
+ 1 file changed, 13 insertions(+)
 
-diff --git a/net/wireless/rdev-ops.h b/net/wireless/rdev-ops.h
-index 16dad14aabd7c..a8c58aeb9dde9 100644
---- a/net/wireless/rdev-ops.h
-+++ b/net/wireless/rdev-ops.h
-@@ -537,6 +537,10 @@ static inline int
- rdev_set_wiphy_params(struct cfg80211_registered_device *rdev, u32 changed)
+diff --git a/drivers/net/ethernet/mellanox/mlxsw/spectrum.c b/drivers/net/ethernet/mellanox/mlxsw/spectrum.c
+index e498ee95bacab..30ef318b3d68d 100644
+--- a/drivers/net/ethernet/mellanox/mlxsw/spectrum.c
++++ b/drivers/net/ethernet/mellanox/mlxsw/spectrum.c
+@@ -1061,6 +1061,9 @@ static void update_stats_cache(struct work_struct *work)
+ 			     periodic_hw_stats.update_dw.work);
+ 
+ 	if (!netif_carrier_ok(mlxsw_sp_port->dev))
++		/* Note: mlxsw_sp_port_down_wipe_counters() clears the cache as
++		 * necessary when port goes down.
++		 */
+ 		goto out;
+ 
+ 	mlxsw_sp_port_get_hw_stats(mlxsw_sp_port->dev,
+@@ -3309,6 +3312,15 @@ static int mlxsw_sp_port_unsplit(struct mlxsw_core *mlxsw_core, u8 local_port,
+ 	return 0;
+ }
+ 
++static void
++mlxsw_sp_port_down_wipe_counters(struct mlxsw_sp_port *mlxsw_sp_port)
++{
++	int i;
++
++	for (i = 0; i < TC_MAX_QUEUE; i++)
++		mlxsw_sp_port->periodic_hw_stats.xstats.backlog[i] = 0;
++}
++
+ static void mlxsw_sp_pude_event_func(const struct mlxsw_reg_info *reg,
+ 				     char *pude_pl, void *priv)
  {
- 	int ret;
-+
-+	if (!rdev->ops->set_wiphy_params)
-+		return -EOPNOTSUPP;
-+
- 	trace_rdev_set_wiphy_params(&rdev->wiphy, changed);
- 	ret = rdev->ops->set_wiphy_params(&rdev->wiphy, changed);
- 	trace_rdev_return_int(&rdev->wiphy, ret);
+@@ -3329,6 +3341,7 @@ static void mlxsw_sp_pude_event_func(const struct mlxsw_reg_info *reg,
+ 	} else {
+ 		netdev_info(mlxsw_sp_port->dev, "link down\n");
+ 		netif_carrier_off(mlxsw_sp_port->dev);
++		mlxsw_sp_port_down_wipe_counters(mlxsw_sp_port);
+ 	}
+ }
+ 
 -- 
 2.20.1
 
