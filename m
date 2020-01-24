@@ -2,56 +2,132 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 9D0DA149189
-	for <lists+netdev@lfdr.de>; Sat, 25 Jan 2020 00:02:19 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4464B149198
+	for <lists+netdev@lfdr.de>; Sat, 25 Jan 2020 00:08:14 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729300AbgAXXCR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 24 Jan 2020 18:02:17 -0500
-Received: from smtprelay0064.hostedemail.com ([216.40.44.64]:59034 "EHLO
-        smtprelay.hostedemail.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1729195AbgAXXCR (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 24 Jan 2020 18:02:17 -0500
-Received: from filter.hostedemail.com (clb03-v110.bra.tucows.net [216.40.38.60])
-        by smtprelay04.hostedemail.com (Postfix) with ESMTP id 9D610180A68D8;
-        Fri, 24 Jan 2020 23:02:16 +0000 (UTC)
-X-Session-Marker: 6A6F6540706572636865732E636F6D
-X-Spam-Summary: 2,0,0,,d41d8cd98f00b204,joe@perches.com,:::::,RULES_HIT:41:355:379:599:968:988:989:1260:1277:1311:1313:1314:1345:1359:1437:1515:1516:1518:1534:1537:1566:1593:1594:1711:1714:1730:1747:1777:1792:2110:2194:2199:2393:2559:2562:2693:2828:3138:3139:3140:3141:3142:3622:3865:3866:3868:3870:3871:3872:3873:4225:4321:5007:10004:10400:10848:11658:11914:12297:12740:12760:12895:13069:13161:13229:13311:13357:13439:14659:21080:21627:30045:30054:30091,0,RBL:none,CacheIP:none,Bayesian:0.5,0.5,0.5,Netcheck:none,DomainCache:0,MSF:not bulk,SPF:,MSBL:0,DNSBL:none,Custom_rules:0:0:0,LFtime:1,LUA_SUMMARY:none
-X-HE-Tag: chair33_8831116e1430d
-X-Filterd-Recvd-Size: 1348
-Received: from XPS-9350.home (unknown [47.151.135.224])
-        (Authenticated sender: joe@perches.com)
-        by omf16.hostedemail.com (Postfix) with ESMTPA;
-        Fri, 24 Jan 2020 23:02:15 +0000 (UTC)
-Message-ID: <2603295b9f93bebda831079f10a8c6faf9b1c812.camel@perches.com>
-Subject: Re: [net-next 06/14] mlx5: Use proper logging and tracing line
- terminations
-From:   Joe Perches <joe@perches.com>
-To:     Saeed Mahameed <saeedm@mellanox.com>,
-        "davem@davemloft.net" <davem@davemloft.net>
-Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-Date:   Fri, 24 Jan 2020 15:01:13 -0800
-In-Reply-To: <83a85bb8d25d08cb897d4af54b7a71f285238520.camel@mellanox.com>
-References: <20200124215431.47151-1-saeedm@mellanox.com>
-         <20200124215431.47151-7-saeedm@mellanox.com>
-         <6713b0b5394cfcc5b2b2c6c2f2fb48920a3f2efa.camel@perches.com>
-         <83a85bb8d25d08cb897d4af54b7a71f285238520.camel@mellanox.com>
-Content-Type: text/plain; charset="ISO-8859-1"
-User-Agent: Evolution 3.34.1-2 
+        id S1729433AbgAXXIM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 24 Jan 2020 18:08:12 -0500
+Received: from us-smtp-2.mimecast.com ([207.211.31.81]:44626 "EHLO
+        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1729182AbgAXXIM (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 24 Jan 2020 18:08:12 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1579907291;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=+pQMYieQNovVhRg3Nj/s2qkdJCjR5iAcrsF/1uR16VA=;
+        b=jDbSAA0T8SbSMZbEoOrqoF3SLP4tGx5qIWEXYrSHw/irAlmUvnLgijN0DsnzD3kvmREYyP
+        NHC9wgTQ6mzJDWMDSfjy73LOs5kivTrdiZ+skLJSgPQ4va43amEvcMpQks3WP81X3I9EnA
+        4mUeSbJ/l0jlhbW81PkudncfYDOqE3Q=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-337-gAWFFvPeNi-kbmFD8NKbCw-1; Fri, 24 Jan 2020 18:08:07 -0500
+X-MC-Unique: gAWFFvPeNi-kbmFD8NKbCw-1
+Received: from smtp.corp.redhat.com (int-mx08.intmail.prod.int.phx2.redhat.com [10.5.11.23])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id EA878107ACCD;
+        Fri, 24 Jan 2020 23:08:05 +0000 (UTC)
+Received: from warthog.procyon.org.uk (ovpn-120-49.rdu2.redhat.com [10.10.120.49])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 2F2D33CCA;
+        Fri, 24 Jan 2020 23:08:05 +0000 (UTC)
+Organization: Red Hat UK Ltd. Registered Address: Red Hat UK Ltd, Amberley
+        Place, 107-111 Peascod Street, Windsor, Berkshire, SI4 1TE, United
+        Kingdom.
+        Registered in England and Wales under Company Registration No. 3798903
+Subject: [PATCH net] rxrpc: Fix use-after-free in rxrpc_receive_data()
+From:   David Howells <dhowells@redhat.com>
+To:     netdev@vger.kernel.org
+Cc:     dhowells@redhat.com, linux-afs@lists.infradead.org,
+        linux-kernel@vger.kernel.org
+Date:   Fri, 24 Jan 2020 23:08:04 +0000
+Message-ID: <157990728440.1173687.14473656600696398776.stgit@warthog.procyon.org.uk>
+User-Agent: StGit/0.19
 MIME-Version: 1.0
+Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
+X-Scanned-By: MIMEDefang 2.84 on 10.5.11.23
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, 2020-01-24 at 22:42 +0000, Saeed Mahameed wrote:
-> 2) keep it as is, and fix whatever you don't like about the current
-> state of the patch. (remove the newline).. 
+The subpacket scanning loop in rxrpc_receive_data() references the
+subpacket count in the private data part of the sk_buff in the loop
+termination condition.  However, when the final subpacket is pasted into
+the ring buffer, the function is no longer has a ref on the sk_buff and
+should not be looking at sp->* any more.  This point is actually marked in
+the code when skb is cleared (but sp is not - which is an error).
 
-Just removing then newlines will be fine, thanks.
+Fix this by caching sp->nr_subpackets in a local variable and using that
+instead.
 
-There were two unnecessary newlines in your posted patch,
-one in rx, one in tx.
+Also clear 'sp' to catch accesses after that point.
 
-cheers, Joe
+This can show up as an oops in rxrpc_get_skb() if sp->nr_subpackets gets
+trashed by the sk_buff getting freed and reused in the meantime.
+
+Fixes: e2de6c404898 ("rxrpc: Use info in skbuff instead of reparsing a jumbo packet")
+Signed-off-by: David Howells <dhowells@redhat.com>
+---
+
+ net/rxrpc/input.c |   12 +++++++-----
+ 1 file changed, 7 insertions(+), 5 deletions(-)
+
+diff --git a/net/rxrpc/input.c b/net/rxrpc/input.c
+index 86bd133b4fa0..96d54e5bf7bc 100644
+--- a/net/rxrpc/input.c
++++ b/net/rxrpc/input.c
+@@ -413,7 +413,7 @@ static void rxrpc_input_data(struct rxrpc_call *call, struct sk_buff *skb)
+ {
+ 	struct rxrpc_skb_priv *sp = rxrpc_skb(skb);
+ 	enum rxrpc_call_state state;
+-	unsigned int j;
++	unsigned int j, nr_subpackets;
+ 	rxrpc_serial_t serial = sp->hdr.serial, ack_serial = 0;
+ 	rxrpc_seq_t seq0 = sp->hdr.seq, hard_ack;
+ 	bool immediate_ack = false, jumbo_bad = false;
+@@ -457,7 +457,8 @@ static void rxrpc_input_data(struct rxrpc_call *call, struct sk_buff *skb)
+ 	call->ackr_prev_seq = seq0;
+ 	hard_ack = READ_ONCE(call->rx_hard_ack);
+ 
+-	if (sp->nr_subpackets > 1) {
++	nr_subpackets = sp->nr_subpackets;
++	if (nr_subpackets > 1) {
+ 		if (call->nr_jumbo_bad > 3) {
+ 			ack = RXRPC_ACK_NOSPACE;
+ 			ack_serial = serial;
+@@ -465,11 +466,11 @@ static void rxrpc_input_data(struct rxrpc_call *call, struct sk_buff *skb)
+ 		}
+ 	}
+ 
+-	for (j = 0; j < sp->nr_subpackets; j++) {
++	for (j = 0; j < nr_subpackets; j++) {
+ 		rxrpc_serial_t serial = sp->hdr.serial + j;
+ 		rxrpc_seq_t seq = seq0 + j;
+ 		unsigned int ix = seq & RXRPC_RXTX_BUFF_MASK;
+-		bool terminal = (j == sp->nr_subpackets - 1);
++		bool terminal = (j == nr_subpackets - 1);
+ 		bool last = terminal && (sp->rx_flags & RXRPC_SKB_INCL_LAST);
+ 		u8 flags, annotation = j;
+ 
+@@ -506,7 +507,7 @@ static void rxrpc_input_data(struct rxrpc_call *call, struct sk_buff *skb)
+ 		}
+ 
+ 		if (call->rxtx_buffer[ix]) {
+-			rxrpc_input_dup_data(call, seq, sp->nr_subpackets > 1,
++			rxrpc_input_dup_data(call, seq, nr_subpackets > 1,
+ 					     &jumbo_bad);
+ 			if (ack != RXRPC_ACK_DUPLICATE) {
+ 				ack = RXRPC_ACK_DUPLICATE;
+@@ -564,6 +565,7 @@ static void rxrpc_input_data(struct rxrpc_call *call, struct sk_buff *skb)
+ 			 * ring.
+ 			 */
+ 			skb = NULL;
++			sp = NULL;
+ 		}
+ 
+ 		if (last) {
+
 
