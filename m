@@ -2,31 +2,31 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 372AF147947
-	for <lists+netdev@lfdr.de>; Fri, 24 Jan 2020 09:22:44 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C2A89147946
+	for <lists+netdev@lfdr.de>; Fri, 24 Jan 2020 09:22:43 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729606AbgAXIW0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        id S1729575AbgAXIW0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
         Fri, 24 Jan 2020 03:22:26 -0500
-Received: from a.mx.secunet.com ([62.96.220.36]:47430 "EHLO a.mx.secunet.com"
+Received: from a.mx.secunet.com ([62.96.220.36]:47410 "EHLO a.mx.secunet.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726080AbgAXIW0 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S1729463AbgAXIW0 (ORCPT <rfc822;netdev@vger.kernel.org>);
         Fri, 24 Jan 2020 03:22:26 -0500
 Received: from localhost (localhost [127.0.0.1])
-        by a.mx.secunet.com (Postfix) with ESMTP id D7C68201E4;
+        by a.mx.secunet.com (Postfix) with ESMTP id 5F9D92026E;
         Fri, 24 Jan 2020 09:22:24 +0100 (CET)
 X-Virus-Scanned: by secunet
 Received: from a.mx.secunet.com ([127.0.0.1])
         by localhost (a.mx.secunet.com [127.0.0.1]) (amavisd-new, port 10024)
-        with ESMTP id RDCjAarXqEnT; Fri, 24 Jan 2020 09:22:24 +0100 (CET)
+        with ESMTP id rDjhi5J4pbQA; Fri, 24 Jan 2020 09:22:23 +0100 (CET)
 Received: from mail-essen-01.secunet.de (mail-essen-01.secunet.de [10.53.40.204])
         (using TLSv1 with cipher ECDHE-RSA-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by a.mx.secunet.com (Postfix) with ESMTPS id 5F93620536;
+        by a.mx.secunet.com (Postfix) with ESMTPS id 5E9C62052E;
         Fri, 24 Jan 2020 09:22:23 +0100 (CET)
 Received: from gauss2.secunet.de (10.182.7.193) by mail-essen-01.secunet.de
  (10.53.40.204) with Microsoft SMTP Server id 14.3.439.0; Fri, 24 Jan 2020
  09:22:23 +0100
-Received: by gauss2.secunet.de (Postfix, from userid 1000)      id 1AC2431800F8;
+Received: by gauss2.secunet.de (Postfix, from userid 1000)      id 22FF63180106;
  Fri, 24 Jan 2020 09:22:23 +0100 (CET)
 From:   Steffen Klassert <steffen.klassert@secunet.com>
 To:     David Miller <davem@davemloft.net>
@@ -36,9 +36,9 @@ CC:     Steffen Klassert <steffen.klassert@secunet.com>,
         "Subash Abhinov Kasiviswanathan" <subashab@codeaurora.org>,
         Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>,
         <netdev@vger.kernel.org>
-Subject: [PATCH net-next v2 1/4] net: Add fraglist GRO/GSO feature flags
-Date:   Fri, 24 Jan 2020 09:22:15 +0100
-Message-ID: <20200124082218.2572-2-steffen.klassert@secunet.com>
+Subject: [PATCH net-next v2 2/4] net: Add a netdev software feature set that defaults to off.
+Date:   Fri, 24 Jan 2020 09:22:16 +0100
+Message-ID: <20200124082218.2572-3-steffen.klassert@secunet.com>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <20200124082218.2572-1-steffen.klassert@secunet.com>
 References: <20200124082218.2572-1-steffen.klassert@secunet.com>
@@ -50,88 +50,45 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This adds new Fraglist GRO/GSO feature flags. They will be used
-to configure fraglist GRO/GSO what will be implemented with some
-followup paches.
+The previous patch added the NETIF_F_GRO_FRAGLIST feature.
+This is a software feature that should default to off.
+Current software features default to on, so add a new
+feature set that defaults to off.
 
 Signed-off-by: Steffen Klassert <steffen.klassert@secunet.com>
 Reviewed-by: Willem de Bruijn <willemb@google.com>
 ---
- include/linux/netdev_features.h | 6 +++++-
- include/linux/netdevice.h       | 1 +
- include/linux/skbuff.h          | 2 ++
- net/ethtool/common.c            | 1 +
- 4 files changed, 9 insertions(+), 1 deletion(-)
+ include/linux/netdev_features.h | 3 +++
+ net/core/dev.c                  | 2 +-
+ 2 files changed, 4 insertions(+), 1 deletion(-)
 
 diff --git a/include/linux/netdev_features.h b/include/linux/netdev_features.h
-index 4b19c544c59a..b239507da2a0 100644
+index b239507da2a0..34d050bb1ae6 100644
 --- a/include/linux/netdev_features.h
 +++ b/include/linux/netdev_features.h
-@@ -53,8 +53,9 @@ enum {
- 	NETIF_F_GSO_ESP_BIT,		/* ... ESP with TSO */
- 	NETIF_F_GSO_UDP_BIT,		/* ... UFO, deprecated except tuntap */
- 	NETIF_F_GSO_UDP_L4_BIT,		/* ... UDP payload GSO (not UFO) */
-+	NETIF_F_GSO_FRAGLIST_BIT,		/* ... Fraglist GSO */
- 	/**/NETIF_F_GSO_LAST =		/* last bit, see GSO_MASK */
--		NETIF_F_GSO_UDP_L4_BIT,
-+		NETIF_F_GSO_FRAGLIST_BIT,
+@@ -230,6 +230,9 @@ static inline int find_next_netdev_feature(u64 feature, unsigned long start)
+ /* changeable features with no special hardware requirements */
+ #define NETIF_F_SOFT_FEATURES	(NETIF_F_GSO | NETIF_F_GRO)
  
- 	NETIF_F_FCOE_CRC_BIT,		/* FCoE CRC32 */
- 	NETIF_F_SCTP_CRC_BIT,		/* SCTP checksum offload */
-@@ -80,6 +81,7 @@ enum {
- 
- 	NETIF_F_GRO_HW_BIT,		/* Hardware Generic receive offload */
- 	NETIF_F_HW_TLS_RECORD_BIT,	/* Offload TLS record */
-+	NETIF_F_GRO_FRAGLIST_BIT,	/* Fraglist GRO */
- 
- 	/*
- 	 * Add your fresh new feature above and remember to update
-@@ -150,6 +152,8 @@ enum {
- #define NETIF_F_GSO_UDP_L4	__NETIF_F(GSO_UDP_L4)
- #define NETIF_F_HW_TLS_TX	__NETIF_F(HW_TLS_TX)
- #define NETIF_F_HW_TLS_RX	__NETIF_F(HW_TLS_RX)
-+#define NETIF_F_GRO_FRAGLIST	__NETIF_F(GRO_FRAGLIST)
-+#define NETIF_F_GSO_FRAGLIST	__NETIF_F(GSO_FRAGLIST)
- 
- /* Finds the next feature with the highest number of the range of start till 0.
-  */
-diff --git a/include/linux/netdevice.h b/include/linux/netdevice.h
-index 2741aa35bec6..f8c2d1227433 100644
---- a/include/linux/netdevice.h
-+++ b/include/linux/netdevice.h
-@@ -4564,6 +4564,7 @@ static inline bool net_gso_ok(netdev_features_t features, int gso_type)
- 	BUILD_BUG_ON(SKB_GSO_ESP != (NETIF_F_GSO_ESP >> NETIF_F_GSO_SHIFT));
- 	BUILD_BUG_ON(SKB_GSO_UDP != (NETIF_F_GSO_UDP >> NETIF_F_GSO_SHIFT));
- 	BUILD_BUG_ON(SKB_GSO_UDP_L4 != (NETIF_F_GSO_UDP_L4 >> NETIF_F_GSO_SHIFT));
-+	BUILD_BUG_ON(SKB_GSO_FRAGLIST != (NETIF_F_GSO_FRAGLIST >> NETIF_F_GSO_SHIFT));
- 
- 	return (features & feature) == feature;
- }
-diff --git a/include/linux/skbuff.h b/include/linux/skbuff.h
-index aaf73b34f72f..5ac5cb1befef 100644
---- a/include/linux/skbuff.h
-+++ b/include/linux/skbuff.h
-@@ -592,6 +592,8 @@ enum {
- 	SKB_GSO_UDP = 1 << 16,
- 
- 	SKB_GSO_UDP_L4 = 1 << 17,
++/* Changeable features with no special hardware requirements that defaults to off. */
++#define NETIF_F_SOFT_FEATURES_OFF	NETIF_F_GRO_FRAGLIST
 +
-+	SKB_GSO_FRAGLIST = 1 << 18,
- };
+ #define NETIF_F_VLAN_FEATURES	(NETIF_F_HW_VLAN_CTAG_FILTER | \
+ 				 NETIF_F_HW_VLAN_CTAG_RX | \
+ 				 NETIF_F_HW_VLAN_CTAG_TX | \
+diff --git a/net/core/dev.c b/net/core/dev.c
+index 6368c94c9e0a..0dcabd3753d9 100644
+--- a/net/core/dev.c
++++ b/net/core/dev.c
+@@ -9272,7 +9272,7 @@ int register_netdevice(struct net_device *dev)
+ 	/* Transfer changeable features to wanted_features and enable
+ 	 * software offloads (GSO and GRO).
+ 	 */
+-	dev->hw_features |= NETIF_F_SOFT_FEATURES;
++	dev->hw_features |= (NETIF_F_SOFT_FEATURES | NETIF_F_SOFT_FEATURES_OFF);
+ 	dev->features |= NETIF_F_SOFT_FEATURES;
  
- #if BITS_PER_LONG > 32
-diff --git a/net/ethtool/common.c b/net/ethtool/common.c
-index e621b1694d2f..c7b8956c3827 100644
---- a/net/ethtool/common.c
-+++ b/net/ethtool/common.c
-@@ -59,6 +59,7 @@ const char netdev_features_strings[NETDEV_FEATURE_COUNT][ETH_GSTRING_LEN] = {
- 	[NETIF_F_HW_TLS_RECORD_BIT] =	"tls-hw-record",
- 	[NETIF_F_HW_TLS_TX_BIT] =	 "tls-hw-tx-offload",
- 	[NETIF_F_HW_TLS_RX_BIT] =	 "tls-hw-rx-offload",
-+	[NETIF_F_GRO_FRAGLIST_BIT] =	 "rx-gro-list",
- };
- 
- const char
+ 	if (dev->netdev_ops->ndo_udp_tunnel_add) {
 -- 
 2.17.1
 
