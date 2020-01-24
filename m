@@ -2,135 +2,71 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id AB2EE148A66
-	for <lists+netdev@lfdr.de>; Fri, 24 Jan 2020 15:47:24 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8C92E148AA4
+	for <lists+netdev@lfdr.de>; Fri, 24 Jan 2020 15:52:48 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2389365AbgAXOrW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 24 Jan 2020 09:47:22 -0500
-Received: from mail-pl1-f195.google.com ([209.85.214.195]:42655 "EHLO
-        mail-pl1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2389914AbgAXOrU (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 24 Jan 2020 09:47:20 -0500
-Received: by mail-pl1-f195.google.com with SMTP id p9so865841plk.9
-        for <netdev@vger.kernel.org>; Fri, 24 Jan 2020 06:47:20 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=ZoYv+bzovQuSOXb+w5Rac2L2fPdV1EgC6IGdHhnQB5s=;
-        b=DwmTTLRsI8kyAFQNqq5bBadClrgikux3E72iZkvz1myzhGbmFRetQEgVMNiR/yHi4r
-         Xri0Agf9m/kkoEcXkzsA80mz+weqxHJTLg9ZsAlr+p4qzR76K2hCn7r0ouzQNiOJmDhV
-         qw8/X1l2kSh4IeQUUBvDjTspHRJ5ts+FUfLi0NLRheSMIEBxpClEc8UKBjpXWgGLGsRE
-         7OSadFn2fu4lTkq2zXU4KcxnFxWQNfwYKjuxZbjgs4rtaUPFoLHyjnvQ5YQ42lQjDmvk
-         doojc4YGf1TqnowjJHjcKt2SJ2ZjbZZ/bjSraUdTk0MHrqPGmWKL66fmnv95GAcpI9Hb
-         eTcQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=ZoYv+bzovQuSOXb+w5Rac2L2fPdV1EgC6IGdHhnQB5s=;
-        b=Fmxpoe/c47qJIcoPEMB+SxaO3584gcWkPFohy2hD1O+HTl/lgkJcN5dr4tzQ1fVJnI
-         5N7SZi4C8xkc8RC4nK5/LOSrnRa/bgFg16pZSvN50esmFyt+oq54fKFAKROKEELRNHK9
-         FIEwLPrBsmvgc8iDPwf16xH0fWH6UINlfso08hewUoW1KfEV9OjfqqJCOjWZ0zR2oRXW
-         6yCMqxncRBpQfZjC5pIjJCZM2BUcXmkpkRPpUKmsmUlMiFEywBkQ1UEXZ//rD4acfRbu
-         fiuhVVc6cXdspz0Si5feM2xOW/iZUAZ3XwqLRGUH/+wzMcvBReTETpstUqfTtAN2u67J
-         c9Nw==
-X-Gm-Message-State: APjAAAUIhauEgdHPtpsSHJdo22TSaeYQhs5O0GkLBcQxQ0FqkyOtCAgm
-        NNVV/dIY6/wtXKTOQC7J5K0=
-X-Google-Smtp-Source: APXvYqwSZcmVjOJtxt0guGwUyDxRvmynQYGZTv9Qw9zPVLeOGA83If4uQVP0C/g9ez+vF6ftZimupg==
-X-Received: by 2002:a17:90b:258:: with SMTP id fz24mr3469267pjb.6.1579877239986;
-        Fri, 24 Jan 2020 06:47:19 -0800 (PST)
-Received: from martin-VirtualBox ([122.178.219.138])
-        by smtp.gmail.com with ESMTPSA id s131sm7122675pfs.135.2020.01.24.06.47.18
-        (version=TLS1 cipher=ECDHE-RSA-AES128-SHA bits=128/128);
-        Fri, 24 Jan 2020 06:47:19 -0800 (PST)
-Date:   Fri, 24 Jan 2020 20:17:11 +0530
-From:   Martin Varghese <martinvarghesenokia@gmail.com>
-To:     Willem de Bruijn <willemdebruijn.kernel@gmail.com>
-Cc:     Network Development <netdev@vger.kernel.org>,
-        David Miller <davem@davemloft.net>, corbet@lwn.net,
-        Alexey Kuznetsov <kuznet@ms2.inr.ac.ru>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        scott.drennan@nokia.com, Jiri Benc <jbenc@redhat.com>,
-        martin.varghese@nokia.com
-Subject: Re: [PATCH net-next v5 1/2] net: UDP tunnel encapsulation module for
- tunnelling different protocols like MPLS,IP,NSH etc.
-Message-ID: <20200124144711.GA8532@martin-VirtualBox>
-References: <cover.1579798999.git.martin.varghese@nokia.com>
- <f1805f7c981d74d8611dd19329765a1f7308cbaf.1579798999.git.martin.varghese@nokia.com>
- <CA+FuTSccdUY3Z4d9wznbjysacs=OAD4mfRsPP4N84NTEVhOSAQ@mail.gmail.com>
+        id S1730953AbgAXOwq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 24 Jan 2020 09:52:46 -0500
+Received: from mail.kernel.org ([198.145.29.99]:44680 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1730287AbgAXOwq (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 24 Jan 2020 09:52:46 -0500
+Received: from cakuba (c-73-93-4-247.hsd1.ca.comcast.net [73.93.4.247])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id A720720704;
+        Fri, 24 Jan 2020 14:52:45 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1579877565;
+        bh=SWQtWFvP2yM5RTM0cJf3qzdhWsmk+CUpbrJZ2ck+Zxs=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=OCVmpaFORc4TqvptdkWJvnSmyl70Z5uEf4IYVdy2heKCgllI6QmjqNjE5dPmwoMc5
+         alByYmV1Ni3acbhUsPp8oHgHQwlQGcgyxLMskSrIWb1kCQj5giif02TdhILDTAV40O
+         JnSNpt0ygT2a7bzyGY/sTqSgY1yvQldsjg1z3OsY=
+Date:   Fri, 24 Jan 2020 06:52:44 -0800
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Daniel Borkmann <daniel@iogearbox.net>
+Cc:     Luigi Rizzo <lrizzo@google.com>, netdev@vger.kernel.org,
+        Jesper Dangaard Brouer <hawk@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>, sameehj@amazon.com,
+        toke@redhat.com
+Subject: Re: [PATCH net-next] v2 net-xdp: netdev attribute to control
+ xdpgeneric skb linearization
+Message-ID: <20200124065244.4cafef68@cakuba>
+In-Reply-To: <3a7e66da-7506-47a0-8733-8d48674176f9@iogearbox.net>
+References: <20200123232054.183436-1-lrizzo@google.com>
+        <3a7e66da-7506-47a0-8733-8d48674176f9@iogearbox.net>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CA+FuTSccdUY3Z4d9wznbjysacs=OAD4mfRsPP4N84NTEVhOSAQ@mail.gmail.com>
-User-Agent: Mutt/1.5.21 (2010-09-15)
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Jan 23, 2020 at 05:42:25PM -0500, Willem de Bruijn wrote:
-> On Thu, Jan 23, 2020 at 1:04 PM Martin Varghese
-> <martinvarghesenokia@gmail.com> wrote:
-> >
-> > From: Martin Varghese <martin.varghese@nokia.com>
-> >
-> > The Bareudp tunnel module provides a generic L3 encapsulation
-> > tunnelling module for tunnelling different protocols like MPLS,
-> > IP,NSH etc inside a UDP tunnel.
-> >
-> > Signed-off-by: Martin Varghese <martin.varghese@nokia.com>
+On Fri, 24 Jan 2020 10:55:19 +0100, Daniel Borkmann wrote:
+> > diff --git a/net/core/dev.c b/net/core/dev.c
+> > index 4dcc1b390667..13a671e45b61 100644
+> > --- a/net/core/dev.c
+> > +++ b/net/core/dev.c
+> > @@ -4484,8 +4484,8 @@ static u32 netif_receive_generic_xdp(struct sk_buff *skb,
+> >   	 * of XDP_PACKET_HEADROOM bytes. This is the guarantee that also
+> >   	 * native XDP provides, thus we need to do it here as well.
+> >   	 */
+> > -	if (skb_is_nonlinear(skb) ||
+> > -	    skb_headroom(skb) < XDP_PACKET_HEADROOM) {
+> > +	if (skb->dev->xdp_linearize && (skb_is_nonlinear(skb) ||
+> > +	    skb_headroom(skb) < XDP_PACKET_HEADROOM)) {
+> >   		int hroom = XDP_PACKET_HEADROOM - skb_headroom(skb);
+> >   		int troom = skb->tail + skb->data_len - skb->end;  
 > 
-> > diff --git a/include/net/ip6_tunnel.h b/include/net/ip6_tunnel.h
-> > index 028eaea..8215d1b 100644
-> > --- a/include/net/ip6_tunnel.h
-> > +++ b/include/net/ip6_tunnel.h
-> > @@ -165,5 +165,55 @@ static inline void ip6tunnel_xmit(struct sock *sk, struct sk_buff *skb,
-> >                 iptunnel_xmit_stats(dev, pkt_len);
-> >         }
-> >  }
-> > +
-> > +static inline struct dst_entry *ip6tunnel_get_dst(struct sk_buff *skb,
-> > +                                                 struct net_device *dev,
-> > +                                                 struct net *net,
-> > +                                                 struct socket *sock,
-> > +                                                 struct flowi6 *fl6,
-> > +                                                 const struct ip_tunnel_info *info,
-> > +                                                 bool use_cache)
-> > +{
-> > +       struct dst_entry *dst = NULL;
-> > +#ifdef CONFIG_DST_CACHE
-> > +       struct dst_cache *dst_cache;
-> > +#endif
-> 
-> I just noticed these ifdefs are absent in Geneve. On closer look,
-> CONFIG_NET_UDP_TUNNEL selects CONFIG_NET_IP_TUNNEL selects
-> CONFIG_DST_CACHE. So they are indeed not needed.
-> 
-> Sorry, should have noticed that in v4. It could conceivably be fixed
-> up later, but seems worth one more round to get it right from the
-> start.
-> 
-But unlike geneve i have placed this definition in ip_tunnels.h &
-ip6_tunnels.h which doesnt come under NET_IP_TUNNEL.Hence build 
-will fail in cases where NET_UDP_TUNNEL is disabled
-Kbuild robot has shown that in v3.
+> I still think in order for this knob to be generally useful, we would need to
+> provide an equivalent of bpf_skb_pull_data() helper, which in generic XDP would then
+> pull in more data from non-linear section, and in native XDP would be a "no-op" since
+> the frame is already linear. Otherwise, as mentioned in previous thread, users would
+> have no chance to examine headers if they are not pre-pulled by the driver.
 
-Even with  #ifdef CONFIG_DST_CACHE Kbuild robot reported another issue.
-when ip6_tunnel.h included in ip4_tunnel_core.c.
-dst_cache_get_ipv6 comes under ipv6 flag  and hence the compilation of 
-ip4_tunnel_core.c fails when IPV6 is disabled.
-
-Ideally this functions should be defined in ip_tunnel.c & ip6_tunnel.c
-as these function has no significance if IP Tunnel is disabled.
-
-
-> Glad you found the previous reviews helpful. I will also miss a lot.
-> For more assurance and also as regression test, it might be
-> worth looking into adding a bareudp mode to
-> tools/testing/selftests/net/pmtu.sh. That looks like it exercises a
-> variety of tunnel types already. Extending it might be little work
-> (once ip supports bareudp).
-> 
-> To be clear, not for this patch set. Let's not delay that further.
-> Just a thought.
+Which takes us to the point of the ongoing work to allow multi-buffer
+frames in native mode. Sorry if this was already mentioned but this
+seems like the other side of the same coin, once we have multi-buffer
+semantics in native mode we can likely just replicate them for skbs, no?
