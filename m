@@ -2,35 +2,37 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id A325F148740
-	for <lists+netdev@lfdr.de>; Fri, 24 Jan 2020 15:22:02 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 40CB31487E6
+	for <lists+netdev@lfdr.de>; Fri, 24 Jan 2020 15:26:11 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2392239AbgAXOVu (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 24 Jan 2020 09:21:50 -0500
-Received: from mail.kernel.org ([198.145.29.99]:43776 "EHLO mail.kernel.org"
+        id S2389593AbgAXOZZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 24 Jan 2020 09:25:25 -0500
+Received: from mail.kernel.org ([198.145.29.99]:43798 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2392230AbgAXOVs (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 24 Jan 2020 09:21:48 -0500
+        id S2392233AbgAXOVu (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 24 Jan 2020 09:21:50 -0500
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 8296F21556;
-        Fri, 24 Jan 2020 14:21:47 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id A08C8222C2;
+        Fri, 24 Jan 2020 14:21:48 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1579875708;
-        bh=WLHXPwq0EdaMgI+zF0ACG1Mj7qwQtreqZgVlFTlDgD0=;
+        s=default; t=1579875709;
+        bh=w0CFkfqbG6EaSlOzx/NhcXmF5pjsbQME2xrR3kTJoPA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=y5ADQw3Y8OTk3HOFRgS3yNtIaDiCrzH+wZpI/fB+/q24N7lnyhA40KjJdzCZcQg3G
-         5BNvN/5zV6TNVFOxDsXgnaXUAuQEDzw/6iaIlWpd+bS5d8UvF+gXVAtkZ8WzKhfikK
-         bFp56RFpxWTYSdjVWq1QQN1wrkZkKEjtTc5OnaHs=
+        b=MhWUXTnm12u4BdxACy9CMo8J7EmmKTO1DZ/4sS5eLu/a0BCdK6dss+bnMmb5qd6bi
+         IS4P7t/6B0Ao9E0mcYkmbJuBLL/oDBagT+fNfnIuFemFhlUC/j5pgk+CEIXgr9faIH
+         0FhgtNG6aIrmE0frL20dP745WNx83Q0JmS2wEEnQ=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Arnd Bergmann <arnd@arndb.de>,
-        Johannes Berg <johannes.berg@intel.com>,
-        Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.14 24/32] wireless: wext: avoid gcc -O3 warning
-Date:   Fri, 24 Jan 2020 09:21:11 -0500
-Message-Id: <20200124142119.30484-24-sashal@kernel.org>
+Cc:     Johannes Berg <johannes.berg@intel.com>,
+        syzbot+e8a797964a4180eb57d5@syzkaller.appspotmail.com,
+        syzbot+34b582cf32c1db008f8e@syzkaller.appspotmail.com,
+        Sasha Levin <sashal@kernel.org>,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 4.14 25/32] cfg80211: check for set_wiphy_params
+Date:   Fri, 24 Jan 2020 09:21:12 -0500
+Message-Id: <20200124142119.30484-25-sashal@kernel.org>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20200124142119.30484-1-sashal@kernel.org>
 References: <20200124142119.30484-1-sashal@kernel.org>
@@ -43,54 +45,39 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Arnd Bergmann <arnd@arndb.de>
+From: Johannes Berg <johannes.berg@intel.com>
 
-[ Upstream commit e16119655c9e6c4aa5767cd971baa9c491f41b13 ]
+[ Upstream commit 24953de0a5e31dcca7e82c8a3c79abc2dfe8fb6e ]
 
-After the introduction of CONFIG_CC_OPTIMIZE_FOR_PERFORMANCE_O3,
-the wext code produces a bogus warning:
+Check if set_wiphy_params is assigned and return an error if not,
+some drivers (e.g. virt_wifi where syzbot reported it) don't have
+it.
 
-In function 'iw_handler_get_iwstats',
-    inlined from 'ioctl_standard_call' at net/wireless/wext-core.c:1015:9,
-    inlined from 'wireless_process_ioctl' at net/wireless/wext-core.c:935:10,
-    inlined from 'wext_ioctl_dispatch.part.8' at net/wireless/wext-core.c:986:8,
-    inlined from 'wext_handle_ioctl':
-net/wireless/wext-core.c:671:3: error: argument 1 null where non-null expected [-Werror=nonnull]
-   memcpy(extra, stats, sizeof(struct iw_statistics));
-   ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-In file included from arch/x86/include/asm/string.h:5,
-net/wireless/wext-core.c: In function 'wext_handle_ioctl':
-arch/x86/include/asm/string_64.h:14:14: note: in a call to function 'memcpy' declared here
-
-The problem is that ioctl_standard_call() sometimes calls the handler
-with a NULL argument that would cause a problem for iw_handler_get_iwstats.
-However, iw_handler_get_iwstats never actually gets called that way.
-
-Marking that function as noinline avoids the warning and leads
-to slightly smaller object code as well.
-
-Signed-off-by: Arnd Bergmann <arnd@arndb.de>
-Link: https://lore.kernel.org/r/20200107200741.3588770-1-arnd@arndb.de
+Reported-by: syzbot+e8a797964a4180eb57d5@syzkaller.appspotmail.com
+Reported-by: syzbot+34b582cf32c1db008f8e@syzkaller.appspotmail.com
+Signed-off-by: Johannes Berg <johannes.berg@intel.com>
+Link: https://lore.kernel.org/r/20200113125358.ac07f276efff.Ibd85ee1b12e47b9efb00a2adc5cd3fac50da791a@changeid
 Signed-off-by: Johannes Berg <johannes.berg@intel.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/wireless/wext-core.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ net/wireless/rdev-ops.h | 4 ++++
+ 1 file changed, 4 insertions(+)
 
-diff --git a/net/wireless/wext-core.c b/net/wireless/wext-core.c
-index 6cdb054484d66..5236a3c2c0ccf 100644
---- a/net/wireless/wext-core.c
-+++ b/net/wireless/wext-core.c
-@@ -659,7 +659,8 @@ struct iw_statistics *get_wireless_stats(struct net_device *dev)
- 	return NULL;
- }
- 
--static int iw_handler_get_iwstats(struct net_device *		dev,
-+/* noinline to avoid a bogus warning with -O3 */
-+static noinline int iw_handler_get_iwstats(struct net_device *	dev,
- 				  struct iw_request_info *	info,
- 				  union iwreq_data *		wrqu,
- 				  char *			extra)
+diff --git a/net/wireless/rdev-ops.h b/net/wireless/rdev-ops.h
+index 96849357dd907..4077bb3af440c 100644
+--- a/net/wireless/rdev-ops.h
++++ b/net/wireless/rdev-ops.h
+@@ -537,6 +537,10 @@ static inline int
+ rdev_set_wiphy_params(struct cfg80211_registered_device *rdev, u32 changed)
+ {
+ 	int ret;
++
++	if (!rdev->ops->set_wiphy_params)
++		return -EOPNOTSUPP;
++
+ 	trace_rdev_set_wiphy_params(&rdev->wiphy, changed);
+ 	ret = rdev->ops->set_wiphy_params(&rdev->wiphy, changed);
+ 	trace_rdev_return_int(&rdev->wiphy, ret);
 -- 
 2.20.1
 
