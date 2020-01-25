@@ -2,143 +2,172 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 01F591493F6
-	for <lists+netdev@lfdr.de>; Sat, 25 Jan 2020 09:07:09 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E5769149407
+	for <lists+netdev@lfdr.de>; Sat, 25 Jan 2020 09:48:30 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727925AbgAYIHG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 25 Jan 2020 03:07:06 -0500
-Received: from mail-db8eur05on2110.outbound.protection.outlook.com ([40.107.20.110]:2753
-        "EHLO EUR05-DB8-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1726303AbgAYIHG (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sat, 25 Jan 2020 03:07:06 -0500
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=lQLv8OgU6WSCHTBxb+A90W5UwCZi7it6unYFPyrjdAh75MS5wAIN8YNQBPSX/phJIc/94vtyau19rsYSqyOx+YcWAGwoSIZ5Z1JyZFFB8SYZ8c9aM5QbhOrNqpcI9Zfe37eNzBdg6tgSey3yX6ZFAJzeb4L9cQ+2fJ9nGrCC7K1fDIZTe4i/WUhgOfh5GW/WrkvkW19MhGCC/zhrnd6T1rBr2J9juWmna5pUtU5wFMMXOHFLkljuX/viEaJoqsULVAWlKV/V+D+ndrXWPgivayojzJjbCTCZhp4WXe4WYRHKM+B/IbzkzUFoZ3VteB4aZwh8QhPV9WtbscpiMci65A==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=8jWG4qdVCaydfIb3gvC6T3KdTVW9QRIzlhFSRLCFyPY=;
- b=Com0oHmYSc7LLnH+AdbqrOuUaj3eYGqLVhqy6WjJpfnzdjiYG/UV+bVIq5qzupO5gGMhJuwqInwChkik8QAfjms22nQaEYzgauT5Ae76moaz+wF3/+IJMtzvjzcXOAhYUU1a201YDFjrKzgrKc6LMdsA7yKRhucuWlrkH4j1EKQfyz2IpABwpXbbzt0AmvJ1oCBOINmyJLYB/F1h6ELs63kT9V4xzPGF7eCuPnNUpYGoYxffQ0qM/lNB44yBcK8JechOulcXnY1ruPjgbgBwBm9lNx0R292yxKeq7Kf3QF7t2852D+Bp6Pc2zpfWCNOYZGJ5YHF9m3qbc7o9DHcq6A==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=voleatech.de; dmarc=pass action=none header.from=voleatech.de;
- dkim=pass header.d=voleatech.de; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=voleatech.de;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=8jWG4qdVCaydfIb3gvC6T3KdTVW9QRIzlhFSRLCFyPY=;
- b=OmJ2gI43O64bSHeydZPqS6BIuvxW5vVCiWmRawjZKLQY6emJD/52FXUe8iz3yC+1q+YaZ7tSxhZLFjiTX/L56G4PZs3z5hBDgHgidm+4Funw5bn0iYTDTtURYYuaKC+Xe/3xJPuHFzLCjErPKeYmySGZFX7u7qTLLQFFKW9jENs=
-Received: from AM0PR05MB5156.eurprd05.prod.outlook.com (20.178.20.19) by
- AM0PR05MB5684.eurprd05.prod.outlook.com (20.178.115.80) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.2665.22; Sat, 25 Jan 2020 08:07:04 +0000
-Received: from AM0PR05MB5156.eurprd05.prod.outlook.com
- ([fe80::28cb:442b:6907:83e7]) by AM0PR05MB5156.eurprd05.prod.outlook.com
- ([fe80::28cb:442b:6907:83e7%6]) with mapi id 15.20.2665.017; Sat, 25 Jan 2020
- 08:07:04 +0000
-Received: from SvensMacBookAir.sven.lan (78.43.2.70) by FR2P281CA0001.DEUP281.PROD.OUTLOOK.COM (2603:10a6:d10:a::11) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.2665.20 via Frontend Transport; Sat, 25 Jan 2020 08:07:03 +0000
-From:   Sven Auhagen <sven.auhagen@voleatech.de>
-To:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-CC:     "lorenzo.bianconi@redhat.com" <lorenzo.bianconi@redhat.com>,
+        id S1727441AbgAYIsW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 25 Jan 2020 03:48:22 -0500
+Received: from us-smtp-1.mimecast.com ([205.139.110.61]:25921 "EHLO
+        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1726293AbgAYIsV (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 25 Jan 2020 03:48:21 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1579942100;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=wp+JAl4vdkY5ZXedyqivW3ZncESlNKOB3ht1JdrmUlI=;
+        b=ff1kWZbKDk9HRJpY7AvTC8gMMBC7VyGs1QbQgZ4Ic8mawKEwjYKr7PR9/BmgRDrGDtLB/x
+        gM4pOKzYhJ0mT+Lcj41VCzIKmbG+hRovAUHcz27dAO7kad6HWiGbFzLcvQUAYeKX6ZPQSG
+        /ohy4V6S9rjO28DgqzJbwaXKir9EGCM=
+Received: from mail-wr1-f72.google.com (mail-wr1-f72.google.com
+ [209.85.221.72]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-258-OCEQqeGlPE6E4GW0KLQwrg-1; Sat, 25 Jan 2020 03:48:18 -0500
+X-MC-Unique: OCEQqeGlPE6E4GW0KLQwrg-1
+Received: by mail-wr1-f72.google.com with SMTP id f17so2712469wrt.19
+        for <netdev@vger.kernel.org>; Sat, 25 Jan 2020 00:48:18 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=wp+JAl4vdkY5ZXedyqivW3ZncESlNKOB3ht1JdrmUlI=;
+        b=ULbPGzuCXnQwHPUTKusMPihxPUDrqshwnj8d4cPLVfBOJpTjvD29aX0mmWveI0Gvk0
+         dXIPNHJEygILR4X5teg+baZexLZObHkgf/gGiWbRSRa05amR6amjUg7Ty2R/qCDUTcfQ
+         zDf98ko77JZYJovuwPJIUMUerpPmrBGdPJ4obHcut2NPIL61+7QFjyN/rTPgqliJHpLU
+         ZSTcnt9Ow02cUuItOSsIgaSCBjpdYz/eB+jhyrMykL+JhH8tOkjz1M6O+zMJoKV5Ldtk
+         f2f8QO2GMgePF5CeDaxX2Lvo/paRmviD5tZ0wumztJ93HDMjq0zz+pfGch0CHMJeU92s
+         ba9w==
+X-Gm-Message-State: APjAAAWM9bpmNKNS9Ye5Q96LEutkAIORC02Rt31ceXR6hm5UY9l9k9ja
+        12gQy74a0sBzniQ6tKSJT2Zj+QRmD4QSBhv3yBJcJDSWCTRzPnr9PljQh5t9X4F6x0V0RxVbXuJ
+        yRkGbD2avtNDHizVs
+X-Received: by 2002:a5d:6305:: with SMTP id i5mr9392887wru.399.1579942096517;
+        Sat, 25 Jan 2020 00:48:16 -0800 (PST)
+X-Google-Smtp-Source: APXvYqxNLk3u5X2+XXOPEQUHfiWped9uudBiMrrRglDf+8wcxTWALoG0XBCBu4j7/ztGs0Bgs2mFjQ==
+X-Received: by 2002:a5d:6305:: with SMTP id i5mr9392863wru.399.1579942096232;
+        Sat, 25 Jan 2020 00:48:16 -0800 (PST)
+Received: from p977.fit.wifi.vutbr.cz ([147.229.117.36])
+        by smtp.gmail.com with ESMTPSA id 60sm11336679wrn.86.2020.01.25.00.48.14
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sat, 25 Jan 2020 00:48:15 -0800 (PST)
+Date:   Sat, 25 Jan 2020 09:48:12 +0100
+From:   "lorenzo.bianconi@redhat.com" <lorenzo.bianconi@redhat.com>
+To:     Sven Auhagen <sven.auhagen@voleatech.de>
+Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
         "davem@davemloft.net" <davem@davemloft.net>,
         "thomas.petazzoni@bootlin.com" <thomas.petazzoni@bootlin.com>,
         "brouer@redhat.com" <brouer@redhat.com>,
         "ilias.apalodimas@linaro.org" <ilias.apalodimas@linaro.org>,
         "matteo.croce@redhat.com" <matteo.croce@redhat.com>,
         "jakub.kicinski@netronome.com" <jakub.kicinski@netronome.com>
-Subject: [PATCH v5] mvneta driver disallow XDP program on hardware buffer
+Subject: Re: [PATCH v5] mvneta driver disallow XDP program on hardware buffer
  management
-Thread-Topic: [PATCH v5] mvneta driver disallow XDP program on hardware buffer
- management
-Thread-Index: AQHV01Zt85Jc6nz440+eUwbZXq2o9A==
-Date:   Sat, 25 Jan 2020 08:07:03 +0000
-Message-ID: <20200125080702.81712-1-sven.auhagen@voleatech.de>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-mailer: git-send-email 2.21.1 (Apple Git-122.3)
-x-clientproxiedby: FR2P281CA0001.DEUP281.PROD.OUTLOOK.COM
- (2603:10a6:d10:a::11) To AM0PR05MB5156.eurprd05.prod.outlook.com
- (2603:10a6:208:f7::19)
-x-originating-ip: [78.43.2.70]
-authentication-results: spf=none (sender IP is )
- smtp.mailfrom=sven.auhagen@voleatech.de; 
-x-ms-exchange-messagesentrepresentingtype: 1
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: 5935dd57-5ec7-43f2-334a-08d7a16d902b
-x-ms-traffictypediagnostic: AM0PR05MB5684:|AM0PR05MB5684:
-x-microsoft-antispam-prvs: <AM0PR05MB56841997E4AB2738BBCC7963EF090@AM0PR05MB5684.eurprd05.prod.outlook.com>
-x-ms-exchange-transport-forked: True
-x-ms-oob-tlc-oobclassifiers: OLM:6790;
-x-forefront-prvs: 0293D40691
-x-forefront-antispam-report: SFV:NSPM;SFS:(10019020)(4636009)(396003)(136003)(39830400003)(346002)(366004)(376002)(189003)(199004)(316002)(1076003)(54906003)(86362001)(36756003)(107886003)(6512007)(4326008)(2906002)(6486002)(508600001)(8936002)(186003)(956004)(81156014)(26005)(8676002)(2616005)(81166006)(44832011)(16526019)(66556008)(64756008)(66476007)(6506007)(52116002)(66946007)(71200400001)(66446008)(6916009)(5660300002)(309714004);DIR:OUT;SFP:1102;SCL:1;SRVR:AM0PR05MB5684;H:AM0PR05MB5156.eurprd05.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;MX:1;A:1;
-received-spf: None (protection.outlook.com: voleatech.de does not designate
- permitted sender hosts)
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: UIPnRK8JoBhMYN8mu6RlDX1gTLDIlyUUrk84h6QaSPh6vDwu5LdoQN9xDpC7vYWKxN0HDrNO9Vml/8gZXgtHfLm3QtLyleZC8xJotRo7cU+hAwf+XPShMP3hv4M9iI/kPMOYa0dW1+eS/Eaz2rbJgeeXblspmEJU1KQ8gCY5NW77eDaXyYuTGR2EtELv4E2r768yW3qvFhKKKQTMjrdDGTKD0q903X0Q1Tc2Rq3AfFHYkG4Ds8EwmrWMdxBb18ZxMZvid/IyYQrySN+rtBZiP1aGjw0rSkqd32Q50sZp/YZiAYuO4jLrv1MmDtAPjNIy7Zzcu36846I+OrINCEeVPOTBQUPPhoTEQGoWmhcJh1tOWaQekNYPyd2v1z+4MfSNLjysSkzYZjqZaCOhAlT8nDQ4tUctIvvCThXDcZm0XSw6st9/SVEWDFajsEJo92DbsGFnyKnM7G14arjALC7EUbBOorxeMAPJ0+3/jQ6rayi2ZsUe16wZptJZ6B5m1q9y
-x-ms-exchange-antispam-messagedata: INU6Az5yOLgn9yjJCa6qMljxS+cNRZKnOASeh0zgLe6DQhp+nwNJABXGqZ1sW8xm8o41qI8N9dkislVBU3MtJRqKjWgTw3TVMIKu4KE9Jf6qs11EWpcACNnFHXlOp5l3uvVlhsMOvNjxA/1DgyKkGA==
-Content-Type: text/plain; charset="iso-8859-1"
-Content-Transfer-Encoding: quoted-printable
+Message-ID: <20200125084812.GA3398@p977.fit.wifi.vutbr.cz>
+References: <20200125080702.81712-1-sven.auhagen@voleatech.de>
 MIME-Version: 1.0
-X-OriginatorOrg: voleatech.de
-X-MS-Exchange-CrossTenant-Network-Message-Id: 5935dd57-5ec7-43f2-334a-08d7a16d902b
-X-MS-Exchange-CrossTenant-originalarrivaltime: 25 Jan 2020 08:07:03.9641
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: b82a99f6-7981-4a72-9534-4d35298f847b
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: KjUw7GHYTl4M43gLwPKYnrs/6uroak0/nUovt/vG3s2eTJdu+rRI+p3BrYQ8UHB7VErvm4QcG9SG1xY9qKEyx+b6QKKL5y5pfSzEhRKt7Xw=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM0PR05MB5684
+Content-Type: multipart/signed; micalg=pgp-sha256;
+        protocol="application/pgp-signature"; boundary="CE+1k2dSO48ffgeK"
+Content-Disposition: inline
+In-Reply-To: <20200125080702.81712-1-sven.auhagen@voleatech.de>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Recently XDP Support was added to the mvneta driver
-for software buffer management only.
-It is still possible to attach an XDP program if
-hardware buffer management is used.
-It is not doing anything at that point.
 
-The patch disallows attaching XDP programs to mvneta
-if hardware buffer management is used.
+--CE+1k2dSO48ffgeK
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-I am sorry about that. It is my first submission and I am having
-some troubles with the format of my emails.
+> Recently XDP Support was added to the mvneta driver
+> for software buffer management only.
+> It is still possible to attach an XDP program if
+> hardware buffer management is used.
+> It is not doing anything at that point.
+>=20
 
-v4 -> v5:
-- Remove extra tabs
+[...]
 
-v3 -> v4:
-- Please ignore v3 I accidentally submitted
-  my other patch with git-send-mail and v4 is correct
+> --- a/drivers/net/ethernet/marvell/mvneta.c
+> +++ b/drivers/net/ethernet/marvell/mvneta.c
+> @@ -4225,6 +4225,12 @@ static int mvneta_xdp_setup(struct net_device *dev=
+, struct bpf_prog *prog,
+>  return -EOPNOTSUPP;
+>  }
+>=20
+> +if (pp->bm_priv) {
+> +NL_SET_ERR_MSG_MOD(extack,
+> +   "Hardware Buffer Management not supported on XDP");
+> +return -EOPNOTSUPP;
+> +}
 
-v2 -> v3:
-- My mailserver corrupted the patch
-  resubmission with git-send-email
+Could you please fix the following checkpatch warnings?
 
-v1 -> v2:
-- Fixing the patches indentation
+$ <kernel_dir>/scripts/checkpatch.pl --strict file.patch
 
-Signed-off-by: Sven Auhagen <sven.auhagen@voleatech.de>
+WARNING: suspect code indent for conditional statements (0, 0)
+#53: FILE: drivers/net/ethernet/marvell/mvneta.c:4228:
++if (pp->bm_priv) {
++NL_SET_ERR_MSG_MOD(extack,
 
-diff --git a/drivers/net/ethernet/marvell/mvneta.c b/drivers/net/ethernet/m=
-arvell/mvneta.c
-index 71a872d46bc4..96593b9fbd9b 100644
---- a/drivers/net/ethernet/marvell/mvneta.c
-+++ b/drivers/net/ethernet/marvell/mvneta.c
-@@ -4225,6 +4225,12 @@ static int mvneta_xdp_setup(struct net_device *dev, =
-struct bpf_prog *prog,
- 		return -EOPNOTSUPP;
- 	}
-=20
-+	if (pp->bm_priv) {
-+		NL_SET_ERR_MSG_MOD(extack,
-+				   "Hardware Buffer Management not supported on XDP");
-+		return -EOPNOTSUPP;
-+	}
-+
- 	need_update =3D !!pp->xdp_prog !=3D !!prog;
- 	if (running && need_update)
- 		mvneta_stop(dev);
+CHECK: Alignment should match open parenthesis
+#55: FILE: drivers/net/ethernet/marvell/mvneta.c:4230:
++NL_SET_ERR_MSG_MOD(extack,
++   "Hardware Buffer Management not supported on XDP");
+
+WARNING: please, no spaces at the start of a line
+#55: FILE: drivers/net/ethernet/marvell/mvneta.c:4230:
++   "Hardware Buffer Management not supported on XDP");$
+
+total: 0 errors, 2 warnings, 12 lines checked
+
+Regards,
+Lorenzo
+
+> +
+>  need_update =3D !!pp->xdp_prog !=3D !!prog;
+>  if (running && need_update)
+>  mvneta_stop(dev);
+>=20
+> +++ Voleatech auf der E-World, 11. bis 13. Februar 2020, Halle 5, Stand 5=
+21 +++
+>=20
+> Beste Gr=FC=DFe/Best regards
+>=20
+> Sven Auhagen
+> Dipl. Math. oec., M.Sc.
+> Voleatech GmbH
+> HRB: B 754643
+> USTID: DE303643180
+> Grathwohlstr. 5
+> 72762 Reutlingen
+> Tel: +49 7121539550
+> Fax: +49 7121539551
+> E-Mail: sven.auhagen@voleatech.de
+> www.voleatech.de<https://www.voleatech.de>
+> Diese Information ist ausschlie=DFlich f=FCr den Adressaten bestimmt und =
+kann vertraulich oder gesetzlich gesch=FCtzte Informationen enthalten. Wenn=
+ Sie nicht der bestimmungsgem=E4=DFe Adressat sind, unterrichten Sie bitte =
+den Absender und vernichten Sie diese Mail. Anderen als dem bestimmungsgem=
+=E4=DFen Adressaten ist es untersagt, diese E-Mail zu lesen, zu speichern, =
+weiterzuleiten oder ihren Inhalt auf welche Weise auch immer zu verwenden. =
+F=FCr den Adressaten sind die Informationen in dieser Mail nur zum pers=F6n=
+lichen Gebrauch. Eine Weiterleitung darf nur nach R=FCcksprache mit dem Abs=
+ender erfolgen. Wir verwenden aktuelle Virenschutzprogramme. F=FCr Sch=E4de=
+n, die dem Empf=E4nger gleichwohl durch von uns zugesandte mit Viren befall=
+ene E-Mails entstehen, schlie=DFen wir jede Haftung aus.
+>=20
+
+--CE+1k2dSO48ffgeK
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iHUEABYIAB0WIQTquNwa3Txd3rGGn7Y6cBh0uS2trAUCXiwAyQAKCRA6cBh0uS2t
+rO/EAP0c9sIWfsoZoMRmgt5DI/y10xIkj+mmbk9qujy91FaAwAD+Iclar9FzXggA
+PrztQKNaFT94PiDoOukcva9tPiF/XwE=
+=8xqd
+-----END PGP SIGNATURE-----
+
+--CE+1k2dSO48ffgeK--
+
