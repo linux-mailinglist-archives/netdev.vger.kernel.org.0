@@ -2,60 +2,46 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id DBCFE1497C4
-	for <lists+netdev@lfdr.de>; Sat, 25 Jan 2020 21:25:57 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 196471497D6
+	for <lists+netdev@lfdr.de>; Sat, 25 Jan 2020 21:41:08 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727141AbgAYUZy (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 25 Jan 2020 15:25:54 -0500
-Received: from mga01.intel.com ([192.55.52.88]:60084 "EHLO mga01.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726448AbgAYUZy (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sat, 25 Jan 2020 15:25:54 -0500
-X-Amp-Result: SKIPPED(no attachment in message)
-X-Amp-File-Uploaded: False
-Received: from fmsmga006.fm.intel.com ([10.253.24.20])
-  by fmsmga101.fm.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 25 Jan 2020 12:25:54 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.70,363,1574150400"; 
-   d="scan'208";a="428622215"
-Received: from apricoch-mobl2.amr.corp.intel.com (HELO ellie) ([10.252.137.80])
-  by fmsmga006.fm.intel.com with ESMTP; 25 Jan 2020 12:25:53 -0800
-From:   Vinicius Costa Gomes <vinicius.gomes@intel.com>
-To:     Vladimir Oltean <olteanv@gmail.com>
-Cc:     netdev <netdev@vger.kernel.org>,
-        Jamal Hadi Salim <jhs@mojatatu.com>,
-        Cong Wang <xiyou.wangcong@gmail.com>,
-        Jiri Pirko <jiri@resnulli.us>,
-        "David S. Miller" <davem@davemloft.net>,
-        Vladimir Oltean <vladimir.oltean@nxp.com>,
-        Po Liu <po.liu@nxp.com>
-Subject: Re: [PATCH net v1 2/3] taprio: Fix still allowing changing the flags during runtime
-In-Reply-To: <CA+h21hojJYDsb29Xc99hN52J2Vtxd0PbrUWWWGwfBVsKa-RJ=g@mail.gmail.com>
-References: <20200125005320.3353761-1-vinicius.gomes@intel.com> <20200125005320.3353761-3-vinicius.gomes@intel.com> <CA+h21hojJYDsb29Xc99hN52J2Vtxd0PbrUWWWGwfBVsKa-RJ=g@mail.gmail.com>
-Date:   Sat, 25 Jan 2020 12:25:53 -0800
-Message-ID: <87o8ur1dwu.fsf@intel.com>
-MIME-Version: 1.0
-Content-Type: text/plain
+        id S1727177AbgAYUlE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 25 Jan 2020 15:41:04 -0500
+Received: from shards.monkeyblade.net ([23.128.96.9]:52786 "EHLO
+        shards.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726454AbgAYUlE (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 25 Jan 2020 15:41:04 -0500
+Received: from localhost (unknown [62.209.224.147])
+        (using TLSv1 with cipher AES256-SHA (256/256 bits))
+        (Client did not present a certificate)
+        (Authenticated sender: davem-davemloft)
+        by shards.monkeyblade.net (Postfix) with ESMTPSA id EC88F15B6A330;
+        Sat, 25 Jan 2020 12:41:02 -0800 (PST)
+Date:   Sat, 25 Jan 2020 21:40:58 +0100 (CET)
+Message-Id: <20200125.214058.2161220905227482093.davem@davemloft.net>
+To:     pablo@netfilter.org
+Cc:     netfilter-devel@vger.kernel.org, netdev@vger.kernel.org
+Subject: Re: [PATCH 0/7] Netfilter fixes for net
+From:   David Miller <davem@davemloft.net>
+In-Reply-To: <20200125173415.191571-1-pablo@netfilter.org>
+References: <20200125173415.191571-1-pablo@netfilter.org>
+X-Mailer: Mew version 6.8 on Emacs 26.3
+Mime-Version: 1.0
+Content-Type: Text/Plain; charset=us-ascii
+Content-Transfer-Encoding: 7bit
+X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Sat, 25 Jan 2020 12:41:03 -0800 (PST)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi,
+From: Pablo Neira Ayuso <pablo@netfilter.org>
+Date: Sat, 25 Jan 2020 18:34:08 +0100
 
-Vladimir Oltean <olteanv@gmail.com> writes:
+> The following patchset contains Netfilter fixes for net:
+ ...
+> You can pull these changes from:
+> 
+>   git://git.kernel.org/pub/scm/linux/kernel/git/pablo/nf.git
 
->
-> You can't quite do this, since it now breaks plain 'tc qdisc add'
-> behavior. Can you initialize q->flags to -1 in taprio_init, just below
-> q->clockid, and keep the "q->flags != -1" check here? You might also
-> need to validate the taprio_flags to be a positive value.
->
-
-Ugh, thanks for pointing this out. Will re-spin the series fixing this.
-Another lesson on not sending patches last thing on a friday.
-
-
-Cheers,
---
-Vinicius
+Pulled, thanks Pablo.
