@@ -2,110 +2,111 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 6330514974A
-	for <lists+netdev@lfdr.de>; Sat, 25 Jan 2020 19:50:10 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B1F88149754
+	for <lists+netdev@lfdr.de>; Sat, 25 Jan 2020 20:04:57 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726657AbgAYSuJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 25 Jan 2020 13:50:09 -0500
-Received: from mail.kernel.org ([198.145.29.99]:43202 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726327AbgAYSuJ (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sat, 25 Jan 2020 13:50:09 -0500
-Received: from localhost (unknown [213.57.247.131])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 45A2420716;
-        Sat, 25 Jan 2020 18:50:06 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1579978208;
-        bh=9fLybVybpupSb8a/XCbIuD2vcmNwiPPZ0TyDswiQWik=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=Pw4HcdNtjSyHSEqkF5MWFgu/vQXSiS0ceBJRFYGLLtgnPpFJY/gLqyRwwcXqEvb9L
-         CxHlNyYjtgZ+e7cb8fq4hSH4VgAaGdj/Bu3Vtbzb/KjgLz9K7mPhtCDpQHNgl01aV2
-         Pcwr0ZAsIo6oXlqfjdOpJmLe5pwBoXJDnzJ6kEkY=
-Date:   Sat, 25 Jan 2020 20:49:58 +0200
-From:   Leon Romanovsky <leon@kernel.org>
-To:     Florian Fainelli <f.fainelli@gmail.com>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Michal Kubecek <mkubecek@suse.cz>,
-        Michal Kalderon <michal.kalderon@marvell.com>,
+        id S1726743AbgAYTE4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 25 Jan 2020 14:04:56 -0500
+Received: from mail-yb1-f196.google.com ([209.85.219.196]:40655 "EHLO
+        mail-yb1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726454AbgAYTE4 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 25 Jan 2020 14:04:56 -0500
+Received: by mail-yb1-f196.google.com with SMTP id l197so2810977ybf.7
+        for <netdev@vger.kernel.org>; Sat, 25 Jan 2020 11:04:55 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=ziepe.ca; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=Lx6zoF9l+s8fFKaF/OITBTPQQ6pnY4nPkFOxXyCiQfs=;
+        b=U50eu7Suc7wAyLlSOZPzcyaaIb7hfweFWL8mIHWg3XcgM+/2CfddjZjX85B6AgfcdL
+         wlm9hoWmUi4F8079oXizn2SKFlnWbB9E4n1NKiCED/AYQ8I8k9EdF7D0povlbHUc2g6/
+         pWoWblg2z/fmaOqGUOJjiqxbf2tg9OHNjSDiT+WTDvePDIOE2V9We7WFs7UzzZuzLU4u
+         GqfdBRyBsmIEfpVzIwx9AGQvT6haU3adTXVLE0Xu72VVztQJ+kr5bi/Q5x+oFnlCQQ2J
+         BqykTVZRwJ7u5Zne7of8/BDdSs6xftUL6Qvj4U3jB6nlmimUwT70CYpPzw2/BqoMtDAG
+         Dk3A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=Lx6zoF9l+s8fFKaF/OITBTPQQ6pnY4nPkFOxXyCiQfs=;
+        b=LSsmy0SOO6rBu5/84ZkcT7vBRvSmnK2dE4b05Wv2vsf4lzGoNsnQmoxnp0sFMwpI3O
+         YLP8oC9Db9VzL17AmErUfTHHv0MTx9HvUJGRZ/Lho7ARzg7Sc71de5bBH+O/QIJk2NkW
+         BtRN9r00SRp5mti5SS4xmI6WwD/5cjmYHRlXOST8vJmetOBzFzDCJ/FvtgFWNY6AnvVn
+         B337CPLwJBA+ie4Nb4VbGlkFIHtUsZhNfh/0tjLqGdHJrgbyzQClMkP2pzMErvaEIkq+
+         waopbAXTfoT+8U97nHP6V9MUPfWte6/zZrXZYQTwSf3tIJzmPAFime26vvqAg2IyQa6x
+         zHxg==
+X-Gm-Message-State: APjAAAXYcRr0c0pP4C6BvhN0a5N8svtZDlXk4S2CP3V4gj8qSV3cSH4e
+        YymdVAAT2GeBV6TOZEULqRnRaQ==
+X-Google-Smtp-Source: APXvYqxwXxweGUcUNslBAGMjeZhE+jBgUQybSM4sA4z1hphuYWKnqXtnv4+AStFcEym0r1P+NOCAsw==
+X-Received: by 2002:a25:8486:: with SMTP id v6mr7109125ybk.409.1579979094874;
+        Sat, 25 Jan 2020 11:04:54 -0800 (PST)
+Received: from ziepe.ca ([199.167.24.140])
+        by smtp.gmail.com with ESMTPSA id u127sm3754607ywb.68.2020.01.25.11.04.54
+        (version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
+        Sat, 25 Jan 2020 11:04:54 -0800 (PST)
+Received: from jgg by jggl.ziepe.ca with local (Exim 4.90_1)
+        (envelope-from <jgg@ziepe.ca>)
+        id 1ivQjh-0007qt-L1; Sat, 25 Jan 2020 15:04:49 -0400
+Date:   Sat, 25 Jan 2020 15:04:49 -0400
+From:   Jason <jgg@ziepe.ca>
+To:     Leon Romanovsky <leon@kernel.org>
+Cc:     Doug Ledford <dledford@redhat.com>,
+        Jason Gunthorpe <jgg@mellanox.com>,
+        Danit Goldberg <danitg@mellanox.com>,
+        RDMA mailing list <linux-rdma@vger.kernel.org>,
+        Saeed Mahameed <saeedm@mellanox.com>,
         linux-netdev <netdev@vger.kernel.org>,
-        RDMA mailing list <linux-rdma@vger.kernel.org>
-Subject: Re: [PATCH net-next v1] net/core: Replace driver version to be
- kernel version
-Message-ID: <20200125184958.GA2993@unreal>
-References: <20200125161401.40683-1-leon@kernel.org>
- <b0f73391-d7f5-1efe-2927-bed02668f8c5@gmail.com>
+        Leon Romanovsky <leonro@mellanox.com>
+Subject: Re: [PATCH mlx5-next] IB/mlx5: Return the administrative GUID if
+ exists
+Message-ID: <20200125190449.GA30147@jggl>
+References: <20200116120048.12744-1-leon@kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <b0f73391-d7f5-1efe-2927-bed02668f8c5@gmail.com>
+In-Reply-To: <20200116120048.12744-1-leon@kernel.org>
+User-Agent: Mutt/1.9.4 (2018-02-28)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, Jan 25, 2020 at 08:55:01AM -0800, Florian Fainelli wrote:
->
->
-> On 1/25/2020 8:14 AM, Leon Romanovsky wrote:
-> > From: Leon Romanovsky <leonro@mellanox.com>
-> >
-> > In order to stop useless driver version bumps and unify output
-> > presented by ethtool -i, let's overwrite the version string.
-> >
-> > Before this change:
-> > [leonro@erver ~]$ ethtool -i eth0
-> > driver: virtio_net
-> > version: 1.0.0
-> > After this change:
-> > [leonro@server ~]$ ethtool -i eth0
-> > driver: virtio_net
-> > version: 5.5.0-rc6+
-> >
-> > Signed-off-by: Leon Romanovsky <leonro@mellanox.com>> ---
-> >  Changelog:
-> >  v1: Resend per-Dave's request
-> >      https://lore.kernel.org/linux-rdma/20200125.101311.1924780619716720495.davem@davemloft.net
-> >      No changes at all and applied cleanly on top of "3333e50b64fe Merge branch 'mlxsw-Offload-TBF'"
-> >  v0: https://lore.kernel.org/linux-rdma/20200123130541.30473-1-leon@kernel.org
->
-> There does not appear to be any explanation why we think this is a good
-> idea for *all* drivers, and not just the ones that are purely virtual?
+On Thu, Jan 16, 2020 at 02:00:48PM +0200, Leon Romanovsky wrote:
+> From: Danit Goldberg <danitg@mellanox.com>
+> 
+> A user can achieve the operational GUID (a.k.a affective GUID) through
+> link/infiniband. Therefore it is preferred to return the administrative
+> GUID if exists instead of the operational.
+> This way the PF can query which VF GUID will be set in the next bind.
+> In order to align with MAC address, zero is returned if
+> administrative GUID is not set.
+> 
+> For example:
+> - Before setting administrative GUID:
+> ip link show
+> ib0: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 4092 qdisc mq state UP mode DEFAULT group default qlen 256
+> link/infiniband 00:00:00:08:fe:80:00:00:00:00:00:00:52:54:00:c0:fe:12:34:55 brd 00:ff:ff:ff:ff:12:40:1b:ff:ff:00:00:00:00:00:00:ff:ff:ff:ff
+> vf 0     link/infiniband 00:00:00:08:fe:80:00:00:00:00:00:00:52:54:00:c0:fe:12:34:55 brd 00:ff:ff:ff:ff:12:40:1b:ff:ff:00:00:00:00:00:00:ff:ff:ff:ff,
+> spoof checking off, NODE_GUID 00:00:00:00:00:00:00:00, PORT_GUID 00:00:00:00:00:00:00:00, link-state auto, trust off, query_rss off
+> 
+> ip link set ib0 vf 0 node_guid 11:00:af:21:cb:05:11:00
+> ip link set ib0 vf 0 port_guid 22:11:af:21:cb:05:11:00
+> 
+> - After setting administrative GUID:
+> ip link show
+> ib0: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 4092 qdisc mq state UP mode DEFAULT group default qlen 256
+> link/infiniband 00:00:00:08:fe:80:00:00:00:00:00:00:52:54:00:c0:fe:12:34:55 brd 00:ff:ff:ff:ff:12:40:1b:ff:ff:00:00:00:00:00:00:ff:ff:ff:ff
+> vf 0     link/infiniband 00:00:00:08:fe:80:00:00:00:00:00:00:52:54:00:c0:fe:12:34:55 brd 00:ff:ff:ff:ff:12:40:1b:ff:ff:00:00:00:00:00:00:ff:ff:ff:ff,
+> spoof checking off, NODE_GUID 11:00:af:21:cb:05:11:00, PORT_GUID 22:11:af:21:cb:05:11:00, link-state auto, trust off, query_rss off
+> 
+> Fixes: 9c0015ef0928 ("IB/mlx5: Implement callbacks for getting VFs GUID attributes")
+> Signed-off-by: Danit Goldberg <danitg@mellanox.com>
+> Signed-off-by: Leon Romanovsky <leonro@mellanox.com>
+> ---
+>  drivers/infiniband/hw/mlx5/ib_virt.c | 28 ++++++++++++----------------
+>  include/linux/mlx5/driver.h          |  5 +++++
+>  2 files changed, 17 insertions(+), 16 deletions(-)
 
-We beat this dead horse too many times already, latest discussion and
-justification can be found in that thread.
-https://lore.kernel.org/linux-rdma/20200122152627.14903-1-michal.kalderon@marvell.com/T/#md460ff8f976c532a89d6860411c3c50bb811038b
+Applied to for-next, thanks
 
-However, it was discussed in ksummit mailing list too and overall
-agreement that version exposed by in-tree modules are useless and
-sometimes even worse. They mislead users to expect some features
-or lack of them based on this arbitrary string.
-
->
-> Are you not concerned that this is ABI and that specific userland may be
-> relying on a specific info format and we could now be breaking their
-> version checks? I do not disagree that the version is not particularly
-> useful for in-tree kernel, but this is ABI, and breaking user-space is
-> usually a source of support questions.
-
-See this Linus's response:
-"The unified policy is pretty much that version codes do not matter, do
-not exist, and do not get updated.
-
-Things are supposed to be backwards and forwards compatible, because
-we don't accept breakage in user space anyway. So versioning is
-pointless, and only causes problems."
-https://lore.kernel.org/ksummit-discuss/CA+55aFx9A=5cc0QZ7CySC4F2K7eYaEfzkdYEc9JaNgCcV25=rg@mail.gmail.com/
-
-I also don't think that declaring every print in the kernel as ABI is
-good thing to do. We are not breaking binary ABI and continuing to
-supply some sort of versioning, but in unified format and not in wild
-west way like it is now.
-
-So bottom line, if some REAL user space application (not test suites) relies
-on specific version reported from ethtool, it is already broken and can't work
-sanely for stable@, distros and upstream kernels.
-
-Thanks
+Jason
