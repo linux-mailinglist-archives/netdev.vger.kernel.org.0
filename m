@@ -2,69 +2,98 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 4F716149633
-	for <lists+netdev@lfdr.de>; Sat, 25 Jan 2020 16:20:45 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 743B6149636
+	for <lists+netdev@lfdr.de>; Sat, 25 Jan 2020 16:23:37 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726260AbgAYPUb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 25 Jan 2020 10:20:31 -0500
-Received: from vps0.lunn.ch ([185.16.172.187]:54056 "EHLO vps0.lunn.ch"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725710AbgAYPUb (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sat, 25 Jan 2020 10:20:31 -0500
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:
-        Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
-        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
-        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
-        List-Post:List-Owner:List-Archive;
-        bh=X8UUPTOUNfFXETSXGA8mkvkgEObCurF5t9bY3s9/WBw=; b=CvGoJahVgWmRUJ6lVkXuQ1M419
-        Q/XFzshlEk7MPbOCKU20WMXVtIIDV0QUzNt5sL/uGSCuRSjz+XfKMwWrmYDSPMCPKwzhQJWZUAzkq
-        5ZiKCStAZ3mi7aNle7UBR6BcdetgqEEMQOrrF2viYG9DfzS202kGxeEcyR/ihrfTlBTM=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.93)
-        (envelope-from <andrew@lunn.ch>)
-        id 1ivNEV-0006u6-W4; Sat, 25 Jan 2020 16:20:24 +0100
-Date:   Sat, 25 Jan 2020 16:20:23 +0100
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Horatiu Vultur <horatiu.vultur@microchip.com>
-Cc:     linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        bridge@lists.linux-foundation.org, jiri@resnulli.us,
-        ivecera@redhat.com, davem@davemloft.net, roopa@cumulusnetworks.com,
-        nikolay@cumulusnetworks.com, anirudh.venkataramanan@intel.com,
-        olteanv@gmail.com, jeffrey.t.kirsher@intel.com,
-        UNGLinuxDriver@microchip.com
-Subject: Re: [RFC net-next v3 03/10] net: bridge: mrp: Add MRP interface used
- by netlink
-Message-ID: <20200125152023.GA18311@lunn.ch>
-References: <20200124161828.12206-1-horatiu.vultur@microchip.com>
- <20200124161828.12206-4-horatiu.vultur@microchip.com>
- <20200124174315.GC13647@lunn.ch>
- <20200125113726.ousbmm4n3ab4xnqt@soft-dev3.microsemi.net>
+        id S1726300AbgAYPXf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 25 Jan 2020 10:23:35 -0500
+Received: from mail-lf1-f42.google.com ([209.85.167.42]:33839 "EHLO
+        mail-lf1-f42.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725710AbgAYPXf (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 25 Jan 2020 10:23:35 -0500
+Received: by mail-lf1-f42.google.com with SMTP id l18so3203935lfc.1;
+        Sat, 25 Jan 2020 07:23:33 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=nqs08425RUN3uyEpWTzaksGv8utumJixkeluY86HgYI=;
+        b=H4nwxo+nKidqIAWFRMpJ17p86ZPPu0eGk7Qps6fgrxt7lnRZYoTE4LuL+JXf2KZQBu
+         3B/xQk/Ci0z0gegWmCITyzcnP+6jrIutPPykwXxvUEtIGZRYNMz/brmjN/xoSkJZpFDp
+         /Tn+w24anZgNgDqYMXwXSv8Do59Ow9COWhzEVRj+Q5HPyS0ZoPTwWZ1VKIxPej6GJdjJ
+         lYo79mP07YFMZ4YW22eWePJsDJYw9T+RErd3hI/pads3bHJYTL2DMFqoQwSL3zkZ6ETc
+         wjP/oaPVYgmbUzI5qJskaLlXHtYi9oFIajEWHreoBEDm7dzxViwZ/S+rRsWHX1M3+vcX
+         ejdQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=nqs08425RUN3uyEpWTzaksGv8utumJixkeluY86HgYI=;
+        b=aScYR0HvJocqWqulkbAQ4uhpEzaMyg0WFgyYJRcpzBYxqwl9HRDuc7fm74Sj3QSq0R
+         VgLZscdSNlmy+g4Iw6QYcZF3dmYoRYORTHfWFjuSFadsNXzDEfiu203By0wY7J69bVin
+         rQSRL6ch5O+C/EP3UQDnSYAVpUNb2M+XAxJNCAszTnjbL/7H6z8W+MGqK/FtBFrfmqRN
+         9fQBE+gVmpZ+9JwBq0oK7ZCXhQGG72U17vGH2j1aXjoq4+oMbsyZiGLKhDQpMhTFWAOu
+         f8v2lcMIXKVYTlMGammaLOQEXqdCzchdUWOY40NqKxhOmQxkICyGm2uNflwOPEZeq6Qm
+         DOSw==
+X-Gm-Message-State: APjAAAXiH+Sp6oDHphSmpNAgnfMsf0WJoX2I0GH25UFRcCQVr3iYD3k0
+        AyqQ4Yh/22TOMeS2xAHF/PUaTi9TY5ViqvySj6I=
+X-Google-Smtp-Source: APXvYqxLt/1cWcxBYLBmxSo44hlhsCJ6/wTOviEGGreQ1cvaGNkX4YNTfkd27HgtbXjMGJd92P337mFIeIgiQk0Y4ZY=
+X-Received: by 2002:a19:5013:: with SMTP id e19mr3989969lfb.8.1579965812962;
+ Sat, 25 Jan 2020 07:23:32 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200125113726.ousbmm4n3ab4xnqt@soft-dev3.microsemi.net>
+References: <20200123161508.915203-1-jolsa@kernel.org>
+In-Reply-To: <20200123161508.915203-1-jolsa@kernel.org>
+From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Date:   Sat, 25 Jan 2020 07:23:21 -0800
+Message-ID: <CAADnVQLBQ2t30BwqBb9wJc5rM5M9URvKk25HUBa94PuL8tYcDw@mail.gmail.com>
+Subject: Re: [PATCHv4 0/3] bpf: trampoline fixes
+To:     Jiri Olsa <jolsa@kernel.org>
+Cc:     Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Network Development <netdev@vger.kernel.org>,
+        bpf <bpf@vger.kernel.org>, Andrii Nakryiko <andriin@fb.com>,
+        Yonghong Song <yhs@fb.com>, Martin KaFai Lau <kafai@fb.com>,
+        Jakub Kicinski <jakub.kicinski@netronome.com>,
+        David Miller <davem@redhat.com>,
+        =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@intel.com>,
+        John Fastabend <john.fastabend@gmail.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, Jan 25, 2020 at 12:37:26PM +0100, Horatiu Vultur wrote:
-> The 01/24/2020 18:43, Andrew Lunn wrote:
-> > EXTERNAL EMAIL: Do not click links or open attachments unless you know the content is safe
-> > 
-> > > br_mrp_flush - will flush the FDB.
-> > 
-> > How does this differ from a normal bridge flush? I assume there is a
-> > way for user space to flush the bridge FDB.
-> 
-> Hi,
-> 
-> If I seen corectly the normal bridge flush will clear the entire FDB for
-> all the ports of the bridge. In this case it is require to clear FDB
-> entries only for the ring ports.
+On Thu, Jan 23, 2020 at 8:15 AM Jiri Olsa <jolsa@kernel.org> wrote:
+>
+> hi,
+> sending 2 fixes to fix kernel support for loading
+> trampoline programs in bcc/bpftrace and allow to
+> unwind through trampoline/dispatcher.
+>
+> Original rfc post [1].
+>
+> Speedup output of perf bench while running klockstat.py
+> on kprobes vs trampolines:
+>
+>     Without:
+>             $ perf bench sched messaging -l 50000
+>             ...
+>                  Total time: 18.571 [sec]
+>
+>     With current kprobe tracing:
+>             $ perf bench sched messaging -l 50000
+>             ...
+>                  Total time: 183.395 [sec]
+>
+>     With kfunc tracing:
+>             $ perf bench sched messaging -l 50000
+>             ...
+>                  Total time: 39.773 [sec]
+>
+> v4 changes:
+>   - rebased on latest bpf-next/master
+>   - removed image tree mutex and use trampoline_mutex instead
+>   - checking directly for string pointer in patch 1 [Alexei]
+>   - skipped helpers patches, as they are no longer needed [Alexei]
 
-Maybe it would be better to extend the current bridge netlink call to
-be able to pass an optional interface to be flushed?  I'm not sure it
-is a good idea to have two APIs doing very similar things.
-
-   Andrew
+Applied. Thanks
