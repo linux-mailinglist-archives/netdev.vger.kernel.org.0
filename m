@@ -2,91 +2,78 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 8C2E714968B
-	for <lists+netdev@lfdr.de>; Sat, 25 Jan 2020 17:14:19 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 64B8C14968F
+	for <lists+netdev@lfdr.de>; Sat, 25 Jan 2020 17:16:29 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726294AbgAYQOR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 25 Jan 2020 11:14:17 -0500
-Received: from mail.kernel.org ([198.145.29.99]:33020 "EHLO mail.kernel.org"
+        id S1726690AbgAYQQV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 25 Jan 2020 11:16:21 -0500
+Received: from vps0.lunn.ch ([185.16.172.187]:54148 "EHLO vps0.lunn.ch"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725843AbgAYQOR (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sat, 25 Jan 2020 11:14:17 -0500
-Received: from localhost (unknown [213.57.247.131])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id E99D32071A;
-        Sat, 25 Jan 2020 16:14:15 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1579968856;
-        bh=tG1jztXvIuyrhcdmu+h109XhVd+uN6XSXS+OCTvPijg=;
-        h=From:To:Cc:Subject:Date:From;
-        b=IE1Pf0FIQxoeX/IEZ9c7E5mnfQvAoADungW9c0V5sdvfR3soZFnLXwj32eBVCiA1I
-         E97T+yfsfo8hcimZRTN+uLNESSL0UAx4KU5GjqnmryZKzpMg41ydCf3dGlXhfR56KE
-         alS0bFOmQgUkchIZoslzJlStE6FiPSAvFp5RZJzo=
-From:   Leon Romanovsky <leon@kernel.org>
-To:     "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-Cc:     Leon Romanovsky <leonro@mellanox.com>,
-        Michal Kalderon <michal.kalderon@marvell.com>,
-        linux-netdev <netdev@vger.kernel.org>,
-        RDMA mailing list <linux-rdma@vger.kernel.org>
-Subject: [PATCH net-next v1] net/core: Replace driver version to be kernel version
-Date:   Sat, 25 Jan 2020 18:14:01 +0200
-Message-Id: <20200125161401.40683-1-leon@kernel.org>
-X-Mailer: git-send-email 2.24.1
+        id S1725843AbgAYQQU (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sat, 25 Jan 2020 11:16:20 -0500
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:
+        Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
+        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
+        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
+        List-Post:List-Owner:List-Archive;
+        bh=7pOZtCRspHMG7P8OoioPIeVczYmsdyWf2zfgI15qGfA=; b=FBkqhd+zNjAokfOr0U28bnV6cy
+        rS/LI20ZiGJKZQ169QVHehvysN/lCP2dukOffEJL6rkdG/UR3LJBUK0bE5+Wg1u6eXZIdevpfGxJ8
+        0rK9AQ5S+ShDtvfzuhBY62mgUhN6r0jKdOegG0eMW+93WfcBWb5k7eaITn+tB7zYPErk=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.93)
+        (envelope-from <andrew@lunn.ch>)
+        id 1ivO6Z-00075c-Hs; Sat, 25 Jan 2020 17:16:15 +0100
+Date:   Sat, 25 Jan 2020 17:16:15 +0100
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Horatiu Vultur <horatiu.vultur@microchip.com>
+Cc:     linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        bridge@lists.linux-foundation.org, jiri@resnulli.us,
+        ivecera@redhat.com, davem@davemloft.net, roopa@cumulusnetworks.com,
+        nikolay@cumulusnetworks.com, anirudh.venkataramanan@intel.com,
+        olteanv@gmail.com, jeffrey.t.kirsher@intel.com,
+        UNGLinuxDriver@microchip.com
+Subject: Re: [RFC net-next v3 09/10] net: bridge: mrp: Integrate MRP into the
+ bridge
+Message-ID: <20200125161615.GD18311@lunn.ch>
+References: <20200124161828.12206-1-horatiu.vultur@microchip.com>
+ <20200124161828.12206-10-horatiu.vultur@microchip.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20200124161828.12206-10-horatiu.vultur@microchip.com>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Leon Romanovsky <leonro@mellanox.com>
+>  br_netif_receive_skb(struct net *net, struct sock *sk, struct sk_buff *skb)
+> @@ -338,6 +341,17 @@ rx_handler_result_t br_handle_frame(struct sk_buff **pskb)
+>  			return RX_HANDLER_CONSUMED;
+>  		}
+>  	}
+> +#ifdef CONFIG_BRIDGE_MRP
+> +	/* If there is no MRP instance do normal forwarding */
+> +	if (!p->mrp_aware)
+> +		goto forward;
+> +
+> +	if (skb->protocol == htons(ETH_P_MRP))
+> +		return RX_HANDLER_PASS;
 
-In order to stop useless driver version bumps and unify output
-presented by ethtool -i, let's overwrite the version string.
+What MAC address is used for these MRP frames? It would make sense to
+use a L2 link local destination address, since i assume they are not
+supposed to be forwarded by the bridge. If so, you could extend the
+if (unlikely(is_link_local_ether_addr(dest))) condition.
 
-Before this change:
-[leonro@erver ~]$ ethtool -i eth0
-driver: virtio_net
-version: 1.0.0
-After this change:
-[leonro@server ~]$ ethtool -i eth0
-driver: virtio_net
-version: 5.5.0-rc6+
+> +
+> +	if (p->state == BR_STATE_BLOCKING)
+> +		goto drop;
+> +#endif
 
-Signed-off-by: Leon Romanovsky <leonro@mellanox.com>
----
- Changelog:
- v1: Resend per-Dave's request
-     https://lore.kernel.org/linux-rdma/20200125.101311.1924780619716720495.davem@davemloft.net
-     No changes at all and applied cleanly on top of "3333e50b64fe Merge branch 'mlxsw-Offload-TBF'"
- v0: https://lore.kernel.org/linux-rdma/20200123130541.30473-1-leon@kernel.org
----
- net/ethtool/ioctl.c | 3 +++
- 1 file changed, 3 insertions(+)
+Is this needed? The next block of code is a switch statement on
+p->state. The default case, which BR_STATE_BLOCKING should hit, is
+drop.
 
-diff --git a/net/ethtool/ioctl.c b/net/ethtool/ioctl.c
-index 182bffbffa78..a403decacb6d 100644
---- a/net/ethtool/ioctl.c
-+++ b/net/ethtool/ioctl.c
-@@ -17,6 +17,7 @@
- #include <linux/phy.h>
- #include <linux/bitops.h>
- #include <linux/uaccess.h>
-+#include <linux/vermagic.h>
- #include <linux/vmalloc.h>
- #include <linux/sfp.h>
- #include <linux/slab.h>
-@@ -666,6 +667,8 @@ static noinline_for_stack int ethtool_get_drvinfo(struct net_device *dev,
- 		return -EOPNOTSUPP;
- 	}
+This function is on the hot path. So we should try to optimize it as
+much as possible.
 
-+	strlcpy(info.version, UTS_RELEASE, sizeof(info.version));
-+
- 	/*
- 	 * this method of obtaining string set info is deprecated;
- 	 * Use ETHTOOL_GSSET_INFO instead.
---
-2.24.1
-
+     Andrew
