@@ -2,110 +2,161 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 20A3C149773
-	for <lists+netdev@lfdr.de>; Sat, 25 Jan 2020 20:29:06 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B5A3414977F
+	for <lists+netdev@lfdr.de>; Sat, 25 Jan 2020 20:39:33 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727215AbgAYT3A (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 25 Jan 2020 14:29:00 -0500
-Received: from esa5.microchip.iphmx.com ([216.71.150.166]:58892 "EHLO
-        esa5.microchip.iphmx.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726448AbgAYT27 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 25 Jan 2020 14:28:59 -0500
-Received-SPF: Pass (esa5.microchip.iphmx.com: domain of
-  Allan.Nielsen@microchip.com designates 198.175.253.82 as
-  permitted sender) identity=mailfrom;
-  client-ip=198.175.253.82; receiver=esa5.microchip.iphmx.com;
-  envelope-from="Allan.Nielsen@microchip.com";
-  x-sender="Allan.Nielsen@microchip.com";
-  x-conformance=spf_only; x-record-type="v=spf1";
-  x-record-text="v=spf1 mx a:ushub1.microchip.com
-  a:smtpout.microchip.com -exists:%{i}.spf.microchip.iphmx.com
-  include:servers.mcsv.net include:mktomail.com
-  include:spf.protection.outlook.com ~all"
-Received-SPF: None (esa5.microchip.iphmx.com: no sender
-  authenticity information available from domain of
-  postmaster@email.microchip.com) identity=helo;
-  client-ip=198.175.253.82; receiver=esa5.microchip.iphmx.com;
-  envelope-from="Allan.Nielsen@microchip.com";
-  x-sender="postmaster@email.microchip.com";
-  x-conformance=spf_only
-Authentication-Results: esa5.microchip.iphmx.com; dkim=none (message not signed) header.i=none; spf=Pass smtp.mailfrom=Allan.Nielsen@microchip.com; spf=None smtp.helo=postmaster@email.microchip.com; dmarc=pass (p=none dis=none) d=microchip.com
-IronPort-SDR: LmzuGqhttF/xfKlz3vN8UCSxVJmlEhupmImJsA7v4AzRU/HKQvQqYBREmoaEzf+fHW7WIsMl7d
- CJQdgDUnTp8T+WbR1g4LluoF3HR3zCJ7ZS99n26UVEIn0FbZK8bmD1e+kFjofsUYFwG9eFW0fq
- YSB+PhTunKvzHwEISleY9WBeDY944oDZV4e2oWUl8bJMVeei5KZm5G91QMePUXiW3RM+myr0qX
- RV2LMM1yghDqn02BzjkdGJHEtTxOxSjdOVElTsrCJjxcqXr1teKz1+mNmt078ke8Q6gaseFvj5
- 0CY=
-X-IronPort-AV: E=Sophos;i="5.70,362,1574146800"; 
-   d="scan'208";a="63107753"
-Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
-  by esa5.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 25 Jan 2020 12:28:58 -0700
-Received: from chn-vm-ex03.mchp-main.com (10.10.85.151) by
- chn-vm-ex02.mchp-main.com (10.10.85.144) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.1713.5; Sat, 25 Jan 2020 12:28:53 -0700
-Received: from localhost (10.10.85.251) by chn-vm-ex03.mchp-main.com
- (10.10.85.151) with Microsoft SMTP Server id 15.1.1713.5 via Frontend
- Transport; Sat, 25 Jan 2020 12:28:55 -0700
-Date:   Sat, 25 Jan 2020 20:28:54 +0100
-From:   "Allan W. Nielsen" <allan.nielsen@microchip.com>
-To:     Andrew Lunn <andrew@lunn.ch>
-CC:     Horatiu Vultur <horatiu.vultur@microchip.com>,
-        <linux-kernel@vger.kernel.org>, <netdev@vger.kernel.org>,
-        <bridge@lists.linux-foundation.org>, <jiri@resnulli.us>,
-        <ivecera@redhat.com>, <davem@davemloft.net>,
-        <roopa@cumulusnetworks.com>, <nikolay@cumulusnetworks.com>,
-        <anirudh.venkataramanan@intel.com>, <olteanv@gmail.com>,
-        <jeffrey.t.kirsher@intel.com>, <UNGLinuxDriver@microchip.com>
-Subject: Re: [RFC net-next v3 04/10] net: bridge: mrp: Add generic netlink
- interface to configure MRP
-Message-ID: <20200125192854.yi544iu2atvbbwey@lx-anielsen.microsemi.net>
-References: <20200124161828.12206-1-horatiu.vultur@microchip.com>
- <20200124161828.12206-5-horatiu.vultur@microchip.com>
- <20200125153403.GB18311@lunn.ch>
+        id S1726911AbgAYTjc (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 25 Jan 2020 14:39:32 -0500
+Received: from smtp-out.kfki.hu ([148.6.0.45]:45727 "EHLO smtp-out.kfki.hu"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726448AbgAYTjb (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sat, 25 Jan 2020 14:39:31 -0500
+Received: from localhost (localhost [127.0.0.1])
+        by smtp0.kfki.hu (Postfix) with ESMTP id 170C66740117;
+        Sat, 25 Jan 2020 20:39:28 +0100 (CET)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+        blackhole.kfki.hu; h=mime-version:user-agent:message-id:from
+        :from:date:date:received:received:received; s=20151130; t=
+        1579981166; x=1581795567; bh=o6B/u85TTAYQbWbOC0O46Un9+pO2wLzCQtf
+        /iOnQNK8=; b=q+/XVW9A+O1i7s2E+r8U0T6u4615KP2bAWt62mR5/t0QdL0a4ft
+        qk/WWVUbrxFpmfd6NioMka2+oda7FE/nDZd94FLkTZdw8P5KJXGqvI4HmT1BSQ/I
+        Z2jkBxOTi7s1e6qQ9MglBfrjrUVWDpC7piqBFFg3onyLG+XsaaW39wUE=
+X-Virus-Scanned: Debian amavisd-new at smtp0.kfki.hu
+Received: from smtp0.kfki.hu ([127.0.0.1])
+        by localhost (smtp0.kfki.hu [127.0.0.1]) (amavisd-new, port 10026)
+        with ESMTP; Sat, 25 Jan 2020 20:39:26 +0100 (CET)
+Received: from blackhole.kfki.hu (blackhole.szhk.kfki.hu [IPv6:2001:738:5001:1::240:2])
+        by smtp0.kfki.hu (Postfix) with ESMTP id BF3846740114;
+        Sat, 25 Jan 2020 20:39:25 +0100 (CET)
+Received: by blackhole.kfki.hu (Postfix, from userid 1000)
+        id 977962151F; Sat, 25 Jan 2020 20:39:25 +0100 (CET)
+Date:   Sat, 25 Jan 2020 20:39:25 +0100 (CET)
+From:   =?UTF-8?Q?Kadlecsik_J=C3=B3zsef?= <kadlec@blackhole.kfki.hu>
+To:     syzbot <syzbot+fc69d7cb21258ab4ae4d@syzkaller.appspotmail.com>
+cc:     netdev@vger.kernel.org, netfilter-devel@vger.kernel.org,
+        Pablo Neira Ayuso <pablo@netfilter.org>,
+        syzkaller-bugs@googlegroups.com
+Subject: [PATCH 1/1] netfilter: ipset: fix suspicious RCU usage in
+ find_set_and_id
+Message-ID: <alpine.DEB.2.20.2001252034050.23279@blackhole.kfki.hu>
+User-Agent: Alpine 2.20 (DEB 67 2015-01-07)
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"; format=flowed
-Content-Disposition: inline
-In-Reply-To: <20200125153403.GB18311@lunn.ch>
+Content-Type: text/plain; charset=US-ASCII
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 25.01.2020 16:34, Andrew Lunn wrote:
->EXTERNAL EMAIL: Do not click links or open attachments unless you know the content is safe
->
->On Fri, Jan 24, 2020 at 05:18:22PM +0100, Horatiu Vultur wrote:
->> Implement the generic netlink interface to configure MRP. The implementation
->> will do sanity checks over the attributes and then eventually call the MRP
->> interface which eventually will call the switchdev API.
->What was your thinking between adding a new generic netlink interface,
->and extending the current one?
->
->I've not looked at your user space code yet, but i assume it has to
->make use of both? It needs to create the bridge and add the
->interfaces. And then it needs to control the MRP state.
->
->Allan mentioned you might get around to implementing 802.1CB? Would
->that be another generic netlink interface, or would you extend the MRP
->interface?
-Horatiu, if you have given this any thoughts, then please share them.
+find_set_and_id() is called when the NFNL_SUBSYS_IPSET mutex is held.
+However, in the error path there can be a follow-up recvmsg() without
+the mutex held. Use the start() function of struct netlink_dump_control
+instead of dump() to verify and report if the specified set does not
+exist.
 
-Here are my thoughts on 802.1CB: If we look at this with the traditional
-NIC/host POW, then it would be natural to look at the HSR interface as
-Vinicius suggested, and expose it as a new interface (HSR0). But when
-looking at how 802.1CB say a bridge should act, and also what the
-capabilities of the HW are, then it seem more natural to extend the TC
-system. In HW it is a TCAM classifying the traffic, and it has some
-actions to either replicate the matched frames, or eliminate the
-additional copies.
+Thanks to Pablo Neira Ayuso for helping me to understand the subleties
+of the netlink protocol.
 
-The HW also supports CFM (see [1]), which we need (partly) to complete
-the MRP implementation with MIM/MIC roles. This is also useful for none
-MRP users (like ERPS).
+Reported-by: syzbot+fc69d7cb21258ab4ae4d@syzkaller.appspotmail.com
+Signed-off-by: Jozsef Kadlecsik <kadlec@netfilter.org>
+---
+ net/netfilter/ipset/ip_set_core.c | 41 ++++++++++++++++---------------
+ 1 file changed, 21 insertions(+), 20 deletions(-)
 
-This seems like an argument for moving this to the existing netlink
-interfaces instead of having it as a generic netlink.
+diff --git a/net/netfilter/ipset/ip_set_core.c b/net/netfilter/ipset/ip_set_core.c
+index cf895bc80871..69c107f9ba8d 100644
+--- a/net/netfilter/ipset/ip_set_core.c
++++ b/net/netfilter/ipset/ip_set_core.c
+@@ -1483,31 +1483,34 @@ ip_set_dump_policy[IPSET_ATTR_CMD_MAX + 1] = {
+ };
+ 
+ static int
+-dump_init(struct netlink_callback *cb, struct ip_set_net *inst)
++ip_set_dump_start(struct netlink_callback *cb)
+ {
+ 	struct nlmsghdr *nlh = nlmsg_hdr(cb->skb);
+ 	int min_len = nlmsg_total_size(sizeof(struct nfgenmsg));
+ 	struct nlattr *cda[IPSET_ATTR_CMD_MAX + 1];
+ 	struct nlattr *attr = (void *)nlh + min_len;
++	struct sk_buff *skb = cb->skb;
++	struct ip_set_net *inst = ip_set_pernet(sock_net(skb->sk));
+ 	u32 dump_type;
+-	ip_set_id_t index;
+ 	int ret;
+ 
+ 	ret = nla_parse(cda, IPSET_ATTR_CMD_MAX, attr,
+ 			nlh->nlmsg_len - min_len,
+ 			ip_set_dump_policy, NULL);
+ 	if (ret)
+-		return ret;
++		goto error;
+ 
+ 	cb->args[IPSET_CB_PROTO] = nla_get_u8(cda[IPSET_ATTR_PROTOCOL]);
+ 	if (cda[IPSET_ATTR_SETNAME]) {
++		ip_set_id_t index;
+ 		struct ip_set *set;
+ 
+ 		set = find_set_and_id(inst, nla_data(cda[IPSET_ATTR_SETNAME]),
+ 				      &index);
+-		if (!set)
+-			return -ENOENT;
+-
++		if (!set) {
++			ret = -ENOENT;
++			goto error;
++		}
+ 		dump_type = DUMP_ONE;
+ 		cb->args[IPSET_CB_INDEX] = index;
+ 	} else {
+@@ -1523,10 +1526,17 @@ dump_init(struct netlink_callback *cb, struct ip_set_net *inst)
+ 	cb->args[IPSET_CB_DUMP] = dump_type;
+ 
+ 	return 0;
++
++error:
++	/* We have to create and send the error message manually :-( */
++	if (nlh->nlmsg_flags & NLM_F_ACK) {
++		netlink_ack(cb->skb, nlh, ret, NULL);
++	}
++	return ret;
+ }
+ 
+ static int
+-ip_set_dump_start(struct sk_buff *skb, struct netlink_callback *cb)
++ip_set_dump_do(struct sk_buff *skb, struct netlink_callback *cb)
+ {
+ 	ip_set_id_t index = IPSET_INVALID_ID, max;
+ 	struct ip_set *set = NULL;
+@@ -1537,18 +1547,8 @@ ip_set_dump_start(struct sk_buff *skb, struct netlink_callback *cb)
+ 	bool is_destroyed;
+ 	int ret = 0;
+ 
+-	if (!cb->args[IPSET_CB_DUMP]) {
+-		ret = dump_init(cb, inst);
+-		if (ret < 0) {
+-			nlh = nlmsg_hdr(cb->skb);
+-			/* We have to create and send the error message
+-			 * manually :-(
+-			 */
+-			if (nlh->nlmsg_flags & NLM_F_ACK)
+-				netlink_ack(cb->skb, nlh, ret, NULL);
+-			return ret;
+-		}
+-	}
++	if (!cb->args[IPSET_CB_DUMP])
++		return -EINVAL;
+ 
+ 	if (cb->args[IPSET_CB_INDEX] >= inst->ip_set_max)
+ 		goto out;
+@@ -1684,7 +1684,8 @@ static int ip_set_dump(struct net *net, struct sock *ctnl, struct sk_buff *skb,
+ 
+ 	{
+ 		struct netlink_dump_control c = {
+-			.dump = ip_set_dump_start,
++			.start = ip_set_dump_start,
++			.dump = ip_set_dump_do,
+ 			.done = ip_set_dump_done,
+ 		};
+ 		return netlink_dump_start(ctnl, skb, nlh, &c);
+-- 
+2.20.1
 
-[1] https://en.wikipedia.org/wiki/IEEE_802.1ag
-
-/Allan
