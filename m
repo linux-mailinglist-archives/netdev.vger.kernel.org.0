@@ -2,34 +2,34 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 0B1F514955A
+	by mail.lfdr.de (Postfix) with ESMTP id 88D3414955B
 	for <lists+netdev@lfdr.de>; Sat, 25 Jan 2020 12:49:19 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727590AbgAYLtG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 25 Jan 2020 06:49:06 -0500
-Received: from mail.kernel.org ([198.145.29.99]:59018 "EHLO mail.kernel.org"
+        id S1728827AbgAYLtK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 25 Jan 2020 06:49:10 -0500
+Received: from mail.kernel.org ([198.145.29.99]:59046 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725767AbgAYLtG (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sat, 25 Jan 2020 06:49:06 -0500
+        id S1725767AbgAYLtK (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sat, 25 Jan 2020 06:49:10 -0500
 Received: from p977.fit.wifi.vutbr.cz (unknown [147.229.117.36])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id F200C20704;
-        Sat, 25 Jan 2020 11:49:04 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id C4B8820704;
+        Sat, 25 Jan 2020 11:49:08 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1579952946;
-        bh=cskSgIKitgoWdwJ38kJ3gRDY9irF4/i9eaR8E1KNRXY=;
+        s=default; t=1579952949;
+        bh=+JzB7yLZcr3orX5CcpEDPzmjOeC1wIQbj82tn5c4h7U=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=VvQWuSen6UKAvt2OWzKrWdNV0wrPDvqnabkvSO+9axL5S56ApqLSRzFZ0aQGLCmJC
-         9QlVhU421OiNlQf19MCn+PMmcqTVY1T8Rt+iohAw48gU8QRb+ObmyU+7CHljCY/U0W
-         1rfIj7G0NKMpTB8C74bhetAGthq+OWCrSf2ZwQ4o=
+        b=awH3P2CJz+vJA6pW+CqKpDPvP877Qtm5XvrCU3vpFArdKL3YgezxeP+8jJWfiKP1m
+         1bNqnUVfCjLI0GZEmYS4tYAm0ZOUskYNb2ckbXGM3uDGAXTb2Qe7G6nCJMuswV0pXO
+         eZ65TywjGlaom0pop0tFQhEzjMvMlYdHTueL8aKA=
 From:   Lorenzo Bianconi <lorenzo@kernel.org>
 To:     netdev@vger.kernel.org
 Cc:     ilias.apalodimas@linaro.org, davem@davemloft.net,
         lorenzo.bianconi@redhat.com, brouer@redhat.com
-Subject: [PATCH net 1/2] net: socionext: fix possible user-after-free in netsec_process_rx
-Date:   Sat, 25 Jan 2020 12:48:50 +0100
-Message-Id: <b66c3b2603da49706597d84aacb7ac8b4ffb1820.1579952387.git.lorenzo@kernel.org>
+Subject: [PATCH net 2/2] net: socionext: fix xdp_result initialization in netsec_process_rx
+Date:   Sat, 25 Jan 2020 12:48:51 +0100
+Message-Id: <6c5c8394590826f4d69172cf31e95d44eae92245.1579952387.git.lorenzo@kernel.org>
 X-Mailer: git-send-email 2.21.1
 In-Reply-To: <cover.1579952387.git.lorenzo@kernel.org>
 References: <cover.1579952387.git.lorenzo@kernel.org>
@@ -40,10 +40,9 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Fix possible use-after-free in in netsec_process_rx that can occurs if
-the first packet is sent to the normal networking stack and the
-following one is dropped by the bpf program attached to the xdp hook.
-Fix the issue defining the skb pointer in the 'budget' loop
+Fix xdp_result initialization in netsec_process_rx in order to not
+increase rx counters if there is no bpf program attached to the xdp hook
+and napi_gro_receive returns GRO_DROP
 
 Fixes: ba2b232108d3c ("net: netsec: add XDP support")
 Signed-off-by: Lorenzo Bianconi <lorenzo@kernel.org>
@@ -52,25 +51,19 @@ Signed-off-by: Lorenzo Bianconi <lorenzo@kernel.org>
  1 file changed, 1 insertion(+), 1 deletion(-)
 
 diff --git a/drivers/net/ethernet/socionext/netsec.c b/drivers/net/ethernet/socionext/netsec.c
-index 869a498e3b5e..0e12a9856aea 100644
+index 0e12a9856aea..56c0e643f430 100644
 --- a/drivers/net/ethernet/socionext/netsec.c
 +++ b/drivers/net/ethernet/socionext/netsec.c
-@@ -929,7 +929,6 @@ static int netsec_process_rx(struct netsec_priv *priv, int budget)
- 	struct netsec_rx_pkt_info rx_info;
- 	enum dma_data_direction dma_dir;
- 	struct bpf_prog *xdp_prog;
--	struct sk_buff *skb = NULL;
- 	u16 xdp_xmit = 0;
- 	u32 xdp_act = 0;
- 	int done = 0;
-@@ -943,6 +942,7 @@ static int netsec_process_rx(struct netsec_priv *priv, int budget)
+@@ -942,8 +942,8 @@ static int netsec_process_rx(struct netsec_priv *priv, int budget)
  		struct netsec_de *de = dring->vaddr + (DESC_SZ * idx);
  		struct netsec_desc *desc = &dring->desc[idx];
  		struct page *page = virt_to_page(desc->addr);
-+		struct sk_buff *skb = NULL;
- 		u32 xdp_result = XDP_PASS;
++		u32 xdp_result = NETSEC_XDP_PASS;
+ 		struct sk_buff *skb = NULL;
+-		u32 xdp_result = XDP_PASS;
  		u16 pkt_len, desc_len;
  		dma_addr_t dma_handle;
+ 		struct xdp_buff xdp;
 -- 
 2.21.1
 
