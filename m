@@ -2,40 +2,40 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id B25731494F7
-	for <lists+netdev@lfdr.de>; Sat, 25 Jan 2020 11:48:52 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 29B1A14951A
+	for <lists+netdev@lfdr.de>; Sat, 25 Jan 2020 12:13:51 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726729AbgAYKsr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 25 Jan 2020 05:48:47 -0500
-Received: from mail-eopbgr10124.outbound.protection.outlook.com ([40.107.1.124]:18430
-        "EHLO EUR02-HE1-obe.outbound.protection.outlook.com"
+        id S1726146AbgAYLMI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 25 Jan 2020 06:12:08 -0500
+Received: from mail-eopbgr30093.outbound.protection.outlook.com ([40.107.3.93]:58106
+        "EHLO EUR03-AM5-obe.outbound.protection.outlook.com"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1725710AbgAYKsq (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sat, 25 Jan 2020 05:48:46 -0500
+        id S1725767AbgAYLMH (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sat, 25 Jan 2020 06:12:07 -0500
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=Bm6EmvEaH2Ucr9fLGD5OzbfNhU0murYznSMXcMb8/v517IIhbfPY6E2K8tnzBnZ79wyHXWCO510ZWWX8EElf2e3zCDiUnkmBzE4SdX1d2pOlAWGbJVLbodP48dB5ZzdFl2fcf1lxPXgBhZZ1oDhmEr0ChYvHleoXKagEXmOEoeoV8WTXJLZedvYpnE+UBmh7UoMWE51TcMMBIXHugzsyOAyUbhYW1DBoNQp1c7Tnea6mOcUP/zqW9QJlzJK8sfIMfleITmDyMARGT8GJVE8irohEPfwpcWo0+SPu8n3E4ni1sAX3brxGLMg/3N9RsZlmVE4UhsAwK7zzD5NtVJgb7Q==
+ b=Rw/r6s2TIHRwWF5VsVj4XKZvBKRol3sgesp2J2iVz3qQPQHBWE9hsiQf6x9Te0IlZ8UOugrhfj+fbplDk+/YJS38ijYHyrgdQo3Qx2a+6rJl25pagJnpYJl3wx2FojsmK8tEcHmK4Mf8tCjMfwbL1X8aUN8kd/HJFUgWbsTDHkwXzEkT+31xtxmCjiFcjT9+O/JmFgO98EzOgMB608FGogxk5sSJd/+LdBF3mV6UKYgS4VERLr8AcvQ+A+VCuZeBkGqA7POLM2uO72U1arfYPxIuI7NCL/uHid7AHFwA966FQJzkhHYZ+vPHV5dLDL9SRanMJUb/yQpdgqogox6e1w==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=pyupf76kG1FRvQkUMv3/mCjsAzSVF/2pFlZlJ9tdHvY=;
- b=TQp7qhI20WMrSLDqz2uBQhSU2Hu/ReqDINTnkDDPtWb1risISlEy42vn6ftmxYYhQt3PRoc41hBhoVOen7pZU/J82wFg/W/htTzZc5qe5gZTqUPXH0D/kVfZpG6V5C1yFGUdchCYOUsR+5ydHgKV0VYMKlS+RcEmQuBFkZRd9EgE7PcC7K1j9JfBnsggmUpma0p0p7NTC8L7mxsX/SnE+go3T+JqIP/3Q18hyy/3Bf9WIINv+0uRHBmAXMm1eafgMaNHoHK6mhtHPk1Mh75Q/lRoYxqGoa2apHJj88h/bm86jxyL+pQAQo0ryDPLeKoTmR78XrZvZK2FMoSgoqJM+Q==
+ bh=8YDVjPFeaxp6QlcHjRT526FrapfLiyjeKvt8jSIK9nk=;
+ b=F8EIyNaT0VCt5YS+NGtg1tzpTW53JWr4VK/ZBQvlpSXSylM2m0ykQsR9dGOD1TA5GviqH/lXBLs4+koJMAuOwk+aKaZCS1qQHu+rimiewnLFO0HM9UytUy4uF9l+XG/SHauIRPZxPSAJN9b4YRIFHBRRGObvw1gETZYUeKvXp+yhOBZHTsJkbZ6z9HIVKW1G2kDLZXLraDhw/Lo3Va/i8ZktfFtyXM564okaOdfWUQ10u4jB5nLTUp5s9p6zupewJKLW2GwelBSdEZ+voR9qiJWnal1BIAw1F5fLTahX6bjdtg7wcGdCcNnoghu7Fq+Y/LRLFIEyfrboOuZIcJcsxQ==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=voleatech.de; dmarc=pass action=none header.from=voleatech.de;
  dkim=pass header.d=voleatech.de; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=voleatech.de;
  s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=pyupf76kG1FRvQkUMv3/mCjsAzSVF/2pFlZlJ9tdHvY=;
- b=D5LgM54uvZwRrteUxUrQp4beesrf2rgf/MMfx5rz+7h9SQDGUz7cXld+Wpi7h97RWezml6cQOfB/qcuPbv3QK1PliiPby1lVus7N2XlTR34/5rt3xlN8hPw4cBFyhJl+hsxV2GD2WAoDiGdkxDSmx2YpHGo2W14DrtUfmMRbe+Y=
+ bh=8YDVjPFeaxp6QlcHjRT526FrapfLiyjeKvt8jSIK9nk=;
+ b=OTnvyKt6e2u1xWWPCjYWwUI8WyAR4qeZoAz3WEPXkNjtUVlxDK7eQyWlTfCL2vUZB2W37efLVnJNROPfXtgEqOnqMFnVIrfORt0pc6JQYRMnJHqHbMUZ6QvG97znM3i6u8c21osoH2xpsdpTdNsPRjT3T1HUv/DlnN+QWkDkyIs=
 Received: from AM0PR05MB5156.eurprd05.prod.outlook.com (20.178.20.19) by
- AM0PR05MB4578.eurprd05.prod.outlook.com (52.133.54.155) with Microsoft SMTP
+ AM0PR05MB5924.eurprd05.prod.outlook.com (20.178.202.150) with Microsoft SMTP
  Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.2644.24; Sat, 25 Jan 2020 10:48:40 +0000
+ 15.20.2665.20; Sat, 25 Jan 2020 11:12:00 +0000
 Received: from AM0PR05MB5156.eurprd05.prod.outlook.com
  ([fe80::28cb:442b:6907:83e7]) by AM0PR05MB5156.eurprd05.prod.outlook.com
  ([fe80::28cb:442b:6907:83e7%6]) with mapi id 15.20.2665.017; Sat, 25 Jan 2020
- 10:48:40 +0000
-Received: from SvensMacBookAir.sven.lan (78.43.2.70) by ZR0P278CA0020.CHEP278.PROD.OUTLOOK.COM (2603:10a6:910:1c::7) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.2665.22 via Frontend Transport; Sat, 25 Jan 2020 10:48:39 +0000
+ 11:12:00 +0000
+Received: from SvensMacBookAir.sven.lan (78.43.2.70) by AM0PR06CA0095.eurprd06.prod.outlook.com (20.178.20.228) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.2665.22 via Frontend Transport; Sat, 25 Jan 2020 11:11:59 +0000
 From:   Sven Auhagen <sven.auhagen@voleatech.de>
 To:     "lorenzo.bianconi@redhat.com" <lorenzo.bianconi@redhat.com>
 CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
@@ -44,146 +44,213 @@ CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
         "brouer@redhat.com" <brouer@redhat.com>,
         "ilias.apalodimas@linaro.org" <ilias.apalodimas@linaro.org>,
         "matteo.croce@redhat.com" <matteo.croce@redhat.com>,
+        "mw@semihalf.com" <mw@semihalf.com>,
         "jakub.kicinski@netronome.com" <jakub.kicinski@netronome.com>
-Subject: Re: [PATCH v5] mvneta driver disallow XDP program on hardware buffer
- management
-Thread-Topic: [PATCH v5] mvneta driver disallow XDP program on hardware buffer
- management
-Thread-Index: AQHV01Zt85Jc6nz440+eUwbZXq2o9Kf7EawAgAAhpgA=
-Date:   Sat, 25 Jan 2020 10:48:39 +0000
-Message-ID: <20200125104838.s6ata3hot4kwr7lq@SvensMacBookAir.sven.lan>
-References: <20200125080702.81712-1-sven.auhagen@voleatech.de>
- <20200125084812.GA3398@p977.fit.wifi.vutbr.cz>
-In-Reply-To: <20200125084812.GA3398@p977.fit.wifi.vutbr.cz>
+Subject: Re: [PATCH] mvneta driver XDP fixes armhf
+Thread-Topic: [PATCH] mvneta driver XDP fixes armhf
+Thread-Index: AQHV0Qt0wGHHU1bPe06KgczxouriXaf3TJoAgAJ+uwCAAXMYAA==
+Date:   Sat, 25 Jan 2020 11:11:59 +0000
+Message-ID: <20200125111158.nge3qahnocq2obot@SvensMacBookAir.sven.lan>
+References: <C39F91BD-26BA-4373-A056-CE2E6B9D750E@voleatech.de>
+ <20200122225740.GA3384@localhost.localdomain>
+ <20200124120344.y3avbjdiu6gtmhbr@SvensMacbookPro.hq.voleatech.com>
+In-Reply-To: <20200124120344.y3avbjdiu6gtmhbr@SvensMacbookPro.hq.voleatech.com>
 Accept-Language: en-US
 Content-Language: en-US
 X-MS-Has-Attach: 
 X-MS-TNEF-Correlator: 
-x-clientproxiedby: ZR0P278CA0020.CHEP278.PROD.OUTLOOK.COM
- (2603:10a6:910:1c::7) To AM0PR05MB5156.eurprd05.prod.outlook.com
- (2603:10a6:208:f7::19)
+x-clientproxiedby: AM0PR06CA0095.eurprd06.prod.outlook.com (20.178.20.228) To
+ AM0PR05MB5156.eurprd05.prod.outlook.com (20.178.20.19)
 x-originating-ip: [78.43.2.70]
 authentication-results: spf=none (sender IP is )
  smtp.mailfrom=sven.auhagen@voleatech.de; 
 x-ms-exchange-messagesentrepresentingtype: 1
 x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: c4c8abeb-b63f-43c2-3dca-08d7a184236e
-x-ms-traffictypediagnostic: AM0PR05MB4578:|AM0PR05MB4578:
-x-microsoft-antispam-prvs: <AM0PR05MB4578C477E9BDF0D9F7025FFAEF090@AM0PR05MB4578.eurprd05.prod.outlook.com>
+x-ms-office365-filtering-correlation-id: 5e00c8d3-fc83-4251-8d1b-08d7a18765cd
+x-ms-traffictypediagnostic: AM0PR05MB5924:|AM0PR05MB5924:
+x-microsoft-antispam-prvs: <AM0PR05MB592482BB585597BA966B8A63EF090@AM0PR05MB5924.eurprd05.prod.outlook.com>
 x-ms-exchange-transport-forked: True
-x-ms-oob-tlc-oobclassifiers: OLM:211;
+x-ms-oob-tlc-oobclassifiers: OLM:10000;
 x-forefront-prvs: 0293D40691
-x-forefront-antispam-report: SFV:NSPM;SFS:(10019020)(4636009)(39830400003)(136003)(366004)(376002)(346002)(396003)(189003)(199004)(4326008)(66946007)(66476007)(66446008)(107886003)(66556008)(316002)(64756008)(2906002)(5660300002)(8676002)(55016002)(81156014)(9686003)(8936002)(6862004)(54906003)(508600001)(81166006)(186003)(7696005)(52116002)(6506007)(1076003)(26005)(66574012)(71200400001)(16526019)(956004)(86362001)(44832011)(15974865002)(309714004);DIR:OUT;SFP:1102;SCL:1;SRVR:AM0PR05MB4578;H:AM0PR05MB5156.eurprd05.prod.outlook.com;FPR:;SPF:None;LANG:de;PTR:InfoNoRecords;MX:1;A:1;
+x-forefront-antispam-report: SFV:NSPM;SFS:(10019020)(4636009)(376002)(136003)(366004)(346002)(39830400003)(396003)(199004)(189003)(107886003)(86362001)(8936002)(8676002)(966005)(6862004)(316002)(44832011)(71200400001)(54906003)(508600001)(956004)(66946007)(2906002)(186003)(16526019)(64756008)(66476007)(66556008)(66446008)(81156014)(45080400002)(81166006)(55016002)(7696005)(52116002)(6506007)(26005)(9686003)(4326008)(66574012)(1076003)(5660300002);DIR:OUT;SFP:1102;SCL:1;SRVR:AM0PR05MB5924;H:AM0PR05MB5156.eurprd05.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;A:1;MX:1;
 received-spf: None (protection.outlook.com: voleatech.de does not designate
  permitted sender hosts)
 x-ms-exchange-senderadcheck: 1
 x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: fmIg47eHDbgJz+g6lq71RVBQ+vG+HePTFDpNMnuh6weuQ3rePBnOWapoatoSpKcMmZcYoyrnMgbQ5QKhYXdaHFwsdL1sSZxH+vas1BR2NrqjCqOzxQKHF6YG71D+iiBk9o/wscJj3wPHAgxF1zXVXOggYahy5dnWyjZOE576cPBxdI+zHHcFYFh+OmrTRld3rSLZsHYMzVcxCbkgP0u8qnZWID0/V1nKHZNAAMlUT6S7ICmMlg+WYyQZBgIlfIhjyx456fQ/4B7RB2o84bQGN5rgBZu8Vhr3gTmApkzI3ql80GCd5R/ofFCZsZ4jXdxl1MiDnxlexdmbfuEZIoxtXIra+sPDMazhM004gvN9/rrv4f0oU/Zvb7sfer3UkBmBRCqLVVfF23YD/Ij9zOp2qP0cNIGtlMNzoh088ljFxEiKEgg913cu1Bi21daHvTkXLbNu+EUNKu5JmFk1tt/F3CMHv5IkxjUUmq+yi0vR5CQVBUIE2GdB74QVoU6qJVew+7U8THQ33TBQXBLKsIBQjQ==
+x-microsoft-antispam-message-info: 5XyjX77vhyzqQC3mFqmn6p1g6ueZKSnM1loxuV7jK4gGuWOwZO2Fx5j6baQTyXAwLV7qWkxE84y0qtaAGYxEBBAvAbgEP8OdAyXFo7YjTvS6kwprbqNdQblM7FFz/DGlr8kh3zvVD4SY53jBzxQReIaUBLd+BRDQlI1cERR0texdSYKFyzJLkqJVSTIQzMjIIkR+ytCQP3apWc85EtuSyjiK4ZaJLQpvq4mT+Xnt0gXQ7N7ZWLiH2WYIRWnCscpGQUJ38BT6DI+p5PMTUCwUSdCQpkSKmYuLwFOWwS6eABoR4DNUujLBWFBJ6mVvgcQkxYCzeqXpHa1LgcM3zIdSfGtyXTbRd/9NtBXiTKiDtElbVrrA587GVoE89qS1g2f+TLG9XLXK+TSEFAF1U9x0ma05kAQ5rlVXCiRvjt+q2AEQpJcBKaDPBz4sg1ho3NkJNyIPKx4Ku+x59l3K0HKc5sx2Lmusbin7cgP0AfrX6Mw=
+x-ms-exchange-antispam-messagedata: M1+0Eqry0U/wHMC5RrLIT98rm2MyDE5sj/tkFWESYh7Yi527LG1VbHSDLO4gJRO18XvuP6r/79BqwORHC/NHE6a+VdrHPQiMVMTSuUV2/wo2LAoG7El5ErIeWFMVBaQr6EgmXPb9G50FdXLbDVXAZg==
 Content-Type: text/plain; charset="iso-8859-1"
-Content-ID: <7A28A22D6415874F8FC8B3F20D6E3CFB@eurprd05.prod.outlook.com>
+Content-ID: <868AF094B9A0674285FC090C4683ABE5@eurprd05.prod.outlook.com>
 Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
 X-OriginatorOrg: voleatech.de
-X-MS-Exchange-CrossTenant-Network-Message-Id: c4c8abeb-b63f-43c2-3dca-08d7a184236e
-X-MS-Exchange-CrossTenant-originalarrivaltime: 25 Jan 2020 10:48:39.9926
+X-MS-Exchange-CrossTenant-Network-Message-Id: 5e00c8d3-fc83-4251-8d1b-08d7a18765cd
+X-MS-Exchange-CrossTenant-originalarrivaltime: 25 Jan 2020 11:12:00.1898
  (UTC)
 X-MS-Exchange-CrossTenant-fromentityheader: Hosted
 X-MS-Exchange-CrossTenant-id: b82a99f6-7981-4a72-9534-4d35298f847b
 X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: Vi0qj31GrOYu4sBhTK6Ji+uGOrgDUfghXFVI/iQ1tstgdJ2HJkOKTqVCYtAGydgnRcc/E5iqk82sWgjO7JsoJplWzAP0lsAHQ9Dy7O++Ao4=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM0PR05MB4578
+X-MS-Exchange-CrossTenant-userprincipalname: g2rMvvUW4NCUXq4YIi0jR1VTFHykRjV3KRlX2AvdgyVNepLMUpYbaHatl4T/oi9tk5lOdpGgGL4yORtOSW1mlZD+tvhh+fezVSnzq2vwVFM=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM0PR05MB5924
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, Jan 25, 2020 at 09:48:12AM +0100, lorenzo.bianconi@redhat.com wrote=
-:
-> > Recently XDP Support was added to the mvneta driver
-> > for software buffer management only.
-> > It is still possible to attach an XDP program if
-> > hardware buffer management is used.
-> > It is not doing anything at that point.
+On Fri, Jan 24, 2020 at 12:03:46PM +0000, Sven Auhagen wrote:
+> On Wed, Jan 22, 2020 at 11:57:40PM +0100, lorenzo.bianconi@redhat.com wro=
+te:
+> > Hi Sven,
 > >=20
->=20
-> [...]
->=20
-> > --- a/drivers/net/ethernet/marvell/mvneta.c
-> > +++ b/drivers/net/ethernet/marvell/mvneta.c
-> > @@ -4225,6 +4225,12 @@ static int mvneta_xdp_setup(struct net_device *d=
-ev, struct bpf_prog *prog,
-> >  return -EOPNOTSUPP;
-> >  }
+> > > Recently XDP Support was added to the mvneta driver for software buff=
+er management.
+> > > I tested XDP with my armada 388 board. It has hardware buffer managem=
+ent defined in the device tree file.
+> > > I disabled the mvneta_bm module to test XDP.
+> > >=20
+> > > I found multiple problems.
+> > >=20
+> > > 1. With hardware buffer management enabled and mvneta_bm disabled the=
+ rx_offset was set to 0 with armhf (32 bit) which leads to no headroom in X=
+DP and therefore the XDP Redirect did not work.
+> > > 2. Removing the hardware buffer management from the device tree file =
+completely made the mvneta driver unusable as it did not work anymore.
 > >=20
-> > +if (pp->bm_priv) {
-> > +NL_SET_ERR_MSG_MOD(extack,
-> > +   "Hardware Buffer Management not supported on XDP");
-> > +return -EOPNOTSUPP;
-> > +}
+> > Do you mean removing 'buffer-manager' property from the device tree?
 >=20
-> Could you please fix the following checkpatch warnings?
+> Yes removing it from each nics device tree definition.
+> The if statement is not used in that case and the rx_offset_correction is=
+ always MVNETA_SKB_HEADROOM.
 >=20
-> $ <kernel_dir>/scripts/checkpatch.pl --strict file.patch
+> >=20
+> > >=20
+> > > After some debugging I found out that xdp->data =3D data + pp->rx_off=
+set_correction + MVNETA_MH_SIZE;  has to be xdp->data =3D data + pp->rx_off=
+set_correction; if pp->rx_offset_correction > 0.
+> > > I am not sure why and I am looking for help if someone is seeing the =
+same on an arm64 board.
+> >=20
+> > Are you sure the hw does not insert the mvneta header before the data? =
+It seems
+> > to me that it is added even for hw buffer devices (according to the cod=
+e)
 >=20
-> WARNING: suspect code indent for conditional statements (0, 0)
-> #53: FILE: drivers/net/ethernet/marvell/mvneta.c:4228:
-> +if (pp->bm_priv) {
-> +NL_SET_ERR_MSG_MOD(extack,
+> It is definitely possible. The 2 bytes before the data are 0. I believe
+> the mvneta header is also 0 when no switch is attached.
+> Is it added when a hw buffer capable device is not using and initializing
+> the hw buffer?
 >=20
-> CHECK: Alignment should match open parenthesis
-> #55: FILE: drivers/net/ethernet/marvell/mvneta.c:4230:
-> +NL_SET_ERR_MSG_MOD(extack,
-> +   "Hardware Buffer Management not supported on XDP");
->=20
-> WARNING: please, no spaces at the start of a line
-> #55: FILE: drivers/net/ethernet/marvell/mvneta.c:4230:
-> +   "Hardware Buffer Management not supported on XDP");$
->=20
-> total: 0 errors, 2 warnings, 12 lines checked
->=20
-> Regards,
-> Lorenzo
+> Do you have any documentation regarding the header?
+> I have access to the Marvell Extranet but could not find anything.
 
-I double checked and I do not have those warning on my end with v5.
-I also redownloaded the patch from my submission on patchwork.
-What am I missing?
+I think I found the problem. I found the documentation finally and it state=
+s:
+
+The physical buffer pointer must be 64-bit aligned; therefore, bits[2:0] of=
+ the pointers are considered as zeros.
+
+rx_offset is defined as MVNETA_SKB_HEADROOM which in turn is:
+
+#define MVNETA_SKB_HEADROOM	(max(XDP_PACKET_HEADROOM, NET_SKB_PAD) + \
+				 NET_IP_ALIGN)
+
+this leads to an offset on armhf of 258 which is not 64 bit aligned and the=
+refore
+shortened to 256 hence the MH header is actually at 256.
+
+This would explain my problem.
+
+Any thoughts?
 
 Best
 Sven
 
 >=20
-> > +
-> >  need_update =3D !!pp->xdp_prog !=3D !!prog;
-> >  if (running && need_update)
-> >  mvneta_stop(dev);
 > >=20
-> > +++ Voleatech auf der E-World, 11. bis 13. Februar 2020, Halle 5, Stand=
- 521 +++
+> > >=20
+> > > Attached is a patch that fixes the problem on my armhf platform, as s=
+aid I am not sure if this is a universal fix or armhf only.
+> > >=20
+> > > Any feedback is appreciated.
+> > >=20
+> > > Signed-off-by: Sven Auhagen <sven.auhagen@voleatech.de>
+> > >=20
+> > > --- a/drivers/net/ethernet/marvell/mvneta.c2020-01-22 08:44:05.611395=
+960 +0000
+> > > +++ b/drivers/net/ethernet/marvell/mvneta.c2020-01-22 08:59:27.053739=
+433 +0000
+> > > @@ -2158,7 +2158,7 @@ mvneta_swbm_rx_frame(struct mvneta_port
+> > >  prefetch(data);
+> > >=20
+> > >  xdp->data_hard_start =3D data;
+> > > -xdp->data =3D data + pp->rx_offset_correction + MVNETA_MH_SIZE;
+> > > +xdp->data =3D data + pp->rx_offset_correction;
 > >=20
-> > Beste Gr=FC=DFe/Best regards
+> > This will break XDP support for 'real' sw buffer devices like Espressob=
+in.
+>=20
+> The current code seems to break real hw buffer devices using sw buffer on=
+ armhf though.
+>=20
+> Best
+> Sven
+>=20
 > >=20
-> > Sven Auhagen
-> > Dipl. Math. oec., M.Sc.
-> > Voleatech GmbH
-> > HRB: B 754643
-> > USTID: DE303643180
-> > Grathwohlstr. 5
-> > 72762 Reutlingen
-> > Tel: +49 7121539550
-> > Fax: +49 7121539551
-> > E-Mail: sven.auhagen@voleatech.de
-> > www.voleatech.de<https://www.voleatech.de>
-> > Diese Information ist ausschlie=DFlich f=FCr den Adressaten bestimmt un=
-d kann vertraulich oder gesetzlich gesch=FCtzte Informationen enthalten. We=
-nn Sie nicht der bestimmungsgem=E4=DFe Adressat sind, unterrichten Sie bitt=
-e den Absender und vernichten Sie diese Mail. Anderen als dem bestimmungsge=
-m=E4=DFen Adressaten ist es untersagt, diese E-Mail zu lesen, zu speichern,=
- weiterzuleiten oder ihren Inhalt auf welche Weise auch immer zu verwenden.=
- F=FCr den Adressaten sind die Informationen in dieser Mail nur zum pers=F6=
-nlichen Gebrauch. Eine Weiterleitung darf nur nach R=FCcksprache mit dem Ab=
-sender erfolgen. Wir verwenden aktuelle Virenschutzprogramme. F=FCr Sch=E4d=
-en, die dem Empf=E4nger gleichwohl durch von uns zugesandte mit Viren befal=
-lene E-Mails entstehen, schlie=DFen wir jede Haftung aus.
+> > Regards,
+> > Lorenzo
 > >=20
-
-
+> > >  xdp->data_end =3D xdp->data + data_len;
+> > >  xdp_set_data_meta_invalid(xdp);
+> > >=20
+> > > @@ -4960,7 +4960,8 @@ static int mvneta_probe(struct platform_
+> > >   * NET_SKB_PAD, exceeds 64B. It should be 64B for 64-bit
+> > >   * platforms and 0B for 32-bit ones.
+> > >   */
+> > > -pp->rx_offset_correction =3D max(0,
+> > > +if (pp->bm_priv)
+> > > +pp->rx_offset_correction =3D max(0,
+> > >         NET_SKB_PAD -
+> > >         MVNETA_RX_PKT_OFFSET_CORRECTION);
+> > >  }
+> > >=20
+> > >=20
+> > >=20
+> > >=20
+> > > +++ Voleatech auf der E-World, 11. bis 13. Februar 2020, Halle 5, Sta=
+nd 521 +++
+> > >=20
+> > > Beste Gr=FC=DFe/Best regards
+> > >=20
+> > > Sven Auhagen
+> > > Dipl. Math. oec., M.Sc.
+> > > Voleatech GmbH
+> > > HRB: B 754643
+> > > USTID: DE303643180
+> > > Grathwohlstr. 5
+> > > 72762 Reutlingen
+> > > Tel: +49 7121539550
+> > > Fax: +49 7121539551
+> > > E-Mail: sven.auhagen@voleatech.de
+> > > https://eur03.safelinks.protection.outlook.com/?url=3Dwww.voleatech.d=
+e&amp;data=3D02%7C01%7Csven.auhagen%40voleatech.de%7C16ecc6de7670473d7de108=
+d7a0c5cf85%7Cb82a99f679814a7295344d35298f847b%7C0%7C0%7C637154643755759442&=
+amp;sdata=3DPlhiaiQCqIc9Pmkux%2B8xLf%2FiwP3Nn3UsMRozhbX%2FR%2B0%3D&amp;rese=
+rved=3D0<https://eur03.safelinks.protection.outlook.com/?url=3Dhttps%3A%2F%=
+2Fwww.voleatech.de&amp;data=3D02%7C01%7Csven.auhagen%40voleatech.de%7C16ecc=
+6de7670473d7de108d7a0c5cf85%7Cb82a99f679814a7295344d35298f847b%7C0%7C0%7C63=
+7154643755759442&amp;sdata=3DsSpe8NSqXN8dJOp%2Fb%2FaaHcEPTdtT4jE59ek97VvTtl=
+Y%3D&amp;reserved=3D0>
+> > > Diese Information ist ausschlie=DFlich f=FCr den Adressaten bestimmt =
+und kann vertraulich oder gesetzlich gesch=FCtzte Informationen enthalten. =
+Wenn Sie nicht der bestimmungsgem=E4=DFe Adressat sind, unterrichten Sie bi=
+tte den Absender und vernichten Sie diese Mail. Anderen als dem bestimmungs=
+gem=E4=DFen Adressaten ist es untersagt, diese E-Mail zu lesen, zu speicher=
+n, weiterzuleiten oder ihren Inhalt auf welche Weise auch immer zu verwende=
+n. F=FCr den Adressaten sind die Informationen in dieser Mail nur zum pers=
+=F6nlichen Gebrauch. Eine Weiterleitung darf nur nach R=FCcksprache mit dem=
+ Absender erfolgen. Wir verwenden aktuelle Virenschutzprogramme. F=FCr Sch=
+=E4den, die dem Empf=E4nger gleichwohl durch von uns zugesandte mit Viren b=
+efallene E-Mails entstehen, schlie=DFen wir jede Haftung aus.
+>=20
+>=20
+>=20
