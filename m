@@ -2,103 +2,120 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 3E02D149768
-	for <lists+netdev@lfdr.de>; Sat, 25 Jan 2020 20:16:20 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6A1C014976E
+	for <lists+netdev@lfdr.de>; Sat, 25 Jan 2020 20:24:41 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727228AbgAYTQP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 25 Jan 2020 14:16:15 -0500
-Received: from esa2.microchip.iphmx.com ([68.232.149.84]:4736 "EHLO
-        esa2.microchip.iphmx.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726448AbgAYTQP (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 25 Jan 2020 14:16:15 -0500
-Received-SPF: Pass (esa2.microchip.iphmx.com: domain of
-  Allan.Nielsen@microchip.com designates 198.175.253.82 as
-  permitted sender) identity=mailfrom;
-  client-ip=198.175.253.82; receiver=esa2.microchip.iphmx.com;
-  envelope-from="Allan.Nielsen@microchip.com";
-  x-sender="Allan.Nielsen@microchip.com";
-  x-conformance=spf_only; x-record-type="v=spf1";
-  x-record-text="v=spf1 mx a:ushub1.microchip.com
-  a:smtpout.microchip.com -exists:%{i}.spf.microchip.iphmx.com
-  include:servers.mcsv.net include:mktomail.com
-  include:spf.protection.outlook.com ~all"
-Received-SPF: None (esa2.microchip.iphmx.com: no sender
-  authenticity information available from domain of
-  postmaster@email.microchip.com) identity=helo;
-  client-ip=198.175.253.82; receiver=esa2.microchip.iphmx.com;
-  envelope-from="Allan.Nielsen@microchip.com";
-  x-sender="postmaster@email.microchip.com";
-  x-conformance=spf_only
-Authentication-Results: esa2.microchip.iphmx.com; dkim=none (message not signed) header.i=none; spf=Pass smtp.mailfrom=Allan.Nielsen@microchip.com; spf=None smtp.helo=postmaster@email.microchip.com; dmarc=pass (p=none dis=none) d=microchip.com
-IronPort-SDR: x4hJIa9iFYOUSnyqOswuEs0+n+ZxsmpfPXpEgiDhuhDL0Gwz6TaW3pQJqhqTRYRY8gh+3zqhda
- 4w1HvNB6gKkxBTF/2gIHo9+DBL2gd2zi2Orhow8IJD3v21SpsDEfhDSIDwCC3m1ah7LgXCUQ/O
- NRS+wpWlgnfnKYhumxYyfCRN7yyFCNHRebzFu1l9AUhz63JQ6F4VUv++HJ4ltlqUOfqb1Sjk0O
- nGm/t/9lu1JP+PHCsNE+SicBt2LBUxoWDLOj0dKn0q24PQhb56yAGy51iCca6qNLHM3zbMsXDx
- Zto=
-X-IronPort-AV: E=Sophos;i="5.70,362,1574146800"; 
-   d="scan'208";a="63745682"
-Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
-  by esa2.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 25 Jan 2020 12:16:14 -0700
-Received: from chn-vm-ex03.mchp-main.com (10.10.85.151) by
- chn-vm-ex02.mchp-main.com (10.10.85.144) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.1713.5; Sat, 25 Jan 2020 12:16:11 -0700
-Received: from localhost (10.10.85.251) by chn-vm-ex03.mchp-main.com
- (10.10.85.151) with Microsoft SMTP Server id 15.1.1713.5 via Frontend
- Transport; Sat, 25 Jan 2020 12:16:13 -0700
-Date:   Sat, 25 Jan 2020 20:16:12 +0100
-From:   "Allan W. Nielsen" <allan.nielsen@microchip.com>
-To:     Andrew Lunn <andrew@lunn.ch>
-CC:     Horatiu Vultur <horatiu.vultur@microchip.com>,
-        <linux-kernel@vger.kernel.org>, <netdev@vger.kernel.org>,
-        <bridge@lists.linux-foundation.org>, <jiri@resnulli.us>,
-        <ivecera@redhat.com>, <davem@davemloft.net>,
-        <roopa@cumulusnetworks.com>, <nikolay@cumulusnetworks.com>,
-        <anirudh.venkataramanan@intel.com>, <olteanv@gmail.com>,
-        <jeffrey.t.kirsher@intel.com>, <UNGLinuxDriver@microchip.com>
-Subject: Re: [RFC net-next v3 03/10] net: bridge: mrp: Add MRP interface used
- by netlink
-Message-ID: <20200125191612.5dlzlvb7g2bucqna@lx-anielsen.microsemi.net>
-References: <20200124161828.12206-1-horatiu.vultur@microchip.com>
- <20200124161828.12206-4-horatiu.vultur@microchip.com>
- <20200124174315.GC13647@lunn.ch>
- <20200125113726.ousbmm4n3ab4xnqt@soft-dev3.microsemi.net>
- <20200125152023.GA18311@lunn.ch>
+        id S1726858AbgAYTYj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 25 Jan 2020 14:24:39 -0500
+Received: from mail.kernel.org ([198.145.29.99]:56486 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726612AbgAYTYj (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sat, 25 Jan 2020 14:24:39 -0500
+Received: from localhost (unknown [213.57.247.131])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id BC4D320716;
+        Sat, 25 Jan 2020 19:24:37 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1579980278;
+        bh=svuCOIvmzn8AXVk05zxy4YZFVmU7PdfsB/Br9vmpMOQ=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=DjAa+AbazBLc5yQGBAntjjwuT4INjq028LPYhIkLM3hgrAAloop0BYNIYhCOP9thd
+         A247i59+dTlYCRIpTwoasNXAvnr1fd3F+YuKqhcuuy9pPx7gAgkB+Hj5YVifI4o7SZ
+         Ho0pPP9cnqKOsoM3lCweJdhe/MMlFL+wehMgp+LA=
+Date:   Sat, 25 Jan 2020 21:24:35 +0200
+From:   Leon Romanovsky <leon@kernel.org>
+To:     Florian Fainelli <f.fainelli@gmail.com>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Michal Kubecek <mkubecek@suse.cz>,
+        Michal Kalderon <michal.kalderon@marvell.com>,
+        linux-netdev <netdev@vger.kernel.org>,
+        RDMA mailing list <linux-rdma@vger.kernel.org>
+Subject: Re: [PATCH net-next v1] net/core: Replace driver version to be
+ kernel version
+Message-ID: <20200125192435.GD2993@unreal>
+References: <20200125161401.40683-1-leon@kernel.org>
+ <b0f73391-d7f5-1efe-2927-bed02668f8c5@gmail.com>
+ <20200125184958.GA2993@unreal>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"; format=flowed
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20200125152023.GA18311@lunn.ch>
+In-Reply-To: <20200125184958.GA2993@unreal>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 25.01.2020 16:20, Andrew Lunn wrote:
->EXTERNAL EMAIL: Do not click links or open attachments unless you know the content is safe
+On Sat, Jan 25, 2020 at 08:49:58PM +0200, Leon Romanovsky wrote:
+> On Sat, Jan 25, 2020 at 08:55:01AM -0800, Florian Fainelli wrote:
+> >
+> >
+> > On 1/25/2020 8:14 AM, Leon Romanovsky wrote:
+> > > From: Leon Romanovsky <leonro@mellanox.com>
+> > >
+> > > In order to stop useless driver version bumps and unify output
+> > > presented by ethtool -i, let's overwrite the version string.
+> > >
+> > > Before this change:
+> > > [leonro@erver ~]$ ethtool -i eth0
+> > > driver: virtio_net
+> > > version: 1.0.0
+> > > After this change:
+> > > [leonro@server ~]$ ethtool -i eth0
+> > > driver: virtio_net
+> > > version: 5.5.0-rc6+
+> > >
+> > > Signed-off-by: Leon Romanovsky <leonro@mellanox.com>> ---
+> > >  Changelog:
+> > >  v1: Resend per-Dave's request
+> > >      https://lore.kernel.org/linux-rdma/20200125.101311.1924780619716720495.davem@davemloft.net
+> > >      No changes at all and applied cleanly on top of "3333e50b64fe Merge branch 'mlxsw-Offload-TBF'"
+> > >  v0: https://lore.kernel.org/linux-rdma/20200123130541.30473-1-leon@kernel.org
+> >
+> > There does not appear to be any explanation why we think this is a good
+> > idea for *all* drivers, and not just the ones that are purely virtual?
 >
->On Sat, Jan 25, 2020 at 12:37:26PM +0100, Horatiu Vultur wrote:
->> The 01/24/2020 18:43, Andrew Lunn wrote:
->> > EXTERNAL EMAIL: Do not click links or open attachments unless you know the content is safe
->> >
->> > > br_mrp_flush - will flush the FDB.
->> >
->> > How does this differ from a normal bridge flush? I assume there is a
->> > way for user space to flush the bridge FDB.
->>
->> Hi,
->>
->> If I seen corectly the normal bridge flush will clear the entire FDB for
->> all the ports of the bridge. In this case it is require to clear FDB
->> entries only for the ring ports.
+> We beat this dead horse too many times already, latest discussion and
+> justification can be found in that thread.
+> https://lore.kernel.org/linux-rdma/20200122152627.14903-1-michal.kalderon@marvell.com/T/#md460ff8f976c532a89d6860411c3c50bb811038b
 >
->Maybe it would be better to extend the current bridge netlink call to
->be able to pass an optional interface to be flushed?  I'm not sure it
->is a good idea to have two APIs doing very similar things.
-I agree.
+> However, it was discussed in ksummit mailing list too and overall
+> agreement that version exposed by in-tree modules are useless and
+> sometimes even worse. They mislead users to expect some features
+> or lack of them based on this arbitrary string.
+>
+> >
+> > Are you not concerned that this is ABI and that specific userland may be
+> > relying on a specific info format and we could now be breaking their
+> > version checks? I do not disagree that the version is not particularly
+> > useful for in-tree kernel, but this is ABI, and breaking user-space is
+> > usually a source of support questions.
+>
+> See this Linus's response:
+> "The unified policy is pretty much that version codes do not matter, do
+> not exist, and do not get updated.
+>
+> Things are supposed to be backwards and forwards compatible, because
+> we don't accept breakage in user space anyway. So versioning is
+> pointless, and only causes problems."
+> https://lore.kernel.org/ksummit-discuss/CA+55aFx9A=5cc0QZ7CySC4F2K7eYaEfzkdYEc9JaNgCcV25=rg@mail.gmail.com/
+>
+> I also don't think that declaring every print in the kernel as ABI is
+> good thing to do. We are not breaking binary ABI and continuing to
+> supply some sort of versioning, but in unified format and not in wild
+> west way like it is now.
+>
+> So bottom line, if some REAL user space application (not test suites) relies
+> on specific version reported from ethtool, it is already broken and can't work
+> sanely for stable@, distros and upstream kernels.
 
-And when looking at this again, I start to think that we should have
-extended the existing netlink interface with new commands, instead of
-adding a generic netlink.
+And about support questions,
+I'm already over-asked to update our mlx5 driver version every time some
+of our developers adds new feature (every week or two), which is insane.
+So I prefer to have one stable solution in the kernel.
 
-/Allan
+Thanks
 
+>
+> Thanks
