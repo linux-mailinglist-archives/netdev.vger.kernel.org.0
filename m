@@ -2,39 +2,45 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 92B011494AF
-	for <lists+netdev@lfdr.de>; Sat, 25 Jan 2020 11:47:50 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 25A86149493
+	for <lists+netdev@lfdr.de>; Sat, 25 Jan 2020 11:44:40 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729732AbgAYKnQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 25 Jan 2020 05:43:16 -0500
-Received: from Galois.linutronix.de ([193.142.43.55]:44303 "EHLO
+        id S1730219AbgAYKo1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 25 Jan 2020 05:44:27 -0500
+Received: from Galois.linutronix.de ([193.142.43.55]:44387 "EHLO
         Galois.linutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729638AbgAYKnP (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 25 Jan 2020 05:43:15 -0500
+        with ESMTP id S1729868AbgAYKn0 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 25 Jan 2020 05:43:26 -0500
 Received: from [5.158.153.53] (helo=tip-bot2.lab.linutronix.de)
         by Galois.linutronix.de with esmtpsa (TLS1.2:DHE_RSA_AES_256_CBC_SHA256:256)
         (Exim 4.80)
         (envelope-from <tip-bot2@linutronix.de>)
-        id 1ivIu1-0008VZ-RP; Sat, 25 Jan 2020 11:42:58 +0100
+        id 1ivIu5-0008V2-8j; Sat, 25 Jan 2020 11:43:01 +0100
 Received: from [127.0.1.1] (localhost [IPv6:::1])
-        by tip-bot2.lab.linutronix.de (Postfix) with ESMTP id B3F4D1C1A74;
+        by tip-bot2.lab.linutronix.de (Postfix) with ESMTP id 74CF51C1A72;
         Sat, 25 Jan 2020 11:42:48 +0100 (CET)
 Date:   Sat, 25 Jan 2020 10:42:48 -0000
 From:   "tip-bot2 for Paul E. McKenney" <tip-bot2@linutronix.de>
 Reply-to: linux-kernel@vger.kernel.org
 To:     linux-tip-commits@vger.kernel.org
-Subject: [tip: core/rcu] net/tipc: Replace rcu_swap_protected() with
+Subject: [tip: core/rcu] wireless/mediatek: Replace rcu_swap_protected() with
  rcu_replace_pointer()
 Cc:     Linus Torvalds <torvalds@linux-foundation.org>,
-        kbuild test robot <lkp@intel.com>,
+        "Martin K. Petersen" <martin.petersen@oracle.com>,
         "Paul E. McKenney" <paulmck@kernel.org>,
-        Jon Maloy <jon.maloy@ericsson.com>,
-        Ying Xue <ying.xue@windriver.com>,
-        "David S. Miller" <davem@davemloft.net>, <netdev@vger.kernel.org>,
-        <tipc-discussion@lists.sourceforge.net>, x86 <x86@kernel.org>,
+        Kalle Valo <kvalo@codeaurora.org>,
+        Felix Fietkau <nbd@nbd.name>,
+        Lorenzo Bianconi <lorenzo.bianconi83@gmail.com>,
+        Ryder Lee <ryder.lee@mediatek.com>,
+        Roy Luo <royluo@google.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        <linux-wireless@vger.kernel.org>, <netdev@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-mediatek@lists.infradead.org>, x86 <x86@kernel.org>,
         LKML <linux-kernel@vger.kernel.org>
 MIME-Version: 1.0
-Message-ID: <157994896855.396.463583645581287836.tip-bot2@tip-bot2>
+Message-ID: <157994896823.396.3709123757914257242.tip-bot2@tip-bot2>
 X-Mailer: tip-git-log-daemon
 Robot-ID: <tip-bot2.linutronix.de>
 Robot-Unsubscribe: Contact <mailto:tglx@linutronix.de> to get blacklisted from these emails
@@ -50,14 +56,14 @@ X-Mailing-List: netdev@vger.kernel.org
 
 The following commit has been merged into the core/rcu branch of tip:
 
-Commit-ID:     1a271ebbfe33a44f61e02d35a2950ab00b32850b
-Gitweb:        https://git.kernel.org/tip/1a271ebbfe33a44f61e02d35a2950ab00b32850b
+Commit-ID:     a191c9e9f73a78e8801b5eeb3d43bbd6fd73b86f
+Gitweb:        https://git.kernel.org/tip/a191c9e9f73a78e8801b5eeb3d43bbd6fd73b86f
 Author:        Paul E. McKenney <paulmck@kernel.org>
-AuthorDate:    Mon, 09 Dec 2019 19:13:45 -08:00
+AuthorDate:    Wed, 11 Dec 2019 10:30:21 -08:00
 Committer:     Paul E. McKenney <paulmck@kernel.org>
-CommitterDate: Thu, 12 Dec 2019 10:19:40 -08:00
+CommitterDate: Thu, 12 Dec 2019 10:20:51 -08:00
 
-net/tipc: Replace rcu_swap_protected() with rcu_replace_pointer()
+wireless/mediatek: Replace rcu_swap_protected() with rcu_replace_pointer()
 
 This commit replaces the use of rcu_swap_protected() with the more
 intuitively appealing rcu_replace_pointer() as a step towards removing
@@ -65,38 +71,37 @@ rcu_swap_protected().
 
 Link: https://lore.kernel.org/lkml/CAHk-=wiAsJLw1egFEE=Z7-GGtM6wcvtyytXZA1+BHqta4gg6Hw@mail.gmail.com/
 Reported-by: Linus Torvalds <torvalds@linux-foundation.org>
-Reported-by: kbuild test robot <lkp@intel.com>
+Reported-by: "Martin K. Petersen" <martin.petersen@oracle.com>
+[ paulmck: Apply Matthias Brugger feedback. ]
 Signed-off-by: Paul E. McKenney <paulmck@kernel.org>
-[ paulmck: Updated based on Ying Xue and Tuong Lien Tong feedback. ]
-Cc: Jon Maloy <jon.maloy@ericsson.com>
-Cc: Ying Xue <ying.xue@windriver.com>
+Reviewed-by: "Martin K. Petersen" <martin.petersen@oracle.com>
+Acked-by: Kalle Valo <kvalo@codeaurora.org>
+Cc: Felix Fietkau <nbd@nbd.name>
+Cc: Lorenzo Bianconi <lorenzo.bianconi83@gmail.com>
+Cc: Ryder Lee <ryder.lee@mediatek.com>
+Cc: Roy Luo <royluo@google.com>
 Cc: "David S. Miller" <davem@davemloft.net>
+Cc: Matthias Brugger <matthias.bgg@gmail.com>
+Cc: <linux-wireless@vger.kernel.org>
 Cc: <netdev@vger.kernel.org>
-Cc: <tipc-discussion@lists.sourceforge.net>
+Cc: <linux-arm-kernel@lists.infradead.org>
+Cc: <linux-mediatek@lists.infradead.org>
 ---
- net/tipc/crypto.c | 5 +----
- 1 file changed, 1 insertion(+), 4 deletions(-)
+ drivers/net/wireless/mediatek/mt76/agg-rx.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/net/tipc/crypto.c b/net/tipc/crypto.c
-index 990a872..c8c47fc 100644
---- a/net/tipc/crypto.c
-+++ b/net/tipc/crypto.c
-@@ -257,9 +257,6 @@ static char *tipc_key_change_dump(struct tipc_key old, struct tipc_key new,
- #define tipc_aead_rcu_ptr(rcu_ptr, lock)				\
- 	rcu_dereference_protected((rcu_ptr), lockdep_is_held(lock))
+diff --git a/drivers/net/wireless/mediatek/mt76/agg-rx.c b/drivers/net/wireless/mediatek/mt76/agg-rx.c
+index 53b5a4b..59c1878 100644
+--- a/drivers/net/wireless/mediatek/mt76/agg-rx.c
++++ b/drivers/net/wireless/mediatek/mt76/agg-rx.c
+@@ -281,8 +281,8 @@ void mt76_rx_aggr_stop(struct mt76_dev *dev, struct mt76_wcid *wcid, u8 tidno)
+ {
+ 	struct mt76_rx_tid *tid = NULL;
  
--#define tipc_aead_rcu_swap(rcu_ptr, ptr, lock)				\
--	rcu_swap_protected((rcu_ptr), (ptr), lockdep_is_held(lock))
--
- #define tipc_aead_rcu_replace(rcu_ptr, ptr, lock)			\
- do {									\
- 	typeof(rcu_ptr) __tmp = rcu_dereference_protected((rcu_ptr),	\
-@@ -1189,7 +1186,7 @@ static bool tipc_crypto_key_try_align(struct tipc_crypto *rx, u8 new_pending)
- 
- 	/* Move passive key if any */
- 	if (key.passive) {
--		tipc_aead_rcu_swap(rx->aead[key.passive], tmp2, &rx->lock);
-+		tmp2 = rcu_replace_pointer(rx->aead[key.passive], tmp2, lockdep_is_held(&rx->lock));
- 		x = (key.passive - key.pending + new_pending) % KEY_MAX;
- 		new_passive = (x <= 0) ? x + KEY_MAX : x;
- 	}
+-	rcu_swap_protected(wcid->aggr[tidno], tid,
+-			   lockdep_is_held(&dev->mutex));
++	tid = rcu_replace_pointer(wcid->aggr[tidno], tid,
++				  lockdep_is_held(&dev->mutex));
+ 	if (tid) {
+ 		mt76_rx_aggr_shutdown(dev, tid);
+ 		kfree_rcu(tid, rcu_head);
