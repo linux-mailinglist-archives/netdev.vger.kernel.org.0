@@ -2,161 +2,131 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id B5A3414977F
-	for <lists+netdev@lfdr.de>; Sat, 25 Jan 2020 20:39:33 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 55D47149781
+	for <lists+netdev@lfdr.de>; Sat, 25 Jan 2020 20:40:41 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726911AbgAYTjc (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 25 Jan 2020 14:39:32 -0500
-Received: from smtp-out.kfki.hu ([148.6.0.45]:45727 "EHLO smtp-out.kfki.hu"
+        id S1727107AbgAYTkj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 25 Jan 2020 14:40:39 -0500
+Received: from mail.kernel.org ([198.145.29.99]:33726 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726448AbgAYTjb (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sat, 25 Jan 2020 14:39:31 -0500
-Received: from localhost (localhost [127.0.0.1])
-        by smtp0.kfki.hu (Postfix) with ESMTP id 170C66740117;
-        Sat, 25 Jan 2020 20:39:28 +0100 (CET)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-        blackhole.kfki.hu; h=mime-version:user-agent:message-id:from
-        :from:date:date:received:received:received; s=20151130; t=
-        1579981166; x=1581795567; bh=o6B/u85TTAYQbWbOC0O46Un9+pO2wLzCQtf
-        /iOnQNK8=; b=q+/XVW9A+O1i7s2E+r8U0T6u4615KP2bAWt62mR5/t0QdL0a4ft
-        qk/WWVUbrxFpmfd6NioMka2+oda7FE/nDZd94FLkTZdw8P5KJXGqvI4HmT1BSQ/I
-        Z2jkBxOTi7s1e6qQ9MglBfrjrUVWDpC7piqBFFg3onyLG+XsaaW39wUE=
-X-Virus-Scanned: Debian amavisd-new at smtp0.kfki.hu
-Received: from smtp0.kfki.hu ([127.0.0.1])
-        by localhost (smtp0.kfki.hu [127.0.0.1]) (amavisd-new, port 10026)
-        with ESMTP; Sat, 25 Jan 2020 20:39:26 +0100 (CET)
-Received: from blackhole.kfki.hu (blackhole.szhk.kfki.hu [IPv6:2001:738:5001:1::240:2])
-        by smtp0.kfki.hu (Postfix) with ESMTP id BF3846740114;
-        Sat, 25 Jan 2020 20:39:25 +0100 (CET)
-Received: by blackhole.kfki.hu (Postfix, from userid 1000)
-        id 977962151F; Sat, 25 Jan 2020 20:39:25 +0100 (CET)
-Date:   Sat, 25 Jan 2020 20:39:25 +0100 (CET)
-From:   =?UTF-8?Q?Kadlecsik_J=C3=B3zsef?= <kadlec@blackhole.kfki.hu>
-To:     syzbot <syzbot+fc69d7cb21258ab4ae4d@syzkaller.appspotmail.com>
-cc:     netdev@vger.kernel.org, netfilter-devel@vger.kernel.org,
-        Pablo Neira Ayuso <pablo@netfilter.org>,
-        syzkaller-bugs@googlegroups.com
-Subject: [PATCH 1/1] netfilter: ipset: fix suspicious RCU usage in
- find_set_and_id
-Message-ID: <alpine.DEB.2.20.2001252034050.23279@blackhole.kfki.hu>
-User-Agent: Alpine 2.20 (DEB 67 2015-01-07)
+        id S1726448AbgAYTkj (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sat, 25 Jan 2020 14:40:39 -0500
+Received: from cakuba (c-73-93-4-247.hsd1.ca.comcast.net [73.93.4.247])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 4169420708;
+        Sat, 25 Jan 2020 19:40:38 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1579981238;
+        bh=M/rbLv2cwxH5tCcUMkLEGQCU3S99/Hdl1lMqjgHMNmQ=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=THxE6aS9TeHMLNgvy2vV0VFEKeAeA7loCWlz/mphUXflvQIH+/mlcTx+TZ7tR+dK6
+         sgWkx904ylv0SnBPVKA6igfDhdkYlelhlVOfM0FUOSQLi+3kQsdU6ZX3qyBcTOGZtz
+         ruZhYsR+0fZxM1UdnZpkDeWG3Yha9p14QC4Xb324=
+Date:   Sat, 25 Jan 2020 11:40:37 -0800
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Saeed Mahameed <saeedm@mellanox.com>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        Aya Levin <ayal@mellanox.com>,
+        Eran Ben Elisha <eranbe@mellanox.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Russell King <linux@armlinux.org.uk>,
+        Michal Kubecek <mkubecek@suse.cz>
+Subject: Re: [net-next V2 11/14] ethtool: Add support for low latency RS FEC
+Message-ID: <20200125114037.203e63ca@cakuba>
+In-Reply-To: <20200125051039.59165-12-saeedm@mellanox.com>
+References: <20200125051039.59165-1-saeedm@mellanox.com>
+        <20200125051039.59165-12-saeedm@mellanox.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-find_set_and_id() is called when the NFNL_SUBSYS_IPSET mutex is held.
-However, in the error path there can be a follow-up recvmsg() without
-the mutex held. Use the start() function of struct netlink_dump_control
-instead of dump() to verify and report if the specified set does not
-exist.
+On Sat, 25 Jan 2020 05:11:52 +0000, Saeed Mahameed wrote:
+> From: Aya Levin <ayal@mellanox.com>
+> 
+> Add support for low latency Reed Solomon FEC as LLRS.
+> 
+> Signed-off-by: Aya Levin <ayal@mellanox.com>
+> Reviewed-by: Eran Ben Elisha <eranbe@mellanox.com>
+> Signed-off-by: Saeed Mahameed <saeedm@mellanox.com>
 
-Thanks to Pablo Neira Ayuso for helping me to understand the subleties
-of the netlink protocol.
+This is kind of buried in the midst of the driver patches.
+It'd preferably be a small series of its own. 
+Let's at least try to CC PHY folk now.
 
-Reported-by: syzbot+fc69d7cb21258ab4ae4d@syzkaller.appspotmail.com
-Signed-off-by: Jozsef Kadlecsik <kadlec@netfilter.org>
----
- net/netfilter/ipset/ip_set_core.c | 41 ++++++++++++++++---------------
- 1 file changed, 21 insertions(+), 20 deletions(-)
+Is this from some standard?
 
-diff --git a/net/netfilter/ipset/ip_set_core.c b/net/netfilter/ipset/ip_set_core.c
-index cf895bc80871..69c107f9ba8d 100644
---- a/net/netfilter/ipset/ip_set_core.c
-+++ b/net/netfilter/ipset/ip_set_core.c
-@@ -1483,31 +1483,34 @@ ip_set_dump_policy[IPSET_ATTR_CMD_MAX + 1] = {
- };
- 
- static int
--dump_init(struct netlink_callback *cb, struct ip_set_net *inst)
-+ip_set_dump_start(struct netlink_callback *cb)
- {
- 	struct nlmsghdr *nlh = nlmsg_hdr(cb->skb);
- 	int min_len = nlmsg_total_size(sizeof(struct nfgenmsg));
- 	struct nlattr *cda[IPSET_ATTR_CMD_MAX + 1];
- 	struct nlattr *attr = (void *)nlh + min_len;
-+	struct sk_buff *skb = cb->skb;
-+	struct ip_set_net *inst = ip_set_pernet(sock_net(skb->sk));
- 	u32 dump_type;
--	ip_set_id_t index;
- 	int ret;
- 
- 	ret = nla_parse(cda, IPSET_ATTR_CMD_MAX, attr,
- 			nlh->nlmsg_len - min_len,
- 			ip_set_dump_policy, NULL);
- 	if (ret)
--		return ret;
-+		goto error;
- 
- 	cb->args[IPSET_CB_PROTO] = nla_get_u8(cda[IPSET_ATTR_PROTOCOL]);
- 	if (cda[IPSET_ATTR_SETNAME]) {
-+		ip_set_id_t index;
- 		struct ip_set *set;
- 
- 		set = find_set_and_id(inst, nla_data(cda[IPSET_ATTR_SETNAME]),
- 				      &index);
--		if (!set)
--			return -ENOENT;
--
-+		if (!set) {
-+			ret = -ENOENT;
-+			goto error;
-+		}
- 		dump_type = DUMP_ONE;
- 		cb->args[IPSET_CB_INDEX] = index;
- 	} else {
-@@ -1523,10 +1526,17 @@ dump_init(struct netlink_callback *cb, struct ip_set_net *inst)
- 	cb->args[IPSET_CB_DUMP] = dump_type;
- 
- 	return 0;
-+
-+error:
-+	/* We have to create and send the error message manually :-( */
-+	if (nlh->nlmsg_flags & NLM_F_ACK) {
-+		netlink_ack(cb->skb, nlh, ret, NULL);
-+	}
-+	return ret;
- }
- 
- static int
--ip_set_dump_start(struct sk_buff *skb, struct netlink_callback *cb)
-+ip_set_dump_do(struct sk_buff *skb, struct netlink_callback *cb)
- {
- 	ip_set_id_t index = IPSET_INVALID_ID, max;
- 	struct ip_set *set = NULL;
-@@ -1537,18 +1547,8 @@ ip_set_dump_start(struct sk_buff *skb, struct netlink_callback *cb)
- 	bool is_destroyed;
- 	int ret = 0;
- 
--	if (!cb->args[IPSET_CB_DUMP]) {
--		ret = dump_init(cb, inst);
--		if (ret < 0) {
--			nlh = nlmsg_hdr(cb->skb);
--			/* We have to create and send the error message
--			 * manually :-(
--			 */
--			if (nlh->nlmsg_flags & NLM_F_ACK)
--				netlink_ack(cb->skb, nlh, ret, NULL);
--			return ret;
--		}
--	}
-+	if (!cb->args[IPSET_CB_DUMP])
-+		return -EINVAL;
- 
- 	if (cb->args[IPSET_CB_INDEX] >= inst->ip_set_max)
- 		goto out;
-@@ -1684,7 +1684,8 @@ static int ip_set_dump(struct net *net, struct sock *ctnl, struct sk_buff *skb,
- 
- 	{
- 		struct netlink_dump_control c = {
--			.dump = ip_set_dump_start,
-+			.start = ip_set_dump_start,
-+			.dump = ip_set_dump_do,
- 			.done = ip_set_dump_done,
- 		};
- 		return netlink_dump_start(ctnl, skb, nlh, &c);
--- 
-2.20.1
+> diff --git a/drivers/net/phy/phy-core.c b/drivers/net/phy/phy-core.c
+> index a4d2d59fceca..e083e7a76ada 100644
+> --- a/drivers/net/phy/phy-core.c
+> +++ b/drivers/net/phy/phy-core.c
+> @@ -8,7 +8,7 @@
+>  
+>  const char *phy_speed_to_str(int speed)
+>  {
+> -	BUILD_BUG_ON_MSG(__ETHTOOL_LINK_MODE_MASK_NBITS != 74,
+> +	BUILD_BUG_ON_MSG(__ETHTOOL_LINK_MODE_MASK_NBITS != 75,
+>  		"Enum ethtool_link_mode_bit_indices and phylib are out of sync. "
+>  		"If a speed or mode has been added please update phy_speed_to_str "
+>  		"and the PHY settings array.\n");
+> diff --git a/include/uapi/linux/ethtool.h b/include/uapi/linux/ethtool.h
+> index 116bcbf09c74..e0c4383ea952 100644
+> --- a/include/uapi/linux/ethtool.h
+> +++ b/include/uapi/linux/ethtool.h
+> @@ -1326,6 +1326,7 @@ enum ethtool_fec_config_bits {
+>  	ETHTOOL_FEC_OFF_BIT,
+>  	ETHTOOL_FEC_RS_BIT,
+>  	ETHTOOL_FEC_BASER_BIT,
+> +	ETHTOOL_FEC_LLRS_BIT,
+>  };
+>  
+>  #define ETHTOOL_FEC_NONE		(1 << ETHTOOL_FEC_NONE_BIT)
+> @@ -1333,6 +1334,7 @@ enum ethtool_fec_config_bits {
+>  #define ETHTOOL_FEC_OFF			(1 << ETHTOOL_FEC_OFF_BIT)
+>  #define ETHTOOL_FEC_RS			(1 << ETHTOOL_FEC_RS_BIT)
+>  #define ETHTOOL_FEC_BASER		(1 << ETHTOOL_FEC_BASER_BIT)
+> +#define ETHTOOL_FEC_LLRS		(1 << ETHTOOL_FEC_LLRS_BIT)
+>  
+>  /* CMDs currently supported */
+>  #define ETHTOOL_GSET		0x00000001 /* DEPRECATED, Get settings.
+> @@ -1517,7 +1519,7 @@ enum ethtool_link_mode_bit_indices {
+>  	ETHTOOL_LINK_MODE_400000baseLR8_ER8_FR8_Full_BIT = 71,
+>  	ETHTOOL_LINK_MODE_400000baseDR8_Full_BIT	 = 72,
+>  	ETHTOOL_LINK_MODE_400000baseCR8_Full_BIT	 = 73,
+> -
+> +	ETHTOOL_LINK_MODE_FEC_LLRS_BIT			 = 74,
+>  	/* must be last entry */
+>  	__ETHTOOL_LINK_MODE_MASK_NBITS
+>  };
+> diff --git a/net/ethtool/common.c b/net/ethtool/common.c
+> index e621b1694d2f..8e4e809340f0 100644
+> --- a/net/ethtool/common.c
+> +++ b/net/ethtool/common.c
+> @@ -167,6 +167,7 @@ const char link_mode_names[][ETH_GSTRING_LEN] = {
+>  	__DEFINE_LINK_MODE_NAME(400000, LR8_ER8_FR8, Full),
+>  	__DEFINE_LINK_MODE_NAME(400000, DR8, Full),
+>  	__DEFINE_LINK_MODE_NAME(400000, CR8, Full),
+> +	__DEFINE_SPECIAL_MODE_NAME(FEC_LLRS, "LLRS"),
+>  };
+>  static_assert(ARRAY_SIZE(link_mode_names) == __ETHTOOL_LINK_MODE_MASK_NBITS);
+>  
+> diff --git a/net/ethtool/linkmodes.c b/net/ethtool/linkmodes.c
+> index 96f20be64553..f049b97072fe 100644
+> --- a/net/ethtool/linkmodes.c
+> +++ b/net/ethtool/linkmodes.c
+> @@ -237,6 +237,7 @@ static const struct link_mode_info link_mode_params[] = {
+>  	__DEFINE_LINK_MODE_PARAMS(400000, LR8_ER8_FR8, Full),
+>  	__DEFINE_LINK_MODE_PARAMS(400000, DR8, Full),
+>  	__DEFINE_LINK_MODE_PARAMS(400000, CR8, Full),
+> +	__DEFINE_SPECIAL_MODE_PARAMS(FEC_LLRS),
+>  };
+>  
+>  static const struct nla_policy
 
