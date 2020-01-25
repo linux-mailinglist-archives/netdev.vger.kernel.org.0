@@ -2,194 +2,206 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 736F71492C3
-	for <lists+netdev@lfdr.de>; Sat, 25 Jan 2020 02:42:42 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id AD19214936A
+	for <lists+netdev@lfdr.de>; Sat, 25 Jan 2020 06:17:04 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2387584AbgAYBmk (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 24 Jan 2020 20:42:40 -0500
-Received: from mail-pl1-f196.google.com ([209.85.214.196]:38771 "EHLO
-        mail-pl1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2387475AbgAYBmk (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 24 Jan 2020 20:42:40 -0500
-Received: by mail-pl1-f196.google.com with SMTP id t6so1503655plj.5
-        for <netdev@vger.kernel.org>; Fri, 24 Jan 2020 17:42:39 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=broadcom.com; s=google;
-        h=subject:to:cc:references:from:autocrypt:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=tlFaD//BvBZv3xMn475Kee1Ktpmgh8PdbAcukkFkcZk=;
-        b=FKFao3/vBoD6gBdGn/A1bfmgaHYMK7YAgelnIVuBpEG8ZuvRp77moVXqR+i9VeLph1
-         IjGqumeDHzLyhQ2ok076w/2lhWeZqlcVHAKpamYkke+XuN7qcrInusYq+NBAGAxnRJtz
-         ujxIASjG7ecf9qW2DXodQbKE3AVXZzUZUrozc=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:autocrypt
-         :message-id:date:user-agent:mime-version:in-reply-to
-         :content-language:content-transfer-encoding;
-        bh=tlFaD//BvBZv3xMn475Kee1Ktpmgh8PdbAcukkFkcZk=;
-        b=NEZq8YGGn78OF55+m+H1qtps6ogsTJTRwns+8DYpc4I/yANOayeDkDlclNUpcJ0RzC
-         tTKSJvKJc94h9mAIo0rth4oweob/lD3vOQG6aZH5i0Rp0JiSE4GO31Bfqm6UmKeUkXp6
-         yooZzuohJ2lzK5MbH08DPTQGcOCvK3MNisgsWU2JN6Psu1h1vxL/ia+petDLttZ191Eh
-         Tc1fJ2jguDHt5UD9LzIjHhc0k8J0Y+sj6x/1WB+6CbPo1nu7mvoy/iA3jH/O1K6VcZrp
-         H2Ee0kOAB17SmnhntjrXsDjfhQL/nymy4mBvKc02p+f7kYWindsNz8srQNQIpiFvJEqj
-         C8gg==
-X-Gm-Message-State: APjAAAWK5YVNPIAYjc2LzWUDJK8z9ktlqM8awQsygLGxEwdWAFBVtkCi
-        EHf81Mb1W1uZpIoX6bWEq5y3Kw==
-X-Google-Smtp-Source: APXvYqzcTplmxy+Fp0EM4pzo5ggzYAc1VJGxYEM0GGZv7D2MP/UkjtiILAh+DW8IK4zu9wJNLy1Uew==
-X-Received: by 2002:a17:90b:941:: with SMTP id dw1mr2403404pjb.21.1579916559059;
-        Fri, 24 Jan 2020 17:42:39 -0800 (PST)
-Received: from [192.168.1.3] (ip68-111-84-250.oc.oc.cox.net. [68.111.84.250])
-        by smtp.gmail.com with ESMTPSA id t1sm8075530pgq.23.2020.01.24.17.42.37
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 24 Jan 2020 17:42:38 -0800 (PST)
-Subject: Re: [PATCH net-next] net: systemport: Do not block interrupts in TX
- reclaim
-To:     Eric Dumazet <eric.dumazet@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>, netdev@vger.kernel.org
-Cc:     kuba@kernel.org, edumazet@google.com,
-        "David S. Miller" <davem@davemloft.net>,
-        "open list:BROADCOM SYSTEMPORT ETHERNET DRIVER" 
-        <bcm-kernel-feedback-list@broadcom.com>,
-        open list <linux-kernel@vger.kernel.org>
-References: <20200124235930.640-1-f.fainelli@gmail.com>
- <de50408a-37db-e55e-57af-54574c7b5e42@gmail.com>
-From:   Florian Fainelli <florian.fainelli@broadcom.com>
-Autocrypt: addr=florian.fainelli@broadcom.com; keydata=
- mQENBFPAG8ABCAC3EO02urEwipgbUNJ1r6oI2Vr/+uE389lSEShN2PmL3MVnzhViSAtrYxeT
- M0Txqn1tOWoIc4QUl6Ggqf5KP6FoRkCrgMMTnUAINsINYXK+3OLe7HjP10h2jDRX4Ajs4Ghs
- JrZOBru6rH0YrgAhr6O5gG7NE1jhly+EsOa2MpwOiXO4DE/YKZGuVe6Bh87WqmILs9KvnNrQ
- PcycQnYKTVpqE95d4M824M5cuRB6D1GrYovCsjA9uxo22kPdOoQRAu5gBBn3AdtALFyQj9DQ
- KQuc39/i/Kt6XLZ/RsBc6qLs+p+JnEuPJngTSfWvzGjpx0nkwCMi4yBb+xk7Hki4kEslABEB
- AAG0MEZsb3JpYW4gRmFpbmVsbGkgPGZsb3JpYW4uZmFpbmVsbGlAYnJvYWRjb20uY29tPokB
- xAQQAQgArgUCXJvPrRcKAAG/SMv+fS3xUQWa0NryPuoRGjsA3SAUAAAAAAAWAAFrZXktdXNh
- Z2UtbWFza0BwZ3AuY29tjDAUgAAAAAAgAAdwcmVmZXJyZWQtZW1haWwtZW5jb2RpbmdAcGdw
- LmNvbXBncG1pbWUICwkIBwMCAQoFF4AAAAAZGGxkYXA6Ly9rZXlzLmJyb2FkY29tLmNvbQUb
- AwAAAAMWAgEFHgEAAAAEFQgJCgAKCRCBMbXEKbxmoE4DB/9JySDRt/ArjeOHOwGA2sLR1DV6
- Mv6RuStiefNvJ14BRfMkt9EV/dBp9CsI+slwj9/ZlBotQXlAoGr4uivZvcnQ9dWDjTExXsRJ
- WcBwUlSUPYJc/kPWFnTxF8JFBNMIQSZSR2dBrDqRP0UWYJ5XaiTbVRpd8nka9BQu4QB8d/Bx
- VcEJEth3JF42LSF9DPZlyKUTHOj4l1iZ/Gy3AiP9jxN50qol9OT37adOJXGEbix8zxoCAn2W
- +grt1ickvUo95hYDxE6TSj4b8+b0N/XT5j3ds1wDd/B5ZzL9fgBjNCRzp8McBLM5tXIeTYu9
- mJ1F5OW89WvDTwUXtT19P1r+qRqKuQENBFPAG8EBCACsa+9aKnvtPjGAnO1mn1hHKUBxVML2
- C3HQaDp5iT8Q8A0ab1OS4akj75P8iXYfZOMVA0Lt65taiFtiPT7pOZ/yc/5WbKhsPE9dwysr
- vHjHL2gP4q5vZV/RJduwzx8v9KrMZsVZlKbvcvUvgZmjG9gjPSLssTFhJfa7lhUtowFof0fA
- q3Zy+vsy5OtEe1xs5kiahdPb2DZSegXW7DFg15GFlj+VG9WSRjSUOKk+4PCDdKl8cy0LJs+r
- W4CzBB2ARsfNGwRfAJHU4Xeki4a3gje1ISEf+TVxqqLQGWqNsZQ6SS7jjELaB/VlTbrsUEGR
- 1XfIn/sqeskSeQwJiFLeQgj3ABEBAAGJAkEEGAECASsFAlPAG8IFGwwAAADAXSAEGQEIAAYF
- AlPAG8EACgkQk2AGqJgvD1UNFQgAlpN5/qGxQARKeUYOkL7KYvZFl3MAnH2VeNTiGFoVzKHO
- e7LIwmp3eZ6GYvGyoNG8cOKrIPvXDYGdzzfwxVnDSnAE92dv+H05yanSUv/2HBIZa/LhrPmV
- hXKgD27XhQjOHRg0a7qOvSKx38skBsderAnBZazfLw9OukSnrxXqW/5pe3mBHTeUkQC8hHUD
- Cngkn95nnLXaBAhKnRfzFqX1iGENYRH3Zgtis7ZvodzZLfWUC6nN8LDyWZmw/U9HPUaYX8qY
- MP0n039vwh6GFZCqsFCMyOfYrZeS83vkecAwcoVh8dlHdke0rnZk/VytXtMe1u2uc9dUOr68
- 7hA+Z0L5IQAKCRCBMbXEKbxmoLoHCACXeRGHuijOmOkbyOk7x6fkIG1OXcb46kokr2ptDLN0
- Ky4nQrWp7XBk9ls/9j5W2apKCcTEHONK2312uMUEryWI9BlqWnawyVL1LtyxLLpwwsXVq5m5
- sBkSqma2ldqBu2BHXZg6jntF5vzcXkqG3DCJZ2hOldFPH+czRwe2OOsiY42E/w7NUyaN6b8H
- rw1j77+q3QXldOw/bON361EusWHdbhcRwu3WWFiY2ZslH+Xr69VtYAoMC1xtDxIvZ96ps9ZX
- pUPJUqHJr8QSrTG1/zioQH7j/4iMJ07MMPeQNkmj4kGQOdTcsFfDhYLDdCE5dj5WeE6fYRxE
- Q3up0ArDSP1L
-Message-ID: <36eea933-d30b-344b-1f29-d8e5959f27fd@broadcom.com>
-Date:   Fri, 24 Jan 2020 17:42:37 -0800
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
- Thunderbird/68.4.1
-MIME-Version: 1.0
-In-Reply-To: <de50408a-37db-e55e-57af-54574c7b5e42@gmail.com>
-Content-Type: text/plain; charset=utf-8
+        id S1725812AbgAYFLF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 25 Jan 2020 00:11:05 -0500
+Received: from mail-eopbgr70077.outbound.protection.outlook.com ([40.107.7.77]:22390
+        "EHLO EUR04-HE1-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1725267AbgAYFLE (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sat, 25 Jan 2020 00:11:04 -0500
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=DlYgOciOh6/TzalRDyUij5sqW3KlP9aIURL5M4Y/I/WdrPgS1SFVoUt4ygtAWw64Ih0+rzLbf5UnUtCsi/gt+DdLsrCYyiY70N7XgDjX4DJYg86MyMbo4eiMBIM69BbpWOemUY1YvjauxxQ7F0Z1/7GgFEgS887NLexUx6ks2ihZeJs9YIqrnVyVu/rzXhtdKFlbMPojQD37WszCZAcdzBqMweyswGHAdZasi+xEC0js00yoej0tg7s5L+R8YOAQDHYt8GHDC5L+jEHfehIefSnSU658O4mvxJJ13g2SLPrpGlyQNmrbLKlZf6LQxQgaLRMHxtjsdusEOLMTiVCJWw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=nZaqTkWzUY5rQFTo/84QFrOlrssUc3ksgpNB1s79Fn0=;
+ b=PRyPGZhYnje4Od/jII3q0YRESqN/AY8QRThG6zFSaKjxa2yVHZp6w09HXVpQ7vHGXop7XS23SC1GBhF0QCzCB4Rb0M/j08kK5p5kUkLHBw7c4LzE4rDtr/QaD3+fUdtDfkLHcBirXUdZtXZz5sqI9MDTsUmf+NDGM3FPqI/aXbSWBVrLR9FDvrauJG8D5O9qAPfDfQSFS0pio0pW7rOlBaEr+kYL5aacYN9p9LFJwBPdbzvpVkPPdfdORZcfjhhankeIiDZQ/QiQcc9j/Uu3K2kBOPnc1iVhC4IkjZKuRlgYaaOjLSPlszET/lKCfOhDT8dfXXT8no2fAb4fgn4dmA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=mellanox.com; dmarc=pass action=none header.from=mellanox.com;
+ dkim=pass header.d=mellanox.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Mellanox.com;
+ s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=nZaqTkWzUY5rQFTo/84QFrOlrssUc3ksgpNB1s79Fn0=;
+ b=YnKSKcGo7bk1B6GL2st39KoqEdaZVz/f7+wA2pBVRUIEEVndf7jfAXm2AH1Ykl/R6B2UDct0PrD879RPdk55W1paYxqUuWzRgpjPkP9X6p+UG0WnJReDnQWyYBdAJM0mShqUP+k+VbH3vFvJpXVkiIdFN/oI0FfinMkv0bxVpPY=
+Received: from VI1PR05MB5102.eurprd05.prod.outlook.com (20.177.51.151) by
+ VI1SPR01MB0394.eurprd05.prod.outlook.com (10.186.159.14) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.2665.22; Sat, 25 Jan 2020 05:10:59 +0000
+Received: from VI1PR05MB5102.eurprd05.prod.outlook.com
+ ([fe80::d830:96fc:e928:c096]) by VI1PR05MB5102.eurprd05.prod.outlook.com
+ ([fe80::d830:96fc:e928:c096%6]) with mapi id 15.20.2644.027; Sat, 25 Jan 2020
+ 05:10:59 +0000
+Received: from smtp.office365.com (73.15.39.150) by BY5PR16CA0025.namprd16.prod.outlook.com (2603:10b6:a03:1a0::38) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.2665.20 via Frontend Transport; Sat, 25 Jan 2020 05:10:55 +0000
+From:   Saeed Mahameed <saeedm@mellanox.com>
+To:     "David S. Miller" <davem@davemloft.net>
+CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        Saeed Mahameed <saeedm@mellanox.com>
+Subject: [pull request][net-next V2 00/14] Mellanox, mlx5 updates 2020-01-24
+Thread-Topic: [pull request][net-next V2 00/14] Mellanox, mlx5 updates
+ 2020-01-24
+Thread-Index: AQHV0z3TVnwn9d/Ptk+/GCv7MQ9qAQ==
+Date:   Sat, 25 Jan 2020 05:10:56 +0000
+Message-ID: <20200125051039.59165-1-saeedm@mellanox.com>
+Accept-Language: en-US
 Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-mailer: git-send-email 2.24.1
+x-originating-ip: [73.15.39.150]
+x-clientproxiedby: BY5PR16CA0025.namprd16.prod.outlook.com
+ (2603:10b6:a03:1a0::38) To VI1PR05MB5102.eurprd05.prod.outlook.com
+ (2603:10a6:803:5e::23)
+authentication-results: spf=none (sender IP is )
+ smtp.mailfrom=saeedm@mellanox.com; 
+x-ms-exchange-messagesentrepresentingtype: 1
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-ht: Tenant
+x-ms-office365-filtering-correlation-id: 57605cc7-084c-46f9-6ea1-08d7a154f55e
+x-ms-traffictypediagnostic: VI1SPR01MB0394:|VI1SPR01MB0394:
+x-ms-exchange-transport-forked: True
+x-microsoft-antispam-prvs: <VI1SPR01MB03947A7A80707D6C33AAD0A8BE090@VI1SPR01MB0394.eurprd05.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:10000;
+x-forefront-prvs: 0293D40691
+x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(4636009)(376002)(136003)(39860400002)(346002)(366004)(396003)(189003)(199004)(36756003)(66476007)(66946007)(2906002)(107886003)(4326008)(86362001)(52116002)(6512007)(66556008)(15650500001)(26005)(6506007)(8676002)(81166006)(66446008)(64756008)(81156014)(316002)(8936002)(71200400001)(1076003)(478600001)(54906003)(5660300002)(6486002)(16526019)(6916009)(956004)(186003)(2616005)(54420400002);DIR:OUT;SFP:1101;SCL:1;SRVR:VI1SPR01MB0394;H:VI1PR05MB5102.eurprd05.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;MX:1;A:1;
+received-spf: None (protection.outlook.com: mellanox.com does not designate
+ permitted sender hosts)
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: hX588/Okkg0X+Fkt/CroQeHWUZWkpSULwWTDMLXc86fBsjh9skeftlock482XbWILkBRHhj7xYs4WkgsDMDKmumgvDrZo5Ffomd00NXZtV0kRxMUTPV5gIGSb5YtnJXHJvgewxmFPZleXSspWpD1oerLXcTG7bRH49v4DU8xhWiJ0fCDgQUqqMQyZN9i/gVOWep2saxMtnntQ5Z4oZQwgjveM6RnQh7ZmmcyakdCSyCmVech+HxBvDgus3Med0bQqQL7TRJE27yBGH0J1FXsLehmaQtwetXTr2uP/VGqSckK9LquXaMZVPEiRTOyMygV0fU3lvHGulQMijeOS7vR6SOWI6LPdJDDNc/VYRx5MfPtoZzsuit2pOwJ6gDOXZIGFQ7Omp16l/BNtfMzTv1xQvNoVO7TBGQxVel1gQFih8UwvS2MYizNVPEDREn2j2jHhax8LJ3YG7HFC49e4BcQRTBoClu9D9v1FoCJDkEnWN2Db8rfJXmmvAeSnYLNmmpzRBk+RFZUglGVcCLRnAI5Vzqgl887uwuu9QNLxKUSr6Y=
+x-ms-exchange-antispam-messagedata: xZLbWza3cX6I63koLi4xIB0F56aQ+DPeDvPzcMYSezwLjhP2EoJ1Q9iMmMlRBCJWY69tyZhtgojHH2WnOQakqK1bwdejuZP40awkPXLzymWwCvQer8xUvxU6LdFaNl/5ED9xvnG35NYUDaCRz9/IXw==
+Content-Type: text/plain; charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
+MIME-Version: 1.0
+X-OriginatorOrg: Mellanox.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 57605cc7-084c-46f9-6ea1-08d7a154f55e
+X-MS-Exchange-CrossTenant-originalarrivaltime: 25 Jan 2020 05:10:58.9140
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: a652971c-7d2e-4d9b-a6a4-d149256f461b
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: MpnzrEtr74tHUGqay0jNX4kuj8pf+7VvRdO7W8agTiSVOAH2Rj6X57bbCwXjhggfeScO6naSwMRE4Z4WwSyoiw==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1SPR01MB0394
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Hi Dave,
 
+This series adds some updates to mlx5 driver
+1) Devlink health dump support for both rx and tx health reporters.
+2) FEC modes supports.
+3) misc small patches.
 
-On 1/24/2020 5:35 PM, Eric Dumazet wrote:
-> 
-> 
-> On 1/24/20 3:59 PM, Florian Fainelli wrote:
->> There is no need to disable interrupts with a spin_lock_irqsave() in
->> bcm_sysport_tx_poll() since we are in softIRQ context already. Leave
->> interrupts enabled, thus giving a chance for the RX interrupts to be
->> processed.
->>
->> This now makes bcm_sysport_tx_reclaim() equivalent to
->> bcm_sysport_tx_clean(), thus remove the former, and make
->> bcm_sysport_tx_reclaim_all() to use the latter.
->>
->> Signed-off-by: Florian Fainelli <f.fainelli@gmail.com>
->> ---
->>  drivers/net/ethernet/broadcom/bcmsysport.c | 30 ++++++----------------
->>  1 file changed, 8 insertions(+), 22 deletions(-)
->>
->> diff --git a/drivers/net/ethernet/broadcom/bcmsysport.c b/drivers/net/ethernet/broadcom/bcmsysport.c
->> index f07ac0e0af59..dfff0657ce8f 100644
->> --- a/drivers/net/ethernet/broadcom/bcmsysport.c
->> +++ b/drivers/net/ethernet/broadcom/bcmsysport.c
->> @@ -925,26 +925,6 @@ static unsigned int __bcm_sysport_tx_reclaim(struct bcm_sysport_priv *priv,
->>  	return pkts_compl;
->>  }
->>  
->> -/* Locked version of the per-ring TX reclaim routine */
->> -static unsigned int bcm_sysport_tx_reclaim(struct bcm_sysport_priv *priv,
->> -					   struct bcm_sysport_tx_ring *ring)
->> -{
->> -	struct netdev_queue *txq;
->> -	unsigned int released;
->> -	unsigned long flags;
->> -
->> -	txq = netdev_get_tx_queue(priv->netdev, ring->index);
->> -
->> -	spin_lock_irqsave(&ring->lock, flags);
->> -	released = __bcm_sysport_tx_reclaim(priv, ring);
->> -	if (released)
->> -		netif_tx_wake_queue(txq);
->> -
->> -	spin_unlock_irqrestore(&ring->lock, flags);
->> -
->> -	return released;
->> -}
->> -
->>  /* Locked version of the per-ring TX reclaim, but does not wake the queue */
->>  static void bcm_sysport_tx_clean(struct bcm_sysport_priv *priv,
->>  				 struct bcm_sysport_tx_ring *ring)
->> @@ -960,9 +940,15 @@ static int bcm_sysport_tx_poll(struct napi_struct *napi, int budget)
->>  {
->>  	struct bcm_sysport_tx_ring *ring =
->>  		container_of(napi, struct bcm_sysport_tx_ring, napi);
->> +	struct bcm_sysport_priv *priv = ring->priv;
->>  	unsigned int work_done = 0;
->>  
->> -	work_done = bcm_sysport_tx_reclaim(ring->priv, ring);
->> +	spin_lock(&ring->lock);
->> +	work_done = __bcm_sysport_tx_reclaim(priv, ring);
->> +	if (work_done)
->> +		netif_tx_wake_queue(netdev_get_tx_queue(priv->netdev,
->> +							ring->index));
->> +	spin_unlock(&ring->lock);
->>  
->>  	if (work_done == 0) {
->>  		napi_complete(napi);
->> @@ -984,7 +970,7 @@ static void bcm_sysport_tx_reclaim_all(struct bcm_sysport_priv *priv)
->>  	unsigned int q;
->>  
->>  	for (q = 0; q < priv->netdev->num_tx_queues; q++)
->> -		bcm_sysport_tx_reclaim(priv, &priv->tx_rings[q]);
->> +		bcm_sysport_tx_clean(priv, &priv->tx_rings[q]);
->>  }
->>  
->>  static int bcm_sysport_poll(struct napi_struct *napi, int budget)
->>
-> 
-> I am a bit confused by this patch, the changelog mixes hard and soft irqs.
-> 
-> This driver seems to call bcm_sysport_tx_reclaim_all() from hard irq handler 
-> (INTRL2_0_TX_RING_FULL condition)
-> 
-> So it looks you need to acquire ring->lock with some _irqsave() variant when
-> bcm_sysport_tx_poll() is running (from BH context)
+V1 -> V2:
+ - Remove "\n" from snprintf, happened due to rebase with a conflicting
+   feature, Thanks Joe for spotting this.
 
-You are right, I completely missed that path and the very reason why
-this is spin_lock_irqsave() in the first place... time to get some sleep.
+For more information please see tag log below.
 
-Thanks!
--- 
-Florian
+Please pull and let me know if there is any problem.
+
+Please note that the series starts with a merge of mlx5-next branch,
+to resolve and avoid dependency with rdma tree.
+
+Note about non-mlx5 change:
+For the FEC link modes support, Aya added the define for
+low latency Reed Solomon FEC as LLRS, in: include/uapi/linux/ethtool.h
+
+Thanks,
+Saeed.
+
+The following changes since commit 62a2b103785a30f0354ca9b5af9da81641a6ec47=
+:
+
+  Merge branch 'mlx5-next' of git://git.kernel.org/pub/scm/linux/kernel/git=
+/mellanox/linux (2020-01-24 21:04:49 -0800)
+
+are available in the Git repository at:
+
+  git://git.kernel.org/pub/scm/linux/kernel/git/saeed/linux.git tags/mlx5-u=
+pdates-2020-01-24
+
+for you to fetch changes up to f8db58cf4e15bda512c834c075c8ebbd35e0f79e:
+
+  net/mlx5: Fix lowest FDB pool size (2020-01-24 21:05:06 -0800)
+
+----------------------------------------------------------------
+mlx5-updates-2020-01-24
+
+This series adds two moderate updates and some misc small patches to
+mlx5 driver.
+
+1) From Aya, Add the missing devlink health dump callbacks support for
+both rx and tx health reporters.
+
+First patch of the series is extending devlink API to set binary fmsg
+data.
+
+All others patches in the series are adding the mlx5 devlink health
+callbacks support and the needed FW commands.
+
+2) Also from Aya, Support for FEC modes based on 50G per lane links.
+Part of this series, Aya adds one missing link mode define "FEC_LLRS"
+to include/uapi/linux/ethtool.h.
+
+3) Erez handles the reformat capability in SW steerig
+
+4) From Joe, Use proper logging and tracing line terminations
+
+5) Paul, Fix lowest FDB pool size, which got lost due to code re-placement
+in net-next.
+
+----------------------------------------------------------------
+Aya Levin (11):
+      devlink: Force enclosing array on binary fmsg data
+      net/mlx5: Add support for resource dump
+      net/mlx5e: Gather reporters APIs together
+      net/mlx5e: Support dump callback in TX reporter
+      net/mlx5e: Support dump callback in RX reporter
+      net/mlx5e: Set FEC to auto when configured mode is not supported
+      net/mlx5e: Enforce setting of a single FEC mode
+      net/mlx5e: Advertise globaly supported FEC modes
+      net/mlxe5: Separate between FEC and current speed
+      ethtool: Add support for low latency RS FEC
+      net/mlx5e: Add support for FEC modes based on 50G per lane links
+
+Erez Shitrit (1):
+      net/mlx5: DR, Handle reformat capability over sw-steering tables
+
+Joe Perches (1):
+      mlx5: Use proper logging and tracing line terminations
+
+Paul Blakey (1):
+      net/mlx5: Fix lowest FDB pool size
+
+ drivers/net/ethernet/mellanox/mlx5/core/Makefile   |   2 +-
+ .../ethernet/mellanox/mlx5/core/diag/rsc_dump.c    | 286 +++++++++++++++++=
+++++
+ .../ethernet/mellanox/mlx5/core/diag/rsc_dump.h    |  58 +++++
+ .../net/ethernet/mellanox/mlx5/core/en/health.c    | 107 +++++++-
+ .../net/ethernet/mellanox/mlx5/core/en/health.h    |   8 +-
+ drivers/net/ethernet/mellanox/mlx5/core/en/port.c  | 253 ++++++++++-------=
+-
+ drivers/net/ethernet/mellanox/mlx5/core/en/port.h  |   8 +-
+ .../ethernet/mellanox/mlx5/core/en/reporter_rx.c   | 266 ++++++++++++++++-=
+--
+ .../ethernet/mellanox/mlx5/core/en/reporter_tx.c   | 181 ++++++++++---
+ .../net/ethernet/mellanox/mlx5/core/en_ethtool.c   |  71 ++---
+ .../mellanox/mlx5/core/eswitch_offloads_chains.c   |   2 +-
+ drivers/net/ethernet/mellanox/mlx5/core/main.c     |  12 +
+ .../ethernet/mellanox/mlx5/core/steering/fs_dr.c   |   9 +-
+ drivers/net/phy/phy-core.c                         |   2 +-
+ include/linux/mlx5/driver.h                        |   1 +
+ include/net/devlink.h                              |   5 +
+ include/uapi/linux/ethtool.h                       |   4 +-
+ net/core/devlink.c                                 |  94 ++++++-
+ net/ethtool/common.c                               |   1 +
+ net/ethtool/linkmodes.c                            |   1 +
+ 20 files changed, 1144 insertions(+), 227 deletions(-)
+ create mode 100644 drivers/net/ethernet/mellanox/mlx5/core/diag/rsc_dump.c
+ create mode 100644 drivers/net/ethernet/mellanox/mlx5/core/diag/rsc_dump.h
