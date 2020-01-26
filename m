@@ -2,187 +2,162 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 0DB80149A68
-	for <lists+netdev@lfdr.de>; Sun, 26 Jan 2020 12:32:25 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 63D2D149A7C
+	for <lists+netdev@lfdr.de>; Sun, 26 Jan 2020 12:54:58 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2387408AbgAZLcX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 26 Jan 2020 06:32:23 -0500
-Received: from mail-wr1-f68.google.com ([209.85.221.68]:44643 "EHLO
-        mail-wr1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728689AbgAZLcX (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 26 Jan 2020 06:32:23 -0500
-Received: by mail-wr1-f68.google.com with SMTP id q10so7487861wrm.11
-        for <netdev@vger.kernel.org>; Sun, 26 Jan 2020 03:32:21 -0800 (PST)
+        id S2387435AbgAZLys (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 26 Jan 2020 06:54:48 -0500
+Received: from mail-ed1-f66.google.com ([209.85.208.66]:44433 "EHLO
+        mail-ed1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726436AbgAZLys (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 26 Jan 2020 06:54:48 -0500
+Received: by mail-ed1-f66.google.com with SMTP id g19so3610810eds.11;
+        Sun, 26 Jan 2020 03:54:45 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=resnulli-us.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=GXKyIYmr4EQGB5WXC/HimGvE2YHHdahIQYU0nsd1dZA=;
-        b=wmViJQ/ttIMyQSKfWV7I0f80PXp9QoZDVA07ixf2yt531k1ab5iokmRUhO+gX7gfeh
-         SG2xT8743wK9mhwA9UGryybGTSQoF3ReRpaFhDBeyeDcgTydGx0BSgrtk4VWAau3scP0
-         8ucM4xZV0sG6vQWpojCFY037wLoVl2UlzPny6ebPBo0bvJLyPsKv3Euaoq9alYC8U7dV
-         a73wKZJ+Ik6DQTYr+5Kpc412Cr9UIbAM594wCyZG0uZJ+l9zdxitbwV6XO42XqYfFmca
-         K8cFbePz6x5ICla8XIcZO3PKv83IS59B1sD0g/v2KSQq/m2d0w1O3mcOza5cBjvz4FTa
-         2/iA==
+        d=gmail.com; s=20161025;
+        h=from:date:to:cc:subject:in-reply-to:message-id:references
+         :user-agent:mime-version:content-id;
+        bh=yebpCXrtZX8bx3fQb5NWjS3jPJJayF5dsD82yx4g9kY=;
+        b=K4FedAVyqeEd9VcH6t/5K1e9kdcf2VE+t2m/1s4BwLxfMMt9m0rxxr6+Epmbml5hyA
+         LQNwSP4yirgcbKJncp48HdkyeDhj9MWB10hFMbL6dJLe6zIWZW/r45gYOvewzXw8Qj4o
+         7jYfewofIYAKdsML3FSln6latL+kYWZWAKVCGUq1/UogAYv81LDoelceUltJFoxJlqB9
+         cMbMoZab6n24EzCPtLYvVe8SEIjrV7+wKTOd3v7yTrN12u6W0x89+/kGRhs4OcKPfoA/
+         UZHN+RD573fE+ieYwtq26Cc72LKe40rCH/ckaI/pT+OYpvgFMZgNOCjjLVSugUivkYsn
+         0Rig==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=GXKyIYmr4EQGB5WXC/HimGvE2YHHdahIQYU0nsd1dZA=;
-        b=RUm0Qc7DvDqhubV+Wax+A4e1kUoErnU8/zUjR84ovIHN9L1VyMihlRdzyKyStJcQBY
-         lgqNO98cqpuGxUjiXcKGvtYO0MeEAXz5ZpNpk494ORbHnQ5z0eXPbn9GlZai4bEfHRq8
-         aFLqJA14oRrc/lUITWQLXxgZx6X93Lzklop8sceT6Q9Yt+YF/yrFfZggg62LJfrkOItP
-         xzDcIdEMb+0IIsIFfzDeaSe5XoZ0uMEOde/LVkDW1JAcfEdO7gwM0QJIoiH+E0K/cl2N
-         d4cLZphYwMvdHE5rRftXLQQQ1oEXulDyLwiil5X+h8mPQT7XKAgtZL2tzuUrP3JcHFVq
-         RN/g==
-X-Gm-Message-State: APjAAAWSAkLX/GsZhr0X5ljvXBjKUlPyBW6zzL6uXJ8hlpcRziPlvBkQ
-        uAzjhv6xjTM7OgsdHQOaZgwoTw==
-X-Google-Smtp-Source: APXvYqwWwOU2/LK4Bfnn1Qs6J5JYm2NkyfX6v2/05VbK1lmZbFdH+whcfRtwBBsyaZubMqYxVZUSPA==
-X-Received: by 2002:adf:b648:: with SMTP id i8mr14838275wre.91.1580038340888;
-        Sun, 26 Jan 2020 03:32:20 -0800 (PST)
-Received: from localhost (jirka.pirko.cz. [84.16.102.26])
-        by smtp.gmail.com with ESMTPSA id n28sm16049765wra.48.2020.01.26.03.32.20
+        h=x-gm-message-state:from:date:to:cc:subject:in-reply-to:message-id
+         :references:user-agent:mime-version:content-id;
+        bh=yebpCXrtZX8bx3fQb5NWjS3jPJJayF5dsD82yx4g9kY=;
+        b=ukYTB5DLqxENQZMOelb9DgNuq9ljRLtUZrQETZpj1IAN41A8wEmCzN4Htd8VC1KOWZ
+         cKbOso/1VLRdO89eWzqILBr0+o0w0ds8KyhwBa4hdZqghT8IBiZfueNHdE8oTrxAs0hC
+         VBMFC38EcmB5Qy5RFezaJRBoXA98GdLaDyww53Demhz6v0UFoWLos0DSa+zk11/WM0P9
+         HubItPR00ruvMcEOc6esU6JJA2/6PtcL/wKNWrRScKTMZHS7X3dGouqIHWthFOUwIIiD
+         QF0SvUFMYUJ5BiFKvqsu8F0H8SCZNi76YVVxrbQixU/+2b1mokzp92WdNYAnmuUwqbAz
+         f9bA==
+X-Gm-Message-State: APjAAAVSdC2jFKcQJSICTRig5ApW/kGa8xmZFc1aIvJhmb0vpUHbErlk
+        1PVKDGDvqVokCkKA4p9u/eM=
+X-Google-Smtp-Source: APXvYqxfMz+LuhN79Em3ii/ilFnUf4Rw1aGe7WJUHbV187YP9KWdveWG1Oxgvj0kx/yc9rp+izn3pg==
+X-Received: by 2002:a17:906:5586:: with SMTP id y6mr9416414ejp.343.1580039684935;
+        Sun, 26 Jan 2020 03:54:44 -0800 (PST)
+Received: from felia ([2001:16b8:2da0:3900:15f5:151e:3025:d216])
+        by smtp.gmail.com with ESMTPSA id d19sm258868ejd.21.2020.01.26.03.54.43
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 26 Jan 2020 03:32:20 -0800 (PST)
-Date:   Sun, 26 Jan 2020 12:32:19 +0100
-From:   Jiri Pirko <jiri@resnulli.us>
-To:     Michael Chan <michael.chan@broadcom.com>
-Cc:     davem@davemloft.net, netdev@vger.kernel.org,
-        Vasundhara Volam <vasundhara-v.volam@broadcom.com>
-Subject: Re: [PATCH net-next 09/16] bnxt_en: Refactor bnxt_dl_register()
-Message-ID: <20200126113219.GI2254@nanopsycho.orion>
-References: <1580029390-32760-1-git-send-email-michael.chan@broadcom.com>
- <1580029390-32760-10-git-send-email-michael.chan@broadcom.com>
+        Sun, 26 Jan 2020 03:54:44 -0800 (PST)
+From:   Lukas Bulwahn <lukas.bulwahn@gmail.com>
+X-Google-Original-From: Lukas Bulwahn <lukas@gmail.com>
+Date:   Sun, 26 Jan 2020 12:54:42 +0100 (CET)
+X-X-Sender: lukas@felia
+To:     =?ISO-8859-15?Q?Jouni_H=F6gander?= <jouni.hogander@unikie.com>
+cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Lukas Bulwahn <lukas.bulwahn@gmail.com>,
+        open list <linux-kernel@vger.kernel.org>,
+        Linus Torvalds <torvalds@linux-foundation.org>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Ben Hutchings <ben.hutchings@codethink.co.uk>,
+        linux- stable <stable@vger.kernel.org>,
+        Netdev <netdev@vger.kernel.org>,
+        Al Viro <viro@zeniv.linux.org.uk>,
+        linux-fsdevel@vger.kernel.org, Eric Dumazet <edumazet@google.com>,
+        "David S. Miller" <davem@davemloft.net>, syzkaller@googlegroups.com
+Subject: Re: [PATCH 4.19 000/306] 4.19.87-stable review
+In-Reply-To: <87sgk8szhc.fsf@unikie.com>
+Message-ID: <alpine.DEB.2.21.2001261236430.4933@felia>
+References: <20191127203114.766709977@linuxfoundation.org> <CA+G9fYuAY+14aPiRVUcXLbsr5zJ-GLjULX=s9jcGWcw_vb5Kzw@mail.gmail.com> <20191128073623.GE3317872@kroah.com> <CAKXUXMy_=gVVw656AL5Rih_DJrdrFLoURS-et0+dpJ2cKaw6SQ@mail.gmail.com> <20191129085800.GF3584430@kroah.com>
+ <87sgk8szhc.fsf@unikie.com>
+User-Agent: Alpine 2.21 (DEB 202 2017-01-01)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <1580029390-32760-10-git-send-email-michael.chan@broadcom.com>
+Content-Type: multipart/mixed; BOUNDARY="8323329-62265607-1580039587=:4933"
+Content-ID: <alpine.DEB.2.21.2001261254360.4933@felia>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Sun, Jan 26, 2020 at 10:03:03AM CET, michael.chan@broadcom.com wrote:
->From: Vasundhara Volam <vasundhara-v.volam@broadcom.com>
->
->Define bnxt_dl_params_register() and bnxt_dl_params_unregister()
->functions and move params register/unregister code to these newly
->defined functions. This patch is in preparation to register
->devlink irrespective of firmware spec. version in the next patch.
->
->Signed-off-by: Vasundhara Volam <vasundhara-v.volam@broadcom.com>
->Signed-off-by: Michael Chan <michael.chan@broadcom.com>
->---
-> drivers/net/ethernet/broadcom/bnxt/bnxt_devlink.c | 60 ++++++++++++++---------
-> 1 file changed, 36 insertions(+), 24 deletions(-)
->
->diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt_devlink.c b/drivers/net/ethernet/broadcom/bnxt/bnxt_devlink.c
->index 0c3d224..9253eed 100644
->--- a/drivers/net/ethernet/broadcom/bnxt/bnxt_devlink.c
->+++ b/drivers/net/ethernet/broadcom/bnxt/bnxt_devlink.c
->@@ -485,6 +485,38 @@ static const struct devlink_param bnxt_dl_params[] = {
-> static const struct devlink_param bnxt_dl_port_params[] = {
-> };
-> 
->+static int bnxt_dl_params_register(struct bnxt *bp)
->+{
->+	int rc;
->+
->+	rc = devlink_params_register(bp->dl, bnxt_dl_params,
->+				     ARRAY_SIZE(bnxt_dl_params));
->+	if (rc) {
->+		netdev_warn(bp->dev, "devlink_params_register failed. rc=%d",
->+			    rc);
->+		return rc;
->+	}
->+	rc = devlink_port_params_register(&bp->dl_port, bnxt_dl_port_params,
->+					  ARRAY_SIZE(bnxt_dl_port_params));
+  This message is in MIME format.  The first part should be readable text,
+  while the remaining parts are likely unreadable without MIME-aware tools.
 
-Wait, this assumes that you have 1:1 devlink:devlink_port setup. Is that
-correct? Don't you have other devlink_ports for eswitch representors
-that have params?
- 
+--8323329-62265607-1580039587=:4933
+Content-Type: text/plain; CHARSET=ISO-8859-15
+Content-Transfer-Encoding: 8BIT
+Content-ID: <alpine.DEB.2.21.2001261254361.4933@felia>
 
->+	if (rc) {
->+		netdev_err(bp->dev, "devlink_port_params_register failed");
->+		devlink_params_unregister(bp->dl, bnxt_dl_params,
->+					  ARRAY_SIZE(bnxt_dl_params));
->+		return rc;
->+	}
->+	devlink_params_publish(bp->dl);
->+
->+	return 0;
->+}
->+
->+static void bnxt_dl_params_unregister(struct bnxt *bp)
->+{
->+	devlink_params_unregister(bp->dl, bnxt_dl_params,
->+				  ARRAY_SIZE(bnxt_dl_params));
->+	devlink_port_params_unregister(&bp->dl_port, bnxt_dl_port_params,
->+				       ARRAY_SIZE(bnxt_dl_port_params));
->+}
->+
-> int bnxt_dl_register(struct bnxt *bp)
-> {
-> 	struct devlink *dl;
->@@ -520,40 +552,24 @@ int bnxt_dl_register(struct bnxt *bp)
-> 	if (!BNXT_PF(bp))
-> 		return 0;
+
+On Wed, 22 Jan 2020, Jouni Högander wrote:
+
+> Greg Kroah-Hartman <gregkh@linuxfoundation.org> writes:
+> >> > Now queued up, I'll push out -rc2 versions with this fix.
+> >> >
+> >> > greg k-h
+> >> 
+> >> We have also been informed about another regression these two commits
+> >> are causing:
+> >> 
+> >> https://lore.kernel.org/lkml/ace19af4-7cae-babd-bac5-cd3505dcd874@I-love.SAKURA.ne.jp/
+> >> 
+> >> I suggest to drop these two patches from this queue, and give us a
+> >> week to shake out the regressions of the change, and once ready, we
+> >> can include the complete set of fixes to stable (probably in a week or
+> >> two).
+> >
+> > Ok, thanks for the information, I've now dropped them from all of the
+> > queues that had them in them.
+> >
+> > greg k-h
 > 
->-	rc = devlink_params_register(dl, bnxt_dl_params,
->-				     ARRAY_SIZE(bnxt_dl_params));
->-	if (rc) {
->-		netdev_warn(bp->dev, "devlink_params_register failed. rc=%d",
->-			    rc);
->-		goto err_dl_unreg;
->-	}
->-
-> 	devlink_port_attrs_set(&bp->dl_port, DEVLINK_PORT_FLAVOUR_PHYSICAL,
-> 			       bp->pf.port_id, false, 0,
-> 			       bp->switch_id, sizeof(bp->switch_id));
-> 	rc = devlink_port_register(dl, &bp->dl_port, bp->pf.port_id);
-> 	if (rc) {
-> 		netdev_err(bp->dev, "devlink_port_register failed");
->-		goto err_dl_param_unreg;
->+		goto err_dl_unreg;
-> 	}
-> 	devlink_port_type_eth_set(&bp->dl_port, bp->dev);
+> I have now run more extensive Syzkaller testing on following patches:
 > 
->-	rc = devlink_port_params_register(&bp->dl_port, bnxt_dl_port_params,
->-					  ARRAY_SIZE(bnxt_dl_port_params));
->-	if (rc) {
->-		netdev_err(bp->dev, "devlink_port_params_register failed");
->+	rc = bnxt_dl_params_register(bp);
->+	if (rc)
-> 		goto err_dl_port_unreg;
->-	}
->-
->-	devlink_params_publish(dl);
+> cb626bf566eb net-sysfs: Fix reference count leak
+> ddd9b5e3e765 net-sysfs: Call dev_hold always in rx_queue_add_kobject
+> e0b60903b434 net-sysfs: Call dev_hold always in netdev_queue_add_kobje
+> 48a322b6f996 net-sysfs: fix netdev_queue_add_kobject() breakage
+> b8eb718348b8 net-sysfs: Fix reference count leak in rx|netdev_queue_add_kobject
 > 
-> 	return 0;
+> These patches are fixing couple of memory leaks including this one found
+> by Syzbot: https://syzkaller.appspot.com/bug?extid=ad8ca40ecd77896d51e2
 > 
-> err_dl_port_unreg:
-> 	devlink_port_unregister(&bp->dl_port);
->-err_dl_param_unreg:
->-	devlink_params_unregister(dl, bnxt_dl_params,
->-				  ARRAY_SIZE(bnxt_dl_params));
-> err_dl_unreg:
-> 	devlink_unregister(dl);
-> err_dl_free:
->@@ -570,12 +586,8 @@ void bnxt_dl_unregister(struct bnxt *bp)
-> 		return;
+> I can reproduce these memory leaks in following stable branches: 4.14,
+> 4.19, and 5.4.
 > 
-> 	if (BNXT_PF(bp)) {
->-		devlink_port_params_unregister(&bp->dl_port,
->-					       bnxt_dl_port_params,
->-					       ARRAY_SIZE(bnxt_dl_port_params));
->+		bnxt_dl_params_unregister(bp);
-> 		devlink_port_unregister(&bp->dl_port);
->-		devlink_params_unregister(dl, bnxt_dl_params,
->-					  ARRAY_SIZE(bnxt_dl_params));
-> 	}
-> 	devlink_unregister(dl);
-> 	devlink_free(dl);
->-- 
->2.5.1
+> These are all now merged into net/master tree and based on my testing
+> they are ready to be taken into stable branches as well.
 >
+
++ syzkaller list
+Jouni et. al, please drop Linus in further responses; Linus, it was wrong 
+to add you to this thread in the first place (reason is explained below)
+
+Jouni, thanks for investigating.
+
+It raises the following questions and comments:
+
+- Does the memory leak NOT appear on 4.9 and earlier LTS branches (or did 
+you not check that)? If it does not appear, can you bisect it with the 
+reproducer to the commit between 4.14 and 4.9?
+
+- Do the reproducers you found with your syzkaller testing show the same 
+behaviour (same bisection) as the reproducers from syzbot?
+
+- I fear syzbot's automatic bisection on is wrong, and Linus' commit 
+0e034f5c4bc4 ("iwlwifi: fix mis-merge that breaks the driver") is not to 
+blame here; that commit did not cause the memory leak, but fixed some 
+unrelated issue that simply confuses syzbot's automatic bisection.
+
+Just FYI: Dmitry Vyukov's evaluation of the syzbot bisection shows that 
+about 50% are wrong, e.g., due to multiple bugs being triggered with one 
+reproducer and the difficulty of automatically identifying them of being 
+different due to different root causes (despite the smart heuristics of 
+syzkaller & syzbot). So, to identify the actual commit on which the memory 
+leak first appeared, you need to bisect manually with your own judgement 
+if the reported bug stack trace fits to the issue you investigating. Or 
+you use syzbot's automatic bisection but then with a reduced kernel config 
+that cannot be confused by other issues. You might possibly also hit a 
+"beginning of time" in your bisection, where KASAN was simply not 
+supported, then the initially causing commit can simply not determined by 
+bisection with the reproducer and needs some code inspection and 
+archaeology with git. Can you go ahead try to identify the correct commit 
+for this issue?
+
+
+Lukas
+--8323329-62265607-1580039587=:4933--
