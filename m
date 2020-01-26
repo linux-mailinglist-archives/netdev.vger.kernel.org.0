@@ -2,161 +2,113 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 137AF149D45
-	for <lists+netdev@lfdr.de>; Sun, 26 Jan 2020 23:11:48 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0F417149D44
+	for <lists+netdev@lfdr.de>; Sun, 26 Jan 2020 23:11:46 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729331AbgAZWLp (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 26 Jan 2020 17:11:45 -0500
-Received: from mail.kernel.org ([198.145.29.99]:39546 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726670AbgAZWLn (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sun, 26 Jan 2020 17:11:43 -0500
-Received: from cakuba (c-73-93-4-247.hsd1.ca.comcast.net [73.93.4.247])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 2A89B206F0;
-        Sun, 26 Jan 2020 22:11:42 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1580076702;
-        bh=kvXprYKhwKQ6DKK462OJfYCocLr22EfI3A9UfMeA0WM=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=Xc6OT1y96mmeK8YjYLjN79vITDnaOuD3/28HlOdB2gcKjh1e/13oup//FZPrXdeOG
-         WMecobHZmp8qGxAlhfZ4wwRCd1JtnkGe4HY1EcDrFcIxslNeiD3Nx/3RScSWI+4SE4
-         kdUmjg9xT+Jitz95SCZU+tkmXY5NqyrvxLlETngc=
-Date:   Sun, 26 Jan 2020 14:11:41 -0800
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     David Ahern <dsahern@gmail.com>
-Cc:     Toke =?UTF-8?B?SMO4aWxhbmQtSsO4cmdlbnNlbg==?= <toke@redhat.com>,
-        David Ahern <dsahern@kernel.org>, netdev@vger.kernel.org,
-        prashantbhole.linux@gmail.com, jasowang@redhat.com,
-        davem@davemloft.net, jbrouer@redhat.com, mst@redhat.com,
-        toshiaki.makita1@gmail.com, daniel@iogearbox.net,
-        john.fastabend@gmail.com, ast@kernel.org, kafai@fb.com,
-        songliubraving@fb.com, yhs@fb.com, andriin@fb.com,
-        David Ahern <dahern@digitalocean.com>
-Subject: Re: [PATCH bpf-next 03/12] net: Add IFLA_XDP_EGRESS for XDP
- programs in the egress path
-Message-ID: <20200126141141.0b773aba@cakuba>
-In-Reply-To: <1d84d8be-6812-d63a-97ca-ebc68cc266b9@gmail.com>
-References: <20200123014210.38412-1-dsahern@kernel.org>
-        <20200123014210.38412-4-dsahern@kernel.org>
-        <87tv4m9zio.fsf@toke.dk>
-        <335b624a-655a-c0c6-ca27-102e6dac790b@gmail.com>
-        <20200124072128.4fcb4bd1@cakuba>
-        <87o8usg92d.fsf@toke.dk>
-        <1d84d8be-6812-d63a-97ca-ebc68cc266b9@gmail.com>
+        id S1727235AbgAZWLo (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 26 Jan 2020 17:11:44 -0500
+Received: from mail-pl1-f195.google.com ([209.85.214.195]:42862 "EHLO
+        mail-pl1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727161AbgAZWLn (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 26 Jan 2020 17:11:43 -0500
+Received: by mail-pl1-f195.google.com with SMTP id p9so3035406plk.9
+        for <netdev@vger.kernel.org>; Sun, 26 Jan 2020 14:11:43 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=pensando.io; s=google;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-transfer-encoding:content-language;
+        bh=n5qGcAaShVjdAONHjUZjFQvCWxD3ogfJfCSb9GV3HdM=;
+        b=BkZpBnc8Aqzf7GcMo3K4eM2tl5LMLZhsEwl5daLCswd+QsoxyI5LKM9FtoyroeZptA
+         uwRsGQvLlN0fLEFRVyPaG4T2Lb1eeJ0V4l5AiLSi5zN819wFgOYy7Gv9QVCgoFAScDB+
+         0UtUR8tUxYyG5+jq8+Fwrj5TUo8iWO+SrmPiA7gLwSfyDm4b2Hws+J/1iB0H0yQZK6l3
+         pS7i2WEMFpGSVV0lpzrYD9KzaQM5eg0ZskkZ4LWEtbl9cetkYBKdc3wbwDRiq9DLafXC
+         GsnxnUO7QM+PPva5EXeOoOvwrgS7e4RaT3UPxecrlqzMPYoq6iW9rg4htdqHLu+kuC0r
+         0+/g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-transfer-encoding
+         :content-language;
+        bh=n5qGcAaShVjdAONHjUZjFQvCWxD3ogfJfCSb9GV3HdM=;
+        b=QR4tLjLKTw0dnrN56s1NsmDOw0NOewf4CHc+6nazdfbqrJHwCpE5AfAKiVxYpmxV3y
+         XZpvTrZxUyYBwFmyNopnXfZa8o+kEg4wyAi5HVOSIHjgPfl+F+8NXvbWD/dI1lSw8m0P
+         EzDvg2Tf7QexJQbWn8ctMzRIeugJQPUmealphbukkrP6taDUj5wU5HQ0uOlzwt7k2BZM
+         IIZJd14QJs5mLzYzCxbts2AqRPN0wxEod8doBmna7K9QAqezPvSqmLeoAMv5czzSDTY/
+         M63EQWx4FMX8X5mY/hkX3STFanQdHSYzJ2rTybEqKajZcWky8fW5Prjk/X9BdiVnpfrI
+         QqTA==
+X-Gm-Message-State: APjAAAUEZ0RaL2WKtKD/e5k47NI0AJJzBp2W/TL6LMC0v0RYolkEPs2V
+        6bJ/aylMOjrbh9srko+hSLcvTg==
+X-Google-Smtp-Source: APXvYqxkKXskt5nS0KLwvMKIvLpFjOfvgnrLWD7xbc/E87saaEXj7lY//x/kiOmsR9MZJqCg7pUjKQ==
+X-Received: by 2002:a17:902:82cc:: with SMTP id u12mr13692479plz.342.1580076703085;
+        Sun, 26 Jan 2020 14:11:43 -0800 (PST)
+Received: from Shannons-MacBook-Pro.local (static-50-53-47-17.bvtn.or.frontiernet.net. [50.53.47.17])
+        by smtp.gmail.com with ESMTPSA id u1sm12884680pfn.133.2020.01.26.14.11.42
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Sun, 26 Jan 2020 14:11:42 -0800 (PST)
+Subject: Re: [PATCH net-next] net/core: Replace driver version to be kernel
+ version
+To:     Leon Romanovsky <leon@kernel.org>
+Cc:     Jakub Kicinski <kuba@kernel.org>,
+        "David S . Miller" <davem@davemloft.net>,
+        Michal Kalderon <michal.kalderon@marvell.com>,
+        linux-netdev <netdev@vger.kernel.org>,
+        RDMA mailing list <linux-rdma@vger.kernel.org>
+References: <20200123130541.30473-1-leon@kernel.org>
+ <43d43a45-18db-f959-7275-63c9976fdf40@pensando.io>
+ <20200126194110.GA3870@unreal> <20200126124957.78a31463@cakuba>
+ <20200126210850.GB3870@unreal>
+ <31c6c46a-63b2-6397-5c75-5671ee8d41c3@pensando.io>
+ <20200126212424.GD3870@unreal>
+From:   Shannon Nelson <snelson@pensando.io>
+Message-ID: <0755f526-73cb-e926-2785-845fec0f51dd@pensando.io>
+Date:   Sun, 26 Jan 2020 14:12:38 -0800
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:68.0)
+ Gecko/20100101 Thunderbird/68.3.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
+In-Reply-To: <20200126212424.GD3870@unreal>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 8bit
+Content-Language: en-US
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, 25 Jan 2020 18:43:36 -0700, David Ahern wrote:
-> On 1/24/20 8:36 AM, Toke H=C3=B8iland-J=C3=B8rgensen wrote:
-> > Jakub Kicinski <kuba@kernel.org> writes:
-> >> On Thu, 23 Jan 2020 14:33:42 -0700, David Ahern wrote: =20
-> >>> On 1/23/20 4:35 AM, Toke H=C3=B8iland-J=C3=B8rgensen wrote: =20
-> >>>> David Ahern <dsahern@kernel.org> writes: =20
-> >>>>> From: David Ahern <dahern@digitalocean.com>
-> >>>>>
-> >>>>> Add IFLA_XDP_EGRESS to if_link.h uapi to handle an XDP program atta=
-ched
-> >>>>> to the egress path of a device. Add rtnl_xdp_egress_fill and helper=
-s as
-> >>>>> the egress counterpart to the existing rtnl_xdp_fill. The expectati=
-on
-> >>>>> is that going forward egress path will acquire the various levels of
-> >>>>> attach - generic, driver and hardware.   =20
-> >>>>
-> >>>> How would a 'hardware' attach work for this? As I said in my reply to
-> >>>> the previous patch, isn't this explicitly for emulating XDP on the o=
-ther
-> >>>> end of a point-to-point link? How would that work with offloaded
-> >>>> programs? =20
-> >>>
-> >>> Nothing about this patch set is limited to point-to-point links. =20
-> >>
-> >> I struggle to understand of what the expected semantics of this new
-> >> hook are. Is this going to be run on all frames sent to the device
-> >> from the stack? All frames from the stack and from XDP_REDIRECT?
-> >>
-> >> A little hard to figure out the semantics when we start from a funky
-> >> device like tun :S =20
-> >=20
-> > Yes, that is also why I found this a bit weird. We have discussed plans
-> > for an XDP TX hook before:
-> > https://github.com/xdp-project/xdp-project/blob/master/xdp-project.org#=
-xdp-hook-at-tx
-> >=20
-> > That TX hook would run for everything at TX, but it would be a separate
-> > program type with its own metadata access. Whereas the idea with this
-> > series (seemed to me) to be just to be able to "emulate" run a regular
-> > RX-side XDP program on egress for devices where this makes sense.
-> >=20
-> > If this series is not meant to implement that "emulation", but rather be
-> > usable for all devices, I really think we should go straight for the
-> > full TX hook as discussed earlier...
->=20
-> The first patch set from Jason and Prashant started from the perspective
-> of offloading XDP programs for a guest. Independently, I was looking at
-> XDP in the TX path (now referred to as egress to avoid confusion with
-> the XDP_TX return type).=20
+On 1/26/20 1:24 PM, Leon Romanovsky wrote:
+> On Sun, Jan 26, 2020 at 01:17:52PM -0800, Shannon Nelson wrote:
+>> On 1/26/20 1:08 PM, Leon Romanovsky wrote:
+>>> The long-standing policy in kernel that we don't really care about
+>>> out-of-tree code.
+>> That doesn't mean we need to be aggressively against out-of-tree code.  One
+>> of the positive points about Linux and loadable modules has always been the
+>> flexibility that allows and encourages innovation, and helps enable more
+>> work and testing before a driver can become a fully-fledged part of the
+>> kernel.  This move actively discourages part of that flexibility and I think
+>> it is breaking part of the usefulness of modules.
+> You are mixing definitions, nothing stops those people to innovate and
+> develop their code inside kernel and as standalone modules too.
+>
+> It just stops them to put useless driver version string inside ethtool.
+> If they feel that their life can't be without something from 90s, they
+> have venerable MODULE_VERSION() macro to print anything they want.
+>
+Part of the pain of supporting our users is getting them to give us 
+useful information about their problem.  The more commands I need them 
+to run to get information about the environment, the less likely I will 
+get anything useful.  We've been training our users over the years to 
+use "ethtool -i" to get a good chunk of that info, with the knowledge 
+that the driver version is only a hint, based upon the distro involved.  
+I don't want to lose that hint.  If anything, I'd prefer that we added a 
+field for UTS_RELEASE in the ethtool output, but I know that's too much 
+to ask.
 
-I looked through the commit message and the cover letter again, and you
-never explain why you need the egress hook. Could you please clarify
-your needs? If it's container-related maybe what Daniel talked about at
-last netconf could be a better solution?
+If the driver can put its "useless" version info into the 
+MODULE_VERSION, why is it not acceptable for the ethtool driver version 
+field?
 
-I can't quite square the concept of XDP which started as close to the
-metal BPF hook for HW drivers, and this heavily SW-focused addition.
+... and as beauty is in the eye of the beholder, a judgement of 
+"useless" is a personal thing.  Personally, I find it the driver version 
+useful.
 
-> Jason and Prashant were touching some of the
-> same code paths in the tun driver that I needed for XDP in the Tx path,
-> so we decided to consolidate and have XDP egress done first and then
-> offload of VMs as a followup. Offload in virtio_net can be done very
-> similar to how it is done in nfp -- the program is passed to the host as
-> a hardware level attach mode, and the driver verifies the program can be
-> offloaded (e.g., does not contain helpers that expose host specific data
-> like the fib lookup helper).
+sln
 
-<rant>
-
-I'd ask to please never compare this work to the nfp offload. Netronome
-was able to open up their NIC down to the instruction set level, with
-the JIT in tree and rest of the FW open source:
-
-https://github.com/Netronome/nic-firmware/
-
-and that work is now used as precedent for something that risks turning
-the kernel into a damn control plane for proprietary clouds?
-
-I can see how they may seem similar in operational terms, but for
-people who care about open source they couldn't be more different.
-
-</rant>
-
-> At this point, you need to stop thinking solely from the perspective of
-> tun or tap and VM offload; think about this from the ability to run an
-> XDP program on egress path at an appropriate place in the NIC driver
-> that covers both skbs and xdp_frames (e.g., on a REDIRECT). This has
-> been discussed before as a need (e.g, Toke's reference above), and I am
-> trying to get this initial support done.
-
-TX hook related to queuing is a very different beast than just a RX
-hook flipped. The queuing is a problem that indeed needs work, but just
-adding a mirror RX hook does not solve that, and establishes semantics
-which may be counter productive. That's why I was asking for clear
-semantics.
-
-> I very much wanted to avoid copy-paste-modify for the entire XDP API for
-> this. For the most part XDP means ebpf at the NIC driver / hardware
-> level (obviously with the exception of generic mode). The goal is
-> tempered with the need for the verifier to reject rx entries in the
-> xdp_md context. Hence the reason for use of an attach_type - existing
-> infrastructure to test and reject the accesses.
-
-For the offload host rx queue =3D=3D dev PCI tx queue and vice versa.
-So other than the name the rejection makes no sense. Just add a union
-to xdp_md so both tx and rx names can be used.
