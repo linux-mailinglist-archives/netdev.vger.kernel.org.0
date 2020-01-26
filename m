@@ -2,138 +2,157 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id A82CE149BFD
-	for <lists+netdev@lfdr.de>; Sun, 26 Jan 2020 18:10:25 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id DDD5D149C03
+	for <lists+netdev@lfdr.de>; Sun, 26 Jan 2020 18:13:06 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726545AbgAZRKY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 26 Jan 2020 12:10:24 -0500
-Received: from mail-pg1-f193.google.com ([209.85.215.193]:37170 "EHLO
-        mail-pg1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726173AbgAZRKY (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 26 Jan 2020 12:10:24 -0500
-Received: by mail-pg1-f193.google.com with SMTP id q127so3956450pga.4
-        for <netdev@vger.kernel.org>; Sun, 26 Jan 2020 09:10:23 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=kernel-dk.20150623.gappssmtp.com; s=20150623;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=ISotJI3izVmXl3fjfB5uTrAYmwdgYfTOknESvfHgtZk=;
-        b=N8yflsFSMo7z3TohnJaUL9dTQK5ay/N2VmQ0cVC2L7uONXQVzN+hmbOTVywede6zNY
-         ZMD6X5Ibh0fD4PTewZdSnz7d14c0IgLWlieRNDowPssmahpv2H/Cb4q+YAwJxjQv9Qdp
-         w5UN134ifB0I5pKbdveIYAuMJmwQh+eEqNSE2IPwtieN+lKQm14zneSQwH7fOUHTNHvr
-         gAOpToN/GVumKmK0euYBifaZPS3y718ISGXiGDIDIQn0dQSxmJz4c7pzbioJ8zp/+T0L
-         nDlDrwsTqKRQO/g1U5+LL7MbQ3TPgyTpUE+XSfwRMbfDL+d5CAA26B8+zL6Z6SvkyobK
-         u/AA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=ISotJI3izVmXl3fjfB5uTrAYmwdgYfTOknESvfHgtZk=;
-        b=JX43gkSaC5m+qol1+V2gVYAuKgzVbjVUua8wFbGzd9ga4V7t6O046yu4t/px1w5YwU
-         JDfjOlsNFZHuY1mwm8dEtICcZ1VQRe30HtaZY361xrgkPrR/oF43ZUB/SMKeV/gDydxt
-         5eBhjteN+7YvYZG8TkptQixLVhcGGSG5SCbnoKM8yGZDlg1dET9mcuTxvPT9AJA/L7pA
-         cWRTJWRGOIlNB1UwRQvBKYmdY+s6KpSpNERiR/l+Z8zSC2AqV2IU5IhpPduhbwB3YKT7
-         IaAxacns+d99sDYdQUINHRUinsMVnWaRzepju4zXKdUue1LYONjr/g8c5TmsodQsaaYX
-         Zu3g==
-X-Gm-Message-State: APjAAAVhiQcJtcqKTCdh/Wt/MCn1/WnPIkvxZuwQqGxwmxgaD/lly0un
-        y6soAqyfUfx5DJtRy1iNPvIQfbKihK4=
-X-Google-Smtp-Source: APXvYqym3vadWUhjWT7Te3HkaNqzI77r+VUVo4DIV3gy9ebln2NudM/oNPXUBmetPULNnbzrzAJowA==
-X-Received: by 2002:a63:211f:: with SMTP id h31mr14427070pgh.299.1580058623198;
-        Sun, 26 Jan 2020 09:10:23 -0800 (PST)
-Received: from [192.168.1.188] ([66.219.217.145])
-        by smtp.gmail.com with ESMTPSA id 11sm13232933pfz.25.2020.01.26.09.10.21
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sun, 26 Jan 2020 09:10:22 -0800 (PST)
-Subject: Re: [PATCH 2/4] io_uring: io_uring: add support for async work
- inheriting files
-To:     Andres Freund <andres@anarazel.de>
-Cc:     linux-block@vger.kernel.org, io-uring <io-uring@vger.kernel.org>,
-        davem@davemloft.net, netdev@vger.kernel.org, jannh@google.com
-References: <20191025173037.13486-1-axboe@kernel.dk>
- <20191025173037.13486-3-axboe@kernel.dk>
- <20200126101207.oqovstqfr4iddc3p@alap3.anarazel.de>
-From:   Jens Axboe <axboe@kernel.dk>
-Message-ID: <1f9a5869-845a-f7ca-7530-49e407602023@kernel.dk>
-Date:   Sun, 26 Jan 2020 10:10:20 -0700
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.4.1
+        id S1727212AbgAZRNA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 26 Jan 2020 12:13:00 -0500
+Received: from vps0.lunn.ch ([185.16.172.187]:54756 "EHLO vps0.lunn.ch"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726339AbgAZRNA (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sun, 26 Jan 2020 12:13:00 -0500
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:
+        Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
+        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
+        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
+        List-Post:List-Owner:List-Archive;
+        bh=l5amRRhffN7SW+44mi2KiL5Riiwg1WKIl4fQH5PcALQ=; b=gdiTF4HzVAZqXHazDeHDojZQmF
+        OoDj01/uxiE5MDEfOJoqDGfqqBk/NKjf7bwsWcexlTw2IBQgFSGKBS4HPQBl+LmH4Bx4zD6IYfkuj
+        K3Y3naQ8t4KO3zeswScGgZXhuWMRYYkt7c97i9gObQzDMI78/Mfr8d6Kct4zoameC4ps=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.93)
+        (envelope-from <andrew@lunn.ch>)
+        id 1ivlSt-0002M2-4A; Sun, 26 Jan 2020 18:12:51 +0100
+Date:   Sun, 26 Jan 2020 18:12:51 +0100
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Horatiu Vultur <horatiu.vultur@microchip.com>
+Cc:     linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        bridge@lists.linux-foundation.org, jiri@resnulli.us,
+        ivecera@redhat.com, davem@davemloft.net, roopa@cumulusnetworks.com,
+        nikolay@cumulusnetworks.com, anirudh.venkataramanan@intel.com,
+        olteanv@gmail.com, jeffrey.t.kirsher@intel.com,
+        UNGLinuxDriver@microchip.com
+Subject: Re: [RFC net-next v3 09/10] net: bridge: mrp: Integrate MRP into the
+ bridge
+Message-ID: <20200126171251.GK18311@lunn.ch>
+References: <20200124161828.12206-1-horatiu.vultur@microchip.com>
+ <20200124161828.12206-10-horatiu.vultur@microchip.com>
+ <20200125161615.GD18311@lunn.ch>
+ <20200126130111.o75gskwe2fmfd4g5@soft-dev3.microsemi.net>
 MIME-Version: 1.0
-In-Reply-To: <20200126101207.oqovstqfr4iddc3p@alap3.anarazel.de>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20200126130111.o75gskwe2fmfd4g5@soft-dev3.microsemi.net>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 1/26/20 3:12 AM, Andres Freund wrote:
-> Hi,
+On Sun, Jan 26, 2020 at 02:01:11PM +0100, Horatiu Vultur wrote:
+> The 01/25/2020 17:16, Andrew Lunn wrote:
+> > EXTERNAL EMAIL: Do not click links or open attachments unless you know the content is safe
+> > 
+> > >  br_netif_receive_skb(struct net *net, struct sock *sk, struct sk_buff *skb)
+> > > @@ -338,6 +341,17 @@ rx_handler_result_t br_handle_frame(struct sk_buff **pskb)
+> > >                       return RX_HANDLER_CONSUMED;
+> > >               }
+> > >       }
+> > > +#ifdef CONFIG_BRIDGE_MRP
+> > > +     /* If there is no MRP instance do normal forwarding */
+> > > +     if (!p->mrp_aware)
+> > > +             goto forward;
+> > > +
+> > > +     if (skb->protocol == htons(ETH_P_MRP))
+> > > +             return RX_HANDLER_PASS;
+> > 
+> > What MAC address is used for these MRP frames? It would make sense to
+> > use a L2 link local destination address, since i assume they are not
+> > supposed to be forwarded by the bridge. If so, you could extend the
+> > if (unlikely(is_link_local_ether_addr(dest))) condition.
 > 
-> On 2019-10-25 11:30:35 -0600, Jens Axboe wrote:
->> This is in preparation for adding opcodes that need to add new files
->> in a process file table, system calls like open(2) or accept4(2).
->>
->> If an opcode needs this, it must set IO_WQ_WORK_NEEDS_FILES in the work
->> item. If work that needs to get punted to async context have this
->> set, the async worker will assume the original task file table before
->> executing the work.
->>
->> Note that opcodes that need access to the current files of an
->> application cannot be done through IORING_SETUP_SQPOLL.
+> The MAC addresses used by MRP frames are:
+> 0x1, 0x15, 0x4e, 0x0, 0x0, 0x1 - used by MRP_Test frames
+> 0x1, 0x15, 0x4e, 0x0, 0x0, 0x2 - used by the rest of MRP frames.
 > 
-> 
-> Unfortunately this partially breaks sharing a uring across with forked
-> off processes, even though it initially appears to work:
-> 
-> 
->> +static int io_uring_flush(struct file *file, void *data)
->> +{
->> +	struct io_ring_ctx *ctx = file->private_data;
->> +
->> +	io_uring_cancel_files(ctx, data);
->> +	if (fatal_signal_pending(current) || (current->flags & PF_EXITING))
->> +		io_wq_cancel_all(ctx->io_wq);
->> +	return 0;
->> +}
-> 
-> Once one process having the uring fd open (even if it were just a fork
-> never touching the uring, I believe) exits, this prevents the uring from
-> being usable for any async tasks. The process exiting closes the fd,
-> which triggers flush. io_wq_cancel_all() sets IO_WQ_BIT_CANCEL, which
-> never gets unset, which causes all future async sqes to be be
-> immediately returned as -ECANCELLED by the worker, via io_req_cancelled.
-> 
-> It's not clear to me why a close() should cancel the the wq (nor clear
-> the entire backlog, after 1d7bb1d50fb4)? Couldn't that even just be a
-> dup()ed fd? Or a fork that immediately exec()s?
-> 
-> After rudely ifdefing out the above if, and reverting 44d282796f81, my
-> WIP io_uring using version of postgres appears to pass its tests - which
-> are very sparse at this point - again with 5.5-rc7.
+> If we will add support also for MIM/MIC. These requires 2 more MAC
+> addresses:
+> 0x1, 0x15, 0x4e, 0x0, 0x0, 0x3 - used by MRP_InTest frames.
+> 0x1, 0x15, 0x4e, 0x0, 0x0, 0x4 - used by the other MRP interconnect
+> frames.
 
-We need to cancel work items using the files from this process if it
-exits, but I think we should be fine not canceling all work. Especially
-since thet setting of IO_WQ_BIT_CANCEL is a one way street...  I'm assuming
-the below works for you?
+Hi Horatiu
 
-diff --git a/fs/io_uring.c b/fs/io_uring.c
-index e5b502091804..e3ac2a6ff195 100644
---- a/fs/io_uring.c
-+++ b/fs/io_uring.c
-@@ -5044,10 +5044,8 @@ static int io_uring_flush(struct file *file, void *data)
- 	struct io_ring_ctx *ctx = file->private_data;
- 
- 	io_uring_cancel_files(ctx, data);
--	if (fatal_signal_pending(current) || (current->flags & PF_EXITING)) {
-+	if (fatal_signal_pending(current) || (current->flags & PF_EXITING))
- 		io_cqring_overflow_flush(ctx, true);
--		io_wq_cancel_all(ctx->io_wq);
--	}
- 	return 0;
- }
- 
--- 
-Jens Axboe
+I made the wrong guess about how this protocol worked when i said L2
+link local. These MAC addresses are L2 multicast.
 
+And you are using a raw socket to receive them into userspace when
+needed.
+
+'Thinking allowed' here.
+
+    +------------------------------------------+
+    |                                          |
+    +-->|H1|<---------->|H2|<---------->|H3|<--+
+    eth0    eth1    eth0    eth1    eth0    eth1
+     ^
+     |
+  Blocked
+
+
+There are three major classes of user case here:
+
+1) Pure software solution
+
+You need the software bridge in the client to forward these frames
+from the left side to the right side. (Does the standard give these
+two ports names)? In the master, the left port is blocked, so the
+bridge drops them anyway. You have a RAW socket open on both eth0 and
+eth1, so you get to see the frames, even if the bridge drops them.
+
+2) Hardware offload to an MRP unaware switch.
+
+I'm thinking about a plain switch supported by DSA, Marvell, Broadcom,
+etc. It has no special knowledge of MRP.
+
+Ideally, you want the switch to forward MRP_Test frames left to right
+for a client. In a master, i think you have a problem, since the port
+is blocked. The hardware is unlikely to recognise these frames as
+special, since they are not in the 01-80-C2-XX-XX-XX block, and let
+them through. So your raw socket is never going to see them, and you
+cannot detect open/closed ring.
+
+I don't know how realistic it is to support MRP in this case, and i
+also don't think you can fall back to a pure software solution,
+because the software bridge is going to offload the basic bridge
+operation to the hardware. It would be nice if you could detect this,
+and return -EOPNOTSUPP.
+
+3) Hardware offload to an MRP aware switch.
+
+For a client, you tell it which port is left, which is right, and
+assume it forwards the frames. For a master, you again tell it which
+is left, which is right, and ask it send MRP_Test frames out right,
+and report changes in open/closed on the right port. You don't need
+the CPU to see the MRP_Test frames, so the switch has no need to
+forward them to the CPU.
+
+We should think about the general case of a bridge with many ports,
+and many pairs of ports using MRP. This makes the forwarding of these
+frames interesting. Given that they are multicast, the default action
+of the software bridge is that it will flood them. Does the protocol
+handle seeing MRP_Test from some other loop? Do we need to avoid this?
+You could avoid this by adding MDB entries to the bridge. However,
+this does not scale to more then one ring. I don't think an MDB is
+associated to an ingress port. So you cannot say 
+
+0x1, 0x15, 0x4e, 0x0, 0x0, 0x1 ingress port1 egress port2
+0x1, 0x15, 0x4e, 0x0, 0x0, 0x1 ingress port3 egress port4
+
+The best you can say is
+
+0x1, 0x15, 0x4e, 0x0, 0x0, 0x1 egress port2, port4
+
+I'm sure there are other issues i'm missing, but it is interesting to
+think about all this.
+
+Andrew
