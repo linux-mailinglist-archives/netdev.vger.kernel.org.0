@@ -2,84 +2,59 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 1B39D149A3C
-	for <lists+netdev@lfdr.de>; Sun, 26 Jan 2020 11:48:41 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id CBBEB149A40
+	for <lists+netdev@lfdr.de>; Sun, 26 Jan 2020 11:50:35 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2387401AbgAZKsg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 26 Jan 2020 05:48:36 -0500
-Received: from mail26.static.mailgun.info ([104.130.122.26]:62731 "EHLO
-        mail26.static.mailgun.info" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1729255AbgAZKsg (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 26 Jan 2020 05:48:36 -0500
-DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org; q=dns/txt;
- s=smtp; t=1580035716; h=Date: Message-Id: Cc: To: References:
- In-Reply-To: From: Subject: Content-Transfer-Encoding: MIME-Version:
- Content-Type: Sender; bh=6dvZlOi6F0EoCpr+/HJGOxTRA67L4SDOxF1/MIi3hmM=;
- b=qqho674ZWGAkhSeKgtHIJVxQyHD9ytptVJIv0YzXut5OxZl/MZJTTMnXZD2AGiwKTM8EgzAE
- AHBetTYwoZKj0StG2lJIAjJaS75ycZjTr+L0og5jXUALIY/FJe3swOqLdEyAhSHb2ZFRpsDt
- H7zG7c2Jv6tGoNDZ6W552DuoNxE=
-X-Mailgun-Sending-Ip: 104.130.122.26
-X-Mailgun-Sid: WyJiZjI2MiIsICJuZXRkZXZAdmdlci5rZXJuZWwub3JnIiwgImJlOWU0YSJd
-Received: from smtp.codeaurora.org (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171])
- by mxa.mailgun.org with ESMTP id 5e2d6e82.7fe8bb133458-smtp-out-n03;
- Sun, 26 Jan 2020 10:48:34 -0000 (UTC)
-Received: by smtp.codeaurora.org (Postfix, from userid 1001)
-        id 26455C4479C; Sun, 26 Jan 2020 10:48:34 +0000 (UTC)
-X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
-        aws-us-west-2-caf-mail-1.web.codeaurora.org
-X-Spam-Level: 
-X-Spam-Status: No, score=0.5 required=2.0 tests=ALL_TRUSTED,MISSING_DATE,
-        MISSING_MID,SPF_NONE autolearn=no autolearn_force=no version=3.4.0
-Received: from potku.adurom.net (88-114-240-156.elisa-laajakaista.fi [88.114.240.156])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        (Authenticated sender: kvalo)
-        by smtp.codeaurora.org (Postfix) with ESMTPSA id 7D7C8C433CB;
-        Sun, 26 Jan 2020 10:48:31 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org 7D7C8C433CB
-Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
-Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; spf=none smtp.mailfrom=kvalo@codeaurora.org
-Content-Type: text/plain; charset="utf-8"
-MIME-Version: 1.0
+        id S1729353AbgAZKue (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 26 Jan 2020 05:50:34 -0500
+Received: from shards.monkeyblade.net ([23.128.96.9]:56022 "EHLO
+        shards.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726571AbgAZKue (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 26 Jan 2020 05:50:34 -0500
+Received: from localhost (unknown [147.229.117.36])
+        (using TLSv1 with cipher AES256-SHA (256/256 bits))
+        (Client did not present a certificate)
+        (Authenticated sender: davem-davemloft)
+        by shards.monkeyblade.net (Postfix) with ESMTPSA id 957E2151C491C;
+        Sun, 26 Jan 2020 02:50:32 -0800 (PST)
+Date:   Sun, 26 Jan 2020 11:50:28 +0100 (CET)
+Message-Id: <20200126.115028.1635138302146567330.davem@davemloft.net>
+To:     jeffrey.t.kirsher@intel.com
+Cc:     netdev@vger.kernel.org, nhorman@redhat.com, sassmann@redhat.com
+Subject: Re: [net-next 0/8][pull request] 100GbE Intel Wired LAN Driver
+ Updates 2020-01-25
+From:   David Miller <davem@davemloft.net>
+In-Reply-To: <20200126060737.3238027-1-jeffrey.t.kirsher@intel.com>
+References: <20200126060737.3238027-1-jeffrey.t.kirsher@intel.com>
+X-Mailer: Mew version 6.8 on Emacs 26.3
+Mime-Version: 1.0
+Content-Type: Text/Plain; charset=us-ascii
 Content-Transfer-Encoding: 7bit
-Subject: Re: [PATCH][next] ath11k: avoid null pointer dereference when pointer
- band is null
-From:   Kalle Valo <kvalo@codeaurora.org>
-In-Reply-To: <20200111090824.9999-1-colin.king@canonical.com>
-References: <20200111090824.9999-1-colin.king@canonical.com>
-To:     Colin King <colin.king@canonical.com>
-Cc:     "David S . Miller" <davem@davemloft.net>,
-        John Crispin <john@phrozen.org>,
-        Shashidhar Lakkavalli <slakkavalli@datto.com>,
-        ath11k@lists.infradead.org, linux-wireless@vger.kernel.org,
-        netdev@vger.kernel.org, kernel-janitors@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-User-Agent: pwcli/0.0.0-git (https://github.com/kvalo/pwcli/) Python/2.7.12
-Message-Id: <20200126104834.26455C4479C@smtp.codeaurora.org>
-Date:   Sun, 26 Jan 2020 10:48:34 +0000 (UTC)
+X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Sun, 26 Jan 2020 02:50:33 -0800 (PST)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Colin King <colin.king@canonical.com> wrote:
+From: Jeff Kirsher <jeffrey.t.kirsher@intel.com>
+Date: Sat, 25 Jan 2020 22:07:29 -0800
 
-> In the unlikely event that cap->supported_bands has neither
-> WMI_HOST_WLAN_2G_CAP set or WMI_HOST_WLAN_5G_CAP set then pointer
-> band is null and a null dereference occurs when assigning
-> band->n_iftype_data.  Move the assignment to the if blocks to
-> avoid this.  Cleans up static analysis warnings.
+> This series contains updates to the ice driver to add support for RSS.
 > 
-> Addresses-Coverity: ("Explicit null dereference")
-> Fixes: 9f056ed8ee01 ("ath11k: add HE support")
-> Signed-off-by: Colin Ian King <colin.king@canonical.com>
-> Signed-off-by: Kalle Valo <kvalo@codeaurora.org>
+> Henry and Tony enable the driver to write the filtering hardware tables
+> to allow for changing of RSS rules, also introduced and initialized the
+> structures for storing the configuration.  Then followed it up by
+> creating an extraction sequence based on the packet header protocols to
+> be programmed.  Next was storing the TCAM entry with the profile data
+> and VSI group in the respective software structures.
+> 
+> Md Fahad sets up the configuration to support RSS tables for the virtual
+> function (VF) driver (iavf).  Add support for flow types TCP4, TCP6,
+> UDP4, UDP6, SCTP4 and SCTP6 for RSS via ethtool.
+> 
+> The following are changes since commit 3333e50b64fe30b7e53cf02456a2f567f689ae4f:
+>   Merge branch 'mlxsw-Offload-TBF'
+> and are available in the git repository at:
+>   git://git.kernel.org/pub/scm/linux/kernel/git/jkirsher/next-queue 100GbE
 
-Patch applied to ath-next branch of ath.git, thanks.
-
-3b4516838eaa ath11k: avoid null pointer dereference when pointer band is null
-
--- 
-https://patchwork.kernel.org/patch/11328755/
-
-https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
+Pulled, thanks Jeff.
