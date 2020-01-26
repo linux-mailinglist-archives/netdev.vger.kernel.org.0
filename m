@@ -2,51 +2,50 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 345141499AF
+	by mail.lfdr.de (Postfix) with ESMTP id A90241499B0
 	for <lists+netdev@lfdr.de>; Sun, 26 Jan 2020 10:03:33 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726338AbgAZJD1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 26 Jan 2020 04:03:27 -0500
-Received: from mail-pg1-f195.google.com ([209.85.215.195]:42316 "EHLO
-        mail-pg1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726173AbgAZJD1 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 26 Jan 2020 04:03:27 -0500
-Received: by mail-pg1-f195.google.com with SMTP id s64so3574181pgb.9
-        for <netdev@vger.kernel.org>; Sun, 26 Jan 2020 01:03:26 -0800 (PST)
+        id S1726481AbgAZJD3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 26 Jan 2020 04:03:29 -0500
+Received: from mail-pj1-f65.google.com ([209.85.216.65]:35129 "EHLO
+        mail-pj1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726173AbgAZJD2 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 26 Jan 2020 04:03:28 -0500
+Received: by mail-pj1-f65.google.com with SMTP id q39so1857236pjc.0
+        for <netdev@vger.kernel.org>; Sun, 26 Jan 2020 01:03:28 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=broadcom.com; s=google;
         h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=78gUMQZNPVS/+qczHXdqil56Xfsy528oj63pBzGO5to=;
-        b=O3WYjE1HroPMzz5WluC5k6bcwX03/sujcOh7ZNwKpUatZEuODwtGKuQnAvVKuRLOq9
-         kXrBSNkKcBXo3FvoY4N2Qwo028zw61QgobP1EpTkPEI7GWveG6KR8i1aTLv0utBurfl2
-         vMbD+Fmh8ULyd3wwybcQ7hto9QMDM98DBF28w=
+        bh=swMX3ZhvJus2lpAmQSbywZz47exFvO5e1kSg0QE7pdo=;
+        b=Q42pc62yuShvaOj4JrmJO6xIK5FtbVA03dwuvGSJLLsLGtyMDJFcZOKbAz88edczbH
+         eGmHDyf3XOnYBtlqZhBCTinaG2druxP6NJBOSEj5WD1pVTVHzHqAjjxwHD52zm90w8UK
+         7giEBQYsUVo5RNCpz//ufbYE2sUqmhSdKcF3s=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references;
-        bh=78gUMQZNPVS/+qczHXdqil56Xfsy528oj63pBzGO5to=;
-        b=K/aEZScbZW92nMjsvIO/MWaAPaGFdno45bD5f9+MBD1KtJsGHam1qZca1R+sP+tSDs
-         GqOCFMNHT3kNqQ4xOeu1uYnyhSnhOaaXhJhqPgzQY/rAwUFL0OW4AEm3mDMn+r+L5Rhr
-         8lilogAo/Vu/QuJ/wWJFUriH6qoEmJJllLEIj8MSBR0+mbHxP6HlqQ5uUXseKNgP5oPj
-         MnQNFLkcVgHrufu0YC0rd7Dt4WzOQVZv2bI0/mHMZFWx7Ge4XV1yII4p4TjSd2p9zXUp
-         ZMG++fl29xPSGThrEH+JtyxH9ImF7WPjmm7Dc39+w7FLhCiCyt2L0fvjv2GhjuUO6eCy
-         1rzQ==
-X-Gm-Message-State: APjAAAUgl2XwknMmtI6/+Husvjj7/XHybxi+8L9o4UU2ctI9FEry9RHq
-        IsOZBLg56qnTDHgCWZXmZbl5vlwM258=
-X-Google-Smtp-Source: APXvYqyxsWhk4b9QTL5trKVJVJ50ZcDgXwvYAr9rvzCUEY4L7kB13bHndHg6yyVce60o0HwRWCGssQ==
-X-Received: by 2002:a63:4a50:: with SMTP id j16mr13813377pgl.323.1580029406146;
-        Sun, 26 Jan 2020 01:03:26 -0800 (PST)
+        bh=swMX3ZhvJus2lpAmQSbywZz47exFvO5e1kSg0QE7pdo=;
+        b=SXx9G4nQJeCxcCMZo/mqfRTn2nEiuq3o9kK7dLCW0Dd4TnMyTZCAUKpnEZc7EuIUyE
+         U2Gahe9rVr4ABr6hmDDGKmG4Gx/CQAhaVAEz0ZGc2F418jZaeadYV44+QWR0OhAi7Gxu
+         5TQOI3vH9Vr6NCA30TP3qDX9EDklN7Tln9mFYsil3q+N5qMZeJheVLb254vXqMyRFLcG
+         X9uK8ShorH0lvWjDC4ltD0podvgkoMOHmQP/ENIN4xjR6bNCnrFmSd05sZLH++1ncWXo
+         7NG4EGj7tYMTzDjoK2NY3+LTw36EsY9wPvSdxwPv1yyxEVSLT6A6/wQY8d44TqCWRTJi
+         I3Lg==
+X-Gm-Message-State: APjAAAWGzGaf251Ooo8rBGG7k3vvnRNPkSZS6hKnHHyQO8rtn127HaWW
+        j0VzLR4LSoccduqmMg9ZPAxrSw==
+X-Google-Smtp-Source: APXvYqxmvJd+Kr1HsrM8BZkZgcMGsRM5vMUX84uno+u5h7EMftrYNSMkJePucbCY8Hv/MmqJiORfPQ==
+X-Received: by 2002:a17:90a:3502:: with SMTP id q2mr8701185pjb.46.1580029408046;
+        Sun, 26 Jan 2020 01:03:28 -0800 (PST)
 Received: from localhost.swdvt.lab.broadcom.com ([192.19.223.252])
-        by smtp.gmail.com with ESMTPSA id i17sm11856315pfr.67.2020.01.26.01.03.24
+        by smtp.gmail.com with ESMTPSA id i17sm11856315pfr.67.2020.01.26.01.03.26
         (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Sun, 26 Jan 2020 01:03:25 -0800 (PST)
+        Sun, 26 Jan 2020 01:03:27 -0800 (PST)
 From:   Michael Chan <michael.chan@broadcom.com>
 To:     davem@davemloft.net
-Cc:     netdev@vger.kernel.org,
-        Sriharsha Basavapatna <sriharsha.basavapatna@broadcom.com>
-Subject: [PATCH net-next 01/16] bnxt_en: Support ingress rate limiting with TC-offload.
-Date:   Sun, 26 Jan 2020 04:02:55 -0500
-Message-Id: <1580029390-32760-2-git-send-email-michael.chan@broadcom.com>
+Cc:     netdev@vger.kernel.org
+Subject: [PATCH net-next 02/16] bnxt_en: Improve link up detection.
+Date:   Sun, 26 Jan 2020 04:02:56 -0500
+Message-Id: <1580029390-32760-3-git-send-email-michael.chan@broadcom.com>
 X-Mailer: git-send-email 1.8.3.1
 In-Reply-To: <1580029390-32760-1-git-send-email-michael.chan@broadcom.com>
 References: <1580029390-32760-1-git-send-email-michael.chan@broadcom.com>
@@ -55,177 +54,72 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Sriharsha Basavapatna <sriharsha.basavapatna@broadcom.com>
+In bnxt_update_phy_setting(), ethtool_get_link_ksettings() and
+bnxt_disable_an_for_lpbk(), we inconsistently use netif_carrier_ok()
+to determine link.  Instead, we should use bp->link_info.link_up
+which has the true link state.  The netif_carrier state may be off
+during self-test and while the device is being reset and may not always
+reflect the true link state.
 
-This patch enables offloading of ingress rate limiting TC-action
-on a VF. The driver processes "cls_matchall" filter callbacks to
-add and remove ingress rate limiting actions. The driver parses
-police action parameter and sends the command to FW to configure
-rate limiting for the VF.
+By always using bp->link_info.link_up, the code is now more
+consistent and more correct.  Some unnecessary link toggles are
+now prevented with this patch.
 
-For example, to configure rate limiting offload on a VF using OVS,
-use the below command on the corresponding VF-rep port. The example
-below configures min and max tx rates of 200 and 600 Mbps.
-
-	# ovs-vsctl set interface bnxt0_pf0vf0 \
-		ingress_policing_rate=600000 ingress_policing_burst=200000
-
-Signed-off-by: Sriharsha Basavapatna <sriharsha.basavapatna@broadcom.com>
 Signed-off-by: Michael Chan <michael.chan@broadcom.com>
 ---
- drivers/net/ethernet/broadcom/bnxt/bnxt.h     |  1 +
- drivers/net/ethernet/broadcom/bnxt/bnxt_tc.c  | 90 +++++++++++++++++++++++++++
- drivers/net/ethernet/broadcom/bnxt/bnxt_tc.h  |  3 +
- drivers/net/ethernet/broadcom/bnxt/bnxt_vfr.c |  2 +
- 4 files changed, 96 insertions(+)
+ drivers/net/ethernet/broadcom/bnxt/bnxt.c         |  2 +-
+ drivers/net/ethernet/broadcom/bnxt/bnxt_ethtool.c | 16 ++++++++--------
+ 2 files changed, 9 insertions(+), 9 deletions(-)
 
-diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt.h b/drivers/net/ethernet/broadcom/bnxt/bnxt.h
-index f143354..534bc9e 100644
---- a/drivers/net/ethernet/broadcom/bnxt/bnxt.h
-+++ b/drivers/net/ethernet/broadcom/bnxt/bnxt.h
-@@ -1069,6 +1069,7 @@ struct bnxt_vf_info {
- 	u32	max_tx_rate;
- 	void	*hwrm_cmd_req_addr;
- 	dma_addr_t	hwrm_cmd_req_dma_addr;
-+	unsigned long police_id;
- };
- #endif
+diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt.c b/drivers/net/ethernet/broadcom/bnxt/bnxt.c
+index 198c69dc..4b6f746 100644
+--- a/drivers/net/ethernet/broadcom/bnxt/bnxt.c
++++ b/drivers/net/ethernet/broadcom/bnxt/bnxt.c
+@@ -9064,7 +9064,7 @@ static int bnxt_update_phy_setting(struct bnxt *bp)
+ 	/* The last close may have shutdown the link, so need to call
+ 	 * PHY_CFG to bring it back up.
+ 	 */
+-	if (!netif_carrier_ok(bp->dev))
++	if (!bp->link_info.link_up)
+ 		update_link = true;
  
-diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt_tc.c b/drivers/net/ethernet/broadcom/bnxt/bnxt_tc.c
-index 0cc6ec5..2dfb650 100644
---- a/drivers/net/ethernet/broadcom/bnxt/bnxt_tc.c
-+++ b/drivers/net/ethernet/broadcom/bnxt/bnxt_tc.c
-@@ -10,6 +10,7 @@
- #include <linux/netdevice.h>
- #include <linux/inetdevice.h>
- #include <linux/if_vlan.h>
-+#include <linux/pci.h>
- #include <net/flow_dissector.h>
- #include <net/pkt_cls.h>
- #include <net/tc_act/tc_gact.h>
-@@ -1983,6 +1984,95 @@ static int bnxt_tc_indr_block_event(struct notifier_block *nb,
- 	return NOTIFY_DONE;
- }
+ 	if (!bnxt_eee_config_ok(bp))
+diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt_ethtool.c b/drivers/net/ethernet/broadcom/bnxt/bnxt_ethtool.c
+index 08d56ec..6171fa8 100644
+--- a/drivers/net/ethernet/broadcom/bnxt/bnxt_ethtool.c
++++ b/drivers/net/ethernet/broadcom/bnxt/bnxt_ethtool.c
+@@ -1462,15 +1462,15 @@ static int bnxt_get_link_ksettings(struct net_device *dev,
+ 		ethtool_link_ksettings_add_link_mode(lk_ksettings,
+ 						     advertising, Autoneg);
+ 		base->autoneg = AUTONEG_ENABLE;
+-		if (link_info->phy_link_status == BNXT_LINK_LINK)
++		base->duplex = DUPLEX_UNKNOWN;
++		if (link_info->phy_link_status == BNXT_LINK_LINK) {
+ 			bnxt_fw_to_ethtool_lp_adv(link_info, lk_ksettings);
++			if (link_info->duplex & BNXT_LINK_DUPLEX_FULL)
++				base->duplex = DUPLEX_FULL;
++			else
++				base->duplex = DUPLEX_HALF;
++		}
+ 		ethtool_speed = bnxt_fw_to_ethtool_speed(link_info->link_speed);
+-		if (!netif_carrier_ok(dev))
+-			base->duplex = DUPLEX_UNKNOWN;
+-		else if (link_info->duplex & BNXT_LINK_DUPLEX_FULL)
+-			base->duplex = DUPLEX_FULL;
+-		else
+-			base->duplex = DUPLEX_HALF;
+ 	} else {
+ 		base->autoneg = AUTONEG_DISABLE;
+ 		ethtool_speed =
+@@ -2707,7 +2707,7 @@ static int bnxt_disable_an_for_lpbk(struct bnxt *bp,
+ 		return rc;
  
-+static inline int bnxt_tc_find_vf_by_fid(struct bnxt *bp, u16 fid)
-+{
-+	int num_vfs = pci_num_vf(bp->pdev);
-+	int i;
-+
-+	for (i = 0; i < num_vfs; i++) {
-+		if (bp->pf.vf[i].fw_fid == fid)
-+			break;
-+	}
-+	if (i >= num_vfs)
-+		return -EINVAL;
-+	return i;
-+}
-+
-+static int bnxt_tc_del_matchall(struct bnxt *bp, u16 src_fid,
-+				struct tc_cls_matchall_offload *matchall_cmd)
-+{
-+	int vf_idx;
-+
-+	vf_idx = bnxt_tc_find_vf_by_fid(bp, src_fid);
-+	if (vf_idx < 0)
-+		return vf_idx;
-+
-+	if (bp->pf.vf[vf_idx].police_id != matchall_cmd->cookie)
-+		return -ENOENT;
-+
-+	bnxt_set_vf_bw(bp->dev, vf_idx, 0, 0);
-+	bp->pf.vf[vf_idx].police_id = 0;
-+	return 0;
-+}
-+
-+static int bnxt_tc_add_matchall(struct bnxt *bp, u16 src_fid,
-+				struct tc_cls_matchall_offload *matchall_cmd)
-+{
-+	struct flow_action_entry *action;
-+	int vf_idx;
-+	s64 burst;
-+	u64 rate;
-+	int rc;
-+
-+	vf_idx = bnxt_tc_find_vf_by_fid(bp, src_fid);
-+	if (vf_idx < 0)
-+		return vf_idx;
-+
-+	action = &matchall_cmd->rule->action.entries[0];
-+	if (action->id != FLOW_ACTION_POLICE) {
-+		netdev_err(bp->dev, "%s: Unsupported matchall action: %d",
-+			   __func__, action->id);
-+		return -EOPNOTSUPP;
-+	}
-+	if (bp->pf.vf[vf_idx].police_id && bp->pf.vf[vf_idx].police_id !=
-+	    matchall_cmd->cookie) {
-+		netdev_err(bp->dev,
-+			   "%s: Policer is already configured for VF: %d",
-+			   __func__, vf_idx);
-+		return -EEXIST;
-+	}
-+
-+	rate = (u32)div_u64(action->police.rate_bytes_ps, 1024 * 1000) * 8;
-+	burst = (u32)div_u64(action->police.rate_bytes_ps *
-+			     PSCHED_NS2TICKS(action->police.burst),
-+			     PSCHED_TICKS_PER_SEC);
-+	burst = (u32)PSCHED_TICKS2NS(burst) / (1 << 20);
-+
-+	rc = bnxt_set_vf_bw(bp->dev, vf_idx, burst, rate);
-+	if (rc) {
-+		netdev_err(bp->dev,
-+			   "Error: %s: VF: %d rate: %llu burst: %llu rc: %d",
-+			   __func__, vf_idx, rate, burst, rc);
-+		return rc;
-+	}
-+
-+	bp->pf.vf[vf_idx].police_id = matchall_cmd->cookie;
-+	return 0;
-+}
-+
-+int bnxt_tc_setup_matchall(struct bnxt *bp, u16 src_fid,
-+			   struct tc_cls_matchall_offload *cls_matchall)
-+{
-+	switch (cls_matchall->command) {
-+	case TC_CLSMATCHALL_REPLACE:
-+		return bnxt_tc_add_matchall(bp, src_fid, cls_matchall);
-+	case TC_CLSMATCHALL_DESTROY:
-+		return bnxt_tc_del_matchall(bp, src_fid, cls_matchall);
-+	default:
-+		return -EOPNOTSUPP;
-+	}
-+}
-+
- static const struct rhashtable_params bnxt_tc_flow_ht_params = {
- 	.head_offset = offsetof(struct bnxt_tc_flow_node, node),
- 	.key_offset = offsetof(struct bnxt_tc_flow_node, cookie),
-diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt_tc.h b/drivers/net/ethernet/broadcom/bnxt/bnxt_tc.h
-index 10c62b0..963788e 100644
---- a/drivers/net/ethernet/broadcom/bnxt/bnxt_tc.h
-+++ b/drivers/net/ethernet/broadcom/bnxt/bnxt_tc.h
-@@ -220,6 +220,9 @@ int bnxt_tc_setup_flower(struct bnxt *bp, u16 src_fid,
- int bnxt_init_tc(struct bnxt *bp);
- void bnxt_shutdown_tc(struct bnxt *bp);
- void bnxt_tc_flow_stats_work(struct bnxt *bp);
-+int bnxt_tc_setup_matchall(struct bnxt *bp, u16 src_fid,
-+			   struct tc_cls_matchall_offload *cls_matchall);
-+
- 
- static inline bool bnxt_tc_flower_enabled(struct bnxt *bp)
- {
-diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt_vfr.c b/drivers/net/ethernet/broadcom/bnxt/bnxt_vfr.c
-index b010b34..b9d3dae 100644
---- a/drivers/net/ethernet/broadcom/bnxt/bnxt_vfr.c
-+++ b/drivers/net/ethernet/broadcom/bnxt/bnxt_vfr.c
-@@ -156,6 +156,8 @@ static int bnxt_vf_rep_setup_tc_block_cb(enum tc_setup_type type,
- 	switch (type) {
- 	case TC_SETUP_CLSFLOWER:
- 		return bnxt_tc_setup_flower(bp, vf_fid, type_data);
-+	case TC_SETUP_CLSMATCHALL:
-+		return bnxt_tc_setup_matchall(bp, vf_fid, type_data);
- 	default:
- 		return -EOPNOTSUPP;
- 	}
+ 	fw_speed = PORT_PHY_CFG_REQ_FORCE_LINK_SPEED_1GB;
+-	if (netif_carrier_ok(bp->dev))
++	if (bp->link_info.link_up)
+ 		fw_speed = bp->link_info.link_speed;
+ 	else if (fw_advertising & BNXT_LINK_SPEED_MSK_10GB)
+ 		fw_speed = PORT_PHY_CFG_REQ_FORCE_LINK_SPEED_10GB;
 -- 
 2.5.1
 
