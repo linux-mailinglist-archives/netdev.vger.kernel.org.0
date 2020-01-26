@@ -2,59 +2,117 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id CBBEB149A40
-	for <lists+netdev@lfdr.de>; Sun, 26 Jan 2020 11:50:35 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C9BA5149A44
+	for <lists+netdev@lfdr.de>; Sun, 26 Jan 2020 11:54:29 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729353AbgAZKue (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 26 Jan 2020 05:50:34 -0500
-Received: from shards.monkeyblade.net ([23.128.96.9]:56022 "EHLO
-        shards.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726571AbgAZKue (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 26 Jan 2020 05:50:34 -0500
-Received: from localhost (unknown [147.229.117.36])
-        (using TLSv1 with cipher AES256-SHA (256/256 bits))
-        (Client did not present a certificate)
-        (Authenticated sender: davem-davemloft)
-        by shards.monkeyblade.net (Postfix) with ESMTPSA id 957E2151C491C;
-        Sun, 26 Jan 2020 02:50:32 -0800 (PST)
-Date:   Sun, 26 Jan 2020 11:50:28 +0100 (CET)
-Message-Id: <20200126.115028.1635138302146567330.davem@davemloft.net>
-To:     jeffrey.t.kirsher@intel.com
-Cc:     netdev@vger.kernel.org, nhorman@redhat.com, sassmann@redhat.com
-Subject: Re: [net-next 0/8][pull request] 100GbE Intel Wired LAN Driver
- Updates 2020-01-25
-From:   David Miller <davem@davemloft.net>
-In-Reply-To: <20200126060737.3238027-1-jeffrey.t.kirsher@intel.com>
-References: <20200126060737.3238027-1-jeffrey.t.kirsher@intel.com>
-X-Mailer: Mew version 6.8 on Emacs 26.3
-Mime-Version: 1.0
-Content-Type: Text/Plain; charset=us-ascii
-Content-Transfer-Encoding: 7bit
-X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Sun, 26 Jan 2020 02:50:33 -0800 (PST)
+        id S1729384AbgAZKy1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 26 Jan 2020 05:54:27 -0500
+Received: from mail.kernel.org ([198.145.29.99]:44030 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726571AbgAZKy1 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sun, 26 Jan 2020 05:54:27 -0500
+Received: from localhost (unknown [193.47.165.251])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 301CC2075D;
+        Sun, 26 Jan 2020 10:54:26 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1580036066;
+        bh=DV1e5XI83L9xgMJppGfP3HTCWwFdC/rEXOwVi5kioy8=;
+        h=From:To:Cc:Subject:Date:From;
+        b=hVvimlsWqEoYkQCCFQNyY4fcgnUT9qgra6FgvmjrjGtvUtJtlAFcIhKOqXO/OJhwH
+         5zKhTBrq+ReWA7nV4P5nr0HSxk3ff5f5kGHOtXtfle7C4y/FkQpiSbydG/FpaQzl82
+         w8AmigFKrbmcKkN2r9EjYj4MAbWNIL+aQ8t9GC/E=
+From:   Leon Romanovsky <leon@kernel.org>
+To:     "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Florian Fainelli <f.fainelli@gmail.com>
+Cc:     Leon Romanovsky <leonro@mellanox.com>,
+        Michal Kalderon <michal.kalderon@marvell.com>,
+        linux-netdev <netdev@vger.kernel.org>,
+        RDMA mailing list <linux-rdma@vger.kernel.org>
+Subject: [PATCH net-next v3] net/core: Replace driver version to be kernel version
+Date:   Sun, 26 Jan 2020 12:54:22 +0200
+Message-Id: <20200126105422.86969-1-leon@kernel.org>
+X-Mailer: git-send-email 2.24.1
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Jeff Kirsher <jeffrey.t.kirsher@intel.com>
-Date: Sat, 25 Jan 2020 22:07:29 -0800
+From: Leon Romanovsky <leonro@mellanox.com>
 
-> This series contains updates to the ice driver to add support for RSS.
-> 
-> Henry and Tony enable the driver to write the filtering hardware tables
-> to allow for changing of RSS rules, also introduced and initialized the
-> structures for storing the configuration.  Then followed it up by
-> creating an extraction sequence based on the packet header protocols to
-> be programmed.  Next was storing the TCAM entry with the profile data
-> and VSI group in the respective software structures.
-> 
-> Md Fahad sets up the configuration to support RSS tables for the virtual
-> function (VF) driver (iavf).  Add support for flow types TCP4, TCP6,
-> UDP4, UDP6, SCTP4 and SCTP6 for RSS via ethtool.
-> 
-> The following are changes since commit 3333e50b64fe30b7e53cf02456a2f567f689ae4f:
->   Merge branch 'mlxsw-Offload-TBF'
-> and are available in the git repository at:
->   git://git.kernel.org/pub/scm/linux/kernel/git/jkirsher/next-queue 100GbE
+In order to stop useless driver version bumps and unify output
+presented by ethtool -i, let's overwrite the version string.
 
-Pulled, thanks Jeff.
+As Linus said in [1]: "Things are supposed to be backwards and
+forwards compatible, because we don't accept breakage in user
+space anyway. So versioning is pointless, and only causes
+problems."
+
+They cause problems when users start to see version changes
+and expect specific set of features which will be different
+for stable@, vanilla and distribution kernels.
+
+Distribution kernels are based on some kernel version with extra
+patches on top, for example, in RedHat world this "extra" is a lot
+and for them the driver version say nothing. Users who run vanilla
+kernels won't use driver version information too, because running
+such kernels requires knowledge and understanding.
+
+Another set of problems are related to difference in versioning scheme
+and such doesn't allow to write meaningful automation which will work
+sanely on all ethtool capable devices.
+
+Before this change:
+[leonro@erver ~]$ ethtool -i eth0
+driver: virtio_net
+version: 1.0.0
+After this change:
+[leonro@server ~]$ ethtool -i eth0
+driver: virtio_net
+version: 5.5.0-rc6+
+
+Link: https://lore.kernel.org/ksummit-discuss/CA+55aFx9A=5cc0QZ7CySC4F2K7eYaEfzkdYEc9JaNgCcV25=rg@mail.gmail.com/
+Link: https://lore.kernel.org/linux-rdma/20200122152627.14903-1-michal.kalderon@marvell.com/T/#md460ff8f976c532a89d6860411c3c50bb811038b
+Signed-off-by: Leon Romanovsky <leonro@mellanox.com>
+---
+ Changelog:
+ v3: Used wrong target branch, changed from rdma-next to net-next.
+ v2: https://lore.kernel.org/linux-rdma/20200126100124.86014-1-leon@kernel.org
+     Updated commit message.
+ v1: https://lore.kernel.org/linux-rdma/20200125161401.40683-1-leon@kernel.org
+     Resend per-Dave's request
+     https://lore.kernel.org/linux-rdma/20200125.101311.1924780619716720495.davem@davemloft.net
+     No changes at all and applied cleanly on top of "3333e50b64fe Merge branch 'mlxsw-Offload-TBF'"
+ v0: https://lore.kernel.org/linux-rdma/20200123130541.30473-1-leon@kernel.org
+---
+ net/ethtool/ioctl.c | 3 +++
+ 1 file changed, 3 insertions(+)
+
+diff --git a/net/ethtool/ioctl.c b/net/ethtool/ioctl.c
+index 182bffbffa78..a403decacb6d 100644
+--- a/net/ethtool/ioctl.c
++++ b/net/ethtool/ioctl.c
+@@ -17,6 +17,7 @@
+ #include <linux/phy.h>
+ #include <linux/bitops.h>
+ #include <linux/uaccess.h>
++#include <linux/vermagic.h>
+ #include <linux/vmalloc.h>
+ #include <linux/sfp.h>
+ #include <linux/slab.h>
+@@ -666,6 +667,8 @@ static noinline_for_stack int ethtool_get_drvinfo(struct net_device *dev,
+ 		return -EOPNOTSUPP;
+ 	}
+
++	strlcpy(info.version, UTS_RELEASE, sizeof(info.version));
++
+ 	/*
+ 	 * this method of obtaining string set info is deprecated;
+ 	 * Use ETHTOOL_GSSET_INFO instead.
+--
+2.24.1
+
