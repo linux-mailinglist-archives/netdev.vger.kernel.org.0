@@ -2,86 +2,97 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 84406149C68
-	for <lists+netdev@lfdr.de>; Sun, 26 Jan 2020 20:00:30 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 29888149C71
+	for <lists+netdev@lfdr.de>; Sun, 26 Jan 2020 20:12:17 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726657AbgAZTA2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 26 Jan 2020 14:00:28 -0500
-Received: from mail-io1-f67.google.com ([209.85.166.67]:40216 "EHLO
-        mail-io1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726087AbgAZTA2 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 26 Jan 2020 14:00:28 -0500
-Received: by mail-io1-f67.google.com with SMTP id x1so7587800iop.7
-        for <netdev@vger.kernel.org>; Sun, 26 Jan 2020 11:00:28 -0800 (PST)
+        id S1727453AbgAZTMP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 26 Jan 2020 14:12:15 -0500
+Received: from mail-pl1-f194.google.com ([209.85.214.194]:35928 "EHLO
+        mail-pl1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726087AbgAZTMP (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 26 Jan 2020 14:12:15 -0500
+Received: by mail-pl1-f194.google.com with SMTP id a6so2957759plm.3;
+        Sun, 26 Jan 2020 11:12:14 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=xS1lfhBR0XNW1XsNAxmOMjV9HdMQdS11cdckGlLaDko=;
-        b=qKmcDzW5px+uLtoJzMme75AkhnE1D95ABjHKkewyTYtKYT99tl7bhaz4RTetwYIGrZ
-         Gi7oC83aNQjcyv/L9jGWJBZ3mhyRo4refWxzGYDvwBZE/Mt41WfEsyvueA+AB7FNxzgF
-         qeXtv5IQnwdsECgYeS/ocs2MTjXZnJ8O/m3rzCGu2LF05MYu0R974O3LLi+9uthhEgVg
-         HAb1cv1lH2+A2n57961VR75erH+2x8TVyG+9wOPYPKI/g5X2zFAsJH3hYdydgfZfceNM
-         DsblGnej70Qjw2AQLj2rcj1gWFdC1KINXfqSzvTRxGjevHwQ1qRautB88uHyen4/L7Ex
-         obKQ==
+        h=subject:to:references:from:message-id:date:user-agent:mime-version
+         :in-reply-to:content-language:content-transfer-encoding;
+        bh=eP6xMoPCig2/HzkgQ7KOnjUmZ+p8+wvhn5hX2zOjjeI=;
+        b=vJwVt3b57kFu5gNuJb+7ttUR6qGyMQ5iw1r6HV2O68DlNYyplzRE6JOy5GsnpEIq7n
+         4HwNloKOo6FiprGjbebs3iUAellkI7dT++WNXHKT5vEkBeRPFPfPTwb92BWWffXHyqLs
+         vxX4qoRure/aUATJjiSh+nx1eml3uDGAZOQCyB6c5NUVzNMOU9q6/GQDlp81AvwtUmDa
+         JISrjaZI4JjFmKWpgcMNxSNcs6Olq9clFswQlE+ya6nSUPKBFcL17lQpNz4bSKl4pP3b
+         dTGIYCTK+kNRGrXDmjA335AqAipndzxbIEKXPfgveWWjXZ2ggLI/4LfII/pQqtEuHwql
+         WN8Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=xS1lfhBR0XNW1XsNAxmOMjV9HdMQdS11cdckGlLaDko=;
-        b=jsGTChW/UrdBBC/uMvQGfD5aR+V9SEYH5OpMzKfuJx7zMmqXMWeL5k5GfbrFjEI8SI
-         uI7MQso87ZZsFW6OJs5mjJFqQ/Nv6ZluuM4SWkXktH/utRUdNejbPtNGR2lcMm2LVqE6
-         kaMAWcS91LEVdX64qqLacuMfN/EVp+g8uqsjCHd96rVW0MYkEjXYN1ig9y93U94j1uHF
-         OfeQ2kNVtF1J7g1KGEyy/dyp4mgpngLt4jf2CdZYOBZfNBT2Uh8Z8HLYZMO0SWPncyzV
-         TKoZx4s+FyZHbTFKCvpcMpf8ISGHrRS1uzio7NeEvLeRkvEmaWkS9tRJgm8Phc5VxQhV
-         De5g==
-X-Gm-Message-State: APjAAAVobpB/5FiM5XOoWlB/bkATYHJjtuRocfvb/COU3vmkqC2fJ09l
-        +29krR4+hIyMnSuSKyCBlLPrhjOD9+H6ShyYtEM=
-X-Google-Smtp-Source: APXvYqzRmTZ+Arl1EPhhI/pQYq6Kjd6prHBQcmYzI/Fvlk1i9l6DnVm2CC7drRR2rVH77vFlaHQhnx/n6UbhekGxfIg=
-X-Received: by 2002:a02:7092:: with SMTP id f140mr9341660jac.128.1580065227595;
- Sun, 26 Jan 2020 11:00:27 -0800 (PST)
+        h=x-gm-message-state:subject:to:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=eP6xMoPCig2/HzkgQ7KOnjUmZ+p8+wvhn5hX2zOjjeI=;
+        b=KSTf/sL0SY50EDo7rLTMG+GAQujlxQt1YYtZF74DYQzyD5v33Xvt2yA3xt1j+Ey0H0
+         0Idy1coIj8SS0c7qibcpB844zH0qA75yw3RbgVquE5LkWSOdxtOg4s3xeVkGCG0hGpNi
+         AeBaJ3wxWi/STwZ4B5MxvYVG8Ici8xCimWtSVGWDQcld375t/k+MsfMTndd4OuTaKGcH
+         mstxVJ3eD0DaA85UVBMWRgLY61Iy/k/K7QrjVr9GBcqlIgESt4LbYmEok+/D/kklQRRs
+         MQpHP74y90S1gXjVvE6CwVfqhyALKS2O32dOQ68TY4Hr01E9ROCaMDzdX2NRmttZJbNV
+         +dUw==
+X-Gm-Message-State: APjAAAUJfvTSVTMASjE2TC/G3/16deNqp+cpt4JQZaULidHdVEOP8zTv
+        6mS1Uy83mDqJMWl3ni78lKk=
+X-Google-Smtp-Source: APXvYqy2Qxg7EZY/r53BdOkTqJYTylNzR69cnHzV8CoK0eVKOoCnabV6VSSIkxFvPCSwFsBNgToqHA==
+X-Received: by 2002:a17:90a:c981:: with SMTP id w1mr9197251pjt.129.1580065934239;
+        Sun, 26 Jan 2020 11:12:14 -0800 (PST)
+Received: from [192.168.86.235] (c-73-241-150-58.hsd1.ca.comcast.net. [73.241.150.58])
+        by smtp.gmail.com with ESMTPSA id hg11sm13064978pjb.14.2020.01.26.11.12.12
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Sun, 26 Jan 2020 11:12:13 -0800 (PST)
+Subject: Re: INFO: rcu detected stall in addrconf_rs_timer (3)
+To:     syzbot <syzbot+c22c6b9dce8e773ddcb6@syzkaller.appspotmail.com>,
+        davem@davemloft.net, edumazet@google.com, jhs@mojatatu.com,
+        jiri@resnulli.us, kuba@kernel.org, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org, syzkaller-bugs@googlegroups.com,
+        xiyou.wangcong@gmail.com
+References: <0000000000003021ea059d0c98b4@google.com>
+From:   Eric Dumazet <eric.dumazet@gmail.com>
+Message-ID: <7f746a56-07d9-282d-02b6-1724350b90b7@gmail.com>
+Date:   Sun, 26 Jan 2020 11:12:11 -0800
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.2.2
 MIME-Version: 1.0
-References: <1579887955-22172-1-git-send-email-sunil.kovvuri@gmail.com> <1579887955-22172-5-git-send-email-sunil.kovvuri@gmail.com>
-In-Reply-To: <1579887955-22172-5-git-send-email-sunil.kovvuri@gmail.com>
-From:   Dave Taht <dave.taht@gmail.com>
-Date:   Sun, 26 Jan 2020 11:00:16 -0800
-Message-ID: <CAA93jw63P06fc=64tss_GJDsw7N=Ucg3pXai_25eT-EK4FysHA@mail.gmail.com>
-Subject: Re: [PATCH v5 04/17] octeontx2-pf: Initialize and config queues
-To:     sunil.kovvuri@gmail.com
-Cc:     Linux Kernel Network Developers <netdev@vger.kernel.org>,
-        "David S. Miller" <davem@davemloft.net>, kubakici@wp.pl,
-        =?UTF-8?Q?Michal_Kube=C4=8Dek?= <mkubecek@suse.cz>,
-        maciej.fijalkowski@intel.com, Sunil Goutham <sgoutham@marvell.com>,
-        Geetha sowjanya <gakula@marvell.com>
-Content-Type: text/plain; charset="UTF-8"
+In-Reply-To: <0000000000003021ea059d0c98b4@google.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-I guess my question generally is, what form of RED is implemented in
-the hardware?
 
-http://mirrors.bufferbloat.net/~jg/RelevantPapers/Red_in_a_different_light.pdf
 
-> +/* RED and drop levels of CQ on packet reception.
-> + * For CQ level is measure of emptiness ( 0x0 = full, 255 = empty).
-> + */
-> +#define RQ_PASS_LVL_CQ(skid, qsize)    ((((skid) + 16) * 256) / (qsize))
-> +#define RQ_DROP_LVL_CQ(skid, qsize)    (((skid) * 256) / (qsize))
-> +
-> +/* RED and drop levels of AURA for packet reception.
-> + * For AURA level is measure of fullness (0x0 = empty, 255 = full).
-> + * Eg: For RQ length 1K, for pass/drop level 204/230.
-> + * RED accepts pkts if free pointers > 102 & <= 205.
-> + * Drops pkts if free pointers < 102.
-> + */
-> +#define RQ_PASS_LVL_AURA (255 - ((95 * 256) / 100)) /* RED when 95% is full */
-> +#define RQ_DROP_LVL_AURA (255 - ((99 * 256) / 100)) /* Drop when 99% is full */
+On 1/26/20 7:25 AM, syzbot wrote:
+> syzbot suspects this bug was fixed by commit:
+> 
+> commit d9e15a2733067c9328fb56d98fe8e574fa19ec31
+> Author: Eric Dumazet <edumazet@google.com>
+> Date:   Mon Jan 6 14:10:39 2020 +0000
+> 
+>     pkt_sched: fq: do not accept silly TCA_FQ_QUANTUM
+> 
+> bisection log:  https://syzkaller.appspot.com/x/bisect.txt?x=1625d479e00000
+> start commit:   a1ec57c0 net: stmmac: tc: Fix TAPRIO division operation
+> git tree:       net-next
+> kernel config:  https://syzkaller.appspot.com/x/.config?x=7159d94cd4de714e
+> dashboard link: https://syzkaller.appspot.com/bug?extid=c22c6b9dce8e773ddcb6
+> syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=168e33b6e00000
+> C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=178c160ae00000
+> 
+> If the result looks correct, please mark the bug fixed by replying with:
+> 
+> #syz fix: pkt_sched: fq: do not accept silly TCA_FQ_QUANTUM
+> 
+> For information about bisection process see: https://goo.gl/tpsmEJ#bisection
+> 
 
-I guess my question generally is, what form of RED is implemented in
-the hardware?
+This sounds legit.
 
-(what's aura?)
-
-http://mirrors.bufferbloat.net/~jg/RelevantPapers/Red_in_a_different_light.pdf
+#syz fix: pkt_sched: fq: do not accept silly TCA_FQ_QUANTUM
