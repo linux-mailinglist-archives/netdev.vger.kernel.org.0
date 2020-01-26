@@ -2,91 +2,62 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id ABC3F149B74
-	for <lists+netdev@lfdr.de>; Sun, 26 Jan 2020 16:37:20 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id CDFCC149B7A
+	for <lists+netdev@lfdr.de>; Sun, 26 Jan 2020 16:39:27 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726548AbgAZPgf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 26 Jan 2020 10:36:35 -0500
-Received: from mail25.static.mailgun.info ([104.130.122.25]:42750 "EHLO
-        mail25.static.mailgun.info" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1725838AbgAZPgf (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 26 Jan 2020 10:36:35 -0500
-DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org; q=dns/txt;
- s=smtp; t=1580052994; h=Date: Message-Id: Cc: To: References:
- In-Reply-To: From: Subject: Content-Transfer-Encoding: MIME-Version:
- Content-Type: Sender; bh=fB+9Ig6BEvL0LASv8D9I/HUEKOK3HLWIXnz4r7aDix4=;
- b=sxEBPpkNs7TqeCvz/V7EJ+TqSw6UpMTm83YQMc7FZ5R+PdaDJ0FBhwDVDGnF+P0htvV27GsU
- tbqY2FSz/ckOvVdFmvXVLMXM25Vt3Wgc1xiOVYUVgNPT7ghsyukifqU+NK7yXKWpL4uIpPyD
- DdYweANq8iu3jcoWMhyHGlUk1c4=
-X-Mailgun-Sending-Ip: 104.130.122.25
-X-Mailgun-Sid: WyJiZjI2MiIsICJuZXRkZXZAdmdlci5rZXJuZWwub3JnIiwgImJlOWU0YSJd
-Received: from smtp.codeaurora.org (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171])
- by mxa.mailgun.org with ESMTP id 5e2db201.7f4488a5bca8-smtp-out-n01;
- Sun, 26 Jan 2020 15:36:33 -0000 (UTC)
-Received: by smtp.codeaurora.org (Postfix, from userid 1001)
-        id CD520C4479C; Sun, 26 Jan 2020 15:36:33 +0000 (UTC)
-X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
-        aws-us-west-2-caf-mail-1.web.codeaurora.org
-X-Spam-Level: 
-X-Spam-Status: No, score=0.5 required=2.0 tests=ALL_TRUSTED,MISSING_DATE,
-        MISSING_MID,SPF_NONE autolearn=no autolearn_force=no version=3.4.0
-Received: from potku.adurom.net (88-114-240-156.elisa-laajakaista.fi [88.114.240.156])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        (Authenticated sender: kvalo)
-        by smtp.codeaurora.org (Postfix) with ESMTPSA id 2E70FC43383;
-        Sun, 26 Jan 2020 15:36:31 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org 2E70FC43383
-Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
-Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; spf=none smtp.mailfrom=kvalo@codeaurora.org
-Content-Type: text/plain; charset="utf-8"
+        id S1726545AbgAZPjW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 26 Jan 2020 10:39:22 -0500
+Received: from vps0.lunn.ch ([185.16.172.187]:54678 "EHLO vps0.lunn.ch"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1725944AbgAZPjW (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sun, 26 Jan 2020 10:39:22 -0500
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:
+        Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
+        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
+        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
+        List-Post:List-Owner:List-Archive;
+        bh=qtE+IzNrdxXTltJQJXlBufW7IZUuYC1+jN7ZQ7mwQMo=; b=WjIF5nX6yM3ovyQ081Z22B5++a
+        IuiKbQWTFnFIhdnF6sOXMjS63TlK8CPYr9hJ56t1w7M9g473u++CIoAqPldJrWHcj9kAmSP7SpfV5
+        fvmCaSUTASp5JhN63bUogAWapvwoHmwZfGRu/ZDV5ceDIQo/03OzwPvOVqKKy5YEf46Y=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.93)
+        (envelope-from <andrew@lunn.ch>)
+        id 1ivk0J-00025J-1o; Sun, 26 Jan 2020 16:39:15 +0100
+Date:   Sun, 26 Jan 2020 16:39:15 +0100
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Horatiu Vultur <horatiu.vultur@microchip.com>
+Cc:     "Allan W. Nielsen" <allan.nielsen@microchip.com>,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        bridge@lists.linux-foundation.org, jiri@resnulli.us,
+        ivecera@redhat.com, davem@davemloft.net, roopa@cumulusnetworks.com,
+        nikolay@cumulusnetworks.com, anirudh.venkataramanan@intel.com,
+        olteanv@gmail.com, jeffrey.t.kirsher@intel.com,
+        UNGLinuxDriver@microchip.com
+Subject: Re: [RFC net-next v3 03/10] net: bridge: mrp: Add MRP interface used
+ by netlink
+Message-ID: <20200126153915.GI18311@lunn.ch>
+References: <20200124161828.12206-1-horatiu.vultur@microchip.com>
+ <20200124161828.12206-4-horatiu.vultur@microchip.com>
+ <20200124174315.GC13647@lunn.ch>
+ <20200125113726.ousbmm4n3ab4xnqt@soft-dev3.microsemi.net>
+ <20200125152023.GA18311@lunn.ch>
+ <20200125191612.5dlzlvb7g2bucqna@lx-anielsen.microsemi.net>
+ <20200126132843.k4rzn7vfti7lqvos@soft-dev3.microsemi.net>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Subject: Re: [PATCH] hostap: Adjust indentation in prism2_hostapd_add_sta
-From:   Kalle Valo <kvalo@codeaurora.org>
-In-Reply-To: <20191218011545.40557-1-natechancellor@gmail.com>
-References: <20191218011545.40557-1-natechancellor@gmail.com>
-To:     Nathan Chancellor <natechancellor@gmail.com>
-Cc:     linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, clang-built-linux@googlegroups.com,
-        Nathan Chancellor <natechancellor@gmail.com>
-User-Agent: pwcli/0.0.0-git (https://github.com/kvalo/pwcli/) Python/2.7.12
-Message-Id: <20200126153633.CD520C4479C@smtp.codeaurora.org>
-Date:   Sun, 26 Jan 2020 15:36:33 +0000 (UTC)
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20200126132843.k4rzn7vfti7lqvos@soft-dev3.microsemi.net>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Nathan Chancellor <natechancellor@gmail.com> wrote:
+> We could do also that. The main reason why I have added a new generic
+> netlink was that I thought it would be clearer what commands are for MRP
+> configuration.
 
-> Clang warns:
-> 
-> ../drivers/net/wireless/intersil/hostap/hostap_ap.c:2511:3: warning:
-> misleading indentation; statement is not part of the previous 'if'
-> [-Wmisleading-indentation]
->         if (sta->tx_supp_rates & WLAN_RATE_5M5)
->         ^
-> ../drivers/net/wireless/intersil/hostap/hostap_ap.c:2509:2: note:
-> previous statement is here
->         if (sta->tx_supp_rates & WLAN_RATE_2M)
->         ^
-> 1 warning generated.
-> 
-> This warning occurs because there is a space before the tab on this
-> line. Remove it so that the indentation is consistent with the Linux
-> kernel coding style and clang no longer warns.
-> 
-> Fixes: ff1d2767d5a4 ("Add HostAP wireless driver.")
-> Link: https://github.com/ClangBuiltLinux/linux/issues/813
-> Signed-off-by: Nathan Chancellor <natechancellor@gmail.com>
-> Reviewed-by: Nick Desaulniers <ndesaulniers@google.com>
+The naming makes this clear, having _MRP_ in the attribute names etc.
 
-Patch applied to wireless-drivers-next.git, thanks.
+But it would be good have input from the Bridge maintainers.
 
-b61156fba74f hostap: Adjust indentation in prism2_hostapd_add_sta
-
--- 
-https://patchwork.kernel.org/patch/11299247/
-
-https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
+    Andrew
