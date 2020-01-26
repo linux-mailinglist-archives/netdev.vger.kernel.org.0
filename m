@@ -2,87 +2,91 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 26A251498CD
-	for <lists+netdev@lfdr.de>; Sun, 26 Jan 2020 05:54:54 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A7A75149968
+	for <lists+netdev@lfdr.de>; Sun, 26 Jan 2020 07:07:42 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729248AbgAZEyw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 25 Jan 2020 23:54:52 -0500
-Received: from mail-qk1-f195.google.com ([209.85.222.195]:33121 "EHLO
-        mail-qk1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729014AbgAZEyw (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 25 Jan 2020 23:54:52 -0500
-Received: by mail-qk1-f195.google.com with SMTP id h23so6464748qkh.0
-        for <netdev@vger.kernel.org>; Sat, 25 Jan 2020 20:54:51 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=vy+QkTpv1IIiY0QT5I1UGyf9JmQemC9if+XxfGRJLqk=;
-        b=hApVMWFvXM1ycWnt4zB7mhpJgvWSy3a5eABBdw/yn8gkgeEmMnCtAJ/KWHP197g4CF
-         lqpaUpKewbjHEGYFzqjgANuY49nFAE3OcNXebepaD5hulPv2pge+uEXtRUkTVIWq3ZyU
-         XtNX7UIY2zD/rumsTUcqVuykmQM07Lk6CfFjwzx1EzcVL9DHs+EFv/sfyL0dSWoOzOxx
-         Z3O26u8DDOtKXoR4JQlDHkF07si/qNtVotxsuVt5nHNXOal3hVvTWtRXwzzRrQ2SNLCy
-         Y4oOQ+U+561vZAV9dSWxmDll4G606N8yfgdT7HhAyfhnmigAikooVVLl0ahbOGi1GKt+
-         W0bA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=vy+QkTpv1IIiY0QT5I1UGyf9JmQemC9if+XxfGRJLqk=;
-        b=AoE/95OvGu1mspmNHIFXlrgpbzoDw5fKicNQ/hsDsEyNwbwj0Qv2cqICMk0SB3nP1A
-         OZi9Bpr3KFESEHde5L+56uXwnXgMYc29VPgMpcG9RCyNSs8go4bLJGr8mdJc3H3M9Dm1
-         LcdtmQlsTh6Pkv466WpDfNuO78KQwrOEnNAkMW9iT4Flf4b4h71/C+8pjyn/giWQfK9C
-         DWC3fM7bWePyHnzoZrxv7lEU8i0ASH7Uj1Pg1niBoW+0QgAU28GzxWdyLSkleUk9mtKW
-         PjWSve4aaNkoB0LnQ9lOuThFcFm/wgU0ryxDuUyD1dvsqhQ/uFzAST4C2erysT4YqbJF
-         96QA==
-X-Gm-Message-State: APjAAAVvch3H8aoG7fRDpLc4cEVvr6t4GFd0wAN+oHnZT3EtwPXVhCOw
-        85GLkS1b88+/Pr8ikcSHAjk=
-X-Google-Smtp-Source: APXvYqwP9yFe0iuxWQQH7EtbrjzgU1WXI4cq57EGOQlEzo++2E/2KG1xDlJDsOzyAtyAB5/NyTNr3Q==
-X-Received: by 2002:ae9:e211:: with SMTP id c17mr10945661qkc.133.1580014490803;
-        Sat, 25 Jan 2020 20:54:50 -0800 (PST)
-Received: from ast-mbp ([2620:10d:c091:480::a64e])
-        by smtp.gmail.com with ESMTPSA id 13sm6612338qke.85.2020.01.25.20.54.47
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Sat, 25 Jan 2020 20:54:50 -0800 (PST)
-Date:   Sat, 25 Jan 2020 20:54:45 -0800
-From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
-To:     David Ahern <dsahern@gmail.com>
-Cc:     Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        David Ahern <dsahern@kernel.org>, netdev@vger.kernel.org,
-        prashantbhole.linux@gmail.com, jasowang@redhat.com,
-        davem@davemloft.net, jbrouer@redhat.com, mst@redhat.com,
-        toshiaki.makita1@gmail.com, daniel@iogearbox.net,
-        john.fastabend@gmail.com, ast@kernel.org, kafai@fb.com,
-        songliubraving@fb.com, yhs@fb.com, andriin@fb.com,
-        David Ahern <dahern@digitalocean.com>
-Subject: Re: [PATCH bpf-next 03/12] net: Add IFLA_XDP_EGRESS for XDP programs
- in the egress path
-Message-ID: <20200126045443.f47dzxdglazzchfm@ast-mbp>
-References: <20200123014210.38412-1-dsahern@kernel.org>
- <20200123014210.38412-4-dsahern@kernel.org>
- <87tv4m9zio.fsf@toke.dk>
- <335b624a-655a-c0c6-ca27-102e6dac790b@gmail.com>
- <20200124072128.4fcb4bd1@cakuba>
- <87o8usg92d.fsf@toke.dk>
- <1d84d8be-6812-d63a-97ca-ebc68cc266b9@gmail.com>
+        id S1726323AbgAZGHl (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 26 Jan 2020 01:07:41 -0500
+Received: from mga14.intel.com ([192.55.52.115]:18151 "EHLO mga14.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1725773AbgAZGHk (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sun, 26 Jan 2020 01:07:40 -0500
+X-Amp-Result: SKIPPED(no attachment in message)
+X-Amp-File-Uploaded: False
+Received: from orsmga006.jf.intel.com ([10.7.209.51])
+  by fmsmga103.fm.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 25 Jan 2020 22:07:40 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.70,364,1574150400"; 
+   d="scan'208";a="230947202"
+Received: from jtkirshe-desk1.jf.intel.com ([134.134.177.74])
+  by orsmga006.jf.intel.com with ESMTP; 25 Jan 2020 22:07:40 -0800
+From:   Jeff Kirsher <jeffrey.t.kirsher@intel.com>
+To:     davem@davemloft.net
+Cc:     Jeff Kirsher <jeffrey.t.kirsher@intel.com>, netdev@vger.kernel.org,
+        nhorman@redhat.com, sassmann@redhat.com
+Subject: [net-next 0/8][pull request] 100GbE Intel Wired LAN Driver Updates 2020-01-25
+Date:   Sat, 25 Jan 2020 22:07:29 -0800
+Message-Id: <20200126060737.3238027-1-jeffrey.t.kirsher@intel.com>
+X-Mailer: git-send-email 2.24.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <1d84d8be-6812-d63a-97ca-ebc68cc266b9@gmail.com>
-User-Agent: NeoMutt/20180223
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, Jan 25, 2020 at 06:43:36PM -0700, David Ahern wrote:
-> 
-> That said, Martin's comment throws a wrench in the goal: if the existing
-> code does not enforce expected_attach_type then that option can not be
-> used in which case I guess I have to go with a new program type
-> (BPF_PROG_TYPE_XDP_EGRESS) which takes a new context (xdp_egress_md),
-> has different return codes, etc.
+This series contains updates to the ice driver to add support for RSS.
 
-This is acceptable risk. We did such thing in the past. The chances of
-user space breakage are extremely low.
+Henry and Tony enable the driver to write the filtering hardware tables
+to allow for changing of RSS rules, also introduced and initialized the
+structures for storing the configuration.  Then followed it up by
+creating an extraction sequence based on the packet header protocols to
+be programmed.  Next was storing the TCAM entry with the profile data
+and VSI group in the respective software structures.
+
+Md Fahad sets up the configuration to support RSS tables for the virtual
+function (VF) driver (iavf).  Add support for flow types TCP4, TCP6,
+UDP4, UDP6, SCTP4 and SCTP6 for RSS via ethtool.
+
+The following are changes since commit 3333e50b64fe30b7e53cf02456a2f567f689ae4f:
+  Merge branch 'mlxsw-Offload-TBF'
+and are available in the git repository at:
+  git://git.kernel.org/pub/scm/linux/kernel/git/jkirsher/next-queue 100GbE
+
+Md Fahad Iqbal Polash (2):
+  ice: Initilialize VF RSS tables
+  ice: Implement ethtool get/set rx-flow-hash
+
+Tony Nguyen (6):
+  ice: Enable writing hardware filtering tables
+  ice: Allocate flow profile
+  ice: Populate TCAM filter software structures
+  ice: Enable writing filtering tables
+  ice: Optimize table usage
+  ice: Bump version
+
+ drivers/net/ethernet/intel/ice/Makefile       |    3 +-
+ .../net/ethernet/intel/ice/ice_adminq_cmd.h   |    8 +
+ drivers/net/ethernet/intel/ice/ice_common.c   |  114 +-
+ drivers/net/ethernet/intel/ice/ice_common.h   |    8 +
+ drivers/net/ethernet/intel/ice/ice_ethtool.c  |  243 ++
+ .../net/ethernet/intel/ice/ice_flex_pipe.c    | 2575 ++++++++++++++++-
+ .../net/ethernet/intel/ice/ice_flex_pipe.h    |    9 +
+ .../net/ethernet/intel/ice/ice_flex_type.h    |  112 +
+ drivers/net/ethernet/intel/ice/ice_flow.c     | 1275 ++++++++
+ drivers/net/ethernet/intel/ice/ice_flow.h     |  207 ++
+ .../net/ethernet/intel/ice/ice_lan_tx_rx.h    |    8 +
+ drivers/net/ethernet/intel/ice/ice_lib.c      |  146 +-
+ drivers/net/ethernet/intel/ice/ice_main.c     |    2 +-
+ .../ethernet/intel/ice/ice_protocol_type.h    |   25 +
+ drivers/net/ethernet/intel/ice/ice_status.h   |    1 +
+ drivers/net/ethernet/intel/ice/ice_switch.c   |   36 -
+ drivers/net/ethernet/intel/ice/ice_type.h     |    6 +
+ 17 files changed, 4729 insertions(+), 49 deletions(-)
+ create mode 100644 drivers/net/ethernet/intel/ice/ice_flow.c
+ create mode 100644 drivers/net/ethernet/intel/ice/ice_flow.h
+ create mode 100644 drivers/net/ethernet/intel/ice/ice_protocol_type.h
+
+-- 
+2.24.1
+
