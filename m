@@ -2,63 +2,66 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 446D1149C57
-	for <lists+netdev@lfdr.de>; Sun, 26 Jan 2020 19:35:11 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C5E44149C5F
+	for <lists+netdev@lfdr.de>; Sun, 26 Jan 2020 19:55:26 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728420AbgAZSfG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 26 Jan 2020 13:35:06 -0500
-Received: from mail-pg1-f193.google.com ([209.85.215.193]:42081 "EHLO
-        mail-pg1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726761AbgAZSfG (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 26 Jan 2020 13:35:06 -0500
-Received: by mail-pg1-f193.google.com with SMTP id s64so4004390pgb.9
-        for <netdev@vger.kernel.org>; Sun, 26 Jan 2020 10:35:06 -0800 (PST)
+        id S1728583AbgAZSzY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 26 Jan 2020 13:55:24 -0500
+Received: from mail-pl1-f196.google.com ([209.85.214.196]:46855 "EHLO
+        mail-pl1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725838AbgAZSzX (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 26 Jan 2020 13:55:23 -0500
+Received: by mail-pl1-f196.google.com with SMTP id y8so2927173pll.13
+        for <netdev@vger.kernel.org>; Sun, 26 Jan 2020 10:55:23 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=pensando.io; s=google;
-        h=subject:to:cc:references:from:message-id:date:user-agent
+        h=from:subject:to:cc:references:message-id:date:user-agent
          :mime-version:in-reply-to:content-transfer-encoding:content-language;
-        bh=buJqycnRJmE0klBvQ3jUgMDQeTjnHb0PShrMhrfuVB8=;
-        b=0ld6Ez34Qsy5L3zKymuv8E6s6kzPBTjfgjQExASj5271nr04uZjgejw/GxVmrYGSq3
-         bPaIDolal+2F38wWFPyNSQmA7WddKehD390EXrXeKt23g0Vh1LKITI+f3zlGcRDBgf9d
-         z0xAsaSsde/YRQdkq9D6PEzUdwsds0vDwWDZw2gj18W4zOXxpgSw74hC/Iij7np58XAQ
-         Sok2aEho84XWfHCmkvMfwsfF/CW7rAJOTq3ZyrrQVIwoWE5Ql0/8yBvmDhZ/sO3ia7ko
-         VoDvP1nyMu3y8PgBlt6d4xAuEXXSbWdoFX91Vj6H0/coJAZ0DKZsYL4/GsQdZp+We76Y
-         14qA==
+        bh=SwkUwKYIYvLUqX5JaWLXfEVl6YlHqss44QQbPFczvoA=;
+        b=5AfoRmiQo00AZ3wCsaekrCQmEDM91vVTOJpso5+ZXBQvvyf04qCa0HqC+f1AP0Cenp
+         uSKOX+t/9sI6VyHYq17WFP4tJNF84jrk1dSnffsZgfH63NyL0HRQbpBzNBVB32HaqNbV
+         5o157eRxEDDBlxh1OuihQj60I1fXNeBjr+DwPHWO1rRjwciUAPvoFPEAFhzRQw1wFxj7
+         H2UufXMCeu6DJU9aO/jwKCJWdmCZPy97EtVHdFQg6erZY+r5+JCBs3DnE9WFzsaXSFZR
+         w/v6tBIu0ORf5FTXdt31F/MAQvF7BRerahPwN2I47WaZABgn9feaUGvBqGKZ+4u57lIx
+         Y8Qw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+        h=x-gm-message-state:from:subject:to:cc:references:message-id:date
          :user-agent:mime-version:in-reply-to:content-transfer-encoding
          :content-language;
-        bh=buJqycnRJmE0klBvQ3jUgMDQeTjnHb0PShrMhrfuVB8=;
-        b=VKCS3kiGBgPkrqyT+JGv6H8Iq7jivJ9q3dy32OAwTDwP4SLttVNh9GoKJW4CTW8xPg
-         Bb7K7kYQ3d0rrQVtVr589QZkY91yd4HgKQ8pXemUrkUtwP+zyZHVzt4NDx/McpIjjZqh
-         tZKZNN4mTMRgOJnmCEJxn9MqARefpFQ/NSsEb+OjRfc9aaZT4TZi1lrYAEL1LfH94OuW
-         jxiQ0us2QurldHDL3MZHJHMzAX2uZLR0pKR/edgsoQHCG+Et/ln7h7OwQTze7PKlETfh
-         +iTV6ZC4ZB6yviPtkaWhIh8BeBWR35pSrP6K93EcUAaJozDmIPGil4i6J4O0jz5eGzCK
-         pfUQ==
-X-Gm-Message-State: APjAAAXbuMBb2AXpYzyx/JsfRVjlNQI8+JwCUwIoUJGLNQDQm/UKMEKO
-        qv0uVYXU5OOupzpYzWTEi6vIqA==
-X-Google-Smtp-Source: APXvYqyhSoh0s6Ekkqi2sNDxODbKwJ831I0jnyBSCMndArKyHIgMKJixjEHLPA+aFoo/LdQTaooSYQ==
-X-Received: by 2002:aa7:9796:: with SMTP id o22mr12683626pfp.101.1580063705781;
-        Sun, 26 Jan 2020 10:35:05 -0800 (PST)
+        bh=SwkUwKYIYvLUqX5JaWLXfEVl6YlHqss44QQbPFczvoA=;
+        b=GaKHtCeZmdzc6SALrDT1teFdYLZGH2KeBUZPOuPN+kHW82N4XlmvtkkEC33fnB0JMC
+         9Ye36/sJESE+Q24n3JUIWPazO3jjj5316g0spK1Lb2wV1NFmvEP5MnNSFl5Ftat1x1Eo
+         VtKzCpDlyAlDqg8D1iXsxHjCDs97BueLHv45psTMeL5oJAbbo9YLmj7XPwbtrYc2Kljf
+         WPdublDRTMhjmfJEdKn7ol61/dKsGARj+BNK2Yrt75v4OC5kNHSnKUnOGwN5KPqUP1SE
+         fl50qtWCMf3VGrGFvH4h+HZaFMknc5ScS9UuV0YnhxxASozYES73wB03pu2cbGpTsHZS
+         2Nwg==
+X-Gm-Message-State: APjAAAXMsHD0VflFSUePH6KZzZH76Dt6Sk1dSA+qxv082RU8qgR5MNMQ
+        wIIDpZv6L/52+N2s7xlvnJXeHj1dnoXLqw==
+X-Google-Smtp-Source: APXvYqxRaXVAnSukkGVGodMg09oPLJgO0PUjp7Nnhym1S35cDxgomDzeIJ4/L3Yl5/7tLwyYw+T5pg==
+X-Received: by 2002:a17:902:904c:: with SMTP id w12mr14649211plz.35.1580064922790;
+        Sun, 26 Jan 2020 10:55:22 -0800 (PST)
 Received: from Shannons-MacBook-Pro.local (static-50-53-47-17.bvtn.or.frontiernet.net. [50.53.47.17])
-        by smtp.gmail.com with ESMTPSA id s25sm12426540pfh.110.2020.01.26.10.35.04
+        by smtp.gmail.com with ESMTPSA id s1sm12871406pgv.87.2020.01.26.10.55.21
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sun, 26 Jan 2020 10:35:05 -0800 (PST)
-Subject: Re: [PATCH] ionic: Fix rx queue allocation in 'ionic_lif_alloc()'
-To:     Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
-        drivers@pensando.io, jakub.kicinski@netronome.com,
-        davem@davemloft.net
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        kernel-janitors@vger.kernel.org
-References: <20200126102540.14812-1-christophe.jaillet@wanadoo.fr>
+        Sun, 26 Jan 2020 10:55:22 -0800 (PST)
 From:   Shannon Nelson <snelson@pensando.io>
-Message-ID: <0a90fbcb-430e-d059-cd1c-7960e7ec6806@pensando.io>
-Date:   Sun, 26 Jan 2020 10:36:00 -0800
+Subject: Re: [PATCH net-next] net/core: Replace driver version to be kernel
+ version
+To:     Leon Romanovsky <leon@kernel.org>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>
+Cc:     Leon Romanovsky <leonro@mellanox.com>,
+        Michal Kalderon <michal.kalderon@marvell.com>,
+        linux-netdev <netdev@vger.kernel.org>,
+        RDMA mailing list <linux-rdma@vger.kernel.org>
+References: <20200123130541.30473-1-leon@kernel.org>
+Message-ID: <43d43a45-18db-f959-7275-63c9976fdf40@pensando.io>
+Date:   Sun, 26 Jan 2020 10:56:17 -0800
 User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:68.0)
  Gecko/20100101 Thunderbird/68.3.1
 MIME-Version: 1.0
-In-Reply-To: <20200126102540.14812-1-christophe.jaillet@wanadoo.fr>
+In-Reply-To: <20200123130541.30473-1-leon@kernel.org>
 Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Transfer-Encoding: 8bit
 Content-Language: en-US
@@ -67,50 +70,99 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 1/26/20 2:25 AM, Christophe JAILLET wrote:
-> The 'struct ionic' has a 'nrxqs_per_lif' field. So use it instead of
-> using two times the value of 'ntxqs_per_lif'.
+On 1/23/20 5:05 AM, Leon Romanovsky wrote:
+> From: Leon Romanovsky<leonro@mellanox.com>
 >
-> Note that with the current implementation, this patch is a no-op because
-> both fields are set to the same value in 'ionic_lifs_size()' which
-> is called before reaching 'ionic_lif_alloc()'.
+> In order to stop useless driver version bumps and unify output
+> presented by ethtool -i, let's overwrite the version string.
 >
-> However, it is more future-proof.
+> Before this change:
+> [leonro@erver ~]$ ethtool -i eth0
+> driver: virtio_net
+> version: 1.0.0
+> After this change:
+> [leonro@server ~]$ ethtool -i eth0
+> driver: virtio_net
+> version: 5.5.0-rc6+
 >
-> Fixes: 1a58e196467f ("ionic: Add basic lif support")
-> Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+> Signed-off-by: Leon Romanovsky<leonro@mellanox.com>
 > ---
-> Another alternative could be to use 'alloc_etherdev_mq()' if really using
-> the same value for both fields is what is expected.
-> ---
->   drivers/net/ethernet/pensando/ionic/ionic_lif.c | 2 +-
->   1 file changed, 1 insertion(+), 1 deletion(-)
+> I wanted to change to VERMAGIC_STRING, but the output doesn't
+> look pleasant to my taste and on my system is truncated to be
+> "version: 5.5.0-rc6+ SMP mod_unload modve".
 >
-> diff --git a/drivers/net/ethernet/pensando/ionic/ionic_lif.c b/drivers/net/ethernet/pensando/ionic/ionic_lif.c
-> index 60fd14df49d7..96d3b3e993ad 100644
-> --- a/drivers/net/ethernet/pensando/ionic/ionic_lif.c
-> +++ b/drivers/net/ethernet/pensando/ionic/ionic_lif.c
-> @@ -1663,7 +1663,7 @@ static struct ionic_lif *ionic_lif_alloc(struct ionic *ionic, unsigned int index
->   	int err;
->   
->   	netdev = alloc_etherdev_mqs(sizeof(*lif),
-> -				    ionic->ntxqs_per_lif, ionic->ntxqs_per_lif);
-> +				    ionic->ntxqs_per_lif, ionic->nrxqs_per_lif);
->   	if (!netdev) {
->   		dev_err(dev, "Cannot allocate netdev, aborting\n");
->   		return ERR_PTR(-ENOMEM);
+> After this patch, we can drop all those version assignments
+> from the drivers.
+>
+> Inspired by nfp and hns code.
+> ---
+>   net/core/ethtool.c | 3 +++
+>   1 file changed, 3 insertions(+)
+>
+> diff --git a/net/core/ethtool.c b/net/core/ethtool.c
+> index cd9bc67381b2..3c6fb13a78bf 100644
+> --- a/net/core/ethtool.c
+> +++ b/net/core/ethtool.c
+> @@ -17,6 +17,7 @@
+>   #include <linux/phy.h>
+>   #include <linux/bitops.h>
+>   #include <linux/uaccess.h>
+> +#include <linux/vermagic.h>
+>   #include <linux/vmalloc.h>
+>   #include <linux/sfp.h>
+>   #include <linux/slab.h>
+> @@ -776,6 +777,8 @@ static noinline_for_stack int ethtool_get_drvinfo(struct net_device *dev,
+>   		return -EOPNOTSUPP;
+>   	}
+>
+> +	strlcpy(info.version, UTS_RELEASE, sizeof(info.version));
+> +
+>   	/*
+>   	 * this method of obtaining string set info is deprecated;
+>   	 * Use ETHTOOL_GSSET_INFO instead.
+> --
+> 2.20.1
+>
 
-NAK
+First of all, although I've seen some of the arguments about distros and 
+their backporting, I still believe that the driver version number is 
+useful.  In most cases it at least gets us in the ballpark of what 
+generation the driver happens to be and is still useful. I'd really 
+prefer that it is just left alone for the device manufactures and their 
+support folks to deal with.
 
-Even though the NIC configuration seems to allow for different values, 
-the rest of the driver assumes that the values are equal and things will 
-likely break if they aren't.  This is why the ethtool service 
-ionic_set_channels() only allows the user to change the Combined value, 
-and not the individual rx or tx values.
+Fine, I'm sure I lose that argument since there's already been plenty of 
+discussion about it.
 
-If you really want to tweak this, a better change might be to use the 
-min of ntxqs and nrxqs, and maybe add a warning log message that they 
-are configured with different values.
+Meanwhile, there is some non-zero number of support scripts and 
+processes, possibly internal testing chains, that use that driver/vendor 
+specific version information and will be broken by this change.  Small 
+number?  Large number?  I don't know, but we're breaking them.
+
+Sure, I probably easily lose that argument too, but it still should be 
+stated.
+
+This will end up affecting out-of-tree drivers as well, where it is 
+useful to know what the version number is, most especially since it is 
+different from what the kernel provided driver is.  How else are we to 
+get this information out to the user?  If this feature gets squashed, 
+we'll end up having to abuse some other mechanism so we can get the live 
+information from the driver, and probably each vendor will find a 
+different way to sneak it out, giving us more chaos than where we 
+started.  At least the ethtool version field is a known and consistent 
+place for the version info.
+
+Of course, out-of-tree drivers are not first class citizens, so I 
+probably lose that argument as well.
+
+So if you are so all fired up about not allowing the drivers to report 
+their own version number, then why report anything at all? Maybe just 
+report a blank field.  As some have said, the uname info is already 
+available else where, why are we sticking it here?
+
+Personally, I think this is a rather arbitrary, heavy handed and 
+unnecessary slam on the drivers, and will make support more difficult in 
+the long run.
 
 sln
 
