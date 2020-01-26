@@ -2,70 +2,77 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 247A4149A0D
-	for <lists+netdev@lfdr.de>; Sun, 26 Jan 2020 11:25:53 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 76354149A1A
+	for <lists+netdev@lfdr.de>; Sun, 26 Jan 2020 11:30:32 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729360AbgAZKZv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 26 Jan 2020 05:25:51 -0500
-Received: from smtp08.smtpout.orange.fr ([80.12.242.130]:43489 "EHLO
-        smtp.smtpout.orange.fr" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729300AbgAZKZv (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 26 Jan 2020 05:25:51 -0500
-Received: from localhost.localdomain ([92.140.214.230])
-        by mwinf5d67 with ME
-        id uyRn210074ypjRG03yRo0l; Sun, 26 Jan 2020 11:25:49 +0100
-X-ME-Helo: localhost.localdomain
-X-ME-Auth: Y2hyaXN0b3BoZS5qYWlsbGV0QHdhbmFkb28uZnI=
-X-ME-Date: Sun, 26 Jan 2020 11:25:49 +0100
-X-ME-IP: 92.140.214.230
-From:   Christophe JAILLET <christophe.jaillet@wanadoo.fr>
-To:     snelson@pensando.io, drivers@pensando.io,
-        jakub.kicinski@netronome.com, davem@davemloft.net
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        kernel-janitors@vger.kernel.org,
-        Christophe JAILLET <christophe.jaillet@wanadoo.fr>
-Subject: [PATCH] ionic: Fix rx queue allocation in 'ionic_lif_alloc()'
-Date:   Sun, 26 Jan 2020 11:25:40 +0100
-Message-Id: <20200126102540.14812-1-christophe.jaillet@wanadoo.fr>
-X-Mailer: git-send-email 2.20.1
+        id S1729300AbgAZKaO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 26 Jan 2020 05:30:14 -0500
+Received: from mail26.static.mailgun.info ([104.130.122.26]:43187 "EHLO
+        mail26.static.mailgun.info" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1729107AbgAZKaO (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 26 Jan 2020 05:30:14 -0500
+DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org; q=dns/txt;
+ s=smtp; t=1580034613; h=Date: Message-Id: Cc: To: References:
+ In-Reply-To: From: Subject: Content-Transfer-Encoding: MIME-Version:
+ Content-Type: Sender; bh=4aEVqIqI9+SlQqawbAs7IiU8R7BwwIk/UJc+UVjYgSw=;
+ b=Z2NanRQX9PgvpPJGvK/E7oNv5epERskRq5BA1mXRnaIGiGz5LJ0mQM48YEemVWMgrKH1CX4d
+ eHhB1WufQFx7/k0WbnMsc0BVF3U1FX+YGWmotM2dmbOtbr2Y8pvrffVzjIQwro7zfIWeQkJw
+ VW15Qdk3ERwd0XK4JrHlaIuk3DY=
+X-Mailgun-Sending-Ip: 104.130.122.26
+X-Mailgun-Sid: WyJiZjI2MiIsICJuZXRkZXZAdmdlci5rZXJuZWwub3JnIiwgImJlOWU0YSJd
+Received: from smtp.codeaurora.org (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171])
+ by mxa.mailgun.org with ESMTP id 5e2d6a33.7f2016c10fb8-smtp-out-n03;
+ Sun, 26 Jan 2020 10:30:11 -0000 (UTC)
+Received: by smtp.codeaurora.org (Postfix, from userid 1001)
+        id D6424C4479C; Sun, 26 Jan 2020 10:30:11 +0000 (UTC)
+X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
+        aws-us-west-2-caf-mail-1.web.codeaurora.org
+X-Spam-Level: 
+X-Spam-Status: No, score=0.5 required=2.0 tests=ALL_TRUSTED,MISSING_DATE,
+        MISSING_MID,SPF_NONE autolearn=no autolearn_force=no version=3.4.0
+Received: from potku.adurom.net (88-114-240-156.elisa-laajakaista.fi [88.114.240.156])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        (Authenticated sender: kvalo)
+        by smtp.codeaurora.org (Postfix) with ESMTPSA id 792C3C433CB;
+        Sun, 26 Jan 2020 10:30:09 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org 792C3C433CB
+Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
+Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; spf=none smtp.mailfrom=kvalo@codeaurora.org
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7bit
+Subject: Re: [PATCH -next 4/6] ath10k: use true,false for bool variable
+From:   Kalle Valo <kvalo@codeaurora.org>
+In-Reply-To: <1577196966-84926-5-git-send-email-zhengbin13@huawei.com>
+References: <1577196966-84926-5-git-send-email-zhengbin13@huawei.com>
+To:     zhengbin <zhengbin13@huawei.com>
+Cc:     <yhchuang@realtek.com>, <davem@davemloft.net>,
+        <linux-wireless@vger.kernel.org>, <netdev@vger.kernel.org>,
+        <zhengbin13@huawei.com>
+User-Agent: pwcli/0.0.0-git (https://github.com/kvalo/pwcli/) Python/2.7.12
+Message-Id: <20200126103011.D6424C4479C@smtp.codeaurora.org>
+Date:   Sun, 26 Jan 2020 10:30:11 +0000 (UTC)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The 'struct ionic' has a 'nrxqs_per_lif' field. So use it instead of
-using two times the value of 'ntxqs_per_lif'.
+zhengbin <zhengbin13@huawei.com> wrote:
 
-Note that with the current implementation, this patch is a no-op because
-both fields are set to the same value in 'ionic_lifs_size()' which
-is called before reaching 'ionic_lif_alloc()'.
+> Fixes coccicheck warning:
+> 
+> drivers/net/wireless/ath/ath10k/htt_rx.c:2143:2-31: WARNING: Assignment of 0/1 to bool variable
+> 
+> Reported-by: Hulk Robot <hulkci@huawei.com>
+> Signed-off-by: zhengbin <zhengbin13@huawei.com>
+> Signed-off-by: Kalle Valo <kvalo@codeaurora.org>
 
-However, it is more future-proof.
+Patch applied to ath-next branch of ath.git, thanks.
 
-Fixes: 1a58e196467f ("ionic: Add basic lif support")
-Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
----
-Another alternative could be to use 'alloc_etherdev_mq()' if really using
-the same value for both fields is what is expected.
----
- drivers/net/ethernet/pensando/ionic/ionic_lif.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+0f7ab288ade9 ath10k: use true,false for bool variable
 
-diff --git a/drivers/net/ethernet/pensando/ionic/ionic_lif.c b/drivers/net/ethernet/pensando/ionic/ionic_lif.c
-index 60fd14df49d7..96d3b3e993ad 100644
---- a/drivers/net/ethernet/pensando/ionic/ionic_lif.c
-+++ b/drivers/net/ethernet/pensando/ionic/ionic_lif.c
-@@ -1663,7 +1663,7 @@ static struct ionic_lif *ionic_lif_alloc(struct ionic *ionic, unsigned int index
- 	int err;
- 
- 	netdev = alloc_etherdev_mqs(sizeof(*lif),
--				    ionic->ntxqs_per_lif, ionic->ntxqs_per_lif);
-+				    ionic->ntxqs_per_lif, ionic->nrxqs_per_lif);
- 	if (!netdev) {
- 		dev_err(dev, "Cannot allocate netdev, aborting\n");
- 		return ERR_PTR(-ENOMEM);
 -- 
-2.20.1
+https://patchwork.kernel.org/patch/11309357/
 
+https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
