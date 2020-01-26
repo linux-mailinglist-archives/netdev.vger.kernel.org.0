@@ -2,82 +2,64 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id E7DE31499CC
-	for <lists+netdev@lfdr.de>; Sun, 26 Jan 2020 10:21:02 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A77BF1499D9
+	for <lists+netdev@lfdr.de>; Sun, 26 Jan 2020 10:46:16 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729012AbgAZJU4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 26 Jan 2020 04:20:56 -0500
-Received: from smtp04.smtpout.orange.fr ([80.12.242.126]:40607 "EHLO
-        smtp.smtpout.orange.fr" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726443AbgAZJU4 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 26 Jan 2020 04:20:56 -0500
-Received: from localhost.localdomain ([93.23.15.185])
-        by mwinf5d07 with ME
-        id uxLl2100n3zZxD103xLmMA; Sun, 26 Jan 2020 10:20:54 +0100
-X-ME-Helo: localhost.localdomain
-X-ME-Auth: Y2hyaXN0b3BoZS5qYWlsbGV0QHdhbmFkb28uZnI=
-X-ME-Date: Sun, 26 Jan 2020 10:20:54 +0100
-X-ME-IP: 93.23.15.185
-From:   Christophe JAILLET <christophe.jaillet@wanadoo.fr>
-To:     claudiu.manoil@nxp.com, davem@davemloft.net
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        kernel-janitors@vger.kernel.org,
-        Christophe JAILLET <christophe.jaillet@wanadoo.fr>
-Subject: [PATCH] gianfar: Allocate the correct number of rx queues in 'gfar_of_init()'
-Date:   Sun, 26 Jan 2020 10:20:28 +0100
-Message-Id: <20200126092028.14246-1-christophe.jaillet@wanadoo.fr>
-X-Mailer: git-send-email 2.20.1
+        id S1726518AbgAZJqP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 26 Jan 2020 04:46:15 -0500
+Received: from mx4.wp.pl ([212.77.101.12]:25026 "EHLO mx4.wp.pl"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1727754AbgAZJqO (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sun, 26 Jan 2020 04:46:14 -0500
+X-Greylist: delayed 399 seconds by postgrey-1.27 at vger.kernel.org; Sun, 26 Jan 2020 04:46:13 EST
+Received: (wp-smtpd smtp.wp.pl 1467 invoked from network); 26 Jan 2020 10:39:33 +0100
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=wp.pl; s=1024a;
+          t=1580031573; bh=8l1rmL5X5Cv0Cj5XiywukSTYoIUEeUjYPldXFydWbC0=;
+          h=From:To:Cc:Subject;
+          b=nOuavmRoSp5RRbeyZdERhjGL6lBZfuXp1C1VmIyHyeBce9sOakGtCD5JYmxMVHj4p
+           jvLiTTi+ttVtC62AHQY30tVHldAx8qkFpPY4H4fzMzBBtG7g8PBn5G/1x8ilpdGDLi
+           on5uDFfGmaLAJd15pl1s+7iBsuBqrtzBsV+ikYR4=
+Received: from host-178.215.207.168-internet.zabrze.debacom.pl (HELO localhost) (stf_xl@wp.pl@[178.215.207.168])
+          (envelope-sender <stf_xl@wp.pl>)
+          by smtp.wp.pl (WP-SMTPD) with ECDHE-RSA-AES256-GCM-SHA384 encrypted SMTP
+          for <colin.king@canonical.com>; 26 Jan 2020 10:39:33 +0100
+Date:   Sun, 26 Jan 2020 10:39:32 +0100
+From:   Stanislaw Gruszka <stf_xl@wp.pl>
+To:     Colin King <colin.king@canonical.com>
+Cc:     Kalle Valo <kvalo@codeaurora.org>,
+        "David S . Miller" <davem@davemloft.net>,
+        Meenakshi Venkataraman <meenakshi.venkataraman@intel.com>,
+        Wey-Yi Guy <wey-yi.w.guy@intel.com>,
+        Johannes Berg <johannes.berg@intel.com>,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        kernel-janitors@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH][next] iwlegacy: ensure loop counter addr does not wrap
+ and cause an infinite loop
+Message-ID: <20200126093932.GA605118@wp.pl>
+References: <20200126000954.22807-1-colin.king@canonical.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20200126000954.22807-1-colin.king@canonical.com>
+X-WP-MailID: 5300318e69b08c0e5e0d2f8643f46dc7
+X-WP-AV: skaner antywirusowy Poczty Wirtualnej Polski
+X-WP-SPAM: NO 0000000 [oROH]                               
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-We can get values for rx and tx queues from "fsl,num_rx_queues" and
-"fsl,num_tx_queues". However, when 'alloc_etherdev_mq()' is called, the
-value for "tx" is used for both.
+On Sun, Jan 26, 2020 at 12:09:54AM +0000, Colin King wrote:
+> From: Colin Ian King <colin.king@canonical.com>
+> 
+> The loop counter addr is a u16 where as the upper limit of the loop
+> is a an int. In the unlikely event that the il->cfg->eeprom_size is
+> greater than 64K then we end up with an infinite loop since addr will
+> wrap around an never reach upper loop limit. Fix this by making addr
+> an int.
+> 
+> Addresses-Coverity: ("Infinite loop")
+> Fixes: be663ab67077 ("iwlwifi: split the drivers for agn and legacy devices 3945/4965")
+> Signed-off-by: Colin Ian King <colin.king@canonical.com>
 
-Use 'alloc_etherdev_mqs()' instead.
-
-Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
----
-WARNING: This patch is purely speculative!
-
-I don't fully understand the code, and tx and rx queues seem to be
-allocated by 'gfar_alloc_[rt]x_queues()' and handled with priv-> fields.
-I don't know the relationship between queues provided by the core, and the
-ones specificly handled in this driver.
-
-'netif_set_real_num_rx_queues()' a few lines below is also spurious to me.
-If "fsl,num_rx_queues" > "fsl,num_tx_queues" it will return an error and
-things then look out of synch (i.e. 'priv->num_rx_queues' is set to a value
-bigger than what is allocated by core, that is to say the one from
-'priv->num_tx_queues')
-
-If my assumptions are correct, I guess that the call to
-'netif_set_real_num_rx_queues()' is useless
-
-
-Sorry for the noise if I'm completly wrong.
-In such a case, some explanation would be appreciated.
----
- drivers/net/ethernet/freescale/gianfar.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/drivers/net/ethernet/freescale/gianfar.c b/drivers/net/ethernet/freescale/gianfar.c
-index 72868a28b621..5e934069682e 100644
---- a/drivers/net/ethernet/freescale/gianfar.c
-+++ b/drivers/net/ethernet/freescale/gianfar.c
-@@ -708,7 +708,7 @@ static int gfar_of_init(struct platform_device *ofdev, struct net_device **pdev)
- 		return -EINVAL;
- 	}
- 
--	*pdev = alloc_etherdev_mq(sizeof(*priv), num_tx_qs);
-+	*pdev = alloc_etherdev_mqs(sizeof(*priv), num_tx_qs, num_rx_qs);
- 	dev = *pdev;
- 	if (NULL == dev)
- 		return -ENOMEM;
--- 
-2.20.1
-
+Acked-by: Stanislaw Gruszka <stf_xl@wp.pl>
