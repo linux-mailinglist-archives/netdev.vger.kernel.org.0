@@ -2,73 +2,64 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id F1D0C149BE6
-	for <lists+netdev@lfdr.de>; Sun, 26 Jan 2020 17:38:44 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A82CE149BFD
+	for <lists+netdev@lfdr.de>; Sun, 26 Jan 2020 18:10:25 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726275AbgAZQim (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 26 Jan 2020 11:38:42 -0500
-Received: from mail-ot1-f65.google.com ([209.85.210.65]:35968 "EHLO
-        mail-ot1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725838AbgAZQim (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 26 Jan 2020 11:38:42 -0500
-Received: by mail-ot1-f65.google.com with SMTP id g15so6208425otp.3
-        for <netdev@vger.kernel.org>; Sun, 26 Jan 2020 08:38:41 -0800 (PST)
+        id S1726545AbgAZRKY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 26 Jan 2020 12:10:24 -0500
+Received: from mail-pg1-f193.google.com ([209.85.215.193]:37170 "EHLO
+        mail-pg1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726173AbgAZRKY (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 26 Jan 2020 12:10:24 -0500
+Received: by mail-pg1-f193.google.com with SMTP id q127so3956450pga.4
+        for <netdev@vger.kernel.org>; Sun, 26 Jan 2020 09:10:23 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
+        d=kernel-dk.20150623.gappssmtp.com; s=20150623;
         h=subject:to:cc:references:from:message-id:date:user-agent
          :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=0F5wxLrvjSi7b6WDenK8sorowC/ysc76b5NtDO0Qo78=;
-        b=I0UZctLtO2QWvDGU9j3TuVNgZQXwgCAi9BdFVwN9FhOpS/oRjz9L4Eqn/w/3w14PLr
-         zKmd23hSq6wBu6KlJm+q4/VWyydF7YAvgBRegmc24p9l0KhyAcws8HXTrFrTm59Zb3gV
-         GdQmEgWRZLKPRzySlv1earPMQmQE99AFvgCvG54OJljTrzjB/A5+0u/RS35y8vXsl0/g
-         FPA6Tiva6oqTu0/qjYRWmzkXsuMM75VA3lN/GNydJNNj7n3MfjAEd5dY8ttYQnd0FFrE
-         arQmyffqAXcj0tPZ9pAPoo2cB42fg1OkdRSfTXAwQ+xefdm0QzbHfVc/6+3m152NR7RD
-         pFfw==
+        bh=ISotJI3izVmXl3fjfB5uTrAYmwdgYfTOknESvfHgtZk=;
+        b=N8yflsFSMo7z3TohnJaUL9dTQK5ay/N2VmQ0cVC2L7uONXQVzN+hmbOTVywede6zNY
+         ZMD6X5Ibh0fD4PTewZdSnz7d14c0IgLWlieRNDowPssmahpv2H/Cb4q+YAwJxjQv9Qdp
+         w5UN134ifB0I5pKbdveIYAuMJmwQh+eEqNSE2IPwtieN+lKQm14zneSQwH7fOUHTNHvr
+         gAOpToN/GVumKmK0euYBifaZPS3y718ISGXiGDIDIQn0dQSxmJz4c7pzbioJ8zp/+T0L
+         nDlDrwsTqKRQO/g1U5+LL7MbQ3TPgyTpUE+XSfwRMbfDL+d5CAA26B8+zL6Z6SvkyobK
+         u/AA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:subject:to:cc:references:from:message-id:date
          :user-agent:mime-version:in-reply-to:content-language
          :content-transfer-encoding;
-        bh=0F5wxLrvjSi7b6WDenK8sorowC/ysc76b5NtDO0Qo78=;
-        b=cIUI1bt5zj/RIFW1OMT7iCzDSc6h9EhufC9tau9iv4CvrX0FBM42EEIBa8U+CHUUVA
-         u1R6TlicIKcizjLQ7C5yorBBJU6EkQxEs5PGHj05ZAmATJC9h1yKb4Xo8oM9DJyAGuzF
-         OWWyT5pCho0kHOxDP/TM5y3Ik1fURA4NNnugA50xJDf7+PbPUmTe4Bhz6eQve10Oarej
-         F9tVJbeZEIgq+aOario/EBqrVF+3h0AaClPayMF0VyBJIu9Tg+eVCLXcRmUSVFPj2d0m
-         EMwYs7mx/hf5aNAJRvKBo4g/5JcAReAjf4LfuSB+9DpMWs/lvixPbibaEZRtK+zGIQPP
-         6CgQ==
-X-Gm-Message-State: APjAAAUAewEAKegTgm22PKmB0XK1u3JdevmcRZIqyMhfrMAlJ0p5nXOc
-        n80QJRLrklUt4V5Pv9XqIy4=
-X-Google-Smtp-Source: APXvYqwUnX+N4hoj5gtEWxhEwHrEdOSyuSrKCGoxuZZ7oHqH32+W7GloO3tuRbxIL4dYm5BT+AZXsQ==
-X-Received: by 2002:a9d:73ca:: with SMTP id m10mr10074369otk.312.1580056721020;
-        Sun, 26 Jan 2020 08:38:41 -0800 (PST)
-Received: from [172.16.171.105] ([208.139.204.134])
-        by smtp.googlemail.com with ESMTPSA id u33sm4519298otb.49.2020.01.26.08.38.35
+        bh=ISotJI3izVmXl3fjfB5uTrAYmwdgYfTOknESvfHgtZk=;
+        b=JX43gkSaC5m+qol1+V2gVYAuKgzVbjVUua8wFbGzd9ga4V7t6O046yu4t/px1w5YwU
+         JDfjOlsNFZHuY1mwm8dEtICcZ1VQRe30HtaZY361xrgkPrR/oF43ZUB/SMKeV/gDydxt
+         5eBhjteN+7YvYZG8TkptQixLVhcGGSG5SCbnoKM8yGZDlg1dET9mcuTxvPT9AJA/L7pA
+         cWRTJWRGOIlNB1UwRQvBKYmdY+s6KpSpNERiR/l+Z8zSC2AqV2IU5IhpPduhbwB3YKT7
+         IaAxacns+d99sDYdQUINHRUinsMVnWaRzepju4zXKdUue1LYONjr/g8c5TmsodQsaaYX
+         Zu3g==
+X-Gm-Message-State: APjAAAVhiQcJtcqKTCdh/Wt/MCn1/WnPIkvxZuwQqGxwmxgaD/lly0un
+        y6soAqyfUfx5DJtRy1iNPvIQfbKihK4=
+X-Google-Smtp-Source: APXvYqym3vadWUhjWT7Te3HkaNqzI77r+VUVo4DIV3gy9ebln2NudM/oNPXUBmetPULNnbzrzAJowA==
+X-Received: by 2002:a63:211f:: with SMTP id h31mr14427070pgh.299.1580058623198;
+        Sun, 26 Jan 2020 09:10:23 -0800 (PST)
+Received: from [192.168.1.188] ([66.219.217.145])
+        by smtp.gmail.com with ESMTPSA id 11sm13232933pfz.25.2020.01.26.09.10.21
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sun, 26 Jan 2020 08:38:40 -0800 (PST)
-Subject: Re: [PATCH bpf-next 03/12] net: Add IFLA_XDP_EGRESS for XDP programs
- in the egress path
-To:     Jesper Dangaard Brouer <jbrouer@redhat.com>
-Cc:     =?UTF-8?Q?Toke_H=c3=b8iland-J=c3=b8rgensen?= <toke@redhat.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        David Ahern <dsahern@kernel.org>, netdev@vger.kernel.org,
-        prashantbhole.linux@gmail.com, jasowang@redhat.com,
-        davem@davemloft.net, mst@redhat.com, toshiaki.makita1@gmail.com,
-        daniel@iogearbox.net, john.fastabend@gmail.com, ast@kernel.org,
-        kafai@fb.com, songliubraving@fb.com, yhs@fb.com, andriin@fb.com,
-        David Ahern <dahern@digitalocean.com>
-References: <20200123014210.38412-1-dsahern@kernel.org>
- <20200123014210.38412-4-dsahern@kernel.org> <87tv4m9zio.fsf@toke.dk>
- <335b624a-655a-c0c6-ca27-102e6dac790b@gmail.com>
- <20200124072128.4fcb4bd1@cakuba> <87o8usg92d.fsf@toke.dk>
- <1d84d8be-6812-d63a-97ca-ebc68cc266b9@gmail.com>
- <20200126134933.2514b2ab@carbon>
-From:   David Ahern <dsahern@gmail.com>
-Message-ID: <5290f2dd-ade6-ce0f-bf01-0872d4cfe14f@gmail.com>
-Date:   Sun, 26 Jan 2020 09:38:30 -0700
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:68.0)
- Gecko/20100101 Thunderbird/68.4.1
+        Sun, 26 Jan 2020 09:10:22 -0800 (PST)
+Subject: Re: [PATCH 2/4] io_uring: io_uring: add support for async work
+ inheriting files
+To:     Andres Freund <andres@anarazel.de>
+Cc:     linux-block@vger.kernel.org, io-uring <io-uring@vger.kernel.org>,
+        davem@davemloft.net, netdev@vger.kernel.org, jannh@google.com
+References: <20191025173037.13486-1-axboe@kernel.dk>
+ <20191025173037.13486-3-axboe@kernel.dk>
+ <20200126101207.oqovstqfr4iddc3p@alap3.anarazel.de>
+From:   Jens Axboe <axboe@kernel.dk>
+Message-ID: <1f9a5869-845a-f7ca-7530-49e407602023@kernel.dk>
+Date:   Sun, 26 Jan 2020 10:10:20 -0700
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.4.1
 MIME-Version: 1.0
-In-Reply-To: <20200126134933.2514b2ab@carbon>
+In-Reply-To: <20200126101207.oqovstqfr4iddc3p@alap3.anarazel.de>
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
@@ -77,56 +68,72 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 1/26/20 5:49 AM, Jesper Dangaard Brouer wrote:
->> This has
->> been discussed before as a need (e.g, Toke's reference above), and I am
->> trying to get this initial support done.
+On 1/26/20 3:12 AM, Andres Freund wrote:
+> Hi,
+> 
+> On 2019-10-25 11:30:35 -0600, Jens Axboe wrote:
+>> This is in preparation for adding opcodes that need to add new files
+>> in a process file table, system calls like open(2) or accept4(2).
 >>
->> I very much wanted to avoid copy-paste-modify for the entire XDP API for
->> this. For the most part XDP means ebpf at the NIC driver / hardware
->> level (obviously with the exception of generic mode). The goal is
->> tempered with the need for the verifier to reject rx entries in the
->> xdp_md context. Hence the reason for use of an attach_type - existing
->> infrastructure to test and reject the accesses.
+>> If an opcode needs this, it must set IO_WQ_WORK_NEEDS_FILES in the work
+>> item. If work that needs to get punted to async context have this
+>> set, the async worker will assume the original task file table before
+>> executing the work.
 >>
->> That said, Martin's comment throws a wrench in the goal: if the existing
->> code does not enforce expected_attach_type then that option can not be
->> used in which case I guess I have to go with a new program type
->> (BPF_PROG_TYPE_XDP_EGRESS) which takes a new context (xdp_egress_md),
->> has different return codes, etc.
+>> Note that opcodes that need access to the current files of an
+>> application cannot be done through IORING_SETUP_SQPOLL.
 > 
-> Taking about return codes.  Does XDP the return codes make sense for
-> this EGRESS hook? (if thinking about this being egress on the real NIC).
 > 
-> E.g. XDP_REDIRECT would have to be supported, which is interesting, but
-> also have implications (like looping packets).
+> Unfortunately this partially breaks sharing a uring across with forked
+> off processes, even though it initially appears to work:
 > 
-> E.g. what is the semantics/action of XDP_TX return code?
+> 
+>> +static int io_uring_flush(struct file *file, void *data)
+>> +{
+>> +	struct io_ring_ctx *ctx = file->private_data;
+>> +
+>> +	io_uring_cancel_files(ctx, data);
+>> +	if (fatal_signal_pending(current) || (current->flags & PF_EXITING))
+>> +		io_wq_cancel_all(ctx->io_wq);
+>> +	return 0;
+>> +}
+> 
+> Once one process having the uring fd open (even if it were just a fork
+> never touching the uring, I believe) exits, this prevents the uring from
+> being usable for any async tasks. The process exiting closes the fd,
+> which triggers flush. io_wq_cancel_all() sets IO_WQ_BIT_CANCEL, which
+> never gets unset, which causes all future async sqes to be be
+> immediately returned as -ECANCELLED by the worker, via io_req_cancelled.
+> 
+> It's not clear to me why a close() should cancel the the wq (nor clear
+> the entire backlog, after 1d7bb1d50fb4)? Couldn't that even just be a
+> dup()ed fd? Or a fork that immediately exec()s?
+> 
+> After rudely ifdefing out the above if, and reverting 44d282796f81, my
+> WIP io_uring using version of postgres appears to pass its tests - which
+> are very sparse at this point - again with 5.5-rc7.
 
-This has been discussed. XDP_TX in the EGRESS path could arguably be
-equal to XDP_PASS.
+We need to cancel work items using the files from this process if it
+exits, but I think we should be fine not canceling all work. Especially
+since thet setting of IO_WQ_BIT_CANCEL is a one way street...  I'm assuming
+the below works for you?
 
-> 
-> E.g. I'm considering adding a XDP_CONGESTED return code that can cause
-> backpressure towards qdisc layer.
-> 
-> Also think about that if this EGRESS hook uses standard prog type for
-> XDP (BPF_PROG_TYPE_XDP), then we need to convert xdp_frame to xdp_buff
-> (and also convert SKBs to xdp_buff).
+diff --git a/fs/io_uring.c b/fs/io_uring.c
+index e5b502091804..e3ac2a6ff195 100644
+--- a/fs/io_uring.c
++++ b/fs/io_uring.c
+@@ -5044,10 +5044,8 @@ static int io_uring_flush(struct file *file, void *data)
+ 	struct io_ring_ctx *ctx = file->private_data;
+ 
+ 	io_uring_cancel_files(ctx, data);
+-	if (fatal_signal_pending(current) || (current->flags & PF_EXITING)) {
++	if (fatal_signal_pending(current) || (current->flags & PF_EXITING))
+ 		io_cqring_overflow_flush(ctx, true);
+-		io_wq_cancel_all(ctx->io_wq);
+-	}
+ 	return 0;
+ }
+ 
+-- 
+Jens Axboe
 
-Why? What about the patch set requires that change to be done to have
-support for EGRESS path?
-
-> 
-> Are we sure that reusing the same bpf prog type is the right choice?
-> 
-
-Martin's comment about existing checking on the expected attach type is
-the only reason I have seen so far to not have the same program type.
-
-Looking at the helpers for use in XDP programs do you believe any of
-those should not be allowed with EGRESS programs? Do you have any reason
-to think that existing XDP capabilities should be prohibited or
-different for EGRESS? As mentioned earlier the attach type can be used
-to have the verifier handle small context differences (and restrict
-helpers if needed).
