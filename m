@@ -2,62 +2,202 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id B473B149D4D
-	for <lists+netdev@lfdr.de>; Sun, 26 Jan 2020 23:17:04 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C10B6149D56
+	for <lists+netdev@lfdr.de>; Sun, 26 Jan 2020 23:21:13 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726703AbgAZWRD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 26 Jan 2020 17:17:03 -0500
-Received: from mail.kernel.org ([198.145.29.99]:40194 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726144AbgAZWRD (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sun, 26 Jan 2020 17:17:03 -0500
-Received: from cakuba (c-73-93-4-247.hsd1.ca.comcast.net [73.93.4.247])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 0538C206F0;
-        Sun, 26 Jan 2020 22:17:01 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1580077022;
-        bh=G0YQljacqyGi60baxOGuuxA3tsDozb7ynGvgJM9FoSw=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=uJpHRyui7Xc+240diNmKRK4PzUNzS3zCygiKGGPiB4JoX/1p+idVechGYSwRlSzif
-         F/vjvKWeFz2mfqNIfIBo5dgUHWyPFO+IIGO1axdcJxXURaaW+e9szskwnRX9wUbM3N
-         fWFJgcvw4jFRqkk4xxE0XZQ586S0+YcLmlrT3abU=
-Date:   Sun, 26 Jan 2020 14:17:01 -0800
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Jesper Dangaard Brouer <jbrouer@redhat.com>
-Cc:     David Ahern <dsahern@gmail.com>,
-        Toke =?UTF-8?B?SMO4aWxhbmQtSsO4cmdl?= =?UTF-8?B?bnNlbg==?= 
-        <toke@redhat.com>, David Ahern <dsahern@kernel.org>,
-        netdev@vger.kernel.org, prashantbhole.linux@gmail.com,
-        jasowang@redhat.com, davem@davemloft.net, mst@redhat.com,
-        toshiaki.makita1@gmail.com, daniel@iogearbox.net,
-        john.fastabend@gmail.com, ast@kernel.org, kafai@fb.com,
-        songliubraving@fb.com, yhs@fb.com, andriin@fb.com,
-        David Ahern <dahern@digitalocean.com>
-Subject: Re: [PATCH bpf-next 03/12] net: Add IFLA_XDP_EGRESS for XDP
- programs in the egress path
-Message-ID: <20200126141701.3f27b03c@cakuba>
-In-Reply-To: <20200126134933.2514b2ab@carbon>
-References: <20200123014210.38412-1-dsahern@kernel.org>
-        <20200123014210.38412-4-dsahern@kernel.org>
-        <87tv4m9zio.fsf@toke.dk>
-        <335b624a-655a-c0c6-ca27-102e6dac790b@gmail.com>
-        <20200124072128.4fcb4bd1@cakuba>
-        <87o8usg92d.fsf@toke.dk>
-        <1d84d8be-6812-d63a-97ca-ebc68cc266b9@gmail.com>
-        <20200126134933.2514b2ab@carbon>
+        id S1727161AbgAZWUf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 26 Jan 2020 17:20:35 -0500
+Received: from mail-pg1-f194.google.com ([209.85.215.194]:35248 "EHLO
+        mail-pg1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726144AbgAZWUe (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 26 Jan 2020 17:20:34 -0500
+Received: by mail-pg1-f194.google.com with SMTP id l24so4184750pgk.2;
+        Sun, 26 Jan 2020 14:20:34 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:from:to:cc:date:message-id:user-agent:mime-version
+         :content-transfer-encoding;
+        bh=sXfYLOLdd02erXZBS6NsKdPSlN+ij/CZWA/e36ACWCA=;
+        b=nm9A3JZOrOrLr4Us0stuI1EB5VLcEm1Jxx3D6RkcdVK+e9mLUp8zkNrLCzOG1Bau5R
+         l0OMNT7gjt/sA/Z71za8j+yboHs0+NfKcWIsSrAiRMC+93ohjoxNW892nPbcSWM32BHM
+         P9pJYzf/duzg/g7Drs4t27X2XWd2jA6KPtF9FfaCQDjlibTIo7qYIGViPFsaJTigWWfZ
+         OEp4rthc7LAD7QAS9TwMPzovGe5pIImGk86glkyJDt1EWpk1jwvXf/d8ICWC2XhaWZz3
+         sjQlrD8QwnNGalKIpyNmqRQSf51r2RbZWDJmo3pWS7YO97vv/mFH7E6CAwR5NfEyry3u
+         /+cg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:from:to:cc:date:message-id:user-agent
+         :mime-version:content-transfer-encoding;
+        bh=sXfYLOLdd02erXZBS6NsKdPSlN+ij/CZWA/e36ACWCA=;
+        b=tHr8QVuFCohosm+pyQCcZqy8cDpvEsDydNwcU8w0FDBitnyvN7hq4JKDI2WpS+GDld
+         1pj1wz+Aiwyq/pfR+wZHn7J4SYncc/cr43EiencAvLT6o203sC5KTLBJZI1noBbbBddg
+         NazqB420iDvap2G8hAo2wMMbNCWEoPkTHxbXyBnxWAnvRARGTq5oNw0pMQiL6EkeOBGY
+         c8QjWPLX1mj1LUrQPdSSfL+0APKaMt+j8ZlGg3DtcXxUIhNh7bC6GA/0777PyvR+dQex
+         QgAgwLPOAMRJ3ERTvixgze0CO5XkQWZgLBoGkVmNrZ/NNhxRRmZjI5wUrJfLG3HWgHbO
+         IXig==
+X-Gm-Message-State: APjAAAUnNLh9Xc8VCh/Q6/8foTCqNtv6UT0NEb06H9Jr4GnnmqTVgDy9
+        LFjoGNBmOfppogpgniEQ780=
+X-Google-Smtp-Source: APXvYqzwRszTozJWzwxnXFp3UCZdVsPB6kUJnvD53XYspcfoVK++4Ov5Hk57HxJFrwa+He91HUxk8Q==
+X-Received: by 2002:a63:755:: with SMTP id 82mr16459232pgh.154.1580077234026;
+        Sun, 26 Jan 2020 14:20:34 -0800 (PST)
+Received: from [127.0.1.1] ([184.63.162.180])
+        by smtp.gmail.com with ESMTPSA id 144sm13662899pfc.124.2020.01.26.14.20.27
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sun, 26 Jan 2020 14:20:33 -0800 (PST)
+Subject: [bpf PATCH v2] bpf: verifier,
+ do_refine_retval_range may clamp umin to 0 incorrectly
+From:   John Fastabend <john.fastabend@gmail.com>
+To:     bpf@vger.kernel.org
+Cc:     yhs@fb.com, john.fastabend@gmail.com, ast@kernel.org,
+        daniel@iogearbox.net, netdev@vger.kernel.org
+Date:   Sun, 26 Jan 2020 14:20:22 -0800
+Message-ID: <158007722209.21106.17558935396388172908.stgit@john-XPS-13-9370>
+User-Agent: StGit/0.17.1-dirty
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, 26 Jan 2020 13:49:33 +0100, Jesper Dangaard Brouer wrote:
-> Yes, please. I want this NIC TX hook to see both SKBs and xdp_frames.
+do_refine_retval_range() is called to refine return values from specified
+helpers, probe_read_str and get_stack at the moment, the reasoning is
+because both have a max value as part of their input arguments and
+because the helper ensure the return value will not be larger than this
+we can set smax values of the return register, r0.
 
-Any pointers on what for? Unless we see actual use cases there's
-a justifiable concern of the entire thing just being an application of
-"We can solve any problem by introducing an extra level of indirection."
+However, the return value is a signed integer so setting umax is incorrect
+It leads to further confusion when the do_refine_retval_range() then calls,
+__reg_deduce_bounds() which will see a umax value as meaning the value is
+unsigned and then assuming it is unsigned set the smin = umin which in this
+case results in 'smin = 0' and an 'smax = X' where X is the input argument
+from the helper call.
+
+Here are the comments from _reg_deduce_bounds() on why this would be safe
+to do.
+
+ /* Learn sign from unsigned bounds.  Signed bounds cross the sign
+  * boundary, so we must be careful.
+  */
+ if ((s64)reg->umax_value >= 0) {
+	/* Positive.  We can't learn anything from the smin, but smax
+	 * is positive, hence safe.
+	 */
+	reg->smin_value = reg->umin_value;
+	reg->smax_value = reg->umax_value = min_t(u64, reg->smax_value,
+						  reg->umax_value);
+
+But now we incorrectly have a return value with type int with the
+signed bounds (0,X). Suppose the return value is negative, which is
+possible the we have the verifier and reality out of sync. Among other
+things this may result in any error handling code being falsely detected
+as dead-code and removed. For instance the example below shows using
+bpf_probe_read_str() causes the error path to be identified as dead
+code and removed.
+
+>From the 'llvm-object -S' dump,
+
+ r2 = 100
+ call 45
+ if r0 s< 0 goto +4
+ r4 = *(u32 *)(r7 + 0)
+
+But from dump xlate
+
+  (b7) r2 = 100
+  (85) call bpf_probe_read_compat_str#-96768
+  (61) r4 = *(u32 *)(r7 +0)  <-- dropped if goto
+
+Due to verifier state after call being
+
+ R0=inv(id=0,umax_value=100,var_off=(0x0; 0x7f))
+
+To fix omit setting the umax value because its not safe. The only
+actual bounds we know is the smax. This results in the correct bounds
+(SMIN, X) where X is the max length from the helper. After this the
+new verifier state looks like the following after call 45.
+
+R0=inv(id=0,smax_value=100)
+
+Then xlated version no longer removed dead code giving the expected
+result,
+
+  (b7) r2 = 100
+  (85) call bpf_probe_read_compat_str#-96768
+  (c5) if r0 s< 0x0 goto pc+4
+  (61) r4 = *(u32 *)(r7 +0)
+
+Note, bpf_probe_read_* calls are root only so we wont hit this case
+with non-root bpf users.
+
+v2 note: In original version we set msize_smax_value from check_func_arg()
+and propagated this into smax of retval. The logic was smax is the bound
+on the retval we set and because the type in the helper is ARG_CONST_SIZE
+we know that the reg is a positive tnum_const() so umax=smax. Alexei
+pointed out though this is a bit odd to read because the register in
+check_func_arg() has a C type of u32 and the umax bound would be the
+normally relavent bound here. Pulling in extra knowledge about future
+checks makes reading the code a bit tricky. Further having a signed
+meta data that can only ever be positive is also a bit odd. So dropped
+the msize_smax_value metadata and made it a u64 msize_max_Value to
+indicate its unsigned. And additionally save bound from umax value in
+check_arg_funcs which is the same as smax due to as noted above tnumx_cont
+and negative check but reads better. By my analysis nothing functionally
+changes in v2 but it does get easier to read so that is win.
+
+Fixes: 849fa50662fbc ("bpf: verifier, refine bounds may clamp umin to 0 incorrectly")
+Signed-off-by: John Fastabend <john.fastabend@gmail.com>
+---
+ kernel/bpf/verifier.c |   20 ++++++++++++--------
+ 1 file changed, 12 insertions(+), 8 deletions(-)
+
+diff --git a/kernel/bpf/verifier.c b/kernel/bpf/verifier.c
+index 7d530ce8719d..1c63436510d8 100644
+--- a/kernel/bpf/verifier.c
++++ b/kernel/bpf/verifier.c
+@@ -227,8 +227,7 @@ struct bpf_call_arg_meta {
+ 	bool pkt_access;
+ 	int regno;
+ 	int access_size;
+-	s64 msize_smax_value;
+-	u64 msize_umax_value;
++	u64 msize_max_value;
+ 	int ref_obj_id;
+ 	int func_id;
+ 	u32 btf_id;
+@@ -3569,11 +3568,16 @@ static int check_func_arg(struct bpf_verifier_env *env, u32 regno,
+ 	} else if (arg_type_is_mem_size(arg_type)) {
+ 		bool zero_size_allowed = (arg_type == ARG_CONST_SIZE_OR_ZERO);
+ 
+-		/* remember the mem_size which may be used later
+-		 * to refine return values.
++		/* This is used to refine r0 return value bounds for helpers
++		 * that enforce this value as an upper bound on return values.
++		 * See do_refine_retval_range() for helpers that can refine
++		 * the return value. C type of helper is u32 so we pull register
++		 * bound from umax_value however, if not a const then meta
++		 * is null'd and if negative verifier errors out. Only upper
++		 * bounds can be learned because retval is an int type and
++		 * negative retvals are allowed.
+ 		 */
+-		meta->msize_smax_value = reg->smax_value;
+-		meta->msize_umax_value = reg->umax_value;
++		meta->msize_max_value = reg->umax_value;
+ 
+ 		/* The register is SCALAR_VALUE; the access check
+ 		 * happens using its boundaries.
+@@ -4077,10 +4081,10 @@ static void do_refine_retval_range(struct bpf_reg_state *regs, int ret_type,
+ 	     func_id != BPF_FUNC_probe_read_str))
+ 		return;
+ 
+-	ret_reg->smax_value = meta->msize_smax_value;
+-	ret_reg->umax_value = meta->msize_umax_value;
++	ret_reg->smax_value = meta->msize_max_value;
+ 	__reg_deduce_bounds(ret_reg);
+ 	__reg_bound_offset(ret_reg);
++	__update_reg_bounds(ret_reg);
+ }
+ 
+ static int
+
