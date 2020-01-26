@@ -2,53 +2,69 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 7C72314981E
-	for <lists+netdev@lfdr.de>; Sat, 25 Jan 2020 23:35:10 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E4BB514984A
+	for <lists+netdev@lfdr.de>; Sun, 26 Jan 2020 01:10:12 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727699AbgAYWfE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 25 Jan 2020 17:35:04 -0500
-Received: from mail.kernel.org ([198.145.29.99]:41214 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727285AbgAYWfE (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sat, 25 Jan 2020 17:35:04 -0500
-Subject: Re: [GIT] Networking
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1579991703;
-        bh=PCUMx6bpKFINzFW6ARpgnsyecWMnbIzh3bZ8vJ80Gnc=;
-        h=From:In-Reply-To:References:Date:To:Cc:From;
-        b=qX0Z3GHnNz0tDm0jeGINQPEBW8q0UVpbhfRBj0BgYk561SAifVRw3r/3f3cUp5xop
-         i9IL0fC/axTdOiooysH5I238T9SEQ5yGXe79XFxPblOdTMoCRcdN3UX5npAbHWtqdN
-         8Jo0z5PB7v6F5/Lqv2CAfbuyfJX4BEImHmHE8nAM=
-From:   pr-tracker-bot@kernel.org
-In-Reply-To: <20200125.224148.1422830886922555363.davem@davemloft.net>
-References: <20200125.224148.1422830886922555363.davem@davemloft.net>
-X-PR-Tracked-List-Id: <linux-kernel.vger.kernel.org>
-X-PR-Tracked-Message-Id: <20200125.224148.1422830886922555363.davem@davemloft.net>
-X-PR-Tracked-Remote: git://git.kernel.org/pub/scm/linux/kernel/git/netdev/net.git
- refs/heads/master
-X-PR-Tracked-Commit-Id: fa865ba183d61c1ec8cbcab8573159c3b72b89a4
-X-PR-Merge-Tree: torvalds/linux.git
-X-PR-Merge-Refname: refs/heads/master
-X-PR-Merge-Commit-Id: 84809aaf78b5b4c2e6478dc6121a1c8fb439a024
-Message-Id: <157999170352.21045.704562636007940215.pr-tracker-bot@kernel.org>
-Date:   Sat, 25 Jan 2020 22:35:03 +0000
-To:     David Miller <davem@davemloft.net>
-Cc:     torvalds@linux-foundation.org, akpm@linux-foundation.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+        id S1728797AbgAZAKC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 25 Jan 2020 19:10:02 -0500
+Received: from youngberry.canonical.com ([91.189.89.112]:45648 "EHLO
+        youngberry.canonical.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727307AbgAZAKB (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 25 Jan 2020 19:10:01 -0500
+Received: from 1.general.cking.uk.vpn ([10.172.193.212] helo=localhost)
+        by youngberry.canonical.com with esmtpsa (TLS1.2:ECDHE_RSA_AES_128_GCM_SHA256:128)
+        (Exim 4.86_2)
+        (envelope-from <colin.king@canonical.com>)
+        id 1ivVUx-0006OK-4l; Sun, 26 Jan 2020 00:09:55 +0000
+From:   Colin King <colin.king@canonical.com>
+To:     Stanislaw Gruszka <stf_xl@wp.pl>,
+        Kalle Valo <kvalo@codeaurora.org>,
+        "David S . Miller" <davem@davemloft.net>,
+        Meenakshi Venkataraman <meenakshi.venkataraman@intel.com>,
+        Wey-Yi Guy <wey-yi.w.guy@intel.com>,
+        Johannes Berg <johannes.berg@intel.com>,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org
+Cc:     kernel-janitors@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH][next] iwlegacy: ensure loop counter addr does not wrap and cause an infinite loop
+Date:   Sun, 26 Jan 2020 00:09:54 +0000
+Message-Id: <20200126000954.22807-1-colin.king@canonical.com>
+X-Mailer: git-send-email 2.24.0
+MIME-Version: 1.0
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The pull request you sent on Sat, 25 Jan 2020 22:41:48 +0100 (CET):
+From: Colin Ian King <colin.king@canonical.com>
 
-> git://git.kernel.org/pub/scm/linux/kernel/git/netdev/net.git refs/heads/master
+The loop counter addr is a u16 where as the upper limit of the loop
+is a an int. In the unlikely event that the il->cfg->eeprom_size is
+greater than 64K then we end up with an infinite loop since addr will
+wrap around an never reach upper loop limit. Fix this by making addr
+an int.
 
-has been merged into torvalds/linux.git:
-https://git.kernel.org/torvalds/c/84809aaf78b5b4c2e6478dc6121a1c8fb439a024
+Addresses-Coverity: ("Infinite loop")
+Fixes: be663ab67077 ("iwlwifi: split the drivers for agn and legacy devices 3945/4965")
+Signed-off-by: Colin Ian King <colin.king@canonical.com>
+---
+ drivers/net/wireless/intel/iwlegacy/common.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-Thank you!
-
+diff --git a/drivers/net/wireless/intel/iwlegacy/common.c b/drivers/net/wireless/intel/iwlegacy/common.c
+index d966b29b45ee..348c17ce72f5 100644
+--- a/drivers/net/wireless/intel/iwlegacy/common.c
++++ b/drivers/net/wireless/intel/iwlegacy/common.c
+@@ -699,7 +699,7 @@ il_eeprom_init(struct il_priv *il)
+ 	u32 gp = _il_rd(il, CSR_EEPROM_GP);
+ 	int sz;
+ 	int ret;
+-	u16 addr;
++	int addr;
+ 
+ 	/* allocate eeprom */
+ 	sz = il->cfg->eeprom_size;
 -- 
-Deet-doot-dot, I am a bot.
-https://korg.wiki.kernel.org/userdoc/prtracker
+2.24.0
+
