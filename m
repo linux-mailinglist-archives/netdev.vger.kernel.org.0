@@ -2,69 +2,84 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 78A33149A38
-	for <lists+netdev@lfdr.de>; Sun, 26 Jan 2020 11:47:40 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1B39D149A3C
+	for <lists+netdev@lfdr.de>; Sun, 26 Jan 2020 11:48:41 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729422AbgAZKrg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 26 Jan 2020 05:47:36 -0500
-Received: from smtp08.smtpout.orange.fr ([80.12.242.130]:37985 "EHLO
-        smtp.smtpout.orange.fr" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729337AbgAZKrf (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 26 Jan 2020 05:47:35 -0500
-Received: from localhost.localdomain ([92.140.214.230])
-        by mwinf5d67 with ME
-        id uynZ210074ypjRG03ynZym; Sun, 26 Jan 2020 11:47:34 +0100
-X-ME-Helo: localhost.localdomain
-X-ME-Auth: Y2hyaXN0b3BoZS5qYWlsbGV0QHdhbmFkb28uZnI=
-X-ME-Date: Sun, 26 Jan 2020 11:47:34 +0100
-X-ME-IP: 92.140.214.230
-From:   Christophe JAILLET <christophe.jaillet@wanadoo.fr>
-To:     isubramanian@apm.com, keyur@os.amperecomputing.com,
-        quan@os.amperecomputing.com, tinamdar@apm.com, kdinh@apm.com,
-        davem@davemloft.net
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        kernel-janitors@vger.kernel.org,
-        Christophe JAILLET <christophe.jaillet@wanadoo.fr>
-Subject: [PATCH v2] drivers: net: xgene: Fix the order of the arguments of 'alloc_etherdev_mqs()'
-Date:   Sun, 26 Jan 2020 11:47:30 +0100
-Message-Id: <20200126104730.15217-1-christophe.jaillet@wanadoo.fr>
-X-Mailer: git-send-email 2.20.1
+        id S2387401AbgAZKsg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 26 Jan 2020 05:48:36 -0500
+Received: from mail26.static.mailgun.info ([104.130.122.26]:62731 "EHLO
+        mail26.static.mailgun.info" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1729255AbgAZKsg (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 26 Jan 2020 05:48:36 -0500
+DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org; q=dns/txt;
+ s=smtp; t=1580035716; h=Date: Message-Id: Cc: To: References:
+ In-Reply-To: From: Subject: Content-Transfer-Encoding: MIME-Version:
+ Content-Type: Sender; bh=6dvZlOi6F0EoCpr+/HJGOxTRA67L4SDOxF1/MIi3hmM=;
+ b=qqho674ZWGAkhSeKgtHIJVxQyHD9ytptVJIv0YzXut5OxZl/MZJTTMnXZD2AGiwKTM8EgzAE
+ AHBetTYwoZKj0StG2lJIAjJaS75ycZjTr+L0og5jXUALIY/FJe3swOqLdEyAhSHb2ZFRpsDt
+ H7zG7c2Jv6tGoNDZ6W552DuoNxE=
+X-Mailgun-Sending-Ip: 104.130.122.26
+X-Mailgun-Sid: WyJiZjI2MiIsICJuZXRkZXZAdmdlci5rZXJuZWwub3JnIiwgImJlOWU0YSJd
+Received: from smtp.codeaurora.org (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171])
+ by mxa.mailgun.org with ESMTP id 5e2d6e82.7fe8bb133458-smtp-out-n03;
+ Sun, 26 Jan 2020 10:48:34 -0000 (UTC)
+Received: by smtp.codeaurora.org (Postfix, from userid 1001)
+        id 26455C4479C; Sun, 26 Jan 2020 10:48:34 +0000 (UTC)
+X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
+        aws-us-west-2-caf-mail-1.web.codeaurora.org
+X-Spam-Level: 
+X-Spam-Status: No, score=0.5 required=2.0 tests=ALL_TRUSTED,MISSING_DATE,
+        MISSING_MID,SPF_NONE autolearn=no autolearn_force=no version=3.4.0
+Received: from potku.adurom.net (88-114-240-156.elisa-laajakaista.fi [88.114.240.156])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        (Authenticated sender: kvalo)
+        by smtp.codeaurora.org (Postfix) with ESMTPSA id 7D7C8C433CB;
+        Sun, 26 Jan 2020 10:48:31 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org 7D7C8C433CB
+Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
+Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; spf=none smtp.mailfrom=kvalo@codeaurora.org
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7bit
+Subject: Re: [PATCH][next] ath11k: avoid null pointer dereference when pointer
+ band is null
+From:   Kalle Valo <kvalo@codeaurora.org>
+In-Reply-To: <20200111090824.9999-1-colin.king@canonical.com>
+References: <20200111090824.9999-1-colin.king@canonical.com>
+To:     Colin King <colin.king@canonical.com>
+Cc:     "David S . Miller" <davem@davemloft.net>,
+        John Crispin <john@phrozen.org>,
+        Shashidhar Lakkavalli <slakkavalli@datto.com>,
+        ath11k@lists.infradead.org, linux-wireless@vger.kernel.org,
+        netdev@vger.kernel.org, kernel-janitors@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+User-Agent: pwcli/0.0.0-git (https://github.com/kvalo/pwcli/) Python/2.7.12
+Message-Id: <20200126104834.26455C4479C@smtp.codeaurora.org>
+Date:   Sun, 26 Jan 2020 10:48:34 +0000 (UTC)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-'alloc_etherdev_mqs()' expects first 'tx', then 'rx'. The semantic here
-looks reversed.
+Colin King <colin.king@canonical.com> wrote:
 
-Reorder the arguments passed to 'alloc_etherdev_mqs()' in order to keep
-the correct semantic.
+> In the unlikely event that cap->supported_bands has neither
+> WMI_HOST_WLAN_2G_CAP set or WMI_HOST_WLAN_5G_CAP set then pointer
+> band is null and a null dereference occurs when assigning
+> band->n_iftype_data.  Move the assignment to the if blocks to
+> avoid this.  Cleans up static analysis warnings.
+> 
+> Addresses-Coverity: ("Explicit null dereference")
+> Fixes: 9f056ed8ee01 ("ath11k: add HE support")
+> Signed-off-by: Colin Ian King <colin.king@canonical.com>
+> Signed-off-by: Kalle Valo <kvalo@codeaurora.org>
 
-In fact, this is a no-op because both XGENE_NUM_[RT]X_RING are 8.
+Patch applied to ath-next branch of ath.git, thanks.
 
-Fixes: 107dec2749fe ("drivers: net: xgene: Add support for multiple queues")
-Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
----
-v2: Fix subject
----
- drivers/net/ethernet/apm/xgene/xgene_enet_main.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+3b4516838eaa ath11k: avoid null pointer dereference when pointer band is null
 
-diff --git a/drivers/net/ethernet/apm/xgene/xgene_enet_main.c b/drivers/net/ethernet/apm/xgene/xgene_enet_main.c
-index d8612131c55e..cc8031ae9aa3 100644
---- a/drivers/net/ethernet/apm/xgene/xgene_enet_main.c
-+++ b/drivers/net/ethernet/apm/xgene/xgene_enet_main.c
-@@ -2020,7 +2020,7 @@ static int xgene_enet_probe(struct platform_device *pdev)
- 	int ret;
- 
- 	ndev = alloc_etherdev_mqs(sizeof(struct xgene_enet_pdata),
--				  XGENE_NUM_RX_RING, XGENE_NUM_TX_RING);
-+				  XGENE_NUM_TX_RING, XGENE_NUM_RX_RING);
- 	if (!ndev)
- 		return -ENOMEM;
- 
 -- 
-2.20.1
+https://patchwork.kernel.org/patch/11328755/
 
+https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
