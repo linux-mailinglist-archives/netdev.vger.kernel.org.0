@@ -2,105 +2,119 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 88FB4149C96
-	for <lists+netdev@lfdr.de>; Sun, 26 Jan 2020 20:50:15 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id DD78A149C9B
+	for <lists+netdev@lfdr.de>; Sun, 26 Jan 2020 20:55:05 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728890AbgAZTuM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 26 Jan 2020 14:50:12 -0500
-Received: from mail-wr1-f66.google.com ([209.85.221.66]:45276 "EHLO
-        mail-wr1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725838AbgAZTuM (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 26 Jan 2020 14:50:12 -0500
-Received: by mail-wr1-f66.google.com with SMTP id j42so8360027wrj.12;
-        Sun, 26 Jan 2020 11:50:10 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id;
-        bh=IzokdTn8xHJq417mKTUutSBXkWIrdbd8a0vBGM9PALk=;
-        b=tUPl+VtrH1Pl/A4cENMw5jkqUIZaLlSp5ydlxs2eEZZYc0n/n4fR4W4bE4nBs2A8pP
-         Eq/VlMeWDee0oCrFbAG7gD1v886V1jwQtLuks601G9XeR3ZTk7lNhJ/99ZhkMG+NsXCK
-         ysP8CUIZEnJGxYeIU2SZhWv88j2lt91x07GGd8vA24i5BGLLg+H7T0g/QPPrDCwvObEb
-         OquqVrA10a9s100NTWjoa/2flZM3aaMSajkhidYsw6WFl98LGMNiH9PJCCyvME/e3z7L
-         3OJc5x5ES8uEK01+odOH9ZpOe+YibQtCzJDWkbsFSEuujhaASncos/am4Ad8vsEf0YeT
-         U43g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id;
-        bh=IzokdTn8xHJq417mKTUutSBXkWIrdbd8a0vBGM9PALk=;
-        b=P1biF30aLcEtih7TsYISdY4oILC5dZ99p+HxhImf92cSruMW4r6h1M6ncyJjbR5lJZ
-         jYY8RW0a8YmdOWE5DuSu4gLuuzcHtcr6m3wl3DeE1FLy1Rde8nLVgCxVaY68b2RDUab8
-         5kOsXWczhEd8BI10t5jq4Tfk32yJQxSOssgQFvUrIWg1aNzWJfaJ9+Jc7/UB1qJp3tmk
-         BYVGj4Jzbl4KcZea8yxa9IbaiFFtJxqr7DQg9QWaaqMH9lsJIZbUvBnvsF1kzGprZsrK
-         BISrGi6Bfu59o6C2DtmvDqRNZMqaFOPhOedgoioclGfQzs3ti6LQWDrzvPPVPvkLYje0
-         2lqw==
-X-Gm-Message-State: APjAAAVFFKb+asat9bl3SzEElKXlVaDUhDnM1ZMLbAZIsdMAqOqox1GZ
-        ZkT+5Ncj9dxqhYpk4JE8suI=
-X-Google-Smtp-Source: APXvYqyhEHf2NIuKRy19vEIN59z5o3oawzaNdznPSkQo8rWN9kw2aTBuGC9d37PH10pj80bWiOQUmQ==
-X-Received: by 2002:a5d:4b45:: with SMTP id w5mr16918742wrs.224.1580068209319;
-        Sun, 26 Jan 2020 11:50:09 -0800 (PST)
-Received: from localhost.localdomain ([188.25.254.226])
-        by smtp.gmail.com with ESMTPSA id v22sm15313301wml.11.2020.01.26.11.50.08
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 26 Jan 2020 11:50:08 -0800 (PST)
-From:   Vladimir Oltean <olteanv@gmail.com>
-To:     shawnguo@kernel.org, devicetree@vger.kernel.org
-Cc:     leoyang.li@nxp.com, claudiu.manoil@nxp.com, robh+dt@kernel.org,
-        pavel@denx.de, linux-arm-kernel@lists.infradead.org,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        stable@vger.kernel.org, Vladimir Oltean <olteanv@gmail.com>
-Subject: [PATCH] ARM: dts: ls1021a: Restore MDIO compatible to gianfar
-Date:   Sun, 26 Jan 2020 21:49:50 +0200
-Message-Id: <20200126194950.31699-1-olteanv@gmail.com>
-X-Mailer: git-send-email 2.17.1
+        id S1726438AbgAZTzD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 26 Jan 2020 14:55:03 -0500
+Received: from shards.monkeyblade.net ([23.128.96.9]:59646 "EHLO
+        shards.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726087AbgAZTzD (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 26 Jan 2020 14:55:03 -0500
+Received: from localhost (unknown [62.209.224.147])
+        (using TLSv1 with cipher AES256-SHA (256/256 bits))
+        (Client did not present a certificate)
+        (Authenticated sender: davem-davemloft)
+        by shards.monkeyblade.net (Postfix) with ESMTPSA id EFB82155526E3;
+        Sun, 26 Jan 2020 11:54:59 -0800 (PST)
+Date:   Sun, 26 Jan 2020 20:54:55 +0100 (CET)
+Message-Id: <20200126.205455.1082696737843782760.davem@davemloft.net>
+To:     sunil.kovvuri@gmail.com
+Cc:     netdev@vger.kernel.org, kubakici@wp.pl, mkubecek@suse.cz,
+        maciej.fijalkowski@intel.com, sgoutham@marvell.com,
+        gakula@marvell.com
+Subject: Re: [PATCH v5 04/17] octeontx2-pf: Initialize and config queues
+From:   David Miller <davem@davemloft.net>
+In-Reply-To: <CA+sq2CcQk47hZ9tue1-yjGmUFF7RONfG47c2T77SRU5t8ovpVg@mail.gmail.com>
+References: <1579887955-22172-5-git-send-email-sunil.kovvuri@gmail.com>
+        <20200126.120059.1968749784775179465.davem@davemloft.net>
+        <CA+sq2CcQk47hZ9tue1-yjGmUFF7RONfG47c2T77SRU5t8ovpVg@mail.gmail.com>
+X-Mailer: Mew version 6.8 on Emacs 26.3
+Mime-Version: 1.0
+Content-Type: Text/Plain; charset=us-ascii
+Content-Transfer-Encoding: 7bit
+X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Sun, 26 Jan 2020 11:55:02 -0800 (PST)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The difference between "fsl,etsec2-mdio" and "gianfar" has to do with
-the .get_tbipa function, which calculates the address of the TBIPA
-register automatically, if not explicitly specified. [ see
-drivers/net/ethernet/freescale/fsl_pq_mdio.c ]. On LS1021A, the TBIPA
-register is at offset 0x30 within the port register block, which is what
-the "gianfar" method of calculating addresses actually does.
+From: Sunil Kovvuri <sunil.kovvuri@gmail.com>
+Date: Sun, 26 Jan 2020 23:30:04 +0530
 
-Luckily, the bad "compatible" is inconsequential for ls1021a.dtsi,
-because the TBIPA register is explicitly specified via the second "reg"
-(<0x0 0x2d10030 0x0 0x4>), so the "get_tbipa" function is dead code.
-Nonetheless it's good to restore it to its correct value.
+> On Sun, Jan 26, 2020 at 4:31 PM David Miller <davem@davemloft.net> wrote:
+>>
+>> From: sunil.kovvuri@gmail.com
+>> Date: Fri, 24 Jan 2020 23:15:42 +0530
+>>
+>> > @@ -184,6 +192,72 @@ static inline void otx2_mbox_unlock(struct mbox *mbox)
+>> >       mutex_unlock(&mbox->lock);
+>> >  }
+>> >
+>> > +/* With the absence of API for 128-bit IO memory access for arm64,
+>> > + * implement required operations at place.
+>> > + */
+>> > +#if defined(CONFIG_ARM64)
+>> > +static inline void otx2_write128(u64 lo, u64 hi, void __iomem *addr)
+>> > +{
+>> > +     __asm__ volatile("stp %x[x0], %x[x1], [%x[p1],#0]!"
+>> > +                      ::[x0]"r"(lo), [x1]"r"(hi), [p1]"r"(addr));
+>> > +}
+>> > +
+>> > +static inline u64 otx2_atomic64_add(u64 incr, u64 *ptr)
+>> > +{
+>> > +     u64 result;
+>> > +
+>> > +     __asm__ volatile(".cpu   generic+lse\n"
+>> > +                      "ldadd %x[i], %x[r], [%[b]]"
+>> > +                      : [r]"=r"(result), "+m"(*ptr)
+>> > +                      : [i]"r"(incr), [b]"r"(ptr)
+>> > +                      : "memory");
+>> > +     return result;
+>> > +}
+>> > +
+>> > +#else
+>> > +#define otx2_write128(lo, hi, addr)
+>> > +#define otx2_atomic64_add(incr, ptr)         ({ *ptr = incr; })
+>> > +#endif
+>>
+>> So what exactly is going on here?  Are these true 128-bit writes
+>> and atomic operations?  Why is it named atomic64 then?  Why can't
+>> the normal atomic64 kernel interfaces be used?
+> 
+> otx2_write128() is used to free receive buffer pointers into buffer pool.
+> It's a register write, which works like,
+> "A 128-bit write (STP) to NPA_LF_AURA_OP_FREE0 and
+> NPA_LF_AURA_OP_FREE1 frees a pointer into a given pool. All other
+> accesses to these registers (e.g. reads and 64-bit writes) are RAZ/WI."
+> 
+> Wrt otx2_atomic64_add(), registers for reading IRQ status, queue stats etc
+> works only with 64-bit atomic load-and-add instructions. The nornal
+> atomic64 kernel
+> interface for ARM64 which supports 'ldadd' instruction needs
+> CONFIG_ARM64_LSE_ATOMICS
+> to be enabled. LSE (Large system extensions) is a CPU feature which is supported
+> by silicons which implement ARMv8.1 and later version of instruction set.
+> 
+> To support kernel with and without LSE_ATOMICS config enabled, here we are
+> passing "cpu   generic+lse" to the compiler. This is also done to avoid making
+> ARM64 and ARM64_LSE_ATOMICS hard dependency for driver compilation.
+> 
+>>
+>> Finally why is the #else case doing an assignment to *ptr rather
+>> than an increment like "*ptr += incr;"?
+> 
+> This device is a on-chip network controller which is a ARM64 based.
+> Previously when i submitted driver with ARM64 dependency i was advised
+> to allow this driver to be built for other architectures as well for
+> static analysis
+> reports etc.
+> https://www.spinics.net/lists/linux-soc/msg05847.html
+> 
+> Hence added a dummy 'otx2_atomic64_add' just for compilation purposes.
+> Please ignore the definition.
 
-Background discussion:
-https://www.spinics.net/lists/stable/msg361156.html
+But it doesn't add, it assigns.  That's the point of my question.
 
-Fixes: c7861adbe37f ("ARM: dts: ls1021: Fix SGMII PCS link remaining down after PHY disconnect")
-Reported-by: Pavel Machek <pavel@denx.de>
-Signed-off-by: Vladimir Oltean <olteanv@gmail.com>
----
- arch/arm/boot/dts/ls1021a.dtsi | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
-
-diff --git a/arch/arm/boot/dts/ls1021a.dtsi b/arch/arm/boot/dts/ls1021a.dtsi
-index 2f6977ada447..63d9f4a066e3 100644
---- a/arch/arm/boot/dts/ls1021a.dtsi
-+++ b/arch/arm/boot/dts/ls1021a.dtsi
-@@ -728,7 +728,7 @@
- 		};
- 
- 		mdio0: mdio@2d24000 {
--			compatible = "fsl,etsec2-mdio";
-+			compatible = "gianfar";
- 			device_type = "mdio";
- 			#address-cells = <1>;
- 			#size-cells = <0>;
-@@ -737,7 +737,7 @@
- 		};
- 
- 		mdio1: mdio@2d64000 {
--			compatible = "fsl,etsec2-mdio";
-+			compatible = "gianfar";
- 			device_type = "mdio";
- 			#address-cells = <1>;
- 			#size-cells = <0>;
--- 
-2.17.1
-
+If you are going to provide a fallback, at least make it semantically
+correct.
