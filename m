@@ -2,29 +2,29 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 9227E149BAC
-	for <lists+netdev@lfdr.de>; Sun, 26 Jan 2020 16:50:16 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id CC969149BB1
+	for <lists+netdev@lfdr.de>; Sun, 26 Jan 2020 16:52:22 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727872AbgAZPt6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 26 Jan 2020 10:49:58 -0500
-Received: from mail25.static.mailgun.info ([104.130.122.25]:15675 "EHLO
-        mail25.static.mailgun.info" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726079AbgAZPt5 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 26 Jan 2020 10:49:57 -0500
+        id S1728809AbgAZPwM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 26 Jan 2020 10:52:12 -0500
+Received: from mail26.static.mailgun.info ([104.130.122.26]:10390 "EHLO
+        mail26.static.mailgun.info" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1727453AbgAZPwM (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 26 Jan 2020 10:52:12 -0500
 DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org; q=dns/txt;
- s=smtp; t=1580053797; h=Date: Message-Id: Cc: To: References:
+ s=smtp; t=1580053932; h=Date: Message-Id: Cc: To: References:
  In-Reply-To: From: Subject: Content-Transfer-Encoding: MIME-Version:
- Content-Type: Sender; bh=0ACMIx0vNvxE/ZpblsQ/pYyMZSg0rEuOGRCaibRFMx8=;
- b=X1AaiMlrCKB8tIBeoTgLbwd3XZEI1juBH7MMNO2u6PCVr3tIOBbL8HQQDDggD2GQjTZQ2HOv
- LCyRImP7HZ1mfScpq/VFGx6cRDfyQd6WsejMd24L/r0Rx7kEeMm3V9H7rg3azndjuQP4SP1T
- RMd+/aqmJKiE3D0KqDu7ObnWLJY=
-X-Mailgun-Sending-Ip: 104.130.122.25
+ Content-Type: Sender; bh=JD2pxB6M6Wq/L05zP++/dLn61nN2ob1L8mfn2pSrEp8=;
+ b=PDMdgcadGhva1dHiXk+4OkbglbbXewu61ZfYngflmFPlz92BBc2Et9aYpVAq9vHFKM20LyLT
+ kyEU/s3flj138oEBVdeSsUaC5AAOAO5AaBef0eEtVTk8FaWCqB7f0y6OTwPhowyaifUoGpp+
+ QgbLfgjHKjxiOhbT3GAuXJ21Sn8=
+X-Mailgun-Sending-Ip: 104.130.122.26
 X-Mailgun-Sid: WyJiZjI2MiIsICJuZXRkZXZAdmdlci5rZXJuZWwub3JnIiwgImJlOWU0YSJd
 Received: from smtp.codeaurora.org (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171])
- by mxa.mailgun.org with ESMTP id 5e2db524.7f8eeb65c3e8-smtp-out-n02;
- Sun, 26 Jan 2020 15:49:56 -0000 (UTC)
+ by mxa.mailgun.org with ESMTP id 5e2db5a7.7f0d7ee0c340-smtp-out-n02;
+ Sun, 26 Jan 2020 15:52:07 -0000 (UTC)
 Received: by smtp.codeaurora.org (Postfix, from userid 1001)
-        id 019D1C433A2; Sun, 26 Jan 2020 15:49:55 +0000 (UTC)
+        id 5337DC4479C; Sun, 26 Jan 2020 15:52:06 +0000 (UTC)
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
         aws-us-west-2-caf-mail-1.web.codeaurora.org
 X-Spam-Level: 
@@ -34,52 +34,55 @@ Received: from potku.adurom.net (88-114-240-156.elisa-laajakaista.fi [88.114.240
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
         (Authenticated sender: kvalo)
-        by smtp.codeaurora.org (Postfix) with ESMTPSA id AD08EC433CB;
-        Sun, 26 Jan 2020 15:49:52 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org AD08EC433CB
+        by smtp.codeaurora.org (Postfix) with ESMTPSA id 75FB2C43383;
+        Sun, 26 Jan 2020 15:52:03 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org 75FB2C43383
 Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
 Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; spf=none smtp.mailfrom=kvalo@codeaurora.org
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 7bit
-Subject: Re: [PATCH] rtlwifi: fix spelling mistake
+Subject: Re: [PATCH][next] iwlegacy: ensure loop counter addr does not wrap
+ and cause an infinite loop
 From:   Kalle Valo <kvalo@codeaurora.org>
-In-Reply-To: <20200124043433.GA3024@google.com>
-References: <20200124043433.GA3024@google.com>
-To:     Saurav Girepunje <saurav.girepunje@gmail.com>
-Cc:     pkshih@realtek.com, davem@davemloft.net, Larry.Finger@lwfinger.net,
-        saurav.girepunje@gmail.com, linux-wireless@vger.kernel.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        saurav.girepunje@hotmail.com
+In-Reply-To: <20200126000954.22807-1-colin.king@canonical.com>
+References: <20200126000954.22807-1-colin.king@canonical.com>
+To:     Colin King <colin.king@canonical.com>
+Cc:     Stanislaw Gruszka <stf_xl@wp.pl>,
+        "David S . Miller" <davem@davemloft.net>,
+        Meenakshi Venkataraman <meenakshi.venkataraman@intel.com>,
+        Wey-Yi Guy <wey-yi.w.guy@intel.com>,
+        Johannes Berg <johannes.berg@intel.com>,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        kernel-janitors@vger.kernel.org, linux-kernel@vger.kernel.org
 User-Agent: pwcli/0.0.0-git (https://github.com/kvalo/pwcli/) Python/2.7.12
-Message-Id: <20200126154955.019D1C433A2@smtp.codeaurora.org>
-Date:   Sun, 26 Jan 2020 15:49:55 +0000 (UTC)
+Message-Id: <20200126155206.5337DC4479C@smtp.codeaurora.org>
+Date:   Sun, 26 Jan 2020 15:52:06 +0000 (UTC)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Saurav Girepunje <saurav.girepunje@gmail.com> wrote:
+Colin King <colin.king@canonical.com> wrote:
 
-> fix spelling mistake reported by checkpatch in trx.c .
+> From: Colin Ian King <colin.king@canonical.com>
 > 
-> Signed-off-by: Saurav Girepunje <saurav.girepunje@gmail.com>
+> The loop counter addr is a u16 where as the upper limit of the loop
+> is an int. In the unlikely event that the il->cfg->eeprom_size is
+> greater than 64K then we end up with an infinite loop since addr will
+> wrap around an never reach upper loop limit. Fix this by making addr
+> an int.
+> 
+> Addresses-Coverity: ("Infinite loop")
+> Fixes: be663ab67077 ("iwlwifi: split the drivers for agn and legacy devices 3945/4965")
+> Signed-off-by: Colin Ian King <colin.king@canonical.com>
+> Acked-by: Stanislaw Gruszka <stf_xl@wp.pl>
 
-Failed to apply to wireless-drivers-next, please rebase and resend as
-v2.
+Patch applied to wireless-drivers-next.git, thanks.
 
-error: patch failed: drivers/net/wireless/realtek/rtlwifi/rtl8192se/trx.c:276
-error: drivers/net/wireless/realtek/rtlwifi/rtl8192se/trx.c: patch does not apply
-error: Did you hand edit your patch?
-It does not apply to blobs recorded in its index.
-Applying: rtlwifi: fix spelling mistake
-Using index info to reconstruct a base tree...
-Patch failed at 0001 rtlwifi: fix spelling mistake
-The copy of the patch that failed is found in: .git/rebase-apply/patch
-
-Patch set to Changes Requested.
+c2f9a4e4a5ab iwlegacy: ensure loop counter addr does not wrap and cause an infinite loop
 
 -- 
-https://patchwork.kernel.org/patch/11349731/
+https://patchwork.kernel.org/patch/11351769/
 
 https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
