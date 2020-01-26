@@ -2,29 +2,29 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id EAF70149B84
-	for <lists+netdev@lfdr.de>; Sun, 26 Jan 2020 16:43:43 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9D249149B8D
+	for <lists+netdev@lfdr.de>; Sun, 26 Jan 2020 16:44:15 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727453AbgAZPll (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 26 Jan 2020 10:41:41 -0500
-Received: from mail26.static.mailgun.info ([104.130.122.26]:61852 "EHLO
+        id S1728253AbgAZPnq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 26 Jan 2020 10:43:46 -0500
+Received: from mail26.static.mailgun.info ([104.130.122.26]:64819 "EHLO
         mail26.static.mailgun.info" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726240AbgAZPll (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 26 Jan 2020 10:41:41 -0500
+        by vger.kernel.org with ESMTP id S1726252AbgAZPnq (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 26 Jan 2020 10:43:46 -0500
 DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org; q=dns/txt;
- s=smtp; t=1580053300; h=Date: Message-Id: Cc: To: References:
+ s=smtp; t=1580053425; h=Date: Message-Id: Cc: To: References:
  In-Reply-To: From: Subject: Content-Transfer-Encoding: MIME-Version:
- Content-Type: Sender; bh=4oNgHEj5QFbNpu267rvGYVEB/8nFuoK3Pr+1T8Kx9y8=;
- b=m1leRY3sVlOjI78N+eJugC4t6wqaqJCySnHyU2RGbd0LnQVRR9SmIcAuKhbhub7TEVmc9F4s
- RsVhaGnmggFEfnComV5sIXuoe3P3fTw2U0aQU3Z/YbbIOL2diToHR/511asXeA3LHokukKWN
- fB1qO6lxHAMFU5C5i+D+lEU06lc=
+ Content-Type: Sender; bh=pejZ+l4byocUl4MO9Xh34Wf+bv32hnImIXB9SxfFKhw=;
+ b=S/ZpsuyI9pTYlbCJlV/z9byzgr+KAzgzVV8gzkzJ2Qr/+Fzhy64x0i0uq6GTl/tneN0HrjJY
+ 6ITBqBUEACNPa/LyUU9Iykzy00uspgi6iZRXBPbx+ETzGMPjXkHw/XcvIIImaA5CUG6hDZPw
+ FmGPuJ2dzgQgG4zjPE9Y1q+vkeQ=
 X-Mailgun-Sending-Ip: 104.130.122.26
 X-Mailgun-Sid: WyJiZjI2MiIsICJuZXRkZXZAdmdlci5rZXJuZWwub3JnIiwgImJlOWU0YSJd
 Received: from smtp.codeaurora.org (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171])
- by mxa.mailgun.org with ESMTP id 5e2db331.7f733e56ef48-smtp-out-n02;
- Sun, 26 Jan 2020 15:41:37 -0000 (UTC)
+ by mxa.mailgun.org with ESMTP id 5e2db3b0.7f8407011768-smtp-out-n03;
+ Sun, 26 Jan 2020 15:43:44 -0000 (UTC)
 Received: by smtp.codeaurora.org (Postfix, from userid 1001)
-        id 4F504C43383; Sun, 26 Jan 2020 15:41:37 +0000 (UTC)
+        id BBC4EC433CB; Sun, 26 Jan 2020 15:43:44 +0000 (UTC)
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
         aws-us-west-2-caf-mail-1.web.codeaurora.org
 X-Spam-Level: 
@@ -34,62 +34,44 @@ Received: from potku.adurom.net (88-114-240-156.elisa-laajakaista.fi [88.114.240
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
         (Authenticated sender: kvalo)
-        by smtp.codeaurora.org (Postfix) with ESMTPSA id 100FDC433CB;
-        Sun, 26 Jan 2020 15:41:33 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org 100FDC433CB
+        by smtp.codeaurora.org (Postfix) with ESMTPSA id 043C8C43383;
+        Sun, 26 Jan 2020 15:43:41 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org 043C8C43383
 Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
 Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; spf=none smtp.mailfrom=kvalo@codeaurora.org
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 7bit
-Subject: Re: [PATCH] brcmfmac: sdio: Fix OOB interrupt initialization on
- brcm43362
+Subject: Re: [PATCH] brcmfmac: Remove always false 'idx < 0' statement
 From:   Kalle Valo <kvalo@codeaurora.org>
-In-Reply-To: <20191226092033.12600-1-jean-philippe@linaro.org>
-References: <20191226092033.12600-1-jean-philippe@linaro.org>
-To:     Jean-Philippe Brucker <jean-philippe@linaro.org>
-Cc:     linux-wireless@vger.kernel.org,
-        brcm80211-dev-list.pdl@broadcom.com,
-        brcm80211-dev-list@cypress.com, netdev@vger.kernel.org,
-        arend.vanspriel@broadcom.com, hdegoede@redhat.com,
-        franky.lin@broadcom.com, hante.meuleman@broadcom.com,
-        chi-hsien.lin@cypress.com, wright.feng@cypress.com,
-        davem@davemloft.net
+In-Reply-To: <20200108135748.46096-1-yuehaibing@huawei.com>
+References: <20200108135748.46096-1-yuehaibing@huawei.com>
+To:     YueHaibing <yuehaibing@huawei.com>
+Cc:     <arend.vanspriel@broadcom.com>, <linux-wireless@vger.kernel.org>,
+        <brcm80211-dev-list.pdl@broadcom.com>,
+        <brcm80211-dev-list@cypress.com>, <netdev@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>, yuehaibing <yuehaibing@huawei.com>
 User-Agent: pwcli/0.0.0-git (https://github.com/kvalo/pwcli/) Python/2.7.12
-Message-Id: <20200126154137.4F504C43383@smtp.codeaurora.org>
-Date:   Sun, 26 Jan 2020 15:41:37 +0000 (UTC)
+Message-Id: <20200126154344.BBC4EC433CB@smtp.codeaurora.org>
+Date:   Sun, 26 Jan 2020 15:43:44 +0000 (UTC)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Jean-Philippe Brucker <jean-philippe@linaro.org> wrote:
+YueHaibing <yuehaibing@huawei.com> wrote:
 
-> Commit 262f2b53f679 ("brcmfmac: call brcmf_attach() just before calling
-> brcmf_bus_started()") changed the initialization order of the brcmfmac
-> SDIO driver. Unfortunately since brcmf_sdiod_intr_register() is now
-> called before the sdiodev->bus_if initialization, it reads the wrong
-> chip ID and fails to initialize the GPIO on brcm43362. Thus the chip
-> cannot send interrupts and fails to probe:
+> From: yuehaibing <yuehaibing@huawei.com>
 > 
-> [   12.517023] brcmfmac: brcmf_sdio_bus_rxctl: resumed on timeout
-> [   12.531214] ieee80211 phy0: brcmf_bus_started: failed: -110
-> [   12.536976] ieee80211 phy0: brcmf_attach: dongle is not responding: err=-110
-> [   12.566467] brcmfmac: brcmf_sdio_firmware_callback: brcmf_attach failed
+> idx is declared as u32, it will never less than 0.
 > 
-> Initialize the bus interface earlier to ensure that
-> brcmf_sdiod_intr_register() properly sets up the OOB interrupt.
-> 
-> BugLink: https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=908438
-> Fixes: 262f2b53f679 ("brcmfmac: call brcmf_attach() just before calling brcmf_bus_started()")
-> Signed-off-by: Jean-Philippe Brucker <jean-philippe@linaro.org>
-> Reviewed-by: Arend van Spriel <arend.vanspriel@broadcom.com>
+> Signed-off-by: yuehaibing <yuehaibing@huawei.com>
 
 Patch applied to wireless-drivers-next.git, thanks.
 
-8c8e60fb86a9 brcmfmac: sdio: Fix OOB interrupt initialization on brcm43362
+627b0d094240 brcmfmac: Remove always false 'idx < 0' statement
 
 -- 
-https://patchwork.kernel.org/patch/11310417/
+https://patchwork.kernel.org/patch/11323743/
 
 https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
