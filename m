@@ -2,138 +2,176 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 4CCF0149A93
-	for <lists+netdev@lfdr.de>; Sun, 26 Jan 2020 13:49:24 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id EF0EF149A96
+	for <lists+netdev@lfdr.de>; Sun, 26 Jan 2020 13:50:39 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2387443AbgAZMtS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 26 Jan 2020 07:49:18 -0500
-Received: from esa3.microchip.iphmx.com ([68.232.153.233]:54874 "EHLO
-        esa3.microchip.iphmx.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2387398AbgAZMtR (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 26 Jan 2020 07:49:17 -0500
-Received-SPF: Pass (esa3.microchip.iphmx.com: domain of
-  Horatiu.Vultur@microchip.com designates 198.175.253.82 as
-  permitted sender) identity=mailfrom;
-  client-ip=198.175.253.82; receiver=esa3.microchip.iphmx.com;
-  envelope-from="Horatiu.Vultur@microchip.com";
-  x-sender="Horatiu.Vultur@microchip.com";
-  x-conformance=spf_only; x-record-type="v=spf1";
-  x-record-text="v=spf1 mx a:ushub1.microchip.com
-  a:smtpout.microchip.com -exists:%{i}.spf.microchip.iphmx.com
-  include:servers.mcsv.net include:mktomail.com
-  include:spf.protection.outlook.com ~all"
-Received-SPF: None (esa3.microchip.iphmx.com: no sender
-  authenticity information available from domain of
-  postmaster@email.microchip.com) identity=helo;
-  client-ip=198.175.253.82; receiver=esa3.microchip.iphmx.com;
-  envelope-from="Horatiu.Vultur@microchip.com";
-  x-sender="postmaster@email.microchip.com";
-  x-conformance=spf_only
-Authentication-Results: esa3.microchip.iphmx.com; dkim=none (message not signed) header.i=none; spf=Pass smtp.mailfrom=Horatiu.Vultur@microchip.com; spf=None smtp.helo=postmaster@email.microchip.com; dmarc=pass (p=none dis=none) d=microchip.com
-IronPort-SDR: pSDVn3chmLQfhl0uygt7Pv6ND1lo09LprktTom4Xw4jam8/UUciMtrMe5cMlLKvmmhaiasrWiU
- vUrtVuZrMnEJpmTBDPduve/PAZC7fzA9Meubjb/kWekJyP29CR8DvlYPHhmMcYglC7pk6bEwK5
- hYCDnbFL/I+dk7AjfRGm5Y2tr9m+ZfsjtOLuDuHnFCiRQdxrrNLfdDaMDhazIUmTRWtTMXA9Iw
- RErzsVpVFgzc1VEkJSoqur6Xib6LTge35ek9kCslUbS4rSI4H98jshEau6FVeR0nR/ImKNcUcz
- D94=
-X-IronPort-AV: E=Sophos;i="5.70,365,1574146800"; 
-   d="scan'208";a="64538482"
-Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
-  by esa3.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 26 Jan 2020 05:49:16 -0700
-Received: from chn-vm-ex01.mchp-main.com (10.10.85.143) by
- chn-vm-ex01.mchp-main.com (10.10.85.143) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.1713.5; Sun, 26 Jan 2020 05:49:14 -0700
-Received: from localhost (10.10.85.251) by chn-vm-ex01.mchp-main.com
- (10.10.85.143) with Microsoft SMTP Server id 15.1.1713.5 via Frontend
- Transport; Sun, 26 Jan 2020 05:49:13 -0700
-Date:   Sun, 26 Jan 2020 13:49:11 +0100
-From:   Horatiu Vultur <horatiu.vultur@microchip.com>
-To:     Andrew Lunn <andrew@lunn.ch>
-CC:     <linux-kernel@vger.kernel.org>, <netdev@vger.kernel.org>,
-        <bridge@lists.linux-foundation.org>, <jiri@resnulli.us>,
-        <ivecera@redhat.com>, <davem@davemloft.net>,
-        <roopa@cumulusnetworks.com>, <nikolay@cumulusnetworks.com>,
-        <anirudh.venkataramanan@intel.com>, <olteanv@gmail.com>,
-        <jeffrey.t.kirsher@intel.com>, <UNGLinuxDriver@microchip.com>
-Subject: Re: [RFC net-next v3 09/10] net: bridge: mrp: Integrate MRP into the
- bridge
-Message-ID: <20200126124911.z5zh44agxbe6lwhh@soft-dev3.microsemi.net>
-References: <20200124161828.12206-1-horatiu.vultur@microchip.com>
- <20200124161828.12206-10-horatiu.vultur@microchip.com>
- <20200125154248.GC18311@lunn.ch>
+        id S2387454AbgAZMt6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 26 Jan 2020 07:49:58 -0500
+Received: from us-smtp-1.mimecast.com ([207.211.31.81]:59244 "EHLO
+        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S2387398AbgAZMt6 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 26 Jan 2020 07:49:58 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1580042997;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=xoQIoxN+JLBbKgt/dVDcIeKSH7Tz56Y8+obpar4ys0k=;
+        b=ZFuKF3OjyMVyldDScMLJYIxP6R4UnCxCMaA3uUkwmVm7aRcK845lZuj8+Ech715/Ly/EOk
+        nQrToCYStqLGXFTqivS6s8j9odh+/UgI5j8iZFsbczE2B9aNhuq4h2ohpaL7Y32DV4vMcQ
+        xFRHPzBDT+/OlusImPoU3QZ/dZGxUak=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-233-5_u8-OQTNyO5khmRUb4qHw-1; Sun, 26 Jan 2020 07:49:49 -0500
+X-MC-Unique: 5_u8-OQTNyO5khmRUb4qHw-1
+Received: from smtp.corp.redhat.com (int-mx05.intmail.prod.int.phx2.redhat.com [10.5.11.15])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 3C7451882CC0;
+        Sun, 26 Jan 2020 12:49:47 +0000 (UTC)
+Received: from carbon (ovpn-200-18.brq.redhat.com [10.40.200.18])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 1C60984321;
+        Sun, 26 Jan 2020 12:49:37 +0000 (UTC)
+Date:   Sun, 26 Jan 2020 13:49:33 +0100
+From:   Jesper Dangaard Brouer <jbrouer@redhat.com>
+To:     David Ahern <dsahern@gmail.com>
+Cc:     Toke =?UTF-8?B?SMO4aWxhbmQtSsO4cmdlbnNlbg==?= <toke@redhat.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        David Ahern <dsahern@kernel.org>, netdev@vger.kernel.org,
+        prashantbhole.linux@gmail.com, jasowang@redhat.com,
+        davem@davemloft.net, mst@redhat.com, toshiaki.makita1@gmail.com,
+        daniel@iogearbox.net, john.fastabend@gmail.com, ast@kernel.org,
+        kafai@fb.com, songliubraving@fb.com, yhs@fb.com, andriin@fb.com,
+        David Ahern <dahern@digitalocean.com>
+Subject: Re: [PATCH bpf-next 03/12] net: Add IFLA_XDP_EGRESS for XDP
+ programs in the egress path
+Message-ID: <20200126134933.2514b2ab@carbon>
+In-Reply-To: <1d84d8be-6812-d63a-97ca-ebc68cc266b9@gmail.com>
+References: <20200123014210.38412-1-dsahern@kernel.org>
+        <20200123014210.38412-4-dsahern@kernel.org>
+        <87tv4m9zio.fsf@toke.dk>
+        <335b624a-655a-c0c6-ca27-102e6dac790b@gmail.com>
+        <20200124072128.4fcb4bd1@cakuba>
+        <87o8usg92d.fsf@toke.dk>
+        <1d84d8be-6812-d63a-97ca-ebc68cc266b9@gmail.com>
+Organization: Red Hat Inc.
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Disposition: inline
-In-Reply-To: <20200125154248.GC18311@lunn.ch>
-User-Agent: NeoMutt/20180716
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.15
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The 01/25/2020 16:42, Andrew Lunn wrote:
-> EXTERNAL EMAIL: Do not click links or open attachments unless you know the content is safe
-> 
-> On Fri, Jan 24, 2020 at 05:18:27PM +0100, Horatiu Vultur wrote:
-> > To integrate MRP into the bridge, the bridge needs to do the following:
-> > - initialized and destroy the generic netlink used by MRP
-> > - detect if the MRP frame was received on a port that is part of a MRP ring. In
-> >   case it was not, then forward the frame as usual, otherwise redirect the frame
-> >   to the upper layer.
-> >
-> > Signed-off-by: Horatiu Vultur <horatiu.vultur@microchip.com>
-> > ---
-> >  net/bridge/br.c         | 11 +++++++++++
-> >  net/bridge/br_device.c  |  3 +++
-> >  net/bridge/br_if.c      |  6 ++++++
-> >  net/bridge/br_input.c   | 14 ++++++++++++++
-> >  net/bridge/br_private.h | 14 ++++++++++++++
-> >  5 files changed, 48 insertions(+)
-> >
-> > diff --git a/net/bridge/br.c b/net/bridge/br.c
-> > index b6fe30e3768f..d5e556eed4ba 100644
-> > --- a/net/bridge/br.c
-> > +++ b/net/bridge/br.c
-> > @@ -344,6 +344,12 @@ static int __init br_init(void)
-> >       if (err)
-> >               goto err_out5;
-> >
-> > +#ifdef CONFIG_BRIDGE_MRP
-> > +     err = br_mrp_netlink_init();
-> > +     if (err)
-> > +             goto err_out6;
-> > +#endif
-> 
-> Please try to avoid #ifdef's like this in C code. Add a stub function
-> to br_private_mrp.h.
-> 
-> If you really cannot avoid #ifdef, please use #if IS_ENABLED(CONFIG_BRIDGE_MRP).
-> That expands to
-> 
->         if (0) {
-> 
->         }
-> 
-> So the compiler will compile it and then optimize it out. That gives
-> us added benefit of build testing, we don't suddenly find the code no
-> longer compiles when we enable the option.
-> 
-> > --- a/net/bridge/br_input.c
-> > +++ b/net/bridge/br_input.c
-> > @@ -21,6 +21,9 @@
-> >  #include <linux/rculist.h>
-> >  #include "br_private.h"
-> >  #include "br_private_tunnel.h"
-> > +#ifdef CONFIG_BRIDGE_MRP
-> > +#include "br_private_mrp.h"
-> > +#endif
-> 
-> It should always be safe to include a header file.
-> 
->    Andrew
+On Sat, 25 Jan 2020 18:43:36 -0700
+David Ahern <dsahern@gmail.com> wrote:
 
-Thanks for pointing out these mistakes. I will try to avoid all these
-#ifdef's in the next patch series.
+> On 1/24/20 8:36 AM, Toke H=C3=B8iland-J=C3=B8rgensen wrote:
+> > Jakub Kicinski <kuba@kernel.org> writes:
+> >  =20
+> >> On Thu, 23 Jan 2020 14:33:42 -0700, David Ahern wrote: =20
+> >>> On 1/23/20 4:35 AM, Toke H=C3=B8iland-J=C3=B8rgensen wrote: =20
+> >>>> David Ahern <dsahern@kernel.org> writes: =20
+> >>>>> From: David Ahern <dahern@digitalocean.com>
+> >>>>>
+> >>>>> Add IFLA_XDP_EGRESS to if_link.h uapi to handle an XDP program atta=
+ched
+> >>>>> to the egress path of a device. Add rtnl_xdp_egress_fill and helper=
+s as
+> >>>>> the egress counterpart to the existing rtnl_xdp_fill. The expectati=
+on
+> >>>>> is that going forward egress path will acquire the various levels of
+> >>>>> attach - generic, driver and hardware.   =20
+> >>>>
+> >>>> How would a 'hardware' attach work for this? As I said in my reply to
+> >>>> the previous patch, isn't this explicitly for emulating XDP on the o=
+ther
+> >>>> end of a point-to-point link? How would that work with offloaded
+> >>>> programs? =20
+> >>>
+> >>> Nothing about this patch set is limited to point-to-point links. =20
+> >>
+> >> I struggle to understand of what the expected semantics of this new
+> >> hook are. Is this going to be run on all frames sent to the device
+> >> from the stack? All frames from the stack and from XDP_REDIRECT?
+> >>
+> >> A little hard to figure out the semantics when we start from a funky
+> >> device like tun :S =20
+> >=20
+> > Yes, that is also why I found this a bit weird. We have discussed plans
+> > for an XDP TX hook before:
+> > https://github.com/xdp-project/xdp-project/blob/master/xdp-project.org#=
+xdp-hook-at-tx
+> >=20
+> > That TX hook would run for everything at TX, but it would be a separate
+> > program type with its own metadata access. Whereas the idea with this
+> > series (seemed to me) to be just to be able to "emulate" run a regular
+> > RX-side XDP program on egress for devices where this makes sense.
+> >=20
+> > If this series is not meant to implement that "emulation", but rather be
+> > usable for all devices, I really think we should go straight for the
+> > full TX hook as discussed earlier...
+> >  =20
+>=20
+> The first patch set from Jason and Prashant started from the perspective
+> of offloading XDP programs for a guest. Independently, I was looking at
+> XDP in the TX path (now referred to as egress to avoid confusion with
+> the XDP_TX return type). Jason and Prashant were touching some of the
+> same code paths in the tun driver that I needed for XDP in the Tx path,
+> so we decided to consolidate and have XDP egress done first and then
+> offload of VMs as a followup. Offload in virtio_net can be done very
+> similar to how it is done in nfp -- the program is passed to the host as
+> a hardware level attach mode, and the driver verifies the program can be
+> offloaded (e.g., does not contain helpers that expose host specific data
+> like the fib lookup helper).
+>=20
+> At this point, you need to stop thinking solely from the perspective of
+> tun or tap and VM offload; think about this from the ability to run an
+> XDP program on egress path at an appropriate place in the NIC driver
+> that covers both skbs and xdp_frames (e.g., on a REDIRECT).
 
--- 
-/Horatiu
+Yes, please. I want this NIC TX hook to see both SKBs and xdp_frames.
+
+
+> This has
+> been discussed before as a need (e.g, Toke's reference above), and I am
+> trying to get this initial support done.
+>=20
+> I very much wanted to avoid copy-paste-modify for the entire XDP API for
+> this. For the most part XDP means ebpf at the NIC driver / hardware
+> level (obviously with the exception of generic mode). The goal is
+> tempered with the need for the verifier to reject rx entries in the
+> xdp_md context. Hence the reason for use of an attach_type - existing
+> infrastructure to test and reject the accesses.
+>=20
+> That said, Martin's comment throws a wrench in the goal: if the existing
+> code does not enforce expected_attach_type then that option can not be
+> used in which case I guess I have to go with a new program type
+> (BPF_PROG_TYPE_XDP_EGRESS) which takes a new context (xdp_egress_md),
+> has different return codes, etc.
+
+Taking about return codes.  Does XDP the return codes make sense for
+this EGRESS hook? (if thinking about this being egress on the real NIC).
+
+E.g. XDP_REDIRECT would have to be supported, which is interesting, but
+also have implications (like looping packets).
+
+E.g. what is the semantics/action of XDP_TX return code?
+
+E.g. I'm considering adding a XDP_CONGESTED return code that can cause
+backpressure towards qdisc layer.
+
+Also think about that if this EGRESS hook uses standard prog type for
+XDP (BPF_PROG_TYPE_XDP), then we need to convert xdp_frame to xdp_buff
+(and also convert SKBs to xdp_buff).
+
+Are we sure that reusing the same bpf prog type is the right choice?
+
+--=20
+Best regards,
+  Jesper Dangaard Brouer
+  MSc.CS, Principal Kernel Engineer at Red Hat
+  LinkedIn: http://www.linkedin.com/in/brouer
+
