@@ -2,126 +2,102 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 343B6149AA7
-	for <lists+netdev@lfdr.de>; Sun, 26 Jan 2020 14:01:25 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D8F0D149AB7
+	for <lists+netdev@lfdr.de>; Sun, 26 Jan 2020 14:20:11 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2387431AbgAZNBP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 26 Jan 2020 08:01:15 -0500
-Received: from esa5.microchip.iphmx.com ([216.71.150.166]:19163 "EHLO
-        esa5.microchip.iphmx.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728689AbgAZNBP (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 26 Jan 2020 08:01:15 -0500
-Received-SPF: Pass (esa5.microchip.iphmx.com: domain of
-  Horatiu.Vultur@microchip.com designates 198.175.253.82 as
-  permitted sender) identity=mailfrom;
-  client-ip=198.175.253.82; receiver=esa5.microchip.iphmx.com;
-  envelope-from="Horatiu.Vultur@microchip.com";
-  x-sender="Horatiu.Vultur@microchip.com";
-  x-conformance=spf_only; x-record-type="v=spf1";
-  x-record-text="v=spf1 mx a:ushub1.microchip.com
-  a:smtpout.microchip.com -exists:%{i}.spf.microchip.iphmx.com
-  include:servers.mcsv.net include:mktomail.com
-  include:spf.protection.outlook.com ~all"
-Received-SPF: None (esa5.microchip.iphmx.com: no sender
-  authenticity information available from domain of
-  postmaster@email.microchip.com) identity=helo;
-  client-ip=198.175.253.82; receiver=esa5.microchip.iphmx.com;
-  envelope-from="Horatiu.Vultur@microchip.com";
-  x-sender="postmaster@email.microchip.com";
-  x-conformance=spf_only
-Authentication-Results: esa5.microchip.iphmx.com; dkim=none (message not signed) header.i=none; spf=Pass smtp.mailfrom=Horatiu.Vultur@microchip.com; spf=None smtp.helo=postmaster@email.microchip.com; dmarc=pass (p=none dis=none) d=microchip.com
-IronPort-SDR: yNCRfbb5cMs/w6zEcQdPDA6GeBmY+GKZJ5wCk1a4e0ElcxTwrjvSCEh4aY7OO3/Yf+PCymD+9y
- 7iNAZVqxGAcwkU8B5v+UU8UyHxCoV0whApn/ab1bYQ9kUPqwI1OApR15ekPOFbm9UunnKlXbPF
- DbMIJst1Vazz82Q8noRpkiLpQV1Zivy+jOSLnsAqJWAtMm08duUVXycpszJrC6Va/Wbse4+q0s
- 7gnkZBAYgNCrtwYDKlqJjhAhEKtdzSt0AIYcNJ7ZyES4AdQDepmDnTfNeT6C6uC4PLNZ7VLYjd
- 2fA=
-X-IronPort-AV: E=Sophos;i="5.70,365,1574146800"; 
-   d="scan'208";a="63134271"
-Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
-  by esa5.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 26 Jan 2020 06:01:13 -0700
-Received: from chn-vm-ex01.mchp-main.com (10.10.85.143) by
- chn-vm-ex04.mchp-main.com (10.10.85.152) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.1713.5; Sun, 26 Jan 2020 06:01:12 -0700
-Received: from localhost (10.10.85.251) by chn-vm-ex01.mchp-main.com
- (10.10.85.143) with Microsoft SMTP Server id 15.1.1713.5 via Frontend
- Transport; Sun, 26 Jan 2020 06:01:12 -0700
-Date:   Sun, 26 Jan 2020 14:01:11 +0100
-From:   Horatiu Vultur <horatiu.vultur@microchip.com>
-To:     Andrew Lunn <andrew@lunn.ch>
-CC:     <linux-kernel@vger.kernel.org>, <netdev@vger.kernel.org>,
-        <bridge@lists.linux-foundation.org>, <jiri@resnulli.us>,
-        <ivecera@redhat.com>, <davem@davemloft.net>,
-        <roopa@cumulusnetworks.com>, <nikolay@cumulusnetworks.com>,
-        <anirudh.venkataramanan@intel.com>, <olteanv@gmail.com>,
-        <jeffrey.t.kirsher@intel.com>, <UNGLinuxDriver@microchip.com>
-Subject: Re: [RFC net-next v3 09/10] net: bridge: mrp: Integrate MRP into the
- bridge
-Message-ID: <20200126130111.o75gskwe2fmfd4g5@soft-dev3.microsemi.net>
-References: <20200124161828.12206-1-horatiu.vultur@microchip.com>
- <20200124161828.12206-10-horatiu.vultur@microchip.com>
- <20200125161615.GD18311@lunn.ch>
+        id S1728847AbgAZNUK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 26 Jan 2020 08:20:10 -0500
+Received: from mail-pl1-f193.google.com ([209.85.214.193]:46317 "EHLO
+        mail-pl1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726275AbgAZNUK (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 26 Jan 2020 08:20:10 -0500
+Received: by mail-pl1-f193.google.com with SMTP id y8so2755224pll.13;
+        Sun, 26 Jan 2020 05:20:09 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:mail-followup-to:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=qFmJ85cJ5bHzMdd9PJDJanoJBeSPOYAKuu6B3Rz+8MM=;
+        b=sg/LGHubq6c/mDNUpzqbD8QV2utRz/c9y9JORPN8efDE7Cy+B3wTrboQ2dNY1zBtag
+         ybOH+kaKgMgpYfNVca3MAm0QH95XD5wlz67NpIoz2SBCYqcwUp/67+9673o+QQaQrONt
+         70hmci5GklichLAS2rMJRJceIZYrBzwmyLTZ21TgAYdwxgkgaDZUtWJiJ+eczLwKexyt
+         tmRpn5weTVZfI4ZyWlYpNSJfpoS9At2R2zTZX/z9jUCMcBOp38DMLVTOQQKgRiKN7S3d
+         DG8MdfYac57FsU/Ukp+u78bG1Ck66zVjYDfyFnMJm1Rf86V9xzWnc2MLj2LHhNgiXH+q
+         RLKw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id
+         :mail-followup-to:references:mime-version:content-disposition
+         :in-reply-to:user-agent;
+        bh=qFmJ85cJ5bHzMdd9PJDJanoJBeSPOYAKuu6B3Rz+8MM=;
+        b=K+8ZVOid76dzWHovQmoBiqetcFfxfdrDS090NsoZECsghw7lJMcK5/6bvliiEShpkS
+         LIybmzChShXkrKh/9ncISNExAIVDOT7cUyMkQZfdrdfZ+eSDwoOBIEW+LnC1f0Vv4Bjd
+         9sjILjQEOQXcBEQZ0st1hcez2UDImeFRfHnkyhtsVmkwc23L4XnnAUce9UCo4QMBERwV
+         52E3IeDxwKfLhja0SRVmKw1rs5/bmFasDgvWNY7p2m+T8x2lQ1fGpPgy61f/2JMSPqPt
+         gr6TLbRuShKaYdFLdgsPKMP95ycT9Vs0lbAm0wU+ZVZ1KtqjjQDAWjt1dkDCcmMYKD2v
+         iW6Q==
+X-Gm-Message-State: APjAAAXGzyVTw4QEtU1l3c4DtEYSmcNZ8h2vyRNNsmgq1SMFEFbSZRkK
+        4+LVKlvFKs3NAuiHDEodbs8=
+X-Google-Smtp-Source: APXvYqxQM1UdwS3WSmnegLNDPNTmtELKNbZOjJl1nL6NITYEQKMPaZBzC5aS/EJAiw5NfjIcgBMLqg==
+X-Received: by 2002:a17:902:bd90:: with SMTP id q16mr406108pls.34.1580044808979;
+        Sun, 26 Jan 2020 05:20:08 -0800 (PST)
+Received: from localhost ([192.55.55.43])
+        by smtp.gmail.com with ESMTPSA id m22sm13169639pgn.8.2020.01.26.05.20.07
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sun, 26 Jan 2020 05:20:08 -0800 (PST)
+Date:   Sun, 26 Jan 2020 15:20:04 +0200
+From:   Johan Hedberg <johan.hedberg@gmail.com>
+To:     Dan Carpenter <dan.carpenter@oracle.com>
+Cc:     Marcel Holtmann <marcel@holtmann.org>,
+        syzbot <syzbot+eba992608adf3d796bcc@syzkaller.appspotmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        linux-bluetooth@vger.kernel.org, netdev@vger.kernel.org,
+        syzkaller-bugs@googlegroups.com
+Subject: Re: [PATCH] Bluetooth: Fix race condition in hci_release_sock()
+Message-ID: <20200126132004.GA70786@pmessmer-mobl1.ger.corp.intel.com>
+Mail-Followup-To: Dan Carpenter <dan.carpenter@oracle.com>,
+        Marcel Holtmann <marcel@holtmann.org>,
+        syzbot <syzbot+eba992608adf3d796bcc@syzkaller.appspotmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        linux-bluetooth@vger.kernel.org, netdev@vger.kernel.org,
+        syzkaller-bugs@googlegroups.com
+References: <00000000000012309d059c27b724@google.com>
+ <20200115174903.shuanlfvnly3anqk@kili.mountain>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20200125161615.GD18311@lunn.ch>
-User-Agent: NeoMutt/20180716
+In-Reply-To: <20200115174903.shuanlfvnly3anqk@kili.mountain>
+User-Agent: Mutt/1.12.2 (2019-09-21)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The 01/25/2020 17:16, Andrew Lunn wrote:
-> EXTERNAL EMAIL: Do not click links or open attachments unless you know the content is safe
+Hi Dan,
+
+On Wed, Jan 15, 2020, Dan Carpenter wrote:
+> Syzbot managed to trigger a use after free "KASAN: use-after-free Write
+> in hci_sock_bind".  I have reviewed the code manually and one possibly
+> cause I have found is that we are not holding lock_sock(sk) when we do
+> the hci_dev_put(hdev) in hci_sock_release().  My theory is that the bind
+> and the release are racing against each other which results in this use
+> after free.
 > 
-> >  br_netif_receive_skb(struct net *net, struct sock *sk, struct sk_buff *skb)
-> > @@ -338,6 +341,17 @@ rx_handler_result_t br_handle_frame(struct sk_buff **pskb)
-> >                       return RX_HANDLER_CONSUMED;
-> >               }
-> >       }
-> > +#ifdef CONFIG_BRIDGE_MRP
-> > +     /* If there is no MRP instance do normal forwarding */
-> > +     if (!p->mrp_aware)
-> > +             goto forward;
-> > +
-> > +     if (skb->protocol == htons(ETH_P_MRP))
-> > +             return RX_HANDLER_PASS;
+> Reported-by: syzbot+eba992608adf3d796bcc@syzkaller.appspotmail.com
+> Signed-off-by: Dan Carpenter <dan.carpenter@oracle.com>
+> ---
+> Not tested!  Please review very very carefully!
 > 
-> What MAC address is used for these MRP frames? It would make sense to
-> use a L2 link local destination address, since i assume they are not
-> supposed to be forwarded by the bridge. If so, you could extend the
-> if (unlikely(is_link_local_ether_addr(dest))) condition.
-
-The MAC addresses used by MRP frames are:
-0x1, 0x15, 0x4e, 0x0, 0x0, 0x1 - used by MRP_Test frames
-0x1, 0x15, 0x4e, 0x0, 0x0, 0x2 - used by the rest of MRP frames.
-
-If we will add support also for MIM/MIC. These requires 2 more MAC
-addresses:
-0x1, 0x15, 0x4e, 0x0, 0x0, 0x3 - used by MRP_InTest frames.
-0x1, 0x15, 0x4e, 0x0, 0x0, 0x4 - used by the other MRP interconnect
-frames.
-
-Then maybe I shoukd change the check to be something like:
-if (unlikely(skb->protocol == htons(ETH_P_MRP)))
-
+> I feel like maybe someone should audit the (struct proto_ops)->release()
+> functions because there may be similar bugs to this in other drivers.
 > 
-> > +
-> > +     if (p->state == BR_STATE_BLOCKING)
-> > +             goto drop;
-> > +#endif
-> 
-> Is this needed? The next block of code is a switch statement on
-> p->state. The default case, which BR_STATE_BLOCKING should hit, is
-> drop.
+>  net/bluetooth/hci_sock.c | 3 +++
+>  1 file changed, 3 insertions(+)
 
-Yes you are rigth, it is not needed anymore.
+The patch looks correct to me since it's following the same locking
+conventions as all the other socket callbacks in hci_sock.c. I also
+verified that it doesn't cause regressions in the various socket testers
+we have in user space BlueZ (e.g. tools/l2cap-tester). The patch is now
+applied to the bluetooth-next tree. Thanks!
 
-> 
-> This function is on the hot path. So we should try to optimize it as
-> much as possible.
-> 
->      Andrew
-
--- 
-/Horatiu
+Johan
