@@ -2,29 +2,29 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 76354149A1A
-	for <lists+netdev@lfdr.de>; Sun, 26 Jan 2020 11:30:32 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 35275149A27
+	for <lists+netdev@lfdr.de>; Sun, 26 Jan 2020 11:37:51 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729300AbgAZKaO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 26 Jan 2020 05:30:14 -0500
-Received: from mail26.static.mailgun.info ([104.130.122.26]:43187 "EHLO
-        mail26.static.mailgun.info" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1729107AbgAZKaO (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 26 Jan 2020 05:30:14 -0500
+        id S1729345AbgAZKhq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 26 Jan 2020 05:37:46 -0500
+Received: from mail25.static.mailgun.info ([104.130.122.25]:63966 "EHLO
+        mail25.static.mailgun.info" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1729145AbgAZKhq (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 26 Jan 2020 05:37:46 -0500
 DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org; q=dns/txt;
- s=smtp; t=1580034613; h=Date: Message-Id: Cc: To: References:
+ s=smtp; t=1580035065; h=Date: Message-Id: Cc: To: References:
  In-Reply-To: From: Subject: Content-Transfer-Encoding: MIME-Version:
- Content-Type: Sender; bh=4aEVqIqI9+SlQqawbAs7IiU8R7BwwIk/UJc+UVjYgSw=;
- b=Z2NanRQX9PgvpPJGvK/E7oNv5epERskRq5BA1mXRnaIGiGz5LJ0mQM48YEemVWMgrKH1CX4d
- eHhB1WufQFx7/k0WbnMsc0BVF3U1FX+YGWmotM2dmbOtbr2Y8pvrffVzjIQwro7zfIWeQkJw
- VW15Qdk3ERwd0XK4JrHlaIuk3DY=
-X-Mailgun-Sending-Ip: 104.130.122.26
+ Content-Type: Sender; bh=Z75vo15kFHSAjpOh8gqvQcI40tUdEQ8bAOEe2NzjOZg=;
+ b=CamIuXtyG6gfcFid4409AgzfidGlhfRrURfpDH9Rkp6luGKv1ECYrICsVNz6JMdfPbVki6Ov
+ 0pqB0kCAo6Ygvz5USifcqF/Fb6nIa8yImMa4OxKZE6BdGiXLqWGynMPIBkA2CQdPuv0rbHd2
+ j9JQwvmkn6NDA1SbLq2EGZ/2XkE=
+X-Mailgun-Sending-Ip: 104.130.122.25
 X-Mailgun-Sid: WyJiZjI2MiIsICJuZXRkZXZAdmdlci5rZXJuZWwub3JnIiwgImJlOWU0YSJd
 Received: from smtp.codeaurora.org (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171])
- by mxa.mailgun.org with ESMTP id 5e2d6a33.7f2016c10fb8-smtp-out-n03;
- Sun, 26 Jan 2020 10:30:11 -0000 (UTC)
+ by mxa.mailgun.org with ESMTP id 5e2d6bf7.7fb04d30e810-smtp-out-n02;
+ Sun, 26 Jan 2020 10:37:43 -0000 (UTC)
 Received: by smtp.codeaurora.org (Postfix, from userid 1001)
-        id D6424C4479C; Sun, 26 Jan 2020 10:30:11 +0000 (UTC)
+        id 83EBBC433A2; Sun, 26 Jan 2020 10:37:43 +0000 (UTC)
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
         aws-us-west-2-caf-mail-1.web.codeaurora.org
 X-Spam-Level: 
@@ -34,45 +34,74 @@ Received: from potku.adurom.net (88-114-240-156.elisa-laajakaista.fi [88.114.240
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
         (Authenticated sender: kvalo)
-        by smtp.codeaurora.org (Postfix) with ESMTPSA id 792C3C433CB;
-        Sun, 26 Jan 2020 10:30:09 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org 792C3C433CB
+        by smtp.codeaurora.org (Postfix) with ESMTPSA id E43F3C433CB;
+        Sun, 26 Jan 2020 10:37:36 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org E43F3C433CB
 Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
 Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; spf=none smtp.mailfrom=kvalo@codeaurora.org
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 7bit
-Subject: Re: [PATCH -next 4/6] ath10k: use true,false for bool variable
+Subject: Re: [PATCH] ath11k: fix debugfs build failure
 From:   Kalle Valo <kvalo@codeaurora.org>
-In-Reply-To: <1577196966-84926-5-git-send-email-zhengbin13@huawei.com>
-References: <1577196966-84926-5-git-send-email-zhengbin13@huawei.com>
-To:     zhengbin <zhengbin13@huawei.com>
-Cc:     <yhchuang@realtek.com>, <davem@davemloft.net>,
-        <linux-wireless@vger.kernel.org>, <netdev@vger.kernel.org>,
-        <zhengbin13@huawei.com>
+In-Reply-To: <20200107215036.1333983-1-arnd@arndb.de>
+References: <20200107215036.1333983-1-arnd@arndb.de>
+To:     Arnd Bergmann <arnd@arndb.de>
+Cc:     Manikanta Pubbisetty <mpubbise@codeaurora.org>,
+        John Crispin <john@phrozen.org>,
+        Sven Eckelmann <seckelmann@datto.com>,
+        Bhagavathi Perumal S <bperumal@codeaurora.org>,
+        Anilkumar Kolli <akolli@codeaurora.org>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Ganesh Sesetti <gseset@codeaurora.org>,
+        Govindaraj Saminathan <gsamin@codeaurora.org>,
+        Julia Lawall <julia.lawall@lip6.fr>,
+        Karthikeyan Periyasamy <periyasa@codeaurora.org>,
+        kbuild test robot <lkp@intel.com>,
+        Maharaja Kennadyrajan <mkenna@codeaurora.org>,
+        Miles Hu <milehu@codeaurora.org>,
+        Muna Sinada <msinada@codeaurora.org>,
+        Pradeep Kumar Chitrapu <pradeepc@codeaurora.org>,
+        Rajkumar Manoharan <rmanohar@codeaurora.org>,
+        Sathishkumar Muruganandam <murugana@codeaurora.org>,
+        Shashidhar Lakkavalli <slakkavalli@datto.com>,
+        Sriram R <srirrama@codeaurora.org>,
+        Vasanthakumar Thiagarajan <vthiagar@codeaurora.org>,
+        Venkateswara Naralasetty <vnaralas@codeaurora.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Tamizh chelvam <tamizhr@codeaurora.org>,
+        ath11k@lists.infradead.org, linux-wireless@vger.kernel.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
 User-Agent: pwcli/0.0.0-git (https://github.com/kvalo/pwcli/) Python/2.7.12
-Message-Id: <20200126103011.D6424C4479C@smtp.codeaurora.org>
-Date:   Sun, 26 Jan 2020 10:30:11 +0000 (UTC)
+Message-Id: <20200126103743.83EBBC433A2@smtp.codeaurora.org>
+Date:   Sun, 26 Jan 2020 10:37:43 +0000 (UTC)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-zhengbin <zhengbin13@huawei.com> wrote:
+Arnd Bergmann <arnd@arndb.de> wrote:
 
-> Fixes coccicheck warning:
+> When CONFIG_ATH11K_DEBUGFS is disabled, but CONFIG_MAC80211_DEBUGFS
+> is turned on, the driver fails to build:
 > 
-> drivers/net/wireless/ath/ath10k/htt_rx.c:2143:2-31: WARNING: Assignment of 0/1 to bool variable
+> drivers/net/wireless/ath/ath11k/debugfs_sta.c: In function 'ath11k_dbg_sta_open_htt_peer_stats':
+> drivers/net/wireless/ath/ath11k/debugfs_sta.c:416:4: error: 'struct ath11k' has no member named 'debug'
+>   ar->debug.htt_stats.stats_req = stats_req;
+>     ^~
 > 
-> Reported-by: Hulk Robot <hulkci@huawei.com>
-> Signed-off-by: zhengbin <zhengbin13@huawei.com>
+> It appears that just using the former symbol is sufficient here,
+> adding a Kconfig dependency takes care of the corner cases.
+> 
+> Fixes: d5c65159f289 ("ath11k: driver for Qualcomm IEEE 802.11ax devices")
+> Signed-off-by: Arnd Bergmann <arnd@arndb.de>
 > Signed-off-by: Kalle Valo <kvalo@codeaurora.org>
 
 Patch applied to ath-next branch of ath.git, thanks.
 
-0f7ab288ade9 ath10k: use true,false for bool variable
+a45ceea5015d ath11k: fix debugfs build failure
 
 -- 
-https://patchwork.kernel.org/patch/11309357/
+https://patchwork.kernel.org/patch/11321921/
 
 https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
