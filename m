@@ -2,72 +2,45 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 6C369149B05
-	for <lists+netdev@lfdr.de>; Sun, 26 Jan 2020 15:25:19 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0DE24149B12
+	for <lists+netdev@lfdr.de>; Sun, 26 Jan 2020 15:28:11 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728977AbgAZOZQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 26 Jan 2020 09:25:16 -0500
-Received: from mail25.static.mailgun.info ([104.130.122.25]:28604 "EHLO
-        mail25.static.mailgun.info" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726323AbgAZOZQ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 26 Jan 2020 09:25:16 -0500
-DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org; q=dns/txt;
- s=smtp; t=1580048715; h=Content-Type: MIME-Version: Message-ID:
- In-Reply-To: Date: References: Subject: Cc: To: From: Sender;
- bh=DzhIXU+qv1ciGaNGzExa6n/8OGLjYzAcP3i90CedJAI=; b=eBGmqTJa8tRijD3iJoVA7otxxDGoWRQAaH9mKNTW+nFomBmGlrXJ+0nXCuo3j1IgpEcds/I0
- 89Kx7NE2LIKIa08GN2g4d4AvjIAbci17I8IISyhmfQ/k0FD53ZnDNjplZe7JPrykWeb/jEWx
- 10FqyZ9RBCD4L3vP9rg4bKqxVcs=
-X-Mailgun-Sending-Ip: 104.130.122.25
-X-Mailgun-Sid: WyJiZjI2MiIsICJuZXRkZXZAdmdlci5rZXJuZWwub3JnIiwgImJlOWU0YSJd
-Received: from smtp.codeaurora.org (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171])
- by mxa.mailgun.org with ESMTP id 5e2da147.7f33070196c0-smtp-out-n03;
- Sun, 26 Jan 2020 14:25:11 -0000 (UTC)
-Received: by smtp.codeaurora.org (Postfix, from userid 1001)
-        id AB1CAC4479F; Sun, 26 Jan 2020 14:25:11 +0000 (UTC)
-X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
-        aws-us-west-2-caf-mail-1.web.codeaurora.org
-X-Spam-Level: 
-X-Spam-Status: No, score=-1.0 required=2.0 tests=ALL_TRUSTED,SPF_NONE
-        autolearn=unavailable autolearn_force=no version=3.4.0
-Received: from potku.adurom.net (88-114-240-156.elisa-laajakaista.fi [88.114.240.156])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-        (No client certificate requested)
-        (Authenticated sender: kvalo)
-        by smtp.codeaurora.org (Postfix) with ESMTPSA id B35A3C43383;
-        Sun, 26 Jan 2020 14:25:09 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org B35A3C43383
-Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
-Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; spf=none smtp.mailfrom=kvalo@codeaurora.org
-From:   Kalle Valo <kvalo@codeaurora.org>
-To:     Justin Capella <justincapella@gmail.com>
-Cc:     Stephen Boyd <swboyd@chromium.org>, netdev@vger.kernel.org,
-        ath10k <ath10k@lists.infradead.org>,
-        linux-wireless <linux-wireless@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH] ath10k: Use device_get_match_data() to simplify code
-References: <20200123232944.39247-1-swboyd@chromium.org>
-        <CAMrEMU-e55q7uvd220+1kuYJ4Xa-4ckz5CvYezCj2ahn_K8t9w@mail.gmail.com>
-Date:   Sun, 26 Jan 2020 16:25:07 +0200
-In-Reply-To: <CAMrEMU-e55q7uvd220+1kuYJ4Xa-4ckz5CvYezCj2ahn_K8t9w@mail.gmail.com>
-        (Justin Capella's message of "Sat, 25 Jan 2020 20:18:40 -0800")
-Message-ID: <87o8uqcn24.fsf@kamboji.qca.qualcomm.com>
-User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/24.5 (gnu/linux)
-MIME-Version: 1.0
-Content-Type: text/plain
+        id S2387453AbgAZO2D (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 26 Jan 2020 09:28:03 -0500
+Received: from shards.monkeyblade.net ([23.128.96.9]:57632 "EHLO
+        shards.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2387401AbgAZO2D (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 26 Jan 2020 09:28:03 -0500
+Received: from localhost (unknown [62.209.224.147])
+        (using TLSv1 with cipher AES256-SHA (256/256 bits))
+        (Client did not present a certificate)
+        (Authenticated sender: davem-davemloft)
+        by shards.monkeyblade.net (Postfix) with ESMTPSA id C6FBA15BF3419;
+        Sun, 26 Jan 2020 06:28:01 -0800 (PST)
+Date:   Sun, 26 Jan 2020 15:27:57 +0100 (CET)
+Message-Id: <20200126.152757.1376333579798530411.davem@davemloft.net>
+To:     jwi@linux.ibm.com
+Cc:     netdev@vger.kernel.org, linux-s390@vger.kernel.org,
+        heiko.carstens@de.ibm.com, ubraun@linux.ibm.com
+Subject: Re: [PATCH net-next 0/5] s390/qeth: updates 2020-01-25
+From:   David Miller <davem@davemloft.net>
+In-Reply-To: <20200125155303.40971-1-jwi@linux.ibm.com>
+References: <20200125155303.40971-1-jwi@linux.ibm.com>
+X-Mailer: Mew version 6.8 on Emacs 26.3
+Mime-Version: 1.0
+Content-Type: Text/Plain; charset=us-ascii
+Content-Transfer-Encoding: 7bit
+X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Sun, 26 Jan 2020 06:28:02 -0800 (PST)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Justin Capella <justincapella@gmail.com> writes:
+From: Julian Wiedmann <jwi@linux.ibm.com>
+Date: Sat, 25 Jan 2020 16:52:58 +0100
 
-> Maybe use dev here as well?
->
->>                 dev_err(&pdev->dev, "failed to find matching device tree id\n");
+> please apply the following patch series for qeth to your net-next tree.
+> 
+> This brings a number of cleanups for the init/teardown code paths.
 
-I changed that. And also fixed a checkpatch warning:
-
-drivers/net/wireless/ath/ath10k/snoc.c:1483: Please don't use multiple blank lines
-
--- 
-https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
+Series applied, thank you.
