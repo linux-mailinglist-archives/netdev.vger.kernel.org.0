@@ -2,48 +2,41 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 2B25114A5E7
-	for <lists+netdev@lfdr.de>; Mon, 27 Jan 2020 15:21:12 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id BBC0314A5F5
+	for <lists+netdev@lfdr.de>; Mon, 27 Jan 2020 15:25:21 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728866AbgA0OVK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 27 Jan 2020 09:21:10 -0500
-Received: from mail.kernel.org ([198.145.29.99]:58726 "EHLO mail.kernel.org"
+        id S1729050AbgA0OZU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 27 Jan 2020 09:25:20 -0500
+Received: from mail.kernel.org ([198.145.29.99]:59842 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727235AbgA0OVK (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 27 Jan 2020 09:21:10 -0500
+        id S1727479AbgA0OZT (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 27 Jan 2020 09:25:19 -0500
 Received: from cakuba (c-73-93-4-247.hsd1.ca.comcast.net [73.93.4.247])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 4F4AF206D3;
-        Mon, 27 Jan 2020 14:21:09 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 2369720716;
+        Mon, 27 Jan 2020 14:25:19 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1580134869;
-        bh=9grUDBlpkZBiGDuifFySHYkjodars0QnmiJQVp43ar0=;
+        s=default; t=1580135119;
+        bh=bg56Ldz/RBxKM4HJmiXF4nnJGZhFUWOIGlGJ+sIOhTo=;
         h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=SlgafFLF7owdsL9/XDRgbPoAt3iH+Gt/vSXQ4V/+LqQcmHh5LfBhQXjXO4feAW1eE
-         B9XyJY5AaZadAYkZBScfAdYjdw4gbrPXGrPofKPzDjiRAjGlrG4peU1HiEoH0iLQWY
-         hWHe/ReefkSRUX775Oh4vMacDLPxRko44m5lKeEE=
-Date:   Mon, 27 Jan 2020 06:21:08 -0800
+        b=A2kJerg4OoCBbsVOMXqslzQIXwSDkXhrDT2U2sZOLO/h06EDNNGezZgJb2LJT9aeG
+         DAG6FyRi7dEaJ5tXECbJ6/eu7AibHv3Gp4f6q8yRkLtNAAnY1qxShdfY784XcEND9C
+         C8fZEiyniXXMtAzptDXSXNFu4qMWnI6vaICgrCqw=
+Date:   Mon, 27 Jan 2020 06:25:18 -0800
 From:   Jakub Kicinski <kuba@kernel.org>
-To:     Leon Romanovsky <leon@kernel.org>
-Cc:     Shannon Nelson <snelson@pensando.io>,
-        "David S . Miller" <davem@davemloft.net>,
-        Michal Kalderon <michal.kalderon@marvell.com>,
-        linux-netdev <netdev@vger.kernel.org>,
-        RDMA mailing list <linux-rdma@vger.kernel.org>
-Subject: Re: [PATCH net-next] net/core: Replace driver version to be kernel
- version
-Message-ID: <20200127062108.082c9e5e@cakuba>
-In-Reply-To: <20200127064534.GJ3870@unreal>
-References: <20200123130541.30473-1-leon@kernel.org>
-        <43d43a45-18db-f959-7275-63c9976fdf40@pensando.io>
-        <20200126194110.GA3870@unreal>
-        <20200126124957.78a31463@cakuba>
-        <20200126210850.GB3870@unreal>
-        <20200126133353.77f5cb7e@cakuba>
-        <2a8d0845-9e6d-30ab-03d9-44817a7c2848@pensando.io>
-        <20200127053433.GF3870@unreal>
-        <20200127064534.GJ3870@unreal>
+To:     Vasundhara Volam <vasundhara-v.volam@broadcom.com>
+Cc:     Michael Chan <michael.chan@broadcom.com>,
+        David Miller <davem@davemloft.net>,
+        Netdev <netdev@vger.kernel.org>, Jiri Pirko <jiri@mellanox.com>
+Subject: Re: [PATCH net-next 14/16] devlink: add macros for "fw.roce" and
+ "board.nvm_cfg"
+Message-ID: <20200127062518.4274b802@cakuba>
+In-Reply-To: <CAACQVJrc66xBDQRi0a_tShW6Ngtqtxwn5FUM_T8krt0cNe9d-w@mail.gmail.com>
+References: <1580029390-32760-1-git-send-email-michael.chan@broadcom.com>
+        <1580029390-32760-15-git-send-email-michael.chan@broadcom.com>
+        <20200126161826.0e4df544@cakuba>
+        <CAACQVJrc66xBDQRi0a_tShW6Ngtqtxwn5FUM_T8krt0cNe9d-w@mail.gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
@@ -52,13 +45,25 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, 27 Jan 2020 08:45:34 +0200, Leon Romanovsky wrote:
-> > The thing is that we don't consider in-kernel API as stable one, so
-> > addition of new field which is not in use in upstream looks sketchy to
-> > me, but I have an idea how to solve it.  
-> 
-> Actually, it looks like my idea is Jakub's and Michal's idea. I will use
-> this opportunity and remove MODULE_VERSION() too.
+On Mon, 27 Jan 2020 11:12:52 +0530, Vasundhara Volam wrote:
+> On Mon, Jan 27, 2020 at 5:48 AM Jakub Kicinski <kuba@kernel.org> wrote:
+> > On Sun, 26 Jan 2020 04:03:08 -0500, Michael Chan wrote:  
+> > > --- a/Documentation/networking/devlink/devlink-info.rst
+> > > +++ b/Documentation/networking/devlink/devlink-info.rst
+> > > @@ -59,6 +59,11 @@ board.manufacture
+> > >
+> > >  An identifier of the company or the facility which produced the part.
+> > >
+> > > +board.nvm_cfg
+> > > +-------------
+> > > +
+> > > +Non-volatile memory version of the board.  
+> >
+> > Could you describe a little more detail? Sounds a little similar to
+> > fw.psid which Mellanox has added, perhaps it serves the same purpose
+> > and we could reuse that one?  
+> It is almost similar. We can reuse and update documentation in
+> bnxt.rst mentioning
+> that parameter set is present in NVM .
 
-If you do please make sure DKMS works. I remember it was looking at
-that value.
+Thanks!
