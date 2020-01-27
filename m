@@ -2,87 +2,78 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 7816D149ED3
-	for <lists+netdev@lfdr.de>; Mon, 27 Jan 2020 06:34:38 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E95A2149ED4
+	for <lists+netdev@lfdr.de>; Mon, 27 Jan 2020 06:43:24 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1725893AbgA0Feh (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 27 Jan 2020 00:34:37 -0500
-Received: from mail.kernel.org ([198.145.29.99]:34916 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725763AbgA0Feg (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 27 Jan 2020 00:34:36 -0500
-Received: from localhost (unknown [213.57.247.131])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 80C1120842;
-        Mon, 27 Jan 2020 05:34:35 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1580103276;
-        bh=AN8xcbeAswCLKrMQKmHd+ictWwzTZpXA28r44lXQ/Fg=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=u+L9PgCJVXK+J/rTMLvAUh8kcw71LjCNNYBOvBl5fT4+AcXcsiFy4icosh5+9A2px
-         eEa5wkABLZYCeFyY9U6F4lN7aMxjQ54XVXsCQ62mzNEYffxvVRRM6Pr3IRkWm9zrxf
-         YYwrExasm1OHVd0ugu8auPWQLLyCaTcXu4Dcovng=
-Date:   Mon, 27 Jan 2020 07:34:33 +0200
-From:   Leon Romanovsky <leon@kernel.org>
-To:     Shannon Nelson <snelson@pensando.io>
-Cc:     Jakub Kicinski <kuba@kernel.org>,
-        "David S . Miller" <davem@davemloft.net>,
-        Michal Kalderon <michal.kalderon@marvell.com>,
-        linux-netdev <netdev@vger.kernel.org>,
-        RDMA mailing list <linux-rdma@vger.kernel.org>
-Subject: Re: [PATCH net-next] net/core: Replace driver version to be kernel
- version
-Message-ID: <20200127053433.GF3870@unreal>
-References: <20200123130541.30473-1-leon@kernel.org>
- <43d43a45-18db-f959-7275-63c9976fdf40@pensando.io>
- <20200126194110.GA3870@unreal>
- <20200126124957.78a31463@cakuba>
- <20200126210850.GB3870@unreal>
- <20200126133353.77f5cb7e@cakuba>
- <2a8d0845-9e6d-30ab-03d9-44817a7c2848@pensando.io>
+        id S1725893AbgA0FnG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 27 Jan 2020 00:43:06 -0500
+Received: from mail-lf1-f67.google.com ([209.85.167.67]:46843 "EHLO
+        mail-lf1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725775AbgA0FnF (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 27 Jan 2020 00:43:05 -0500
+Received: by mail-lf1-f67.google.com with SMTP id z26so5295370lfg.13
+        for <netdev@vger.kernel.org>; Sun, 26 Jan 2020 21:43:04 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=broadcom.com; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=50k0l7tr+r4CbxpOdaQ60uyiV5MAaABmH1TGLvaz+g0=;
+        b=VGtPAul9FeDoL67YNtnmtHwXGAgzZmn07fEv+WUb1Nm9emKvlvJ5JWNlrgX/GifhYt
+         kTKk1K6n0KQVULFEIhi6N+OCHBcr3OHbAlr54Wt7FL7YbH3mcIk0usRBDUTQNDqCKXOV
+         7PZqvi7RXqifvRBq50+5gXir7gv2EZvCKGoKw=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=50k0l7tr+r4CbxpOdaQ60uyiV5MAaABmH1TGLvaz+g0=;
+        b=naejwGNixxxltf7V1fVS1cMG9udgG+3WDo0Z959f59Y4/qb4OlL2GhipCbZ5qAtRil
+         1ETUQvLskaS9LPWwPihT+8B+A7IiJTXErGjQfrPqJTj0KWZzRa9b1HUN0DNNXaEzIL1h
+         Ip5QoRADr+zuc4IKUnhw0sVvHhJS19QhalTyVAQkt6+YH7gahOrKee+RPQ/ZYLv9jqQH
+         ADuH3mje4Jqx1/f95B0qTB5E2Ke2cjpA1/FzqqSPm4He97wvncEn0o1vU1YRGRLv7KHd
+         0eiyB/kJm0w5hhPty6eVPFx3jkZm63b2XwJ6wsqjcd+6K+gydxI+ecyDJlCFZ6gBZdmp
+         yODQ==
+X-Gm-Message-State: APjAAAUIEFdWwqArfc4/elpcPmpNE/Ala/B+b9Zphr65DrEuMjYisb+U
+        Mj3MT3IY+EODEiRLQwhPlYzbdNdxh92GSaZzq1mFdg==
+X-Google-Smtp-Source: APXvYqyk83UiGRM/BOpcDJqYbZ72F63B6e6oUBQQmMZESkkXSbONTozE8tRPlTWZSAimqSq3l543Y5HbRSKs2h0566s=
+X-Received: by 2002:ac2:4884:: with SMTP id x4mr7452383lfc.92.1580103783545;
+ Sun, 26 Jan 2020 21:43:03 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <2a8d0845-9e6d-30ab-03d9-44817a7c2848@pensando.io>
+References: <1580029390-32760-1-git-send-email-michael.chan@broadcom.com>
+ <1580029390-32760-15-git-send-email-michael.chan@broadcom.com> <20200126161826.0e4df544@cakuba>
+In-Reply-To: <20200126161826.0e4df544@cakuba>
+From:   Vasundhara Volam <vasundhara-v.volam@broadcom.com>
+Date:   Mon, 27 Jan 2020 11:12:52 +0530
+Message-ID: <CAACQVJrc66xBDQRi0a_tShW6Ngtqtxwn5FUM_T8krt0cNe9d-w@mail.gmail.com>
+Subject: Re: [PATCH net-next 14/16] devlink: add macros for "fw.roce" and "board.nvm_cfg"
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     Michael Chan <michael.chan@broadcom.com>,
+        David Miller <davem@davemloft.net>,
+        Netdev <netdev@vger.kernel.org>, Jiri Pirko <jiri@mellanox.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, Jan 26, 2020 at 02:21:58PM -0800, Shannon Nelson wrote:
-> On 1/26/20 1:33 PM, Jakub Kicinski wrote
-> > > The long-standing policy in kernel that we don't really care about
-> > > out-of-tree code.
-> > Yeah... we all know it's not that simple :)
+On Mon, Jan 27, 2020 at 5:48 AM Jakub Kicinski <kuba@kernel.org> wrote:
+>
+> On Sun, 26 Jan 2020 04:03:08 -0500, Michael Chan wrote:
+> > --- a/Documentation/networking/devlink/devlink-info.rst
+> > +++ b/Documentation/networking/devlink/devlink-info.rst
+> > @@ -59,6 +59,11 @@ board.manufacture
 > >
-> > The in-tree driver versions are meaningless and cause annoying churn
-> > when people arbitrarily bump them. If we can get people to stop doing
-> > that we'll be happy, that's all there is to it.
+> >  An identifier of the company or the facility which produced the part.
 > >
-> Perhaps it would be helpful if this standard was applied to all the drivers
-> equally?  For example, I see that this week's ice driver update from Intel
-> was accepted with no comment on their driver version bump.
-
-Thanks, it is another great example of why trusting driver authors,
-even experienced, on specific topics is not an option.
-
+> > +board.nvm_cfg
+> > +-------------
+> > +
+> > +Non-volatile memory version of the board.
 >
-> Look, if we want to stamp all in-kernel drivers with the kernel version,
-> fine.  But let's do it in a way that doesn't break the out-of-tree driver
-> ability to report something else.  Can we set up a macro for in-kernel
-> drivers to use in their get_drvinfo callback and require drivers to use that
-> macro?  Then the out-of-tree drivers are able to replace that macro with
-> whatever they need.  Just don't forcibly bash the value from higher up in
-> the stack.
+> Could you describe a little more detail? Sounds a little similar to
+> fw.psid which Mellanox has added, perhaps it serves the same purpose
+> and we could reuse that one?
+It is almost similar. We can reuse and update documentation in
+bnxt.rst mentioning
+that parameter set is present in NVM .
 
-The thing is that we don't consider in-kernel API as stable one, so
-addition of new field which is not in use in upstream looks sketchy to
-me, but I have an idea how to solve it.
-
-Thanks
-
->
-> sln
->
+Thanks.
