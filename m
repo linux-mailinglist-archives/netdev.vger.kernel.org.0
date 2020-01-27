@@ -2,80 +2,82 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 7B7A314A748
-	for <lists+netdev@lfdr.de>; Mon, 27 Jan 2020 16:37:00 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3ED7A14A75E
+	for <lists+netdev@lfdr.de>; Mon, 27 Jan 2020 16:40:03 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729588AbgA0Pgz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 27 Jan 2020 10:36:55 -0500
-Received: from mail-oi1-f196.google.com ([209.85.167.196]:43417 "EHLO
-        mail-oi1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729133AbgA0Pgz (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 27 Jan 2020 10:36:55 -0500
-Received: by mail-oi1-f196.google.com with SMTP id p125so7006890oif.10;
-        Mon, 27 Jan 2020 07:36:54 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=RTwkN+1nsK3Tbd6o0pbrLO1yGQq+UJG41x5hJujk/8A=;
-        b=WU+dimbV5pvEKQM7QR6lgBxCvou6rPpDpsHtokCaUoOXlhODLpu8QPscK5lY1qEHfW
-         XB0IAekwWLvMLeWW6AuAKT6SI0/p8dzkz8ndFE6HUreyh66tSnE68TP91A7KZiExic+X
-         Fhkj3aFYi9hb3YZmNxd/DrVebMjdIGACkEliFog4Hb6qkMC5XL+0rmnmyUA9OXccNIQr
-         5e0L/lN6mFHRPa2FM+JngG+lVEGx2ZZIJj60EuPPVMifeaX9jft3a0d2KDfw0oiP47X8
-         xV69lZ21oV04RUipcckS1J8nmwn2ijoL/MiPB5ASYPwOGEu9lgllMRsD8hgNoPSCnnED
-         HSXA==
-X-Gm-Message-State: APjAAAV0xFlaZ7SUHKJ1V/UpoU5o+ZSIsMokRbxvgS61BXWMKVpbGA+G
-        ZcAgNQhY8wcHMp/kQPmrhw==
-X-Google-Smtp-Source: APXvYqx5tKEVzlvNIbjMUMTAI82thP8Ra2rKVGkItgc9MD6ZFnXKNKE7x5hPgxINh4EsrLRo3aEoRg==
-X-Received: by 2002:aca:cf58:: with SMTP id f85mr7934927oig.6.1580139413880;
-        Mon, 27 Jan 2020 07:36:53 -0800 (PST)
-Received: from rob-hp-laptop (24-155-109-49.dyn.grandenetworks.net. [24.155.109.49])
-        by smtp.gmail.com with ESMTPSA id k17sm4925460oic.45.2020.01.27.07.36.52
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 27 Jan 2020 07:36:53 -0800 (PST)
-Received: (nullmailer pid 32751 invoked by uid 1000);
-        Mon, 27 Jan 2020 15:36:52 -0000
-Date:   Mon, 27 Jan 2020 09:36:52 -0600
-From:   Rob Herring <robh@kernel.org>
-To:     "H. Nikolaus Schaller" <hns@goldelico.com>
-Cc:     Kalle Valo <kvalo@codeaurora.org>,
-        Ulf Hansson <ulf.hansson@linaro.org>,
-        Mark Rutland <mark.rutland@arm.com>,
-        "H. Nikolaus Schaller" <hns@goldelico.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Alexios Zavras <alexios.zavras@intel.com>,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        letux-kernel@openphoenux.org, kernel@pyra-handheld.com
-Subject: Re: [PATCH v3 1/2] DTS: bindings: wl1251: mark ti,power-gpio as
- optional
-Message-ID: <20200127153652.GA32638@bogus>
-References: <cover.1580068813.git.hns@goldelico.com>
- <d34183026b1a46a082f73ab3d0888c92cf6286ec.1580068813.git.hns@goldelico.com>
+        id S1729522AbgA0PkB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 27 Jan 2020 10:40:01 -0500
+Received: from mail.kernel.org ([198.145.29.99]:36944 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1729146AbgA0PkB (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 27 Jan 2020 10:40:01 -0500
+Received: from localhost (unknown [213.57.247.131])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 57EA520716;
+        Mon, 27 Jan 2020 15:40:00 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1580139601;
+        bh=yxV5i/ey6aBEFwz0rjwjXdarrHeZEaWS2JsglKRvKRo=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=f+tNAc5xateSa19Y2tCNokSVsNpIpwPymhysoTNqw9biF4HPrLMyB+OVfQRaKH8b3
+         X4EgzUH1fEt33iFKvIoDa+A6FT4XH/57AXZ+4zzHjXxOxSWuj/y0Om1WUinovgpro3
+         32stOlwFoeUmZyU5GYFUeNlm6TAeFNKWlS8QHYYU=
+Date:   Mon, 27 Jan 2020 17:39:57 +0200
+From:   Leon Romanovsky <leon@kernel.org>
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     Shannon Nelson <snelson@pensando.io>,
+        "David S . Miller" <davem@davemloft.net>,
+        Michal Kalderon <michal.kalderon@marvell.com>,
+        linux-netdev <netdev@vger.kernel.org>,
+        RDMA mailing list <linux-rdma@vger.kernel.org>
+Subject: Re: [PATCH net-next] net/core: Replace driver version to be kernel
+ version
+Message-ID: <20200127153957.GQ3870@unreal>
+References: <20200123130541.30473-1-leon@kernel.org>
+ <43d43a45-18db-f959-7275-63c9976fdf40@pensando.io>
+ <20200126194110.GA3870@unreal>
+ <20200126124957.78a31463@cakuba>
+ <20200126210850.GB3870@unreal>
+ <20200126133353.77f5cb7e@cakuba>
+ <2a8d0845-9e6d-30ab-03d9-44817a7c2848@pensando.io>
+ <20200127053433.GF3870@unreal>
+ <20200127064534.GJ3870@unreal>
+ <20200127062108.082c9e5e@cakuba>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <d34183026b1a46a082f73ab3d0888c92cf6286ec.1580068813.git.hns@goldelico.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+In-Reply-To: <20200127062108.082c9e5e@cakuba>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, 26 Jan 2020 21:00:13 +0100, "H. Nikolaus Schaller" wrote:
-> It is now only useful for SPI interface.
-> Power control of SDIO mode is done through mmc core.
-> 
-> Suggested by: Ulf Hansson <ulf.hansson@linaro.org>
-> Signed-off-by: H. Nikolaus Schaller <hns@goldelico.com>
-> ---
->  Documentation/devicetree/bindings/net/wireless/ti,wl1251.txt | 3 ++-
->  1 file changed, 2 insertions(+), 1 deletion(-)
-> 
+On Mon, Jan 27, 2020 at 06:21:08AM -0800, Jakub Kicinski wrote:
+> On Mon, 27 Jan 2020 08:45:34 +0200, Leon Romanovsky wrote:
+> > > The thing is that we don't consider in-kernel API as stable one, so
+> > > addition of new field which is not in use in upstream looks sketchy to
+> > > me, but I have an idea how to solve it.
+> >
+> > Actually, it looks like my idea is Jakub's and Michal's idea. I will use
+> > this opportunity and remove MODULE_VERSION() too.
+>
+> If you do please make sure DKMS works. I remember it was looking at
+> that value.
 
-Please add Acked-by/Reviewed-by tags when posting new versions. However,
-there's no need to repost patches *only* to add the tags. The upstream
-maintainer will do that for acks received on the version they apply.
+I'll check, thanks.
 
-If a tag was not added on purpose, please state why and what changed.
+However from reading the source, it will be unlikely to see any
+issues there.
+
+DKMS uses modversion for two things. First is to manage internal tree
+where those modules will be built and it knows how to install and clean
+automatically modules. Second is to list modaliases, and it handles them
+perfectly with and without version [1].
+
+In our case, modules version will be available, it just going to change
+from 1.0.0. to something like 5.5.0-rc6.
+
+[1] https://github.com/dell/dkms/blob/master/dkms_find-provides#L48
+
+Thanks
