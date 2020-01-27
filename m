@@ -2,160 +2,216 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id CD2D514A482
-	for <lists+netdev@lfdr.de>; Mon, 27 Jan 2020 14:06:35 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5956C14A496
+	for <lists+netdev@lfdr.de>; Mon, 27 Jan 2020 14:11:03 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726590AbgA0NGa (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 27 Jan 2020 08:06:30 -0500
-Received: from www62.your-server.de ([213.133.104.62]:38164 "EHLO
-        www62.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728843AbgA0NG1 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 27 Jan 2020 08:06:27 -0500
-Received: from [2001:1620:665:0:5795:5b0a:e5d5:5944] (helo=localhost)
-        by www62.your-server.de with esmtpsa (TLSv1.2:DHE-RSA-AES256-GCM-SHA384:256)
-        (Exim 4.89_1)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1iw45r-0003XN-FD; Mon, 27 Jan 2020 14:06:19 +0100
-From:   Daniel Borkmann <daniel@iogearbox.net>
-To:     davem@davemloft.net
-Cc:     jakub.kicinski@netronome.com, daniel@iogearbox.net, ast@kernel.org,
-        netdev@vger.kernel.org, bpf@vger.kernel.org
-Subject: pull-request: bpf-next 2020-01-27
-Date:   Mon, 27 Jan 2020 14:06:18 +0100
-Message-Id: <20200127130618.24926-1-daniel@iogearbox.net>
-X-Mailer: git-send-email 2.21.0
+        id S1726252AbgA0NLB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 27 Jan 2020 08:11:01 -0500
+Received: from mail-lf1-f65.google.com ([209.85.167.65]:46208 "EHLO
+        mail-lf1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725907AbgA0NLB (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 27 Jan 2020 08:11:01 -0500
+Received: by mail-lf1-f65.google.com with SMTP id z26so6122611lfg.13
+        for <netdev@vger.kernel.org>; Mon, 27 Jan 2020 05:10:59 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=cloudflare.com; s=google;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=ZpwxmMsGW52ttZ8q51qiuMqluh1AV3yKSX/KJD4SpEk=;
+        b=lkcdWxoc6CUk2NEu66UaGET6sC80h/uGLWQTUaj9lBLDD6X8AlRSr8GZQxmcBlpCSF
+         xnUz9qq54TQRZpJ9ceZipgCOYuxjv0SGP8QAE1Ew2xURHn3Mcs+DOzVt2JzghZaS22rS
+         XdMXN3sy+A813qsNhg5ViF1Vc1a2jHlJ4RGMo=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=ZpwxmMsGW52ttZ8q51qiuMqluh1AV3yKSX/KJD4SpEk=;
+        b=sdlKPHJFQTV3nzB1zdI9lrDp8Y5pxHhRKo5lveOBGXkIvbCeaBCutqzf745prN1eZV
+         FRO30OMZwM10+0s4aXYyBOQTxPW4vmT4KikF0kGXalGh7VJfJqGf4ORne8bKb18VfTuO
+         u9ldNGVjfE6jXbURnuOgMXYABtd6r+CUmXDwGvOKYkOBz9ikvhiCb6n7zSHJ7MktZjKy
+         zfbuu8E5GY0YGJ38lyhs1KfHuQ1EJl36miSF+zYFuk2XhFa2/Aryexc0Mr7qgoX7GDbM
+         n+92Av2vsssiTKrx9X+7zmeQ/31ka2TCqCShD22oPE0jMJrh7dNxF5neugDeIZ0/shW8
+         rBjA==
+X-Gm-Message-State: APjAAAUqsAwUiHnkPecRp8jMXBjmk3tlKDI5e/ax5h726XHSuw9QuVnQ
+        1fRnDGBQgtPyqBaX9+lTFnvq4A==
+X-Google-Smtp-Source: APXvYqw+vxc7Uk2KNQHNdXJ5Ej9aOYPmNhcaFOiU6lbwyOxEN5OZwCH1nemWM65AXb9FtofFJ5h/ng==
+X-Received: by 2002:a19:f610:: with SMTP id x16mr7300059lfe.80.1580130659033;
+        Mon, 27 Jan 2020 05:10:59 -0800 (PST)
+Received: from cloudflare.com ([2a02:a310:c262:aa00:b35e:8938:2c2a:ba8b])
+        by smtp.gmail.com with ESMTPSA id r21sm8220620ljn.64.2020.01.27.05.10.58
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 27 Jan 2020 05:10:58 -0800 (PST)
+From:   Jakub Sitnicki <jakub@cloudflare.com>
+To:     bpf@vger.kernel.org
+Cc:     netdev@vger.kernel.org, kernel-team@cloudflare.com
+Subject: [PATCH bpf-next v6 00/12] Extend SOCKMAP to store listening sockets
+Date:   Mon, 27 Jan 2020 14:10:45 +0100
+Message-Id: <20200127131057.150941-1-jakub@cloudflare.com>
+X-Mailer: git-send-email 2.24.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
-X-Authenticated-Sender: daniel@iogearbox.net
-X-Virus-Scanned: Clear (ClamAV 0.101.4/25708/Mon Jan 27 12:37:29 2020)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi David,
+Make SOCKMAP a generic collection for listening as well as established
+sockets. This lets us use SOCKMAP BPF maps with reuseport BPF programs.
 
-The following pull-request contains BPF updates for your *net-next* tree.
+The biggest advantage of SOCKMAP over REUSEPORT_SOCKARRAY is that the
+former allows the socket can be in more than one map at the same time.
+However, until SOCKMAP gets extended to work with UDP, it is not a drop in
+replacement for REUSEPORT_SOCKARRAY.
 
-We've added 20 non-merge commits during the last 5 day(s) which contain
-a total of 24 files changed, 433 insertions(+), 104 deletions(-).
+Having a BPF map type that can hold listening sockets, and can gracefully
+co-exist with reuseport BPF is important if, in the future, we want to have
+BPF programs that run at socket lookup time [0]. Cover letter for v1 of
+this series tells the full background story of how we got here [1].
 
-The main changes are:
+Thanks,
+-jkbs
 
-1) Make BPF trampolines and dispatcher aware for the stack unwinder, from Jiri Olsa.
+[0] https://lore.kernel.org/bpf/20190828072250.29828-1-jakub@cloudflare.com/
+[1] https://lore.kernel.org/bpf/20191123110751.6729-1-jakub@cloudflare.com/
+[2] https://lore.kernel.org/bpf/20200111061206.8028-1-john.fastabend@gmail.com/
 
-2) Improve handling of failed CO-RE relocations in libbpf, from Andrii Nakryiko.
+v5 -> v6:
 
-3) Several fixes to BPF sockmap and reuseport selftests, from Lorenz Bauer.
+- Added a fix-up for patch 1 which I forgot to commit in v5. Sigh.
 
-4) Various cleanups in BPF devmap's XDP flush code, from John Fastabend.
+v4 -> v5:
 
-5) Fix BPF flow dissector when used with port ranges, from Yoshiki Komachi.
+- Rebase onto recent bpf-next to resolve conflicts. (Daniel)
 
-6) Fix bpffs' map_seq_next callback to always inc position index, from Vasily Averin.
 
-7) Allow overriding LLVM tooling for runqslower utility, from Andrey Ignatov.
+v3 -> v4:
 
-8) Silence false-positive lockdep splats in devmap hash lookup, from Amol Grover.
+- Make tcp_bpf_clone parameter names consistent across function declaration
+  and definition. (Martin)
 
-9) Fix fentry/fexit selftests to initialize a variable before use, from John Sperbeck.
+- Use sock_map_redirect_okay helper everywhere we need to take a different
+  action for listening sockets. (Lorenz)
 
-Please consider pulling these changes from:
+- Expand comment explaining the need for a callback from reuseport to
+  sockarray code in reuseport_detach_sock. (Martin)
 
-  git://git.kernel.org/pub/scm/linux/kernel/git/bpf/bpf-next.git
+- Mention the possibility of using a u64 counter for reuseport IDs in the
+  future in the description for patch 10. (Martin)
 
-Thanks a lot!
+v2 -> v3:
 
-Also thanks to reporters, reviewers and testers of commits in this pull-request:
+- Generate reuseport ID when group is created. Please see patch 10
+  description for details. (Martin)
 
-Andrii Nakryiko, Björn Töpel, Jakub Sitnicki, Jesper Dangaard Brouer, 
-John Fastabend, Martin KaFai Lau, Petar Penkov, Song Liu, Toke 
-Høiland-Jørgensen, William Smith, Yonghong Song
+- Fix the build when CONFIG_NET_SOCK_MSG is not selected by either
+  CONFIG_BPF_STREAM_PARSER or CONFIG_TLS. (kbuild bot & John)
 
-----------------------------------------------------------------
+- Allow updating sockmap from BPF on BPF_SOCK_OPS_TCP_LISTEN_CB callback. An
+  oversight in previous iterations. Users may want to populate the sockmap with
+  listening sockets from BPF as well.
 
-The following changes since commit fd786fb1d2cad70b9aaba8c73872cbf63262bd58:
+- Removed RCU read lock assertion in sock_map_lookup_sys. (Martin)
 
-  net: convert suitable drivers to use phy_do_ioctl_running (2020-01-23 10:49:30 +0100)
+- Get rid of a warning when child socket was cloned with parent's psock
+  state. (John)
 
-are available in the Git repository at:
+- Check for tcp_bpf_unhash rather than tcp_bpf_recvmsg when deciding if
+  sk_proto needs restoring on clone. Check for recvmsg in the context of
+  listening socket cloning was confusing. (Martin)
 
-  git://git.kernel.org/pub/scm/linux/kernel/git/bpf/bpf-next.git 
+- Consolidate sock_map_sk_is_suitable with sock_map_update_okay. This led
+  to adding dedicated predicates for sockhash. Update self-tests
+  accordingly. (John)
 
-for you to fetch changes up to 82650dab9a5a2928c8d982cce5e3c687f14f8716:
+- Annotate unlikely branch in bpf_{sk,msg}_redirect_map when socket isn't
+  in a map, or isn't a valid redirect target. (John)
 
-  Merge branch 'bpf-flow-dissector-fix-port-ranges' (2020-01-27 11:25:12 +0100)
+- Document paired READ/WRITE_ONCE annotations and cover shared access in
+  more detail in patch 2 description. (John)
 
-----------------------------------------------------------------
-Alexei Starovoitov (1):
-      Merge branch 'trampoline-fixes'
+- Correct a couple of log messages in sockmap_listen self-tests so the
+  message reflects the actual failure.
 
-Amol Grover (1):
-      bpf, devmap: Pass lockdep expression to RCU lists
+- Rework reuseport tests from sockmap_listen suite so that ENOENT error
+  from bpf_sk_select_reuseport handler does not happen on happy path.
 
-Andrey Ignatov (1):
-      tools/bpf: Allow overriding llvm tools for runqslower
+v1 -> v2:
 
-Andrii Nakryiko (4):
-      selftests/bpf: Improve bpftool changes detection
-      bpftool: Print function linkage in BTF dump
-      libbpf: Improve handling of failed CO-RE relocations
-      libbpf: Fix realloc usage in bpf_core_find_cands
+- af_ops->syn_recv_sock callback is no longer overridden and burdened with
+  restoring sk_prot and clearing sk_user_data in the child socket. As child
+  socket is already hashed when syn_recv_sock returns, it is too late to
+  put it in the right state. Instead patches 3 & 4 address restoring
+  sk_prot and clearing sk_user_data before we hash the child socket.
+  (Pointed out by Martin Lau)
 
-Daniel Borkmann (1):
-      Merge branch 'bpf-flow-dissector-fix-port-ranges'
+- Annotate shared access to sk->sk_prot with READ_ONCE/WRITE_ONCE macros as
+  we write to it from sk_msg while socket might be getting cloned on
+  another CPU. (Suggested by John Fastabend)
 
-Jiri Olsa (3):
-      bpf: Allow BTF ctx access for string pointers
-      bpf: Allow to resolve bpf trampoline and dispatcher in unwind
-      selftest/bpf: Add test for allowed trampolines count
+- Convert tests for SOCKMAP holding listening sockets to return-on-error
+  style, and hook them up to test_progs. Also use BPF skeleton for setup.
+  Add new tests to cover the race scenario discovered during v1 review.
 
-John Fastabend (3):
-      bpf, xdp: Update devmap comments to reflect napi/rcu usage
-      bpf, xdp: virtio_net use access ptr macro for xdp enable check
-      bpf, xdp: Remove no longer required rcu_read_{un}lock()
+RFC -> v1:
 
-John Sperbeck (1):
-      selftests/bpf: Initialize duration variable before using
+- Switch from overriding proto->accept to af_ops->syn_recv_sock, which
+  happens earlier. Clearing the psock state after accept() does not work
+  for child sockets that become orphaned (never got accepted). v4-mapped
+  sockets need special care.
 
-Lorenz Bauer (4):
-      selftests: bpf: Use a temporary file in test_sockmap
-      selftests: bpf: Ignore FIN packets for reuseport tests
-      selftests: bpf: Make reuseport test output more legible
-      selftests: bpf: Reset global state between reuseport test runs
+- Return the socket cookie on SOCKMAP lookup from syscall to be on par with
+  REUSEPORT_SOCKARRAY. Requires SOCKMAP to take u64 on lookup/update from
+  syscall.
 
-Vasily Averin (1):
-      bpf: map_seq_next should always increase position index
+- Make bpf_sk_redirect_map (ingress) and bpf_msg_redirect_map (egress)
+  SOCKMAP helpers fail when target socket is a listening one.
 
-Yoshiki Komachi (2):
-      flow_dissector: Fix to use new variables for port ranges in bpf hook
-      selftests/bpf: Add test based on port range for BPF flow dissector
+- Make bpf_sk_select_reuseport helper fail when target is a TCP established
+  socket.
 
- drivers/net/veth.c                                 |   6 +-
- drivers/net/virtio_net.c                           |   2 +-
- include/linux/bpf.h                                |  12 ++-
- kernel/bpf/btf.c                                   |  16 +++
- kernel/bpf/devmap.c                                |  29 +++---
- kernel/bpf/dispatcher.c                            |   4 +-
- kernel/bpf/inode.c                                 |   3 +-
- kernel/bpf/trampoline.c                            |  80 +++++++++++++--
- kernel/extable.c                                   |   7 +-
- net/core/flow_dissector.c                          |  11 +-
- tools/bpf/bpftool/btf.c                            |  27 ++++-
- tools/bpf/runqslower/Makefile                      |   6 +-
- tools/lib/bpf/libbpf.c                             |  99 ++++++++++--------
- tools/lib/bpf/libbpf.h                             |   6 +-
- tools/testing/selftests/bpf/Makefile               |  11 +-
- .../testing/selftests/bpf/prog_tests/fentry_test.c |   2 +-
- .../selftests/bpf/prog_tests/fexit_bpf2bpf.c       |   2 +-
- .../testing/selftests/bpf/prog_tests/fexit_test.c  |   2 +-
- .../selftests/bpf/prog_tests/select_reuseport.c    |  44 ++++++--
- .../selftests/bpf/prog_tests/trampoline_count.c    | 112 +++++++++++++++++++++
- .../bpf/progs/test_select_reuseport_kern.c         |   6 ++
- .../selftests/bpf/progs/test_trampoline_count.c    |  21 ++++
- tools/testing/selftests/bpf/test_flow_dissector.sh |  14 +++
- tools/testing/selftests/bpf/test_sockmap.c         |  15 +--
- 24 files changed, 433 insertions(+), 104 deletions(-)
- create mode 100644 tools/testing/selftests/bpf/prog_tests/trampoline_count.c
- create mode 100644 tools/testing/selftests/bpf/progs/test_trampoline_count.c
+- Teach libbpf to recognize SK_REUSEPORT program type from section name.
+
+- Add a dedicated set of tests for SOCKMAP holding listening sockets,
+  covering map operations, overridden socket callbacks, and BPF helpers.
+
+
+Jakub Sitnicki (12):
+  bpf, sk_msg: Don't clear saved sock proto on restore
+  net, sk_msg: Annotate lockless access to sk_prot on clone
+  net, sk_msg: Clear sk_user_data pointer on clone if tagged
+  tcp_bpf: Don't let child socket inherit parent protocol ops on copy
+  bpf, sockmap: Allow inserting listening TCP sockets into sockmap
+  bpf, sockmap: Don't set up sockmap progs for listening sockets
+  bpf, sockmap: Return socket cookie on lookup from syscall
+  bpf, sockmap: Let all kernel-land lookup values in SOCKMAP
+  bpf: Allow selecting reuseport socket from a SOCKMAP
+  net: Generate reuseport group ID on group creation
+  selftests/bpf: Extend SK_REUSEPORT tests to cover SOCKMAP
+  selftests/bpf: Tests for SOCKMAP holding listening sockets
+
+ include/linux/skmsg.h                         |   21 +-
+ include/net/sock.h                            |   37 +-
+ include/net/sock_reuseport.h                  |    2 -
+ include/net/tcp.h                             |    7 +
+ kernel/bpf/reuseport_array.c                  |    5 -
+ kernel/bpf/verifier.c                         |    6 +-
+ net/core/filter.c                             |   27 +-
+ net/core/skmsg.c                              |    2 +-
+ net/core/sock.c                               |   11 +-
+ net/core/sock_map.c                           |  133 +-
+ net/core/sock_reuseport.c                     |   50 +-
+ net/ipv4/tcp_bpf.c                            |   17 +-
+ net/ipv4/tcp_minisocks.c                      |    2 +
+ net/ipv4/tcp_ulp.c                            |    3 +-
+ net/tls/tls_main.c                            |    3 +-
+ .../bpf/prog_tests/select_reuseport.c         |   60 +-
+ .../selftests/bpf/prog_tests/sockmap_listen.c | 1455 +++++++++++++++++
+ .../selftests/bpf/progs/test_sockmap_listen.c |   77 +
+ tools/testing/selftests/bpf/test_maps.c       |    6 +-
+ 19 files changed, 1811 insertions(+), 113 deletions(-)
+ create mode 100644 tools/testing/selftests/bpf/prog_tests/sockmap_listen.c
+ create mode 100644 tools/testing/selftests/bpf/progs/test_sockmap_listen.c
+
+-- 
+2.24.1
+
