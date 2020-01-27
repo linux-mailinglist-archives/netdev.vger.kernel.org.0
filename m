@@ -2,55 +2,59 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 9F46214A563
-	for <lists+netdev@lfdr.de>; Mon, 27 Jan 2020 14:48:36 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 35AA514A571
+	for <lists+netdev@lfdr.de>; Mon, 27 Jan 2020 14:52:26 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727161AbgA0Nse (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 27 Jan 2020 08:48:34 -0500
-Received: from mail-pg1-f174.google.com ([209.85.215.174]:33378 "EHLO
-        mail-pg1-f174.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726164AbgA0Nse (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 27 Jan 2020 08:48:34 -0500
-Received: by mail-pg1-f174.google.com with SMTP id 6so5197073pgk.0
-        for <netdev@vger.kernel.org>; Mon, 27 Jan 2020 05:48:34 -0800 (PST)
+        id S1728241AbgA0NwY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 27 Jan 2020 08:52:24 -0500
+Received: from mail-pj1-f67.google.com ([209.85.216.67]:51410 "EHLO
+        mail-pj1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726303AbgA0NwY (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 27 Jan 2020 08:52:24 -0500
+Received: by mail-pj1-f67.google.com with SMTP id fa20so22646pjb.1
+        for <netdev@vger.kernel.org>; Mon, 27 Jan 2020 05:52:23 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=networkplumber-org.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:subject:message-id:mime-version
-         :content-transfer-encoding;
-        bh=ZoaWgFtYMoaRQSl5S0bnZtKcySZ6Lf8iycKLLFT9xEQ=;
-        b=PXFenjatoZXrZ+evz8As05GYsNZnpCzjnU4Df0WkZuSrId9J18vqPnrEOt/yj4vrsI
-         hFLnJ/ZC1fDz8yA2Kg3MSD/28m3lUWXD64onrTXwvAxHkq7c8r74ubaclg9/vdm+PIb3
-         KRNfMZf/vEqvHzvzvEwaNEFJ3b7G5SoSAhcjaR45w+UsUgD24x6mIzEFrZs4o/qZKATU
-         6lh4Vm6tswosXbq4Uq5kHkEMv+ujy1WbOJ9oOqkVoUeUuiWbiw1GkPX7UVlF0DZnzVYR
-         dcEps+pZspdG4vIXxP9q2JbdF5sE2Pb2NODQC400Y7k2cC0gIOI6Ol6E6HO+zA45luqR
-         ugPw==
+        h=date:from:to:cc:subject:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=NlXj9KW0eZtSCliOVig/+jCW/RgGOhDmKBf672iVsr4=;
+        b=Z4j9IzznNqyg3vueP/zEYNbKF+DhEkxhI8fvOYAmzZ3XDo0p5CZUUxUUnlX8oAzDi+
+         RFukzDUyHdNVbRrIvVuOy5Xin90dy1oCRzUuK6iF/4A2e3NycM8KcWct8u/WF4rkWa7h
+         /OuQf+ceh9jcQQ5Rl0honr2m9CJoU5SYcC9O9fAIe4ZXgpOyaBc1dktt+BDq9gWGe53V
+         oBmhyj8PTGvKJ39q1rwn732mFDv/fZ8DN3iBCuMibQPKtYj5Z9Xy7MArRFBTXKLiyeby
+         DzyHMa7ahifkCiLD7f99Zuf5VCVb/5JJ+HuMLS7dAk+FR5rpizE+LMUk+rK8np6V914n
+         vwCw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:subject:message-id:mime-version
-         :content-transfer-encoding;
-        bh=ZoaWgFtYMoaRQSl5S0bnZtKcySZ6Lf8iycKLLFT9xEQ=;
-        b=MNEkU+cyo+hI+KWIvp80deibZmgjrsMRUGO3v9Hm/FaERUZj0jHH1CXa5jMmepj0CO
-         UPCB9NekQKysEIiIBOLhQm/DvhElMkH+m2v0OJHRDy/wCoTb4rXD145n12Tg6XoepEne
-         8xcX1VDL/thRiQ5ihhkbFn9Z3mA57uEjwmSCbNLXCxrqXzWfGT7T+kiiYMUZqSe8CKuN
-         3qvH9j2s0aW3nzdxcpZ0WZHCUeQxGVCD25zUDUpT735PkH21yLpWuqUsxC6e1Ap2CwKW
-         UCCmutay5rGvULOJML3zbxWcP3PSX79j8mHXBIOtpHemtS0wB0AHVwhkd4WCt3sXSrQo
-         /uIA==
-X-Gm-Message-State: APjAAAWG8xDvxHw8F8V28up68odcsEUEB492QGF9PqxDJNnsZEtPCcmq
-        tV2CBmfLFXRup4veSdcHKo5GEJv9x40=
-X-Google-Smtp-Source: APXvYqwSmLg/BTEy4Dn8qLAcAaVyeOvTx3qkXTr8t1RNwt7Ywkk3vQJ9xF+NTL7sxi6XoecSU4gnqA==
-X-Received: by 2002:a65:680f:: with SMTP id l15mr20361258pgt.307.1580132913301;
-        Mon, 27 Jan 2020 05:48:33 -0800 (PST)
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=NlXj9KW0eZtSCliOVig/+jCW/RgGOhDmKBf672iVsr4=;
+        b=ffD4illpzEsNCxBUN/cG0z4GNTIGGGOkDVAimVXQqOmCPsMaYBjkBjHTEce/yiK6rF
+         w1GSa7aewXNbv7khJR0HpXJ65bigYuxzRfNinr8id41EFPqaqYNxNc0CpworPIEZIN8+
+         hQtrYDIcp0nMROloHaUFjBv9ZEhQ0Mdd7BsW2sTBL8IKO8UICZo04XDXbmUzFkopKW89
+         AuZM2ymKXLlMauQ4q+7I5wQ9KVcdhwv+5jt1EqBu9Yhz3wTQgk5nFQhVUr2Y844qWxOs
+         7+5yclbi1jdxwnGsH+QVZ0AexLmgbQJLXpBe/6ed/tlGD/O2tr7KqjSeFFDIk0Yr2/9y
+         Ml0w==
+X-Gm-Message-State: APjAAAVabif/xNUtOw2y0v5nvinzzgbOWtytU1mVUszg9JnvQWZPUpqS
+        11kwJaFSrP2RxX7FuPM5vsl6+w==
+X-Google-Smtp-Source: APXvYqwvaXlp6b1DQ1WYsBCoXgCiwBLcdRnVtsteeU9PJmkuSPc3tVzV6FjEbFGZ3v7o3Ms37XPL5A==
+X-Received: by 2002:a17:90a:8a0c:: with SMTP id w12mr14399932pjn.61.1580133143553;
+        Mon, 27 Jan 2020 05:52:23 -0800 (PST)
 Received: from hermes.lan (204-195-22-127.wavecable.com. [204.195.22.127])
-        by smtp.gmail.com with ESMTPSA id l14sm16242248pgt.42.2020.01.27.05.48.32
-        for <netdev@vger.kernel.org>
+        by smtp.gmail.com with ESMTPSA id a10sm15682348pjq.8.2020.01.27.05.52.22
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 27 Jan 2020 05:48:33 -0800 (PST)
-Date:   Mon, 27 Jan 2020 05:48:30 -0800
+        Mon, 27 Jan 2020 05:52:23 -0800 (PST)
+Date:   Mon, 27 Jan 2020 05:52:15 -0800
 From:   Stephen Hemminger <stephen@networkplumber.org>
-To:     netdev@vger.kernel.org
-Subject: Fw: [Bug 206319] New: ECN header flag processing overly restrictive
- in TCP
-Message-ID: <20200127054830.53973d51@hermes.lan>
+To:     Ron Diskin <rondi@mellanox.com>
+Cc:     David Ahern <dsahern@gmail.com>, Jiri Pirko <jiri@mellanox.com>,
+        Moshe Shemesh <moshe@mellanox.com>, netdev@vger.kernel.org
+Subject: Re: [PATCH iproute2 1/6] json_print: Introduce
+ print_#type_name_value
+Message-ID: <20200127055215.65e44719@hermes.lan>
+In-Reply-To: <1579775551-22659-2-git-send-email-rondi@mellanox.com>
+References: <1579775551-22659-1-git-send-email-rondi@mellanox.com>
+        <1579775551-22659-2-git-send-email-rondi@mellanox.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
@@ -59,60 +63,25 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Thu, 23 Jan 2020 12:32:26 +0200
+Ron Diskin <rondi@mellanox.com> wrote:
 
+> Until now print_#type functions supported printing constant names and
+> unknown (variable) values only.
+> Add functions to allow printing when the name is also sent to the
+> function as a variable.
+> 
+> Signed-off-by: Ron Diskin <rondi@mellanox.com>
+> Reviewed-by: Moshe Shemesh <moshe@mellanox.com>
+> Reviewed-by: Jiri Pirko <jiri@mellanox.com>
 
-Begin forwarded message:
+Series applied.
+I fixed one style complaint from checkpatch by removing semi-colon
+in macro.
 
-Date: Mon, 27 Jan 2020 08:15:36 +0000
-From: bugzilla-daemon@bugzilla.kernel.org
-To: stephen@networkplumber.org
-Subject: [Bug 206319] New: ECN header flag processing overly restrictive in TCP
+WARNING: macros should not use a trailing semicolon
+#80: FILE: include/json_print.h:75:
++#define _PRINT_NAME_VALUE_FUNC(type_name, type, format_char)		  \
++	void print_##type_name##_name_value(const char *name, type value); \
++
 
-
-https://bugzilla.kernel.org/show_bug.cgi?id=206319
-
-            Bug ID: 206319
-           Summary: ECN header flag processing overly restrictive in TCP
-           Product: Networking
-           Version: 2.5
-    Kernel Version: HEAD
-          Hardware: All
-                OS: Linux
-              Tree: Mainline
-            Status: NEW
-          Severity: normal
-          Priority: P1
-         Component: Other
-          Assignee: stephen@networkplumber.org
-          Reporter: rscheff@gmx.at
-        Regression: No
-
-RFC3168 states, that a CWR flag "SHOULD" be *sent* together with a new data
-segment.
-
-However, linux is processing the CWR flag as data receiver ONLY when it arrives
-together with some data (but apparently does accept it on retransmissions).
-
-This has been found to be an interoperability issue with *BSD, where the CWR is
-sent as quickly as possible, including on pure ACKs (or retransmissions) so
-far. That deviation from RFC3168 there is reported at
-https://bugs.freebsd.org/bugzilla/show_bug.cgi?id=243231
-
-Nevertheless, CWR processing as receiver should be less restrictive, to meet
-the sprit of Postels Law: "Be liberal in what you accept, and conservative in
-what you send."
-
-
-This has been demonstrated to be a dramatic performance impediment, as the data
-receiver (linux) keeps the ECE latched, while *BSD interprets the additional
-ECE flags as another round of congestion. To which the data sender reacts by
-continous reductions of the congestion window until extremely low packet
-transmission rates (1 packet per delayed ACK timeout, or even persist timeout
-(5s) are hit, and kept at that level for extensive periods of time.
-
-Discussed this issue with Neal and Yuchung already, this bug report is to track
-the issue in the field (impacted environments).
-
--- 
-You are receiving this mail because:
-You are the assignee for the bug.
