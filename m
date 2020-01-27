@@ -2,95 +2,124 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 5888814A140
-	for <lists+netdev@lfdr.de>; Mon, 27 Jan 2020 10:56:59 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B8BD314A142
+	for <lists+netdev@lfdr.de>; Mon, 27 Jan 2020 10:57:01 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726428AbgA0J46 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 27 Jan 2020 04:56:58 -0500
-Received: from mail-pf1-f175.google.com ([209.85.210.175]:43996 "EHLO
-        mail-pf1-f175.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725807AbgA0J45 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 27 Jan 2020 04:56:57 -0500
-Received: by mail-pf1-f175.google.com with SMTP id s1so4067159pfh.10
-        for <netdev@vger.kernel.org>; Mon, 27 Jan 2020 01:56:57 -0800 (PST)
+        id S1726599AbgA0J5A (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 27 Jan 2020 04:57:00 -0500
+Received: from mail-pf1-f195.google.com ([209.85.210.195]:40104 "EHLO
+        mail-pf1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725807AbgA0J47 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 27 Jan 2020 04:56:59 -0500
+Received: by mail-pf1-f195.google.com with SMTP id q8so4673776pfh.7
+        for <netdev@vger.kernel.org>; Mon, 27 Jan 2020 01:56:59 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=broadcom.com; s=google;
-        h=from:to:cc:subject:date:message-id;
-        bh=fIYiiwMd9z48bOBXK6crDtgvZJhx0dwrez+iHOIrthU=;
-        b=AUIbP8Lq68g7FLfv6qI4hdHtadnIYPwJoWyKXpQhu5GeWbNvEtW5QUG5QOHisBUS2u
-         e1Qar23lixh1l/S2CtT8cOYx5hM8oyixvLW1lVtLCO92GZTJrVswUx/KaJBVq54c8bU/
-         SLJjFTfHH8ZaukQRPsFGxXUCs2ri2e8Nh2HdQ=
+        h=from:to:cc:subject:date:message-id:in-reply-to:references;
+        bh=swMX3ZhvJus2lpAmQSbywZz47exFvO5e1kSg0QE7pdo=;
+        b=ORqb2V7RnryP0HZHr934L9LVatO+kZ4uQyKjcaREkDrbkxkzP1yqEEDZe8I7k8R/kT
+         iDGzr8cNkLPDKIYhY5Im/uRYKWpsYOKufWMPtRmgojes8nSiqmJ5Ncq1osD6rva88Klc
+         En3msIdsJiOzFGNAtmqGBgGu3+Lv4R5oRoyg4=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id;
-        bh=fIYiiwMd9z48bOBXK6crDtgvZJhx0dwrez+iHOIrthU=;
-        b=shNB5sDdWUiu6uOQHF276nDkAJID71lQ3pJSetWbiVmwkJtE+0vgWBYo/nilKLeBQu
-         voT9fuvQ3Db/Oreg7dMYeFXsz/KSdj3tLziIIuF2slL6QMXHrvdI91zZu+DvMSLnG5O3
-         nB8ZFoVsRCWNdhKDMg0Udj17MwqCYlQO+Lghh+a6XrPpYqqVnEIIoGc86VYsGhAr1x0V
-         FbbzOMYsEwg+9iaB6YOWYmTbz2jU0WXlqB61wf+qrXpOVaXfj1LTxaWABZbooGT+ujB+
-         MWKu6JjWYKWpHiugIG8mx9Qo4QJ70hQyTgUswfKDeTnFXKw1ueranHEYgLGEutULYErn
-         nAQg==
-X-Gm-Message-State: APjAAAVX4fcnipo62i5neuvz15B8KsUeP+AXUxYbPcznS9EJjdkT23g4
-        xeZvgZIHEJMfdoeIuRvtketZSqb2gr4=
-X-Google-Smtp-Source: APXvYqz4XgRopCPyVT3G6bFFUMC8BvcmPPyZCfkW53rCh4rYZZanVH3wHkI0qY+yJSjoH/8BO9EV/g==
-X-Received: by 2002:a65:484d:: with SMTP id i13mr18893343pgs.32.1580119017150;
-        Mon, 27 Jan 2020 01:56:57 -0800 (PST)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references;
+        bh=swMX3ZhvJus2lpAmQSbywZz47exFvO5e1kSg0QE7pdo=;
+        b=F/B+xBwinM2FFrY3ZFBrSjGdtA6jXwiNd3K7jY8yLNeiX/NC6D77WAdNMrZCbVI7G4
+         bpqOvpx+MSNt7BtIFOoUzawHl1IFrKmGDPzaJQgXeO7T3mXuZJBJ9TVXxScdLJg4lOF6
+         CRc4eZaqyRUi/7Yo5RojQ10CzIPae/7Oh/m761QN6HrPUT0g0N22Fq7HNN4sIrmw5aOy
+         E19OFIqtC8rcfYuunQUbGo7UNi7OVjgQv+UIwk10dcgtI/ZLlZRBz3LClq+tQI5LZgko
+         kMvjQ4K87X+hG2f/VGsoI575AesNqb4Xmuz6xuc5Gimie000xChjCn8JS2PrrQMA4QD3
+         8LUQ==
+X-Gm-Message-State: APjAAAX5OInYnNjZd2WcSCn0mGx9pECwMcNKXIKKjztQ5B/cMJF3UbjP
+        v6ie8L1ERNWYgqHmBEjOXs9JmSW/RBw=
+X-Google-Smtp-Source: APXvYqydG5hL2D/tGWEXXxogLb31z31BmQ/YM7Auw3TerSxlCxbvilvv9mXCWSLJ0NQwmZ6Fo8dqtQ==
+X-Received: by 2002:a65:6706:: with SMTP id u6mr17830477pgf.38.1580119019107;
+        Mon, 27 Jan 2020 01:56:59 -0800 (PST)
 Received: from localhost.swdvt.lab.broadcom.com ([192.19.223.252])
-        by smtp.gmail.com with ESMTPSA id r3sm15232594pfg.145.2020.01.27.01.56.55
+        by smtp.gmail.com with ESMTPSA id r3sm15232594pfg.145.2020.01.27.01.56.57
         (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Mon, 27 Jan 2020 01:56:56 -0800 (PST)
+        Mon, 27 Jan 2020 01:56:58 -0800 (PST)
 From:   Michael Chan <michael.chan@broadcom.com>
 To:     davem@davemloft.net
 Cc:     netdev@vger.kernel.org
-Subject: [PATCH net-net v2 00/15] bnxt_en: Updates for net-next.
-Date:   Mon, 27 Jan 2020 04:56:12 -0500
-Message-Id: <1580118987-30052-1-git-send-email-michael.chan@broadcom.com>
+Subject: [PATCH net-next v2 01/15] bnxt_en: Improve link up detection.
+Date:   Mon, 27 Jan 2020 04:56:13 -0500
+Message-Id: <1580118987-30052-2-git-send-email-michael.chan@broadcom.com>
 X-Mailer: git-send-email 1.8.3.1
+In-Reply-To: <1580118987-30052-1-git-send-email-michael.chan@broadcom.com>
+References: <1580118987-30052-1-git-send-email-michael.chan@broadcom.com>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This patch-set includes link up and link initialization improvements,
-RSS and aRFS improvements, devlink refactoring and registration
-improvements, devlink info support including documentation.
+In bnxt_update_phy_setting(), ethtool_get_link_ksettings() and
+bnxt_disable_an_for_lpbk(), we inconsistently use netif_carrier_ok()
+to determine link.  Instead, we should use bp->link_info.link_up
+which has the true link state.  The netif_carrier state may be off
+during self-test and while the device is being reset and may not always
+reflect the true link state.
 
-v2: Removed the TC ingress rate limiting patch. The developer Harsha needs
-to rework some code.
-    Use fw.psid suggested by Jakub Kicinski.
+By always using bp->link_info.link_up, the code is now more
+consistent and more correct.  Some unnecessary link toggles are
+now prevented with this patch.
 
-Michael Chan (6):
-  bnxt_en: Improve link up detection.
-  bnxt_en: Improve bnxt_probe_phy().
-  bnxt_en: Remove the setting of dev_port.
-  bnxt_en: Support UDP RSS hashing on 575XX chips.
-  bnxt_en: Do not accept fragments for aRFS flow steering.
-  bnxt_en: Disable workaround for lost interrupts on 575XX B0 and newer
-    chips.
+Signed-off-by: Michael Chan <michael.chan@broadcom.com>
+---
+ drivers/net/ethernet/broadcom/bnxt/bnxt.c         |  2 +-
+ drivers/net/ethernet/broadcom/bnxt/bnxt_ethtool.c | 16 ++++++++--------
+ 2 files changed, 9 insertions(+), 9 deletions(-)
 
-Pavan Chebbi (1):
-  bnxt_en: Periodically check and remove aged-out ntuple filters
-
-Vasundhara Volam (8):
-  bnxt_en: Refactor bnxt_dl_register()
-  bnxt_en: Register devlink irrespective of firmware spec version
-  bnxt_en: Move devlink_register before registering netdev
-  bnxt_en: Add support to update progress of flash update
-  bnxt_en: Rename switch_id to dsn
-  devlink: add macro for "fw.roce"
-  bnxt_en: Add support for devlink info command
-  devlink: document devlink info versions reported by bnxt_en driver
-
- Documentation/networking/devlink/bnxt.rst         |  33 ++++
- Documentation/networking/devlink/devlink-info.rst |   6 +
- drivers/net/ethernet/broadcom/bnxt/bnxt.c         |  46 +++--
- drivers/net/ethernet/broadcom/bnxt/bnxt.h         |   4 +-
- drivers/net/ethernet/broadcom/bnxt/bnxt_devlink.c | 224 ++++++++++++++++++----
- drivers/net/ethernet/broadcom/bnxt/bnxt_devlink.h |   4 +
- drivers/net/ethernet/broadcom/bnxt/bnxt_ethtool.c |  16 +-
- include/net/devlink.h                             |   2 +
- 8 files changed, 277 insertions(+), 58 deletions(-)
-
+diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt.c b/drivers/net/ethernet/broadcom/bnxt/bnxt.c
+index 198c69dc..4b6f746 100644
+--- a/drivers/net/ethernet/broadcom/bnxt/bnxt.c
++++ b/drivers/net/ethernet/broadcom/bnxt/bnxt.c
+@@ -9064,7 +9064,7 @@ static int bnxt_update_phy_setting(struct bnxt *bp)
+ 	/* The last close may have shutdown the link, so need to call
+ 	 * PHY_CFG to bring it back up.
+ 	 */
+-	if (!netif_carrier_ok(bp->dev))
++	if (!bp->link_info.link_up)
+ 		update_link = true;
+ 
+ 	if (!bnxt_eee_config_ok(bp))
+diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt_ethtool.c b/drivers/net/ethernet/broadcom/bnxt/bnxt_ethtool.c
+index 08d56ec..6171fa8 100644
+--- a/drivers/net/ethernet/broadcom/bnxt/bnxt_ethtool.c
++++ b/drivers/net/ethernet/broadcom/bnxt/bnxt_ethtool.c
+@@ -1462,15 +1462,15 @@ static int bnxt_get_link_ksettings(struct net_device *dev,
+ 		ethtool_link_ksettings_add_link_mode(lk_ksettings,
+ 						     advertising, Autoneg);
+ 		base->autoneg = AUTONEG_ENABLE;
+-		if (link_info->phy_link_status == BNXT_LINK_LINK)
++		base->duplex = DUPLEX_UNKNOWN;
++		if (link_info->phy_link_status == BNXT_LINK_LINK) {
+ 			bnxt_fw_to_ethtool_lp_adv(link_info, lk_ksettings);
++			if (link_info->duplex & BNXT_LINK_DUPLEX_FULL)
++				base->duplex = DUPLEX_FULL;
++			else
++				base->duplex = DUPLEX_HALF;
++		}
+ 		ethtool_speed = bnxt_fw_to_ethtool_speed(link_info->link_speed);
+-		if (!netif_carrier_ok(dev))
+-			base->duplex = DUPLEX_UNKNOWN;
+-		else if (link_info->duplex & BNXT_LINK_DUPLEX_FULL)
+-			base->duplex = DUPLEX_FULL;
+-		else
+-			base->duplex = DUPLEX_HALF;
+ 	} else {
+ 		base->autoneg = AUTONEG_DISABLE;
+ 		ethtool_speed =
+@@ -2707,7 +2707,7 @@ static int bnxt_disable_an_for_lpbk(struct bnxt *bp,
+ 		return rc;
+ 
+ 	fw_speed = PORT_PHY_CFG_REQ_FORCE_LINK_SPEED_1GB;
+-	if (netif_carrier_ok(bp->dev))
++	if (bp->link_info.link_up)
+ 		fw_speed = bp->link_info.link_speed;
+ 	else if (fw_advertising & BNXT_LINK_SPEED_MSK_10GB)
+ 		fw_speed = PORT_PHY_CFG_REQ_FORCE_LINK_SPEED_10GB;
 -- 
 2.5.1
 
