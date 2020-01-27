@@ -2,190 +2,96 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 39084149E84
-	for <lists+netdev@lfdr.de>; Mon, 27 Jan 2020 05:51:22 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3624D149E9F
+	for <lists+netdev@lfdr.de>; Mon, 27 Jan 2020 06:18:59 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726922AbgA0EvU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 26 Jan 2020 23:51:20 -0500
-Received: from mail-lj1-f196.google.com ([209.85.208.196]:41413 "EHLO
-        mail-lj1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726743AbgA0EvU (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 26 Jan 2020 23:51:20 -0500
-Received: by mail-lj1-f196.google.com with SMTP id h23so9195149ljc.8
-        for <netdev@vger.kernel.org>; Sun, 26 Jan 2020 20:51:18 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=broadcom.com; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=Ki4qkh/EfXLaWX1kthGeQwsKn9IruVl+TYtZj0UrKyU=;
-        b=U//igtUWoFyyELHTVlGKdFqSiTxHYARt4eonqvc0fMPoFtNVQbchKaXZ+pLFapetXd
-         4NGk9LZCdjjEP4v1aUtF8c4WkxHcB0o/BtEkUgdXceZwIMSQfsT1ZgM44VMZ4nntGFjD
-         6rgw1ROF7cTqXgDm4RMi1FSMuggyxv6tAZ09Y=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=Ki4qkh/EfXLaWX1kthGeQwsKn9IruVl+TYtZj0UrKyU=;
-        b=PF9IPlYoLhwj72XD+Lepd7fkAvn5OftTzfndI0h3zeh5FsOhx1bl95CBRmBBNtIZWI
-         0BWHD11lxV/p2O9WvPlySg6feNAwAcyuW2mQx4DgwMjGDvZflnCu/qyeGke8j5I5E7B3
-         AB2HOWSBF9NsQt/Z/4CS+jr9F0jhbTD1ZMBJesaCTG2tdnYVX/K5nSq4fvogbtzbzS2l
-         EVo8oeyiza7wrDUmpeU/CMxEQkybqc4O1M+9obeq2dkKge9iCsjCHAcFkXIl+Ds0N4dc
-         Vmcvk0M+BAOiU1A7VsDaZ84Kwfm9Izrkd17Cc1hNEGUPX7mztZ1shP4GNfBFDSWinvWd
-         aIpg==
-X-Gm-Message-State: APjAAAWMHsK5Y77ERTnf3OiGNktdPUXfz6LEsQF8VLPoJQXmytPpvKc5
-        +2ufXB6omBRSHv/zSJDsSqFlSNmDWzm9Z/raFhK06w==
-X-Google-Smtp-Source: APXvYqzkZirp1xw2zFO8Hc9gj8Umjgc4GmRAb015bQiMYrG8fETr+jwqh5sg8znyllQsPiyl9pUkaUaU2N2HCMRS9ag=
-X-Received: by 2002:a2e:2e11:: with SMTP id u17mr8853761lju.117.1580100677325;
- Sun, 26 Jan 2020 20:51:17 -0800 (PST)
+        id S1725893AbgA0FS5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 27 Jan 2020 00:18:57 -0500
+Received: from mail.kernel.org ([198.145.29.99]:59900 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1725308AbgA0FS5 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 27 Jan 2020 00:18:57 -0500
+Received: from localhost (unknown [213.57.247.131])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 3DC26214DB;
+        Mon, 27 Jan 2020 05:18:56 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1580102336;
+        bh=tIboLkpRnkHnTj4/j8Q8BRW5/0Y4Wlvava+w1Cvfn0k=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=RzEobAeMYLZJ5UCEx2lUTMnoyIjsqjbtPPt7D6/e1s0fll9S0oWTAz6TWGo7UqGDp
+         8r7tyWYGSOGyDhYW6/IaswauauhLc/uKIHmlhFlAgdilDfvCeQPd+NAKT0Sks4q3jj
+         tbazNujoj4adisOei8dcZj5uF1b2At/d9/XlfPEA=
+Date:   Mon, 27 Jan 2020 07:18:54 +0200
+From:   Leon Romanovsky <leon@kernel.org>
+To:     Michal Kubecek <mkubecek@suse.cz>
+Cc:     netdev@vger.kernel.org, Shannon Nelson <snelson@pensando.io>,
+        Jakub Kicinski <kuba@kernel.org>,
+        "David S . Miller" <davem@davemloft.net>,
+        Michal Kalderon <michal.kalderon@marvell.com>,
+        RDMA mailing list <linux-rdma@vger.kernel.org>
+Subject: Re: [PATCH net-next] net/core: Replace driver version to be kernel
+ version
+Message-ID: <20200127051854.GE3870@unreal>
+References: <20200123130541.30473-1-leon@kernel.org>
+ <43d43a45-18db-f959-7275-63c9976fdf40@pensando.io>
+ <20200126194110.GA3870@unreal>
+ <20200126124957.78a31463@cakuba>
+ <20200126210850.GB3870@unreal>
+ <31c6c46a-63b2-6397-5c75-5671ee8d41c3@pensando.io>
+ <20200126212424.GD3870@unreal>
+ <0755f526-73cb-e926-2785-845fec0f51dd@pensando.io>
+ <20200126222253.GX22304@unicorn.suse.cz>
 MIME-Version: 1.0
-References: <1580029390-32760-1-git-send-email-michael.chan@broadcom.com>
- <1580029390-32760-10-git-send-email-michael.chan@broadcom.com> <20200126113219.GI2254@nanopsycho.orion>
-In-Reply-To: <20200126113219.GI2254@nanopsycho.orion>
-From:   Vasundhara Volam <vasundhara-v.volam@broadcom.com>
-Date:   Mon, 27 Jan 2020 10:21:06 +0530
-Message-ID: <CAACQVJpR8OoifuMiArgoSqyYDxiKeZi0B29h7TrX+sktFys-zw@mail.gmail.com>
-Subject: Re: [PATCH net-next 09/16] bnxt_en: Refactor bnxt_dl_register()
-To:     Jiri Pirko <jiri@resnulli.us>
-Cc:     Michael Chan <michael.chan@broadcom.com>,
-        David Miller <davem@davemloft.net>,
-        Netdev <netdev@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20200126222253.GX22304@unicorn.suse.cz>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, Jan 26, 2020 at 5:02 PM Jiri Pirko <jiri@resnulli.us> wrote:
+On Sun, Jan 26, 2020 at 11:22:53PM +0100, Michal Kubecek wrote:
+> On Sun, Jan 26, 2020 at 02:12:38PM -0800, Shannon Nelson wrote:
+> > On 1/26/20 1:24 PM, Leon Romanovsky wrote:
+> > > On Sun, Jan 26, 2020 at 01:17:52PM -0800, Shannon Nelson wrote:
+> > > > On 1/26/20 1:08 PM, Leon Romanovsky wrote:
+> > > > > The long-standing policy in kernel that we don't really care about
+> > > > > out-of-tree code.
+> > > > That doesn't mean we need to be aggressively against out-of-tree code.  One
+> > > > of the positive points about Linux and loadable modules has always been the
+> > > > flexibility that allows and encourages innovation, and helps enable more
+> > > > work and testing before a driver can become a fully-fledged part of the
+> > > > kernel.  This move actively discourages part of that flexibility and I think
+> > > > it is breaking part of the usefulness of modules.
+> > > You are mixing definitions, nothing stops those people to innovate and
+> > > develop their code inside kernel and as standalone modules too.
+> > >
+> > > It just stops them to put useless driver version string inside ethtool.
+> > > If they feel that their life can't be without something from 90s, they
+> > > have venerable MODULE_VERSION() macro to print anything they want.
+> > >
+> > Part of the pain of supporting our users is getting them to give us useful
+> > information about their problem.  The more commands I need them to run to
+> > get information about the environment, the less likely I will get anything
+> > useful.  We've been training our users over the years to use "ethtool -i" to
+> > get a good chunk of that info, with the knowledge that the driver version is
+> > only a hint, based upon the distro involved.  I don't want to lose that
+> > hint.  If anything, I'd prefer that we added a field for UTS_RELEASE in the
+> > ethtool output, but I know that's too much to ask.
 >
-> Sun, Jan 26, 2020 at 10:03:03AM CET, michael.chan@broadcom.com wrote:
-> >From: Vasundhara Volam <vasundhara-v.volam@broadcom.com>
-> >
-> >Define bnxt_dl_params_register() and bnxt_dl_params_unregister()
-> >functions and move params register/unregister code to these newly
-> >defined functions. This patch is in preparation to register
-> >devlink irrespective of firmware spec. version in the next patch.
-> >
-> >Signed-off-by: Vasundhara Volam <vasundhara-v.volam@broadcom.com>
-> >Signed-off-by: Michael Chan <michael.chan@broadcom.com>
-> >---
-> > drivers/net/ethernet/broadcom/bnxt/bnxt_devlink.c | 60 ++++++++++++++---------
-> > 1 file changed, 36 insertions(+), 24 deletions(-)
-> >
-> >diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt_devlink.c b/drivers/net/ethernet/broadcom/bnxt/bnxt_devlink.c
-> >index 0c3d224..9253eed 100644
-> >--- a/drivers/net/ethernet/broadcom/bnxt/bnxt_devlink.c
-> >+++ b/drivers/net/ethernet/broadcom/bnxt/bnxt_devlink.c
-> >@@ -485,6 +485,38 @@ static const struct devlink_param bnxt_dl_params[] = {
-> > static const struct devlink_param bnxt_dl_port_params[] = {
-> > };
-> >
-> >+static int bnxt_dl_params_register(struct bnxt *bp)
-> >+{
-> >+      int rc;
-> >+
-> >+      rc = devlink_params_register(bp->dl, bnxt_dl_params,
-> >+                                   ARRAY_SIZE(bnxt_dl_params));
-> >+      if (rc) {
-> >+              netdev_warn(bp->dev, "devlink_params_register failed. rc=%d",
-> >+                          rc);
-> >+              return rc;
-> >+      }
-> >+      rc = devlink_port_params_register(&bp->dl_port, bnxt_dl_port_params,
-> >+                                        ARRAY_SIZE(bnxt_dl_port_params));
->
-> Wait, this assumes that you have 1:1 devlink:devlink_port setup. Is that
-> correct? Don't you have other devlink_ports for eswitch representors
-> that have params?
-Yes Jiri, this assumes 1:1 setup. Our driver does not register params for VFs.
-It will register params only for PFs.
+> At the same time, I've been trying to explain both our L1/L2 support
+> guys and our customers that "driver version" information reported by
+> "ethtool -i" is almost useless and that if they really want to identify
+> driver version, they should rather use srcversion as reported by modinfo
+> or sysfs.
 
-This patch is refactoring of code and moving params_registers to a new function,
-which will not be called for VFs.
+We went even farther and wrote simple bash script that collects all
+needed information from the system.
 
-There is a check for PF in bnxt_dl_register() and return before calling
-bnxt_dl_params_register(), if check fails.
+Thanks
+
 >
->
-> >+      if (rc) {
-> >+              netdev_err(bp->dev, "devlink_port_params_register failed");
-> >+              devlink_params_unregister(bp->dl, bnxt_dl_params,
-> >+                                        ARRAY_SIZE(bnxt_dl_params));
-> >+              return rc;
-> >+      }
-> >+      devlink_params_publish(bp->dl);
-> >+
-> >+      return 0;
-> >+}
-> >+
-> >+static void bnxt_dl_params_unregister(struct bnxt *bp)
-> >+{
-> >+      devlink_params_unregister(bp->dl, bnxt_dl_params,
-> >+                                ARRAY_SIZE(bnxt_dl_params));
-> >+      devlink_port_params_unregister(&bp->dl_port, bnxt_dl_port_params,
-> >+                                     ARRAY_SIZE(bnxt_dl_port_params));
-> >+}
-> >+
-> > int bnxt_dl_register(struct bnxt *bp)
-> > {
-> >       struct devlink *dl;
-> >@@ -520,40 +552,24 @@ int bnxt_dl_register(struct bnxt *bp)
-> >       if (!BNXT_PF(bp))
-> >               return 0;
-> >
-> >-      rc = devlink_params_register(dl, bnxt_dl_params,
-> >-                                   ARRAY_SIZE(bnxt_dl_params));
-> >-      if (rc) {
-> >-              netdev_warn(bp->dev, "devlink_params_register failed. rc=%d",
-> >-                          rc);
-> >-              goto err_dl_unreg;
-> >-      }
-> >-
-> >       devlink_port_attrs_set(&bp->dl_port, DEVLINK_PORT_FLAVOUR_PHYSICAL,
-> >                              bp->pf.port_id, false, 0,
-> >                              bp->switch_id, sizeof(bp->switch_id));
-> >       rc = devlink_port_register(dl, &bp->dl_port, bp->pf.port_id);
-> >       if (rc) {
-> >               netdev_err(bp->dev, "devlink_port_register failed");
-> >-              goto err_dl_param_unreg;
-> >+              goto err_dl_unreg;
-> >       }
-> >       devlink_port_type_eth_set(&bp->dl_port, bp->dev);
-> >
-> >-      rc = devlink_port_params_register(&bp->dl_port, bnxt_dl_port_params,
-> >-                                        ARRAY_SIZE(bnxt_dl_port_params));
-> >-      if (rc) {
-> >-              netdev_err(bp->dev, "devlink_port_params_register failed");
-> >+      rc = bnxt_dl_params_register(bp);
-> >+      if (rc)
-> >               goto err_dl_port_unreg;
-> >-      }
-> >-
-> >-      devlink_params_publish(dl);
-> >
-> >       return 0;
-> >
-> > err_dl_port_unreg:
-> >       devlink_port_unregister(&bp->dl_port);
-> >-err_dl_param_unreg:
-> >-      devlink_params_unregister(dl, bnxt_dl_params,
-> >-                                ARRAY_SIZE(bnxt_dl_params));
-> > err_dl_unreg:
-> >       devlink_unregister(dl);
-> > err_dl_free:
-> >@@ -570,12 +586,8 @@ void bnxt_dl_unregister(struct bnxt *bp)
-> >               return;
-> >
-> >       if (BNXT_PF(bp)) {
-> >-              devlink_port_params_unregister(&bp->dl_port,
-> >-                                             bnxt_dl_port_params,
-> >-                                             ARRAY_SIZE(bnxt_dl_port_params));
-> >+              bnxt_dl_params_unregister(bp);
-> >               devlink_port_unregister(&bp->dl_port);
-> >-              devlink_params_unregister(dl, bnxt_dl_params,
-> >-                                        ARRAY_SIZE(bnxt_dl_params));
-> >       }
-> >       devlink_unregister(dl);
-> >       devlink_free(dl);
-> >--
-> >2.5.1
-> >
+> Michal
