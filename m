@@ -2,117 +2,236 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 41B7D14ABDA
-	for <lists+netdev@lfdr.de>; Mon, 27 Jan 2020 22:56:28 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3FA8B14ABEE
+	for <lists+netdev@lfdr.de>; Mon, 27 Jan 2020 23:14:21 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726293AbgA0V40 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 27 Jan 2020 16:56:26 -0500
-Received: from mail-eopbgr10083.outbound.protection.outlook.com ([40.107.1.83]:57314
-        "EHLO EUR02-HE1-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1726080AbgA0V40 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 27 Jan 2020 16:56:26 -0500
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=SEUhROTpC3K0MEYpcDM9T2c0DPbngnDpA+Pe6PUVFxYc92dkdAbYK08qHgUYL5WSwzxYLMV75dAWVpLunaFCTTccHpE6t5ji/QsB0e4bUDUSMajROniXKGGub8A0qCrlX4uHDYJ+0oRqNiH5dTC2oa7newdLQm/TrTneEaTY5UU+iMt29Gxa6A0l1b08MCxZDC6GywS5fwF7DDTJz+JK0LcCSa4lNG5ug9cU47yF4H/Mvx14E6Kowyzv+BLYW8Axmcicu0nBDPdWo5jaTFb8IkpuOxQRivIs5AlBa7nZmsTT0EviXPyc5p/FyVv8bum8M3WvRL/WkDM5eOdgcb+R1g==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=2sAcOnsa/Bt/EteLxuSeg1RaiDdZIY0pOIoSmCHlkIY=;
- b=KI0wzs3y8pCuLq4UXBqPHdqh65a5EcMd6zZkh7WZAC3t948LAECFEolmYa5oujNoyESMEL0ri5EMMJIGVbEScH+iJnDsoUIIc7AGZBzt0n/Fri9pZV7S+TIWkECRHXLEUGxIMaIz0B4NFaY/T3ALD8UBk+HWXjUHQMkUYyqRMCTEXuV7gtQIWCT1toSH/aR7UVd9IiWjB0nU3BGiUMYHg4BTLkckB7c2Iw0eHJcocD3//12QAMxeihPcio7S9b7v8CYpuprIXHgnLogeEe/ehYz5UdGZxwjgiuhRff2CcoAK9UlyNQG+fM5kHB3KeUQbhHD5Y/nmfuRy1/ayPJvCXA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=mellanox.com; dmarc=pass action=none header.from=mellanox.com;
- dkim=pass header.d=mellanox.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Mellanox.com;
- s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=2sAcOnsa/Bt/EteLxuSeg1RaiDdZIY0pOIoSmCHlkIY=;
- b=t2t1qYRUG7TiOcvP6St03wAB4orBPuIWRPhFP4A0qbMth0h3ylNhRrJJiNnTsr+sCLWjn8risnMhQdoFg1FhQhi+R6ic/ahZRTk/ixb74N5OEOyCzkZW4NDX3RpXHlFVd88bYwIm4tP2RA1ARMiFFYnMp5hru7fy9E8EEpmS5NY=
-Received: from AM6PR05MB5094.eurprd05.prod.outlook.com (20.177.34.93) by
- AM6PR05MB5412.eurprd05.prod.outlook.com (20.177.118.17) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.2665.20; Mon, 27 Jan 2020 21:56:23 +0000
-Received: from AM6PR05MB5094.eurprd05.prod.outlook.com
- ([fe80::d9f3:f3b8:86b2:a40a]) by AM6PR05MB5094.eurprd05.prod.outlook.com
- ([fe80::d9f3:f3b8:86b2:a40a%7]) with mapi id 15.20.2665.017; Mon, 27 Jan 2020
- 21:56:23 +0000
-From:   Saeed Mahameed <saeedm@mellanox.com>
-To:     "kuba@kernel.org" <kuba@kernel.org>,
-        "andrew@lunn.ch" <andrew@lunn.ch>
-CC:     Aya Levin <ayal@mellanox.com>,
-        "mkubecek@suse.cz" <mkubecek@suse.cz>,
-        "linux@armlinux.org.uk" <linux@armlinux.org.uk>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "hkallweit1@gmail.com" <hkallweit1@gmail.com>,
-        Eran Ben Elisha <eranbe@mellanox.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "f.fainelli@gmail.com" <f.fainelli@gmail.com>
-Subject: Re: [net-next V2 11/14] ethtool: Add support for low latency RS FEC
-Thread-Topic: [net-next V2 11/14] ethtool: Add support for low latency RS FEC
-Thread-Index: AQHV0z30mWH9Qamk9kSgrdqkMYV+GKf7yCaAgAAXzwCAAzLGAA==
-Date:   Mon, 27 Jan 2020 21:56:22 +0000
-Message-ID: <fedd89528dfa9a3716b07731e4439d6b1ffe6329.camel@mellanox.com>
-References: <20200125051039.59165-1-saeedm@mellanox.com>
-         <20200125051039.59165-12-saeedm@mellanox.com>
-         <20200125114037.203e63ca@cakuba> <20200125210550.GH18311@lunn.ch>
-In-Reply-To: <20200125210550.GH18311@lunn.ch>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-user-agent: Evolution 3.34.3 (3.34.3-1.fc31) 
-authentication-results: spf=none (sender IP is )
- smtp.mailfrom=saeedm@mellanox.com; 
-x-originating-ip: [209.116.155.178]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-ht: Tenant
-x-ms-office365-filtering-correlation-id: 9a60a23f-1ec0-46ab-a46b-08d7a373bfc3
-x-ms-traffictypediagnostic: AM6PR05MB5412:|AM6PR05MB5412:
-x-ms-exchange-transport-forked: True
-x-microsoft-antispam-prvs: <AM6PR05MB5412722EA2B8F5D47426A44EBE0B0@AM6PR05MB5412.eurprd05.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:7219;
-x-forefront-prvs: 02951C14DC
-x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(4636009)(136003)(39860400002)(376002)(366004)(346002)(396003)(199004)(189003)(86362001)(316002)(2906002)(110136005)(4326008)(54906003)(478600001)(6512007)(71200400001)(6506007)(4744005)(6486002)(5660300002)(66476007)(91956017)(76116006)(186003)(8936002)(81166006)(36756003)(26005)(8676002)(81156014)(64756008)(66446008)(2616005)(66556008)(66946007);DIR:OUT;SFP:1101;SCL:1;SRVR:AM6PR05MB5412;H:AM6PR05MB5094.eurprd05.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;A:1;MX:1;
-received-spf: None (protection.outlook.com: mellanox.com does not designate
- permitted sender hosts)
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: dheATxFlVfr71bOOVXf+v9cPI9hw65Xo6+HuPZ+1IjZIrG1KLuhTvn9yiYrxqIHYmP3nk5oRiWVBBaCLsb9V45X/vGDjEfquGMiw5NQuzj1bOKgi3apiVaD2UWTZx4ccJg9T0mqLPt8IXvKehFABj2+w4p2iRJTMq21mOgiSg+mXgMmVS5thbYLuFoDKkoXsSmd2bCwA+5XypKo6Fk9hiRC7rOKADvMLgtugHN0dHN8yLDpVLvMcM3f8od7KHAw8i/7smeQopFTOCT4IBZ0SIvNVjZG84Kx8l4B074tSDX4cdamnA3ycTjFvAIWEJCfZzIdPu+MNc0oqXydcks1KyQ9wd9H3TnuAkqKi9DmS2cN3dNO8FWIc1WgrlEEZ8GQCVEIVsX+gv80POmY3nG8+D76sk633eHbIIbPuE/8wmJPZ5IxkwbnCWSQNjJVSKkJZ
-x-ms-exchange-antispam-messagedata: 6wKNTVf6vJDEHb1tIC58P2wzrcUWymMNSO0r5eiAs6keNpANEXJbB3S8LoOnGvSinhGavQENh0BzWvW/YIG6NWuoaUfrVSlfnoQ4efc6FTpYXqOjFTxZiLtRzTbBTTFHLHlea8CIvYkPBbUA8C704w==
-Content-Type: text/plain; charset="utf-8"
-Content-ID: <B7E7775DC498DF459C329AACA10E77AD@eurprd05.prod.outlook.com>
-Content-Transfer-Encoding: base64
+        id S1726338AbgA0WOM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 27 Jan 2020 17:14:12 -0500
+Received: from smtp-out.kfki.hu ([148.6.0.46]:51949 "EHLO smtp-out.kfki.hu"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1725946AbgA0WOL (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 27 Jan 2020 17:14:11 -0500
+Received: from localhost (localhost [127.0.0.1])
+        by smtp1.kfki.hu (Postfix) with ESMTP id 7F7253C8014F;
+        Mon, 27 Jan 2020 23:14:08 +0100 (CET)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+        blackhole.kfki.hu; h=mime-version:user-agent:references
+        :message-id:in-reply-to:from:from:date:date:received:received
+        :received; s=20151130; t=1580163246; x=1581977647; bh=ulTH0RRxql
+        7c//LE6kmDWTETxqSFptGl1z2vBDEwGHg=; b=MhN+qU0x5clKGQpORU07CDn/m2
+        MRgqtL9/4EBx2eMYYhlB+SuR4eWJ5sFiT3An24gVmRXf3EoTQf7D08CxqQu+K13E
+        65dM159lKVmdNQ8iSG2205NpDiLk8BOEUwJUlgWCa49VwzMyDPChXqvx9kQ4ngmd
+        U+WytSVFc5bS4jY70=
+X-Virus-Scanned: Debian amavisd-new at smtp1.kfki.hu
+Received: from smtp1.kfki.hu ([127.0.0.1])
+        by localhost (smtp1.kfki.hu [127.0.0.1]) (amavisd-new, port 10026)
+        with ESMTP; Mon, 27 Jan 2020 23:14:06 +0100 (CET)
+Received: from blackhole.kfki.hu (blackhole.szhk.kfki.hu [IPv6:2001:738:5001:1::240:2])
+        by smtp1.kfki.hu (Postfix) with ESMTP id C843F3C8011C;
+        Mon, 27 Jan 2020 23:14:04 +0100 (CET)
+Received: by blackhole.kfki.hu (Postfix, from userid 1000)
+        id E70C321304; Mon, 27 Jan 2020 23:14:03 +0100 (CET)
+Date:   Mon, 27 Jan 2020 23:14:03 +0100 (CET)
+From:   =?UTF-8?Q?Kadlecsik_J=C3=B3zsef?= <kadlec@blackhole.kfki.hu>
+To:     Hillf Danton <hdanton@sina.com>
+cc:     syzbot <syzbot+68a806795ac89df3aa1c@syzkaller.appspotmail.com>,
+        x86@kernel.org, tony.luck@intel.com, peterz@infradead.org,
+        netdev@vger.kernel.org, hpa@zytor.com,
+        linux-kernel@vger.kernel.org, syzkaller-bugs@googlegroups.com,
+        coreteam@netfilter.org, bp@alien8.de,
+        netfilter-devel@vger.kernel.org, tglx@linutronix.de,
+        mingo@redhat.com, davem@davemloft.net
+Subject: Re: [netfilter-core] INFO: rcu detected stall in hash_ip4_gc
+In-Reply-To: <20200127042315.10456-1-hdanton@sina.com>
+Message-ID: <alpine.DEB.2.20.2001272304410.2904@blackhole.kfki.hu>
+References: <20200127042315.10456-1-hdanton@sina.com>
+User-Agent: Alpine 2.20 (DEB 67 2015-01-07)
 MIME-Version: 1.0
-X-OriginatorOrg: Mellanox.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 9a60a23f-1ec0-46ab-a46b-08d7a373bfc3
-X-MS-Exchange-CrossTenant-originalarrivaltime: 27 Jan 2020 21:56:22.8291
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: a652971c-7d2e-4d9b-a6a4-d149256f461b
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: QoACVNLWVMLIaaV3ooZ+PsbYxj9tdkIi1EzgYTYBIYuOXRB9dnFahquPj2ezVLXpo+I2jrwWiICzzOVL+LvYQQ==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM6PR05MB5412
+Content-Type: text/plain; charset=US-ASCII
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-T24gU2F0LCAyMDIwLTAxLTI1IGF0IDIyOjA1ICswMTAwLCBBbmRyZXcgTHVubiB3cm90ZToNCj4g
-T24gU2F0LCBKYW4gMjUsIDIwMjAgYXQgMTE6NDA6MzdBTSAtMDgwMCwgSmFrdWIgS2ljaW5za2kg
-d3JvdGU6DQo+ID4gT24gU2F0LCAyNSBKYW4gMjAyMCAwNToxMTo1MiArMDAwMCwgU2FlZWQgTWFo
-YW1lZWQgd3JvdGU6DQo+ID4gPiBGcm9tOiBBeWEgTGV2aW4gPGF5YWxAbWVsbGFub3guY29tPg0K
-PiA+ID4gDQo+ID4gPiBBZGQgc3VwcG9ydCBmb3IgbG93IGxhdGVuY3kgUmVlZCBTb2xvbW9uIEZF
-QyBhcyBMTFJTLg0KPiA+ID4gDQo+ID4gPiBTaWduZWQtb2ZmLWJ5OiBBeWEgTGV2aW4gPGF5YWxA
-bWVsbGFub3guY29tPg0KPiA+ID4gUmV2aWV3ZWQtYnk6IEVyYW4gQmVuIEVsaXNoYSA8ZXJhbmJl
-QG1lbGxhbm94LmNvbT4NCj4gPiA+IFNpZ25lZC1vZmYtYnk6IFNhZWVkIE1haGFtZWVkIDxzYWVl
-ZG1AbWVsbGFub3guY29tPg0KPiA+IA0KPiA+IFRoaXMgaXMga2luZCBvZiBidXJpZWQgaW4gdGhl
-IG1pZHN0IG9mIHRoZSBkcml2ZXIgcGF0Y2hlcy4NCj4gPiBJdCdkIHByZWZlcmFibHkgYmUgYSBz
-bWFsbCBzZXJpZXMgb2YgaXRzIG93bi4gDQo+ID4gTGV0J3MgYXQgbGVhc3QgdHJ5IHRvIENDIFBI
-WSBmb2xrIG5vdy4NCj4gDQo+IFRoYW5rcyBKYWt1dg0KPiANCg0KSSBhY3R1YWxseSBDQ2VkIFBI
-WSBvbiBWMSAuLiBidXQgZm9yZ290IG9uIFYyIDooLg0KDQpBbnl3YXkgdGhlIEJJVCBpcyB2ZXJ5
-IGNsZWFyIGFuZCBzdGFuZGFyZCBhcyBBeWEgcG9pbnRlZCBvdXQuLiANCg0KU2hhbGwgSSByZXN1
-Ym1pdCB3aXRoIHRoZSB1cGRhdGUgY29tbWl0IG1lc3NhZ2UgPw0KDQpJIHNlZSB0aGUgc2VyaWVz
-IGlzIG1hcmtlZCBhcyAiTm90IEFwcGxpY2FibGUiIGkgZG9uJ3Qga25vdyB3aHkgdGhvdWdoDQou
-LiANCg0KPiA+IElzIHRoaXMgZnJvbSBzb21lIHN0YW5kYXJkPw0KPiANCj4gQSByZWZlcmVuY2Ug
-d291bGQgYmUgZ29vZC4NCj4gDQo+IEkgYXNzdW1lIHRoZSBleGlzdGluZyBFVEhUT09MX0xJTktf
-TU9ERV9GRUNfUlNfQklUIGlzIGZvciBDbGF1c2UgOTEuDQo+IFdoYXQgY2xhdXNlIGRvZXMgdGhp
-cyBMTFJTIHJlZmVyIHRvPw0KPiANCj4gVGhhbmtzDQo+IAlBbmRyZXcNCg==
+
+Hi,
+
+On Mon, 27 Jan 2020, Hillf Danton wrote:
+
+> 
+> Sun, 26 Jan 2020 11:17:12 -0800 (PST)
+> > syzbot found the following crash on:
+> > 
+> > HEAD commit:    6381b442 Merge tag 'iommu-fixes-v5.5-rc7' of git://git.ker..
+> > git tree:       upstream
+> > console output: https://syzkaller.appspot.com/x/log.txt?x=14f44769e00000
+> > kernel config:  https://syzkaller.appspot.com/x/.config?x=cf8e288883e40aba
+> > dashboard link: https://syzkaller.appspot.com/bug?extid=68a806795ac89df3aa1c
+> > compiler:       gcc (GCC) 9.0.0 20181231 (experimental)
+> > userspace arch: i386
+> > syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=11fad479e00000
+> > C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=12f62f21e00000
+> > 
+> > The bug was bisected to:
+> > 
+> > commit 23c42a403a9cfdbad6004a556c927be7dd61a8ee
+> > Author: Jozsef Kadlecsik <kadlec@blackhole.kfki.hu>
+> > Date:   Sat Oct 27 13:07:40 2018 +0000
+> > 
+> >     netfilter: ipset: Introduction of new commands and protocol version 7
+> > 
+> > bisection log:  https://syzkaller.appspot.com/x/bisect.txt?x=1128b611e00000
+> > final crash:    https://syzkaller.appspot.com/x/report.txt?x=1328b611e00000
+> > console output: https://syzkaller.appspot.com/x/log.txt?x=1528b611e00000
+> > 
+> > IMPORTANT: if you fix the bug, please add the following tag to the commit:
+> > Reported-by: syzbot+68a806795ac89df3aa1c@syzkaller.appspotmail.com
+> > Fixes: 23c42a403a9c ("netfilter: ipset: Introduction of new commands and protocol version 7")
+> > 
+> > rcu: INFO: rcu_preempt detected stalls on CPUs/tasks:
+> > 	(detected by 1, t=10502 jiffies, g=9453, q=929)
+> > rcu: All QSes seen, last rcu_preempt kthread activity 10502 (4294981303-4294970801), jiffies_till_next_fqs=1, root ->qsmask 0x0
+> > syz-executor596 R  running task    28776  9738   9733 0x20020008
+> > Call Trace:
+> >  <IRQ>
+> >  sched_show_task kernel/sched/core.c:5954 [inline]
+> >  sched_show_task.cold+0x2ee/0x35d kernel/sched/core.c:5929
+> >  print_other_cpu_stall kernel/rcu/tree_stall.h:410 [inline]
+> >  check_cpu_stall kernel/rcu/tree_stall.h:538 [inline]
+> >  rcu_pending kernel/rcu/tree.c:2827 [inline]
+> >  rcu_sched_clock_irq.cold+0xaf4/0xc0d kernel/rcu/tree.c:2271
+> >  update_process_times+0x2d/0x70 kernel/time/timer.c:1726
+> >  tick_sched_handle+0xa2/0x190 kernel/time/tick-sched.c:171
+> >  tick_sched_timer+0x53/0x140 kernel/time/tick-sched.c:1314
+> >  __run_hrtimer kernel/time/hrtimer.c:1517 [inline]
+> >  __hrtimer_run_queues+0x364/0xe40 kernel/time/hrtimer.c:1579
+> >  hrtimer_interrupt+0x314/0x770 kernel/time/hrtimer.c:1641
+> >  local_apic_timer_interrupt arch/x86/kernel/apic/apic.c:1110 [inline]
+> >  smp_apic_timer_interrupt+0x160/0x610 arch/x86/kernel/apic/apic.c:1135
+> >  apic_timer_interrupt+0xf/0x20 arch/x86/entry/entry_64.S:829
+> > RIP: 0010:native_safe_halt+0xe/0x10 arch/x86/include/asm/irqflags.h:61
+> > Code: 18 77 de f9 eb 8a cc cc cc cc cc cc e9 07 00 00 00 0f 00 2d c4 31 54 00 f4 c3 66 90 e9 07 00 00 00 0f 00 2d b4 31 54 00 fb f4 <c3> cc 55 48 89 e5 41 57 41 56 41 55 41 54 53 e8 fe 3f 8e f9 e8 c9
+> > RSP: 0018:ffffc90000da8b10 EFLAGS: 00000286 ORIG_RAX: ffffffffffffff13
+> > RAX: 1ffffffff1326676 RBX: ffff8880a46f6e20 RCX: 0000000000000002
+> > RDX: dffffc0000000000 RSI: 0000000000000008 RDI: ffff8880a3224b14
+> > RBP: ffffc90000da8b30 R08: 1ffffffff165e7b1 R09: fffffbfff165e7b2
+> > R10: fffffbfff165e7b1 R11: ffffffff8b2f3d8f R12: 0000000000000003
+> > R13: 0000000000000282 R14: 0000000000000000 R15: 0000000000000001
+> >  pv_wait arch/x86/include/asm/paravirt.h:648 [inline]
+> >  pv_wait_head_or_lock kernel/locking/qspinlock_paravirt.h:470 [inline]
+> >  __pv_queued_spin_lock_slowpath+0x9ba/0xc40 kernel/locking/qspinlock.c:507
+> >  pv_queued_spin_lock_slowpath arch/x86/include/asm/paravirt.h:638 [inline]
+> >  queued_spin_lock_slowpath arch/x86/include/asm/qspinlock.h:50 [inline]
+> >  queued_spin_lock include/asm-generic/qspinlock.h:81 [inline]
+> >  do_raw_spin_lock+0x21d/0x2f0 kernel/locking/spinlock_debug.c:113
+> >  __raw_spin_lock_bh include/linux/spinlock_api_smp.h:136 [inline]
+> >  _raw_spin_lock_bh+0x3b/0x50 kernel/locking/spinlock.c:175
+> >  spin_lock_bh include/linux/spinlock.h:343 [inline]
+> >  hash_ip4_gc+0x49/0x150 net/netfilter/ipset/ip_set_hash_gen.h:532
+> >  call_timer_fn+0x1ac/0x780 kernel/time/timer.c:1404
+> >  expire_timers kernel/time/timer.c:1449 [inline]
+> >  __run_timers kernel/time/timer.c:1773 [inline]
+> >  __run_timers kernel/time/timer.c:1740 [inline]
+> >  run_timer_softirq+0x6c3/0x1790 kernel/time/timer.c:1786
+> >  __do_softirq+0x262/0x98c kernel/softirq.c:292
+> >  invoke_softirq kernel/softirq.c:373 [inline]
+> >  irq_exit+0x19b/0x1e0 kernel/softirq.c:413
+> >  exiting_irq arch/x86/include/asm/apic.h:536 [inline]
+> >  smp_apic_timer_interrupt+0x1a3/0x610 arch/x86/kernel/apic/apic.c:1137
+> >  apic_timer_interrupt+0xf/0x20 arch/x86/entry/entry_64.S:829
+> >  </IRQ>
+> > RIP: 0010:schedule_debug kernel/sched/core.c:3878 [inline]
+> > RIP: 0010:__schedule+0x119/0x1f90 kernel/sched/core.c:4013
+> > Code: 48 89 fa 48 c1 ea 03 80 3c 02 00 0f 85 ad 18 00 00 48 b8 00 00 00 00 00 fc ff df 4d 8b 7d 18 4c 89 fa 48 c1 ea 03 80 3c 02 00 <0f> 85 d2 18 00 00 49 81 3f 9d 6e ac 57 0f 85 47 1e 00 00 84 db 75
+> > RSP: 0018:ffffc90001f17b70 EFLAGS: 00000246 ORIG_RAX: ffffffffffffff13
+> > RAX: dffffc0000000000 RBX: 0000000000000000 RCX: ffffffff839f64da
+> > RDX: 1ffff920003e2000 RSI: ffffffff839f64e3 RDI: ffff8880a3224298
+> > RBP: ffffc90001f17c38 R08: ffff8880a3224280 R09: 0000000000000000
+> > R10: 0000000000000000 R11: 0000000000000000 R12: ffff8880ae937340
+> > R13: ffff8880a3224280 R14: 0000000000037340 R15: ffffc90001f10000
+> >  schedule+0xdc/0x2b0 kernel/sched/core.c:4155
+> >  freezable_schedule include/linux/freezer.h:172 [inline]
+> >  do_nanosleep+0x21f/0x640 kernel/time/hrtimer.c:1874
+> >  hrtimer_nanosleep+0x297/0x550 kernel/time/hrtimer.c:1927
+> >  __do_sys_nanosleep_time32 kernel/time/hrtimer.c:1981 [inline]
+> >  __se_sys_nanosleep_time32 kernel/time/hrtimer.c:1968 [inline]
+> >  __ia32_sys_nanosleep_time32+0x1ad/0x230 kernel/time/hrtimer.c:1968
+> >  do_syscall_32_irqs_on arch/x86/entry/common.c:337 [inline]
+> >  do_fast_syscall_32+0x27b/0xe16 arch/x86/entry/common.c:408
+> >  entry_SYSENTER_compat+0x70/0x7f arch/x86/entry/entry_64_compat.S:139
+> > RIP: 0023:0xf7f089a9
+> > Code: 00 00 00 89 d3 5b 5e 5f 5d c3 b8 80 96 98 00 eb c4 8b 04 24 c3 8b 1c 24 c3 8b 34 24 c3 8b 3c 24 c3 51 52 55 89 e5 0f 34 cd 80 <5d> 5a 59 c3 90 90 90 90 eb 0d 90 90 90 90 90 90 90 90 90 90 90 90
+> > RSP: 002b:00000000ffe365ac EFLAGS: 00000246 ORIG_RAX: 00000000000000a2
+> > RAX: ffffffffffffffda RBX: 00000000ffe365d8 RCX: 0000000000000000
+> > RDX: 0000000000002611 RSI: 0000000000051fda RDI: 0000000000000000
+> > RBP: 00000000ffe36628 R08: 0000000000000000 R09: 0000000000000000
+> > R10: 0000000000000000 R11: 0000000000000000 R12: 0000000000000000
+> > R13: 0000000000000000 R14: 0000000000000000 R15: 0000000000000000
+> > rcu: rcu_preempt kthread starved for 10502 jiffies! g9453 f0x2 RCU_GP_WAIT_FQS(5) ->state=0x0 ->cpu=0
+> > rcu: RCU grace-period kthread stack dump:
+> > rcu_preempt     R  running task    29264    10      2 0x80004000
+> > Call Trace:
+> >  context_switch kernel/sched/core.c:3385 [inline]
+> >  __schedule+0x934/0x1f90 kernel/sched/core.c:4081
+> >  schedule+0xdc/0x2b0 kernel/sched/core.c:4155
+> >  schedule_timeout+0x486/0xc50 kernel/time/timer.c:1895
+> >  rcu_gp_fqs_loop kernel/rcu/tree.c:1661 [inline]
+> >  rcu_gp_kthread+0x9b2/0x18d0 kernel/rcu/tree.c:1821
+> >  kthread+0x361/0x430 kernel/kthread.c:255
+> >  ret_from_fork+0x24/0x30 arch/x86/entry/entry_64.S:352
+> > 
+> > 
+> > ---
+> > This bug is generated by a bot. It may contain errors.
+> > See https://goo.gl/tpsmEJ for more information about syzbot.
+> > syzbot engineers can be reached at syzkaller@googlegroups.com.
+> > 
+> > syzbot will keep track of this bug report. See:
+> > https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
+> > For information about bisection process see: https://goo.gl/tpsmEJ#bisection
+> > syzbot can test patches for this bug, for details see:
+> > https://goo.gl/tpsmEJ#testing-patches
+> 
+> Retry gc next jiffy if someone else is doing their works under lock
+> protection.
+
+Thanks for the patch, but it does not fix completely the issue: the same 
+error message can pop up in ip_set_uadd(), because it calls the gc 
+function as well when the set is full but there can be timed out entries. 
+I'm going to work on a solution with covers that case too.
+
+Best regards,
+Jozsef
+ 
+> --- a/net/netfilter/ipset/ip_set_hash_gen.h
+> +++ b/net/netfilter/ipset/ip_set_hash_gen.h
+> @@ -527,13 +527,16 @@ mtype_gc(struct timer_list *t)
+>  {
+>  	struct htype *h = from_timer(h, t, gc);
+>  	struct ip_set *set = h->set;
+> +	bool busy = false;
+>  
+>  	pr_debug("called\n");
+> -	spin_lock_bh(&set->lock);
+> -	mtype_expire(set, h);
+> -	spin_unlock_bh(&set->lock);
+> +	if (spin_trylock_bh(&set->lock)) {
+> +		mtype_expire(set, h);
+> +		spin_unlock_bh(&set->lock);
+> +	} else
+> +		busy = true;
+>  
+> -	h->gc.expires = jiffies + IPSET_GC_PERIOD(set->timeout) * HZ;
+> +	h->gc.expires = jiffies + busy ? 1 : IPSET_GC_PERIOD(set->timeout) * HZ;
+>  	add_timer(&h->gc);
+>  }
+>  
+> 
+> 
+> 
+
+-
+E-mail  : kadlec@blackhole.kfki.hu, kadlecsik.jozsef@wigner.mta.hu
+PGP key : http://www.kfki.hu/~kadlec/pgp_public_key.txt
+Address : Wigner Research Centre for Physics
+          H-1525 Budapest 114, POB. 49, Hungary
