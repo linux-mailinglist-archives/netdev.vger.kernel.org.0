@@ -2,82 +2,130 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 3ED7A14A75E
-	for <lists+netdev@lfdr.de>; Mon, 27 Jan 2020 16:40:03 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A1E8A14A76B
+	for <lists+netdev@lfdr.de>; Mon, 27 Jan 2020 16:41:36 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729522AbgA0PkB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 27 Jan 2020 10:40:01 -0500
-Received: from mail.kernel.org ([198.145.29.99]:36944 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1729146AbgA0PkB (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 27 Jan 2020 10:40:01 -0500
-Received: from localhost (unknown [213.57.247.131])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 57EA520716;
-        Mon, 27 Jan 2020 15:40:00 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1580139601;
-        bh=yxV5i/ey6aBEFwz0rjwjXdarrHeZEaWS2JsglKRvKRo=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=f+tNAc5xateSa19Y2tCNokSVsNpIpwPymhysoTNqw9biF4HPrLMyB+OVfQRaKH8b3
-         X4EgzUH1fEt33iFKvIoDa+A6FT4XH/57AXZ+4zzHjXxOxSWuj/y0Om1WUinovgpro3
-         32stOlwFoeUmZyU5GYFUeNlm6TAeFNKWlS8QHYYU=
-Date:   Mon, 27 Jan 2020 17:39:57 +0200
-From:   Leon Romanovsky <leon@kernel.org>
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     Shannon Nelson <snelson@pensando.io>,
-        "David S . Miller" <davem@davemloft.net>,
-        Michal Kalderon <michal.kalderon@marvell.com>,
-        linux-netdev <netdev@vger.kernel.org>,
-        RDMA mailing list <linux-rdma@vger.kernel.org>
-Subject: Re: [PATCH net-next] net/core: Replace driver version to be kernel
- version
-Message-ID: <20200127153957.GQ3870@unreal>
-References: <20200123130541.30473-1-leon@kernel.org>
- <43d43a45-18db-f959-7275-63c9976fdf40@pensando.io>
- <20200126194110.GA3870@unreal>
- <20200126124957.78a31463@cakuba>
- <20200126210850.GB3870@unreal>
- <20200126133353.77f5cb7e@cakuba>
- <2a8d0845-9e6d-30ab-03d9-44817a7c2848@pensando.io>
- <20200127053433.GF3870@unreal>
- <20200127064534.GJ3870@unreal>
- <20200127062108.082c9e5e@cakuba>
+        id S1729654AbgA0Ple (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 27 Jan 2020 10:41:34 -0500
+Received: from mail-yw1-f46.google.com ([209.85.161.46]:42885 "EHLO
+        mail-yw1-f46.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729536AbgA0Ple (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 27 Jan 2020 10:41:34 -0500
+Received: by mail-yw1-f46.google.com with SMTP id b81so2710341ywe.9
+        for <netdev@vger.kernel.org>; Mon, 27 Jan 2020 07:41:34 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=YDRS4NAt8vd1pqf0SAl2NO1AqofC2JgvebZS5AXriZI=;
+        b=I79dfZqTt5NUdrojUxikbobi0WnbXUXJfkMJq+dZapdFkYrGAQEqa/jksCL4VRxEux
+         sAMkLtDpAZKE487BJx0sFm5PyXBkhRlfBLEMMEVU8EPt+TX0WHgvOVkwp+3kFE8r3fHa
+         kPP0gEz17wlrxF/aJi6omb0hmsEnyv0kqz1wepjcDI4F6iKGJPZkQJ2sRuN/CM4OGAMN
+         GyxnXXCqszPmA1NYCIjTQ42nAEWyBK6/a48OJEqLv8ZZzUYRKwep4jv2HCo6+WgkWDCo
+         EWiFGFTKMPm/Vs03xbmMNavTUeF37K6TLaNEpSXQowC6yVXkIYLKo4vAXyVwuosIojgL
+         i/Kw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=YDRS4NAt8vd1pqf0SAl2NO1AqofC2JgvebZS5AXriZI=;
+        b=WTU1Kg9c6Jnwr5VniDcYM5XUOuMH9Rno2j3WMr92ISAYyVljF3RyJgAAo21MxqROoH
+         mX0lMZb/EBzyhP1kQ+t4Dy8owq7/K7OCUKAnuiZ5u0sorS/yn8W+B0aLynKDFGSfsAvX
+         l70rI+kH2MPIQeIDaEtcqnZkQCNLZqenzoQsivQbgDNyT6v7Bghauo81qd1gQ+PIFVdM
+         xeTvEI+FemBoCuGKRxUFbOLmuBNm9fL4b02+z3KAoLOkGH8Uv6d8I1zfncXYjoZxiIGs
+         7mG0DQ1EbKlboip2z/zeH+2N+ftKA8aZDvSpCBqZPnvlB50O6KBPilmJUjhyT/GGnvi0
+         AVbQ==
+X-Gm-Message-State: APjAAAVBwu+4wo90MHKnbVhGF4+Hvtz4AFuefNORrZRxpSwvhrGpymCe
+        AVd0OgcA9ag++XcHFBGG1sYWsvtB
+X-Google-Smtp-Source: APXvYqxE3VfwaCM8UcMoEGeVC+Aoca92fIUdGQvAyq5KEfoO5R0oa1yQnKdZoa6i2AgmOV9bi1kRyA==
+X-Received: by 2002:a0d:dd13:: with SMTP id g19mr12348364ywe.129.1580139693185;
+        Mon, 27 Jan 2020 07:41:33 -0800 (PST)
+Received: from mail-yw1-f47.google.com (mail-yw1-f47.google.com. [209.85.161.47])
+        by smtp.gmail.com with ESMTPSA id n1sm6770103ywe.78.2020.01.27.07.41.32
+        for <netdev@vger.kernel.org>
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 27 Jan 2020 07:41:32 -0800 (PST)
+Received: by mail-yw1-f47.google.com with SMTP id v126so4891248ywc.10
+        for <netdev@vger.kernel.org>; Mon, 27 Jan 2020 07:41:32 -0800 (PST)
+X-Received: by 2002:a0d:dfc5:: with SMTP id i188mr12847001ywe.172.1580139691691;
+ Mon, 27 Jan 2020 07:41:31 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200127062108.082c9e5e@cakuba>
+References: <20200127152411.15914-1-Jason@zx2c4.com>
+In-Reply-To: <20200127152411.15914-1-Jason@zx2c4.com>
+From:   Willem de Bruijn <willemdebruijn.kernel@gmail.com>
+Date:   Mon, 27 Jan 2020 10:40:55 -0500
+X-Gmail-Original-Message-ID: <CA+FuTSecc8ZzNL+8RvYUj4n_iTWCy4-vV46eCWtsHenT9u96QQ@mail.gmail.com>
+Message-ID: <CA+FuTSecc8ZzNL+8RvYUj4n_iTWCy4-vV46eCWtsHenT9u96QQ@mail.gmail.com>
+Subject: Re: [RFC] net: add gro frag support to udp tunnel api
+To:     "Jason A. Donenfeld" <Jason@zx2c4.com>,
+        Paolo Abeni <pabeni@redhat.com>
+Cc:     Steffen Klassert <steffen.klassert@secunet.com>,
+        Network Development <netdev@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Jan 27, 2020 at 06:21:08AM -0800, Jakub Kicinski wrote:
-> On Mon, 27 Jan 2020 08:45:34 +0200, Leon Romanovsky wrote:
-> > > The thing is that we don't consider in-kernel API as stable one, so
-> > > addition of new field which is not in use in upstream looks sketchy to
-> > > me, but I have an idea how to solve it.
-> >
-> > Actually, it looks like my idea is Jakub's and Michal's idea. I will use
-> > this opportunity and remove MODULE_VERSION() too.
+On Mon, Jan 27, 2020 at 10:25 AM Jason A. Donenfeld <Jason@zx2c4.com> wrote:
 >
-> If you do please make sure DKMS works. I remember it was looking at
-> that value.
+> Hi Steffen,
+>
+> This is very much a "RFC", in that the code here is fodder for
+> discussion more than something I'm seriously proposing at the moment.
+> I'm writing to you specifically because I recall us having discussed
+> something like this a while ago and you being interested.
+>
+> WireGuard would benefit from getting lists of SKBs all together in a
+> bunch on the receive side. At the moment, encap_rcv splits them apart
+> one by one before giving them to the API. This patch proposes a way to
+> opt-in to receiving them before they've been split. The solution
+> involves adding an encap_type flag that enables calling the encap_rcv
+> function earlier before the skbs have been split apart.
+>
+> I worry that it's not this straight forward, however, because of this
+> function below called, "udp_unexpected_gso". It looks like there's a
+> fast path for the case when it doesn't need to be split apart, and that
+> if it is already split apart, that's expected, whereas splitting it
+> apart would be "unexpected." I'm not too familiar with this code. Do you
+> know off hand why this would be unexpected?
 
-I'll check, thanks.
+This is for delivery to local sockets.
 
-However from reading the source, it will be unlikely to see any
-issues there.
+UDP GRO packets need to be split back up before delivery, unless the
+socket has set socket option UDP_GRO.
 
-DKMS uses modversion for two things. First is to manage internal tree
-where those modules will be built and it knows how to install and clean
-automatically modules. Second is to list modaliases, and it handles them
-perfectly with and without version [1].
+This is checked in the GRO layer by checking udp_sk(sk)->gro_enabled.
 
-In our case, modules version will be available, it just going to change
-from 1.0.0. to something like 5.5.0-rc6.
+There is a race condition between this check and the packet arriving
+at the socket. Hence the unexpected.
 
-[1] https://github.com/dell/dkms/blob/master/dkms_find-provides#L48
+Note that UDP GSO can take two forms, the fraglist approach by Steffen
+or the earlier implementation that builds a single skb with frags.
 
-Thanks
+>  static int udp_queue_rcv_skb(struct sock *sk, struct sk_buff *skb)
+>  {
+> +       int (*encap_rcv_gro)(struct sock *sk, struct sk_buff *skb);
+>         struct sk_buff *next, *segs;
+>         int ret;
+>
+> +       if (static_branch_unlikely(&udp_encap_needed_key) &&
+> +           up->encap_type & UDP_ENCAP_SUPPORT_GRO_FRAGS &&
+> +           (encap_rcv_gro = READ_ONCE(up->encap_rcv))) {
+> +               //XXX: deal with checksum?
+> +               ret = encap_rcv(sk, skb);
+> +               if (ret <= 0) //XXX: deal with incrementing udp error stats?
+> +                       return -ret;
+> +       }
+
+I think it'll be sufficient to just set optionally
+udp_sk(sk)->gro_enabled on encap sockets and let it takes the default
+path, below?
+
+> +
+>         if (likely(!udp_unexpected_gso(sk, skb)))
+>                 return udp_queue_rcv_one_skb(sk, skb);
+>
+> --
+> 2.24.1
+>
