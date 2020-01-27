@@ -2,115 +2,151 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id D2545149F79
-	for <lists+netdev@lfdr.de>; Mon, 27 Jan 2020 09:08:56 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C0D8B149FC2
+	for <lists+netdev@lfdr.de>; Mon, 27 Jan 2020 09:22:33 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727816AbgA0IIw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 27 Jan 2020 03:08:52 -0500
-Received: from mail-db8eur05on2058.outbound.protection.outlook.com ([40.107.20.58]:35200
-        "EHLO EUR05-DB8-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1725955AbgA0IIw (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 27 Jan 2020 03:08:52 -0500
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=b68im0XjNDExwb3sfmppoZ391ArpUxWV48yO/xCQzxGjG3XKzLachKQyR1CIhCE6WlvYeYjWI5mz/imHfJ1s9fX7sqQ8AjyUIw5tIEyzzydibu3LuPgFP7PC31pcYkMpxp+7X8u74Ao8cF1swy0V7AM3lCv10WqaEVNG0BtnMQN6GitFo9jFFi24+LAuAESSarjKqGQUWT0UO9j+8gndgo5Frq6NFjpUpDVcui4jyhE5niPmQfkzy0308GNXY7j5TVhIAwFQIbtO4PsYGYTAP2heFN+Dj+WqSiktutZ7gc3CMptIiGzNhddD/YiTNhPE/yNwPCfKJwO6nmoIBOwByQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=VRimNDtcrqpAoob8H+ybJK2CtM2WDSMt9Sgk/XLq0Rc=;
- b=Nax1i9luUEhrCPS6RwGDb/F9QSr6Qkf/Mr5+9CwXOQj/SM3qBNCIUfzcdh8zqGuOWSNueqWsSsTV3zguFs7sXovsN5qmMj7BakBl8a5hersjWKL+BtUgOeyn/0pvYMcyqT7sd2Vm5BbKNfEq8K0WOS6Ppudf6BQQ9gavqhGUyR5abrqq884GBQkzmvYOsIxmMeFsEd7/BqW5B52VnNWY/rdluPvikORs75sVI4u9qas5RSLeggslXwTxUc/4WJ5V+umTepw+av7y1f7bhtu574xelbZQvNyD6MuIh5gff7kMain+AwISzG/NEC0TyRzX5JLd2NNXklzv1qh2BTyQ9w==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=mellanox.com; dmarc=pass action=none header.from=mellanox.com;
- dkim=pass header.d=mellanox.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Mellanox.com;
- s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=VRimNDtcrqpAoob8H+ybJK2CtM2WDSMt9Sgk/XLq0Rc=;
- b=gOVL8mR226InZ57Ijfdt4LJmarU8DZNeCEZhjRjT2b8LMsVnk6i1qCqn94V645/+XOBDQdsrehM4/JjHrplRhoGesV5+c0bZzQdm9YqBnxjEZs6DR3u7DPuVdhS3v5zSpI4Sf46l6MdxxNPwvA70CtoMB0wPcXzFgpMtPxev9Pw=
-Received: from AM6PR05MB5460.eurprd05.prod.outlook.com (20.177.189.76) by
- AM6PR05MB6167.eurprd05.prod.outlook.com (20.178.94.208) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.2665.20; Mon, 27 Jan 2020 08:08:48 +0000
-Received: from AM6PR05MB5460.eurprd05.prod.outlook.com
- ([fe80::c5ae:717a:f178:c829]) by AM6PR05MB5460.eurprd05.prod.outlook.com
- ([fe80::c5ae:717a:f178:c829%4]) with mapi id 15.20.2665.025; Mon, 27 Jan 2020
- 08:08:48 +0000
-Received: from [10.80.4.9] (193.47.165.251) by AM3PR05CA0145.eurprd05.prod.outlook.com (2603:10a6:207:3::23) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.2665.20 via Frontend Transport; Mon, 27 Jan 2020 08:08:47 +0000
-From:   Boris Pismenny <borisp@mellanox.com>
-To:     Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
-        Saeed Mahameed <saeedm@mellanox.com>,
-        "leon@kernel.org" <leon@kernel.org>,
-        "davem@davemloft.net" <davem@davemloft.net>
-CC:     "linux-rdma@vger.kernel.org" <linux-rdma@vger.kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "kernel-janitors@vger.kernel.org" <kernel-janitors@vger.kernel.org>
-Subject: Re: [PATCH] net/mlx5: Remove a useless 'drain_workqueue()' call in
- 'mlx5e_ipsec_cleanup()'
-Thread-Topic: [PATCH] net/mlx5: Remove a useless 'drain_workqueue()' call in
- 'mlx5e_ipsec_cleanup()'
-Thread-Index: AQHV1HE08SQb1JAKjECDsRl72U4cTqf+KRuA
-Date:   Mon, 27 Jan 2020 08:08:48 +0000
-Message-ID: <f9b066c7-e59a-9106-da57-a7c0ffc36d9b@mellanox.com>
-References: <20200126175104.17948-1-christophe.jaillet@wanadoo.fr>
-In-Reply-To: <20200126175104.17948-1-christophe.jaillet@wanadoo.fr>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-clientproxiedby: AM3PR05CA0145.eurprd05.prod.outlook.com
- (2603:10a6:207:3::23) To AM6PR05MB5460.eurprd05.prod.outlook.com
- (2603:10a6:20b:36::12)
-authentication-results: spf=none (sender IP is )
- smtp.mailfrom=borisp@mellanox.com; 
-x-ms-exchange-messagesentrepresentingtype: 1
-x-originating-ip: [193.47.165.251]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-ht: Tenant
-x-ms-office365-filtering-correlation-id: 60ee128f-c99c-423f-a08d-08d7a3002348
-x-ms-traffictypediagnostic: AM6PR05MB6167:|AM6PR05MB6167:
-x-ms-exchange-transport-forked: True
-x-microsoft-antispam-prvs: <AM6PR05MB61675BF1B61EEB1F3EB1A230B00B0@AM6PR05MB6167.eurprd05.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:222;
-x-forefront-prvs: 02951C14DC
-x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(4636009)(346002)(366004)(136003)(396003)(376002)(39860400002)(199004)(189003)(6486002)(956004)(5660300002)(4744005)(16576012)(4326008)(2616005)(316002)(8936002)(31696002)(66476007)(66556008)(66446008)(66946007)(64756008)(31686004)(186003)(52116002)(54906003)(53546011)(2906002)(478600001)(110136005)(81166006)(71200400001)(81156014)(36756003)(16526019)(26005)(8676002)(86362001);DIR:OUT;SFP:1101;SCL:1;SRVR:AM6PR05MB6167;H:AM6PR05MB5460.eurprd05.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;A:1;MX:1;
-received-spf: None (protection.outlook.com: mellanox.com does not designate
- permitted sender hosts)
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: PK/IOnhVfdhwBcs1xxHf/c8OglTbwkV+6fS2OddkVWYRG8JEHc0x1lv/EIjA3txKbtLfGIka8N+15vGlEWtuNzlhC32IPBCYOl24QDzjE1YPw/BfiVU3AnmxYqetSpyotmQJr/+RjleFudkMvH4aSz2w7Ega3Xu3ZObhel/nTPJeYRPR39IcbNQDxp0/ZVyKZhJ+M/MFcjAZTgH0T0V+DO4+J0akVoM0azJLDGRFC2IEy+obcVcR+Qansqzq9jgfIiMiYaqxaxXkj35odQVZRrc5qE7BYC+iWznuA4nMyVuUMYmW2iHGP7Kwi7/9YMXLDOOeyoNa4FYb9YSbwRA3cpQGGtGfiAgU2LuWyzp5cFHC+F0dKB+TKSiuq5QzCA+f9kxZT25RnVV2bOJNSAm629M4H4UZuDrdfe7k/R/A5Dbgizpl9Ous4MaCWJ7DCk+9
-x-ms-exchange-antispam-messagedata: whwvN6CLSTW8pnTAurC5jQpTZuGXCSQX/YvddMLOCNyEwaUtsaQODAv1e4S77EbZdlHwaiKxC4g3UleUh/ZgmomLbCDoSEwWYvFbTC1J+YtjvuDQQK5AWWW90K3v0ew5JDgMhiup17NdIsYeDjEuKA==
-Content-Type: text/plain; charset="utf-8"
-Content-ID: <0C6E3EBCF9707E4294ED0A0030D613C7@eurprd05.prod.outlook.com>
-Content-Transfer-Encoding: base64
-MIME-Version: 1.0
-X-OriginatorOrg: Mellanox.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 60ee128f-c99c-423f-a08d-08d7a3002348
-X-MS-Exchange-CrossTenant-originalarrivaltime: 27 Jan 2020 08:08:48.5583
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: a652971c-7d2e-4d9b-a6a4-d149256f461b
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: XytIj7c7dUatZehNxsSre/F2MODLShDZNAlepotNrZFaTSxBAljiYh2JWmE8RokDcfJcGZYWBLB5eX4lQ20gjQ==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM6PR05MB6167
+        id S1728921AbgA0IWH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 27 Jan 2020 03:22:07 -0500
+Received: from correo.us.es ([193.147.175.20]:36420 "EHLO mail.us.es"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1725955AbgA0IWH (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 27 Jan 2020 03:22:07 -0500
+Received: from antivirus1-rhel7.int (unknown [192.168.2.11])
+        by mail.us.es (Postfix) with ESMTP id 1D68DB1920
+        for <netdev@vger.kernel.org>; Mon, 27 Jan 2020 09:22:06 +0100 (CET)
+Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
+        by antivirus1-rhel7.int (Postfix) with ESMTP id 0CA53DA720
+        for <netdev@vger.kernel.org>; Mon, 27 Jan 2020 09:22:06 +0100 (CET)
+Received: by antivirus1-rhel7.int (Postfix, from userid 99)
+        id 012ADDA71A; Mon, 27 Jan 2020 09:22:05 +0100 (CET)
+X-Spam-Checker-Version: SpamAssassin 3.4.1 (2015-04-28) on antivirus1-rhel7.int
+X-Spam-Level: 
+X-Spam-Status: No, score=-108.2 required=7.5 tests=ALL_TRUSTED,BAYES_50,
+        SMTPAUTH_US2,USER_IN_WHITELIST autolearn=disabled version=3.4.1
+Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
+        by antivirus1-rhel7.int (Postfix) with ESMTP id 39E4FDA710;
+        Mon, 27 Jan 2020 09:22:02 +0100 (CET)
+Received: from 192.168.1.97 (192.168.1.97)
+ by antivirus1-rhel7.int (F-Secure/fsigk_smtp/550/antivirus1-rhel7.int);
+ Mon, 27 Jan 2020 09:22:02 +0100 (CET)
+X-Virus-Status: clean(F-Secure/fsigk_smtp/550/antivirus1-rhel7.int)
+Received: from salvia.here (unknown [90.77.255.23])
+        (Authenticated sender: pneira@us.es)
+        by entrada.int (Postfix) with ESMTPA id 17DE942EFB81;
+        Mon, 27 Jan 2020 09:22:02 +0100 (CET)
+X-SMTPAUTHUS: auth mail.us.es
+From:   Pablo Neira Ayuso <pablo@netfilter.org>
+To:     netfilter-devel@vger.kernel.org
+Cc:     davem@davemloft.net, netdev@vger.kernel.org
+Subject: [PATCH 0/6] Netfilter updates for net-next
+Date:   Mon, 27 Jan 2020 09:20:48 +0100
+Message-Id: <20200127082054.318263-1-pablo@netfilter.org>
+X-Mailer: git-send-email 2.11.0
+X-Virus-Scanned: ClamAV using ClamSMTP
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-DQpPbiAxLzI2LzIwMjAgNzo1MSBQTSwgQ2hyaXN0b3BoZSBKQUlMTEVUIHdyb3RlOg0KPiAnZGVz
-dHJveV93b3JrcXVldWUoKScgYWxyZWFkeSBjYWxscyAnZHJhaW5fd29ya3F1ZXVlKCknLCB0aGVy
-ZSBpcyBubyBuZWVkDQo+IHRvIGNhbGwgaXQgZXhwbGljaXRseS4NCj4NCj4gU2lnbmVkLW9mZi1i
-eTogQ2hyaXN0b3BoZSBKQUlMTEVUIDxjaHJpc3RvcGhlLmphaWxsZXRAd2FuYWRvby5mcj4NCj4g
-LS0tDQo+ICBkcml2ZXJzL25ldC9ldGhlcm5ldC9tZWxsYW5veC9tbHg1L2NvcmUvZW5fYWNjZWwv
-aXBzZWMuYyB8IDEgLQ0KPiAgMSBmaWxlIGNoYW5nZWQsIDEgZGVsZXRpb24oLSkNCj4NCj4gZGlm
-ZiAtLWdpdCBhL2RyaXZlcnMvbmV0L2V0aGVybmV0L21lbGxhbm94L21seDUvY29yZS9lbl9hY2Nl
-bC9pcHNlYy5jIGIvZHJpdmVycy9uZXQvZXRoZXJuZXQvbWVsbGFub3gvbWx4NS9jb3JlL2VuX2Fj
-Y2VsL2lwc2VjLmMNCj4gaW5kZXggY2Y1OGM5NjM3OTA0Li4yOTYyNmM2YzljMjUgMTAwNjQ0DQo+
-IC0tLSBhL2RyaXZlcnMvbmV0L2V0aGVybmV0L21lbGxhbm94L21seDUvY29yZS9lbl9hY2NlbC9p
-cHNlYy5jDQo+ICsrKyBiL2RyaXZlcnMvbmV0L2V0aGVybmV0L21lbGxhbm94L21seDUvY29yZS9l
-bl9hY2NlbC9pcHNlYy5jDQo+IEBAIC00MzMsNyArNDMzLDYgQEAgdm9pZCBtbHg1ZV9pcHNlY19j
-bGVhbnVwKHN0cnVjdCBtbHg1ZV9wcml2ICpwcml2KQ0KPiAgCWlmICghaXBzZWMpDQo+ICAJCXJl
-dHVybjsNCj4gIA0KPiAtCWRyYWluX3dvcmtxdWV1ZShpcHNlYy0+d3EpOw0KPiAgCWRlc3Ryb3lf
-d29ya3F1ZXVlKGlwc2VjLT53cSk7DQo+ICANCj4gIAlpZGFfZGVzdHJveSgmaXBzZWMtPmhhbGxv
-Yyk7DQpMR1RNDQo=
+Hi,
+
+This batch contains Netfilter updates for net-next:
+
+1) Add nft_setelem_parse_key() helper function.
+
+2) Add NFTA_SET_ELEM_KEY_END to specify a range with one single element.
+
+3) Add NFTA_SET_DESC_CONCAT to describe the set element concatenation,
+   from Stefano Brivio.
+
+4) Add bitmap_cut() to copy n-bits from source to destination,
+   from Stefano Brivio.
+
+5) Add set to match on arbitrary concatenations, from Stefano Brivio.
+
+6) Add selftest for this new set type. An extract of Stefano's
+   description follows:
+
+"Existing nftables set implementations allow matching entries with
+interval expressions (rbtree), e.g. 192.0.2.1-192.0.2.4, entries
+specifying field concatenation (hash, rhash), e.g. 192.0.2.1:22,
+but not both.
+
+In other words, none of the set types allows matching on range
+expressions for more than one packet field at a time, such as ipset
+does with types bitmap:ip,mac, and, to a more limited extent
+(netmasks, not arbitrary ranges), with types hash:net,net,
+hash:net,port, hash:ip,port,net, and hash:net,port,net.
+
+As a pure hash-based approach is unsuitable for matching on ranges,
+and "proxying" the existing red-black tree type looks impractical as
+elements would need to be shared and managed across all employed
+trees, this new set implementation intends to fill the functionality
+gap by employing a relatively novel approach.
+
+The fundamental idea, illustrated in deeper detail in patch 5/9, is to
+use lookup tables classifying a small number of grouped bits from each
+field, and map the lookup results in a way that yields a verdict for
+the full set of specified fields.
+
+The grouping bit aspect is loosely inspired by the Grouper algorithm,
+by Jay Ligatti, Josh Kuhn, and Chris Gage (see patch 5/9 for the full
+reference).
+
+A reference, stand-alone implementation of the algorithm itself is
+available at:
+        https://pipapo.lameexcu.se
+
+Some notes about possible future optimisations are also mentioned
+there. This algorithm reduces the matching problem to, essentially,
+a repetitive sequence of simple bitwise operations, and is
+particularly suitable to be optimised by leveraging SIMD instruction
+sets."
+
+You can pull these changes from:
+
+  git://git.kernel.org/pub/scm/linux/kernel/git/pablo/nf-next.git
+
+Thank you.
+
+----------------------------------------------------------------
+
+The following changes since commit 32efcc06d2a15fa87585614d12d6c2308cc2d3f3:
+
+  tcp: export count for rehash attempts (2020-01-26 15:28:47 +0100)
+
+are available in the git repository at:
+
+  git://git.kernel.org/pub/scm/linux/kernel/git/pablo/nf-next.git HEAD
+
+for you to fetch changes up to 611973c1e06faef31d034deeb3ae7b7960b1f043:
+
+  selftests: netfilter: Introduce tests for sets with range concatenation (2020-01-27 08:54:30 +0100)
+
+----------------------------------------------------------------
+Pablo Neira Ayuso (2):
+      netfilter: nf_tables: add nft_setelem_parse_key()
+      netfilter: nf_tables: add NFTA_SET_ELEM_KEY_END attribute
+
+Stefano Brivio (4):
+      netfilter: nf_tables: Support for sets with multiple ranged fields
+      bitmap: Introduce bitmap_cut(): cut bits and shift remaining
+      nf_tables: Add set type for arbitrary concatenation of ranges
+      selftests: netfilter: Introduce tests for sets with range concatenation
+
+ include/linux/bitmap.h                             |    4 +
+ include/net/netfilter/nf_tables.h                  |   22 +-
+ include/net/netfilter/nf_tables_core.h             |    1 +
+ include/uapi/linux/netfilter/nf_tables.h           |   17 +
+ lib/bitmap.c                                       |   66 +
+ net/netfilter/Makefile                             |    3 +-
+ net/netfilter/nf_tables_api.c                      |  260 ++-
+ net/netfilter/nf_tables_set_core.c                 |    2 +
+ net/netfilter/nft_dynset.c                         |    2 +-
+ net/netfilter/nft_set_pipapo.c                     | 2102 ++++++++++++++++++++
+ net/netfilter/nft_set_rbtree.c                     |    3 +
+ tools/testing/selftests/netfilter/Makefile         |    3 +-
+ .../selftests/netfilter/nft_concat_range.sh        | 1481 ++++++++++++++
+ 13 files changed, 3896 insertions(+), 70 deletions(-)
+ create mode 100644 net/netfilter/nft_set_pipapo.c
+ create mode 100755 tools/testing/selftests/netfilter/nft_concat_range.sh
