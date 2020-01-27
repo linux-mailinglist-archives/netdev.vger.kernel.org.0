@@ -2,61 +2,61 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 87A9114A92F
-	for <lists+netdev@lfdr.de>; Mon, 27 Jan 2020 18:42:50 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D107F14A931
+	for <lists+netdev@lfdr.de>; Mon, 27 Jan 2020 18:44:00 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1725989AbgA0Rms (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 27 Jan 2020 12:42:48 -0500
-Received: from mail-ed1-f68.google.com ([209.85.208.68]:39990 "EHLO
-        mail-ed1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725845AbgA0Rms (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 27 Jan 2020 12:42:48 -0500
-Received: by mail-ed1-f68.google.com with SMTP id p3so9877847edx.7
-        for <netdev@vger.kernel.org>; Mon, 27 Jan 2020 09:42:46 -0800 (PST)
+        id S1726004AbgA0Rn7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 27 Jan 2020 12:43:59 -0500
+Received: from mail-ed1-f65.google.com ([209.85.208.65]:39309 "EHLO
+        mail-ed1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725845AbgA0Rn6 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 27 Jan 2020 12:43:58 -0500
+Received: by mail-ed1-f65.google.com with SMTP id m13so11638289edb.6;
+        Mon, 27 Jan 2020 09:43:56 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=subject:to:cc:references:from:autocrypt:message-id:date:user-agent
          :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=smK7f3M0uHT3jpYWR1gIQOXo41Q7ccA1hWE5y/dhQtQ=;
-        b=Ra3vf9rBVBlnFR6QuCiA7O2vcMLfdEE6y9YVHgR9uqqw8dtQa5x9cOqxdaWSedUyTN
-         egK8Mv1yRfYIXxO7iu8kmVqx+BjgD9rmBFnP5G38YQdFgffSfdkx3dxi5yrZvFk7S+9c
-         YlvpSgytErzbjl+oKKYss9Vboty4VS7CTYV2Mc+82IyTk8DE/mN+gksenTUW1anFcAST
-         FAZ4kr9bXzvo6kD03XM7pI+8PC/cSiGjXgMcphZOYoOOxMQazeynNtO02jd00S5EUQkY
-         D+zm/0XCDckYaBlKCD0x93lV6bvZwVCGO/A2VAUUw26beXkbZwVsKO0QOprJ5KIKHF6f
-         nhgA==
+        bh=/gIyXn19LzQhlGsMHgaMza5Ityh2L+fRBdhnILNHDt8=;
+        b=upHo0ItjaKlQiAYrSvDaxexw1XScZO4mnSJrVKiIzqNvUXCz49EMhXOG4Arb+85QwJ
+         cGfqJF8Sp3N/ovmOzei4uIqAFp2mB0BkJQuJWW8tr3QXnjTOxd613KmDEALJBSZbmibp
+         I5Wd8liolkb7Hpwc454xLGGv7kJTzP55u8kAoO85RKQU06r6oyKGtwz/jk5hHAvTs71C
+         i6G4QSrHJQVCq6ckhk2LO1irYK3JLEGGMvporARqyvlnSFhxx/BHIK5XHqnIQrDzAtlD
+         z0PeOSSV6w38YWmrNIucEyVKutlBOUoM2OtYoAXO5fzqFRebZda56VtQ1RIXHaYVKda1
+         g4Sw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:subject:to:cc:references:from:autocrypt
          :message-id:date:user-agent:mime-version:in-reply-to
          :content-language:content-transfer-encoding;
-        bh=smK7f3M0uHT3jpYWR1gIQOXo41Q7ccA1hWE5y/dhQtQ=;
-        b=qJpVz4BBJ5ZEB0OJCfYZdemJ4vxLPTLYdRrsePFI7mV50Nclfhm0HkdutqfkiJRkTf
-         qwySnepyQRYIzSNSqhfMDJpO7219b659POc1Hm+A3QgZ+NaFUVrMzMV0hS8Tym8czmxT
-         wIJgNqiw1tkrBEy0AVp4icPpb5CO6jZnozcwliQoz9ofh0IT0Ljfhwe/+0aaEu+5p7J0
-         i4GZo2o1ogtJ7QBZv1Ew+HOEFoTsYU267LYFOMQJShIjJuL8FrGqR6/jRe9KZivb1YRI
-         zj25Jji4NEC2W9+FYcadd7ngRM6qnneNJbnYTaQ3EwWt8zusjBx/R3pAk4JJKgdFx+dt
-         HpCA==
-X-Gm-Message-State: APjAAAXqFdx47Ng73ME3VtM8wZDjeE8utuqzIryT2sllNVwGmZl6md5s
-        gr/qcjhDwbwfhMFbwY5/Igbs/2qz
-X-Google-Smtp-Source: APXvYqwFm2OsIfXpwoveuNW2wwiWyoMEc4hD0+VPU0BFpfNF5UaHFt4RPtupSv04V6GpcW56ve3ZRw==
-X-Received: by 2002:aa7:ca53:: with SMTP id j19mr10592102edt.305.1580146965791;
-        Mon, 27 Jan 2020 09:42:45 -0800 (PST)
+        bh=/gIyXn19LzQhlGsMHgaMza5Ityh2L+fRBdhnILNHDt8=;
+        b=F/IsCIGAa8+94GUx9jbOVsxInCUP1y3PKVzit01JCTLVBCtGy0uSorLm2sY8j/JIYH
+         tdtTOJt1Xb7Jnp3kEtIVv3EwWxpx/DPNBAJXeO4qsNOjO86BvQoewyNC7tij9H0LTry5
+         RwMzEOBj4c45/nAUBdChTMPJHzIGiT5ByCzx3lZ95HKGc9O7OVmNo5glebeSagCS7h5n
+         7DOD3Ay9E7+dhKPk0l/pKoc0TcCuGIX3GNRUDwxdYTmNTEC3DtKP6qQh9B7kCjDyVjg5
+         ma5YWKl9rXLsBaCv5EwO77e1yk0LdiiBKKYli+SflX+BoiuhJT7IsJ0voueO0md4XfLg
+         fp7A==
+X-Gm-Message-State: APjAAAXJ+yMxwQwYxDlKN5p6C5O82Wu48aPy4LfwQsXiErRWO1Zv+0N/
+        Xm4oLGCQIUIwTS86OqV0GA/I6Y8W
+X-Google-Smtp-Source: APXvYqzKEez6LaxLB6H9mn2c2NTM0vksKYZXzVpMQL8hrj3Q/2v0MbI/t/qcXgL+6ehxSjPFTaVwsQ==
+X-Received: by 2002:a17:906:f90e:: with SMTP id lc14mr13755353ejb.217.1580147035903;
+        Mon, 27 Jan 2020 09:43:55 -0800 (PST)
 Received: from [10.67.50.115] ([192.19.223.252])
-        by smtp.googlemail.com with ESMTPSA id f13sm283044edq.26.2020.01.27.09.42.42
+        by smtp.googlemail.com with ESMTPSA id n14sm378579ejx.11.2020.01.27.09.43.53
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 27 Jan 2020 09:42:44 -0800 (PST)
-Subject: Re: [PATCH net-next 1/2] net: phy: aquantia: add rate_adaptation
- indication
-To:     "Madalin Bucur (OSS)" <madalin.bucur@oss.nxp.com>,
-        "davem@davemloft.net" <davem@davemloft.net>
-Cc:     "andrew@lunn.ch" <andrew@lunn.ch>,
-        "hkallweit1@gmail.com" <hkallweit1@gmail.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "ykaukab@suse.de" <ykaukab@suse.de>
-References: <1579701573-6609-1-git-send-email-madalin.bucur@oss.nxp.com>
- <1579701573-6609-2-git-send-email-madalin.bucur@oss.nxp.com>
- <68921c8a-06b6-d5c0-e857-14e7bc2c0a94@gmail.com>
- <DB8PR04MB6985606F38572D8512E8D27EEC0F0@DB8PR04MB6985.eurprd04.prod.outlook.com>
+        Mon, 27 Jan 2020 09:43:55 -0800 (PST)
+Subject: Re: [PATCH net-next v4] net/core: Replace driver version to be kernel
+ version
+To:     Leon Romanovsky <leon@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Michal Kubecek <mkubecek@suse.cz>,
+        Shannon Nelson <snelson@pensando.io>
+Cc:     Leon Romanovsky <leonro@mellanox.com>,
+        Michal Kalderon <michal.kalderon@marvell.com>,
+        linux-netdev <netdev@vger.kernel.org>,
+        RDMA mailing list <linux-rdma@vger.kernel.org>
+References: <20200127072028.19123-1-leon@kernel.org>
 From:   Florian Fainelli <f.fainelli@gmail.com>
 Autocrypt: addr=f.fainelli@gmail.com; prefer-encrypt=mutual; keydata=
  xsDiBEjPuBIRBACW9MxSJU9fvEOCTnRNqG/13rAGsj+vJqontvoDSNxRgmafP8d3nesnqPyR
@@ -112,12 +112,12 @@ Autocrypt: addr=f.fainelli@gmail.com; prefer-encrypt=mutual; keydata=
  HvsHIcv4lxCWkFXkwsuWqzEKK6kxVpRDoEQPDj+Oy/ZJ5fYuMbkdHrlegwoQ64LrqdmiVVPC
  TwQYEQIADwIbDAUCVF/S8QUJHlwd3wAKCRBhV5kVtWN2Do+FAJ956xSz2XpDHql+Wg/2qv3b
  G10n8gCguORqNGMsVRxrlLs7/himep7MrCc=
-Message-ID: <77e3ddcb-bddb-32d8-9c87-48ba9a7f2773@gmail.com>
-Date:   Mon, 27 Jan 2020 09:42:41 -0800
+Message-ID: <610dd4fb-4f7e-d3a6-cc75-7e4104dd8285@gmail.com>
+Date:   Mon, 27 Jan 2020 09:43:52 -0800
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
  Thunderbird/68.4.1
 MIME-Version: 1.0
-In-Reply-To: <DB8PR04MB6985606F38572D8512E8D27EEC0F0@DB8PR04MB6985.eurprd04.prod.outlook.com>
+In-Reply-To: <20200127072028.19123-1-leon@kernel.org>
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
@@ -126,85 +126,29 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 1/22/20 11:38 PM, Madalin Bucur (OSS) wrote:
->> -----Original Message-----
->> From: Florian Fainelli <f.fainelli@gmail.com>
->> Sent: Wednesday, January 22, 2020 7:58 PM
->> To: Madalin Bucur (OSS) <madalin.bucur@oss.nxp.com>; davem@davemloft.net
->> Cc: andrew@lunn.ch; hkallweit1@gmail.com; netdev@vger.kernel.org;
->> ykaukab@suse.de
->> Subject: Re: [PATCH net-next 1/2] net: phy: aquantia: add rate_adaptation
->> indication
->>
->> On 1/22/20 5:59 AM, Madalin Bucur wrote:
->>> The AQR PHYs are able to perform rate adaptation between
->>> the system interface and the line interfaces. When such
->>> a PHY is deployed, the ethernet driver should not limit
->>> the modes supported or advertised by the PHY. This patch
->>> introduces the bit that allows checking for this feature
->>> in the phy_device structure and its use for the Aquantia
->>> PHYs.
->>>
->>> Signed-off-by: Madalin Bucur <madalin.bucur@oss.nxp.com>
->>> ---
->>>  drivers/net/phy/aquantia_main.c | 3 +++
->>>  include/linux/phy.h             | 3 +++
->>>  2 files changed, 6 insertions(+)
->>>
->>> diff --git a/drivers/net/phy/aquantia_main.c
->> b/drivers/net/phy/aquantia_main.c
->>> index 975789d9349d..36fdd523b758 100644
->>> --- a/drivers/net/phy/aquantia_main.c
->>> +++ b/drivers/net/phy/aquantia_main.c
->>> @@ -209,6 +209,9 @@ static int aqr_config_aneg(struct phy_device
->> *phydev)
->>>  	u16 reg;
->>>  	int ret;
->>>
->>> +	/* add here as this is called for all devices */
->>> +	phydev->rate_adaptation = 1;
->>
->> How about introducing a new PHY_SUPPORTS_RATE_ADAPTATION flag and you
->> set that directly from the phy_driver entry? using the "flags" bitmask
->> instead of adding another structure member to phy_device?
+On 1/26/20 11:20 PM, Leon Romanovsky wrote:
+>  net/ethtool/ioctl.c | 2 ++
+>  1 file changed, 2 insertions(+)
 > 
-> I've looked at the phydev->dev_flags use, it seemed to me that mostly it
-> is used to convey configuration options towards the PHY.
+> diff --git a/net/ethtool/ioctl.c b/net/ethtool/ioctl.c
+> index 182bffbffa78..0501b615e920 100644
+> --- a/net/ethtool/ioctl.c
+> +++ b/net/ethtool/ioctl.c
+> @@ -17,6 +17,7 @@
+>  #include <linux/phy.h>
+>  #include <linux/bitops.h>
+>  #include <linux/uaccess.h>
+> +#include <linux/vermagic.h>
+>  #include <linux/vmalloc.h>
+>  #include <linux/sfp.h>
+>  #include <linux/slab.h>
+> @@ -655,6 +656,7 @@ static noinline_for_stack int ethtool_get_drvinfo(struct net_device *dev,
+> 
+>  	memset(&info, 0, sizeof(info));
+>  	info.cmd = ETHTOOL_GDRVINFO;
+> +	strlcpy(info.version, UTS_RELEASE, sizeof(info.version));
 
-You read me incorrectly, I am suggesting using the phy_driver::flags
-member, not the phy_device::dev_flags entry, please re-consider your
-position.
-
-> Another problem
-> is that it's meaning seems to be opaque,  PHY specific. I wanted to avoid
-> trampling on a certain PHY hardcoded value and I turned my attention to
-> the bit fields in the phy_device. I noticed that there are already 12 bits
-> so due to alignment, the added bit is not adding extra size to the struct.
->  
->>> +
->>>  	if (phydev->autoneg == AUTONEG_DISABLE)
->>>  		return genphy_c45_pma_setup_forced(phydev);
->>>
->>> diff --git a/include/linux/phy.h b/include/linux/phy.h
->>> index dd4a91f1feaa..2a5c202333fc 100644
->>> --- a/include/linux/phy.h
->>> +++ b/include/linux/phy.h
->>> @@ -387,6 +387,9 @@ struct phy_device {
->>>  	/* Interrupts are enabled */
->>>  	unsigned interrupts:1;
->>>
->>> +	/* Rate adaptation in the PHY */
->>> +	unsigned rate_adaptation:1;
->>> +
->>>  	enum phy_state state;
->>>
->>>  	u32 dev_flags;
->>>
->>
->>
->> --
->> Florian
-
-
+This is much more reasonable, thanks for addressing everyone's concerns
+Leon.
 -- 
 Florian
