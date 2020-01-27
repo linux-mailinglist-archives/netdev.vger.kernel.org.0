@@ -2,288 +2,378 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 26EA814A885
-	for <lists+netdev@lfdr.de>; Mon, 27 Jan 2020 18:03:36 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 77BEF14A88D
+	for <lists+netdev@lfdr.de>; Mon, 27 Jan 2020 18:04:46 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1725930AbgA0RDe (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 27 Jan 2020 12:03:34 -0500
-Received: from UPDC19PA19.eemsg.mail.mil ([214.24.27.194]:43247 "EHLO
-        UPDC19PA19.eemsg.mail.mil" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725828AbgA0RDd (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 27 Jan 2020 12:03:33 -0500
-X-Greylist: delayed 429 seconds by postgrey-1.27 at vger.kernel.org; Mon, 27 Jan 2020 12:03:32 EST
-X-EEMSG-check-017: 50208362|UPDC19PA19_ESA_OUT01.csd.disa.mil
-X-IronPort-AV: E=Sophos;i="5.70,370,1574121600"; 
-   d="scan'208";a="50208362"
-Received: from emsm-gh1-uea11.ncsc.mil ([214.29.60.3])
-  by UPDC19PA19.eemsg.mail.mil with ESMTP/TLS/DHE-RSA-AES256-SHA256; 27 Jan 2020 16:56:20 +0000
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=tycho.nsa.gov; i=@tycho.nsa.gov; q=dns/txt;
-  s=tycho.nsa.gov; t=1580144180; x=1611680180;
-  h=subject:from:to:cc:references:message-id:date:
-   mime-version:in-reply-to:content-transfer-encoding;
-  bh=JONYkeMLPoAJAaqitTzat6W8NCvIdG/UcgyJ1OEpbMA=;
-  b=PDKKPlUU+aCKE6lkO/gMbceBz2oUNyaEfvBG60/QLywEo2hR5US3NxX9
-   uhNTd6MtXyjti0MBLAbVgSyS9hfcomLifYbFoZ2cQAy2/gajl9Q5L8bn6
-   0WCRhpvsV74DmV42yxwcrTwGi4uHfTpWGOJbefciwBRm71eQJhus7X9nT
-   YM9fCpks7C3MjhjK5NP9lJXa3OK/iHKqgsSzCEJTT8TBQLvi5qAQ1ew5K
-   VV9nDQoyUW8b7eXeRmGDrgYQEIbD9uU/PsmovSxE2VRJ7gfai5pzbJqOU
-   CHIe3WWaLaIPE1/XwTpZ7saIWjgvwHb7zvzo4P2Z/nyIlHqnapfXbFSaO
-   A==;
-X-IronPort-AV: E=Sophos;i="5.70,370,1574121600"; 
-   d="scan'208";a="38291032"
-IronPort-PHdr: =?us-ascii?q?9a23=3ADBDIDxIV1djs5jRKntmcpTZWNBhigK39O0sv0r?=
- =?us-ascii?q?FitYgXIv3/rarrMEGX3/hxlliBBdydt6sYzbGM+PG4ESxYuNDd6StEKMQNHz?=
- =?us-ascii?q?Y+yuwu1zQ6B8CEDUCpZNXLVAcdWPp4aVl+4nugOlJUEsutL3fbo3m18CJAUk?=
- =?us-ascii?q?6nbVk9Kev6AJPdgNqq3O6u5ZLTfx9IhD2gar9uMRm6twrcutQZjId4JKs91B?=
- =?us-ascii?q?TFr39Ud+9LwW9kOU+fkwzz68ut8pNv6Thct+4k+8VdTaj0YqM0QKBCAj87KW?=
- =?us-ascii?q?41/srrtRfCTQuL+HQRV3gdnwRLDQbY8hz0R4/9vSTmuOVz3imaJtD2QqsvWT?=
- =?us-ascii?q?u+9adrSQTnhzkBOjUk7WzYkM1wjKZcoBK8uxxyxpPfbY+JOPZieK7WYMgXTn?=
- =?us-ascii?q?RdUMlPSyNBA5u8b4oRAOoHIeZYtJT2q18XoRejGQWgGObjxzlGiX/s2a0xzv?=
- =?us-ascii?q?ovHwfI0gc9G94CqXrZodHwOKoUTOu7zrTHzS/bYv1L2Tnz9obIfBMvr/6CUr?=
- =?us-ascii?q?1/c9bex0Y0GgPZjVids5DpMy+b2+kPtWWQ8upuVfioi24iswx/vySvydk0io?=
- =?us-ascii?q?nJmI0VzE3P+zh8wIkvId24TFB0YN65G5ZXrCGVKpB2T9g+Q2BopCk6yroGtY?=
- =?us-ascii?q?S9fCgR0psr3RHfa/uZc4WR5B/oSeifITB9hH1/ebK/gQ6/8Uu+xe3mUMm7zl?=
- =?us-ascii?q?JKojBCktnWuXAA0QHY5MufSvZl40us1jmC2xrT5+1ZO0w4i6XWJ4A7zrItkJ?=
- =?us-ascii?q?cYrF7NETXsmErsia+bbkAk+u+15Ov5erjmvZqcN5NsigH5L6QuhtSzAeQmPQ?=
- =?us-ascii?q?gKWGiW4fi826f5/U34XbVKlec6kqjfsJDUIsQbvbC2DBNP3oY/6xewEzem0N?=
- =?us-ascii?q?MCkXkBMF1FYw6Ig5LsO1HPJPD0Ffa/g1Kynzd33/3KI7LsD5rXInXDjbvtZ6?=
- =?us-ascii?q?hx5kFCxAYp0NxT/5dUBasAIPL3VE/xrtvYDhohPgyv3unnE85w1p8eWG2TAq?=
- =?us-ascii?q?+ZN7nesVmT5u01OeWMa4gVuCjlJ/g/+/HulWM5mUMafaSxwZQYcmu4EepmIk?=
- =?us-ascii?q?iCenrjntcBHn0XvgowSOzllkeCXSdPaHmoRa4z+jY7CIe+B4fZWo+tmKCB3D?=
- =?us-ascii?q?u8HpBOem9JEEuMHmnodomeQPcDdCKSLdV8kjwKUbiuVZUh2AqvtA/817poMO?=
- =?us-ascii?q?7U9jcEupLk0dh///fTmg0q9TxoE8Sd1HmAT2NxnmMPXT82xqF/oVdmx1eFy6?=
- =?us-ascii?q?d4huJXFd1J6/NOSAc6OobWz/ZmBNDqRgLBYtCJRU6iQtWnBzExU90wz8YVY0?=
- =?us-ascii?q?ljB9qikwrD3yu2A74VjrCLAZs0/b/B33j1Oclw0GjG1KY/gFk8WMdPNnOphr?=
- =?us-ascii?q?R59wfNA47FiUKZl7ylda4Exi7C6H+DzXaSvEFfSANwSrvKXXQeZkvQsNT46V?=
- =?us-ascii?q?jPT6GhCbs5KAtN082CJbVQat3vk1pGQO3vONPEY2K+g22wHwqHxquQbIr2fG?=
- =?us-ascii?q?UQxCbdB1YanAAI4XmGMg8+BiS6rm3CDDxuD1XvY0bt8eljrXO3VEg0zxuFb0?=
- =?us-ascii?q?d5zbq65gYVheCAS/MUxr8EuiAhqzVyHFqn3dLWDNqAqBBnfKVHf9w95kxK2n?=
- =?us-ascii?q?7DuAx7OZygKaFiiUIEfARzpU/hyxJ3CoBYm8gwsHwq1BZyKb6f0F5ZbzOXw5?=
- =?us-ascii?q?bwOrLKKmnz+hCjcq3W1U/E0NaQ5KgP7O81q1T6sAGtEUoi7Wto38NO03SG5Z?=
- =?us-ascii?q?XKERASXojrXkYx6Rd2vbPaYjEl7YPOyXJsKbW0siPF298xHOsq0Augf9NEPa?=
- =?us-ascii?q?OcDgDyDskaC9GrKOwtnFipdAwLMPpO+64zOsOsb+GG17KzPOZ8gDKminxK4I?=
- =?us-ascii?q?R60kKW6SV8TO/J35EezvGX2QuHUDj8jFO/vczthY9EYjQSFHKlySf4HI5Rer?=
- =?us-ascii?q?FyfYETBGizOcK32Mtxh5v2VnFF7lGjGU0J2MqteRqVYVz9wRdc1UIJrny7gS?=
- =?us-ascii?q?G41SB7kyk1rqqD2yzD2/7tdB8dNWFWWmZvlk3jIZOxj98BWEiodRIllB276k?=
- =?us-ascii?q?bm36JbvrhwL3HPQUdUeCj7N2diXbWstrWffcFP9oglsTtYUOuie1CWUL39rA?=
- =?us-ascii?q?UA0yPlAWRewCo3dzawupX2hxZ6kn6SLG5vrHrFfsF93RLf68bTRP5SxTcGXT?=
- =?us-ascii?q?V4iTjNClilItmm59GUmIvEsuC7UmKtTIFccS7uzdDIiCzuzmRxDAz3pPuzk8?=
- =?us-ascii?q?DpFQUgmXvw3sJnRA3Tpxb1f4fv2r7/OushdU5tUhu04MNhF5A4iYAwjYwe3X?=
- =?us-ascii?q?UArpST4XcD12z0NJET26f5dmAMXhYNytvY4U7iwkInZnaIwZ/pE26QydZ7Zs?=
- =?us-ascii?q?WrJ2YR1j854uhUB6qOqr9Jhy14phy/tw2VKeNwmjYb1OsG9nEXmacKtRArwy?=
- =?us-ascii?q?HbBaodTmdCOim5rAiF99Czqu1sYW+rdbWhnB5lkcuJEKCJogYaXm3wPJglA3?=
- =?us-ascii?q?kjvY1ELFvQ3Sirucnfc97KYIdW70bFng=3D=3D?=
-X-IPAS-Result: =?us-ascii?q?A2ANAACVFC9e/wHyM5BmGwEBAQEBAQEFAQEBEQEBAwMBA?=
- =?us-ascii?q?QGBZwYBAQELAYF8gRhUIRIqhBSII2CGdQEBAQEBAQaBN4EBiG6PThSBZwkBA?=
- =?us-ascii?q?QEBAQEBAQErDAEBhEACgkg0CQ4CEAEBAQQBAQEBAQUDAQFshTcMgjspAYJ6A?=
- =?us-ascii?q?QUjBAsBBUEQCRoCAh8HAgJXBgEMBgIBAYJjPwGCViUPkE+bd38zhDUBhFCBO?=
- =?us-ascii?q?AaBDioBjDd5gQeBEScPgihzhDGDKIJeBJd6l16CQ4JMhHaObwYbgkiMT4tlL?=
- =?us-ascii?q?Y4ziGSUIzmBWCsIAhgIIQ+DKBI9GA2GJo1PAxcViE+FXSMDMgGOCQEB?=
-Received: from tarius.tycho.ncsc.mil (HELO tarius.infosec.tycho.ncsc.mil) ([144.51.242.1])
-  by emsm-gh1-uea11.NCSC.MIL with ESMTP; 27 Jan 2020 16:56:19 +0000
-Received: from moss-pluto.infosec.tycho.ncsc.mil (moss-pluto [192.168.25.131])
-        by tarius.infosec.tycho.ncsc.mil (8.14.7/8.14.4) with ESMTP id 00RGtQCM017159;
-        Mon, 27 Jan 2020 11:55:27 -0500
-Subject: KASAN slab-out-of-bounds in tun_chr_open/sock_init_data (Was: Re:
- [PATCH v14 00/23] LSM: Module stacking for AppArmor)
-From:   Stephen Smalley <sds@tycho.nsa.gov>
-To:     Casey Schaufler <casey@schaufler-ca.com>,
-        casey.schaufler@intel.com, jmorris@namei.org,
-        linux-security-module@vger.kernel.org, selinux@vger.kernel.org
-Cc:     keescook@chromium.org, john.johansen@canonical.com,
-        penguin-kernel@i-love.sakura.ne.jp, paul@paul-moore.com,
-        lorenzo@google.com, "David S. Miller" <davem@davemloft.net>,
-        amade@asmblr.net,
-        Linux Kernel Network Developers <netdev@vger.kernel.org>,
-        maxk@qti.qualcomm.com
-References: <20200124002306.3552-1-casey.ref@schaufler-ca.com>
- <20200124002306.3552-1-casey@schaufler-ca.com>
- <22585291-b7e0-5a22-6682-168611d902fa@tycho.nsa.gov>
- <6b717a13-3586-5854-0eee-617798f92d34@schaufler-ca.com>
- <de97dc66-7f5b-21f0-cf3d-a1485acbc1c9@tycho.nsa.gov>
-Message-ID: <628f018e-5a88-295b-9e4d-b4c6a49645b5@tycho.nsa.gov>
-Date:   Mon, 27 Jan 2020 11:56:58 -0500
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.4.1
+        id S1726252AbgA0REm (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 27 Jan 2020 12:04:42 -0500
+Received: from foss.arm.com ([217.140.110.172]:47192 "EHLO foss.arm.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726101AbgA0REl (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 27 Jan 2020 12:04:41 -0500
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 4B1E931B;
+        Mon, 27 Jan 2020 09:04:40 -0800 (PST)
+Received: from donnerap.cambridge.arm.com (usa-sjc-imap-foss1.foss.arm.com [10.121.207.14])
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 13EDC3F67D;
+        Mon, 27 Jan 2020 09:04:38 -0800 (PST)
+Date:   Mon, 27 Jan 2020 17:04:36 +0000
+From:   Andre Przywara <andre.przywara@arm.com>
+To:     Russell King - ARM Linux admin <linux@armlinux.org.uk>
+Cc:     Andrew Lunn <andrew@lunn.ch>, netdev@vger.kernel.org,
+        Radhey Shyam Pandey <radhey.shyam.pandey@xilinx.com>,
+        Michal Simek <michal.simek@xilinx.com>,
+        linux-kernel@vger.kernel.org,
+        Robert Hancock <hancock@sedsystems.ca>,
+        "David S . Miller" <davem@davemloft.net>,
+        linux-arm-kernel@lists.infradead.org
+Subject: Re: [PATCH 07/14] net: axienet: Fix SGMII support
+Message-ID: <20200127170436.5d88ca4f@donnerap.cambridge.arm.com>
+In-Reply-To: <20200120154554.GD25745@shell.armlinux.org.uk>
+References: <20200110115415.75683-1-andre.przywara@arm.com>
+ <20200110115415.75683-8-andre.przywara@arm.com>
+ <20200110140415.GE19739@lunn.ch>
+ <20200110142038.2ed094ba@donnerap.cambridge.arm.com>
+ <20200110150409.GD25745@shell.armlinux.org.uk>
+ <20200110152215.GF25745@shell.armlinux.org.uk>
+ <20200110170457.GH25745@shell.armlinux.org.uk>
+ <20200118112258.GT25745@shell.armlinux.org.uk>
+ <3b28dcb4-6e52-9a48-bf9c-ddad4cf5e98a@arm.com>
+ <20200120154554.GD25745@shell.armlinux.org.uk>
+Organization: ARM
+X-Mailer: Claws Mail 3.17.3 (GTK+ 2.24.32; aarch64-unknown-linux-gnu)
 MIME-Version: 1.0
-In-Reply-To: <de97dc66-7f5b-21f0-cf3d-a1485acbc1c9@tycho.nsa.gov>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 1/27/20 11:14 AM, Stephen Smalley wrote:
-> On 1/24/20 4:49 PM, Casey Schaufler wrote:
->> On 1/24/2020 1:04 PM, Stephen Smalley wrote:
->>> On 1/23/20 7:22 PM, Casey Schaufler wrote:
->>>> This patchset provides the changes required for
->>>> the AppArmor security module to stack safely with any other.
->>>>
->>>> v14: Rebase to 5.5-rc5
->>>>        Incorporate feedback from v13
->>>>        - Use an array of audit rules (patch 0002)
->>>>        - Significant change, removed Acks (patch 0002)
->>>>        - Remove unneeded include (patch 0013)
->>>>        - Use context.len correctly (patch 0015)
->>>>        - Reorder code to be more sensible (patch 0016)
->>>>        - Drop SO_PEERCONTEXT as it's not needed yet (patch 0023)
->>>
->>> I don't know for sure if this is your bug, but it happens every time 
->>> I boot with your patches applied and not at all on stock v5.5-rc5 so 
->>> here it is.  Will try to bisect as time permits but not until next 
->>> week. Trigger seems to be loading the tun driver.
->>
->> Thanks. I will have a look as well.
+On Mon, 20 Jan 2020 15:45:54 +0000
+Russell King - ARM Linux admin <linux@armlinux.org.uk> wrote:
+
+Hi Russell,
+
+sorry for the delay, some other stuff bubbling up, then I couldn't access the board ...
+
+> On Mon, Jan 20, 2020 at 02:50:28PM +0000, Andre Przywara wrote:
+> > On 18/01/2020 11:22, Russell King - ARM Linux admin wrote:  
+> > > On Fri, Jan 10, 2020 at 05:04:57PM +0000, Russell King - ARM Linux admin wrote:  
+> > >> Maybe something like the below will help?
+> > >>
+> > >> Basically, use phylink_mii_pcs_get_state() instead of
+> > >> axienet_mac_pcs_get_state(), and setup lp->phylink_config.pcs_mii
+> > >> to point at the MII bus, and lp->phylink_config.pcs_mii_addr to
+> > >> access the internal PHY (as per C_PHYADDR parameter.)
+> > >>
+> > >> You may have some fuzz (with gnu patch) while trying to apply this,
+> > >> as you won't have the context for the first and last hunks in this
+> > >> patch.
+> > >>
+> > >> This will probably not be the final version of the patch anyway;
+> > >> there's some possibility to pull some of the functionality out of
+> > >> phylib into a more general library which would avoid some of the
+> > >> functional duplication.  
+> > > 
+> > > Hi Andre,
+> > > 
+> > > Did you have a chance to see whether this helps?  
+> > 
+> > Sorry, I needed some time to wrap my head around your reply first. Am I am still not fully finished with this process ;-)
+> > Anyway I observed that when I add 'managed = "in-band-status"' to the DT, it seems to work, because it actually calls axienet_mac_pcs_get_state() to learn the actual negotiated parameters. Then in turn it calls mac_config with the proper speed instead of -1:
+> > [  151.682532] xilinx_axienet 7fe00000.ethernet eth0: configuring for inband/sgmii link mode
+> > [  151.710743] axienet_mac_config(config, mode=2, speed=-1, duplex=255, pause=16)
+> > ...
+> > [  153.818568] axienet_mac_pcs_get_state(config): speed=1000, interface=4, pause=0
+> > [  153.842244] axienet_mac_config(config, mode=2, speed=1000, duplex=1, pause=0)
+> > 
+> > Without that DT property it never called mac_pcs_get_state(), so never learnt about the actual settings.
+> > But the actual MAC setting was already right (1 GBps, FD). Whether this was by chance (reset value?) or because this was set by the PHY via SGMII, I don't know.
+> > So in my case I think I *need* to have the managed = ... property in my DT.  
 > 
-> Bisection led to the first patch in the series, "LSM: Infrastructure 
-> management of the sock security". Still not sure if the bug is in the 
-> patch itself or just being surfaced by it.
-
-Looks like the bug is pre-existing to me and just exposed by your patch. 
-tun_chr_open() is creating a struct tun_file via sk_alloc() with its own 
-tun_proto with a custom .obj_size.  It then passes the tun_file->socket 
-and ->sk fields to sock_init_data().  sock_init_data() assumes it can 
-safely use SOCK_INODE(sock) if sock is non-NULL, which means that it 
-presumes all such sockets were wrapped in a struct socket_alloc.  But 
-this one wasn't.  I don't know if that's a bug in the tun driver for not 
-wrapping its socket in a socket_alloc or in sock_init_data() for 
-assuming that all sockets it is passed have been so wrapped.  KASAN is 
-tripping on this assignment in sock_init_data():
-
-net/core/sock.c:
-    2871                 sk->sk_uid      =       SOCK_INODE(sock)->i_uid;
-
-This appears to have been broken since commit 
-86741ec25462e4c8cdce6df2f41ead05568c7d5e ("net: core: Add a UID field to 
-struct sock.").
-
-Previously reported here by someone else with RFC patches:
-https://lore.kernel.org/netdev/20190929110502.2284-1-amade@asmblr.net/
-
+> I really don't like this guess-work.  The specifications are freely
+> available out there, so there's really no need for this.
 > 
->>>
->>> [   67.726834] tun: Universal TUN/TAP device driver, 1.6
->>> [   67.736657] 
->>> ==================================================================
->>> [   67.741335] BUG: KASAN: slab-out-of-bounds in 
->>> sock_init_data+0x14a/0x5a0
->>> [   67.745037] Read of size 4 at addr ffff88870afe8928 by task 
->>> libvirtd/1238
->>>
->>> [   67.751861] CPU: 4 PID: 1238 Comm: libvirtd Tainted: G T 
->>> 5.5.0-rc5+ #54
->>> [   67.756250] Call Trace:
->>> [   67.759510]  dump_stack+0xb8/0x110
->>> [   67.761604]  print_address_description.constprop.0+0x1f/0x280
->>> [   67.763768]  __kasan_report.cold+0x75/0x8f
->>> [   67.765895]  ? sock_init_data+0x14a/0x5a0
->>> [   67.768282]  kasan_report+0xe/0x20
->>> [   67.770397]  sock_init_data+0x14a/0x5a0
->>> [   67.772511]  tun_chr_open+0x1de/0x280 [tun]
->>> [   67.774644]  misc_open+0x1cb/0x210
->>> [   67.776820]  chrdev_open+0x15b/0x350
->>> [   67.778917]  ? cdev_put.part.0+0x30/0x30
->>> [   67.781030]  do_dentry_open+0x2cb/0x800
->>> [   67.783135]  ? cdev_put.part.0+0x30/0x30
->>> [   67.785225]  ? devcgroup_check_permission+0x11a/0x260
->>> [   67.787321]  ? __x64_sys_fchdir+0xf0/0xf0
->>> [   67.789418]  ? security_inode_permission+0x5b/0x70
->>> [   67.791513]  path_openat+0x858/0x14a0
->>> [   67.793589]  ? path_mountpoint+0x5e0/0x5e0
->>> [   67.795719]  ? mark_lock+0xb8/0xb00
->>> [   67.797786]  do_filp_open+0x11e/0x1b0
->>> [   67.799840]  ? may_open_dev+0x60/0x60
->>> [   67.801871]  ? match_held_lock+0x1b/0x240
->>> [   67.803968]  ? lock_downgrade+0x360/0x360
->>> [   67.805997]  ? do_raw_spin_lock+0x119/0x1d0
->>> [   67.808041]  ? rwlock_bug.part.0+0x60/0x60
->>> [   67.810099]  ? do_raw_spin_unlock+0xa3/0x130
->>> [   67.812244]  ? _raw_spin_unlock+0x1f/0x30
->>> [   67.814287]  ? __alloc_fd+0x143/0x2f0
->>> [   67.816324]  do_sys_open+0x1f0/0x2d0
->>> [   67.818358]  ? filp_open+0x50/0x50
->>> [   67.820404]  ? trace_hardirqs_on_thunk+0x1a/0x1c
->>> [   67.822447]  ? lockdep_hardirqs_off+0xbe/0x100
->>> [   67.824473]  ? mark_held_locks+0x24/0x90
->>> [   67.826484]  do_syscall_64+0x74/0xd0
->>> [   67.828480]  entry_SYSCALL_64_after_hwframe+0x49/0xbe
->>> [   67.830478] RIP: 0033:0x7f1a2cce6074
->>> [   67.832495] Code: 24 20 eb 8f 66 90 44 89 54 24 0c e8 86 f4 ff ff 
->>> 44 8b 54 24 0c 44 89 e2 48 89 ee 41 89 c0 bf 9c ff ff ff b8 01 01 00 
->>> 00 0f 05 <48> 3d 00 f0 ff ff 77 32 44 89 c7 89 44 24 0c e8 b8 f4 ff 
->>> ff 8b 44
->>> [   67.834760] RSP: 002b:00007f19e4af46d0 EFLAGS: 00000293 ORIG_RAX: 
->>> 0000000000000101
->>> [   67.837032] RAX: ffffffffffffffda RBX: 0000000000000000 RCX: 
->>> 00007f1a2cce6074
->>> [   67.839318] RDX: 0000000000000002 RSI: 00007f1a2d0bfb67 RDI: 
->>> 00000000ffffff9c
->>> [   67.841598] RBP: 00007f1a2d0bfb67 R08: 0000000000000000 R09: 
->>> 00007f19e4af4914
->>> [   67.843941] R10: 0000000000000000 R11: 0000000000000293 R12: 
->>> 0000000000000002
->>> [   67.846283] R13: 000000000000000d R14: 00007f19e4af4920 R15: 
->>> 00007f1a2d0bfb67
->>>
->>> [   67.850936] Allocated by task 1238:
->>> [   67.853241]  save_stack+0x1b/0x80
->>> [   67.855533]  __kasan_kmalloc.constprop.0+0xc2/0xd0
->>> [   67.857935]  sk_prot_alloc+0x115/0x170
->>> [   67.860235]  sk_alloc+0x2f/0xa10
->>> [   67.862541]  tun_chr_open+0x4d/0x280 [tun]
->>> [   67.864894]  misc_open+0x1cb/0x210
->>> [   67.867164]  chrdev_open+0x15b/0x350
->>> [   67.869448]  do_dentry_open+0x2cb/0x800
->>> [   67.871768]  path_openat+0x858/0x14a0
->>> [   67.874041]  do_filp_open+0x11e/0x1b0
->>> [   67.876328]  do_sys_open+0x1f0/0x2d0
->>> [   67.878592]  do_syscall_64+0x74/0xd0
->>> [   67.880899]  entry_SYSCALL_64_after_hwframe+0x49/0xbe
->>>
->>> [   67.885431] Freed by task 726:
->>> [   67.887689]  save_stack+0x1b/0x80
->>> [   67.889967]  __kasan_slab_free+0x12c/0x170
->>> [   67.892197]  kfree+0xff/0x430
->>> [   67.894444]  uevent_show+0x176/0x1b0
->>> [   67.896709]  dev_attr_show+0x37/0x70
->>> [   67.898940]  sysfs_kf_seq_show+0x119/0x210
->>> [   67.901159]  seq_read+0x29d/0x720
->>> [   67.903367]  vfs_read+0xf9/0x1f0
->>> [   67.905538]  ksys_read+0xc9/0x160
->>> [   67.907736]  do_syscall_64+0x74/0xd0
->>> [   67.909889]  entry_SYSCALL_64_after_hwframe+0x49/0xbe
->>>
->>> [   67.914100] The buggy address belongs to the object at 
->>> ffff88870afe8000
->>>                  which belongs to the cache kmalloc-4k of size 4096
->>> [   67.918357] The buggy address is located 2344 bytes inside of
->>>                  4096-byte region [ffff88870afe8000, ffff88870afe9000)
->>> [   67.922562] The buggy address belongs to the page:
->>> [   67.924725] page:ffffea001c2bfa00 refcount:1 mapcount:0 
->>> mapping:ffff88881f00de00 index:0x0 compound_mapcount: 0
->>> [   67.926926] raw: 0017ffe000010200 ffffea001c167a00 
->>> 0000000200000002 ffff88881f00de00
->>> [   67.929144] raw: 0000000000000000 0000000080040004 
->>> 00000001ffffffff 0000000000000000
->>> [   67.931362] page dumped because: kasan: bad access detected
->>>
->>> [   67.936192] Memory state around the buggy address:
->>> [   67.938438]  ffff88870afe8800: 00 00 00 00 00 00 00 00 00 00 00 00 
->>> 00 00 00 00
->>> [   67.941078]  ffff88870afe8880: fc fc fc fc fc fc fc fc fc fc fc fc 
->>> fc fc fc fc
->>> [   67.943393] >ffff88870afe8900: fc fc fc fc fc fc fc fc fc fc fc fc 
->>> fc fc fc fc
->>> [   67.945709]                                   ^
->>> [   67.948000]  ffff88870afe8980: fc fc fc fc fc fc fc fc fc fc fc fc 
->>> fc fc fc fc
->>> [   67.950311]  ffff88870afe8a00: fc fc fc fc fc fc fc fc fc fc fc fc 
->>> fc fc fc fc
->>> [   67.952629] 
->>> ==================================================================
+> pg051-tri-mode-eth-mac.pdf describes the ethernet controller, and
+> Table 2-32 therein describes the EMMC register.
 > 
+> Bits 31 and 30 comprise a two-bit field which indicates the speed that
+> has been configured.  When the Xilinx IP has been configured for a
+> fixed speed, it adopts a hard-coded value (in other words, it is read-
+> only).  When it is read-writable, it defaults to "10" - 1G speed.
+> 
+> So, I think this just works by coincidence, not by proper design,
+> and therefore your patch in this sub-thread is incorrect since it's
+> masking the problem.
+> 
+> > But I was wondering if we need this patch anyway, regardless of the proper way to check for the connection setting in this case. Because at the moment calling mac_config with speed=-1 will *delete* the current MAC speed setting and leave it as 10 Mbps (because this is encoded as 0), when speed is not one of the well-known values. I am not sure that is desired behaviour, or speed=-1 just means: don't touch the speed setting. After all we call mac_config with speed=-1 first, even when later fixing this up (see above).  
+> 
+> Have you tested 100M and 10M speeds as well - I suspect you'll find
+> that, as you're relying on the IP default EMMC register setting, it
+> just won't work with your patches as they stand, because there is
+> nothing to read the in-band result.  I also don't see anything in
+> either pg051-tri-mode-eth-mac.pdf or pg047-gig-eth-pcs-pma.pdf which
+> indicates that the PCS negotiation results are passed automatically
+> between either IP blocks.
+> 
+> Therefore, I think you _will_ need something like the patch I've
+> proposed to make this Xilinx IP work properly.
+
+OK, I think I begin to understand where you are coming from: Despite using SGMII there is *no* automatic in-band passing of the PHY link status to the MAC (I was working on that assumption and was treating the default 1Gbps as a result of that auto-negotiation).
+And since the registers that the manual mentions are actually PHY registers, we need to use MDIO to access them.
+And just when I was wondering how I should do this I realised that this is exactly what your patch does ...
+
+So I filled the gaps in there, and that indeed seems to improve now.
+Some questions:
+- I still always see mac_config() being called with speed=-1 first. With the current mac_config implementation this screws up the MAC setup, but is later corrected (see below). But I would still get that "Speed other than 10, 100 or 1Gbps is not supported" message. So if this speed=-1 some special case that needs extra handling? Where does it actually come from?
+- Checking the phylink doc for mac_config() I understand that when using MLO_AN_INBAND, I should "place the link into inband negotiation mode". Does that mean that it should call phylink_mii_pcs_an_restart()? Or is this the responsibility of phylink?
+- When using managed = "in-band-status", I see a second call to mac_config() having the right parameters (1Gbps, FD) now, as read by phylink_mii_pcs_get_state(). So this gets eventually set up correctly now, thanks to your patch.
+- I initialise "lp->phylink_config.pcs_mii = lp->mii_bus;" in axienet_probe(), just before calling phylink_create(). Where would be the best place to set the PHY address (phylink_config.pcs_mii_addr)? That is not known yet at this point, I guess? (I hacked it to 1 just to test your code).
+- When *not* using managed = "in-band-status", I see mac_config still being called with MLO_AN_PHY and speed=-1. Is that expected? Is there something else missing, possibly in the DT? Shouldn't phylink ask the PHY via MDIO about the status first, then come back with the results as parameters to mac_config()? The phylink mac_config() doc just says that we should configure the MAC according to speed, duplex and pause passed in.
+
+Regarding 10/100 Mbps: I can't test any other speeds, because this is on an FPGA in some data centre, and I can't control the other side. I am already happy that I have *some* Ethernet cable connected to it ;-)
+
+Cheers,
+Andre.
+ 
+> I've augmented the patch with further 1000BASE-X support, including
+> adding support for configuring the advertisement in the PG047 PCS
+> registers.  To allow this IP to support 1000BASE-X, from what I
+> read in these documents, that will also be necessary.
+> 
+> 8<===
+> From: Russell King <rmk+kernel@armlinux.org.uk>
+> Subject: [PATCH] net: phylink: helpers for 802.3 clause 37/SGMII register sets
+> 
+> Implement helpers for PCS accessed via the MII bus using register
+> sets conforming to 802.3 clause 37. Advertisements for clause 37
+> and Cisco SGMII are supported by these helpers.
+> 
+> Signed-off-by: Russell King <rmk+kernel@armlinux.org.uk>
+> ---
+>  drivers/net/phy/phylink.c | 186 ++++++++++++++++++++++++++++++++++++++
+>  include/linux/phylink.h   |   9 ++
+>  2 files changed, 195 insertions(+)
+> 
+> diff --git a/drivers/net/phy/phylink.c b/drivers/net/phy/phylink.c
+> index e260098d3719..ed82407240b8 100644
+> --- a/drivers/net/phy/phylink.c
+> +++ b/drivers/net/phy/phylink.c
+> @@ -2081,4 +2081,190 @@ phy_interface_t phylink_select_serdes_interface(unsigned long *interfaces,
+>  }
+>  EXPORT_SYMBOL_GPL(phylink_select_serdes_interface);
+>  
+> +static void phylink_decode_advertisement(struct phylink_link_state *state)
+> +{
+> +	__ETHTOOL_DECLARE_LINK_MODE_MASK(u);
+> +
+> +	linkmode_and(u, state->lp_advertising, state->advertising);
+> +
+> +	if (linkmode_test_bit(ETHTOOL_LINK_MODE_Pause_BIT, u)) {
+> +		state->pause = MLO_PAUSE_RX | MLO_PAUSE_TX;
+> +	} else if (linkmode_test_bit(ETHTOOL_LINK_MODE_Asym_Pause_BIT, u)) {
+> +		if (linkmode_test_bit(ETHTOOL_LINK_MODE_Pause_BIT,
+> +				      state->lp_advertising))
+> +			state->pause |= MLO_PAUSE_TX;
+> +		if (linkmode_test_bit(ETHTOOL_LINK_MODE_Pause_BIT,
+> +				      state->advertising))
+> +			state->pause |= MLO_PAUSE_RX;
+> +	}
+> +
+> +	if (linkmode_test_bit(ETHTOOL_LINK_MODE_2500baseX_Full_BIT, u)) {
+> +		state->speed = SPEED_2500;
+> +		state->duplex = DUPLEX_FULL;
+> +	} else if (linkmode_test_bit(ETHTOOL_LINK_MODE_1000baseX_Full_BIT, u)) {
+> +		state->pause = SPEED_1000;
+> +		state->duplex = DUPLEX_FULL;
+> +	} else {
+> +		state->link = false;
+> +	}
+> +}
+> +
+> +static void phylink_decode_sgmii_word(struct phylink_link_state *state,
+> +				      uint16_t config_reg)
+> +{
+> +	if (!(lpa & BIT(15))) {
+> +		state->link = false;
+> +		return;
+> +	}
+> +
+> +	switch (lpa & 0x0c00) {
+> +	case 0x0000:
+> +		state->speed = SPEED_10;
+> +		state->duplex = lpa & 0x1000 ? DUPLEX_FULL : DUPLEX_HALF;
+> +		break;
+> +	case 0x0400:
+> +		state->speed = SPEED_100;
+> +		state->duplex = lpa & 0x1000 ? DUPLEX_FULL : DUPLEX_HALF;
+> +		break;
+> +	case 0x0800:
+> +		state->speed = SPEED_1000;
+> +		state->duplex = lpa & 0x1000 ? DUPLEX_FULL : DUPLEX_HALF;
+> +		break;
+> +	default:
+> +		state->link = false;
+> +		break;
+> +	}
+> +}
+> +
+> +/**
+> + * phylink_mii_pcs_get_state - read the MAC PCS state
+> + * @config: a pointer to a &struct phylink_config.
+> + * @state: a pointer to a &struct phylink_link_state.
+> + *
+> + * Helper for MAC PCS supporting the 802.3 register set for clause 37
+> + * negotiation and/or SGMII control.
+> + *
+> + * Read the MAC PCS state from the MII device configured in @config and
+> + * parse the Clause 37 or Cisco SGMII link partner negotiation word into
+> + * the phylink @state structure. This is suitable to be directly plugged
+> + * into the mac_pcs_get_state() member of the struct phylink_mac_ops
+> + * structure.
+> + */
+> +void phylink_mii_pcs_get_state(struct phylink_config *config,
+> +			       struct phylink_link_state *state)
+> +{
+> +	struct mii_bus *bus = config->pcs_mii;
+> +	int addr = config->pcs_mii_addr;
+> +	int bmsr, lpa;
+> +
+> +	bmsr = mdiobus_read(bus, addr, MII_BMSR);
+> +	lpa = mdiobus_read(bus, addr, MII_LPA);
+> +	if (bmsr < 0 || lpa < 0) {
+> +		state->link = false;
+> +		return;
+> +	}
+> +
+> +	state->link = !!(bmsr & BMSR_LSTATUS);
+> +	state->an_complete = !!(bmsr & BMSR_ANEGCOMPLETE);
+> +	if (!state->link)
+> +		return;
+> +
+> +	switch (state->interface) {
+> +	case PHY_INTERFACE_MODE_1000BASEX:
+> +		if (lpa & LPA_1000XFULL)
+> +			linkmode_set_bit(ETHTOOL_LINK_MODE_1000baseX_Full_BIT,
+> +					 state->lp_advertising);
+> +		goto lpa_8023z;
+> +
+> +	case PHY_INTERFACE_MODE_2500BASEX:
+> +		if (lpa & LPA_1000XFULL)
+> +			linkmode_set_bit(ETHTOOL_LINK_MODE_2500baseX_Full_BIT,
+> +					 state->lp_advertising);
+> +	lpa_8023z:
+> +		if (lpa & LPA_1000XPAUSE)
+> +			linkmode_set_bit(ETHTOOL_LINK_MODE_Pause_BIT,
+> +					 state->lp_advertising);
+> +		if (lpa & LPA_1000XPAUSE_ASYM)
+> +			linkmode_set_bit(ETHTOOL_LINK_MODE_Asym_Pause_BIT,
+> +					 state->lp_advertising);
+> +		if (lpa & LPA_LPACK)
+> +			linkmode_set_bit(ETHTOOL_LINK_MODE_Autoneg_BIT,
+> +					 state->lp_advertising);
+> +		phylink_decode_advertisement(state);
+> +		break;
+> +
+> +	case PHY_INTERFACE_MODE_SGMII:
+> +		phylink_decode_sgmii_word(state, lpa);
+> +		break;
+> +
+> +	default:
+> +		state->link = false;
+> +		break;
+> +	}
+> +}
+> +EXPORT_SYMBOL_GPL(phylink_mii_pcs_get_state);
+> +
+> +/**
+> + * phylink_mii_pcs_set_advertisement - configure the clause 37 PCS advertisement
+> + * @config: a pointer to a &struct phylink_config.
+> + * @state: a pointer to the state being configured.
+> + *
+> + * Helper for MAC PCS supporting the 802.3 register set for clause 37
+> + * negotiation and/or SGMII control.
+> + *
+> + * Configure the clause 37 PCS advertisement as specified by @state. This
+> + * does not trigger a renegotiation; phylink will do that via the
+> + * mac_an_restart() method of the struct phylink_mac_ops structure.
+> + */
+> +int phylink_mii_pcs_set_advertisement(struct phylink_config *config,
+> +				      const struct phylink_link_state *state)
+> +{
+> +	struct mii_bus *bus = config->pcs_mii;
+> +	int addr = config->pcs_mii_addr;
+> +	u16 adv;
+> +
+> +	switch (state->interface) {
+> +	case PHY_INTERFACE_MODE_1000BASEX:
+> +	case PHY_INTERFACE_MODE_2500BASEX:
+> +		adv = ADVERTISE_1000XFULL;
+> +		if (linkmode_test_bit(ETHTOOL_LINK_MODE_Pause_BIT,
+> +				      state->advertising))
+> +			adv |= ADVERTISE_1000XPAUSE;
+> +		if (linkmode_test_bit(ETHTOOL_LINK_MODE_Asym_Pause_BIT,
+> +				      state->advertising))
+> +			adv |= ADVERTISE_1000XPSE_ASYM;
+> +		return mdiobus_write(bus, addr, MII_ADVERTISE, adv);
+> +
+> +	default:
+> +		/* Nothing to do for other modes */
+> +		return 0;
+> +	}
+> +}
+> +EXPORT_SYMBOL_GPL(phylink_mii_pcs_set_advertisement);
+> +
+> +/**
+> + * phylink_mii_pcs_an_restart - restart 802.3z autonegotiation
+> + * @config: a pointer to a &struct phylink_config.
+> + *
+> + * Helper for MAC PCS supporting the 802.3 register set for clause 37
+> + * negotiation.
+> + *
+> + * Restart the clause 37 negotiation with the link partner. This is
+> + * suitable to be directly plugged into the mac_pcs_get_state() member
+> + * of the struct phylink_mac_ops structure.
+> + */
+> +void phylink_mii_pcs_an_restart(struct phylink_config *config)
+> +{
+> +	struct mii_bus *bus = config->pcs_mii;
+> +	int val, addr = config->pcs_mii_addr;
+> +
+> +	val = mdiobus_read(bus, addr, MII_BMCR);
+> +	if (val >= 0) {
+> +		val |= BMCR_ANRESTART;
+> +
+> +		mdiobus_write(bus, addr, MII_BMCR, val);
+> +	}
+> +}
+> +EXPORT_SYMBOL_GPL(phylink_mii_pcs_an_restart);
+> +
+>  MODULE_LICENSE("GPL v2");
+> diff --git a/include/linux/phylink.h b/include/linux/phylink.h
+> index 4ea76e083847..d51f45fc5f9a 100644
+> --- a/include/linux/phylink.h
+> +++ b/include/linux/phylink.h
+> @@ -65,6 +65,9 @@ enum phylink_op_type {
+>  struct phylink_config {
+>  	struct device *dev;
+>  	enum phylink_op_type type;
+> +
+> +	struct mii_bus *pcs_mii;
+> +	int pcs_mii_addr;
+>  };
+>  
+>  /**
+> @@ -292,4 +295,10 @@ phy_interface_t phylink_select_serdes_interface(unsigned long *interfaces,
+>  						const phy_interface_t *pref,
+>  						size_t nprefs);
+>  
+> +void phylink_mii_pcs_get_state(struct phylink_config *config,
+> +			       struct phylink_link_state *state);
+> +int phylink_mii_pcs_set_advertisement(struct phylink_config *config,
+> +				      const struct phylink_link_state *state);
+> +void phylink_mii_pcs_an_restart(struct phylink_config *config);
+> +
+>  #endif
 
