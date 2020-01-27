@@ -2,113 +2,74 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 9DDE314A7E5
-	for <lists+netdev@lfdr.de>; Mon, 27 Jan 2020 17:16:32 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id DD3D114A7F4
+	for <lists+netdev@lfdr.de>; Mon, 27 Jan 2020 17:22:15 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729652AbgA0QQa (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 27 Jan 2020 11:16:30 -0500
-Received: from pandora.armlinux.org.uk ([78.32.30.218]:38256 "EHLO
-        pandora.armlinux.org.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729505AbgA0QQa (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 27 Jan 2020 11:16:30 -0500
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
-        MIME-Version:Message-ID:Subject:Cc:To:From:Date:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
-        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:References:
-        List-Id:List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:
-        List-Archive; bh=FMStAuMdUvPtlZSG748bT/MUB/fTbV/HL3g/nNS74xI=; b=MSzFVbOGBumi
-        qfftaOB2fr2GlIsWi4gDbmKOC2dLKiEJtWsVLCj1F7CmETzHVpP2SA3fYopHS+CrL+s8j/6pMb3//
-        8IyOrCFlUlzAuw+NGbRdFmt9HJP1d8ZjIT9//yNLr5mJA0p5cphDuDqLYedHbwk5hhuwps4oufrU5
-        0CrPkZq9icS9hmUaTyMf9CEx+CoWEHAHoBlNj1dQZmrP8u0DEcNvTbA2LxDzAuzWfcZlux3XU1Rwe
-        /wh1sA3iFaHm2KSPWO3SIgjYytx9l/0mSQ9HpT3iO6T88YdpBOoQ0zW//y6IlELeNJJiBIsjosZil
-        pHL5Sgs0+jug413joHIU2A==;
-Received: from shell.armlinux.org.uk ([2001:4d48:ad52:3201:5054:ff:fe00:4ec]:60624)
-        by pandora.armlinux.org.uk with esmtpsa (TLSv1.2:ECDHE-RSA-AES256-GCM-SHA384:256)
-        (Exim 4.90_1)
-        (envelope-from <linux@armlinux.org.uk>)
-        id 1iw73l-0002Ms-LQ; Mon, 27 Jan 2020 16:16:21 +0000
-Received: from linux by shell.armlinux.org.uk with local (Exim 4.92)
-        (envelope-from <linux@shell.armlinux.org.uk>)
-        id 1iw73i-0001YE-GI; Mon, 27 Jan 2020 16:16:18 +0000
-Date:   Mon, 27 Jan 2020 16:16:18 +0000
-From:   Russell King - ARM Linux admin <linux@armlinux.org.uk>
-To:     Andrew Lunn <andrew@lunn.ch>,
-        Madalin Bucur <madalin.bucur@oss.nxp.com>
-Cc:     davem@davemloft.net, f.fainelli@gmail.com, hkallweit1@gmail.com,
-        netdev@vger.kernel.org, ykaukab@suse.de
-Subject: Re: FWD: [PATCH v2 0/2] net: phy: aquantia: indicate rate adaptation
-Message-ID: <20200127161618.GY25745@shell.armlinux.org.uk>
+        id S1729719AbgA0QWL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 27 Jan 2020 11:22:11 -0500
+Received: from vps0.lunn.ch ([185.16.172.187]:56214 "EHLO vps0.lunn.ch"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1729600AbgA0QWL (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 27 Jan 2020 11:22:11 -0500
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:
+        Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
+        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
+        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
+        List-Post:List-Owner:List-Archive;
+        bh=jqVwM+IjEqXkV9M8NMwyyP0+f47l+p41i+3R+JYJ8V0=; b=mqlDVbcQuEeg/xh8juESDnyTCA
+        EV2SZgsM9/mfEMZJntjYI9HKbPXJqaMO9Wb8xI61gyQhiLVoN8pYugGUCzVwVVMARE5yqbfHIgc4C
+        n36zZTIJ9TfLD0EB81WznFHWH9SK9Znf3960J3xkKLzQOT64vsdoDoDqD9p11Av2TsOU=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.93)
+        (envelope-from <andrew@lunn.ch>)
+        id 1iw79K-0007AO-8b; Mon, 27 Jan 2020 17:22:06 +0100
+Date:   Mon, 27 Jan 2020 17:22:06 +0100
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Russell King - ARM Linux admin <linux@armlinux.org.uk>
+Cc:     Jose Abreu <Jose.Abreu@synopsys.com>,
+        Joao Pinto <Joao.Pinto@synopsys.com>,
+        Alexandre Torgue <alexandre.torgue@st.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "linux-stm32@st-md-mailman.stormreply.com" 
+        <linux-stm32@st-md-mailman.stormreply.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Giuseppe Cavallaro <peppe.cavallaro@st.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        "linux-arm-kernel@lists.infradead.org" 
+        <linux-arm-kernel@lists.infradead.org>,
+        Heiner Kallweit <hkallweit1@gmail.com>
+Subject: Re: [RFC net-next 6/8] net: phylink: Configure MAC/PCS when link is
+ up without PHY
+Message-ID: <20200127162206.GJ13647@lunn.ch>
+References: <cover.1580122909.git.Jose.Abreu@synopsys.com>
+ <9a2136885d9a892ff170be88fdffeda82c778a10.1580122909.git.Jose.Abreu@synopsys.com>
+ <20200127112102.GT25745@shell.armlinux.org.uk>
+ <BN8PR12MB3266714AE9EC1A97218120B3D30B0@BN8PR12MB3266.namprd12.prod.outlook.com>
+ <20200127114600.GU25745@shell.armlinux.org.uk>
+ <20200127140038.GD13647@lunn.ch>
+ <20200127140834.GW25745@shell.armlinux.org.uk>
+ <20200127145107.GE13647@lunn.ch>
+ <20200127161132.GX25745@shell.armlinux.org.uk>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20200127151351.GG13647@lunn.ch>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+In-Reply-To: <20200127161132.GX25745@shell.armlinux.org.uk>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Andrew, thanks for the heads up.
+> > Heiner has another device which has an Aquantia PHY running in an odd
+> > mode so that it does 1G over a T2 link. It uses SGMII for this, and
+> > that is where we first noticed the issue of the MAC and PCS having
+> > different configurations.
+> 
+> Do you know when the issue appeared?
 
-Madalin, please resend this series, copying me with these patches, so
-Andrew doesn't have to keep alerting me to your patches. Thanks.
+As far as i understand, it never worked, it is not a regression as
+such. But Heiner probably knows more.
 
-On Mon, Jan 27, 2020 at 04:13:51PM +0100, Andrew Lunn wrote:
-> ----- Forwarded message from Madalin Bucur <madalin.bucur@oss.nxp.com> -----
-> 
-> Date: Mon, 27 Jan 2020 17:07:49 +0200
-> From: Madalin Bucur <madalin.bucur@oss.nxp.com>
-> To: davem@davemloft.net
-> Cc: andrew@lunn.ch, f.fainelli@gmail.com, hkallweit1@gmail.com, netdev@vger.kernel.org, ykaukab@suse.de, Madalin
-> 	Bucur <madalin.bucur@oss.nxp.com>
-> Subject: [PATCH v2 0/2] net: phy: aquantia: indicate rate adaptation
-> X-Spam-Status: No, score=-6.9 required=4.0 tests=BAYES_00,
-> 	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,RCVD_IN_DNSWL_HI,
-> 	RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_NONE autolearn=ham autolearn_force=no
-> 	version=3.4.4-rc1
-> 
-> Changes since v1:
->   rewrote commit messages to evidentiate that this is a PHY
->   generic feature, not a particular feature of the Aquantia
->   PHYs and added more details on how the 1G link issue this
->   is circumventing came about.
-> 
-> This patch-set introduces a bit into the phy_device
-> structure to indicate the PHYs ability to do rate
-> adaptation between the system and line interfaces and
-> sets this bit for the Aquantia PHYs that have this feature.
-> 
-> By taking into account the presence of the said bit, address
-> an issue with the LS1046ARDB board 10G interface no longer
-> working with an 1G link partner after autonegotiation support
-> was added for the Aquantia PHY on board in
-> 
-> commit 09c4c57f7bc4 ("net: phy: aquantia: add support for auto-negotiation configuration")
-> 
-> Before this commit the values advertised by the PHY were not
-> influenced by the dpaa_eth driver removal of system-side unsupported
-> modes as the aqr_config_aneg() was basically a no-op. After this
-> commit, the modes removed by the dpaa_eth driver were no longer
-> advertised thus autonegotiation with 1G link partners failed.
-> 
-> Madalin Bucur (2):
->   net: phy: aquantia: add rate_adaptation indication
->   dpaa_eth: support all modes with rate adapting PHYs
-> 
->  drivers/net/ethernet/freescale/dpaa/dpaa_eth.c | 10 +++++++---
->  drivers/net/phy/aquantia_main.c                |  3 +++
->  include/linux/phy.h                            |  3 +++
->  3 files changed, 13 insertions(+), 3 deletions(-)
-> 
-> -- 
-> 2.1.0
-> 
-> 
-> ----- End forwarded message -----
-> 
-
--- 
-RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
-FTTC broadband for 0.8mile line in suburbia: sync at 12.1Mbps down 622kbps up
-According to speedtest.net: 11.9Mbps down 500kbps up
+      Andrew
