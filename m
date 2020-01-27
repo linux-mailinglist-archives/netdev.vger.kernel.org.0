@@ -2,132 +2,110 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 65B3214AC4C
-	for <lists+netdev@lfdr.de>; Mon, 27 Jan 2020 23:54:59 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id CACDC14AC8D
+	for <lists+netdev@lfdr.de>; Tue, 28 Jan 2020 00:20:08 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726442AbgA0Wyz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 27 Jan 2020 17:54:55 -0500
-Received: from ozlabs.org ([203.11.71.1]:57355 "EHLO ozlabs.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726164AbgA0Wyz (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 27 Jan 2020 17:54:55 -0500
-Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (No client certificate requested)
-        by mail.ozlabs.org (Postfix) with ESMTPSA id 4864nk5Qq1z9sPJ;
-        Tue, 28 Jan 2020 09:54:50 +1100 (AEDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=canb.auug.org.au;
-        s=201702; t=1580165691;
-        bh=TC+Bk4yssTtaHBpAR5BNdU7WqavBtwsSepN+Yaa2TNQ=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=Ja2LQoTS1GPIrXybj09hloSxAozUdZUyu5utTaxRp8c/IlzDbx5FpRliTMGjC1bgN
-         tGIHEAlSSn73qVvhf6SJvBAIbwBg7WFczQEDck4DHEnNnZp6yrq2XcaVR/eIjj4MhG
-         jQqUgB91oS7n2idrsAAq4XJJCDmF/tVvH69ta2xEqrXG7gL68Vn6JT7464eo6nXnRS
-         o44+PmaxfGMiBPycvr66o6QfYJkCKfEKgM+gQ+MT9EbkBh2hMQehmynyrASxvKRFJC
-         dUnafDwzfw1rWy5Q++FJCBSh58cT1+UpnZ7Q5j3ojeZIp5Ib6Nj2YK9KZLm/uw9uzL
-         r/ZUZxe7OFbYQ==
-Date:   Tue, 28 Jan 2020 09:54:49 +1100
-From:   Stephen Rothwell <sfr@canb.auug.org.au>
-To:     David Miller <davem@davemloft.net>,
-        Networking <netdev@vger.kernel.org>
-Cc:     Christoph Hellwig <hch@lst.de>,
-        Linux Next Mailing List <linux-next@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Alexandru-Mihai Maftei <amaftei@solarflare.com>
-Subject: Re: linux-next: manual merge of the generic-ioremap tree with the
- net-next tree
-Message-ID: <20200128095449.5688fddc@canb.auug.org.au>
-In-Reply-To: <20200109161202.1b0909d9@canb.auug.org.au>
-References: <20200109161202.1b0909d9@canb.auug.org.au>
+        id S1726323AbgA0XUC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 27 Jan 2020 18:20:02 -0500
+Received: from mail-pg1-f196.google.com ([209.85.215.196]:40441 "EHLO
+        mail-pg1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726099AbgA0XUB (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 27 Jan 2020 18:20:01 -0500
+Received: by mail-pg1-f196.google.com with SMTP id k25so5939686pgt.7
+        for <netdev@vger.kernel.org>; Mon, 27 Jan 2020 15:20:01 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=chromium.org; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=QT8O29qq6UX2ERtfMZtIcpjsnZ2zWwc1vGjIRRz0cAI=;
+        b=XawkCOgE5DXMC5T4UMCWjNatVuCxPXGElKDJzkypz39qHzpJzBQm4Kjg2Wyc74N8XU
+         ae0RNb4v9jld0zCxnKtoZyL8qTh3A+57E2UqJ/UgP52rejOuyEYKSTX+2MbIBdIK8wvO
+         WFe7hDDB9CBICJzlBnEvr5cP0Jna4twh3KH9c=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=QT8O29qq6UX2ERtfMZtIcpjsnZ2zWwc1vGjIRRz0cAI=;
+        b=SKFDTDcIZV2cdrT0sH+5TjJxhOaO03GCVfWWFaYhIffglerQzhI25G+ndSENodJoTs
+         IXi3ZEiZiH9KcNujagujYvLSSnGiB59FRvm6nmvDn0hU30g114Qk1Sac06UsH2L+oK58
+         qqUO9KrRUaKSROIS1ulgWwXhQO7Pjax69Dv/38emqCgUBG1/yWqoOaJ8Gs6/YebaTew3
+         VpSEF9mp1iRN5Wwx+mReG6fsPqxWtfHXmwZxJxGD9Siv46ufaJPiaFZCvH9kRMaQs4NU
+         5SkdJEEidI49An3mWcHdTiMzEx4zT4xBXHbV2GeGabbH3A9Qi+mWjaJFWqXHC+v/SAHj
+         sQ4w==
+X-Gm-Message-State: APjAAAVSQTpbJa8NFLLHN5vopgR55qVQOup/gwJqP5XXtflSYrO8nQZA
+        KGMEroRLo8J64PU/I4tApb9/wg==
+X-Google-Smtp-Source: APXvYqyXDQEpPXM0xicaJgXWD5GwCMvtHrO2YWSFefSzTu/QuqyGJhGs+kmBUEZGJW1pcHmWRN4ELQ==
+X-Received: by 2002:aa7:934a:: with SMTP id 10mr1028171pfn.233.1580167201197;
+        Mon, 27 Jan 2020 15:20:01 -0800 (PST)
+Received: from www.outflux.net (smtp.outflux.net. [198.145.64.163])
+        by smtp.gmail.com with ESMTPSA id m12sm3509886pfh.37.2020.01.27.15.19.59
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 27 Jan 2020 15:20:00 -0800 (PST)
+Date:   Mon, 27 Jan 2020 15:19:59 -0800
+From:   Kees Cook <keescook@chromium.org>
+To:     Jiri Slaby <jslaby@suse.cz>
+Cc:     Alexander Viro <viro@zeniv.linux.org.uk>,
+        linux-kernel@vger.kernel.org, David Windsor <dave@nullcore.net>,
+        Pekka Enberg <penberg@kernel.org>,
+        David Rientjes <rientjes@google.com>,
+        Joonsoo Kim <iamjoonsoo.kim@lge.com>,
+        Andrew Morton <akpm@linux-foundation.org>, linux-mm@kvack.org,
+        linux-xfs@vger.kernel.org,
+        Linus Torvalds <torvalds@linux-foundation.org>,
+        Andy Lutomirski <luto@kernel.org>,
+        Christoph Hellwig <hch@infradead.org>,
+        Christoph Lameter <cl@linux.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Laura Abbott <labbott@redhat.com>,
+        Mark Rutland <mark.rutland@arm.com>,
+        "Martin K. Petersen" <martin.petersen@oracle.com>,
+        Paolo Bonzini <pbonzini@redhat.com>,
+        Christian Borntraeger <borntraeger@de.ibm.com>,
+        Christoffer Dall <christoffer.dall@linaro.org>,
+        Dave Kleikamp <dave.kleikamp@oracle.com>,
+        Jan Kara <jack@suse.cz>,
+        Luis de Bethencourt <luisbg@kernel.org>,
+        Marc Zyngier <marc.zyngier@arm.com>,
+        Rik van Riel <riel@redhat.com>,
+        Matthew Garrett <mjg59@google.com>,
+        linux-fsdevel@vger.kernel.org, linux-arch@vger.kernel.org,
+        netdev@vger.kernel.org, kernel-hardening@lists.openwall.com,
+        Vlastimil Babka <vbabka@suse.cz>,
+        Michal Kubecek <mkubecek@suse.cz>
+Subject: Re: [kernel-hardening] [PATCH 09/38] usercopy: Mark kmalloc caches
+ as usercopy caches
+Message-ID: <202001271519.AA6ADEACF0@keescook>
+References: <1515636190-24061-1-git-send-email-keescook@chromium.org>
+ <1515636190-24061-10-git-send-email-keescook@chromium.org>
+ <9519edb7-456a-a2fa-659e-3e5a1ff89466@suse.cz>
+ <201911121313.1097D6EE@keescook>
+ <201911141327.4DE6510@keescook>
+ <bfca96db-bbd0-d958-7732-76e36c667c68@suse.cz>
 MIME-Version: 1.0
-Content-Type: multipart/signed; boundary="Sig_/u.qhGEasX3Q0i80LbwjupLO";
- protocol="application/pgp-signature"; micalg=pgp-sha256
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <bfca96db-bbd0-d958-7732-76e36c667c68@suse.cz>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
---Sig_/u.qhGEasX3Q0i80LbwjupLO
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: quoted-printable
+On Thu, Jan 23, 2020 at 09:14:20AM +0100, Jiri Slaby wrote:
+> On 14. 11. 19, 22:27, Kees Cook wrote:
+> > On Tue, Nov 12, 2019 at 01:21:54PM -0800, Kees Cook wrote:
+> >> How is iucv the only network protocol that has run into this? Do others
+> >> use a bounce buffer?
+> > 
+> > Another solution would be to use a dedicated kmem cache (instead of the
+> > shared kmalloc dma one)?
+> 
+> Has there been any conclusion to this thread yet? For the time being, we
+> disabled HARDENED_USERCOPY on s390...
+> 
+> https://lore.kernel.org/kernel-hardening/9519edb7-456a-a2fa-659e-3e5a1ff89466@suse.cz/
 
-Hi all,
+I haven't heard anything new. What did people think of a separate kmem
+cache?
 
-On Thu, 9 Jan 2020 16:12:02 +1100 Stephen Rothwell <sfr@canb.auug.org.au> w=
-rote:
->
-> Hi all,
->=20
-> Today's linux-next merge of the generic-ioremap tree got a conflict in:
->=20
->   drivers/net/ethernet/sfc/efx.c
->=20
-> between commit:
->=20
->   f1826756b499 ("sfc: move struct init and fini code")
->=20
-> from the net-next tree and commit:
->=20
->   4bdc0d676a64 ("remove ioremap_nocache and devm_ioremap_nocache")
->=20
-> from the generic-ioremap tree.
->=20
-> I fixed it up (the latter moved the code, so I applied the following
-> merge fix patch) and can carry the fix as necessary. This is now fixed
-> as far as linux-next is concerned, but any non trivial conflicts should
-> be mentioned to your upstream maintainer when your tree is submitted
-> for merging.  You may also want to consider cooperating with the
-> maintainer of the conflicting tree to minimise any particularly complex
-> conflicts.
->=20
-> From: Stephen Rothwell <sfr@canb.auug.org.au>
-> Date: Thu, 9 Jan 2020 16:08:52 +1100
-> Subject: [PATCH] fix up for "sfc: move struct init and fini code"
->=20
-> Signed-off-by: Stephen Rothwell <sfr@canb.auug.org.au>
-> ---
->  drivers/net/ethernet/sfc/efx_common.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
->=20
-> diff --git a/drivers/net/ethernet/sfc/efx_common.c b/drivers/net/ethernet=
-/sfc/efx_common.c
-> index fe74c66c8ec6..bf0126633c25 100644
-> --- a/drivers/net/ethernet/sfc/efx_common.c
-> +++ b/drivers/net/ethernet/sfc/efx_common.c
-> @@ -954,7 +954,7 @@ int efx_init_io(struct efx_nic *efx, int bar, dma_add=
-r_t dma_mask,
->  		goto fail3;
->  	}
-> =20
-> -	efx->membase =3D ioremap_nocache(efx->membase_phys, mem_map_size);
-> +	efx->membase =3D ioremap(efx->membase_phys, mem_map_size);
->  	if (!efx->membase) {
->  		netif_err(efx, probe, efx->net_dev,
->  			  "could not map memory BAR at %llx+%x\n",
-> --=20
-> 2.24.0
-
-This is now a conflict between the net-next tree and Linus' tree.
-
---=20
-Cheers,
-Stephen Rothwell
-
---Sig_/u.qhGEasX3Q0i80LbwjupLO
-Content-Type: application/pgp-signature
-Content-Description: OpenPGP digital signature
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAEBCAAdFiEENIC96giZ81tWdLgKAVBC80lX0GwFAl4vajkACgkQAVBC80lX
-0GzPpQf/a9xWOi9dDL04qfsIfYg7TednXbl7p81Oy/NQz7EYO4Ug8YuXuzASb8B3
-71X56Ie0xqEakAqndG5XS1+sBTLe1go/5le13+AxXvVIVp5lC3kTX9XYZ8RTdEEj
-b0GEjRozCvNMyV+MOqsS09TJVbKor4ZRATBLdtnpiGNx3m/+YCuMWOA+7Joz0TaD
-6pcJQmlWXZ+c7iYFD6PWR7IfoPtytWV4Gxa+EkucMwFJqIL5BiWhRSlBwjnXoPwL
-VDu4D+MHE+D4kvCw3oJt3yT2dutxkf+ShVxQbXR1EZL0u+hJvJ13sYpYeSVwkTPl
-WAXm1yi79Gldyu4CHeLug8vzhMwLhQ==
-=+npg
------END PGP SIGNATURE-----
-
---Sig_/u.qhGEasX3Q0i80LbwjupLO--
+-- 
+Kees Cook
