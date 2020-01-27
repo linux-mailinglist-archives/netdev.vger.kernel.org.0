@@ -2,145 +2,152 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id E072414A77C
-	for <lists+netdev@lfdr.de>; Mon, 27 Jan 2020 16:49:03 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C8D2314A77D
+	for <lists+netdev@lfdr.de>; Mon, 27 Jan 2020 16:49:48 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729678AbgA0PtC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 27 Jan 2020 10:49:02 -0500
-Received: from mail-pl1-f195.google.com ([209.85.214.195]:42205 "EHLO
-        mail-pl1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728783AbgA0PtC (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 27 Jan 2020 10:49:02 -0500
-Received: by mail-pl1-f195.google.com with SMTP id p9so3885840plk.9
-        for <netdev@vger.kernel.org>; Mon, 27 Jan 2020 07:49:01 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=djy3Kh44k9yBgyb1jaNJvgO0D/LWjxaViOmFKiUUKKw=;
-        b=KUsIaCIKYLRFkAb48YEpM0QnR/B+KGY1b+4UjGt84nvLx6QjFE4Q8NoHiB6BoCkbdr
-         jTZ/aAaGG2AtQztNfC79il30+cPXUqDB7JS2tBZAdNrXnyVJs1ZSZzoeGzhGDP2pEwnY
-         21ioRVC6HDlBK+Ub/nXm+xRZullgFW+SXVbxA9r/3VU+EgzqHp0Q61yzabSBeztZTBMS
-         JL2QkYIPEbGACC5s2s75q5VIB1uwM8p1ZgOOnhNuQCRGSqlJIW062G18o0sY+C9tjzQt
-         uhwgEwIl8Cy8AMZlSp6QVDp7YcTRHY/LGgG/tlp0d0wTWRZxsFTuBVcxYV2ic0k5v0Mo
-         54DA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=djy3Kh44k9yBgyb1jaNJvgO0D/LWjxaViOmFKiUUKKw=;
-        b=BSzXSh88NvzjUkhHKw55RV7calG5KosH6aiNRqiPgONxO6OTMxwYyMuozisrgHqHhH
-         gaSfOFPH8Vn7vMJp8tRAj79Zk0l+u+busvvLjXwQzW9UiTbDoYVUJWXeugJrkc9zUbMD
-         EtpAApO7cSRka7wvLjtBkq0hHHM4Ee+WUiUcd1x7zzV30zwmrdeFF+u38HGJxc6ibpp6
-         spM4NQkr8iS3wXLWQFzeF5TdUYdE8T2RlSIhmyMCQN/KokzOLdFYTkPj/0Jkeq8QGshd
-         Lh9rFWY1EMYyQ+s276lllMp0dHhUT0Zn7QEf3IIdX1Gm1qf22NWPUCRhfKTfRRRBKPoq
-         OEaw==
-X-Gm-Message-State: APjAAAU4/IrC5PrZf/6y7VdbRqTSNwau9iZUZxbxWJ31/33ZmsXtWqw4
-        rYMXdze5Mz+BD/iByfdWQEI=
-X-Google-Smtp-Source: APXvYqwQnA/FSfz3aEQ0jC/Q69+F7A8IbFAYOubRMhZkJbcZdkUJ2to+jL9FipADjeMamez8DwIRHQ==
-X-Received: by 2002:a17:902:b401:: with SMTP id x1mr18447150plr.326.1580140140974;
-        Mon, 27 Jan 2020 07:49:00 -0800 (PST)
-Received: from martin-VirtualBox ([122.178.219.138])
-        by smtp.gmail.com with ESMTPSA id b185sm16860863pfa.102.2020.01.27.07.48.59
-        (version=TLS1 cipher=ECDHE-RSA-AES128-SHA bits=128/128);
-        Mon, 27 Jan 2020 07:49:00 -0800 (PST)
-Date:   Mon, 27 Jan 2020 21:18:55 +0530
-From:   Martin Varghese <martinvarghesenokia@gmail.com>
-To:     Willem de Bruijn <willemdebruijn.kernel@gmail.com>
-Cc:     Network Development <netdev@vger.kernel.org>,
-        David Miller <davem@davemloft.net>,
-        Jonathan Corbet <corbet@lwn.net>,
-        Alexey Kuznetsov <kuznet@ms2.inr.ac.ru>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        scott.drennan@nokia.com, Jiri Benc <jbenc@redhat.com>,
-        martin.varghese@nokia.com
-Subject: Re: [PATCH net-next v5 1/2] net: UDP tunnel encapsulation module for
- tunnelling different protocols like MPLS,IP,NSH etc.
-Message-ID: <20200127154855.GA2512@martin-VirtualBox>
-References: <cover.1579798999.git.martin.varghese@nokia.com>
- <f1805f7c981d74d8611dd19329765a1f7308cbaf.1579798999.git.martin.varghese@nokia.com>
- <CA+FuTSccdUY3Z4d9wznbjysacs=OAD4mfRsPP4N84NTEVhOSAQ@mail.gmail.com>
- <20200124144711.GA8532@martin-VirtualBox>
- <CAF=yD-J7C-g_L8p2N+h4OS2q2nEOOmJqKvnTw5tP4wtm6WuqKA@mail.gmail.com>
+        id S1729505AbgA0Ptr (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 27 Jan 2020 10:49:47 -0500
+Received: from mail-eopbgr150040.outbound.protection.outlook.com ([40.107.15.40]:48682
+        "EHLO EUR01-DB5-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1728783AbgA0Ptq (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 27 Jan 2020 10:49:46 -0500
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=mLsYktOpH8H5NGzo7oQUTOLdytdpjbF4KJPOs5o4mOux+35aZno52PjfCzXG4vApzEwYAkaEYL8y3bWElPGCBzVuwCGPuQjNLJRSzz1y9kP74y8z/cU5g+TXZiaw7sJIvmrRE+frQuy5Ii0ilkG1cHso6VMv9Kvsfd4EdVNEVpkXZHPVY9lUDCsFRpTiWDI2qlVFCRg6xHvg2I2B1Ny1P6IYSBLeeP9oAllskieR5f9OZ63uJwg28qqq2vrZHK0Laktc/J+TyvaSXRlJ2imkj2l331O2bPI/3yhY25mwQqt+AEZBP6ZTk/y718yz2C7IO3vt7heBJNLX/AjAzIz7qQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=e3h84hxu4V9dgvjJmJUCX4+6zxKBtNIUF4JADQOwhOw=;
+ b=ChZ5PcA1v/XIcfhKOaN9li4YVeQCHRzODXagzO5J/r5YDZxmGgJDXKyXKY4emPksspGRr3yMU4MOk1Lb+NmV+4oLH54yri5hHb6vn55Qf5c6ZkJMNPZlyvsS8GsWS3qYAM+DG6cZ9f6QNhc9GGBzLMH48FLWkCPiYnUsKDwX8LZEwzsYDyo7zgHHLW+8YggwHd3E9Qa0g2Innv5jnm14gTLDc+DiEaNQCa41IHTA4dWdVucOznxTefeyBB4uvEqwoVHWscjtrl54I6I1Pw2MxbwYPdHn/dhSZKOv9oatQDDabAFHZ/UW2/Zf69jYZ3rcO1PqD22DZJQS1esrd/Eu4w==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=oss.nxp.com; dmarc=pass action=none header.from=oss.nxp.com;
+ dkim=pass header.d=oss.nxp.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=NXP1.onmicrosoft.com;
+ s=selector2-NXP1-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=e3h84hxu4V9dgvjJmJUCX4+6zxKBtNIUF4JADQOwhOw=;
+ b=IKN2sTCs5RdEYeqSubBbvM4aEUZKKMbSI3yKhqpgp5CFxJWhshMZn5zNZWT0yLzFyzfQRBR8buU+z3aGmwcHrU4lDqcrn98FkRhjn24L4d2jVcRB8DAqTFl47BzPf4JHUeLvmMkMEJADzM89yDgJdlTlY53D027ag7WiKcv8eyI=
+Received: from DB8PR04MB6985.eurprd04.prod.outlook.com (52.133.243.85) by
+ DB8PR04MB6361.eurprd04.prod.outlook.com (20.179.249.140) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.2665.24; Mon, 27 Jan 2020 15:49:42 +0000
+Received: from DB8PR04MB6985.eurprd04.prod.outlook.com
+ ([fe80::c181:4a83:14f2:27e3]) by DB8PR04MB6985.eurprd04.prod.outlook.com
+ ([fe80::c181:4a83:14f2:27e3%6]) with mapi id 15.20.2665.026; Mon, 27 Jan 2020
+ 15:49:42 +0000
+From:   "Madalin Bucur (OSS)" <madalin.bucur@oss.nxp.com>
+To:     Vladimir Oltean <olteanv@gmail.com>,
+        "Madalin Bucur (OSS)" <madalin.bucur@oss.nxp.com>
+CC:     "David S. Miller" <davem@davemloft.net>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        netdev <netdev@vger.kernel.org>,
+        "ykaukab@suse.de" <ykaukab@suse.de>
+Subject: RE: [PATCH v2 2/2] dpaa_eth: support all modes with rate adapting
+ PHYs
+Thread-Topic: [PATCH v2 2/2] dpaa_eth: support all modes with rate adapting
+ PHYs
+Thread-Index: AQHV1SOT4TVxn3QCwU2UHzdlmVFpwqf+o0+AgAAE+tA=
+Date:   Mon, 27 Jan 2020 15:49:42 +0000
+Message-ID: <DB8PR04MB69853D197A7DCF6D02F8B876EC0B0@DB8PR04MB6985.eurprd04.prod.outlook.com>
+References: <1580137671-22081-1-git-send-email-madalin.bucur@oss.nxp.com>
+ <1580137671-22081-3-git-send-email-madalin.bucur@oss.nxp.com>
+ <CA+h21hqzR72v9=dWGk1zBptNHNst+kajh6SHHSUMp02fAq5m5g@mail.gmail.com>
+In-Reply-To: <CA+h21hqzR72v9=dWGk1zBptNHNst+kajh6SHHSUMp02fAq5m5g@mail.gmail.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+authentication-results: spf=none (sender IP is )
+ smtp.mailfrom=madalin.bucur@oss.nxp.com; 
+x-ms-exchange-messagesentrepresentingtype: 1
+x-originating-ip: [86.126.28.142]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-ht: Tenant
+x-ms-office365-filtering-correlation-id: 4c9acfc3-ee7d-4b50-41e0-08d7a340866d
+x-ms-traffictypediagnostic: DB8PR04MB6361:|DB8PR04MB6361:
+x-ms-exchange-sharedmailbox-routingagent-processed: True
+x-ms-exchange-transport-forked: True
+x-microsoft-antispam-prvs: <DB8PR04MB636142A57A2F026FA5B9F273AD0B0@DB8PR04MB6361.eurprd04.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:8882;
+x-forefront-prvs: 02951C14DC
+x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(4636009)(396003)(39860400002)(366004)(346002)(376002)(136003)(189003)(199004)(9686003)(478600001)(33656002)(55016002)(86362001)(71200400001)(76116006)(66476007)(66556008)(64756008)(186003)(5660300002)(52536014)(66946007)(66446008)(26005)(4326008)(81166006)(81156014)(7696005)(54906003)(110136005)(2906002)(8936002)(8676002)(6506007)(53546011)(316002);DIR:OUT;SFP:1101;SCL:1;SRVR:DB8PR04MB6361;H:DB8PR04MB6985.eurprd04.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;MX:1;A:0;
+received-spf: None (protection.outlook.com: oss.nxp.com does not designate
+ permitted sender hosts)
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: wD4LYb/A+qwJ1wTcrD6ebe8CZF37yqccxHGYkIZFVMdwF2/HKfMndIyHdUeZEU0RDAVTNbyfK/+GdXBdNsQJF7imNziJAJOOB7c3jUMj567lebn8qcCH+T/4L2NHIJIh00bYrgnZkyqcFPUeICBqwL0khPvMv6iIUgfpEBev1l5blZJNlCODo4WPBo0NJ8oSdXPGZIH/A2ePHwk+ISbMwohqh47+mIT9tz59xmd8CkaLEz/N/7n0P3CkWnsSU/rJU8/et9dCY8JWfUBx4ITpegOpggai1s8fuWE7FwlxApfMJ90GsHKPwVKctfZAvdBrXRVEjuguP3jtcGFAj39nbbxnl7GQi02YrXKYsJI6uJ0I2KCfu20gUvrtDbBt8unQrO2bIuhCxf2mezX/KbAVc40jxSBDvu3BmK9oo/J/hqacF9oGMYDx+SdyT2yOGViS
+x-ms-exchange-antispam-messagedata: q+lNIC2NHS2rr+9k7u8b1MHqR+sJaoxIo/tnDG3H82MEDbwVoRqVHU8mhMnGYCwG15G9ZI1ydv3HRe1h7Y6FZESecrFExhtVnt+XtXFPG0m1R++CzBigT9yJ+VM5BqgtqyY9+FXNvHVdY+ZpbJ8Jug==
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CAF=yD-J7C-g_L8p2N+h4OS2q2nEOOmJqKvnTw5tP4wtm6WuqKA@mail.gmail.com>
-User-Agent: Mutt/1.5.21 (2010-09-15)
+X-OriginatorOrg: oss.nxp.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 4c9acfc3-ee7d-4b50-41e0-08d7a340866d
+X-MS-Exchange-CrossTenant-originalarrivaltime: 27 Jan 2020 15:49:42.3053
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: H/OHIRm9U+C6+eeJMctUMVthvtH2r9YfFg0dZkGlwSMaPr4MGepvLdQjmevYCvol+/CwRi9fiCELB9T6sI8QWQ==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DB8PR04MB6361
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Jan 24, 2020 at 03:47:37PM -0500, Willem de Bruijn wrote:
-> On Fri, Jan 24, 2020 at 9:47 AM Martin Varghese
-> <martinvarghesenokia@gmail.com> wrote:
-> >
-> > On Thu, Jan 23, 2020 at 05:42:25PM -0500, Willem de Bruijn wrote:
-> > > On Thu, Jan 23, 2020 at 1:04 PM Martin Varghese
-> > > <martinvarghesenokia@gmail.com> wrote:
-> > > >
-> > > > From: Martin Varghese <martin.varghese@nokia.com>
-> > > >
-> > > > The Bareudp tunnel module provides a generic L3 encapsulation
-> > > > tunnelling module for tunnelling different protocols like MPLS,
-> > > > IP,NSH etc inside a UDP tunnel.
-> > > >
-> > > > Signed-off-by: Martin Varghese <martin.varghese@nokia.com>
-> > >
-> > > > diff --git a/include/net/ip6_tunnel.h b/include/net/ip6_tunnel.h
-> > > > index 028eaea..8215d1b 100644
-> > > > --- a/include/net/ip6_tunnel.h
-> > > > +++ b/include/net/ip6_tunnel.h
-> > > > @@ -165,5 +165,55 @@ static inline void ip6tunnel_xmit(struct sock *sk, struct sk_buff *skb,
-> > > >                 iptunnel_xmit_stats(dev, pkt_len);
-> > > >         }
-> > > >  }
-> > > > +
-> > > > +static inline struct dst_entry *ip6tunnel_get_dst(struct sk_buff *skb,
-> > > > +                                                 struct net_device *dev,
-> > > > +                                                 struct net *net,
-> > > > +                                                 struct socket *sock,
-> > > > +                                                 struct flowi6 *fl6,
-> > > > +                                                 const struct ip_tunnel_info *info,
-> > > > +                                                 bool use_cache)
-> > > > +{
-> > > > +       struct dst_entry *dst = NULL;
-> > > > +#ifdef CONFIG_DST_CACHE
-> > > > +       struct dst_cache *dst_cache;
-> > > > +#endif
-> > >
-> > > I just noticed these ifdefs are absent in Geneve. On closer look,
-> > > CONFIG_NET_UDP_TUNNEL selects CONFIG_NET_IP_TUNNEL selects
-> > > CONFIG_DST_CACHE. So they are indeed not needed.
-> > >
-> > > Sorry, should have noticed that in v4. It could conceivably be fixed
-> > > up later, but seems worth one more round to get it right from the
-> > > start.
-> > >
-> > But unlike geneve i have placed this definition in ip_tunnels.h &
-> > ip6_tunnels.h which doesnt come under NET_IP_TUNNEL.Hence build
-> > will fail in cases where NET_UDP_TUNNEL is disabled
-> > Kbuild robot has shown that in v3.
-> >
-> > Even with  #ifdef CONFIG_DST_CACHE Kbuild robot reported another issue.
-> > when ip6_tunnel.h included in ip4_tunnel_core.c.
-> > dst_cache_get_ipv6 comes under ipv6 flag  and hence the compilation of
-> > ip4_tunnel_core.c fails when IPV6 is disabled.
-> >
-> > Ideally this functions should be defined in ip_tunnel.c & ip6_tunnel.c
-> > as these function has no significance if IP Tunnel is disabled.
-> 
-> Sounds great. Yes, these functions are better in a .c file.
-
-Keeping these functions in ipv4/route.c and ipv6/ip6_output.c along with ip_route_output_flow & ip6_dst_lookup_flow
-These functions will be named ip_route_output_tunnel & ip6_dst_lookup_tunnel
- 
-
-Keeping these functions in ip_tunnels.c & ip6_tunnels.c is a bad idea as the bareudp module has no
-Dependency with ipv4 & ipv6 tunnel module as of now and there is no need to create one.
-
-
-Do you see any issues
-If the above approach is not feasible we should fall back to ip_tunnel.h ip6_tunnel.h with proper #ifdef protection
-
+PiAtLS0tLU9yaWdpbmFsIE1lc3NhZ2UtLS0tLQ0KPiBGcm9tOiBWbGFkaW1pciBPbHRlYW4gPG9s
+dGVhbnZAZ21haWwuY29tPg0KPiBTZW50OiBNb25kYXksIEphbnVhcnkgMjcsIDIwMjAgNTozMSBQ
+TQ0KPiBUbzogTWFkYWxpbiBCdWN1ciAoT1NTKSA8bWFkYWxpbi5idWN1ckBvc3MubnhwLmNvbT4N
+Cj4gQ2M6IERhdmlkIFMuIE1pbGxlciA8ZGF2ZW1AZGF2ZW1sb2Z0Lm5ldD47IEFuZHJldyBMdW5u
+IDxhbmRyZXdAbHVubi5jaD47DQo+IEZsb3JpYW4gRmFpbmVsbGkgPGYuZmFpbmVsbGlAZ21haWwu
+Y29tPjsgSGVpbmVyIEthbGx3ZWl0DQo+IDxoa2FsbHdlaXQxQGdtYWlsLmNvbT47IG5ldGRldiA8
+bmV0ZGV2QHZnZXIua2VybmVsLm9yZz47IHlrYXVrYWJAc3VzZS5kZQ0KPiBTdWJqZWN0OiBSZTog
+W1BBVENIIHYyIDIvMl0gZHBhYV9ldGg6IHN1cHBvcnQgYWxsIG1vZGVzIHdpdGggcmF0ZSBhZGFw
+dGluZw0KPiBQSFlzDQo+IA0KPiBIaSBNYWRhbGluLA0KPiANCj4gT24gTW9uLCAyNyBKYW4gMjAy
+MCBhdCAxNzowOCwgTWFkYWxpbiBCdWN1ciA8bWFkYWxpbi5idWN1ckBvc3MubnhwLmNvbT4NCj4g
+d3JvdGU6DQo+ID4NCj4gPiBTdG9wIHJlbW92aW5nIG1vZGVzIHRoYXQgYXJlIG5vdCBzdXBwb3J0
+ZWQgb24gdGhlIHN5c3RlbSBpbnRlcmZhY2UNCj4gPiB3aGVuIHRoZSBjb25uZWN0ZWQgUEhZIGlz
+IGNhcGFibGUgb2YgcmF0ZSBhZGFwdGF0aW9uLiBUaGlzIGFkZHJlc3Nlcw0KPiA+IGFuIGlzc3Vl
+IHdpdGggdGhlIExTMTA0NkFSREIgYm9hcmQgMTBHIGludGVyZmFjZSBubyBsb25nZXIgd29ya2lu
+Zw0KPiA+IHdpdGggYW4gMUcgbGluayBwYXJ0bmVyIGFmdGVyIGF1dG9uZWdvdGlhdGlvbiBzdXBw
+b3J0IHdhcyBhZGRlZA0KPiA+IGZvciB0aGUgQXF1YW50aWEgUEhZIG9uIGJvYXJkIGluDQo+ID4N
+Cj4gPiBjb21taXQgMDljNGM1N2Y3YmM0ICgibmV0OiBwaHk6IGFxdWFudGlhOiBhZGQgc3VwcG9y
+dCBmb3IgYXV0by0NCj4gbmVnb3RpYXRpb24gY29uZmlndXJhdGlvbiIpDQo+ID4NCj4gPiBCZWZv
+cmUgdGhpcyBjb21taXQgdGhlIHZhbHVlcyBhZHZlcnRpc2VkIGJ5IHRoZSBQSFkgd2VyZSBub3QN
+Cj4gPiBpbmZsdWVuY2VkIGJ5IHRoZSBkcGFhX2V0aCBkcml2ZXIgcmVtb3ZhbCBvZiBzeXN0ZW0t
+c2lkZSB1bnN1cHBvcnRlZA0KPiA+IG1vZGVzIGFzIHRoZSBhcXJfY29uZmlnX2FuZWcoKSB3YXMg
+YmFzaWNhbGx5IGEgbm8tb3AuIEFmdGVyIHRoaXMNCj4gPiBjb21taXQsIHRoZSBtb2RlcyByZW1v
+dmVkIGJ5IHRoZSBkcGFhX2V0aCBkcml2ZXIgd2VyZSBubyBsb25nZXINCj4gPiBhZHZlcnRpc2Vk
+IHRodXMgYXV0b25lZ290aWF0aW9uIHdpdGggMUcgbGluayBwYXJ0bmVycyBmYWlsZWQuDQo+ID4N
+Cj4gPiBSZXBvcnRlZC1ieTogTWlhbiBZb3VzYWYgS2F1a2FiIDx5a2F1a2FiQHN1c2UuZGU+DQo+
+ID4gU2lnbmVkLW9mZi1ieTogTWFkYWxpbiBCdWN1ciA8bWFkYWxpbi5idWN1ckBvc3MubnhwLmNv
+bT4NCj4gPiAtLS0NCj4gPiAgZHJpdmVycy9uZXQvZXRoZXJuZXQvZnJlZXNjYWxlL2RwYWEvZHBh
+YV9ldGguYyB8IDEwICsrKysrKystLS0NCj4gPiAgMSBmaWxlIGNoYW5nZWQsIDcgaW5zZXJ0aW9u
+cygrKSwgMyBkZWxldGlvbnMoLSkNCj4gPg0KPiA+IGRpZmYgLS1naXQgYS9kcml2ZXJzL25ldC9l
+dGhlcm5ldC9mcmVlc2NhbGUvZHBhYS9kcGFhX2V0aC5jDQo+IGIvZHJpdmVycy9uZXQvZXRoZXJu
+ZXQvZnJlZXNjYWxlL2RwYWEvZHBhYV9ldGguYw0KPiA+IGluZGV4IGEzMDFmMDA5NTIyMy4uZDNl
+YjIzNTQ1MGU1IDEwMDY0NA0KPiA+IC0tLSBhL2RyaXZlcnMvbmV0L2V0aGVybmV0L2ZyZWVzY2Fs
+ZS9kcGFhL2RwYWFfZXRoLmMNCj4gPiArKysgYi9kcml2ZXJzL25ldC9ldGhlcm5ldC9mcmVlc2Nh
+bGUvZHBhYS9kcGFhX2V0aC5jDQo+ID4gQEAgLTI0NzEsOSArMjQ3MSwxMyBAQCBzdGF0aWMgaW50
+IGRwYWFfcGh5X2luaXQoc3RydWN0IG5ldF9kZXZpY2UNCj4gKm5ldF9kZXYpDQo+ID4gICAgICAg
+ICAgICAgICAgIHJldHVybiAtRU5PREVWOw0KPiA+ICAgICAgICAgfQ0KPiA+DQo+ID4gLSAgICAg
+ICAvKiBSZW1vdmUgYW55IGZlYXR1cmVzIG5vdCBzdXBwb3J0ZWQgYnkgdGhlIGNvbnRyb2xsZXIg
+Ki8NCj4gPiAtICAgICAgIGV0aHRvb2xfY29udmVydF9sZWdhY3lfdTMyX3RvX2xpbmtfbW9kZSht
+YXNrLCBtYWNfZGV2LQ0KPiA+aWZfc3VwcG9ydCk7DQo+ID4gLSAgICAgICBsaW5rbW9kZV9hbmQo
+cGh5X2Rldi0+c3VwcG9ydGVkLCBwaHlfZGV2LT5zdXBwb3J0ZWQsIG1hc2spOw0KPiA+ICsgICAg
+ICAgaWYgKG1hY19kZXYtPnBoeV9pZiAhPSBQSFlfSU5URVJGQUNFX01PREVfWEdNSUkgfHwNCj4g
+PiArICAgICAgICAgICAhcGh5X2Rldi0+cmF0ZV9hZGFwdGF0aW9uKSB7DQo+ID4gKyAgICAgICAg
+ICAgICAgIC8qIFJlbW92ZSBhbnkgZmVhdHVyZXMgbm90IHN1cHBvcnRlZCBieSB0aGUgY29udHJv
+bGxlcg0KPiAqLw0KPiA+ICsgICAgICAgICAgICAgICBldGh0b29sX2NvbnZlcnRfbGVnYWN5X3Uz
+Ml90b19saW5rX21vZGUobWFzaywNCj4gPiArICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
+ICAgICAgICAgICAgICAgICAgICAgICAgIG1hY19kZXYtDQo+ID5pZl9zdXBwb3J0KTsNCj4gPiAr
+ICAgICAgICAgICAgICAgbGlua21vZGVfYW5kKHBoeV9kZXYtPnN1cHBvcnRlZCwgcGh5X2Rldi0+
+c3VwcG9ydGVkLA0KPiBtYXNrKTsNCj4gPiArICAgICAgIH0NCj4gDQo+IElzIHRoaXMgc3VmZmlj
+aWVudD8NCj4gSSBzdXBwb3NlIHRoaXMgd29ya3MgYmVjYXVzZSB5b3UgaGF2ZSBmbG93IGNvbnRy
+b2wgZW5hYmxlZCBieSBkZWZhdWx0Pw0KPiBXaGF0IHdvdWxkIGhhcHBlbiBpZiB0aGUgdXNlciB3
+b3VsZCBkaXNhYmxlIGZsb3cgY29udHJvbCB3aXRoIGV0aHRvb2w/DQoNClVzZXIgbWlzY29uZmln
+dXJhdGlvbiBpcyBub3Qgc29tZXRoaW5nIEknZCB0cnkgdG8gcHJldmVudCBmcm9tIGRyaXZlciBj
+b2RlLi4uDQoNCj4gPg0KPiA+ICAgICAgICAgcGh5X3N1cHBvcnRfYXN5bV9wYXVzZShwaHlfZGV2
+KTsNCj4gPg0KPiA+IC0tDQo+ID4gMi4xLjANCj4gPg0KPiANCj4gUmVnYXJkcywNCj4gLVZsYWRp
+bWlyDQo=
