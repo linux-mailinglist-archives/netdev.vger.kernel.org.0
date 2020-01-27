@@ -2,84 +2,74 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 45E23149DF9
-	for <lists+netdev@lfdr.de>; Mon, 27 Jan 2020 01:22:18 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id AD8F5149DFC
+	for <lists+netdev@lfdr.de>; Mon, 27 Jan 2020 01:26:09 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726921AbgA0AWN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 26 Jan 2020 19:22:13 -0500
-Received: from vps0.lunn.ch ([185.16.172.187]:55080 "EHLO vps0.lunn.ch"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726444AbgA0AWN (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sun, 26 Jan 2020 19:22:13 -0500
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:
-        Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
-        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
-        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
-        List-Post:List-Owner:List-Archive;
-        bh=9rUQVlLvGqFvHyfWHm2VLMp3C2XF+wuO1ILfr9Iv0Ik=; b=5tv7xVanXELUILmtsCOvn3L0k1
-        2qVv+kH/AXtaitKkf7TaQdRBckW/G7TsVwwJWewduTVp81qsE9e9ITzzoUrQ0JwDPsFp8BVC1IFFK
-        xRkEzKc9ecFFqT7sshZHdgu8wXXbOjlT4Vwv+5QNLuI567HqrN3saNsZAB3n6BSlXZzI=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.93)
-        (envelope-from <andrew@lunn.ch>)
-        id 1ivsAI-0003gt-64; Mon, 27 Jan 2020 01:22:06 +0100
-Date:   Mon, 27 Jan 2020 01:22:06 +0100
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Michal Kubecek <mkubecek@suse.cz>
-Cc:     David Miller <davem@davemloft.net>, netdev@vger.kernel.org,
-        Jakub Kicinski <kuba@kernel.org>,
-        Jiri Pirko <jiri@resnulli.us>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        John Linville <linville@tuxdriver.com>,
-        Johannes Berg <johannes@sipsolutions.net>,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH net-next 3/7] ethtool: set message mask with DEBUG_SET
- request
-Message-ID: <20200127002206.GC12816@lunn.ch>
-References: <cover.1580075977.git.mkubecek@suse.cz>
- <844bf6bf518640fbfc67b5dd7976d9e8683c2d2d.1580075977.git.mkubecek@suse.cz>
+        id S1726670AbgA0A0H (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 26 Jan 2020 19:26:07 -0500
+Received: from mail-ot1-f67.google.com ([209.85.210.67]:44611 "EHLO
+        mail-ot1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726382AbgA0A0H (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 26 Jan 2020 19:26:07 -0500
+Received: by mail-ot1-f67.google.com with SMTP id h9so6817068otj.11
+        for <netdev@vger.kernel.org>; Sun, 26 Jan 2020 16:26:07 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:reply-to:from:date:message-id:subject:to
+         :content-transfer-encoding;
+        bh=wPTmBByH22sML1O6KLsoK4X8f+4fg4a0Y7WxN3W7EW4=;
+        b=hMVB5NegoDg06UOgggc4IW7kVKbETtzAut7dLvw0Q8hbU+OqYSKYE3LKLqgB+024ae
+         nVUD4rRS1w2CQ/WUZSX+PVMjOpg7erQFkIfYfzpsrqrxNo5IgYRow49omRiZZuKtWnuE
+         saVEpdfCMQrc45MRfOMLRqH9v7OLfwyY3d+qx8k9hDGfodDV16kbMzLAKV2Ve2WX4b2h
+         ECQMRRk0oSFjDslozGsnhSo3VxJUDSfYRYHpEGnMIOwfpjkel01OwGPZoPhjhMzpeb7c
+         3gQ0XzkSnNcZtQOFKunHYc50ATuCO+9j2wsf15UDvwyREsLThSpk0NjcadMC+lu4o0cL
+         MHew==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:reply-to:from:date:message-id
+         :subject:to:content-transfer-encoding;
+        bh=wPTmBByH22sML1O6KLsoK4X8f+4fg4a0Y7WxN3W7EW4=;
+        b=e52BRV3YH2YaZFpMXMHdlM7L4cNh/0zKduIpoy5d5meIGM20mwbzA+f43Aa07Lj8jB
+         +tTTJamKp3YMeaSH7DapKll37yY+Gj6bCWVA56ULlv1IUic2joTzzzWk3PKJibMWyNPH
+         8XM2fEqLTEJar1s5zy/Q8KDur0IDCUwEa/D6ahjoOn/SIs8OwcSUzI0Uf3BDOuhHB5MO
+         dtLgnw1vf4Eqe7Np5x/CBBSHZwKHXcYieGpeJaCPq2U+2uhaSaEm0BPhn6EK088vT8jj
+         b0AuKVR97fEvO650enZyuF/EnFkOcFjF9Whw4Yf+gnk4QMFLUlzxbIjN7z6/Ii3qEqG+
+         FqFQ==
+X-Gm-Message-State: APjAAAU3Oy7GIElq5+OnLpIdghgyaslZnndid6U0QTJI94Gn6kFi7sIJ
+        g+OS2PyEAa3tWFcnBr1rjGBS35no/42D0L0EGKI=
+X-Google-Smtp-Source: APXvYqwUKOsuNhIiiJd3cytLlQfkkdlSx+WpNPHKMecnCESZ2tyiui7cBEOc1aqHKLB8ZskFTElyYzrL5/PkVxdyKPI=
+X-Received: by 2002:a9d:d06:: with SMTP id 6mr10959449oti.176.1580084766804;
+ Sun, 26 Jan 2020 16:26:06 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <844bf6bf518640fbfc67b5dd7976d9e8683c2d2d.1580075977.git.mkubecek@suse.cz>
+Received: by 2002:a4a:6215:0:0:0:0:0 with HTTP; Sun, 26 Jan 2020 16:26:06
+ -0800 (PST)
+Reply-To: solomonomra878@gmail.com
+From:   "Mr.Solomon Omar" <mrs.favour.solimon@gmail.com>
+Date:   Mon, 27 Jan 2020 01:26:06 +0100
+Message-ID: <CAN6zs8RdzP34K8nmMDGkZ4kifHrYp6_Dm3LdF3wL73zvk_3Hsg@mail.gmail.com>
+Subject: You are confidentially needed as trustee.
+To:     undisclosed-recipients:;
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, Jan 26, 2020 at 11:11:07PM +0100, Michal Kubecek wrote:
-> Implement DEBUG_SET netlink request to set debugging settings for a device.
-> At the moment, only message mask corresponding to message level as set by
-> ETHTOOL_SMSGLVL ioctl request can be set. (It is called message level in
-> ioctl interface but almost all drivers interpret it as a bit mask.)
-> 
-> Signed-off-by: Michal Kubecek <mkubecek@suse.cz>
-> +int ethnl_set_debug(struct sk_buff *skb, struct genl_info *info)
-> +{
-> +	struct nlattr *tb[ETHTOOL_A_DEBUG_MAX + 1];
-> +	struct ethnl_req_info req_info = {};
-> +	struct net_device *dev;
-> +	bool mod = false;
-> +	u32 msg_mask;
-> +	int ret;
-> +
-> +	ret = nlmsg_parse(info->nlhdr, GENL_HDRLEN, tb,
-> +			  ETHTOOL_A_DEBUG_MAX, debug_set_policy,
-> +			  info->extack);
-> +	if (ret < 0)
-> +		return ret;
-> +	ret = ethnl_parse_header(&req_info, tb[ETHTOOL_A_DEBUG_HEADER],
-> +				 genl_info_net(info), info->extack, true);
-> +	if (ret < 0)
-> +		return ret;
-> +	dev = req_info.dev;
-> +	if (!dev->ethtool_ops->get_msglevel || !dev->ethtool_ops->set_msglevel)
-> +		return -EOPNOTSUPP;
+--=20
 
-This seems like a new requirement, that both get and set callbacks are
-implemented. However, A quick look thought the code suggests all
-drivers already do have both get and set. So i think this is safe.
+Hello dear,
 
-Reviewed-by: Andrew Lunn <andrew@lunn.ch>
+I'm working with  Bank International in Ouagadougou the capital city
+of Burkina Faso.
 
-    Andrew
+I'm one of the senior director of the bank, I=E2=80=99m writing you this me=
+mo
+because I have this urgent deal/business proposal that will benefit me
+and you. Please write me on my personal email for more detail
+information concerning the issue at hand
+mrsolomonoma263@gmail.com
+
+Thanks,
+
+Mr.Solomon Omar
