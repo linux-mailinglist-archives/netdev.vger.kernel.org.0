@@ -2,131 +2,100 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id CDE2214AAAC
-	for <lists+netdev@lfdr.de>; Mon, 27 Jan 2020 20:41:08 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6561D14AB31
+	for <lists+netdev@lfdr.de>; Mon, 27 Jan 2020 21:40:39 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726885AbgA0TlE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 27 Jan 2020 14:41:04 -0500
-Received: from mga07.intel.com ([134.134.136.100]:60163 "EHLO mga07.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725845AbgA0TlE (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 27 Jan 2020 14:41:04 -0500
-X-Amp-Result: SKIPPED(no attachment in message)
-X-Amp-File-Uploaded: False
-Received: from orsmga002.jf.intel.com ([10.7.209.21])
-  by orsmga105.jf.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 27 Jan 2020 11:17:52 -0800
-X-IronPort-AV: E=Sophos;i="5.70,370,1574150400"; 
-   d="scan'208,223";a="246489194"
-Received: from jmanteyx-desk.jf.intel.com ([10.54.51.75])
-  by orsmga002-auth.jf.intel.com with ESMTP/TLS/DHE-RSA-AES256-SHA; 27 Jan 2020 11:17:52 -0800
+        id S1726099AbgA0Ukh (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 27 Jan 2020 15:40:37 -0500
+Received: from mail-qt1-f196.google.com ([209.85.160.196]:42378 "EHLO
+        mail-qt1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725944AbgA0Ukh (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 27 Jan 2020 15:40:37 -0500
+Received: by mail-qt1-f196.google.com with SMTP id j5so8491071qtq.9
+        for <netdev@vger.kernel.org>; Mon, 27 Jan 2020 12:40:36 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=w5mLIqhlG+D02O6dRiTkCJD1g/OXPajidxvsn+Q3y8I=;
+        b=m4kJ7jL31g8OKN15DdeKNbWnqCBXr7qZXqxvnhMhRo/vCuBwGOhvzEZVKny7qGAuD4
+         3q+W6GltJBOsTiJqUFfKXgEIMDuvaUO9T+SGSCsPfGEe++GOYVGYt9ujUVHRvykPT0yM
+         e8lb7fpT4zdekpr+I7r1Zo5cHdihDaMiGXf4UZIIXN5kqMzTsZQTjdId5WZ1zPuIXLGG
+         +Iq1pejhOluL7UFancj5KhOhW3YFQS5JMa5Iqf1nDx7RFjTy4nXUlBaYzsnW+5OsFNEk
+         rMeb1En1nYS7867QtkkIcvUDofnU2a8hIocAIiOM2aa6prk8niRE76cErOLp7LWJ+BtA
+         i2vQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=w5mLIqhlG+D02O6dRiTkCJD1g/OXPajidxvsn+Q3y8I=;
+        b=JxnTMGfB+iyxsr2H34SdUUdRgYWx+4siZqNoZl2Ptkvd8Sn/zhxBwFP9NJ+UZ15GfD
+         Vw7o+jimCZZiSD4eyvIxMJ7SHR099LyOH/gQOMo1/IcldwWzpxDefwC4LZCfMgHrkDEz
+         ZkDqa+WBPluR9bvnBlAGzULtKm7XY0/9mJWd08GZ9YsI1mG6mECHJHNIumAn2sq5eOD5
+         xOWywKR6+F2P8yjayU8NB+0y9MCN/HFFg7dBEho0EJq0giwVC0Rx0FUn3coHP6wvRBE8
+         6sFBXgqz5aPmDPpkCgUXK5dvC4WP5mlyvNCE2GsY4DAyOEimHSBCS1KM6gc9UU1lvkbI
+         hoXw==
+X-Gm-Message-State: APjAAAUeAhzylljwbUNkXw+MJJyWZPoOhFZVvQFt0VYynesN3d7WgHPM
+        jg58OMJcROhVdNRXJ4HtHH3tDk8P
+X-Google-Smtp-Source: APXvYqxb4lxrHuOUV1EftcGztGvQk5r2WVrG2GeL55rL1KGTDkd0QioAAuFFU+2NqhqerEapaeD+Sw==
+X-Received: by 2002:ac8:43d0:: with SMTP id w16mr18151474qtn.43.1580157635977;
+        Mon, 27 Jan 2020 12:40:35 -0800 (PST)
+Received: from willemb.nyc.corp.google.com ([2620:0:1003:312:6084:feee:4efa:5ea9])
+        by smtp.gmail.com with ESMTPSA id r13sm10661207qtt.70.2020.01.27.12.40.34
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 27 Jan 2020 12:40:35 -0800 (PST)
+From:   Willem de Bruijn <willemdebruijn.kernel@gmail.com>
 To:     netdev@vger.kernel.org
-Cc:     samjonas <sam@mendozajonas.com>, davem@davemloft.net,
-        Johnathan Mantey <johnathanx.mantey@intel.com>
-From:   Johnathan Mantey <johnathanx.mantey@intel.com>
-Subject: [PATCH ftgmac100:] Return link speed and duplex settings for the NCSI
- channel
-Autocrypt: addr=johnathanx.mantey@intel.com; prefer-encrypt=mutual; keydata=
- mQENBFija08BCAC60TO2X22b0tJ2Gy2iQLWx20mGcD7ugBpm1o2IW2M+um3GR0BG/bUcLciw
- dEnX9SWT30jx8TimenyUYeDS1CKML/e4JnCAUhSktNZRPBjzla991OkpqtFJEHj/pHrXTsz0
- ODhmnSaZ49TsY+5BqtRMexICYOtSP8+xuftPN7g2pQNFi7xYlQkutP8WKIY3TacW/6MPiYek
- pqVaaF0cXynCMDvbK0km7m0S4X01RZFKXUwlbuMireNk4IyZ/59hN+fh1MYMQ6RXOgmHqxSu
- 04GjkbBLf2Sddplb6KzPMRWPJ5uNdvlkAfyT4P0R5EfkV5wCRdoJ1lNC9WI1bqHkbt07ABEB
- AAG0JUpvaG5hdGhhbiBNYW50ZXkgPG1hbnRleWpnQGdtYWlsLmNvbT6JATcEEwEIACEFAlij
- a08CGwMFCwkIBwIGFQgJCgsCBBYCAwECHgECF4AACgkQ0EfviT3fHwmcBAgAkENzQ8s0RK+f
- nr4UogrCBS132lDdtlOypm1WgGDOVQNra7A1rvXFgN05RqrdRTpRevv7+S8ipbiG/kxn9P8+
- VhhW1SvUT8Tvkb9YYHos6za3v0YblibFNbYRgQcybYMeKz2/DcVU+ioKZ1SxNJsFXx6wH71I
- V2YumQRHAsh4Je6CmsiMVP4XNadzCQXzzcU9sstKV0A194JM/d8hjXfwMHZE6qnKgAkHIV3Q
- 61YCuvkdr5SJSrOVo2IMN0pVxhhW7lqCAGBGb4oOhqePwGqOabU3Ui4qTbHP2BWP5UscehkK
- 6TVKcpYApsUcWyxvvOARoktmlPnGYqJPnRwXpQBlqLkBDQRYo2tPAQgAyOv5Lgg2VkHO84R7
- LJJDBxcaCDjyAvHBynznEEk11JHrPuonEWi6pqgB8+Kc588/GerXZqJ9AMkR43UW/5cPlyF2
- wVO4aYaQwryDtiXEu+5rpbQfAvBpKTbrBfYIPc8thuAC2kdB4IO24T6PVSYVXYc/giOL0Iwb
- /WZfMd5ajtKfa727xfbKCEHlzakqmUl0SyrARdrSynhX1R9Wnf2BwtUV7mxFxtMukak0zdTf
- 2IXZXDltZC224vWqkXiI7Gt/FDc2y6gcsYY/4a2+vjhWuZk3lEzP0pbXQqOseDM1zZXln/m7
- BFbJ6VUn1zWcrt0c82GTMqkeGUheUhDiYLQ7xwARAQABiQEfBBgBCAAJBQJYo2tPAhsMAAoJ
- ENBH74k93x8JKEUH/3UPZryjmM0F3h8I0ZWuruxAxiqvksLOOtarU6RikIAHhwjvluEcTH4E
- JsDjqtRUvBMU907XNotpqpW2e9jN8tFRyR4wW9CYkilB02qgrDm9DXVGb2BDtC/MY+6KUgsG
- k5Ftr9uaXNd0K4IGRJSyU6ZZn0inTcXlqD+NgOE2eX9qpeKEhDufgF7fKHbKDkS4hj6Z09dT
- Y8eW9d6d2Yf/RzTBJvZxjBFbIgeUGeykbSKztp2OBe6mecpVPhKooTq+X/mJehpRA6mAhuQZ
- 28lvie7hbRFjqR3JB7inAKL4eT1/9bT/MqcPh43PXTAzB6/Iclg5B7GGgEFe27VL0hyqiqc=
-Message-ID: <ca1ed820-8da4-fad0-7335-ab92501e95a0@intel.com>
-Date:   Mon, 27 Jan 2020 11:17:50 -0800
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.4.1
+Cc:     davem@davemloft.net, pabeni@redhat.com,
+        Willem de Bruijn <willemb@google.com>,
+        syzbot <syzkaller@googlegroups.com>
+Subject: [PATCH net] udp: segment looped gso packets correctly
+Date:   Mon, 27 Jan 2020 15:40:31 -0500
+Message-Id: <20200127204031.244254-1-willemdebruijn.kernel@gmail.com>
+X-Mailer: git-send-email 2.25.0.341.g760bfbb309-goog
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
 Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From 2917ebea460252fe465ebd64ee720386eda574ad Mon Sep 17 00:00:00 2001
-From: Johnathan Mantey <johnathanx.mantey@intel.com>
-Date: Mon, 27 Jan 2020 09:03:56 -0800
-Subject: [PATCH ftgmac100:] Return link speed and duplex settings for
-the NCSI
- channel
+From: Willem de Bruijn <willemb@google.com>
 
-The ftgmac100_open function initializes state for the NCSI
-channel. The get link settings function does not return this
-data. This caused the link speed, and the duplex value to be returned
-incorrectly by the PHY driver (0 Mbps, and duplex off).
+Multicast and broadcast packets can be looped from egress to ingress
+pre segmentation with dev_loopback_xmit. That function unconditionally
+sets ip_summed to CHECKSUM_UNNECESSARY.
 
-Update the driver to return either the PHY settings when not using
-NCSI, or the NCSI values that were assigned when the driver is opened.
+udp_rcv_segment segments gso packets in the udp rx path. Segmentation
+usually executes on egress, and does not expect packets of this type.
+__udp_gso_segment interprets !CHECKSUM_PARTIAL as CHECKSUM_NONE. But
+the offsets are not correct for gso_make_checksum.
 
-Signed-off-by: Johnathan Mantey <johnathanx.mantey@intel.com>
+UDP GSO packets are of type CHECKSUM_PARTIAL, with their uh->check set
+to the correct pseudo header checksum. Reset ip_summed to this type.
+(CHECKSUM_PARTIAL is allowed on ingress, see comments in skbuff.h)
+
+Reported-by: syzbot <syzkaller@googlegroups.com>
+Fixes: cf329aa42b66 ("udp: cope with UDP GRO packet misdirection")
+Signed-off-by: Willem de Bruijn <willemb@google.com>
 ---
- drivers/net/ethernet/faraday/ftgmac100.c | 22 +++++++++++++++++++++-
- 1 file changed, 21 insertions(+), 1 deletion(-)
+ include/net/udp.h | 3 +++
+ 1 file changed, 3 insertions(+)
 
-diff --git a/drivers/net/ethernet/faraday/ftgmac100.c
-b/drivers/net/ethernet/faraday/ftgmac100.c
-index 8ed85037f021..a53878eecfc8 100644
---- a/drivers/net/ethernet/faraday/ftgmac100.c
-+++ b/drivers/net/ethernet/faraday/ftgmac100.c
-@@ -1218,10 +1218,30 @@ static int ftgmac100_set_pauseparam(struct
-net_device *netdev,
- 	return 0;
- }
-
-+int ftgmac100_ethtool_get_link_ksettings(struct net_device *netdev,
-+					 struct ethtool_link_ksettings *cmd)
-+{
-+	struct phy_device *phydev = netdev->phydev;
-+	struct ftgmac100 *priv = netdev_priv(netdev);
-+	int retval = 0;
+diff --git a/include/net/udp.h b/include/net/udp.h
+index bad74f7808311..8f163d674f072 100644
+--- a/include/net/udp.h
++++ b/include/net/udp.h
+@@ -476,6 +476,9 @@ static inline struct sk_buff *udp_rcv_segment(struct sock *sk,
+ 	if (!inet_get_convert_csum(sk))
+ 		features |= NETIF_F_IP_CSUM | NETIF_F_IPV6_CSUM;
+ 
++	if (skb->pkt_type == PACKET_LOOPBACK)
++		skb->ip_summed = CHECKSUM_PARTIAL;
 +
-+	if (phydev) {
-+		phy_ethtool_ksettings_get(phydev, cmd);
-+	} else if (priv->use_ncsi) {
-+		cmd->base.speed = priv->cur_speed;
-+		cmd->base.duplex = priv->cur_duplex;
-+		cmd->base.autoneg = 0;
-+	} else {
-+		retval = -ENODEV;
-+	}
-+
-+	return retval;
-+}
-+
- static const struct ethtool_ops ftgmac100_ethtool_ops = {
- 	.get_drvinfo		= ftgmac100_get_drvinfo,
- 	.get_link		= ethtool_op_get_link,
--	.get_link_ksettings	= phy_ethtool_get_link_ksettings,
-+	.get_link_ksettings	= ftgmac100_ethtool_get_link_ksettings,
- 	.set_link_ksettings	= phy_ethtool_set_link_ksettings,
- 	.nway_reset		= phy_ethtool_nway_reset,
- 	.get_ringparam		= ftgmac100_get_ringparam,
+ 	/* the GSO CB lays after the UDP one, no need to save and restore any
+ 	 * CB fragment
+ 	 */
 -- 
-2.24.1
-
--- 
-Johnathan Mantey
-Senior Software Engineer
-*azad technology partners*
-Contributing to Technology Innovation since 1992
-Phone: (503) 712-6764
-Email: johnathanx.mantey@intel.com <mailto:johnathanx.mantey@intel.com>
+2.25.0.341.g760bfbb309-goog
 
