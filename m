@@ -2,257 +2,117 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id E558A14AB7C
-	for <lists+netdev@lfdr.de>; Mon, 27 Jan 2020 22:16:27 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 41B7D14ABDA
+	for <lists+netdev@lfdr.de>; Mon, 27 Jan 2020 22:56:28 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726240AbgA0VQU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 27 Jan 2020 16:16:20 -0500
-Received: from mail-wr1-f68.google.com ([209.85.221.68]:43175 "EHLO
-        mail-wr1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725955AbgA0VQU (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 27 Jan 2020 16:16:20 -0500
-Received: by mail-wr1-f68.google.com with SMTP id d16so13376491wre.10;
-        Mon, 27 Jan 2020 13:16:18 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:date:to:cc:subject:in-reply-to:message-id:references
-         :user-agent:mime-version;
-        bh=81DUY2c9ZW9f7zPo1osSxiKRvvdo9rLFQnLTxxEr3HA=;
-        b=PHgQraG7ew4Ok+osxRiL5gGVuArcTfpQmtcDcfLtwrxGuCQSmCl/ePQOiEfc/UB344
-         cJ55zwrIBvxU+s1jxtukUMYkJXJW5PeDWi+vAgRm37dF+PhmhNH7Io/eUX/VCoAbQhvJ
-         DQxGLH850YxfALv077fYueO7atlFXfiKlU0PWuiNVTCBX4udfFkjB9Q62y8bWUphlCG2
-         mli4yv9yt5/nuczWjzvikK+X0dSJVjCsGaynMkCZUu44lHnPJD1IvOVFuW78VVSymi2D
-         kb7mlENI9eJectKM9mQ4Igd7/T57dD8vNCXKMxUSOkYrAcIdvz5mcDuibBHHIaurvWR/
-         4kKg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:date:to:cc:subject:in-reply-to:message-id
-         :references:user-agent:mime-version;
-        bh=81DUY2c9ZW9f7zPo1osSxiKRvvdo9rLFQnLTxxEr3HA=;
-        b=EOcxFw8H2anPZVOnqBm8/+mI0LUOOw0LosCftt3/nixT+75zPNf0MMfGMfv7TVnrw7
-         +6/7pHyKZzOfHaOINBxJrYM99KXTd93A0aVtPPe1dOpgYOEinMymf9k2rSoxQsY1lTSU
-         8gJMV2gC/j5xeuQb2hCVAmiPh8NxnMd/3O+fp2clvg0jQt29HcR4uQYQtj8DXvfemkfj
-         bVsqngE32jAnfYM5CWU7Ey+R7aCzfDKD4gM67mBrU3Eu2N6MBDg/S1IzjRtx9yE9lerM
-         /W60Vz3bOXtqx3bzK5nzBHwMlwEUlJIpq0xweFd03+P6GMhGtR1redes0nlentNT3err
-         HiKA==
-X-Gm-Message-State: APjAAAUYf5wE0dIxv79pJVEdMSPWjajS6H5tDtsoph7C9TMAwM9SYjxo
-        kuwXFVV8PfGbbmFvvYltxjotY5HazT0=
-X-Google-Smtp-Source: APXvYqza+0GIumRtV/WgC/siHrRCCJMNjwMyDziQ44OPZCYLe1nTsMeKS4x4oWbytILc5TJdphmycQ==
-X-Received: by 2002:adf:f80b:: with SMTP id s11mr25389289wrp.12.1580159777788;
-        Mon, 27 Jan 2020 13:16:17 -0800 (PST)
-Received: from felia ([2001:16b8:2d9d:8c00:380d:4350:8c25:6615])
-        by smtp.gmail.com with ESMTPSA id u16sm50960wmj.41.2020.01.27.13.16.16
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 27 Jan 2020 13:16:17 -0800 (PST)
-From:   Lukas Bulwahn <lukas.bulwahn@gmail.com>
-X-Google-Original-From: Lukas Bulwahn <lukas@gmail.com>
-Date:   Mon, 27 Jan 2020 22:16:04 +0100 (CET)
-X-X-Sender: lukas@felia
-To:     =?ISO-8859-15?Q?Jouni_H=F6gander?= <jouni.hogander@unikie.com>
-cc:     Lukas Bulwahn <lukas.bulwahn@gmail.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        open list <linux-kernel@vger.kernel.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Ben Hutchings <ben.hutchings@codethink.co.uk>,
-        linux- stable <stable@vger.kernel.org>,
-        Netdev <netdev@vger.kernel.org>,
-        Al Viro <viro@zeniv.linux.org.uk>,
-        linux-fsdevel@vger.kernel.org, Eric Dumazet <edumazet@google.com>,
-        "David S. Miller" <davem@davemloft.net>, syzkaller@googlegroups.com
-Subject: Re: [PATCH 4.19 000/306] 4.19.87-stable review
-In-Reply-To: <87h80h2suv.fsf@unikie.com>
-Message-ID: <alpine.DEB.2.21.2001272145260.2951@felia>
-References: <20191127203114.766709977@linuxfoundation.org> <CA+G9fYuAY+14aPiRVUcXLbsr5zJ-GLjULX=s9jcGWcw_vb5Kzw@mail.gmail.com> <20191128073623.GE3317872@kroah.com> <CAKXUXMy_=gVVw656AL5Rih_DJrdrFLoURS-et0+dpJ2cKaw6SQ@mail.gmail.com> <20191129085800.GF3584430@kroah.com>
- <87sgk8szhc.fsf@unikie.com> <alpine.DEB.2.21.2001261236430.4933@felia> <87h80h2suv.fsf@unikie.com>
-User-Agent: Alpine 2.21 (DEB 202 2017-01-01)
+        id S1726293AbgA0V40 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 27 Jan 2020 16:56:26 -0500
+Received: from mail-eopbgr10083.outbound.protection.outlook.com ([40.107.1.83]:57314
+        "EHLO EUR02-HE1-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1726080AbgA0V40 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 27 Jan 2020 16:56:26 -0500
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=SEUhROTpC3K0MEYpcDM9T2c0DPbngnDpA+Pe6PUVFxYc92dkdAbYK08qHgUYL5WSwzxYLMV75dAWVpLunaFCTTccHpE6t5ji/QsB0e4bUDUSMajROniXKGGub8A0qCrlX4uHDYJ+0oRqNiH5dTC2oa7newdLQm/TrTneEaTY5UU+iMt29Gxa6A0l1b08MCxZDC6GywS5fwF7DDTJz+JK0LcCSa4lNG5ug9cU47yF4H/Mvx14E6Kowyzv+BLYW8Axmcicu0nBDPdWo5jaTFb8IkpuOxQRivIs5AlBa7nZmsTT0EviXPyc5p/FyVv8bum8M3WvRL/WkDM5eOdgcb+R1g==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=2sAcOnsa/Bt/EteLxuSeg1RaiDdZIY0pOIoSmCHlkIY=;
+ b=KI0wzs3y8pCuLq4UXBqPHdqh65a5EcMd6zZkh7WZAC3t948LAECFEolmYa5oujNoyESMEL0ri5EMMJIGVbEScH+iJnDsoUIIc7AGZBzt0n/Fri9pZV7S+TIWkECRHXLEUGxIMaIz0B4NFaY/T3ALD8UBk+HWXjUHQMkUYyqRMCTEXuV7gtQIWCT1toSH/aR7UVd9IiWjB0nU3BGiUMYHg4BTLkckB7c2Iw0eHJcocD3//12QAMxeihPcio7S9b7v8CYpuprIXHgnLogeEe/ehYz5UdGZxwjgiuhRff2CcoAK9UlyNQG+fM5kHB3KeUQbhHD5Y/nmfuRy1/ayPJvCXA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=mellanox.com; dmarc=pass action=none header.from=mellanox.com;
+ dkim=pass header.d=mellanox.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Mellanox.com;
+ s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=2sAcOnsa/Bt/EteLxuSeg1RaiDdZIY0pOIoSmCHlkIY=;
+ b=t2t1qYRUG7TiOcvP6St03wAB4orBPuIWRPhFP4A0qbMth0h3ylNhRrJJiNnTsr+sCLWjn8risnMhQdoFg1FhQhi+R6ic/ahZRTk/ixb74N5OEOyCzkZW4NDX3RpXHlFVd88bYwIm4tP2RA1ARMiFFYnMp5hru7fy9E8EEpmS5NY=
+Received: from AM6PR05MB5094.eurprd05.prod.outlook.com (20.177.34.93) by
+ AM6PR05MB5412.eurprd05.prod.outlook.com (20.177.118.17) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.2665.20; Mon, 27 Jan 2020 21:56:23 +0000
+Received: from AM6PR05MB5094.eurprd05.prod.outlook.com
+ ([fe80::d9f3:f3b8:86b2:a40a]) by AM6PR05MB5094.eurprd05.prod.outlook.com
+ ([fe80::d9f3:f3b8:86b2:a40a%7]) with mapi id 15.20.2665.017; Mon, 27 Jan 2020
+ 21:56:23 +0000
+From:   Saeed Mahameed <saeedm@mellanox.com>
+To:     "kuba@kernel.org" <kuba@kernel.org>,
+        "andrew@lunn.ch" <andrew@lunn.ch>
+CC:     Aya Levin <ayal@mellanox.com>,
+        "mkubecek@suse.cz" <mkubecek@suse.cz>,
+        "linux@armlinux.org.uk" <linux@armlinux.org.uk>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "hkallweit1@gmail.com" <hkallweit1@gmail.com>,
+        Eran Ben Elisha <eranbe@mellanox.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "f.fainelli@gmail.com" <f.fainelli@gmail.com>
+Subject: Re: [net-next V2 11/14] ethtool: Add support for low latency RS FEC
+Thread-Topic: [net-next V2 11/14] ethtool: Add support for low latency RS FEC
+Thread-Index: AQHV0z30mWH9Qamk9kSgrdqkMYV+GKf7yCaAgAAXzwCAAzLGAA==
+Date:   Mon, 27 Jan 2020 21:56:22 +0000
+Message-ID: <fedd89528dfa9a3716b07731e4439d6b1ffe6329.camel@mellanox.com>
+References: <20200125051039.59165-1-saeedm@mellanox.com>
+         <20200125051039.59165-12-saeedm@mellanox.com>
+         <20200125114037.203e63ca@cakuba> <20200125210550.GH18311@lunn.ch>
+In-Reply-To: <20200125210550.GH18311@lunn.ch>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+user-agent: Evolution 3.34.3 (3.34.3-1.fc31) 
+authentication-results: spf=none (sender IP is )
+ smtp.mailfrom=saeedm@mellanox.com; 
+x-originating-ip: [209.116.155.178]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-ht: Tenant
+x-ms-office365-filtering-correlation-id: 9a60a23f-1ec0-46ab-a46b-08d7a373bfc3
+x-ms-traffictypediagnostic: AM6PR05MB5412:|AM6PR05MB5412:
+x-ms-exchange-transport-forked: True
+x-microsoft-antispam-prvs: <AM6PR05MB5412722EA2B8F5D47426A44EBE0B0@AM6PR05MB5412.eurprd05.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:7219;
+x-forefront-prvs: 02951C14DC
+x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(4636009)(136003)(39860400002)(376002)(366004)(346002)(396003)(199004)(189003)(86362001)(316002)(2906002)(110136005)(4326008)(54906003)(478600001)(6512007)(71200400001)(6506007)(4744005)(6486002)(5660300002)(66476007)(91956017)(76116006)(186003)(8936002)(81166006)(36756003)(26005)(8676002)(81156014)(64756008)(66446008)(2616005)(66556008)(66946007);DIR:OUT;SFP:1101;SCL:1;SRVR:AM6PR05MB5412;H:AM6PR05MB5094.eurprd05.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;A:1;MX:1;
+received-spf: None (protection.outlook.com: mellanox.com does not designate
+ permitted sender hosts)
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: dheATxFlVfr71bOOVXf+v9cPI9hw65Xo6+HuPZ+1IjZIrG1KLuhTvn9yiYrxqIHYmP3nk5oRiWVBBaCLsb9V45X/vGDjEfquGMiw5NQuzj1bOKgi3apiVaD2UWTZx4ccJg9T0mqLPt8IXvKehFABj2+w4p2iRJTMq21mOgiSg+mXgMmVS5thbYLuFoDKkoXsSmd2bCwA+5XypKo6Fk9hiRC7rOKADvMLgtugHN0dHN8yLDpVLvMcM3f8od7KHAw8i/7smeQopFTOCT4IBZ0SIvNVjZG84Kx8l4B074tSDX4cdamnA3ycTjFvAIWEJCfZzIdPu+MNc0oqXydcks1KyQ9wd9H3TnuAkqKi9DmS2cN3dNO8FWIc1WgrlEEZ8GQCVEIVsX+gv80POmY3nG8+D76sk633eHbIIbPuE/8wmJPZ5IxkwbnCWSQNjJVSKkJZ
+x-ms-exchange-antispam-messagedata: 6wKNTVf6vJDEHb1tIC58P2wzrcUWymMNSO0r5eiAs6keNpANEXJbB3S8LoOnGvSinhGavQENh0BzWvW/YIG6NWuoaUfrVSlfnoQ4efc6FTpYXqOjFTxZiLtRzTbBTTFHLHlea8CIvYkPBbUA8C704w==
+Content-Type: text/plain; charset="utf-8"
+Content-ID: <B7E7775DC498DF459C329AACA10E77AD@eurprd05.prod.outlook.com>
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-Content-Type: multipart/mixed; boundary="8323329-600720457-1580159776=:2951"
+X-OriginatorOrg: Mellanox.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 9a60a23f-1ec0-46ab-a46b-08d7a373bfc3
+X-MS-Exchange-CrossTenant-originalarrivaltime: 27 Jan 2020 21:56:22.8291
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: a652971c-7d2e-4d9b-a6a4-d149256f461b
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: QoACVNLWVMLIaaV3ooZ+PsbYxj9tdkIi1EzgYTYBIYuOXRB9dnFahquPj2ezVLXpo+I2jrwWiICzzOVL+LvYQQ==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM6PR05MB5412
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-  This message is in MIME format.  The first part should be readable text,
-  while the remaining parts are likely unreadable without MIME-aware tools.
-
---8323329-600720457-1580159776=:2951
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 8BIT
-
-
-
-On Mon, 27 Jan 2020, Jouni Högander wrote:
-
-> Lukas Bulwahn <lukas.bulwahn@gmail.com> writes:
-> 
-> > On Wed, 22 Jan 2020, Jouni Högander wrote:
-> >
-> >> Greg Kroah-Hartman <gregkh@linuxfoundation.org> writes:
-> >> >> > Now queued up, I'll push out -rc2 versions with this fix.
-> >> >> >
-> >> >> > greg k-h
-> >> >> 
-> >> >> We have also been informed about another regression these two commits
-> >> >> are causing:
-> >> >> 
-> >> >> https://lore.kernel.org/lkml/ace19af4-7cae-babd-bac5-cd3505dcd874@I-love.SAKURA.ne.jp/
-> >> >> 
-> >> >> I suggest to drop these two patches from this queue, and give us a
-> >> >> week to shake out the regressions of the change, and once ready, we
-> >> >> can include the complete set of fixes to stable (probably in a week or
-> >> >> two).
-> >> >
-> >> > Ok, thanks for the information, I've now dropped them from all of the
-> >> > queues that had them in them.
-> >> >
-> >> > greg k-h
-> >> 
-> >> I have now run more extensive Syzkaller testing on following patches:
-> >> 
-> >> cb626bf566eb net-sysfs: Fix reference count leak
-> >> ddd9b5e3e765 net-sysfs: Call dev_hold always in rx_queue_add_kobject
-> >> e0b60903b434 net-sysfs: Call dev_hold always in netdev_queue_add_kobje
-> >> 48a322b6f996 net-sysfs: fix netdev_queue_add_kobject() breakage
-> >> b8eb718348b8 net-sysfs: Fix reference count leak in rx|netdev_queue_add_kobject
-> >> 
-> >> These patches are fixing couple of memory leaks including this one found
-> >> by Syzbot: https://syzkaller.appspot.com/bug?extid=ad8ca40ecd77896d51e2
-> >> 
-> >> I can reproduce these memory leaks in following stable branches: 4.14,
-> >> 4.19, and 5.4.
-> >> 
-> >> These are all now merged into net/master tree and based on my testing
-> >> they are ready to be taken into stable branches as well.
-> >>
-> >
-> > + syzkaller list
-> > Jouni et. al, please drop Linus in further responses; Linus, it was wrong 
-> > to add you to this thread in the first place (reason is explained below)
-> >
-> > Jouni, thanks for investigating.
-> >
-> > It raises the following questions and comments:
-> >
-> > - Does the memory leak NOT appear on 4.9 and earlier LTS branches (or did 
-> > you not check that)? If it does not appear, can you bisect it with the 
-> > reproducer to the commit between 4.14 and 4.9?
-> 
-> I tested and these memory leaks are not reproucible in 4.9 and earlier.
-> 
-> >
-> > - Do the reproducers you found with your syzkaller testing show the same 
-> > behaviour (same bisection) as the reproducers from syzbot?
-> 
-> Yes, they are same.
-> 
-> >
-> > - I fear syzbot's automatic bisection on is wrong, and Linus' commit 
-> > 0e034f5c4bc4 ("iwlwifi: fix mis-merge that breaks the driver") is not to 
-> > blame here; that commit did not cause the memory leak, but fixed some 
-> > unrelated issue that simply confuses syzbot's automatic bisection.
-> >
-> > Just FYI: Dmitry Vyukov's evaluation of the syzbot bisection shows that 
-> > about 50% are wrong, e.g., due to multiple bugs being triggered with one 
-> > reproducer and the difficulty of automatically identifying them of being 
-> > different due to different root causes (despite the smart heuristics of 
-> > syzkaller & syzbot). So, to identify the actual commit on which the memory 
-> > leak first appeared, you need to bisect manually with your own judgement 
-> > if the reported bug stack trace fits to the issue you investigating. Or 
-> > you use syzbot's automatic bisection but then with a reduced kernel config 
-> > that cannot be confused by other issues. You might possibly also hit a 
-> > "beginning of time" in your bisection, where KASAN was simply not 
-> > supported, then the initially causing commit can simply not determined by 
-> > bisection with the reproducer and needs some code inspection and 
-> > archaeology with git. Can you go ahead try to identify the correct commit 
-> > for this issue?
-> 
-> These two commits (that are not in 4.9 and earlier) are intorducing these leaks:
-> 
-> commit e331c9066901dfe40bea4647521b86e9fb9901bb
-> Author: YueHaibing <yuehaibing@huawei.com>
-> Date:   Tue Mar 19 10:16:53 2019 +0800
-> 
->     net-sysfs: call dev_hold if kobject_init_and_add success
->     
->     [ Upstream commit a3e23f719f5c4a38ffb3d30c8d7632a4ed8ccd9e ]
->     
->     In netdev_queue_add_kobject and rx_queue_add_kobject,
->     if sysfs_create_group failed, kobject_put will call
->     netdev_queue_release to decrease dev refcont, however
->     dev_hold has not be called. So we will see this while
->     unregistering dev:
->     
->     unregister_netdevice: waiting for bcsh0 to become free. Usage count = -1
->     
->     Reported-by: Hulk Robot <hulkci@huawei.com>
->     Fixes: d0d668371679 ("net: don't decrement kobj reference count on init fail
-> ure")
->     Signed-off-by: YueHaibing <yuehaibing@huawei.com>
->     Signed-off-by: David S. Miller <davem@davemloft.net>
->     Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-> 
-> commit d0d6683716791b2a2761a1bb025c613eb73da6c3
-> Author: stephen hemminger <stephen@networkplumber.org>
-> Date:   Fri Aug 18 13:46:19 2017 -0700
-> 
->     net: don't decrement kobj reference count on init failure
->     
->     If kobject_init_and_add failed, then the failure path would
->     decrement the reference count of the queue kobject whose reference
->     count was already zero.
->     
->     Fixes: 114cf5802165 ("bql: Byte queue limits")
->     Signed-off-by: Stephen Hemminger <sthemmin@microsoft.com>
->     Signed-off-by: David S. Miller <davem@davemloft.net>
-> 
-
-But, it seems that we now have just a long sequences of fix patches.
-
-This commit from 2011 seems to be the initial buggy one:
-
-commit 114cf5802165ee93e3ab461c9c505cd94a08b800
-Author: Tom Herbert <therbert@google.com>
-Date:   Mon Nov 28 16:33:09 2011 +0000
-
-    bql: Byte queue limits
-
-And then we just have fixes over fixes:
-
-114cf5802165ee93e3ab461c9c505cd94a08b800
-fixed by d0d6683716791b2a2761a1bb025c613eb73da6c3
-fixed by a3e23f719f5c4a38ffb3d30c8d7632a4ed8ccd9e
-fixed by the sequence of your five patches, mentioned above
-
-
-If that is right, we should be able to find a reproducer with syzkaller on 
-the versions before d0d668371679 ("net: don't decrement kobj reference 
-count on init failure") with fault injection enabled or some manually 
-injected fault by modifying the source code to always fail on init to 
-really trigger the init failure, and see the reference count go below 
-zero.
-
-All further issues should also have reproducers found with syzkaller.
-If we have a good feeling on the reproducers and this series of fixes 
-really fixed the issue now here for all cases, we should suggest to 
-backport all of the fixes to 4.4 and 4.9.
-
-We should NOT just have Greg pick up a subset of the patches and backport 
-them to 4.4 and 4.9, that will likely break more than it fixes.
-
-Jouni, did you see Greg's bot inform you that he would pick up your latest 
-patch for 4.4 and 4.9? Please respond to those emails to make sure a 
-complete set of patches is picked up, which we tested with all those 
-intermediate reproducers and an extensive syzkaller run hitting the 
-net-sysfs interface (e.g., by configuring the corpus and check coverage).
-
-If you cannot do this testing for 4.4 and 4.9 now quickly (you 
-potentially have less than 24 hours), we should hold those new patches 
-back for 4.4 and 4.9, as none of the fixes seem to be applied at all right 
-now and the users have not complained yet on 4.4 and 4.9.
-Once testing of the whole fix sequence is done, we request to backport all 
-patches at once for 4.4 and 4.9.
-
-Lukas
-
-
---8323329-600720457-1580159776=:2951--
+T24gU2F0LCAyMDIwLTAxLTI1IGF0IDIyOjA1ICswMTAwLCBBbmRyZXcgTHVubiB3cm90ZToNCj4g
+T24gU2F0LCBKYW4gMjUsIDIwMjAgYXQgMTE6NDA6MzdBTSAtMDgwMCwgSmFrdWIgS2ljaW5za2kg
+d3JvdGU6DQo+ID4gT24gU2F0LCAyNSBKYW4gMjAyMCAwNToxMTo1MiArMDAwMCwgU2FlZWQgTWFo
+YW1lZWQgd3JvdGU6DQo+ID4gPiBGcm9tOiBBeWEgTGV2aW4gPGF5YWxAbWVsbGFub3guY29tPg0K
+PiA+ID4gDQo+ID4gPiBBZGQgc3VwcG9ydCBmb3IgbG93IGxhdGVuY3kgUmVlZCBTb2xvbW9uIEZF
+QyBhcyBMTFJTLg0KPiA+ID4gDQo+ID4gPiBTaWduZWQtb2ZmLWJ5OiBBeWEgTGV2aW4gPGF5YWxA
+bWVsbGFub3guY29tPg0KPiA+ID4gUmV2aWV3ZWQtYnk6IEVyYW4gQmVuIEVsaXNoYSA8ZXJhbmJl
+QG1lbGxhbm94LmNvbT4NCj4gPiA+IFNpZ25lZC1vZmYtYnk6IFNhZWVkIE1haGFtZWVkIDxzYWVl
+ZG1AbWVsbGFub3guY29tPg0KPiA+IA0KPiA+IFRoaXMgaXMga2luZCBvZiBidXJpZWQgaW4gdGhl
+IG1pZHN0IG9mIHRoZSBkcml2ZXIgcGF0Y2hlcy4NCj4gPiBJdCdkIHByZWZlcmFibHkgYmUgYSBz
+bWFsbCBzZXJpZXMgb2YgaXRzIG93bi4gDQo+ID4gTGV0J3MgYXQgbGVhc3QgdHJ5IHRvIENDIFBI
+WSBmb2xrIG5vdy4NCj4gDQo+IFRoYW5rcyBKYWt1dg0KPiANCg0KSSBhY3R1YWxseSBDQ2VkIFBI
+WSBvbiBWMSAuLiBidXQgZm9yZ290IG9uIFYyIDooLg0KDQpBbnl3YXkgdGhlIEJJVCBpcyB2ZXJ5
+IGNsZWFyIGFuZCBzdGFuZGFyZCBhcyBBeWEgcG9pbnRlZCBvdXQuLiANCg0KU2hhbGwgSSByZXN1
+Ym1pdCB3aXRoIHRoZSB1cGRhdGUgY29tbWl0IG1lc3NhZ2UgPw0KDQpJIHNlZSB0aGUgc2VyaWVz
+IGlzIG1hcmtlZCBhcyAiTm90IEFwcGxpY2FibGUiIGkgZG9uJ3Qga25vdyB3aHkgdGhvdWdoDQou
+LiANCg0KPiA+IElzIHRoaXMgZnJvbSBzb21lIHN0YW5kYXJkPw0KPiANCj4gQSByZWZlcmVuY2Ug
+d291bGQgYmUgZ29vZC4NCj4gDQo+IEkgYXNzdW1lIHRoZSBleGlzdGluZyBFVEhUT09MX0xJTktf
+TU9ERV9GRUNfUlNfQklUIGlzIGZvciBDbGF1c2UgOTEuDQo+IFdoYXQgY2xhdXNlIGRvZXMgdGhp
+cyBMTFJTIHJlZmVyIHRvPw0KPiANCj4gVGhhbmtzDQo+IAlBbmRyZXcNCg==
