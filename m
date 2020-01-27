@@ -2,116 +2,80 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 5E9FA14A736
-	for <lists+netdev@lfdr.de>; Mon, 27 Jan 2020 16:31:41 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7B7A314A748
+	for <lists+netdev@lfdr.de>; Mon, 27 Jan 2020 16:37:00 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729399AbgA0PbU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 27 Jan 2020 10:31:20 -0500
-Received: from mail-ed1-f67.google.com ([209.85.208.67]:38439 "EHLO
-        mail-ed1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729146AbgA0PbU (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 27 Jan 2020 10:31:20 -0500
-Received: by mail-ed1-f67.google.com with SMTP id p23so2411567edr.5
-        for <netdev@vger.kernel.org>; Mon, 27 Jan 2020 07:31:19 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=NkdzLFNgJvteRYCsnmdL81NA/Tn3A5A6N+qd51vUP1I=;
-        b=ekYpzpqv6LaP8dXa9yBbQNg6xCrSHAAHRNla5lDSReKV1/NCBzTRaFno9XX9Rk8R/m
-         hPCXUYpty4oE5Y6oKGTGFINBJfxfMlkRPTSpZMO05cu4aD8z/sOlryY+lBU8DQBEmF3h
-         ImTBHfam0lxYZlfB/5PUCYU8wsfIjY3XgxtcebOKR6VpCvdWcXuwHLKTU54SxA/64Hn9
-         BUVYQgoQCP/45GD1vP5PtVE+hp3U40kijkTdCgyIXm4wOP+42MZSLh4bTVo+0GZoB3gT
-         2e09xaieyx9TWAN886BAv/bh3KH6z+GjA4uxlrXG/6Z3tE0saAwcF4PjRSBmtJ7POzQq
-         FNoQ==
+        id S1729588AbgA0Pgz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 27 Jan 2020 10:36:55 -0500
+Received: from mail-oi1-f196.google.com ([209.85.167.196]:43417 "EHLO
+        mail-oi1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729133AbgA0Pgz (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 27 Jan 2020 10:36:55 -0500
+Received: by mail-oi1-f196.google.com with SMTP id p125so7006890oif.10;
+        Mon, 27 Jan 2020 07:36:54 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=NkdzLFNgJvteRYCsnmdL81NA/Tn3A5A6N+qd51vUP1I=;
-        b=g21WYP5wvmz9grsW6EHXfDdkk4mWy+ipskBbYVr1k7v+fB9BSjeEm6HBZ4wk5u7sL8
-         vdrUDzUzQzEcpmOPLCvL8VhIVlhqjVNm+Al6y5id/CnWn5sXOfejw7dQXhMny9Kd84mV
-         k404kfksd2uNOYkHOchRmgkdE4t/wzZzSTlUvnCJ2Z1VhH+YHNIv/gsp30qJPMjrMtsG
-         dCA3KbRUkxybjERxr5FOotWWsPi22gPWX0vi/3xIh2/ewVoBRp9OccmJJ7a/ZcDSxpE+
-         u+/drCBNlf0/MA0l/geJFKdnhBVMOW6dBpot9ny5xDvns6UUuUJnBW00KOO2PWslsDRR
-         AgFg==
-X-Gm-Message-State: APjAAAVnTPdX00SwdqcQDK2V7zOFJGbRQJA4QjSe8/7t+oK+ryu1lUPr
-        +SPAte1I0rLSKeRO322EJ9mSOJZz655lWbz+42Q=
-X-Google-Smtp-Source: APXvYqxwBAs/FV4+x4RM+c/a7iumTynIusJ0Z2N/aV6nBAgowmPvkisg7twyeSOIgibiUE0GmhAfLIZHZYvrxZwZ7Xo=
-X-Received: by 2002:a17:906:af99:: with SMTP id mj25mr3711291ejb.293.1580139078511;
- Mon, 27 Jan 2020 07:31:18 -0800 (PST)
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=RTwkN+1nsK3Tbd6o0pbrLO1yGQq+UJG41x5hJujk/8A=;
+        b=WU+dimbV5pvEKQM7QR6lgBxCvou6rPpDpsHtokCaUoOXlhODLpu8QPscK5lY1qEHfW
+         XB0IAekwWLvMLeWW6AuAKT6SI0/p8dzkz8ndFE6HUreyh66tSnE68TP91A7KZiExic+X
+         Fhkj3aFYi9hb3YZmNxd/DrVebMjdIGACkEliFog4Hb6qkMC5XL+0rmnmyUA9OXccNIQr
+         5e0L/lN6mFHRPa2FM+JngG+lVEGx2ZZIJj60EuPPVMifeaX9jft3a0d2KDfw0oiP47X8
+         xV69lZ21oV04RUipcckS1J8nmwn2ijoL/MiPB5ASYPwOGEu9lgllMRsD8hgNoPSCnnED
+         HSXA==
+X-Gm-Message-State: APjAAAV0xFlaZ7SUHKJ1V/UpoU5o+ZSIsMokRbxvgS61BXWMKVpbGA+G
+        ZcAgNQhY8wcHMp/kQPmrhw==
+X-Google-Smtp-Source: APXvYqx5tKEVzlvNIbjMUMTAI82thP8Ra2rKVGkItgc9MD6ZFnXKNKE7x5hPgxINh4EsrLRo3aEoRg==
+X-Received: by 2002:aca:cf58:: with SMTP id f85mr7934927oig.6.1580139413880;
+        Mon, 27 Jan 2020 07:36:53 -0800 (PST)
+Received: from rob-hp-laptop (24-155-109-49.dyn.grandenetworks.net. [24.155.109.49])
+        by smtp.gmail.com with ESMTPSA id k17sm4925460oic.45.2020.01.27.07.36.52
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 27 Jan 2020 07:36:53 -0800 (PST)
+Received: (nullmailer pid 32751 invoked by uid 1000);
+        Mon, 27 Jan 2020 15:36:52 -0000
+Date:   Mon, 27 Jan 2020 09:36:52 -0600
+From:   Rob Herring <robh@kernel.org>
+To:     "H. Nikolaus Schaller" <hns@goldelico.com>
+Cc:     Kalle Valo <kvalo@codeaurora.org>,
+        Ulf Hansson <ulf.hansson@linaro.org>,
+        Mark Rutland <mark.rutland@arm.com>,
+        "H. Nikolaus Schaller" <hns@goldelico.com>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Alexios Zavras <alexios.zavras@intel.com>,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        letux-kernel@openphoenux.org, kernel@pyra-handheld.com
+Subject: Re: [PATCH v3 1/2] DTS: bindings: wl1251: mark ti,power-gpio as
+ optional
+Message-ID: <20200127153652.GA32638@bogus>
+References: <cover.1580068813.git.hns@goldelico.com>
+ <d34183026b1a46a082f73ab3d0888c92cf6286ec.1580068813.git.hns@goldelico.com>
 MIME-Version: 1.0
-References: <1580137671-22081-1-git-send-email-madalin.bucur@oss.nxp.com> <1580137671-22081-3-git-send-email-madalin.bucur@oss.nxp.com>
-In-Reply-To: <1580137671-22081-3-git-send-email-madalin.bucur@oss.nxp.com>
-From:   Vladimir Oltean <olteanv@gmail.com>
-Date:   Mon, 27 Jan 2020 17:31:07 +0200
-Message-ID: <CA+h21hqzR72v9=dWGk1zBptNHNst+kajh6SHHSUMp02fAq5m5g@mail.gmail.com>
-Subject: Re: [PATCH v2 2/2] dpaa_eth: support all modes with rate adapting PHYs
-To:     madalin.bucur@oss.nxp.com
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        netdev <netdev@vger.kernel.org>, ykaukab@suse.de
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <d34183026b1a46a082f73ab3d0888c92cf6286ec.1580068813.git.hns@goldelico.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Madalin,
-
-On Mon, 27 Jan 2020 at 17:08, Madalin Bucur <madalin.bucur@oss.nxp.com> wrote:
->
-> Stop removing modes that are not supported on the system interface
-> when the connected PHY is capable of rate adaptation. This addresses
-> an issue with the LS1046ARDB board 10G interface no longer working
-> with an 1G link partner after autonegotiation support was added
-> for the Aquantia PHY on board in
->
-> commit 09c4c57f7bc4 ("net: phy: aquantia: add support for auto-negotiation configuration")
->
-> Before this commit the values advertised by the PHY were not
-> influenced by the dpaa_eth driver removal of system-side unsupported
-> modes as the aqr_config_aneg() was basically a no-op. After this
-> commit, the modes removed by the dpaa_eth driver were no longer
-> advertised thus autonegotiation with 1G link partners failed.
->
-> Reported-by: Mian Yousaf Kaukab <ykaukab@suse.de>
-> Signed-off-by: Madalin Bucur <madalin.bucur@oss.nxp.com>
+On Sun, 26 Jan 2020 21:00:13 +0100, "H. Nikolaus Schaller" wrote:
+> It is now only useful for SPI interface.
+> Power control of SDIO mode is done through mmc core.
+> 
+> Suggested by: Ulf Hansson <ulf.hansson@linaro.org>
+> Signed-off-by: H. Nikolaus Schaller <hns@goldelico.com>
 > ---
->  drivers/net/ethernet/freescale/dpaa/dpaa_eth.c | 10 +++++++---
->  1 file changed, 7 insertions(+), 3 deletions(-)
->
-> diff --git a/drivers/net/ethernet/freescale/dpaa/dpaa_eth.c b/drivers/net/ethernet/freescale/dpaa/dpaa_eth.c
-> index a301f0095223..d3eb235450e5 100644
-> --- a/drivers/net/ethernet/freescale/dpaa/dpaa_eth.c
-> +++ b/drivers/net/ethernet/freescale/dpaa/dpaa_eth.c
-> @@ -2471,9 +2471,13 @@ static int dpaa_phy_init(struct net_device *net_dev)
->                 return -ENODEV;
->         }
->
-> -       /* Remove any features not supported by the controller */
-> -       ethtool_convert_legacy_u32_to_link_mode(mask, mac_dev->if_support);
-> -       linkmode_and(phy_dev->supported, phy_dev->supported, mask);
-> +       if (mac_dev->phy_if != PHY_INTERFACE_MODE_XGMII ||
-> +           !phy_dev->rate_adaptation) {
-> +               /* Remove any features not supported by the controller */
-> +               ethtool_convert_legacy_u32_to_link_mode(mask,
-> +                                                       mac_dev->if_support);
-> +               linkmode_and(phy_dev->supported, phy_dev->supported, mask);
-> +       }
+>  Documentation/devicetree/bindings/net/wireless/ti,wl1251.txt | 3 ++-
+>  1 file changed, 2 insertions(+), 1 deletion(-)
+> 
 
-Is this sufficient?
-I suppose this works because you have flow control enabled by default?
-What would happen if the user would disable flow control with ethtool?
+Please add Acked-by/Reviewed-by tags when posting new versions. However,
+there's no need to repost patches *only* to add the tags. The upstream
+maintainer will do that for acks received on the version they apply.
 
->
->         phy_support_asym_pause(phy_dev);
->
-> --
-> 2.1.0
->
-
-Regards,
--Vladimir
+If a tag was not added on purpose, please state why and what changed.
