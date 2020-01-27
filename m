@@ -2,54 +2,58 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 2752614A473
+	by mail.lfdr.de (Postfix) with ESMTP id E78DB14A474
 	for <lists+netdev@lfdr.de>; Mon, 27 Jan 2020 14:05:54 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726571AbgA0NFt (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 27 Jan 2020 08:05:49 -0500
-Received: from mail-pl1-f195.google.com ([209.85.214.195]:33145 "EHLO
-        mail-pl1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725907AbgA0NFs (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 27 Jan 2020 08:05:48 -0500
-Received: by mail-pl1-f195.google.com with SMTP id ay11so3744524plb.0
-        for <netdev@vger.kernel.org>; Mon, 27 Jan 2020 05:05:48 -0800 (PST)
+        id S1726650AbgA0NFw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 27 Jan 2020 08:05:52 -0500
+Received: from mail-pj1-f65.google.com ([209.85.216.65]:51372 "EHLO
+        mail-pj1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725828AbgA0NFw (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 27 Jan 2020 08:05:52 -0500
+Received: by mail-pj1-f65.google.com with SMTP id d15so2937241pjw.1
+        for <netdev@vger.kernel.org>; Mon, 27 Jan 2020 05:05:52 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=Zc0El/tSao4utC8ALPz3MjLbn8m5+Vgx33vACaxMO1s=;
-        b=lricIBF8jhv18QA3qG6BkF5/z3MSIaJwCv8ISFHsFXDvqsKdcatqVeStVxcx76AT0q
-         5lGXO9EIXuVTOjU63M4QIy6fzx4aM7e7UlxZcPve4ahQxF4DG9gmL0vyPlEvElgJa/zW
-         wR7VeNMQ+iT67/yWjSiPCS1u3KwdY73eQa8gIy8nwoFOWFi+H4ndAJqxHTLHWbBk0on5
-         34rc18qmkUa5wOJ0cwt7Wi/PtPwZgJl0399HpLN2DofSs7X+C7gFNoND/NNkpoaVQrm6
-         kHhwzMbUIkSA1xJNu+qEa4HDFU39qM5zV9dv17pHJyaUhGbzRzls5ENY6C6YzVlW2lwm
-         KDig==
+        bh=QHmrUbINS89CjIqKsQlggunX8AgiLFGErKDeupIdXj4=;
+        b=lq7ewKbMYe88bPnamBJ+otsTvdvqLi31VVQiCDFin1o5q+xJ2tfa/X132qMPi+qfE7
+         Gln4VeJ0FwGx3vOo86BX00cgDetrf4cTL6CFdd1BRFoVJGzoEwN5mlcMWI4I6jjcoo0b
+         IHLnsLyameXZcO/GoI0Tovr/flrUDc7Hc5nzL+1n/kzDOqLpzWg9oiLg0e8C1sHovYfi
+         7zl1DBif9g+cBYURnGdP9TccA69oSStkdSo5cY4o0KJ7AFrpKe029BO0cZ2fKbbukV5r
+         Nwhmmq8m1yPCcMXBPpw3kXeohJx+dm3rWSjeuQZnCm1q5nT77MAVXzS2Hja8hHYhIQ0P
+         X+/Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references;
-        bh=Zc0El/tSao4utC8ALPz3MjLbn8m5+Vgx33vACaxMO1s=;
-        b=cJ3Di38+PMD0S22q6ZjpREoaMiArHGPXDYkTU/xpAljnu1RUVMyBp5rnZz7mkNFXuC
-         xBsKRCsaua6uO2uTwmah2WcaKnczg2p2sJH5wZieO3D+wqAreEOH/RhAvXew3hPH72un
-         sJGdf6k1JSeU5SgAqbnbdrmrGwpjaHORZ6MU2q9v/nPTBg6bkms/AGpxlTsgTGKdaI2q
-         HfHjgTZw3dpJKD5w8UbBlGymUFY1cAFZc7p9Cc5qD+EBAd6+OnoR7J3w30FjoVjAuK7u
-         cNkiZPU0dfnsfUXRxRdDoH/FDIziKDaEtu3zqcxQEntFP6KkATaaW5acnYe/t/KM6Tmb
-         ZG/Q==
-X-Gm-Message-State: APjAAAW1GJJkbnGTZHTfazSgU4FDXc5Iu4/S73AGbv/QvqsEbYTPUO2l
-        0pP8vGZs4c2ei9416ws9U9DmYfsIiaM=
-X-Google-Smtp-Source: APXvYqwI7cCS0PsuuJY0rapshUss0iSuxrTMxuqu/MR3nE0SqkA+Ol2R/zWEapWFmwTF41lbcYO+ZQ==
-X-Received: by 2002:a17:902:ff11:: with SMTP id f17mr17061599plj.273.1580130347503;
-        Mon, 27 Jan 2020 05:05:47 -0800 (PST)
+        bh=QHmrUbINS89CjIqKsQlggunX8AgiLFGErKDeupIdXj4=;
+        b=iRap7K8DltHoW9P5JNtJxg2AM/tg8QJdgBcPVDJdRfozWN9w2d8vGUhH63qh432ZFO
+         3VeGM9W/WNMB0SZhNDtQ8B3YTaBKLn5EX9ClnqGlrzNFBeliL1QuSlAZdnJxhiq75gB5
+         h54auTWQD1H+QrlIvXCfMeJZZaPyw25+nbJr6EyERZFRYNLqsTs7OFrp/6Il0T9Hk0UD
+         Hot+ZEv4btuGQe081EUSCBlPyUQzq+PQ98fM8jhyXUs04WMQF6HnxN8Oi69XOkqVeUdj
+         +7FzrfAk3ExYGRTuXw1URD3oMrDZYZwCqBDIaZlYMuJCjdXBGYyhN/yKIvsMb8CibNXw
+         SzNQ==
+X-Gm-Message-State: APjAAAU/juMMpuMvyW+iuqzhNZDeFKCNmlrIFtpWhcu8KScG6K/JgO93
+        tL2ImBauevGB9CE9acT3B2C+myMDrgA=
+X-Google-Smtp-Source: APXvYqwFDhITZ3rYODPPPZJgH52FyQcWd1GVagybG/Geolgp4BygGK4zNXh8r9zFnPDdnvTOpd3K2Q==
+X-Received: by 2002:a17:902:904c:: with SMTP id w12mr18215781plz.35.1580130351389;
+        Mon, 27 Jan 2020 05:05:51 -0800 (PST)
 Received: from machine421.marvell.com ([115.113.156.2])
-        by smtp.googlemail.com with ESMTPSA id c15sm17241717pja.30.2020.01.27.05.05.44
+        by smtp.googlemail.com with ESMTPSA id c15sm17241717pja.30.2020.01.27.05.05.47
         (version=TLS1_2 cipher=ECDHE-RSA-AES128-SHA bits=128/128);
-        Mon, 27 Jan 2020 05:05:46 -0800 (PST)
+        Mon, 27 Jan 2020 05:05:50 -0800 (PST)
 From:   sunil.kovvuri@gmail.com
 To:     netdev@vger.kernel.org
 Cc:     davem@davemloft.net, kubakici@wp.pl, mkubecek@suse.cz,
-        maciej.fijalkowski@intel.com, Sunil Goutham <sgoutham@marvell.com>
-Subject: [PATCH v6 01/17] octeontx2-pf: Add Marvell OcteonTX2 NIC driver
-Date:   Mon, 27 Jan 2020 18:35:15 +0530
-Message-Id: <1580130331-8964-2-git-send-email-sunil.kovvuri@gmail.com>
+        maciej.fijalkowski@intel.com, Sunil Goutham <sgoutham@marvell.com>,
+        Geetha sowjanya <gakula@marvell.com>,
+        Christina Jacob <cjacob@marvell.com>,
+        Subbaraya Sundeep <sbhatta@marvell.com>,
+        Aleksey Makarov <amakarov@marvell.com>
+Subject: [PATCH v6 02/17] octeontx2-pf: Mailbox communication with AF
+Date:   Mon, 27 Jan 2020 18:35:16 +0530
+Message-Id: <1580130331-8964-3-git-send-email-sunil.kovvuri@gmail.com>
 X-Mailer: git-send-email 2.7.4
 In-Reply-To: <1580130331-8964-1-git-send-email-sunil.kovvuri@gmail.com>
 References: <1580130331-8964-1-git-send-email-sunil.kovvuri@gmail.com>
@@ -60,74 +64,50 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Sunil Goutham <sgoutham@marvell.com>
 
-This patch adds template for the Marvell's OcteonTX2 network
-controller's physical function driver. Just the probe, PCI
-specific initialization and netdev registration.
+In the resource virtualization unit (RVU) each of the PF and AF
+(admin function) share a 64KB of reserved memory region for
+communication. This patch initializes PF <=> AF mailbox IRQs,
+registers handlers for processing these communication messages.
+Also adds support to process these messages in both directions
+ie responses to PF initiated DOWN (PF => AF) messages and AF
+initiated UP messages (AF => PF).
 
+Mbox communication APIs and message formats are defined in AF driver
+(drivers/net/ethernet/marvell/octeontx2/af), mbox.h from AF driver is
+included here to avoid duplication.
+
+Signed-off-by: Geetha sowjanya <gakula@marvell.com>
+Signed-off-by: Christina Jacob <cjacob@marvell.com>
+Signed-off-by: Subbaraya Sundeep <sbhatta@marvell.com>
+Signed-off-by: Aleksey Makarov <amakarov@marvell.com>
 Signed-off-by: Sunil Goutham <sgoutham@marvell.com>
 ---
- drivers/net/ethernet/marvell/octeontx2/Kconfig     |   8 +
- drivers/net/ethernet/marvell/octeontx2/Makefile    |   2 +
- .../net/ethernet/marvell/octeontx2/nic/Makefile    |  10 +
- .../ethernet/marvell/octeontx2/nic/otx2_common.h   |  77 ++++++++
- .../net/ethernet/marvell/octeontx2/nic/otx2_pf.c   | 214 +++++++++++++++++++++
- .../net/ethernet/marvell/octeontx2/nic/otx2_reg.h  |  51 +++++
- 6 files changed, 362 insertions(+)
- create mode 100644 drivers/net/ethernet/marvell/octeontx2/nic/Makefile
- create mode 100644 drivers/net/ethernet/marvell/octeontx2/nic/otx2_common.h
- create mode 100644 drivers/net/ethernet/marvell/octeontx2/nic/otx2_pf.c
- create mode 100644 drivers/net/ethernet/marvell/octeontx2/nic/otx2_reg.h
+ .../net/ethernet/marvell/octeontx2/nic/Makefile    |   2 +-
+ .../ethernet/marvell/octeontx2/nic/otx2_common.c   |  28 ++
+ .../ethernet/marvell/octeontx2/nic/otx2_common.h   | 166 ++++++++++
+ .../net/ethernet/marvell/octeontx2/nic/otx2_pf.c   | 359 ++++++++++++++++++++-
+ 4 files changed, 552 insertions(+), 3 deletions(-)
+ create mode 100644 drivers/net/ethernet/marvell/octeontx2/nic/otx2_common.c
 
-diff --git a/drivers/net/ethernet/marvell/octeontx2/Kconfig b/drivers/net/ethernet/marvell/octeontx2/Kconfig
-index fb34fbd..ced514c 100644
---- a/drivers/net/ethernet/marvell/octeontx2/Kconfig
-+++ b/drivers/net/ethernet/marvell/octeontx2/Kconfig
-@@ -25,3 +25,11 @@ config NDC_DIS_DYNAMIC_CACHING
- 	  This config option disables caching of dynamic entries such as NIX SQEs
- 	  , NPA stack pages etc in NDC. Also locks down NIX SQ/CQ/RQ/RSS and
- 	  NPA Aura/Pool contexts.
-+
-+config OCTEONTX2_PF
-+	tristate "Marvell OcteonTX2 NIC Physical Function driver"
-+	select OCTEONTX2_MBOX
-+	depends on (64BIT && COMPILE_TEST) || ARM64
-+	depends on PCI
-+	help
-+	  This driver supports Marvell's OcteonTX2 NIC physical function.
-diff --git a/drivers/net/ethernet/marvell/octeontx2/Makefile b/drivers/net/ethernet/marvell/octeontx2/Makefile
-index e579dcd..0064a69 100644
---- a/drivers/net/ethernet/marvell/octeontx2/Makefile
-+++ b/drivers/net/ethernet/marvell/octeontx2/Makefile
-@@ -3,4 +3,6 @@
- # Makefile for Marvell OcteonTX2 device drivers.
- #
- 
-+obj-$(CONFIG_OCTEONTX2_MBOX) += af/
- obj-$(CONFIG_OCTEONTX2_AF) += af/
-+obj-$(CONFIG_OCTEONTX2_PF) += nic/
 diff --git a/drivers/net/ethernet/marvell/octeontx2/nic/Makefile b/drivers/net/ethernet/marvell/octeontx2/nic/Makefile
-new file mode 100644
-index 0000000..622b803
---- /dev/null
+index 622b803..339fde8 100644
+--- a/drivers/net/ethernet/marvell/octeontx2/nic/Makefile
 +++ b/drivers/net/ethernet/marvell/octeontx2/nic/Makefile
-@@ -0,0 +1,10 @@
-+# SPDX-License-Identifier: GPL-2.0
-+#
-+# Makefile for Marvell's OcteonTX2 ethernet device drivers
-+#
-+
-+obj-$(CONFIG_OCTEONTX2_PF) += octeontx2_nicpf.o
-+
-+octeontx2_nicpf-y := otx2_pf.o
-+
-+ccflags-y += -I$(srctree)/drivers/net/ethernet/marvell/octeontx2/af
-diff --git a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_common.h b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_common.h
+@@ -5,6 +5,6 @@
+ 
+ obj-$(CONFIG_OCTEONTX2_PF) += octeontx2_nicpf.o
+ 
+-octeontx2_nicpf-y := otx2_pf.o
++octeontx2_nicpf-y := otx2_pf.o otx2_common.o
+ 
+ ccflags-y += -I$(srctree)/drivers/net/ethernet/marvell/octeontx2/af
+diff --git a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_common.c b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_common.c
 new file mode 100644
-index 0000000..9d52ab3
+index 0000000..cbab325
 --- /dev/null
-+++ b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_common.h
-@@ -0,0 +1,77 @@
-+/* SPDX-License-Identifier: GPL-2.0 */
++++ b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_common.c
+@@ -0,0 +1,28 @@
++// SPDX-License-Identifier: GPL-2.0
 +/* Marvell OcteonTx2 RVU Ethernet driver
 + *
 + * Copyright (C) 2020 Marvell International Ltd.
@@ -137,350 +117,639 @@ index 0000000..9d52ab3
 + * published by the Free Software Foundation.
 + */
 +
-+#ifndef OTX2_COMMON_H
-+#define OTX2_COMMON_H
-+
++#include <linux/interrupt.h>
 +#include <linux/pci.h>
 +
 +#include "otx2_reg.h"
-+
-+/* PCI device IDs */
-+#define PCI_DEVID_OCTEONTX2_RVU_PF              0xA063
-+
-+/* PCI BAR nos */
-+#define PCI_CFG_REG_BAR_NUM                     2
-+
-+struct otx2_hw {
-+	struct pci_dev		*pdev;
-+	u16                     rx_queues;
-+	u16                     tx_queues;
-+	u16			max_queues;
-+};
-+
-+struct otx2_nic {
-+	void __iomem		*reg_base;
-+	struct net_device	*netdev;
-+
-+	struct otx2_hw		hw;
-+	struct pci_dev		*pdev;
-+	struct device		*dev;
-+};
-+
-+/* Register read/write APIs */
-+static inline void __iomem *otx2_get_regaddr(struct otx2_nic *nic, u64 offset)
-+{
-+	u64 blkaddr;
-+
-+	switch ((offset >> RVU_FUNC_BLKADDR_SHIFT) & RVU_FUNC_BLKADDR_MASK) {
-+	case BLKTYPE_NIX:
-+		blkaddr = BLKADDR_NIX0;
-+		break;
-+	case BLKTYPE_NPA:
-+		blkaddr = BLKADDR_NPA;
-+		break;
-+	default:
-+		blkaddr = BLKADDR_RVUM;
-+		break;
-+	};
-+
-+	offset &= ~(RVU_FUNC_BLKADDR_MASK << RVU_FUNC_BLKADDR_SHIFT);
-+	offset |= (blkaddr << RVU_FUNC_BLKADDR_SHIFT);
-+
-+	return nic->reg_base + offset;
-+}
-+
-+static inline void otx2_write64(struct otx2_nic *nic, u64 offset, u64 val)
-+{
-+	void __iomem *addr = otx2_get_regaddr(nic, offset);
-+
-+	writeq(val, addr);
-+}
-+
-+static inline u64 otx2_read64(struct otx2_nic *nic, u64 offset)
-+{
-+	void __iomem *addr = otx2_get_regaddr(nic, offset);
-+
-+	return readq(addr);
-+}
-+
-+#endif /* OTX2_COMMON_H */
-diff --git a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_pf.c b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_pf.c
-new file mode 100644
-index 0000000..d3af200
---- /dev/null
-+++ b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_pf.c
-@@ -0,0 +1,214 @@
-+// SPDX-License-Identifier: GPL-2.0
-+/* Marvell OcteonTx2 RVU Physcial Function ethernet driver
-+ *
-+ * Copyright (C) 2020 Marvell International Ltd.
-+ *
-+ * This program is free software; you can redistribute it and/or modify
-+ * it under the terms of the GNU General Public License version 2 as
-+ * published by the Free Software Foundation.
-+ */
-+
-+#include <linux/module.h>
-+#include <linux/interrupt.h>
-+#include <linux/pci.h>
-+#include <linux/etherdevice.h>
-+#include <linux/of.h>
-+#include <linux/if_vlan.h>
-+#include <linux/iommu.h>
-+#include <net/ip.h>
-+
 +#include "otx2_common.h"
 +
-+#define DRV_NAME	"octeontx2-nicpf"
-+#define DRV_STRING	"Marvell OcteonTX2 NIC Physical Function Driver"
-+#define DRV_VERSION	"1.0"
++#define M(_name, _id, _fn_name, _req_type, _rsp_type)			\
++int __weak								\
++otx2_mbox_up_handler_ ## _fn_name(struct otx2_nic *pfvf,		\
++				struct _req_type *req,			\
++				struct _rsp_type *rsp)			\
++{									\
++	/* Nothing to do here */					\
++	return 0;							\
++}									\
++EXPORT_SYMBOL(otx2_mbox_up_handler_ ## _fn_name);
++MBOX_UP_CGX_MESSAGES
++#undef M
+diff --git a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_common.h b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_common.h
+index 9d52ab3..a21eaaf6 100644
+--- a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_common.h
++++ b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_common.h
+@@ -13,6 +13,7 @@
+ 
+ #include <linux/pci.h>
+ 
++#include <mbox.h>
+ #include "otx2_reg.h"
+ 
+ /* PCI device IDs */
+@@ -20,12 +21,31 @@
+ 
+ /* PCI BAR nos */
+ #define PCI_CFG_REG_BAR_NUM                     2
++#define PCI_MBOX_BAR_NUM                        4
 +
-+/* Supported devices */
-+static const struct pci_device_id otx2_pf_id_table[] = {
-+	{ PCI_DEVICE(PCI_VENDOR_ID_CAVIUM, PCI_DEVID_OCTEONTX2_RVU_PF) },
-+	{ 0, }  /* end of table */
++#define NAME_SIZE                               32
++
++struct mbox {
++	struct otx2_mbox	mbox;
++	struct work_struct	mbox_wrk;
++	struct otx2_mbox	mbox_up;
++	struct work_struct	mbox_up_wrk;
++	struct otx2_nic		*pfvf;
++	void			*bbuf_base; /* Bounce buffer for mbox memory */
++	struct mutex		lock;	/* serialize mailbox access */
++	int			num_msgs; /* mbox number of messages */
++	int			up_num_msgs; /* mbox_up number of messages */
 +};
+ 
+ struct otx2_hw {
+ 	struct pci_dev		*pdev;
+ 	u16                     rx_queues;
+ 	u16                     tx_queues;
+ 	u16			max_queues;
 +
-+MODULE_AUTHOR("Marvell International Ltd.");
-+MODULE_DESCRIPTION(DRV_STRING);
-+MODULE_LICENSE("GPL v2");
-+MODULE_VERSION(DRV_VERSION);
-+MODULE_DEVICE_TABLE(pci, otx2_pf_id_table);
++	/* MSI-X */
++	char			*irq_name;
++	cpumask_var_t           *affinity_mask;
+ };
+ 
+ struct otx2_nic {
+@@ -35,6 +55,12 @@ struct otx2_nic {
+ 	struct otx2_hw		hw;
+ 	struct pci_dev		*pdev;
+ 	struct device		*dev;
 +
-+static int otx2_set_real_num_queues(struct net_device *netdev,
-+				    int tx_queues, int rx_queues)
++	/* Mbox */
++	struct mbox		mbox;
++	struct workqueue_struct *mbox_wq;
++
++	u16			pcifunc; /* RVU PF_FUNC */
+ };
+ 
+ /* Register read/write APIs */
+@@ -74,4 +100,144 @@ static inline u64 otx2_read64(struct otx2_nic *nic, u64 offset)
+ 	return readq(addr);
+ }
+ 
++/* Mbox bounce buffer APIs */
++static inline int otx2_mbox_bbuf_init(struct mbox *mbox, struct pci_dev *pdev)
++{
++	struct otx2_mbox *otx2_mbox;
++	struct otx2_mbox_dev *mdev;
++
++	mbox->bbuf_base = devm_kmalloc(&pdev->dev, MBOX_SIZE, GFP_KERNEL);
++	if (!mbox->bbuf_base)
++		return -ENOMEM;
++
++	/* Overwrite mbox mbase to point to bounce buffer, so that PF/VF
++	 * prepare all mbox messages in bounce buffer instead of directly
++	 * in hw mbox memory.
++	 */
++	otx2_mbox = &mbox->mbox;
++	mdev = &otx2_mbox->dev[0];
++	mdev->mbase = mbox->bbuf_base;
++
++	otx2_mbox = &mbox->mbox_up;
++	mdev = &otx2_mbox->dev[0];
++	mdev->mbase = mbox->bbuf_base;
++	return 0;
++}
++
++static inline void otx2_sync_mbox_bbuf(struct otx2_mbox *mbox, int devid)
++{
++	u16 msgs_offset = ALIGN(sizeof(struct mbox_hdr), MBOX_MSG_ALIGN);
++	void *hw_mbase = mbox->hwbase + (devid * MBOX_SIZE);
++	struct otx2_mbox_dev *mdev = &mbox->dev[devid];
++	struct mbox_hdr *hdr;
++	u64 msg_size;
++
++	if (mdev->mbase == hw_mbase)
++		return;
++
++	hdr = hw_mbase + mbox->rx_start;
++	msg_size = hdr->msg_size;
++
++	if (msg_size > mbox->rx_size - msgs_offset)
++		msg_size = mbox->rx_size - msgs_offset;
++
++	/* Copy mbox messages from mbox memory to bounce buffer */
++	memcpy(mdev->mbase + mbox->rx_start,
++	       hw_mbase + mbox->rx_start, msg_size + msgs_offset);
++}
++
++static inline void otx2_mbox_lock_init(struct mbox *mbox)
++{
++	mutex_init(&mbox->lock);
++}
++
++static inline void otx2_mbox_lock(struct mbox *mbox)
++{
++	mutex_lock(&mbox->lock);
++}
++
++static inline void otx2_mbox_unlock(struct mbox *mbox)
++{
++	mutex_unlock(&mbox->lock);
++}
++
++/* Mbox APIs */
++static inline int otx2_sync_mbox_msg(struct mbox *mbox)
 +{
 +	int err;
 +
-+	err = netif_set_real_num_tx_queues(netdev, tx_queues);
++	if (!otx2_mbox_nonempty(&mbox->mbox, 0))
++		return 0;
++	otx2_mbox_msg_send(&mbox->mbox, 0);
++	err = otx2_mbox_wait_for_rsp(&mbox->mbox, 0);
++	if (err)
++		return err;
++
++	return otx2_mbox_check_rsp_msgs(&mbox->mbox, 0);
++}
++
++static inline int otx2_sync_mbox_up_msg(struct mbox *mbox, int devid)
++{
++	int err;
++
++	if (!otx2_mbox_nonempty(&mbox->mbox_up, devid))
++		return 0;
++	otx2_mbox_msg_send(&mbox->mbox_up, devid);
++	err = otx2_mbox_wait_for_rsp(&mbox->mbox_up, devid);
++	if (err)
++		return err;
++
++	return otx2_mbox_check_rsp_msgs(&mbox->mbox_up, devid);
++}
++
++/* Use this API to send mbox msgs in atomic context
++ * where sleeping is not allowed
++ */
++static inline int otx2_sync_mbox_msg_busy_poll(struct mbox *mbox)
++{
++	int err;
++
++	if (!otx2_mbox_nonempty(&mbox->mbox, 0))
++		return 0;
++	otx2_mbox_msg_send(&mbox->mbox, 0);
++	err = otx2_mbox_busy_poll_for_rsp(&mbox->mbox, 0);
++	if (err)
++		return err;
++
++	return otx2_mbox_check_rsp_msgs(&mbox->mbox, 0);
++}
++
++#define M(_name, _id, _fn_name, _req_type, _rsp_type)                   \
++static struct _req_type __maybe_unused					\
++*otx2_mbox_alloc_msg_ ## _fn_name(struct mbox *mbox)                    \
++{									\
++	struct _req_type *req;						\
++									\
++	req = (struct _req_type *)otx2_mbox_alloc_msg_rsp(		\
++		&mbox->mbox, 0, sizeof(struct _req_type),		\
++		sizeof(struct _rsp_type));				\
++	if (!req)							\
++		return NULL;						\
++	req->hdr.sig = OTX2_MBOX_REQ_SIG;				\
++	req->hdr.id = _id;						\
++	return req;							\
++}
++
++MBOX_MESSAGES
++#undef M
++
++#define M(_name, _id, _fn_name, _req_type, _rsp_type)			\
++int									\
++otx2_mbox_up_handler_ ## _fn_name(struct otx2_nic *pfvf,		\
++				struct _req_type *req,			\
++				struct _rsp_type *rsp);			\
++
++MBOX_UP_CGX_MESSAGES
++#undef M
++
++#define	RVU_PFVF_PF_SHIFT	10
++#define	RVU_PFVF_PF_MASK	0x3F
++#define	RVU_PFVF_FUNC_SHIFT	0
++#define	RVU_PFVF_FUNC_MASK	0x3FF
++
+ #endif /* OTX2_COMMON_H */
+diff --git a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_pf.c b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_pf.c
+index d3af200..e21bc10 100644
+--- a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_pf.c
++++ b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_pf.c
+@@ -35,6 +35,322 @@ MODULE_LICENSE("GPL v2");
+ MODULE_VERSION(DRV_VERSION);
+ MODULE_DEVICE_TABLE(pci, otx2_pf_id_table);
+ 
++enum {
++	TYPE_PFAF,
++	TYPE_PFVF,
++};
++
++static void otx2_queue_work(struct mbox *mw, struct workqueue_struct *mbox_wq,
++			    int first, int mdevs, u64 intr, int type)
++{
++	struct otx2_mbox_dev *mdev;
++	struct otx2_mbox *mbox;
++	struct mbox_hdr *hdr;
++	int i;
++
++	for (i = first; i < mdevs; i++) {
++		/* start from 0 */
++		if (!(intr & BIT_ULL(i - first)))
++			continue;
++
++		mbox = &mw->mbox;
++		mdev = &mbox->dev[i];
++		if (type == TYPE_PFAF)
++			otx2_sync_mbox_bbuf(mbox, i);
++		hdr = mdev->mbase + mbox->rx_start;
++		/* The hdr->num_msgs is set to zero immediately in the interrupt
++		 * handler to  ensure that it holds a correct value next time
++		 * when the interrupt handler is called.
++		 * pf->mbox.num_msgs holds the data for use in pfaf_mbox_handler
++		 * pf>mbox.up_num_msgs holds the data for use in
++		 * pfaf_mbox_up_handler.
++		 */
++		if (hdr->num_msgs) {
++			mw[i].num_msgs = hdr->num_msgs;
++			hdr->num_msgs = 0;
++			if (type == TYPE_PFAF)
++				memset(mbox->hwbase + mbox->rx_start, 0,
++				       ALIGN(sizeof(struct mbox_hdr),
++					     sizeof(u64)));
++
++			queue_work(mbox_wq, &mw[i].mbox_wrk);
++		}
++
++		mbox = &mw->mbox_up;
++		mdev = &mbox->dev[i];
++		if (type == TYPE_PFAF)
++			otx2_sync_mbox_bbuf(mbox, i);
++		hdr = mdev->mbase + mbox->rx_start;
++		if (hdr->num_msgs) {
++			mw[i].up_num_msgs = hdr->num_msgs;
++			hdr->num_msgs = 0;
++			if (type == TYPE_PFAF)
++				memset(mbox->hwbase + mbox->rx_start, 0,
++				       ALIGN(sizeof(struct mbox_hdr),
++					     sizeof(u64)));
++
++			queue_work(mbox_wq, &mw[i].mbox_up_wrk);
++		}
++	}
++}
++
++static void otx2_process_pfaf_mbox_msg(struct otx2_nic *pf,
++				       struct mbox_msghdr *msg)
++{
++	if (msg->id >= MBOX_MSG_MAX) {
++		dev_err(pf->dev,
++			"Mbox msg with unknown ID 0x%x\n", msg->id);
++		return;
++	}
++
++	if (msg->sig != OTX2_MBOX_RSP_SIG) {
++		dev_err(pf->dev,
++			"Mbox msg with wrong signature %x, ID 0x%x\n",
++			 msg->sig, msg->id);
++		return;
++	}
++
++	switch (msg->id) {
++	case MBOX_MSG_READY:
++		pf->pcifunc = msg->pcifunc;
++		break;
++	default:
++		if (msg->rc)
++			dev_err(pf->dev,
++				"Mbox msg response has err %d, ID 0x%x\n",
++				msg->rc, msg->id);
++		break;
++	}
++}
++
++static void otx2_pfaf_mbox_handler(struct work_struct *work)
++{
++	struct otx2_mbox_dev *mdev;
++	struct mbox_hdr *rsp_hdr;
++	struct mbox_msghdr *msg;
++	struct otx2_mbox *mbox;
++	struct mbox *af_mbox;
++	struct otx2_nic *pf;
++	int offset, id;
++
++	af_mbox = container_of(work, struct mbox, mbox_wrk);
++	mbox = &af_mbox->mbox;
++	mdev = &mbox->dev[0];
++	rsp_hdr = (struct mbox_hdr *)(mdev->mbase + mbox->rx_start);
++
++	offset = mbox->rx_start + ALIGN(sizeof(*rsp_hdr), MBOX_MSG_ALIGN);
++	pf = af_mbox->pfvf;
++
++	for (id = 0; id < af_mbox->num_msgs; id++) {
++		msg = (struct mbox_msghdr *)(mdev->mbase + offset);
++		otx2_process_pfaf_mbox_msg(pf, msg);
++		offset = mbox->rx_start + msg->next_msgoff;
++		mdev->msgs_acked++;
++	}
++
++	otx2_mbox_reset(mbox, 0);
++}
++
++static int otx2_process_mbox_msg_up(struct otx2_nic *pf,
++				    struct mbox_msghdr *req)
++{
++	/* Check if valid, if not reply with a invalid msg */
++	if (req->sig != OTX2_MBOX_REQ_SIG) {
++		otx2_reply_invalid_msg(&pf->mbox.mbox_up, 0, 0, req->id);
++		return -ENODEV;
++	}
++
++	switch (req->id) {
++#define M(_name, _id, _fn_name, _req_type, _rsp_type)			\
++	case _id: {							\
++		struct _rsp_type *rsp;					\
++		int err;						\
++									\
++		rsp = (struct _rsp_type *)otx2_mbox_alloc_msg(		\
++			&pf->mbox.mbox_up, 0,				\
++			sizeof(struct _rsp_type));			\
++		if (!rsp)						\
++			return -ENOMEM;					\
++									\
++		rsp->hdr.id = _id;					\
++		rsp->hdr.sig = OTX2_MBOX_RSP_SIG;			\
++		rsp->hdr.pcifunc = 0;					\
++		rsp->hdr.rc = 0;					\
++									\
++		err = otx2_mbox_up_handler_ ## _fn_name(		\
++			pf, (struct _req_type *)req, rsp);		\
++		return err;						\
++	}
++MBOX_UP_CGX_MESSAGES
++#undef M
++		break;
++	default:
++		otx2_reply_invalid_msg(&pf->mbox.mbox_up, 0, 0, req->id);
++		return -ENODEV;
++	}
++	return 0;
++}
++
++static void otx2_pfaf_mbox_up_handler(struct work_struct *work)
++{
++	struct mbox *af_mbox = container_of(work, struct mbox, mbox_up_wrk);
++	struct otx2_mbox *mbox = &af_mbox->mbox_up;
++	struct otx2_mbox_dev *mdev = &mbox->dev[0];
++	struct otx2_nic *pf = af_mbox->pfvf;
++	int offset, id, devid = 0;
++	struct mbox_hdr *rsp_hdr;
++	struct mbox_msghdr *msg;
++
++	rsp_hdr = (struct mbox_hdr *)(mdev->mbase + mbox->rx_start);
++
++	offset = mbox->rx_start + ALIGN(sizeof(*rsp_hdr), MBOX_MSG_ALIGN);
++
++	for (id = 0; id < af_mbox->up_num_msgs; id++) {
++		msg = (struct mbox_msghdr *)(mdev->mbase + offset);
++
++		devid = msg->pcifunc & RVU_PFVF_FUNC_MASK;
++		/* Skip processing VF's messages */
++		if (!devid)
++			otx2_process_mbox_msg_up(pf, msg);
++		offset = mbox->rx_start + msg->next_msgoff;
++	}
++
++	otx2_mbox_msg_send(mbox, 0);
++}
++
++static irqreturn_t otx2_pfaf_mbox_intr_handler(int irq, void *pf_irq)
++{
++	struct otx2_nic *pf = (struct otx2_nic *)pf_irq;
++	struct mbox *mbox;
++
++	/* Clear the IRQ */
++	otx2_write64(pf, RVU_PF_INT, BIT_ULL(0));
++
++	mbox = &pf->mbox;
++	otx2_queue_work(mbox, pf->mbox_wq, 0, 1, 1, TYPE_PFAF);
++
++	return IRQ_HANDLED;
++}
++
++static void otx2_disable_mbox_intr(struct otx2_nic *pf)
++{
++	int vector = pci_irq_vector(pf->pdev, RVU_PF_INT_VEC_AFPF_MBOX);
++
++	/* Disable AF => PF mailbox IRQ */
++	otx2_write64(pf, RVU_PF_INT_ENA_W1C, BIT_ULL(0));
++	free_irq(vector, pf);
++}
++
++static int otx2_register_mbox_intr(struct otx2_nic *pf, bool probe_af)
++{
++	struct otx2_hw *hw = &pf->hw;
++	struct msg_req *req;
++	char *irq_name;
++	int err;
++
++	/* Register mailbox interrupt handler */
++	irq_name = &hw->irq_name[RVU_PF_INT_VEC_AFPF_MBOX * NAME_SIZE];
++	snprintf(irq_name, NAME_SIZE, "RVUPFAF Mbox");
++	err = request_irq(pci_irq_vector(pf->pdev, RVU_PF_INT_VEC_AFPF_MBOX),
++			  otx2_pfaf_mbox_intr_handler, 0, irq_name, pf);
 +	if (err) {
-+		netdev_err(netdev,
-+			   "Failed to set no of Tx queues: %d\n", tx_queues);
++		dev_err(pf->dev,
++			"RVUPF: IRQ registration failed for PFAF mbox irq\n");
 +		return err;
 +	}
 +
-+	err = netif_set_real_num_rx_queues(netdev, rx_queues);
-+	if (err)
-+		netdev_err(netdev,
-+			   "Failed to set no of Rx queues: %d\n", rx_queues);
-+	return err;
-+}
-+
-+static int otx2_open(struct net_device *netdev)
-+{
-+	netif_carrier_off(netdev);
-+
-+	return 0;
-+}
-+
-+static int otx2_stop(struct net_device *netdev)
-+{
-+	return 0;
-+}
-+
-+static const struct net_device_ops otx2_netdev_ops = {
-+	.ndo_open		= otx2_open,
-+	.ndo_stop		= otx2_stop,
-+};
-+
-+static int otx2_check_pf_usable(struct otx2_nic *nic)
-+{
-+	u64 rev;
-+
-+	rev = otx2_read64(nic, RVU_PF_BLOCK_ADDRX_DISC(BLKADDR_RVUM));
-+	rev = (rev >> 12) & 0xFF;
-+	/* Check if AF has setup revision for RVUM block,
-+	 * otherwise this driver probe should be deferred
-+	 * until AF driver comes up.
++	/* Enable mailbox interrupt for msgs coming from AF.
++	 * First clear to avoid spurious interrupts, if any.
 +	 */
-+	if (!rev) {
-+		dev_warn(nic->dev,
-+			 "AF is not initialized, deferring probe\n");
++	otx2_write64(pf, RVU_PF_INT, BIT_ULL(0));
++	otx2_write64(pf, RVU_PF_INT_ENA_W1S, BIT_ULL(0));
++
++	if (!probe_af)
++		return 0;
++
++	/* Check mailbox communication with AF */
++	req = otx2_mbox_alloc_msg_ready(&pf->mbox);
++	if (!req) {
++		otx2_disable_mbox_intr(pf);
++		return -ENOMEM;
++	}
++	err = otx2_sync_mbox_msg(&pf->mbox);
++	if (err) {
++		dev_warn(pf->dev,
++			 "AF not responding to mailbox, deferring probe\n");
++		otx2_disable_mbox_intr(pf);
 +		return -EPROBE_DEFER;
 +	}
++
 +	return 0;
 +}
 +
-+static int otx2_probe(struct pci_dev *pdev, const struct pci_device_id *id)
++static void otx2_pfaf_mbox_destroy(struct otx2_nic *pf)
 +{
-+	struct device *dev = &pdev->dev;
-+	struct net_device *netdev;
-+	struct otx2_nic *pf;
-+	struct otx2_hw *hw;
-+	int err, qcount;
++	struct mbox *mbox = &pf->mbox;
 +
-+	err = pcim_enable_device(pdev);
-+	if (err) {
-+		dev_err(dev, "Failed to enable PCI device\n");
-+		return err;
++	if (pf->mbox_wq) {
++		flush_workqueue(pf->mbox_wq);
++		destroy_workqueue(pf->mbox_wq);
++		pf->mbox_wq = NULL;
 +	}
 +
-+	err = pci_request_regions(pdev, DRV_NAME);
-+	if (err) {
-+		dev_err(dev, "PCI request regions failed 0x%x\n", err);
-+		return err;
-+	}
++	if (mbox->mbox.hwbase)
++		iounmap((void __iomem *)mbox->mbox.hwbase);
 +
-+	err = dma_set_mask_and_coherent(dev, DMA_BIT_MASK(48));
-+	if (err) {
-+		dev_err(dev, "DMA mask config failed, abort\n");
-+		goto err_release_regions;
-+	}
++	otx2_mbox_destroy(&mbox->mbox);
++	otx2_mbox_destroy(&mbox->mbox_up);
++}
 +
-+	pci_set_master(pdev);
++static int otx2_pfaf_mbox_init(struct otx2_nic *pf)
++{
++	struct mbox *mbox = &pf->mbox;
++	void __iomem *hwbase;
++	int err;
 +
-+	/* Set number of queues */
-+	qcount = min_t(int, num_online_cpus(), num_online_cpus());
++	mbox->pfvf = pf;
++	pf->mbox_wq = alloc_workqueue("otx2_pfaf_mailbox",
++				      WQ_UNBOUND | WQ_HIGHPRI |
++				      WQ_MEM_RECLAIM, 1);
++	if (!pf->mbox_wq)
++		return -ENOMEM;
 +
-+	netdev = alloc_etherdev_mqs(sizeof(*pf), qcount, qcount);
-+	if (!netdev) {
++	/* Mailbox is a reserved memory (in RAM) region shared between
++	 * admin function (i.e AF) and this PF, shouldn't be mapped as
++	 * device memory to allow unaligned accesses.
++	 */
++	hwbase = ioremap_wc(pci_resource_start(pf->pdev, PCI_MBOX_BAR_NUM),
++			    pci_resource_len(pf->pdev, PCI_MBOX_BAR_NUM));
++	if (!hwbase) {
++		dev_err(pf->dev, "Unable to map PFAF mailbox region\n");
 +		err = -ENOMEM;
-+		goto err_release_regions;
++		goto exit;
 +	}
 +
-+	pci_set_drvdata(pdev, netdev);
-+	SET_NETDEV_DEV(netdev, &pdev->dev);
-+	pf = netdev_priv(netdev);
-+	pf->netdev = netdev;
-+	pf->pdev = pdev;
-+	pf->dev = dev;
-+
-+	hw = &pf->hw;
-+	hw->pdev = pdev;
-+	hw->rx_queues = qcount;
-+	hw->tx_queues = qcount;
-+	hw->max_queues = qcount;
-+
-+	/* Map CSRs */
-+	pf->reg_base = pcim_iomap(pdev, PCI_CFG_REG_BAR_NUM, 0);
-+	if (!pf->reg_base) {
-+		dev_err(dev, "Unable to map physical function CSRs, aborting\n");
-+		err = -ENOMEM;
-+		goto err_free_netdev;
-+	}
-+
-+	err = otx2_check_pf_usable(pf);
++	err = otx2_mbox_init(&mbox->mbox, hwbase, pf->pdev, pf->reg_base,
++			     MBOX_DIR_PFAF, 1);
 +	if (err)
-+		goto err_free_netdev;
++		goto exit;
 +
-+	err = otx2_set_real_num_queues(netdev, hw->tx_queues, hw->rx_queues);
++	err = otx2_mbox_init(&mbox->mbox_up, hwbase, pf->pdev, pf->reg_base,
++			     MBOX_DIR_PFAF_UP, 1);
 +	if (err)
-+		goto err_free_netdev;
++		goto exit;
 +
-+	netdev->netdev_ops = &otx2_netdev_ops;
++	err = otx2_mbox_bbuf_init(mbox, pf->pdev);
++	if (err)
++		goto exit;
 +
-+	err = register_netdev(netdev);
-+	if (err) {
-+		dev_err(dev, "Failed to register netdevice\n");
-+		goto err_free_netdev;
-+	}
++	INIT_WORK(&mbox->mbox_wrk, otx2_pfaf_mbox_handler);
++	INIT_WORK(&mbox->mbox_up_wrk, otx2_pfaf_mbox_up_handler);
++	otx2_mbox_lock_init(&pf->mbox);
 +
 +	return 0;
-+
-+err_free_netdev:
-+	pci_set_drvdata(pdev, NULL);
-+	free_netdev(netdev);
-+err_release_regions:
-+	pci_release_regions(pdev);
++exit:
++	otx2_pfaf_mbox_destroy(pf);
 +	return err;
 +}
 +
-+static void otx2_remove(struct pci_dev *pdev)
-+{
-+	struct net_device *netdev = pci_get_drvdata(pdev);
-+	struct otx2_nic *pf;
+ static int otx2_set_real_num_queues(struct net_device *netdev,
+ 				    int tx_queues, int rx_queues)
+ {
+@@ -96,6 +412,7 @@ static int otx2_probe(struct pci_dev *pdev, const struct pci_device_id *id)
+ 	struct otx2_nic *pf;
+ 	struct otx2_hw *hw;
+ 	int err, qcount;
++	int num_vec;
+ 
+ 	err = pcim_enable_device(pdev);
+ 	if (err) {
+@@ -139,6 +456,17 @@ static int otx2_probe(struct pci_dev *pdev, const struct pci_device_id *id)
+ 	hw->tx_queues = qcount;
+ 	hw->max_queues = qcount;
+ 
++	num_vec = pci_msix_vec_count(pdev);
++	hw->irq_name = devm_kmalloc_array(&hw->pdev->dev, num_vec, NAME_SIZE,
++					  GFP_KERNEL);
++	if (!hw->irq_name)
++		goto err_free_netdev;
 +
-+	if (!netdev)
-+		return;
++	hw->affinity_mask = devm_kcalloc(&hw->pdev->dev, num_vec,
++					 sizeof(cpumask_var_t), GFP_KERNEL);
++	if (!hw->affinity_mask)
++		goto err_free_netdev;
 +
-+	pf = netdev_priv(netdev);
+ 	/* Map CSRs */
+ 	pf->reg_base = pcim_iomap(pdev, PCI_CFG_REG_BAR_NUM, 0);
+ 	if (!pf->reg_base) {
+@@ -151,20 +479,44 @@ static int otx2_probe(struct pci_dev *pdev, const struct pci_device_id *id)
+ 	if (err)
+ 		goto err_free_netdev;
+ 
++	err = pci_alloc_irq_vectors(hw->pdev, RVU_PF_INT_VEC_CNT,
++				    RVU_PF_INT_VEC_CNT, PCI_IRQ_MSIX);
++	if (err < 0) {
++		dev_err(dev, "%s: Failed to alloc %d IRQ vectors\n",
++			__func__, num_vec);
++		goto err_free_netdev;
++	}
 +
-+	unregister_netdev(netdev);
-+	pci_free_irq_vectors(pf->pdev);
-+	pci_set_drvdata(pdev, NULL);
-+	free_netdev(netdev);
-+	pci_release_regions(pdev);
-+}
++	/* Init PF <=> AF mailbox stuff */
++	err = otx2_pfaf_mbox_init(pf);
++	if (err)
++		goto err_free_irq_vectors;
 +
-+static struct pci_driver otx2_pf_driver = {
-+	.name = DRV_NAME,
-+	.id_table = otx2_pf_id_table,
-+	.probe = otx2_probe,
-+	.shutdown = otx2_remove,
-+	.remove = otx2_remove,
-+};
++	/* Register mailbox interrupt */
++	err = otx2_register_mbox_intr(pf, true);
++	if (err)
++		goto err_mbox_destroy;
 +
-+static int __init otx2_rvupf_init_module(void)
-+{
-+	pr_info("%s: %s\n", DRV_NAME, DRV_STRING);
+ 	err = otx2_set_real_num_queues(netdev, hw->tx_queues, hw->rx_queues);
+ 	if (err)
+-		goto err_free_netdev;
++		goto err_disable_mbox_intr;
+ 
+ 	netdev->netdev_ops = &otx2_netdev_ops;
+ 
+ 	err = register_netdev(netdev);
+ 	if (err) {
+ 		dev_err(dev, "Failed to register netdevice\n");
+-		goto err_free_netdev;
++		goto err_disable_mbox_intr;
+ 	}
+ 
+ 	return 0;
+ 
++err_disable_mbox_intr:
++	otx2_disable_mbox_intr(pf);
++err_mbox_destroy:
++	otx2_pfaf_mbox_destroy(pf);
++err_free_irq_vectors:
++	pci_free_irq_vectors(hw->pdev);
+ err_free_netdev:
+ 	pci_set_drvdata(pdev, NULL);
+ 	free_netdev(netdev);
+@@ -184,9 +536,12 @@ static void otx2_remove(struct pci_dev *pdev)
+ 	pf = netdev_priv(netdev);
+ 
+ 	unregister_netdev(netdev);
++	otx2_disable_mbox_intr(pf);
++	otx2_pfaf_mbox_destroy(pf);
+ 	pci_free_irq_vectors(pf->pdev);
+ 	pci_set_drvdata(pdev, NULL);
+ 	free_netdev(netdev);
 +
-+	return pci_register_driver(&otx2_pf_driver);
-+}
-+
-+static void __exit otx2_rvupf_cleanup_module(void)
-+{
-+	pci_unregister_driver(&otx2_pf_driver);
-+}
-+
-+module_init(otx2_rvupf_init_module);
-+module_exit(otx2_rvupf_cleanup_module);
-diff --git a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_reg.h b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_reg.h
-new file mode 100644
-index 0000000..d0bd64a
---- /dev/null
-+++ b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_reg.h
-@@ -0,0 +1,51 @@
-+/* SPDX-License-Identifier: GPL-2.0 */
-+/* Marvell OcteonTx2 RVU Ethernet driver
-+ *
-+ * Copyright (C) 2020 Marvell International Ltd.
-+ *
-+ * This program is free software; you can redistribute it and/or modify
-+ * it under the terms of the GNU General Public License version 2 as
-+ * published by the Free Software Foundation.
-+ */
-+
-+#ifndef OTX2_REG_H
-+#define OTX2_REG_H
-+
-+#include <rvu_struct.h>
-+
-+/* RVU PF registers */
-+#define	RVU_PF_VFX_PFVF_MBOX0		    (0x00000)
-+#define	RVU_PF_VFX_PFVF_MBOX1		    (0x00008)
-+#define RVU_PF_VFX_PFVF_MBOXX(a, b)         (0x0 | (a) << 12 | (b) << 3)
-+#define RVU_PF_VF_BAR4_ADDR                 (0x10)
-+#define RVU_PF_BLOCK_ADDRX_DISC(a)          (0x200 | (a) << 3)
-+#define RVU_PF_VFME_STATUSX(a)              (0x800 | (a) << 3)
-+#define RVU_PF_VFTRPENDX(a)                 (0x820 | (a) << 3)
-+#define RVU_PF_VFTRPEND_W1SX(a)             (0x840 | (a) << 3)
-+#define RVU_PF_VFPF_MBOX_INTX(a)            (0x880 | (a) << 3)
-+#define RVU_PF_VFPF_MBOX_INT_W1SX(a)        (0x8A0 | (a) << 3)
-+#define RVU_PF_VFPF_MBOX_INT_ENA_W1SX(a)    (0x8C0 | (a) << 3)
-+#define RVU_PF_VFPF_MBOX_INT_ENA_W1CX(a)    (0x8E0 | (a) << 3)
-+#define RVU_PF_VFFLR_INTX(a)                (0x900 | (a) << 3)
-+#define RVU_PF_VFFLR_INT_W1SX(a)            (0x920 | (a) << 3)
-+#define RVU_PF_VFFLR_INT_ENA_W1SX(a)        (0x940 | (a) << 3)
-+#define RVU_PF_VFFLR_INT_ENA_W1CX(a)        (0x960 | (a) << 3)
-+#define RVU_PF_VFME_INTX(a)                 (0x980 | (a) << 3)
-+#define RVU_PF_VFME_INT_W1SX(a)             (0x9A0 | (a) << 3)
-+#define RVU_PF_VFME_INT_ENA_W1SX(a)         (0x9C0 | (a) << 3)
-+#define RVU_PF_VFME_INT_ENA_W1CX(a)         (0x9E0 | (a) << 3)
-+#define RVU_PF_PFAF_MBOX0                   (0xC00)
-+#define RVU_PF_PFAF_MBOX1                   (0xC08)
-+#define RVU_PF_PFAF_MBOXX(a)                (0xC00 | (a) << 3)
-+#define RVU_PF_INT                          (0xc20)
-+#define RVU_PF_INT_W1S                      (0xc28)
-+#define RVU_PF_INT_ENA_W1S                  (0xc30)
-+#define RVU_PF_INT_ENA_W1C                  (0xc38)
-+#define RVU_PF_MSIX_VECX_ADDR(a)            (0x000 | (a) << 4)
-+#define RVU_PF_MSIX_VECX_CTL(a)             (0x008 | (a) << 4)
-+#define RVU_PF_MSIX_PBAX(a)                 (0xF0000 | (a) << 3)
-+
-+#define RVU_FUNC_BLKADDR_SHIFT		20
-+#define RVU_FUNC_BLKADDR_MASK		0x1FULL
-+
-+#endif /* OTX2_REG_H */
+ 	pci_release_regions(pdev);
+ }
+ 
 -- 
 2.7.4
 
