@@ -2,269 +2,247 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 7EC8714A0A5
-	for <lists+netdev@lfdr.de>; Mon, 27 Jan 2020 10:25:48 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B2AE214A0CA
+	for <lists+netdev@lfdr.de>; Mon, 27 Jan 2020 10:30:19 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729371AbgA0JZd (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 27 Jan 2020 04:25:33 -0500
-Received: from mail.katalix.com ([3.9.82.81]:42022 "EHLO mail.katalix.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1729213AbgA0JZd (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 27 Jan 2020 04:25:33 -0500
-Received: from [IPv6:2a02:8010:6359:1:f9de:51c5:a310:b61b] (unknown [IPv6:2a02:8010:6359:1:f9de:51c5:a310:b61b])
-        (Authenticated sender: james)
-        by mail.katalix.com (Postfix) with ESMTPSA id 0B2B18CBBC;
-        Mon, 27 Jan 2020 09:25:31 +0000 (GMT)
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple; d=katalix.com; s=mail;
-        t=1580117131; bh=PkyoiNwpKQHvwLIL56aEQ3nYdgdfvVeKXFDZ5Our4IA=;
-        h=Subject:To:Cc:References:From:Date:In-Reply-To:From;
-        b=WVYEgmwXneFNLJ0kwCLkDmtj/Nm1iF33gve7AMUD8W2XMt2q9KH+fOYQqRmZf/Amp
-         +/xQ227XAZO8Ss/hbaVqEjtEG2xEYZ7iLgLJ2PD+J8uIdjrZKzg3d0CMfhOEgbEwDg
-         B2hFDObcXTxs7f0nbMyeZTNB5fUpNmUhrCmSdRZrWTYh+S+tioGjk6CWqWs6D78V3r
-         TZ+SYo3qo7bCaXJHPToyWkmvI0n+jzUdWr6aXw9k687iT2GSjJgECQAtc09AHZXsrs
-         ZeWuSgD2CRC9zzsJlukJVW8Bdt1QiC943RKt/FqdAouMVphCPz8/MUjhanYtkYhXRT
-         JzP38vbP2j1gQ==
-Subject: Re: [PATCH net] l2tp: Allow duplicate session creation with UDP
-To:     Guillaume Nault <gnault@redhat.com>
-Cc:     Tom Parkin <tparkin@katalix.com>,
-        Ridge Kennedy <ridgek@alliedtelesis.co.nz>,
-        netdev <netdev@vger.kernel.org>
-References: <20200116190556.GA25654@linux.home>
- <20200116212332.GD4028@jackdaw>
- <alpine.DEB.2.21.2001171027090.9038@ridgek-dl.ws.atlnz.lc>
- <20200117131848.GA3405@jackdaw> <20200117142558.GB2743@linux.home>
- <20200117191939.GB3405@jackdaw> <20200118191336.GC12036@linux.home>
- <20200120150946.GB4142@jackdaw> <20200121163531.GA6469@localhost.localdomain>
- <CAEwTi7Q4JzaCwug3M8Aa9y1yFXm1qBjQvKq3eiw=ekBft9wETw@mail.gmail.com>
- <20200125115702.GB4023@p271.fit.wifi.vutbr.cz>
-From:   James Chapman <jchapman@katalix.com>
-Autocrypt: addr=jchapman@katalix.com; prefer-encrypt=mutual; keydata=
- xsBNBFDmvq0BCACizu6XvQjeWZ1Mnal/oG9AkCs5Rl3GULpnH0mLvPZhU7oKbgx5MHaFDKVJ
- rQTbNEchbLDN6e5+UD98qa4ebvNx1ZkoOoNxxiuMQGWaLojDKBc9x+baW1CPtX55ikq2LwGr
- 0glmtUF6Aolpw6GzDrzZEqH+Nb+L3hNTLBfVP+D1scd4R7w2Nw+BSQXPQYjnOEBDDq4fSWoI
- Cm2E18s3bOHDT9a4ZuB9xLS8ZuYGW6p2SMPFHQb09G82yidgxRIbKsJuOdRTIrQD/Z3mEuT/
- 3iZsUFEcUN0T/YBN3a3i0P1uIad7XfdHy95oJTAMyrxnJlnAX3F7YGs80rnrKBLZ8rFfABEB
- AAHNJEphbWVzIENoYXBtYW4gPGpjaGFwbWFuQGthdGFsaXguY29tPsLAeAQTAQIAIgUCUOa+
- rQIbIwYLCQgHAwIGFQgCCQoLBBYCAwECHgECF4AACgkQINzVgFp/OkBr2gf7BA4jmtvUOGOO
- JFsj1fDmbAzyE6Q79H6qnkgYm7QNEw7o+5r7EjaUwsh0w13lNtKNS8g7ZWkiBmSOguJueKph
- GCdyY/KOHZ7NoJw39dTGVZrvJmyLDn/CQN0saRSJZXWtV31ccjfpJGQEn9Gb0Xci0KjrlH1A
- cqxzjwTmBUr4S2EHIzCcini1KTtjbtsE+dKP4zqR/T52SXVoYvqMmJOhUhXh62C0mu8FoDM0
- iFDEy4B0LcGAJt6zXy+YCqz7dOwhZBB4QX4F1N2BLF3Yd1pv8wBBZE7w70ds7rD7pnIaxXEK
- D6yCGrsZrdqAJfAgYL1lqkNffZ6uOSQPFOPod9UiZM7ATQRQ5r6tAQgAyROh3s0PyPx2L2Fb
- jC1mMi4cZSCpeX3zM9aM4aU8P16EDfzBgGv/Sme3JcrYSzIAJqxCvKpR+HoKhPk34HUR/AOk
- 16pP3lU0rt6lKel2spD1gpMuCWjAaFs+dPyUAw13py4Y5Ej2ww38iKujHyT586U6skk9xixK
- 1aHmGJx7IqqRXHgjb6ikUlx4PJdAUn2duqasQ8axjykIVK5xGwXnva/pnVprPSIKrydNmXUq
- BIDtFQ4Qz1PQVvK93KeCVQpxxisYNFRQ5TL6PtgVtK8uunABFdsRqlsw1Ob0+mD5fidITCIJ
- mYOL8K74RYU4LfhspS4JwT8nmKuJmJVZ5DjY2wARAQABwsBfBBgBAgAJBQJQ5r6tAhsMAAoJ
- ECDc1YBafzpA9CEH/jJ8Ye73Vgm38iMsxNYJ9Do9JvVJzq7TEduqWzAFew8Ft0F9tZAiY0J3
- U2i4vlVWK8Kbnh+44VAKXYzaddLXAxOcZ8YYy+sVfeVoJs3lAH+SuRwt0EplHWvCK5AkUhUN
- jjIvsQoNBVUP3AcswIqNOrtSkbuUkevNMyPtd0GLS9HVOW0e+7nFce7Ow9ahKA3iGg5Re9rD
- UlDluVylCCNnUD8Wxgve4K+thRL9T7kxkr7aX7WJ7A4a8ky+r3Daf7OhGN9S/Z/GMSs0E+1P
- Qm7kZ2e0J6PSfzy9xDtoRXRNigtN2o8DHf/quwckT5T6Z6WiKEaIKdgaXZVhphENThl7lp8=
-Organization: Katalix Systems Ltd
-Message-ID: <72007ca8-3ad4-62db-1b38-1ecefb82cb20@katalix.com>
-Date:   Mon, 27 Jan 2020 09:25:30 +0000
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.4.1
-MIME-Version: 1.0
-In-Reply-To: <20200125115702.GB4023@p271.fit.wifi.vutbr.cz>
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
+        id S1729606AbgA0J3w (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 27 Jan 2020 04:29:52 -0500
+Received: from mail-bn8nam11on2065.outbound.protection.outlook.com ([40.107.236.65]:6052
+        "EHLO NAM11-BN8-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1726191AbgA0J3s (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 27 Jan 2020 04:29:48 -0500
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=WPMl3s83rl3w/UGbpDm+LOYq9git6S8T8DHBShGu62p4/NGJxdHE2G6/ARN7ppr9tsr4Zrh+8T4Px1MZ4xF7azmymPnsvIvSkTr+gKysOGIcx0UHDyZAJvTEVS/OOK9Kdi43Ghk7Yzt4nE1M34KgzBfUWZ2RtE9dAI7Zs33kcjGAvqQGse1WpgRxAZR0OtE516T449DGk6oi5Z260C6+4YZuh2sSZ7ClgqGETTv/TF1Tkj93EhH9PshdGjBPZu/j7q8Q3mebEK0ogT95WV8WLkXZ/8H1PqXmeaeKHJyrP/4imJSIsZ2CbPQay7kAmLXHUcQDKVCAx4M6b//8RNslEw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=B1UlNqjRAyhapYPaDO/R7dxljyO0ba3EicN+CC0HuXk=;
+ b=axAp3NWJS7cQ+h00x6YgncLMt2ZOt9fA1sTfjaRYzRUtNPgpkrpgDrL69Vnilix3OPwyA06K/77I7353Th8Mazu6Azu3kK+X1IFvuHUzdXFItgKdTXYf/X/CFGyK3ggMUBDhu/8E9C1xy67AStAOtVeSIWH4uQFDSDjwzcmpX+QR6MCnV4FFzkyR2n8FyL52l6OlhU6jdG+jQsqKDAdoWqVSodye1p9TqQaVebtvBGy8vXyIsf5eUkVX+mdE85nAexZRrcuqcpFCLEeNzjrMfozBHzZRj+nV2yl4xdNJwtW3nfbtb4v2AayRZmQHcw5tFpILOfOqXmvU02AZ5j6VwQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=xilinx.com; dmarc=pass action=none header.from=xilinx.com;
+ dkim=pass header.d=xilinx.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=xilinx.onmicrosoft.com; s=selector2-xilinx-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=B1UlNqjRAyhapYPaDO/R7dxljyO0ba3EicN+CC0HuXk=;
+ b=ga0YTKM5w0jlTtC01AoVIH7OKSOtu+BAXMqQ0cEj1KO0MgszalacvO+cF36WhTUtSQ+cb9zJ8FYUP7P5/44kGzQlWG6Agjbsfa/nH2aTghinufyvK2RBAJY3a9xl4IC6CHSWNukD6ssbET2sxhO0Llig/0njFKhDqf0PhzvavQg=
+Received: from CH2PR02MB7000.namprd02.prod.outlook.com (20.180.9.216) by
+ CH2PR02MB6888.namprd02.prod.outlook.com (20.180.10.23) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.2665.22; Mon, 27 Jan 2020 09:28:05 +0000
+Received: from CH2PR02MB7000.namprd02.prod.outlook.com
+ ([fe80::969:436f:b4b8:4899]) by CH2PR02MB7000.namprd02.prod.outlook.com
+ ([fe80::969:436f:b4b8:4899%7]) with mapi id 15.20.2665.026; Mon, 27 Jan 2020
+ 09:28:05 +0000
+From:   Radhey Shyam Pandey <radheys@xilinx.com>
+To:     Andre Przywara <andre.przywara@arm.com>,
+        Rob Herring <robh@kernel.org>
+CC:     "David S . Miller" <davem@davemloft.net>,
+        Michal Simek <michals@xilinx.com>,
+        Robert Hancock <hancock@sedsystems.ca>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-arm-kernel@lists.infradead.org" 
+        <linux-arm-kernel@lists.infradead.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        Mark Rutland <mark.rutland@arm.com>,
+        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>
+Subject: RE: [PATCH 14/14] net: axienet: Update devicetree binding
+ documentation
+Thread-Topic: [PATCH 14/14] net: axienet: Update devicetree binding
+ documentation
+Thread-Index: AQHVx6zAwkWlmecTYkaoyYejTEfW+Kf1um2AgARdAICABDs/YA==
+Date:   Mon, 27 Jan 2020 09:28:04 +0000
+Message-ID: <CH2PR02MB70009C7F41F729A7FA02023DC70B0@CH2PR02MB7000.namprd02.prod.outlook.com>
+References: <20200110115415.75683-1-andre.przywara@arm.com>
+        <20200110115415.75683-15-andre.przywara@arm.com>
+        <20200121215109.GA26808@bogus>
+ <20200124162903.722468f1@donnerap.cambridge.arm.com>
+In-Reply-To: <20200124162903.722468f1@donnerap.cambridge.arm.com>
+Accept-Language: en-US
 Content-Language: en-US
+X-MS-Has-Attach: 
+X-Auto-Response-Suppress: DR, RN, NRN, OOF, AutoReply
+X-MS-TNEF-Correlator: 
+authentication-results: spf=none (sender IP is )
+ smtp.mailfrom=radheys@xilinx.com; 
+x-originating-ip: [149.199.50.133]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-ht: Tenant
+x-ms-office365-filtering-correlation-id: a226d874-cd50-4198-1cd6-08d7a30b36bc
+x-ms-traffictypediagnostic: CH2PR02MB6888:|CH2PR02MB6888:
+x-ms-exchange-transport-forked: True
+x-microsoft-antispam-prvs: <CH2PR02MB68882F1B6956DDCE5C1D7390C70B0@CH2PR02MB6888.namprd02.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:9508;
+x-forefront-prvs: 02951C14DC
+x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(4636009)(376002)(396003)(346002)(39860400002)(136003)(366004)(199004)(189003)(76116006)(66946007)(64756008)(66556008)(66476007)(110136005)(15650500001)(86362001)(54906003)(66446008)(33656002)(2906002)(316002)(55016002)(26005)(8676002)(81166006)(81156014)(52536014)(8936002)(6506007)(478600001)(71200400001)(7696005)(4326008)(5660300002)(9686003)(53546011)(186003);DIR:OUT;SFP:1101;SCL:1;SRVR:CH2PR02MB6888;H:CH2PR02MB7000.namprd02.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;A:1;MX:1;
+received-spf: None (protection.outlook.com: xilinx.com does not designate
+ permitted sender hosts)
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: y1kW834Ppm4eZJsUuT7VeVn20lidthJk4XBDPJOSMOmgalKw/aZBTs1t0S66YrbC8WtzVhyQLSR02hGytcSPOKYmpHYw2vZZdppE90hQAGIHAXtH1imnkMJC6HC+XmtU1/bChtaTpI5TfrST4NhEgYdyK2LzqLOunOPzFa3/85nO6QNCjMwhmcIJG4YCK24cq8ds1BZSJpAz4i/Aw+xwMw7LcHQeN5iXiNHso25QDRRoWd7vMnwpsjPusb9F8jJBxjZTsJJ0Zpb3ejf4fgOZnPzrB5gdsjAHaksbcQ4f0kPkqmLexv6+EbOttnoR+NnUqdKPQJFxGpV0gqUC4XZ8a58jX/xn3a2IpNQd/2CvL26OP05buXuXTz0ujO2GuFd95mnVYymOCjGOxNGv+1ZEA0ES3L7QxJOZVeIzxiJEVMWsYWxOHjRggjZI/VLnnITR
+x-ms-exchange-antispam-messagedata: 6uufy3oIJ3fZFUzZrKeoSkd7ksdwb1EE1MeSZUN7qK7lQZm3ksZ7k697GcNS7STW6jq6BJQfQYd0Y0FVinVbtGQdXc21KKTbTv4vdh2ZFdbbtbIru9hWhepGwfNzJat0zknaY2nKO4W3l0KAhWM8gw==
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
+MIME-Version: 1.0
+X-OriginatorOrg: xilinx.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: a226d874-cd50-4198-1cd6-08d7a30b36bc
+X-MS-Exchange-CrossTenant-originalarrivaltime: 27 Jan 2020 09:28:05.2458
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 657af505-d5df-48d0-8300-c31994686c5c
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: WNM+ilKHCJnhXHHqcco1vaReX9yj0ddrY0eQtHLhh0Jj2vrj6IjxhWDywNe+nNdK0IbNwaFP+/otVYIr/QPZFQ==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: CH2PR02MB6888
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 25/01/2020 11:57, Guillaume Nault wrote:
-> On Wed, Jan 22, 2020 at 11:55:35AM +0000, James Chapman wrote:
->> On Tue, 21 Jan 2020 at 16:35, Guillaume Nault <gnault@redhat.com> wrot=
-e:
->>> On Mon, Jan 20, 2020 at 03:09:46PM +0000, Tom Parkin wrote:
->>>> I'm struggling with it a bit though.  Wouldn't extending the hash ke=
-y
->>>> like this get expensive, especially for IPv6 addresses?
->>>>
->>> From what I recall, L2TP performances are already quite low. That's
->>> certainly not a reason for making things worse, but I believe that
->>> computing a 3 or 5 tuple hash should be low overhead in comparison.
->>> But checking with real numbers would be interesting.
->>>
->> In my experience, poor L2TP data performance is usually the result of
->> MTU config issues causing IP fragmentation in the tunnel. L2TPv3
->> ethernet throughput is similar to ethernet bridge throughput in the
->> setups that I know of.
->>
-> I said that because I remember I had tested L2TPv3 and VXLAN a few
-> years ago and I was surprised by the performance gap. I certainly can't=
+> -----Original Message-----
+> From: Andre Przywara <andre.przywara@arm.com>
+> Sent: Friday, January 24, 2020 9:59 PM
+> To: Rob Herring <robh@kernel.org>
+> Cc: David S . Miller <davem@davemloft.net>; Radhey Shyam Pandey
+> <radheys@xilinx.com>; Michal Simek <michals@xilinx.com>; Robert Hancock
+> <hancock@sedsystems.ca>; netdev@vger.kernel.org; linux-arm-
+> kernel@lists.infradead.org; linux-kernel@vger.kernel.org; Mark Rutland
+> <mark.rutland@arm.com>; devicetree@vger.kernel.org
+> Subject: Re: [PATCH 14/14] net: axienet: Update devicetree binding
+> documentation
+>=20
+> On Tue, 21 Jan 2020 15:51:09 -0600
+> Rob Herring <robh@kernel.org> wrote:
+>=20
+> Hi Rob,
+>=20
+> thanks for having a look!
+>=20
+> > On Fri, Jan 10, 2020 at 11:54:15AM +0000, Andre Przywara wrote:
+> > > This adds documentation about the newly introduced, optional
+> > > "xlnx,addrwidth" property to the binding documentation.
+> > >
+> > > While at it, clarify the wording on some properties, replace obsolete
+> > > .txt file references with their new .yaml counterparts, and add a mor=
+e
+> > > modern example, using the axistream-connected property.
+> > >
+> > > Cc: Rob Herring <robh+dt@kernel.org>
+> > > Cc: Mark Rutland <mark.rutland@arm.com>
+> > > Cc: devicetree@vger.kernel.org
+> > > Signed-off-by: Andre Przywara <andre.przywara@arm.com>
+> > > ---
+> > >  .../bindings/net/xilinx_axienet.txt           | 57 ++++++++++++++++-=
+--
+> > >  1 file changed, 50 insertions(+), 7 deletions(-)
+> > >
+> > > diff --git a/Documentation/devicetree/bindings/net/xilinx_axienet.txt
+> b/Documentation/devicetree/bindings/net/xilinx_axienet.txt
+> > > index 7360617cdedb..78c278c5200f 100644
+> > > --- a/Documentation/devicetree/bindings/net/xilinx_axienet.txt
+> > > +++ b/Documentation/devicetree/bindings/net/xilinx_axienet.txt
+> > > @@ -12,7 +12,8 @@ sent and received through means of an AXI DMA
+> controller. This driver
+> > >  includes the DMA driver code, so this driver is incompatible with AX=
+I DMA
+> > >  driver.
+> > >
+> > > -For more details about mdio please refer phy.txt file in the same di=
+rectory.
+> > > +For more details about mdio please refer to the ethernet-phy.yaml fi=
+le in
+> > > +the same directory.
+> > >
+> > >  Required properties:
+> > >  - compatible	: Must be one of "xlnx,axi-ethernet-1.00.a",
+> > > @@ -27,14 +28,14 @@ Required properties:
+> > >  		  instead, and only the Ethernet core interrupt is optionally
+> > >  		  specified here.
+> > >  - phy-handle	: Should point to the external phy device.
+> > > -		  See ethernet.txt file in the same directory.
+> > > -- xlnx,rxmem	: Set to allocated memory buffer for Rx/Tx in the
+> hardware
+> > > +		  See the ethernet-controller.yaml file in the same directory.
+> > > +- xlnx,rxmem	: Size of the RXMEM buffer in the hardware, in bytes.
+> > >
+> > >  Optional properties:
+> > > -- phy-mode	: See ethernet.txt
+> > > +- phy-mode	: See ethernet-controller.yaml.
+> > >  - xlnx,phy-type	: Deprecated, do not use, but still accepted in
+> preference
+> > >  		  to phy-mode.
+> > > -- xlnx,txcsum	: 0 or empty for disabling TX checksum offload,
+> > > +- xlnx,txcsum	: 0 for disabling TX checksum offload (default if
+> omitted),
+> > >  		  1 to enable partial TX checksum offload,
+> > >  		  2 to enable full TX checksum offload
+> > >  - xlnx,rxcsum	: Same values as xlnx,txcsum but for RX checksum
+> offload
+> > > @@ -48,10 +49,20 @@ Optional properties:
+> > >  		       If this is specified, the DMA-related resources from that
+> > >  		       device (DMA registers and DMA TX/RX interrupts) rather
+> > >  		       than this one will be used.
+> > > - - mdio		: Child node for MDIO bus. Must be defined if PHY
+> access is
+> > > +- mdio		: Child node for MDIO bus. Must be defined if PHY
+> access is
+> > >  		  required through the core's MDIO interface (i.e. always,
+> > >  		  unless the PHY is accessed through a different bus).
+> > >
+> > > +Required properties for axistream-connected subnode:
+> > > +- reg		: Address and length of the AXI DMA controller MMIO
+> space.
+> > > +- interrupts	: A list of 2 interrupts: TX DMA and RX DMA, in that or=
+der.
+> > > +
+> > > +Optional properties for axistream-connected subnode:
+> > > +- xlnx,addrwidth: Specifies the configured address width of the DMA.=
+ Newer
+> > > +		  versions of the IP allow setting this to a value between
+> > > +		  32 and 64. Defaults to 32 bits if not specified.
+> >
+> > I think this should be expressed using dma-ranges. This is exactly the
+> > purpose of dma-ranges and we shouldn't need a device specific property
+> > for this sort of thing.
 
-> remember the details of the setup, but I'd be very surprised if I had
-> misconfigured the MTU.
+dma-ranges define the relationship between the physical address spaces of t=
+he
+parent and child nodes. In this case, ethernet and dma (parent-child) have
+the same view of physical address space.   Do we mean to use the child-size
+dma-range field and determine the address width?
 
+>=20
+> OK, after talking to Robin about it, I think I will indeed drop the whole=
+ usage of
+> xlnx,addrwidth altogether.
+> Some thoughts:
+> - An integrator would choose the addrwidth value in the IP to be big enou=
+gh for
+> the whole bus. In our case it's actually 40 bits, because this is the max=
+ address
+> size the interconnect supports. So any possible physical address the kern=
+el could
+> come up with would be valid for the DMA IP.
+> - Because of this we set the DMA mask to either 64-bit or 32-bit, dependi=
+ng on
+> the auto detection of the MSB registers.
+> - If some integrator screws this up anyway, they can always set dma-range=
+s in
+> the parent to limit the address range. IIUC, no further code would be nee=
+ded in
+> the Ethernet driver, as this would be handled by some (DMA?) framework?
 
-Fair enough. I'd be interested in your observations and ideas regarding
-improving performance at some point. But I suggest keep this thread
-focused on the session ID scope issue.
+I think the current driver design will be simplified once we switch to the
+dmaengine framework and use the xilinx dma(drivers/dma/xilinx_dma.c) driver=
+.
+The address width parsing is already handled by the dma driver. I am workin=
+g
+on an RFC to remove dma code from axiethernet and planning to post patchset=
+.
+Hopefully, that should address all concerns.
 
-
->> Like my colleague, Tom, I'm also struggling with this approach.
->>
-> I don't pretend that implementing scoped sessions IDs is trivial. It
-> just looks like the best way to solve the compatibility problem (IMHO).=
-
-
->> I can't see how replacing a lookup using a 32-bit hash key with one
->> using a 260-bit or more key (128+128+4 for two IPv[46] addresses and
->> the session ID) isn't going to hurt performance, let alone the
->> per-session memory footprint. In addition, it is changing the scope of=
-
->> the session ID away from what is defined in the RFC.
->>
-> I don't see why we'd need to increase the l2tp_session's structure size=
-=2E
-> We can already get the 3/5-tuple from the parent's tunnel socket. And
-> there are some low hanging fruits to pick if one wants to reduce L2TP's=
-
-> memory footprint.
->
-> From a performance point of view, 3/5-tuple matches are quite common
-> operations in the networking stack. I don't expect that to be costly
-> compared to the rest of the L2TP Rx operations. And we certainly have
-> room to streamline the datapath if necessary.
-
-
-I was assuming the key used for the session ID lookup would be stored
-with the session so that we wouldn't have to prepare it for each and
-every packet receive.
-
-
->> I think Linux shouldn't diverge from the spirit of the L2TPv3 RFC
->> since the RFC is what implementors code against. Ridge's application
->> relies on duplicated L2TPv3 session IDs which are scoped by the UDP
->> 5-tuple address. But equally, there may be existing applications out
->> there which rely on Linux performing L2TPv3 session lookup by session
->> ID alone, as per the RFC. For IP-encap, Linux already does this, but
->> not for UDP. What if we get a request to do so for UDP, for
->> RFC-compliance? It would be straightforward to do as long as the
->> session ID scope isn't restricted by the proposed patch.
->>
-> As long as the external behavior conforms to the RFC, I don't see any
-> problem. Local applications are still responsible for selecting
-> session-IDs. I don't see how they could be confused if the kernel
-> accepted more IDs, especially since that was the original behaviour.
-
-But it wouldn't conform with the RFC.
-
-RFC3931 says:
-
-=C2=A0The Session ID alone provides the necessary context for all further=
-
-=C2=A0packet processing, including the presence, size, and value of the
-=C2=A0Cookie, the type of L2-Specific Sublayer, and the type of payload
-=C2=A0being tunneled.
-
-and also
-
-=C2=A0The data message format for tunneling data packets may be utilized
-=C2=A0with or without the L2TP control channel, either via manual
-=C2=A0configuration or via other signaling methods to pre-configure or
-=C2=A0distribute L2TP session information.
-
->> I'm not aware
->> that such an application exists, but my point is that the RFC is a key=
-
->> document that implementors use when implementing applications so
->> diverging from it seems more likely to result in unforseen problems
->> later.
->>
-> I would have to read the RFC with scoped session IDs in mind, but, as
-> far as I can see, the only things that global session IDs allow which
-> can't be done with scoped session IDs are:
->   * Accepting L2TPoIP sessions to receive L2TPoUDP packets and
->     vice-versa.
->   * Accepting L2TPv3 packets from peers we're not connected to.
->
-> I don't find any of these to be desirable. Although Tom convinced me
-> that global session IDs are in the spirit of the RFC, I still don't
-> think that restricting their scope goes against it in any practical
-> way. The L2TPv3 control plane requires a two way communication, which
-> means that the session is bound to a given 3/5-tuple for control
-> messages. Why would the data plane behave differently?
-
-
-The Cable Labs / DOCSIS DEPI protocol is a good example. It is based on
-L2TPv3 and uses the L2TPv3 data plane. It treats the session ID as
-unscoped and not associated with a given tunnel.
-
-
-> I agree that it looks saner (and simpler) for a control plane to never
-> assign the same session ID to sessions running over different tunnels,
-> even if they have different 3/5-tuples. But that's the user space
-> control plane implementation's responsability to select unique session
-> IDs in this case. The fact that the kernel uses scoped or global IDs is=
-
-> irrelevant. For unmanaged tunnels, the administrator has complete
-> control over the local and remote session IDs and is free to assign
-> them globally if it wants to, even if the kernel would have accepted
-> reusing session IDs.
-
-
-I disagree. Using scoped session IDs may break applications that assume
-RFC behaviour. I mentioned one example where session IDs are used
-unscoped above.
-
-
->> It's unfortunate that Linux previously unintentionally allowed L2TPv3
->> session ID clashes and an application is in the field that relies on
->> this behaviour. However, the change that fixed this (and introduced
->> the reported regression) was back in March 2017 and the problem is
->> only coming to light now. Of the options we have available, a knob to
->> re-enable the old behaviour may be the best compromise after all.
->>
->> Could we ask Ridge to submit a new version of his patch which includes=
-
->> a knob to enable it?
->>
-> But what would be the default behaviour? If it's "use global IDs", then=
-
-> we'll keep breaking applications that used to work with older kernels.
-> Ridge would know how to revert to the ancient behaviour, but other
-> users would probably never know about the knob. And if we set the
-> default behaviour to "allow duplicate IDs for L2TPv3oUDP", then the
-> knob doesn't need to be implemented as part of Ridge's fix. It can
-> always be added later, if we ever decide to unify session lookups
-> accross L2TPoUDP and L2TPoIP and that extending the session hash key
-> proves not to be a practical solution.
-
-
-The default would be the current behaviour: "global IDs". We'll be
-breaking applications that assume scoped session IDs, yes. But I think
-the number of these applications will be minimal given the RFC is clear
-that session IDs are unscoped and the kernel has worked this way for
-almost 3 years.
-
-I think it's important that the kernel continues to treat the L2TPv3
-session ID as "global".
-
-However, there might be an alternative solution to fix this for Ridge's
-use case that doesn't involve adding 3/5-tuple session ID lookups in the
-receive path or adding a control knob...
-
-My understanding is that Ridge's application uses unmanaged tunnels
-(like "ip l2tp" does). These use kernel sockets. The netlink tunnel
-create request does not indicate a valid tunnel socket fd. So we could
-use scoped session IDs for unmanaged UDP tunnels only. If Ridge's patch
-were tweaked to allow scoped IDs only for UDP unmanaged tunnels (adding
-a test for tunnel->fd < 0), managed tunnels would continue to work as
-they do now and any application that uses unmanaged tunnels would get
-scoped session IDs. No control knob or 3/5-tuple session ID lookups
-required.
-
-
-> Sorry for replying late. It's been a busy week.
-
-
-No problem at all.
-
-
-
+>=20
+> Does that make sense?
+>=20
+> Cheers,
+> Andre
