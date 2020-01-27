@@ -2,61 +2,74 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 8850014A52D
-	for <lists+netdev@lfdr.de>; Mon, 27 Jan 2020 14:34:00 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 32CC914A533
+	for <lists+netdev@lfdr.de>; Mon, 27 Jan 2020 14:36:02 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727479AbgA0Nd6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 27 Jan 2020 08:33:58 -0500
-Received: from shards.monkeyblade.net ([23.128.96.9]:39380 "EHLO
+        id S1727453AbgA0NgA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 27 Jan 2020 08:36:00 -0500
+Received: from shards.monkeyblade.net ([23.128.96.9]:39432 "EHLO
         shards.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726164AbgA0Nd6 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 27 Jan 2020 08:33:58 -0500
+        with ESMTP id S1725938AbgA0Nf7 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 27 Jan 2020 08:35:59 -0500
 Received: from localhost (unknown [213.175.37.12])
         (using TLSv1 with cipher AES256-SHA (256/256 bits))
         (Client did not present a certificate)
         (Authenticated sender: davem-davemloft)
-        by shards.monkeyblade.net (Postfix) with ESMTPSA id 340001570D63C;
-        Mon, 27 Jan 2020 05:33:56 -0800 (PST)
-Date:   Mon, 27 Jan 2020 14:33:54 +0100 (CET)
-Message-Id: <20200127.143354.920658271738682867.davem@davemloft.net>
-To:     sunil.kovvuri@gmail.com
-Cc:     netdev@vger.kernel.org, kubakici@wp.pl, mkubecek@suse.cz,
-        maciej.fijalkowski@intel.com, sgoutham@marvell.com
-Subject: Re: [PATCH v6 00/17] octeontx2-pf: Add network driver for physical
- function
+        by shards.monkeyblade.net (Postfix) with ESMTPSA id 4FDE415729971;
+        Mon, 27 Jan 2020 05:35:58 -0800 (PST)
+Date:   Mon, 27 Jan 2020 14:35:56 +0100 (CET)
+Message-Id: <20200127.143556.336328166951372844.davem@davemloft.net>
+To:     michal.kalderon@marvell.com
+Cc:     ariel.elior@marvell.com, netdev@vger.kernel.org,
+        linux-rdma@vger.kernel.org, linux-scsi@vger.kernel.org
+Subject: Re: [PATCH v3 net-next 00/13] qed*: Utilize FW 8.42.2.0
 From:   David Miller <davem@davemloft.net>
-In-Reply-To: <1580130331-8964-1-git-send-email-sunil.kovvuri@gmail.com>
-References: <1580130331-8964-1-git-send-email-sunil.kovvuri@gmail.com>
+In-Reply-To: <20200127132619.27144-1-michal.kalderon@marvell.com>
+References: <20200127132619.27144-1-michal.kalderon@marvell.com>
 X-Mailer: Mew version 6.8 on Emacs 26.3
 Mime-Version: 1.0
 Content-Type: Text/Plain; charset=us-ascii
 Content-Transfer-Encoding: 7bit
-X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Mon, 27 Jan 2020 05:33:57 -0800 (PST)
+X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Mon, 27 Jan 2020 05:35:59 -0800 (PST)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: sunil.kovvuri@gmail.com
-Date: Mon, 27 Jan 2020 18:35:14 +0530
+From: Michal Kalderon <michal.kalderon@marvell.com>
+Date: Mon, 27 Jan 2020 15:26:06 +0200
 
-> From: Sunil Goutham <sgoutham@marvell.com>
+> This FW contains several fixes and features, main ones listed below.
+> We have taken into consideration past comments on previous FW versions
+> that were uploaded and tried to separate this one to smaller patches to
+> ease review.
 > 
-> OcteonTX2 SOC's resource virtualization unit (RVU) supports
-> multiple physical and virtual functions. Each of the PF's
-> functionality is determined by what kind of resources are attached
-> to it. If NPA and NIX blocks are attached to a PF it can function
-> as a highly capable network device.
+> - RoCE
+> 	- SRIOV support
+> 	- Fixes in following flows:
+> 		- latency optimization flow for inline WQEs
+> 		- iwarp OOO packed DDPs flow
+> 		- tx-dif workaround calculations flow
+> 		- XRC-SRQ exceed cache num
 > 
-> This patch series add a network driver for the PF. Initial set of
-> patches adds mailbox communication with admin function (RVU AF)
-> and configuration of queues. Followed by Rx and tx pkts NAPI
-> handler and then support for HW offloads like RSS, TSO, Rxhash etc.
-> Ethtool support to extract stats, config RSS, queue sizes, queue
-> count is also added.
+> - iSCSI
+> 	- Fixes:
+> 		- iSCSI TCP out-of-order handling.
+> 		- iscsi retransmit flow
 > 
-> Added documentation to give a high level overview of HW and
-> different drivers which will be upstreamed and how they interact.
+> - Fcoe
+> 	- Fixes:
+> 		- upload + cleanup flows
+> 
+> - Debug
+> 	- Better handling of extracting data during traffic
+> 	- ILT Dump -> dumping host memory used by chip
+> 	- MDUMP -> collect debug data on system crash and extract after
+> 	  reboot
+> 
+> Patches prefixed with FW 8.42.2.0 are required to work with binary
+> 8.42.2.0 FW where as the rest are FW related but do not require the
+> binary.
  ...
 
 Series applied.
