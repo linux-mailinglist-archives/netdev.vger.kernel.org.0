@@ -2,154 +2,209 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 30DC814A90C
-	for <lists+netdev@lfdr.de>; Mon, 27 Jan 2020 18:34:42 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 87A9114A92F
+	for <lists+netdev@lfdr.de>; Mon, 27 Jan 2020 18:42:50 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726155AbgA0Rek (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 27 Jan 2020 12:34:40 -0500
-Received: from sonic316-26.consmr.mail.ne1.yahoo.com ([66.163.187.152]:33754
-        "EHLO sonic316-26.consmr.mail.ne1.yahoo.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1725990AbgA0Rej (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 27 Jan 2020 12:34:39 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=yahoo.com; s=s2048; t=1580146478; bh=A/ZYBcsKjndslC0dUgOAmvGgLpzj7T5uRCYfgFS3GvE=; h=Subject:To:Cc:References:From:Date:In-Reply-To:From:Subject; b=oD/eweIdtKTSTazSa57JvtWG/Ur6KJau1xTaDaXu0fn2kE7mHLIM15rWDnBv7CbzbrumR6S62Moz84mkhs7L5mo36hXdBO/EM7NkQWMVFEhP3qBa4B7FIXHkL0AVS0eI0ymgmlMG1gAnvhSnFspmhr6KtIMnwuex9ak8fk6f4HFiyeSRFXqxCIK9Q0Ya1kbiCvoHVYXNYByqOtPw23lObnZA8EXJrnPoUG35zG/nsCQtAjtHUfxHxRCXPIh487uusbeZbSqOK9yVRaOquwW+H64CXeZcb+zghECA3gz1mgbivkjP7h1pV/UoNj3JxaiP7KnPu220dtuhS1Sgagc81g==
-X-YMail-OSG: UIEmYk8VM1nUFo.TG2huX.9Yf51YUwgGeR8.Rvcw3gyDo4HZzBN2aLT_OB8VGHI
- kS7rbKIRDliKAg7ib45TdfcTIc_xLiJ1WKXWdY1T7GW4Puc4ZvA52vaO.m8o4Ab3iCESw8KADzma
- PGluHQSY602GWkHEtwo0iPPb3M4bof.lL2bsoa.CrE6RcXJVRQaqgwU72v8fP73E2wexNDoSxNly
- rOvNoSpi610HvpH20r8LrzJe6hreZa_6KZ3zRuASUqjWAF.f7bz4C01idFzW.vcFnfgAXoHkt13k
- 3qujb9Bprbg3lYbOop0IoE_Ib6LWK5mXONn3_kkJRxgIXCFnUr4PbIM275ZpzljexMIx1WafrCQF
- b4bACrL1105_87yi1A3cTBWk8zrnjaVBfB.bPlxev4nJOytcU840_VMc7oeMfALnYDCHpA783Vg0
- xUp8_wmq3XuF8FOdslHyRPtDuFBGoplpVr90QyXUgGv9MTOivh5Ka.AkpIcFY4WQLsqehA0Pnzx.
- .vWVaTnTfpA2M4p12oKeXMa0IVmeV3a2kMUgCIEo4iQH.qq.zIn354f8MMAqt1Q7xoD6yiV8UGKT
- v5_yG.1rixf38soN.FiiltyrA7DOX3ULseALlv6iBrqVQkvHQtjMXnXwBq_rXjBY.1ag7mvYjc4P
- WjlRlhFNAo7PsPH7eDT6rdd7Mkq7U.rKion58rhW33AlQc1lSSVeDw8snQztC_jqmW498bp_KRGQ
- b380DccyPa88oLc9YLtwSALuNIL4F6euqqj1WDW6U0zOTV3SYG5xS82WQoUu6027T2AtCFQdkba1
- CbJaYp9r1nMQJ5iHpzwmWym8OtnCM6b99YAabd3blil4Z95bpZgBwBQY5LnP470v4xWZEOv.8Dch
- 0m58RKwW38RfnQaLO0euItesA8IlIsmOcqwFtt.kvIC5AVCUcfcMsgqsMbu70hxulzVdycTJV9qA
- Kl6.lT3carJ4JpnfWNMcjbIYUJ1tfW1CmyAC7q2oNq.zmxQ9lfhctTVYdT6Fu5Zx4zdIkI4l2O_E
- N5qNg1UWqtvet4Xf8NlZfN7_TfRyjNbjf9J9B4YARcTnAyu3HQ9Z4klX7n4uNFTYPpsXnAX2_UuV
- 3SkcZV9hz54bALb22w8toJKqd50IGJjjB7qH.zjt4p3cileUt3ozvy.DmtUO2rFEkUilQEYWUc42
- 9wu05HdGCmzwyAjSRTT3Bfkgg_8GfrxfcMNKzB2pIFDLpQKbPv42zOWcyG7Z0jAzujHo0K5fvLxh
- FdT639sycg8aGvwzWQBXX4mYUfNSQiHFkCIrNVA458SyEdmQbgwBaZcQNo7qnEsu.I8D_xHIbDcN
- LQdxDicOW6m9ATstAdC38W80PRhnZDk0vj2NDmg0hkfMr2d9w12cc8Izs5q9hYRRX98HQcksJqIc
- FAD9Ls4YWSPs3Nwv.Ii_KXKdvS1f.Vw--
-Received: from sonic.gate.mail.ne1.yahoo.com by sonic316.consmr.mail.ne1.yahoo.com with HTTP; Mon, 27 Jan 2020 17:34:38 +0000
-Received: by smtp429.mail.ne1.yahoo.com (Oath Hermes SMTP Server) with ESMTPA ID 0e6883b3604d029b21a83e85a9420c9f;
-          Mon, 27 Jan 2020 17:34:33 +0000 (UTC)
-Subject: Re: KASAN slab-out-of-bounds in tun_chr_open/sock_init_data (Was: Re:
- [PATCH v14 00/23] LSM: Module stacking for AppArmor)
-To:     Stephen Smalley <sds@tycho.nsa.gov>, casey.schaufler@intel.com,
-        jmorris@namei.org, linux-security-module@vger.kernel.org,
-        selinux@vger.kernel.org
-Cc:     keescook@chromium.org, john.johansen@canonical.com,
-        penguin-kernel@i-love.sakura.ne.jp, paul@paul-moore.com,
-        lorenzo@google.com, "David S. Miller" <davem@davemloft.net>,
-        amade@asmblr.net,
-        Linux Kernel Network Developers <netdev@vger.kernel.org>,
-        maxk@qti.qualcomm.com, Casey Schaufler <casey@schaufler-ca.com>
-References: <20200124002306.3552-1-casey.ref@schaufler-ca.com>
- <20200124002306.3552-1-casey@schaufler-ca.com>
- <22585291-b7e0-5a22-6682-168611d902fa@tycho.nsa.gov>
- <6b717a13-3586-5854-0eee-617798f92d34@schaufler-ca.com>
- <de97dc66-7f5b-21f0-cf3d-a1485acbc1c9@tycho.nsa.gov>
- <628f018e-5a88-295b-9e4d-b4c6a49645b5@tycho.nsa.gov>
-From:   Casey Schaufler <casey@schaufler-ca.com>
-Autocrypt: addr=casey@schaufler-ca.com; keydata=
- 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
- abzjfg==
-Message-ID: <736cf361-1eaf-2d5e-ffc5-c5cda6e2ec7d@schaufler-ca.com>
-Date:   Mon, 27 Jan 2020 09:34:33 -0800
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
- Thunderbird/68.4.2
+        id S1725989AbgA0Rms (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 27 Jan 2020 12:42:48 -0500
+Received: from mail-ed1-f68.google.com ([209.85.208.68]:39990 "EHLO
+        mail-ed1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725845AbgA0Rms (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 27 Jan 2020 12:42:48 -0500
+Received: by mail-ed1-f68.google.com with SMTP id p3so9877847edx.7
+        for <netdev@vger.kernel.org>; Mon, 27 Jan 2020 09:42:46 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:autocrypt:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=smK7f3M0uHT3jpYWR1gIQOXo41Q7ccA1hWE5y/dhQtQ=;
+        b=Ra3vf9rBVBlnFR6QuCiA7O2vcMLfdEE6y9YVHgR9uqqw8dtQa5x9cOqxdaWSedUyTN
+         egK8Mv1yRfYIXxO7iu8kmVqx+BjgD9rmBFnP5G38YQdFgffSfdkx3dxi5yrZvFk7S+9c
+         YlvpSgytErzbjl+oKKYss9Vboty4VS7CTYV2Mc+82IyTk8DE/mN+gksenTUW1anFcAST
+         FAZ4kr9bXzvo6kD03XM7pI+8PC/cSiGjXgMcphZOYoOOxMQazeynNtO02jd00S5EUQkY
+         D+zm/0XCDckYaBlKCD0x93lV6bvZwVCGO/A2VAUUw26beXkbZwVsKO0QOprJ5KIKHF6f
+         nhgA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:autocrypt
+         :message-id:date:user-agent:mime-version:in-reply-to
+         :content-language:content-transfer-encoding;
+        bh=smK7f3M0uHT3jpYWR1gIQOXo41Q7ccA1hWE5y/dhQtQ=;
+        b=qJpVz4BBJ5ZEB0OJCfYZdemJ4vxLPTLYdRrsePFI7mV50Nclfhm0HkdutqfkiJRkTf
+         qwySnepyQRYIzSNSqhfMDJpO7219b659POc1Hm+A3QgZ+NaFUVrMzMV0hS8Tym8czmxT
+         wIJgNqiw1tkrBEy0AVp4icPpb5CO6jZnozcwliQoz9ofh0IT0Ljfhwe/+0aaEu+5p7J0
+         i4GZo2o1ogtJ7QBZv1Ew+HOEFoTsYU267LYFOMQJShIjJuL8FrGqR6/jRe9KZivb1YRI
+         zj25Jji4NEC2W9+FYcadd7ngRM6qnneNJbnYTaQ3EwWt8zusjBx/R3pAk4JJKgdFx+dt
+         HpCA==
+X-Gm-Message-State: APjAAAXqFdx47Ng73ME3VtM8wZDjeE8utuqzIryT2sllNVwGmZl6md5s
+        gr/qcjhDwbwfhMFbwY5/Igbs/2qz
+X-Google-Smtp-Source: APXvYqwFm2OsIfXpwoveuNW2wwiWyoMEc4hD0+VPU0BFpfNF5UaHFt4RPtupSv04V6GpcW56ve3ZRw==
+X-Received: by 2002:aa7:ca53:: with SMTP id j19mr10592102edt.305.1580146965791;
+        Mon, 27 Jan 2020 09:42:45 -0800 (PST)
+Received: from [10.67.50.115] ([192.19.223.252])
+        by smtp.googlemail.com with ESMTPSA id f13sm283044edq.26.2020.01.27.09.42.42
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 27 Jan 2020 09:42:44 -0800 (PST)
+Subject: Re: [PATCH net-next 1/2] net: phy: aquantia: add rate_adaptation
+ indication
+To:     "Madalin Bucur (OSS)" <madalin.bucur@oss.nxp.com>,
+        "davem@davemloft.net" <davem@davemloft.net>
+Cc:     "andrew@lunn.ch" <andrew@lunn.ch>,
+        "hkallweit1@gmail.com" <hkallweit1@gmail.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "ykaukab@suse.de" <ykaukab@suse.de>
+References: <1579701573-6609-1-git-send-email-madalin.bucur@oss.nxp.com>
+ <1579701573-6609-2-git-send-email-madalin.bucur@oss.nxp.com>
+ <68921c8a-06b6-d5c0-e857-14e7bc2c0a94@gmail.com>
+ <DB8PR04MB6985606F38572D8512E8D27EEC0F0@DB8PR04MB6985.eurprd04.prod.outlook.com>
+From:   Florian Fainelli <f.fainelli@gmail.com>
+Autocrypt: addr=f.fainelli@gmail.com; prefer-encrypt=mutual; keydata=
+ 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
+ G10n8gCguORqNGMsVRxrlLs7/himep7MrCc=
+Message-ID: <77e3ddcb-bddb-32d8-9c87-48ba9a7f2773@gmail.com>
+Date:   Mon, 27 Jan 2020 09:42:41 -0800
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.4.1
 MIME-Version: 1.0
-In-Reply-To: <628f018e-5a88-295b-9e4d-b4c6a49645b5@tycho.nsa.gov>
+In-Reply-To: <DB8PR04MB6985606F38572D8512E8D27EEC0F0@DB8PR04MB6985.eurprd04.prod.outlook.com>
 Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
 Content-Language: en-US
-X-Mailer: WebService/1.1.15116 hermes Apache-HttpAsyncClient/4.1.4 (Java/1.8.0_181)
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 1/27/2020 8:56 AM, Stephen Smalley wrote:
-> On 1/27/20 11:14 AM, Stephen Smalley wrote:
->> On 1/24/20 4:49 PM, Casey Schaufler wrote:
->>> On 1/24/2020 1:04 PM, Stephen Smalley wrote:
->>>> On 1/23/20 7:22 PM, Casey Schaufler wrote:
->>>>> This patchset provides the changes required for
->>>>> the AppArmor security module to stack safely with any other.
->>>>>
->>>>> v14: Rebase to 5.5-rc5
->>>>> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 Incorporate feedback from v13
->>>>> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 - Use an array of audit rules =
-(patch 0002)
->>>>> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 - Significant change, removed =
-Acks (patch 0002)
->>>>> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 - Remove unneeded include (pat=
-ch 0013)
->>>>> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 - Use context.len correctly (p=
-atch 0015)
->>>>> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 - Reorder code to be more sens=
-ible (patch 0016)
->>>>> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 - Drop SO_PEERCONTEXT as it's =
-not needed yet (patch 0023)
->>>>
->>>> I don't know for sure if this is your bug, but it happens every time=
- I boot with your patches applied and not at all on stock v5.5-rc5 so her=
-e it is.=C2=A0 Will try to bisect as time permits but not until next week=
-=2E Trigger seems to be loading the tun driver.
->>>
->>> Thanks. I will have a look as well.
+On 1/22/20 11:38 PM, Madalin Bucur (OSS) wrote:
+>> -----Original Message-----
+>> From: Florian Fainelli <f.fainelli@gmail.com>
+>> Sent: Wednesday, January 22, 2020 7:58 PM
+>> To: Madalin Bucur (OSS) <madalin.bucur@oss.nxp.com>; davem@davemloft.net
+>> Cc: andrew@lunn.ch; hkallweit1@gmail.com; netdev@vger.kernel.org;
+>> ykaukab@suse.de
+>> Subject: Re: [PATCH net-next 1/2] net: phy: aquantia: add rate_adaptation
+>> indication
 >>
->> Bisection led to the first patch in the series, "LSM: Infrastructure m=
-anagement of the sock security". Still not sure if the bug is in the patc=
-h itself or just being surfaced by it.
->
-> Looks like the bug is pre-existing to me and just exposed by your patch=
-=2E
+>> On 1/22/20 5:59 AM, Madalin Bucur wrote:
+>>> The AQR PHYs are able to perform rate adaptation between
+>>> the system interface and the line interfaces. When such
+>>> a PHY is deployed, the ethernet driver should not limit
+>>> the modes supported or advertised by the PHY. This patch
+>>> introduces the bit that allows checking for this feature
+>>> in the phy_device structure and its use for the Aquantia
+>>> PHYs.
+>>>
+>>> Signed-off-by: Madalin Bucur <madalin.bucur@oss.nxp.com>
+>>> ---
+>>>  drivers/net/phy/aquantia_main.c | 3 +++
+>>>  include/linux/phy.h             | 3 +++
+>>>  2 files changed, 6 insertions(+)
+>>>
+>>> diff --git a/drivers/net/phy/aquantia_main.c
+>> b/drivers/net/phy/aquantia_main.c
+>>> index 975789d9349d..36fdd523b758 100644
+>>> --- a/drivers/net/phy/aquantia_main.c
+>>> +++ b/drivers/net/phy/aquantia_main.c
+>>> @@ -209,6 +209,9 @@ static int aqr_config_aneg(struct phy_device
+>> *phydev)
+>>>  	u16 reg;
+>>>  	int ret;
+>>>
+>>> +	/* add here as this is called for all devices */
+>>> +	phydev->rate_adaptation = 1;
+>>
+>> How about introducing a new PHY_SUPPORTS_RATE_ADAPTATION flag and you
+>> set that directly from the phy_driver entry? using the "flags" bitmask
+>> instead of adding another structure member to phy_device?
+> 
+> I've looked at the phydev->dev_flags use, it seemed to me that mostly it
+> is used to convey configuration options towards the PHY.
 
-OK, thanks. I don't see how moving the allocation ought to have
-perturbed that, but it's good to know what happened.=20
+You read me incorrectly, I am suggesting using the phy_driver::flags
+member, not the phy_device::dev_flags entry, please re-consider your
+position.
+
+> Another problem
+> is that it's meaning seems to be opaque,  PHY specific. I wanted to avoid
+> trampling on a certain PHY hardcoded value and I turned my attention to
+> the bit fields in the phy_device. I noticed that there are already 12 bits
+> so due to alignment, the added bit is not adding extra size to the struct.
+>  
+>>> +
+>>>  	if (phydev->autoneg == AUTONEG_DISABLE)
+>>>  		return genphy_c45_pma_setup_forced(phydev);
+>>>
+>>> diff --git a/include/linux/phy.h b/include/linux/phy.h
+>>> index dd4a91f1feaa..2a5c202333fc 100644
+>>> --- a/include/linux/phy.h
+>>> +++ b/include/linux/phy.h
+>>> @@ -387,6 +387,9 @@ struct phy_device {
+>>>  	/* Interrupts are enabled */
+>>>  	unsigned interrupts:1;
+>>>
+>>> +	/* Rate adaptation in the PHY */
+>>> +	unsigned rate_adaptation:1;
+>>> +
+>>>  	enum phy_state state;
+>>>
+>>>  	u32 dev_flags;
+>>>
+>>
+>>
+>> --
+>> Florian
 
 
+-- 
+Florian
