@@ -2,80 +2,63 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 4172B14A5D9
-	for <lists+netdev@lfdr.de>; Mon, 27 Jan 2020 15:16:27 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2B25114A5E7
+	for <lists+netdev@lfdr.de>; Mon, 27 Jan 2020 15:21:12 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729031AbgA0OQZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 27 Jan 2020 09:16:25 -0500
-Received: from mail.kernel.org ([198.145.29.99]:57940 "EHLO mail.kernel.org"
+        id S1728866AbgA0OVK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 27 Jan 2020 09:21:10 -0500
+Received: from mail.kernel.org ([198.145.29.99]:58726 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727479AbgA0OQZ (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 27 Jan 2020 09:16:25 -0500
+        id S1727235AbgA0OVK (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 27 Jan 2020 09:21:10 -0500
 Received: from cakuba (c-73-93-4-247.hsd1.ca.comcast.net [73.93.4.247])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 041A020720;
-        Mon, 27 Jan 2020 14:16:23 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 4F4AF206D3;
+        Mon, 27 Jan 2020 14:21:09 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1580134584;
-        bh=QLGC/g2xFAJN+jsIisFFPeLyrH5w+wY1dxT5ukxBkb4=;
+        s=default; t=1580134869;
+        bh=9grUDBlpkZBiGDuifFySHYkjodars0QnmiJQVp43ar0=;
         h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=RWEntD3rXuODof0e3KbboePBtmXLkbL5G+pAvafXfyQClD4eL5s1liJsLRXMU1fE/
-         2YgkDjPK9mhRL5h3pD8pfNiXSTdob9bcyrOYl5a1WGrVDhMy8XLY0tu5I8CdAq9c2D
-         UICfprxvg1YkgY5fxzCoTdZNUbzQvioCLhXEeemQ=
-Date:   Mon, 27 Jan 2020 06:16:23 -0800
+        b=SlgafFLF7owdsL9/XDRgbPoAt3iH+Gt/vSXQ4V/+LqQcmHh5LfBhQXjXO4feAW1eE
+         B9XyJY5AaZadAYkZBScfAdYjdw4gbrPXGrPofKPzDjiRAjGlrG4peU1HiEoH0iLQWY
+         hWHe/ReefkSRUX775Oh4vMacDLPxRko44m5lKeEE=
+Date:   Mon, 27 Jan 2020 06:21:08 -0800
 From:   Jakub Kicinski <kuba@kernel.org>
-To:     David Ahern <dsahern@gmail.com>
-Cc:     Toke =?UTF-8?B?SMO4aWxhbmQtSsO4cmdlbnNlbg==?= <toke@redhat.com>,
-        David Ahern <dsahern@kernel.org>, netdev@vger.kernel.org,
-        prashantbhole.linux@gmail.com, jasowang@redhat.com,
-        davem@davemloft.net, jbrouer@redhat.com, mst@redhat.com,
-        toshiaki.makita1@gmail.com, daniel@iogearbox.net,
-        john.fastabend@gmail.com, ast@kernel.org, kafai@fb.com,
-        songliubraving@fb.com, yhs@fb.com, andriin@fb.com,
-        David Ahern <dahern@digitalocean.com>
-Subject: Re: [PATCH bpf-next 03/12] net: Add IFLA_XDP_EGRESS for XDP
- programs in the egress path
-Message-ID: <20200127061623.1cf42cd0@cakuba>
-In-Reply-To: <33f233a9-88b4-a75a-d1e5-fbbda21f9546@gmail.com>
-References: <20200123014210.38412-1-dsahern@kernel.org>
-        <20200123014210.38412-4-dsahern@kernel.org>
-        <87tv4m9zio.fsf@toke.dk>
-        <335b624a-655a-c0c6-ca27-102e6dac790b@gmail.com>
-        <20200124072128.4fcb4bd1@cakuba>
-        <87o8usg92d.fsf@toke.dk>
-        <1d84d8be-6812-d63a-97ca-ebc68cc266b9@gmail.com>
-        <20200126141141.0b773aba@cakuba>
-        <33f233a9-88b4-a75a-d1e5-fbbda21f9546@gmail.com>
+To:     Leon Romanovsky <leon@kernel.org>
+Cc:     Shannon Nelson <snelson@pensando.io>,
+        "David S . Miller" <davem@davemloft.net>,
+        Michal Kalderon <michal.kalderon@marvell.com>,
+        linux-netdev <netdev@vger.kernel.org>,
+        RDMA mailing list <linux-rdma@vger.kernel.org>
+Subject: Re: [PATCH net-next] net/core: Replace driver version to be kernel
+ version
+Message-ID: <20200127062108.082c9e5e@cakuba>
+In-Reply-To: <20200127064534.GJ3870@unreal>
+References: <20200123130541.30473-1-leon@kernel.org>
+        <43d43a45-18db-f959-7275-63c9976fdf40@pensando.io>
+        <20200126194110.GA3870@unreal>
+        <20200126124957.78a31463@cakuba>
+        <20200126210850.GB3870@unreal>
+        <20200126133353.77f5cb7e@cakuba>
+        <2a8d0845-9e6d-30ab-03d9-44817a7c2848@pensando.io>
+        <20200127053433.GF3870@unreal>
+        <20200127064534.GJ3870@unreal>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, 26 Jan 2020 21:03:15 -0700, David Ahern wrote:
-> On 1/26/20 3:11 PM, Jakub Kicinski wrote:
-> > I looked through the commit message and the cover letter again, and you
-> > never explain why you need the egress hook. Could you please clarify
-> > your needs?  =20
->=20
-> XDP is about efficient network processing - ie., bypassing the Linux
-> stack when it does not make sense for the person deploying some
-> solution. XDP right now is Rx centric.
+On Mon, 27 Jan 2020 08:45:34 +0200, Leon Romanovsky wrote:
+> > The thing is that we don't consider in-kernel API as stable one, so
+> > addition of new field which is not in use in upstream looks sketchy to
+> > me, but I have an idea how to solve it.  
+> 
+> Actually, it looks like my idea is Jakub's and Michal's idea. I will use
+> this opportunity and remove MODULE_VERSION() too.
 
-Network hardware is also "Rx centric" and somehow it works..
-
-> I want to run an ebpf program in the Tx path of the NIC regardless of
-> how the packet arrived at the device -- as an skb or an xdp_frame. There
-> are options for running programs on skb-based packets (e.g., tc). There
-> are *zero* options for manipulating/controlling/denying xdp_frames -
-> e.g., one REDIRECTED from an ingress device.
-
-Okay - so no precise use case.  You can run the same program at the=20
-end of whatever is doing the redirect (especially with Alexei's work=20
-on linking) and from cls_bpf =F0=9F=A4=B7=E2=80=8D=E2=99=82=EF=B8=8F
-
-I'm sure all driver authors can't wait to plough through their TX paths
-:/
+If you do please make sure DKMS works. I remember it was looking at
+that value.
