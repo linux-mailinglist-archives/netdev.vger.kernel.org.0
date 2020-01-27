@@ -2,74 +2,94 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 0688A149E78
-	for <lists+netdev@lfdr.de>; Mon, 27 Jan 2020 05:01:13 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id CAB4D149E79
+	for <lists+netdev@lfdr.de>; Mon, 27 Jan 2020 05:03:21 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727322AbgA0EBH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 26 Jan 2020 23:01:07 -0500
-Received: from mail-io1-f69.google.com ([209.85.166.69]:41879 "EHLO
-        mail-io1-f69.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726545AbgA0EBE (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 26 Jan 2020 23:01:04 -0500
-Received: by mail-io1-f69.google.com with SMTP id z201so4784487iof.8
-        for <netdev@vger.kernel.org>; Sun, 26 Jan 2020 20:01:03 -0800 (PST)
+        id S1727084AbgA0EDT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 26 Jan 2020 23:03:19 -0500
+Received: from mail-il1-f195.google.com ([209.85.166.195]:36325 "EHLO
+        mail-il1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726545AbgA0EDS (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 26 Jan 2020 23:03:18 -0500
+Received: by mail-il1-f195.google.com with SMTP id b15so6369554iln.3
+        for <netdev@vger.kernel.org>; Sun, 26 Jan 2020 20:03:18 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=zmAgkN6gBrhJ3tPU0oV2PyU6BWpEwi4U41T62RRUzjA=;
+        b=VH9OPXAK+slCyzTbgdy1t3WsJNFIWol2/LkeB4xgnyVdsSYBGxd5sRRHQ4vae6Xn82
+         H3CfMy2rXRJYs0eMiF9DqU0mAqaOaMp3wybGMblWozr6qAn/6ijJ+K8E6DgS1+BnzAY7
+         wPalu5/TlzgBUXXdr6nuPPckYvXRE0kQ5bMo8uQNgYqDvIozD77qGVqZT7Cvjfk9wbwA
+         b4K47uXN6wiEBG1xgUR9nKKlhRclKSWe/nnbaPiOzKHOs8anJIpm8yj5hzJOcpeTn7U7
+         W/TNLzY4P138UaIne7YYg4bDFN+1dwdnxol11/I45lrJrNTnQkycuv0h2QlbPtIeJH0u
+         jRgA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:date:in-reply-to:message-id:subject
-         :from:to;
-        bh=VgaYY37/arJ//cWZJnlZvZwtZBPazlQXq/CIao1WfmQ=;
-        b=N/0uuFJHEUN9qTnESYI3r4JWsxr9I7Pf6h//YGU0MkA6zLME7ZlAdiz8a8FbYblqTu
-         UU80c197i/Azb+iXPgPXmMmGO+GEPmbQa/oRt+GDUV92bJ3rpoYQF9okT/j7YPanweQz
-         DMQIltFc57PuzTiYtH4TGBcBwuCD5iZ7+QPl9LslZLvIyJsoV9NwT+M7cyRkqBnBTr2F
-         y1MMMPchWNGmbm7VXWU7xZkoK2fXp4Y7SD/5C3z1ZlY/uhlvUnjY5fl4PcANkLmcKxGT
-         rqb9twRXsvxLg46H2ry9lqSbd+G9E/aNGE9xLrlg3tdbGwl/QsCsnDJYLh2LRXZTpl7/
-         KksQ==
-X-Gm-Message-State: APjAAAVJOvO/uMMvCsFqMQvysSIuBtGWC15vnWNJFB3zA+yuC8CQIVjx
-        hSjK9f8RyJV/qJplMCz+FUVmQDTnoOq5REfS4s80eHMQgHhX
-X-Google-Smtp-Source: APXvYqysxyvWoFV1hsXw8Jkg2vzZtt8Wscf4J2wj8nn/VWMlh9MEbn8dzfvU/rqOy4eKy13jsOByr26t5WOoeFH66a7eL6jBTpI/
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=zmAgkN6gBrhJ3tPU0oV2PyU6BWpEwi4U41T62RRUzjA=;
+        b=LiB7LGvxgfgdRr9fY7YZPIWyWg0i5Pwa/KAD30DKD1iVIeSLnKCNO/+TQrbRQktlm9
+         3EwMw/NE/f8+Fs10fDDwu+TlSTY6CkpFIOQcqOjam6XWx+hgubvD8MoiECsL/968Ici/
+         zt7pVieIFszM1qacbCjt8SZVpv4uRCdzqxtTX0yv55nceRTDIllvhACsu1TNv4UubpvY
+         voQlf2ZRDniF82LOMOgGBaBttL/dpSGgBuAqpKmbBKGdkmqNJrgeXSEtTAmzcOC3VJH8
+         mqfRzKLeUuy8jojb5QbF4Z2tr1ldeJRIJsRBPU4RR+y6iKzo3HdhqmnjEIU9qQLp4hlx
+         IUIQ==
+X-Gm-Message-State: APjAAAUgXTvoOpnR67AxvmDigSPpaodj1gXdnQIDPg/biq9dM/Q0mDLt
+        RJ3tbN3ZwhPBZi+K3IjlHu4=
+X-Google-Smtp-Source: APXvYqznOLAN6rIUZXDpW3NBfjd8zQgdA61F6D55wL0jqewuFYdSkCG75I5TEu7cNqoeytrDBMp62Q==
+X-Received: by 2002:a92:cc89:: with SMTP id x9mr13853325ilo.77.1580097797992;
+        Sun, 26 Jan 2020 20:03:17 -0800 (PST)
+Received: from ?IPv6:2601:282:803:7700:58fc:9ee4:d099:9314? ([2601:282:803:7700:58fc:9ee4:d099:9314])
+        by smtp.googlemail.com with ESMTPSA id e7sm3159513ios.47.2020.01.26.20.03.15
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Sun, 26 Jan 2020 20:03:17 -0800 (PST)
+Subject: Re: [PATCH bpf-next 03/12] net: Add IFLA_XDP_EGRESS for XDP programs
+ in the egress path
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     =?UTF-8?Q?Toke_H=c3=b8iland-J=c3=b8rgensen?= <toke@redhat.com>,
+        David Ahern <dsahern@kernel.org>, netdev@vger.kernel.org,
+        prashantbhole.linux@gmail.com, jasowang@redhat.com,
+        davem@davemloft.net, jbrouer@redhat.com, mst@redhat.com,
+        toshiaki.makita1@gmail.com, daniel@iogearbox.net,
+        john.fastabend@gmail.com, ast@kernel.org, kafai@fb.com,
+        songliubraving@fb.com, yhs@fb.com, andriin@fb.com,
+        David Ahern <dahern@digitalocean.com>
+References: <20200123014210.38412-1-dsahern@kernel.org>
+ <20200123014210.38412-4-dsahern@kernel.org> <87tv4m9zio.fsf@toke.dk>
+ <335b624a-655a-c0c6-ca27-102e6dac790b@gmail.com>
+ <20200124072128.4fcb4bd1@cakuba> <87o8usg92d.fsf@toke.dk>
+ <1d84d8be-6812-d63a-97ca-ebc68cc266b9@gmail.com>
+ <20200126141141.0b773aba@cakuba>
+From:   David Ahern <dsahern@gmail.com>
+Message-ID: <33f233a9-88b4-a75a-d1e5-fbbda21f9546@gmail.com>
+Date:   Sun, 26 Jan 2020 21:03:15 -0700
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:68.0)
+ Gecko/20100101 Thunderbird/68.4.1
 MIME-Version: 1.0
-X-Received: by 2002:a02:864b:: with SMTP id e69mr11540998jai.83.1580097663218;
- Sun, 26 Jan 2020 20:01:03 -0800 (PST)
-Date:   Sun, 26 Jan 2020 20:01:03 -0800
-In-Reply-To: <000000000000dd68d0059c74a1db@google.com>
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <000000000000ed3a48059d17277e@google.com>
-Subject: Re: KASAN: slab-out-of-bounds Read in bitmap_ip_add
-From:   syzbot <syzbot+f3e96783d74ee8ea9aa3@syzkaller.appspotmail.com>
-To:     akpm@linux-foundation.org, allison@lohutok.net,
-        aryabinin@virtuozzo.com, coreteam@netfilter.org,
-        davem@davemloft.net, elver@google.com, fw@strlen.de,
-        gregkh@linuxfoundation.org, info@metux.net, jeremy@azazel.net,
-        kadlec@netfilter.org, kstewart@linuxfoundation.org,
-        linux-kernel@vger.kernel.org, mark.rutland@arm.com,
-        netdev@vger.kernel.org, netfilter-devel@vger.kernel.org,
-        pablo@netfilter.org, syzkaller-bugs@googlegroups.com,
-        tglx@linutronix.de, torvalds@linux-foundation.org
-Content-Type: text/plain; charset="UTF-8"
+In-Reply-To: <20200126141141.0b773aba@cakuba>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-syzbot has bisected this bug to:
+On 1/26/20 3:11 PM, Jakub Kicinski wrote:
+> 
+> I looked through the commit message and the cover letter again, and you
+> never explain why you need the egress hook. Could you please clarify
+> your needs? 
 
-commit 751ad98d5f881df91ba47e013b82422912381e8e
-Author: Marco Elver <elver@google.com>
-Date:   Fri Jul 12 03:54:00 2019 +0000
+XDP is about efficient network processing - ie., bypassing the Linux
+stack when it does not make sense for the person deploying some
+solution. XDP right now is Rx centric.
 
-    asm-generic, x86: add bitops instrumentation for KASAN
+I want to run an ebpf program in the Tx path of the NIC regardless of
+how the packet arrived at the device -- as an skb or an xdp_frame. There
+are options for running programs on skb-based packets (e.g., tc). There
+are *zero* options for manipulating/controlling/denying xdp_frames -
+e.g., one REDIRECTED from an ingress device.
 
-bisection log:  https://syzkaller.appspot.com/x/bisect.txt?x=1287db66e00000
-start commit:   244dc268 Merge tag 'drm-fixes-2020-01-19' of git://anongit..
-git tree:       upstream
-final crash:    https://syzkaller.appspot.com/x/report.txt?x=1187db66e00000
-console output: https://syzkaller.appspot.com/x/log.txt?x=1687db66e00000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=d9290aeb7e6cf1c4
-dashboard link: https://syzkaller.appspot.com/bug?extid=f3e96783d74ee8ea9aa3
-syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=1104c495e00000
-
-Reported-by: syzbot+f3e96783d74ee8ea9aa3@syzkaller.appspotmail.com
-Fixes: 751ad98d5f88 ("asm-generic, x86: add bitops instrumentation for KASAN")
-
-For information about bisection process see: https://goo.gl/tpsmEJ#bisection
