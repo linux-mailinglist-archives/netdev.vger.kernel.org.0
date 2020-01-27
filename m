@@ -2,106 +2,111 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 6BFD414AA71
-	for <lists+netdev@lfdr.de>; Mon, 27 Jan 2020 20:27:14 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id CD65914AA74
+	for <lists+netdev@lfdr.de>; Mon, 27 Jan 2020 20:28:41 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727738AbgA0T1J (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 27 Jan 2020 14:27:09 -0500
-Received: from mail-io1-f70.google.com ([209.85.166.70]:45979 "EHLO
-        mail-io1-f70.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725955AbgA0T1J (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 27 Jan 2020 14:27:09 -0500
-Received: by mail-io1-f70.google.com with SMTP id t12so6781084iog.12
-        for <netdev@vger.kernel.org>; Mon, 27 Jan 2020 11:27:09 -0800 (PST)
+        id S1726323AbgA0T2d (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 27 Jan 2020 14:28:33 -0500
+Received: from mail-wm1-f67.google.com ([209.85.128.67]:50852 "EHLO
+        mail-wm1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725845AbgA0T2d (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 27 Jan 2020 14:28:33 -0500
+Received: by mail-wm1-f67.google.com with SMTP id a5so8036541wmb.0;
+        Mon, 27 Jan 2020 11:28:32 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=nVpNgKJkF9tkji59pMJrNk0LvUKK5aYZzAaELznZEIo=;
+        b=EOPSnOhcgaq1gVIt4MtWAnnjLhta8bYIS1juX1koiLs8kPKtUS+C8v+HIVkCGlcxuA
+         j8v+OFcxiedIi+GPnp5ZjC6mMCb6f67Hw33ayz55aUpmhj+57sMXUmUn41UfqE9NT7Ad
+         drQiejNjHnpG3hwUF9zSRsVq4AOqdhYv2HScIj99eoD1IyoQ7ILWYjt+L3c5E7DDWxl+
+         81ojPuXLQN+n84E4lL1zuKsyOwkRHIDS3tEAjpZ5Po6ufowof5o/OZwe6BZwAUGFHB+A
+         w84W02xMdaIqsZEa6jlyiTL0M7TJUEW8IpyO6D8RBZdVTZ/D9pO8UNjhHy60bWEhbU94
+         +yTw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
-        bh=Ht06EFTCAqiZgMddO3KkSOA8HJxQ0XCFgZ86CB8ciyI=;
-        b=romqdKdE2WpzVK9sA1aQQObr5P98zppTVeUN2ClbjLoUhzIIJpx+efOLZXy2YpgZWO
-         oC0VAQ+v/x6WuaN2Cbi9/h2KDpnQnMHa+YPKNsSd5Q74LHUYRfjjk0OGf74U/ypq5bMn
-         5WS0r/OoUD14QJDLg+I3ZogmEPQsJJfyb9PrOeKY42bklFtP3z3Z6Ma7vkHuTVZ8ZSGd
-         SPkhq8NXuwPdGLyYBIX228X1yoRjEOZVufhBMP8jXsHWZbAi0FtGPM7KRohcK7h4kD6P
-         gUzHidl2AxNpYA+ZIUIumOzGHXw84DghgzFrISGorkCSWlgq+Vfuet78SwghLwW1ZL0g
-         RfcA==
-X-Gm-Message-State: APjAAAUXxZY6kCHw4e3FA3TJDkQT1D7ZD6UmaPZJY4Bxv4r7OuAwiZpt
-        m5KYtOoUaT8sx0RHpblEMrZm+Tqzsg25dO57C7H9/CIgo+OH
-X-Google-Smtp-Source: APXvYqyvvyEfcV6G/0Ud00/pVELKfYR0HIbxKlWKGloKVNLcYJDxFp3Pb9UNq7ptNUdNJkeHBpUUQc2UP70WZ5RMBvbCkErRCdFC
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=nVpNgKJkF9tkji59pMJrNk0LvUKK5aYZzAaELznZEIo=;
+        b=qXtkuWtPcqM+abxJll+vJ4pq7VSzrLTpL5RBtLn2ZJ/Aihjdeqt9OX/qRLxjNUWx3U
+         JxPMe4DtwEBNlAIxEek5ULZKCTCx1M/SO+1mKhmjdCI+uOxkw61qkwl8gcC9JzOH+dSO
+         F9s9shOUGGf11d5JG6rr0pmrDoEp8E81FhJF82j5r+4123wIBhnTP5peZ/cAt1K1ELE8
+         O1yrnK3HJmkLU8kWxEH2XmkDLJRmip7EqDNqccuyd5Yoo0FcnmqyILzPSJqKqzwvD2Yj
+         CPMoFPrE68XLamd4vKgd0PzW+Ip5oWIcg/d8SXytoZIV8NNgijtgj99gn/R+LzTCKER6
+         u4QQ==
+X-Gm-Message-State: APjAAAWHDfE7HCwTdQwNasiBsJVSqmjdpvmLfP8AQL0rVhsiX/TtA/AE
+        eQqTpFY3nI4enUjTH8F2NlHZd7PP
+X-Google-Smtp-Source: APXvYqxoCNMBFRKbINc2j745ycYNdqyYUaS3O3hsaHm6/siwUXdgo2uba0UD5gd43Kd/W8rSqHHk3w==
+X-Received: by 2002:a1c:9c87:: with SMTP id f129mr235606wme.26.1580153311807;
+        Mon, 27 Jan 2020 11:28:31 -0800 (PST)
+Received: from ?IPv6:2003:ea:8f36:6800:3496:17d5:1b2b:bee1? (p200300EA8F366800349617D51B2BBEE1.dip0.t-ipconnect.de. [2003:ea:8f36:6800:3496:17d5:1b2b:bee1])
+        by smtp.googlemail.com with ESMTPSA id e6sm22981852wru.44.2020.01.27.11.28.30
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 27 Jan 2020 11:28:31 -0800 (PST)
+Subject: Re: [RFC net-next 6/8] net: phylink: Configure MAC/PCS when link is
+ up without PHY
+To:     Andrew Lunn <andrew@lunn.ch>,
+        Russell King - ARM Linux admin <linux@armlinux.org.uk>
+Cc:     Jose Abreu <Jose.Abreu@synopsys.com>,
+        Joao Pinto <Joao.Pinto@synopsys.com>,
+        Alexandre Torgue <alexandre.torgue@st.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "linux-stm32@st-md-mailman.stormreply.com" 
+        <linux-stm32@st-md-mailman.stormreply.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Giuseppe Cavallaro <peppe.cavallaro@st.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        "linux-arm-kernel@lists.infradead.org" 
+        <linux-arm-kernel@lists.infradead.org>
+References: <cover.1580122909.git.Jose.Abreu@synopsys.com>
+ <9a2136885d9a892ff170be88fdffeda82c778a10.1580122909.git.Jose.Abreu@synopsys.com>
+ <20200127112102.GT25745@shell.armlinux.org.uk>
+ <BN8PR12MB3266714AE9EC1A97218120B3D30B0@BN8PR12MB3266.namprd12.prod.outlook.com>
+ <20200127114600.GU25745@shell.armlinux.org.uk>
+ <20200127140038.GD13647@lunn.ch>
+ <20200127140834.GW25745@shell.armlinux.org.uk>
+ <20200127145107.GE13647@lunn.ch>
+ <20200127161132.GX25745@shell.armlinux.org.uk>
+ <20200127162206.GJ13647@lunn.ch>
+From:   Heiner Kallweit <hkallweit1@gmail.com>
+Message-ID: <c3e863b8-2143-fee3-bb0b-65699661d7ab@gmail.com>
+Date:   Mon, 27 Jan 2020 20:28:21 +0100
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
+ Thunderbird/68.4.1
 MIME-Version: 1.0
-X-Received: by 2002:a6b:6e18:: with SMTP id d24mr14110973ioh.301.1580153228897;
- Mon, 27 Jan 2020 11:27:08 -0800 (PST)
-Date:   Mon, 27 Jan 2020 11:27:08 -0800
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <000000000000e63046059d2417e8@google.com>
-Subject: memory leak in garp_request_join
-From:   syzbot <syzbot+13ad608e190b5f8ad8a8@syzkaller.appspotmail.com>
-To:     allison@lohutok.net, davem@davemloft.net,
-        gregkh@linuxfoundation.org, info@metux.net,
-        kstewart@linuxfoundation.org, kuba@kernel.org,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        syzkaller-bugs@googlegroups.com, tglx@linutronix.de
-Content-Type: text/plain; charset="UTF-8"
+In-Reply-To: <20200127162206.GJ13647@lunn.ch>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello,
+On 27.01.2020 17:22, Andrew Lunn wrote:
+>>> Heiner has another device which has an Aquantia PHY running in an odd
+>>> mode so that it does 1G over a T2 link. It uses SGMII for this, and
+>>> that is where we first noticed the issue of the MAC and PCS having
+>>> different configurations.
+>>
+>> Do you know when the issue appeared?
+> 
+> As far as i understand, it never worked, it is not a regression as
+> such. But Heiner probably knows more.
+> 
+I think you're referring to the issue that was fixed with following
+commit: 72d8b4fdbfb6 ("net: dsa: mv88e6xxx: support in-band signalling
+on SGMII ports with external PHYs"). The commit description also has a
+link to the discussion we had about the issue. If I read it correctly
+the issue is independent of this proprietary 1000BaseT2 mode having
+been used.
 
-syzbot found the following crash on:
-
-HEAD commit:    d5226fa6 Linux 5.5
-git tree:       upstream
-console output: https://syzkaller.appspot.com/x/log.txt?x=176b440de00000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=698d5ad38dda6cb6
-dashboard link: https://syzkaller.appspot.com/bug?extid=13ad608e190b5f8ad8a8
-compiler:       gcc (GCC) 9.0.0 20181231 (experimental)
-syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=15d86b35e00000
-C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=1043d769e00000
-
-IMPORTANT: if you fix the bug, please add the following tag to the commit:
-Reported-by: syzbot+13ad608e190b5f8ad8a8@syzkaller.appspotmail.com
-
-BUG: memory leak
-unreferenced object 0xffff888114008dc0 (size 64):
-  comm "syz-executor967", pid 7318, jiffies 4294943348 (age 13.580s)
-  hex dump (first 32 bytes):
-    01 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  ................
-    00 00 00 00 00 00 00 00 08 00 00 00 01 02 00 08  ................
-  backtrace:
-    [<0000000067139221>] kmemleak_alloc_recursive include/linux/kmemleak.h:43 [inline]
-    [<0000000067139221>] slab_post_alloc_hook mm/slab.h:586 [inline]
-    [<0000000067139221>] slab_alloc mm/slab.c:3320 [inline]
-    [<0000000067139221>] __do_kmalloc mm/slab.c:3654 [inline]
-    [<0000000067139221>] __kmalloc+0x169/0x300 mm/slab.c:3665
-    [<0000000093813bfa>] kmalloc include/linux/slab.h:561 [inline]
-    [<0000000093813bfa>] garp_attr_create net/802/garp.c:187 [inline]
-    [<0000000093813bfa>] garp_request_join+0x132/0x1f0 net/802/garp.c:350
-    [<0000000078a2be7e>] vlan_gvrp_request_join+0x86/0x90 net/8021q/vlan_gvrp.c:34
-    [<0000000092861d25>] vlan_dev_open+0x173/0x290 net/8021q/vlan_dev.c:290
-    [<00000000451be632>] __dev_open+0x109/0x1b0 net/core/dev.c:1431
-    [<00000000fa297b7f>] __dev_change_flags+0x246/0x2c0 net/core/dev.c:8105
-    [<0000000065bc5439>] rtnl_configure_link+0x57/0x100 net/core/rtnetlink.c:2996
-    [<000000005ed66308>] __rtnl_newlink+0x8b9/0xb80 net/core/rtnetlink.c:3332
-    [<00000000d6be140e>] rtnl_newlink+0x4e/0x80 net/core/rtnetlink.c:3372
-    [<0000000030786841>] rtnetlink_rcv_msg+0x178/0x4b0 net/core/rtnetlink.c:5433
-    [<00000000cb252134>] netlink_rcv_skb+0x61/0x170 net/netlink/af_netlink.c:2477
-    [<000000002c0f0d61>] rtnetlink_rcv+0x1d/0x30 net/core/rtnetlink.c:5451
-    [<00000000e09dee2f>] netlink_unicast_kernel net/netlink/af_netlink.c:1302 [inline]
-    [<00000000e09dee2f>] netlink_unicast+0x223/0x310 net/netlink/af_netlink.c:1328
-    [<0000000036f4d1c5>] netlink_sendmsg+0x2c0/0x570 net/netlink/af_netlink.c:1917
-    [<0000000064dc927c>] sock_sendmsg_nosec net/socket.c:639 [inline]
-    [<0000000064dc927c>] sock_sendmsg+0x54/0x70 net/socket.c:659
-    [<00000000cd57f12f>] ____sys_sendmsg+0x2d0/0x300 net/socket.c:2330
-
-
-
----
-This bug is generated by a bot. It may contain errors.
-See https://goo.gl/tpsmEJ for more information about syzbot.
-syzbot engineers can be reached at syzkaller@googlegroups.com.
-
-syzbot will keep track of this bug report. See:
-https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
-syzbot can test patches for this bug, for details see:
-https://goo.gl/tpsmEJ#testing-patches
+>       Andrew
+> .
+> 
+Heiner
