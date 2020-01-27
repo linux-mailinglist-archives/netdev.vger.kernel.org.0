@@ -2,110 +2,343 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id CACDC14AC8D
-	for <lists+netdev@lfdr.de>; Tue, 28 Jan 2020 00:20:08 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1DCDA14ACA6
+	for <lists+netdev@lfdr.de>; Tue, 28 Jan 2020 00:40:29 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726323AbgA0XUC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 27 Jan 2020 18:20:02 -0500
-Received: from mail-pg1-f196.google.com ([209.85.215.196]:40441 "EHLO
-        mail-pg1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726099AbgA0XUB (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 27 Jan 2020 18:20:01 -0500
-Received: by mail-pg1-f196.google.com with SMTP id k25so5939686pgt.7
-        for <netdev@vger.kernel.org>; Mon, 27 Jan 2020 15:20:01 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=QT8O29qq6UX2ERtfMZtIcpjsnZ2zWwc1vGjIRRz0cAI=;
-        b=XawkCOgE5DXMC5T4UMCWjNatVuCxPXGElKDJzkypz39qHzpJzBQm4Kjg2Wyc74N8XU
-         ae0RNb4v9jld0zCxnKtoZyL8qTh3A+57E2UqJ/UgP52rejOuyEYKSTX+2MbIBdIK8wvO
-         WFe7hDDB9CBICJzlBnEvr5cP0Jna4twh3KH9c=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=QT8O29qq6UX2ERtfMZtIcpjsnZ2zWwc1vGjIRRz0cAI=;
-        b=SKFDTDcIZV2cdrT0sH+5TjJxhOaO03GCVfWWFaYhIffglerQzhI25G+ndSENodJoTs
-         IXi3ZEiZiH9KcNujagujYvLSSnGiB59FRvm6nmvDn0hU30g114Qk1Sac06UsH2L+oK58
-         qqUO9KrRUaKSROIS1ulgWwXhQO7Pjax69Dv/38emqCgUBG1/yWqoOaJ8Gs6/YebaTew3
-         VpSEF9mp1iRN5Wwx+mReG6fsPqxWtfHXmwZxJxGD9Siv46ufaJPiaFZCvH9kRMaQs4NU
-         5SkdJEEidI49An3mWcHdTiMzEx4zT4xBXHbV2GeGabbH3A9Qi+mWjaJFWqXHC+v/SAHj
-         sQ4w==
-X-Gm-Message-State: APjAAAVSQTpbJa8NFLLHN5vopgR55qVQOup/gwJqP5XXtflSYrO8nQZA
-        KGMEroRLo8J64PU/I4tApb9/wg==
-X-Google-Smtp-Source: APXvYqyXDQEpPXM0xicaJgXWD5GwCMvtHrO2YWSFefSzTu/QuqyGJhGs+kmBUEZGJW1pcHmWRN4ELQ==
-X-Received: by 2002:aa7:934a:: with SMTP id 10mr1028171pfn.233.1580167201197;
-        Mon, 27 Jan 2020 15:20:01 -0800 (PST)
-Received: from www.outflux.net (smtp.outflux.net. [198.145.64.163])
-        by smtp.gmail.com with ESMTPSA id m12sm3509886pfh.37.2020.01.27.15.19.59
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 27 Jan 2020 15:20:00 -0800 (PST)
-Date:   Mon, 27 Jan 2020 15:19:59 -0800
-From:   Kees Cook <keescook@chromium.org>
-To:     Jiri Slaby <jslaby@suse.cz>
-Cc:     Alexander Viro <viro@zeniv.linux.org.uk>,
-        linux-kernel@vger.kernel.org, David Windsor <dave@nullcore.net>,
-        Pekka Enberg <penberg@kernel.org>,
-        David Rientjes <rientjes@google.com>,
-        Joonsoo Kim <iamjoonsoo.kim@lge.com>,
-        Andrew Morton <akpm@linux-foundation.org>, linux-mm@kvack.org,
-        linux-xfs@vger.kernel.org,
-        Linus Torvalds <torvalds@linux-foundation.org>,
-        Andy Lutomirski <luto@kernel.org>,
-        Christoph Hellwig <hch@infradead.org>,
-        Christoph Lameter <cl@linux.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Laura Abbott <labbott@redhat.com>,
-        Mark Rutland <mark.rutland@arm.com>,
-        "Martin K. Petersen" <martin.petersen@oracle.com>,
-        Paolo Bonzini <pbonzini@redhat.com>,
-        Christian Borntraeger <borntraeger@de.ibm.com>,
-        Christoffer Dall <christoffer.dall@linaro.org>,
-        Dave Kleikamp <dave.kleikamp@oracle.com>,
-        Jan Kara <jack@suse.cz>,
-        Luis de Bethencourt <luisbg@kernel.org>,
-        Marc Zyngier <marc.zyngier@arm.com>,
-        Rik van Riel <riel@redhat.com>,
-        Matthew Garrett <mjg59@google.com>,
-        linux-fsdevel@vger.kernel.org, linux-arch@vger.kernel.org,
-        netdev@vger.kernel.org, kernel-hardening@lists.openwall.com,
-        Vlastimil Babka <vbabka@suse.cz>,
-        Michal Kubecek <mkubecek@suse.cz>
-Subject: Re: [kernel-hardening] [PATCH 09/38] usercopy: Mark kmalloc caches
- as usercopy caches
-Message-ID: <202001271519.AA6ADEACF0@keescook>
-References: <1515636190-24061-1-git-send-email-keescook@chromium.org>
- <1515636190-24061-10-git-send-email-keescook@chromium.org>
- <9519edb7-456a-a2fa-659e-3e5a1ff89466@suse.cz>
- <201911121313.1097D6EE@keescook>
- <201911141327.4DE6510@keescook>
- <bfca96db-bbd0-d958-7732-76e36c667c68@suse.cz>
+        id S1726205AbgA0Xk1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 27 Jan 2020 18:40:27 -0500
+Received: from mga07.intel.com ([134.134.136.100]:13554 "EHLO mga07.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1725955AbgA0Xk1 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 27 Jan 2020 18:40:27 -0500
+X-Amp-Result: UNKNOWN
+X-Amp-Original-Verdict: FILE UNKNOWN
+X-Amp-File-Uploaded: False
+Received: from orsmga005.jf.intel.com ([10.7.209.41])
+  by orsmga105.jf.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 27 Jan 2020 15:40:00 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.70,371,1574150400"; 
+   d="scan'208";a="401498961"
+Received: from lkp-server01.sh.intel.com (HELO lkp-server01) ([10.239.97.150])
+  by orsmga005.jf.intel.com with ESMTP; 27 Jan 2020 15:39:58 -0800
+Received: from kbuild by lkp-server01 with local (Exim 4.89)
+        (envelope-from <lkp@intel.com>)
+        id 1iwDz3-000FLc-VE; Tue, 28 Jan 2020 07:39:57 +0800
+Date:   Tue, 28 Jan 2020 07:39:44 +0800
+From:   kbuild test robot <lkp@intel.com>
+To:     Michal Kalderon <michal.kalderon@marvell.com>
+Cc:     kbuild-all@lists.01.org, michal.kalderon@marvell.com,
+        ariel.elior@marvell.com, davem@davemloft.net,
+        netdev@vger.kernel.org, linux-rdma@vger.kernel.org,
+        linux-scsi@vger.kernel.org
+Subject: Re: [PATCH v2 net-next 05/13] qed: Use dmae to write to widebus
+ registers in fw_funcs
+Message-ID: <202001280733.Fb6BWwaH%lkp@intel.com>
+References: <20200123105836.15090-6-michal.kalderon@marvell.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <bfca96db-bbd0-d958-7732-76e36c667c68@suse.cz>
+In-Reply-To: <20200123105836.15090-6-michal.kalderon@marvell.com>
+User-Agent: NeoMutt/20170113 (1.7.2)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Jan 23, 2020 at 09:14:20AM +0100, Jiri Slaby wrote:
-> On 14. 11. 19, 22:27, Kees Cook wrote:
-> > On Tue, Nov 12, 2019 at 01:21:54PM -0800, Kees Cook wrote:
-> >> How is iucv the only network protocol that has run into this? Do others
-> >> use a bounce buffer?
-> > 
-> > Another solution would be to use a dedicated kmem cache (instead of the
-> > shared kmalloc dma one)?
-> 
-> Has there been any conclusion to this thread yet? For the time being, we
-> disabled HARDENED_USERCOPY on s390...
-> 
-> https://lore.kernel.org/kernel-hardening/9519edb7-456a-a2fa-659e-3e5a1ff89466@suse.cz/
+Hi Michal,
 
-I haven't heard anything new. What did people think of a separate kmem
-cache?
+I love your patch! Perhaps something to improve:
 
--- 
-Kees Cook
+[auto build test WARNING on net-next/master]
+[also build test WARNING on linus/master v5.5 next-20200122]
+[if your patch is applied to the wrong git tree, please drop us a note to help
+improve the system. BTW, we also suggest to use '--base' option to specify the
+base tree in git format-patch, please see https://stackoverflow.com/a/37406982]
+
+url:    https://github.com/0day-ci/linux/commits/Michal-Kalderon/qed-Utilize-FW-8-42-2-0/20200125-055253
+base:   https://git.kernel.org/pub/scm/linux/kernel/git/davem/net-next.git 9bbc8be29d66cc34b650510f2c67b5c55235fe5d
+reproduce:
+        # apt-get install sparse
+        # sparse version: v0.6.1-153-g47b6dfef-dirty
+        make ARCH=x86_64 allmodconfig
+        make C=1 CF='-fdiagnostic-prefix -D__CHECK_ENDIAN__'
+
+If you fix the issue, kindly add following tag
+Reported-by: kbuild test robot <lkp@intel.com>
+
+
+sparse warnings: (new ones prefixed by >>)
+
+>> drivers/net/ethernet/qlogic/qed/qed_dev.c:910:9: sparse: sparse: invalid assignment: &=
+>> drivers/net/ethernet/qlogic/qed/qed_dev.c:910:9: sparse:    left side has type restricted __le32
+>> drivers/net/ethernet/qlogic/qed/qed_dev.c:910:9: sparse:    right side has type int
+   drivers/net/ethernet/qlogic/qed/qed_dev.c:910:9: sparse: sparse: invalid assignment: |=
+>> drivers/net/ethernet/qlogic/qed/qed_dev.c:910:9: sparse:    left side has type restricted __le32
+>> drivers/net/ethernet/qlogic/qed/qed_dev.c:910:9: sparse:    right side has type unsigned long long
+--
+>> drivers/net/ethernet/qlogic/qed/qed_hw.c:413:20: sparse: sparse: restricted __le32 degrades to integer
+   drivers/net/ethernet/qlogic/qed/qed_hw.c:420:20: sparse: sparse: restricted __le32 degrades to integer
+   drivers/net/ethernet/qlogic/qed/qed_hw.c:432:13: sparse: sparse: restricted __le32 degrades to integer
+   drivers/net/ethernet/qlogic/qed/qed_hw.c:438:20: sparse: sparse: restricted __le32 degrades to integer
+   drivers/net/ethernet/qlogic/qed/qed_hw.c:449:13: sparse: sparse: restricted __le32 degrades to integer
+   drivers/net/ethernet/qlogic/qed/qed_hw.c:455:13: sparse: sparse: restricted __le32 degrades to integer
+   drivers/net/ethernet/qlogic/qed/qed_hw.c:739:22: sparse: sparse: restricted __le32 degrades to integer
+--
+   drivers/net/ethernet/qlogic/qed/qed_init_fw_funcs.c:1056:9: sparse:    right side has type int
+   drivers/net/ethernet/qlogic/qed/qed_init_fw_funcs.c:1056:9: sparse: sparse: invalid assignment: |=
+   drivers/net/ethernet/qlogic/qed/qed_init_fw_funcs.c:1056:9: sparse:    left side has type restricted __le32
+   drivers/net/ethernet/qlogic/qed/qed_init_fw_funcs.c:1056:9: sparse:    right side has type unsigned long long
+   drivers/net/ethernet/qlogic/qed/qed_init_fw_funcs.c:1354:9: sparse: sparse: invalid assignment: &=
+   drivers/net/ethernet/qlogic/qed/qed_init_fw_funcs.c:1354:9: sparse:    left side has type restricted __le32
+   drivers/net/ethernet/qlogic/qed/qed_init_fw_funcs.c:1354:9: sparse:    right side has type int
+   drivers/net/ethernet/qlogic/qed/qed_init_fw_funcs.c:1354:9: sparse: sparse: invalid assignment: |=
+   drivers/net/ethernet/qlogic/qed/qed_init_fw_funcs.c:1354:9: sparse:    left side has type restricted __le32
+   drivers/net/ethernet/qlogic/qed/qed_init_fw_funcs.c:1354:9: sparse:    right side has type unsigned long long
+   drivers/net/ethernet/qlogic/qed/qed_init_fw_funcs.c:1355:9: sparse: sparse: invalid assignment: &=
+   drivers/net/ethernet/qlogic/qed/qed_init_fw_funcs.c:1355:9: sparse:    left side has type restricted __le32
+   drivers/net/ethernet/qlogic/qed/qed_init_fw_funcs.c:1355:9: sparse:    right side has type int
+   drivers/net/ethernet/qlogic/qed/qed_init_fw_funcs.c:1355:9: sparse: sparse: invalid assignment: |=
+   drivers/net/ethernet/qlogic/qed/qed_init_fw_funcs.c:1355:9: sparse:    left side has type restricted __le32
+   drivers/net/ethernet/qlogic/qed/qed_init_fw_funcs.c:1355:9: sparse:    right side has type unsigned long long
+   drivers/net/ethernet/qlogic/qed/qed_init_fw_funcs.c:1358:17: sparse: sparse: invalid assignment: &=
+   drivers/net/ethernet/qlogic/qed/qed_init_fw_funcs.c:1358:17: sparse:    left side has type restricted __le32
+   drivers/net/ethernet/qlogic/qed/qed_init_fw_funcs.c:1358:17: sparse:    right side has type int
+   drivers/net/ethernet/qlogic/qed/qed_init_fw_funcs.c:1358:17: sparse: sparse: invalid assignment: |=
+   drivers/net/ethernet/qlogic/qed/qed_init_fw_funcs.c:1358:17: sparse:    left side has type restricted __le32
+   drivers/net/ethernet/qlogic/qed/qed_init_fw_funcs.c:1358:17: sparse:    right side has type unsigned long long
+   drivers/net/ethernet/qlogic/qed/qed_init_fw_funcs.c:1359:17: sparse: sparse: invalid assignment: &=
+   drivers/net/ethernet/qlogic/qed/qed_init_fw_funcs.c:1359:17: sparse:    left side has type restricted __le32
+   drivers/net/ethernet/qlogic/qed/qed_init_fw_funcs.c:1359:17: sparse:    right side has type int
+   drivers/net/ethernet/qlogic/qed/qed_init_fw_funcs.c:1359:17: sparse: sparse: invalid assignment: |=
+   drivers/net/ethernet/qlogic/qed/qed_init_fw_funcs.c:1359:17: sparse:    left side has type restricted __le32
+   drivers/net/ethernet/qlogic/qed/qed_init_fw_funcs.c:1359:17: sparse:    right side has type unsigned long long
+   drivers/net/ethernet/qlogic/qed/qed_init_fw_funcs.c:1360:17: sparse: sparse: invalid assignment: &=
+   drivers/net/ethernet/qlogic/qed/qed_init_fw_funcs.c:1360:17: sparse:    left side has type restricted __le32
+   drivers/net/ethernet/qlogic/qed/qed_init_fw_funcs.c:1360:17: sparse:    right side has type int
+   drivers/net/ethernet/qlogic/qed/qed_init_fw_funcs.c:1360:17: sparse: sparse: invalid assignment: |=
+   drivers/net/ethernet/qlogic/qed/qed_init_fw_funcs.c:1360:17: sparse:    left side has type restricted __le32
+   drivers/net/ethernet/qlogic/qed/qed_init_fw_funcs.c:1360:17: sparse:    right side has type unsigned long long
+   drivers/net/ethernet/qlogic/qed/qed_init_fw_funcs.c:1361:17: sparse: sparse: invalid assignment: &=
+   drivers/net/ethernet/qlogic/qed/qed_init_fw_funcs.c:1361:17: sparse:    left side has type restricted __le32
+   drivers/net/ethernet/qlogic/qed/qed_init_fw_funcs.c:1361:17: sparse:    right side has type int
+   drivers/net/ethernet/qlogic/qed/qed_init_fw_funcs.c:1361:17: sparse: sparse: invalid assignment: |=
+   drivers/net/ethernet/qlogic/qed/qed_init_fw_funcs.c:1361:17: sparse:    left side has type restricted __le32
+   drivers/net/ethernet/qlogic/qed/qed_init_fw_funcs.c:1361:17: sparse:    right side has type unsigned long long
+   drivers/net/ethernet/qlogic/qed/qed_init_fw_funcs.c:1362:17: sparse: sparse: invalid assignment: &=
+   drivers/net/ethernet/qlogic/qed/qed_init_fw_funcs.c:1362:17: sparse:    left side has type restricted __le32
+   drivers/net/ethernet/qlogic/qed/qed_init_fw_funcs.c:1362:17: sparse:    right side has type int
+   drivers/net/ethernet/qlogic/qed/qed_init_fw_funcs.c:1362:17: sparse: sparse: invalid assignment: |=
+   drivers/net/ethernet/qlogic/qed/qed_init_fw_funcs.c:1362:17: sparse:    left side has type restricted __le32
+   drivers/net/ethernet/qlogic/qed/qed_init_fw_funcs.c:1362:17: sparse:    right side has type unsigned long long
+   drivers/net/ethernet/qlogic/qed/qed_init_fw_funcs.c:1363:17: sparse: sparse: invalid assignment: &=
+   drivers/net/ethernet/qlogic/qed/qed_init_fw_funcs.c:1363:17: sparse:    left side has type restricted __le32
+   drivers/net/ethernet/qlogic/qed/qed_init_fw_funcs.c:1363:17: sparse:    right side has type int
+   drivers/net/ethernet/qlogic/qed/qed_init_fw_funcs.c:1363:17: sparse: sparse: invalid assignment: |=
+   drivers/net/ethernet/qlogic/qed/qed_init_fw_funcs.c:1363:17: sparse:    left side has type restricted __le32
+   drivers/net/ethernet/qlogic/qed/qed_init_fw_funcs.c:1363:17: sparse:    right side has type unsigned long long
+   drivers/net/ethernet/qlogic/qed/qed_init_fw_funcs.c:1365:17: sparse: sparse: invalid assignment: &=
+   drivers/net/ethernet/qlogic/qed/qed_init_fw_funcs.c:1365:17: sparse:    left side has type restricted __le32
+   drivers/net/ethernet/qlogic/qed/qed_init_fw_funcs.c:1365:17: sparse:    right side has type int
+   drivers/net/ethernet/qlogic/qed/qed_init_fw_funcs.c:1365:17: sparse: sparse: invalid assignment: |=
+   drivers/net/ethernet/qlogic/qed/qed_init_fw_funcs.c:1365:17: sparse:    left side has type restricted __le32
+   drivers/net/ethernet/qlogic/qed/qed_init_fw_funcs.c:1365:17: sparse:    right side has type unsigned long long
+   drivers/net/ethernet/qlogic/qed/qed_init_fw_funcs.c:1366:17: sparse: sparse: invalid assignment: &=
+   drivers/net/ethernet/qlogic/qed/qed_init_fw_funcs.c:1366:17: sparse:    left side has type restricted __le32
+   drivers/net/ethernet/qlogic/qed/qed_init_fw_funcs.c:1366:17: sparse:    right side has type int
+   drivers/net/ethernet/qlogic/qed/qed_init_fw_funcs.c:1366:17: sparse: sparse: invalid assignment: |=
+   drivers/net/ethernet/qlogic/qed/qed_init_fw_funcs.c:1366:17: sparse:    left side has type restricted __le32
+   drivers/net/ethernet/qlogic/qed/qed_init_fw_funcs.c:1366:17: sparse:    right side has type unsigned long long
+   drivers/net/ethernet/qlogic/qed/qed_init_fw_funcs.c:1367:17: sparse: sparse: invalid assignment: &=
+   drivers/net/ethernet/qlogic/qed/qed_init_fw_funcs.c:1367:17: sparse:    left side has type restricted __le32
+   drivers/net/ethernet/qlogic/qed/qed_init_fw_funcs.c:1367:17: sparse:    right side has type int
+   drivers/net/ethernet/qlogic/qed/qed_init_fw_funcs.c:1367:17: sparse: sparse: invalid assignment: |=
+   drivers/net/ethernet/qlogic/qed/qed_init_fw_funcs.c:1367:17: sparse:    left side has type restricted __le32
+   drivers/net/ethernet/qlogic/qed/qed_init_fw_funcs.c:1367:17: sparse:    right side has type unsigned long long
+   drivers/net/ethernet/qlogic/qed/qed_init_fw_funcs.c:1369:17: sparse: sparse: invalid assignment: &=
+   drivers/net/ethernet/qlogic/qed/qed_init_fw_funcs.c:1369:17: sparse:    left side has type restricted __le32
+   drivers/net/ethernet/qlogic/qed/qed_init_fw_funcs.c:1369:17: sparse:    right side has type int
+   drivers/net/ethernet/qlogic/qed/qed_init_fw_funcs.c:1369:17: sparse: sparse: invalid assignment: |=
+   drivers/net/ethernet/qlogic/qed/qed_init_fw_funcs.c:1369:17: sparse:    left side has type restricted __le32
+   drivers/net/ethernet/qlogic/qed/qed_init_fw_funcs.c:1369:17: sparse:    right side has type unsigned long long
+   drivers/net/ethernet/qlogic/qed/qed_init_fw_funcs.c:1370:17: sparse: sparse: invalid assignment: &=
+   drivers/net/ethernet/qlogic/qed/qed_init_fw_funcs.c:1370:17: sparse:    left side has type restricted __le32
+   drivers/net/ethernet/qlogic/qed/qed_init_fw_funcs.c:1370:17: sparse:    right side has type int
+   drivers/net/ethernet/qlogic/qed/qed_init_fw_funcs.c:1370:17: sparse: sparse: invalid assignment: |=
+   drivers/net/ethernet/qlogic/qed/qed_init_fw_funcs.c:1370:17: sparse:    left side has type restricted __le32
+   drivers/net/ethernet/qlogic/qed/qed_init_fw_funcs.c:1370:17: sparse:    right side has type unsigned long long
+   drivers/net/ethernet/qlogic/qed/qed_init_fw_funcs.c:1372:17: sparse: sparse: invalid assignment: &=
+   drivers/net/ethernet/qlogic/qed/qed_init_fw_funcs.c:1372:17: sparse:    left side has type restricted __le32
+   drivers/net/ethernet/qlogic/qed/qed_init_fw_funcs.c:1372:17: sparse:    right side has type int
+   drivers/net/ethernet/qlogic/qed/qed_init_fw_funcs.c:1372:17: sparse: sparse: invalid assignment: |=
+   drivers/net/ethernet/qlogic/qed/qed_init_fw_funcs.c:1372:17: sparse:    left side has type restricted __le32
+   drivers/net/ethernet/qlogic/qed/qed_init_fw_funcs.c:1372:17: sparse:    right side has type unsigned long long
+   drivers/net/ethernet/qlogic/qed/qed_init_fw_funcs.c:1373:17: sparse: sparse: invalid assignment: &=
+   drivers/net/ethernet/qlogic/qed/qed_init_fw_funcs.c:1373:17: sparse:    left side has type restricted __le32
+   drivers/net/ethernet/qlogic/qed/qed_init_fw_funcs.c:1373:17: sparse:    right side has type int
+   drivers/net/ethernet/qlogic/qed/qed_init_fw_funcs.c:1373:17: sparse: sparse: invalid assignment: |=
+   drivers/net/ethernet/qlogic/qed/qed_init_fw_funcs.c:1373:17: sparse:    left side has type restricted __le32
+   drivers/net/ethernet/qlogic/qed/qed_init_fw_funcs.c:1373:17: sparse:    right side has type unsigned long long
+   drivers/net/ethernet/qlogic/qed/qed_init_fw_funcs.c:1375:17: sparse: sparse: invalid assignment: &=
+   drivers/net/ethernet/qlogic/qed/qed_init_fw_funcs.c:1375:17: sparse:    left side has type restricted __le32
+   drivers/net/ethernet/qlogic/qed/qed_init_fw_funcs.c:1375:17: sparse:    right side has type int
+   drivers/net/ethernet/qlogic/qed/qed_init_fw_funcs.c:1375:17: sparse: sparse: invalid assignment: |=
+   drivers/net/ethernet/qlogic/qed/qed_init_fw_funcs.c:1375:17: sparse:    left side has type restricted __le32
+   drivers/net/ethernet/qlogic/qed/qed_init_fw_funcs.c:1375:17: sparse:    right side has type unsigned long long
+>> drivers/net/ethernet/qlogic/qed/qed_init_fw_funcs.c:1388:21: sparse: sparse: incorrect type in assignment (different base types)
+>> drivers/net/ethernet/qlogic/qed/qed_init_fw_funcs.c:1388:21: sparse:    expected restricted __le32 [addressable] [usertype] lo
+>> drivers/net/ethernet/qlogic/qed/qed_init_fw_funcs.c:1388:21: sparse:    got unsigned int
+   drivers/net/ethernet/qlogic/qed/qed_init_fw_funcs.c:1389:21: sparse: sparse: incorrect type in assignment (different base types)
+>> drivers/net/ethernet/qlogic/qed/qed_init_fw_funcs.c:1389:21: sparse:    expected restricted __le32 [addressable] [usertype] hi
+>> drivers/net/ethernet/qlogic/qed/qed_init_fw_funcs.c:1389:21: sparse:    got int
+   drivers/net/ethernet/qlogic/qed/qed_init_fw_funcs.c:1430:23: sparse: sparse: cast to restricted __be32
+   drivers/net/ethernet/qlogic/qed/qed_init_fw_funcs.c:1430:23: sparse: sparse: cast to restricted __be32
+   drivers/net/ethernet/qlogic/qed/qed_init_fw_funcs.c:1430:23: sparse: sparse: cast to restricted __be32
+   drivers/net/ethernet/qlogic/qed/qed_init_fw_funcs.c:1430:23: sparse: sparse: cast to restricted __be32
+   drivers/net/ethernet/qlogic/qed/qed_init_fw_funcs.c:1430:23: sparse: sparse: cast to restricted __be32
+   drivers/net/ethernet/qlogic/qed/qed_init_fw_funcs.c:1430:23: sparse: sparse: cast to restricted __be32
+--
+>> drivers/net/ethernet/qlogic/qed/qed_init_ops.c:218:9: sparse: sparse: invalid assignment: &=
+>> drivers/net/ethernet/qlogic/qed/qed_init_ops.c:218:9: sparse:    left side has type restricted __le32
+>> drivers/net/ethernet/qlogic/qed/qed_init_ops.c:218:9: sparse:    right side has type int
+   drivers/net/ethernet/qlogic/qed/qed_init_ops.c:218:9: sparse: sparse: invalid assignment: |=
+>> drivers/net/ethernet/qlogic/qed/qed_init_ops.c:218:9: sparse:    left side has type restricted __le32
+>> drivers/net/ethernet/qlogic/qed/qed_init_ops.c:218:9: sparse:    right side has type unsigned long long
+   drivers/net/ethernet/qlogic/qed/qed_init_ops.c:239:33: sparse: sparse: cast to restricted __le32
+   drivers/net/ethernet/qlogic/qed/qed_init_ops.c:240:20: sparse: sparse: cast to restricted __le32
+   drivers/net/ethernet/qlogic/qed/qed_init_ops.c:253:16: sparse: sparse: cast to restricted __le32
+   drivers/net/ethernet/qlogic/qed/qed_init_ops.c:310:20: sparse: sparse: cast to restricted __le32
+   drivers/net/ethernet/qlogic/qed/qed_init_ops.c:326:24: sparse: sparse: cast to restricted __le32
+   drivers/net/ethernet/qlogic/qed/qed_init_ops.c:330:24: sparse: sparse: cast to restricted __le32
+   drivers/net/ethernet/qlogic/qed/qed_init_ops.c:342:29: sparse: sparse: cast to restricted __le16
+   drivers/net/ethernet/qlogic/qed/qed_init_ops.c:343:29: sparse: sparse: cast to restricted __le16
+   drivers/net/ethernet/qlogic/qed/qed_init_ops.c:375:16: sparse: sparse: cast to restricted __le32
+   drivers/net/ethernet/qlogic/qed/qed_init_ops.c:401:16: sparse: sparse: cast to restricted __le32
+   drivers/net/ethernet/qlogic/qed/qed_init_ops.c:410:17: sparse: sparse: cast to restricted __le32
+   drivers/net/ethernet/qlogic/qed/qed_init_ops.c:410:17: sparse: sparse: cast to restricted __le32
+   drivers/net/ethernet/qlogic/qed/qed_init_ops.c:466:22: sparse: sparse: cast to restricted __le16
+   drivers/net/ethernet/qlogic/qed/qed_init_ops.c:471:24: sparse: sparse: cast to restricted __le32
+   drivers/net/ethernet/qlogic/qed/qed_init_ops.c:479:20: sparse: sparse: cast to restricted __le32
+   drivers/net/ethernet/qlogic/qed/qed_init_ops.c:480:23: sparse: sparse: cast to restricted __le32
+   drivers/net/ethernet/qlogic/qed/qed_init_ops.c:508:28: sparse: sparse: cast to restricted __le32
+   drivers/net/ethernet/qlogic/qed/qed_init_ops.c:531:25: sparse: sparse: cast to restricted __le32
+   drivers/net/ethernet/qlogic/qed/qed_init_ops.c:531:25: sparse: sparse: cast to restricted __le32
+   drivers/net/ethernet/qlogic/qed/qed_init_ops.c:531:25: sparse: sparse: cast to restricted __le32
+   drivers/net/ethernet/qlogic/qed/qed_init_ops.c:531:25: sparse: sparse: cast to restricted __le32
+--
+>> drivers/net/ethernet/qlogic/qed/qed_sriov.c:355:9: sparse: sparse: invalid assignment: &=
+>> drivers/net/ethernet/qlogic/qed/qed_sriov.c:355:9: sparse:    left side has type restricted __le32
+>> drivers/net/ethernet/qlogic/qed/qed_sriov.c:355:9: sparse:    right side has type int
+   drivers/net/ethernet/qlogic/qed/qed_sriov.c:355:9: sparse: sparse: invalid assignment: |=
+>> drivers/net/ethernet/qlogic/qed/qed_sriov.c:355:9: sparse:    left side has type restricted __le32
+>> drivers/net/ethernet/qlogic/qed/qed_sriov.c:355:9: sparse:    right side has type unsigned long long
+   drivers/net/ethernet/qlogic/qed/qed_sriov.c:575:35: sparse: sparse: incorrect type in argument 3 (incompatible argument 3 (different base types))
+   drivers/net/ethernet/qlogic/qed/qed_sriov.c:575:35: sparse:    expected int ( *[usertype] cb )( ... )
+   drivers/net/ethernet/qlogic/qed/qed_sriov.c:575:35: sparse:    got int ( * )( ... )
+   drivers/net/ethernet/qlogic/qed/qed_sriov.c:1229:9: sparse: sparse: invalid assignment: &=
+   drivers/net/ethernet/qlogic/qed/qed_sriov.c:1229:9: sparse:    left side has type restricted __le32
+   drivers/net/ethernet/qlogic/qed/qed_sriov.c:1229:9: sparse:    right side has type int
+   drivers/net/ethernet/qlogic/qed/qed_sriov.c:1229:9: sparse: sparse: invalid assignment: |=
+   drivers/net/ethernet/qlogic/qed/qed_sriov.c:1229:9: sparse:    left side has type restricted __le32
+   drivers/net/ethernet/qlogic/qed/qed_sriov.c:1229:9: sparse:    right side has type unsigned long long
+   drivers/net/ethernet/qlogic/qed/qed_sriov.c:4029:39: sparse: sparse: cast from restricted __le32
+   drivers/net/ethernet/qlogic/qed/qed_sriov.c:4029:70: sparse: sparse: restricted __le32 degrades to integer
+   drivers/net/ethernet/qlogic/qed/qed_sriov.c:4107:9: sparse: sparse: invalid assignment: &=
+   drivers/net/ethernet/qlogic/qed/qed_sriov.c:4107:9: sparse:    left side has type restricted __le32
+   drivers/net/ethernet/qlogic/qed/qed_sriov.c:4107:9: sparse:    right side has type int
+   drivers/net/ethernet/qlogic/qed/qed_sriov.c:4107:9: sparse: sparse: invalid assignment: |=
+   drivers/net/ethernet/qlogic/qed/qed_sriov.c:4107:9: sparse:    left side has type restricted __le32
+   drivers/net/ethernet/qlogic/qed/qed_sriov.c:4107:9: sparse:    right side has type unsigned long long
+   drivers/net/ethernet/qlogic/qed/qed_sriov.c:4108:9: sparse: sparse: invalid assignment: &=
+   drivers/net/ethernet/qlogic/qed/qed_sriov.c:4108:9: sparse:    left side has type restricted __le32
+   drivers/net/ethernet/qlogic/qed/qed_sriov.c:4108:9: sparse:    right side has type int
+   drivers/net/ethernet/qlogic/qed/qed_sriov.c:4108:9: sparse: sparse: invalid assignment: |=
+   drivers/net/ethernet/qlogic/qed/qed_sriov.c:4108:9: sparse:    left side has type restricted __le32
+   drivers/net/ethernet/qlogic/qed/qed_sriov.c:4108:9: sparse:    right side has type unsigned long long
+
+vim +910 drivers/net/ethernet/qlogic/qed/qed_dev.c
+
+   867	
+   868	static int
+   869	qed_llh_access_filter(struct qed_hwfn *p_hwfn,
+   870			      struct qed_ptt *p_ptt,
+   871			      u8 abs_ppfid,
+   872			      u8 filter_idx,
+   873			      struct qed_llh_filter_details *p_details)
+   874	{
+   875		struct qed_dmae_params params = {0};
+   876		u32 addr;
+   877		u8 pfid;
+   878		int rc;
+   879	
+   880		/* The NIG/LLH registers that are accessed in this function have only 16
+   881		 * rows which are exposed to a PF. I.e. only the 16 filters of its
+   882		 * default ppfid. Accessing filters of other ppfids requires pretending
+   883		 * to another PFs.
+   884		 * The calculation of PPFID->PFID in AH is based on the relative index
+   885		 * of a PF on its port.
+   886		 * For BB the pfid is actually the abs_ppfid.
+   887		 */
+   888		if (QED_IS_BB(p_hwfn->cdev))
+   889			pfid = abs_ppfid;
+   890		else
+   891			pfid = abs_ppfid * p_hwfn->cdev->num_ports_in_engine +
+   892			    MFW_PORT(p_hwfn);
+   893	
+   894		/* Filter enable - should be done first when removing a filter */
+   895		if (!p_details->enable) {
+   896			qed_fid_pretend(p_hwfn, p_ptt,
+   897					pfid << PXP_PRETEND_CONCRETE_FID_PFID_SHIFT);
+   898	
+   899			addr = NIG_REG_LLH_FUNC_FILTER_EN + filter_idx * 0x4;
+   900			qed_wr(p_hwfn, p_ptt, addr, p_details->enable);
+   901	
+   902			qed_fid_pretend(p_hwfn, p_ptt,
+   903					p_hwfn->rel_pf_id <<
+   904					PXP_PRETEND_CONCRETE_FID_PFID_SHIFT);
+   905		}
+   906	
+   907		/* Filter value */
+   908		addr = NIG_REG_LLH_FUNC_FILTER_VALUE + 2 * filter_idx * 0x4;
+   909	
+ > 910		SET_FIELD(params.flags, QED_DMAE_PARAMS_DST_PF_VALID, 0x1);
+   911		params.dst_pfid = pfid;
+   912		rc = qed_dmae_host2grc(p_hwfn,
+   913				       p_ptt,
+   914				       (u64)(uintptr_t)&p_details->value,
+   915				       addr, 2 /* size_in_dwords */,
+   916				       &params);
+   917		if (rc)
+   918			return rc;
+   919	
+   920		qed_fid_pretend(p_hwfn, p_ptt,
+   921				pfid << PXP_PRETEND_CONCRETE_FID_PFID_SHIFT);
+   922	
+   923		/* Filter mode */
+   924		addr = NIG_REG_LLH_FUNC_FILTER_MODE + filter_idx * 0x4;
+   925		qed_wr(p_hwfn, p_ptt, addr, p_details->mode);
+   926	
+   927		/* Filter protocol type */
+   928		addr = NIG_REG_LLH_FUNC_FILTER_PROTOCOL_TYPE + filter_idx * 0x4;
+   929		qed_wr(p_hwfn, p_ptt, addr, p_details->protocol_type);
+   930	
+   931		/* Filter header select */
+   932		addr = NIG_REG_LLH_FUNC_FILTER_HDR_SEL + filter_idx * 0x4;
+   933		qed_wr(p_hwfn, p_ptt, addr, p_details->hdr_sel);
+   934	
+   935		/* Filter enable - should be done last when adding a filter */
+   936		if (p_details->enable) {
+   937			addr = NIG_REG_LLH_FUNC_FILTER_EN + filter_idx * 0x4;
+   938			qed_wr(p_hwfn, p_ptt, addr, p_details->enable);
+   939		}
+   940	
+   941		qed_fid_pretend(p_hwfn, p_ptt,
+   942				p_hwfn->rel_pf_id <<
+   943				PXP_PRETEND_CONCRETE_FID_PFID_SHIFT);
+   944	
+   945		return 0;
+   946	}
+   947	
+
+---
+0-DAY kernel test infrastructure                 Open Source Technology Center
+https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org Intel Corporation
