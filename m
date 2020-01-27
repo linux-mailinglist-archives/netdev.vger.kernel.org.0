@@ -2,142 +2,85 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 5FF6B14A629
-	for <lists+netdev@lfdr.de>; Mon, 27 Jan 2020 15:31:19 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 18C4414A62C
+	for <lists+netdev@lfdr.de>; Mon, 27 Jan 2020 15:31:26 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729137AbgA0ObR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 27 Jan 2020 09:31:17 -0500
-Received: from mail-pl1-f196.google.com ([209.85.214.196]:41704 "EHLO
-        mail-pl1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728939AbgA0ObR (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 27 Jan 2020 09:31:17 -0500
-Received: by mail-pl1-f196.google.com with SMTP id t14so3809131plr.8
-        for <netdev@vger.kernel.org>; Mon, 27 Jan 2020 06:31:16 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id;
-        bh=4lFy+Z3vbhpMmzpcZLstEix7Vd2C2/L8RiV4vAfWX6w=;
-        b=LU9/gXGQ2PB5wC1LkEnRJr34gTs4Fn87pcSXr0Keu3d9hc2gDZuxyD4KYGE3l4Ub8w
-         EEFl0LUJJfumBkIie+519S7FuuUQP3xITc3jOzgBj39c7MzzwzGeQGIFZrkHLcps30L2
-         x4kdIVKMt/QFQCpX6Mn1n+pGJ9cNbrbyyqJa82gpMmUxAhJ2Rvvh5dQ5C7duv8Z+IYMv
-         2nI1jXAK6A3dYMDYweUSO10EhhBamqKILvB9Abu40HP/PAGp3evdR+t+M82UJ/H1xF9n
-         svD9w1BQA2uTcSBbJb1/3ARVffYzDSla7AQJaYclY7awLCkgOmABi6XwYqkd4BhLpcSB
-         LjSA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id;
-        bh=4lFy+Z3vbhpMmzpcZLstEix7Vd2C2/L8RiV4vAfWX6w=;
-        b=aF2Qtg0hK7fT0ToyBYQhpxdxgmDGLTOv5WzTGNiqXoVhBcWYBRwTMaFWUZlk3atXDL
-         LGBpiW+vZkKWY/3ksyN4qqmXzmoWemfZkXC3BedJT7coJkRRFyWQBkY6ojNY9TcmEVJM
-         YdYp2c73pNrWi92mrpIt96U+SaPjp6TJ7tSV0CkbizrrKekPH5bXjstquSrgA3T9Sijx
-         gUWQqinrde+6RQEgQ1ztB8+jdvKkxUt5E8VAb2FC4FVfFDYSOlejxZa7O10JeLMOPmZw
-         Yi1MC9oipb5u1re4hubNmvRw5ShWUBRrckreywQW8U/oQUcuktfFsND+/C4o1G5KMLAm
-         5v3A==
-X-Gm-Message-State: APjAAAVAq2JDrJ5qX5/vJ18foSaqVqQLPk2Xhgd59tai9qpGOsbmDZns
-        o9QtilCSSSDS+bWqiKfEfTw=
-X-Google-Smtp-Source: APXvYqxelmJPWCo8wd/XX83mqDeQMcXekZ/Qw6JMcITPv72clsNG+CBEvG4G37jH3U+bH+6PyXdTsA==
-X-Received: by 2002:a17:90a:c705:: with SMTP id o5mr14498836pjt.67.1580135476338;
-        Mon, 27 Jan 2020 06:31:16 -0800 (PST)
-Received: from localhost.localdomain ([180.70.143.152])
-        by smtp.gmail.com with ESMTPSA id d189sm16366498pga.70.2020.01.27.06.31.14
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 27 Jan 2020 06:31:15 -0800 (PST)
-From:   Taehee Yoo <ap420073@gmail.com>
-To:     davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org
-Cc:     ap420073@gmail.com
-Subject: [PATCH net v2 6/6] netdevsim: remove unused sdev code
-Date:   Mon, 27 Jan 2020 14:31:09 +0000
-Message-Id: <20200127143109.1644-1-ap420073@gmail.com>
-X-Mailer: git-send-email 2.17.1
+        id S1729152AbgA0ObY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 27 Jan 2020 09:31:24 -0500
+Received: from a.mx.secunet.com ([62.96.220.36]:44864 "EHLO a.mx.secunet.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1728939AbgA0ObY (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 27 Jan 2020 09:31:24 -0500
+Received: from localhost (localhost [127.0.0.1])
+        by a.mx.secunet.com (Postfix) with ESMTP id 62FCE20569
+        for <netdev@vger.kernel.org>; Mon, 27 Jan 2020 15:31:23 +0100 (CET)
+X-Virus-Scanned: by secunet
+Received: from a.mx.secunet.com ([127.0.0.1])
+        by localhost (a.mx.secunet.com [127.0.0.1]) (amavisd-new, port 10024)
+        with ESMTP id Na8MTqnNV2Qk for <netdev@vger.kernel.org>;
+        Mon, 27 Jan 2020 15:31:22 +0100 (CET)
+Received: from mail-essen-01.secunet.de (mail-essen-01.secunet.de [10.53.40.204])
+        (using TLSv1 with cipher ECDHE-RSA-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by a.mx.secunet.com (Postfix) with ESMTPS id F27D820561
+        for <netdev@vger.kernel.org>; Mon, 27 Jan 2020 15:31:22 +0100 (CET)
+Received: from [10.182.7.178] (10.182.7.178) by mail-essen-01.secunet.de
+ (10.53.40.204) with Microsoft SMTP Server (TLS) id 14.3.439.0; Mon, 27 Jan
+ 2020 15:31:22 +0100
+From:   Thomas Egerer <thomas.egerer@secunet.com>
+Subject: [PATCH net] xfrm: Interpret XFRM_INF as 32 bit value for non-ESN
+ states
+To:     <netdev@vger.kernel.org>
+Openpgp: preference=signencrypt
+Message-ID: <8a3e5a49-5906-b6a6-beb7-0479bc64dcd0@secunet.com>
+Date:   Mon, 27 Jan 2020 15:31:14 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.3.0
+MIME-Version: 1.0
+Content-Type: text/plain; charset="windows-1252"
+Content-Language: de-DE
+Content-Transfer-Encoding: 7bit
+X-EXCLAIMER-MD-CONFIG: 2c86f778-e09b-4440-8b15-867914633a10
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-sdev.c code is merged into dev.c and is not used anymore.
-it would be removed.
+Currently, when left unconfigured, hard and soft packet limit are set to
+XFRM_INF ((__u64)~0). This can be problematic for non-ESN states, as
+their 'natural' packet limit is 2^32 - 1 packets. When reached, instead
+of creating an expire event, the states become unusable and increase
+their respective 'state expired' counter in the xfrm statistics. The
+only way for them to actually expire is based on their lifetime limits.
 
-Signed-off-by: Taehee Yoo <ap420073@gmail.com>
+This patch reduces the packet limit of non-ESN states with XFRM_INF as
+their soft/hard packet limit to their maximum achievable sequence
+number in order to trigger an expire, which can then be used by an IKE
+daemon to reestablish the connection.
+
+Signed-off-by: Thomas Egerer <thomas.egerer@secunet.com>
 ---
- drivers/net/netdevsim/sdev.c | 69 ------------------------------------
- 1 file changed, 69 deletions(-)
- delete mode 100644 drivers/net/netdevsim/sdev.c
+ net/xfrm/xfrm_user.c | 7 +++++++
+ 1 file changed, 7 insertions(+)
 
-diff --git a/drivers/net/netdevsim/sdev.c b/drivers/net/netdevsim/sdev.c
-deleted file mode 100644
-index 6712da3340d6..000000000000
---- a/drivers/net/netdevsim/sdev.c
-+++ /dev/null
-@@ -1,69 +0,0 @@
--// SPDX-License-Identifier: GPL-2.0
--/* Copyright (c) 2019 Mellanox Technologies. All rights reserved */
--
--#include <linux/debugfs.h>
--#include <linux/err.h>
--#include <linux/kernel.h>
--#include <linux/slab.h>
--
--#include "netdevsim.h"
--
--static struct dentry *nsim_sdev_ddir;
--
--static u32 nsim_sdev_id;
--
--struct netdevsim_shared_dev *nsim_sdev_get(struct netdevsim *joinns)
--{
--	struct netdevsim_shared_dev *sdev;
--	char sdev_ddir_name[10];
--	int err;
--
--	if (joinns) {
--		if (WARN_ON(!joinns->sdev))
--			return ERR_PTR(-EINVAL);
--		sdev = joinns->sdev;
--		sdev->refcnt++;
--		return sdev;
--	}
--
--	sdev = kzalloc(sizeof(*sdev), GFP_KERNEL);
--	if (!sdev)
--		return ERR_PTR(-ENOMEM);
--	sdev->refcnt = 1;
--	sdev->switch_id = nsim_sdev_id++;
--
--	sprintf(sdev_ddir_name, "%u", sdev->switch_id);
--	sdev->ddir = debugfs_create_dir(sdev_ddir_name, nsim_sdev_ddir);
--	if (IS_ERR_OR_NULL(sdev->ddir)) {
--		err = PTR_ERR_OR_ZERO(sdev->ddir) ?: -EINVAL;
--		goto err_sdev_free;
--	}
--
--	return sdev;
--
--err_sdev_free:
--	nsim_sdev_id--;
--	kfree(sdev);
--	return ERR_PTR(err);
--}
--
--void nsim_sdev_put(struct netdevsim_shared_dev *sdev)
--{
--	if (--sdev->refcnt)
--		return;
--	debugfs_remove_recursive(sdev->ddir);
--	kfree(sdev);
--}
--
--int nsim_sdev_init(void)
--{
--	nsim_sdev_ddir = debugfs_create_dir(DRV_NAME "_sdev", NULL);
--	if (IS_ERR_OR_NULL(nsim_sdev_ddir))
--		return -ENOMEM;
--	return 0;
--}
--
--void nsim_sdev_exit(void)
--{
--	debugfs_remove_recursive(nsim_sdev_ddir);
--}
+diff --git a/net/xfrm/xfrm_user.c b/net/xfrm/xfrm_user.c
+index b88ba45..84d4008 100644
+--- a/net/xfrm/xfrm_user.c
++++ b/net/xfrm/xfrm_user.c
+@@ -505,6 +505,13 @@ static void copy_from_user_state(struct xfrm_state *x, struct xfrm_usersa_info *
+ 
+ 	if (!x->sel.family && !(p->flags & XFRM_STATE_AF_UNSPEC))
+ 		x->sel.family = p->family;
++
++	if ((x->props.flags & XFRM_STATE_ESN) == 0 {
++		if (x->lft.soft_packet_limit == XFRM_INF)
++			x->lft.soft_packet_limit == (__u32)~0;
++		if (x->lft.hard_packet_limit == XFRM_INF)
++			x->lft.hard_packet_limit == (__u32)~0;
++	}
+ }
+ 
+ /*
 -- 
-2.17.1
+2.6.4
 
