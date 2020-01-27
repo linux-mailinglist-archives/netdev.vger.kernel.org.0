@@ -2,265 +2,153 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id BC71314A2CC
-	for <lists+netdev@lfdr.de>; Mon, 27 Jan 2020 12:16:46 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id DC95A14A2E1
+	for <lists+netdev@lfdr.de>; Mon, 27 Jan 2020 12:18:23 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730351AbgA0LQi (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 27 Jan 2020 06:16:38 -0500
-Received: from sv2-smtprelay2.synopsys.com ([149.117.73.133]:44532 "EHLO
-        smtprelay-out1.synopsys.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1730220AbgA0LPw (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 27 Jan 2020 06:15:52 -0500
-Received: from mailhost.synopsys.com (mdc-mailhost1.synopsys.com [10.225.0.209])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits))
-        (No client certificate requested)
-        by smtprelay-out1.synopsys.com (Postfix) with ESMTPS id 2B69240686;
-        Mon, 27 Jan 2020 11:09:30 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=synopsys.com; s=mail;
-        t=1580123371; bh=pcWoruQFAEk+c+2GkezwGa9LXTHob64AMZbCenOjLZs=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:In-Reply-To:
-         References:From;
-        b=DAFFzf9GWWjZjA6xKfNJuRQHiZczy3mm1+AZnS7mv+uGsByNXLehVJyeidS2xVKZb
-         /TvdM65SJsIhyL8wAgT3VV+ePo4DheKus7Rf8/vR+umncCjNjI+pKJlpo9JVq/HTvF
-         yJSrj1qTQZEoJLHcH/cYImCGz7m1//4Cp3HQgElrpLLeIFNFhJzafv05bYfBzTfnjC
-         edRWc6HnVdeIwHONq1YnrIhgkDjd/K0edOU5NbwV2ZmzX18aGGGOSjJK5wYECP+ZHI
-         TiHrOR2sCqfgZNT5Eau1Wm/V7yoSMJWlcVxT7uvZUBfdRFsToobBJWuCDX9wy8/NwG
-         P2IJhSfnA+NwA==
-Received: from de02dwia024.internal.synopsys.com (de02dwia024.internal.synopsys.com [10.225.19.81])
-        by mailhost.synopsys.com (Postfix) with ESMTP id DAB5EA00A4;
-        Mon, 27 Jan 2020 11:09:28 +0000 (UTC)
-From:   Jose Abreu <Jose.Abreu@synopsys.com>
-To:     netdev@vger.kernel.org
-Cc:     Joao Pinto <Joao.Pinto@synopsys.com>,
-        Jose Abreu <Jose.Abreu@synopsys.com>,
-        Giuseppe Cavallaro <peppe.cavallaro@st.com>,
-        Alexandre Torgue <alexandre.torgue@st.com>,
-        Jose Abreu <Jose.Abreu@synopsys.com>,
+        id S1729791AbgA0LSK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 27 Jan 2020 06:18:10 -0500
+Received: from mail-il1-f193.google.com ([209.85.166.193]:45291 "EHLO
+        mail-il1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726210AbgA0LSJ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 27 Jan 2020 06:18:09 -0500
+Received: by mail-il1-f193.google.com with SMTP id p8so7088935iln.12
+        for <netdev@vger.kernel.org>; Mon, 27 Jan 2020 03:18:09 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=broadcom.com; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=B2jn7Up2+cD+eD0D5ROwEvtEdti9pDs97jpRUZiU808=;
+        b=TeflSVeClgOmybuUdraDwRDq9IBddwlPu0A697aG3aE5gp2/aIDp2vvWgEWA/XhPU5
+         DKrgrbvlYYAdAEyYGSHlCA3Lyu+tHHlgxKD4D17+p9Ty0j+YOIKzJpDWzCaU11xjS2ga
+         tAECbeUjD+qPWCI4YH854OjSrAxIK+z8wE4kY=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=B2jn7Up2+cD+eD0D5ROwEvtEdti9pDs97jpRUZiU808=;
+        b=jfwqCWRt3ejn8U1kd7Ue/4OMsErUr4XYBBzNKxb28fmhGBBQ6fW6+QphCeYmid3PoC
+         j5Qm0TzF62iiRtjt6+xgE91HZnpxmE4YHL/pU4Ln3DvUENX0TY0EpGSdX/5SKvf+yrFh
+         t9FTMyTpcYBBOUDe5Qf+pzE87Ww8577FWW3HdS9eVoWhKhdcelyYNqcs5gKUUzi/52bu
+         AzEVLhtMPrHXzN9UZY6TPLhjZ1WDI2VEuoE6K8W99RQGzfZvXy1HjW0AK583fAprSdL6
+         i49QEiXIqpeGrGN4P4Hu6FgdcU3ex8qGjzXFQTPpWrBVP5F01sCOdax1Ugu//bGVqDLA
+         tKng==
+X-Gm-Message-State: APjAAAVyGk3gJ08M+7KWjBE0ayaLVqWOkhh+Z54rMqx2BD4zKc3CAkEh
+        yfxnfKPzrPHbkSKkir+rQqOJy5QVxk2d/F7LhOBAxBQuY0A=
+X-Google-Smtp-Source: APXvYqxi9Al6EhVp6Fzs3kt7WGSSwQJ9MM7X9p2Zw11dLwUwgYfH+Qk893fJYujMv7QyZvGWxu7R2xASBb1OJ8GmRss=
+X-Received: by 2002:a92:bb08:: with SMTP id w8mr13902051ili.27.1580123446775;
+ Mon, 27 Jan 2020 03:10:46 -0800 (PST)
+MIME-Version: 1.0
+References: <20200123130816.24815-1-kalimuthu.velappan@broadcom.com> <a7d6f51f-8c5c-9242-97a1-8fdea9fdbb7b@iogearbox.net>
+In-Reply-To: <a7d6f51f-8c5c-9242-97a1-8fdea9fdbb7b@iogearbox.net>
+From:   Kalimuthu Velappan <kalimuthu.velappan@broadcom.com>
+Date:   Mon, 27 Jan 2020 16:40:09 +0530
+Message-ID: <CAKA8wj0nLH7UV=Pnk6kbHbyx2sxbL+fOd7JC=o2KryZKRgPFYQ@mail.gmail.com>
+Subject: Re: [PATCH] Support for nlattr and nested_nlattr attribute search in
+ EBPF filter
+To:     Daniel Borkmann <daniel@iogearbox.net>
+Cc:     Alexei Starovoitov <ast@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        Andrii Nakryiko <andriin@fb.com>,
         "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        linux-stm32@st-md-mailman.stormreply.com,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
-Subject: [RFC net-next 8/8] net: stmmac: Integrate it with DesignWare XPCS
-Date:   Mon, 27 Jan 2020 12:09:13 +0100
-Message-Id: <26c3a51fe9a31723309f60cd1de7e1b71aa4490d.1580122909.git.Jose.Abreu@synopsys.com>
-X-Mailer: git-send-email 2.7.4
-In-Reply-To: <cover.1580122909.git.Jose.Abreu@synopsys.com>
-References: <cover.1580122909.git.Jose.Abreu@synopsys.com>
-In-Reply-To: <cover.1580122909.git.Jose.Abreu@synopsys.com>
-References: <cover.1580122909.git.Jose.Abreu@synopsys.com>
+        Stanislav Fomichev <sdf@google.com>,
+        Quentin Monnet <quentin.monnet@netronome.com>,
+        Andrey Ignatov <rdna@fb.com>,
+        "open list:BPF (Safe dynamic programs and tools)" 
+        <netdev@vger.kernel.org>,
+        "open list:BPF (Safe dynamic programs and tools)" 
+        <bpf@vger.kernel.org>, open list <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Adds all the necessary logic so that stmmac can be used with Synopsys
-DesignWare XPCS.
+Hi Daniel,
 
-Signed-off-by: Jose Abreu <Jose.Abreu@synopsys.com>
+There are few network applications relying on Netlink subsystem to get
+notifications for net-device attribute changes like MTU, Speed,
+Oper-Status, Name, slave, slave info, etc. The Netlink subsystem
+notifies the application on every attribute change regardless of what
+is being needed for the application. The attribute search support in
+EBPF filter helps to filter the Netlink packets based on the specific
+set of attributes that are needed for the application.
 
----
-Cc: Giuseppe Cavallaro <peppe.cavallaro@st.com>
-Cc: Alexandre Torgue <alexandre.torgue@st.com>
-Cc: Jose Abreu <joabreu@synopsys.com>
-Cc: "David S. Miller" <davem@davemloft.net>
-Cc: Jakub Kicinski <kuba@kernel.org>
-Cc: Maxime Coquelin <mcoquelin.stm32@gmail.com>
-Cc: Russell King <linux@armlinux.org.uk>
-Cc: Andrew Lunn <andrew@lunn.ch>
-Cc: Florian Fainelli <f.fainelli@gmail.com>
-Cc: Heiner Kallweit <hkallweit1@gmail.com>
-Cc: netdev@vger.kernel.org
-Cc: linux-stm32@st-md-mailman.stormreply.com
-Cc: linux-arm-kernel@lists.infradead.org
-Cc: linux-kernel@vger.kernel.org
----
- drivers/net/ethernet/stmicro/stmmac/Kconfig       |  1 +
- drivers/net/ethernet/stmicro/stmmac/common.h      |  3 +++
- drivers/net/ethernet/stmicro/stmmac/hwif.h        | 12 ++++++++++
- drivers/net/ethernet/stmicro/stmmac/stmmac_main.c | 16 +++++++++++++-
- drivers/net/ethernet/stmicro/stmmac/stmmac_mdio.c | 27 +++++++++++++++++++++++
- include/linux/stmmac.h                            |  1 +
- 6 files changed, 59 insertions(+), 1 deletion(-)
+The classical BPF supports attribute search but that doesn't support
+MAPS. The extended BPF supports MAPS, but the attribute search is not
+enabled. Hence this patch enables the support for attribute search in
+EBPF.
 
-diff --git a/drivers/net/ethernet/stmicro/stmmac/Kconfig b/drivers/net/ethernet/stmicro/stmmac/Kconfig
-index 338e25a6374e..9ad927f646e8 100644
---- a/drivers/net/ethernet/stmicro/stmmac/Kconfig
-+++ b/drivers/net/ethernet/stmicro/stmmac/Kconfig
-@@ -3,6 +3,7 @@ config STMMAC_ETH
- 	tristate "STMicroelectronics Multi-Gigabit Ethernet driver"
- 	depends on HAS_IOMEM && HAS_DMA
- 	select MII
-+	select MDIO_XPCS
- 	select PAGE_POOL
- 	select PHYLINK
- 	select CRC32
-diff --git a/drivers/net/ethernet/stmicro/stmmac/common.h b/drivers/net/ethernet/stmicro/stmmac/common.h
-index 487099092693..9bdbf589d93f 100644
---- a/drivers/net/ethernet/stmicro/stmmac/common.h
-+++ b/drivers/net/ethernet/stmicro/stmmac/common.h
-@@ -15,6 +15,7 @@
- #include <linux/netdevice.h>
- #include <linux/stmmac.h>
- #include <linux/phy.h>
-+#include <linux/mdio-xpcs.h>
- #include <linux/module.h>
- #if IS_ENABLED(CONFIG_VLAN_8021Q)
- #define STMMAC_VLAN_TAG_USED
-@@ -446,6 +447,8 @@ struct mac_device_info {
- 	const struct stmmac_hwtimestamp *ptp;
- 	const struct stmmac_tc_ops *tc;
- 	const struct stmmac_mmc_ops *mmc;
-+	const struct mdio_xpcs_ops *xpcs;
-+	struct mdio_xpcs_args xpcs_args;
- 	struct mii_regs mii;	/* MII register Addresses */
- 	struct mac_link link;
- 	void __iomem *pcsr;     /* vpointer to device CSRs */
-diff --git a/drivers/net/ethernet/stmicro/stmmac/hwif.h b/drivers/net/ethernet/stmicro/stmmac/hwif.h
-index df63b0367aff..c71dd99c8abf 100644
---- a/drivers/net/ethernet/stmicro/stmmac/hwif.h
-+++ b/drivers/net/ethernet/stmicro/stmmac/hwif.h
-@@ -577,6 +577,18 @@ struct stmmac_mmc_ops {
- #define stmmac_mmc_read(__priv, __args...) \
- 	stmmac_do_void_callback(__priv, mmc, read, __args)
- 
-+/* XPCS callbacks */
-+#define stmmac_xpcs_validate(__priv, __args...) \
-+	stmmac_do_callback(__priv, xpcs, validate, __args)
-+#define stmmac_xpcs_config(__priv, __args...) \
-+	stmmac_do_callback(__priv, xpcs, config, __args)
-+#define stmmac_xpcs_get_state(__priv, __args...) \
-+	stmmac_do_callback(__priv, xpcs, get_state, __args)
-+#define stmmac_xpcs_link_up(__priv, __args...) \
-+	stmmac_do_callback(__priv, xpcs, link_up, __args)
-+#define stmmac_xpcs_probe(__priv, __args...) \
-+	stmmac_do_callback(__priv, xpcs, probe, __args)
-+
- struct stmmac_regs_off {
- 	u32 ptp_off;
- 	u32 mmc_off;
-diff --git a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
-index eaedea4b353e..19084b10f3c2 100644
---- a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
-+++ b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
-@@ -863,12 +863,18 @@ static void stmmac_validate(struct phylink_config *config,
- 
- 	phylink_and(state->advertising, mac_supported);
- 	phylink_andnot(state->advertising, mask);
-+
-+	/* If PCS is supported, check which modes it supports */
-+	stmmac_xpcs_validate(priv, &priv->hw->xpcs_args, supported, state);
- }
- 
- static void stmmac_mac_pcs_get_state(struct phylink_config *config,
- 				     struct phylink_link_state *state)
- {
-+	struct stmmac_priv *priv = netdev_priv(to_net_dev(config->dev));
-+
- 	state->link = 0;
-+	stmmac_xpcs_get_state(priv, &priv->hw->xpcs_args, state);
- }
- 
- static void stmmac_mac_config(struct phylink_config *config, unsigned int mode,
-@@ -877,6 +883,11 @@ static void stmmac_mac_config(struct phylink_config *config, unsigned int mode,
- 	struct stmmac_priv *priv = netdev_priv(to_net_dev(config->dev));
- 	u32 ctrl;
- 
-+	if (priv->hw->xpcs && !state->an_complete) {
-+		stmmac_xpcs_config(priv, &priv->hw->xpcs_args, state);
-+		return;
-+	}
-+
- 	ctrl = readl(priv->ioaddr + MAC_CTRL_REG);
- 	ctrl &= ~priv->hw->link.speed_mask;
- 
-@@ -952,6 +963,7 @@ static void stmmac_mac_link_up(struct phylink_config *config,
- {
- 	struct stmmac_priv *priv = netdev_priv(to_net_dev(config->dev));
- 
-+	stmmac_xpcs_link_up(priv, &priv->hw->xpcs_args, priv->speed, interface);
- 	stmmac_mac_set(priv, priv->ioaddr, true);
- 	if (phy && priv->dma_cap.eee) {
- 		priv->eee_active = phy_init_eee(phy, 1) >= 0;
-@@ -1040,6 +1052,7 @@ static int stmmac_phy_setup(struct stmmac_priv *priv)
- 
- 	priv->phylink_config.dev = &priv->dev->dev;
- 	priv->phylink_config.type = PHYLINK_NETDEV;
-+	priv->phylink_config.pcs_poll = true;
- 
- 	if (!fwnode)
- 		fwnode = dev_fwnode(priv->device);
-@@ -2687,7 +2700,8 @@ static int stmmac_open(struct net_device *dev)
- 	int ret;
- 
- 	if (priv->hw->pcs != STMMAC_PCS_TBI &&
--	    priv->hw->pcs != STMMAC_PCS_RTBI) {
-+	    priv->hw->pcs != STMMAC_PCS_RTBI &&
-+	    priv->hw->xpcs == NULL) {
- 		ret = stmmac_init_phy(dev);
- 		if (ret) {
- 			netdev_err(priv->dev,
-diff --git a/drivers/net/ethernet/stmicro/stmmac/stmmac_mdio.c b/drivers/net/ethernet/stmicro/stmmac/stmmac_mdio.c
-index cfe5d8b73142..b2a707e2ef43 100644
---- a/drivers/net/ethernet/stmicro/stmmac/stmmac_mdio.c
-+++ b/drivers/net/ethernet/stmicro/stmmac/stmmac_mdio.c
-@@ -382,6 +382,14 @@ int stmmac_mdio_register(struct net_device *ndev)
- 		max_addr = PHY_MAX_ADDR;
- 	}
- 
-+	if (mdio_bus_data->has_xpcs) {
-+		priv->hw->xpcs = mdio_xpcs_get_ops();
-+		if (!priv->hw->xpcs) {
-+			err = -ENODEV;
-+			goto bus_register_fail;
-+		}
-+	}
-+
- 	if (mdio_bus_data->needs_reset)
- 		new_bus->reset = &stmmac_mdio_reset;
- 
-@@ -433,6 +441,25 @@ int stmmac_mdio_register(struct net_device *ndev)
- 		found = 1;
- 	}
- 
-+	/* Try to probe the XPCS by scanning all addresses. */
-+	if (priv->hw->xpcs) {
-+		struct mdio_xpcs_args *xpcs = &priv->hw->xpcs_args;
-+		int ret, mode = priv->plat->phy_interface;
-+		max_addr = PHY_MAX_ADDR;
-+
-+		xpcs->bus = new_bus;
-+
-+		for (addr = 0; addr < max_addr; addr++) {
-+			xpcs->addr = addr;
-+
-+			ret = stmmac_xpcs_probe(priv, xpcs, mode);
-+			if (!ret) {
-+				found = 1;
-+				break;
-+			}
-+		}
-+	}
-+
- 	if (!found && !mdio_node) {
- 		dev_warn(dev, "No PHY found\n");
- 		mdiobus_unregister(new_bus);
-diff --git a/include/linux/stmmac.h b/include/linux/stmmac.h
-index 19190c609282..fbafb353e9be 100644
---- a/include/linux/stmmac.h
-+++ b/include/linux/stmmac.h
-@@ -80,6 +80,7 @@
- 
- struct stmmac_mdio_bus_data {
- 	unsigned int phy_mask;
-+	unsigned int has_xpcs;
- 	int *irqs;
- 	int probed_phy_irq;
- 	bool needs_reset;
+Thanks
+Kals
+
+
+On Thu, Jan 23, 2020 at 9:27 PM Daniel Borkmann <daniel@iogearbox.net> wrote:
+>
+> On 1/23/20 2:08 PM, Kalimuthu Velappan wrote:
+> > Added attribute search and nested attribute support in EBPF filter
+> > functionality.
+>
+> Your commit describes what the code does, but not the rationale why it's needed
+> resp. the use-case you're trying to solve with this.
+>
+> Also, why it cannot be resolved in native BPF?
+>
+> > Signed-off-by: Kalimuthu Velappan <kalimuthu.velappan@broadcom.com>
+> > ---
+> >   include/uapi/linux/bpf.h       |  5 ++++-
+> >   net/core/filter.c              | 22 ++++++++++++++++++++++
+> >   tools/include/uapi/linux/bpf.h |  4 +++-
+> >   3 files changed, 29 insertions(+), 2 deletions(-)
+> >
+> > diff --git a/include/uapi/linux/bpf.h b/include/uapi/linux/bpf.h
+> > index dbbcf0b..ac9794c 100644
+> > --- a/include/uapi/linux/bpf.h
+> > +++ b/include/uapi/linux/bpf.h
+> > @@ -2938,7 +2938,10 @@ union bpf_attr {
+> >       FN(probe_read_user),            \
+> >       FN(probe_read_kernel),          \
+> >       FN(probe_read_user_str),        \
+> > -     FN(probe_read_kernel_str),
+> > +     FN(probe_read_kernel_str),  \
+> > +     FN(skb_get_nlattr),     \
+> > +     FN(skb_get_nlattr_nest),
+> > +
+>
+> This is not on latest bpf-next tree.
+>
+> >   /* integer value in 'imm' field of BPF_CALL instruction selects which helper
+> >    * function eBPF program intends to call
+> > diff --git a/net/core/filter.c b/net/core/filter.c
+> > index 538f6a7..56a87e1 100644
+> > --- a/net/core/filter.c
+> > +++ b/net/core/filter.c
+> > @@ -2699,6 +2699,24 @@ static const struct bpf_func_proto bpf_set_hash_invalid_proto = {
+> >       .arg1_type      = ARG_PTR_TO_CTX,
+> >   };
+> >
+> > +static const struct bpf_func_proto bpf_skb_get_nlattr_proto = {
+> > +     .func           = bpf_skb_get_nlattr,
+> > +     .gpl_only       = false,
+> > +     .ret_type       = RET_INTEGER,
+> > +     .arg1_type      = ARG_PTR_TO_CTX,
+> > +     .arg2_type  = ARG_ANYTHING,
+> > +     .arg3_type  = ARG_ANYTHING,
+> > +};
+> > +
+> > +static const struct bpf_func_proto skb_get_nlattr_nest_proto = {
+> > +     .func           = bpf_skb_get_nlattr_nest,
+> > +     .gpl_only       = false,
+> > +     .ret_type       = RET_INTEGER,
+> > +     .arg1_type      = ARG_PTR_TO_CTX,
+> > +     .arg2_type  = ARG_ANYTHING,
+> > +     .arg3_type  = ARG_ANYTHING,
+> > +};
+> > +
+> >   BPF_CALL_2(bpf_set_hash, struct sk_buff *, skb, u32, hash)
+
+
+
 -- 
-2.7.4
-
+Thanks
+- Kals
