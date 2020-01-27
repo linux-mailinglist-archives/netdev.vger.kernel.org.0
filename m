@@ -2,52 +2,53 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id EA94A14A49A
-	for <lists+netdev@lfdr.de>; Mon, 27 Jan 2020 14:11:09 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B89E014A49C
+	for <lists+netdev@lfdr.de>; Mon, 27 Jan 2020 14:11:11 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726885AbgA0NLI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 27 Jan 2020 08:11:08 -0500
-Received: from mail-lf1-f67.google.com ([209.85.167.67]:45624 "EHLO
+        id S1726743AbgA0NLH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 27 Jan 2020 08:11:07 -0500
+Received: from mail-lf1-f67.google.com ([209.85.167.67]:34228 "EHLO
         mail-lf1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725938AbgA0NLE (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 27 Jan 2020 08:11:04 -0500
-Received: by mail-lf1-f67.google.com with SMTP id 203so6128164lfa.12
-        for <netdev@vger.kernel.org>; Mon, 27 Jan 2020 05:11:03 -0800 (PST)
+        with ESMTP id S1725972AbgA0NLG (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 27 Jan 2020 08:11:06 -0500
+Received: by mail-lf1-f67.google.com with SMTP id l18so6162320lfc.1
+        for <netdev@vger.kernel.org>; Mon, 27 Jan 2020 05:11:04 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=cloudflare.com; s=google;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=C/PWUyZ8WRMMuhUFK+j0t9124ZJpx3NI0SI5nXhQtCo=;
-        b=okc0XUK3sMFMydVNVuT1L7mCOk1kyNQ14brv9lJ7iT3gU04xvS8o5XzypRnWlHtmPA
-         +vxTEbYSsxQD5Si0dvgST1U3oNsu0nOtmJJ+ufoaAzofDjpv9c7TVkzqtNvfVjqCHP38
-         60B+k4a8N0fKL6IvXRH9UzoDXoXMg6L8nNGtw=
+        bh=DmmvmFYM1C2O/HFL+O+XUj+uU0hQmm347kKY5Qq/hzA=;
+        b=TBBx6WMRyAEvOO3FBy/R1uI33vrlSfPcV0kAoQqf1g1Sr5FAFGAr8ZiuJG5yYTJnNL
+         4EB7LgRAXiqB1+B3g+6CmutB/wBgAgtEHZwEHTelYEGEXZNT3PZ/H6+xsskc79bzMWJ7
+         ul8mF+A4W/A99fRsZy0VzrFuhQuz6BxL3YNZg=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=C/PWUyZ8WRMMuhUFK+j0t9124ZJpx3NI0SI5nXhQtCo=;
-        b=FTnS6j3R7PyEUiiWrFSo4pI/D7KJA1t1ypniOSRLuzj/mrHMNRuafnmI6mOzO5jCXA
-         APeuWcUN7hoRtH1Rbj7K5V7pcTE5deDQVSOPc5YX5eVFgIHKVcouuX9gN08alhAJwGKH
-         hoc0L/v5v0qE+UBQv3wuM0uwcTCShB5aiA+NdBxZFgbVvgo8Y2718Kqzi1jR1bN6+FUq
-         fjTPwEcf3RUsZasQZJHG6X5h2ihTG7FInLJMdEpZyA3jv5ZZf+Ck/KNrfbeQ+pYGWfUK
-         xaGlCzwg5L0/99WjMRFvE/JZxEqnEvHjTAkAszqWI/xOy3Al4s5oirY8S1SnrJMh/3NA
-         iLjw==
-X-Gm-Message-State: APjAAAWps8OHeYOlIze0YUiekJaRpiBQW9PFDJ6rlEeFF3TBP9/GkNdp
-        JmspodBKGz+a39+kf7YgvdhiSw==
-X-Google-Smtp-Source: APXvYqz3hFjkb2z7Nu8jPiRud8QnvXBM77zXm9xaMdm7YFOjjXqK1kefkPFveQnMqpZPSnzUXpGyYA==
-X-Received: by 2002:a19:4f46:: with SMTP id a6mr8039588lfk.143.1580130661940;
-        Mon, 27 Jan 2020 05:11:01 -0800 (PST)
+        bh=DmmvmFYM1C2O/HFL+O+XUj+uU0hQmm347kKY5Qq/hzA=;
+        b=WhbBzE7158+itSx3xNEQQhA2xcVmmkw68hxq32nvUpfvzqyBWzyTi8iWLZCOLq+WeZ
+         RlDdhgds+wgQAcP5NAl4dEXbQyFfoef1+nJAgYHjGQd3fI3MHcRtxwt07q+/tYkD0Bei
+         cPbjpQXOY/GKIoggJ3JB8CBJK01WoZ3sjNrlmJvuPNcdPePb53djsWKVjx6tKlURqCak
+         j3RbLuCI2mGdngV4MJ038jirfi0ZvnWe481s5dwmPhcbxkGcsaR41fUIEtVBJWNqIQcs
+         cuQLIVbOzkcRyU4GDk75zdKTUGvJlzHbn7EA3NRYFolNVwDkp+hq6m+wNi8xa4czlRpA
+         WcfA==
+X-Gm-Message-State: APjAAAUkrmoX53m0QGV8xgUVD+/LZ00PIgBv4SGa9pCB/9QuNclheAp1
+        M9F9ie25EfkuTER78ysLGfF29Q==
+X-Google-Smtp-Source: APXvYqyJjwuvWoDLSqdlvwpowMRPM/+Th4yxUBLap6lmvXgjMWvctxHCKWxImoYZ76xY3YxseAAeYQ==
+X-Received: by 2002:a19:ee1a:: with SMTP id g26mr8077514lfb.147.1580130663484;
+        Mon, 27 Jan 2020 05:11:03 -0800 (PST)
 Received: from cloudflare.com ([2a02:a310:c262:aa00:b35e:8938:2c2a:ba8b])
-        by smtp.gmail.com with ESMTPSA id k24sm10154017ljj.27.2020.01.27.05.11.01
+        by smtp.gmail.com with ESMTPSA id s7sm2780464ljc.50.2020.01.27.05.11.02
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 27 Jan 2020 05:11:01 -0800 (PST)
+        Mon, 27 Jan 2020 05:11:03 -0800 (PST)
 From:   Jakub Sitnicki <jakub@cloudflare.com>
 To:     bpf@vger.kernel.org
 Cc:     netdev@vger.kernel.org, kernel-team@cloudflare.com,
+        John Fastabend <john.fastabend@gmail.com>,
         Martin KaFai Lau <kafai@fb.com>
-Subject: [PATCH bpf-next v6 02/12] net, sk_msg: Annotate lockless access to sk_prot on clone
-Date:   Mon, 27 Jan 2020 14:10:47 +0100
-Message-Id: <20200127131057.150941-3-jakub@cloudflare.com>
+Subject: [PATCH bpf-next v6 03/12] net, sk_msg: Clear sk_user_data pointer on clone if tagged
+Date:   Mon, 27 Jan 2020 14:10:48 +0100
+Message-Id: <20200127131057.150941-4-jakub@cloudflare.com>
 X-Mailer: git-send-email 2.24.1
 In-Reply-To: <20200127131057.150941-1-jakub@cloudflare.com>
 References: <20200127131057.150941-1-jakub@cloudflare.com>
@@ -58,141 +59,128 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-sk_msg and ULP frameworks override protocol callbacks pointer in
-sk->sk_prot, while tcp accesses it locklessly when cloning the listening
-socket, that is with neither sk_lock nor sk_callback_lock held.
+sk_user_data can hold a pointer to an object that is not intended to be
+shared between the parent socket and the child that gets a pointer copy on
+clone. This is the case when sk_user_data points at reference-counted
+object, like struct sk_psock.
 
-Once we enable use of listening sockets with sockmap (and hence sk_msg),
-there will be shared access to sk->sk_prot if socket is getting cloned
-while being inserted/deleted to/from the sockmap from another CPU:
+One way to resolve it is to tag the pointer with a no-copy flag by
+repurposing its lowest bit. Based on the bit-flag value we clear the child
+sk_user_data pointer after cloning the parent socket.
 
-Read side:
+The no-copy flag is stored in the pointer itself as opposed to externally,
+say in socket flags, to guarantee that the pointer and the flag are copied
+from parent to child socket in an atomic fashion. Parent socket state is
+subject to change while copying, we don't hold any locks at that time.
 
-tcp_v4_rcv
-  sk = __inet_lookup_skb(...)
-  tcp_check_req(sk)
-    inet_csk(sk)->icsk_af_ops->syn_recv_sock
-      tcp_v4_syn_recv_sock
-        tcp_create_openreq_child
-          inet_csk_clone_lock
-            sk_clone_lock
-              READ_ONCE(sk->sk_prot)
+This approach relies on an assumption that sk_user_data holds a pointer to
+an object aligned at least 2 bytes. A manual audit of existing users of
+rcu_dereference_sk_user_data helper confirms our assumption.
 
-Write side:
+Also, an RCU-protected sk_user_data is not likely to hold a pointer to a
+char value or a pathological case of "struct { char c; }". To be safe, warn
+when the flag-bit is set when setting sk_user_data to catch any future
+misuses.
 
-sock_map_ops->map_update_elem
-  sock_map_update_elem
-    sock_map_update_common
-      sock_map_link_no_progs
-        tcp_bpf_init
-          tcp_bpf_update_sk_prot
-            sk_psock_update_proto
-              WRITE_ONCE(sk->sk_prot, ops)
+It is worth considering why clearing sk_user_data unconditionally is not an
+option. There exist users, DRBD, NVMe, and Xen drivers being among them,
+that rely on the pointer being copied when cloning the listening socket.
 
-sock_map_ops->map_delete_elem
-  sock_map_delete_elem
-    __sock_map_delete
-     sock_map_unref
-       sk_psock_put
-         sk_psock_drop
-           sk_psock_restore_proto
-             tcp_update_ulp
-               WRITE_ONCE(sk->sk_prot, proto)
+Potentially we could distinguish these users by checking if the listening
+socket has been created in kernel-space via sock_create_kern, and hence has
+sk_kern_sock flag set. However, this is not the case for NVMe and Xen
+drivers, which create sockets without marking them as belonging to the
+kernel.
 
-Mark the shared access with READ_ONCE/WRITE_ONCE annotations.
-
+Acked-by: John Fastabend <john.fastabend@gmail.com>
 Acked-by: Martin KaFai Lau <kafai@fb.com>
 Signed-off-by: Jakub Sitnicki <jakub@cloudflare.com>
 ---
- include/linux/skmsg.h | 3 ++-
- net/core/sock.c       | 5 +++--
- net/ipv4/tcp_bpf.c    | 4 +++-
- net/ipv4/tcp_ulp.c    | 3 ++-
- net/tls/tls_main.c    | 3 ++-
- 5 files changed, 12 insertions(+), 6 deletions(-)
+ include/net/sock.h | 37 +++++++++++++++++++++++++++++++++++--
+ net/core/skmsg.c   |  2 +-
+ net/core/sock.c    |  6 ++++++
+ 3 files changed, 42 insertions(+), 3 deletions(-)
 
-diff --git a/include/linux/skmsg.h b/include/linux/skmsg.h
-index 6311838e7df8..8647937998f3 100644
---- a/include/linux/skmsg.h
-+++ b/include/linux/skmsg.h
-@@ -352,7 +352,8 @@ static inline void sk_psock_update_proto(struct sock *sk,
- 	psock->saved_write_space = sk->sk_write_space;
+diff --git a/include/net/sock.h b/include/net/sock.h
+index 02162b0378f7..9f37fdfd15d4 100644
+--- a/include/net/sock.h
++++ b/include/net/sock.h
+@@ -502,10 +502,43 @@ enum sk_pacing {
+ 	SK_PACING_FQ		= 2,
+ };
  
- 	psock->sk_proto = sk->sk_prot;
--	sk->sk_prot = ops;
-+	/* Pairs with lockless read in sk_clone_lock() */
-+	WRITE_ONCE(sk->sk_prot, ops);
- }
++/* Pointer stored in sk_user_data might not be suitable for copying
++ * when cloning the socket. For instance, it can point to a reference
++ * counted object. sk_user_data bottom bit is set if pointer must not
++ * be copied.
++ */
++#define SK_USER_DATA_NOCOPY	1UL
++#define SK_USER_DATA_PTRMASK	~(SK_USER_DATA_NOCOPY)
++
++/**
++ * sk_user_data_is_nocopy - Test if sk_user_data pointer must not be copied
++ * @sk: socket
++ */
++static inline bool sk_user_data_is_nocopy(const struct sock *sk)
++{
++	return ((uintptr_t)sk->sk_user_data & SK_USER_DATA_NOCOPY);
++}
++
+ #define __sk_user_data(sk) ((*((void __rcu **)&(sk)->sk_user_data)))
  
- static inline void sk_psock_restore_proto(struct sock *sk,
+-#define rcu_dereference_sk_user_data(sk)	rcu_dereference(__sk_user_data((sk)))
+-#define rcu_assign_sk_user_data(sk, ptr)	rcu_assign_pointer(__sk_user_data((sk)), ptr)
++#define rcu_dereference_sk_user_data(sk)				\
++({									\
++	void *__tmp = rcu_dereference(__sk_user_data((sk)));		\
++	(void *)((uintptr_t)__tmp & SK_USER_DATA_PTRMASK);		\
++})
++#define rcu_assign_sk_user_data(sk, ptr)				\
++({									\
++	uintptr_t __tmp = (uintptr_t)(ptr);				\
++	WARN_ON_ONCE(__tmp & ~SK_USER_DATA_PTRMASK);			\
++	rcu_assign_pointer(__sk_user_data((sk)), __tmp);		\
++})
++#define rcu_assign_sk_user_data_nocopy(sk, ptr)				\
++({									\
++	uintptr_t __tmp = (uintptr_t)(ptr);				\
++	WARN_ON_ONCE(__tmp & ~SK_USER_DATA_PTRMASK);			\
++	rcu_assign_pointer(__sk_user_data((sk)),			\
++			   __tmp | SK_USER_DATA_NOCOPY);		\
++})
+ 
+ /*
+  * SK_CAN_REUSE and SK_NO_REUSE on a socket mean that the socket is OK
+diff --git a/net/core/skmsg.c b/net/core/skmsg.c
+index 3866d7e20c07..cd133688fd78 100644
+--- a/net/core/skmsg.c
++++ b/net/core/skmsg.c
+@@ -512,7 +512,7 @@ struct sk_psock *sk_psock_init(struct sock *sk, int node)
+ 	sk_psock_set_state(psock, SK_PSOCK_TX_ENABLED);
+ 	refcount_set(&psock->refcnt, 1);
+ 
+-	rcu_assign_sk_user_data(sk, psock);
++	rcu_assign_sk_user_data_nocopy(sk, psock);
+ 	sock_hold(sk);
+ 
+ 	return psock;
 diff --git a/net/core/sock.c b/net/core/sock.c
-index a4c8fac781ff..3953bb23f4d0 100644
+index 3953bb23f4d0..74662943af5c 100644
 --- a/net/core/sock.c
 +++ b/net/core/sock.c
-@@ -1792,16 +1792,17 @@ static void sk_init_common(struct sock *sk)
-  */
- struct sock *sk_clone_lock(const struct sock *sk, const gfp_t priority)
- {
-+	struct proto *prot = READ_ONCE(sk->sk_prot);
- 	struct sock *newsk;
- 	bool is_charged = true;
+@@ -1864,6 +1864,12 @@ struct sock *sk_clone_lock(const struct sock *sk, const gfp_t priority)
+ 			goto out;
+ 		}
  
--	newsk = sk_prot_alloc(sk->sk_prot, priority, sk->sk_family);
-+	newsk = sk_prot_alloc(prot, priority, sk->sk_family);
- 	if (newsk != NULL) {
- 		struct sk_filter *filter;
- 
- 		sock_copy(newsk, sk);
- 
--		newsk->sk_prot_creator = sk->sk_prot;
-+		newsk->sk_prot_creator = prot;
- 
- 		/* SANITY */
- 		if (likely(newsk->sk_net_refcnt))
-diff --git a/net/ipv4/tcp_bpf.c b/net/ipv4/tcp_bpf.c
-index 8a01428f80c1..dd183b050642 100644
---- a/net/ipv4/tcp_bpf.c
-+++ b/net/ipv4/tcp_bpf.c
-@@ -645,8 +645,10 @@ static void tcp_bpf_reinit_sk_prot(struct sock *sk, struct sk_psock *psock)
- 	/* Reinit occurs when program types change e.g. TCP_BPF_TX is removed
- 	 * or added requiring sk_prot hook updates. We keep original saved
- 	 * hooks in this case.
-+	 *
-+	 * Pairs with lockless read in sk_clone_lock().
- 	 */
--	sk->sk_prot = &tcp_bpf_prots[family][config];
-+	WRITE_ONCE(sk->sk_prot, &tcp_bpf_prots[family][config]);
- }
- 
- static int tcp_bpf_assert_proto_ops(struct proto *ops)
-diff --git a/net/ipv4/tcp_ulp.c b/net/ipv4/tcp_ulp.c
-index 38d3ad141161..6c43fa189195 100644
---- a/net/ipv4/tcp_ulp.c
-+++ b/net/ipv4/tcp_ulp.c
-@@ -106,7 +106,8 @@ void tcp_update_ulp(struct sock *sk, struct proto *proto,
- 
- 	if (!icsk->icsk_ulp_ops) {
- 		sk->sk_write_space = write_space;
--		sk->sk_prot = proto;
-+		/* Pairs with lockless read in sk_clone_lock() */
-+		WRITE_ONCE(sk->sk_prot, proto);
- 		return;
- 	}
- 
-diff --git a/net/tls/tls_main.c b/net/tls/tls_main.c
-index 94774c0e5ff3..b19a54f4cdcc 100644
---- a/net/tls/tls_main.c
-+++ b/net/tls/tls_main.c
-@@ -742,7 +742,8 @@ static void tls_update(struct sock *sk, struct proto *p,
- 		ctx->sk_write_space = write_space;
- 		ctx->sk_proto = p;
- 	} else {
--		sk->sk_prot = p;
-+		/* Pairs with lockless read in sk_clone_lock() */
-+		WRITE_ONCE(sk->sk_prot, p);
- 		sk->sk_write_space = write_space;
- 	}
- }
++		/* Clear sk_user_data if parent had the pointer tagged
++		 * as not suitable for copying when cloning.
++		 */
++		if (sk_user_data_is_nocopy(newsk))
++			RCU_INIT_POINTER(newsk->sk_user_data, NULL);
++
+ 		newsk->sk_err	   = 0;
+ 		newsk->sk_err_soft = 0;
+ 		newsk->sk_priority = 0;
 -- 
 2.24.1
 
