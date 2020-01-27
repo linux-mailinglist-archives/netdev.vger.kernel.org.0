@@ -2,49 +2,45 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id CE18A14A202
-	for <lists+netdev@lfdr.de>; Mon, 27 Jan 2020 11:33:02 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7DA9114A20D
+	for <lists+netdev@lfdr.de>; Mon, 27 Jan 2020 11:33:59 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729724AbgA0Kc4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 27 Jan 2020 05:32:56 -0500
-Received: from us-smtp-delivery-1.mimecast.com ([205.139.110.120]:26230 "EHLO
-        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S1727985AbgA0Kc4 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 27 Jan 2020 05:32:56 -0500
+        id S1729929AbgA0Kd5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 27 Jan 2020 05:33:57 -0500
+Received: from us-smtp-2.mimecast.com ([207.211.31.81]:26466 "EHLO
+        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1729747AbgA0Kd5 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 27 Jan 2020 05:33:57 -0500
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1580121175;
+        s=mimecast20190719; t=1580121236;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=soDlykxoKL+jvpEFJIbGP8m2LcnZcRwleRT2GQ1f240=;
-        b=IvCNgDD0eBpVBo+aRwjG0fR6X3vLH3ahnc8V71kV0iDmomOYi+a9Qn/t4uNKe3zCsVnV3Z
-        DAhICmd575N00WV+L0tT78jwEE5zyGeTCdflQQgSYc+RQQYCLl/HpSFhRm0Jn7cjC2UoLf
-        MJia3NUz7/PsvJdWR3O8LyjZj3uBoYo=
+        bh=F0Hm7ss6kYkj54uX1OBqHRxkV2onI2wt308KHXeq7N0=;
+        b=WkTrfJJvsPi1xMKlCH9Y3MHNhv5uTOdz5Q7RUiLcNuUKOx2BevnxHEhXbsYdH2b8O16Q8d
+        8YVaKEeHsPi8Srgdt+67cn2E4WwIWAP/Ndu5WkysKc6vybrhey9bP7fFKqFPEOH1uJjCWq
+        6UM2BABhYZQZ6F08cZ4S8hE3gsHdYj4=
 Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
  [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-426-rGwk10ADPAamTUxbxaCdcw-1; Mon, 27 Jan 2020 05:32:51 -0500
-X-MC-Unique: rGwk10ADPAamTUxbxaCdcw-1
+ us-mta-281-4CXON7BVM0a58o9Mauypjg-1; Mon, 27 Jan 2020 05:33:49 -0500
+X-MC-Unique: 4CXON7BVM0a58o9Mauypjg-1
 Received: from smtp.corp.redhat.com (int-mx06.intmail.prod.int.phx2.redhat.com [10.5.11.16])
         (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 1278C803C04;
-        Mon, 27 Jan 2020 10:32:48 +0000 (UTC)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 155BF107ACC9;
+        Mon, 27 Jan 2020 10:33:48 +0000 (UTC)
 Received: from localhost (ovpn-112-13.phx2.redhat.com [10.3.112.13])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id F10D05C1D6;
-        Mon, 27 Jan 2020 10:32:41 +0000 (UTC)
-Date:   Mon, 27 Jan 2020 11:32:39 +0100 (CET)
-Message-Id: <20200127.113239.1283544245838356770.davem@redhat.com>
-To:     mkubecek@suse.cz
-Cc:     netdev@vger.kernel.org, kuba@kernel.org, jiri@resnulli.us,
-        andrew@lunn.ch, f.fainelli@gmail.com, linville@tuxdriver.com,
-        johannes@sipsolutions.net, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH net-next 0/7] ethtool netlink interface, part 2
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 862F45C1D6;
+        Mon, 27 Jan 2020 10:33:45 +0000 (UTC)
+Date:   Mon, 27 Jan 2020 11:33:44 +0100 (CET)
+Message-Id: <20200127.113344.201476041854846828.davem@redhat.com>
+To:     michael.chan@broadcom.com
+Cc:     netdev@vger.kernel.org
+Subject: Re: [PATCH net-net v2 00/15] bnxt_en: Updates for net-next.
 From:   David Miller <davem@redhat.com>
-In-Reply-To: <20200127095744.GG570@unicorn.suse.cz>
-References: <cover.1580075977.git.mkubecek@suse.cz>
-        <20200127.104049.2252228859572866640.davem@davemloft.net>
-        <20200127095744.GG570@unicorn.suse.cz>
+In-Reply-To: <1580118987-30052-1-git-send-email-michael.chan@broadcom.com>
+References: <1580118987-30052-1-git-send-email-michael.chan@broadcom.com>
 Mime-Version: 1.0
 Content-Type: Text/Plain; charset=us-ascii
 Content-Transfer-Encoding: 7bit
@@ -54,33 +50,16 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Michal Kubecek <mkubecek@suse.cz>
-Date: Mon, 27 Jan 2020 10:57:44 +0100
+From: Michael Chan <michael.chan@broadcom.com>
+Date: Mon, 27 Jan 2020 04:56:12 -0500
 
-> On Mon, Jan 27, 2020 at 10:40:49AM +0100, David Miller wrote:
->> From: Michal Kubecek <mkubecek@suse.cz>
->> Date: Sun, 26 Jan 2020 23:10:58 +0100 (CET)
->> 
->> > This shorter series adds support for getting and setting of wake-on-lan
->> > settings and message mask (originally message level). Together with the
->> > code already in net-next, this will allow full implementation of
->> > "ethtool <dev>" and "ethtool -s <dev> ...".
->> > 
->> > Older versions of the ethtool netlink series allowed getting WoL settings
->> > by unprivileged users and only filtered out the password but this was
->> > a source of controversy so for now, ETHTOOL_MSG_WOL_GET request always
->> > requires CAP_NET_ADMIN as ETHTOOL_GWOL ioctl request does.
->> 
->> It looks like this will need to be respun at least once, and net-next
->> is closing today so....
+> This patch-set includes link up and link initialization improvements,
+> RSS and aRFS improvements, devlink refactoring and registration
+> improvements, devlink info support including documentation.
 > 
-> The problem with ethnl_parse_header() name not making it obvious that it
-> takes a reference is not introduced in this series, the function is
-> already in net-next so that it does not matter if this series is merged
-> or not. Other than that, there is only the missing "the" in
-> documentation.
+> v2: Removed the TC ingress rate limiting patch. The developer Harsha needs
+> to rework some code.
+>     Use fw.psid suggested by Jakub Kicinski.
 
-Ok, looks good, series applied.
-
-Thanky you.
+Series applied, thanks Michael.
 
