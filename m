@@ -2,119 +2,92 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 1F1B7149DF1
-	for <lists+netdev@lfdr.de>; Mon, 27 Jan 2020 01:14:36 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 519B1149DF3
+	for <lists+netdev@lfdr.de>; Mon, 27 Jan 2020 01:14:43 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727586AbgA0AOc (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 26 Jan 2020 19:14:32 -0500
-Received: from mail-pf1-f195.google.com ([209.85.210.195]:37924 "EHLO
-        mail-pf1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727250AbgA0AOc (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 26 Jan 2020 19:14:32 -0500
-Received: by mail-pf1-f195.google.com with SMTP id x185so4076080pfc.5;
-        Sun, 26 Jan 2020 16:14:31 -0800 (PST)
+        id S1728234AbgA0AOm (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 26 Jan 2020 19:14:42 -0500
+Received: from mail-pj1-f66.google.com ([209.85.216.66]:50519 "EHLO
+        mail-pj1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726444AbgA0AOl (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 26 Jan 2020 19:14:41 -0500
+Received: by mail-pj1-f66.google.com with SMTP id r67so2271747pjb.0;
+        Sun, 26 Jan 2020 16:14:41 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=jwKhSkxejmyMPyM+NVjUzzmt99OqXL3Od8mcxBL1EyU=;
-        b=KzIA6lKlm9r14alo9oUUhjDXA3ZfYQgq3ShYMZl3kZGwnBzvqUpk95mvY65KsQ6z8I
-         qrTpJo7DgBQT475zg9jgxi3VxFJ/nzN/SpsDILQN4uKjaPuVlN9IKvUyZq+p7gE45dTA
-         0xmwZHIMXcycWcf/Ex8jOU1nR23LPDy1sM9ypayxyrDAo8JxVKLMe4QeSbfd/VcEkstV
-         z89DWZSwozkr9PWLn/JDbtvw7wrK9+8orMOvnnzPh8sYQwuV1fQOJ0Ys/v94tsIsij0S
-         u8SHWMspiyltDcN0N3E19PE6sC80wUvHDfAsUvisGTg+D8Qs5HmUZ7wcAj9KW6rTEPiI
-         IlGQ==
+        h=from:to:cc:subject:date:message-id:in-reply-to:references;
+        bh=g9j0lMDO8NoNU4KTbS42+2WezLD8kVVyGGPJ2HPGp/M=;
+        b=b2/IUtdu18/t4bYGGOQ7x5MWjXe0RvXpuaSe36Y2GK8n+4PhxfH23p2ePlTepBHC9q
+         S8WwMTyHRkmfSV2OdzyW3aFwb+4DtzOHYElM/CD1yDEf0LsPZx5tGnVFtQ1dcYGvHcvY
+         mkW33Ggd1dL5n5llbrjzKwY/XwY4vp614NKRj8GEAdYgdk6AdmzRjpw+bnm+x2kjGiJ2
+         egbuub+FkmL4vIA4kFXkT8zFuJGpOtTJV++TOTFCDBw3/YgOg41GcfikeSQcARLRKikC
+         k1ySwv6tKO2uiFp37lJvVdTeT8WmHBjTX4R8p5uZw/0JFUsK+7pW5YIetVQ7eiY7hXTE
+         vf4g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=jwKhSkxejmyMPyM+NVjUzzmt99OqXL3Od8mcxBL1EyU=;
-        b=KCLu9D/W/RyiJ3xDIWM8BMsIuNINANlfJrTf5jOZ2ObF87s5ThLtagBZiF+YfgH0y1
-         iW1AZ5tsWYfhbHEpQul2cxUWWZzNdtgZmyf86+y6q4qK3x4oMYdC8iv+54eEsXeyZhEy
-         Um5dsiFTxmu95oKYowADh2Wt0SJ+kWr5PrmU7CqtlI3DR2+PIgmcR7g6GZklZcFH0PKU
-         k9An5wKA3ppxJi8qklgYWPNrAH3J5Z3VDRwNCKQjmNmsqr4FdzJDalvhHTiwlOKz8dLy
-         sS0KzmjHSf8kdwfMavWc05nfQuelHSeiAR1N+NNL7CVN7uCSkjDyPP+ld815zKHW83Dd
-         2YbA==
-X-Gm-Message-State: APjAAAUV4jAjGsdEzKHUuQ+vpNOgtRcl3aQfpVP4u0l6dRx+TLFetGFo
-        fdS3uy9fD7lbYCJrdl7/i7VhCtgS
-X-Google-Smtp-Source: APXvYqwUKVDer0FpGdFYXA6N3SPce7fkiWTORnJcD7OhGLqI+0LLvgzE/TObc301N6Vg1mYOfsL/mA==
-X-Received: by 2002:a63:1346:: with SMTP id 6mr16735605pgt.111.1580084071242;
-        Sun, 26 Jan 2020 16:14:31 -0800 (PST)
+         :references;
+        bh=g9j0lMDO8NoNU4KTbS42+2WezLD8kVVyGGPJ2HPGp/M=;
+        b=BTJbTO04uLtwUN2QK8R2ecEBBXBTif3dW/yFbIHloo3fdGtFgxe1N1IZ8oCJBXHhi2
+         lKDkjciR2ca0ZKHRGCm9uYrYIQDW5PzwhJ8kvocb67tYHaub+vLufvQ4XI6bOHmhMYMk
+         TTSCavNLYB7KLJdJ3r5Z7IRwfgsPfxFPFpb7EPQ8hu8gzNQG4yl0fKLDen1AxjcawZrh
+         hhT2NfnFQhD0Klk8IG+ukexhEd26IwIey29++2DewDFTgrNZYgE7XZmMrq+NFiQMRE+9
+         lcIUXvXWQ+dCRvz0k1nYcZpcBccUA4dPkj/9vSVq3x4ZlCmouv03XdHt6ba65McRjDYg
+         TRtQ==
+X-Gm-Message-State: APjAAAUKnZaGZOZn/VVSQWS6VULJfl46SJPn8C1k+zQaZ8+JrmOEdl4+
+        bpJEgjvD+zIbST+KegQdUBsjnpGA
+X-Google-Smtp-Source: APXvYqztDq2yJzJ1c3OzJhrSUTP0qhBn1h/Gxq5DXts3xNuqVcULO20YQ5lUODekPeFyzBao8+iGUA==
+X-Received: by 2002:a17:902:8f8a:: with SMTP id z10mr15532830plo.169.1580084080980;
+        Sun, 26 Jan 2020 16:14:40 -0800 (PST)
 Received: from localhost.localdomain ([184.63.162.180])
-        by smtp.gmail.com with ESMTPSA id i23sm13326949pfo.11.2020.01.26.16.14.21
+        by smtp.gmail.com with ESMTPSA id i23sm13326949pfo.11.2020.01.26.16.14.31
         (version=TLS1_2 cipher=ECDHE-RSA-AES128-SHA bits=128/128);
-        Sun, 26 Jan 2020 16:14:30 -0800 (PST)
+        Sun, 26 Jan 2020 16:14:40 -0800 (PST)
 From:   John Fastabend <john.fastabend@gmail.com>
 To:     bpf@vger.kernel.org
 Cc:     bjorn.topel@intel.com, songliubraving@fb.com,
         john.fastabend@gmail.com, ast@kernel.org, daniel@iogearbox.net,
         toke@redhat.com, maciej.fijalkowski@intel.com,
         netdev@vger.kernel.org
-Subject: [PATCH bpf-next v3 1/3] bpf: xdp, update devmap comments to reflect napi/rcu usage
-Date:   Sun, 26 Jan 2020 16:14:00 -0800
-Message-Id: <1580084042-11598-2-git-send-email-john.fastabend@gmail.com>
+Subject: [PATCH bpf-next v3 2/3] bpf: xdp, virtio_net use access ptr macro for xdp enable check
+Date:   Sun, 26 Jan 2020 16:14:01 -0800
+Message-Id: <1580084042-11598-3-git-send-email-john.fastabend@gmail.com>
 X-Mailer: git-send-email 2.7.4
 In-Reply-To: <1580084042-11598-1-git-send-email-john.fastabend@gmail.com>
 References: <1580084042-11598-1-git-send-email-john.fastabend@gmail.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Now that we rely on synchronize_rcu and call_rcu waiting to
-exit perempt-disable regions (NAPI) lets update the comments
-to reflect this.
+virtio_net currently relies on rcu critical section to access the xdp
+program in its xdp_xmit handler. However, the pointer to the xdp program
+is only used to do a NULL pointer comparison to determine if xdp is
+enabled or not.
 
-Fixes: 0536b85239b84 ("xdp: Simplify devmap cleanup")
-Acked-by: Björn Töpel <bjorn.topel@intel.com>
-Acked-by: Song Liu <songliubraving@fb.com>
+Use rcu_access_pointer() instead of rcu_dereference() to reflect this.
+Then later when we drop rcu_read critical section virtio_net will not
+need in special handling.
+
+Acked-by: Jesper Dangaard Brouer <brouer@redhat.com>
 Signed-off-by: John Fastabend <john.fastabend@gmail.com>
 ---
- kernel/bpf/devmap.c | 21 +++++++++++----------
- 1 file changed, 11 insertions(+), 10 deletions(-)
+ drivers/net/virtio_net.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/kernel/bpf/devmap.c b/kernel/bpf/devmap.c
-index da9c832..707583f 100644
---- a/kernel/bpf/devmap.c
-+++ b/kernel/bpf/devmap.c
-@@ -193,10 +193,12 @@ static void dev_map_free(struct bpf_map *map)
- 
- 	/* At this point bpf_prog->aux->refcnt == 0 and this map->refcnt == 0,
- 	 * so the programs (can be more than one that used this map) were
--	 * disconnected from events. Wait for outstanding critical sections in
--	 * these programs to complete. The rcu critical section only guarantees
--	 * no further reads against netdev_map. It does __not__ ensure pending
--	 * flush operations (if any) are complete.
-+	 * disconnected from events. The following synchronize_rcu() guarantees
-+	 * both rcu read critical sections complete and waits for
-+	 * preempt-disable regions (NAPI being the relevant context here) so we
-+	 * are certain there will be no further reads against the netdev_map and
-+	 * all flush operations are complete. Flush operations can only be done
-+	 * from NAPI context for this reason.
+diff --git a/drivers/net/virtio_net.c b/drivers/net/virtio_net.c
+index 4d7d5434..945eabc 100644
+--- a/drivers/net/virtio_net.c
++++ b/drivers/net/virtio_net.c
+@@ -501,7 +501,7 @@ static int virtnet_xdp_xmit(struct net_device *dev,
+ 	/* Only allow ndo_xdp_xmit if XDP is loaded on dev, as this
+ 	 * indicate XDP resources have been successfully allocated.
  	 */
+-	xdp_prog = rcu_dereference(rq->xdp_prog);
++	xdp_prog = rcu_access_pointer(rq->xdp_prog);
+ 	if (!xdp_prog)
+ 		return -ENXIO;
  
- 	spin_lock(&dev_map_lock);
-@@ -498,12 +500,11 @@ static int dev_map_delete_elem(struct bpf_map *map, void *key)
- 		return -EINVAL;
- 
- 	/* Use call_rcu() here to ensure any rcu critical sections have
--	 * completed, but this does not guarantee a flush has happened
--	 * yet. Because driver side rcu_read_lock/unlock only protects the
--	 * running XDP program. However, for pending flush operations the
--	 * dev and ctx are stored in another per cpu map. And additionally,
--	 * the driver tear down ensures all soft irqs are complete before
--	 * removing the net device in the case of dev_put equals zero.
-+	 * completed as well as any flush operations because call_rcu
-+	 * will wait for preempt-disable region to complete, NAPI in this
-+	 * context.  And additionally, the driver tear down ensures all
-+	 * soft irqs are complete before removing the net device in the
-+	 * case of dev_put equals zero.
- 	 */
- 	old_dev = xchg(&dtab->netdev_map[k], NULL);
- 	if (old_dev)
 -- 
 2.7.4
 
