@@ -2,145 +2,167 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id B3CE514A622
-	for <lists+netdev@lfdr.de>; Mon, 27 Jan 2020 15:30:43 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 509A214A626
+	for <lists+netdev@lfdr.de>; Mon, 27 Jan 2020 15:30:54 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729196AbgA0Oam (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 27 Jan 2020 09:30:42 -0500
-Received: from mail-pj1-f67.google.com ([209.85.216.67]:54057 "EHLO
-        mail-pj1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729186AbgA0Oal (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 27 Jan 2020 09:30:41 -0500
-Received: by mail-pj1-f67.google.com with SMTP id n96so3014582pjc.3
-        for <netdev@vger.kernel.org>; Mon, 27 Jan 2020 06:30:41 -0800 (PST)
+        id S1729210AbgA0Oaw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 27 Jan 2020 09:30:52 -0500
+Received: from mail-pf1-f195.google.com ([209.85.210.195]:43100 "EHLO
+        mail-pf1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729066AbgA0Oaw (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 27 Jan 2020 09:30:52 -0500
+Received: by mail-pf1-f195.google.com with SMTP id s1so4388860pfh.10
+        for <netdev@vger.kernel.org>; Mon, 27 Jan 2020 06:30:51 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id;
-        bh=bdXp12rWWIhABbMqabuTQA3uM8UtAWN7EmJVz8e/1f0=;
-        b=vaaL8N9lg7WG4Skae9qJZyaKgZ4XiBkWsjtEPQjE/qm6dQlIzJrJ7Fehqdoem4VeY/
-         iepmiImxImxP4ZiKBD+c4+fxUwmZQNQF+1uO+qKxooWHaSdUa8m1JHNWlTPYrLApYf7X
-         gys2U38Qt/e/2LmTL11+zc6UFClzZ8lX51px91Savn2fm6LHB44eAQAWWnpsO2FS2/WR
-         dw0XCy3w0d3HJ46Kj1ynAM1hVUbGi5mCXxbfMkyUEffhNYmI2ieJktzJ8tqPYtLh7BO8
-         jQjugAiYyPlx0S+zO7OLxBqKPLZagxpw0AGJFa4jTbjKt8nwJX1q6Y9HFOGNnnDG2/gI
-         fWqA==
+        bh=Ou0kDYuq5RJq3J5tI4/vM3gS4N0SdYFivJXJ6M6m160=;
+        b=CVkMFCMkXd3cPSdOIPioKUZtcXDSynz5wFIOECwHV3gM1yvCynkDo/Q2Fm1ttbq6CG
+         8IPg/uQ1d5+MlHTYQpxi9vvnwbrA+fOyn+C9rT+uVY9APcJFWH+5Bk3SNDklPBdkWFXz
+         uSJWg149YRmdJgHkWdN2BepFdHSwx0ki6L1DkDTqWAkofzNGi4YAyBxIxzKk9Jmo9u5C
+         dOUJWIdyPb6dafyvsqlGDNhanvp0nokEAt9TG1SsM2Nqf0uLt3klusQixh8eFzYwlM2q
+         s51/QEExzfB7iiuj8QwSQ/3dMJDn9nYGlLQgr4S3RnLVjIxKC3fuCtRsfG2oO31Ex1iB
+         zqZA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id;
-        bh=bdXp12rWWIhABbMqabuTQA3uM8UtAWN7EmJVz8e/1f0=;
-        b=SLwbLRQCKcDVSb9z1czSire3taVnOSRl3LmQkCdYe6vr0IdD4+fZrAa8HEeRTzkH7l
-         a0KX8Q9jRmlaFc60pHeT6DoctMQ89uoLu6wWoa6y2LY4djoJS5q7LU9zC5OONSod+S14
-         7yCi4puLpI/lbLbr7Upn/qXDXfxOPEcAHz5b399C0EGFU/nCmK6C2p9GcvXrUFNqrx9O
-         bG2gpGMslZBZFC7j7c4JAu35rvHMCOTsBR7qkMLCmG5stOKMcMRTefmA3eIUpn6s9a4D
-         scO4135QnE2nn6BPSbI3tc79BH5S5oHP9lhwEdUzWIr3SZ31JxEkWQBl/yocU4cClEE8
-         3uKw==
-X-Gm-Message-State: APjAAAXj9xs70dJv3KUgInhjuhFAn0lnvKxg0F2UE0F3AQr2Rt2oyrIk
-        RaULtNESl6AUt3hjNsNVnUDoY/tE
-X-Google-Smtp-Source: APXvYqypdux3P5f2or0ANpplbR75vSRQOKqliIFXOntdeaxdKhZAHfU3kjW4HIas3lXsYdG+Z2nrzw==
-X-Received: by 2002:a17:902:d918:: with SMTP id c24mr18174789plz.167.1580135441036;
-        Mon, 27 Jan 2020 06:30:41 -0800 (PST)
+        bh=Ou0kDYuq5RJq3J5tI4/vM3gS4N0SdYFivJXJ6M6m160=;
+        b=EglgvLtmbVr6OhMmYdNpCO7DUkHajTCWhsr/E0lyW22VDnFj0rueaeOY39QhPibCrR
+         2DguwD4gOGLTGFiRObKPhHY6j/NrX21vsNFBZ7r+bbJSqO635etTwVDhKNiHAdkIq85J
+         5L0s4zMz03Slnn3/nXS5fLoCNtJlrFIckBeUghMQER6KiWDVoK7ndxb9VUHLQKGz3dbt
+         2sxz/EKI9JCLaASMjBmjWBzdrh7uSTq8sBIiGtLQrCH23x0wPmrg4VCbeIYUqaRrs8lP
+         OER+jFPHFqiVbpkQoz4LNgAYN6BdByp6bBLnuZSYHhpbvgYEDLH5c7CtwM7Dql5Bj1o2
+         j1zw==
+X-Gm-Message-State: APjAAAXYy9BraPKAVDnTrCvAXd6aOMg+GKCDQPtaGYqgtpLzWpuqJk4H
+        GdQfPnZTyRA37P5I2tJP8vw=
+X-Google-Smtp-Source: APXvYqxcurYBFfp95Ut9cKBAYNJ+z0dgRlE+5ld11S39ngcCkaUzu4WdZyos+lncbGXQh3GgiPYJ8w==
+X-Received: by 2002:a62:3846:: with SMTP id f67mr1467610pfa.29.1580135451360;
+        Mon, 27 Jan 2020 06:30:51 -0800 (PST)
 Received: from localhost.localdomain ([180.70.143.152])
-        by smtp.gmail.com with ESMTPSA id v25sm2059441pfe.147.2020.01.27.06.30.38
+        by smtp.gmail.com with ESMTPSA id s124sm7483611pfc.57.2020.01.27.06.30.49
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 27 Jan 2020 06:30:40 -0800 (PST)
+        Mon, 27 Jan 2020 06:30:50 -0800 (PST)
 From:   Taehee Yoo <ap420073@gmail.com>
 To:     davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org
 Cc:     ap420073@gmail.com
-Subject: [PATCH net v2 3/6] netdevsim: fix stack-out-of-bounds in nsim_dev_debugfs_init()
-Date:   Mon, 27 Jan 2020 14:30:34 +0000
-Message-Id: <20200127143034.1367-1-ap420073@gmail.com>
+Subject: [PATCH net v2 4/6] netdevsim: use IS_ERR instead of IS_ERR_OR_NULL for debugfs
+Date:   Mon, 27 Jan 2020 14:30:44 +0000
+Message-Id: <20200127143044.1468-1-ap420073@gmail.com>
 X-Mailer: git-send-email 2.17.1
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-When netdevsim dev is being created, a debugfs directory is created.
-The variable "dev_ddir_name" is 16bytes device name pointer and device
-name is "netdevsim<dev id>".
-The maximum dev id length is 10.
-So, 16bytes for device name isn't enough.
+Debugfs APIs return valid pointer or error pointer. it doesn't return NULL.
+So, using IS_ERR is enough, not using IS_ERR_OR_NULL.
 
-Test commands:
-    modprobe netdevsim
-    echo "1000000000 0" > /sys/bus/netdevsim/new_device
-
-Splat looks like:
-[  362.229174][  T889] BUG: KASAN: stack-out-of-bounds in number+0x824/0x880
-[  362.230221][  T889] Write of size 1 at addr ffff8880c1def988 by task bash/889
-[  362.231541][  T889]
-[  362.232116][  T889] CPU: 2 PID: 889 Comm: bash Not tainted 5.5.0-rc6+ #318
-[  362.233233][  T889] Hardware name: innotek GmbH VirtualBox/VirtualBox, BIOS VirtualBox 12/01/2006
-[  362.237316][  T889] Call Trace:
-[  362.237790][  T889]  dump_stack+0x96/0xdb
-[  362.238471][  T889]  ? number+0x824/0x880
-[  362.239137][  T889]  print_address_description.constprop.5+0x1be/0x360
-[  362.240166][  T889]  ? number+0x824/0x880
-[  362.240782][  T889]  ? number+0x824/0x880
-[  362.254907][  T889]  __kasan_report+0x12a/0x16f
-[  362.276693][  T889]  ? number+0x824/0x880
-[  362.284345][  T889]  kasan_report+0xe/0x20
-[  362.291523][  T889]  number+0x824/0x880
-[  362.305981][  T889]  ? put_dec+0xa0/0xa0
-[  362.306583][  T889]  ? rcu_read_lock_sched_held+0x90/0xc0
-[  362.307779][  T889]  vsnprintf+0x63c/0x10b0
-[  362.308440][  T889]  ? pointer+0x5b0/0x5b0
-[  362.309068][  T889]  ? mark_lock+0x11d/0xc40
-[  362.309740][  T889]  sprintf+0x9b/0xd0
-[  362.327152][  T889]  ? scnprintf+0xe0/0xe0
-[  362.327888][  T889]  nsim_dev_probe+0x63c/0xbf0 [netdevsim]
-[  362.328882][  T889]  ? kernfs_next_descendant_post+0x11d/0x250
-[  362.331521][  T889]  ? nsim_dev_reload_up+0x500/0x500 [netdevsim]
-[  362.333054][  T889]  ? kernfs_add_one+0x2c6/0x410
-[  362.334145][  T889]  ? kernfs_get.part.12+0x4c/0x60
-[  362.335181][  T889]  ? kernfs_put+0x29/0x4b0
-[  362.335814][  T889]  ? kernfs_create_link+0x170/0x230
-[  362.336600][  T889]  ? sysfs_do_create_link_sd.isra.2+0x87/0xf0
-[  362.338118][  T889]  really_probe+0x4b2/0xb50
-[  362.338789][  T889]  ? driver_allows_async_probing+0x110/0x110
-[  362.340055][  T889]  driver_probe_device+0x24d/0x370
-[  362.349864][  T889]  ? __device_attach_driver+0xae/0x210
-[  362.364057][  T889]  ? driver_allows_async_probing+0x110/0x110
-[  362.367598][  T889]  bus_for_each_drv+0x10f/0x190
-[  362.371583][  T889]  ? bus_rescan_devices+0x20/0x20
-[  362.372524][  T889]  ? mutex_lock_io_nested+0x1380/0x1380
-[  362.374546][  T889]  __device_attach+0x1b1/0x2d0
-[  362.376621][  T889]  ? device_bind_driver+0xa0/0xa0
-[  362.378889][  T889]  ? wait_for_completion+0x390/0x390
-[  362.379727][  T889]  bus_probe_device+0x1a7/0x250
-[  362.380635][  T889]  device_add+0x1101/0x1900
-[  362.381590][  T889]  ? memset+0x1f/0x40
-[  362.382409][  T889]  ? lockdep_init_map+0x10c/0x630
-[  362.383701][  T889]  ? device_link_remove+0x120/0x120
-[  362.386953][  T889]  ? lockdep_init_map+0x10c/0x630
-[  362.387656][  T889]  ? __init_waitqueue_head+0x3a/0x90
-[  362.388868][  T889]  new_device_store+0x277/0x4c0 [netdevsim]
-[  362.389822][  T889]  ? del_port_store+0x160/0x160 [netdevsim]
-[ ... ]
-
-Fixes: ab1d0cc004d7 ("netdevsim: change debugfs tree topology")
+Reported-by: kbuild test robot <lkp@intel.com>
+Reported-by: Dan Carpenter <dan.carpenter@oracle.com>
 Signed-off-by: Taehee Yoo <ap420073@gmail.com>
 ---
 
 v1 -> v2:
- - Update Fixes tag
- - Do not use arbitary 32 bytes for dev_ddir_name
+ - Fix use-after-free
 
- drivers/net/netdevsim/dev.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/net/netdevsim/bpf.c    | 10 ++++++----
+ drivers/net/netdevsim/dev.c    | 16 ++++++++--------
+ drivers/net/netdevsim/health.c |  4 ++--
+ 3 files changed, 16 insertions(+), 14 deletions(-)
 
+diff --git a/drivers/net/netdevsim/bpf.c b/drivers/net/netdevsim/bpf.c
+index 2b74425822ab..0b362b8dac17 100644
+--- a/drivers/net/netdevsim/bpf.c
++++ b/drivers/net/netdevsim/bpf.c
+@@ -218,6 +218,7 @@ static int nsim_bpf_create_prog(struct nsim_dev *nsim_dev,
+ {
+ 	struct nsim_bpf_bound_prog *state;
+ 	char name[16];
++	int ret;
+ 
+ 	state = kzalloc(sizeof(*state), GFP_KERNEL);
+ 	if (!state)
+@@ -230,9 +231,10 @@ static int nsim_bpf_create_prog(struct nsim_dev *nsim_dev,
+ 	/* Program id is not populated yet when we create the state. */
+ 	sprintf(name, "%u", nsim_dev->prog_id_gen++);
+ 	state->ddir = debugfs_create_dir(name, nsim_dev->ddir_bpf_bound_progs);
+-	if (IS_ERR_OR_NULL(state->ddir)) {
++	if (IS_ERR(state->ddir)) {
++		ret = PTR_ERR(state->ddir);
+ 		kfree(state);
+-		return -ENOMEM;
++		return ret;
+ 	}
+ 
+ 	debugfs_create_u32("id", 0400, state->ddir, &prog->aux->id);
+@@ -587,8 +589,8 @@ int nsim_bpf_dev_init(struct nsim_dev *nsim_dev)
+ 
+ 	nsim_dev->ddir_bpf_bound_progs = debugfs_create_dir("bpf_bound_progs",
+ 							    nsim_dev->ddir);
+-	if (IS_ERR_OR_NULL(nsim_dev->ddir_bpf_bound_progs))
+-		return -ENOMEM;
++	if (IS_ERR(nsim_dev->ddir_bpf_bound_progs))
++		return PTR_ERR(nsim_dev->ddir_bpf_bound_progs);
+ 
+ 	nsim_dev->bpf_dev = bpf_offload_dev_create(&nsim_bpf_dev_ops, nsim_dev);
+ 	err = PTR_ERR_OR_ZERO(nsim_dev->bpf_dev);
 diff --git a/drivers/net/netdevsim/dev.c b/drivers/net/netdevsim/dev.c
-index 0dfaf999e8db..2c23b232926b 100644
+index 2c23b232926b..955da8da72db 100644
 --- a/drivers/net/netdevsim/dev.c
 +++ b/drivers/net/netdevsim/dev.c
-@@ -87,7 +87,7 @@ static const struct file_operations nsim_dev_take_snapshot_fops = {
- 
- static int nsim_dev_debugfs_init(struct nsim_dev *nsim_dev)
- {
--	char dev_ddir_name[16];
-+	char dev_ddir_name[sizeof(DRV_NAME) + 10];
+@@ -91,11 +91,11 @@ static int nsim_dev_debugfs_init(struct nsim_dev *nsim_dev)
  
  	sprintf(dev_ddir_name, DRV_NAME "%u", nsim_dev->nsim_bus_dev->dev.id);
  	nsim_dev->ddir = debugfs_create_dir(dev_ddir_name, nsim_dev_ddir);
+-	if (IS_ERR_OR_NULL(nsim_dev->ddir))
+-		return PTR_ERR_OR_ZERO(nsim_dev->ddir) ?: -EINVAL;
++	if (IS_ERR(nsim_dev->ddir))
++		return PTR_ERR(nsim_dev->ddir);
+ 	nsim_dev->ports_ddir = debugfs_create_dir("ports", nsim_dev->ddir);
+-	if (IS_ERR_OR_NULL(nsim_dev->ports_ddir))
+-		return PTR_ERR_OR_ZERO(nsim_dev->ports_ddir) ?: -EINVAL;
++	if (IS_ERR(nsim_dev->ports_ddir))
++		return PTR_ERR(nsim_dev->ports_ddir);
+ 	debugfs_create_bool("fw_update_status", 0600, nsim_dev->ddir,
+ 			    &nsim_dev->fw_update_status);
+ 	debugfs_create_u32("max_macs", 0600, nsim_dev->ddir,
+@@ -126,8 +126,8 @@ static int nsim_dev_port_debugfs_init(struct nsim_dev *nsim_dev,
+ 	sprintf(port_ddir_name, "%u", nsim_dev_port->port_index);
+ 	nsim_dev_port->ddir = debugfs_create_dir(port_ddir_name,
+ 						 nsim_dev->ports_ddir);
+-	if (IS_ERR_OR_NULL(nsim_dev_port->ddir))
+-		return -ENOMEM;
++	if (IS_ERR(nsim_dev_port->ddir))
++		return PTR_ERR(nsim_dev_port->ddir);
+ 
+ 	sprintf(dev_link_name, "../../../" DRV_NAME "%u",
+ 		nsim_dev->nsim_bus_dev->dev.id);
+@@ -939,8 +939,8 @@ int nsim_dev_port_del(struct nsim_bus_dev *nsim_bus_dev,
+ int nsim_dev_init(void)
+ {
+ 	nsim_dev_ddir = debugfs_create_dir(DRV_NAME, NULL);
+-	if (IS_ERR_OR_NULL(nsim_dev_ddir))
+-		return -ENOMEM;
++	if (IS_ERR(nsim_dev_ddir))
++		return PTR_ERR(nsim_dev_ddir);
+ 	return 0;
+ }
+ 
+diff --git a/drivers/net/netdevsim/health.c b/drivers/net/netdevsim/health.c
+index 9aa637d162eb..30595b1299bd 100644
+--- a/drivers/net/netdevsim/health.c
++++ b/drivers/net/netdevsim/health.c
+@@ -285,8 +285,8 @@ int nsim_dev_health_init(struct nsim_dev *nsim_dev, struct devlink *devlink)
+ 	}
+ 
+ 	health->ddir = debugfs_create_dir("health", nsim_dev->ddir);
+-	if (IS_ERR_OR_NULL(health->ddir)) {
+-		err = PTR_ERR_OR_ZERO(health->ddir) ?: -EINVAL;
++	if (IS_ERR(health->ddir)) {
++		err = PTR_ERR(health->ddir);
+ 		goto err_dummy_reporter_destroy;
+ 	}
+ 
 -- 
 2.17.1
 
