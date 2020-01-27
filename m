@@ -2,149 +2,160 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id DB18D14A47E
-	for <lists+netdev@lfdr.de>; Mon, 27 Jan 2020 14:06:25 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id CD2D514A482
+	for <lists+netdev@lfdr.de>; Mon, 27 Jan 2020 14:06:35 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728783AbgA0NGY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 27 Jan 2020 08:06:24 -0500
-Received: from mail-wr1-f68.google.com ([209.85.221.68]:36600 "EHLO
-        mail-wr1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728420AbgA0NGY (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 27 Jan 2020 08:06:24 -0500
-Received: by mail-wr1-f68.google.com with SMTP id z3so11210291wru.3
-        for <netdev@vger.kernel.org>; Mon, 27 Jan 2020 05:06:23 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=kS7yJhlVUOfNREbSaSDouqwpe3+jD6p/BLbIeIOS2VE=;
-        b=RybaYdy++25ntY5q98FbGEZXDZXGRPrlEZxwlXhvZSAb5TpkL+pQC63Tp2+9LJE7wQ
-         IIjrTtRz9jTRnZG+RvCq81rB+neTbtmKJAiEx8yt94/aAKGRKL5F+UwVuo8v0h2LPGpQ
-         m73JZkyPhqCm/N3A5DA4WVy9W3f1qBRcGfex5B5ZczUpaizHbC5+KrH4Fz7rieZ5wP5q
-         y/4OuB6WQPY+1Mu7sZ98NDg4JEYHAqfdq7x1JfMU7iRvFAESeC7KixzuPGcnx02qpsBO
-         WzNnEEpdsayNOPJyKUaXB+IMVh8CJxVgotQgyrRnINgMrP+nfUHI+PH/gSBUiIOU6bll
-         Rq6A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=kS7yJhlVUOfNREbSaSDouqwpe3+jD6p/BLbIeIOS2VE=;
-        b=HgpX7j8qNj808wFb3jweCxLVcxZtjzSwYO0sYJ0afVJDVQz468K0mKinwFS8r4q2ta
-         ZSvpJBTVP7MDQlU+T29VUX7v8C+KLSOlVWUil0V72q3CMEsta/l1JNBgrzU748blrZwc
-         IaVPAY5wUS2GcoZ4UN5ND33ImGRbUBs4tf5+Mp4wNeKuoKV/YLhiCWLOCxmJK1CNYy/7
-         sISg2dUdA3HVhzknoGb7bwm4ZpE5c+h+40fhhMq1dAz7ydwIPlhzMOhdZn0cTyP/dA+0
-         r39heKrZWO4hFFgXLlA3TjbmSP2uoZt2F/5cHgm+xyq8K7qEXoXOnKPB6rm8RM1nd58b
-         J7FA==
-X-Gm-Message-State: APjAAAViknF2BfI65mSVkUXjMOs4cqBtql5oodUdkpq4L4sCaGFGeKbH
-        dMr3AMJffI13XTPkqzXT19a/bvJQhoeq5np2WQ0=
-X-Google-Smtp-Source: APXvYqz3+uYn2ZbgxPWjz48Sj+KFcoSgvRNrSnszDBa7eEknvQVvKFePYoc7KoDGOred3hduD/+vX0AwmIwZzfbwrOg=
-X-Received: by 2002:a5d:540f:: with SMTP id g15mr20755500wrv.86.1580130382827;
- Mon, 27 Jan 2020 05:06:22 -0800 (PST)
+        id S1726590AbgA0NGa (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 27 Jan 2020 08:06:30 -0500
+Received: from www62.your-server.de ([213.133.104.62]:38164 "EHLO
+        www62.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728843AbgA0NG1 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 27 Jan 2020 08:06:27 -0500
+Received: from [2001:1620:665:0:5795:5b0a:e5d5:5944] (helo=localhost)
+        by www62.your-server.de with esmtpsa (TLSv1.2:DHE-RSA-AES256-GCM-SHA384:256)
+        (Exim 4.89_1)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1iw45r-0003XN-FD; Mon, 27 Jan 2020 14:06:19 +0100
+From:   Daniel Borkmann <daniel@iogearbox.net>
+To:     davem@davemloft.net
+Cc:     jakub.kicinski@netronome.com, daniel@iogearbox.net, ast@kernel.org,
+        netdev@vger.kernel.org, bpf@vger.kernel.org
+Subject: pull-request: bpf-next 2020-01-27
+Date:   Mon, 27 Jan 2020 14:06:18 +0100
+Message-Id: <20200127130618.24926-1-daniel@iogearbox.net>
+X-Mailer: git-send-email 2.21.0
 MIME-Version: 1.0
-References: <1579887955-22172-5-git-send-email-sunil.kovvuri@gmail.com>
- <20200126.120059.1968749784775179465.davem@davemloft.net> <CA+sq2CcQk47hZ9tue1-yjGmUFF7RONfG47c2T77SRU5t8ovpVg@mail.gmail.com>
- <20200126.205455.1082696737843782760.davem@davemloft.net>
-In-Reply-To: <20200126.205455.1082696737843782760.davem@davemloft.net>
-From:   Sunil Kovvuri <sunil.kovvuri@gmail.com>
-Date:   Mon, 27 Jan 2020 18:36:10 +0530
-Message-ID: <CA+sq2CeiNdS-d-wpYhBaxD4CiVfx5AbyYM_a+Obpod7woYGzpg@mail.gmail.com>
-Subject: Re: [PATCH v5 04/17] octeontx2-pf: Initialize and config queues
-To:     David Miller <davem@davemloft.net>
-Cc:     Linux Netdev List <netdev@vger.kernel.org>,
-        Jakub Kicinski <kubakici@wp.pl>,
-        Michal Kubecek <mkubecek@suse.cz>,
-        Maciej Fijalkowski <maciej.fijalkowski@intel.com>,
-        Sunil Goutham <sgoutham@marvell.com>,
-        Geetha sowjanya <gakula@marvell.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+X-Authenticated-Sender: daniel@iogearbox.net
+X-Virus-Scanned: Clear (ClamAV 0.101.4/25708/Mon Jan 27 12:37:29 2020)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Jan 27, 2020 at 1:25 AM David Miller <davem@davemloft.net> wrote:
->
-> From: Sunil Kovvuri <sunil.kovvuri@gmail.com>
-> Date: Sun, 26 Jan 2020 23:30:04 +0530
->
-> > On Sun, Jan 26, 2020 at 4:31 PM David Miller <davem@davemloft.net> wrote:
-> >>
-> >> From: sunil.kovvuri@gmail.com
-> >> Date: Fri, 24 Jan 2020 23:15:42 +0530
-> >>
-> >> > @@ -184,6 +192,72 @@ static inline void otx2_mbox_unlock(struct mbox *mbox)
-> >> >       mutex_unlock(&mbox->lock);
-> >> >  }
-> >> >
-> >> > +/* With the absence of API for 128-bit IO memory access for arm64,
-> >> > + * implement required operations at place.
-> >> > + */
-> >> > +#if defined(CONFIG_ARM64)
-> >> > +static inline void otx2_write128(u64 lo, u64 hi, void __iomem *addr)
-> >> > +{
-> >> > +     __asm__ volatile("stp %x[x0], %x[x1], [%x[p1],#0]!"
-> >> > +                      ::[x0]"r"(lo), [x1]"r"(hi), [p1]"r"(addr));
-> >> > +}
-> >> > +
-> >> > +static inline u64 otx2_atomic64_add(u64 incr, u64 *ptr)
-> >> > +{
-> >> > +     u64 result;
-> >> > +
-> >> > +     __asm__ volatile(".cpu   generic+lse\n"
-> >> > +                      "ldadd %x[i], %x[r], [%[b]]"
-> >> > +                      : [r]"=r"(result), "+m"(*ptr)
-> >> > +                      : [i]"r"(incr), [b]"r"(ptr)
-> >> > +                      : "memory");
-> >> > +     return result;
-> >> > +}
-> >> > +
-> >> > +#else
-> >> > +#define otx2_write128(lo, hi, addr)
-> >> > +#define otx2_atomic64_add(incr, ptr)         ({ *ptr = incr; })
-> >> > +#endif
-> >>
-> >> So what exactly is going on here?  Are these true 128-bit writes
-> >> and atomic operations?  Why is it named atomic64 then?  Why can't
-> >> the normal atomic64 kernel interfaces be used?
-> >
-> > otx2_write128() is used to free receive buffer pointers into buffer pool.
-> > It's a register write, which works like,
-> > "A 128-bit write (STP) to NPA_LF_AURA_OP_FREE0 and
-> > NPA_LF_AURA_OP_FREE1 frees a pointer into a given pool. All other
-> > accesses to these registers (e.g. reads and 64-bit writes) are RAZ/WI."
-> >
-> > Wrt otx2_atomic64_add(), registers for reading IRQ status, queue stats etc
-> > works only with 64-bit atomic load-and-add instructions. The nornal
-> > atomic64 kernel
-> > interface for ARM64 which supports 'ldadd' instruction needs
-> > CONFIG_ARM64_LSE_ATOMICS
-> > to be enabled. LSE (Large system extensions) is a CPU feature which is supported
-> > by silicons which implement ARMv8.1 and later version of instruction set.
-> >
-> > To support kernel with and without LSE_ATOMICS config enabled, here we are
-> > passing "cpu   generic+lse" to the compiler. This is also done to avoid making
-> > ARM64 and ARM64_LSE_ATOMICS hard dependency for driver compilation.
-> >
-> >>
-> >> Finally why is the #else case doing an assignment to *ptr rather
-> >> than an increment like "*ptr += incr;"?
-> >
-> > This device is a on-chip network controller which is a ARM64 based.
-> > Previously when i submitted driver with ARM64 dependency i was advised
-> > to allow this driver to be built for other architectures as well for
-> > static analysis
-> > reports etc.
-> > https://www.spinics.net/lists/linux-soc/msg05847.html
-> >
-> > Hence added a dummy 'otx2_atomic64_add' just for compilation purposes.
-> > Please ignore the definition.
->
-> But it doesn't add, it assigns.  That's the point of my question.
->
-> If you are going to provide a fallback, at least make it semantically
-> correct.
+Hi David,
 
-Okay, will fix and resubmit.
+The following pull-request contains BPF updates for your *net-next* tree.
 
-Thanks,
-Sunil.
+We've added 20 non-merge commits during the last 5 day(s) which contain
+a total of 24 files changed, 433 insertions(+), 104 deletions(-).
+
+The main changes are:
+
+1) Make BPF trampolines and dispatcher aware for the stack unwinder, from Jiri Olsa.
+
+2) Improve handling of failed CO-RE relocations in libbpf, from Andrii Nakryiko.
+
+3) Several fixes to BPF sockmap and reuseport selftests, from Lorenz Bauer.
+
+4) Various cleanups in BPF devmap's XDP flush code, from John Fastabend.
+
+5) Fix BPF flow dissector when used with port ranges, from Yoshiki Komachi.
+
+6) Fix bpffs' map_seq_next callback to always inc position index, from Vasily Averin.
+
+7) Allow overriding LLVM tooling for runqslower utility, from Andrey Ignatov.
+
+8) Silence false-positive lockdep splats in devmap hash lookup, from Amol Grover.
+
+9) Fix fentry/fexit selftests to initialize a variable before use, from John Sperbeck.
+
+Please consider pulling these changes from:
+
+  git://git.kernel.org/pub/scm/linux/kernel/git/bpf/bpf-next.git
+
+Thanks a lot!
+
+Also thanks to reporters, reviewers and testers of commits in this pull-request:
+
+Andrii Nakryiko, Björn Töpel, Jakub Sitnicki, Jesper Dangaard Brouer, 
+John Fastabend, Martin KaFai Lau, Petar Penkov, Song Liu, Toke 
+Høiland-Jørgensen, William Smith, Yonghong Song
+
+----------------------------------------------------------------
+
+The following changes since commit fd786fb1d2cad70b9aaba8c73872cbf63262bd58:
+
+  net: convert suitable drivers to use phy_do_ioctl_running (2020-01-23 10:49:30 +0100)
+
+are available in the Git repository at:
+
+  git://git.kernel.org/pub/scm/linux/kernel/git/bpf/bpf-next.git 
+
+for you to fetch changes up to 82650dab9a5a2928c8d982cce5e3c687f14f8716:
+
+  Merge branch 'bpf-flow-dissector-fix-port-ranges' (2020-01-27 11:25:12 +0100)
+
+----------------------------------------------------------------
+Alexei Starovoitov (1):
+      Merge branch 'trampoline-fixes'
+
+Amol Grover (1):
+      bpf, devmap: Pass lockdep expression to RCU lists
+
+Andrey Ignatov (1):
+      tools/bpf: Allow overriding llvm tools for runqslower
+
+Andrii Nakryiko (4):
+      selftests/bpf: Improve bpftool changes detection
+      bpftool: Print function linkage in BTF dump
+      libbpf: Improve handling of failed CO-RE relocations
+      libbpf: Fix realloc usage in bpf_core_find_cands
+
+Daniel Borkmann (1):
+      Merge branch 'bpf-flow-dissector-fix-port-ranges'
+
+Jiri Olsa (3):
+      bpf: Allow BTF ctx access for string pointers
+      bpf: Allow to resolve bpf trampoline and dispatcher in unwind
+      selftest/bpf: Add test for allowed trampolines count
+
+John Fastabend (3):
+      bpf, xdp: Update devmap comments to reflect napi/rcu usage
+      bpf, xdp: virtio_net use access ptr macro for xdp enable check
+      bpf, xdp: Remove no longer required rcu_read_{un}lock()
+
+John Sperbeck (1):
+      selftests/bpf: Initialize duration variable before using
+
+Lorenz Bauer (4):
+      selftests: bpf: Use a temporary file in test_sockmap
+      selftests: bpf: Ignore FIN packets for reuseport tests
+      selftests: bpf: Make reuseport test output more legible
+      selftests: bpf: Reset global state between reuseport test runs
+
+Vasily Averin (1):
+      bpf: map_seq_next should always increase position index
+
+Yoshiki Komachi (2):
+      flow_dissector: Fix to use new variables for port ranges in bpf hook
+      selftests/bpf: Add test based on port range for BPF flow dissector
+
+ drivers/net/veth.c                                 |   6 +-
+ drivers/net/virtio_net.c                           |   2 +-
+ include/linux/bpf.h                                |  12 ++-
+ kernel/bpf/btf.c                                   |  16 +++
+ kernel/bpf/devmap.c                                |  29 +++---
+ kernel/bpf/dispatcher.c                            |   4 +-
+ kernel/bpf/inode.c                                 |   3 +-
+ kernel/bpf/trampoline.c                            |  80 +++++++++++++--
+ kernel/extable.c                                   |   7 +-
+ net/core/flow_dissector.c                          |  11 +-
+ tools/bpf/bpftool/btf.c                            |  27 ++++-
+ tools/bpf/runqslower/Makefile                      |   6 +-
+ tools/lib/bpf/libbpf.c                             |  99 ++++++++++--------
+ tools/lib/bpf/libbpf.h                             |   6 +-
+ tools/testing/selftests/bpf/Makefile               |  11 +-
+ .../testing/selftests/bpf/prog_tests/fentry_test.c |   2 +-
+ .../selftests/bpf/prog_tests/fexit_bpf2bpf.c       |   2 +-
+ .../testing/selftests/bpf/prog_tests/fexit_test.c  |   2 +-
+ .../selftests/bpf/prog_tests/select_reuseport.c    |  44 ++++++--
+ .../selftests/bpf/prog_tests/trampoline_count.c    | 112 +++++++++++++++++++++
+ .../bpf/progs/test_select_reuseport_kern.c         |   6 ++
+ .../selftests/bpf/progs/test_trampoline_count.c    |  21 ++++
+ tools/testing/selftests/bpf/test_flow_dissector.sh |  14 +++
+ tools/testing/selftests/bpf/test_sockmap.c         |  15 +--
+ 24 files changed, 433 insertions(+), 104 deletions(-)
+ create mode 100644 tools/testing/selftests/bpf/prog_tests/trampoline_count.c
+ create mode 100644 tools/testing/selftests/bpf/progs/test_trampoline_count.c
