@@ -2,158 +2,99 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 4BDCC14B90F
-	for <lists+netdev@lfdr.de>; Tue, 28 Jan 2020 15:33:05 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 13C7314BAC8
+	for <lists+netdev@lfdr.de>; Tue, 28 Jan 2020 15:41:16 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732725AbgA1O01 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 28 Jan 2020 09:26:27 -0500
-Received: from mail.kernel.org ([198.145.29.99]:53836 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726989AbgA1O00 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 28 Jan 2020 09:26:26 -0500
-Received: from localhost (83-86-89-107.cable.dynamic.v4.ziggo.nl [83.86.89.107])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        id S1729832AbgA1OOV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 28 Jan 2020 09:14:21 -0500
+Received: from us-smtp-1.mimecast.com ([207.211.31.81]:53800 "EHLO
+        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1727457AbgA1OOU (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 28 Jan 2020 09:14:20 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1580220859;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=1TT+QoDrDwn4Has4Pl8Zj6cAkxwn/5nCKkHuYuA4YJw=;
+        b=ie63clTFg4g+h4t1H2bSCW3GaG0nSonyeiEgAQrtJfHgodgNeMSGY3g088F8edMlPDkBQB
+        rGGrP71xSICRx/QS5hr+SskeOGzfUgCbalxeBcjtD+q9JiU4IvicnEuhSvO5jR9yWnTQ9g
+        MTlECjljCKC71TcrStsvih2FK06VHns=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-361-fe3j9RyFPd6_wlhX5NO4vA-1; Tue, 28 Jan 2020 09:14:01 -0500
+X-MC-Unique: fe3j9RyFPd6_wlhX5NO4vA-1
+Received: from smtp.corp.redhat.com (int-mx01.intmail.prod.int.phx2.redhat.com [10.5.11.11])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id D273C207FD;
-        Tue, 28 Jan 2020 14:26:24 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1580221585;
-        bh=4YVSFGvrEhTYt7QF1aKqFLgF6yffFb0U7rnqeQu6t7U=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=m7VUTOVSjsm5Yo3s8k4sA0L6XMOOeBhw7SyDgNUKYxAJOya8mL1ohRwIXq1plYKIY
-         KDIaaxE/CmfL6qmonqy3FcufdxNtA7zVLjuitk9/abILv6R7woeax1ucX1j8Iz4awr
-         qfG5xZ5IBw+R0NSMW/ko8kGicaoF2bB8Fx5fMIfc=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        syzbot+017e491ae13c0068598a@syzkaller.appspotmail.com,
-        Richard Palethorpe <rpalethorpe@suse.com>,
-        Wolfgang Grandegger <wg@grandegger.com>,
-        Marc Kleine-Budde <mkl@pengutronix.de>,
-        "David S. Miller" <davem@davemloft.net>,
-        Tyler Hall <tylerwhall@gmail.com>, linux-can@vger.kernel.org,
-        netdev@vger.kernel.org, syzkaller@googlegroups.com
-Subject: [PATCH 4.19 01/92] can, slip: Protect tty->disc_data in write_wakeup and close with RCU
-Date:   Tue, 28 Jan 2020 15:07:29 +0100
-Message-Id: <20200128135809.516072484@linuxfoundation.org>
-X-Mailer: git-send-email 2.25.0
-In-Reply-To: <20200128135809.344954797@linuxfoundation.org>
-References: <20200128135809.344954797@linuxfoundation.org>
-User-Agent: quilt/0.66
-X-stable: review
-X-Patchwork-Hint: ignore
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id C1F6280568F;
+        Tue, 28 Jan 2020 14:13:57 +0000 (UTC)
+Received: from carbon (ovpn-200-56.brq.redhat.com [10.40.200.56])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 6465284BAF;
+        Tue, 28 Jan 2020 14:13:47 +0000 (UTC)
+Date:   Tue, 28 Jan 2020 15:13:43 +0100
+From:   Jesper Dangaard Brouer <jbrouer@redhat.com>
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     David Ahern <dsahern@gmail.com>,
+        Toke =?UTF-8?B?SMO4aWxhbmQtSsO4cmdl?= =?UTF-8?B?bnNlbg==?= 
+        <toke@redhat.com>, David Ahern <dsahern@kernel.org>,
+        netdev@vger.kernel.org, prashantbhole.linux@gmail.com,
+        jasowang@redhat.com, davem@davemloft.net, mst@redhat.com,
+        toshiaki.makita1@gmail.com, daniel@iogearbox.net,
+        john.fastabend@gmail.com, ast@kernel.org, kafai@fb.com,
+        songliubraving@fb.com, yhs@fb.com, andriin@fb.com,
+        David Ahern <dahern@digitalocean.com>
+Subject: Re: [PATCH bpf-next 03/12] net: Add IFLA_XDP_EGRESS for XDP
+ programs in the egress path
+Message-ID: <20200128151343.28c1537d@carbon>
+In-Reply-To: <20200126141701.3f27b03c@cakuba>
+References: <20200123014210.38412-1-dsahern@kernel.org>
+        <20200123014210.38412-4-dsahern@kernel.org>
+        <87tv4m9zio.fsf@toke.dk>
+        <335b624a-655a-c0c6-ca27-102e6dac790b@gmail.com>
+        <20200124072128.4fcb4bd1@cakuba>
+        <87o8usg92d.fsf@toke.dk>
+        <1d84d8be-6812-d63a-97ca-ebc68cc266b9@gmail.com>
+        <20200126134933.2514b2ab@carbon>
+        <20200126141701.3f27b03c@cakuba>
+Organization: Red Hat Inc.
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.11
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Richard Palethorpe <rpalethorpe@suse.com>
+On Sun, 26 Jan 2020 14:17:01 -0800
+Jakub Kicinski <kuba@kernel.org> wrote:
 
-[ Upstream commit 0ace17d56824165c7f4c68785d6b58971db954dd ]
+> On Sun, 26 Jan 2020 13:49:33 +0100, Jesper Dangaard Brouer wrote:
+> > Yes, please. I want this NIC TX hook to see both SKBs and xdp_frames.  
+> 
+> Any pointers on what for? Unless we see actual use cases there's
+> a justifiable concern of the entire thing just being an application of
+> "We can solve any problem by introducing an extra level of indirection."
 
-write_wakeup can happen in parallel with close/hangup where tty->disc_data
-is set to NULL and the netdevice is freed thus also freeing
-disc_data. write_wakeup accesses disc_data so we must prevent close from
-freeing the netdev while write_wakeup has a non-NULL view of
-tty->disc_data.
+I have two use-cases:
 
-We also need to make sure that accesses to disc_data are atomic. Which can
-all be done with RCU.
+(1) For XDP easier handling of interface specific setting on egress,
+e.g. pushing a VLAN-id, instead of having to figure this out in RX hook.
+(I think this is also David Ahern's use-case)
 
-This problem was found by Syzkaller on SLCAN, but the same issue is
-reproducible with the SLIP line discipline using an LTP test based on the
-Syzkaller reproducer.
 
-A fix which didn't use RCU was posted by Hillf Danton.
+(2) I want this egress XDP hook to have the ability to signal
+backpressure. Today we have BQL in most drivers (which is essential to
+avoid bufferbloat). For XDP_REDIRECT we don't, which we must solve.
 
-Fixes: 661f7fda21b1 ("slip: Fix deadlock in write_wakeup")
-Fixes: a8e83b17536a ("slcan: Port write_wakeup deadlock fix from slip")
-Reported-by: syzbot+017e491ae13c0068598a@syzkaller.appspotmail.com
-Signed-off-by: Richard Palethorpe <rpalethorpe@suse.com>
-Cc: Wolfgang Grandegger <wg@grandegger.com>
-Cc: Marc Kleine-Budde <mkl@pengutronix.de>
-Cc: "David S. Miller" <davem@davemloft.net>
-Cc: Tyler Hall <tylerwhall@gmail.com>
-Cc: linux-can@vger.kernel.org
-Cc: netdev@vger.kernel.org
-Cc: linux-kernel@vger.kernel.org
-Cc: syzkaller@googlegroups.com
-Signed-off-by: David S. Miller <davem@davemloft.net>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
----
- drivers/net/can/slcan.c |   12 ++++++++++--
- drivers/net/slip/slip.c |   12 ++++++++++--
- 2 files changed, 20 insertions(+), 4 deletions(-)
+For use-case(2), we likely need a BPF-helper calling netif_tx_stop_queue(),
+or a return code that can stop the queue towards the higher layers.
 
---- a/drivers/net/can/slcan.c
-+++ b/drivers/net/can/slcan.c
-@@ -343,9 +343,16 @@ static void slcan_transmit(struct work_s
-  */
- static void slcan_write_wakeup(struct tty_struct *tty)
- {
--	struct slcan *sl = tty->disc_data;
-+	struct slcan *sl;
-+
-+	rcu_read_lock();
-+	sl = rcu_dereference(tty->disc_data);
-+	if (!sl)
-+		goto out;
- 
- 	schedule_work(&sl->tx_work);
-+out:
-+	rcu_read_unlock();
- }
- 
- /* Send a can_frame to a TTY queue. */
-@@ -640,10 +647,11 @@ static void slcan_close(struct tty_struc
- 		return;
- 
- 	spin_lock_bh(&sl->lock);
--	tty->disc_data = NULL;
-+	rcu_assign_pointer(tty->disc_data, NULL);
- 	sl->tty = NULL;
- 	spin_unlock_bh(&sl->lock);
- 
-+	synchronize_rcu();
- 	flush_work(&sl->tx_work);
- 
- 	/* Flush network side */
---- a/drivers/net/slip/slip.c
-+++ b/drivers/net/slip/slip.c
-@@ -452,9 +452,16 @@ static void slip_transmit(struct work_st
-  */
- static void slip_write_wakeup(struct tty_struct *tty)
- {
--	struct slip *sl = tty->disc_data;
-+	struct slip *sl;
-+
-+	rcu_read_lock();
-+	sl = rcu_dereference(tty->disc_data);
-+	if (!sl)
-+		goto out;
- 
- 	schedule_work(&sl->tx_work);
-+out:
-+	rcu_read_unlock();
- }
- 
- static void sl_tx_timeout(struct net_device *dev)
-@@ -882,10 +889,11 @@ static void slip_close(struct tty_struct
- 		return;
- 
- 	spin_lock_bh(&sl->lock);
--	tty->disc_data = NULL;
-+	rcu_assign_pointer(tty->disc_data, NULL);
- 	sl->tty = NULL;
- 	spin_unlock_bh(&sl->lock);
- 
-+	synchronize_rcu();
- 	flush_work(&sl->tx_work);
- 
- 	/* VSV = very important to remove timers */
-
+-- 
+Best regards,
+  Jesper Dangaard Brouer
+  MSc.CS, Principal Kernel Engineer at Red Hat
+  LinkedIn: http://www.linkedin.com/in/brouer
 
