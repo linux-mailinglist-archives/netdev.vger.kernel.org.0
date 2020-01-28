@@ -2,103 +2,90 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 550E214BF9F
-	for <lists+netdev@lfdr.de>; Tue, 28 Jan 2020 19:25:56 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6BD8D14C002
+	for <lists+netdev@lfdr.de>; Tue, 28 Jan 2020 19:41:58 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726682AbgA1SZw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 28 Jan 2020 13:25:52 -0500
-Received: from vps0.lunn.ch ([185.16.172.187]:57408 "EHLO vps0.lunn.ch"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726276AbgA1SZw (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 28 Jan 2020 13:25:52 -0500
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:
-        Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
-        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
-        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
-        List-Post:List-Owner:List-Archive;
-        bh=9rzg8pOQc/eaFdW99Vz4O3jHl+7pHiM7u4M/N2zjXkU=; b=VebU66qEXJs9WAZC/uirqsZ7mX
-        OeOrKJJw/KVKUhkMEVs/QGETVhl2qzSFUd3E/lV7hdBCotWajXxt6dvKTE9vVde4qW/MMN5mMOp3S
-        ZA1c5MLXkU2rC0fe7ztoIqt4Ohv3tPUiuPC8w1qtDw5vdx11umzbQlCyqmRrmTHhgoUk=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.93)
-        (envelope-from <andrew@lunn.ch>)
-        id 1iwVYU-0003W8-Ff; Tue, 28 Jan 2020 19:25:42 +0100
-Date:   Tue, 28 Jan 2020 19:25:42 +0100
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Russell King - ARM Linux admin <linux@armlinux.org.uk>
-Cc:     Jose Abreu <Jose.Abreu@synopsys.com>,
-        Joao Pinto <Joao.Pinto@synopsys.com>,
-        Alexandre Torgue <alexandre.torgue@st.com>,
+        id S1726303AbgA1Sl5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 28 Jan 2020 13:41:57 -0500
+Received: from us-smtp-1.mimecast.com ([205.139.110.61]:34044 "EHLO
+        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1726276AbgA1Sl4 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 28 Jan 2020 13:41:56 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1580236915;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=g505J+OXZAIyrPJs5BzKa+nYQjRA1XdxShMDB6Q8I+g=;
+        b=Hhdm/eGpvM7is1r15elWru8Y7yW0UK3Os/Y6D+ZJhDoz5koXCKy0I6Nn8YKHK7cT8U2bUE
+        M5x0wfFrXXLo2KozGWL7wdG2EURWw8Z3q6Rthu5/6VVBeVQis3TZvyRyPmQ+QI0LU9Kj+a
+        ZgdAAjbGDU6JIATfkj092CgY/cgdiaU=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-340-9oQaP31nPSOvdMupnGKybg-1; Tue, 28 Jan 2020 13:41:50 -0500
+X-MC-Unique: 9oQaP31nPSOvdMupnGKybg-1
+Received: from smtp.corp.redhat.com (int-mx08.intmail.prod.int.phx2.redhat.com [10.5.11.23])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id A315313E5;
+        Tue, 28 Jan 2020 18:41:49 +0000 (UTC)
+Received: from carbon (ovpn-200-56.brq.redhat.com [10.40.200.56])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 2600F38E;
+        Tue, 28 Jan 2020 18:41:37 +0000 (UTC)
+Date:   Tue, 28 Jan 2020 19:41:36 +0100
+From:   Jesper Dangaard Brouer <brouer@redhat.com>
+To:     Matteo Croce <mcroce@redhat.com>
+Cc:     Ilias Apalodimas <ilias.apalodimas@linaro.org>,
+        Lorenzo Bianconi <lorenzo.bianconi@redhat.com>,
+        Saeed Mahameed <saeedm@mellanox.com>,
+        Tariq Toukan <tariqt@mellanox.com>,
+        Toke =?UTF-8?B?SMO4aWxhbmQtSsO4cmdlbnNlbg==?= <toke@redhat.com>,
+        Jonathan Lemon <jonathan.lemon@gmail.com>,
         "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "linux-stm32@st-md-mailman.stormreply.com" 
-        <linux-stm32@st-md-mailman.stormreply.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Giuseppe Cavallaro <peppe.cavallaro@st.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        "linux-arm-kernel@lists.infradead.org" 
-        <linux-arm-kernel@lists.infradead.org>,
-        Heiner Kallweit <hkallweit1@gmail.com>
-Subject: Re: [RFC net-next 6/8] net: phylink: Configure MAC/PCS when link is
- up without PHY
-Message-ID: <20200128182542.GB12180@lunn.ch>
-References: <cover.1580122909.git.Jose.Abreu@synopsys.com>
- <9a2136885d9a892ff170be88fdffeda82c778a10.1580122909.git.Jose.Abreu@synopsys.com>
- <20200127112102.GT25745@shell.armlinux.org.uk>
- <BN8PR12MB3266714AE9EC1A97218120B3D30B0@BN8PR12MB3266.namprd12.prod.outlook.com>
- <20200127114600.GU25745@shell.armlinux.org.uk>
- <20200127140038.GD13647@lunn.ch>
- <20200127140834.GW25745@shell.armlinux.org.uk>
- <20200127145107.GE13647@lunn.ch>
- <20200128180802.GD25745@shell.armlinux.org.uk>
+        brouer@redhat.com
+Subject: Re: Created benchmarks modules for page_pool
+Message-ID: <20200128194136.4dff1cb2@carbon>
+In-Reply-To: <CAGnkfhy4O+VO9u+pGE83qmtce8+OR4Q2s1e9Wdupr-Bo5FU1fg@mail.gmail.com>
+References: <20200121170945.41e58f32@carbon>
+        <20200122104205.GA569175@apalos.home>
+        <20200122130932.0209cb27@carbon>
+        <CAGnkfhy4O+VO9u+pGE83qmtce8+OR4Q2s1e9Wdupr-Bo5FU1fg@mail.gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200128180802.GD25745@shell.armlinux.org.uk>
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+X-Scanned-By: MIMEDefang 2.84 on 10.5.11.23
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Jan 28, 2020 at 06:08:03PM +0000, Russell King - ARM Linux admin wrote:
-> On Mon, Jan 27, 2020 at 03:51:07PM +0100, Andrew Lunn wrote:
-> > I've also had issues with the DSA links, also being configured to
-> > 10/Half. That seems to be related to having a phy-mode property in
-> > device tree. I need to add a fixed-link property to set the correct
-> > speed. Something is broken here, previously the fixed-link was only
-> > needed if the speed needed to be lower than the ports maximum. I think
-> > that is a separate issue i need to dig into, not part of the PCS to
-> > MAC transfer.
+On Tue, 28 Jan 2020 17:22:47 +0100
+Matteo Croce <mcroce@redhat.com> wrote:
+
+> On Wed, Jan 22, 2020 at 1:09 PM Jesper Dangaard Brouer
+> <brouer@redhat.com> wrote:
+> > On Wed, 22 Jan 2020 12:42:05 +0200  
+> > > Interesting, i'll try having a look at the code and maybe run then on
+> > > my armv8 board.  
+> >
+> > That will be great, but we/you have to fixup the Intel specific ASM
+> > instructions in time_bench.c (which we already discussed on IRC).
+> >  
 > 
-> I think I understand what is happening on this one more fully.
-> 
-> When DSA initialises, the DSA and CPU ports are initially configured to
-> maximum speed via mv88e6xxx_setup_port(), called via mv88e6xxx_setup(),
-> the .setup method, dsa_switch_setup(), and dsa_tree_setup_switches().
-> 
-> dsa_tree_setup_switches() then moves on to calling dsa_port_setup().
-> dsa_port_setup() calls dsa_port_link_register_of() for the DSA and CPU
-> ports, which calls into dsa_port_phylink_register().
-> 
-> That calls phylink_create(), and then attempts to attach a PHY using
-> phylink_of_phy_connect() - which itself is rather weird - since when
-> has a DSA or CPU port been allowed to have a PHY in its DT node?
+> What does it need to work on arm64? Replace RDPMC with something generic?
 
-Hi Russell
+Replacing the RDTSC. Hoping Ilias will fix it for ARM ;-) 
 
-There are some boards which have back to back PHYs between the SoC and
-the Switch. Most designs rely on strapping the PHYs to just work, no
-software configuration needed. But then came along a board with a PHY
-which needed a kick to make it work :-(
+You can also fix yourself via using get_cycles() include <linux/timex.h>.
+If the ARCH doesn't have support it will just return 0.
 
-> That hasn't changed in phylink yet - so it's a bug that dates back
-> to the phylink integration into the DSA core, and is a regression
-> resulting from that.
+Have you tried it out on your normal x86/Intel box?
+Hint:
+ https://prototype-kernel.readthedocs.io/en/latest/prototype-kernel/build-process.html
+-- 
+Best regards,
+  Jesper Dangaard Brouer
+  MSc.CS, Principal Kernel Engineer at Red Hat
+  LinkedIn: http://www.linkedin.com/in/brouer
 
-And i think i probably did not notice it because nearly all the boards
-i test with connect to the FEC, which is Fast Ethernet only, so needs
-fixed-link properties.
-
-	   Andrew
