@@ -2,132 +2,140 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id A545214C16B
-	for <lists+netdev@lfdr.de>; Tue, 28 Jan 2020 21:08:55 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7738414C1F3
+	for <lists+netdev@lfdr.de>; Tue, 28 Jan 2020 22:16:52 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726320AbgA1UIs (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 28 Jan 2020 15:08:48 -0500
-Received: from youngberry.canonical.com ([91.189.89.112]:36939 "EHLO
-        youngberry.canonical.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726143AbgA1UIs (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 28 Jan 2020 15:08:48 -0500
-Received: from 1.general.cking.uk.vpn ([10.172.193.212])
-        by youngberry.canonical.com with esmtpsa (TLS1.2:ECDHE_RSA_AES_128_GCM_SHA256:128)
-        (Exim 4.86_2)
-        (envelope-from <colin.king@canonical.com>)
-        id 1iwXAC-0004NW-Qx; Tue, 28 Jan 2020 20:08:44 +0000
-To:     Chin-Yen Lee <timlee@realtek.com>,
-        Yan-Hsuan Chuang <yhchuang@realtek.com>,
+        id S1726504AbgA1VQq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 28 Jan 2020 16:16:46 -0500
+Received: from ozlabs.org ([203.11.71.1]:49327 "EHLO ozlabs.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726211AbgA1VQq (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 28 Jan 2020 16:16:46 -0500
+Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (No client certificate requested)
+        by mail.ozlabs.org (Postfix) with ESMTPSA id 486fZ15jfFz9sNT;
+        Wed, 29 Jan 2020 08:16:41 +1100 (AEDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=canb.auug.org.au;
+        s=201702; t=1580246202;
+        bh=znBPl4ee35QRiKKMj1IQ0LS/r8uB/BO2eAzVRMxlpbE=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=u8ngAzFhMKfp/dMM02griDzeRlvEGx8zNGu570k3jabOi7r8aXkHLNGFyW18yyIjn
+         w5JFRt3vO+NqoDoro7fdRG0w11EQDa2QK/Cv1gkXsaa70yWm6dGFllToDKerhow/Vy
+         K6X7fGGDCrYi3+Be3qnIXOcb6jGRgZgEVXevryPqRgOs2I+pgkSoHxTWs/VzAB++eK
+         FLi4jmoOugI/XUID0YM95fCyoh6Gw0Ng/uojITKFK0QiIns0JszyRmP7PmPYbe0Y91
+         PZImZNvG6z96oqcmZc64RvxvqlTa51tchCbR6wu4QoEqXTrTNC2molUT6R+M7XoW+C
+         wWADUuo9A7cLg==
+Date:   Wed, 29 Jan 2020 08:16:28 +1100
+From:   Stephen Rothwell <sfr@canb.auug.org.au>
+To:     David Miller <davem@davemloft.net>,
+        Networking <netdev@vger.kernel.org>,
         Kalle Valo <kvalo@codeaurora.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        "linux-wireless@vger.kernel.org" <linux-wireless@vger.kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-Cc:     "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-From:   Colin Ian King <colin.king@canonical.com>
-Autocrypt: addr=colin.king@canonical.com; prefer-encrypt=mutual; keydata=
- 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
-Subject: re: rtw88: support wowlan feature for 8822c
-Message-ID: <3ec2e7e0-cb21-f1ae-af6f-00eedc296235@canonical.com>
-Date:   Tue, 28 Jan 2020 20:08:44 +0000
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.4.1
+        Wireless <linux-wireless@vger.kernel.org>
+Cc:     Christoph Hellwig <hch@lst.de>,
+        Linux Next Mailing List <linux-next@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Alexandru-Mihai Maftei <amaftei@solarflare.com>
+Subject: Re: linux-next: manual merge of the generic-ioremap tree with the
+ net-next tree
+Message-ID: <20200129081628.750f5e05@canb.auug.org.au>
+In-Reply-To: <20200128095449.5688fddc@canb.auug.org.au>
+References: <20200109161202.1b0909d9@canb.auug.org.au>
+        <20200128095449.5688fddc@canb.auug.org.au>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 8bit
+Content-Type: multipart/signed; boundary="Sig_/H80WBqcdd8x4xb7Ec0IpJys";
+ protocol="application/pgp-signature"; micalg=pgp-sha256
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi
+--Sig_/H80WBqcdd8x4xb7Ec0IpJys
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: quoted-printable
 
-Static analysis with Coverity has found an issue with an uninitialized
-variable in the following linux-next commit:
+Hi all,
 
-commit 44bc17f7f5b3b2cc4084eba6307ba750078a8a73
-Author: Chin-Yen Lee <timlee@realtek.com>
-Date:   Thu Dec 19 16:58:14 2019 +0800
+On Tue, 28 Jan 2020 09:54:49 +1100 Stephen Rothwell <sfr@canb.auug.org.au> =
+wrote:
+>
+> On Thu, 9 Jan 2020 16:12:02 +1100 Stephen Rothwell <sfr@canb.auug.org.au>=
+ wrote:
+> >=20
+> > Today's linux-next merge of the generic-ioremap tree got a conflict in:
+> >=20
+> >   drivers/net/ethernet/sfc/efx.c
+> >=20
+> > between commit:
+> >=20
+> >   f1826756b499 ("sfc: move struct init and fini code")
+> >=20
+> > from the net-next tree and commit:
+> >=20
+> >   4bdc0d676a64 ("remove ioremap_nocache and devm_ioremap_nocache")
+> >=20
+> > from the generic-ioremap tree.
+> >=20
+> > I fixed it up (the latter moved the code, so I applied the following
+> > merge fix patch) and can carry the fix as necessary. This is now fixed
+> > as far as linux-next is concerned, but any non trivial conflicts should
+> > be mentioned to your upstream maintainer when your tree is submitted
+> > for merging.  You may also want to consider cooperating with the
+> > maintainer of the conflicting tree to minimise any particularly complex
+> > conflicts.
+> >=20
+> > From: Stephen Rothwell <sfr@canb.auug.org.au>
+> > Date: Thu, 9 Jan 2020 16:08:52 +1100
+> > Subject: [PATCH] fix up for "sfc: move struct init and fini code"
+> >=20
+> > Signed-off-by: Stephen Rothwell <sfr@canb.auug.org.au>
+> > ---
+> >  drivers/net/ethernet/sfc/efx_common.c | 2 +-
+> >  1 file changed, 1 insertion(+), 1 deletion(-)
+> >=20
+> > diff --git a/drivers/net/ethernet/sfc/efx_common.c b/drivers/net/ethern=
+et/sfc/efx_common.c
+> > index fe74c66c8ec6..bf0126633c25 100644
+> > --- a/drivers/net/ethernet/sfc/efx_common.c
+> > +++ b/drivers/net/ethernet/sfc/efx_common.c
+> > @@ -954,7 +954,7 @@ int efx_init_io(struct efx_nic *efx, int bar, dma_a=
+ddr_t dma_mask,
+> >  		goto fail3;
+> >  	}
+> > =20
+> > -	efx->membase =3D ioremap_nocache(efx->membase_phys, mem_map_size);
+> > +	efx->membase =3D ioremap(efx->membase_phys, mem_map_size);
+> >  	if (!efx->membase) {
+> >  		netif_err(efx, probe, efx->net_dev,
+> >  			  "could not map memory BAR at %llx+%x\n",
+> > --=20
+> > 2.24.0 =20
+>=20
+> This is now a conflict between the net-next tree and Linus' tree.
 
-    rtw88: support wowlan feature for 8822c
+It actually turns out that this is a conflict between the
+wireless-drivers tree and Linus' tree since the wireless-drivers tree
+has merged most of the net-next tree.
 
-Anaysis is as follows:
+--=20
+Cheers,
+Stephen Rothwell
 
-284 static bool rtw_wow_check_fw_status(struct rtw_dev *rtwdev, bool
-wow_enable)
-285 {
+--Sig_/H80WBqcdd8x4xb7Ec0IpJys
+Content-Type: application/pgp-signature
+Content-Description: OpenPGP digital signature
 
-   1. var_decl: Declaring variable ret without initializer.
-286        bool ret;
-287
-288        /* wait 100ms for wow firmware to finish work */
-289        msleep(100);
-290
+-----BEGIN PGP SIGNATURE-----
 
-   2. Condition wow_enable, taking true branch.
-291        if (wow_enable) {
+iQEzBAEBCAAdFiEENIC96giZ81tWdLgKAVBC80lX0GwFAl4wpKwACgkQAVBC80lX
+0GyOJAf/VlXWXj3k+51plddZl88xdeutVOpBxXmovQt+7ecZdqniu8CMA4YCipTv
+JLGwp7h/0zoxsDMu7ddzJectmvR5EbQZbKIST+lYVSpYCOkuXMNIastFwWNlAg08
+FSdvCllk2X09M69WuvEFfABd4UY9Uj4xRcCWZIKiQzSokaHRxTw5hhmkw+BnEW3T
+eZS8HNw+HitwLAgDa7Dt+Goz7zFe4qJldYHiP4eRpJ9OKG1uolGE5gA3NnN8PnVJ
+63k5U1Aohojt5m8MRb64oqNJ8k+09Oe7pqTUTdzdJJotTRiQREiA2S5Dklnr4+1y
+MpWd7x5b5nBXPmpB0TE5Wdlh5HqRuA==
+=wRbj
+-----END PGP SIGNATURE-----
 
-   3. Condition !rtw_read8(rtwdev, 455), taking false branch.
-292                if (!rtw_read8(rtwdev, REG_WOWLAN_WAKE_REASON))
-293                        ret = 0;
-
-   4. Falling through to end of if statement.
-294        } else {
-295                if (rtw_read32_mask(rtwdev, REG_FE1IMR,
-BIT_FS_RXDONE) == 0 &&
-296                    rtw_read32_mask(rtwdev, REG_RXPKT_NUM,
-BIT_RW_RELEASE) == 0)
-297                        ret = 0;
-298        }
-299
-
-Uninitialized scalar variable (UNINIT)5. uninit_use: Using uninitialized
-value ret.
-
-300        if (ret)
-301                rtw_err(rtwdev, "failed to check wow status %s\n",
-302                        wow_enable ? "enabled" : "disabled");
-303
-304        return ret;
-
-Colin
+--Sig_/H80WBqcdd8x4xb7Ec0IpJys--
