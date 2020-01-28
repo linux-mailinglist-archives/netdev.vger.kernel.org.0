@@ -2,176 +2,476 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id D8E0E14B098
-	for <lists+netdev@lfdr.de>; Tue, 28 Jan 2020 08:58:57 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6907614B0B2
+	for <lists+netdev@lfdr.de>; Tue, 28 Jan 2020 09:10:15 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1725920AbgA1H6u (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 28 Jan 2020 02:58:50 -0500
-Received: from mx0b-001b2d01.pphosted.com ([148.163.158.5]:64068 "EHLO
-        mx0a-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1725839AbgA1H6t (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 28 Jan 2020 02:58:49 -0500
-Received: from pps.filterd (m0098419.ppops.net [127.0.0.1])
-        by mx0b-001b2d01.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 00S7nUmL132825
-        for <netdev@vger.kernel.org>; Tue, 28 Jan 2020 02:58:48 -0500
-Received: from e06smtp01.uk.ibm.com (e06smtp01.uk.ibm.com [195.75.94.97])
-        by mx0b-001b2d01.pphosted.com with ESMTP id 2xrfg0kvec-1
-        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=NOT)
-        for <netdev@vger.kernel.org>; Tue, 28 Jan 2020 02:58:48 -0500
-Received: from localhost
-        by e06smtp01.uk.ibm.com with IBM ESMTP SMTP Gateway: Authorized Use Only! Violators will be prosecuted
-        for <netdev@vger.kernel.org> from <borntraeger@de.ibm.com>;
-        Tue, 28 Jan 2020 07:58:43 -0000
-Received: from b06cxnps4075.portsmouth.uk.ibm.com (9.149.109.197)
-        by e06smtp01.uk.ibm.com (192.168.101.131) with IBM ESMTP SMTP Gateway: Authorized Use Only! Violators will be prosecuted;
-        (version=TLSv1/SSLv3 cipher=AES256-GCM-SHA384 bits=256/256)
-        Tue, 28 Jan 2020 07:58:34 -0000
-Received: from d06av23.portsmouth.uk.ibm.com (d06av23.portsmouth.uk.ibm.com [9.149.105.59])
-        by b06cxnps4075.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 00S7wWmZ48627784
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Tue, 28 Jan 2020 07:58:32 GMT
-Received: from d06av23.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id A0E85A4040;
-        Tue, 28 Jan 2020 07:58:32 +0000 (GMT)
-Received: from d06av23.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id BC979A404D;
-        Tue, 28 Jan 2020 07:58:31 +0000 (GMT)
-Received: from oc7455500831.ibm.com (unknown [9.152.224.41])
-        by d06av23.portsmouth.uk.ibm.com (Postfix) with ESMTP;
-        Tue, 28 Jan 2020 07:58:31 +0000 (GMT)
-Subject: Re: [kernel-hardening] [PATCH 09/38] usercopy: Mark kmalloc caches as
- usercopy caches
-To:     Kees Cook <keescook@chromium.org>, Jiri Slaby <jslaby@suse.cz>,
-        Julian Wiedmann <jwi@linux.ibm.com>,
-        Ursula Braun <ubraun@linux.ibm.com>
-Cc:     Alexander Viro <viro@zeniv.linux.org.uk>,
-        linux-kernel@vger.kernel.org, David Windsor <dave@nullcore.net>,
-        Pekka Enberg <penberg@kernel.org>,
-        David Rientjes <rientjes@google.com>,
-        Joonsoo Kim <iamjoonsoo.kim@lge.com>,
-        Andrew Morton <akpm@linux-foundation.org>, linux-mm@kvack.org,
-        linux-xfs@vger.kernel.org,
-        Linus Torvalds <torvalds@linux-foundation.org>,
-        Andy Lutomirski <luto@kernel.org>,
-        Christoph Hellwig <hch@infradead.org>,
-        Christoph Lameter <cl@linux.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Laura Abbott <labbott@redhat.com>,
-        Mark Rutland <mark.rutland@arm.com>,
-        "Martin K. Petersen" <martin.petersen@oracle.com>,
-        Paolo Bonzini <pbonzini@redhat.com>,
-        Christoffer Dall <christoffer.dall@linaro.org>,
-        Dave Kleikamp <dave.kleikamp@oracle.com>,
-        Jan Kara <jack@suse.cz>,
-        Luis de Bethencourt <luisbg@kernel.org>,
-        Marc Zyngier <marc.zyngier@arm.com>,
-        Rik van Riel <riel@redhat.com>,
-        Matthew Garrett <mjg59@google.com>,
-        linux-fsdevel@vger.kernel.org, linux-arch@vger.kernel.org,
-        netdev@vger.kernel.org, kernel-hardening@lists.openwall.com,
-        Vlastimil Babka <vbabka@suse.cz>,
-        Michal Kubecek <mkubecek@suse.cz>
-References: <1515636190-24061-1-git-send-email-keescook@chromium.org>
- <1515636190-24061-10-git-send-email-keescook@chromium.org>
- <9519edb7-456a-a2fa-659e-3e5a1ff89466@suse.cz>
- <201911121313.1097D6EE@keescook> <201911141327.4DE6510@keescook>
- <bfca96db-bbd0-d958-7732-76e36c667c68@suse.cz>
- <202001271519.AA6ADEACF0@keescook>
-From:   Christian Borntraeger <borntraeger@de.ibm.com>
-Autocrypt: addr=borntraeger@de.ibm.com; prefer-encrypt=mutual; keydata=
- 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
- nS4h0HDFPrrp1C2EMVYIQrMokWvlFZbCpsdYbBI=
-Date:   Tue, 28 Jan 2020 08:58:31 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.3.0
-MIME-Version: 1.0
-In-Reply-To: <202001271519.AA6ADEACF0@keescook>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 8bit
-X-TM-AS-GCONF: 00
-x-cbid: 20012807-4275-0000-0000-0000039B95C8
-X-IBM-AV-DETECTION: SAVI=unused REMOTE=unused XFE=unused
-x-cbparentid: 20012807-4276-0000-0000-000038AFAC92
-Message-Id: <5861936c-1fe1-4c44-d012-26efa0c8b6e7@de.ibm.com>
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.138,18.0.572
- definitions=2020-01-28_02:2020-01-24,2020-01-28 signatures=0
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 bulkscore=0 adultscore=0
- malwarescore=0 mlxlogscore=999 priorityscore=1501 impostorscore=0
- phishscore=0 mlxscore=0 lowpriorityscore=0 clxscore=1011 spamscore=0
- suspectscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-1911200001 definitions=main-2001280064
+        id S1725912AbgA1IKF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 28 Jan 2020 03:10:05 -0500
+Received: from inva020.nxp.com ([92.121.34.13]:38064 "EHLO inva020.nxp.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1725825AbgA1IKF (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 28 Jan 2020 03:10:05 -0500
+Received: from inva020.nxp.com (localhost [127.0.0.1])
+        by inva020.eu-rdc02.nxp.com (Postfix) with ESMTP id 00CB01A0EE6;
+        Tue, 28 Jan 2020 09:10:01 +0100 (CET)
+Received: from inv0113.in-blr01.nxp.com (inv0113.in-blr01.nxp.com [165.114.116.118])
+        by inva020.eu-rdc02.nxp.com (Postfix) with ESMTP id 731061A0A8E;
+        Tue, 28 Jan 2020 09:10:00 +0100 (CET)
+Received: from lsv0210.swis.in-blr01.nxp.com (lsv0210.swis.in-blr01.nxp.com [92.120.145.207])
+        by inv0113.in-blr01.nxp.com (Postfix) with ESMTP id D4379327;
+        Tue, 28 Jan 2020 13:39:59 +0530 (IST)
+From:   Makarand Pawagi <makarand.pawagi@nxp.com>
+To:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, linux-acpi@vger.kernel.org,
+        linux@armlinux.org.uk
+Cc:     jon@solid-run.com, cristian.sovaiala@nxp.com,
+        laurentiu.tudor@nxp.com, ioana.ciornei@nxp.com, V.Sethi@nxp.com,
+        calvin.johnson@nxp.com, pankaj.bansal@nxp.com,
+        lorenzo.pieralisi@arm.com, guohanjun@huawei.com,
+        sudeep.holla@arm.com, rjw@rjwysocki.net, lenb@kernel.org,
+        stuyoder@gmail.com, tglx@linutronix.de, jason@lakedaemon.net,
+        maz@kernel.org, shameerali.kolothum.thodi@huawei.com,
+        will@kernel.org, robin.murphy@arm.com, nleeder@codeaurora.org,
+        Makarand Pawagi <makarand.pawagi@nxp.com>
+Subject: [PATCH] bus: fsl-mc: Add ACPI support for fsl-mc
+Date:   Tue, 28 Jan 2020 13:38:45 +0530
+Message-Id: <1580198925-50411-1-git-send-email-makarand.pawagi@nxp.com>
+X-Mailer: git-send-email 2.7.4
+X-Virus-Scanned: ClamAV using ClamSMTP
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+ACPI support is added in the fsl-mc driver. Driver will parse
+MC DSDT table to extract memory and other resorces.
 
+Interrupt (GIC ITS) information will be extracted from MADT table
+by drivers/irqchip/irq-gic-v3-its-fsl-mc-msi.c.
 
-On 28.01.20 00:19, Kees Cook wrote:
-> On Thu, Jan 23, 2020 at 09:14:20AM +0100, Jiri Slaby wrote:
->> On 14. 11. 19, 22:27, Kees Cook wrote:
->>> On Tue, Nov 12, 2019 at 01:21:54PM -0800, Kees Cook wrote:
->>>> How is iucv the only network protocol that has run into this? Do others
->>>> use a bounce buffer?
->>>
->>> Another solution would be to use a dedicated kmem cache (instead of the
->>> shared kmalloc dma one)?
->>
->> Has there been any conclusion to this thread yet? For the time being, we
->> disabled HARDENED_USERCOPY on s390...
->>
->> https://lore.kernel.org/kernel-hardening/9519edb7-456a-a2fa-659e-3e5a1ff89466@suse.cz/
-> 
-> I haven't heard anything new. What did people think of a separate kmem
-> cache?
-> 
+IORT table will be parsed to configure DMA.
 
-Adding Julian and Ursula. A separate kmem cache for iucv might be indeed
-a solution for the user hardening issue.
-On the other hand not marking the DMA caches still seems questionable.
+Signed-off-by: Makarand Pawagi <makarand.pawagi@nxp.com>
+---
+ drivers/acpi/arm64/iort.c                   | 53 +++++++++++++++++++++
+ drivers/bus/fsl-mc/dprc-driver.c            |  3 +-
+ drivers/bus/fsl-mc/fsl-mc-bus.c             | 48 +++++++++++++------
+ drivers/bus/fsl-mc/fsl-mc-msi.c             | 10 +++-
+ drivers/bus/fsl-mc/fsl-mc-private.h         |  4 +-
+ drivers/irqchip/irq-gic-v3-its-fsl-mc-msi.c | 71 ++++++++++++++++++++++++++++-
+ include/linux/acpi_iort.h                   |  5 ++
+ 7 files changed, 174 insertions(+), 20 deletions(-)
 
-For reference
-https://bugzilla.suse.com/show_bug.cgi?id=1156053
-the kernel hardening now triggers a warning.
+diff --git a/drivers/acpi/arm64/iort.c b/drivers/acpi/arm64/iort.c
+index 33f7198..beb9cd5 100644
+--- a/drivers/acpi/arm64/iort.c
++++ b/drivers/acpi/arm64/iort.c
+@@ -15,6 +15,7 @@
+ #include <linux/kernel.h>
+ #include <linux/list.h>
+ #include <linux/pci.h>
++#include <linux/fsl/mc.h>
+ #include <linux/platform_device.h>
+ #include <linux/slab.h>
+ 
+@@ -622,6 +623,29 @@ static int iort_dev_find_its_id(struct device *dev, u32 req_id,
+ }
+ 
+ /**
++ * iort_get_fsl_mc_device_domain() - Find MSI domain related to a device
++ * @dev: The device.
++ * @mc_icid: ICID for the fsl_mc device.
++ *
++ * Returns: the MSI domain for this device, NULL otherwise
++ */
++struct irq_domain *iort_get_fsl_mc_device_domain(struct device *dev,
++							u32 mc_icid)
++{
++	struct fwnode_handle *handle;
++	int its_id;
++
++	if (iort_dev_find_its_id(dev, mc_icid, 0, &its_id))
++		return NULL;
++
++	handle = iort_find_domain_token(its_id);
++	if (!handle)
++		return NULL;
++
++	return irq_find_matching_fwnode(handle, DOMAIN_BUS_FSL_MC_MSI);
++}
++
++/**
+  * iort_get_device_domain() - Find MSI domain related to a device
+  * @dev: The device.
+  * @req_id: Requester ID for the device.
+@@ -924,6 +948,21 @@ static int iort_pci_iommu_init(struct pci_dev *pdev, u16 alias, void *data)
+ 	return iort_iommu_xlate(info->dev, parent, streamid);
+ }
+ 
++static int iort_fsl_mc_iommu_init(struct device *dev,
++				struct acpi_iort_node *node, u32 *streamid)
++{
++	struct acpi_iort_node *parent;
++	struct fsl_mc_device *mc_dev = to_fsl_mc_device(dev);
++
++	parent = iort_node_map_id(node, mc_dev->icid, streamid,
++						IORT_IOMMU_TYPE);
++
++	if (parent)
++		return iort_iommu_xlate(dev, parent, *streamid);
++
++	return 0;
++}
++
+ /**
+  * iort_iommu_configure - Set-up IOMMU configuration for a device.
+  *
+@@ -962,6 +1001,20 @@ const struct iommu_ops *iort_iommu_configure(struct device *dev)
+ 
+ 		if (!err && iort_pci_rc_supports_ats(node))
+ 			dev->iommu_fwspec->flags |= IOMMU_FWSPEC_PCI_RC_ATS;
++	} else if (dev_is_fsl_mc(dev)) {
++		struct device *dma_dev = dev;
++
++		if (!(to_acpi_device_node(dma_dev->fwnode))) {
++			while (dev_is_fsl_mc(dma_dev))
++				dma_dev = dma_dev->parent;
++		}
++
++		node = iort_scan_node(ACPI_IORT_NODE_NAMED_COMPONENT,
++					iort_match_node_callback, dma_dev);
++		if (!node)
++			return NULL;
++
++		err = iort_fsl_mc_iommu_init(dev, node, &streamid);
+ 	} else {
+ 		int i = 0;
+ 
+diff --git a/drivers/bus/fsl-mc/dprc-driver.c b/drivers/bus/fsl-mc/dprc-driver.c
+index c8b1c38..31dd790 100644
+--- a/drivers/bus/fsl-mc/dprc-driver.c
++++ b/drivers/bus/fsl-mc/dprc-driver.c
+@@ -4,6 +4,7 @@
+  *
+  * Copyright (C) 2014-2016 Freescale Semiconductor, Inc.
+  * Author: German Rivera <German.Rivera@freescale.com>
++ * Copyright 2018-2020 NXP
+  *
+  */
+ 
+@@ -638,7 +639,7 @@ static int dprc_probe(struct fsl_mc_device *mc_dev)
+ 			return -EINVAL;
+ 
+ 		error = fsl_mc_find_msi_domain(parent_dev,
+-					       &mc_msi_domain);
++					&mc_msi_domain, mc_dev);
+ 		if (error < 0) {
+ 			dev_warn(&mc_dev->dev,
+ 				 "WARNING: MC bus without interrupt support\n");
+diff --git a/drivers/bus/fsl-mc/fsl-mc-bus.c b/drivers/bus/fsl-mc/fsl-mc-bus.c
+index a07cc19..5d388e4 100644
+--- a/drivers/bus/fsl-mc/fsl-mc-bus.c
++++ b/drivers/bus/fsl-mc/fsl-mc-bus.c
+@@ -4,11 +4,13 @@
+  *
+  * Copyright (C) 2014-2016 Freescale Semiconductor, Inc.
+  * Author: German Rivera <German.Rivera@freescale.com>
++ * Copyright 2018-2020 NXP
+  *
+  */
+ 
+ #define pr_fmt(fmt) "fsl-mc: " fmt
+ 
++#include <linux/acpi.h>
+ #include <linux/module.h>
+ #include <linux/of_device.h>
+ #include <linux/of_address.h>
+@@ -129,12 +131,25 @@ static int fsl_mc_bus_uevent(struct device *dev, struct kobj_uevent_env *env)
+ 
+ static int fsl_mc_dma_configure(struct device *dev)
+ {
++	enum dev_dma_attr attr;
+ 	struct device *dma_dev = dev;
++	int err = -ENODEV;
+ 
+ 	while (dev_is_fsl_mc(dma_dev))
+ 		dma_dev = dma_dev->parent;
+ 
+-	return of_dma_configure(dev, dma_dev->of_node, 0);
++	if (dma_dev->of_node)
++		err = of_dma_configure(dev, dma_dev->of_node, 1);
++	else {
++		if (has_acpi_companion(dma_dev)) {
++			attr = acpi_get_dma_attr(to_acpi_device_node
++							(dma_dev->fwnode));
++			if (attr != DEV_DMA_NOT_SUPPORTED)
++				err = acpi_dma_configure(dev, attr);
++		}
++	}
++
++	return err;
+ }
+ 
+ static ssize_t modalias_show(struct device *dev, struct device_attribute *attr,
+@@ -863,7 +878,7 @@ static int fsl_mc_bus_probe(struct platform_device *pdev)
+ 	phys_addr_t mc_portal_phys_addr;
+ 	u32 mc_portal_size;
+ 	struct mc_version mc_version;
+-	struct resource res;
++	struct resource *plat_res;
+ 
+ 	mc = devm_kzalloc(&pdev->dev, sizeof(*mc), GFP_KERNEL);
+ 	if (!mc)
+@@ -874,16 +889,9 @@ static int fsl_mc_bus_probe(struct platform_device *pdev)
+ 	/*
+ 	 * Get physical address of MC portal for the root DPRC:
+ 	 */
+-	error = of_address_to_resource(pdev->dev.of_node, 0, &res);
+-	if (error < 0) {
+-		dev_err(&pdev->dev,
+-			"of_address_to_resource() failed for %pOF\n",
+-			pdev->dev.of_node);
+-		return error;
+-	}
+-
+-	mc_portal_phys_addr = res.start;
+-	mc_portal_size = resource_size(&res);
++	plat_res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
++	mc_portal_phys_addr = plat_res->start;
++	mc_portal_size = resource_size(plat_res);
+ 	error = fsl_create_mc_io(&pdev->dev, mc_portal_phys_addr,
+ 				 mc_portal_size, NULL,
+ 				 FSL_MC_IO_ATOMIC_CONTEXT_PORTAL, &mc_io);
+@@ -900,11 +908,13 @@ static int fsl_mc_bus_probe(struct platform_device *pdev)
+ 	dev_info(&pdev->dev, "MC firmware version: %u.%u.%u\n",
+ 		 mc_version.major, mc_version.minor, mc_version.revision);
+ 
+-	error = get_mc_addr_translation_ranges(&pdev->dev,
++	if (dev_of_node(&pdev->dev)) {
++		error = get_mc_addr_translation_ranges(&pdev->dev,
+ 					       &mc->translation_ranges,
+ 					       &mc->num_translation_ranges);
+-	if (error < 0)
+-		goto error_cleanup_mc_io;
++		if (error < 0)
++			goto error_cleanup_mc_io;
++	}
+ 
+ 	error = dprc_get_container_id(mc_io, 0, &container_id);
+ 	if (error < 0) {
+@@ -931,6 +941,7 @@ static int fsl_mc_bus_probe(struct platform_device *pdev)
+ 		goto error_cleanup_mc_io;
+ 
+ 	mc->root_mc_bus_dev = mc_bus_dev;
++	mc_bus_dev->dev.fwnode = pdev->dev.fwnode;
+ 	return 0;
+ 
+ error_cleanup_mc_io:
+@@ -964,11 +975,18 @@ static const struct of_device_id fsl_mc_bus_match_table[] = {
+ 
+ MODULE_DEVICE_TABLE(of, fsl_mc_bus_match_table);
+ 
++static const struct acpi_device_id fsl_mc_bus_acpi_match_table[] = {
++	{"NXP0008", 0 },
++	{ }
++};
++MODULE_DEVICE_TABLE(acpi, fsl_mc_bus_acpi_match_table);
++
+ static struct platform_driver fsl_mc_bus_driver = {
+ 	.driver = {
+ 		   .name = "fsl_mc_bus",
+ 		   .pm = NULL,
+ 		   .of_match_table = fsl_mc_bus_match_table,
++		   .acpi_match_table = fsl_mc_bus_acpi_match_table,
+ 		   },
+ 	.probe = fsl_mc_bus_probe,
+ 	.remove = fsl_mc_bus_remove,
+diff --git a/drivers/bus/fsl-mc/fsl-mc-msi.c b/drivers/bus/fsl-mc/fsl-mc-msi.c
+index 8b9c66d..bd10952 100644
+--- a/drivers/bus/fsl-mc/fsl-mc-msi.c
++++ b/drivers/bus/fsl-mc/fsl-mc-msi.c
+@@ -4,6 +4,7 @@
+  *
+  * Copyright (C) 2015-2016 Freescale Semiconductor, Inc.
+  * Author: German Rivera <German.Rivera@freescale.com>
++ * Copyright 2020 NXP
+  *
+  */
+ 
+@@ -13,6 +14,7 @@
+ #include <linux/irq.h>
+ #include <linux/irqdomain.h>
+ #include <linux/msi.h>
++#include <linux/acpi_iort.h>
+ 
+ #include "fsl-mc-private.h"
+ 
+@@ -178,13 +180,19 @@ struct irq_domain *fsl_mc_msi_create_irq_domain(struct fwnode_handle *fwnode,
+ }
+ 
+ int fsl_mc_find_msi_domain(struct device *mc_platform_dev,
+-			   struct irq_domain **mc_msi_domain)
++			   struct irq_domain **mc_msi_domain,
++				struct fsl_mc_device *mc_dev)
+ {
+ 	struct irq_domain *msi_domain;
+ 	struct device_node *mc_of_node = mc_platform_dev->of_node;
+ 
+ 	msi_domain = of_msi_get_domain(mc_platform_dev, mc_of_node,
+ 				       DOMAIN_BUS_FSL_MC_MSI);
++
++	if (!msi_domain)
++		msi_domain = iort_get_fsl_mc_device_domain(mc_platform_dev,
++								mc_dev->icid);
++
+ 	if (!msi_domain) {
+ 		pr_err("Unable to find fsl-mc MSI domain for %pOF\n",
+ 		       mc_of_node);
+diff --git a/drivers/bus/fsl-mc/fsl-mc-private.h b/drivers/bus/fsl-mc/fsl-mc-private.h
+index 21ca8c756..e8f4c0f 100644
+--- a/drivers/bus/fsl-mc/fsl-mc-private.h
++++ b/drivers/bus/fsl-mc/fsl-mc-private.h
+@@ -3,6 +3,7 @@
+  * Freescale Management Complex (MC) bus private declarations
+  *
+  * Copyright (C) 2016 Freescale Semiconductor, Inc.
++ * Copyright 2020 NXP
+  *
+  */
+ #ifndef _FSL_MC_PRIVATE_H_
+@@ -596,7 +597,8 @@ int fsl_mc_msi_domain_alloc_irqs(struct device *dev,
+ void fsl_mc_msi_domain_free_irqs(struct device *dev);
+ 
+ int fsl_mc_find_msi_domain(struct device *mc_platform_dev,
+-			   struct irq_domain **mc_msi_domain);
++			   struct irq_domain **mc_msi_domain,
++				struct fsl_mc_device *mc_dev);
+ 
+ int fsl_mc_populate_irq_pool(struct fsl_mc_bus *mc_bus,
+ 			     unsigned int irq_count);
+diff --git a/drivers/irqchip/irq-gic-v3-its-fsl-mc-msi.c b/drivers/irqchip/irq-gic-v3-its-fsl-mc-msi.c
+index 606efa6..df99170 100644
+--- a/drivers/irqchip/irq-gic-v3-its-fsl-mc-msi.c
++++ b/drivers/irqchip/irq-gic-v3-its-fsl-mc-msi.c
+@@ -4,9 +4,11 @@
+  *
+  * Copyright (C) 2015-2016 Freescale Semiconductor, Inc.
+  * Author: German Rivera <German.Rivera@freescale.com>
++ * Copyright 2020 NXP
+  *
+  */
+ 
++#include <linux/acpi_iort.h>
+ #include <linux/of_device.h>
+ #include <linux/of_address.h>
+ #include <linux/irq.h>
+@@ -66,7 +68,66 @@ static const struct of_device_id its_device_id[] = {
+ 	{},
+ };
+ 
+-static int __init its_fsl_mc_msi_init(void)
++static int __init its_fsl_mc_msi_init_one(struct fwnode_handle *handle,
++					const char *name)
++{
++	struct irq_domain *parent;
++	struct irq_domain *mc_msi_domain;
++
++	parent = irq_find_matching_fwnode(handle, DOMAIN_BUS_NEXUS);
++	if (!parent || !msi_get_domain_info(parent)) {
++		pr_err("%s: Unable to locate ITS domain\n", name);
++		return -ENXIO;
++	}
++
++	mc_msi_domain = fsl_mc_msi_create_irq_domain(
++					 handle,
++					 &its_fsl_mc_msi_domain_info,
++					 parent);
++	if (!mc_msi_domain)
++		pr_err("ACPIF: unable to create fsl-mc domain\n");
++
++	pr_info("fsl-mc MSI: domain created\n");
++
++	return 0;
++}
++
++static int __init
++its_fsl_mc_msi_parse_madt(union acpi_subtable_headers *header,
++			const unsigned long end)
++{
++	struct acpi_madt_generic_translator *its_entry;
++	struct fwnode_handle *dom_handle;
++	const char *node_name;
++	int err = -ENXIO;
++
++	its_entry = (struct acpi_madt_generic_translator *)header;
++	node_name = kasprintf(GFP_KERNEL, "ITS@0x%lx",
++				(long)its_entry->base_address);
++
++	dom_handle = iort_find_domain_token(its_entry->translation_id);
++	if (!dom_handle) {
++		pr_err("%s: Unable to locate ITS domain handle\n", node_name);
++		goto out;
++	}
++
++	err = its_fsl_mc_msi_init_one(dom_handle, node_name);
++	if (!err)
++		pr_info("fsl-mc MSI: %s domain created\n", node_name);
++
++out:
++	kfree(node_name);
++	return err;
++}
++
++static int __init its_fsl_mc_acpi_msi_init(void)
++{
++	acpi_table_parse_madt(ACPI_MADT_TYPE_GENERIC_TRANSLATOR,
++				its_fsl_mc_msi_parse_madt, 0);
++	return 0;
++}
++
++static int __init its_fsl_mc_of_msi_init(void)
+ {
+ 	struct device_node *np;
+ 	struct irq_domain *parent;
+@@ -96,8 +157,14 @@ static int __init its_fsl_mc_msi_init(void)
+ 
+ 		pr_info("fsl-mc MSI: %pOF domain created\n", np);
+ 	}
+-
+ 	return 0;
+ }
+ 
++static int __init its_fsl_mc_msi_init(void)
++{
++	its_fsl_mc_of_msi_init();
++	its_fsl_mc_acpi_msi_init();
++
++	return 0;
++}
+ early_initcall(its_fsl_mc_msi_init);
+diff --git a/include/linux/acpi_iort.h b/include/linux/acpi_iort.h
+index 8e7e2ec..0afc608 100644
+--- a/include/linux/acpi_iort.h
++++ b/include/linux/acpi_iort.h
+@@ -30,6 +30,8 @@ struct fwnode_handle *iort_find_domain_token(int trans_id);
+ void acpi_iort_init(void);
+ u32 iort_msi_map_rid(struct device *dev, u32 req_id);
+ struct irq_domain *iort_get_device_domain(struct device *dev, u32 req_id);
++struct irq_domain *iort_get_fsl_mc_device_domain(struct device *dev,
++								u32 req_id);
+ void acpi_configure_pmsi_domain(struct device *dev);
+ int iort_pmsi_get_dev_id(struct device *dev, u32 *dev_id);
+ /* IOMMU interface */
+@@ -40,6 +42,9 @@ int iort_iommu_msi_get_resv_regions(struct device *dev, struct list_head *head);
+ static inline void acpi_iort_init(void) { }
+ static inline u32 iort_msi_map_rid(struct device *dev, u32 req_id)
+ { return req_id; }
++static inline struct irq_domain *iort_get_fsl_mc_device_domain
++					(struct device *dev, u32 req_id)
++{ return NULL; }
+ static inline struct irq_domain *iort_get_device_domain(struct device *dev,
+ 							u32 req_id)
+ { return NULL; }
+-- 
+2.7.4
 
