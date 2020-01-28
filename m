@@ -2,129 +2,111 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id F13E514AE6D
-	for <lists+netdev@lfdr.de>; Tue, 28 Jan 2020 04:33:50 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A67B114AE74
+	for <lists+netdev@lfdr.de>; Tue, 28 Jan 2020 04:43:16 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726571AbgA1Ddp (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 27 Jan 2020 22:33:45 -0500
-Received: from userp2130.oracle.com ([156.151.31.86]:38514 "EHLO
-        userp2130.oracle.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726164AbgA1Ddp (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 27 Jan 2020 22:33:45 -0500
-Received: from pps.filterd (userp2130.oracle.com [127.0.0.1])
-        by userp2130.oracle.com (8.16.0.27/8.16.0.27) with SMTP id 00S3S5Ns001927;
-        Tue, 28 Jan 2020 03:33:01 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=date : from : to : cc
- : subject : message-id : mime-version : content-type : in-reply-to;
- s=corp-2019-08-05; bh=Nr7BQpdUONE47IibUeMZ7q+ndlt/7dgoh1WHBUaOUEE=;
- b=Mq0qwbm+JIcGdVF1wAk4kMmoNoIJQGo8DLETTDyojDh/2SvOjCv5q44ISCYRQDnivZ4X
- hc89sY8knzZGDkhBQNkH8RD53WBqjy5/jB35ppGP3NPA3vVyLM9KkQEUkKfAbOqjlZtY
- wVgdatpJqcHozD61VIo4CZm9xXNLI0YzdLWH9aGhIWt55/wdCBIGoMWxxA/IKMHqwNew
- 9qAVRWTTgL+yCumVzJrCnk0M/DgikpZWUyhRUoTEcAV0PUNfOFpKDjcTZHYzG8IeTBHD
- da/2rHL/P4X7WShZDRUsBfHu1W+pFJPmGzWJyZHODHuFTnV/yKmYb8uOg82oLRzgr3V7 nw== 
-Received: from aserp3030.oracle.com (aserp3030.oracle.com [141.146.126.71])
-        by userp2130.oracle.com with ESMTP id 2xrd3u3db6-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Tue, 28 Jan 2020 03:33:01 +0000
-Received: from pps.filterd (aserp3030.oracle.com [127.0.0.1])
-        by aserp3030.oracle.com (8.16.0.27/8.16.0.27) with SMTP id 00S3SgiB022942;
-        Tue, 28 Jan 2020 03:33:00 GMT
-Received: from aserv0121.oracle.com (aserv0121.oracle.com [141.146.126.235])
-        by aserp3030.oracle.com with ESMTP id 2xryuar7cx-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Tue, 28 Jan 2020 03:33:00 +0000
-Received: from abhmp0004.oracle.com (abhmp0004.oracle.com [141.146.116.10])
-        by aserv0121.oracle.com (8.14.4/8.13.8) with ESMTP id 00S3WuGE008383;
-        Tue, 28 Jan 2020 03:32:56 GMT
-Received: from kadam (/129.205.23.165)
-        by default (Oracle Beehive Gateway v4.0)
-        with ESMTP ; Mon, 27 Jan 2020 19:32:52 -0800
-Date:   Tue, 28 Jan 2020 06:32:15 +0300
-From:   Dan Carpenter <dan.carpenter@oracle.com>
-To:     kbuild@lists.01.org, Jason Wang <jasowang@redhat.com>
-Cc:     kbuild-all@lists.01.org, mst@redhat.com, jasowang@redhat.com,
-        linux-kernel@vger.kernel.org, kvm@vger.kernel.org,
-        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
-        tiwei.bie@intel.com, jgg@mellanox.com, maxime.coquelin@redhat.com,
-        cunming.liang@intel.com, zhihong.wang@intel.com,
-        rob.miller@broadcom.com, xiao.w.wang@intel.com,
-        haotian.wang@sifive.com, lingshan.zhu@intel.com,
-        eperezma@redhat.com, lulu@redhat.com, parav@mellanox.com,
-        kevin.tian@intel.com, stefanha@redhat.com, rdunlap@infradead.org,
-        hch@infradead.org, aadam@redhat.com, jakub.kicinski@netronome.com,
-        jiri@mellanox.com, shahafs@mellanox.com, hanand@xilinx.com,
-        mhabets@solarflare.com
-Subject: Re: [PATCH 5/5] vdpasim: vDPA device simulator
-Message-ID: <20200128033215.GO1870@kadam>
+        id S1726267AbgA1DnP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 27 Jan 2020 22:43:15 -0500
+Received: from mail-qk1-f196.google.com ([209.85.222.196]:42209 "EHLO
+        mail-qk1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726164AbgA1DnO (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 27 Jan 2020 22:43:14 -0500
+Received: by mail-qk1-f196.google.com with SMTP id q15so12024039qke.9
+        for <netdev@vger.kernel.org>; Mon, 27 Jan 2020 19:43:13 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=nrB//Vothdm9bhS+gReU21VgQM2ERZtPDXe64SwQNGs=;
+        b=vMWeeDijYyMM/SS9gJJc3NNsvo6Nta7UHszPhr/1uR8OnLHFnPwtNQE8JLVLwh+2W0
+         Kr17/JzRL+K0glp6u9ZmaRa3A0KextU9zA9cSL7km4LiEhS4LpQKOc9NKGutn49ddfiZ
+         b540g/Ob1NGBHtH0mdQc9bs2JGkFK3H3/XMCAOW4tQgNu49VwSThTFPbb7B9rGg4eQcb
+         4A6fowuXhKC/9IM8u+OfJJOZ52TFCsp0QMIzPB6T+1QFY37pr65AOdWQLfMdbS/6k/Dv
+         PjjcoN/dMRTIoZVx9+B7QdlYwTVfIBg1JD/XKalyO0vg4uyaPX2mPUvKo8IPtFhcW3qK
+         stlQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=nrB//Vothdm9bhS+gReU21VgQM2ERZtPDXe64SwQNGs=;
+        b=WAduQ47QzhEXwCvkYyPRyzCv8PFfxfEY9/KKkRCRrkKFQbocSxu2fLaLTcsjhKqrXD
+         vyvcEOfKoMNRMl8u/+ERkVZEhAX/TC3/ka1CvvUgaQr59BUdSYpx7cHtpu92Xd4bS4qV
+         af28+boJD0Efi6gVjFyGhWtMfNj99kjky6eLVFCr5yGW8SbiY1YAugsJVVDYFGA/bz0C
+         9yOBqFnYQeHbS2NogH3Sr3lYJxbkTok2Y9RdV36YoF0CyFNvFHeEIrP3Jrr0fBKl2o9Q
+         Y94BhRQIVn6blbq8wKmBtLS8+1I219HtWC/rJZhiMViI0sMFh12euVibLueqL/yG5iIr
+         34Bg==
+X-Gm-Message-State: APjAAAX5zbD0ABSwKslvllkr2V++wEnRK4fQ7WJrHek29J4svG8F6Ttv
+        pSB0A+P3GWT9jRWmB3kvr20=
+X-Google-Smtp-Source: APXvYqyDUfeFnznzy3flWfa36EJZBsIrHzWFRj1tbwW3F6CyzCAXu3IyC11YNUQFcmEoFovl0DfCDg==
+X-Received: by 2002:a37:91c2:: with SMTP id t185mr18525211qkd.284.1580182993112;
+        Mon, 27 Jan 2020 19:43:13 -0800 (PST)
+Received: from ?IPv6:2601:282:803:7700:58fc:9ee4:d099:9314? ([2601:282:803:7700:58fc:9ee4:d099:9314])
+        by smtp.googlemail.com with ESMTPSA id h34sm12210799qtc.62.2020.01.27.19.43.10
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 27 Jan 2020 19:43:12 -0800 (PST)
+Subject: Re: [PATCH bpf-next 03/12] net: Add IFLA_XDP_EGRESS for XDP programs
+ in the egress path
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     =?UTF-8?Q?Toke_H=c3=b8iland-J=c3=b8rgensen?= <toke@redhat.com>,
+        David Ahern <dsahern@kernel.org>, netdev@vger.kernel.org,
+        prashantbhole.linux@gmail.com, jasowang@redhat.com,
+        davem@davemloft.net, jbrouer@redhat.com, mst@redhat.com,
+        toshiaki.makita1@gmail.com, daniel@iogearbox.net,
+        john.fastabend@gmail.com, ast@kernel.org, kafai@fb.com,
+        songliubraving@fb.com, yhs@fb.com, andriin@fb.com,
+        David Ahern <dahern@digitalocean.com>
+References: <20200123014210.38412-1-dsahern@kernel.org>
+ <20200123014210.38412-4-dsahern@kernel.org> <87tv4m9zio.fsf@toke.dk>
+ <335b624a-655a-c0c6-ca27-102e6dac790b@gmail.com>
+ <20200124072128.4fcb4bd1@cakuba> <87o8usg92d.fsf@toke.dk>
+ <1d84d8be-6812-d63a-97ca-ebc68cc266b9@gmail.com>
+ <20200126141141.0b773aba@cakuba>
+ <33f233a9-88b4-a75a-d1e5-fbbda21f9546@gmail.com>
+ <20200127061623.1cf42cd0@cakuba>
+From:   David Ahern <dsahern@gmail.com>
+Message-ID: <252acf50-91ff-fdc5-3ce1-491a02de07c6@gmail.com>
+Date:   Mon, 27 Jan 2020 20:43:09 -0700
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:68.0)
+ Gecko/20100101 Thunderbird/68.4.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200116124231.20253-6-jasowang@redhat.com>
-User-Agent: Mutt/1.9.4 (2018-02-28)
-X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9513 signatures=668685
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 suspectscore=0 malwarescore=0
- phishscore=0 bulkscore=0 spamscore=0 mlxscore=0 mlxlogscore=999
- adultscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.0.1-1911140001 definitions=main-2001280026
-X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9513 signatures=668685
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 priorityscore=1501 malwarescore=0
- suspectscore=0 phishscore=0 bulkscore=0 spamscore=0 clxscore=1011
- lowpriorityscore=0 mlxscore=0 impostorscore=0 mlxlogscore=999 adultscore=0
- classifier=spam adjust=0 reason=mlx scancount=1 engine=8.0.1-1911140001
- definitions=main-2001280026
+In-Reply-To: <20200127061623.1cf42cd0@cakuba>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Jason,
+On 1/27/20 7:16 AM, Jakub Kicinski wrote:
+>> I want to run an ebpf program in the Tx path of the NIC regardless of
+>> how the packet arrived at the device -- as an skb or an xdp_frame. There
+>> are options for running programs on skb-based packets (e.g., tc). There
+>> are *zero* options for manipulating/controlling/denying xdp_frames -
+>> e.g., one REDIRECTED from an ingress device.
+> 
+> Okay - so no precise use case.  You can run the same program at the 
 
-url:    https://github.com/0day-ci/linux/commits/Jason-Wang/vDPA-support/20200117-170243
-base:   https://git.kernel.org/pub/scm/linux/kernel/git/mst/vhost.git linux-next
+For the sake of this discussion, consider a per-VM, per-tap device ebpf
+program for firewall / ACL / traffic verification (packet manipulation
+is also a possibility). Small, singly focused ebpf programs - attached
+at startup, driven by maps, cleaned up when the tap device is destroyed.
+(Remember: Tx for tap device is ingress to a VM.)
 
-If you fix the issue, kindly add following tag
-Reported-by: kbuild test robot <lkp@intel.com>
-Reported-by: Dan Carpenter <dan.carpenter@oracle.com>
+Small, singly focused programs only run for traffic to be delivered to
+the VM. Setup is easy; cleanup automatic. How the traffic got there
+could vary - from a bridge (L2 forwarding), the host stack (L3 routing),
+or an XDP program on the host's NICs. It could have arrived at the host
+with an encap header which is removed and the inner packet forwarded to
+the VM.
 
-smatch warnings:
-drivers/virtio/vdpa/vdpa_sim.c:288 vdpasim_alloc_coherent() warn: returning freed memory 'addr'
+> end of whatever is doing the redirect (especially with Alexei's work 
 
-# https://github.com/0day-ci/linux/commit/55047769b3e974d68b2aab5ce0022459b172a23f
-git remote add linux-review https://github.com/0day-ci/linux
-git remote update linux-review
-git checkout 55047769b3e974d68b2aab5ce0022459b172a23f
-vim +/addr +288 drivers/virtio/vdpa/vdpa_sim.c
+There are use cases where they may make sense, but this is not one.
 
-55047769b3e974 Jason Wang 2020-01-16  263  static void *vdpasim_alloc_coherent(struct device *dev, size_t size,
-55047769b3e974 Jason Wang 2020-01-16  264  				    dma_addr_t *dma_addr, gfp_t flag,
-55047769b3e974 Jason Wang 2020-01-16  265  				    unsigned long attrs)
-55047769b3e974 Jason Wang 2020-01-16  266  {
-55047769b3e974 Jason Wang 2020-01-16  267  	struct vdpa_device *vdpa = dev_to_vdpa(dev);
-55047769b3e974 Jason Wang 2020-01-16  268  	struct vdpasim *vdpasim = vdpa_to_sim(vdpa);
-55047769b3e974 Jason Wang 2020-01-16  269  	struct vhost_iotlb *iommu = vdpasim->iommu;
-55047769b3e974 Jason Wang 2020-01-16  270  	void *addr = kmalloc(size, flag);
-55047769b3e974 Jason Wang 2020-01-16  271  	int ret;
-55047769b3e974 Jason Wang 2020-01-16  272  
-55047769b3e974 Jason Wang 2020-01-16  273  	if (!addr)
-55047769b3e974 Jason Wang 2020-01-16  274  		*dma_addr = DMA_MAPPING_ERROR;
-55047769b3e974 Jason Wang 2020-01-16  275  	else {
-55047769b3e974 Jason Wang 2020-01-16  276  		u64 pa = virt_to_phys(addr);
-55047769b3e974 Jason Wang 2020-01-16  277  
-55047769b3e974 Jason Wang 2020-01-16  278  		ret = vhost_iotlb_add_range(iommu, (u64)pa,
-55047769b3e974 Jason Wang 2020-01-16  279  					    (u64)pa + size - 1,
-55047769b3e974 Jason Wang 2020-01-16  280  					    pa, VHOST_MAP_RW);
-55047769b3e974 Jason Wang 2020-01-16  281  		if (ret) {
-55047769b3e974 Jason Wang 2020-01-16  282  			kfree(addr);
-                                                                ^^^^^^^^^^^
-55047769b3e974 Jason Wang 2020-01-16  283  			*dma_addr = DMA_MAPPING_ERROR;
-55047769b3e974 Jason Wang 2020-01-16  284  		} else
-55047769b3e974 Jason Wang 2020-01-16  285  			*dma_addr = (dma_addr_t)pa;
-55047769b3e974 Jason Wang 2020-01-16  286  	}
-55047769b3e974 Jason Wang 2020-01-16  287  
-55047769b3e974 Jason Wang 2020-01-16 @288  	return addr;
-                                                ^^^^^^^^^^^^
-55047769b3e974 Jason Wang 2020-01-16  289  }
+> on linking) and from cls_bpf 🤷‍♂️
+> 
 
----
-0-DAY kernel test infrastructure                 Open Source Technology Center
-https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org Intel Corporation
+cls_bpf is tc based == skb, no? I want to handle any packet, regardless
+of how it arrived at the device's xmit function.
