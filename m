@@ -2,103 +2,114 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 5E2A414B37B
-	for <lists+netdev@lfdr.de>; Tue, 28 Jan 2020 12:27:22 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D82DA14B4E5
+	for <lists+netdev@lfdr.de>; Tue, 28 Jan 2020 14:29:55 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1725965AbgA1L1U (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 28 Jan 2020 06:27:20 -0500
-Received: from us-smtp-2.mimecast.com ([205.139.110.61]:50956 "EHLO
-        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1725901AbgA1L1U (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 28 Jan 2020 06:27:20 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1580210839;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=WoK20dj2WtqaSEOQp40+FfgOB/2S785cb3dvVwYAbWw=;
-        b=dQACrC8DPoXWIS5I0qPuDoGSTcFZHUWtBszW2BpMUNwWTci89G5DTrPjc9aBwGf4Sv/Ifq
-        SOWEP94L71KEpsfCF0fvZ/UHWc8krtQVHdXk7DPxPQ8gSoFuRC45LUXOPhwD+h2RWTjChU
-        UTTtpv2A6h4zZCbRtu1IKoq09ILxVR0=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-428-4vS0gXQ5PtmCzKoc4H25-Q-1; Tue, 28 Jan 2020 06:27:15 -0500
-X-MC-Unique: 4vS0gXQ5PtmCzKoc4H25-Q-1
-Received: from smtp.corp.redhat.com (int-mx01.intmail.prod.int.phx2.redhat.com [10.5.11.11])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        id S1726233AbgA1N3v (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 28 Jan 2020 08:29:51 -0500
+Received: from mail.kernel.org ([198.145.29.99]:60486 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1725852AbgA1N3v (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 28 Jan 2020 08:29:51 -0500
+Received: from localhost (83-86-89-107.cable.dynamic.v4.ziggo.nl [83.86.89.107])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 0096213E5;
-        Tue, 28 Jan 2020 11:27:14 +0000 (UTC)
-Received: from ovpn-118-5.ams2.redhat.com (unknown [10.36.118.5])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 929C2863C9;
-        Tue, 28 Jan 2020 11:27:12 +0000 (UTC)
-Message-ID: <2c22b5de7b99cd6b32117f907ea031beb5b59d1e.camel@redhat.com>
-Subject: Re: [PATCH net] udp: segment looped gso packets correctly
-From:   Paolo Abeni <pabeni@redhat.com>
-To:     Willem de Bruijn <willemdebruijn.kernel@gmail.com>,
-        netdev@vger.kernel.org
-Cc:     davem@davemloft.net, Willem de Bruijn <willemb@google.com>,
-        syzbot <syzkaller@googlegroups.com>
-Date:   Tue, 28 Jan 2020 12:27:14 +0100
-In-Reply-To: <20200127204031.244254-1-willemdebruijn.kernel@gmail.com>
-References: <20200127204031.244254-1-willemdebruijn.kernel@gmail.com>
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.32.5 (3.32.5-1.fc30) 
+        by mail.kernel.org (Postfix) with ESMTPSA id 0CDFF22522;
+        Tue, 28 Jan 2020 13:29:50 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1580218190;
+        bh=6ZWtuJeJGD/vSdabZ+Y8n3PzjfZ41WaLfTxUqO7NTS4=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=LTtQjKO6EYlnnorbv7eYnezhDMhehRtItnN54RZ1s43CGNB4vbPgOIzeXdQ8tEvmr
+         XOzUXi1iLehhViF7oiXMNQSHuPwzbzqEIvSC7/f3H85S3WeLaqf0R2Cngz10NvL8gv
+         bHg154WREvL5LqrTjfXxWY4NAWI9GfFvbzZi9Mhs=
+Date:   Tue, 28 Jan 2020 14:29:41 +0100
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     Jouni =?iso-8859-1?Q?H=F6gander?= <jouni.hogander@unikie.com>
+Cc:     Lukas Bulwahn <lukas.bulwahn@gmail.com>,
+        open list <linux-kernel@vger.kernel.org>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Ben Hutchings <ben.hutchings@codethink.co.uk>,
+        linux- stable <stable@vger.kernel.org>,
+        Netdev <netdev@vger.kernel.org>,
+        Al Viro <viro@zeniv.linux.org.uk>,
+        linux-fsdevel@vger.kernel.org, Eric Dumazet <edumazet@google.com>,
+        "David S. Miller" <davem@davemloft.net>, syzkaller@googlegroups.com
+Subject: Re: [PATCH 4.19 000/306] 4.19.87-stable review
+Message-ID: <20200128132941.GA2956977@kroah.com>
+References: <20191127203114.766709977@linuxfoundation.org>
+ <CA+G9fYuAY+14aPiRVUcXLbsr5zJ-GLjULX=s9jcGWcw_vb5Kzw@mail.gmail.com>
+ <20191128073623.GE3317872@kroah.com>
+ <CAKXUXMy_=gVVw656AL5Rih_DJrdrFLoURS-et0+dpJ2cKaw6SQ@mail.gmail.com>
+ <20191129085800.GF3584430@kroah.com>
+ <87sgk8szhc.fsf@unikie.com>
+ <87zhe727uo.fsf@unikie.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.11
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <87zhe727uo.fsf@unikie.com>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, 2020-01-27 at 15:40 -0500, Willem de Bruijn wrote:
-> From: Willem de Bruijn <willemb@google.com>
+On Tue, Jan 28, 2020 at 12:28:15PM +0200, Jouni Högander wrote:
+> Hello Greg,
 > 
-> Multicast and broadcast packets can be looped from egress to ingress
-> pre segmentation with dev_loopback_xmit. That function unconditionally
-> sets ip_summed to CHECKSUM_UNNECESSARY.
+> jouni.hogander@unikie.com (Jouni Högander) writes:
 > 
-> udp_rcv_segment segments gso packets in the udp rx path. Segmentation
-> usually executes on egress, and does not expect packets of this type.
-> __udp_gso_segment interprets !CHECKSUM_PARTIAL as CHECKSUM_NONE. But
-> the offsets are not correct for gso_make_checksum.
+> > Greg Kroah-Hartman <gregkh@linuxfoundation.org> writes:
+> >>> > Now queued up, I'll push out -rc2 versions with this fix.
+> >>> >
+> >>> > greg k-h
+> >>> 
+> >>> We have also been informed about another regression these two commits
+> >>> are causing:
+> >>> 
+> >>> https://lore.kernel.org/lkml/ace19af4-7cae-babd-bac5-cd3505dcd874@I-love.SAKURA.ne.jp/
+> >>> 
+> >>> I suggest to drop these two patches from this queue, and give us a
+> >>> week to shake out the regressions of the change, and once ready, we
+> >>> can include the complete set of fixes to stable (probably in a week or
+> >>> two).
+> >>
+> >> Ok, thanks for the information, I've now dropped them from all of the
+> >> queues that had them in them.
+> >>
+> >> greg k-h
+> >
+> > I have now run more extensive Syzkaller testing on following patches:
+> >
+> > cb626bf566eb net-sysfs: Fix reference count leak
+> > ddd9b5e3e765 net-sysfs: Call dev_hold always in rx_queue_add_kobject
+> > e0b60903b434 net-sysfs: Call dev_hold always in netdev_queue_add_kobje
+> > 48a322b6f996 net-sysfs: fix netdev_queue_add_kobject() breakage
+> > b8eb718348b8 net-sysfs: Fix reference count leak in rx|netdev_queue_add_kobject
+> >
+> > These patches are fixing couple of memory leaks including this one found
+> > by Syzbot: https://syzkaller.appspot.com/bug?extid=ad8ca40ecd77896d51e2
+> >
+> > I can reproduce these memory leaks in following stable branches: 4.14,
+> > 4.19, and 5.4.
+> >
+> > These are all now merged into net/master tree and based on my testing
+> > they are ready to be taken into stable branches as well.
+> >
+> > Best Regards,
+> >
+> > Jouni Högander
 > 
-> UDP GSO packets are of type CHECKSUM_PARTIAL, with their uh->check set
-> to the correct pseudo header checksum. Reset ip_summed to this type.
-> (CHECKSUM_PARTIAL is allowed on ingress, see comments in skbuff.h)
+> These four patches are still missing from 4.14 and 4.19 branches:
 > 
-> Reported-by: syzbot <syzkaller@googlegroups.com>
-> Fixes: cf329aa42b66 ("udp: cope with UDP GRO packet misdirection")
-> Signed-off-by: Willem de Bruijn <willemb@google.com>
-> ---
->  include/net/udp.h | 3 +++
->  1 file changed, 3 insertions(+)
+> ddd9b5e3e765 net-sysfs: Call dev_hold always in rx_queue_add_kobject
+> e0b60903b434 net-sysfs: Call dev_hold always in netdev_queue_add_kobje
+> 48a322b6f996 net-sysfs: fix netdev_queue_add_kobject() breakage
+> b8eb718348b8 net-sysfs: Fix reference count leak in rx|netdev_queue_add_kobject
 > 
-> diff --git a/include/net/udp.h b/include/net/udp.h
-> index bad74f7808311..8f163d674f072 100644
-> --- a/include/net/udp.h
-> +++ b/include/net/udp.h
-> @@ -476,6 +476,9 @@ static inline struct sk_buff *udp_rcv_segment(struct sock *sk,
->  	if (!inet_get_convert_csum(sk))
->  		features |= NETIF_F_IP_CSUM | NETIF_F_IPV6_CSUM;
->  
-> +	if (skb->pkt_type == PACKET_LOOPBACK)
-> +		skb->ip_summed = CHECKSUM_PARTIAL;
-> +
->  	/* the GSO CB lays after the UDP one, no need to save and restore any
->  	 * CB fragment
->  	 */
+> Could you please consider taking them in or let me know if you want some
+> further activities from my side?
 
-LGTM, Thanks!
+Thanks for the list, I have now queued these all up.
 
-Acked-by: Paolo Abeni <pabeni@redhat.com>
-
-Out of sheer curiosity, do you know what was the kernel behaviour
-before the 'fixes' commit ? GSO packet delivered to user-space stillaggregated ?!? 
-
-Thanks,
-
-Paolo
-
+greg k-h
