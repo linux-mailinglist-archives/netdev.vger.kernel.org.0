@@ -2,43 +2,47 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id A5C9214B8C5
-	for <lists+netdev@lfdr.de>; Tue, 28 Jan 2020 15:27:17 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 974AE14BC45
+	for <lists+netdev@lfdr.de>; Tue, 28 Jan 2020 15:52:28 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1733277AbgA1O1N (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 28 Jan 2020 09:27:13 -0500
-Received: from mail.kernel.org ([198.145.29.99]:54840 "EHLO mail.kernel.org"
+        id S1726327AbgA1N63 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 28 Jan 2020 08:58:29 -0500
+Received: from mail.kernel.org ([198.145.29.99]:43204 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1733097AbgA1O1L (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 28 Jan 2020 09:27:11 -0500
+        id S1726107AbgA1N63 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 28 Jan 2020 08:58:29 -0500
 Received: from localhost (83-86-89-107.cable.dynamic.v4.ziggo.nl [83.86.89.107])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id E099720716;
-        Tue, 28 Jan 2020 14:27:09 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id A53012173E;
+        Tue, 28 Jan 2020 13:58:27 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1580221630;
-        bh=hNUuSpR/k3+mdub8eIuCkfnODaICqkGo37Nmkd2O/UM=;
+        s=default; t=1580219908;
+        bh=EmU2KblDL3LVYksrDiv/+aYOedkX9CR3qRvOgmbDTWc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ISWilGkufwaUfniMpPdGShuokXNScvrpGCxHT5bGwl2qszlgZcyppQEy1G5oV/BOh
-         n+K5muT33rBJAlc5PZxw8YbcyaxLU+Wv2pe3qdlpGaIa9oNGvn9fRILXsje/7YxuIU
-         2erTQkjaQXgQZoewh7aBrbuhjinJnU/sarEEMy8w=
+        b=CAL2b7+ZfPD3enM4xFYuTgHBzdc+UzJNR5IqHGGh3IBbgg339vnRk0vgpWGCNkadl
+         Eg/430dEMXmocJcVBYp1YAL+lSX7eWxuql16sWxVlOyzRzdxONKcOgFXVyKjXy7vhF
+         xKFVRIUJNPXJPiEmDtz1bfbSkpNM4aY6np/zO6H4=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Wen Yang <wenyang@linux.alibaba.com>,
-        Eric Dumazet <edumazet@google.com>,
+        stable@vger.kernel.org,
+        syzbot+017e491ae13c0068598a@syzkaller.appspotmail.com,
+        Richard Palethorpe <rpalethorpe@suse.com>,
+        Wolfgang Grandegger <wg@grandegger.com>,
+        Marc Kleine-Budde <mkl@pengutronix.de>,
         "David S. Miller" <davem@davemloft.net>,
-        Alexey Kuznetsov <kuznet@ms2.inr.ac.ru>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        netdev@vger.kernel.org
-Subject: [PATCH 4.19 19/92] tcp_bbr: improve arithmetic division in bbr_update_bw()
-Date:   Tue, 28 Jan 2020 15:07:47 +0100
-Message-Id: <20200128135811.615398397@linuxfoundation.org>
+        Tyler Hall <tylerwhall@gmail.com>, linux-can@vger.kernel.org,
+        netdev@vger.kernel.org, syzkaller@googlegroups.com
+Subject: [PATCH 4.14 01/46] can, slip: Protect tty->disc_data in write_wakeup and close with RCU
+Date:   Tue, 28 Jan 2020 14:57:35 +0100
+Message-Id: <20200128135750.358825967@linuxfoundation.org>
 X-Mailer: git-send-email 2.25.0
-In-Reply-To: <20200128135809.344954797@linuxfoundation.org>
-References: <20200128135809.344954797@linuxfoundation.org>
+In-Reply-To: <20200128135749.822297911@linuxfoundation.org>
+References: <20200128135749.822297911@linuxfoundation.org>
 User-Agent: quilt/0.66
+X-stable: review
+X-Patchwork-Hint: ignore
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
@@ -47,39 +51,109 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Wen Yang <wenyang@linux.alibaba.com>
+From: Richard Palethorpe <rpalethorpe@suse.com>
 
-[ Upstream commit 5b2f1f3070b6447b76174ea8bfb7390dc6253ebd ]
+[ Upstream commit 0ace17d56824165c7f4c68785d6b58971db954dd ]
 
-do_div() does a 64-by-32 division. Use div64_long() instead of it
-if the divisor is long, to avoid truncation to 32-bit.
-And as a nice side effect also cleans up the function a bit.
+write_wakeup can happen in parallel with close/hangup where tty->disc_data
+is set to NULL and the netdevice is freed thus also freeing
+disc_data. write_wakeup accesses disc_data so we must prevent close from
+freeing the netdev while write_wakeup has a non-NULL view of
+tty->disc_data.
 
-Signed-off-by: Wen Yang <wenyang@linux.alibaba.com>
-Cc: Eric Dumazet <edumazet@google.com>
+We also need to make sure that accesses to disc_data are atomic. Which can
+all be done with RCU.
+
+This problem was found by Syzkaller on SLCAN, but the same issue is
+reproducible with the SLIP line discipline using an LTP test based on the
+Syzkaller reproducer.
+
+A fix which didn't use RCU was posted by Hillf Danton.
+
+Fixes: 661f7fda21b1 ("slip: Fix deadlock in write_wakeup")
+Fixes: a8e83b17536a ("slcan: Port write_wakeup deadlock fix from slip")
+Reported-by: syzbot+017e491ae13c0068598a@syzkaller.appspotmail.com
+Signed-off-by: Richard Palethorpe <rpalethorpe@suse.com>
+Cc: Wolfgang Grandegger <wg@grandegger.com>
+Cc: Marc Kleine-Budde <mkl@pengutronix.de>
 Cc: "David S. Miller" <davem@davemloft.net>
-Cc: Alexey Kuznetsov <kuznet@ms2.inr.ac.ru>
-Cc: Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>
+Cc: Tyler Hall <tylerwhall@gmail.com>
+Cc: linux-can@vger.kernel.org
 Cc: netdev@vger.kernel.org
 Cc: linux-kernel@vger.kernel.org
-Signed-off-by: Eric Dumazet <edumazet@google.com>
+Cc: syzkaller@googlegroups.com
 Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- net/ipv4/tcp_bbr.c |    3 +--
- 1 file changed, 1 insertion(+), 2 deletions(-)
+ drivers/net/can/slcan.c |   12 ++++++++++--
+ drivers/net/slip/slip.c |   12 ++++++++++--
+ 2 files changed, 20 insertions(+), 4 deletions(-)
 
---- a/net/ipv4/tcp_bbr.c
-+++ b/net/ipv4/tcp_bbr.c
-@@ -680,8 +680,7 @@ static void bbr_update_bw(struct sock *s
- 	 * bandwidth sample. Delivered is in packets and interval_us in uS and
- 	 * ratio will be <<1 for most connections. So delivered is first scaled.
- 	 */
--	bw = (u64)rs->delivered * BW_UNIT;
--	do_div(bw, rs->interval_us);
-+	bw = div64_long((u64)rs->delivered * BW_UNIT, rs->interval_us);
+--- a/drivers/net/can/slcan.c
++++ b/drivers/net/can/slcan.c
+@@ -343,9 +343,16 @@ static void slcan_transmit(struct work_s
+  */
+ static void slcan_write_wakeup(struct tty_struct *tty)
+ {
+-	struct slcan *sl = tty->disc_data;
++	struct slcan *sl;
++
++	rcu_read_lock();
++	sl = rcu_dereference(tty->disc_data);
++	if (!sl)
++		goto out;
  
- 	/* If this sample is application-limited, it is likely to have a very
- 	 * low delivered count that represents application behavior rather than
+ 	schedule_work(&sl->tx_work);
++out:
++	rcu_read_unlock();
+ }
+ 
+ /* Send a can_frame to a TTY queue. */
+@@ -640,10 +647,11 @@ static void slcan_close(struct tty_struc
+ 		return;
+ 
+ 	spin_lock_bh(&sl->lock);
+-	tty->disc_data = NULL;
++	rcu_assign_pointer(tty->disc_data, NULL);
+ 	sl->tty = NULL;
+ 	spin_unlock_bh(&sl->lock);
+ 
++	synchronize_rcu();
+ 	flush_work(&sl->tx_work);
+ 
+ 	/* Flush network side */
+--- a/drivers/net/slip/slip.c
++++ b/drivers/net/slip/slip.c
+@@ -452,9 +452,16 @@ static void slip_transmit(struct work_st
+  */
+ static void slip_write_wakeup(struct tty_struct *tty)
+ {
+-	struct slip *sl = tty->disc_data;
++	struct slip *sl;
++
++	rcu_read_lock();
++	sl = rcu_dereference(tty->disc_data);
++	if (!sl)
++		goto out;
+ 
+ 	schedule_work(&sl->tx_work);
++out:
++	rcu_read_unlock();
+ }
+ 
+ static void sl_tx_timeout(struct net_device *dev)
+@@ -886,10 +893,11 @@ static void slip_close(struct tty_struct
+ 		return;
+ 
+ 	spin_lock_bh(&sl->lock);
+-	tty->disc_data = NULL;
++	rcu_assign_pointer(tty->disc_data, NULL);
+ 	sl->tty = NULL;
+ 	spin_unlock_bh(&sl->lock);
+ 
++	synchronize_rcu();
+ 	flush_work(&sl->tx_work);
+ 
+ 	/* VSV = very important to remove timers */
 
 
