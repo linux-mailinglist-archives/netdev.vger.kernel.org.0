@@ -2,183 +2,147 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 6C2C514AE09
-	for <lists+netdev@lfdr.de>; Tue, 28 Jan 2020 03:15:50 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6468614AE3C
+	for <lists+netdev@lfdr.de>; Tue, 28 Jan 2020 04:00:06 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727773AbgA1CPs (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 27 Jan 2020 21:15:48 -0500
-Received: from mail-pl1-f193.google.com ([209.85.214.193]:41695 "EHLO
-        mail-pl1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726428AbgA1CPs (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 27 Jan 2020 21:15:48 -0500
-Received: by mail-pl1-f193.google.com with SMTP id t14so4471115plr.8
-        for <netdev@vger.kernel.org>; Mon, 27 Jan 2020 18:15:47 -0800 (PST)
+        id S1726428AbgA1DAD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 27 Jan 2020 22:00:03 -0500
+Received: from mail-pj1-f66.google.com ([209.85.216.66]:39480 "EHLO
+        mail-pj1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726101AbgA1DAD (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 27 Jan 2020 22:00:03 -0500
+Received: by mail-pj1-f66.google.com with SMTP id e9so351489pjr.4
+        for <netdev@vger.kernel.org>; Mon, 27 Jan 2020 19:00:03 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20161025;
-        h=date:subject:cc:from:to:in-reply-to:references:message-id
-         :mime-version:content-transfer-encoding;
-        bh=qmbQ0SD8DHdPpZVGfV+v1K3FzTS4vgL8G+UXqGsRlEM=;
-        b=oJYkHQY0Qg9dTZkcxG6jkQGXiG0GH5ZtKl+UrH4KB1GB4Mw3rWF5wj5MLx9pa78QxD
-         DMYj3w0MOwW3VuO2O9u5lraOKIO6RbPE3a8ClNKWLDgde+w7IJ0zvx2q+y0f+DYwhv0Q
-         +meFECUlEmD+V1igh3dP1bMGVpRH6xKEqP4FRn9giySfJKsQ5CmgrVaOGc3Mtw2ZoMM4
-         eGmnxzo917BFntj3SkDta9Dyh7xBaM3qKVL/s2IbZmUX3hXsW8OVtQdb/gi/QMWHbyb8
-         ZwtVULSmtrgXyhmYNTeGemhXraoOjOJay1yszOmIo2Dc+vkEld06UMMdIQYktXRgq5bW
-         +/Og==
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=Zb3vaMlCnEIaKoKuEPxaWXPkDmU9sA/hlBePDwvbZxg=;
+        b=LiOCq7RXddMvB8gqmSOf6SqFzuigpHoidXnqfx1tmw4gchYK7DyHGRfRRMRmeiQHa5
+         JKbTG4aY/Gr6SoFpadbwo62q0ywyr/n3o3LOMTlg76mA6a63mFuE5xmU2ZXO7uZumOi5
+         Ec4mciVce/7oP2Y+cfIVVW1kxwUFSxeUg4pH3SUXeYl4DyzslPuFRAB/+J9lGqn91bSw
+         NDPQpuPhm/U3Co3DSk5D3hf1a8Wi4F2OIjUJYK6oDRB9CHUGrV2oQ4CykjitPHhMQwRI
+         sgCs2Am8qmGS/sulZboX2fGRFlECoQ31PNVW3HfBi/6L1+mSoit81VWMFpIPqY8Sktiu
+         bIaQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:subject:cc:from:to:in-reply-to:references
-         :message-id:mime-version:content-transfer-encoding;
-        bh=qmbQ0SD8DHdPpZVGfV+v1K3FzTS4vgL8G+UXqGsRlEM=;
-        b=pUTvVFb8NTSPjavpfB0MZdU0sB906TdXsSrf108VpwQiCt65i1hBXuKakEau13qJR8
-         GWFxZjmsQY+E9itQLETJWePQWBxE3yqKswPNSF9ESWr4L3kQPPtXVryMCCU6TYRevbOi
-         yiDYuPAxTHs4rKj7Z2K9gCJ2VqTs17839/DzHrwIC9VVnymNvHOjRxBXf01a93csq0Cd
-         D74O+svb8KfXuaAnTSuo8CnRz1BWmbZnJf1WK6HJ4dKgb4FLTUxy+B1uXKJJ7t68utG5
-         /WUfkYoeAeAoimQjGin+aqYftKC1GcelqLT75SY9AQ//aKu3rpJVvgXAbarx/kD7B0zm
-         WXsw==
-X-Gm-Message-State: APjAAAV/1+Rvaq3GaEhLL1KSpOFwudfKCAVh8fT8TZfSkwacM8LVUY81
-        vss578T8n1khwfMxurZKX/ax5w==
-X-Google-Smtp-Source: APXvYqxyw1+9nDeY2fJ0PoezS+gA2HUhBTNGtpwFtRWhhrLUPF/Qn0/RVu3ns6X61ABPQl7i3FNfZQ==
-X-Received: by 2002:a17:902:b484:: with SMTP id y4mr20197741plr.126.1580177747166;
-        Mon, 27 Jan 2020 18:15:47 -0800 (PST)
-Received: from localhost ([216.9.110.1])
-        by smtp.gmail.com with ESMTPSA id u18sm17430131pgi.44.2020.01.27.18.15.46
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=Zb3vaMlCnEIaKoKuEPxaWXPkDmU9sA/hlBePDwvbZxg=;
+        b=eOJrtpE/QY9qWdNnF0PiuOoib+dlgNWwAW74VdICXbUPL8g5fcvD+RcH6dofK+HpL+
+         3s+TQcfiyHwuqRm+4tUrh6ZB7wq/Zen2WrfhcdlKnIWQ3v4G9xbQ6SBdpavKj3CFVr/z
+         8Scowjju1iV3iYUzqRJA0azaOih2if/VY++/gNMJeaOq2GejwelNDFSXpWf4UTiY6a1b
+         AY9Iju5q6v9B0RM77J9mJHx4ZiMjz3XMpbgjWFhSYJ4ZfI2jBVNxuYdjY/NrMDpIuXt0
+         TJ+J6VWBG5BHyioRQurcEgYvtzQtpv4jOori22yvl6XSjT7IwCBldz3IPVuoZ6AxNQS4
+         LQgA==
+X-Gm-Message-State: APjAAAW+22FhIuQzMhx8BC2zRC09vdR5v8pLRZF8v3FyB+QoTawTXTLL
+        LHVIkUhfAYTx+MFo525r7TXQYizE
+X-Google-Smtp-Source: APXvYqxdehSUpRTXWeeWl84SjIcqzzB1FI5QVI5bMLYuYQHCyF2qDcEOjLEyJArRTHCaPCpAvV9H9w==
+X-Received: by 2002:a17:90a:858a:: with SMTP id m10mr2092329pjn.117.1580180402682;
+        Mon, 27 Jan 2020 19:00:02 -0800 (PST)
+Received: from phantasmagoria.svl.corp.google.com ([2620:15c:2c4:201:2b0a:8c1:6a84:1aa0])
+        by smtp.gmail.com with ESMTPSA id p5sm18184677pga.69.2020.01.27.19.00.01
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 27 Jan 2020 18:15:46 -0800 (PST)
-Date:   Mon, 27 Jan 2020 18:15:46 -0800 (PST)
-X-Google-Original-Date: Mon, 27 Jan 2020 18:15:44 PST (-0800)
-Subject:     Re: [PATCH bpf-next v2 7/9] riscv, bpf: optimize calls
-CC:     daniel@iogearbox.net, ast@kernel.org, netdev@vger.kernel.org,
-        linux-riscv@lists.infradead.org, bpf@vger.kernel.org
-From:   Palmer Dabbelt <palmerdabbelt@google.com>
-To:     Bjorn Topel <bjorn.topel@gmail.com>
-In-Reply-To: <CAJ+HfNhvTdsBq_tmKNcxVdS=nro=jwL5yLxnyDXO02Vai+5YNg@mail.gmail.com>
-References: <CAJ+HfNhvTdsBq_tmKNcxVdS=nro=jwL5yLxnyDXO02Vai+5YNg@mail.gmail.com>
-  <20191216091343.23260-1-bjorn.topel@gmail.com> <20191216091343.23260-8-bjorn.topel@gmail.com>
-  <mhng-041b1051-f9ac-4cd8-95bf-731bb1bfbdb8@palmerdabbelt-glaptop>
-Message-ID: <mhng-a006210f-8a00-42c3-b93d-135144220411@palmerdabbelt-glaptop1>
-Mime-Version: 1.0 (MHng)
-Content-Type: text/plain; charset=utf-8; format=flowed
+        Mon, 27 Jan 2020 19:00:02 -0800 (PST)
+From:   Arjun Roy <arjunroy.kdev@gmail.com>
+To:     davem@davemloft.net, netdev@vger.kernel.org,
+        akpm@linux-foundation.org, linux-mm@kvack.org
+Cc:     arjunroy@google.com, Eric Dumazet <edumazet@google.com>,
+        Soheil Hassas Yeganeh <soheil@google.com>
+Subject: [PATCH resend mm,net-next 1/3] mm: Refactor insert_page to prepare for batched-lock insert.
+Date:   Mon, 27 Jan 2020 18:59:56 -0800
+Message-Id: <20200128025958.43490-1-arjunroy.kdev@gmail.com>
+X-Mailer: git-send-email 2.25.0.341.g760bfbb309-goog
+MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 07 Jan 2020 02:14:17 PST (-0800), Bjorn Topel wrote:
-> On Mon, 23 Dec 2019 at 19:58, Palmer Dabbelt <palmerdabbelt@google.com> wrote:
->>
->> On Mon, 16 Dec 2019 01:13:41 PST (-0800), Bjorn Topel wrote:
->> > Instead of using emit_imm() and emit_jalr() which can expand to six
->> > instructions, start using jal or auipc+jalr.
->> >
->> > Signed-off-by: Björn Töpel <bjorn.topel@gmail.com>
->> > ---
->> >  arch/riscv/net/bpf_jit_comp.c | 101 +++++++++++++++++++++-------------
->> >  1 file changed, 64 insertions(+), 37 deletions(-)
->> >
->> > diff --git a/arch/riscv/net/bpf_jit_comp.c b/arch/riscv/net/bpf_jit_comp.c
->> > index 46cff093f526..8d7e3343a08c 100644
->> > --- a/arch/riscv/net/bpf_jit_comp.c
->> > +++ b/arch/riscv/net/bpf_jit_comp.c
->> > @@ -811,11 +811,12 @@ static void emit_sext_32_rd(u8 *rd, struct rv_jit_context *ctx)
->> >       *rd = RV_REG_T2;
->> >  }
->> >
->> > -static void emit_jump_and_link(u8 rd, int rvoff, struct rv_jit_context *ctx)
->> > +static void emit_jump_and_link(u8 rd, s64 rvoff, bool force_jalr,
->> > +                            struct rv_jit_context *ctx)
->> >  {
->> >       s64 upper, lower;
->> >
->> > -     if (is_21b_int(rvoff)) {
->> > +     if (rvoff && is_21b_int(rvoff) && !force_jalr) {
->> >               emit(rv_jal(rd, rvoff >> 1), ctx);
->> >               return;
->> >       }
->> > @@ -832,6 +833,28 @@ static bool is_signed_bpf_cond(u8 cond)
->> >               cond == BPF_JSGE || cond == BPF_JSLE;
->> >  }
->> >
->> > +static int emit_call(bool fixed, u64 addr, struct rv_jit_context *ctx)
->> > +{
->> > +     s64 off = 0;
->> > +     u64 ip;
->> > +     u8 rd;
->> > +
->> > +     if (addr && ctx->insns) {
->> > +             ip = (u64)(long)(ctx->insns + ctx->ninsns);
->> > +             off = addr - ip;
->> > +             if (!is_32b_int(off)) {
->> > +                     pr_err("bpf-jit: target call addr %pK is out of range\n",
->> > +                            (void *)addr);
->> > +                     return -ERANGE;
->> > +             }
->> > +     }
->> > +
->> > +     emit_jump_and_link(RV_REG_RA, off, !fixed, ctx);
->> > +     rd = bpf_to_rv_reg(BPF_REG_0, ctx);
->> > +     emit(rv_addi(rd, RV_REG_A0, 0), ctx);
->>
->> Why are they out of order?  It seems like it'd be better to just have the BPF
->> calling convention match the RISC-V calling convention, as that'd avoid
->> juggling the registers around.
->>
->
-> BPF passes arguments in R1, R2, ..., and return value in R0. Given
-> that a0 plays the role of R1 and R0, how can we avoid the register
-> juggling (without complicating the JIT too much)? It would be nice
-> though... and ARM64 has the same concern AFAIK.
+From: Arjun Roy <arjunroy@google.com>
 
-Oh, why did you say that?  This kind of stuff is why I'm twenty days behind on
-email...
+Add helper methods for vm_insert_page()/insert_page() to prepare for
+vm_insert_pages(), which batch-inserts pages to reduce spinlock
+operations when inserting multiple consecutive pages into the user
+page table.
 
-https://lore.kernel.org/bpf/20200128021145.36774-1-palmerdabbelt@google.com/T/#t
+The intention of this patch-set is to reduce atomic ops for
+tcp zerocopy receives, which normally hits the same spinlock multiple
+times consecutively.
 
-:)
+Signed-off-by: Arjun Roy <arjunroy@google.com>
+Signed-off-by: Eric Dumazet <edumazet@google.com>
+Signed-off-by: Soheil Hassas Yeganeh <soheil@google.com>
 
-> [...]
->> > @@ -1599,36 +1611,51 @@ struct bpf_prog *bpf_int_jit_compile(struct bpf_prog *prog)
->> >       for (i = 0; i < 16; i++) {
->> >               pass++;
->> >               ctx->ninsns = 0;
->> > -             if (build_body(ctx, extra_pass)) {
->> > +             if (build_body(ctx, extra_pass, ctx->offset)) {
->> >                       prog = orig_prog;
->> >                       goto out_offset;
->> >               }
->> >               build_prologue(ctx);
->> >               ctx->epilogue_offset = ctx->ninsns;
->> >               build_epilogue(ctx);
->> > -             if (ctx->ninsns == prev_ninsns)
->> > -                     break;
->> > +
->> > +             if (ctx->ninsns == prev_ninsns) {
->> > +                     if (jit_data->header)
->> > +                             break;
->> > +
->> > +                     image_size = sizeof(u32) * ctx->ninsns;
->> > +                     jit_data->header =
->> > +                             bpf_jit_binary_alloc(image_size,
->> > +                                                  &jit_data->image,
->> > +                                                  sizeof(u32),
->> > +                                                  bpf_fill_ill_insns);
->> > +                     if (!jit_data->header) {
->> > +                             prog = orig_prog;
->> > +                             goto out_offset;
->> > +                     }
->> > +
->> > +                     ctx->insns = (u32 *)jit_data->image;
->> > +                     /* Now, when the image is allocated, the image
->> > +                      * can potentially shrink more (auipc/jalr ->
->> > +                      * jal).
->> > +                      */
->> > +             }
->>
->> It seems like these fragments should go along with patch #2 that introduces the
->> code, as I don't see anything above that makes this necessary here.
->>
->
-> No, you're right.
->
->
-> Björn
+---
+ mm/memory.c | 41 ++++++++++++++++++++++++-----------------
+ 1 file changed, 24 insertions(+), 17 deletions(-)
+
+diff --git a/mm/memory.c b/mm/memory.c
+index 7c6e19bdc428..7e23a9275386 100644
+--- a/mm/memory.c
++++ b/mm/memory.c
+@@ -1693,6 +1693,27 @@ pte_t *__get_locked_pte(struct mm_struct *mm, unsigned long addr,
+ 	return pte_alloc_map_lock(mm, pmd, addr, ptl);
+ }
+ 
++static int validate_page_before_insert(struct page *page)
++{
++	if (PageAnon(page) || PageSlab(page))
++		return -EINVAL;
++	flush_dcache_page(page);
++	return 0;
++}
++
++static int insert_page_into_pte_locked(struct mm_struct *mm, pte_t *pte,
++			unsigned long addr, struct page *page, pgprot_t prot)
++{
++	if (!pte_none(*pte))
++		return -EBUSY;
++	/* Ok, finally just insert the thing.. */
++	get_page(page);
++	inc_mm_counter_fast(mm, mm_counter_file(page));
++	page_add_file_rmap(page, false);
++	set_pte_at(mm, addr, pte, mk_pte(page, prot));
++	return 0;
++}
++
+ /*
+  * This is the old fallback for page remapping.
+  *
+@@ -1708,28 +1729,14 @@ static int insert_page(struct vm_area_struct *vma, unsigned long addr,
+ 	pte_t *pte;
+ 	spinlock_t *ptl;
+ 
+-	retval = -EINVAL;
+-	if (PageAnon(page) || PageSlab(page))
++	retval = validate_page_before_insert(page);
++	if (retval)
+ 		goto out;
+ 	retval = -ENOMEM;
+-	flush_dcache_page(page);
+ 	pte = get_locked_pte(mm, addr, &ptl);
+ 	if (!pte)
+ 		goto out;
+-	retval = -EBUSY;
+-	if (!pte_none(*pte))
+-		goto out_unlock;
+-
+-	/* Ok, finally just insert the thing.. */
+-	get_page(page);
+-	inc_mm_counter_fast(mm, mm_counter_file(page));
+-	page_add_file_rmap(page, false);
+-	set_pte_at(mm, addr, pte, mk_pte(page, prot));
+-
+-	retval = 0;
+-	pte_unmap_unlock(pte, ptl);
+-	return retval;
+-out_unlock:
++	retval = insert_page_into_pte_locked(mm, pte, addr, page, prot);
+ 	pte_unmap_unlock(pte, ptl);
+ out:
+ 	return retval;
+-- 
+2.25.0.rc1.283.g88dfdc4193-goog
+
