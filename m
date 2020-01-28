@@ -2,197 +2,129 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 53F9414AE3E
-	for <lists+netdev@lfdr.de>; Tue, 28 Jan 2020 04:00:25 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id F13E514AE6D
+	for <lists+netdev@lfdr.de>; Tue, 28 Jan 2020 04:33:50 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726541AbgA1DAX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 27 Jan 2020 22:00:23 -0500
-Received: from mail-pj1-f66.google.com ([209.85.216.66]:34749 "EHLO
-        mail-pj1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726101AbgA1DAX (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 27 Jan 2020 22:00:23 -0500
-Received: by mail-pj1-f66.google.com with SMTP id f2so278275pjq.1
-        for <netdev@vger.kernel.org>; Mon, 27 Jan 2020 19:00:23 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=va5ceMBcMHca5rjvI+EDSohv+EXPpRRFokLBFZz9T2A=;
-        b=Li6NLUzVdFa03uhF/grzvDirq0uQuojXbvzYub/HWIORNwXnnHlhRZjkHVIQ+tU6L3
-         lAlrcES7e1W1qqCpYftPzQfxAWQnNnwsIYgvYZTVbNRgwgKpX/sYPTjxQHPzaNJtiXK3
-         PU4uPf3KV3JrZXGZkN25GnVw9x+0lcWgMi/Y49XqpYcWLeao84PMkZVox7olQm0JMYrH
-         vUyBTw0Yfcq0AX5BnlX2g6eCQmy6NQfa6kcxY5tvXlHLzEHKt5TWPEhLx6AGjRvJKOT4
-         xFkAIVaurbhAceKnPWwsHROBQACe38O8A2O3Kchygy65TGeLzKxm5n9HQRIpjcjFI0Jm
-         Ldkw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=va5ceMBcMHca5rjvI+EDSohv+EXPpRRFokLBFZz9T2A=;
-        b=SWIcKRTpVygFNm/liSQkcKBnSCJn9siFUUr5A2zyGzy3km9D0UXoKYa/iGl98+Qg9N
-         T5cmqEbeTN46D5AK1FeCtkQT4fmUvG9eQq6csDMbcjibVjBEitdGTXScyYmqg20eR3p8
-         i2YcC9AjewNOCOTXM55f3u543xhMkpCC6gvTQ9gA7qXVbpXykmr97REl4Thn5vZYx4ww
-         c4hPUdZCNEfoDx7r0cXssgNdUAW+cqs4RyWrONeg8QOiO1NipUb59t8Be6sh4q2uf5H8
-         YxKqwsR/ID/aNEJmoQQdTgW331s7UPFld90lk/0fr7FRdGYcpDwFXiu1tI1Bl6l8G+Dq
-         pCXA==
-X-Gm-Message-State: APjAAAVODzHbB9i+D5iFdOQoeUwjMkcUlltWujAyiZlUgUJhKPbWHGMv
-        ZcRk0x+vlQCN1l8cwpXgHlk=
-X-Google-Smtp-Source: APXvYqxE4U/Yr9uMcJLTs7FMzjv+WkOIiTCx8pbWC5e7IjY95Sn57gW5PeYdkXHyY+vKApXsIToP7g==
-X-Received: by 2002:a17:90b:4382:: with SMTP id in2mr2137282pjb.29.1580180422682;
-        Mon, 27 Jan 2020 19:00:22 -0800 (PST)
-Received: from phantasmagoria.svl.corp.google.com ([2620:15c:2c4:201:2b0a:8c1:6a84:1aa0])
-        by smtp.gmail.com with ESMTPSA id p5sm18184677pga.69.2020.01.27.19.00.22
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 27 Jan 2020 19:00:22 -0800 (PST)
-From:   Arjun Roy <arjunroy.kdev@gmail.com>
-To:     davem@davemloft.net, netdev@vger.kernel.org,
-        akpm@linux-foundation.org, linux-mm@kvack.org
-Cc:     arjunroy@google.com, Eric Dumazet <edumazet@google.com>,
-        Soheil Hassas Yeganeh <soheil@google.com>
-Subject: [PATCH resend mm,net-next 3/3] net-zerocopy: Use vm_insert_pages() for tcp rcv zerocopy.
-Date:   Mon, 27 Jan 2020 18:59:58 -0800
-Message-Id: <20200128025958.43490-3-arjunroy.kdev@gmail.com>
-X-Mailer: git-send-email 2.25.0.341.g760bfbb309-goog
-In-Reply-To: <20200128025958.43490-1-arjunroy.kdev@gmail.com>
-References: <20200128025958.43490-1-arjunroy.kdev@gmail.com>
+        id S1726571AbgA1Ddp (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 27 Jan 2020 22:33:45 -0500
+Received: from userp2130.oracle.com ([156.151.31.86]:38514 "EHLO
+        userp2130.oracle.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726164AbgA1Ddp (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 27 Jan 2020 22:33:45 -0500
+Received: from pps.filterd (userp2130.oracle.com [127.0.0.1])
+        by userp2130.oracle.com (8.16.0.27/8.16.0.27) with SMTP id 00S3S5Ns001927;
+        Tue, 28 Jan 2020 03:33:01 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=date : from : to : cc
+ : subject : message-id : mime-version : content-type : in-reply-to;
+ s=corp-2019-08-05; bh=Nr7BQpdUONE47IibUeMZ7q+ndlt/7dgoh1WHBUaOUEE=;
+ b=Mq0qwbm+JIcGdVF1wAk4kMmoNoIJQGo8DLETTDyojDh/2SvOjCv5q44ISCYRQDnivZ4X
+ hc89sY8knzZGDkhBQNkH8RD53WBqjy5/jB35ppGP3NPA3vVyLM9KkQEUkKfAbOqjlZtY
+ wVgdatpJqcHozD61VIo4CZm9xXNLI0YzdLWH9aGhIWt55/wdCBIGoMWxxA/IKMHqwNew
+ 9qAVRWTTgL+yCumVzJrCnk0M/DgikpZWUyhRUoTEcAV0PUNfOFpKDjcTZHYzG8IeTBHD
+ da/2rHL/P4X7WShZDRUsBfHu1W+pFJPmGzWJyZHODHuFTnV/yKmYb8uOg82oLRzgr3V7 nw== 
+Received: from aserp3030.oracle.com (aserp3030.oracle.com [141.146.126.71])
+        by userp2130.oracle.com with ESMTP id 2xrd3u3db6-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Tue, 28 Jan 2020 03:33:01 +0000
+Received: from pps.filterd (aserp3030.oracle.com [127.0.0.1])
+        by aserp3030.oracle.com (8.16.0.27/8.16.0.27) with SMTP id 00S3SgiB022942;
+        Tue, 28 Jan 2020 03:33:00 GMT
+Received: from aserv0121.oracle.com (aserv0121.oracle.com [141.146.126.235])
+        by aserp3030.oracle.com with ESMTP id 2xryuar7cx-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Tue, 28 Jan 2020 03:33:00 +0000
+Received: from abhmp0004.oracle.com (abhmp0004.oracle.com [141.146.116.10])
+        by aserv0121.oracle.com (8.14.4/8.13.8) with ESMTP id 00S3WuGE008383;
+        Tue, 28 Jan 2020 03:32:56 GMT
+Received: from kadam (/129.205.23.165)
+        by default (Oracle Beehive Gateway v4.0)
+        with ESMTP ; Mon, 27 Jan 2020 19:32:52 -0800
+Date:   Tue, 28 Jan 2020 06:32:15 +0300
+From:   Dan Carpenter <dan.carpenter@oracle.com>
+To:     kbuild@lists.01.org, Jason Wang <jasowang@redhat.com>
+Cc:     kbuild-all@lists.01.org, mst@redhat.com, jasowang@redhat.com,
+        linux-kernel@vger.kernel.org, kvm@vger.kernel.org,
+        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
+        tiwei.bie@intel.com, jgg@mellanox.com, maxime.coquelin@redhat.com,
+        cunming.liang@intel.com, zhihong.wang@intel.com,
+        rob.miller@broadcom.com, xiao.w.wang@intel.com,
+        haotian.wang@sifive.com, lingshan.zhu@intel.com,
+        eperezma@redhat.com, lulu@redhat.com, parav@mellanox.com,
+        kevin.tian@intel.com, stefanha@redhat.com, rdunlap@infradead.org,
+        hch@infradead.org, aadam@redhat.com, jakub.kicinski@netronome.com,
+        jiri@mellanox.com, shahafs@mellanox.com, hanand@xilinx.com,
+        mhabets@solarflare.com
+Subject: Re: [PATCH 5/5] vdpasim: vDPA device simulator
+Message-ID: <20200128033215.GO1870@kadam>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20200116124231.20253-6-jasowang@redhat.com>
+User-Agent: Mutt/1.9.4 (2018-02-28)
+X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9513 signatures=668685
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 suspectscore=0 malwarescore=0
+ phishscore=0 bulkscore=0 spamscore=0 mlxscore=0 mlxlogscore=999
+ adultscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.0.1-1911140001 definitions=main-2001280026
+X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9513 signatures=668685
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 priorityscore=1501 malwarescore=0
+ suspectscore=0 phishscore=0 bulkscore=0 spamscore=0 clxscore=1011
+ lowpriorityscore=0 mlxscore=0 impostorscore=0 mlxlogscore=999 adultscore=0
+ classifier=spam adjust=0 reason=mlx scancount=1 engine=8.0.1-1911140001
+ definitions=main-2001280026
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Arjun Roy <arjunroy@google.com>
+Hi Jason,
 
-Use vm_insert_pages() for tcp receive zerocopy. Spin lock cycles
-(as reported by perf) drop from a couple of percentage points
-to a fraction of a percent. This results in a roughly 6% increase in
-efficiency, measured roughly as zerocopy receive count divided by CPU
-utilization.
+url:    https://github.com/0day-ci/linux/commits/Jason-Wang/vDPA-support/20200117-170243
+base:   https://git.kernel.org/pub/scm/linux/kernel/git/mst/vhost.git linux-next
 
-The intention of this patch-set is to reduce atomic ops for
-tcp zerocopy receives, which normally hits the same spinlock multiple
-times consecutively.
+If you fix the issue, kindly add following tag
+Reported-by: kbuild test robot <lkp@intel.com>
+Reported-by: Dan Carpenter <dan.carpenter@oracle.com>
 
-Signed-off-by: Arjun Roy <arjunroy@google.com>
-Signed-off-by: Eric Dumazet <edumazet@google.com>
-Signed-off-by: Soheil Hassas Yeganeh <soheil@google.com>
+smatch warnings:
+drivers/virtio/vdpa/vdpa_sim.c:288 vdpasim_alloc_coherent() warn: returning freed memory 'addr'
+
+# https://github.com/0day-ci/linux/commit/55047769b3e974d68b2aab5ce0022459b172a23f
+git remote add linux-review https://github.com/0day-ci/linux
+git remote update linux-review
+git checkout 55047769b3e974d68b2aab5ce0022459b172a23f
+vim +/addr +288 drivers/virtio/vdpa/vdpa_sim.c
+
+55047769b3e974 Jason Wang 2020-01-16  263  static void *vdpasim_alloc_coherent(struct device *dev, size_t size,
+55047769b3e974 Jason Wang 2020-01-16  264  				    dma_addr_t *dma_addr, gfp_t flag,
+55047769b3e974 Jason Wang 2020-01-16  265  				    unsigned long attrs)
+55047769b3e974 Jason Wang 2020-01-16  266  {
+55047769b3e974 Jason Wang 2020-01-16  267  	struct vdpa_device *vdpa = dev_to_vdpa(dev);
+55047769b3e974 Jason Wang 2020-01-16  268  	struct vdpasim *vdpasim = vdpa_to_sim(vdpa);
+55047769b3e974 Jason Wang 2020-01-16  269  	struct vhost_iotlb *iommu = vdpasim->iommu;
+55047769b3e974 Jason Wang 2020-01-16  270  	void *addr = kmalloc(size, flag);
+55047769b3e974 Jason Wang 2020-01-16  271  	int ret;
+55047769b3e974 Jason Wang 2020-01-16  272  
+55047769b3e974 Jason Wang 2020-01-16  273  	if (!addr)
+55047769b3e974 Jason Wang 2020-01-16  274  		*dma_addr = DMA_MAPPING_ERROR;
+55047769b3e974 Jason Wang 2020-01-16  275  	else {
+55047769b3e974 Jason Wang 2020-01-16  276  		u64 pa = virt_to_phys(addr);
+55047769b3e974 Jason Wang 2020-01-16  277  
+55047769b3e974 Jason Wang 2020-01-16  278  		ret = vhost_iotlb_add_range(iommu, (u64)pa,
+55047769b3e974 Jason Wang 2020-01-16  279  					    (u64)pa + size - 1,
+55047769b3e974 Jason Wang 2020-01-16  280  					    pa, VHOST_MAP_RW);
+55047769b3e974 Jason Wang 2020-01-16  281  		if (ret) {
+55047769b3e974 Jason Wang 2020-01-16  282  			kfree(addr);
+                                                                ^^^^^^^^^^^
+55047769b3e974 Jason Wang 2020-01-16  283  			*dma_addr = DMA_MAPPING_ERROR;
+55047769b3e974 Jason Wang 2020-01-16  284  		} else
+55047769b3e974 Jason Wang 2020-01-16  285  			*dma_addr = (dma_addr_t)pa;
+55047769b3e974 Jason Wang 2020-01-16  286  	}
+55047769b3e974 Jason Wang 2020-01-16  287  
+55047769b3e974 Jason Wang 2020-01-16 @288  	return addr;
+                                                ^^^^^^^^^^^^
+55047769b3e974 Jason Wang 2020-01-16  289  }
 
 ---
- net/ipv4/tcp.c | 67 +++++++++++++++++++++++++++++++++++++++++++++-----
- 1 file changed, 61 insertions(+), 6 deletions(-)
-
-diff --git a/net/ipv4/tcp.c b/net/ipv4/tcp.c
-index 34490d972758..52f96c3ceab3 100644
---- a/net/ipv4/tcp.c
-+++ b/net/ipv4/tcp.c
-@@ -1861,14 +1861,48 @@ int tcp_mmap(struct file *file, struct socket *sock,
- }
- EXPORT_SYMBOL(tcp_mmap);
- 
-+static int tcp_zerocopy_vm_insert_batch(struct vm_area_struct *vma,
-+					struct page **pages,
-+					unsigned long pages_to_map,
-+					unsigned long *insert_addr,
-+					u32 *length_with_pending,
-+					u32 *seq,
-+					struct tcp_zerocopy_receive *zc)
-+{
-+	unsigned long pages_remaining = pages_to_map;
-+	int bytes_mapped;
-+	int ret;
-+
-+	ret = vm_insert_pages(vma, *insert_addr, pages, &pages_remaining);
-+	bytes_mapped = PAGE_SIZE * (pages_to_map - pages_remaining);
-+	/* Even if vm_insert_pages fails, it may have partially succeeded in
-+	 * mapping (some but not all of the pages).
-+	 */
-+	*seq += bytes_mapped;
-+	*insert_addr += bytes_mapped;
-+	if (ret) {
-+		/* But if vm_insert_pages did fail, we have to unroll some state
-+		 * we speculatively touched before.
-+		 */
-+		const int bytes_not_mapped = PAGE_SIZE * pages_remaining;
-+		*length_with_pending -= bytes_not_mapped;
-+		zc->recv_skip_hint += bytes_not_mapped;
-+	}
-+	return ret;
-+}
-+
- static int tcp_zerocopy_receive(struct sock *sk,
- 				struct tcp_zerocopy_receive *zc)
- {
- 	unsigned long address = (unsigned long)zc->address;
- 	u32 length = 0, seq, offset, zap_len;
-+	#define PAGE_BATCH_SIZE 8
-+	struct page *pages[PAGE_BATCH_SIZE];
- 	const skb_frag_t *frags = NULL;
- 	struct vm_area_struct *vma;
- 	struct sk_buff *skb = NULL;
-+	unsigned long pg_idx = 0;
-+	unsigned long curr_addr;
- 	struct tcp_sock *tp;
- 	int inq;
- 	int ret;
-@@ -1901,15 +1935,26 @@ static int tcp_zerocopy_receive(struct sock *sk,
- 		zc->recv_skip_hint = zc->length;
- 	}
- 	ret = 0;
-+	curr_addr = address;
- 	while (length + PAGE_SIZE <= zc->length) {
- 		if (zc->recv_skip_hint < PAGE_SIZE) {
-+			/* If we're here, finish the current batch. */
-+			if (pg_idx) {
-+				ret = tcp_zerocopy_vm_insert_batch(vma, pages,
-+								   pg_idx,
-+								   &curr_addr,
-+								   &length,
-+								   &seq, zc);
-+				if (ret)
-+					goto out;
-+				pg_idx = 0;
-+			}
- 			if (skb) {
- 				skb = skb->next;
- 				offset = seq - TCP_SKB_CB(skb)->seq;
- 			} else {
- 				skb = tcp_recv_skb(sk, seq, &offset);
- 			}
--
- 			zc->recv_skip_hint = skb->len - offset;
- 			offset -= skb_headlen(skb);
- 			if ((int)offset < 0 || skb_has_frag_list(skb))
-@@ -1933,14 +1978,24 @@ static int tcp_zerocopy_receive(struct sock *sk,
- 			zc->recv_skip_hint -= remaining;
- 			break;
- 		}
--		ret = vm_insert_page(vma, address + length,
--				     skb_frag_page(frags));
--		if (ret)
--			break;
-+		pages[pg_idx] = skb_frag_page(frags);
-+		pg_idx++;
- 		length += PAGE_SIZE;
--		seq += PAGE_SIZE;
- 		zc->recv_skip_hint -= PAGE_SIZE;
- 		frags++;
-+		if (pg_idx == PAGE_BATCH_SIZE) {
-+			ret = tcp_zerocopy_vm_insert_batch(vma, pages, pg_idx,
-+							   &curr_addr, &length,
-+							   &seq, zc);
-+			if (ret)
-+				goto out;
-+			pg_idx = 0;
-+		}
-+	}
-+	if (pg_idx) {
-+		ret = tcp_zerocopy_vm_insert_batch(vma, pages, pg_idx,
-+						   &curr_addr, &length, &seq,
-+						   zc);
- 	}
- out:
- 	up_read(&current->mm->mmap_sem);
--- 
-2.25.0.rc1.283.g88dfdc4193-goog
-
+0-DAY kernel test infrastructure                 Open Source Technology Center
+https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org Intel Corporation
