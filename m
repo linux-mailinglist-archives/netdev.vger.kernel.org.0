@@ -2,53 +2,60 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 7DD4914B007
-	for <lists+netdev@lfdr.de>; Tue, 28 Jan 2020 08:04:09 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E36FA14B066
+	for <lists+netdev@lfdr.de>; Tue, 28 Jan 2020 08:27:18 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1725919AbgA1HD7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 28 Jan 2020 02:03:59 -0500
-Received: from coyote.holtmann.net ([212.227.132.17]:35896 "EHLO
-        mail.holtmann.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725797AbgA1HD6 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 28 Jan 2020 02:03:58 -0500
-Received: from marcel-macbook.fritz.box (p4FEFC5A7.dip0.t-ipconnect.de [79.239.197.167])
-        by mail.holtmann.org (Postfix) with ESMTPSA id B5D75CECDB;
-        Tue, 28 Jan 2020 08:13:16 +0100 (CET)
+        id S1725852AbgA1H1R (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 28 Jan 2020 02:27:17 -0500
+Received: from [107.150.126.192] ([107.150.126.192]:54305 "EHLO yourdomain.com"
+        rhost-flags-FAIL-FAIL-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1725776AbgA1H1Q (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 28 Jan 2020 02:27:16 -0500
+X-Greylist: delayed 601 seconds by postgrey-1.27 at vger.kernel.org; Tue, 28 Jan 2020 02:27:15 EST
+Received: by yourdomain.com id h5vh580e97cr for <netdev@vger.kernel.org>; Tue, 28 Jan 2020 16:17:12 +0900 (envelope-from <tr@foxmail.com>)
+Message-ID: <20200128151710635506@foxmail.com>
+From:   =?iso-2022-jp?B?GyRCJW0lQyVGGyhCIDEz?= <tr@foxmail.com>
+To:     <netdev@vger.kernel.org>
+Subject: =?iso-2022-jp?B?MjAyMBskQkcvGyhCY2hyb21lGyRCJSIlcyUxITwlSCEjGyhCaVBo?=
+        =?iso-2022-jp?B?b25lMTEbJEIkckZ+PGokOSRrJUElYyVzJTkkLCQiJGsbKEI=?=
+Date:   Tue, 28 Jan 2020 15:16:59 +0800
+MIME-Version: 1.0
 Content-Type: text/plain;
-        charset=us-ascii
-Mime-Version: 1.0 (Mac OS X Mail 13.0 \(3608.40.2.2.4\))
-Subject: Re: [PATCH] Bluetooth: SMP: Fix SALT value in some comments
-From:   Marcel Holtmann <marcel@holtmann.org>
-In-Reply-To: <20200127223609.15066-1-christophe.jaillet@wanadoo.fr>
-Date:   Tue, 28 Jan 2020 08:03:56 +0100
-Cc:     Johan Hedberg <johan.hedberg@gmail.com>, kuba@kernel.org,
-        "David S. Miller" <davem@davemloft.net>,
-        linux-bluetooth@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, kernel-janitors@vger.kernel.org
-Content-Transfer-Encoding: 7bit
-Message-Id: <03F1C6B2-0F04-4991-8912-7220F9F88F5C@holtmann.org>
-References: <20200127223609.15066-1-christophe.jaillet@wanadoo.fr>
-To:     Christophe JAILLET <christophe.jaillet@wanadoo.fr>
-X-Mailer: Apple Mail (2.3608.40.2.2.4)
+        charset="iso-2022-jp"
+Content-Transfer-Encoding: base64
+X-mailer: Dzijvjy 3
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Christophe,
+GyRCIiMiIiIjKCwoLCgsKCwoLCgsKCwoLCgsKCwoLCgsKCwoLCgsKCwoLCgsKCwoLCgsKCwoLCgs
+KCwoLCgsKCwoLCgsKCwoLCgsGyhCDQobJEIiIiIjISEhIRsoQkNocm9tZSBFeHByZXNzIE5ld3Mb
+JEIhIRsoQjIwMjAvMS8yOA0KGyRCS1wlYSE8JWskTyVJJWElJCVzJE4xP01RIUolYSE8JWtBdzx1
+Py4kZCVbITwlYCVaITwlOCROST08KCFLJEs0WCRvJGsbKEINChskQiEhPUVNVyRKRExDTiRIJEok
+aiReJDkhIxsoQg0KGyRCIiMhISgsKCwoLCgsKCwoLCgsKCwoLCgsKCwoLCgsKCwoLCgsKCwoLCgs
+KCwoLCgsKCwoLCgsKCwoLCgsKCwoLCgsKCwoLCgsGyhCDQobJEIhISFoIUUiaCFFIWghRSJoIUUh
+aCFFIWghRSJoIUUhaCFFImghRSFoIUUhaCFFImghRSFoIUUiaCFFIWghRSFoIUUiaCFFIWgbKEIN
+CiANCjIwMjAbJEJHLyVWJWklJiU2MFU4K0Q0OjobKEINChskQiVhITwlayROJDRFfkNlJCokYSRH
+JEgkJiQ0JDYkJCReJDkhIztkJD8kQSROMFU4K0Q0OjokSzsyMkMkNyRGISIbKEJpUGhvbmUxMRsk
+QiRyRn48aiRHJC0kXiQ5ISMbKEINChskQjdXGyhCMTAwGyRCQmYkThsoQmlQaG9uZRskQiRyTVEw
+VSQ3JF4kNyQ/JWklcyVAJWAkS0NqPVAkOSRrISMbKEINCg0KGyRCJCIkSiQ/JCw7ZCQ/JEEkTjNo
+RjAkSzsyMkMkOSRrJDMkSCRyM1okNyRfJEskNyRGJCQkXiQ5ISM1Lj1FJEolIiVJJVAlJCU5JHIk
+NyRGJC8kbCReJDkbKEINCiANChskQiIjGyhCIBskQjsyMkMkTkp9SyEbKEINChskQiInGyhCQ2hy
+b21lIBskQiVtJTAlJCVzJE8kMyRBJGkbKEINCmh0dHBzOi8vZ29vZ2xlLWNocm9tZS5kc2xkc2Yu
+Y29tLw0KIA0KIA0KIA0KIA0KGyRCIWEhYSFhIWEhYSFhIWEhYSFhIWEhYSFhIWEhYSFhIWEhYSFh
+IWEhYSFhIWEhYSFhIWEhYSFhIWEhYSFhIWEhYSFhIWEbKEINChskQiEhGyhCR29vZ2xlIEphcGFu
+IChSb3Bwb25naSkNChskQiEhGyhCUm9wcG9uZ2kgSGlsbHMgTW9yaSBUb3dlciwgNiBjaG9tZS0x
+MC0xIFJvcHBvbmdpLCBNaW5hdG8gQ2l0eSwgVG9reW8gMTA2LTYxMjYNChskQiEhIihLXCVhITwl
+ayRPQXc/LkBsTVEkRyQ5ISMbKEINChskQiEhGyhCICAbJEIkKkxkJCQ5ZyRvJDskTz5lJE4bKEJV
+UkwbJEIkTiEiQGxNUSVVJSkhPCVgJGgkaiQqNGokJCQ3JF4kOSEjGyhCDQobJEIhYSFhIWEhYSFh
+IWEhYSFhIWEhYSFhIWEhYSFhIWEhYSFhIWEhYSFhIWEhYSFhIWEhYSFhIWEhYSFhIWEhYSFhIWEh
+YRsoQg0KGyRCISEhVhsoQkdvb2dsZSBFeHByZXNzIE5ld3MbJEIhVyRLN0c6XCQ1JGwkRiQkJGsk
+OSRZJEYkTjUtO3YhIhsoQg0KGyRCISFKOD5PRXkkTkw1Q0dFPjpcJHI2WDtfJDckXiQ5ISMbKEIN
+ChskQiEhQ3g6bjgiJE8bKEJHb29nbGUbJEIkLD1qTS0kNyRGJCQkayEjGyhCDQobJEIhIRsoQkNv
+cHlyaWdodCBHb29nbGUgQ28uLCBMdGQuIDIwMTkNChskQiFhIWEhYSFhIWEhYSFhIWEhYSFhIWEh
+YSFhIWEhYSFhIWEhYSFhIWEhYSFhIWEhYSFhIWEhYSFhIWEhYSFhIWEhYSFhGyhCDQobJEIhISEh
+ISEhISEhISEhISEhISEhISEhISEhISEhISEhISEhISEhISEhISEhISEhISEhISEhISEhISEhGyhC
+IEUxOTEwMTAyNDINCg==
 
-> Salts are 16 bytes long.
-> Remove some extra and erroneous '0' in the human readable format used
-> in comments.
-> 
-> Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
-> ---
-> net/bluetooth/smp.c | 4 ++--
-> 1 file changed, 2 insertions(+), 2 deletions(-)
-
-patch has been applied to bluetooth-next tree.
-
-Regards
-
-Marcel
 
