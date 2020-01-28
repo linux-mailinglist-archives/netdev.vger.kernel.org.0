@@ -2,99 +2,79 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 13C7314BAC8
-	for <lists+netdev@lfdr.de>; Tue, 28 Jan 2020 15:41:16 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 931D914BC70
+	for <lists+netdev@lfdr.de>; Tue, 28 Jan 2020 15:58:24 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729832AbgA1OOV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 28 Jan 2020 09:14:21 -0500
-Received: from us-smtp-1.mimecast.com ([207.211.31.81]:53800 "EHLO
-        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1727457AbgA1OOU (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 28 Jan 2020 09:14:20 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1580220859;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=1TT+QoDrDwn4Has4Pl8Zj6cAkxwn/5nCKkHuYuA4YJw=;
-        b=ie63clTFg4g+h4t1H2bSCW3GaG0nSonyeiEgAQrtJfHgodgNeMSGY3g088F8edMlPDkBQB
-        rGGrP71xSICRx/QS5hr+SskeOGzfUgCbalxeBcjtD+q9JiU4IvicnEuhSvO5jR9yWnTQ9g
-        MTlECjljCKC71TcrStsvih2FK06VHns=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-361-fe3j9RyFPd6_wlhX5NO4vA-1; Tue, 28 Jan 2020 09:14:01 -0500
-X-MC-Unique: fe3j9RyFPd6_wlhX5NO4vA-1
-Received: from smtp.corp.redhat.com (int-mx01.intmail.prod.int.phx2.redhat.com [10.5.11.11])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id C1F6280568F;
-        Tue, 28 Jan 2020 14:13:57 +0000 (UTC)
-Received: from carbon (ovpn-200-56.brq.redhat.com [10.40.200.56])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 6465284BAF;
-        Tue, 28 Jan 2020 14:13:47 +0000 (UTC)
-Date:   Tue, 28 Jan 2020 15:13:43 +0100
-From:   Jesper Dangaard Brouer <jbrouer@redhat.com>
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     David Ahern <dsahern@gmail.com>,
-        Toke =?UTF-8?B?SMO4aWxhbmQtSsO4cmdl?= =?UTF-8?B?bnNlbg==?= 
-        <toke@redhat.com>, David Ahern <dsahern@kernel.org>,
-        netdev@vger.kernel.org, prashantbhole.linux@gmail.com,
-        jasowang@redhat.com, davem@davemloft.net, mst@redhat.com,
-        toshiaki.makita1@gmail.com, daniel@iogearbox.net,
-        john.fastabend@gmail.com, ast@kernel.org, kafai@fb.com,
-        songliubraving@fb.com, yhs@fb.com, andriin@fb.com,
-        David Ahern <dahern@digitalocean.com>
-Subject: Re: [PATCH bpf-next 03/12] net: Add IFLA_XDP_EGRESS for XDP
- programs in the egress path
-Message-ID: <20200128151343.28c1537d@carbon>
-In-Reply-To: <20200126141701.3f27b03c@cakuba>
-References: <20200123014210.38412-1-dsahern@kernel.org>
-        <20200123014210.38412-4-dsahern@kernel.org>
-        <87tv4m9zio.fsf@toke.dk>
-        <335b624a-655a-c0c6-ca27-102e6dac790b@gmail.com>
-        <20200124072128.4fcb4bd1@cakuba>
-        <87o8usg92d.fsf@toke.dk>
-        <1d84d8be-6812-d63a-97ca-ebc68cc266b9@gmail.com>
-        <20200126134933.2514b2ab@carbon>
-        <20200126141701.3f27b03c@cakuba>
-Organization: Red Hat Inc.
+        id S1726541AbgA1O6L (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 28 Jan 2020 09:58:11 -0500
+Received: from mail-pf1-f196.google.com ([209.85.210.196]:40214 "EHLO
+        mail-pf1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726319AbgA1O6L (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 28 Jan 2020 09:58:11 -0500
+Received: by mail-pf1-f196.google.com with SMTP id q8so6741252pfh.7;
+        Tue, 28 Jan 2020 06:58:10 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=xVg7yvmtWgmr43KxLTmI3D7lMD6VbKHeVc6c1ksu9WU=;
+        b=cAoClRy3JAZUhXmD5tD9S6sAgFkmXeMAWWyZj4AyoV+mQvhmXqkmysZ/PpYCpQMh4q
+         8URdcdKQjwDsls1KxHWOxtxJs9XXcM5qF6IluaXDwPXEre3psp1G3a+T5Szjt/gPDOKg
+         Lba5C4uWOILvq46slE+w3i+qqsxfGe3CwCTqQiHcKGjPEjd8qBGPadaQPhkAeRmusLf4
+         YMCDIEgpzRKl9cBTa1EYKwF+HoBNNiOxh9VdbuT8aai/yBMXWC5DtJnnWKy5kVEqwA2U
+         wF4V2/UN70Gq8OEmZd7yA+tb5TMmL6/imGvzthSSzdfv7+0L916YpT4Axr0cgaJrPDjA
+         HI2Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=xVg7yvmtWgmr43KxLTmI3D7lMD6VbKHeVc6c1ksu9WU=;
+        b=mzUx85DuAa1DI4wWFvUvecT9d9lUxqcEk6TELwEnjsaVyqafocH21WcTZt4AXClyYs
+         6uuP7rgxDOoPbhsUwyCFR2nGgFVuQI4Jao1hOyQUvJGHmHx3FzU91Lqqg47EtVfIF0lM
+         IHtm8jQ7OjQ5KKeRUwUVjgqBmXNOifGvxi2DPpMk79OkFvLSAB5+P0b/7HWkdoF+9PdD
+         sVBIr3XKuQVFSf150eXcNyVMlfKkD6FvaLWsNF1rG+IxrdLFmXSPnruO3Ovg10z0himG
+         oEjdeI5Z+VAO4CTQHYHLDK/G+djpDpwcGfbv/JUdKRXw7R7RAHul0/b/Fd4tvcAWrZZ8
+         x1Iw==
+X-Gm-Message-State: APjAAAXd4NMJlB+izLHv9X5L48It0QdXs0D4HHAe4Df7d9sHa0gcFDOK
+        5jSoesoEINDl2z/SacvPnaA=
+X-Google-Smtp-Source: APXvYqxNf1EXoNBaASlV1mmB+s43Ce4o89OK8f/drmebdoVYbgswj1SeuD+turU5RtHfze5RRLx7Qw==
+X-Received: by 2002:a65:4b89:: with SMTP id t9mr11059341pgq.102.1580223490422;
+        Tue, 28 Jan 2020 06:58:10 -0800 (PST)
+Received: from localhost (c-73-241-114-122.hsd1.ca.comcast.net. [73.241.114.122])
+        by smtp.gmail.com with ESMTPSA id x7sm20743774pfp.93.2020.01.28.06.58.09
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 28 Jan 2020 06:58:09 -0800 (PST)
+Date:   Tue, 28 Jan 2020 06:58:07 -0800
+From:   Richard Cochran <richardcochran@gmail.com>
+To:     Brendan Higgins <brendanhiggins@google.com>
+Cc:     jdike@addtoit.com, richard@nod.at, anton.ivanov@cambridgegreys.com,
+        linux-um@lists.infradead.org, linux-kernel@vger.kernel.org,
+        davidgow@google.com, heidifahim@google.com, netdev@vger.kernel.org
+Subject: Re: [PATCH v1 4/5] ptp: 1588_clock_ines: add unspecified HAS_IOMEM
+ dependency
+Message-ID: <20200128145807.GA2492@localhost>
+References: <20200127235356.122031-1-brendanhiggins@google.com>
+ <20200127235356.122031-5-brendanhiggins@google.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.11
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20200127235356.122031-5-brendanhiggins@google.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, 26 Jan 2020 14:17:01 -0800
-Jakub Kicinski <kuba@kernel.org> wrote:
-
-> On Sun, 26 Jan 2020 13:49:33 +0100, Jesper Dangaard Brouer wrote:
-> > Yes, please. I want this NIC TX hook to see both SKBs and xdp_frames.  
+On Mon, Jan 27, 2020 at 03:53:55PM -0800, Brendan Higgins wrote:
+> Currently CONFIG_PTP_1588_CLOCK_INES=y implicitly depends on
+> CONFIG_HAS_IOMEM=y; consequently, on architectures without IOMEM we get
+> the following build error:
 > 
-> Any pointers on what for? Unless we see actual use cases there's
-> a justifiable concern of the entire thing just being an application of
-> "We can solve any problem by introducing an extra level of indirection."
+> /usr/bin/ld: drivers/ptp/ptp_ines.o: in function `ines_ptp_ctrl_probe':
+> drivers/ptp/ptp_ines.c:795: undefined reference to `devm_ioremap_resource'
+> 
+> Fix the build error by adding the unspecified dependency.
+> 
+> Signed-off-by: Brendan Higgins <brendanhiggins@google.com>
 
-I have two use-cases:
-
-(1) For XDP easier handling of interface specific setting on egress,
-e.g. pushing a VLAN-id, instead of having to figure this out in RX hook.
-(I think this is also David Ahern's use-case)
-
-
-(2) I want this egress XDP hook to have the ability to signal
-backpressure. Today we have BQL in most drivers (which is essential to
-avoid bufferbloat). For XDP_REDIRECT we don't, which we must solve.
-
-For use-case(2), we likely need a BPF-helper calling netif_tx_stop_queue(),
-or a return code that can stop the queue towards the higher layers.
-
--- 
-Best regards,
-  Jesper Dangaard Brouer
-  MSc.CS, Principal Kernel Engineer at Red Hat
-  LinkedIn: http://www.linkedin.com/in/brouer
-
+Acked-by: Richard Cochran <richardcochran@gmail.com>
