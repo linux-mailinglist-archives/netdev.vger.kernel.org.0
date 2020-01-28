@@ -2,72 +2,48 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 3BFDC14CEB7
+	by mail.lfdr.de (Postfix) with ESMTP id B3B5D14CEB8
 	for <lists+netdev@lfdr.de>; Wed, 29 Jan 2020 17:58:55 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727025AbgA2Q6q (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 29 Jan 2020 11:58:46 -0500
-Received: from shards.monkeyblade.net ([23.128.96.9]:34506 "EHLO
+        id S1727088AbgA2Q6t (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 29 Jan 2020 11:58:49 -0500
+Received: from shards.monkeyblade.net ([23.128.96.9]:34528 "EHLO
         shards.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726683AbgA2Q6q (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 29 Jan 2020 11:58:46 -0500
+        with ESMTP id S1726683AbgA2Q6s (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 29 Jan 2020 11:58:48 -0500
 Received: from localhost (dhcp-077-249-119-090.chello.nl [77.249.119.90])
         (using TLSv1 with cipher AES256-SHA (256/256 bits))
         (Client did not present a certificate)
         (Authenticated sender: davem-davemloft)
-        by shards.monkeyblade.net (Postfix) with ESMTPSA id B0ADF14F0D033;
-        Wed, 29 Jan 2020 08:58:44 -0800 (PST)
-Date:   Tue, 28 Jan 2020 10:59:09 +0100 (CET)
-Message-Id: <20200128.105909.2133255162840958859.davem@davemloft.net>
-To:     willemdebruijn.kernel@gmail.com
-Cc:     netdev@vger.kernel.org, pabeni@redhat.com, willemb@google.com,
-        syzkaller@googlegroups.com
-Subject: Re: [PATCH net] udp: segment looped gso packets correctly
+        by shards.monkeyblade.net (Postfix) with ESMTPSA id 7A0AA14F0D680;
+        Wed, 29 Jan 2020 08:58:46 -0800 (PST)
+Date:   Tue, 28 Jan 2020 11:00:35 +0100 (CET)
+Message-Id: <20200128.110035.1287294869237249484.davem@davemloft.net>
+To:     scott.branden@broadcom.com
+Cc:     andrew@lunn.ch, f.fainelli@gmail.com, hkallweit1@gmail.com,
+        bcm-kernel-feedback-list@broadcom.com, linux@armlinux.org.uk,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 1/1] net: phy: add default ARCH_BCM_IPROC for
+ MDIO_BCM_IPROC
 From:   David Miller <davem@davemloft.net>
-In-Reply-To: <20200127204031.244254-1-willemdebruijn.kernel@gmail.com>
-References: <20200127204031.244254-1-willemdebruijn.kernel@gmail.com>
+In-Reply-To: <20200128003828.20439-1-scott.branden@broadcom.com>
+References: <20200128003828.20439-1-scott.branden@broadcom.com>
 X-Mailer: Mew version 6.8 on Emacs 26.3
 Mime-Version: 1.0
 Content-Type: Text/Plain; charset=us-ascii
 Content-Transfer-Encoding: 7bit
-X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Wed, 29 Jan 2020 08:58:45 -0800 (PST)
+X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Wed, 29 Jan 2020 08:58:48 -0800 (PST)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Willem de Bruijn <willemdebruijn.kernel@gmail.com>
-Date: Mon, 27 Jan 2020 15:40:31 -0500
+From: Scott Branden <scott.branden@broadcom.com>
+Date: Mon, 27 Jan 2020 16:38:28 -0800
 
-> From: Willem de Bruijn <willemb@google.com>
+> Add default MDIO_BCM_IPROC Kconfig setting such that it is default
+> on for IPROC family of devices.
 > 
-> Multicast and broadcast packets can be looped from egress to ingress
-> pre segmentation with dev_loopback_xmit. That function unconditionally
-> sets ip_summed to CHECKSUM_UNNECESSARY.
-> 
-> udp_rcv_segment segments gso packets in the udp rx path. Segmentation
-> usually executes on egress, and does not expect packets of this type.
-> __udp_gso_segment interprets !CHECKSUM_PARTIAL as CHECKSUM_NONE. But
-> the offsets are not correct for gso_make_checksum.
-> 
-> UDP GSO packets are of type CHECKSUM_PARTIAL, with their uh->check set
-> to the correct pseudo header checksum. Reset ip_summed to this type.
-> (CHECKSUM_PARTIAL is allowed on ingress, see comments in skbuff.h)
-> 
-> Reported-by: syzbot <syzkaller@googlegroups.com>
-> Fixes: cf329aa42b66 ("udp: cope with UDP GRO packet misdirection")
-> Signed-off-by: Willem de Bruijn <willemb@google.com>
+> Signed-off-by: Scott Branden <scott.branden@broadcom.com>
 
-Applied and queued up for -stable, but I have to say:
-
-> +	if (skb->pkt_type == PACKET_LOOPBACK)
-> +		skb->ip_summed = CHECKSUM_PARTIAL;
-> +
-
-There are a lot of implementation detail assumptions encoded into that
-conditional statement :-)
-
-Feel free to follow-up with a patch adding a comment containing a
-condensed version of your commit log here.
-
-Thanks.
+Applied, thanks.
