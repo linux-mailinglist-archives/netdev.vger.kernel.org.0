@@ -2,84 +2,86 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 188F514B5A6
-	for <lists+netdev@lfdr.de>; Tue, 28 Jan 2020 14:59:44 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id F422414B580
+	for <lists+netdev@lfdr.de>; Tue, 28 Jan 2020 14:57:56 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726905AbgA1N70 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 28 Jan 2020 08:59:26 -0500
-Received: from mail.kernel.org ([198.145.29.99]:44796 "EHLO mail.kernel.org"
+        id S1726303AbgA1N5z (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 28 Jan 2020 08:57:55 -0500
+Received: from mail.kernel.org ([198.145.29.99]:43096 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726721AbgA1N7Z (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 28 Jan 2020 08:59:25 -0500
-Received: from localhost (83-86-89-107.cable.dynamic.v4.ziggo.nl [83.86.89.107])
+        id S1726107AbgA1N5y (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 28 Jan 2020 08:57:54 -0500
+Received: from cakuba (c-73-93-4-247.hsd1.ca.comcast.net [73.93.4.247])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id E065024685;
-        Tue, 28 Jan 2020 13:59:24 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 874C92173E;
+        Tue, 28 Jan 2020 13:57:53 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1580219965;
-        bh=zZf8c5U7fLLNQMm+qitPFQ+bq0WSO61rPIjPlrn69Mk=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=NJGF/wPjJWvRs4xJAWSV1B9VkEdMIigmUcDAwjtJJxvfJvBpYjQJzEPY4vVkLdV5H
-         fDOQ6bucQXkrxIBI2MYNzJr2SRuc63E36rjXUY7UK7sowCW/V0ouZHXO7IBqxkQez4
-         hLWc00mexKh/R4mULMeLk9M9GHaqKZpkWrotXAtA=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Wen Yang <wenyang@linux.alibaba.com>,
-        Eric Dumazet <edumazet@google.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Alexey Kuznetsov <kuznet@ms2.inr.ac.ru>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        netdev@vger.kernel.org
-Subject: [PATCH 4.14 15/46] tcp_bbr: improve arithmetic division in bbr_update_bw()
-Date:   Tue, 28 Jan 2020 14:57:49 +0100
-Message-Id: <20200128135751.969497560@linuxfoundation.org>
-X-Mailer: git-send-email 2.25.0
-In-Reply-To: <20200128135749.822297911@linuxfoundation.org>
-References: <20200128135749.822297911@linuxfoundation.org>
-User-Agent: quilt/0.66
+        s=default; t=1580219874;
+        bh=HL0lcgWOM+5WXYJru6CbR/OifIZqGLRnlFp5NoYOE0Y=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=pNLx6pOuQC2ktMsIQYcTCmiHpW8l7UgnqiieM1LOFJ5O8+JydIVc0Nxf2117gLrUo
+         W5CxIEJ+n2rjflPIIHvBXvRMdvNgu7kMGnqpfVfeGzYAGqtOCa+bE8LH80NleR63h3
+         i1/xXp+x+nnxbdZkz6f9YugaHLepy55j2p0kEPq8=
+Date:   Tue, 28 Jan 2020 05:57:52 -0800
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     David Ahern <dsahern@gmail.com>
+Cc:     Toke =?UTF-8?B?SMO4aWxhbmQtSsO4cmdlbnNlbg==?= <toke@redhat.com>,
+        David Ahern <dsahern@kernel.org>, netdev@vger.kernel.org,
+        prashantbhole.linux@gmail.com, jasowang@redhat.com,
+        davem@davemloft.net, jbrouer@redhat.com, mst@redhat.com,
+        toshiaki.makita1@gmail.com, daniel@iogearbox.net,
+        john.fastabend@gmail.com, ast@kernel.org, kafai@fb.com,
+        songliubraving@fb.com, yhs@fb.com, andriin@fb.com,
+        David Ahern <dahern@digitalocean.com>
+Subject: Re: [PATCH bpf-next 03/12] net: Add IFLA_XDP_EGRESS for XDP
+ programs in the egress path
+Message-ID: <20200128055752.617aebc7@cakuba>
+In-Reply-To: <252acf50-91ff-fdc5-3ce1-491a02de07c6@gmail.com>
+References: <20200123014210.38412-1-dsahern@kernel.org>
+        <20200123014210.38412-4-dsahern@kernel.org>
+        <87tv4m9zio.fsf@toke.dk>
+        <335b624a-655a-c0c6-ca27-102e6dac790b@gmail.com>
+        <20200124072128.4fcb4bd1@cakuba>
+        <87o8usg92d.fsf@toke.dk>
+        <1d84d8be-6812-d63a-97ca-ebc68cc266b9@gmail.com>
+        <20200126141141.0b773aba@cakuba>
+        <33f233a9-88b4-a75a-d1e5-fbbda21f9546@gmail.com>
+        <20200127061623.1cf42cd0@cakuba>
+        <252acf50-91ff-fdc5-3ce1-491a02de07c6@gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Wen Yang <wenyang@linux.alibaba.com>
+On Mon, 27 Jan 2020 20:43:09 -0700, David Ahern wrote:
+> > end of whatever is doing the redirect (especially with Alexei's work  =
+=20
+>=20
+> There are use cases where they may make sense, but this is not one.
+>=20
+> > on linking) and from cls_bpf =F0=9F=A4=B7=E2=80=8D=E2=99=82=EF=B8=8F
+>=20
+> cls_bpf is tc based =3D=3D skb, no? I want to handle any packet, regardle=
+ss
+> of how it arrived at the device's xmit function.
 
-[ Upstream commit 5b2f1f3070b6447b76174ea8bfb7390dc6253ebd ]
+Yes, that's why I said you need the same rules in XDP before REDIRECT
+and cls_bpf. Sure it's more complex, but (1) it's faster to drop in
+the ingress prog before going though the entire redirect code and
+without parsing the packet twice and (2) no extra kernel code necessary.
 
-do_div() does a 64-by-32 division. Use div64_long() instead of it
-if the divisor is long, to avoid truncation to 32-bit.
-And as a nice side effect also cleans up the function a bit.
+Even the VM "offload" work doesn't need this. Translating an XDP prog
+into a cls_bpf one should be trivial. Slap on some prologue to linearize
+the skb, move ctx offsets around, slap on an epilogue to convert exit
+codes, anything else?
 
-Signed-off-by: Wen Yang <wenyang@linux.alibaba.com>
-Cc: Eric Dumazet <edumazet@google.com>
-Cc: "David S. Miller" <davem@davemloft.net>
-Cc: Alexey Kuznetsov <kuznet@ms2.inr.ac.ru>
-Cc: Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>
-Cc: netdev@vger.kernel.org
-Cc: linux-kernel@vger.kernel.org
-Signed-off-by: Eric Dumazet <edumazet@google.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
----
- net/ipv4/tcp_bbr.c |    3 +--
- 1 file changed, 1 insertion(+), 2 deletions(-)
+I'm weary of partially implemented XDP features, EGRESS prog does us=20
+no good when most drivers didn't yet catch up with the REDIRECTs. And
+we're adding this before we considered the queuing problem.
 
---- a/net/ipv4/tcp_bbr.c
-+++ b/net/ipv4/tcp_bbr.c
-@@ -678,8 +678,7 @@ static void bbr_update_bw(struct sock *s
- 	 * bandwidth sample. Delivered is in packets and interval_us in uS and
- 	 * ratio will be <<1 for most connections. So delivered is first scaled.
- 	 */
--	bw = (u64)rs->delivered * BW_UNIT;
--	do_div(bw, rs->interval_us);
-+	bw = div64_long((u64)rs->delivered * BW_UNIT, rs->interval_us);
- 
- 	/* If this sample is application-limited, it is likely to have a very
- 	 * low delivered count that represents application behavior rather than
-
-
+But if I'm alone in thinking this, and I'm not convincing anyone we can
+move on :)
