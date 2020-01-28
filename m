@@ -2,47 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 9474614C068
-	for <lists+netdev@lfdr.de>; Tue, 28 Jan 2020 19:54:22 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5265C14C06E
+	for <lists+netdev@lfdr.de>; Tue, 28 Jan 2020 19:54:33 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726389AbgA1SyU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 28 Jan 2020 13:54:20 -0500
-Received: from mail-pl1-f201.google.com ([209.85.214.201]:40822 "EHLO
-        mail-pl1-f201.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726296AbgA1SyU (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 28 Jan 2020 13:54:20 -0500
-Received: by mail-pl1-f201.google.com with SMTP id y2so6014961plt.7
-        for <netdev@vger.kernel.org>; Tue, 28 Jan 2020 10:54:20 -0800 (PST)
+        id S1726659AbgA1Sy3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 28 Jan 2020 13:54:29 -0500
+Received: from mail-pf1-f202.google.com ([209.85.210.202]:53250 "EHLO
+        mail-pf1-f202.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726541AbgA1SyZ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 28 Jan 2020 13:54:25 -0500
+Received: by mail-pf1-f202.google.com with SMTP id c17so963099pfi.20
+        for <netdev@vger.kernel.org>; Tue, 28 Jan 2020 10:54:24 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=google.com; s=20161025;
-        h=date:message-id:mime-version:subject:from:to:cc;
-        bh=D8ZUQ1iH7UYJdekJiQ43tyzlStAo9VsUap383J1XoBc=;
-        b=cGm6L0Vh2NeLo0SSDbWSjRCz3JHlt6hazZyyxnMfW5/XOJEAfHAM9e4P5T/4bjJ1vj
-         5W1/HlJUNLtPJggumIuwfXpCblGvLig+vI8bFGz8vQU2ad8pbpm29ekfW+Yp4wBxT7Ud
-         47qfHYp/WeHOyS2zvCJZwIbfzYgEL0pQv5fPzo0qc1lKCAAngkzPYctuaXa5H/CWk2xd
-         eKM2Jq2WkW91SFPraueCygjQO01pxxnAVhv6y7USTzZsHFVgpoa8k8jy2GjKKYWbyzJP
-         cF1ar47rmU6+Oc/nqz4ioMMq2Nh1SOUq2qmLP50SfsnHsgoNbC/uAcg7D+RzkqqMhaWk
-         TP7w==
+        h=date:in-reply-to:message-id:mime-version:references:subject:from:to
+         :cc;
+        bh=LbDTiPWVh2Qq5foi37sJFb+KsRGTnNFnk1CotalxKRA=;
+        b=DohQe0ejifkTBADJN4Db02nIq6lRvM4Xw8JkruUg/Tj+3D5xGSsK6mod4Bi+4BtDSL
+         EWf0oJVtWdlFQ0HhnKjvr2dqNXKyreI4Mc0sBUTawJmL0phIQobqIdHU/XPRJqHF2YP3
+         4eXyvvgIw37R5WtSFYV9/tXX6LbhmeE1Z4i6UcFo3C7DuvURoxo7jLD3ug1xtaFK/03W
+         M3nYESFnsxWbVng/xDoujrQWQwO7qmLWyuVGOfw+8+Ipbyz4Gqt04T09m5TScDSTAgvP
+         vOvSh0HqzbMDSz/Q53Z/okCmOt9FvziDMxBeas6L9XL120tGmSitCzDmRx4QLiFVtd8W
+         8p6g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:message-id:mime-version:subject:from:to:cc;
-        bh=D8ZUQ1iH7UYJdekJiQ43tyzlStAo9VsUap383J1XoBc=;
-        b=POgJU4mdc6xhGnjAq88DRaws8t3flWVbX9l/Ji7k/VJpz+te9BbXqtkEj2zo+t8wFT
-         egUKc+wVUiuKYgMii6R3d7PnvTO85h7ETeDYlDuP6elRUk1pDjM/wcxIX1bxg8OMtCBn
-         Ydsh95HRJwfT6IbbwR/prBpMJ/6ELm/fZraqn0HMHdMzajnDnfbXjQ8YhKdUlsSf86C+
-         SyPZOHKhC2/A1Gq04NSj4/yITf+eiyR8anM0GQY/7kGNm8XKgkEWArPrKMXDzqsRDxzn
-         /u7oikgk/3+3bhuPW0qHXC4vRvv4H2zThhRKdVKxSzJmAZRAU8PJPvONdjEAyMdlXoZv
-         Rwjw==
-X-Gm-Message-State: APjAAAWEiwc6+SNvgA1jxsiX0JPvEDEtVb8QuKWot+tx189naOZJkFHF
-        HKononZ9LkFVmZ8a/ZiJiKo+vZNFP3bXDw==
-X-Google-Smtp-Source: APXvYqwMGIhNdBb1uhMfzbfgKURyoP+pBKSWsr0NxPReGsr8lCZ3ikSiKfSVKqp45vgaYbph8TlNQT/X06WtYw==
-X-Received: by 2002:a63:8f55:: with SMTP id r21mr4675275pgn.422.1580237659563;
- Tue, 28 Jan 2020 10:54:19 -0800 (PST)
-Date:   Tue, 28 Jan 2020 10:54:13 -0800
-Message-Id: <20200128185414.158541-1-mmandlik@google.com>
+        h=x-gm-message-state:date:in-reply-to:message-id:mime-version
+         :references:subject:from:to:cc;
+        bh=LbDTiPWVh2Qq5foi37sJFb+KsRGTnNFnk1CotalxKRA=;
+        b=atheDweYEa+3rImJGn2ZEJJ2SfLQjFu7xUF+7x+RqKemDM1BFMhzosQzqDkW0uNZSA
+         D/1UIfXJZ7RUhYYznCblADDuIYyUZpEKbmMcCear1k2J7wq7ba8K2qy+JXqlHTiyt2Us
+         nXRj3zGCnQyufUUQ1WkQD7C2kqs04RTDtfiAO8Hil7TxYaOWrvhYQ1nwNh9M+vNVD+r2
+         DAmXVRsqEyLT5Hl/Vbw7YZlG2f3GTZVfZSWoK00M2ZkM0RhK4R0q6mIjvvfyGGiylCUP
+         NQOYgKm5sCV30Rj3gFwK8UK7ZpIBodv4rOTat/uU+pVMhlrrgd7u+9U9sLMU+XD9XTL9
+         SjSA==
+X-Gm-Message-State: APjAAAU0uTbFUslxO39ttSRo5mOkrPR9ApyXitrBxPx7kEiGlp8KfLU9
+        jcfwT1BPVTvzHeg09Mqu9TIIA/EPJOMYhg==
+X-Google-Smtp-Source: APXvYqyK/6wCT/mTPrR4EawFmZoRdscXKvoE+wJYU6Idai+Lw83amCiJ4RuwIEoVmYywqquXhHt8NZy7BkOb3Q==
+X-Received: by 2002:a65:578e:: with SMTP id b14mr26340514pgr.444.1580237664492;
+ Tue, 28 Jan 2020 10:54:24 -0800 (PST)
+Date:   Tue, 28 Jan 2020 10:54:14 -0800
+In-Reply-To: <20200128185414.158541-1-mmandlik@google.com>
+Message-Id: <20200128105322.1.If741898c727a5d948cbb10fdf9225b84efd443c8@changeid>
 Mime-Version: 1.0
+References: <20200128185414.158541-1-mmandlik@google.com>
 X-Mailer: git-send-email 2.25.0.341.g760bfbb309-goog
-Subject: [PATCH 0/1] Bluetooth: Fix refcount use-after-free issue
+Subject: [PATCH 1/1] Bluetooth: Fix refcount use-after-free issue
 From:   Manish Mandlik <mmandlik@google.com>
 To:     Marcel Holtmann <marcel@holtmann.org>
 Cc:     Yoni Shavit <yshavit@chromium.org>,
@@ -62,94 +66,196 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+There is no lock preventing both l2cap_sock_release() and
+chan->ops->close() from running at the same time.
 
-Hello Linux-Bluetooth,
+If we consider Thread A running l2cap_chan_timeout() and Thread B running
+l2cap_sock_release(), expected behavior is:
+  A::l2cap_chan_timeout()->l2cap_chan_close()->l2cap_sock_teardown_cb()
+  A::l2cap_chan_timeout()->l2cap_sock_close_cb()->l2cap_sock_kill()
+  B::l2cap_sock_release()->sock_orphan()
+  B::l2cap_sock_release()->l2cap_sock_kill()
 
-   Sometimes after boot following kernel warning is observed:
+where,
+sock_orphan() clears "sk->sk_socket" and l2cap_sock_teardown_cb() marks
+socket as SOCK_ZAPPED.
 
-   [   62.793493] refcount_t: underflow; use-after-free.
-   [   62.799419] WARNING: CPU: 2 PID: 69 at /mnt/host/source/src/third_party/
-   kernel/v4.19/lib/refcount.c:187 refcount_sub_and_test_checked+0x80/0x8c
-   [   62.812298] Modules linked in: hidp rfcomm uinput hci_uart btqca
-   bluetooth ecdh_generic mtk_scp mtk_rpmsg mtk_scp_ipi rpmsg_core bridge
-   snd_seq_dummy stp llc snd_seq snd_seq_device lzo_rle lzo_compress
-   nf_nat_tftp nf_conntrack_tftp nf_nat_ftp nf_conntrack_ftp esp6 ah6
-   xfrm6_mode_tunnel xfrm6_mode_transport xfrm4_mode_tunnel
-   xfrm4_mode_transport ip6t_REJECT ip6t_ipv6header zram ipt_MASQUERADE fuse
-   ath10k_sdio ath10k_core ath mac80211 cfg80211 joydev
-   [   62.852227] CPU: 2 PID: 69 Comm: kworker/2:1 Tainted: G S    4.19.36 #344
-   [   62.860057] Hardware name: MediaTek kukui rev1 board (DT)
-   [   62.865510] Workqueue: events l2cap_chan_timeout [bluetooth]
-   [   62.871177] pstate: 60000005 (nZCv daif -PAN -UAO)
-   [   62.875973] pc : refcount_sub_and_test_checked+0x80/0x8c
-   [   62.881285] lr : refcount_sub_and_test_checked+0x7c/0x8c
-   [   62.886594] sp : ffffff8008533cc0
-   [   62.889907] x29: ffffff8008533cc0 x28: 0000000000000402
-   [   62.895227] x27: ffffffaf37f16000 x26: ffffffe33b342d80
-   [   62.900547] x25: ffffffe33aa2c210 x24: 0000000000000000
-   [   62.905867] x23: ffffffe3294ef910 x22: ffffffe3294efc68
-   [   62.911188] x21: ffffffe3294ef910 x20: ffffffe320fe3238
-   [   62.916516] x19: ffffffe3294ed000 x18: 0000464806a32cd4
-   [   62.921842] x17: 0000000000000400 x16: 0000000000000001
-   [   62.927162] x15: 0000000000000000 x14: 0000000000000001
-   [   62.932482] x13: 00000000000c001f x12: 0000000000000000
-   [   62.937802] x11: 0000000000000001 x10: 0000000000000007
-   [   62.943122] x9 : 97fe39c0a1baee00 x8 : 97fe39c0a1baee00
-   [   62.948442] x7 : ffffffaf36af114c x6 : 0000000000000000
-   [   62.953762] x5 : 0000000000000080 x4 : 0000000000000001
-   [   62.959081] x3 : ffffff8008533868 x2 : 0000000000000006
-   [   62.964401] x1 : ffffffe33b3436a0 x0 : 0000000000000000
-   [   62.969721] Call trace:
-   [   62.972176]  refcount_sub_and_test_checked+0x80/0x8c
-   [   62.977142]  refcount_dec_and_test_checked+0x14/0x20
-   [   62.982153]  l2cap_sock_kill+0x40/0x58 [bluetooth]
-   [   62.986974]  l2cap_sock_close_cb+0x1c/0x28 [bluetooth]
-   [   62.992140]  l2cap_chan_timeout+0x94/0xb4 [bluetooth]
-   [   62.997196]  process_one_work+0x330/0x65c
-   [   63.001206]  worker_thread+0x2c8/0x3ec
-   [   63.004957]  kthread+0x124/0x134
-   [   63.008197]  ret_from_fork+0x10/0x18
-   [   63.011784] irq event stamp: 50638
-   [   63.015203] hardirqs last  enabled at (50637): [<ffffffaf37404fa4>]
-   _raw_spin_unlock_irq+0x34/0x68
-   [   63.024165] hardirqs last disabled at (50638): [<ffffffaf36a80e4c>]
-   do_debug_exception+0x44/0x16c
-   [   63.033036] softirqs last  enabled at (50632): [<ffffffaf36a81634>]
-   __do_softirq+0x45c/0x4a4
-   [   63.041473] softirqs last disabled at (50613): [<ffffffaf36abcf80>]
-   irq_exit+0xd8/0xf8
-   [   63.049386] ---[ end trace 91fdf7b9eddd3bb0 ]---
+In l2cap_sock_kill(), there is an "if-statement" that checks if both
+sock_orphan() and sock_teardown() has been run i.e. sk->sk_socket is NULL
+and socket is marked as SOCK_ZAPPED. Socket is killed if the condition is
+satisfied.
 
-   After analyzing the code, we noticed that there is a race condition between
-   l2cap_chan_timeout() and l2cap_sock_release() while killing the socket.
+In the race condition, following occurs:
+  A::l2cap_chan_timeout()->l2cap_chan_close()->l2cap_sock_teardown_cb()
+  B::l2cap_sock_release()->sock_orphan()
+  B::l2cap_sock_release()->l2cap_sock_kill()
+  A::l2cap_chan_timeout()->l2cap_sock_close_cb()->l2cap_sock_kill()
 
-   There are few more places in l2cap code where this race condition will occur.
-   Issue is reproducible by writing a test which runs connect/disconnect of a
-   bluetooth device in loop. With the help of this test, issue is consistently
-   reproducible just within a couple of hours.
+In this scenario, "if-statement" is true in both B::l2cap_sock_kill() and
+A::l2cap_sock_kill() and we hit "refcount: underflow; use-after-free" bug.
 
-   To fix this, protect teardown/sock_kill and orphan/sock_kill by adding
-   hold_lock on l2cap channel to ensure that the socket is killed only after
-   it is marked as zapped and orphan.
+Similar condition occurs at other places where teardown/sock_kill is
+happening:
+  l2cap_disconnect_rsp()->l2cap_chan_del()->l2cap_sock_teardown_cb()
+  l2cap_disconnect_rsp()->l2cap_sock_close_cb()->l2cap_sock_kill()
 
-   This change was tested by running the above test overnight and verifying that
-   issue is not observed.
+  l2cap_conn_del()->l2cap_chan_del()->l2cap_sock_teardown_cb()
+  l2cap_conn_del()->l2cap_sock_close_cb()->l2cap_sock_kill()
 
-   There are places in sco and rfcomm code as well where similar race condition
-   may occur. We are planning to send separate patches for them as well. Please
-   let us know if this looks like a good generalized solution.
+  l2cap_disconnect_req()->l2cap_chan_del()->l2cap_sock_teardown_cb()
+  l2cap_disconnect_req()->l2cap_sock_close_cb()->l2cap_sock_kill()
 
-Regards,
-Manish.
+  l2cap_sock_cleanup_listen()->l2cap_chan_close()->l2cap_sock_teardown_cb()
+  l2cap_sock_cleanup_listen()->l2cap_sock_kill()
 
+Protect teardown/sock_kill and orphan/sock_kill by adding hold_lock on
+l2cap channel to ensure that the socket is killed only after marked as
+zapped and orphan.
 
-Manish Mandlik (1):
-  Bluetooth: Fix refcount use-after-free issue
+Signed-off-by: Manish Mandlik <mmandlik@google.com>
+---
 
  net/bluetooth/l2cap_core.c | 26 +++++++++++++++-----------
  net/bluetooth/l2cap_sock.c | 16 +++++++++++++---
  2 files changed, 28 insertions(+), 14 deletions(-)
 
+diff --git a/net/bluetooth/l2cap_core.c b/net/bluetooth/l2cap_core.c
+index 195459a1e53e..dd2021270b8a 100644
+--- a/net/bluetooth/l2cap_core.c
++++ b/net/bluetooth/l2cap_core.c
+@@ -419,6 +419,9 @@ static void l2cap_chan_timeout(struct work_struct *work)
+ 	BT_DBG("chan %p state %s", chan, state_to_string(chan->state));
+ 
+ 	mutex_lock(&conn->chan_lock);
++	/* __set_chan_timer() calls l2cap_chan_hold(chan) while scheduling
++	 * this work. No need to call l2cap_chan_hold(chan) here again.
++	 */
+ 	l2cap_chan_lock(chan);
+ 
+ 	if (chan->state == BT_CONNECTED || chan->state == BT_CONFIG)
+@@ -431,12 +434,12 @@ static void l2cap_chan_timeout(struct work_struct *work)
+ 
+ 	l2cap_chan_close(chan, reason);
+ 
+-	l2cap_chan_unlock(chan);
+-
+ 	chan->ops->close(chan);
+-	mutex_unlock(&conn->chan_lock);
+ 
++	l2cap_chan_unlock(chan);
+ 	l2cap_chan_put(chan);
++
++	mutex_unlock(&conn->chan_lock);
+ }
+ 
+ struct l2cap_chan *l2cap_chan_create(void)
+@@ -1737,9 +1740,9 @@ static void l2cap_conn_del(struct hci_conn *hcon, int err)
+ 
+ 		l2cap_chan_del(chan, err);
+ 
+-		l2cap_chan_unlock(chan);
+-
+ 		chan->ops->close(chan);
++
++		l2cap_chan_unlock(chan);
+ 		l2cap_chan_put(chan);
+ 	}
+ 
+@@ -4405,6 +4408,7 @@ static inline int l2cap_disconnect_req(struct l2cap_conn *conn,
+ 		return 0;
+ 	}
+ 
++	l2cap_chan_hold(chan);
+ 	l2cap_chan_lock(chan);
+ 
+ 	rsp.dcid = cpu_to_le16(chan->scid);
+@@ -4413,12 +4417,11 @@ static inline int l2cap_disconnect_req(struct l2cap_conn *conn,
+ 
+ 	chan->ops->set_shutdown(chan);
+ 
+-	l2cap_chan_hold(chan);
+ 	l2cap_chan_del(chan, ECONNRESET);
+ 
+-	l2cap_chan_unlock(chan);
+-
+ 	chan->ops->close(chan);
++
++	l2cap_chan_unlock(chan);
+ 	l2cap_chan_put(chan);
+ 
+ 	mutex_unlock(&conn->chan_lock);
+@@ -4450,20 +4453,21 @@ static inline int l2cap_disconnect_rsp(struct l2cap_conn *conn,
+ 		return 0;
+ 	}
+ 
++	l2cap_chan_hold(chan);
+ 	l2cap_chan_lock(chan);
+ 
+ 	if (chan->state != BT_DISCONN) {
+ 		l2cap_chan_unlock(chan);
++		l2cap_chan_put(chan);
+ 		mutex_unlock(&conn->chan_lock);
+ 		return 0;
+ 	}
+ 
+-	l2cap_chan_hold(chan);
+ 	l2cap_chan_del(chan, 0);
+ 
+-	l2cap_chan_unlock(chan);
+-
+ 	chan->ops->close(chan);
++
++	l2cap_chan_unlock(chan);
+ 	l2cap_chan_put(chan);
+ 
+ 	mutex_unlock(&conn->chan_lock);
+diff --git a/net/bluetooth/l2cap_sock.c b/net/bluetooth/l2cap_sock.c
+index a7be8b59b3c2..ab65304f3f63 100644
+--- a/net/bluetooth/l2cap_sock.c
++++ b/net/bluetooth/l2cap_sock.c
+@@ -1042,7 +1042,7 @@ static int l2cap_sock_recvmsg(struct socket *sock, struct msghdr *msg,
+ }
+ 
+ /* Kill socket (only if zapped and orphan)
+- * Must be called on unlocked socket.
++ * Must be called on unlocked socket, with l2cap channel lock.
+  */
+ static void l2cap_sock_kill(struct sock *sk)
+ {
+@@ -1203,8 +1203,15 @@ static int l2cap_sock_release(struct socket *sock)
+ 
+ 	err = l2cap_sock_shutdown(sock, 2);
+ 
++	l2cap_chan_hold(l2cap_pi(sk)->chan);
++	l2cap_chan_lock(l2cap_pi(sk)->chan);
++
+ 	sock_orphan(sk);
+ 	l2cap_sock_kill(sk);
++
++	l2cap_chan_unlock(l2cap_pi(sk)->chan);
++	l2cap_chan_put(l2cap_pi(sk)->chan);
++
+ 	return err;
+ }
+ 
+@@ -1222,12 +1229,15 @@ static void l2cap_sock_cleanup_listen(struct sock *parent)
+ 		BT_DBG("child chan %p state %s", chan,
+ 		       state_to_string(chan->state));
+ 
++		l2cap_chan_hold(chan);
+ 		l2cap_chan_lock(chan);
++
+ 		__clear_chan_timer(chan);
+ 		l2cap_chan_close(chan, ECONNRESET);
+-		l2cap_chan_unlock(chan);
+-
+ 		l2cap_sock_kill(sk);
++
++		l2cap_chan_unlock(chan);
++		l2cap_chan_put(chan);
+ 	}
+ }
+ 
 -- 
 2.25.0.341.g760bfbb309-goog
 
