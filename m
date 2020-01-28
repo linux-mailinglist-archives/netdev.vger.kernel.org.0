@@ -2,109 +2,139 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 1AB4414C2BB
-	for <lists+netdev@lfdr.de>; Tue, 28 Jan 2020 23:15:22 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1D11314C333
+	for <lists+netdev@lfdr.de>; Wed, 29 Jan 2020 00:01:59 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726478AbgA1WPS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 28 Jan 2020 17:15:18 -0500
-Received: from mail-yb1-f193.google.com ([209.85.219.193]:42141 "EHLO
-        mail-yb1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726257AbgA1WPR (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 28 Jan 2020 17:15:17 -0500
-Received: by mail-yb1-f193.google.com with SMTP id z125so5585242ybf.9;
-        Tue, 28 Jan 2020 14:15:16 -0800 (PST)
+        id S1726443AbgA1XB5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 28 Jan 2020 18:01:57 -0500
+Received: from mail-pf1-f195.google.com ([209.85.210.195]:43659 "EHLO
+        mail-pf1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726276AbgA1XB4 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 28 Jan 2020 18:01:56 -0500
+Received: by mail-pf1-f195.google.com with SMTP id s1so6822379pfh.10
+        for <netdev@vger.kernel.org>; Tue, 28 Jan 2020 15:01:56 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=sender:from:to:cc:subject:date:message-id;
-        bh=WO/nRS9efA2jaU/WklByd7JTyruIx9K7cCmh5g/56w8=;
-        b=clbGC1USnyA8dsclFpIk3x+1zjO8ld+M52BNjyllqE7oNRzkLUCLUREUZdq1bSC2C+
-         43XzQpCcS04+ctxTdiLMAQ/rToX5HBnX3iIS1HywHynDq4QbLkAiRZbwfFx9orpmHbic
-         NTTk2pbeW7BkfGXnlvjZO/uR7Kp21wmyM9Hz5B8D9WUMVj24gMcpoXV2zBtPGGRVASce
-         B3wgGc8HAc5kkV3iPSdIYb5c+TvQCkaptkN1sgQirtzq8c/reKxKmEUnmNxysXhfIK+7
-         VL9e2oUZa352CS9yIQIu/OznwLkPLssfrUy+taYQp7DCnUVC/lC+n906DRXtK7Su44U1
-         eYRw==
+        d=chromium.org; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=+dg91h5BizLIOhJtrfPoQX1PBXFzRkzG/EccKIP5g+k=;
+        b=SLEtsTXM5HHL6KRx3hcUWmwHu6WOPgN0CNP8fHNTI+FAT+8rXdOFNHQ4Yag2eY0oom
+         MxIjkObrnioymch5q5MyrzGbWNjwhgMUswCx/M+MVBVQAe23jccXfrAxinTI930p2387
+         D9bys2Kwzdd099/FcXPhmwL9QuGCzxCyDD8ZA=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:sender:from:to:cc:subject:date:message-id;
-        bh=WO/nRS9efA2jaU/WklByd7JTyruIx9K7cCmh5g/56w8=;
-        b=OTaXvbrTVuL0MmJryN4o8PUQqIr7G6Yi8kEtWidYwnRR4BLzV0RcELZ3TVpg8CC6Mj
-         GTDvPFTGqLWsAJy819A1g9yylZUV8RR591mVGVpmrIyGJ7MIxokNLylGC7h+fM0R2SUE
-         F2ytsjlwNLm4zp6IVxff/ndQRU9UyS9BjPlo6UMJICYo6qmRuBzrV1Kn4Nn0TIE04mdR
-         EKJ85wiKRkheN2Qw6wvR861HedDSZq4j4PY/ddNPL7pZZjFNxHTM2MdJBjAXLFVfyDwp
-         OMayDHJk+UkmXJY2cVoLEn5R6+p8iS2bPArt8D+9MDmdri/24Qj/DNqITnqvKUL3Xuzc
-         K54w==
-X-Gm-Message-State: APjAAAUsaPNzMe9yzho7vyE/o467pKO2gtBnB1UwexZafIxnns8OwJPU
-        cyqECU10IdOHw2Mu+1PKbyM=
-X-Google-Smtp-Source: APXvYqwfpQ/wP6r1KP5a33g8F0cBdliNI0SCjYSrisRyCh/wAQneJm9e9B/vLJjhHeAbSd6n5CGolw==
-X-Received: by 2002:a25:d055:: with SMTP id h82mr18932492ybg.418.1580249716373;
-        Tue, 28 Jan 2020 14:15:16 -0800 (PST)
-Received: from localhost ([2600:1700:e321:62f0:329c:23ff:fee3:9d7c])
-        by smtp.gmail.com with ESMTPSA id l37sm64830ywa.103.2020.01.28.14.15.10
-        (version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
-        Tue, 28 Jan 2020 14:15:15 -0800 (PST)
-From:   Guenter Roeck <linux@roeck-us.net>
-To:     Kalle Valo <kvalo@codeaurora.org>
-Cc:     Arend van Spriel <arend.vanspriel@broadcom.com>,
-        Franky Lin <franky.lin@broadcom.com>,
-        Hante Meuleman <hante.meuleman@broadcom.com>,
-        Chi-Hsien Lin <chi-hsien.lin@cypress.com>,
-        Dan Carpenter <dan.carpenter@oracle.com>,
-        linux-wireless@vger.kernel.org,
-        brcm80211-dev-list.pdl@broadcom.com,
-        brcm80211-dev-list@cypress.com, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Guenter Roeck <linux@roeck-us.net>,
-        Matthias Kaehlcke <mka@chromium.org>,
-        Brian Norris <briannorris@chromium.org>,
-        Douglas Anderson <dianders@chromium.org>
-Subject: [PATCH] brcmfmac: abort and release host after error
-Date:   Tue, 28 Jan 2020 14:14:57 -0800
-Message-Id: <20200128221457.12467-1-linux@roeck-us.net>
-X-Mailer: git-send-email 2.17.1
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=+dg91h5BizLIOhJtrfPoQX1PBXFzRkzG/EccKIP5g+k=;
+        b=bM7v5zMMmr6B20WqrkOrYZuD93dPhZ+TP0HVyuziAMG6Uqajg56LJovGSMYzO4reej
+         BLwAUmxqOzB3OLX9+KtVtXhN/R9PaBVf+mAkpGODuP0k790fE4c+JmpLWQv8xndvtX5y
+         CK6OJ3dxTBAzwBXxdrNUR3Yb2FrDwsPpuTUr/4tW0aEV+v3C+NuZKJcj5YfbBysFpOZh
+         rubk8NESmYGvBgSChe4RzP+dV7jyW0dQJObtIe2+UyESFQe4e6joVT0llwrt9WDy/LD8
+         2z2Q69zUB2nfBgEAdIenwvhcDqmKbGPfL9GRbG4da0BI/lLZKSDKZMrgqf+u2G/nJnMK
+         ENDQ==
+X-Gm-Message-State: APjAAAXJH++r8qy6nvLseXmgD4C7t2Q96wvFEszY54cVM3ZApjH9OYC2
+        RzDlQgNKFgTMXP9r+sip5GUZiQ==
+X-Google-Smtp-Source: APXvYqxW3ZrU4wM0/mAVtxUyqtcw5VzYRKNT21IpKIlpAgs8GJ04bta0GGU8Rs7byefZaonYLylsnQ==
+X-Received: by 2002:aa7:82d5:: with SMTP id f21mr6360681pfn.245.1580252515843;
+        Tue, 28 Jan 2020 15:01:55 -0800 (PST)
+Received: from www.outflux.net (smtp.outflux.net. [198.145.64.163])
+        by smtp.gmail.com with ESMTPSA id k21sm136324pgt.22.2020.01.28.15.01.54
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 28 Jan 2020 15:01:54 -0800 (PST)
+Date:   Tue, 28 Jan 2020 15:01:53 -0800
+From:   Kees Cook <keescook@chromium.org>
+To:     Christian Borntraeger <borntraeger@de.ibm.com>
+Cc:     Jiri Slaby <jslaby@suse.cz>, Julian Wiedmann <jwi@linux.ibm.com>,
+        Ursula Braun <ubraun@linux.ibm.com>,
+        Alexander Viro <viro@zeniv.linux.org.uk>,
+        linux-kernel@vger.kernel.org, David Windsor <dave@nullcore.net>,
+        Pekka Enberg <penberg@kernel.org>,
+        David Rientjes <rientjes@google.com>,
+        Joonsoo Kim <iamjoonsoo.kim@lge.com>,
+        Andrew Morton <akpm@linux-foundation.org>, linux-mm@kvack.org,
+        linux-xfs@vger.kernel.org,
+        Linus Torvalds <torvalds@linux-foundation.org>,
+        Andy Lutomirski <luto@kernel.org>,
+        Christoph Hellwig <hch@infradead.org>,
+        Christoph Lameter <cl@linux.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Laura Abbott <labbott@redhat.com>,
+        Mark Rutland <mark.rutland@arm.com>,
+        "Martin K. Petersen" <martin.petersen@oracle.com>,
+        Paolo Bonzini <pbonzini@redhat.com>,
+        Christoffer Dall <christoffer.dall@linaro.org>,
+        Dave Kleikamp <dave.kleikamp@oracle.com>,
+        Jan Kara <jack@suse.cz>,
+        Luis de Bethencourt <luisbg@kernel.org>,
+        Marc Zyngier <marc.zyngier@arm.com>,
+        Rik van Riel <riel@redhat.com>,
+        Matthew Garrett <mjg59@google.com>,
+        linux-fsdevel@vger.kernel.org, linux-arch@vger.kernel.org,
+        netdev@vger.kernel.org, kernel-hardening@lists.openwall.com,
+        Vlastimil Babka <vbabka@suse.cz>,
+        Michal Kubecek <mkubecek@suse.cz>
+Subject: Re: [kernel-hardening] [PATCH 09/38] usercopy: Mark kmalloc caches
+ as usercopy caches
+Message-ID: <202001281457.FA11CC313A@keescook>
+References: <1515636190-24061-1-git-send-email-keescook@chromium.org>
+ <1515636190-24061-10-git-send-email-keescook@chromium.org>
+ <9519edb7-456a-a2fa-659e-3e5a1ff89466@suse.cz>
+ <201911121313.1097D6EE@keescook>
+ <201911141327.4DE6510@keescook>
+ <bfca96db-bbd0-d958-7732-76e36c667c68@suse.cz>
+ <202001271519.AA6ADEACF0@keescook>
+ <5861936c-1fe1-4c44-d012-26efa0c8b6e7@de.ibm.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <5861936c-1fe1-4c44-d012-26efa0c8b6e7@de.ibm.com>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-With commit 216b44000ada ("brcmfmac: Fix use after free in
-brcmf_sdio_readframes()") applied, we see locking timeouts in
-brcmf_sdio_watchdog_thread().
+On Tue, Jan 28, 2020 at 08:58:31AM +0100, Christian Borntraeger wrote:
+> 
+> 
+> On 28.01.20 00:19, Kees Cook wrote:
+> > On Thu, Jan 23, 2020 at 09:14:20AM +0100, Jiri Slaby wrote:
+> >> On 14. 11. 19, 22:27, Kees Cook wrote:
+> >>> On Tue, Nov 12, 2019 at 01:21:54PM -0800, Kees Cook wrote:
+> >>>> How is iucv the only network protocol that has run into this? Do others
+> >>>> use a bounce buffer?
+> >>>
+> >>> Another solution would be to use a dedicated kmem cache (instead of the
+> >>> shared kmalloc dma one)?
+> >>
+> >> Has there been any conclusion to this thread yet? For the time being, we
+> >> disabled HARDENED_USERCOPY on s390...
+> >>
+> >> https://lore.kernel.org/kernel-hardening/9519edb7-456a-a2fa-659e-3e5a1ff89466@suse.cz/
+> > 
+> > I haven't heard anything new. What did people think of a separate kmem
+> > cache?
+> > 
+> 
+> Adding Julian and Ursula. A separate kmem cache for iucv might be indeed
+> a solution for the user hardening issue.
 
-brcmfmac: brcmf_escan_timeout: timer expired
-INFO: task brcmf_wdog/mmc1:621 blocked for more than 120 seconds.
-Not tainted 4.19.94-07984-g24ff99a0f713 #1
-"echo 0 > /proc/sys/kernel/hung_task_timeout_secs" disables this message.
-brcmf_wdog/mmc1 D    0   621      2 0x00000000 last_sleep: 2440793077.  last_runnable: 2440766827
-[<c0aa1e60>] (__schedule) from [<c0aa2100>] (schedule+0x98/0xc4)
-[<c0aa2100>] (schedule) from [<c0853830>] (__mmc_claim_host+0x154/0x274)
-[<c0853830>] (__mmc_claim_host) from [<bf10c5b8>] (brcmf_sdio_watchdog_thread+0x1b0/0x1f8 [brcmfmac])
-[<bf10c5b8>] (brcmf_sdio_watchdog_thread [brcmfmac]) from [<c02570b8>] (kthread+0x178/0x180)
+It should be very clean -- any existing kmallocs already have to be
+"special" in the sense that they're marked with the DMA flag. So
+converting these to a separate cache should be mostly mechanical.
 
-In addition to restarting or exiting the loop, it is also necessary to
-abort the command and to release the host.
+> On the other hand not marking the DMA caches still seems questionable.
 
-Fixes: 216b44000ada ("brcmfmac: Fix use after free in brcmf_sdio_readframes()")
-Cc: Dan Carpenter <dan.carpenter@oracle.com>
-Cc: Matthias Kaehlcke <mka@chromium.org>
-Cc: Brian Norris <briannorris@chromium.org>
-Cc: Douglas Anderson <dianders@chromium.org>
-Signed-off-by: Guenter Roeck <linux@roeck-us.net>
----
- drivers/net/wireless/broadcom/brcm80211/brcmfmac/sdio.c | 2 ++
- 1 file changed, 2 insertions(+)
+My understanding is that exposing DMA memory to userspace copies can
+lead to unexpected results, especially for misbehaving hardware, so I'm
+not convinced this is a generically bad hardening choice.
 
-diff --git a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/sdio.c b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/sdio.c
-index f9df95bc7fa1..2e1c23c7269d 100644
---- a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/sdio.c
-+++ b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/sdio.c
-@@ -1938,6 +1938,8 @@ static uint brcmf_sdio_readframes(struct brcmf_sdio *bus, uint maxframes)
- 			if (brcmf_sdio_hdparse(bus, bus->rxhdr, &rd_new,
- 					       BRCMF_SDIO_FT_NORMAL)) {
- 				rd->len = 0;
-+				brcmf_sdio_rxfail(bus, true, true);
-+				sdio_release_host(bus->sdiodev->func1);
- 				brcmu_pkt_buf_free_skb(pkt);
- 				continue;
- 			}
+-Kees
+
+> 
+> For reference
+> https://bugzilla.suse.com/show_bug.cgi?id=1156053
+> the kernel hardening now triggers a warning.
+> 
+
 -- 
-2.17.1
-
+Kees Cook
