@@ -2,86 +2,94 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id F422414B580
-	for <lists+netdev@lfdr.de>; Tue, 28 Jan 2020 14:57:56 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 30F3514B721
+	for <lists+netdev@lfdr.de>; Tue, 28 Jan 2020 15:11:53 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726303AbgA1N5z (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 28 Jan 2020 08:57:55 -0500
-Received: from mail.kernel.org ([198.145.29.99]:43096 "EHLO mail.kernel.org"
+        id S1727006AbgA1OLk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 28 Jan 2020 09:11:40 -0500
+Received: from mail.kernel.org ([198.145.29.99]:60832 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726107AbgA1N5y (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 28 Jan 2020 08:57:54 -0500
-Received: from cakuba (c-73-93-4-247.hsd1.ca.comcast.net [73.93.4.247])
+        id S1727097AbgA1OLk (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 28 Jan 2020 09:11:40 -0500
+Received: from localhost (83-86-89-107.cable.dynamic.v4.ziggo.nl [83.86.89.107])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 874C92173E;
-        Tue, 28 Jan 2020 13:57:53 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 4959E24685;
+        Tue, 28 Jan 2020 14:11:39 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1580219874;
-        bh=HL0lcgWOM+5WXYJru6CbR/OifIZqGLRnlFp5NoYOE0Y=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=pNLx6pOuQC2ktMsIQYcTCmiHpW8l7UgnqiieM1LOFJ5O8+JydIVc0Nxf2117gLrUo
-         W5CxIEJ+n2rjflPIIHvBXvRMdvNgu7kMGnqpfVfeGzYAGqtOCa+bE8LH80NleR63h3
-         i1/xXp+x+nnxbdZkz6f9YugaHLepy55j2p0kEPq8=
-Date:   Tue, 28 Jan 2020 05:57:52 -0800
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     David Ahern <dsahern@gmail.com>
-Cc:     Toke =?UTF-8?B?SMO4aWxhbmQtSsO4cmdlbnNlbg==?= <toke@redhat.com>,
-        David Ahern <dsahern@kernel.org>, netdev@vger.kernel.org,
-        prashantbhole.linux@gmail.com, jasowang@redhat.com,
-        davem@davemloft.net, jbrouer@redhat.com, mst@redhat.com,
-        toshiaki.makita1@gmail.com, daniel@iogearbox.net,
-        john.fastabend@gmail.com, ast@kernel.org, kafai@fb.com,
-        songliubraving@fb.com, yhs@fb.com, andriin@fb.com,
-        David Ahern <dahern@digitalocean.com>
-Subject: Re: [PATCH bpf-next 03/12] net: Add IFLA_XDP_EGRESS for XDP
- programs in the egress path
-Message-ID: <20200128055752.617aebc7@cakuba>
-In-Reply-To: <252acf50-91ff-fdc5-3ce1-491a02de07c6@gmail.com>
-References: <20200123014210.38412-1-dsahern@kernel.org>
-        <20200123014210.38412-4-dsahern@kernel.org>
-        <87tv4m9zio.fsf@toke.dk>
-        <335b624a-655a-c0c6-ca27-102e6dac790b@gmail.com>
-        <20200124072128.4fcb4bd1@cakuba>
-        <87o8usg92d.fsf@toke.dk>
-        <1d84d8be-6812-d63a-97ca-ebc68cc266b9@gmail.com>
-        <20200126141141.0b773aba@cakuba>
-        <33f233a9-88b4-a75a-d1e5-fbbda21f9546@gmail.com>
-        <20200127061623.1cf42cd0@cakuba>
-        <252acf50-91ff-fdc5-3ce1-491a02de07c6@gmail.com>
+        s=default; t=1580220699;
+        bh=bglMOhpW0akwAO+UKsVyPEKX3a4ppREXxXPwjhFHAw4=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=frmn8J2D3e8YSTKtf4SuDTCbs8t1nFn9MEGzUdYXHMO9u6PrjjTNUNX/YUMRnas9F
+         YdDmf6zdb1lhz4FFotUh8UX/Q92qTSf3QnqSvGTinMCB1wicXD4khKJ/ui0AsjiL31
+         zaCmYy3os2wsDWzlUZwwsRKA5bUAGojINgtTQO+I=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Wen Yang <wen.yang99@zte.com.cn>,
+        "David S. Miller" <davem@davemloft.net>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Luis Chamberlain <mcgrof@kernel.org>,
+        Michael Ellerman <mpe@ellerman.id.au>, netdev@vger.kernel.org,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 4.4 110/183] net: pasemi: fix an use-after-free in pasemi_mac_phy_init()
+Date:   Tue, 28 Jan 2020 15:05:29 +0100
+Message-Id: <20200128135840.905748645@linuxfoundation.org>
+X-Mailer: git-send-email 2.25.0
+In-Reply-To: <20200128135829.486060649@linuxfoundation.org>
+References: <20200128135829.486060649@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, 27 Jan 2020 20:43:09 -0700, David Ahern wrote:
-> > end of whatever is doing the redirect (especially with Alexei's work  =
-=20
->=20
-> There are use cases where they may make sense, but this is not one.
->=20
-> > on linking) and from cls_bpf =F0=9F=A4=B7=E2=80=8D=E2=99=82=EF=B8=8F
->=20
-> cls_bpf is tc based =3D=3D skb, no? I want to handle any packet, regardle=
-ss
-> of how it arrived at the device's xmit function.
+From: Wen Yang <wen.yang99@zte.com.cn>
 
-Yes, that's why I said you need the same rules in XDP before REDIRECT
-and cls_bpf. Sure it's more complex, but (1) it's faster to drop in
-the ingress prog before going though the entire redirect code and
-without parsing the packet twice and (2) no extra kernel code necessary.
+[ Upstream commit faf5577f2498cea23011b5c785ef853ded22700b ]
 
-Even the VM "offload" work doesn't need this. Translating an XDP prog
-into a cls_bpf one should be trivial. Slap on some prologue to linearize
-the skb, move ctx offsets around, slap on an epilogue to convert exit
-codes, anything else?
+The phy_dn variable is still being used in of_phy_connect() after the
+of_node_put() call, which may result in use-after-free.
 
-I'm weary of partially implemented XDP features, EGRESS prog does us=20
-no good when most drivers didn't yet catch up with the REDIRECTs. And
-we're adding this before we considered the queuing problem.
+Fixes: 1dd2d06c0459 ("net: Rework pasemi_mac driver to use of_mdio infrastructure")
+Signed-off-by: Wen Yang <wen.yang99@zte.com.cn>
+Cc: "David S. Miller" <davem@davemloft.net>
+Cc: Thomas Gleixner <tglx@linutronix.de>
+Cc: Luis Chamberlain <mcgrof@kernel.org>
+Cc: Michael Ellerman <mpe@ellerman.id.au>
+Cc: netdev@vger.kernel.org
+Cc: linux-kernel@vger.kernel.org
+Signed-off-by: David S. Miller <davem@davemloft.net>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ drivers/net/ethernet/pasemi/pasemi_mac.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-But if I'm alone in thinking this, and I'm not convincing anyone we can
-move on :)
+diff --git a/drivers/net/ethernet/pasemi/pasemi_mac.c b/drivers/net/ethernet/pasemi/pasemi_mac.c
+index 57a6e6cd74fc3..48106953cf64b 100644
+--- a/drivers/net/ethernet/pasemi/pasemi_mac.c
++++ b/drivers/net/ethernet/pasemi/pasemi_mac.c
+@@ -1091,7 +1091,6 @@ static int pasemi_mac_phy_init(struct net_device *dev)
+ 
+ 	dn = pci_device_to_OF_node(mac->pdev);
+ 	phy_dn = of_parse_phandle(dn, "phy-handle", 0);
+-	of_node_put(phy_dn);
+ 
+ 	mac->link = 0;
+ 	mac->speed = 0;
+@@ -1100,6 +1099,7 @@ static int pasemi_mac_phy_init(struct net_device *dev)
+ 	phydev = of_phy_connect(dev, phy_dn, &pasemi_adjust_link, 0,
+ 				PHY_INTERFACE_MODE_SGMII);
+ 
++	of_node_put(phy_dn);
+ 	if (!phydev) {
+ 		printk(KERN_ERR "%s: Could not attach to phy\n", dev->name);
+ 		return -ENODEV;
+-- 
+2.20.1
+
+
+
