@@ -2,172 +2,256 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 243A514AE76
-	for <lists+netdev@lfdr.de>; Tue, 28 Jan 2020 04:45:41 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 19B3F14AE90
+	for <lists+netdev@lfdr.de>; Tue, 28 Jan 2020 05:04:19 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726338AbgA1Dpj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 27 Jan 2020 22:45:39 -0500
-Received: from mga14.intel.com ([192.55.52.115]:38214 "EHLO mga14.intel.com"
+        id S1726360AbgA1EER (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 27 Jan 2020 23:04:17 -0500
+Received: from mail.kernel.org ([198.145.29.99]:56814 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726164AbgA1Dpj (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 27 Jan 2020 22:45:39 -0500
-X-Amp-Result: UNSCANNABLE
-X-Amp-File-Uploaded: False
-Received: from fmsmga004.fm.intel.com ([10.253.24.48])
-  by fmsmga103.fm.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 27 Jan 2020 19:45:35 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.70,372,1574150400"; 
-   d="scan'208";a="252154036"
-Received: from lkp-server01.sh.intel.com (HELO lkp-server01) ([10.239.97.150])
-  by fmsmga004.fm.intel.com with ESMTP; 27 Jan 2020 19:45:34 -0800
-Received: from kbuild by lkp-server01 with local (Exim 4.89)
-        (envelope-from <lkp@intel.com>)
-        id 1iwHok-000FBN-B0; Tue, 28 Jan 2020 11:45:34 +0800
-Date:   Tue, 28 Jan 2020 11:45:06 +0800
-From:   kbuild test robot <lkp@intel.com>
-To:     Michal Kalderon <michal.kalderon@marvell.com>
-Cc:     kbuild-all@lists.01.org, michal.kalderon@marvell.com,
-        ariel.elior@marvell.com, davem@davemloft.net,
-        netdev@vger.kernel.org, linux-rdma@vger.kernel.org,
-        linux-scsi@vger.kernel.org
-Subject: Re: [PATCH v2 net-next 09/13] qed: FW 8.42.2.0 HSI changes
-Message-ID: <202001281133.FfnErAlx%lkp@intel.com>
-References: <20200123105836.15090-10-michal.kalderon@marvell.com>
+        id S1726191AbgA1EEQ (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 27 Jan 2020 23:04:16 -0500
+Received: from cakuba (c-73-93-4-247.hsd1.ca.comcast.net [73.93.4.247])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 841C42173E;
+        Tue, 28 Jan 2020 04:04:15 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1580184255;
+        bh=9tOpVc1d3p99Nigt+fYdy50b08XiJa5V0dzKgQVxDFw=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=xlaf4402HyIIGGhGkBlOCuTz8bON6Y2/6DkQtBNodjITLbvSJjAt7maf5swWDi2v/
+         XgLIK/NyfQIoGvWKwwcwsv103hx/1Im4tb3F6f36i6wTQunHVe0jRDDmlCfSd4S/Ps
+         7+oXb5TvIqqcX/Y7GRz+dZADyWFI1J23x6kL4pC8=
+Date:   Mon, 27 Jan 2020 20:04:14 -0800
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Taehee Yoo <ap420073@gmail.com>
+Cc:     davem@davemloft.net, netdev@vger.kernel.org
+Subject: Re: [PATCH net v2 2/6] netdevsim: disable devlink reload when
+ resources are being used
+Message-ID: <20200127200414.41a6d521@cakuba>
+In-Reply-To: <20200127143015.1264-1-ap420073@gmail.com>
+References: <20200127143015.1264-1-ap420073@gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200123105836.15090-10-michal.kalderon@marvell.com>
-User-Agent: NeoMutt/20170113 (1.7.2)
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Michal,
+On Mon, 27 Jan 2020 14:30:15 +0000, Taehee Yoo wrote:
+> devlink reload destroys resources and allocates resources again.
+> So, when devices and ports resources are being used, devlink reload
+> function should not be executed. In order to avoid this race, a new
+> lock is added and new_port() and del_port() call devlink_reload_disable()
+> and devlink_reload_enable().
+> 
+> Thread0                      Thread1
+> {new/del}_port()             {new/del}_port()
+> devlink_reload_disable()
+>                              devlink_reload_disable()
+> devlink_reload_enable()      //here
+>                              devlink_reload_enable()
+> 
+> Before Thread1's devlink_reload_enable(), the devlink is already allowed
+> to execute reload because Thread0 allows it. devlink reload disable/enable
+> variable type is bool. So the above case would exist.
+> So, disable/enable should be executed atomically.
+> In order to do that, a new lock is used.
+> 
+> Test commands:
+>     modprobe netdevsim
+>     echo 1 > /sys/bus/netdevsim/new_device
+> 
+>     while :
+>     do
+>         echo 1 > /sys/devices/netdevsim1/new_port &
+>         echo 1 > /sys/devices/netdevsim1/del_port &
+>         devlink dev reload netdevsim/netdevsim1 &
+>     done
+> 
+> Splat looks like:
+> [ 1067.313531][ T1480] kernel BUG at lib/list_debug.c:53!
+> [ 1067.314519][ T1480] invalid opcode: 0000 [#1] SMP DEBUG_PAGEALLOC KASAN PTI
+> [ 1067.315948][ T1480] CPU: 3 PID: 1480 Comm: bash Tainted: G        W         5.5.0-rc6+ #318
+> [ 1067.326082][ T1480] Hardware name: innotek GmbH VirtualBox/VirtualBox, BIOS VirtualBox 12/01/2006
+> [ 1067.356308][ T1480] RIP: 0010:__list_del_entry_valid+0xe6/0x150
+> [ 1067.357006][ T1480] Code: 89 ea 48 c7 c7 a0 64 1e 9f e8 7f 5b 4d ff 0f 0b 48 c7 c7 00 65 1e 9f e8 71 5b 4d ff 4
+> [ 1067.395359][ T1480] RSP: 0018:ffff8880a316fb58 EFLAGS: 00010282
+> [ 1067.396016][ T1480] RAX: 0000000000000054 RBX: ffff8880c0e76718 RCX: 0000000000000000
+> [ 1067.402370][ T1480] RDX: 0000000000000054 RSI: 0000000000000008 RDI: ffffed101462df61
+> [ 1067.430844][ T1480] RBP: ffff8880a31bfca0 R08: ffffed101b5404f9 R09: ffffed101b5404f9
+> [ 1067.432165][ T1480] R10: 0000000000000001 R11: ffffed101b5404f8 R12: ffff8880a316fcb0
+> [ 1067.433526][ T1480] R13: ffff8880a310d440 R14: ffffffffa117a7c0 R15: ffff8880c0e766c0
+> [ 1067.435818][ T1480] FS:  00007f001c026740(0000) GS:ffff8880da800000(0000) knlGS:0000000000000000
+> [ 1067.441677][ T1480] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+> [ 1067.451305][ T1480] CR2: 00007f001afb7180 CR3: 00000000a3170003 CR4: 00000000000606e0
+> [ 1067.453416][ T1480] Call Trace:
+> [ 1067.453832][ T1480]  mutex_remove_waiter+0x101/0x520
+> [ 1067.455949][ T1480]  __mutex_lock+0xac7/0x14b0
+> [ 1067.456880][ T1480]  ? nsim_dev_port_add+0x50/0x150 [netdevsim]
+> [ 1067.458946][ T1480]  ? mutex_lock_io_nested+0x1380/0x1380
+> [ 1067.460614][ T1480]  ? _parse_integer+0xf0/0xf0
+> [ 1067.472498][ T1480]  ? kstrtouint+0x86/0x110
+> [ 1067.473327][ T1480]  ? nsim_dev_port_add+0x50/0x150 [netdevsim]
+> [ 1067.474187][ T1480]  nsim_dev_port_add+0x50/0x150 [netdevsim]
+> [ 1067.474980][ T1480]  new_port_store+0xc4/0xf0 [netdevsim]
+> [ 1067.475717][ T1480]  ? del_port_store+0xf0/0xf0 [netdevsim]
+> [ 1067.476478][ T1480]  ? sysfs_kf_write+0x3b/0x180
+> [ 1067.477106][ T1480]  ? sysfs_file_ops+0x160/0x160
+> [ 1067.477744][ T1480]  kernfs_fop_write+0x276/0x410
+> [ ... ]
+> 
+> Fixes: 4418f862d675 ("netdevsim: implement support for devlink region and snapshots")
+> Fixes: 75ba029f3c07 ("netdevsim: implement proper devlink reload")
+> Signed-off-by: Taehee Yoo <ap420073@gmail.com>
+> ---
+>  drivers/net/netdevsim/bus.c       | 21 ++++++++++++++++++++-
+>  drivers/net/netdevsim/dev.c       | 14 ++++++++++++++
+>  drivers/net/netdevsim/netdevsim.h |  4 ++++
+>  3 files changed, 38 insertions(+), 1 deletion(-)
+> 
+> diff --git a/drivers/net/netdevsim/bus.c b/drivers/net/netdevsim/bus.c
+> index a3205fd73c8f..b1aed37a0574 100644
+> --- a/drivers/net/netdevsim/bus.c
+> +++ b/drivers/net/netdevsim/bus.c
+> @@ -16,7 +16,7 @@
+>  
+>  static DEFINE_IDA(nsim_bus_dev_ids);
+>  static LIST_HEAD(nsim_bus_dev_list);
+> -static DEFINE_MUTEX(nsim_bus_dev_ops_lock);
+> +DEFINE_MUTEX(nsim_bus_dev_ops_lock);
+>  static bool enable;
+>  
+>  static struct nsim_bus_dev *to_nsim_bus_dev(struct device *dev)
+> @@ -97,6 +97,8 @@ new_port_store(struct device *dev, struct device_attribute *attr,
+>  	       const char *buf, size_t count)
+>  {
+>  	struct nsim_bus_dev *nsim_bus_dev = to_nsim_bus_dev(dev);
+> +	struct nsim_dev *nsim_dev = dev_get_drvdata(dev);
+> +	struct devlink *devlink;
+>  	unsigned int port_index;
+>  	int ret;
+>  
+> @@ -105,7 +107,14 @@ new_port_store(struct device *dev, struct device_attribute *attr,
+>  	ret = kstrtouint(buf, 0, &port_index);
+>  	if (ret)
+>  		return ret;
+> +
+> +	devlink = priv_to_devlink(nsim_dev);
+> +
+> +	mutex_lock(&nsim_bus_dev->port_ops_lock);
+> +	devlink_reload_disable(devlink);
+>  	ret = nsim_dev_port_add(nsim_bus_dev, port_index);
+> +	devlink_reload_enable(devlink);
+> +	mutex_unlock(&nsim_bus_dev->port_ops_lock);
+>  	return ret ? ret : count;
+>  }
+>  
+> @@ -116,6 +125,8 @@ del_port_store(struct device *dev, struct device_attribute *attr,
+>  	       const char *buf, size_t count)
+>  {
+>  	struct nsim_bus_dev *nsim_bus_dev = to_nsim_bus_dev(dev);
+> +	struct nsim_dev *nsim_dev = dev_get_drvdata(dev);
+> +	struct devlink *devlink;
+>  	unsigned int port_index;
+>  	int ret;
+>  
+> @@ -124,7 +135,14 @@ del_port_store(struct device *dev, struct device_attribute *attr,
+>  	ret = kstrtouint(buf, 0, &port_index);
+>  	if (ret)
+>  		return ret;
+> +
+> +	devlink = priv_to_devlink(nsim_dev);
+> +
+> +	mutex_lock(&nsim_bus_dev->port_ops_lock);
+> +	devlink_reload_disable(devlink);
+>  	ret = nsim_dev_port_del(nsim_bus_dev, port_index);
+> +	devlink_reload_enable(devlink);
+> +	mutex_unlock(&nsim_bus_dev->port_ops_lock);
+>  	return ret ? ret : count;
+>  }
+>  
+> @@ -301,6 +319,7 @@ nsim_bus_dev_new(unsigned int id, unsigned int port_count)
+>  	nsim_bus_dev->dev.type = &nsim_bus_dev_type;
+>  	nsim_bus_dev->port_count = port_count;
+>  	nsim_bus_dev->initial_net = current->nsproxy->net_ns;
+> +	mutex_init(&nsim_bus_dev->port_ops_lock);
+>  
+>  	err = device_register(&nsim_bus_dev->dev);
+>  	if (err)
 
-I love your patch! Perhaps something to improve:
+Disabling reload around port add/del makes perfect sense
 
-[auto build test WARNING on net-next/master]
-[also build test WARNING on linus/master v5.5 next-20200122]
-[if your patch is applied to the wrong git tree, please drop us a note to help
-improve the system. BTW, we also suggest to use '--base' option to specify the
-base tree in git format-patch, please see https://stackoverflow.com/a/37406982]
+> diff --git a/drivers/net/netdevsim/dev.c b/drivers/net/netdevsim/dev.c
+> index 4b39aba2e9c4..0dfaf999e8db 100644
+> --- a/drivers/net/netdevsim/dev.c
+> +++ b/drivers/net/netdevsim/dev.c
+> @@ -43,6 +43,8 @@ static ssize_t nsim_dev_take_snapshot_write(struct file *file,
+>  					    size_t count, loff_t *ppos)
+>  {
+>  	struct nsim_dev *nsim_dev = file->private_data;
+> +	struct nsim_bus_dev *nsim_bus_dev;
+> +	struct devlink *devlink;
+>  	void *dummy_data;
+>  	int err;
+>  	u32 id;
+> @@ -51,11 +53,23 @@ static ssize_t nsim_dev_take_snapshot_write(struct file *file,
+>  	if (!dummy_data)
+>  		return -ENOMEM;
+>  
+> +	devlink = priv_to_devlink(nsim_dev);
+> +	nsim_bus_dev = nsim_dev->nsim_bus_dev;
+> +
+>  	get_random_bytes(dummy_data, NSIM_DEV_DUMMY_REGION_SIZE);
+>  
+> +	mutex_lock(&nsim_bus_dev_ops_lock);
 
-url:    https://github.com/0day-ci/linux/commits/Michal-Kalderon/qed-Utilize-FW-8-42-2-0/20200125-055253
-base:   https://git.kernel.org/pub/scm/linux/kernel/git/davem/net-next.git 9bbc8be29d66cc34b650510f2c67b5c55235fe5d
-reproduce:
-        # apt-get install sparse
-        # sparse version: v0.6.1-153-g47b6dfef-dirty
-        make ARCH=x86_64 allmodconfig
-        make C=1 CF='-fdiagnostic-prefix -D__CHECK_ENDIAN__'
+Not sure why we have to lock the big lock here?
 
-If you fix the issue, kindly add following tag
-Reported-by: kbuild test robot <lkp@intel.com>
+> +	mutex_lock(&nsim_bus_dev->port_ops_lock);
+> +	devlink_reload_disable(devlink);
 
+Or the port lock, or disable reload - the reload path unregisters and
+re-registers the snapshot, so snapshot can't be taken during reload, 
+I don't think.
 
-sparse warnings: (new ones prefixed by >>)
+>  	id = devlink_region_snapshot_id_get(priv_to_devlink(nsim_dev));
+>  	err = devlink_region_snapshot_create(nsim_dev->dummy_region,
+>  					     dummy_data, id, kfree);
+> +
+> +	devlink_reload_enable(devlink);
+> +	mutex_unlock(&nsim_bus_dev->port_ops_lock);
+> +	mutex_unlock(&nsim_bus_dev_ops_lock);
+> +
+>  	if (err) {
+>  		pr_err("Failed to create region snapshot\n");
+>  		kfree(dummy_data);
+> diff --git a/drivers/net/netdevsim/netdevsim.h b/drivers/net/netdevsim/netdevsim.h
+> index ea3931391ce2..a8b6c9e6f79f 100644
+> --- a/drivers/net/netdevsim/netdevsim.h
+> +++ b/drivers/net/netdevsim/netdevsim.h
+> @@ -74,6 +74,8 @@ struct netdevsim {
+>  	struct nsim_ipsec ipsec;
+>  };
+>  
+> +extern struct mutex nsim_bus_dev_ops_lock;
+> +
+>  struct netdevsim *
+>  nsim_create(struct nsim_dev *nsim_dev, struct nsim_dev_port *nsim_dev_port);
+>  void nsim_destroy(struct netdevsim *ns);
+> @@ -240,6 +242,8 @@ struct nsim_bus_dev {
+>  				  */
+>  	unsigned int num_vfs;
+>  	struct nsim_vf_config *vfconfigs;
+> +	/* Lock for new_port() and del_port() to disable devlink reload */
 
-   drivers/net/ethernet/qlogic/qed/qed_debug.c:1897:29: sparse: sparse: restricted __le32 degrades to integer
-   drivers/net/ethernet/qlogic/qed/qed_debug.c:1897:58: sparse: sparse: restricted __le32 degrades to integer
-   drivers/net/ethernet/qlogic/qed/qed_debug.c:1899:22: sparse: sparse: incorrect type in assignment (different base types)
-   drivers/net/ethernet/qlogic/qed/qed_debug.c:1899:22: sparse:    expected unsigned int [assigned] [usertype] addr
-   drivers/net/ethernet/qlogic/qed/qed_debug.c:1899:22: sparse:    got restricted __le32 [addressable] [usertype] grc_addr
-   drivers/net/ethernet/qlogic/qed/qed_debug.c:1901:33: sparse: sparse: restricted __le32 degrades to integer
-   drivers/net/ethernet/qlogic/qed/qed_debug.c:2030:65: sparse: sparse: incorrect type in argument 4 (different base types)
-   drivers/net/ethernet/qlogic/qed/qed_debug.c:2030:65: sparse:    expected unsigned int [usertype] param_val
-   drivers/net/ethernet/qlogic/qed/qed_debug.c:2030:65: sparse:    got restricted __le32 [addressable] [usertype] timestamp
->> drivers/net/ethernet/qlogic/qed/qed_debug.c:5067:25: sparse: sparse: restricted __le16 degrades to integer
-   drivers/net/ethernet/qlogic/qed/qed_debug.c:7992:46: sparse: sparse: incorrect type in assignment (different base types)
-   drivers/net/ethernet/qlogic/qed/qed_debug.c:7992:46: sparse:    expected unsigned int [usertype]
-   drivers/net/ethernet/qlogic/qed/qed_debug.c:7992:46: sparse:    got restricted __be32 [assigned] [usertype] val
+It'd be good to have the comment point out which fields the lock
+protects, rather than code.
 
-vim +5067 drivers/net/ethernet/qlogic/qed/qed_debug.c
+> +	struct mutex port_ops_lock;
+>  	bool init;
+>  };
+>  
 
-c965db44462919 Tomer Tayar     2016-09-07  5013  
-c965db44462919 Tomer Tayar     2016-09-07  5014  /* Performs FW Asserts Dump to the specified buffer.
-c965db44462919 Tomer Tayar     2016-09-07  5015   * Returns the dumped size in dwords.
-c965db44462919 Tomer Tayar     2016-09-07  5016   */
-c965db44462919 Tomer Tayar     2016-09-07  5017  static u32 qed_fw_asserts_dump(struct qed_hwfn *p_hwfn,
-c965db44462919 Tomer Tayar     2016-09-07  5018  			       struct qed_ptt *p_ptt, u32 *dump_buf, bool dump)
-c965db44462919 Tomer Tayar     2016-09-07  5019  {
-c965db44462919 Tomer Tayar     2016-09-07  5020  	struct dbg_tools_data *dev_data = &p_hwfn->dbg_info;
-be086e7c53f1fa Mintz, Yuval    2017-03-11  5021  	struct fw_asserts_ram_section *asserts;
-c965db44462919 Tomer Tayar     2016-09-07  5022  	char storm_letter_str[2] = "?";
-c965db44462919 Tomer Tayar     2016-09-07  5023  	struct fw_info fw_info;
-be086e7c53f1fa Mintz, Yuval    2017-03-11  5024  	u32 offset = 0;
-c965db44462919 Tomer Tayar     2016-09-07  5025  	u8 storm_id;
-c965db44462919 Tomer Tayar     2016-09-07  5026  
-c965db44462919 Tomer Tayar     2016-09-07  5027  	/* Dump global params */
-c965db44462919 Tomer Tayar     2016-09-07  5028  	offset += qed_dump_common_global_params(p_hwfn,
-c965db44462919 Tomer Tayar     2016-09-07  5029  						p_ptt,
-c965db44462919 Tomer Tayar     2016-09-07  5030  						dump_buf + offset, dump, 1);
-c965db44462919 Tomer Tayar     2016-09-07  5031  	offset += qed_dump_str_param(dump_buf + offset,
-c965db44462919 Tomer Tayar     2016-09-07  5032  				     dump, "dump-type", "fw-asserts");
-7b6859fbdcc4a5 Mintz, Yuval    2017-05-18  5033  
-7b6859fbdcc4a5 Mintz, Yuval    2017-05-18  5034  	/* Find Storm dump size */
-c965db44462919 Tomer Tayar     2016-09-07  5035  	for (storm_id = 0; storm_id < MAX_DBG_STORMS; storm_id++) {
-be086e7c53f1fa Mintz, Yuval    2017-03-11  5036  		u32 fw_asserts_section_addr, next_list_idx_addr, next_list_idx;
-7b6859fbdcc4a5 Mintz, Yuval    2017-05-18  5037  		struct storm_defs *storm = &s_storm_defs[storm_id];
-be086e7c53f1fa Mintz, Yuval    2017-03-11  5038  		u32 last_list_idx, addr;
-c965db44462919 Tomer Tayar     2016-09-07  5039  
-7b6859fbdcc4a5 Mintz, Yuval    2017-05-18  5040  		if (dev_data->block_in_reset[storm->block_id])
-c965db44462919 Tomer Tayar     2016-09-07  5041  			continue;
-c965db44462919 Tomer Tayar     2016-09-07  5042  
-c965db44462919 Tomer Tayar     2016-09-07  5043  		/* Read FW info for the current Storm */
-d52c89f120de84 Michal Kalderon 2018-06-05  5044  		qed_read_storm_fw_info(p_hwfn, p_ptt, storm_id, &fw_info);
-c965db44462919 Tomer Tayar     2016-09-07  5045  
-be086e7c53f1fa Mintz, Yuval    2017-03-11  5046  		asserts = &fw_info.fw_asserts_section;
-be086e7c53f1fa Mintz, Yuval    2017-03-11  5047  
-c965db44462919 Tomer Tayar     2016-09-07  5048  		/* Dump FW Asserts section header and params */
-7b6859fbdcc4a5 Mintz, Yuval    2017-05-18  5049  		storm_letter_str[0] = storm->letter;
-7b6859fbdcc4a5 Mintz, Yuval    2017-05-18  5050  		offset += qed_dump_section_hdr(dump_buf + offset,
-7b6859fbdcc4a5 Mintz, Yuval    2017-05-18  5051  					       dump, "fw_asserts", 2);
-7b6859fbdcc4a5 Mintz, Yuval    2017-05-18  5052  		offset += qed_dump_str_param(dump_buf + offset,
-7b6859fbdcc4a5 Mintz, Yuval    2017-05-18  5053  					     dump, "storm", storm_letter_str);
-7b6859fbdcc4a5 Mintz, Yuval    2017-05-18  5054  		offset += qed_dump_num_param(dump_buf + offset,
-7b6859fbdcc4a5 Mintz, Yuval    2017-05-18  5055  					     dump,
-7b6859fbdcc4a5 Mintz, Yuval    2017-05-18  5056  					     "size",
-be086e7c53f1fa Mintz, Yuval    2017-03-11  5057  					     asserts->list_element_dword_size);
-c965db44462919 Tomer Tayar     2016-09-07  5058  
-7b6859fbdcc4a5 Mintz, Yuval    2017-05-18  5059  		/* Read and dump FW Asserts data */
-c965db44462919 Tomer Tayar     2016-09-07  5060  		if (!dump) {
-be086e7c53f1fa Mintz, Yuval    2017-03-11  5061  			offset += asserts->list_element_dword_size;
-c965db44462919 Tomer Tayar     2016-09-07  5062  			continue;
-c965db44462919 Tomer Tayar     2016-09-07  5063  		}
-c965db44462919 Tomer Tayar     2016-09-07  5064  
-7b6859fbdcc4a5 Mintz, Yuval    2017-05-18  5065  		fw_asserts_section_addr = storm->sem_fast_mem_addr +
-c965db44462919 Tomer Tayar     2016-09-07  5066  			SEM_FAST_REG_INT_RAM +
-be086e7c53f1fa Mintz, Yuval    2017-03-11 @5067  			RAM_LINES_TO_BYTES(asserts->section_ram_line_offset);
-7b6859fbdcc4a5 Mintz, Yuval    2017-05-18  5068  		next_list_idx_addr = fw_asserts_section_addr +
-be086e7c53f1fa Mintz, Yuval    2017-03-11  5069  			DWORDS_TO_BYTES(asserts->list_next_index_dword_offset);
-c965db44462919 Tomer Tayar     2016-09-07  5070  		next_list_idx = qed_rd(p_hwfn, p_ptt, next_list_idx_addr);
-da09091732aecc Tomer Tayar     2017-12-27  5071  		last_list_idx = (next_list_idx > 0 ?
-da09091732aecc Tomer Tayar     2017-12-27  5072  				 next_list_idx :
-da09091732aecc Tomer Tayar     2017-12-27  5073  				 asserts->list_num_elements) - 1;
-be086e7c53f1fa Mintz, Yuval    2017-03-11  5074  		addr = BYTES_TO_DWORDS(fw_asserts_section_addr) +
-be086e7c53f1fa Mintz, Yuval    2017-03-11  5075  		       asserts->list_dword_offset +
-be086e7c53f1fa Mintz, Yuval    2017-03-11  5076  		       last_list_idx * asserts->list_element_dword_size;
-be086e7c53f1fa Mintz, Yuval    2017-03-11  5077  		offset +=
-be086e7c53f1fa Mintz, Yuval    2017-03-11  5078  		    qed_grc_dump_addr_range(p_hwfn, p_ptt,
-be086e7c53f1fa Mintz, Yuval    2017-03-11  5079  					    dump_buf + offset,
-be086e7c53f1fa Mintz, Yuval    2017-03-11  5080  					    dump, addr,
-7b6859fbdcc4a5 Mintz, Yuval    2017-05-18  5081  					    asserts->list_element_dword_size,
-d52c89f120de84 Michal Kalderon 2018-06-05  5082  						  false, SPLIT_TYPE_NONE, 0);
-c965db44462919 Tomer Tayar     2016-09-07  5083  	}
-c965db44462919 Tomer Tayar     2016-09-07  5084  
-c965db44462919 Tomer Tayar     2016-09-07  5085  	/* Dump last section */
-da09091732aecc Tomer Tayar     2017-12-27  5086  	offset += qed_dump_last_section(dump_buf, offset, dump);
-7b6859fbdcc4a5 Mintz, Yuval    2017-05-18  5087  
-c965db44462919 Tomer Tayar     2016-09-07  5088  	return offset;
-c965db44462919 Tomer Tayar     2016-09-07  5089  }
-c965db44462919 Tomer Tayar     2016-09-07  5090  
-
-:::::: The code at line 5067 was first introduced by commit
-:::::: be086e7c53f1fac51eed14523b28f2214b548dd2 qed*: Utilize Firmware 8.15.3.0
-
-:::::: TO: Mintz, Yuval <Yuval.Mintz@cavium.com>
-:::::: CC: David S. Miller <davem@davemloft.net>
-
----
-0-DAY kernel test infrastructure                 Open Source Technology Center
-https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org Intel Corporation
