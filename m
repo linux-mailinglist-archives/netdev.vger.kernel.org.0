@@ -2,117 +2,147 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 22D4514CAB3
-	for <lists+netdev@lfdr.de>; Wed, 29 Jan 2020 13:20:06 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 37ECB14CAC2
+	for <lists+netdev@lfdr.de>; Wed, 29 Jan 2020 13:23:20 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726256AbgA2MUE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 29 Jan 2020 07:20:04 -0500
-Received: from us-smtp-1.mimecast.com ([205.139.110.61]:40774 "EHLO
-        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1726069AbgA2MUE (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 29 Jan 2020 07:20:04 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1580300402;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=3Wjp87kqbGVK57QdCzJVY8qjp9Lbk2x9me6yIfK6qGU=;
-        b=iz8kMQbStm4Rt6sklW/0W888/aKocL6SO7rDhgkAY9+DmJqDjvS1VBtojBvhdiHa7JPr4H
-        ifdHVRggETRmrG97nuon7K3s1clgfVAxEJtfrgBhyQhqjmnTVBixBplquiN9/t/zmCW6oa
-        VF6tkc73u5vi3vzmqKib+gIUIp9VEVc=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-428-VmQC9n9JP8mMx3BfPPNuXQ-1; Wed, 29 Jan 2020 07:19:58 -0500
-X-MC-Unique: VmQC9n9JP8mMx3BfPPNuXQ-1
-Received: from smtp.corp.redhat.com (int-mx02.intmail.prod.int.phx2.redhat.com [10.5.11.12])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id E82EF10054E3;
-        Wed, 29 Jan 2020 12:19:56 +0000 (UTC)
-Received: from hive.redhat.com (unknown [10.43.2.47])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id C2B3C60BE0;
-        Wed, 29 Jan 2020 12:19:55 +0000 (UTC)
-From:   Petr Oros <poros@redhat.com>
-To:     netdev@vger.kernel.org
-Cc:     andrew@lunn.ch, f.fainelli@gmail.com, hkallweit1@gmail.com,
-        ivecera@redhat.com
-Subject: [PATCH net v2] phy: avoid unnecessary link-up delay in polling mode
-Date:   Wed, 29 Jan 2020 13:19:55 +0100
-Message-Id: <20200129121955.168731-1-poros@redhat.com>
-In-Reply-To: <20200129101308.74185-1-poros@redhat.com>
-References: <20200129101308.74185-1-poros@redhat.com>
+        id S1726645AbgA2MXP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 29 Jan 2020 07:23:15 -0500
+Received: from mail-pg1-f196.google.com ([209.85.215.196]:35103 "EHLO
+        mail-pg1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726067AbgA2MXP (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 29 Jan 2020 07:23:15 -0500
+Received: by mail-pg1-f196.google.com with SMTP id l24so8761338pgk.2;
+        Wed, 29 Jan 2020 04:23:14 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:mail-followup-to:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=Zw2QOXTYa4DPfoFWBlgmT0QVWsY+VSIRNslcmp73E4U=;
+        b=dLloQdRrHAzD9N+RT3r+t+VeVn1ngk7JOdmn4PXhf9VBwZ5aqozvIWUq0QzaSf+6w2
+         49nN1Nl1bC6myj8/VRFvqtknJXFC9Bw8rZ4pXwBXjGnfRpIzQFHeStnGX84YaP8wOvmm
+         43IkND/A1PK9AndEw8xUfQVnteZ6/CiuAS9Zp3HIfBa0iwSTA2Zcw41EkjM1x1caTvU4
+         gr9y9Rx/QoQmf0wCJBBaklKAwEtYIHWh7+UKTlnASItW7O9w4r/9nCWX/K+P3Bs/1mv5
+         S9YKrAUWrzS4p3Q0DyrxvV2iSdNIGY8XoA67arpfYzNPZabxza5uhPQmzGj85/yl6EvV
+         VOOQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id
+         :mail-followup-to:references:mime-version:content-disposition
+         :in-reply-to:user-agent;
+        bh=Zw2QOXTYa4DPfoFWBlgmT0QVWsY+VSIRNslcmp73E4U=;
+        b=MhYhGi/eSDH4MZ03LoKe1f40cR3hm/AyhyURHTPoTlSiP3hB2VnBjJ66JOlze2HPk9
+         ak/GD0YsfRHmfrngz/SY+eePXYV0WJos9hVG+KucpurXvW4bs21KjV6aqFz+mxFADNCI
+         UAfjQ7M1x0o7n/e+g2w4oa+day7jQADnrWwFSZuvkwoMmjivCZVJp2pgilSHsZ7gqFUM
+         1hqKg6zaV7CTJsFGkWlrnsBGxmOD4vwhT0Eckpzr4dhVEuRSrgDF+CKB4J8MqUDepqzY
+         hCdmHjh5k1I0TSOrF2cFVl8gPLOYO+Lpd5R4YhBDseB9OWzrVZtRd0k2w3I6h5KuN8jk
+         eR9Q==
+X-Gm-Message-State: APjAAAW8hv7xy7yGfFQ1CGzE5JyQs4BzU81N6Eg1iQqiaPAt5xrEEJRO
+        Io2N7eAdSfn/GDzzB1k1Pko=
+X-Google-Smtp-Source: APXvYqxsajtGXiWfJo7puAJC96Gh1QHON9TNgislJuPYpCDA2oHS69K5SxciFe4TldTfyBS2XnF8Mg==
+X-Received: by 2002:a63:f403:: with SMTP id g3mr30619483pgi.62.1580300594266;
+        Wed, 29 Jan 2020 04:23:14 -0800 (PST)
+Received: from Gentoo ([103.231.91.35])
+        by smtp.gmail.com with ESMTPSA id r145sm2749967pfr.5.2020.01.29.04.23.09
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Wed, 29 Jan 2020 04:23:13 -0800 (PST)
+Date:   Wed, 29 Jan 2020 17:53:01 +0530
+From:   Bhaskar Chowdhury <unixbhaskar@gmail.com>
+To:     "Jason A. Donenfeld" <Jason@zx2c4.com>
+Cc:     WireGuard mailing list <wireguard@lists.zx2c4.com>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Netdev <netdev@vger.kernel.org>,
+        Linux Next Mailing List <linux-next@vger.kernel.org>
+Subject: Re: wireguard ci hooked up to quite a few kernel trees
+Message-ID: <20200129122259.GA25949@Gentoo>
+Mail-Followup-To: Bhaskar Chowdhury <unixbhaskar@gmail.com>,
+        "Jason A. Donenfeld" <Jason@zx2c4.com>,
+        WireGuard mailing list <wireguard@lists.zx2c4.com>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Netdev <netdev@vger.kernel.org>,
+        Linux Next Mailing List <linux-next@vger.kernel.org>
+References: <CAHmME9rProfVf4VGHGX9no3KTa08nL_oYkK8Nv+eknk4ewVMAw@mail.gmail.com>
 MIME-Version: 1.0
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.12
-Content-Transfer-Encoding: quoted-printable
+Content-Type: multipart/signed; micalg=pgp-sha256;
+        protocol="application/pgp-signature"; boundary="oyUTqETQ0mS9luUI"
+Content-Disposition: inline
+In-Reply-To: <CAHmME9rProfVf4VGHGX9no3KTa08nL_oYkK8Nv+eknk4ewVMAw@mail.gmail.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-commit 93c0970493c71f ("net: phy: consider latched link-down status in
-polling mode") removed double-read of latched link-state register for
-polling mode from genphy_update_link(). This added extra ~1s delay into
-sequence link down->up.
-Following scenario:
- - After boot link goes up
- - phy_start() is called triggering an aneg restart, hence link goes
-   down and link-down info is latched.
- - After aneg has finished link goes up. In phy_state_machine is checked
-   link state but it is latched "link is down". The state machine is
-   scheduled after one second and there is detected "link is up". This
-   extra delay can be avoided when we keep link-state register double rea=
-d
-   in case when link was down previously.
 
-With this solution we don't miss a link-down event in polling mode and
-link-up is faster.
+--oyUTqETQ0mS9luUI
+Content-Type: text/plain; charset=us-ascii; format=flowed
+Content-Disposition: inline
 
-Changes in v2:
-- Fixed typos in phy_polling_mode() argument
+Looks bloody good Jason! thanks, man!
 
-Fixes: 93c0970493c71f ("net: phy: consider latched link-down status in po=
-lling mode")
-Signed-off-by: Petr Oros <poros@redhat.com>
----
- drivers/net/phy/phy-c45.c    | 5 +++--
- drivers/net/phy/phy_device.c | 5 +++--
- 2 files changed, 6 insertions(+), 4 deletions(-)
+~Bhaskar
 
-diff --git a/drivers/net/phy/phy-c45.c b/drivers/net/phy/phy-c45.c
-index a1caeee1223617..bceb0dcdecbd61 100644
---- a/drivers/net/phy/phy-c45.c
-+++ b/drivers/net/phy/phy-c45.c
-@@ -239,9 +239,10 @@ int genphy_c45_read_link(struct phy_device *phydev)
-=20
- 		/* The link state is latched low so that momentary link
- 		 * drops can be detected. Do not double-read the status
--		 * in polling mode to detect such short link drops.
-+		 * in polling mode to detect such short link drops except
-+		 * the link was already down.
- 		 */
--		if (!phy_polling_mode(phydev)) {
-+		if (!phy_polling_mode(phydev) || !phydev->link) {
- 			val =3D phy_read_mmd(phydev, devad, MDIO_STAT1);
- 			if (val < 0)
- 				return val;
-diff --git a/drivers/net/phy/phy_device.c b/drivers/net/phy/phy_device.c
-index 6a5056e0ae7757..05417419c484fa 100644
---- a/drivers/net/phy/phy_device.c
-+++ b/drivers/net/phy/phy_device.c
-@@ -1930,9 +1930,10 @@ int genphy_update_link(struct phy_device *phydev)
-=20
- 	/* The link state is latched low so that momentary link
- 	 * drops can be detected. Do not double-read the status
--	 * in polling mode to detect such short link drops.
-+	 * in polling mode to detect such short link drops except
-+	 * the link was already down.
- 	 */
--	if (!phy_polling_mode(phydev)) {
-+	if (!phy_polling_mode(phydev) || !phydev->link) {
- 		status =3D phy_read(phydev, MII_BMSR);
- 		if (status < 0)
- 			return status;
---=20
-2.24.1
+On 13:15 Wed 29 Jan 2020, Jason A. Donenfeld wrote:
+>Hi all,
+>
+>With the merging of wireguard, I've hooked the project's CI up to
+>quite a few trees. We now have:
+>
+>- net-next
+>- net
+>- linux-next
+>- linux (Linus' tree)
+>- wireguard-linux (my tree)
+>- wireguard-linux-compat (backports to kernels 3.10 - 5.5)
+>
+>When the various pushes and pulls click a few more cranks through the
+>machinery, I'll probably add crypto and cryptodev, and eventually
+>Greg's stable trees. If anybody has suggestions on other relevant
+>trees that might help catch bugs as early as possible, I'm all ears.
+>
+>Right now builds are kicked off for every single commit made to each
+>one of these trees, on x86_64, i686, aarch64, aarch64_be, arm, armeb,
+>mips64, mips64el, mips, mipsel, powerpc64le, powerpc, and m68k. For
+>each of these, a fresh kernel and miniature userland containing the
+>test suite is built from source, and then booted in qemu.
+>
+>Even though the CI at the moment is focused on the wireguard test
+>suite, it has a habit of finding lots of bugs and regressions in other
+>weird places. For example, linux-next is failing at the moment on a
+>few archs.
+>
+>I run this locally every day all day while developing kernel things
+>too. It's one command to test a full kernel for whatever thing I'm
+>working on, and this winds up saving a lot of time in development and
+>lets me debug things with printk in the dumbest ways possible while
+>still being productive and efficient.
+>
+>You can view the current build status here:
+>https://www.wireguard.com/build-status/
+>
+>This sort of CI is another take on the kernel CI problem; I know a few
+>organizations are doing similar things. I'd be happy to eventually
+>expand this into something more general, should there be sufficient
+>interest -- probably initially on networking stuff -- or it might turn
+>out that this simply inspires something else that is more general and
+>robust, which is fine too. Either way, here's my contribution to the
+>modicum of kernel CI things happening.
+>
+>Regards,
+>Jason
 
+--oyUTqETQ0mS9luUI
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAABCAAdFiEEnwF+nWawchZUPOuwsjqdtxFLKRUFAl4xeR8ACgkQsjqdtxFL
+KRX0iQf/TkKseJ2jksqjmC+bnMd9mnIox1pWzGwElpv1csKIwul3m+TnHGRFSCOu
+FBbHlw0MSrrEB0dOyG5NJr2GqtGiEJ1ogoLT6XjUq4qpcaIljJU3gU35c6UKiM12
+ThYstC9ZfdXoPgPI5n5qL3p8rTp71Aj7b947ZRfQ2SEMQiEZ5wEgwAwK+fV0yAsa
+VwqJxZy2jZTiOABqW8Ez65YyhceUDvGfv0G1K6EdZdyWfHsoOHXUH24C4jdtGFWi
+m+I7ZnFM9LFlzz1Fyh62PDwIBMYHegW3rvm6q3XawJo4+8VYodApw5axbRDfjGFK
+tMcQCZyCSD4Rtpv+Vrfg0Toveq4nOw==
+=cnyd
+-----END PGP SIGNATURE-----
+
+--oyUTqETQ0mS9luUI--
