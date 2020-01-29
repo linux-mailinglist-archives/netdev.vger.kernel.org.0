@@ -2,203 +2,117 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 939D214C9F8
-	for <lists+netdev@lfdr.de>; Wed, 29 Jan 2020 12:57:45 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E1B5B14CA32
+	for <lists+netdev@lfdr.de>; Wed, 29 Jan 2020 13:06:33 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726177AbgA2L5n (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 29 Jan 2020 06:57:43 -0500
-Received: from mail-ed1-f65.google.com ([209.85.208.65]:36702 "EHLO
-        mail-ed1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726068AbgA2L5n (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 29 Jan 2020 06:57:43 -0500
-Received: by mail-ed1-f65.google.com with SMTP id j17so18353683edp.3
-        for <netdev@vger.kernel.org>; Wed, 29 Jan 2020 03:57:42 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=YButG86THPml9p7mxfeYqxqh3TsBrQZ3DQlZnnfX388=;
-        b=eykYTk1CK9VMeNWRiJE+K5ItY9XnrjCk1r+HmiLyU0f+GsH4g42WYr+iZzwoRIMZ+0
-         x1HW1XEBIKZgL6yCqIm2WyxH9uCdG6JSoeJ/mkCQ3xL7f+3CIVKe6os/d++A4QT1JzLJ
-         jl/q1Q4PHW+s27kNsSzKr03aDq9x8WRlsH0651iC+otr+Q/2RVuUZO/eslyjH1BAW5ON
-         vy+X5+GfrMxBNKTAZrJ6dVcWVeK8o52uBlAN6YC6ZdbVS4s5UVowqUCi/zCcP4tYzlzN
-         9hVMvltcWRfltnYyFtQajwkPU0WSFD7lMVPWo5+yuRmsrw/DveTlD6LmsICPB4MT/2mc
-         jssA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=YButG86THPml9p7mxfeYqxqh3TsBrQZ3DQlZnnfX388=;
-        b=lipy5GXUBmls1gmMTFPPRSm+Uwp0Ko3ZiiOncm9MaKlLN2VsRv8di9g0an00sT7F5q
-         ZAz4t/m0offWNv39QciOhx9mD+oibKelX+x+MF9L2cx6MEknBMBFlAEPyZuc56p/Wvjk
-         gbYt3kGR4E8CU0Xw0GAqReeG8JjWgybcjIASU5iJKXzEOJAB7uiF6H27jKoCDPQWZIB/
-         bITBnWEgvy4hMer3u5OnmnqbJMVBsIuSaLtCUU3FhFRpMdQ/U0/cz6LZMZQNNpOxklk5
-         C+BMhPLD9KT9YzxE+TV3uwigyBx49Bzk7pAx/XcgPMDMZVfnCVNuPr01F4dUPdvkbYbN
-         egmw==
-X-Gm-Message-State: APjAAAVTu7i++kjNFF/IGYSFuiidpyMxnbeUiX8MQ3cy+1wQt31geGTr
-        Ilm46nRI+HMMSVc4l6SLJ1H3CTqsSeeJLWTwT4U=
-X-Google-Smtp-Source: APXvYqxHGaCBsnbw9lWyM5+LFI+uuuDmmve2W2v2DXFHiJFAAY33PearjtbtxTSfVnODTFPrtJfo6M7AElNmmNDpM7A=
-X-Received: by 2002:aa7:d3cb:: with SMTP id o11mr7531296edr.145.1580299061461;
- Wed, 29 Jan 2020 03:57:41 -0800 (PST)
+        id S1726260AbgA2MGb (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 29 Jan 2020 07:06:31 -0500
+Received: from us-smtp-1.mimecast.com ([207.211.31.81]:35598 "EHLO
+        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1726067AbgA2MGa (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 29 Jan 2020 07:06:30 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1580299589;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=n8ggB9lNFliA144N9ZRBwOnBhRCpFljRjwzjSrA0YuU=;
+        b=d1XVkaYjT3Yl27FIQES+igua7oc2hjWxhsJlgIP5Cx7YaCyYx+HvjCtY8qcu1UAJkskedY
+        a/HzJezoM09uNRzooE+yvw691v+V/CzmCMUV3Bm/RUAMWrRArRApQqBfv6uwnXFGR+TBqJ
+        Ngmfexo8143sW6292HYdK3LEVozoyTc=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-383-z97udVoNPz-XJWWnQFyreA-1; Wed, 29 Jan 2020 07:06:25 -0500
+X-MC-Unique: z97udVoNPz-XJWWnQFyreA-1
+Received: from smtp.corp.redhat.com (int-mx08.intmail.prod.int.phx2.redhat.com [10.5.11.23])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 65A98107ACC7;
+        Wed, 29 Jan 2020 12:06:24 +0000 (UTC)
+Received: from cera.brq.redhat.com (unknown [10.43.2.69])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 66AE1388;
+        Wed, 29 Jan 2020 12:06:23 +0000 (UTC)
+Date:   Wed, 29 Jan 2020 13:06:22 +0100
+From:   Ivan Vecera <ivecera@redhat.com>
+To:     Petr Oros <poros@redhat.com>
+Cc:     netdev@vger.kernel.org, andrew@lunn.ch, f.fainelli@gmail.com,
+        hkallweit1@gmail.com
+Subject: Re: [PATCH net] phy: avoid unnecessary link-up delay in polling
+ mode
+Message-ID: <20200129130622.1b8b6e43@cera.brq.redhat.com>
+In-Reply-To: <20200129101308.74185-1-poros@redhat.com>
+References: <20200129101308.74185-1-poros@redhat.com>
 MIME-Version: 1.0
-References: <1579701573-6609-1-git-send-email-madalin.bucur@oss.nxp.com>
- <1579701573-6609-2-git-send-email-madalin.bucur@oss.nxp.com>
- <68921c8a-06b6-d5c0-e857-14e7bc2c0a94@gmail.com> <DB8PR04MB6985606F38572D8512E8D27EEC0F0@DB8PR04MB6985.eurprd04.prod.outlook.com>
- <77e3ddcb-bddb-32d8-9c87-48ba9a7f2773@gmail.com> <CA+h21hq7U_EtetuLZN5rjXcq+cRUoD0y_76LxuHpoC53J70CEQ@mail.gmail.com>
- <DB8PR04MB6985139D4ABED85B701445A9EC050@DB8PR04MB6985.eurprd04.prod.outlook.com>
- <CA+h21hpSpgQsQ0kRmSaC2qfmFj=0KadDjwEK2Bvkz72g+iGxBQ@mail.gmail.com> <DB8PR04MB6985B0A712634DCFCD5390A4EC050@DB8PR04MB6985.eurprd04.prod.outlook.com>
-In-Reply-To: <DB8PR04MB6985B0A712634DCFCD5390A4EC050@DB8PR04MB6985.eurprd04.prod.outlook.com>
-From:   Vladimir Oltean <olteanv@gmail.com>
-Date:   Wed, 29 Jan 2020 13:57:30 +0200
-Message-ID: <CA+h21hqz0VwPyhuKaSuS8So56KSsp260UFrigQ4=_7-VZKKtvw@mail.gmail.com>
-Subject: Re: [PATCH net-next 1/2] net: phy: aquantia: add rate_adaptation indication
-To:     "Madalin Bucur (OSS)" <madalin.bucur@oss.nxp.com>
-Cc:     Florian Fainelli <f.fainelli@gmail.com>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "andrew@lunn.ch" <andrew@lunn.ch>,
-        "hkallweit1@gmail.com" <hkallweit1@gmail.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "ykaukab@suse.de" <ykaukab@suse.de>,
-        Russell King - ARM Linux admin <linux@armlinux.org.uk>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+X-Scanned-By: MIMEDefang 2.84 on 10.5.11.23
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Madalin,
+On Wed, 29 Jan 2020 11:13:08 +0100
+Petr Oros <poros@redhat.com> wrote:
 
-On Wed, 29 Jan 2020 at 12:53, Madalin Bucur (OSS)
-<madalin.bucur@oss.nxp.com> wrote:
->
-> > As far as I understand, for Aquantia devices this is a 3-way switch for:
-> > - No rate adaptation
-> > - USX rate adaptation
-> > - Pause rate adaptation.
-> > So what does your "phydev->rate_adaptation = 1" assignment mean?
->
-> phydev->rate_adaptation = 1 means the PHY is able to perform rate adaptation
->
-> There is not such thing as USX, if you refer to USXGMII, that's something you
-> can check for in the interface mode.
->
+> commit 93c0970493c71f ("net: phy: consider latched link-down status in
+> polling mode") removed double-read of latched link-state register for
+> polling mode from genphy_update_link(). This added extra ~1s delay into
+> sequence link down->up.
+> Following scenario:
+>  - After boot link goes up
+>  - phy_start() is called triggering an aneg restart, hence link goes
+>    down and link-down info is latched.
+>  - After aneg has finished link goes up. In phy_state_machine is checked
+>    link state but it is latched "link is down". The state machine is
+>    scheduled after one second and there is detected "link is up". This
+>    extra delay can be avoided when we keep link-state register double read
+>    in case when link was down previously.
+> 
+> With this solution we don't miss a link-down event in polling mode and
+> link-up is faster.
+> 
+> Fixes: 93c0970493c71f ("net: phy: consider latched link-down status in polling mode")
+> Signed-off-by: Petr Oros <poros@redhat.com>
+> ---
+>  drivers/net/phy/phy-c45.c    | 5 +++--
+>  drivers/net/phy/phy_device.c | 5 +++--
+>  2 files changed, 6 insertions(+), 4 deletions(-)
+> 
+> diff --git a/drivers/net/phy/phy-c45.c b/drivers/net/phy/phy-c45.c
+> index a1caeee1223617..bceb0dcdecbd61 100644
+> --- a/drivers/net/phy/phy-c45.c
+> +++ b/drivers/net/phy/phy-c45.c
+> @@ -239,9 +239,10 @@ int genphy_c45_read_link(struct phy_device *phydev)
+>  
+>  		/* The link state is latched low so that momentary link
+>  		 * drops can be detected. Do not double-read the status
+> -		 * in polling mode to detect such short link drops.
+> +		 * in polling mode to detect such short link drops except
+> +		 * the link was already down.
+>  		 */
+> -		if (!phy_polling_mode(phydev)) {
+> +		if (!phy_polling_mode(phydev) || !phydev->link) {
+>  			val = phy_read_mmd(phydev, devad, MDIO_STAT1);
+>  			if (val < 0)
+>  				return val;
+> diff --git a/drivers/net/phy/phy_device.c b/drivers/net/phy/phy_device.c
+> index 6a5056e0ae7757..d5f4804c34d597 100644
+> --- a/drivers/net/phy/phy_device.c
+> +++ b/drivers/net/phy/phy_device.c
+> @@ -1930,9 +1930,10 @@ int genphy_update_link(struct phy_device *phydev)
+>  
+>  	/* The link state is latched low so that momentary link
+>  	 * drops can be detected. Do not double-read the status
+> -	 * in polling mode to detect such short link drops.
+> +	 * in polling mode to detect such short link drops except
+> +	 * the link was already down.
+>  	 */
+> -	if (!phy_polling_mode(phydev)) {
+> +	if (!phy_polling_mode(pihydev) || !phydev->link) {
+                               ^
+Please remove the extra 'i' ----
 
-I did nothing more than just read aloud the AQR412 description for
-register 1E.31F.
+Thx,
+Ivan
 
-> > From context and datasheet I deduced that you mean "the PHY is
-> > configured to send PAUSE frames for 10GBase-R and 2500Base-X modes",
-> > which are probably the modes in which you're using it.
-> >
-> > But how do you _know_ that the PHY has this switch set correctly? It
-> > is either set by firmware or by MDIO, but I don't see any of that
-> > being checked for.
->
-> I know it is set because someone does put some work in designing a system,
-> in provisioning a correct firmware image.
->
-
-So you don't consider "firmware without this flag set, but software
-(bootloader, kernel) enables it" to be a valid way of designing a
-system? And your position is "well, I don't care if the person
-integrating the system didn't take care of all the hardware/firmware
-prerequisites, because software isn't going to attempt to do anything
-helpful here even if it can"?
-
-So the generic Linux kernel will just ask the person who put the work
-in designing some system, right?
-
-What is it that you are trying to prove?
-
-If anything, this reminds me of the xkcd:
-int getRandomNumber()
-{
-    return 4; // chosen by fair dice roll. guaranteed to be random.
-}
-
-> >
-> > So you think that having a PHY firmware with rate adaptation disabled
-> > is "stupid user"?
-> > What if the rate adaptation feature is not enabled in firmware, but is
-> > being enabled by U-Boot, but the user had the generic PHY driver
-> > instead of the Aquantia one, or used a different or old bootloader?
-> > "Stupid user"?
->
-> Disabling rate adaptation is one of so many ways one could cripple a
-> system interface, there are many that require polarity inversion, lane
-> switching, etc. and still there is no support for that in the kernel.
->
-> > The PHY and the Ethernet driver are strongly decoupled, so they need
-> > to agree on an operating mode that will work for both of them.
-> > Ideally the PHY would really know how it's configured, not just
-> > hardcode "yeah, I can do rate adaptation, try me".
-> > The fact that you can build sanity checks on top (like in this case
-> > not allowing the user to disable pause frames in the Ethernet driver
-> > on RX), that don't stand in the way, is just proof that the system is
-> > well designed. If you can't build sanity checks, or if they stand in
-> > the way, it isn't.
->
-> If you don't need them, it's even better.
->
-
-I am not really sure where you're heading with this one.
-
-> > If anything, why haven't you considered the opposite logic here:
-> > - Ethernet driver (dpaa_eth) supports all speeds 10G and below.
-> > - PHY driver (or PHY core) removes the supported and advertised speeds
-> > for anything other than 2.5G and 10G if it can't do this rate
-> > adaptation thing, and its system side isn't USXGMII. It's not like
-> > this is dpaa_eth specific in any way.
->
-> "what about...", indeed. There are many situations one could imagine
-> when things would not work, we can do some brain storming on improving
-> this list. Meanwhile, a real issue is that in the current design, the
-> ethernet driver needs to remove modes that are invalid from the PHY
-> advertising, but needs to refrain from doing that when coupled with
-> a PHY that does rate adaptation. This bit provides just an indication
-> of that ability.
-
-An incomplete one, at that.
-Here's a list of things/potential design improvements that were
-suggested to you but you only gave evasive answers on unrelated
-topics:
-- PHY says "I can do rate adaptation" [ via pause frames ]. Ethernet
-driver knows it supports RX flow control. Good for them. But there's a
-difference between "can" and "will", and somebody should bridge that
-gap. The PHY should either (a) really check if rate adaptation is
-enabled, before saying it is (b) say it is, for the interface modes
-where that makes sense, but then actually enable it when necessary.
-- The system that will be devised would work as an extensible way for
-PHY to report capabilities depending on interface mode. Another
-capability has been expressed (in-band autoneg) that is similar to
-what you are trying to introduce, in that it requires PHY-MAC
-coordination and that it is dependent on the system interface that is
-being used.
-- Why would the Ethernet driver be concerned about what media-side
-link speed gets negotiated and used, as long as there's a PHY that can
-deal with that. The approach you're taking doesn't really scale. It
-scales better to have this sort of logic in the PHY driver only (if
-possible), or in the PHY library (either one) too if necessary. _Yes_,
-this is a larger problem and is present outside of dpaa_eth too, at
-the moment.
-
-> "what about...", indeed.
-
-I didn't say anything about "anti-stupid devices", you did. I prefer
-fail-fast systems because I don't enjoy debugging issues that can be
-caught automatically. If you enjoy spending you and your users' time
-like that, good for you.
-
->
-> > > Madalin
-> > >
-> > >
-> > > > > --
-> > > > > Florian
-> > > >
-> > > > Regards,
-> > > > -Vladimir
-> >
-> > -Vladimir
-
--Vladimir
