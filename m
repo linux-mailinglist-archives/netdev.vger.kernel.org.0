@@ -2,106 +2,86 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 15ADD14CC0B
-	for <lists+netdev@lfdr.de>; Wed, 29 Jan 2020 15:05:01 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9FFEB14CC2C
+	for <lists+netdev@lfdr.de>; Wed, 29 Jan 2020 15:16:31 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726768AbgA2OEz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 29 Jan 2020 09:04:55 -0500
-Received: from smtp-fw-9102.amazon.com ([207.171.184.29]:58261 "EHLO
-        smtp-fw-9102.amazon.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726750AbgA2OEy (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 29 Jan 2020 09:04:54 -0500
+        id S1726558AbgA2OQ2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 29 Jan 2020 09:16:28 -0500
+Received: from mail-pg1-f180.google.com ([209.85.215.180]:41442 "EHLO
+        mail-pg1-f180.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726177AbgA2OQ2 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 29 Jan 2020 09:16:28 -0500
+Received: by mail-pg1-f180.google.com with SMTP id x8so8898681pgk.8
+        for <netdev@vger.kernel.org>; Wed, 29 Jan 2020 06:16:28 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=amazon.com; i=@amazon.com; q=dns/txt; s=amazon201209;
-  t=1580306694; x=1611842694;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=+NC7xruYEt4luvDBzD9BoOrfS+SmhYmic98nIY+vu7c=;
-  b=aPKowMQGrEukB1XN6faHFcuBzytlfXSfAH/7zmLfo6B1oekizKHkn7eJ
-   UEGhMxwy4y4It1SCUEti+FLVqiRHXZoJJYU0Ume6NsQ+yiObcXBndgSAf
-   DRrhcDa6du2o2jQRX3fT8qYACA9ZegfEWjLBvzpGOdxzlLJrw6RxreE7D
-   U=;
-IronPort-SDR: VIo/T1ZEQL73n/fBszwucuFa3lZN3eV0GE+57ECvjXQWLOYRDKRNgEfreVGbRTlTKRSIqNwcZ/
- GxVrYlXd1RiA==
-X-IronPort-AV: E=Sophos;i="5.70,378,1574121600"; 
-   d="scan'208";a="21799052"
-Received: from sea32-co-svc-lb4-vlan3.sea.corp.amazon.com (HELO email-inbound-relay-1e-97fdccfd.us-east-1.amazon.com) ([10.47.23.38])
-  by smtp-border-fw-out-9102.sea19.amazon.com with ESMTP; 29 Jan 2020 14:04:42 +0000
-Received: from EX13MTAUEB002.ant.amazon.com (iad55-ws-svc-p15-lb9-vlan3.iad.amazon.com [10.40.159.166])
-        by email-inbound-relay-1e-97fdccfd.us-east-1.amazon.com (Postfix) with ESMTPS id 72337A1F72;
-        Wed, 29 Jan 2020 14:04:41 +0000 (UTC)
-Received: from EX13D08UEB002.ant.amazon.com (10.43.60.107) by
- EX13MTAUEB002.ant.amazon.com (10.43.60.12) with Microsoft SMTP Server (TLS)
- id 15.0.1367.3; Wed, 29 Jan 2020 14:04:25 +0000
-Received: from EX13MTAUEA001.ant.amazon.com (10.43.61.82) by
- EX13D08UEB002.ant.amazon.com (10.43.60.107) with Microsoft SMTP Server (TLS)
- id 15.0.1367.3; Wed, 29 Jan 2020 14:04:25 +0000
-Received: from dev-dsk-sameehj-1c-1edacdb5.eu-west-1.amazon.com (172.19.82.3)
- by mail-relay.amazon.com (10.43.61.243) with Microsoft SMTP Server id
- 15.0.1367.3 via Frontend Transport; Wed, 29 Jan 2020 14:04:25 +0000
-Received: by dev-dsk-sameehj-1c-1edacdb5.eu-west-1.amazon.com (Postfix, from userid 9775579)
-        id B2E9F81D1C; Wed, 29 Jan 2020 14:04:24 +0000 (UTC)
-From:   Sameeh Jubran <sameehj@amazon.com>
-To:     <davem@davemloft.net>, <netdev@vger.kernel.org>
-CC:     Arthur Kiyanovski <akiyano@amazon.com>, <dwmw@amazon.com>,
-        <zorik@amazon.com>, <matua@amazon.com>, <saeedb@amazon.com>,
-        <msw@amazon.com>, <aliguori@amazon.com>, <nafea@amazon.com>,
-        <gtzalik@amazon.com>, <netanel@amazon.com>, <alisaidi@amazon.com>,
-        <benh@amazon.com>, <sameehj@amazon.com>, <ndagan@amazon.com>
-Subject: [PATCH V1 net 11/11] net: ena: ena-com.c: prevent NULL pointer dereference
-Date:   Wed, 29 Jan 2020 14:04:22 +0000
-Message-ID: <20200129140422.20166-12-sameehj@amazon.com>
-X-Mailer: git-send-email 2.24.1.AMZN
-In-Reply-To: <20200129140422.20166-1-sameehj@amazon.com>
-References: <20200129140422.20166-1-sameehj@amazon.com>
+        d=networkplumber-org.20150623.gappssmtp.com; s=20150623;
+        h=date:from:to:cc:subject:message-id:mime-version
+         :content-transfer-encoding;
+        bh=F61LnmBVZlm2lS4N34vgbLIqsf4fBX6ZHe8ZhhUMZvY=;
+        b=Sii8GI6UqWip9Gf4URAgLzBfcPJkm/wCRPSBvSz9CaNEemwH5gadMcTeYQs3Q99fnO
+         y6OH9acd6WEU2FZJPb6QwhvF1T889OTYr/UDiCdpN1lK7ye3TGnw0WhmxmHduLv/KRKU
+         oBcSon/OVojl1sqIjzI2Pz18CdTZTv0406wgu9CiDxdmAplJTG9awZMUSI4z9ZuIXSbn
+         sHxOtBkROrf6QmbWGa84YQ0jpJFkVnxQpZTjxSA36lzOrIwuu+f4QSL85DLi4Bv7C+f1
+         Vb8CpKwilV3Z0PnVCael0lfg0IhY6u4zed4rjzvSPQETg5F6QCj5vdMoqXq36im0Vqgs
+         CBug==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:mime-version
+         :content-transfer-encoding;
+        bh=F61LnmBVZlm2lS4N34vgbLIqsf4fBX6ZHe8ZhhUMZvY=;
+        b=IUOZw6JuGbOrORSOVUIP27D8GOK48f3h6K3QGxsTRrfUUEbN7VkvR8rNNuMJbMiru7
+         HeQQu5ivVm+sEq/wHV07zKOjG3FxjUjspLUp+XWni82PwUSKbz0yxejaam3KWfM2XVx7
+         U2nIqH6joSgU3gtkmaA9ot6QTmesYkwEATz/6xMs70ry6TYMVsl498ipIfVuNxVLOqA4
+         PuNhn/4gID/vevwagT9DSlrnS4Qlj+sM5wTHiKyorRb3Hgs/vVRR8szm5llx1UgNGM10
+         cyd74bvBoxZgctd5FW2sS7uSR1Wx6cSfcGkp1Vj9ch0YXjprCf7Pk047Y2imCT7Q5NPb
+         eU4w==
+X-Gm-Message-State: APjAAAUE3ojrUYBxCFqa4bx6sHqoCZLyL2nbk9WA+EfCMDnMfuBOI/pM
+        1imHGxYiKzVvo8a69yM3UD/bG1Z4A5M=
+X-Google-Smtp-Source: APXvYqzzEbA0j/WaUUb79gYTctOKSgt/pPSA1JdTqlrY8dqQDGVTThMdKUt2nR64ayvRsBca82k6kQ==
+X-Received: by 2002:a63:950c:: with SMTP id p12mr31427495pgd.85.1580307387548;
+        Wed, 29 Jan 2020 06:16:27 -0800 (PST)
+Received: from hermes.lan (204-195-22-127.wavecable.com. [204.195.22.127])
+        by smtp.gmail.com with ESMTPSA id t1sm3033799pgq.23.2020.01.29.06.16.26
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 29 Jan 2020 06:16:27 -0800 (PST)
+Date:   Wed, 29 Jan 2020 06:16:19 -0800
+From:   Stephen Hemminger <stephen@networkplumber.org>
+To:     Peter Junos <petoju@gmail.com>, David Ahern <dsahern@gmail.com>
+Cc:     netdev@vger.kernel.org
+Subject: iproute2 regression test now  failing after merge
+Message-ID: <20200129061619.76283217@hermes.lan>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Arthur Kiyanovski <akiyano@amazon.com>
+I merged iproute2-next into iproute2 and noticed that the regression test for ss
+is now failing.
 
-comp_ctx can be NULL in a very rare case when an admin command is executed
-during the execution of ena_remove().
+$ make check 
+Removing results dir ...
+Running bridge/vlan/tunnelshow.t [iproute2-this/4.19.0-6-amd64]: PASS
+Running ip/netns/set_nsid_batch.t [iproute2-this/4.19.0-6-amd64]: PASS
+Running ip/netns/set_nsid.t [iproute2-this/4.19.0-6-amd64]: PASS
+Running ip/link/show_dev_wo_vf_rate.t [iproute2-this/4.19.0-6-amd64]: PASS
+Running ip/link/add_type_xfrm.t [iproute2-this/4.19.0-6-amd64]: PASS
+Running ip/link/new_link.t [iproute2-this/4.19.0-6-amd64]: PASS
+Running ip/tunnel/add_tunnel.t [iproute2-this/4.19.0-6-amd64]: PASS
+Running ip/route/add_default_route.t [iproute2-this/4.19.0-6-amd64]: PASS
+Running ss/ssfilter.t [iproute2-this/4.19.0-6-amd64]: FAILED
 
-The bug scenario is as follows:
 
-* ena_destroy_device() sets the comp_ctx to be NULL
-* An admin command is executed before executing unregister_netdev(),
-  this can still happen because our device can still receive callbacks
-  from the netdev infrastructure such as ethtool commands.
-* When attempting to access the comp_ctx, the bug occurs since it's set
-  to NULL
 
-Fix:
-Added a check that comp_ctx is not NULL
+Bisected it down to:
 
-Fixes: 1738cd3ed342 ("net: ena: Add a driver for Amazon Elastic Network Adapters (ENA)")
-Signed-off-by: Sameeh Jubran <sameehj@amazon.com>
-Signed-off-by: Arthur Kiyanovski <akiyano@amazon.com>
----
- drivers/net/ethernet/amazon/ena/ena_com.c | 5 +++++
- 1 file changed, 5 insertions(+)
+commit c4f58629945898722ad9078e0f407c96f1ec7d2b
+Author: Peter Junos <petoju@gmail.com>
+Date:   Thu Dec 26 14:07:09 2019 +0100
 
-diff --git a/drivers/net/ethernet/amazon/ena/ena_com.c b/drivers/net/ethernet/amazon/ena/ena_com.c
-index 43ba30081..a7061718e 100644
---- a/drivers/net/ethernet/amazon/ena/ena_com.c
-+++ b/drivers/net/ethernet/amazon/ena/ena_com.c
-@@ -209,6 +209,11 @@ static void comp_ctxt_release(struct ena_com_admin_queue *queue,
- static struct ena_comp_ctx *get_comp_ctxt(struct ena_com_admin_queue *queue,
- 					  u16 command_id, bool capture)
- {
-+	if (unlikely(!queue->comp_ctx)) {
-+		pr_err("Completion context is NULL\n");
-+		return NULL;
-+	}
-+
- 	if (unlikely(command_id >= queue->q_depth)) {
- 		pr_err("command id is larger than the queue size. cmd_id: %u queue size %d\n",
- 		       command_id, queue->q_depth);
--- 
-2.24.1.AMZN
+    ss: use compact output for undetected screen width
 
+
+This commit is fine, the tests just need to be updated.m
