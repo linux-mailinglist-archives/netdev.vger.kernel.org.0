@@ -2,89 +2,91 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 597D114CF4C
-	for <lists+netdev@lfdr.de>; Wed, 29 Jan 2020 18:09:18 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4F3B414CF4F
+	for <lists+netdev@lfdr.de>; Wed, 29 Jan 2020 18:09:51 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727160AbgA2RJO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 29 Jan 2020 12:09:14 -0500
-Received: from mga17.intel.com ([192.55.52.151]:36543 "EHLO mga17.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726647AbgA2RJN (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 29 Jan 2020 12:09:13 -0500
-X-Amp-Result: SKIPPED(no attachment in message)
-X-Amp-File-Uploaded: False
-Received: from fmsmga001.fm.intel.com ([10.253.24.23])
-  by fmsmga107.fm.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 29 Jan 2020 09:09:13 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.70,378,1574150400"; 
-   d="scan'208";a="314882181"
-Received: from cmossx-mobl1.amr.corp.intel.com ([10.251.7.89])
-  by fmsmga001.fm.intel.com with ESMTP; 29 Jan 2020 09:09:13 -0800
-Date:   Wed, 29 Jan 2020 09:09:12 -0800 (PST)
-From:   Mat Martineau <mathew.j.martineau@linux.intel.com>
-X-X-Sender: mjmartin@cmossx-mobl1.amr.corp.intel.com
-To:     Randy Dunlap <rdunlap@infradead.org>
-cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        David Miller <davem@davemloft.net>,
-        Matthieu Baerts <matthieu.baerts@tessares.net>,
-        mptcp@lists.01.org, LKML <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH] MAINTAINERS: mptcp@ mailing list is moderated
-In-Reply-To: <0d3e4e6f-5437-ae85-f1f5-89971ea3423f@infradead.org>
-Message-ID: <alpine.OSX.2.21.2001290857310.9282@cmossx-mobl1.amr.corp.intel.com>
-References: <0d3e4e6f-5437-ae85-f1f5-89971ea3423f@infradead.org>
-User-Agent: Alpine 2.21 (OSX 202 2017-01-01)
+        id S1727265AbgA2RJq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 29 Jan 2020 12:09:46 -0500
+Received: from bombadil.infradead.org ([198.137.202.133]:49012 "EHLO
+        bombadil.infradead.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727192AbgA2RJp (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 29 Jan 2020 12:09:45 -0500
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=bombadil.20170209; h=In-Reply-To:Content-Type:MIME-Version
+        :References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
+        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
+        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+         bh=JBGzCaUSC9Lw4zwXSBacb958kBHmLwh4j+E2NT3N+w8=; b=NhFKnxuoL1ybWnVtBKPDIWMBP
+        kobcIUhcIWOiLiG3PhNd1ELyerpA31rPbS6Kk+/rNcGNtdvIwl3PWmij/a9xM6voX6vcQ34B/13tb
+        4sU+kkNa7lo/b+1DVlDczi63ra5N/m9v+y0mgHUBdkQYpbYHvL4MFcrF2hKLGtE/SDpRurYO/ZJMU
+        3fNEzYX6iMsOEDNCuxNq+MS6nvqCnrBj9PFGyavXJ3LfiH3BOipeubAWMl/VM2NN+GdAtadT2jDC1
+        ZhsY2KS8Q6r+OuKBSd1ZSOIe6r+EBoMmmCU1+Zeo7KcL47ocsUHq4SR16gYSJMGUFtfahEHuJSMCK
+        tP90C6XjA==;
+Received: from hch by bombadil.infradead.org with local (Exim 4.92.3 #3 (Red Hat Linux))
+        id 1iwqqR-00019P-Ug; Wed, 29 Jan 2020 17:09:39 +0000
+Date:   Wed, 29 Jan 2020 09:09:39 -0800
+From:   Christoph Hellwig <hch@infradead.org>
+To:     Christian Borntraeger <borntraeger@de.ibm.com>
+Cc:     Christopher Lameter <cl@linux.com>,
+        Kees Cook <keescook@chromium.org>, Jiri Slaby <jslaby@suse.cz>,
+        Julian Wiedmann <jwi@linux.ibm.com>,
+        Ursula Braun <ubraun@linux.ibm.com>,
+        Alexander Viro <viro@zeniv.linux.org.uk>,
+        linux-kernel@vger.kernel.org, David Windsor <dave@nullcore.net>,
+        Pekka Enberg <penberg@kernel.org>,
+        David Rientjes <rientjes@google.com>,
+        Joonsoo Kim <iamjoonsoo.kim@lge.com>,
+        Andrew Morton <akpm@linux-foundation.org>, linux-mm@kvack.org,
+        linux-xfs@vger.kernel.org,
+        Linus Torvalds <torvalds@linux-foundation.org>,
+        Andy Lutomirski <luto@kernel.org>,
+        Christoph Hellwig <hch@infradead.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Laura Abbott <labbott@redhat.com>,
+        Mark Rutland <mark.rutland@arm.com>,
+        "Martin K. Petersen" <martin.petersen@oracle.com>,
+        Paolo Bonzini <pbonzini@redhat.com>,
+        Christoffer Dall <christoffer.dall@linaro.org>,
+        Dave Kleikamp <dave.kleikamp@oracle.com>,
+        Jan Kara <jack@suse.cz>,
+        Luis de Bethencourt <luisbg@kernel.org>,
+        Marc Zyngier <marc.zyngier@arm.com>,
+        Rik van Riel <riel@redhat.com>,
+        Matthew Garrett <mjg59@google.com>,
+        linux-fsdevel@vger.kernel.org, linux-arch@vger.kernel.org,
+        netdev@vger.kernel.org, kernel-hardening@lists.openwall.com,
+        Vlastimil Babka <vbabka@suse.cz>,
+        Michal Kubecek <mkubecek@suse.cz>
+Subject: Re: [kernel-hardening] [PATCH 09/38] usercopy: Mark kmalloc caches
+ as usercopy caches
+Message-ID: <20200129170939.GA4277@infradead.org>
+References: <1515636190-24061-10-git-send-email-keescook@chromium.org>
+ <9519edb7-456a-a2fa-659e-3e5a1ff89466@suse.cz>
+ <201911121313.1097D6EE@keescook>
+ <201911141327.4DE6510@keescook>
+ <bfca96db-bbd0-d958-7732-76e36c667c68@suse.cz>
+ <202001271519.AA6ADEACF0@keescook>
+ <5861936c-1fe1-4c44-d012-26efa0c8b6e7@de.ibm.com>
+ <202001281457.FA11CC313A@keescook>
+ <alpine.DEB.2.21.2001291640350.1546@www.lameter.com>
+ <6844ea47-8e0e-4fb7-d86f-68046995a749@de.ibm.com>
 MIME-Version: 1.0
-Content-Type: text/plain; format=flowed; charset=US-ASCII
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <6844ea47-8e0e-4fb7-d86f-68046995a749@de.ibm.com>
+X-SRS-Rewrite: SMTP reverse-path rewritten from <hch@infradead.org> by bombadil.infradead.org. See http://www.infradead.org/rpr.html
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Wed, Jan 29, 2020 at 06:07:14PM +0100, Christian Borntraeger wrote:
+> > DMA can be done to NORMAL memory as well.
+> 
+> Exactly. 
+> I think iucv uses GFP_DMA because z/VM needs those buffers to reside below 2GB (which is ZONA_DMA for s390).
 
-On Tue, 28 Jan 2020, Randy Dunlap wrote:
-
-> From: Randy Dunlap <rdunlap@infradead.org>
->
-> Note that mptcp@lists.01.org is moderated, like we note for
-> other mailing lists.
-
-Hi Randy -
-
-The mptcp@lists.01.org list is not moderated, but there's a server-wide 
-default rule that holds messages with 10 or more recipients for any sender 
-(list member or not). I've turned off those server-wide defaults for this 
-list so it shouldn't be a problem in the future.
-
-Thank you for your report on the build errors.
-
-
-Mat
-
-
->
-> Signed-off-by: Randy Dunlap <rdunlap@infradead.org>
-> Cc: Mat Martineau <mathew.j.martineau@linux.intel.com>
-> Cc: Matthieu Baerts <matthieu.baerts@tessares.net>
-> Cc: netdev@vger.kernel.org
-> Cc: mptcp@lists.01.org
-> ---
-> MAINTAINERS |    2 +-
-> 1 file changed, 1 insertion(+), 1 deletion(-)
->
-> --- mmotm-2020-0128-2005.orig/MAINTAINERS
-> +++ mmotm-2020-0128-2005/MAINTAINERS
-> @@ -11718,7 +11718,7 @@ NETWORKING [MPTCP]
-> M:	Mat Martineau <mathew.j.martineau@linux.intel.com>
-> M:	Matthieu Baerts <matthieu.baerts@tessares.net>
-> L:	netdev@vger.kernel.org
-> -L:	mptcp@lists.01.org
-> +L:	mptcp@lists.01.org (moderated for non-subscribers)
-> W:	https://github.com/multipath-tcp/mptcp_net-next/wiki
-> B:	https://github.com/multipath-tcp/mptcp_net-next/issues
-> S:	Maintained
->
->
-
---
-Mat Martineau
-Intel
+The normal way to allocate memory with addressing limits would be to
+use dma_alloc_coherent and friends.  Any chance to switch iucv over to
+that?  Or is there no device associated with it?
