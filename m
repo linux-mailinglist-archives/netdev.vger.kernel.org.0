@@ -2,132 +2,73 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 69EAA14CC5F
-	for <lists+netdev@lfdr.de>; Wed, 29 Jan 2020 15:24:39 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 27E3014CC7C
+	for <lists+netdev@lfdr.de>; Wed, 29 Jan 2020 15:31:38 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726717AbgA2OYe (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 29 Jan 2020 09:24:34 -0500
-Received: from mail26.static.mailgun.info ([104.130.122.26]:28493 "EHLO
-        mail26.static.mailgun.info" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726485AbgA2OYd (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 29 Jan 2020 09:24:33 -0500
-DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org; q=dns/txt;
- s=smtp; t=1580307873; h=Content-Type: MIME-Version: Message-ID:
- In-Reply-To: Date: References: Subject: Cc: To: From: Sender;
- bh=VX3kmbdYfef45mzPcZSRglrDaIuEGLiG+F/CL1OGSpc=; b=OmfIdw5j5WbS2fnzU6Gqv7DbccM8z1Lwa528+VquuiplJNh3q7Y8pQTMsWbgTf6yz6doJPLN
- nl1f02/2QuoF8SfIOzfQ3ohHvFQRauTscKbTe0ZfOOEnfvjb9P4hvq4U70g8lAsChrXjGqmb
- 3BUV/XviyfyLsyKtO+Oj8BEQ3Z0=
-X-Mailgun-Sending-Ip: 104.130.122.26
-X-Mailgun-Sid: WyJiZjI2MiIsICJuZXRkZXZAdmdlci5rZXJuZWwub3JnIiwgImJlOWU0YSJd
-Received: from smtp.codeaurora.org (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171])
- by mxa.mailgun.org with ESMTP id 5e31959c.7f717f937d50-smtp-out-n03;
- Wed, 29 Jan 2020 14:24:28 -0000 (UTC)
-Received: by smtp.codeaurora.org (Postfix, from userid 1001)
-        id E9771C4479F; Wed, 29 Jan 2020 14:24:27 +0000 (UTC)
-X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
-        aws-us-west-2-caf-mail-1.web.codeaurora.org
-X-Spam-Level: 
-X-Spam-Status: No, score=-1.0 required=2.0 tests=ALL_TRUSTED,SPF_NONE
-        autolearn=unavailable autolearn_force=no version=3.4.0
-Received: from x230.qca.qualcomm.com (88-114-240-156.elisa-laajakaista.fi [88.114.240.156])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+        id S1726617AbgA2Obe (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 29 Jan 2020 09:31:34 -0500
+Received: from us-smtp-delivery-1.mimecast.com ([205.139.110.120]:41167 "EHLO
+        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+        with ESMTP id S1726178AbgA2Obe (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 29 Jan 2020 09:31:34 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1580308293;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=G7VPQyEy9jq501f9dCw0P5i1lWTGCoQFQqkVwBaZvh0=;
+        b=Qo4uGXivZHOj4uZ9Ru4jyGoYSQkRcHxzi4rEttrCZBearSWhHP8vKOSDgmdPMnOb31MAQc
+        bq+kQ6r6iqnG0xke1Q0vfZGp6PkPUIBj1bmrZZlAtMZ4IobR1JKtKnqNrhifsdRViR4lQ4
+        W9eTOwe8xvr9Zs6CbMMR7Katr969x4k=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-294-pkhO9K4wOqSNieIqIQ8dEQ-1; Wed, 29 Jan 2020 09:31:31 -0500
+X-MC-Unique: pkhO9K4wOqSNieIqIQ8dEQ-1
+Received: from smtp.corp.redhat.com (int-mx07.intmail.prod.int.phx2.redhat.com [10.5.11.22])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        (Authenticated sender: kvalo)
-        by smtp.codeaurora.org (Postfix) with ESMTPSA id 095A5C433CB;
-        Wed, 29 Jan 2020 14:24:24 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org 095A5C433CB
-Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
-Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; spf=none smtp.mailfrom=kvalo@codeaurora.org
-From:   Kalle Valo <kvalo@codeaurora.org>
-To:     Stephen Rothwell <sfr@canb.auug.org.au>
-Cc:     David Miller <davem@davemloft.net>,
-        Networking <netdev@vger.kernel.org>,
-        Wireless <linux-wireless@vger.kernel.org>,
-        Christoph Hellwig <hch@lst.de>,
-        Linux Next Mailing List <linux-next@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Alexandru-Mihai Maftei <amaftei@solarflare.com>
-Subject: Re: linux-next: manual merge of the generic-ioremap tree with the net-next tree
-References: <20200109161202.1b0909d9@canb.auug.org.au>
-        <20200128095449.5688fddc@canb.auug.org.au>
-        <20200129081628.750f5e05@canb.auug.org.au>
-Date:   Wed, 29 Jan 2020 16:24:22 +0200
-In-Reply-To: <20200129081628.750f5e05@canb.auug.org.au> (Stephen Rothwell's
-        message of "Wed, 29 Jan 2020 08:16:28 +1100")
-Message-ID: <87blqm8hnt.fsf@codeaurora.org>
-User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/24.5 (gnu/linux)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 2E5308F3695;
+        Wed, 29 Jan 2020 14:31:30 +0000 (UTC)
+Received: from renaissance-vector.redhat.com (ovpn-116-61.ams2.redhat.com [10.36.116.61])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 2230D10027BA;
+        Wed, 29 Jan 2020 14:31:28 +0000 (UTC)
+From:   Andrea Claudi <aclaudi@redhat.com>
+To:     netdev@vger.kernel.org
+Cc:     stephen@networkplumber.org, dsahern@gmail.com
+Subject: [PATCH iproute2] ip link: xstats: fix TX IGMP reports string
+Date:   Wed, 29 Jan 2020 15:31:11 +0100
+Message-Id: <fce759168882726ddb51410ba35faf88b9c31970.1580307681.git.aclaudi@redhat.com>
 MIME-Version: 1.0
-Content-Type: text/plain
+X-Scanned-By: MIMEDefang 2.84 on 10.5.11.22
+Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Stephen Rothwell <sfr@canb.auug.org.au> writes:
+This restore the string format we have before jsonification, adding a
+missing space between v2 and v3 on TX IGMP reports string.
 
-> Hi all,
->
-> On Tue, 28 Jan 2020 09:54:49 +1100 Stephen Rothwell <sfr@canb.auug.org.au> wrote:
->>
->> On Thu, 9 Jan 2020 16:12:02 +1100 Stephen Rothwell <sfr@canb.auug.org.au> wrote:
->> > 
->> > Today's linux-next merge of the generic-ioremap tree got a conflict in:
->> > 
->> >   drivers/net/ethernet/sfc/efx.c
->> > 
->> > between commit:
->> > 
->> >   f1826756b499 ("sfc: move struct init and fini code")
->> > 
->> > from the net-next tree and commit:
->> > 
->> >   4bdc0d676a64 ("remove ioremap_nocache and devm_ioremap_nocache")
->> > 
->> > from the generic-ioremap tree.
->> > 
->> > I fixed it up (the latter moved the code, so I applied the following
->> > merge fix patch) and can carry the fix as necessary. This is now fixed
->> > as far as linux-next is concerned, but any non trivial conflicts should
->> > be mentioned to your upstream maintainer when your tree is submitted
->> > for merging.  You may also want to consider cooperating with the
->> > maintainer of the conflicting tree to minimise any particularly complex
->> > conflicts.
->> > 
->> > From: Stephen Rothwell <sfr@canb.auug.org.au>
->> > Date: Thu, 9 Jan 2020 16:08:52 +1100
->> > Subject: [PATCH] fix up for "sfc: move struct init and fini code"
->> > 
->> > Signed-off-by: Stephen Rothwell <sfr@canb.auug.org.au>
->> > ---
->> >  drivers/net/ethernet/sfc/efx_common.c | 2 +-
->> >  1 file changed, 1 insertion(+), 1 deletion(-)
->> > 
->> > diff --git a/drivers/net/ethernet/sfc/efx_common.c b/drivers/net/ethernet/sfc/efx_common.c
->> > index fe74c66c8ec6..bf0126633c25 100644
->> > --- a/drivers/net/ethernet/sfc/efx_common.c
->> > +++ b/drivers/net/ethernet/sfc/efx_common.c
->> > @@ -954,7 +954,7 @@ int efx_init_io(struct efx_nic *efx, int bar, dma_addr_t dma_mask,
->> >  		goto fail3;
->> >  	}
->> >  
->> > -	efx->membase = ioremap_nocache(efx->membase_phys, mem_map_size);
->> > +	efx->membase = ioremap(efx->membase_phys, mem_map_size);
->> >  	if (!efx->membase) {
->> >  		netif_err(efx, probe, efx->net_dev,
->> >  			  "could not map memory BAR at %llx+%x\n",
->> > -- 
->> > 2.24.0  
->> 
->> This is now a conflict between the net-next tree and Linus' tree.
->
-> It actually turns out that this is a conflict between the
-> wireless-drivers tree and Linus' tree since the wireless-drivers tree
-> has merged most of the net-next tree.
+Fixes: a9bc23a79227a ("ip: bridge: add xstats json support")
+Signed-off-by: Andrea Claudi <aclaudi@redhat.com>
+---
+ ip/iplink_bridge.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-Yeah, I fast forwarded wireless-drivers to top of net-next so that I can
-easily apply fixes and send them to Dave later this week. But as I don't
-touch drivers/net/ethernet I don't think there's nothing I can do to fix
-this conflict.
+diff --git a/ip/iplink_bridge.c b/ip/iplink_bridge.c
+index 06f736d4dc710..868ea6e266ebe 100644
+--- a/ip/iplink_bridge.c
++++ b/ip/iplink_bridge.c
+@@ -742,7 +742,7 @@ static void bridge_print_stats_attr(struct rtattr *at=
+tr, int ifindex)
+ 			print_string(PRINT_FP, NULL, "%-16s      ", "");
+ 			print_u64(PRINT_ANY, "tx_v1", "TX: v1 %llu ",
+ 				  mstats->igmp_v1reports[BR_MCAST_DIR_TX]);
+-			print_u64(PRINT_ANY, "tx_v2", "v2 %llu",
++			print_u64(PRINT_ANY, "tx_v2", "v2 %llu ",
+ 				  mstats->igmp_v2reports[BR_MCAST_DIR_TX]);
+ 			print_u64(PRINT_ANY, "tx_v3", "v3 %llu\n",
+ 				  mstats->igmp_v3reports[BR_MCAST_DIR_TX]);
+--=20
+2.24.1
 
--- 
-https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
