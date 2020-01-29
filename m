@@ -2,97 +2,125 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 59EB314D2D0
-	for <lists+netdev@lfdr.de>; Wed, 29 Jan 2020 23:03:00 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 158B514D2EF
+	for <lists+netdev@lfdr.de>; Wed, 29 Jan 2020 23:18:37 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726648AbgA2WC4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 29 Jan 2020 17:02:56 -0500
-Received: from bombadil.infradead.org ([198.137.202.133]:41362 "EHLO
-        bombadil.infradead.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726283AbgA2WCz (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 29 Jan 2020 17:02:55 -0500
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=bombadil.20170209; h=Content-Transfer-Encoding:
-        Content-Type:In-Reply-To:MIME-Version:Date:Message-ID:From:References:Cc:To:
-        Subject:Sender:Reply-To:Content-ID:Content-Description:Resent-Date:
-        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
-        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-         bh=Fop62bTazPLo+WGNB+BfCgO9zchmyRpUfYX/ot3XXHk=; b=WEB96WDwGvjGlZ1G/woW/8P3L
-        7eraE+Yqe8ItWLr3zttniO9D1gPV7Y5hdupA0mtJtuJ6QmjriI9pKK7ogBjzXJkkv8Rll+Kopg8Bk
-        vnudFQN+wGCWsF2ptNGDPdxb2O3BM6RIoTBvvVAtPM36CNz6nnyAf46o3dOI7Y/zw2Y6auq1gFeIC
-        ezIuDIKKUrcxVy3LOWtD3f895LvLYBQblxIT8Txgb+2qnmo9gGCyt1cWtmKRUE4TWrAYW424TIqEL
-        g03kbDKjM/82JSW0ejGd8tXDFqeFN4gALcs6JuZ6DcueQ9hXtZFmAIzNai8SoU9/SBK7LTD+tvzmN
-        rCKDtDEoA==;
-Received: from [2601:1c0:6280:3f0:897c:6038:c71d:ecac]
-        by bombadil.infradead.org with esmtpsa (Exim 4.92.3 #3 (Red Hat Linux))
-        id 1iwvQE-0006zY-Ja; Wed, 29 Jan 2020 22:02:55 +0000
-Subject: Re: [PATCH] MAINTAINERS: mptcp@ mailing list is moderated
-To:     Mat Martineau <mathew.j.martineau@linux.intel.com>
-Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        David Miller <davem@davemloft.net>,
-        Matthieu Baerts <matthieu.baerts@tessares.net>,
-        mptcp@lists.01.org, LKML <linux-kernel@vger.kernel.org>
-References: <0d3e4e6f-5437-ae85-f1f5-89971ea3423f@infradead.org>
- <alpine.OSX.2.21.2001290857310.9282@cmossx-mobl1.amr.corp.intel.com>
-From:   Randy Dunlap <rdunlap@infradead.org>
-Message-ID: <4112784b-a70b-8e4a-4110-9898e0626306@infradead.org>
-Date:   Wed, 29 Jan 2020 14:02:52 -0800
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.4.1
+        id S1726750AbgA2WSe (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 29 Jan 2020 17:18:34 -0500
+Received: from mail-wm1-f53.google.com ([209.85.128.53]:38627 "EHLO
+        mail-wm1-f53.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726222AbgA2WSe (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 29 Jan 2020 17:18:34 -0500
+Received: by mail-wm1-f53.google.com with SMTP id a9so1788210wmj.3
+        for <netdev@vger.kernel.org>; Wed, 29 Jan 2020 14:18:32 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:mime-version:content-disposition
+         :in-reply-to;
+        bh=OlTorTdUmgJN8IxK7i3AS2zJs6rioQMgbclTI7pellc=;
+        b=FtZcylepwJKMDZvYc0zLPYNcJyd3TdtahTzsDNAn8ncYWc6AWL/OLuqXDmIYgoFE/F
+         Hwxrh+nEP+mpCVC21saCF/6PIoUzJdHPrUcVaOTV7b/NNn9JxWvfm0iTv62K7F3Fp5IS
+         PKsVNg/tt80hb0dDkddQD80R5oW/ydAeBU0980cE++WUTFaRnx5wvyLKe8ixHV7q6qyH
+         QIVDKv9LuUfgV5E6Ee38Lr/ZuGaYLw6LYMmjN67uQQ/O5gDIpNuFLn95Q4+STnn9LfDk
+         +FhliQQlTeJa0+AzOX52ZFhBb7kMR/TjVmRyBCVXgzQty5r58/79Hpc7Ok8nW6HQHirT
+         aqjg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:mime-version
+         :content-disposition:in-reply-to;
+        bh=OlTorTdUmgJN8IxK7i3AS2zJs6rioQMgbclTI7pellc=;
+        b=b0nWz4Uk1YWqT1mtqVkvD/juBs1b53MqdU3xbvVABTpKIuys+TCCBlnGEdqvVYurwz
+         tK+BIJoqNxbLWzhmhLEIHv9cbBTQjoBu9lpv+cbwAX5R+Igr1lTrfWFCURHV3YKdBfbL
+         Dhx++KVereqgZxSP6dKHXoC3vB4xzLdsDs3xb3my22Gt/FXDHFSsPMgKD9VsJH8eCe+4
+         flIaiaQbB8WaLAU0VCTaUFlbfLbVHoz+CDXHqUqPT3mocpQv6+wzLnw9KwadHaHcqB1h
+         RB/dJy72b4GWu9RVPGERuqqlCeKsKigQg+JRcA62UZy1A2uj0XaRdloFxIWiKvrU0vHR
+         9KEg==
+X-Gm-Message-State: APjAAAX3F6kNFSqi/2dA2AmoMU2ECDgiNXVWgPlZzfGyytqJWVUYCBC3
+        ZWElgha2II3xUstzBQ4sXTgh6KoJGiY=
+X-Google-Smtp-Source: APXvYqyX2dCvkJ/m146AlxpVCRbmF0B/d65QA0WdB1E6qRwGSjhdePMhTP7RHLkwAZ9IbKPt3QLahw==
+X-Received: by 2002:a1c:6588:: with SMTP id z130mr1366690wmb.0.1580336311586;
+        Wed, 29 Jan 2020 14:18:31 -0800 (PST)
+Received: from peto-laptopnovy (46.229.228.5.host.vnet.sk. [46.229.228.5])
+        by smtp.gmail.com with ESMTPSA id t131sm3944018wmb.13.2020.01.29.14.18.30
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 29 Jan 2020 14:18:31 -0800 (PST)
+Date:   Wed, 29 Jan 2020 23:18:21 +0100
+From:   Peter =?utf-8?B?SsO6bm/FoQ==?= <petoju@gmail.com>
+To:     netdev@vger.kernel.org, stephen@networkplumber.org
+Cc:     dsahern@gmail.com, petoju@gmail.com
+Subject: [PATCH net-next] ss: fix tests to reflect compact output
+Message-ID: <20200129221821.GA47050@peto-laptopnovy>
 MIME-Version: 1.0
-In-Reply-To: <alpine.OSX.2.21.2001290857310.9282@cmossx-mobl1.amr.corp.intel.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20200129061619.76283217@hermes.lan>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 1/29/20 9:09 AM, Mat Martineau wrote:
-> 
-> On Tue, 28 Jan 2020, Randy Dunlap wrote:
-> 
->> From: Randy Dunlap <rdunlap@infradead.org>
->>
->> Note that mptcp@lists.01.org is moderated, like we note for
->> other mailing lists.
-> 
-> Hi Randy -
-> 
-> The mptcp@lists.01.org list is not moderated, but there's a server-wide default rule that holds messages with 10 or more recipients for any sender (list member or not). I've turned off those server-wide defaults for this list so it shouldn't be a problem in the future.
+This fixes broken tests in c4f58629945898722ad9078e0f407c96f1ec7d2b
 
-OK, thanks for the clarification & revert...
+It also escapes stars as grep is used and more bugs could sneak under
+the radar with the previous solution.
+---
+ testsuite/tests/ss/ssfilter.t | 24 ++++++++++++------------
+ 1 file changed, 12 insertions(+), 12 deletions(-)
 
-> Thank you for your report on the build errors.
-> 
-> 
-> Mat
-> 
-> 
->>
->> Signed-off-by: Randy Dunlap <rdunlap@infradead.org>
->> Cc: Mat Martineau <mathew.j.martineau@linux.intel.com>
->> Cc: Matthieu Baerts <matthieu.baerts@tessares.net>
->> Cc: netdev@vger.kernel.org
->> Cc: mptcp@lists.01.org
->> ---
->> MAINTAINERS |    2 +-
->> 1 file changed, 1 insertion(+), 1 deletion(-)
->>
->> --- mmotm-2020-0128-2005.orig/MAINTAINERS
->> +++ mmotm-2020-0128-2005/MAINTAINERS
->> @@ -11718,7 +11718,7 @@ NETWORKING [MPTCP]
->> M:    Mat Martineau <mathew.j.martineau@linux.intel.com>
->> M:    Matthieu Baerts <matthieu.baerts@tessares.net>
->> L:    netdev@vger.kernel.org
->> -L:    mptcp@lists.01.org
->> +L:    mptcp@lists.01.org (moderated for non-subscribers)
->> W:    https://github.com/multipath-tcp/mptcp_net-next/wiki
->> B:    https://github.com/multipath-tcp/mptcp_net-next/issues
->> S:    Maintained
-
-
+diff --git a/testsuite/tests/ss/ssfilter.t b/testsuite/tests/ss/ssfilter.t
+index 3091054f..4c2315ca 100755
+--- a/testsuite/tests/ss/ssfilter.t
++++ b/testsuite/tests/ss/ssfilter.t
+@@ -12,37 +12,37 @@ export TCPDIAG_FILE="$(dirname $0)/ss1.dump"
+ ts_log "[Testing ssfilter]"
+ 
+ ts_ss "$0" "Match dport = 22" -Htna dport = 22
+-test_on "ESTAB     0           0                10.0.0.1:36266           10.0.0.1:22"
++test_on "ESTAB 0      0      10.0.0.1:36266 10.0.0.1:22"
+ 
+ ts_ss "$0" "Match dport 22" -Htna dport 22
+-test_on "ESTAB     0           0                10.0.0.1:36266           10.0.0.1:22"
++test_on "ESTAB 0      0      10.0.0.1:36266 10.0.0.1:22"
+ 
+ ts_ss "$0" "Match (dport)" -Htna '( dport = 22 )'
+-test_on "ESTAB     0           0                10.0.0.1:36266           10.0.0.1:22"
++test_on "ESTAB 0      0      10.0.0.1:36266 10.0.0.1:22"
+ 
+ ts_ss "$0" "Match src = 0.0.0.0" -Htna src = 0.0.0.0
+-test_on "LISTEN      0           128               0.0.0.0:22             0.0.0.0:*"
++test_on "LISTEN 0      128    0.0.0.0:22 0.0.0.0:\*"
+ 
+ ts_ss "$0" "Match src 0.0.0.0" -Htna src 0.0.0.0
+-test_on "LISTEN      0           128               0.0.0.0:22             0.0.0.0:*"
++test_on "LISTEN 0      128    0.0.0.0:22 0.0.0.0:\*"
+ 
+ ts_ss "$0" "Match src sport" -Htna src 0.0.0.0 sport = 22
+-test_on "LISTEN      0           128               0.0.0.0:22             0.0.0.0:*"
++test_on "LISTEN 0      128    0.0.0.0:22 0.0.0.0:\*"
+ 
+ ts_ss "$0" "Match src and sport" -Htna src 0.0.0.0 and sport = 22
+-test_on "LISTEN      0           128               0.0.0.0:22             0.0.0.0:*"
++test_on "LISTEN 0      128    0.0.0.0:22 0.0.0.0:\*"
+ 
+ ts_ss "$0" "Match src and sport and dport" -Htna src 10.0.0.1 and sport = 22 and dport = 50312
+-test_on "ESTAB     0           0                10.0.0.1:22           10.0.0.2:50312"
++test_on "ESTAB 0      0      10.0.0.1:22 10.0.0.2:50312"
+ 
+ ts_ss "$0" "Match src and sport and (dport)" -Htna 'src 10.0.0.1 and sport = 22 and ( dport = 50312 )'
+-test_on "ESTAB     0           0                10.0.0.1:22           10.0.0.2:50312"
++test_on "ESTAB 0      0      10.0.0.1:22 10.0.0.2:50312"
+ 
+ ts_ss "$0" "Match src and (sport and dport)" -Htna 'src 10.0.0.1 and ( sport = 22 and dport = 50312 )'
+-test_on "ESTAB     0           0                10.0.0.1:22           10.0.0.2:50312"
++test_on "ESTAB 0      0      10.0.0.1:22 10.0.0.2:50312"
+ 
+ ts_ss "$0" "Match (src and sport) and dport" -Htna '( src 10.0.0.1 and sport = 22 ) and dport = 50312'
+-test_on "ESTAB     0           0                10.0.0.1:22           10.0.0.2:50312"
++test_on "ESTAB 0      0      10.0.0.1:22 10.0.0.2:50312"
+ 
+ ts_ss "$0" "Match (src or src) and dst" -Htna '( src 0.0.0.0 or src 10.0.0.1 ) and dst 10.0.0.2'
+-test_on "ESTAB     0           0                10.0.0.1:22           10.0.0.2:50312"
++test_on "ESTAB 0      0      10.0.0.1:22 10.0.0.2:50312"
 -- 
-~Randy
+2.24.0
 
