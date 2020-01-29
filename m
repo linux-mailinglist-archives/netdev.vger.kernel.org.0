@@ -2,50 +2,50 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 4D20914D221
-	for <lists+netdev@lfdr.de>; Wed, 29 Jan 2020 21:54:00 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id F14E614D22A
+	for <lists+netdev@lfdr.de>; Wed, 29 Jan 2020 21:55:49 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726751AbgA2Ux6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 29 Jan 2020 15:53:58 -0500
-Received: from mail-lf1-f65.google.com ([209.85.167.65]:39676 "EHLO
-        mail-lf1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726672AbgA2Ux5 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 29 Jan 2020 15:53:57 -0500
-Received: by mail-lf1-f65.google.com with SMTP id t23so663679lfk.6
-        for <netdev@vger.kernel.org>; Wed, 29 Jan 2020 12:53:56 -0800 (PST)
+        id S1726955AbgA2Uzs (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 29 Jan 2020 15:55:48 -0500
+Received: from mail-lj1-f195.google.com ([209.85.208.195]:32773 "EHLO
+        mail-lj1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726317AbgA2Uzr (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 29 Jan 2020 15:55:47 -0500
+Received: by mail-lj1-f195.google.com with SMTP id y6so943409lji.0
+        for <netdev@vger.kernel.org>; Wed, 29 Jan 2020 12:55:46 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=mime-version:reply-to:from:date:message-id:subject:to;
         bh=ZgXaiMoNWkpgbw6uWTvwmirHDXu3Eo7Nh8gc/HaUT1U=;
-        b=B+4bTE2ZLQ9+kazA4+YtCcxUsd63P3o2mMN9rGbKRdpK/xvGoMBlnW8htFmuVA4JmH
-         hduzntIekg6rwJvApRt8SoWighm3G9Gj92zBtdZGOhmmHgQA4w1Fc7XWlRBe4JK3Ta6/
-         Si4EaJhaCXQpeiv9O5CrtxVui98GhzgehcOzlMpCW+iCQO9oRN0cwxykg1c2rtjRgGXb
-         AG7jLm3cssCEMgVbIFmOpvQBYSRb+g8ENHA4xDsXlsnu9OnMdSKapFhEnKA15xR5VLjB
-         jqtUpkT3xozZNOua2ym9+VBazQO+cJJw5y1s66bfDZ+BAV++IjQCF1X0lp1JrKyFXUPx
-         4OGg==
+        b=qfqrkHQuO605YnL8sEg4bH6mfmaV+0+PjhHspmVM2oNmp+iqbjEl0BwBeVaPPgKVxl
+         NTYicJdq5rFiWcU+EF+9HiNZ4tXpVjc7qRh5x0ycerYuJQRi9Sggn/AYWN4c4PZW5jo4
+         R8pja34rhgBDzn8R/F6l+azYhIEdQgO6w+KHsLYolduXdi+56yejau9hjxUBc0H39+Jx
+         5XDaoiipSz7MAlJv9jDvBQVcETREQWKPYjihVZ43HjMCRQ3bOeEB3CbTESg4Z/nlI0UQ
+         HEsnJ0t97vAUBXP0cFcetEehnUxlSqP9m9ZILmQlMtCwcg7eKpnI+BFSgm9o/szT45Y4
+         Rweg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:reply-to:from:date:message-id
          :subject:to;
         bh=ZgXaiMoNWkpgbw6uWTvwmirHDXu3Eo7Nh8gc/HaUT1U=;
-        b=L7qxSU/EW2G+xMooUKXxQII9RJ+gSqDhmm1ryDyJKiZ672+Ljz87+XcKIkh0oDB3jj
-         vi0G2k0yTH2ZzFcjB289kHYndBI/MaUcUHgRI0RVSlv49pDzS5aEF28n+is0gaIl1c7M
-         62XxvslFUIIBEKOgoK3NC3ajbl4xyQRwK5Y3tO5gx7OLcbEhSSl0h0y/GUfwgeoPZAu4
-         XiJISlkOFq5uc+bU2Q0DbiFkoAwabV4+NlJhI83VKjQRonZ5UO4BAY7LFi0IEX0UlPNP
-         UuUQbbln4M/IcGXhIvohph1ppIvtAAUzaP3EptJJ53Odcnxva3DHaH3pUo+XDfO6nk0x
-         9w/g==
-X-Gm-Message-State: APjAAAWAUFnqg52Q6MsykCuaayWYezdgJpKtajk9DoiAqPB0yLGtzaqs
-        yZ9iyNjyipNWA9yoV0odc8iXNePHvqAXslE3TfY=
-X-Google-Smtp-Source: APXvYqwR7/wtu9x7hbDYunKk0wpELmuZyXQL1vrHmGJiSzrRceWblNXex+czqPAv1mZsxEF/kLFuWeCnqJML4AM6N3c=
-X-Received: by 2002:ac2:5964:: with SMTP id h4mr579260lfp.213.1580331235715;
- Wed, 29 Jan 2020 12:53:55 -0800 (PST)
+        b=KLmDx4KRBwAQ981DgaIHbICbAKASyed1daqyGp1y8y/RhyK++CKod4sTCdjvTT83o8
+         sFb0KBxqV6O8yY1bRBS2oESvQ7CkXVKegy6NnyM/Havztle9TAT9AEaFDLbutKyjy2/7
+         lVVcrbqrgqFzhAez0IvHYY5ErMitnb9B3oKmat3n7kqi8ok3oCXTN/rmz67BMMzvFTfH
+         AAsnXarHMGG/nxfI5Ns8SEVptRcBiehQX6WoGOZ69rPGGriv/t5GYfnTyADzSkeyBwyb
+         6SHW1R46uuluJXVXztQFcCLqAV4S17ME041Xw0Uw4seLLY5p6i8vSwV5zq7ou+5RFhos
+         8hiw==
+X-Gm-Message-State: APjAAAUrdwnB8Xk0EyvJXw1R3peMCSd7kcrv0U/l+WmatGTsWgY9OpTH
+        QCwA47RjXCShB8QsFOiKzTqyjb6e7By5bw1HglQ=
+X-Google-Smtp-Source: APXvYqwnQ1eJT7Et6k30N3uon82dxuJ5eq1hPBUJH3T/9HzbLNa1p6wH1n9cS4aY8KbknTVuJ5y2QMOzsVywlL9oDY8=
+X-Received: by 2002:a2e:9b5a:: with SMTP id o26mr644030ljj.190.1580331345791;
+ Wed, 29 Jan 2020 12:55:45 -0800 (PST)
 MIME-Version: 1.0
-Received: by 2002:a19:c149:0:0:0:0:0 with HTTP; Wed, 29 Jan 2020 12:53:55
+Received: by 2002:a19:c149:0:0:0:0:0 with HTTP; Wed, 29 Jan 2020 12:55:45
  -0800 (PST)
 Reply-To: drbellomusa009@gmail.com
 From:   "Dr.Bello Musa." <musaboy1988@gmail.com>
-Date:   Wed, 29 Jan 2020 21:53:55 +0100
-Message-ID: <CAH3v6_JB-ozPWHneqZAnxg6-5DHa8-3WH1Uc2kMyxEEGi8es-w@mail.gmail.com>
+Date:   Wed, 29 Jan 2020 21:55:45 +0100
+Message-ID: <CAH3v6_K28Y84gFiP-T-TWKjayf7Jd7t5UsxKzVLrZbHrb5qFpA@mail.gmail.com>
 Subject: THANKS ALOT.
 To:     undisclosed-recipients:;
 Content-Type: text/plain; charset="UTF-8"
