@@ -2,52 +2,56 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 2217814CDEF
-	for <lists+netdev@lfdr.de>; Wed, 29 Jan 2020 17:07:48 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7A33814CE5A
+	for <lists+netdev@lfdr.de>; Wed, 29 Jan 2020 17:24:40 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726922AbgA2QHq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 29 Jan 2020 11:07:46 -0500
-Received: from mail.kernel.org ([198.145.29.99]:34134 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726766AbgA2QHq (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 29 Jan 2020 11:07:46 -0500
-Received: from cakuba (c-73-93-4-247.hsd1.ca.comcast.net [73.93.4.247])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id EE8A92070E;
-        Wed, 29 Jan 2020 16:07:44 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1580314065;
-        bh=9yBPj4UNwYUOR69iyQMVsIStEM9u9/xr9i6+RNqmRhQ=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=fl5XgjQ+SnLlbl0rM+bpIjYDd20EP14WvCAR+KQIDika0zrOrjd0rKtbQsfXjy8nD
-         qFXiG9PsccCnfn2XJcXD7KJibmVFqcBvdY36zRsWEEYMI7R1qK0rm30iB/pobWCUBD
-         mvk/RGPGsJIPX1SBaxbS/GtRi//lOu0CZr1agG9g=
-Date:   Wed, 29 Jan 2020 08:07:44 -0800
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Sameeh Jubran <sameehj@amazon.com>
-Cc:     <davem@davemloft.net>, <netdev@vger.kernel.org>,
-        Arthur Kiyanovski <akiyano@amazon.com>, <dwmw@amazon.com>,
-        <zorik@amazon.com>, <matua@amazon.com>, <saeedb@amazon.com>,
-        <msw@amazon.com>, <aliguori@amazon.com>, <nafea@amazon.com>,
-        <gtzalik@amazon.com>, <netanel@amazon.com>, <alisaidi@amazon.com>,
-        <benh@amazon.com>, <ndagan@amazon.com>
-Subject: Re: [PATCH V1 net 07/11] net: ena: fix incorrectly saving queue
- numbers when setting RSS indirection table
-Message-ID: <20200129080744.52be661e@cakuba>
-In-Reply-To: <20200129140422.20166-8-sameehj@amazon.com>
-References: <20200129140422.20166-1-sameehj@amazon.com>
-        <20200129140422.20166-8-sameehj@amazon.com>
+        id S1727084AbgA2QYh (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 29 Jan 2020 11:24:37 -0500
+Received: from www62.your-server.de ([213.133.104.62]:46164 "EHLO
+        www62.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726847AbgA2QYh (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 29 Jan 2020 11:24:37 -0500
+Received: from sslproxy06.your-server.de ([78.46.172.3])
+        by www62.your-server.de with esmtpsa (TLSv1.2:DHE-RSA-AES256-GCM-SHA384:256)
+        (Exim 4.89_1)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1iwq8n-0005t7-Ih; Wed, 29 Jan 2020 17:24:33 +0100
+Received: from [2001:1620:665:0:5795:5b0a:e5d5:5944] (helo=linux-3.fritz.box)
+        by sslproxy06.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1iwq8n-000LxS-AT; Wed, 29 Jan 2020 17:24:33 +0100
+Subject: Re: [PATCH bpf] bpf: Reuse log from btf_prase_vmlinux() in
+ btf_struct_ops_init()
+To:     Martin KaFai Lau <kafai@fb.com>, bpf@vger.kernel.org
+Cc:     Alexei Starovoitov <ast@kernel.org>,
+        David Miller <davem@davemloft.net>, kernel-team@fb.com,
+        netdev@vger.kernel.org
+References: <20200127175145.1154438-1-kafai@fb.com>
+From:   Daniel Borkmann <daniel@iogearbox.net>
+Message-ID: <50acd550-4451-b40d-e50f-a3b2f894fcfa@iogearbox.net>
+Date:   Wed, 29 Jan 2020 17:24:32 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.7.2
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+In-Reply-To: <20200127175145.1154438-1-kafai@fb.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
 Content-Transfer-Encoding: 7bit
+X-Authenticated-Sender: daniel@iogearbox.net
+X-Virus-Scanned: Clear (ClamAV 0.101.4/25710/Wed Jan 29 12:38:38 2020)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 29 Jan 2020 14:04:18 +0000, Sameeh Jubran wrote:
-> Also move the set code to a standalone function for code clarity.
+On 1/27/20 6:51 PM, Martin KaFai Lau wrote:
+> Instead of using a locally defined "struct bpf_verifier_log log = {}",
+> btf_struct_ops_init() should reuse the "log" from its calling
+> function "btf_parse_vmlinux()".  It should also resolve the
+> frame-size too large compiler warning in some ARCH.
+> 
+> Fixes: 27ae7997a661 ("bpf: Introduce BPF_PROG_TYPE_STRUCT_OPS")
+> Signed-off-by: Martin KaFai Lau <kafai@fb.com>
 
-This is unrelated, and should not be a part of a fix. Fixes are
-supposed to be small, please never do code refactoring in them.
+Applied, thanks!
