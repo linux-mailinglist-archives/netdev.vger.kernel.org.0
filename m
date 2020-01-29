@@ -2,421 +2,175 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 44A4F14CF63
-	for <lists+netdev@lfdr.de>; Wed, 29 Jan 2020 18:14:41 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8CC4614CF81
+	for <lists+netdev@lfdr.de>; Wed, 29 Jan 2020 18:20:15 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727259AbgA2ROc (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 29 Jan 2020 12:14:32 -0500
-Received: from smtp-fw-2101.amazon.com ([72.21.196.25]:42015 "EHLO
-        smtp-fw-2101.amazon.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726647AbgA2ROb (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 29 Jan 2020 12:14:31 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=amazon.com; i=@amazon.com; q=dns/txt; s=amazon201209;
-  t=1580318071; x=1611854071;
-  h=from:to:cc:subject:date:message-id:mime-version;
-  bh=Y4qkdH4PnKR8rhbINAimoZdjk7NwzUHSP5Ch9Wm1NKg=;
-  b=b71EdtqVvhj6KmOBJamjG6zb+55ITPLa4RV3BEEXtWTSDtge4vsYlUUT
-   kAqMOyRqAlRlFVQPixdwYfi/ojx2cE0ZmnFaQXZbT+qRGYMIxzBD1BGFo
-   Q6mR2vzZQF7MxS+I/UjmpKjPogF3uZxskq5Z6mCe4t14+AlX8drWSzFT1
-   I=;
-IronPort-SDR: ApPNeuqW/T97xN9up+4Fm2MFy+coHUUyl36FvdiNFU/AvPUtitFp92uZC1RQiHpT0Vw7jmI+62
- Z7nVj0OBzAWw==
-X-IronPort-AV: E=Sophos;i="5.70,378,1574121600"; 
-   d="scan'208";a="14793931"
-Received: from iad12-co-svc-p1-lb1-vlan2.amazon.com (HELO email-inbound-relay-2b-a7fdc47a.us-west-2.amazon.com) ([10.43.8.2])
-  by smtp-border-fw-out-2101.iad2.amazon.com with ESMTP; 29 Jan 2020 17:14:27 +0000
-Received: from EX13MTAUEA002.ant.amazon.com (pdx4-ws-svc-p6-lb7-vlan2.pdx.amazon.com [10.170.41.162])
-        by email-inbound-relay-2b-a7fdc47a.us-west-2.amazon.com (Postfix) with ESMTPS id B0A10C5D18;
-        Wed, 29 Jan 2020 17:14:25 +0000 (UTC)
-Received: from EX13D31EUA001.ant.amazon.com (10.43.165.15) by
- EX13MTAUEA002.ant.amazon.com (10.43.61.77) with Microsoft SMTP Server (TLS)
- id 15.0.1236.3; Wed, 29 Jan 2020 17:14:25 +0000
-Received: from u886c93fd17d25d.ant.amazon.com (10.43.161.74) by
- EX13D31EUA001.ant.amazon.com (10.43.165.15) with Microsoft SMTP Server (TLS)
- id 15.0.1367.3; Wed, 29 Jan 2020 17:14:18 +0000
-From:   <sjpark@amazon.com>
-To:     <davem@davemloft.net>
-CC:     <edumazet@google.com>, <ast@kernel.org>, <daniel@iogearbox.net>,
-        <kafai@fb.com>, <songliubraving@fb.com>, <yhs@fb.com>,
-        <andriin@fb.com>, <netdev@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>, <bpf@vger.kernel.org>,
-        <aams@amazon.com>, <benh@kernel.crashing.org>, <dola@amazon.com>
-Subject: Latency spikes occurs from frequent socket connections
-Date:   Wed, 29 Jan 2020 18:14:03 +0100
-Message-ID: <20200129171403.3926-1-sjpark@amazon.com>
-X-Mailer: git-send-email 2.17.1
+        id S1726830AbgA2RUN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 29 Jan 2020 12:20:13 -0500
+Received: from mx0b-001b2d01.pphosted.com ([148.163.158.5]:10352 "EHLO
+        mx0a-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1727235AbgA2RUK (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 29 Jan 2020 12:20:10 -0500
+Received: from pps.filterd (m0098414.ppops.net [127.0.0.1])
+        by mx0b-001b2d01.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 00THEEpB035091
+        for <netdev@vger.kernel.org>; Wed, 29 Jan 2020 12:20:09 -0500
+Received: from e06smtp04.uk.ibm.com (e06smtp04.uk.ibm.com [195.75.94.100])
+        by mx0b-001b2d01.pphosted.com with ESMTP id 2xubcsevw3-1
+        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=NOT)
+        for <netdev@vger.kernel.org>; Wed, 29 Jan 2020 12:20:09 -0500
+Received: from localhost
+        by e06smtp04.uk.ibm.com with IBM ESMTP SMTP Gateway: Authorized Use Only! Violators will be prosecuted
+        for <netdev@vger.kernel.org> from <borntraeger@de.ibm.com>;
+        Wed, 29 Jan 2020 17:20:06 -0000
+Received: from b06cxnps3075.portsmouth.uk.ibm.com (9.149.109.195)
+        by e06smtp04.uk.ibm.com (192.168.101.134) with IBM ESMTP SMTP Gateway: Authorized Use Only! Violators will be prosecuted;
+        (version=TLSv1/SSLv3 cipher=AES256-GCM-SHA384 bits=256/256)
+        Wed, 29 Jan 2020 17:19:58 -0000
+Received: from d06av26.portsmouth.uk.ibm.com (d06av26.portsmouth.uk.ibm.com [9.149.105.62])
+        by b06cxnps3075.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 00THJvjm61276264
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Wed, 29 Jan 2020 17:19:57 GMT
+Received: from d06av26.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 54426AE059;
+        Wed, 29 Jan 2020 17:19:57 +0000 (GMT)
+Received: from d06av26.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 6D912AE051;
+        Wed, 29 Jan 2020 17:19:56 +0000 (GMT)
+Received: from oc7455500831.ibm.com (unknown [9.152.224.41])
+        by d06av26.portsmouth.uk.ibm.com (Postfix) with ESMTP;
+        Wed, 29 Jan 2020 17:19:56 +0000 (GMT)
+Subject: Re: [kernel-hardening] [PATCH 09/38] usercopy: Mark kmalloc caches as
+ usercopy caches
+To:     Christoph Hellwig <hch@infradead.org>
+Cc:     Christopher Lameter <cl@linux.com>,
+        Kees Cook <keescook@chromium.org>, Jiri Slaby <jslaby@suse.cz>,
+        Julian Wiedmann <jwi@linux.ibm.com>,
+        Ursula Braun <ubraun@linux.ibm.com>,
+        Alexander Viro <viro@zeniv.linux.org.uk>,
+        linux-kernel@vger.kernel.org, David Windsor <dave@nullcore.net>,
+        Pekka Enberg <penberg@kernel.org>,
+        David Rientjes <rientjes@google.com>,
+        Joonsoo Kim <iamjoonsoo.kim@lge.com>,
+        Andrew Morton <akpm@linux-foundation.org>, linux-mm@kvack.org,
+        linux-xfs@vger.kernel.org,
+        Linus Torvalds <torvalds@linux-foundation.org>,
+        Andy Lutomirski <luto@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Laura Abbott <labbott@redhat.com>,
+        Mark Rutland <mark.rutland@arm.com>,
+        "Martin K. Petersen" <martin.petersen@oracle.com>,
+        Paolo Bonzini <pbonzini@redhat.com>,
+        Christoffer Dall <christoffer.dall@linaro.org>,
+        Dave Kleikamp <dave.kleikamp@oracle.com>,
+        Jan Kara <jack@suse.cz>,
+        Luis de Bethencourt <luisbg@kernel.org>,
+        Marc Zyngier <marc.zyngier@arm.com>,
+        Rik van Riel <riel@redhat.com>,
+        Matthew Garrett <mjg59@google.com>,
+        linux-fsdevel@vger.kernel.org, linux-arch@vger.kernel.org,
+        netdev@vger.kernel.org, kernel-hardening@lists.openwall.com,
+        Vlastimil Babka <vbabka@suse.cz>,
+        Michal Kubecek <mkubecek@suse.cz>
+References: <1515636190-24061-10-git-send-email-keescook@chromium.org>
+ <9519edb7-456a-a2fa-659e-3e5a1ff89466@suse.cz>
+ <201911121313.1097D6EE@keescook> <201911141327.4DE6510@keescook>
+ <bfca96db-bbd0-d958-7732-76e36c667c68@suse.cz>
+ <202001271519.AA6ADEACF0@keescook>
+ <5861936c-1fe1-4c44-d012-26efa0c8b6e7@de.ibm.com>
+ <202001281457.FA11CC313A@keescook>
+ <alpine.DEB.2.21.2001291640350.1546@www.lameter.com>
+ <6844ea47-8e0e-4fb7-d86f-68046995a749@de.ibm.com>
+ <20200129170939.GA4277@infradead.org>
+From:   Christian Borntraeger <borntraeger@de.ibm.com>
+Autocrypt: addr=borntraeger@de.ibm.com; prefer-encrypt=mutual; keydata=
+ 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
+ nS4h0HDFPrrp1C2EMVYIQrMokWvlFZbCpsdYbBI=
+Date:   Wed, 29 Jan 2020 18:19:56 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.3.0
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.43.161.74]
-X-ClientProxiedBy: EX13D35UWB003.ant.amazon.com (10.43.161.65) To
- EX13D31EUA001.ant.amazon.com (10.43.165.15)
+In-Reply-To: <20200129170939.GA4277@infradead.org>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-TM-AS-GCONF: 00
+x-cbid: 20012917-0016-0000-0000-000002E1D3E4
+X-IBM-AV-DETECTION: SAVI=unused REMOTE=unused XFE=unused
+x-cbparentid: 20012917-0017-0000-0000-000033449AC6
+Message-Id: <771c5511-c5ab-3dd1-d938-5dbc40396daa@de.ibm.com>
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.138,18.0.572
+ definitions=2020-01-29_04:2020-01-28,2020-01-29 signatures=0
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 bulkscore=0 mlxlogscore=633
+ clxscore=1015 adultscore=0 phishscore=0 suspectscore=0 malwarescore=0
+ priorityscore=1501 spamscore=0 mlxscore=0 lowpriorityscore=0
+ impostorscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-1911200001 definitions=main-2001290141
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello,
 
 
-We found races in the kernel code that incur latency spikes.  We thus would
-like to share our investigations and hear your opinions.
+On 29.01.20 18:09, Christoph Hellwig wrote:
+> On Wed, Jan 29, 2020 at 06:07:14PM +0100, Christian Borntraeger wrote:
+>>> DMA can be done to NORMAL memory as well.
+>>
+>> Exactly. 
+>> I think iucv uses GFP_DMA because z/VM needs those buffers to reside below 2GB (which is ZONA_DMA for s390).
+> 
+> The normal way to allocate memory with addressing limits would be to
+> use dma_alloc_coherent and friends.  Any chance to switch iucv over to
+> that?  Or is there no device associated with it?
 
+There is not necessarily a device for that. It is a hypervisor interface (an
+instruction that is interpreted by z/VM). We do have the netiucv driver that
+creates a virtual nic, but there is also AF_IUCV which works without a device.
 
-Problem Reproduce
-=================
+But back to the original question: If we mark kmalloc caches as usercopy caches,
+we should do the same for DMA kmalloc caches. As outlined by Christoph, this has
+nothing to do with device DMA.
 
-You can reproduce the problem by compiling and running source code of
-'server.c' and 'client.c', which I pasted at the end of this mail, as below:
 
-    $ gcc -o client client.c
-    $ gcc -o server server.c
-    $ ./server &
-    $ ./client
-    ...
-    port: 45150, lat: 1005320, avg: 229, nr: 1070811
-    ...
 
-The reproduce program works as follow.  The server creates and binds a socket
-to port 4242, listen on it, and start a infinite loop.  Inside the loop, it
-accepts connection, read 4 bytes from the socket, and close.
-The client is constructed as an infinite loop.  Inside the loop, it creates a
-socket with LINGER and NODELAY option, connect to the server, send 4 bytes
-data, try read some data from server.  After the read() returns, it measure the
-latency from the beginning of this loop to here and if the latency is larger
-than 1 second (spike), print a message.
 
-The 6th line of above example is the message client prints for the latency
-spike.  It shows what port currently client used, the latency (in
-microseconds), averaged latency (in microseconds, again), and total number of
-connections client has made since beginning of this execution.  During our 10
-minute execution of the reproduce program, we could see 397 times of latency
-spikes among 2,744,124 connections.
-
-
-Packet Trace
-============
-
-For investigation of this issue, we used tcpdump as below:
-
-    # tcpdump -nnn -i lo port 4242
-
-Below is a part of the trace that related with this spike.
-
-```
-11:57:13.188107 IP 127.0.0.1.45150 > 127.0.0.1.4242: Flags [S], seq 2541101293, win 65495, options [mss 65495,sackOK,TS val 953759375 ecr 0,nop,wscale 7], length 0
-11:57:13.188109 IP 127.0.0.1.4242 > 127.0.0.1.45150: Flags [S.], seq 2413948679, ack 2541101294, win 65483, options [mss 65495,sackOK,TS val 953759375 ecr 953759375,nop,wscale 7], length 0
-11:57:13.188116 IP 127.0.0.1.45150 > 127.0.0.1.4242: Flags [.], ack 1, win 512, options [nop,nop,TS val 953759375 ecr 953759375], length 0
-11:57:13.188231 IP 127.0.0.1.45150 > 127.0.0.1.4242: Flags [P.], seq 1:5, ack 1, win 512, options [nop,nop,TS val 953759375 ecr 953759375], length 4
-11:57:13.188235 IP 127.0.0.1.4242 > 127.0.0.1.45150: Flags [.], ack 5, win 512, options [nop,nop,TS val 953759375 ecr 953759375], length 0
-11:57:13.188248 IP 127.0.0.1.4242 > 127.0.0.1.45150: Flags [F.], seq 1, ack 5, win 512, options [nop,nop,TS val 953759375 ecr 953759375], length 0
-11:57:13.188347 IP 127.0.0.1.45150 > 127.0.0.1.4242: Flags [.], ack 2, win 512, options [nop,nop,TS val 953759375 ecr 953759375], length 0
-11:57:13.188355 IP 127.0.0.1.45150 > 127.0.0.1.4242: Flags [R.], seq 5, ack 2, win 512, options [nop,nop,TS val 953759375 ecr 953759375], length 0
-
-
-11:57:14.436259 IP 127.0.0.1.45150 > 127.0.0.1.4242: Flags [S], seq 2560603644, win 65495, options [mss 65495,sackOK,TS val 953760623 ecr 0,nop,wscale 7], length 0
-11:57:14.436266 IP 127.0.0.1.4242 > 127.0.0.1.45150: Flags [.], ack 5, win 512, options [nop,nop,TS val 953760623 ecr 953759375], length 0
-11:57:14.436271 IP 127.0.0.1.45150 > 127.0.0.1.4242: Flags [R], seq 2541101298, win 0, length 0
-11:57:15.464613 IP 127.0.0.1.45150 > 127.0.0.1.4242: Flags [S], seq 2560603644, win 65495, options [mss 65495,sackOK,TS val 953761652 ecr 0,nop,wscale 7], length 0
-11:57:15.464633 IP 127.0.0.1.4242 > 127.0.0.1.45150: Flags [S.], seq 2449519317, ack 2560603645, win 65483, options [mss 65495,sackOK,TS val 953761652 ecr 953761652,nop,wscale 7], length 0
-11:57:15.464644 IP 127.0.0.1.45150 > 127.0.0.1.4242: Flags [.], ack 1, win 512, options [nop,nop,TS val 953761652 ecr 953761652], length 0
-11:57:15.464677 IP 127.0.0.1.45150 > 127.0.0.1.4242: Flags [P.], seq 1:5, ack 1, win 512, options [nop,nop,TS val 953761652 ecr 953761652], length 4
-11:57:15.464680 IP 127.0.0.1.4242 > 127.0.0.1.45150: Flags [.], ack 5, win 512, options [nop,nop,TS val 953761652 ecr 953761652], length 0
-11:57:15.464730 IP 127.0.0.1.4242 > 127.0.0.1.45150: Flags [F.], seq 1, ack 5, win 512, options [nop,nop,TS val 953761652 ecr 953761652], length 0
-11:57:15.464865 IP 127.0.0.1.45150 > 127.0.0.1.4242: Flags [R.], seq 5, ack 2, win 512, options [nop,nop,TS val 953761652 ecr 953761652], length 0
-```
-
-The lower 10 lines of trace are for the latency spike made connection. You can
-see that it spend more than 1 second.  The client sent SYN packet with seq
-number 2560603644, but server respond with ACK with seq number 5.  This means
-the connection was not properly closed.
-
-The upper 8 lines of trace shows the last connection using the 45150 port.  The
-client sent RST/ACK properly.
-
-
-What Happend Inside
-===================
-
-So, according to the TCP state protocol[1], expected behavior is as below:
-
-	 00 server				clinet
-	 01 ESTABLISHED				ESTABLISHED
-	 02 close()
-	 03 FIN_WAIT_1
-	 04 		---FIN-->
-	 05 					CLOSE_WAIT
-	 06 		<--ACK---
-	 07 FIN_WAIT_2
-	 08 		<--RST/ACK---
-	 09 TIME_WAIT
-	 10 		---ACK-->
-	 11 					LAST_ACK
-	 12 CLOSED				CLOSED
-
-As server closes socket, server socket changes its state to FIN_WAIT_1 and send
-FIN packet to client (lines 1-4).  The client changes its socket state to
-CLOSE_WAIT and send ACK (lines 5 and 6).  By receiving this ACK, server socket
-becomes FIN_WAIT_2 state (line 7).  The client also send RST/ACK (line 8).  By
-receiving the RST/ACK, the server moves to TIME_WAIT state and send ACK to the
-client.  The client now receive the ACK and move to LAST_ACK state, and now
-both the server and the client goes to CLOSED.
-
-However, due to the parallel structure of the TCP packet handling, below
-reordering could happen.
-
-	 00 server				clinet
-	 01 ESTABLISHED				ESTABLISHED
-	 02 close()
-	 03 FIN_WAIT_1
-	 04 		---FIN-->
-	 05 					CLOSE_WAIT
-	 06 				(<--ACK---)
-	 07	  			(<--RST/ACK---)
-	 08 				(fired in right order)
-	 09 		<--RST/ACK---
-	 10 		<--ACK---
-	 11 		(arrived in wrong order)
-	 12 FIN_WAIT_2
-
-Lines 1 to 5 is same with above.  The client now send the ACK first, and then
-RST/ACK.  However, these two packets are handled in parallel and thus RST/ACK
-is processed before ACK.  The RST/ACK is just ignored as it is unexpected
-packet.  The ACK arrives eventually and changes the server's state to
-FIN_WAIT_2.  Now the server waits for RST/ACK from the client but it has
-already arrived before and ignored.  Therefore, the server cannot move to
-TIME_WAIT, and no ACK to the client is sent.  As a result, the client will stay
-in the CLOSE_WAIT state.  Later, the port is reused and thus the previously
-described situation happens.
-
-[1] https://en.wikipedia.org/wiki/File:Tcp_state_diagram.png
-
-
-Into The Kernel Code
-====================
-
-By diving into the kernel code, one of us found where most of this races comes
-out.  It's in the 'tcp_v4_rcv()' function.  Roughly speaking, it does error
-condition check, lookup, process, and few more works in sequence.  I'm calling
-the small steps as lookup and process step as those are labeled as in the
-code.  And, a few of the process step is protected by 'bh_lock_sock_nested()'.
-
-However, the process of the RST/ACK is done outside of the critical section.
-In more detail, the first 'if' statement of the process step checks current
-state and go to 'do_time_wait' step, which will change the state to FIN_WAIT_2
-and send the final ACK that will make the client to LAST_ACK state:
-
-    process:
-    	if (sk->sk_state == TCP_TIME_WAIT)
-    		godo do_time_wait;
-
-This is before the critical section.  Thus in some case, RST/ACK packet passes
-this check while the ACK which the client has sent before RST/ACK is being
-processed inside the critical section.
-
-
-Experimental Fix
-----------------
-
-We confirmed this is the case by logging and some experiments.  Further,
-because the process of RST/ACK packet would stuck in front of the critical
-section while the ACK is being processed inside the critical section in most
-case, we add one more check of the RST/ACK inside the critical section.  In
-detail, it's as below:
-
-    --- a/net/ipv4/tcp_ipv4.c
-    +++ b/net/ipv4/tcp_ipv4.c
-    @@ -1912,6 +1912,29 @@ int tcp_v4_rcv(struct sk_buff *skb)
-            tcp_segs_in(tcp_sk(sk), skb);
-            ret = 0;
-            if (!sock_owned_by_user(sk)) {
-    +               // While waiting for the socket lock, the sk may have
-    +               // transitioned to FIN_WAIT2/TIME_WAIT so lookup the
-    +               // twsk and if one is found reprocess the skb
-    +               if (unlikely(sk->sk_state == TCP_CLOSE && !th->syn
-    +                       && (th->fin || th->rst))) {
-    +                       struct sock *sk2 = __inet_lookup_established(
-    +                               net, &tcp_hashinfo,
-    +                               iph->saddr, th->source,
-    +                               iph->daddr, ntohs(th->dest),
-    +                               inet_iif(skb), sdif);
-    +                       if (sk2) {
-    +                               if (sk2 == sk) {
-    +                                       sock_put(sk2);
-    +                               } else {
-    +                                       bh_unlock_sock(sk);
-    +                                       tcp_v4_restore_cb(skb);
-    +                                       if (refcounted) sock_put(sk);
-    +                                       sk = sk2;
-    +                                       refcounted = true;
-    +                                       goto process;
-    +                               }
-    +                       }
-    +               }
-                    skb_to_free = sk->sk_rx_skb_cache;
-                    sk->sk_rx_skb_cache = NULL;
-                    ret = tcp_v4_do_rcv(sk, skb);
-
-We applied this change to the kernel and confirmed that the latency spikes
-disappeared with the reproduce program.
-
-
-More Races
-----------
-
-Further, the man who found the code path and made the fix found another race
-resulted from the commit ec94c2696f0b ("tcp/dccp: avoid one atomic operation
-for timewait hashdance").  He believes the 'refcount_set()' should be done
-before the 'spin_lock()', as it allows others to see the packet in the list but
-ignore as the reference count is zero.  This race seems much rare than the
-above one and thus we have no reproducible test for this, yet.
-
-
-Request for Comments
-====================
-
-So, may I ask your comments about this issue and our experimental solution?
-Below is the source code of the reproducible program.
-
-
-Thanks,
-SeongJae Park
-
-
-
-============================== 8< ============================================
-========================     client.c     ====================================
-============================== 8< ============================================
-/*
- * This code is a modification of the code at
- * https://www.geeksforgeeks.org/socket-programming-cc/
- */
-#include <arpa/inet.h>
-#include <error.h>
-#include <netinet/tcp.h>
-#include <stdio.h>
-#include <sys/socket.h>
-#include <sys/time.h>
-#include <unistd.h>
-
-#define timediff(s, e) ((e.tv_sec - s.tv_sec) * 1000000 + e.tv_usec - s.tv_usec)
-
-int main(int argc, char const *argv[])
-{
-	int sock = 0;
-	struct sockaddr_in addr, laddr;
-	socklen_t len = sizeof(laddr);
-	struct linger sl;
-	int flag = 1;
-	int buffer;
-	int rc;
-	struct timeval start, end;
-	unsigned long lat, sum_lat = 0, nr_lat = 0;
-
-	while (1) {
-		gettimeofday(&start, NULL);
-
-		sock = socket(AF_INET, SOCK_STREAM, 0);
-		if (sock < 0)
-			error(-1, -1, "socket creation");
-
-		sl.l_onoff = 1;
-		sl.l_linger = 0;
-		if (setsockopt(sock, SOL_SOCKET, SO_LINGER, &sl, sizeof(sl)))
-			error(-1, -1, "setsockopt(linger)");
-
-		if (setsockopt(sock, IPPROTO_TCP, TCP_NODELAY,
-					&flag, sizeof(flag)))
-			error(-1, -1, "setsockopt(nodelay)");
-
-		addr.sin_family = AF_INET;
-		addr.sin_port = htons(4242);
-
-		rc = inet_pton(AF_INET, "127.0.0.1", &addr.sin_addr);
-		if (rc <= 0)
-			error(-1, -1, "inet_pton");
-
-		rc = connect(sock, (struct sockaddr *)&addr, sizeof(addr));
-		if (rc < 0)
-			error(-1, -1, "connect");
-
-		send(sock, &buffer, sizeof(buffer), 0);
-
-		read(sock, &buffer, sizeof(buffer));
-		read(sock, &buffer, sizeof(buffer));
-
-		gettimeofday(&end, NULL);
-		lat = timediff(start, end);
-		sum_lat += lat;
-		nr_lat++;
-		if (lat > 100000) {
-			rc = getsockname(sock, (struct sockaddr *)&laddr, &len);
-			if (rc == -1)
-				error(-1, -1, "getsockname");
-			printf("port: %d, lat: %lu, avg: %lu, nr: %lu\n",
-					ntohs(laddr.sin_port), lat,
-					sum_lat / nr_lat, nr_lat);
-		}
-
-		if (nr_lat % 1000 == 0)
-			fflush(stdout);
-
-
-		close(sock);
-	}
-	return 0;
-}
-============================== 8< ============================================
-========================     server.c     ====================================
-============================== 8< ============================================
-/*
- * This code is a modification of the code at
- * https://www.geeksforgeeks.org/socket-programming-cc/
- */
-#include <error.h>
-#include <netinet/in.h>
-#include <stdio.h>
-#include <sys/socket.h>
-#include <unistd.h>
-
-int main(int argc, char const *argv[])
-{
-	int sock, new_sock;
-	int opt = 1;
-	struct sockaddr_in address;
-	int addrlen = sizeof(address);
-	int buffer;
-	int rc;
-
-	sock = socket(AF_INET, SOCK_STREAM, 0);
-	if (!sock)
-		error(-1, -1, "socket");
-
-	rc = setsockopt(sock, SOL_SOCKET, SO_REUSEADDR | SO_REUSEPORT,
-			&opt, sizeof(opt));
-	if (rc == -1)
-		error(-1, -1, "setsockopt");
-
-	address.sin_family = AF_INET;
-	address.sin_addr.s_addr = INADDR_ANY;
-	address.sin_port = htons(4242);
-
-	rc = bind(sock, (struct sockaddr *)&address, sizeof(address));
-	if (rc < 0)
-		error(-1, -1, "bind");
-
-	rc = listen(sock, 3);
-	if (rc < 0)
-		error(-1, -1, "listen");
-
-	while (1) {
-		new_sock = accept(sock, (struct sockaddr *)&address,
-				(socklen_t *)&addrlen);
-		if (new_sock < 0)
-			error(-1, -1, "accept");
-
-		rc = read(new_sock, &buffer, sizeof(buffer));
-		close(new_sock);
-	}
-	return 0;
-}
