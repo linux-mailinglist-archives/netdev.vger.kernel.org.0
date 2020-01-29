@@ -2,109 +2,68 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id B9E6414CF8B
-	for <lists+netdev@lfdr.de>; Wed, 29 Jan 2020 18:21:46 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8703B14CFBA
+	for <lists+netdev@lfdr.de>; Wed, 29 Jan 2020 18:35:32 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727250AbgA2RVo (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 29 Jan 2020 12:21:44 -0500
-Received: from mail-yw1-f68.google.com ([209.85.161.68]:42050 "EHLO
-        mail-yw1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726893AbgA2RVn (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 29 Jan 2020 12:21:43 -0500
-Received: by mail-yw1-f68.google.com with SMTP id b81so175511ywe.9
-        for <netdev@vger.kernel.org>; Wed, 29 Jan 2020 09:21:42 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=/IQnUlZhIXQ6cA8rde71im7xnRTEjmtD1qfBjFVp0mI=;
-        b=JeAb5jSqnOoHjuxJgtl+vO32xP7qlblMF3btXErZ9BXFn3YPZ4svLRyEIUFvRDQ6cv
-         Iu0sK9ZqdQctbvmt+ywuQWzKUlpKnyHk/oJrmPJtkGhsCrp7C1ddMakzvfZiQyOacg8H
-         5Am/l/Qm5ad4cWtYIdoYFl7LgrPH/kq3WRJnun1tjlQ8zNCKc1tidUP2NS9zR8jriFgK
-         KBCR5rU0WEsvjHJWtDZtnb0yu8M4VAYtz69xzHd6v9dGDnwcjoxDoISLT3ZA56oEdTww
-         BdGN0aHjukN/R7Lr0AQDUacJRz9K4VC7BE2K3ZOPpT1eE4MDiHb6JWHheolnsxNFdCry
-         lWwg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=/IQnUlZhIXQ6cA8rde71im7xnRTEjmtD1qfBjFVp0mI=;
-        b=hgKqstTmlVnIbSP0Himpsk7VBz7YTkrEoqoATEiGM2f1L8y67gu6bZXACfrKoL0rqJ
-         +9U35cddi0YOOUb4OUy718ngD/UdwEmmztAuqCnZAGIsF2lQKEB7gIFV00V3+J/qeSZv
-         vAg7+/f+sHfyjbk524hpH809M3u7x7RbQq0ISj/xxjuh3ib8PvsGxCAKKXTsUq/e/GUQ
-         pJ60FSbvkEFGSUyTyQxS083aPMsSWaFZVeBRjM188DRXyfN6fVh7TdtI/ouH4tgY1Niw
-         jn2K5i+jYH0vUzMZmgG7SXj9Q6bcl9Kq3qMRsbw4/L04Tkbws8Z0ie8mDoG/L671fxvV
-         wawg==
-X-Gm-Message-State: APjAAAWPgTyYmR0kJCbU8SGSwgWxbbuYqOqz6WQT8fjoyycQkrGwaUiB
-        tUb7fMZjnxzegdzBFFD4LiALNfTW
-X-Google-Smtp-Source: APXvYqx7bwuXydEaATXDErwB+/n15McOkgdK2qDWg3uM/kn9fMjuNlQToJlrYdcx/BlRqC+HRKK4vQ==
-X-Received: by 2002:a81:9146:: with SMTP id i67mr20935790ywg.120.1580318501598;
-        Wed, 29 Jan 2020 09:21:41 -0800 (PST)
-Received: from mail-yb1-f181.google.com (mail-yb1-f181.google.com. [209.85.219.181])
-        by smtp.gmail.com with ESMTPSA id p1sm1327067ywh.74.2020.01.29.09.21.40
-        for <netdev@vger.kernel.org>
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 29 Jan 2020 09:21:40 -0800 (PST)
-Received: by mail-yb1-f181.google.com with SMTP id z125so198496ybf.9
-        for <netdev@vger.kernel.org>; Wed, 29 Jan 2020 09:21:40 -0800 (PST)
-X-Received: by 2002:a25:bf91:: with SMTP id l17mr474135ybk.178.1580318499826;
- Wed, 29 Jan 2020 09:21:39 -0800 (PST)
+        id S1726679AbgA2Rfa (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 29 Jan 2020 12:35:30 -0500
+Received: from correo.us.es ([193.147.175.20]:50960 "EHLO mail.us.es"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726750AbgA2Rfa (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 29 Jan 2020 12:35:30 -0500
+Received: from antivirus1-rhel7.int (unknown [192.168.2.11])
+        by mail.us.es (Postfix) with ESMTP id E8DA2F8D5A
+        for <netdev@vger.kernel.org>; Wed, 29 Jan 2020 18:35:28 +0100 (CET)
+Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
+        by antivirus1-rhel7.int (Postfix) with ESMTP id D6317DA714
+        for <netdev@vger.kernel.org>; Wed, 29 Jan 2020 18:35:28 +0100 (CET)
+Received: by antivirus1-rhel7.int (Postfix, from userid 99)
+        id CBED6DA70E; Wed, 29 Jan 2020 18:35:28 +0100 (CET)
+X-Spam-Checker-Version: SpamAssassin 3.4.1 (2015-04-28) on antivirus1-rhel7.int
+X-Spam-Level: 
+X-Spam-Status: No, score=-108.2 required=7.5 tests=ALL_TRUSTED,BAYES_50,
+        SMTPAUTH_US2,USER_IN_WHITELIST autolearn=disabled version=3.4.1
+Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
+        by antivirus1-rhel7.int (Postfix) with ESMTP id DCA2FDA702;
+        Wed, 29 Jan 2020 18:35:26 +0100 (CET)
+Received: from 192.168.1.97 (192.168.1.97)
+ by antivirus1-rhel7.int (F-Secure/fsigk_smtp/550/antivirus1-rhel7.int);
+ Wed, 29 Jan 2020 18:35:26 +0100 (CET)
+X-Virus-Status: clean(F-Secure/fsigk_smtp/550/antivirus1-rhel7.int)
+Received: from us.es (unknown [90.77.255.23])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        (Authenticated sender: 1984lsi)
+        by entrada.int (Postfix) with ESMTPSA id C081F42EFB80;
+        Wed, 29 Jan 2020 18:35:26 +0100 (CET)
+Date:   Wed, 29 Jan 2020 18:35:25 +0100
+X-SMTPAUTHUS: auth mail.us.es
+From:   Pablo Neira Ayuso <pablo@netfilter.org>
+To:     Kadlecsik =?iso-8859-1?Q?J=F3zsef?= <kadlec@blackhole.kfki.hu>
+Cc:     syzbot <syzbot+fc69d7cb21258ab4ae4d@syzkaller.appspotmail.com>,
+        netdev@vger.kernel.org, netfilter-devel@vger.kernel.org,
+        syzkaller-bugs@googlegroups.com
+Subject: Re: [PATCH 1/1] netfilter: ipset: fix suspicious RCU usage in
+ find_set_and_id
+Message-ID: <20200129173525.ikrw5bckxrgqc52v@salvia>
+References: <alpine.DEB.2.20.2001252034050.23279@blackhole.kfki.hu>
 MIME-Version: 1.0
-References: <20200127204031.244254-1-willemdebruijn.kernel@gmail.com> <20200128.105909.2133255162840958859.davem@davemloft.net>
-In-Reply-To: <20200128.105909.2133255162840958859.davem@davemloft.net>
-From:   Willem de Bruijn <willemdebruijn.kernel@gmail.com>
-Date:   Wed, 29 Jan 2020 12:21:03 -0500
-X-Gmail-Original-Message-ID: <CA+FuTSem3r-7F_=b5eiT1J5QbP9_pHhFNDSkDkz0v19uSVq=Ow@mail.gmail.com>
-Message-ID: <CA+FuTSem3r-7F_=b5eiT1J5QbP9_pHhFNDSkDkz0v19uSVq=Ow@mail.gmail.com>
-Subject: Re: [PATCH net] udp: segment looped gso packets correctly
-To:     David Miller <davem@davemloft.net>
-Cc:     Willem de Bruijn <willemdebruijn.kernel@gmail.com>,
-        Network Development <netdev@vger.kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        syzkaller <syzkaller@googlegroups.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <alpine.DEB.2.20.2001252034050.23279@blackhole.kfki.hu>
+User-Agent: NeoMutt/20170113 (1.7.2)
+X-Virus-Scanned: ClamAV using ClamSMTP
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Jan 29, 2020 at 11:58 AM David Miller <davem@davemloft.net> wrote:
->
-> From: Willem de Bruijn <willemdebruijn.kernel@gmail.com>
-> Date: Mon, 27 Jan 2020 15:40:31 -0500
->
-> > From: Willem de Bruijn <willemb@google.com>
-> >
-> > Multicast and broadcast packets can be looped from egress to ingress
-> > pre segmentation with dev_loopback_xmit. That function unconditionally
-> > sets ip_summed to CHECKSUM_UNNECESSARY.
-> >
-> > udp_rcv_segment segments gso packets in the udp rx path. Segmentation
-> > usually executes on egress, and does not expect packets of this type.
-> > __udp_gso_segment interprets !CHECKSUM_PARTIAL as CHECKSUM_NONE. But
-> > the offsets are not correct for gso_make_checksum.
-> >
-> > UDP GSO packets are of type CHECKSUM_PARTIAL, with their uh->check set
-> > to the correct pseudo header checksum. Reset ip_summed to this type.
-> > (CHECKSUM_PARTIAL is allowed on ingress, see comments in skbuff.h)
-> >
-> > Reported-by: syzbot <syzkaller@googlegroups.com>
-> > Fixes: cf329aa42b66 ("udp: cope with UDP GRO packet misdirection")
-> > Signed-off-by: Willem de Bruijn <willemb@google.com>
->
-> Applied and queued up for -stable, but I have to say:
->
-> > +     if (skb->pkt_type == PACKET_LOOPBACK)
-> > +             skb->ip_summed = CHECKSUM_PARTIAL;
-> > +
->
-> There are a lot of implementation detail assumptions encoded into that
-> conditional statement :-)
->
-> Feel free to follow-up with a patch adding a comment containing a
-> condensed version of your commit log here.
+On Sat, Jan 25, 2020 at 08:39:25PM +0100, Kadlecsik József wrote:
+> find_set_and_id() is called when the NFNL_SUBSYS_IPSET mutex is held.
+> However, in the error path there can be a follow-up recvmsg() without
+> the mutex held. Use the start() function of struct netlink_dump_control
+> instead of dump() to verify and report if the specified set does not
+> exist.
 
-Will do. Yeah, that does look pretty obscure. I may have gotten a bit
-too used to relying solely on git blame ;-)
-
-Thanks!
+Applied, thanks Jozsef.
