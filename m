@@ -2,181 +2,82 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id C379114C54A
-	for <lists+netdev@lfdr.de>; Wed, 29 Jan 2020 05:39:15 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id CEFE114C54D
+	for <lists+netdev@lfdr.de>; Wed, 29 Jan 2020 05:42:49 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726620AbgA2EjJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 28 Jan 2020 23:39:09 -0500
-Received: from bombadil.infradead.org ([198.137.202.133]:56780 "EHLO
-        bombadil.infradead.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726401AbgA2EjI (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 28 Jan 2020 23:39:08 -0500
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=bombadil.20170209; h=Content-Transfer-Encoding:
-        Content-Type:In-Reply-To:MIME-Version:Date:Message-ID:From:Cc:References:To:
-        Subject:Sender:Reply-To:Content-ID:Content-Description:Resent-Date:
-        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
-        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-         bh=9eFMSk3kiCUa/opxi1hhhRm+z30AIL9ELkBjRpgDmH8=; b=ETMJ+lxnbv1/0PpjOHPJQhHrJ
-        2B321fseH1jxkU5+aEt3ZZdf+9dKJUFN4Hc+JwxwFJqCJgA4r7u1PjIegyHafhtp6hn18/0fWi9QH
-        PBXG6TpgcZreAubvDGWD9PpEcKig4P0GdONKtxDtwlD+FIEL0PJ1Jg+j+n4vky+5bGMpKpRyDrpk2
-        7iGYIOnZiFP7298y/LrM7hYtQ3MHLsgnyMO4iUmFEzN5r5sxB5fgJ4yVUroJuVdNs5Y7+pEgX7KDm
-        rr0Byk0px9Zc0t5rIcQhMZs6JUrBVVWlJCPoG2waou3rPK1CPmbg4qbV2ZgAqca0SW0h6/31hiuaO
-        Tf/Z8ZTdw==;
-Received: from [2601:1c0:6280:3f0:897c:6038:c71d:ecac]
-        by bombadil.infradead.org with esmtpsa (Exim 4.92.3 #3 (Red Hat Linux))
-        id 1iwf85-0000gu-2Q; Wed, 29 Jan 2020 04:39:05 +0000
-Subject: Re: mmotm 2020-01-28-20-05 uploaded (net/mptcp/subflow.c)
-To:     akpm@linux-foundation.org, broonie@kernel.org,
-        linux-fsdevel@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-mm@kvack.org, linux-next@vger.kernel.org, mhocko@suse.cz,
-        mm-commits@vger.kernel.org, sfr@canb.auug.org.au,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-References: <20200129040640.6PNuz0vcp%akpm@linux-foundation.org>
-Cc:     mptcp@lists.01.org,
-        Mat Martineau <mathew.j.martineau@linux.intel.com>,
-        Matthieu Baerts <matthieu.baerts@tessares.net>
-From:   Randy Dunlap <rdunlap@infradead.org>
-Message-ID: <71437ed1-e8b6-83bc-04b2-4c82fb313370@infradead.org>
-Date:   Tue, 28 Jan 2020 20:39:03 -0800
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.4.1
-MIME-Version: 1.0
-In-Reply-To: <20200129040640.6PNuz0vcp%akpm@linux-foundation.org>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 8bit
+        id S1726605AbgA2Emq convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Tue, 28 Jan 2020 23:42:46 -0500
+Received: from coyote.holtmann.net ([212.227.132.17]:33780 "EHLO
+        mail.holtmann.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726401AbgA2Emq (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 28 Jan 2020 23:42:46 -0500
+Received: from marcel-macbook.fritz.box (p4FEFC5A7.dip0.t-ipconnect.de [79.239.197.167])
+        by mail.holtmann.org (Postfix) with ESMTPSA id 2ADDDCEC82;
+        Wed, 29 Jan 2020 05:52:04 +0100 (CET)
+Content-Type: text/plain;
+        charset=utf-8
+Mime-Version: 1.0 (Mac OS X Mail 13.0 \(3608.60.0.2.5\))
+Subject: Re: [RFC PATCH v2 1/4] Bluetooth: Add mgmt op set_wake_capable
+From:   Marcel Holtmann <marcel@holtmann.org>
+In-Reply-To: <20200127175842.RFC.v2.1.I797e2f4cb824299043e771f3ab9cef86ee09f4db@changeid>
+Date:   Wed, 29 Jan 2020 05:42:43 +0100
+Cc:     Luiz Augusto von Dentz <luiz.dentz@gmail.com>,
+        Alain Michaud <alainm@chromium.org>,
+        linux-bluetooth@vger.kernel.org,
+        chromeos-bluetooth-upstreaming@chromium.org,
+        "David S. Miller" <davem@davemloft.net>,
+        Johan Hedberg <johan.hedberg@gmail.com>,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Jakub Kicinski <kuba@kernel.org>
+Content-Transfer-Encoding: 8BIT
+Message-Id: <8C3B4FA7-3A59-4E0C-B609-B6278470F46E@holtmann.org>
+References: <20200128015848.226966-1-abhishekpandit@chromium.org>
+ <20200127175842.RFC.v2.1.I797e2f4cb824299043e771f3ab9cef86ee09f4db@changeid>
+To:     Abhishek Pandit-Subedi <abhishekpandit@chromium.org>
+X-Mailer: Apple Mail (2.3608.60.0.2.5)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 1/28/20 8:06 PM, akpm@linux-foundation.org wrote:
-> The mm-of-the-moment snapshot 2020-01-28-20-05 has been uploaded to
+Hi Abhishek.
+
+> When the system is suspended, only some connected Bluetooth devices
+> cause user input that should wake the system (mostly HID devices). Add
+> a list to keep track of devices that can wake the system and add
+> a management API to let userspace tell the kernel whether a device is
+> wake capable or not.
 > 
->    http://www.ozlabs.org/~akpm/mmotm/
+> Signed-off-by: Abhishek Pandit-Subedi <abhishekpandit@chromium.org>
+> ---
 > 
-> mmotm-readme.txt says
+> Changes in v2: None
 > 
-> README for mm-of-the-moment:
+> include/net/bluetooth/hci_core.h |  1 +
+> include/net/bluetooth/mgmt.h     |  7 ++++++
+> net/bluetooth/hci_core.c         |  1 +
+> net/bluetooth/mgmt.c             | 40 ++++++++++++++++++++++++++++++++
+> 4 files changed, 49 insertions(+)
 > 
-> http://www.ozlabs.org/~akpm/mmotm/
-> 
-> This is a snapshot of my -mm patch queue.  Uploaded at random hopefully
-> more than once a week.
-> 
+> diff --git a/include/net/bluetooth/hci_core.h b/include/net/bluetooth/hci_core.h
+> index 89ecf0a80aa1..ce4bebcb0265 100644
+> --- a/include/net/bluetooth/hci_core.h
+> +++ b/include/net/bluetooth/hci_core.h
+> @@ -394,6 +394,7 @@ struct hci_dev {
+> 	struct list_head	mgmt_pending;
+> 	struct list_head	blacklist;
+> 	struct list_head	whitelist;
+> +	struct list_head	wakeable;
 
-Lots of build errors when CONFIG_PROC_FS is not set/enabled:
+I have the feeling that using a separate list is making this more complicated for us than it needs to be. I think in parts this comes through the fact that BR/EDR devices are handled via the whitelist list and for LE devices we are using the conn params “framework”.
 
-(truncation of around 500 lines of errors & warnings:)
+So maybe it is actually better to store in wakeable list just the BR/EDR devices. And ensure that wakeable is a subset of the whitelist list. And for LE we store it in the conn params lists.
 
-In file included from ../include/asm-generic/percpu.h:7:0,
-                 from ../arch/x86/include/asm/percpu.h:556,
-                 from ../arch/x86/include/asm/preempt.h:6,
-                 from ../include/linux/preempt.h:78,
-                 from ../include/linux/spinlock.h:51,
-                 from ../include/linux/seqlock.h:36,
-                 from ../include/linux/time.h:6,
-                 from ../include/linux/stat.h:19,
-                 from ../include/linux/module.h:13,
-                 from ../net/mptcp/subflow.c:10:
-../net/mptcp/subflow.c: In function ‘mptcp_subflow_create_socket’:
-../net/mptcp/subflow.c:624:25: error: ‘struct netns_core’ has no member named ‘sock_inuse’
-  this_cpu_add(*net->core.sock_inuse, 1);
-                         ^
-../include/linux/percpu-defs.h:219:47: note: in definition of macro ‘__verify_pcpu_ptr’
-  const void __percpu *__vpp_verify = (typeof((ptr) + 0))NULL; \
-                                               ^~~
-../include/linux/percpu-defs.h:509:33: note: in expansion of macro ‘__pcpu_size_call’
- #define this_cpu_add(pcp, val)  __pcpu_size_call(this_cpu_add_, pcp, val)
-                                 ^~~~~~~~~~~~~~~~
-../net/mptcp/subflow.c:624:2: note: in expansion of macro ‘this_cpu_add’
-  this_cpu_add(*net->core.sock_inuse, 1);
-  ^~~~~~~~~~~~
-../net/mptcp/subflow.c:624:25: error: ‘struct netns_core’ has no member named ‘sock_inuse’
-  this_cpu_add(*net->core.sock_inuse, 1);
-                         ^
-../include/linux/percpu-defs.h:376:16: note: in definition of macro ‘__pcpu_size_call’
-  switch(sizeof(variable)) {     \
-                ^~~~~~~~
-../net/mptcp/subflow.c:624:2: note: in expansion of macro ‘this_cpu_add’
-  this_cpu_add(*net->core.sock_inuse, 1);
-  ^~~~~~~~~~~~
-In file included from ../arch/x86/include/asm/preempt.h:6:0,
-                 from ../include/linux/preempt.h:78,
-                 from ../include/linux/spinlock.h:51,
-                 from ../include/linux/seqlock.h:36,
-                 from ../include/linux/time.h:6,
-                 from ../include/linux/stat.h:19,
-                 from ../include/linux/module.h:13,
-                 from ../net/mptcp/subflow.c:10:
-../net/mptcp/subflow.c:624:25: error: ‘struct netns_core’ has no member named ‘sock_inuse’
-  this_cpu_add(*net->core.sock_inuse, 1);
-                         ^
-../arch/x86/include/asm/percpu.h:129:17: note: in definition of macro ‘percpu_add_op’
-  typedef typeof(var) pao_T__;     \
-                 ^~~
-../include/linux/percpu-defs.h:377:11: note: in expansion of macro ‘this_cpu_add_1’
-   case 1: stem##1(variable, __VA_ARGS__);break;  \
-           ^~~~
-../include/linux/percpu-defs.h:509:33: note: in expansion of macro ‘__pcpu_size_call’
- #define this_cpu_add(pcp, val)  __pcpu_size_call(this_cpu_add_, pcp, val)
-                                 ^~~~~~~~~~~~~~~~
-../net/mptcp/subflow.c:624:2: note: in expansion of macro ‘this_cpu_add’
-  this_cpu_add(*net->core.sock_inuse, 1);
-  ^~~~~~~~~~~~
-../net/mptcp/subflow.c:624:25: error: ‘struct netns_core’ has no member named ‘sock_inuse’
-  this_cpu_add(*net->core.sock_inuse, 1);
-                         ^
-../arch/x86/include/asm/percpu.h:138:17: note: in definition of macro ‘percpu_add_op’
-  switch (sizeof(var)) {      \
-                 ^~~
-../include/linux/percpu-defs.h:377:11: note: in expansion of macro ‘this_cpu_add_1’
-   case 1: stem##1(variable, __VA_ARGS__);break;  \
-           ^~~~
-../include/linux/percpu-defs.h:509:33: note: in expansion of macro ‘__pcpu_size_call’
- #define this_cpu_add(pcp, val)  __pcpu_size_call(this_cpu_add_, pcp, val)
-                                 ^~~~~~~~~~~~~~~~
-../net/mptcp/subflow.c:624:2: note: in expansion of macro ‘this_cpu_add’
-  this_cpu_add(*net->core.sock_inuse, 1);
-  ^~~~~~~~~~~~
-../net/mptcp/subflow.c:624:25: error: ‘struct netns_core’ has no member named ‘sock_inuse’
-  this_cpu_add(*net->core.sock_inuse, 1);
-                         ^
-../arch/x86/include/asm/percpu.h:141:45: note: in definition of macro ‘percpu_add_op’
-    asm qual ("incb "__percpu_arg(0) : "+m" (var)); \
-                                             ^~~
-../include/linux/percpu-defs.h:377:11: note: in expansion of macro ‘this_cpu_add_1’
-   case 1: stem##1(variable, __VA_ARGS__);break;  \
-           ^~~~
-../include/linux/percpu-defs.h:509:33: note: in expansion of macro ‘__pcpu_size_call’
- #define this_cpu_add(pcp, val)  __pcpu_size_call(this_cpu_add_, pcp, val)
-                                 ^~~~~~~~~~~~~~~~
-../net/mptcp/subflow.c:624:2: note: in expansion of macro ‘this_cpu_add’
-  this_cpu_add(*net->core.sock_inuse, 1);
-  ^~~~~~~~~~~~
-../net/mptcp/subflow.c:624:25: error: ‘struct netns_core’ has no member named ‘sock_inuse’
-  this_cpu_add(*net->core.sock_inuse, 1);
-                         ^
-../arch/x86/include/asm/percpu.h:143:45: note: in definition of macro ‘percpu_add_op’
-    asm qual ("decb "__percpu_arg(0) : "+m" (var)); \
-                                             ^~~
-../include/linux/percpu-defs.h:377:11: note: in expansion of macro ‘this_cpu_add_1’
-   case 1: stem##1(variable, __VA_ARGS__);break;  \
-           ^~~~
-../include/linux/percpu-defs.h:509:33: note: in expansion of macro ‘__pcpu_size_call’
- #define this_cpu_add(pcp, val)  __pcpu_size_call(this_cpu_add_, pcp, val)
-                                 ^~~~~~~~~~~~~~~~
-../net/mptcp/subflow.c:624:2: note: in expansion of macro ‘this_cpu_add’
-  this_cpu_add(*net->core.sock_inuse, 1);
-  ^~~~~~~~~~~~
-../net/mptcp/subflow.c:624:25: error: ‘struct netns_core’ has no member named ‘sock_inuse’
-  this_cpu_add(*net->core.sock_inuse, 1);
-                         ^
+At some point, I think we need to merge whitelist and wakeable list for BR/EDR into a proper structure that can hold this information and maybe also revamp the inquiry cache we are using.
 
+I will comment on the rest when I go through the LE whitelist update patch (and yes, I realize or variable whitelist for BR/EDR is confusing).
 
+Regards
 
+Marcel
 
--- 
-~Randy
-Reported-by: Randy Dunlap <rdunlap@infradead.org>
