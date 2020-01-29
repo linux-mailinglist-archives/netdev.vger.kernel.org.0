@@ -2,176 +2,277 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 5AB4C14C9DA
-	for <lists+netdev@lfdr.de>; Wed, 29 Jan 2020 12:42:44 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A3C9514C9E0
+	for <lists+netdev@lfdr.de>; Wed, 29 Jan 2020 12:44:30 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726322AbgA2Lmm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 29 Jan 2020 06:42:42 -0500
-Received: from mail-eopbgr60061.outbound.protection.outlook.com ([40.107.6.61]:62764
-        "EHLO EUR04-DB3-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1726067AbgA2Lmm (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 29 Jan 2020 06:42:42 -0500
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=do7CpSDcOvPJzCMEwm0E/AEE6A0HydOIuwdqBIy//gKYMf3ZkQEYolwAXwHsBNeG8RVcQio7QrZ5CuMa/wke1F9YlTHjV2uK0KqqXwUG57NgIdp0N8jcGiPv8fMOu+HStPOHlcBvgsNexjXHjnpqbG1e+VvOFiLSYu4T+XHh+TxY6yq2XFnfyTlepZ3kSwzMcgfl0nneREXGK9FYbPlagndfc9qCAyF0UHjePp3pSO+zNzyPacgG59YAtv5+XKd1khsZ3z6ihUDtr+b0C93P+dlq1h5g+Wwj/Eu0cxTc7r8usPJYFmShmomsGGbmo2auqOjBBW1IwHWLGz9dnbsbqQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=vHaKn6SBE69OK5IhCQhNnAcXou/zvj5SOpU9qToWDZ0=;
- b=bb97Y8WFSH+RQ/sPhL7v1Wo0tWDvaGAKru2RrDL6ccZfVKGJW9uD0JlMvtzfkXNFBHFGtqVKB5rpZ2DT0WFjBxNU9pNJWO3OdSmev6dWqWLgYlJvWZThD9ZdgqjWQL2ouY+8y65Ae5Vuc2FwZPdfiHX6Wo5kgcBI8NY3i+nsX1IDwQPyzRninfdOubTh48zpsfl8Es06TZNvaptn+LhHBi4eC+ppp9aeto9WSZHSqsjM5AynykMx+crQ1KYVAqKu3BPhzPXoFsXfQT9uC8uQe4D4OJDhl9VOI0JVPb8YRc+FGMJb9CYNSG+gRnZzEZxWH3nu+gVmix20suBE/99gFw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=mellanox.com; dmarc=pass action=none header.from=mellanox.com;
- dkim=pass header.d=mellanox.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Mellanox.com;
- s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=vHaKn6SBE69OK5IhCQhNnAcXou/zvj5SOpU9qToWDZ0=;
- b=ehUZxq/VT10Q2DNHrPCN1ctfDsTQKvU8/T6Rk7vobB2e9kBmZLjvxywtFmoH7IfzXscOh33x7KQkBF5ubVtBoMsEl3r1Ajhq6lELMDxTwaliiRGKcnso0ROM6+SNF7CwjxinFwMJD1Pg69OdDaE6ps7Yn/R0h86Q+gwMII9xVQM=
-Received: from AM4PR05MB3396.eurprd05.prod.outlook.com (10.171.187.33) by
- AM4PR05MB3364.eurprd05.prod.outlook.com (10.171.191.15) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.2686.26; Wed, 29 Jan 2020 11:42:37 +0000
-Received: from AM4PR05MB3396.eurprd05.prod.outlook.com
- ([fe80::4ddd:bf4e:72d0:a720]) by AM4PR05MB3396.eurprd05.prod.outlook.com
- ([fe80::4ddd:bf4e:72d0:a720%2]) with mapi id 15.20.2665.027; Wed, 29 Jan 2020
- 11:42:37 +0000
-Received: from [10.223.0.122] (193.47.165.251) by FR2P281CA0005.DEUP281.PROD.OUTLOOK.COM (2603:10a6:d10:a::15) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.2665.20 via Frontend Transport; Wed, 29 Jan 2020 11:42:36 +0000
-From:   Roi Dayan <roid@mellanox.com>
-To:     Jiri Pirko <jiri@resnulli.us>,
-        "xiangxia.m.yue@gmail.com" <xiangxia.m.yue@gmail.com>
-CC:     "gerlitz.or@gmail.com" <gerlitz.or@gmail.com>,
-        "saeedm@dev.mellanox.co.il" <saeedm@dev.mellanox.co.il>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-Subject: Re: [PATCH v3] net/mlx5e: Don't allow forwarding between uplink
-Thread-Topic: [PATCH v3] net/mlx5e: Don't allow forwarding between uplink
-Thread-Index: AQHV0RU6J45T8uTRaUSYf1wNB/NefKf2rwMAgArhKwA=
-Date:   Wed, 29 Jan 2020 11:42:37 +0000
-Message-ID: <d5d9c2d1-1201-c1e7-903a-a27c37e9e1e8@mellanox.com>
-References: <1579691703-56363-1-git-send-email-xiangxia.m.yue@gmail.com>
- <20200122133354.GB2196@nanopsycho>
-In-Reply-To: <20200122133354.GB2196@nanopsycho>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-originating-ip: [193.47.165.251]
-user-agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
- Thunderbird/68.4.1
-x-clientproxiedby: FR2P281CA0005.DEUP281.PROD.OUTLOOK.COM
- (2603:10a6:d10:a::15) To AM4PR05MB3396.eurprd05.prod.outlook.com
- (2603:10a6:205:5::33)
-authentication-results: spf=none (sender IP is )
- smtp.mailfrom=roid@mellanox.com; 
-x-ms-exchange-messagesentrepresentingtype: 1
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-ht: Tenant
-x-ms-office365-filtering-correlation-id: 702671ad-4907-4be7-3390-08d7a4b05694
-x-ms-traffictypediagnostic: AM4PR05MB3364:|AM4PR05MB3364:
-x-ms-exchange-transport-forked: True
-x-microsoft-antispam-prvs: <AM4PR05MB3364CF2320E5EBAE9B7ECF97B5050@AM4PR05MB3364.eurprd05.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:2000;
-x-forefront-prvs: 02973C87BC
-x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(4636009)(39860400002)(136003)(366004)(346002)(396003)(376002)(189003)(199004)(5660300002)(81166006)(52116002)(8676002)(8936002)(81156014)(478600001)(26005)(71200400001)(66446008)(64756008)(66476007)(66556008)(4326008)(66946007)(86362001)(31696002)(2906002)(53546011)(36756003)(6486002)(31686004)(16576012)(316002)(54906003)(110136005)(16526019)(2616005)(186003)(956004);DIR:OUT;SFP:1101;SCL:1;SRVR:AM4PR05MB3364;H:AM4PR05MB3396.eurprd05.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;MX:1;A:1;
-received-spf: None (protection.outlook.com: mellanox.com does not designate
- permitted sender hosts)
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: W4HQCp8kng1p3dnYgp4ADIgcN7t3Iz5Fd/3h9Wjs6Fq3w4dIkjiFEHRSF/AAe22hVvnS1TWT+U8NJTi+1Zn7JlJcNfsloeWSedg0gleo73oPl+T+PSdQnUuvdZQ2b0KqyyfA67gCEjZTewsaZ9q9YUY9RXhDMkAJF6WWiwWPeztMgVjHiyv83jAh+3i59SgPEQ06pjs+OuWbLL611GpVEULb244GhV+sFIHUMGICUyEA/vPymXgaeQyeFozS0eMckF5RjzKeI6GRAIZsAQl9zw1bg0TL8p2dkpZrucyt0AlgbUngkzePcWdKAMtE0LhnFKwBvEn/nfSDGxAIN7X/uZeAd8BUvAi014d80BfWdawwhBRT8RJpGYKqHvRKNU+o1+xxnEl1iOY6pKwoFjnZSfd93q97kp1UFoLbq2H5uZxl37eTJkIyxzncVEMHWxs3
-x-ms-exchange-antispam-messagedata: YZZtwWndNurgKLGQ0oEaJHQAOgDqYoe571AT0l/xyN1tS5CRTp5AJBl+7rR/I0b1lcKjiyOOjGUiAlGxx1vu07tx2G2Zaz6DTwaVS3kg5D7Nqp+dXSnwh5PL/YD8AfxsXm3BBHona2PF8XQsWxfgVw==
-Content-Type: text/plain; charset="utf-8"
-Content-ID: <75126BEC5028FD4F9924B34A1086A4A0@eurprd05.prod.outlook.com>
-Content-Transfer-Encoding: base64
+        id S1726206AbgA2Lo2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 29 Jan 2020 06:44:28 -0500
+Received: from us-smtp-delivery-1.mimecast.com ([205.139.110.120]:46922 "EHLO
+        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+        with ESMTP id S1726068AbgA2Lo2 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 29 Jan 2020 06:44:28 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1580298266;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=KHnJ1yw3/OPxyc1j5qauNbjyn7J8GCURt5U/MpR84IU=;
+        b=EHY7ip09VCSS6h+xTPUvdpu2jPPlOmXsYD69IYJq9vcKyCwAzlh0tHWCjkIe7BFjTmbx9M
+        1FJRxlywOZlf9r5ePzbOEDVm6R4QbbUT0bi2Kxw2eawKjD1d2HR0zSxP3IR7YqzPyriV95
+        okEXqtZip9e29vxE/bgkp9+I8jvEVEQ=
+Received: from mail-wm1-f69.google.com (mail-wm1-f69.google.com
+ [209.85.128.69]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-224-Ai_uyNp7PBuZTqSv85bAxQ-1; Wed, 29 Jan 2020 06:44:24 -0500
+X-MC-Unique: Ai_uyNp7PBuZTqSv85bAxQ-1
+Received: by mail-wm1-f69.google.com with SMTP id y24so2230146wmj.8
+        for <netdev@vger.kernel.org>; Wed, 29 Jan 2020 03:44:24 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:content-transfer-encoding
+         :in-reply-to;
+        bh=KHnJ1yw3/OPxyc1j5qauNbjyn7J8GCURt5U/MpR84IU=;
+        b=ewj2+fQYfKyJ8Y/G7XZGFY+hiQmhcVDmCSwvwNG1fAO8fNYbmWjO6dUNUm7XxqjMAB
+         QG2zLTqfwH2GQrqM34YCbs8UZ+n21BqKPap0prU4E6CcP3F0E6U7A/uDAOddYdwXGM3w
+         zeutX2wPZqYxvvZmZVcW3fdKNyzOwgIedhOVZ3QCVnqiScXnOYB6Q8vhF3izIV5bHjPy
+         cEGDIcRTbjoAFcL+6qeQr+AGZ6SPuxEZb1r92gjW44PtMBLrpEa/qXLjqVxdpt3WrgTL
+         imE+V2XF0uqUPGsL9MvsDH+uFuwRinIKkCa2LczY/MSFEonoFXrmf4jX2fLiIG1uqyTy
+         XEZA==
+X-Gm-Message-State: APjAAAVlTqDeEQ/dIZkoxxYVojlm2D25aMN9vL3yPRXWWJSzMOEM9WDp
+        ykKVSek9bt1QZwfKMbeCUKrNUgKXTU1QhV7Djql7vuqhq7SZbMYO2KFo2GNDMiD4G8aCNsHnrpw
+        hbToR2VtCzQZSJL4K
+X-Received: by 2002:adf:cd04:: with SMTP id w4mr7060297wrm.219.1580298263021;
+        Wed, 29 Jan 2020 03:44:23 -0800 (PST)
+X-Google-Smtp-Source: APXvYqxZlFqqVU8mA4h0Q7daXUYTHhoPd8+evmGaa3AflfnKUCMobv3/O2fyLKdBsVo4FD7eoRStIA==
+X-Received: by 2002:adf:cd04:: with SMTP id w4mr7060255wrm.219.1580298262473;
+        Wed, 29 Jan 2020 03:44:22 -0800 (PST)
+Received: from pc-61.home (2a01cb0585138800b113760e11343d15.ipv6.abo.wanadoo.fr. [2a01:cb05:8513:8800:b113:760e:1134:3d15])
+        by smtp.gmail.com with ESMTPSA id 16sm2046393wmi.0.2020.01.29.03.44.21
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 29 Jan 2020 03:44:21 -0800 (PST)
+Date:   Wed, 29 Jan 2020 12:44:19 +0100
+From:   Guillaume Nault <gnault@redhat.com>
+To:     James Chapman <jchapman@katalix.com>
+Cc:     Tom Parkin <tparkin@katalix.com>,
+        Ridge Kennedy <ridgek@alliedtelesis.co.nz>,
+        netdev <netdev@vger.kernel.org>
+Subject: Re: [PATCH net] l2tp: Allow duplicate session creation with UDP
+Message-ID: <20200129114419.GA11337@pc-61.home>
+References: <alpine.DEB.2.21.2001171027090.9038@ridgek-dl.ws.atlnz.lc>
+ <20200117131848.GA3405@jackdaw>
+ <20200117142558.GB2743@linux.home>
+ <20200117191939.GB3405@jackdaw>
+ <20200118191336.GC12036@linux.home>
+ <20200120150946.GB4142@jackdaw>
+ <20200121163531.GA6469@localhost.localdomain>
+ <CAEwTi7Q4JzaCwug3M8Aa9y1yFXm1qBjQvKq3eiw=ekBft9wETw@mail.gmail.com>
+ <20200125115702.GB4023@p271.fit.wifi.vutbr.cz>
+ <72007ca8-3ad4-62db-1b38-1ecefb82cb20@katalix.com>
 MIME-Version: 1.0
-X-OriginatorOrg: Mellanox.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 702671ad-4907-4be7-3390-08d7a4b05694
-X-MS-Exchange-CrossTenant-originalarrivaltime: 29 Jan 2020 11:42:37.1885
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: a652971c-7d2e-4d9b-a6a4-d149256f461b
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: ltpaShuaJZ/Ferd3kB1d0wKjve/UrCsrVdMMdlpq1ZiaLu59RTIC2lHQ7Cze57VCqUi9Oay62N0sYLEY5UcANA==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM4PR05MB3364
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <72007ca8-3ad4-62db-1b38-1ecefb82cb20@katalix.com>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-DQoNCk9uIDIwMjAtMDEtMjIgMzozMyBQTSwgSmlyaSBQaXJrbyB3cm90ZToNCj4gV2VkLCBKYW4g
-MjIsIDIwMjAgYXQgMTI6MTU6MDNQTSBDRVQsIHhpYW5neGlhLm0ueXVlQGdtYWlsLmNvbSB3cm90
-ZToNCj4+IEZyb206IFRvbmdoYW8gWmhhbmcgPHhpYW5neGlhLm0ueXVlQGdtYWlsLmNvbT4NCj4+
-DQo+PiBXZSBjYW4gaW5zdGFsbCBmb3J3YXJkaW5nIHBhY2tldHMgcnVsZSBiZXR3ZWVuIHVwbGlu
-aw0KPj4gaW4gc3dpdGNoZGV2IG1vZGUsIGFzIHNob3cgYmVsb3cuIEJ1dCB0aGUgaGFyZHdhcmUg
-ZG9lcw0KPj4gbm90IGRvIHRoYXQgYXMgZXhwZWN0ZWQgKG1sbnhfcGVyZiAtaSAkUEYxLCB3ZSBj
-YW4ndCBnZXQNCj4+IHRoZSBjb3VudGVyIG9mIHRoZSBQRjEpLiBCeSB0aGUgd2F5LCBpZiB3ZSBh
-ZGQgdGhlIHVwbGluaw0KPj4gUEYwLCBQRjEgdG8gT3BlbiB2U3dpdGNoIGFuZCBlbmFibGUgaHct
-b2ZmbG9hZCwgdGhlIHJ1bGVzDQo+PiBjYW4gYmUgb2ZmbG9hZGVkIGJ1dCBub3Qgd29yayBmaW5l
-IHRvby4gVGhpcyBwYXRjaCBhZGQgYQ0KPj4gY2hlY2sgYW5kIGlmIHNvIHJldHVybiAtRU9QTk9U
-U1VQUC4NCj4+DQo+PiAkIHRjIGZpbHRlciBhZGQgZGV2ICRQRjAgcHJvdG9jb2wgYWxsIHBhcmVu
-dCBmZmZmOiBwcmlvIDEgaGFuZGxlIDEgXA0KPj4gICAgZmxvd2VyIHNraXBfc3cgYWN0aW9uIG1p
-cnJlZCBlZ3Jlc3MgcmVkaXJlY3QgZGV2ICRQRjENCj4+DQo+PiAkIHRjIC1kIC1zIGZpbHRlciBz
-aG93IGRldiAkUEYwIGluZ3Jlc3MNCj4+ICAgIHNraXBfc3cNCj4+ICAgIGluX2h3IGluX2h3X2Nv
-dW50IDENCj4+ICAgIGFjdGlvbiBvcmRlciAxOiBtaXJyZWQgKEVncmVzcyBSZWRpcmVjdCB0byBk
-ZXZpY2UgZW5wMTMwczBmMSkgc3RvbGVuDQo+PiAgICAuLi4NCj4+ICAgIFNlbnQgaGFyZHdhcmUg
-NDA4OTU0IGJ5dGVzIDQxNzMgcGt0DQo+PiAgICAuLi4NCj4+DQo+PiBTaWduZWQtb2ZmLWJ5OiBU
-b25naGFvIFpoYW5nIDx4aWFuZ3hpYS5tLnl1ZUBnbWFpbC5jb20+DQo+PiAtLS0NCj4+IGRyaXZl
-cnMvbmV0L2V0aGVybmV0L21lbGxhbm94L21seDUvY29yZS9lbl9yZXAuYyB8ICA1ICsrKysrDQo+
-PiBkcml2ZXJzL25ldC9ldGhlcm5ldC9tZWxsYW5veC9tbHg1L2NvcmUvZW5fcmVwLmggfCAgMSAr
-DQo+PiBkcml2ZXJzL25ldC9ldGhlcm5ldC9tZWxsYW5veC9tbHg1L2NvcmUvZW5fdGMuYyAgfCAx
-OSArKysrKysrKysrKysrKysrKysrDQo+PiAzIGZpbGVzIGNoYW5nZWQsIDI1IGluc2VydGlvbnMo
-KykNCj4+DQo+PiBkaWZmIC0tZ2l0IGEvZHJpdmVycy9uZXQvZXRoZXJuZXQvbWVsbGFub3gvbWx4
-NS9jb3JlL2VuX3JlcC5jIGIvZHJpdmVycy9uZXQvZXRoZXJuZXQvbWVsbGFub3gvbWx4NS9jb3Jl
-L2VuX3JlcC5jDQo+PiBpbmRleCBmMTc1Y2IyLi5hYzJhMDM1IDEwMDY0NA0KPj4gLS0tIGEvZHJp
-dmVycy9uZXQvZXRoZXJuZXQvbWVsbGFub3gvbWx4NS9jb3JlL2VuX3JlcC5jDQo+PiArKysgYi9k
-cml2ZXJzL25ldC9ldGhlcm5ldC9tZWxsYW5veC9tbHg1L2NvcmUvZW5fcmVwLmMNCj4+IEBAIC0x
-NDM0LDYgKzE0MzQsMTEgQEAgc3RhdGljIHN0cnVjdCBkZXZsaW5rX3BvcnQgKm1seDVlX2dldF9k
-ZXZsaW5rX3BvcnQoc3RydWN0IG5ldF9kZXZpY2UgKmRldikNCj4+IAkubmRvX3NldF9mZWF0dXJl
-cyAgICAgICAgPSBtbHg1ZV9zZXRfZmVhdHVyZXMsDQo+PiB9Ow0KPj4NCj4+ICtib29sIG1seDVl
-X2Vzd2l0Y2hfdXBsaW5rX3JlcChzdHJ1Y3QgbmV0X2RldmljZSAqbmV0ZGV2KQ0KPj4gK3sNCj4+
-ICsJcmV0dXJuIG5ldGRldi0+bmV0ZGV2X29wcyA9PSAmbWx4NWVfbmV0ZGV2X29wc191cGxpbmtf
-cmVwOw0KPj4gK30NCj4+ICsNCj4+IGJvb2wgbWx4NWVfZXN3aXRjaF9yZXAoc3RydWN0IG5ldF9k
-ZXZpY2UgKm5ldGRldikNCj4+IHsNCj4+IAlpZiAobmV0ZGV2LT5uZXRkZXZfb3BzID09ICZtbHg1
-ZV9uZXRkZXZfb3BzX3JlcCB8fA0KPj4gZGlmZiAtLWdpdCBhL2RyaXZlcnMvbmV0L2V0aGVybmV0
-L21lbGxhbm94L21seDUvY29yZS9lbl9yZXAuaCBiL2RyaXZlcnMvbmV0L2V0aGVybmV0L21lbGxh
-bm94L21seDUvY29yZS9lbl9yZXAuaA0KPj4gaW5kZXggMzFmODNjOC4uNTIxMTgxOSAxMDA2NDQN
-Cj4+IC0tLSBhL2RyaXZlcnMvbmV0L2V0aGVybmV0L21lbGxhbm94L21seDUvY29yZS9lbl9yZXAu
-aA0KPj4gKysrIGIvZHJpdmVycy9uZXQvZXRoZXJuZXQvbWVsbGFub3gvbWx4NS9jb3JlL2VuX3Jl
-cC5oDQo+PiBAQCAtMTk5LDYgKzE5OSw3IEBAIHZvaWQgbWx4NWVfcmVwX2VuY2FwX2VudHJ5X2Rl
-dGFjaChzdHJ1Y3QgbWx4NWVfcHJpdiAqcHJpdiwNCj4+IHZvaWQgbWx4NWVfcmVwX3F1ZXVlX25l
-aWdoX3N0YXRzX3dvcmsoc3RydWN0IG1seDVlX3ByaXYgKnByaXYpOw0KPj4NCj4+IGJvb2wgbWx4
-NWVfZXN3aXRjaF9yZXAoc3RydWN0IG5ldF9kZXZpY2UgKm5ldGRldik7DQo+PiArYm9vbCBtbHg1
-ZV9lc3dpdGNoX3VwbGlua19yZXAoc3RydWN0IG5ldF9kZXZpY2UgKm5ldGRldik7DQo+Pg0KPj4g
-I2Vsc2UgLyogQ09ORklHX01MWDVfRVNXSVRDSCAqLw0KPj4gc3RhdGljIGlubGluZSBib29sIG1s
-eDVlX2lzX3VwbGlua19yZXAoc3RydWN0IG1seDVlX3ByaXYgKnByaXYpIHsgcmV0dXJuIGZhbHNl
-OyB9DQo+PiBkaWZmIC0tZ2l0IGEvZHJpdmVycy9uZXQvZXRoZXJuZXQvbWVsbGFub3gvbWx4NS9j
-b3JlL2VuX3RjLmMgYi9kcml2ZXJzL25ldC9ldGhlcm5ldC9tZWxsYW5veC9tbHg1L2NvcmUvZW5f
-dGMuYw0KPj4gaW5kZXggZGI2MTRiZC4uMzVmNjhlNCAxMDA2NDQNCj4+IC0tLSBhL2RyaXZlcnMv
-bmV0L2V0aGVybmV0L21lbGxhbm94L21seDUvY29yZS9lbl90Yy5jDQo+PiArKysgYi9kcml2ZXJz
-L25ldC9ldGhlcm5ldC9tZWxsYW5veC9tbHg1L2NvcmUvZW5fdGMuYw0KPj4gQEAgLTMzNjEsNiAr
-MzM2MSw3IEBAIHN0YXRpYyBpbnQgcGFyc2VfdGNfZmRiX2FjdGlvbnMoc3RydWN0IG1seDVlX3By
-aXYgKnByaXYsDQo+PiAJCQkJc3RydWN0IG1seDVfZXN3aXRjaCAqZXN3ID0gcHJpdi0+bWRldi0+
-cHJpdi5lc3dpdGNoOw0KPj4gCQkJCXN0cnVjdCBuZXRfZGV2aWNlICp1cGxpbmtfZGV2ID0gbWx4
-NV9lc3dpdGNoX3VwbGlua19nZXRfcHJvdG9fZGV2KGVzdywgUkVQX0VUSCk7DQo+PiAJCQkJc3Ry
-dWN0IG5ldF9kZXZpY2UgKnVwbGlua191cHBlcjsNCj4+ICsJCQkJc3RydWN0IG1seDVlX3JlcF9w
-cml2ICpyZXBfcHJpdjsNCj4+DQo+PiAJCQkJaWYgKGlzX2R1cGxpY2F0ZWRfb3V0cHV0X2Rldmlj
-ZShwcml2LT5uZXRkZXYsDQo+PiAJCQkJCQkJCW91dF9kZXYsDQo+PiBAQCAtMzM5Niw2ICszMzk3
-LDI0IEBAIHN0YXRpYyBpbnQgcGFyc2VfdGNfZmRiX2FjdGlvbnMoc3RydWN0IG1seDVlX3ByaXYg
-KnByaXYsDQo+PiAJCQkJCQlyZXR1cm4gZXJyOw0KPj4gCQkJCX0NCj4+DQo+PiArCQkJCS8qIERv
-bid0IGFsbG93IGZvcndhcmRpbmcgYmV0d2VlbiB1cGxpbmsuDQo+PiArCQkJCSAqDQo+PiArCQkJ
-CSAqIElucHV0IHZwb3J0IHdhcyBzdG9yZWQgZXN3X2F0dHItPmluX3JlcC4NCj4+ICsJCQkJICog
-SW4gTEFHIGNhc2UsICpwcml2KiBpcyB0aGUgcHJpdmF0ZSBkYXRhIG9mDQo+PiArCQkJCSAqIHVw
-bGluayB3aGljaCBtYXkgYmUgbm90IHRoZSBpbnB1dCB2cG9ydC4NCj4+ICsJCQkJICovDQo+PiAr
-CQkJCXJlcF9wcml2ID0gbWx4NWVfcmVwX3RvX3JlcF9wcml2KGF0dHItPmluX3JlcCk7DQo+PiAr
-CQkJCWlmIChtbHg1ZV9lc3dpdGNoX3VwbGlua19yZXAocmVwX3ByaXYtPm5ldGRldikgJiYNCj4+
-ICsJCQkJICAgIG1seDVlX2Vzd2l0Y2hfdXBsaW5rX3JlcChvdXRfZGV2KSkgew0KPj4gKwkJCQkJ
-TkxfU0VUX0VSUl9NU0dfTU9EKGV4dGFjaywNCj4+ICsJCQkJCQkJICAgImRldmljZXMgYXJlIGJv
-dGggdXBsaW5rLCAiDQo+IA0KPiBOZXZlciBicmVhayBlcnJvciBtZXNzYWdlcy4NCj4gDQo+IA0K
-Pj4gKwkJCQkJCQkgICAiY2FuJ3Qgb2ZmbG9hZCBmb3J3YXJkaW5nIik7DQo+PiArCQkJCQlwcl9l
-cnIoImRldmljZXMgJXMgJXMgYXJlIGJvdGggdXBsaW5rLCAiDQo+IA0KPiBIZXJlIGFzIHdlbGwu
-DQo+IA0KPiANCj4+ICsJCQkJCSAgICAgICAiY2FuJ3Qgb2ZmbG9hZCBmb3J3YXJkaW5nXG4iLA0K
-Pj4gKwkJCQkJICAgICAgIHByaXYtPm5ldGRldi0+bmFtZSwgb3V0X2Rldi0+bmFtZSk7DQo+PiAr
-CQkJCQlyZXR1cm4gLUVPUE5PVFNVUFA7DQo+PiArCQkJCX0NCj4+ICsNCj4+IAkJCQlpZiAoIW1s
-eDVlX2lzX3ZhbGlkX2Vzd2l0Y2hfZndkX2Rldihwcml2LCBvdXRfZGV2KSkgew0KPj4gCQkJCQlO
-TF9TRVRfRVJSX01TR19NT0QoZXh0YWNrLA0KPj4gCQkJCQkJCSAgICJkZXZpY2VzIGFyZSBub3Qg
-b24gc2FtZSBzd2l0Y2ggSFcsIGNhbid0IG9mZmxvYWQgZm9yd2FyZGluZyIpOw0KPj4gLS0gDQo+
-PiAxLjguMy4xDQo+Pg0KDQpiZXNpZGUgd2hhdCBKaXJpIGNvbW1lbnRlZCwgdGhlIHJlc3QgbG9v
-a3MgZmluZSB0byBtZS4NCg==
+On Mon, Jan 27, 2020 at 09:25:30AM +0000, James Chapman wrote:
+> On 25/01/2020 11:57, Guillaume Nault wrote:
+> > On Wed, Jan 22, 2020 at 11:55:35AM +0000, James Chapman wrote:
+> >> In my experience, poor L2TP data performance is usually the result of
+> >> MTU config issues causing IP fragmentation in the tunnel. L2TPv3
+> >> ethernet throughput is similar to ethernet bridge throughput in the
+> >> setups that I know of.
+> >>
+> > I said that because I remember I had tested L2TPv3 and VXLAN a few
+> > years ago and I was surprised by the performance gap. I certainly can't
+> > remember the details of the setup, but I'd be very surprised if I had
+> > misconfigured the MTU.
+> 
+> Fair enough. I'd be interested in your observations and ideas regarding
+> improving performance at some point. But I suggest keep this thread
+> focused on the session ID scope issue.
+> 
+I had started working on the data path more than a year ago, but never
+got far enough to submit anything. I might revive this work if I find
+enough time. But yes, sure, let's focus on the sessions IDs for now.
+
+> >> I can't see how replacing a lookup using a 32-bit hash key with one
+> >> using a 260-bit or more key (128+128+4 for two IPv[46] addresses and
+> >> the session ID) isn't going to hurt performance, let alone the
+> >> per-session memory footprint. In addition, it is changing the scope of
+> >> the session ID away from what is defined in the RFC.
+> >>
+> > I don't see why we'd need to increase the l2tp_session's structure size.
+> > We can already get the 3/5-tuple from the parent's tunnel socket. And
+> > there are some low hanging fruits to pick if one wants to reduce L2TP's
+> > memory footprint.
+> >
+> > From a performance point of view, 3/5-tuple matches are quite common
+> > operations in the networking stack. I don't expect that to be costly
+> > compared to the rest of the L2TP Rx operations. And we certainly have
+> > room to streamline the datapath if necessary.
+> 
+> I was assuming the key used for the session ID lookup would be stored
+> with the session so that we wouldn't have to prepare it for each and
+> every packet receive.
+> 
+I don't think that we could store the hash in the session structure.
+The tunnel socket could be rebound or reconnected, thus changing the
+5/3-tuple from under us.
+
+My idea was to lookup the hash bucket using only the session ID, then
+select the session from this bucket by checking both the session ID and
+the 5/3-tuple.
+
+> >> I think Linux shouldn't diverge from the spirit of the L2TPv3 RFC
+> >> since the RFC is what implementors code against. Ridge's application
+> >> relies on duplicated L2TPv3 session IDs which are scoped by the UDP
+> >> 5-tuple address. But equally, there may be existing applications out
+> >> there which rely on Linux performing L2TPv3 session lookup by session
+> >> ID alone, as per the RFC. For IP-encap, Linux already does this, but
+> >> not for UDP. What if we get a request to do so for UDP, for
+> >> RFC-compliance? It would be straightforward to do as long as the
+> >> session ID scope isn't restricted by the proposed patch.
+> >>
+> > As long as the external behavior conforms to the RFC, I don't see any
+> > problem. Local applications are still responsible for selecting
+> > session-IDs. I don't see how they could be confused if the kernel
+> > accepted more IDs, especially since that was the original behaviour.
+> 
+> But it wouldn't conform with the RFC.
+> 
+> RFC3931 says:
+> 
+>  The Session ID alone provides the necessary context for all further
+>  packet processing, including the presence, size, and value of the
+>  Cookie, the type of L2-Specific Sublayer, and the type of payload
+>  being tunneled.
+> 
+> and also
+> 
+>  The data message format for tunneling data packets may be utilized
+>  with or without the L2TP control channel, either via manual
+>  configuration or via other signaling methods to pre-configure or
+>  distribute L2TP session information.
+> 
+Since userspace is in charge of selecting the session ID, I still can't
+see how having the kernel accept duplicate IDs goes against the RFC.
+The kernel doesn't assign duplicate IDs on its own. Userspace has full
+control on the IDs and can implement whatever constraint when assigning
+session IDs (even the DOCSIS DEPI way of partioning the session ID
+space).
+
+> > I would have to read the RFC with scoped session IDs in mind, but, as
+> > far as I can see, the only things that global session IDs allow which
+> > can't be done with scoped session IDs are:
+> >   * Accepting L2TPoIP sessions to receive L2TPoUDP packets and
+> >     vice-versa.
+> >   * Accepting L2TPv3 packets from peers we're not connected to.
+> >
+> > I don't find any of these to be desirable. Although Tom convinced me
+> > that global session IDs are in the spirit of the RFC, I still don't
+> > think that restricting their scope goes against it in any practical
+> > way. The L2TPv3 control plane requires a two way communication, which
+> > means that the session is bound to a given 3/5-tuple for control
+> > messages. Why would the data plane behave differently?
+> 
+> The Cable Labs / DOCSIS DEPI protocol is a good example. It is based on
+> L2TPv3 and uses the L2TPv3 data plane. It treats the session ID as
+> unscoped and not associated with a given tunnel.
+> 
+Fair enough. Then we could add a L2TP_ATTR_SCOPE netlink attribute to
+sessions. A global scope would reject the session ID if another session
+already exists with this ID in the same network namespace. Sessions with
+global scope would be looked up solely based on their ID. A non-global
+scope would allow a session ID to be duplicated as long as the 3/5-tuple
+is different and no session uses this ID with global scope.
+
+> > I agree that it looks saner (and simpler) for a control plane to never
+> > assign the same session ID to sessions running over different tunnels,
+> > even if they have different 3/5-tuples. But that's the user space
+> > control plane implementation's responsability to select unique session
+> > IDs in this case. The fact that the kernel uses scoped or global IDs is
+> > irrelevant. For unmanaged tunnels, the administrator has complete
+> > control over the local and remote session IDs and is free to assign
+> > them globally if it wants to, even if the kernel would have accepted
+> > reusing session IDs.
+> 
+> I disagree. Using scoped session IDs may break applications that assume
+> RFC behaviour. I mentioned one example where session IDs are used
+> unscoped above.
+> 
+I'm sorry, but I still don't understand how could that break any
+existing application.
+
+For L2TPoUDP, session IDs are always looked up in the context of the
+UDP socket. So even though the kernel has stopped accepting duplicate
+IDs, the session IDs remain scoped in practice. And with the
+application being responsible for assigning IDs, I don't see how making
+the kernel less restrictive could break any existing implementation.
+Again, userspace remains in full control for session ID assignment
+policy.
+
+Then we have L2TPoIP, which does the opposite, always looks up sessions
+globally and depends on session IDs being unique in the network
+namespace. But Ridge's patch does not change that. Also, by adding the
+L2TP_ATTR_SCOPE attribute (as defined above), we could keep this
+behaviour (L2TPoIP session could have global scope by default).
+
+> >> Could we ask Ridge to submit a new version of his patch which includes
+> >> a knob to enable it?
+> >>
+> > But what would be the default behaviour? If it's "use global IDs", then
+> > we'll keep breaking applications that used to work with older kernels.
+> > Ridge would know how to revert to the ancient behaviour, but other
+> > users would probably never know about the knob. And if we set the
+> > default behaviour to "allow duplicate IDs for L2TPv3oUDP", then the
+> > knob doesn't need to be implemented as part of Ridge's fix. It can
+> > always be added later, if we ever decide to unify session lookups
+> > accross L2TPoUDP and L2TPoIP and that extending the session hash key
+> > proves not to be a practical solution.
+> 
+> 
+> The default would be the current behaviour: "global IDs". We'll be
+> breaking applications that assume scoped session IDs, yes. But I think
+> the number of these applications will be minimal given the RFC is clear
+> that session IDs are unscoped and the kernel has worked this way for
+> almost 3 years.
+> 
+> I think it's important that the kernel continues to treat the L2TPv3
+> session ID as "global".
+> 
+I'm uncomfortable with this. 3 years is not that long, it's the typical
+long term support time for community kernels (not even mentioning
+"enterprise" distributions). Also, we have a report showing that the
+current behaviour broke some use cases, while we never had any problem
+reported for the ancient behaviour (which had been in place for 7
+years). And finally, rejecting duplicate IDs, won't make the session ID
+space global. As I pointed out earlier, L2TPoUDP sessions are still
+going to be scoped in practice, because that's how lookup is done
+currently. So I don't see what would be the benefit of artificially
+limitting the sessions IDs accepted by the kernel (but I agree that
+L2TPoIP session IDs have to remain unique in the network namespace).
+
+> However, there might be an alternative solution to fix this for Ridge's
+> use case that doesn't involve adding 3/5-tuple session ID lookups in the
+> receive path or adding a control knob...
+> 
+> My understanding is that Ridge's application uses unmanaged tunnels
+> (like "ip l2tp" does). These use kernel sockets. The netlink tunnel
+> create request does not indicate a valid tunnel socket fd. So we could
+> use scoped session IDs for unmanaged UDP tunnels only. If Ridge's patch
+> were tweaked to allow scoped IDs only for UDP unmanaged tunnels (adding
+> a test for tunnel->fd < 0), managed tunnels would continue to work as
+> they do now and any application that uses unmanaged tunnels would get
+> scoped session IDs. No control knob or 3/5-tuple session ID lookups
+> required.
+> 
+Well, I'd prefer to not introduce another subtle behaviour change. What
+does rejecting duplicate IDs bring us if the lookup is still done in
+the context of the socket? If the point is to have RFC compliance, then
+we'd also need to modify the lookup functions.
+
