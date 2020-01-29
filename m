@@ -2,131 +2,207 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id CC9A814C447
-	for <lists+netdev@lfdr.de>; Wed, 29 Jan 2020 01:58:29 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 99B1614C485
+	for <lists+netdev@lfdr.de>; Wed, 29 Jan 2020 03:09:07 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726964AbgA2A60 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 28 Jan 2020 19:58:26 -0500
-Received: from mail-io1-f67.google.com ([209.85.166.67]:38921 "EHLO
-        mail-io1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726739AbgA2A60 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 28 Jan 2020 19:58:26 -0500
-Received: by mail-io1-f67.google.com with SMTP id c16so16685602ioh.6
-        for <netdev@vger.kernel.org>; Tue, 28 Jan 2020 16:58:25 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=broadcom.com; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=hfPnwCqzCAhNK/qRWkWU3pxM5PERG8Ehj+A9uu9jn7s=;
-        b=PV5nGiReMA0sAjLADHB6cjIFeP0lOuZ2izL3OeGoiIvgFCUiygVFxPpzwLVE5KY48/
-         fNV7VLkyKdLRhdw6lXTdtjxDSp1Kfm98KBAR0mc8RBQRe6pToRC6dObO8PA0tI98u+En
-         ahQO0LZozEg2pDBtBjOaZHpxcaSgzRJcywL2E=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=hfPnwCqzCAhNK/qRWkWU3pxM5PERG8Ehj+A9uu9jn7s=;
-        b=GLOdV7v1C/Si6PLEBGeoz1TBR2W62UeBhfOosmGmSbEMzZdWJgOrXaGlznPR9R0Ff5
-         6l0lTGNKHOaK+p3fEngft31phWLd/AgS7JGSacVCS/HMRnfmstomPXkWcQ0nOsPlrWRT
-         lpE0w9xNxeEk5pex1CVU5Al4+AiRPUmO98DeC9Ff1JFIDa8YQvz0wryVgLkBBjfEwlKB
-         9M04ed+n7wfUCRcrSiR8vqixFjct6bPRxRv6epYNClqm+xogu/vxMsNZ3muQ+BQFskpM
-         SLkdg7/qBNHRJIhAJT3bXNgkzDU+9CAgnB9lj2+ccoBTkgquByQVhPriOCwi2oYi2qdP
-         Poiw==
-X-Gm-Message-State: APjAAAXhDNuBeqhv1OUgXd+1hmYjOK2En7hLPY2LR1PgpzKlxQnzWlae
-        1IT1kVXCpajjb/8yrN62GsM83u+fZccRc2tT0AhGyg==
-X-Google-Smtp-Source: APXvYqymqB5TqQR1jEIKQdvhU6+g/gQUeuhg7Wx4i4yDpD6JXZCAkkKsc3l6eWETvdrvN+KyCLd1363joP/UoRND9Pw=
-X-Received: by 2002:a05:6602:22cd:: with SMTP id e13mr15272247ioe.251.1580259505025;
- Tue, 28 Jan 2020 16:58:25 -0800 (PST)
+        id S1726411AbgA2CJF convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Tue, 28 Jan 2020 21:09:05 -0500
+Received: from youngberry.canonical.com ([91.189.89.112]:41895 "EHLO
+        youngberry.canonical.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726363AbgA2CJF (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 28 Jan 2020 21:09:05 -0500
+Received: from c-67-160-6-8.hsd1.wa.comcast.net ([67.160.6.8] helo=famine.localdomain)
+        by youngberry.canonical.com with esmtpsa (TLS1.2:ECDHE_RSA_AES_128_GCM_SHA256:128)
+        (Exim 4.86_2)
+        (envelope-from <jay.vosburgh@canonical.com>)
+        id 1iwcmp-0002wQ-DY; Wed, 29 Jan 2020 02:08:59 +0000
+Received: by famine.localdomain (Postfix, from userid 1000)
+        id 6D94E67BB3; Tue, 28 Jan 2020 18:08:57 -0800 (PST)
+Received: from famine (localhost [127.0.0.1])
+        by famine.localdomain (Postfix) with ESMTP id 65AC4AC1CC;
+        Tue, 28 Jan 2020 18:08:57 -0800 (PST)
+From:   Jay Vosburgh <jay.vosburgh@canonical.com>
+To:     Maor Gottlieb <maorg@mellanox.com>
+cc:     vfalico@gmail.com, andy@greyhouse.net, jiri@mellanox.com,
+        davem@davemloft.net, netdev@vger.kernel.org, saeedm@mellanox.com,
+        jgg@mellanox.com, leonro@mellanox.com, alexr@mellanox.com,
+        markz@mellanox.com, parav@mellanox.com, eranbe@mellanox.com,
+        linux-rdma@vger.kernel.org
+Subject: Re: [RFC PATCH 4/4] bonding: Implement ndo_xmit_slave_get
+In-reply-to: <20200126132126.9981-5-maorg@mellanox.com>
+References: <20200126132126.9981-1-maorg@mellanox.com> <20200126132126.9981-5-maorg@mellanox.com>
+Comments: In-reply-to Maor Gottlieb <maorg@mellanox.com>
+   message dated "Sun, 26 Jan 2020 15:21:26 +0200."
+X-Mailer: MH-E 8.6+git; nmh 1.6; GNU Emacs 27.0.50
 MIME-Version: 1.0
-References: <20200128221457.12467-1-linux@roeck-us.net> <CAD=FV=Wg2MZ56fsCk+TvRSSeZVz5eM4cwugK=HN6imm5wfGgiw@mail.gmail.com>
- <20200129000551.GA17256@roeck-us.net>
-In-Reply-To: <20200129000551.GA17256@roeck-us.net>
-From:   Franky Lin <franky.lin@broadcom.com>
-Date:   Tue, 28 Jan 2020 16:57:59 -0800
-Message-ID: <CA+8PC_f=qCUjihwbjd3vtGaNkG-=R1qm83oS7AmgtLTy6EgjyQ@mail.gmail.com>
-Subject: Re: [PATCH] brcmfmac: abort and release host after error
-To:     Guenter Roeck <linux@roeck-us.net>
-Cc:     Doug Anderson <dianders@chromium.org>,
-        Kalle Valo <kvalo@codeaurora.org>,
-        Arend van Spriel <arend.vanspriel@broadcom.com>,
-        Hante Meuleman <hante.meuleman@broadcom.com>,
-        Chi-Hsien Lin <chi-hsien.lin@cypress.com>,
-        Dan Carpenter <dan.carpenter@oracle.com>,
-        linux-wireless <linux-wireless@vger.kernel.org>,
-        "open list:BROADCOM BRCM80211 IEEE802.11n WIRELESS DRIVER" 
-        <brcm80211-dev-list.pdl@broadcom.com>,
-        brcm80211-dev-list <brcm80211-dev-list@cypress.com>,
-        netdev <netdev@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Matthias Kaehlcke <mka@chromium.org>,
-        Brian Norris <briannorris@chromium.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset="us-ascii"
+Content-ID: <708.1580263737.1@famine>
+Content-Transfer-Encoding: 8BIT
+Date:   Tue, 28 Jan 2020 18:08:57 -0800
+Message-ID: <709.1580263737@famine>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Jan 28, 2020 at 4:05 PM Guenter Roeck <linux@roeck-us.net> wrote:
+Maor Gottlieb <maorg@mellanox.com> wrote:
+
+>Add implementation of ndo_xmit_slave_get.
+>When user set the LAG_FLAGS_HASH_ALL_SLAVES bit and the xmit slave
+>result is based on the hash, then the slave will be selected from the
+>array of all the slaves.
 >
-> On Tue, Jan 28, 2020 at 03:14:45PM -0800, Doug Anderson wrote:
-> > Hi,
-> >
-> > On Tue, Jan 28, 2020 at 2:15 PM Guenter Roeck <linux@roeck-us.net> wrote:
-> > >
-> > > With commit 216b44000ada ("brcmfmac: Fix use after free in
-> > > brcmf_sdio_readframes()") applied, we see locking timeouts in
-> > > brcmf_sdio_watchdog_thread().
-> > >
-> > > brcmfmac: brcmf_escan_timeout: timer expired
-> > > INFO: task brcmf_wdog/mmc1:621 blocked for more than 120 seconds.
-> > > Not tainted 4.19.94-07984-g24ff99a0f713 #1
-> > > "echo 0 > /proc/sys/kernel/hung_task_timeout_secs" disables this message.
-> > > brcmf_wdog/mmc1 D    0   621      2 0x00000000 last_sleep: 2440793077.  last_runnable: 2440766827
-> > > [<c0aa1e60>] (__schedule) from [<c0aa2100>] (schedule+0x98/0xc4)
-> > > [<c0aa2100>] (schedule) from [<c0853830>] (__mmc_claim_host+0x154/0x274)
-> > > [<c0853830>] (__mmc_claim_host) from [<bf10c5b8>] (brcmf_sdio_watchdog_thread+0x1b0/0x1f8 [brcmfmac])
-> > > [<bf10c5b8>] (brcmf_sdio_watchdog_thread [brcmfmac]) from [<c02570b8>] (kthread+0x178/0x180)
-> > >
-> > > In addition to restarting or exiting the loop, it is also necessary to
-> > > abort the command and to release the host.
-> > >
-> > > Fixes: 216b44000ada ("brcmfmac: Fix use after free in brcmf_sdio_readframes()")
-> > > Cc: Dan Carpenter <dan.carpenter@oracle.com>
-> > > Cc: Matthias Kaehlcke <mka@chromium.org>
-> > > Cc: Brian Norris <briannorris@chromium.org>
-> > > Cc: Douglas Anderson <dianders@chromium.org>
-> > > Signed-off-by: Guenter Roeck <linux@roeck-us.net>
-> > > ---
-> > >  drivers/net/wireless/broadcom/brcm80211/brcmfmac/sdio.c | 2 ++
-> > >  1 file changed, 2 insertions(+)
-> > >
-> > > diff --git a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/sdio.c b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/sdio.c
-> > > index f9df95bc7fa1..2e1c23c7269d 100644
-> > > --- a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/sdio.c
-> > > +++ b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/sdio.c
-> > > @@ -1938,6 +1938,8 @@ static uint brcmf_sdio_readframes(struct brcmf_sdio *bus, uint maxframes)
-> > >                         if (brcmf_sdio_hdparse(bus, bus->rxhdr, &rd_new,
-> > >                                                BRCMF_SDIO_FT_NORMAL)) {
-> > >                                 rd->len = 0;
-> > > +                               brcmf_sdio_rxfail(bus, true, true);
-> > > +                               sdio_release_host(bus->sdiodev->func1);
-> >
-> > I don't know much about this driver so I don't personally know if
-> > "true, true" is the correct thing to pass to brcmf_sdio_rxfail(), but
-> > it seems plausible.  Definitely the fix to call sdio_release_host() is
-> > sane.
-> >
-> > Thus, unless someone knows for sure that brcmf_sdio_rxfail()'s
-> > parameters should be different:
-> >
-> Actually, looking at brcmf_sdio_hdparse() and its other callers,
-> I think it may not be needed at all - other callers don't do it, and
-> there already are some calls to brcmf_sdio_rxfail() in that function.
-> It would be nice though to get a confirmation before I submit v2.
+>Signed-off-by: Maor Gottlieb <maorg@mellanox.com>
+>---
+> drivers/net/bonding/bond_main.c | 63 ++++++++++++++++++++++++++++++---
+> include/net/bonding.h           |  1 +
+> 2 files changed, 60 insertions(+), 4 deletions(-)
+>
+>diff --git a/drivers/net/bonding/bond_main.c b/drivers/net/bonding/bond_main.c
+>index adab1e3549ff..c8f440d1b624 100644
+>--- a/drivers/net/bonding/bond_main.c
+>+++ b/drivers/net/bonding/bond_main.c
+>@@ -4098,7 +4098,8 @@ static void bond_skip_slave(struct bond_up_slave *slaves,
+>  */
+> int bond_update_slave_arr(struct bonding *bond, struct slave *skipslave)
+> {
+>-	struct bond_up_slave *active_slaves, *old_active_slaves;
+>+	struct bond_up_slave *active_slaves = NULL, *all_slaves = NULL;
+>+	struct bond_up_slave *old_active_slaves, *old_all_slaves;
+> 	struct slave *slave;
+> 	struct list_head *iter;
+> 	int agg_id = 0;
+>@@ -4110,7 +4111,9 @@ int bond_update_slave_arr(struct bonding *bond, struct slave *skipslave)
+> 
+> 	active_slaves = kzalloc(struct_size(active_slaves, arr,
+> 					    bond->slave_cnt), GFP_KERNEL);
+>-	if (!active_slaves) {
+>+	all_slaves = kzalloc(struct_size(all_slaves, arr,
+>+					 bond->slave_cnt), GFP_KERNEL);
+>+	if (!active_slaves || !all_slaves) {
+> 		ret = -ENOMEM;
+> 		pr_err("Failed to build slave-array.\n");
+> 		goto out;
+>@@ -4141,14 +4144,17 @@ int bond_update_slave_arr(struct bonding *bond, struct slave *skipslave)
+> 			if (!agg || agg->aggregator_identifier != agg_id)
+> 				continue;
+> 		}
+>-		if (!bond_slave_can_tx(slave))
+>+		if (!bond_slave_can_tx(slave)) {
+>+			all_slaves->arr[all_slaves->count++] = slave;
+> 			continue;
+>+		}
+> 		if (skipslave == slave)
+> 			continue;
+> 
+> 		slave_dbg(bond->dev, slave->dev, "Adding slave to tx hash array[%d]\n",
+> 			  active_slaves->count);
+> 
+>+		all_slaves->arr[all_slaves->count++] = slave;
+> 		active_slaves->arr[active_slaves->count++] = slave;
+> 	}
+> 
+>@@ -4156,10 +4162,18 @@ int bond_update_slave_arr(struct bonding *bond, struct slave *skipslave)
+> 	rcu_assign_pointer(bond->active_slaves, active_slaves);
+> 	if (old_active_slaves)
+> 		kfree_rcu(old_active_slaves, rcu);
+>+
+>+	old_all_slaves = rtnl_dereference(bond->all_slaves);
+>+	rcu_assign_pointer(bond->all_slaves, all_slaves);
+>+	if (old_all_slaves)
+>+		kfree_rcu(old_all_slaves, rcu);
+> out:
+>-	if (ret != 0 && skipslave)
+>+	if (ret != 0 && skipslave) {
+> 		bond_skip_slave(rtnl_dereference(bond->active_slaves),
+> 				skipslave);
+>+		kfree(all_slaves);
+>+		kfree(active_slaves);
+>+	}
 
-I think invoking rxfail with both abort and NACK set to true is the
-right thing to do here so that the pipeline can be properly purged.
+	I'm still going through the patch set, but noticed this right
+away: the above will leak memory if !skipslave and the allocation for
+active_slaves succeeds, but the allocation for all_slaves fails.
+> 
+> 	return ret;
+> }
+>@@ -4265,6 +4279,46 @@ static u16 bond_select_queue(struct net_device *dev, struct sk_buff *skb,
+> 	return txq;
+> }
+> 
+>+static struct net_device *bond_xmit_slave_get(struct net_device *master_dev,
+>+					      struct sk_buff *skb,
+>+					      int flags)
+>+{
+>+	struct bonding *bond = netdev_priv(master_dev);
+>+	struct bond_up_slave *slaves;
+>+	struct slave *slave;
+>+
+>+	switch (BOND_MODE(bond)) {
+>+	case BOND_MODE_ROUNDROBIN:
+>+		slave = bond_xmit_roundrobin_slave_get(bond, skb);
+>+		break;
+>+	case BOND_MODE_ACTIVEBACKUP:
+>+		slave = bond_xmit_activebackup_slave_get(bond, skb);
+>+		break;
+>+	case BOND_MODE_8023AD:
+>+	case BOND_MODE_XOR:
+>+		if (flags & LAG_FLAGS_HASH_ALL_SLAVES)
+>+			slaves = rcu_dereference(bond->all_slaves);
+>+		else
+>+			slaves = rcu_dereference(bond->active_slaves);
+>+		slave = bond_xmit_3ad_xor_slave_get(bond, skb, slaves);
+>+		break;
+>+	case BOND_MODE_BROADCAST:
+>+		return ERR_PTR(-EOPNOTSUPP);
+>+	case BOND_MODE_ALB:
+>+		slave = bond_xmit_alb_slave_get(bond, skb);
+>+		break;
+>+	case BOND_MODE_TLB:
+>+		slave = bond_xmit_tlb_slave_get(bond, skb);
+>+		break;
+>+	default:
+>+		return NULL;
 
-Thanks!
+	I would argue this should (a) return an error (not NULL), and,
+(b) ideally issue a netdev_err for this impossible situation, similar to
+the other switch statements in bonding.
 
-Acked-by: franky.lin@broadcom.com
+	-J
+	
+>+	}
+>+
+>+	if (slave)
+>+		return slave->dev;
+>+	return NULL;
+>+}
+>+
+> static netdev_tx_t __bond_start_xmit(struct sk_buff *skb, struct net_device *dev)
+> {
+> 	struct bonding *bond = netdev_priv(dev);
+>@@ -4387,6 +4441,7 @@ static const struct net_device_ops bond_netdev_ops = {
+> 	.ndo_del_slave		= bond_release,
+> 	.ndo_fix_features	= bond_fix_features,
+> 	.ndo_features_check	= passthru_features_check,
+>+	.ndo_xmit_slave_get	= bond_xmit_slave_get,
+> };
+> 
+> static const struct device_type bond_type = {
+>diff --git a/include/net/bonding.h b/include/net/bonding.h
+>index b77daffc1b52..6dd970eb9d3f 100644
+>--- a/include/net/bonding.h
+>+++ b/include/net/bonding.h
+>@@ -201,6 +201,7 @@ struct bonding {
+> 	struct   slave __rcu *current_arp_slave;
+> 	struct   slave __rcu *primary_slave;
+> 	struct   bond_up_slave __rcu *active_slaves; /* Array of usable slaves */
+>+	struct   bond_up_slave __rcu *all_slaves; /* Array of all slaves */
+> 	bool     force_primary;
+> 	s32      slave_cnt; /* never change this value outside the attach/detach wrappers */
+> 	int     (*recv_probe)(const struct sk_buff *, struct bonding *,
+>-- 
+>2.17.2
+>
+
+---
+	-Jay Vosburgh, jay.vosburgh@canonical.com
