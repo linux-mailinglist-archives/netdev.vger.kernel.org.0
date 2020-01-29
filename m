@@ -2,114 +2,97 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id C93DF14D2B6
-	for <lists+netdev@lfdr.de>; Wed, 29 Jan 2020 22:48:11 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 59EB314D2D0
+	for <lists+netdev@lfdr.de>; Wed, 29 Jan 2020 23:03:00 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726617AbgA2VsK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 29 Jan 2020 16:48:10 -0500
-Received: from metis.ext.pengutronix.de ([85.220.165.71]:53395 "EHLO
-        metis.ext.pengutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726222AbgA2VsJ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 29 Jan 2020 16:48:09 -0500
-Received: from ptx.hi.pengutronix.de ([2001:67c:670:100:1d::c0])
-        by metis.ext.pengutronix.de with esmtps (TLS1.2:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <mgr@pengutronix.de>)
-        id 1iwvBv-0002C0-L5; Wed, 29 Jan 2020 22:48:07 +0100
-Received: from mgr by ptx.hi.pengutronix.de with local (Exim 4.89)
-        (envelope-from <mgr@pengutronix.de>)
-        id 1iwvBt-0006r3-3p; Wed, 29 Jan 2020 22:48:05 +0100
-Date:   Wed, 29 Jan 2020 22:48:05 +0100
-From:   Michael Grzeschik <mgr@pengutronix.de>
-To:     Andrew Lunn <andrew@lunn.ch>
-Cc:     f.fainelli@gmail.com, netdev@vger.kernel.org, davem@davemloft.net,
-        kernel@pengutronix.de
-Subject: Re: [PATCH] mdio-bitbang: add support for lowlevel mdio read/write
-Message-ID: <20200129214805.l4djnzrzpk7inkvk@pengutronix.de>
-References: <20191107154201.GF7344@lunn.ch>
- <20191218162919.5293-1-m.grzeschik@pengutronix.de>
- <20191221164110.GL30801@lunn.ch>
- <20200129154201.oaxjbqkkyifvf5gg@pengutronix.de>
- <20200129155346.GG12180@lunn.ch>
+        id S1726648AbgA2WC4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 29 Jan 2020 17:02:56 -0500
+Received: from bombadil.infradead.org ([198.137.202.133]:41362 "EHLO
+        bombadil.infradead.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726283AbgA2WCz (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 29 Jan 2020 17:02:55 -0500
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=bombadil.20170209; h=Content-Transfer-Encoding:
+        Content-Type:In-Reply-To:MIME-Version:Date:Message-ID:From:References:Cc:To:
+        Subject:Sender:Reply-To:Content-ID:Content-Description:Resent-Date:
+        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
+        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+         bh=Fop62bTazPLo+WGNB+BfCgO9zchmyRpUfYX/ot3XXHk=; b=WEB96WDwGvjGlZ1G/woW/8P3L
+        7eraE+Yqe8ItWLr3zttniO9D1gPV7Y5hdupA0mtJtuJ6QmjriI9pKK7ogBjzXJkkv8Rll+Kopg8Bk
+        vnudFQN+wGCWsF2ptNGDPdxb2O3BM6RIoTBvvVAtPM36CNz6nnyAf46o3dOI7Y/zw2Y6auq1gFeIC
+        ezIuDIKKUrcxVy3LOWtD3f895LvLYBQblxIT8Txgb+2qnmo9gGCyt1cWtmKRUE4TWrAYW424TIqEL
+        g03kbDKjM/82JSW0ejGd8tXDFqeFN4gALcs6JuZ6DcueQ9hXtZFmAIzNai8SoU9/SBK7LTD+tvzmN
+        rCKDtDEoA==;
+Received: from [2601:1c0:6280:3f0:897c:6038:c71d:ecac]
+        by bombadil.infradead.org with esmtpsa (Exim 4.92.3 #3 (Red Hat Linux))
+        id 1iwvQE-0006zY-Ja; Wed, 29 Jan 2020 22:02:55 +0000
+Subject: Re: [PATCH] MAINTAINERS: mptcp@ mailing list is moderated
+To:     Mat Martineau <mathew.j.martineau@linux.intel.com>
+Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        David Miller <davem@davemloft.net>,
+        Matthieu Baerts <matthieu.baerts@tessares.net>,
+        mptcp@lists.01.org, LKML <linux-kernel@vger.kernel.org>
+References: <0d3e4e6f-5437-ae85-f1f5-89971ea3423f@infradead.org>
+ <alpine.OSX.2.21.2001290857310.9282@cmossx-mobl1.amr.corp.intel.com>
+From:   Randy Dunlap <rdunlap@infradead.org>
+Message-ID: <4112784b-a70b-8e4a-4110-9898e0626306@infradead.org>
+Date:   Wed, 29 Jan 2020 14:02:52 -0800
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.4.1
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha256;
-        protocol="application/pgp-signature"; boundary="lj3mvo2wyac5j44g"
-Content-Disposition: inline
-In-Reply-To: <20200129155346.GG12180@lunn.ch>
-X-Sent-From: Pengutronix Hildesheim
-X-URL:  http://www.pengutronix.de/
-X-IRC:  #ptxdist @freenode
-X-Accept-Language: de,en
-X-Accept-Content-Type: text/plain
-X-Uptime: 22:42:48 up 206 days,  3:52, 89 users,  load average: 0.35, 0.25,
- 0.20
-User-Agent: NeoMutt/20170113 (1.7.2)
-X-SA-Exim-Connect-IP: 2001:67c:670:100:1d::c0
-X-SA-Exim-Mail-From: mgr@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: netdev@vger.kernel.org
+In-Reply-To: <alpine.OSX.2.21.2001290857310.9282@cmossx-mobl1.amr.corp.intel.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On 1/29/20 9:09 AM, Mat Martineau wrote:
+> 
+> On Tue, 28 Jan 2020, Randy Dunlap wrote:
+> 
+>> From: Randy Dunlap <rdunlap@infradead.org>
+>>
+>> Note that mptcp@lists.01.org is moderated, like we note for
+>> other mailing lists.
+> 
+> Hi Randy -
+> 
+> The mptcp@lists.01.org list is not moderated, but there's a server-wide default rule that holds messages with 10 or more recipients for any sender (list member or not). I've turned off those server-wide defaults for this list so it shouldn't be a problem in the future.
 
---lj3mvo2wyac5j44g
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+OK, thanks for the clarification & revert...
 
-On Wed, Jan 29, 2020 at 04:53:46PM +0100, Andrew Lunn wrote:
-> On Wed, Jan 29, 2020 at 04:42:01PM +0100, Michael Grzeschik wrote:
-> > Hi Andrew!
-> >=20
-> > I tested your patch. But it works only partially. For the case that
-> > the upper driver is directly communicating in SMI mode with the phy,
-> > this works fine. But the regular MDIO connection does not work anymore
-> > afterwards.
-> >=20
-> > The normals MDIO communication still needs to work, as mdio-gpio is
-> > calling of_mdiobus_register that on the other end calls get_phy_device
-> > and tries to communicate via regular MDIO to the device.
->=20
-> Do you mean you have a mix of devices on the bus, some standards
-> comformant, and others using this hacked up SMI0 mode?
+> Thank you for your report on the build errors.
+> 
+> 
+> Mat
+> 
+> 
+>>
+>> Signed-off-by: Randy Dunlap <rdunlap@infradead.org>
+>> Cc: Mat Martineau <mathew.j.martineau@linux.intel.com>
+>> Cc: Matthieu Baerts <matthieu.baerts@tessares.net>
+>> Cc: netdev@vger.kernel.org
+>> Cc: mptcp@lists.01.org
+>> ---
+>> MAINTAINERS |    2 +-
+>> 1 file changed, 1 insertion(+), 1 deletion(-)
+>>
+>> --- mmotm-2020-0128-2005.orig/MAINTAINERS
+>> +++ mmotm-2020-0128-2005/MAINTAINERS
+>> @@ -11718,7 +11718,7 @@ NETWORKING [MPTCP]
+>> M:    Mat Martineau <mathew.j.martineau@linux.intel.com>
+>> M:    Matthieu Baerts <matthieu.baerts@tessares.net>
+>> L:    netdev@vger.kernel.org
+>> -L:    mptcp@lists.01.org
+>> +L:    mptcp@lists.01.org (moderated for non-subscribers)
+>> W:    https://github.com/multipath-tcp/mptcp_net-next/wiki
+>> B:    https://github.com/multipath-tcp/mptcp_net-next/issues
+>> S:    Maintained
 
-Actually it is the same device used in both modes. The SMI0
-mode is used by the switch driver to address the extended switch
-functions. But on the same bus we have the fec connected to
-the cpu bound fixed-phy (microchip,ks8863) via MDIO.
 
-> You need to specify per device if SMI0 should be used?
+-- 
+~Randy
 
-Yes, we have to use the same bus fot both modes SMI0 and MDIO.
-
- Michael
-
---=20
-Pengutronix e.K.                           |                             |
-Steuerwalder Str. 21                       | http://www.pengutronix.de/  |
-31137 Hildesheim, Germany                  | Phone: +49-5121-206917-0    |
-Amtsgericht Hildesheim, HRA 2686           | Fax:   +49-5121-206917-5555 |
-
---lj3mvo2wyac5j44g
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQIzBAABCAAdFiEElXvEUs6VPX6mDPT8C+njFXoeLGQFAl4x/ZEACgkQC+njFXoe
-LGTaJg//SPMBAgzFT76dvhEaaSs+KKmIzRgOVoBkYwE1ohnemSB3nuRyOn1xT8YB
-/Mtc60Do0s3JZE8/Yg9Ba0dgC+OXodmOE2kmTBbJ0X/3lZWDaxA+6SE503PjpDIp
-p6O2RM8WhOEjYvWeadyw3MDSTZRzJHVo6b5ocO7aEtrrzDIsSZA48qy6VX4Pjtgy
-hbfXJHMK1+5rTPkpuL6K1N/pWeBxXd2iqzKI+LXFeFegTHzl2nyhRfUkQ98tXOrb
-tqzqQ7OHB7NAFA54WD5J9TorY3GbBUP0OcolGO5RteFK8Z4Y7LrTW/ko6w9YGyeY
-JfPbDDmjZcD1D1dztXSo97+d/U4JuOgha/bAIztN2m55SZM7vGZeHrCfPoDNX8kw
-hdMS9NVv2sdEAI1G7Gdkrwh/H+Rx+ffbwYGqH/b7YqOfckBigU8rIn/5LcsZwC5T
-WFw+pooA2UiuXE1m3q1/CbSJ7d4IjFRah2e/bQMj3ZVtQLLn2qrZMK5xvgi1TYDj
-hO2le2UvhYruV2ztqpJ7yhKT7+q2NmkV2uZ62tQHBd6zBsT52InHteBnzDdTFQVs
-28NnZImBfioTABF0S/EZg9Gd6zFvrBWYMg4rfX4X5jyqwxavUkp1GXQb7/EUroNd
-e0bxgZV5cGLoyGhQ8Mo0LPoDvkJjIBur8sEyI8b9wiDh7kO3xmM=
-=nwnv
------END PGP SIGNATURE-----
-
---lj3mvo2wyac5j44g--
