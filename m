@@ -2,136 +2,173 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 0691A14C7D4
-	for <lists+netdev@lfdr.de>; Wed, 29 Jan 2020 10:09:51 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E745F14C807
+	for <lists+netdev@lfdr.de>; Wed, 29 Jan 2020 10:26:27 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726059AbgA2JJt (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 29 Jan 2020 04:09:49 -0500
-Received: from mail-eopbgr60070.outbound.protection.outlook.com ([40.107.6.70]:35584
-        "EHLO EUR04-DB3-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1725899AbgA2JJs (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 29 Jan 2020 04:09:48 -0500
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=cXG2nIUIKgK35w6sW9+i9n7QaQ/F1jMoGcof+mddHgiOBK39/TORveUCsq53/57dN5bGiPhgtFH8AYJoCmXUS6Lcivx+TGlOddSchWVGghT9FeYOTA3mcX2X/81hS5FsHLaNbeCHoWbIWK67dqg9QFfyh/c2RKZPRTxhd3u8muzCo5FZgXojRHaVH0GWrAl07mIfX32WvaqMV3LVi2jEGEQjNcoG8ALFB2i5OIz58UJuPqJs/WtqGO7JGYfudSlwXBz4zjak9OEivn2nH/OfLYS+pxL7WNI19VZJWlQoGEVhoGiZQbkVcJm7ksTvS51anVQ5do44/CtCNJWIQyJ0Vg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=vATnlmz3y9BrMQW42U7BEEIRTROKLuSlprNmnHDWHag=;
- b=UobMTfnbFvS0W0xbb8T5D51yP2UnXguZJbDLtmrxZodVtz+MOoTYjyCwfA8zAPGmSGJfcq8aX5NtlORr9iyU7IGiaoElkPwJFCnher2c/+kvI8+x1+fOz78LQx32hz0pL5EXU3vf9d+kT5pTCMBGChKZc5wNIVYp+iLW064csnJZe4yOapcPyo5rPcuWz+bImyApPqeYdxSdJwowtrzUnVlf4QkbXomJIeDMEO0NhuZdAftYD2RCOmm/h7bBQLCqDJAG7aciADcv+Mb71L3jM0RNkPSUgS//ecfYsvRPBCUrsdkceMkZVzrNiy/rJV2hvjEvhIUomHFLkibori0F0w==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=oss.nxp.com; dmarc=pass action=none header.from=oss.nxp.com;
- dkim=pass header.d=oss.nxp.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=NXP1.onmicrosoft.com;
- s=selector2-NXP1-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=vATnlmz3y9BrMQW42U7BEEIRTROKLuSlprNmnHDWHag=;
- b=cw/Vlg3HSwRAnnR/iSDzp/1WvuTLbjOaQu70IgHC3QMYKI+mzGacb4j7ThA9sBwLDXV+yCBk6JbN7YUcO57wTL2WCGiJDqX5O9RlIJpzjqliRvBwVjQr2jFHrIy4FCx0+oQx68h1eZx/fq4yxXQlgLioX1/svrmQG9ZxOi/umi4=
-Received: from DB8PR04MB6985.eurprd04.prod.outlook.com (52.133.243.85) by
- DB8PR04MB6731.eurprd04.prod.outlook.com (20.179.248.219) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.2665.24; Wed, 29 Jan 2020 09:09:44 +0000
-Received: from DB8PR04MB6985.eurprd04.prod.outlook.com
- ([fe80::c181:4a83:14f2:27e3]) by DB8PR04MB6985.eurprd04.prod.outlook.com
- ([fe80::c181:4a83:14f2:27e3%6]) with mapi id 15.20.2665.027; Wed, 29 Jan 2020
- 09:09:44 +0000
-From:   "Madalin Bucur (OSS)" <madalin.bucur@oss.nxp.com>
-To:     Vladimir Oltean <olteanv@gmail.com>, Andrew Lunn <andrew@lunn.ch>
-CC:     "Madalin Bucur (OSS)" <madalin.bucur@oss.nxp.com>,
+        id S1726528AbgA2J0Z (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 29 Jan 2020 04:26:25 -0500
+Received: from mx0b-001b2d01.pphosted.com ([148.163.158.5]:64584 "EHLO
+        mx0a-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1726036AbgA2J0Y (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 29 Jan 2020 04:26:24 -0500
+Received: from pps.filterd (m0098421.ppops.net [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 00T9ABtv000646
+        for <netdev@vger.kernel.org>; Wed, 29 Jan 2020 04:26:22 -0500
+Received: from e06smtp03.uk.ibm.com (e06smtp03.uk.ibm.com [195.75.94.99])
+        by mx0a-001b2d01.pphosted.com with ESMTP id 2xttntecp0-1
+        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=NOT)
+        for <netdev@vger.kernel.org>; Wed, 29 Jan 2020 04:26:22 -0500
+Received: from localhost
+        by e06smtp03.uk.ibm.com with IBM ESMTP SMTP Gateway: Authorized Use Only! Violators will be prosecuted
+        for <netdev@vger.kernel.org> from <ubraun@linux.ibm.com>;
+        Wed, 29 Jan 2020 09:26:19 -0000
+Received: from b06cxnps4074.portsmouth.uk.ibm.com (9.149.109.196)
+        by e06smtp03.uk.ibm.com (192.168.101.133) with IBM ESMTP SMTP Gateway: Authorized Use Only! Violators will be prosecuted;
+        (version=TLSv1/SSLv3 cipher=AES256-GCM-SHA384 bits=256/256)
+        Wed, 29 Jan 2020 09:26:10 -0000
+Received: from d06av21.portsmouth.uk.ibm.com (d06av21.portsmouth.uk.ibm.com [9.149.105.232])
+        by b06cxnps4074.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 00T9Q94X54919184
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Wed, 29 Jan 2020 09:26:09 GMT
+Received: from d06av21.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 25FA05204E;
+        Wed, 29 Jan 2020 09:26:09 +0000 (GMT)
+Received: from oc5311105230.ibm.com (unknown [9.152.224.222])
+        by d06av21.portsmouth.uk.ibm.com (Postfix) with ESMTP id 14F875204F;
+        Wed, 29 Jan 2020 09:26:08 +0000 (GMT)
+Subject: Re: [kernel-hardening] [PATCH 09/38] usercopy: Mark kmalloc caches as
+ usercopy caches
+To:     Kees Cook <keescook@chromium.org>,
+        Christian Borntraeger <borntraeger@de.ibm.com>
+Cc:     Jiri Slaby <jslaby@suse.cz>, Julian Wiedmann <jwi@linux.ibm.com>,
+        Alexander Viro <viro@zeniv.linux.org.uk>,
+        linux-kernel@vger.kernel.org, David Windsor <dave@nullcore.net>,
+        Pekka Enberg <penberg@kernel.org>,
+        David Rientjes <rientjes@google.com>,
+        Joonsoo Kim <iamjoonsoo.kim@lge.com>,
+        Andrew Morton <akpm@linux-foundation.org>, linux-mm@kvack.org,
+        linux-xfs@vger.kernel.org,
+        Linus Torvalds <torvalds@linux-foundation.org>,
+        Andy Lutomirski <luto@kernel.org>,
+        Christoph Hellwig <hch@infradead.org>,
+        Christoph Lameter <cl@linux.com>,
         "David S. Miller" <davem@davemloft.net>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        netdev <netdev@vger.kernel.org>,
-        "ykaukab@suse.de" <ykaukab@suse.de>
-Subject: RE: [PATCH v2 2/2] dpaa_eth: support all modes with rate adapting
- PHYs
-Thread-Topic: [PATCH v2 2/2] dpaa_eth: support all modes with rate adapting
- PHYs
-Thread-Index: AQHV1SOT4TVxn3QCwU2UHzdlmVFpwqf+o0+AgAAJP4CAAYv9gIABC37w
-Date:   Wed, 29 Jan 2020 09:09:44 +0000
-Message-ID: <DB8PR04MB698504E07E288BB5BD79BD38EC050@DB8PR04MB6985.eurprd04.prod.outlook.com>
-References: <1580137671-22081-1-git-send-email-madalin.bucur@oss.nxp.com>
- <1580137671-22081-3-git-send-email-madalin.bucur@oss.nxp.com>
- <CA+h21hqzR72v9=dWGk1zBptNHNst+kajh6SHHSUMp02fAq5m5g@mail.gmail.com>
- <20200127160413.GI13647@lunn.ch>
- <CA+h21hoZVDFANhzP5BOkZ+HxLMg9=pcdmLbaavg-1CpDEq=CHg@mail.gmail.com>
-In-Reply-To: <CA+h21hoZVDFANhzP5BOkZ+HxLMg9=pcdmLbaavg-1CpDEq=CHg@mail.gmail.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-authentication-results: spf=none (sender IP is )
- smtp.mailfrom=madalin.bucur@oss.nxp.com; 
-x-ms-exchange-messagesentrepresentingtype: 1
-x-originating-ip: [212.146.100.6]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-ht: Tenant
-x-ms-office365-filtering-correlation-id: 11da133e-458a-4b90-5966-08d7a49afb74
-x-ms-traffictypediagnostic: DB8PR04MB6731:|DB8PR04MB6731:
-x-ms-exchange-sharedmailbox-routingagent-processed: True
-x-ms-exchange-transport-forked: True
-x-microsoft-antispam-prvs: <DB8PR04MB67316D46C061214A1CB4A369AD050@DB8PR04MB6731.eurprd04.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:10000;
-x-forefront-prvs: 02973C87BC
-x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(4636009)(39860400002)(136003)(346002)(366004)(396003)(376002)(189003)(199004)(76116006)(66446008)(64756008)(66556008)(66946007)(66476007)(478600001)(33656002)(2906002)(53546011)(26005)(186003)(81166006)(4326008)(81156014)(6506007)(9686003)(8676002)(5660300002)(71200400001)(7696005)(8936002)(55016002)(110136005)(52536014)(54906003)(86362001)(316002);DIR:OUT;SFP:1101;SCL:1;SRVR:DB8PR04MB6731;H:DB8PR04MB6985.eurprd04.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;MX:1;A:0;
-received-spf: None (protection.outlook.com: oss.nxp.com does not designate
- permitted sender hosts)
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: HAfM4CET1ePmorj7VbL+A3KdVY3gySisyV8kOhPK48b5QfYwfvbNbqZPf+R4JxCtWQ0Aw3ymMpYxuuH64stT6Ih2A2AOdm/PkW9EQ3wfLymXmJ9dcDLdBKR3kDGjPCM83zNm4rAqwlT2R3whB1AQ7/vN60zvhHQ8Rx0oW1g3reLrzY5qT4+iW8zpgR4h4FmlFQVXQE7Pm/I0zupQFkqagYQUrSz5t3ytx13sTImzF7aWl4IvovjzSYn905N2wo/OuSfy7+0eemJPFHym/9B93Xe7fklNCECz1icvZ1HaV6ciFHm0HVaYwV7A2FOPdciUcS1byX/CdAJGfav06hJQWFVB1M8SAput8jYrKpMPHCobB3fmLZ76p47jVMR/HdLaI72/hPfnO2zhqfx7ymYh4PsW2v1BThbMIkcyFpD3v8GV9h+BaSKLIQoO9zUUJkXc
-x-ms-exchange-antispam-messagedata: zx41ea/eC3xuILl69nhcuUNlFLSSlSlJTIzOlob/DH1Ah+b+3WyKEk6xN61Q2puqq9FNBIR0PML8+XYAXYpJmHjEz4ROPvwNLxA1NJsEgbwyjFZgW4iKgLxbfG9v7q84EJdloGBlHmfO2enaupI0YQ==
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+        Laura Abbott <labbott@redhat.com>,
+        Mark Rutland <mark.rutland@arm.com>,
+        "Martin K. Petersen" <martin.petersen@oracle.com>,
+        Paolo Bonzini <pbonzini@redhat.com>,
+        Christoffer Dall <christoffer.dall@linaro.org>,
+        Dave Kleikamp <dave.kleikamp@oracle.com>,
+        Jan Kara <jack@suse.cz>,
+        Luis de Bethencourt <luisbg@kernel.org>,
+        Marc Zyngier <marc.zyngier@arm.com>,
+        Rik van Riel <riel@redhat.com>,
+        Matthew Garrett <mjg59@google.com>,
+        linux-fsdevel@vger.kernel.org, linux-arch@vger.kernel.org,
+        netdev@vger.kernel.org, kernel-hardening@lists.openwall.com,
+        Vlastimil Babka <vbabka@suse.cz>,
+        Michal Kubecek <mkubecek@suse.cz>
+References: <1515636190-24061-1-git-send-email-keescook@chromium.org>
+ <1515636190-24061-10-git-send-email-keescook@chromium.org>
+ <9519edb7-456a-a2fa-659e-3e5a1ff89466@suse.cz>
+ <201911121313.1097D6EE@keescook> <201911141327.4DE6510@keescook>
+ <bfca96db-bbd0-d958-7732-76e36c667c68@suse.cz>
+ <202001271519.AA6ADEACF0@keescook>
+ <5861936c-1fe1-4c44-d012-26efa0c8b6e7@de.ibm.com>
+ <202001281457.FA11CC313A@keescook>
+From:   Ursula Braun <ubraun@linux.ibm.com>
+Date:   Wed, 29 Jan 2020 10:26:07 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.3.0
 MIME-Version: 1.0
-X-OriginatorOrg: oss.nxp.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 11da133e-458a-4b90-5966-08d7a49afb74
-X-MS-Exchange-CrossTenant-originalarrivaltime: 29 Jan 2020 09:09:44.6122
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: ErO6cC/J4/lhjho40PBTn4U668X6owxrjEhVTYfap8VCbzA0nck+sqDQUOOTycVugAk62WfASHPIQ3mjQ6YIaA==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DB8PR04MB6731
+In-Reply-To: <202001281457.FA11CC313A@keescook>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-TM-AS-GCONF: 00
+x-cbid: 20012909-0012-0000-0000-00000381AD82
+X-IBM-AV-DETECTION: SAVI=unused REMOTE=unused XFE=unused
+x-cbparentid: 20012909-0013-0000-0000-000021BE0418
+Message-Id: <009da641-175c-4a50-d658-a40ac0ca7bc6@linux.ibm.com>
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.138,18.0.572
+ definitions=2020-01-29_01:2020-01-28,2020-01-29 signatures=0
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 mlxscore=0 malwarescore=0
+ spamscore=0 impostorscore=0 phishscore=0 bulkscore=0 suspectscore=0
+ adultscore=0 priorityscore=1501 mlxlogscore=999 lowpriorityscore=0
+ clxscore=1011 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-1911200001 definitions=main-2001290076
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-PiAtLS0tLU9yaWdpbmFsIE1lc3NhZ2UtLS0tLQ0KPiBGcm9tOiBWbGFkaW1pciBPbHRlYW4gPG9s
-dGVhbnZAZ21haWwuY29tPg0KPiBTZW50OiBUdWVzZGF5LCBKYW51YXJ5IDI4LCAyMDIwIDU6NDIg
-UE0NCj4gVG86IEFuZHJldyBMdW5uIDxhbmRyZXdAbHVubi5jaD4NCj4gQ2M6IE1hZGFsaW4gQnVj
-dXIgKE9TUykgPG1hZGFsaW4uYnVjdXJAb3NzLm54cC5jb20+OyBEYXZpZCBTLiBNaWxsZXINCj4g
-PGRhdmVtQGRhdmVtbG9mdC5uZXQ+OyBGbG9yaWFuIEZhaW5lbGxpIDxmLmZhaW5lbGxpQGdtYWls
-LmNvbT47IEhlaW5lcg0KPiBLYWxsd2VpdCA8aGthbGx3ZWl0MUBnbWFpbC5jb20+OyBuZXRkZXYg
-PG5ldGRldkB2Z2VyLmtlcm5lbC5vcmc+Ow0KPiB5a2F1a2FiQHN1c2UuZGUNCj4gU3ViamVjdDog
-UmU6IFtQQVRDSCB2MiAyLzJdIGRwYWFfZXRoOiBzdXBwb3J0IGFsbCBtb2RlcyB3aXRoIHJhdGUN
-Cj4gYWRhcHRpbmcgUEhZcw0KPiANCj4gSGkgQW5kcmV3LA0KPiANCj4gT24gTW9uLCAyNyBKYW4g
-MjAyMCBhdCAxODowNCwgQW5kcmV3IEx1bm4gPGFuZHJld0BsdW5uLmNoPiB3cm90ZToNCj4gPg0K
-PiA+ID4gSXMgdGhpcyBzdWZmaWNpZW50Pw0KPiA+ID4gSSBzdXBwb3NlIHRoaXMgd29ya3MgYmVj
-YXVzZSB5b3UgaGF2ZSBmbG93IGNvbnRyb2wgZW5hYmxlZCBieQ0KPiBkZWZhdWx0Pw0KPiA+ID4g
-V2hhdCB3b3VsZCBoYXBwZW4gaWYgdGhlIHVzZXIgd291bGQgZGlzYWJsZSBmbG93IGNvbnRyb2wg
-d2l0aA0KPiBldGh0b29sPw0KPiA+DQo+ID4gSXQgd2lsbCBzdGlsbCB3b3JrLiBOZXR3b3JrIHBy
-b3RvY29scyBleHBlY3QgcGFja2V0cyB0byBiZSBkcm9wcGVkLA0KPiA+IHRoZXJlIGFyZSBib3R0
-bGVuZWNrcyBvbiB0aGUgbmV0d29yaywgYW5kIHRob3NlIGJvdHRsZW5lY2tzIGNoYW5nZQ0KPiA+
-IGR5bmFtaWNhbGx5LiBUQ1Agd2lsbCBzdGlsbCBiZSBhYmxlIHRvIGRldGVybWluZSBob3cgbXVj
-aCB0cmFmZmljIGl0DQo+ID4gY2FuIHNlbmQgd2l0aG91dCB0b28gbXVjaCBwYWNrZXQgbG9zcywg
-aW5kZXBlbmRlbnQgb2YgaWYgdGhlDQo+ID4gYm90dGxlbmVjayBpcyBoZXJlIGJldHdlZW4gdGhl
-IE1BQyBhbmQgdGhlIFBIWSwgb3IgbGF0ZXIgd2hlbiBpdCBoaXRzDQo+ID4gYW4gUkZDIDExNDkg
-bGluay4NCj4gDQo+IEZvbGxvd2luZyB0aGlzIGxvZ2ljLCB0aGlzIHBhdGNoIGlzbid0IG5lZWRl
-ZCBhdCBhbGwsIHJpZ2h0PyBUaGUgUEhZDQo+IHdpbGwgZHJvcCBmcmFtZXMgdGhhdCBpdCBjYW4n
-dCBob2xkIGluIGl0cyBzbWFsbCBGSUZPcyB3aGVuIGFkYXB0aW5nIGENCj4gbGluayBzcGVlZCB0
-byBhbm90aGVyLCBhbmQgaGlnaGVyLWxldmVsIHByb3RvY29scyB3aWxsIGNvcGUuIEFuZCBmbG93
-DQo+IGNvbnRyb2wgYXQgbGFyZ2UgaXNuJ3QgbmVlZGVkLg0KDQpJJ20gYWZyYWlkIHlvdSBtaXNz
-ZWQgdGhlIHBhdGNoIGRlc2NyaXB0aW9uIHRoYXQgZXhwbGFpbnMgdGhlcmUgd2lsbCBiZQ0Kbm8g
-bGluayB3aXRoIGEgMUcgcGFydG5lciB3aXRob3V0IHRoaXMgY2hhbmdlOg0KDQo8PCBBZnRlciB0
-aGlzDQpjb21taXQsIHRoZSBtb2RlcyByZW1vdmVkIGJ5IHRoZSBkcGFhX2V0aCBkcml2ZXIgd2Vy
-ZSBubyBsb25nZXINCmFkdmVydGlzZWQgdGh1cyBhdXRvbmVnb3RpYXRpb24gd2l0aCAxRyBsaW5r
-IHBhcnRuZXJzIGZhaWxlZC4+Pg0KDQo+IFdoYXQgSSB3YXMgdHJ5aW5nIHRvIHNlZSBNYWRhbGlu
-J3Mgb3BpbmlvbiBvbiB3YXMgd2hldGhlciBpbiBmYWN0IHdlDQo+IHdhbnQgdG8ga2VlcCB0aGUg
-UlggZmxvdyBjb250cm9sIGFzICdmaXhlZCBvbicgaWYgdGhlIE1BQyBzdXBwb3J0cyBpdA0KPiBh
-bmQgdGhlIFBIWSBuZWVkcyBpdCwgX2FzIGEgZnVuY3Rpb24gb2YgdGhlIGN1cnJlbnQgcGh5X21v
-ZGUgYW5kIG1heWJlDQo+IGxpbmsgc3BlZWRfICh0aGUgdW5kZXJsaW5lZCBwYXJ0IGlzIGltcG9y
-dGFudCBJTU8pLg0KDQpUaGF0J3MgYSBzZXBhcmF0ZSBjb25jZXJuLCBieSBkZWZhdWx0IGFsbCBp
-cyBmaW5lLCBzaG91bGQgdGhlIHVzZXIgd2FudCB0bw0Kc2hvb3QgaGltc2VsZiBpbiB0aGUgZm9v
-dCwgd2UgbWF5IG5lZWQgdG8gYWxsb3cgaGltIHRvIGRvIGl0Lg0KDQo+ID4NCj4gPiAgICAgQW5k
-cmV3DQo+ID4NCj4gDQo+IFRoYW5rcywNCj4gLVZsYWRpbWlyDQo=
+
+
+On 1/29/20 12:01 AM, Kees Cook wrote:
+> On Tue, Jan 28, 2020 at 08:58:31AM +0100, Christian Borntraeger wrote:
+>>
+>>
+>> On 28.01.20 00:19, Kees Cook wrote:
+>>> On Thu, Jan 23, 2020 at 09:14:20AM +0100, Jiri Slaby wrote:
+>>>> On 14. 11. 19, 22:27, Kees Cook wrote:
+>>>>> On Tue, Nov 12, 2019 at 01:21:54PM -0800, Kees Cook wrote:
+>>>>>> How is iucv the only network protocol that has run into this? Do others
+>>>>>> use a bounce buffer?
+>>>>>
+>>>>> Another solution would be to use a dedicated kmem cache (instead of the
+>>>>> shared kmalloc dma one)?
+>>>>
+>>>> Has there been any conclusion to this thread yet? For the time being, we
+>>>> disabled HARDENED_USERCOPY on s390...
+>>>>
+>>>> https://lore.kernel.org/kernel-hardening/9519edb7-456a-a2fa-659e-3e5a1ff89466@suse.cz/
+>>>
+>>> I haven't heard anything new. What did people think of a separate kmem
+>>> cache?
+>>>
+>>
+>> Adding Julian and Ursula. A separate kmem cache for iucv might be indeed
+>> a solution for the user hardening issue.
+> 
+> It should be very clean -- any existing kmallocs already have to be
+> "special" in the sense that they're marked with the DMA flag. So
+> converting these to a separate cache should be mostly mechanical.
+> 
+
+Linux on System z can run within a guest hosted by the IBM mainframe operating system
+z/VM. z/VM offers a transport called Inter-User Communications Vehicle (short IUCV).
+It is limited to 4-byte-addresses when sending and receiving data.
+One base transport for AF_IUCV sockets in the Linux kernel is this Inter-User
+Communications Vehicle of z/VM. AF_IUCV sockets exist for s390 only. 
+
+AF_IUCV sockets make use of the base socket layer, and work with sk_buffs for sending
+and receiving data of variable length.
+Storage for sk_buffs is allocated with __alloc_skb(), which invokes
+   data = kmalloc_reserve(size, gfp_mask, node, &pfmemalloc);
+For IUCV transport the "data"-address should fit into 4 bytes. That's the reason why
+we work with GFP_DMA here.
+
+kmem_caches manage memory of fixed size. This does not fit well for sk_buff memory
+of variable length. Do you propose to add a kmem_cache solution for sk_buff memory here?
+
+>> On the other hand not marking the DMA caches still seems questionable.
+> 
+> My understanding is that exposing DMA memory to userspace copies can
+> lead to unexpected results, especially for misbehaving hardware, so I'm
+> not convinced this is a generically bad hardening choice.
+> 
+
+We have not yet been reported a memory problem here. Do you have more details, if
+this is really a problem for the s390 architecture?
+
+Kind regards, Ursula 
+
+> -Kees
+> 
+>>
+>> For reference
+>> https://bugzilla.suse.com/show_bug.cgi?id=1156053
+>> the kernel hardening now triggers a warning.
+>>
+> 
+
