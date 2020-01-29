@@ -2,175 +2,109 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 8CC4614CF81
-	for <lists+netdev@lfdr.de>; Wed, 29 Jan 2020 18:20:15 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B9E6414CF8B
+	for <lists+netdev@lfdr.de>; Wed, 29 Jan 2020 18:21:46 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726830AbgA2RUN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 29 Jan 2020 12:20:13 -0500
-Received: from mx0b-001b2d01.pphosted.com ([148.163.158.5]:10352 "EHLO
-        mx0a-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1727235AbgA2RUK (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 29 Jan 2020 12:20:10 -0500
-Received: from pps.filterd (m0098414.ppops.net [127.0.0.1])
-        by mx0b-001b2d01.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 00THEEpB035091
-        for <netdev@vger.kernel.org>; Wed, 29 Jan 2020 12:20:09 -0500
-Received: from e06smtp04.uk.ibm.com (e06smtp04.uk.ibm.com [195.75.94.100])
-        by mx0b-001b2d01.pphosted.com with ESMTP id 2xubcsevw3-1
-        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=NOT)
-        for <netdev@vger.kernel.org>; Wed, 29 Jan 2020 12:20:09 -0500
-Received: from localhost
-        by e06smtp04.uk.ibm.com with IBM ESMTP SMTP Gateway: Authorized Use Only! Violators will be prosecuted
-        for <netdev@vger.kernel.org> from <borntraeger@de.ibm.com>;
-        Wed, 29 Jan 2020 17:20:06 -0000
-Received: from b06cxnps3075.portsmouth.uk.ibm.com (9.149.109.195)
-        by e06smtp04.uk.ibm.com (192.168.101.134) with IBM ESMTP SMTP Gateway: Authorized Use Only! Violators will be prosecuted;
-        (version=TLSv1/SSLv3 cipher=AES256-GCM-SHA384 bits=256/256)
-        Wed, 29 Jan 2020 17:19:58 -0000
-Received: from d06av26.portsmouth.uk.ibm.com (d06av26.portsmouth.uk.ibm.com [9.149.105.62])
-        by b06cxnps3075.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 00THJvjm61276264
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Wed, 29 Jan 2020 17:19:57 GMT
-Received: from d06av26.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 54426AE059;
-        Wed, 29 Jan 2020 17:19:57 +0000 (GMT)
-Received: from d06av26.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 6D912AE051;
-        Wed, 29 Jan 2020 17:19:56 +0000 (GMT)
-Received: from oc7455500831.ibm.com (unknown [9.152.224.41])
-        by d06av26.portsmouth.uk.ibm.com (Postfix) with ESMTP;
-        Wed, 29 Jan 2020 17:19:56 +0000 (GMT)
-Subject: Re: [kernel-hardening] [PATCH 09/38] usercopy: Mark kmalloc caches as
- usercopy caches
-To:     Christoph Hellwig <hch@infradead.org>
-Cc:     Christopher Lameter <cl@linux.com>,
-        Kees Cook <keescook@chromium.org>, Jiri Slaby <jslaby@suse.cz>,
-        Julian Wiedmann <jwi@linux.ibm.com>,
-        Ursula Braun <ubraun@linux.ibm.com>,
-        Alexander Viro <viro@zeniv.linux.org.uk>,
-        linux-kernel@vger.kernel.org, David Windsor <dave@nullcore.net>,
-        Pekka Enberg <penberg@kernel.org>,
-        David Rientjes <rientjes@google.com>,
-        Joonsoo Kim <iamjoonsoo.kim@lge.com>,
-        Andrew Morton <akpm@linux-foundation.org>, linux-mm@kvack.org,
-        linux-xfs@vger.kernel.org,
-        Linus Torvalds <torvalds@linux-foundation.org>,
-        Andy Lutomirski <luto@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Laura Abbott <labbott@redhat.com>,
-        Mark Rutland <mark.rutland@arm.com>,
-        "Martin K. Petersen" <martin.petersen@oracle.com>,
-        Paolo Bonzini <pbonzini@redhat.com>,
-        Christoffer Dall <christoffer.dall@linaro.org>,
-        Dave Kleikamp <dave.kleikamp@oracle.com>,
-        Jan Kara <jack@suse.cz>,
-        Luis de Bethencourt <luisbg@kernel.org>,
-        Marc Zyngier <marc.zyngier@arm.com>,
-        Rik van Riel <riel@redhat.com>,
-        Matthew Garrett <mjg59@google.com>,
-        linux-fsdevel@vger.kernel.org, linux-arch@vger.kernel.org,
-        netdev@vger.kernel.org, kernel-hardening@lists.openwall.com,
-        Vlastimil Babka <vbabka@suse.cz>,
-        Michal Kubecek <mkubecek@suse.cz>
-References: <1515636190-24061-10-git-send-email-keescook@chromium.org>
- <9519edb7-456a-a2fa-659e-3e5a1ff89466@suse.cz>
- <201911121313.1097D6EE@keescook> <201911141327.4DE6510@keescook>
- <bfca96db-bbd0-d958-7732-76e36c667c68@suse.cz>
- <202001271519.AA6ADEACF0@keescook>
- <5861936c-1fe1-4c44-d012-26efa0c8b6e7@de.ibm.com>
- <202001281457.FA11CC313A@keescook>
- <alpine.DEB.2.21.2001291640350.1546@www.lameter.com>
- <6844ea47-8e0e-4fb7-d86f-68046995a749@de.ibm.com>
- <20200129170939.GA4277@infradead.org>
-From:   Christian Borntraeger <borntraeger@de.ibm.com>
-Autocrypt: addr=borntraeger@de.ibm.com; prefer-encrypt=mutual; keydata=
- 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
- nS4h0HDFPrrp1C2EMVYIQrMokWvlFZbCpsdYbBI=
-Date:   Wed, 29 Jan 2020 18:19:56 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.3.0
+        id S1727250AbgA2RVo (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 29 Jan 2020 12:21:44 -0500
+Received: from mail-yw1-f68.google.com ([209.85.161.68]:42050 "EHLO
+        mail-yw1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726893AbgA2RVn (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 29 Jan 2020 12:21:43 -0500
+Received: by mail-yw1-f68.google.com with SMTP id b81so175511ywe.9
+        for <netdev@vger.kernel.org>; Wed, 29 Jan 2020 09:21:42 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=/IQnUlZhIXQ6cA8rde71im7xnRTEjmtD1qfBjFVp0mI=;
+        b=JeAb5jSqnOoHjuxJgtl+vO32xP7qlblMF3btXErZ9BXFn3YPZ4svLRyEIUFvRDQ6cv
+         Iu0sK9ZqdQctbvmt+ywuQWzKUlpKnyHk/oJrmPJtkGhsCrp7C1ddMakzvfZiQyOacg8H
+         5Am/l/Qm5ad4cWtYIdoYFl7LgrPH/kq3WRJnun1tjlQ8zNCKc1tidUP2NS9zR8jriFgK
+         KBCR5rU0WEsvjHJWtDZtnb0yu8M4VAYtz69xzHd6v9dGDnwcjoxDoISLT3ZA56oEdTww
+         BdGN0aHjukN/R7Lr0AQDUacJRz9K4VC7BE2K3ZOPpT1eE4MDiHb6JWHheolnsxNFdCry
+         lWwg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=/IQnUlZhIXQ6cA8rde71im7xnRTEjmtD1qfBjFVp0mI=;
+        b=hgKqstTmlVnIbSP0Himpsk7VBz7YTkrEoqoATEiGM2f1L8y67gu6bZXACfrKoL0rqJ
+         +9U35cddi0YOOUb4OUy718ngD/UdwEmmztAuqCnZAGIsF2lQKEB7gIFV00V3+J/qeSZv
+         vAg7+/f+sHfyjbk524hpH809M3u7x7RbQq0ISj/xxjuh3ib8PvsGxCAKKXTsUq/e/GUQ
+         pJ60FSbvkEFGSUyTyQxS083aPMsSWaFZVeBRjM188DRXyfN6fVh7TdtI/ouH4tgY1Niw
+         jn2K5i+jYH0vUzMZmgG7SXj9Q6bcl9Kq3qMRsbw4/L04Tkbws8Z0ie8mDoG/L671fxvV
+         wawg==
+X-Gm-Message-State: APjAAAWPgTyYmR0kJCbU8SGSwgWxbbuYqOqz6WQT8fjoyycQkrGwaUiB
+        tUb7fMZjnxzegdzBFFD4LiALNfTW
+X-Google-Smtp-Source: APXvYqx7bwuXydEaATXDErwB+/n15McOkgdK2qDWg3uM/kn9fMjuNlQToJlrYdcx/BlRqC+HRKK4vQ==
+X-Received: by 2002:a81:9146:: with SMTP id i67mr20935790ywg.120.1580318501598;
+        Wed, 29 Jan 2020 09:21:41 -0800 (PST)
+Received: from mail-yb1-f181.google.com (mail-yb1-f181.google.com. [209.85.219.181])
+        by smtp.gmail.com with ESMTPSA id p1sm1327067ywh.74.2020.01.29.09.21.40
+        for <netdev@vger.kernel.org>
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 29 Jan 2020 09:21:40 -0800 (PST)
+Received: by mail-yb1-f181.google.com with SMTP id z125so198496ybf.9
+        for <netdev@vger.kernel.org>; Wed, 29 Jan 2020 09:21:40 -0800 (PST)
+X-Received: by 2002:a25:bf91:: with SMTP id l17mr474135ybk.178.1580318499826;
+ Wed, 29 Jan 2020 09:21:39 -0800 (PST)
 MIME-Version: 1.0
-In-Reply-To: <20200129170939.GA4277@infradead.org>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-TM-AS-GCONF: 00
-x-cbid: 20012917-0016-0000-0000-000002E1D3E4
-X-IBM-AV-DETECTION: SAVI=unused REMOTE=unused XFE=unused
-x-cbparentid: 20012917-0017-0000-0000-000033449AC6
-Message-Id: <771c5511-c5ab-3dd1-d938-5dbc40396daa@de.ibm.com>
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.138,18.0.572
- definitions=2020-01-29_04:2020-01-28,2020-01-29 signatures=0
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 bulkscore=0 mlxlogscore=633
- clxscore=1015 adultscore=0 phishscore=0 suspectscore=0 malwarescore=0
- priorityscore=1501 spamscore=0 mlxscore=0 lowpriorityscore=0
- impostorscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-1911200001 definitions=main-2001290141
+References: <20200127204031.244254-1-willemdebruijn.kernel@gmail.com> <20200128.105909.2133255162840958859.davem@davemloft.net>
+In-Reply-To: <20200128.105909.2133255162840958859.davem@davemloft.net>
+From:   Willem de Bruijn <willemdebruijn.kernel@gmail.com>
+Date:   Wed, 29 Jan 2020 12:21:03 -0500
+X-Gmail-Original-Message-ID: <CA+FuTSem3r-7F_=b5eiT1J5QbP9_pHhFNDSkDkz0v19uSVq=Ow@mail.gmail.com>
+Message-ID: <CA+FuTSem3r-7F_=b5eiT1J5QbP9_pHhFNDSkDkz0v19uSVq=Ow@mail.gmail.com>
+Subject: Re: [PATCH net] udp: segment looped gso packets correctly
+To:     David Miller <davem@davemloft.net>
+Cc:     Willem de Bruijn <willemdebruijn.kernel@gmail.com>,
+        Network Development <netdev@vger.kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        syzkaller <syzkaller@googlegroups.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Wed, Jan 29, 2020 at 11:58 AM David Miller <davem@davemloft.net> wrote:
+>
+> From: Willem de Bruijn <willemdebruijn.kernel@gmail.com>
+> Date: Mon, 27 Jan 2020 15:40:31 -0500
+>
+> > From: Willem de Bruijn <willemb@google.com>
+> >
+> > Multicast and broadcast packets can be looped from egress to ingress
+> > pre segmentation with dev_loopback_xmit. That function unconditionally
+> > sets ip_summed to CHECKSUM_UNNECESSARY.
+> >
+> > udp_rcv_segment segments gso packets in the udp rx path. Segmentation
+> > usually executes on egress, and does not expect packets of this type.
+> > __udp_gso_segment interprets !CHECKSUM_PARTIAL as CHECKSUM_NONE. But
+> > the offsets are not correct for gso_make_checksum.
+> >
+> > UDP GSO packets are of type CHECKSUM_PARTIAL, with their uh->check set
+> > to the correct pseudo header checksum. Reset ip_summed to this type.
+> > (CHECKSUM_PARTIAL is allowed on ingress, see comments in skbuff.h)
+> >
+> > Reported-by: syzbot <syzkaller@googlegroups.com>
+> > Fixes: cf329aa42b66 ("udp: cope with UDP GRO packet misdirection")
+> > Signed-off-by: Willem de Bruijn <willemb@google.com>
+>
+> Applied and queued up for -stable, but I have to say:
+>
+> > +     if (skb->pkt_type == PACKET_LOOPBACK)
+> > +             skb->ip_summed = CHECKSUM_PARTIAL;
+> > +
+>
+> There are a lot of implementation detail assumptions encoded into that
+> conditional statement :-)
+>
+> Feel free to follow-up with a patch adding a comment containing a
+> condensed version of your commit log here.
 
+Will do. Yeah, that does look pretty obscure. I may have gotten a bit
+too used to relying solely on git blame ;-)
 
-On 29.01.20 18:09, Christoph Hellwig wrote:
-> On Wed, Jan 29, 2020 at 06:07:14PM +0100, Christian Borntraeger wrote:
->>> DMA can be done to NORMAL memory as well.
->>
->> Exactly. 
->> I think iucv uses GFP_DMA because z/VM needs those buffers to reside below 2GB (which is ZONA_DMA for s390).
-> 
-> The normal way to allocate memory with addressing limits would be to
-> use dma_alloc_coherent and friends.  Any chance to switch iucv over to
-> that?  Or is there no device associated with it?
-
-There is not necessarily a device for that. It is a hypervisor interface (an
-instruction that is interpreted by z/VM). We do have the netiucv driver that
-creates a virtual nic, but there is also AF_IUCV which works without a device.
-
-But back to the original question: If we mark kmalloc caches as usercopy caches,
-we should do the same for DMA kmalloc caches. As outlined by Christoph, this has
-nothing to do with device DMA.
-
-
-
-
+Thanks!
