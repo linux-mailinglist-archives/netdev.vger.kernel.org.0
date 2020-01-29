@@ -2,152 +2,117 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id A690414CCD5
-	for <lists+netdev@lfdr.de>; Wed, 29 Jan 2020 15:56:59 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C07ED14CD47
+	for <lists+netdev@lfdr.de>; Wed, 29 Jan 2020 16:23:16 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726551AbgA2O46 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 29 Jan 2020 09:56:58 -0500
-Received: from us-smtp-delivery-1.mimecast.com ([207.211.31.120]:54926 "EHLO
-        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S1726314AbgA2O45 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 29 Jan 2020 09:56:57 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1580309816;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=/qm5aHkGYf0tXpDpwmazjFC7+K2icdeqWs8ozBESY5s=;
-        b=LIYtko6yybGFb+VKuJZVSr9MT5K2iEaR22Pu+7R4LieSGgqCmMpEaTLGh6nJBv76zh6t2L
-        NnzrU6bQs5wIuIeWFMhKFjh4F83jqCA/pAVdMMoSfI2XKz+400W6dza27fc1J/t84tfBnt
-        28bklRhmGxuSiqwvyoVGjjC9yEhbJms=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-19-GCv-nnZGN7ObksMcNHQjCA-1; Wed, 29 Jan 2020 09:56:55 -0500
-X-MC-Unique: GCv-nnZGN7ObksMcNHQjCA-1
-Received: from smtp.corp.redhat.com (int-mx01.intmail.prod.int.phx2.redhat.com [10.5.11.11])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 0353A800D41;
-        Wed, 29 Jan 2020 14:56:54 +0000 (UTC)
-Received: from renaissance-vector.redhat.com (ovpn-116-61.ams2.redhat.com [10.36.116.61])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id EC62084BC4;
-        Wed, 29 Jan 2020 14:56:52 +0000 (UTC)
-From:   Andrea Claudi <aclaudi@redhat.com>
-To:     netdev@vger.kernel.org
-Cc:     stephen@networkplumber.org, dsahern@gmail.com
-Subject: [PATCH iproute2] ip-xfrm: Fix help messages
-Date:   Wed, 29 Jan 2020 15:56:40 +0100
-Message-Id: <7136ded9fe876eab3b1cdcae6a6fc45960b7b3d9.1580309665.git.aclaudi@redhat.com>
+        id S1726959AbgA2PXN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 29 Jan 2020 10:23:13 -0500
+Received: from mail-ed1-f68.google.com ([209.85.208.68]:39559 "EHLO
+        mail-ed1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726840AbgA2PXN (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 29 Jan 2020 10:23:13 -0500
+Received: by mail-ed1-f68.google.com with SMTP id m13so120356edb.6
+        for <netdev@vger.kernel.org>; Wed, 29 Jan 2020 07:23:12 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:reply-to:from:date:message-id:subject:to;
+        bh=zNIZfJiSxMZMQ+jpxlHZpbyav/hxl1N4g5AlWcOPE4k=;
+        b=sqIyxr2sSmTbpYrnc73Fw3XbKIfXpvbA8fkgg3ho7Bc/SNkrCnpTBLbrhYCZf7vn0w
+         xQ1sX2gwA1z5HTOj8grdMTvfShpvDb3QJKO39s9ByiPwdU2624P/DdU41FNTenhVQY73
+         GG4LV6SnAdvbKu2WzW6ippYiEdnn9XTWCCGdiOf+Bo+aVNcQ3tGx0QNvFerHiBsPLYd9
+         ogeUU4LmSadK14Qd0fCh2IQ6HQ1Y1qUpoi2WiUQV1GdH473ifNr11qt5VOacy/4Z9uxq
+         QgO0BHk6I0hU1NSJQdmiP/G+O4mtydIhWmA7aa/MIU/OqCzIcljNyR/Mde66gdqxyR3c
+         gk0g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:reply-to:from:date:message-id
+         :subject:to;
+        bh=zNIZfJiSxMZMQ+jpxlHZpbyav/hxl1N4g5AlWcOPE4k=;
+        b=lHikBTQp2r87rFC/nX277VaTi40JFzMZbRJ5B7sCEmGDjgEEoGVoT6+oXswDF0kOON
+         /A+CjLQswAYQCo54BsobegshsROLdcCT4MnrPsE7Qcx4sjalWTwv6tP4cSCVbKBsgzVg
+         4UWKqSU4JGuTyUXxX8oRXAepKPO4tUQSxK91UwUOBiBl6KOWyoz085AJEq5X8bQaPMfl
+         VD5uae49yEA6oh1Tnw3Ebi0dskuKVPkUFZM02Izj1MRhttUH6kuSyQCVqJLuWPwWFDiM
+         0/5VUeG/zmy/sjUkH2dJWFLI/PelOrwDBiUBrvwJD0THfIxT25rzr9ccWf/6TEhtGXJn
+         12gA==
+X-Gm-Message-State: APjAAAXbO+mo24D0vAWshPrXhaTHgAKLALAQPiPu00RTy5kd0HOZHDK1
+        kH8XmNiI/Vq7fuIDxxDHvx3ufTG1ylM29HDBego=
+X-Google-Smtp-Source: APXvYqxz14EV2v3EAGjGqoi1yfmFLhkmVlpM93umpOajJBpXHNPMjmGKwG+ClnJ2goBWJ0+qVELm97SfozLL4OJQr7I=
+X-Received: by 2002:aa7:cf07:: with SMTP id a7mr8142504edy.381.1580311391365;
+ Wed, 29 Jan 2020 07:23:11 -0800 (PST)
 MIME-Version: 1.0
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.11
-Content-Transfer-Encoding: quoted-printable
+Received: by 2002:a17:906:1fd2:0:0:0:0 with HTTP; Wed, 29 Jan 2020 07:23:10
+ -0800 (PST)
+Reply-To: yesben300@gmail.com
+From:   PAUL SMITH UNITED NATION DEPT <ksandurubf20@gmail.com>
+Date:   Wed, 29 Jan 2020 16:23:10 +0100
+Message-ID: <CANz9UWqMq9=QSvO=DtJHVKhuaG6nWDJNNVSSqmAKN7TuSAK9kQ@mail.gmail.com>
+Subject: THIS IS LEGITIMATE AND GENUINE TRANSACTION
+To:     undisclosed-recipients:;
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-After commit 8589eb4efdf2a ("treewide: refactor help messages") help
-messages for xfrm state and policy are broken, printing many times the
-same protocol in UPSPEC section:
+Dear Beneficiary,
 
-$ ip xfrm state help
-[...]
-UPSPEC :=3D proto { { tcp | tcp | tcp | tcp } [ sport PORT ] [ dport PORT=
- ] |
-                  { icmp | icmp | icmp } [ type NUMBER ] [ code NUMBER ] =
-|
-                  gre [ key { DOTTED-QUAD | NUMBER } ] | PROTO }
+ I am Mr.Paul Smith, Please this transaction is very urgent and
+confidential meanwhile it is real, genuine and legitimate. I am given
+you 100% assurance and guarantee that this transaction is 100% risk
+free.
 
-This happens because strxf_proto function is non-reentrant and gets calle=
-d
-multiple times in the same fprintf instruction.
+ The board of directors has decided to pay off all contractors that
+the Government is owing or in any way you been owed by the recent
+government, here the board has decided to pay off all outstanding
+payment.($25.5million has been mapped out to compensate all, may be
+you defrauded in the process of pursuing your fund or any, here is
+chance of redemption from the government to repay and compensate all
+those victims.
 
-This commit fix the issue avoiding calls to strxf_proto() with a constant
-param, just hardcoding strings for protocol names.
+We will give you a round trip ticket to come to Ecuador where you will
+go and pick up an anti doth cleanser that will be used to cleanse the
+fund and make it spendable before the fund will finally transferred
+into your designated bank account in your country.
 
-Fixes: 8589eb4efdf2a ("treewide: refactor help messages")
-Signed-off-by: Andrea Claudi <aclaudi@redhat.com>
----
- ip/xfrm_policy.c | 21 +++------------------
- ip/xfrm_state.c  | 24 +++---------------------
- 2 files changed, 6 insertions(+), 39 deletions(-)
+During this trip, the government have set up a board of directors,
+there work is to sponsor your trip tho and back to where the fund will
+be developed, also on your arrival to Ecuador the diplomat will come
+and give you a sum of $1000 for your hotel expenses and on your
+arrival to Europe where this fund will be develop, you will be given
+another $1000 that will take the whole expense for the few days it
+take them to cleanse the fund.
 
-diff --git a/ip/xfrm_policy.c b/ip/xfrm_policy.c
-index 7c0233c182902..d3c706d3225f0 100644
---- a/ip/xfrm_policy.c
-+++ b/ip/xfrm_policy.c
-@@ -66,24 +66,9 @@ static void usage(void)
- 		"Usage: ip xfrm policy count\n"
- 		"Usage: ip xfrm policy set [ hthresh4 LBITS RBITS ] [ hthresh6 LBITS R=
-BITS ]\n"
- 		"SELECTOR :=3D [ src ADDR[/PLEN] ] [ dst ADDR[/PLEN] ] [ dev DEV ] [ U=
-PSPEC ]\n"
--		"UPSPEC :=3D proto { { ");
--	fprintf(stderr, "%s | %s | %s | %s } ",
--		strxf_proto(IPPROTO_TCP),
--		strxf_proto(IPPROTO_UDP),
--		strxf_proto(IPPROTO_SCTP),
--		strxf_proto(IPPROTO_DCCP));
--	fprintf(stderr,
--		"[ sport PORT ] [ dport PORT ] |\n"
--		"                  { %s | %s | %s } ",
--		strxf_proto(IPPROTO_ICMP),
--		strxf_proto(IPPROTO_ICMPV6),
--		strxf_proto(IPPROTO_MH));
--	fprintf(stderr,
--		"[ type NUMBER ] [ code NUMBER ] |\n"
--		"                  %s",
--		strxf_proto(IPPROTO_GRE));
--	fprintf(stderr,
--		" [ key { DOTTED-QUAD | NUMBER } ] | PROTO }\n"
-+		"UPSPEC :=3D proto { { tcp | udp | sctp | dccp } [ sport PORT ] [ dpor=
-t PORT ] |\n"
-+		"                  { icmp | ipv6-icmp | mobility-header } [ type NUMBE=
-R ] [ code NUMBER ] |\n"
-+		"                  gre [ key { DOTTED-QUAD | NUMBER } ] | PROTO }\n"
- 		"DIR :=3D in | out | fwd\n"
- 		"PTYPE :=3D main | sub\n"
- 		"ACTION :=3D allow | block\n"
-diff --git a/ip/xfrm_state.c b/ip/xfrm_state.c
-index b03ccc5807e90..7b413cd9b9a22 100644
---- a/ip/xfrm_state.c
-+++ b/ip/xfrm_state.c
-@@ -106,27 +106,9 @@ static void usage(void)
- 		"EXTRA-FLAG-LIST :=3D [ EXTRA-FLAG-LIST ] EXTRA-FLAG\n"
- 		"EXTRA-FLAG :=3D dont-encap-dscp\n"
- 		"SELECTOR :=3D [ src ADDR[/PLEN] ] [ dst ADDR[/PLEN] ] [ dev DEV ] [ U=
-PSPEC ]\n"
--		"UPSPEC :=3D proto { { ");
--	fprintf(stderr,
--		"%s | %s | %s | %s",
--		strxf_proto(IPPROTO_TCP),
--		strxf_proto(IPPROTO_UDP),
--		strxf_proto(IPPROTO_SCTP),
--		strxf_proto(IPPROTO_DCCP));
--	fprintf(stderr,
--		" } [ sport PORT ] [ dport PORT ] |\n"
--		"                  { ");
--	fprintf(stderr,
--		"%s | %s | %s",
--		strxf_proto(IPPROTO_ICMP),
--		strxf_proto(IPPROTO_ICMPV6),
--		strxf_proto(IPPROTO_MH));
--	fprintf(stderr,
--		" } [ type NUMBER ] [ code NUMBER ] |\n");
--	fprintf(stderr,
--		"                  %s", strxf_proto(IPPROTO_GRE));
--	fprintf(stderr,
--		" [ key { DOTTED-QUAD | NUMBER } ] | PROTO }\n"
-+		"UPSPEC :=3D proto { { tcp | udp | sctp | dccp } [ sport PORT ] [ dpor=
-t PORT ] |\n"
-+		"                  { icmp | ipv6-icmp | mobility-header } [ type NUMBE=
-R ] [ code NUMBER ] |\n"
-+		"                  gre [ key { DOTTED-QUAD | NUMBER } ] | PROTO }\n"
- 		"LIMIT-LIST :=3D [ LIMIT-LIST ] limit LIMIT\n"
- 		"LIMIT :=3D { time-soft | time-hard | time-use-soft | time-use-hard } =
-SECONDS |\n"
- 		"         { byte-soft | byte-hard } SIZE | { packet-soft | packet-hard=
- } COUNT\n"
---=20
-2.24.1
+After they might have cleanse the money, they come back and pick you
+to any local bank where this fund will be lodge for onward transfer
+into your  designated bank account in your country.
 
+After the fund is been transferred into your account I will come over
+to have my own share of the fund. If you have any doubts or question
+to ask, please feel free to ask and also I must made it clear that
+this transaction is 100% risk free noting of any problem is involve
+also we have the documents to back up the transfer to avoid any
+questioning from any authority.
+
+Lastly,You are not going to spend any money on this trip, the
+government has set board of directors that will take care of the
+expenses so nobody will ask you to come up with Money
+
+Get back to me with your first data page of your international
+passport to enable the sponsor secure your visa. You are not going to
+spend any single dollars, all the expenses both flight ticket and your
+feeding, hotel accommodation will be taking care by the sponsor mapped
+by the government.
+
+All you need is to indicate your interest open also send your mobile
+telephone number and your international passport data page to enable
+the sponsor proceed with your traveling documents and  your visa
+processing.
+
+Thanks for your understanding and cooperation towards the
+actualization of this transaction.
+
+Mr. Paul Smith
+Dept of United Nation
+
+
+THIS IS LEGITIMATE AND GENUINE TRANSACTION
