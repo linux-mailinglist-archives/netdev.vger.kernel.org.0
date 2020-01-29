@@ -2,117 +2,88 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id C07ED14CD47
-	for <lists+netdev@lfdr.de>; Wed, 29 Jan 2020 16:23:16 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id CF99E14CD72
+	for <lists+netdev@lfdr.de>; Wed, 29 Jan 2020 16:33:57 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726959AbgA2PXN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 29 Jan 2020 10:23:13 -0500
-Received: from mail-ed1-f68.google.com ([209.85.208.68]:39559 "EHLO
-        mail-ed1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726840AbgA2PXN (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 29 Jan 2020 10:23:13 -0500
-Received: by mail-ed1-f68.google.com with SMTP id m13so120356edb.6
-        for <netdev@vger.kernel.org>; Wed, 29 Jan 2020 07:23:12 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:reply-to:from:date:message-id:subject:to;
-        bh=zNIZfJiSxMZMQ+jpxlHZpbyav/hxl1N4g5AlWcOPE4k=;
-        b=sqIyxr2sSmTbpYrnc73Fw3XbKIfXpvbA8fkgg3ho7Bc/SNkrCnpTBLbrhYCZf7vn0w
-         xQ1sX2gwA1z5HTOj8grdMTvfShpvDb3QJKO39s9ByiPwdU2624P/DdU41FNTenhVQY73
-         GG4LV6SnAdvbKu2WzW6ippYiEdnn9XTWCCGdiOf+Bo+aVNcQ3tGx0QNvFerHiBsPLYd9
-         ogeUU4LmSadK14Qd0fCh2IQ6HQ1Y1qUpoi2WiUQV1GdH473ifNr11qt5VOacy/4Z9uxq
-         QgO0BHk6I0hU1NSJQdmiP/G+O4mtydIhWmA7aa/MIU/OqCzIcljNyR/Mde66gdqxyR3c
-         gk0g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:reply-to:from:date:message-id
-         :subject:to;
-        bh=zNIZfJiSxMZMQ+jpxlHZpbyav/hxl1N4g5AlWcOPE4k=;
-        b=lHikBTQp2r87rFC/nX277VaTi40JFzMZbRJ5B7sCEmGDjgEEoGVoT6+oXswDF0kOON
-         /A+CjLQswAYQCo54BsobegshsROLdcCT4MnrPsE7Qcx4sjalWTwv6tP4cSCVbKBsgzVg
-         4UWKqSU4JGuTyUXxX8oRXAepKPO4tUQSxK91UwUOBiBl6KOWyoz085AJEq5X8bQaPMfl
-         VD5uae49yEA6oh1Tnw3Ebi0dskuKVPkUFZM02Izj1MRhttUH6kuSyQCVqJLuWPwWFDiM
-         0/5VUeG/zmy/sjUkH2dJWFLI/PelOrwDBiUBrvwJD0THfIxT25rzr9ccWf/6TEhtGXJn
-         12gA==
-X-Gm-Message-State: APjAAAXbO+mo24D0vAWshPrXhaTHgAKLALAQPiPu00RTy5kd0HOZHDK1
-        kH8XmNiI/Vq7fuIDxxDHvx3ufTG1ylM29HDBego=
-X-Google-Smtp-Source: APXvYqxz14EV2v3EAGjGqoi1yfmFLhkmVlpM93umpOajJBpXHNPMjmGKwG+ClnJ2goBWJ0+qVELm97SfozLL4OJQr7I=
-X-Received: by 2002:aa7:cf07:: with SMTP id a7mr8142504edy.381.1580311391365;
- Wed, 29 Jan 2020 07:23:11 -0800 (PST)
+        id S1726498AbgA2Pd4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 29 Jan 2020 10:33:56 -0500
+Received: from vps0.lunn.ch ([185.16.172.187]:58106 "EHLO vps0.lunn.ch"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726240AbgA2Pdz (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 29 Jan 2020 10:33:55 -0500
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:
+        Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
+        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
+        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
+        List-Post:List-Owner:List-Archive;
+        bh=sh29NOViedSJKeae0NTwxenCnu47xcqJdkHNCJZRTu0=; b=dAseRJoXqqrWpwQ2Kv05C5jlem
+        tKiCr7cYBNANTA47TkFQONVhfIGu7k3IzpXuHa+qsMHYDW6+HnAJ3eHu+Ab53f62/Xp3whcAwzEHe
+        X4ujwM3GJJ77yby4Xx7SauYfmkNJ+j39NgstZYMQSuebqfM91RFuQcBZBEtcULKzv6Sw=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.93)
+        (envelope-from <andrew@lunn.ch>)
+        id 1iwpLh-0006v7-6z; Wed, 29 Jan 2020 16:33:49 +0100
+Date:   Wed, 29 Jan 2020 16:33:49 +0100
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     "Madalin Bucur (OSS)" <madalin.bucur@oss.nxp.com>
+Cc:     Vladimir Oltean <olteanv@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "hkallweit1@gmail.com" <hkallweit1@gmail.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "ykaukab@suse.de" <ykaukab@suse.de>,
+        Russell King - ARM Linux admin <linux@armlinux.org.uk>
+Subject: Re: [PATCH net-next 1/2] net: phy: aquantia: add rate_adaptation
+ indication
+Message-ID: <20200129153349.GB25384@lunn.ch>
+References: <1579701573-6609-2-git-send-email-madalin.bucur@oss.nxp.com>
+ <68921c8a-06b6-d5c0-e857-14e7bc2c0a94@gmail.com>
+ <DB8PR04MB6985606F38572D8512E8D27EEC0F0@DB8PR04MB6985.eurprd04.prod.outlook.com>
+ <77e3ddcb-bddb-32d8-9c87-48ba9a7f2773@gmail.com>
+ <CA+h21hq7U_EtetuLZN5rjXcq+cRUoD0y_76LxuHpoC53J70CEQ@mail.gmail.com>
+ <DB8PR04MB6985139D4ABED85B701445A9EC050@DB8PR04MB6985.eurprd04.prod.outlook.com>
+ <CA+h21hpSpgQsQ0kRmSaC2qfmFj=0KadDjwEK2Bvkz72g+iGxBQ@mail.gmail.com>
+ <DB8PR04MB6985B0A712634DCFCD5390A4EC050@DB8PR04MB6985.eurprd04.prod.outlook.com>
+ <20200129134447.GA25384@lunn.ch>
+ <DB8PR04MB698588200EE839607F055B24EC050@DB8PR04MB6985.eurprd04.prod.outlook.com>
 MIME-Version: 1.0
-Received: by 2002:a17:906:1fd2:0:0:0:0 with HTTP; Wed, 29 Jan 2020 07:23:10
- -0800 (PST)
-Reply-To: yesben300@gmail.com
-From:   PAUL SMITH UNITED NATION DEPT <ksandurubf20@gmail.com>
-Date:   Wed, 29 Jan 2020 16:23:10 +0100
-Message-ID: <CANz9UWqMq9=QSvO=DtJHVKhuaG6nWDJNNVSSqmAKN7TuSAK9kQ@mail.gmail.com>
-Subject: THIS IS LEGITIMATE AND GENUINE TRANSACTION
-To:     undisclosed-recipients:;
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <DB8PR04MB698588200EE839607F055B24EC050@DB8PR04MB6985.eurprd04.prod.outlook.com>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Dear Beneficiary,
+> Nor do I need to know, my approach here is "non nocere", if there is a
+> chance for the PHY to link with the partner at a different speed than the
+> one supported on the system interface, do not prevent it by deleting those
+> modes, as the dpaa_eth driver does now. Whether that link will be successful
+> or not depends upon many variables and only some are related to rate adaptation.
 
- I am Mr.Paul Smith, Please this transaction is very urgent and
-confidential meanwhile it is real, genuine and legitimate. I am given
-you 100% assurance and guarantee that this transaction is 100% risk
-free.
+We need to make it clear then that this bit being true just indicates
+that the device might perform rate adaptation, no guarantees, it might
+depend on firmware your board does not have, phase of the moon, etc.
 
- The board of directors has decided to pay off all contractors that
-the Government is owing or in any way you been owed by the recent
-government, here the board has decided to pay off all outstanding
-payment.($25.5million has been mapped out to compensate all, may be
-you defrauded in the process of pursuing your fund or any, here is
-chance of redemption from the government to repay and compensate all
-those victims.
+I don't like this. Your board not working is your problem, you know
+the risks. But when somebody else starts using this bit, and it does
+not work, that is not so nice.
 
-We will give you a round trip ticket to come to Ecuador where you will
-go and pick up an anti doth cleanser that will be used to cleanse the
-fund and make it spendable before the fund will finally transferred
-into your designated bank account in your country.
+Either:
 
-During this trip, the government have set up a board of directors,
-there work is to sponsor your trip tho and back to where the fund will
-be developed, also on your arrival to Ecuador the diplomat will come
-and give you a sum of $1000 for your hotel expenses and on your
-arrival to Europe where this fund will be develop, you will be given
-another $1000 that will take the whole expense for the few days it
-take them to cleanse the fund.
+We have documentary evidence that all Aquantia PHYs support this all
+the time.
 
-After they might have cleanse the money, they come back and pick you
-to any local bank where this fund will be lodge for onward transfer
-into your  designated bank account in your country.
+We add code to read registers to determine if the feature is enabled.
 
-After the fund is been transferred into your account I will come over
-to have my own share of the fund. If you have any doubts or question
-to ask, please feel free to ask and also I must made it clear that
-this transaction is 100% risk free noting of any problem is involve
-also we have the documents to back up the transfer to avoid any
-questioning from any authority.
+We add code to enable the feature.
 
-Lastly,You are not going to spend any money on this trip, the
-government has set board of directors that will take care of the
-expenses so nobody will ask you to come up with Money
+You limit the scope of this to just your MAC driver. It can try to
+detect if an Aquantia phy is being used, phdev->drv can be used to
+detect this, and then you enable the extra link modes. Or add a device
+tree property, etc.
 
-Get back to me with your first data page of your international
-passport to enable the sponsor secure your visa. You are not going to
-spend any single dollars, all the expenses both flight ticket and your
-feeding, hotel accommodation will be taking care by the sponsor mapped
-by the government.
-
-All you need is to indicate your interest open also send your mobile
-telephone number and your international passport data page to enable
-the sponsor proceed with your traveling documents and  your visa
-processing.
-
-Thanks for your understanding and cooperation towards the
-actualization of this transaction.
-
-Mr. Paul Smith
-Dept of United Nation
+Thanks
+	Andrew
 
 
-THIS IS LEGITIMATE AND GENUINE TRANSACTION
