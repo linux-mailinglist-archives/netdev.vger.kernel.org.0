@@ -2,26 +2,26 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 5B24414CCD0
-	for <lists+netdev@lfdr.de>; Wed, 29 Jan 2020 15:55:11 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 841ED14CCD1
+	for <lists+netdev@lfdr.de>; Wed, 29 Jan 2020 15:55:14 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726707AbgA2OzJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 29 Jan 2020 09:55:09 -0500
-Received: from Chamillionaire.breakpoint.cc ([193.142.43.52]:42566 "EHLO
+        id S1726719AbgA2OzM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 29 Jan 2020 09:55:12 -0500
+Received: from Chamillionaire.breakpoint.cc ([193.142.43.52]:42576 "EHLO
         Chamillionaire.breakpoint.cc" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726645AbgA2OzI (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 29 Jan 2020 09:55:08 -0500
+        by vger.kernel.org with ESMTP id S1726645AbgA2OzL (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 29 Jan 2020 09:55:11 -0500
 Received: from fw by Chamillionaire.breakpoint.cc with local (Exim 4.92)
         (envelope-from <fw@breakpoint.cc>)
-        id 1iwokE-00078F-2M; Wed, 29 Jan 2020 15:55:06 +0100
+        id 1iwokI-00078a-Bv; Wed, 29 Jan 2020 15:55:10 +0100
 From:   Florian Westphal <fw@strlen.de>
 To:     <netdev@vger.kernel.org>
 Cc:     matthieu.baerts@tessares.net, mathew.j.martineau@linux.intel.com,
         Florian Westphal <fw@strlen.de>,
         Christoph Paasch <cpaasch@apple.com>
-Subject: [PATCH net 2/4] mptcp: fix panic on user pointer access
-Date:   Wed, 29 Jan 2020 15:54:44 +0100
-Message-Id: <20200129145446.26425-3-fw@strlen.de>
+Subject: [PATCH net 3/4] mptcp: avoid a lockdep splat when mcast group was joined
+Date:   Wed, 29 Jan 2020 15:54:45 +0100
+Message-Id: <20200129145446.26425-4-fw@strlen.de>
 X-Mailer: git-send-email 2.24.1
 In-Reply-To: <20200129145446.26425-1-fw@strlen.de>
 References: <20200129145446.26425-1-fw@strlen.de>
@@ -32,186 +32,93 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Its not possible to call the kernel_(s|g)etsockopt functions here,
-the address points to user memory:
+syzbot triggered following lockdep splat:
 
-General protection fault in user access. Non-canonical address?
-WARNING: CPU: 1 PID: 5352 at arch/x86/mm/extable.c:77 ex_handler_uaccess+0xba/0xe0 arch/x86/mm/extable.c:77
-Kernel panic - not syncing: panic_on_warn set ...
-[..]
-Call Trace:
- fixup_exception+0x9d/0xcd arch/x86/mm/extable.c:178
- general_protection+0x2d/0x40 arch/x86/entry/entry_64.S:1202
- do_ip_getsockopt+0x1f6/0x1860 net/ipv4/ip_sockglue.c:1323
- ip_getsockopt+0x87/0x1c0 net/ipv4/ip_sockglue.c:1561
- tcp_getsockopt net/ipv4/tcp.c:3691 [inline]
- tcp_getsockopt+0x8c/0xd0 net/ipv4/tcp.c:3685
- kernel_getsockopt+0x121/0x1f0 net/socket.c:3736
- mptcp_getsockopt+0x69/0x90 net/mptcp/protocol.c:830
- __sys_getsockopt+0x13a/0x220 net/socket.c:2175
+ffffffff82d2cd40 (rtnl_mutex){+.+.}, at: ip_mc_drop_socket+0x52/0x180
+but task is already holding lock:
+ffff8881187a2310 (sk_lock-AF_INET){+.+.}, at: mptcp_close+0x18/0x30
 
-We can call tcp_get/setsockopt functions instead.  Doing so fixes
-crashing, but still leaves rtnl related lockdep splat:
+which lock already depends on the new lock.
 
-     WARNING: possible circular locking dependency detected
-     5.5.0-rc6 #2 Not tainted
-     ------------------------------------------------------
-     syz-executor.0/16334 is trying to acquire lock:
-     ffffffff84f7a080 (rtnl_mutex){+.+.}, at: do_ip_setsockopt.isra.0+0x277/0x3820 net/ipv4/ip_sockglue.c:644
-     but task is already holding lock:
-     ffff888116503b90 (sk_lock-AF_INET){+.+.}, at: lock_sock include/net/sock.h:1516 [inline]
-     ffff888116503b90 (sk_lock-AF_INET){+.+.}, at: mptcp_setsockopt+0x28/0x90 net/mptcp/protocol.c:1284
+the existing dependency chain (in reverse order) is:
+-> #1 (sk_lock-AF_INET){+.+.}:
+       lock_acquire+0xee/0x230
+       lock_sock_nested+0x89/0xc0
+       do_ip_setsockopt.isra.0+0x335/0x22f0
+       ip_setsockopt+0x35/0x60
+       tcp_setsockopt+0x5d/0x90
+       __sys_setsockopt+0xf3/0x190
+       __x64_sys_setsockopt+0x61/0x70
+       do_syscall_64+0x72/0x300
+       entry_SYSCALL_64_after_hwframe+0x49/0xbe
+-> #0 (rtnl_mutex){+.+.}:
+       check_prevs_add+0x2b7/0x1210
+       __lock_acquire+0x10b6/0x1400
+       lock_acquire+0xee/0x230
+       __mutex_lock+0x120/0xc70
+       ip_mc_drop_socket+0x52/0x180
+       inet_release+0x36/0xe0
+       __sock_release+0xfd/0x130
+       __mptcp_close+0xa8/0x1f0
+       inet_release+0x7f/0xe0
+       __sock_release+0x69/0x130
+       sock_close+0x18/0x20
+       __fput+0x179/0x400
+       task_work_run+0xd5/0x110
+       do_exit+0x685/0x1510
+       do_group_exit+0x7e/0x170
+       __x64_sys_exit_group+0x28/0x30
+       do_syscall_64+0x72/0x300
+       entry_SYSCALL_64_after_hwframe+0x49/0xbe
 
-     which lock already depends on the new lock.
-     the existing dependency chain (in reverse order) is:
+The trigger is:
+  socket(AF_INET, SOCK_STREAM, 0x106 /* IPPROTO_MPTCP */) = 4
+  setsockopt(4, SOL_IP, MCAST_JOIN_GROUP, {gr_interface=7, gr_group={sa_family=AF_INET, sin_port=htons(20003), sin_addr=inet_addr("224.0.0.2")}}, 136) = 0
+  exit(0)
 
-     -> #1 (sk_lock-AF_INET){+.+.}:
-            lock_sock_nested+0xca/0x120 net/core/sock.c:2944
-            lock_sock include/net/sock.h:1516 [inline]
-            do_ip_setsockopt.isra.0+0x281/0x3820 net/ipv4/ip_sockglue.c:645
-            ip_setsockopt+0x44/0xf0 net/ipv4/ip_sockglue.c:1248
-            udp_setsockopt+0x5d/0xa0 net/ipv4/udp.c:2639
-            __sys_setsockopt+0x152/0x240 net/socket.c:2130
-            __do_sys_setsockopt net/socket.c:2146 [inline]
-            __se_sys_setsockopt net/socket.c:2143 [inline]
-            __x64_sys_setsockopt+0xba/0x150 net/socket.c:2143
-            do_syscall_64+0xbd/0x5b0 arch/x86/entry/common.c:294
-            entry_SYSCALL_64_after_hwframe+0x49/0xbe
+Which results in a call to rtnl_lock while we are holding
+the parent mptcp socket lock via
+mptcp_close -> lock_sock(msk) -> inet_release -> ip_mc_drop_socket -> rtnl_lock().
 
-     -> #0 (rtnl_mutex){+.+.}:
-            check_prev_add kernel/locking/lockdep.c:2475 [inline]
-            check_prevs_add kernel/locking/lockdep.c:2580 [inline]
-            validate_chain kernel/locking/lockdep.c:2970 [inline]
-            __lock_acquire+0x1fb2/0x4680 kernel/locking/lockdep.c:3954
-            lock_acquire+0x127/0x330 kernel/locking/lockdep.c:4484
-            __mutex_lock_common kernel/locking/mutex.c:956 [inline]
-            __mutex_lock+0x158/0x1340 kernel/locking/mutex.c:1103
-            do_ip_setsockopt.isra.0+0x277/0x3820 net/ipv4/ip_sockglue.c:644
-            ip_setsockopt+0x44/0xf0 net/ipv4/ip_sockglue.c:1248
-            tcp_setsockopt net/ipv4/tcp.c:3159 [inline]
-            tcp_setsockopt+0x8c/0xd0 net/ipv4/tcp.c:3153
-            kernel_setsockopt+0x121/0x1f0 net/socket.c:3767
-            mptcp_setsockopt+0x69/0x90 net/mptcp/protocol.c:1288
-            __sys_setsockopt+0x152/0x240 net/socket.c:2130
-            __do_sys_setsockopt net/socket.c:2146 [inline]
-            __se_sys_setsockopt net/socket.c:2143 [inline]
-            __x64_sys_setsockopt+0xba/0x150 net/socket.c:2143
-            do_syscall_64+0xbd/0x5b0 arch/x86/entry/common.c:294
-            entry_SYSCALL_64_after_hwframe+0x49/0xbe
+From lockdep point of view we thus have both
+'rtnl_lock; lock_sock' and 'lock_sock; rtnl_lock'.
 
-     other info that might help us debug this:
+Fix this by stealing the msk conn_list and doing the subflow close
+without holding the msk lock.
 
-      Possible unsafe locking scenario:
-
-            CPU0                    CPU1
-            ----                    ----
-       lock(sk_lock-AF_INET);
-                                    lock(rtnl_mutex);
-                                    lock(sk_lock-AF_INET);
-       lock(rtnl_mutex);
-
-The lockdep complaint is because we hold mptcp socket lock when calling
-the sk_prot get/setsockopt handler, and those might need to acquire the
-rtnl mutex.  Normally, order is:
-
-rtnl_lock(sk) -> lock_sock
-
-Whereas for mptcp the order is
-
-lock_sock(mptcp_sk) rtnl_lock -> lock_sock(subflow_sk)
-
-We can avoid this by releasing the mptcp socket lock early, but, as Paolo
-points out, we need to get/put the subflow socket refcount before doing so
-to avoid race with concurrent close().
-
-Fixes: 717e79c867ca5 ("mptcp: Add setsockopt()/getsockopt() socket operations")
+Fixes: cec37a6e41aae7bf ("mptcp: Handle MP_CAPABLE options for outgoing connections")
 Reported-by: Christoph Paasch <cpaasch@apple.com>
 Signed-off-by: Florian Westphal <fw@strlen.de>
 ---
- net/mptcp/protocol.c | 40 ++++++++++++++++++++++------------------
- 1 file changed, 22 insertions(+), 18 deletions(-)
+ net/mptcp/protocol.c | 8 ++++++--
+ 1 file changed, 6 insertions(+), 2 deletions(-)
 
 diff --git a/net/mptcp/protocol.c b/net/mptcp/protocol.c
-index f1b1160dbbb4..07ebff6396cd 100644
+index 07ebff6396cd..73c192d8c158 100644
 --- a/net/mptcp/protocol.c
 +++ b/net/mptcp/protocol.c
-@@ -781,15 +781,12 @@ static void mptcp_destroy(struct sock *sk)
- }
- 
- static int mptcp_setsockopt(struct sock *sk, int level, int optname,
--			    char __user *uoptval, unsigned int optlen)
-+			    char __user *optval, unsigned int optlen)
+@@ -644,17 +644,21 @@ static void __mptcp_close(struct sock *sk, long timeout)
  {
+ 	struct mptcp_subflow_context *subflow, *tmp;
  	struct mptcp_sock *msk = mptcp_sk(sk);
--	char __kernel *optval;
- 	int ret = -EOPNOTSUPP;
- 	struct socket *ssock;
--
--	/* will be treated as __user in tcp_setsockopt */
--	optval = (char __kernel __force *)uoptval;
-+	struct sock *ssk;
++	LIST_HEAD(conn_list);
  
- 	pr_debug("msk=%p", msk);
+ 	mptcp_token_destroy(msk->token);
+ 	inet_sk_state_store(sk, TCP_CLOSE);
  
-@@ -798,27 +795,28 @@ static int mptcp_setsockopt(struct sock *sk, int level, int optname,
- 	 */
- 	lock_sock(sk);
- 	ssock = __mptcp_socket_create(msk, MPTCP_SAME_STATE);
--	if (!IS_ERR(ssock)) {
--		pr_debug("subflow=%p", ssock->sk);
--		ret = kernel_setsockopt(ssock, level, optname, optval, optlen);
-+	if (IS_ERR(ssock)) {
-+		release_sock(sk);
-+		return ret;
+-	list_for_each_entry_safe(subflow, tmp, &msk->conn_list, node) {
++	list_splice_init(&msk->conn_list, &conn_list);
++
++	release_sock(sk);
++
++	list_for_each_entry_safe(subflow, tmp, &conn_list, node) {
+ 		struct sock *ssk = mptcp_subflow_tcp_sock(subflow);
+ 
+ 		__mptcp_close_ssk(sk, ssk, subflow, timeout);
  	}
-+
-+	ssk = ssock->sk;
-+	sock_hold(ssk);
- 	release_sock(sk);
  
-+	ret = tcp_setsockopt(ssk, level, optname, optval, optlen);
-+	sock_put(ssk);
-+
- 	return ret;
- }
- 
- static int mptcp_getsockopt(struct sock *sk, int level, int optname,
--			    char __user *uoptval, int __user *uoption)
-+			    char __user *optval, int __user *option)
- {
- 	struct mptcp_sock *msk = mptcp_sk(sk);
--	char __kernel *optval;
- 	int ret = -EOPNOTSUPP;
--	int __kernel *option;
- 	struct socket *ssock;
--
--	/* will be treated as __user in tcp_getsockopt */
--	optval = (char __kernel __force *)uoptval;
--	option = (int __kernel __force *)uoption;
-+	struct sock *ssk;
- 
- 	pr_debug("msk=%p", msk);
- 
-@@ -827,12 +825,18 @@ static int mptcp_getsockopt(struct sock *sk, int level, int optname,
- 	 */
- 	lock_sock(sk);
- 	ssock = __mptcp_socket_create(msk, MPTCP_SAME_STATE);
--	if (!IS_ERR(ssock)) {
--		pr_debug("subflow=%p", ssock->sk);
--		ret = kernel_getsockopt(ssock, level, optname, optval, option);
-+	if (IS_ERR(ssock)) {
-+		release_sock(sk);
-+		return ret;
- 	}
-+
-+	ssk = ssock->sk;
-+	sock_hold(ssk);
- 	release_sock(sk);
- 
-+	ret = tcp_getsockopt(ssk, level, optname, optval, option);
-+	sock_put(ssk);
-+
- 	return ret;
+-	release_sock(sk);
+ 	sk_common_release(sk);
  }
  
 -- 
