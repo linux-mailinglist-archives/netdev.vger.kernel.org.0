@@ -2,189 +2,132 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 11DE614C3BE
-	for <lists+netdev@lfdr.de>; Wed, 29 Jan 2020 00:51:18 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A6EF014C3D1
+	for <lists+netdev@lfdr.de>; Wed, 29 Jan 2020 01:10:45 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726515AbgA1XvQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 28 Jan 2020 18:51:16 -0500
-Received: from mga01.intel.com ([192.55.52.88]:42267 "EHLO mga01.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726466AbgA1XvQ (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 28 Jan 2020 18:51:16 -0500
-X-Amp-Result: SKIPPED(no attachment in message)
-X-Amp-File-Uploaded: False
-Received: from fmsmga003.fm.intel.com ([10.253.24.29])
-  by fmsmga101.fm.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 28 Jan 2020 15:51:15 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.70,375,1574150400"; 
-   d="scan'208";a="277321930"
-Received: from vcostago-desk1.jf.intel.com ([10.54.70.26])
-  by FMSMGA003.fm.intel.com with ESMTP; 28 Jan 2020 15:51:16 -0800
-From:   Vinicius Costa Gomes <vinicius.gomes@intel.com>
-To:     netdev@vger.kernel.org
-Cc:     Vinicius Costa Gomes <vinicius.gomes@intel.com>, jhs@mojatatu.com,
-        xiyou.wangcong@gmail.com, jiri@resnulli.us, davem@davemloft.net,
-        vladimir.oltean@nxp.com, po.liu@nxp.com
-Subject: [PATCH net v2 3/3] taprio: Fix still allowing changing the flags during runtime
-Date:   Tue, 28 Jan 2020 15:52:27 -0800
-Message-Id: <20200128235227.3942256-4-vinicius.gomes@intel.com>
-X-Mailer: git-send-email 2.25.0
-In-Reply-To: <20200128235227.3942256-1-vinicius.gomes@intel.com>
-References: <20200128235227.3942256-1-vinicius.gomes@intel.com>
+        id S1726393AbgA2AFz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 28 Jan 2020 19:05:55 -0500
+Received: from mail-yw1-f66.google.com ([209.85.161.66]:42915 "EHLO
+        mail-yw1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726293AbgA2AFz (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 28 Jan 2020 19:05:55 -0500
+Received: by mail-yw1-f66.google.com with SMTP id b81so5389588ywe.9;
+        Tue, 28 Jan 2020 16:05:54 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=sender:date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=rgWPjpm71KLMajt1C0pJqM2Dk9ey1dZlH3RmoN0wOJA=;
+        b=OUKA13bHs4m3WEJAZa6xubUE/Wfr72WOxP3GdGKdTm/Qfboo81x06MsBzAj2GZ9jH7
+         ULhGmpJLSAQtssiTAH+oBbQT7rrXb0+VYkY8NPNRFHenVAuMcDVWNOAC3a1MWYO5pgca
+         C4YonlEHYzWqYlg0RtJkWYLwTZg+ByBKV4i2Q0JMgDGaU1gVdW3YwBPFyOjvplZKcCxh
+         BkZiR0ICrx6kCaVwk1GtjlfO9WGiDfeb0bq/X46OLgIFrt+QDEOCs9cHZOeJGKRVmNNx
+         UJORX9Ph9cbztLd9AjBW8qfwEqzE6JG4T+EtN0tOer0y82L1IpcBIZ1lvcKEPnAI9rEV
+         Iqww==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:sender:date:from:to:cc:subject:message-id
+         :references:mime-version:content-disposition:in-reply-to:user-agent;
+        bh=rgWPjpm71KLMajt1C0pJqM2Dk9ey1dZlH3RmoN0wOJA=;
+        b=U/7MG6x+cRD4sdbob1yKBgAhoDbyHUjU8m31XwAChY+1KxQ//5RzALqbj6Qvl7Szb/
+         KjQH6+VF01tHrvd6ftZ4PVkpItQJ2Za+poxVSYS3tE+Lolk35DV7J/xj6k1ytRPhl4OG
+         Nft00jw5i4OcL+PWKOVdH3dgbDZVXszWwHjBAtaZWMTAJvDQyzxfIpVsmNs+U35FBGG9
+         NdULrGQwtxTrC6wLiiXFF7uHKhIue3Mr61rkyckxoA4lDPJwfX2pkxgBc1yybvIauoeM
+         K3v9RP8UoyJ1wb1QYDAuicwDCRAX0xGiqaEJQ0PBFD3jEKuRUc/efMGHv0r+8y+xddHS
+         KFKQ==
+X-Gm-Message-State: APjAAAUWTLUO6KfsiJkCK75A/7VbRX7HgEVA5ezbzuhIWUptXC/7k/TH
+        X/ukFHbAulcCmgvLXb157NlCzxsz
+X-Google-Smtp-Source: APXvYqzJzWgZFNse0f/wEG06A1YsX783dXOB6ZYgMeRQ/nyRoRfq2LJueuEcAhicvK5yNFnSh/3DRQ==
+X-Received: by 2002:a81:71d7:: with SMTP id m206mr18062471ywc.495.1580256353789;
+        Tue, 28 Jan 2020 16:05:53 -0800 (PST)
+Received: from localhost ([2600:1700:e321:62f0:329c:23ff:fee3:9d7c])
+        by smtp.gmail.com with ESMTPSA id 63sm213636ywg.96.2020.01.28.16.05.52
+        (version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
+        Tue, 28 Jan 2020 16:05:53 -0800 (PST)
+Date:   Tue, 28 Jan 2020 16:05:51 -0800
+From:   Guenter Roeck <linux@roeck-us.net>
+To:     Doug Anderson <dianders@chromium.org>
+Cc:     Kalle Valo <kvalo@codeaurora.org>,
+        Arend van Spriel <arend.vanspriel@broadcom.com>,
+        Franky Lin <franky.lin@broadcom.com>,
+        Hante Meuleman <hante.meuleman@broadcom.com>,
+        Chi-Hsien Lin <chi-hsien.lin@cypress.com>,
+        Dan Carpenter <dan.carpenter@oracle.com>,
+        linux-wireless <linux-wireless@vger.kernel.org>,
+        brcm80211-dev-list.pdl@broadcom.com,
+        brcm80211-dev-list <brcm80211-dev-list@cypress.com>,
+        netdev <netdev@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Matthias Kaehlcke <mka@chromium.org>,
+        Brian Norris <briannorris@chromium.org>
+Subject: Re: [PATCH] brcmfmac: abort and release host after error
+Message-ID: <20200129000551.GA17256@roeck-us.net>
+References: <20200128221457.12467-1-linux@roeck-us.net>
+ <CAD=FV=Wg2MZ56fsCk+TvRSSeZVz5eM4cwugK=HN6imm5wfGgiw@mail.gmail.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAD=FV=Wg2MZ56fsCk+TvRSSeZVz5eM4cwugK=HN6imm5wfGgiw@mail.gmail.com>
+User-Agent: Mutt/1.9.4 (2018-02-28)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Because 'q->flags' starts as zero, and zero is a valid value, we
-aren't able to detect the transition from zero to something else
-during "runtime".
+On Tue, Jan 28, 2020 at 03:14:45PM -0800, Doug Anderson wrote:
+> Hi,
+> 
+> On Tue, Jan 28, 2020 at 2:15 PM Guenter Roeck <linux@roeck-us.net> wrote:
+> >
+> > With commit 216b44000ada ("brcmfmac: Fix use after free in
+> > brcmf_sdio_readframes()") applied, we see locking timeouts in
+> > brcmf_sdio_watchdog_thread().
+> >
+> > brcmfmac: brcmf_escan_timeout: timer expired
+> > INFO: task brcmf_wdog/mmc1:621 blocked for more than 120 seconds.
+> > Not tainted 4.19.94-07984-g24ff99a0f713 #1
+> > "echo 0 > /proc/sys/kernel/hung_task_timeout_secs" disables this message.
+> > brcmf_wdog/mmc1 D    0   621      2 0x00000000 last_sleep: 2440793077.  last_runnable: 2440766827
+> > [<c0aa1e60>] (__schedule) from [<c0aa2100>] (schedule+0x98/0xc4)
+> > [<c0aa2100>] (schedule) from [<c0853830>] (__mmc_claim_host+0x154/0x274)
+> > [<c0853830>] (__mmc_claim_host) from [<bf10c5b8>] (brcmf_sdio_watchdog_thread+0x1b0/0x1f8 [brcmfmac])
+> > [<bf10c5b8>] (brcmf_sdio_watchdog_thread [brcmfmac]) from [<c02570b8>] (kthread+0x178/0x180)
+> >
+> > In addition to restarting or exiting the loop, it is also necessary to
+> > abort the command and to release the host.
+> >
+> > Fixes: 216b44000ada ("brcmfmac: Fix use after free in brcmf_sdio_readframes()")
+> > Cc: Dan Carpenter <dan.carpenter@oracle.com>
+> > Cc: Matthias Kaehlcke <mka@chromium.org>
+> > Cc: Brian Norris <briannorris@chromium.org>
+> > Cc: Douglas Anderson <dianders@chromium.org>
+> > Signed-off-by: Guenter Roeck <linux@roeck-us.net>
+> > ---
+> >  drivers/net/wireless/broadcom/brcm80211/brcmfmac/sdio.c | 2 ++
+> >  1 file changed, 2 insertions(+)
+> >
+> > diff --git a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/sdio.c b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/sdio.c
+> > index f9df95bc7fa1..2e1c23c7269d 100644
+> > --- a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/sdio.c
+> > +++ b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/sdio.c
+> > @@ -1938,6 +1938,8 @@ static uint brcmf_sdio_readframes(struct brcmf_sdio *bus, uint maxframes)
+> >                         if (brcmf_sdio_hdparse(bus, bus->rxhdr, &rd_new,
+> >                                                BRCMF_SDIO_FT_NORMAL)) {
+> >                                 rd->len = 0;
+> > +                               brcmf_sdio_rxfail(bus, true, true);
+> > +                               sdio_release_host(bus->sdiodev->func1);
+> 
+> I don't know much about this driver so I don't personally know if
+> "true, true" is the correct thing to pass to brcmf_sdio_rxfail(), but
+> it seems plausible.  Definitely the fix to call sdio_release_host() is
+> sane.
+> 
+> Thus, unless someone knows for sure that brcmf_sdio_rxfail()'s
+> parameters should be different:
+> 
+Actually, looking at brcmf_sdio_hdparse() and its other callers,
+I think it may not be needed at all - other callers don't do it, and
+there already are some calls to brcmf_sdio_rxfail() in that function.
+It would be nice though to get a confirmation before I submit v2.
 
-The solution is to initialize 'q->flags' with an invalid value, so we
-can detect if 'q->flags' was set by the user or not.
-
-This was causing the following RCU stall:
-
-[ 1730.558249] rcu: INFO: rcu_preempt detected stalls on CPUs/tasks:
-[ 1730.558258] rcu: 	  6-...0: (190 ticks this GP) idle=922/0/0x1 softirq=25580/25582 fqs=16250
-[ 1730.558264] 		  (detected by 2, t=65002 jiffies, g=33017, q=81)
-[ 1730.558269] Sending NMI from CPU 2 to CPUs 6:
-[ 1730.559277] NMI backtrace for cpu 6
-[ 1730.559277] CPU: 6 PID: 0 Comm: swapper/6 Tainted: G            E     5.5.0-rc6+ #35
-[ 1730.559278] Hardware name: Gigabyte Technology Co., Ltd. Z390 AORUS ULTRA/Z390 AORUS ULTRA-CF, BIOS F7 03/14/2019
-[ 1730.559278] RIP: 0010:__hrtimer_run_queues+0xe2/0x440
-[ 1730.559278] Code: 48 8b 43 28 4c 89 ff 48 8b 75 c0 48 89 45 c8 e8 f4 bb 7c 00 0f 1f 44 00 00 65 8b 05 40 31 f0 68 89 c0 48 0f a3 05 3e 5c 25 01 <0f> 82 fc 01 00 00 48 8b 45 c8 48 89 df ff d0 89 45 c8 0f 1f 44 00
-[ 1730.559279] RSP: 0018:ffff9970802d8f10 EFLAGS: 00000083
-[ 1730.559279] RAX: 0000000000000006 RBX: ffff8b31645bff38 RCX: 0000000000000000
-[ 1730.559280] RDX: 0000000000000000 RSI: ffffffff9710f2ec RDI: ffffffff978daf0e
-[ 1730.559280] RBP: ffff9970802d8f68 R08: 0000000000000000 R09: 0000000000000000
-[ 1730.559280] R10: 0000018336d7944e R11: 0000000000000001 R12: ffff8b316e39f9c0
-[ 1730.559281] R13: ffff8b316e39f940 R14: ffff8b316e39f998 R15: ffff8b316e39f7c0
-[ 1730.559281] FS:  0000000000000000(0000) GS:ffff8b316e380000(0000) knlGS:0000000000000000
-[ 1730.559281] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-[ 1730.559281] CR2: 00007f1105303760 CR3: 0000000227210005 CR4: 00000000003606e0
-[ 1730.559282] DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
-[ 1730.559282] DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
-[ 1730.559282] Call Trace:
-[ 1730.559282]  <IRQ>
-[ 1730.559283]  ? taprio_dequeue_soft+0x2d0/0x2d0 [sch_taprio]
-[ 1730.559283]  hrtimer_interrupt+0x104/0x220
-[ 1730.559283]  ? irqtime_account_irq+0x34/0xa0
-[ 1730.559283]  smp_apic_timer_interrupt+0x6d/0x230
-[ 1730.559284]  apic_timer_interrupt+0xf/0x20
-[ 1730.559284]  </IRQ>
-[ 1730.559284] RIP: 0010:cpu_idle_poll+0x35/0x1a0
-[ 1730.559285] Code: 88 82 ff 65 44 8b 25 12 7d 73 68 0f 1f 44 00 00 e8 90 c3 89 ff fb 65 48 8b 1c 25 c0 7e 01 00 48 8b 03 a8 08 74 0b eb 1c f3 90 <48> 8b 03 a8 08 75 13 8b 05 be a8 a8 00 85 c0 75 ed e8 75 48 84 ff
-[ 1730.559285] RSP: 0018:ffff997080137ea8 EFLAGS: 00000202 ORIG_RAX: ffffffffffffff13
-[ 1730.559285] RAX: 0000000000000001 RBX: ffff8b316bc3c580 RCX: 0000000000000000
-[ 1730.559286] RDX: 0000000000000001 RSI: 000000002819aad9 RDI: ffffffff978da730
-[ 1730.559286] RBP: ffff997080137ec0 R08: 0000018324a6d387 R09: 0000000000000000
-[ 1730.559286] R10: 0000000000000400 R11: 0000000000000001 R12: 0000000000000006
-[ 1730.559286] R13: ffff8b316bc3c580 R14: 0000000000000000 R15: 0000000000000000
-[ 1730.559287]  ? cpu_idle_poll+0x20/0x1a0
-[ 1730.559287]  ? cpu_idle_poll+0x20/0x1a0
-[ 1730.559287]  do_idle+0x4d/0x1f0
-[ 1730.559287]  ? complete+0x44/0x50
-[ 1730.559288]  cpu_startup_entry+0x1b/0x20
-[ 1730.559288]  start_secondary+0x142/0x180
-[ 1730.559288]  secondary_startup_64+0xb6/0xc0
-[ 1776.686313] nvme nvme0: I/O 96 QID 1 timeout, completion polled
-
-Fixes: 4cfd5779bd6e ("taprio: Add support for txtime-assist mode")
-Signed-off-by: Vinicius Costa Gomes <vinicius.gomes@intel.com>
----
- net/sched/sch_taprio.c | 47 ++++++++++++++++++++++++++++++------------
- 1 file changed, 34 insertions(+), 13 deletions(-)
-
-diff --git a/net/sched/sch_taprio.c b/net/sched/sch_taprio.c
-index 110143fba114..7a13a144615b 100644
---- a/net/sched/sch_taprio.c
-+++ b/net/sched/sch_taprio.c
-@@ -31,6 +31,7 @@ static DEFINE_SPINLOCK(taprio_list_lock);
- 
- #define TXTIME_ASSIST_IS_ENABLED(flags) ((flags) & TCA_TAPRIO_ATTR_FLAG_TXTIME_ASSIST)
- #define FULL_OFFLOAD_IS_ENABLED(flags) ((flags) & TCA_TAPRIO_ATTR_FLAG_FULL_OFFLOAD)
-+#define TAPRIO_FLAGS_INVALID U32_MAX
- 
- struct sched_entry {
- 	struct list_head list;
-@@ -1367,6 +1368,33 @@ static int taprio_mqprio_cmp(const struct net_device *dev,
- 	return 0;
- }
- 
-+static int taprio_new_flags(const struct nlattr *attr, u32 old,
-+			    struct netlink_ext_ack *extack)
-+{
-+	u32 new = 0;
-+
-+	if (attr) {
-+		new = nla_get_u32(attr);
-+	} else if (old != TAPRIO_FLAGS_INVALID) {
-+		/* If the user didn't specify new flags and the old
-+		 * one is valid, use the old value.
-+		 */
-+		return old;
-+	}
-+
-+	if (old != TAPRIO_FLAGS_INVALID && old != new) {
-+		NL_SET_ERR_MSG_MOD(extack, "Changing 'flags' of a running schedule is not supported");
-+		return -ENOTSUPP;
-+	}
-+
-+	if (!taprio_flags_valid(new)) {
-+		NL_SET_ERR_MSG_MOD(extack, "Specified 'flags' are not valid");
-+		return -EINVAL;
-+	}
-+
-+	return new;
-+}
-+
- static int taprio_change(struct Qdisc *sch, struct nlattr *opt,
- 			 struct netlink_ext_ack *extack)
- {
-@@ -1375,7 +1403,6 @@ static int taprio_change(struct Qdisc *sch, struct nlattr *opt,
- 	struct taprio_sched *q = qdisc_priv(sch);
- 	struct net_device *dev = qdisc_dev(sch);
- 	struct tc_mqprio_qopt *mqprio = NULL;
--	u32 taprio_flags = 0;
- 	unsigned long flags;
- 	ktime_t start;
- 	int i, err;
-@@ -1388,19 +1415,12 @@ static int taprio_change(struct Qdisc *sch, struct nlattr *opt,
- 	if (tb[TCA_TAPRIO_ATTR_PRIOMAP])
- 		mqprio = nla_data(tb[TCA_TAPRIO_ATTR_PRIOMAP]);
- 
--	if (tb[TCA_TAPRIO_ATTR_FLAGS]) {
--		taprio_flags = nla_get_u32(tb[TCA_TAPRIO_ATTR_FLAGS]);
--
--		if (q->flags != 0 && q->flags != taprio_flags) {
--			NL_SET_ERR_MSG_MOD(extack, "Changing 'flags' of a running schedule is not supported");
--			return -EOPNOTSUPP;
--		} else if (!taprio_flags_valid(taprio_flags)) {
--			NL_SET_ERR_MSG_MOD(extack, "Specified 'flags' are not valid");
--			return -EINVAL;
--		}
-+	err = taprio_new_flags(tb[TCA_TAPRIO_ATTR_FLAGS],
-+			       q->flags, extack);
-+	if (err < 0)
-+		return err;
- 
--		q->flags = taprio_flags;
--	}
-+	q->flags = err;
- 
- 	err = taprio_parse_mqprio_opt(dev, mqprio, extack, q->flags);
- 	if (err < 0)
-@@ -1597,6 +1617,7 @@ static int taprio_init(struct Qdisc *sch, struct nlattr *opt,
- 	 * and get the valid one on taprio_change().
- 	 */
- 	q->clockid = -1;
-+	q->flags = TAPRIO_FLAGS_INVALID;
- 
- 	spin_lock(&taprio_list_lock);
- 	list_add(&q->taprio_list, &taprio_list);
--- 
-2.25.0
-
+Guenter
