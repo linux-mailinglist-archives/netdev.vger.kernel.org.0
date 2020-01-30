@@ -2,146 +2,179 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 8915C14DD79
-	for <lists+netdev@lfdr.de>; Thu, 30 Jan 2020 16:02:01 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2938314DD9B
+	for <lists+netdev@lfdr.de>; Thu, 30 Jan 2020 16:10:01 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727263AbgA3PB6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 30 Jan 2020 10:01:58 -0500
-Received: from mail-pg1-f193.google.com ([209.85.215.193]:46836 "EHLO
-        mail-pg1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726948AbgA3PB5 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 30 Jan 2020 10:01:57 -0500
-Received: by mail-pg1-f193.google.com with SMTP id z124so1765338pgb.13;
-        Thu, 30 Jan 2020 07:01:57 -0800 (PST)
+        id S1727247AbgA3PJ7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 30 Jan 2020 10:09:59 -0500
+Received: from mail-lf1-f65.google.com ([209.85.167.65]:38623 "EHLO
+        mail-lf1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726948AbgA3PJ7 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 30 Jan 2020 10:09:59 -0500
+Received: by mail-lf1-f65.google.com with SMTP id r14so2523475lfm.5
+        for <netdev@vger.kernel.org>; Thu, 30 Jan 2020 07:09:55 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=taXx+ntK4GyiVfQ3GXRjKHqsGEpKX33UOGmexQOYw6g=;
-        b=Bv0Vc4HY0jMs32vYmT5Wkh5RlSLywxFvOyqwUAax7QzIm9W3o7HvGJRBu5/9OdK1Ja
-         XoKsoQPPrBoZXLOcF9gWbqYygavumFBdYqZMlfOBN68cSOU4Vzem3DZH3sjZFZKaRvU0
-         fy1gUGNFH9OxDax3GYrdBzKbU81EQVfLJP2NsbRyWG0SHnLtcbUhyd+rMqiZT7D0s7rd
-         OmJh85q/oughbIgHyazE7WvZx4YzJWmVmDGG+ZHh+QaY2IkiPGmndb2+E5kx7X0iHxBe
-         /+YIIAuoQQEMb8LpxQID1FkTIbW4fY47e6jvkpHMtJXOmda+1esmnEqE9YxssZ4Xgi8Y
-         xnHQ==
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=4h+4OGu1kh8r5D+nWBY6Iqkh5f24yEITwaPsUihYoQM=;
+        b=tUKOR4b4pgGF+2VE2u7EDS6RYuvEVwdqIi9VoY8PMT3czyMUqu5kASIXiVs2Ul3QiE
+         FktJIWtoWm4MjSFY/LqsZaaOl3D5nc+KpgIzuIdBiZmQt2DNN9zbvGcgCR+s+GjErJq6
+         kpbXS374PoHjhfKjXIdigAfSG6m3T+GsZXedUXxSl61KlLCYask2SE1CK2GY6sN5RkXx
+         ld0CwZ/pWr6g15xF+ADzSUngj2lV+ISDq0jW+76zXeulYu+yakTvRyA5Eoh0Fmuo5ZTL
+         bCPr6HjeRIosyixmJfcmYGtvuTk+URZOIwnYa9yd7CSHtasT1NWwKPSYAVHGEjqicP/g
+         nHVQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=taXx+ntK4GyiVfQ3GXRjKHqsGEpKX33UOGmexQOYw6g=;
-        b=YtzH80Rn2XvZ1zxSsQ/ghk5uf4CuwGI7ptoSdTbUGTsqbIjQi/joMeNJN6+PGsuzxB
-         Yoo5RuowBgBHQnNjfbSXxyX1jxx8skcZeobnNi5AkQmAEFytFrPC6chESJw78OGbYakK
-         ltO1dyhQHM+O7YXWLpz9xfvSJQDuBzPenXJuldveqJWg0pSxfYWexD42atED/g8oT17m
-         cVpCFmtif4+NY/iuYyqvBwh/En5rd6asW3/Ej+x6XxF3ZA5ms1C/1I88WGJu6+7gR2P8
-         jvDoB22UK2RxeiCLFNUP239gmHod5QX4ZGPrLJFseWaqnnIUm+40gIffxRqXlWEOZJcv
-         dgUw==
-X-Gm-Message-State: APjAAAU2oxZPE5S7hQsvoZagSozDPY7CZDYz24r3ZnTdrDsb1CFmez6C
-        3/ADzt3EtpHalno3/FuXXFg=
-X-Google-Smtp-Source: APXvYqzPA/x6bG2eMMow7olzd0KpNzfQERCi5MAiCXV1A6uYdNrOnsiOgrBC96e/CeW/r3XPRDvwtg==
-X-Received: by 2002:a65:4242:: with SMTP id d2mr5196624pgq.166.1580396516645;
-        Thu, 30 Jan 2020 07:01:56 -0800 (PST)
-Received: from localhost (c-73-241-114-122.hsd1.ca.comcast.net. [73.241.114.122])
-        by smtp.gmail.com with ESMTPSA id ep2sm6743362pjb.31.2020.01.30.07.01.55
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 30 Jan 2020 07:01:55 -0800 (PST)
-Date:   Thu, 30 Jan 2020 07:01:53 -0800
-From:   Richard Cochran <richardcochran@gmail.com>
-To:     min.li.xe@renesas.com
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 2/2] ptp: Add a ptp clock driver for IDT 82P33 SMU.
-Message-ID: <20200130150153.GB1477@localhost>
-References: <1580326638-5455-1-git-send-email-min.li.xe@renesas.com>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=4h+4OGu1kh8r5D+nWBY6Iqkh5f24yEITwaPsUihYoQM=;
+        b=DueE2VEJVDsJRBzJXI0HB/b1194G1/haUS+/iAEJ8bte2V2Ml5YR7o7Av2PG7njAMQ
+         fD9x/jhP4OaIB4rhVCh/0eJkCjLilaMuo7y23RlofGOL2Ta5iPqHSv2SJsTOdTHJxk12
+         ETKxzAVeyYp1w87sOpnvgOxC2w8YNWgF0rp9jNmIwzo7/FAG6r8iJyouRFQihUOkIr76
+         HGzi2g6quQuDSKUrlF4iqSc/EFoVMJiH/oKgsMi7UKuS/4EGmz6IAR7lfySqksEVQvQY
+         32Zg1hjGYqqFyMnnKXoDf8eQTP6XSdS7LRjUNzLcsJCM/2cVYD9vfndENOjVyKs4rroV
+         +J0g==
+X-Gm-Message-State: APjAAAVe74vrASjixln1jOnrM6sNrK74FG13VfMbusdI+XSu/TsjLHmO
+        j16Dh8T6rM+18tm8k13UFlmec28yFqZUeMESMgo=
+X-Google-Smtp-Source: APXvYqwF+tFyzfLuMM2m9Ufk3I3pidW2nbZRq+OtZof3Q8nl9S2vL0bSSYYD2/0bgAKpL+VqCYByaFoAsyCeloDTz0M=
+X-Received: by 2002:a19:6d13:: with SMTP id i19mr2758146lfc.6.1580396994862;
+ Thu, 30 Jan 2020 07:09:54 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <1580326638-5455-1-git-send-email-min.li.xe@renesas.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+References: <20200127142957.1177-1-ap420073@gmail.com> <20200127065755.12cf7eb6@cakuba>
+In-Reply-To: <20200127065755.12cf7eb6@cakuba>
+From:   Taehee Yoo <ap420073@gmail.com>
+Date:   Fri, 31 Jan 2020 00:09:43 +0900
+Message-ID: <CAMArcTV9bt7SEo2010JBUj3DQAakFmkHD3hWTiMj-0kW+RVXDQ@mail.gmail.com>
+Subject: Re: [PATCH net v2 1/6] netdevsim: fix race conditions in netdevsim operations
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     David Miller <davem@davemloft.net>, Netdev <netdev@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Mon, 27 Jan 2020 at 23:57, Jakub Kicinski <kuba@kernel.org> wrote:
+>
 
-The net-next tree is closed for new submissions until after the
-mainline merge window closes.  So you will have to re-submit this
-patch then.
+Hi Jakub,
+Thank you for the review!
 
-This patch and the first one should have [net-next] in the subject
-line.  Please address both messages (1/2 and 2/2) to the netdev list,
-with the others on CC.
+> On Mon, 27 Jan 2020 14:29:57 +0000, Taehee Yoo wrote:
+> > This patch fixes a several locking problem.
+> >
+> > 1. netdevsim basic operations(new_device, del_device, new_port,
+> > and del_port) are called with sysfs.
+> > These operations use the same resource so they should acquire a lock for
+> > the whole resource not only for a list.
+> > 2. devices are managed by nsim_bus_dev_list. and all devices are deleted
+> > in the __exit() routine. After delete routine, new_device() and
+> > del_device() should be disallowed. So, the global flag variable 'enable'
+> > is added.
+> > 3. new_port() and del_port() would be called before resources are
+> > allocated or initialized. If so, panic will occur.
+> > In order to avoid this scenario, variable 'nsim_bus_dev->init' is added.
+>
+> > Fixes: f9d9db47d3ba ("netdevsim: add bus attributes to add new and delete devices")
+> > Fixes: 794b2c05ca1c ("netdevsim: extend device attrs to support port addition and deletion")
+> > Signed-off-by: Taehee Yoo <ap420073@gmail.com>
+> > ---
+> >
+> > v1 -> v2
+> >  - Do not use trylock
+> >  - Do not include code, which fixes devlink reload problem
+> >  - Update Fixes tags
+> >  - Update comments
+>
+> Thank you for the update!
+>
+> > diff --git a/drivers/net/netdevsim/bus.c b/drivers/net/netdevsim/bus.c
+> > index 6aeed0c600f8..a3205fd73c8f 100644
+> > --- a/drivers/net/netdevsim/bus.c
+> > +++ b/drivers/net/netdevsim/bus.c
+> > @@ -16,7 +16,8 @@
+> >
+> >  static DEFINE_IDA(nsim_bus_dev_ids);
+> >  static LIST_HEAD(nsim_bus_dev_list);
+> > -static DEFINE_MUTEX(nsim_bus_dev_list_lock);
+> > +static DEFINE_MUTEX(nsim_bus_dev_ops_lock);
+> > +static bool enable;
+> >
+> >  static struct nsim_bus_dev *to_nsim_bus_dev(struct device *dev)
+> >  {
+> > @@ -99,6 +100,8 @@ new_port_store(struct device *dev, struct device_attribute *attr,
+> >       unsigned int port_index;
+> >       int ret;
+> >
+> > +     if (!nsim_bus_dev->init)
+> > +             return -EBUSY;
+>
+> I think we should use the acquire/release semantics on those variables.
+> The init should be smp_store_release() and the read in ops should use
+> smp_load_acquire().
+>
 
-But for, here are a few coding style issues...
+Okay, I will use a barrier for the 'init' variable.
+Should a barrier be used for 'enable' variable too?
+Although this value is protected by nsim_bus_dev_list_lock,
+I didn't use the lock for this value in the nsim_bus_init()
+because I thought it's enough.
+How do you think about this? Should lock or barrier is needed?
 
-On Wed, Jan 29, 2020 at 02:37:18PM -0500, min.li.xe@renesas.com wrote:
-> @@ -12,4 +12,5 @@ obj-$(CONFIG_PTP_1588_CLOCK_KVM)	+= ptp_kvm.o
->  obj-$(CONFIG_PTP_1588_CLOCK_QORIQ)	+= ptp-qoriq.o
->  ptp-qoriq-y				+= ptp_qoriq.o
->  ptp-qoriq-$(CONFIG_DEBUG_FS)		+= ptp_qoriq_debugfs.o
-> -obj-$(CONFIG_PTP_1588_CLOCK_IDTCM)	+= ptp_clockmatrix.o
-> \ No newline at end of file
+> With that we should be able to move the new variable manipulation out
+> of the bus_dev lock section. Having a lock for operations/code is a
+> little bit of a bad code trait, as locks should generally protect data.
+> The lock could then remain as is just for protecting operations on the
+> list.
+>
 
-Please fix white space here
+Thank so much for this.
+I will keep this trait in mind!
 
-> +obj-$(CONFIG_PTP_1588_CLOCK_IDTCM)	+= ptp_clockmatrix.o
-> +obj-$(CONFIG_PTP_1588_CLOCK_IDT82P33)	+= ptp_idt82p33.o
-> \ No newline at end of file
+> >       ret = kstrtouint(buf, 0, &port_index);
+> >       if (ret)
+> >               return ret;
+> > @@ -116,6 +119,8 @@ del_port_store(struct device *dev, struct device_attribute *attr,
+> >       unsigned int port_index;
+> >       int ret;
+> >
+> > +     if (!nsim_bus_dev->init)
+> > +             return -EBUSY;
+> >       ret = kstrtouint(buf, 0, &port_index);
+> >       if (ret)
+> >               return ret;
+> > @@ -179,13 +184,21 @@ new_device_store(struct bus_type *bus, const char *buf, size_t count)
+> >               pr_err("Format for adding new device is \"id port_count\" (uint uint).\n");
+> >               return -EINVAL;
+> >       }
+> > +     mutex_lock(&nsim_bus_dev_ops_lock);
+> > +     if (!enable) {
+> > +             mutex_unlock(&nsim_bus_dev_ops_lock);
+> > +             return -EBUSY;
+> > +     }
+> >       nsim_bus_dev = nsim_bus_dev_new(id, port_count);
+> > -     if (IS_ERR(nsim_bus_dev))
+> > +     if (IS_ERR(nsim_bus_dev)) {
+> > +             mutex_unlock(&nsim_bus_dev_ops_lock);
+> >               return PTR_ERR(nsim_bus_dev);
+> > +     }
+> > +
+> > +     nsim_bus_dev->init = true;
+>
+> Not sure it matters but perhaps set it to init after its added to the
+> list? Should it also be set to false before remove?
+>
 
-and here.
+Setting the 'init' to true before list ops isn't bad because the list
+isn't used in {new/del}_port().
+The reason for this is to allow {new/del}_port() as fast as possible.
+Setting the 'init' to false before remove isn't necessary because
+kernfs internally sync this operation.
+But I think it's not good for reading code.
+So, I will add this explicit code.
 
-> +static void _idt82p33_caps_init(struct ptp_clock_info	*caps)
-> +{
+> Thanks again for this work, I'll look at the other patches later today.
 
-No need for leading _ on private methods.
-
-> +	(caps)->owner = THIS_MODULE;
-> +	(caps)->max_adj = 92000;
-> +	(caps)->adjfreq = idt82p33_adjfreq;
-> +	(caps)->adjtime = idt82p33_adjtime;
-> +	(caps)->gettime64 = idt82p33_gettime;
-> +	(caps)->settime64 = idt82p33_settime;
-> +	(caps)->enable = idt82p33_enable;
-> +}
-> +
-> +static int _mask_bit_count(int mask)
-> +{
-
-There is a GCC built in for this.
-
-> +	int ret = 0;
-> +
-> +	while (mask != 0) {
-> +		mask &= (mask-1);
-> +		ret++;
-> +	}
-> +
-> +	return ret;
-> +}
-> +
-> +static void _byte_array_to_timespec(struct timespec64 *ts,
-> +				u8 buf[TOD_BYTE_COUNT])
-> +{
-
-Prefix all your functions with idt82p33_ please.
-
-> +	u8 i;
-> +	s32 nsec;
-> +	time64_t sec;
-> +
-> +	nsec = buf[3];
-> +	for (i = 0; i < 3; i++) {
-> +		nsec <<= 8;
-> +		nsec |= buf[2 - i];
-> +	}
-> +
-> +	sec = buf[9];
-> +	for (i = 0; i < 5; i++) {
-> +		sec <<= 8;
-> +		sec |= buf[8 - i];
-> +	}
-> +
-> +	ts->tv_sec = sec;
-> +	ts->tv_nsec = nsec;
-> +}
-
-Thanks,
-Richard
+Thank you so much for your insight!
+Taehee Yoo
