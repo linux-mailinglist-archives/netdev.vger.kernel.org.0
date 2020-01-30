@@ -2,82 +2,98 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id EC4E214E2E8
-	for <lists+netdev@lfdr.de>; Thu, 30 Jan 2020 20:08:30 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9F24214E2F1
+	for <lists+netdev@lfdr.de>; Thu, 30 Jan 2020 20:10:45 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727585AbgA3TIY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 30 Jan 2020 14:08:24 -0500
-Received: from node.akkea.ca ([192.155.83.177]:59260 "EHLO node.akkea.ca"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727541AbgA3TIX (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 30 Jan 2020 14:08:23 -0500
-Received: from localhost (localhost [127.0.0.1])
-        by node.akkea.ca (Postfix) with ESMTP id 375164E204D;
-        Thu, 30 Jan 2020 19:08:23 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=akkea.ca; s=mail;
-        t=1580411303; bh=QCWqH3i6d7d//U54D23iF2Hbhl80FK9JvAL3ILoF+mE=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References;
-        b=pOO9Itn2isE39rKwYWjLZuG0PjnqpBRrjBatfdhXx1gXo5/x7qBUtyTjWR1JIFOEg
-         VoOCQ2Ou3A75wCcZntUteAjd34cbEReRk+efA4XTL7SDRwGRKIFQbNfaYr2R/VRvQ1
-         xJny9RnrFPk3orRjH35Pnpwh346cr6nXbAv+IrdA=
-X-Virus-Scanned: Debian amavisd-new at mail.akkea.ca
-Received: from node.akkea.ca ([127.0.0.1])
-        by localhost (mail.akkea.ca [127.0.0.1]) (amavisd-new, port 10024)
-        with ESMTP id e0iH27lz8nbj; Thu, 30 Jan 2020 19:08:22 +0000 (UTC)
-Received: from www.akkea.ca (node.akkea.ca [192.155.83.177])
-        by node.akkea.ca (Postfix) with ESMTPSA id AE0BA4E200C;
-        Thu, 30 Jan 2020 19:08:22 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=akkea.ca; s=mail;
-        t=1580411302; bh=QCWqH3i6d7d//U54D23iF2Hbhl80FK9JvAL3ILoF+mE=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References;
-        b=JYlXYzUu+ZVgG563aVfsaQ99S9y/WvTjFPlAI8N3r4iMe/smi2lGQMlZri0yfiwVY
-         BFoP5No+HHdspJjFgD9I8P/hFjtVLeNX3KYlmsM8jECpvU3GMFLYa9p3XLqWztFa9K
-         XA0CaUykfYrziL+9kXgSRCifzJGKiGdy/nrw0TyQ=
+        id S1728014AbgA3TKi (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 30 Jan 2020 14:10:38 -0500
+Received: from us-smtp-delivery-1.mimecast.com ([207.211.31.120]:37397 "EHLO
+        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+        with ESMTP id S1727677AbgA3TKh (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 30 Jan 2020 14:10:37 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1580411436;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=SUtSFdT+kYmI8Bo8IponmuE6vaTB5AiudIIi8xyUiPM=;
+        b=fg92RMsbHHLhjkNsqU9PHB9FpdCywI6BBx8dTxZp1OJHIiwh6oVcoUthiHpF3gau63jCbx
+        vLmaoH/SHMC5CYZHkd1/z+ma7bYzwVlDniAz7aim+dUxJWKMvnee1Qi6Eh/8hcQoXb5R3J
+        udS41RkK4PRZt7zadQowf8ffb9EFdg8=
+Received: from mail-wm1-f72.google.com (mail-wm1-f72.google.com
+ [209.85.128.72]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-217-6uroAP8kMj65Mth2kU3EiQ-1; Thu, 30 Jan 2020 14:10:34 -0500
+X-MC-Unique: 6uroAP8kMj65Mth2kU3EiQ-1
+Received: by mail-wm1-f72.google.com with SMTP id z7so1292327wmi.0
+        for <netdev@vger.kernel.org>; Thu, 30 Jan 2020 11:10:34 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=SUtSFdT+kYmI8Bo8IponmuE6vaTB5AiudIIi8xyUiPM=;
+        b=PkL40YgEs1I3jCOhC6nU0pcnuGyhgMqhGLYqLkRoxnwasAxFXE1n6++2HaBaTVCmjf
+         ZnQXzNts4H9uCWYm70SZOFHDdpqrKj4MLuQW5Dn3al2wiFtPI7/t5rojTIOoOR533qB7
+         oIS39q/xscFZdlk5SWCqYNG0Dw5LHaqQPuoYeuNykR2sEz63+/jFSFm6t6AFNVcbM/Kf
+         K/ZpwP2hJQby4Z6iKZ4s9ONfyP0xZN4reIjtzBKVwsf9FUchDFQ8JKsO69cPmLwjOPS3
+         jtVwmqceu0iXDzboBjiICBQMT80Zdn1Bv8G2s2w3Pqn31rAaaiIIY2h+xW9VDrLPEqR6
+         Pp1g==
+X-Gm-Message-State: APjAAAUxXir+FXatvMhuc0zIShGMAQgAadhvUafoce2WvknrsK5VdSfj
+        WayBTJ5ZaO7h8vUinVZjsnhCCLI+dLSr0Z4doetC9poWG5C84Gtit+9+A1PoGokGPUSig1EPgtS
+        3Cmrab69rpPZMLT72
+X-Received: by 2002:a5d:6708:: with SMTP id o8mr7467579wru.296.1580411433138;
+        Thu, 30 Jan 2020 11:10:33 -0800 (PST)
+X-Google-Smtp-Source: APXvYqwd2K5FNDKGZYqIaB7n3fgbnyN9C2V+AsRZ0esnHsarDmz4aw6MjM7UxxTdj8JoUalHG+ySGg==
+X-Received: by 2002:a5d:6708:: with SMTP id o8mr7467555wru.296.1580411432866;
+        Thu, 30 Jan 2020 11:10:32 -0800 (PST)
+Received: from turbo.redhat.com (net-2-36-173-233.cust.vodafonedsl.it. [2.36.173.233])
+        by smtp.gmail.com with ESMTPSA id s139sm7794275wme.35.2020.01.30.11.10.32
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 30 Jan 2020 11:10:32 -0800 (PST)
+From:   Matteo Croce <mcroce@redhat.com>
+To:     netdev@vger.kernel.org, linux-doc@vger.kernel.org
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Pablo Neira Ayuso <pablo@netfilter.org>,
+        Florian Westphal <fw@strlen.de>, linux-kernel@vger.kernel.org
+Subject: [PATCH net] netfilter: nf_flowtable: fix documentation
+Date:   Thu, 30 Jan 2020 20:10:19 +0100
+Message-Id: <20200130191019.19440-1-mcroce@redhat.com>
+X-Mailer: git-send-email 2.24.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII;
- format=flowed
-Content-Transfer-Encoding: 7bit
-Date:   Thu, 30 Jan 2020 11:08:22 -0800
-From:   Angus Ainslie <angus@akkea.ca>
-To:     Dan Williams <dcbw@redhat.com>
-Cc:     Amitkumar Karwar <amitkarwar@gmail.com>,
-        Siva Rebbagondla <siva8118@gmail.com>,
-        Kalle Valo <kvalo@codeaurora.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: Redpine RS9116 M.2 module with NetworkManager
-In-Reply-To: <dec7cce5138d4cfeb5596d63048db7ec19a18c3c.camel@redhat.com>
-References: <59789f30ee686338c7bcffe3c6cbc453@akkea.ca>
- <dec7cce5138d4cfeb5596d63048db7ec19a18c3c.camel@redhat.com>
-Message-ID: <47d5e080faa1edbf17d2bdeccee5ded9@akkea.ca>
-X-Sender: angus@akkea.ca
-User-Agent: Roundcube Webmail/1.3.6
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Dan,
+In the flowtable documentation there is a missing semicolon, the command
+as is would give this error:
 
-On 2020-01-30 10:39, Dan Williams wrote:
-> On Thu, 2020-01-30 at 10:18 -0800, Angus Ainslie wrote:
->> 
->> I suspect this is a driver bug rather than a NM bug as I saw similar
->> issues with an earlier Redpine proprietary driver that was fixed by
->> updating that driver. What rsi_dbg zone will help debug this ?
-> 
-> NM just uses wpa_supplicant underneath, so if you can get supplicant
-> debug logs showing the failure, that would help. But perhaps the driver
-> has a problem with scan MAC randomization that NM can be configured to
-> do by default; that's been an issue with proprietary and out-of-tree
-> drivers in the past. Just a thought.
-> 
-> https://blog.muench-johannes.de/networkmanager-disable-mac-randomization-314
-> 
+    nftables.conf:5:27-33: Error: syntax error, unexpected devices, expecting newline or semicolon
+                    hook ingress priority 0 devices = { br0, pppoe-data };
+                                            ^^^^^^^
+    nftables.conf:4:12-13: Error: invalid hook (null)
+            flowtable ft {
+                      ^^
 
-Thanks that was the fix.
+Fixes: 19b351f16fd9 ("netfilter: add flowtable documentation")
+Signed-off-by: Matteo Croce <mcroce@redhat.com>
+---
+ Documentation/networking/nf_flowtable.txt | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-Angus
+diff --git a/Documentation/networking/nf_flowtable.txt b/Documentation/networking/nf_flowtable.txt
+index ca2136c76042..0bf32d1121be 100644
+--- a/Documentation/networking/nf_flowtable.txt
++++ b/Documentation/networking/nf_flowtable.txt
+@@ -76,7 +76,7 @@ flowtable and add one rule to your forward chain.
+ 
+         table inet x {
+ 		flowtable f {
+-			hook ingress priority 0 devices = { eth0, eth1 };
++			hook ingress priority 0; devices = { eth0, eth1 };
+ 		}
+                 chain y {
+                         type filter hook forward priority 0; policy accept;
+-- 
+2.24.1
 
-> Dan
