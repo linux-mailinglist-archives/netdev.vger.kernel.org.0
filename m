@@ -2,94 +2,115 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 34D4C14DFA9
-	for <lists+netdev@lfdr.de>; Thu, 30 Jan 2020 18:11:04 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 055F214E04A
+	for <lists+netdev@lfdr.de>; Thu, 30 Jan 2020 18:55:10 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727470AbgA3RK5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 30 Jan 2020 12:10:57 -0500
-Received: from mail.kernel.org ([198.145.29.99]:45944 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726514AbgA3RK4 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 30 Jan 2020 12:10:56 -0500
-Received: from cakuba (unknown [199.201.64.133])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        id S1727557AbgA3RzG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 30 Jan 2020 12:55:06 -0500
+Received: from ssl.serverraum.org ([176.9.125.105]:50645 "EHLO
+        ssl.serverraum.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727333AbgA3RzF (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 30 Jan 2020 12:55:05 -0500
+Received: from apollo.fritz.box (unknown [IPv6:2a02:810c:c200:2e91:6257:18ff:fec4:ca34])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-384) server-signature RSA-PSS (2048 bits) server-digest SHA256)
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id D4AB020707;
-        Thu, 30 Jan 2020 17:10:55 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1580404256;
-        bh=Hxrsh7O/rjzAeL1uBZU4NMmuZq1J4Zw8jlVqpSJ/bR4=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=S3+Rs+Ad125yxd6jqyK1V6fCELrvcCmCaIoeJpZld0ZcfixK0JJDrONTnLfoa7w27
-         oiiKZKJjwAhxUh3gMtGWF2xjVe3ofm0/vd8aTqCiRH8jE8zA79fG4bkhDFQf9UP1gW
-         kyjzhAV/8gHxw4DJwQBnUgr2ogEgCLzhmPkbrEI8=
-Date:   Thu, 30 Jan 2020 09:10:55 -0800
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Robert Jones <rjones@gateworks.com>
-Cc:     Sunil Goutham <sgoutham@marvell.com>,
-        Robert Richter <rrichter@marvell.com>,
-        David Miller <davem@davemloft.net>,
-        linux-arm-kernel@lists.infradead.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Tim Harvey <tharvey@gateworks.com>
-Subject: Re: [PATCH net] net: thunderx: workaround BGX TX Underflow issue
-Message-ID: <20200130091055.159d63ed@cakuba>
-In-Reply-To: <20200129223609.9327-1-rjones@gateworks.com>
-References: <20200129223609.9327-1-rjones@gateworks.com>
+        by ssl.serverraum.org (Postfix) with ESMTPSA id 2FB0B2305C;
+        Thu, 30 Jan 2020 18:45:06 +0100 (CET)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=walle.cc; s=mail2016061301;
+        t=1580406309;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=HHpCOJ8JX5SEm2UJ7ps+5qppNNw1zZGQMy85Ld7opXo=;
+        b=JSrCSURsgccrSywbAtlO6PXcCqRobXYVZA90dLCH9+74fLJAuMEU+6E3b1hBRBmrgaZgs+
+        madwBRx0XI/EJ61MizOe5iwpIuWF3CFvFt927r5+AkwT8XnjPnW5aMfup4jG/5QJxQiL11
+        d5kg74ug9RbaH7IBqDQ3LIK/cpOhIqk=
+From:   Michael Walle <michael@walle.cc>
+To:     linux-kernel@vger.kernel.org, netdev@vger.kernel.org
+Cc:     Richard Cochran <richardcochran@gmail.com>,
+        Russell King <linux@armlinux.org.uk>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Andrew Lunn <andrew@lunn.ch>, Michael Walle <michael@walle.cc>
+Subject: [PATCH net-next 1/2] net: mdio: of: fix potential NULL pointer derefernce
+Date:   Thu, 30 Jan 2020 18:44:50 +0100
+Message-Id: <20200130174451.17951-1-michael@walle.cc>
+X-Mailer: git-send-email 2.20.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
+X-Spamd-Bar: ++++++
+X-Spam-Level: ******
+X-Rspamd-Server: web
+X-Spam-Status: Yes, score=6.40
+X-Spam-Score: 6.40
+X-Rspamd-Queue-Id: 2FB0B2305C
+X-Spamd-Result: default: False [6.40 / 15.00];
+         ARC_NA(0.00)[];
+         FROM_HAS_DN(0.00)[];
+         TO_DN_SOME(0.00)[];
+         R_MISSING_CHARSET(2.50)[];
+         FREEMAIL_ENVRCPT(0.00)[gmail.com];
+         TAGGED_RCPT(0.00)[];
+         MIME_GOOD(-0.10)[text/plain];
+         BROKEN_CONTENT_TYPE(1.50)[];
+         TO_MATCH_ENVRCPT_ALL(0.00)[];
+         DKIM_SIGNED(0.00)[];
+         RCPT_COUNT_SEVEN(0.00)[8];
+         MID_CONTAINS_FROM(1.00)[];
+         RCVD_COUNT_ZERO(0.00)[0];
+         FROM_EQ_ENVFROM(0.00)[];
+         MIME_TRACE(0.00)[0:+];
+         ASN(0.00)[asn:31334, ipnet:2a02:810c::/31, country:DE];
+         FREEMAIL_CC(0.00)[gmail.com,armlinux.org.uk,lunn.ch,walle.cc];
+         SUSPICIOUS_RECIPS(1.50)[]
+X-Spam: Yes
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 29 Jan 2020 14:36:09 -0800, Robert Jones wrote:
-> From: Tim Harvey <tharvey@gateworks.com>
-> 
-> While it is not yet understood why a TX underflow can easily occur
-> for SGMII interfaces resulting in a TX wedge. It has been found that
-> disabling/re-enabling the LMAC resolves the issue.
-> 
-> Signed-off-by: Tim Harvey <tharvey@gateworks.com>
-> Reviewed-by: Robert Jones <rjones@gateworks.com>
+of_find_mii_timestamper() returns NULL if no timestamper is found.
+Therefore, guard the unregister_mii_timestamper() calls.
 
-Sunil or Robert (i.e. one of the maintainers) will have to review this
-patch (as indicated by Dave by marking it with "Needs Review / ACK" in
-patchwork).
+Fixes: 1dca22b18421 ("net: mdio: of: Register discovered MII time stampers.")
+Signed-off-by: Michael Walle <michael@walle.cc>
+---
+ drivers/of/of_mdio.c | 9 ++++++---
+ 1 file changed, 6 insertions(+), 3 deletions(-)
 
-At a quick look there are some things which jump out at me:
+diff --git a/drivers/of/of_mdio.c b/drivers/of/of_mdio.c
+index f5c2a5487761..db0ed5879803 100644
+--- a/drivers/of/of_mdio.c
++++ b/drivers/of/of_mdio.c
+@@ -81,13 +81,15 @@ static int of_mdiobus_register_phy(struct mii_bus *mdio,
+ 	else
+ 		phy = get_phy_device(mdio, addr, is_c45);
+ 	if (IS_ERR(phy)) {
+-		unregister_mii_timestamper(mii_ts);
++		if (mii_ts)
++			unregister_mii_timestamper(mii_ts);
+ 		return PTR_ERR(phy);
+ 	}
+ 
+ 	rc = of_irq_get(child, 0);
+ 	if (rc == -EPROBE_DEFER) {
+-		unregister_mii_timestamper(mii_ts);
++		if (mii_ts)
++			unregister_mii_timestamper(mii_ts);
+ 		phy_device_free(phy);
+ 		return rc;
+ 	}
+@@ -116,7 +118,8 @@ static int of_mdiobus_register_phy(struct mii_bus *mdio,
+ 	 * register it */
+ 	rc = phy_device_register(phy);
+ 	if (rc) {
+-		unregister_mii_timestamper(mii_ts);
++		if (mii_ts)
++			unregister_mii_timestamper(mii_ts);
+ 		phy_device_free(phy);
+ 		of_node_put(child);
+ 		return rc;
+-- 
+2.20.1
 
-> +static int bgx_register_intr(struct pci_dev *pdev)
-> +{
-> +	struct bgx *bgx = pci_get_drvdata(pdev);
-> +	struct device *dev = &pdev->dev;
-> +	int num_vec, ret;
-> +
-> +	/* Enable MSI-X */
-> +	num_vec = pci_msix_vec_count(pdev);
-> +	ret = pci_alloc_irq_vectors(pdev, num_vec, num_vec, PCI_IRQ_MSIX);
-> +	if (ret < 0) {
-> +		dev_err(dev, "Req for #%d msix vectors failed\n", num_vec);
-> +		return 1;
-
-Please propagate real error codes, or make this function void as the
-caller never actually checks the return value.
-
-> +	}
-> +	sprintf(bgx->irq_name, "BGX%d", bgx->bgx_id);
-> +	ret = request_irq(pci_irq_vector(pdev, GMPX_GMI_TX_INT),
-
-There is a alloc_irq and request_irq call added in this patch but there
-is never any freeing. Are you sure this is fine? Devices can be
-reprobed (unbound and bound to drivers via sysfs).
-
-> +		bgx_intr_handler, 0, bgx->irq_name, bgx);
-
-Please align the continuation line with the opening bracket (checkpatch
---strict should help catch this).
-
-> +	if (ret)
-> +		return 1;
-> +
-> +	return 0;
-> +}
