@@ -2,73 +2,123 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id B9F5714DA34
-	for <lists+netdev@lfdr.de>; Thu, 30 Jan 2020 12:53:18 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4F49014DA7C
+	for <lists+netdev@lfdr.de>; Thu, 30 Jan 2020 13:16:07 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727278AbgA3LxQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 30 Jan 2020 06:53:16 -0500
-Received: from a.mx.secunet.com ([62.96.220.36]:57224 "EHLO a.mx.secunet.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727272AbgA3LxO (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 30 Jan 2020 06:53:14 -0500
-Received: from localhost (localhost [127.0.0.1])
-        by a.mx.secunet.com (Postfix) with ESMTP id 56C8120538
-        for <netdev@vger.kernel.org>; Thu, 30 Jan 2020 12:53:13 +0100 (CET)
-X-Virus-Scanned: by secunet
-Received: from a.mx.secunet.com ([127.0.0.1])
-        by localhost (a.mx.secunet.com [127.0.0.1]) (amavisd-new, port 10024)
-        with ESMTP id z1glNPLUSDAw for <netdev@vger.kernel.org>;
-        Thu, 30 Jan 2020 12:53:12 +0100 (CET)
-Received: from mail-essen-01.secunet.de (mail-essen-01.secunet.de [10.53.40.204])
-        (using TLSv1 with cipher ECDHE-RSA-AES256-SHA (256/256 bits))
+        id S1727145AbgA3MQF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 30 Jan 2020 07:16:05 -0500
+Received: from edrik.securmail.fr ([45.91.125.3]:43034 "EHLO
+        edrik.securmail.fr" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726873AbgA3MQF (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 30 Jan 2020 07:16:05 -0500
+X-Greylist: delayed 538 seconds by postgrey-1.27 at vger.kernel.org; Thu, 30 Jan 2020 07:16:04 EST
+Received: by edrik.securmail.fr (Postfix, from userid 58)
+        id 3926BB0D57; Thu, 30 Jan 2020 13:06:21 +0100 (CET)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=swordarmor.fr;
+        s=swordarmor; t=1580385981;
+        bh=+5oHzbslc2yfbbq2D+xtm6+1Z9AqDPE33dFjz6mCBqo=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To;
+        b=sRHeNIpqS4Bioxut5gv25J3ESs5tQ77OBzyFfeBvvSpIHXxF5SqS6phKFZw5AAzuo
+         hfwgHbMOjusmX80zUVDvWXHuRwNlR4jPGcyzKTm/5sl+WCh0r06vzYJ8majF2wIw4y
+         PlUM4yTNquFY2Y1V/wAcvCBTpu4V+UfwvLQ8HdnU=
+X-Spam-Checker-Version: SpamAssassin 3.4.2 (2018-09-13) on edrik.securmail.fr
+X-Spam-Level: 
+X-Spam-Status: No, score=-1.1 required=5.0 tests=ALL_TRUSTED,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU autolearn=unavailable autolearn_force=no
+        version=3.4.2
+Received: from mew.swordarmor.fr (mew.swordarmor.fr [IPv6:2a00:5884:102:1::4])
+        (using TLSv1.2 with cipher DHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by a.mx.secunet.com (Postfix) with ESMTPS id A8A932056D
-        for <netdev@vger.kernel.org>; Thu, 30 Jan 2020 12:53:12 +0100 (CET)
-Received: from [10.182.7.178] (10.182.7.178) by mail-essen-01.secunet.de
- (10.53.40.204) with Microsoft SMTP Server (TLS) id 14.3.439.0; Thu, 30 Jan
- 2020 12:53:11 +0100
-Subject: Re: [PATCH net] xfrm: Interpret XFRM_INF as 32 bit value for non-ESN
- states
-To:     Steffen Klassert <steffen.klassert@secunet.com>
-CC:     <netdev@vger.kernel.org>
-References: <8a3e5a49-5906-b6a6-beb7-0479bc64dcd0@secunet.com>
- <20200130103432.GK27973@gauss3.secunet.de>
-From:   Thomas Egerer <thomas.egerer@secunet.com>
-Openpgp: preference=signencrypt
-Message-ID: <6aed470f-d1ff-e939-3b1a-80237e9ab84f@secunet.com>
-Date:   Thu, 30 Jan 2020 12:52:58 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.3.0
+        (Authenticated sender: alarig@swordarmor.fr)
+        by edrik.securmail.fr (Postfix) with ESMTPSA id 3BEADB0D3C;
+        Thu, 30 Jan 2020 13:06:16 +0100 (CET)
+Authentication-Results: edrik.securmail.fr/3BEADB0D3C; dmarc=none (p=none dis=none) header.from=swordarmor.fr
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=swordarmor.fr;
+        s=swordarmor; t=1580385976;
+        bh=+5oHzbslc2yfbbq2D+xtm6+1Z9AqDPE33dFjz6mCBqo=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To;
+        b=SggDMhG+xdMiYNdl/Ptd0O3jtK24XDgeQ6HazlNMiF2Vy747WE1HD2nerzRDetjkE
+         zl/JjUBP9gIbE5TftQNXjSEareQl0HKqwrMPAb5iX878UlEYelRN3xJOj8blc7Gcz1
+         orbBJIC1F/5iBRdkaESAF8jdj01pl568z8aprwMU=
+Date:   Thu, 30 Jan 2020 13:06:59 +0100
+From:   Alarig Le Lay <alarig@swordarmor.fr>
+To:     Captain Wiggum <captwiggum@gmail.com>
+Cc:     Stephen Suryaputra <ssuryaextr@gmail.com>,
+        Levente <leventelist@gmail.com>, netdev <netdev@vger.kernel.org>
+Subject: Re: IPv6 test fail
+Message-ID: <20200130120659.b3dxp43mk74ahmqq@mew.swordarmor.fr>
+References: <CACwWb3CYP9MENZJAzBt5buMNxkck7+Qig9yYG8nTYrdBw1fk5A@mail.gmail.com>
+ <CAHapkUgCWS4DxGVL2qJsXmiAEq4rGY+sPTROx4iftO6mD_261g@mail.gmail.com>
+ <CAB=W+o=-XEu_QZtrt6_Qt-HB4CUH+4nUs1o02tVFqJJkdi_bhg@mail.gmail.com>
 MIME-Version: 1.0
-In-Reply-To: <20200130103432.GK27973@gauss3.secunet.de>
-Content-Type: text/plain; charset="utf-8"
-Content-Language: de-DE
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-X-EXCLAIMER-MD-CONFIG: 2c86f778-e09b-4440-8b15-867914633a10
+In-Reply-To: <CAB=W+o=-XEu_QZtrt6_Qt-HB4CUH+4nUs1o02tVFqJJkdi_bhg@mail.gmail.com>
+User-Agent: NeoMutt/20180716
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello Steffen,
+Hello,
 
-On 1/30/20 11:34 AM, Steffen Klassert wrote:
-> On Mon, Jan 27, 2020 at 03:31:14PM +0100, Thomas Egerer wrote:
-> 
-> You need one more close bracket here:
-> 
-> /home/klassert/git/ipsec/net/xfrm/xfrm_user.c: In function ‘copy_from_user_state’:
-> /home/klassert/git/ipsec/net/xfrm/xfrm_user.c:509:45: error: expected ‘)’ before ‘{’ token
->   if ((x->props.flags & XFRM_STATE_ESN) == 0 {
->                                              ^
-> /home/klassert/git/ipsec/net/xfrm/xfrm_user.c:515:1: error: expected expression before ‘}’ token
->  }
->  ^
-> 
-> Please fix and resend.
-You're right. I wonder how that could have happened. I will rebuild
-and make sure, I tested the kernel version including the patch and
-not the one without.
+It seems that I’m not here for enough time, I can’t find your thread.
+What were your issues on IPv6? I hit some from migrating to 4.19 (from
+4.4) on routers, so I’m still on 4.4 for now.
 
+We discussed it a bit on bird ML:
+https://bird.network.cz/pipermail/bird-users/2019-June/013509.html
+https://bird.network.cz/pipermail/bird-users/2019-November/013992.html
+https://bird.network.cz/pipermail/bird-users/2019-December/014011.html
 
-Thomas
+(sorry for the multiple links, it seems that the archive is split by
+months)
+
+By chances, are we hitting the same bug?
+
+Regards,
+Alarig Le Lay
+
+On mer. 29 janv. 15:31:20 2020, Captain Wiggum wrote:
+> (resending without html.:)
+> I started the thread.
+> We are using 4.19.x and 4.9.x, but for reference I also tested then current 5.x.
+> I believe we got it all worked out at the time.
+> --John Masinter
+> 
+> 
+> On Wed, Dec 18, 2019 at 2:00 PM Stephen Suryaputra <ssuryaextr@gmail.com> wrote:
+> >
+> > I am curious: what kernel version are you testing?
+> > I recall that several months ago there is a thread on TAHI IPv6.
+> > Including the person who started the thread.
+> >
+> > Stephen.
+> >
+> > On Thu, Oct 24, 2019 at 7:43 AM Levente <leventelist@gmail.com> wrote:
+> > >
+> > > Dear list,
+> > >
+> > >
+> > > We are testing IPv6 again against the test specification of ipv6forum.
+> > >
+> > > https://www.ipv6ready.org/?page=documents&tag=ipv6-core-protocols
+> > >
+> > > The test house state that some certain packages doesn't arrive to the
+> > > device under test. We fail test cases
+> > >
+> > > V6LC.1.2.2: No Next Header After Extension Header
+> > > V6LC.1.2.3: Unreacognized Next Header in Extension Header - End Node
+> > > V6LC.1.2.4: Extension Header Processing Order
+> > > V6LC.1.2.5: Option Processing Order
+> > > V6LC.1.2.8: Option Processing Destination Options Header
+> > >
+> > > The question is that is it possible that the this is the intended way
+> > > of operation? I.e. the kernel swallows those malformed packages? We
+> > > use tcpdump to log the traffic.
+> > >
+> > >
+> > > Thank you for your help.
+> > >
+> > > Levente
