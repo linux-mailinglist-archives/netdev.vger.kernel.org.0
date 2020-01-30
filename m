@@ -2,80 +2,81 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 302F914E084
-	for <lists+netdev@lfdr.de>; Thu, 30 Jan 2020 19:07:28 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4B32814E0B6
+	for <lists+netdev@lfdr.de>; Thu, 30 Jan 2020 19:24:13 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728083AbgA3SHV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 30 Jan 2020 13:07:21 -0500
-Received: from mail-pg1-f194.google.com ([209.85.215.194]:43449 "EHLO
-        mail-pg1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727499AbgA3SHV (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 30 Jan 2020 13:07:21 -0500
-Received: by mail-pg1-f194.google.com with SMTP id u131so2036735pgc.10
-        for <netdev@vger.kernel.org>; Thu, 30 Jan 2020 10:07:20 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=pensando.io; s=google;
-        h=from:to:cc:subject:date:message-id;
-        bh=1S6CV21lOaRLXKoyd1LR/Pkc/8et3fMNM0VtMjTfn6M=;
-        b=UouOqD1syYK47KQtn+XO1FJ79QN1QcJ3J3AfYp8cXI2bV2n4Ucqv39OClnT/9fa2bh
-         K+ENbiAOtYDkIzzwiNRPLS6Awvk0RPXo0kDzhE9Rp3+vywssJeWk9OV/kiMf6k1JxvAd
-         UDAFkuWjxABBv2oRKQNfjpPHaSkE2Oiink8LiukKyYYTHJtAaR7fmKSHj8ybXXUpGfQf
-         T7ibqk0B6iHBcKkJqwm0daeJsvTV79xyqgPGDTXHIhfAyMeioXSy1kJ7Xfoxo9c5tIbN
-         wBwOyXwoq57aNWchirv/nBLXBqYKrFbbJa+0ShcYso+QEwvcu36kSEtT60wUPVfgaULg
-         uiTg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id;
-        bh=1S6CV21lOaRLXKoyd1LR/Pkc/8et3fMNM0VtMjTfn6M=;
-        b=hNE4oJYoKcP7hVslfbCnQ2n17ohjUSavIPlzAJIGZDwB8GuuNJoAFcB/1CM+AKJZoS
-         OFscC6tAPDczktDjIG3y+tWtt/1DACRCoD9oseDUUV5lEhc+1Iju9nIA/ex/NXi6kxeZ
-         SKE6Vewn4OP2wZX4BK/tY88ZKr+BXWkHjrDYKJqLxrMVKgtXJl2NGauou7SGsBh4ZA8m
-         9u309kSoyoKFAQuskjIaSLvZkP+90OCVr0gSoZHKahTuIu9OEQ1ctB52zcCp4S68oP+P
-         720tTc8WMAQ+Yj9sFANIMnu41mKhlSFS1oRygapDf5RoC1EyEyLO8cCneLN3+ClYumFp
-         7/OA==
-X-Gm-Message-State: APjAAAUXXZWVriqa/P4FUY2eqLyza34nJgkkThIhWxO3niPc+IAkkzpq
-        0LrZ9vW/oWmNFxBHumI7R6rJEDWtnew7qw==
-X-Google-Smtp-Source: APXvYqxjsekRxIFlHLq2YzWsNODPvzqcBrXm5D/OhHOPFaVMaTBRuUC8qtLr+zGelR3P9bc0+JyiWQ==
-X-Received: by 2002:a63:3f4f:: with SMTP id m76mr5682695pga.353.1580407640415;
-        Thu, 30 Jan 2020 10:07:20 -0800 (PST)
-Received: from driver-dev1.pensando.io ([12.226.153.42])
-        by smtp.gmail.com with ESMTPSA id g10sm7107094pgh.35.2020.01.30.10.07.19
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Thu, 30 Jan 2020 10:07:19 -0800 (PST)
-From:   Shannon Nelson <snelson@pensando.io>
-To:     netdev@vger.kernel.org, davem@davemloft.net
-Cc:     Shannon Nelson <snelson@pensando.io>
-Subject: [PATCH net] ionic: fix rxq comp packet type mask
-Date:   Thu, 30 Jan 2020 10:07:06 -0800
-Message-Id: <20200130180706.4891-1-snelson@pensando.io>
-X-Mailer: git-send-email 2.17.1
+        id S1729432AbgA3SYJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 30 Jan 2020 13:24:09 -0500
+Received: from node.akkea.ca ([192.155.83.177]:57316 "EHLO node.akkea.ca"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1727697AbgA3SYJ (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 30 Jan 2020 13:24:09 -0500
+X-Greylist: delayed 312 seconds by postgrey-1.27 at vger.kernel.org; Thu, 30 Jan 2020 13:24:09 EST
+Received: from localhost (localhost [127.0.0.1])
+        by node.akkea.ca (Postfix) with ESMTP id 2F2884E204D;
+        Thu, 30 Jan 2020 18:18:57 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=akkea.ca; s=mail;
+        t=1580408337; bh=3E251MH06Dbd00638c4EBWp/OLDF5tixRqh+0dV7y5Y=;
+        h=Date:From:To:Cc:Subject;
+        b=oQGW8Lg5T8UqWMQ6eEYb3z3rRwCySG4i2NpDkrYlh84RT5yII8Lf9yfevBBtmwGZQ
+         bBJM1LvXYK658qeWhIcRfZ1NqFP0P2U57NDH7Lkxk+yPDYpXaMid7DKQtcrMjN+l0C
+         5iaKf+luLCDePSu3DM64SB7eqr7KxNDSUWAQxO+4=
+X-Virus-Scanned: Debian amavisd-new at mail.akkea.ca
+Received: from node.akkea.ca ([127.0.0.1])
+        by localhost (mail.akkea.ca [127.0.0.1]) (amavisd-new, port 10024)
+        with ESMTP id E_-dYhpVuoUL; Thu, 30 Jan 2020 18:18:56 +0000 (UTC)
+Received: from www.akkea.ca (node.akkea.ca [192.155.83.177])
+        by node.akkea.ca (Postfix) with ESMTPSA id A899F4E200C;
+        Thu, 30 Jan 2020 18:18:56 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=akkea.ca; s=mail;
+        t=1580408336; bh=3E251MH06Dbd00638c4EBWp/OLDF5tixRqh+0dV7y5Y=;
+        h=Date:From:To:Cc:Subject;
+        b=RC66mL6wBnh9Vxy0M/T7tGydF5dz1qCANrAqG7zJstzjEI9eIDVOp98MXKF1yCgs5
+         B03dUfyFBmv+H6XlpVFicPR9EAjDimNQ0XLAovsl4hg5kOXOToOW3Hhug3I7O54hyX
+         DyADWx5DX40SttywcQZ4hbp+5civvmf+cZ2FenjE=
+MIME-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII;
+ format=flowed
+Content-Transfer-Encoding: 7bit
+Date:   Thu, 30 Jan 2020 10:18:56 -0800
+From:   Angus Ainslie <angus@akkea.ca>
+To:     Amitkumar Karwar <amitkarwar@gmail.com>,
+        Siva Rebbagondla <siva8118@gmail.com>
+Cc:     Kalle Valo <kvalo@codeaurora.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Redpine RS9116 M.2 module with NetworkManager
+Message-ID: <59789f30ee686338c7bcffe3c6cbc453@akkea.ca>
+X-Sender: angus@akkea.ca
+User-Agent: Roundcube Webmail/1.3.6
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Be sure to include all the packet type bits in the mask.
+Hi,
 
-Fixes: fbfb8031533c ("ionic: Add hardware init and device commands")
+I'm trying the get a Redpine RS9116 module working with networkmanager. 
+I've tried this on 5.3, 5.5 and next-20200128. I'm using the Redpine 1.5 
+"rs9116_wlan_bt_classic.rps" firmware.
 
-Signed-off-by: Shannon Nelson <snelson@pensando.io>
----
- drivers/net/ethernet/pensando/ionic/ionic_if.h | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+If I configure the interface using iw, wpa_supplicant and dhclient all 
+works as expected.
 
-diff --git a/drivers/net/ethernet/pensando/ionic/ionic_if.h b/drivers/net/ethernet/pensando/ionic/ionic_if.h
-index f131adad96e3..ce07c2931a72 100644
---- a/drivers/net/ethernet/pensando/ionic/ionic_if.h
-+++ b/drivers/net/ethernet/pensando/ionic/ionic_if.h
-@@ -866,7 +866,7 @@ struct ionic_rxq_comp {
- #define IONIC_RXQ_COMP_CSUM_F_VLAN	0x40
- #define IONIC_RXQ_COMP_CSUM_F_CALC	0x80
- 	u8     pkt_type_color;
--#define IONIC_RXQ_COMP_PKT_TYPE_MASK	0x0f
-+#define IONIC_RXQ_COMP_PKT_TYPE_MASK	0x7f
- };
- 
- enum ionic_pkt_type {
--- 
-2.17.1
+If I try to configure the interface using nmtui most of the time no APs 
+show up to associate to. "iw dev wlan0 list" shows all of the APs in the 
+vicinity.
 
+If I do manage to get an AP to show when I try to "Activate a 
+connection" I get the error below
+
+Could not activate connection:
+Activation failed: No reason given
+
+I suspect this is a driver bug rather than a NM bug as I saw similar 
+issues with an earlier Redpine proprietary driver that was fixed by 
+updating that driver. What rsi_dbg zone will help debug this ?
+
+Thanks
+Angus
