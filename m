@@ -2,145 +2,178 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 5659414E3EC
-	for <lists+netdev@lfdr.de>; Thu, 30 Jan 2020 21:27:20 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7711214E4CD
+	for <lists+netdev@lfdr.de>; Thu, 30 Jan 2020 22:33:13 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727618AbgA3U1N (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 30 Jan 2020 15:27:13 -0500
-Received: from mail-io1-f70.google.com ([209.85.166.70]:56673 "EHLO
-        mail-io1-f70.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726514AbgA3U1N (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 30 Jan 2020 15:27:13 -0500
-Received: by mail-io1-f70.google.com with SMTP id d13so2675302ioo.23
-        for <netdev@vger.kernel.org>; Thu, 30 Jan 2020 12:27:12 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
-        bh=5KZLsPvp+8RXuR3Pe74Ca7Nz3IFftp+XwGDjktIH68M=;
-        b=l4AdvPISeAiiL/0CbPA2oqk5QO7JiUdwHd2dGVtNJw3HXF8AUhb5Ym4vdPPtzlMedS
-         27bGDn6Ktgmc+Qa6W6BIR4TDjVcyrwtbssinVAsjovABZ+gpSClREXwmIWpeF+xfQGIf
-         FL8CHjhSvOj6KIwZhm0/DS6kY8dgPxPrVSkMu0KnFUwh0PILMmHXsty3fOBrJB8PUDKB
-         pdg0o2F1ZZhd851XrXpoq5iFMyqWLG7ijz13BmFGNSRojc6xFVo5AqIrqrltktoXOWAC
-         JlZWy8lezpfy/tPQ7tc7l2z7whKQLJwSTb42fIU5v1b2ldshuAOeoEnb3s8pHid+DBCQ
-         5d9w==
-X-Gm-Message-State: APjAAAX8HTYiIKwe723slRWCohr2vTWM29BUJrAukajZTbEMPg1d5fj2
-        ddbv9jdmpZ9rxcNSI7B4fzFVaUpoy0zMMHkLVGN56QVYorqG
-X-Google-Smtp-Source: APXvYqyDasm6UIB0FZii5UdG+JTKmNvvy6WauxDS/4wSvwqbe5KHiJV8QICxB/oUzc7+cgJYhpDJrrfMm6gzTbXBdUvP3teD73o9
-MIME-Version: 1.0
-X-Received: by 2002:a5d:8509:: with SMTP id q9mr5862535ion.134.1580416032632;
- Thu, 30 Jan 2020 12:27:12 -0800 (PST)
-Date:   Thu, 30 Jan 2020 12:27:12 -0800
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <00000000000038fa02059d614893@google.com>
-Subject: KMSAN: uninit-value in batadv_interface_tx (2)
-From:   syzbot <syzbot+24458cef7d37351dd0c3@syzkaller.appspotmail.com>
-To:     a@unstable.cc, b.a.t.m.a.n@lists.open-mesh.org,
-        davem@davemloft.net, glider@google.com,
-        linux-kernel@vger.kernel.org, mareklindner@neomailbox.ch,
-        netdev@vger.kernel.org, sven@narfation.org, sw@simonwunderlich.de,
-        syzkaller-bugs@googlegroups.com
-Content-Type: text/plain; charset="UTF-8"
+        id S1727476AbgA3VdI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 30 Jan 2020 16:33:08 -0500
+Received: from lists.gateworks.com ([108.161.130.12]:36186 "EHLO
+        lists.gateworks.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726739AbgA3VdI (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 30 Jan 2020 16:33:08 -0500
+Received: from 68-189-91-139.static.snlo.ca.charter.com ([68.189.91.139] helo=rjones.pdc.gateworks.com)
+        by lists.gateworks.com with esmtp (Exim 4.82)
+        (envelope-from <rjones@gateworks.com>)
+        id 1ixHRL-00011c-SA; Thu, 30 Jan 2020 21:33:31 +0000
+From:   Robert Jones <rjones@gateworks.com>
+To:     Sunil Goutham <sgoutham@marvell.com>,
+        Robert Richter <rrichter@marvell.com>,
+        David Miller <davem@davemloft.net>
+Cc:     Jakub Kicinski <kuba@kernel.org>,
+        Maciej Fijalkowski <maciej.fijalkowski@intel.com>,
+        linux-arm-kernel@lists.infradead.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Tim Harvey <tharvey@gateworks.com>
+Subject: [PATCH net v2] net: thunderx: workaround BGX TX Underflow issue
+Date:   Thu, 30 Jan 2020 13:32:52 -0800
+Message-Id: <20200130213252.17005-1-rjones@gateworks.com>
+X-Mailer: git-send-email 2.9.2
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello,
+From: Tim Harvey <tharvey@gateworks.com>
 
-syzbot found the following crash on:
+While it is not yet understood why a TX underflow can easily occur
+for SGMII interfaces resulting in a TX wedge. It has been found that
+disabling/re-enabling the LMAC resolves the issue.
 
-HEAD commit:    686a4f77 kmsan: don't compile memmove
-git tree:       https://github.com/google/kmsan.git master
-console output: https://syzkaller.appspot.com/x/log.txt?x=11aff3c9e00000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=e10654781bc1f11c
-dashboard link: https://syzkaller.appspot.com/bug?extid=24458cef7d37351dd0c3
-compiler:       clang version 10.0.0 (https://github.com/llvm/llvm-project/ c2443155a0fb245c8f17f2c1c72b6ea391e86e81)
-
-Unfortunately, I don't have any reproducer for this crash yet.
-
-IMPORTANT: if you fix the bug, please add the following tag to the commit:
-Reported-by: syzbot+24458cef7d37351dd0c3@syzkaller.appspotmail.com
-
-=====================================================
-BUG: KMSAN: uninit-value in batadv_interface_tx+0x10cf/0x2450 net/batman-adv/soft-interface.c:264
-CPU: 1 PID: 16 Comm: ksoftirqd/1 Not tainted 5.5.0-rc5-syzkaller #0
-Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
-Call Trace:
- __dump_stack lib/dump_stack.c:77 [inline]
- dump_stack+0x1c9/0x220 lib/dump_stack.c:118
- kmsan_report+0xf7/0x1e0 mm/kmsan/kmsan_report.c:118
- __msan_warning+0x58/0xa0 mm/kmsan/kmsan_instr.c:215
- batadv_interface_tx+0x10cf/0x2450 net/batman-adv/soft-interface.c:264
- __netdev_start_xmit include/linux/netdevice.h:4447 [inline]
- netdev_start_xmit include/linux/netdevice.h:4461 [inline]
- xmit_one net/core/dev.c:3420 [inline]
- dev_hard_start_xmit+0x531/0xab0 net/core/dev.c:3436
- __dev_queue_xmit+0x37de/0x4220 net/core/dev.c:4013
- dev_queue_xmit+0x4b/0x60 net/core/dev.c:4046
- hsr_xmit net/hsr/hsr_forward.c:228 [inline]
- hsr_forward_do net/hsr/hsr_forward.c:285 [inline]
- hsr_forward_skb+0x2614/0x30d0 net/hsr/hsr_forward.c:361
- hsr_handle_frame+0x385/0x4b0 net/hsr/hsr_slave.c:43
- __netif_receive_skb_core+0x21de/0x5840 net/core/dev.c:5051
- __netif_receive_skb_one_core net/core/dev.c:5148 [inline]
- __netif_receive_skb net/core/dev.c:5264 [inline]
- process_backlog+0x936/0x1410 net/core/dev.c:6095
- napi_poll net/core/dev.c:6532 [inline]
- net_rx_action+0x786/0x1ab0 net/core/dev.c:6600
- __do_softirq+0x311/0x83d kernel/softirq.c:293
- run_ksoftirqd+0x25/0x40 kernel/softirq.c:607
- smpboot_thread_fn+0x493/0x980 kernel/smpboot.c:165
- kthread+0x4b5/0x4f0 kernel/kthread.c:256
- ret_from_fork+0x35/0x40 arch/x86/entry/entry_64.S:353
-
-Uninit was stored to memory at:
- kmsan_save_stack_with_flags mm/kmsan/kmsan.c:144 [inline]
- kmsan_internal_chain_origin+0xad/0x130 mm/kmsan/kmsan.c:310
- kmsan_memcpy_memmove_metadata+0x272/0x2e0 mm/kmsan/kmsan.c:247
- kmsan_memcpy_metadata+0xb/0x10 mm/kmsan/kmsan.c:267
- __msan_memcpy+0x43/0x50 mm/kmsan/kmsan_instr.c:116
- pskb_expand_head+0x38b/0x1b00 net/core/skbuff.c:1637
- __skb_pad+0x47f/0x900 net/core/skbuff.c:1805
- __skb_put_padto include/linux/skbuff.h:3193 [inline]
- skb_put_padto include/linux/skbuff.h:3212 [inline]
- send_hsr_supervision_frame+0x122d/0x1500 net/hsr/hsr_device.c:310
- hsr_announce+0x1e2/0x370 net/hsr/hsr_device.c:341
- call_timer_fn+0x218/0x510 kernel/time/timer.c:1404
- expire_timers kernel/time/timer.c:1449 [inline]
- __run_timers+0xcff/0x1210 kernel/time/timer.c:1773
- run_timer_softirq+0x2d/0x50 kernel/time/timer.c:1786
- __do_softirq+0x311/0x83d kernel/softirq.c:293
-
-Uninit was created at:
- kmsan_save_stack_with_flags+0x3c/0x90 mm/kmsan/kmsan.c:144
- kmsan_internal_alloc_meta_for_pages mm/kmsan/kmsan_shadow.c:307 [inline]
- kmsan_alloc_page+0x12a/0x310 mm/kmsan/kmsan_shadow.c:336
- __alloc_pages_nodemask+0x57f2/0x5f60 mm/page_alloc.c:4800
- __alloc_pages include/linux/gfp.h:498 [inline]
- __alloc_pages_node include/linux/gfp.h:511 [inline]
- alloc_pages_node include/linux/gfp.h:525 [inline]
- __page_frag_cache_refill mm/page_alloc.c:4875 [inline]
- page_frag_alloc+0x3ae/0x910 mm/page_alloc.c:4905
- __netdev_alloc_skb+0x703/0xbb0 net/core/skbuff.c:455
- __netdev_alloc_skb_ip_align include/linux/skbuff.h:2801 [inline]
- netdev_alloc_skb_ip_align include/linux/skbuff.h:2811 [inline]
- batadv_iv_ogm_aggregate_new net/batman-adv/bat_iv_ogm.c:558 [inline]
- batadv_iv_ogm_queue_add+0x10da/0x1900 net/batman-adv/bat_iv_ogm.c:670
- batadv_iv_ogm_schedule_buff net/batman-adv/bat_iv_ogm.c:829 [inline]
- batadv_iv_ogm_schedule+0xcf1/0x13c0 net/batman-adv/bat_iv_ogm.c:865
- batadv_iv_send_outstanding_bat_ogm_packet+0xbae/0xd50 net/batman-adv/bat_iv_ogm.c:1718
- process_one_work+0x1552/0x1ef0 kernel/workqueue.c:2264
- worker_thread+0xef6/0x2450 kernel/workqueue.c:2410
- kthread+0x4b5/0x4f0 kernel/kthread.c:256
- ret_from_fork+0x35/0x40 arch/x86/entry/entry_64.S:353
-=====================================================
-
-
+Signed-off-by: Tim Harvey <tharvey@gateworks.com>
+Reviewed-by: Robert Jones <rjones@gateworks.com>
 ---
-This bug is generated by a bot. It may contain errors.
-See https://goo.gl/tpsmEJ for more information about syzbot.
-syzbot engineers can be reached at syzkaller@googlegroups.com.
+Changes in v2:
+ - Changed bgx_register_intr() to a void return
+ - Added pci_free_irq_vectors() calls to free irq if named/allocated
+ - Use snprintf instead of sprintf for irq names
 
-syzbot will keep track of this bug report. See:
-https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
+ drivers/net/ethernet/cavium/thunder/thunder_bgx.c | 59 +++++++++++++++++++++++
+ drivers/net/ethernet/cavium/thunder/thunder_bgx.h |  9 ++++
+ 2 files changed, 68 insertions(+)
+
+diff --git a/drivers/net/ethernet/cavium/thunder/thunder_bgx.c b/drivers/net/ethernet/cavium/thunder/thunder_bgx.c
+index c4f6ec0..cbf8596 100644
+--- a/drivers/net/ethernet/cavium/thunder/thunder_bgx.c
++++ b/drivers/net/ethernet/cavium/thunder/thunder_bgx.c
+@@ -74,6 +74,7 @@ struct bgx {
+ 	struct pci_dev		*pdev;
+ 	bool                    is_dlm;
+ 	bool                    is_rgx;
++	char			irq_name[7];
+ };
+ 
+ static struct bgx *bgx_vnic[MAX_BGX_THUNDER];
+@@ -1535,6 +1536,53 @@ static int bgx_init_phy(struct bgx *bgx)
+ 	return bgx_init_of_phy(bgx);
+ }
+ 
++static irqreturn_t bgx_intr_handler(int irq, void *data)
++{
++	struct bgx *bgx = (struct bgx *)data;
++	struct device *dev = &bgx->pdev->dev;
++	u64 status, val;
++	int lmac;
++
++	for (lmac = 0; lmac < bgx->lmac_count; lmac++) {
++		status = bgx_reg_read(bgx, lmac, BGX_GMP_GMI_TXX_INT);
++		if (status & GMI_TXX_INT_UNDFLW) {
++			dev_err(dev, "BGX%d lmac%d UNDFLW\n", bgx->bgx_id,
++				lmac);
++			val = bgx_reg_read(bgx, lmac, BGX_CMRX_CFG);
++			val &= ~CMR_EN;
++			bgx_reg_write(bgx, lmac, BGX_CMRX_CFG, val);
++			val |= CMR_EN;
++			bgx_reg_write(bgx, lmac, BGX_CMRX_CFG, val);
++		}
++		/* clear interrupts */
++		bgx_reg_write(bgx, lmac, BGX_GMP_GMI_TXX_INT, status);
++	}
++
++	return IRQ_HANDLED;
++}
++
++static void bgx_register_intr(struct pci_dev *pdev)
++{
++	struct bgx *bgx = pci_get_drvdata(pdev);
++	struct device *dev = &pdev->dev;
++	int num_vec, ret;
++
++	/* Enable MSI-X */
++	num_vec = pci_msix_vec_count(pdev);
++	ret = pci_alloc_irq_vectors(pdev, num_vec, num_vec, PCI_IRQ_MSIX);
++	if (ret < 0) {
++		dev_err(dev, "Req for #%d msix vectors failed\n", num_vec);
++		return;
++	}
++	snprintf(bgx->irq_name, sizeof(bgx->irqname), "BGX%d", bgx->bgx_id);
++	ret = request_irq(pci_irq_vector(pdev, GMPX_GMI_TX_INT),
++			  bgx_intr_handler, 0, bgx->irq_name, bgx);
++	if (ret) {
++		if (bgx->irq_name[0])
++			pci_free_irq_vectors(pdev);
++	}
++}
++
+ static int bgx_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
+ {
+ 	int err;
+@@ -1604,6 +1652,8 @@ static int bgx_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
+ 
+ 	bgx_init_hw(bgx);
+ 
++	bgx_register_intr(pdev);
++
+ 	/* Enable all LMACs */
+ 	for (lmac = 0; lmac < bgx->lmac_count; lmac++) {
+ 		err = bgx_lmac_enable(bgx, lmac);
+@@ -1614,12 +1664,18 @@ static int bgx_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
+ 				bgx_lmac_disable(bgx, --lmac);
+ 			goto err_enable;
+ 		}
++
++		/* enable TX FIFO Underflow interrupt */
++		bgx_reg_modify(bgx, lmac, BGX_GMP_GMI_TXX_INT_ENA_W1S,
++			       GMI_TXX_INT_UNDFLW);
+ 	}
+ 
+ 	return 0;
+ 
+ err_enable:
+ 	bgx_vnic[bgx->bgx_id] = NULL;
++	if (bgx->irq_name[0])
++		pci_free_irq_vectors(pdev);
+ err_release_regions:
+ 	pci_release_regions(pdev);
+ err_disable_device:
+@@ -1637,6 +1693,9 @@ static void bgx_remove(struct pci_dev *pdev)
+ 	for (lmac = 0; lmac < bgx->lmac_count; lmac++)
+ 		bgx_lmac_disable(bgx, lmac);
+ 
++	if (bgx->irq_name[0])
++		pci_free_irq_vectors(pdev);
++
+ 	bgx_vnic[bgx->bgx_id] = NULL;
+ 	pci_release_regions(pdev);
+ 	pci_disable_device(pdev);
+diff --git a/drivers/net/ethernet/cavium/thunder/thunder_bgx.h b/drivers/net/ethernet/cavium/thunder/thunder_bgx.h
+index 2588870..cdea493 100644
+--- a/drivers/net/ethernet/cavium/thunder/thunder_bgx.h
++++ b/drivers/net/ethernet/cavium/thunder/thunder_bgx.h
+@@ -180,6 +180,15 @@
+ #define BGX_GMP_GMI_TXX_BURST		0x38228
+ #define BGX_GMP_GMI_TXX_MIN_PKT		0x38240
+ #define BGX_GMP_GMI_TXX_SGMII_CTL	0x38300
++#define BGX_GMP_GMI_TXX_INT		0x38500
++#define BGX_GMP_GMI_TXX_INT_W1S		0x38508
++#define BGX_GMP_GMI_TXX_INT_ENA_W1C	0x38510
++#define BGX_GMP_GMI_TXX_INT_ENA_W1S	0x38518
++#define  GMI_TXX_INT_PTP_LOST			BIT_ULL(4)
++#define  GMI_TXX_INT_LATE_COL			BIT_ULL(3)
++#define  GMI_TXX_INT_XSDEF			BIT_ULL(2)
++#define  GMI_TXX_INT_XSCOL			BIT_ULL(1)
++#define  GMI_TXX_INT_UNDFLW			BIT_ULL(0)
+ 
+ #define BGX_MSIX_VEC_0_29_ADDR		0x400000 /* +(0..29) << 4 */
+ #define BGX_MSIX_VEC_0_29_CTL		0x400008
+-- 
+2.9.2
+
