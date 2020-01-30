@@ -2,67 +2,69 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 3F34414DC26
-	for <lists+netdev@lfdr.de>; Thu, 30 Jan 2020 14:41:56 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 35F7614DC4A
+	for <lists+netdev@lfdr.de>; Thu, 30 Jan 2020 14:50:07 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727221AbgA3Nly convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Thu, 30 Jan 2020 08:41:54 -0500
-Received: from us-smtp-2.mimecast.com ([205.139.110.61]:45753 "EHLO
-        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727125AbgA3Nlx (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 30 Jan 2020 08:41:53 -0500
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-8-ilKwKLf5Ng6J2SLpUVZx-g-1; Thu, 30 Jan 2020 08:41:48 -0500
-Received: from smtp.corp.redhat.com (int-mx04.intmail.prod.int.phx2.redhat.com [10.5.11.14])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 21DB7107ACC5;
-        Thu, 30 Jan 2020 13:41:46 +0000 (UTC)
-Received: from bistromath.localdomain (ovpn-117-110.ams2.redhat.com [10.36.117.110])
-        by smtp.corp.redhat.com (Postfix) with ESMTPS id 340EC5DA7B;
-        Thu, 30 Jan 2020 13:41:42 +0000 (UTC)
-Date:   Thu, 30 Jan 2020 14:41:41 +0100
-From:   Sabrina Dubroca <sd@queasysnail.net>
-To:     Oliver Hartkopp <socketcan@hartkopp.net>
-Cc:     linux-can@vger.kernel.org, netdev@vger.kernel.org,
-        syzbot+c3ea30e1e2485573f953@syzkaller.appspotmail.com,
-        dvyukov@google.com, mkl@pengutronix.de, j.vosburgh@gmail.com,
-        vfalico@gmail.com, andy@greyhouse.net, davem@davemloft.net,
-        linux-stable <stable@vger.kernel.org>
-Subject: Re: [PATCH] bonding: do not enslave CAN devices
-Message-ID: <20200130134141.GA804563@bistromath.localdomain>
-References: <20200130133046.2047-1-socketcan@hartkopp.net>
+        id S1727357AbgA3NuF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 30 Jan 2020 08:50:05 -0500
+Received: from mail-qk1-f196.google.com ([209.85.222.196]:37281 "EHLO
+        mail-qk1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727107AbgA3NuF (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 30 Jan 2020 08:50:05 -0500
+Received: by mail-qk1-f196.google.com with SMTP id 21so2959822qky.4
+        for <netdev@vger.kernel.org>; Thu, 30 Jan 2020 05:50:03 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:reply-to:from:date:message-id:subject:to;
+        bh=GrdyiqEFc7d9G/zdkgFcJ6VHW0IWWZvW+Hm2PT6e4V0=;
+        b=ZWU2Eb5oW6e3mtkpmlLaQpI8CqXKEBhwmaOcgg9FihyNiVb2zeKcGmyRJFccgEY8pP
+         njpEA34XD5ddhdSUAuPEmWqrB5vrW8KB4pXVuM3n+H5dZAyqQnfbvt/PmMU+oP1uKSM2
+         A+bX8J/T1yLYnohHCr0Eix5kmhxUJe26FqGMU+NApVsKs5q+V8tpUjOS8GphgYVr8GT+
+         sVhSf5knyfNLWRw74qtMeew4tIX6XhP8RXp94ZDFvEuH6q+GwH7yqdZsqop5wpW5GHh/
+         dxIkDHIVuTO8TQRWHUkcmiZInGimhQcdPSFk/dP/IibXu2dARGYy58vVkwplr3JTaeuc
+         NENQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:reply-to:from:date:message-id
+         :subject:to;
+        bh=GrdyiqEFc7d9G/zdkgFcJ6VHW0IWWZvW+Hm2PT6e4V0=;
+        b=b7xVLClw/Su/FjaorCWA9IrvQgUej5ozcu3yE36+rRV/oc1Voonl8KkwgeyTWMAE5w
+         X7U/y3Er/xOVcAcqjpF7ckWGrqtabgLjBKeAHXckdw2sl715k72qRhBXBiG5M3ftR9F6
+         3WfA7L/j0sw0S5+Z4DIQ9jrLAAlfJu2dXA4OTRA1UjkizOCmoKxzmeCI2Fd5pYfURETz
+         alxIyElBbm/fHGgEXe141H/Z28cwBqngf5tJ+S6i0bybeXRzpsnC+peWLzxKDkzeRUva
+         w4Br8FElE2b3nWLLGVCc8WRngQyzD4Qf6pt6iE46cKxM/SolVwfWuOgfXtTtUq1LZ1F5
+         vlKg==
+X-Gm-Message-State: APjAAAU1Ka/IHLCMgZLJDFfNdxzxiq59NShqdfu/UZiHNQMMoVkqMGWC
+        HjlmSl8ypLAwbJswzEGlKrvgYiEEbOOyRjEF0TY=
+X-Google-Smtp-Source: APXvYqziFCbOI62mSk8hs5hrvFy8zjORi+/+nieRdtf54ndtdkktshjGItbtN893+jiUgH92s436UFOxZbz5pamfONY=
+X-Received: by 2002:a37:9c0c:: with SMTP id f12mr5060472qke.125.1580392203513;
+ Thu, 30 Jan 2020 05:50:03 -0800 (PST)
 MIME-Version: 1.0
-In-Reply-To: <20200130133046.2047-1-socketcan@hartkopp.net>
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.14
-X-MC-Unique: ilKwKLf5Ng6J2SLpUVZx-g-1
-X-Mimecast-Spam-Score: 0
-X-Mimecast-Originator: queasysnail.net
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8BIT
-Content-Disposition: inline
+Received: by 2002:aed:37c2:0:0:0:0:0 with HTTP; Thu, 30 Jan 2020 05:50:02
+ -0800 (PST)
+Reply-To: tracywilliam26@gmail.com
+From:   Dr Tracy William <gracebanneth@gmail.com>
+Date:   Thu, 30 Jan 2020 05:50:02 -0800
+Message-ID: <CABo=7A1x3Fw7E0oydrxs7QHmrEhpj7-0SEsQa9dGMyuEo6eV-w@mail.gmail.com>
+Subject: GREETINGS FROM TRACY WILLIAM
+To:     undisclosed-recipients:;
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello,
-
-2020-01-30, 14:30:46 +0100, Oliver Hartkopp wrote:
-> Since commit 8df9ffb888c ("can: make use of preallocated can_ml_priv for per
-> device struct can_dev_rcv_lists") the device specific CAN receive filter lists
-> are stored in netdev_priv() and dev->ml_priv points to these filters.
-> 
-> In the bug report Syzkaller enslaved a vxcan1 CAN device and accessed the
-> bonding device with a PF_CAN socket which lead to a crash due to an access of
-> an unhandled bond_dev->ml_priv pointer.
-> 
-> Deny to enslave CAN devices by the bonding driver as the resulting bond_dev
-> pretends to be a CAN device by copying dev->type without really being one.
-
-Does the team driver have the same problem?
-
 -- 
-Sabrina
+Hello Dear,
+how are you today,I hope you are doing great.
+It is my great pleasure to
+contact you and i hope you don't mind,I was just surfing
+through the Internet search when i found your email address,I want to make a new
+and special friend,I hope you don't mind.
 
+My name is Tracy William,I am from the United States of America but
+presently I live
+and work in England,
+I will give you pictures and details of me as soon as i hear from you
+bye
+Tracy
