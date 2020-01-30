@@ -2,216 +2,184 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id B071A14E508
-	for <lists+netdev@lfdr.de>; Thu, 30 Jan 2020 22:45:55 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 91F5014E525
+	for <lists+netdev@lfdr.de>; Thu, 30 Jan 2020 22:53:38 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727333AbgA3Vpu (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 30 Jan 2020 16:45:50 -0500
-Received: from mail-wr1-f68.google.com ([209.85.221.68]:43107 "EHLO
-        mail-wr1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726739AbgA3Vpt (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 30 Jan 2020 16:45:49 -0500
-Received: by mail-wr1-f68.google.com with SMTP id d16so5996094wre.10;
-        Thu, 30 Jan 2020 13:45:46 -0800 (PST)
+        id S1725985AbgA3Vxh (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 30 Jan 2020 16:53:37 -0500
+Received: from mail-pj1-f68.google.com ([209.85.216.68]:37995 "EHLO
+        mail-pj1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725835AbgA3Vxg (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 30 Jan 2020 16:53:36 -0500
+Received: by mail-pj1-f68.google.com with SMTP id j17so1918672pjz.3;
+        Thu, 30 Jan 2020 13:53:34 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=wHp3wY6EbskwLtVSraRT0zmeUswYzI0IaeiJ+sQlEAY=;
-        b=UBsol0OI94UvcceGUkGGbg9BPk2SYryPULvUtgtT4LJCuK4zNC5sSNi6sKSGdrkZiE
-         F1/tT9KaZ8qhWdKzt+292Vb2ml+Bp+TUyJ5wHx7YXTnjBTGUP7kbQn15vaZ9D5hqnWGM
-         TIA4a/rT9KIoI+1OurqPl48V7XMRmS3MT+LLGbwplNUk+cKQnsJRdtxTEkXUNgTLKnW+
-         0FgxgWfLutvvQPK51TTe7I1hqKwJ7mzK59Or65fdJm89QpG17aBl7ToFeX9+WZBwll/p
-         cj16GjSv9ZZB8GgGKQfHoz/kF1+xgZgT2hm+MOERxI/DNTeDrSl5l1izCqNQtDbFAPB6
-         mN0Q==
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=9+c98/oxOHNUyGzccjUUkoAPacv6RdIiORztEtMrVFg=;
+        b=JPzkUj15fmdkrIov+SnkTmU2zB7E7+Hbp7Nl5dtXaMGB0Yx8nxkoEcGhP/y2C2SXV/
+         GETslDWAycWZatUHi2bPosvtIUwNEtuF+w9YluWht43vyvCR8Vt/HL51//R5yLWyoLmY
+         y0ljRO3wJ2DHUA5H8uW0f2bQQa9KY3Mn9zVZ2J2uuvOIpBpuPogle0yUig96qY27QcKe
+         dc3sr9mUAaiWIG8QRj1YSStKqwnd5InhveK/r6/a3cA+i16tsWsxeTUxUjlkxizCvS07
+         hL0e5QpNbGlDN5CK4UKeaoEdx5bYJb5RAIVP/j/4uaS51rIdsQwDUNKZo40ENCDXXFTS
+         SEjg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=wHp3wY6EbskwLtVSraRT0zmeUswYzI0IaeiJ+sQlEAY=;
-        b=nzI6iM4OhOdoHvr9g+MlnT2N4ylwAnyqNrnYNhKgPuJsQldfgN0+e7TSHRbdM8DrC4
-         lGDmLmMiMR5tqj6YgR4knjS2r5+U3AshOoQ3LV0MMurZ6kkDfdN7xdi5IfGwA5pQWqQN
-         tkzDt2fGsvGdRbZayVhhvHPMqBKIIo84fd+mP65+HgOlUAkWv/yPk/697pGJo7R6HO3j
-         1ZWn0IRTQ5meJ6M4mtbFw4y3wKk1/gxiHVHROGKWjkgPc/NY2VofVagLydAucQNzRH6n
-         VUcz8iOEXAlkQQcH1CHVxwAhI4DVna3Q/Jxc9zFXgtdkSYYB2fFU8YxCACcoGMGQvldV
-         b0ow==
-X-Gm-Message-State: APjAAAVSB1VGbOPcgeL9GUf4FdctIfftQnKpKMEvtXzHktL/DZxzWCQw
-        JVWhwbdNx57d0n6b3ONioug=
-X-Google-Smtp-Source: APXvYqzARgdfdA9GrP/iZ3VHGJvyoNKKns7gvUBGHXL/oYoPanZqPLggoX3TmU6Y86PDjyJuCy5AwA==
-X-Received: by 2002:adf:dfc2:: with SMTP id q2mr8112298wrn.251.1580420745935;
-        Thu, 30 Jan 2020 13:45:45 -0800 (PST)
-Received: from ?IPv6:2003:ea:8f29:6000:4039:5a2f:e01:48bf? (p200300EA8F29600040395A2F0E0148BF.dip0.t-ipconnect.de. [2003:ea:8f29:6000:4039:5a2f:e01:48bf])
-        by smtp.googlemail.com with ESMTPSA id d204sm7941097wmd.30.2020.01.30.13.45.44
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 30 Jan 2020 13:45:45 -0800 (PST)
-Subject: Re: [PATCH net] net: thunderx: workaround BGX TX Underflow issue
-To:     Robert Jones <rjones@gateworks.com>,
-        Sunil Goutham <sgoutham@marvell.com>,
-        Robert Richter <rrichter@marvell.com>,
-        David Miller <davem@davemloft.net>
-Cc:     linux-arm-kernel@lists.infradead.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Tim Harvey <tharvey@gateworks.com>
-References: <20200129223609.9327-1-rjones@gateworks.com>
-From:   Heiner Kallweit <hkallweit1@gmail.com>
-Message-ID: <dfb2fb4c-4147-dcd2-7c60-1c3653e1092f@gmail.com>
-Date:   Thu, 30 Jan 2020 22:45:38 +0100
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
- Thunderbird/68.4.2
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=9+c98/oxOHNUyGzccjUUkoAPacv6RdIiORztEtMrVFg=;
+        b=mOFPxaejzeNxZAGACRvDDBBG0kc6frEn0Yp/mJ+IS2aYDBiwdQ2t6QuUcpwRBQB4eH
+         be9pi2Mag7d3ZW9MQbK5rLa54eDlKHbnRSle2zEpITzy+z4NERM0vxulIrzyVCdxJw+7
+         kO++jQiKTqJlqXAsRGjVu6RaBjdwS+0q6d3boZSPjji/Nfs/vsgbYuf8XU9SLfKo6SnY
+         2sb/Mkuw8zs0/udfqc72GUyQeR8JJpgFUjFwnCr9suU/7kcSeBQ6gX00XEcXOhgpVWNq
+         m702iFrNi49P3/5UM0nzG3/LOe4ndmuRWlwqn7nJ25hj2DRFf9+4FKYEMudrQkwXAbcv
+         ANOw==
+X-Gm-Message-State: APjAAAV3J6zm/wUm+SsG+7I4nvvTP61maG9ZPwzzCKasFcXJKqAOSIyz
+        FDmmEzXn9vzaBOcJvwaNkEQ=
+X-Google-Smtp-Source: APXvYqy33u2/xNEqTgqNLZvCqe3TzkhXp2Z2m50hMoQoqOkZTn/ou8M8jOaf688IUyPSssG0OwPFqA==
+X-Received: by 2002:a17:90b:30c9:: with SMTP id hi9mr7143094pjb.81.1580421214217;
+        Thu, 30 Jan 2020 13:53:34 -0800 (PST)
+Received: from ast-mbp ([2620:10d:c090:200::2:f7d])
+        by smtp.gmail.com with ESMTPSA id f127sm7694372pfa.112.2020.01.30.13.53.32
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Thu, 30 Jan 2020 13:53:32 -0800 (PST)
+Date:   Thu, 30 Jan 2020 13:53:31 -0800
+From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
+To:     Matt Cover <werekraken@gmail.com>
+Cc:     daniel@iogearbox.net, davem@davemloft.net,
+        Matthew Cover <matthew.cover@stackpath.com>,
+        netdev@vger.kernel.org, bpf@vger.kernel.org, kernel-team@fb.com
+Subject: unstable bpf helpers proposal. Was: [PATCH bpf-next v2 1/2] bpf: add
+ bpf_ct_lookup_{tcp,udp}() helpers
+Message-ID: <20200130215330.f3unziderf5rlipf@ast-mbp>
+References: <20200118000128.15746-1-matthew.cover@stackpath.com>
+ <20200121202038.26490-1-matthew.cover@stackpath.com>
+ <CAGyo_hpVm7q3ghW+je23xs3ja_COP_BMZoE_=phwGRzjSTih8w@mail.gmail.com>
+ <CAOftzPi74gg=g8VK-43KmA7qqpiSYnJVoYUFDtPDwum10KHc2Q@mail.gmail.com>
+ <CAGyo_hprQRLLUUnt9G4SJnbgLSdN=HTDDGFBsPYMDC5bGmTPYA@mail.gmail.com>
 MIME-Version: 1.0
-In-Reply-To: <20200129223609.9327-1-rjones@gateworks.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAGyo_hprQRLLUUnt9G4SJnbgLSdN=HTDDGFBsPYMDC5bGmTPYA@mail.gmail.com>
+User-Agent: NeoMutt/20180223
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 29.01.2020 23:36, Robert Jones wrote:
-> From: Tim Harvey <tharvey@gateworks.com>
+On Fri, Jan 24, 2020 at 02:46:30PM -0700, Matt Cover wrote:
 > 
-> While it is not yet understood why a TX underflow can easily occur
-> for SGMII interfaces resulting in a TX wedge. It has been found that
-> disabling/re-enabling the LMAC resolves the issue.
-> 
-> Signed-off-by: Tim Harvey <tharvey@gateworks.com>
-> Reviewed-by: Robert Jones <rjones@gateworks.com>
-> ---
->  drivers/net/ethernet/cavium/thunder/thunder_bgx.c | 54 +++++++++++++++++++++++
->  drivers/net/ethernet/cavium/thunder/thunder_bgx.h |  9 ++++
->  2 files changed, 63 insertions(+)
-> 
-> diff --git a/drivers/net/ethernet/cavium/thunder/thunder_bgx.c b/drivers/net/ethernet/cavium/thunder/thunder_bgx.c
-> index c4f6ec0..078ecea 100644
-> --- a/drivers/net/ethernet/cavium/thunder/thunder_bgx.c
-> +++ b/drivers/net/ethernet/cavium/thunder/thunder_bgx.c
-> @@ -74,6 +74,7 @@ struct bgx {
->  	struct pci_dev		*pdev;
->  	bool                    is_dlm;
->  	bool                    is_rgx;
-> +	char			irq_name[7];
+> In addition to the nf_conntrack helpers, I'm hoping to add helpers for
+> lookups to the ipvs connection table via ip_vs_conn_in_get(). From my
+> perspective, this is again similar. 
 
-Why do you store the name? It's used in probe() only.
+...
 
->  };
-> 
->  static struct bgx *bgx_vnic[MAX_BGX_THUNDER];
-> @@ -1535,6 +1536,53 @@ static int bgx_init_phy(struct bgx *bgx)
->  	return bgx_init_of_phy(bgx);
->  }
-> 
-> +static irqreturn_t bgx_intr_handler(int irq, void *data)
-> +{
-> +	struct bgx *bgx = (struct bgx *)data;
-> +	struct device *dev = &bgx->pdev->dev;
-> +	u64 status, val;
-> +	int lmac;
-> +
-> +	for (lmac = 0; lmac < bgx->lmac_count; lmac++) {
-> +		status = bgx_reg_read(bgx, lmac, BGX_GMP_GMI_TXX_INT);
-> +		if (status & GMI_TXX_INT_UNDFLW) {
-> +			dev_err(dev, "BGX%d lmac%d UNDFLW\n", bgx->bgx_id,
+> Writing to an existing nf_conn could be added to this helper in the
+> future. Then, as an example, an XDP program could populate ct->mark
+> and a restore mark rule could be used to apply the mark to the skb.
+> This is conceptually similar to the XDP/tc interaction example.
 
-Using pci_err() would make your life a lttle easier.
+...
 
-> +				lmac);
-> +			val = bgx_reg_read(bgx, lmac, BGX_CMRX_CFG);
-> +			val &= ~CMR_EN;
-> +			bgx_reg_write(bgx, lmac, BGX_CMRX_CFG, val);
-> +			val |= CMR_EN;
-> +			bgx_reg_write(bgx, lmac, BGX_CMRX_CFG, val);
-> +		}
-> +		/* clear interrupts */
-> +		bgx_reg_write(bgx, lmac, BGX_GMP_GMI_TXX_INT, status);
-> +	}
-> +
-> +	return IRQ_HANDLED;
-> +}
-> +
-> +static int bgx_register_intr(struct pci_dev *pdev)
-> +{
-> +	struct bgx *bgx = pci_get_drvdata(pdev);
-> +	struct device *dev = &pdev->dev;
-> +	int num_vec, ret;
-> +
-> +	/* Enable MSI-X */
-> +	num_vec = pci_msix_vec_count(pdev);
-> +	ret = pci_alloc_irq_vectors(pdev, num_vec, num_vec, PCI_IRQ_MSIX);
+> I'm planning to add a bpf_tcp_nf_conn() helper which gives access to
+> members of ip_ct_tcp. This is similar to bpf_tcp_sock() in my mind.
 
-Why do you want to enforce using MSI-X? Any interrupt type should be
-fine for you, so let the system decide and use PCI_IRQ_ALL_TYPES.
-And why do you need more than one vector if all you're interested in
-is tx underflow events?
+...
 
-> +	if (ret < 0) {
-> +		dev_err(dev, "Req for #%d msix vectors failed\n", num_vec);
-> +		return 1;
-> +	}
-> +	sprintf(bgx->irq_name, "BGX%d", bgx->bgx_id);
-> +	ret = request_irq(pci_irq_vector(pdev, GMPX_GMI_TX_INT),
-> +		bgx_intr_handler, 0, bgx->irq_name, bgx);
+> I touched on create and update above. Delete, like create, would
+> almost certainly be a separate helper. This submission is not
+> intended to put us on that track. I do not believe it hinders an
+> effort such as that either. Are you worried that adding nf_conn to
+> bpf is a slippery slope?
 
-Here using pci_request_irq() would make your life easier.
-This function also allows to dynamically create the irq name.
+Looks like there is a need to access quite a bit of ct, ipvs internal states.
+I bet neigh, route and other kernel internal tables will be next. The
+lookup/update/delete to these tables is necessary. If somebody wants to do a
+fast bridge in XDP they may want to reuse icmp_send(). I've seen folks
+reimplementing it purely on BPF side, but kernel's icmp_send() is clearly
+superior, so exposing it as a helper will be useful too. And so on and so
+forth. There are lots of kernel bits that BPF progs want to interact with.
 
-> +	if (ret)
-> +		return 1;
-> +
-> +	return 0;
-> +}
-> +
->  static int bgx_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
->  {
->  	int err;
-> @@ -1604,6 +1652,8 @@ static int bgx_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
-> 
->  	bgx_init_hw(bgx);
-> 
-> +	bgx_register_intr(pdev);
-> +
->  	/* Enable all LMACs */
->  	for (lmac = 0; lmac < bgx->lmac_count; lmac++) {
->  		err = bgx_lmac_enable(bgx, lmac);
-> @@ -1614,6 +1664,10 @@ static int bgx_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
->  				bgx_lmac_disable(bgx, --lmac);
->  			goto err_enable;
->  		}
-> +
-> +		/* enable TX FIFO Underflow interrupt */
-> +		bgx_reg_modify(bgx, lmac, BGX_GMP_GMI_TXX_INT_ENA_W1S,
-> +			       GMI_TXX_INT_UNDFLW);
+If we expose all of that via existing bpf helper mechanism we will freeze a
+large chunk of networking stack. I agree that accessing these data structures
+from BPF side is useful, but I don't think we can risk hardening the kernel so
+much. We need new helper mechanism that will be unstable api. It needs to be
+obviously unstable to both kernel developers and bpf users. Yet such mechanim
+should allow bpf progs accessing all these things without sacrificing safety.
 
-If allocating an interrupt fails then you most likely don't want to do this.
-And do you need this interrupt if the interface is down? If not then you
-could think about moving this to the ndo_open() callback.
-And the chip interrupt should be masked if not needed any longer.
-Else you risk spurious interrupts e.g. after driver unload.
+I think such new mechanism can be modeled similar to kernel modules and
+EXPORT_SYMBOL[_GPL] convention. The kernel has established policy that
+these function do change and in-tree kernel modules get updated along the way
+while out-of-tree gets broken periodically. I propose to do the same for BPF.
+Certain kernel functions can be marked as EXPORT_SYMBOL_BPF and they will be
+eligible to be called from BPF program. The verifier will do safety checks and
+type matching based on BTF. The same way it already does for tracing progs.
+For example the ct lookup can be:
+struct nf_conn *
+bpf_ct_lookup(struct __sk_buff *skb, struct nf_conntrack_tuple *tuple, u32 len,
+              u8 proto, u64 netns_id, u64 flags)
+{
+}
+EXPORT_SYMBOL_BPF(bpf_ct_lookup);
+The first argument 'skb' has stable api and type. It's __sk_buff and it's
+context for all skb-based progs, so any program that got __sk_buff from
+somewhere can pass it into this helper.
+The second argument is 'struct nf_conntrack_tuple *'. It's unstable and
+kernel internal. Currently the verifier recognizes it as PTR_TO_BTF_ID
+for tracing progs and can do the same for networking. It cannot recognize
+it on stack though. Like:
+int bpf_prog(struct __sk_buff *skb)
+{
+  struct nf_conntrack_tuple my_tupple = { ...};
+  bpf_ct_lookup(skb, &my_tupple, ...);
+}
+won't work yet. The verifier needs to be taught to deal with PTR_TO_BTF_ID
+where it points to the stack.
+The last three arguments are scalars and already recognized as SCALAR_VALUE by
+the verifier. So with minor extensions the verifier will be able to prove the
+safety of argument passing.
 
->  	}
-> 
->  	return 0;
-> diff --git a/drivers/net/ethernet/cavium/thunder/thunder_bgx.h b/drivers/net/ethernet/cavium/thunder/thunder_bgx.h
-> index 2588870..cdea493 100644
-> --- a/drivers/net/ethernet/cavium/thunder/thunder_bgx.h
-> +++ b/drivers/net/ethernet/cavium/thunder/thunder_bgx.h
-> @@ -180,6 +180,15 @@
->  #define BGX_GMP_GMI_TXX_BURST		0x38228
->  #define BGX_GMP_GMI_TXX_MIN_PKT		0x38240
->  #define BGX_GMP_GMI_TXX_SGMII_CTL	0x38300
-> +#define BGX_GMP_GMI_TXX_INT		0x38500
-> +#define BGX_GMP_GMI_TXX_INT_W1S		0x38508
-> +#define BGX_GMP_GMI_TXX_INT_ENA_W1C	0x38510
-> +#define BGX_GMP_GMI_TXX_INT_ENA_W1S	0x38518
-> +#define  GMI_TXX_INT_PTP_LOST			BIT_ULL(4)
-> +#define  GMI_TXX_INT_LATE_COL			BIT_ULL(3)
-> +#define  GMI_TXX_INT_XSDEF			BIT_ULL(2)
-> +#define  GMI_TXX_INT_XSCOL			BIT_ULL(1)
-> +#define  GMI_TXX_INT_UNDFLW			BIT_ULL(0)
-> 
->  #define BGX_MSIX_VEC_0_29_ADDR		0x400000 /* +(0..29) << 4 */
->  #define BGX_MSIX_VEC_0_29_CTL		0x400008
-> --
-> 2.9.2
-> 
+The return value is trickier. It can be solved with appropriate type
+annotations like:
+struct nf_conn *
+bpf_ct_lookup(struct __sk_buff *skb, struct nf_conntrack_tuple *tuple, u32 len,
+             u8 proto, u64 netns_id, u64 flags)
+{ ...
+}
+EXPORT_SYMBOL_BPF__acquires(bpf_ct_lookup);
+int bpf_ct_release(struct nf_conn * ct)
+{ ...
+}
+EXPORT_SYMBOL_BPF__releases(bpf_ct_release);
+By convention the return value is acquired and the first argument is released.
+Then the verifier will be able to pair them the same way it does
+bpf_sk_lookup()/bpf_sk_release(), but in declarative way. So the verifier code
+doesn't need to be touched for every such function pair in the future.
 
+Note struct nf_conn and struct nf_conntrack_tuple stay kernel internal.
+BPF program can define fields it wants to access as:
+struct nf_conn {
+  u32 timeout;
+  u64 status;
+  u32 mark;
+} __attribute__((preserve_access_index));
+int bpf_prog()
+{
+  struct nf_conn *ct = bpf_ct_lookup(...);
+  if (ct) {
+       ct->timeout;
+  }
+}
+and CO-RE logic will deal with kernel specific relocations.
+The same way it does for tracing progs that access all kernel data.
+
+I think it's plenty obvious that such bpf helpers are unstable api. The
+networking programs will have access to all kernel data structures, receive
+them from white listed set of EXPORT_SYMBOL_BPF() functions and pass them into
+those functions back. Just like tracing progs that have access to everything.
+They can read all fields of kernel internal struct sk_buff and pass it into
+bpf_skb_output().
+The same way kernel modules can access all kernel data structures and call
+white listed set of EXPORT_SYMBOL() helpers.
