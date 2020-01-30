@@ -2,97 +2,120 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id F2E2614DB28
-	for <lists+netdev@lfdr.de>; Thu, 30 Jan 2020 14:02:19 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6658814DBE8
+	for <lists+netdev@lfdr.de>; Thu, 30 Jan 2020 14:30:40 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727238AbgA3NCS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 30 Jan 2020 08:02:18 -0500
-Received: from mail-yw1-f43.google.com ([209.85.161.43]:43590 "EHLO
-        mail-yw1-f43.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726980AbgA3NCS (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 30 Jan 2020 08:02:18 -0500
-Received: by mail-yw1-f43.google.com with SMTP id f204so881384ywc.10
-        for <netdev@vger.kernel.org>; Thu, 30 Jan 2020 05:02:17 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:from:date:message-id:subject:to;
-        bh=Pa/ccRm4RbffTLTyLYWqpDsnkj37/rCOT9I/Na1RIiw=;
-        b=EV2wFM9jCDNrzyxRE+MLC/O5X9hf34kHlPv+KQo67pVC0TPGbaQ67VSV5OGwpWnbNd
-         lL8TTxMsd5vx1mXcEJvAaYJ8uO1rkPz9bqKerGy+SjLp9TXUb0TQ37+vtiMoVGE/HSE/
-         FK2bYrMRE3kRuclQU17cwlpytDblOPtHoisjeHRq9T75DQL2ao3A4T9XdZkToHg0qS2s
-         JwtYA1rqxTBED6CCTs5KbT18gXBEnRWugQLNC2RCKVwmRiUaU0FZF29+pUiutsMcrlG2
-         0IhFWnw9MqlnNvUpIp86O+paBOgNzV1WJfRj/dDV+g5uVSImCbe+1MVloJBXAeq1j2Vf
-         2rFg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:from:date:message-id:subject:to;
-        bh=Pa/ccRm4RbffTLTyLYWqpDsnkj37/rCOT9I/Na1RIiw=;
-        b=D7gzgEey9VZ+v+kGsKxa1psQ/fd6bl9LkQh0XPPnJ8ieiQrvLHr5vFqF8xsa8dPM3z
-         rk3li/xANDqViuTGvF6JGl+5T+hfc/cjVoNWqPJuqD3oNodlRfMnpta+nHMTpha47DlH
-         gEFLP5qEXrqM4njZ2mPGFWAHMl9C2Akcc+VBcXvn3TKenqIX6Daq4IfoIjHvPG/tYW4X
-         rH6UaU4WiQwRBtSVQyIngAVWfgsn5LxTJZDOKUYeqdDTgz1QJGW1ghkT5Prd0wk29IyC
-         WRhUL+clT/Pc8yX+avpla+ErRtzCqBvZS8L+nDv0Zmc2wzR7xH4N3loH/bkuLNoPi/zg
-         Z9yg==
-X-Gm-Message-State: APjAAAXVun+kTH3XO5Lz2WatLrftbrw5T5Pk0L8J8oe9VwYcqBO/ni6o
-        fC7e5CQO/T2XQdqXkM6jjm5G104xU8cVmfIgS/LS5YxvmXw=
-X-Google-Smtp-Source: APXvYqzsH/926Ud7gueNiqkXD6RTSeTZEuOqpu7qLeY/xfKSmp8wQJs6H6USgUFWVHWZo0hdPlsK1m2AvZqjiCtAh3Y=
-X-Received: by 2002:a81:3212:: with SMTP id y18mr3237937ywy.247.1580389336443;
- Thu, 30 Jan 2020 05:02:16 -0800 (PST)
+        id S1727448AbgA3Nad (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 30 Jan 2020 08:30:33 -0500
+Received: from mx08-00178001.pphosted.com ([91.207.212.93]:28646 "EHLO
+        mx07-00178001.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1726948AbgA3Nac (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 30 Jan 2020 08:30:32 -0500
+Received: from pps.filterd (m0046660.ppops.net [127.0.0.1])
+        by mx07-00178001.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 00UDNhRE005759;
+        Thu, 30 Jan 2020 14:30:10 +0100
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=st.com; h=from : to : cc : subject
+ : date : message-id : references : in-reply-to : content-type : content-id
+ : content-transfer-encoding : mime-version; s=STMicroelectronics;
+ bh=DDE7wRVrKC8L3nY1nmBlLG8DjibQ4CfnKv8w7/2QhPU=;
+ b=T2ffEgEjN/DMXOY2HgMx42+9Qeuasz4Zl5qAECuKJeXBe0JiI+Z5YfCa6AouqnQm5mcv
+ ZlHUuDE/xzlUlF/DiZhmpY1vNaS9E7RbPuNIFaJCYKkjeJtpXt/OvtaDohE362vHhGKJ
+ 40fribYB498l3vlZFqz/qoTfwcnfgFffuuOdUWnwm0DPOO+NPunxz41cKYRroq3qbiVD
+ 4x8DLE4Ji32iPI2wG7F6I319uTcRJD7Xqc+4oQWEoUA6hllvmW8T6IYged0JrXW72AAv
+ S9izNaMquA24kcdPLuuLXzgw8c9RRaoauvVBwpyKL/Yba1LdVLzi+8EkQGV5YqMA+4Oo Dg== 
+Received: from beta.dmz-eu.st.com (beta.dmz-eu.st.com [164.129.1.35])
+        by mx07-00178001.pphosted.com with ESMTP id 2xrbpb8sp2-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Thu, 30 Jan 2020 14:30:10 +0100
+Received: from euls16034.sgp.st.com (euls16034.sgp.st.com [10.75.44.20])
+        by beta.dmz-eu.st.com (STMicroelectronics) with ESMTP id 21FCE10002A;
+        Thu, 30 Jan 2020 14:30:05 +0100 (CET)
+Received: from Webmail-eu.st.com (sfhdag3node3.st.com [10.75.127.9])
+        by euls16034.sgp.st.com (STMicroelectronics) with ESMTP id CA4BF2D5CFA;
+        Thu, 30 Jan 2020 14:30:05 +0100 (CET)
+Received: from SFHDAG5NODE3.st.com (10.75.127.15) by SFHDAG3NODE3.st.com
+ (10.75.127.9) with Microsoft SMTP Server (TLS) id 15.0.1347.2; Thu, 30 Jan
+ 2020 14:30:05 +0100
+Received: from SFHDAG5NODE3.st.com ([fe80::7c09:5d6b:d2c7:5f47]) by
+ SFHDAG5NODE3.st.com ([fe80::7c09:5d6b:d2c7:5f47%20]) with mapi id
+ 15.00.1473.003; Thu, 30 Jan 2020 14:30:05 +0100
+From:   Christophe ROULLIER <christophe.roullier@st.com>
+To:     David Miller <davem@davemloft.net>
+CC:     "joabreu@synopsys.com" <joabreu@synopsys.com>,
+        "mcoquelin.stm32@gmail.com" <mcoquelin.stm32@gmail.com>,
+        Alexandre TORGUE <alexandre.torgue@st.com>,
+        Peppe CAVALLARO <peppe.cavallaro@st.com>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "linux-arm-kernel@lists.infradead.org" 
+        <linux-arm-kernel@lists.infradead.org>,
+        "linux-stm32@st-md-mailman.stormreply.com" 
+        <linux-stm32@st-md-mailman.stormreply.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+Subject: Re: [PATCH 1/1] net: ethernet: stmmac: simplify phy modes management
+ for stm32
+Thread-Topic: [PATCH 1/1] net: ethernet: stmmac: simplify phy modes management
+ for stm32
+Thread-Index: AQHV1pIW1y791lwjMUusjpFyRZvewKgDJNKA
+Date:   Thu, 30 Jan 2020 13:30:05 +0000
+Message-ID: <05adc7cc-19cb-7e6e-f6df-07ec8f5e841f@st.com>
+References: <20200128083942.17823-1-christophe.roullier@st.com>
+ <20200129.115131.1101786807458791369.davem@davemloft.net>
+In-Reply-To: <20200129.115131.1101786807458791369.davem@davemloft.net>
+Accept-Language: fr-FR, en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+user-agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.4.1
+x-ms-exchange-messagesentrepresentingtype: 1
+x-ms-exchange-transport-fromentityheader: Hosted
+x-originating-ip: [10.75.127.51]
+Content-Type: text/plain; charset="utf-8"
+Content-ID: <C6EE503FF153424FB0ED17B9583F7CA4@st.com>
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-From:   Martin T <m4rtntns@gmail.com>
-Date:   Thu, 30 Jan 2020 15:02:02 +0200
-Message-ID: <CAJx5YvHH9CoC8ZDz+MwG8RFr3eg2OtDvmU-EaqG76CiAz+W+5Q@mail.gmail.com>
-Subject: Why is NIC driver queue depth driver dependent when it allocates
- system memory?
-To:     netdev@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.138,18.0.572
+ definitions=2020-01-30_03:2020-01-28,2020-01-30 signatures=0
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi,
-
-when I read the source code of for example tg3 driver or e1000e
-driver, then looks like the driver queue is allocated from system
-memory. For example, in e1000_ethtool.c kcalloc() is called to
-allocate GFP_KERNEL memory.
-
-If system memory is allocated, then why are there driver-dependent
-limits? For example, in my workstation the maximum RX/TX queue for the
-NIC using tg3 driver is 511 while maximum RX/TX queue for the NIC
-using e1000e driver is 4096:
-
-# Broadcom Limited NetXtreme BCM5722 Gigabit Ethernet; tg3 driver
-# ethtool -g eth1
-Ring parameters for eth1:
-Pre-set maximums:
-RX:             511
-RX Mini:        0
-RX Jumbo:       0
-TX:             511
-Current hardware settings:
-RX:             200
-RX Mini:        0
-RX Jumbo:       0
-TX:             511
-
-# Intel Corporation Ethernet Connection (2) I219-LM; e1000e driver
-# ethtool -g eth0
-Ring parameters for eth0:
-Pre-set maximums:
-RX:             4096
-RX Mini:        0
-RX Jumbo:       0
-TX:             4096
-Current hardware settings:
-RX:             256
-RX Mini:        0
-RX Jumbo:       0
-TX:             256
-
-#
-
-
-thanks,
-Martin
+T24gMS8yOS8yMCAxMTo1MSBBTSwgRGF2aWQgTWlsbGVyIHdyb3RlOg0KPiBGcm9tOiBDaHJpc3Rv
+cGhlIFJvdWxsaWVyIDxjaHJpc3RvcGhlLnJvdWxsaWVyQHN0LmNvbT4NCj4gRGF0ZTogVHVlLCAy
+OCBKYW4gMjAyMCAwOTozOTo0MiArMDEwMA0KPg0KPj4gTm8gbmV3IGZlYXR1cmUsIGp1c3QgdG8g
+c2ltcGxpZnkgc3RtMzIgcGFydCB0byBiZSBlYXNpZXIgdG8gdXNlLg0KPj4gQWRkIGJ5IGRlZmF1
+bHQgYWxsIEV0aGVybmV0IGNsb2NrcyBpbiBEVCwgYW5kIGFjdGl2YXRlIG9yIG5vdCBpbiBmdW5j
+dGlvbg0KPj4gb2YgcGh5IG1vZGUsIGNsb2NrIGZyZXF1ZW5jeSwgaWYgcHJvcGVydHkgInN0LGV4
+dC1waHljbGsiIGlzIHNldCBvciBub3QuDQo+PiBLZWVwIGJhY2t3YXJkIGNvbXBhdGliaWxpdHkN
+Cj4+IC0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0t
+LS0tLS0tLS0tLS0tLS0tLS0tDQo+PiB8UEhZX01PREUgfCBOb3JtYWwgfCBQSFkgd28gY3J5c3Rh
+bHwgICBQSFkgd28gY3J5c3RhbCAgIHwgIE5vIDEyNU1oeiAgfA0KPj4gfCAgICAgICAgIHwgICAg
+ICAgIHwgICAgICAyNU1IeiAgICB8ICAgICAgICA1ME1IeiAgICAgICB8ICBmcm9tIFBIWSAgIHwN
+Cj4+IC0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0t
+LS0tLS0tLS0tLS0tLS0tLS0tDQo+PiB8ICBNSUkgICAgfAkgLSAgICB8ICAgICBldGgtY2sgICAg
+fCAgICAgICBuL2EgICAgICAgICAgfAkgICAgbi9hICB8DQo+PiB8ICAgICAgICAgfCAgICAgICAg
+fCBzdCxleHQtcGh5Y2xrIHwgICAgICAgICAgICAgICAgICAgIHwgICAgICAgICAgICAgfA0KPj4g
+LS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0t
+LS0tLS0tLS0tLS0tLS0NCj4+IHwgIEdNSUkgICB8CSAtICAgIHwgICAgIGV0aC1jayAgICB8ICAg
+ICAgIG4vYSAgICAgICAgICB8CSAgICBuL2EgIHwNCj4+IHwgICAgICAgICB8ICAgICAgICB8IHN0
+LGV4dC1waHljbGsgfCAgICAgICAgICAgICAgICAgICAgfCAgICAgICAgICAgICB8DQo+PiAtLS0t
+LS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0t
+LS0tLS0tLS0tLQ0KPj4gfCBSR01JSSAgIHwJIC0gICAgfCAgICAgZXRoLWNrICAgIHwgICAgICAg
+bi9hICAgICAgICAgIHwgICAgICBldGgtY2sgIHwNCj4+IHwgICAgICAgICB8ICAgICAgICB8IHN0
+LGV4dC1waHljbGsgfCAgICAgICAgICAgICAgICAgICAgfHN0LGV0aC1jbGstc2VsfA0KPj4gfCAg
+ICAgICAgIHwgICAgICAgIHwgICAgICAgICAgICAgICB8ICAgICAgICAgICAgICAgICAgICB8ICAg
+ICAgIG9yICAgICB8DQo+PiB8ICAgICAgICAgfCAgICAgICAgfCAgICAgICAgICAgICAgIHwgICAg
+ICAgICAgICAgICAgICAgIHwgc3QsZXh0LXBoeWNsa3wNCj4+IC0tLS0tLS0tLS0tLS0tLS0tLS0t
+LS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLQ0KPj4g
+fCBSTUlJICAgIHwJIC0gICAgfCAgICAgZXRoLWNrICAgIHwgICAgICBldGgtY2sgICAgICAgIHwJ
+ICAgICBuL2EgIHwNCj4+IHwgICAgICAgICB8ICAgICAgICB8IHN0LGV4dC1waHljbGsgfCBzdCxl
+dGgtcmVmLWNsay1zZWwgfCAgICAgICAgICAgICAgfA0KPj4gfCAgICAgICAgIHwgICAgICAgIHwg
+ICAgICAgICAgICAgICB8IG9yIHN0LGV4dC1waHljbGsgICB8ICAgICAgICAgICAgICB8DQo+PiAt
+LS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0t
+LS0tLS0tLS0tLS0tLS0NCj4+DQo+PiBTaWduZWQtb2ZmLWJ5OiBDaHJpc3RvcGhlIFJvdWxsaWVy
+IDxjaHJpc3RvcGhlLnJvdWxsaWVyQHN0LmNvbT4NCj4gSWYgYW55dGhpbmcsIHRoaXMgaXMgbW9y
+ZSBvZiBhIGNsZWFudXAsIGFuZCB0aGVyZWZvcmUgb25seSBhcHByb3ByaWF0ZSBmb3INCj4gbmV0
+LW5leHQgd2hlbiBpdCBvcGVucyBiYWNrIHVwLg0KVGhhbmtzIERhdmlkLCBJdCBpcyBub3QgdXJn
+ZW50LCBkbyB5b3Ugd2FudCB0aGF0IEkgcmUtcHVzaCBpdCB3aXRoIA0KIlBBVENIIG5ldCBuZXh0
+IiA/
