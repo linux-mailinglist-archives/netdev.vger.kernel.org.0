@@ -2,80 +2,97 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id ABD9214DB20
-	for <lists+netdev@lfdr.de>; Thu, 30 Jan 2020 14:00:06 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id F2E2614DB28
+	for <lists+netdev@lfdr.de>; Thu, 30 Jan 2020 14:02:19 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727299AbgA3M76 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 30 Jan 2020 07:59:58 -0500
-Received: from mail.kernel.org ([198.145.29.99]:40532 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727107AbgA3M76 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 30 Jan 2020 07:59:58 -0500
-Received: from localhost (unknown [193.47.165.251])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id E3A4320702;
-        Thu, 30 Jan 2020 12:59:56 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1580389197;
-        bh=JNIF4xcLS3EAgcYhSNk8/FL+grLMS1nHKvBUas/mkUg=;
-        h=From:To:Cc:Subject:Date:From;
-        b=puhLDowyJtgsIqAaqATZn1NpW4QsZ7JLcN28ekoCeyYQhw97oUMwKAdDLTt4gmcIP
-         jLlxh4qIiySpPwxLQBjZr53K6JaVfwczd3DMGsDSHvqSBi//O7/3DG0Ju5RSDUT3YH
-         R+AprRJ9JJrfFOn6jt6uX32vwiF6z49EEdWHdP1o=
-From:   Leon Romanovsky <leon@kernel.org>
-To:     "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-Cc:     Leon Romanovsky <leonro@mellanox.com>,
-        Adrian Chiris <adrianc@mellanox.com>,
-        Danit Goldberg <danitg@mellanox.com>,
-        linux-netdev <netdev@vger.kernel.org>
-Subject: [PATCH net] net/core: Do not clear VF index for node/port GUIDs query
-Date:   Thu, 30 Jan 2020 14:59:49 +0200
-Message-Id: <20200130125949.409354-1-leon@kernel.org>
-X-Mailer: git-send-email 2.24.1
+        id S1727238AbgA3NCS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 30 Jan 2020 08:02:18 -0500
+Received: from mail-yw1-f43.google.com ([209.85.161.43]:43590 "EHLO
+        mail-yw1-f43.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726980AbgA3NCS (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 30 Jan 2020 08:02:18 -0500
+Received: by mail-yw1-f43.google.com with SMTP id f204so881384ywc.10
+        for <netdev@vger.kernel.org>; Thu, 30 Jan 2020 05:02:17 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:from:date:message-id:subject:to;
+        bh=Pa/ccRm4RbffTLTyLYWqpDsnkj37/rCOT9I/Na1RIiw=;
+        b=EV2wFM9jCDNrzyxRE+MLC/O5X9hf34kHlPv+KQo67pVC0TPGbaQ67VSV5OGwpWnbNd
+         lL8TTxMsd5vx1mXcEJvAaYJ8uO1rkPz9bqKerGy+SjLp9TXUb0TQ37+vtiMoVGE/HSE/
+         FK2bYrMRE3kRuclQU17cwlpytDblOPtHoisjeHRq9T75DQL2ao3A4T9XdZkToHg0qS2s
+         JwtYA1rqxTBED6CCTs5KbT18gXBEnRWugQLNC2RCKVwmRiUaU0FZF29+pUiutsMcrlG2
+         0IhFWnw9MqlnNvUpIp86O+paBOgNzV1WJfRj/dDV+g5uVSImCbe+1MVloJBXAeq1j2Vf
+         2rFg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:from:date:message-id:subject:to;
+        bh=Pa/ccRm4RbffTLTyLYWqpDsnkj37/rCOT9I/Na1RIiw=;
+        b=D7gzgEey9VZ+v+kGsKxa1psQ/fd6bl9LkQh0XPPnJ8ieiQrvLHr5vFqF8xsa8dPM3z
+         rk3li/xANDqViuTGvF6JGl+5T+hfc/cjVoNWqPJuqD3oNodlRfMnpta+nHMTpha47DlH
+         gEFLP5qEXrqM4njZ2mPGFWAHMl9C2Akcc+VBcXvn3TKenqIX6Daq4IfoIjHvPG/tYW4X
+         rH6UaU4WiQwRBtSVQyIngAVWfgsn5LxTJZDOKUYeqdDTgz1QJGW1ghkT5Prd0wk29IyC
+         WRhUL+clT/Pc8yX+avpla+ErRtzCqBvZS8L+nDv0Zmc2wzR7xH4N3loH/bkuLNoPi/zg
+         Z9yg==
+X-Gm-Message-State: APjAAAXVun+kTH3XO5Lz2WatLrftbrw5T5Pk0L8J8oe9VwYcqBO/ni6o
+        fC7e5CQO/T2XQdqXkM6jjm5G104xU8cVmfIgS/LS5YxvmXw=
+X-Google-Smtp-Source: APXvYqzsH/926Ud7gueNiqkXD6RTSeTZEuOqpu7qLeY/xfKSmp8wQJs6H6USgUFWVHWZo0hdPlsK1m2AvZqjiCtAh3Y=
+X-Received: by 2002:a81:3212:: with SMTP id y18mr3237937ywy.247.1580389336443;
+ Thu, 30 Jan 2020 05:02:16 -0800 (PST)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+From:   Martin T <m4rtntns@gmail.com>
+Date:   Thu, 30 Jan 2020 15:02:02 +0200
+Message-ID: <CAJx5YvHH9CoC8ZDz+MwG8RFr3eg2OtDvmU-EaqG76CiAz+W+5Q@mail.gmail.com>
+Subject: Why is NIC driver queue depth driver dependent when it allocates
+ system memory?
+To:     netdev@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Leon Romanovsky <leonro@mellanox.com>
+Hi,
 
-VF numbers were assigned to node_guid and port_guid, but cleared
-right before such query calls were issued. It caused to return
-node/port GUIDs of VF index 0 for all VFs.
+when I read the source code of for example tg3 driver or e1000e
+driver, then looks like the driver queue is allocated from system
+memory. For example, in e1000_ethtool.c kcalloc() is called to
+allocate GFP_KERNEL memory.
 
-Fixes: 30aad41721e0 ("net/core: Add support for getting VF GUIDs")
-Reported-by: Adrian Chiris <adrianc@mellanox.com>
-Signed-off-by: Leon Romanovsky <leonro@mellanox.com>
----
- net/core/rtnetlink.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+If system memory is allocated, then why are there driver-dependent
+limits? For example, in my workstation the maximum RX/TX queue for the
+NIC using tg3 driver is 511 while maximum RX/TX queue for the NIC
+using e1000e driver is 4096:
 
-diff --git a/net/core/rtnetlink.c b/net/core/rtnetlink.c
-index cdad6ed532c4..09c44bf2e1d2 100644
---- a/net/core/rtnetlink.c
-+++ b/net/core/rtnetlink.c
-@@ -1242,6 +1242,8 @@ static noinline_for_stack int rtnl_fill_vfinfo(struct sk_buff *skb,
- 		return 0;
+# Broadcom Limited NetXtreme BCM5722 Gigabit Ethernet; tg3 driver
+# ethtool -g eth1
+Ring parameters for eth1:
+Pre-set maximums:
+RX:             511
+RX Mini:        0
+RX Jumbo:       0
+TX:             511
+Current hardware settings:
+RX:             200
+RX Mini:        0
+RX Jumbo:       0
+TX:             511
 
- 	memset(&vf_vlan_info, 0, sizeof(vf_vlan_info));
-+	memset(&node_guid, 0, sizeof(node_guid));
-+	memset(&port_guid, 0, sizeof(port_guid));
+# Intel Corporation Ethernet Connection (2) I219-LM; e1000e driver
+# ethtool -g eth0
+Ring parameters for eth0:
+Pre-set maximums:
+RX:             4096
+RX Mini:        0
+RX Jumbo:       0
+TX:             4096
+Current hardware settings:
+RX:             256
+RX Mini:        0
+RX Jumbo:       0
+TX:             256
 
- 	vf_mac.vf =
- 		vf_vlan.vf =
-@@ -1290,8 +1292,6 @@ static noinline_for_stack int rtnl_fill_vfinfo(struct sk_buff *skb,
- 		    sizeof(vf_trust), &vf_trust))
- 		goto nla_put_vf_failure;
+#
 
--	memset(&node_guid, 0, sizeof(node_guid));
--	memset(&port_guid, 0, sizeof(port_guid));
- 	if (dev->netdev_ops->ndo_get_vf_guid &&
- 	    !dev->netdev_ops->ndo_get_vf_guid(dev, vfs_num, &node_guid,
- 					      &port_guid)) {
---
-2.24.1
 
+thanks,
+Martin
