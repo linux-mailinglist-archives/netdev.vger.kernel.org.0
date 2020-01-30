@@ -2,58 +2,61 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 0AA2E14E566
-	for <lists+netdev@lfdr.de>; Thu, 30 Jan 2020 23:14:54 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4493C14E56C
+	for <lists+netdev@lfdr.de>; Thu, 30 Jan 2020 23:15:40 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726070AbgA3WOu (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 30 Jan 2020 17:14:50 -0500
-Received: from mail.kernel.org ([198.145.29.99]:38972 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725907AbgA3WOu (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 30 Jan 2020 17:14:50 -0500
-Received: from cakuba (unknown [199.201.64.133])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        id S1726622AbgA3WPc (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 30 Jan 2020 17:15:32 -0500
+Received: from us-smtp-2.mimecast.com ([207.211.31.81]:36828 "EHLO
+        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1726174AbgA3WPb (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 30 Jan 2020 17:15:31 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1580422530;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=juHZpbC38gvldwKKQgtdJvr3WmA0nVAvz2zKADDsVX8=;
+        b=Dg5DBbg8ioL3+SsafOB7iQn0GQBkGA6JmScpWFzQEkVPagdlI7SabiKp5SmcWwP6xIaGdg
+        Z9o2aMeQaUJpdCQe1Gu0DOkNMPOxlGQ/6VyJBDSA4j7dH2MhMSLCbrNcYOBvl/yi/xNUew
+        rGgAPqt+0LHH/qGF/VNrHpFiGBcZv90=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-287--dY0x9LyPcuhPTVbKqxSyA-1; Thu, 30 Jan 2020 17:15:26 -0500
+X-MC-Unique: -dY0x9LyPcuhPTVbKqxSyA-1
+Received: from smtp.corp.redhat.com (int-mx03.intmail.prod.int.phx2.redhat.com [10.5.11.13])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 9273620707;
-        Thu, 30 Jan 2020 22:14:49 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1580422489;
-        bh=Hh04uXBi7OcIx5ozha/taPqwFRcX5aRWOqzIboXiuHU=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=s9ACRgpQmFHVWcx5jc0K+lNdf539SserYwTzfbdVUaTUnC72bjHFmygCrnuZfE5YA
-         Fq2wn2udDI8nOuRa0iIxQqUBuI0H5aIv4+vAlGbBnR5UQ41+QE7ALfD8/n9YpQb9oa
-         yxbZaXU5dQF8EM3PF6N4Qp57ZJ8F5vD3Mrf60/Ok=
-Date:   Thu, 30 Jan 2020 14:14:48 -0800
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Pablo Neira Ayuso <pablo@netfilter.org>
-Cc:     Matteo Croce <mcroce@redhat.com>, netdev@vger.kernel.org,
-        linux-doc@vger.kernel.org, "David S. Miller" <davem@davemloft.net>,
-        Florian Westphal <fw@strlen.de>, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH net] netfilter: nf_flowtable: fix documentation
-Message-ID: <20200130141448.27fa32aa@cakuba>
-In-Reply-To: <20200130191019.19440-1-mcroce@redhat.com>
-References: <20200130191019.19440-1-mcroce@redhat.com>
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 99730803C22;
+        Thu, 30 Jan 2020 22:15:24 +0000 (UTC)
+Received: from warthog.procyon.org.uk (ovpn-120-197.rdu2.redhat.com [10.10.120.197])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id EB24F8BE04;
+        Thu, 30 Jan 2020 22:15:21 +0000 (UTC)
+Organization: Red Hat UK Ltd. Registered Address: Red Hat UK Ltd, Amberley
+        Place, 107-111 Peascod Street, Windsor, Berkshire, SI4 1TE, United
+        Kingdom.
+        Registered in England and Wales under Company Registration No. 3798903
+From:   David Howells <dhowells@redhat.com>
+In-Reply-To: <0000000000005b4a6c0596d8c5a8@google.com>
+References: <0000000000005b4a6c0596d8c5a8@google.com>
+To:     syzbot <syzbot+2e7168a4d3c4ec071fdc@syzkaller.appspotmail.com>
+Cc:     dhowells@redhat.com, davem@davemloft.net, glider@google.com,
+        linux-afs@lists.infradead.org, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org, syzkaller-bugs@googlegroups.com
+Subject: Re: KMSAN: use-after-free in rxrpc_send_keepalive
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="us-ascii"
+Content-ID: <3725015.1580422520.1@warthog.procyon.org.uk>
+Content-Transfer-Encoding: quoted-printable
+Date:   Thu, 30 Jan 2020 22:15:20 +0000
+Message-ID: <3725016.1580422520@warthog.procyon.org.uk>
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.13
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 30 Jan 2020 20:10:19 +0100, Matteo Croce wrote:
-> In the flowtable documentation there is a missing semicolon, the command
-> as is would give this error:
-> 
->     nftables.conf:5:27-33: Error: syntax error, unexpected devices, expecting newline or semicolon
->                     hook ingress priority 0 devices = { br0, pppoe-data };
->                                             ^^^^^^^
->     nftables.conf:4:12-13: Error: invalid hook (null)
->             flowtable ft {
->                       ^^
-> 
-> Fixes: 19b351f16fd9 ("netfilter: add flowtable documentation")
-> Signed-off-by: Matteo Croce <mcroce@redhat.com>
+#syz test: git://git.kernel.org/pub/scm/linux/kernel/git/dhowells/linux-fs=
+.git e4866645bc264194ef92722ff09321a485d913a5
 
-This is netfilter so even though it's tagged as net, I'm expecting
-Pablo (or Jon) to take it. Please LMK if I'm wrong.
