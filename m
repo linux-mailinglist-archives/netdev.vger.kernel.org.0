@@ -2,116 +2,75 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 70E6914D541
-	for <lists+netdev@lfdr.de>; Thu, 30 Jan 2020 03:38:44 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A437414D73D
+	for <lists+netdev@lfdr.de>; Thu, 30 Jan 2020 09:06:42 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726818AbgA3Cin (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 29 Jan 2020 21:38:43 -0500
-Received: from mail-qt1-f194.google.com ([209.85.160.194]:43923 "EHLO
-        mail-qt1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726715AbgA3Cin (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 29 Jan 2020 21:38:43 -0500
-Received: by mail-qt1-f194.google.com with SMTP id d18so1255681qtj.10;
-        Wed, 29 Jan 2020 18:38:42 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=dbcD6682c+KrFWBTEZOgSBLcGdzJ+QWAbpm1C62YsGg=;
-        b=GxSf5vv9IYqodESHslTJkjQkrGZeux57/uZJGht1qC6w283vMnjYU/9KJT4QgbHpiU
-         iUD41wweXu7argTUucVSWVQpaUaWeGOfq/nxvYgxDb3mYIuFO6XloJXU+9KK6z66l3aX
-         wUR/zqejWKKD/9SDkwhmjG3NAWRfm+aCv8a5yfK8U6+5WPTDfDbNjZD+pFGAFcawPWih
-         mi19lYYoTgNuTZwW9r4Q8DeJnUC96fpS6mtYVvuybh9vsRkn4gB7x/TWK6YOmmrhJWyf
-         xZIucvSrVxawLPmor8HO1sUq5YPeuuV3/9mMT927mDjDktxUXQqWLLk0k0ymjxokKNy8
-         U4ug==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=dbcD6682c+KrFWBTEZOgSBLcGdzJ+QWAbpm1C62YsGg=;
-        b=Cu2VY9E2XlqmD7WMn2VJsFhS3fHn34kAxBwllkyvpFoKBJOqeZEBCb5PirKwIRgrWo
-         4brtNHxsnCAfJCqbCCU+jnlg3Bj5X8aI6GnS6jVZqS+4SpRfy6zHLPMCQ+xvhqWlqgTN
-         Hs+uBaQgrBhSlue+Lb75MCg7LRdHntk8LqPQHzgYQtn1f5pZjT8VrNCL1UC1uowu7vzG
-         00C/4LGWFdoyTt4odcRW5UDltMCKKisSU2E96lQ9wHU/hK54cdsExqLw/kMAgwx8p9b+
-         vYXj0diqxKrlZU4+qO07L/t1HlWq42nHb6pNQwl+UnGfO8KkWVpDA/Ufn8D/OIItrwPo
-         ySmg==
-X-Gm-Message-State: APjAAAWUkGFLp7Fbn52zvpRKRFU5q/Hl8WHZAemeBD8PSjj3QVi8kuIN
-        R5bKZTL57wyUTDFUFvKHHEXBphZqWURJcI5VSKg=
-X-Google-Smtp-Source: APXvYqwJ3A3yFJ8SlW5LFUUG87FfZtL6778DlBEPb5RcLvmyYhhD7sXhml2u2Wen1SR4ulXLTWQTme2vxOWRUgos8wk=
-X-Received: by 2002:ac8:7b29:: with SMTP id l9mr2519503qtu.141.1580351921621;
- Wed, 29 Jan 2020 18:38:41 -0800 (PST)
+        id S1726891AbgA3IGh (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 30 Jan 2020 03:06:37 -0500
+Received: from hostingweb31-40.netsons.net ([89.40.174.40]:46128 "EHLO
+        hostingweb31-40.netsons.net" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1726397AbgA3IGh (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 30 Jan 2020 03:06:37 -0500
+Received: from [109.168.11.45] (port=36612 helo=pc-ceresoli.dev.aim)
+        by hostingweb31.netsons.net with esmtpa (Exim 4.92)
+        (envelope-from <luca@lucaceresoli.net>)
+        id 1ix4qP-00BysD-BP; Thu, 30 Jan 2020 09:06:33 +0100
+From:   Luca Ceresoli <luca@lucaceresoli.net>
+To:     linux-wireless@vger.kernel.org
+Cc:     Luca Ceresoli <luca@lucaceresoli.net>,
+        Luca Coelho <luciano.coelho@intel.com>,
+        Johannes Berg <johannes.berg@intel.com>,
+        Emmanuel Grumbach <emmanuel.grumbach@intel.com>,
+        Intel Linux Wireless <linuxwifi@intel.com>,
+        Kalle Valo <kvalo@codeaurora.org>,
+        "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH v2] iwlwifi: fix config variable name in comment
+Date:   Thu, 30 Jan 2020 09:06:22 +0100
+Message-Id: <20200130080622.1927-1-luca@lucaceresoli.net>
+X-Mailer: git-send-email 2.25.0
 MIME-Version: 1.0
-References: <cover.1580348836.git.hex@fb.com> <065fa340d5f65648e908bc94b6bd63e57e976f35.1580348836.git.hex@fb.com>
- <CAEf4BzapaKj+CArhK+GooqcRsTTSoYkR0Vbh87inX8kMYDHeSw@mail.gmail.com>
-In-Reply-To: <CAEf4BzapaKj+CArhK+GooqcRsTTSoYkR0Vbh87inX8kMYDHeSw@mail.gmail.com>
-From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Wed, 29 Jan 2020 18:38:30 -0800
-Message-ID: <CAEf4BzYBKHVVoD9d3cDG=Adoeh6s2dzrJE-7M4tdHfbRX2zdFg@mail.gmail.com>
-Subject: Re: [PATCH bpf 1/1] runqslower: fix Makefile
-To:     Yulia Kartseva <hex@fb.com>
-Cc:     bpf <bpf@vger.kernel.org>, Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Networking <netdev@vger.kernel.org>,
-        Andrii Nakryiko <andriin@fb.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
+X-AntiAbuse: This header was added to track abuse, please include it with any abuse report
+X-AntiAbuse: Primary Hostname - hostingweb31.netsons.net
+X-AntiAbuse: Original Domain - vger.kernel.org
+X-AntiAbuse: Originator/Caller UID/GID - [47 12] / [47 12]
+X-AntiAbuse: Sender Address Domain - lucaceresoli.net
+X-Get-Message-Sender-Via: hostingweb31.netsons.net: authenticated_id: luca+lucaceresoli.net/only user confirmed/virtual account not confirmed
+X-Authenticated-Sender: hostingweb31.netsons.net: luca@lucaceresoli.net
+X-Source: 
+X-Source-Args: 
+X-Source-Dir: 
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Jan 29, 2020 at 6:37 PM Andrii Nakryiko
-<andrii.nakryiko@gmail.com> wrote:
->
-> On Wed, Jan 29, 2020 at 6:10 PM Yulia Kartseva <hex@fb.com> wrote:
-> >
-> > From: Julia Kartseva <hex@fb.com>
-> >
-> > Fix undefined reference linker errors when building runqslower with
-> > gcc 7.4.0 on Ubuntu 18.04.
-> > The issue is with misplaced -lelf, -lz options in Makefile:
-> > $(Q)$(CC) $(CFLAGS) -lelf -lz $^ -o $@
-> >
-> > -lelf, -lz options should follow the list of target dependencies:
-> > $(Q)$(CC) $(CFLAGS) $^ -lelf -lz -o $@
-> > or after substitution
-> > cc -g -Wall runqslower.o libbpf.a -lelf -lz -o runqslower
-> >
-> > The current order of gcc params causes failure in libelf symbols resolution,
-> > e.g. undefined reference to `elf_memory'
-> > ---
->
-> Thanks for fixing!
->
-> Just for the future, there is no need to create a cover letter for a
-> single patch.
->
-> Please also add Fixes tag like so:
->
-> Fixes: 9c01546d26d2 ("tools/bpf: Add runqslower tool to tools/bpf")
+The correct variable name was replaced here by mistake.
 
-Oh, and Signed-off-by is missing too, please add and respin v2.
+Fixes: ab27926d9e4a ("iwlwifi: fix devices with PCI Device ID 0x34F0 and 11ac RF modules")
+Signed-off-by: Luca Ceresoli <luca@lucaceresoli.net>
 
-With that, also add:
+---
 
-Acked-by: Andrii Nakryiko <andriin@fb.com>
+Changes in v2:
+ - rebased on current master fixing conflicts
+---
+ drivers/net/wireless/intel/iwlwifi/iwl-config.h | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
->
-> >  tools/bpf/runqslower/Makefile | 2 +-
-> >  1 file changed, 1 insertion(+), 1 deletion(-)
-> >
-> > diff --git a/tools/bpf/runqslower/Makefile b/tools/bpf/runqslower/Makefile
-> > index 0c021352b..87eae5be9 100644
-> > --- a/tools/bpf/runqslower/Makefile
-> > +++ b/tools/bpf/runqslower/Makefile
-> > @@ -41,7 +41,7 @@ clean:
-> >
-> >  $(OUTPUT)/runqslower: $(OUTPUT)/runqslower.o $(BPFOBJ)
-> >         $(call msg,BINARY,$@)
-> > -       $(Q)$(CC) $(CFLAGS) -lelf -lz $^ -o $@
-> > +       $(Q)$(CC) $(CFLAGS) $^ -lelf -lz -o $@
-> >
-> >  $(OUTPUT)/runqslower.o: runqslower.h $(OUTPUT)/runqslower.skel.h             \
-> >                         $(OUTPUT)/runqslower.bpf.o
-> > --
-> > 2.17.1
-> >
+diff --git a/drivers/net/wireless/intel/iwlwifi/iwl-config.h b/drivers/net/wireless/intel/iwlwifi/iwl-config.h
+index be6a2bf9ce74..df2d3257cce2 100644
+--- a/drivers/net/wireless/intel/iwlwifi/iwl-config.h
++++ b/drivers/net/wireless/intel/iwlwifi/iwl-config.h
+@@ -600,6 +600,6 @@ extern const struct iwl_cfg iwlax211_2ax_cfg_so_gf_a0;
+ extern const struct iwl_cfg iwlax210_2ax_cfg_ty_gf_a0;
+ extern const struct iwl_cfg iwlax411_2ax_cfg_so_gf4_a0;
+ extern const struct iwl_cfg iwlax411_2ax_cfg_sosnj_gf4_a0;
+-#endif /* CPTCFG_IWLMVM || CPTCFG_IWLFMAC */
++#endif /* CONFIG_IWLMVM */
+ 
+ #endif /* __IWL_CONFIG_H__ */
+-- 
+2.25.0
+
