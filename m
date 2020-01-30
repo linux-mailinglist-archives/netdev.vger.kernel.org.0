@@ -2,22 +2,22 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id CCB9B14D504
-	for <lists+netdev@lfdr.de>; Thu, 30 Jan 2020 02:36:18 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A7E4214D502
+	for <lists+netdev@lfdr.de>; Thu, 30 Jan 2020 02:36:15 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727198AbgA3BgO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        id S1727256AbgA3BgO (ORCPT <rfc822;lists+netdev@lfdr.de>);
         Wed, 29 Jan 2020 20:36:14 -0500
 Received: from mga12.intel.com ([192.55.52.136]:49906 "EHLO mga12.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726618AbgA3BgN (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 29 Jan 2020 20:36:13 -0500
+        id S1727139AbgA3BgO (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 29 Jan 2020 20:36:14 -0500
 X-Amp-Result: SKIPPED(no attachment in message)
 X-Amp-File-Uploaded: False
 Received: from fmsmga002.fm.intel.com ([10.253.24.26])
   by fmsmga106.fm.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 29 Jan 2020 17:36:13 -0800
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.70,380,1574150400"; 
-   d="scan'208";a="262008471"
+   d="scan'208";a="262008475"
 Received: from vcostago-desk1.jf.intel.com ([10.54.70.26])
   by fmsmga002.fm.intel.com with ESMTP; 29 Jan 2020 17:36:13 -0800
 From:   Vinicius Costa Gomes <vinicius.gomes@intel.com>
@@ -25,10 +25,12 @@ To:     netdev@vger.kernel.org
 Cc:     Vinicius Costa Gomes <vinicius.gomes@intel.com>, jhs@mojatatu.com,
         xiyou.wangcong@gmail.com, jiri@resnulli.us, davem@davemloft.net,
         vladimir.oltean@nxp.com, po.liu@nxp.com
-Subject: [PATCH net v3 0/2] taprio: Some fixes
-Date:   Wed, 29 Jan 2020 17:37:19 -0800
-Message-Id: <20200130013721.33812-1-vinicius.gomes@intel.com>
+Subject: [PATCH net v3 1/2] taprio: Fix enabling offload with wrong number of traffic classes
+Date:   Wed, 29 Jan 2020 17:37:20 -0800
+Message-Id: <20200130013721.33812-2-vinicius.gomes@intel.com>
 X-Mailer: git-send-email 2.25.0
+In-Reply-To: <20200130013721.33812-1-vinicius.gomes@intel.com>
+References: <20200130013721.33812-1-vinicius.gomes@intel.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
@@ -36,46 +38,68 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi,
+If the driver implementing taprio offloading depends on the value of
+the network device number of traffic classes (dev->num_tc) for
+whatever reason, it was going to receive the value zero. The value was
+only set after the offloading function is called.
 
-Changes from v2:
-  - Squashed commits 2/3 and 3/3 into a single one (I think a single
-    commit is going to be easier to review);
-  - Removed an "improvement" that was causing changes in user visible
-    behavior;
+So, moving setting the number of traffic classes to before the
+offloading function is called fixes this issue. This is safe because
+this only happens when taprio is instantiated (we don't allow this
+configuration to be changed without first removing taprio).
 
-Changes from v1:
-  - Fixed ignoring the 'flags' argument when adding a new
-    instance (Vladimir Oltean);
-  - Changed the order of commits;
+Fixes: 9c66d1564676 ("taprio: Add support for hardware offloading")
+Reported-by: Po Liu <po.liu@nxp.com>
+Signed-off-by: Vinicius Costa Gomes <vinicius.gomes@intel.com>
+Acked-by: Vladimir Oltean <vladimir.oltean@nxp.com>
+---
+ net/sched/sch_taprio.c | 26 +++++++++++++-------------
+ 1 file changed, 13 insertions(+), 13 deletions(-)
 
-Updated cover letter:
-
-Some fixes for taprio:
-
-Patch 1/2: Reported by Po Liu, is more of a improvement of usability for
-drivers implementing offloading features, now they can rely on the
-value of dev->num_tc, instead of going through some hops to get this
-value.
-
-Patch 2/2: Use 'q->flags' as the source of truth for the offloading
-flags. Tries to solidify the current behavior, while avoiding going
-into invalid states, one of which was causing a "rcu stall" (more
-information in the commit message).
-
-@Vladimir: If possible, I would appreciate your Ack on patch 2/2. I
-have been looking at this code for so long that I might have missed
-something obvious (and my growing dislike for the word 'flags' may be
-affecting my judgement :-).
-
-
-Vinicius Costa Gomes (2):
-  taprio: Fix enabling offload with wrong number of traffic classes
-  taprio: Fix still allowing changing the flags during runtime
-
- net/sched/sch_taprio.c | 87 ++++++++++++++++++++++++++----------------
- 1 file changed, 54 insertions(+), 33 deletions(-)
-
+diff --git a/net/sched/sch_taprio.c b/net/sched/sch_taprio.c
+index c609373c8661..ad0dadcfcdba 100644
+--- a/net/sched/sch_taprio.c
++++ b/net/sched/sch_taprio.c
+@@ -1444,6 +1444,19 @@ static int taprio_change(struct Qdisc *sch, struct nlattr *opt,
+ 
+ 	taprio_set_picos_per_byte(dev, q);
+ 
++	if (mqprio) {
++		netdev_set_num_tc(dev, mqprio->num_tc);
++		for (i = 0; i < mqprio->num_tc; i++)
++			netdev_set_tc_queue(dev, i,
++					    mqprio->count[i],
++					    mqprio->offset[i]);
++
++		/* Always use supplied priority mappings */
++		for (i = 0; i <= TC_BITMASK; i++)
++			netdev_set_prio_tc_map(dev, i,
++					       mqprio->prio_tc_map[i]);
++	}
++
+ 	if (FULL_OFFLOAD_IS_ENABLED(taprio_flags))
+ 		err = taprio_enable_offload(dev, mqprio, q, new_admin, extack);
+ 	else
+@@ -1471,19 +1484,6 @@ static int taprio_change(struct Qdisc *sch, struct nlattr *opt,
+ 		q->advance_timer.function = advance_sched;
+ 	}
+ 
+-	if (mqprio) {
+-		netdev_set_num_tc(dev, mqprio->num_tc);
+-		for (i = 0; i < mqprio->num_tc; i++)
+-			netdev_set_tc_queue(dev, i,
+-					    mqprio->count[i],
+-					    mqprio->offset[i]);
+-
+-		/* Always use supplied priority mappings */
+-		for (i = 0; i <= TC_BITMASK; i++)
+-			netdev_set_prio_tc_map(dev, i,
+-					       mqprio->prio_tc_map[i]);
+-	}
+-
+ 	if (FULL_OFFLOAD_IS_ENABLED(taprio_flags)) {
+ 		q->dequeue = taprio_dequeue_offload;
+ 		q->peek = taprio_peek_offload;
 -- 
 2.25.0
 
