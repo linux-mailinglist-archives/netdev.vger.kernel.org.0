@@ -2,120 +2,96 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 6658814DBE8
-	for <lists+netdev@lfdr.de>; Thu, 30 Jan 2020 14:30:40 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B39B414DBEF
+	for <lists+netdev@lfdr.de>; Thu, 30 Jan 2020 14:31:20 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727448AbgA3Nad (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 30 Jan 2020 08:30:33 -0500
-Received: from mx08-00178001.pphosted.com ([91.207.212.93]:28646 "EHLO
-        mx07-00178001.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1726948AbgA3Nac (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 30 Jan 2020 08:30:32 -0500
-Received: from pps.filterd (m0046660.ppops.net [127.0.0.1])
-        by mx07-00178001.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 00UDNhRE005759;
-        Thu, 30 Jan 2020 14:30:10 +0100
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=st.com; h=from : to : cc : subject
- : date : message-id : references : in-reply-to : content-type : content-id
- : content-transfer-encoding : mime-version; s=STMicroelectronics;
- bh=DDE7wRVrKC8L3nY1nmBlLG8DjibQ4CfnKv8w7/2QhPU=;
- b=T2ffEgEjN/DMXOY2HgMx42+9Qeuasz4Zl5qAECuKJeXBe0JiI+Z5YfCa6AouqnQm5mcv
- ZlHUuDE/xzlUlF/DiZhmpY1vNaS9E7RbPuNIFaJCYKkjeJtpXt/OvtaDohE362vHhGKJ
- 40fribYB498l3vlZFqz/qoTfwcnfgFffuuOdUWnwm0DPOO+NPunxz41cKYRroq3qbiVD
- 4x8DLE4Ji32iPI2wG7F6I319uTcRJD7Xqc+4oQWEoUA6hllvmW8T6IYged0JrXW72AAv
- S9izNaMquA24kcdPLuuLXzgw8c9RRaoauvVBwpyKL/Yba1LdVLzi+8EkQGV5YqMA+4Oo Dg== 
-Received: from beta.dmz-eu.st.com (beta.dmz-eu.st.com [164.129.1.35])
-        by mx07-00178001.pphosted.com with ESMTP id 2xrbpb8sp2-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Thu, 30 Jan 2020 14:30:10 +0100
-Received: from euls16034.sgp.st.com (euls16034.sgp.st.com [10.75.44.20])
-        by beta.dmz-eu.st.com (STMicroelectronics) with ESMTP id 21FCE10002A;
-        Thu, 30 Jan 2020 14:30:05 +0100 (CET)
-Received: from Webmail-eu.st.com (sfhdag3node3.st.com [10.75.127.9])
-        by euls16034.sgp.st.com (STMicroelectronics) with ESMTP id CA4BF2D5CFA;
-        Thu, 30 Jan 2020 14:30:05 +0100 (CET)
-Received: from SFHDAG5NODE3.st.com (10.75.127.15) by SFHDAG3NODE3.st.com
- (10.75.127.9) with Microsoft SMTP Server (TLS) id 15.0.1347.2; Thu, 30 Jan
- 2020 14:30:05 +0100
-Received: from SFHDAG5NODE3.st.com ([fe80::7c09:5d6b:d2c7:5f47]) by
- SFHDAG5NODE3.st.com ([fe80::7c09:5d6b:d2c7:5f47%20]) with mapi id
- 15.00.1473.003; Thu, 30 Jan 2020 14:30:05 +0100
-From:   Christophe ROULLIER <christophe.roullier@st.com>
-To:     David Miller <davem@davemloft.net>
-CC:     "joabreu@synopsys.com" <joabreu@synopsys.com>,
-        "mcoquelin.stm32@gmail.com" <mcoquelin.stm32@gmail.com>,
-        Alexandre TORGUE <alexandre.torgue@st.com>,
-        Peppe CAVALLARO <peppe.cavallaro@st.com>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "linux-arm-kernel@lists.infradead.org" 
-        <linux-arm-kernel@lists.infradead.org>,
-        "linux-stm32@st-md-mailman.stormreply.com" 
-        <linux-stm32@st-md-mailman.stormreply.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-Subject: Re: [PATCH 1/1] net: ethernet: stmmac: simplify phy modes management
- for stm32
-Thread-Topic: [PATCH 1/1] net: ethernet: stmmac: simplify phy modes management
- for stm32
-Thread-Index: AQHV1pIW1y791lwjMUusjpFyRZvewKgDJNKA
-Date:   Thu, 30 Jan 2020 13:30:05 +0000
-Message-ID: <05adc7cc-19cb-7e6e-f6df-07ec8f5e841f@st.com>
-References: <20200128083942.17823-1-christophe.roullier@st.com>
- <20200129.115131.1101786807458791369.davem@davemloft.net>
-In-Reply-To: <20200129.115131.1101786807458791369.davem@davemloft.net>
-Accept-Language: fr-FR, en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-user-agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.4.1
-x-ms-exchange-messagesentrepresentingtype: 1
-x-ms-exchange-transport-fromentityheader: Hosted
-x-originating-ip: [10.75.127.51]
-Content-Type: text/plain; charset="utf-8"
-Content-ID: <C6EE503FF153424FB0ED17B9583F7CA4@st.com>
-Content-Transfer-Encoding: base64
+        id S1727468AbgA3NbS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 30 Jan 2020 08:31:18 -0500
+Received: from mo4-p01-ob.smtp.rzone.de ([85.215.255.54]:12267 "EHLO
+        mo4-p01-ob.smtp.rzone.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727268AbgA3NbS (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 30 Jan 2020 08:31:18 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; t=1580391073;
+        s=strato-dkim-0002; d=hartkopp.net;
+        h=Message-Id:Date:Subject:Cc:To:From:X-RZG-CLASS-ID:X-RZG-AUTH:From:
+        Subject:Sender;
+        bh=D9/rKeaBEIa8g767m+jAx030F+M3BpeQII4qSughjjE=;
+        b=nKtT3nR8uRgcil/VzwY/qq8Lp/RybHCrIkNI7KYr6Vu7MUkz7dXoLlhtDB1LDIkQXM
+        KVSxZCVPeSWKt9tiAjKy+W4R4lBZhfsaCEqbJuE6yokDdkkZVbUhzKg77oRVoWbQLPjO
+        y3tEG2++LIwil31xWQsi3RkKkDqqzpZyS5Aw6MsiI8YNx00uNrdsHaQ4IhOXJqxD1kV8
+        TkafIQizjlS1vceultB1zc7L/8bVzwE9CPikudzvHz4hvSzYBeLcBAkcNWB2CTZGfU5q
+        Wtrg0XOANt4ihDoy7mBfeGjZKoHFnw3nMiqyYSO1T1FawaL7GKI7ormBk2TI5F6bBpyU
+        sdtA==
+X-RZG-AUTH: ":P2MHfkW8eP4Mre39l357AZT/I7AY/7nT2yrDxb8mjGrp7owjzFK3JbFk1mS8nvQfEUpxpWaP+a2CUQ=="
+X-RZG-CLASS-ID: mo00
+Received: from silver.be.tmme.com
+        by smtp.strato.de (RZmta 46.1.12 AUTH)
+        with ESMTPSA id g084e8w0UDV105S
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256 bits))
+        (Client did not present a certificate);
+        Thu, 30 Jan 2020 14:31:01 +0100 (CET)
+From:   Oliver Hartkopp <socketcan@hartkopp.net>
+To:     linux-can@vger.kernel.org
+Cc:     netdev@vger.kernel.org,
+        syzbot+c3ea30e1e2485573f953@syzkaller.appspotmail.com,
+        dvyukov@google.com, mkl@pengutronix.de, j.vosburgh@gmail.com,
+        vfalico@gmail.com, andy@greyhouse.net, davem@davemloft.net,
+        Oliver Hartkopp <socketcan@hartkopp.net>,
+        linux-stable <stable@vger.kernel.org>
+Subject: [PATCH] bonding: do not enslave CAN devices
+Date:   Thu, 30 Jan 2020 14:30:46 +0100
+Message-Id: <20200130133046.2047-1-socketcan@hartkopp.net>
+X-Mailer: git-send-email 2.20.1
 MIME-Version: 1.0
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.138,18.0.572
- definitions=2020-01-30_03:2020-01-28,2020-01-30 signatures=0
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-T24gMS8yOS8yMCAxMTo1MSBBTSwgRGF2aWQgTWlsbGVyIHdyb3RlOg0KPiBGcm9tOiBDaHJpc3Rv
-cGhlIFJvdWxsaWVyIDxjaHJpc3RvcGhlLnJvdWxsaWVyQHN0LmNvbT4NCj4gRGF0ZTogVHVlLCAy
-OCBKYW4gMjAyMCAwOTozOTo0MiArMDEwMA0KPg0KPj4gTm8gbmV3IGZlYXR1cmUsIGp1c3QgdG8g
-c2ltcGxpZnkgc3RtMzIgcGFydCB0byBiZSBlYXNpZXIgdG8gdXNlLg0KPj4gQWRkIGJ5IGRlZmF1
-bHQgYWxsIEV0aGVybmV0IGNsb2NrcyBpbiBEVCwgYW5kIGFjdGl2YXRlIG9yIG5vdCBpbiBmdW5j
-dGlvbg0KPj4gb2YgcGh5IG1vZGUsIGNsb2NrIGZyZXF1ZW5jeSwgaWYgcHJvcGVydHkgInN0LGV4
-dC1waHljbGsiIGlzIHNldCBvciBub3QuDQo+PiBLZWVwIGJhY2t3YXJkIGNvbXBhdGliaWxpdHkN
-Cj4+IC0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0t
-LS0tLS0tLS0tLS0tLS0tLS0tDQo+PiB8UEhZX01PREUgfCBOb3JtYWwgfCBQSFkgd28gY3J5c3Rh
-bHwgICBQSFkgd28gY3J5c3RhbCAgIHwgIE5vIDEyNU1oeiAgfA0KPj4gfCAgICAgICAgIHwgICAg
-ICAgIHwgICAgICAyNU1IeiAgICB8ICAgICAgICA1ME1IeiAgICAgICB8ICBmcm9tIFBIWSAgIHwN
-Cj4+IC0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0t
-LS0tLS0tLS0tLS0tLS0tLS0tDQo+PiB8ICBNSUkgICAgfAkgLSAgICB8ICAgICBldGgtY2sgICAg
-fCAgICAgICBuL2EgICAgICAgICAgfAkgICAgbi9hICB8DQo+PiB8ICAgICAgICAgfCAgICAgICAg
-fCBzdCxleHQtcGh5Y2xrIHwgICAgICAgICAgICAgICAgICAgIHwgICAgICAgICAgICAgfA0KPj4g
-LS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0t
-LS0tLS0tLS0tLS0tLS0NCj4+IHwgIEdNSUkgICB8CSAtICAgIHwgICAgIGV0aC1jayAgICB8ICAg
-ICAgIG4vYSAgICAgICAgICB8CSAgICBuL2EgIHwNCj4+IHwgICAgICAgICB8ICAgICAgICB8IHN0
-LGV4dC1waHljbGsgfCAgICAgICAgICAgICAgICAgICAgfCAgICAgICAgICAgICB8DQo+PiAtLS0t
-LS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0t
-LS0tLS0tLS0tLQ0KPj4gfCBSR01JSSAgIHwJIC0gICAgfCAgICAgZXRoLWNrICAgIHwgICAgICAg
-bi9hICAgICAgICAgIHwgICAgICBldGgtY2sgIHwNCj4+IHwgICAgICAgICB8ICAgICAgICB8IHN0
-LGV4dC1waHljbGsgfCAgICAgICAgICAgICAgICAgICAgfHN0LGV0aC1jbGstc2VsfA0KPj4gfCAg
-ICAgICAgIHwgICAgICAgIHwgICAgICAgICAgICAgICB8ICAgICAgICAgICAgICAgICAgICB8ICAg
-ICAgIG9yICAgICB8DQo+PiB8ICAgICAgICAgfCAgICAgICAgfCAgICAgICAgICAgICAgIHwgICAg
-ICAgICAgICAgICAgICAgIHwgc3QsZXh0LXBoeWNsa3wNCj4+IC0tLS0tLS0tLS0tLS0tLS0tLS0t
-LS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLQ0KPj4g
-fCBSTUlJICAgIHwJIC0gICAgfCAgICAgZXRoLWNrICAgIHwgICAgICBldGgtY2sgICAgICAgIHwJ
-ICAgICBuL2EgIHwNCj4+IHwgICAgICAgICB8ICAgICAgICB8IHN0LGV4dC1waHljbGsgfCBzdCxl
-dGgtcmVmLWNsay1zZWwgfCAgICAgICAgICAgICAgfA0KPj4gfCAgICAgICAgIHwgICAgICAgIHwg
-ICAgICAgICAgICAgICB8IG9yIHN0LGV4dC1waHljbGsgICB8ICAgICAgICAgICAgICB8DQo+PiAt
-LS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0t
-LS0tLS0tLS0tLS0tLS0NCj4+DQo+PiBTaWduZWQtb2ZmLWJ5OiBDaHJpc3RvcGhlIFJvdWxsaWVy
-IDxjaHJpc3RvcGhlLnJvdWxsaWVyQHN0LmNvbT4NCj4gSWYgYW55dGhpbmcsIHRoaXMgaXMgbW9y
-ZSBvZiBhIGNsZWFudXAsIGFuZCB0aGVyZWZvcmUgb25seSBhcHByb3ByaWF0ZSBmb3INCj4gbmV0
-LW5leHQgd2hlbiBpdCBvcGVucyBiYWNrIHVwLg0KVGhhbmtzIERhdmlkLCBJdCBpcyBub3QgdXJn
-ZW50LCBkbyB5b3Ugd2FudCB0aGF0IEkgcmUtcHVzaCBpdCB3aXRoIA0KIlBBVENIIG5ldCBuZXh0
-IiA/
+Since commit 8df9ffb888c ("can: make use of preallocated can_ml_priv for per
+device struct can_dev_rcv_lists") the device specific CAN receive filter lists
+are stored in netdev_priv() and dev->ml_priv points to these filters.
+
+In the bug report Syzkaller enslaved a vxcan1 CAN device and accessed the
+bonding device with a PF_CAN socket which lead to a crash due to an access of
+an unhandled bond_dev->ml_priv pointer.
+
+Deny to enslave CAN devices by the bonding driver as the resulting bond_dev
+pretends to be a CAN device by copying dev->type without really being one.
+
+Reported-by: syzbot+c3ea30e1e2485573f953@syzkaller.appspotmail.com
+Fixes: 8df9ffb888c ("can: make use of preallocated can_ml_priv for per
+device struct can_dev_rcv_lists")
+Cc: linux-stable <stable@vger.kernel.org> # >= v5.4
+Signed-off-by: Oliver Hartkopp <socketcan@hartkopp.net>
+---
+ drivers/net/bonding/bond_main.c | 12 ++++++++++++
+ 1 file changed, 12 insertions(+)
+
+diff --git a/drivers/net/bonding/bond_main.c b/drivers/net/bonding/bond_main.c
+index 48d5ec770b94..4b781a7dfd96 100644
+--- a/drivers/net/bonding/bond_main.c
++++ b/drivers/net/bonding/bond_main.c
+@@ -1475,6 +1475,18 @@ int bond_enslave(struct net_device *bond_dev, struct net_device *slave_dev,
+ 		return -EPERM;
+ 	}
+ 
++	/* CAN network devices hold device specific filter lists in
++	 * netdev_priv() where dev->ml_priv sets a reference to.
++	 * As bonding assumes to have some ethernet-like device it doesn't
++	 * take care about these CAN specific filter lists today.
++	 * So we deny the enslaving of CAN interfaces here.
++	 */
++	if (slave_dev->type == ARPHRD_CAN) {
++		NL_SET_ERR_MSG(extack, "CAN devices can not be enslaved");
++		slave_err(bond_dev, slave_dev, "no bonding on CAN devices\n");
++		return -EINVAL;
++	}
++
+ 	/* set bonding device ether type by slave - bonding netdevices are
+ 	 * created with ether_setup, so when the slave type is not ARPHRD_ETHER
+ 	 * there is a need to override some of the type dependent attribs/funcs.
+-- 
+2.20.1
+
