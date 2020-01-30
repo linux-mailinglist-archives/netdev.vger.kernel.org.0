@@ -2,84 +2,73 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 17F9914D971
-	for <lists+netdev@lfdr.de>; Thu, 30 Jan 2020 12:02:51 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B9F5714DA34
+	for <lists+netdev@lfdr.de>; Thu, 30 Jan 2020 12:53:18 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727161AbgA3LCq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 30 Jan 2020 06:02:46 -0500
-Received: from out1-smtp.messagingengine.com ([66.111.4.25]:48939 "EHLO
-        out1-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726885AbgA3LCq (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 30 Jan 2020 06:02:46 -0500
-Received: from compute3.internal (compute3.nyi.internal [10.202.2.43])
-        by mailout.nyi.internal (Postfix) with ESMTP id 72D2621C29;
-        Thu, 30 Jan 2020 06:02:45 -0500 (EST)
-Received: from mailfrontend2 ([10.202.2.163])
-  by compute3.internal (MEProxy); Thu, 30 Jan 2020 06:02:45 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-        messagingengine.com; h=cc:content-type:date:from:in-reply-to
-        :message-id:mime-version:references:subject:to:x-me-proxy
-        :x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=fm1; bh=vtYdWY
-        LZAq1c7RCl4Mx4GaWluW5nfRFIB+W8SD870bI=; b=ZCNC9MubHObovZsp3jq8Kc
-        7IhkpIlg3inrxh+5YQptMX5RjzyufM1OzDrIF8BdpXJu8ni+oNSX9z1TgW/fazk1
-        WhzzdbPwpVWTdydc8nhgEvXoEusBprDz5Ouj3hOMLzbp+cteQZ3KlmsdMmvYPpuX
-        zDOQZuzJnwnNIyKXvlVEWp+3iYhtrSV7wdFMDngDwyf4C5yZRhDNCasEIf75+Ky/
-        VdSQ1ElD76DcbF3y6k7uHxy3xjbDcXtuf4PkRjTFRp99RQ2yIu0E12NS6P6VrZZ3
-        kCjmlIhnxu6nJzeYAHFT+v39YgpRccAa2b4z0wRQumgyQ8wdRgi5g55I2mikF+Rg
-        ==
-X-ME-Sender: <xms:1LcyXrqi44RGRdPqfAmwVyb4QNoin6Fu2d9mWQTgqGwvkzHe3Qq_0A>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedugedrfeekgddvgecutefuodetggdotefrodftvf
-    curfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfghnecu
-    uegrihhlohhuthemuceftddtnecuogfuuhhsphgvtghtffhomhgrihhnucdlgeelmdenuc
-    fjughrpeffhffvuffkfhggtggujgesthdtredttddtvdenucfhrhhomhepkfguohcuufgt
-    hhhimhhmvghluceoihguohhstghhsehiughoshgthhdrohhrgheqnecuffhomhgrihhnpe
-    hkvghrnhgvlhdrohhrghdprghpphhsphhothdrtghomhenucfkphepudelfedrgeejrddu
-    ieehrddvhedunecuvehluhhsthgvrhfuihiivgeptdenucfrrghrrghmpehmrghilhhfrh
-    homhepihguohhstghhsehiughoshgthhdrohhrgh
-X-ME-Proxy: <xmx:1LcyXv4XV3WyubHsQZEIZGqNrKz69G2aZGMt_lY9HnPzSAhtM7YsCg>
-    <xmx:1LcyXtoG9DRr8qecaee5a4ecw9aRWmlx1HijE8Y1aANOFYS1TSejQA>
-    <xmx:1LcyXlLmpXFM6iunKFUsNPpqDj2pYJ6rMWKbcqQODD7kKKBhST1JEg>
-    <xmx:1bcyXmNqsvEtog5YFLLWXRmPH2OokcsknGRhbzMq4ifPvb7vnMedvQ>
-Received: from localhost (unknown [193.47.165.251])
-        by mail.messagingengine.com (Postfix) with ESMTPA id 66DEE3060A08;
-        Thu, 30 Jan 2020 06:02:44 -0500 (EST)
-Date:   Thu, 30 Jan 2020 13:02:42 +0200
-From:   Ido Schimmel <idosch@idosch.org>
-To:     syzbot <syzbot+63abe9d5f32ff88090eb@syzkaller.appspotmail.com>
-Cc:     davem@davemloft.net, kuba@kernel.org, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org, syzkaller-bugs@googlegroups.com
-Subject: Re: WARNING in nsim_fib6_rt_nh_del
-Message-ID: <20200130110242.GA108853@splinter>
-References: <00000000000097a900059d58700d@google.com>
+        id S1727278AbgA3LxQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 30 Jan 2020 06:53:16 -0500
+Received: from a.mx.secunet.com ([62.96.220.36]:57224 "EHLO a.mx.secunet.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1727272AbgA3LxO (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 30 Jan 2020 06:53:14 -0500
+Received: from localhost (localhost [127.0.0.1])
+        by a.mx.secunet.com (Postfix) with ESMTP id 56C8120538
+        for <netdev@vger.kernel.org>; Thu, 30 Jan 2020 12:53:13 +0100 (CET)
+X-Virus-Scanned: by secunet
+Received: from a.mx.secunet.com ([127.0.0.1])
+        by localhost (a.mx.secunet.com [127.0.0.1]) (amavisd-new, port 10024)
+        with ESMTP id z1glNPLUSDAw for <netdev@vger.kernel.org>;
+        Thu, 30 Jan 2020 12:53:12 +0100 (CET)
+Received: from mail-essen-01.secunet.de (mail-essen-01.secunet.de [10.53.40.204])
+        (using TLSv1 with cipher ECDHE-RSA-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by a.mx.secunet.com (Postfix) with ESMTPS id A8A932056D
+        for <netdev@vger.kernel.org>; Thu, 30 Jan 2020 12:53:12 +0100 (CET)
+Received: from [10.182.7.178] (10.182.7.178) by mail-essen-01.secunet.de
+ (10.53.40.204) with Microsoft SMTP Server (TLS) id 14.3.439.0; Thu, 30 Jan
+ 2020 12:53:11 +0100
+Subject: Re: [PATCH net] xfrm: Interpret XFRM_INF as 32 bit value for non-ESN
+ states
+To:     Steffen Klassert <steffen.klassert@secunet.com>
+CC:     <netdev@vger.kernel.org>
+References: <8a3e5a49-5906-b6a6-beb7-0479bc64dcd0@secunet.com>
+ <20200130103432.GK27973@gauss3.secunet.de>
+From:   Thomas Egerer <thomas.egerer@secunet.com>
+Openpgp: preference=signencrypt
+Message-ID: <6aed470f-d1ff-e939-3b1a-80237e9ab84f@secunet.com>
+Date:   Thu, 30 Jan 2020 12:52:58 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.3.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <00000000000097a900059d58700d@google.com>
+In-Reply-To: <20200130103432.GK27973@gauss3.secunet.de>
+Content-Type: text/plain; charset="utf-8"
+Content-Language: de-DE
+Content-Transfer-Encoding: 8bit
+X-EXCLAIMER-MD-CONFIG: 2c86f778-e09b-4440-8b15-867914633a10
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Jan 30, 2020 at 01:54:15AM -0800, syzbot wrote:
-> Hello,
-> 
-> syzbot found the following crash on:
-> 
-> HEAD commit:    b3a60822 Merge branch 'for-v5.6' of git://git.kernel.org:/..
-> git tree:       net-next
-> console output: https://syzkaller.appspot.com/x/log.txt?x=12461f66e00000
-> kernel config:  https://syzkaller.appspot.com/x/.config?x=614e56d86457f3a7
-> dashboard link: https://syzkaller.appspot.com/bug?extid=63abe9d5f32ff88090eb
-> compiler:       gcc (GCC) 9.0.0 20181231 (experimental)
-> 
-> Unfortunately, I don't have any reproducer for this crash yet.
-> 
-> IMPORTANT: if you fix the bug, please add the following tag to the commit:
-> Reported-by: syzbot+63abe9d5f32ff88090eb@syzkaller.appspotmail.com
-> 
-> ------------[ cut here ]------------
-> WARNING: CPU: 1 PID: 24083 at drivers/net/netdevsim/fib.c:448 nsim_fib6_rt_nh_del+0x287/0x350 drivers/net/netdevsim/fib.c:448
+Hello Steffen,
 
-Will check.
+On 1/30/20 11:34 AM, Steffen Klassert wrote:
+> On Mon, Jan 27, 2020 at 03:31:14PM +0100, Thomas Egerer wrote:
+> 
+> You need one more close bracket here:
+> 
+> /home/klassert/git/ipsec/net/xfrm/xfrm_user.c: In function ‘copy_from_user_state’:
+> /home/klassert/git/ipsec/net/xfrm/xfrm_user.c:509:45: error: expected ‘)’ before ‘{’ token
+>   if ((x->props.flags & XFRM_STATE_ESN) == 0 {
+>                                              ^
+> /home/klassert/git/ipsec/net/xfrm/xfrm_user.c:515:1: error: expected expression before ‘}’ token
+>  }
+>  ^
+> 
+> Please fix and resend.
+You're right. I wonder how that could have happened. I will rebuild
+and make sure, I tested the kernel version including the patch and
+not the one without.
 
-Thanks
+
+Thomas
