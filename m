@@ -2,103 +2,82 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 8431C14D510
-	for <lists+netdev@lfdr.de>; Thu, 30 Jan 2020 02:59:24 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id EBEE814D518
+	for <lists+netdev@lfdr.de>; Thu, 30 Jan 2020 03:09:47 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726754AbgA3B7L (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 29 Jan 2020 20:59:11 -0500
-Received: from mail-ot1-f66.google.com ([209.85.210.66]:33501 "EHLO
-        mail-ot1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726632AbgA3B7L (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 29 Jan 2020 20:59:11 -0500
-Received: by mail-ot1-f66.google.com with SMTP id b18so1695480otp.0;
-        Wed, 29 Jan 2020 17:59:10 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=i88Mz1HHfHLRjCoXJjYlUuVlF7tVe72iHNwcP0Yi878=;
-        b=FVzpVYqBOkYJARKHKHz9NHlb+5/d7Vt+y/cLQ9kbw3/DGLgrZUfmFvhTPbXxBB40ev
-         oE1abXhHnNBgzBj1j3EOAabKBgjxt1eRdkKZBx4HjFUjZyq3ytVXrVOzPkZ5YBJTKnRT
-         kcDOi9OglnDClR0mdlIcNuZH7M/LoORTZphTZy+gLkKsXsNZutbn8GS0av34/GlQ2MdA
-         c+TjAOf7/GCrZgxK9twfKuDfelQJ30hPK4IVMFksBOmDMIk0mihHjq5lv90Y4lztsRAx
-         evEW3LpbForUZMEVfuyWogpNsH3eiuFWc/IPpUDlf6zj4hyJko7j4fbrvrPMMq+a7acZ
-         fsDA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=i88Mz1HHfHLRjCoXJjYlUuVlF7tVe72iHNwcP0Yi878=;
-        b=ExnGDzs8EqYn973RGjETx9Cno+OFLSuBhxd7y0rsTZoyeaLqeYw0WFgrnwYmNnryNm
-         6pRp0OFFCcIb+S05qmxX/i8u6zPzKsD0L0avroWiKFt24eKC8xM1VwYA82Cora+ou6OC
-         EG0QWCFwsYG6rO3bO8BQjfUeYvPOaeGLVEz7hbl6Np8RK9Jyjg5OzIaOOmWH90uUOimK
-         7eQszoYdNuXSffvbjcXbdrMKT7TcNG1cEfjV1Clf30mWNn5OBhb2h4aOk7s5YwZSDLym
-         0HMlGgyQWf7b4rNZ1iAfYvsN9I8V+nDjDuDsk+fUkAGyHOIhrQwqwJw39Q1LI96pVo38
-         CPLQ==
-X-Gm-Message-State: APjAAAXXCx1YDUeY+S72oF0fszQ8FJydBjwf3bJ2/XgrhlSaao2uO8Kw
-        ip96s7+rjKABDoUAfH3D8j8=
-X-Google-Smtp-Source: APXvYqwf3Y2XAi7u2qNJRKRkKDQV20c+PEuElI0yUCGY1S8JLzS4wxhZN5rjfaR7wsnHeHMBXU6t5g==
-X-Received: by 2002:a05:6830:4cd:: with SMTP id s13mr1710548otd.181.1580349550068;
-        Wed, 29 Jan 2020 17:59:10 -0800 (PST)
-Received: from localhost.localdomain ([2604:1380:4111:8b00::1])
-        by smtp.gmail.com with ESMTPSA id r13sm1216891oic.52.2020.01.29.17.59.09
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 29 Jan 2020 17:59:09 -0800 (PST)
-From:   Nathan Chancellor <natechancellor@gmail.com>
-To:     Kalle Valo <kvalo@codeaurora.org>
-Cc:     ath11k@lists.infradead.org, linux-wireless@vger.kernel.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        clang-built-linux@googlegroups.com,
-        Nathan Chancellor <natechancellor@gmail.com>,
-        ci_notify@linaro.org
-Subject: [PATCH] ath11k: Silence clang -Wsometimes-uninitialized in ath11k_update_per_peer_stats_from_txcompl
-Date:   Wed, 29 Jan 2020 18:59:05 -0700
-Message-Id: <20200130015905.18610-1-natechancellor@gmail.com>
-X-Mailer: git-send-email 2.25.0
+        id S1726715AbgA3CJn (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 29 Jan 2020 21:09:43 -0500
+Received: from mx0b-00082601.pphosted.com ([67.231.153.30]:59312 "EHLO
+        mx0b-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1726632AbgA3CJn (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 29 Jan 2020 21:09:43 -0500
+Received: from pps.filterd (m0148460.ppops.net [127.0.0.1])
+        by mx0a-00082601.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 00U250E7003248
+        for <netdev@vger.kernel.org>; Wed, 29 Jan 2020 18:09:42 -0800
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
+ : date : message-id : mime-version : content-type; s=facebook;
+ bh=Wve3vdg/Xj7dM3IcXA1CuHaJmAn1D0qlflZfMFTggbg=;
+ b=AltwyslTL6YrbtM4Ja2Z7OmB/uPDsaf1V5n5ZSDxAE+WUHTO08KpOqOhhEFp3BwNteLs
+ rocBRucYJ2T3Ozg1yF6uXwa2+AD/4aA7BvplLA+JPAHqp2YjidLBBUP5HVHLIHuy9P9v
+ WYSbrkp4XaWa1mbM+SSYH3U2NbAmE0rD/O8= 
+Received: from maileast.thefacebook.com ([163.114.130.16])
+        by mx0a-00082601.pphosted.com with ESMTP id 2xuepgt5e6-10
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT)
+        for <netdev@vger.kernel.org>; Wed, 29 Jan 2020 18:09:42 -0800
+Received: from intmgw002.41.prn1.facebook.com (2620:10d:c0a8:1b::d) by
+ mail.thefacebook.com (2620:10d:c0a8:82::d) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.1779.2; Wed, 29 Jan 2020 18:09:38 -0800
+Received: by devvm4065.prn2.facebook.com (Postfix, from userid 125878)
+        id 35FAA435722AB; Wed, 29 Jan 2020 18:09:32 -0800 (PST)
+Smtp-Origin-Hostprefix: devvm
+From:   Yulia Kartseva <hex@fb.com>
+Smtp-Origin-Hostname: devvm4065.prn2.facebook.com
+To:     <bpf@vger.kernel.org>, <hex@fb.com>, <ast@kernel.org>,
+        <daniel@iogearbox.net>, <netdev@vger.kernel.org>
+CC:     <andriin@fb.com>
+Smtp-Origin-Cluster: prn2c23
+Subject: [PATCH bpf 0/1] runqslower: fix Makefile
+Date:   Wed, 29 Jan 2020 18:09:05 -0800
+Message-ID: <cover.1580348836.git.hex@fb.com>
+X-Mailer: git-send-email 2.17.1
+X-FB-Internal: Safe
 MIME-Version: 1.0
-X-Patchwork-Bot: notify
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.138,18.0.572
+ definitions=2020-01-29_08:2020-01-28,2020-01-29 signatures=0
+X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 impostorscore=0
+ suspectscore=8 adultscore=0 clxscore=1015 priorityscore=1501 phishscore=0
+ mlxscore=0 malwarescore=0 mlxlogscore=896 bulkscore=0 lowpriorityscore=0
+ spamscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-1911200001 definitions=main-2001300012
+X-FB-Internal: deliver
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Clang warns a few times (trimmed for brevity):
+From: Julia Kartseva <hex@fb.com>
 
-../drivers/net/wireless/ath/ath11k/debugfs_sta.c:185:7: warning:
-variable 'rate_idx' is used uninitialized whenever 'if' condition is
-false [-Wsometimes-uninitialized]
+Fix undefined reference linker errors when building runqslower with
+gcc 7.4.0 on Ubuntu 18.04.
+The issue is with misplaced -lelf, -lz options in Makefile:
+$(Q)$(CC) $(CFLAGS) -lelf -lz $^ -o $@
 
-It is not wrong, rate_idx is only initialized in the first if block.
-However, this is not necessarily an issue in practice because rate_idx
-will only be used when initialized because
-ath11k_accumulate_per_peer_tx_stats only uses rate_idx when flags is not
-set to RATE_INFO_FLAGS_HE_MCS, RATE_INFO_FLAGS_VHT_MCS, or
-RATE_INFO_FLAGS_MCS. Still, it is not good to stick uninitialized values
-into another function so initialize it to zero to prevent any issues
-down the line.
+-lelf, -lz options should follow the list of target dependencies:
+$(Q)$(CC) $(CFLAGS) $^ -lelf -lz -o $@
+or after substitution
+cc -g -Wall runqslower.o libbpf.a -lelf -lz -o runqslower
 
-Fixes: d5c65159f289 ("ath11k: driver for Qualcomm IEEE 802.11ax devices")
-Link: https://github.com/ClangBuiltLinux/linux/issues/832
-Reported-by: ci_notify@linaro.org
-Signed-off-by: Nathan Chancellor <natechancellor@gmail.com>
----
- drivers/net/wireless/ath/ath11k/debugfs_sta.c | 2 +-
+The current order of gcc params causes failure in libelf symbols resolution,
+e.g. undefined reference to `elf_memory'
+
+Julia Kartseva (1):
+  runqslower: fix Makefile
+
+ tools/bpf/runqslower/Makefile | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/net/wireless/ath/ath11k/debugfs_sta.c b/drivers/net/wireless/ath/ath11k/debugfs_sta.c
-index 743760c9bcae..a5bdd16d6d46 100644
---- a/drivers/net/wireless/ath/ath11k/debugfs_sta.c
-+++ b/drivers/net/wireless/ath/ath11k/debugfs_sta.c
-@@ -136,7 +136,7 @@ void ath11k_update_per_peer_stats_from_txcompl(struct ath11k *ar,
- 	struct ath11k_sta *arsta;
- 	struct ieee80211_sta *sta;
- 	u16 rate;
--	u8 rate_idx;
-+	u8 rate_idx = 0;
- 	int ret;
- 	u8 mcs;
- 
 -- 
-2.25.0
+2.17.1
 
