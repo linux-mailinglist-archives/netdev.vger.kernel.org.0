@@ -2,84 +2,84 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 5CE5A14D9C0
-	for <lists+netdev@lfdr.de>; Thu, 30 Jan 2020 12:28:08 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 17F9914D971
+	for <lists+netdev@lfdr.de>; Thu, 30 Jan 2020 12:02:51 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727164AbgA3L2H (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 30 Jan 2020 06:28:07 -0500
-Received: from mga07.intel.com ([134.134.136.100]:45867 "EHLO mga07.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727128AbgA3L2H (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 30 Jan 2020 06:28:07 -0500
-X-Amp-Result: UNSCANNABLE
-X-Amp-File-Uploaded: False
-Received: from fmsmga005.fm.intel.com ([10.253.24.32])
-  by orsmga105.jf.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 30 Jan 2020 03:28:05 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.70,381,1574150400"; 
-   d="scan'208";a="428339804"
-Received: from ranger.igk.intel.com ([10.102.21.164])
-  by fmsmga005.fm.intel.com with ESMTP; 30 Jan 2020 03:28:04 -0800
-Date:   Thu, 30 Jan 2020 05:19:03 +0100
-From:   Maciej Fijalkowski <maciej.fijalkowski@intel.com>
-To:     Yulia Kartseva <hex@fb.com>
-Cc:     bpf@vger.kernel.org, ast@kernel.org, daniel@iogearbox.net,
-        netdev@vger.kernel.org, andriin@fb.com
-Subject: Re: [PATCH v2 bpf] runqslower: fix Makefile
-Message-ID: <20200130041903.GC39325@ranger.igk.intel.com>
-References: <da8c16011df5628cfc9ddfeaeca2aa5d90be920b.1580373028.git.hex@fb.com>
+        id S1727161AbgA3LCq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 30 Jan 2020 06:02:46 -0500
+Received: from out1-smtp.messagingengine.com ([66.111.4.25]:48939 "EHLO
+        out1-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1726885AbgA3LCq (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 30 Jan 2020 06:02:46 -0500
+Received: from compute3.internal (compute3.nyi.internal [10.202.2.43])
+        by mailout.nyi.internal (Postfix) with ESMTP id 72D2621C29;
+        Thu, 30 Jan 2020 06:02:45 -0500 (EST)
+Received: from mailfrontend2 ([10.202.2.163])
+  by compute3.internal (MEProxy); Thu, 30 Jan 2020 06:02:45 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+        messagingengine.com; h=cc:content-type:date:from:in-reply-to
+        :message-id:mime-version:references:subject:to:x-me-proxy
+        :x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=fm1; bh=vtYdWY
+        LZAq1c7RCl4Mx4GaWluW5nfRFIB+W8SD870bI=; b=ZCNC9MubHObovZsp3jq8Kc
+        7IhkpIlg3inrxh+5YQptMX5RjzyufM1OzDrIF8BdpXJu8ni+oNSX9z1TgW/fazk1
+        WhzzdbPwpVWTdydc8nhgEvXoEusBprDz5Ouj3hOMLzbp+cteQZ3KlmsdMmvYPpuX
+        zDOQZuzJnwnNIyKXvlVEWp+3iYhtrSV7wdFMDngDwyf4C5yZRhDNCasEIf75+Ky/
+        VdSQ1ElD76DcbF3y6k7uHxy3xjbDcXtuf4PkRjTFRp99RQ2yIu0E12NS6P6VrZZ3
+        kCjmlIhnxu6nJzeYAHFT+v39YgpRccAa2b4z0wRQumgyQ8wdRgi5g55I2mikF+Rg
+        ==
+X-ME-Sender: <xms:1LcyXrqi44RGRdPqfAmwVyb4QNoin6Fu2d9mWQTgqGwvkzHe3Qq_0A>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedugedrfeekgddvgecutefuodetggdotefrodftvf
+    curfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfghnecu
+    uegrihhlohhuthemuceftddtnecuogfuuhhsphgvtghtffhomhgrihhnucdlgeelmdenuc
+    fjughrpeffhffvuffkfhggtggujgesthdtredttddtvdenucfhrhhomhepkfguohcuufgt
+    hhhimhhmvghluceoihguohhstghhsehiughoshgthhdrohhrgheqnecuffhomhgrihhnpe
+    hkvghrnhgvlhdrohhrghdprghpphhsphhothdrtghomhenucfkphepudelfedrgeejrddu
+    ieehrddvhedunecuvehluhhsthgvrhfuihiivgeptdenucfrrghrrghmpehmrghilhhfrh
+    homhepihguohhstghhsehiughoshgthhdrohhrgh
+X-ME-Proxy: <xmx:1LcyXv4XV3WyubHsQZEIZGqNrKz69G2aZGMt_lY9HnPzSAhtM7YsCg>
+    <xmx:1LcyXtoG9DRr8qecaee5a4ecw9aRWmlx1HijE8Y1aANOFYS1TSejQA>
+    <xmx:1LcyXlLmpXFM6iunKFUsNPpqDj2pYJ6rMWKbcqQODD7kKKBhST1JEg>
+    <xmx:1bcyXmNqsvEtog5YFLLWXRmPH2OokcsknGRhbzMq4ifPvb7vnMedvQ>
+Received: from localhost (unknown [193.47.165.251])
+        by mail.messagingengine.com (Postfix) with ESMTPA id 66DEE3060A08;
+        Thu, 30 Jan 2020 06:02:44 -0500 (EST)
+Date:   Thu, 30 Jan 2020 13:02:42 +0200
+From:   Ido Schimmel <idosch@idosch.org>
+To:     syzbot <syzbot+63abe9d5f32ff88090eb@syzkaller.appspotmail.com>
+Cc:     davem@davemloft.net, kuba@kernel.org, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org, syzkaller-bugs@googlegroups.com
+Subject: Re: WARNING in nsim_fib6_rt_nh_del
+Message-ID: <20200130110242.GA108853@splinter>
+References: <00000000000097a900059d58700d@google.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <da8c16011df5628cfc9ddfeaeca2aa5d90be920b.1580373028.git.hex@fb.com>
-User-Agent: Mutt/1.12.1 (2019-06-15)
+In-Reply-To: <00000000000097a900059d58700d@google.com>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Jan 30, 2020 at 12:38:32AM -0800, Yulia Kartseva wrote:
-> From: Julia Kartseva <hex@fb.com>
+On Thu, Jan 30, 2020 at 01:54:15AM -0800, syzbot wrote:
+> Hello,
+> 
+> syzbot found the following crash on:
+> 
+> HEAD commit:    b3a60822 Merge branch 'for-v5.6' of git://git.kernel.org:/..
+> git tree:       net-next
+> console output: https://syzkaller.appspot.com/x/log.txt?x=12461f66e00000
+> kernel config:  https://syzkaller.appspot.com/x/.config?x=614e56d86457f3a7
+> dashboard link: https://syzkaller.appspot.com/bug?extid=63abe9d5f32ff88090eb
+> compiler:       gcc (GCC) 9.0.0 20181231 (experimental)
+> 
+> Unfortunately, I don't have any reproducer for this crash yet.
+> 
+> IMPORTANT: if you fix the bug, please add the following tag to the commit:
+> Reported-by: syzbot+63abe9d5f32ff88090eb@syzkaller.appspotmail.com
+> 
+> ------------[ cut here ]------------
+> WARNING: CPU: 1 PID: 24083 at drivers/net/netdevsim/fib.c:448 nsim_fib6_rt_nh_del+0x287/0x350 drivers/net/netdevsim/fib.c:448
 
-I don't think you need the 'From: ' line if you are the sender of patch.
+Will check.
 
-> 
-> Fixes: 9c01546d26d2 ("tools/bpf: Add runqslower tool to tools/bpf")
-> Signed-off-by: Julia Kartseva <hex@fb.com>
-> Acked-by: Andrii Nakryiko <andriin@fb.com>
-
-These tags should be placed after the commit message.
-
-> 
-> Fix undefined reference linker errors when building runqslower with
-> gcc 7.4.0 on Ubuntu 18.04.
-> The issue is with misplaced -lelf, -lz options in Makefile:
-> $(Q)$(CC) $(CFLAGS) -lelf -lz $^ -o $@
-> 
-> -lelf, -lz options should follow the list of target dependencies:
-> $(Q)$(CC) $(CFLAGS) $^ -lelf -lz -o $@
-> or after substitution
-> cc -g -Wall runqslower.o libbpf.a -lelf -lz -o runqslower
-> 
-> The current order of gcc params causes failure in libelf symbols resolution,
-> e.g. undefined reference to `elf_memory'
-> ---
->  tools/bpf/runqslower/Makefile | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
-> 
-> diff --git a/tools/bpf/runqslower/Makefile b/tools/bpf/runqslower/Makefile
-> index 0c021352b..87eae5be9 100644
-> --- a/tools/bpf/runqslower/Makefile
-> +++ b/tools/bpf/runqslower/Makefile
-> @@ -41,7 +41,7 @@ clean:
->  
->  $(OUTPUT)/runqslower: $(OUTPUT)/runqslower.o $(BPFOBJ)
->  	$(call msg,BINARY,$@)
-> -	$(Q)$(CC) $(CFLAGS) -lelf -lz $^ -o $@
-> +	$(Q)$(CC) $(CFLAGS) $^ -lelf -lz -o $@
->  
->  $(OUTPUT)/runqslower.o: runqslower.h $(OUTPUT)/runqslower.skel.h	      \
->  			$(OUTPUT)/runqslower.bpf.o
-> -- 
-> 2.17.1
-> 
+Thanks
