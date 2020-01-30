@@ -2,14 +2,14 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 3990F14E5BE
-	for <lists+netdev@lfdr.de>; Thu, 30 Jan 2020 23:59:27 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D908814E5C3
+	for <lists+netdev@lfdr.de>; Fri, 31 Jan 2020 00:00:07 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727618AbgA3W7X (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 30 Jan 2020 17:59:23 -0500
+        id S1727606AbgA3W7W (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 30 Jan 2020 17:59:22 -0500
 Received: from mga12.intel.com ([192.55.52.136]:51507 "EHLO mga12.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726667AbgA3W7W (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S1726294AbgA3W7W (ORCPT <rfc822;netdev@vger.kernel.org>);
         Thu, 30 Jan 2020 17:59:22 -0500
 X-Amp-Result: SKIPPED(no attachment in message)
 X-Amp-File-Uploaded: False
@@ -17,16 +17,16 @@ Received: from fmsmga006.fm.intel.com ([10.253.24.20])
   by fmsmga106.fm.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 30 Jan 2020 14:59:21 -0800
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.70,383,1574150400"; 
-   d="scan'208";a="430187761"
+   d="scan'208";a="430187765"
 Received: from jekeller-desk.amr.corp.intel.com (HELO jekeller-desk.jekeller.internal) ([10.166.244.172])
   by fmsmga006.fm.intel.com with ESMTP; 30 Jan 2020 14:59:20 -0800
 From:   Jacob Keller <jacob.e.keller@intel.com>
 To:     netdev@vger.kernel.org
 Cc:     jiri@resnulli.us, valex@mellanox.com, linyunsheng@huawei.com,
         lihong.yang@intel.com, Jacob Keller <jacob.e.keller@intel.com>
-Subject: [PATCH 01/15] devlink: prepare to support region operations
-Date:   Thu, 30 Jan 2020 14:58:56 -0800
-Message-Id: <20200130225913.1671982-2-jacob.e.keller@intel.com>
+Subject: [PATCH 02/15] devlink: add functions to take snapshot while locked
+Date:   Thu, 30 Jan 2020 14:58:57 -0800
+Message-Id: <20200130225913.1671982-3-jacob.e.keller@intel.com>
 X-Mailer: git-send-email 2.25.0.rc1
 In-Reply-To: <20200130225913.1671982-1-jacob.e.keller@intel.com>
 References: <20200130225913.1671982-1-jacob.e.keller@intel.com>
@@ -37,233 +37,152 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Modify the devlink region code in preparation for adding new operations
-on regions.
+A future change is going to add a new devlink command to request
+a snapshot on demand. This function will want to call the
+devlink_region_snapshot_id_get and devlink_region_snapshot_create
+functions while already holding the devlink instance lock.
 
-Create a devlink_region_ops structure, and move the name pointer from
-within the devlink_region structure into the ops structure (similar to
-the devlink_health_reporter_ops).
-
-This prepares the regions to enable support of additional operations in
-the future such as requesting snapshots, or accessing the region
-directly without a snapshot.
+Extract the logic of these two functions into static functions with the
+_locked postfix. Modify the original functions to be implemented in
+terms of the new locked functions.
 
 Signed-off-by: Jacob Keller <jacob.e.keller@intel.com>
 ---
- drivers/net/ethernet/mellanox/mlx4/crdump.c | 25 ++++++++++++---------
- drivers/net/netdevsim/dev.c                 |  6 ++++-
- include/net/devlink.h                       | 17 ++++++++++----
- net/core/devlink.c                          | 23 ++++++++++---------
- 4 files changed, 45 insertions(+), 26 deletions(-)
+ net/core/devlink.c | 95 +++++++++++++++++++++++++++++-----------------
+ 1 file changed, 61 insertions(+), 34 deletions(-)
 
-diff --git a/drivers/net/ethernet/mellanox/mlx4/crdump.c b/drivers/net/ethernet/mellanox/mlx4/crdump.c
-index 64ed725aec28..4cea64033919 100644
---- a/drivers/net/ethernet/mellanox/mlx4/crdump.c
-+++ b/drivers/net/ethernet/mellanox/mlx4/crdump.c
-@@ -38,8 +38,13 @@
- #define CR_ENABLE_BIT_OFFSET		0xF3F04
- #define MAX_NUM_OF_DUMPS_TO_STORE	(8)
- 
--static const char *region_cr_space_str = "cr-space";
--static const char *region_fw_health_str = "fw-health";
-+static const struct devlink_region_ops region_cr_space_ops = {
-+	.name = "cr-space",
-+};
-+
-+static const struct devlink_region_ops region_fw_health_ops = {
-+	.name = "fw-health",
-+};
- 
- /* Set to true in case cr enable bit was set to true before crdump */
- static bool crdump_enbale_bit_set;
-@@ -103,10 +108,10 @@ static void mlx4_crdump_collect_crspace(struct mlx4_dev *dev,
- 		if (err) {
- 			kvfree(crspace_data);
- 			mlx4_warn(dev, "crdump: devlink create %s snapshot id %d err %d\n",
--				  region_cr_space_str, id, err);
-+				  region_cr_space_ops.name, id, err);
- 		} else {
- 			mlx4_info(dev, "crdump: added snapshot %d to devlink region %s\n",
--				  id, region_cr_space_str);
-+				  id, region_cr_space_ops.name);
- 		}
- 	} else {
- 		mlx4_err(dev, "crdump: Failed to allocate crspace buffer\n");
-@@ -142,10 +147,10 @@ static void mlx4_crdump_collect_fw_health(struct mlx4_dev *dev,
- 		if (err) {
- 			kvfree(health_data);
- 			mlx4_warn(dev, "crdump: devlink create %s snapshot id %d err %d\n",
--				  region_fw_health_str, id, err);
-+				  region_fw_health_ops.name, id, err);
- 		} else {
- 			mlx4_info(dev, "crdump: added snapshot %d to devlink region %s\n",
--				  id, region_fw_health_str);
-+				  id, region_fw_health_ops.name);
- 		}
- 	} else {
- 		mlx4_err(dev, "crdump: Failed to allocate health buffer\n");
-@@ -205,23 +210,23 @@ int mlx4_crdump_init(struct mlx4_dev *dev)
- 	/* Create cr-space region */
- 	crdump->region_crspace =
- 		devlink_region_create(devlink,
--				      region_cr_space_str,
-+				      &region_cr_space_ops,
- 				      MAX_NUM_OF_DUMPS_TO_STORE,
- 				      pci_resource_len(pdev, 0));
- 	if (IS_ERR(crdump->region_crspace))
- 		mlx4_warn(dev, "crdump: create devlink region %s err %ld\n",
--			  region_cr_space_str,
-+			  region_cr_space_ops.name,
- 			  PTR_ERR(crdump->region_crspace));
- 
- 	/* Create fw-health region */
- 	crdump->region_fw_health =
- 		devlink_region_create(devlink,
--				      region_fw_health_str,
-+				      &region_fw_health_ops,
- 				      MAX_NUM_OF_DUMPS_TO_STORE,
- 				      HEALTH_BUFFER_SIZE);
- 	if (IS_ERR(crdump->region_fw_health))
- 		mlx4_warn(dev, "crdump: create devlink region %s err %ld\n",
--			  region_fw_health_str,
-+			  region_fw_health_ops.name,
- 			  PTR_ERR(crdump->region_fw_health));
- 
- 	return 0;
-diff --git a/drivers/net/netdevsim/dev.c b/drivers/net/netdevsim/dev.c
-index b53fbc06e104..d521b7bfe007 100644
---- a/drivers/net/netdevsim/dev.c
-+++ b/drivers/net/netdevsim/dev.c
-@@ -242,11 +242,15 @@ static void nsim_devlink_param_load_driverinit_values(struct devlink *devlink)
- 
- #define NSIM_DEV_DUMMY_REGION_SNAPSHOT_MAX 16
- 
-+static const struct devlink_region_ops dummy_region_ops = {
-+	.name = "dummy",
-+};
-+
- static int nsim_dev_dummy_region_init(struct nsim_dev *nsim_dev,
- 				      struct devlink *devlink)
- {
- 	nsim_dev->dummy_region =
--		devlink_region_create(devlink, "dummy",
-+		devlink_region_create(devlink, &dummy_region_ops,
- 				      NSIM_DEV_DUMMY_REGION_SNAPSHOT_MAX,
- 				      NSIM_DEV_DUMMY_REGION_SIZE);
- 	return PTR_ERR_OR_ZERO(nsim_dev->dummy_region);
-diff --git a/include/net/devlink.h b/include/net/devlink.h
-index ce5cea428fdc..4a0baa6903cb 100644
---- a/include/net/devlink.h
-+++ b/include/net/devlink.h
-@@ -495,6 +495,14 @@ struct devlink_info_req;
- 
- typedef void devlink_snapshot_data_dest_t(const void *data);
- 
-+/**
-+ * struct devlink_region_ops - Region operations
-+ * @name: region name
-+ */
-+struct devlink_region_ops {
-+	const char *name;
-+};
-+
- struct devlink_fmsg;
- struct devlink_health_reporter;
- 
-@@ -949,10 +957,11 @@ void devlink_port_param_value_changed(struct devlink_port *devlink_port,
- 				      u32 param_id);
- void devlink_param_value_str_fill(union devlink_param_value *dst_val,
- 				  const char *src);
--struct devlink_region *devlink_region_create(struct devlink *devlink,
--					     const char *region_name,
--					     u32 region_max_snapshots,
--					     u64 region_size);
-+struct devlink_region *
-+devlink_region_create(struct devlink *devlink,
-+		      const struct devlink_region_ops *ops,
-+		      u32 region_max_snapshots,
-+		      u64 region_size);
- void devlink_region_destroy(struct devlink_region *region);
- u32 devlink_region_snapshot_id_get(struct devlink *devlink);
- int devlink_region_snapshot_create(struct devlink_region *region,
 diff --git a/net/core/devlink.c b/net/core/devlink.c
-index ca1df0ec3c97..d1f7bfbf81da 100644
+index d1f7bfbf81da..faf4f4c5c539 100644
 --- a/net/core/devlink.c
 +++ b/net/core/devlink.c
-@@ -344,7 +344,7 @@ devlink_sb_tc_index_get_from_info(struct devlink_sb *devlink_sb,
- struct devlink_region {
- 	struct devlink *devlink;
- 	struct list_head list;
--	const char *name;
-+	const struct devlink_region_ops *ops;
- 	struct list_head snapshot_list;
- 	u32 max_snapshots;
- 	u32 cur_snapshots;
-@@ -365,7 +365,7 @@ devlink_region_get_by_name(struct devlink *devlink, const char *region_name)
- 	struct devlink_region *region;
+@@ -3761,6 +3761,63 @@ static void devlink_nl_region_notify(struct devlink_region *region,
+ 	nlmsg_free(msg);
+ }
  
- 	list_for_each_entry(region, &devlink->region_list, list)
--		if (!strcmp(region->name, region_name))
-+		if (!strcmp(region->ops->name, region_name))
- 			return region;
- 
- 	return NULL;
-@@ -3687,7 +3687,7 @@ static int devlink_nl_region_fill(struct sk_buff *msg, struct devlink *devlink,
- 	if (err)
- 		goto nla_put_failure;
- 
--	err = nla_put_string(msg, DEVLINK_ATTR_REGION_NAME, region->name);
-+	err = nla_put_string(msg, DEVLINK_ATTR_REGION_NAME, region->ops->name);
- 	if (err)
- 		goto nla_put_failure;
- 
-@@ -3733,7 +3733,7 @@ static void devlink_nl_region_notify(struct devlink_region *region,
- 		goto out_cancel_msg;
- 
- 	err = nla_put_string(msg, DEVLINK_ATTR_REGION_NAME,
--			     region->name);
-+			     region->ops->name);
- 	if (err)
- 		goto out_cancel_msg;
- 
-@@ -7530,21 +7530,22 @@ EXPORT_SYMBOL_GPL(devlink_param_value_str_fill);
-  *	devlink_region_create - create a new address region
-  *
-  *	@devlink: devlink
-- *	@region_name: region name
-+ *	@ops: region operations and name
-  *	@region_max_snapshots: Maximum supported number of snapshots for region
-  *	@region_size: size of region
-  */
--struct devlink_region *devlink_region_create(struct devlink *devlink,
--					     const char *region_name,
--					     u32 region_max_snapshots,
--					     u64 region_size)
-+struct devlink_region *
-+devlink_region_create(struct devlink *devlink,
-+		      const struct devlink_region_ops *ops,
-+		      u32 region_max_snapshots,
-+		      u64 region_size)
++/**
++ *	devlink_region_snapshot_id_get_locked - get snapshot ID
++ *
++ *	Returns a new snapshot id. Must be called while holding the
++ *	devlink instance lock.
++ */
++static u32 devlink_region_snapshot_id_get_locked(struct devlink *devlink)
++{
++	return ++devlink->snapshot_id;
++}
++
++/**
++ *	devlink_region_snapshot_create_locked - create a new snapshot
++ *	This will add a new snapshot of a region. The snapshot
++ *	will be stored on the region struct and can be accessed
++ *	from devlink. This is useful for future	analyses of snapshots.
++ *	Multiple snapshots can be created on a region.
++ *	The @snapshot_id should be obtained using the getter function.
++ *
++ *	Must be called only while holding the devlink instance lock.
++ *
++ *	@region: devlink region of the snapshot
++ *	@data: snapshot data
++ *	@snapshot_id: snapshot id to be created
++ *	@destructor: pointer to destructor function to free data
++ */
++static int
++devlink_region_snapshot_create_locked(struct devlink_region *region,
++				      u8 *data, u32 snapshot_id,
++				      devlink_snapshot_data_dest_t *destructor)
++{
++	struct devlink_snapshot *snapshot;
++
++	/* check if region can hold one more snapshot */
++	if (region->cur_snapshots == region->max_snapshots)
++		return -ENOMEM;
++
++	if (devlink_region_snapshot_get_by_id(region, snapshot_id))
++		return -EEXIST;
++
++	snapshot = kzalloc(sizeof(*snapshot), GFP_KERNEL);
++	if (!snapshot)
++		return -ENOMEM;
++
++	snapshot->id = snapshot_id;
++	snapshot->region = region;
++	snapshot->data = data;
++	snapshot->data_destructor = destructor;
++
++	list_add_tail(&snapshot->list, &region->snapshot_list);
++
++	region->cur_snapshots++;
++
++	devlink_nl_region_notify(region, snapshot, DEVLINK_CMD_REGION_NEW);
++	return 0;
++}
++
+ static void devlink_region_snapshot_del(struct devlink_region *region,
+ 					struct devlink_snapshot *snapshot)
  {
- 	struct devlink_region *region;
- 	int err = 0;
+@@ -7611,7 +7668,7 @@ u32 devlink_region_snapshot_id_get(struct devlink *devlink)
+ 	u32 id;
  
  	mutex_lock(&devlink->lock);
+-	id = ++devlink->snapshot_id;
++	id = devlink_region_snapshot_id_get_locked(devlink);
+ 	mutex_unlock(&devlink->lock);
  
--	if (devlink_region_get_by_name(devlink, region_name)) {
-+	if (devlink_region_get_by_name(devlink, ops->name)) {
- 		err = -EEXIST;
- 		goto unlock;
- 	}
-@@ -7557,7 +7558,7 @@ struct devlink_region *devlink_region_create(struct devlink *devlink,
+ 	return id;
+@@ -7622,7 +7679,7 @@ EXPORT_SYMBOL_GPL(devlink_region_snapshot_id_get);
+  *	devlink_region_snapshot_create - create a new snapshot
+  *	This will add a new snapshot of a region. The snapshot
+  *	will be stored on the region struct and can be accessed
+- *	from devlink. This is useful for future	analyses of snapshots.
++ *	from devlink. This is useful for future analyses of snapshots.
+  *	Multiple snapshots can be created on a region.
+  *	The @snapshot_id should be obtained using the getter function.
+  *
+@@ -7636,43 +7693,13 @@ int devlink_region_snapshot_create(struct devlink_region *region,
+ 				   devlink_snapshot_data_dest_t *data_destructor)
+ {
+ 	struct devlink *devlink = region->devlink;
+-	struct devlink_snapshot *snapshot;
+ 	int err;
  
- 	region->devlink = devlink;
- 	region->max_snapshots = region_max_snapshots;
--	region->name = region_name;
-+	region->ops = ops;
- 	region->size = region_size;
- 	INIT_LIST_HEAD(&region->snapshot_list);
- 	list_add_tail(&region->list, &devlink->region_list);
+ 	mutex_lock(&devlink->lock);
+-
+-	/* check if region can hold one more snapshot */
+-	if (region->cur_snapshots == region->max_snapshots) {
+-		err = -ENOMEM;
+-		goto unlock;
+-	}
+-
+-	if (devlink_region_snapshot_get_by_id(region, snapshot_id)) {
+-		err = -EEXIST;
+-		goto unlock;
+-	}
+-
+-	snapshot = kzalloc(sizeof(*snapshot), GFP_KERNEL);
+-	if (!snapshot) {
+-		err = -ENOMEM;
+-		goto unlock;
+-	}
+-
+-	snapshot->id = snapshot_id;
+-	snapshot->region = region;
+-	snapshot->data = data;
+-	snapshot->data_destructor = data_destructor;
+-
+-	list_add_tail(&snapshot->list, &region->snapshot_list);
+-
+-	region->cur_snapshots++;
+-
+-	devlink_nl_region_notify(region, snapshot, DEVLINK_CMD_REGION_NEW);
++	err = devlink_region_snapshot_create_locked(region, data, snapshot_id,
++						    data_destructor);
+ 	mutex_unlock(&devlink->lock);
+-	return 0;
+ 
+-unlock:
+-	mutex_unlock(&devlink->lock);
+ 	return err;
+ }
+ EXPORT_SYMBOL_GPL(devlink_region_snapshot_create);
 -- 
 2.25.0.rc1
 
