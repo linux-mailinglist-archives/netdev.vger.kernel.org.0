@@ -2,99 +2,100 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id F2CBA14E271
-	for <lists+netdev@lfdr.de>; Thu, 30 Jan 2020 19:52:22 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 240CC14E2FA
+	for <lists+netdev@lfdr.de>; Thu, 30 Jan 2020 20:16:41 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731528AbgA3SwO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 30 Jan 2020 13:52:14 -0500
-Received: from mail-qk1-f195.google.com ([209.85.222.195]:33375 "EHLO
-        mail-qk1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728148AbgA3SwM (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 30 Jan 2020 13:52:12 -0500
-Received: by mail-qk1-f195.google.com with SMTP id h23so4037700qkh.0;
-        Thu, 30 Jan 2020 10:52:11 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=LMl8JElt0mvgTgvW+EEMMXYvFexdnBQSWb7RkJvCjqA=;
-        b=ESwOkmcyHoMoeUwUDadDvmHHjHDYkxsnJDKmJDXyf7F74pcbvZbnysaJGoLY0igKek
-         ClGvhIjqslHFVlwoxiDVXSyD800fHGurfXiTJHkUKuEZekoHhi+TMwS55VOC2VRyuFEc
-         nolRoPbSbnxksppjMw+0YjDOc04rxh/C/J9P+ZT8vgKNBlEtUDWl2CuUF6DOglLMZ+VW
-         q7BhkyrSsW+85zZTNroYcJobQiwAqm0LQtppGajCYhBZpedZ7pSXzqbFCxpOu5mv8yjz
-         nu/dC8Qo8ubf9XeBAN1fpn31N8n8ECEr5suT6V6eoNb7ET1jRLvn7wHWVFHhDqlI/fjB
-         9u4g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=LMl8JElt0mvgTgvW+EEMMXYvFexdnBQSWb7RkJvCjqA=;
-        b=Dd5zxitDypbvMufn10k4YYUkKov6GnKEyWN+wJtUV2cgkQZufMtKuk9ocmjqv9VGd5
-         mpKWGXRjqmrJ6gLNzyGY+VP3qxFDyNRBzRTQzEhCridVjsO10if9Mbj2mka/iAG3I/uP
-         FfSx9cFj5fzqirFi3rMLd6OPsAiEyMgU2NY6DRG8G413Kv3wBUS5G5J5DGbEaJaKqSrd
-         V5juubsUr9Cts3BZHZ3B/sqj/PGG4AdPxju7LZhKg4W7TJvLnNny4sonajHLpAGd1gK2
-         GMu4UmDV+6dG8cFi8WAlQswVMvtHcd1R+WrgIfPv3Hgmbhk2jMaCvgYsxVe6vHsIAq0B
-         XPYg==
-X-Gm-Message-State: APjAAAVZVLPF/nrWyqpHOu687xZ/iJt4T51VrXWD9oFhczU/xU2hKsRH
-        S/ESkIf8JgfN/8YmvQh76Xv8ck8d68SKGGWhDBo=
-X-Google-Smtp-Source: APXvYqw7Nn9YpFh+P9d/GAaw+6uz6DZrDlKzkLBFlhl6WWaT5W8fBebgHo01bmHJT8lu3H6BC6Yrd2eGgl4Z59I7GAQ=
-X-Received: by 2002:ae9:eb48:: with SMTP id b69mr4100302qkg.39.1580410331255;
- Thu, 30 Jan 2020 10:52:11 -0800 (PST)
+        id S1727680AbgA3TQg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 30 Jan 2020 14:16:36 -0500
+Received: from mga04.intel.com ([192.55.52.120]:9436 "EHLO mga04.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726267AbgA3TQg (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 30 Jan 2020 14:16:36 -0500
+X-Amp-Result: UNKNOWN
+X-Amp-Original-Verdict: FILE UNKNOWN
+X-Amp-File-Uploaded: False
+Received: from fmsmga002.fm.intel.com ([10.253.24.26])
+  by fmsmga104.fm.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 30 Jan 2020 11:16:35 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.70,382,1574150400"; 
+   d="scan'208";a="262281101"
+Received: from ranger.igk.intel.com ([10.102.21.164])
+  by fmsmga002.fm.intel.com with ESMTP; 30 Jan 2020 11:16:33 -0800
+Date:   Thu, 30 Jan 2020 13:07:30 +0100
+From:   Maciej Fijalkowski <maciej.fijalkowski@intel.com>
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     Robert Jones <rjones@gateworks.com>,
+        Sunil Goutham <sgoutham@marvell.com>,
+        Robert Richter <rrichter@marvell.com>,
+        David Miller <davem@davemloft.net>,
+        linux-arm-kernel@lists.infradead.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Tim Harvey <tharvey@gateworks.com>
+Subject: Re: [PATCH net] net: thunderx: workaround BGX TX Underflow issue
+Message-ID: <20200130120730.GA60572@ranger.igk.intel.com>
+References: <20200129223609.9327-1-rjones@gateworks.com>
+ <20200130091055.159d63ed@cakuba>
 MIME-Version: 1.0
-References: <CAEf4BzbjXRFYkr2LCh50mLV+cQ9WrgRB+U4CbxekVVf=nfRUZw@mail.gmail.com>
- <20200129035457.90892-1-eric@sage.org>
-In-Reply-To: <20200129035457.90892-1-eric@sage.org>
-From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Thu, 30 Jan 2020 10:52:00 -0800
-Message-ID: <CAEf4BzZOWRyuhDUdbCt0fqroaX1sGaTpwPohKwntFm+KivkWnQ@mail.gmail.com>
-Subject: Re: [PATCH v3] samples/bpf: Add xdp_stat sample program
-To:     Eric Sage <eric@sage.org>
-Cc:     bpf <bpf@vger.kernel.org>, Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Martin Lau <kafai@fb.com>, Yonghong Song <yhs@fb.com>,
-        Andrii Nakryiko <andriin@fb.com>,
-        Jakub Kicinski <jakub.kicinski@netronome.com>,
-        Jesper Dangaard Brouer <hawk@kernel.org>,
-        john fastabend <john.fastabend@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Networking <netdev@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20200130091055.159d63ed@cakuba>
+User-Agent: Mutt/1.12.1 (2019-06-15)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Jan 28, 2020 at 7:55 PM Eric Sage <eric@sage.org> wrote:
->
-> At Facebook we use tail calls to jump between our firewall filters and
-> our L4LB. This is a program I wrote to estimate per program performance
-> by swapping out the entries in the program array with interceptors that
-> take measurements and then jump to the original entries.
->
-> I found the sample programs to be invaluable in understanding how to use
-> the libbpf API (as well as the test env from the xdp-tutorial repo for
-> testing), and want to return the favor. I am currently working on
-> my next iteration that uses fentry/fexit to be less invasive,
-> but I thought it was an interesting PoC of what you can do with program
-> arrays.
->
-> Signed-off-by: Eric Sage <eric@sage.org>
-> ---
+On Thu, Jan 30, 2020 at 09:10:55AM -0800, Jakub Kicinski wrote:
+> On Wed, 29 Jan 2020 14:36:09 -0800, Robert Jones wrote:
+> > From: Tim Harvey <tharvey@gateworks.com>
+> > 
+> > While it is not yet understood why a TX underflow can easily occur
+> > for SGMII interfaces resulting in a TX wedge. It has been found that
+> > disabling/re-enabling the LMAC resolves the issue.
+> > 
+> > Signed-off-by: Tim Harvey <tharvey@gateworks.com>
+> > Reviewed-by: Robert Jones <rjones@gateworks.com>
+> 
+> Sunil or Robert (i.e. one of the maintainers) will have to review this
+> patch (as indicated by Dave by marking it with "Needs Review / ACK" in
+> patchwork).
+> 
+> At a quick look there are some things which jump out at me:
+> 
+> > +static int bgx_register_intr(struct pci_dev *pdev)
+> > +{
+> > +	struct bgx *bgx = pci_get_drvdata(pdev);
+> > +	struct device *dev = &pdev->dev;
+> > +	int num_vec, ret;
+> > +
+> > +	/* Enable MSI-X */
+> > +	num_vec = pci_msix_vec_count(pdev);
+> > +	ret = pci_alloc_irq_vectors(pdev, num_vec, num_vec, PCI_IRQ_MSIX);
+> > +	if (ret < 0) {
+> > +		dev_err(dev, "Req for #%d msix vectors failed\n", num_vec);
+> > +		return 1;
+> 
+> Please propagate real error codes, or make this function void as the
+> caller never actually checks the return value.
+> 
+> > +	}
+> > +	sprintf(bgx->irq_name, "BGX%d", bgx->bgx_id);
 
-Looks good, thanks!
+Another quick look: use snprintf so that you won't overflow the
+bgx->irq_name in case bgx->bgx_id has some weird big number.
 
-Acked-by: Andrii Nakryiko <andriin@fb.com>
-
-> Changes in v3:
-> - Fixed typos in xdp_stat_kern.c
-> - Switch to using key_size, value_size for prog arrays.
->
-
-Just for the future: you should keep entire changelog, starting from
-v1->v2 changes. Also, netdev patches usually preserve them as part of
-commit message (for individual patch) or cover letter (for patch set).
-But in this case I think changes are not substantial enough to record
-them permanently, so it's fine.
-
-
-[...]
+> > +	ret = request_irq(pci_irq_vector(pdev, GMPX_GMI_TX_INT),
+> 
+> There is a alloc_irq and request_irq call added in this patch but there
+> is never any freeing. Are you sure this is fine? Devices can be
+> reprobed (unbound and bound to drivers via sysfs).
+> 
+> > +		bgx_intr_handler, 0, bgx->irq_name, bgx);
+> 
+> Please align the continuation line with the opening bracket (checkpatch
+> --strict should help catch this).
+> 
+> > +	if (ret)
+> > +		return 1;
+> > +
+> > +	return 0;
+> > +}
