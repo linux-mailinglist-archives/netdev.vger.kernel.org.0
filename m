@@ -2,96 +2,75 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 5875114D7D6
-	for <lists+netdev@lfdr.de>; Thu, 30 Jan 2020 09:39:06 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id ED6D014D7FA
+	for <lists+netdev@lfdr.de>; Thu, 30 Jan 2020 09:54:45 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726931AbgA3IjE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 30 Jan 2020 03:39:04 -0500
-Received: from mx0a-00082601.pphosted.com ([67.231.145.42]:46422 "EHLO
-        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726757AbgA3IjE (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 30 Jan 2020 03:39:04 -0500
-Received: from pps.filterd (m0109334.ppops.net [127.0.0.1])
-        by mx0a-00082601.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 00U8cI2Z012487
-        for <netdev@vger.kernel.org>; Thu, 30 Jan 2020 00:39:03 -0800
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
- : date : message-id : mime-version : content-type; s=facebook;
- bh=khsLizDS52/2mfrYczdH1CWnwlOHZD4qPjW+pbJ46BY=;
- b=hhXvAZMqwlxQCagPSlyJ23CL9Eecz9ZnPlIjohbj1nvckMJ2XUrtcNj+ssHB7dsS0qhc
- 9gK1CBDq2rQO9NveEPiJOQKa8nuK189cqhb0opgyBxjWu5cDN6SHx9CUxbip97xQ02vn
- yZBedY9D0TpAQb+LKtfNDSuBsiVyRmqGZG8= 
-Received: from mail.thefacebook.com ([163.114.132.120])
-        by mx0a-00082601.pphosted.com with ESMTP id 2xufrv2w2k-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT)
-        for <netdev@vger.kernel.org>; Thu, 30 Jan 2020 00:39:03 -0800
-Received: from intmgw002.06.prn3.facebook.com (2620:10d:c085:108::8) by
- mail.thefacebook.com (2620:10d:c085:21d::7) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.1779.2; Thu, 30 Jan 2020 00:39:03 -0800
-Received: by devvm4065.prn2.facebook.com (Postfix, from userid 125878)
-        id 141E3435B9032; Thu, 30 Jan 2020 00:38:52 -0800 (PST)
-Smtp-Origin-Hostprefix: devvm
-From:   Yulia Kartseva <hex@fb.com>
-Smtp-Origin-Hostname: devvm4065.prn2.facebook.com
-To:     <bpf@vger.kernel.org>, <hex@fb.com>, <ast@kernel.org>,
-        <daniel@iogearbox.net>, <netdev@vger.kernel.org>
-CC:     <andriin@fb.com>
-Smtp-Origin-Cluster: prn2c23
-Subject: [PATCH v2 bpf] runqslower: fix Makefile
-Date:   Thu, 30 Jan 2020 00:38:32 -0800
-Message-ID: <da8c16011df5628cfc9ddfeaeca2aa5d90be920b.1580373028.git.hex@fb.com>
-X-Mailer: git-send-email 2.17.1
-X-FB-Internal: Safe
+        id S1727139AbgA3Iyl (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 30 Jan 2020 03:54:41 -0500
+Received: from mail26.static.mailgun.info ([104.130.122.26]:14387 "EHLO
+        mail26.static.mailgun.info" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1726882AbgA3Iyk (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 30 Jan 2020 03:54:40 -0500
+DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org; q=dns/txt;
+ s=smtp; t=1580374480; h=Content-Type: MIME-Version: Message-ID:
+ In-Reply-To: Date: References: Subject: Cc: To: From: Sender;
+ bh=N4CNwBz5EJbDpyDW//KpaRAWD7Ad6mnXNFZjBhnIKVg=; b=ImQcH/RN8WHeu/mjbBsVD63xYeJG/esJ9LOsu2iJnIJ8jMlK8DJ0EMoOVuIxCX0bhMxq1cbG
+ 7XFBgYYuq5PZ5f3HWh5ler6gJqRJ5ILOibs+rMUpuGQnXw1ihLEoG2ArMM/Yj+HlUcROnoan
+ OibiHaPixwfV14Swg5ADf86fl+0=
+X-Mailgun-Sending-Ip: 104.130.122.26
+X-Mailgun-Sid: WyJiZjI2MiIsICJuZXRkZXZAdmdlci5rZXJuZWwub3JnIiwgImJlOWU0YSJd
+Received: from smtp.codeaurora.org (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171])
+ by mxa.mailgun.org with ESMTP id 5e3299cc.7eff5281b618-smtp-out-n01;
+ Thu, 30 Jan 2020 08:54:36 -0000 (UTC)
+Received: by smtp.codeaurora.org (Postfix, from userid 1001)
+        id 6C5AEC4479F; Thu, 30 Jan 2020 08:54:36 +0000 (UTC)
+X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
+        aws-us-west-2-caf-mail-1.web.codeaurora.org
+X-Spam-Level: 
+X-Spam-Status: No, score=-1.0 required=2.0 tests=ALL_TRUSTED,SPF_NONE
+        autolearn=unavailable autolearn_force=no version=3.4.0
+Received: from potku.adurom.net (88-114-240-156.elisa-laajakaista.fi [88.114.240.156])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+        (No client certificate requested)
+        (Authenticated sender: kvalo)
+        by smtp.codeaurora.org (Postfix) with ESMTPSA id 8A342C43383;
+        Thu, 30 Jan 2020 08:54:33 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org 8A342C43383
+Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
+Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; spf=none smtp.mailfrom=kvalo@codeaurora.org
+From:   Kalle Valo <kvalo@codeaurora.org>
+To:     Luca Ceresoli <luca@lucaceresoli.net>
+Cc:     linux-wireless@vger.kernel.org,
+        Luca Coelho <luciano.coelho@intel.com>,
+        Johannes Berg <johannes.berg@intel.com>,
+        Emmanuel Grumbach <emmanuel.grumbach@intel.com>,
+        Intel Linux Wireless <linuxwifi@intel.com>,
+        "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v2] iwlwifi: fix config variable name in comment
+References: <20200130080622.1927-1-luca@lucaceresoli.net>
+Date:   Thu, 30 Jan 2020 10:54:31 +0200
+In-Reply-To: <20200130080622.1927-1-luca@lucaceresoli.net> (Luca Ceresoli's
+        message of "Thu, 30 Jan 2020 09:06:22 +0100")
+Message-ID: <877e19cojc.fsf@kamboji.qca.qualcomm.com>
+User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/24.5 (gnu/linux)
 MIME-Version: 1.0
 Content-Type: text/plain
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.138,18.0.572
- definitions=2020-01-30_02:2020-01-28,2020-01-30 signatures=0
-X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 priorityscore=1501
- suspectscore=0 mlxscore=0 adultscore=0 impostorscore=0 phishscore=0
- lowpriorityscore=0 bulkscore=0 mlxlogscore=999 spamscore=0 malwarescore=0
- clxscore=1015 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-1911200001 definitions=main-2001300061
-X-FB-Internal: deliver
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Julia Kartseva <hex@fb.com>
+Luca Ceresoli <luca@lucaceresoli.net> writes:
 
-Fixes: 9c01546d26d2 ("tools/bpf: Add runqslower tool to tools/bpf")
-Signed-off-by: Julia Kartseva <hex@fb.com>
-Acked-by: Andrii Nakryiko <andriin@fb.com>
+> The correct variable name was replaced here by mistake.
+>
+> Fixes: ab27926d9e4a ("iwlwifi: fix devices with PCI Device ID 0x34F0
+> and 11ac RF modules")
 
-Fix undefined reference linker errors when building runqslower with
-gcc 7.4.0 on Ubuntu 18.04.
-The issue is with misplaced -lelf, -lz options in Makefile:
-$(Q)$(CC) $(CFLAGS) -lelf -lz $^ -o $@
+The Fixes tag should be all in one line. But TBH I'm not sure if it
+makes sense to add that to a patch which has no functional changes like
+this one.
 
--lelf, -lz options should follow the list of target dependencies:
-$(Q)$(CC) $(CFLAGS) $^ -lelf -lz -o $@
-or after substitution
-cc -g -Wall runqslower.o libbpf.a -lelf -lz -o runqslower
-
-The current order of gcc params causes failure in libelf symbols resolution,
-e.g. undefined reference to `elf_memory'
----
- tools/bpf/runqslower/Makefile | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/tools/bpf/runqslower/Makefile b/tools/bpf/runqslower/Makefile
-index 0c021352b..87eae5be9 100644
---- a/tools/bpf/runqslower/Makefile
-+++ b/tools/bpf/runqslower/Makefile
-@@ -41,7 +41,7 @@ clean:
- 
- $(OUTPUT)/runqslower: $(OUTPUT)/runqslower.o $(BPFOBJ)
- 	$(call msg,BINARY,$@)
--	$(Q)$(CC) $(CFLAGS) -lelf -lz $^ -o $@
-+	$(Q)$(CC) $(CFLAGS) $^ -lelf -lz -o $@
- 
- $(OUTPUT)/runqslower.o: runqslower.h $(OUTPUT)/runqslower.skel.h	      \
- 			$(OUTPUT)/runqslower.bpf.o
 -- 
-2.17.1
-
+https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
