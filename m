@@ -2,81 +2,113 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 4B32814E0B6
-	for <lists+netdev@lfdr.de>; Thu, 30 Jan 2020 19:24:13 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3E30C14E0D6
+	for <lists+netdev@lfdr.de>; Thu, 30 Jan 2020 19:32:13 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729432AbgA3SYJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 30 Jan 2020 13:24:09 -0500
-Received: from node.akkea.ca ([192.155.83.177]:57316 "EHLO node.akkea.ca"
+        id S1727648AbgA3ScL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 30 Jan 2020 13:32:11 -0500
+Received: from mx2.suse.de ([195.135.220.15]:53670 "EHLO mx2.suse.de"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727697AbgA3SYJ (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 30 Jan 2020 13:24:09 -0500
-X-Greylist: delayed 312 seconds by postgrey-1.27 at vger.kernel.org; Thu, 30 Jan 2020 13:24:09 EST
-Received: from localhost (localhost [127.0.0.1])
-        by node.akkea.ca (Postfix) with ESMTP id 2F2884E204D;
-        Thu, 30 Jan 2020 18:18:57 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=akkea.ca; s=mail;
-        t=1580408337; bh=3E251MH06Dbd00638c4EBWp/OLDF5tixRqh+0dV7y5Y=;
-        h=Date:From:To:Cc:Subject;
-        b=oQGW8Lg5T8UqWMQ6eEYb3z3rRwCySG4i2NpDkrYlh84RT5yII8Lf9yfevBBtmwGZQ
-         bBJM1LvXYK658qeWhIcRfZ1NqFP0P2U57NDH7Lkxk+yPDYpXaMid7DKQtcrMjN+l0C
-         5iaKf+luLCDePSu3DM64SB7eqr7KxNDSUWAQxO+4=
-X-Virus-Scanned: Debian amavisd-new at mail.akkea.ca
-Received: from node.akkea.ca ([127.0.0.1])
-        by localhost (mail.akkea.ca [127.0.0.1]) (amavisd-new, port 10024)
-        with ESMTP id E_-dYhpVuoUL; Thu, 30 Jan 2020 18:18:56 +0000 (UTC)
-Received: from www.akkea.ca (node.akkea.ca [192.155.83.177])
-        by node.akkea.ca (Postfix) with ESMTPSA id A899F4E200C;
-        Thu, 30 Jan 2020 18:18:56 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=akkea.ca; s=mail;
-        t=1580408336; bh=3E251MH06Dbd00638c4EBWp/OLDF5tixRqh+0dV7y5Y=;
-        h=Date:From:To:Cc:Subject;
-        b=RC66mL6wBnh9Vxy0M/T7tGydF5dz1qCANrAqG7zJstzjEI9eIDVOp98MXKF1yCgs5
-         B03dUfyFBmv+H6XlpVFicPR9EAjDimNQ0XLAovsl4hg5kOXOToOW3Hhug3I7O54hyX
-         DyADWx5DX40SttywcQZ4hbp+5civvmf+cZ2FenjE=
+        id S1727495AbgA3ScL (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 30 Jan 2020 13:32:11 -0500
+X-Virus-Scanned: by amavisd-new at test-mx.suse.de
+Received: from relay2.suse.de (unknown [195.135.220.254])
+        by mx2.suse.de (Postfix) with ESMTP id C83EDAF21;
+        Thu, 30 Jan 2020 18:32:08 +0000 (UTC)
+Received: by unicorn.suse.cz (Postfix, from userid 1000)
+        id 7A343E0095; Thu, 30 Jan 2020 19:32:07 +0100 (CET)
+Date:   Thu, 30 Jan 2020 19:32:07 +0100
+From:   Michal Kubecek <mkubecek@suse.cz>
+To:     netdev@vger.kernel.org
+Cc:     Dmitry Yakunin <zeil@yandex-team.ru>, davem@davemloft.net,
+        kuba@kernel.org
+Subject: Re: [PATCH] netlink: add real_num_[tr]x_queues to ifinfo
+Message-ID: <20200130183207.GD20720@unicorn.suse.cz>
+References: <20200130175749.GA31391@zeil-osx>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII;
- format=flowed
-Content-Transfer-Encoding: 7bit
-Date:   Thu, 30 Jan 2020 10:18:56 -0800
-From:   Angus Ainslie <angus@akkea.ca>
-To:     Amitkumar Karwar <amitkarwar@gmail.com>,
-        Siva Rebbagondla <siva8118@gmail.com>
-Cc:     Kalle Valo <kvalo@codeaurora.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Redpine RS9116 M.2 module with NetworkManager
-Message-ID: <59789f30ee686338c7bcffe3c6cbc453@akkea.ca>
-X-Sender: angus@akkea.ca
-User-Agent: Roundcube Webmail/1.3.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20200130175749.GA31391@zeil-osx>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi,
+On Thu, Jan 30, 2020 at 08:57:49PM +0300, Dmitry Yakunin wrote:
+> This patch adds the number of active tx/rx queues to ifinfo message.
+> 
+> Now there are two ways of determining the number of active queues:
+> 1) by counting entries in /sys/class/net/eth[0-9]+/queues/
+> 2) by ioctl syscall if a driver implements ethtool_ops->get_channels()
+> 
+> Default mq qdisc sets up pfifo_fast only for active queues. So, if we want
+> to reproduce this behavior with custom leaf qdiscs, we should use one
+> of these methods which are foreign for the code where netlink was used.
 
-I'm trying the get a Redpine RS9116 module working with networkmanager. 
-I've tried this on 5.3, 5.5 and next-20200128. I'm using the Redpine 1.5 
-"rs9116_wlan_bt_classic.rps" firmware.
+Netlink interface for get_channels() and set_channels() ethtool_ops is
+one of the first I plan to submit when net-next is open again after the
+merge window.
 
-If I configure the interface using iw, wpa_supplicant and dhclient all 
-works as expected.
+Michal
 
-If I try to configure the interface using nmtui most of the time no APs 
-show up to associate to. "iw dev wlan0 list" shows all of the APs in the 
-vicinity.
-
-If I do manage to get an AP to show when I try to "Activate a 
-connection" I get the error below
-
-Could not activate connection:
-Activation failed: No reason given
-
-I suspect this is a driver bug rather than a NM bug as I saw similar 
-issues with an earlier Redpine proprietary driver that was fixed by 
-updating that driver. What rsi_dbg zone will help debug this ?
-
-Thanks
-Angus
+> 
+> Signed-off-by: Dmitry Yakunin <zeil@yandex-team.ru>
+> ---
+>  include/uapi/linux/if_link.h | 2 ++
+>  net/core/rtnetlink.c         | 6 ++++++
+>  2 files changed, 8 insertions(+)
+> 
+> diff --git a/include/uapi/linux/if_link.h b/include/uapi/linux/if_link.h
+> index 8aec876..6566b63 100644
+> --- a/include/uapi/linux/if_link.h
+> +++ b/include/uapi/linux/if_link.h
+> @@ -169,6 +169,8 @@ enum {
+>  	IFLA_MAX_MTU,
+>  	IFLA_PROP_LIST,
+>  	IFLA_ALT_IFNAME, /* Alternative ifname */
+> +	IFLA_REAL_NUM_TX_QUEUES,
+> +	IFLA_REAL_NUM_RX_QUEUES,
+>  	__IFLA_MAX
+>  };
+>  
+> diff --git a/net/core/rtnetlink.c b/net/core/rtnetlink.c
+> index d9001b5..3ebae18 100644
+> --- a/net/core/rtnetlink.c
+> +++ b/net/core/rtnetlink.c
+> @@ -1013,7 +1013,9 @@ static noinline size_t if_nlmsg_size(const struct net_device *dev,
+>  	       + nla_total_size(1) /* IFLA_CARRIER */
+>  	       + nla_total_size(4) /* IFLA_PROMISCUITY */
+>  	       + nla_total_size(4) /* IFLA_NUM_TX_QUEUES */
+> +	       + nla_total_size(4) /* IFLA_REAL_NUM_TX_QUEUES */
+>  	       + nla_total_size(4) /* IFLA_NUM_RX_QUEUES */
+> +	       + nla_total_size(4) /* IFLA_REAL_NUM_RX_QUEUES */
+>  	       + nla_total_size(4) /* IFLA_GSO_MAX_SEGS */
+>  	       + nla_total_size(4) /* IFLA_GSO_MAX_SIZE */
+>  	       + nla_total_size(1) /* IFLA_OPERSTATE */
+> @@ -1687,10 +1689,12 @@ static int rtnl_fill_ifinfo(struct sk_buff *skb,
+>  	    nla_put_u32(skb, IFLA_GROUP, dev->group) ||
+>  	    nla_put_u32(skb, IFLA_PROMISCUITY, dev->promiscuity) ||
+>  	    nla_put_u32(skb, IFLA_NUM_TX_QUEUES, dev->num_tx_queues) ||
+> +	    nla_put_u32(skb, IFLA_REAL_NUM_TX_QUEUES, dev->real_num_tx_queues) ||
+>  	    nla_put_u32(skb, IFLA_GSO_MAX_SEGS, dev->gso_max_segs) ||
+>  	    nla_put_u32(skb, IFLA_GSO_MAX_SIZE, dev->gso_max_size) ||
+>  #ifdef CONFIG_RPS
+>  	    nla_put_u32(skb, IFLA_NUM_RX_QUEUES, dev->num_rx_queues) ||
+> +	    nla_put_u32(skb, IFLA_REAL_NUM_RX_QUEUES, dev->real_num_rx_queues) ||
+>  #endif
+>  	    put_master_ifindex(skb, dev) ||
+>  	    nla_put_u8(skb, IFLA_CARRIER, netif_carrier_ok(dev)) ||
+> @@ -1803,7 +1807,9 @@ static const struct nla_policy ifla_policy[IFLA_MAX+1] = {
+>  	[IFLA_EXT_MASK]		= { .type = NLA_U32 },
+>  	[IFLA_PROMISCUITY]	= { .type = NLA_U32 },
+>  	[IFLA_NUM_TX_QUEUES]	= { .type = NLA_U32 },
+> +	[IFLA_REAL_NUM_TX_QUEUES] = { .type = NLA_U32 },
+>  	[IFLA_NUM_RX_QUEUES]	= { .type = NLA_U32 },
+> +	[IFLA_REAL_NUM_RX_QUEUES] = { .type = NLA_U32 },
+>  	[IFLA_GSO_MAX_SEGS]	= { .type = NLA_U32 },
+>  	[IFLA_GSO_MAX_SIZE]	= { .type = NLA_U32 },
+>  	[IFLA_PHYS_PORT_ID]	= { .type = NLA_BINARY, .len = MAX_PHYS_ITEM_ID_LEN },
+> -- 
+> 2.7.4
+> 
