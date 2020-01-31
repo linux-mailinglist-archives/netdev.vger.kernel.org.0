@@ -2,38 +2,37 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 34FE414F1D1
+	by mail.lfdr.de (Postfix) with ESMTP id A92E014F1D2
 	for <lists+netdev@lfdr.de>; Fri, 31 Jan 2020 19:07:40 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727305AbgAaSHZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 31 Jan 2020 13:07:25 -0500
-Received: from mail.kernel.org ([198.145.29.99]:59570 "EHLO mail.kernel.org"
+        id S1727309AbgAaSHa (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 31 Jan 2020 13:07:30 -0500
+Received: from mail.kernel.org ([198.145.29.99]:59596 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726712AbgAaSHY (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 31 Jan 2020 13:07:24 -0500
+        id S1726712AbgAaSHa (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 31 Jan 2020 13:07:30 -0500
 Received: from cakuba.hsd1.ca.comcast.net (unknown [199.201.64.133])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 042EF20663;
-        Fri, 31 Jan 2020 18:07:23 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id BCFA120663;
+        Fri, 31 Jan 2020 18:07:28 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1580494044;
-        bh=nOVDYQjNjuvbf1Tubb+KPDDDk28bUGenhjO8JBJWkW4=;
+        s=default; t=1580494049;
+        bh=+fwQTU+wexC5mIAGR24Z0A2XyyHUtHvLNlgesjKHN3Q=;
         h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=y0JWVWthsGggyskDi83k1xir/4PjD26GZ86B9r9YgOIMOBDtPpNdzUXvTKBApMyy/
-         llN72LEbvP1Iv6ygfYqiuUpjsqx/JPtI3f/OVGQQsR5pxDKjDO5eqBPhzCNj4E6fjM
-         Syu20CG4eUpD3elVO3ap0gkXX3l3CVvkOSuqAD0Q=
-Date:   Fri, 31 Jan 2020 10:07:23 -0800
+        b=G29WbTEPiCpj7HHSmOLuARsf7EC6/MGlbl8LhQQUT7svu/STFTTQUn19xbWHmvVJU
+         D1M63qYW1Y2HUYLZfGXdgctSHKlSskrp1eknF8GOWc+d/MgZo7m3B6u6B8Ru46QZXx
+         gK7aKFahv17CCygufMPwMR0xFe8icVATrtSyTJIU=
+Date:   Fri, 31 Jan 2020 10:07:27 -0800
 From:   Jakub Kicinski <kuba@kernel.org>
 To:     Jacob Keller <jacob.e.keller@intel.com>
 Cc:     netdev@vger.kernel.org, jiri@resnulli.us, valex@mellanox.com,
         linyunsheng@huawei.com, lihong.yang@intel.com
-Subject: Re: [PATCH 08/15] devlink: add devres managed devlinkm_alloc and
- devlinkm_free
-Message-ID: <20200131100723.0d6893fa@cakuba.hsd1.ca.comcast.net>
-In-Reply-To: <20200130225913.1671982-9-jacob.e.keller@intel.com>
+Subject: Re: [PATCH 10/15] ice: add basic handler for devlink .info_get
+Message-ID: <20200131100727.1e098f49@cakuba.hsd1.ca.comcast.net>
+In-Reply-To: <20200130225913.1671982-11-jacob.e.keller@intel.com>
 References: <20200130225913.1671982-1-jacob.e.keller@intel.com>
-        <20200130225913.1671982-9-jacob.e.keller@intel.com>
+        <20200130225913.1671982-11-jacob.e.keller@intel.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
@@ -42,26 +41,181 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 30 Jan 2020 14:59:03 -0800, Jacob Keller wrote:
-> Add devres managed allocation functions for allocating a devlink
-> instance. These can be used by device drivers based on the devres
-> framework which want to allocate a devlink instance.
+On Thu, 30 Jan 2020 14:59:05 -0800, Jacob Keller wrote:
+> The devlink .info_get callback allows the driver to report detailed
+> version information. The following devlink versions are reported with
+> this initial implementation:
 > 
-> For simplicity and to reduce churn in the devlink core code, the devres
-> management works by creating a node with a double-pointer. The devlink
-> instance is allocated using the normal devlink_alloc and released using
-> the normal devlink_free.
-> 
-> An alternative solution where the raw memory for devlink is allocated
-> directly via devres_alloc could be done. Such an implementation would
-> either significantly increase code duplication or code churn in order to
-> refactor the setup from the allocation.
-> 
-> The new devres managed allocation function will be used by the ice
-> driver in a following change to implement initial devlink support.
+>  "driver.version" -> device driver version, to match ethtool -i version
+>  "fw" -> firmware version as reported by ethtool -i firmware-version
+>  "fw.mgmt" -> The version of the firmware that controls PHY, link, etc
+>  "fw.api" -> API version of interface exposed over the AdminQ
+>  "fw.build" -> Unique build identifier for the management firmware
+>  "nvm.version" -> Version of the NVM parameters section
+>  "nvm.oem" -> OEM-specific version information
+>  "nvm.eetrack" -> Unique identifier for the combined NVM image
+
+These all need documentation.
+
+> With this, devlink can now report at least the same information as
+> reported by the older ethtool interface. Each section of the
+> "firmware-version" is also reported independently so that it is easier
+> to understand the meaning.
 > 
 > Signed-off-by: Jacob Keller <jacob.e.keller@intel.com>
+> ---
+>  drivers/net/ethernet/intel/ice/ice_devlink.c | 103 +++++++++++++++++++
+>  1 file changed, 103 insertions(+)
+> 
+> diff --git a/drivers/net/ethernet/intel/ice/ice_devlink.c b/drivers/net/ethernet/intel/ice/ice_devlink.c
+> index 0b0f936122de..493c2c2986f2 100644
+> --- a/drivers/net/ethernet/intel/ice/ice_devlink.c
+> +++ b/drivers/net/ethernet/intel/ice/ice_devlink.c
+> @@ -2,9 +2,112 @@
+>  /* Copyright (c) 2019, Intel Corporation. */
+>  
+>  #include "ice.h"
+> +#include "ice_lib.h"
+>  #include "ice_devlink.h"
+>  
+> +/**
+> + * ice_devlink_info_get - .info_get devlink handler
+> + * @devlink: devlink instance structure
+> + * @req: the devlink info request
+> + * @extack: extended netdev ack structure
+> + *
+> + * Callback for the devlink .info_get operation. Reports information about the
+> + * device.
+> + *
+> + * @returns zero on success or an error code on failure.
+> + */
+> +static int ice_devlink_info_get(struct devlink *devlink,
+> +				struct devlink_info_req *req,
+> +				struct netlink_ext_ack *extack)
+> +{
+> +	u8 oem_ver, oem_patch, nvm_ver_hi, nvm_ver_lo;
+> +	struct ice_pf *pf = devlink_priv(devlink);
+> +	struct ice_hw *hw = &pf->hw;
+> +	u16 oem_build;
+> +	char buf[32]; /* TODO: size this properly */
+> +	int err;
+> +
+> +	ice_get_nvm_version(hw, &oem_ver, &oem_build, &oem_patch, &nvm_ver_hi,
+> +			    &nvm_ver_lo);
+> +
+> +	err = devlink_info_driver_name_put(req, KBUILD_MODNAME);
+> +	if (err) {
+> +		NL_SET_ERR_MSG_MOD(extack, "Unable to set driver name");
+> +		return err;
+> +	}
+> +
+> +	/* driver.version */
+> +	err = devlink_info_version_fixed_put(req, "driver.version",
+> +					     ice_drv_ver);
 
-Ugh. The devlink instance sharing/aliasing is something that needs to
-be solved at some point. But the problem likely exists elsewhere
-already. Do you have global ASIC resources?
+Hard no. You should really try to follow the discussions on netdev.
+
+> +	if (err) {
+> +		NL_SET_ERR_MSG_MOD(extack, "Unable to set driver version");
+> +		return err;
+> +	}
+> +
+> +	/* fw (match exact output of ethtool -i firmware-version) */
+
+That's generally a bad idea, the whole point of info was that people
+were stuffing multiple things into ethtool -i fw. Is this only one item
+referring to one single entity?
+
+> +	err = devlink_info_version_running_put(req,
+> +					       DEVLINK_INFO_VERSION_GENERIC_FW,
+> +					       ice_nvm_version_str(hw));
+> +	if (err) {
+> +		NL_SET_ERR_MSG_MOD(extack, "Unable to set combined fw version");
+> +		return err;
+> +	}
+> +
+> +	/* fw.mgmt (DEVLINK_INFO_VERSION_GENERIC_FW_MGMT) */
+> +	snprintf(buf, sizeof(buf), "%u.%u.%u", hw->fw_maj_ver, hw->fw_min_ver,
+> +		 hw->fw_patch);
+> +	err = devlink_info_version_running_put(req, "fw.mgmt", buf);
+
+why not use the define?
+
+> +	if (err) {
+> +		NL_SET_ERR_MSG_MOD(extack, "Unable to set fw version data");
+> +		return err;
+> +	}
+> +
+> +	/* fw.api */
+> +	snprintf(buf, sizeof(buf), "%u.%u", hw->api_maj_ver,
+> +		 hw->api_min_ver);
+> +	err = devlink_info_version_running_put(req, "fw.api", buf);
+
+Is this the API version of the management FW? I'd go for "fw.mgmt.api".
+Datapath, RoCE and other bits may have APIs which evolve independently
+for complex chips.
+
+> +	if (err) {
+> +		NL_SET_ERR_MSG_MOD(extack, "Unable to set fw API data");
+> +		return err;
+> +	}
+> +
+> +	/* fw.build */
+> +	snprintf(buf, sizeof(buf), "%08x", hw->fw_build);
+> +	err = devlink_info_version_running_put(req, "fw.build", buf);
+
+Huh? Why is this not part of the version?
+
+Maybe you want to use fw.bundle? Naming is hard, at Netronome added
+that as a unique identifier for the FW in its entirety / the entire
+build as it is passed from Eng to QA and released externally.
+
+> +	if (err) {
+> +		NL_SET_ERR_MSG_MOD(extack, "Unable to set fw build data");
+> +		return err;
+> +	}
+> +
+> +	/* nvm.version */
+> +	snprintf(buf, sizeof(buf), "%x.%02x", nvm_ver_hi, nvm_ver_lo);
+> +	err = devlink_info_version_running_put(req, "nvm.version", buf);
+
+Please us the psid 
+
+> +	if (err) {
+> +		NL_SET_ERR_MSG_MOD(extack, "Unable to set NVM version data");
+> +		return err;
+> +	}
+> +
+> +	/* nvm.oem */
+> +	snprintf(buf, sizeof(buf), "%u.%u.%u", oem_ver, oem_build, oem_patch);
+> +	err = devlink_info_version_running_put(req, "nvm.oem", buf);
+
+This looks like free form catch all. Let's not.
+
+> +	if (err) {
+> +		NL_SET_ERR_MSG_MOD(extack, "Unable to set oem version data");
+> +		return err;
+> +	}
+> +
+> +	/* nvm.eetrack */
+> +	snprintf(buf, sizeof(buf), "0x%0X", hw->nvm.eetrack);
+
+Mm. maybe this is bundle? Or psid. Hm. Please explain what this is and
+what it's supposed to be used for. I should probably add more docs to
+the existing items :S
+
+> +	err = devlink_info_version_running_put(req, "nvm.eetrack", buf);
+> +	if (err) {
+> +		NL_SET_ERR_MSG_MOD(extack, "Unable to set NVM eetrack data");
+> +		return err;
+> +	}
+> +
+> +	return 0;
+> +}
+> +
+>  const struct devlink_ops ice_devlink_ops = {
+> +	.info_get = ice_devlink_info_get,
+>  };
+>  
+>  /**
+
