@@ -2,95 +2,102 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 8218214E8F9
-	for <lists+netdev@lfdr.de>; Fri, 31 Jan 2020 07:56:53 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id CE13C14E8FF
+	for <lists+netdev@lfdr.de>; Fri, 31 Jan 2020 07:57:16 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727525AbgAaG4t (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 31 Jan 2020 01:56:49 -0500
-Received: from mail-lf1-f65.google.com ([209.85.167.65]:44901 "EHLO
-        mail-lf1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726127AbgAaG4s (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 31 Jan 2020 01:56:48 -0500
-Received: by mail-lf1-f65.google.com with SMTP id v201so4061144lfa.11
-        for <netdev@vger.kernel.org>; Thu, 30 Jan 2020 22:56:47 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=dgHAL/b3H25F9Kmx9hlQ4Nh6RfK5rJn2yUGqAi/ncBk=;
-        b=a2IsS0zknbBg6CdNwWDJU3HFktms+9xOSGaJYNih2A7T0dkdkmQSW46HNV5vlRfcRE
-         Tt+P9JVFwm97WNuzIDc9VyVjDcvJZw8sKRZRasohvFcNu9EirYfOBMsPIyARoDFcfzut
-         kdV1UKg7/Zw58zW6MslJBTrJDbp+EHsQinJiu7LvnJNXH4hoIKjQo75tSK1ByQ6NFtr2
-         rJZwCzByEbVsC5SdoHfx+olqnkQ8xTx5eyQpT+dsHlK34cPWomM7MVwkXfGQWnKiwv/0
-         kVyqfbXhr8LKPjKuSwtvhkvA+qnznL6sXuH+6f2KQKhyYT3l5OhnDhmUlx/eMnIU5KfK
-         6Upw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=dgHAL/b3H25F9Kmx9hlQ4Nh6RfK5rJn2yUGqAi/ncBk=;
-        b=dTwr8ITkd5EGLwub2FHIlKMxdsZPPVVpHKCvkxQ0dsXQzmyCI3lssosAMQUw2cQhS+
-         uDnf6MiF1qLbEmx2DjUJ0WJLWl7c2kXqhGhl8lSTsoYgFiw3fktJ3lu+axQ6JEi7TNF7
-         4kDyv5ZSQ52gDtsax+Gyhng0M+Sa6ODXOSI9TSDqrJlfttLA1qOSdm13BdxQyTW1oNxl
-         pDFDMzNgsGxbB7zMlG/fzN7FTfBg9umd+M5eFhh5aU75JHCOPG+MuRo8eTsoQT/uvQEi
-         G4LRYSBsxgAce0yPlitavhXqAtOPECsmGGc31g0MvlI4DOmKRBd40vCAi0ohbJ9LtMls
-         ZQTw==
-X-Gm-Message-State: APjAAAVcBKO+V35tsAby985cM21gFL3usMyf0YZlYFk24MUrTgXwKfgZ
-        +03UmAfXgAKo/esTpyunQ8iqAnTCNBzFzEqg3M85yXOz
-X-Google-Smtp-Source: APXvYqyNb9nbs8PHwV1ohRbIuBuzDt7Zpt4fevnU1NBTFfxg6RhKCQOnsFSuMN6BZtFGYWYiuwSDZVzHKu/LzdV0New=
-X-Received: by 2002:ac2:5509:: with SMTP id j9mr4595589lfk.135.1580453806958;
- Thu, 30 Jan 2020 22:56:46 -0800 (PST)
+        id S1728103AbgAaG5P (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 31 Jan 2020 01:57:15 -0500
+Received: from userp2130.oracle.com ([156.151.31.86]:43546 "EHLO
+        userp2130.oracle.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726127AbgAaG5O (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 31 Jan 2020 01:57:14 -0500
+Received: from pps.filterd (userp2130.oracle.com [127.0.0.1])
+        by userp2130.oracle.com (8.16.0.27/8.16.0.27) with SMTP id 00V6sLVf081667;
+        Fri, 31 Jan 2020 06:57:00 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=date : from : to : cc
+ : subject : message-id : mime-version : content-type; s=corp-2019-08-05;
+ bh=tiB4iq2Q8i2SRPr5AGcPm2GpvYmtOgewas625ubrIEk=;
+ b=RpxuJWwR6mcIF3f/8LYbzt0xCyuxrP28iIObRiNxaPOIMhVCKgHq2PG9hQtarfeFrxWV
+ oSGJ6UF+gwiav5ES1sQX6pGRnVWifn8ULUCeMgn/u5kylg91sKt7Ja3Qphx5ZkyXO5/H
+ ch+7c/xODwYZgIYrce2fbpQ7325YylLQdcfm+QRIqar4DtMLDcEhZMMuGHFmG+U5vps2
+ 0kI7PmEOoNDHRAJy//guCcoSSQWwxisPtnNP64OjylUgJC0LU4t2NhUlziVqErZsCfxP
+ 7eNQUydZY5eovz7YgJyHa+OfENndryd9vWZlYB0iC0WMG2fZOs+AKDyK4ONiKvxNcMlt rQ== 
+Received: from userp3020.oracle.com (userp3020.oracle.com [156.151.31.79])
+        by userp2130.oracle.com with ESMTP id 2xrd3urfuh-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Fri, 31 Jan 2020 06:57:00 +0000
+Received: from pps.filterd (userp3020.oracle.com [127.0.0.1])
+        by userp3020.oracle.com (8.16.0.27/8.16.0.27) with SMTP id 00V6rarj118647;
+        Fri, 31 Jan 2020 06:57:00 GMT
+Received: from aserv0122.oracle.com (aserv0122.oracle.com [141.146.126.236])
+        by userp3020.oracle.com with ESMTP id 2xva6pwdqt-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Fri, 31 Jan 2020 06:57:00 +0000
+Received: from abhmp0020.oracle.com (abhmp0020.oracle.com [141.146.116.26])
+        by aserv0122.oracle.com (8.14.4/8.14.4) with ESMTP id 00V6uuJ5015354;
+        Fri, 31 Jan 2020 06:56:57 GMT
+Received: from kili.mountain (/129.205.23.165)
+        by default (Oracle Beehive Gateway v4.0)
+        with ESMTP ; Thu, 30 Jan 2020 22:56:56 -0800
+Date:   Fri, 31 Jan 2020 09:56:47 +0300
+From:   Dan Carpenter <dan.carpenter@oracle.com>
+To:     Jamal Hadi Salim <jhs@mojatatu.com>
+Cc:     Cong Wang <xiyou.wangcong@gmail.com>,
+        Jiri Pirko <jiri@resnulli.us>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Mohit Bhasi <mohitbhasi1998@gmail.com>,
+        "Mohit P. Tahiliani" <tahiliani@nitk.edu.in>,
+        "V. Saicharan" <vsaicharan1998@gmail.com>,
+        Gautam Ramakrishnan <gautamramk@gmail.com>,
+        netdev@vger.kernel.org, kernel-janitors@vger.kernel.org
+Subject: [PATCH net] net: sched: prevent a use after free
+Message-ID: <20200131065647.joonbg3wzcw26x3b@kili.mountain>
 MIME-Version: 1.0
-References: <20200127142957.1177-1-ap420073@gmail.com> <20200127065755.12cf7eb6@cakuba>
- <CAMArcTV9bt7SEo2010JBUj3DQAakFmkHD3hWTiMj-0kW+RVXDQ@mail.gmail.com> <20200130094459.22649bb8@cakuba>
-In-Reply-To: <20200130094459.22649bb8@cakuba>
-From:   Taehee Yoo <ap420073@gmail.com>
-Date:   Fri, 31 Jan 2020 15:56:35 +0900
-Message-ID: <CAMArcTXoA8=r0ARzToDhHgyVMco2EP-mE7Wmn2XVjbtZ55sCKg@mail.gmail.com>
-Subject: Re: [PATCH net v2 1/6] netdevsim: fix race conditions in netdevsim operations
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     David Miller <davem@davemloft.net>, Netdev <netdev@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+X-Mailer: git-send-email haha only kidding
+User-Agent: NeoMutt/20170113 (1.7.2)
+X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9516 signatures=668685
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 suspectscore=0 malwarescore=0
+ phishscore=0 bulkscore=0 spamscore=0 mlxscore=0 mlxlogscore=896
+ adultscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.0.1-1911140001 definitions=main-2001310061
+X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9516 signatures=668685
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 priorityscore=1501 malwarescore=0
+ suspectscore=0 phishscore=0 bulkscore=0 spamscore=0 clxscore=1011
+ lowpriorityscore=0 mlxscore=0 impostorscore=0 mlxlogscore=960 adultscore=0
+ classifier=spam adjust=0 reason=mlx scancount=1 engine=8.0.1-1911140001
+ definitions=main-2001310061
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, 31 Jan 2020 at 02:45, Jakub Kicinski <kuba@kernel.org> wrote:
->
+The code calls kfree_skb(skb); and then re-uses "skb" on the next line.
+Let's re-order these lines to solve the problem.
 
-Hi Jakub,
+Fixes: ec97ecf1ebe4 ("net: sched: add Flow Queue PIE packet scheduler")
+Signed-off-by: Dan Carpenter <dan.carpenter@oracle.com>
+---
+ net/sched/sch_fq_pie.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-> On Fri, 31 Jan 2020 00:09:43 +0900, Taehee Yoo wrote:
-> > > > @@ -99,6 +100,8 @@ new_port_store(struct device *dev, struct device_attribute *attr,
-> > > >       unsigned int port_index;
-> > > >       int ret;
-> > > >
-> > > > +     if (!nsim_bus_dev->init)
-> > > > +             return -EBUSY;
-> > >
-> > > I think we should use the acquire/release semantics on those variables.
-> > > The init should be smp_store_release() and the read in ops should use
-> > > smp_load_acquire().
-> >
-> > Okay, I will use a barrier for the 'init' variable.
-> > Should a barrier be used for 'enable' variable too?
-> > Although this value is protected by nsim_bus_dev_list_lock,
-> > I didn't use the lock for this value in the nsim_bus_init()
-> > because I thought it's enough.
->
-> To be clear I think the code as you wrote it would behave correctly
-> (it's reasonable to expect that the call to driver_register() implies
-> a barrier).
->
-> > How do you think about this? Should lock or barrier is needed?
->
-> IMO having both of the flag variables have the load/store semantics
-> (that's both 'init' and 'enable') is just less error prone and easier
-> to understand.
->
-> And then the locks can go back to only protecting the lists, I think.
+diff --git a/net/sched/sch_fq_pie.c b/net/sched/sch_fq_pie.c
+index bbd0dea6b6b9..78472e0773e9 100644
+--- a/net/sched/sch_fq_pie.c
++++ b/net/sched/sch_fq_pie.c
+@@ -349,9 +349,9 @@ static int fq_pie_change(struct Qdisc *sch, struct nlattr *opt,
+ 	while (sch->q.qlen > sch->limit) {
+ 		struct sk_buff *skb = fq_pie_qdisc_dequeue(sch);
+ 
+-		kfree_skb(skb);
+ 		len_dropped += qdisc_pkt_len(skb);
+ 		num_dropped += 1;
++		kfree_skb(skb);
+ 	}
+ 	qdisc_tree_reduce_backlog(sch, num_dropped, len_dropped);
+ 
+-- 
+2.11.0
 
-I will try to test it then send a v3 patch.
-Thank you!
-Taehee Yoo
