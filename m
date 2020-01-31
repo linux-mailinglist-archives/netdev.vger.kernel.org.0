@@ -2,82 +2,84 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id B1E3414F203
-	for <lists+netdev@lfdr.de>; Fri, 31 Jan 2020 19:17:01 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id EE68D14F213
+	for <lists+netdev@lfdr.de>; Fri, 31 Jan 2020 19:22:55 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726023AbgAaSRA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 31 Jan 2020 13:17:00 -0500
-Received: from mga07.intel.com ([134.134.136.100]:1261 "EHLO mga07.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725268AbgAaSQ7 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 31 Jan 2020 13:16:59 -0500
-X-Amp-Result: SKIPPED(no attachment in message)
-X-Amp-File-Uploaded: False
-Received: from orsmga004.jf.intel.com ([10.7.209.38])
-  by orsmga105.jf.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 31 Jan 2020 10:16:59 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.70,386,1574150400"; 
-   d="scan'208";a="377417417"
-Received: from jekeller-mobl1.amr.corp.intel.com (HELO [134.134.177.86]) ([134.134.177.86])
-  by orsmga004.jf.intel.com with ESMTP; 31 Jan 2020 10:16:59 -0800
-Subject: Re: [PATCH 08/15] devlink: add devres managed devlinkm_alloc and
- devlinkm_free
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     netdev@vger.kernel.org, jiri@resnulli.us, valex@mellanox.com,
-        linyunsheng@huawei.com, lihong.yang@intel.com
-References: <20200130225913.1671982-1-jacob.e.keller@intel.com>
- <20200130225913.1671982-9-jacob.e.keller@intel.com>
- <20200131100718.6c8471f0@cakuba.hsd1.ca.comcast.net>
-From:   Jacob Keller <jacob.e.keller@intel.com>
-Organization: Intel Corporation
-Message-ID: <b7481d02-1635-9855-13a6-97016eaf4004@intel.com>
-Date:   Fri, 31 Jan 2020 10:16:59 -0800
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
- Thunderbird/68.4.2
-MIME-Version: 1.0
-In-Reply-To: <20200131100718.6c8471f0@cakuba.hsd1.ca.comcast.net>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+        id S1726109AbgAaSWy (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 31 Jan 2020 13:22:54 -0500
+Received: from mail-pj1-f73.google.com ([209.85.216.73]:52374 "EHLO
+        mail-pj1-f73.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726055AbgAaSWy (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 31 Jan 2020 13:22:54 -0500
+Received: by mail-pj1-f73.google.com with SMTP id u10so4651565pjy.2
+        for <netdev@vger.kernel.org>; Fri, 31 Jan 2020 10:22:53 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20161025;
+        h=date:message-id:mime-version:subject:from:to:cc;
+        bh=B5wdAHb0BLY3DXPuoldIIOm84h0+abLBP/2I5e4QJEQ=;
+        b=RGJAzLYa3BbK0+2986RaNlSUaYKWMqoofX3uKqlrQZZde7cW0TE24gm7v9RjrwAPMC
+         +ULx0vcWQxVHWxXsfRkt/UKOS2jDFttIM1rM0qX3b6IiOfchS+0YpHYfQNr7IdvEgFZE
+         hsqPdvwQTi8iO6F4r1MWXKrSbtLEvhrVfQBVsQcuYS73dAIPaTT/bCaty8ZU2GLFYv0g
+         C2bh8ZiKCOYq5hXWbEFCGhqgJ7Tu12jinICBG7CY9m7m0O5Z+680BXd7X05Upt+LjKrT
+         GIARDZIYuoJNq37INlDwxpL8rRTjP/QPsHlkeuAdPYofJK3Hu2u9pDlwBQYU13p3stCp
+         HxUQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:message-id:mime-version:subject:from:to:cc;
+        bh=B5wdAHb0BLY3DXPuoldIIOm84h0+abLBP/2I5e4QJEQ=;
+        b=DzRzfz6z+VwYp4B4HhgWcJgtfAzCPaqzBcIuE9/aVKZ9bfvJb8h4N3IoRC1/NSiOYi
+         SVPiwsybkJ1OVR/mOruYpc++69/qZRQv3L63Qk8o3ydnAcJDVYYvvJcy1BmveChRZOEw
+         4y4UcJq8gRqoEdpxfE4k154yI/6ijdriy/T1g/u+fIKbYbx6Yo/Msjmh+Kjux7ydC/hY
+         MWHNYZAxJ52IKFfYTEXTWSoAgU41TADknRjj7wp9ZPE9f7fhAX2D5laXQZonvzaVpQuL
+         f5XP9Hqu4NXraZuprPv5R84H3AJhoMbv2b2XFN0RmZ7SWhVuGuMNNVq6cHKBTOY7hIHL
+         KZNw==
+X-Gm-Message-State: APjAAAUPC0kqQSAQpEGuRXKwFBqghdJMz6dIzbhZ0Xk8Wl7L1ttAlS9r
+        UHgQdqlYfuBvYC4SCJ7GI2C1o9rjXXcFmA==
+X-Google-Smtp-Source: APXvYqy/96yaDfCpFuFJYUo/zTXs1b7zhsPDJ8vIPx16FZCiq3IzFs66LIAnL+q2/g6myqzLINrME485UbRoQA==
+X-Received: by 2002:a63:520a:: with SMTP id g10mr10729404pgb.298.1580494973399;
+ Fri, 31 Jan 2020 10:22:53 -0800 (PST)
+Date:   Fri, 31 Jan 2020 10:22:47 -0800
+Message-Id: <20200131182247.126058-1-edumazet@google.com>
+Mime-Version: 1.0
+X-Mailer: git-send-email 2.25.0.341.g760bfbb309-goog
+Subject: [PATCH net] tcp: clear tp->delivered in tcp_disconnect()
+From:   Eric Dumazet <edumazet@google.com>
+To:     "David S . Miller" <davem@davemloft.net>
+Cc:     netdev <netdev@vger.kernel.org>,
+        Neal Cardwell <ncardwell@google.com>,
+        Eric Dumazet <edumazet@google.com>,
+        Eric Dumazet <eric.dumazet@gmail.com>,
+        Yuchung Cheng <ycheng@google.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 1/31/2020 10:07 AM, Jakub Kicinski wrote:
-> On Thu, 30 Jan 2020 14:59:03 -0800, Jacob Keller wrote:
->> Add devres managed allocation functions for allocating a devlink
->> instance. These can be used by device drivers based on the devres
->> framework which want to allocate a devlink instance.
->>
->> For simplicity and to reduce churn in the devlink core code, the devres
->> management works by creating a node with a double-pointer. The devlink
->> instance is allocated using the normal devlink_alloc and released using
->> the normal devlink_free.
->>
->> An alternative solution where the raw memory for devlink is allocated
->> directly via devres_alloc could be done. Such an implementation would
->> either significantly increase code duplication or code churn in order to
->> refactor the setup from the allocation.
->>
->> The new devres managed allocation function will be used by the ice
->> driver in a following change to implement initial devlink support.
->>
->> Signed-off-by: Jacob Keller <jacob.e.keller@intel.com>
-> 
-> How much are you actually going to gain by doing this given you still
-> have to deal with registering an unregistering all devlink things...
-> 
+tp->delivered needs to be cleared in tcp_disconnect().
 
-So, the main problem is that the ice driver's private PF structure is
-allocated using devm_alloc.. and if we switch to using devlink_alloc
-then that memory is no longer managed by devres and it becomes more
-difficult to manage...
+tcp_disconnect() is rarely used, but it is worth fixing it.
 
-That being said, after looking at exactly how the ice driver uses devres
-and managing things.. Probably not much gain in general. The ice driver
-could implement its own call for this if we still need it.
+Fixes: ddf1af6fa00e ("tcp: new delivery accounting")
+Signed-off-by: Eric Dumazet <edumazet@google.com>
+Cc: Yuchung Cheng <ycheng@google.com>
+Cc: Neal Cardwell <ncardwell@google.com>
+---
+ net/ipv4/tcp.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-In theory the register/unregister of devlink resources could be managed
-by using devres_add_action to handle the teardown.. but that's a fairly
-major refactor to get everything working.
+diff --git a/net/ipv4/tcp.c b/net/ipv4/tcp.c
+index dd57f1e3618160c1e51d6ff54afa984292614e5c..a8ffdfb61f422228d4af1de600b756c9d3894ef5 100644
+--- a/net/ipv4/tcp.c
++++ b/net/ipv4/tcp.c
+@@ -2622,6 +2622,7 @@ int tcp_disconnect(struct sock *sk, int flags)
+ 	tp->snd_cwnd = TCP_INIT_CWND;
+ 	tp->snd_cwnd_cnt = 0;
+ 	tp->window_clamp = 0;
++	tp->delivered = 0;
+ 	tp->delivered_ce = 0;
+ 	tcp_set_ca_state(sk, TCP_CA_Open);
+ 	tp->is_sack_reneg = 0;
+-- 
+2.25.0.341.g760bfbb309-goog
+
