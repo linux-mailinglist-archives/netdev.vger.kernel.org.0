@@ -2,116 +2,77 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 9CD4614EA93
-	for <lists+netdev@lfdr.de>; Fri, 31 Jan 2020 11:23:57 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4130A14EA97
+	for <lists+netdev@lfdr.de>; Fri, 31 Jan 2020 11:26:28 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728341AbgAaKXx convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Fri, 31 Jan 2020 05:23:53 -0500
-Received: from rtits2.realtek.com ([211.75.126.72]:35106 "EHLO
-        rtits2.realtek.com.tw" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728071AbgAaKXx (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 31 Jan 2020 05:23:53 -0500
-Authenticated-By: 
-X-SpamFilter-By: BOX Solutions SpamTrap 5.62 with qID 00VANfqG016275, This message is accepted by code: ctloc85258
-Received: from mail.realtek.com (RTEXMB06.realtek.com.tw[172.21.6.99])
-        by rtits2.realtek.com.tw (8.15.2/2.57/5.78) with ESMTPS id 00VANfqG016275
-        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=NOT);
-        Fri, 31 Jan 2020 18:23:41 +0800
-Received: from RTEXDAG02.realtek.com.tw (172.21.6.101) by
- RTEXMB06.realtek.com.tw (172.21.6.99) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.1779.2; Fri, 31 Jan 2020 18:23:41 +0800
-Received: from RTEXMB04.realtek.com.tw (172.21.6.97) by
- RTEXDAG02.realtek.com.tw (172.21.6.101) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.1779.2; Fri, 31 Jan 2020 18:23:40 +0800
-Received: from RTEXMB04.realtek.com.tw ([fe80::d9c5:a079:495e:b999]) by
- RTEXMB04.realtek.com.tw ([fe80::d9c5:a079:495e:b999%6]) with mapi id
- 15.01.1779.005; Fri, 31 Jan 2020 18:23:40 +0800
-From:   Tony Chuang <yhchuang@realtek.com>
-To:     Nathan Chancellor <natechancellor@gmail.com>,
-        Kalle Valo <kvalo@codeaurora.org>
-CC:     "linux-wireless@vger.kernel.org" <linux-wireless@vger.kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "clang-built-linux@googlegroups.com" 
-        <clang-built-linux@googlegroups.com>
-Subject: RE: [PATCH] rtw88: Initialize ret in rtw_wow_check_fw_status
-Thread-Topic: [PATCH] rtw88: Initialize ret in rtw_wow_check_fw_status
-Thread-Index: AQHV1w0+cQfBiHwgKkKd8alOOCYKsqgEkmQA
-Date:   Fri, 31 Jan 2020 10:23:40 +0000
-Message-ID: <e0fb1ead6dcc4ecc973b3b9b5399ef66@realtek.com>
-References: <20200130013308.16395-1-natechancellor@gmail.com>
-In-Reply-To: <20200130013308.16395-1-natechancellor@gmail.com>
-Accept-Language: zh-TW, en-US
-Content-Language: zh-TW
+        id S1728317AbgAaK00 convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Fri, 31 Jan 2020 05:26:26 -0500
+Received: from eu-smtp-delivery-151.mimecast.com ([146.101.78.151]:23589 "EHLO
+        eu-smtp-delivery-151.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1728071AbgAaK00 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 31 Jan 2020 05:26:26 -0500
+Received: from AcuMS.aculab.com (156.67.243.126 [156.67.243.126]) (Using
+ TLS) by relay.mimecast.com with ESMTP id
+ uk-mta-213-YCgl78x1PKeLx9KdC7yCLA-1; Fri, 31 Jan 2020 10:26:21 +0000
+Received: from AcuMS.Aculab.com (fd9f:af1c:a25b:0:43c:695e:880f:8750) by
+ AcuMS.aculab.com (fd9f:af1c:a25b:0:43c:695e:880f:8750) with Microsoft SMTP
+ Server (TLS) id 15.0.1347.2; Fri, 31 Jan 2020 10:26:21 +0000
+Received: from AcuMS.Aculab.com ([fe80::43c:695e:880f:8750]) by
+ AcuMS.aculab.com ([fe80::43c:695e:880f:8750%12]) with mapi id 15.00.1347.000;
+ Fri, 31 Jan 2020 10:26:21 +0000
+From:   David Laight <David.Laight@ACULAB.COM>
+To:     netdev <netdev@vger.kernel.org>
+Subject: Freeing 'temporary' IPv4 route table entries.
+Thread-Topic: Freeing 'temporary' IPv4 route table entries.
+Thread-Index: AdXXj93DZx0FEI6/TbeS56CZssFH8A==
+Date:   Fri, 31 Jan 2020 10:26:21 +0000
+Message-ID: <bee231ddc34142d2a96bfdc9a6a2f57c@AcuMS.aculab.com>
+Accept-Language: en-GB, en-US
+Content-Language: en-US
 X-MS-Has-Attach: 
 X-MS-TNEF-Correlator: 
-x-originating-ip: [172.21.68.175]
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 8BIT
+x-ms-exchange-transport-fromentityheader: Hosted
+x-originating-ip: [10.202.205.107]
 MIME-Version: 1.0
+X-MC-Unique: YCgl78x1PKeLx9KdC7yCLA-1
+X-Mimecast-Spam-Score: 0
+X-Mimecast-Originator: aculab.com
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8BIT
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Nathan Chancellor
-> Subject: [PATCH] rtw88: Initialize ret in rtw_wow_check_fw_status
-> 
-> Clang warns a few times (trimmed for brevity):
-> 
-> ../drivers/net/wireless/realtek/rtw88/wow.c:295:7: warning: variable
-> 'ret' is used uninitialized whenever 'if' condition is false
-> [-Wsometimes-uninitialized]
-> 
-> Initialize ret to true and change the other assignments to false because
-> it is a boolean value.
-> 
-> Fixes: 44bc17f7f5b3 ("rtw88: support wowlan feature for 8822c")
-> Link: https://github.com/ClangBuiltLinux/linux/issues/850
-> Signed-off-by: Nathan Chancellor <natechancellor@gmail.com>
-> ---
->  drivers/net/wireless/realtek/rtw88/wow.c | 6 +++---
->  1 file changed, 3 insertions(+), 3 deletions(-)
-> 
-> diff --git a/drivers/net/wireless/realtek/rtw88/wow.c
-> b/drivers/net/wireless/realtek/rtw88/wow.c
-> index af5c27e1bb07..5db49802c72c 100644
-> --- a/drivers/net/wireless/realtek/rtw88/wow.c
-> +++ b/drivers/net/wireless/realtek/rtw88/wow.c
-> @@ -283,18 +283,18 @@ static void rtw_wow_rx_dma_start(struct rtw_dev
-> *rtwdev)
-> 
->  static bool rtw_wow_check_fw_status(struct rtw_dev *rtwdev, bool
-> wow_enable)
->  {
-> -	bool ret;
-> +	bool ret = true;
-> 
->  	/* wait 100ms for wow firmware to finish work */
->  	msleep(100);
-> 
->  	if (wow_enable) {
->  		if (!rtw_read8(rtwdev, REG_WOWLAN_WAKE_REASON))
-> -			ret = 0;
-> +			ret = false;
->  	} else {
->  		if (rtw_read32_mask(rtwdev, REG_FE1IMR, BIT_FS_RXDONE) == 0
-> &&
->  		    rtw_read32_mask(rtwdev, REG_RXPKT_NUM,
-> BIT_RW_RELEASE) == 0)
-> -			ret = 0;
-> +			ret = false;
->  	}
-> 
->  	if (ret)
-> --
-> 2.25.0
+If I call sendmsg() on a raw socket (or probably
+an unconnected UDP one) rt_dst_alloc() is called
+in the bowels of ip_route_output_flow() to hold
+the remote address.
 
-NACK.
+Much later __dev_queue_xmit() calls dst_release()
+to delete the 'dst' referenced from the skb.
 
-This patch could lead to incorrect behavior of WOW.
-I will send a new patch to fix it, and change the type to "int".
+Prior to f8864972 it did just that.
+Afterwards the actual delete is 'laundered' through the
+rcu callbacks.
+This is probably ok for dst that are actually attached
+to sockets or tunnels (which aren't freed very often).
+But it leads to horrid long rcu callback sequences
+when a lot of messages are sent.
+(A sample of 1 gave nearly 100 deletes in one go.)
+There is also the additional cost of deferring the free
+(and the extra retpoline etc).
 
-Yan-Hsuan
+ISTM that the dst_alloc() done during a send should
+set a flag so that the 'dst' can be immediately
+freed since it is known that no one can be picking up
+a reference as it is being freed.
+
+Thoughts?
+
+	David
+
+-
+Registered Address Lakeside, Bramley Road, Mount Farm, Milton Keynes, MK1 1PT, UK
+Registration No: 1397386 (Wales)
+
