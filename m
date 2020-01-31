@@ -2,217 +2,126 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 8C02314EAAB
-	for <lists+netdev@lfdr.de>; Fri, 31 Jan 2020 11:35:58 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0651814EB61
+	for <lists+netdev@lfdr.de>; Fri, 31 Jan 2020 12:03:59 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728368AbgAaKfy (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 31 Jan 2020 05:35:54 -0500
-Received: from mail-am6eur05on2047.outbound.protection.outlook.com ([40.107.22.47]:6188
-        "EHLO EUR05-AM6-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1728301AbgAaKfx (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 31 Jan 2020 05:35:53 -0500
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=E5z6U1bbcTQAf2hTnCk5yZStX9c51rYUPDbS1K2uwnKJpUblcslijYX/1OgtD5Kl8a76prqTLcaQY29CdVODlnOjh1HepqT3wAHFwAWS7WMKLLyTyiPF82UqHaGBoPYDQ1td/KNQCKlPSZZMrfvlcqUOG9UF+PFidOAHbcSsmQg5Yzi9RGKnXLU7/vhnYBwuXo/5biY38QnjdPQhSMs0PBkJHfv2kmqS6zzLSulIfn6OAtVaL7X7A4aguMxiDLOnewlV+7ra8nSQG5OQdRm04sJvlFA+SMaxTWjIweW/IiGq6VWtqe44N7EgXzfeAV7ShR6/NdbC4fvaYoJXHECHIQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=QwppSEjk7ee/qM1UU3hToWmDih6IhHafyplqnNuLEs8=;
- b=LzgIQPCfTB9ius7U7Aj0DAoP7ut6MBEEjqlElReimAUm7RJ+QW12y6w3klJJZ4Mn8Z6EzU3mjL82u75cNjFudvHQxZM1K+Qa7lB1BMgwffE9lx0BgPptUN0D1+F6qlsOzgOfWwuuIHfFDgBxtApfA3RyBmjjnpI2vXGckQbJp62cyNkvj2J9Jc/yV3UzegVBPNdpMlerU774hsi5RSMuICSIL1OBrSofW7JTwCWRxbScR5ic5eN1/L11cM/3kPr1S0djkHnkkgGW1WIG6mRv+dnIFGdzZDurt1nLDnveFvkd+MW357/OOI/GYxe8jQQQjpbYeSsV4hIHxc7JJ73evQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
- header.d=nxp.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=QwppSEjk7ee/qM1UU3hToWmDih6IhHafyplqnNuLEs8=;
- b=NZ/KfNPc6Hohu6dt6EO7bnN1/XHsdWDXUvU9X6wKwKGcLgLTrp8C+S+m/gdgP6bAjZjl1oJ/pVNTu6olCtIqi+LaFRTMFNlaVVsA/UwKUPaHcHMxFGpv6N4y25Bgz6KD7Wd+PUYis4TWdxRENMCRGIQjMLt+9trFrX0nftxGvgg=
-Received: from DB8PR04MB7164.eurprd04.prod.outlook.com (52.135.62.23) by
- DB8PR04MB7081.eurprd04.prod.outlook.com (10.141.120.82) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.2686.29; Fri, 31 Jan 2020 10:35:48 +0000
-Received: from DB8PR04MB7164.eurprd04.prod.outlook.com
- ([fe80::dc1f:d30c:afb8:789d]) by DB8PR04MB7164.eurprd04.prod.outlook.com
- ([fe80::dc1f:d30c:afb8:789d%5]) with mapi id 15.20.2665.027; Fri, 31 Jan 2020
- 10:35:48 +0000
-From:   Makarand Pawagi <makarand.pawagi@nxp.com>
-To:     Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>
-CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "linux-arm-kernel@lists.infradead.org" 
-        <linux-arm-kernel@lists.infradead.org>,
-        "linux-acpi@vger.kernel.org" <linux-acpi@vger.kernel.org>,
-        "linux@armlinux.org.uk" <linux@armlinux.org.uk>,
-        "jon@solid-run.com" <jon@solid-run.com>,
-        Cristi Sovaiala <cristian.sovaiala@nxp.com>,
-        Laurentiu Tudor <laurentiu.tudor@nxp.com>,
-        Ioana Ciornei <ioana.ciornei@nxp.com>,
-        Varun Sethi <V.Sethi@nxp.com>,
-        Calvin Johnson <calvin.johnson@nxp.com>,
-        Pankaj Bansal <pankaj.bansal@nxp.com>,
-        "guohanjun@huawei.com" <guohanjun@huawei.com>,
-        "sudeep.holla@arm.com" <sudeep.holla@arm.com>,
-        "rjw@rjwysocki.net" <rjw@rjwysocki.net>,
-        "lenb@kernel.org" <lenb@kernel.org>,
-        "stuyoder@gmail.com" <stuyoder@gmail.com>,
-        "tglx@linutronix.de" <tglx@linutronix.de>,
-        "jason@lakedaemon.net" <jason@lakedaemon.net>,
-        "maz@kernel.org" <maz@kernel.org>,
-        "shameerali.kolothum.thodi@huawei.com" 
-        <shameerali.kolothum.thodi@huawei.com>,
-        "will@kernel.org" <will@kernel.org>,
-        "robin.murphy@arm.com" <robin.murphy@arm.com>,
-        "nleeder@codeaurora.org" <nleeder@codeaurora.org>,
-        Andy Wang <Andy.Wang@arm.com>, Paul Yang <Paul.Yang@arm.com>
-Subject: RE: [EXT] Re: [PATCH] bus: fsl-mc: Add ACPI support for fsl-mc
-Thread-Topic: [EXT] Re: [PATCH] bus: fsl-mc: Add ACPI support for fsl-mc
-Thread-Index: AQHV1bJXocSJjYU2TkeOIM2eKr9F06f/610AgARn+SA=
-Date:   Fri, 31 Jan 2020 10:35:48 +0000
-Message-ID: <DB8PR04MB7164DDF48480956F05886DABEB070@DB8PR04MB7164.eurprd04.prod.outlook.com>
-References: <1580198925-50411-1-git-send-email-makarand.pawagi@nxp.com>
- <20200128110916.GA491@e121166-lin.cambridge.arm.com>
-In-Reply-To: <20200128110916.GA491@e121166-lin.cambridge.arm.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-authentication-results: spf=none (sender IP is )
- smtp.mailfrom=makarand.pawagi@nxp.com; 
-x-originating-ip: [92.121.36.197]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-ht: Tenant
-x-ms-office365-filtering-correlation-id: 08561246-569a-4957-5daf-08d7a6395650
-x-ms-traffictypediagnostic: DB8PR04MB7081:|DB8PR04MB7081:
-x-ms-exchange-transport-forked: True
-x-microsoft-antispam-prvs: <DB8PR04MB70812AF111EF17AF71E31001EB070@DB8PR04MB7081.eurprd04.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:9508;
-x-forefront-prvs: 029976C540
-x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(4636009)(136003)(376002)(39860400002)(346002)(396003)(366004)(189003)(199004)(2906002)(8936002)(7696005)(81156014)(81166006)(8676002)(71200400001)(7416002)(55016002)(54906003)(4326008)(316002)(6506007)(6916009)(186003)(66446008)(26005)(64756008)(86362001)(66946007)(66476007)(76116006)(66556008)(966005)(5660300002)(53546011)(478600001)(9686003)(52536014)(33656002)(44832011);DIR:OUT;SFP:1101;SCL:1;SRVR:DB8PR04MB7081;H:DB8PR04MB7164.eurprd04.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;MX:1;A:1;
-received-spf: None (protection.outlook.com: nxp.com does not designate
- permitted sender hosts)
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: 18mP1OXrqJuUIKBNR/f3R9xu4iGLY/0F6z+BCVISwNLdN9swiIR5hYFKslmjLJYamNrY3V2tchP1AzlQwNzAWjNbM/odVxhbMqHya1M0uGPbtuSFnjZIMGGpZcNkUXiR83Q8MkRbiSwzjeUqP3TV9W5jF1wV4II9OQcxYDSRqRrx4ZdgMwT7fnpB8LX4FTJRR2qrsJssu/X+i0JgveQlDDhbdsSC1rOaOqaTVI459eYGpMNo2ntQ1BS4EyZI3tas7N4EPmq1giH1V1cDdoBqzgsymBRfjhmtwEal1/uYyMuniNRHHluC83XCqXX+xMnndU4Mah6Oh66F6Ti0CpM5VEKg9Z42VuoQpLJQ3+iqNcHejZ7BN6cN54NVpPdAVLEA/Is6pTHCZdPab32JXeHBcBK7cxMPpT3ZB/S7TQFjo/uZYbYCEw938syb4qlMc2ZdNWj0cE6o3kcnZRnVxYOjR3PdFOTvoc33jsbSOjSMVSwQhUEiJxlGoH6Tzit8F9CycO3AJR9M0bcOdoIWgE9NDg==
-x-ms-exchange-antispam-messagedata: /5kqVB6H4PRX5B6BUauFZlfojz4q6NrHYUQTXA+Xor7CaYlSJHS6ibeyVdFXXA6ErZeGxkbaJDIeTJrvsysaAZw9jzzAbAziCFxFmJD2r1Xxzv7UkQhaUeAW6Mfx3UmS2+fAEz3bAFCStVrKBvKfdg==
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+        id S1728402AbgAaLD5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 31 Jan 2020 06:03:57 -0500
+Received: from mail25.static.mailgun.info ([104.130.122.25]:27464 "EHLO
+        mail25.static.mailgun.info" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1728396AbgAaLD5 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 31 Jan 2020 06:03:57 -0500
+DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org; q=dns/txt;
+ s=smtp; t=1580468636; h=Content-Type: MIME-Version: Message-ID:
+ In-Reply-To: Date: References: Subject: Cc: To: From: Sender;
+ bh=rNOUhYWPTelGWLCs3FtWi8wsKS2uU5eRrCt6VpYAPQ0=; b=FuvKaCKb5Ix343TAsrO28+fU15XYvHT34kqDfcBzZ7SLQjlWFl0OWgzc+aghGV11sD1K4mKb
+ PYeeV5sipo5D+Hz3WRobsnRZb6FWOUToaJrFFgET1876vDw4i5XVui9quUnu7FwEF7NhQFCn
+ ygto1wk35t5VBg5SJfgO5ERtCoY=
+X-Mailgun-Sending-Ip: 104.130.122.25
+X-Mailgun-Sid: WyJiZjI2MiIsICJuZXRkZXZAdmdlci5rZXJuZWwub3JnIiwgImJlOWU0YSJd
+Received: from smtp.codeaurora.org (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171])
+ by mxa.mailgun.org with ESMTP id 5e340999.7efdf0508f48-smtp-out-n03;
+ Fri, 31 Jan 2020 11:03:53 -0000 (UTC)
+Received: by smtp.codeaurora.org (Postfix, from userid 1001)
+        id D055BC433A2; Fri, 31 Jan 2020 11:03:53 +0000 (UTC)
+X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
+        aws-us-west-2-caf-mail-1.web.codeaurora.org
+X-Spam-Level: 
+X-Spam-Status: No, score=-1.0 required=2.0 tests=ALL_TRUSTED,SPF_NONE
+        autolearn=unavailable autolearn_force=no version=3.4.0
+Received: from potku.adurom.net (88-114-240-156.elisa-laajakaista.fi [88.114.240.156])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+        (No client certificate requested)
+        (Authenticated sender: kvalo)
+        by smtp.codeaurora.org (Postfix) with ESMTPSA id 57225C433A2;
+        Fri, 31 Jan 2020 11:03:51 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org 57225C433A2
+Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
+Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; spf=none smtp.mailfrom=kvalo@codeaurora.org
+From:   Kalle Valo <kvalo@codeaurora.org>
+To:     Tony Chuang <yhchuang@realtek.com>
+Cc:     Nathan Chancellor <natechancellor@gmail.com>,
+        "linux-wireless\@vger.kernel.org" <linux-wireless@vger.kernel.org>,
+        "netdev\@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-kernel\@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "clang-built-linux\@googlegroups.com" 
+        <clang-built-linux@googlegroups.com>
+Subject: Re: [PATCH] rtw88: Initialize ret in rtw_wow_check_fw_status
+References: <20200130013308.16395-1-natechancellor@gmail.com>
+        <e0fb1ead6dcc4ecc973b3b9b5399ef66@realtek.com>
+Date:   Fri, 31 Jan 2020 13:03:48 +0200
+In-Reply-To: <e0fb1ead6dcc4ecc973b3b9b5399ef66@realtek.com> (Tony Chuang's
+        message of "Fri, 31 Jan 2020 10:23:40 +0000")
+Message-ID: <87mua3c2gb.fsf@kamboji.qca.qualcomm.com>
+User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/24.5 (gnu/linux)
 MIME-Version: 1.0
-X-OriginatorOrg: nxp.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 08561246-569a-4957-5daf-08d7a6395650
-X-MS-Exchange-CrossTenant-originalarrivaltime: 31 Jan 2020 10:35:48.6483
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: XbDxYcCLtRcqlRKSofOnVNLRPaEqaU8K96MAWP04WbLNxpAHhhl/52b7D+soYVhFjMl1bCyNjFrYk/SiCtuDqQ==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DB8PR04MB7081
+Content-Type: text/plain
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> -----Original Message-----
-> From: Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>
-> Sent: Tuesday, January 28, 2020 4:39 PM
-> To: Makarand Pawagi <makarand.pawagi@nxp.com>
-> Cc: netdev@vger.kernel.org; linux-kernel@vger.kernel.org; linux-arm-
-> kernel@lists.infradead.org; linux-acpi@vger.kernel.org; linux@armlinux.or=
-g.uk;
-> jon@solid-run.com; Cristi Sovaiala <cristian.sovaiala@nxp.com>; Laurentiu
-> Tudor <laurentiu.tudor@nxp.com>; Ioana Ciornei <ioana.ciornei@nxp.com>;
-> Varun Sethi <V.Sethi@nxp.com>; Calvin Johnson <calvin.johnson@nxp.com>;
-> Pankaj Bansal <pankaj.bansal@nxp.com>; guohanjun@huawei.com;
-> sudeep.holla@arm.com; rjw@rjwysocki.net; lenb@kernel.org;
-> stuyoder@gmail.com; tglx@linutronix.de; jason@lakedaemon.net;
-> maz@kernel.org; shameerali.kolothum.thodi@huawei.com; will@kernel.org;
-> robin.murphy@arm.com; nleeder@codeaurora.org
-> Subject: [EXT] Re: [PATCH] bus: fsl-mc: Add ACPI support for fsl-mc
->=20
-> Caution: EXT Email
->=20
-> On Tue, Jan 28, 2020 at 01:38:45PM +0530, Makarand Pawagi wrote:
-> > ACPI support is added in the fsl-mc driver. Driver will parse MC DSDT
-> > table to extract memory and other resorces.
-> >
-> > Interrupt (GIC ITS) information will be extracted from MADT table by
-> > drivers/irqchip/irq-gic-v3-its-fsl-mc-msi.c.
-> >
-> > IORT table will be parsed to configure DMA.
-> >
-> > Signed-off-by: Makarand Pawagi <makarand.pawagi@nxp.com>
-> > ---
-> >  drivers/acpi/arm64/iort.c                   | 53 +++++++++++++++++++++
-> >  drivers/bus/fsl-mc/dprc-driver.c            |  3 +-
-> >  drivers/bus/fsl-mc/fsl-mc-bus.c             | 48 +++++++++++++------
-> >  drivers/bus/fsl-mc/fsl-mc-msi.c             | 10 +++-
-> >  drivers/bus/fsl-mc/fsl-mc-private.h         |  4 +-
-> >  drivers/irqchip/irq-gic-v3-its-fsl-mc-msi.c | 71
-> ++++++++++++++++++++++++++++-
-> >  include/linux/acpi_iort.h                   |  5 ++
-> >  7 files changed, 174 insertions(+), 20 deletions(-)
-> >
-> > diff --git a/drivers/acpi/arm64/iort.c b/drivers/acpi/arm64/iort.c
-> > index 33f7198..beb9cd5 100644
-> > --- a/drivers/acpi/arm64/iort.c
-> > +++ b/drivers/acpi/arm64/iort.c
-> > @@ -15,6 +15,7 @@
-> >  #include <linux/kernel.h>
-> >  #include <linux/list.h>
-> >  #include <linux/pci.h>
-> > +#include <linux/fsl/mc.h>
-> >  #include <linux/platform_device.h>
-> >  #include <linux/slab.h>
-> >
-> > @@ -622,6 +623,29 @@ static int iort_dev_find_its_id(struct device
-> > *dev, u32 req_id,  }
-> >
-> >  /**
-> > + * iort_get_fsl_mc_device_domain() - Find MSI domain related to a
-> > +device
-> > + * @dev: The device.
-> > + * @mc_icid: ICID for the fsl_mc device.
-> > + *
-> > + * Returns: the MSI domain for this device, NULL otherwise  */ struct
-> > +irq_domain *iort_get_fsl_mc_device_domain(struct device *dev,
-> > +                                                     u32 mc_icid) {
-> > +     struct fwnode_handle *handle;
-> > +     int its_id;
-> > +
-> > +     if (iort_dev_find_its_id(dev, mc_icid, 0, &its_id))
-> > +             return NULL;
-> > +
-> > +     handle =3D iort_find_domain_token(its_id);
-> > +     if (!handle)
-> > +             return NULL;
-> > +
-> > +     return irq_find_matching_fwnode(handle, DOMAIN_BUS_FSL_MC_MSI);
-> > +}
->=20
-> NAK
->=20
-> I am not willing to take platform specific code in the generic IORT layer=
-.
->=20
-> ACPI on ARM64 works on platforms that comply with SBSA/SBBR guidelines:
->=20
->=20
-> https://developer.arm.com/architectures/platform-design/server-systems
+Tony Chuang <yhchuang@realtek.com> writes:
+
+> From: Nathan Chancellor
+>> Subject: [PATCH] rtw88: Initialize ret in rtw_wow_check_fw_status
+>> 
+>> Clang warns a few times (trimmed for brevity):
+>> 
+>> ../drivers/net/wireless/realtek/rtw88/wow.c:295:7: warning: variable
+>> 'ret' is used uninitialized whenever 'if' condition is false
+>> [-Wsometimes-uninitialized]
+>> 
+>> Initialize ret to true and change the other assignments to false because
+>> it is a boolean value.
+>> 
+>> Fixes: 44bc17f7f5b3 ("rtw88: support wowlan feature for 8822c")
+>> Link: https://github.com/ClangBuiltLinux/linux/issues/850
+>> Signed-off-by: Nathan Chancellor <natechancellor@gmail.com>
+>> ---
+>>  drivers/net/wireless/realtek/rtw88/wow.c | 6 +++---
+>>  1 file changed, 3 insertions(+), 3 deletions(-)
+>> 
+>> diff --git a/drivers/net/wireless/realtek/rtw88/wow.c
+>> b/drivers/net/wireless/realtek/rtw88/wow.c
+>> index af5c27e1bb07..5db49802c72c 100644
+>> --- a/drivers/net/wireless/realtek/rtw88/wow.c
+>> +++ b/drivers/net/wireless/realtek/rtw88/wow.c
+>> @@ -283,18 +283,18 @@ static void rtw_wow_rx_dma_start(struct rtw_dev
+>> *rtwdev)
+>> 
+>>  static bool rtw_wow_check_fw_status(struct rtw_dev *rtwdev, bool
+>> wow_enable)
+>>  {
+>> -	bool ret;
+>> +	bool ret = true;
+>> 
+>>  	/* wait 100ms for wow firmware to finish work */
+>>  	msleep(100);
+>> 
+>>  	if (wow_enable) {
+>>  		if (!rtw_read8(rtwdev, REG_WOWLAN_WAKE_REASON))
+>> -			ret = 0;
+>> +			ret = false;
+>>  	} else {
+>>  		if (rtw_read32_mask(rtwdev, REG_FE1IMR, BIT_FS_RXDONE) == 0
+>> &&
+>>  		    rtw_read32_mask(rtwdev, REG_RXPKT_NUM,
+>> BIT_RW_RELEASE) == 0)
+>> -			ret = 0;
+>> +			ret = false;
+>>  	}
+>> 
+>>  	if (ret)
+>> --
+>> 2.25.0
 >
-> Deviating from those requires butchering ACPI specifications (ie IORT) an=
-d
-> related kernel code which goes totally against what ACPI is meant for on =
-ARM64
-> systems, so there is no upstream pathway for this code I am afraid.
->=20
-Reason of adding this platform specific function in the generic IORT layer =
-is=20
-That iort_get_device_domain() only deals with PCI bus (DOMAIN_BUS_PCI_MSI).
+> NACK.
+>
+> This patch could lead to incorrect behavior of WOW.
+> I will send a new patch to fix it, and change the type to "int".
 
-fsl-mc objects when probed, need to find irq_domain which is associated wit=
-h
-the fsl-mc bus (DOMAIN_BUS_FSL_MC_MSI). It will not be possible to do that
-if we do not add this function because there are no other suitable APIs exp=
-orted
-by IORT layer to do the job.
+Please send it separately so that I can queue it to v5.6.
 
-
-
+-- 
+https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
