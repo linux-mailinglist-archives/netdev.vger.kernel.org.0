@@ -2,95 +2,106 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id BA30514E7BA
-	for <lists+netdev@lfdr.de>; Fri, 31 Jan 2020 04:57:00 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1C86014E807
+	for <lists+netdev@lfdr.de>; Fri, 31 Jan 2020 05:57:22 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727995AbgAaD44 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 30 Jan 2020 22:56:56 -0500
-Received: from bombadil.infradead.org ([198.137.202.133]:36472 "EHLO
-        bombadil.infradead.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727909AbgAaD44 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 30 Jan 2020 22:56:56 -0500
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=bombadil.20170209; h=Content-Transfer-Encoding:
-        Content-Type:In-Reply-To:MIME-Version:Date:Message-ID:From:References:Cc:To:
-        Subject:Sender:Reply-To:Content-ID:Content-Description:Resent-Date:
-        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
-        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-         bh=5AiRNNR3E4corHChDgT2p0fKB/v898YA69onJ2mDDvw=; b=ZT77gvY6Brb8nwO28+W+PgGME
-        1oHALqs7edfA5cAXt2DkOj2ED02hIyZk7cqJZUEQ6g9u6JxtsI2no2cLY87s/Gw8YqdFaGe7neSG3
-        TnzE4fI058xHpmkMFgn4T9ST8cE/wBnMz1TXttpMowzC/81zyT7NbUQTDs6rp5VjWDP34tBDwvi0d
-        4SaOhBuvujCcPwav2o9u7mZZb9KWuycxO2j08+HV/qBzJPjTSlJgoSlyF8xoM+eO3fEq2SeyS3Wfz
-        FvLanvkTO7oNyZKJHaSODqEIHL/RVYgxErYSycYFySL+vareq71eeVKPboLj6qLAvpnhaSsRKFbhj
-        Jp6aKukPQ==;
-Received: from [2601:1c0:6280:3f0:897c:6038:c71d:ecac]
-        by bombadil.infradead.org with esmtpsa (Exim 4.92.3 #3 (Red Hat Linux))
-        id 1ixNQD-0003II-6X; Fri, 31 Jan 2020 03:56:45 +0000
-Subject: Re: [PATCH] vhost: introduce vDPA based backend
-To:     Tiwei Bie <tiwei.bie@intel.com>, mst@redhat.com,
-        jasowang@redhat.com
-Cc:     linux-kernel@vger.kernel.org, kvm@vger.kernel.org,
-        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
-        shahafs@mellanox.com, jgg@mellanox.com, rob.miller@broadcom.com,
-        haotian.wang@sifive.com, eperezma@redhat.com, lulu@redhat.com,
-        parav@mellanox.com, hch@infradead.org, jiri@mellanox.com,
-        hanand@xilinx.com, mhabets@solarflare.com,
-        maxime.coquelin@redhat.com, lingshan.zhu@intel.com,
-        dan.daly@intel.com, cunming.liang@intel.com, zhihong.wang@intel.com
-References: <20200131033651.103534-1-tiwei.bie@intel.com>
-From:   Randy Dunlap <rdunlap@infradead.org>
-Message-ID: <43aeecb4-4c08-df3d-1c1d-699ec4c494bd@infradead.org>
-Date:   Thu, 30 Jan 2020 19:56:43 -0800
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.4.1
+        id S1728070AbgAaE5T (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 30 Jan 2020 23:57:19 -0500
+Received: from userp2120.oracle.com ([156.151.31.85]:40738 "EHLO
+        userp2120.oracle.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727933AbgAaE5T (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 30 Jan 2020 23:57:19 -0500
+Received: from pps.filterd (userp2120.oracle.com [127.0.0.1])
+        by userp2120.oracle.com (8.16.0.27/8.16.0.27) with SMTP id 00V4t9S2169776;
+        Fri, 31 Jan 2020 04:57:10 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=date : from : to : cc
+ : subject : message-id : mime-version : content-type; s=corp-2019-08-05;
+ bh=vhZBZHYwVQzRkRLs8F0bVp2acAD00tQ4dSXfaT080og=;
+ b=qDrw86Zex1TwokPNvN+0PXezdzAZPyaWWLNKVuV+PRjFRyVEQYqwBnZgJ76oyV1TKxSK
+ m4KmMs+1nhgiXbuOp3yAlkHnVAkZ3Z8b6WRMSs7POX4L4+5LPCwTd8ON360Zde6jHoVj
+ zkB2erApNm2mKH6PNSaDTzuOT3/+BExbBJ35RhxorPpi5kzPFkN2A41XwtmRD+Q+aCTM
+ 2AyHX3EdGNBIW+lvkjYdSdQ2Fa/Pq1eOdYYn81JlGJdPZPBnJmnDsh0YwnstoAnF0ety
+ Jq4f3L2DZJYBg4XVNAoHAaod48FAmYEk3vGACbjtIAX2CNA2CmfOZpqy7wkTE0GrCqId Tg== 
+Received: from userp3020.oracle.com (userp3020.oracle.com [156.151.31.79])
+        by userp2120.oracle.com with ESMTP id 2xrearqyj3-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Fri, 31 Jan 2020 04:57:10 +0000
+Received: from pps.filterd (userp3020.oracle.com [127.0.0.1])
+        by userp3020.oracle.com (8.16.0.27/8.16.0.27) with SMTP id 00V4sPgm071523;
+        Fri, 31 Jan 2020 04:57:10 GMT
+Received: from aserv0122.oracle.com (aserv0122.oracle.com [141.146.126.236])
+        by userp3020.oracle.com with ESMTP id 2xva6pnhee-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Fri, 31 Jan 2020 04:57:09 +0000
+Received: from abhmp0013.oracle.com (abhmp0013.oracle.com [141.146.116.19])
+        by aserv0122.oracle.com (8.14.4/8.14.4) with ESMTP id 00V4v8VD009079;
+        Fri, 31 Jan 2020 04:57:08 GMT
+Received: from kili.mountain (/129.205.23.165)
+        by default (Oracle Beehive Gateway v4.0)
+        with ESMTP ; Thu, 30 Jan 2020 20:57:07 -0800
+Date:   Fri, 31 Jan 2020 07:56:59 +0300
+From:   Dan Carpenter <dan.carpenter@oracle.com>
+To:     Jeff Kirsher <jeffrey.t.kirsher@intel.com>,
+        Tony Nguyen <anthony.l.nguyen@intel.com>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Henry Tieman <henry.w.tieman@intel.com>,
+        intel-wired-lan@lists.osuosl.org, netdev@vger.kernel.org,
+        kernel-janitors@vger.kernel.org
+Subject: [PATCH net] ice: Fix a couple off by one bugs
+Message-ID: <20200131045658.ahliv7jvubpwoeru@kili.mountain>
 MIME-Version: 1.0
-In-Reply-To: <20200131033651.103534-1-tiwei.bie@intel.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+X-Mailer: git-send-email haha only kidding
+User-Agent: NeoMutt/20170113 (1.7.2)
+X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9516 signatures=668685
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 suspectscore=2 malwarescore=0
+ phishscore=0 bulkscore=0 spamscore=0 mlxscore=0 mlxlogscore=999
+ adultscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.0.1-1911140001 definitions=main-2001310042
+X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9516 signatures=668685
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 priorityscore=1501 malwarescore=0
+ suspectscore=2 phishscore=0 bulkscore=0 spamscore=0 clxscore=1011
+ lowpriorityscore=0 mlxscore=0 impostorscore=0 mlxlogscore=999 adultscore=0
+ classifier=spam adjust=0 reason=mlx scancount=1 engine=8.0.1-1911140001
+ definitions=main-2001310042
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi,
+The hw->blk[blk]->es.ref_count[] array has hw->blk[blk].es.count
+elements.  It gets allocated in ice_init_hw_tbls().  So the > should be
+>= to prevent accessing one element beyond the end of the array.
 
-On 1/30/20 7:36 PM, Tiwei Bie wrote:
-> diff --git a/drivers/vhost/Kconfig b/drivers/vhost/Kconfig
-> index f21c45aa5e07..13e6a94d0243 100644
-> --- a/drivers/vhost/Kconfig
-> +++ b/drivers/vhost/Kconfig
-> @@ -34,6 +34,18 @@ config VHOST_VSOCK
->  	To compile this driver as a module, choose M here: the module will be called
->  	vhost_vsock.
->  
-> +config VHOST_VDPA
-> +	tristate "Vhost driver for vDPA based backend"
-> +	depends on EVENTFD && VDPA
-> +	select VHOST
-> +	default n
-> +	---help---
-> +	This kernel module can be loaded in host kernel to accelerate
-> +	guest virtio devices with the vDPA based backends.
+Fixes: 2c61054c5fda ("ice: Optimize table usage")
+Signed-off-by: Dan Carpenter <dan.carpenter@oracle.com>
+---
+ drivers/net/ethernet/intel/ice/ice_flex_pipe.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-	                              vDPA-based
-
-> +
-> +	To compile this driver as a module, choose M here: the module
-> +	will be called vhost_vdpa.
-> +
-
-The preferred Kconfig style nowadays is
-(a) use "help" instead of "---help---"
-(b) indent the help text with one tab + 2 spaces
-
-and don't use "default n" since that is already the default.
-
->  config VHOST
->  	tristate
->          depends on VHOST_IOTLB
-
-thanks.
+diff --git a/drivers/net/ethernet/intel/ice/ice_flex_pipe.c b/drivers/net/ethernet/intel/ice/ice_flex_pipe.c
+index 99208946224c..38a7041fe774 100644
+--- a/drivers/net/ethernet/intel/ice/ice_flex_pipe.c
++++ b/drivers/net/ethernet/intel/ice/ice_flex_pipe.c
+@@ -1950,7 +1950,7 @@ ice_free_prof_id(struct ice_hw *hw, enum ice_block blk, u8 prof_id)
+ static enum ice_status
+ ice_prof_inc_ref(struct ice_hw *hw, enum ice_block blk, u8 prof_id)
+ {
+-	if (prof_id > hw->blk[blk].es.count)
++	if (prof_id >= hw->blk[blk].es.count)
+ 		return ICE_ERR_PARAM;
+ 
+ 	hw->blk[blk].es.ref_count[prof_id]++;
+@@ -1991,7 +1991,7 @@ ice_write_es(struct ice_hw *hw, enum ice_block blk, u8 prof_id,
+ static enum ice_status
+ ice_prof_dec_ref(struct ice_hw *hw, enum ice_block blk, u8 prof_id)
+ {
+-	if (prof_id > hw->blk[blk].es.count)
++	if (prof_id >= hw->blk[blk].es.count)
+ 		return ICE_ERR_PARAM;
+ 
+ 	if (hw->blk[blk].es.ref_count[prof_id] > 0) {
 -- 
-~Randy
+2.11.0
 
