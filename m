@@ -2,303 +2,300 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id A910914E96F
-	for <lists+netdev@lfdr.de>; Fri, 31 Jan 2020 09:12:05 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7447F14E972
+	for <lists+netdev@lfdr.de>; Fri, 31 Jan 2020 09:12:28 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728134AbgAaIMD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 31 Jan 2020 03:12:03 -0500
-Received: from mail.katalix.com ([3.9.82.81]:35964 "EHLO mail.katalix.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728099AbgAaIMD (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 31 Jan 2020 03:12:03 -0500
-Received: from [IPv6:2a02:8010:6359:1:f9de:51c5:a310:b61b] (unknown [IPv6:2a02:8010:6359:1:f9de:51c5:a310:b61b])
-        (Authenticated sender: james)
-        by mail.katalix.com (Postfix) with ESMTPSA id 56CE28F80B;
-        Fri, 31 Jan 2020 08:12:01 +0000 (GMT)
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple; d=katalix.com; s=mail;
-        t=1580458321; bh=N+NztQWSEOPgX3hRcjNr52KbnmqYjqa+ofF1CiKnAi8=;
-        h=Subject:To:Cc:References:From:Date:In-Reply-To:From;
-        b=u/6WTAUWtfMYDAXfNrWAcuvfi7wB7qcT8Osy/2r5tFjJGB1XIdDtuyE8foDg57Bk+
-         ovIytkafBsM0bcm06bjy/Oa/fF/pBzD7G5FM0Rrnv6Amr7jLUCerSa3AhpxnRVKfpB
-         RxJOhmyr//GxdfLoVZvdB4STcH9mYEYQ+PGTZyGbOqlTxqmkoN7hgjBR8kqb4rkr3M
-         3Z7nqqfK6aws4F7HJTV8JAkEP1BicxKpTVSDfqlUwib/i1LwcuoBQBQmhb88QrwY8z
-         7w60oRVk6anPhHSylWj5ebcvPIlcFNOpDAWBr4F8eiIcwuDi1v5hiOiXMnd7rh/lNa
-         qR7fratMki/Kw==
-Subject: Re: [PATCH net] l2tp: Allow duplicate session creation with UDP
-To:     Guillaume Nault <gnault@redhat.com>
-Cc:     Tom Parkin <tparkin@katalix.com>,
-        Ridge Kennedy <ridgek@alliedtelesis.co.nz>,
-        netdev <netdev@vger.kernel.org>
-References: <20200117142558.GB2743@linux.home> <20200117191939.GB3405@jackdaw>
- <20200118191336.GC12036@linux.home> <20200120150946.GB4142@jackdaw>
- <20200121163531.GA6469@localhost.localdomain>
- <CAEwTi7Q4JzaCwug3M8Aa9y1yFXm1qBjQvKq3eiw=ekBft9wETw@mail.gmail.com>
- <20200125115702.GB4023@p271.fit.wifi.vutbr.cz>
- <72007ca8-3ad4-62db-1b38-1ecefb82cb20@katalix.com>
- <20200129114419.GA11337@pc-61.home>
- <0d7f9d7e-e13b-8254-6a90-fc08bade3e16@katalix.com>
- <20200130223440.GA28541@pc-61.home>
-From:   James Chapman <jchapman@katalix.com>
-Autocrypt: addr=jchapman@katalix.com; prefer-encrypt=mutual; keydata=
- xsBNBFDmvq0BCACizu6XvQjeWZ1Mnal/oG9AkCs5Rl3GULpnH0mLvPZhU7oKbgx5MHaFDKVJ
- rQTbNEchbLDN6e5+UD98qa4ebvNx1ZkoOoNxxiuMQGWaLojDKBc9x+baW1CPtX55ikq2LwGr
- 0glmtUF6Aolpw6GzDrzZEqH+Nb+L3hNTLBfVP+D1scd4R7w2Nw+BSQXPQYjnOEBDDq4fSWoI
- Cm2E18s3bOHDT9a4ZuB9xLS8ZuYGW6p2SMPFHQb09G82yidgxRIbKsJuOdRTIrQD/Z3mEuT/
- 3iZsUFEcUN0T/YBN3a3i0P1uIad7XfdHy95oJTAMyrxnJlnAX3F7YGs80rnrKBLZ8rFfABEB
- AAHNJEphbWVzIENoYXBtYW4gPGpjaGFwbWFuQGthdGFsaXguY29tPsLAeAQTAQIAIgUCUOa+
- rQIbIwYLCQgHAwIGFQgCCQoLBBYCAwECHgECF4AACgkQINzVgFp/OkBr2gf7BA4jmtvUOGOO
- JFsj1fDmbAzyE6Q79H6qnkgYm7QNEw7o+5r7EjaUwsh0w13lNtKNS8g7ZWkiBmSOguJueKph
- GCdyY/KOHZ7NoJw39dTGVZrvJmyLDn/CQN0saRSJZXWtV31ccjfpJGQEn9Gb0Xci0KjrlH1A
- cqxzjwTmBUr4S2EHIzCcini1KTtjbtsE+dKP4zqR/T52SXVoYvqMmJOhUhXh62C0mu8FoDM0
- iFDEy4B0LcGAJt6zXy+YCqz7dOwhZBB4QX4F1N2BLF3Yd1pv8wBBZE7w70ds7rD7pnIaxXEK
- D6yCGrsZrdqAJfAgYL1lqkNffZ6uOSQPFOPod9UiZM7ATQRQ5r6tAQgAyROh3s0PyPx2L2Fb
- jC1mMi4cZSCpeX3zM9aM4aU8P16EDfzBgGv/Sme3JcrYSzIAJqxCvKpR+HoKhPk34HUR/AOk
- 16pP3lU0rt6lKel2spD1gpMuCWjAaFs+dPyUAw13py4Y5Ej2ww38iKujHyT586U6skk9xixK
- 1aHmGJx7IqqRXHgjb6ikUlx4PJdAUn2duqasQ8axjykIVK5xGwXnva/pnVprPSIKrydNmXUq
- BIDtFQ4Qz1PQVvK93KeCVQpxxisYNFRQ5TL6PtgVtK8uunABFdsRqlsw1Ob0+mD5fidITCIJ
- mYOL8K74RYU4LfhspS4JwT8nmKuJmJVZ5DjY2wARAQABwsBfBBgBAgAJBQJQ5r6tAhsMAAoJ
- ECDc1YBafzpA9CEH/jJ8Ye73Vgm38iMsxNYJ9Do9JvVJzq7TEduqWzAFew8Ft0F9tZAiY0J3
- U2i4vlVWK8Kbnh+44VAKXYzaddLXAxOcZ8YYy+sVfeVoJs3lAH+SuRwt0EplHWvCK5AkUhUN
- jjIvsQoNBVUP3AcswIqNOrtSkbuUkevNMyPtd0GLS9HVOW0e+7nFce7Ow9ahKA3iGg5Re9rD
- UlDluVylCCNnUD8Wxgve4K+thRL9T7kxkr7aX7WJ7A4a8ky+r3Daf7OhGN9S/Z/GMSs0E+1P
- Qm7kZ2e0J6PSfzy9xDtoRXRNigtN2o8DHf/quwckT5T6Z6WiKEaIKdgaXZVhphENThl7lp8=
-Organization: Katalix Systems Ltd
-Message-ID: <95e86df4-0fff-5f41-8556-eeaede23340d@katalix.com>
-Date:   Fri, 31 Jan 2020 08:12:01 +0000
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.4.1
+        id S1728159AbgAaIMY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 31 Jan 2020 03:12:24 -0500
+Received: from mail-pf1-f194.google.com ([209.85.210.194]:34309 "EHLO
+        mail-pf1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728099AbgAaIMY (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 31 Jan 2020 03:12:24 -0500
+Received: by mail-pf1-f194.google.com with SMTP id i6so2948145pfc.1;
+        Fri, 31 Jan 2020 00:12:23 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=9La4XRYOPIW+wBytP9lnaX+NFvdLotLa6kVZ3qcVyN4=;
+        b=J7cmKmSHNC6TnmiPZtogNOgiLc0g+IWXInr212XaYOWskNcgHZK6hp8W0xWct1wxxZ
+         SsphLkZUO7WOYR5VsPzDCEgr6HWfyyhnW7D6RbD/ZYo8BTj3XDHzKJ63hEYzNL4BsnsV
+         Y0h5PEvsIDkPRiZUXG04bVrlP1EbUwCzlhoP60EDJ+HFFi7GvRqup3eUacSNzgLaIj5Z
+         exQLesOcBySbo1al2DKe25aE2H9NJsrDj9TxIQpt74ChaYE8xy5+VrWVDzcdgEUnDLdM
+         efUvkYpOWg3djQXYsBu45XGHmOsZC29kzAIC2lwd1u5zCE47qgdsFscV9oQeQOFsStlW
+         fe0A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=9La4XRYOPIW+wBytP9lnaX+NFvdLotLa6kVZ3qcVyN4=;
+        b=l7q1zStbKctD4gr4P+sKzNBXjMNsj5laGam08Aqxyj0mqw8gvd69AJP4Jxl+DpIKmE
+         24u1exjHTUNyBt8l5buO1PF9OiNwK14oYOXi8DpkyO1uuesnb9NwpufRtglZ7XKUqjxv
+         eSgjlm7wOl+Sst3Ms//BX4AVAZjCTuWbZeZqsg9M2UYJP1Sfj9NkVEI6eOZ21fSU0RqF
+         1Ft2pjbS8NvTgfbtkZNxkaVD2re3kAnWL3gd4DFKcOloGw89NpCA6y0IxrbVgbz39Gp8
+         CLxZcBkoTLYVFzGwtAXnnBUC945N49ZrcEMp+4CtzfbsWW7EeOupYic+8vXKB5/iifbh
+         GapA==
+X-Gm-Message-State: APjAAAXiAhwSXgp04K/V+TslzAB2nSDyC8lmvosZWQx9LhMZ9hblgDY9
+        Bosl7qpgiHUT95JQpPAkJyRh23/8/emjbbRNeW8=
+X-Google-Smtp-Source: APXvYqw9xBw1IUz5duiGU37X5OkFQjh1LCDiOddMyWxVrEghnCJDNRAKQ4R2Bwf7gCgDFODfLGFCu6/0tFc2bCI/vqA=
+X-Received: by 2002:a63:5a23:: with SMTP id o35mr8986507pgb.4.1580458342892;
+ Fri, 31 Jan 2020 00:12:22 -0800 (PST)
 MIME-Version: 1.0
-In-Reply-To: <20200130223440.GA28541@pc-61.home>
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
-Content-Language: en-US
+References: <20200131045953.wbj66jkvijnmf5s2@kili.mountain>
+In-Reply-To: <20200131045953.wbj66jkvijnmf5s2@kili.mountain>
+From:   Andy Shevchenko <andy.shevchenko@gmail.com>
+Date:   Fri, 31 Jan 2020 10:12:11 +0200
+Message-ID: <CAHp75Vd_CNFx8xT9yO9LA=jKjT_xnc3XotUJx4jNFKaq0bpHsg@mail.gmail.com>
+Subject: Re: [PATCH net] device property: change device_get_phy_mode() to
+ prevent signedess bugs
+To:     Dan Carpenter <dan.carpenter@oracle.com>
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Ajay Gupta <ajayg@nvidia.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        "Rafael J. Wysocki" <rafael@kernel.org>,
+        Iyappan Subramanian <iyappan@os.amperecomputing.com>,
+        Keyur Chudgar <keyur@os.amperecomputing.com>,
+        Quan Nguyen <quan@os.amperecomputing.com>,
+        Steve Glendinning <steve.glendinning@shawell.net>,
+        Jassi Brar <jaswinder.singh@linaro.org>,
+        Ilias Apalodimas <ilias.apalodimas@linaro.org>,
+        Giuseppe Cavallaro <peppe.cavallaro@st.com>,
+        Alexandre Torgue <alexandre.torgue@st.com>,
+        Jose Abreu <joabreu@synopsys.com>,
+        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+        Dmitry Torokhov <dmitry.torokhov@gmail.com>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Sakari Ailus <sakari.ailus@linux.intel.com>,
+        Heikki Krogerus <heikki.krogerus@linux.intel.com>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        netdev <netdev@vger.kernel.org>,
+        linux-stm32@st-md-mailman.stormreply.com,
+        kernel-janitors@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 30/01/2020 22:34, Guillaume Nault wrote:
-> On Thu, Jan 30, 2020 at 10:28:23AM +0000, James Chapman wrote:
->> On 29/01/2020 11:44, Guillaume Nault wrote:
->>> Since userspace is in charge of selecting the session ID, I still can=
-'t
->>> see how having the kernel accept duplicate IDs goes against the RFC.
->>> The kernel doesn't assign duplicate IDs on its own. Userspace has ful=
-l
->>> control on the IDs and can implement whatever constraint when assigni=
-ng
->>> session IDs (even the DOCSIS DEPI way of partioning the session ID
->>> space).
->> Perhaps another example might help.
->>
->> Suppose there's an L2TPv3 app out there today that creates two tunnels=
-
->> to a peer, one of which is used as a hot-standby backup in case the ma=
-in
->> tunnel fails. This system uses separate network interfaces for the
->> tunnels, e.g. a router using a mobile network as a backup. If the main=
-
->> tunnel fails, it switches traffic of sessions immediately into the
->> second tunnel. Userspace is deliberately using the same session IDs in=
-
->> both tunnels in this case. This would work today for IP-encap, but not=
-
->> for UDP. However, if the kernel treats session IDs as scoped by 3-tupl=
-e,
->> the application would break. The app would need to be modified to add
->> each session ID into both tunnels to work again.
->>
-> That's an interesting use case. I can imagine how this works on Rx, but=
-
-> how can packets be transmitted on the new tunnel? The session will
-> still send packets through the original tunnel with the original
-> 3-tuple, and there's no way to reassign a session to a new tunnel. We
-> could probably rebind/reconnect the tunnel socket, but then why
-> creating the second tunnel in the kernel?
-
-It might use some netfilter or BPF code to change the IPs and redirect
-outbound packets. TBH, it's a hypothetical use case and probably easier
-to implement using scoped session IDs. :-)
-
-
->>>>> I would have to read the RFC with scoped session IDs in mind, but, =
-as
->>>>> far as I can see, the only things that global session IDs allow whi=
-ch
->>>>> can't be done with scoped session IDs are:
->>>>>   * Accepting L2TPoIP sessions to receive L2TPoUDP packets and
->>>>>     vice-versa.
->>>>>   * Accepting L2TPv3 packets from peers we're not connected to.
->>>>>
->>>>> I don't find any of these to be desirable. Although Tom convinced m=
-e
->>>>> that global session IDs are in the spirit of the RFC, I still don't=
-
->>>>> think that restricting their scope goes against it in any practical=
-
->>>>> way. The L2TPv3 control plane requires a two way communication, whi=
-ch
->>>>> means that the session is bound to a given 3/5-tuple for control
->>>>> messages. Why would the data plane behave differently?
->>>> The Cable Labs / DOCSIS DEPI protocol is a good example. It is based=
- on
->>>> L2TPv3 and uses the L2TPv3 data plane. It treats the session ID as
->>>> unscoped and not associated with a given tunnel.
->>>>
->>> Fair enough. Then we could add a L2TP_ATTR_SCOPE netlink attribute to=
-
->>> sessions. A global scope would reject the session ID if another sessi=
-on
->>> already exists with this ID in the same network namespace. Sessions w=
-ith
->>> global scope would be looked up solely based on their ID. A non-globa=
-l
->>> scope would allow a session ID to be duplicated as long as the 3/5-tu=
-ple
->>> is different and no session uses this ID with global scope.
->>>
->>>>> I agree that it looks saner (and simpler) for a control plane to ne=
-ver
->>>>> assign the same session ID to sessions running over different tunne=
-ls,
->>>>> even if they have different 3/5-tuples. But that's the user space
->>>>> control plane implementation's responsability to select unique sess=
-ion
->>>>> IDs in this case. The fact that the kernel uses scoped or global ID=
-s is
->>>>> irrelevant. For unmanaged tunnels, the administrator has complete
->>>>> control over the local and remote session IDs and is free to assign=
-
->>>>> them globally if it wants to, even if the kernel would have accepte=
-d
->>>>> reusing session IDs.
->>>> I disagree. Using scoped session IDs may break applications that ass=
-ume
->>>> RFC behaviour. I mentioned one example where session IDs are used
->>>> unscoped above.
->>>>
->>> I'm sorry, but I still don't understand how could that break any
->>> existing application.
->> Does my example of the hot-standby backup tunnel help?
->>
-> Yes, even though I'm not sure how it precisely translate in terms of
-> userspace/kernel interraction. But anyway, with L2TP_ATTR_SCOPE, we'd
-> have the possibility to keep session ID unscoped for l2tp_ip by
-> default. That should be enough to keep any such scenario working
-> without any modification.
+On Fri, Jan 31, 2020 at 7:03 AM Dan Carpenter <dan.carpenter@oracle.com> wrote:
 >
->>> For L2TPoUDP, session IDs are always looked up in the context of the
->>> UDP socket. So even though the kernel has stopped accepting duplicate=
-
->>> IDs, the session IDs remain scoped in practice. And with the
->>> application being responsible for assigning IDs, I don't see how maki=
-ng
->>> the kernel less restrictive could break any existing implementation.
->>> Again, userspace remains in full control for session ID assignment
->>> policy.
->>>
->>> Then we have L2TPoIP, which does the opposite, always looks up sessio=
-ns
->>> globally and depends on session IDs being unique in the network
->>> namespace. But Ridge's patch does not change that. Also, by adding th=
-e
->>> L2TP_ATTR_SCOPE attribute (as defined above), we could keep this
->>> behaviour (L2TPoIP session could have global scope by default).
->> I'm looking at this with an end goal of having the UDP rx path later
->> modified to work the same way as IP-encap currently does. I know Linux=
-
->> has never worked this way in the L2TPv3 UDP path and no-one has
->> requested that it does yet, but I think it would improve the
->> implementation if UDP and IP encap behaved similarly.
->>
-> Yes, unifying UDP and IP encap would be really nice.
+> The device_get_phy_mode() was returning negative error codes on
+> failure and positive phy_interface_t values on success.  The problem is
+> that the phy_interface_t type is an enum which GCC treats as unsigned.
+> This lead to recurring signedness bugs where we check "if (phy_mode < 0)"
+> and "phy_mode" is unsigned.
 >
->> L2TP_ATTR_SCOPE would be a good way for the app to select which
->> behaviour it prefers.
->>
-> Yes. But do we agree that it's also a way to keep the existing
-> behaviour: unscoped for IP, scoped to the 5-tuple for UDP? That is, IP
-> and UDP encap would use a different default value when user space
-> doesn't request a specific behaviour.
-
-Yes, that would be the safest approach.
-
-
->>>> However, there might be an alternative solution to fix this for Ridg=
-e's
->>>> use case that doesn't involve adding 3/5-tuple session ID lookups in=
- the
->>>> receive path or adding a control knob...
->>>>
->>>> My understanding is that Ridge's application uses unmanaged tunnels
->>>> (like "ip l2tp" does). These use kernel sockets. The netlink tunnel
->>>> create request does not indicate a valid tunnel socket fd. So we cou=
-ld
->>>> use scoped session IDs for unmanaged UDP tunnels only. If Ridge's pa=
-tch
->>>> were tweaked to allow scoped IDs only for UDP unmanaged tunnels (add=
-ing
->>>> a test for tunnel->fd < 0), managed tunnels would continue to work a=
-s
->>>> they do now and any application that uses unmanaged tunnels would ge=
-t
->>>> scoped session IDs. No control knob or 3/5-tuple session ID lookups
->>>> required.
->>>>
->>> Well, I'd prefer to not introduce another subtle behaviour change. Wh=
-at
->>> does rejecting duplicate IDs bring us if the lookup is still done in
->>> the context of the socket? If the point is to have RFC compliance, th=
-en
->>> we'd also need to modify the lookup functions.
->>>
->> I agree, it's not ideal. Rejecting duplicate IDs for UDP will allow th=
-e
->> UDP rx path to be modified later to work the same way as IP. So my ide=
-a
->> was to allow for that change to be made later but only for managed
->> tunnels (sockets created by userspace). My worry with the original pat=
-ch
->> is that it suggests that session IDs for UDP are always scoped by the
->> tunnel so tweaking it to apply only for unmanaged tunnels was a way of=
-
->> showing this.
->>
->> However, you've convinced me now that scoping the session ID by
->> 3/5-tuple could work. As long as there's a mechanism that lets
->> applications choose whether the 3/5-tuple is ignored in the rx path, I=
-'m
->> ok with it.
->>
-> Do we agree that, with L2TP_ATTR_SCOPE being a long-term solution, we
-> shouldn't need to reject duplicate session IDs for UDP tunnels?
-
-Yes.
-
-
-> To summarise my idea:
+> In the commit 0c65b2b90d13 ("net: of_get_phy_mode: Change API to solve
+> int/unit warnings") we updated of_get_phy_mode() take a pointer to
+> phy_mode and only return zero on success and negatives on failure.  This
+> patch does the same thing for device_get_phy_mode().  Plus it's just
+> nice for the API to be the same in both places.
 >
->   * Short term plan:
->     Integrate a variant of Ridge's patch, as it's simple, can easily be=
 
->     backported to -stable and doesn't prevent the future use of global
->     session IDs (as those will be specified with L2TP_ATTR_SCOPE).
+For device property API changes
+Reviewed-by: Andy Shevchenko <andy.shevchenko@gmail.com>
+
+> Fixes: b9f0b2f634c0 ("net: stmmac: platform: fix probe for ACPI devices")
+> Signed-off-by: Dan Carpenter <dan.carpenter@oracle.com>
+> ---
+> This is a change to drivers/base/ but all the users are ethernet drivers
+> so probably it makes sense for Dave to take this?
 >
->   * Long term plan:
->     Implement L2TP_ATTR_SCOPE, a session attribute defining if the
->     session ID is global or scoped to the X-tuple (3-tuple for IP,
->     5-tuple for UDP).
->     Original behaviour would be respected to avoid breaking existing
->     applications. So, by default, IP encapsulation would use global
->     scope and UDP encapsulation would use 5-tuple scope.
+> Also this fixes a bug in stmmac.  If you wanted I could make a one
+> liner fix for that and then write this change on top of that.  The bug
+> is only in v5.6 so it doesn't affect old kernels.
 >
-> Does that look like a good way forward?
+>  drivers/base/property.c                               | 13 +++++++++++--
+>  drivers/net/ethernet/apm/xgene-v2/main.c              |  9 ++++-----
+>  drivers/net/ethernet/apm/xgene-v2/main.h              |  2 +-
+>  drivers/net/ethernet/apm/xgene/xgene_enet_main.c      |  6 +++---
+>  drivers/net/ethernet/apm/xgene/xgene_enet_main.h      |  2 +-
+>  drivers/net/ethernet/smsc/smsc911x.c                  |  8 +++-----
+>  drivers/net/ethernet/socionext/netsec.c               |  5 ++---
+>  drivers/net/ethernet/stmicro/stmmac/stmmac_platform.c |  6 +++---
+>  include/linux/property.h                              |  3 ++-
+>  9 files changed, 30 insertions(+), 24 deletions(-)
+>
+> diff --git a/drivers/base/property.c b/drivers/base/property.c
+> index 511f6d7acdfe..8854cfbd213b 100644
+> --- a/drivers/base/property.c
+> +++ b/drivers/base/property.c
+> @@ -863,9 +863,18 @@ EXPORT_SYMBOL_GPL(fwnode_get_phy_mode);
+>   * 'phy-connection-type', and return its index in phy_modes table, or errno in
+>   * error case.
+>   */
+> -int device_get_phy_mode(struct device *dev)
+> +int device_get_phy_mode(struct device *dev, phy_interface_t *interface)
+>  {
+> -       return fwnode_get_phy_mode(dev_fwnode(dev));
+> +       int mode;
+> +
+> +       *interface = PHY_INTERFACE_MODE_NA;
+> +
+> +       mode = fwnode_get_phy_mode(dev_fwnode(dev));
+> +       if (mode < 0)
+> +               return mode;
+> +
+> +       *interface = mode;
+> +       return 0;
+>  }
+>  EXPORT_SYMBOL_GPL(device_get_phy_mode);
+>
+> diff --git a/drivers/net/ethernet/apm/xgene-v2/main.c b/drivers/net/ethernet/apm/xgene-v2/main.c
+> index c48f60996761..706602918dd1 100644
+> --- a/drivers/net/ethernet/apm/xgene-v2/main.c
+> +++ b/drivers/net/ethernet/apm/xgene-v2/main.c
+> @@ -15,7 +15,7 @@ static int xge_get_resources(struct xge_pdata *pdata)
+>  {
+>         struct platform_device *pdev;
+>         struct net_device *ndev;
+> -       int phy_mode, ret = 0;
+> +       int ret = 0;
+>         struct resource *res;
+>         struct device *dev;
+>
+> @@ -41,12 +41,11 @@ static int xge_get_resources(struct xge_pdata *pdata)
+>
+>         memcpy(ndev->perm_addr, ndev->dev_addr, ndev->addr_len);
+>
+> -       phy_mode = device_get_phy_mode(dev);
+> -       if (phy_mode < 0) {
+> +       ret = device_get_phy_mode(dev, &pdata->resources.phy_mode);
+> +       if (ret) {
+>                 dev_err(dev, "Unable to get phy-connection-type\n");
+> -               return phy_mode;
+> +               return ret;
+>         }
+> -       pdata->resources.phy_mode = phy_mode;
+>
+>         if (pdata->resources.phy_mode != PHY_INTERFACE_MODE_RGMII) {
+>                 dev_err(dev, "Incorrect phy-connection-type specified\n");
+> diff --git a/drivers/net/ethernet/apm/xgene-v2/main.h b/drivers/net/ethernet/apm/xgene-v2/main.h
+> index d41439d2709d..d687f0185908 100644
+> --- a/drivers/net/ethernet/apm/xgene-v2/main.h
+> +++ b/drivers/net/ethernet/apm/xgene-v2/main.h
+> @@ -35,7 +35,7 @@
+>
+>  struct xge_resource {
+>         void __iomem *base_addr;
+> -       int phy_mode;
+> +       phy_interface_t phy_mode;
+>         u32 irq;
+>  };
+>
+> diff --git a/drivers/net/ethernet/apm/xgene/xgene_enet_main.c b/drivers/net/ethernet/apm/xgene/xgene_enet_main.c
+> index 6aee2f0fc0db..da35e70ccceb 100644
+> --- a/drivers/net/ethernet/apm/xgene/xgene_enet_main.c
+> +++ b/drivers/net/ethernet/apm/xgene/xgene_enet_main.c
+> @@ -1736,10 +1736,10 @@ static int xgene_enet_get_resources(struct xgene_enet_pdata *pdata)
+>
+>         memcpy(ndev->perm_addr, ndev->dev_addr, ndev->addr_len);
+>
+> -       pdata->phy_mode = device_get_phy_mode(dev);
+> -       if (pdata->phy_mode < 0) {
+> +       ret = device_get_phy_mode(dev, &pdata->phy_mode);
+> +       if (ret) {
+>                 dev_err(dev, "Unable to get phy-connection-type\n");
+> -               return pdata->phy_mode;
+> +               return ret;
+>         }
+>         if (!phy_interface_mode_is_rgmii(pdata->phy_mode) &&
+>             pdata->phy_mode != PHY_INTERFACE_MODE_SGMII &&
+> diff --git a/drivers/net/ethernet/apm/xgene/xgene_enet_main.h b/drivers/net/ethernet/apm/xgene/xgene_enet_main.h
+> index 18f4923b1723..600cddf1942d 100644
+> --- a/drivers/net/ethernet/apm/xgene/xgene_enet_main.h
+> +++ b/drivers/net/ethernet/apm/xgene/xgene_enet_main.h
+> @@ -209,7 +209,7 @@ struct xgene_enet_pdata {
+>         void __iomem *pcs_addr;
+>         void __iomem *ring_csr_addr;
+>         void __iomem *ring_cmd_addr;
+> -       int phy_mode;
+> +       phy_interface_t phy_mode;
+>         enum xgene_enet_rm rm;
+>         struct xgene_enet_cle cle;
+>         u64 *extd_stats;
+> diff --git a/drivers/net/ethernet/smsc/smsc911x.c b/drivers/net/ethernet/smsc/smsc911x.c
+> index 49a6a9167af4..2d773e5e67f8 100644
+> --- a/drivers/net/ethernet/smsc/smsc911x.c
+> +++ b/drivers/net/ethernet/smsc/smsc911x.c
+> @@ -2361,14 +2361,12 @@ static const struct smsc911x_ops shifted_smsc911x_ops = {
+>  static int smsc911x_probe_config(struct smsc911x_platform_config *config,
+>                                  struct device *dev)
+>  {
+> -       int phy_interface;
+>         u32 width = 0;
+>         int err;
+>
+> -       phy_interface = device_get_phy_mode(dev);
+> -       if (phy_interface < 0)
+> -               phy_interface = PHY_INTERFACE_MODE_NA;
+> -       config->phy_interface = phy_interface;
+> +       err = device_get_phy_mode(dev, &config->phy_interface);
+> +       if (err)
+> +               config->phy_interface = PHY_INTERFACE_MODE_NA;
+>
+>         device_get_mac_address(dev, config->mac, ETH_ALEN);
+>
+> diff --git a/drivers/net/ethernet/socionext/netsec.c b/drivers/net/ethernet/socionext/netsec.c
+> index e8224b543dfc..95ff91230523 100644
+> --- a/drivers/net/ethernet/socionext/netsec.c
+> +++ b/drivers/net/ethernet/socionext/netsec.c
+> @@ -1994,10 +1994,9 @@ static int netsec_probe(struct platform_device *pdev)
+>         priv->msg_enable = NETIF_MSG_TX_ERR | NETIF_MSG_HW | NETIF_MSG_DRV |
+>                            NETIF_MSG_LINK | NETIF_MSG_PROBE;
+>
+> -       priv->phy_interface = device_get_phy_mode(&pdev->dev);
+> -       if ((int)priv->phy_interface < 0) {
+> +       ret = device_get_phy_mode(&pdev->dev, &priv->phy_interface);
+> +       if (ret) {
+>                 dev_err(&pdev->dev, "missing required property 'phy-mode'\n");
+> -               ret = -ENODEV;
+>                 goto free_ndev;
+>         }
+>
+> diff --git a/drivers/net/ethernet/stmicro/stmmac/stmmac_platform.c b/drivers/net/ethernet/stmicro/stmmac/stmmac_platform.c
+> index d10ac54bf385..aa77c332ea1d 100644
+> --- a/drivers/net/ethernet/stmicro/stmmac/stmmac_platform.c
+> +++ b/drivers/net/ethernet/stmicro/stmmac/stmmac_platform.c
+> @@ -412,9 +412,9 @@ stmmac_probe_config_dt(struct platform_device *pdev, const char **mac)
+>                 *mac = NULL;
+>         }
+>
+> -       plat->phy_interface = device_get_phy_mode(&pdev->dev);
+> -       if (plat->phy_interface < 0)
+> -               return ERR_PTR(plat->phy_interface);
+> +       rc = device_get_phy_mode(&pdev->dev, &plat->phy_interface);
+> +       if (rc)
+> +               return ERR_PTR(rc);
+>
+>         plat->interface = stmmac_of_get_mac_mode(np);
+>         if (plat->interface < 0)
+> diff --git a/include/linux/property.h b/include/linux/property.h
+> index d86de017c689..2ffe9842c997 100644
+> --- a/include/linux/property.h
+> +++ b/include/linux/property.h
+> @@ -12,6 +12,7 @@
+>
+>  #include <linux/bits.h>
+>  #include <linux/fwnode.h>
+> +#include <linux/phy.h>
+>  #include <linux/types.h>
+>
+>  struct device;
+> @@ -368,7 +369,7 @@ enum dev_dma_attr device_get_dma_attr(struct device *dev);
+>
+>  const void *device_get_match_data(struct device *dev);
+>
+> -int device_get_phy_mode(struct device *dev);
+> +int device_get_phy_mode(struct device *dev, phy_interface_t *interface);
+>
+>  void *device_get_mac_address(struct device *dev, char *addr, int alen);
+>
+> --
+> 2.11.0
+>
 
-Yes, it sounds good to me.
 
-Your proposed approach of using only the session ID to do the session
-lookup but then optionally using the 3/5-tuple to scope it resolves my
-concerns.
-
-
-
+-- 
+With Best Regards,
+Andy Shevchenko
