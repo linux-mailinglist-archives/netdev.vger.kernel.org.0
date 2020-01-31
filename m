@@ -2,97 +2,112 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id AC2F314F2A5
-	for <lists+netdev@lfdr.de>; Fri, 31 Jan 2020 20:23:08 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E660314F2AB
+	for <lists+netdev@lfdr.de>; Fri, 31 Jan 2020 20:24:39 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726086AbgAaTXE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 31 Jan 2020 14:23:04 -0500
-Received: from dvalin.narfation.org ([213.160.73.56]:37490 "EHLO
-        dvalin.narfation.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725954AbgAaTXD (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 31 Jan 2020 14:23:03 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=narfation.org;
-        s=20121; t=1580498581;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=475KMUwh+W/5/54fUMNMhVrEiGEgG0BkyP5o/poCjIk=;
-        b=Y1wkZ6At5ZQ1bhcC6hZKYluFT+vJPz6yK7Ljag2xjl8U4ZAujGX6rx+W8OlSQrIfAhXCaQ
-        yO+11tdDhDi08PgkU/0ig1SLo0K6F70Yqg/1/9+ela2yPYDyuiKjCbIwt4kulktZZ8BgRK
-        0K54wdA1O+ZlJo1HJ7XxIwmuEWATVN4=
-From:   Sven Eckelmann <sven@narfation.org>
-To:     syzbot <syzbot+37bad4f9cb2033876f32@syzkaller.appspotmail.com>
-Cc:     a@unstable.cc, b.a.t.m.a.n@lists.open-mesh.org,
-        davem@davemloft.net, glider@google.com,
-        linux-kernel@vger.kernel.org, mareklindner@neomailbox.ch,
-        netdev@vger.kernel.org, sw@simonwunderlich.de,
-        syzkaller-bugs@googlegroups.com
-Subject: Re: KMSAN: uninit-value in batadv_bla_tx
-Date:   Fri, 31 Jan 2020 20:22:48 +0100
-Message-ID: <2584399.6Er73V5Qae@sven-edge>
-In-Reply-To: <0000000000004701a9059d7351dd@google.com>
-References: <0000000000004701a9059d7351dd@google.com>
+        id S1726202AbgAaTYf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 31 Jan 2020 14:24:35 -0500
+Received: from correo.us.es ([193.147.175.20]:36788 "EHLO mail.us.es"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726001AbgAaTYf (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 31 Jan 2020 14:24:35 -0500
+Received: from antivirus1-rhel7.int (unknown [192.168.2.11])
+        by mail.us.es (Postfix) with ESMTP id 9B17EFC5F2
+        for <netdev@vger.kernel.org>; Fri, 31 Jan 2020 20:24:34 +0100 (CET)
+Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
+        by antivirus1-rhel7.int (Postfix) with ESMTP id 8B03CDA711
+        for <netdev@vger.kernel.org>; Fri, 31 Jan 2020 20:24:34 +0100 (CET)
+Received: by antivirus1-rhel7.int (Postfix, from userid 99)
+        id 80610DA707; Fri, 31 Jan 2020 20:24:34 +0100 (CET)
+X-Spam-Checker-Version: SpamAssassin 3.4.1 (2015-04-28) on antivirus1-rhel7.int
+X-Spam-Level: 
+X-Spam-Status: No, score=-108.2 required=7.5 tests=ALL_TRUSTED,BAYES_50,
+        SMTPAUTH_US2,USER_IN_WHITELIST autolearn=disabled version=3.4.1
+Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
+        by antivirus1-rhel7.int (Postfix) with ESMTP id 8F588DA702;
+        Fri, 31 Jan 2020 20:24:32 +0100 (CET)
+Received: from 192.168.1.97 (192.168.1.97)
+ by antivirus1-rhel7.int (F-Secure/fsigk_smtp/550/antivirus1-rhel7.int);
+ Fri, 31 Jan 2020 20:24:32 +0100 (CET)
+X-Virus-Status: clean(F-Secure/fsigk_smtp/550/antivirus1-rhel7.int)
+Received: from salvia.here (unknown [90.77.255.23])
+        (Authenticated sender: pneira@us.es)
+        by entrada.int (Postfix) with ESMTPA id 6BD8942EFB80;
+        Fri, 31 Jan 2020 20:24:32 +0100 (CET)
+X-SMTPAUTHUS: auth mail.us.es
+From:   Pablo Neira Ayuso <pablo@netfilter.org>
+To:     netfilter-devel@vger.kernel.org
+Cc:     davem@davemloft.net, netdev@vger.kernel.org
+Subject: [PATCH 0/6] Netfilter fixes for net
+Date:   Fri, 31 Jan 2020 20:24:22 +0100
+Message-Id: <20200131192428.167274-1-pablo@netfilter.org>
+X-Mailer: git-send-email 2.11.0
 MIME-Version: 1.0
-Content-Type: multipart/signed; boundary="nextPart5323429.oYtFQFovjn"; micalg="pgp-sha512"; protocol="application/pgp-signature"
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+X-Virus-Scanned: ClamAV using ClamSMTP
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
---nextPart5323429.oYtFQFovjn
-Content-Transfer-Encoding: 7Bit
-Content-Type: text/plain; charset="us-ascii"
+Hi,
 
-On Friday, 31 January 2020 18:58:13 CET syzbot wrote:
-[...]
-> HEAD commit:    686a4f77 kmsan: don't compile memmove
-> git tree:       https://github.com/google/kmsan.git master
-> console output: https://syzkaller.appspot.com/x/log.txt?x=10b1da4ee00000
-> kernel config:  https://syzkaller.appspot.com/x/.config?x=e10654781bc1f11c
-> dashboard link: https://syzkaller.appspot.com/bug?extid=37bad4f9cb2033876f32
-> compiler:       clang version 10.0.0 (https://github.com/llvm/llvm-project/ c2443155a0fb245c8f17f2c1c72b6ea391e86e81)
-> syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=102be0a1e00000
-> C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=123105a5e00000
-> 
-> IMPORTANT: if you fix the bug, please add the following tag to the commit:
-> Reported-by: syzbot+37bad4f9cb2033876f32@syzkaller.appspotmail.com
-> 
-> =====================================================
-> BUG: KMSAN: uninit-value in batadv_bla_tx+0x2675/0x3730 net/batman-adv/bridge_loop_avoidance.c:1960
-> CPU: 0 PID: 9 Comm: ksoftirqd/0 Not tainted 5.5.0-rc5-syzkaller #0
-> Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
-[...]
+The following patchset contains Netfilter fixes for net:
 
-Looks like the same problem in HSR as 
- https://syzkaller.appspot.com/bug?extid=24458cef7d37351dd0c3
+1) Fix suspicious RCU usage in ipset, from Jozsef Kadlecsik.
 
-#syz dup: KMSAN: uninit-value in batadv_interface_tx (2)
+2) Use kvcalloc, from Joe Perches.
 
-Kind regards,
-	Sven
---nextPart5323429.oYtFQFovjn
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: This is a digitally signed message part.
-Content-Transfer-Encoding: 7Bit
+3) Flush flowtable hardware workqueue after garbage collection run,
+   from Paul Blakey.
 
------BEGIN PGP SIGNATURE-----
+4) Missing flowtable hardware workqueue flush from nf_flow_table_free(),
+   also from Paul.
 
-iQIzBAABCgAdFiEEF10rh2Elc9zjMuACXYcKB8Eme0YFAl40fokACgkQXYcKB8Em
-e0YVug/+Lq5g6TG+P5pDoP29Gwz/VR393Sy1CVg08+qKhg4xaXgYCd/N+qdrhHFL
-9nF44JbNEcTr56+hwr382xo9Er5dwmPt2bdWqQfmg7p3gcdgNunW6E2fepA8gbrK
-Xs4FQC2nmLhIS0xFPEOq39RsaCg+fuwvqufInXiG65FjasecPqqmHL8bJjsxmWK0
-OJKqANFKtmLc47bvDhY8iln3snvRdqVCoT35QKkGYaCmHmOSR6029idnAXpU/4Mm
-8feJ1z6oN3InoX41CHbeonATimjUvTwNuQ7w6BcrixzIACh/dM+xFEoeeaoXeFYb
-ym6WH5v2e4LjrI5HkoHNqvsPAIeh/VTdvTLNEmzqhISzLZjhX4SJKE9wjIZzP7qI
-ifpcRFI4a5rzedS+HzOAP417UIqXcLwVqWEWmN8F/VljEWI/ZR3LCzeNFDSzujBh
-Dy+0p/te5IpWgBhAtEDfkcME1PjFIZrQSQo8DwTEE2ZrBc7rID0kmsc3m2xDcoHZ
-44pdVRptM6IzSfqqdKyODB2/Q+6rusCWNFLhO9dVshacYN1MOvQzbtqQ63+TpbAe
-0RqtaQGYRRhnM54tO5Ms7AzayWftal2zra2ftyFWtsok6THqNxRvYNCXiB8NGFch
-VJl/HZFnh+RbgP6DnCqT0GxXpd9dEnrr/VXSq3XRsTf7rk5OR+A=
-=fZ5+
------END PGP SIGNATURE-----
+5) Restore NF_FLOW_HW_DEAD in flow_offload_work_del(), from Paul.
 
---nextPart5323429.oYtFQFovjn--
+6) Flowtable documentation fixes, from Matteo Croce.
 
+You can pull these changes from:
 
+  git://git.kernel.org/pub/scm/linux/kernel/git/pablo/nf.git
 
+Thank you.
+
+----------------------------------------------------------------
+
+The following changes since commit 44efc78d0e464ce70b45b165c005f8bedc17952e:
+
+  net: mvneta: fix XDP support if sw bm is used as fallback (2020-01-29 13:57:59 +0100)
+
+are available in the git repository at:
+
+  git://git.kernel.org/pub/scm/linux/kernel/git/pablo/nf.git HEAD
+
+for you to fetch changes up to 78e06cf430934fc3768c342cbebdd1013dcd6fa7:
+
+  netfilter: nf_flowtable: fix documentation (2020-01-31 19:31:42 +0100)
+
+----------------------------------------------------------------
+Joe Perches (1):
+      netfilter: Use kvcalloc
+
+Kadlecsik József (1):
+      netfilter: ipset: fix suspicious RCU usage in find_set_and_id
+
+Matteo Croce (1):
+      netfilter: nf_flowtable: fix documentation
+
+Paul Blakey (3):
+      netfilter: flowtable: Fix hardware flush order on nf_flow_table_cleanup
+      netfilter: flowtable: Fix missing flush hardware on table free
+      netfilter: flowtable: Fix setting forgotten NF_FLOW_HW_DEAD flag
+
+ Documentation/networking/nf_flowtable.txt |  2 +-
+ net/netfilter/ipset/ip_set_core.c         | 41 ++++++++++++++++---------------
+ net/netfilter/nf_conntrack_core.c         |  3 +--
+ net/netfilter/nf_flow_table_core.c        |  3 ++-
+ net/netfilter/nf_flow_table_offload.c     |  1 +
+ net/netfilter/x_tables.c                  |  4 +--
+ 6 files changed, 28 insertions(+), 26 deletions(-)
