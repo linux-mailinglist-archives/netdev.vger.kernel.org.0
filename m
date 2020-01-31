@@ -2,125 +2,80 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 0611814EF3A
-	for <lists+netdev@lfdr.de>; Fri, 31 Jan 2020 16:10:28 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5FEC414EF49
+	for <lists+netdev@lfdr.de>; Fri, 31 Jan 2020 16:14:56 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729283AbgAaPKV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 31 Jan 2020 10:10:21 -0500
-Received: from mail-ot1-f65.google.com ([209.85.210.65]:43968 "EHLO
-        mail-ot1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729143AbgAaPKV (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 31 Jan 2020 10:10:21 -0500
-Received: by mail-ot1-f65.google.com with SMTP id p8so6822120oth.10
-        for <netdev@vger.kernel.org>; Fri, 31 Jan 2020 07:10:20 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=q/xXQBacUD2LT8kSykWMZ7/iwuqhb5D7McardiSYKME=;
-        b=JUFWKDQBUMYZ+0Y15MzGZH1cBQT2UEcvEfM4E0GwkSULZlsWxrkdc7pJzG02OgilmU
-         vdaLyfpR+04czvv95l9J4nzOUDUqm9wFLgK5o3sNq/sW/FlkivfpWsBzyzCE8JNoIZAt
-         IqWiwgC8QoZQbQkpYIf5rI33i+H1jfEz9FyDBIcOO+eQmV7aA5nmdCnnD7GowP4yLloB
-         TZxqlOahpyf1I9Rc008vBmQ48VkwK1+XLR6jAz0q3au80nCO4PBrCjhmOmRYfPnVDpXp
-         tZFeMav43caGNzk+zne9P5gm7wPI3qnG21TpVjNKLX2amGfSOkgvpFcI6bKNmXPTFQwj
-         Jofw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=q/xXQBacUD2LT8kSykWMZ7/iwuqhb5D7McardiSYKME=;
-        b=BIOBv9espOZwEp1YeszirAS+NN15pNDA4n8fagn4QRoSl5TJJBETFPltY2BTIZShUw
-         Ety+GK1y1+RmPBgpuZOnTuKWANzk12MfV5bkGWUlvCpsAHRMKaEjjCRwq5rDz3dt+IRO
-         hnAb7TJDyX7iNjDR6YAjAkiwr89gsi9ToLvjQu2/ugn4B0XYh9f04aHLyHaY5TNpRbnP
-         Bmm1EMFjTpLTGzvrJmXoD4gcK1fulq8BS2cEgY/uDv1ozSopHwrsyaJlKJgBcby/d5Xj
-         WOxrDMji1LNDxMCMN77xqoetcI6JT+XT2Z0vyM1GkflpvwcDFGuVokKs9L1Z24POdsUe
-         gPiw==
-X-Gm-Message-State: APjAAAVYvAikI89WdmXaFmT9nGeZXg/FRdDvBzpMR9QCi44xXNHKdlZf
-        7QVNt1uUL7f46iUFJ3qcR01WQEM88ejCgS2Uei99Lw==
-X-Google-Smtp-Source: APXvYqzdUKbLLFfbg0yUNrwjz7Px+wdEBBUAVUZlYOtmTmp4jvGH53EmoZv1kff+Lskv6SBX/aOHDRpmoh9H+TeRGFQ=
-X-Received: by 2002:a9d:7315:: with SMTP id e21mr8319157otk.255.1580483419727;
- Fri, 31 Jan 2020 07:10:19 -0800 (PST)
+        id S1729075AbgAaPOg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 31 Jan 2020 10:14:36 -0500
+Received: from lelv0143.ext.ti.com ([198.47.23.248]:53538 "EHLO
+        lelv0143.ext.ti.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728893AbgAaPOg (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 31 Jan 2020 10:14:36 -0500
+Received: from lelv0265.itg.ti.com ([10.180.67.224])
+        by lelv0143.ext.ti.com (8.15.2/8.15.2) with ESMTP id 00VFEUSS042071;
+        Fri, 31 Jan 2020 09:14:30 -0600
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
+        s=ti-com-17Q1; t=1580483670;
+        bh=oGFn7FCda5lV95p7QFBd+eBDB4foT+y/egIAbRIGLYc=;
+        h=From:To:CC:Subject:Date;
+        b=LXxZk9X+REmReSOpHtvghDrZMqxEri6/hwsykvS4WgD+Nxsz1VSZKEo19BxeK5Jym
+         zHtp+7t311Ole9CTosX1a5w4ueiCCUhyHjR1+vIuMs8urYZSZyT+khTAuB8a9I3bnq
+         YXI6pYp3ZhvdiP9JJHmgzxgD1ZeoOyAlazDbj+RU=
+Received: from DFLE114.ent.ti.com (dfle114.ent.ti.com [10.64.6.35])
+        by lelv0265.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 00VFEUmL060081
+        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
+        Fri, 31 Jan 2020 09:14:30 -0600
+Received: from DFLE110.ent.ti.com (10.64.6.31) by DFLE114.ent.ti.com
+ (10.64.6.35) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1847.3; Fri, 31
+ Jan 2020 09:14:29 -0600
+Received: from fllv0040.itg.ti.com (10.64.41.20) by DFLE110.ent.ti.com
+ (10.64.6.31) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1847.3 via
+ Frontend Transport; Fri, 31 Jan 2020 09:14:29 -0600
+Received: from localhost (ileax41-snat.itg.ti.com [10.172.224.153])
+        by fllv0040.itg.ti.com (8.15.2/8.15.2) with ESMTP id 00VFETJ8117450;
+        Fri, 31 Jan 2020 09:14:29 -0600
+From:   Dan Murphy <dmurphy@ti.com>
+To:     <andrew@lunn.ch>, <f.fainelli@gmail.com>, <hkallweit1@gmail.com>,
+        <bunk@kernel.org>
+CC:     <netdev@vger.kernel.org>, <devicetree@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>, <grygorii.strashko@ti.com>,
+        Dan Murphy <dmurphy@ti.com>
+Subject: [PATCH net-master 0/1] DP83867 Speed optimization feature
+Date:   Fri, 31 Jan 2020 09:11:09 -0600
+Message-ID: <20200131151110.31642-1-dmurphy@ti.com>
+X-Mailer: git-send-email 2.25.0
 MIME-Version: 1.0
-References: <20200131122421.23286-1-sjpark@amazon.com> <20200131122421.23286-3-sjpark@amazon.com>
-In-Reply-To: <20200131122421.23286-3-sjpark@amazon.com>
-From:   Neal Cardwell <ncardwell@google.com>
-Date:   Fri, 31 Jan 2020 10:10:03 -0500
-Message-ID: <CADVnQyk9xevY0kA9Sm9S9MOBNvcuiY+7YGBtGuoue+r+eizyOA@mail.gmail.com>
-Subject: Re: [PATCH 2/3] tcp: Reduce SYN resend delay if a suspicous ACK is received
-To:     sjpark@amazon.com
-Cc:     Eric Dumazet <edumazet@google.com>,
-        David Miller <davem@davemloft.net>, shuah@kernel.org,
-        Netdev <netdev@vger.kernel.org>, linux-kselftest@vger.kernel.org,
-        LKML <linux-kernel@vger.kernel.org>, sj38.park@gmail.com,
-        aams@amazon.com, SeongJae Park <sjpark@amazon.de>,
-        Yuchung Cheng <ycheng@google.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Jan 31, 2020 at 7:25 AM <sjpark@amazon.com> wrote:
->
-> From: SeongJae Park <sjpark@amazon.de>
->
-> When closing a connection, the two acks that required to change closing
-> socket's status to FIN_WAIT_2 and then TIME_WAIT could be processed in
-> reverse order.  This is possible in RSS disabled environments such as a
-> connection inside a host.
->
-> For example, expected state transitions and required packets for the
-> disconnection will be similar to below flow.
->
->          00 (Process A)                         (Process B)
->          01 ESTABLISHED                         ESTABLISHED
->          02 close()
->          03 FIN_WAIT_1
->          04             ---FIN-->
->          05                                     CLOSE_WAIT
->          06             <--ACK---
->          07 FIN_WAIT_2
->          08             <--FIN/ACK---
->          09 TIME_WAIT
->          10             ---ACK-->
->          11                                     LAST_ACK
->          12 CLOSED                              CLOSED
+Hello
 
-AFAICT this sequence is not quite what would happen, and that it would
-be different starting in line 8, and would unfold as follows:
+Speed optimization, also known as link downshift, enables fallback to 100M
+operation after multiple consecutive failed attempts at Gigabit link
+establishment. Such a case could occur if cabling with only four wires
+were connected instead of the standard cabling with eight wires.
+Speed optimization also supports fallback to 10M if link establishment fails
+in Gigabit and in 100M mode.
 
-          08                                     close()
-          09                                     LAST_ACK
-          10             <--FIN/ACK---
-          11 TIME_WAIT
-          12             ---ACK-->
-          13 CLOSED                              CLOSED
+Speed optimization can be enabled via strap or via register configuration.
+The 48 pin devices do not have the ability to strap this feature and the PHY
+team suggested to enable this bit for all use cases.
 
+Dan
 
-> The acks in lines 6 and 8 are the acks.  If the line 8 packet is
-> processed before the line 6 packet, it will be just ignored as it is not
-> a expected packet,
+Dan Murphy (1):
+  net: phy: dp83867: Add speed optimization feature
 
-AFAICT that is where the bug starts.
+ drivers/net/phy/dp83867.c | 48 +++++++++++++++++++++++++++++++++++++++
+ 1 file changed, 48 insertions(+)
 
-AFAICT, from first principles, when process A receives the FIN/ACK it
-should move to TIME_WAIT even if it has not received a preceding ACK.
-That's because ACKs are cumulative. So receiving a later cumulative
-ACK conveys all the information in the previous ACKs.
+-- 
+2.25.0
 
-Also, consider the de facto standard state transition diagram from
-"TCP/IP Illustrated, Volume 2: The Implementation", by Wright and
-Stevens, e.g.:
-
-  https://courses.cs.washington.edu/courses/cse461/19sp/lectures/TCPIP_State_Transition_Diagram.pdf
-
-This first-principles analysis agrees with the Wright/Stevens diagram,
-which says that a connection in FIN_WAIT_1 that receives a FIN/ACK
-should move to TIME_WAIT.
-
-This seems like a faster and more robust solution than installing
-special timers.
-
-Thoughts?
-
-neal
