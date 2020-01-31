@@ -2,85 +2,99 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 8383F14EE09
-	for <lists+netdev@lfdr.de>; Fri, 31 Jan 2020 14:58:16 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4855014EE1E
+	for <lists+netdev@lfdr.de>; Fri, 31 Jan 2020 15:00:38 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728866AbgAaN6M (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 31 Jan 2020 08:58:12 -0500
-Received: from vps0.lunn.ch ([185.16.172.187]:60002 "EHLO vps0.lunn.ch"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728500AbgAaN6M (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 31 Jan 2020 08:58:12 -0500
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:
-        Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
-        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
-        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
-        List-Post:List-Owner:List-Archive;
-        bh=M1F71jvBqrpDNfAxNP559L2v7vOR6DOGsr1UJQiyE0E=; b=AQOn2fybqbDTF0u5okJfCrxC6z
-        5g8Wyei/0tS7qnYFWdLg5ZpWmKOUaVwF//RM6mbKQfZzYeDv7d6np87N5VvOavsAQWgijt+vD6IKP
-        Dx5EI3JKfG7LoNltgG/F4XYL0TFjRN76iXfrUfTrFM0kX5BgRJw0uHXl5UrCcYWOqC3A=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.93)
-        (envelope-from <andrew@lunn.ch>)
-        id 1ixWnq-0007SO-NR; Fri, 31 Jan 2020 14:57:46 +0100
-Date:   Fri, 31 Jan 2020 14:57:46 +0100
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Dan Carpenter <dan.carpenter@oracle.com>
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Ajay Gupta <ajayg@nvidia.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        "Rafael J. Wysocki" <rafael@kernel.org>,
-        Iyappan Subramanian <iyappan@os.amperecomputing.com>,
-        Keyur Chudgar <keyur@os.amperecomputing.com>,
-        Quan Nguyen <quan@os.amperecomputing.com>,
-        Steve Glendinning <steve.glendinning@shawell.net>,
-        Jassi Brar <jaswinder.singh@linaro.org>,
-        Ilias Apalodimas <ilias.apalodimas@linaro.org>,
-        Giuseppe Cavallaro <peppe.cavallaro@st.com>,
-        Alexandre Torgue <alexandre.torgue@st.com>,
-        Jose Abreu <joabreu@synopsys.com>,
-        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
-        Dmitry Torokhov <dmitry.torokhov@gmail.com>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Sakari Ailus <sakari.ailus@linux.intel.com>,
-        Heikki Krogerus <heikki.krogerus@linux.intel.com>,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        linux-stm32@st-md-mailman.stormreply.com,
-        kernel-janitors@vger.kernel.org
-Subject: Re: [PATCH net] device property: change device_get_phy_mode() to
- prevent signedess bugs
-Message-ID: <20200131135746.GF9639@lunn.ch>
-References: <20200131045953.wbj66jkvijnmf5s2@kili.mountain>
+        id S1728760AbgAaOAc convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Fri, 31 Jan 2020 09:00:32 -0500
+Received: from eu-smtp-delivery-151.mimecast.com ([207.82.80.151]:40533 "EHLO
+        eu-smtp-delivery-151.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1728735AbgAaOAb (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 31 Jan 2020 09:00:31 -0500
+Received: from AcuMS.aculab.com (156.67.243.126 [156.67.243.126]) (Using
+ TLS) by relay.mimecast.com with ESMTP id
+ uk-mta-242-JHDjgXV-PJqc_fZ2W4bcWg-1; Fri, 31 Jan 2020 14:00:28 +0000
+Received: from AcuMS.Aculab.com (fd9f:af1c:a25b:0:43c:695e:880f:8750) by
+ AcuMS.aculab.com (fd9f:af1c:a25b:0:43c:695e:880f:8750) with Microsoft SMTP
+ Server (TLS) id 15.0.1347.2; Fri, 31 Jan 2020 14:00:27 +0000
+Received: from AcuMS.Aculab.com ([fe80::43c:695e:880f:8750]) by
+ AcuMS.aculab.com ([fe80::43c:695e:880f:8750%12]) with mapi id 15.00.1347.000;
+ Fri, 31 Jan 2020 14:00:27 +0000
+From:   David Laight <David.Laight@ACULAB.COM>
+To:     "'sjpark@amazon.com'" <sjpark@amazon.com>,
+        "edumazet@google.com" <edumazet@google.com>,
+        "davem@davemloft.net" <davem@davemloft.net>
+CC:     "shuah@kernel.org" <shuah@kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-kselftest@vger.kernel.org" <linux-kselftest@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "sj38.park@gmail.com" <sj38.park@gmail.com>,
+        "aams@amazon.com" <aams@amazon.com>,
+        SeongJae Park <sjpark@amazon.de>
+Subject: RE: [PATCH 0/3] Fix reconnection latency caused by FIN/ACK handling
+ race
+Thread-Topic: [PATCH 0/3] Fix reconnection latency caused by FIN/ACK handling
+ race
+Thread-Index: AQHV2DFvc3pd6ARlHUK3D8H5esqW/agEyn3w
+Date:   Fri, 31 Jan 2020 14:00:27 +0000
+Message-ID: <dc37fb0dad3c4a5f9fd88eea89d81908@AcuMS.aculab.com>
+References: <20200131122421.23286-1-sjpark@amazon.com>
+In-Reply-To: <20200131122421.23286-1-sjpark@amazon.com>
+Accept-Language: en-GB, en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-ms-exchange-transport-fromentityheader: Hosted
+x-originating-ip: [10.202.205.107]
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200131045953.wbj66jkvijnmf5s2@kili.mountain>
+X-MC-Unique: JHDjgXV-PJqc_fZ2W4bcWg-1
+X-Mimecast-Spam-Score: 0
+X-Mimecast-Originator: aculab.com
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8BIT
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> diff --git a/drivers/net/ethernet/apm/xgene-v2/main.c b/drivers/net/ethernet/apm/xgene-v2/main.c
-> index c48f60996761..706602918dd1 100644
-> --- a/drivers/net/ethernet/apm/xgene-v2/main.c
-> +++ b/drivers/net/ethernet/apm/xgene-v2/main.c
-> @@ -15,7 +15,7 @@ static int xge_get_resources(struct xge_pdata *pdata)
->  {
->  	struct platform_device *pdev;
->  	struct net_device *ndev;
-> -	int phy_mode, ret = 0;
-> +	int ret = 0;
->  	struct resource *res;
->  	struct device *dev;
+From: sjpark@amazon.com
+> Sent: 31 January 2020 12:24
+...
+> The acks in lines 6 and 8 are the acks.  If the line 8 packet is
+> processed before the line 6 packet, it will be just ignored as it is not
+> a expected packet, and the later process of the line 6 packet will
+> change the status of Process A to FIN_WAIT_2, but as it has already
+> handled line 8 packet, it will not go to TIME_WAIT and thus will not
+> send the line 10 packet to Process B.  Thus, Process B will left in
+> CLOSE_WAIT status, as below.
+> 
+> 	 00 (Process A)				(Process B)
+> 	 01 ESTABLISHED				ESTABLISHED
+> 	 02 close()
+> 	 03 FIN_WAIT_1
+> 	 04 		---FIN-->
+> 	 05 					CLOSE_WAIT
+> 	 06 				(<--ACK---)
+> 	 07	  			(<--FIN/ACK---)
+> 	 08 				(fired in right order)
+> 	 09 		<--FIN/ACK---
+> 	 10 		<--ACK---
+> 	 11 		(processed in reverse order)
+> 	 12 FIN_WAIT_2
 
-Hi Dan
+Why doesn't A treat the FIN/ACK (09) as valid (as if
+the ACK had got lost) and then ignore the ACK (10) because
+it refers to a closed socket?
 
-DaveM likes reverse christmas tree. So you need to move ret later to
-keep the tree.
+I presume that B sends two ACKs (06 and 07) because it can
+sit in an intermediate state and the first ACK stops the FIN
+being resent?
 
-Apart from that:
+I've implemented lots of protocols in my time, but not TCP.
 
-Reviewed-by: Andrew Lunn <andrew@lunn.ch>
+	David
 
-    Andrew
+-
+Registered Address Lakeside, Bramley Road, Mount Farm, Milton Keynes, MK1 1PT, UK
+Registration No: 1397386 (Wales)
 
