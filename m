@@ -2,79 +2,103 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 8807014EE68
-	for <lists+netdev@lfdr.de>; Fri, 31 Jan 2020 15:27:57 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 61CB114EE70
+	for <lists+netdev@lfdr.de>; Fri, 31 Jan 2020 15:29:44 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729014AbgAaO1y (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 31 Jan 2020 09:27:54 -0500
-Received: from mail-wr1-f65.google.com ([209.85.221.65]:36826 "EHLO
-        mail-wr1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728730AbgAaO1x (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 31 Jan 2020 09:27:53 -0500
-Received: by mail-wr1-f65.google.com with SMTP id z3so8863763wru.3
-        for <netdev@vger.kernel.org>; Fri, 31 Jan 2020 06:27:52 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=resnulli-us.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=V/PCnqNtDQJTE0n6z019lCU8yqKmiVuTIJCF6Mgs2hA=;
-        b=zym66xsy/sjzCBn080zU+FiBL1C3WjHGj6hPdfx+yz4tx+sXjgCI4IXwOcP9KNvUr8
-         6xFC8DlHxEY9TDbv71iMStIek4j0ibL8+k1x0uloTJlEcofseH+Me4fZK0nY0uaJ1l2B
-         MhgiEy4L3KgUMEJ2vBNwdDr2F/Qc2pQES4V0TnYIZSxkhpL+J7pIIzSZxpwibXe7atfi
-         m4J0ZN45z+vzoF2Sh8E5EdsKIJMNMACaoDn/Vv+PsEBgXOEYSs6XQeFQgj3Vu9JYN9rP
-         jEeTloINK+LpNlSfYB9wbzt3pgjTwCG+J1xn3oNJviWGRq5jOdoCf4iUO1imiX3vMGFS
-         r6NQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=V/PCnqNtDQJTE0n6z019lCU8yqKmiVuTIJCF6Mgs2hA=;
-        b=hP5UfKzJUUtFC4syyny+0nDMit6u04CzToKuYW/UUWQJq/ySdXNDj/g23KKu1PHEwP
-         3PM+2K2l0jGc/mBp/MqIjuoei201YGYLmIB8NzcNPPQ+o4zKmJoeR7rlmzQYhmry+40O
-         r7ZODe6e15fm0Q/sZuaj2GZJuhc5GvU9wPlcCuDI2KwfTve3QLhwOu/XUDF0rPO71m12
-         gtFzX7EVdA/0MQXHcssYOaXy8KEto0PI1s2WksnL3DnV7diAdjQBckwbQEn5XTIIr4Lu
-         a2wg2awrTrK5mkYt5EHYQawGAYZi5Y4677E7bdX+U4dY550Im5M8YvxMRPsi7RSDv+Cc
-         iZ/Q==
-X-Gm-Message-State: APjAAAWp9K8ZLTmzEc1N8lNvFYXSpf5SnRNL82hOSA0wRoGO3WmhXowm
-        +uopGItxt74CM8TT1J3QxJT1WA==
-X-Google-Smtp-Source: APXvYqwffjVdonyWBGQTjTsoah1oQOI+zi0erFyjvn3dkdCOYmw51m6xt5K4qjQP30gxfi9r574VWA==
-X-Received: by 2002:a5d:4651:: with SMTP id j17mr12699429wrs.237.1580480871833;
-        Fri, 31 Jan 2020 06:27:51 -0800 (PST)
-Received: from localhost (jirka.pirko.cz. [84.16.102.26])
-        by smtp.gmail.com with ESMTPSA id j12sm12916560wrw.54.2020.01.31.06.27.50
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 31 Jan 2020 06:27:51 -0800 (PST)
-Date:   Fri, 31 Jan 2020 15:27:50 +0100
-From:   Jiri Pirko <jiri@resnulli.us>
-To:     Nathan Chancellor <natechancellor@gmail.com>
-Cc:     Jiri Pirko <jiri@mellanox.com>, Ido Schimmel <idosch@mellanox.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Petr Machata <petrm@mellanox.com>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Randy Dunlap <rdunlap@infradead.org>
-Subject: Re: [PATCH v2] mlxsw: spectrum_qdisc: Fix 64-bit division error in
- mlxsw_sp_qdisc_tbf_rate_kbps
-Message-ID: <20200131142750.GA2251@nanopsycho.orion>
-References: <20200130232641.51095-1-natechancellor@gmail.com>
- <20200131015123.55400-1-natechancellor@gmail.com>
+        id S1728985AbgAaO3h (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 31 Jan 2020 09:29:37 -0500
+Received: from vps0.lunn.ch ([185.16.172.187]:60056 "EHLO vps0.lunn.ch"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1728827AbgAaO3h (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 31 Jan 2020 09:29:37 -0500
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:
+        Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
+        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
+        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
+        List-Post:List-Owner:List-Archive;
+        bh=wII15MgeqWbZfMqpukw8WbJXMIjvvlTLwoyDgIUTqRM=; b=ShZjamFMEFEi8ZK6lvRTAfg72t
+        Vnb01CyPnJ7r54jskpVozNRpja4cak/rpQ3EA+z8tdCxGk/ma0n7XNXXYSzDi8aJs81HiyfqbzIDI
+        TBwGIdJHIzI15tZXE3NfSucMK1mqWPVg/4N3IYkodR379POfvridvakg2WpfKOtGPAOs=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.93)
+        (envelope-from <andrew@lunn.ch>)
+        id 1ixXIA-0007bY-Q6; Fri, 31 Jan 2020 15:29:06 +0100
+Date:   Fri, 31 Jan 2020 15:29:06 +0100
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Robin Murphy <robin.murphy@arm.com>
+Cc:     Jon Nettleton <jon@solid-run.com>,
+        Ard Biesheuvel <ard.biesheuvel@linaro.org>,
+        Marc Zyngier <maz@kernel.org>,
+        Makarand Pawagi <makarand.pawagi@nxp.com>,
+        Calvin Johnson <calvin.johnson@nxp.com>, stuyoder@gmail.com,
+        nleeder@codeaurora.org, Ioana Ciornei <ioana.ciornei@nxp.com>,
+        Cristi Sovaiala <cristian.sovaiala@nxp.com>,
+        Hanjun Guo <guohanjun@huawei.com>,
+        Will Deacon <will@kernel.org>,
+        Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
+        Pankaj Bansal <pankaj.bansal@nxp.com>,
+        Russell King <linux@armlinux.org.uk>,
+        ACPI Devel Maling List <linux-acpi@vger.kernel.org>,
+        Len Brown <lenb@kernel.org>,
+        Jason Cooper <jason@lakedaemon.net>,
+        Andy Wang <Andy.Wang@arm.com>, Varun Sethi <V.Sethi@nxp.com>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        linux-arm-kernel <linux-arm-kernel@lists.infradead.org>,
+        Laurentiu Tudor <laurentiu.tudor@nxp.com>,
+        Paul Yang <Paul.Yang@arm.com>,
+        "<netdev@vger.kernel.org>" <netdev@vger.kernel.org>,
+        "Rafael J. Wysocki" <rjw@rjwysocki.net>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Shameerali Kolothum Thodi 
+        <shameerali.kolothum.thodi@huawei.com>,
+        Sudeep Holla <sudeep.holla@arm.com>
+Subject: Re: [EXT] Re: [PATCH] bus: fsl-mc: Add ACPI support for fsl-mc
+Message-ID: <20200131142906.GG9639@lunn.ch>
+References: <1580198925-50411-1-git-send-email-makarand.pawagi@nxp.com>
+ <20200128110916.GA491@e121166-lin.cambridge.arm.com>
+ <DB8PR04MB7164DDF48480956F05886DABEB070@DB8PR04MB7164.eurprd04.prod.outlook.com>
+ <12531d6c569c7e14dffe8e288d9f4a0b@kernel.org>
+ <CAKv+Gu8uaJBmy5wDgk=uzcmC4vkEyOjW=JRvhpjfsdh-HcOCLg@mail.gmail.com>
+ <CABdtJHsu9R9g4mn25=9EW3jkCMhnej_rfkiRzo3OCX4cv4hpUQ@mail.gmail.com>
+ <0680c2ce-cff0-d163-6bd9-1eb39be06eee@arm.com>
+ <CABdtJHuLZeNd9bQZ-cmQi00WnObYPvM=BdWNw4EMpOFHjRd70w@mail.gmail.com>
+ <b136adc4-be48-82df-0592-97b4ba11dd79@arm.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20200131015123.55400-1-natechancellor@gmail.com>
+In-Reply-To: <b136adc4-be48-82df-0592-97b4ba11dd79@arm.com>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Fri, Jan 31, 2020 at 02:51:23AM CET, natechancellor@gmail.com wrote:
->When building arm32 allmodconfig:
->
->ERROR: "__aeabi_uldivmod"
->[drivers/net/ethernet/mellanox/mlxsw/mlxsw_spectrum.ko] undefined!
->
->rate_bytes_ps has type u64, we need to use a 64-bit division helper to
->avoid a build error.
->
->Fixes: a44f58c41bfb ("mlxsw: spectrum_qdisc: Support offloading of TBF Qdisc")
->Signed-off-by: Nathan Chancellor <natechancellor@gmail.com>
+> > But by design SFP, SFP+, and QSFP cages are not fixed function network
+> > adapters.  They are physical and logical devices that can adapt to
+> > what is plugged into them.  How the devices are exposed should be
+> > irrelevant to this conversation it is about the underlying
+> > connectivity.
+> 
+> Apologies - I was under the impression that SFP and friends were a
+> physical-layer thing and that a MAC in the SoC would still be fixed such
+> that its DMA and interrupt configuration could be statically described
+> regardless of what transceiver was plugged in (even if some configurations
+> might not use every interrupt/stream ID/etc.) If that isn't the case I shall
+> go and educate myself further.
 
-Acked-by: Jiri Pirko <jiri@mellanox.com>
+Hi Robin
+
+It gets interesting with QSFP cages. The Q is quad, there are 4 SERDES
+lanes. You can use them for 1x 40G link, or you can split them into 4x
+10G links. So you either need one MAC or 4 MACs connecting to the
+cage, and this can change on the fly when a modules is ejected and
+replaced with another module. There are only one set of control pins
+for i2c, loss of signal, TX disable, module inserted. So where the
+interrupt/stream ID/etc are mapped needs some flexibility.
+
+There is also to some degree a conflict with hiding all this inside
+firmware. This is complex stuff. It is much better to have one core
+implementing in Linux plus some per hardware driver support, than
+having X firmware blobs, generally closed source, each with there own
+bugs which nobody can fix.
+
+     Andrew
