@@ -2,82 +2,120 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id A4B7914EF41
-	for <lists+netdev@lfdr.de>; Fri, 31 Jan 2020 16:13:40 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 50AAB14EF4E
+	for <lists+netdev@lfdr.de>; Fri, 31 Jan 2020 16:15:35 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728992AbgAaPNe (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 31 Jan 2020 10:13:34 -0500
-Received: from smtp-fw-9101.amazon.com ([207.171.184.25]:33739 "EHLO
-        smtp-fw-9101.amazon.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728846AbgAaPNe (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 31 Jan 2020 10:13:34 -0500
+        id S1728974AbgAaPPc (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 31 Jan 2020 10:15:32 -0500
+Received: from mail-yw1-f66.google.com ([209.85.161.66]:33869 "EHLO
+        mail-yw1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728726AbgAaPPc (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 31 Jan 2020 10:15:32 -0500
+Received: by mail-yw1-f66.google.com with SMTP id b186so5013715ywc.1
+        for <netdev@vger.kernel.org>; Fri, 31 Jan 2020 07:15:31 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=amazon.com; i=@amazon.com; q=dns/txt; s=amazon201209;
-  t=1580483613; x=1612019613;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   mime-version;
-  bh=/LNOzaMe/3JZolWTvP9IVpSTbmeTWa8BUCvny72YYxY=;
-  b=vSU/a8TdIL3WfKPkFbhL0fV1fVGlaiNxAujzM5V31a9GE9jSf0wHney4
-   bNonC+kIGzmNoLOgE1sN0jQiuH2MXqr97U+rbHKLtVuhTHWVqykJbe/3k
-   xrWjEJigQ8jsnSuv381aTR59HDxcFiT9USEa10i/jzjI3tmvMhhJnEDMp
-   U=;
-IronPort-SDR: KVYn3WWRFZcf3tBkHpyDu7mmLFvMRWRoxr8gDHFHRpJ7/4LVKKqIClS8gp9SN7t9eoYm0+9Rda
- Ar54+gtUYhcA==
-X-IronPort-AV: E=Sophos;i="5.70,386,1574121600"; 
-   d="scan'208";a="13861159"
-Received: from sea32-co-svc-lb4-vlan3.sea.corp.amazon.com (HELO email-inbound-relay-2a-d0be17ee.us-west-2.amazon.com) ([10.47.23.38])
-  by smtp-border-fw-out-9101.sea19.amazon.com with ESMTP; 31 Jan 2020 15:13:22 +0000
-Received: from EX13MTAUEA002.ant.amazon.com (pdx4-ws-svc-p6-lb7-vlan3.pdx.amazon.com [10.170.41.166])
-        by email-inbound-relay-2a-d0be17ee.us-west-2.amazon.com (Postfix) with ESMTPS id BB7CCA230C;
-        Fri, 31 Jan 2020 15:13:21 +0000 (UTC)
-Received: from EX13D31EUA001.ant.amazon.com (10.43.165.15) by
- EX13MTAUEA002.ant.amazon.com (10.43.61.77) with Microsoft SMTP Server (TLS)
- id 15.0.1236.3; Fri, 31 Jan 2020 15:13:21 +0000
-Received: from u886c93fd17d25d.ant.amazon.com (10.43.162.249) by
- EX13D31EUA001.ant.amazon.com (10.43.165.15) with Microsoft SMTP Server (TLS)
- id 15.0.1367.3; Fri, 31 Jan 2020 15:13:16 +0000
-From:   <sjpark@amazon.com>
-To:     Eric Dumazet <edumazet@google.com>
-CC:     <sjpark@amazon.com>, David Miller <davem@davemloft.net>,
-        Shuah Khan <shuah@kernel.org>, netdev <netdev@vger.kernel.org>,
-        "open list:KERNEL SELFTEST FRAMEWORK" 
-        <linux-kselftest@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>, <sj38.park@gmail.com>,
-        <aams@amazon.com>, SeongJae Park <sjpark@amazon.de>
-Subject: Re: Re: [PATCH 3/3] selftests: net: Add FIN_ACK processing order related latency spike test
-Date:   Fri, 31 Jan 2020 16:13:02 +0100
-Message-ID: <20200131151302.28040-1-sjpark@amazon.com>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <CANn89iJrwVuEUHFqH1iCJd3nwTWAuXCdEJozwz6gzDV5Snm3Ug@mail.gmail.com> (raw)
+        d=solid-run-com.20150623.gappssmtp.com; s=20150623;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=dKqqlpA+EkYjXixe2TS2xK7+DyD3uNKJKEB0gcN7Kss=;
+        b=zM91B1671UUjUt7B4XhWH0jKv4TzeL2OGkjsxZr6YetTM6KnFw900Ukel/cRquX0U6
+         /s2JfZpPbKUq/hyBOchczdnZP5oy6LHCnqrOZHmBiurBK22nhFbHBa0kNR9a7mmo7Ooy
+         uXyyJl8Sw6q2bVInAbUXGqW1AXzLWuOuP7wcwOH0a406Qljft7LX0O9wfukjwAudPtZP
+         NXoNfOkGncX1sLCF6A2cABmwx2anxLMJJj+k5cQQtCy9BdKCV+MVJFeKCh5ER4Mc2zJz
+         wa+9WuxuAWSoLKZimoK3BKKytP0yZHM7LdE34XG08cOSXqyxkEWSXLPQyK9sCOJc/9ct
+         zBrg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=dKqqlpA+EkYjXixe2TS2xK7+DyD3uNKJKEB0gcN7Kss=;
+        b=r0MwJ13TiLc59tEYGZUfC5fbLwz0onS/1QTqppa+SWEM+QvkdYcPK+U/gDE4ZwW3WX
+         c9EBYHAKM3fceUjlfIqWvEMKin7pOO9p6+56Ie4ixUyocaGg4tsgXOLyeGcATIs55L+A
+         YC9KejHVNPdcr8eRxdXIEvZ+1dJkVCVLoJ9pwsYD8vYNJA4f6jKMZ6IwMwElXf0jlDG4
+         hDic0GKtOAsrmu17XhVU75ykqiqKk9qDZ1MNI1u5hWl5/YRarI0DxKaBZoWBCd4kLr35
+         CdDlr7J5pGApyvfqiOTv/tUqbzo/8LHdxBu00jq6h3kSBHoInEmJuiP4UgIYqIlVWo8n
+         UCXg==
+X-Gm-Message-State: APjAAAURDl5m0tkn6fr5cawj5pSrEEhpMsmDhvNX+89srUaJ9gEMQCNP
+        Y0iZlqRlTKanRsLB4Vc3OzfTW4wbkGZwCqpJV/mOyg==
+X-Google-Smtp-Source: APXvYqwsAGpGy6tic5rDdkc84xGCO6z1ubMWeOs7PNuXCUuhqHHO+HdXDIU+E2oTbdCyqF+X9ln5AxdumM3moQc/u34=
+X-Received: by 2002:a25:e790:: with SMTP id e138mr822292ybh.120.1580483731154;
+ Fri, 31 Jan 2020 07:15:31 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.43.162.249]
-X-ClientProxiedBy: EX13D17UWB001.ant.amazon.com (10.43.161.252) To
- EX13D31EUA001.ant.amazon.com (10.43.165.15)
+References: <20200128110916.GA491@e121166-lin.cambridge.arm.com>
+ <DB8PR04MB7164DDF48480956F05886DABEB070@DB8PR04MB7164.eurprd04.prod.outlook.com>
+ <12531d6c569c7e14dffe8e288d9f4a0b@kernel.org> <CAKv+Gu8uaJBmy5wDgk=uzcmC4vkEyOjW=JRvhpjfsdh-HcOCLg@mail.gmail.com>
+ <CABdtJHsu9R9g4mn25=9EW3jkCMhnej_rfkiRzo3OCX4cv4hpUQ@mail.gmail.com>
+ <0680c2ce-cff0-d163-6bd9-1eb39be06eee@arm.com> <CABdtJHuLZeNd9bQZ-cmQi00WnObYPvM=BdWNw4EMpOFHjRd70w@mail.gmail.com>
+ <b136adc4-be48-82df-0592-97b4ba11dd79@arm.com> <20200131142906.GG9639@lunn.ch>
+ <20200131144737.GA4948@willie-the-truck> <20200131150929.GB13902@lunn.ch>
+In-Reply-To: <20200131150929.GB13902@lunn.ch>
+From:   Jon Nettleton <jon@solid-run.com>
+Date:   Fri, 31 Jan 2020 16:14:55 +0100
+Message-ID: <CABdtJHs5zdS=unviHX3=Gsbf=q9ooS0sYMUAbtvaZT0D0ORNkw@mail.gmail.com>
+Subject: Re: [EXT] Re: [PATCH] bus: fsl-mc: Add ACPI support for fsl-mc
+To:     Andrew Lunn <andrew@lunn.ch>
+Cc:     Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
+        Ard Biesheuvel <ard.biesheuvel@linaro.org>,
+        Marc Zyngier <maz@kernel.org>,
+        Makarand Pawagi <makarand.pawagi@nxp.com>,
+        Calvin Johnson <calvin.johnson@nxp.com>, stuyoder@gmail.com,
+        nleeder@codeaurora.org, Ioana Ciornei <ioana.ciornei@nxp.com>,
+        Cristi Sovaiala <cristian.sovaiala@nxp.com>,
+        Hanjun Guo <guohanjun@huawei.com>,
+        Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
+        Pankaj Bansal <pankaj.bansal@nxp.com>,
+        Russell King <linux@armlinux.org.uk>,
+        ACPI Devel Maling List <linux-acpi@vger.kernel.org>,
+        Len Brown <lenb@kernel.org>,
+        Jason Cooper <jason@lakedaemon.net>,
+        Andy Wang <Andy.Wang@arm.com>, Varun Sethi <V.Sethi@nxp.com>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        linux-arm-kernel <linux-arm-kernel@lists.infradead.org>,
+        Laurentiu Tudor <laurentiu.tudor@nxp.com>,
+        Paul Yang <Paul.Yang@arm.com>,
+        "<netdev@vger.kernel.org>" <netdev@vger.kernel.org>,
+        "Rafael J. Wysocki" <rjw@rjwysocki.net>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Shameerali Kolothum Thodi 
+        <shameerali.kolothum.thodi@huawei.com>,
+        Sudeep Holla <sudeep.holla@arm.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, 31 Jan 2020 06:56:13 -0800 Eric Dumazet <edumazet@google.com> wrote:
+On Fri, Jan 31, 2020 at 4:09 PM Andrew Lunn <andrew@lunn.ch> wrote:
+>
+> > Devicetree to the rescue!
+>
+> Yes, exactly. We have good, standardised descriptions for most of this
+> in device tree. And phylink can handle SFP and SFP+. Nobody has worked
+> on QSFP yet, since phylink has mostly been pushed by the embedded
+> world and 40G is not yet popular in the embedded world.
+>
+> > Entertaining the use of ACPI without any firmware abstraction for this
+> > hardware really feels like a square peg / round hole situation, so I'm
+> > assuming somebody's telling you that you need it "FOAR ENTAPRYZE". Who
+> > is it and can you tell them to bog off?
+>
+> The issues here is that SFPs are appearing in more and more server
+> systems, replacing plain old copper Ethernet. If the boxes use off the
+> shelf Mellanox or Intel PCIe cards, it is not an issue. But silicon
+> vendors are integrating this into the SoC in the ARM way of doing
+> things, memory mapped, spread over a number of controllers, not a
+> single PCIe device.
+>
+> Maybe we need hybrid systems. Plain, old, simple, boring things like
+> CPUs, serial ports, SATA, PCIe busses are described in ACPI. Complex
+> interesting things are in DT. The hard thing is the interface between
+> the two. DT having a phandle to an ACPI object, e.g a GPIO, interrupt
+> or an i2c bus.
+>
+>    Andrew
 
-> On Fri, Jan 31, 2020 at 4:25 AM <sjpark@amazon.com> wrote:
-> >
-> > From: SeongJae Park <sjpark@amazon.de>
-> >
-> > This commit adds a test for FIN_ACK process races related reconnection
-> > latency spike issues.  The issue has described and solved by the
-> > previous commit ("tcp: Reduce SYN resend delay if a suspicous ACK is
-> > received").
-> >
-> 
-> I do not know for other tests, but using a hard coded port (4242) is
-> going to be flakky, since the port might be already used.
-> 
-> Please make sure to run tests on a separate namespace.
+Just as a review reference, I have found an old attempted
+implementation documented here.
+https://github.com/CumulusNetworks/apd-tools/wiki
 
-Agreed, will do so in next spin.
-
-
-Thanks,
-SeongJae Park
+-Jon
