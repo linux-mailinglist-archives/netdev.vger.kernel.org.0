@@ -2,103 +2,76 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 61CB114EE70
-	for <lists+netdev@lfdr.de>; Fri, 31 Jan 2020 15:29:44 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3D98C14EEB0
+	for <lists+netdev@lfdr.de>; Fri, 31 Jan 2020 15:44:24 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728985AbgAaO3h (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 31 Jan 2020 09:29:37 -0500
-Received: from vps0.lunn.ch ([185.16.172.187]:60056 "EHLO vps0.lunn.ch"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728827AbgAaO3h (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 31 Jan 2020 09:29:37 -0500
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:
-        Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
-        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
-        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
-        List-Post:List-Owner:List-Archive;
-        bh=wII15MgeqWbZfMqpukw8WbJXMIjvvlTLwoyDgIUTqRM=; b=ShZjamFMEFEi8ZK6lvRTAfg72t
-        Vnb01CyPnJ7r54jskpVozNRpja4cak/rpQ3EA+z8tdCxGk/ma0n7XNXXYSzDi8aJs81HiyfqbzIDI
-        TBwGIdJHIzI15tZXE3NfSucMK1mqWPVg/4N3IYkodR379POfvridvakg2WpfKOtGPAOs=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.93)
-        (envelope-from <andrew@lunn.ch>)
-        id 1ixXIA-0007bY-Q6; Fri, 31 Jan 2020 15:29:06 +0100
-Date:   Fri, 31 Jan 2020 15:29:06 +0100
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Robin Murphy <robin.murphy@arm.com>
-Cc:     Jon Nettleton <jon@solid-run.com>,
-        Ard Biesheuvel <ard.biesheuvel@linaro.org>,
-        Marc Zyngier <maz@kernel.org>,
-        Makarand Pawagi <makarand.pawagi@nxp.com>,
-        Calvin Johnson <calvin.johnson@nxp.com>, stuyoder@gmail.com,
-        nleeder@codeaurora.org, Ioana Ciornei <ioana.ciornei@nxp.com>,
-        Cristi Sovaiala <cristian.sovaiala@nxp.com>,
-        Hanjun Guo <guohanjun@huawei.com>,
-        Will Deacon <will@kernel.org>,
-        Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
-        Pankaj Bansal <pankaj.bansal@nxp.com>,
-        Russell King <linux@armlinux.org.uk>,
-        ACPI Devel Maling List <linux-acpi@vger.kernel.org>,
-        Len Brown <lenb@kernel.org>,
-        Jason Cooper <jason@lakedaemon.net>,
-        Andy Wang <Andy.Wang@arm.com>, Varun Sethi <V.Sethi@nxp.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        linux-arm-kernel <linux-arm-kernel@lists.infradead.org>,
-        Laurentiu Tudor <laurentiu.tudor@nxp.com>,
-        Paul Yang <Paul.Yang@arm.com>,
-        "<netdev@vger.kernel.org>" <netdev@vger.kernel.org>,
-        "Rafael J. Wysocki" <rjw@rjwysocki.net>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Shameerali Kolothum Thodi 
-        <shameerali.kolothum.thodi@huawei.com>,
-        Sudeep Holla <sudeep.holla@arm.com>
-Subject: Re: [EXT] Re: [PATCH] bus: fsl-mc: Add ACPI support for fsl-mc
-Message-ID: <20200131142906.GG9639@lunn.ch>
-References: <1580198925-50411-1-git-send-email-makarand.pawagi@nxp.com>
- <20200128110916.GA491@e121166-lin.cambridge.arm.com>
- <DB8PR04MB7164DDF48480956F05886DABEB070@DB8PR04MB7164.eurprd04.prod.outlook.com>
- <12531d6c569c7e14dffe8e288d9f4a0b@kernel.org>
- <CAKv+Gu8uaJBmy5wDgk=uzcmC4vkEyOjW=JRvhpjfsdh-HcOCLg@mail.gmail.com>
- <CABdtJHsu9R9g4mn25=9EW3jkCMhnej_rfkiRzo3OCX4cv4hpUQ@mail.gmail.com>
- <0680c2ce-cff0-d163-6bd9-1eb39be06eee@arm.com>
- <CABdtJHuLZeNd9bQZ-cmQi00WnObYPvM=BdWNw4EMpOFHjRd70w@mail.gmail.com>
- <b136adc4-be48-82df-0592-97b4ba11dd79@arm.com>
+        id S1729082AbgAaOoH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 31 Jan 2020 09:44:07 -0500
+Received: from mail-pl1-f196.google.com ([209.85.214.196]:41351 "EHLO
+        mail-pl1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728827AbgAaOoH (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 31 Jan 2020 09:44:07 -0500
+Received: by mail-pl1-f196.google.com with SMTP id t14so2816563plr.8
+        for <netdev@vger.kernel.org>; Fri, 31 Jan 2020 06:44:07 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:reply-to:from:date:message-id:subject:to
+         :content-transfer-encoding;
+        bh=qc/Y3vCb7NYYeqiWXiBIM9qnsqNnnpKIRuYLQTvXC+M=;
+        b=WfKQLQ1iitxIdsFgTYwLQgS7Fx9hE2TWqt/YNAM6GCy+MIhP8dIrqnbu+lA4zEzwnR
+         D37sx70ILe8b3ALjYN3LOgDA4ivEdB0Bryva3vvu24774+4rttq+rWdcOPP3gPqtT/Qn
+         Mjy3RTCQxN5DLQOVK2oEHNbG0C7h82LcoCgzbM++CrVrU9W7QE95ayY6hjijHDg6L+dy
+         UmNGWdWVSRrqBHBEcVfQOrWIlGSCLpf3g/FQFzFESGKacrc1TJqYDiEluglWcgVFJkCI
+         N8MJZH75YQtB5AJq0lzriT7u+ZOqL8oD3mmK4NeVZC0iJxBRL3DUpT8fDF2OUD6dx5XT
+         HEIw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:reply-to:from:date:message-id
+         :subject:to:content-transfer-encoding;
+        bh=qc/Y3vCb7NYYeqiWXiBIM9qnsqNnnpKIRuYLQTvXC+M=;
+        b=glg7naDipelVKloiBFYfhMvZ/wCd1gEwkehcDoZp4g16DDfXZOLvFeqqiedrjEVqgH
+         I9OVNP1vf71LelpzpQdMi35s6SjlTaYn74/xQTu/o+++D02fIWfFlI+wT09lruxmkebm
+         P1UeuBtdSNaMSgCfcUJO4N8VcO6rnp7BaWkkUKo6ba+4W4BX+xAKDTHvi6ZHjbSiVVDS
+         YonOQBJ2VX8j7ttqwy46rrDpyPzyMvtwzSW6y9srfKVEeYHYHoqA04vtIVDbwVUWlvvR
+         Rh+a8b/4PaefqpElvO6KTfbZUorSYfiD+N1mwuvYMhC9+T+k6sYz5i2fVrdOhS43ngFX
+         at6g==
+X-Gm-Message-State: APjAAAViMqNJqkfAu6zE/HPtetKKmRrNHKSCSNtimhaBDcFrbcqA50PU
+        N5OwxkGrmNhZ2b9JMTGrsjkIH7IRjih/LfJJraE=
+X-Google-Smtp-Source: APXvYqyuZluVoc1IcKf7aEsEB83G/vXITVk7HNqF6AvbiESMWdeOpuD4dHgJN+9fJkC3yvssXDEryX6ax2u3tBEfTrU=
+X-Received: by 2002:a17:902:a414:: with SMTP id p20mr10904169plq.7.1580481846730;
+ Fri, 31 Jan 2020 06:44:06 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <b136adc4-be48-82df-0592-97b4ba11dd79@arm.com>
+Received: by 2002:a17:90a:e003:0:0:0:0 with HTTP; Fri, 31 Jan 2020 06:44:06
+ -0800 (PST)
+Reply-To: aakkaavvii@gmail.com
+From:   Abraham Morrison <awochambers004@gmail.com>
+Date:   Fri, 31 Jan 2020 06:44:06 -0800
+Message-ID: <CAH2diS5iOoADogo+vGuwdDF5Vs4r93ZLhwBEU4N=4mH2recj=A@mail.gmail.com>
+Subject: Good day!
+To:     undisclosed-recipients:;
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: base64
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> > But by design SFP, SFP+, and QSFP cages are not fixed function network
-> > adapters.  They are physical and logical devices that can adapt to
-> > what is plugged into them.  How the devices are exposed should be
-> > irrelevant to this conversation it is about the underlying
-> > connectivity.
-> 
-> Apologies - I was under the impression that SFP and friends were a
-> physical-layer thing and that a MAC in the SoC would still be fixed such
-> that its DMA and interrupt configuration could be statically described
-> regardless of what transceiver was plugged in (even if some configurations
-> might not use every interrupt/stream ID/etc.) If that isn't the case I shall
-> go and educate myself further.
-
-Hi Robin
-
-It gets interesting with QSFP cages. The Q is quad, there are 4 SERDES
-lanes. You can use them for 1x 40G link, or you can split them into 4x
-10G links. So you either need one MAC or 4 MACs connecting to the
-cage, and this can change on the fly when a modules is ejected and
-replaced with another module. There are only one set of control pins
-for i2c, loss of signal, TX disable, module inserted. So where the
-interrupt/stream ID/etc are mapped needs some flexibility.
-
-There is also to some degree a conflict with hiding all this inside
-firmware. This is complex stuff. It is much better to have one core
-implementing in Linux plus some per hardware driver support, than
-having X firmware blobs, generally closed source, each with there own
-bugs which nobody can fix.
-
-     Andrew
+0JTQvtGA0L7Qs9C+0Lkg0LTRgNGD0LMsDQrQryDQkdCw0YDRgNC40YHRgtC10YAg0JDQstGA0LDQ
+sNC8INCc0L7RgNGA0LjRgdC+0L0sINCS0Ysg0L/QvtC70YPRh9C40LvQuCDQvNC+0LUg0L/RgNC1
+0LTRi9C00YPRidC10LUg0YHQvtC+0LHRidC10L3QuNC1INC00LvRjw0K0LLQsNGBPyDQoyDQvNC1
+0L3RjyDQtdGB0YLRjCDQtNC70Y8g0LLQsNGBINCy0LDQttC90LDRjyDQuNC90YTQvtGA0LzQsNGG
+0LjRjyDQviDQstCw0YjQtdC8INC90LDRgdC70LXQtNGB0YLQstC10L3QvdC+0LwNCtGE0L7QvdC0
+0LUg0LIg0YDQsNC30LzQtdGA0LUgKDIwIDUwMCAwMDAsMDApINC80LjQu9C70LjQvtC90L7QsiDQ
+tNC+0LvQu9Cw0YDQvtCyLCDQvtGB0YLQsNCy0LvQtdC90L3QvtC8INCy0LDQvA0K0L/QvtC60L7Q
+udC90YvQvCDRgNC+0LTRgdGC0LLQtdC90L3QuNC60L7QvCwg0LzQuNGB0YLQtdGAINCQ0LvQtdC6
+0YHQsNC90LTRgC4g0KLQsNC6INGH0YLQviwg0LXRgdC70Lgg0LLRiw0K0LfQsNC40L3RgtC10YDQ
+tdGB0L7QstCw0L3Riywg0YHQstGP0LbQuNGC0LXRgdGMINGB0L4g0LzQvdC+0Lkg0LTQu9GPINCx
+0L7Qu9C10LUg0L/QvtC00YDQvtCx0L3QvtC5INC40L3RhNC+0YDQvNCw0YbQuNC4Lg0K0KHQv9Cw
+0YHQuNCx0L4uDQrQkdCw0YDRgNC40YHRgtC10YAg0JDQstGA0LDQsNC8INCc0L7RgNGA0LjRgdC+
+0L0uDQouLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLg0KRGVhciBGcmllbmQsDQpJIGFtIEJhcnJp
+c3RlciBBYnJhaGFtIE1vcnJpc29uLCBEaWQgeW91IHJlY2VpdmUgbXkgcHJldmlvdXMgbWVzc2Fn
+ZQ0KdG8geW91PyBJIGhhdmUgYW4gaW1wb3J0YW50IGluZm9ybWF0aW9uIGZvciB5b3UgYWJvdXQg
+eW91ciBpbmhlcml0YW5jZQ0KZnVuZCB3b3J0aCBvZiAoJDIwLDUwMCwwMDAuMDApIE1pbGxpb24g
+d2hpY2ggd2FzIGxlZnQgZm9yIHlvdSBieSB5b3VyDQpsYXRlIHJlbGF0aXZlLCBNci4gQWxleGFu
+ZGVyLiBTbyBpZiB5b3UgYXJlIGludGVyZXN0ZWQgZ2V0IGJhY2sgdG8gbWUNCmZvciBtb3JlIGRl
+dGFpbHMuDQpUaGFuayB5b3UuDQpCYXJyaXN0ZXIgQWJyYWhhbSBNb3JyaXNvbi4NCg==
