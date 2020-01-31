@@ -2,55 +2,54 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 6A19014F233
-	for <lists+netdev@lfdr.de>; Fri, 31 Jan 2020 19:31:59 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1183C14F235
+	for <lists+netdev@lfdr.de>; Fri, 31 Jan 2020 19:32:48 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726494AbgAaSb4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 31 Jan 2020 13:31:56 -0500
-Received: from mail-oi1-f193.google.com ([209.85.167.193]:35760 "EHLO
-        mail-oi1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725939AbgAaSb4 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 31 Jan 2020 13:31:56 -0500
-Received: by mail-oi1-f193.google.com with SMTP id b18so8233926oie.2
-        for <netdev@vger.kernel.org>; Fri, 31 Jan 2020 10:31:55 -0800 (PST)
+        id S1726262AbgAaScq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 31 Jan 2020 13:32:46 -0500
+Received: from mail-pf1-f201.google.com ([209.85.210.201]:55418 "EHLO
+        mail-pf1-f201.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725907AbgAaScp (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 31 Jan 2020 13:32:45 -0500
+Received: by mail-pf1-f201.google.com with SMTP id 63so4460943pfw.22
+        for <netdev@vger.kernel.org>; Fri, 31 Jan 2020 10:32:45 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=google.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=+EOpzG/jT5UVOc5yPyXKRysOgujhRwVFjCr78FsrzTQ=;
-        b=ER6AX1bSIdiYktJaBLtjGu3zIjMWmuiOvjmYQ/TRc8c8oq4Ir4HBhJFwZl/XVCQZVt
-         OSD3opFWQnZHnelfsAKUtKlTBQzClzS0oPI3SMEb19HVzc+xVen0y4KnSJ/nsIJ87qKI
-         QDMmDIHg14hMkG3wB5Cir+nESxMRHHtKou68ktcZdQ6kuo40qpvZ9wi2Ioa1ZnFFyq6J
-         HkMidMpBumCjpnvUdYbetJtdhTR2ciVSKVdZGSJDZodV/uMO9aOQG4HQGDtMg0sO56er
-         SVmHWb35HBOKUq78uBAyzwI6sE2a7X219iQXFPgFI7JiK/rr65FZHZbe0Ha+Brtxje8n
-         w68g==
+        h=date:message-id:mime-version:subject:from:to:cc;
+        bh=J1QFr62Ow7U+Z8XwZP3S0a+dNZnNVzSk1ch4WzaK1jU=;
+        b=FGfm4Va62VUwBcSpP9sPtPXt64qBuq4YUnlQkreh/ck0MnaWLxUmQF17Si5Ko7wsdf
+         Gv7I5JpaKW+GTjIfhswzMygEva1tVsXh4AtxF+oM/e8narvU3tEv8149LtaqQXeSYAf1
+         ksnIhj5JpwZS9MU95XV8b0Y6og1y6MpB3vXFSx1j5n1Tm4GYpgVr6GCNN07y+K4WI2xT
+         hh4teimg0TEEirFw2HQ8yinkxwmaxOELBQycbvgHxfOuFcUillKjcsvOciFD+YIVr25q
+         8VOm/pvQRS3Om9fWvx5iGdoWGZL5XreNAW1yOvm4nkMQVZZ4D26UCtD0lmB/n4ePAFeF
+         xVPQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=+EOpzG/jT5UVOc5yPyXKRysOgujhRwVFjCr78FsrzTQ=;
-        b=ICjVIkvqtFHAodiaJv9w9ppw+XmmTwIJqv3nbuTy3bkEu1IdjYINEC0cGIRYNuky1u
-         3oD5LPm9kicucZ+Ot0qbdQW/jdpuE1dnBn82Ky6264wbV8YI93lGtH3Aw9OekEoLZ4j3
-         LH231hDzlxBJPgEOm+Iomth8S5fZvTgbviXZQA0Usm7SpnYtR4ubyxoa2OgP4QYZCAs9
-         mYWsW4Fl4ZTbzn/2/de4NZS+J5gb2EuDPZl2U9VUSlCOaXyGCC8fAyYRbApotBN9ioR9
-         P81SMJc65RlRSXhOp84yQSn/jv/541ODwbZtZ/6371LX8bdXhYmvfVmQDmExG+PvXa6r
-         o72w==
-X-Gm-Message-State: APjAAAXJlrzQwJYOy49LKUUGesedKBMbqrbcTqqHYyB5DMxaeitS9nNS
-        rho6rMmqQoENUyZ9cMtSXjKPicsEqlUgpav5VUW3aQ==
-X-Google-Smtp-Source: APXvYqwKF7GosKsWOCkrMLXb2fFiHkLr+8UYsiU7INXI7vIhZN+XpsxIQz3nvN+Z1H3+xtRdSOc65+iWKQSwlwrVySM=
-X-Received: by 2002:aca:2407:: with SMTP id n7mr7306241oic.14.1580495515232;
- Fri, 31 Jan 2020 10:31:55 -0800 (PST)
-MIME-Version: 1.0
-References: <20200131182247.126058-1-edumazet@google.com>
-In-Reply-To: <20200131182247.126058-1-edumazet@google.com>
-From:   Neal Cardwell <ncardwell@google.com>
-Date:   Fri, 31 Jan 2020 13:31:39 -0500
-Message-ID: <CADVnQy==XFxLXmJtmx3tnsscpUGr_sRNGFaRwg+64o7Dkwq2zg@mail.gmail.com>
-Subject: Re: [PATCH net] tcp: clear tp->delivered in tcp_disconnect()
-To:     Eric Dumazet <edumazet@google.com>
-Cc:     "David S . Miller" <davem@davemloft.net>,
-        netdev <netdev@vger.kernel.org>,
+        h=x-gm-message-state:date:message-id:mime-version:subject:from:to:cc;
+        bh=J1QFr62Ow7U+Z8XwZP3S0a+dNZnNVzSk1ch4WzaK1jU=;
+        b=OG60ty5hrSMcCFEMlRU/YHdS770VIcGkUDkOFbZSFnMP9MEfAazNn4ZoTkL1pdODn7
+         mafbvGXkF7Lr/Jx4jLN4YrvA4Fyjt5PdTdo14L/yGF6J61i81fDuIOjt8CJTHu6CM8+O
+         ekKBww/1HX7p1BlphTUeYy/i2e9a9xi58/uaxBQO1mGa+mDYeyxkXJgqqS+Jc9sYqd2W
+         LbZTExxbQsC8mK254oT8BrUKqvIQRv5nnq9UhOju/da3dhEsQCyEwF8ScJJWfai8tkna
+         zvRfNymD/zLanNWI+IXGkX0clDP5ARn21k9/ummcsow4BqXmKud+RBVmfG4ZvvaTAd6u
+         iFfQ==
+X-Gm-Message-State: APjAAAVRKnGyFmeOtLY9Tq9RCGCz24oZL5qAailXGFYIExN3fgveLxvg
+        me+OWrT3rK7XEHUGQZdAoDsPu/jpqmpzlg==
+X-Google-Smtp-Source: APXvYqyYyjDad34/VA51fHiZQzYw2J9Yu+zjroePMoadmArI8dNHmsvcTOZeg+gH9qi+lrkOHAh0RVsD4ibk4A==
+X-Received: by 2002:a63:4b48:: with SMTP id k8mr11683788pgl.362.1580495565001;
+ Fri, 31 Jan 2020 10:32:45 -0800 (PST)
+Date:   Fri, 31 Jan 2020 10:32:41 -0800
+Message-Id: <20200131183241.140636-1-edumazet@google.com>
+Mime-Version: 1.0
+X-Mailer: git-send-email 2.25.0.341.g760bfbb309-goog
+Subject: [PATCH net] tcp: clear tp->data_segs{in|out} in tcp_disconnect()
+From:   Eric Dumazet <edumazet@google.com>
+To:     "David S . Miller" <davem@davemloft.net>
+Cc:     netdev <netdev@vger.kernel.org>,
+        Neal Cardwell <ncardwell@google.com>,
+        Eric Dumazet <edumazet@google.com>,
         Eric Dumazet <eric.dumazet@gmail.com>,
+        Martin KaFai Lau <kafai@fb.com>,
         Yuchung Cheng <ycheng@google.com>
 Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
@@ -58,36 +57,33 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Jan 31, 2020 at 1:22 PM Eric Dumazet <edumazet@google.com> wrote:
->
-> tp->delivered needs to be cleared in tcp_disconnect().
->
-> tcp_disconnect() is rarely used, but it is worth fixing it.
->
-> Fixes: ddf1af6fa00e ("tcp: new delivery accounting")
-> Signed-off-by: Eric Dumazet <edumazet@google.com>
-> Cc: Yuchung Cheng <ycheng@google.com>
-> Cc: Neal Cardwell <ncardwell@google.com>
-> ---
->  net/ipv4/tcp.c | 1 +
->  1 file changed, 1 insertion(+)
->
-> diff --git a/net/ipv4/tcp.c b/net/ipv4/tcp.c
-> index dd57f1e3618160c1e51d6ff54afa984292614e5c..a8ffdfb61f422228d4af1de600b756c9d3894ef5 100644
-> --- a/net/ipv4/tcp.c
-> +++ b/net/ipv4/tcp.c
-> @@ -2622,6 +2622,7 @@ int tcp_disconnect(struct sock *sk, int flags)
->         tp->snd_cwnd = TCP_INIT_CWND;
->         tp->snd_cwnd_cnt = 0;
->         tp->window_clamp = 0;
-> +       tp->delivered = 0;
->         tp->delivered_ce = 0;
->         tcp_set_ca_state(sk, TCP_CA_Open);
->         tp->is_sack_reneg = 0;
-> --
+tp->data_segs_in and tp->data_segs_out need to be cleared
+in tcp_disconnect().
 
-Thanks, Eric!
+tcp_disconnect() is rarely used, but it is worth fixing it.
 
-Acked-by: Neal Cardwell <ncardwell@google.com>
+Fixes: a44d6eacdaf5 ("tcp: Add RFC4898 tcpEStatsPerfDataSegsOut/In")
+Signed-off-by: Eric Dumazet <edumazet@google.com>
+Cc: Martin KaFai Lau <kafai@fb.com>
+Cc: Yuchung Cheng <ycheng@google.com>
+Cc: Neal Cardwell <ncardwell@google.com>
+---
+ net/ipv4/tcp.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
-neal
+diff --git a/net/ipv4/tcp.c b/net/ipv4/tcp.c
+index a8ffdfb61f422228d4af1de600b756c9d3894ef5..3b601823f69a93dd20f9a4876945a87cd2196dc9 100644
+--- a/net/ipv4/tcp.c
++++ b/net/ipv4/tcp.c
+@@ -2643,6 +2643,8 @@ int tcp_disconnect(struct sock *sk, int flags)
+ 	tp->bytes_acked = 0;
+ 	tp->bytes_received = 0;
+ 	tp->bytes_retrans = 0;
++	tp->data_segs_in = 0;
++	tp->data_segs_out = 0;
+ 	tp->duplicate_sack[0].start_seq = 0;
+ 	tp->duplicate_sack[0].end_seq = 0;
+ 	tp->dsack_dups = 0;
+-- 
+2.25.0.341.g760bfbb309-goog
+
