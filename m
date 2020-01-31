@@ -2,101 +2,111 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 055C014ECB9
-	for <lists+netdev@lfdr.de>; Fri, 31 Jan 2020 13:50:59 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 98E3214ECCD
+	for <lists+netdev@lfdr.de>; Fri, 31 Jan 2020 13:58:28 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728537AbgAaMu5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 31 Jan 2020 07:50:57 -0500
-Received: from us-smtp-1.mimecast.com ([205.139.110.61]:50079 "EHLO
+        id S1728590AbgAaM6Z (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 31 Jan 2020 07:58:25 -0500
+Received: from us-smtp-1.mimecast.com ([205.139.110.61]:53914 "EHLO
         us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1728500AbgAaMu5 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 31 Jan 2020 07:50:57 -0500
+        by vger.kernel.org with ESMTP id S1728514AbgAaM6Z (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 31 Jan 2020 07:58:25 -0500
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1580475055;
+        s=mimecast20190719; t=1580475504;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          in-reply-to:in-reply-to:references:references;
-        bh=IQdfYs6m1PIY/KYb2XC8zs3buJwpVsuZJ9Imcy0toDk=;
-        b=UyhMdvc2K7ibwGxv3CxHWCghk4+MK+Q0q4jQ7jw/4ng+RfRlmlQS7FHUyp958shBodCcL4
-        GlX4H4CawB71Ssd+fBNSXwovGh8CXGS0RW9Ojg5AxjsovsGPkRClkhZfRHrmF9YFMQHFLu
-        FQWFG/gsZDM842VgVZlZMuzqxwU3TmU=
-Received: from mail-wr1-f71.google.com (mail-wr1-f71.google.com
- [209.85.221.71]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-348-MY6XfPj8PvywJbxhz2443w-1; Fri, 31 Jan 2020 07:50:54 -0500
-X-MC-Unique: MY6XfPj8PvywJbxhz2443w-1
-Received: by mail-wr1-f71.google.com with SMTP id b13so3273145wrx.22
-        for <netdev@vger.kernel.org>; Fri, 31 Jan 2020 04:50:53 -0800 (PST)
+        bh=sgTfRaVBDRCmw+myA/TCCEBxkQJTkrEbUjL7m09+FDs=;
+        b=FaEo//5HaHt/W60qJKW8OZ4HrmzLk/jL18UsYdD36UGD4qI3RN323GpYwscdIQRIAfSHv7
+        foS4X0I14tCcoNylbCcp25Rc7OuTH6vd63AAo5VrhKVhABejE6FkFfKHYvpXZL2X68ITd3
+        JbZx4wIHt9j+Z2ZAyCTNbGaSd/wWTCc=
+Received: from mail-wm1-f71.google.com (mail-wm1-f71.google.com
+ [209.85.128.71]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-380-4Gyaou66OryW-jp1eLDjjw-1; Fri, 31 Jan 2020 07:58:18 -0500
+X-MC-Unique: 4Gyaou66OryW-jp1eLDjjw-1
+Received: by mail-wm1-f71.google.com with SMTP id m18so2005657wmc.4
+        for <netdev@vger.kernel.org>; Fri, 31 Jan 2020 04:58:18 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:date:from:to:cc:subject:message-id:references
          :mime-version:content-disposition:in-reply-to;
-        bh=IQdfYs6m1PIY/KYb2XC8zs3buJwpVsuZJ9Imcy0toDk=;
-        b=sHhEKgn6dg57Mk4Z3pBeFeZmW9Ng3hgfH/4pjiQ9IAihaAZTrNoz00+F1WkVJ5Adw1
-         x1hg2wZayQM6UnaHOwkudPSDWZsIiXtUWp0nYR012j+9FWfFocLjZ+WybpDkeP9UdV77
-         1As1XHnqSFwvTBqr4N9urruiLx3wzPH54PVIKzhyvQZXcwc6mU8dyVpc1vgJC3FhXZKu
-         5vi63oXAYL6bL4LI39clri048wwxgZWdCCkwz3vo+DBcaOkkSQuDYPKZwsqYg4VrThYa
-         /DTY+ysCljMPnnXLjntZLINs6+TgM2P4bbjjSQLE4rqQeETnxShxYajoYg311qxCiWoI
-         DsKg==
-X-Gm-Message-State: APjAAAUDbTNAbhX2KeUQpCyTp7CHyw9uc6LKqzStnVUR4iJJkNwxxk/M
-        BapSJGhuWWz0pP2iJYjjf8N+alRi+6Q0r7MKwx9duQSfthgjjW9p2G3f6+6Yx5pRp4kLcACfxv4
-        7eZfGQQNhaC5bwaEg
-X-Received: by 2002:adf:ecc6:: with SMTP id s6mr11551258wro.345.1580475052837;
-        Fri, 31 Jan 2020 04:50:52 -0800 (PST)
-X-Google-Smtp-Source: APXvYqweB/7L086idovP3/4SPgeGs1xIZM42ItW5l1pfn10KHGPWX7CSxHQKj/qrkrY1oQZyKkUwBw==
-X-Received: by 2002:adf:ecc6:: with SMTP id s6mr11551247wro.345.1580475052667;
-        Fri, 31 Jan 2020 04:50:52 -0800 (PST)
+        bh=sgTfRaVBDRCmw+myA/TCCEBxkQJTkrEbUjL7m09+FDs=;
+        b=OaiWF3KJjvOeFlomFpLLOhgCgP9cJgvmxflvrM9rCgZqbwRQ6TPpqU/VMkPWpPCEZT
+         F/RK/z8rIexsGTHnW0cTNhcA3CmjNZZ4F1O/N8ohgM4NXXaDk7tYI/k5u+NnR5NwJLGJ
+         vYW6OApt16t7bFX77nWLu/Z//YFB1Xenw3Dfk6hILcFGt12T4FiNNqc/9UmTAPInKSwY
+         hIzTlllwgqe8aQzza7PwlEySmWMX0drlTxK256QQoi3KTjR81FTQTfXbCR+xsqMLifYF
+         5YdEnWaqAgHx5iMR09/tFJfLVhzS4LpiUVEuYC0oMnRvRqOhuwkYu/bg8Lcoh/Ly8cw7
+         6WXA==
+X-Gm-Message-State: APjAAAVGzLHiFyr0snYc99yy5LJNcE83qOqfmhqCWPn78O4WAEHccu1g
+        uqE60tfuGWTDtw8NSjntwyaLtGzRkK9pFGQMMvZYSADhbGk2rlXJ88oylRMN/QlQHrPeFAkhlPr
+        M42UbSKf5dWIE+fMu
+X-Received: by 2002:a5d:6a42:: with SMTP id t2mr7986612wrw.83.1580475496869;
+        Fri, 31 Jan 2020 04:58:16 -0800 (PST)
+X-Google-Smtp-Source: APXvYqyqpfosN7PC6N5s4p3w2nTqzSokPswONvfggt/rWgy+OdbNpPzqm1w6ZrFHstcEuhM+DkfmXQ==
+X-Received: by 2002:a5d:6a42:: with SMTP id t2mr7986603wrw.83.1580475496681;
+        Fri, 31 Jan 2020 04:58:16 -0800 (PST)
 Received: from pc-61.home (2a01cb0585138800b113760e11343d15.ipv6.abo.wanadoo.fr. [2a01:cb05:8513:8800:b113:760e:1134:3d15])
-        by smtp.gmail.com with ESMTPSA id p5sm11546624wrt.79.2020.01.31.04.50.51
+        by smtp.gmail.com with ESMTPSA id q1sm6211153wrw.5.2020.01.31.04.58.15
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 31 Jan 2020 04:50:52 -0800 (PST)
-Date:   Fri, 31 Jan 2020 13:50:50 +0100
+        Fri, 31 Jan 2020 04:58:16 -0800 (PST)
+Date:   Fri, 31 Jan 2020 13:58:14 +0100
 From:   Guillaume Nault <gnault@redhat.com>
-To:     Tom Parkin <tparkin@katalix.com>
-Cc:     James Chapman <jchapman@katalix.com>,
-        Ridge Kennedy <ridgek@alliedtelesis.co.nz>,
-        netdev <netdev@vger.kernel.org>
+To:     Ridge Kennedy <ridgek@alliedtelesis.co.nz>
+Cc:     netdev@vger.kernel.org
 Subject: Re: [PATCH net] l2tp: Allow duplicate session creation with UDP
-Message-ID: <20200131125050.GB32428@pc-61.home>
-References: <20200118191336.GC12036@linux.home>
- <20200120150946.GB4142@jackdaw>
- <20200121163531.GA6469@localhost.localdomain>
- <CAEwTi7Q4JzaCwug3M8Aa9y1yFXm1qBjQvKq3eiw=ekBft9wETw@mail.gmail.com>
- <20200125115702.GB4023@p271.fit.wifi.vutbr.cz>
- <72007ca8-3ad4-62db-1b38-1ecefb82cb20@katalix.com>
- <20200129114419.GA11337@pc-61.home>
- <0d7f9d7e-e13b-8254-6a90-fc08bade3e16@katalix.com>
- <20200130223440.GA28541@pc-61.home>
- <20200131095553.GA4245@jackdaw>
+Message-ID: <20200131125814.GC32428@pc-61.home>
+References: <20200115223446.7420-1-ridge.kennedy@alliedtelesis.co.nz>
+ <20200116123854.GA23974@linux.home>
+ <alpine.DEB.2.21.2001171016080.9038@ridgek-dl.ws.atlnz.lc>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20200131095553.GA4245@jackdaw>
+In-Reply-To: <alpine.DEB.2.21.2001171016080.9038@ridgek-dl.ws.atlnz.lc>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Jan 31, 2020 at 09:55:54AM +0000, Tom Parkin wrote:
-> On  Thu, Jan 30, 2020 at 23:34:40 +0100, Guillaume Nault wrote:
-> > To summarise my idea:
+On Fri, Jan 17, 2020 at 10:26:09AM +1300, Ridge Kennedy wrote:
+> On Thu, 16 Jan 2020, Guillaume Nault wrote:
+> > On Thu, Jan 16, 2020 at 11:34:47AM +1300, Ridge Kennedy wrote:
+> > > diff --git a/net/l2tp/l2tp_core.c b/net/l2tp/l2tp_core.c
+> > > index f82ea12bac37..0cc86227c618 100644
+> > > --- a/net/l2tp/l2tp_core.c
+> > > +++ b/net/l2tp/l2tp_core.c
+> > > @@ -323,7 +323,9 @@ int l2tp_session_register(struct l2tp_session *session,
+> > >  		spin_lock_bh(&pn->l2tp_session_hlist_lock);
+> > > 
+> > >  		hlist_for_each_entry(session_walk, g_head, global_hlist)
+> > > -			if (session_walk->session_id == session->session_id) {
+> > > +			if (session_walk->session_id == session->session_id &&
+> > > +			    (session_walk->tunnel->encap == L2TP_ENCAPTYPE_IP ||
+> > > +			     tunnel->encap == L2TP_ENCAPTYPE_IP)) {
+> > >  				err = -EEXIST;
+> > >  				goto err_tlock_pnlock;
+> > >  			}
+> > Well, I think we have a more fundamental problem here. By adding
+> > L2TPoUDP sessions to the global list, we allow cross-talks with L2TPoIP
+> > sessions. That is, if we have an L2TPv3 session X running over UDP and
+> > we receive an L2TP_IP packet targetted at session ID X, then
+> > l2tp_session_get() will return the L2TP_UDP session to l2tp_ip_recv().
 > > 
-> >   * Short term plan:
-> >     Integrate a variant of Ridge's patch, as it's simple, can easily be
-> >     backported to -stable and doesn't prevent the future use of global
-> >     session IDs (as those will be specified with L2TP_ATTR_SCOPE).
+> > I guess l2tp_session_get() should be dropped and l2tp_ip_recv() should
+> > look up the session in the context of its socket, like in the UDP case.
 > > 
-> >   * Long term plan:
-> >     Implement L2TP_ATTR_SCOPE, a session attribute defining if the
-> >     session ID is global or scoped to the X-tuple (3-tuple for IP,
-> >     5-tuple for UDP).
-> >     Original behaviour would be respected to avoid breaking existing
-> >     applications. So, by default, IP encapsulation would use global
-> >     scope and UDP encapsulation would use 5-tuple scope.
-> > 
-> > Does that look like a good way forward?
+> > But for the moment, what about just not adding L2TP_UDP sessions to the
+> > global list? That should fix both your problem and the L2TP_UDP/L2TP_IP
+> > cross-talks.
 > 
-> FWIW, this sounds reasonable to me too.
+> I did consider not adding the L2TP_UDP sessions to the global list, but that
+> change looked a little more involved as the netlink interface was also
+> making use of the list to lookup sessions by ifname. At a minimum
+> it looks like this would require rework of l2tp_session_get_by_ifname().
 > 
-Nice to see that we're all on the same page.
-Thanks!
+Yes, you're right. Now that we all agree on this fix, can you please
+repost your patch?
+
+BTW, I wouldn't mind a small comment on top of the conditional to
+explain that IP encap assumes globally unique session IDs while UDP
+doesn't.
 
