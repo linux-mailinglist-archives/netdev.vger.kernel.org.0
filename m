@@ -2,51 +2,114 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 7F4BB14F0D9
-	for <lists+netdev@lfdr.de>; Fri, 31 Jan 2020 17:48:32 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A6C9414F0DA
+	for <lists+netdev@lfdr.de>; Fri, 31 Jan 2020 17:48:48 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726761AbgAaQsa (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 31 Jan 2020 11:48:30 -0500
-Received: from mail.kernel.org ([198.145.29.99]:35954 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726139AbgAaQsa (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 31 Jan 2020 11:48:30 -0500
-Received: from cakuba.hsd1.ca.comcast.net (unknown [199.201.64.133])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id E8DBD20663;
-        Fri, 31 Jan 2020 16:48:29 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1580489310;
-        bh=RjDOjAfEFNF/6+19JpT8seuHWam68R/PXLK1yp/bddE=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=YWaZtywFM9dIyzFGSPrDj507x68q+sdoOw/Jc2R/+l0vNDBwQIxFJDe11ZbIss7K9
-         5a4WQlzWq2VxYS2dbxgNWHA38cYO5+lD53/mkFqiTmyRHHghzPgV6Cz9iZOwUu54Kw
-         pdVC10UKNIy4MvpxY6vQby+0itVCrZdFVuCbY7uE=
-Date:   Fri, 31 Jan 2020 08:48:29 -0800
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Shannon Nelson <snelson@pensando.io>
-Cc:     netdev@vger.kernel.org, davem@davemloft.net
-Subject: Re: [PATCH net] ionic: fix rxq comp packet type mask
-Message-ID: <20200131084829.15ceddcb@cakuba.hsd1.ca.comcast.net>
-In-Reply-To: <20200130180706.4891-1-snelson@pensando.io>
-References: <20200130180706.4891-1-snelson@pensando.io>
+        id S1726805AbgAaQsq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 31 Jan 2020 11:48:46 -0500
+Received: from eu-smtp-delivery-151.mimecast.com ([146.101.78.151]:59671 "EHLO
+        eu-smtp-delivery-151.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1726139AbgAaQsq (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 31 Jan 2020 11:48:46 -0500
+Received: from AcuMS.aculab.com (156.67.243.126 [156.67.243.126]) (Using
+ TLS) by relay.mimecast.com with ESMTP id
+ uk-mta-253-8DHeLZ-RMUWmaiJnsa3xjg-1; Fri, 31 Jan 2020 16:48:41 +0000
+Received: from AcuMS.Aculab.com (fd9f:af1c:a25b:0:43c:695e:880f:8750) by
+ AcuMS.aculab.com (fd9f:af1c:a25b:0:43c:695e:880f:8750) with Microsoft SMTP
+ Server (TLS) id 15.0.1347.2; Fri, 31 Jan 2020 16:48:41 +0000
+Received: from AcuMS.Aculab.com ([fe80::43c:695e:880f:8750]) by
+ AcuMS.aculab.com ([fe80::43c:695e:880f:8750%12]) with mapi id 15.00.1347.000;
+ Fri, 31 Jan 2020 16:48:41 +0000
+From:   David Laight <David.Laight@ACULAB.COM>
+To:     'Eric Dumazet' <eric.dumazet@gmail.com>,
+        netdev <netdev@vger.kernel.org>
+Subject: RE: Freeing 'temporary' IPv4 route table entries.
+Thread-Topic: Freeing 'temporary' IPv4 route table entries.
+Thread-Index: AdXXj93DZx0FEI6/TbeS56CZssFH8AAvsEAAAAGXP8A=
+Date:   Fri, 31 Jan 2020 16:48:40 +0000
+Message-ID: <95631ce55d474245b623baba2f9d01af@AcuMS.aculab.com>
+References: <bee231ddc34142d2a96bfdc9a6a2f57c@AcuMS.aculab.com>
+ <3cfcd1b7-96e4-a5b6-21e7-8182a367f349@gmail.com>
+In-Reply-To: <3cfcd1b7-96e4-a5b6-21e7-8182a367f349@gmail.com>
+Accept-Language: en-GB, en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-ms-exchange-transport-fromentityheader: Hosted
+x-originating-ip: [10.202.205.107]
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+X-MC-Unique: 8DHeLZ-RMUWmaiJnsa3xjg-1
+X-Mimecast-Spam-Score: 0
+X-Mimecast-Originator: aculab.com
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: base64
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 30 Jan 2020 10:07:06 -0800, Shannon Nelson wrote:
-> Be sure to include all the packet type bits in the mask.
-> 
-> Fixes: fbfb8031533c ("ionic: Add hardware init and device commands")
-> 
-> Signed-off-by: Shannon Nelson <snelson@pensando.io>
+RnJvbTogRXJpYyBEdW1hemV0DQo+IFNlbnQ6IDMxIEphbnVhcnkgMjAyMCAxNTo1NA0KPiANCj4g
+T24gMS8zMS8yMCAyOjI2IEFNLCBEYXZpZCBMYWlnaHQgd3JvdGU6DQo+ID4gSWYgSSBjYWxsIHNl
+bmRtc2coKSBvbiBhIHJhdyBzb2NrZXQgKG9yIHByb2JhYmx5DQo+ID4gYW4gdW5jb25uZWN0ZWQg
+VURQIG9uZSkgcnRfZHN0X2FsbG9jKCkgaXMgY2FsbGVkDQo+ID4gaW4gdGhlIGJvd2VscyBvZiBp
+cF9yb3V0ZV9vdXRwdXRfZmxvdygpIHRvIGhvbGQNCj4gPiB0aGUgcmVtb3RlIGFkZHJlc3MuDQo+
+ID4NCj4gPiBNdWNoIGxhdGVyIF9fZGV2X3F1ZXVlX3htaXQoKSBjYWxscyBkc3RfcmVsZWFzZSgp
+DQo+ID4gdG8gZGVsZXRlIHRoZSAnZHN0JyByZWZlcmVuY2VkIGZyb20gdGhlIHNrYi4NCj4gPg0K
+PiA+IFByaW9yIHRvIGY4ODY0OTcyIGl0IGRpZCBqdXN0IHRoYXQuDQo+ID4gQWZ0ZXJ3YXJkcyB0
+aGUgYWN0dWFsIGRlbGV0ZSBpcyAnbGF1bmRlcmVkJyB0aHJvdWdoIHRoZQ0KPiA+IHJjdSBjYWxs
+YmFja3MuDQo+ID4gVGhpcyBpcyBwcm9iYWJseSBvayBmb3IgZHN0IHRoYXQgYXJlIGFjdHVhbGx5
+IGF0dGFjaGVkDQo+ID4gdG8gc29ja2V0cyBvciB0dW5uZWxzICh3aGljaCBhcmVuJ3QgZnJlZWQg
+dmVyeSBvZnRlbikuDQo+ID4gQnV0IGl0IGxlYWRzIHRvIGhvcnJpZCBsb25nIHJjdSBjYWxsYmFj
+ayBzZXF1ZW5jZXMNCj4gPiB3aGVuIGEgbG90IG9mIG1lc3NhZ2VzIGFyZSBzZW50Lg0KPiA+IChB
+IHNhbXBsZSBvZiAxIGdhdmUgbmVhcmx5IDEwMCBkZWxldGVzIGluIG9uZSBnby4pDQo+ID4gVGhl
+cmUgaXMgYWxzbyB0aGUgYWRkaXRpb25hbCBjb3N0IG9mIGRlZmVycmluZyB0aGUgZnJlZQ0KPiA+
+IChhbmQgdGhlIGV4dHJhIHJldHBvbGluZSBldGMpLg0KPiA+DQo+ID4gSVNUTSB0aGF0IHRoZSBk
+c3RfYWxsb2MoKSBkb25lIGR1cmluZyBhIHNlbmQgc2hvdWxkDQo+ID4gc2V0IGEgZmxhZyBzbyB0
+aGF0IHRoZSAnZHN0JyBjYW4gYmUgaW1tZWRpYXRlbHkNCj4gPiBmcmVlZCBzaW5jZSBpdCBpcyBr
+bm93biB0aGF0IG5vIG9uZSBjYW4gYmUgcGlja2luZyB1cA0KPiA+IGEgcmVmZXJlbmNlIGFzIGl0
+IGlzIGJlaW5nIGZyZWVkLg0KPiA+DQo+ID4gVGhvdWdodHM/DQo+ID4NCj4gDQo+IEkgdGhvdWdo
+dCB0aGVzZSByb3V0ZXMgd2VyZSBjYWNoZWQgaW4gcGVyLWNwdSBjYWNoZXMuDQo+IA0KPiBBdCBs
+ZWFzdCBmb3IgVURQIEkgZG8gbm90IHNlZSByY3UgY2FsbGJhY2tzIGJlaW5nIHF1ZXVlZWQuDQoN
+CkZvciByYXdpcCAoYWN0dWFsbHkgc2VuZGluZyBVRFApIGFsbCB0aGUgc2VuZHMgZ286DQoNCjI4
+MjcxMC40MDc3NTkgfCAgIDApIHBpZC0yOTE1OCAgfCAgICAgICAgICAgICAgIHwgICAgICAgICAg
+aW5ldF9zZW5kbXNnKCkgew0KMjgyNzEwLjQwNzc1OSB8ICAgMCkgcGlkLTI5MTU4ICB8ICAgMC4w
+OTMgdXMgICAgfCAgICAgICAgICAgIGluZXRfc2VuZF9wcmVwYXJlKCk7DQoyODI3MTAuNDA3NzU5
+IHwgICAwKSBwaWQtMjkxNTggIHwgICAgICAgICAgICAgICB8ICAgICAgICAgICAgcmF3X3NlbmRt
+c2coKSB7DQoyODI3MTAuNDA3NzU5IHwgICAwKSBwaWQtMjkxNTggIHwgICAwLjA5NCB1cyAgICB8
+ICAgICAgICAgICAgICBzZWN1cml0eV9za19jbGFzc2lmeV9mbG93KCk7DQoyODI3MTAuNDA3NzYw
+IHwgICAwKSBwaWQtMjkxNTggIHwgICAgICAgICAgICAgICB8ICAgICAgICAgICAgICBpcF9yb3V0
+ZV9vdXRwdXRfZmxvdygpIHsNCjI4MjcxMC40MDc3NjAgfCAgIDApIHBpZC0yOTE1OCAgfCAgICAg
+ICAgICAgICAgIHwgICAgICAgICAgICAgICAgaXBfcm91dGVfb3V0cHV0X2tleV9oYXNoKCkgew0K
+MjgyNzEwLjQwNzc2MCB8ICAgMCkgcGlkLTI5MTU4ICB8ICAgICAgICAgICAgICAgfCAgICAgICAg
+ICAgICAgICAgIGlwX3JvdXRlX291dHB1dF9rZXlfaGFzaF9yY3UoKSB7DQoyODI3MTAuNDA3NzYw
+IHwgICAwKSBwaWQtMjkxNTggIHwgICAwLjE2MCB1cyAgICB8ICAgICAgICAgICAgICAgICAgICBm
+aWJfdGFibGVfbG9va3VwKCk7DQoyODI3MTAuNDA3NzYwIHwgICAwKSBwaWQtMjkxNTggIHwgICAg
+ICAgICAgICAgICB8ICAgICAgICAgICAgICAgICAgICBmaWJfc2VsZWN0X3BhdGgoKSB7DQoyODI3
+MTAuNDA3NzYwIHwgICAwKSBwaWQtMjkxNTggIHwgICAwLjEwMiB1cyAgICB8ICAgICAgICAgICAg
+ICAgICAgICAgIGZpYl9yZXN1bHRfcHJlZnNyYygpOw0KMjgyNzEwLjQwNzc2MCB8ICAgMCkgcGlk
+LTI5MTU4ICB8ICAgMC4zMDIgdXMgICAgfCAgICAgICAgICAgICAgICAgICAgfSAvKiBmaWJfc2Vs
+ZWN0X3BhdGggKi8NCjI4MjcxMC40MDc3NjEgfCAgIDApIHBpZC0yOTE1OCAgfCAgIDAuMTAzIHVz
+ICAgIHwgICAgICAgICAgICAgICAgICAgIGZpbmRfZXhjZXB0aW9uKCk7DQoyODI3MTAuNDA3NzYx
+IHwgICAwKSBwaWQtMjkxNTggIHwgICAgICAgICAgICAgICB8ICAgICAgICAgICAgICAgICAgICBy
+dF9kc3RfYWxsb2MoKSB7DQoyODI3MTAuNDA3NzYxIHwgICAwKSBwaWQtMjkxNTggIHwgICAgICAg
+ICAgICAgICB8ICAgICAgICAgICAgICAgICAgICAgIGRzdF9hbGxvYygpIHsNCjI4MjcxMC40MDc3
+NjEgfCAgIDApIHBpZC0yOTE1OCAgfCAgICAgICAgICAgICAgIHwgICAgICAgICAgICAgICAgICAg
+ICAgICBrbWVtX2NhY2hlX2FsbG9jKCkgew0KMjgyNzEwLjQwNzc2MSB8ICAgMCkgcGlkLTI5MTU4
+ICB8ICAgMC4xMDIgdXMgICAgfCAgICAgICAgICAgICAgICAgICAgICAgICAgc2hvdWxkX2ZhaWxz
+bGFiKCk7DQoyODI3MTAuNDA3NzYxIHwgICAwKSBwaWQtMjkxNTggIHwgICAwLjM2MiB1cyAgICB8
+ICAgICAgICAgICAgICAgICAgICAgICAgfSAvKiBrbWVtX2NhY2hlX2FsbG9jICovDQoyODI3MTAu
+NDA3NzYxIHwgICAwKSBwaWQtMjkxNTggIHwgICAwLjA5OCB1cyAgICB8ICAgICAgICAgICAgICAg
+ICAgICAgICAgZHN0X2luaXQoKTsNCjI4MjcxMC40MDc3NjIgfCAgIDApIHBpZC0yOTE1OCAgfCAg
+IDAuNzQ3IHVzICAgIHwgICAgICAgICAgICAgICAgICAgICAgfSAvKiBkc3RfYWxsb2MgKi8NCjI4
+MjcxMC40MDc3NjIgfCAgIDApIHBpZC0yOTE1OCAgfCAgIDAuOTM2IHVzICAgIHwgICAgICAgICAg
+ICAgICAgICAgIH0gLyogcnRfZHN0X2FsbG9jICovDQoNClRoZW4gZHN0X3JlbGVhc2UoKSBnZXRz
+IGNhbGxlZCBmcm9tIF9fZGV2X3F1ZXVlX3htaXQoKS4NCkluIHRoaXMgdGVzdCBhbGwgdGhlIGRl
+c3RpbmF0aW9ucyBhcmUgdGhlIHNhbWUsIGJ1dCBpbiByZWFsIGxpZmUNCnRoZXJlIHdpbGwgYmUg
+MTAwcyBvZiBkaWZmZXJlbnQgYWRkcmVzc2VzLg0KDQpBcmUgdGhlIGFkZHJlc3NlcyBpbnNlcnRl
+ZCBpbiB0aGUgY2FjaGUgYXQgdGhlIHN0YXJ0IG9mIHRoZSBzZW5kIGFuZA0KdGhlbiBkZWxldGVk
+IG9uY2UgdGhlIG1lc3NhZ2UgaXMgc2VudD8NCg0KSSdtIG5vdCBzdXJlIHRoZXJlIGFyZSBhbnkg
+J2Nvbm5lY3RlZCcgc29ja2V0cyB0byB0aGF0IElQIGFkZHJlc3MuDQooVGhpcyBpcyBTSVAgKyBS
+VFAgdGVzdGluZy4pDQoNCglEYXZpZA0KDQotDQpSZWdpc3RlcmVkIEFkZHJlc3MgTGFrZXNpZGUs
+IEJyYW1sZXkgUm9hZCwgTW91bnQgRmFybSwgTWlsdG9uIEtleW5lcywgTUsxIDFQVCwgVUsNClJl
+Z2lzdHJhdGlvbiBObzogMTM5NzM4NiAoV2FsZXMpDQo=
 
-Applied, thank you. 
-
-Please remember not to add empty lines between tags and explain
-user-visible impact of fixes.
