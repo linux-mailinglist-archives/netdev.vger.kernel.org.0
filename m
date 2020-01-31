@@ -2,40 +2,68 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 9904214F1FC
-	for <lists+netdev@lfdr.de>; Fri, 31 Jan 2020 19:13:24 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 27A9414F20C
+	for <lists+netdev@lfdr.de>; Fri, 31 Jan 2020 19:19:41 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1725909AbgAaSNV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 31 Jan 2020 13:13:21 -0500
-Received: from mga07.intel.com ([134.134.136.100]:65470 "EHLO mga07.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725268AbgAaSNV (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 31 Jan 2020 13:13:21 -0500
-X-Amp-Result: SKIPPED(no attachment in message)
-X-Amp-File-Uploaded: False
-Received: from orsmga004.jf.intel.com ([10.7.209.38])
-  by orsmga105.jf.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 31 Jan 2020 10:12:20 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.70,386,1574150400"; 
-   d="scan'208";a="377415638"
-Received: from jekeller-mobl1.amr.corp.intel.com (HELO [134.134.177.86]) ([134.134.177.86])
-  by orsmga004.jf.intel.com with ESMTP; 31 Jan 2020 10:12:19 -0800
-Subject: Re: [PATCH 04/15] netdevsim: support taking immediate snapshot via
- devlink
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     netdev@vger.kernel.org, jiri@resnulli.us, valex@mellanox.com,
-        linyunsheng@huawei.com, lihong.yang@intel.com
-References: <20200130225913.1671982-1-jacob.e.keller@intel.com>
- <20200130225913.1671982-5-jacob.e.keller@intel.com>
- <20200131100712.5ba1ce65@cakuba.hsd1.ca.comcast.net>
-From:   Jacob Keller <jacob.e.keller@intel.com>
-Organization: Intel Corporation
-Message-ID: <eda2109e-edb8-d37c-ca85-80e767cdf89b@intel.com>
-Date:   Fri, 31 Jan 2020 10:12:19 -0800
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
- Thunderbird/68.4.2
+        id S1726295AbgAaSTg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 31 Jan 2020 13:19:36 -0500
+Received: from mail-io1-f65.google.com ([209.85.166.65]:36643 "EHLO
+        mail-io1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725909AbgAaSTg (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 31 Jan 2020 13:19:36 -0500
+Received: by mail-io1-f65.google.com with SMTP id d15so9207976iog.3;
+        Fri, 31 Jan 2020 10:19:34 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=c8i1GlKInlXyN29xwVsz2/AwFCxW5o2ypUfu5ITlzRY=;
+        b=Sf0Ptb03U35DGJ7wylQ0dAs6FQUPlkNKMKX4E04EOWICW9PDZP1sV3I+9Mg05AkdMs
+         yoOh6VuWR64rPBSGk6LMEZImeLl80RM1R6FwdXk4WX+mWCWbLPUGdXBxQwMtg/EgvMbR
+         +jfAZJ09295ytpQW6b2ulVgE+c8f3xHB3hK8wrfrVDcC3QYbv0J+Z+GILXtbK3XwiHTJ
+         8jsFQqj/D6/bFkPZRCbYKp9yZeYOxn8zx3s0599ykKBXiVJntPHn5geFpLus6SqDOWni
+         M2StTip5BgKKwJveXYeL+Kz6Ddbw/KlxwEBkVexFDlbEo8VzTGEWrZj+7YkMatcXxULI
+         4Yig==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=c8i1GlKInlXyN29xwVsz2/AwFCxW5o2ypUfu5ITlzRY=;
+        b=tFxE2gVEkmS3ciDmj07mmEAZGyV7K6fLF5llj/saF+r1jm26lYxM9ZN/NH62YpyPV/
+         RCOplfpeKlEpslQUffem3K+EZaj3omOGWVcS6y1dC/Niofl/9nB/7XVY8x1tBY9hOlDy
+         r3pVbFPnpIbbR2mlP/u/SZP3x06tgok/RuzX8DpAIybus+d4GarNDpyzTJ1vIhFnMz3Z
+         GHZadMKeADYUIxduvn9fSjztHCP0V+a3oi9pJyjM++NNeaADVfIhWrCrPdk/EgZHFuGi
+         xlBTB7q55qPcKbfZaFbDtG+GZMtbSuO39lLgmLdv5arM/1jiulrK+0KtRiAt7LfeZW2j
+         hFAg==
+X-Gm-Message-State: APjAAAVgS2JkTWed3W1ybGO/5YRCGQQg9snnzWip/yT4/OPiBiWmYO2Q
+        HYiEJ7tGDRJK/y3ojQ4NfbetoeHj
+X-Google-Smtp-Source: APXvYqy4Fu0s+h1yZg5wMFoMycKioZaG7S+3BtI06GDfKvNq+GTOzFz3vJ36/F4bq4GlMueNUdnG5A==
+X-Received: by 2002:a65:420d:: with SMTP id c13mr11908567pgq.101.1580494357755;
+        Fri, 31 Jan 2020 10:12:37 -0800 (PST)
+Received: from ?IPv6:2620:15c:2c1:200:55c7:81e6:c7d8:94b? ([2620:15c:2c1:200:55c7:81e6:c7d8:94b])
+        by smtp.gmail.com with ESMTPSA id ev5sm8578011pjb.4.2020.01.31.10.12.35
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 31 Jan 2020 10:12:36 -0800 (PST)
+Subject: Re: [PATCH 2/3] tcp: Reduce SYN resend delay if a suspicous ACK is
+ received
+To:     Neal Cardwell <ncardwell@google.com>, sjpark@amazon.com
+Cc:     Eric Dumazet <edumazet@google.com>,
+        David Miller <davem@davemloft.net>, shuah@kernel.org,
+        Netdev <netdev@vger.kernel.org>, linux-kselftest@vger.kernel.org,
+        LKML <linux-kernel@vger.kernel.org>, sj38.park@gmail.com,
+        aams@amazon.com, SeongJae Park <sjpark@amazon.de>,
+        Yuchung Cheng <ycheng@google.com>
+References: <20200131122421.23286-1-sjpark@amazon.com>
+ <20200131122421.23286-3-sjpark@amazon.com>
+ <CADVnQyk9xevY0kA9Sm9S9MOBNvcuiY+7YGBtGuoue+r+eizyOA@mail.gmail.com>
+From:   Eric Dumazet <eric.dumazet@gmail.com>
+Message-ID: <dd146bac-4e8a-4119-2d2b-ce6bf2daf7ce@gmail.com>
+Date:   Fri, 31 Jan 2020 10:12:34 -0800
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.2.2
 MIME-Version: 1.0
-In-Reply-To: <20200131100712.5ba1ce65@cakuba.hsd1.ca.comcast.net>
+In-Reply-To: <CADVnQyk9xevY0kA9Sm9S9MOBNvcuiY+7YGBtGuoue+r+eizyOA@mail.gmail.com>
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
@@ -44,100 +72,84 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 1/31/2020 10:07 AM, Jakub Kicinski wrote:
-> On Thu, 30 Jan 2020 14:58:59 -0800, Jacob Keller wrote:
->> Implement the .snapshot region operation for the dummy data region. This
->> enables a region snapshot to be taken upon request via the new
->> DEVLINK_CMD_REGION_SNAPSHOT command.
+
+
+On 1/31/20 7:10 AM, Neal Cardwell wrote:
+> On Fri, Jan 31, 2020 at 7:25 AM <sjpark@amazon.com> wrote:
 >>
->> Signed-off-by: Jacob Keller <jacob.e.keller@intel.com>
->> ---
->>  drivers/net/netdevsim/dev.c                   | 38 +++++++++++++++----
->>  .../drivers/net/netdevsim/devlink.sh          |  5 +++
->>  2 files changed, 36 insertions(+), 7 deletions(-)
+>> From: SeongJae Park <sjpark@amazon.de>
 >>
->> diff --git a/drivers/net/netdevsim/dev.c b/drivers/net/netdevsim/dev.c
->> index d521b7bfe007..924cd328037f 100644
->> --- a/drivers/net/netdevsim/dev.c
->> +++ b/drivers/net/netdevsim/dev.c
->> @@ -38,24 +38,47 @@ static struct dentry *nsim_dev_ddir;
->>  
->>  #define NSIM_DEV_DUMMY_REGION_SIZE (1024 * 32)
->>  
->> +static int nsim_dev_take_snapshot(struct devlink *devlink,
+>> When closing a connection, the two acks that required to change closing
+>> socket's status to FIN_WAIT_2 and then TIME_WAIT could be processed in
+>> reverse order.  This is possible in RSS disabled environments such as a
+>> connection inside a host.
+>>
+>> For example, expected state transitions and required packets for the
+>> disconnection will be similar to below flow.
+>>
+>>          00 (Process A)                         (Process B)
+>>          01 ESTABLISHED                         ESTABLISHED
+>>          02 close()
+>>          03 FIN_WAIT_1
+>>          04             ---FIN-->
+>>          05                                     CLOSE_WAIT
+>>          06             <--ACK---
+>>          07 FIN_WAIT_2
+>>          08             <--FIN/ACK---
+>>          09 TIME_WAIT
+>>          10             ---ACK-->
+>>          11                                     LAST_ACK
+>>          12 CLOSED                              CLOSED
 > 
-> nit: break the line after static int, you've done it in other patches
->     so I trust you agree it's a superior formatting style :)
+> AFAICT this sequence is not quite what would happen, and that it would
+> be different starting in line 8, and would unfold as follows:
 > 
+>           08                                     close()
+>           09                                     LAST_ACK
+>           10             <--FIN/ACK---
+>           11 TIME_WAIT
+>           12             ---ACK-->
+>           13 CLOSED                              CLOSED
+> 
+> 
+>> The acks in lines 6 and 8 are the acks.  If the line 8 packet is
+>> processed before the line 6 packet, it will be just ignored as it is not
+>> a expected packet,
+> 
+> AFAICT that is where the bug starts.
+> 
+> AFAICT, from first principles, when process A receives the FIN/ACK it
+> should move to TIME_WAIT even if it has not received a preceding ACK.
+> That's because ACKs are cumulative. So receiving a later cumulative
+> ACK conveys all the information in the previous ACKs.
+> 
+> Also, consider the de facto standard state transition diagram from
+> "TCP/IP Illustrated, Volume 2: The Implementation", by Wright and
+> Stevens, e.g.:
+> 
+>   https://courses.cs.washington.edu/courses/cse461/19sp/lectures/TCPIP_State_Transition_Diagram.pdf
+> 
+> This first-principles analysis agrees with the Wright/Stevens diagram,
+> which says that a connection in FIN_WAIT_1 that receives a FIN/ACK
+> should move to TIME_WAIT.
+> 
+> This seems like a faster and more robust solution than installing
+> special timers.
+> 
+> Thoughts?
 
-Sure.
 
->> +				  struct netlink_ext_ack *extack,
->> +				  u8 **data,
->> +				  devlink_snapshot_data_dest_t **destructor)
->> +{
->> +	void *dummy_data;
->> +
->> +	dummy_data = kmalloc(NSIM_DEV_DUMMY_REGION_SIZE, GFP_KERNEL);
->> +	if (!dummy_data) {
->> +		NL_SET_ERR_MSG(extack, "Out of memory");
-> 
-> Unnecessary, there will be an OOM splat, and ENOMEM is basically
-> exactly the same as the message.
-> 
->> +		return -ENOMEM;
->> +	}
->> +
->> +	get_random_bytes(dummy_data, NSIM_DEV_DUMMY_REGION_SIZE);
->> +
->> +	*data = dummy_data;
->> +	*destructor = kfree;
-> 
-> Is there any driver which uses different destructor for different
-> snapshots? Looks like something we could put in ops, maybe?
-> 
+This is orthogonal I think.
 
-Hmm. Yea I think you're right making this tied to the ops structure
-instead of the callback makes sense to me.
+No matter how hard we fix the other side, we should improve the active side.
 
->> +	return 0;
->> +}
->> +
->>  static ssize_t nsim_dev_take_snapshot_write(struct file *file,
->>  					    const char __user *data,
->>  					    size_t count, loff_t *ppos)
->>  {
->>  	struct nsim_dev *nsim_dev = file->private_data;
->> -	void *dummy_data;
->> +	devlink_snapshot_data_dest_t *destructor;
->> +	u8 *dummy_data;
->>  	int err;
->>  	u32 id;
->>  
->> -	dummy_data = kmalloc(NSIM_DEV_DUMMY_REGION_SIZE, GFP_KERNEL);
->> -	if (!dummy_data)
->> -		return -ENOMEM;
->> -
->> -	get_random_bytes(dummy_data, NSIM_DEV_DUMMY_REGION_SIZE);
->> +	err = nsim_dev_take_snapshot(priv_to_devlink(nsim_dev), NULL,
->> +				     &dummy_data, &destructor);
->> +	if (err) {
->> +		pr_err("Failed to capture region snapshot\n");
-> 
-> Also not a very useful message for netdevsim IMHO give the caller
-> clearly requested a snapshot and will get a more informative error 
-> from errno.
-> 
+Since we send a RST, sending the SYN a few ms after the RST seems way better
+than waiting 1 second as if we received no packet at all.
 
-Will remove.
+Receiving this ACK tells us something about networking health, no need
+to be very cautious about the next attempt.
 
->> +		return err;
->> +	}
->>  
->>  	id = devlink_region_snapshot_id_get(priv_to_devlink(nsim_dev));
->>  	err = devlink_region_snapshot_create(nsim_dev->dummy_region,
->> -					     dummy_data, id, kfree);
->> +					     dummy_data, id, destructor);
->>  	if (err) {
->>  		pr_err("Failed to create region snapshot\n");
->>  		kfree(dummy_data);
+Of course, if you have a fix for the passive side, that would be nice to review !
+
+
+
