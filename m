@@ -2,70 +2,68 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id B2A8514F1F8
-	for <lists+netdev@lfdr.de>; Fri, 31 Jan 2020 19:09:57 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E5A2E14F211
+	for <lists+netdev@lfdr.de>; Fri, 31 Jan 2020 19:20:51 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726712AbgAaSJy (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 31 Jan 2020 13:09:54 -0500
-Received: from mga09.intel.com ([134.134.136.24]:31494 "EHLO mga09.intel.com"
+        id S1726074AbgAaSUq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 31 Jan 2020 13:20:46 -0500
+Received: from mail.kernel.org ([198.145.29.99]:37836 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726262AbgAaSJy (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 31 Jan 2020 13:09:54 -0500
-X-Amp-Result: SKIPPED(no attachment in message)
-X-Amp-File-Uploaded: False
-Received: from orsmga004.jf.intel.com ([10.7.209.38])
-  by orsmga102.jf.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 31 Jan 2020 10:09:54 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.70,386,1574150400"; 
-   d="scan'208";a="377414811"
-Received: from jekeller-mobl1.amr.corp.intel.com (HELO [134.134.177.86]) ([134.134.177.86])
-  by orsmga004.jf.intel.com with ESMTP; 31 Jan 2020 10:09:54 -0800
-Subject: Re: [PATCH 02/15] devlink: add functions to take snapshot while
- locked
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     netdev@vger.kernel.org, jiri@resnulli.us, valex@mellanox.com,
-        linyunsheng@huawei.com, lihong.yang@intel.com
-References: <20200130225913.1671982-1-jacob.e.keller@intel.com>
- <20200130225913.1671982-3-jacob.e.keller@intel.com>
- <20200131100706.5c98981e@cakuba.hsd1.ca.comcast.net>
-From:   Jacob Keller <jacob.e.keller@intel.com>
-Organization: Intel Corporation
-Message-ID: <8cb6ab98-9d20-4965-f230-0a4ad229be97@intel.com>
-Date:   Fri, 31 Jan 2020 10:09:54 -0800
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
- Thunderbird/68.4.2
+        id S1725907AbgAaSUq (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 31 Jan 2020 13:20:46 -0500
+Received: from cakuba.hsd1.ca.comcast.net (unknown [199.201.64.133])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id ACB8A20707;
+        Fri, 31 Jan 2020 18:11:31 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1580494292;
+        bh=gQno9C8p/R8VNXviQsvTyedgYHZxejFQg8eaD99IcSw=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=gqHXgQ6QYuxFgykHeqKwbiu9BqIB8i++0YkKIbyp8HuV2VvRxhjAZEXOdrTpYAyFb
+         2xa15SknxDnFoJg6pqSN97HzhKDhD2BApDYKOqMjTZIiW5aRBmbJ56KVphXSFJxYB3
+         K9jHLCQHIcgfuo2G9Yw0zK7sdyrpneLkXxtx9VGQ=
+Date:   Fri, 31 Jan 2020 10:11:30 -0800
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Dan Murphy <dmurphy@ti.com>
+Cc:     <andrew@lunn.ch>, <f.fainelli@gmail.com>, <hkallweit1@gmail.com>,
+        <bunk@kernel.org>, <netdev@vger.kernel.org>,
+        <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <grygorii.strashko@ti.com>
+Subject: Re: [PATCH net-master 1/1] net: phy: dp83867: Add speed
+ optimization feature
+Message-ID: <20200131101130.1b265526@cakuba.hsd1.ca.comcast.net>
+In-Reply-To: <6b4bb017-de97-0688-47c5-723ec4c3a339@ti.com>
+References: <20200131151110.31642-1-dmurphy@ti.com>
+        <20200131151110.31642-2-dmurphy@ti.com>
+        <20200131091004.18d54183@cakuba.hsd1.ca.comcast.net>
+        <6b4bb017-de97-0688-47c5-723ec4c3a339@ti.com>
 MIME-Version: 1.0
-In-Reply-To: <20200131100706.5c98981e@cakuba.hsd1.ca.comcast.net>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
+Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 1/31/2020 10:07 AM, Jakub Kicinski wrote:
-> On Thu, 30 Jan 2020 14:58:57 -0800, Jacob Keller wrote:
->> +static int
->> +devlink_region_snapshot_create_locked(struct devlink_region *region,
->> +				      u8 *data, u32 snapshot_id,
->> +				      devlink_snapshot_data_dest_t *destructor)
+On Fri, 31 Jan 2020 11:14:05 -0600, Dan Murphy wrote:
+> On 1/31/20 11:10 AM, Jakub Kicinski wrote:
+> > While we wait for the PHY folk to take a look, could you please
+> > provide a Fixes tag?  
 > 
-> -1 on the _locked suffix. Please follow the time-honored tradition of
-> using double underscore for internal helpers which make assumption
-> about calling context.
+> Hmm. This is not a bug fix though this is a new feature being added.
 > 
+> Not sure what it would be fixing.
 
-Sure.
+I see, you target the patch at net which is for fixes, so I
+misinterpreted this:
 
->> +{
->> +	struct devlink_snapshot *snapshot;
-> 
-> lockdep_assert_held() is much better than just a kdoc comment.
-> 
+> This feature can also be strapped on the 64 pin PHY devices
+> but the 48 pin devices do not have the strap pin available to enable
+> this feature in the hardware.
 
-Ok.
+as you fixing 48 devices or such.
 
->> +	/* check if region can hold one more snapshot */
->> +	if (region->cur_snapshots == region->max_snapshots)
->> +		return -ENOMEM;
+So please correct the tree to net-next and since net-next is now closed:
+http://vger.kernel.org/~davem/net-next.html
+only post as RFC until net-next opens back up.
