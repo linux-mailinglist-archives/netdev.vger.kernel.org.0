@@ -2,104 +2,77 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 0AFAB14E827
-	for <lists+netdev@lfdr.de>; Fri, 31 Jan 2020 06:13:27 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7830214E82E
+	for <lists+netdev@lfdr.de>; Fri, 31 Jan 2020 06:17:43 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726336AbgAaFNS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 31 Jan 2020 00:13:18 -0500
-Received: from bombadil.infradead.org ([198.137.202.133]:41240 "EHLO
-        bombadil.infradead.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725263AbgAaFNS (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 31 Jan 2020 00:13:18 -0500
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=bombadil.20170209; h=Content-Transfer-Encoding:
-        Content-Type:In-Reply-To:MIME-Version:Date:Message-ID:References:Cc:To:From:
-        Subject:Sender:Reply-To:Content-ID:Content-Description:Resent-Date:
-        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
-        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-         bh=NVnsA3lgQnOxibe1eLWi6OoL2Yp9oede8aVfjqOqlkI=; b=RgvO7YDRDIlWCO4ilKNIMWyKB
-        HXTP4o0SsAe8lqyFLX7AKBfa492GccM8ZfS7h/OPo0C4Ijhl8QomF2PI2NhL11/fyj5OzuYGwDDra
-        vL6xYE1ZwmC8EudMZX0/EIMfunxANPM10WilPgnqE0wUjZUnoV9GvWImPfGYEZ0a7al5a7tnwribn
-        tGJYL8wL4sWvPzr9AnjnA/0ZK6AJxJfZQtnyU0cdSOtJ725kJKLopNeLRipXOeT8pTg/URCNAOxlL
-        AHnllLkOc1BOAtFbNz/MGmzr8t1B9667HWssRnzW3PNr2ZXP8kq+FHnOkG5fzaGKq0DMPw6M48HXb
-        00ahJVGVg==;
-Received: from [2601:1c0:6280:3f0:897c:6038:c71d:ecac]
-        by bombadil.infradead.org with esmtpsa (Exim 4.92.3 #3 (Red Hat Linux))
-        id 1ixOc0-0004Dv-Fr; Fri, 31 Jan 2020 05:13:00 +0000
-Subject: Re: [PATCH] vhost: introduce vDPA based backend
-From:   Randy Dunlap <rdunlap@infradead.org>
-To:     Tiwei Bie <tiwei.bie@intel.com>, mst@redhat.com,
-        jasowang@redhat.com
-Cc:     linux-kernel@vger.kernel.org, kvm@vger.kernel.org,
-        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
-        shahafs@mellanox.com, jgg@mellanox.com, rob.miller@broadcom.com,
-        haotian.wang@sifive.com, eperezma@redhat.com, lulu@redhat.com,
-        parav@mellanox.com, hch@infradead.org, jiri@mellanox.com,
-        hanand@xilinx.com, mhabets@solarflare.com,
-        maxime.coquelin@redhat.com, lingshan.zhu@intel.com,
-        dan.daly@intel.com, cunming.liang@intel.com, zhihong.wang@intel.com
-References: <20200131033651.103534-1-tiwei.bie@intel.com>
- <43aeecb4-4c08-df3d-1c1d-699ec4c494bd@infradead.org>
-Message-ID: <05e21ed9-d5af-b57c-36cd-50b34915e82d@infradead.org>
-Date:   Thu, 30 Jan 2020 21:12:57 -0800
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.4.1
+        id S1726134AbgAaFRj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 31 Jan 2020 00:17:39 -0500
+Received: from mail-pl1-f194.google.com ([209.85.214.194]:40389 "EHLO
+        mail-pl1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725263AbgAaFRj (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 31 Jan 2020 00:17:39 -0500
+Received: by mail-pl1-f194.google.com with SMTP id y1so2244788plp.7;
+        Thu, 30 Jan 2020 21:17:37 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=cuvjx7AIX7khPCGW/ptRVwlIZDS34QDntRrzehyOm+c=;
+        b=JPSyKWy9qHkV8mRn/mKXpRX9fPNxeWAUkeyQUljqrmFMNMBVGYH0mDwyBiw3JYEuaf
+         BxUW1ysmpenEAHtUlwB68rNF9Ot8Ry1QnWaeCvPbxjP8mjePW3k4kILGWxfumjbKlAvy
+         1FdcsoN9A+8e7JfZYF0Oc38aeu/d7hE2CMSNMVq+4adzzynRfXCylN8QELeE8p6gJbti
+         NcAx+aL2IV41q9M2B8QlEpfdRVOhHFnB9/kyAP2mRGpb7vgIgqrcGus109XLVKFvqDRU
+         IwYh2t/98I1I6e21Ka/hOxWMjhBgY3A5N9kZlduKMoWuRjjEQ04j5bIDMtzx0YtWA0dD
+         oLog==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=cuvjx7AIX7khPCGW/ptRVwlIZDS34QDntRrzehyOm+c=;
+        b=Zget1uQmnYv2fEhvqMh2Rvc3PnA8055H68l6c7tjxySOByXC+0GumHi+J2rtmRWrS1
+         Ov0svHJQT4wDm9AwgDOwTlZTyN1ziCKEEghmnwj7G1L4BY73lzk5yI5KGtICV+MOf+1p
+         WNEK/uvzOqNPxSjvlo09M6wEL59gN1XDt968RtbD8nkN0+Gk75J1p0UxDzf+z9djNY0y
+         Q5v9QUe7z9ZL/bZSF+zaMjnrlgVOI0r/jIM4DE/EqMpDCVIOuuB0qQjM414qqmbIkypV
+         Ai+dhS2cMu7gh6UuvU4WmQFOa0QOusU05e48FQDX5WEMmCfurYagOhvPSEBlP4kBeF2Z
+         H1hA==
+X-Gm-Message-State: APjAAAXKUmZKjXXZnU0Ct+5v8UCbTAOByih7e/CWeHzlZezPPk/Oe8Ot
+        0cniIBbGfIIDmWSinbE31pM=
+X-Google-Smtp-Source: APXvYqxM/tb3AZ/vDuSE3psHOgDMaAK027AaKFytF2+aRK1w+U0tH98RUMlTAQ3OYJeKfgs6KeoB1A==
+X-Received: by 2002:a17:902:5a85:: with SMTP id r5mr8614531pli.222.1580447857238;
+        Thu, 30 Jan 2020 21:17:37 -0800 (PST)
+Received: from localhost (c-73-241-114-122.hsd1.ca.comcast.net. [73.241.114.122])
+        by smtp.gmail.com with ESMTPSA id q21sm8902132pfn.123.2020.01.30.21.17.36
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 30 Jan 2020 21:17:36 -0800 (PST)
+Date:   Thu, 30 Jan 2020 21:17:34 -0800
+From:   Richard Cochran <richardcochran@gmail.com>
+To:     Michael Walle <michael@walle.cc>
+Cc:     linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        Russell King <linux@armlinux.org.uk>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Andrew Lunn <andrew@lunn.ch>
+Subject: Re: [PATCH net-next 1/2] net: mdio: of: fix potential NULL pointer
+ derefernce
+Message-ID: <20200131051734.GA1398@localhost>
+References: <20200130174451.17951-1-michael@walle.cc>
 MIME-Version: 1.0
-In-Reply-To: <43aeecb4-4c08-df3d-1c1d-699ec4c494bd@infradead.org>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20200130174451.17951-1-michael@walle.cc>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 1/30/20 7:56 PM, Randy Dunlap wrote:
-> Hi,
+On Thu, Jan 30, 2020 at 06:44:50PM +0100, Michael Walle wrote:
+> of_find_mii_timestamper() returns NULL if no timestamper is found.
+> Therefore, guard the unregister_mii_timestamper() calls.
 > 
-> On 1/30/20 7:36 PM, Tiwei Bie wrote:
->> diff --git a/drivers/vhost/Kconfig b/drivers/vhost/Kconfig
->> index f21c45aa5e07..13e6a94d0243 100644
->> --- a/drivers/vhost/Kconfig
->> +++ b/drivers/vhost/Kconfig
->> @@ -34,6 +34,18 @@ config VHOST_VSOCK
->>  	To compile this driver as a module, choose M here: the module will be called
->>  	vhost_vsock.
->>  
->> +config VHOST_VDPA
->> +	tristate "Vhost driver for vDPA based backend"
+> Fixes: 1dca22b18421 ("net: mdio: of: Register discovered MII time stampers.")
+> Signed-off-by: Michael Walle <michael@walle.cc>
 
-oops, missed this one:
-	                           vDPA-based
+Good catch.
 
->> +	depends on EVENTFD && VDPA
->> +	select VHOST
->> +	default n
->> +	---help---
->> +	This kernel module can be loaded in host kernel to accelerate
->> +	guest virtio devices with the vDPA based backends.
-> 
-> 	                              vDPA-based
-> 
->> +
->> +	To compile this driver as a module, choose M here: the module
->> +	will be called vhost_vdpa.
->> +
-> 
-> The preferred Kconfig style nowadays is
-> (a) use "help" instead of "---help---"
-> (b) indent the help text with one tab + 2 spaces
-> 
-> and don't use "default n" since that is already the default.
-> 
->>  config VHOST
->>  	tristate
->>          depends on VHOST_IOTLB
-> 
-> thanks.
-> 
-
-
--- 
-~Randy
-
+Acked-by: Richard Cochran <richardcochran@gmail.com>
