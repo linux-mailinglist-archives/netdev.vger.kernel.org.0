@@ -2,99 +2,79 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 4855014EE1E
-	for <lists+netdev@lfdr.de>; Fri, 31 Jan 2020 15:00:38 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8807014EE68
+	for <lists+netdev@lfdr.de>; Fri, 31 Jan 2020 15:27:57 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728760AbgAaOAc convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Fri, 31 Jan 2020 09:00:32 -0500
-Received: from eu-smtp-delivery-151.mimecast.com ([207.82.80.151]:40533 "EHLO
-        eu-smtp-delivery-151.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1728735AbgAaOAb (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 31 Jan 2020 09:00:31 -0500
-Received: from AcuMS.aculab.com (156.67.243.126 [156.67.243.126]) (Using
- TLS) by relay.mimecast.com with ESMTP id
- uk-mta-242-JHDjgXV-PJqc_fZ2W4bcWg-1; Fri, 31 Jan 2020 14:00:28 +0000
-Received: from AcuMS.Aculab.com (fd9f:af1c:a25b:0:43c:695e:880f:8750) by
- AcuMS.aculab.com (fd9f:af1c:a25b:0:43c:695e:880f:8750) with Microsoft SMTP
- Server (TLS) id 15.0.1347.2; Fri, 31 Jan 2020 14:00:27 +0000
-Received: from AcuMS.Aculab.com ([fe80::43c:695e:880f:8750]) by
- AcuMS.aculab.com ([fe80::43c:695e:880f:8750%12]) with mapi id 15.00.1347.000;
- Fri, 31 Jan 2020 14:00:27 +0000
-From:   David Laight <David.Laight@ACULAB.COM>
-To:     "'sjpark@amazon.com'" <sjpark@amazon.com>,
-        "edumazet@google.com" <edumazet@google.com>,
-        "davem@davemloft.net" <davem@davemloft.net>
-CC:     "shuah@kernel.org" <shuah@kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-kselftest@vger.kernel.org" <linux-kselftest@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "sj38.park@gmail.com" <sj38.park@gmail.com>,
-        "aams@amazon.com" <aams@amazon.com>,
-        SeongJae Park <sjpark@amazon.de>
-Subject: RE: [PATCH 0/3] Fix reconnection latency caused by FIN/ACK handling
- race
-Thread-Topic: [PATCH 0/3] Fix reconnection latency caused by FIN/ACK handling
- race
-Thread-Index: AQHV2DFvc3pd6ARlHUK3D8H5esqW/agEyn3w
-Date:   Fri, 31 Jan 2020 14:00:27 +0000
-Message-ID: <dc37fb0dad3c4a5f9fd88eea89d81908@AcuMS.aculab.com>
-References: <20200131122421.23286-1-sjpark@amazon.com>
-In-Reply-To: <20200131122421.23286-1-sjpark@amazon.com>
-Accept-Language: en-GB, en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-ms-exchange-transport-fromentityheader: Hosted
-x-originating-ip: [10.202.205.107]
+        id S1729014AbgAaO1y (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 31 Jan 2020 09:27:54 -0500
+Received: from mail-wr1-f65.google.com ([209.85.221.65]:36826 "EHLO
+        mail-wr1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728730AbgAaO1x (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 31 Jan 2020 09:27:53 -0500
+Received: by mail-wr1-f65.google.com with SMTP id z3so8863763wru.3
+        for <netdev@vger.kernel.org>; Fri, 31 Jan 2020 06:27:52 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=resnulli-us.20150623.gappssmtp.com; s=20150623;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=V/PCnqNtDQJTE0n6z019lCU8yqKmiVuTIJCF6Mgs2hA=;
+        b=zym66xsy/sjzCBn080zU+FiBL1C3WjHGj6hPdfx+yz4tx+sXjgCI4IXwOcP9KNvUr8
+         6xFC8DlHxEY9TDbv71iMStIek4j0ibL8+k1x0uloTJlEcofseH+Me4fZK0nY0uaJ1l2B
+         MhgiEy4L3KgUMEJ2vBNwdDr2F/Qc2pQES4V0TnYIZSxkhpL+J7pIIzSZxpwibXe7atfi
+         m4J0ZN45z+vzoF2Sh8E5EdsKIJMNMACaoDn/Vv+PsEBgXOEYSs6XQeFQgj3Vu9JYN9rP
+         jEeTloINK+LpNlSfYB9wbzt3pgjTwCG+J1xn3oNJviWGRq5jOdoCf4iUO1imiX3vMGFS
+         r6NQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=V/PCnqNtDQJTE0n6z019lCU8yqKmiVuTIJCF6Mgs2hA=;
+        b=hP5UfKzJUUtFC4syyny+0nDMit6u04CzToKuYW/UUWQJq/ySdXNDj/g23KKu1PHEwP
+         3PM+2K2l0jGc/mBp/MqIjuoei201YGYLmIB8NzcNPPQ+o4zKmJoeR7rlmzQYhmry+40O
+         r7ZODe6e15fm0Q/sZuaj2GZJuhc5GvU9wPlcCuDI2KwfTve3QLhwOu/XUDF0rPO71m12
+         gtFzX7EVdA/0MQXHcssYOaXy8KEto0PI1s2WksnL3DnV7diAdjQBckwbQEn5XTIIr4Lu
+         a2wg2awrTrK5mkYt5EHYQawGAYZi5Y4677E7bdX+U4dY550Im5M8YvxMRPsi7RSDv+Cc
+         iZ/Q==
+X-Gm-Message-State: APjAAAWp9K8ZLTmzEc1N8lNvFYXSpf5SnRNL82hOSA0wRoGO3WmhXowm
+        +uopGItxt74CM8TT1J3QxJT1WA==
+X-Google-Smtp-Source: APXvYqwffjVdonyWBGQTjTsoah1oQOI+zi0erFyjvn3dkdCOYmw51m6xt5K4qjQP30gxfi9r574VWA==
+X-Received: by 2002:a5d:4651:: with SMTP id j17mr12699429wrs.237.1580480871833;
+        Fri, 31 Jan 2020 06:27:51 -0800 (PST)
+Received: from localhost (jirka.pirko.cz. [84.16.102.26])
+        by smtp.gmail.com with ESMTPSA id j12sm12916560wrw.54.2020.01.31.06.27.50
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 31 Jan 2020 06:27:51 -0800 (PST)
+Date:   Fri, 31 Jan 2020 15:27:50 +0100
+From:   Jiri Pirko <jiri@resnulli.us>
+To:     Nathan Chancellor <natechancellor@gmail.com>
+Cc:     Jiri Pirko <jiri@mellanox.com>, Ido Schimmel <idosch@mellanox.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Petr Machata <petrm@mellanox.com>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Randy Dunlap <rdunlap@infradead.org>
+Subject: Re: [PATCH v2] mlxsw: spectrum_qdisc: Fix 64-bit division error in
+ mlxsw_sp_qdisc_tbf_rate_kbps
+Message-ID: <20200131142750.GA2251@nanopsycho.orion>
+References: <20200130232641.51095-1-natechancellor@gmail.com>
+ <20200131015123.55400-1-natechancellor@gmail.com>
 MIME-Version: 1.0
-X-MC-Unique: JHDjgXV-PJqc_fZ2W4bcWg-1
-X-Mimecast-Spam-Score: 0
-X-Mimecast-Originator: aculab.com
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8BIT
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20200131015123.55400-1-natechancellor@gmail.com>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: sjpark@amazon.com
-> Sent: 31 January 2020 12:24
-...
-> The acks in lines 6 and 8 are the acks.  If the line 8 packet is
-> processed before the line 6 packet, it will be just ignored as it is not
-> a expected packet, and the later process of the line 6 packet will
-> change the status of Process A to FIN_WAIT_2, but as it has already
-> handled line 8 packet, it will not go to TIME_WAIT and thus will not
-> send the line 10 packet to Process B.  Thus, Process B will left in
-> CLOSE_WAIT status, as below.
-> 
-> 	 00 (Process A)				(Process B)
-> 	 01 ESTABLISHED				ESTABLISHED
-> 	 02 close()
-> 	 03 FIN_WAIT_1
-> 	 04 		---FIN-->
-> 	 05 					CLOSE_WAIT
-> 	 06 				(<--ACK---)
-> 	 07	  			(<--FIN/ACK---)
-> 	 08 				(fired in right order)
-> 	 09 		<--FIN/ACK---
-> 	 10 		<--ACK---
-> 	 11 		(processed in reverse order)
-> 	 12 FIN_WAIT_2
+Fri, Jan 31, 2020 at 02:51:23AM CET, natechancellor@gmail.com wrote:
+>When building arm32 allmodconfig:
+>
+>ERROR: "__aeabi_uldivmod"
+>[drivers/net/ethernet/mellanox/mlxsw/mlxsw_spectrum.ko] undefined!
+>
+>rate_bytes_ps has type u64, we need to use a 64-bit division helper to
+>avoid a build error.
+>
+>Fixes: a44f58c41bfb ("mlxsw: spectrum_qdisc: Support offloading of TBF Qdisc")
+>Signed-off-by: Nathan Chancellor <natechancellor@gmail.com>
 
-Why doesn't A treat the FIN/ACK (09) as valid (as if
-the ACK had got lost) and then ignore the ACK (10) because
-it refers to a closed socket?
-
-I presume that B sends two ACKs (06 and 07) because it can
-sit in an intermediate state and the first ACK stops the FIN
-being resent?
-
-I've implemented lots of protocols in my time, but not TCP.
-
-	David
-
--
-Registered Address Lakeside, Bramley Road, Mount Farm, Milton Keynes, MK1 1PT, UK
-Registration No: 1397386 (Wales)
-
+Acked-by: Jiri Pirko <jiri@mellanox.com>
