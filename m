@@ -2,105 +2,124 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 44C0C14EEE9
-	for <lists+netdev@lfdr.de>; Fri, 31 Jan 2020 16:01:40 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0AEBD14EF20
+	for <lists+netdev@lfdr.de>; Fri, 31 Jan 2020 16:06:14 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729128AbgAaPBe (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 31 Jan 2020 10:01:34 -0500
-Received: from mail-yw1-f67.google.com ([209.85.161.67]:33239 "EHLO
-        mail-yw1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729071AbgAaPBe (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 31 Jan 2020 10:01:34 -0500
-Received: by mail-yw1-f67.google.com with SMTP id 192so4972403ywy.0
-        for <netdev@vger.kernel.org>; Fri, 31 Jan 2020 07:01:33 -0800 (PST)
+        id S1729126AbgAaPGI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 31 Jan 2020 10:06:08 -0500
+Received: from smtp-fw-6001.amazon.com ([52.95.48.154]:5997 "EHLO
+        smtp-fw-6001.amazon.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729034AbgAaPGI (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 31 Jan 2020 10:06:08 -0500
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=lP6TzEP91d7hLsESfdMqNdtjrOfbthLJkOU6UXoqTVs=;
-        b=JjC9sj0bkY+d7wSCXaj+o8kYk69s9tJNc3C2A70tF2dKMLJG5FFvog7iey+EBH5tkS
-         R2aSMJpoMMRCHqY17xrSS5Cr6n0aReHPNRY3UI1Q2jNoC28C+IB6ZSKLOi2Ljy3ucS8i
-         VbZ7wosy2IjQCeQQRaYpJ8CIuxVesucU1Ll0y323e9Fp4ZPxPB1VSSDMuAlFeShpoVJ2
-         Zp/zpk9vDLlIvK1X6Xrs/P5eKsJhXpaHJy4chljIaOzmj9gXt8yeNTN7HueQPSF93WJN
-         bBfbkKkvNhAGzoUiF6pP4gzT1Glae++rA5nYHhRAa1zXKG8rCazvnGSwwk+05bmdG2uG
-         PwTA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=lP6TzEP91d7hLsESfdMqNdtjrOfbthLJkOU6UXoqTVs=;
-        b=bhMoP7hrd0SSjMf+c5Dw4Sxkku2OFBS5O4TMZStroIY0zxZ7XDArfIMslmu0Vg4gAi
-         QsGj50FybtiT/ShCuj80IITPddmyAn2tcf9F90XMLr4wANMugbSkcZVUkoR4Cw0O4EUS
-         UEf3KtGk62cO03XdYsfFg0c5sWZRXkWhQ5moVyF3FQfBQ68fKl/7cLOne+YLfb+C3VCl
-         ACuKYTuwvbQt76k4oSMj32qJcv3g4eNGa8gpDDyYcADZ9pwPpRMYt4dLQhyqGNYVxmpw
-         Rlv5i8GSq5gdtPbKmygrefSgBbDIhOu26mDz+iuLsVRMHINmRSCb0KiqAOE4iIR/JEUC
-         WXsQ==
-X-Gm-Message-State: APjAAAWmFXxwGLgjqvWqmm7HuCFXzd1TXTJhIiyi+xUtNTE+Y1SrgjeD
-        EUnHauNyJmiro1UO7B7uRqbUtWUFMIMvI52ji+4EYg==
-X-Google-Smtp-Source: APXvYqzs7gtN6z+3DwxRauYOyBeJ0zMKdNI1QZWw5WgJpiiQ/ixWmcWH3ZOyJ2v3tzlLqA2ss5ytj9xF+z66rXG7cCs=
-X-Received: by 2002:a81:b38a:: with SMTP id r132mr8677745ywh.114.1580482892732;
- Fri, 31 Jan 2020 07:01:32 -0800 (PST)
+  d=amazon.com; i=@amazon.com; q=dns/txt; s=amazon201209;
+  t=1580483168; x=1612019168;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   mime-version;
+  bh=ibAJSA6wdOg0PnzV2uto1TBRG7DetiN8T++aLxGU9cM=;
+  b=nlqgcNlb5Ri46aWcvd1OGI4bxJSL6PfmnOM2IZci9fnFgCJcPRH043PU
+   DACNs3J6jBKuXSSOD2LY4cgMXmJaZ7ubveq4fLk6yuNYdI8Usa4+1ZFUg
+   4U5HAM7lKh/PYzvub5SkKoLzDtE29sakr7wNdR8hK22fX7EzKNDX6/GIX
+   w=;
+IronPort-SDR: 5DEVMlG4yhcSitO+uhmJ3dq/t8jDoHkMcFNBoOp4aidvraLR/o9Qp1wt/QuiT57DapOb7aYI0K
+ TVq76vvfQNxg==
+X-IronPort-AV: E=Sophos;i="5.70,386,1574121600"; 
+   d="scan'208";a="15641307"
+Received: from iad12-co-svc-p1-lb1-vlan3.amazon.com (HELO email-inbound-relay-2c-6f38efd9.us-west-2.amazon.com) ([10.43.8.6])
+  by smtp-border-fw-out-6001.iad6.amazon.com with ESMTP; 31 Jan 2020 15:06:06 +0000
+Received: from EX13MTAUEA002.ant.amazon.com (pdx4-ws-svc-p6-lb7-vlan3.pdx.amazon.com [10.170.41.166])
+        by email-inbound-relay-2c-6f38efd9.us-west-2.amazon.com (Postfix) with ESMTPS id 7AF83A07D8;
+        Fri, 31 Jan 2020 15:06:04 +0000 (UTC)
+Received: from EX13D31EUA001.ant.amazon.com (10.43.165.15) by
+ EX13MTAUEA002.ant.amazon.com (10.43.61.77) with Microsoft SMTP Server (TLS)
+ id 15.0.1236.3; Fri, 31 Jan 2020 15:06:03 +0000
+Received: from u886c93fd17d25d.ant.amazon.com (10.43.162.249) by
+ EX13D31EUA001.ant.amazon.com (10.43.165.15) with Microsoft SMTP Server (TLS)
+ id 15.0.1367.3; Fri, 31 Jan 2020 15:05:58 +0000
+From:   <sjpark@amazon.com>
+To:     David Laight <David.Laight@ACULAB.COM>
+CC:     "'sjpark@amazon.com'" <sjpark@amazon.com>,
+        "edumazet@google.com" <edumazet@google.com>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "shuah@kernel.org" <shuah@kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-kselftest@vger.kernel.org" <linux-kselftest@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "sj38.park@gmail.com" <sj38.park@gmail.com>,
+        "aams@amazon.com" <aams@amazon.com>,
+        SeongJae Park <sjpark@amazon.de>
+Subject: Re: RE: [PATCH 0/3] Fix reconnection latency caused by FIN/ACK handling race
+Date:   Fri, 31 Jan 2020 16:05:44 +0100
+Message-ID: <20200131150544.26333-1-sjpark@amazon.com>
+X-Mailer: git-send-email 2.17.1
+In-Reply-To: <dc37fb0dad3c4a5f9fd88eea89d81908@AcuMS.aculab.com> (raw)
 MIME-Version: 1.0
-References: <20200131122421.23286-1-sjpark@amazon.com> <20200131122421.23286-3-sjpark@amazon.com>
-In-Reply-To: <20200131122421.23286-3-sjpark@amazon.com>
-From:   Eric Dumazet <edumazet@google.com>
-Date:   Fri, 31 Jan 2020 07:01:21 -0800
-Message-ID: <CANn89i+rKfAhUjYLoEhyYj8OsRBtHC+ukPcE6CuTAJjb183GRQ@mail.gmail.com>
-Subject: Re: [PATCH 2/3] tcp: Reduce SYN resend delay if a suspicous ACK is received
-To:     sjpark@amazon.com
-Cc:     David Miller <davem@davemloft.net>, Shuah Khan <shuah@kernel.org>,
-        netdev <netdev@vger.kernel.org>,
-        "open list:KERNEL SELFTEST FRAMEWORK" 
-        <linux-kselftest@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>, sj38.park@gmail.com,
-        aams@amazon.com, SeongJae Park <sjpark@amazon.de>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain
+X-Originating-IP: [10.43.162.249]
+X-ClientProxiedBy: EX13D01UWA002.ant.amazon.com (10.43.160.74) To
+ EX13D31EUA001.ant.amazon.com (10.43.165.15)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Jan 31, 2020 at 4:25 AM <sjpark@amazon.com> wrote:
+On Fri, 31 Jan 2020 14:00:27 +0000 David Laight <David.Laight@ACULAB.COM> wrote:
 
-> Signed-off-by: SeongJae Park <sjpark@amazon.de>
-> ---
->  net/ipv4/tcp_input.c | 6 +++++-
->  1 file changed, 5 insertions(+), 1 deletion(-)
->
-> diff --git a/net/ipv4/tcp_input.c b/net/ipv4/tcp_input.c
-> index 2a976f57f7e7..b168e29e1ad1 100644
-> --- a/net/ipv4/tcp_input.c
-> +++ b/net/ipv4/tcp_input.c
-> @@ -5893,8 +5893,12 @@ static int tcp_rcv_synsent_state_process(struct sock *sk, struct sk_buff *skb,
->                  *        the segment and return)"
->                  */
->                 if (!after(TCP_SKB_CB(skb)->ack_seq, tp->snd_una) ||
-> -                   after(TCP_SKB_CB(skb)->ack_seq, tp->snd_nxt))
-> +                   after(TCP_SKB_CB(skb)->ack_seq, tp->snd_nxt)) {
-> +                       /* Previous FIN/ACK or RST/ACK might be ignore. */
-> +                       inet_csk_reset_xmit_timer(sk, ICSK_TIME_RETRANS,
-> +                                                 TCP_ATO_MIN, TCP_RTO_MAX);
+> From: sjpark@amazon.com
+> > Sent: 31 January 2020 12:24
+> ...
+> > The acks in lines 6 and 8 are the acks.  If the line 8 packet is
+> > processed before the line 6 packet, it will be just ignored as it is not
+> > a expected packet, and the later process of the line 6 packet will
+> > change the status of Process A to FIN_WAIT_2, but as it has already
+> > handled line 8 packet, it will not go to TIME_WAIT and thus will not
+> > send the line 10 packet to Process B.  Thus, Process B will left in
+> > CLOSE_WAIT status, as below.
+> > 
+> > 	 00 (Process A)				(Process B)
+> > 	 01 ESTABLISHED				ESTABLISHED
+> > 	 02 close()
+> > 	 03 FIN_WAIT_1
+> > 	 04 		---FIN-->
+> > 	 05 					CLOSE_WAIT
+> > 	 06 				(<--ACK---)
+> > 	 07	  			(<--FIN/ACK---)
+> > 	 08 				(fired in right order)
+> > 	 09 		<--FIN/ACK---
+> > 	 10 		<--ACK---
+> > 	 11 		(processed in reverse order)
+> > 	 12 FIN_WAIT_2
+> 
+> Why doesn't A treat the FIN/ACK (09) as valid (as if
+> the ACK had got lost) and then ignore the ACK (10) because
+> it refers to a closed socket?
 
-This is not what I suggested.
+Because the TCP protocol (RFC 793) doesn't have such speculation.  TCP is
+stateful protocol.  Thus, packets arrived in unexpected state are not required
+to be respected, AFAIU.
 
-I suggested implementing a strategy where only the _first_ retransmit
-would be done earlier.
+> 
+> I presume that B sends two ACKs (06 and 07) because it can
+> sit in an intermediate state and the first ACK stops the FIN
+> being resent?
 
-So you need to look at the current counter of retransmit attempts,
-then reset the timer if this SYN_SENT
-socket never resent a SYN.
+I think there is no such presume in the protocol, either.
 
-We do not want to trigger packet storms, if for some reason the remote
-peer constantly sends
-us the same packet.
+> 
+> I've implemented lots of protocols in my time, but not TCP.
 
-Thanks.
+If you find anything I'm misunderstanding, please don't hesitate to yell at me.
+Hope the previous discussion[1] regarding this issue to be helpful.
 
->                         goto reset_and_undo;
-> +               }
->
->                 if (tp->rx_opt.saw_tstamp && tp->rx_opt.rcv_tsecr &&
->                     !between(tp->rx_opt.rcv_tsecr, tp->retrans_stamp,
-> --
-> 2.17.1
->
+
+Thanks,
+SeongJae Park
+
+[1] https://lore.kernel.org/bpf/20200129171403.3926-1-sjpark@amazon.com/
+
+> 
+> 	David
+> 
+> -
+> Registered Address Lakeside, Bramley Road, Mount Farm, Milton Keynes, MK1 1PT, UK
+> Registration No: 1397386 (Wales)
