@@ -2,90 +2,99 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id C0EA814F250
-	for <lists+netdev@lfdr.de>; Fri, 31 Jan 2020 19:39:36 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 41B1F14F251
+	for <lists+netdev@lfdr.de>; Fri, 31 Jan 2020 19:41:53 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726347AbgAaSjc (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 31 Jan 2020 13:39:32 -0500
-Received: from lelv0142.ext.ti.com ([198.47.23.249]:34396 "EHLO
-        lelv0142.ext.ti.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725909AbgAaSjc (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 31 Jan 2020 13:39:32 -0500
-Received: from lelv0265.itg.ti.com ([10.180.67.224])
-        by lelv0142.ext.ti.com (8.15.2/8.15.2) with ESMTP id 00VIdRs5103479;
-        Fri, 31 Jan 2020 12:39:27 -0600
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
-        s=ti-com-17Q1; t=1580495967;
-        bh=C2OoElTb/xW5zZLPQjBxo7wY426iSsHo1LeUV6VejFE=;
-        h=Subject:To:CC:References:From:Date:In-Reply-To;
-        b=QNT9rjeIO//1kMCfVIaZE0is8gn/smizq4jY0KflSLx9isqwzKZMCwOcpNQ20aIDq
-         l/5Lq9eUW/rAWfpAB5pPb682ov3Rj9qhx2vahzPUPXpGgMcDe3eSdFWRCcsX9geFB6
-         kHPlaX3Z6j3TmaKvX+1OAu0DWmC8/oQtwNmnRdlA=
-Received: from DFLE108.ent.ti.com (dfle108.ent.ti.com [10.64.6.29])
-        by lelv0265.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 00VIdRPf104721
-        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
-        Fri, 31 Jan 2020 12:39:27 -0600
-Received: from DFLE107.ent.ti.com (10.64.6.28) by DFLE108.ent.ti.com
- (10.64.6.29) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1847.3; Fri, 31
- Jan 2020 12:39:27 -0600
-Received: from lelv0326.itg.ti.com (10.180.67.84) by DFLE107.ent.ti.com
- (10.64.6.28) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1847.3 via
- Frontend Transport; Fri, 31 Jan 2020 12:39:27 -0600
-Received: from [10.250.65.13] (ileax41-snat.itg.ti.com [10.172.224.153])
-        by lelv0326.itg.ti.com (8.15.2/8.15.2) with ESMTP id 00VIdR2P059261;
-        Fri, 31 Jan 2020 12:39:27 -0600
-Subject: Re: [PATCH net-master 1/1] net: phy: dp83867: Add speed optimization
- feature
-To:     Jakub Kicinski <kuba@kernel.org>
-CC:     <andrew@lunn.ch>, <f.fainelli@gmail.com>, <hkallweit1@gmail.com>,
-        <bunk@kernel.org>, <netdev@vger.kernel.org>,
-        <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <grygorii.strashko@ti.com>
-References: <20200131151110.31642-1-dmurphy@ti.com>
- <20200131151110.31642-2-dmurphy@ti.com>
- <20200131091004.18d54183@cakuba.hsd1.ca.comcast.net>
- <6b4bb017-de97-0688-47c5-723ec4c3a339@ti.com>
- <20200131101130.1b265526@cakuba.hsd1.ca.comcast.net>
-From:   Dan Murphy <dmurphy@ti.com>
-Message-ID: <90266d62-11bf-ca61-179e-ac38e41e3bb2@ti.com>
-Date:   Fri, 31 Jan 2020 12:36:08 -0600
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.4.1
+        id S1726096AbgAaSlv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 31 Jan 2020 13:41:51 -0500
+Received: from mail-wm1-f66.google.com ([209.85.128.66]:40228 "EHLO
+        mail-wm1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725909AbgAaSlv (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 31 Jan 2020 13:41:51 -0500
+Received: by mail-wm1-f66.google.com with SMTP id t14so9856604wmi.5
+        for <netdev@vger.kernel.org>; Fri, 31 Jan 2020 10:41:50 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=5gmwKqAKc5kWsvxeD4EGDMD92bC5n6bIWCn6V1AM57Q=;
+        b=QLNMX1SL1B0wIJPcq1V+nHEJTkeo/O/GjbIOI07GeptbjLniIUYgGIHZJtxSLMJoym
+         38aq5Ow0vT8WTjknPWWTIgoK+6mO4KwiBgDsMimoHYicdYksWZtiRMgzfQDgFjNXZNI1
+         lpOBIcxuKbboFR2KTUw+G9/zqhxwTG/BggV7kYrZDBt9kZTQKIWb6PCqxqQ4vnXrS9+5
+         D5rjEYs4HPYO/cH4Fy4s9xTbbDGhMxS7u9IiyzmzqphNh3NFlYL36gfOT+LThfYA4dr+
+         n7ib9UmPOfZ2+WxGWOjDV3baK3rwG7WqR68Jx+KpWgTWVE9bOhfCkkAEgyC0Dnw5whDy
+         cXsw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=5gmwKqAKc5kWsvxeD4EGDMD92bC5n6bIWCn6V1AM57Q=;
+        b=pn5/HiCFbTpJOpn95TBNd0YNv3N2j4aJkItLIBetKH78szovKOsFZTr1TjIueSLziU
+         dP0Mdf74S4MrB0LAIjSFHgt0fzsh7I2j4yxGf9ima/nwEKudIX5D1QsIm4hNThD56DxV
+         jkGCrLEQc788iFPeF93ctINmkg1lYEpn383AxbQC0ZQhq+7FMoEsG4Ua5vBT7NFIZmOq
+         +SSqoQN4tNEG3ptyZNJAI4ohWi78y9KGV97PoeIh5uTjZNFEfXuWin93wI8FPoX6/Jd7
+         IzNmQYGtluPavkfQRWwNXVgJd1qenU+gPaE4zq79z4idxHSVTJwd9aY9R7YUCdNfzBJp
+         WTWg==
+X-Gm-Message-State: APjAAAXwFsxnY5hadJBrhiSw84ajdmbn87GVoSyj7D/QKLe0dMEY0mKt
+        hGSDXRDAG2dvXKq07RAP2N88vu35I/N/WJDdoJefvA==
+X-Google-Smtp-Source: APXvYqzFoHwcaYLzfWkYaneTs2Zo7iUsuHzERbU41SfIMHCtj+bKtImwcdoULSMez/paPiCscHk1QDBBak4Gn+JYvM4=
+X-Received: by 2002:a1c:4d08:: with SMTP id o8mr13758443wmh.86.1580496108817;
+ Fri, 31 Jan 2020 10:41:48 -0800 (PST)
 MIME-Version: 1.0
-In-Reply-To: <20200131101130.1b265526@cakuba.hsd1.ca.comcast.net>
-Content-Type: text/plain; charset="utf-8"; format=flowed
-Content-Transfer-Encoding: 7bit
-Content-Language: en-US
-X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
+References: <20200131182247.126058-1-edumazet@google.com> <CADVnQy==XFxLXmJtmx3tnsscpUGr_sRNGFaRwg+64o7Dkwq2zg@mail.gmail.com>
+In-Reply-To: <CADVnQy==XFxLXmJtmx3tnsscpUGr_sRNGFaRwg+64o7Dkwq2zg@mail.gmail.com>
+From:   Soheil Hassas Yeganeh <soheil@google.com>
+Date:   Fri, 31 Jan 2020 13:41:03 -0500
+Message-ID: <CACSApvaPH9oD7gM8KHnT1Pn=uD3g-6jDwyt0X5-MKooVcaySYA@mail.gmail.com>
+Subject: Re: [PATCH net] tcp: clear tp->delivered in tcp_disconnect()
+To:     Neal Cardwell <ncardwell@google.com>
+Cc:     Eric Dumazet <edumazet@google.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        netdev <netdev@vger.kernel.org>,
+        Eric Dumazet <eric.dumazet@gmail.com>,
+        Yuchung Cheng <ycheng@google.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Jakob
+On Fri, Jan 31, 2020 at 1:32 PM Neal Cardwell <ncardwell@google.com> wrote:
+>
+> On Fri, Jan 31, 2020 at 1:22 PM Eric Dumazet <edumazet@google.com> wrote:
+> >
+> > tp->delivered needs to be cleared in tcp_disconnect().
+> >
+> > tcp_disconnect() is rarely used, but it is worth fixing it.
+> >
+> > Fixes: ddf1af6fa00e ("tcp: new delivery accounting")
+> > Signed-off-by: Eric Dumazet <edumazet@google.com>
+> > Cc: Yuchung Cheng <ycheng@google.com>
+> > Cc: Neal Cardwell <ncardwell@google.com>
+> > ---
+> >  net/ipv4/tcp.c | 1 +
+> >  1 file changed, 1 insertion(+)
+> >
+> > diff --git a/net/ipv4/tcp.c b/net/ipv4/tcp.c
+> > index dd57f1e3618160c1e51d6ff54afa984292614e5c..a8ffdfb61f422228d4af1de600b756c9d3894ef5 100644
+> > --- a/net/ipv4/tcp.c
+> > +++ b/net/ipv4/tcp.c
+> > @@ -2622,6 +2622,7 @@ int tcp_disconnect(struct sock *sk, int flags)
+> >         tp->snd_cwnd = TCP_INIT_CWND;
+> >         tp->snd_cwnd_cnt = 0;
+> >         tp->window_clamp = 0;
+> > +       tp->delivered = 0;
+> >         tp->delivered_ce = 0;
+> >         tcp_set_ca_state(sk, TCP_CA_Open);
+> >         tp->is_sack_reneg = 0;
+> > --
+>
+> Thanks, Eric!
+>
+> Acked-by: Neal Cardwell <ncardwell@google.com>
+>
+> neal
 
-On 1/31/20 12:11 PM, Jakub Kicinski wrote:
-> On Fri, 31 Jan 2020 11:14:05 -0600, Dan Murphy wrote:
->> On 1/31/20 11:10 AM, Jakub Kicinski wrote:
->>> While we wait for the PHY folk to take a look, could you please
->>> provide a Fixes tag?
->> Hmm. This is not a bug fix though this is a new feature being added.
->>
->> Not sure what it would be fixing.
-> I see, you target the patch at net which is for fixes, so I
-> misinterpreted this:
+Acked-by: Soheil Hassas Yeganeh <soheil@google.com>
 
-My fault I will have a v2 so I will rebase on top of net-next.
-
->> This feature can also be strapped on the 64 pin PHY devices
->> but the 48 pin devices do not have the strap pin available to enable
->> this feature in the hardware.
-> as you fixing 48 devices or such.
-
-
-Not really fixing them just enabling them to use this feature.
-
-Dan
-
+Nice catch! Thanks!
