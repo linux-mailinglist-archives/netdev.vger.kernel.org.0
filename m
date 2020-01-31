@@ -2,93 +2,79 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 138E214E61B
-	for <lists+netdev@lfdr.de>; Fri, 31 Jan 2020 00:27:00 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D04BD14E683
+	for <lists+netdev@lfdr.de>; Fri, 31 Jan 2020 01:21:08 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727562AbgA3X0w (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 30 Jan 2020 18:26:52 -0500
-Received: from mail-ot1-f66.google.com ([209.85.210.66]:32777 "EHLO
-        mail-ot1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726481AbgA3X0w (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 30 Jan 2020 18:26:52 -0500
-Received: by mail-ot1-f66.google.com with SMTP id b18so4884079otp.0;
-        Thu, 30 Jan 2020 15:26:52 -0800 (PST)
+        id S1727626AbgAaAVH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 30 Jan 2020 19:21:07 -0500
+Received: from mail-lf1-f68.google.com ([209.85.167.68]:33023 "EHLO
+        mail-lf1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727380AbgAaAVG (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 30 Jan 2020 19:21:06 -0500
+Received: by mail-lf1-f68.google.com with SMTP id n25so3606123lfl.0;
+        Thu, 30 Jan 2020 16:21:05 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=uiPnoOAYPt0TxpEOOk3xyCGG2sxkTQwY14DXYCt3mdw=;
-        b=XlIy0Vu/CiLZtlGrJG2TgfCjV1o+mfeLuhhL+eMsuwQxVRfyGWn+5TE9WRAB4Xq+CF
-         wGj16HUb/YW4TQ3G2cAAZ0iEWD7t54L7fE3whumbk2FAgell+92Lotp877b8/JAOuOPp
-         QBQiS16J6/ZGaWHMo9kt7WXTAycbonDuW6OXrQzJ6/6ChsS4XZTf9XgItWbI8Xkdh4J4
-         0m7pwpRRZGmlqdrZ8wWQBvQ5kVJTcPF1fcELzWSTp5qnf/V0ZiLhKy+UCPm6yDRHbQGU
-         xWcxLSfWzDJE3eiri6UV/6UMv+kErLMRGv+Z6RQM0VxEjsNy+vh2zjfxLxFQIu/5aNgy
-         YBOA==
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=YJl6wAbcLxvyPMiKfkvwF3k+eTQS8qulkoTKA0EzkyI=;
+        b=G+akR26q27WNPIKhlJ/apbXJ69ZyWCA0DLukrbj91jTkF8ibRLJT7XGfcof6ETXhQj
+         A2yCkdZP3hvCODMJm4icjJJv96/4O0oTX8SJ9dlkcTXXufbh9By9rkdJwoIFLCo/IKIP
+         L2vjiYxC0Lg5UPhGIGUre2BNkfTQvICDdO27i0Wt94AjfFN7GzZGe49zhADEr2LUsRjG
+         aYm7PKyHbFBbiqDE1DjzsEt3nz/P+TUo9r23+IXy4vB9cLs8PAEZ5fxLV99y/sM4pXDE
+         5BiVHkC7p5diknYfIujh+4ss1WMHyf/ZGPnmGEj7d//uiBkObW+euoy7cevvpypwjoQV
+         QJDA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=uiPnoOAYPt0TxpEOOk3xyCGG2sxkTQwY14DXYCt3mdw=;
-        b=BTqAKwLlcU6MwTnsliYJ0kZVlx+jUVniLT0zBTHvLuEuEaR6izDt3UrUo5E9yvAj5u
-         7VJtJiz9fr+3z9iCe2bR/755LSDFeKVRE6ii5BteZuP/jkbyNldQhRcW7kzT/ip4oZG2
-         FDynvi77bo2tBD4u+xNcppSchyeOnylcArT3M2MoGAH6yUey7dvsG2VZJPsWEGUStRXj
-         UfyZftFmnEJLgfzpsaxaeX6+hy2/gKmFhJQhXMo520EAjEtAYPcsfJpgEyobsx9K35Cn
-         LH6AGeBbBOdtTPm24KpcEHYYWaLUdSaWeVGjcz6dXnUA/lRVCaZyKxrCgiidJ71kmz9t
-         6Rpg==
-X-Gm-Message-State: APjAAAWYkdLVa8/iOdeecK02SZx/4omsUuTLqQWE/rhdrx7CdGzdRsa+
-        dxix4c+r+Qw8p/6/CzqSi4R2AXdM
-X-Google-Smtp-Source: APXvYqxZNaW195FQdMEybZTaiz+asOc491aU3TOUXInHWb5YWmTolmZwK1TemcXXstCDfNxqzUK1HQ==
-X-Received: by 2002:a9d:6505:: with SMTP id i5mr5181796otl.121.1580426811624;
-        Thu, 30 Jan 2020 15:26:51 -0800 (PST)
-Received: from localhost.localdomain ([2604:1380:4111:8b00::1])
-        by smtp.gmail.com with ESMTPSA id 96sm2294473otn.29.2020.01.30.15.26.50
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 30 Jan 2020 15:26:51 -0800 (PST)
-From:   Nathan Chancellor <natechancellor@gmail.com>
-To:     Jiri Pirko <jiri@mellanox.com>, Ido Schimmel <idosch@mellanox.com>,
-        "David S. Miller" <davem@davemloft.net>
-Cc:     Petr Machata <petrm@mellanox.com>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        Nathan Chancellor <natechancellor@gmail.com>
-Subject: [PATCH] mlxsw: spectrum_qdisc: Fix 64-bit division error in mlxsw_sp_qdisc_tbf_rate_kbps
-Date:   Thu, 30 Jan 2020 16:26:41 -0700
-Message-Id: <20200130232641.51095-1-natechancellor@gmail.com>
-X-Mailer: git-send-email 2.25.0
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=YJl6wAbcLxvyPMiKfkvwF3k+eTQS8qulkoTKA0EzkyI=;
+        b=PACoptP6kl2uG4dWu8pP+l0JH3CqX0fbPSFon2KZ+66n1CB0c5HMe1rLGkfvcPqbEs
+         O2/oVNpUWkH27EyzrUToMTvB27Bbszstl1ApNiOXZavH81RWLqmEXXPvB2sSvcD9Ns6L
+         xzi1DHfSOC+2XXNjqy3eFOH8dDOxBA1fNn7xtbQ5T5p7cButJxiFOt/B35Cg2kQZGwGb
+         uKF6nLil4NwnpXc3f8VE4kgOJV4jD+SEbjf3Nm0s/UR4m9auDAsac0SWg7PkvQ3xG5XL
+         //aoczBiWybsB1El6k1Xrqpxr/ZFKz8GSqlf5c1lW0XqYWOHkSF/HqGBHl63+aux9Qmb
+         Zjsw==
+X-Gm-Message-State: APjAAAWJiwpXZa7TWrxzRoqw47QsdDzoCW96HF1yQY2lFvGswU+o1zis
+        XIozBz721VuasBh0cUukBIoj3KvLf62+6JjCtj4=
+X-Google-Smtp-Source: APXvYqyxIhlLn1xAeJnO1JlpLRiUbZemvA7cXbmPXjb7fhZHJ1tUQLyquVsMnJxWqc68U2HuwUM4ofi4FZgMt+W+/lE=
+X-Received: by 2002:a19:c3ce:: with SMTP id t197mr3875456lff.174.1580430064465;
+ Thu, 30 Jan 2020 16:21:04 -0800 (PST)
 MIME-Version: 1.0
-X-Patchwork-Bot: notify
-Content-Transfer-Encoding: 8bit
+References: <908498f794661c44dca54da9e09dc0c382df6fcb.1580425879.git.hex@fb.com>
+In-Reply-To: <908498f794661c44dca54da9e09dc0c382df6fcb.1580425879.git.hex@fb.com>
+From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Date:   Thu, 30 Jan 2020 16:20:53 -0800
+Message-ID: <CAADnVQLjsMWw0F8FJoBGLLs_Ab2WXc-T2Lfhks=sUKVTBu1veQ@mail.gmail.com>
+Subject: Re: [PATCH v3 bpf] runqslower: fix Makefile
+To:     Yulia Kartseva <hex@fb.com>
+Cc:     bpf <bpf@vger.kernel.org>, Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Network Development <netdev@vger.kernel.org>,
+        Andrii Nakryiko <andriin@fb.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-When building arm32 allmodconfig:
+On Thu, Jan 30, 2020 at 3:14 PM Yulia Kartseva <hex@fb.com> wrote:
+>
+> Fix undefined reference linker errors when building runqslower with
+> gcc 7.4.0 on Ubuntu 18.04.
+> The issue is with misplaced -lelf, -lz options in Makefile:
+> $(Q)$(CC) $(CFLAGS) -lelf -lz $^ -o $@
+>
+> -lelf, -lz options should follow the list of target dependencies:
+> $(Q)$(CC) $(CFLAGS) $^ -lelf -lz -o $@
+> or after substitution
+> cc -g -Wall runqslower.o libbpf.a -lelf -lz -o runqslower
+>
+> The current order of gcc params causes failure in libelf symbols resolution,
+> e.g. undefined reference to `elf_memory'
+>
+> Fixes: 9c01546d26d2 ("tools/bpf: Add runqslower tool to tools/bpf")
+> Signed-off-by: Julia Kartseva <hex@fb.com>
+> Acked-by: Andrii Nakryiko <andriin@fb.com>
 
-ERROR: "__aeabi_uldivmod"
-[drivers/net/ethernet/mellanox/mlxsw/mlxsw_spectrum.ko] undefined!
-
-rate_bytes_ps has type u64, we need to use a 64-bit division helper to
-avoid a build error.
-
-Fixes: a44f58c41bfb ("mlxsw: spectrum_qdisc: Support offloading of TBF Qdisc")
-Signed-off-by: Nathan Chancellor <natechancellor@gmail.com>
----
- drivers/net/ethernet/mellanox/mlxsw/spectrum_qdisc.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/drivers/net/ethernet/mellanox/mlxsw/spectrum_qdisc.c b/drivers/net/ethernet/mellanox/mlxsw/spectrum_qdisc.c
-index 79a2801d59f6..65e681ef01e8 100644
---- a/drivers/net/ethernet/mellanox/mlxsw/spectrum_qdisc.c
-+++ b/drivers/net/ethernet/mellanox/mlxsw/spectrum_qdisc.c
-@@ -614,7 +614,7 @@ mlxsw_sp_qdisc_tbf_rate_kbps(struct tc_tbf_qopt_offload_replace_params *p)
- 	/* TBF interface is in bytes/s, whereas Spectrum ASIC is configured in
- 	 * Kbits/s.
- 	 */
--	return p->rate.rate_bytes_ps / 1000 * 8;
-+	return div_u64(p->rate.rate_bytes_ps, 1000 * 8);
- }
- 
- static int
--- 
-2.25.0
-
+Applied. Thanks
