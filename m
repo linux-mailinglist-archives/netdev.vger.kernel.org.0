@@ -2,88 +2,90 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 1183C14F235
-	for <lists+netdev@lfdr.de>; Fri, 31 Jan 2020 19:32:48 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C0EA814F250
+	for <lists+netdev@lfdr.de>; Fri, 31 Jan 2020 19:39:36 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726262AbgAaScq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 31 Jan 2020 13:32:46 -0500
-Received: from mail-pf1-f201.google.com ([209.85.210.201]:55418 "EHLO
-        mail-pf1-f201.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725907AbgAaScp (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 31 Jan 2020 13:32:45 -0500
-Received: by mail-pf1-f201.google.com with SMTP id 63so4460943pfw.22
-        for <netdev@vger.kernel.org>; Fri, 31 Jan 2020 10:32:45 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20161025;
-        h=date:message-id:mime-version:subject:from:to:cc;
-        bh=J1QFr62Ow7U+Z8XwZP3S0a+dNZnNVzSk1ch4WzaK1jU=;
-        b=FGfm4Va62VUwBcSpP9sPtPXt64qBuq4YUnlQkreh/ck0MnaWLxUmQF17Si5Ko7wsdf
-         Gv7I5JpaKW+GTjIfhswzMygEva1tVsXh4AtxF+oM/e8narvU3tEv8149LtaqQXeSYAf1
-         ksnIhj5JpwZS9MU95XV8b0Y6og1y6MpB3vXFSx1j5n1Tm4GYpgVr6GCNN07y+K4WI2xT
-         hh4teimg0TEEirFw2HQ8yinkxwmaxOELBQycbvgHxfOuFcUillKjcsvOciFD+YIVr25q
-         8VOm/pvQRS3Om9fWvx5iGdoWGZL5XreNAW1yOvm4nkMQVZZ4D26UCtD0lmB/n4ePAFeF
-         xVPQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:message-id:mime-version:subject:from:to:cc;
-        bh=J1QFr62Ow7U+Z8XwZP3S0a+dNZnNVzSk1ch4WzaK1jU=;
-        b=OG60ty5hrSMcCFEMlRU/YHdS770VIcGkUDkOFbZSFnMP9MEfAazNn4ZoTkL1pdODn7
-         mafbvGXkF7Lr/Jx4jLN4YrvA4Fyjt5PdTdo14L/yGF6J61i81fDuIOjt8CJTHu6CM8+O
-         ekKBww/1HX7p1BlphTUeYy/i2e9a9xi58/uaxBQO1mGa+mDYeyxkXJgqqS+Jc9sYqd2W
-         LbZTExxbQsC8mK254oT8BrUKqvIQRv5nnq9UhOju/da3dhEsQCyEwF8ScJJWfai8tkna
-         zvRfNymD/zLanNWI+IXGkX0clDP5ARn21k9/ummcsow4BqXmKud+RBVmfG4ZvvaTAd6u
-         iFfQ==
-X-Gm-Message-State: APjAAAVRKnGyFmeOtLY9Tq9RCGCz24oZL5qAailXGFYIExN3fgveLxvg
-        me+OWrT3rK7XEHUGQZdAoDsPu/jpqmpzlg==
-X-Google-Smtp-Source: APXvYqyYyjDad34/VA51fHiZQzYw2J9Yu+zjroePMoadmArI8dNHmsvcTOZeg+gH9qi+lrkOHAh0RVsD4ibk4A==
-X-Received: by 2002:a63:4b48:: with SMTP id k8mr11683788pgl.362.1580495565001;
- Fri, 31 Jan 2020 10:32:45 -0800 (PST)
-Date:   Fri, 31 Jan 2020 10:32:41 -0800
-Message-Id: <20200131183241.140636-1-edumazet@google.com>
-Mime-Version: 1.0
-X-Mailer: git-send-email 2.25.0.341.g760bfbb309-goog
-Subject: [PATCH net] tcp: clear tp->data_segs{in|out} in tcp_disconnect()
-From:   Eric Dumazet <edumazet@google.com>
-To:     "David S . Miller" <davem@davemloft.net>
-Cc:     netdev <netdev@vger.kernel.org>,
-        Neal Cardwell <ncardwell@google.com>,
-        Eric Dumazet <edumazet@google.com>,
-        Eric Dumazet <eric.dumazet@gmail.com>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Yuchung Cheng <ycheng@google.com>
-Content-Type: text/plain; charset="UTF-8"
+        id S1726347AbgAaSjc (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 31 Jan 2020 13:39:32 -0500
+Received: from lelv0142.ext.ti.com ([198.47.23.249]:34396 "EHLO
+        lelv0142.ext.ti.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725909AbgAaSjc (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 31 Jan 2020 13:39:32 -0500
+Received: from lelv0265.itg.ti.com ([10.180.67.224])
+        by lelv0142.ext.ti.com (8.15.2/8.15.2) with ESMTP id 00VIdRs5103479;
+        Fri, 31 Jan 2020 12:39:27 -0600
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
+        s=ti-com-17Q1; t=1580495967;
+        bh=C2OoElTb/xW5zZLPQjBxo7wY426iSsHo1LeUV6VejFE=;
+        h=Subject:To:CC:References:From:Date:In-Reply-To;
+        b=QNT9rjeIO//1kMCfVIaZE0is8gn/smizq4jY0KflSLx9isqwzKZMCwOcpNQ20aIDq
+         l/5Lq9eUW/rAWfpAB5pPb682ov3Rj9qhx2vahzPUPXpGgMcDe3eSdFWRCcsX9geFB6
+         kHPlaX3Z6j3TmaKvX+1OAu0DWmC8/oQtwNmnRdlA=
+Received: from DFLE108.ent.ti.com (dfle108.ent.ti.com [10.64.6.29])
+        by lelv0265.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 00VIdRPf104721
+        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
+        Fri, 31 Jan 2020 12:39:27 -0600
+Received: from DFLE107.ent.ti.com (10.64.6.28) by DFLE108.ent.ti.com
+ (10.64.6.29) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1847.3; Fri, 31
+ Jan 2020 12:39:27 -0600
+Received: from lelv0326.itg.ti.com (10.180.67.84) by DFLE107.ent.ti.com
+ (10.64.6.28) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1847.3 via
+ Frontend Transport; Fri, 31 Jan 2020 12:39:27 -0600
+Received: from [10.250.65.13] (ileax41-snat.itg.ti.com [10.172.224.153])
+        by lelv0326.itg.ti.com (8.15.2/8.15.2) with ESMTP id 00VIdR2P059261;
+        Fri, 31 Jan 2020 12:39:27 -0600
+Subject: Re: [PATCH net-master 1/1] net: phy: dp83867: Add speed optimization
+ feature
+To:     Jakub Kicinski <kuba@kernel.org>
+CC:     <andrew@lunn.ch>, <f.fainelli@gmail.com>, <hkallweit1@gmail.com>,
+        <bunk@kernel.org>, <netdev@vger.kernel.org>,
+        <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <grygorii.strashko@ti.com>
+References: <20200131151110.31642-1-dmurphy@ti.com>
+ <20200131151110.31642-2-dmurphy@ti.com>
+ <20200131091004.18d54183@cakuba.hsd1.ca.comcast.net>
+ <6b4bb017-de97-0688-47c5-723ec4c3a339@ti.com>
+ <20200131101130.1b265526@cakuba.hsd1.ca.comcast.net>
+From:   Dan Murphy <dmurphy@ti.com>
+Message-ID: <90266d62-11bf-ca61-179e-ac38e41e3bb2@ti.com>
+Date:   Fri, 31 Jan 2020 12:36:08 -0600
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.4.1
+MIME-Version: 1.0
+In-Reply-To: <20200131101130.1b265526@cakuba.hsd1.ca.comcast.net>
+Content-Type: text/plain; charset="utf-8"; format=flowed
+Content-Transfer-Encoding: 7bit
+Content-Language: en-US
+X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-tp->data_segs_in and tp->data_segs_out need to be cleared
-in tcp_disconnect().
+Jakob
 
-tcp_disconnect() is rarely used, but it is worth fixing it.
+On 1/31/20 12:11 PM, Jakub Kicinski wrote:
+> On Fri, 31 Jan 2020 11:14:05 -0600, Dan Murphy wrote:
+>> On 1/31/20 11:10 AM, Jakub Kicinski wrote:
+>>> While we wait for the PHY folk to take a look, could you please
+>>> provide a Fixes tag?
+>> Hmm. This is not a bug fix though this is a new feature being added.
+>>
+>> Not sure what it would be fixing.
+> I see, you target the patch at net which is for fixes, so I
+> misinterpreted this:
 
-Fixes: a44d6eacdaf5 ("tcp: Add RFC4898 tcpEStatsPerfDataSegsOut/In")
-Signed-off-by: Eric Dumazet <edumazet@google.com>
-Cc: Martin KaFai Lau <kafai@fb.com>
-Cc: Yuchung Cheng <ycheng@google.com>
-Cc: Neal Cardwell <ncardwell@google.com>
----
- net/ipv4/tcp.c | 2 ++
- 1 file changed, 2 insertions(+)
+My fault I will have a v2 so I will rebase on top of net-next.
 
-diff --git a/net/ipv4/tcp.c b/net/ipv4/tcp.c
-index a8ffdfb61f422228d4af1de600b756c9d3894ef5..3b601823f69a93dd20f9a4876945a87cd2196dc9 100644
---- a/net/ipv4/tcp.c
-+++ b/net/ipv4/tcp.c
-@@ -2643,6 +2643,8 @@ int tcp_disconnect(struct sock *sk, int flags)
- 	tp->bytes_acked = 0;
- 	tp->bytes_received = 0;
- 	tp->bytes_retrans = 0;
-+	tp->data_segs_in = 0;
-+	tp->data_segs_out = 0;
- 	tp->duplicate_sack[0].start_seq = 0;
- 	tp->duplicate_sack[0].end_seq = 0;
- 	tp->dsack_dups = 0;
--- 
-2.25.0.341.g760bfbb309-goog
+>> This feature can also be strapped on the 64 pin PHY devices
+>> but the 48 pin devices do not have the strap pin available to enable
+>> this feature in the hardware.
+> as you fixing 48 devices or such.
+
+
+Not really fixing them just enabling them to use this feature.
+
+Dan
 
