@@ -2,150 +2,117 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 5FDF914F536
-	for <lists+netdev@lfdr.de>; Sat,  1 Feb 2020 00:32:17 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6725814F53F
+	for <lists+netdev@lfdr.de>; Sat,  1 Feb 2020 00:37:04 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726347AbgAaX1J (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 31 Jan 2020 18:27:09 -0500
-Received: from mail-pl1-f202.google.com ([209.85.214.202]:38757 "EHLO
-        mail-pl1-f202.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726239AbgAaX1I (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 31 Jan 2020 18:27:08 -0500
-Received: by mail-pl1-f202.google.com with SMTP id t17so4550430ply.5
-        for <netdev@vger.kernel.org>; Fri, 31 Jan 2020 15:27:08 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20161025;
-        h=date:message-id:mime-version:subject:from:to:cc;
-        bh=LoShAQX3tPUZD1jc9JW0rORq+uOX0ffru868fqsgKyA=;
-        b=bY10y9PIgdyIBd55WEymxKkjJeZ9CNdJnc2f3wzYKE2V/7SkCQD7lxavhl8eE/F4We
-         m+Cjcp6NEcw+Fxe/EZw3iTulLIF5F5mDxPhO77TewyWZtGqwLQzlUjUSdJJRsRFIPXbg
-         Js1P2n0UBJGwUD86B4FlCNwqXKgFHHJdbCTpoClPII4k7OkjNnxSZW6znFY1ibOqECmK
-         ZweQDmJT3ZNa5N1ve8NNpUq2vrZRsmYfoPQCnNo4qfNWZBY6yDXk85hhRuMKJ8ln//SP
-         grT71b6yEyczbXv0WXE+CshOL9pbwFYQthny65iN4/472sNZ+6NNbr8opvLFdi0c5hnp
-         xRpw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:message-id:mime-version:subject:from:to:cc;
-        bh=LoShAQX3tPUZD1jc9JW0rORq+uOX0ffru868fqsgKyA=;
-        b=Rd3MNbycQodN6w+Ae7E18LBjQc1/Nl+L6XhaZXvbulyK2JML1lCxSwZITWAkkPC9+U
-         31UjqARId6kAi0ebDqk7EMgsrNaiOQgdRkZDgWCPOe9/qjJ7WP4YSLNqLpj8p2kTiyUp
-         U5UfjPlfocfEiLwkmCDQXW5ThRxBAEuTzt9s/ZfIUlGwXiVWbc6YLVRkhWo7Y1Ys6xhx
-         /cZbCq+00EYealOmgcDzD66PlW9AYsXgcXJVoY98C/yDxMFA039pLXTlP22MtsJC4DWA
-         jd63M1oxGQV8oRs7S0KCbVp0XdzzgjpnHFJlHbigV9/MTU3za8N2YHdKPgKeqNTg+dyE
-         l8xw==
-X-Gm-Message-State: APjAAAXxwe4OeETfRPA55CdLrPpQiByGhuaq5h08+N7qjfbLGA5wrxDT
-        uO5V9SraXt0vJ+aRl3TI6y+EDEz8azaFfg==
-X-Google-Smtp-Source: APXvYqwNCv2JrQevDFp/6iA4Ks0jTAAXGS16skdOFugvCM0qxttr40/FhX0zFPQuZ6baCHGvv+0CI6LIe4YTRA==
-X-Received: by 2002:a63:bc01:: with SMTP id q1mr13629747pge.442.1580513227683;
- Fri, 31 Jan 2020 15:27:07 -0800 (PST)
-Date:   Fri, 31 Jan 2020 15:27:04 -0800
-Message-Id: <20200131232704.161648-1-edumazet@google.com>
-Mime-Version: 1.0
-X-Mailer: git-send-email 2.25.0.341.g760bfbb309-goog
-Subject: [PATCH net] cls_rsvp: fix rsvp_policy
-From:   Eric Dumazet <edumazet@google.com>
-To:     "David S . Miller" <davem@davemloft.net>
-Cc:     netdev <netdev@vger.kernel.org>,
-        Eric Dumazet <edumazet@google.com>,
-        Eric Dumazet <eric.dumazet@gmail.com>,
-        syzbot <syzkaller@googlegroups.com>
-Content-Type: text/plain; charset="UTF-8"
+        id S1726330AbgAaXhD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 31 Jan 2020 18:37:03 -0500
+Received: from Chamillionaire.breakpoint.cc ([193.142.43.52]:53028 "EHLO
+        Chamillionaire.breakpoint.cc" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1726239AbgAaXhC (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 31 Jan 2020 18:37:02 -0500
+Received: from fw by Chamillionaire.breakpoint.cc with local (Exim 4.92)
+        (envelope-from <fw@strlen.de>)
+        id 1ixfqN-0006Qg-2J; Sat, 01 Feb 2020 00:36:59 +0100
+Date:   Sat, 1 Feb 2020 00:36:59 +0100
+From:   Florian Westphal <fw@strlen.de>
+To:     Cong Wang <xiyou.wangcong@gmail.com>
+Cc:     Florian Westphal <fw@strlen.de>,
+        Linux Kernel Network Developers <netdev@vger.kernel.org>,
+        NetFilter <netfilter-devel@vger.kernel.org>,
+        syzbot <syzbot+adf6c6c2be1c3a718121@syzkaller.appspotmail.com>,
+        Pablo Neira Ayuso <pablo@netfilter.org>,
+        Jozsef Kadlecsik <kadlec@netfilter.org>
+Subject: Re: [Patch nf 3/3] xt_hashlimit: limit the max size of hashtable
+Message-ID: <20200131233659.GM795@breakpoint.cc>
+References: <20200131205216.22213-1-xiyou.wangcong@gmail.com>
+ <20200131205216.22213-4-xiyou.wangcong@gmail.com>
+ <20200131220807.GJ795@breakpoint.cc>
+ <CAM_iQpVVgkP8u_9ez-2fmrJDdKoFwAxGcbE3Mmk3=7cv4W_QJQ@mail.gmail.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAM_iQpVVgkP8u_9ez-2fmrJDdKoFwAxGcbE3Mmk3=7cv4W_QJQ@mail.gmail.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-NLA_BINARY can be confusing, since .len value represents
-the max size of the blob.
+Cong Wang <xiyou.wangcong@gmail.com> wrote:
+> On Fri, Jan 31, 2020 at 2:08 PM Florian Westphal <fw@strlen.de> wrote:
+> >
+> > Cong Wang <xiyou.wangcong@gmail.com> wrote:
+> > > The user-specified hashtable size is unbound, this could
+> > > easily lead to an OOM or a hung task as we hold the global
+> > > mutex while allocating and initializing the new hashtable.
+> > >
+> > > The max value is derived from the max value when chosen by
+> > > the kernel.
+> > >
+> > > Reported-and-tested-by: syzbot+adf6c6c2be1c3a718121@syzkaller.appspotmail.com
+> > > Cc: Pablo Neira Ayuso <pablo@netfilter.org>
+> > > Cc: Jozsef Kadlecsik <kadlec@netfilter.org>
+> > > Cc: Florian Westphal <fw@strlen.de>
+> > > Signed-off-by: Cong Wang <xiyou.wangcong@gmail.com>
+> > > ---
+> > >  net/netfilter/xt_hashlimit.c | 6 +++++-
+> > >  1 file changed, 5 insertions(+), 1 deletion(-)
+> > >
+> > > diff --git a/net/netfilter/xt_hashlimit.c b/net/netfilter/xt_hashlimit.c
+> > > index 57a2639bcc22..6327134c5886 100644
+> > > --- a/net/netfilter/xt_hashlimit.c
+> > > +++ b/net/netfilter/xt_hashlimit.c
+> > > @@ -272,6 +272,8 @@ dsthash_free(struct xt_hashlimit_htable *ht, struct dsthash_ent *ent)
+> > >  }
+> > >  static void htable_gc(struct work_struct *work);
+> > >
+> > > +#define HASHLIMIT_MAX_SIZE 8192
+> > > +
+> > >  static int htable_create(struct net *net, struct hashlimit_cfg3 *cfg,
+> > >                        const char *name, u_int8_t family,
+> > >                        struct xt_hashlimit_htable **out_hinfo,
+> > > @@ -290,7 +292,7 @@ static int htable_create(struct net *net, struct hashlimit_cfg3 *cfg,
+> > >               size = (nr_pages << PAGE_SHIFT) / 16384 /
+> > >                      sizeof(struct hlist_head);
+> > >               if (nr_pages > 1024 * 1024 * 1024 / PAGE_SIZE)
+> > > -                     size = 8192;
+> > > +                     size = HASHLIMIT_MAX_SIZE;
+> > >               if (size < 16)
+> > >                       size = 16;
+> > >       }
+> > > @@ -848,6 +850,8 @@ static int hashlimit_mt_check_common(const struct xt_mtchk_param *par,
+> > >
+> > >       if (cfg->gc_interval == 0 || cfg->expire == 0)
+> > >               return -EINVAL;
+> > > +     if (cfg->size > HASHLIMIT_MAX_SIZE)
+> > > +             return -ENOMEM;
+> >
+> > Hmm, won't that break restore of rulesets that have something like
+> >
+> > --hashlimit-size 10000?
+> >
+> > AFAIU this limits the module to vmalloc requests of only 64kbyte.
+> > I'm not opposed to a limit (or a cap), but 64k seems a bit low to me.
+> 
+> 8192 is from the current code which handles kernel-chosen size
+> (that is cfg->size==0), I personally have no idea what the max
+> should be. :)
 
-cls_rsvp really wants user space to provide long enough data
-for TCA_RSVP_DST and TCA_RSVP_SRC attributes.
+Me neither :-/
 
-BUG: KMSAN: uninit-value in rsvp_get net/sched/cls_rsvp.h:258 [inline]
-BUG: KMSAN: uninit-value in gen_handle net/sched/cls_rsvp.h:402 [inline]
-BUG: KMSAN: uninit-value in rsvp_change+0x1ae9/0x4220 net/sched/cls_rsvp.h:572
-CPU: 1 PID: 13228 Comm: syz-executor.1 Not tainted 5.5.0-rc5-syzkaller #0
-Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
-Call Trace:
- __dump_stack lib/dump_stack.c:77 [inline]
- dump_stack+0x1c9/0x220 lib/dump_stack.c:118
- kmsan_report+0xf7/0x1e0 mm/kmsan/kmsan_report.c:118
- __msan_warning+0x58/0xa0 mm/kmsan/kmsan_instr.c:215
- rsvp_get net/sched/cls_rsvp.h:258 [inline]
- gen_handle net/sched/cls_rsvp.h:402 [inline]
- rsvp_change+0x1ae9/0x4220 net/sched/cls_rsvp.h:572
- tc_new_tfilter+0x31fe/0x5010 net/sched/cls_api.c:2104
- rtnetlink_rcv_msg+0xcb7/0x1570 net/core/rtnetlink.c:5415
- netlink_rcv_skb+0x451/0x650 net/netlink/af_netlink.c:2477
- rtnetlink_rcv+0x50/0x60 net/core/rtnetlink.c:5442
- netlink_unicast_kernel net/netlink/af_netlink.c:1302 [inline]
- netlink_unicast+0xf9e/0x1100 net/netlink/af_netlink.c:1328
- netlink_sendmsg+0x1248/0x14d0 net/netlink/af_netlink.c:1917
- sock_sendmsg_nosec net/socket.c:639 [inline]
- sock_sendmsg net/socket.c:659 [inline]
- ____sys_sendmsg+0x12b6/0x1350 net/socket.c:2330
- ___sys_sendmsg net/socket.c:2384 [inline]
- __sys_sendmsg+0x451/0x5f0 net/socket.c:2417
- __do_sys_sendmsg net/socket.c:2426 [inline]
- __se_sys_sendmsg+0x97/0xb0 net/socket.c:2424
- __x64_sys_sendmsg+0x4a/0x70 net/socket.c:2424
- do_syscall_64+0xb8/0x160 arch/x86/entry/common.c:296
- entry_SYSCALL_64_after_hwframe+0x44/0xa9
-RIP: 0033:0x45b349
-Code: ad b6 fb ff c3 66 2e 0f 1f 84 00 00 00 00 00 66 90 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 0f 83 7b b6 fb ff c3 66 2e 0f 1f 84 00 00 00 00
-RSP: 002b:00007f269d43dc78 EFLAGS: 00000246 ORIG_RAX: 000000000000002e
-RAX: ffffffffffffffda RBX: 00007f269d43e6d4 RCX: 000000000045b349
-RDX: 0000000000000000 RSI: 00000000200001c0 RDI: 0000000000000003
-RBP: 000000000075bfc8 R08: 0000000000000000 R09: 0000000000000000
-R10: 0000000000000000 R11: 0000000000000246 R12: 00000000ffffffff
-R13: 00000000000009c2 R14: 00000000004cb338 R15: 000000000075bfd4
+> Please suggest a number.
 
-Uninit was created at:
- kmsan_save_stack_with_flags mm/kmsan/kmsan.c:144 [inline]
- kmsan_internal_poison_shadow+0x66/0xd0 mm/kmsan/kmsan.c:127
- kmsan_slab_alloc+0x8a/0xe0 mm/kmsan/kmsan_hooks.c:82
- slab_alloc_node mm/slub.c:2774 [inline]
- __kmalloc_node_track_caller+0xb40/0x1200 mm/slub.c:4382
- __kmalloc_reserve net/core/skbuff.c:141 [inline]
- __alloc_skb+0x2fd/0xac0 net/core/skbuff.c:209
- alloc_skb include/linux/skbuff.h:1049 [inline]
- netlink_alloc_large_skb net/netlink/af_netlink.c:1174 [inline]
- netlink_sendmsg+0x7d3/0x14d0 net/netlink/af_netlink.c:1892
- sock_sendmsg_nosec net/socket.c:639 [inline]
- sock_sendmsg net/socket.c:659 [inline]
- ____sys_sendmsg+0x12b6/0x1350 net/socket.c:2330
- ___sys_sendmsg net/socket.c:2384 [inline]
- __sys_sendmsg+0x451/0x5f0 net/socket.c:2417
- __do_sys_sendmsg net/socket.c:2426 [inline]
- __se_sys_sendmsg+0x97/0xb0 net/socket.c:2424
- __x64_sys_sendmsg+0x4a/0x70 net/socket.c:2424
- do_syscall_64+0xb8/0x160 arch/x86/entry/common.c:296
- entry_SYSCALL_64_after_hwframe+0x44/0xa9
+O would propose a max alloc size (hard limit) of ~8 MByte of vmalloc
+space, or maybe 16 at most.
 
-Fixes: 6fa8c0144b77 ("[NET_SCHED]: Use nla_policy for attribute validation in classifiers")
-Signed-off-by: Eric Dumazet <edumazet@google.com>
-Reported-by: syzbot <syzkaller@googlegroups.com>
----
- net/sched/cls_rsvp.h | 6 ++----
- 1 file changed, 2 insertions(+), 4 deletions(-)
+1048576 max upperlimit -> ~8mbyte vmalloc request -> allows to store
+up to 2**23 entries.
 
-diff --git a/net/sched/cls_rsvp.h b/net/sched/cls_rsvp.h
-index c22624131949746e5f0f25654a5efce7466d9727..d36949d9382c41dda54d12269fe1e8ff9c7e397f 100644
---- a/net/sched/cls_rsvp.h
-+++ b/net/sched/cls_rsvp.h
-@@ -463,10 +463,8 @@ static u32 gen_tunnel(struct rsvp_head *data)
- 
- static const struct nla_policy rsvp_policy[TCA_RSVP_MAX + 1] = {
- 	[TCA_RSVP_CLASSID]	= { .type = NLA_U32 },
--	[TCA_RSVP_DST]		= { .type = NLA_BINARY,
--				    .len = RSVP_DST_LEN * sizeof(u32) },
--	[TCA_RSVP_SRC]		= { .type = NLA_BINARY,
--				    .len = RSVP_DST_LEN * sizeof(u32) },
-+	[TCA_RSVP_DST]		= { .len = RSVP_DST_LEN * sizeof(u32) },
-+	[TCA_RSVP_SRC]		= { .len = RSVP_DST_LEN * sizeof(u32) },
- 	[TCA_RSVP_PINFO]	= { .len = sizeof(struct tc_rsvp_pinfo) },
- };
- 
--- 
-2.25.0.341.g760bfbb309-goog
+In order to prevent breaking userspace, perhaps make it so that the
+kernel caps cfg.max at twice that value?  Would allow storing up to
+16777216 addresses with an average chain depth of 16 (which is quite
+large).  We could increase the max limit in case someone presents a use
+case.
 
+What do you think?
