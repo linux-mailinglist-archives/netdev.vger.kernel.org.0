@@ -2,49 +2,49 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 2A63614EC76
-	for <lists+netdev@lfdr.de>; Fri, 31 Jan 2020 13:25:17 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8199914EC73
+	for <lists+netdev@lfdr.de>; Fri, 31 Jan 2020 13:25:15 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728619AbgAaMZH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 31 Jan 2020 07:25:07 -0500
-Received: from smtp-fw-9102.amazon.com ([207.171.184.29]:19839 "EHLO
-        smtp-fw-9102.amazon.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728479AbgAaMZG (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 31 Jan 2020 07:25:06 -0500
+        id S1728593AbgAaMZD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 31 Jan 2020 07:25:03 -0500
+Received: from smtp-fw-6002.amazon.com ([52.95.49.90]:18569 "EHLO
+        smtp-fw-6002.amazon.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728479AbgAaMZC (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 31 Jan 2020 07:25:02 -0500
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
   d=amazon.com; i=@amazon.com; q=dns/txt; s=amazon201209;
-  t=1580473506; x=1612009506;
+  t=1580473502; x=1612009502;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version;
-  bh=Zk3wI8pneK5JMxV2EImoUPA7OfrNe6Lhhf3JHIUUWqY=;
-  b=hRQnojC/oaqgQ+X76gJT6GVaCC/0OKnYU0nwztqm9rz8wrFtEhQX5+7C
-   u97T80bi05uYAJkRAgiYDOH85FtouhpnaGDYdR5JtxzYa6MiVes0Uuwo6
-   jAcmnaDnhTdwwmDcQyDXcUdulNZXxplOq3fcSTMoPqq8osGA/GWeEMasC
-   E=;
-IronPort-SDR: Np1qsOA8+sTvpoqKlzTfcuNbFkT0rEFe4IoX6P/b3gjbU+BnT4Ox6rykIMoLiQr3zVcW4JyFiH
- ndG8wwzXOpvQ==
+  bh=eRB/ftryms8SbjXF4iCqjGPRzeoxvd6GBWw9lqbtxB0=;
+  b=nQKRHryKLJTFcb+57IaviVMdb2qPECQXko9UubgfQWvYGkktseAKrRGv
+   8zjjRABXK24DImgyYC8votSkIc63bJpPi2RvM3f/EEoOE7Qz+Q2WWWTtl
+   7ZKEBEncQsN+PbH3DNsLjqyuOLPpRR4P/cKr8USFutdA2M3nGdRsIVWco
+   4=;
+IronPort-SDR: FjtJcV8W/7QMEyRqX73rrKYPGUu1l5ipxU5Wqi/KNdrAmwIT9DzgOkbgj4ecX+WVJjdtpLd8Eo
+ Hj7woZy7te9w==
 X-IronPort-AV: E=Sophos;i="5.70,385,1574121600"; 
-   d="scan'208";a="22232066"
-Received: from sea32-co-svc-lb4-vlan3.sea.corp.amazon.com (HELO email-inbound-relay-2a-1c1b5cdd.us-west-2.amazon.com) ([10.47.23.38])
-  by smtp-border-fw-out-9102.sea19.amazon.com with ESMTP; 31 Jan 2020 12:24:54 +0000
+   d="scan'208";a="14174527"
+Received: from iad12-co-svc-p1-lb1-vlan3.amazon.com (HELO email-inbound-relay-2b-a7fdc47a.us-west-2.amazon.com) ([10.43.8.6])
+  by smtp-border-fw-out-6002.iad6.amazon.com with ESMTP; 31 Jan 2020 12:25:00 +0000
 Received: from EX13MTAUEA002.ant.amazon.com (pdx4-ws-svc-p6-lb7-vlan2.pdx.amazon.com [10.170.41.162])
-        by email-inbound-relay-2a-1c1b5cdd.us-west-2.amazon.com (Postfix) with ESMTPS id C9323A1E27;
-        Fri, 31 Jan 2020 12:24:53 +0000 (UTC)
+        by email-inbound-relay-2b-a7fdc47a.us-west-2.amazon.com (Postfix) with ESMTPS id 3822CC5CEB;
+        Fri, 31 Jan 2020 12:24:57 +0000 (UTC)
 Received: from EX13D31EUA001.ant.amazon.com (10.43.165.15) by
  EX13MTAUEA002.ant.amazon.com (10.43.61.77) with Microsoft SMTP Server (TLS)
- id 15.0.1236.3; Fri, 31 Jan 2020 12:24:53 +0000
+ id 15.0.1236.3; Fri, 31 Jan 2020 12:24:57 +0000
 Received: from u886c93fd17d25d.ant.amazon.com (10.43.162.50) by
  EX13D31EUA001.ant.amazon.com (10.43.165.15) with Microsoft SMTP Server (TLS)
- id 15.0.1367.3; Fri, 31 Jan 2020 12:24:48 +0000
+ id 15.0.1367.3; Fri, 31 Jan 2020 12:24:52 +0000
 From:   <sjpark@amazon.com>
 To:     <edumazet@google.com>, <davem@davemloft.net>
 CC:     <shuah@kernel.org>, <netdev@vger.kernel.org>,
         <linux-kselftest@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
         <sj38.park@gmail.com>, <aams@amazon.com>,
         SeongJae Park <sjpark@amazon.de>
-Subject: [PATCH 2/3] tcp: Reduce SYN resend delay if a suspicous ACK is received
-Date:   Fri, 31 Jan 2020 13:24:20 +0100
-Message-ID: <20200131122421.23286-3-sjpark@amazon.com>
+Subject: [PATCH 3/3] selftests: net: Add FIN_ACK processing order related latency spike test
+Date:   Fri, 31 Jan 2020 13:24:21 +0100
+Message-ID: <20200131122421.23286-4-sjpark@amazon.com>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <20200131122421.23286-1-sjpark@amazon.com>
 References: <20200131122421.23286-1-sjpark@amazon.com>
@@ -60,92 +60,243 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: SeongJae Park <sjpark@amazon.de>
 
-When closing a connection, the two acks that required to change closing
-socket's status to FIN_WAIT_2 and then TIME_WAIT could be processed in
-reverse order.  This is possible in RSS disabled environments such as a
-connection inside a host.
-
-For example, expected state transitions and required packets for the
-disconnection will be similar to below flow.
-
-	 00 (Process A)				(Process B)
-	 01 ESTABLISHED				ESTABLISHED
-	 02 close()
-	 03 FIN_WAIT_1
-	 04 		---FIN-->
-	 05 					CLOSE_WAIT
-	 06 		<--ACK---
-	 07 FIN_WAIT_2
-	 08 		<--FIN/ACK---
-	 09 TIME_WAIT
-	 10 		---ACK-->
-	 11 					LAST_ACK
-	 12 CLOSED				CLOSED
-
-The acks in lines 6 and 8 are the acks.  If the line 8 packet is
-processed before the line 6 packet, it will be just ignored as it is not
-a expected packet, and the later process of the line 6 packet will
-change the status of Process A to FIN_WAIT_2, but as it has already
-handled line 8 packet, it will not go to TIME_WAIT and thus will not
-send the line 10 packet to Process B.  Thus, Process B will left in
-CLOSE_WAIT status, as below.
-
-	 00 (Process A)				(Process B)
-	 01 ESTABLISHED				ESTABLISHED
-	 02 close()
-	 03 FIN_WAIT_1
-	 04 		---FIN-->
-	 05 					CLOSE_WAIT
-	 06 				(<--ACK---)
-	 07	  			(<--FIN/ACK---)
-	 08 				(fired in right order)
-	 09 		<--FIN/ACK---
-	 10 		<--ACK---
-	 11 		(processed in reverse order)
-	 12 FIN_WAIT_2
-
-Later, if the Process B sends SYN to Process A for reconnection using
-the same port, Process A will responds with an ACK for the last flow,
-which has no increased sequence number.  Thus, Process A will send RST,
-wait for TIMEOUT_INIT (one second in default), and then try
-reconnection.  If reconnections are frequent, the one second latency
-spikes can be a big problem.  Below is a tcpdump results of the problem:
-
-    14.436259 IP 127.0.0.1.45150 > 127.0.0.1.4242: Flags [S], seq 2560603644
-    14.436266 IP 127.0.0.1.4242 > 127.0.0.1.45150: Flags [.], ack 5, win 512
-    14.436271 IP 127.0.0.1.45150 > 127.0.0.1.4242: Flags [R], seq 2541101298
-    /* ONE SECOND DELAY */
-    15.464613 IP 127.0.0.1.45150 > 127.0.0.1.4242: Flags [S], seq 2560603644
-
-This commit mitigates the problem by reducing the delay for the next SYN
-if the suspicous ACK is received while in SYN_SENT state.
-
-Following commit will add a selftest, which can be also helpful for
-understanding of this issue.
+This commit adds a test for FIN_ACK process races related reconnection
+latency spike issues.  The issue has described and solved by the
+previous commit ("tcp: Reduce SYN resend delay if a suspicous ACK is
+received").
 
 Signed-off-by: SeongJae Park <sjpark@amazon.de>
 ---
- net/ipv4/tcp_input.c | 6 +++++-
- 1 file changed, 5 insertions(+), 1 deletion(-)
+ tools/testing/selftests/net/.gitignore        |  2 +
+ tools/testing/selftests/net/Makefile          |  2 +
+ tools/testing/selftests/net/fin_ack_lat.sh    | 42 ++++++++++
+ .../selftests/net/fin_ack_lat_accept.c        | 49 +++++++++++
+ .../selftests/net/fin_ack_lat_connect.c       | 81 +++++++++++++++++++
+ 5 files changed, 176 insertions(+)
+ create mode 100755 tools/testing/selftests/net/fin_ack_lat.sh
+ create mode 100644 tools/testing/selftests/net/fin_ack_lat_accept.c
+ create mode 100644 tools/testing/selftests/net/fin_ack_lat_connect.c
 
-diff --git a/net/ipv4/tcp_input.c b/net/ipv4/tcp_input.c
-index 2a976f57f7e7..b168e29e1ad1 100644
---- a/net/ipv4/tcp_input.c
-+++ b/net/ipv4/tcp_input.c
-@@ -5893,8 +5893,12 @@ static int tcp_rcv_synsent_state_process(struct sock *sk, struct sk_buff *skb,
- 		 *        the segment and return)"
- 		 */
- 		if (!after(TCP_SKB_CB(skb)->ack_seq, tp->snd_una) ||
--		    after(TCP_SKB_CB(skb)->ack_seq, tp->snd_nxt))
-+		    after(TCP_SKB_CB(skb)->ack_seq, tp->snd_nxt)) {
-+			/* Previous FIN/ACK or RST/ACK might be ignore. */
-+			inet_csk_reset_xmit_timer(sk, ICSK_TIME_RETRANS,
-+						  TCP_ATO_MIN, TCP_RTO_MAX);
- 			goto reset_and_undo;
-+		}
+diff --git a/tools/testing/selftests/net/.gitignore b/tools/testing/selftests/net/.gitignore
+index 8aefd81fbc86..1bcf7b5498dd 100644
+--- a/tools/testing/selftests/net/.gitignore
++++ b/tools/testing/selftests/net/.gitignore
+@@ -22,3 +22,5 @@ ipv6_flowlabel_mgr
+ so_txtime
+ tcp_fastopen_backup_key
+ nettest
++fin_ack_lat_accept
++fin_ack_lat_connect
+diff --git a/tools/testing/selftests/net/Makefile b/tools/testing/selftests/net/Makefile
+index a8e04d665b69..e4938c26ce3f 100644
+--- a/tools/testing/selftests/net/Makefile
++++ b/tools/testing/selftests/net/Makefile
+@@ -11,6 +11,7 @@ TEST_PROGS += udpgso_bench.sh fib_rule_tests.sh msg_zerocopy.sh psock_snd.sh
+ TEST_PROGS += udpgro_bench.sh udpgro.sh test_vxlan_under_vrf.sh reuseport_addr_any.sh
+ TEST_PROGS += test_vxlan_fdb_changelink.sh so_txtime.sh ipv6_flowlabel.sh
+ TEST_PROGS += tcp_fastopen_backup_key.sh fcnal-test.sh l2tp.sh traceroute.sh
++TEST_PROGS += fin_ack_lat.sh
+ TEST_PROGS_EXTENDED := in_netns.sh
+ TEST_GEN_FILES =  socket nettest
+ TEST_GEN_FILES += psock_fanout psock_tpacket msg_zerocopy reuseport_addr_any
+@@ -18,6 +19,7 @@ TEST_GEN_FILES += tcp_mmap tcp_inq psock_snd txring_overwrite
+ TEST_GEN_FILES += udpgso udpgso_bench_tx udpgso_bench_rx ip_defrag
+ TEST_GEN_FILES += so_txtime ipv6_flowlabel ipv6_flowlabel_mgr
+ TEST_GEN_FILES += tcp_fastopen_backup_key
++TEST_GEN_FILES += fin_ack_lat_accept fin_ack_lat_connect
+ TEST_GEN_PROGS = reuseport_bpf reuseport_bpf_cpu reuseport_bpf_numa
+ TEST_GEN_PROGS += reuseport_dualstack reuseaddr_conflict tls
  
- 		if (tp->rx_opt.saw_tstamp && tp->rx_opt.rcv_tsecr &&
- 		    !between(tp->rx_opt.rcv_tsecr, tp->retrans_stamp,
+diff --git a/tools/testing/selftests/net/fin_ack_lat.sh b/tools/testing/selftests/net/fin_ack_lat.sh
+new file mode 100755
+index 000000000000..0a398c837b7a
+--- /dev/null
++++ b/tools/testing/selftests/net/fin_ack_lat.sh
+@@ -0,0 +1,42 @@
++#!/bin/bash
++# SPDX-License-Identifier: GPL-2.0
++#
++# Test latency spikes caused by FIN/ACK handling race.
++
++set +x
++set -e
++
++tmpfile=$(mktemp /tmp/fin_ack_latency.XXXX.log)
++
++kill_accept() {
++	kill $ACCEPT_PID
++}
++
++cleanup() {
++	kill_accept
++	rm -f $tmpfile
++}
++
++trap cleanup EXIT
++
++do_test() {
++	RUNTIME=$1
++
++	./fin_ack_lat_accept &
++	ACCEPT_PID=$!
++	sleep 1
++
++	./fin_ack_lat_connect | tee $tmpfile &
++	sleep $RUNTIME
++	NR_SPIKES=$(wc -l $tmpfile | awk '{print $1}')
++	rm $tmpfile
++	if [ $NR_SPIKES -gt 0 ]
++	then
++		echo "FAIL: $NR_SPIKES spikes detected"
++		return 1
++	fi
++	return 0
++}
++
++do_test "30"
++echo "test done"
+diff --git a/tools/testing/selftests/net/fin_ack_lat_accept.c b/tools/testing/selftests/net/fin_ack_lat_accept.c
+new file mode 100644
+index 000000000000..a0f0210f12b4
+--- /dev/null
++++ b/tools/testing/selftests/net/fin_ack_lat_accept.c
+@@ -0,0 +1,49 @@
++// SPDX-License-Identifier: GPL-2.0
++
++#include <error.h>
++#include <netinet/in.h>
++#include <stdio.h>
++#include <sys/socket.h>
++#include <unistd.h>
++
++int main(int argc, char const *argv[])
++{
++	int sock, new_sock;
++	int opt = 1;
++	struct sockaddr_in address;
++	int addrlen = sizeof(address);
++	int buffer;
++	int rc;
++
++	sock = socket(AF_INET, SOCK_STREAM, 0);
++	if (!sock)
++		error(-1, -1, "socket");
++
++	rc = setsockopt(sock, SOL_SOCKET, SO_REUSEADDR | SO_REUSEPORT,
++			&opt, sizeof(opt));
++	if (rc == -1)
++		error(-1, -1, "setsockopt");
++
++	address.sin_family = AF_INET;
++	address.sin_addr.s_addr = INADDR_ANY;
++	address.sin_port = htons(4242);
++
++	rc = bind(sock, (struct sockaddr *)&address, sizeof(address));
++	if (rc < 0)
++		error(-1, -1, "bind");
++
++	rc = listen(sock, 3);
++	if (rc < 0)
++		error(-1, -1, "listen");
++
++	while (1) {
++		new_sock = accept(sock, (struct sockaddr *)&address,
++				(socklen_t *)&addrlen);
++		if (new_sock < 0)
++			error(-1, -1, "accept");
++
++		rc = read(new_sock, &buffer, sizeof(buffer));
++		close(new_sock);
++	}
++	return 0;
++}
+diff --git a/tools/testing/selftests/net/fin_ack_lat_connect.c b/tools/testing/selftests/net/fin_ack_lat_connect.c
+new file mode 100644
+index 000000000000..abfdd79f2e17
+--- /dev/null
++++ b/tools/testing/selftests/net/fin_ack_lat_connect.c
+@@ -0,0 +1,81 @@
++// SPDX-License-Identifier: GPL-2.0
++
++#include <arpa/inet.h>
++#include <error.h>
++#include <netinet/tcp.h>
++#include <stdio.h>
++#include <sys/socket.h>
++#include <sys/time.h>
++#include <unistd.h>
++
++static unsigned long timediff(struct timeval s, struct timeval e)
++{
++	if (s.tv_sec > e.tv_sec)
++		return 0;
++	return (e.tv_sec - s.tv_sec) * 1000000 + e.tv_usec - s.tv_usec;
++}
++
++int main(int argc, char const *argv[])
++{
++	int sock = 0;
++	struct sockaddr_in addr, laddr;
++	socklen_t len = sizeof(laddr);
++	struct linger sl;
++	int flag = 1;
++	int buffer;
++	int rc;
++	struct timeval start, end;
++	unsigned long lat, sum_lat = 0, nr_lat = 0;
++
++	while (1) {
++		gettimeofday(&start, NULL);
++
++		sock = socket(AF_INET, SOCK_STREAM, 0);
++		if (sock < 0)
++			error(-1, -1, "socket creation");
++
++		sl.l_onoff = 1;
++		sl.l_linger = 0;
++		if (setsockopt(sock, SOL_SOCKET, SO_LINGER, &sl, sizeof(sl)))
++			error(-1, -1, "setsockopt(linger)");
++
++		if (setsockopt(sock, IPPROTO_TCP, TCP_NODELAY,
++					&flag, sizeof(flag)))
++			error(-1, -1, "setsockopt(nodelay)");
++
++		addr.sin_family = AF_INET;
++		addr.sin_port = htons(4242);
++
++		rc = inet_pton(AF_INET, "127.0.0.1", &addr.sin_addr);
++		if (rc <= 0)
++			error(-1, -1, "inet_pton");
++
++		rc = connect(sock, (struct sockaddr *)&addr, sizeof(addr));
++		if (rc < 0)
++			error(-1, -1, "connect");
++
++		send(sock, &buffer, sizeof(buffer), 0);
++
++		rc = read(sock, &buffer, sizeof(buffer));
++
++		gettimeofday(&end, NULL);
++		lat = timediff(start, end);
++		sum_lat += lat;
++		nr_lat++;
++		if (lat > 100000) {
++			rc = getsockname(sock, (struct sockaddr *)&laddr, &len);
++			if (rc == -1)
++				error(-1, -1, "getsockname");
++			printf("port: %d, lat: %lu, avg: %lu, nr: %lu\n",
++					ntohs(laddr.sin_port), lat,
++					sum_lat / nr_lat, nr_lat);
++		}
++
++		if (nr_lat % 1000 == 0)
++			fflush(stdout);
++
++
++		close(sock);
++	}
++	return 0;
++}
 -- 
 2.17.1
 
