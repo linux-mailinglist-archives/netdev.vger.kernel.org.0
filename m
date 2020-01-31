@@ -2,49 +2,49 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 7830214E82E
-	for <lists+netdev@lfdr.de>; Fri, 31 Jan 2020 06:17:43 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 25CFD14E830
+	for <lists+netdev@lfdr.de>; Fri, 31 Jan 2020 06:18:13 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726134AbgAaFRj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 31 Jan 2020 00:17:39 -0500
-Received: from mail-pl1-f194.google.com ([209.85.214.194]:40389 "EHLO
-        mail-pl1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725263AbgAaFRj (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 31 Jan 2020 00:17:39 -0500
-Received: by mail-pl1-f194.google.com with SMTP id y1so2244788plp.7;
-        Thu, 30 Jan 2020 21:17:37 -0800 (PST)
+        id S1726943AbgAaFSJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 31 Jan 2020 00:18:09 -0500
+Received: from mail-pg1-f194.google.com ([209.85.215.194]:33325 "EHLO
+        mail-pg1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725263AbgAaFSJ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 31 Jan 2020 00:18:09 -0500
+Received: by mail-pg1-f194.google.com with SMTP id 6so2858321pgk.0;
+        Thu, 30 Jan 2020 21:18:07 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=date:from:to:cc:subject:message-id:references:mime-version
          :content-disposition:in-reply-to:user-agent;
-        bh=cuvjx7AIX7khPCGW/ptRVwlIZDS34QDntRrzehyOm+c=;
-        b=JPSyKWy9qHkV8mRn/mKXpRX9fPNxeWAUkeyQUljqrmFMNMBVGYH0mDwyBiw3JYEuaf
-         BxUW1ysmpenEAHtUlwB68rNF9Ot8Ry1QnWaeCvPbxjP8mjePW3k4kILGWxfumjbKlAvy
-         1FdcsoN9A+8e7JfZYF0Oc38aeu/d7hE2CMSNMVq+4adzzynRfXCylN8QELeE8p6gJbti
-         NcAx+aL2IV41q9M2B8QlEpfdRVOhHFnB9/kyAP2mRGpb7vgIgqrcGus109XLVKFvqDRU
-         IwYh2t/98I1I6e21Ka/hOxWMjhBgY3A5N9kZlduKMoWuRjjEQ04j5bIDMtzx0YtWA0dD
-         oLog==
+        bh=ax5JKtShVF4pOcmfNzJ/FPZX/6Hzfw0ryxGY+YWf5AM=;
+        b=erOAcbZrJeQmLWUBvi3Pk4hatMkbOkCzv7+mhJnRXmqbludk8VJXLX60vBP2WnXmta
+         HFhvKK8KfvQu1bj2106MQDN/WozDfYlWt3xdVzZATWl1+isX9d+Lf6538Kf8/kz/g7+E
+         nR3YpQ6Kem10r4R265BQTl8Ze9ebKQuDN7kWx6NhrfwtHMoLKas2XAEL7R6yAlM/d28X
+         g5LIH4jM1ycowB/z8soXQYIzmp8cAyQyWiuZyWScBcX1pUbwKMR/KrsE2bBu6eBr1exl
+         p4iIJ59bt1kAA11TjKwTrS8XCZTkC7PH94m4fMnmQ8JgA0KufPlbTQIV3QFPd0ranXCJ
+         q16Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:date:from:to:cc:subject:message-id:references
          :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=cuvjx7AIX7khPCGW/ptRVwlIZDS34QDntRrzehyOm+c=;
-        b=Zget1uQmnYv2fEhvqMh2Rvc3PnA8055H68l6c7tjxySOByXC+0GumHi+J2rtmRWrS1
-         Ov0svHJQT4wDm9AwgDOwTlZTyN1ziCKEEghmnwj7G1L4BY73lzk5yI5KGtICV+MOf+1p
-         WNEK/uvzOqNPxSjvlo09M6wEL59gN1XDt968RtbD8nkN0+Gk75J1p0UxDzf+z9djNY0y
-         Q5v9QUe7z9ZL/bZSF+zaMjnrlgVOI0r/jIM4DE/EqMpDCVIOuuB0qQjM414qqmbIkypV
-         Ai+dhS2cMu7gh6UuvU4WmQFOa0QOusU05e48FQDX5WEMmCfurYagOhvPSEBlP4kBeF2Z
-         H1hA==
-X-Gm-Message-State: APjAAAXKUmZKjXXZnU0Ct+5v8UCbTAOByih7e/CWeHzlZezPPk/Oe8Ot
-        0cniIBbGfIIDmWSinbE31pM=
-X-Google-Smtp-Source: APXvYqxM/tb3AZ/vDuSE3psHOgDMaAK027AaKFytF2+aRK1w+U0tH98RUMlTAQ3OYJeKfgs6KeoB1A==
-X-Received: by 2002:a17:902:5a85:: with SMTP id r5mr8614531pli.222.1580447857238;
-        Thu, 30 Jan 2020 21:17:37 -0800 (PST)
+        bh=ax5JKtShVF4pOcmfNzJ/FPZX/6Hzfw0ryxGY+YWf5AM=;
+        b=Ljsenl5j2MF7ytTBTFQrWY3BO9u4RtMb457Y5JORMFQraNf78jOAip1E44QB2VWo7x
+         BtJMP4UloysKA7Dugus+G2Ntgt4USIXUwzVRD8+DsG1xWNDpMLe43p1O7YOy9ySSZKdf
+         Am+6uMTQZRDNLXj3GMuY54HPGbmwoB7XFhB66wZ5JbJbIZHrFjcqwgfo3NjFNMeunOop
+         9D/2Icu2oCz5IvcZ5JJpxCgjJOY2L71/by7jRv8kg8bJ2uiDtcnLgR1CwHAiu1hxwCvh
+         55+i7dq30ZjglN1c5Vf1e2CrqABlcniZspGgDWCFyLW+v2fOKlYzNLhyQXlgdrFmS/f1
+         XNSQ==
+X-Gm-Message-State: APjAAAVNMmuBhhg4XIfhZ2GP+TYJdqsh1+re9RsD1Yklq4CGjVsm6IAH
+        zY1lLeHMRRQTyERFwuiFY2UCKwO2
+X-Google-Smtp-Source: APXvYqxfo7Nt5JvGv2CaooTo3QysX5l94BTj8d0KqmWhYVFBkjz6PfUF5IDImRrAEk7AMS14arsmJg==
+X-Received: by 2002:a62:ee11:: with SMTP id e17mr8969429pfi.48.1580447887224;
+        Thu, 30 Jan 2020 21:18:07 -0800 (PST)
 Received: from localhost (c-73-241-114-122.hsd1.ca.comcast.net. [73.241.114.122])
-        by smtp.gmail.com with ESMTPSA id q21sm8902132pfn.123.2020.01.30.21.17.36
+        by smtp.gmail.com with ESMTPSA id h7sm8861596pfq.36.2020.01.30.21.18.06
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 30 Jan 2020 21:17:36 -0800 (PST)
-Date:   Thu, 30 Jan 2020 21:17:34 -0800
+        Thu, 30 Jan 2020 21:18:06 -0800 (PST)
+Date:   Thu, 30 Jan 2020 21:18:04 -0800
 From:   Richard Cochran <richardcochran@gmail.com>
 To:     Michael Walle <michael@walle.cc>
 Cc:     linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
@@ -52,27 +52,30 @@ Cc:     linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
         Heiner Kallweit <hkallweit1@gmail.com>,
         Florian Fainelli <f.fainelli@gmail.com>,
         Andrew Lunn <andrew@lunn.ch>
-Subject: Re: [PATCH net-next 1/2] net: mdio: of: fix potential NULL pointer
- derefernce
-Message-ID: <20200131051734.GA1398@localhost>
+Subject: Re: [PATCH net-next 2/2] net: mii_timestamper: fix static allocation
+ by PHY driver
+Message-ID: <20200131051804.GB1398@localhost>
 References: <20200130174451.17951-1-michael@walle.cc>
+ <20200130174451.17951-2-michael@walle.cc>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20200130174451.17951-1-michael@walle.cc>
+In-Reply-To: <20200130174451.17951-2-michael@walle.cc>
 User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Jan 30, 2020 at 06:44:50PM +0100, Michael Walle wrote:
-> of_find_mii_timestamper() returns NULL if no timestamper is found.
-> Therefore, guard the unregister_mii_timestamper() calls.
+On Thu, Jan 30, 2020 at 06:44:51PM +0100, Michael Walle wrote:
+> If phydev->mii_ts is set by the PHY driver, it will always be
+> overwritten in of_mdiobus_register_phy(). Fix it. Also make sure, that
+> the unregister() doesn't do anything if the mii_timestamper was provided by
+> the PHY driver.
 > 
 > Fixes: 1dca22b18421 ("net: mdio: of: Register discovered MII time stampers.")
 > Signed-off-by: Michael Walle <michael@walle.cc>
 
-Good catch.
+Thanks for the fix.
 
 Acked-by: Richard Cochran <richardcochran@gmail.com>
