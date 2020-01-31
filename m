@@ -2,87 +2,85 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 5AE0314EE0E
-	for <lists+netdev@lfdr.de>; Fri, 31 Jan 2020 14:58:48 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8383F14EE09
+	for <lists+netdev@lfdr.de>; Fri, 31 Jan 2020 14:58:16 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728948AbgAaN6q (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 31 Jan 2020 08:58:46 -0500
-Received: from mail-wr1-f50.google.com ([209.85.221.50]:34950 "EHLO
-        mail-wr1-f50.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728500AbgAaN6q (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 31 Jan 2020 08:58:46 -0500
-Received: by mail-wr1-f50.google.com with SMTP id g17so8759506wro.2
-        for <netdev@vger.kernel.org>; Fri, 31 Jan 2020 05:58:45 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=arangodb.com; s=google;
-        h=date:from:to:subject:message-id:mime-version:content-disposition
-         :user-agent;
-        bh=NbNYmU7TGBK3dRZumVcgTTsq4mqLZhmqNa9FXJpcous=;
-        b=JexBGKiwKISWHg0ESHB6vaxxaI7LgsY9bEoNVUl8/8r/TmVHH+6Q9D6MSI3jMd0VB9
-         Iirj/c3WAgnw9SbNuFlfS89ACUTWED6MUqMK4idJHBIx+XxglRj0D00Sd4f3snh7T5uy
-         UVFFSkf3ewcZ7ZckUXL3/rBTtH+Ere0dNdTPHrE5NAa3nGauFVwchYh1oHl/2dCd3g2A
-         +GENUhZO3Es7dzNKp+UGDINGHHBWfcMn2t1HfQm28I/2juxtKzL5wJpoTsPPmSTq8SL7
-         NYlIBAhQZRf8ZhJBX5Z3x60P/Zc4irnrpObVvqtS/Qoi8s/laNK/ma8Jx87FLMMJve1j
-         Op8w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:subject:message-id:mime-version
-         :content-disposition:user-agent;
-        bh=NbNYmU7TGBK3dRZumVcgTTsq4mqLZhmqNa9FXJpcous=;
-        b=Mv9o8t8xnog8a6O38Tzy/HxVw5l9Lzpz3cFSBL3B/ScKJm0NZw/ps7Ic338USmKF3g
-         owfOVoGwxOitXtuZ4g5JFu6sfBZB6dLEQ8iutNUmtyLNAYzEUIkbJbAXLAQEWWDLFffW
-         7OB83xDakCANQEEUci5t3bWQ22LwV6oJRGywRI15zBA2CpMVavVNGEBeTPOLRWwobOc0
-         c5WvxlvdFPqhJb16XbbSOPWLjpK182qM1TXjc01WlDeo0G4OgIAPeWpzuFD+FE9sl/kX
-         JvZvFlGs426nfk7dOj7pTsztASjZl9ai7fcKne7FnZ3/AivpQBS9S1Skz6yIClFG0FRR
-         uHgg==
-X-Gm-Message-State: APjAAAVUej+r29pWixtIdynt4Xl9I7lYH54ncJsTdmjOKz8TlNQoMfu8
-        OVIxyCcLaLclIPJ209sivSRdiKNXDaBJEIXhmG0SQjhv2M9PXmNDPqkJFS2VvKgF0Hzc9iVIfyZ
-        wfo6D/SW00Mah+E3W6x21OAXUHpZdC7r/rL6eJR8a9DAhLHjnw+BSVJEX+lyMgA==
-X-Google-Smtp-Source: APXvYqyPBX+WiJzQeAD1FT4xYLgsByEX++GvZDeMDV6czS6UkF4Xtt3BuisX5zwp2yfeehrXpAdAkw==
-X-Received: by 2002:a5d:62c8:: with SMTP id o8mr12195838wrv.316.1580479123878;
-        Fri, 31 Jan 2020 05:58:43 -0800 (PST)
-Received: from localhost (p5df1ee40.dip0.t-ipconnect.de. [93.241.238.64])
-        by smtp.gmail.com with ESMTPSA id q3sm10645230wmj.38.2020.01.31.05.58.42
-        for <netdev@vger.kernel.org>
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 31 Jan 2020 05:58:42 -0800 (PST)
-Date:   Fri, 31 Jan 2020 14:57:30 +0100
-From:   Max Neunhoeffer <max@arangodb.com>
-To:     netdev@vger.kernel.org
-Subject: epoll_wait misses edge-triggered eventfd events: bug in Linux 5.3
- and 5.4
-Message-ID: <20200131135730.ezwtgxddjpuczpwy@tux>
+        id S1728866AbgAaN6M (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 31 Jan 2020 08:58:12 -0500
+Received: from vps0.lunn.ch ([185.16.172.187]:60002 "EHLO vps0.lunn.ch"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1728500AbgAaN6M (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 31 Jan 2020 08:58:12 -0500
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:
+        Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
+        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
+        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
+        List-Post:List-Owner:List-Archive;
+        bh=M1F71jvBqrpDNfAxNP559L2v7vOR6DOGsr1UJQiyE0E=; b=AQOn2fybqbDTF0u5okJfCrxC6z
+        5g8Wyei/0tS7qnYFWdLg5ZpWmKOUaVwF//RM6mbKQfZzYeDv7d6np87N5VvOavsAQWgijt+vD6IKP
+        Dx5EI3JKfG7LoNltgG/F4XYL0TFjRN76iXfrUfTrFM0kX5BgRJw0uHXl5UrCcYWOqC3A=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.93)
+        (envelope-from <andrew@lunn.ch>)
+        id 1ixWnq-0007SO-NR; Fri, 31 Jan 2020 14:57:46 +0100
+Date:   Fri, 31 Jan 2020 14:57:46 +0100
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Dan Carpenter <dan.carpenter@oracle.com>
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Ajay Gupta <ajayg@nvidia.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        "Rafael J. Wysocki" <rafael@kernel.org>,
+        Iyappan Subramanian <iyappan@os.amperecomputing.com>,
+        Keyur Chudgar <keyur@os.amperecomputing.com>,
+        Quan Nguyen <quan@os.amperecomputing.com>,
+        Steve Glendinning <steve.glendinning@shawell.net>,
+        Jassi Brar <jaswinder.singh@linaro.org>,
+        Ilias Apalodimas <ilias.apalodimas@linaro.org>,
+        Giuseppe Cavallaro <peppe.cavallaro@st.com>,
+        Alexandre Torgue <alexandre.torgue@st.com>,
+        Jose Abreu <joabreu@synopsys.com>,
+        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+        Dmitry Torokhov <dmitry.torokhov@gmail.com>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Sakari Ailus <sakari.ailus@linux.intel.com>,
+        Heikki Krogerus <heikki.krogerus@linux.intel.com>,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        linux-stm32@st-md-mailman.stormreply.com,
+        kernel-janitors@vger.kernel.org
+Subject: Re: [PATCH net] device property: change device_get_phy_mode() to
+ prevent signedess bugs
+Message-ID: <20200131135746.GF9639@lunn.ch>
+References: <20200131045953.wbj66jkvijnmf5s2@kili.mountain>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-User-Agent: NeoMutt/20180716
+In-Reply-To: <20200131045953.wbj66jkvijnmf5s2@kili.mountain>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Dear All,
+> diff --git a/drivers/net/ethernet/apm/xgene-v2/main.c b/drivers/net/ethernet/apm/xgene-v2/main.c
+> index c48f60996761..706602918dd1 100644
+> --- a/drivers/net/ethernet/apm/xgene-v2/main.c
+> +++ b/drivers/net/ethernet/apm/xgene-v2/main.c
+> @@ -15,7 +15,7 @@ static int xge_get_resources(struct xge_pdata *pdata)
+>  {
+>  	struct platform_device *pdev;
+>  	struct net_device *ndev;
+> -	int phy_mode, ret = 0;
+> +	int ret = 0;
+>  	struct resource *res;
+>  	struct device *dev;
 
-I believe I have found a bug in Linux 5.3 and 5.4 in epoll_wait/epoll_ctl
-when an eventfd together with edge-triggered or the EPOLLONESHOT policy
-is used. If an epoll_ctl call to rearm the eventfd happens approximately
-at the same time as the epoll_wait goes to sleep, the event can be lost, 
-even though proper protection through a mutex is employed.
+Hi Dan
 
-The details together with two programs showing the problem can be found
-here:
+DaveM likes reverse christmas tree. So you need to move ret later to
+keep the tree.
 
-  https://bugzilla.kernel.org/show_bug.cgi?id=205933
+Apart from that:
 
-Older kernels seem not to have this problem, although I did not test all
-versions. I know that 4.15 and 5.0 do not show the problem.
+Reviewed-by: Andrew Lunn <andrew@lunn.ch>
 
-Note that this method of using epoll_wait/eventfd is used by
-boost::asio to wake up event loops in case a new completion handler
-is posted to an io_service, so this is probably relevant for many
-applications.
+    Andrew
 
-Any help with this would be appreciated.
-
-Cheers,
-  Max.
