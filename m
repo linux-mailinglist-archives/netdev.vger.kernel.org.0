@@ -2,114 +2,170 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id A6C9414F0DA
-	for <lists+netdev@lfdr.de>; Fri, 31 Jan 2020 17:48:48 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A3A4014F0E9
+	for <lists+netdev@lfdr.de>; Fri, 31 Jan 2020 17:54:29 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726805AbgAaQsq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 31 Jan 2020 11:48:46 -0500
-Received: from eu-smtp-delivery-151.mimecast.com ([146.101.78.151]:59671 "EHLO
-        eu-smtp-delivery-151.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726139AbgAaQsq (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 31 Jan 2020 11:48:46 -0500
-Received: from AcuMS.aculab.com (156.67.243.126 [156.67.243.126]) (Using
- TLS) by relay.mimecast.com with ESMTP id
- uk-mta-253-8DHeLZ-RMUWmaiJnsa3xjg-1; Fri, 31 Jan 2020 16:48:41 +0000
-Received: from AcuMS.Aculab.com (fd9f:af1c:a25b:0:43c:695e:880f:8750) by
- AcuMS.aculab.com (fd9f:af1c:a25b:0:43c:695e:880f:8750) with Microsoft SMTP
- Server (TLS) id 15.0.1347.2; Fri, 31 Jan 2020 16:48:41 +0000
-Received: from AcuMS.Aculab.com ([fe80::43c:695e:880f:8750]) by
- AcuMS.aculab.com ([fe80::43c:695e:880f:8750%12]) with mapi id 15.00.1347.000;
- Fri, 31 Jan 2020 16:48:41 +0000
-From:   David Laight <David.Laight@ACULAB.COM>
-To:     'Eric Dumazet' <eric.dumazet@gmail.com>,
-        netdev <netdev@vger.kernel.org>
-Subject: RE: Freeing 'temporary' IPv4 route table entries.
-Thread-Topic: Freeing 'temporary' IPv4 route table entries.
-Thread-Index: AdXXj93DZx0FEI6/TbeS56CZssFH8AAvsEAAAAGXP8A=
-Date:   Fri, 31 Jan 2020 16:48:40 +0000
-Message-ID: <95631ce55d474245b623baba2f9d01af@AcuMS.aculab.com>
-References: <bee231ddc34142d2a96bfdc9a6a2f57c@AcuMS.aculab.com>
- <3cfcd1b7-96e4-a5b6-21e7-8182a367f349@gmail.com>
-In-Reply-To: <3cfcd1b7-96e4-a5b6-21e7-8182a367f349@gmail.com>
-Accept-Language: en-GB, en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-ms-exchange-transport-fromentityheader: Hosted
-x-originating-ip: [10.202.205.107]
+        id S1726677AbgAaQyV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 31 Jan 2020 11:54:21 -0500
+Received: from mga09.intel.com ([134.134.136.24]:23682 "EHLO mga09.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726330AbgAaQyV (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 31 Jan 2020 11:54:21 -0500
+X-Amp-Result: SKIPPED(no attachment in message)
+X-Amp-File-Uploaded: False
+Received: from orsmga004.jf.intel.com ([10.7.209.38])
+  by orsmga102.jf.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 31 Jan 2020 08:54:20 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.70,386,1574150400"; 
+   d="scan'208";a="377393441"
+Received: from unknown (HELO [134.134.177.86]) ([134.134.177.86])
+  by orsmga004.jf.intel.com with ESMTP; 31 Jan 2020 08:54:19 -0800
+Subject: Re: [Intel PMC TGPIO Driver 1/5] drivers/ptp: Add Enhanced handling
+ of reserve fields
+To:     christopher.s.hall@intel.com, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, tglx@linutronix.de, hpa@zytor.com,
+        mingo@redhat.com, x86@kernel.org, richardcochran@gmail.com,
+        davem@davemloft.net, sean.v.kelley@intel.com
+References: <20191211214852.26317-1-christopher.s.hall@intel.com>
+ <20191211214852.26317-2-christopher.s.hall@intel.com>
+From:   Jacob Keller <jacob.e.keller@intel.com>
+Organization: Intel Corporation
+Message-ID: <0f868a7e-5806-4976-80b5-0185a64b42a0@intel.com>
+Date:   Fri, 31 Jan 2020 08:54:19 -0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
+ Thunderbird/68.4.2
 MIME-Version: 1.0
-X-MC-Unique: 8DHeLZ-RMUWmaiJnsa3xjg-1
-X-Mimecast-Spam-Score: 0
-X-Mimecast-Originator: aculab.com
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: base64
+In-Reply-To: <20191211214852.26317-2-christopher.s.hall@intel.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-RnJvbTogRXJpYyBEdW1hemV0DQo+IFNlbnQ6IDMxIEphbnVhcnkgMjAyMCAxNTo1NA0KPiANCj4g
-T24gMS8zMS8yMCAyOjI2IEFNLCBEYXZpZCBMYWlnaHQgd3JvdGU6DQo+ID4gSWYgSSBjYWxsIHNl
-bmRtc2coKSBvbiBhIHJhdyBzb2NrZXQgKG9yIHByb2JhYmx5DQo+ID4gYW4gdW5jb25uZWN0ZWQg
-VURQIG9uZSkgcnRfZHN0X2FsbG9jKCkgaXMgY2FsbGVkDQo+ID4gaW4gdGhlIGJvd2VscyBvZiBp
-cF9yb3V0ZV9vdXRwdXRfZmxvdygpIHRvIGhvbGQNCj4gPiB0aGUgcmVtb3RlIGFkZHJlc3MuDQo+
-ID4NCj4gPiBNdWNoIGxhdGVyIF9fZGV2X3F1ZXVlX3htaXQoKSBjYWxscyBkc3RfcmVsZWFzZSgp
-DQo+ID4gdG8gZGVsZXRlIHRoZSAnZHN0JyByZWZlcmVuY2VkIGZyb20gdGhlIHNrYi4NCj4gPg0K
-PiA+IFByaW9yIHRvIGY4ODY0OTcyIGl0IGRpZCBqdXN0IHRoYXQuDQo+ID4gQWZ0ZXJ3YXJkcyB0
-aGUgYWN0dWFsIGRlbGV0ZSBpcyAnbGF1bmRlcmVkJyB0aHJvdWdoIHRoZQ0KPiA+IHJjdSBjYWxs
-YmFja3MuDQo+ID4gVGhpcyBpcyBwcm9iYWJseSBvayBmb3IgZHN0IHRoYXQgYXJlIGFjdHVhbGx5
-IGF0dGFjaGVkDQo+ID4gdG8gc29ja2V0cyBvciB0dW5uZWxzICh3aGljaCBhcmVuJ3QgZnJlZWQg
-dmVyeSBvZnRlbikuDQo+ID4gQnV0IGl0IGxlYWRzIHRvIGhvcnJpZCBsb25nIHJjdSBjYWxsYmFj
-ayBzZXF1ZW5jZXMNCj4gPiB3aGVuIGEgbG90IG9mIG1lc3NhZ2VzIGFyZSBzZW50Lg0KPiA+IChB
-IHNhbXBsZSBvZiAxIGdhdmUgbmVhcmx5IDEwMCBkZWxldGVzIGluIG9uZSBnby4pDQo+ID4gVGhl
-cmUgaXMgYWxzbyB0aGUgYWRkaXRpb25hbCBjb3N0IG9mIGRlZmVycmluZyB0aGUgZnJlZQ0KPiA+
-IChhbmQgdGhlIGV4dHJhIHJldHBvbGluZSBldGMpLg0KPiA+DQo+ID4gSVNUTSB0aGF0IHRoZSBk
-c3RfYWxsb2MoKSBkb25lIGR1cmluZyBhIHNlbmQgc2hvdWxkDQo+ID4gc2V0IGEgZmxhZyBzbyB0
-aGF0IHRoZSAnZHN0JyBjYW4gYmUgaW1tZWRpYXRlbHkNCj4gPiBmcmVlZCBzaW5jZSBpdCBpcyBr
-bm93biB0aGF0IG5vIG9uZSBjYW4gYmUgcGlja2luZyB1cA0KPiA+IGEgcmVmZXJlbmNlIGFzIGl0
-IGlzIGJlaW5nIGZyZWVkLg0KPiA+DQo+ID4gVGhvdWdodHM/DQo+ID4NCj4gDQo+IEkgdGhvdWdo
-dCB0aGVzZSByb3V0ZXMgd2VyZSBjYWNoZWQgaW4gcGVyLWNwdSBjYWNoZXMuDQo+IA0KPiBBdCBs
-ZWFzdCBmb3IgVURQIEkgZG8gbm90IHNlZSByY3UgY2FsbGJhY2tzIGJlaW5nIHF1ZXVlZWQuDQoN
-CkZvciByYXdpcCAoYWN0dWFsbHkgc2VuZGluZyBVRFApIGFsbCB0aGUgc2VuZHMgZ286DQoNCjI4
-MjcxMC40MDc3NTkgfCAgIDApIHBpZC0yOTE1OCAgfCAgICAgICAgICAgICAgIHwgICAgICAgICAg
-aW5ldF9zZW5kbXNnKCkgew0KMjgyNzEwLjQwNzc1OSB8ICAgMCkgcGlkLTI5MTU4ICB8ICAgMC4w
-OTMgdXMgICAgfCAgICAgICAgICAgIGluZXRfc2VuZF9wcmVwYXJlKCk7DQoyODI3MTAuNDA3NzU5
-IHwgICAwKSBwaWQtMjkxNTggIHwgICAgICAgICAgICAgICB8ICAgICAgICAgICAgcmF3X3NlbmRt
-c2coKSB7DQoyODI3MTAuNDA3NzU5IHwgICAwKSBwaWQtMjkxNTggIHwgICAwLjA5NCB1cyAgICB8
-ICAgICAgICAgICAgICBzZWN1cml0eV9za19jbGFzc2lmeV9mbG93KCk7DQoyODI3MTAuNDA3NzYw
-IHwgICAwKSBwaWQtMjkxNTggIHwgICAgICAgICAgICAgICB8ICAgICAgICAgICAgICBpcF9yb3V0
-ZV9vdXRwdXRfZmxvdygpIHsNCjI4MjcxMC40MDc3NjAgfCAgIDApIHBpZC0yOTE1OCAgfCAgICAg
-ICAgICAgICAgIHwgICAgICAgICAgICAgICAgaXBfcm91dGVfb3V0cHV0X2tleV9oYXNoKCkgew0K
-MjgyNzEwLjQwNzc2MCB8ICAgMCkgcGlkLTI5MTU4ICB8ICAgICAgICAgICAgICAgfCAgICAgICAg
-ICAgICAgICAgIGlwX3JvdXRlX291dHB1dF9rZXlfaGFzaF9yY3UoKSB7DQoyODI3MTAuNDA3NzYw
-IHwgICAwKSBwaWQtMjkxNTggIHwgICAwLjE2MCB1cyAgICB8ICAgICAgICAgICAgICAgICAgICBm
-aWJfdGFibGVfbG9va3VwKCk7DQoyODI3MTAuNDA3NzYwIHwgICAwKSBwaWQtMjkxNTggIHwgICAg
-ICAgICAgICAgICB8ICAgICAgICAgICAgICAgICAgICBmaWJfc2VsZWN0X3BhdGgoKSB7DQoyODI3
-MTAuNDA3NzYwIHwgICAwKSBwaWQtMjkxNTggIHwgICAwLjEwMiB1cyAgICB8ICAgICAgICAgICAg
-ICAgICAgICAgIGZpYl9yZXN1bHRfcHJlZnNyYygpOw0KMjgyNzEwLjQwNzc2MCB8ICAgMCkgcGlk
-LTI5MTU4ICB8ICAgMC4zMDIgdXMgICAgfCAgICAgICAgICAgICAgICAgICAgfSAvKiBmaWJfc2Vs
-ZWN0X3BhdGggKi8NCjI4MjcxMC40MDc3NjEgfCAgIDApIHBpZC0yOTE1OCAgfCAgIDAuMTAzIHVz
-ICAgIHwgICAgICAgICAgICAgICAgICAgIGZpbmRfZXhjZXB0aW9uKCk7DQoyODI3MTAuNDA3NzYx
-IHwgICAwKSBwaWQtMjkxNTggIHwgICAgICAgICAgICAgICB8ICAgICAgICAgICAgICAgICAgICBy
-dF9kc3RfYWxsb2MoKSB7DQoyODI3MTAuNDA3NzYxIHwgICAwKSBwaWQtMjkxNTggIHwgICAgICAg
-ICAgICAgICB8ICAgICAgICAgICAgICAgICAgICAgIGRzdF9hbGxvYygpIHsNCjI4MjcxMC40MDc3
-NjEgfCAgIDApIHBpZC0yOTE1OCAgfCAgICAgICAgICAgICAgIHwgICAgICAgICAgICAgICAgICAg
-ICAgICBrbWVtX2NhY2hlX2FsbG9jKCkgew0KMjgyNzEwLjQwNzc2MSB8ICAgMCkgcGlkLTI5MTU4
-ICB8ICAgMC4xMDIgdXMgICAgfCAgICAgICAgICAgICAgICAgICAgICAgICAgc2hvdWxkX2ZhaWxz
-bGFiKCk7DQoyODI3MTAuNDA3NzYxIHwgICAwKSBwaWQtMjkxNTggIHwgICAwLjM2MiB1cyAgICB8
-ICAgICAgICAgICAgICAgICAgICAgICAgfSAvKiBrbWVtX2NhY2hlX2FsbG9jICovDQoyODI3MTAu
-NDA3NzYxIHwgICAwKSBwaWQtMjkxNTggIHwgICAwLjA5OCB1cyAgICB8ICAgICAgICAgICAgICAg
-ICAgICAgICAgZHN0X2luaXQoKTsNCjI4MjcxMC40MDc3NjIgfCAgIDApIHBpZC0yOTE1OCAgfCAg
-IDAuNzQ3IHVzICAgIHwgICAgICAgICAgICAgICAgICAgICAgfSAvKiBkc3RfYWxsb2MgKi8NCjI4
-MjcxMC40MDc3NjIgfCAgIDApIHBpZC0yOTE1OCAgfCAgIDAuOTM2IHVzICAgIHwgICAgICAgICAg
-ICAgICAgICAgIH0gLyogcnRfZHN0X2FsbG9jICovDQoNClRoZW4gZHN0X3JlbGVhc2UoKSBnZXRz
-IGNhbGxlZCBmcm9tIF9fZGV2X3F1ZXVlX3htaXQoKS4NCkluIHRoaXMgdGVzdCBhbGwgdGhlIGRl
-c3RpbmF0aW9ucyBhcmUgdGhlIHNhbWUsIGJ1dCBpbiByZWFsIGxpZmUNCnRoZXJlIHdpbGwgYmUg
-MTAwcyBvZiBkaWZmZXJlbnQgYWRkcmVzc2VzLg0KDQpBcmUgdGhlIGFkZHJlc3NlcyBpbnNlcnRl
-ZCBpbiB0aGUgY2FjaGUgYXQgdGhlIHN0YXJ0IG9mIHRoZSBzZW5kIGFuZA0KdGhlbiBkZWxldGVk
-IG9uY2UgdGhlIG1lc3NhZ2UgaXMgc2VudD8NCg0KSSdtIG5vdCBzdXJlIHRoZXJlIGFyZSBhbnkg
-J2Nvbm5lY3RlZCcgc29ja2V0cyB0byB0aGF0IElQIGFkZHJlc3MuDQooVGhpcyBpcyBTSVAgKyBS
-VFAgdGVzdGluZy4pDQoNCglEYXZpZA0KDQotDQpSZWdpc3RlcmVkIEFkZHJlc3MgTGFrZXNpZGUs
-IEJyYW1sZXkgUm9hZCwgTW91bnQgRmFybSwgTWlsdG9uIEtleW5lcywgTUsxIDFQVCwgVUsNClJl
-Z2lzdHJhdGlvbiBObzogMTM5NzM4NiAoV2FsZXMpDQo=
+On 12/11/2019 1:48 PM, christopher.s.hall@intel.com wrote:
+> From: Christopher Hall <christopher.s.hall@intel.com>
+> 
+> Add functions that parameterize checking and zeroing of reserve fields in
+> ioctl arguments. Eliminates need to change this code when repurposing
+> reserve fields.
+> 
 
+Nice!
+
+> Signed-off-by: Christopher Hall <christopher.s.hall@intel.com>
+> ---
+>  drivers/ptp/ptp_chardev.c | 60 +++++++++++++++++++++------------------
+>  1 file changed, 33 insertions(+), 27 deletions(-)
+> 
+> diff --git a/drivers/ptp/ptp_chardev.c b/drivers/ptp/ptp_chardev.c
+> index 9d72ab593f13..f9ad6df57fa5 100644
+> --- a/drivers/ptp/ptp_chardev.c
+> +++ b/drivers/ptp/ptp_chardev.c
+> @@ -12,6 +12,7 @@
+>  #include <linux/timekeeping.h>
+>  
+>  #include <linux/nospec.h>
+> +#include <linux/string.h>
+>  
+>  #include "ptp_private.h"
+>  
+> @@ -106,6 +107,28 @@ int ptp_open(struct posix_clock *pc, fmode_t fmode)
+>  	return 0;
+>  }
+>  
+> +/* Returns -1 if any reserved fields are non-zero */
+> +static inline int _check_rsv_field(unsigned int *field, size_t size)
+> +{
+> +	unsigned int *iter;
+> +	int ret = 0;
+> +
+> +	for (iter = field; iter < field+size && ret == 0; ++iter)
+> +		ret = *iter == 0 ? 0 : -1;
+> +
+> +	return ret;
+> +}
+> +#define check_rsv_field(field) _check_rsv_field(field, ARRAY_SIZE(field))
+> +
+
+This assumes that reserved fields will always be arrays. Seems like a
+reasonable restriction to me.
+
+Are the reserved fields always integers? Seems so. Ok.
+
+> +static inline void _zero_rsv_field(unsigned int *field, size_t size)
+> +{
+> +	unsigned int *iter;
+> +
+> +	for (iter = field; iter < field+size; ++iter)
+> +		*iter = 0;
+> +}
+> +#define zero_rsv_field(field) _zero_rsv_field(field, ARRAY_SIZE(field))
+> +
+>  long ptp_ioctl(struct posix_clock *pc, unsigned int cmd, unsigned long arg)
+>  {
+>  	struct ptp_clock *ptp = container_of(pc, struct ptp_clock, clock);
+> @@ -154,7 +177,7 @@ long ptp_ioctl(struct posix_clock *pc, unsigned int cmd, unsigned long arg)
+>  			req.extts.flags |= PTP_STRICT_FLAGS;
+>  			/* Make sure no reserved bit is set. */
+>  			if ((req.extts.flags & ~PTP_EXTTS_VALID_FLAGS) ||
+> -			    req.extts.rsv[0] || req.extts.rsv[1]) {
+> +			    check_rsv_field(req.extts.rsv)) {
+>  				err = -EINVAL;
+>  				break;
+>  			}
+> @@ -166,8 +189,7 @@ long ptp_ioctl(struct posix_clock *pc, unsigned int cmd, unsigned long arg)
+>  			}
+>  		} else if (cmd == PTP_EXTTS_REQUEST) {
+>  			req.extts.flags &= PTP_EXTTS_V1_VALID_FLAGS;
+> -			req.extts.rsv[0] = 0;
+> -			req.extts.rsv[1] = 0;
+> +			zero_rsv_field(req.extts.rsv);
+>  		}
+>  		if (req.extts.index >= ops->n_ext_ts) {
+>  			err = -EINVAL;
+> @@ -188,17 +210,13 @@ long ptp_ioctl(struct posix_clock *pc, unsigned int cmd, unsigned long arg)
+>  			break;
+>  		}
+>  		if (((req.perout.flags & ~PTP_PEROUT_VALID_FLAGS) ||
+> -			req.perout.rsv[0] || req.perout.rsv[1] ||
+> -			req.perout.rsv[2] || req.perout.rsv[3]) &&
+> -			cmd == PTP_PEROUT_REQUEST2) {
+> +		     check_rsv_field(req.perout.rsv)) &&
+> +		    cmd == PTP_PEROUT_REQUEST2) {
+>  			err = -EINVAL;
+>  			break;
+>  		} else if (cmd == PTP_PEROUT_REQUEST) {
+>  			req.perout.flags &= PTP_PEROUT_V1_VALID_FLAGS;
+> -			req.perout.rsv[0] = 0;
+> -			req.perout.rsv[1] = 0;
+> -			req.perout.rsv[2] = 0;
+> -			req.perout.rsv[3] = 0;
+> +			zero_rsv_field(req.perout.rsv);
+>  		}
+>  		if (req.perout.index >= ops->n_per_out) {
+>  			err = -EINVAL;
+> @@ -258,7 +276,7 @@ long ptp_ioctl(struct posix_clock *pc, unsigned int cmd, unsigned long arg)
+>  			break;
+>  		}
+>  		if (extoff->n_samples > PTP_MAX_SAMPLES
+> -		    || extoff->rsv[0] || extoff->rsv[1] || extoff->rsv[2]) {
+> +		    || check_rsv_field(extoff->rsv)) {
+>  			err = -EINVAL;
+>  			break;
+>  		}
+> @@ -318,17 +336,11 @@ long ptp_ioctl(struct posix_clock *pc, unsigned int cmd, unsigned long arg)
+>  			err = -EFAULT;
+>  			break;
+>  		}
+> -		if ((pd.rsv[0] || pd.rsv[1] || pd.rsv[2]
+> -				|| pd.rsv[3] || pd.rsv[4])
+> -			&& cmd == PTP_PIN_GETFUNC2) {
+> +		if (check_rsv_field(pd.rsv) && cmd == PTP_PIN_GETFUNC2) {
+
+Not that it's a big deal, but I think this might read more clearly if
+this was "cmd == PTP_PIN_GETFUNC2 && check_rsv_field(pd.rsv)"
+
+Thanks,
+Jake
