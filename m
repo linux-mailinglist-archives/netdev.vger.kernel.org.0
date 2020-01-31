@@ -2,210 +2,90 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 5AD4E14EEC7
-	for <lists+netdev@lfdr.de>; Fri, 31 Jan 2020 15:51:02 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9AF0514EED3
+	for <lists+netdev@lfdr.de>; Fri, 31 Jan 2020 15:55:11 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729118AbgAaOug (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 31 Jan 2020 09:50:36 -0500
-Received: from us-smtp-1.mimecast.com ([205.139.110.61]:54837 "EHLO
-        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1729099AbgAaOuf (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 31 Jan 2020 09:50:35 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1580482233;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=G5qtNmF55up9PuW19M9ztod4mbJlD+L5BOsXwBxDWkA=;
-        b=VoRDqFTLJZgJXBI1N7//RAwLAXChtLAdO/cWTyLZGki5XpufhK6sdIAJJqRSn9kgn3cAK3
-        RcErm38V27df5crbqS6q1Sr5EknYLyryJ19ix3e/0oXT0jWIQ8lLiWEMdQAR1nzBqzR99W
-        E/0s2bqexIGoXCdWP5zVsD3zaVk3iWA=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-330-I55GL5ZpPoKvKnwr-qcgbg-1; Fri, 31 Jan 2020 09:50:23 -0500
-X-MC-Unique: I55GL5ZpPoKvKnwr-qcgbg-1
-Received: from smtp.corp.redhat.com (int-mx06.intmail.prod.int.phx2.redhat.com [10.5.11.16])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id EFCB118C35A0;
-        Fri, 31 Jan 2020 14:50:20 +0000 (UTC)
-Received: from x2.localnet (ovpn-117-67.phx2.redhat.com [10.3.117.67])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id B23C55C54A;
-        Fri, 31 Jan 2020 14:50:09 +0000 (UTC)
-From:   Steve Grubb <sgrubb@redhat.com>
-To:     Paul Moore <paul@paul-moore.com>
-Cc:     Richard Guy Briggs <rgb@redhat.com>,
-        containers@lists.linux-foundation.org, linux-api@vger.kernel.org,
-        Linux-Audit Mailing List <linux-audit@redhat.com>,
-        linux-fsdevel@vger.kernel.org, LKML <linux-kernel@vger.kernel.org>,
-        netdev@vger.kernel.org, netfilter-devel@vger.kernel.org,
-        omosnace@redhat.com, dhowells@redhat.com, simo@redhat.com,
-        Eric Paris <eparis@parisplace.org>,
-        Serge Hallyn <serge@hallyn.com>, ebiederm@xmission.com,
-        nhorman@tuxdriver.com, Dan Walsh <dwalsh@redhat.com>,
-        mpatel@redhat.com
-Subject: Re: [PATCH ghak90 V8 13/16] audit: track container nesting
-Date:   Fri, 31 Jan 2020 09:50:08 -0500
-Message-ID: <5238532.OiMyN8JqPO@x2>
-Organization: Red Hat
-In-Reply-To: <CAHC9VhRkH=YEjAY6dJJHSp934grHnf=O4RiqLu3U8DzdVQOZkg@mail.gmail.com>
-References: <cover.1577736799.git.rgb@redhat.com> <6452955c1e038227a5cd169f689f3fd3db27513f.1577736799.git.rgb@redhat.com> <CAHC9VhRkH=YEjAY6dJJHSp934grHnf=O4RiqLu3U8DzdVQOZkg@mail.gmail.com>
+        id S1729114AbgAaOzG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 31 Jan 2020 09:55:06 -0500
+Received: from mail-yw1-f67.google.com ([209.85.161.67]:35029 "EHLO
+        mail-yw1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728825AbgAaOzF (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 31 Jan 2020 09:55:05 -0500
+Received: by mail-yw1-f67.google.com with SMTP id i190so4939391ywc.2
+        for <netdev@vger.kernel.org>; Fri, 31 Jan 2020 06:55:05 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=SDj5kNjMiLc1TNHQMyijHY5lqlqUv2q9y5ctnKAZRBM=;
+        b=bqZKRFmycIWRiGhpMQzPAIBZjoFVrYuo2SZLTiBQn9hk3BIfxPOgtiasQqrKsz2M5R
+         xcr70sdeXtlmRgqAkxi4MwwCCGAkJhHqVAsDAT18gQB8K95aCL2+v7W3tf6GiQuTk9wx
+         zSsFPc/QZmAsiQnT6xuRc+WOhhu4GLqhGs9PXg0H7dCfbwXXOUvKNyrwN6IBwhS4kjJP
+         xqgIEUk70E2YY22PIZpKwKrFtorhvE2J/tl5xnCl5++MsQJJfl74Og7nGC7EhicDGutJ
+         s6D889kI9JFG1is8ZQK56+B9Cjutnn92mtrnjX6fCu2blz9jNuBePoRzER6x6s+DTbFF
+         UPKA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=SDj5kNjMiLc1TNHQMyijHY5lqlqUv2q9y5ctnKAZRBM=;
+        b=YjGPfsS0XYTD/Ewjj7qKo0gdaI0ekn/+1RA+gqNR4znvszTKwNdBo2YjxmSiJRqrvf
+         8brDyt2XcG7Li12aN++8MPLhyNvF5jl6CPUhrximW3g7VY4f8G5kopz7VwTnQAOFjSZ5
+         e/Z8ojIZQeSyehPZb3otIRPrb8n0V9s1NH4JWol18Wl+Ab5XW4AEGQI+KQjr7Mz8FxPF
+         XAPnF44mSSRyxLfWSR+mFBCQotuIpLpnIK+ae5Vhb/M2Zhaw8tGhRtKgRUg1CqoJGyv9
+         V96O0Cua4vKR3dJ9xtF1XNFWIj7UMnxBiXEpYNl2VbBs2R8l1FjjiXEq/tOG1jq+Z6Si
+         Qiag==
+X-Gm-Message-State: APjAAAWDOvbPvlxD+xiWB8o0+xk+vJzTSQOEo/ELoQIBWQ9H9RmnCcAO
+        AqdGNeQFPctgm4LGQ3HTA0k880YCJdioOW+00wnaPw==
+X-Google-Smtp-Source: APXvYqyvp5cLvKH6z6kEMndeCtof01VGlsZXoDmYcGmrhf/gmPmDw9GCx5N5tQtW9+VSCDoYF9vhN4WVGMlTHp5v3c0=
+X-Received: by 2002:a25:d112:: with SMTP id i18mr8262683ybg.364.1580482504570;
+ Fri, 31 Jan 2020 06:55:04 -0800 (PST)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7Bit
-Content-Type: text/plain; charset="us-ascii"
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.16
+References: <20200131122421.23286-1-sjpark@amazon.com> <20200131122421.23286-2-sjpark@amazon.com>
+In-Reply-To: <20200131122421.23286-2-sjpark@amazon.com>
+From:   Eric Dumazet <edumazet@google.com>
+Date:   Fri, 31 Jan 2020 06:54:53 -0800
+Message-ID: <CANn89iK3usa_bAfnD37VKvS45Qf6FH+H4fo-9zNrGGanc=7uAw@mail.gmail.com>
+Subject: Re: [PATCH 1/3] net/ipv4/inet_timewait_sock: Fix inconsistent comments
+To:     sjpark@amazon.com
+Cc:     David Miller <davem@davemloft.net>, Shuah Khan <shuah@kernel.org>,
+        netdev <netdev@vger.kernel.org>,
+        "open list:KERNEL SELFTEST FRAMEWORK" 
+        <linux-kselftest@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>, sj38.park@gmail.com,
+        aams@amazon.com, SeongJae Park <sjpark@amazon.de>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wednesday, January 22, 2020 4:29:12 PM EST Paul Moore wrote:
-> On Tue, Dec 31, 2019 at 2:51 PM Richard Guy Briggs <rgb@redhat.com> wrote:
-> > Track the parent container of a container to be able to filter and
-> > report nesting.
-> > 
-> > Now that we have a way to track and check the parent container of a
-> > container, modify the contid field format to be able to report that
-> > nesting using a carrat ("^") separator to indicate nesting.  The
-> > original field format was "contid=<contid>" for task-associated records
-> > and "contid=<contid>[,<contid>[...]]" for network-namespace-associated
-> > records.  The new field format is
-> > "contid=<contid>[^<contid>[...]][,<contid>[...]]".
-> 
-> Let's make sure we always use a comma as a separator, even when
-> recording the parent information, for example:
-> "contid=<contid>[,^<contid>[...]][,<contid>[...]]"
-> 
-> > Signed-off-by: Richard Guy Briggs <rgb@redhat.com>
-> > ---
-> > 
-> >  include/linux/audit.h |  1 +
-> >  kernel/audit.c        | 53
-> >  +++++++++++++++++++++++++++++++++++++++++++-------- kernel/audit.h     
-> >    |  1 +
-> >  kernel/auditfilter.c  | 17 ++++++++++++++++-
-> >  kernel/auditsc.c      |  2 +-
-> >  5 files changed, 64 insertions(+), 10 deletions(-)
-> 
-> ...
-> 
-> > diff --git a/kernel/audit.c b/kernel/audit.c
-> > index ef8e07524c46..68be59d1a89b 100644
-> > --- a/kernel/audit.c
-> > +++ b/kernel/audit.c
-> > 
-> > @@ -492,6 +493,7 @@ void audit_switch_task_namespaces(struct nsproxy *ns,
-> > struct task_struct *p)> 
-> >                 audit_netns_contid_add(new->net_ns, contid);
-> >  
-> >  }
-> > 
-> > +void audit_log_contid(struct audit_buffer *ab, u64 contid);
-> 
-> If we need a forward declaration, might as well just move it up near
-> the top of the file with the rest of the declarations.
-> 
-> > +void audit_log_contid(struct audit_buffer *ab, u64 contid)
-> > +{
-> > +       struct audit_contobj *cont = NULL, *prcont = NULL;
-> > +       int h;
-> 
-> It seems safer to pass the audit container ID object and not the u64.
-> 
-> > +       if (!audit_contid_valid(contid)) {
-> > +               audit_log_format(ab, "%llu", contid);
-> 
-> Do we really want to print (u64)-1 here?  Since this is a known
-> invalid number, would "?" be a better choice?
+On Fri, Jan 31, 2020 at 4:24 AM <sjpark@amazon.com> wrote:
+>
+> From: SeongJae Park <sjpark@amazon.de>
+>
+> Commit ec94c2696f0b ("tcp/dccp: avoid one atomic operation for timewait
+> hashdance") mistakenly erased a comment for the second step of
+> `inet_twsk_hashdance()`.  This commit restores it for better
+> readability.
+>
+> Signed-off-by: SeongJae Park <sjpark@amazon.de>
+> ---
+>  net/ipv4/inet_timewait_sock.c | 1 +
+>  1 file changed, 1 insertion(+)
+>
+> diff --git a/net/ipv4/inet_timewait_sock.c b/net/ipv4/inet_timewait_sock.c
+> index c411c87ae865..fbfcd63cc170 100644
+> --- a/net/ipv4/inet_timewait_sock.c
+> +++ b/net/ipv4/inet_timewait_sock.c
+> @@ -120,6 +120,7 @@ void inet_twsk_hashdance(struct inet_timewait_sock *tw, struct sock *sk,
+>
+>         spin_lock(lock);
+>
+> +       /* Step 2: Hash TW into tcp ehash chain. */
 
-The established pattern is that we print -1 when its unset and "?" when its 
-totalling missing. So, how could this be invalid? It should be set or not. 
-That is unless its totally missing just like when we do not run with selinux 
-enabled and a context just doesn't exist.
+This comment adds no value, please do not bring it back.
 
--Steve
+net-next is closed, now is not the time for cosmetic changes.
 
-
-> > +               return;
-> > +       }
-> > +       h = audit_hash_contid(contid);
-> > +       rcu_read_lock();
-> > +       list_for_each_entry_rcu(cont, &audit_contid_hash[h], list)
-> > +               if (cont->id == contid) {
-> > +                       prcont = cont;
-> 
-> Why not just pull the code below into the body of this if statement?
-> It all needs to be done under the RCU read lock anyway and the code
-> would read much better this way.
-> 
-> > +                       break;
-> > +               }
-> > +       if (!prcont) {
-> > +               audit_log_format(ab, "%llu", contid);
-> > +               goto out;
-> > +       }
-> > +       while (prcont) {
-> > +               audit_log_format(ab, "%llu", prcont->id);
-> > +               prcont = prcont->parent;
-> > +               if (prcont)
-> > +                       audit_log_format(ab, "^");
-> 
-> In the interest of limiting the number of calls to audit_log_format(),
-> how about something like the following:
-> 
->   audit_log_format("%llu", cont);
->   iter = cont->parent;
->   while (iter) {
->     if (iter->parent)
->       audit_log_format("^%llu,", iter);
->     else
->       audit_log_format("^%llu", iter);
->     iter = iter->parent;
->   }
-> 
-> > +       }
-> > +out:
-> > +       rcu_read_unlock();
-> > +}
-> > +
-> > 
-> >  /*
-> >  
-> >   * audit_log_container_id - report container info
-> >   * @context: task or local context for record
-> 
-> ...
-> 
-> > @@ -2705,9 +2741,10 @@ int audit_set_contid(struct task_struct *task, u64
-> > contid)> 
-> >         if (!ab)
-> >         
-> >                 return rc;
-> > 
-> > -       audit_log_format(ab,
-> > -                        "op=set opid=%d contid=%llu old-contid=%llu",
-> > -                        task_tgid_nr(task), contid, oldcontid);
-> > +       audit_log_format(ab, "op=set opid=%d contid=",
-> > task_tgid_nr(task)); +       audit_log_contid(ab, contid);
-> > +       audit_log_format(ab, " old-contid=");
-> > +       audit_log_contid(ab, oldcontid);
-> 
-> This is an interesting case where contid and old-contid are going to
-> be largely the same, only the first (current) ID is going to be
-> different; do we want to duplicate all of those IDs?
-> 
-> >         audit_log_end(ab);
-> >         return rc;
-> >  
-> >  }
-> > 
-> > @@ -2723,9 +2760,9 @@ void audit_log_container_drop(void)
-> 
-> --
-> paul moore
-> www.paul-moore.com
-
-
-
-
+Also take a look at Documentation/networking/netdev-FAQ.rst
