@@ -2,260 +2,123 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 9AC0C14EA4D
-	for <lists+netdev@lfdr.de>; Fri, 31 Jan 2020 10:55:58 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 61EC714EA5B
+	for <lists+netdev@lfdr.de>; Fri, 31 Jan 2020 11:01:49 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728306AbgAaJz4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 31 Jan 2020 04:55:56 -0500
-Received: from mail.katalix.com ([3.9.82.81]:36920 "EHLO mail.katalix.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728071AbgAaJz4 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 31 Jan 2020 04:55:56 -0500
-Received: from localhost (82-69-49-219.dsl.in-addr.zen.co.uk [82.69.49.219])
-        (Authenticated sender: tom)
-        by mail.katalix.com (Postfix) with ESMTPSA id 4E13D8CC08;
-        Fri, 31 Jan 2020 09:55:54 +0000 (GMT)
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple; d=katalix.com; s=mail;
-        t=1580464554; bh=iG4ji+bcJylXQdegtmETo/iAehM8kf4oRWy/vEkKsqQ=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=Aj1QLxA2TwF1veb1Bvt9g3Qr6sakliOWyjimdOPzvHh0hyUvXms6qIuFNeJcrD6Jw
-         fSEWdZKG13MfNq1jFRIWnV2mYox1mme51K9yPdCJ76+vImGI3Uju2Ic2w7Le7Bm2+J
-         ZonsTD7e6yxVv3Zehi7qjDFXAYWnBfEtvG9Nk0uwHJ2h5fTaCyyl8p/Cejd3JMyzfs
-         1VCg1xKIyRqRgYXuIFzuDpW8tGbI3hrV98Mlz7lH6KAu/A1N6Q4Og7vmbTxjtE0u6z
-         kcp/gGS2rTqY25iwvGz4q+utdzWyKH111KMMYxYSrFr+TGZPUiWRPvGk9dzI+/HiQ/
-         Wh7IuEUe7Gz5w==
-Date:   Fri, 31 Jan 2020 09:55:54 +0000
-From:   Tom Parkin <tparkin@katalix.com>
-To:     Guillaume Nault <gnault@redhat.com>
-Cc:     James Chapman <jchapman@katalix.com>,
-        Ridge Kennedy <ridgek@alliedtelesis.co.nz>,
-        netdev <netdev@vger.kernel.org>
-Subject: Re: [PATCH net] l2tp: Allow duplicate session creation with UDP
-Message-ID: <20200131095553.GA4245@jackdaw>
-References: <20200117191939.GB3405@jackdaw>
- <20200118191336.GC12036@linux.home>
- <20200120150946.GB4142@jackdaw>
- <20200121163531.GA6469@localhost.localdomain>
- <CAEwTi7Q4JzaCwug3M8Aa9y1yFXm1qBjQvKq3eiw=ekBft9wETw@mail.gmail.com>
- <20200125115702.GB4023@p271.fit.wifi.vutbr.cz>
- <72007ca8-3ad4-62db-1b38-1ecefb82cb20@katalix.com>
- <20200129114419.GA11337@pc-61.home>
- <0d7f9d7e-e13b-8254-6a90-fc08bade3e16@katalix.com>
- <20200130223440.GA28541@pc-61.home>
+        id S1728330AbgAaKBp (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 31 Jan 2020 05:01:45 -0500
+Received: from youngberry.canonical.com ([91.189.89.112]:55343 "EHLO
+        youngberry.canonical.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728160AbgAaKBo (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 31 Jan 2020 05:01:44 -0500
+Received: from 1.general.cking.uk.vpn ([10.172.193.212])
+        by youngberry.canonical.com with esmtpsa (TLS1.2:ECDHE_RSA_AES_128_GCM_SHA256:128)
+        (Exim 4.86_2)
+        (envelope-from <colin.king@canonical.com>)
+        id 1ixT7O-0002rj-2e; Fri, 31 Jan 2020 10:01:42 +0000
+To:     Ariel Elior <aelior@marvell.com>, GR-everest-linux-l2@marvell.com,
+        "David S. Miller" <davem@davemloft.net>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        Michal Kalderon <michal.kalderon@marvell.com>
+Cc:     "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+From:   Colin Ian King <colin.king@canonical.com>
+Autocrypt: addr=colin.king@canonical.com; prefer-encrypt=mutual; keydata=
+ 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
+Subject: re: qed: FW 8.42.2.0 debug features
+Message-ID: <149f65ab-4d15-4b03-1620-a956cff10388@canonical.com>
+Date:   Fri, 31 Jan 2020 10:01:41 +0000
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.4.1
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="ibTvN161/egqYuK8"
-Content-Disposition: inline
-In-Reply-To: <20200130223440.GA28541@pc-61.home>
-User-Agent: Mutt/1.9.4 (2018-02-28)
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Hi,
 
---ibTvN161/egqYuK8
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+Static analysis with Coverity detected an issue in the following commit:
 
-On  Thu, Jan 30, 2020 at 23:34:40 +0100, Guillaume Nault wrote:
-> On Thu, Jan 30, 2020 at 10:28:23AM +0000, James Chapman wrote:
-> > On 29/01/2020 11:44, Guillaume Nault wrote:
-> > > Since userspace is in charge of selecting the session ID, I still can=
-'t
-> > > see how having the kernel accept duplicate IDs goes against the RFC.
-> > > The kernel doesn't assign duplicate IDs on its own. Userspace has full
-> > > control on the IDs and can implement whatever constraint when assigni=
-ng
-> > > session IDs (even the DOCSIS DEPI way of partioning the session ID
-> > > space).
-> > Perhaps another example might help.
-> >=20
-> > Suppose there's an L2TPv3 app out there today that creates two tunnels
-> > to a peer, one of which is used as a hot-standby backup in case the main
-> > tunnel fails. This system uses separate network interfaces for the
-> > tunnels, e.g. a router using a mobile network as a backup. If the main
-> > tunnel fails, it switches traffic of sessions immediately into the
-> > second tunnel. Userspace is deliberately using the same session IDs in
-> > both tunnels in this case. This would work today for IP-encap, but not
-> > for UDP. However, if the kernel treats session IDs as scoped by 3-tuple,
-> > the application would break. The app would need to be modified to add
-> > each session ID into both tunnels to work again.
-> >=20
-> That's an interesting use case. I can imagine how this works on Rx, but
-> how can packets be transmitted on the new tunnel? The session will
-> still send packets through the original tunnel with the original
-> 3-tuple, and there's no way to reassign a session to a new tunnel. We
-> could probably rebind/reconnect the tunnel socket, but then why
-> creating the second tunnel in the kernel?
->=20
-> > >>> I would have to read the RFC with scoped session IDs in mind, but, =
-as
-> > >>> far as I can see, the only things that global session IDs allow whi=
-ch
-> > >>> can't be done with scoped session IDs are:
-> > >>>   * Accepting L2TPoIP sessions to receive L2TPoUDP packets and
-> > >>>     vice-versa.
-> > >>>   * Accepting L2TPv3 packets from peers we're not connected to.
-> > >>>
-> > >>> I don't find any of these to be desirable. Although Tom convinced me
-> > >>> that global session IDs are in the spirit of the RFC, I still don't
-> > >>> think that restricting their scope goes against it in any practical
-> > >>> way. The L2TPv3 control plane requires a two way communication, whi=
-ch
-> > >>> means that the session is bound to a given 3/5-tuple for control
-> > >>> messages. Why would the data plane behave differently?
-> > >> The Cable Labs / DOCSIS DEPI protocol is a good example. It is based=
- on
-> > >> L2TPv3 and uses the L2TPv3 data plane. It treats the session ID as
-> > >> unscoped and not associated with a given tunnel.
-> > >>
-> > > Fair enough. Then we could add a L2TP_ATTR_SCOPE netlink attribute to
-> > > sessions. A global scope would reject the session ID if another sessi=
-on
-> > > already exists with this ID in the same network namespace. Sessions w=
-ith
-> > > global scope would be looked up solely based on their ID. A non-global
-> > > scope would allow a session ID to be duplicated as long as the 3/5-tu=
-ple
-> > > is different and no session uses this ID with global scope.
-> > >
-> > >>> I agree that it looks saner (and simpler) for a control plane to ne=
-ver
-> > >>> assign the same session ID to sessions running over different tunne=
-ls,
-> > >>> even if they have different 3/5-tuples. But that's the user space
-> > >>> control plane implementation's responsability to select unique sess=
-ion
-> > >>> IDs in this case. The fact that the kernel uses scoped or global ID=
-s is
-> > >>> irrelevant. For unmanaged tunnels, the administrator has complete
-> > >>> control over the local and remote session IDs and is free to assign
-> > >>> them globally if it wants to, even if the kernel would have accepted
-> > >>> reusing session IDs.
-> > >> I disagree. Using scoped session IDs may break applications that ass=
-ume
-> > >> RFC behaviour. I mentioned one example where session IDs are used
-> > >> unscoped above.
-> > >>
-> > > I'm sorry, but I still don't understand how could that break any
-> > > existing application.
-> >=20
-> > Does my example of the hot-standby backup tunnel help?
-> >=20
-> Yes, even though I'm not sure how it precisely translate in terms of
-> userspace/kernel interraction. But anyway, with L2TP_ATTR_SCOPE, we'd
-> have the possibility to keep session ID unscoped for l2tp_ip by
-> default. That should be enough to keep any such scenario working
-> without any modification.
->=20
-> > > For L2TPoUDP, session IDs are always looked up in the context of the
-> > > UDP socket. So even though the kernel has stopped accepting duplicate
-> > > IDs, the session IDs remain scoped in practice. And with the
-> > > application being responsible for assigning IDs, I don't see how maki=
-ng
-> > > the kernel less restrictive could break any existing implementation.
-> > > Again, userspace remains in full control for session ID assignment
-> > > policy.
-> > >
-> > > Then we have L2TPoIP, which does the opposite, always looks up sessio=
-ns
-> > > globally and depends on session IDs being unique in the network
-> > > namespace. But Ridge's patch does not change that. Also, by adding the
-> > > L2TP_ATTR_SCOPE attribute (as defined above), we could keep this
-> > > behaviour (L2TPoIP session could have global scope by default).
-> >=20
-> > I'm looking at this with an end goal of having the UDP rx path later
-> > modified to work the same way as IP-encap currently does. I know Linux
-> > has never worked this way in the L2TPv3 UDP path and no-one has
-> > requested that it does yet, but I think it would improve the
-> > implementation if UDP and IP encap behaved similarly.
-> >=20
-> Yes, unifying UDP and IP encap would be really nice.
->=20
-> > L2TP_ATTR_SCOPE would be a good way for the app to select which
-> > behaviour it prefers.
-> >=20
-> Yes. But do we agree that it's also a way to keep the existing
-> behaviour: unscoped for IP, scoped to the 5-tuple for UDP? That is, IP
-> and UDP encap would use a different default value when user space
-> doesn't request a specific behaviour.
->=20
-> > >> However, there might be an alternative solution to fix this for Ridg=
-e's
-> > >> use case that doesn't involve adding 3/5-tuple session ID lookups in=
- the
-> > >> receive path or adding a control knob...
-> > >>
-> > >> My understanding is that Ridge's application uses unmanaged tunnels
-> > >> (like "ip l2tp" does). These use kernel sockets. The netlink tunnel
-> > >> create request does not indicate a valid tunnel socket fd. So we cou=
-ld
-> > >> use scoped session IDs for unmanaged UDP tunnels only. If Ridge's pa=
-tch
-> > >> were tweaked to allow scoped IDs only for UDP unmanaged tunnels (add=
-ing
-> > >> a test for tunnel->fd < 0), managed tunnels would continue to work as
-> > >> they do now and any application that uses unmanaged tunnels would get
-> > >> scoped session IDs. No control knob or 3/5-tuple session ID lookups
-> > >> required.
-> > >>
-> > > Well, I'd prefer to not introduce another subtle behaviour change. Wh=
-at
-> > > does rejecting duplicate IDs bring us if the lookup is still done in
-> > > the context of the socket? If the point is to have RFC compliance, th=
-en
-> > > we'd also need to modify the lookup functions.
-> > >=20
-> > I agree, it's not ideal. Rejecting duplicate IDs for UDP will allow the
-> > UDP rx path to be modified later to work the same way as IP. So my idea
-> > was to allow for that change to be made later but only for managed
-> > tunnels (sockets created by userspace). My worry with the original patch
-> > is that it suggests that session IDs for UDP are always scoped by the
-> > tunnel so tweaking it to apply only for unmanaged tunnels was a way of
-> > showing this.
-> >=20
-> > However, you've convinced me now that scoping the session ID by
-> > 3/5-tuple could work. As long as there's a mechanism that lets
-> > applications choose whether the 3/5-tuple is ignored in the rx path, I'm
-> > ok with it.
-> >=20
-> Do we agree that, with L2TP_ATTR_SCOPE being a long-term solution, we
-> shouldn't need to reject duplicate session IDs for UDP tunnels?
->=20
-> To summarise my idea:
->=20
->   * Short term plan:
->     Integrate a variant of Ridge's patch, as it's simple, can easily be
->     backported to -stable and doesn't prevent the future use of global
->     session IDs (as those will be specified with L2TP_ATTR_SCOPE).
->=20
->   * Long term plan:
->     Implement L2TP_ATTR_SCOPE, a session attribute defining if the
->     session ID is global or scoped to the X-tuple (3-tuple for IP,
->     5-tuple for UDP).
->     Original behaviour would be respected to avoid breaking existing
->     applications. So, by default, IP encapsulation would use global
->     scope and UDP encapsulation would use 5-tuple scope.
->=20
-> Does that look like a good way forward?
+commit 2d22bc8354b15abe413dff76cfe0f7aeb88ef9aa
+Author: Michal Kalderon <michal.kalderon@marvell.com>
+Date:   Mon Jan 27 15:26:19 2020 +0200
 
-FWIW, this sounds reasonable to me too.
+    qed: FW 8.42.2.0 debug features
 
---ibTvN161/egqYuK8
-Content-Type: application/pgp-signature; name="signature.asc"
+Specifically, DBG_STATUS_NO_MATCHING_FRAMING_MODE was added to the enum
+dbg_status in drivers/net/ethernet/qlogic/qed/qed_hsi.h
+however the matching error message string was not added to array
+s_status_str in drivers/net/ethernet/qlogic/qed/qed_debug.c causing an
+out-of-bounds read on the array:
 
------BEGIN PGP SIGNATURE-----
+7088 const char *qed_dbg_get_status_str(enum dbg_status status)
+7089 {
 
-iQEzBAABCgAdFiEEsUkgyDzMwrj81nq0lIwGZQq6i9AFAl4z+aQACgkQlIwGZQq6
-i9D2+AgAnQCROTEkIbgufaQReSB7G1DC8KyaYF1KFTYot2QToTwqfw7j+39R6ZBF
-DCJQ0CchcuUNTg+FRfExJY58sWl12mMWfbDd3WGqKZCbAxevM0asUl4ocTJAc3z5
-EJe/eu9bLcOVuilA0dPjiytrb2X15dYDXUqmSArOZKPxj+AVTyrxjvL9PNO+k8h3
-MtOTZU33PtK3fWkzDHipx9P+PtR7xioK0PxNCNktdlgV4dM5+aYwgT7AbI/BbHxv
-Xoq8w//wT1y4ArXGwLXfjNvejLGURQBUdCHPbmfIPJanCAqjRd1l1UutL5qJdpD9
-dhDf5Q1DZjNcGbGUqrTH2obqukykgQ==
-=uTTJ
------END PGP SIGNATURE-----
+    1. Condition status < MAX_DBG_STATUS, taking true branch.
+    2. cond_at_most: Checking status < MAX_DBG_STATUS implies that
+status may be up to 58 on the true branch.
+    Out-of-bounds read (OVERRUN)
+    3. overrun-local: Overrunning array s_status_str of 58 8-byte
+elements at element index 58 (byte offset 471) using index status (which
+evaluates to 58).
 
---ibTvN161/egqYuK8--
+7090        return (status <
+7091                MAX_DBG_STATUS) ? s_status_str[status] : "Invalid
+debug status";
+7092 }
+
+The array needs DBG_STATUS_NO_MATCHING_FRAMING_MODE added:
+
+        /* DBG_STATUS_INVALID_FILTER_TRIGGER_DWORDS */
+        "The filter/trigger constraint dword offsets are not enabled for
+recording",
+
+        /* Missing DBG_STATUS_NO_MATCHING_FRAMING_MODE text goes here */
+
+        /* DBG_STATUS_VFC_READ_ERROR */
+        "Error reading from VFC",
+
+Colin
