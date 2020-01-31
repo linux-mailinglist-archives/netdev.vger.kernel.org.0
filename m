@@ -2,57 +2,87 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 20D8214EDFD
-	for <lists+netdev@lfdr.de>; Fri, 31 Jan 2020 14:54:43 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5AE0314EE0E
+	for <lists+netdev@lfdr.de>; Fri, 31 Jan 2020 14:58:48 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728726AbgAaNyl (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 31 Jan 2020 08:54:41 -0500
-Received: from mail-io1-f65.google.com ([209.85.166.65]:35990 "EHLO
-        mail-io1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728500AbgAaNyl (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 31 Jan 2020 08:54:41 -0500
-Received: by mail-io1-f65.google.com with SMTP id d15so8236900iog.3
-        for <netdev@vger.kernel.org>; Fri, 31 Jan 2020 05:54:39 -0800 (PST)
+        id S1728948AbgAaN6q (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 31 Jan 2020 08:58:46 -0500
+Received: from mail-wr1-f50.google.com ([209.85.221.50]:34950 "EHLO
+        mail-wr1-f50.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728500AbgAaN6q (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 31 Jan 2020 08:58:46 -0500
+Received: by mail-wr1-f50.google.com with SMTP id g17so8759506wro.2
+        for <netdev@vger.kernel.org>; Fri, 31 Jan 2020 05:58:45 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:reply-to:from:date:message-id:subject:to;
-        bh=7j2CguNwmHywfhsVOcaT2hShHEpc1yq17+AyV1O3o24=;
-        b=QfdzGXmi/5qRk7o01dEyrMfj+BTkyhEFI4YN1YK1tPjnq8pACPdsscopMsWioRqQUB
-         TcLfrqz/E7OvDiFc9DpE00TvWUxaVJZ2NfDLy6MTMfhanwf/hByy85kB74GeR96pqneS
-         i9Snpv5WDa5zpHfF7fDOQTNga3EzXaRMEXBQs+1zxfAzphkrn2jsp1ug7uULISLWikEW
-         rwjhtJDVbtJca5q1Pd8hlQWtUmsMDlqVB0KVNYiOILJsatWaKyAtz5NuQrgrJBLdwMxF
-         ynFTeC3IjuJvLIywsqZVSRrocJlXowhuOIAGFSPz9DbBI/QkBth7nH9YlWdvd3V6VjMU
-         IOCw==
+        d=arangodb.com; s=google;
+        h=date:from:to:subject:message-id:mime-version:content-disposition
+         :user-agent;
+        bh=NbNYmU7TGBK3dRZumVcgTTsq4mqLZhmqNa9FXJpcous=;
+        b=JexBGKiwKISWHg0ESHB6vaxxaI7LgsY9bEoNVUl8/8r/TmVHH+6Q9D6MSI3jMd0VB9
+         Iirj/c3WAgnw9SbNuFlfS89ACUTWED6MUqMK4idJHBIx+XxglRj0D00Sd4f3snh7T5uy
+         UVFFSkf3ewcZ7ZckUXL3/rBTtH+Ere0dNdTPHrE5NAa3nGauFVwchYh1oHl/2dCd3g2A
+         +GENUhZO3Es7dzNKp+UGDINGHHBWfcMn2t1HfQm28I/2juxtKzL5wJpoTsPPmSTq8SL7
+         NYlIBAhQZRf8ZhJBX5Z3x60P/Zc4irnrpObVvqtS/Qoi8s/laNK/ma8Jx87FLMMJve1j
+         Op8w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:reply-to:from:date:message-id
-         :subject:to;
-        bh=7j2CguNwmHywfhsVOcaT2hShHEpc1yq17+AyV1O3o24=;
-        b=mPox+2p0KOGRRXCF6Bu2/B1TEjbI1yewzbIR/TpcM0j27aYPd5u8MSbvRLVqh0P5ws
-         jtpzkvP4AalnzQ+QsWZNYGCaR+1HrWpqdD4Qyt8Bkv2kx8xJ3pp4o3WMNgfLyCBdi14T
-         YLroCM28GVcMwAQhJpyv0kZZoIPiZmXhVE+6cDOMrwLggkV1dcnUycIVSab3fby2Vtzy
-         +qctA8c++BRxs+8NEI+9HdAJMISKu3IJ1HHPGhvo/pxaOCwG734I1ltrFPWxTaZMMGfr
-         tJgjpScBEsNFHnwLoNLNfdv1zWOdJcPXaLzGAR/nrqYv8rDigTsc3CcaS+zNe0N4cCRw
-         6f1Q==
-X-Gm-Message-State: APjAAAUdXLPuwywCJ5ARpFXIQi0HlK3jI3Yhtp4oqGL8jkpazCDj4sqf
-        8zTjYWCMipCAXIpiICoyWKd73mV27ebdwjtgFdE=
-X-Google-Smtp-Source: APXvYqwfy3aoLMhrcKjTc239VGu4fmkoKb01XuEwcILBJ2FuFh7+mnpAmkbQnlzpeSJ1Xy/nPIQfNLz12HtH5zZPeQA=
-X-Received: by 2002:a6b:bd04:: with SMTP id n4mr8666806iof.196.1580478879244;
- Fri, 31 Jan 2020 05:54:39 -0800 (PST)
+        h=x-gm-message-state:date:from:to:subject:message-id:mime-version
+         :content-disposition:user-agent;
+        bh=NbNYmU7TGBK3dRZumVcgTTsq4mqLZhmqNa9FXJpcous=;
+        b=Mv9o8t8xnog8a6O38Tzy/HxVw5l9Lzpz3cFSBL3B/ScKJm0NZw/ps7Ic338USmKF3g
+         owfOVoGwxOitXtuZ4g5JFu6sfBZB6dLEQ8iutNUmtyLNAYzEUIkbJbAXLAQEWWDLFffW
+         7OB83xDakCANQEEUci5t3bWQ22LwV6oJRGywRI15zBA2CpMVavVNGEBeTPOLRWwobOc0
+         c5WvxlvdFPqhJb16XbbSOPWLjpK182qM1TXjc01WlDeo0G4OgIAPeWpzuFD+FE9sl/kX
+         JvZvFlGs426nfk7dOj7pTsztASjZl9ai7fcKne7FnZ3/AivpQBS9S1Skz6yIClFG0FRR
+         uHgg==
+X-Gm-Message-State: APjAAAVUej+r29pWixtIdynt4Xl9I7lYH54ncJsTdmjOKz8TlNQoMfu8
+        OVIxyCcLaLclIPJ209sivSRdiKNXDaBJEIXhmG0SQjhv2M9PXmNDPqkJFS2VvKgF0Hzc9iVIfyZ
+        wfo6D/SW00Mah+E3W6x21OAXUHpZdC7r/rL6eJR8a9DAhLHjnw+BSVJEX+lyMgA==
+X-Google-Smtp-Source: APXvYqyPBX+WiJzQeAD1FT4xYLgsByEX++GvZDeMDV6czS6UkF4Xtt3BuisX5zwp2yfeehrXpAdAkw==
+X-Received: by 2002:a5d:62c8:: with SMTP id o8mr12195838wrv.316.1580479123878;
+        Fri, 31 Jan 2020 05:58:43 -0800 (PST)
+Received: from localhost (p5df1ee40.dip0.t-ipconnect.de. [93.241.238.64])
+        by smtp.gmail.com with ESMTPSA id q3sm10645230wmj.38.2020.01.31.05.58.42
+        for <netdev@vger.kernel.org>
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 31 Jan 2020 05:58:42 -0800 (PST)
+Date:   Fri, 31 Jan 2020 14:57:30 +0100
+From:   Max Neunhoeffer <max@arangodb.com>
+To:     netdev@vger.kernel.org
+Subject: epoll_wait misses edge-triggered eventfd events: bug in Linux 5.3
+ and 5.4
+Message-ID: <20200131135730.ezwtgxddjpuczpwy@tux>
 MIME-Version: 1.0
-Received: by 2002:a6b:ba46:0:0:0:0:0 with HTTP; Fri, 31 Jan 2020 05:54:38
- -0800 (PST)
-Reply-To: passey300@hotmail.com
-From:   Emerald Passey <hannahjustin47@gmail.com>
-Date:   Fri, 31 Jan 2020 13:54:38 +0000
-Message-ID: <CAJb6ze7dSZMj9CZ9nKByZ+zyYx-K2mjN4WKji=VkVR3s=kj_3A@mail.gmail.com>
-Subject: Hi
-To:     undisclosed-recipients:;
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+User-Agent: NeoMutt/20180716
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
--- 
-Ahoj, Ako sa mas?
+Dear All,
+
+I believe I have found a bug in Linux 5.3 and 5.4 in epoll_wait/epoll_ctl
+when an eventfd together with edge-triggered or the EPOLLONESHOT policy
+is used. If an epoll_ctl call to rearm the eventfd happens approximately
+at the same time as the epoll_wait goes to sleep, the event can be lost, 
+even though proper protection through a mutex is employed.
+
+The details together with two programs showing the problem can be found
+here:
+
+  https://bugzilla.kernel.org/show_bug.cgi?id=205933
+
+Older kernels seem not to have this problem, although I did not test all
+versions. I know that 4.15 and 5.0 do not show the problem.
+
+Note that this method of using epoll_wait/eventfd is used by
+boost::asio to wake up event loops in case a new completion handler
+is posted to an io_service, so this is probably relevant for many
+applications.
+
+Any help with this would be appreciated.
+
+Cheers,
+  Max.
