@@ -2,119 +2,139 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id E5FE014F8C4
-	for <lists+netdev@lfdr.de>; Sat,  1 Feb 2020 17:12:08 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8E10E14F8CD
+	for <lists+netdev@lfdr.de>; Sat,  1 Feb 2020 17:19:08 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726900AbgBAQDa (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 1 Feb 2020 11:03:30 -0500
-Received: from us-smtp-delivery-1.mimecast.com ([207.211.31.120]:29935 "EHLO
-        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S1726668AbgBAQDa (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 1 Feb 2020 11:03:30 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1580573009;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=efwbQXImvi8eqejyT0f76KQJJWkbnJVfyc7uD6iCowg=;
-        b=MGYxpEU3800IPdwn2FbHYhz4iEVwjBlkhNzuVDEzCqUBA1ld6uEECQ/r+oyD387+8WkmTC
-        14RQCZGmdn3IMJh6/mYT4u0ujuPrEtEhEgzbcVQpUXYnVeb3Pj+FdxDl+ZxbrDjUrbhXYG
-        7lX2bqgyCJO9wpZvs6vnkx3lKDZdySc=
-Received: from mail-lf1-f71.google.com (mail-lf1-f71.google.com
- [209.85.167.71]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-379-0VGcesZ3PCOiW8Nc-LJStA-1; Sat, 01 Feb 2020 11:03:27 -0500
-X-MC-Unique: 0VGcesZ3PCOiW8Nc-LJStA-1
-Received: by mail-lf1-f71.google.com with SMTP id y23so1718448lfh.7
-        for <netdev@vger.kernel.org>; Sat, 01 Feb 2020 08:03:27 -0800 (PST)
+        id S1726825AbgBAQTB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 1 Feb 2020 11:19:01 -0500
+Received: from mail-wm1-f67.google.com ([209.85.128.67]:53411 "EHLO
+        mail-wm1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726622AbgBAQTA (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 1 Feb 2020 11:19:00 -0500
+Received: by mail-wm1-f67.google.com with SMTP id s10so11286044wmh.3;
+        Sat, 01 Feb 2020 08:18:58 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:autocrypt:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=ZRGHA9Vt1BTMX6AWpe9g3Gm5bUbHXciiSINpWFajmWM=;
+        b=E4FPluC4fig4nGcRpijl90fvFlBsNeqpkd7gtmFW0YxjNhltn47TXkS+V6mHacJ0G6
+         2PCai8XLoRQoppBigEclDGEXJvKYNst2lsizif9EoOnOgm+8CrMvLE+Adc6Ski13Ka9H
+         rKxrVqa73r400Pa07eB39wwW+g14LJHDo5vCACWk1L5bDks2eLiJ1htcT19Z/NotMI9/
+         EiyQqQgK+S/ymkmZvNmQ/Akfimtp4P+M/S+Yjr2jcCjo9p7y5IbojUPyyXY7KxqiCA1U
+         9ufAVBkGh/fpmAAaH2ARaGgo15ZVSkmkVMtOj6Bp509mYg0o9gt8vHvFM9mOay+XYpQP
+         rwMA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
-         :message-id:mime-version;
-        bh=efwbQXImvi8eqejyT0f76KQJJWkbnJVfyc7uD6iCowg=;
-        b=tfV0Hizqbj4E3KY78keAfhE6IodRMDYURjtBDMRtrZSStoFScgUvMa5F95mup0pWga
-         aYeJWyO90hKGnxGhMiHCvnMCblz+/CGRMYMQH+9wUhns3HCWGO25svitzrljN4YAvRVP
-         MplR8WQmIPs3A1UgKYoAuu41c0bFa3pwxL6nI67iwiu+6TovL0oyYVTeP/GqgMK9FSHr
-         sWpE7hTmVzEOHPdZS/EIRP3h8lIHCoL5pKPBJO6IeX+MoNnBtRFSeuROuE4JI5YpsoRy
-         xKBXRrGhLD2YQIGT0IA02Rmlk57qaT+cRVqpMr+yjLzvgi+pk3m53x9Gyh2JV+viJlaW
-         f46w==
-X-Gm-Message-State: APjAAAUDzrO7OisPj0f2gCIqmMK8vcRLJ7VeM+Y8BLHp550bkuHfln75
-        4uSbneV/BKfv9CFCvf0KcBsabPiO2hzDIyOaLcgJa6MJcmHSfbUiTjmzH3KwkZTelVNpRNu4VD6
-        93KXLZslQ3d7bMqrB
-X-Received: by 2002:a2e:93c9:: with SMTP id p9mr8871798ljh.136.1580573006505;
-        Sat, 01 Feb 2020 08:03:26 -0800 (PST)
-X-Google-Smtp-Source: APXvYqz3IUkYMAjiEbokEVVg7LaftvqdWRNUoLaaueul0ZUyyTMJlgXCgk/mBYxM3Klx7FzJe5yiJA==
-X-Received: by 2002:a2e:93c9:: with SMTP id p9mr8871780ljh.136.1580573006326;
-        Sat, 01 Feb 2020 08:03:26 -0800 (PST)
-Received: from alrua-x1.borgediget.toke.dk ([85.204.121.218])
-        by smtp.gmail.com with ESMTPSA id h10sm6638583ljc.39.2020.02.01.08.03.25
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 01 Feb 2020 08:03:25 -0800 (PST)
-Received: by alrua-x1.borgediget.toke.dk (Postfix, from userid 1000)
-        id D7C4B1800A2; Sat,  1 Feb 2020 17:03:19 +0100 (CET)
-From:   Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
-To:     Jakub Kicinski <kuba@kernel.org>,
-        Jesper Dangaard Brouer <jbrouer@redhat.com>
-Cc:     David Ahern <dsahern@gmail.com>, David Ahern <dsahern@kernel.org>,
-        netdev@vger.kernel.org, prashantbhole.linux@gmail.com,
-        jasowang@redhat.com, davem@davemloft.net, mst@redhat.com,
-        toshiaki.makita1@gmail.com, daniel@iogearbox.net,
-        john.fastabend@gmail.com, ast@kernel.org, kafai@fb.com,
-        songliubraving@fb.com, yhs@fb.com, andriin@fb.com,
-        David Ahern <dahern@digitalocean.com>
-Subject: Re: [PATCH bpf-next 03/12] net: Add IFLA_XDP_EGRESS for XDP programs in the egress path
-In-Reply-To: <20200130064517.43f2064f@cakuba>
-References: <20200123014210.38412-1-dsahern@kernel.org> <20200123014210.38412-4-dsahern@kernel.org> <87tv4m9zio.fsf@toke.dk> <335b624a-655a-c0c6-ca27-102e6dac790b@gmail.com> <20200124072128.4fcb4bd1@cakuba> <87o8usg92d.fsf@toke.dk> <1d84d8be-6812-d63a-97ca-ebc68cc266b9@gmail.com> <20200126134933.2514b2ab@carbon> <20200126141701.3f27b03c@cakuba> <20200128151343.28c1537d@carbon> <20200130064517.43f2064f@cakuba>
-X-Clacks-Overhead: GNU Terry Pratchett
-Date:   Sat, 01 Feb 2020 17:03:19 +0100
-Message-ID: <87lfpme1mg.fsf@toke.dk>
+        h=x-gm-message-state:subject:to:cc:references:from:autocrypt
+         :message-id:date:user-agent:mime-version:in-reply-to
+         :content-language:content-transfer-encoding;
+        bh=ZRGHA9Vt1BTMX6AWpe9g3Gm5bUbHXciiSINpWFajmWM=;
+        b=q0lb5uZLr76iVK/66UL+Rl5YwCNE6eQJyIXnNR5dL3U47q6FpM6QYli2uvIQK72JyZ
+         QS0qdVyMbNii5VAcq+UDNJyTv82E0p3n7VBmCX3HZKEa2yfWS+qsbgcnPLi8y2peL03W
+         EqkgzBVl8B0tRBraRY/JEWOV6o8Kb+NlvPCTK3mybLtHfwup9T8dhHDj38RyUBXznRUW
+         TznM1tAOl8ubXVH2nbw81TU7rNM9OBCP5/EPBITDHA88FaI3sX3gPM849Dw/RAJxrByk
+         +a0rObkbskIPwdet+nSmjNwADum4F4GJyqPcndO1ypl83oqsqnwURLHr5C9JAgnea1Uk
+         G0SQ==
+X-Gm-Message-State: APjAAAVOoFKOl2S2uIWD9BZWUPMWL3E2DlPbAslDLh1TPJkvTAuJwhc0
+        lFo9NhepNTVWS2KhT3aoXrA=
+X-Google-Smtp-Source: APXvYqx5oZj5z1GTF/s5xX/qqxjnJ+giVW4kkf8xNES9NQTGBzvsEguX7sS4SoNIXeMEBpOvFy3CFw==
+X-Received: by 2002:a7b:cb49:: with SMTP id v9mr3836027wmj.160.1580573937821;
+        Sat, 01 Feb 2020 08:18:57 -0800 (PST)
+Received: from [192.168.1.3] (ip68-111-84-250.oc.oc.cox.net. [68.111.84.250])
+        by smtp.gmail.com with ESMTPSA id b128sm15458461wmb.25.2020.02.01.08.18.54
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Sat, 01 Feb 2020 08:18:56 -0800 (PST)
+Subject: Re: [PATCH 6/6] net: bcmgenet: reduce severity of missing clock
+ warnings
+To:     Jeremy Linton <jeremy.linton@arm.com>, netdev@vger.kernel.org
+Cc:     opendmb@gmail.com, f.fainelli@gmail.com, davem@davemloft.net,
+        bcm-kernel-feedback-list@broadcom.com,
+        linux-kernel@vger.kernel.org, wahrenst@gmx.net, andrew@lunn.ch,
+        hkallweit1@gmail.com
+References: <20200201074625.8698-1-jeremy.linton@arm.com>
+ <20200201074625.8698-7-jeremy.linton@arm.com>
+From:   Florian Fainelli <f.fainelli@gmail.com>
+Autocrypt: addr=f.fainelli@gmail.com; keydata=
+ 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
+ a9BQwACgnzGuH1BVeT2J0Ra+ZYgkx7DaPR0=
+Message-ID: <fab9842a-b1bf-5615-d090-2de6227739ed@gmail.com>
+Date:   Sat, 1 Feb 2020 08:18:53 -0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
+ Thunderbird/68.4.2
 MIME-Version: 1.0
-Content-Type: text/plain
+In-Reply-To: <20200201074625.8698-7-jeremy.linton@arm.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Jakub Kicinski <kuba@kernel.org> writes:
 
-> On Tue, 28 Jan 2020 15:13:43 +0100, Jesper Dangaard Brouer wrote:
->> On Sun, 26 Jan 2020 14:17:01 -0800
->> Jakub Kicinski <kuba@kernel.org> wrote:
->> 
->> > On Sun, 26 Jan 2020 13:49:33 +0100, Jesper Dangaard Brouer wrote:  
->> > > Yes, please. I want this NIC TX hook to see both SKBs and xdp_frames.    
->> > 
->> > Any pointers on what for? Unless we see actual use cases there's
->> > a justifiable concern of the entire thing just being an application of
->> > "We can solve any problem by introducing an extra level of indirection."  
->> 
->> I have two use-cases:
->> 
->> (1) For XDP easier handling of interface specific setting on egress,
->> e.g. pushing a VLAN-id, instead of having to figure this out in RX hook.
->> (I think this is also David Ahern's use-case)
->
-> Is it really useful to have a hook before multi-buffer frames are
-> possible and perhaps TSO? The local TCP performance is going to tank
-> with XDP enabled otherwise.
 
-For a software router (i.e., something that mostly forwards packets) it
-can still be useful without multi-buffer. But yeah, that is definitely
-something we need to solve, regardless of where this goes.
+On 1/31/2020 11:46 PM, Jeremy Linton wrote:
+> If one types "failed to get enet clock" or similar into google
+> there are ~370k hits. The vast majority are people debugging
+> problems unrelated to this adapter, or bragging about their
+> rpi's. Given that its not a fatal situation with common DT based
+> systems, lets reduce the severity so people aren't seeing failure
+> messages in everyday operation.
+> 
+> Signed-off-by: Jeremy Linton <jeremy.linton@arm.com>
 
->> (2) I want this egress XDP hook to have the ability to signal
->> backpressure. Today we have BQL in most drivers (which is essential to
->> avoid bufferbloat). For XDP_REDIRECT we don't, which we must solve.
->> 
->> For use-case(2), we likely need a BPF-helper calling netif_tx_stop_queue(),
->> or a return code that can stop the queue towards the higher layers.
->
-> Agreed, although for that use case, I'm not sure if non-XDP frames 
-> have to pass trough the hook. Hard to tell as the current patches 
-> don't touch on this use case.
-
-I think it would be weird and surprising if it *doesn't* see packets
-from the stack. On RX, XDP sees everything; the natural expectation
-would be that this was also the case on TX, no?
-
--Toke
-
+Acked-by: Florian Fainelli <f.fainelli@gmail.com>
+-- 
+Florian
