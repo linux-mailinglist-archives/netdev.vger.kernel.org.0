@@ -2,86 +2,127 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 5E4FA14FA6D
-	for <lists+netdev@lfdr.de>; Sat,  1 Feb 2020 20:52:06 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6963B14FA76
+	for <lists+netdev@lfdr.de>; Sat,  1 Feb 2020 21:05:26 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726466AbgBATwE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 1 Feb 2020 14:52:04 -0500
-Received: from mail-oi1-f174.google.com ([209.85.167.174]:37038 "EHLO
-        mail-oi1-f174.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726335AbgBATwE (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 1 Feb 2020 14:52:04 -0500
-Received: by mail-oi1-f174.google.com with SMTP id q84so10871334oic.4
-        for <netdev@vger.kernel.org>; Sat, 01 Feb 2020 11:52:04 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=aQ3uib3iLy6dkxb/g7vtRsyZF7HYX33b9z4ml49/vN0=;
-        b=RlUjE8nbG9BUEpXYH9bERpKh+CUKsAsr47djFnQY1v2+9vo2KMzG0YFQhI9WadfcT8
-         TUc6fV//RrU7p8dSRblgKLqQud5ufIqbfYnJ1Jy8Q9X4fQpDWlkPD/y1mVCYK6fIJEi7
-         uW2cXO9SwN/CPmlJ57tKWZOJJp+ultUNAPKP2TJ4UwTkL+tLa7kOlvDjE/4ua3Auy5iZ
-         qqjwGM2MsItb2Sj8wLxwcWB/YT2iH3HEVqcsywKirJWOPC+xZPqYqwP117bZbBxgW2bq
-         +vwi5H2FzuhUicj9BQALTVP434OX9PxeeZsS23YFHyBrKAq2pkyDn4naSP82fQcpbh6H
-         TpUg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=aQ3uib3iLy6dkxb/g7vtRsyZF7HYX33b9z4ml49/vN0=;
-        b=uGIWbfAAo3IxgQ12gC0vSJ1WEgVRcWIbYaIuTO0k21ZHKENbLzzdvxoYRVFocpvSyR
-         CKtUN/TkLSCqr9zFjeFcdKUPjoFeWOSN63vPxKw5J1J/d0isHRCUrGu8T2MQnK7q/3j3
-         6+RoYJsCDQQaP3vmGQT+C61N8Br5F0im7DW+475mf8hHos9lOngHiXWgFpX/RHQ6FdlD
-         gmPUjOFrPTYXbkgoe0jy78hcDw0RpRsA3jEN9/1y2GfmJqvzuH84sLyANX9sbPXt0yZZ
-         dMRbdDmS3vG5JPC1xNIGjaAWOrWiG5alBacuwPqW07bPlRGe0fM/Ew3RKcm/esNOaQls
-         loTA==
-X-Gm-Message-State: APjAAAVB3Kiw9f84yOET33K8KBd2Mx4/ge9eW3lvIkF5MCD2+yOq8AZR
-        ETCfM3C7lSV04q8onVk8FjEWq4WxSInabtOpYow=
-X-Google-Smtp-Source: APXvYqzHKQ+qlOe6z+KE/BBv1rNnCyGJwxUVPsbFnIYPxaWuzshQ61E3o6L8h96/hstwWoJJs0EGjeyjU4+FrJInAH4=
-X-Received: by 2002:aca:cf07:: with SMTP id f7mr836683oig.5.1580586723853;
- Sat, 01 Feb 2020 11:52:03 -0800 (PST)
+        id S1726514AbgBAUCD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 1 Feb 2020 15:02:03 -0500
+Received: from foss.arm.com ([217.140.110.172]:43576 "EHLO foss.arm.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726354AbgBAUCD (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sat, 1 Feb 2020 15:02:03 -0500
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id ACBC3FEC;
+        Sat,  1 Feb 2020 12:02:02 -0800 (PST)
+Received: from [192.168.122.164] (unknown [172.31.20.19])
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 5F0663F67D;
+        Sat,  1 Feb 2020 12:02:02 -0800 (PST)
+Subject: Re: [PATCH 3/6] net: bcmgenet: enable automatic phy discovery
+To:     Andrew Lunn <andrew@lunn.ch>
+Cc:     netdev@vger.kernel.org, opendmb@gmail.com, f.fainelli@gmail.com,
+        davem@davemloft.net, bcm-kernel-feedback-list@broadcom.com,
+        linux-kernel@vger.kernel.org, wahrenst@gmx.net,
+        hkallweit1@gmail.com
+References: <20200201074625.8698-1-jeremy.linton@arm.com>
+ <20200201074625.8698-4-jeremy.linton@arm.com> <20200201152518.GI9639@lunn.ch>
+From:   Jeremy Linton <jeremy.linton@arm.com>
+Message-ID: <ad9bc142-c0a8-74af-09c6-7150ff4b854a@arm.com>
+Date:   Sat, 1 Feb 2020 14:02:01 -0600
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.4.1
 MIME-Version: 1.0
-References: <CAJx5YvHH9CoC8ZDz+MwG8RFr3eg2OtDvmU-EaqG76CiAz+W+5Q@mail.gmail.com>
- <CAM_iQpUcGr-MHhWBxhL01O-nxWg1NPM8siEPkYgckyDT+Ku3gA@mail.gmail.com> <20200201191441.GC23638@unicorn.suse.cz>
-In-Reply-To: <20200201191441.GC23638@unicorn.suse.cz>
-From:   Cong Wang <xiyou.wangcong@gmail.com>
-Date:   Sat, 1 Feb 2020 11:51:52 -0800
-Message-ID: <CAM_iQpXovVXKZDRJubATG1L8fLM-NQn-fDVWO2YiD8CJ7eoXtg@mail.gmail.com>
-Subject: Re: Why is NIC driver queue depth driver dependent when it allocates
- system memory?
-To:     Michal Kubecek <mkubecek@suse.cz>
-Cc:     Linux Kernel Network Developers <netdev@vger.kernel.org>,
-        Martin T <m4rtntns@gmail.com>
-Content-Type: text/plain; charset="UTF-8"
+In-Reply-To: <20200201152518.GI9639@lunn.ch>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, Feb 1, 2020 at 11:14 AM Michal Kubecek <mkubecek@suse.cz> wrote:
->
-> On Sat, Feb 01, 2020 at 11:08:37AM -0800, Cong Wang wrote:
-> > On Thu, Jan 30, 2020 at 5:03 AM Martin T <m4rtntns@gmail.com> wrote:
-> > >
-> > > Hi,
-> > >
-> > > when I read the source code of for example tg3 driver or e1000e
-> > > driver, then looks like the driver queue is allocated from system
-> > > memory. For example, in e1000_ethtool.c kcalloc() is called to
-> > > allocate GFP_KERNEL memory.
-> > >
-> > > If system memory is allocated, then why are there driver-dependent
-> > > limits? For example, in my workstation the maximum RX/TX queue for the
-> > > NIC using tg3 driver is 511 while maximum RX/TX queue for the NIC
-> > > using e1000e driver is 4096:
-> >
-> > I doubt memory is a consideration for driver to decide the number
-> > of queues. How many CPU's do you have? At least mellanox driver
-> > uses the number of CPU's to determine the default value. Anyway,
-> > you can change it to whatever you prefer.
->
-> Martin was asking about ring sizes, not about number of queues.
+Hi,
 
-Ah, sorry for reading it too quickly.
+On 2/1/20 9:25 AM, Andrew Lunn wrote:
+> On Sat, Feb 01, 2020 at 01:46:22AM -0600, Jeremy Linton wrote:
+>> The unimac mdio driver falls back to scanning the
+>> entire bus if its given an appropriate mask. In ACPI
+>> mode we expect that the system is well behaved and
+>> conforms to recent versions of the specification.
+>>
+>> We then utilize phy_find_first(), and
+>> phy_connect_direct() to find and attach to the
+>> discovered phy during net_device open.
+>>
+>> Signed-off-by: Jeremy Linton <jeremy.linton@arm.com>
+>> ---
+>>   drivers/net/ethernet/broadcom/genet/bcmmii.c | 40 +++++++++++++++++---
+>>   1 file changed, 34 insertions(+), 6 deletions(-)
+>>
+>> diff --git a/drivers/net/ethernet/broadcom/genet/bcmmii.c b/drivers/net/ethernet/broadcom/genet/bcmmii.c
+>> index 2049f8218589..f3271975b375 100644
+>> --- a/drivers/net/ethernet/broadcom/genet/bcmmii.c
+>> +++ b/drivers/net/ethernet/broadcom/genet/bcmmii.c
+>> @@ -5,7 +5,7 @@
+>>    * Copyright (c) 2014-2017 Broadcom
+>>    */
+>>   
+>> -
+>> +#include <linux/acpi.h>
+>>   #include <linux/types.h>
+>>   #include <linux/delay.h>
+>>   #include <linux/wait.h>
+>> @@ -311,7 +311,9 @@ int bcmgenet_mii_config(struct net_device *dev, bool init)
+>>   int bcmgenet_mii_probe(struct net_device *dev)
+>>   {
+>>   	struct bcmgenet_priv *priv = netdev_priv(dev);
+>> -	struct device_node *dn = priv->pdev->dev.of_node;
+>> +	struct device *kdev = &priv->pdev->dev;
+>> +	struct device_node *dn = kdev->of_node;
+>> +
+>>   	struct phy_device *phydev;
+>>   	u32 phy_flags = 0;
+>>   	int ret;
+>> @@ -334,7 +336,27 @@ int bcmgenet_mii_probe(struct net_device *dev)
+>>   			return -ENODEV;
+>>   		}
+>>   	} else {
+>> -		phydev = dev->phydev;
+>> +		if (has_acpi_companion(kdev)) {
+>> +			char mdio_bus_id[MII_BUS_ID_SIZE];
+>> +			struct mii_bus *unimacbus;
+>> +
+>> +			snprintf(mdio_bus_id, MII_BUS_ID_SIZE, "%s-%d",
+>> +				 UNIMAC_MDIO_DRV_NAME, priv->pdev->id);
+>> +
+>> +			unimacbus = mdio_find_bus(mdio_bus_id);
+>> +			if (!unimacbus) {
+>> +				pr_err("Unable to find mii\n");
+>> +				return -ENODEV;
+>> +			}
+>> +			phydev = phy_find_first(unimacbus);
+>> +			put_device(&unimacbus->dev);
+>> +			if (!phydev) {
+>> +				pr_err("Unable to find PHY\n");
+>> +				return -ENODEV;
+> 
+> Hi Jeremy
+> 
+> phy_find_first() is not recommended. Only use it if you have no other
+> option. If the hardware is more complex, two PHYs on one bus, you are
+> going to have a problem. So i suggest this is used only for PCI cards
+> where the hardware is very fixed, and there is only ever one MAC and
+> PHY on the PCI card. When you do have this split between MAC and MDIO
+> bus, each being independent devices, it is more likely that you do
+> have multiple PHYs on one shared MDIO bus.
+> 
+> In the DT world, you use a phy-handle to point to the PHY node in the
+> device tree. Does ACPI have the same concept, a pointer to some other
+> device in ACPI?
 
-Thanks.
+
+I though I should clarify the direct question here about ACPI. ACPI does 
+have the ability to do what you describe, but it a more rigorous way. If 
+you look at the ACPI GenericSerialBus abstraction you will see how ACPI 
+would likely handle this situation. I've been considering making a 
+similar comment in that large fwnode patch set posted the other day.
+
