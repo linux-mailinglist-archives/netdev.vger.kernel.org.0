@@ -2,150 +2,77 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id F229514FA19
-	for <lists+netdev@lfdr.de>; Sat,  1 Feb 2020 20:08:27 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D805514FA1A
+	for <lists+netdev@lfdr.de>; Sat,  1 Feb 2020 20:08:50 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726718AbgBATIX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 1 Feb 2020 14:08:23 -0500
-Received: from foss.arm.com ([217.140.110.172]:43378 "EHLO foss.arm.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726270AbgBATIW (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sat, 1 Feb 2020 14:08:22 -0500
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 4BC2BFEC;
-        Sat,  1 Feb 2020 11:08:22 -0800 (PST)
-Received: from [192.168.122.164] (unknown [172.31.20.19])
-        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 032B73F68E;
-        Sat,  1 Feb 2020 11:08:21 -0800 (PST)
-Subject: Re: [PATCH 3/6] net: bcmgenet: enable automatic phy discovery
-To:     Andrew Lunn <andrew@lunn.ch>
-Cc:     netdev@vger.kernel.org, opendmb@gmail.com, f.fainelli@gmail.com,
-        davem@davemloft.net, bcm-kernel-feedback-list@broadcom.com,
-        linux-kernel@vger.kernel.org, wahrenst@gmx.net,
-        hkallweit1@gmail.com
-References: <20200201074625.8698-1-jeremy.linton@arm.com>
- <20200201074625.8698-4-jeremy.linton@arm.com> <20200201152518.GI9639@lunn.ch>
-From:   Jeremy Linton <jeremy.linton@arm.com>
-Message-ID: <608e7fab-69a3-700d-bfcf-88e5711ce58f@arm.com>
-Date:   Sat, 1 Feb 2020 13:07:46 -0600
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.4.1
+        id S1726814AbgBATIt (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 1 Feb 2020 14:08:49 -0500
+Received: from mail-ot1-f45.google.com ([209.85.210.45]:41763 "EHLO
+        mail-ot1-f45.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726270AbgBATIs (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 1 Feb 2020 14:08:48 -0500
+Received: by mail-ot1-f45.google.com with SMTP id r27so9842061otc.8
+        for <netdev@vger.kernel.org>; Sat, 01 Feb 2020 11:08:48 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=JTbnb9aEXiUcTMCHd/pR5Wrwq0T/BCsh9rlf5HGyNTc=;
+        b=hwfQVJzKS0I5H37ocGwj3q4670YrHSnEoMJKV8yaqnmeIwspqrMqfElgzGHYu6Tay0
+         jr84xoM9unWRNllKuyT/Vk0M3oSaMPT0GOn7qeM9oLGG1R5xc7yWRcuIKoE6VdITlDi1
+         1bPH7Ri3BR4VKrBdIKHrUEkVE7PqeNwGILp63crk80qqqELxRsLOwlyQGkeo982V9CV4
+         KTvLaO2K9OurFtsYRUKYVgYwsF/srO3WDkskPdouEXv0qAHlTdf3MH/WuPN2Cp++OAzt
+         WoKShwa5YjgLAo/gSogUU07doLxtWiwLkmPE2TZ2y5jBupMuk2RImaDcYL8aK8pfLa3T
+         2UAA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=JTbnb9aEXiUcTMCHd/pR5Wrwq0T/BCsh9rlf5HGyNTc=;
+        b=OQllHa6bOr4h1dotN2DBp2S8u+QCXCqEqJk59o/IxOaGQVmgbtVb94sWLF9oD5jhwx
+         Y4V3JMqj3eajh43UtBa/UJn/ojmdtwWJmAJGlAoH5ujXPpp1xA8NXK7c4fEJF6WShWov
+         qb608JJ+edyG7DSmXWxcPcisQNpOAbGkfdR7jHrzq8tPiTgCYJkrCxSybbCOTTS1DMsW
+         JDQK14O4IvpUqVt8HtBjOYa7mWsswbnB6udQZezHgrgQLZ9TvtO2UB5MTV3DDeaH4O5B
+         Zo8UKEr1Y63NoxR1pUWw7GSrjcW+UGyqQPyB2buxSKOJW8tDM7pOZbOWu4rwfkK7nkK+
+         dWqw==
+X-Gm-Message-State: APjAAAWX81L/ZN/IjIY/6WIc3NLCi4MxfTTlBgLxSKbaFp24tBOERhIs
+        B/UgGPn92vZhiSaoqvQK7LSexyHTtorm3SykeU4=
+X-Google-Smtp-Source: APXvYqy6ZVptPtTuzuoJqIz6XCZqTa+gc7TKpjiSeTzF8DX++PcAJr3divb3VembQ3BpsvHqRbHHczEwKK0rIgWXJj4=
+X-Received: by 2002:a9d:53c4:: with SMTP id i4mr12759798oth.48.1580584127995;
+ Sat, 01 Feb 2020 11:08:47 -0800 (PST)
 MIME-Version: 1.0
-In-Reply-To: <20200201152518.GI9639@lunn.ch>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+References: <CAJx5YvHH9CoC8ZDz+MwG8RFr3eg2OtDvmU-EaqG76CiAz+W+5Q@mail.gmail.com>
+In-Reply-To: <CAJx5YvHH9CoC8ZDz+MwG8RFr3eg2OtDvmU-EaqG76CiAz+W+5Q@mail.gmail.com>
+From:   Cong Wang <xiyou.wangcong@gmail.com>
+Date:   Sat, 1 Feb 2020 11:08:37 -0800
+Message-ID: <CAM_iQpUcGr-MHhWBxhL01O-nxWg1NPM8siEPkYgckyDT+Ku3gA@mail.gmail.com>
+Subject: Re: Why is NIC driver queue depth driver dependent when it allocates
+ system memory?
+To:     Martin T <m4rtntns@gmail.com>
+Cc:     Linux Kernel Network Developers <netdev@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi,
+On Thu, Jan 30, 2020 at 5:03 AM Martin T <m4rtntns@gmail.com> wrote:
+>
+> Hi,
+>
+> when I read the source code of for example tg3 driver or e1000e
+> driver, then looks like the driver queue is allocated from system
+> memory. For example, in e1000_ethtool.c kcalloc() is called to
+> allocate GFP_KERNEL memory.
+>
+> If system memory is allocated, then why are there driver-dependent
+> limits? For example, in my workstation the maximum RX/TX queue for the
+> NIC using tg3 driver is 511 while maximum RX/TX queue for the NIC
+> using e1000e driver is 4096:
 
-First thanks for looking at this!
+I doubt memory is a consideration for driver to decide the number
+of queues. How many CPU's do you have? At least mellanox driver
+uses the number of CPU's to determine the default value. Anyway,
+you can change it to whatever you prefer.
 
-On 2/1/20 9:25 AM, Andrew Lunn wrote:
-> On Sat, Feb 01, 2020 at 01:46:22AM -0600, Jeremy Linton wrote:
->> The unimac mdio driver falls back to scanning the
->> entire bus if its given an appropriate mask. In ACPI
->> mode we expect that the system is well behaved and
->> conforms to recent versions of the specification.
->>
->> We then utilize phy_find_first(), and
->> phy_connect_direct() to find and attach to the
->> discovered phy during net_device open.
->>
->> Signed-off-by: Jeremy Linton <jeremy.linton@arm.com>
->> ---
->>   drivers/net/ethernet/broadcom/genet/bcmmii.c | 40 +++++++++++++++++---
->>   1 file changed, 34 insertions(+), 6 deletions(-)
->>
->> diff --git a/drivers/net/ethernet/broadcom/genet/bcmmii.c b/drivers/net/ethernet/broadcom/genet/bcmmii.c
->> index 2049f8218589..f3271975b375 100644
->> --- a/drivers/net/ethernet/broadcom/genet/bcmmii.c
->> +++ b/drivers/net/ethernet/broadcom/genet/bcmmii.c
->> @@ -5,7 +5,7 @@
->>    * Copyright (c) 2014-2017 Broadcom
->>    */
->>   
->> -
->> +#include <linux/acpi.h>
->>   #include <linux/types.h>
->>   #include <linux/delay.h>
->>   #include <linux/wait.h>
->> @@ -311,7 +311,9 @@ int bcmgenet_mii_config(struct net_device *dev, bool init)
->>   int bcmgenet_mii_probe(struct net_device *dev)
->>   {
->>   	struct bcmgenet_priv *priv = netdev_priv(dev);
->> -	struct device_node *dn = priv->pdev->dev.of_node;
->> +	struct device *kdev = &priv->pdev->dev;
->> +	struct device_node *dn = kdev->of_node;
->> +
->>   	struct phy_device *phydev;
->>   	u32 phy_flags = 0;
->>   	int ret;
->> @@ -334,7 +336,27 @@ int bcmgenet_mii_probe(struct net_device *dev)
->>   			return -ENODEV;
->>   		}
->>   	} else {
->> -		phydev = dev->phydev;
->> +		if (has_acpi_companion(kdev)) {
->> +			char mdio_bus_id[MII_BUS_ID_SIZE];
->> +			struct mii_bus *unimacbus;
->> +
->> +			snprintf(mdio_bus_id, MII_BUS_ID_SIZE, "%s-%d",
->> +				 UNIMAC_MDIO_DRV_NAME, priv->pdev->id);
->> +
->> +			unimacbus = mdio_find_bus(mdio_bus_id);
->> +			if (!unimacbus) {
->> +				pr_err("Unable to find mii\n");
->> +				return -ENODEV;
->> +			}
->> +			phydev = phy_find_first(unimacbus);
->> +			put_device(&unimacbus->dev);
->> +			if (!phydev) {
->> +				pr_err("Unable to find PHY\n");
->> +				return -ENODEV;
-> 
-> Hi Jeremy
-> 
-> phy_find_first() is not recommended. Only use it if you have no other
-> option. If the hardware is more complex, two PHYs on one bus, you are
-> going to have a problem. So i suggest this is used only for PCI cards
-> where the hardware is very fixed, and there is only ever one MAC and
-> PHY on the PCI card. When you do have this split between MAC and MDIO
-> bus, each being independent devices, it is more likely that you do
-> have multiple PHYs on one shared MDIO bus.
-
-Understood.
-
-> 
-> In the DT world, you use a phy-handle to point to the PHY node in the
-> device tree. Does ACPI have the same concept, a pointer to some other
-> device in ACPI?
-
-There aren't a lot of good options here. ACPI is mostly a power mgmt 
-abstraction and is directly silent on this topic. So while it can be 
-quite descriptive like DT, frequently choosing to use a bunch of DT 
-properties in ACPI _DSD methods is a mistake. Both for cross OS booting 
-as well as long term support. Similar silence from SBSA, which attempts 
-to setup some guide rails for situations like this. I think that is 
-because there aren't any non-obsolete industry standards for NICs.
-
-So, in an attempt to fall back on the idea that the hardware should be 
-self describing, and it shouldn't be involving the system firmware in 
-basic device specific introspection I've been trying to avoid the use of 
-any DSD properties. In the majority of cases (including DT) these 
-properties aren't being auto-detected by the firmware either, they are 
-just being hard-coded into DT or DSDT tables.
-
-Part of the arm standardization effort has been to clamp down on all the 
-creative ways that these machines can be built. It seems a guide rail 
-that says for this adapter it must have a MDIO bus per MAC for ACPI 
-support as though it were on PCI isn't unreasonable. Another easily 
-understood one, might be to assign the PHY's the the same order as the 
-MAC's UIDs if there were a shared bus (less ideal without example hardware).
-
-I'm not really sure what the right answer here is, but I like to avoid 
-hardcoding DT properties in DSD unless there simply isn't an alternative.
-
+Thanks.
