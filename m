@@ -2,84 +2,84 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 7105C14F7D2
-	for <lists+netdev@lfdr.de>; Sat,  1 Feb 2020 13:53:54 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 580EA14F7EB
+	for <lists+netdev@lfdr.de>; Sat,  1 Feb 2020 14:14:15 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726497AbgBAMxQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 1 Feb 2020 07:53:16 -0500
-Received: from mail-wm1-f66.google.com ([209.85.128.66]:33076 "EHLO
-        mail-wm1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726297AbgBAMxP (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 1 Feb 2020 07:53:15 -0500
-Received: by mail-wm1-f66.google.com with SMTP id m10so10799303wmc.0
-        for <netdev@vger.kernel.org>; Sat, 01 Feb 2020 04:53:14 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:reply-to:from:date:message-id:subject:to;
-        bh=I6HK8bQi+bq0qGR+4YxvwL/Kzre54BnPbKjkwOPo0Dw=;
-        b=G3YOvZoWQpMt06dPp+a608ZocVjZcT6NFhMQVok+E536DaDo7x1bsCtgbROpfNMm+3
-         /j73g+1CzH9Ma3Yq3iV8rk8yR6wi7wzxcNDdXlArvxWf/GH0VDUr49adEqOsv5GP4HKg
-         iZRs19PZt9rDzkLE2UKfczRE/RgedVXC2nv4A2m4UymycPL1zrczFMvuS92Kn1BPStkj
-         xTUqJGZx9EvqmpZUPB7ibbK9La7LwjfTIFDfqXJRengmSf5bFWUtEdVz45q8huZSFDGL
-         ddEy2Tv5TMnfBF2Vjmooe6sNLkvKBcztKVIpYk5ERCkl5L1rXKO2p5iArVQdqhST8KMP
-         1ApA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:reply-to:from:date:message-id
-         :subject:to;
-        bh=I6HK8bQi+bq0qGR+4YxvwL/Kzre54BnPbKjkwOPo0Dw=;
-        b=tomAbmtLkOgFC7Gbv+83RMaBZ/C68f/woePybFjqMOsvFuebjmgXTJF6f+FKZf/myO
-         W4Wcvqg6MLXoWqNUUI40bUPlaeJheeVHlLu4HImNXVPQ5D6bF5nf3bDSr21+KfgThsVB
-         5q6R+9nbdG9Vc86B13TMhwp3ftOJDGv97wSWeLEEBaav7rGRvVtFavsX+3vA87Ie7XUV
-         k4YUyYE1EXmasWnESJ5HFmg6Xdeg7OGfHR1DyykKzJh9Y1+tHGwt/cVrSs1AUYHO6scS
-         MavWGsMkYWu+JCiIpb4rjg4Vnwrp4jQeRGCAqEOl0Y/+kXCHbhRELhSYMDYxUngdDkmV
-         hb0g==
-X-Gm-Message-State: APjAAAVPvbhBFr/oKK7kJgRnrJWahLWDupQXjMqTOwMQWNaio7YCkV21
-        Y7KpsoXVrqS17JMCYSAUpdpaQPfhKC5c6M2bF70=
-X-Google-Smtp-Source: APXvYqzejerBl5849A0viSDivaOOQa8g9s4fkOZLPxp/fgPlTSk9zcvH9lrzSI0xaDcLOJrWLFKiTBT72ZPd3UV90uE=
-X-Received: by 2002:a7b:c19a:: with SMTP id y26mr19318725wmi.152.1580561593913;
- Sat, 01 Feb 2020 04:53:13 -0800 (PST)
+        id S1726677AbgBANOK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 1 Feb 2020 08:14:10 -0500
+Received: from mout.kundenserver.de ([212.227.17.13]:49559 "EHLO
+        mout.kundenserver.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726480AbgBANOK (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 1 Feb 2020 08:14:10 -0500
+Received: from mail-qv1-f51.google.com ([209.85.219.51]) by
+ mrelayeu.kundenserver.de (mreue107 [212.227.15.145]) with ESMTPSA (Nemesis)
+ id 1Mqal4-1jJxnk1tmy-00meOJ; Sat, 01 Feb 2020 14:14:08 +0100
+Received: by mail-qv1-f51.google.com with SMTP id o18so4679652qvf.1;
+        Sat, 01 Feb 2020 05:14:08 -0800 (PST)
+X-Gm-Message-State: APjAAAW//JkEy+BCiksALGX+7u5lTM42mlU1/tetHh3wlntMABcuskcM
+        vCGVx4WDCYrI1YDTKhJDJFj8Vv0Wg+D/dd6uvzg=
+X-Google-Smtp-Source: APXvYqzuLmZzlDe0WECUf1s9qKLEpATfkBs6kbKsvRbW3f8o8LQknpzhDn9B3Z0XpzmFVAqpHPZ3Q2HxrreY9WC02o4=
+X-Received: by 2002:a05:6214:524:: with SMTP id x4mr12953450qvw.4.1580562847224;
+ Sat, 01 Feb 2020 05:14:07 -0800 (PST)
 MIME-Version: 1.0
-Received: by 2002:adf:ef88:0:0:0:0:0 with HTTP; Sat, 1 Feb 2020 04:53:13 -0800 (PST)
-Reply-To: szgma7@gmail.com
-From:   Samuel Amar <sa0317292@gmail.com>
-Date:   Sat, 1 Feb 2020 04:53:13 -0800
-Message-ID: <CAFCYy3ihPPb6G-RoLtuk=Ned-xr65FhyBTONbisiLRj_0wGS_g@mail.gmail.com>
-Subject: Message
-To:     undisclosed-recipients:;
+References: <20200201124301.21148-1-lukas.bulwahn@gmail.com>
+In-Reply-To: <20200201124301.21148-1-lukas.bulwahn@gmail.com>
+From:   Arnd Bergmann <arnd@arndb.de>
+Date:   Sat, 1 Feb 2020 14:13:49 +0100
+X-Gmail-Original-Message-ID: <CAK8P3a0eL7MH8cfMcq9NNWOggepNAu7vhQSw9_ED_4WXZyY35A@mail.gmail.com>
+Message-ID: <CAK8P3a0eL7MH8cfMcq9NNWOggepNAu7vhQSw9_ED_4WXZyY35A@mail.gmail.com>
+Subject: Re: [PATCH] MAINTAINERS: correct entries for ISDN/mISDN section
+To:     Lukas Bulwahn <lukas.bulwahn@gmail.com>
+Cc:     Karsten Keil <isdn@linux-pingi.de>,
+        isdn4linux@listserv.isdn4linux.de,
+        Networking <netdev@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
 Content-Type: text/plain; charset="UTF-8"
+X-Provags-ID: V03:K1:/orgqm+0oCsfIzcahMzGBa3JvU1sljA5C8ADaFWsmDJtqNLj7xR
+ kHxLR4yJiS37kOpkQ+B8FwPzcsELccuM6+Bq3AtCdmbCMqzjYI+jdjLC0Wnpr+VxvBchqx7
+ uiy6kRNfhDHGRTx/BAQpvFcCPcNvDekf5d5cf96uGumWbVcqNSUPVsVnf0asvMQDK4l67kC
+ lBTEzpo1ImneE5CUxWXdg==
+X-Spam-Flag: NO
+X-UI-Out-Filterresults: notjunk:1;V03:K0:4zklKAk9hkM=:UC3BAsdyr86cfPpY86NvZI
+ v1L/IO1n9C3Nv9zUrXxHYInVo/VChv5XVvSuVZKNVZEWVyhoGBAOjLADbv/kuQzEu+p+kgl4i
+ GtIqStPiiZ8FL7CW5M7AL4LQjYCxzbRmaUFzKdpkrZP2LisalBTbVzwij9NHBJeegiJR6fc82
+ 9/l8HIgw67UsfYD0iEOm4jGeMS3dSME87gvyaD9mQGNsiHU9Wzz24Z5f5LZR/pttXZr3c0jKN
+ 4tC+2weK5i2BvNb8p08W3Btd2aKFRlUv57pMcrqmUyMVcvg67YOglW/fYrRg/k/OvbdaEt0Vc
+ Eotw/XbTorF80Z0oOIwhF95BJFE4fqAhesS/KR+FitwM2//xfHR5Eu8HUbhKjHoYCN+q+Oy63
+ PgqGRkqpzeWH+qUWc4j9LM5733LN/9zerR0JxJJbJcr3/mf6X/IKCEAkNZHt8tXj2nK2VhG0W
+ 07u1m+Lj9UPzxN5ZknPLF2FmTPMGCAczlLkxPljsbzD7KaEbOZO3jk3UVcovPVaf0Ut0vGN2A
+ aFj0+2inkdY8U9LTd9I6MPjN0WwJ571Px7hcD7OJRkbm597eXHjqygYPn1CHa3CEDL54MscLG
+ yh2ytH2vW0VsUARRxvzgzpntzAEhoG0TIksXxoJRvarFIxsrWq4MFVomWJ0Od0hWeH6FCIFI1
+ 4mtUZCRG+qEgu+JD9F5+bLSTsbKThtJsvMxnwGlYJPez3Wb+Ob2IGRmvjbIsfJ8B2Ds5HGa9D
+ RSIB1HMKoxmSyGP2OSeGXIyKFmj09NsjkTQuB4gxbIRc3ZbRD4HCvgXvaL0GOOcE2S1uTxEm8
+ 71Q1NWWBQfDVyXIrPx95Jjbg3E59iq3ahjVHbkw4l1KeLX38AM=
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello Dear,
+On Sat, Feb 1, 2020 at 1:44 PM Lukas Bulwahn <lukas.bulwahn@gmail.com> wrote:
+>
+> Commit 6d97985072dc ("isdn: move capi drivers to staging") cleaned up the
+> isdn drivers and split the MAINTAINERS section for ISDN, but missed to add
+> the terminal slash for the two directories mISDN and hardware. Hence, all
+> files in those directories were not part of the new ISDN/mISDN SUBSYSTEM,
+> but were considered to be part of "THE REST".
+>
+> Rectify the situation, and while at it, also complete the section with two
+> further build files that belong to that subsystem.
+>
+> This was identified with a small script that finds all files belonging to
+> "THE REST" according to the current MAINTAINERS file, and I investigated
+> upon its output.
+>
+> Fixes: 6d97985072dc ("isdn: move capi drivers to staging")
+> Signed-off-by: Lukas Bulwahn <lukas.bulwahn@gmail.com>
+> ---
+> Arnd, please ack or even pick it.
+> It is no functional change, so I guess you could simply pick in your own
+> tree for minor fixes.
 
-I am Mr. Samuel Amar, A computer scientist with UBA Bank in Benin
-Republic. I am 26 years old, just started work with UBA Bank I came
-across your file which was marked X and your released disk painted
-RED, I took time to study it and found out that you have paid
-VIRTUALLY all fees and certificate but the fund has not been release
-to you. The most annoying thing is that they cannot tell you the truth
-that on no account will they ever release the fund to you; instead
-they let you spend money unnecessarily.
+Thanks for fixing this,
 
-I do not intend to work here all the days of my life, I can release
-this fund to you if you can certify me of my security, and how I can
-run away from this Benin Republic if I do this, because if I don't run
-away from this country after I made the transfer, I will be Seriously
-in trouble and my life will be in danger. This is like a Mafia setting
-in Benin Republic; you may not understand it because you are not from
-this country. The only thing I will need from you to release this fund
-is a special HARD DISK,I will need two of this hard disk to recopy
-your information from the corrupted one, destroy the previous one, and
-punch the computer to reflect in your bank within 24 banking hours.
-
-I will clean up the tracer and destroy your file, after which I will
-run away from Benin Republic to meet with you. If you are interested.
-Do get in touch with me immediately, You should send to me your
-convenient tell/fax numbers for easy communications and also re
-confirm your banking details, so that there won't be any mistake.
-
-Regards,
-Mr. Samuel.
+Acked-by: Arnd Bergmann <arnd@arndb.de>
