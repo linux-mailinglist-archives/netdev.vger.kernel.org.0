@@ -2,124 +2,87 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id B2B6D14F5E2
-	for <lists+netdev@lfdr.de>; Sat,  1 Feb 2020 03:04:08 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9297B14F5F4
+	for <lists+netdev@lfdr.de>; Sat,  1 Feb 2020 03:53:35 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726733AbgBACEC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 31 Jan 2020 21:04:02 -0500
-Received: from mail-pg1-f194.google.com ([209.85.215.194]:37331 "EHLO
-        mail-pg1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726475AbgBACEC (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 31 Jan 2020 21:04:02 -0500
-Received: by mail-pg1-f194.google.com with SMTP id q127so4549178pga.4;
-        Fri, 31 Jan 2020 18:04:01 -0800 (PST)
+        id S1726708AbgBACxe (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 31 Jan 2020 21:53:34 -0500
+Received: from mail-ot1-f65.google.com ([209.85.210.65]:36634 "EHLO
+        mail-ot1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726475AbgBACxd (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 31 Jan 2020 21:53:33 -0500
+Received: by mail-ot1-f65.google.com with SMTP id j20so101778otq.3;
+        Fri, 31 Jan 2020 18:53:33 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id;
-        bh=Ro9iu9VNOuWviWh4OwZbe94+Deahhttu3CMtreUHnJg=;
-        b=qld644UZy5MSMdAtQDkFv4eR5rOeOIeuYYfxUs23Icnpl5o/mtxhvzILGSb2z3jyMK
-         c4iUPxDxY0Yui24NWEKH6kWwdJHWBYIaJbb+XuE5HNcq0q1qMCIs1vanew6u6v1GhJw9
-         T2PcbubEr4HNdp7sRw4LVM3gfCDjNnqxxPI5MEdEgxq/gTu7B14se15UnnzgPmYO7Y1F
-         Onh2bVuPh9sw+R1MxRUdtJ3k/kMPZ9sED/MwqC3dx7ii9eVo7Fg0SxP6ejCYvW5RGAcO
-         xRR9sNJU9jPBC74vhh33HTE/r8mAT9q+SVPXs4nUv4T2HKAfxu1oG4uYc+5fw45hAwru
-         Ohgg==
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=i+rFn/FCvW27/b5bLIjZVOhUbNdnFH0nmoSUa8PH9yE=;
+        b=MXrbMdjJiEDw8G2LULlk+h2lXrUuWlwzvd2ed1P0CIQXb4W6OO61uGiqNVZCqWe8Fx
+         0gSGMXKBfwEbY98DVTICjKN9w4WR88n/m0YmC+gbg8IY35nE4PwpSw24xls4EsyijbWJ
+         i6R3M2pE6yCDurSjqL2slGxkYA+Z2bNds7sNL32Rukw0R+3Iwn8Utj7HIR/HKfyWbOmH
+         GTS1HjuhtQ9jKo3A0Y31LjIaMAbWX0U5JItxZqcJmq7kmpoNDjUfOjiImOg6wXn0FHHM
+         /Q0flcL2kpaVEHBlM87VXpUqJCp09PSD0NGW30X+vszs/i7KYUPRSdvl3HqvwD5Nb1+r
+         g/MA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id;
-        bh=Ro9iu9VNOuWviWh4OwZbe94+Deahhttu3CMtreUHnJg=;
-        b=IcVRLYIlaDcnL0qteqVsSduG1ECSMDvzeAxdFpw4GB8RviPfOI2PdGoeq+FcDnMOm7
-         UXOXRatc0wabPBDojZQyTwkUo5NZkhxaiHSkAeQ3RYGdxDbwF5pKICnSRLLVBRE/T9e3
-         D13d6I+ikmLwnu38kyek/i7ad09mOQByr9rrHjowxLDszbystf0KoJBFDEpDj6wKZ5ZE
-         rNb6AgjbNsCRLxGIq9WkKzjx3BHtQkynmMx9P/BUshqt/ZAXG9V2XAeXE9GBHBmT9hOz
-         6xDYJpMkB+YzwZ+zA7z31b3F/QnHsV5yKdTp74/pDHugKU4XkTuCq/m8DRHW79mXWrOy
-         bxEQ==
-X-Gm-Message-State: APjAAAXWwLut/pOdjPjxVFGuaz5QHJ8cXXHCNKhn6LAspHs0WebDkqGg
-        aBmI2A1NpvrXBi7Z6rena7I=
-X-Google-Smtp-Source: APXvYqx+2t7NY80ATnmYXbW5lMP4yKLfBufkJ9KD/yZ72OykzVDh9Voe5Bf4K1yXya/3K/FKiTxm4w==
-X-Received: by 2002:a63:8e:: with SMTP id 136mr13129030pga.319.1580522641354;
-        Fri, 31 Jan 2020 18:04:01 -0800 (PST)
-Received: from Asurada-Nvidia.nvidia.com (thunderhill.nvidia.com. [216.228.112.22])
-        by smtp.gmail.com with ESMTPSA id p3sm11744575pfg.184.2020.01.31.18.04.00
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 31 Jan 2020 18:04:00 -0800 (PST)
-From:   Nicolin Chen <nicoleotsuka@gmail.com>
-To:     davem@davemloft.net, peppe.cavallaro@st.com,
-        alexandre.torgue@st.com, joabreu@synopsys.com
-Cc:     mcoquelin.stm32@gmail.com, netdev@vger.kernel.org,
-        linux-stm32@st-md-mailman.stormreply.com,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
-Subject: [PATCH] net: stmmac: Delete txtimer in suspend()
-Date:   Fri, 31 Jan 2020 18:01:24 -0800
-Message-Id: <20200201020124.5989-1-nicoleotsuka@gmail.com>
-X-Mailer: git-send-email 2.17.1
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=i+rFn/FCvW27/b5bLIjZVOhUbNdnFH0nmoSUa8PH9yE=;
+        b=N6QuzWWPKUZBDXi8LNG1Etth45dIzBpGmIWEHJXrd0B1V2Nc6G8kQA8rLJj4pegOhy
+         1t0foA7TFHxwAQz88PiD7KTnc1ZOE2wjXJfazmZjDCDEYyVXo1sY1nzEfajg+8SSpqlG
+         StH3OCKJDWPcW8iBtB/lbpT37Rbkz9xDiCtvydaOCLLV+e5cQkFCB1VLPh/CRK4BhpYb
+         8ogJyvEt+2RnzIiyPzHeeAXRJgSlWJXXl/f42uGoOERhG3lQpGAzqmL19yv12bSNu0cJ
+         CwbuBEgDzVmkpQEVYFmk7gzYXDLvcBXlFfmzMr2fmyeOV0B+EX/SebGn9Cz+C37ukAEO
+         ccfQ==
+X-Gm-Message-State: APjAAAXzh7mLjenlI08W0q6hGzwlpylrjCMyMWPuzgtv5boQywfPjWiu
+        s7mmSTTiBRSlY2LBMUZ97iEpqu8DMzF+qsHZYJw=
+X-Google-Smtp-Source: APXvYqxSrwMeTURHIvrZyG6ZHtWjgMHkHeCxhI+3hyiH6jdgQuvFG5pknmIEdhvVmoVa6mnLJtLlmOkx/MCv25A1nxg=
+X-Received: by 2002:a9d:664a:: with SMTP id q10mr9427780otm.298.1580525612955;
+ Fri, 31 Jan 2020 18:53:32 -0800 (PST)
+MIME-Version: 1.0
+References: <20200131205216.22213-1-xiyou.wangcong@gmail.com>
+ <20200131205216.22213-4-xiyou.wangcong@gmail.com> <20200131220807.GJ795@breakpoint.cc>
+ <CAM_iQpVVgkP8u_9ez-2fmrJDdKoFwAxGcbE3Mmk3=7cv4W_QJQ@mail.gmail.com> <20200131233659.GM795@breakpoint.cc>
+In-Reply-To: <20200131233659.GM795@breakpoint.cc>
+From:   Cong Wang <xiyou.wangcong@gmail.com>
+Date:   Fri, 31 Jan 2020 18:53:21 -0800
+Message-ID: <CAM_iQpWbejoFPbFDSfUtvhFbU3DjhV6NAkPQ+-mirY_QEMHxkA@mail.gmail.com>
+Subject: Re: [Patch nf 3/3] xt_hashlimit: limit the max size of hashtable
+To:     Florian Westphal <fw@strlen.de>
+Cc:     Linux Kernel Network Developers <netdev@vger.kernel.org>,
+        NetFilter <netfilter-devel@vger.kernel.org>,
+        syzbot <syzbot+adf6c6c2be1c3a718121@syzkaller.appspotmail.com>,
+        Pablo Neira Ayuso <pablo@netfilter.org>,
+        Jozsef Kadlecsik <kadlec@netfilter.org>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-When running v5.5 with a rootfs on NFS, memory abort may happen in
-the system resume stage:
- Unable to handle kernel paging request at virtual address dead00000000012a
- [dead00000000012a] address between user and kernel address ranges
- pc : run_timer_softirq+0x334/0x3d8
- lr : run_timer_softirq+0x244/0x3d8
- x1 : ffff800011cafe80 x0 : dead000000000122
- Call trace:
-  run_timer_softirq+0x334/0x3d8
-  efi_header_end+0x114/0x234
-  irq_exit+0xd0/0xd8
-  __handle_domain_irq+0x60/0xb0
-  gic_handle_irq+0x58/0xa8
-  el1_irq+0xb8/0x180
-  arch_cpu_idle+0x10/0x18
-  do_idle+0x1d8/0x2b0
-  cpu_startup_entry+0x24/0x40
-  secondary_start_kernel+0x1b4/0x208
- Code: f9000693 a9400660 f9000020 b4000040 (f9000401)
- ---[ end trace bb83ceeb4c482071 ]---
- Kernel panic - not syncing: Fatal exception in interrupt
- SMP: stopping secondary CPUs
- SMP: failed to stop secondary CPUs 2-3
- Kernel Offset: disabled
- CPU features: 0x00002,2300aa30
- Memory Limit: none
- ---[ end Kernel panic - not syncing: Fatal exception in interrupt ]---
+On Fri, Jan 31, 2020 at 3:37 PM Florian Westphal <fw@strlen.de> wrote:
+> O would propose a max alloc size (hard limit) of ~8 MByte of vmalloc
+> space, or maybe 16 at most.
+>
+> 1048576 max upperlimit -> ~8mbyte vmalloc request -> allows to store
+> up to 2**23 entries.
 
-It's found that stmmac_xmit() and stmmac_resume() sometimes might
-run concurrently, possibly resulting in a race condition between
-mod_timer() and setup_timer(), being called by stmmac_xmit() and
-stmmac_resume() respectively.
+Changing HASHLIMIT_MAX_SIZE to 1048576 seems fine.
 
-Since the resume() runs setup_timer() every time, it'd be safer to
-have del_timer_sync() in the suspend() as the counterpart.
+>
+> In order to prevent breaking userspace, perhaps make it so that the
+> kernel caps cfg.max at twice that value?  Would allow storing up to
+> 16777216 addresses with an average chain depth of 16 (which is quite
+> large).  We could increase the max limit in case someone presents a use
+> case.
+>
 
-Signed-off-by: Nicolin Chen <nicoleotsuka@gmail.com>
----
- drivers/net/ethernet/stmicro/stmmac/stmmac_main.c | 4 ++++
- 1 file changed, 4 insertions(+)
+Not sure if I understand this, I don't see how cap'ing cfg->max could
+help prevent breaking user-space? Are you suggesting to cap it with
+HASHLIMIT_MAX_SIZE too? Something like below?
 
-diff --git a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
-index ff1cbfc834b0..5836b21edd7e 100644
---- a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
-+++ b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
-@@ -4974,6 +4974,7 @@ int stmmac_suspend(struct device *dev)
- {
- 	struct net_device *ndev = dev_get_drvdata(dev);
- 	struct stmmac_priv *priv = netdev_priv(ndev);
-+	u32 chan;
- 
- 	if (!ndev || !netif_running(ndev))
- 		return 0;
-@@ -4987,6 +4988,9 @@ int stmmac_suspend(struct device *dev)
- 
- 	stmmac_disable_all_queues(priv);
- 
-+	for (chan = 0; chan < priv->plat->tx_queues_to_use; chan++)
-+		del_timer_sync(&priv->tx_queue[chan].txtimer);
-+
- 	/* Stop TX/RX DMA */
- 	stmmac_stop_all_dma(priv);
- 
--- 
-2.17.1
++       if (cfg->max > 2 * HASHLIMIT_MAX_SIZE)
++               cfg->max = 2 * HASHLIMIT_MAX_SIZE;
 
+Thanks.
