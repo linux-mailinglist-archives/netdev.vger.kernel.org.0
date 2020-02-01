@@ -2,82 +2,110 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id E215C14F973
-	for <lists+netdev@lfdr.de>; Sat,  1 Feb 2020 19:32:59 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C686B14F97D
+	for <lists+netdev@lfdr.de>; Sat,  1 Feb 2020 19:40:21 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726906AbgBAScs (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 1 Feb 2020 13:32:48 -0500
-Received: from mail-pl1-f196.google.com ([209.85.214.196]:37446 "EHLO
-        mail-pl1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726453AbgBAScs (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 1 Feb 2020 13:32:48 -0500
-Received: by mail-pl1-f196.google.com with SMTP id c23so4143384plz.4;
-        Sat, 01 Feb 2020 10:32:47 -0800 (PST)
+        id S1726670AbgBASkS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 1 Feb 2020 13:40:18 -0500
+Received: from mail-ed1-f68.google.com ([209.85.208.68]:33346 "EHLO
+        mail-ed1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726335AbgBASkS (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 1 Feb 2020 13:40:18 -0500
+Received: by mail-ed1-f68.google.com with SMTP id r21so11553695edq.0
+        for <netdev@vger.kernel.org>; Sat, 01 Feb 2020 10:40:17 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=blF6V5alk7Jq+4TBtrqoD97Q5tLdXXilJ+9XsNdtvwA=;
-        b=r4temlDuJ+IocrSNbznR1vDRdgbdVxEbVj/WCT55tgJDEV8v1SGw3hCDkXUGMrd7Na
-         S6SWJXMl/IvH+EKQgOw1MasPqEpy4Q/tuEzYc5JW8p9SgTDEs862D3GKX7S1DotCbhQy
-         04Wj4qz99I5bOTnyV1x0L9Y1bg1K4FT/88p6ZPa9+bMtgRO0FLLGo5SZ6G9epzsdCsD6
-         NAKjDd/bybnfskWNSICBFxDbJhWyJFv8e34/zPCDozmYskiobKEUlXHJ1VDhGjYxns00
-         x2EtJlcj7D01OSKZlv64rVv1LiORhfvBZGc5UQAJF2zKSRrhZMaNMbqe/POcFSUldtTk
-         6ipg==
+        h=mime-version:reply-to:from:date:message-id:subject:to
+         :content-transfer-encoding;
+        bh=shZxHXCo/+rAmckA7J/Ey6QP2+YhGLEgDLAHvjT5u+A=;
+        b=Ltjexe8GI8Xt0O2m7tLZf/saDLsmwBUdfHPbtvKTWQaqYXsNAAF7+qo8ovOfJ2EKp4
+         6XhnK5kuiykPfV6HUYPy8fqld+2aStnmqaGfo0nBKNtj10i26U+F/aCO+q+NfyR2h63q
+         Jz24ahlYorfSqFgzkH9tKkH/vNlZTZUfLpp/YutxI5Hums7ykKGmZxO3uMR1RUl33dAW
+         3t72cYwD3xnvz+5rSkDoEp5PazSkOK4MiFNj6dpppn7DtkzTZtKSocKsTPVQ/LBpQ1mU
+         p3lZa5JKUArvGBYq3dYHA3MzL1dKAF9gWGtqvmq/JDlR8iB6U75kSEVqwv+kUKmKN+vM
+         zDyw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=blF6V5alk7Jq+4TBtrqoD97Q5tLdXXilJ+9XsNdtvwA=;
-        b=Jo9/BDpJ/PJ36qYOnp81VhsaTI+GkNC+uOjON84VvDrtdyKwHm2rX7BG0Yr1I2CPD/
-         pO9AOKn+72TyKQn9fvpzKFv/Oks+rByeqjnRWvtmzEm0jm9F3sZWGeSS4RFf77IKbZWD
-         +ZYMWq/jyO78Y9eQSesk8vPl+5eOrNN2POUJUKm2Yw87F4ZNJewMMHWOXx0bIDb2fBGa
-         sZTj4x+Xvfexic6oar9kaqaWBYSRhcZpO3QFF1NSE/PWNGL5s0QrAQPekHzjYoYnYCeb
-         PKPf66dVvwqioIUN7NjVSH1/AnICmR9ifDFamhaQlpClRWMSdiCnxLDqLlZArY0gQw7S
-         aQeQ==
-X-Gm-Message-State: APjAAAW7/mVy39w5RU8uiN1b/algCs/reWX4F9IJCEzLGjaeWSsdfAMw
-        7QqIgWMYkLBIByxlB6RbifPYYadpTw8b8I0nKhU=
-X-Google-Smtp-Source: APXvYqyTK+mzHkNsFj2GnomGkQetY/mLfY/6pj9+IAdoYahCK1YkXrgElHPMTIlTQbpO+xewmCg8Sdy84eolmJft+ps=
-X-Received: by 2002:a17:902:be05:: with SMTP id r5mr4881893pls.255.1580581966519;
- Sat, 01 Feb 2020 10:32:46 -0800 (PST)
+        h=x-gm-message-state:mime-version:reply-to:from:date:message-id
+         :subject:to:content-transfer-encoding;
+        bh=shZxHXCo/+rAmckA7J/Ey6QP2+YhGLEgDLAHvjT5u+A=;
+        b=jC8+WiT7LvwQSrv7m2Z4LfxrN/zb88igOrNsWTOdOAl8NIvaKADVJADmXocjjDdo/f
+         JjZfI/7eHvHkIxU+mre/zv0t/SLNuQ40BOuk1Kl4hsMz/hA6cskhbE8xCioPSpwA5/GD
+         SM6hd4NdJ880WzvNe2/s78UHXGKtNDhpuGlDjwCjGeN6VGrvOcQE0vsCIJ4b6pQ5Ze/4
+         Fq39nDjdEjKj/cAaeR2RV3kEELjknYlCAhPPYtHwQeGf88lsO3Hm7XTw6C9CnE49XYse
+         /lMvOVbmXsLjUlZgTZ2eZW2gL0DhLBPA7xRWk2gXZ4tgv0XvRlDS01cm1OXEpBrXX5uh
+         yJlg==
+X-Gm-Message-State: APjAAAUUqqgjyfxfD+5QUvZUvZVpW3AYxxp4PYDTzuPi2PoiD0LSf7OU
+        U6qLuyjJZNdYmM4rcEa9lvTqCgs4oMjg5oh9IBBOWw==
+X-Google-Smtp-Source: APXvYqxZ9sy7No/XAnK2ERVs+Q4styZe26SXnCu2sBWVWbmFjf8jjI+W2FK6do+hjNxoRHJfQ/rScbhfxOOHpKMrtpQ=
+X-Received: by 2002:a17:906:4e97:: with SMTP id v23mr14390668eju.331.1580582416274;
+ Sat, 01 Feb 2020 10:40:16 -0800 (PST)
 MIME-Version: 1.0
-References: <20200201124301.21148-1-lukas.bulwahn@gmail.com>
- <CAHp75Veb1fUkKyJ1_q=iXq=aFqtFrGoVMzoCk15CGaqmARUB+w@mail.gmail.com> <alpine.DEB.2.21.2002011541360.24739@felia>
-In-Reply-To: <alpine.DEB.2.21.2002011541360.24739@felia>
-From:   Andy Shevchenko <andy.shevchenko@gmail.com>
-Date:   Sat, 1 Feb 2020 20:32:35 +0200
-Message-ID: <CAHp75VeWPQhjfMK9i-Bzbyoc=h71PhHShf17HTE0eRF=eURM5g@mail.gmail.com>
-Subject: Re: [PATCH] MAINTAINERS: correct entries for ISDN/mISDN section
-To:     Lukas Bulwahn <lukas.bulwahn@gmail.com>
-Cc:     Karsten Keil <isdn@linux-pingi.de>, Arnd Bergmann <arnd@arndb.de>,
-        "isdn4linux@listserv.isdn4linux.de" 
-        <isdn4linux@listserv.isdn4linux.de>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Received: by 2002:a05:6402:1d06:0:0:0:0 with HTTP; Sat, 1 Feb 2020 10:40:15
+ -0800 (PST)
+Reply-To: mayacinemballo@gmail.com
+From:   TERANGA GOLD CORPORATION <goldcorporationteranga@gmail.com>
+Date:   Sat, 1 Feb 2020 19:40:15 +0100
+Message-ID: <CADQt5Tyf7jF5SGWpqxMi=y7DXT6M7t4SxmZBwbdUcGxjLt+WtA@mail.gmail.com>
+Subject: TERANGA GOLD CORPORATION
+To:     netdev@vger.kernel.org
 Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, Feb 1, 2020 at 4:46 PM Lukas Bulwahn <lukas.bulwahn@gmail.com> wrote:
-> On Sat, 1 Feb 2020, Andy Shevchenko wrote:
-> > On Saturday, February 1, 2020, Lukas Bulwahn <lukas.bulwahn@gmail.com> wrote:
+ TERANGA GOLD CORPORATION OUAGADOUGOU
+ Burkina Faso Ouagadougou is One of the largest gold producing regions
+in Africa.
+ (A Symbol of Africa).
 
-> Interesting... I did not know about that script.
->
-> On the current master and next-20200131, it reports:
->
-> Odd non-pattern line 'Documentation/devicetree/bindings/media/ti,cal.yaml'
-> for 'TI VPE/CAL DRIVERS' at ./scripts/parse-maintainers.pl line 147,
-> <$file> line 16777.
->
-> I will send a patch to the TI VPE/CAL DRIVERS maintainers to fix that as
-> well.
 
-There is a patch waiting:
-https://lore.kernel.org/linux-media/20200128145828.74161-1-andriy.shevchenko@linux.intel.com/
 
--- 
-With Best Regards,
-Andy Shevchenko
+We are group of miners producing unrefined Gold in the form of dust,
+Bars and Nuggets as well as raw uncut diamonds. We will like to use
+this medium to inform you all, that we control the mines from which
+these precious commodities are gotten. We are based in Monrovia,
+Burkina Faso, Liberia and Freetown, Sierra Leone. Mino River Miners
+Association is a Gold and Diamond-mining and exploration group. This
+group has operations in Bu Liberia and Sierra Leone.
+
+
+We deem it necessary to sell our products to genuine buyers and also
+solicit the interest of international investors, who we can work with
+continuously, in improving our mines and increasing our production
+capacity, In this vain, we have asked our representative to secure us
+the chance of meeting a very good and reliable buyer or investor, who
+will be willing to meet us and discuss possible opportunity of buying
+our products constantly and also help to improve our mines, as you
+know that Liberia has a high quality gold of 22+ and even 24 carats in
+quality, Also Burkina Faso have 92% pure gold (22k, the average
+quality extracted by artisanal miners look forward to enter into a
+long term business with buyers.
+
+
+Burkina Faso represents a significant portion of the West African
+Birimian greenstone belt exposure (approximately 22%).
+https://www.terangagold.com/exploration/burkina-faso/default.aspx
+
+
+Richard S. Young
+President, CEO & Non-Independent Director
+TERANGA GOLD CORPORATION.
+
+
+CONTACT PERSON
+
+Mayacine MBALLO
+Senior Procurement Officer chez Teranga Gold Corporation (Ouagadougou)
+EMAIL ADDRESS: mayacinemballo@gmail.com
+Tel: +226 79 10 78 95
+
+
+Jacob Ou=C3=A9draogo
+Cost Accountant at Teranga Gold Corporation (Ouagadougou)
+
+
+_____________________________________________________________________
+           Teranga Gold Corporation. All rights reserved.
