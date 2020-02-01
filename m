@@ -2,87 +2,112 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 9297B14F5F4
-	for <lists+netdev@lfdr.de>; Sat,  1 Feb 2020 03:53:35 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E5C9D14F656
+	for <lists+netdev@lfdr.de>; Sat,  1 Feb 2020 04:55:53 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726708AbgBACxe (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 31 Jan 2020 21:53:34 -0500
-Received: from mail-ot1-f65.google.com ([209.85.210.65]:36634 "EHLO
-        mail-ot1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726475AbgBACxd (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 31 Jan 2020 21:53:33 -0500
-Received: by mail-ot1-f65.google.com with SMTP id j20so101778otq.3;
-        Fri, 31 Jan 2020 18:53:33 -0800 (PST)
+        id S1727025AbgBADzw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 31 Jan 2020 22:55:52 -0500
+Received: from mail-oi1-f194.google.com ([209.85.167.194]:40453 "EHLO
+        mail-oi1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726749AbgBADzw (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 31 Jan 2020 22:55:52 -0500
+Received: by mail-oi1-f194.google.com with SMTP id a142so9411882oii.7
+        for <netdev@vger.kernel.org>; Fri, 31 Jan 2020 19:55:52 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
+        d=google.com; s=20161025;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=i+rFn/FCvW27/b5bLIjZVOhUbNdnFH0nmoSUa8PH9yE=;
-        b=MXrbMdjJiEDw8G2LULlk+h2lXrUuWlwzvd2ed1P0CIQXb4W6OO61uGiqNVZCqWe8Fx
-         0gSGMXKBfwEbY98DVTICjKN9w4WR88n/m0YmC+gbg8IY35nE4PwpSw24xls4EsyijbWJ
-         i6R3M2pE6yCDurSjqL2slGxkYA+Z2bNds7sNL32Rukw0R+3Iwn8Utj7HIR/HKfyWbOmH
-         GTS1HjuhtQ9jKo3A0Y31LjIaMAbWX0U5JItxZqcJmq7kmpoNDjUfOjiImOg6wXn0FHHM
-         /Q0flcL2kpaVEHBlM87VXpUqJCp09PSD0NGW30X+vszs/i7KYUPRSdvl3HqvwD5Nb1+r
-         g/MA==
+        bh=kpR02gdbkQHjEdxG9SGzf7pEIWQTwMtXqw53xDeIps0=;
+        b=VQjFL00X7xtyXkCCDgN3B68jvRIqMEmqrDPxRd5YE3DRN80cjuRwJc+vxnog0d9I5v
+         oefItgDUERaDVY/Gd5fT07KrQSGyCfMFvmsVeDqKTlRMu4QC5hyubUOprxRi3O2iZk9S
+         v53qnNnUyOyS8RL4KLV+hKJDShcM7+QvFo2HLP4uXwSiTMCgRy8D2WH6g4GTnvEFjn5i
+         by/CkmTLDYrhvYjZ9s8vSWSUayYwFsYMnktoKLw6TUHPxil+24ZVVOm8A4US4MkV6VHQ
+         XfULhdcSaKINaYs0Qt9Xq7gu1CkXzn/q0rbEaqmknolSfd9wEwSLp6tTknjiPAawKRvF
+         g/zA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=i+rFn/FCvW27/b5bLIjZVOhUbNdnFH0nmoSUa8PH9yE=;
-        b=N6QuzWWPKUZBDXi8LNG1Etth45dIzBpGmIWEHJXrd0B1V2Nc6G8kQA8rLJj4pegOhy
-         1t0foA7TFHxwAQz88PiD7KTnc1ZOE2wjXJfazmZjDCDEYyVXo1sY1nzEfajg+8SSpqlG
-         StH3OCKJDWPcW8iBtB/lbpT37Rbkz9xDiCtvydaOCLLV+e5cQkFCB1VLPh/CRK4BhpYb
-         8ogJyvEt+2RnzIiyPzHeeAXRJgSlWJXXl/f42uGoOERhG3lQpGAzqmL19yv12bSNu0cJ
-         CwbuBEgDzVmkpQEVYFmk7gzYXDLvcBXlFfmzMr2fmyeOV0B+EX/SebGn9Cz+C37ukAEO
-         ccfQ==
-X-Gm-Message-State: APjAAAXzh7mLjenlI08W0q6hGzwlpylrjCMyMWPuzgtv5boQywfPjWiu
-        s7mmSTTiBRSlY2LBMUZ97iEpqu8DMzF+qsHZYJw=
-X-Google-Smtp-Source: APXvYqxSrwMeTURHIvrZyG6ZHtWjgMHkHeCxhI+3hyiH6jdgQuvFG5pknmIEdhvVmoVa6mnLJtLlmOkx/MCv25A1nxg=
-X-Received: by 2002:a9d:664a:: with SMTP id q10mr9427780otm.298.1580525612955;
- Fri, 31 Jan 2020 18:53:32 -0800 (PST)
+        bh=kpR02gdbkQHjEdxG9SGzf7pEIWQTwMtXqw53xDeIps0=;
+        b=NJBluX2HGAKeDN34TzRt909bfGHxUaCxuaXMMtBurJ6WDzTWELDAnEbQpeAUGwKtE3
+         4wnQ+qwezk5qzYmcdzb8jHZiHRZDMh0sgNZQwTegy/8PhyAx7NCEAcMGZLrUEarW3WZz
+         uBpecgMw8MwHg+uE3UemTsBOveTNbPzrj9H+kD6NZNxWY7Xe5QGuMdGhkemigpgKfuLv
+         RrnTGvp99GhHaAYerHk/9pqcPRaam8TRJ4BM7J1IwDAAB/eqgkvJK+/TWQwi3jABpAZ8
+         UM7K0I7fBX3PsKutJQVhh5uQBSychSTPt5wooXyqS93nueXYCpqlZ8pdad5DIH4aiwpM
+         ZWng==
+X-Gm-Message-State: APjAAAV/m3avlzIz0JnKmKSrZxvKJyf0LjRmyTpBShZKGrrKD9xjPPks
+        uOkzoKpI4ERSmHhnJTGG/uPCFb27X7abirYiQrOPBA==
+X-Google-Smtp-Source: APXvYqxjgAjU3MBV4JGRRnsokOeDc9RuSZPhvl788mDb/V6Q+vKxvqq99N+lRsnjuxpaGJX4PklmpwXXNaKnby1DZuc=
+X-Received: by 2002:aca:1b17:: with SMTP id b23mr6844579oib.95.1580529351343;
+ Fri, 31 Jan 2020 19:55:51 -0800 (PST)
 MIME-Version: 1.0
-References: <20200131205216.22213-1-xiyou.wangcong@gmail.com>
- <20200131205216.22213-4-xiyou.wangcong@gmail.com> <20200131220807.GJ795@breakpoint.cc>
- <CAM_iQpVVgkP8u_9ez-2fmrJDdKoFwAxGcbE3Mmk3=7cv4W_QJQ@mail.gmail.com> <20200131233659.GM795@breakpoint.cc>
-In-Reply-To: <20200131233659.GM795@breakpoint.cc>
-From:   Cong Wang <xiyou.wangcong@gmail.com>
-Date:   Fri, 31 Jan 2020 18:53:21 -0800
-Message-ID: <CAM_iQpWbejoFPbFDSfUtvhFbU3DjhV6NAkPQ+-mirY_QEMHxkA@mail.gmail.com>
-Subject: Re: [Patch nf 3/3] xt_hashlimit: limit the max size of hashtable
-To:     Florian Westphal <fw@strlen.de>
-Cc:     Linux Kernel Network Developers <netdev@vger.kernel.org>,
-        NetFilter <netfilter-devel@vger.kernel.org>,
-        syzbot <syzbot+adf6c6c2be1c3a718121@syzkaller.appspotmail.com>,
-        Pablo Neira Ayuso <pablo@netfilter.org>,
-        Jozsef Kadlecsik <kadlec@netfilter.org>
+References: <CADVnQy=Z0YRPY_0bxBpsZvECgamigESNKx6_-meNW5-6_N4kww@mail.gmail.com>
+ <20200131221755.3874-1-sj38.park@gmail.com>
+In-Reply-To: <20200131221755.3874-1-sj38.park@gmail.com>
+From:   Neal Cardwell <ncardwell@google.com>
+Date:   Fri, 31 Jan 2020 22:55:34 -0500
+Message-ID: <CADVnQy=oFmmG-Z9QMafWLcALOBgohADgwScn2r+7CGFNAw5jvw@mail.gmail.com>
+Subject: Re: Re: [PATCH 2/3] tcp: Reduce SYN resend delay if a suspicous ACK
+ is received
+To:     SeongJae Park <sj38.park@gmail.com>
+Cc:     Eric Dumazet <eric.dumazet@gmail.com>, sjpark@amazon.com,
+        Eric Dumazet <edumazet@google.com>,
+        David Miller <davem@davemloft.net>, shuah@kernel.org,
+        Netdev <netdev@vger.kernel.org>, linux-kselftest@vger.kernel.org,
+        LKML <linux-kernel@vger.kernel.org>, aams@amazon.com,
+        SeongJae Park <sjpark@amazon.de>,
+        Yuchung Cheng <ycheng@google.com>
 Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Jan 31, 2020 at 3:37 PM Florian Westphal <fw@strlen.de> wrote:
-> O would propose a max alloc size (hard limit) of ~8 MByte of vmalloc
-> space, or maybe 16 at most.
+On Fri, Jan 31, 2020 at 5:18 PM SeongJae Park <sj38.park@gmail.com> wrote:
 >
-> 1048576 max upperlimit -> ~8mbyte vmalloc request -> allows to store
-> up to 2**23 entries.
-
-Changing HASHLIMIT_MAX_SIZE to 1048576 seems fine.
-
+> On Fri, 31 Jan 2020 17:11:35 -0500 Neal Cardwell <ncardwell@google.com> wrote:
 >
-> In order to prevent breaking userspace, perhaps make it so that the
-> kernel caps cfg.max at twice that value?  Would allow storing up to
-> 16777216 addresses with an average chain depth of 16 (which is quite
-> large).  We could increase the max limit in case someone presents a use
-> case.
+> > On Fri, Jan 31, 2020 at 1:12 PM Eric Dumazet <eric.dumazet@gmail.com> wrote:
+> > >
+> > >
+> > >
+> > > On 1/31/20 7:10 AM, Neal Cardwell wrote:
+> > > > On Fri, Jan 31, 2020 at 7:25 AM <sjpark@amazon.com> wrote:
+> > > >>
+> > > >> From: SeongJae Park <sjpark@amazon.de>
+> > > >>
+> > > >> When closing a connection, the two acks that required to change closing
+> > > >> socket's status to FIN_WAIT_2 and then TIME_WAIT could be processed in
+> > > >> reverse order.  This is possible in RSS disabled environments such as a
+> > > >> connection inside a host.
+> [...]
+> >
+> > I looked into fixing this, but my quick reading of the Linux
+> > tcp_rcv_state_process() code is that it should behave correctly and
+> > that a connection in FIN_WAIT_1 that receives a FIN/ACK should move to
+> > TIME_WAIT.
+> >
+> > SeongJae, do you happen to have a tcpdump trace of the problematic
+> > sequence where the "process A" ends up in FIN_WAIT_2 when it should be
+> > in TIME_WAIT?
 >
+> Hi Neal,
+>
+>
+> Yes, I have.  You can get it from the previous discussion for this patchset
+> (https://lore.kernel.org/bpf/20200129171403.3926-1-sjpark@amazon.com/).  As it
+> also has a reproducer program and how I got the tcpdump trace, I believe you
+> could get your own trace, too.  If you have any question or need help, feel
+> free to let me know. :)
 
-Not sure if I understand this, I don't see how cap'ing cfg->max could
-help prevent breaking user-space? Are you suggesting to cap it with
-HASHLIMIT_MAX_SIZE too? Something like below?
+Great. Thank you for the pointer.
 
-+       if (cfg->max > 2 * HASHLIMIT_MAX_SIZE)
-+               cfg->max = 2 * HASHLIMIT_MAX_SIZE;
+I had one quick question: in the message:
+  https://lore.kernel.org/bpf/20200129171403.3926-1-sjpark@amazon.com/
+... it showed a trace with the client sending a RST/ACK, but this
+email thread shows a FIN/ACK. I am curious about the motivation for
+the difference?
 
-Thanks.
+Anyway, thanks for the report, and thanks to Eric for further clarifying!
+
+neal
