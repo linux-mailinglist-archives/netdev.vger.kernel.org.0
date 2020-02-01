@@ -2,58 +2,57 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 8E10E14F8CD
-	for <lists+netdev@lfdr.de>; Sat,  1 Feb 2020 17:19:08 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3186B14F8D6
+	for <lists+netdev@lfdr.de>; Sat,  1 Feb 2020 17:24:27 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726825AbgBAQTB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 1 Feb 2020 11:19:01 -0500
-Received: from mail-wm1-f67.google.com ([209.85.128.67]:53411 "EHLO
-        mail-wm1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726622AbgBAQTA (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 1 Feb 2020 11:19:00 -0500
-Received: by mail-wm1-f67.google.com with SMTP id s10so11286044wmh.3;
-        Sat, 01 Feb 2020 08:18:58 -0800 (PST)
+        id S1726893AbgBAQYW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 1 Feb 2020 11:24:22 -0500
+Received: from mail-wm1-f68.google.com ([209.85.128.68]:37138 "EHLO
+        mail-wm1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726643AbgBAQYW (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 1 Feb 2020 11:24:22 -0500
+Received: by mail-wm1-f68.google.com with SMTP id f129so12172989wmf.2;
+        Sat, 01 Feb 2020 08:24:19 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=subject:to:cc:references:from:autocrypt:message-id:date:user-agent
          :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=ZRGHA9Vt1BTMX6AWpe9g3Gm5bUbHXciiSINpWFajmWM=;
-        b=E4FPluC4fig4nGcRpijl90fvFlBsNeqpkd7gtmFW0YxjNhltn47TXkS+V6mHacJ0G6
-         2PCai8XLoRQoppBigEclDGEXJvKYNst2lsizif9EoOnOgm+8CrMvLE+Adc6Ski13Ka9H
-         rKxrVqa73r400Pa07eB39wwW+g14LJHDo5vCACWk1L5bDks2eLiJ1htcT19Z/NotMI9/
-         EiyQqQgK+S/ymkmZvNmQ/Akfimtp4P+M/S+Yjr2jcCjo9p7y5IbojUPyyXY7KxqiCA1U
-         9ufAVBkGh/fpmAAaH2ARaGgo15ZVSkmkVMtOj6Bp509mYg0o9gt8vHvFM9mOay+XYpQP
-         rwMA==
+        bh=OwnXmIcZHTHWnixKWkhNSwwjEIIvt9POeNBZDQz/Z40=;
+        b=dqFYVT7XBtXnx2wkqhCu9bEH4XiDU44boQhKB09nUvE4lJJC63KyYr+vTlKFYE8G5U
+         iTWyg1r67+36X4QHJO9Nh7c7h+Lx7mehHlerLYoPybk5bfR0S8D2QAkPS78UnNmeex7k
+         2euHwCcwjwX45J4P7LNgIqnVrkcdbS3c7jwgXLPie/PUbDl2UaT2EPu+VbALs43NX9oS
+         nAMFaC50UIkBVLoEsRiF69mvh5dyFchfu9m9HPxq2vagmjBU7grIwbcZ0DybNBmuKsNd
+         9C5zeE93KAotCKl9rVCP/u+ZGaBvdvGyATR62TyQd8aJi8ZV4yO/tr/bWFcbrgm4ZQOq
+         x9AQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:subject:to:cc:references:from:autocrypt
          :message-id:date:user-agent:mime-version:in-reply-to
          :content-language:content-transfer-encoding;
-        bh=ZRGHA9Vt1BTMX6AWpe9g3Gm5bUbHXciiSINpWFajmWM=;
-        b=q0lb5uZLr76iVK/66UL+Rl5YwCNE6eQJyIXnNR5dL3U47q6FpM6QYli2uvIQK72JyZ
-         QS0qdVyMbNii5VAcq+UDNJyTv82E0p3n7VBmCX3HZKEa2yfWS+qsbgcnPLi8y2peL03W
-         EqkgzBVl8B0tRBraRY/JEWOV6o8Kb+NlvPCTK3mybLtHfwup9T8dhHDj38RyUBXznRUW
-         TznM1tAOl8ubXVH2nbw81TU7rNM9OBCP5/EPBITDHA88FaI3sX3gPM849Dw/RAJxrByk
-         +a0rObkbskIPwdet+nSmjNwADum4F4GJyqPcndO1ypl83oqsqnwURLHr5C9JAgnea1Uk
-         G0SQ==
-X-Gm-Message-State: APjAAAVOoFKOl2S2uIWD9BZWUPMWL3E2DlPbAslDLh1TPJkvTAuJwhc0
-        lFo9NhepNTVWS2KhT3aoXrA=
-X-Google-Smtp-Source: APXvYqx5oZj5z1GTF/s5xX/qqxjnJ+giVW4kkf8xNES9NQTGBzvsEguX7sS4SoNIXeMEBpOvFy3CFw==
-X-Received: by 2002:a7b:cb49:: with SMTP id v9mr3836027wmj.160.1580573937821;
-        Sat, 01 Feb 2020 08:18:57 -0800 (PST)
+        bh=OwnXmIcZHTHWnixKWkhNSwwjEIIvt9POeNBZDQz/Z40=;
+        b=MNzx2PILoCt+7lPHfVVHLDCQyFK0Q2r1HYto6GGsyz2EhXgvYwPFxPuBZc86mCE9t6
+         J/469LauNymN/4JdrS+pi1MuIO1tPtobHgeuqlzGWwrSawKuNdda4xi2EGOPxlZ+U1Dr
+         pTrC9fO3NScxwYJGyHNvfqA3s9o1R5FMfU8PARbBXLrMV+1quu/Zyuf2vKUGN1PAGE6/
+         F/JQlXhrSJlD8vnz6lo22OOAWWca2tnCuP40n1lZ/ycZWnygkkAJ2ZwW5QPtcheJRf0y
+         4ksjPGC+XF+52F+tevJXwyySD9/T8GmOW0LfimvfIaMM6Jc6RZ6a1vJlrYaP5ZFkBjN6
+         6cWw==
+X-Gm-Message-State: APjAAAUwvD/pASSvMKPBYaWh1Z2TDidzhPBy+mDNTReqLLruzeeosSH2
+        VUk16YA9tdPpGvlbpJgTOEc=
+X-Google-Smtp-Source: APXvYqxpHjkygVb2Dg5FBaCQF5tPq9daPIkriAvbmK4DS7IKAC2wqTsADLtZWYHNaJhyfZxdNva0zw==
+X-Received: by 2002:a7b:c8d3:: with SMTP id f19mr18375534wml.26.1580574258722;
+        Sat, 01 Feb 2020 08:24:18 -0800 (PST)
 Received: from [192.168.1.3] (ip68-111-84-250.oc.oc.cox.net. [68.111.84.250])
-        by smtp.gmail.com with ESMTPSA id b128sm15458461wmb.25.2020.02.01.08.18.54
+        by smtp.gmail.com with ESMTPSA id g2sm16836840wrw.76.2020.02.01.08.24.16
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sat, 01 Feb 2020 08:18:56 -0800 (PST)
-Subject: Re: [PATCH 6/6] net: bcmgenet: reduce severity of missing clock
- warnings
+        Sat, 01 Feb 2020 08:24:18 -0800 (PST)
+Subject: Re: [PATCH 2/6] net: bcmgenet: refactor phy mode configuration
 To:     Jeremy Linton <jeremy.linton@arm.com>, netdev@vger.kernel.org
 Cc:     opendmb@gmail.com, f.fainelli@gmail.com, davem@davemloft.net,
         bcm-kernel-feedback-list@broadcom.com,
         linux-kernel@vger.kernel.org, wahrenst@gmx.net, andrew@lunn.ch,
         hkallweit1@gmail.com
 References: <20200201074625.8698-1-jeremy.linton@arm.com>
- <20200201074625.8698-7-jeremy.linton@arm.com>
+ <20200201074625.8698-3-jeremy.linton@arm.com>
 From:   Florian Fainelli <f.fainelli@gmail.com>
 Autocrypt: addr=f.fainelli@gmail.com; keydata=
  mQGiBEjPuBIRBACW9MxSJU9fvEOCTnRNqG/13rAGsj+vJqontvoDSNxRgmafP8d3nesnqPyR
@@ -109,12 +108,12 @@ Autocrypt: addr=f.fainelli@gmail.com; keydata=
  caxTGgc5zzQHeX67eMzrGomG3ZnIxmd1sAbgvJUDaD2GrYlulfwGWwWyTNbWRvMighVdPkSF
  6XFgQaosWxkV0OELLy2N485YrTr2Uq64VKyxpncLh50e2RnyAJ9qfUATKC9NgZjRvBztfqy4
  a9BQwACgnzGuH1BVeT2J0Ra+ZYgkx7DaPR0=
-Message-ID: <fab9842a-b1bf-5615-d090-2de6227739ed@gmail.com>
-Date:   Sat, 1 Feb 2020 08:18:53 -0800
+Message-ID: <b2d45990-af71-60c3-a210-b23dabb9ba32@gmail.com>
+Date:   Sat, 1 Feb 2020 08:24:14 -0800
 User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
  Thunderbird/68.4.2
 MIME-Version: 1.0
-In-Reply-To: <20200201074625.8698-7-jeremy.linton@arm.com>
+In-Reply-To: <20200201074625.8698-3-jeremy.linton@arm.com>
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
@@ -126,15 +125,19 @@ X-Mailing-List: netdev@vger.kernel.org
 
 
 On 1/31/2020 11:46 PM, Jeremy Linton wrote:
-> If one types "failed to get enet clock" or similar into google
-> there are ~370k hits. The vast majority are people debugging
-> problems unrelated to this adapter, or bragging about their
-> rpi's. Given that its not a fatal situation with common DT based
-> systems, lets reduce the severity so people aren't seeing failure
-> messages in everyday operation.
-> 
-> Signed-off-by: Jeremy Linton <jeremy.linton@arm.com>
+> The DT phy mode is similar to what we want for ACPI
+> lets factor it out of the of path, and change the
+> of_ call to device_. Further if the phy-mode property
+> cannot be found instead of failing the driver load lets
+> just default it to RGMII.
 
-Acked-by: Florian Fainelli <f.fainelli@gmail.com>
+Humm no please do not provide a fallback, if we cannot find a valid
+'phy-mode' property we error out. This controller can be used with a
+variety of configurations (internal EPHY/GPHY, MoCA, external
+MII/Reverse MII/RGMII) and from a support perspective it is much easier
+for us if the driver errors out if one of those essential properties are
+omitted.
+
+Other than that, this looks OK.
 -- 
 Florian
