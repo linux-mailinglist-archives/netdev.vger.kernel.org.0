@@ -2,36 +2,37 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id E49C614FA1C
-	for <lists+netdev@lfdr.de>; Sat,  1 Feb 2020 20:09:08 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 428A014FA1F
+	for <lists+netdev@lfdr.de>; Sat,  1 Feb 2020 20:10:52 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726881AbgBATJE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 1 Feb 2020 14:09:04 -0500
-Received: from foss.arm.com ([217.140.110.172]:43398 "EHLO foss.arm.com"
+        id S1726712AbgBATKq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 1 Feb 2020 14:10:46 -0500
+Received: from foss.arm.com ([217.140.110.172]:43418 "EHLO foss.arm.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726270AbgBATJD (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sat, 1 Feb 2020 14:09:03 -0500
+        id S1726453AbgBATKq (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sat, 1 Feb 2020 14:10:46 -0500
 Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 2D4E9FEC;
-        Sat,  1 Feb 2020 11:09:03 -0800 (PST)
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 7052FFEC;
+        Sat,  1 Feb 2020 11:10:45 -0800 (PST)
 Received: from [192.168.122.164] (unknown [172.31.20.19])
-        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id D87783F68E;
-        Sat,  1 Feb 2020 11:09:02 -0800 (PST)
-Subject: Re: [PATCH 4/6] net: bcmgenet: Initial bcmgenet ACPI support
-To:     Andrew Lunn <andrew@lunn.ch>
-Cc:     netdev@vger.kernel.org, opendmb@gmail.com, f.fainelli@gmail.com,
-        davem@davemloft.net, bcm-kernel-feedback-list@broadcom.com,
-        linux-kernel@vger.kernel.org, wahrenst@gmx.net,
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 21FD93F68E;
+        Sat,  1 Feb 2020 11:10:45 -0800 (PST)
+Subject: Re: [PATCH 2/6] net: bcmgenet: refactor phy mode configuration
+To:     Florian Fainelli <f.fainelli@gmail.com>, netdev@vger.kernel.org
+Cc:     opendmb@gmail.com, davem@davemloft.net,
+        bcm-kernel-feedback-list@broadcom.com,
+        linux-kernel@vger.kernel.org, wahrenst@gmx.net, andrew@lunn.ch,
         hkallweit1@gmail.com
 References: <20200201074625.8698-1-jeremy.linton@arm.com>
- <20200201074625.8698-5-jeremy.linton@arm.com> <20200201153315.GJ9639@lunn.ch>
+ <20200201074625.8698-3-jeremy.linton@arm.com>
+ <b2d45990-af71-60c3-a210-b23dabb9ba32@gmail.com>
 From:   Jeremy Linton <jeremy.linton@arm.com>
-Message-ID: <0536fbdc-f118-3165-9e63-913c1d0def9d@arm.com>
-Date:   Sat, 1 Feb 2020 13:09:02 -0600
+Message-ID: <1c8f6931-8c69-fecb-8a95-9107dfb7ade0@arm.com>
+Date:   Sat, 1 Feb 2020 13:10:44 -0600
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
  Thunderbird/68.4.1
 MIME-Version: 1.0
-In-Reply-To: <20200201153315.GJ9639@lunn.ch>
+In-Reply-To: <b2d45990-af71-60c3-a210-b23dabb9ba32@gmail.com>
 Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
@@ -42,18 +43,28 @@ X-Mailing-List: netdev@vger.kernel.org
 
 Hi,
 
-On 2/1/20 9:33 AM, Andrew Lunn wrote:
->> @@ -3595,7 +3597,7 @@ static int bcmgenet_probe(struct platform_device *pdev)
->>   	/* If this is an internal GPHY, power it on now, before UniMAC is
->>   	 * brought out of reset as absolutely no UniMAC activity is allowed
->>   	 */
->> -	if (dn && !of_property_read_string(dn, "phy-mode", &phy_mode_str) &&
->> +	if (!device_property_read_string(&pdev->dev, "phy-mode", &phy_mode_str) &&
->>   	    !strcasecmp(phy_mode_str, "internal"))
->>   		bcmgenet_power_up(priv, GENET_POWER_PASSIVE);
-> 
-> The code you are modifying appears to be old and out of date. For a
-> long time there has been a helper, of_get_phy_mode(). You should look
-> at fwnode_get_phy_mode().
+Thanks for taking a look at this again!
 
-Yes, thanks, I did that in the other phy path but not here.
+On 2/1/20 10:24 AM, Florian Fainelli wrote:
+> 
+> 
+> On 1/31/2020 11:46 PM, Jeremy Linton wrote:
+>> The DT phy mode is similar to what we want for ACPI
+>> lets factor it out of the of path, and change the
+>> of_ call to device_. Further if the phy-mode property
+>> cannot be found instead of failing the driver load lets
+>> just default it to RGMII.
+> 
+> Humm no please do not provide a fallback, if we cannot find a valid
+> 'phy-mode' property we error out. This controller can be used with a
+> variety of configurations (internal EPHY/GPHY, MoCA, external
+> MII/Reverse MII/RGMII) and from a support perspective it is much easier
+> for us if the driver errors out if one of those essential properties are
+> omitted.
+> 
+> Other than that, this looks OK.
+> 
+
+Sure, I went around in circles about this one because it cluttered the 
+code path up a bit.
+
