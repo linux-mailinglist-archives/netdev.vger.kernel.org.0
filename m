@@ -2,142 +2,148 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 3D9C914F904
-	for <lists+netdev@lfdr.de>; Sat,  1 Feb 2020 17:44:43 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 70AC114F905
+	for <lists+netdev@lfdr.de>; Sat,  1 Feb 2020 17:48:40 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726877AbgBAQoi (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 1 Feb 2020 11:44:38 -0500
-Received: from mout.gmx.net ([212.227.15.19]:44251 "EHLO mout.gmx.net"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726669AbgBAQoi (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sat, 1 Feb 2020 11:44:38 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=gmx.net;
-        s=badeba3b8450; t=1580575470;
-        bh=/ob/a7mTZsY4S24MeD9XiEGceK7Aswp/QlUOPUdplx4=;
-        h=X-UI-Sender-Class:Subject:To:Cc:References:From:Date:In-Reply-To;
-        b=kc1nazgmaVqhaq3ebOmtBHh0aLufYzO0TtrVsdGDUyj4tzK6KnWrHOfK8QM2mSz+j
-         Mv/W/fdG23YxfbYr2ay1h0MJF6ct606B0rkUcy8/uRc2Bjq3jUc1Ow36wVYwZyDMD/
-         qTwbrK7FylBaIJoNMgPbG65FuTiSdXVEXC6NHZgY=
-X-UI-Sender-Class: 01bb95c1-4bf8-414a-932a-4f6e2808ef9c
-Received: from [192.168.1.183] ([37.4.249.138]) by mail.gmx.com (mrgmx004
- [212.227.17.190]) with ESMTPSA (Nemesis) id 1Mf07E-1jVLh13fXG-00gVZh; Sat, 01
- Feb 2020 17:44:29 +0100
-Subject: Re: [PATCH 6/6] net: bcmgenet: reduce severity of missing clock
- warnings
-To:     Jeremy Linton <jeremy.linton@arm.com>, netdev@vger.kernel.org
-Cc:     opendmb@gmail.com, f.fainelli@gmail.com, davem@davemloft.net,
-        bcm-kernel-feedback-list@broadcom.com,
-        linux-kernel@vger.kernel.org, andrew@lunn.ch, hkallweit1@gmail.com,
-        Nicolas Saenz Julienne <nsaenzjulienne@suse.de>
-References: <20200201074625.8698-1-jeremy.linton@arm.com>
- <20200201074625.8698-7-jeremy.linton@arm.com>
-From:   Stefan Wahren <wahrenst@gmx.net>
-Message-ID: <2dfd6cd2-1dd0-c8ff-8d83-aed3b4ea7a79@gmx.net>
-Date:   Sat, 1 Feb 2020 17:44:28 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.9.0
+        id S1726794AbgBAQsi (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 1 Feb 2020 11:48:38 -0500
+Received: from us-smtp-delivery-1.mimecast.com ([207.211.31.120]:33226 "EHLO
+        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+        with ESMTP id S1726669AbgBAQsi (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 1 Feb 2020 11:48:38 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1580575716;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=bMQnrNf2XVcrlI0NWWvkv+BfgLieDCMHZ7gq6MV9Fyk=;
+        b=hrnLWT5wTCIWHR935xU9yuCI+YnF7qYfSgtkOJBNJfLo3u+EtPm07XVl6Tr83uXFg44loX
+        3imbKSm+q8qSde6QfOh5EQQYiM36C0owY+FR7FGjahuVbfVohFgCYzVLuR1nRwKbodsb+9
+        hJ4ZZw2PhVoJvu4rnFo1ql94Q7q5JRo=
+Received: from mail-lj1-f198.google.com (mail-lj1-f198.google.com
+ [209.85.208.198]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-311-1xvYXCtwPDSX-4czz41YiA-1; Sat, 01 Feb 2020 11:48:32 -0500
+X-MC-Unique: 1xvYXCtwPDSX-4czz41YiA-1
+Received: by mail-lj1-f198.google.com with SMTP id d14so2547295ljg.17
+        for <netdev@vger.kernel.org>; Sat, 01 Feb 2020 08:48:32 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
+         :message-id:mime-version:content-transfer-encoding;
+        bh=bMQnrNf2XVcrlI0NWWvkv+BfgLieDCMHZ7gq6MV9Fyk=;
+        b=V/kwXbuLU2OXQRwP3d6U0t3qGIJnVVeFerSqTzns0xUG6iL8kQ3BGhZzwf4P82PYod
+         m2kULJ/Rw0iMtb89LO0gBrfUDTWHSO5f5VVCWxKtcWXWU+sxGgyqU9MHrQO/GKg1lUn6
+         ebekBybUPJc8LI3FPW/Xig7slRfV73cqp22OOzv1QbRP9H/iYDAQP0cw0mTdYfw9Tz05
+         q7aamKV8okGlAlgMgosc2magKUhT4Sa/srDiHHI3SLfmOs8PXtQq8fwvs269hANJdd20
+         0ji6CpMbEj/3aveph1wWykW9q813dDDHwRKvmvERxq9oamxV047rL2/9G4AKOLZTTpOl
+         1L1w==
+X-Gm-Message-State: APjAAAXRHJkTrrOA/AImnrAS5INrjSJrOYiJRmavHmXPK2i0Z/d6qtPR
+        d+4Gfx0YMMiQ5CfSiaGYhNdAWR9NDzbfsKBnjaJgu7l/6Mj/lPMRwnVNCF0XbTLib39ItjJYNv1
+        WnszZm8BErudZD2mC
+X-Received: by 2002:ac2:44bc:: with SMTP id c28mr7887982lfm.72.1580575710930;
+        Sat, 01 Feb 2020 08:48:30 -0800 (PST)
+X-Google-Smtp-Source: APXvYqxcG+yQWhqN/j0ZrgrsI+78PKFTm4E81VMgOtPDXVySn2YjmwrnYBYyhT/8Ugj2aDthMMyiCA==
+X-Received: by 2002:ac2:44bc:: with SMTP id c28mr7887971lfm.72.1580575710646;
+        Sat, 01 Feb 2020 08:48:30 -0800 (PST)
+Received: from alrua-x1.borgediget.toke.dk ([2a0c:4d80:42:443::2])
+        by smtp.gmail.com with ESMTPSA id z8sm6766169ljk.13.2020.02.01.08.48.29
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sat, 01 Feb 2020 08:48:29 -0800 (PST)
+Received: by alrua-x1.borgediget.toke.dk (Postfix, from userid 1000)
+        id D17771800A2; Sat,  1 Feb 2020 17:48:26 +0100 (CET)
+From:   Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
+To:     Yossi Kuperman <yossiku@mellanox.com>,
+        "netdev\@vger.kernel.org" <netdev@vger.kernel.org>
+Cc:     Jamal Hadi Salim <jhs@mojatatu.com>,
+        Jiri Pirko <jiri@mellanox.com>,
+        Rony Efraim <ronye@mellanox.com>,
+        Maxim Mikityanskiy <maximmi@mellanox.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        Eran Ben Elisha <eranbe@mellanox.com>
+Subject: Re: [RFC] Hierarchical QoS Hardware Offload (HTB)
+In-Reply-To: <FC053E80-74C9-4884-92F1-4DBEB5F0C81A@mellanox.com>
+References: <FC053E80-74C9-4884-92F1-4DBEB5F0C81A@mellanox.com>
+X-Clacks-Overhead: GNU Terry Pratchett
+Date:   Sat, 01 Feb 2020 17:48:26 +0100
+Message-ID: <87y2tmckyt.fsf@toke.dk>
 MIME-Version: 1.0
-In-Reply-To: <20200201074625.8698-7-jeremy.linton@arm.com>
 Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: base64
-Content-Language: en-US
-X-Provags-ID: V03:K1:pxSIuV1zBaipvgSKbGqEJEnpcx0G5qFegoQhfHNPqk9zvxZjQvS
- am55P9nUw7TZxBAz6uvIswj+R1R9yThkwceU8bU6U7jTe0tCZpqZWw9RFOsleKALCfnXD6z
- 3hkRUBHADgznpeS98zCgSx4Uek64q6t/SXcqKS65700JRRdE2JdEelR6/fzAmLuI8l8+OsT
- +4eCuchyp4xOyMAKBTDqQ==
-X-Spam-Flag: NO
-X-UI-Out-Filterresults: notjunk:1;V03:K0:vMYkvkvTjxA=:OB2LALFmQULgObB5lIwA/w
- P8bOp3k+fF0biyYTL+g0/QygvgFeKbzO0vckRWD1vSzGYsjphN1f58x9TWIS7KUW0eNyknd50
- w1jgx7+sUSls1UzrwR6OAM6iRYEwaJZv0FzeOajofE0EsRIHQKOupOcj4B3FQNEvUS5T/AJcm
- iYUn4CONmcLNPpv+ZNJBKIsnmuNNebHZPW308P/V8S/aXkEskfBz6RpIsKspAPGA68uEI0Fgk
- 228ZId0jJR0wwgl7S2k/X/RHUt4Cw1srt4xqJTnylLaDgHefifzbKd7GhZf14EfO40uzecLE/
- +L2dUazLVcBNAAf5tJ9oRL0aIa+G7H6G0H1gUaOryw1P57wfPzdB4MMJWrcne2RPoMsGoKkij
- H+pYW5HYrmleL5pmuJtvjwrh3S3LIh161N3cENEtdCO0WBvEkEvo9pvX8n3zSQUNhF5zJXz+6
- tPD2sweoJGhbEsaifVUKJzCue8f4TjkrK2+Wqk5jGR9E/gblbwO2nk9jg4ZjPP7U/CUZo15i4
- 51n8M2k/AkLwjvcnexZAv1sJLGa77uDy7nUPuNRKXV81xGlnkqtlKaJLcxvIh/yNZDFiCta/j
- Uk4C0yn9gH4nu5EvE9KYtvmNarga2TTqY2GgcLGrqHSi2TNNsc/h11Mfl1KQj+cHaaryHp0mv
- vVdznjTr4LzRe6g1w4isEs0F31gfXj5nzyR3Kl0FLwMwBTNPb9Lmw0h8xlS3q98TapE6iMpJ4
- YNRKd6yPNUbMOviboTcZP3w6IrSSOacRtJgQtOtqTiAc5ZhihLtFekmc8jdBmzIR9Aip0xFgt
- gimlq8UBI8fYa7/I+DSwagQvddJhiv4bp2NQ0k0Kt4gIfThORxAzhaiMEe9qvLIrwQ+DVpnSt
- 3KO+NzbzPhJ9K8vcXZqPx31tNXh91Nb+jQp8TTz363LBlpdnrU1o+YIbeED8KubWu5EuTAnWa
- Ukibq928o/zgy2AGi0OraeMbYjtSL+USsRo70PJzdkPrMv5Vd1TDCfEC8yrQ8TbrJ2B80KdiF
- kqiVqtgdDyOJX31vZ/fNBULxhLMhMqp0xtzEuDcPQhDaZNEDpb28znmk4EhgK1X4DjcCmjZsN
- 9h/g4duyLft44CsRgroRD6yOBua3tfcEtwsaOmgakyZxvyrXcGS5vrv/32svKsQOB6rVdckT2
- 3v6or9S6P4css2lGwxC+wVuo4UwCFO4/9W88hnxGl1xH1d/oq3yqriD1DILvXEJqAVV1/V6FC
- 6rl0fpcJKREGUrYNH
+Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-SGkgSmVyZW15LA0KDQpbYWRkIE5pY29sYXMgYXMgQkNNMjgzNSBtYWludGFpbmVyXQ0KDQpBbSAw
-MS4wMi4yMCB1bSAwODo0NiBzY2hyaWViIEplcmVteSBMaW50b246DQo+IElmIG9uZSB0eXBlcyAi
-ZmFpbGVkIHRvIGdldCBlbmV0IGNsb2NrIiBvciBzaW1pbGFyIGludG8gZ29vZ2xlDQo+IHRoZXJl
-IGFyZSB+MzcwayBoaXRzLiBUaGUgdmFzdCBtYWpvcml0eSBhcmUgcGVvcGxlIGRlYnVnZ2luZw0K
-PiBwcm9ibGVtcyB1bnJlbGF0ZWQgdG8gdGhpcyBhZGFwdGVyLCBvciBicmFnZ2luZyBhYm91dCB0
-aGVpcg0KPiBycGkncy4gR2l2ZW4gdGhhdCBpdHMgbm90IGEgZmF0YWwgc2l0dWF0aW9uIHdpdGgg
-Y29tbW9uIERUIGJhc2VkDQo+IHN5c3RlbXMsIGxldHMgcmVkdWNlIHRoZSBzZXZlcml0eSBzbyBw
-ZW9wbGUgYXJlbid0IHNlZWluZyBmYWlsdXJlDQo+IG1lc3NhZ2VzIGluIGV2ZXJ5ZGF5IG9wZXJh
-dGlvbi4NCj4NCmknbSBmaW5lIHdpdGggeW91ciBwYXRjaCwgc2luY2UgdGhlIGNsb2NrcyBhcmUg
-b3B0aW9uYWwgYWNjb3JkaW5nIHRvIHRoZQ0KYmluZGluZy4gQnV0IGluc3RlYWQgb2YgaGlkaW5n
-IG9mIHRob3NlIHdhcm5pbmcsIGl0IHdvdWxkIGJlIGJldHRlciB0bw0KZml4IHRoZSByb290IGNh
-dXNlIChtaXNzaW5nIGNsb2NrcykuIFVuZm9ydHVuYXRlbHkgaSBkb24ndCBoYXZlIHRoZQ0KbmVj
-ZXNzYXJ5IGRvY3VtZW50YXRpb24sIGp1c3Qgc29tZSBhbnN3ZXJzIGZyb20gdGhlIFJQaSBndXlz
-Lg0KDQpUaGlzIGlzIHdoYXQgaSBnb3Qgc28gZmFyOg0KDQpkaWZmIC0tZ2l0IGEvYXJjaC9hcm0v
-Ym9vdC9kdHMvYmNtMjcxMS5kdHNpIGIvYXJjaC9hcm0vYm9vdC9kdHMvYmNtMjcxMS5kdHNpDQpp
-bmRleCA5NjFiZWQ4Li5kNGZmMzcwIDEwMDY0NA0KLS0tIGEvYXJjaC9hcm0vYm9vdC9kdHMvYmNt
-MjcxMS5kdHNpDQorKysgYi9hcmNoL2FybS9ib290L2R0cy9iY20yNzExLmR0c2kNCkBAIC0zMzgs
-NiArMzM4LDggQEANCsKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKg
-wqAgcmVnID0gPDB4MCAweDdkNTgwMDAwIDB4MTAwMDA+Ow0KwqDCoMKgwqDCoMKgwqDCoMKgwqDC
-oMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoCAjYWRkcmVzcy1jZWxscyA9IDwweDE+Ow0KwqDCoMKg
-wqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoCAjc2l6ZS1jZWxscyA9IDww
-eDE+Ow0KK8KgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgIGNsb2Nr
-cyA9IDwmY2xvY2tzIEJDTTI3MTFfQ0xPQ0tfR0VORVQyNTA+Ow0KK8KgwqDCoMKgwqDCoMKgwqDC
-oMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgIGNsb2NrLW5hbWVzID0gImVuZXQiOw0KwqDCoMKg
-wqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoCBpbnRlcnJ1cHRzID0gPEdJ
-Q19TUEkgMTU3IElSUV9UWVBFX0xFVkVMX0hJR0g+LA0KwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKg
-wqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgIDxHSUNfU1BJ
-IDE1OCBJUlFfVFlQRV9MRVZFTF9ISUdIPjsNCsKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDC
-oMKgwqDCoMKgwqDCoMKgwqAgc3RhdHVzID0gImRpc2FibGVkIjsNCmRpZmYgLS1naXQgYS9kcml2
-ZXJzL2Nsay9iY20vY2xrLWJjbTI4MzUuYyBiL2RyaXZlcnMvY2xrL2JjbS9jbGstYmNtMjgzNS5j
-DQppbmRleCBkZWQxM2NjLi42MjdmMWIxIDEwMDY0NA0KLS0tIGEvZHJpdmVycy9jbGsvYmNtL2Ns
-ay1iY20yODM1LmMNCisrKyBiL2RyaXZlcnMvY2xrL2JjbS9jbGstYmNtMjgzNS5jDQpAQCAtMTE2
-LDYgKzExNiwxMCBAQA0KwqAjZGVmaW5lIENNX0VNTUNESVbCoMKgwqDCoMKgwqDCoMKgwqDCoMKg
-wqAgMHgxYzQNCsKgI2RlZmluZSBDTV9FTU1DMkNUTMKgwqDCoMKgwqDCoMKgwqDCoMKgwqAgMHgx
-ZDANCsKgI2RlZmluZSBDTV9FTU1DMkRJVsKgwqDCoMKgwqDCoMKgwqDCoMKgwqAgMHgxZDQNCisj
-ZGVmaW5lIENNX0dFTkVUMjUwQ1RMwqDCoMKgwqDCoMKgwqDCoCAweDFlOA0KKyNkZWZpbmUgQ01f
-R0VORVQyNTBESVbCoMKgwqDCoMKgwqDCoMKgIDB4MWVjDQorI2RlZmluZSBDTV9HRU5FVDEyNUNU
-TMKgwqDCoMKgwqDCoMKgwqAgMHgyMTANCisjZGVmaW5lIENNX0dFTkVUMTI1RElWwqDCoMKgwqDC
-oMKgwqDCoCAweDIxNA0KwqANCsKgLyogR2VuZXJhbCBiaXRzIGZvciB0aGUgQ01fKkNUTCByZWdz
-ICovDQrCoCMgZGVmaW5lIENNX0VOQUJMRcKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKg
-wqDCoMKgwqAgQklUKDQpDQpAQCAtMjAyMSw2ICsyMDI1LDI1IEBAIHN0YXRpYyBjb25zdCBzdHJ1
-Y3QgYmNtMjgzNV9jbGtfZGVzYw0KY2xrX2Rlc2NfYXJyYXlbXSA9IHsNCsKgwqDCoMKgwqDCoMKg
-wqDCoMKgwqDCoMKgwqDCoCAuZnJhY19iaXRzID0gOCwNCsKgwqDCoMKgwqDCoMKgwqDCoMKgwqDC
-oMKgwqDCoCAudGNudF9tdXggPSA0MiksDQrCoA0KK8KgwqDCoMKgwqDCoCAvKiBHRU5FVCBjbG9j
-a3MgKG9ubHkgYXZhaWxhYmxlIGZvciBCQ00yNzExKSAqLw0KK8KgwqDCoMKgwqDCoCBbQkNNMjcx
-MV9DTE9DS19HRU5FVDI1MF3CoMKgwqDCoMKgwqDCoCA9IFJFR0lTVEVSX1BFUl9DTEsoDQorwqDC
-oMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoCBTT0NfQkNNMjcxMSwNCivCoMKgwqDCoMKgwqDCoMKg
-wqDCoMKgwqDCoMKgIC5uYW1lID0gImdlbmV0MjUwIiwNCivCoMKgwqDCoMKgwqDCoMKgwqDCoMKg
-wqDCoMKgIC5jdGxfcmVnID0gQ01fR0VORVQyNTBDVEwsDQorwqDCoMKgwqDCoMKgwqDCoMKgwqDC
-oMKgwqDCoCAuZGl2X3JlZyA9IENNX0dFTkVUMjUwRElWLA0KK8KgwqDCoMKgwqDCoMKgwqDCoMKg
-wqDCoMKgwqAgLmludF9iaXRzID0gNCwNCivCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgIC5m
-cmFjX2JpdHMgPSA4LA0KK8KgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqAgLnRjbnRfbXV4ID0g
-NDUpLA0KKw0KK8KgwqDCoMKgwqDCoCBbQkNNMjcxMV9DTE9DS19HRU5FVDEyNV3CoMKgwqDCoMKg
-wqDCoCA9IFJFR0lTVEVSX1BFUl9DTEsoDQorwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoCBT
-T0NfQkNNMjcxMSwNCivCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgIC5uYW1lID0gImdlbmV0
-MTI1IiwNCivCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgIC5jdGxfcmVnID0gQ01fR0VORVQx
-MjVDVEwsDQorwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoCAuZGl2X3JlZyA9IENNX0dFTkVU
-MTI1RElWLA0KK8KgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqAgLmludF9iaXRzID0gNCwNCivC
-oMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgIC5mcmFjX2JpdHMgPSA4LA0KK8KgwqDCoMKgwqDC
-oMKgwqDCoMKgwqDCoMKgwqAgLnRjbnRfbXV4ID0gNTApLA0KKw0KwqDCoMKgwqDCoMKgwqAgLyog
-R2VuZXJhbCBwdXJwb3NlIChHUElPKSBjbG9ja3MgKi8NCsKgwqDCoMKgwqDCoMKgIFtCQ00yODM1
-X0NMT0NLX0dQMF3CoMKgwqDCoCA9IFJFR0lTVEVSX1BFUl9DTEsoDQrCoMKgwqDCoMKgwqDCoMKg
-wqDCoMKgwqDCoMKgwqAgU09DX0FMTCwNCmRpZmYgLS1naXQgYS9pbmNsdWRlL2R0LWJpbmRpbmdz
-L2Nsb2NrL2JjbTI4MzUuaA0KYi9pbmNsdWRlL2R0LWJpbmRpbmdzL2Nsb2NrL2JjbTI4MzUuaA0K
-aW5kZXggYjYwYzAzNDMuLmZjYTY1YWIgMTAwNjQ0DQotLS0gYS9pbmNsdWRlL2R0LWJpbmRpbmdz
-L2Nsb2NrL2JjbTI4MzUuaA0KKysrIGIvaW5jbHVkZS9kdC1iaW5kaW5ncy9jbG9jay9iY20yODM1
-LmgNCkBAIC02MCwzICs2MCw1IEBADQrCoCNkZWZpbmUgQkNNMjgzNV9DTE9DS19EU0kxUMKgwqDC
-oMKgwqDCoMKgwqDCoMKgwqAgNTANCsKgDQrCoCNkZWZpbmUgQkNNMjcxMV9DTE9DS19FTU1DMsKg
-wqDCoMKgwqDCoMKgwqDCoMKgwqAgNTENCisjZGVmaW5lIEJDTTI3MTFfQ0xPQ0tfR0VORVQyNTDC
-oMKgwqDCoMKgwqDCoMKgIDUyDQorI2RlZmluZSBCQ00yNzExX0NMT0NLX0dFTkVUMTI1wqDCoMKg
-wqDCoMKgwqDCoCA1Mw0KDQoNCg==
+Yossi Kuperman <yossiku@mellanox.com> writes:
+
+> Following is an outline briefly describing our plans towards offloading H=
+TB functionality.
+>
+> HTB qdisc allows you to use one physical link to simulate several
+> slower links. This is done by configuring a hierarchical QoS tree;
+> each tree node corresponds to a class. Filters are used to classify
+> flows to different classes. HTB is quite flexible and versatile, but
+> it comes with a cost. HTB does not scale and consumes considerable CPU
+> and memory. Our aim is to offload HTB functionality to hardware and
+> provide the user with the flexibility and the conventional tools
+> offered by TC subsystem, while scaling to thousands of traffic classes
+> and maintaining wire-speed performance.=C2=A0
+>
+> Mellanox hardware can support hierarchical rate-limiting;
+> rate-limiting is done per hardware queue. In our proposed solution,
+> flow classification takes place in software. By moving the
+> classification to clsact egress hook, which is thread-safe and does
+> not require locking, we avoid the contention induced by the single
+> qdisc lock. Furthermore, clsact filters are perform before the
+> net-device=E2=80=99s TX queue is selected, allowing the driver a chance to
+> translate the class to the appropriate hardware queue. Please note
+> that the user will need to configure the filters slightly different;
+> apply them to the clsact rather than to the HTB itself, and set the
+> priority to the desired class-id.
+>
+> For example, the following two filters are equivalent:
+> 	1. tc filter add dev eth0 parent 1:0 protocol ip flower dst_port 80 clas=
+sid 1:10
+> 	2. tc filter add dev eth0 egress protocol ip flower dst_port 80 action s=
+kbedit priority 1:10
+>
+> Note: to support the above filter no code changes to the upstream kernel =
+nor to iproute2 package is required.
+>
+> Furthermore, the most concerning aspect of the current HTB
+> implementation is its lack of support for multi-queue. All
+> net-device=E2=80=99s TX queues points to the same HTB instance, resulting=
+ in
+> high spin-lock contention. This contention (might) negates the overall
+> performance gains expected by introducing the offload in the first
+> place. We should modify HTB to present itself as mq qdisc does. By
+> default, mq qdisc allocates a simple fifo qdisc per TX queue exposed
+> by the lower layer device. This is only when hardware offload is
+> configured, otherwise, HTB behaves as usual. There is no HTB code
+> along the data-path; the only overhead compared to regular traffic is
+> the classification taking place at clsact. Please note that this
+> design induces full offload---no fallback to software; it is not
+> trivial to partial offload the hierarchical tree considering borrowing
+> between siblings anyway.
+>
+>
+> To summaries: for each HTB leaf-class the driver will allocate a
+> special queue and match it with a corresponding net-device TX queue
+> (increase real_num_tx_queues). A unique fifo qdisc will be attached to
+> any such TX queue. Classification will still take place in software,
+> but rather at the clsact egress hook. This way we can scale to
+> thousands of classes while maintaining wire-speed performance and
+> reducing CPU overhead.
+>
+> Any feedback will be much appreciated.
+
+Other than echoing Dave's concern around baking FIFO semantics into
+hardware, maybe also consider whether implementing the required
+functionality using EDT-based semantics instead might be better? I.e.,
+something like this:
+https://netdevconf.info/0x14/session.html?talk-replacing-HTB-with-EDT-and-B=
+PF
+
+-Toke
+
