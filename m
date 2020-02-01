@@ -2,122 +2,95 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 5CCC914F940
-	for <lists+netdev@lfdr.de>; Sat,  1 Feb 2020 18:56:50 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7978714F95D
+	for <lists+netdev@lfdr.de>; Sat,  1 Feb 2020 19:20:19 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726834AbgBAR4q (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 1 Feb 2020 12:56:46 -0500
-Received: from mail-pj1-f66.google.com ([209.85.216.66]:54378 "EHLO
-        mail-pj1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726731AbgBAR4p (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 1 Feb 2020 12:56:45 -0500
-Received: by mail-pj1-f66.google.com with SMTP id dw13so4387318pjb.4
-        for <netdev@vger.kernel.org>; Sat, 01 Feb 2020 09:56:44 -0800 (PST)
+        id S1726466AbgBASUN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 1 Feb 2020 13:20:13 -0500
+Received: from mail-pg1-f182.google.com ([209.85.215.182]:44668 "EHLO
+        mail-pg1-f182.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726195AbgBASUM (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 1 Feb 2020 13:20:12 -0500
+Received: by mail-pg1-f182.google.com with SMTP id x7so5394033pgl.11;
+        Sat, 01 Feb 2020 10:20:12 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=1rxiDiiWyy+RaaD0YllXb5sVbRbHdZvAaLoyASC1RHA=;
-        b=UbIWczwiQvzV+o1/R62NbaP1lFCIW4J4I1Znu2jtuEVKVBfSBP0kAK6LdTGJ1ujZps
-         /G0uyRiL+3/xM2Hvkwz1ZQhXsnR97q5ZnjDFj6XXbM/7HbkX4QGvl8Ij1VWRDdoVEVqI
-         D9Ks/1wEw6tLdPvSdLg1Vw6B3NocqQ1gDZwAk=
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=sc/wmcgsvsqqJPAqusNZRRjiSGWwsUdCmJftv69qgL4=;
+        b=EuhES7IO0EreL19++LRkzUvPxKaR8b5xehcp3NlephRQVM3qIND/gc0ki3gfZBvfIt
+         DKDLAUqS+7FXvPZvfj/i7q7WuzfR/JPUy+ThnRpliusNT31MCODc5p2ucnHDSBkeeZ73
+         FuGtJ+GLpL4hiSCZdImSZRr2tnrC7cp/HD1kgSN0COXPS6kTwrW8oLZw01ELRQZgpZtQ
+         NypKSvTDZd5q9po/8QwrQKsCWZ9nU6fOFjFtv85xKr3wi0kHGviGZStAvNPy5GqJBqoH
+         l3bscRRtxVavDE2dUHCaycEON+TfRRZrGmRXupx9P+Y3tXpbKzdyA5NUv5yKs7TWUS7i
+         pxsw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=1rxiDiiWyy+RaaD0YllXb5sVbRbHdZvAaLoyASC1RHA=;
-        b=VYtCVwfVk+wrVZw+Wa/g/ySt3s87XgZgMsh9uz+Adk8Ech2yD/h3Zr98DYfMb61nTh
-         gSXlfmAUVArgocQ0fni58jNjznCV6ryEw0VcAz6XLU0+2dOI1Crb4bvDuWeMY/eTC84Z
-         mmGai8/dMZhaeVQYyYJm3Ct7AtAByyvPoUQ3rNumglcrSS+UvtZmSbyrdgOGmIP1k7Lp
-         0kFkCmo1QFT4kJIfoPqNQsERd3BKL8DIpfTqryugjdFOnAJLp4x32ZAWsZpwBoaU26js
-         QdNkGOztgbP3ulweZWVM8n+BQxRurWhx5DD9flO0KLmxwM6rEwfcur08E8e3+jqpFkP1
-         gMKA==
-X-Gm-Message-State: APjAAAW2QQsgQz3FcZ7677gi8fFwz/++gyJUNwEqbZyzWxs9DljnNcYp
-        efqNb1daqssZKJTpcn/OgN+bxw==
-X-Google-Smtp-Source: APXvYqxT3vOizdt1K5+VTatra4+LXkGQ2fpy4tPPX6L9duoaO3re51J2wolPrp+nN4BPCFA89zymvQ==
-X-Received: by 2002:a17:902:9b93:: with SMTP id y19mr15780032plp.89.1580579803746;
-        Sat, 01 Feb 2020 09:56:43 -0800 (PST)
-Received: from www.outflux.net (smtp.outflux.net. [198.145.64.163])
-        by smtp.gmail.com with ESMTPSA id gc1sm14073972pjb.20.2020.02.01.09.56.42
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 01 Feb 2020 09:56:42 -0800 (PST)
-Date:   Sat, 1 Feb 2020 09:56:41 -0800
-From:   Kees Cook <keescook@chromium.org>
-To:     Jann Horn <jannh@google.com>
-Cc:     Christian Borntraeger <borntraeger@de.ibm.com>,
-        Christoph Hellwig <hch@infradead.org>,
-        Christopher Lameter <cl@linux.com>,
-        Jiri Slaby <jslaby@suse.cz>,
-        Julian Wiedmann <jwi@linux.ibm.com>,
-        Ursula Braun <ubraun@linux.ibm.com>,
-        Alexander Viro <viro@zeniv.linux.org.uk>,
-        kernel list <linux-kernel@vger.kernel.org>,
-        David Windsor <dave@nullcore.net>,
-        Pekka Enberg <penberg@kernel.org>,
-        David Rientjes <rientjes@google.com>,
-        Joonsoo Kim <iamjoonsoo.kim@lge.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Linux-MM <linux-mm@kvack.org>, linux-xfs@vger.kernel.org,
-        Linus Torvalds <torvalds@linux-foundation.org>,
-        Andy Lutomirski <luto@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Laura Abbott <labbott@redhat.com>,
-        Mark Rutland <mark.rutland@arm.com>,
-        "Martin K. Petersen" <martin.petersen@oracle.com>,
-        Paolo Bonzini <pbonzini@redhat.com>,
-        Christoffer Dall <christoffer.dall@linaro.org>,
-        Dave Kleikamp <dave.kleikamp@oracle.com>,
-        Jan Kara <jack@suse.cz>,
-        Luis de Bethencourt <luisbg@kernel.org>,
-        Marc Zyngier <marc.zyngier@arm.com>,
-        Rik van Riel <riel@redhat.com>,
-        Matthew Garrett <mjg59@google.com>,
-        linux-fsdevel <linux-fsdevel@vger.kernel.org>,
-        linux-arch <linux-arch@vger.kernel.org>,
-        Network Development <netdev@vger.kernel.org>,
-        Kernel Hardening <kernel-hardening@lists.openwall.com>,
-        Vlastimil Babka <vbabka@suse.cz>,
-        Michal Kubecek <mkubecek@suse.cz>
-Subject: Re: [kernel-hardening] [PATCH 09/38] usercopy: Mark kmalloc caches
- as usercopy caches
-Message-ID: <202002010952.ACDA7A81@keescook>
-References: <bfca96db-bbd0-d958-7732-76e36c667c68@suse.cz>
- <202001271519.AA6ADEACF0@keescook>
- <5861936c-1fe1-4c44-d012-26efa0c8b6e7@de.ibm.com>
- <202001281457.FA11CC313A@keescook>
- <alpine.DEB.2.21.2001291640350.1546@www.lameter.com>
- <6844ea47-8e0e-4fb7-d86f-68046995a749@de.ibm.com>
- <20200129170939.GA4277@infradead.org>
- <771c5511-c5ab-3dd1-d938-5dbc40396daa@de.ibm.com>
- <202001300945.7D465B5F5@keescook>
- <CAG48ez1a4waGk9kB0WLaSbs4muSoK0AYAVk8=XYaKj4_+6e6Hg@mail.gmail.com>
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=sc/wmcgsvsqqJPAqusNZRRjiSGWwsUdCmJftv69qgL4=;
+        b=Uvzg1em9FJSD8KUS/fdikVuAg7lLY0tgaSresGyEuJVQ4q5UozE5g8hr0TdBPYepP1
+         gGOpycE3t+9YJ9cUWRAPCeXOd2Tb+GeVIX+QiZUxf1KzgCuhN2K22mwb+MGxOWlAX1Ln
+         NXQwmkFVABZusbRx9aNlZpzBKkj77sbeSsX25qvvjqPoC3mMa4XbkFDfiXlTkhCMM9KB
+         9MnWE3y6FQrLd5qOA8wUy8Z3NesAjVwkjRDfAJ89aSnYUR+ng7YCVFtWYE9lFLiAUHSH
+         uEcEtqDEna0hHZCik/Lotjw0sI47fwH0qeH/m9Cgg5OLkw5tRdQwgO8/bQ7s/Q2glZBz
+         0BCA==
+X-Gm-Message-State: APjAAAWWwTpoTkysQuaGXIqVB2RvPVtlLxWH6RkeRGYa6iw8tABupzfi
+        9PskV9IQhM4J/z6NMe5TjXc=
+X-Google-Smtp-Source: APXvYqzf/T5Qq1zGlU3DeMkQFmTkZcoWE6uF1OlLdGiQlMxoUc/+8hBa4DPpcKCdceRASeaqqubUlg==
+X-Received: by 2002:a62:1d1:: with SMTP id 200mr17043051pfb.184.1580581211911;
+        Sat, 01 Feb 2020 10:20:11 -0800 (PST)
+Received: from [192.168.86.235] (c-73-241-150-58.hsd1.ca.comcast.net. [73.241.150.58])
+        by smtp.gmail.com with ESMTPSA id p4sm2989884pgh.14.2020.02.01.10.20.09
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Sat, 01 Feb 2020 10:20:10 -0800 (PST)
+Subject: Re: [PATCH v2 2/2] selftests: net: Add FIN_ACK processing order
+ related latency spike test
+To:     sj38.park@gmail.com, edumazet@google.com
+Cc:     davem@davemloft.net, aams@amazon.com, ncardwell@google.com,
+        netdev@vger.kernel.org, linux-kselftest@vger.kernel.org,
+        linux-kernel@vger.kernel.org, shuah@kernel.org, ycheng@google.com,
+        David.Laight@ACULAB.COM, SeongJae Park <sjpark@amazon.de>
+References: <20200201071859.4231-1-sj38.park@gmail.com>
+ <20200201071859.4231-3-sj38.park@gmail.com>
+From:   Eric Dumazet <eric.dumazet@gmail.com>
+Message-ID: <0fc6654c-c938-3920-0097-cddc34474855@gmail.com>
+Date:   Sat, 1 Feb 2020 10:20:08 -0800
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.2.2
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CAG48ez1a4waGk9kB0WLaSbs4muSoK0AYAVk8=XYaKj4_+6e6Hg@mail.gmail.com>
+In-Reply-To: <20200201071859.4231-3-sj38.park@gmail.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Jan 31, 2020 at 01:03:40PM +0100, Jann Horn wrote:
-> I think dma-kmalloc slabs should be handled the same way as normal
-> kmalloc slabs. When a dma-kmalloc allocation is freshly created, it is
-> just normal kernel memory - even if it might later be used for DMA -,
-> and it should be perfectly fine to copy_from_user() into such
-> allocations at that point, and to copy_to_user() out of them at the
-> end. If you look at the places where such allocations are created, you
-> can see things like kmemdup(), memcpy() and so on - all normal
-> operations that shouldn't conceptually be different from usercopy in
-> any relevant way.
 
-I can't find where the address limit for dma-kmalloc is implemented.
 
-As to whitelisting all of dma-kmalloc -- I guess I can be talked into
-it. It still seems like the memory used for direct hardware
-communication shouldn't be exposed to userspace, but it we're dealing
-with packet data, etc, then it makes sense not to have to have bounce
-buffers, etc.
+On 1/31/20 11:18 PM, sj38.park@gmail.com wrote:
+> From: SeongJae Park <sjpark@amazon.de>
+> 
+> This commit adds a test for FIN_ACK process races related reconnection
+> latency spike issues.  The issue has described and solved by the
+> previous commit ("tcp: Reduce SYN resend delay if a suspicous ACK is
+> received").
+> 
+> The test program is configured with a server and a client process.  The
+> server creates and binds a socket to a port that dynamically allocated,
+> listen on it, and start a infinite loop.  Inside the loop, it accepts
+> connection, reads 4 bytes from the socket, and closes the connection.
+> The client is constructed as an infinite loop.  Inside the loop, it
+> creates a socket with LINGER and NODELAY option, connect to the server,
+> send 4 bytes data, try read some data from server.  After the read()
+> returns, it measure the latency from the beginning of this loop to this
+> point and if the latency is larger than 1 second (spike), print a
+> message.
+> 
+> Signed-off-by: SeongJae Park <sjpark@amazon.de>
 
--- 
-Kees Cook
+Reviewed-by: Eric Dumazet <edumazet@google.com>
+
