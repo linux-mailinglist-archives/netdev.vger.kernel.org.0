@@ -2,117 +2,92 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 6725814F53F
-	for <lists+netdev@lfdr.de>; Sat,  1 Feb 2020 00:37:04 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C380214F54E
+	for <lists+netdev@lfdr.de>; Sat,  1 Feb 2020 01:03:28 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726330AbgAaXhD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 31 Jan 2020 18:37:03 -0500
-Received: from Chamillionaire.breakpoint.cc ([193.142.43.52]:53028 "EHLO
-        Chamillionaire.breakpoint.cc" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726239AbgAaXhC (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 31 Jan 2020 18:37:02 -0500
-Received: from fw by Chamillionaire.breakpoint.cc with local (Exim 4.92)
-        (envelope-from <fw@strlen.de>)
-        id 1ixfqN-0006Qg-2J; Sat, 01 Feb 2020 00:36:59 +0100
-Date:   Sat, 1 Feb 2020 00:36:59 +0100
-From:   Florian Westphal <fw@strlen.de>
-To:     Cong Wang <xiyou.wangcong@gmail.com>
-Cc:     Florian Westphal <fw@strlen.de>,
-        Linux Kernel Network Developers <netdev@vger.kernel.org>,
-        NetFilter <netfilter-devel@vger.kernel.org>,
-        syzbot <syzbot+adf6c6c2be1c3a718121@syzkaller.appspotmail.com>,
-        Pablo Neira Ayuso <pablo@netfilter.org>,
-        Jozsef Kadlecsik <kadlec@netfilter.org>
-Subject: Re: [Patch nf 3/3] xt_hashlimit: limit the max size of hashtable
-Message-ID: <20200131233659.GM795@breakpoint.cc>
-References: <20200131205216.22213-1-xiyou.wangcong@gmail.com>
- <20200131205216.22213-4-xiyou.wangcong@gmail.com>
- <20200131220807.GJ795@breakpoint.cc>
- <CAM_iQpVVgkP8u_9ez-2fmrJDdKoFwAxGcbE3Mmk3=7cv4W_QJQ@mail.gmail.com>
+        id S1726561AbgBAADT convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Fri, 31 Jan 2020 19:03:19 -0500
+Received: from mx0a-00082601.pphosted.com ([67.231.145.42]:46984 "EHLO
+        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1726264AbgBAADT (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 31 Jan 2020 19:03:19 -0500
+Received: from pps.filterd (m0044010.ppops.net [127.0.0.1])
+        by mx0a-00082601.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 01101vEO002153
+        for <netdev@vger.kernel.org>; Fri, 31 Jan 2020 16:03:19 -0800
+Received: from mail.thefacebook.com ([163.114.132.120])
+        by mx0a-00082601.pphosted.com with ESMTP id 2xvn09juq0-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT)
+        for <netdev@vger.kernel.org>; Fri, 31 Jan 2020 16:03:18 -0800
+Received: from intmgw004.08.frc2.facebook.com (2620:10d:c085:108::4) by
+ mail.thefacebook.com (2620:10d:c085:21d::4) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.1779.2; Fri, 31 Jan 2020 16:03:18 -0800
+Received: by devbig007.ftw2.facebook.com (Postfix, from userid 572438)
+        id 5FC1E76081D; Fri, 31 Jan 2020 16:03:14 -0800 (PST)
+Smtp-Origin-Hostprefix: devbig
+From:   Alexei Starovoitov <ast@kernel.org>
+Smtp-Origin-Hostname: devbig007.ftw2.facebook.com
+To:     <davem@davemloft.net>
+CC:     <daniel@iogearbox.net>, <netdev@vger.kernel.org>,
+        <bpf@vger.kernel.org>, <kernel-team@fb.com>
+Smtp-Origin-Cluster: ftw2c04
+Subject: [PATCH bpf] bpf: Fix modifier skipping logic
+Date:   Fri, 31 Jan 2020 16:03:14 -0800
+Message-ID: <20200201000314.261392-1-ast@kernel.org>
+X-Mailer: git-send-email 2.23.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CAM_iQpVVgkP8u_9ez-2fmrJDdKoFwAxGcbE3Mmk3=7cv4W_QJQ@mail.gmail.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+Content-Transfer-Encoding: 8BIT
+X-FB-Internal: Safe
+Content-Type: text/plain
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.138,18.0.572
+ definitions=2020-01-31_07:2020-01-31,2020-01-31 signatures=0
+X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 mlxscore=0 clxscore=1034
+ mlxlogscore=979 impostorscore=0 lowpriorityscore=0 adultscore=0
+ malwarescore=0 bulkscore=0 phishscore=0 spamscore=0 suspectscore=1
+ priorityscore=1501 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-1911200001 definitions=main-2001310190
+X-FB-Internal: deliver
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Cong Wang <xiyou.wangcong@gmail.com> wrote:
-> On Fri, Jan 31, 2020 at 2:08 PM Florian Westphal <fw@strlen.de> wrote:
-> >
-> > Cong Wang <xiyou.wangcong@gmail.com> wrote:
-> > > The user-specified hashtable size is unbound, this could
-> > > easily lead to an OOM or a hung task as we hold the global
-> > > mutex while allocating and initializing the new hashtable.
-> > >
-> > > The max value is derived from the max value when chosen by
-> > > the kernel.
-> > >
-> > > Reported-and-tested-by: syzbot+adf6c6c2be1c3a718121@syzkaller.appspotmail.com
-> > > Cc: Pablo Neira Ayuso <pablo@netfilter.org>
-> > > Cc: Jozsef Kadlecsik <kadlec@netfilter.org>
-> > > Cc: Florian Westphal <fw@strlen.de>
-> > > Signed-off-by: Cong Wang <xiyou.wangcong@gmail.com>
-> > > ---
-> > >  net/netfilter/xt_hashlimit.c | 6 +++++-
-> > >  1 file changed, 5 insertions(+), 1 deletion(-)
-> > >
-> > > diff --git a/net/netfilter/xt_hashlimit.c b/net/netfilter/xt_hashlimit.c
-> > > index 57a2639bcc22..6327134c5886 100644
-> > > --- a/net/netfilter/xt_hashlimit.c
-> > > +++ b/net/netfilter/xt_hashlimit.c
-> > > @@ -272,6 +272,8 @@ dsthash_free(struct xt_hashlimit_htable *ht, struct dsthash_ent *ent)
-> > >  }
-> > >  static void htable_gc(struct work_struct *work);
-> > >
-> > > +#define HASHLIMIT_MAX_SIZE 8192
-> > > +
-> > >  static int htable_create(struct net *net, struct hashlimit_cfg3 *cfg,
-> > >                        const char *name, u_int8_t family,
-> > >                        struct xt_hashlimit_htable **out_hinfo,
-> > > @@ -290,7 +292,7 @@ static int htable_create(struct net *net, struct hashlimit_cfg3 *cfg,
-> > >               size = (nr_pages << PAGE_SHIFT) / 16384 /
-> > >                      sizeof(struct hlist_head);
-> > >               if (nr_pages > 1024 * 1024 * 1024 / PAGE_SIZE)
-> > > -                     size = 8192;
-> > > +                     size = HASHLIMIT_MAX_SIZE;
-> > >               if (size < 16)
-> > >                       size = 16;
-> > >       }
-> > > @@ -848,6 +850,8 @@ static int hashlimit_mt_check_common(const struct xt_mtchk_param *par,
-> > >
-> > >       if (cfg->gc_interval == 0 || cfg->expire == 0)
-> > >               return -EINVAL;
-> > > +     if (cfg->size > HASHLIMIT_MAX_SIZE)
-> > > +             return -ENOMEM;
-> >
-> > Hmm, won't that break restore of rulesets that have something like
-> >
-> > --hashlimit-size 10000?
-> >
-> > AFAIU this limits the module to vmalloc requests of only 64kbyte.
-> > I'm not opposed to a limit (or a cap), but 64k seems a bit low to me.
-> 
-> 8192 is from the current code which handles kernel-chosen size
-> (that is cfg->size==0), I personally have no idea what the max
-> should be. :)
+Fix the way modifiers are skipped while walking pointers. Otherwise second
+level dereferences of 'const struct foo *' will be rejected by the verifier.
 
-Me neither :-/
+Fixes: 9e15db66136a ("bpf: Implement accurate raw_tp context access via BTF")
+Signed-off-by: Alexei Starovoitov <ast@kernel.org>
+---
+ kernel/bpf/btf.c | 8 +++-----
+ 1 file changed, 3 insertions(+), 5 deletions(-)
 
-> Please suggest a number.
+diff --git a/kernel/bpf/btf.c b/kernel/bpf/btf.c
+index b7c1660fb594..a289f2915ba8 100644
+--- a/kernel/bpf/btf.c
++++ b/kernel/bpf/btf.c
+@@ -3931,6 +3931,7 @@ int btf_struct_access(struct bpf_verifier_log *log,
+ 
+ 		if (btf_type_is_ptr(mtype)) {
+ 			const struct btf_type *stype;
++			u32 id;
+ 
+ 			if (msize != size || off != moff) {
+ 				bpf_log(log,
+@@ -3939,12 +3940,9 @@ int btf_struct_access(struct bpf_verifier_log *log,
+ 				return -EACCES;
+ 			}
+ 
+-			stype = btf_type_by_id(btf_vmlinux, mtype->type);
+-			/* skip modifiers */
+-			while (btf_type_is_modifier(stype))
+-				stype = btf_type_by_id(btf_vmlinux, stype->type);
++			stype = btf_type_skip_modifiers(btf_vmlinux, mtype->type, &id);
+ 			if (btf_type_is_struct(stype)) {
+-				*next_btf_id = mtype->type;
++				*next_btf_id = id;
+ 				return PTR_TO_BTF_ID;
+ 			}
+ 		}
+-- 
+2.23.0
 
-O would propose a max alloc size (hard limit) of ~8 MByte of vmalloc
-space, or maybe 16 at most.
-
-1048576 max upperlimit -> ~8mbyte vmalloc request -> allows to store
-up to 2**23 entries.
-
-In order to prevent breaking userspace, perhaps make it so that the
-kernel caps cfg.max at twice that value?  Would allow storing up to
-16777216 addresses with an average chain depth of 16 (which is quite
-large).  We could increase the max limit in case someone presents a use
-case.
-
-What do you think?
