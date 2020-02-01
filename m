@@ -2,150 +2,142 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 03AAA14F902
-	for <lists+netdev@lfdr.de>; Sat,  1 Feb 2020 17:43:58 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3D9C914F904
+	for <lists+netdev@lfdr.de>; Sat,  1 Feb 2020 17:44:43 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727053AbgBAQn4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 1 Feb 2020 11:43:56 -0500
-Received: from mail-pj1-f68.google.com ([209.85.216.68]:51767 "EHLO
-        mail-pj1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726622AbgBAQn4 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 1 Feb 2020 11:43:56 -0500
-Received: by mail-pj1-f68.google.com with SMTP id fa20so4341353pjb.1
-        for <netdev@vger.kernel.org>; Sat, 01 Feb 2020 08:43:55 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id;
-        bh=YTGkJu+m4v8swIov2QhsLT2nGbC1Aymk5/iW43KkcEs=;
-        b=i31OC3WsF2V6i6uaMkakCSpGHm2ZtFPjF9P1MIBXrKTpWA9NUyr7cbDwtmc2ZqN8Vh
-         thG8crnsm73KmVEf2IyyLqpqHjIjtj0bG2Xf7J6C3IJyvhusnJ+SPQZmEvA4LD7QrN33
-         30Um9ir3TC2BydZu3OMoWKS3iff+3uckcfp2dRCslftsUfU0olXIb38jPKL0slcSLH52
-         lkWhyFcza5Mj4MyoVUhTe7AKPLzCEWBEdla1R+CjlcyvwbTBZ1zde8371l9IQ4Bm2TRV
-         f/ZwJTx05haRcFppPfc1DEWMn18CJ2hohgUxL6IEeVoqvWPwiDHHPWbkSZy13bTVIhmr
-         zV/w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id;
-        bh=YTGkJu+m4v8swIov2QhsLT2nGbC1Aymk5/iW43KkcEs=;
-        b=L330eE284ysCWc06wK/A+FY8d7gS2nggwKrxPxeUkMQK9Rxo5k3zguB119Ft8Fhq64
-         eukzQYjTPz4dg+pa9eUv0hUs1oQL6IoEi4ePRlod5MiZTBv51Fo2bm7By3aGtCB9J6fc
-         dxs/7o/ZBurRQ0D0hcGuaU0g7sWEeL7fK58uXciq9/72z98xCKpFO+tdFbTXXYSANKgH
-         zckmBgXuz23MvfFHBAdUR4RaQpsYc/mv5gPqz+5PuVIaNyVubrhM92sHfTUobVyps90O
-         zYxPZQdBpudQCHwb0bqZUm8vTXoA5P3Pc4idSzRlwuwniQFhxMkXb9ZL0k3zUjqapbZf
-         qY4Q==
-X-Gm-Message-State: APjAAAWXAKyNJxw74NiU0xw8TL29YoTUtcL65gWxAm16KI+xc3322RuJ
-        XZgKXLmRYI1r9ZbcXzffAo6PXfYw
-X-Google-Smtp-Source: APXvYqzKgCyuHvKToJZJZyVuixgCx/5zgzlBJWUVyFUvyqj+WFrtYjAVZxH+bjQr+w2qNZCFlbFdVg==
-X-Received: by 2002:a17:90a:1951:: with SMTP id 17mr19513689pjh.101.1580575435200;
-        Sat, 01 Feb 2020 08:43:55 -0800 (PST)
-Received: from localhost.localdomain ([180.70.143.152])
-        by smtp.gmail.com with ESMTPSA id s7sm14849775pjk.22.2020.02.01.08.43.53
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 01 Feb 2020 08:43:54 -0800 (PST)
-From:   Taehee Yoo <ap420073@gmail.com>
-To:     davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org
-Cc:     ap420073@gmail.com
-Subject: [PATCH net v3 7/7] netdevsim: remove unused sdev code
-Date:   Sat,  1 Feb 2020 16:43:48 +0000
-Message-Id: <20200201164348.10317-1-ap420073@gmail.com>
-X-Mailer: git-send-email 2.17.1
+        id S1726877AbgBAQoi (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 1 Feb 2020 11:44:38 -0500
+Received: from mout.gmx.net ([212.227.15.19]:44251 "EHLO mout.gmx.net"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726669AbgBAQoi (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sat, 1 Feb 2020 11:44:38 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=gmx.net;
+        s=badeba3b8450; t=1580575470;
+        bh=/ob/a7mTZsY4S24MeD9XiEGceK7Aswp/QlUOPUdplx4=;
+        h=X-UI-Sender-Class:Subject:To:Cc:References:From:Date:In-Reply-To;
+        b=kc1nazgmaVqhaq3ebOmtBHh0aLufYzO0TtrVsdGDUyj4tzK6KnWrHOfK8QM2mSz+j
+         Mv/W/fdG23YxfbYr2ay1h0MJF6ct606B0rkUcy8/uRc2Bjq3jUc1Ow36wVYwZyDMD/
+         qTwbrK7FylBaIJoNMgPbG65FuTiSdXVEXC6NHZgY=
+X-UI-Sender-Class: 01bb95c1-4bf8-414a-932a-4f6e2808ef9c
+Received: from [192.168.1.183] ([37.4.249.138]) by mail.gmx.com (mrgmx004
+ [212.227.17.190]) with ESMTPSA (Nemesis) id 1Mf07E-1jVLh13fXG-00gVZh; Sat, 01
+ Feb 2020 17:44:29 +0100
+Subject: Re: [PATCH 6/6] net: bcmgenet: reduce severity of missing clock
+ warnings
+To:     Jeremy Linton <jeremy.linton@arm.com>, netdev@vger.kernel.org
+Cc:     opendmb@gmail.com, f.fainelli@gmail.com, davem@davemloft.net,
+        bcm-kernel-feedback-list@broadcom.com,
+        linux-kernel@vger.kernel.org, andrew@lunn.ch, hkallweit1@gmail.com,
+        Nicolas Saenz Julienne <nsaenzjulienne@suse.de>
+References: <20200201074625.8698-1-jeremy.linton@arm.com>
+ <20200201074625.8698-7-jeremy.linton@arm.com>
+From:   Stefan Wahren <wahrenst@gmx.net>
+Message-ID: <2dfd6cd2-1dd0-c8ff-8d83-aed3b4ea7a79@gmx.net>
+Date:   Sat, 1 Feb 2020 17:44:28 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.9.0
+MIME-Version: 1.0
+In-Reply-To: <20200201074625.8698-7-jeremy.linton@arm.com>
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: base64
+Content-Language: en-US
+X-Provags-ID: V03:K1:pxSIuV1zBaipvgSKbGqEJEnpcx0G5qFegoQhfHNPqk9zvxZjQvS
+ am55P9nUw7TZxBAz6uvIswj+R1R9yThkwceU8bU6U7jTe0tCZpqZWw9RFOsleKALCfnXD6z
+ 3hkRUBHADgznpeS98zCgSx4Uek64q6t/SXcqKS65700JRRdE2JdEelR6/fzAmLuI8l8+OsT
+ +4eCuchyp4xOyMAKBTDqQ==
+X-Spam-Flag: NO
+X-UI-Out-Filterresults: notjunk:1;V03:K0:vMYkvkvTjxA=:OB2LALFmQULgObB5lIwA/w
+ P8bOp3k+fF0biyYTL+g0/QygvgFeKbzO0vckRWD1vSzGYsjphN1f58x9TWIS7KUW0eNyknd50
+ w1jgx7+sUSls1UzrwR6OAM6iRYEwaJZv0FzeOajofE0EsRIHQKOupOcj4B3FQNEvUS5T/AJcm
+ iYUn4CONmcLNPpv+ZNJBKIsnmuNNebHZPW308P/V8S/aXkEskfBz6RpIsKspAPGA68uEI0Fgk
+ 228ZId0jJR0wwgl7S2k/X/RHUt4Cw1srt4xqJTnylLaDgHefifzbKd7GhZf14EfO40uzecLE/
+ +L2dUazLVcBNAAf5tJ9oRL0aIa+G7H6G0H1gUaOryw1P57wfPzdB4MMJWrcne2RPoMsGoKkij
+ H+pYW5HYrmleL5pmuJtvjwrh3S3LIh161N3cENEtdCO0WBvEkEvo9pvX8n3zSQUNhF5zJXz+6
+ tPD2sweoJGhbEsaifVUKJzCue8f4TjkrK2+Wqk5jGR9E/gblbwO2nk9jg4ZjPP7U/CUZo15i4
+ 51n8M2k/AkLwjvcnexZAv1sJLGa77uDy7nUPuNRKXV81xGlnkqtlKaJLcxvIh/yNZDFiCta/j
+ Uk4C0yn9gH4nu5EvE9KYtvmNarga2TTqY2GgcLGrqHSi2TNNsc/h11Mfl1KQj+cHaaryHp0mv
+ vVdznjTr4LzRe6g1w4isEs0F31gfXj5nzyR3Kl0FLwMwBTNPb9Lmw0h8xlS3q98TapE6iMpJ4
+ YNRKd6yPNUbMOviboTcZP3w6IrSSOacRtJgQtOtqTiAc5ZhihLtFekmc8jdBmzIR9Aip0xFgt
+ gimlq8UBI8fYa7/I+DSwagQvddJhiv4bp2NQ0k0Kt4gIfThORxAzhaiMEe9qvLIrwQ+DVpnSt
+ 3KO+NzbzPhJ9K8vcXZqPx31tNXh91Nb+jQp8TTz363LBlpdnrU1o+YIbeED8KubWu5EuTAnWa
+ Ukibq928o/zgy2AGi0OraeMbYjtSL+USsRo70PJzdkPrMv5Vd1TDCfEC8yrQ8TbrJ2B80KdiF
+ kqiVqtgdDyOJX31vZ/fNBULxhLMhMqp0xtzEuDcPQhDaZNEDpb28znmk4EhgK1X4DjcCmjZsN
+ 9h/g4duyLft44CsRgroRD6yOBua3tfcEtwsaOmgakyZxvyrXcGS5vrv/32svKsQOB6rVdckT2
+ 3v6or9S6P4css2lGwxC+wVuo4UwCFO4/9W88hnxGl1xH1d/oq3yqriD1DILvXEJqAVV1/V6FC
+ 6rl0fpcJKREGUrYNH
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-sdev.c code is merged into dev.c and is not used anymore.
-it would be removed.
-
-Reviewed-by: Jakub Kicinski <kuba@kernel.org>
-Signed-off-by: Taehee Yoo <ap420073@gmail.com>
----
-
-v2 -> v3:
- - Include Reviewed-by tag
-
-v2:
- - Initial patch
-
- drivers/net/netdevsim/sdev.c | 69 ------------------------------------
- 1 file changed, 69 deletions(-)
- delete mode 100644 drivers/net/netdevsim/sdev.c
-
-diff --git a/drivers/net/netdevsim/sdev.c b/drivers/net/netdevsim/sdev.c
-deleted file mode 100644
-index 6712da3340d6..000000000000
---- a/drivers/net/netdevsim/sdev.c
-+++ /dev/null
-@@ -1,69 +0,0 @@
--// SPDX-License-Identifier: GPL-2.0
--/* Copyright (c) 2019 Mellanox Technologies. All rights reserved */
--
--#include <linux/debugfs.h>
--#include <linux/err.h>
--#include <linux/kernel.h>
--#include <linux/slab.h>
--
--#include "netdevsim.h"
--
--static struct dentry *nsim_sdev_ddir;
--
--static u32 nsim_sdev_id;
--
--struct netdevsim_shared_dev *nsim_sdev_get(struct netdevsim *joinns)
--{
--	struct netdevsim_shared_dev *sdev;
--	char sdev_ddir_name[10];
--	int err;
--
--	if (joinns) {
--		if (WARN_ON(!joinns->sdev))
--			return ERR_PTR(-EINVAL);
--		sdev = joinns->sdev;
--		sdev->refcnt++;
--		return sdev;
--	}
--
--	sdev = kzalloc(sizeof(*sdev), GFP_KERNEL);
--	if (!sdev)
--		return ERR_PTR(-ENOMEM);
--	sdev->refcnt = 1;
--	sdev->switch_id = nsim_sdev_id++;
--
--	sprintf(sdev_ddir_name, "%u", sdev->switch_id);
--	sdev->ddir = debugfs_create_dir(sdev_ddir_name, nsim_sdev_ddir);
--	if (IS_ERR_OR_NULL(sdev->ddir)) {
--		err = PTR_ERR_OR_ZERO(sdev->ddir) ?: -EINVAL;
--		goto err_sdev_free;
--	}
--
--	return sdev;
--
--err_sdev_free:
--	nsim_sdev_id--;
--	kfree(sdev);
--	return ERR_PTR(err);
--}
--
--void nsim_sdev_put(struct netdevsim_shared_dev *sdev)
--{
--	if (--sdev->refcnt)
--		return;
--	debugfs_remove_recursive(sdev->ddir);
--	kfree(sdev);
--}
--
--int nsim_sdev_init(void)
--{
--	nsim_sdev_ddir = debugfs_create_dir(DRV_NAME "_sdev", NULL);
--	if (IS_ERR_OR_NULL(nsim_sdev_ddir))
--		return -ENOMEM;
--	return 0;
--}
--
--void nsim_sdev_exit(void)
--{
--	debugfs_remove_recursive(nsim_sdev_ddir);
--}
--- 
-2.17.1
-
+SGkgSmVyZW15LA0KDQpbYWRkIE5pY29sYXMgYXMgQkNNMjgzNSBtYWludGFpbmVyXQ0KDQpBbSAw
+MS4wMi4yMCB1bSAwODo0NiBzY2hyaWViIEplcmVteSBMaW50b246DQo+IElmIG9uZSB0eXBlcyAi
+ZmFpbGVkIHRvIGdldCBlbmV0IGNsb2NrIiBvciBzaW1pbGFyIGludG8gZ29vZ2xlDQo+IHRoZXJl
+IGFyZSB+MzcwayBoaXRzLiBUaGUgdmFzdCBtYWpvcml0eSBhcmUgcGVvcGxlIGRlYnVnZ2luZw0K
+PiBwcm9ibGVtcyB1bnJlbGF0ZWQgdG8gdGhpcyBhZGFwdGVyLCBvciBicmFnZ2luZyBhYm91dCB0
+aGVpcg0KPiBycGkncy4gR2l2ZW4gdGhhdCBpdHMgbm90IGEgZmF0YWwgc2l0dWF0aW9uIHdpdGgg
+Y29tbW9uIERUIGJhc2VkDQo+IHN5c3RlbXMsIGxldHMgcmVkdWNlIHRoZSBzZXZlcml0eSBzbyBw
+ZW9wbGUgYXJlbid0IHNlZWluZyBmYWlsdXJlDQo+IG1lc3NhZ2VzIGluIGV2ZXJ5ZGF5IG9wZXJh
+dGlvbi4NCj4NCmknbSBmaW5lIHdpdGggeW91ciBwYXRjaCwgc2luY2UgdGhlIGNsb2NrcyBhcmUg
+b3B0aW9uYWwgYWNjb3JkaW5nIHRvIHRoZQ0KYmluZGluZy4gQnV0IGluc3RlYWQgb2YgaGlkaW5n
+IG9mIHRob3NlIHdhcm5pbmcsIGl0IHdvdWxkIGJlIGJldHRlciB0bw0KZml4IHRoZSByb290IGNh
+dXNlIChtaXNzaW5nIGNsb2NrcykuIFVuZm9ydHVuYXRlbHkgaSBkb24ndCBoYXZlIHRoZQ0KbmVj
+ZXNzYXJ5IGRvY3VtZW50YXRpb24sIGp1c3Qgc29tZSBhbnN3ZXJzIGZyb20gdGhlIFJQaSBndXlz
+Lg0KDQpUaGlzIGlzIHdoYXQgaSBnb3Qgc28gZmFyOg0KDQpkaWZmIC0tZ2l0IGEvYXJjaC9hcm0v
+Ym9vdC9kdHMvYmNtMjcxMS5kdHNpIGIvYXJjaC9hcm0vYm9vdC9kdHMvYmNtMjcxMS5kdHNpDQpp
+bmRleCA5NjFiZWQ4Li5kNGZmMzcwIDEwMDY0NA0KLS0tIGEvYXJjaC9hcm0vYm9vdC9kdHMvYmNt
+MjcxMS5kdHNpDQorKysgYi9hcmNoL2FybS9ib290L2R0cy9iY20yNzExLmR0c2kNCkBAIC0zMzgs
+NiArMzM4LDggQEANCsKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKg
+wqAgcmVnID0gPDB4MCAweDdkNTgwMDAwIDB4MTAwMDA+Ow0KwqDCoMKgwqDCoMKgwqDCoMKgwqDC
+oMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoCAjYWRkcmVzcy1jZWxscyA9IDwweDE+Ow0KwqDCoMKg
+wqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoCAjc2l6ZS1jZWxscyA9IDww
+eDE+Ow0KK8KgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgIGNsb2Nr
+cyA9IDwmY2xvY2tzIEJDTTI3MTFfQ0xPQ0tfR0VORVQyNTA+Ow0KK8KgwqDCoMKgwqDCoMKgwqDC
+oMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgIGNsb2NrLW5hbWVzID0gImVuZXQiOw0KwqDCoMKg
+wqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoCBpbnRlcnJ1cHRzID0gPEdJ
+Q19TUEkgMTU3IElSUV9UWVBFX0xFVkVMX0hJR0g+LA0KwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKg
+wqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgIDxHSUNfU1BJ
+IDE1OCBJUlFfVFlQRV9MRVZFTF9ISUdIPjsNCsKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDC
+oMKgwqDCoMKgwqDCoMKgwqAgc3RhdHVzID0gImRpc2FibGVkIjsNCmRpZmYgLS1naXQgYS9kcml2
+ZXJzL2Nsay9iY20vY2xrLWJjbTI4MzUuYyBiL2RyaXZlcnMvY2xrL2JjbS9jbGstYmNtMjgzNS5j
+DQppbmRleCBkZWQxM2NjLi42MjdmMWIxIDEwMDY0NA0KLS0tIGEvZHJpdmVycy9jbGsvYmNtL2Ns
+ay1iY20yODM1LmMNCisrKyBiL2RyaXZlcnMvY2xrL2JjbS9jbGstYmNtMjgzNS5jDQpAQCAtMTE2
+LDYgKzExNiwxMCBAQA0KwqAjZGVmaW5lIENNX0VNTUNESVbCoMKgwqDCoMKgwqDCoMKgwqDCoMKg
+wqAgMHgxYzQNCsKgI2RlZmluZSBDTV9FTU1DMkNUTMKgwqDCoMKgwqDCoMKgwqDCoMKgwqAgMHgx
+ZDANCsKgI2RlZmluZSBDTV9FTU1DMkRJVsKgwqDCoMKgwqDCoMKgwqDCoMKgwqAgMHgxZDQNCisj
+ZGVmaW5lIENNX0dFTkVUMjUwQ1RMwqDCoMKgwqDCoMKgwqDCoCAweDFlOA0KKyNkZWZpbmUgQ01f
+R0VORVQyNTBESVbCoMKgwqDCoMKgwqDCoMKgIDB4MWVjDQorI2RlZmluZSBDTV9HRU5FVDEyNUNU
+TMKgwqDCoMKgwqDCoMKgwqAgMHgyMTANCisjZGVmaW5lIENNX0dFTkVUMTI1RElWwqDCoMKgwqDC
+oMKgwqDCoCAweDIxNA0KwqANCsKgLyogR2VuZXJhbCBiaXRzIGZvciB0aGUgQ01fKkNUTCByZWdz
+ICovDQrCoCMgZGVmaW5lIENNX0VOQUJMRcKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKg
+wqDCoMKgwqAgQklUKDQpDQpAQCAtMjAyMSw2ICsyMDI1LDI1IEBAIHN0YXRpYyBjb25zdCBzdHJ1
+Y3QgYmNtMjgzNV9jbGtfZGVzYw0KY2xrX2Rlc2NfYXJyYXlbXSA9IHsNCsKgwqDCoMKgwqDCoMKg
+wqDCoMKgwqDCoMKgwqDCoCAuZnJhY19iaXRzID0gOCwNCsKgwqDCoMKgwqDCoMKgwqDCoMKgwqDC
+oMKgwqDCoCAudGNudF9tdXggPSA0MiksDQrCoA0KK8KgwqDCoMKgwqDCoCAvKiBHRU5FVCBjbG9j
+a3MgKG9ubHkgYXZhaWxhYmxlIGZvciBCQ00yNzExKSAqLw0KK8KgwqDCoMKgwqDCoCBbQkNNMjcx
+MV9DTE9DS19HRU5FVDI1MF3CoMKgwqDCoMKgwqDCoCA9IFJFR0lTVEVSX1BFUl9DTEsoDQorwqDC
+oMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoCBTT0NfQkNNMjcxMSwNCivCoMKgwqDCoMKgwqDCoMKg
+wqDCoMKgwqDCoMKgIC5uYW1lID0gImdlbmV0MjUwIiwNCivCoMKgwqDCoMKgwqDCoMKgwqDCoMKg
+wqDCoMKgIC5jdGxfcmVnID0gQ01fR0VORVQyNTBDVEwsDQorwqDCoMKgwqDCoMKgwqDCoMKgwqDC
+oMKgwqDCoCAuZGl2X3JlZyA9IENNX0dFTkVUMjUwRElWLA0KK8KgwqDCoMKgwqDCoMKgwqDCoMKg
+wqDCoMKgwqAgLmludF9iaXRzID0gNCwNCivCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgIC5m
+cmFjX2JpdHMgPSA4LA0KK8KgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqAgLnRjbnRfbXV4ID0g
+NDUpLA0KKw0KK8KgwqDCoMKgwqDCoCBbQkNNMjcxMV9DTE9DS19HRU5FVDEyNV3CoMKgwqDCoMKg
+wqDCoCA9IFJFR0lTVEVSX1BFUl9DTEsoDQorwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoCBT
+T0NfQkNNMjcxMSwNCivCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgIC5uYW1lID0gImdlbmV0
+MTI1IiwNCivCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgIC5jdGxfcmVnID0gQ01fR0VORVQx
+MjVDVEwsDQorwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoCAuZGl2X3JlZyA9IENNX0dFTkVU
+MTI1RElWLA0KK8KgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqAgLmludF9iaXRzID0gNCwNCivC
+oMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgIC5mcmFjX2JpdHMgPSA4LA0KK8KgwqDCoMKgwqDC
+oMKgwqDCoMKgwqDCoMKgwqAgLnRjbnRfbXV4ID0gNTApLA0KKw0KwqDCoMKgwqDCoMKgwqAgLyog
+R2VuZXJhbCBwdXJwb3NlIChHUElPKSBjbG9ja3MgKi8NCsKgwqDCoMKgwqDCoMKgIFtCQ00yODM1
+X0NMT0NLX0dQMF3CoMKgwqDCoCA9IFJFR0lTVEVSX1BFUl9DTEsoDQrCoMKgwqDCoMKgwqDCoMKg
+wqDCoMKgwqDCoMKgwqAgU09DX0FMTCwNCmRpZmYgLS1naXQgYS9pbmNsdWRlL2R0LWJpbmRpbmdz
+L2Nsb2NrL2JjbTI4MzUuaA0KYi9pbmNsdWRlL2R0LWJpbmRpbmdzL2Nsb2NrL2JjbTI4MzUuaA0K
+aW5kZXggYjYwYzAzNDMuLmZjYTY1YWIgMTAwNjQ0DQotLS0gYS9pbmNsdWRlL2R0LWJpbmRpbmdz
+L2Nsb2NrL2JjbTI4MzUuaA0KKysrIGIvaW5jbHVkZS9kdC1iaW5kaW5ncy9jbG9jay9iY20yODM1
+LmgNCkBAIC02MCwzICs2MCw1IEBADQrCoCNkZWZpbmUgQkNNMjgzNV9DTE9DS19EU0kxUMKgwqDC
+oMKgwqDCoMKgwqDCoMKgwqAgNTANCsKgDQrCoCNkZWZpbmUgQkNNMjcxMV9DTE9DS19FTU1DMsKg
+wqDCoMKgwqDCoMKgwqDCoMKgwqAgNTENCisjZGVmaW5lIEJDTTI3MTFfQ0xPQ0tfR0VORVQyNTDC
+oMKgwqDCoMKgwqDCoMKgIDUyDQorI2RlZmluZSBCQ00yNzExX0NMT0NLX0dFTkVUMTI1wqDCoMKg
+wqDCoMKgwqDCoCA1Mw0KDQoNCg==
