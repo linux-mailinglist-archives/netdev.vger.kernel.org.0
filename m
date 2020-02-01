@@ -2,117 +2,136 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 0B72014F8E2
-	for <lists+netdev@lfdr.de>; Sat,  1 Feb 2020 17:26:49 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 80C8A14F8FA
+	for <lists+netdev@lfdr.de>; Sat,  1 Feb 2020 17:42:46 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727066AbgBAQ0o (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 1 Feb 2020 11:26:44 -0500
-Received: from userp2130.oracle.com ([156.151.31.86]:58866 "EHLO
-        userp2130.oracle.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726670AbgBAQ0n (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 1 Feb 2020 11:26:43 -0500
-Received: from pps.filterd (userp2130.oracle.com [127.0.0.1])
-        by userp2130.oracle.com (8.16.0.27/8.16.0.27) with SMTP id 011GO2ho170066;
-        Sat, 1 Feb 2020 16:26:05 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=date : from : to : cc
- : subject : message-id : references : mime-version : content-type :
- in-reply-to; s=corp-2019-08-05;
- bh=qcGXKiY3GE8IoOSuEgOX+PWsQEJZ9WKgu7dUUWQqrfQ=;
- b=YSNZofZ7ZqYnCJOxzT8gCflqxf5fW+U69ygw+SqauiAzTzmO5wdPmyb7Iu3JqVUPldJb
- i4r/4UJOEV/voWzBdpRGAh/ya5x/TjfXvibYstNEOW9IdwbVwSv6B/4saeuF600HaYMF
- C5gZbNGYHs4s6ZeVgIJM6UhsD0etsXyU5jEl+kbCx+nSVhWdZvDF7TIl+R/zKI1nuVKE
- e+m6pmS/XHQMPyJ4yFW4AuL+2NmZN1y/tGy8JKvmwZ6MyOQXStAjsAeX1tEzXV1Ia75Z
- QYxEF6Ttok170eDo5OkRmk4kjnGANo6PeQKsEWXJYtR4p3ExjsYmzrUdbccT+UyrA+lp TQ== 
-Received: from aserp3030.oracle.com (aserp3030.oracle.com [141.146.126.71])
-        by userp2130.oracle.com with ESMTP id 2xw0rtsr75-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Sat, 01 Feb 2020 16:26:04 +0000
-Received: from pps.filterd (aserp3030.oracle.com [127.0.0.1])
-        by aserp3030.oracle.com (8.16.0.27/8.16.0.27) with SMTP id 011GNKM2187896;
-        Sat, 1 Feb 2020 16:26:04 GMT
-Received: from aserv0122.oracle.com (aserv0122.oracle.com [141.146.126.236])
-        by aserp3030.oracle.com with ESMTP id 2xvycydah3-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Sat, 01 Feb 2020 16:26:03 +0000
-Received: from abhmp0009.oracle.com (abhmp0009.oracle.com [141.146.116.15])
-        by aserv0122.oracle.com (8.14.4/8.14.4) with ESMTP id 011GPpS3016390;
-        Sat, 1 Feb 2020 16:25:51 GMT
-Received: from kadam (/129.205.23.165)
-        by default (Oracle Beehive Gateway v4.0)
-        with ESMTP ; Sat, 01 Feb 2020 08:25:50 -0800
-Date:   Sat, 1 Feb 2020 19:25:37 +0300
-From:   Dan Carpenter <dan.carpenter@oracle.com>
-To:     Hillf Danton <hdanton@sina.com>
-Cc:     syzbot <syzbot+0dc4444774d419e916c8@syzkaller.appspotmail.com>,
-        airlied@linux.ie, alexander.deucher@amd.com,
-        amd-gfx@lists.freedesktop.org, chris@chris-wilson.co.uk,
-        christian.koenig@amd.com, daniel@ffwll.ch, davem@davemloft.net,
-        dri-devel@lists.freedesktop.org, emil.velikov@collabora.com,
-        eric@anholt.net, linaro-mm-sig@lists.linaro.org,
-        linux-kernel@vger.kernel.org, linux-media@vger.kernel.org,
-        netdev@vger.kernel.org, robdclark@chromium.org,
-        seanpaul@chromium.org, sumit.semwal@linaro.org,
-        syzkaller-bugs@googlegroups.com
-Subject: Re: KASAN: use-after-free Read in vgem_gem_dumb_create
-Message-ID: <20200201162537.GK1778@kadam>
-References: <20200201043209.13412-1-hdanton@sina.com>
- <20200201090247.10928-1-hdanton@sina.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200201090247.10928-1-hdanton@sina.com>
-User-Agent: Mutt/1.9.4 (2018-02-28)
-X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9518 signatures=668685
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 suspectscore=0 malwarescore=0
- phishscore=0 bulkscore=0 spamscore=0 mlxscore=0 mlxlogscore=999
- adultscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.0.1-1911140001 definitions=main-2002010121
-X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9518 signatures=668685
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 priorityscore=1501 malwarescore=0
- suspectscore=0 phishscore=0 bulkscore=0 spamscore=0 clxscore=1015
- lowpriorityscore=0 mlxscore=0 impostorscore=0 mlxlogscore=999 adultscore=0
- classifier=spam adjust=0 reason=mlx scancount=1 engine=8.0.1-1911140001
- definitions=main-2002010121
+        id S1726679AbgBAQmo (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 1 Feb 2020 11:42:44 -0500
+Received: from mail-pl1-f195.google.com ([209.85.214.195]:34374 "EHLO
+        mail-pl1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726622AbgBAQmo (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 1 Feb 2020 11:42:44 -0500
+Received: by mail-pl1-f195.google.com with SMTP id j7so4067575plt.1
+        for <netdev@vger.kernel.org>; Sat, 01 Feb 2020 08:42:44 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id;
+        bh=1JnwfnRzwB8Oz97qS2h/DAq9+z2qFDHgax7Xsg5j8eo=;
+        b=TtKngVPHUN33AuB3k9+JdF090MMaatK5KBJs7RpwtZMX5HF3nJl+BWjsL+agxgpCzg
+         6djFhklknfae/x5HEk3PaoWA9YOtOB50KW5Zn4Cuo7gsNOMOeTKXCvpaRw37v0zMDxVU
+         UJuQ0w8ASnM9NogLbRRv6kz8Hntcunq01OD9XVkEQdnLodkQU5Ny5gyjK4+DeyVM4HJH
+         eCVNPBHilVjv1+mn35UXKIK6u+uP4A3b3So27Q+JDPiD34znrF4Abv/EopvwvfowS7kf
+         UkNCdDrmSYSzqcKVGCLD23zlokuxy0hoQdbjM/lz5ASX6Zjwlqy1jWBS/Ugs7wV0//c4
+         HZxA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=1JnwfnRzwB8Oz97qS2h/DAq9+z2qFDHgax7Xsg5j8eo=;
+        b=EJnLhpu3kZGzgAPizwiKyjQagpPfuj05TqUO6rSLROK/bFyu0vfIJZM1yJZId3FeBS
+         tmiqxTc8lwJjhgkLEotYjYR9ZeORTNgynF9D/4DTGJiJLcHsjwqTTFj1SZ5QTR4bKMY3
+         cUd3oZ2pCdcCc6HmDGfCuUxOHw9Vxec6QcBZXbUcKacC0QDnNuS7cuRmaOoTX+BR1fDT
+         OLsFeP0j5/OSXcXYTjrqnddmOVTQZ5nBAYKCG71LdBrj8i6DiOZY5Ra0smFIg/x3lHTi
+         YLMc0JnRgWEPT72ruQ02ZQCBT/p9SKVEYEEg3hBD98HMi1IWADN5xqyeEuw76kh8PuyR
+         Akwg==
+X-Gm-Message-State: APjAAAVIqUZnmgSybhV+SyJ4FURRH7ZC7hd0WWwcZlwX651aam9WpxWL
+        ygRAHRJ1nfXMRqU6uPAPlzo=
+X-Google-Smtp-Source: APXvYqxht+5K8jWRQEcmizRzcajhtuDOjSTLnPkiyOaDdaBzpvoRdQh4Btdcg+jZlYeCdNNgtcFCtQ==
+X-Received: by 2002:a17:902:7d8c:: with SMTP id a12mr15791759plm.47.1580575363630;
+        Sat, 01 Feb 2020 08:42:43 -0800 (PST)
+Received: from localhost.localdomain ([180.70.143.152])
+        by smtp.gmail.com with ESMTPSA id s6sm3360602pgq.29.2020.02.01.08.42.41
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sat, 01 Feb 2020 08:42:42 -0800 (PST)
+From:   Taehee Yoo <ap420073@gmail.com>
+To:     davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org
+Cc:     ap420073@gmail.com
+Subject: [PATCH net v3 0/7] netdevsim: fix several bugs in netdevsim module
+Date:   Sat,  1 Feb 2020 16:42:35 +0000
+Message-Id: <20200201164235.9749-1-ap420073@gmail.com>
+X-Mailer: git-send-email 2.17.1
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, Feb 01, 2020 at 05:02:47PM +0800, Hillf Danton wrote:
-> 
-> On Sat, 1 Feb 2020 09:17:57 +0300 Dan Carpenter wrote:
-> > On Sat, Feb 01, 2020 at 12:32:09PM +0800, Hillf Danton wrote:
-> > >
-> > > Release obj in error path.
-> > > 
-> > > --- a/drivers/gpu/drm/vgem/vgem_drv.c
-> > > +++ b/drivers/gpu/drm/vgem/vgem_drv.c
-> > > @@ -196,10 +196,10 @@ static struct drm_gem_object *vgem_gem_c
-> > >  		return ERR_CAST(obj);
-> > >  
-> > >  	ret = drm_gem_handle_create(file, &obj->base, handle);
-> > > -	drm_gem_object_put_unlocked(&obj->base);
-> > > -	if (ret)
-> > > +	if (ret) {
-> > > +		drm_gem_object_put_unlocked(&obj->base);
-> > >  		return ERR_PTR(ret);
-> > > -
-> > > +	}
-> > >  	return &obj->base;
-> > 
-> > Oh yeah.  It's weird that we never noticed the success path was broken.
-> > It's been that way for three years and no one noticed at all.  Very
-> > strange.
-> > 
-> > Anyway, it already gets freed on error in drm_gem_handle_create() so
-> > we should just delete the drm_gem_object_put_unlocked() here it looks
-> > like.
-> 
-> Good catch, Dan :P
-> Would you please post a patch sometime convenient next week?
+This patchset fixes several bugs in netdevsim module.
 
-Sure.  Will do.
+1. The first patch fixes using uninitialized resources
+This patch fixes two similar problems, which is to use uninitialized
+resources.
+a) In the current code, {new/del}_device_store() use resource,
+they are initialized by __init().
+But, these functions could be called before __init() is finished.
+So, accessing uninitialized data could occur and it eventually makes panic.
+b) In the current code, {new/del}_port_store() uses resource,
+they are initialized by new_device_store().
+But thes functions could be called before new_device_store() is finished.
 
-regards,
-dan carpenter
+2. The second patch fixes another race condition.
+The main problem is a race condition in {new/del}_port() and devlink reload
+function.
+These functions would allocate and remove resources. So these functions
+should not be executed concurrently.
+
+3. The third patch fixes a panic in nsim_dev_take_snapshot_write().
+nsim_dev_take_snapshot_write() uses nsim_dev and nsim_dev->dummy_region.
+But these data could be removed by both reload routine and
+del_device_store(). And these functions could be executed concurrently.
+
+4. The fourth patch fixes stack-out-of-bound in nsim_dev_debugfs_init().
+nsim_dev_debugfs_init() provides only 16bytes for name pointer.
+But, there are some case the name length is over 16bytes.
+So, stack-out-of-bound occurs.
+
+5. The fifth patch uses IS_ERR instead of IS_ERR_OR_NULL.
+debugfs_create_{dir/file} doesn't return NULL.
+So, IS_ERR() is more correct.
+
+6. The sixth patch avoids kmalloc warning.
+When too large memory allocation is requested by user-space, kmalloc
+internally prints warning message.
+That warning message is not necessary.
+In order to avoid that, it adds __GFP_NOWARN.
+
+7. The last patch removes an unused sdev.c file
+
+Change log:
+
+v2 -> v3:
+ - Use smp_load_acquire() and smp_store_release() for flag variables.
+ - Change variable names.
+ - Fix deadlock in second patch.
+ - Update lock variable comment.
+ - Add new patch for fixing panic in snapshot_write().
+ - Include Reviewed-by tags.
+ - Update some log messages and comment.
+
+v1 -> v2: 
+ - Splits a fixing race condition patch into two patches.
+ - Fix incorrect Fixes tags.
+ - Update comments
+ - Fix use-after-free
+ - Add a new patch, which removes an unused sdev.c file.
+ - Remove a patch, which tries to avoid debugfs warning.
+
+Taehee Yoo (7):
+  netdevsim: fix using uninitialized resources
+  netdevsim: disable devlink reload when resources are being used
+  netdevsim: fix panic in nsim_dev_take_snapshot_write()
+  netdevsim: fix stack-out-of-bounds in nsim_dev_debugfs_init()
+  netdevsim: use IS_ERR instead of IS_ERR_OR_NULL for debugfs
+  netdevsim: use __GFP_NOWARN to avoid memalloc warning
+  netdevsim: remove unused sdev code
+
+ drivers/net/netdevsim/bpf.c       | 10 +++--
+ drivers/net/netdevsim/bus.c       | 64 ++++++++++++++++++++++++++--
+ drivers/net/netdevsim/dev.c       | 31 +++++++++-----
+ drivers/net/netdevsim/health.c    |  6 +--
+ drivers/net/netdevsim/netdevsim.h |  4 ++
+ drivers/net/netdevsim/sdev.c      | 69 -------------------------------
+ 6 files changed, 93 insertions(+), 91 deletions(-)
+ delete mode 100644 drivers/net/netdevsim/sdev.c
+
+-- 
+2.17.1
 
