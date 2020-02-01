@@ -2,142 +2,99 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 3186B14F8D6
-	for <lists+netdev@lfdr.de>; Sat,  1 Feb 2020 17:24:27 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0C2FF14F8D7
+	for <lists+netdev@lfdr.de>; Sat,  1 Feb 2020 17:24:53 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726893AbgBAQYW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 1 Feb 2020 11:24:22 -0500
-Received: from mail-wm1-f68.google.com ([209.85.128.68]:37138 "EHLO
-        mail-wm1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726643AbgBAQYW (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 1 Feb 2020 11:24:22 -0500
-Received: by mail-wm1-f68.google.com with SMTP id f129so12172989wmf.2;
-        Sat, 01 Feb 2020 08:24:19 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:autocrypt:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=OwnXmIcZHTHWnixKWkhNSwwjEIIvt9POeNBZDQz/Z40=;
-        b=dqFYVT7XBtXnx2wkqhCu9bEH4XiDU44boQhKB09nUvE4lJJC63KyYr+vTlKFYE8G5U
-         iTWyg1r67+36X4QHJO9Nh7c7h+Lx7mehHlerLYoPybk5bfR0S8D2QAkPS78UnNmeex7k
-         2euHwCcwjwX45J4P7LNgIqnVrkcdbS3c7jwgXLPie/PUbDl2UaT2EPu+VbALs43NX9oS
-         nAMFaC50UIkBVLoEsRiF69mvh5dyFchfu9m9HPxq2vagmjBU7grIwbcZ0DybNBmuKsNd
-         9C5zeE93KAotCKl9rVCP/u+ZGaBvdvGyATR62TyQd8aJi8ZV4yO/tr/bWFcbrgm4ZQOq
-         x9AQ==
+        id S1726990AbgBAQYv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 1 Feb 2020 11:24:51 -0500
+Received: from us-smtp-delivery-1.mimecast.com ([207.211.31.120]:57552 "EHLO
+        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+        with ESMTP id S1726622AbgBAQYv (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 1 Feb 2020 11:24:51 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1580574288;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=rVA1xvyvgyakVVp4hFUV7KOikNj3zE1qxsDSM6eeL9k=;
+        b=DnTQc1mm+CHY5CnKWDa0L8T9hWfaoEMaXmsrC7LKebAwLlOTSpv1hmApA8sGrdq58YByRG
+        zjXjeKacU61N+Jk2WQpMnGZO1hLYUiUogMHU1BsFiGsmvAZcG2w5aOOpwi2fZk1hIk8Wg+
+        AM8XKta5tBE8EQ9qdaUVy5Tg6wEJx+8=
+Received: from mail-lf1-f70.google.com (mail-lf1-f70.google.com
+ [209.85.167.70]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-209-zEQZsF3qNKSQkAwNPHmcJw-1; Sat, 01 Feb 2020 11:24:46 -0500
+X-MC-Unique: zEQZsF3qNKSQkAwNPHmcJw-1
+Received: by mail-lf1-f70.google.com with SMTP id j193so1724582lfj.9
+        for <netdev@vger.kernel.org>; Sat, 01 Feb 2020 08:24:46 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:autocrypt
-         :message-id:date:user-agent:mime-version:in-reply-to
-         :content-language:content-transfer-encoding;
-        bh=OwnXmIcZHTHWnixKWkhNSwwjEIIvt9POeNBZDQz/Z40=;
-        b=MNzx2PILoCt+7lPHfVVHLDCQyFK0Q2r1HYto6GGsyz2EhXgvYwPFxPuBZc86mCE9t6
-         J/469LauNymN/4JdrS+pi1MuIO1tPtobHgeuqlzGWwrSawKuNdda4xi2EGOPxlZ+U1Dr
-         pTrC9fO3NScxwYJGyHNvfqA3s9o1R5FMfU8PARbBXLrMV+1quu/Zyuf2vKUGN1PAGE6/
-         F/JQlXhrSJlD8vnz6lo22OOAWWca2tnCuP40n1lZ/ycZWnygkkAJ2ZwW5QPtcheJRf0y
-         4ksjPGC+XF+52F+tevJXwyySD9/T8GmOW0LfimvfIaMM6Jc6RZ6a1vJlrYaP5ZFkBjN6
-         6cWw==
-X-Gm-Message-State: APjAAAUwvD/pASSvMKPBYaWh1Z2TDidzhPBy+mDNTReqLLruzeeosSH2
-        VUk16YA9tdPpGvlbpJgTOEc=
-X-Google-Smtp-Source: APXvYqxpHjkygVb2Dg5FBaCQF5tPq9daPIkriAvbmK4DS7IKAC2wqTsADLtZWYHNaJhyfZxdNva0zw==
-X-Received: by 2002:a7b:c8d3:: with SMTP id f19mr18375534wml.26.1580574258722;
-        Sat, 01 Feb 2020 08:24:18 -0800 (PST)
-Received: from [192.168.1.3] (ip68-111-84-250.oc.oc.cox.net. [68.111.84.250])
-        by smtp.gmail.com with ESMTPSA id g2sm16836840wrw.76.2020.02.01.08.24.16
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sat, 01 Feb 2020 08:24:18 -0800 (PST)
-Subject: Re: [PATCH 2/6] net: bcmgenet: refactor phy mode configuration
-To:     Jeremy Linton <jeremy.linton@arm.com>, netdev@vger.kernel.org
-Cc:     opendmb@gmail.com, f.fainelli@gmail.com, davem@davemloft.net,
-        bcm-kernel-feedback-list@broadcom.com,
-        linux-kernel@vger.kernel.org, wahrenst@gmx.net, andrew@lunn.ch,
-        hkallweit1@gmail.com
-References: <20200201074625.8698-1-jeremy.linton@arm.com>
- <20200201074625.8698-3-jeremy.linton@arm.com>
-From:   Florian Fainelli <f.fainelli@gmail.com>
-Autocrypt: addr=f.fainelli@gmail.com; keydata=
- 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
- a9BQwACgnzGuH1BVeT2J0Ra+ZYgkx7DaPR0=
-Message-ID: <b2d45990-af71-60c3-a210-b23dabb9ba32@gmail.com>
-Date:   Sat, 1 Feb 2020 08:24:14 -0800
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
- Thunderbird/68.4.2
+        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
+         :message-id:mime-version;
+        bh=rVA1xvyvgyakVVp4hFUV7KOikNj3zE1qxsDSM6eeL9k=;
+        b=GTMv2SzxoC9nEwRkDouunyAe22D4kPVPdBoSz81DbbzyraROaJOnPhJvJQRaAJVffs
+         4bOP8O4pa4nx/sefwXE0DwwoTN6PgaY45ZwjJkK3fnZc2/wuPbBqLAwqgScvI4QZodWB
+         M3wINU9i+MZFIMaywv0APxw6qUB1wvna3YOQPgOe4rMtDvQn0EiAnzpd/sICF1vgOgX1
+         tsP0/vHnoYNyYtgAWo1zZujXq6gUlD+upw2fwt/HNH27XJBj30UsqD8/r84sSgXZB2Qf
+         3K1uBWc+gIOuo1ZPjXryswiAPIPHzIKLnHzEMwjZN8clL2jhOMNGCoWjL3eqmjwtV7Id
+         wUnw==
+X-Gm-Message-State: APjAAAXU+BMyLI95TEnU4L5mHL/x17HxyJkbJlFroEy7euLbFvCDlxd6
+        SRNEXUID4A5gK330AJEAvSiiHmlgg7FablbfjdJiexP5wKnx1gp2sbQ466Ne688KL8gvm90/jm6
+        u1EbdEmLhiYqucH6H
+X-Received: by 2002:a2e:7e11:: with SMTP id z17mr9177512ljc.279.1580574284877;
+        Sat, 01 Feb 2020 08:24:44 -0800 (PST)
+X-Google-Smtp-Source: APXvYqx6ldcko3EJxW/8Z861I0HUJBXFWmXKYV3DZFPoz5EmjPIifk68Mi/kkLdXta9lqupvd1orbA==
+X-Received: by 2002:a2e:7e11:: with SMTP id z17mr9177490ljc.279.1580574284605;
+        Sat, 01 Feb 2020 08:24:44 -0800 (PST)
+Received: from alrua-x1.borgediget.toke.dk ([85.204.121.218])
+        by smtp.gmail.com with ESMTPSA id 14sm6221745lfz.47.2020.02.01.08.24.43
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sat, 01 Feb 2020 08:24:43 -0800 (PST)
+Received: by alrua-x1.borgediget.toke.dk (Postfix, from userid 1000)
+        id 57A311800A2; Sat,  1 Feb 2020 17:24:39 +0100 (CET)
+From:   Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
+To:     Jakub Kicinski <kuba@kernel.org>, David Ahern <dsahern@gmail.com>
+Cc:     David Ahern <dsahern@kernel.org>, netdev@vger.kernel.org,
+        prashantbhole.linux@gmail.com, jasowang@redhat.com,
+        davem@davemloft.net, jbrouer@redhat.com, mst@redhat.com,
+        toshiaki.makita1@gmail.com, daniel@iogearbox.net,
+        john.fastabend@gmail.com, ast@kernel.org, kafai@fb.com,
+        songliubraving@fb.com, yhs@fb.com, andriin@fb.com,
+        David Ahern <dahern@digitalocean.com>
+Subject: Re: [PATCH bpf-next 03/12] net: Add IFLA_XDP_EGRESS for XDP programs in the egress path
+In-Reply-To: <20200128055752.617aebc7@cakuba>
+References: <20200123014210.38412-1-dsahern@kernel.org> <20200123014210.38412-4-dsahern@kernel.org> <87tv4m9zio.fsf@toke.dk> <335b624a-655a-c0c6-ca27-102e6dac790b@gmail.com> <20200124072128.4fcb4bd1@cakuba> <87o8usg92d.fsf@toke.dk> <1d84d8be-6812-d63a-97ca-ebc68cc266b9@gmail.com> <20200126141141.0b773aba@cakuba> <33f233a9-88b4-a75a-d1e5-fbbda21f9546@gmail.com> <20200127061623.1cf42cd0@cakuba> <252acf50-91ff-fdc5-3ce1-491a02de07c6@gmail.com> <20200128055752.617aebc7@cakuba>
+X-Clacks-Overhead: GNU Terry Pratchett
+Date:   Sat, 01 Feb 2020 17:24:39 +0100
+Message-ID: <87ftfue0mw.fsf@toke.dk>
 MIME-Version: 1.0
-In-Reply-To: <20200201074625.8698-3-jeremy.linton@arm.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+[ skipping the first part to just comment on the below: ]
 
+> I'm weary of partially implemented XDP features, EGRESS prog does us
+> no good when most drivers didn't yet catch up with the REDIRECTs.
 
-On 1/31/2020 11:46 PM, Jeremy Linton wrote:
-> The DT phy mode is similar to what we want for ACPI
-> lets factor it out of the of path, and change the
-> of_ call to device_. Further if the phy-mode property
-> cannot be found instead of failing the driver load lets
-> just default it to RGMII.
+I kinda agree with this; but on the other hand, if we have to wait for
+all drivers to catch up, that would mean we couldn't add *anything* new
+that requires driver changes, which is not ideal either :/
 
-Humm no please do not provide a fallback, if we cannot find a valid
-'phy-mode' property we error out. This controller can be used with a
-variety of configurations (internal EPHY/GPHY, MoCA, external
-MII/Reverse MII/RGMII) and from a support perspective it is much easier
-for us if the driver errors out if one of those essential properties are
-omitted.
+> And we're adding this before we considered the queuing problem.
+>
+> But if I'm alone in thinking this, and I'm not convincing anyone we
+> can move on :)
 
-Other than that, this looks OK.
--- 
-Florian
+I do share your concern that this will end up being incompatible with
+whatever solution we end up with for queueing. However, I don't
+necessarily think it will: I view the XDP egress hook as something that
+in any case will run *after* packets are dequeued from whichever
+intermediate queueing it has been through (if any). I think such a hook
+is missing in any case; for instance, it's currently impossible to
+implement something like CoDel (which needs to know how long a packet
+spent in the queue) in eBPF.
+
+-Toke
+
