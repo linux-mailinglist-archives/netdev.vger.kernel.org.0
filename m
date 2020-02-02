@@ -2,46 +2,47 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 573DD14FB54
-	for <lists+netdev@lfdr.de>; Sun,  2 Feb 2020 04:38:55 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 95AC014FB57
+	for <lists+netdev@lfdr.de>; Sun,  2 Feb 2020 04:39:13 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726877AbgBBDit (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 1 Feb 2020 22:38:49 -0500
-Received: from mail-pg1-f194.google.com ([209.85.215.194]:42386 "EHLO
-        mail-pg1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726789AbgBBDis (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 1 Feb 2020 22:38:48 -0500
-Received: by mail-pg1-f194.google.com with SMTP id w21so89320pgl.9;
-        Sat, 01 Feb 2020 19:38:48 -0800 (PST)
+        id S1726947AbgBBDiy (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 1 Feb 2020 22:38:54 -0500
+Received: from mail-pg1-f193.google.com ([209.85.215.193]:37854 "EHLO
+        mail-pg1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726789AbgBBDiy (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 1 Feb 2020 22:38:54 -0500
+Received: by mail-pg1-f193.google.com with SMTP id q127so5852896pga.4;
+        Sat, 01 Feb 2020 19:38:52 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id;
-        bh=uV/djr6uE73WU9/ZzEdxqKkRdihnoCgbfPxx46DizKE=;
-        b=cOQiAsVG1EfDqx5YWebjPSmGyGX5AJva6eYJpgNQPsZJHAEMnwytk8cDxnRAkl9JQ6
-         M1ALHk42yzM7H3vnGDtLL5iS/D8+7s/uefI9kOdFSPrNdS12UvLsS/pCxDVWVtxPh+si
-         KlRUiPA2CU53LmNeV+CYep2AmKThAUlDs06u+BM0987EWCbXiRU0r76tVBWewOyrHUKy
-         wmRLIN2jNZee9GyEVgRv3jA/PCyL05ouLI+ue9p4v5Rl3eXGRyqUpezEmbF4OwpohEP1
-         na3wSroImZCLPTJzQ3DQo5FL4QlPp+tzlvbK0234oL3pfXHeiHyV2rCk5IUn9aXO+jMt
-         xyLQ==
+        h=from:to:cc:subject:date:message-id:in-reply-to:references;
+        bh=HqlOpqfDxlkvlmzjeW5jC7mYHnmnoACp+7MDfXGCRjk=;
+        b=QDZVyZmc6a+j5r7LhYgz+9HrPZQrGeZ9S+Ai2TQCiODhsHhSnql4II0S4TL1P6lXZu
+         zc+3bZJZzlfFU+z6nYQlxC8mfcTiPrm4AFDTVBARVzwGSQoL/W+pPJ/v3vsk5ZMyuRdo
+         +BeOWRR6ZyRo0p461vhw+ORUjxugQRpMOYve4r+0QfQMfSJmPvDtx1tMcGB+lNSqRKhO
+         qhQZ71ellBxdNPataR/zmWwlduV1EbJGiWFpCL4/tJXxWUkIbwbsEySQYNZbCpCtQ+qg
+         ex9y4WTw8vBDFeVvNlbgc1uoqN4WEVn78bzGo2DkdZPCdQz0q0aZOJ3baYE1VKv+bxhU
+         mnnw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id;
-        bh=uV/djr6uE73WU9/ZzEdxqKkRdihnoCgbfPxx46DizKE=;
-        b=XIKa/RWKpZ0mbAj9YLn1UrecnkCbkho6stOT2HDnA+WS3lWLKtGE7ZlbEAxc/HhQ+A
-         vh5vLZUlsa4skmFJJGqCG4PiRt6oOiMSvf1RjVFLM7jHXysZd0Ng+PlMK7n7anQSpUOK
-         Gu+kF8Po7e5tl7TktEuL0lc24/MWZ0VMXOHilzNaYvSex3G0AU2lDVtT3OPDhtyXPoCo
-         N6sEOX3D7IDavJGMkATQ64q68aTIA0W1E0vqdAWQg9mVcFZW4DTbZQvW7VojfOYF+Rb6
-         1/3tuie8+odDDW4UyMhQMxM9jNYDBlpKHjG1SAxOc3BOxzotMhOh9r2+H3LiG0GynXgl
-         kdoA==
-X-Gm-Message-State: APjAAAU4gNJv9zNoRbWL1dIDOMFrBb/Od+sVWfLMt6Hkt8ogT47YkP13
-        ZxVX/Cg5V3mfFFA1VMrCys4=
-X-Google-Smtp-Source: APXvYqwxKgtiDNUrrNBcqjVjJDNBbL/jBOqTGjiv0BzqG2xWSjGEoyn32acwpqr/HWA93K9B65WAkg==
-X-Received: by 2002:a63:646:: with SMTP id 67mr1493064pgg.376.1580614727920;
-        Sat, 01 Feb 2020 19:38:47 -0800 (PST)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references;
+        bh=HqlOpqfDxlkvlmzjeW5jC7mYHnmnoACp+7MDfXGCRjk=;
+        b=YWP0Ag66JjXdT9Do3sCkXE+fSAz2A/3Kko1K9NECJirMmKd0vP5WIXOvN2HdgPuPxZ
+         NWyrLhYCI2Nl9ZaCc8tzM7x5XOPtFfjBdn2C/hFf+QXioSWh0XfgxTMHughrozifIx4E
+         dy0GbKU7k7Qfn2c2XF7bn9tvZKqGT+WPIs8ArKfXPD55d9odEqPRyi089N4/aIlEtpUn
+         2iOx8gmhoz6gAvLamzc7y8Er9h6iuKkJA1hUUHXFbt7mPMOZV6tI2rpyGpEVpApOJMBt
+         wC/3xgCvJ8scbnXUS0dV/rH08ATwR5lkQatE3GKlDdZbcrdGx8QsWHdQjdyhd7qISb1R
+         qE8g==
+X-Gm-Message-State: APjAAAULVYNQCQx2I4pXOV6OcIINSMWfOKNMgYq2RCvBnysuxNv92YDJ
+        hvAncLmgBD3HctOP6TnR8Hk=
+X-Google-Smtp-Source: APXvYqyR2esvd01q2mklM6OsZY4/Xnwd3Bpmb2WGRxDsF2XF2T0wlX9R+sZFi9gNb997AXZvVCOG3Q==
+X-Received: by 2002:a63:ff52:: with SMTP id s18mr18579544pgk.253.1580614731989;
+        Sat, 01 Feb 2020 19:38:51 -0800 (PST)
 Received: from localhost.localdomain ([116.84.110.10])
-        by smtp.gmail.com with ESMTPSA id iq22sm15705334pjb.9.2020.02.01.19.38.44
+        by smtp.gmail.com with ESMTPSA id iq22sm15705334pjb.9.2020.02.01.19.38.48
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 01 Feb 2020 19:38:47 -0800 (PST)
+        Sat, 01 Feb 2020 19:38:51 -0800 (PST)
 From:   sj38.park@gmail.com
 To:     edumazet@google.com
 Cc:     sj38.park@gmail.com, David.Laight@aculab.com, aams@amazon.com,
@@ -49,10 +50,12 @@ Cc:     sj38.park@gmail.com, David.Laight@aculab.com, aams@amazon.com,
         netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
         linux-kselftest@vger.kernel.org, ncardwell@google.com,
         shuah@kernel.org, sjpark@amazon.de
-Subject: [PATCH v3 0/2] Fix reconnection latency caused by FIN/ACK handling race
-Date:   Sun,  2 Feb 2020 03:38:25 +0000
-Message-Id: <20200202033827.16304-1-sj38.park@gmail.com>
+Subject: [PATCH v3 1/2] tcp: Reduce SYN resend delay if a suspicous ACK is received
+Date:   Sun,  2 Feb 2020 03:38:26 +0000
+Message-Id: <20200202033827.16304-2-sj38.park@gmail.com>
 X-Mailer: git-send-email 2.17.1
+In-Reply-To: <20200202033827.16304-1-sj38.park@gmail.com>
+References: <20200202033827.16304-1-sj38.park@gmail.com>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
@@ -82,8 +85,9 @@ disconnection will be similar to below flow.
 	 11 					LAST_ACK
 	 12 CLOSED				CLOSED
 
-In some cases such as LINGER option applied socket, the FIN and FIN/ACK will be
-substituted to RST and RST/ACK, but there is no difference in the main logic.
+In some cases such as LINGER option applied socket, the FIN and FIN/ACK
+will be substituted to RST and RST/ACK, but there is no difference in
+the main logic.
 
 The acks in lines 6 and 8 are the acks.  If the line 8 packet is
 processed before the line 6 packet, it will be just ignored as it is not
@@ -120,51 +124,38 @@ spikes can be a big problem.  Below is a tcpdump results of the problem:
     /* ONE SECOND DELAY */
     15.464613 IP 127.0.0.1.45150 > 127.0.0.1.4242: Flags [S], seq 2560603644
 
-Patchset Organization
----------------------
+This commit mitigates the problem by reducing the delay for the next SYN
+if the suspicous ACK is received while in SYN_SENT state.
 
-The first patch fixes the problem by adjusting the first resend delay of
-the SYN in the case.  The second one adds a user space test to reproduce
-this problem.
+Following commit will add a selftest, which can be also helpful for
+understanding of this issue.
 
-The patches are based on the v5.5.  You can also clone the complete git
-tree:
+Signed-off-by: Eric Dumazet <edumazet@google.com>
+Signed-off-by: SeongJae Park <sjpark@amazon.de>
+---
+ net/ipv4/tcp_input.c | 8 +++++++-
+ 1 file changed, 7 insertions(+), 1 deletion(-)
 
-    $ git clone git://github.com/sjp38/linux -b patches/finack_lat/v3
-
-The web is also available:
-https://github.com/sjp38/linux/tree/patches/finack_lat/v3
-
-
-Patchset History
-----------------
-
-From v2
-(https://lore.kernel.org/linux-kselftest/20200201071859.4231-1-sj38.park@gmail.com/)
- - Use TCP_TIMEOUT_MIN as reduced delay (Neal Cardwall)
- - Add Reviewed-by and Signed-off-by from Eric Dumazet
-
-From v1
-(https://lore.kernel.org/linux-kselftest/20200131122421.23286-1-sjpark@amazon.com/)
- - Drop the trivial comment fix patch (Eric Dumazet)
- - Limit the delay adjustment to only the first SYN resend (Eric Dumazet)
- - selftest: Avoid use of hard-coded port number (Eric Dumazet)
- - Explain RST/ACK and FIN/ACK has no big difference (Neal Cardwell)
-
-SeongJae Park (2):
-  tcp: Reduce SYN resend delay if a suspicous ACK is received
-  selftests: net: Add FIN_ACK processing order related latency spike
-    test
-
- net/ipv4/tcp_input.c                       |   8 +-
- tools/testing/selftests/net/.gitignore     |   1 +
- tools/testing/selftests/net/Makefile       |   2 +
- tools/testing/selftests/net/fin_ack_lat.c  | 151 +++++++++++++++++++++
- tools/testing/selftests/net/fin_ack_lat.sh |  35 +++++
- 5 files changed, 196 insertions(+), 1 deletion(-)
- create mode 100644 tools/testing/selftests/net/fin_ack_lat.c
- create mode 100755 tools/testing/selftests/net/fin_ack_lat.sh
-
+diff --git a/net/ipv4/tcp_input.c b/net/ipv4/tcp_input.c
+index 2a976f57f7e7..baa4fee117f9 100644
+--- a/net/ipv4/tcp_input.c
++++ b/net/ipv4/tcp_input.c
+@@ -5893,8 +5893,14 @@ static int tcp_rcv_synsent_state_process(struct sock *sk, struct sk_buff *skb,
+ 		 *        the segment and return)"
+ 		 */
+ 		if (!after(TCP_SKB_CB(skb)->ack_seq, tp->snd_una) ||
+-		    after(TCP_SKB_CB(skb)->ack_seq, tp->snd_nxt))
++		    after(TCP_SKB_CB(skb)->ack_seq, tp->snd_nxt)) {
++			/* Previous FIN/ACK or RST/ACK might be ignored. */
++			if (icsk->icsk_retransmits == 0)
++				inet_csk_reset_xmit_timer(sk,
++						ICSK_TIME_RETRANS,
++						TCP_TIMEOUT_MIN, TCP_RTO_MAX);
+ 			goto reset_and_undo;
++		}
+ 
+ 		if (tp->rx_opt.saw_tstamp && tp->rx_opt.rcv_tsecr &&
+ 		    !between(tp->rx_opt.rcv_tsecr, tp->retrans_stamp,
 -- 
 2.17.1
 
