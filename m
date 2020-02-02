@@ -2,38 +2,37 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 9A04B14FF1B
-	for <lists+netdev@lfdr.de>; Sun,  2 Feb 2020 21:27:41 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id DB4DC14FF25
+	for <lists+netdev@lfdr.de>; Sun,  2 Feb 2020 21:43:13 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726992AbgBBU1g (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 2 Feb 2020 15:27:36 -0500
-Received: from mail.kernel.org ([198.145.29.99]:58190 "EHLO mail.kernel.org"
+        id S1727072AbgBBUnI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 2 Feb 2020 15:43:08 -0500
+Received: from mail.kernel.org ([198.145.29.99]:59872 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726940AbgBBU1g (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sun, 2 Feb 2020 15:27:36 -0500
+        id S1726921AbgBBUnH (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sun, 2 Feb 2020 15:43:07 -0500
 Received: from cakuba.hsd1.ca.comcast.net (c-73-93-4-247.hsd1.ca.comcast.net [73.93.4.247])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id CD63D20658;
-        Sun,  2 Feb 2020 20:27:35 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id EAAC52067C;
+        Sun,  2 Feb 2020 20:43:06 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1580675256;
-        bh=RS07e3Qlj1ZE6hT/yNk/el9AIRQKLw4CMrmg2qCg/60=;
+        s=default; t=1580676187;
+        bh=Ch4njxdszvV1cbIifCfhuw/kD7hywsLYY/EAHrIrfqs=;
         h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=mIPiQLt75OcS5pTPQNLZx59Z0lqL6H64LQyCZQ98NAFNg7AKYOUa0brVUY209GSUN
-         jzlpVS9hpS178mm3k/pWhWt0Kaw5oXIhR2WZ9v9prdm+Vc3k5pA5D4xOxE1zPeOeop
-         G6IG0Rkd4V4ubK5pQCt45OMEzfWJMY4lHKcpO0Vs=
-Date:   Sun, 2 Feb 2020 12:27:35 -0800
+        b=VwLF0qg1SF/xAqRz22Tu1hP+J14iKyikROmY2jb42K6ILlBO2QKHTgwzmk6oBq0ZB
+         OVJ0WMl/BsZ+YXrUBhxDyYiuuIu8zpAXYdARYyJymEvp6uQGoaIQrdepE9rQdJyQp/
+         J+NRJNxJ7ZQckfh5xCLbi7dk+8vNshwR1lY7t5hw=
+Date:   Sun, 2 Feb 2020 12:43:06 -0800
 From:   Jakub Kicinski <kuba@kernel.org>
-To:     David Howells <dhowells@redhat.com>
-Cc:     netdev@vger.kernel.org, linux-afs@lists.infradead.org,
+To:     Lukas Bulwahn <lukas.bulwahn@gmail.com>
+Cc:     Karsten Keil <isdn@linux-pingi.de>, Arnd Bergmann <arnd@arndb.de>,
+        isdn4linux@listserv.isdn4linux.de, netdev@vger.kernel.org,
         linux-kernel@vger.kernel.org
-Subject: Re: [PATCH net 3/4] rxrpc: Fix missing active use pinning of
- rxrpc_local object
-Message-ID: <20200202122735.157d8b44@cakuba.hsd1.ca.comcast.net>
-In-Reply-To: <158047737679.133127.13567286503234295.stgit@warthog.procyon.org.uk>
-References: <158047735578.133127.17728061182258449164.stgit@warthog.procyon.org.uk>
-        <158047737679.133127.13567286503234295.stgit@warthog.procyon.org.uk>
+Subject: Re: [PATCH] MAINTAINERS: correct entries for ISDN/mISDN section
+Message-ID: <20200202124306.54bcabea@cakuba.hsd1.ca.comcast.net>
+In-Reply-To: <20200201124301.21148-1-lukas.bulwahn@gmail.com>
+References: <20200201124301.21148-1-lukas.bulwahn@gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
@@ -42,22 +41,21 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, 31 Jan 2020 13:29:36 +0000, David Howells wrote:
-> diff --git a/net/rxrpc/conn_event.c b/net/rxrpc/conn_event.c
-> index 808a4723f868..abfff3e0921c 100644
-> --- a/net/rxrpc/conn_event.c
-> +++ b/net/rxrpc/conn_event.c
-> @@ -133,6 +133,8 @@ static void rxrpc_conn_retransmit_call(struct rxrpc_connection *conn,
->  		break;
->  	}
->  
-> +	BUG_ON(!conn->params.local);
-> +	BUG_ON(!conn->params.local->socket);
+On Sat,  1 Feb 2020 13:43:01 +0100, Lukas Bulwahn wrote:
+> Commit 6d97985072dc ("isdn: move capi drivers to staging") cleaned up the
+> isdn drivers and split the MAINTAINERS section for ISDN, but missed to add
+> the terminal slash for the two directories mISDN and hardware. Hence, all
+> files in those directories were not part of the new ISDN/mISDN SUBSYSTEM,
+> but were considered to be part of "THE REST".
+> 
+> Rectify the situation, and while at it, also complete the section with two
+> further build files that belong to that subsystem.
+> 
+> This was identified with a small script that finds all files belonging to
+> "THE REST" according to the current MAINTAINERS file, and I investigated
+> upon its output.
+> 
+> Fixes: 6d97985072dc ("isdn: move capi drivers to staging")
+> Signed-off-by: Lukas Bulwahn <lukas.bulwahn@gmail.com>
 
-Is this really, really not possible to convert those into a WARN_ON()
-and return?
-
->  	ret = kernel_sendmsg(conn->params.local->socket, &msg, iov, ioc, len);
->  	conn->params.peer->last_tx_at = ktime_get_seconds();
->  	if (ret < 0)
-
+Applied to net, thanks!
