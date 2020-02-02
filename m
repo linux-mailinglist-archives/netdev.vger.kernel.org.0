@@ -2,59 +2,61 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id C90AB14FEA8
-	for <lists+netdev@lfdr.de>; Sun,  2 Feb 2020 18:44:05 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B809714FEA9
+	for <lists+netdev@lfdr.de>; Sun,  2 Feb 2020 18:45:33 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726906AbgBBRoC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 2 Feb 2020 12:44:02 -0500
-Received: from mail-il1-f195.google.com ([209.85.166.195]:44013 "EHLO
-        mail-il1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726525AbgBBRoC (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 2 Feb 2020 12:44:02 -0500
-Received: by mail-il1-f195.google.com with SMTP id o13so10628214ilg.10
-        for <netdev@vger.kernel.org>; Sun, 02 Feb 2020 09:44:02 -0800 (PST)
+        id S1726930AbgBBRpa (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 2 Feb 2020 12:45:30 -0500
+Received: from mail-io1-f67.google.com ([209.85.166.67]:34222 "EHLO
+        mail-io1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726909AbgBBRpa (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 2 Feb 2020 12:45:30 -0500
+Received: by mail-io1-f67.google.com with SMTP id z193so14119342iof.1
+        for <netdev@vger.kernel.org>; Sun, 02 Feb 2020 09:45:29 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=subject:to:cc:references:from:message-id:date:user-agent
          :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=X9Bzxi78KuroggKIkCWwqPOlae+7gqbtQfDV8S6QaP0=;
-        b=Tqq/8mLtdZIDC1aV5hQKvl4K2ZjM3BFaUtiH14amA64/YH04mvykuzAzwcsuVj2A+l
-         9EC9ilkU1CT8LxKFKq8GH/t57PMKGwK43jtsY6UFjkB+4tVPUEPUan49NJYfxrKxX8uR
-         6ryliGffQ57PIk8IhcPNevnv5jP7UTInqE0CdRCt/rbYP6UsMC+wZ4K/y8/VOukF3QSL
-         Pd5Sw6L9LP6YuiSEailvKXPjnGnha5SOTvcK27Rsv3fHK2p7SjNpe6Viurx1C0veYcPw
-         mqnzSxINAqXf2gYvl3HV7U+toJf/UVscvUzpAZFcnUZ6Uf5KcahnAfalkMIZJVRxinxB
-         IklQ==
+        bh=V+GxuCm0hAdY9xVRHiAVt3gl8Cp4yF/0HXYsgQOSkQk=;
+        b=vRBNveStpfCCBgJIZtxsh6swEzZQ+VsyA2wLFDxwd6e0E9uYXn4X1zYkRwHcVQkI+v
+         rEsI79j7elWvj7oizWkVlIUcnyqoElq6nPyufySg3NcacIuK7ngL6lGPJ6rQou4AWWRu
+         8zfoiW33lAiv0F5QbO4K1U4kC3kumOvkIF/GuAEWU8iNvKFIiyckLeKQxajtqpFRRUgc
+         BCtlZr1psr05nifY0jbTeMHiXIZysCfu3kQiUHQVl7CQMDmrooXLuH2gZ/YMKJ9gHaJA
+         B80YomZLIsQMlXAJUaVtVGd6/eZ0F+3Wy6OCxsPjp0cs0mFzo2Rp4Fv58TJRrNXDsTTA
+         1qfQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:subject:to:cc:references:from:message-id:date
          :user-agent:mime-version:in-reply-to:content-language
          :content-transfer-encoding;
-        bh=X9Bzxi78KuroggKIkCWwqPOlae+7gqbtQfDV8S6QaP0=;
-        b=BzvvqhPYbyQ1Nc5cCoJtcXynYHlHstNrn0dgsctIoid8o01coYYH8UjXLDwo57kKd8
-         JHQLyrNcAq8OUwogbW+ZRmIYaRLkzuOYgvjPEXob8ruRCmHfL0vxkwIGxu6sGg7lQAGz
-         JBNjPu7hTzxEKOiHi9wuoDQ6GIVCghXZ1PeFXM5g0Q57L9nBLkbVLXiAo+Q9jgSDqLzW
-         lCdd/f1wftzriTe6ku6OftuPg16f8v4NGem+C25toiK/xaJHWdqDLO9ocbEVdTe704bZ
-         kpwUPzClie201/5AAzWp26EzQjNWo6RIH8BHrNGrlIWSrN0UuoUQgffzi1Bu766ARKHd
-         FsAQ==
-X-Gm-Message-State: APjAAAVycr+IKaIReQbkVSyNPmRkwaQfXjszEV0YrgaCt/vilP2BkbQF
-        eyqdWDwkG0+vqVu3Vw3QbrE=
-X-Google-Smtp-Source: APXvYqwLYHZtGOrEngrIQi9YgEBJu+O5Kt2KfyQ4TWZgVrYdpht7fGIsRVAkcfmTvdicfAIwthBZ8A==
-X-Received: by 2002:a92:860a:: with SMTP id g10mr18068349ild.280.1580665441721;
-        Sun, 02 Feb 2020 09:44:01 -0800 (PST)
+        bh=V+GxuCm0hAdY9xVRHiAVt3gl8Cp4yF/0HXYsgQOSkQk=;
+        b=Eu6D+LdYC7IyO1OAUwvPtGufmW0qSVAP9BenqAs7WqDEx8L+DYFyw/w+AIYXn+RHJA
+         9sdicRTKL6BZzzisNCJUu32ovg7TdStpMwlFeLD45+4/LCdNv1p7xs7xZ+WbV3VPWVlE
+         0BcDtrc2CCbX1XLcbqWBZ4I3/QHr74M4hYU6E1lNq0ykHf6D030yYjB1/XAyatkjTbHu
+         jUqY0TIemNOo4wbxaWEFSnO+AXEjgMJjr590GIAEXXkVeeWTeBWT8HGzBQtmFA0pk5fh
+         XQuSLZ6u1tTWu3UMg155cYpaMS4eEG2tqENipET3A83901vbwjfDCOuVIS8oRWaVqhuS
+         +ZGA==
+X-Gm-Message-State: APjAAAUDaovxuqQS7iOYHwoES26guqbgZiF0sLEG7LiAnc3HeE2W3NMv
+        sr+e/fp2o7FF8y8gf0YHhO8=
+X-Google-Smtp-Source: APXvYqzsgxKNqQ5Q7FqtFNcUVejfNmIzUp56Y7GwMG5MWGUQ1QzGkZileKWy66YjZFroFixfbb23Eg==
+X-Received: by 2002:a5e:840f:: with SMTP id h15mr17073149ioj.286.1580665529367;
+        Sun, 02 Feb 2020 09:45:29 -0800 (PST)
 Received: from ?IPv6:2601:282:803:7700:2529:5ed3:9969:3b0e? ([2601:282:803:7700:2529:5ed3:9969:3b0e])
-        by smtp.googlemail.com with ESMTPSA id w5sm4656204iob.26.2020.02.02.09.43.59
+        by smtp.googlemail.com with ESMTPSA id q8sm4714243ion.57.2020.02.02.09.45.27
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sun, 02 Feb 2020 09:44:00 -0800 (PST)
+        Sun, 02 Feb 2020 09:45:28 -0800 (PST)
 Subject: Re: [PATCH bpf-next 03/12] net: Add IFLA_XDP_EGRESS for XDP programs
  in the egress path
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     =?UTF-8?Q?Toke_H=c3=b8iland-J=c3=b8rgensen?= <toke@redhat.com>,
-        David Ahern <dsahern@gmail.com>, netdev@vger.kernel.org,
+To:     Jakub Kicinski <kuba@kernel.org>,
+        =?UTF-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vu?= =?UTF-8?Q?sen?= 
+        <toke@redhat.com>
+Cc:     David Ahern <dsahern@kernel.org>, netdev@vger.kernel.org,
         prashantbhole.linux@gmail.com, jasowang@redhat.com,
         davem@davemloft.net, jbrouer@redhat.com, mst@redhat.com,
         toshiaki.makita1@gmail.com, daniel@iogearbox.net,
         john.fastabend@gmail.com, ast@kernel.org, kafai@fb.com,
-        songliubraving@fb.com, yhs@fb.com, andriin@fb.com
+        songliubraving@fb.com, yhs@fb.com, andriin@fb.com,
+        David Ahern <dahern@digitalocean.com>
 References: <20200123014210.38412-1-dsahern@kernel.org>
  <20200123014210.38412-4-dsahern@kernel.org> <87tv4m9zio.fsf@toke.dk>
  <335b624a-655a-c0c6-ca27-102e6dac790b@gmail.com>
@@ -64,56 +66,26 @@ References: <20200123014210.38412-1-dsahern@kernel.org>
  <33f233a9-88b4-a75a-d1e5-fbbda21f9546@gmail.com>
  <20200127061623.1cf42cd0@cakuba>
  <252acf50-91ff-fdc5-3ce1-491a02de07c6@gmail.com>
- <20200128055752.617aebc7@cakuba>
+ <20200128055752.617aebc7@cakuba> <87ftfue0mw.fsf@toke.dk>
+ <20200201090800.47b38d2b@cakuba.hsd1.ca.comcast.net>
 From:   David Ahern <dsahern@gmail.com>
-Message-ID: <e3f52be9-e5c8-ba4f-dd99-ddcc5d13bc91@gmail.com>
-Date:   Sun, 2 Feb 2020 10:43:58 -0700
+Message-ID: <f821e692-59cf-ae58-f34f-7bab6a702b46@gmail.com>
+Date:   Sun, 2 Feb 2020 10:45:27 -0700
 User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:68.0)
  Gecko/20100101 Thunderbird/68.4.2
 MIME-Version: 1.0
-In-Reply-To: <20200128055752.617aebc7@cakuba>
+In-Reply-To: <20200201090800.47b38d2b@cakuba.hsd1.ca.comcast.net>
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 1/28/20 6:57 AM, Jakub Kicinski wrote:
-> On Mon, 27 Jan 2020 20:43:09 -0700, David Ahern wrote:
->>> end of whatever is doing the redirect (especially with Alexei's work   
->>
->> There are use cases where they may make sense, but this is not one.
->>
->>> on linking) and from cls_bpf 🤷‍♂️
->>
->> cls_bpf is tc based == skb, no? I want to handle any packet, regardless
->> of how it arrived at the device's xmit function.
-> 
-> Yes, that's why I said you need the same rules in XDP before REDIRECT
-> and cls_bpf. Sure it's more complex, but (1) it's faster to drop in
-> the ingress prog before going though the entire redirect code and
-> without parsing the packet twice and (2) no extra kernel code necessary.
+On 2/1/20 10:08 AM, Jakub Kicinski wrote:
+> If EGRESS is only for XDP frames we could try to hide the handling in
+> the core (with slight changes to XDP_TX handling in the drivers),
 
-you are making a lot of assumptions and frankly it's the 'c' word
-(complex) that I want to avoid. I do not believe in the OVS style of
-packet processing - one gigantic program with a bunch of logic and data
-driven flow lookups that affect every packet. I prefer simple, singly
-focused programs logically concatenated to make decisions. Simpler
-management, simpler lifecycle. The scope, scale and lifecycle management
-of VMs/containers is just as important as minimizing the cycles spent
-per packet. XDP in the Tx path is a missing primitive to make life simple.
-
-As an example, the program on the ingress NICs to the host can be
-nothing more than a demux'er - use the ethernet header and vlan
-(preferably with vlan offload enabled) to do a <vlan,mac> lookup. No
-packet parsing at all at this level. The lookup returns an index of
-where to redirect the packet (e.g., the tap device of a VM). At the same
-time, packets can hit the "slow path" - processing support from the full
-stack when it is needed and still packets end up at the tap device. *IF*
-there is an ingress ACL for that tap device managed by the host, it can
-exist in 1 place - a program and map attached to the tap device limited
-to that tap device's networking function (VMs can have multiple
-connections to different networks with different needs at this point),
-and the program gets run for both XDP fast path and skb slow path.
+It is not. I have said multiple times it is to work on ALL packets that
+hit the xmit function, both skbs and xdp_frames.
