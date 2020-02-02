@@ -2,58 +2,107 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id AB9D814FF33
-	for <lists+netdev@lfdr.de>; Sun,  2 Feb 2020 22:17:44 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B33A614FF69
+	for <lists+netdev@lfdr.de>; Sun,  2 Feb 2020 22:30:51 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726992AbgBBVKf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 2 Feb 2020 16:10:35 -0500
-Received: from sonic305-37.consmr.mail.bf2.yahoo.com ([74.6.133.236]:40671
-        "EHLO sonic305-37.consmr.mail.bf2.yahoo.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726967AbgBBVKe (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 2 Feb 2020 16:10:34 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=yahoo.com; s=s2048; t=1580677833; bh=VxFSqOLnoyhxZXWK73TPGK3hr8yutZ4yWmLQa/jSY/I=; h=Date:From:Reply-To:Subject:References:From:Subject; b=XFugQFBJgh9kzqAi2bDTLfXrflGW+Aa3sXSIFyJK8glLQFbFkZTWYTTng+GsjdYgDvo454n+A05Io3u9xQwdr0ejuztdlp0zzy9XJlLctnF4IJ12xnAV2ofS6E7a4OBLyFIrSBerOIsec/6LfFLDbNy8CcWoCkpV2y9XzkbLXs1EC6m/ak04homkju3KDCmaYdHhoWDXrXT970ENEuWeJM3jY2skBIduux/7L0QX4TFVeiXVyEk9PNhNqLQLf7HwxTXz0uzNhLesA8tFE0pvpHNyl5Rt2J4ZkIm0vt3/a9yrWSJhdbdAiKac0maW8lVNxhajdoxXabmBnrXhy+S6OQ==
-X-YMail-OSG: zh7qJYIVM1m_FeD5I.zXf7FSP3_QfZl07gcJUh9i0G1Lermaehx.paxC3crvxaS
- .ugKiidzRFcn3_p3geSIH.Is.rOxgNRm6Mg.tjQKu19b3dJfrgXy2KcrHtFEoxaZhhPaxuR88ZQR
- x.2wpCK.N.LAmy13tY1JoBBPLCy9bLw75tSnpJMhUMs0Hstw2paV47oMIfpkbFuorPbaX44mRoOk
- BBC4ccx_AzGVS0BQ2JD6U1w1qIq4KLp5ByNsksAqE0mBxRhfcHn.7oUUXtvGpXn3.pdPh2x4UZtd
- ..I.wNdJ_2JDq6jx4Mopgyg1YkoS03hr9fxgAmmESYfCrhVQ1UXSOuJS7ouKv8VM.ozzHh39VrBS
- X_fTPe_vaE3UQaMA30Q8XiJCYm55xqGm1T0kZ7A96lUt2NmNQmk7uOS6KkTSeOqDPS6ZKyFhEcuq
- YrsWiy0FuK5iu3FrhjUgQb7gbdG0h0qaai1hbrnMbJ1r31hjv4C1ef30vYNWfeZweqzavvFEKg1S
- IpICx5lwPr2atZZ6ju1tVuekfUKtJ460rPk97D8BuH.5FffjPeWGcE6IOuD5CImaIzlDzaUpyp2O
- sxJV7JWm_X6Z9LBKbUQOr198.W06HuD6tdsAxrhhEKoSzodXFP51UkR8jkyX7hDGRhFEi2.a6ETq
- v9w0nND1cauEO1x48MDGxSiFht82SzAVoKYzbkhdk1QZhZPHeYcDJWL2KtgVssQ222dtrKMdAHqj
- VfSla0ghGEY._1X3ob2ts3SFO5mdla.mEQSEUeIurSi1YkuB_GWUfVuOFd2C2HjyL7q2jjoiUJv1
- F_Z.3vzacyVXGEgntME.Bv3LfdPV_HgaGF9RSObrvB3DSNRazzRnuNm53dy8f_Y9WCk_hqIQIKBX
- X36eh6VXQm_EymKYDA.FDwWlO3S.FuEV3v7uu63ZJQ6AooNEESAUN5XBkMBchzI6gH46hmz67o3G
- izfZXLEofkOrwDgOpQ2n1oMFMDsJh88uF7God_qzA1Mi4A0K4tSEJMEHQh1Q9x0E9IUtfdMn1E3o
- RLt00aORMIUqKRMkusV_g7Lr367QZ.5V1KD77bvQs9vWMTtzogdqGaaHsxmHI43r1s1U1KWTzx8v
- uXH5vxcbOAIaVoDezwZUV04vMXr60FoyArVzbb3D2XnjyTuu684yRA9TlZn.zA.B2tofQLEd0erx
- jm4ld0x7IWG..hD5yL.QgRRHPPqZ_Q2BR0wWKDzYocmEzoM3fbmIpvGQJHGtUQj77S_s.YQapfgZ
- 67HI0Q4Hng8XblCLf.fRAon6393yDuJbOMAflEpTf5Tidej8mwxrWeQzlmObszr.4XlilN3Re1hJ
- 4wF7FFWRB0MKMHjJiMkLaIn5Dx8wXHSdjejcp
-Received: from sonic.gate.mail.ne1.yahoo.com by sonic305.consmr.mail.bf2.yahoo.com with HTTP; Sun, 2 Feb 2020 21:10:33 +0000
-Date:   Sun, 2 Feb 2020 21:08:32 +0000 (UTC)
-From:   "Mrs. Maureen Hinckley" <dd34@gczao.com>
-Reply-To: maurhinck6@gmail.com
-Message-ID: <709835941.497249.1580677712921@mail.yahoo.com>
-Subject: 
+        id S1727124AbgBBVau (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 2 Feb 2020 16:30:50 -0500
+Received: from mail.kernel.org ([198.145.29.99]:39814 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1727119AbgBBVat (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sun, 2 Feb 2020 16:30:49 -0500
+Received: from cakuba.hsd1.ca.comcast.net (c-73-93-4-247.hsd1.ca.comcast.net [73.93.4.247])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id E31E72067C;
+        Sun,  2 Feb 2020 21:30:48 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1580679049;
+        bh=ZQOaIkjXv+JNK/tgD9QQiopUZMQdGEeJFIvL1c4xmfc=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=mECmFWBdy2bnANGtth6hvJT18/H9BF1PCuzxnvy/5kUOOcjtwzfZyKi3G2ICfX+8W
+         AGqj8Bs6njtg93FegZym/Ngl6x285JZFX6F9HPAXqIRW1K+4+hT/fdM/2qUQjZ4Og5
+         L/XOx2+sI6FQkEsYkYqAGhmDWOnbxVJcaHqHl5NM=
+Date:   Sun, 2 Feb 2020 13:30:47 -0800
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Cong Wang <xiyou.wangcong@gmail.com>
+Cc:     netdev@vger.kernel.org,
+        syzbot+35d4dea36c387813ed31@syzkaller.appspotmail.com,
+        Eric Dumazet <eric.dumazet@gmail.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        Jamal Hadi Salim <jhs@mojatatu.com>,
+        Jiri Pirko <jiri@resnulli.us>
+Subject: Re: [Patch net] net_sched: fix an OOB access in cls_tcindex
+Message-ID: <20200202133047.5deec0e2@cakuba.hsd1.ca.comcast.net>
+In-Reply-To: <20200202181950.18439-1-xiyou.wangcong@gmail.com>
+References: <20200202181950.18439-1-xiyou.wangcong@gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
-References: <709835941.497249.1580677712921.ref@mail.yahoo.com>
-X-Mailer: WebService/1.1.15149 YMailNodin Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/79.0.3945.130 Safari/537.36 OPR/66.0.3515.44
-To:     unlisted-recipients:; (no To-header on input)
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Sun,  2 Feb 2020 10:19:50 -0800, Cong Wang wrote:
+> As Eric noticed, tcindex_alloc_perfect_hash() uses cp->hash
+> to compute the size of memory allocation, but cp->hash is
+> set again after the allocation, this caused an out-of-bound
+> access.
+> 
+> So we have to move all cp->hash initialization and computation
+> before the memory allocation. Move cp->mask and cp->shift together
+> as cp->hash may need them for computation.
+> 
+> Reported-and-tested-by: syzbot+35d4dea36c387813ed31@syzkaller.appspotmail.com
+> Fixes: 331b72922c5f ("net: sched: RCU cls_tcindex")
+> Cc: Eric Dumazet <eric.dumazet@gmail.com>
+> Cc: John Fastabend <john.fastabend@gmail.com>
+> Cc: Jamal Hadi Salim <jhs@mojatatu.com>
+> Cc: Jiri Pirko <jiri@resnulli.us>
+> Signed-off-by: Cong Wang <xiyou.wangcong@gmail.com>
+> ---
+>  net/sched/cls_tcindex.c | 38 +++++++++++++++++++-------------------
+>  1 file changed, 19 insertions(+), 19 deletions(-)
+> 
+> diff --git a/net/sched/cls_tcindex.c b/net/sched/cls_tcindex.c
+> index 3d4a1280352f..2ba8c034fce8 100644
+> --- a/net/sched/cls_tcindex.c
+> +++ b/net/sched/cls_tcindex.c
+> @@ -333,6 +333,25 @@ tcindex_set_parms(struct net *net, struct tcf_proto *tp, unsigned long base,
+>  	cp->fall_through = p->fall_through;
+>  	cp->tp = tp;
+>  
+> +	if (tb[TCA_TCINDEX_HASH])
+> +		cp->hash = nla_get_u32(tb[TCA_TCINDEX_HASH]);
+> +
+> +	if (tb[TCA_TCINDEX_MASK])
+> +		cp->mask = nla_get_u16(tb[TCA_TCINDEX_MASK]);
+> +
+> +	if (tb[TCA_TCINDEX_SHIFT])
+> +		cp->shift = nla_get_u32(tb[TCA_TCINDEX_SHIFT]);
+> +
+> +	if (!cp->hash) {
+> +		/* Hash not specified, use perfect hash if the upper limit
+> +		 * of the hashing index is below the threshold.
+> +		 */
+> +		if ((cp->mask >> cp->shift) < PERFECT_HASH_THRESHOLD)
+> +			cp->hash = (cp->mask >> cp->shift) + 1;
+> +		else
+> +			cp->hash = DEFAULT_HASH_SIZE;
+> +	}
+> +
+>  	if (p->perfect) {
+>  		int i;
+> 
+		if (tcindex_alloc_perfect_hash(net, cp) < 0)
+			goto errout;
+		for (i = 0; i < cp->hash; i++)
+			cp->perfect[i].res = p->perfect[i].res;
+		balloc = 1;
+	}
 
+Wouldn't the loop be a problem now? cp->hash defaulted to previous
+value - s/cp->hash/min(cp->hash, p->hash)/ ?
 
-I am Maureen Hinckley and my foundation is donating (Five hundred and fifty=
- thousand USD) to you. Contact us via my email at (maurhinck6@gmail.com) fo=
-r further details.
-
-Best Regards,
-Mrs. Maureen Hinckley,
-Copyright =C2=A92020 The Maureen Hinckley Foundation All Rights Reserved.
+Also, unrelated, I think the jump to errout1 leaks cp->perfect and exts?
