@@ -2,134 +2,169 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 69AE414FAEB
-	for <lists+netdev@lfdr.de>; Sun,  2 Feb 2020 00:12:41 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 573DD14FB54
+	for <lists+netdev@lfdr.de>; Sun,  2 Feb 2020 04:38:55 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726670AbgBAXMf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 1 Feb 2020 18:12:35 -0500
-Received: from vps-vb.mhejs.net ([37.28.154.113]:37848 "EHLO vps-vb.mhejs.net"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726487AbgBAXMe (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sat, 1 Feb 2020 18:12:34 -0500
-X-Greylist: delayed 932 seconds by postgrey-1.27 at vger.kernel.org; Sat, 01 Feb 2020 18:12:33 EST
-Received: from MUA
-        by vps-vb.mhejs.net with esmtps (TLSv1.2:ECDHE-RSA-AES128-GCM-SHA256:128)
-        (Exim 4.92.3)
-        (envelope-from <mail@maciej.szmigiero.name>)
-        id 1iy1h8-0005Hd-SL; Sat, 01 Feb 2020 23:56:54 +0100
-Subject: Re: [PATCH firmware] rtl_nic: add firmware files for RTL8153
-To:     Hayes Wang <hayeswang@realtek.com>
-Cc:     linux-firmware@kernel.org, netdev@vger.kernel.org,
-        pmalani@chromium.org, grundler@chromium.org, nic_swsd@realtek.com
-References: <1394712342-15778-335-Taiwan-albertk@realtek.com>
-From:   "Maciej S. Szmigiero" <mail@maciej.szmigiero.name>
-Autocrypt: addr=mail@maciej.szmigiero.name; prefer-encrypt=mutual; keydata=
- mQINBFpGusUBEADXUMM2t7y9sHhI79+2QUnDdpauIBjZDukPZArwD+sDlx5P+jxaZ13XjUQc
- 6oJdk+jpvKiyzlbKqlDtw/Y2Ob24tg1g/zvkHn8AVUwX+ZWWewSZ0vcwp7u/LvA+w2nJbIL1
- N0/QUUdmxfkWTHhNqgkNX5hEmYqhwUPozFR0zblfD/6+XFR7VM9yT0fZPLqYLNOmGfqAXlxY
- m8nWmi+lxkd/PYqQQwOq6GQwxjRFEvSc09m/YPYo9hxh7a6s8hAP88YOf2PD8oBB1r5E7KGb
- Fv10Qss4CU/3zaiyRTExWwOJnTQdzSbtnM3S8/ZO/sL0FY/b4VLtlZzERAraxHdnPn8GgxYk
- oPtAqoyf52RkCabL9dsXPWYQjkwG8WEUPScHDy8Uoo6imQujshG23A99iPuXcWc/5ld9mIo/
- Ee7kN50MOXwS4vCJSv0cMkVhh77CmGUv5++E/rPcbXPLTPeRVy6SHgdDhIj7elmx2Lgo0cyh
- uyxyBKSuzPvb61nh5EKAGL7kPqflNw7LJkInzHqKHDNu57rVuCHEx4yxcKNB4pdE2SgyPxs9
- 9W7Cz0q2Hd7Yu8GOXvMfQfrBiEV4q4PzidUtV6sLqVq0RMK7LEi0RiZpthwxz0IUFwRw2KS/
- 9Kgs9LmOXYimodrV0pMxpVqcyTepmDSoWzyXNP2NL1+GuQtaTQARAQABtDBNYWNpZWogUy4g
- U3ptaWdpZXJvIDxtYWlsQG1hY2llai5zem1pZ2llcm8ubmFtZT6JAlQEEwEIAD4CGwMFCwkI
- BwIGFQoJCAsCBBYCAwECHgECF4AWIQRyeg1N257Z9gOb7O+Ef143kM4JdwUCXgY+twUJBDYq
- 8gAKCRCEf143kM4Jd/45D/wJvB7YuXuQvgqB9rG2b6cxMe2hriH9iLnpJlUjgzHwNDWkVF6v
- ZYJeIhYyUSxHNK/XExDS7UfH8E9Z7Jo9AoSlw+EBcUcw/HEwRI0DACicKemdJZVTsRn+sOC8
- Imw/pWRyMHLy/Fc59xa68x7+6XFuABrcik05LTF6CDB/1EeUAPVY7mfQOpPUx4G72TZj93F5
- 30MnFj2PWJIiQ0T3MxDH02+TRdussTcaCy7opx5xOQER6kPIaQVKfNfEftT+p7B8Cr+jZJMo
- K7Lib6BnZJKXzYw0M8aB+qAbsipv/ctozOjzHLwTLuhpFcQV+ExccuWg53+pk71j9Pd+u8hq
- qNx9iNJtCb+jsbLbtoOtWpDLdTvSrXp7dQBCcqMs9CCBVPKdgyg+YPOcAgbGitygIpJCs0s9
- 5WRSv+lGmad14GDnp6c01kFnUqZ3G4B5/WLqmCFsIzZTnvW+kH5gw5PFBI0eD7s8Gf523NgX
- 0U2c1hEtFyW539v8b+5USIYgLNqFjhJ0u8Fp4re5TFI16/rG8Ts+fpsPzJGx5LcrD+OIqN7A
- VRIWAyNhUZpczp7e391R2MT4W1ee5lywt4YfC3/7ifBZ/lFZgsPmGRlhT+PT4ZBiTL6w8pP9
- HT+KiMAtgvISfoOgeMQ5NE0+DIV615CEKXGtTGeeBoHOza2Oq5BSIPvKwbkBjQRaRrtSAQwA
- 1c8skXiNYGgitv7X8osxlkOGiqvy1WVV6jJsv068W6irDhVETSB6lSc7Qozk9podxjlrae9b
- vqfaJxsWhuwQjd+QKAvklWiLqw4dll2R3+aanBcRJcdZ9iw0T63ctD26xz84Wm7HIVhGOKsS
- yHHWJv2CVHjfD9ppxs62XuQNNb3vP3i7LEto9zT1Zwt6TKsJy5kWSjfRr+2eoSi0LIzBFaGN
- D8UOP8FdpS7MEkqUQPMI17E+02+5XCLh33yXgHFVyWUxChqL2r8y57iXBYE/9XF3j4+58oTD
- ne/3ef+6dwZGyqyP1C34vWoh/IBq2Ld4cKWhzOUXlqKJno0V6pR0UgnIJN7SchdZy5jd0Mrq
- yEI5k7fcQHJxLK6wvoQv3mogZok4ddLRJdADifE4+OMyKwzjLXtmjqNtW1iLGc/JjMXQxRi0
- ksC8iTXgOjY0f7G4iMkgZkBfd1zqfS+5DfcGdxgpM0m9EZ1mhERRR80U6C+ZZ5VzXga2bj0o
- ZSumgODJABEBAAGJA/IEGAEIACYCGwIWIQRyeg1N257Z9gOb7O+Ef143kM4JdwUCXgY/uAUJ
- BDYrZgHAwPQgBBkBCAAdFiEE4ndqq6COJv9aG0oJUrHW6VHQzgcFAlpGu1IACgkQUrHW6VHQ
- zgdztQv+PRhCVQ7KUuQMEvMaH+rc1GIaHT6Igbvn77bEG1Kd39jX3lJDdyZXrVqxFylLu64r
- +9kHeCslM+Uq/fUM94od7cXGkvCW7ST1MUGQ3g+/rAf88F5l+KjUzLShw2sxElP+sjGQGQ4z
- Llve5MarGtV4TH6dJlDXZTtxwHotHZDiA2bUeJYLlMAggwLM/rBS9xfytMNuFk8U0THR/TVw
- vu3VymjdOjJnSecFyu9iRskRXc8LA9JxqDbfmETePg1dPehxiwgMvdi3WdYk4BB1wMl0MdnU
- 2Ea3AdjU3nX+Uc/npPMvDuzai9ZA7/tVG1RaQhIElL85+A5Tb2Wzl0IoO1kTafkaQNBOStEe
- O1fhLSz5/3Dt+dOOqxp7VuwSHqEXb3jc6WgnwZiimF8vvGzE2PNBAuIAwGItY2fkpGblbmmN
- b/qYZEjdbVNjfJXyVyez//QoiUrQk2sC9nNL7zYTEMocuJFN90a2158h5ve1qBT0jpUx69Ok
- yR8/DxnAEmj04WSoCRCEf143kM4Jd7OzEADUrk8wzAA0xcA90X0xp2FkANDA82fxCdnXYjQ/
- IJW+GVupSQ/eWBzUprtb8tELSBnIWQ6bLv7vbetN1zPy+n6YeB0IVgwWoOObnT0BOeLleUsy
- KKBhtD6Vw3u5QxdpdGUIwPB39+NaBgo1Sh99fAVNv2ARNa12jzI2lRvVtWMdRkMaLclkMCpB
- Lw3UItHfwPhHhxwwfQ/s37acPHoxf+Jg3C0oDNAjNzOlDbuoa0sYlrJ17ExDuoH/SzGu+zAo
- XWIZG/JWQahS2HTLfjQDsLq0NdNfgPCpa7TZJIAimXAUqR1zKBJtDpbt5rdFJR9dHXipab/W
- rDKeBgMIgv8rwcJMFHwbr72ht/5imC3uInxCCI76w3MpxuHfXWzWsbOXwceZ9La3k/MHEGtc
- 05yGMerio0MZHJwRuG7wI4xBMt5LP6KMQcsEMdDQaiZxC3GgBAuU1ewdj6sKodCAUOFXBiXx
- ePW59LVYZVHCAwYXBoCgy0P1BpFbYNY5p0tzWakCSw94YC2yVjc+8xoJCdlBN3dHJStrOTQ4
- P1nWwO5ELit0mW+yLtsumj0mlNs1EzSnhKhrci4YfOLOGV3Wnp/QqfVU1uArhC8yZ/FWBNau
- MKYJmFdTOS89DdqGx2/VjICOaG28GL75QXwcbViNJukN5kx0b6cGlnm9tr8DZ/4AHFDmBrkB
- jQRaRrwiAQwAxnVmJqeP9VUTISps+WbyYFYlMFfIurl7tzK74bc67KUBp+PHuDP9p4ZcJUGC
- 3UZJP85/GlUVdE1NairYWEJQUB7bpogTuzMI825QXIB9z842HwWfP2RW5eDtJMeujzJeFaUp
- meTG9snzaYxYN3r0TDKj5dZwSIThIMQpsmhH2zylkT0jH7kBPxb8IkCQ1c6wgKITwoHFjTIO
- 0B75U7bBNSDpXUaUDvd6T3xd1Fz57ujAvKHrZfWtaNSGwLmUYQAcFvrKDGPB5Z3ggkiTtkmW
- 3OCQbnIxGJJw/+HefYhB5/kCcpKUQ2RYcYgCZ0/WcES1xU5dnNe4i0a5gsOFSOYCpNCfTHtt
- VxKxZZTQ/rxjXwTuToXmTI4Nehn96t25DHZ0t9L9UEJ0yxH2y8Av4rtf75K2yAXFZa8dHnQg
- CkyjA/gs0ujGwD+Gs7dYQxP4i+rLhwBWD3mawJxLxY0vGwkG7k7npqanlsWlATHpOdqBMUiA
- R22hs02FikAoiXNgWTy7ABEBAAGJAjwEGAEIACYCGwwWIQRyeg1N257Z9gOb7O+Ef143kM4J
- dwUCXgZABwUJBDYq5QAKCRCEf143kM4Jd8WEEAC1D/p5Fi/YvVlUUBHhI+WS5c8SqdZaM//h
- r0RfyrUaKwU+XR+wB6HACwfvN3t0i7BhiER9s6UaMcxWzZfVZYcLcgaKvucHkQMkO+XxGcqE
- /7m0j7r4iERxCi3FZTNMLGjxzG2teWesUSbvtlrFMtc3lxwdAiA/kF8FBkesG7acP0saiIJr
- UcMfU+ZsXGxMSrZ4RRRFESvcgvK95KgnlsyuRouyVFu7tJVbTnW6/65JRFNlEQ6Wsbx/0C90
- KWkF9R7DLtcVxno75+pXiXDdy9bq54uQeT+9dr+EdyVL0H3eTzP9js7GrRahuHD6/AxekQwX
- afDLYnExRXL7acu5a1fUpDKWe/CigtyjJz73Dvs9eV7Wvk69TFV60Ft84UEqNBqSha7s1/m8
- tQW4InvfnL9h0LWVvwUZe5HKCPe65amwBOvwkkYd4OfNb0NDVudTMsCYLJ8al57zLelH2hcS
- wOiVdXBsbePjzLy2exEXUb1bHFjBoHnHX6uszBOzM/Dv1eNWJPZ3r3PRFnQk/D9ohEXVEmUI
- TLDd7lR06Nr8J4oG1RprRTW1T8xE6lSwbfsp9ApU1QuDZzSI1hdNpDYRVUmQeiXnSjR1YBVb
- zOyMU+hnnsQZMdTQ2qVFZs4JGCA9/wSOMMsohDbJNX2iGR1S+RFpZY9sipuGBVM7wIVrz4Ac Iw==
-Message-ID: <cea329a9-943b-7c15-ffb4-5e58b04d35e3@maciej.szmigiero.name>
-Date:   Sat, 1 Feb 2020 23:56:49 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.4.1
-MIME-Version: 1.0
-In-Reply-To: <1394712342-15778-335-Taiwan-albertk@realtek.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 8bit
+        id S1726877AbgBBDit (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 1 Feb 2020 22:38:49 -0500
+Received: from mail-pg1-f194.google.com ([209.85.215.194]:42386 "EHLO
+        mail-pg1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726789AbgBBDis (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 1 Feb 2020 22:38:48 -0500
+Received: by mail-pg1-f194.google.com with SMTP id w21so89320pgl.9;
+        Sat, 01 Feb 2020 19:38:48 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id;
+        bh=uV/djr6uE73WU9/ZzEdxqKkRdihnoCgbfPxx46DizKE=;
+        b=cOQiAsVG1EfDqx5YWebjPSmGyGX5AJva6eYJpgNQPsZJHAEMnwytk8cDxnRAkl9JQ6
+         M1ALHk42yzM7H3vnGDtLL5iS/D8+7s/uefI9kOdFSPrNdS12UvLsS/pCxDVWVtxPh+si
+         KlRUiPA2CU53LmNeV+CYep2AmKThAUlDs06u+BM0987EWCbXiRU0r76tVBWewOyrHUKy
+         wmRLIN2jNZee9GyEVgRv3jA/PCyL05ouLI+ue9p4v5Rl3eXGRyqUpezEmbF4OwpohEP1
+         na3wSroImZCLPTJzQ3DQo5FL4QlPp+tzlvbK0234oL3pfXHeiHyV2rCk5IUn9aXO+jMt
+         xyLQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=uV/djr6uE73WU9/ZzEdxqKkRdihnoCgbfPxx46DizKE=;
+        b=XIKa/RWKpZ0mbAj9YLn1UrecnkCbkho6stOT2HDnA+WS3lWLKtGE7ZlbEAxc/HhQ+A
+         vh5vLZUlsa4skmFJJGqCG4PiRt6oOiMSvf1RjVFLM7jHXysZd0Ng+PlMK7n7anQSpUOK
+         Gu+kF8Po7e5tl7TktEuL0lc24/MWZ0VMXOHilzNaYvSex3G0AU2lDVtT3OPDhtyXPoCo
+         N6sEOX3D7IDavJGMkATQ64q68aTIA0W1E0vqdAWQg9mVcFZW4DTbZQvW7VojfOYF+Rb6
+         1/3tuie8+odDDW4UyMhQMxM9jNYDBlpKHjG1SAxOc3BOxzotMhOh9r2+H3LiG0GynXgl
+         kdoA==
+X-Gm-Message-State: APjAAAU4gNJv9zNoRbWL1dIDOMFrBb/Od+sVWfLMt6Hkt8ogT47YkP13
+        ZxVX/Cg5V3mfFFA1VMrCys4=
+X-Google-Smtp-Source: APXvYqwxKgtiDNUrrNBcqjVjJDNBbL/jBOqTGjiv0BzqG2xWSjGEoyn32acwpqr/HWA93K9B65WAkg==
+X-Received: by 2002:a63:646:: with SMTP id 67mr1493064pgg.376.1580614727920;
+        Sat, 01 Feb 2020 19:38:47 -0800 (PST)
+Received: from localhost.localdomain ([116.84.110.10])
+        by smtp.gmail.com with ESMTPSA id iq22sm15705334pjb.9.2020.02.01.19.38.44
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sat, 01 Feb 2020 19:38:47 -0800 (PST)
+From:   sj38.park@gmail.com
+To:     edumazet@google.com
+Cc:     sj38.park@gmail.com, David.Laight@aculab.com, aams@amazon.com,
+        davem@davemloft.net, eric.dumazet@gmail.com,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-kselftest@vger.kernel.org, ncardwell@google.com,
+        shuah@kernel.org, sjpark@amazon.de
+Subject: [PATCH v3 0/2] Fix reconnection latency caused by FIN/ACK handling race
+Date:   Sun,  2 Feb 2020 03:38:25 +0000
+Message-Id: <20200202033827.16304-1-sj38.park@gmail.com>
+X-Mailer: git-send-email 2.17.1
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Hayes,
+From: SeongJae Park <sjpark@amazon.de>
 
-On 23.10.2019 05:39, Hayes Wang wrote:
-> This adds the firmware for Realtek RTL8153 Based USB Ethernet Adapters.
-> 
-> 1. Fix compatible issue for Asmedia hub.
-> 2. Fix compatible issue for Compal platform.
-> 3. Fix sometimes the device is lost after rebooting.
-> 4. Improve the compatibility for EEE.
-> 
-> Signed-off-by: Hayes Wang <hayeswang@realtek.com>
-> ---
->  WHENCE                |  11 +++++++++++
->  rtl_nic/rtl8153a-2.fw | Bin 0 -> 1768 bytes
->  rtl_nic/rtl8153a-3.fw | Bin 0 -> 1440 bytes
->  rtl_nic/rtl8153a-4.fw | Bin 0 -> 712 bytes
+When closing a connection, the two acks that required to change closing
+socket's status to FIN_WAIT_2 and then TIME_WAIT could be processed in
+reverse order.  This is possible in RSS disabled environments such as a
+connection inside a host.
 
-This file fails to load for me:
-thost kernel: [ T2503] r8152 1-3:1.0: unused bp5 is not zero
-thost kernel: [ T2503] r8152 1-3:1.0: check USB firmware failed
-thost kernel: [ T2503] r8152 1-3:1.0: unable to load firmware patch rtl_nic/rtl8153a-4.fw (-14)
+For example, expected state transitions and required packets for the
+disconnection will be similar to below flow.
 
-Looking at the above file it has fw_mac->bp_num set to 5,
-but fw_mac->bp[] array has 6 elements filled.
+	 00 (Process A)				(Process B)
+	 01 ESTABLISHED				ESTABLISHED
+	 02 close()
+	 03 FIN_WAIT_1
+	 04 		---FIN-->
+	 05 					CLOSE_WAIT
+	 06 		<--ACK---
+	 07 FIN_WAIT_2
+	 08 		<--FIN/ACK---
+	 09 TIME_WAIT
+	 10 		---ACK-->
+	 11 					LAST_ACK
+	 12 CLOSED				CLOSED
 
-If I force fw_mac->bp_num to 6 in the code it loads successfully,
-so perhaps it's a mistake in the firmware header?
+In some cases such as LINGER option applied socket, the FIN and FIN/ACK will be
+substituted to RST and RST/ACK, but there is no difference in the main logic.
 
-Maciej
+The acks in lines 6 and 8 are the acks.  If the line 8 packet is
+processed before the line 6 packet, it will be just ignored as it is not
+a expected packet, and the later process of the line 6 packet will
+change the status of Process A to FIN_WAIT_2, but as it has already
+handled line 8 packet, it will not go to TIME_WAIT and thus will not
+send the line 10 packet to Process B.  Thus, Process B will left in
+CLOSE_WAIT status, as below.
+
+	 00 (Process A)				(Process B)
+	 01 ESTABLISHED				ESTABLISHED
+	 02 close()
+	 03 FIN_WAIT_1
+	 04 		---FIN-->
+	 05 					CLOSE_WAIT
+	 06 				(<--ACK---)
+	 07	  			(<--FIN/ACK---)
+	 08 				(fired in right order)
+	 09 		<--FIN/ACK---
+	 10 		<--ACK---
+	 11 		(processed in reverse order)
+	 12 FIN_WAIT_2
+
+Later, if the Process B sends SYN to Process A for reconnection using
+the same port, Process A will responds with an ACK for the last flow,
+which has no increased sequence number.  Thus, Process A will send RST,
+wait for TIMEOUT_INIT (one second in default), and then try
+reconnection.  If reconnections are frequent, the one second latency
+spikes can be a big problem.  Below is a tcpdump results of the problem:
+
+    14.436259 IP 127.0.0.1.45150 > 127.0.0.1.4242: Flags [S], seq 2560603644
+    14.436266 IP 127.0.0.1.4242 > 127.0.0.1.45150: Flags [.], ack 5, win 512
+    14.436271 IP 127.0.0.1.45150 > 127.0.0.1.4242: Flags [R], seq 2541101298
+    /* ONE SECOND DELAY */
+    15.464613 IP 127.0.0.1.45150 > 127.0.0.1.4242: Flags [S], seq 2560603644
+
+Patchset Organization
+---------------------
+
+The first patch fixes the problem by adjusting the first resend delay of
+the SYN in the case.  The second one adds a user space test to reproduce
+this problem.
+
+The patches are based on the v5.5.  You can also clone the complete git
+tree:
+
+    $ git clone git://github.com/sjp38/linux -b patches/finack_lat/v3
+
+The web is also available:
+https://github.com/sjp38/linux/tree/patches/finack_lat/v3
+
+
+Patchset History
+----------------
+
+From v2
+(https://lore.kernel.org/linux-kselftest/20200201071859.4231-1-sj38.park@gmail.com/)
+ - Use TCP_TIMEOUT_MIN as reduced delay (Neal Cardwall)
+ - Add Reviewed-by and Signed-off-by from Eric Dumazet
+
+From v1
+(https://lore.kernel.org/linux-kselftest/20200131122421.23286-1-sjpark@amazon.com/)
+ - Drop the trivial comment fix patch (Eric Dumazet)
+ - Limit the delay adjustment to only the first SYN resend (Eric Dumazet)
+ - selftest: Avoid use of hard-coded port number (Eric Dumazet)
+ - Explain RST/ACK and FIN/ACK has no big difference (Neal Cardwell)
+
+SeongJae Park (2):
+  tcp: Reduce SYN resend delay if a suspicous ACK is received
+  selftests: net: Add FIN_ACK processing order related latency spike
+    test
+
+ net/ipv4/tcp_input.c                       |   8 +-
+ tools/testing/selftests/net/.gitignore     |   1 +
+ tools/testing/selftests/net/Makefile       |   2 +
+ tools/testing/selftests/net/fin_ack_lat.c  | 151 +++++++++++++++++++++
+ tools/testing/selftests/net/fin_ack_lat.sh |  35 +++++
+ 5 files changed, 196 insertions(+), 1 deletion(-)
+ create mode 100644 tools/testing/selftests/net/fin_ack_lat.c
+ create mode 100755 tools/testing/selftests/net/fin_ack_lat.sh
+
+-- 
+2.17.1
+
