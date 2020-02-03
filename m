@@ -2,131 +2,133 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 668AC1502F5
-	for <lists+netdev@lfdr.de>; Mon,  3 Feb 2020 10:07:04 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 710C6150313
+	for <lists+netdev@lfdr.de>; Mon,  3 Feb 2020 10:14:31 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727773AbgBCJHA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 3 Feb 2020 04:07:00 -0500
-Received: from aserp2120.oracle.com ([141.146.126.78]:38768 "EHLO
-        aserp2120.oracle.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726045AbgBCJG7 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 3 Feb 2020 04:06:59 -0500
-Received: from pps.filterd (aserp2120.oracle.com [127.0.0.1])
-        by aserp2120.oracle.com (8.16.0.27/8.16.0.27) with SMTP id 013934fr088127;
-        Mon, 3 Feb 2020 09:06:41 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=date : from : to : cc
- : subject : message-id : references : mime-version : content-type :
- in-reply-to; s=corp-2019-08-05;
- bh=8WgPDKN0FJnUuKUBLKIxeobzc7t0Hcs7X5V3wjF1qF0=;
- b=LsHCgmGufai5qhkHeBqE7FZNDZB+nNdr1VIkClhVmmVBnP0vrrrqsyGzQXAsO5YvhFyn
- O6Ji/TwMEED9xLA0SHaIYYc/eBTR+NYfFiFHw8lAkc8B98IOBCPUKkRC59xP/eszz66x
- O3E9oCq0+zgIIUt3dpomej0ne1XSPTu+4Ru+KW9plKsJQz8IR+DWP3zppw1OKC95P0aF
- 5Y9vDip0WXiAYtY7Cp/+Ab6CoT2BGl3WgxAGwPm0SGNXNIXzF2hZLZ3gOVlBk637s9TC
- D79dARXZ5zRLAeITfA9pstDkGSIzuLpI35Awp5DJSMe+lViv+r4ybs7Klc14zSaRXNbS iQ== 
-Received: from userp3030.oracle.com (userp3030.oracle.com [156.151.31.80])
-        by aserp2120.oracle.com with ESMTP id 2xw19q69g5-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Mon, 03 Feb 2020 09:06:40 +0000
-Received: from pps.filterd (userp3030.oracle.com [127.0.0.1])
-        by userp3030.oracle.com (8.16.0.27/8.16.0.27) with SMTP id 01393JHS177625;
-        Mon, 3 Feb 2020 09:06:40 GMT
-Received: from userv0122.oracle.com (userv0122.oracle.com [156.151.31.75])
-        by userp3030.oracle.com with ESMTP id 2xwjt3e3un-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Mon, 03 Feb 2020 09:06:39 +0000
-Received: from abhmp0014.oracle.com (abhmp0014.oracle.com [141.146.116.20])
-        by userv0122.oracle.com (8.14.4/8.14.4) with ESMTP id 01396Ywj008538;
-        Mon, 3 Feb 2020 09:06:35 GMT
-Received: from kadam (/41.210.143.134)
-        by default (Oracle Beehive Gateway v4.0)
-        with ESMTP ; Mon, 03 Feb 2020 01:06:31 -0800
-Date:   Mon, 3 Feb 2020 12:06:19 +0300
-From:   Dan Carpenter <dan.carpenter@oracle.com>
-To:     Daniel Vetter <daniel@ffwll.ch>
-Cc:     syzbot <syzbot+0dc4444774d419e916c8@syzkaller.appspotmail.com>,
-        Dave Airlie <airlied@linux.ie>,
-        Alex Deucher <alexander.deucher@amd.com>,
-        amd-gfx list <amd-gfx@lists.freedesktop.org>,
-        "Wilson, Chris" <chris@chris-wilson.co.uk>,
-        Christian =?iso-8859-1?Q?K=F6nig?= <christian.koenig@amd.com>,
-        David Miller <davem@davemloft.net>,
-        dri-devel <dri-devel@lists.freedesktop.org>,
-        Emil Velikov <emil.velikov@collabora.com>,
-        "Anholt, Eric" <eric@anholt.net>,
-        "moderated list:DMA BUFFER SHARING FRAMEWORK" 
-        <linaro-mm-sig@lists.linaro.org>,
+        id S1727600AbgBCJO0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 3 Feb 2020 04:14:26 -0500
+Received: from mail-vi1eur05on2080.outbound.protection.outlook.com ([40.107.21.80]:6017
+        "EHLO EUR05-VI1-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1726244AbgBCJO0 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 3 Feb 2020 04:14:26 -0500
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=MgkWBI2sBamPV88W9iuHCt7vyZEVdT5gHZ5iiwr2ccoMUxQqKQK2ckHwJaxI3cqp8+J3rQ3r8Ws+cUpTZNKnJSsKzs2CPWSk9yJSUJkH7b5yAT3hIYAFQGLHlT+w/FINGGsIxfBEuIjBIfpQhnImmX5+jBSXGNio3n4rUPlcfVQD7AI4p6ZXtrL87YbD0qByVOwD4Fs9yIqrNfTFuNbau+WBXTStYbzvbgMrhKXI93RLWEvTODhxr5CH4mKu3IwNKLQtbilJmKbpvzLGi+WCJ9l26k2R43ABZPcMVgep62xJXHmITqvLwntrh95DLHA7/WVzf8gsNKJban/z9DHCmw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=I5DtGSMdHoh9RbC6UibIQ3bTN5i+onI6/UQlQeccVI8=;
+ b=AO56tLN2ldUhrpM0r7oINnuGWOiyXqo/guTTRYvRzCWaeiplA5uJaUMk221u0QVDkRIHb6ByR4epf5X0gUVEGCGyFnLlVDoLbWMXvemGFcQ9LfwECOWSfv8JTeb5XNhGErayjIdxtxDh5pjYCcHucNzy6fm6AeLw7ttx3Rs0n5cpujdKljKr83NJOYtWLIb5dQxuDikvk3aLB9O1YdMXV7dEl0XH+IKH2UU7DT4axddJEfs7xey43N0mJtOB4gJrlZxzPkhf1G3EShhZgVO1jPxXqP3IockE139d1Kn2BBH01I94A7B1JlUDDsQHeUg0UiTETIUzjfEjBU1F82R4lA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=oss.nxp.com; dmarc=pass action=none header.from=oss.nxp.com;
+ dkim=pass header.d=oss.nxp.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=NXP1.onmicrosoft.com;
+ s=selector2-NXP1-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=I5DtGSMdHoh9RbC6UibIQ3bTN5i+onI6/UQlQeccVI8=;
+ b=RjgAr0yadfOayXcaVSnCbns7O4bzFoQ709Feuv0zzHSHr3ignSPkL0/PZwqcr9cm2l9fgeAsHqlCdst4kCfPf5us0zw4hKiOtP8+N7sFfI8AnbAgCxyBTB6d7tRQ9GOqFdTACmceme+n/RMxMf2uyUxTxyJ+5u+2vtfjFNS6SKk=
+Received: from AM0PR04MB5636.eurprd04.prod.outlook.com (20.178.202.86) by
+ AM0PR04MB6017.eurprd04.prod.outlook.com (20.179.33.211) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.2686.27; Mon, 3 Feb 2020 09:13:42 +0000
+Received: from AM0PR04MB5636.eurprd04.prod.outlook.com
+ ([fe80::1b4:31d2:1485:6e07]) by AM0PR04MB5636.eurprd04.prod.outlook.com
+ ([fe80::1b4:31d2:1485:6e07%7]) with mapi id 15.20.2686.028; Mon, 3 Feb 2020
+ 09:13:42 +0000
+From:   "Calvin Johnson (OSS)" <calvin.johnson@oss.nxp.com>
+To:     Andy Shevchenko <andy.shevchenko@gmail.com>,
+        Dan Carpenter <dan.carpenter@oracle.com>
+CC:     "linux.cj@gmail.com" <linux.cj@gmail.com>,
+        Jon Nettleton <jon@solid-run.com>,
+        Russell King - ARM Linux <linux@armlinux.org.uk>,
+        Makarand Pawagi <makarand.pawagi@nxp.com>,
+        Cristi Sovaiala <cristian.sovaiala@nxp.com>,
+        Laurentiu Tudor <laurentiu.tudor@nxp.com>,
+        Ioana Ciornei <ioana.ciornei@nxp.com>,
+        Varun Sethi <V.Sethi@nxp.com>,
+        Pankaj Bansal <pankaj.bansal@nxp.com>,
+        "Rajesh V. Bikkina" <rajesh.bikkina@nxp.com>,
+        "Calvin Johnson (OSS)" <calvin.johnson@oss.nxp.com>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Antoine Tenart <antoine.tenart@bootlin.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Dmitry Torokhov <dmitry.torokhov@gmail.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Heikki Krogerus <heikki.krogerus@linux.intel.com>,
+        Matteo Croce <mcroce@redhat.com>,
+        Maxime Chevallier <maxime.chevallier@bootlin.com>,
+        "Rafael J. Wysocki" <rafael@kernel.org>,
+        Russell King <rmk+kernel@armlinux.org.uk>,
+        Sakari Ailus <sakari.ailus@linux.intel.com>,
+        Thomas Gleixner <tglx@linutronix.de>,
         Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        "open list:DMA BUFFER SHARING FRAMEWORK" 
-        <linux-media@vger.kernel.org>, netdev <netdev@vger.kernel.org>,
-        Rob Clark <robdclark@chromium.org>,
-        Sean Paul <seanpaul@chromium.org>,
-        Sumit Semwal <sumit.semwal@linaro.org>,
-        syzkaller-bugs <syzkaller-bugs@googlegroups.com>
-Subject: Re: KASAN: use-after-free Read in vgem_gem_dumb_create
-Message-ID: <20200203090619.GL1778@kadam>
-References: <000000000000ae2f81059d7716b8@google.com>
- <CAKMK7uGivsYzP6h9rg0eN34YuOVbee6gnhdOxiys=M=4phK+kw@mail.gmail.com>
+        netdev <netdev@vger.kernel.org>
+Subject: RE: [PATCH v1 4/7] device property: fwnode_get_phy_mode: Change API
+ to solve int/unit warnings
+Thread-Topic: [PATCH v1 4/7] device property: fwnode_get_phy_mode: Change API
+ to solve int/unit warnings
+Thread-Index: AQHV2nI6nPm6Kny3S0qrJenP9wKoOA==
+Date:   Mon, 3 Feb 2020 09:13:42 +0000
+Message-ID: <AM0PR04MB5636C44D0943B7E5F01218DF93000@AM0PR04MB5636.eurprd04.prod.outlook.com>
+References: <20200131153440.20870-1-calvin.johnson@nxp.com>
+ <20200131153440.20870-5-calvin.johnson@nxp.com>
+ <CAHp75Vdnz79NiHs5MfxAevzOuk-A6ESHR+Epoym+v3Qo4XPvLw@mail.gmail.com>
+In-Reply-To: <CAHp75Vdnz79NiHs5MfxAevzOuk-A6ESHR+Epoym+v3Qo4XPvLw@mail.gmail.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+authentication-results: spf=none (sender IP is )
+ smtp.mailfrom=calvin.johnson@oss.nxp.com; 
+x-ms-exchange-messagesentrepresentingtype: 1
+x-originating-ip: [92.121.36.198]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-ht: Tenant
+x-ms-office365-filtering-correlation-id: 4de3b39a-fbbf-418e-886d-08d7a8895d52
+x-ms-traffictypediagnostic: AM0PR04MB6017:|AM0PR04MB6017:
+x-ms-exchange-sharedmailbox-routingagent-processed: True
+x-ms-exchange-transport-forked: True
+x-microsoft-antispam-prvs: <AM0PR04MB6017F552AE81B65E5ED675D2D2000@AM0PR04MB6017.eurprd04.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:7219;
+x-forefront-prvs: 0302D4F392
+x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(4636009)(39860400002)(366004)(396003)(136003)(346002)(376002)(189003)(199004)(71200400001)(8676002)(52536014)(81166006)(81156014)(8936002)(7696005)(4744005)(478600001)(966005)(5660300002)(55016002)(54906003)(110136005)(9686003)(76116006)(316002)(7416002)(66446008)(64756008)(186003)(4326008)(53546011)(66556008)(66476007)(86362001)(6506007)(2906002)(26005)(66946007)(33656002);DIR:OUT;SFP:1101;SCL:1;SRVR:AM0PR04MB6017;H:AM0PR04MB5636.eurprd04.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;MX:1;A:0;
+received-spf: None (protection.outlook.com: oss.nxp.com does not designate
+ permitted sender hosts)
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: aaaLWz/OsnT9DwxZ05eB8gYtGgPgM6qiuTFjSooNC6ND4U+VK3lBkiyOA0+aeMEAwOJCI0s7erwR3YIC2h3lXzIRP7OmsZTQoOskzJ8e9sSlkjX3k8FDBYz6bPIu1p+5h2dpJbrhMKepIuhkml2jE/qyhXRBhlJD0AUGhAnlYbEVpu0jtZzj44No77igg6ydJwuxpmGGcKskVkdTpB6ofR4xxc7dY0q3efyTKQr7K4l6XC5dJ7tTYd/s9uX9JCbtHKNobhH/wH063vrdnpR6zfdQAEu0TikDMIdoJ1HFlBFwTF6x/5zCNKHPiD1YrS3K4EqDSrQskWZMSP7tklWeOd6K4OuTNCJSo8z+ccqx9GK8kl8MRlDwlHsj1eTK4Ubo2g1rGDj8TnXlP8xy2Nh9GWVxawA0ljRLyFDNJh5lZkxN6OLhoUYvS6mMQ7CN+uq48Lpwz3fgNO+Pdqu9tEu+XLhF601eq+BhnYbc9Ggjq8KICIe/RTDccs+D/Q0lDM/jVtCn3leLCqE6LZ8xtuP3Xg==
+x-ms-exchange-antispam-messagedata: MBUstTe65wfRlzaKfu/DazxDoqGd+A8hwmIASnqppfJi/gldRM42ek90wkfUzvbOsf15PCMwPvurOg25/ssj+IN0Fiowc8CkdAsMdHppCtc4LTexJvU1WPNZyBEAgiYEuRQEq/lM4UGtCiPs902SaA==
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CAKMK7uGivsYzP6h9rg0eN34YuOVbee6gnhdOxiys=M=4phK+kw@mail.gmail.com>
-User-Agent: Mutt/1.9.4 (2018-02-28)
-X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9519 signatures=668685
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 suspectscore=0 malwarescore=0
- phishscore=0 bulkscore=0 spamscore=0 mlxscore=0 mlxlogscore=999
- adultscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.0.1-1911140001 definitions=main-2002030073
-X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9519 signatures=668685
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 priorityscore=1501 malwarescore=0
- suspectscore=0 phishscore=0 bulkscore=0 spamscore=0 clxscore=1015
- lowpriorityscore=0 mlxscore=0 impostorscore=0 mlxlogscore=999 adultscore=0
- classifier=spam adjust=0 reason=mlx scancount=1 engine=8.0.1-1911140001
- definitions=main-2002030073
+X-OriginatorOrg: oss.nxp.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 4de3b39a-fbbf-418e-886d-08d7a8895d52
+X-MS-Exchange-CrossTenant-originalarrivaltime: 03 Feb 2020 09:13:42.5230
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: lIildBwFBVhdO+qdorIhq33UmwwglBTzPQhJUk+N+n2IUzRU1ej4DfEt2PjKWWtwqpzAjRMYR5rPkdrjAREDPw==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM0PR04MB6017
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, Feb 02, 2020 at 02:19:18PM +0100, Daniel Vetter wrote:
-> On Fri, Jan 31, 2020 at 11:28 PM syzbot
-> <syzbot+0dc4444774d419e916c8@syzkaller.appspotmail.com> wrote:
-> >
-> > Hello,
-> >
-> > syzbot found the following crash on:
-> >
-> > HEAD commit:    39bed42d Merge tag 'for-linus-hmm' of git://git.kernel.org..
-> > git tree:       upstream
-> > console output: https://syzkaller.appspot.com/x/log.txt?x=179465bee00000
-> > kernel config:  https://syzkaller.appspot.com/x/.config?x=2646535f8818ae25
-> > dashboard link: https://syzkaller.appspot.com/bug?extid=0dc4444774d419e916c8
-> > compiler:       gcc (GCC) 9.0.0 20181231 (experimental)
-> > syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=16251279e00000
-> >
-> > The bug was bisected to:
-> >
-> > commit 7611750784664db46d0db95631e322aeb263dde7
-> > Author: Alex Deucher <alexander.deucher@amd.com>
-> > Date:   Wed Jun 21 16:31:41 2017 +0000
-> >
-> >     drm/amdgpu: use kernel is_power_of_2 rather than local version
-> >
-> > bisection log:  https://syzkaller.appspot.com/x/bisect.txt?x=11628df1e00000
-> > final crash:    https://syzkaller.appspot.com/x/report.txt?x=13628df1e00000
-> > console output: https://syzkaller.appspot.com/x/log.txt?x=15628df1e00000
-> >
-> > IMPORTANT: if you fix the bug, please add the following tag to the commit:
-> > Reported-by: syzbot+0dc4444774d419e916c8@syzkaller.appspotmail.com
-> > Fixes: 761175078466 ("drm/amdgpu: use kernel is_power_of_2 rather than local version")
-> 
-> Aside: This bisect line is complete nonsense ... I'm kinda at the
-> point where I'm assuming that syzbot bisect results are garbage, which
-> is maybe not what we want. I guess much stricter filtering for noise
-> is needed, dunno.
-> -Danile
-
-With race conditions the git bisect is often nonsense.
-
-regards,
-dan carpenter
-
+SGkgQW5keSwNCg0KPiAtLS0tLU9yaWdpbmFsIE1lc3NhZ2UtLS0tLQ0KPiBGcm9tOiBBbmR5IFNo
+ZXZjaGVua28gPGFuZHkuc2hldmNoZW5rb0BnbWFpbC5jb20+DQo+IFN1YmplY3Q6IFJlOiBbUEFU
+Q0ggdjEgNC83XSBkZXZpY2UgcHJvcGVydHk6IGZ3bm9kZV9nZXRfcGh5X21vZGU6DQo+IENoYW5n
+ZSBBUEkgdG8gc29sdmUgaW50L3VuaXQgd2FybmluZ3MNCj4gDQo+IE9uIEZyaSwgSmFuIDMxLCAy
+MDIwIGF0IDU6MzggUE0gQ2FsdmluIEpvaG5zb24gPGNhbHZpbi5qb2huc29uQG54cC5jb20+DQo+
+IHdyb3RlOg0KPiA+DQo+ID4gRnJvbTogQ2FsdmluIEpvaG5zb24gPGNhbHZpbi5qb2huc29uQG9z
+cy5ueHAuY29tPg0KPiA+DQo+ID4gQVBJIGZ3bm9kZV9nZXRfcGh5X21vZGUgaXMgbW9kaWZpZWQg
+dG8gZm9sbG93IHRoZSBjaGFuZ2VzIG1hZGUgYnkNCj4gPiBDb21taXQgMGM2NWIyYjkwZDEzYzEg
+KCJuZXQ6IG9mX2dldF9waHlfbW9kZTogQ2hhbmdlIEFQSSB0byBzb2x2ZQ0KPiA+IGludC91bml0
+IHdhcm5pbmdzIikuDQo+IA0KPiBJIHRoaW5rIGl0IHdvdWxkIGJlIGdvb2QgdG8gYmFzZSB5b3Vy
+IHNlcmllcyBvbiBEYW4ncyBmaXggcGF0Y2guDQoNClRoaXMgcGF0Y2ggaXMgYmFzZWQgb24gRGFu
+J3MgZml4IHBhdGNoIGh0dHBzOi8vd3d3LnNwaW5pY3MubmV0L2xpc3RzL25ldGRldi9tc2c2MDY0
+ODcuaHRtbCAuDQpDb21taXQgMGM2NWIyYjkwZDEzYzEgKCJuZXQ6IG9mX2dldF9waHlfbW9kZTog
+Q2hhbmdlIEFQSSB0byBzb2x2ZSBpbnQvdW5pdCB3YXJuaW5ncyIpLg0KQ2FuIHlvdSBwbGVhc2Ug
+Z2l2ZSBtb3JlIGNsYXJpdHkgb24gd2hhdCB5b3UgbWVhbnQ/IFBsZWFzZSBwb2ludCB0byBtZSwg
+aWYgdGhlcmUgaXMgc29tZSANCnNwZWNpZmljIHBhdGNoIHRoYXQgeW91IGFyZSByZWZlcnJpbmcg
+dG8uDQoNClRoYW5rcw0KQ2FsdmluDQo=
