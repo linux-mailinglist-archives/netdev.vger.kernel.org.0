@@ -2,109 +2,96 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 123D5150212
-	for <lists+netdev@lfdr.de>; Mon,  3 Feb 2020 08:46:58 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id DB0EF150262
+	for <lists+netdev@lfdr.de>; Mon,  3 Feb 2020 09:16:55 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727704AbgBCHqw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 3 Feb 2020 02:46:52 -0500
-Received: from bombadil.infradead.org ([198.137.202.133]:58872 "EHLO
-        bombadil.infradead.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727652AbgBCHqw (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 3 Feb 2020 02:46:52 -0500
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=bombadil.20170209; h=In-Reply-To:Content-Type:MIME-Version
-        :References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
-        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
-        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-         bh=1OnLUtccVxzRGy3H6tEuURVA5Cw1eDsrX9HvO+XJeD4=; b=tIPQmbMBJJkyM1EUffKpQ6t8+
-        6fwTSe6r4ihL5NqNlss4BtnMRFyaJcEPiVZ64i/7LitZrfYs81oZ1L69NyPjMREv3zXAuPxvS0bI2
-        eMLUSHfCDe+Uhbh/03f2I/93N1FOLazKz82/5pZp0ZjY/ieytY6YhoUGFolkmaBRB9ehsBDiIZHK+
-        bkuV60ig9MmsNyEVGt8E0ZhQVk6ERJlJE/YSTpSCBFbCtPNtYKIiwbs9X9JfUX2DCkFMoZJyTbNcM
-        L+Sm7T5i2/9zTP8/s+1LrDkKFqoSf7iPfX+6fv7NwwWoLbf8UowsIMPpObCqY5IZs9aWtvn+JjE0x
-        uAmUP6+mA==;
-Received: from willy by bombadil.infradead.org with local (Exim 4.92.3 #3 (Red Hat Linux))
-        id 1iyWRQ-0001Y1-VE; Mon, 03 Feb 2020 07:46:44 +0000
-Date:   Sun, 2 Feb 2020 23:46:44 -0800
-From:   Matthew Wilcox <willy@infradead.org>
-To:     Jann Horn <jannh@google.com>
-Cc:     Kees Cook <keescook@chromium.org>,
-        Christian Borntraeger <borntraeger@de.ibm.com>,
-        Christoph Hellwig <hch@infradead.org>,
-        Christopher Lameter <cl@linux.com>,
-        Jiri Slaby <jslaby@suse.cz>,
-        Julian Wiedmann <jwi@linux.ibm.com>,
-        Ursula Braun <ubraun@linux.ibm.com>,
-        Alexander Viro <viro@zeniv.linux.org.uk>,
-        kernel list <linux-kernel@vger.kernel.org>,
-        David Windsor <dave@nullcore.net>,
-        Pekka Enberg <penberg@kernel.org>,
-        David Rientjes <rientjes@google.com>,
-        Joonsoo Kim <iamjoonsoo.kim@lge.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Linux-MM <linux-mm@kvack.org>, linux-xfs@vger.kernel.org,
-        Linus Torvalds <torvalds@linux-foundation.org>,
-        Andy Lutomirski <luto@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Laura Abbott <labbott@redhat.com>,
-        Mark Rutland <mark.rutland@arm.com>,
-        "Martin K. Petersen" <martin.petersen@oracle.com>,
-        Paolo Bonzini <pbonzini@redhat.com>,
-        Dave Kleikamp <dave.kleikamp@oracle.com>,
-        Jan Kara <jack@suse.cz>, Marc Zyngier <marc.zyngier@arm.com>,
-        Matthew Garrett <mjg59@google.com>,
-        linux-fsdevel <linux-fsdevel@vger.kernel.org>,
-        linux-arch <linux-arch@vger.kernel.org>,
-        Network Development <netdev@vger.kernel.org>,
-        Kernel Hardening <kernel-hardening@lists.openwall.com>,
-        Vlastimil Babka <vbabka@suse.cz>,
-        Michal Kubecek <mkubecek@suse.cz>
-Subject: Re: [kernel-hardening] [PATCH 09/38] usercopy: Mark kmalloc caches
- as usercopy caches
-Message-ID: <20200203074644.GD8731@bombadil.infradead.org>
-References: <5861936c-1fe1-4c44-d012-26efa0c8b6e7@de.ibm.com>
- <202001281457.FA11CC313A@keescook>
- <alpine.DEB.2.21.2001291640350.1546@www.lameter.com>
- <6844ea47-8e0e-4fb7-d86f-68046995a749@de.ibm.com>
- <20200129170939.GA4277@infradead.org>
- <771c5511-c5ab-3dd1-d938-5dbc40396daa@de.ibm.com>
- <202001300945.7D465B5F5@keescook>
- <CAG48ez1a4waGk9kB0WLaSbs4muSoK0AYAVk8=XYaKj4_+6e6Hg@mail.gmail.com>
- <202002010952.ACDA7A81@keescook>
- <CAG48ez2ms+TDEXQdDONuQ1GG0K20E69nV1r_yjKxxYjYKv1VCg@mail.gmail.com>
+        id S1727793AbgBCIQw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 3 Feb 2020 03:16:52 -0500
+Received: from szxga06-in.huawei.com ([45.249.212.32]:39146 "EHLO huawei.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1727540AbgBCIQv (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 3 Feb 2020 03:16:51 -0500
+Received: from DGGEMS404-HUB.china.huawei.com (unknown [172.30.72.59])
+        by Forcepoint Email with ESMTP id 71800479F7C0A6080A88;
+        Mon,  3 Feb 2020 16:16:48 +0800 (CST)
+Received: from [127.0.0.1] (10.57.71.8) by DGGEMS404-HUB.china.huawei.com
+ (10.3.19.204) with Microsoft SMTP Server id 14.3.439.0; Mon, 3 Feb 2020
+ 16:16:38 +0800
+Subject: Re: [PATCH -next] bpf: make btf_check_func_type_match() static
+To:     Yonghong Song <yhs@fb.com>, <ast@kernel.org>,
+        <daniel@iogearbox.net>
+CC:     <chenzhou10@huawei.com>, <kafai@fb.com>, <songliubraving@fb.com>,
+        <andriin@fb.com>, <netdev@vger.kernel.org>, <bpf@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>,
+        <clang-built-linux@googlegroups.com>
+References: <20200203020220.117152-1-yaohongbo@huawei.com>
+ <a29bf101-81b0-68ef-356c-dfdc9c53d899@fb.com>
+From:   Yao HongBo <yaohongbo@huawei.com>
+Message-ID: <f82e64c5-9299-b1a2-41b6-0f3630793d2b@huawei.com>
+Date:   Mon, 3 Feb 2020 16:16:17 +0800
+User-Agent: Mozilla/5.0 (Windows NT 6.1; WOW64; rv:60.0) Gecko/20100101
+ Thunderbird/60.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CAG48ez2ms+TDEXQdDONuQ1GG0K20E69nV1r_yjKxxYjYKv1VCg@mail.gmail.com>
+In-Reply-To: <a29bf101-81b0-68ef-356c-dfdc9c53d899@fb.com>
+Content-Type: text/plain; charset="utf-8"
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
+X-Originating-IP: [10.57.71.8]
+X-CFilter-Loop: Reflected
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, Feb 01, 2020 at 08:27:49PM +0100, Jann Horn wrote:
-> FWIW, as far as I understand, usercopy doesn't actually have any
-> effect on drivers that use the modern, proper APIs, since those don't
-> use the slab allocator at all - as I pointed out in my last mail, the
-> dma-kmalloc* slabs are used very rarely. (Which is good, because
-> putting objects from less-than-page-size slabs into iommu entries is a
-> terrible idea from a security and reliability perspective because it
-> gives the hardware access to completely unrelated memory.) Instead,
-> they get pages from the page allocator, and these pages may e.g. be
-> allocated from the DMA, DMA32 or NORMAL zones depending on the
-> restrictions imposed by hardware. So I think the usercopy restriction
-> only affects a few oddball drivers (like this s390 stuff), which is
-> why you're not seeing more bug reports caused by this.
 
-Getting pages from the page allocator is true for dma_alloc_coherent()
-and friends.  But it's not true for streaming DMA mappings (dma_map_*)
-for which the memory usually comes from kmalloc().  If this is something
-we want to fix (and I have an awful feeling we're going to regret it
-if we say "no, we trust the hardware"), we're going to have to come up
-with a new memory allocation API for these cases.  Or bounce bugger the
-memory for devices we don't trust.
 
-The problem with the dma_map_* API is that memory might end up being
-allocated once and then used multiple times by different drivers.  eg if
-I allocate an NFS packet, it might get sent first to eth0, then (when the
-route fails) sent to eth1.  Similarly in storage, a RAID-5 driver might
-map the same memory several times to send to different disk controllers.
+On 2/3/2020 2:20 PM, Yonghong Song wrote:
+> 
+> 
+> On 2/2/20 6:02 PM, Hongbo Yao wrote:
+>> Fix sparse warning:
+>> kernel/bpf/btf.c:4131:5: warning: symbol 'btf_check_func_type_match' was
+>> not declared. Should it be static?
+> 
+> Yes, static is better since the function is only used in one file.
+> 
+> Please use the tag "[PATCH bpf-next]" instead of "[PATCH -next]".
+> Since this is to fix a sparse warning, I think it should be okay
+> to target bpf-next. Please resubmit after bpf-next reopens in
+> about a week.
+
+OK.
+
+>>
+>> Reported-by: Hulk Robot <hulkci@huawei.com>
+>> Signed-off-by: Hongbo Yao <yaohongbo@huawei.com>
+>> ---
+>>   kernel/bpf/btf.c | 2 +-
+>>   1 file changed, 1 insertion(+), 1 deletion(-)
+>>
+>> diff --git a/kernel/bpf/btf.c b/kernel/bpf/btf.c
+>> index 8c9d8f266bef..83d3d92023af 100644
+>> --- a/kernel/bpf/btf.c
+>> +++ b/kernel/bpf/btf.c
+>> @@ -4144,7 +4144,7 @@ int btf_distill_func_proto(struct bpf_verifier_log *log,
+>>    * EFAULT - verifier bug
+>>    * 0 - 99% match. The last 1% is validated by the verifier.
+>>    */
+>> -int btf_check_func_type_match(struct bpf_verifier_log *log,
+>> +static int btf_check_func_type_match(struct bpf_verifier_log *log,
+>>                     struct btf *btf1, const struct btf_type *t1,
+>>                     struct btf *btf2, const struct btf_type *t2)
+> 
+> Please also align
+>   struct btf *btf1, const struct btf_type *t1,
+>   struct btf *btf2, const struct btf_type *t2)
+> properly after you added 'static' before the function declaration.
+
+I'll fix it, thanks.
+
+>>   {
+>>
+> 
+> .
+> 
+
