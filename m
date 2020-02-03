@@ -2,92 +2,56 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id F1D9915132D
-	for <lists+netdev@lfdr.de>; Tue,  4 Feb 2020 00:24:58 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 66E9C151334
+	for <lists+netdev@lfdr.de>; Tue,  4 Feb 2020 00:28:01 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726930AbgBCXYz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 3 Feb 2020 18:24:55 -0500
-Received: from gate2.alliedtelesis.co.nz ([202.36.163.20]:53510 "EHLO
-        gate2.alliedtelesis.co.nz" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726474AbgBCXYz (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 3 Feb 2020 18:24:55 -0500
-Received: from mmarshal3.atlnz.lc (mmarshal3.atlnz.lc [10.32.18.43])
+        id S1726287AbgBCX14 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 3 Feb 2020 18:27:56 -0500
+Received: from mail.kernel.org ([198.145.29.99]:41512 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726331AbgBCX14 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 3 Feb 2020 18:27:56 -0500
+Received: from cakuba.hsd1.ca.comcast.net (unknown [199.201.64.133])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (Client did not present a certificate)
-        by gate2.alliedtelesis.co.nz (Postfix) with ESMTPS id B20D3806B7;
-        Tue,  4 Feb 2020 12:24:51 +1300 (NZDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=alliedtelesis.co.nz;
-        s=mail181024; t=1580772291;
-        bh=+w7IRyue1MBR5b05+nY7WCMRjhPds+Z3/mRS/mEeTok=;
-        h=From:To:Cc:Subject:Date;
-        b=XX73JqGEE12oQBq+fCOMPF5GY0PSzjNOWpCLQ4cTsoVc4Y4ZLe3Lz0hoGHGy2d5Tp
-         CyvWZOFIwpTVvpT3erAZ2Gx/Cs9eKm0G1j1ingbi0nvba0ozB3LV58i61IpgRV/UAm
-         8MYHqHMzkoZthdFgQNvADQtC7VhDWTVktnWENl52KCf59SCjTvGeB8KmTgU94ZVywK
-         cW9vxuiUPbRMyNo1vhEG1wvvbU7ozmv0yQiWcadVqnsR3Pu2e6v2b5CWTDqrSmjmuX
-         3TK5RuSHcBQX8uoDnnlTZdl9IO01osnXaWUeItNYRLABxEtiTdobaoEkd3q1dG9l9+
-         OK45bp90jMCOw==
-Received: from smtp (Not Verified[10.32.16.33]) by mmarshal3.atlnz.lc with Trustwave SEG (v7,5,8,10121)
-        id <B5e38abc40000>; Tue, 04 Feb 2020 12:24:52 +1300
-Received: from ridgek-dl.ws.atlnz.lc (ridgek-dl.ws.atlnz.lc [10.33.22.15])
-        by smtp (Postfix) with ESMTP id 5E06113EED4;
-        Tue,  4 Feb 2020 12:24:51 +1300 (NZDT)
-Received: by ridgek-dl.ws.atlnz.lc (Postfix, from userid 1637)
-        id 778F6140303; Tue,  4 Feb 2020 12:24:51 +1300 (NZDT)
-From:   Ridge Kennedy <ridge.kennedy@alliedtelesis.co.nz>
-To:     netdev@vger.kernel.org
-Cc:     gnault@redhat.com, tparkin@katalix.com, jchapman@katalix.com,
-        Ridge Kennedy <ridge.kennedy@alliedtelesis.co.nz>
-Subject: [PATCH v2 net] l2tp: Allow duplicate session creation with UDP
-Date:   Tue,  4 Feb 2020 12:24:00 +1300
-Message-Id: <20200203232400.28981-1-ridge.kennedy@alliedtelesis.co.nz>
-X-Mailer: git-send-email 2.25.0
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id E227D20720;
+        Mon,  3 Feb 2020 23:27:55 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1580772476;
+        bh=zj6vzTgY+ian5h9Uf9Ldr10pMfEKnXzI/V7kIzpmx9g=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=NT6CLo0AqPlmIL/kiubEMrt0qooJHBiCUm1i6MBmMGyMm8nUE2QYZ0qWBNdBjwAw9
+         38HxWf6AuL8jROwEzZ8ZnGaPYU5MDpe4QNPAhakeLkDJW92jeSxzTorbxGZpvgETHT
+         SXW8URiGTjdbxFQm7DvdreG3q3VbRy4LuR7Q6uVo=
+Date:   Mon, 3 Feb 2020 15:27:55 -0800
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Michael Chan <michael.chan@broadcom.com>
+Cc:     David Miller <davem@davemloft.net>,
+        Netdev <netdev@vger.kernel.org>,
+        Vasundhara Volam <vasundhara-v.volam@broadcom.com>
+Subject: Re: [stable] bnxt_en: Move devlink_register before registering
+ netdev
+Message-ID: <20200203152755.577057b0@cakuba.hsd1.ca.comcast.net>
+In-Reply-To: <CACKFLi=8uYrOx9GM412hArXzFHZW7WpD3P4F_hT5S0bgf_YTjA@mail.gmail.com>
+References: <CACKFLi=8uYrOx9GM412hArXzFHZW7WpD3P4F_hT5S0bgf_YTjA@mail.gmail.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: quoted-printable
-x-atlnz-ls: pat
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-In the past it was possible to create multiple L2TPv3 sessions with the
-same session id as long as the sessions belonged to different tunnels.
-The resulting sessions had issues when used with IP encapsulated tunnels,
-but worked fine with UDP encapsulated ones. Some applications began to
-rely on this behaviour to avoid having to negotiate unique session ids.
+On Sun, 2 Feb 2020 23:42:00 -0800, Michael Chan wrote:
+> David, I'd like to request this patch for 5.4 and 5.5 stable kernels.
+> Without this patch, the phys_port_name may not be registered in time
+> for the netdev and some users report seeing inconsistent naming of the
+> device.  Thanks.
+> 
+> commit cda2cab0771183932d6ba73c5ac63bb63decdadf
+> Author: Vasundhara Volam <vasundhara-v.volam@broadcom.com>
+> Date:   Mon Jan 27 04:56:22 2020 -0500
+> 
+>     bnxt_en: Move devlink_register before registering netdev
 
-Some time ago a change was made to require session ids to be unique acros=
-s
-all tunnels, breaking the applications making use of this "feature".
-
-This change relaxes the duplicate session id check to allow duplicates
-if both of the colliding sessions belong to UDP encapsulated tunnels.
-
-Fixes: dbdbc73b4478 ("l2tp: fix duplicate session creation")
-Signed-off-by: Ridge Kennedy <ridge.kennedy@alliedtelesis.co.nz>
----
- net/l2tp/l2tp_core.c | 7 ++++++-
- 1 file changed, 6 insertions(+), 1 deletion(-)
-
-diff --git a/net/l2tp/l2tp_core.c b/net/l2tp/l2tp_core.c
-index f82ea12bac37..425b95eb7e87 100644
---- a/net/l2tp/l2tp_core.c
-+++ b/net/l2tp/l2tp_core.c
-@@ -322,8 +322,13 @@ int l2tp_session_register(struct l2tp_session *sessi=
-on,
-=20
- 		spin_lock_bh(&pn->l2tp_session_hlist_lock);
-=20
-+		/* IP encap expects session IDs to be globally unique, while
-+		 * UDP encap doesn't.
-+		 */
- 		hlist_for_each_entry(session_walk, g_head, global_hlist)
--			if (session_walk->session_id =3D=3D session->session_id) {
-+			if (session_walk->session_id =3D=3D session->session_id &&
-+			    (session_walk->tunnel->encap =3D=3D L2TP_ENCAPTYPE_IP ||
-+			     tunnel->encap =3D=3D L2TP_ENCAPTYPE_IP)) {
- 				err =3D -EEXIST;
- 				goto err_tlock_pnlock;
- 			}
---=20
-2.25.0
-
+Queued!
