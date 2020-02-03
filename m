@@ -2,112 +2,77 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id B3E69150103
-	for <lists+netdev@lfdr.de>; Mon,  3 Feb 2020 05:56:27 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 560E51500F3
+	for <lists+netdev@lfdr.de>; Mon,  3 Feb 2020 05:31:24 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727257AbgBCEx5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 2 Feb 2020 23:53:57 -0500
-Received: from dpmailmta01-22.doteasy.com ([65.61.219.2]:37068 "EHLO
-        dpmailmta01.doteasy.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S1727165AbgBCEx5 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 2 Feb 2020 23:53:57 -0500
-X-Default-Received-SPF: pass (skip=forwardok (res=PASS)) x-ip-name=192.168.101.83;
-Received: from dpmailrp03.doteasy.com (unverified [192.168.101.83]) 
-        by dpmailmta01.doteasy.com (DEO) with ESMTP id 54391293-1394429 
-        for <netdev@vger.kernel.org>; Sun, 02 Feb 2020 20:53:56 -0800
-Received: from dpmail22.doteasy.com (dpmail22.doteasy.com [192.168.101.22])
-        by dpmailrp03.doteasy.com (8.14.4/8.14.4/Debian-8+deb8u2) with ESMTP id 0134ruvA032592
-        for <netdev@vger.kernel.org>; Sun, 2 Feb 2020 20:53:56 -0800
-X-SmarterMail-Authenticated-As: trev@larock.ca
-Received: from mail-ed1-f54.google.com (mail-ed1-f54.google.com [209.85.208.54]) by dpmail22.doteasy.com with SMTP;
-   Sun, 2 Feb 2020 20:53:43 -0800
-Received: by mail-ed1-f54.google.com with SMTP id g19so14599522eds.11
-        for <netdev@vger.kernel.org>; Sun, 02 Feb 2020 20:53:30 -0800 (PST)
-X-Gm-Message-State: APjAAAU3TQHQIX35zkFn1j9vv0BvxtHVXYDaZ/W7vbwP4xWxz0uBE8Jh
-        5dywGdLcjcH0hjwLhum1bfAnH6lZiK7aQiu4tWE=
-X-Google-Smtp-Source: APXvYqyMJp/ciwGVJeHlI8WoK8JZSwrUQYYvgEYvweKrdTjsrrZFfzHIw/aveB18pqAJ0WiSodLFYkTiLI0J5t6Ryrc=
-X-Received: by 2002:a2e:8e91:: with SMTP id z17mr12251397ljk.13.1580699622324;
- Sun, 02 Feb 2020 19:13:42 -0800 (PST)
+        id S1727412AbgBCEbT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 2 Feb 2020 23:31:19 -0500
+Received: from mail-pf1-f196.google.com ([209.85.210.196]:37124 "EHLO
+        mail-pf1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727205AbgBCEbT (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 2 Feb 2020 23:31:19 -0500
+Received: by mail-pf1-f196.google.com with SMTP id p14so6873789pfn.4;
+        Sun, 02 Feb 2020 20:31:18 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=B/pqc5tLbveP95ALTWC5rTGc/WIRdIa57BSU9tmG+gI=;
+        b=VT6JWtD74yFe5niajdq4lSju87soOwnqRdDeJFW3Gq53IwYsip7tBhPHq8Two1NQeT
+         0HhlRP9FIbjT9Db5co0lDrX5DbAphuffzXr9ByAwNS7LiECF2xFX4wLOnrrQrKmA+niM
+         stysnytFz+mPyA/+lpRCFi0uQLioh9C3pTvl7xUoOmxBZLbnJdP/VyQyH6T2Lc7MWgyA
+         QFKtu8o7NPIz5APevyMYFzlaTtiWT+zrG28C9VVm5w89RVRvCYv/DCPOfiuFglJAytYN
+         U484YHtq3H9SiI4k/fUN1MFbI0866kAnLwbhkBaC9oKQ+ZH1HXNdUvwOIhszXuTNhQFg
+         /H4w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=B/pqc5tLbveP95ALTWC5rTGc/WIRdIa57BSU9tmG+gI=;
+        b=tZlBiT8VQ+g10MfZHBf7LDKHJaow14zuNvn6m27iwnuyOlQHSyPfcALrQ4D5KbnZge
+         uNze8pd96cfkXvvi4wFjZO3bgZu3h4X+Qc8ILQmu7lqDVjwMID99j9eOSsUchlBfrAKM
+         NjH3XggVQzkJftSopABnkaWcmNKimx0hGo061sbqwvTHe7Fpr84ViPjdXcm7+XOR/8nm
+         MXwlJBEBMqtakkDKHyDwzJjPbaaWNw13kvm6Lwe6MRHivEyjuW3PVijHqYvekNYg30/e
+         5bKObBXZ88Z838r9R4lD1ju2QkCglVZ/DLBf9tORQx+R63Ealg5jatkPZQfIbzNK3l0z
+         pYfw==
+X-Gm-Message-State: APjAAAVRpLcFYbKa9dpItD6/q63FOgNcMX1+0wYg85kz/upXU5BObMEc
+        dq5VhF85pxBAStm6DTGjWheEeXRy/V8=
+X-Google-Smtp-Source: APXvYqyS7IDaujP1qN9la85QZ8laOB1qTeMXO8k9GljFAYm44rjo0mZdgxadYyE1RWu7ThNejIRXoQ==
+X-Received: by 2002:aa7:9a01:: with SMTP id w1mr22335004pfj.231.1580704278148;
+        Sun, 02 Feb 2020 20:31:18 -0800 (PST)
+Received: from tw-172-25-31-76.office.twttr.net ([8.25.197.24])
+        by smtp.gmail.com with ESMTPSA id z29sm17823374pgc.21.2020.02.02.20.31.17
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sun, 02 Feb 2020 20:31:17 -0800 (PST)
+From:   Cong Wang <xiyou.wangcong@gmail.com>
+To:     netdev@vger.kernel.org
+Cc:     fw@strlen.de, netfilter-devel@vger.kernel.org,
+        Cong Wang <xiyou.wangcong@gmail.com>
+Subject: [Patch nf v2 0/3] netfilter: xt_hashlimit: a few improvements
+Date:   Sun,  2 Feb 2020 20:30:50 -0800
+Message-Id: <20200203043053.19192-1-xiyou.wangcong@gmail.com>
+X-Mailer: git-send-email 2.21.1
 MIME-Version: 1.0
-References: <CAHgT=KfpKenfzn3+uiVdF-B3mGv30Ngu70y6Zn+wH0GcGcDFYQ@mail.gmail.com>
- <ff36e5d0-0b01-9683-1698-474468067402@gmail.com> <CAHgT=KcQb4ngBmhU82cc+XbW_2RvYfi0OwH5ROstkw9DD8G3mA@mail.gmail.com>
- <5e8522fb-d383-c0ea-f013-8625f204c4ce@gmail.com> <CAHgT=KdW3hNy4pE+prSA1WyKNu0Ni8qg0SSbxWQ_Dx0RjcPLdA@mail.gmail.com>
- <9777beb0-0c9c-ef8b-22f0-81373b635e50@candelatech.com> <fe7ec5d0-73ed-aa8b-3246-39894252fec7@gmail.com>
-In-Reply-To: <fe7ec5d0-73ed-aa8b-3246-39894252fec7@gmail.com>
-From:   Trev Larock <trev@larock.ca>
-Date:   Sun, 2 Feb 2020 22:13:30 -0500
-X-Gmail-Original-Message-ID: <CAHgT=KePvNSg9uU7SdG-9LwmwZZJkH7_FSXW+Yd5Y8G-Bd3gtA@mail.gmail.com>
-Message-ID: <CAHgT=KePvNSg9uU7SdG-9LwmwZZJkH7_FSXW+Yd5Y8G-Bd3gtA@mail.gmail.com>
-Subject: Re: VRF + ip xfrm, egress ESP packet looping when qdisc configured
-To:     David Ahern <dsahern@gmail.com>
-Cc:     Ben Greear <greearb@candelatech.com>, netdev@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
-X-Exim-Id: CAHgT=KePvNSg9uU7SdG-9LwmwZZJkH7_FSXW+Yd5Y8G-Bd3gtA
-X-Bayes-Prob: 0.0001 (Score 0, tokens from: base:default, @@RPTN)
-X-Spam-Score: 0.00 () [Hold at 5.00] 
-X-CanIt-Geo: No geolocation information available for 192.168.101.22
-X-CanItPRO-Stream: base:default
-X-Canit-Stats-ID: 011W4RUSf - aac1de17e286 - 20200202
-X-Scanned-By: CanIt (www . roaringpenguin . com) on 192.168.101.83
-X-To-Not-Matched: true
-X-Originating-IP: 192.168.101.83
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Jan 13, 2020 at 11:51 AM David Ahern <dsahern@gmail.com> wrote:
-> Trev's problem is looping due to the presence of the qdisc. The vrf
-> driver needs to detect that it has seen the packet and not redirect it
-> again.
-Yes note it was when specifying no dev on the xfrm policy/state.
-For the non-qdisc case the policy triggered from the __ip4_datagram_connect->
-xfrm_lookup and the vrf "direct" route sent it out without any xfrm_lookup call.
-It appears to work but it's not really a "xfrm vrf specific " policy.
+This patchset improves vmalloc allocation handling and
+hashlimit_mutex usage for xt_hashlimit.
 
-For qdisc the policy matched again on the vrf->xfrm_lookup call.
+---
+v2: address review comments
 
-When specifying "dev vrf0" I don't see the policy get matched at all.
-Should that be triggered in the vrf.c -> xfrm_lookup  call from
-vrf_process_v4_outbound or elsewhere?
+Cong Wang (3):
+  xt_hashlimit: avoid OOM for user-controlled vmalloc
+  xt_hashlimit: reduce hashlimit_mutex scope for htable_put()
+  xt_hashlimit: limit the max size of hashtable
 
-(The qdisc case seems more like the older / pre dcdd43c41e commit flow.)
+ net/netfilter/xt_hashlimit.c | 26 ++++++++++++++++++--------
+ 1 file changed, 18 insertions(+), 8 deletions(-)
 
-From ftrace stack trace with qdisc and sending UDP packet with netcat
-   nc-4391  [001] .... 11663.551103: xfrm_lookup <-xfrm_lookup_route
-   nc-4391  [001] .... 11663.551104: <stack trace>
- => xfrm_lookup
- => xfrm_lookup_route
- => vrf_xmit
- => dev_hard_start_xmit
- => sch_direct_xmit
- => __qdisc_run
- => __dev_queue_xmit
- => vrf_finish_output
- => vrf_output
- => ip_send_skb
- => udp_send_skb
- => udp_sendmsg
- => sock_sendmsg
- => SYSC_sendto
- => do_syscall_64
- => entry_SYSCALL_64_after_hwframe
-
-Full flow from vrf_xmit:
-vrf_xmit
- -->is_ip_tx_frame
-   -->vrf_process_v4_outbound
-     -->ip_route_output_flow
-       -->xfrm_lookup_route
-         --> xfrm_lookup
-
-In vrf_process_v4_outbound the flow sets ".flowi4_oif = vrf_dev->ifindex",
-should that match the vrf ifindex or the network interface enslaved to the vrf?
-I observe it's = network interface so matching a policy with dev vrf0
-won't trigger, but not sure if it's missing config or some other issue.
-Is there any reference/test sample configs for vrf+xfrm use case where
-that matched policy as expected? (even on older kernel).
-
-Thanks,
-Trev
+-- 
+2.21.1
 
