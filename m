@@ -2,163 +2,94 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 2F061150E6A
-	for <lists+netdev@lfdr.de>; Mon,  3 Feb 2020 18:11:01 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id EE2E3150E51
+	for <lists+netdev@lfdr.de>; Mon,  3 Feb 2020 18:07:30 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729169AbgBCRKz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 3 Feb 2020 12:10:55 -0500
-Received: from mga06.intel.com ([134.134.136.31]:61760 "EHLO mga06.intel.com"
+        id S1727830AbgBCRH3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 3 Feb 2020 12:07:29 -0500
+Received: from mga18.intel.com ([134.134.136.126]:40598 "EHLO mga18.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728737AbgBCRKz (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 3 Feb 2020 12:10:55 -0500
+        id S1727256AbgBCRH2 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 3 Feb 2020 12:07:28 -0500
 X-Amp-Result: SKIPPED(no attachment in message)
 X-Amp-File-Uploaded: False
 Received: from fmsmga003.fm.intel.com ([10.253.24.29])
-  by orsmga104.jf.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 03 Feb 2020 08:56:58 -0800
+  by orsmga106.jf.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 03 Feb 2020 09:07:28 -0800
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.70,398,1574150400"; 
-   d="scan'208";a="278798860"
-Received: from unknown (HELO [134.134.177.86]) ([134.134.177.86])
-  by FMSMGA003.fm.intel.com with ESMTP; 03 Feb 2020 08:56:57 -0800
-Subject: Re: [PATCH 08/15] devlink: add devres managed devlinkm_alloc and
- devlinkm_free
+   d="scan'208";a="278801841"
+Received: from jekeller-mobl1.amr.corp.intel.com (HELO [134.134.177.86]) ([134.134.177.86])
+  by FMSMGA003.fm.intel.com with ESMTP; 03 Feb 2020 09:07:27 -0800
+Subject: Re: [PATCH 01/15] devlink: prepare to support region operations
 To:     Jiri Pirko <jiri@resnulli.us>
 Cc:     netdev@vger.kernel.org, valex@mellanox.com, linyunsheng@huawei.com,
         lihong.yang@intel.com
 References: <20200130225913.1671982-1-jacob.e.keller@intel.com>
- <20200130225913.1671982-9-jacob.e.keller@intel.com>
- <20200203112919.GB2260@nanopsycho>
+ <20200130225913.1671982-2-jacob.e.keller@intel.com>
+ <20200203113529.GC2260@nanopsycho>
 From:   Jacob Keller <jacob.e.keller@intel.com>
 Organization: Intel Corporation
-Message-ID: <e9ac5cfd-34dd-cb99-8950-473a97c20090@intel.com>
-Date:   Mon, 3 Feb 2020 08:56:57 -0800
+Message-ID: <375672b9-5464-c25e-da7b-e435cc505a5c@intel.com>
+Date:   Mon, 3 Feb 2020 09:07:27 -0800
 User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
  Thunderbird/68.4.2
 MIME-Version: 1.0
-In-Reply-To: <20200203112919.GB2260@nanopsycho>
+In-Reply-To: <20200203113529.GC2260@nanopsycho>
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 2/3/2020 3:29 AM, Jiri Pirko wrote:
-> Thu, Jan 30, 2020 at 11:59:03PM CET, jacob.e.keller@intel.com wrote:
->> Add devres managed allocation functions for allocating a devlink
->> instance. These can be used by device drivers based on the devres
->> framework which want to allocate a devlink instance.
+On 2/3/2020 3:35 AM, Jiri Pirko wrote:
+> Thu, Jan 30, 2020 at 11:58:56PM CET, jacob.e.keller@intel.com wrote:
+>> Modify the devlink region code in preparation for adding new operations
+>> on regions.
 >>
->> For simplicity and to reduce churn in the devlink core code, the devres
->> management works by creating a node with a double-pointer. The devlink
->> instance is allocated using the normal devlink_alloc and released using
->> the normal devlink_free.
+>> Create a devlink_region_ops structure, and move the name pointer from
+>> within the devlink_region structure into the ops structure (similar to
+>> the devlink_health_reporter_ops).
 >>
->> An alternative solution where the raw memory for devlink is allocated
->> directly via devres_alloc could be done. Such an implementation would
->> either significantly increase code duplication or code churn in order to
->> refactor the setup from the allocation.
->>
->> The new devres managed allocation function will be used by the ice
->> driver in a following change to implement initial devlink support.
+>> This prepares the regions to enable support of additional operations in
+>> the future such as requesting snapshots, or accessing the region
+>> directly without a snapshot.
 >>
 >> Signed-off-by: Jacob Keller <jacob.e.keller@intel.com>
 >> ---
->> include/net/devlink.h |  4 ++++
->> lib/devres.c          |  1 +
->> net/core/devlink.c    | 54 +++++++++++++++++++++++++++++++++++++++++++
->> 3 files changed, 59 insertions(+)
+>> drivers/net/ethernet/mellanox/mlx4/crdump.c | 25 ++++++++++++---------
+>> drivers/net/netdevsim/dev.c                 |  6 ++++-
+>> include/net/devlink.h                       | 17 ++++++++++----
+>> net/core/devlink.c                          | 23 ++++++++++---------
+>> 4 files changed, 45 insertions(+), 26 deletions(-)
 >>
->> diff --git a/include/net/devlink.h b/include/net/devlink.h
->> index 63e954241404..1c3540280396 100644
->> --- a/include/net/devlink.h
->> +++ b/include/net/devlink.h
->> @@ -858,11 +858,15 @@ struct ib_device;
->> struct net *devlink_net(const struct devlink *devlink);
->> void devlink_net_set(struct devlink *devlink, struct net *net);
->> struct devlink *devlink_alloc(const struct devlink_ops *ops, size_t priv_size);
->> +struct devlink *devlinkm_alloc(struct device * dev,
->> +			       const struct devlink_ops *ops,
->> +			       size_t priv_size);
->> int devlink_register(struct devlink *devlink, struct device *dev);
->> void devlink_unregister(struct devlink *devlink);
->> void devlink_reload_enable(struct devlink *devlink);
->> void devlink_reload_disable(struct devlink *devlink);
->> void devlink_free(struct devlink *devlink);
->> +void devlinkm_free(struct device *dev, struct devlink *devlink);
->> int devlink_port_register(struct devlink *devlink,
->> 			  struct devlink_port *devlink_port,
->> 			  unsigned int port_index);
->> diff --git a/lib/devres.c b/lib/devres.c
->> index 6ef51f159c54..239c81d40612 100644
->> --- a/lib/devres.c
->> +++ b/lib/devres.c
->> @@ -5,6 +5,7 @@
->> #include <linux/gfp.h>
->> #include <linux/export.h>
->> #include <linux/of_address.h>
->> +#include <net/devlink.h>
+>> diff --git a/drivers/net/ethernet/mellanox/mlx4/crdump.c b/drivers/net/ethernet/mellanox/mlx4/crdump.c
+>> index 64ed725aec28..4cea64033919 100644
+>> --- a/drivers/net/ethernet/mellanox/mlx4/crdump.c
+>> +++ b/drivers/net/ethernet/mellanox/mlx4/crdump.c
+>> @@ -38,8 +38,13 @@
+>> #define CR_ENABLE_BIT_OFFSET		0xF3F04
+>> #define MAX_NUM_OF_DUMPS_TO_STORE	(8)
 >>
->> enum devm_ioremap_type {
->> 	DEVM_IOREMAP = 0,
->> diff --git a/net/core/devlink.c b/net/core/devlink.c
->> index 574008c536fa..b2b855d12a11 100644
->> --- a/net/core/devlink.c
->> +++ b/net/core/devlink.c
->> @@ -6531,6 +6531,60 @@ void devlink_free(struct devlink *devlink)
->> }
->> EXPORT_SYMBOL_GPL(devlink_free);
->>
->> +static void devres_devlink_release(struct device *dev, void *res)
->> +{
->> +	devlink_free(*(struct devlink **)res);
->> +}
->> +
->> +static int devres_devlink_match(struct device *dev, void *res, void *data)
->> +{
->> +	return *(struct devlink **)res == data;
->> +}
->> +
->> +/**
->> + * devlinkm_alloc - Allocate devlink instance managed by devres
->> + * @dev: device to allocate devlink for
->> + * @ops: devlink ops structure
->> + * @priv_size: size of private data portion
->> + *
->> + * Allocate a devlink instance and manage its release via devres.
->> + */
->> +struct devlink *devlinkm_alloc(struct device *dev,
+>> -static const char *region_cr_space_str = "cr-space";
+>> -static const char *region_fw_health_str = "fw-health";
 > 
-> Why "devlinkm"? Looks like the usual prefix for this is "devm_"
-> So "devm_devlink_alloc/free"?
-> 
+> Just leave these as are and use in ops and messages. It is odd to use
+> ops.name in the message.
 > 
 
-pcim_enable_device
-pcim_iomap
-pcim_iomap_devres
-pcim_iomap_regions
-pcim_iomap_regions_request_all
-pcim_iomap_release
-pcim_iomap_table
-pcim_iounmap
-pcim_iounmap_regions
-pcim_pin_device
-pcim_release
-pcim_set_mwi
-pcim_state
+So this produces the following errors, not 100% sure how to resolve:
 
-There are some devm_pci_* though... Heh.
 
-Regardless, I agree wit Jakub, and am going to remove this, because it
-seems less valuable since the driver needs to manage the remaining
-devlink state regardless. (Unless we add devm_devlink_* for every thing,
-but....)
+> drivers/net/ethernet/mellanox/mlx4/crdump.c:45:10: error: initializer element is not constant
+>    45 |  .name = region_cr_space_str,
+>       |          ^~~~~~~~~~~~~~~~~~~
+> drivers/net/ethernet/mellanox/mlx4/crdump.c:45:10: note: (near initialization for ‘region_cr_space_ops.name’)
+> drivers/net/ethernet/mellanox/mlx4/crdump.c:49:10: error: initializer element is not constant
+>    49 |  .name = region_fw_health_str,
+>       |          ^~~~~~~~~~~~~~~~~~~~
 
-I think it makes more sense to assume a devres driver would need to
-manage its own usage via direct devres calls to setup the teardown
-actions manually.
 
 Thanks,
 Jake
