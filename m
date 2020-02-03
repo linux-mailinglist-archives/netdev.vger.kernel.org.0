@@ -2,67 +2,71 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 6E316150418
-	for <lists+netdev@lfdr.de>; Mon,  3 Feb 2020 11:21:03 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E845815041E
+	for <lists+netdev@lfdr.de>; Mon,  3 Feb 2020 11:23:59 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727165AbgBCKU5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 3 Feb 2020 05:20:57 -0500
-Received: from eddie.linux-mips.org ([148.251.95.138]:39616 "EHLO
-        cvs.linux-mips.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726258AbgBCKU5 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 3 Feb 2020 05:20:57 -0500
-Received: (from localhost user: 'macro', uid#1010) by eddie.linux-mips.org
-        with ESMTP id S23990395AbgBCKUqnryg0 (ORCPT
-        <rfc822;kernel-janitors@vger.kernel.org> + 2 others);
-        Mon, 3 Feb 2020 11:20:46 +0100
-Date:   Mon, 3 Feb 2020 10:20:46 +0000 (GMT)
-From:   "Maciej W. Rozycki" <macro@linux-mips.org>
-To:     Dan Carpenter <dan.carpenter@oracle.com>
-cc:     Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
-        Ralf Baechle <ralf@linux-mips.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        kernel-janitors@vger.kernel.org
-Subject: Re: [PATCH] defxx: Fix a sentinel at the end of a 'eisa_device_id'
- structure
-In-Reply-To: <20200203095553.GN1778@kadam>
-Message-ID: <alpine.LFD.2.21.2002031015530.752735@eddie.linux-mips.org>
-References: <20200202142341.22124-1-christophe.jaillet@wanadoo.fr> <20200203095553.GN1778@kadam>
+        id S1727307AbgBCKXx (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 3 Feb 2020 05:23:53 -0500
+Received: from us-smtp-2.mimecast.com ([207.211.31.81]:30986 "EHLO
+        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1726100AbgBCKXw (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 3 Feb 2020 05:23:52 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1580725431;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=Ir31YPKw00IaR4oAq3edSrrdUHl7ICLQw2SC3HVAAC4=;
+        b=c785G2Abc950Q3YCQvXT86nlPXe/esBmU6urxUMJyG6yeAt/gx40D7Kn5TbEEKWBQrpiGK
+        Z5q65IlzW7gsYkUxPCJVHpLDsCguyYjyO5ZPZsVrE9n95nRMHWa4wlAJ9hySZDptDRtDUa
+        Bk50UwQ4Hp82fh3jNnsqToDO2pC6LYc=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-335-nK8sREX3OCKJMwcjJ7ImLg-1; Mon, 03 Feb 2020 05:23:47 -0500
+X-MC-Unique: nK8sREX3OCKJMwcjJ7ImLg-1
+Received: from smtp.corp.redhat.com (int-mx08.intmail.prod.int.phx2.redhat.com [10.5.11.23])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 780EB18A6EC2;
+        Mon,  3 Feb 2020 10:23:46 +0000 (UTC)
+Received: from warthog.procyon.org.uk (ovpn-120-218.rdu2.redhat.com [10.10.120.218])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 702A91FD3B;
+        Mon,  3 Feb 2020 10:23:45 +0000 (UTC)
+Organization: Red Hat UK Ltd. Registered Address: Red Hat UK Ltd, Amberley
+        Place, 107-111 Peascod Street, Windsor, Berkshire, SI4 1TE, United
+        Kingdom.
+        Registered in England and Wales under Company Registration No. 3798903
+From:   David Howells <dhowells@redhat.com>
+In-Reply-To: <20200202122735.157d8b44@cakuba.hsd1.ca.comcast.net>
+References: <20200202122735.157d8b44@cakuba.hsd1.ca.comcast.net> <158047735578.133127.17728061182258449164.stgit@warthog.procyon.org.uk> <158047737679.133127.13567286503234295.stgit@warthog.procyon.org.uk>
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     dhowells@redhat.com, netdev@vger.kernel.org,
+        linux-afs@lists.infradead.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH net 3/4] rxrpc: Fix missing active use pinning of rxrpc_local object
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+Content-Type: text/plain; charset="us-ascii"
+Content-ID: <734243.1580725424.1@warthog.procyon.org.uk>
+Date:   Mon, 03 Feb 2020 10:23:44 +0000
+Message-ID: <734244.1580725424@warthog.procyon.org.uk>
+X-Scanned-By: MIMEDefang 2.84 on 10.5.11.23
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, 3 Feb 2020, Dan Carpenter wrote:
+Jakub Kicinski <kuba@kernel.org> wrote:
 
-> > diff --git a/drivers/net/fddi/defxx.c b/drivers/net/fddi/defxx.c
-> > index 077c68498f04..7ef0c57f07c6 100644
-> > --- a/drivers/net/fddi/defxx.c
-> > +++ b/drivers/net/fddi/defxx.c
-> > @@ -3768,11 +3768,11 @@ static void dfx_pci_unregister(struct pci_dev *pdev)
-> >  
-> >  #ifdef CONFIG_EISA
-> >  static const struct eisa_device_id dfx_eisa_table[] = {
-> > -        { "DEC3001", DEFEA_PROD_ID_1 },
-> > -        { "DEC3002", DEFEA_PROD_ID_2 },
-> > -        { "DEC3003", DEFEA_PROD_ID_3 },
-> > -        { "DEC3004", DEFEA_PROD_ID_4 },
-> > -        { }
-> > +	{ "DEC3001", DEFEA_PROD_ID_1 },
-> > +	{ "DEC3002", DEFEA_PROD_ID_2 },
-> > +	{ "DEC3003", DEFEA_PROD_ID_3 },
-> > +	{ "DEC3004", DEFEA_PROD_ID_4 },
-> > +	{ "" }
+> > +	BUG_ON(!conn->params.local);
+> > +	BUG_ON(!conn->params.local->socket);
 > 
-> You haven't changed runtime at all.  :P (struct eisa_device_id)->sig[]
-> is an array, not a pointer.  There is no NULL dereference because an
-> array in the middle of another array can't be NULL.
+> Is this really, really not possible to convert those into a WARN_ON()
+> and return?
 
- Right, the code is good as it stands (I should have more faith in my past 
-achievements ;) ).  Except for the whitespace issue, which I suppose might 
-not be worth bothering to fix.  Thanks for your meticulousness!
+I can take those out - I actually put them in to help figure out which pointer
+had become NULL - but turning them into a WARN_ON() and return doesn't
+actually help that much since, without this patch, there was nothing to stop
+the relevant pointer getting cleared between this point and the next access,
+so there's a chance you'd end up with the same oops anyway.
 
-  Maciej
+David
+
