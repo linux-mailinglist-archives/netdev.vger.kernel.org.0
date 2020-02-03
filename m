@@ -2,167 +2,279 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 98CDC1511D1
-	for <lists+netdev@lfdr.de>; Mon,  3 Feb 2020 22:31:02 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A0F3A15122A
+	for <lists+netdev@lfdr.de>; Mon,  3 Feb 2020 22:58:17 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726992AbgBCVbB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 3 Feb 2020 16:31:01 -0500
-Received: from mail-wr1-f68.google.com ([209.85.221.68]:43400 "EHLO
-        mail-wr1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726474AbgBCVbA (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 3 Feb 2020 16:31:00 -0500
-Received: by mail-wr1-f68.google.com with SMTP id z9so8010114wrs.10
-        for <netdev@vger.kernel.org>; Mon, 03 Feb 2020 13:30:59 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=resnulli-us.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=xJzSlxyYdKNjxK3XP3gEc+vP/QE0xnB2lOPz0ti8Q/w=;
-        b=YpNAiwA8DWFfU3WVBsu7UeXPf6ASA+fvrSnPa2sXptNO1dVQUrB4GslFR0693cUDKU
-         K3Odzxv0r6LxAW6AiDMoXI9uqpR9TemHtdjiyYEUjF1GJf5y11JlhTagbNIOLL5z5VGd
-         R/4TvvxQGgeUoTVjRXNifg4G7hQhYJS2nY7rxWw0eAH863BzP0aPO0QQSKDKfQH+BrhO
-         cNkPgNnkhQ0pYO0eqpnlSIVPSOppO5M3sqgVSIvRKmddU3+w78GjZFEnCyTQRz5ojl7a
-         zTRZuwl1wwDLmWcnfRW89kxZjIHyLJTkpJZSG6z/UpNnKE2IhvmGnWXoSpD/8WUVC9sf
-         V4Sw==
+        id S1726872AbgBCV6P (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 3 Feb 2020 16:58:15 -0500
+Received: from mail-io1-f72.google.com ([209.85.166.72]:41787 "EHLO
+        mail-io1-f72.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726331AbgBCV6P (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 3 Feb 2020 16:58:15 -0500
+Received: by mail-io1-f72.google.com with SMTP id z201so10345075iof.8
+        for <netdev@vger.kernel.org>; Mon, 03 Feb 2020 13:58:15 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=xJzSlxyYdKNjxK3XP3gEc+vP/QE0xnB2lOPz0ti8Q/w=;
-        b=LFeO5QroUwCojbnd8X+8uQIxplmn4c/N/+osy6NH3oeIGxO1qLIU5YszQ4IS0VMjjO
-         chkH3QDUGIpUMbRtkhACJjJLm/PdwWHshjhdTNH4IqHWr64SIZKzlhMJa5pc1s+gktu3
-         qLynkYuVA4fpARcNTtnQ43lQQd7WRDV9BwkEZpYbOttGHlz3FLAx4f2IO4xvbfWRd0z5
-         WoTYeoVz05+belRZSFaYzNTmE3mitpAk7cXbEoxEffs5yqujzfw8XQU35zs/33hjoYNP
-         ng2wj8OVBI2Ivt1pupLC7+oDhTPAWi+Jfzxp6+El+tVxDst5MzNtN7C15k+xAi3+VZFO
-         woNw==
-X-Gm-Message-State: APjAAAUlqKksE1aCVNfaYjblDWCnjwiMA+x2OhJ7xmlR3VrJUc6pL5un
-        KGjXUYfOKbQTkH1q8foJsMFGow==
-X-Google-Smtp-Source: APXvYqwjChqxiKFs2sdJIDXYKjcumeaBV7mDSZNx+HDJQz26sXSgMHbHL236yrypPF35dcCHVEu2cw==
-X-Received: by 2002:a5d:61d1:: with SMTP id q17mr18052878wrv.156.1580765458708;
-        Mon, 03 Feb 2020 13:30:58 -0800 (PST)
-Received: from localhost (ip-89-177-6-126.net.upcbroadband.cz. [89.177.6.126])
-        by smtp.gmail.com with ESMTPSA id s1sm18849359wro.66.2020.02.03.13.30.57
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 03 Feb 2020 13:30:58 -0800 (PST)
-Date:   Mon, 3 Feb 2020 22:30:57 +0100
-From:   Jiri Pirko <jiri@resnulli.us>
-To:     Jacob Keller <jacob.e.keller@intel.com>
-Cc:     netdev@vger.kernel.org, valex@mellanox.com, linyunsheng@huawei.com,
-        lihong.yang@intel.com
-Subject: Re: [PATCH 03/15] devlink: add operation to take an immediate
- snapshot
-Message-ID: <20200203213057.GJ2260@nanopsycho>
-References: <20200130225913.1671982-1-jacob.e.keller@intel.com>
- <20200130225913.1671982-4-jacob.e.keller@intel.com>
- <20200203115001.GE2260@nanopsycho>
- <6b97b131-65a2-e6d0-779e-d8ab31d5c0ae@intel.com>
+        h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
+        bh=BV5bGmLp3Jvdfl+pa8JRvVqICwp/WeY6QDoBp6Mfh14=;
+        b=XKpu03d6kOaTduP5yfvFXXU7yCtmmC1Ai6N8Sqmf4FD4bXiYbHxjeU7M6sUqKAfvYH
+         JFn+wQyu4Sx0UqOM6gXwYmeHkQvcrYIqqZWGTNbo6z+YGVVRoJKt3fFyrcS4djZOzYkK
+         l+V7frrZxNQRLE0ZAt6lRTbvYOs+zqH3mjytbDn4UxbNso51m3OpCXImwlitjr6P2EqZ
+         4MK+vWwpzKw9JA754MFcUBFkXZ5Cq5rfGdZH5rfRPPim2WTR8jgiO93VhP4Pa00zywBV
+         VfgsK7+zvblI9cLdAs/+ijnKAwI+6WuKD4ApnJgNB5hPuv8tKNLyg++O6LgppDezLJdk
+         EYCg==
+X-Gm-Message-State: APjAAAUS71Hn4Jglo3ivoeu1zQsbxXY401ybFX+aBc/AYOtDGLD6MQGT
+        t5TkhxQH1JTWxniuX+E4QF2ZJuuysTAcrcrgncuAEKBnTyvP
+X-Google-Smtp-Source: APXvYqzdZak/7xmCchg8/6oBXNyfNZJA3WutyuOPMhmAfTM3NEaV8p9M8rU4kir77Ws5GLydR95zxztABeKTlUDyjIflhjTdSiNg
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <6b97b131-65a2-e6d0-779e-d8ab31d5c0ae@intel.com>
+X-Received: by 2002:a5e:d602:: with SMTP id w2mr19525192iom.94.1580767094901;
+ Mon, 03 Feb 2020 13:58:14 -0800 (PST)
+Date:   Mon, 03 Feb 2020 13:58:14 -0800
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <0000000000002a13b5059db305a5@google.com>
+Subject: possible deadlock in pty_write
+From:   syzbot <syzbot+3118a33395397bb6b0ca@syzkaller.appspotmail.com>
+To:     a@unstable.cc, andrew@lunn.ch, b.a.t.m.a.n@lists.open-mesh.org,
+        davem@davemloft.net, gregkh@linuxfoundation.org,
+        hkallweit1@gmail.com, jakub.kicinski@netronome.com,
+        jslaby@suse.com, linux-kernel@vger.kernel.org,
+        mareklindner@neomailbox.ch, netdev@vger.kernel.org,
+        sw@simonwunderlich.de, syzkaller-bugs@googlegroups.com
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Mon, Feb 03, 2020 at 08:32:36PM CET, jacob.e.keller@intel.com wrote:
->On 2/3/2020 3:50 AM, Jiri Pirko wrote:
->> Thu, Jan 30, 2020 at 11:58:58PM CET, jacob.e.keller@intel.com wrote:
->>> Add a new devlink command, DEVLINK_CMD_REGION_TAKE_SNAPSHOT. This
->>> command is intended to enable userspace to request an immediate snapshot
->>> of a region.
->>>
->>> Regions can enable support for requestable snapshots by implementing the
->>> snapshot callback function in the region's devlink_region_ops structure.
->>>
->>> Implementations of this function callback should capture an immediate
->>> copy of the data and return it and its destructor in the function
->>> parameters. The core devlink code will generate a snapshot ID and create
->>> the new snapshot while holding the devlink instance lock.
->>>
->>> Signed-off-by: Jacob Keller <jacob.e.keller@intel.com>
->>> ---
->>> .../networking/devlink/devlink-region.rst     |  9 +++-
->>> include/net/devlink.h                         |  7 +++
->>> include/uapi/linux/devlink.h                  |  2 +
->>> net/core/devlink.c                            | 46 +++++++++++++++++++
->>> 4 files changed, 62 insertions(+), 2 deletions(-)
->>>
->>> diff --git a/Documentation/networking/devlink/devlink-region.rst b/Documentation/networking/devlink/devlink-region.rst
->>> index 1a7683e7acb2..262249e6c3fc 100644
->>> --- a/Documentation/networking/devlink/devlink-region.rst
->>> +++ b/Documentation/networking/devlink/devlink-region.rst
->>> @@ -20,6 +20,11 @@ address regions that are otherwise inaccessible to the user.
->>> Regions may also be used to provide an additional way to debug complex error
->>> states, but see also :doc:`devlink-health`
->>>
->>> +Regions may optionally support capturing a snapshot on demand via the
->>> +``DEVLINK_CMD_REGION_TAKE_SNAPSHOT`` netlink message. A driver wishing to
->>> +allow requested snapshots must implement the ``.snapshot`` callback for the
->>> +region in its ``devlink_region_ops`` structure.
->>> +
->>> example usage
->>> -------------
->>>
->>> @@ -40,8 +45,8 @@ example usage
->>>     # Delete a snapshot using:
->>>     $ devlink region del pci/0000:00:05.0/cr-space snapshot 1
->>>
->>> -    # Trigger (request) a snapshot be taken:
->>> -    $ devlink region trigger pci/0000:00:05.0/cr-space
->>> +    # Request an immediate snapshot, if supported by the region
->>> +    $ devlink region snapshot pci/0000:00:05.0/cr-space
->> 
->> 
->> Hmm, the shapshot is now removed by user calling:
->> 
->> $ devlink region del DEV/REGION snapshot SNAPSHOT_ID
->> That is using DEVLINK_CMD_REGION_DEL netlink command calling
->> devlink_nl_cmd_region_del()
->> 
->> I think the creation should be symmetric. Something like:
->> $ devlink region add DEV/REGION snapshot SNAPSHOT_ID
->> SNAPSHOT_ID is either exact number or "any" if user does not care.
->> The benefit of using user-passed ID value is that you can use this
->> easily in scripts.
->> 
->> The existing unused netlink command DEVLINK_CMD_REGION_NEW would be used
->> for this.
->> 
->
->So I have some concern trying to allow picking the snapshot id. I agree
->it is useful, but want to make sure we pick the best design for how to
->handle things.
->
->Currently regions support taking a snapshot across multiple regions with
->the same ID. this means that the region id value is stored per devlink
->instead of per region.
->
->If users can pick IDs, they can and probably will become sparse. This
->means that we now need to be able to handle this.
->
->If a user picks an ID, we want to ensure that the global region id
->number is incremented properly so that we skip the used IDs, otherwise
->those could accidentally collide.
->
->The simplest solution is to just force the global ID to be 1 larger at a
->minimum every time the userspace calls us with an ID.
->
->But now what happens if a user requests a really large ID (U32_MAX - 1)?
->and then we now overflow our region ID.
->
->This was previously a rare occurrence, but has now become possibly common.
->
->We could require/force the user to pick IDs within a limited range, and
->have the automatic regions come from another range..
->
->We could enhance ID selection to just pick "lowest number unused by any
->region". This would allow re-using ID numbers after they've been
->deleted.. I think this approach is the most robust but does require a
->bit of extra computation.
+Hello,
 
-Check out "ida"
+syzbot found the following crash on:
 
->
->Thanks,
->Jake
+HEAD commit:    ccaaaf6f Merge tag 'mpx-for-linus' of git://git.kernel.org..
+git tree:       upstream
+console output: https://syzkaller.appspot.com/x/log.txt?x=11bc585ee00000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=879390c6b09ccf66
+dashboard link: https://syzkaller.appspot.com/bug?extid=3118a33395397bb6b0ca
+compiler:       gcc (GCC) 9.0.0 20181231 (experimental)
+syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=165bda4ee00000
+C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=1646a85ee00000
+
+The bug was bisected to:
+
+commit 65b27995a4ab8fc51b4adc6b4dcdca20f7a595bb
+Author: Heiner Kallweit <hkallweit1@gmail.com>
+Date:   Mon Aug 12 21:52:19 2019 +0000
+
+    net: phy: let phy_speed_down/up support speeds >1Gbps
+
+bisection log:  https://syzkaller.appspot.com/x/bisect.txt?x=1764f735e00000
+final crash:    https://syzkaller.appspot.com/x/report.txt?x=14e4f735e00000
+console output: https://syzkaller.appspot.com/x/log.txt?x=10e4f735e00000
+
+IMPORTANT: if you fix the bug, please add the following tag to the commit:
+Reported-by: syzbot+3118a33395397bb6b0ca@syzkaller.appspotmail.com
+Fixes: 65b27995a4ab ("net: phy: let phy_speed_down/up support speeds >1Gbps")
+
+======================================================
+WARNING: possible circular locking dependency detected
+5.5.0-syzkaller #0 Not tainted
+------------------------------------------------------
+syz-executor465/10262 is trying to acquire lock:
+ffffffff89b9f960 (console_owner){-.-.}, at: console_trylock_spinning kernel/printk/printk.c:1724 [inline]
+ffffffff89b9f960 (console_owner){-.-.}, at: vprintk_emit+0x3fd/0x700 kernel/printk/printk.c:1995
+
+but task is already holding lock:
+ffff88808d6b7940 (&(&port->lock)->rlock){-.-.}, at: pty_write+0xff/0x200 drivers/tty/pty.c:120
+
+which lock already depends on the new lock.
+
+
+the existing dependency chain (in reverse order) is:
+
+-> #2 (&(&port->lock)->rlock){-.-.}:
+       __raw_spin_lock_irqsave include/linux/spinlock_api_smp.h:110 [inline]
+       _raw_spin_lock_irqsave+0x95/0xcd kernel/locking/spinlock.c:159
+       tty_port_tty_get+0x24/0x100 drivers/tty/tty_port.c:287
+       tty_port_default_wakeup+0x16/0x40 drivers/tty/tty_port.c:47
+       tty_port_tty_wakeup+0x57/0x70 drivers/tty/tty_port.c:387
+       uart_write_wakeup+0x46/0x70 drivers/tty/serial/serial_core.c:104
+       serial8250_tx_chars+0x495/0xaf0 drivers/tty/serial/8250/8250_port.c:1760
+       serial8250_handle_irq.part.0+0x261/0x2b0 drivers/tty/serial/8250/8250_port.c:1833
+       serial8250_handle_irq drivers/tty/serial/8250/8250_port.c:1819 [inline]
+       serial8250_default_handle_irq+0xc0/0x150 drivers/tty/serial/8250/8250_port.c:1849
+       serial8250_interrupt+0xf1/0x1a0 drivers/tty/serial/8250/8250_core.c:126
+       __handle_irq_event_percpu+0x15d/0x970 kernel/irq/handle.c:149
+       handle_irq_event_percpu+0x74/0x160 kernel/irq/handle.c:189
+       handle_irq_event+0xa7/0x134 kernel/irq/handle.c:206
+       handle_edge_irq+0x25e/0x8d0 kernel/irq/chip.c:830
+       generic_handle_irq_desc include/linux/irqdesc.h:156 [inline]
+       do_IRQ+0xde/0x280 arch/x86/kernel/irq.c:250
+       ret_from_intr+0x0/0x36
+       arch_local_irq_restore arch/x86/include/asm/paravirt.h:752 [inline]
+       __raw_spin_unlock_irqrestore include/linux/spinlock_api_smp.h:160 [inline]
+       _raw_spin_unlock_irqrestore+0x90/0xe0 kernel/locking/spinlock.c:191
+       spin_unlock_irqrestore include/linux/spinlock.h:393 [inline]
+       uart_write+0x3b6/0x6f0 drivers/tty/serial/serial_core.c:613
+       process_output_block drivers/tty/n_tty.c:595 [inline]
+       n_tty_write+0x40e/0x1080 drivers/tty/n_tty.c:2333
+       do_tty_write drivers/tty/tty_io.c:962 [inline]
+       tty_write+0x496/0x7f0 drivers/tty/tty_io.c:1046
+       redirected_tty_write+0xb2/0xc0 drivers/tty/tty_io.c:1067
+       __vfs_write+0x8a/0x110 fs/read_write.c:494
+       vfs_write+0x268/0x5d0 fs/read_write.c:558
+       ksys_write+0x14f/0x290 fs/read_write.c:611
+       __do_sys_write fs/read_write.c:623 [inline]
+       __se_sys_write fs/read_write.c:620 [inline]
+       __x64_sys_write+0x73/0xb0 fs/read_write.c:620
+       do_syscall_64+0xfa/0x790 arch/x86/entry/common.c:294
+       entry_SYSCALL_64_after_hwframe+0x49/0xbe
+
+-> #1 (&port_lock_key){-.-.}:
+       __raw_spin_lock_irqsave include/linux/spinlock_api_smp.h:110 [inline]
+       _raw_spin_lock_irqsave+0x95/0xcd kernel/locking/spinlock.c:159
+       serial8250_console_write+0x253/0x9a0 drivers/tty/serial/8250/8250_port.c:3142
+       univ8250_console_write+0x5f/0x70 drivers/tty/serial/8250/8250_core.c:587
+       call_console_drivers kernel/printk/printk.c:1791 [inline]
+       console_unlock+0xb7a/0xf00 kernel/printk/printk.c:2473
+       vprintk_emit+0x2a0/0x700 kernel/printk/printk.c:1996
+       vprintk_default+0x28/0x30 kernel/printk/printk.c:2023
+       vprintk_func+0x7e/0x189 kernel/printk/printk_safe.c:386
+       printk+0xba/0xed kernel/printk/printk.c:2056
+       register_console+0x745/0xb50 kernel/printk/printk.c:2798
+       univ8250_console_init+0x3e/0x4b drivers/tty/serial/8250/8250_core.c:682
+       console_init+0x461/0x67b kernel/printk/printk.c:2884
+       start_kernel+0x653/0x8e2 init/main.c:713
+       x86_64_start_reservations+0x29/0x2b arch/x86/kernel/head64.c:490
+       x86_64_start_kernel+0x77/0x7b arch/x86/kernel/head64.c:471
+       secondary_startup_64+0xa4/0xb0 arch/x86/kernel/head_64.S:242
+
+-> #0 (console_owner){-.-.}:
+       check_prev_add kernel/locking/lockdep.c:2475 [inline]
+       check_prevs_add kernel/locking/lockdep.c:2580 [inline]
+       validate_chain kernel/locking/lockdep.c:2970 [inline]
+       __lock_acquire+0x2596/0x4a00 kernel/locking/lockdep.c:3954
+       lock_acquire+0x190/0x410 kernel/locking/lockdep.c:4484
+       console_trylock_spinning kernel/printk/printk.c:1745 [inline]
+       vprintk_emit+0x43a/0x700 kernel/printk/printk.c:1995
+       vprintk_default+0x28/0x30 kernel/printk/printk.c:2023
+       vprintk_func+0x7e/0x189 kernel/printk/printk_safe.c:386
+       printk+0xba/0xed kernel/printk/printk.c:2056
+       fail_dump lib/fault-inject.c:45 [inline]
+       should_fail+0x708/0x852 lib/fault-inject.c:144
+       __should_failslab+0x121/0x190 mm/failslab.c:33
+       should_failslab+0x9/0x14 mm/slab_common.c:1811
+       slab_pre_alloc_hook mm/slab.h:567 [inline]
+       slab_alloc mm/slab.c:3306 [inline]
+       __do_kmalloc mm/slab.c:3654 [inline]
+       __kmalloc+0x71/0x770 mm/slab.c:3665
+       kmalloc include/linux/slab.h:561 [inline]
+       tty_buffer_alloc drivers/tty/tty_buffer.c:175 [inline]
+       __tty_buffer_request_room+0x1fb/0x5c0 drivers/tty/tty_buffer.c:273
+       tty_insert_flip_string_fixed_flag+0x93/0x1f0 drivers/tty/tty_buffer.c:318
+       tty_insert_flip_string include/linux/tty_flip.h:37 [inline]
+       pty_write+0x133/0x200 drivers/tty/pty.c:122
+       n_tty_write+0xb1d/0x1080 drivers/tty/n_tty.c:2356
+       do_tty_write drivers/tty/tty_io.c:962 [inline]
+       tty_write+0x496/0x7f0 drivers/tty/tty_io.c:1046
+       do_loop_readv_writev fs/read_write.c:717 [inline]
+       do_loop_readv_writev fs/read_write.c:701 [inline]
+       do_iter_write fs/read_write.c:972 [inline]
+       do_iter_write+0x4a0/0x610 fs/read_write.c:951
+       vfs_writev+0x1b3/0x2f0 fs/read_write.c:1015
+       do_writev+0x15b/0x330 fs/read_write.c:1058
+       __do_sys_writev fs/read_write.c:1131 [inline]
+       __se_sys_writev fs/read_write.c:1128 [inline]
+       __x64_sys_writev+0x75/0xb0 fs/read_write.c:1128
+       do_syscall_64+0xfa/0x790 arch/x86/entry/common.c:294
+       entry_SYSCALL_64_after_hwframe+0x49/0xbe
+
+other info that might help us debug this:
+
+Chain exists of:
+  console_owner --> &port_lock_key --> &(&port->lock)->rlock
+
+ Possible unsafe locking scenario:
+
+       CPU0                    CPU1
+       ----                    ----
+  lock(&(&port->lock)->rlock);
+                               lock(&port_lock_key);
+                               lock(&(&port->lock)->rlock);
+  lock(console_owner);
+
+ *** DEADLOCK ***
+
+5 locks held by syz-executor465/10262:
+ #0: ffff88809dca8090 (&tty->ldisc_sem){++++}, at: ldsem_down_read+0x33/0x40 drivers/tty/tty_ldsem.c:340
+ #1: ffff88809dca8118 (&tty->atomic_write_lock){+.+.}, at: tty_write_lock+0x23/0x90 drivers/tty/tty_io.c:888
+ #2: ffff88809dca82a0 (&tty->termios_rwsem){++++}, at: n_tty_write+0x1b5/0x1080 drivers/tty/n_tty.c:2316
+ #3: ffffc90007a67360 (&ldata->output_lock){+.+.}, at: n_tty_write+0xadd/0x1080 drivers/tty/n_tty.c:2355
+ #4: ffff88808d6b7940 (&(&port->lock)->rlock){-.-.}, at: pty_write+0xff/0x200 drivers/tty/pty.c:120
+
+stack backtrace:
+CPU: 0 PID: 10262 Comm: syz-executor465 Not tainted 5.5.0-syzkaller #0
+Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
+Call Trace:
+ __dump_stack lib/dump_stack.c:77 [inline]
+ dump_stack+0x197/0x210 lib/dump_stack.c:118
+ print_circular_bug.isra.0.cold+0x163/0x172 kernel/locking/lockdep.c:1684
+ check_noncircular+0x32e/0x3e0 kernel/locking/lockdep.c:1808
+ check_prev_add kernel/locking/lockdep.c:2475 [inline]
+ check_prevs_add kernel/locking/lockdep.c:2580 [inline]
+ validate_chain kernel/locking/lockdep.c:2970 [inline]
+ __lock_acquire+0x2596/0x4a00 kernel/locking/lockdep.c:3954
+ lock_acquire+0x190/0x410 kernel/locking/lockdep.c:4484
+ console_trylock_spinning kernel/printk/printk.c:1745 [inline]
+ vprintk_emit+0x43a/0x700 kernel/printk/printk.c:1995
+ vprintk_default+0x28/0x30 kernel/printk/printk.c:2023
+ vprintk_func+0x7e/0x189 kernel/printk/printk_safe.c:386
+ printk+0xba/0xed kernel/printk/printk.c:2056
+ fail_dump lib/fault-inject.c:45 [inline]
+ should_fail+0x708/0x852 lib/fault-inject.c:144
+ __should_failslab+0x121/0x190 mm/failslab.c:33
+ should_failslab+0x9/0x14 mm/slab_common.c:1811
+ slab_pre_alloc_hook mm/slab.h:567 [inline]
+ slab_alloc mm/slab.c:3306 [inline]
+ __do_kmalloc mm/slab.c:3654 [inline]
+ __kmalloc+0x71/0x770 mm/slab.c:3665
+ kmalloc include/linux/slab.h:561 [inline]
+ tty_buffer_alloc drivers/tty/tty_buffer.c:175 [inline]
+ __tty_buffer_request_room+0x1fb/0x5c0 drivers/tty/tty_buffer.c:273
+ tty_insert_flip_string_fixed_flag+0x93/0x1f0 drivers/tty/tty_buffer.c:318
+ tty_insert_flip_string include/linux/tty_flip.h:37 [inline]
+ pty_write+0x133/0x200 drivers/tty/pty.c:122
+ n_tty_write+0xb1d/0x1080 drivers/tty/n_tty.c:2356
+ do_tty_write drivers/tty/tty_io.c:962 [inline]
+ tty_write+0x496/0x7f0 drivers/tty/tty_io.c:1046
+ do_loop_readv_writev fs/read_write.c:717 [inline]
+ do_loop_readv_writev fs/read_write.c:701 [inline]
+ do_iter_write fs/read_write.c:972 [inline]
+ do_iter_write+0x4a0/0x610 fs/read_write.c:951
+ vfs_writev+0x1b3/0x2f0 fs/read_write.c:1015
+ do_writev+0x15b/0x330 fs/read_write.c:1058
+ __do_sys_writev fs/read_write.c:1131 [inline]
+ __se_sys_writev fs/read_write.c:1128 [inline]
+ __x64_sys_writev+0x75/0xb0 fs/read_write.c:1128
+ do_syscall_64+0xfa/0x790 arch/x86/entry/common.c:294
+ entry_SYSCALL_64_after_hwframe+0x49/0xbe
+RIP: 0033:0x4437c9
+Code: e8 0c e8 ff ff 48 83 c4 18 c3 0f 1f 80 00 00 00 00 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 0f 83 6b 09 fc ff c3 66 2e 0f 1f 84 00 00 00 00
+RSP: 002b:00007ffe144fe178 EFLAGS: 00000246 ORIG_RAX: 0000000000000014
+RAX: ffffffffffffffda RBX: 0000000000000000 RCX: 00000000004437c9
+RDX: 1000000000000252 RSI: 00000000200023c0 RDI: 0000000000000005
+RBP: 00000000000385a4 R08: 0000000000000001 R09: 0000000000400033
+R10: 0000000000000000 R11: 0000000000000246 R12: ffffffffffffffff
+R13: 0000000000000006 R14: 0000000000000000 R15: 0000000000000000
+
+
+---
+This bug is generated by a bot. It may contain errors.
+See https://goo.gl/tpsmEJ for more information about syzbot.
+syzbot engineers can be reached at syzkaller@googlegroups.com.
+
+syzbot will keep track of this bug report. See:
+https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
+For information about bisection process see: https://goo.gl/tpsmEJ#bisection
+syzbot can test patches for this bug, for details see:
+https://goo.gl/tpsmEJ#testing-patches
