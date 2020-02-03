@@ -2,44 +2,44 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 2A7601509DB
-	for <lists+netdev@lfdr.de>; Mon,  3 Feb 2020 16:34:26 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 202871509DC
+	for <lists+netdev@lfdr.de>; Mon,  3 Feb 2020 16:34:29 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727789AbgBCPeY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 3 Feb 2020 10:34:24 -0500
-Received: from us-smtp-1.mimecast.com ([207.211.31.81]:24479 "EHLO
+        id S1727937AbgBCPe1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 3 Feb 2020 10:34:27 -0500
+Received: from us-smtp-2.mimecast.com ([205.139.110.61]:41461 "EHLO
         us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1727201AbgBCPeY (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 3 Feb 2020 10:34:24 -0500
+        by vger.kernel.org with ESMTP id S1727201AbgBCPe0 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 3 Feb 2020 10:34:26 -0500
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1580744063;
+        s=mimecast20190719; t=1580744065;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=592y981M3iebaRRWsq+12mogxXJF6Sly4cspD9Amr+M=;
-        b=PUKN0hI8GpqDGA2YThm0oDvHqzBjV2qtMXbCk8zXb/YrMeyLDOSiRtDNrkXF2SfEYS/FwR
-        qYop33OsmXczoFipkHRWR7hsI8wgG1Rl7HyfryqlHJr2bx/FP0c4aGtFKYI3XSIC9GFqIH
-        Ije3NlYlnVC2eMigcMt1C73ZxderO8Q=
+        bh=1dVNMmi9+IrW73Rlj89dIAp6HaWx65TNxJYOXYg8pqk=;
+        b=Zz5eCXbGWX2B0DC2E4lFZx/tkHQC14Xr1AXBoI/icd1cMU00c8x6FHQmsehQLqhTi92Jo/
+        EpWfOpFEhapgkyWKD+Jz616ujbVb6hVogKA4glEdjoz9PWuqPojS7oQ9WuNnowOoqAG15w
+        STBsAAqnONhsdpxhXU+92R4E9p2kmk8=
 Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
  [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-351-47iuCdFTM1Coz6srdE5Z4A-1; Mon, 03 Feb 2020 10:34:19 -0500
-X-MC-Unique: 47iuCdFTM1Coz6srdE5Z4A-1
+ us-mta-410-EAYj6Hn-PfWcXSke2nEjHA-1; Mon, 03 Feb 2020 10:34:21 -0500
+X-MC-Unique: EAYj6Hn-PfWcXSke2nEjHA-1
 Received: from smtp.corp.redhat.com (int-mx02.intmail.prod.int.phx2.redhat.com [10.5.11.12])
         (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 42E2618A88D8;
-        Mon,  3 Feb 2020 15:34:18 +0000 (UTC)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id ED54410E1C04;
+        Mon,  3 Feb 2020 15:34:19 +0000 (UTC)
 Received: from wlan-180-229.mxp.redhat.com (wlan-180-229.mxp.redhat.com [10.32.180.229])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 0DB8760BE0;
-        Mon,  3 Feb 2020 15:34:16 +0000 (UTC)
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 8794760BE0;
+        Mon,  3 Feb 2020 15:34:18 +0000 (UTC)
 From:   Davide Caratti <dcaratti@redhat.com>
 To:     Roman Mashak <mrv@mojatatu.com>, Hangbin Liu <liuhangbin@gmail.com>
 Cc:     Jamal Hadi Salim <jhs@mojatatu.com>,
         "David S . Miller" <davem@davemloft.net>, netdev@vger.kernel.org
-Subject: [PATCH net 1/2] tc-testing: fix eBPF tests failure on linux fresh clones
-Date:   Mon,  3 Feb 2020 16:29:29 +0100
-Message-Id: <32b2f2c31374b2d478fa1ac91e37a5b070d34d7c.1580740848.git.dcaratti@redhat.com>
+Subject: [PATCH net 2/2] tc-testing: add missing 'nsPlugin' to basic.json
+Date:   Mon,  3 Feb 2020 16:29:30 +0100
+Message-Id: <5211afb18c18b0fb9da633d364874125ac64bae6.1580740848.git.dcaratti@redhat.com>
 In-Reply-To: <cover.1580740848.git.dcaratti@redhat.com>
 References: <cover.1580740848.git.dcaratti@redhat.com>
 MIME-Version: 1.0
@@ -50,37 +50,192 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-when the following command is done on a fresh clone of the kernel tree,
+since tdc tests for cls_basic need $DEV1, use 'nsPlugin' so that the
+following command can be run without errors:
 
- [root@f31 tc-testing]# ./tdc.py -c bpf
+ [root@f31 tc-testing]# ./tdc.py -c basic
 
-test cases that need to build the eBPF sample program fail systematically=
-,
-because 'buildebpfPlugin' is unable to install the kernel headers (i.e, t=
-he
-'khdr' target fails). Pass the correct environment to 'make', in place of
-ENVIR, to allow running these tests.
-
-Fixes: 4c2d39bd40c1 ("tc-testing: use a plugin to build eBPF program")
+Fixes: 4717b05328ba ("tc-testing: Introduced tdc tests for basic filter")
 Signed-off-by: Davide Caratti <dcaratti@redhat.com>
 ---
- .../testing/selftests/tc-testing/plugin-lib/buildebpfPlugin.py  | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ .../tc-testing/tc-tests/filters/basic.json    | 51 +++++++++++++++++++
+ 1 file changed, 51 insertions(+)
 
-diff --git a/tools/testing/selftests/tc-testing/plugin-lib/buildebpfPlugi=
-n.py b/tools/testing/selftests/tc-testing/plugin-lib/buildebpfPlugin.py
-index e98c36750fae..d34fe06268d2 100644
---- a/tools/testing/selftests/tc-testing/plugin-lib/buildebpfPlugin.py
-+++ b/tools/testing/selftests/tc-testing/plugin-lib/buildebpfPlugin.py
-@@ -54,7 +54,7 @@ class SubPlugin(TdcPlugin):
-             shell=3DTrue,
-             stdout=3Dsubprocess.PIPE,
-             stderr=3Dsubprocess.PIPE,
--            env=3DENVIR)
-+            env=3Dos.environ.copy())
-         (rawout, serr) =3D proc.communicate()
-=20
-         if proc.returncode !=3D 0 and len(serr) > 0:
+diff --git a/tools/testing/selftests/tc-testing/tc-tests/filters/basic.js=
+on b/tools/testing/selftests/tc-testing/tc-tests/filters/basic.json
+index 2e361cea63bc..98a20faf3198 100644
+--- a/tools/testing/selftests/tc-testing/tc-tests/filters/basic.json
++++ b/tools/testing/selftests/tc-testing/tc-tests/filters/basic.json
+@@ -6,6 +6,9 @@
+             "filter",
+             "basic"
+         ],
++        "plugins": {
++            "requires": "nsPlugin"
++        },
+         "setup": [
+             "$TC qdisc add dev $DEV1 ingress"
+         ],
+@@ -25,6 +28,9 @@
+             "filter",
+             "basic"
+         ],
++        "plugins": {
++            "requires": "nsPlugin"
++        },
+         "setup": [
+             "$TC qdisc add dev $DEV1 ingress"
+         ],
+@@ -44,6 +50,9 @@
+             "filter",
+             "basic"
+         ],
++        "plugins": {
++            "requires": "nsPlugin"
++        },
+         "setup": [
+             "$TC qdisc add dev $DEV1 ingress"
+         ],
+@@ -63,6 +72,9 @@
+             "filter",
+             "basic"
+         ],
++        "plugins": {
++            "requires": "nsPlugin"
++        },
+         "setup": [
+             "$TC qdisc add dev $DEV1 ingress"
+         ],
+@@ -82,6 +94,9 @@
+             "filter",
+             "basic"
+         ],
++        "plugins": {
++            "requires": "nsPlugin"
++        },
+         "setup": [
+             "$TC qdisc add dev $DEV1 ingress"
+         ],
+@@ -101,6 +116,9 @@
+             "filter",
+             "basic"
+         ],
++        "plugins": {
++            "requires": "nsPlugin"
++        },
+         "setup": [
+             "$TC qdisc add dev $DEV1 ingress"
+         ],
+@@ -120,6 +138,9 @@
+             "filter",
+             "basic"
+         ],
++        "plugins": {
++            "requires": "nsPlugin"
++        },
+         "setup": [
+             "$TC qdisc add dev $DEV1 ingress"
+         ],
+@@ -139,6 +160,9 @@
+             "filter",
+             "basic"
+         ],
++        "plugins": {
++            "requires": "nsPlugin"
++        },
+         "setup": [
+             "$TC qdisc add dev $DEV1 ingress"
+         ],
+@@ -158,6 +182,9 @@
+             "filter",
+             "basic"
+         ],
++        "plugins": {
++            "requires": "nsPlugin"
++        },
+         "setup": [
+             "$TC qdisc add dev $DEV1 ingress"
+         ],
+@@ -177,6 +204,9 @@
+             "filter",
+             "basic"
+         ],
++        "plugins": {
++            "requires": "nsPlugin"
++        },
+         "setup": [
+             "$TC qdisc add dev $DEV1 ingress"
+         ],
+@@ -196,6 +226,9 @@
+             "filter",
+             "basic"
+         ],
++        "plugins": {
++            "requires": "nsPlugin"
++        },
+         "setup": [
+             "$TC qdisc add dev $DEV1 ingress"
+         ],
+@@ -215,6 +248,9 @@
+             "filter",
+             "basic"
+         ],
++        "plugins": {
++            "requires": "nsPlugin"
++        },
+         "setup": [
+             "$TC qdisc add dev $DEV1 ingress"
+         ],
+@@ -234,6 +270,9 @@
+             "filter",
+             "basic"
+         ],
++        "plugins": {
++            "requires": "nsPlugin"
++        },
+         "setup": [
+             "$TC qdisc add dev $DEV1 ingress"
+         ],
+@@ -253,6 +292,9 @@
+             "filter",
+             "basic"
+         ],
++        "plugins": {
++            "requires": "nsPlugin"
++        },
+         "setup": [
+             "$TC qdisc add dev $DEV1 ingress"
+         ],
+@@ -272,6 +314,9 @@
+             "filter",
+             "basic"
+         ],
++        "plugins": {
++            "requires": "nsPlugin"
++        },
+         "setup": [
+             "$TC qdisc add dev $DEV1 ingress"
+         ],
+@@ -291,6 +336,9 @@
+             "filter",
+             "basic"
+         ],
++        "plugins": {
++            "requires": "nsPlugin"
++        },
+         "setup": [
+             "$TC qdisc add dev $DEV1 ingress"
+         ],
+@@ -310,6 +358,9 @@
+             "filter",
+             "basic"
+         ],
++        "plugins": {
++            "requires": "nsPlugin"
++        },
+         "setup": [
+             "$TC qdisc add dev $DEV1 ingress"
+         ],
 --=20
 2.24.1
 
