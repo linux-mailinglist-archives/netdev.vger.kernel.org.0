@@ -2,112 +2,133 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 3F33A1500F9
-	for <lists+netdev@lfdr.de>; Mon,  3 Feb 2020 05:31:27 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B58B81500FA
+	for <lists+netdev@lfdr.de>; Mon,  3 Feb 2020 05:39:23 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727441AbgBCEbY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 2 Feb 2020 23:31:24 -0500
-Received: from mail-pg1-f195.google.com ([209.85.215.195]:34567 "EHLO
-        mail-pg1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727234AbgBCEbW (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 2 Feb 2020 23:31:22 -0500
-Received: by mail-pg1-f195.google.com with SMTP id j4so7109792pgi.1;
-        Sun, 02 Feb 2020 20:31:21 -0800 (PST)
+        id S1727409AbgBCEjU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 2 Feb 2020 23:39:20 -0500
+Received: from mail-ot1-f67.google.com ([209.85.210.67]:44214 "EHLO
+        mail-ot1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727164AbgBCEjU (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 2 Feb 2020 23:39:20 -0500
+Received: by mail-ot1-f67.google.com with SMTP id h9so12343747otj.11
+        for <netdev@vger.kernel.org>; Sun, 02 Feb 2020 20:39:18 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=OcAvEpV9ilFN43nto1Kxy9AQ4yLOQOiqzoFpl1MjHJQ=;
-        b=KkYbMac3keYH02HXhQ4qiJWYxKSEAit1Zy/yViPbAGtv5+KoQjTPDcigdfQDztf0Yp
-         jxyB9C4hCtIUzFuXyEsJwhNUVRcVCy7UJveClvO/oKQYoP3ZVL+NYkxg1HOquHxUBemj
-         NDIipRxgrsMjmV2W4Ly5ZJbJGNgJGcTeTLsmcm/0bXnpio3AlWLyYZHsw9b1EN3Mh4GY
-         LEmjEayKBHHvQ4FDhnv1dSbPbDuYwfvpeWxZBYGN7JtlrZry6Sf0L6MFwJj/aUtTOjyi
-         QVcf8e5sDunMD638OaVrYHQwb/DLOP5Y3+5adXn6vFThChe7g3eZFI/5y0qBq7k/wU8K
-         7CgA==
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=MMZL9uS3JbVJ2lhDFniRbbl1cpu9QULQN44Jq2JwMCQ=;
+        b=fegu5qmCa2bwvsfaoI53q6wdn5DvNXNHMQNHW8r/TWPrtd/d8ORCVJftkEy0GWW97A
+         VuFxzJySjD1l47rvcmSqOvc2zNxVNmniaFjE10QWKgNtqER8eRtlKgwx0TaG7RIScfdY
+         6MQqKqW+gxY4USTj1pFqYw8GJ1PIphZIyWLaduRMXDKexAbjyaglVGhfsaWSPh3zO9fF
+         c3YCibAAdnq3oxDLY0+Nw0P3rwSgz+GcVOzFxDuMwaCdUe2K4KzXLp7aAWujfhvonaBc
+         e8w+3/F9ilk3x2RiKaTGl1xnu04GLlfjAiSElUNuJzlugu+ac+N2mKMhsywtldyB32Gc
+         PlwQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=OcAvEpV9ilFN43nto1Kxy9AQ4yLOQOiqzoFpl1MjHJQ=;
-        b=OkZef3CZBDeR08+a7r/+WSp/eg6aIS0XDui4PMvbX9qSw+NaD7Y58tmFKuIanJKqoX
-         FWHUCQRiYRMYvI9eBYGSDjpaVXUCKnq/uTAWMYu9QI8Z3Gj+D+ex96roRz9xmMFUuZ9g
-         d/NuxQ5EGTJVXZQwceVrES3caMXNwxDXMTvtJdzfoh/mtJLpLGXbLWTYqUWJlXaMu7YO
-         +2Po+4Mr1MDqQ8RTNhaD8EVKsgirhTnf32/dPIXOfFHs/uNPBJ7jv8JrPUq9LL5LTVep
-         S4C5YAqZ8nzHoMdau+llT0UFUwcV56xxdcS61B+knBtxUWPTaQE3R6bicSfhFF6wdWOp
-         Mb8w==
-X-Gm-Message-State: APjAAAWZiZUklG55Hqbk2YzLi/vPpp2zbwMEDtu3m+8OIMmCZ757L6X5
-        R6Rg2OnMuIOrousyDa7PYHs/I1o/5FM=
-X-Google-Smtp-Source: APXvYqwTwrxltSEeEfWFGEFYdfRXcxsVMfAsPFpvxPV0z+bKwMofG0gcPjWT3SFpgAhiAupjJhHfeA==
-X-Received: by 2002:a62:4ecc:: with SMTP id c195mr23247816pfb.158.1580704281071;
-        Sun, 02 Feb 2020 20:31:21 -0800 (PST)
-Received: from tw-172-25-31-76.office.twttr.net ([8.25.197.24])
-        by smtp.gmail.com with ESMTPSA id z29sm17823374pgc.21.2020.02.02.20.31.20
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 02 Feb 2020 20:31:20 -0800 (PST)
-From:   Cong Wang <xiyou.wangcong@gmail.com>
-To:     netdev@vger.kernel.org
-Cc:     fw@strlen.de, netfilter-devel@vger.kernel.org,
-        Cong Wang <xiyou.wangcong@gmail.com>,
-        syzbot+adf6c6c2be1c3a718121@syzkaller.appspotmail.com,
-        Pablo Neira Ayuso <pablo@netfilter.org>,
-        Jozsef Kadlecsik <kadlec@netfilter.org>
-Subject: [Patch nf v2 3/3] xt_hashlimit: limit the max size of hashtable
-Date:   Sun,  2 Feb 2020 20:30:53 -0800
-Message-Id: <20200203043053.19192-4-xiyou.wangcong@gmail.com>
-X-Mailer: git-send-email 2.21.1
-In-Reply-To: <20200203043053.19192-1-xiyou.wangcong@gmail.com>
-References: <20200203043053.19192-1-xiyou.wangcong@gmail.com>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=MMZL9uS3JbVJ2lhDFniRbbl1cpu9QULQN44Jq2JwMCQ=;
+        b=HKqVSJ5pWNuCaz90eX+0RGp62maGFFUTJ08gnwg4gPNXdDiC2vZQTo/qrHkEpzlfrk
+         K4rD+EnKzM1x5NpymFPV0rS03/YpjhovJGHKDwzgZ9DCu3u0adiczPRneT1YLVq3vfzK
+         l5pf7q/P4CKDbrI3SRs7u2U5HYzTVMwBpHCRyyytzwHa1hLCJQbZC2PIdJoqJcT0asn9
+         fN8NUfdLb867sMZ0Z9WTS+vBnXhDzrxQOV4CngBsnS7sbnopw9hfHK7KnKLI3JokeUYJ
+         6VEMsZ7ygwoyO9DBvRniqlD2PofB9Cx68sMyFMK55pfqCKD2JLRMHNG1xaVxmbL//rH8
+         qpaQ==
+X-Gm-Message-State: APjAAAXC7KjSkUWYpAvHLYk/nQBXmUjTji+xDXTZ09bcsuOsF8iw+yNO
+        vpC+gtW4APo2xHE7LJqxBFVk/83EmkimWqWj1qgTpCCiL2E=
+X-Google-Smtp-Source: APXvYqwdV6yLkKUQfQ8vWKlSw3+E0up3YCWbvYtPbj+Lsa/a1WhwXO27veKjxw1426En7g0uXKKqRNNaBderX1F4Cfo=
+X-Received: by 2002:a05:6830:1e64:: with SMTP id m4mr17274167otr.244.1580704757852;
+ Sun, 02 Feb 2020 20:39:17 -0800 (PST)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20200202181950.18439-1-xiyou.wangcong@gmail.com> <20200202133047.5deec0e2@cakuba.hsd1.ca.comcast.net>
+In-Reply-To: <20200202133047.5deec0e2@cakuba.hsd1.ca.comcast.net>
+From:   Cong Wang <xiyou.wangcong@gmail.com>
+Date:   Sun, 2 Feb 2020 20:39:06 -0800
+Message-ID: <CAM_iQpUu_sY3EFBJQUQ5212Y4=Az6p2G6P+DNa-T_dYLVnrtWA@mail.gmail.com>
+Subject: Re: [Patch net] net_sched: fix an OOB access in cls_tcindex
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     Linux Kernel Network Developers <netdev@vger.kernel.org>,
+        syzbot <syzbot+35d4dea36c387813ed31@syzkaller.appspotmail.com>,
+        Eric Dumazet <eric.dumazet@gmail.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        Jamal Hadi Salim <jhs@mojatatu.com>,
+        Jiri Pirko <jiri@resnulli.us>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The user-specified hashtable size is unbound, this could
-easily lead to an OOM or a hung task as we hold the global
-mutex while allocating and initializing the new hashtable.
+On Sun, Feb 2, 2020 at 1:30 PM Jakub Kicinski <kuba@kernel.org> wrote:
+>
+> On Sun,  2 Feb 2020 10:19:50 -0800, Cong Wang wrote:
+> > As Eric noticed, tcindex_alloc_perfect_hash() uses cp->hash
+> > to compute the size of memory allocation, but cp->hash is
+> > set again after the allocation, this caused an out-of-bound
+> > access.
+> >
+> > So we have to move all cp->hash initialization and computation
+> > before the memory allocation. Move cp->mask and cp->shift together
+> > as cp->hash may need them for computation.
+> >
+> > Reported-and-tested-by: syzbot+35d4dea36c387813ed31@syzkaller.appspotmail.com
+> > Fixes: 331b72922c5f ("net: sched: RCU cls_tcindex")
+> > Cc: Eric Dumazet <eric.dumazet@gmail.com>
+> > Cc: John Fastabend <john.fastabend@gmail.com>
+> > Cc: Jamal Hadi Salim <jhs@mojatatu.com>
+> > Cc: Jiri Pirko <jiri@resnulli.us>
+> > Signed-off-by: Cong Wang <xiyou.wangcong@gmail.com>
+> > ---
+> >  net/sched/cls_tcindex.c | 38 +++++++++++++++++++-------------------
+> >  1 file changed, 19 insertions(+), 19 deletions(-)
+> >
+> > diff --git a/net/sched/cls_tcindex.c b/net/sched/cls_tcindex.c
+> > index 3d4a1280352f..2ba8c034fce8 100644
+> > --- a/net/sched/cls_tcindex.c
+> > +++ b/net/sched/cls_tcindex.c
+> > @@ -333,6 +333,25 @@ tcindex_set_parms(struct net *net, struct tcf_proto *tp, unsigned long base,
+> >       cp->fall_through = p->fall_through;
+> >       cp->tp = tp;
+> >
+> > +     if (tb[TCA_TCINDEX_HASH])
+> > +             cp->hash = nla_get_u32(tb[TCA_TCINDEX_HASH]);
+> > +
+> > +     if (tb[TCA_TCINDEX_MASK])
+> > +             cp->mask = nla_get_u16(tb[TCA_TCINDEX_MASK]);
+> > +
+> > +     if (tb[TCA_TCINDEX_SHIFT])
+> > +             cp->shift = nla_get_u32(tb[TCA_TCINDEX_SHIFT]);
+> > +
+> > +     if (!cp->hash) {
+> > +             /* Hash not specified, use perfect hash if the upper limit
+> > +              * of the hashing index is below the threshold.
+> > +              */
+> > +             if ((cp->mask >> cp->shift) < PERFECT_HASH_THRESHOLD)
+> > +                     cp->hash = (cp->mask >> cp->shift) + 1;
+> > +             else
+> > +                     cp->hash = DEFAULT_HASH_SIZE;
+> > +     }
+> > +
+> >       if (p->perfect) {
+> >               int i;
+> >
+>                 if (tcindex_alloc_perfect_hash(net, cp) < 0)
+>                         goto errout;
+>                 for (i = 0; i < cp->hash; i++)
+>                         cp->perfect[i].res = p->perfect[i].res;
+>                 balloc = 1;
+>         }
+>
+> Wouldn't the loop be a problem now? cp->hash defaulted to previous
+> value - s/cp->hash/min(cp->hash, p->hash)/ ?
 
-Add a max value to cap both cfg->size and cfg->max, as
-suggested by Florian.
+Yes, good catch!
 
-Reported-and-tested-by: syzbot+adf6c6c2be1c3a718121@syzkaller.appspotmail.com
-Cc: Pablo Neira Ayuso <pablo@netfilter.org>
-Cc: Jozsef Kadlecsik <kadlec@netfilter.org>
-Cc: Florian Westphal <fw@strlen.de>
-Signed-off-by: Cong Wang <xiyou.wangcong@gmail.com>
----
- net/netfilter/xt_hashlimit.c | 10 ++++++++++
- 1 file changed, 10 insertions(+)
+>
+> Also, unrelated, I think the jump to errout1 leaks cp->perfect and exts?
 
-diff --git a/net/netfilter/xt_hashlimit.c b/net/netfilter/xt_hashlimit.c
-index 06e59f9d9f62..60c023630d14 100644
---- a/net/netfilter/xt_hashlimit.c
-+++ b/net/netfilter/xt_hashlimit.c
-@@ -837,6 +837,8 @@ hashlimit_mt(const struct sk_buff *skb, struct xt_action_param *par)
- 	return hashlimit_mt_common(skb, par, hinfo, &info->cfg, 3);
- }
- 
-+#define HASHLIMIT_MAX_SIZE 1048576
-+
- static int hashlimit_mt_check_common(const struct xt_mtchk_param *par,
- 				     struct xt_hashlimit_htable **hinfo,
- 				     struct hashlimit_cfg3 *cfg,
-@@ -847,6 +849,14 @@ static int hashlimit_mt_check_common(const struct xt_mtchk_param *par,
- 
- 	if (cfg->gc_interval == 0 || cfg->expire == 0)
- 		return -EINVAL;
-+	if (cfg->size > HASHLIMIT_MAX_SIZE) {
-+		cfg->size = HASHLIMIT_MAX_SIZE;
-+		pr_info_ratelimited("size too large, truncated to %u\n", cfg->size);
-+	}
-+	if (cfg->max > HASHLIMIT_MAX_SIZE) {
-+		cfg->max = HASHLIMIT_MAX_SIZE;
-+		pr_info_ratelimited("max too large, truncated to %u\n", cfg->max);
-+	}
- 	if (par->family == NFPROTO_IPV4) {
- 		if (cfg->srcmask > 32 || cfg->dstmask > 32)
- 			return -EINVAL;
--- 
-2.21.1
+Yes, we should call tcindex_free_perfect_hash(). I will make
+a separated patch for this.
 
+Thanks.
