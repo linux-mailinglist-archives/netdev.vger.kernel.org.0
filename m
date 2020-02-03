@@ -2,274 +2,159 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 2DF2F15079B
-	for <lists+netdev@lfdr.de>; Mon,  3 Feb 2020 14:44:31 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B3BF51507AE
+	for <lists+netdev@lfdr.de>; Mon,  3 Feb 2020 14:48:14 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727859AbgBCNo3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 3 Feb 2020 08:44:29 -0500
-Received: from mail-wr1-f66.google.com ([209.85.221.66]:43830 "EHLO
-        mail-wr1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726913AbgBCNo3 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 3 Feb 2020 08:44:29 -0500
-Received: by mail-wr1-f66.google.com with SMTP id z9so5990610wrs.10
-        for <netdev@vger.kernel.org>; Mon, 03 Feb 2020 05:44:25 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=resnulli-us.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=HGwFoVvnfG/LS2S/ummY1JJ/J7ajB757QhMHUvk2AR8=;
-        b=ng+FOyg5OVLNDLzsm/XcgaPMgBTgRetLxdLOXlgGY4Z6qymRB3k64f2DuQzS/ohUkQ
-         W7kOEcnSaYepneWg3r6QfHP7q+JJp2souCRyt6EtmX2jIo2E1fO0/LfJvxVIN5bwHdCA
-         FKTDgexOYM7sHOG4Zj8LDflc6PucWJB7N5HWIho9bJZ1IBnoX8pZaVkBeGrApzAW06GR
-         DuFdcJLhJX82RPTO/DOwSMHJFK+eEnMMXzFVs8Zke3y3LrDb/9bXZwk3/fhoHQnzy9Yp
-         wXhLWn6CQG6+isdWb2gWN8EJiLi0El7FNxXP9SwEtQCVUEDi8b6BzxNUGaq6tiloVfsu
-         MC4A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=HGwFoVvnfG/LS2S/ummY1JJ/J7ajB757QhMHUvk2AR8=;
-        b=AYie3RRRIyNWdsSAxzoTmMhjkacKnQWYemWjyOXlhetz07k6tPJD5KhczKk456cE+5
-         neksbXUq5fp95CI302qN2AwBV2kUdYqaTP15LPchvIi0/pn6kJWOmKaGo9MC6mmf12o9
-         97kkxUH96PoQ4cLSYMkULVkXHUN4MZudm+gdG3VO0WzrljlwTekekTF+2kpaL8Dze+Vg
-         AwxCtecRWmyJHucG0FGx0XcQwIjJxOJqG53KT13gedzsG8ITXgnkLxBg0ldzWayFhOth
-         2zUnSnaS6i045LTaqX8vvIMIJGMLRpJ5emH6PfQGGvc6S/o0c7BNDuk3rpgjs9fzmfnp
-         KAmw==
-X-Gm-Message-State: APjAAAU8ZF0r0qgMvFlVdAV8rDEaIQspTWUCuFG+LM9ljpiEhEvlGjtN
-        jxMqIHN7NuM0B8ifbMYVi6srWg==
-X-Google-Smtp-Source: APXvYqyS92Sn3zKHZLBJCqzWdWKitTiKjieEp80pjO4q1755kNdMqPOavCYmJVbMHAm943LqUcBxmg==
-X-Received: by 2002:adf:f586:: with SMTP id f6mr15044865wro.46.1580737464771;
-        Mon, 03 Feb 2020 05:44:24 -0800 (PST)
-Received: from localhost (ip-89-177-6-126.net.upcbroadband.cz. [89.177.6.126])
-        by smtp.gmail.com with ESMTPSA id n3sm24926956wrs.8.2020.02.03.05.44.24
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 03 Feb 2020 05:44:24 -0800 (PST)
-Date:   Mon, 3 Feb 2020 14:44:23 +0100
-From:   Jiri Pirko <jiri@resnulli.us>
-To:     Jacob Keller <jacob.e.keller@intel.com>
-Cc:     netdev@vger.kernel.org, valex@mellanox.com, linyunsheng@huawei.com,
-        lihong.yang@intel.com
-Subject: Re: [PATCH 13/15] devlink: support directly reading from region
- memory
-Message-ID: <20200203134423.GG2260@nanopsycho>
-References: <20200130225913.1671982-1-jacob.e.keller@intel.com>
- <20200130225913.1671982-14-jacob.e.keller@intel.com>
+        id S1727823AbgBCNsN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 3 Feb 2020 08:48:13 -0500
+Received: from metis.ext.pengutronix.de ([85.220.165.71]:45881 "EHLO
+        metis.ext.pengutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727606AbgBCNsM (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 3 Feb 2020 08:48:12 -0500
+Received: from gallifrey.ext.pengutronix.de ([2001:67c:670:201:5054:ff:fe8d:eefb] helo=bjornoya.blackshift.org)
+        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <mkl@pengutronix.de>)
+        id 1iyc58-0002zm-Ps; Mon, 03 Feb 2020 14:48:06 +0100
+Received: from [IPv6:2a03:f580:87bc:d400:9ccc:854a:ce4:c322] (unknown [IPv6:2a03:f580:87bc:d400:9ccc:854a:ce4:c322])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-384) server-signature RSA-PSS (4096 bits) server-digest SHA256
+         client-signature RSA-PSS (4096 bits) client-digest SHA256)
+        (Client CN "mkl@blackshift.org", Issuer "StartCom Class 1 Client CA" (not verified))
+        (Authenticated sender: mkl@blackshift.org)
+        by smtp.blackshift.org (Postfix) with ESMTPSA id 85B8C4AF765;
+        Mon,  3 Feb 2020 13:48:04 +0000 (UTC)
+Subject: Re: [RFC] can: can_create_echo_skb(): fix echo skb generation: always
+ use skb_clone()
+To:     Naresh Kamboju <naresh.kamboju@linaro.org>,
+        Oleksij Rempel <o.rempel@pengutronix.de>
+Cc:     dev.kurt@vandijck-laurijssen.be, wg@grandegger.com,
+        Pengutronix Kernel Team <kernel@pengutronix.de>,
+        linux-can@vger.kernel.org, Netdev <netdev@vger.kernel.org>,
+        lkft-triage@lists.linaro.org
+References: <20200124132656.22156-1-o.rempel@pengutronix.de>
+ <CA+G9fYsxOouFBgCBacXzdimJUfZ3DXVAia6XL7kCvcQX7qgOnA@mail.gmail.com>
+From:   Marc Kleine-Budde <mkl@pengutronix.de>
+Openpgp: preference=signencrypt
+Autocrypt: addr=mkl@pengutronix.de; prefer-encrypt=mutual; keydata=
+ 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
+Message-ID: <7ee9df43-2efb-ba57-c8a9-301bae12c0d7@pengutronix.de>
+Date:   Mon, 3 Feb 2020 14:48:02 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.9.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200130225913.1671982-14-jacob.e.keller@intel.com>
+In-Reply-To: <CA+G9fYsxOouFBgCBacXzdimJUfZ3DXVAia6XL7kCvcQX7qgOnA@mail.gmail.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: de-DE
+Content-Transfer-Encoding: 8bit
+X-SA-Exim-Connect-IP: 2001:67c:670:201:5054:ff:fe8d:eefb
+X-SA-Exim-Mail-From: mkl@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: netdev@vger.kernel.org
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Thu, Jan 30, 2020 at 11:59:08PM CET, jacob.e.keller@intel.com wrote:
->Add a new region operation for directly reading from a region, without
->taking a full snapshot.
->
->Extend the DEVLINK_CMD_REGION_READ to allow directly reading from
->a region, if supported. Instead of reporting a missing snapshot id as
->invalid, check to see if direct reading is implemented for the region.
->If so, use the direct read operation to grab the current contents of the
->region.
->
->This new behavior of DEVLINK_CMD_REGION_READ should be backwards
->compatible. Previously, all kernels rejected such
->a DEVLINK_CMD_REGION_READ with -EINVAL, and will now either accept the
->call or report -EOPNOTSUPP for regions which do not implement direct
->access.
->
->Signed-off-by: Jacob Keller <jacob.e.keller@intel.com>
->---
-> .../networking/devlink/devlink-region.rst     |  8 ++
-> include/net/devlink.h                         |  4 +
-> net/core/devlink.c                            | 82 +++++++++++++++++--
-> 3 files changed, 87 insertions(+), 7 deletions(-)
->
->diff --git a/Documentation/networking/devlink/devlink-region.rst b/Documentation/networking/devlink/devlink-region.rst
->index 262249e6c3fc..a543f5ee7a9e 100644
->--- a/Documentation/networking/devlink/devlink-region.rst
->+++ b/Documentation/networking/devlink/devlink-region.rst
->@@ -25,6 +25,10 @@ Regions may optionally support capturing a snapshot on demand via the
-> allow requested snapshots must implement the ``.snapshot`` callback for the
-> region in its ``devlink_region_ops`` structure.
+On 2/3/20 2:43 PM, Naresh Kamboju wrote:
+> On Fri, 24 Jan 2020 at 18:57, Oleksij Rempel <o.rempel@pengutronix.de> wrote:
+>>
+>> All user space generated SKBs are owned by a socket (unless injected
+>> into the key via AF_PACKET). If a socket is closed, all associated skbs
+>> will be cleaned up.
+>>
+>> This leads to a problem when a CAN driver calls can_put_echo_skb() on a
+>> unshared SKB. If the socket is closed prior to the TX complete handler,
+>> can_get_echo_skb() and the subsequent delivering of the echo SKB to
+>> all registered callbacks, a SKB with a refcount of 0 is delivered.
+>>
+>> To avoid the problem, in can_get_echo_skb() the original SKB is now
+>> always cloned, regardless of shared SKB or not. If the process exists it
+>> can now safely discard its SKBs, without disturbing the delivery of the
+>> echo SKB.
+>>
+>> The problem shows up in the j1939 stack, when it clones the
+>> incoming skb, which detects the already 0 refcount.
+>>
+>> We can easily reproduce this with following example:
+>>
+>> testj1939 -B -r can0: &
+>> cansend can0 1823ff40#0123
+>>
+>> WARNING: CPU: 0 PID: 293 at lib/refcount.c:25 refcount_warn_saturate+0x108/0x174
+>> refcount_t: addition on 0; use-after-free.
 > 
->+Regions may optionally allow directly reading from their contents without a
->+snapshot. A driver wishing to enable this for a region should implement the
->+``.read`` callback in the ``devlink_region_ops`` structure.
->+
-> example usage
-> -------------
+> FYI,
+> This issue noticed in our Linaro test farm
+> On linux next version 5.5.0-next-20200203 running on beagleboard x15 arm device.
 > 
->@@ -60,6 +64,10 @@ example usage
->             length 16
->     0000000000000000 0014 95dc 0014 9514 0035 1670 0034 db30
-> 
->+    # Read from the region without a snapshot
->+    $ devlink region read pci/0000:00:05.0/fw-health address 16 length 16
->+    0000000000000010 0000 0000 ffff ff04 0029 8c00 0028 8cc8
->+
-> As regions are likely very device or driver specific, no generic regions are
-> defined. See the driver-specific documentation files for information on the
-> specific regions a driver supports.
->diff --git a/include/net/devlink.h b/include/net/devlink.h
->index 1c3540280396..47ce1b5481de 100644
->--- a/include/net/devlink.h
->+++ b/include/net/devlink.h
->@@ -508,6 +508,10 @@ struct devlink_region_ops {
-> 			struct netlink_ext_ack *extack,
-> 			u8 **data,
-> 			devlink_snapshot_data_dest_t **destructor);
->+	int (*read)(struct devlink *devlink,
->+		    u64 curr_offset,
->+		    u32 data_size,
->+		    u8 *data);
+> Thanks for providing fix for this case.
 
-Too much wrapping.
+Can we add your Tested-by to the patch?
 
+regards,
+Marc
 
-> };
-> 
-> struct devlink_fmsg;
->diff --git a/net/core/devlink.c b/net/core/devlink.c
->index b2b855d12a11..5831b7b78915 100644
->--- a/net/core/devlink.c
->+++ b/net/core/devlink.c
->@@ -4005,6 +4005,56 @@ static int devlink_nl_region_read_snapshot_fill(struct sk_buff *skb,
-> 	return err;
-> }
-> 
->+static int devlink_nl_region_read_direct_fill(struct sk_buff *skb,
->+					      struct devlink *devlink,
->+					      struct devlink_region *region,
->+					      struct nlattr **attrs,
->+					      u64 start_offset,
->+					      u64 end_offset,
->+					      bool dump,
->+					      u64 *new_offset)
-
-Again.
-
-
->+{
->+	u64 curr_offset = start_offset;
->+	int err = 0;
->+	u8 *data;
->+
->+	/* Allocate and re-use a single buffer */
->+	data = kzalloc(DEVLINK_REGION_READ_CHUNK_SIZE, GFP_KERNEL);
->+	if (!data)
->+		return -ENOMEM;
->+
->+	*new_offset = start_offset;
->+
->+	if (end_offset > region->size || dump)
->+		end_offset = region->size;
->+
->+	while (curr_offset < end_offset) {
->+		u32 data_size;
->+
->+		if (end_offset - curr_offset < DEVLINK_REGION_READ_CHUNK_SIZE)
->+			data_size = end_offset - curr_offset;
->+		else
->+			data_size = DEVLINK_REGION_READ_CHUNK_SIZE;
->+
->+		err = region->ops->read(devlink, curr_offset, data_size, data);
-
-There is a lot of code duplication is this function. Perhap there could
-be a cb and cb_priv here to distinguish shapshot and direct read?
-
-
-
->+		if (err)
->+			break;
->+
->+		err = devlink_nl_cmd_region_read_chunk_fill(skb, devlink,
->+							    data, data_size,
->+							    curr_offset);
->+		if (err)
->+			break;
->+
->+		curr_offset += data_size;
->+	}
->+	*new_offset = curr_offset;
->+
->+	kfree(data);
->+
->+	return err;
->+}
->+
-> static int devlink_nl_cmd_region_read_dumpit(struct sk_buff *skb,
-> 					     struct netlink_callback *cb)
-> {
->@@ -4016,6 +4066,7 @@ static int devlink_nl_cmd_region_read_dumpit(struct sk_buff *skb,
-> 	const char *region_name;
-> 	struct devlink *devlink;
-> 	bool dump = true;
->+	bool direct;
-> 	void *hdr;
-> 	int err;
-> 
->@@ -4030,8 +4081,7 @@ static int devlink_nl_cmd_region_read_dumpit(struct sk_buff *skb,
-> 
-> 	mutex_lock(&devlink->lock);
-> 
->-	if (!attrs[DEVLINK_ATTR_REGION_NAME] ||
->-	    !attrs[DEVLINK_ATTR_REGION_SNAPSHOT_ID]) {
->+	if (!attrs[DEVLINK_ATTR_REGION_NAME]) {
-> 		err = -EINVAL;
-> 		goto out_unlock;
-> 	}
->@@ -4043,6 +4093,17 @@ static int devlink_nl_cmd_region_read_dumpit(struct sk_buff *skb,
-> 		goto out_unlock;
-> 	}
-> 
->+	if (attrs[DEVLINK_ATTR_REGION_SNAPSHOT_ID])
->+		direct = false;
->+	else
->+		direct = true;
-
-	direct = !attrs[DEVLINK_ATTR_REGION_SNAPSHOT_ID];
-
-
->+
->+	/* Region may not support direct read access */
->+	if (direct && !region->ops->read) {
-
-extack msg please.
-
-
->+		err = -EOPNOTSUPP;
->+		goto out_unlock;
->+	}
->+
-> 	hdr = genlmsg_put(skb, NETLINK_CB(cb->skb).portid, cb->nlh->nlmsg_seq,
-> 			  &devlink_nl_family, NLM_F_ACK | NLM_F_MULTI,
-> 			  DEVLINK_CMD_REGION_READ);
->@@ -4076,11 +4137,18 @@ static int devlink_nl_cmd_region_read_dumpit(struct sk_buff *skb,
-> 		dump = false;
-> 	}
-> 
->-	err = devlink_nl_region_read_snapshot_fill(skb, devlink,
->-						   region, attrs,
->-						   start_offset,
->-						   end_offset, dump,
->-						   &ret_offset);
->+	if (direct)
->+		err = devlink_nl_region_read_direct_fill(skb, devlink,
->+							 region, attrs,
->+							 start_offset,
->+							 end_offset, dump,
->+							 &ret_offset);
->+	else
->+		err = devlink_nl_region_read_snapshot_fill(skb, devlink,
->+							   region, attrs,
->+							   start_offset,
->+							   end_offset, dump,
->+							   &ret_offset);
-> 
-> 	if (err && err != -EMSGSIZE)
-> 		goto nla_put_failure;
->-- 
->2.25.0.rc1
->
+-- 
+Pengutronix e.K.                 | Marc Kleine-Budde           |
+Embedded Linux                   | https://www.pengutronix.de  |
+Vertretung West/Dortmund         | Phone: +49-231-2826-924     |
+Amtsgericht Hildesheim, HRA 2686 | Fax:   +49-5121-206917-5555 |
