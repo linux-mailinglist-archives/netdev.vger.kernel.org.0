@@ -2,80 +2,80 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 2E43B1504EA
-	for <lists+netdev@lfdr.de>; Mon,  3 Feb 2020 12:08:19 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7AF0E15050D
+	for <lists+netdev@lfdr.de>; Mon,  3 Feb 2020 12:19:27 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727917AbgBCLIO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 3 Feb 2020 06:08:14 -0500
-Received: from smtprelay0053.hostedemail.com ([216.40.44.53]:53054 "EHLO
-        smtprelay.hostedemail.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1727509AbgBCLIO (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 3 Feb 2020 06:08:14 -0500
-Received: from filter.hostedemail.com (clb03-v110.bra.tucows.net [216.40.38.60])
-        by smtprelay02.hostedemail.com (Postfix) with ESMTP id BD3E72816;
-        Mon,  3 Feb 2020 11:08:12 +0000 (UTC)
-X-Session-Marker: 6A6F6540706572636865732E636F6D
-X-Spam-Summary: 2,0,0,,d41d8cd98f00b204,joe@perches.com,:::::::::::::::,RULES_HIT:41:69:355:379:599:800:960:973:982:988:989:1260:1277:1311:1313:1314:1345:1359:1437:1515:1516:1518:1534:1541:1593:1594:1711:1730:1747:1777:1792:2198:2199:2393:2553:2559:2562:2693:2828:3138:3139:3140:3141:3142:3353:3622:3653:3865:3866:3867:3868:3870:3872:3874:4321:5007:6691:7514:9040:10004:10400:10848:10967:11232:11658:11914:12043:12291:12297:12555:12663:12683:12740:12760:12895:12986:13069:13311:13357:13439:14093:14095:14096:14181:14659:14721:21080:21324:21451:21611:21627:30054:30060:30070:30090:30091,0,RBL:none,CacheIP:none,Bayesian:0.5,0.5,0.5,Netcheck:none,DomainCache:0,MSF:not bulk,SPF:,MSBL:0,DNSBL:none,Custom_rules:0:0:0,LFtime:2,LUA_SUMMARY:none
-X-HE-Tag: cause64_d4df4aac5c17
-X-Filterd-Recvd-Size: 2662
-Received: from XPS-9350.home (unknown [47.151.135.224])
-        (Authenticated sender: joe@perches.com)
-        by omf12.hostedemail.com (Postfix) with ESMTPA;
-        Mon,  3 Feb 2020 11:08:11 +0000 (UTC)
-Message-ID: <ce81e9b1ac6ede9f7a16823175192ef69613ec07.camel@perches.com>
+        id S1727972AbgBCLTN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 3 Feb 2020 06:19:13 -0500
+Received: from mail-pj1-f67.google.com ([209.85.216.67]:38680 "EHLO
+        mail-pj1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726994AbgBCLTM (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 3 Feb 2020 06:19:12 -0500
+Received: by mail-pj1-f67.google.com with SMTP id j17so6263139pjz.3;
+        Mon, 03 Feb 2020 03:19:10 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=dLAb3xztgDHweesldz/wp0VQkjaUb67kJlNH5oaiVi8=;
+        b=JskEg8dlqaXPpSQ2Di8o07memgkmylmIYUdT7hSZIIGW22O7KlyKQClBDj2CYtbklr
+         1b1l4XZJWnb5575BmdoR/lc8gCgyAQtkXWQz/PRaLVKV3Qr/j2qDtILn59+8RgZ7wcRA
+         fATWh0PfN0aY9cCUELRlwXO/x0pXWGLckfwp+vHo18TEtBJ8TNdObprSCTnY5d/5D6Sv
+         yYpT+9rN5Ah8cQWbUUP0HMZq/TRcb/hFbaQ33FsCB2EbOvyjEc17uV1KAl4AozhTWAKX
+         TYJTgGUwlWtjhGF66PB+ydAjjVe2hK9nioclqgWLlus8mXfWCH7HgpXlGLjJ2RqQ19l4
+         Hw/Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=dLAb3xztgDHweesldz/wp0VQkjaUb67kJlNH5oaiVi8=;
+        b=DshpTRHiEK4ZxQC/n1QYCcfNh1eyRxR+IKXE/pvHksN/6978LlXk7HIOaT7vTZ5khx
+         hjLOtrL19icISw7Xet+ZtuLXvyimroDfaJNhZ6314k/WzrKqv+ZkBxXUebxz/c1mg3p8
+         3eueMlyWK2RWjguuAJyQPL+5BWLjNXYhnD2Dg5S9vOEn9NqGDyxjWtalYdxlmJE+HMD6
+         xIUNJyS+T9nxIW51ICYDGN4uaZNqa4OpgrL8Dq3bqVohp/FXbC5iv34FaE9I0+/BUff5
+         a0I6U24mYybUUycXz1WVPHPjfLW+p+c4o4xbk+J12INgHGIg0XjU0VD0pEDIIb+Fv2hO
+         KMvQ==
+X-Gm-Message-State: APjAAAU7wX1NcR0zLMn9udpxQuIGquNSe0KPr1QDpnOJ+3NDnFGwdPyF
+        XypzW6FEzbHzekaugpgPzdVSuYXc+IEQvQZmSRs=
+X-Google-Smtp-Source: APXvYqyw5xhbbzVw+yQ2wqY0NDnDkGXCz6bNcND50+B6/eor7++FXaiNu0XJDggLxBk/oVzl6mwP8r50ymp5sDq4ov4=
+X-Received: by 2002:a17:90a:2004:: with SMTP id n4mr29122443pjc.20.1580728750105;
+ Mon, 03 Feb 2020 03:19:10 -0800 (PST)
+MIME-Version: 1.0
+References: <20200201124301.21148-1-lukas.bulwahn@gmail.com>
+ <20200202124306.54bcabea@cakuba.hsd1.ca.comcast.net> <CAHp75VdVXqz7fab4MKH2jZozx4NGGkQnJyTWHDKCdgSwD2AtpA@mail.gmail.com>
+ <ce81e9b1ac6ede9f7a16823175192ef69613ec07.camel@perches.com>
+In-Reply-To: <ce81e9b1ac6ede9f7a16823175192ef69613ec07.camel@perches.com>
+From:   Andy Shevchenko <andy.shevchenko@gmail.com>
+Date:   Mon, 3 Feb 2020 13:17:44 +0200
+Message-ID: <CAHp75VdaaOW0ktt4eo4NsLFu2QT1K1mHK8DZeycOPhbvcMq4wQ@mail.gmail.com>
 Subject: Re: [PATCH] MAINTAINERS: correct entries for ISDN/mISDN section
-From:   Joe Perches <joe@perches.com>
-To:     Andy Shevchenko <andy.shevchenko@gmail.com>,
-        Jakub Kicinski <kuba@kernel.org>
-Cc:     Lukas Bulwahn <lukas.bulwahn@gmail.com>,
+To:     Joe Perches <joe@perches.com>
+Cc:     Jakub Kicinski <kuba@kernel.org>,
+        Lukas Bulwahn <lukas.bulwahn@gmail.com>,
         Karsten Keil <isdn@linux-pingi.de>,
         Arnd Bergmann <arnd@arndb.de>,
         isdn4linux@listserv.isdn4linux.de, netdev <netdev@vger.kernel.org>,
         Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-Date:   Mon, 03 Feb 2020 03:07:01 -0800
-In-Reply-To: <CAHp75VdVXqz7fab4MKH2jZozx4NGGkQnJyTWHDKCdgSwD2AtpA@mail.gmail.com>
-References: <20200201124301.21148-1-lukas.bulwahn@gmail.com>
-         <20200202124306.54bcabea@cakuba.hsd1.ca.comcast.net>
-         <CAHp75VdVXqz7fab4MKH2jZozx4NGGkQnJyTWHDKCdgSwD2AtpA@mail.gmail.com>
-Content-Type: text/plain; charset="ISO-8859-1"
-User-Agent: Evolution 3.34.1-2 
-MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, 2020-02-03 at 12:13 +0200, Andy Shevchenko wrote:
-> On Sun, Feb 2, 2020 at 10:45 PM Jakub Kicinski <kuba@kernel.org> wrote:
-> > On Sat,  1 Feb 2020 13:43:01 +0100, Lukas Bulwahn wrote:
-> > > Commit 6d97985072dc ("isdn: move capi drivers to staging") cleaned up the
-> > > isdn drivers and split the MAINTAINERS section for ISDN, but missed to add
-> > > the terminal slash for the two directories mISDN and hardware. Hence, all
-> > > files in those directories were not part of the new ISDN/mISDN SUBSYSTEM,
-> > > but were considered to be part of "THE REST".
-> > > 
-> > > Rectify the situation, and while at it, also complete the section with two
-> > > further build files that belong to that subsystem.
-> > > 
-> > > This was identified with a small script that finds all files belonging to
-> > > "THE REST" according to the current MAINTAINERS file, and I investigated
-> > > upon its output.
-> > > 
-> > > Fixes: 6d97985072dc ("isdn: move capi drivers to staging")
-> > > Signed-off-by: Lukas Bulwahn <lukas.bulwahn@gmail.com>
-> > 
-> > Applied to net, thanks!
-> 
-> I'm not sure it's ready. I think parse-maintainers.pl will change few
-> lines here.
+On Mon, Feb 3, 2020 at 1:08 PM Joe Perches <joe@perches.com> wrote:
+> On Mon, 2020-02-03 at 12:13 +0200, Andy Shevchenko wrote:
+> > On Sun, Feb 2, 2020 at 10:45 PM Jakub Kicinski <kuba@kernel.org> wrote:
 
-parse-maintainers would change a _lot_ of the MAINTAINERS file
-by reordering section letters.
+...
 
-$ perl ./scripts/parse-maintainers.pl --output=MAINTAINERS
-$ git diff --stat MAINTAINERS
- MAINTAINERS | 5572 +++++++++++++++++++++++++++++------------------------------
- 1 file changed, 2786 insertions(+), 2786 deletions(-)
+> > I'm not sure it's ready. I think parse-maintainers.pl will change few
+> > lines here.
+>
+> parse-maintainers would change a _lot_ of the MAINTAINERS file
+> by reordering section letters.
 
+I think it's quite easy to find out if it had changed the record in question.
 
+-- 
+With Best Regards,
+Andy Shevchenko
