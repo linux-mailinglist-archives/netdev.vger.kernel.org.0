@@ -2,102 +2,90 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 725FC150439
-	for <lists+netdev@lfdr.de>; Mon,  3 Feb 2020 11:30:57 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 66D74150440
+	for <lists+netdev@lfdr.de>; Mon,  3 Feb 2020 11:31:13 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727595AbgBCKaz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 3 Feb 2020 05:30:55 -0500
-Received: from us-smtp-1.mimecast.com ([205.139.110.61]:23282 "EHLO
-        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1726100AbgBCKaz (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 3 Feb 2020 05:30:55 -0500
+        id S1727716AbgBCKa6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 3 Feb 2020 05:30:58 -0500
+Received: from us-smtp-delivery-1.mimecast.com ([207.211.31.120]:29628 "EHLO
+        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+        with ESMTP id S1726100AbgBCKa4 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 3 Feb 2020 05:30:56 -0500
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1580725854;
+        s=mimecast20190719; t=1580725855;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=SnRCq3AS1z4sFuxBCb6ZulsCTqiIP0mZ/GCJGWgKAJU=;
-        b=PuMM8F7PnQxgdNyi/v5+tmZrpwFb5DgdidljA+WkpsgvmpGQFtT9KE7uxJUQ8KpiT9X8Tk
-        2u6FC5qCkPizCL1bgHYowK9oHc/juvJFcw9jFZWiHfX+858nCCmSb9eRA7z6QDb1zVRVhV
-        aCjBxAQ3y9eOiY1Zn8h27AS4AFJhBE4=
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=pCLKGSqMaV4qZrcygd/MqiNrWGKg5U4tuMzI7W//FPE=;
+        b=EY78hb/zbxzLYBZfKwqQyO15rG8Sasmcj0Gu21mG36bryA1ryJmIuUeNV4cM/iXztH0UR6
+        QLFfPCM10Xoy9l0Y55lUcbQYO7BMGj60SMGTCRJ+7jMdVSS6p5g3l7n3BVNYIiRpJshHco
+        zHkSQJ3qKxkf1Cao0NVAfLyGR+W3TIE=
 Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
  [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-376-4EqTogPSNMS0-fukX4_jeg-1; Mon, 03 Feb 2020 05:30:47 -0500
-X-MC-Unique: 4EqTogPSNMS0-fukX4_jeg-1
-Received: from smtp.corp.redhat.com (int-mx05.intmail.prod.int.phx2.redhat.com [10.5.11.15])
+ us-mta-321-aDSi7BMRMNOumPCYsDuLOw-1; Mon, 03 Feb 2020 05:30:54 -0500
+X-MC-Unique: aDSi7BMRMNOumPCYsDuLOw-1
+Received: from smtp.corp.redhat.com (int-mx01.intmail.prod.int.phx2.redhat.com [10.5.11.11])
         (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id A8E8C107ACC4;
-        Mon,  3 Feb 2020 10:30:46 +0000 (UTC)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 5664613E6;
+        Mon,  3 Feb 2020 10:30:53 +0000 (UTC)
 Received: from warthog.procyon.org.uk (ovpn-120-218.rdu2.redhat.com [10.10.120.218])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id CF9047792E;
-        Mon,  3 Feb 2020 10:30:45 +0000 (UTC)
-Subject: [PATCH net 0/4] rxrpc: Fixes ver #2
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 9344789A99;
+        Mon,  3 Feb 2020 10:30:52 +0000 (UTC)
+Organization: Red Hat UK Ltd. Registered Address: Red Hat UK Ltd, Amberley
+        Place, 107-111 Peascod Street, Windsor, Berkshire, SI4 1TE, United
+        Kingdom.
+        Registered in England and Wales under Company Registration No. 3798903
+Subject: [PATCH net 1/4] rxrpc: Fix use-after-free in rxrpc_put_local() ver #2
 From:   David Howells <dhowells@redhat.com>
 To:     netdev@vger.kernel.org
 Cc:     dhowells@redhat.com, linux-afs@lists.infradead.org,
         linux-kernel@vger.kernel.org
-Date:   Mon, 03 Feb 2020 10:30:45 +0000
-Message-ID: <158072584492.743488.4616022353630142921.stgit@warthog.procyon.org.uk>
+Date:   Mon, 03 Feb 2020 10:30:51 +0000
+Message-ID: <158072585191.743488.10422251782960804156.stgit@warthog.procyon.org.uk>
+In-Reply-To: <158072584492.743488.4616022353630142921.stgit@warthog.procyon.org.uk>
+References: <158072584492.743488.4616022353630142921.stgit@warthog.procyon.org.uk>
 User-Agent: StGit/0.19
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.15
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.11
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Fix rxrpc_put_local() to not access local->debug_id after calling
+atomic_dec_return() as, unless that returned n==0, we no longer have the
+right to access the object.
 
-Here are a number of fixes for AF_RXRPC:
-
- (1) Fix a potential use after free in rxrpc_put_local() where it was
-     accessing the object just put to get tracing information.
-
- (2) Fix insufficient notifications being generated by the function that
-     queues data packets on a call.  This occasionally causes recvmsg() to
-     stall indefinitely.
-
- (3) Fix a number of packet-transmitting work functions to hold an active
-     count on the local endpoint so that the UDP socket doesn't get
-     destroyed whilst they're calling kernel_sendmsg() on it.
-
- (4) Fix a NULL pointer deref that stemmed from a call's connection pointer
-     being cleared when the call was disconnected.
-
-Changes:
-
- v2: Removed a couple of BUG() statements that got added.
-
-The patches are tagged here:
-
-	git://git.kernel.org/pub/scm/linux/kernel/git/dhowells/linux-fs.git
-	rxrpc-fixes-20200130
-
-and can also be found on the following branch:
-
-	http://git.kernel.org/cgit/linux/kernel/git/dhowells/linux-fs.git/log/?h=rxrpc-fixes
-
-David
+Fixes: 06d9532fa6b3 ("rxrpc: Fix read-after-free in rxrpc_queue_local()")
+Signed-off-by: David Howells <dhowells@redhat.com>
 ---
-David Howells (4):
-      rxrpc: Fix use-after-free in rxrpc_put_local()
-      rxrpc: Fix insufficient receive notification generation
-      rxrpc: Fix missing active use pinning of rxrpc_local object
-      rxrpc: Fix NULL pointer deref due to call->conn being cleared on disconnect
 
+ net/rxrpc/local_object.c |    5 ++++-
+ 1 file changed, 4 insertions(+), 1 deletion(-)
 
- net/rxrpc/af_rxrpc.c     |    2 ++
- net/rxrpc/ar-internal.h  |   11 +++++++++++
- net/rxrpc/call_object.c  |    4 ++--
- net/rxrpc/conn_client.c  |    3 +--
- net/rxrpc/conn_event.c   |   30 ++++++++++++++++++++----------
- net/rxrpc/conn_object.c  |    4 ++--
- net/rxrpc/input.c        |    6 ++----
- net/rxrpc/local_object.c |   23 +++++++++++------------
- net/rxrpc/output.c       |   27 +++++++++------------------
- net/rxrpc/peer_event.c   |   42 +++++++++++++++++++++++-------------------
- 10 files changed, 83 insertions(+), 69 deletions(-)
+diff --git a/net/rxrpc/local_object.c b/net/rxrpc/local_object.c
+index 36587260cabd..3aa179efcda4 100644
+--- a/net/rxrpc/local_object.c
++++ b/net/rxrpc/local_object.c
+@@ -364,11 +364,14 @@ void rxrpc_queue_local(struct rxrpc_local *local)
+ void rxrpc_put_local(struct rxrpc_local *local)
+ {
+ 	const void *here = __builtin_return_address(0);
++	unsigned int debug_id;
+ 	int n;
+ 
+ 	if (local) {
++		debug_id = local->debug_id;
++
+ 		n = atomic_dec_return(&local->usage);
+-		trace_rxrpc_local(local->debug_id, rxrpc_local_put, n, here);
++		trace_rxrpc_local(debug_id, rxrpc_local_put, n, here);
+ 
+ 		if (n == 0)
+ 			call_rcu(&local->rcu, rxrpc_local_rcu);
 
 
