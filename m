@@ -2,58 +2,55 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 999581512C1
-	for <lists+netdev@lfdr.de>; Tue,  4 Feb 2020 00:11:39 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2E70415130E
+	for <lists+netdev@lfdr.de>; Tue,  4 Feb 2020 00:22:43 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727105AbgBCXLh (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 3 Feb 2020 18:11:37 -0500
-Received: from www62.your-server.de ([213.133.104.62]:40826 "EHLO
-        www62.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726474AbgBCXLh (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 3 Feb 2020 18:11:37 -0500
-Received: from sslproxy05.your-server.de ([78.46.172.2])
-        by www62.your-server.de with esmtpsa (TLSv1.2:DHE-RSA-AES256-GCM-SHA384:256)
-        (Exim 4.89_1)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1iyksR-0002cV-Ay; Tue, 04 Feb 2020 00:11:35 +0100
-Received: from [178.197.249.21] (helo=pc-9.home)
-        by sslproxy05.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1iyksQ-00008k-0w; Tue, 04 Feb 2020 00:11:34 +0100
-Subject: Re: [PATCH bpf] selftests/bpf: fix trampoline_count.c selftest
- compilation warning
-To:     Andrii Nakryiko <andriin@fb.com>, bpf@vger.kernel.org,
-        netdev@vger.kernel.org, ast@fb.com
-Cc:     andrii.nakryiko@gmail.com, kernel-team@fb.com
-References: <20200202065152.2718142-1-andriin@fb.com>
-From:   Daniel Borkmann <daniel@iogearbox.net>
-Message-ID: <b313bfe5-e10a-4732-21f7-c95f0d9394dd@iogearbox.net>
-Date:   Tue, 4 Feb 2020 00:11:33 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.7.2
+        id S1726853AbgBCXW2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 3 Feb 2020 18:22:28 -0500
+Received: from mail.kernel.org ([198.145.29.99]:40214 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726369AbgBCXW2 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 3 Feb 2020 18:22:28 -0500
+Received: from cakuba.hsd1.ca.comcast.net (unknown [199.201.64.133])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 03D1F20720;
+        Mon,  3 Feb 2020 23:22:27 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1580772148;
+        bh=M8uT3OIpWlr106dtN396rnCU6f5+uzstcSUp8q2TEvY=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=2iItBQaUwKcfL7MSeAiljeAGaXY70QxvZXeKA8f1dqU80csaJCxuoeCnc3tL5QWDU
+         x/WKDNA7WjY/CuxWdu3EhmKoy+HTabwOKlOiZnmq22rwa8L9jj7okwKxvK7gZnhQyY
+         4H4+v5fOuzDbp1xOtF1RjoZYT3RVy43cCgn7TcrU=
+Date:   Mon, 3 Feb 2020 15:22:27 -0800
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Michael Chan <michael.chan@broadcom.com>
+Cc:     davem@davemloft.net, netdev@vger.kernel.org
+Subject: Re: [PATCH net 0/4] bnxt_en: Bug fixes.
+Message-ID: <20200203152227.20b0e93c@cakuba.hsd1.ca.comcast.net>
+In-Reply-To: <1580629298-20071-1-git-send-email-michael.chan@broadcom.com>
+References: <1580629298-20071-1-git-send-email-michael.chan@broadcom.com>
 MIME-Version: 1.0
-In-Reply-To: <20200202065152.2718142-1-andriin@fb.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 8bit
-X-Authenticated-Sender: daniel@iogearbox.net
-X-Virus-Scanned: Clear (ClamAV 0.101.4/25715/Mon Feb  3 12:37:20 2020)
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 2/2/20 7:51 AM, Andrii Nakryiko wrote:
-> Fix missing braces compilation warning in trampoline_count test:
+On Sun,  2 Feb 2020 02:41:34 -0500, Michael Chan wrote:
+> 3 patches that fix some issues in the firmware reset logic, starting
+> with a small patch to refactor the code that re-enables SRIOV.  The
+> last patch fixes a TC queue mapping issue.
 > 
->    .../prog_tests/trampoline_count.c: In function ‘test_trampoline_count’:
->    .../prog_tests/trampoline_count.c:49:9: warning: missing braces around initializer [-Wmissing-braces]
->    struct inst inst[MAX_TRAMP_PROGS] = { 0 };
->           ^
->    .../prog_tests/trampoline_count.c:49:9: warning: (near initialization for ‘inst[0]’) [-Wmissing-braces]
+> Michael Chan (3):
+>   bnxt_en: Refactor logic to re-enable SRIOV after firmware reset
+>     detected.
+>   bnxt_en: Fix RDMA driver failure with SRIOV after firmware reset.
+>   bnxt_en: Fix TC queue mapping.
 > 
-> Fixes: d633d57902a5 ("selftest/bpf: Add test for allowed trampolines count")
-> Signed-off-by: Andrii Nakryiko <andriin@fb.com>
+> Vasundhara Volam (1):
+>   bnxt_en: Fix logic that disables Bus Master during firmware reset.
 
-Applied, thanks!
+Applied and added to stable queued, thank you!
