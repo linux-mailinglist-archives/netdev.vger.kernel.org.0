@@ -2,142 +2,212 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 4F3211506C4
-	for <lists+netdev@lfdr.de>; Mon,  3 Feb 2020 14:18:26 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 660C9150797
+	for <lists+netdev@lfdr.de>; Mon,  3 Feb 2020 14:43:51 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728252AbgBCNSW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 3 Feb 2020 08:18:22 -0500
-Received: from mail-eopbgr750077.outbound.protection.outlook.com ([40.107.75.77]:2478
-        "EHLO NAM02-BL2-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1727358AbgBCNSV (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 3 Feb 2020 08:18:21 -0500
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=IhGBZMIZGOcl156g7T17ZYJ2kYQN/3XV/vR+AJJMAmx4Ew1XeAC8iXNyEkPJv5EFjcaDwOLLXfgN7fE4wAoWaeSyT1umXtQrHj6/6L2duqPYDX5JMRAu4B2NFfo3+rTyc5QRk1qcLkbz36uFK1JSn7Vto0m4A5sSg/HkUN2Nu4+Z6YsWpSkJOTeA4AFrLD3QCICon9L24J1moCs8iEpbVCh1tilgOLUs2DaaaLnjT3VYGTpeqjmTNBmQO0iuLsbIlsG9bPqByecgBoXoTlKX4euL6qrTpRMoTvi3VfCjT0q3kwZ+Qh0LNcOIQi+yVCI5Glgfvl202HkXaewMn8FmbQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=P87ZOiQn4QqnpAITcE/bN7GI+tVlmise4JjWEaatQjI=;
- b=kplts0WvrfXHn/S8mCpMN2P0BUcsL8XpCBoWWnlJtC47u3Ymbq1o7GTOKyCiQLoFXCQ40wmHV4hyh21meKdgn9wD8n44JG3VzUp2p5KP/oKdZvP4ShmI24e4TAl33kViKqs0TUKfUn1W7z80Bc/pi3orIPwsF0hP3s8+otU9SYTiLWEt8iBqV7eoRc3LpXqHPdXWjceiEjGU8xMVj12YmhL7SGjzlJXNSetb04stCGcVuv2oIKWoS1oPEyUwpt4Au7xABPVEH1T1pq/AzZn+H+rOMZyhJy1sgP5UDOFeixs5BIETR7G0unDrnowNi7gYr87fMOFfJZFCSf64DAgFpw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 149.199.60.83) smtp.rcpttodomain=gmail.com smtp.mailfrom=xilinx.com;
- dmarc=bestguesspass action=none header.from=xilinx.com; dkim=none (message
- not signed); arc=none
+        id S1727526AbgBCNnt (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 3 Feb 2020 08:43:49 -0500
+Received: from mail-lj1-f195.google.com ([209.85.208.195]:42743 "EHLO
+        mail-lj1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726913AbgBCNnt (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 3 Feb 2020 08:43:49 -0500
+Received: by mail-lj1-f195.google.com with SMTP id d10so14645403ljl.9
+        for <netdev@vger.kernel.org>; Mon, 03 Feb 2020 05:43:47 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=xilinx.onmicrosoft.com; s=selector2-xilinx-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=P87ZOiQn4QqnpAITcE/bN7GI+tVlmise4JjWEaatQjI=;
- b=TjY2yDaJE3JZUhU9M5GVilz2ZWbg3+P+AImChrkQIhkr23kae3LLC8AW+apMe9geVrDViMXZeBOo7brc/29dZrlcQvVrg7FS/bY5asHw4imzEJZVzZbawUYciVXqOup/Gyk0Ksn5eABYVlLM8opfpdAVZ6cgrmFKIVpNCB9kT50=
-Received: from DM6PR02CA0101.namprd02.prod.outlook.com (2603:10b6:5:1f4::42)
- by BN6PR02MB3265.namprd02.prod.outlook.com (2603:10b6:405:62::39) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.2686.29; Mon, 3 Feb
- 2020 13:18:19 +0000
-Received: from BL2NAM02FT043.eop-nam02.prod.protection.outlook.com
- (2a01:111:f400:7e46::203) by DM6PR02CA0101.outlook.office365.com
- (2603:10b6:5:1f4::42) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.2686.32 via Frontend
- Transport; Mon, 3 Feb 2020 13:18:18 +0000
-Authentication-Results: spf=pass (sender IP is 149.199.60.83)
- smtp.mailfrom=xilinx.com; gmail.com; dkim=none (message not signed)
- header.d=none;gmail.com; dmarc=bestguesspass action=none
- header.from=xilinx.com;
-Received-SPF: Pass (protection.outlook.com: domain of xilinx.com designates
- 149.199.60.83 as permitted sender) receiver=protection.outlook.com;
- client-ip=149.199.60.83; helo=xsj-pvapsmtpgw01;
-Received: from xsj-pvapsmtpgw01 (149.199.60.83) by
- BL2NAM02FT043.mail.protection.outlook.com (10.152.77.95) with Microsoft SMTP
- Server (version=TLS1_0, cipher=TLS_RSA_WITH_AES_256_CBC_SHA) id 15.20.2686.25
- via Frontend Transport; Mon, 3 Feb 2020 13:18:18 +0000
-Received: from unknown-38-66.xilinx.com ([149.199.38.66] helo=xsj-pvapsmtp01)
-        by xsj-pvapsmtpgw01 with esmtp (Exim 4.63)
-        (envelope-from <harini.katakam@xilinx.com>)
-        id 1iybcI-0003Fg-0y; Mon, 03 Feb 2020 05:18:18 -0800
-Received: from [127.0.0.1] (helo=localhost)
-        by xsj-pvapsmtp01 with smtp (Exim 4.63)
-        (envelope-from <harini.katakam@xilinx.com>)
-        id 1iybcC-0002w8-T8; Mon, 03 Feb 2020 05:18:12 -0800
-Received: from xsj-pvapsmtp01 (smtp.xilinx.com [149.199.38.66])
-        by xsj-smtp-dlp2.xlnx.xilinx.com (8.13.8/8.13.1) with ESMTP id 013DIBY8003814;
-        Mon, 3 Feb 2020 05:18:12 -0800
-Received: from [10.140.6.13] (helo=xhdharinik40.xilinx.com)
-        by xsj-pvapsmtp01 with esmtp (Exim 4.63)
-        (envelope-from <harini.katakam@xilinx.com>)
-        id 1iybcB-0002t1-Cz; Mon, 03 Feb 2020 05:18:11 -0800
-From:   Harini Katakam <harini.katakam@xilinx.com>
-To:     nicolas.ferre@microchip.com, davem@davemloft.net,
-        claudiu.beznea@microchip.com, kuba@kernel.org
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        michal.simek@xilinx.com, harinikatakamlinux@gmail.com,
-        harini.katakam@xilinx.com
-Subject: [PATCH v2 2/2] net: macb: Limit maximum GEM TX length in TSO
-Date:   Mon,  3 Feb 2020 18:48:02 +0530
-Message-Id: <1580735882-7429-3-git-send-email-harini.katakam@xilinx.com>
-X-Mailer: git-send-email 2.7.4
-In-Reply-To: <1580735882-7429-1-git-send-email-harini.katakam@xilinx.com>
-References: <1580735882-7429-1-git-send-email-harini.katakam@xilinx.com>
-X-RCIS-Action: ALLOW
-X-TM-AS-Product-Ver: IMSS-7.1.0.1224-8.2.0.1013-23620.005
-X-TM-AS-User-Approved-Sender: Yes;Yes
-X-EOPAttributedMessage: 0
-X-MS-Office365-Filtering-HT: Tenant
-X-Forefront-Antispam-Report: CIP:149.199.60.83;IPV:;CTRY:US;EFV:NLI;SFV:NSPM;SFS:(10009020)(4636009)(346002)(396003)(376002)(136003)(39860400002)(189003)(199004)(36756003)(6666004)(356004)(44832011)(426003)(2616005)(5660300002)(7696005)(336012)(70586007)(70206006)(186003)(26005)(4326008)(107886003)(316002)(2906002)(478600001)(8936002)(9786002)(8676002)(81166006)(81156014);DIR:OUT;SFP:1101;SCL:1;SRVR:BN6PR02MB3265;H:xsj-pvapsmtpgw01;FPR:;SPF:Pass;LANG:en;PTR:unknown-60-83.xilinx.com;MX:1;A:1;
+        d=linaro.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=0oZvLE0wV4+dIhVzJgWhi9Otxqj1OjNQ2STMZT4lrsQ=;
+        b=FGlzeSoFcdzAK9/RZVx2dbmIManF4yO11To1sJ8dSAL6BqjVr0npej5BNrFf1qQfPO
+         t9RYpcozJ5bGCsw3Hy9wQcu+WexOvlM95fHhXe41fOwZxEhaRq5z6rye0GDcGTP3O3rp
+         XZkq8/3OurmZRup722kZMrV867kd52f5X5sSpAAtzM/aDLcOiVQQyzK6oT8jsv4M5oBx
+         jqSp7o6eQTLQuqT7zqqwgXrJN8EJLU0Sm/wULFlZyPgtL9B3wtip7+MJ8YTvLrFhcr0d
+         SkfnC0zTdrq4PJqOFtBpn+GgKAwraRxmFVOTTXTkGsVVHZl5DwARdEeXapVQ3KKuRgH0
+         N7ZQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=0oZvLE0wV4+dIhVzJgWhi9Otxqj1OjNQ2STMZT4lrsQ=;
+        b=tR/AAzNK1aHnUbpm86gzv1eGhz5/uKkRy3J85sxa7ZfaMkpEmHIdB5EejfqaWykzjq
+         yNTLh5MSBODYZKHvx5PMkTdvhvDqHgthBX664K+nx5laXYdC99kZITlQmR9jRT5G6a9m
+         lw1AR9xYH760pdMqSxOd6OVE8gPp37rXQMehQAjGbMIxUW435ITddBukrJoybCDc9Xzi
+         0hrC244aH65fDxIOCt+f5FpejS+GTyRtoVSRrs6+UvOUkInr27WrWsFeK/VjvC5z6sk5
+         vOLqVUAzoD36QRWDSVYG/+qJkyvnOihHXus1OHF/bLiLh/oBXs3kQZ2DKjZwLFlpWH/b
+         srqg==
+X-Gm-Message-State: APjAAAXAWBP07yEj0sJ+eumPhsypjyYVUu1H3JaL9EqIMMXM4uNCQ0LS
+        DU7YlV5jg8BHTBS/5paefFi6RGOGxMrgRCh1ZFrgUg==
+X-Google-Smtp-Source: APXvYqxDgAFxjGt4n1sPSbTTgTVYTNCCPllor6LZmhF9sHF00c5HSINZ3D5pbul6brCy2H0gvG3ldaEWdOOPusa6c+Y=
+X-Received: by 2002:a2e:8e70:: with SMTP id t16mr13903334ljk.73.1580737426568;
+ Mon, 03 Feb 2020 05:43:46 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 4a1cf9ce-d2ec-4a8a-828a-08d7a8ab8909
-X-MS-TrafficTypeDiagnostic: BN6PR02MB3265:
-X-Microsoft-Antispam-PRVS: <BN6PR02MB3265A2588F0E5CC9E932CBBEC9000@BN6PR02MB3265.namprd02.prod.outlook.com>
-X-Auto-Response-Suppress: DR, RN, NRN, OOF, AutoReply
-X-MS-Oob-TLC-OOBClassifiers: OLM:8273;
-X-Forefront-PRVS: 0302D4F392
-X-MS-Exchange-SenderADCheck: 1
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: deKy75hinOzLTttYd9v7+YX2dfFdrWGsLVF8bIaaZR/o88KU2w4CfaX1rFmTi3yNN+cJY5Zo0mhGfjwYzqf0JuL735xntg831O/ST5/RU2yrjyjKFngLxKZX4ja7FX2VH0QP971vN19ccJJwQpiFEBaSId3dLeoTqs6OL6kDwpqjF85ZExuQNE9Sag+cdF35olqGs1Zj4eX/L7WCy7mwsZ1weLVY7BdXueldJdzoWiKTP1Y+kQ+9aCZtZHNUi4jgY7lJR2bHZ6gGhoC6S7rlwFnX3jsCuCRzhYCQf/NV15cs/6GM2IAP3i8IGNLs6375qZD+77q3rBAfxIRFfkC9nBlg0wMimmy1+ERMFiTb/9WxFNBAW6kRqXHfebv2eZrNbWcyV94JhZEG55+mGZEoGD3qCr6yZ3b0hr6XqD53RljsZS5C+S2ukYp42Zon4IAW
-X-OriginatorOrg: xilinx.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 03 Feb 2020 13:18:18.6418
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 4a1cf9ce-d2ec-4a8a-828a-08d7a8ab8909
-X-MS-Exchange-CrossTenant-Id: 657af505-d5df-48d0-8300-c31994686c5c
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=657af505-d5df-48d0-8300-c31994686c5c;Ip=[149.199.60.83];Helo=[xsj-pvapsmtpgw01]
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BN6PR02MB3265
+References: <20200124132656.22156-1-o.rempel@pengutronix.de>
+In-Reply-To: <20200124132656.22156-1-o.rempel@pengutronix.de>
+From:   Naresh Kamboju <naresh.kamboju@linaro.org>
+Date:   Mon, 3 Feb 2020 19:13:35 +0530
+Message-ID: <CA+G9fYsxOouFBgCBacXzdimJUfZ3DXVAia6XL7kCvcQX7qgOnA@mail.gmail.com>
+Subject: Re: [RFC] can: can_create_echo_skb(): fix echo skb generation: always
+ use skb_clone()
+To:     Oleksij Rempel <o.rempel@pengutronix.de>
+Cc:     dev.kurt@vandijck-laurijssen.be, mkl@pengutronix.de,
+        wg@grandegger.com, Pengutronix Kernel Team <kernel@pengutronix.de>,
+        linux-can@vger.kernel.org, Netdev <netdev@vger.kernel.org>,
+        lkft-triage@lists.linaro.org
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-GEM_MAX_TX_LEN currently resolves to 0x3FF8 for any IP version supporting
-TSO with full 14bits of length field in payload descriptor. But an IP
-errata causes false amba_error (bit 6 of ISR) when length in payload
-descriptors is specified above 16387. The error occurs because the DMA
-falsely concludes that there is not enough space in SRAM for incoming
-payload. These errors were observed continuously under stress of large
-packets using iperf on a version where SRAM was 16K for each queue. This
-errata will be documented shortly and affects all versions since TSO
-functionality was added. Hence limit the max length to 0x3FC0 (rounded).
+On Fri, 24 Jan 2020 at 18:57, Oleksij Rempel <o.rempel@pengutronix.de> wrote:
+>
+> All user space generated SKBs are owned by a socket (unless injected
+> into the key via AF_PACKET). If a socket is closed, all associated skbs
+> will be cleaned up.
+>
+> This leads to a problem when a CAN driver calls can_put_echo_skb() on a
+> unshared SKB. If the socket is closed prior to the TX complete handler,
+> can_get_echo_skb() and the subsequent delivering of the echo SKB to
+> all registered callbacks, a SKB with a refcount of 0 is delivered.
+>
+> To avoid the problem, in can_get_echo_skb() the original SKB is now
+> always cloned, regardless of shared SKB or not. If the process exists it
+> can now safely discard its SKBs, without disturbing the delivery of the
+> echo SKB.
+>
+> The problem shows up in the j1939 stack, when it clones the
+> incoming skb, which detects the already 0 refcount.
+>
+> We can easily reproduce this with following example:
+>
+> testj1939 -B -r can0: &
+> cansend can0 1823ff40#0123
+>
+> WARNING: CPU: 0 PID: 293 at lib/refcount.c:25 refcount_warn_saturate+0x108/0x174
+> refcount_t: addition on 0; use-after-free.
 
-Signed-off-by: Harini Katakam <harini.katakam@xilinx.com>
----
-v2:
-Use 0x3FC0 by default
+FYI,
+This issue noticed in our Linaro test farm
+On linux next version 5.5.0-next-20200203 running on beagleboard x15 arm device.
 
- drivers/net/ethernet/cadence/macb_main.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+Thanks for providing fix for this case.
 
-diff --git a/drivers/net/ethernet/cadence/macb_main.c b/drivers/net/ethernet/cadence/macb_main.c
-index 2e418b8..cca321c 100644
---- a/drivers/net/ethernet/cadence/macb_main.c
-+++ b/drivers/net/ethernet/cadence/macb_main.c
-@@ -73,7 +73,7 @@ struct sifive_fu540_macb_mgmt {
- /* Max length of transmit frame must be a multiple of 8 bytes */
- #define MACB_TX_LEN_ALIGN	8
- #define MACB_MAX_TX_LEN		((unsigned int)((1 << MACB_TX_FRMLEN_SIZE) - 1) & ~((unsigned int)(MACB_TX_LEN_ALIGN - 1)))
--#define GEM_MAX_TX_LEN		((unsigned int)((1 << GEM_TX_FRMLEN_SIZE) - 1) & ~((unsigned int)(MACB_TX_LEN_ALIGN - 1)))
-+#define GEM_MAX_TX_LEN		(unsigned int)(0x3FC0)
- 
- #define GEM_MTU_MIN_SIZE	ETH_MIN_MTU
- #define MACB_NETIF_LSO		NETIF_F_TSO
+Warning log.
+[    0.013414] ------------[ cut here ]------------
+[    0.013420] WARNING: CPU: 0 PID: 0 at
+/usr/src/kernel/lib/refcount.c:25 refcount_warn_saturate+0x108/0x174
+[    0.013424] refcount_t: addition on 0; use-after-free.
+[    0.013427] Modules linked in:
+[    0.013435] CPU: 0 PID: 0 Comm: swapper/0 Not tainted 5.5.0-next-20200203 #1
+[    0.013439] Hardware name: Generic DRA74X (Flattened Device Tree)
+[    0.013442] Backtrace:
+[    0.013448] [<c040fac4>] (dump_backtrace) from [<c040fdf8>]
+(show_stack+0x20/0x24)
+[    0.013452]  r7:c23f2e68 r6:00000000 r5:600000d3 r4:c23f2e68
+[    0.013456] [<c040fdd8>] (show_stack) from [<c14144d0>]
+(dump_stack+0xe8/0x114)
+[    0.013459] [<c14143e8>] (dump_stack) from [<c04595cc>] (__warn+0x100/0x118)
+[    0.013463]  r10:efca9a50 r9:c0957770 r8:00000019 r7:c1c2343c
+r6:00000009 r5:00000000
+[    0.013467]  r4:c2201b7c r3:be2d277f
+[    0.013470] [<c04594cc>] (__warn) from [<c0459668>]
+(warn_slowpath_fmt+0x84/0xc0)
+[    0.013474]  r9:00000009 r8:c0957770 r7:00000019 r6:c1c2343c
+r5:c1c2345c r4:c2208708
+[    0.013478] [<c04595e8>] (warn_slowpath_fmt) from [<c0957770>]
+(refcount_warn_saturate+0x108/0x174)
+[    0.013481]  r9:c2a36014 r8:c2a35c56 r7:c2a35c56 r6:00000007
+r5:efca9a50 r4:efca9a70
+[    0.013485] [<c0957668>] (refcount_warn_saturate) from [<c1419a30>]
+(kobject_get+0xa8/0xac)
+[    0.013489] [<c1419988>] (kobject_get) from [<c112aa6c>]
+(of_node_get+0x24/0x2c)
+[    0.013492]  r4:efca9a44
+[    0.013495] [<c112aa48>] (of_node_get) from [<c11298fc>]
+(of_fwnode_get+0x44/0x50)
+[    0.013499]  r5:efca9a50 r4:00000007
+[    0.013502] [<c11298b8>] (of_fwnode_get) from [<c0cbbdc8>]
+(fwnode_get_nth_parent+0x3c/0x6c)
+[    0.013507] [<c0cbbd8c>] (fwnode_get_nth_parent) from [<c1428624>]
+(fwnode_full_name_string+0x3c/0xa8)
+[    0.013510]  r7:c2a35c56 r6:c1c54319 r5:c189c7d0 r4:00000007
+[    0.013514] [<c14285e8>] (fwnode_full_name_string) from
+[<c142a04c>] (device_node_string+0x48c/0x4ec)
+[    0.013518]  r10:ffffffff r9:c1bde730 r8:efca9a44 r7:c2a35c56
+r6:c1c54319 r5:c2a36014
+[    0.013521]  r4:c2208708
+[    0.013525] [<c1429bc4>] (device_node_string) from [<c142bc1c>]
+(pointer+0x43c/0x4e0)
+[    0.013529]  r10:c2a36014 r9:c2201d3c r8:c2201e90 r7:00000002
+r6:00000000 r5:c2a36014
+[    0.013532]  r4:c2a35c56
+[    0.013535] [<c142b7e0>] (pointer) from [<c142be88>] (vsnprintf+0x1c8/0x414)
+[    0.013539]  r7:00000002 r6:c1d5b4e8 r5:c1d5b4e6 r4:c2a35c56
+[    0.013542] [<c142bcc0>] (vsnprintf) from [<c142c0e8>] (vscnprintf+0x14/0x2c)
+[    0.013546]  r10:00000000 r9:00000000 r8:ffffffff r7:c2a352e8
+r6:00000028 r5:600000d3
+[    0.013549]  r4:000003e0
+[    0.013553] [<c142c0d4>] (vscnprintf) from [<c04db300>]
+(vprintk_store+0x44/0x220)
+[    0.013556]  r5:600000d3 r4:c2a352e8
+[    0.013560] [<c04db2bc>] (vprintk_store) from [<c04db8a0>]
+(vprintk_emit+0xa0/0x2fc)
+[    0.013564]  r10:00000001 r9:ffffffff r8:00000000 r7:00000000
+r6:00000028 r5:600000d3
+[    0.013567]  r4:c2a352e8
+[    0.013571] [<c04db800>] (vprintk_emit) from [<c04dbb2c>]
+(vprintk_default+0x30/0x38)
+[    0.013575]  r10:efca9a44 r9:00000001 r8:00000000 r7:ffffe000
+r6:c2201e8c r5:c1d5b4c4
+[    0.013578]  r4:c21aa590
+[    0.013582] [<c04dbafc>] (vprintk_default) from [<c04dc9d4>]
+(vprintk_func+0xe0/0x168)
+[    0.013585] [<c04dc8f4>] (vprintk_func) from [<c04dc1ec>] (printk+0x40/0x5c)
+[    0.013589]  r7:00000000 r6:c23d2350 r5:efca9a44 r4:c2208708
+[    0.013592] [<c04dc1ac>] (printk) from [<c112b7c8>]
+(of_node_release+0xb0/0xcc)
+[    0.013596]  r3:00000008 r2:00000000 r1:efca9a44 r0:c1d5b4c4
+[    0.013599]  r4:efca9a70
+[    0.013602] [<c112b718>] (of_node_release) from [<c1419c28>]
+(kobject_put+0x11c/0x23c)
+[    0.013606]  r5:c2422cb8 r4:efca9a70
+[    0.013609] [<c1419b0c>] (kobject_put) from [<c112aa98>]
+(of_node_put+0x24/0x28)
+[    0.013613]  r7:e98f7980 r6:c2201ef4 r5:00000000 r4:e98f7940
+[    0.013616] [<c112aa74>] (of_node_put) from [<c20474a0>]
+(of_clk_init+0x1a4/0x248)
+[    0.013620] [<c20472fc>] (of_clk_init) from [<c20140dc>]
+(omap_clk_init+0x4c/0x68)
+[    0.013624]  r10:efc8b8c0 r9:c2433054 r8:00000000 r7:c2208700
+r6:00000066 r5:c20dab64
+[    0.013627]  r4:c2434500
+[    0.013631] [<c2014090>] (omap_clk_init) from [<c2014afc>]
+(omap4_sync32k_timer_init+0x18/0x3c)
+[    0.013634]  r5:c20dab64 r4:c2433000
+[    0.013638] [<c2014ae4>] (omap4_sync32k_timer_init) from
+[<c2014de8>] (omap5_realtime_timer_init+0x1c/0x258)
+[    0.013642] [<c2014dcc>] (omap5_realtime_timer_init) from
+[<c2005954>] (time_init+0x30/0x44)
+[    0.013645]  r9:c2433054 r8:00000000 r7:c2208700 r6:00000066
+r5:c20dab64 r4:c2433000
+[    0.013649] [<c2005924>] (time_init) from [<c20012dc>]
+(start_kernel+0x590/0x720)
+[    0.013652] [<c2000d4c>] (start_kernel) from [<00000000>] (0x0)
+[    0.013656]  r10:30c5387d r9:412fc0f2 r8:8ffdc000 r7:00000000
+r6:30c0387d r5:00000000
+[    0.013659]  r4:c2000330
+[    0.013662] irq event stamp: 0
+[    0.013665] hardirqs last  enabled at (0): [<00000000>] 0x0
+[    0.013669] hardirqs last disabled at (0): [<00000000>] 0x0
+[    0.013672] softirqs last  enabled at (0): [<00000000>] 0x0
+[    0.013676] softirqs last disabled at (0): [<00000000>] 0x0
+[    0.013679] ---[ end trace ec9a61ce578d03f8 ]---
+[    0.013683] ------------[ cut here ]------------a
+
+full test log link,
+https://lkft.validation.linaro.org/scheduler/job/1158386#L3711
+
+
 -- 
-2.7.4
-
+Linaro LKFT
+https://lkft.linaro.org
