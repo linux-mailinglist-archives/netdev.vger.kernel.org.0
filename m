@@ -2,33 +2,34 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 4ADDB150EB2
-	for <lists+netdev@lfdr.de>; Mon,  3 Feb 2020 18:36:47 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 587A3150EBC
+	for <lists+netdev@lfdr.de>; Mon,  3 Feb 2020 18:38:34 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728798AbgBCRge (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 3 Feb 2020 12:36:34 -0500
-Received: from bombadil.infradead.org ([198.137.202.133]:48756 "EHLO
+        id S1728953AbgBCRiP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 3 Feb 2020 12:38:15 -0500
+Received: from bombadil.infradead.org ([198.137.202.133]:48902 "EHLO
         bombadil.infradead.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726561AbgBCRge (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 3 Feb 2020 12:36:34 -0500
+        with ESMTP id S1726561AbgBCRiP (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 3 Feb 2020 12:38:15 -0500
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
         d=infradead.org; s=bombadil.20170209; h=In-Reply-To:Content-Type:MIME-Version
         :References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
         Content-Transfer-Encoding:Content-ID:Content-Description;
-        bh=M5ilNMr/HaOIF+l97HNJx/b4/Xm/SDuNMftzBAjQyhk=; b=aRscgIH2h0u4Rl1ejEyVb5K5cr
-        UmN9OrjOYROKrgyw8lErle++lCLxJN1Yce9M6aMoTb6vqHWK/H8LiT0lF6w1L6tfCpihErVm1YMDe
-        uFSh3RCwwzsuzL8Tb7xrpDaQY9GpyQjGCW2eZDhtzfIWOJePB3MedA6YJDv2AYc73eNsoZzC7YaKn
-        bjou3GrF54S6T26jlG4BaVI9n22CIcPERlaVrqepPb4ER/SpFuRLtPJ+y0m6Zm8MgBvwEIjEPKV4o
-        ACIsAcGyhfYY7eknHBb4LWnFgLRJf2IrWdsxeTQDhkxsBuHmJurPafJYqIbZsBK5iA7jsrR6PmbtJ
-        sV96kmcg==;
+        bh=+svzYeMjDifvnay5XBCjENPcDei37krIAEbCjdfWWhU=; b=Uh9wVVKd7GmAMVO4QoLCs33RIH
+        tlUkrd456X1MQBI2ZcjKd8tWTxYKw/bt1d55Ecyox2OJeX/KE3bKnXvCj0vdsvzOSRJOd/UDIAj2w
+        l69ejkcK5CyzMwzk0S4RHBdXLS04dd6+vaW8jfpHz5B4mBd/ZuzHl/qmllj4Q34oHizwWkUodym02
+        ZUMRhjFtl2ELh+OM+6mA5n82D1di9RosZqr2hOYtHgD5aGIXdOFNC+Vi54iDCsFS1U75qnFbhSdWd
+        6KQP4QlIfHfPrkzxQ8aWaj0dUQkgDa2J9kucmHTDPGk2LSzjnDt+zoORFqfTTcsUgOBgWXXrrmdLU
+        rT5JVVNg==;
 Received: from hch by bombadil.infradead.org with local (Exim 4.92.3 #3 (Red Hat Linux))
-        id 1iyfe2-0000sA-OK; Mon, 03 Feb 2020 17:36:22 +0000
-Date:   Mon, 3 Feb 2020 09:36:22 -0800
+        id 1iyffn-00015V-Ss; Mon, 03 Feb 2020 17:38:11 +0000
+Date:   Mon, 3 Feb 2020 09:38:11 -0800
 From:   Christoph Hellwig <hch@infradead.org>
-To:     Christian Borntraeger <borntraeger@de.ibm.com>
-Cc:     Christoph Hellwig <hch@infradead.org>,
+To:     Kees Cook <keescook@chromium.org>
+Cc:     Christian Borntraeger <borntraeger@de.ibm.com>,
+        Christoph Hellwig <hch@infradead.org>,
         Christopher Lameter <cl@linux.com>,
-        Kees Cook <keescook@chromium.org>, Jiri Slaby <jslaby@suse.cz>,
+        Jiri Slaby <jslaby@suse.cz>,
         Julian Wiedmann <jwi@linux.ibm.com>,
         Ursula Braun <ubraun@linux.ibm.com>,
         Alexander Viro <viro@zeniv.linux.org.uk>,
@@ -58,9 +59,8 @@ Cc:     Christoph Hellwig <hch@infradead.org>,
         Michal Kubecek <mkubecek@suse.cz>
 Subject: Re: [kernel-hardening] [PATCH 09/38] usercopy: Mark kmalloc caches
  as usercopy caches
-Message-ID: <20200203173622.GA30011@infradead.org>
-References: <201911121313.1097D6EE@keescook>
- <201911141327.4DE6510@keescook>
+Message-ID: <20200203173811.GB30011@infradead.org>
+References: <201911141327.4DE6510@keescook>
  <bfca96db-bbd0-d958-7732-76e36c667c68@suse.cz>
  <202001271519.AA6ADEACF0@keescook>
  <5861936c-1fe1-4c44-d012-26efa0c8b6e7@de.ibm.com>
@@ -69,30 +69,23 @@ References: <201911121313.1097D6EE@keescook>
  <6844ea47-8e0e-4fb7-d86f-68046995a749@de.ibm.com>
  <20200129170939.GA4277@infradead.org>
  <771c5511-c5ab-3dd1-d938-5dbc40396daa@de.ibm.com>
+ <202001300945.7D465B5F5@keescook>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <771c5511-c5ab-3dd1-d938-5dbc40396daa@de.ibm.com>
+In-Reply-To: <202001300945.7D465B5F5@keescook>
 X-SRS-Rewrite: SMTP reverse-path rewritten from <hch@infradead.org> by bombadil.infradead.org. See http://www.infradead.org/rpr.html
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Jan 29, 2020 at 06:19:56PM +0100, Christian Borntraeger wrote:
-> There is not necessarily a device for that. It is a hypervisor interface (an
-> instruction that is interpreted by z/VM). We do have the netiucv driver that
-> creates a virtual nic, but there is also AF_IUCV which works without a device.
-> 
-> But back to the original question: If we mark kmalloc caches as usercopy caches,
-> we should do the same for DMA kmalloc caches. As outlined by Christoph, this has
-> nothing to do with device DMA.
+On Thu, Jan 30, 2020 at 11:23:38AM -0800, Kees Cook wrote:
+> Hm, looks like it's allocated from the low 16MB. Seems like poor naming!
+> :) There seems to be a LOT of stuff using GFP_DMA, and it seems unlikely
+> those are all expecting low addresses?
 
-Oh well, s/390 with its weird mix of cpu and I/O again.  Everywhere else
-where we have addressing limits we do treat that as a DMA address.
-
-We've also had a bit of a lose plan to force ZONE_DMA as a public
-interface out, as it is generally the wrong thing to do for drivers.
-A ZONE_32 and/or ZONE_31 makes some sense as the backing for the
-dma allocator, but it mostly shouldn't be exposed, especially not to
-the slab allocator.
+Most of that is either completely or partially bogus.  Besides the
+weird S/390 stuff pretty much everything should be using the dma
+allocators.  A couple really messed up drivers even pass GFP_DMA*
+to the dma allocator, but my patches to fix that up seem to be stuck.
