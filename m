@@ -2,48 +2,48 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 51A891500F5
-	for <lists+netdev@lfdr.de>; Mon,  3 Feb 2020 05:31:25 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 437031500F7
+	for <lists+netdev@lfdr.de>; Mon,  3 Feb 2020 05:31:26 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727425AbgBCEbU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 2 Feb 2020 23:31:20 -0500
-Received: from mail-pf1-f196.google.com ([209.85.210.196]:39002 "EHLO
+        id S1727434AbgBCEbV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 2 Feb 2020 23:31:21 -0500
+Received: from mail-pf1-f196.google.com ([209.85.210.196]:46322 "EHLO
         mail-pf1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727205AbgBCEbU (ORCPT
+        with ESMTP id S1727234AbgBCEbU (ORCPT
         <rfc822;netdev@vger.kernel.org>); Sun, 2 Feb 2020 23:31:20 -0500
-Received: by mail-pf1-f196.google.com with SMTP id 84so6866826pfy.6;
-        Sun, 02 Feb 2020 20:31:19 -0800 (PST)
+Received: by mail-pf1-f196.google.com with SMTP id k29so6850750pfp.13;
+        Sun, 02 Feb 2020 20:31:20 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=XLWBL5IGNRhI3LzF4vsrrNV/8zgR7TdSogqBMHqzKtg=;
-        b=OTA4bhhTSHJIcY8e0tWOVsN/QlYLAket8wOH8mkUBesNf+1u8lf3WbqdryrX5Ls8me
-         VY6zHs5T5xUAFih900h5chmUlc3IdrNSTtqMez3BERdC3I+ha4d0e/m2axN0V2zmoeik
-         e1RLvmTVBxoRhIHy0+grq7sfWrxWwN73hpJzmXgCMAI9nyQRWvXZ5SBvD9acwpP+6OJu
-         bSpfrvr3V7yPqQE47/OH7P6Ku7dPL2WIFUtEde64aN4enbaUszHAAu0wpBzJa+bNyndd
-         5gGMXIu85HHcRMEaL+XcZJdfU2otX1N+HT6drNDEl1aR/L96kIqPmBv6Ul2I6vpx7Frd
-         Cixg==
+        bh=ikbOgVn/JuDRreUdkS0Lnc6cVOsPSurSCODuXTVbzbc=;
+        b=helXDmETOcofgWyKbbtUW1Lt4zjyrjFHRTeAPBIqDi7IrMmVHSvE9Ge/mpfME1fD6+
+         TGSjfiIqsD1OyqWpsfzIXWI7a/L2p+46i7a0vaVwIgIDCzDoiLH98O+n495J4qoqhj2c
+         ZXJm66j68UBRyvLlId/DfjZpR0q4XfLgyZBCk1I903dT+6Js2RrcprOkO+3DEEjeqU3D
+         wJXz32QCC6FWpNiFwNVib8TZJkBXT43fY4IIWEUb5lFGYeNdhiuQp87Ooznk3wTpFaIu
+         ATueCHBY7/T/BfSANGZmqTzOrQMTZ2U+bMhdyGSF6vzbDGc7xwmGB3Fq/SCyLJNr4iSZ
+         k0yA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=XLWBL5IGNRhI3LzF4vsrrNV/8zgR7TdSogqBMHqzKtg=;
-        b=KND3zN9WI9FPynnEkvly/YYjf0vo6aGIryj48pR3BqEl2DMdCIGiflR0BJmWMjDyvK
-         Y2fIelCYyvAvcH60Ec/s1Y0JTfKMCHfoitkinOTABaam5hl5Cyb9NbFeITMzDXogTq5a
-         0RrjvrHWGG0HaoYWO08ajyYhgdHH7AbK8SuBZ89LvSfVl/NsklRhWzYlBJJk12zj5Lt9
-         XCRK6eE625Gc7QuuUmgJ1qbVX2X2UuOzx5xz+ILd5lnNI04E35tFtcXxYDKdUBVswA12
-         Gahg7j8g0qdpK+MHCxUlOvDHEUlN78kkiQq0c2dJQKRHs85VziI3KkL7kZ3N3TArkH6G
-         o4AA==
-X-Gm-Message-State: APjAAAUEg02gAHXeMt8SGmwPdwFcsu51ivdecs4uRlO3XkwVH96W2zZd
-        MO9X1NJpdR4LnBkDi3oOkYNGumwcnJM=
-X-Google-Smtp-Source: APXvYqwtkcdfvVS2rplAouitinKGsLrCCQ8uA7oKh+L020DnrmwTaBklEmhYS35emBFlS3ZsI4wxNQ==
-X-Received: by 2002:a62:1b4f:: with SMTP id b76mr23726081pfb.163.1580704279184;
-        Sun, 02 Feb 2020 20:31:19 -0800 (PST)
+        bh=ikbOgVn/JuDRreUdkS0Lnc6cVOsPSurSCODuXTVbzbc=;
+        b=Fp0xAOt+oeDDVx3MGaEkLzgLUFJd846YMH65zaI0RjVaurxkUQsMjSt9dkdkMIYAVU
+         hWYo9JxcPwNjQh3QAS6YGQOYlcxI+BAyZDN3cDDAjQwryzP6QntJSqJJU5Gh6YDLGuBs
+         S3RNOsNz8SxdpwBVC5zbImQPmYl+pCP0keNtohdo52tlpbAwM19Ktl1ugSIdBGjTtDkb
+         VHkepcTB8SZUFKr+tTtZCi8Tuzujde15YGimHh+i+7RrGb1brDVHiYlK5nakhGlurZ1i
+         eYnRnjk01WWBBn9K8gOlwWe1kHxUrruP6x+HYd8HH3e/RSDomwY7O2T4mS3bTFW6EL1W
+         lxsg==
+X-Gm-Message-State: APjAAAXEQYQnmmSdel2GZAO7YBgp6SsWOQk/6bNmW1Eyp9y9wI0OFr+k
+        6SmRoWT74irb3znyYQ9PAfeiqHmmJUw=
+X-Google-Smtp-Source: APXvYqxETSYWxyEwECGO0UJgnGGRupnzJgqsALSw/VV2Mwqshbm/SMcOI1a44tcLsTIdslnSW915Lg==
+X-Received: by 2002:aa7:9dde:: with SMTP id g30mr22724643pfq.91.1580704280117;
+        Sun, 02 Feb 2020 20:31:20 -0800 (PST)
 Received: from tw-172-25-31-76.office.twttr.net ([8.25.197.24])
-        by smtp.gmail.com with ESMTPSA id z29sm17823374pgc.21.2020.02.02.20.31.18
+        by smtp.gmail.com with ESMTPSA id z29sm17823374pgc.21.2020.02.02.20.31.19
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 02 Feb 2020 20:31:18 -0800 (PST)
+        Sun, 02 Feb 2020 20:31:19 -0800 (PST)
 From:   Cong Wang <xiyou.wangcong@gmail.com>
 To:     netdev@vger.kernel.org
 Cc:     fw@strlen.de, netfilter-devel@vger.kernel.org,
@@ -51,9 +51,9 @@ Cc:     fw@strlen.de, netfilter-devel@vger.kernel.org,
         syzbot+adf6c6c2be1c3a718121@syzkaller.appspotmail.com,
         Pablo Neira Ayuso <pablo@netfilter.org>,
         Jozsef Kadlecsik <kadlec@netfilter.org>
-Subject: [Patch nf v2 1/3] xt_hashlimit: avoid OOM for user-controlled vmalloc
-Date:   Sun,  2 Feb 2020 20:30:51 -0800
-Message-Id: <20200203043053.19192-2-xiyou.wangcong@gmail.com>
+Subject: [Patch nf v2 2/3] xt_hashlimit: reduce hashlimit_mutex scope for htable_put()
+Date:   Sun,  2 Feb 2020 20:30:52 -0800
+Message-Id: <20200203043053.19192-3-xiyou.wangcong@gmail.com>
 X-Mailer: git-send-email 2.21.1
 In-Reply-To: <20200203043053.19192-1-xiyou.wangcong@gmail.com>
 References: <20200203043053.19192-1-xiyou.wangcong@gmail.com>
@@ -64,36 +64,76 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The hashtable size could be controlled by user, so use flags
-GFP_USER | __GFP_NOWARN to avoid OOM warning triggered by user-space.
+It is unnecessary to hold hashlimit_mutex for htable_destroy()
+as it is already removed from the global hashtable and its
+refcount is already zero.
 
-Also add __GFP_NORETRY to avoid retrying, as this is just a
-best effort and the failure is already handled gracefully.
+Also, switch hinfo->use to refcount_t so that we don't have
+to hold the mutex until it reaches zero in htable_put().
 
 Reported-and-tested-by: syzbot+adf6c6c2be1c3a718121@syzkaller.appspotmail.com
 Cc: Pablo Neira Ayuso <pablo@netfilter.org>
 Cc: Jozsef Kadlecsik <kadlec@netfilter.org>
-Cc: Florian Westphal <fw@strlen.de>
+Acked-by: Florian Westphal <fw@strlen.de>
 Signed-off-by: Cong Wang <xiyou.wangcong@gmail.com>
 ---
- net/netfilter/xt_hashlimit.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ net/netfilter/xt_hashlimit.c | 12 ++++++------
+ 1 file changed, 6 insertions(+), 6 deletions(-)
 
 diff --git a/net/netfilter/xt_hashlimit.c b/net/netfilter/xt_hashlimit.c
-index bccd47cd7190..5d9943b37c42 100644
+index 5d9943b37c42..06e59f9d9f62 100644
 --- a/net/netfilter/xt_hashlimit.c
 +++ b/net/netfilter/xt_hashlimit.c
-@@ -293,8 +293,8 @@ static int htable_create(struct net *net, struct hashlimit_cfg3 *cfg,
- 		if (size < 16)
- 			size = 16;
+@@ -36,6 +36,7 @@
+ #include <linux/netfilter_ipv6/ip6_tables.h>
+ #include <linux/mutex.h>
+ #include <linux/kernel.h>
++#include <linux/refcount.h>
+ #include <uapi/linux/netfilter/xt_hashlimit.h>
+ 
+ #define XT_HASHLIMIT_ALL (XT_HASHLIMIT_HASH_DIP | XT_HASHLIMIT_HASH_DPT | \
+@@ -114,7 +115,7 @@ struct dsthash_ent {
+ 
+ struct xt_hashlimit_htable {
+ 	struct hlist_node node;		/* global list of all htables */
+-	int use;
++	refcount_t use;
+ 	u_int8_t family;
+ 	bool rnd_initialized;
+ 
+@@ -315,7 +316,7 @@ static int htable_create(struct net *net, struct hashlimit_cfg3 *cfg,
+ 	for (i = 0; i < hinfo->cfg.size; i++)
+ 		INIT_HLIST_HEAD(&hinfo->hash[i]);
+ 
+-	hinfo->use = 1;
++	refcount_set(&hinfo->use, 1);
+ 	hinfo->count = 0;
+ 	hinfo->family = family;
+ 	hinfo->rnd_initialized = false;
+@@ -420,7 +421,7 @@ static struct xt_hashlimit_htable *htable_find_get(struct net *net,
+ 	hlist_for_each_entry(hinfo, &hashlimit_net->htables, node) {
+ 		if (!strcmp(name, hinfo->name) &&
+ 		    hinfo->family == family) {
+-			hinfo->use++;
++			refcount_inc(&hinfo->use);
+ 			return hinfo;
+ 		}
  	}
--	/* FIXME: don't use vmalloc() here or anywhere else -HW */
--	hinfo = vmalloc(struct_size(hinfo, hash, size));
-+	hinfo = __vmalloc(struct_size(hinfo, hash, size),
-+			  GFP_USER | __GFP_NOWARN | __GFP_NORETRY, PAGE_KERNEL);
- 	if (hinfo == NULL)
- 		return -ENOMEM;
- 	*out_hinfo = hinfo;
+@@ -429,12 +430,11 @@ static struct xt_hashlimit_htable *htable_find_get(struct net *net,
+ 
+ static void htable_put(struct xt_hashlimit_htable *hinfo)
+ {
+-	mutex_lock(&hashlimit_mutex);
+-	if (--hinfo->use == 0) {
++	if (refcount_dec_and_mutex_lock(&hinfo->use, &hashlimit_mutex)) {
+ 		hlist_del(&hinfo->node);
++		mutex_unlock(&hashlimit_mutex);
+ 		htable_destroy(hinfo);
+ 	}
+-	mutex_unlock(&hashlimit_mutex);
+ }
+ 
+ /* The algorithm used is the Simple Token Bucket Filter (TBF)
 -- 
 2.21.1
 
