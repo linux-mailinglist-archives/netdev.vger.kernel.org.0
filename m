@@ -2,45 +2,42 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id A0F3A15122A
-	for <lists+netdev@lfdr.de>; Mon,  3 Feb 2020 22:58:17 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 263DC15123B
+	for <lists+netdev@lfdr.de>; Mon,  3 Feb 2020 23:08:18 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726872AbgBCV6P (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 3 Feb 2020 16:58:15 -0500
-Received: from mail-io1-f72.google.com ([209.85.166.72]:41787 "EHLO
-        mail-io1-f72.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726331AbgBCV6P (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 3 Feb 2020 16:58:15 -0500
-Received: by mail-io1-f72.google.com with SMTP id z201so10345075iof.8
-        for <netdev@vger.kernel.org>; Mon, 03 Feb 2020 13:58:15 -0800 (PST)
+        id S1727225AbgBCWIQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 3 Feb 2020 17:08:16 -0500
+Received: from mail-il1-f197.google.com ([209.85.166.197]:35123 "EHLO
+        mail-il1-f197.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726924AbgBCWIO (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 3 Feb 2020 17:08:14 -0500
+Received: by mail-il1-f197.google.com with SMTP id h18so13254633ilc.2
+        for <netdev@vger.kernel.org>; Mon, 03 Feb 2020 14:08:12 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
-        bh=BV5bGmLp3Jvdfl+pa8JRvVqICwp/WeY6QDoBp6Mfh14=;
-        b=XKpu03d6kOaTduP5yfvFXXU7yCtmmC1Ai6N8Sqmf4FD4bXiYbHxjeU7M6sUqKAfvYH
-         JFn+wQyu4Sx0UqOM6gXwYmeHkQvcrYIqqZWGTNbo6z+YGVVRoJKt3fFyrcS4djZOzYkK
-         l+V7frrZxNQRLE0ZAt6lRTbvYOs+zqH3mjytbDn4UxbNso51m3OpCXImwlitjr6P2EqZ
-         4MK+vWwpzKw9JA754MFcUBFkXZ5Cq5rfGdZH5rfRPPim2WTR8jgiO93VhP4Pa00zywBV
-         VfgsK7+zvblI9cLdAs/+ijnKAwI+6WuKD4ApnJgNB5hPuv8tKNLyg++O6LgppDezLJdk
-         EYCg==
-X-Gm-Message-State: APjAAAUS71Hn4Jglo3ivoeu1zQsbxXY401ybFX+aBc/AYOtDGLD6MQGT
-        t5TkhxQH1JTWxniuX+E4QF2ZJuuysTAcrcrgncuAEKBnTyvP
-X-Google-Smtp-Source: APXvYqzdZak/7xmCchg8/6oBXNyfNZJA3WutyuOPMhmAfTM3NEaV8p9M8rU4kir77Ws5GLydR95zxztABeKTlUDyjIflhjTdSiNg
+        bh=Fl+mqf7SXbDA+ahGJYdNPGegyPt8l79GHARMg/wdaAs=;
+        b=hNb+0CLMMZcQgFd5VDe9g9lVoZkZo3AjLm9n8v+4uE9sjXWrpz+1tv5gyDFUXA0b2j
+         3lBlcGtRNyLtOIUkFxfIWVh1SMsj0qgL1b62hocOiqACX6HOBXlvwfNBmuFF5alRR19c
+         qw2EnSlLlPKgJuGk8bzUk3G3AVijLJTsozGQmjE2WrOxYkvaOljZtwKApMQW5uX6hGFB
+         QMbsRHF+q5q40sZFq9lY2WmoNJwMH67BVZUb1qztRUiCuu5tadVgFDrb1f1uW5z5Wy9M
+         2Buo71g2Y5gY+rreJRvGQnkEyV6zRgMnSfFV+z1ndFRz+FMuecyG7v05Jwjv6hCHD7Ux
+         MoPQ==
+X-Gm-Message-State: APjAAAUqEbpDHtwXiQldEHmspbyaohPnqgUb0sYe/yng6YPngTgXObnr
+        eNPOMWKR8Ipx18BqjXJKdVgdSWF6uie215UZB2A43iz4Gk4e
+X-Google-Smtp-Source: APXvYqyQ+w9fm6B/HIwRnHtRDk2vjXzNHeQ1F3vNZIncW6vp9VQKkMODARcwAdWPAHzG6DjcnOeyZrGypXGWCmtfI4/BLtOOD23e
 MIME-Version: 1.0
-X-Received: by 2002:a5e:d602:: with SMTP id w2mr19525192iom.94.1580767094901;
- Mon, 03 Feb 2020 13:58:14 -0800 (PST)
-Date:   Mon, 03 Feb 2020 13:58:14 -0800
+X-Received: by 2002:a02:81cc:: with SMTP id r12mr20424294jag.93.1580767692501;
+ Mon, 03 Feb 2020 14:08:12 -0800 (PST)
+Date:   Mon, 03 Feb 2020 14:08:12 -0800
 X-Google-Appengine-App-Id: s~syzkaller
 X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <0000000000002a13b5059db305a5@google.com>
-Subject: possible deadlock in pty_write
-From:   syzbot <syzbot+3118a33395397bb6b0ca@syzkaller.appspotmail.com>
-To:     a@unstable.cc, andrew@lunn.ch, b.a.t.m.a.n@lists.open-mesh.org,
-        davem@davemloft.net, gregkh@linuxfoundation.org,
-        hkallweit1@gmail.com, jakub.kicinski@netronome.com,
-        jslaby@suse.com, linux-kernel@vger.kernel.org,
-        mareklindner@neomailbox.ch, netdev@vger.kernel.org,
-        sw@simonwunderlich.de, syzkaller-bugs@googlegroups.com
+Message-ID: <000000000000c8bcba059db3289b@google.com>
+Subject: possible deadlock in wg_set_device
+From:   syzbot <syzbot+42d05aefd7fce69f968f@syzkaller.appspotmail.com>
+To:     Jason@zx2c4.com, davem@davemloft.net, jason@zx2c4.com,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        syzkaller-bugs@googlegroups.com, wireguard@lists.zx2c4.com
 Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
@@ -51,169 +48,118 @@ Hello,
 
 syzbot found the following crash on:
 
-HEAD commit:    ccaaaf6f Merge tag 'mpx-for-linus' of git://git.kernel.org..
-git tree:       upstream
-console output: https://syzkaller.appspot.com/x/log.txt?x=11bc585ee00000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=879390c6b09ccf66
-dashboard link: https://syzkaller.appspot.com/bug?extid=3118a33395397bb6b0ca
+HEAD commit:    9f68e365 Merge tag 'drm-next-2020-01-30' of git://anongit...
+git tree:       net-next
+console output: https://syzkaller.appspot.com/x/log.txt?x=11b068b5e00000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=95b275782b150c86
+dashboard link: https://syzkaller.appspot.com/bug?extid=42d05aefd7fce69f968f
 compiler:       gcc (GCC) 9.0.0 20181231 (experimental)
-syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=165bda4ee00000
-C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=1646a85ee00000
+syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=1087e9bee00000
+C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=16c665bee00000
 
 The bug was bisected to:
 
-commit 65b27995a4ab8fc51b4adc6b4dcdca20f7a595bb
-Author: Heiner Kallweit <hkallweit1@gmail.com>
-Date:   Mon Aug 12 21:52:19 2019 +0000
+commit e7096c131e5161fa3b8e52a650d7719d2857adfd
+Author: Jason A. Donenfeld <Jason@zx2c4.com>
+Date:   Sun Dec 8 23:27:34 2019 +0000
 
-    net: phy: let phy_speed_down/up support speeds >1Gbps
+    net: WireGuard secure network tunnel
 
-bisection log:  https://syzkaller.appspot.com/x/bisect.txt?x=1764f735e00000
-final crash:    https://syzkaller.appspot.com/x/report.txt?x=14e4f735e00000
-console output: https://syzkaller.appspot.com/x/log.txt?x=10e4f735e00000
+bisection log:  https://syzkaller.appspot.com/x/bisect.txt?x=15abc7c9e00000
+final crash:    https://syzkaller.appspot.com/x/report.txt?x=17abc7c9e00000
+console output: https://syzkaller.appspot.com/x/log.txt?x=13abc7c9e00000
 
 IMPORTANT: if you fix the bug, please add the following tag to the commit:
-Reported-by: syzbot+3118a33395397bb6b0ca@syzkaller.appspotmail.com
-Fixes: 65b27995a4ab ("net: phy: let phy_speed_down/up support speeds >1Gbps")
+Reported-by: syzbot+42d05aefd7fce69f968f@syzkaller.appspotmail.com
+Fixes: e7096c131e51 ("net: WireGuard secure network tunnel")
 
+batman_adv: batadv0: Interface activated: batadv_slave_1
 ======================================================
 WARNING: possible circular locking dependency detected
 5.5.0-syzkaller #0 Not tainted
 ------------------------------------------------------
-syz-executor465/10262 is trying to acquire lock:
-ffffffff89b9f960 (console_owner){-.-.}, at: console_trylock_spinning kernel/printk/printk.c:1724 [inline]
-ffffffff89b9f960 (console_owner){-.-.}, at: vprintk_emit+0x3fd/0x700 kernel/printk/printk.c:1995
+syz-executor962/10036 is trying to acquire lock:
+ffff8880a9696128 ((wq_completion)wg-kex-wireguard0){+.+.}, at: flush_workqueue+0xf7/0x14c0 kernel/workqueue.c:2772
 
 but task is already holding lock:
-ffff88808d6b7940 (&(&port->lock)->rlock){-.-.}, at: pty_write+0xff/0x200 drivers/tty/pty.c:120
+ffff88808ee54e80 (&wg->static_identity.lock){++++}, at: wg_set_device+0xe8b/0x1350 drivers/net/wireguard/netlink.c:567
 
 which lock already depends on the new lock.
 
 
 the existing dependency chain (in reverse order) is:
 
--> #2 (&(&port->lock)->rlock){-.-.}:
-       __raw_spin_lock_irqsave include/linux/spinlock_api_smp.h:110 [inline]
-       _raw_spin_lock_irqsave+0x95/0xcd kernel/locking/spinlock.c:159
-       tty_port_tty_get+0x24/0x100 drivers/tty/tty_port.c:287
-       tty_port_default_wakeup+0x16/0x40 drivers/tty/tty_port.c:47
-       tty_port_tty_wakeup+0x57/0x70 drivers/tty/tty_port.c:387
-       uart_write_wakeup+0x46/0x70 drivers/tty/serial/serial_core.c:104
-       serial8250_tx_chars+0x495/0xaf0 drivers/tty/serial/8250/8250_port.c:1760
-       serial8250_handle_irq.part.0+0x261/0x2b0 drivers/tty/serial/8250/8250_port.c:1833
-       serial8250_handle_irq drivers/tty/serial/8250/8250_port.c:1819 [inline]
-       serial8250_default_handle_irq+0xc0/0x150 drivers/tty/serial/8250/8250_port.c:1849
-       serial8250_interrupt+0xf1/0x1a0 drivers/tty/serial/8250/8250_core.c:126
-       __handle_irq_event_percpu+0x15d/0x970 kernel/irq/handle.c:149
-       handle_irq_event_percpu+0x74/0x160 kernel/irq/handle.c:189
-       handle_irq_event+0xa7/0x134 kernel/irq/handle.c:206
-       handle_edge_irq+0x25e/0x8d0 kernel/irq/chip.c:830
-       generic_handle_irq_desc include/linux/irqdesc.h:156 [inline]
-       do_IRQ+0xde/0x280 arch/x86/kernel/irq.c:250
-       ret_from_intr+0x0/0x36
-       arch_local_irq_restore arch/x86/include/asm/paravirt.h:752 [inline]
-       __raw_spin_unlock_irqrestore include/linux/spinlock_api_smp.h:160 [inline]
-       _raw_spin_unlock_irqrestore+0x90/0xe0 kernel/locking/spinlock.c:191
-       spin_unlock_irqrestore include/linux/spinlock.h:393 [inline]
-       uart_write+0x3b6/0x6f0 drivers/tty/serial/serial_core.c:613
-       process_output_block drivers/tty/n_tty.c:595 [inline]
-       n_tty_write+0x40e/0x1080 drivers/tty/n_tty.c:2333
-       do_tty_write drivers/tty/tty_io.c:962 [inline]
-       tty_write+0x496/0x7f0 drivers/tty/tty_io.c:1046
-       redirected_tty_write+0xb2/0xc0 drivers/tty/tty_io.c:1067
-       __vfs_write+0x8a/0x110 fs/read_write.c:494
-       vfs_write+0x268/0x5d0 fs/read_write.c:558
-       ksys_write+0x14f/0x290 fs/read_write.c:611
-       __do_sys_write fs/read_write.c:623 [inline]
-       __se_sys_write fs/read_write.c:620 [inline]
-       __x64_sys_write+0x73/0xb0 fs/read_write.c:620
-       do_syscall_64+0xfa/0x790 arch/x86/entry/common.c:294
-       entry_SYSCALL_64_after_hwframe+0x49/0xbe
+-> #2 (&wg->static_identity.lock){++++}:
+       down_read+0x95/0x430 kernel/locking/rwsem.c:1495
+       wg_noise_handshake_create_initiation+0xc0/0x670 drivers/net/wireguard/noise.c:499
+       wg_packet_send_handshake_initiation+0x185/0x250 drivers/net/wireguard/send.c:34
+       wg_packet_handshake_send_worker+0x1d/0x30 drivers/net/wireguard/send.c:51
+       process_one_work+0xa05/0x17a0 kernel/workqueue.c:2264
+       worker_thread+0x98/0xe40 kernel/workqueue.c:2410
+       kthread+0x361/0x430 kernel/kthread.c:255
+       ret_from_fork+0x24/0x30 arch/x86/entry/entry_64.S:352
 
--> #1 (&port_lock_key){-.-.}:
-       __raw_spin_lock_irqsave include/linux/spinlock_api_smp.h:110 [inline]
-       _raw_spin_lock_irqsave+0x95/0xcd kernel/locking/spinlock.c:159
-       serial8250_console_write+0x253/0x9a0 drivers/tty/serial/8250/8250_port.c:3142
-       univ8250_console_write+0x5f/0x70 drivers/tty/serial/8250/8250_core.c:587
-       call_console_drivers kernel/printk/printk.c:1791 [inline]
-       console_unlock+0xb7a/0xf00 kernel/printk/printk.c:2473
-       vprintk_emit+0x2a0/0x700 kernel/printk/printk.c:1996
-       vprintk_default+0x28/0x30 kernel/printk/printk.c:2023
-       vprintk_func+0x7e/0x189 kernel/printk/printk_safe.c:386
-       printk+0xba/0xed kernel/printk/printk.c:2056
-       register_console+0x745/0xb50 kernel/printk/printk.c:2798
-       univ8250_console_init+0x3e/0x4b drivers/tty/serial/8250/8250_core.c:682
-       console_init+0x461/0x67b kernel/printk/printk.c:2884
-       start_kernel+0x653/0x8e2 init/main.c:713
-       x86_64_start_reservations+0x29/0x2b arch/x86/kernel/head64.c:490
-       x86_64_start_kernel+0x77/0x7b arch/x86/kernel/head64.c:471
-       secondary_startup_64+0xa4/0xb0 arch/x86/kernel/head_64.S:242
+-> #1 ((work_completion)(&peer->transmit_handshake_work)){+.+.}:
+       process_one_work+0x972/0x17a0 kernel/workqueue.c:2240
+       worker_thread+0x98/0xe40 kernel/workqueue.c:2410
+       kthread+0x361/0x430 kernel/kthread.c:255
+       ret_from_fork+0x24/0x30 arch/x86/entry/entry_64.S:352
 
--> #0 (console_owner){-.-.}:
+-> #0 ((wq_completion)wg-kex-wireguard0){+.+.}:
        check_prev_add kernel/locking/lockdep.c:2475 [inline]
        check_prevs_add kernel/locking/lockdep.c:2580 [inline]
        validate_chain kernel/locking/lockdep.c:2970 [inline]
        __lock_acquire+0x2596/0x4a00 kernel/locking/lockdep.c:3954
        lock_acquire+0x190/0x410 kernel/locking/lockdep.c:4484
-       console_trylock_spinning kernel/printk/printk.c:1745 [inline]
-       vprintk_emit+0x43a/0x700 kernel/printk/printk.c:1995
-       vprintk_default+0x28/0x30 kernel/printk/printk.c:2023
-       vprintk_func+0x7e/0x189 kernel/printk/printk_safe.c:386
-       printk+0xba/0xed kernel/printk/printk.c:2056
-       fail_dump lib/fault-inject.c:45 [inline]
-       should_fail+0x708/0x852 lib/fault-inject.c:144
-       __should_failslab+0x121/0x190 mm/failslab.c:33
-       should_failslab+0x9/0x14 mm/slab_common.c:1811
-       slab_pre_alloc_hook mm/slab.h:567 [inline]
-       slab_alloc mm/slab.c:3306 [inline]
-       __do_kmalloc mm/slab.c:3654 [inline]
-       __kmalloc+0x71/0x770 mm/slab.c:3665
-       kmalloc include/linux/slab.h:561 [inline]
-       tty_buffer_alloc drivers/tty/tty_buffer.c:175 [inline]
-       __tty_buffer_request_room+0x1fb/0x5c0 drivers/tty/tty_buffer.c:273
-       tty_insert_flip_string_fixed_flag+0x93/0x1f0 drivers/tty/tty_buffer.c:318
-       tty_insert_flip_string include/linux/tty_flip.h:37 [inline]
-       pty_write+0x133/0x200 drivers/tty/pty.c:122
-       n_tty_write+0xb1d/0x1080 drivers/tty/n_tty.c:2356
-       do_tty_write drivers/tty/tty_io.c:962 [inline]
-       tty_write+0x496/0x7f0 drivers/tty/tty_io.c:1046
-       do_loop_readv_writev fs/read_write.c:717 [inline]
-       do_loop_readv_writev fs/read_write.c:701 [inline]
-       do_iter_write fs/read_write.c:972 [inline]
-       do_iter_write+0x4a0/0x610 fs/read_write.c:951
-       vfs_writev+0x1b3/0x2f0 fs/read_write.c:1015
-       do_writev+0x15b/0x330 fs/read_write.c:1058
-       __do_sys_writev fs/read_write.c:1131 [inline]
-       __se_sys_writev fs/read_write.c:1128 [inline]
-       __x64_sys_writev+0x75/0xb0 fs/read_write.c:1128
+       flush_workqueue+0x126/0x14c0 kernel/workqueue.c:2775
+       peer_remove_after_dead+0x16b/0x230 drivers/net/wireguard/peer.c:141
+       wg_peer_remove+0x244/0x340 drivers/net/wireguard/peer.c:176
+       wg_set_device+0xf76/0x1350 drivers/net/wireguard/netlink.c:575
+       genl_family_rcv_msg_doit net/netlink/genetlink.c:672 [inline]
+       genl_family_rcv_msg net/netlink/genetlink.c:717 [inline]
+       genl_rcv_msg+0x67d/0xea0 net/netlink/genetlink.c:734
+       netlink_rcv_skb+0x177/0x450 net/netlink/af_netlink.c:2477
+       genl_rcv+0x29/0x40 net/netlink/genetlink.c:745
+       netlink_unicast_kernel net/netlink/af_netlink.c:1302 [inline]
+       netlink_unicast+0x59e/0x7e0 net/netlink/af_netlink.c:1328
+       netlink_sendmsg+0x91c/0xea0 net/netlink/af_netlink.c:1917
+       sock_sendmsg_nosec net/socket.c:652 [inline]
+       sock_sendmsg+0xd7/0x130 net/socket.c:672
+       ____sys_sendmsg+0x753/0x880 net/socket.c:2343
+       ___sys_sendmsg+0x100/0x170 net/socket.c:2397
+       __sys_sendmsg+0x105/0x1d0 net/socket.c:2430
+       __do_sys_sendmsg net/socket.c:2439 [inline]
+       __se_sys_sendmsg net/socket.c:2437 [inline]
+       __x64_sys_sendmsg+0x78/0xb0 net/socket.c:2437
        do_syscall_64+0xfa/0x790 arch/x86/entry/common.c:294
        entry_SYSCALL_64_after_hwframe+0x49/0xbe
 
 other info that might help us debug this:
 
 Chain exists of:
-  console_owner --> &port_lock_key --> &(&port->lock)->rlock
+  (wq_completion)wg-kex-wireguard0 --> (work_completion)(&peer->transmit_handshake_work) --> &wg->static_identity.lock
 
  Possible unsafe locking scenario:
 
        CPU0                    CPU1
        ----                    ----
-  lock(&(&port->lock)->rlock);
-                               lock(&port_lock_key);
-                               lock(&(&port->lock)->rlock);
-  lock(console_owner);
+  lock(&wg->static_identity.lock);
+                               lock((work_completion)(&peer->transmit_handshake_work));
+                               lock(&wg->static_identity.lock);
+  lock((wq_completion)wg-kex-wireguard0);
 
  *** DEADLOCK ***
 
-5 locks held by syz-executor465/10262:
- #0: ffff88809dca8090 (&tty->ldisc_sem){++++}, at: ldsem_down_read+0x33/0x40 drivers/tty/tty_ldsem.c:340
- #1: ffff88809dca8118 (&tty->atomic_write_lock){+.+.}, at: tty_write_lock+0x23/0x90 drivers/tty/tty_io.c:888
- #2: ffff88809dca82a0 (&tty->termios_rwsem){++++}, at: n_tty_write+0x1b5/0x1080 drivers/tty/n_tty.c:2316
- #3: ffffc90007a67360 (&ldata->output_lock){+.+.}, at: n_tty_write+0xadd/0x1080 drivers/tty/n_tty.c:2355
- #4: ffff88808d6b7940 (&(&port->lock)->rlock){-.-.}, at: pty_write+0xff/0x200 drivers/tty/pty.c:120
+5 locks held by syz-executor962/10036:
+ #0: ffffffff8a7899e8 (cb_lock){++++}, at: genl_rcv+0x1a/0x40 net/netlink/genetlink.c:744
+ #1: ffffffff8a789aa0 (genl_mutex){+.+.}, at: genl_lock net/netlink/genetlink.c:33 [inline]
+ #1: ffffffff8a789aa0 (genl_mutex){+.+.}, at: genl_rcv_msg+0x7de/0xea0 net/netlink/genetlink.c:732
+ #2: ffffffff8a733c80 (rtnl_mutex){+.+.}, at: rtnl_lock+0x17/0x20 net/core/rtnetlink.c:72
+ #3: ffff88808ee550a0 (&wg->device_update_lock){+.+.}, at: wg_set_device+0x2be/0x1350 drivers/net/wireguard/netlink.c:510
+ #4: ffff88808ee54e80 (&wg->static_identity.lock){++++}, at: wg_set_device+0xe8b/0x1350 drivers/net/wireguard/netlink.c:567
 
 stack backtrace:
-CPU: 0 PID: 10262 Comm: syz-executor465 Not tainted 5.5.0-syzkaller #0
+CPU: 0 PID: 10036 Comm: syz-executor962 Not tainted 5.5.0-syzkaller #0
 Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
 Call Trace:
  __dump_stack lib/dump_stack.c:77 [inline]
@@ -225,47 +171,34 @@ Call Trace:
  validate_chain kernel/locking/lockdep.c:2970 [inline]
  __lock_acquire+0x2596/0x4a00 kernel/locking/lockdep.c:3954
  lock_acquire+0x190/0x410 kernel/locking/lockdep.c:4484
- console_trylock_spinning kernel/printk/printk.c:1745 [inline]
- vprintk_emit+0x43a/0x700 kernel/printk/printk.c:1995
- vprintk_default+0x28/0x30 kernel/printk/printk.c:2023
- vprintk_func+0x7e/0x189 kernel/printk/printk_safe.c:386
- printk+0xba/0xed kernel/printk/printk.c:2056
- fail_dump lib/fault-inject.c:45 [inline]
- should_fail+0x708/0x852 lib/fault-inject.c:144
- __should_failslab+0x121/0x190 mm/failslab.c:33
- should_failslab+0x9/0x14 mm/slab_common.c:1811
- slab_pre_alloc_hook mm/slab.h:567 [inline]
- slab_alloc mm/slab.c:3306 [inline]
- __do_kmalloc mm/slab.c:3654 [inline]
- __kmalloc+0x71/0x770 mm/slab.c:3665
- kmalloc include/linux/slab.h:561 [inline]
- tty_buffer_alloc drivers/tty/tty_buffer.c:175 [inline]
- __tty_buffer_request_room+0x1fb/0x5c0 drivers/tty/tty_buffer.c:273
- tty_insert_flip_string_fixed_flag+0x93/0x1f0 drivers/tty/tty_buffer.c:318
- tty_insert_flip_string include/linux/tty_flip.h:37 [inline]
- pty_write+0x133/0x200 drivers/tty/pty.c:122
- n_tty_write+0xb1d/0x1080 drivers/tty/n_tty.c:2356
- do_tty_write drivers/tty/tty_io.c:962 [inline]
- tty_write+0x496/0x7f0 drivers/tty/tty_io.c:1046
- do_loop_readv_writev fs/read_write.c:717 [inline]
- do_loop_readv_writev fs/read_write.c:701 [inline]
- do_iter_write fs/read_write.c:972 [inline]
- do_iter_write+0x4a0/0x610 fs/read_write.c:951
- vfs_writev+0x1b3/0x2f0 fs/read_write.c:1015
- do_writev+0x15b/0x330 fs/read_write.c:1058
- __do_sys_writev fs/read_write.c:1131 [inline]
- __se_sys_writev fs/read_write.c:1128 [inline]
- __x64_sys_writev+0x75/0xb0 fs/read_write.c:1128
+ flush_workqueue+0x126/0x14c0 kernel/workqueue.c:2775
+ peer_remove_after_dead+0x16b/0x230 drivers/net/wireguard/peer.c:141
+ wg_peer_remove+0x244/0x340 drivers/net/wireguard/peer.c:176
+ wg_set_device+0xf76/0x1350 drivers/net/wireguard/netlink.c:575
+ genl_family_rcv_msg_doit net/netlink/genetlink.c:672 [inline]
+ genl_family_rcv_msg net/netlink/genetlink.c:717 [inline]
+ genl_rcv_msg+0x67d/0xea0 net/netlink/genetlink.c:734
+ netlink_rcv_skb+0x177/0x450 net/netlink/af_netlink.c:2477
+ genl_rcv+0x29/0x40 net/netlink/genetlink.c:745
+ netlink_unicast_kernel net/netlink/af_netlink.c:1302 [inline]
+ netlink_unicast+0x59e/0x7e0 net/netlink/af_netlink.c:1328
+ netlink_sendmsg+0x91c/0xea0 net/netlink/af_netlink.c:1917
+ sock_sendmsg_nosec net/socket.c:652 [inline]
+ sock_sendmsg+0xd7/0x130 net/socket.c:672
+ ____sys_sendmsg+0x753/0x880 net/socket.c:2343
+ ___sys_sendmsg+0x100/0x170 net/socket.c:2397
+ __sys_sendmsg+0x105/0x1d0 net/socket.c:2430
+ __do_sys_sendmsg net/socket.c:2439 [inline]
+ __se_sys_sendmsg net/socket.c:2437 [inline]
+ __x64_sys_sendmsg+0x78/0xb0 net/socket.c:2437
  do_syscall_64+0xfa/0x790 arch/x86/entry/common.c:294
  entry_SYSCALL_64_after_hwframe+0x49/0xbe
-RIP: 0033:0x4437c9
-Code: e8 0c e8 ff ff 48 83 c4 18 c3 0f 1f 80 00 00 00 00 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 0f 83 6b 09 fc ff c3 66 2e 0f 1f 84 00 00 00 00
-RSP: 002b:00007ffe144fe178 EFLAGS: 00000246 ORIG_RAX: 0000000000000014
-RAX: ffffffffffffffda RBX: 0000000000000000 RCX: 00000000004437c9
-RDX: 1000000000000252 RSI: 00000000200023c0 RDI: 0000000000000005
-RBP: 00000000000385a4 R08: 0000000000000001 R09: 0000000000400033
-R10: 0000000000000000 R11: 0000000000000246 R12: ffffffffffffffff
-R13: 0000000000000006 R14: 0000000000000000 R15: 0000000000000000
+RIP: 0033:0x4491c9
+Code: 18 89 d0 c3 66 2e 0f 1f 84 00 00 00 00 00 0f 1f 00 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 0f 83 9b d4 fb ff c3 66 2e 0f 1f 84 00 00 00 00
+RSP: 002b:00007ffcc45f9878 EFLAGS: 00000246 ORIG_RAX: 000000000000002e
+RAX: ffffffffffffffda RBX: 0000000000003064 RCX: 00000000004491c9
+RDX: 0000000000000000 RSI: 0000000020001340 RDI: 0000000000000004
+RBP: 7261756765726977 R08: 0000000000000000 R09: 0000000001bbbbb
 
 
 ---
