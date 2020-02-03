@@ -2,93 +2,86 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 77CE81500D8
-	for <lists+netdev@lfdr.de>; Mon,  3 Feb 2020 05:04:32 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id AE6351500E0
+	for <lists+netdev@lfdr.de>; Mon,  3 Feb 2020 05:08:48 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727312AbgBCEE3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 2 Feb 2020 23:04:29 -0500
-Received: from mail-il1-f175.google.com ([209.85.166.175]:43769 "EHLO
-        mail-il1-f175.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727096AbgBCEE3 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 2 Feb 2020 23:04:29 -0500
-Received: by mail-il1-f175.google.com with SMTP id o13so11407436ilg.10
-        for <netdev@vger.kernel.org>; Sun, 02 Feb 2020 20:04:27 -0800 (PST)
+        id S1727364AbgBCEIo (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 2 Feb 2020 23:08:44 -0500
+Received: from mail-pf1-f179.google.com ([209.85.210.179]:39668 "EHLO
+        mail-pf1-f179.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727327AbgBCEIn (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 2 Feb 2020 23:08:43 -0500
+Received: by mail-pf1-f179.google.com with SMTP id 84so6843091pfy.6;
+        Sun, 02 Feb 2020 20:08:42 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=07+t3uQ7jxnLdAKsE1N4Bz4rBWPeYpwj/dbDxZ3VurE=;
-        b=mn55pq00FsImJk7X1mq2uQuWnu6QpJqEIHjCnTMXaMNogJOdJlngytur23PDyXZ0Sg
-         WZEJmBGUKTP/niNzqbDBZ1KNMaXDGk3q7rGZ4JhJse31lUCuRh7MWYgzQj2z1QQ3UWxo
-         NblpkwTyKCDQTKFAN0dS4wuYw955rUJSIPgjRiHzt4IY6G1ej4zTdVnpSA3RkSmXAuJ9
-         Hnej0t54a3VkDsdngXnRY5jMSs1+JhSfznK9rG5+NcYVPQe+YvGyqxFdt3c6bvNmsDm7
-         Nox56UTKb4ZOBhKUeBuruV/RBiog2OFz+dvmEzHC9NLttr+yEXKLPcjy9CXmbBlzk0dY
-         3ObQ==
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=3REyJuz7VqLVqGz9lSZ6gGgw5tnssXBevLdzc15Hm3A=;
+        b=qfyJY2Q+RwVBOzWlg0P5bGX8RreHjh4rr0IXVGkiOeqH4VQ/VnCnSrW3HSJ6rf2F2U
+         33OrvjYYIu5D9xPAb2H/EaadZLAxB+dt/bSv2rE2zqZfCLjWY+oTt5CZw+DdbuDdg458
+         2TjDHNUDnbKbU8mTA2BbehsnvDjI890m+3H63a0qxSy8Hyz5jSHEw/Cs1f58kVEUnSjA
+         ffdQTedZ6x7DOSGH3NoQP2HKEGXTtfNfGp69k4fK1pc7pHZrVMfVRQTnREG6a86QIdEK
+         SrxJReZ5xWqngbyy3Pwfgfc2ZUWDJ/tziOVmtt9v6nJqroHjW0jhwxSaSrbeE0SXw3Qv
+         /9Vw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=07+t3uQ7jxnLdAKsE1N4Bz4rBWPeYpwj/dbDxZ3VurE=;
-        b=XBsF4F5twPkmQ98tmX+lx2HY9PQLGic7htZzGe0C1Zmu1tdKS1SorJVRybfB0tJgab
-         3ZN51UDN0w6Nvuxmk+A22OwUAictrdbdQiWyHs4F09z6wj7oNDwP1mEcmItvcLM76cNB
-         1KhBMjYVPP1I+RQsc5Y4cHPC0XnzJgOJTlqEI/lYVvL4XmpWT2jn06bba2Df42Os56Jt
-         HpMYlebQVFWvaPmdUhjluOOQD5Xbejok1P9L1nwpFRFx0MJ7Sosh6bTCRIViEUS1qQKR
-         Qkb+EdBal353qCCK3EpqYcnGAIPwSuzN6JjfEkmUWp2l6Gxq6fIIM4a2bq1BG5JO1YLm
-         ONlA==
-X-Gm-Message-State: APjAAAWpy7ZVtvLmCG3hQRSwagXrprATZTAftBCfaCDogSjNDa1MT4aO
-        IlfOW3VDS4M5FWSyD8Dp/R15puIS
-X-Google-Smtp-Source: APXvYqzmhTDeN6wN/A9+koUEx6NIj7iR0Tw/QbsFcP0CMbmGbv4JbC80zZEVeTl/2eKae4CTfnbrYw==
-X-Received: by 2002:a92:1d92:: with SMTP id g18mr13554528ile.23.1580702667105;
-        Sun, 02 Feb 2020 20:04:27 -0800 (PST)
-Received: from ?IPv6:2601:282:803:7700:2529:5ed3:9969:3b0e? ([2601:282:803:7700:2529:5ed3:9969:3b0e])
-        by smtp.googlemail.com with ESMTPSA id l17sm6636639ilc.49.2020.02.02.20.04.26
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sun, 02 Feb 2020 20:04:26 -0800 (PST)
-Subject: Re: VRF + ip xfrm, egress ESP packet looping when qdisc configured
-To:     Trev Larock <trev@larock.ca>
-Cc:     Ben Greear <greearb@candelatech.com>, netdev@vger.kernel.org
-References: <CAHgT=KfpKenfzn3+uiVdF-B3mGv30Ngu70y6Zn+wH0GcGcDFYQ@mail.gmail.com>
- <ff36e5d0-0b01-9683-1698-474468067402@gmail.com>
- <CAHgT=KcQb4ngBmhU82cc+XbW_2RvYfi0OwH5ROstkw9DD8G3mA@mail.gmail.com>
- <5e8522fb-d383-c0ea-f013-8625f204c4ce@gmail.com>
- <CAHgT=KdW3hNy4pE+prSA1WyKNu0Ni8qg0SSbxWQ_Dx0RjcPLdA@mail.gmail.com>
- <9777beb0-0c9c-ef8b-22f0-81373b635e50@candelatech.com>
- <fe7ec5d0-73ed-aa8b-3246-39894252fec7@gmail.com>
- <CAHgT=KePvNSg9uU7SdG-9LwmwZZJkH7_FSXW+Yd5Y8G-Bd3gtA@mail.gmail.com>
-From:   David Ahern <dsahern@gmail.com>
-Message-ID: <523c649c-4857-0d17-104e-fb4dc4876cc1@gmail.com>
-Date:   Sun, 2 Feb 2020 21:04:25 -0700
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:68.0)
- Gecko/20100101 Thunderbird/68.4.2
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=3REyJuz7VqLVqGz9lSZ6gGgw5tnssXBevLdzc15Hm3A=;
+        b=rfCn1p/QGssZkFHPa2RtYUZ6yDiQKlJQPZBnXhP+z9RzmYDaVOvECP/IQDqYkCoYJY
+         nPup/DviJfWndlNXyD1wikUm9FUDw+qZIeWwc3clDJ8epopWnlDO5DKkEhRfWAJPNiC1
+         L+1ppU74dCV5/qpMZdhdhT8DVMCvd+kkSR1ffC9Et5lwEfKaF27CR+m8+980fRzH3kz8
+         TSEnGXxtl2k/VQgWv/wh0S8mJ+HzYFu8r/nPkO4Ra7KKdOtqDTEdgGtxHEH3YrJRUCzI
+         GM/pD+aVTB1GV+/3bu8W1Jh5mVZcjw1rc8eUJSMR1xOWzV4ZuiWI1X3+XBISHqMI08BU
+         jkrA==
+X-Gm-Message-State: APjAAAUr4OvdqTt2vvhtEiUWWg05GcjNStTYhzNQOrqYej55Cqm/Ipke
+        xos9IuIJprK/6VgUbtRAwks8KFNK
+X-Google-Smtp-Source: APXvYqzWCVie19A1ToCO4CJfRWSUHBI0lkY5p9Rk/KjdH2DxDzIRvgn3EgezaT87Cl9r6J/CcyXaGg==
+X-Received: by 2002:aa7:98c6:: with SMTP id e6mr22859126pfm.251.1580702921623;
+        Sun, 02 Feb 2020 20:08:41 -0800 (PST)
+Received: from localhost (c-73-241-114-122.hsd1.ca.comcast.net. [73.241.114.122])
+        by smtp.gmail.com with ESMTPSA id 13sm17717043pfi.78.2020.02.02.20.08.39
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sun, 02 Feb 2020 20:08:40 -0800 (PST)
+Date:   Sun, 2 Feb 2020 20:08:38 -0800
+From:   Richard Cochran <richardcochran@gmail.com>
+To:     christopher.s.hall@intel.com
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        tglx@linutronix.de, hpa@zytor.com, mingo@redhat.com,
+        x86@kernel.org, jacob.e.keller@intel.com, davem@davemloft.net,
+        sean.v.kelley@intel.com
+Subject: Re: [Intel PMC TGPIO Driver 0/5] Add support for Intel PMC Time GPIO
+ Driver with PHC interface changes to support additional H/W Features
+Message-ID: <20200203040838.GA5851@localhost>
+References: <20191211214852.26317-1-christopher.s.hall@intel.com>
 MIME-Version: 1.0
-In-Reply-To: <CAHgT=KePvNSg9uU7SdG-9LwmwZZJkH7_FSXW+Yd5Y8G-Bd3gtA@mail.gmail.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20191211214852.26317-1-christopher.s.hall@intel.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 2/2/20 8:13 PM, Trev Larock wrote:
-> On Mon, Jan 13, 2020 at 11:51 AM David Ahern <dsahern@gmail.com> wrote:
->> Trev's problem is looping due to the presence of the qdisc. The vrf
->> driver needs to detect that it has seen the packet and not redirect it
->> again.
-> Yes note it was when specifying no dev on the xfrm policy/state.
-> For the non-qdisc case the policy triggered from the __ip4_datagram_connect->
-> xfrm_lookup and the vrf "direct" route sent it out without any xfrm_lookup call.
-> It appears to work but it's not really a "xfrm vrf specific " policy.
-> 
-> For qdisc the policy matched again on the vrf->xfrm_lookup call.
-> 
+On Wed, Dec 11, 2019 at 01:48:47PM -0800, christopher.s.hall@intel.com wrote:
+> The ART frequency is not adjustable. In order, to implement output
+> adjustments an additional edge-timestamp API is added, as well, as
+> a periodic output frequency adjustment API. Togther, these implement
+> equivalent functionality to the existing SYS_OFFSET_* and frequency
+> adjustment APIs.
 
-I understand the problem you are facing. It is limited to xfrm + 	qdisc
-on VRF device. I have a proposal for how to fix it:
+I don't see a reason for a custom, new API just for this device.
 
-    https://github.com/dsahern/linux vrf-qdisc-xfrm
+The TGPIO input clock, the ART, is a free running counter, but you
+want to support frequency adjustments.  Use a timecounter cyclecounter
+pair.
 
-Right now I am stuck on debugging related xfrm cases - like xfrm
-devices, vrf device in the selector, and vti device. I feel like I need
-to get all of them working before sending patches, I just lack enough time.
+Let the user dial a periodic output signal in the normal way.
+
+Let the user change the frequency in the normal way, and during this
+call, adjust the counter values accordingly.
+
+Thanks,
+Richard
