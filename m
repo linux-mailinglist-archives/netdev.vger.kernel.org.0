@@ -2,114 +2,101 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 778E415109B
-	for <lists+netdev@lfdr.de>; Mon,  3 Feb 2020 20:58:41 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9047E15109C
+	for <lists+netdev@lfdr.de>; Mon,  3 Feb 2020 20:59:01 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726325AbgBCT6j (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 3 Feb 2020 14:58:39 -0500
-Received: from us-smtp-2.mimecast.com ([205.139.110.61]:45590 "EHLO
-        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1725372AbgBCT6j (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 3 Feb 2020 14:58:39 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1580759918;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=wq18Hvvo+EOcNLmYOZqnpt8WL6bT2KvkIZ+84qXmYr0=;
-        b=VrpVcHsMAS/yD0zuDEAsImetRCDE4/9jI638jRyKzb7sDDQ3j0GKwTnGUROHcQ9PfOu52+
-        B9NyuPTsk4aBHTCZYDMt2NDH4AfERYqsO8ESneMmlzePK5eybzyGNXOk7CfBYklIe1qXO/
-        kMJTLlS/Eju6P+Ps2TvWB/SYn1cqqX4=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-80-A8EV7TxENuG7RFVlxWxyVw-1; Mon, 03 Feb 2020 14:58:34 -0500
-X-MC-Unique: A8EV7TxENuG7RFVlxWxyVw-1
-Received: from smtp.corp.redhat.com (int-mx03.intmail.prod.int.phx2.redhat.com [10.5.11.13])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 176A91005502;
-        Mon,  3 Feb 2020 19:58:33 +0000 (UTC)
-Received: from krava (ovpn-204-85.brq.redhat.com [10.40.204.85])
-        by smtp.corp.redhat.com (Postfix) with ESMTPS id CA62D8CCC2;
-        Mon,  3 Feb 2020 19:58:29 +0000 (UTC)
-Date:   Mon, 3 Feb 2020 20:58:26 +0100
-From:   Jiri Olsa <jolsa@redhat.com>
-To:     =?iso-8859-1?Q?Bj=F6rn_T=F6pel?= <bjorn.topel@intel.com>
-Cc:     Alexei Starovoitov <alexei.starovoitov@gmail.com>,
-        Jiri Olsa <jolsa@kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>, netdev@vger.kernel.org,
-        bpf@vger.kernel.org, Andrii Nakryiko <andriin@fb.com>,
-        Yonghong Song <yhs@fb.com>, Martin KaFai Lau <kafai@fb.com>,
-        Jakub Kicinski <jakub.kicinski@netronome.com>,
-        David Miller <davem@redhat.com>
-Subject: Re: [PATCH 5/5] bpf: Allow to resolve bpf trampoline in unwind
-Message-ID: <20200203195826.GB1535545@krava>
-References: <20191229143740.29143-1-jolsa@kernel.org>
- <20191229143740.29143-6-jolsa@kernel.org>
- <20200106234639.fo2ctgkb5vumayyl@ast-mbp>
- <20200107130546.GI290055@krava>
- <76a10338-391a-ffca-9af8-f407265d146a@intel.com>
- <20200113094310.GE35080@krava>
- <a2e2b84e-71dd-e32c-bcf4-09298e9f4ce7@intel.com>
- <9da1c8f9-7ca5-e10b-8931-6871fdbffb23@intel.com>
- <20200113123728.GA120834@krava>
+        id S1726930AbgBCT67 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 3 Feb 2020 14:58:59 -0500
+Received: from mail-oi1-f196.google.com ([209.85.167.196]:43521 "EHLO
+        mail-oi1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726250AbgBCT67 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 3 Feb 2020 14:58:59 -0500
+Received: by mail-oi1-f196.google.com with SMTP id p125so15977620oif.10;
+        Mon, 03 Feb 2020 11:58:58 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=BmohpHCjIq9+chn6leBdsiG1usxcQIIK/dXJdjoXWPg=;
+        b=PvsWLNrz0lHlb2+2kVEf2pwV/TizuSmB41RqZHYosaNycHkAx8v72d/t224QlPmgKv
+         zb6ZNvNrJ1NIBvK72yldA79QXcSPCbT8m2kqcxh8N99SFAGiiHy8Aw/oZYA5UPw+zkrh
+         Gheu3XjMf62B9S7GWrdMWdLlBp4T76G45TGrdbhtmBI4f0/n9vlzBde/cWNq62tNjMOK
+         Ib6vBoGXQ6q9BtLARRWdMn92RItARsxydAGP7RvDTxGoEJA4+9+/8zGg+clIoCMk5+1s
+         BMPDKVkiYBbEqJtwZmcjsofBDb0SKI/Yzvm2h7q2JdIZ39qRrCAgOQPfi4nQmjCrE09J
+         WFWg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=BmohpHCjIq9+chn6leBdsiG1usxcQIIK/dXJdjoXWPg=;
+        b=pL3zoTZGZk6KGrx5GgWIpj7PsDs5zev4l7fuxPcVdc0l85C71FONupA13/KFnol+9g
+         cA4Z141H6kvGRsWd999egfw3ou+6Pef//hczIrglqnsmdnq+PNJb3XRMIyl3PO13d8o3
+         KsWRQDBAQlNxx8qsU0lM+CDIiPuG312zOt10yUfrDwYSAiDRA4LB0dO9NTmdAsAArY8z
+         /hHrFAH2RVmyy+ow00jN7Lk/QKGfcZ3iVFkqOeALkEfitJstSmhhMPPnvLeCTwshlisg
+         NBi86wC9xIjjwhJbUDcgiYitB8U0SjwzTEZg0Zv6L0VkTDuEbuBxInlkZ42O2e1x6AWZ
+         ZKfQ==
+X-Gm-Message-State: APjAAAX17V8pg+v9SOSXBIZ+3jV2umoomot46mphxU2vKo4WtEcTYXpm
+        Eb3fNMf+OwIP3vy4LjAkXttevnbbdgKuK4+Usk4=
+X-Google-Smtp-Source: APXvYqykPtXOUjCIXrNKF10ltdfIkcjOcKhB5uft5Xsbm38UAyEEjYVQRciKIW9RvlyLH/a5KNEl4RS77WrhJMUj89o=
+X-Received: by 2002:aca:f08:: with SMTP id 8mr530912oip.60.1580759938556; Mon,
+ 03 Feb 2020 11:58:58 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-In-Reply-To: <20200113123728.GA120834@krava>
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.13
-Content-Transfer-Encoding: quoted-printable
+References: <20200131065647.joonbg3wzcw26x3b@kili.mountain>
+ <CAM_iQpUYv9vEVpYc-WfMNfCc9QaBzmTYs66-GEfwOKiqOXHxew@mail.gmail.com> <20200203083853.GH11068@kadam>
+In-Reply-To: <20200203083853.GH11068@kadam>
+From:   Cong Wang <xiyou.wangcong@gmail.com>
+Date:   Mon, 3 Feb 2020 11:58:47 -0800
+Message-ID: <CAM_iQpWu=EuAj709=wL0ZgbLvFgBbaaVZcMjYm0ZmTeLJ7nkCg@mail.gmail.com>
+Subject: Re: [PATCH net] net: sched: prevent a use after free
+To:     Dan Carpenter <dan.carpenter@oracle.com>
+Cc:     Jamal Hadi Salim <jhs@mojatatu.com>, Jiri Pirko <jiri@resnulli.us>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Mohit Bhasi <mohitbhasi1998@gmail.com>,
+        "Mohit P. Tahiliani" <tahiliani@nitk.edu.in>,
+        "V. Saicharan" <vsaicharan1998@gmail.com>,
+        Gautam Ramakrishnan <gautamramk@gmail.com>,
+        Linux Kernel Network Developers <netdev@vger.kernel.org>,
+        kernel-janitors@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Jan 13, 2020 at 01:37:28PM +0100, Jiri Olsa wrote:
-> On Mon, Jan 13, 2020 at 01:31:38PM +0100, Bj=F6rn T=F6pel wrote:
-> > On 2020-01-13 13:21, Bj=F6rn T=F6pel wrote:
-> > >=20
-> > > On 2020-01-13 10:43, Jiri Olsa wrote:
-> > > > hi,
-> > > > attached patch seems to work for me (trampoline usecase), but I
-> > > > don't know
-> > > > how to test it for dispatcher.. also I need to check if we need t=
-o
-> > > > decrease
-> > > > BPF_TRAMP_MAX or BPF_DISPATCHER_MAX, it might take more time;-)
-> > > >=20
-> > >=20
-> > > Thanks for working on it! I'll take the patch for a spin.
-> > >=20
-> > > To test the dispatcher, just run XDP!
-> > >=20
-> > > With your change, the BPF_DISPATCHER_MAX is still valid. 48 entries=
- =3D>
-> > > 1890B which is < (BPF_IMAGE_SIZE / 2).
->=20
-> great
->=20
-> > >=20
-> >=20
-> > ...and FWIW, it would be nice with bpf_dispatcher_<...> entries in ka=
-llsyms
->=20
-> ok so it'd be 'bpf_dispatcher_<name>'
+On Mon, Feb 3, 2020 at 12:39 AM Dan Carpenter <dan.carpenter@oracle.com> wrote:
+>
+> On Sat, Feb 01, 2020 at 11:38:43AM -0800, Cong Wang wrote:
+> > On Thu, Jan 30, 2020 at 10:57 PM Dan Carpenter <dan.carpenter@oracle.com> wrote:
+> > >
+> > > The code calls kfree_skb(skb); and then re-uses "skb" on the next line.
+> > > Let's re-order these lines to solve the problem.
+> > >
+> > > Fixes: ec97ecf1ebe4 ("net: sched: add Flow Queue PIE packet scheduler")
+> > > Signed-off-by: Dan Carpenter <dan.carpenter@oracle.com>
+> > > ---
+> > >  net/sched/sch_fq_pie.c | 2 +-
+> > >  1 file changed, 1 insertion(+), 1 deletion(-)
+> > >
+> > > diff --git a/net/sched/sch_fq_pie.c b/net/sched/sch_fq_pie.c
+> > > index bbd0dea6b6b9..78472e0773e9 100644
+> > > --- a/net/sched/sch_fq_pie.c
+> > > +++ b/net/sched/sch_fq_pie.c
+> > > @@ -349,9 +349,9 @@ static int fq_pie_change(struct Qdisc *sch, struct nlattr *opt,
+> > >         while (sch->q.qlen > sch->limit) {
+> > >                 struct sk_buff *skb = fq_pie_qdisc_dequeue(sch);
+> > >
+> > > -               kfree_skb(skb);
+> > >                 len_dropped += qdisc_pkt_len(skb);
+> > >                 num_dropped += 1;
+> > > +               kfree_skb(skb);
+> >
+> > Or even better: use rtnl_kfree_skbs().
+>
+> Why is that better?
 
-hi,
-so the only dispatcher is currently defined as:
-  DEFINE_BPF_DISPATCHER(bpf_dispatcher_xdp)
+Because it is designed to be used in this scenario,
+as it defers the free after RTNL unlock which is after
+sch_tree_unlock() too.
 
-with the bpf_dispatcher_<name> logic it shows in kallsyms as:
-  ffffffffa0450000 t bpf_dispatcher_bpf_dispatcher_xdp    [bpf]
-
-to fix that, would you guys preffer having:
-  DEFINE_BPF_DISPATCHER(xdp)=20
-
-or using the full dispatcher name as kallsyms name?
-which would require some discipline for future dispatcher names ;-)
-
-thanks,
-jirka
-
+Thanks.
