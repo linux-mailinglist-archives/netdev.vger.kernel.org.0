@@ -2,148 +2,85 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id BC922150FDE
-	for <lists+netdev@lfdr.de>; Mon,  3 Feb 2020 19:43:54 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7E438150FE6
+	for <lists+netdev@lfdr.de>; Mon,  3 Feb 2020 19:46:43 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729735AbgBCSns (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 3 Feb 2020 13:43:48 -0500
-Received: from pandora.armlinux.org.uk ([78.32.30.218]:38080 "EHLO
-        pandora.armlinux.org.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728901AbgBCSnr (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 3 Feb 2020 13:43:47 -0500
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
-        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
-        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
-        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-         bh=qvDOaWUiHvwEs516vyd8sNz5hwIl/fKnRnf/xSvQNXw=; b=vNytEFPAc0JcaO3v6lOGWH4IT
-        hAGORSJAZ0N3rLsGuzorgd9Vu07isRjWebVZrsZCGi3Yo3TPLyA9pRYMGpJkDpyxoiFuzrM5k6KPX
-        GQrsW5gkzqTdQOjENDR2AxjdF1j4AvXYBWqRprzuOQhc3s05Q3dq7pC+zwn5dS0GJcwK5/vvz104c
-        fSjVqbgi9ZUfTzfB9VLJGrctaMNR+hvHC6UFapoBKwuZCWO90DWyH35mWhxJlDbJ85kq7OwSXtD0p
-        dRy/QgMWEdSi2MGUJpazxfSD9fnILYolBTKyZ7YkGqCvysDOq4HI8CE3pkvMWYIIV1eRxfCsIlCfd
-        k8J+pHmoQ==;
-Received: from shell.armlinux.org.uk ([2001:4d48:ad52:3201:5054:ff:fe00:4ec]:35510)
-        by pandora.armlinux.org.uk with esmtpsa (TLSv1.2:ECDHE-RSA-AES256-GCM-SHA384:256)
-        (Exim 4.90_1)
-        (envelope-from <linux@armlinux.org.uk>)
-        id 1iygh2-0005Fj-My; Mon, 03 Feb 2020 18:43:32 +0000
-Received: from linux by shell.armlinux.org.uk with local (Exim 4.92)
-        (envelope-from <linux@shell.armlinux.org.uk>)
-        id 1iygh0-000083-Gi; Mon, 03 Feb 2020 18:43:30 +0000
-Date:   Mon, 3 Feb 2020 18:43:30 +0000
-From:   Russell King - ARM Linux admin <linux@armlinux.org.uk>
-To:     Calvin Johnson <calvin.johnson@nxp.com>
-Cc:     linux.cj@gmail.com, Jon Nettleton <jon@solid-run.com>,
-        Makarand Pawagi <makarand.pawagi@nxp.com>,
-        cristian.sovaiala@nxp.com, laurentiu.tudor@nxp.com,
-        ioana.ciornei@nxp.com, V.Sethi@nxp.com, pankaj.bansal@nxp.com,
-        "Rajesh V . Bikkina" <rajesh.bikkina@nxp.com>,
-        Calvin Johnson <calvin.johnson@oss.nxp.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        "David S. Miller" <davem@davemloft.net>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org
-Subject: Re: [PATCH v1 6/7] net: phylink: Introduce
- phylink_fwnode_phy_connect()
-Message-ID: <20200203184330.GF18808@shell.armlinux.org.uk>
-References: <20200131153440.20870-1-calvin.johnson@nxp.com>
- <20200131153440.20870-7-calvin.johnson@nxp.com>
- <20200203184121.GR25745@shell.armlinux.org.uk>
+        id S1729759AbgBCSqj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 3 Feb 2020 13:46:39 -0500
+Received: from foss.arm.com ([217.140.110.172]:58486 "EHLO foss.arm.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1728185AbgBCSqi (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 3 Feb 2020 13:46:38 -0500
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id EFAD7101E;
+        Mon,  3 Feb 2020 10:46:37 -0800 (PST)
+Received: from [192.168.122.164] (unknown [10.118.28.21])
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id CEBDB3F52E;
+        Mon,  3 Feb 2020 10:46:37 -0800 (PST)
+Subject: Re: [PATCH 2/6] net: bcmgenet: refactor phy mode configuration
+To:     Florian Fainelli <f.fainelli@gmail.com>,
+        Andrew Lunn <andrew@lunn.ch>
+Cc:     netdev@vger.kernel.org, opendmb@gmail.com, davem@davemloft.net,
+        bcm-kernel-feedback-list@broadcom.com,
+        linux-kernel@vger.kernel.org, wahrenst@gmx.net,
+        hkallweit1@gmail.com
+References: <20200201074625.8698-1-jeremy.linton@arm.com>
+ <20200201074625.8698-3-jeremy.linton@arm.com>
+ <b2d45990-af71-60c3-a210-b23dabb9ba32@gmail.com>
+ <20200203011732.GB30319@lunn.ch>
+ <1146c2fa-0f43-39d2-e6e0-3d255bfd5be3@gmail.com>
+From:   Jeremy Linton <jeremy.linton@arm.com>
+Message-ID: <0d743b51-fd77-db8c-1910-c725c4b2e7b9@arm.com>
+Date:   Mon, 3 Feb 2020 12:46:31 -0600
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.4.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200203184121.GR25745@shell.armlinux.org.uk>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+In-Reply-To: <1146c2fa-0f43-39d2-e6e0-3d255bfd5be3@gmail.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Feb 03, 2020 at 06:41:21PM +0000, Russell King - ARM Linux admin wrote:
-> On Fri, Jan 31, 2020 at 09:04:39PM +0530, Calvin Johnson wrote:
-> > From: Calvin Johnson <calvin.johnson@oss.nxp.com>
-> > 
-> > Introduce phylink_fwnode_phy_connect API to connect the PHY using
-> > fwnode.
-> > 
-> > Signed-off-by: Calvin Johnson <calvin.johnson@oss.nxp.com>
-> > ---
-> > 
-> >  drivers/net/phy/phylink.c | 64 +++++++++++++++++++++++++++++++++++++++
-> >  include/linux/phylink.h   |  2 ++
-> >  2 files changed, 66 insertions(+)
-> > 
-> > diff --git a/drivers/net/phy/phylink.c b/drivers/net/phy/phylink.c
-> > index ee7a718662c6..f211f62283b5 100644
-> > --- a/drivers/net/phy/phylink.c
-> > +++ b/drivers/net/phy/phylink.c
-> > @@ -18,6 +18,7 @@
-> >  #include <linux/spinlock.h>
-> >  #include <linux/timer.h>
-> >  #include <linux/workqueue.h>
-> > +#include <linux/acpi.h>
-> >  
-> >  #include "sfp.h"
-> >  #include "swphy.h"
-> > @@ -817,6 +818,69 @@ int phylink_connect_phy(struct phylink *pl, struct phy_device *phy)
-> >  }
-> >  EXPORT_SYMBOL_GPL(phylink_connect_phy);
-> >  
-> > +/**
-> > + * phylink_fwnode_phy_connect() - connect the PHY specified in the fwnode.
-> > + * @pl: a pointer to a &struct phylink returned from phylink_create()
-> > + * @dn: a pointer to a &struct device_node.
-> > + * @flags: PHY-specific flags to communicate to the PHY device driver
-> > + *
-> > + * Connect the phy specified in the device node @dn to the phylink instance
-> > + * specified by @pl. Actions specified in phylink_connect_phy() will be
-> > + * performed.
-> > + *
-> > + * Returns 0 on success or a negative errno.
-> > + */
-> > +int phylink_fwnode_phy_connect(struct phylink *pl,
-> > +			       struct fwnode_handle *fwnode,
-> > +			       u32 flags)
-> > +{
-> > +	struct fwnode_handle *phy_node;
-> > +	struct phy_device *phy_dev;
-> > +	int ret;
-> > +	int status;
-> > +	struct fwnode_reference_args args;
-> > +
-> > +	/* Fixed links and 802.3z are handled without needing a PHY */
-> > +	if (pl->link_an_mode == MLO_AN_FIXED ||
-> > +	    (pl->link_an_mode == MLO_AN_INBAND &&
-> > +	     phy_interface_mode_is_8023z(pl->link_interface)))
-> > +		return 0;
-> > +
-> > +	status = acpi_node_get_property_reference(fwnode, "phy-handle", 0,
-> > +						  &args);
-> > +	if (ACPI_FAILURE(status) || !is_acpi_device_node(args.fwnode))
-> > +		status = acpi_node_get_property_reference(fwnode, "phy", 0,
-> > +							  &args);
-> > +	if (ACPI_FAILURE(status) || !is_acpi_device_node(args.fwnode))
-> > +		status = acpi_node_get_property_reference(fwnode,
-> > +							  "phy-device", 0,
-> > +							  &args);
-> 
-> This is a copy-and-paste of phylink_of_phy_connect() without much
-> thought.
-> 
-> There is no need to duplicate the legacy DT functionality of
-> phy/phy-device/phy-handle in ACPI - there is no legacy to support,
-> so it's pointless trying to find one of three properties here.
-> 
-> I'd prefer both the DT and ACPI variants to be more integrated, so
-> we don't have two almost identical functions except for the firmware
-> specific detail.
+Hi,
 
-Also, I don't see any ACPI folk in the list of recipients to your
-series.
+On 2/2/20 9:24 PM, Florian Fainelli wrote:
+> 
+> 
+> On 2/2/2020 5:17 PM, Andrew Lunn wrote:
+>> On Sat, Feb 01, 2020 at 08:24:14AM -0800, Florian Fainelli wrote:
+>>>
+>>>
+>>> On 1/31/2020 11:46 PM, Jeremy Linton wrote:
+>>>> The DT phy mode is similar to what we want for ACPI
+>>>> lets factor it out of the of path, and change the
+>>>> of_ call to device_. Further if the phy-mode property
+>>>> cannot be found instead of failing the driver load lets
+>>>> just default it to RGMII.
+>>>
+>>> Humm no please do not provide a fallback, if we cannot find a valid
+>>> 'phy-mode' property we error out. This controller can be used with a
+>>> variety of configurations (internal EPHY/GPHY, MoCA, external
+>>> MII/Reverse MII/RGMII) and from a support perspective it is much easier
+>>> for us if the driver errors out if one of those essential properties are
+>>> omitted.
+>>
+>> Hi Florian
+>>
+>> Does any of the silicon variants have two or more MACs sharing one
+>> MDIO bus? I'm thinking about the next patch in the series.
+> 
+> Have not come across a customer doing that, but the hardware
+> definitively permits it, and so does the top-level chip pinmuxing.
+> 
 
--- 
-RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
-FTTC broadband for 0.8mile line in suburbia: sync at 12.1Mbps down 622kbps up
-According to speedtest.net: 11.9Mbps down 500kbps up
+Does the genet driver?
+
+I might be missing something in the driver, but it looks like the whole 
+thing is 1:1:1:1 with platform dev:mdio:phy:netdev at the moment. Given 
+the way bcmgenet_mii_register is throwing a bcmgenet MII bus for every 
+device _probe().
+
+
