@@ -2,81 +2,225 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id BBE84150E9F
-	for <lists+netdev@lfdr.de>; Mon,  3 Feb 2020 18:30:07 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id DD1E3150EA5
+	for <lists+netdev@lfdr.de>; Mon,  3 Feb 2020 18:33:38 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728493AbgBCRaG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 3 Feb 2020 12:30:06 -0500
-Received: from frisell.zx2c4.com ([192.95.5.64]:40151 "EHLO frisell.zx2c4.com"
+        id S1728547AbgBCRda (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 3 Feb 2020 12:33:30 -0500
+Received: from mx2.suse.de ([195.135.220.15]:39976 "EHLO mx2.suse.de"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727150AbgBCRaG (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 3 Feb 2020 12:30:06 -0500
-Received: by frisell.zx2c4.com (ZX2C4 Mail Server) with ESMTP id 4b6bfc2f
-        for <netdev@vger.kernel.org>;
-        Mon, 3 Feb 2020 17:29:22 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha1; c=relaxed; d=zx2c4.com; h=mime-version
-        :references:in-reply-to:from:date:message-id:subject:to:cc
-        :content-type; s=mail; bh=28t6sotqJukaFxRw171I3Cn6DxE=; b=WvadvR
-        awCQFfOXiFBAGpb31NVzMFCrXb+RoX72vuoryKggzxx1QcQpFUnNLrAbcsf2t2lN
-        74iVHgdLpQqKJAMesGaoqwYmVaicQ1OKg+ATPNsM7OF0zFtBr7hlZ+U5zptJdmfJ
-        SD2NuAnoIfTY/8ydEGDfj2mUp8dfVCVuOa3rUK8MVBw2bDk7+WIeZ/9Hpx30IFX7
-        TF0niHnMDQx+jsn4JltcqETWqsgryDOG0Vg/jSsXdRMcDOjbaSTj9+WDikDs7qQS
-        vAYcCwoxvg7mlQ5DSWNv8hQaIiKgqGrBM5yFqTNFw6UbNR/qPOuR5pUlBgcG3LIX
-        TGYiwMQjAyxeDkaQ==
-Received: by frisell.zx2c4.com (ZX2C4 Mail Server) with ESMTPSA id 1438a7de (TLSv1.2:ECDHE-RSA-AES256-GCM-SHA384:256:NO)
-        for <netdev@vger.kernel.org>;
-        Mon, 3 Feb 2020 17:29:22 +0000 (UTC)
-Received: by mail-oi1-f175.google.com with SMTP id b18so15557753oie.2
-        for <netdev@vger.kernel.org>; Mon, 03 Feb 2020 09:30:04 -0800 (PST)
-X-Gm-Message-State: APjAAAVHlHOTTL4FtoqbMF3bnz9oOapIGZleLaslaxgNmQq/+oNv1LfX
-        cgXJvVmCPoeZx7BTAD5Il/gjYnct00ZYxKfA8D0=
-X-Google-Smtp-Source: APXvYqzIoRHqNoLv7FbvVlnzWCsh7Adxxc5E2xveI4Q5n+MliMNd+hhEYP6mEFieDEAx6R0WAg1mk5zzcMJjebtbYe4=
-X-Received: by 2002:aca:2109:: with SMTP id 9mr77511oiz.119.1580751003175;
- Mon, 03 Feb 2020 09:30:03 -0800 (PST)
+        id S1727620AbgBCRda (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 3 Feb 2020 12:33:30 -0500
+X-Virus-Scanned: by amavisd-new at test-mx.suse.de
+Received: from relay2.suse.de (unknown [195.135.220.254])
+        by mx2.suse.de (Postfix) with ESMTP id F3108ADD7;
+        Mon,  3 Feb 2020 17:33:27 +0000 (UTC)
 MIME-Version: 1.0
-References: <20200203171951.222257-1-edumazet@google.com>
-In-Reply-To: <20200203171951.222257-1-edumazet@google.com>
-From:   "Jason A. Donenfeld" <Jason@zx2c4.com>
-Date:   Mon, 3 Feb 2020 18:29:52 +0100
-X-Gmail-Original-Message-ID: <CAHmME9r3bROD=jAH-598_DU_RUxQECiqC6sw=spdQvHQiiwf=g@mail.gmail.com>
-Message-ID: <CAHmME9r3bROD=jAH-598_DU_RUxQECiqC6sw=spdQvHQiiwf=g@mail.gmail.com>
-Subject: Re: [PATCH net] wireguard: fix use-after-free in root_remove_peer_lists
-To:     Eric Dumazet <edumazet@google.com>
-Cc:     "David S . Miller" <davem@davemloft.net>,
-        netdev <netdev@vger.kernel.org>,
-        Eric Dumazet <eric.dumazet@gmail.com>,
-        syzbot <syzkaller@googlegroups.com>,
-        WireGuard mailing list <wireguard@lists.zx2c4.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=US-ASCII;
+ format=flowed
+Content-Transfer-Encoding: 7bit
+Date:   Mon, 03 Feb 2020 18:33:27 +0100
+From:   Roman Penyaev <rpenyaev@suse.de>
+To:     Max Neunhoeffer <max@arangodb.com>
+Cc:     Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
+        linux-fsdevel@vger.kernel.org, LKML <linux-kernel@vger.kernel.org>,
+        Christopher Kohlhoff <chris.kohlhoff@clearpool.io>
+Subject: Re: epoll_wait misses edge-triggered eventfd events: bug in Linux 5.3
+ and 5.4
+In-Reply-To: <20200203151536.caf6n4b2ymvtssmh@tux>
+References: <20200131135730.ezwtgxddjpuczpwy@tux>
+ <20200201121647.62914697@cakuba.hsd1.ca.comcast.net>
+ <20200203151536.caf6n4b2ymvtssmh@tux>
+Message-ID: <5a16db1f2983ab105b99121ce0737d11@suse.de>
+X-Sender: rpenyaev@suse.de
+User-Agent: Roundcube Webmail
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Eric,
+Hi Max and all,
 
-On Mon, Feb 3, 2020 at 6:19 PM Eric Dumazet <edumazet@google.com> wrote:
-> diff --git a/drivers/net/wireguard/allowedips.c b/drivers/net/wireguard/allowedips.c
-> index 121d9ea0f13584f801ab895753e936c0a12f0028..3725e9cd85f4f2797afd59f42af454acc107aa9a 100644
-> --- a/drivers/net/wireguard/allowedips.c
-> +++ b/drivers/net/wireguard/allowedips.c
-> @@ -263,6 +263,7 @@ static int add(struct allowedips_node __rcu **trie, u8 bits, const u8 *key,
->         } else {
->                 node = kzalloc(sizeof(*node), GFP_KERNEL);
->                 if (unlikely(!node)) {
-> +                       list_del(&newnode->peer_list);
->                         kfree(newnode);
->                         return -ENOMEM;
->                 }
-> --
-> 2.25.0.341.g760bfbb309-goog
+I can reproduce the issue.  My epoll optimization which you referenced
+did not consider the case of wakeups on epoll_ctl() path, only the fd
+update path.
 
-Thanks, nice catch. I remember switching that code over to using the
-peer_list somewhat recently and embarrassed I missed this. Glad to see
-WireGuard is hooked up to syzkaller.
+I will send the fix upstream today/tomorrow (already tested on the
+epollbug.c), the exemplary patch at the bottom of the current
+email.
 
-I've queued this up in my stable tree, and I'll send this back out in
-a few days:
-https://git.zx2c4.com/wireguard-linux/commit/?h=stable&id=3492daa8815770038c9da36382dc66cea76ad4fc
+Also I would like to  submit the epollbug.c as a test case for
+the epoll test suite. Does the author of epollbug have any
+objections?
 
-Jason
+Thanks.
+
+--
+Roman
+
+diff --git a/fs/eventpoll.c b/fs/eventpoll.c
+index c4159bcc05d9..a90f8b8a5def 100644
+--- a/fs/eventpoll.c
++++ b/fs/eventpoll.c
+@@ -745,7 +745,7 @@ static __poll_t ep_scan_ready_list(struct eventpoll 
+*ep,
+                  * the ->poll() wait list (delayed after we release the 
+lock).
+                  */
+                 if (waitqueue_active(&ep->wq))
+-                       wake_up(&ep->wq);
++                       wake_up_locked(&ep->wq);
+                 if (waitqueue_active(&ep->poll_wait))
+                         pwake++;
+         }
+@@ -1200,7 +1200,7 @@ static inline bool chain_epi_lockless(struct 
+epitem *epi)
+   * Another thing worth to mention is that ep_poll_callback() can be 
+called
+   * concurrently for the same @epi from different CPUs if poll table was 
+inited
+   * with several wait queues entries.  Plural wakeup from different CPUs 
+of a
+- * single wait queue is serialized by wq.lock, but the case when 
+multiple wait
++ * single wait queue is serialized by ep->lock, but the case when 
+multiple wait
+   * queues are used should be detected accordingly.  This is detected 
+using
+   * cmpxchg() operation.
+   */
+@@ -1275,6 +1275,13 @@ static int ep_poll_callback(wait_queue_entry_t 
+*wait, unsigned mode, int sync, v
+                                 break;
+                         }
+                 }
++               /*
++                * Since here we have the read lock (ep->lock) taken, 
+plural
++                * wakeup from different CPUs can occur, thus we call 
+wake_up()
++                * variant which implies its own lock on wqueue. All 
+other paths
++                * take write lock, thus modifications on ep->wq are 
+serialized
++                * by rw lock.
++                */
+                 wake_up(&ep->wq);
+         }
+         if (waitqueue_active(&ep->poll_wait))
+@@ -1578,7 +1585,7 @@ static int ep_insert(struct eventpoll *ep, const 
+struct epoll_event *event,
+
+                 /* Notify waiting tasks that events are available */
+                 if (waitqueue_active(&ep->wq))
+-                       wake_up(&ep->wq);
++                       wake_up_locked(&ep->wq);
+                 if (waitqueue_active(&ep->poll_wait))
+                         pwake++;
+         }
+@@ -1684,7 +1691,7 @@ static int ep_modify(struct eventpoll *ep, struct 
+epitem *epi,
+
+                         /* Notify waiting tasks that events are 
+available */
+                         if (waitqueue_active(&ep->wq))
+-                               wake_up(&ep->wq);
++                               wake_up_locked(&ep->wq);
+                         if (waitqueue_active(&ep->poll_wait))
+                                 pwake++;
+                 }
+@@ -1881,9 +1888,9 @@ static int ep_poll(struct eventpoll *ep, struct 
+epoll_event __user *events,
+                 waiter = true;
+                 init_waitqueue_entry(&wait, current);
+
+-               spin_lock_irq(&ep->wq.lock);
++               write_lock_irq(&ep->lock);
+                 __add_wait_queue_exclusive(&ep->wq, &wait);
+-               spin_unlock_irq(&ep->wq.lock);
++               write_unlock_irq(&ep->lock);
+         }
+
+         for (;;) {
+@@ -1931,9 +1938,9 @@ static int ep_poll(struct eventpoll *ep, struct 
+epoll_event __user *events,
+                 goto fetch_events;
+
+         if (waiter) {
+-               spin_lock_irq(&ep->wq.lock);
++               write_lock_irq(&ep->lock);
+                 __remove_wait_queue(&ep->wq, &wait);
+-               spin_unlock_irq(&ep->wq.lock);
++               write_unlock_irq(&ep->lock);
+         }
+
+         return res;
+
+
+
+
+On 2020-02-03 16:15, Max Neunhoeffer wrote:
+> Dear Jakub and all,
+> 
+> I have done a git bisect and found that this commit introduced the 
+> epoll
+> bug:
+> 
+> https://github.com/torvalds/linux/commit/a218cc4914209ac14476cb32769b31a556355b22
+> 
+> I Cc the author of the commit.
+> 
+> This makes sense, since the commit introduces a new rwlock to reduce
+> contention in ep_poll_callback. I do not fully understand the details
+> but this sounds all very close to this bug.
+> 
+> I have also verified that the bug is still present in the latest master
+> branch in Linus' repository.
+> 
+> Furthermore, Chris Kohlhoff has provided yet another reproducing 
+> program
+> which is no longer using edge-triggered but standard level-triggered
+> events and epoll_wait. This makes the bug all the more urgent, since
+> potentially more programs could run into this problem and could end up
+> with sleeping barbers.
+> 
+> I have added all the details to the bugzilla bugreport:
+> 
+>   https://bugzilla.kernel.org/show_bug.cgi?id=205933
+> 
+> Hopefully, we can resolve this now equipped with this amount of 
+> information.
+> 
+> Best regards,
+>   Max.
+> 
+> On 20/02/01 12:16, Jakub Kicinski wrote:
+>> On Fri, 31 Jan 2020 14:57:30 +0100, Max Neunhoeffer wrote:
+>> > Dear All,
+>> >
+>> > I believe I have found a bug in Linux 5.3 and 5.4 in epoll_wait/epoll_ctl
+>> > when an eventfd together with edge-triggered or the EPOLLONESHOT policy
+>> > is used. If an epoll_ctl call to rearm the eventfd happens approximately
+>> > at the same time as the epoll_wait goes to sleep, the event can be lost,
+>> > even though proper protection through a mutex is employed.
+>> >
+>> > The details together with two programs showing the problem can be found
+>> > here:
+>> >
+>> >   https://bugzilla.kernel.org/show_bug.cgi?id=205933
+>> >
+>> > Older kernels seem not to have this problem, although I did not test all
+>> > versions. I know that 4.15 and 5.0 do not show the problem.
+>> >
+>> > Note that this method of using epoll_wait/eventfd is used by
+>> > boost::asio to wake up event loops in case a new completion handler
+>> > is posted to an io_service, so this is probably relevant for many
+>> > applications.
+>> >
+>> > Any help with this would be appreciated.
+>> 
+>> Could be networking related but let's CC FS folks just in case.
+>> 
+>> Would you be able to perform bisection to narrow down the search
+>> for a buggy change?
+
