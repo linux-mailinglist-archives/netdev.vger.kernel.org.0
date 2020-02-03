@@ -2,225 +2,127 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 47E171505A3
-	for <lists+netdev@lfdr.de>; Mon,  3 Feb 2020 12:50:46 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5A4D71505DB
+	for <lists+netdev@lfdr.de>; Mon,  3 Feb 2020 13:06:25 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727279AbgBCLuo (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 3 Feb 2020 06:50:44 -0500
-Received: from mail-wr1-f67.google.com ([209.85.221.67]:42201 "EHLO
-        mail-wr1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726100AbgBCLuo (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 3 Feb 2020 06:50:44 -0500
-Received: by mail-wr1-f67.google.com with SMTP id k11so17613650wrd.9
-        for <netdev@vger.kernel.org>; Mon, 03 Feb 2020 03:50:40 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=resnulli-us.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=p8zeZwTOiMkq3biR5CEstWNRDEfRWIBP/Y87yUyyoOA=;
-        b=JJvaH3dDUtIhHUm8jfilfGsPWqtrWkliggPkDLBrYc9aKobTe1KBd+V528x2fduaVa
-         rC28bZLeOBialReNvoyVQLLGROIflNRdg5EzE7nXLqVfU+GfQkBbTmjqlK8XT1OpTCJm
-         Su2pabknqcN5lclI0XP2OCPRQUewZ+nzLmeTqQkw1M6kmz3owTmf0iGRuwGPPMw14KrJ
-         p4BDYRIYfmzKgqizbgGxXM/F9UvfzH7bpd8T7DEDJthn1RTN9eGxHKEbC1dNCAXgnSMm
-         qNV+qg169MPJ+ojrNCfH5IhALFvUL6aYN1tbwozrXK6OpytVL5gd7D1uO8A+UXkyE7nH
-         i8fQ==
+        id S1727575AbgBCMGQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 3 Feb 2020 07:06:16 -0500
+Received: from mail-wm1-f68.google.com ([209.85.128.68]:54353 "EHLO
+        mail-wm1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727102AbgBCMGQ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 3 Feb 2020 07:06:16 -0500
+Received: by mail-wm1-f68.google.com with SMTP id g1so15564413wmh.4;
+        Mon, 03 Feb 2020 04:06:14 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=p8zeZwTOiMkq3biR5CEstWNRDEfRWIBP/Y87yUyyoOA=;
-        b=fgnSHdgYYbzyn42FX8M4RStvXkDNZSnHLDQ06VP5x/agYjoAPo8YAC7AE95raMHdyr
-         YaREW2+KYoHLG13RcXH0fh7DKD/aTEAPXKOdBK0xQfJsh8G3FXegd+9Nbox8If6Jpa3l
-         Pa2pWMI7v58WTovCkRrJwSVYcImu/I7+Y73piinQT58mVvkVY73QP1bpkrcm4RidYVeW
-         +ikn/Hp9cEqV3ssEukVfVyM67FLxzcU1Dk6rqgVEwCp1Ms7x7Oy7l5DVCLSjtQsOlH2B
-         3zJBD3D3Xuh8y7mpyezb5Ek8Ull9NYjvRNi7dUr58bsaniCX+jJr/RZqAmPSoq3zCT0P
-         7GXA==
-X-Gm-Message-State: APjAAAUZ5FReUnYFnKx0Ipu1FhJWuv1l0fGWvGCm18Q572ykylZ/OaYT
-        pOGQKKyv3arDvQEBbNO/gC3EoA==
-X-Google-Smtp-Source: APXvYqw8N/wmMYBcriMq4imA9mdr2sKers9g1zDu3dYNUhfF7nWosmHk+3WCcFgZ6yCPH2rYVO4F0Q==
-X-Received: by 2002:a5d:4a06:: with SMTP id m6mr15099351wrq.155.1580730640101;
-        Mon, 03 Feb 2020 03:50:40 -0800 (PST)
-Received: from localhost (ip-89-177-6-126.net.upcbroadband.cz. [89.177.6.126])
-        by smtp.gmail.com with ESMTPSA id s8sm23768362wrt.57.2020.02.03.03.50.39
+         :mime-version:content-disposition:content-transfer-encoding
+         :in-reply-to:user-agent;
+        bh=qk2Jt3O1erIU7dk9h6hySa8WTi0Ubkco0XQalim8jms=;
+        b=CE7tCvhl/y7wecdqEHnmgytH9yeu3Ya1/fULl4Yx1GNjCeYENmrF5/32BF3NO4wLXR
+         4uyAyIVKH0grZyW4ccawak3YHuMON/5SHg9N16zG5G1CUlViI65YN6KNGyH9ciLAIy6z
+         gMsWPg1sMP8AJ3Xnvr8Xf1PtxDifN68+LEHkcDhTQLH39U0Ph4Tq1Zjg88fso5qq5zgY
+         YlkmJOmBYyUXotmMkrBHmQ7ZhOGEYL2Pp7HZqIcDx6Nh6jPqU5up/xsFJpVz0WSmY6Q8
+         uq9lfCEmepei9GqDRJDR8vhju4zivSviFY+p06jFTzB0ga2/z+PGKDigbSW+GV6TNC78
+         yyJQ==
+X-Gm-Message-State: APjAAAXrZCq/t1YbDqEhRiEVXD5Cj1rhO2S4EV+2WMs268aJYGNgNMi/
+        S2dsHVj4PeM00fGwdoNADg==
+X-Google-Smtp-Source: APXvYqx7nsm5FWekL3BKJELtK3DXarxIJmSasrulMuL/e1k/RgaRA6fRJdz1qpC/FrkmEVy7vvzz8A==
+X-Received: by 2002:a1c:9c52:: with SMTP id f79mr28804908wme.30.1580731573508;
+        Mon, 03 Feb 2020 04:06:13 -0800 (PST)
+Received: from rob-hp-laptop ([212.187.182.163])
+        by smtp.gmail.com with ESMTPSA id b11sm9698643wrx.89.2020.02.03.04.06.11
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 03 Feb 2020 03:50:39 -0800 (PST)
-Date:   Mon, 3 Feb 2020 12:50:39 +0100
-From:   Jiri Pirko <jiri@resnulli.us>
-To:     Yunsheng Lin <linyunsheng@huawei.com>
-Cc:     Jacob Keller <jacob.e.keller@intel.com>, netdev@vger.kernel.org,
-        valex@mellanox.com, lihong.yang@intel.com
-Subject: Re: [PATCH 03/15] devlink: add operation to take an immediate
- snapshot
-Message-ID: <20200203115039.GF2260@nanopsycho>
-References: <20200130225913.1671982-1-jacob.e.keller@intel.com>
- <20200130225913.1671982-4-jacob.e.keller@intel.com>
- <274ca58e-02be-2f55-d83c-e0019f90a74d@huawei.com>
+        Mon, 03 Feb 2020 04:06:12 -0800 (PST)
+Received: (nullmailer pid 28482 invoked by uid 1000);
+        Mon, 03 Feb 2020 12:06:10 -0000
+Date:   Mon, 3 Feb 2020 12:06:10 +0000
+From:   Rob Herring <robh@kernel.org>
+To:     Faiz Abbas <faiz_abbas@ti.com>
+Cc:     Dan Murphy <dmurphy@ti.com>, Sekhar Nori <nsekhar@ti.com>,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        devicetree@vger.kernel.org, netdev@vger.kernel.org,
+        linux-can@vger.kernel.org, catalin.marinas@arm.com,
+        mark.rutland@arm.com, davem@davemloft.net, mkl@pengutronix.de,
+        wg@grandegger.com, sriram.dash@samsung.com, nm@ti.com,
+        t-kristo@ti.com
+Subject: Re: [PATCH 1/3] dt-bindings: net: can: m_can: Add Documentation for
+ stb-gpios
+Message-ID: <20200203120610.GA9303@bogus>
+References: <20200122080310.24653-1-faiz_abbas@ti.com>
+ <20200122080310.24653-2-faiz_abbas@ti.com>
+ <c3b0eeb8-bd78-aa96-4783-62dc93f03bfe@ti.com>
+ <8fc7c343-267d-c91c-0381-60990cfc35e8@ti.com>
+ <f834087b-da1c-88a0-93fe-bc72c8ac71ff@ti.com>
+ <57baeedc-9f51-7b92-f190-c0bbd8525a16@ti.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=iso-8859-1
 Content-Disposition: inline
-In-Reply-To: <274ca58e-02be-2f55-d83c-e0019f90a74d@huawei.com>
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <57baeedc-9f51-7b92-f190-c0bbd8525a16@ti.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Mon, Feb 03, 2020 at 09:19:23AM CET, linyunsheng@huawei.com wrote:
->On 2020/1/31 6:58, Jacob Keller wrote:
->> Add a new devlink command, DEVLINK_CMD_REGION_TAKE_SNAPSHOT. This
->> command is intended to enable userspace to request an immediate snapshot
->> of a region.
->> 
->> Regions can enable support for requestable snapshots by implementing the
->> snapshot callback function in the region's devlink_region_ops structure.
->> 
->> Implementations of this function callback should capture an immediate
->> copy of the data and return it and its destructor in the function
->> parameters. The core devlink code will generate a snapshot ID and create
->> the new snapshot while holding the devlink instance lock.
->
->Does we need a new devlink command to clear the snapshot created by
->DEVLINK_CMD_REGION_TAKE_SNAPSHOT?
->
->It seems the snapshot of a region is only destroyed when unloading
->the driver.
+On Thu, Jan 23, 2020 at 01:09:41PM +0530, Faiz Abbas wrote:
+> Hi,
+> 
+> On 22/01/20 8:04 pm, Dan Murphy wrote:
+> > Sekhar
+> > 
+> > On 1/22/20 8:24 AM, Sekhar Nori wrote:
+> >> On 22/01/20 7:05 PM, Dan Murphy wrote:
+> >>> Faiz
+> >>>
+> >>> On 1/22/20 2:03 AM, Faiz Abbas wrote:
+> >>>> The CAN transceiver on some boards has an STB pin which is
+> >>>> used to control its standby mode. Add an optional property
+> >>>> stb-gpios to toggle the same.
+> >>>>
+> >>>> Signed-off-by: Faiz Abbas <faiz_abbas@ti.com>
+> >>>> Signed-off-by: Sekhar Nori <nsekhar@ti.com>
+> >>>> ---
+> >>>>    Documentation/devicetree/bindings/net/can/m_can.txt | 2 ++
+> >>>>    1 file changed, 2 insertions(+)
+> >>>>
+> >>>> diff --git a/Documentation/devicetree/bindings/net/can/m_can.txt
+> >>>> b/Documentation/devicetree/bindings/net/can/m_can.txt
+> >>>> index ed614383af9c..cc8ba3f7a2aa 100644
+> >>>> --- a/Documentation/devicetree/bindings/net/can/m_can.txt
+> >>>> +++ b/Documentation/devicetree/bindings/net/can/m_can.txt
+> >>>> @@ -48,6 +48,8 @@ Optional Subnode:
+> >>>>                  that can be used for CAN/CAN-FD modes. See
+> >>>>                
+> >>>> Documentation/devicetree/bindings/net/can/can-transceiver.txt
+> >>>>                  for details.
+> >>>> +stb-gpios        : gpio node to toggle the STB (standby) signal on
+> >>>> the transceiver
+> >>>> +
+> >>> The m_can.txt is for the m_can framework.  If this is specific to the
+> >>> platform then it really does not belong here.
+> >>>
+> >>> If the platform has specific nodes then maybe we need a
+> >>> m_can_platform.txt binding for specific platform nodes.  But I leave
+> >>> that decision to Rob.
+> >> Since this is transceiver enable, should this not be in
+> >> Documentation/devicetree/bindings/net/can/can-transceiver.txt?
+> > 
+> 
+> The transceiver node is just a node without an associated device. I had
+> tried to convert it to a phy implementation but that idea got shot down
+> here:
+> 
+> https://lore.kernel.org/patchwork/patch/1006238/
 
-There is existing command to handle this:
-devlink region del DEV/REGION snapshot SNAPSHOT_ID
+Nodes and drivers are not a 1-1 thing. Is the transceiver a separate h/w 
+device? If so, then it should be a separate node and properties of that 
+device go in its node. Also, nothing is stopping you from using the PHY 
+binding without using the kernel's PHY framework.
 
->
->> 
->> Signed-off-by: Jacob Keller <jacob.e.keller@intel.com>
->> ---
->>  .../networking/devlink/devlink-region.rst     |  9 +++-
->>  include/net/devlink.h                         |  7 +++
->>  include/uapi/linux/devlink.h                  |  2 +
->>  net/core/devlink.c                            | 46 +++++++++++++++++++
->>  4 files changed, 62 insertions(+), 2 deletions(-)
->> 
->> diff --git a/Documentation/networking/devlink/devlink-region.rst b/Documentation/networking/devlink/devlink-region.rst
->> index 1a7683e7acb2..262249e6c3fc 100644
->> --- a/Documentation/networking/devlink/devlink-region.rst
->> +++ b/Documentation/networking/devlink/devlink-region.rst
->> @@ -20,6 +20,11 @@ address regions that are otherwise inaccessible to the user.
->>  Regions may also be used to provide an additional way to debug complex error
->>  states, but see also :doc:`devlink-health`
->>  
->> +Regions may optionally support capturing a snapshot on demand via the
->> +``DEVLINK_CMD_REGION_TAKE_SNAPSHOT`` netlink message. A driver wishing to
->> +allow requested snapshots must implement the ``.snapshot`` callback for the
->> +region in its ``devlink_region_ops`` structure.
->> +
->>  example usage
->>  -------------
->>  
->> @@ -40,8 +45,8 @@ example usage
->>      # Delete a snapshot using:
->>      $ devlink region del pci/0000:00:05.0/cr-space snapshot 1
->>  
->> -    # Trigger (request) a snapshot be taken:
->> -    $ devlink region trigger pci/0000:00:05.0/cr-space
->> +    # Request an immediate snapshot, if supported by the region
->> +    $ devlink region snapshot pci/0000:00:05.0/cr-space
->>  
->>      # Dump a snapshot:
->>      $ devlink region dump pci/0000:00:05.0/fw-health snapshot 1
->> diff --git a/include/net/devlink.h b/include/net/devlink.h
->> index 4a0baa6903cb..63e954241404 100644
->> --- a/include/net/devlink.h
->> +++ b/include/net/devlink.h
->> @@ -498,9 +498,16 @@ typedef void devlink_snapshot_data_dest_t(const void *data);
->>  /**
->>   * struct devlink_region_ops - Region operations
->>   * @name: region name
->> + * @snapshot: callback to request an immediate snapshot. On success,
->> + *            the data and destructor variables must be updated. The function
->> + *            will be called while the devlink instance lock is held.
->>   */
->>  struct devlink_region_ops {
->>  	const char *name;
->> +	int (*snapshot)(struct devlink *devlink,
->> +			struct netlink_ext_ack *extack,
->> +			u8 **data,
->> +			devlink_snapshot_data_dest_t **destructor);
->>  };
->>  
->>  struct devlink_fmsg;
->> diff --git a/include/uapi/linux/devlink.h b/include/uapi/linux/devlink.h
->> index ae37fd4d194a..46643c4320b9 100644
->> --- a/include/uapi/linux/devlink.h
->> +++ b/include/uapi/linux/devlink.h
->> @@ -117,6 +117,8 @@ enum devlink_command {
->>  	DEVLINK_CMD_TRAP_GROUP_NEW,
->>  	DEVLINK_CMD_TRAP_GROUP_DEL,
->>  
->> +	DEVLINK_CMD_REGION_TAKE_SNAPSHOT,
->> +
->>  	/* add new commands above here */
->>  	__DEVLINK_CMD_MAX,
->>  	DEVLINK_CMD_MAX = __DEVLINK_CMD_MAX - 1
->> diff --git a/net/core/devlink.c b/net/core/devlink.c
->> index faf4f4c5c539..574008c536fa 100644
->> --- a/net/core/devlink.c
->> +++ b/net/core/devlink.c
->> @@ -4109,6 +4109,45 @@ static int devlink_nl_cmd_region_read_dumpit(struct sk_buff *skb,
->>  	return err;
->>  }
->>  
->> +static int devlink_nl_cmd_region_take_snapshot(struct sk_buff *skb,
->> +					       struct genl_info *info)
->> +{
->> +	struct devlink *devlink = info->user_ptr[0];
->> +	devlink_snapshot_data_dest_t *destructor;
->> +	struct devlink_region *region;
->> +	const char *region_name;
->> +	u32 snapshot_id;
->> +	u8 *data;
->> +	int err;
->> +
->> +	if (!info->attrs[DEVLINK_ATTR_REGION_NAME]) {
->> +		NL_SET_ERR_MSG_MOD(info->extack, "No region name provided");
->> +		return -EINVAL;
->> +	}
->> +
->> +	region_name = nla_data(info->attrs[DEVLINK_ATTR_REGION_NAME]);
->> +	region = devlink_region_get_by_name(devlink, region_name);
->> +	if (!region) {
->> +		NL_SET_ERR_MSG_MOD(info->extack,
->> +				   "The requested region does not exist");
->> +		return -EINVAL;
->> +	}
->> +
->> +	if (!region->ops->snapshot) {
->> +		NL_SET_ERR_MSG_MOD(info->extack,
->> +				   "The requested region does not support taking an immediate snapshot");
->> +		return -EOPNOTSUPP;
->> +	}
->> +
->> +	err = region->ops->snapshot(devlink, info->extack, &data, &destructor);
->> +	if (err)
->> +		return err;
->> +
->> +	snapshot_id = devlink_region_snapshot_id_get_locked(devlink);
->> +	return devlink_region_snapshot_create_locked(region, data, snapshot_id,
->> +						     destructor);
->> +}
->> +
->>  struct devlink_info_req {
->>  	struct sk_buff *msg;
->>  };
->> @@ -6249,6 +6288,13 @@ static const struct genl_ops devlink_nl_ops[] = {
->>  		.flags = GENL_ADMIN_PERM,
->>  		.internal_flags = DEVLINK_NL_FLAG_NEED_DEVLINK,
->>  	},
->> +	{
->> +		.cmd = DEVLINK_CMD_REGION_TAKE_SNAPSHOT,
->> +		.validate = GENL_DONT_VALIDATE_STRICT | GENL_DONT_VALIDATE_DUMP,
->> +		.doit = devlink_nl_cmd_region_take_snapshot,
->> +		.flags = GENL_ADMIN_PERM,
->> +		.internal_flags = DEVLINK_NL_FLAG_NEED_DEVLINK,
->> +	},
->>  	{
->>  		.cmd = DEVLINK_CMD_INFO_GET,
->>  		.validate = GENL_DONT_VALIDATE_STRICT | GENL_DONT_VALIDATE_DUMP,
->> 
->
+As to whether it should be a separate phy driver, I think probably the 
+wrong decision was made. We always seem to start out with no PHY on 
+these things and the complexity just grows until we need one. 
+
+Rob
