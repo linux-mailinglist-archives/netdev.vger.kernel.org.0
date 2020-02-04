@@ -2,182 +2,93 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 1899E152014
-	for <lists+netdev@lfdr.de>; Tue,  4 Feb 2020 18:58:16 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 30E6C15202A
+	for <lists+netdev@lfdr.de>; Tue,  4 Feb 2020 19:03:23 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727382AbgBDR6O (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 4 Feb 2020 12:58:14 -0500
-Received: from mail-io1-f71.google.com ([209.85.166.71]:54604 "EHLO
-        mail-io1-f71.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727363AbgBDR6O (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 4 Feb 2020 12:58:14 -0500
-Received: by mail-io1-f71.google.com with SMTP id r62so12217800ior.21
-        for <netdev@vger.kernel.org>; Tue, 04 Feb 2020 09:58:13 -0800 (PST)
+        id S1727472AbgBDSDT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 4 Feb 2020 13:03:19 -0500
+Received: from mail-pg1-f195.google.com ([209.85.215.195]:36043 "EHLO
+        mail-pg1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727355AbgBDSDT (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 4 Feb 2020 13:03:19 -0500
+Received: by mail-pg1-f195.google.com with SMTP id k3so10038543pgc.3;
+        Tue, 04 Feb 2020 10:03:18 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:to:references:from:message-id:date:user-agent:mime-version
+         :in-reply-to:content-language:content-transfer-encoding;
+        bh=E8TOUJb1LB1CGjhRZlBmQYfzHnpM6fLCA335raKvA2E=;
+        b=MLQxWerqYuNYbiSuIddhGPcw/f2KrN+IYw9SJLGy3qyOjA+Ux1wMpnyc/zWnle0AlK
+         bAb1WtyMcY7alctYQTVQQcinJaoqkMOzRE3UAYXco3OFid/MXm6q1SlmETLRK51m7+iN
+         xqOcxIedAgSPRfOuRylvDKysGj60wPSZ2dTPrJKUU6WpL53y8Gdog2li7PFyvzdtCYPz
+         yR3vC/HuccTRevBQy8eeWnFN5qFlVRgKOu5Edvm9UqVfHFqZ7Mc+pRsq0LJCWx/TB8ic
+         U+bXabrIHvoJO8uMu5An9CpQmjNNyTZOCRYlyMFMzXgl1DuwsCafCXBP24keqA66EERk
+         wfPQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
-        bh=Um3Xpzx3vG7vvdGcvA/0vPPxMKJre/Qdw6/82ARcNPc=;
-        b=QAfkGF7p+APwOSmX6/GtrvU+wkwtsI3VzZy5UlMhGiw+v+FdcWHuyOHoqRLjIlsonL
-         3o8L9b9R9vFO4jKlCswvFuA1Fzg/6dccojq8Q/VWXxRuaEJaWdnari+7EIXMjMOQkywf
-         7iAQdqojIcItPqerl00QXm0Y16CmJ2joKbxCqfYwAtfoVrc8B6fBk1sWgAj5KBWatQIV
-         CiwJHCU96bZOb/T87I5QpjRks0qCxdur+NfHVDydDCqgL31caVstbaKrIbuIzHXOXDAf
-         Y8jkSQYtISLZpQ055V9QVei0zpTetZtAAG0QXfLt4/iwZ7d8L+kPlc9wjrMoF7GTipHh
-         Sikg==
-X-Gm-Message-State: APjAAAXNIS/DK1BA1uNi5OlcI0Xf9YyxqD8PFGapYuwSRXf4CebsoQJo
-        VvXXmWt6U2lmgYtCH0DxldU7OPJoESoyQQgeUuvlyhz29vWR
-X-Google-Smtp-Source: APXvYqz/k4Imyeeca95alZX24eMTHmjPtFwnVqBqXMpEoIKiVc1JLT2fCo9+2dodxN3LxxIeANc25wcdden+gG5lgaAfBgztARLH
-MIME-Version: 1.0
-X-Received: by 2002:a6b:8e51:: with SMTP id q78mr23341440iod.179.1580839093292;
- Tue, 04 Feb 2020 09:58:13 -0800 (PST)
-Date:   Tue, 04 Feb 2020 09:58:13 -0800
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <0000000000009a59d2059dc3c8e9@google.com>
-Subject: memory leak in tcindex_set_parms
-From:   syzbot <syzbot+f0bbb2287b8993d4fa74@syzkaller.appspotmail.com>
-To:     davem@davemloft.net, jhs@mojatatu.com, jiri@resnulli.us,
+        h=x-gm-message-state:subject:to:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=E8TOUJb1LB1CGjhRZlBmQYfzHnpM6fLCA335raKvA2E=;
+        b=AZp603gJ7ltvYDlaGu7hgcIhv9HddJMw/lUplDpcfD2LqZLJ1h4mfJtXGpSR1pUfPc
+         UGzOngTLC34SZ6BVtrdWdAYB6+lKDmIrJE79BdRx2OlGfAoQoIauXmrexIzDJ7YKizLE
+         c+mb1Ni+IEY7DRIArxDhfYZWbTj209+Au4KQ+ZWI26m6GKMBEoG/jHfUq/MmTpkfe1r+
+         4AlrqIH66vYzL7bDZcEYDLBMFxw4tMB9idQ/7tfDYKEbPGfCHjrI2GGIvAAUpMoljbO4
+         lTxWbqJP086b3vBj9y1ya6D18KIxQGlBua5xrGwpvNIBeUkT/3qZFa/QYW7DijuEwbSk
+         8oWA==
+X-Gm-Message-State: APjAAAVk2yAoFvlMVjzHRyRoUU3sXzwxWzlb9X9lZ6o9bN1Gxb0PNbBe
+        6gYXZkSI+OIvQGW/Wpqj22qXzCxE
+X-Google-Smtp-Source: APXvYqwpCEt7Ve+QDFk7hfb8VlqxpZPJCjxtg1oAHNkMcmdWpBb398WQboTbu4dVUuImidW2CetKMw==
+X-Received: by 2002:a63:515d:: with SMTP id r29mr24456711pgl.265.1580839398398;
+        Tue, 04 Feb 2020 10:03:18 -0800 (PST)
+Received: from ?IPv6:2620:15c:2c1:200:55c7:81e6:c7d8:94b? ([2620:15c:2c1:200:55c7:81e6:c7d8:94b])
+        by smtp.gmail.com with ESMTPSA id w14sm3022453pgi.22.2020.02.04.10.03.17
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 04 Feb 2020 10:03:17 -0800 (PST)
+Subject: Re: memory leak in tcindex_set_parms
+To:     syzbot <syzbot+f0bbb2287b8993d4fa74@syzkaller.appspotmail.com>,
+        davem@davemloft.net, jhs@mojatatu.com, jiri@resnulli.us,
         kuba@kernel.org, linux-kernel@vger.kernel.org,
         netdev@vger.kernel.org, syzkaller-bugs@googlegroups.com,
         xiyou.wangcong@gmail.com
-Content-Type: text/plain; charset="UTF-8"
+References: <0000000000009a59d2059dc3c8e9@google.com>
+From:   Eric Dumazet <eric.dumazet@gmail.com>
+Message-ID: <a1673e4f-6382-d7df-6942-6e4ffd2b81ce@gmail.com>
+Date:   Tue, 4 Feb 2020 10:03:16 -0800
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.2.2
+MIME-Version: 1.0
+In-Reply-To: <0000000000009a59d2059dc3c8e9@google.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello,
-
-syzbot found the following crash on:
-
-HEAD commit:    322bf2d3 Merge branch 'for-5.6' of git://git.kernel.org/pu..
-git tree:       upstream
-console output: https://syzkaller.appspot.com/x/log.txt?x=1111f8e6e00000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=8d0490614a000a37
-dashboard link: https://syzkaller.appspot.com/bug?extid=f0bbb2287b8993d4fa74
-compiler:       gcc (GCC) 9.0.0 20181231 (experimental)
-syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=17db90f6e00000
-C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=13a94511e00000
-
-IMPORTANT: if you fix the bug, please add the following tag to the commit:
-Reported-by: syzbot+f0bbb2287b8993d4fa74@syzkaller.appspotmail.com
-
-executing program
-executing program
-BUG: memory leak
-unreferenced object 0xffff88811ee18c00 (size 256):
-  comm "syz-executor278", pid 7255, jiffies 4294941828 (age 13.710s)
-  hex dump (first 32 bytes):
-    00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  ................
-    00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  ................
-  backtrace:
-    [<0000000004705b10>] kmemleak_alloc_recursive include/linux/kmemleak.h:43 [inline]
-    [<0000000004705b10>] slab_post_alloc_hook mm/slab.h:586 [inline]
-    [<0000000004705b10>] slab_alloc mm/slab.c:3320 [inline]
-    [<0000000004705b10>] kmem_cache_alloc_trace+0x145/0x2c0 mm/slab.c:3549
-    [<000000005a926de7>] kmalloc include/linux/slab.h:556 [inline]
-    [<000000005a926de7>] kmalloc_array include/linux/slab.h:597 [inline]
-    [<000000005a926de7>] kcalloc include/linux/slab.h:609 [inline]
-    [<000000005a926de7>] tcf_exts_init include/net/pkt_cls.h:210 [inline]
-    [<000000005a926de7>] tcindex_set_parms+0xac/0x970 net/sched/cls_tcindex.c:313
-    [<000000004198237d>] tcindex_change+0xd8/0x110 net/sched/cls_tcindex.c:519
-    [<00000000f90be4e9>] tc_new_tfilter+0x566/0xf50 net/sched/cls_api.c:2103
-    [<00000000bdffab68>] rtnetlink_rcv_msg+0x3b2/0x4b0 net/core/rtnetlink.c:5429
-    [<000000008de6f6fa>] netlink_rcv_skb+0x61/0x170 net/netlink/af_netlink.c:2477
-    [<00000000637db501>] rtnetlink_rcv+0x1d/0x30 net/core/rtnetlink.c:5456
-    [<00000000cb1396a7>] netlink_unicast_kernel net/netlink/af_netlink.c:1302 [inline]
-    [<00000000cb1396a7>] netlink_unicast+0x223/0x310 net/netlink/af_netlink.c:1328
-    [<000000003d9f7439>] netlink_sendmsg+0x2c0/0x570 net/netlink/af_netlink.c:1917
-    [<0000000004922ee9>] sock_sendmsg_nosec net/socket.c:652 [inline]
-    [<0000000004922ee9>] sock_sendmsg+0x54/0x70 net/socket.c:672
-    [<00000000bbc6917f>] ____sys_sendmsg+0x2d0/0x300 net/socket.c:2343
-    [<00000000d3ae3854>] ___sys_sendmsg+0x8a/0xd0 net/socket.c:2397
-    [<0000000000c5372b>] __sys_sendmsg+0x80/0xf0 net/socket.c:2430
-    [<00000000db15859a>] __do_sys_sendmsg net/socket.c:2439 [inline]
-    [<00000000db15859a>] __se_sys_sendmsg net/socket.c:2437 [inline]
-    [<00000000db15859a>] __x64_sys_sendmsg+0x23/0x30 net/socket.c:2437
-    [<00000000a5a1c036>] do_syscall_64+0x73/0x220 arch/x86/entry/common.c:294
-    [<00000000e73613df>] entry_SYSCALL_64_after_hwframe+0x44/0xa9
-
-BUG: memory leak
-unreferenced object 0xffff88811ee18900 (size 256):
-  comm "syz-executor278", pid 7255, jiffies 4294941828 (age 13.710s)
-  hex dump (first 32 bytes):
-    00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  ................
-    00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  ................
-  backtrace:
-    [<0000000004705b10>] kmemleak_alloc_recursive include/linux/kmemleak.h:43 [inline]
-    [<0000000004705b10>] slab_post_alloc_hook mm/slab.h:586 [inline]
-    [<0000000004705b10>] slab_alloc mm/slab.c:3320 [inline]
-    [<0000000004705b10>] kmem_cache_alloc_trace+0x145/0x2c0 mm/slab.c:3549
-    [<0000000036dbc592>] kmalloc include/linux/slab.h:556 [inline]
-    [<0000000036dbc592>] kmalloc_array include/linux/slab.h:597 [inline]
-    [<0000000036dbc592>] kcalloc include/linux/slab.h:609 [inline]
-    [<0000000036dbc592>] tcf_exts_init include/net/pkt_cls.h:210 [inline]
-    [<0000000036dbc592>] tcindex_alloc_perfect_hash net/sched/cls_tcindex.c:287 [inline]
-    [<0000000036dbc592>] tcindex_alloc_perfect_hash+0x8f/0xf0 net/sched/cls_tcindex.c:277
-    [<0000000088e6ec51>] tcindex_set_parms+0x831/0x970 net/sched/cls_tcindex.c:405
-    [<000000004198237d>] tcindex_change+0xd8/0x110 net/sched/cls_tcindex.c:519
-    [<00000000f90be4e9>] tc_new_tfilter+0x566/0xf50 net/sched/cls_api.c:2103
-    [<00000000bdffab68>] rtnetlink_rcv_msg+0x3b2/0x4b0 net/core/rtnetlink.c:5429
-    [<000000008de6f6fa>] netlink_rcv_skb+0x61/0x170 net/netlink/af_netlink.c:2477
-    [<00000000637db501>] rtnetlink_rcv+0x1d/0x30 net/core/rtnetlink.c:5456
-    [<00000000cb1396a7>] netlink_unicast_kernel net/netlink/af_netlink.c:1302 [inline]
-    [<00000000cb1396a7>] netlink_unicast+0x223/0x310 net/netlink/af_netlink.c:1328
-    [<000000003d9f7439>] netlink_sendmsg+0x2c0/0x570 net/netlink/af_netlink.c:1917
-    [<0000000004922ee9>] sock_sendmsg_nosec net/socket.c:652 [inline]
-    [<0000000004922ee9>] sock_sendmsg+0x54/0x70 net/socket.c:672
-    [<00000000bbc6917f>] ____sys_sendmsg+0x2d0/0x300 net/socket.c:2343
-    [<00000000d3ae3854>] ___sys_sendmsg+0x8a/0xd0 net/socket.c:2397
-    [<0000000000c5372b>] __sys_sendmsg+0x80/0xf0 net/socket.c:2430
-    [<00000000db15859a>] __do_sys_sendmsg net/socket.c:2439 [inline]
-    [<00000000db15859a>] __se_sys_sendmsg net/socket.c:2437 [inline]
-    [<00000000db15859a>] __x64_sys_sendmsg+0x23/0x30 net/socket.c:2437
-    [<00000000a5a1c036>] do_syscall_64+0x73/0x220 arch/x86/entry/common.c:294
-
-BUG: memory leak
-unreferenced object 0xffff88811ee18800 (size 256):
-  comm "syz-executor278", pid 7255, jiffies 4294941828 (age 13.710s)
-  hex dump (first 32 bytes):
-    00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  ................
-    00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  ................
-  backtrace:
-    [<0000000004705b10>] kmemleak_alloc_recursive include/linux/kmemleak.h:43 [inline]
-    [<0000000004705b10>] slab_post_alloc_hook mm/slab.h:586 [inline]
-    [<0000000004705b10>] slab_alloc mm/slab.c:3320 [inline]
-    [<0000000004705b10>] kmem_cache_alloc_trace+0x145/0x2c0 mm/slab.c:3549
-    [<0000000036dbc592>] kmalloc include/linux/slab.h:556 [inline]
-    [<0000000036dbc592>] kmalloc_array include/linux/slab.h:597 [inline]
-    [<0000000036dbc592>] kcalloc include/linux/slab.h:609 [inline]
-    [<0000000036dbc592>] tcf_exts_init include/net/pkt_cls.h:210 [inline]
-    [<0000000036dbc592>] tcindex_alloc_perfect_hash net/sched/cls_tcindex.c:287 [inline]
-    [<0000000036dbc592>] tcindex_alloc_perfect_hash+0x8f/0xf0 net/sched/cls_tcindex.c:277
-    [<0000000088e6ec51>] tcindex_set_parms+0x831/0x970 net/sched/cls_tcindex.c:405
-    [<000000004198237d>] tcindex_change+0xd8/0x110 net/sched/cls_tcindex.c:519
-    [<00000000f90be4e9>] tc_new_tfilter+0x566/0xf50 net/sched/cls_api.c:2103
-    [<00000000bdffab68>] rtnetlink_rcv_msg+0x3b2/0x4b0 net/core/rtnetlink.c:5429
-    [<000000008de6f6fa>] netlink_rcv_skb+0x61/0x170 net/netlink/af_netlink.c:2477
-    [<00000000637db501>] rtnetlink_rcv+0x1d/0x30 net/core/rtnetlink.c:5456
-    [<00000000cb1396a7>] netlink_unicast_kernel net/netlink/af_netlink.c:1302 [inline]
-    [<00000000cb1396a7>] netlink_unicast+0x223/0x310 net/netlink/af_netlink.c:1328
-    [<000000003d9f7439>] netlink_sendmsg+0x2c0/0x570 net/netlink/af_netlink.c:1917
-    [<0000000004922ee9>] sock_sendmsg_nosec net/socket.c:652 [inline]
-    [<0000000004922ee9>] sock_sendmsg+0x54/0x70 net/socket.c:672
-    [<00000000bbc6917f>] ____sys_sendmsg+0x2d0/0x300 net/socket.c:2343
-    [<00000000d3ae3854>] ___sys_sendmsg+0x8a/0xd0 net/socket.c:2397
-    [<0000000000c5372b>] __sys_sendmsg+0x80/0xf0 net/socket.c:2430
-    [<00000000db15859a>] __do_sys_sendmsg net/socket.c:2439 [inline]
-    [<00000000db15859a>] __se_sys_sendmsg net/socket.c:2437 [inline]
-    [<00000000db15859a>] __x64_sys_sendmsg+0x23/0x30 net/socket.c:2437
-    [<00000000a5a1c036>] do_syscall_64+0x73/0x220 arch/x86/entry/common.c:294
 
 
+On 2/4/20 9:58 AM, syzbot wrote:
+> Hello,
+> 
+> syzbot found the following crash on:
+> 
+> HEAD commit:    322bf2d3 Merge branch 'for-5.6' of git://git.kernel.org/pu..
+> git tree:       upstream
+> console output: https://syzkaller.appspot.com/x/log.txt?x=1111f8e6e00000
+> kernel config:  https://syzkaller.appspot.com/x/.config?x=8d0490614a000a37
+> dashboard link: https://syzkaller.appspot.com/bug?extid=f0bbb2287b8993d4fa74
+> compiler:       gcc (GCC) 9.0.0 20181231 (experimental)
+> syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=17db90f6e00000
+> C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=13a94511e00000
+> 
+> IMPORTANT: if you fix the bug, please add the following tag to the commit:
+> Reported-by: syzbot+f0bbb2287b8993d4fa74@syzkaller.appspotmail.com
+> 
+>
 
----
-This bug is generated by a bot. It may contain errors.
-See https://goo.gl/tpsmEJ for more information about syzbot.
-syzbot engineers can be reached at syzkaller@googlegroups.com.
+Might have been fixed already ?
 
-syzbot will keep track of this bug report. See:
-https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
-syzbot can test patches for this bug, for details see:
-https://goo.gl/tpsmEJ#testing-patches
+commit 599be01ee567b61f4471ee8078870847d0a11e8e    net_sched: fix an OOB access in cls_tcindex
+
