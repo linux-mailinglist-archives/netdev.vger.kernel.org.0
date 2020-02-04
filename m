@@ -2,92 +2,77 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id E98E1151413
-	for <lists+netdev@lfdr.de>; Tue,  4 Feb 2020 02:56:05 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7C1F5151436
+	for <lists+netdev@lfdr.de>; Tue,  4 Feb 2020 03:30:30 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726992AbgBDB4A (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 3 Feb 2020 20:56:00 -0500
-Received: from mail-ua1-f67.google.com ([209.85.222.67]:45397 "EHLO
-        mail-ua1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726872AbgBDB4A (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 3 Feb 2020 20:56:00 -0500
-Received: by mail-ua1-f67.google.com with SMTP id 59so6133675uap.12
-        for <netdev@vger.kernel.org>; Mon, 03 Feb 2020 17:55:59 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:sender:from:date:message-id:subject:to;
-        bh=w/4cKx/VC8LtvzsGBfImTt5Q0EY+ZLRZMCGr+yoxRok=;
-        b=vNpocsfGXwYXIKsjqbkkshkEODMpLOp85RUbWE5y2hCmV7upsUYQxigGasjGYa4NdD
-         4uTJtEZ1MEMN0wDnL3xgW8qmb0uBOsQqOOPU2Vr+e5DsmsrgMtjen8o/7UMbzjuAJx4j
-         E7U8gGouVif6ON27kcd8D0IvqtmjuMe7rlzOhJGjSpYnac06/DGoayShhvpgvq3XTS0t
-         hxHRKqqlyfjV7/eDGyRGTNuxuKo/ArIrR1idkubDmXpoaKnK44GwoY6co68NMJ4uDhTw
-         T1r+xSGsb8ZrXZAHJzP80qaCLMTxPqzLk2u+tFOdwFECjw1B9Nd8cyea6l/tXlYmKpY0
-         LlWQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:sender:from:date:message-id:subject
-         :to;
-        bh=w/4cKx/VC8LtvzsGBfImTt5Q0EY+ZLRZMCGr+yoxRok=;
-        b=rhiAN2OuQG3GIw7mHkdnlhd+0rBIKh41qT/qNTO+M7X+qoQTH5WYiiC7B9wy6kWJHp
-         agQ45EdLtUANjtMRqj0uzW9OEIG4OlBRuuOQbR+EKEp1YIY070tJ9wLIzv/niIZ0MGPZ
-         gbBu8g3bVNZNRZ7GRbPMJEMvItlQoDtUbBqPElqxRt1Ar2As6tiA2jOhNo1TCoKdJVF3
-         wQaSy7qxF02wSIxPFTP+A6/40N7wNp4JEqN2f5rmED5kam9bthYG2Sz11IysangNWnig
-         V41lrSL+HeCP50wcXn8LW9pWZl2Qn1Js5gkBoeCbd8LDTXAULvA0oQaldgzwwMY28qoX
-         yuuw==
-X-Gm-Message-State: APjAAAVtJfD8T9HELvqJRpy2XcDUlNt56XUMAumEZ8oaDO2+ViG3vAvO
-        ze6Jo/7TBn6sUJp0ODe8JGozDeP8Yv5phaeGSUo=
-X-Google-Smtp-Source: APXvYqwe89dOuYUR6WzIAUoGAkcHEtrclof30IHQ2QbklJhxKZqiLG7oaQmwubzs9f/dTUXPi5ibKWrQ7Yo77JiIAGQ=
-X-Received: by 2002:ab0:7025:: with SMTP id u5mr6559874ual.52.1580781359135;
- Mon, 03 Feb 2020 17:55:59 -0800 (PST)
+        id S1727151AbgBDCaY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 3 Feb 2020 21:30:24 -0500
+Received: from szxga04-in.huawei.com ([45.249.212.190]:10145 "EHLO huawei.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1726561AbgBDCaY (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 3 Feb 2020 21:30:24 -0500
+Received: from DGGEMS413-HUB.china.huawei.com (unknown [172.30.72.59])
+        by Forcepoint Email with ESMTP id E46E62EEB371C5BD5695;
+        Tue,  4 Feb 2020 10:30:21 +0800 (CST)
+Received: from localhost.localdomain.localdomain (10.175.113.25) by
+ DGGEMS413-HUB.china.huawei.com (10.3.19.213) with Microsoft SMTP Server id
+ 14.3.439.0; Tue, 4 Feb 2020 10:30:11 +0800
+From:   YueHaibing <yuehaibing@huawei.com>
+To:     Ariel Elior <aelior@marvell.com>,
+        Michal Kalderon <michal.kalderon@marvell.com>,
+        "David S . Miller" <davem@davemloft.net>
+CC:     YueHaibing <yuehaibing@huawei.com>,
+        <GR-everest-linux-l2@marvell.com>, <netdev@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>, <kernel-janitors@vger.kernel.org>,
+        Hulk Robot <hulkci@huawei.com>
+Subject: [PATCH net-next] qed: Remove set but not used variable 'p_link'
+Date:   Tue, 4 Feb 2020 02:24:41 +0000
+Message-ID: <20200204022442.109809-1-yuehaibing@huawei.com>
+X-Mailer: git-send-email 2.20.1
 MIME-Version: 1.0
-Received: by 2002:ab0:13ae:0:0:0:0:0 with HTTP; Mon, 3 Feb 2020 17:55:58 -0800 (PST)
-From:   Mrs Kim Hong Yeoh <mrs.kimhongyeoh055@gmail.com>
-Date:   Tue, 4 Feb 2020 01:55:58 +0000
-X-Google-Sender-Auth: KiwMGfmAvcC-tJsxCnfwR_44cB0
-Message-ID: <CADmpa4Hajx_-YVFZ9TJEoDGaBY9cc+cqZzsXH+6oaM1c25mqFA@mail.gmail.com>
-Subject: With All Due Respect:.
-To:     undisclosed-recipients:;
-Content-Type: text/plain; charset="UTF-8"
+Content-Type:   text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7BIT
+X-Originating-IP: [10.175.113.25]
+X-CFilter-Loop: Reflected
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Dear Sir / Madam,
+Fixes gcc '-Wunused-but-set-variable' warning:
 
-I am Mrs. Kim Hong Yeoh, Working at MAYBANK (Malaysia) as the
-Non-Independent Non-Executive Director and Chairman of Maybank. During
-our last banking Audits we discovered an abandoned account belongs to
-one of our Foreign Deceased Customer, Late Mr. Wang Jian, The
-Co-founder and Co-chairman of HNA Group, a Chinese conglomerate with
-significant real estate ownerships across the U.S., died in an
-accident while on a business trip in France on Tuesday.
+drivers/net/ethernet/qlogic/qed/qed_cxt.c: In function 'qed_qm_init_pf':
+drivers/net/ethernet/qlogic/qed/qed_cxt.c:1401:29: warning:
+ variable 'p_link' set but not used [-Wunused-but-set-variable]
 
-Please go through this link:
-https://observer.com/2018/07/wang-jian-hna-founder-dies-tragic-fall/
+commit 92fae6fb231f ("qed: FW 8.42.2.0 Queue Manager changes")
+leave behind this unused variable.
 
-I am writing to request your assistance in transferring the sum of
-$17.000.000.00 (Seventeen Million United States Dollars) into your
-account as the Late Mr. Wang Jian Foreign Business Partner, which I am
-planning to use the fund to invest for public benefit as follows;
+Reported-by: Hulk Robot <hulkci@huawei.com>
+Signed-off-by: YueHaibing <yuehaibing@huawei.com>
+---
+ drivers/net/ethernet/qlogic/qed/qed_cxt.c | 3 ---
+ 1 file changed, 3 deletions(-)
 
-1. Establish An Orphanage Home To Help The Orphanages Children.
-2. Build A Hospital To Help The Poor.
-3. Build A Nursing Home For Elderly People Need Care & Meal.
+diff --git a/drivers/net/ethernet/qlogic/qed/qed_cxt.c b/drivers/net/ethernet/qlogic/qed/qed_cxt.c
+index fbfff2b1dc93..1a636bad717d 100644
+--- a/drivers/net/ethernet/qlogic/qed/qed_cxt.c
++++ b/drivers/net/ethernet/qlogic/qed/qed_cxt.c
+@@ -1398,14 +1398,11 @@ void qed_qm_init_pf(struct qed_hwfn *p_hwfn,
+ {
+ 	struct qed_qm_info *qm_info = &p_hwfn->qm_info;
+ 	struct qed_qm_pf_rt_init_params params;
+-	struct qed_mcp_link_state *p_link;
+ 	struct qed_qm_iids iids;
+ 
+ 	memset(&iids, 0, sizeof(iids));
+ 	qed_cxt_qm_iids(p_hwfn, &iids);
+ 
+-	p_link = &QED_LEADING_HWFN(p_hwfn->cdev)->mcp_info->link_output;
+-
+ 	memset(&params, 0, sizeof(params));
+ 	params.port_id = p_hwfn->port_id;
+ 	params.pf_id = p_hwfn->rel_pf_id;
 
-Meanwhile, before I contacted you I have done personal investigation
-in locating any of Late Mr. Wang Jian relatives who knows about the
-account, but I came out unsuccessful. However, I took this decision to
-use this fund in supporting the Orphanages Children, Less Privileged
-and Elderly People Need Care & Meal Support, because i don't want this
-fund to be transfer into our Government Treasury Account as unclaimed
-fund as the law of my country abiding.
 
-I am willing to offer you 30% from the total fund for your support and
-assistant in transferring the fund into your account. More details
-information will be forwarded to you to breakdown explaining how the
-fund will be transfer to you.
 
-Waiting for your urgent response.
-best regards
-Mrs. Kim Hong Yeoh.
