@@ -2,166 +2,148 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 8293D15207C
-	for <lists+netdev@lfdr.de>; Tue,  4 Feb 2020 19:40:52 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D705C152099
+	for <lists+netdev@lfdr.de>; Tue,  4 Feb 2020 19:46:56 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727496AbgBDSkr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 4 Feb 2020 13:40:47 -0500
-Received: from mail-qv1-f65.google.com ([209.85.219.65]:44962 "EHLO
-        mail-qv1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727472AbgBDSko (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 4 Feb 2020 13:40:44 -0500
-Received: by mail-qv1-f65.google.com with SMTP id n8so9015966qvg.11
-        for <netdev@vger.kernel.org>; Tue, 04 Feb 2020 10:40:44 -0800 (PST)
+        id S1727455AbgBDSqx (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 4 Feb 2020 13:46:53 -0500
+Received: from mail-yw1-f66.google.com ([209.85.161.66]:36690 "EHLO
+        mail-yw1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727381AbgBDSqw (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 4 Feb 2020 13:46:52 -0500
+Received: by mail-yw1-f66.google.com with SMTP id n184so18766515ywc.3;
+        Tue, 04 Feb 2020 10:46:52 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=lca.pw; s=google;
-        h=from:to:cc:subject:date:message-id;
-        bh=DB0+6oqad2X9sug7/BYe3OrQc0C3Jh0vC4fwygtVpck=;
-        b=Y0tX8RyRRKySRXdE1IIQ203wsgkLe0JjIB952ZIL1eXUf8Y2OwhTzPU33KVr9nY31W
-         +FvemeuSARNLoLGgHZJrGxLLv/xmYI0Rxw4qICVZlu/0aGGnupRnJcGMwt2RBQ/0P5FK
-         qh9Nq4BVutBRnHry/jLlB5YsQIAqhuHYPfBqyOJan3ECEhg7w4AQEqMg68bVbQ3COX/J
-         buQVNDBB7jqdJDatu9qDteW4Vj6g4JTFnwc4RYBxYlqWjkeRxHiBxUfeELgyGmZ7CGxG
-         JhC2z8QSXPHmmZ0rufntInnwDdR2+4ydbqUk/fXpg05Sd8it9kHqsa+RqDk/XDQaKifL
-         30SA==
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=xqzKkZZwYD8UmTNylzK68UHhE3Ou2TiZoSu6psgptxc=;
+        b=llCdtAB8qGVONkL1WDs486cYwq+0N9bCKpYycyW0QBpVz93Ee8uWtEQNHghzDtGGW3
+         VRMBr1Y0qOS1SmI6D5ub9m3PmBbp40ycsvjSzeCR2yVbs0FVTzrGcJ8BCYdJHFcgz/8f
+         xyA4nkFPh069H3Atlfsb17vQV+lkb+h+NUxFVwlCOdlN5EgwwRGGrFl3iY8OLHBRn4Iy
+         SkReHiQi4RGOrUY4tO3n++mqi70SKo+inieoEgT0V5gmNCYQdAwcATJ2YSGSlRA770MD
+         Fx8RlM+twW1y7tWzNceS8P4T/c+UXbpsGD7Juf2Wk8pxw7JU/CDUYBpj0PxArDpX+NIH
+         YozA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id;
-        bh=DB0+6oqad2X9sug7/BYe3OrQc0C3Jh0vC4fwygtVpck=;
-        b=YdNatoQePa7QPM2kL+KJpMvYAM9cEGtG7dV90TcedN9Ghu4wT9vCUmLbePDS+U9Dnf
-         qUHFkaGJAIrk0a+vuvhzvnvST5EXjWyDIYtwov+5NyVSAxm3tBhevljwoUtztEJtqhRT
-         0Bax+vMT1Vk9YCT1suhem6U0HQd1w46EeWPD0/ReP/Q7ZkDPV+4jzikjr+vnkp6EQUZz
-         lHpcha85q/slsqSFvO2anLAr+PLIJJQTeEK++6lvhS62HUnj9VuPHmQGWNN3xeH8ryBe
-         EnxhRMg7APtBwhoqCsox+jGTlzH6EnZ9eEREsdtNEZ1jHm8+mbT3Uw0JguSRRDCmWKur
-         dCjA==
-X-Gm-Message-State: APjAAAVbN0jN4WyZkKrxEKz6vW8LeToKOmmvmBQocJUT1l4aXzHmIaCC
-        gHgUUPbzex9sjCz/KXTKMWte8yFeYpHAvw==
-X-Google-Smtp-Source: APXvYqxAVBSD7kuCElcQ9UYk3+Ei1ZcVmXAHn28Ocu4gusuB44mqNQ06KXU+zhoqeI6e3NQ+Om4BbA==
-X-Received: by 2002:ad4:514e:: with SMTP id g14mr28949172qvq.196.1580841643722;
-        Tue, 04 Feb 2020 10:40:43 -0800 (PST)
-Received: from qcai.nay.com (nat-pool-bos-t.redhat.com. [66.187.233.206])
-        by smtp.gmail.com with ESMTPSA id o17sm12076071qtq.93.2020.02.04.10.40.42
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Tue, 04 Feb 2020 10:40:43 -0800 (PST)
-From:   Qian Cai <cai@lca.pw>
-To:     davem@davemloft.net
-Cc:     kuba@kernel.org, elver@google.com, eric.dumazet@gmail.com,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Qian Cai <cai@lca.pw>
-Subject: [PATCH v3] skbuff: fix a data race in skb_queue_len()
-Date:   Tue,  4 Feb 2020 13:40:29 -0500
-Message-Id: <1580841629-7102-1-git-send-email-cai@lca.pw>
-X-Mailer: git-send-email 1.8.3.1
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=xqzKkZZwYD8UmTNylzK68UHhE3Ou2TiZoSu6psgptxc=;
+        b=CyICAuKFoqPOKD2V/CrBFk/ktw8qQc+T+9dknS/NDtUPNRrG2V1HjeK6Sx+JA35EIy
+         R6uE6czlW08hrvgn1JdZC5mLA3rNU7br+qyyRfdE1+IOSiUlkQNLIdSFmc3AGz34jdMO
+         grluZarHaMkj/t/FP4BKUKu1ApGugLsGENVrSq1PwwEUmxMxZefhiiIEZ1iW4zvM8eeW
+         n+FuelG+ne1aHjG4oFE7OPpnXz0Wc6o+34x9bBrmo93duvyMRY5EC5Kj+KPY5+L+VWef
+         Om8YlbdqBycRkiLl3SC/XVlQXYqrx5o+HmTtQ4YjgibS7nU3mCcDVqvtyFla9j23Thya
+         fI4g==
+X-Gm-Message-State: APjAAAWHGsX37Rawj8hxcHV0trQpxVHZlfSpmC/KagUUafevnmyNXdKP
+        590ac/ipfEUFBIWG2JGZ3PoYGwbSdE7y2rpXfP0=
+X-Google-Smtp-Source: APXvYqyznM3JSsctyFV3LHXcVYtUQMGI945FYzOeF2DwokU04zfTUxXR2Y+b0OsjyVtyk++tp0VZYurDxaRh5YBoKq4=
+X-Received: by 2002:a81:3754:: with SMTP id e81mr7045993ywa.404.1580842011687;
+ Tue, 04 Feb 2020 10:46:51 -0800 (PST)
+MIME-Version: 1.0
+References: <20200131153440.20870-1-calvin.johnson@nxp.com>
+ <20200131153440.20870-4-calvin.johnson@nxp.com> <6501a53b-40aa-5374-3c4a-6b21824f82fd@gmail.com>
+In-Reply-To: <6501a53b-40aa-5374-3c4a-6b21824f82fd@gmail.com>
+From:   Calvin Johnson <linux.cj@gmail.com>
+Date:   Wed, 5 Feb 2020 00:16:39 +0530
+Message-ID: <CAEhpT-VfWhha3B6qS6wFu-PQP9+zb4gxt7=nsrA58cecX21Dog@mail.gmail.com>
+Subject: Re: [PATCH v1 3/7] net/fsl: add ACPI support for mdio bus
+To:     Florian Fainelli <f.fainelli@gmail.com>
+Cc:     Calvin Johnson <calvin.johnson@nxp.com>,
+        Jon Nettleton <jon@solid-run.com>, linux@armlinux.org.uk,
+        Makarand Pawagi <makarand.pawagi@nxp.com>,
+        cristian.sovaiala@nxp.com, laurentiu.tudor@nxp.com,
+        ioana.ciornei@nxp.com, V.Sethi@nxp.com, pankaj.bansal@nxp.com,
+        "Rajesh V . Bikkina" <rajesh.bikkina@nxp.com>,
+        Calvin Johnson <calvin.johnson@oss.nxp.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Madalin Bucur <madalin.bucur@oss.nxp.com>,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-sk_buff.qlen can be accessed concurrently as noticed by KCSAN,
+On Sun, Feb 02, 2020 at 07:44:40PM -0800, Florian Fainelli wrote:
+>
+>
+> On 1/31/2020 7:34 AM, Calvin Johnson wrote:
+> > From: Calvin Johnson <calvin.johnson@oss.nxp.com>
+> >
+> > Add ACPI support for MDIO bus registration while maintaining
+> > the existing DT support.
+> >
+> > Signed-off-by: Calvin Johnson <calvin.johnson@oss.nxp.com>
+> > ---
+>
+> [snip]
+>
+> >     bus = mdiobus_alloc_size(sizeof(struct mdio_fsl_priv));
+> > @@ -263,25 +265,41 @@ static int xgmac_mdio_probe(struct platform_device *pdev)
+> >     bus->read = xgmac_mdio_read;
+> >     bus->write = xgmac_mdio_write;
+> >     bus->parent = &pdev->dev;
+> > -   snprintf(bus->id, MII_BUS_ID_SIZE, "%llx", (unsigned long long)res.start);
+> > +   snprintf(bus->id, MII_BUS_ID_SIZE, "%llx",
+> > +            (unsigned long long)res->start);
+>
+> You could omit this clean up change.
+Sure, will avoid split to newline.
+> >
+> >     /* Set the PHY base address */
+> >     priv = bus->priv;
+> > -   priv->mdio_base = of_iomap(np, 0);
+> > +   priv->mdio_base = devm_ioremap_resource(&pdev->dev, res);
+> >     if (!priv->mdio_base) {
+>
+> This probably needs to become IS_ERR() instead of a plain NULL check
+Ok. Will take care in v2.
+>
+> >             ret = -ENOMEM;
+> >             goto err_ioremap;
+> >     }
+> >
+> > -   priv->is_little_endian = of_property_read_bool(pdev->dev.of_node,
+> > -                                                  "little-endian");
+> > -
+> > -   priv->has_a011043 = of_property_read_bool(pdev->dev.of_node,
+> > -                                             "fsl,erratum-a011043");
+> > -
+> > -   ret = of_mdiobus_register(bus, np);
+> > -   if (ret) {
+> > -           dev_err(&pdev->dev, "cannot register MDIO bus\n");
+> > +   if (is_of_node(pdev->dev.fwnode)) {
+> > +           priv->is_little_endian = of_property_read_bool(pdev->dev.of_node,
+> > +                                                          "little-endian");
+> > +
+> > +           priv->has_a011043 = of_property_read_bool(pdev->dev.of_node,
+> > +                                                     "fsl,erratum-a011043");
+> > +
+> > +           ret = of_mdiobus_register(bus, np);
+> > +           if (ret) {
+> > +                   dev_err(&pdev->dev, "cannot register MDIO bus\n");
+> > +                   goto err_registration;
+> > +           }
+> > +   } else if (is_acpi_node(pdev->dev.fwnode)) {
+> > +           priv->is_little_endian =
+> > +                   fwnode_property_read_bool(pdev->dev.fwnode,
+> > +                                             "little-endian");
+> > +           ret = fwnode_mdiobus_register(bus, pdev->dev.fwnode);
+> > +           if (ret) {
+> > +                   dev_err(&pdev->dev, "cannot register MDIO bus\n");
+> > +                   goto err_registration;
+> > +           }
+>
+> The little-endian property read can be moved out of the DT/ACPI paths
+> and you can just use device_property_read_bool() for that purpose.
+> Having both fwnode_mdiobus_register() and of_mdiobus_register() looks
+> fairly redundant, you could quite easily introduce a wrapper:
+> device_mdiobus_register() which internally takes the appropriate DT/ACPI
+> paths as needed.
+Had some difficulty with DT while using fwnode APIs. Will resolve them
+and provide better integrated code.
 
- BUG: KCSAN: data-race in __skb_try_recv_from_queue / unix_dgram_sendmsg
+Thanks
 
- read to 0xffff8a1b1d8a81c0 of 4 bytes by task 5371 on cpu 96:
-  unix_dgram_sendmsg+0x9a9/0xb70 include/linux/skbuff.h:1821
-				 net/unix/af_unix.c:1761
-  ____sys_sendmsg+0x33e/0x370
-  ___sys_sendmsg+0xa6/0xf0
-  __sys_sendmsg+0x69/0xf0
-  __x64_sys_sendmsg+0x51/0x70
-  do_syscall_64+0x91/0xb47
-  entry_SYSCALL_64_after_hwframe+0x49/0xbe
-
- write to 0xffff8a1b1d8a81c0 of 4 bytes by task 1 on cpu 99:
-  __skb_try_recv_from_queue+0x327/0x410 include/linux/skbuff.h:2029
-  __skb_try_recv_datagram+0xbe/0x220
-  unix_dgram_recvmsg+0xee/0x850
-  ____sys_recvmsg+0x1fb/0x210
-  ___sys_recvmsg+0xa2/0xf0
-  __sys_recvmsg+0x66/0xf0
-  __x64_sys_recvmsg+0x51/0x70
-  do_syscall_64+0x91/0xb47
-  entry_SYSCALL_64_after_hwframe+0x49/0xbe
-
-Since only the read is operating as lockless, it could introduce a logic
-bug in unix_recvq_full() due to the load tearing. Fix it by adding
-a lockless variant of skb_queue_len() and unix_recvq_full() where
-READ_ONCE() is on the read while WRITE_ONCE() is on the write similar to
-the commit d7d16a89350a ("net: add skb_queue_empty_lockless()").
-
-Signed-off-by: Qian Cai <cai@lca.pw>
----
-
-v3: fix minor issues thanks to Eric.
-v2: add lockless variant helpers and WRITE_ONCE().
-
- include/linux/skbuff.h | 14 +++++++++++++-
- net/unix/af_unix.c     | 11 +++++++++--
- 2 files changed, 22 insertions(+), 3 deletions(-)
-
-diff --git a/include/linux/skbuff.h b/include/linux/skbuff.h
-index 3d13a4b717e9..ca8806b69388 100644
---- a/include/linux/skbuff.h
-+++ b/include/linux/skbuff.h
-@@ -1822,6 +1822,18 @@ static inline __u32 skb_queue_len(const struct sk_buff_head *list_)
- }
- 
- /**
-+ *	skb_queue_len_lockless	- get queue length
-+ *	@list_: list to measure
-+ *
-+ *	Return the length of an &sk_buff queue.
-+ *	This variant can be used in lockless contexts.
-+ */
-+static inline __u32 skb_queue_len_lockless(const struct sk_buff_head *list_)
-+{
-+	return READ_ONCE(list_->qlen);
-+}
-+
-+/**
-  *	__skb_queue_head_init - initialize non-spinlock portions of sk_buff_head
-  *	@list: queue to initialize
-  *
-@@ -2026,7 +2038,7 @@ static inline void __skb_unlink(struct sk_buff *skb, struct sk_buff_head *list)
- {
- 	struct sk_buff *next, *prev;
- 
--	list->qlen--;
-+	WRITE_ONCE(list->qlen, list->qlen - 1);
- 	next	   = skb->next;
- 	prev	   = skb->prev;
- 	skb->next  = skb->prev = NULL;
-diff --git a/net/unix/af_unix.c b/net/unix/af_unix.c
-index 321af97c7bbe..62c12cb5763e 100644
---- a/net/unix/af_unix.c
-+++ b/net/unix/af_unix.c
-@@ -189,11 +189,17 @@ static inline int unix_may_send(struct sock *sk, struct sock *osk)
- 	return unix_peer(osk) == NULL || unix_our_peer(sk, osk);
- }
- 
--static inline int unix_recvq_full(struct sock const *sk)
-+static inline int unix_recvq_full(const struct sock *sk)
- {
- 	return skb_queue_len(&sk->sk_receive_queue) > sk->sk_max_ack_backlog;
- }
- 
-+static inline int unix_recvq_full_lockless(const struct sock *sk)
-+{
-+	return skb_queue_len_lockless(&sk->sk_receive_queue) >
-+		READ_ONCE(sk->sk_max_ack_backlog);
-+}
-+
- struct sock *unix_peer_get(struct sock *s)
- {
- 	struct sock *peer;
-@@ -1758,7 +1764,8 @@ static int unix_dgram_sendmsg(struct socket *sock, struct msghdr *msg,
- 	 * - unix_peer(sk) == sk by time of get but disconnected before lock
- 	 */
- 	if (other != sk &&
--	    unlikely(unix_peer(other) != sk && unix_recvq_full(other))) {
-+	    unlikely(unix_peer(other) != sk &&
-+	    unix_recvq_full_lockless(other))) {
- 		if (timeo) {
- 			timeo = unix_wait_for_peer(other, timeo);
- 
--- 
-1.8.3.1
-
+Calvin
