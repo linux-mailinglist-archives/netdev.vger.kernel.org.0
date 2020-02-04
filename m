@@ -2,140 +2,161 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id D8DCC1520DA
-	for <lists+netdev@lfdr.de>; Tue,  4 Feb 2020 20:13:34 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E6F2B1520F0
+	for <lists+netdev@lfdr.de>; Tue,  4 Feb 2020 20:19:35 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727486AbgBDTNa (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 4 Feb 2020 14:13:30 -0500
-Received: from mail-qk1-f194.google.com ([209.85.222.194]:36328 "EHLO
-        mail-qk1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727308AbgBDTNa (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 4 Feb 2020 14:13:30 -0500
-Received: by mail-qk1-f194.google.com with SMTP id w25so19138475qki.3;
-        Tue, 04 Feb 2020 11:13:29 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=bdX909F5cI382fCwL2BmbcR0X3LXro/I1upGDSYHuzo=;
-        b=af9b04eiFve+KyP+LhZf60HCVL8lPPYPwQ3FEmqeZfugnYDSuPcWsvjoIrXPo6YCva
-         Sc1FERU+4ZaaJsFfjiA+Ilwn0S5M+WFGlLJYvVeb3SEJ91x2vP63V+QrjbzKaZ7E0Lvs
-         QYcF+eLurguVf0WwaTyU99Y9wxY/l/BcQhknatNYVhyeIGROiRm+pSTnMqL7puw8leTx
-         YHFXfMcvNO7MNPf2hmS9+TQ1OLDH3/FYxrZWfKKNdej+Bjmyi3nYUvRsQrf5jf4/i9RI
-         oHbybLHDDO4NXvJzLAlQulpZD6bxgLg2iOA6Rg9/FtpCBh34ZJ4fUOiUP+PAf/YXIMmn
-         cVJw==
+        id S1727461AbgBDTTe (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 4 Feb 2020 14:19:34 -0500
+Received: from us-smtp-delivery-1.mimecast.com ([205.139.110.120]:21623 "EHLO
+        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+        with ESMTP id S1727369AbgBDTTe (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 4 Feb 2020 14:19:34 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1580843972;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=k0pjhqQ38lLEsOHy4AcSgtj8v6zTX3VHqcHQyJnlSjY=;
+        b=EDbHNmG9ar1hS4xlFZ9ugxBuZ1PKELpVMEXSiz56JJrSjC8fJibtge0Sf1PWQ3n3X67YL4
+        e8u39MapBVUU08rvWiTpXfMlWseTZBe5eIQOSXMMiLqhaVp94XAhalqjCCREtZEEd1aNn3
+        8CHIe44AoHxIqw38l2o2alpcfilnPHY=
+Received: from mail-lf1-f71.google.com (mail-lf1-f71.google.com
+ [209.85.167.71]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-412-AMVEi87CM-e90IbWEC24pg-1; Tue, 04 Feb 2020 14:19:28 -0500
+X-MC-Unique: AMVEi87CM-e90IbWEC24pg-1
+Received: by mail-lf1-f71.google.com with SMTP id z3so2642790lfq.22
+        for <netdev@vger.kernel.org>; Tue, 04 Feb 2020 11:19:28 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=bdX909F5cI382fCwL2BmbcR0X3LXro/I1upGDSYHuzo=;
-        b=ceqX/Ho2o3GpMXx6jY+g1mEVCxu6TtkGQXEPlpOTdu9A2UXQUbOhqcLp2JP+2ZPtYF
-         uBs3hSjMrqPCbVpcVZ+yCJ3cjmNOLFnRv50j+8/mM3bXQuhC4RVS7RqVmZaKI8XT8qOJ
-         IBZ6zPQHlLXAqWN0vjhJuOJiBzH8fBclSsCN/Dk1xF0E0Jv62opeJVBd5HVZviR7ZHvN
-         Q62fQdYueKub0dQJC7+pAFQya8addXpaMRuQfNkj8+kA48DAnWl41eirBmIbXBEmnh9R
-         Gm4DTCnhrnByd3xpfEkus+vLVzHrIfjAOjR1c4hUJlcep2YbaoKfEDrUlgXq9uy4god8
-         sQrQ==
-X-Gm-Message-State: APjAAAUnFo08sLklh9XQJ8y5zNX3+UTzUuERki4uwf2dehkCfYpe4W3u
-        JNjMnjb2L3uUVjH83xGYDtb8q9SIPqvG1Fsfvpc=
-X-Google-Smtp-Source: APXvYqzL2qBK84KG5kdgM/FLguBsVyHKuNA+SYxiM1gbwqv39K/jDfeV7q5nmkTTa6/okXiRZyHcbl5ya+Yw7DY8LmY=
-X-Received: by 2002:a37:63c7:: with SMTP id x190mr30030638qkb.232.1580843609003;
- Tue, 04 Feb 2020 11:13:29 -0800 (PST)
-MIME-Version: 1.0
-References: <20200128021145.36774-1-palmerdabbelt@google.com> <20200128021145.36774-5-palmerdabbelt@google.com>
-In-Reply-To: <20200128021145.36774-5-palmerdabbelt@google.com>
-From:   =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@gmail.com>
-Date:   Tue, 4 Feb 2020 20:13:17 +0100
-Message-ID: <CAJ+HfNjkacY-KStgGJMgvQh2=2OsMnH6Saij+nAPBqQrSJcNWw@mail.gmail.com>
-Subject: Re: [PATCH 4/4] arm64: bpf: Elide some moves to a0 after calls
-To:     Palmer Dabbelt <palmerdabbelt@google.com>
-Cc:     Daniel Borkmann <daniel@iogearbox.net>,
-        Alexei Starovoitov <ast@kernel.org>, zlim.lnx@gmail.com,
-        catalin.marinas@arm.com, will@kernel.org,
+        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
+         :message-id:mime-version:content-transfer-encoding;
+        bh=k0pjhqQ38lLEsOHy4AcSgtj8v6zTX3VHqcHQyJnlSjY=;
+        b=X8jTm72ZdRbeMmQtz8fr100v2j2Je0Nr846tm+/CInlWwyZZ9+sSTVbPC+63PB96DB
+         /lQHX3v74wp/e786TxeFK6GmNiP1dyE7w5CfPpB389So3gqH6ouugnZ40EHp1SRrQwTy
+         Ksyhr5Ldkg3P1cJrC2eDPKG/ATNH5x+juHI6iT0NWWrc+UQLKJ26A4cLJL3loVePLDIX
+         rOtPmpdP6/fJmwvvbVaJ+SHhwoz8i9C/B+xz+rLi1/f6oF1tdi80Lxli7XG1kzCQOJ5V
+         vhmtHjSEuR8vx+Z+PW45AHO1bNgjjB3J0rAoZBOeaj4++ySMYvJOK0NarCbiwxWUEDpK
+         Dvmw==
+X-Gm-Message-State: APjAAAXd5rKD1U6hi7FbE/KqdnTTijQDOhZSNABjpW/BpxBjPz2MZgX4
+        Y5ZFGhHFNyEfSVICZuaO9m2AuWUm3Ynju2gB7U0BuQSeux1PkGcsIsw0thhHNdsvEBFiLGqpHeU
+        ufrTdGr1xtqgyAce9
+X-Received: by 2002:a2e:a404:: with SMTP id p4mr18722649ljn.234.1580843967224;
+        Tue, 04 Feb 2020 11:19:27 -0800 (PST)
+X-Google-Smtp-Source: APXvYqzjvtMf2bfhzg268ZEIuVd0j8Vz7vTbbgj1be3aFsRivKNgBMLzW1BZjWry/ZTV+Ze1XTav7A==
+X-Received: by 2002:a2e:a404:: with SMTP id p4mr18722636ljn.234.1580843966957;
+        Tue, 04 Feb 2020 11:19:26 -0800 (PST)
+Received: from alrua-x1.borgediget.toke.dk ([45.145.92.2])
+        by smtp.gmail.com with ESMTPSA id t1sm12167127lji.98.2020.02.04.11.19.26
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 04 Feb 2020 11:19:26 -0800 (PST)
+Received: by alrua-x1.borgediget.toke.dk (Postfix, from userid 1000)
+        id 60B0D1802D4; Tue,  4 Feb 2020 20:19:23 +0100 (CET)
+From:   Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
+To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Cc:     David Ahern <dsahern@gmail.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Stephen Hemminger <stephen@networkplumber.org>,
+        Alexei Starovoitov <ast@kernel.org>,
         Martin KaFai Lau <kafai@fb.com>,
         Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        Andrii Nakryiko <andriin@fb.com>,
-        Shuah Khan <shuah@kernel.org>, Netdev <netdev@vger.kernel.org>,
-        bpf <bpf@vger.kernel.org>, linux-arm-kernel@lists.infradead.org,
-        LKML <linux-kernel@vger.kernel.org>,
-        linux-kselftest@vger.kernel.org,
-        clang-built-linux@googlegroups.com, kernel-team@android.com
-Content-Type: text/plain; charset="UTF-8"
+        David Miller <davem@davemloft.net>,
+        Jesper Dangaard Brouer <brouer@redhat.com>,
+        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>
+Subject: Re: [RFC bpf-next 0/5] Convert iproute2 to use libbpf (WIP)
+In-Reply-To: <CAEf4BzYGp95MKjBxNay2w=9RhFAEUCrZ8_y1pqzdG-fUyY63=w@mail.gmail.com>
+References: <20190820114706.18546-1-toke@redhat.com> <CAEf4BzZxb7qZabw6aDVaTqnhr3AGtwEo+DbuBR9U9tJr+qVuyg@mail.gmail.com> <87blwiqlc8.fsf@toke.dk> <CAEf4BzYMKPbfOu4a4UDEfJVcNW1-KvRwJ7PVo+Mf_1YUJgE4Qw@mail.gmail.com> <43e8c177-cc9c-ca0b-1622-e30a7a1281b7@iogearbox.net> <CAEf4Bzab_w0AXy5P9mG14mcyJVgUCzuuNda5FpU5wSEwUciGfg@mail.gmail.com> <87tva8m85t.fsf@toke.dk> <CAEf4BzbzQwLn87G046ZbkLtTbY6WF6o8JkygcPLPGUSezgs9Tw@mail.gmail.com> <CAEf4BzZOAukJZzo4J5q3F2v4MswQ6nJh6G1_c0H0fOJCdc7t0A@mail.gmail.com> <87blqfcvnf.fsf@toke.dk> <CAEf4Bza4bSAzjFp2WDiPAM7hbKcKgAX4A8_TUN8V38gXV9GbTg@mail.gmail.com> <0bf50b22-a8e2-e3b3-aa53-7bd5dd5d4399@gmail.com> <CAEf4Bzbzz3s0bSF_CkP56NTDd+WBLAy0QrMvreShubetahuH0g@mail.gmail.com> <2cf136a4-7f0e-f4b7-1ecb-6cbf6cb6c8ff@gmail.com> <CAEf4Bzb1fXdGFz7BkrQF7uMhBD1F-K_kudhLR5wC-+kA7PMqnA@mail.gmail.com> <87h80669o6.fsf@toke.dk> <CAEf4BzYGp95MKjBxNay2w=9RhFAEUCrZ8_y1pqzdG-fUyY63=w@mail.gmail.com>
+X-Clacks-Overhead: GNU Terry Pratchett
+Date:   Tue, 04 Feb 2020 20:19:23 +0100
+Message-ID: <8736bqf9dw.fsf@toke.dk>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
 Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 28 Jan 2020 at 03:15, Palmer Dabbelt <palmerdabbelt@google.com> wro=
-te:
+Andrii Nakryiko <andrii.nakryiko@gmail.com> writes:
+
+> On Tue, Feb 4, 2020 at 12:25 AM Toke H=C3=B8iland-J=C3=B8rgensen <toke@re=
+dhat.com> wrote:
+>>
+>> Andrii Nakryiko <andrii.nakryiko@gmail.com> writes:
+>>
+>> > On Mon, Feb 3, 2020 at 8:53 PM David Ahern <dsahern@gmail.com> wrote:
+>> >>
+>> >> On 2/3/20 8:41 PM, Andrii Nakryiko wrote:
+>> >> > On Mon, Feb 3, 2020 at 5:46 PM David Ahern <dsahern@gmail.com> wrot=
+e:
+>> >> >>
+>> >> >> On 2/3/20 5:56 PM, Andrii Nakryiko wrote:
+>> >> >>> Great! Just to disambiguate and make sure we are in agreement, my=
+ hope
+>> >> >>> here is that iproute2 can completely delegate to libbpf all the E=
+LF
+>> >> >>>
+>> >> >>
+>> >> >> iproute2 needs to compile and continue working as is when libbpf i=
+s not
+>> >> >> available. e.g., add check in configure to define HAVE_LIBBPF and =
+move
+>> >> >> the existing code and move under else branch.
+>> >> >
+>> >> > Wouldn't it be better to statically compile against libbpf in this
+>> >> > case and get rid a lot of BPF-related code and simplify the rest of
+>> >> > it? This can be easily done by using libbpf through submodule, the
+>> >> > same way as BCC and pahole do it.
+>> >> >
+>> >>
+>> >> iproute2 compiles today and runs on older distributions and older
+>> >> distributions with newer kernels. That needs to hold true after the m=
+ove
+>> >> to libbpf.
+>> >
+>> > And by statically compiling against libbpf, checked out as a
+>> > submodule, that will still hold true, wouldn't it? Or there is some
+>> > complications I'm missing? Libbpf is designed to handle old kernels
+>> > with no problems.
+>>
+>> My plan was to use the same configure test I'm using for xdp-tools
+>> (where I in turn copied the structure of the configure script from
+>> iproute2):
+>>
+>> https://github.com/xdp-project/xdp-tools/blob/master/configure#L59
+>>
+>> This will look for a system libbpf install and compile against it if it
+>> is compatible, and otherwise fall back to a statically linking against a
+>> git submodule.
 >
-> On arm64, the BPF function ABI doesn't match the C function ABI.  Specifi=
-cally,
-> arm64 encodes calls as `a0 =3D f(a0, a1, ...)` while BPF encodes calls as
-> `BPF_REG_0 =3D f(BPF_REG_1, BPF_REG_2, ...)`.  This discrepancy results i=
-n
-> function calls being encoded as a two operations sequence that first does=
- a C
-> ABI calls and then moves the return register into the right place.  This
-> results in one extra instruction for every function call.
->
+> How will this work when build host has libbpf installed, but target
+> host doesn't? You'll get dynamic linker error when trying to run that
+> tool.
 
-It's a lot of extra work for one reg-to-reg move, but it always
-annoyed me in the RISC-V JIT. :-) So, if it *can* be avoided, why not.
+That's called dependency tracking; distros have various ways of going
+about that :)
 
-[...]
->
-> +static int dead_register(const struct jit_ctx *ctx, int offset, int bpf_=
-reg)
+But yeah, if you're going to do you own cross-compilation, you'd
+probably want to just force using the static library.
 
-Given that a lot of archs (RISC-V, arm?, MIPS?) might benefit from
-this, it would be nice if it could be made generic (it already is
-pretty much), and moved to kernel/bpf.
+> If the goal is to have a reliable tool working everywhere, and you
+> already support having libbpf as a submodule, why not always use
+> submodule's libbpf? What's the concern? Libbpf is a small library, I
+> don't think a binary size argument is enough reason to not do this. On
+> the other hand, by using libbpf from submodule, your tool is built
+> *and tested* with a well-known libbpf version that tool-producer
+> controls.
 
-> +{
-> +       const struct bpf_prog *prog =3D ctx->prog;
-> +       int i;
-> +
-> +       for (i =3D offset; i < prog->len; ++i) {
-> +               const struct bpf_insn *insn =3D &prog->insnsi[i];
-> +               const u8 code =3D insn->code;
-> +               const u8 bpf_dst =3D insn->dst_reg;
-> +               const u8 bpf_src =3D insn->src_reg;
-> +               const int writes_dst =3D !((code & BPF_ST) || (code & BPF=
-_STX)
-> +                                        || (code & BPF_JMP32) || (code &=
- BPF_JMP));
-> +               const int reads_dst  =3D !((code & BPF_LD));
-> +               const int reads_src  =3D true;
-> +
-> +               /* Calls are a bit special in that they clobber a bunch o=
-f regisers. */
-> +               if ((code & (BPF_JMP | BPF_CALL)) || (code & (BPF_JMP | B=
-PF_TAIL_CALL)))
-> +                       if ((bpf_reg >=3D BPF_REG_0) && (bpf_reg <=3D BPF=
-_REG_5))
-> +                               return false;
-> +
-> +               /* Registers that are read before they're written are ali=
-ve.
-> +                * Most opcodes are of the form DST =3D DEST op SRC, but =
-there
-> +                * are some exceptions.*/
-> +               if (bpf_src =3D=3D bpf_reg && reads_src)
-> +                       return false;
-> +
-> +               if (bpf_dst =3D=3D bpf_reg && reads_dst)
-> +                       return false;
-> +
-> +               if (bpf_dst =3D=3D bpf_reg && writes_dst)
-> +                       return true;
-> +
-> +               /* Most BPF instructions are 8 bits long, but some ar 16 =
-bits
-> +                * long. */
+I thought we already had this discussion? :)
 
-A bunch of spelling errors above.
+libbpf is a library like any other. Distros that package the library
+want the tools that use it to be dynamically linked against it so
+library upgrades (especially of the CVE-fixing kind) get picked up by
+all users. Other distros have memory and space constraints (iproute2 is
+shipped on OpenWrt, for instance, which is *extremely*
+space-constrained). And yeah, other deployments don't care and will just
+statically compile in the vendored version. So we'll need to support all
+of those use cases.
 
+-Toke
 
-Cheers,
-Bj=C3=B6rn
