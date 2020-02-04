@@ -2,93 +2,123 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 30E6C15202A
-	for <lists+netdev@lfdr.de>; Tue,  4 Feb 2020 19:03:23 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 842F915202F
+	for <lists+netdev@lfdr.de>; Tue,  4 Feb 2020 19:06:15 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727472AbgBDSDT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 4 Feb 2020 13:03:19 -0500
-Received: from mail-pg1-f195.google.com ([209.85.215.195]:36043 "EHLO
-        mail-pg1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727355AbgBDSDT (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 4 Feb 2020 13:03:19 -0500
-Received: by mail-pg1-f195.google.com with SMTP id k3so10038543pgc.3;
-        Tue, 04 Feb 2020 10:03:18 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:references:from:message-id:date:user-agent:mime-version
-         :in-reply-to:content-language:content-transfer-encoding;
-        bh=E8TOUJb1LB1CGjhRZlBmQYfzHnpM6fLCA335raKvA2E=;
-        b=MLQxWerqYuNYbiSuIddhGPcw/f2KrN+IYw9SJLGy3qyOjA+Ux1wMpnyc/zWnle0AlK
-         bAb1WtyMcY7alctYQTVQQcinJaoqkMOzRE3UAYXco3OFid/MXm6q1SlmETLRK51m7+iN
-         xqOcxIedAgSPRfOuRylvDKysGj60wPSZ2dTPrJKUU6WpL53y8Gdog2li7PFyvzdtCYPz
-         yR3vC/HuccTRevBQy8eeWnFN5qFlVRgKOu5Edvm9UqVfHFqZ7Mc+pRsq0LJCWx/TB8ic
-         U+bXabrIHvoJO8uMu5An9CpQmjNNyTZOCRYlyMFMzXgl1DuwsCafCXBP24keqA66EERk
-         wfPQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=E8TOUJb1LB1CGjhRZlBmQYfzHnpM6fLCA335raKvA2E=;
-        b=AZp603gJ7ltvYDlaGu7hgcIhv9HddJMw/lUplDpcfD2LqZLJ1h4mfJtXGpSR1pUfPc
-         UGzOngTLC34SZ6BVtrdWdAYB6+lKDmIrJE79BdRx2OlGfAoQoIauXmrexIzDJ7YKizLE
-         c+mb1Ni+IEY7DRIArxDhfYZWbTj209+Au4KQ+ZWI26m6GKMBEoG/jHfUq/MmTpkfe1r+
-         4AlrqIH66vYzL7bDZcEYDLBMFxw4tMB9idQ/7tfDYKEbPGfCHjrI2GGIvAAUpMoljbO4
-         lTxWbqJP086b3vBj9y1ya6D18KIxQGlBua5xrGwpvNIBeUkT/3qZFa/QYW7DijuEwbSk
-         8oWA==
-X-Gm-Message-State: APjAAAVk2yAoFvlMVjzHRyRoUU3sXzwxWzlb9X9lZ6o9bN1Gxb0PNbBe
-        6gYXZkSI+OIvQGW/Wpqj22qXzCxE
-X-Google-Smtp-Source: APXvYqwpCEt7Ve+QDFk7hfb8VlqxpZPJCjxtg1oAHNkMcmdWpBb398WQboTbu4dVUuImidW2CetKMw==
-X-Received: by 2002:a63:515d:: with SMTP id r29mr24456711pgl.265.1580839398398;
-        Tue, 04 Feb 2020 10:03:18 -0800 (PST)
-Received: from ?IPv6:2620:15c:2c1:200:55c7:81e6:c7d8:94b? ([2620:15c:2c1:200:55c7:81e6:c7d8:94b])
-        by smtp.gmail.com with ESMTPSA id w14sm3022453pgi.22.2020.02.04.10.03.17
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 04 Feb 2020 10:03:17 -0800 (PST)
-Subject: Re: memory leak in tcindex_set_parms
-To:     syzbot <syzbot+f0bbb2287b8993d4fa74@syzkaller.appspotmail.com>,
-        davem@davemloft.net, jhs@mojatatu.com, jiri@resnulli.us,
-        kuba@kernel.org, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org, syzkaller-bugs@googlegroups.com,
-        xiyou.wangcong@gmail.com
-References: <0000000000009a59d2059dc3c8e9@google.com>
-From:   Eric Dumazet <eric.dumazet@gmail.com>
-Message-ID: <a1673e4f-6382-d7df-6942-6e4ffd2b81ce@gmail.com>
-Date:   Tue, 4 Feb 2020 10:03:16 -0800
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.2.2
-MIME-Version: 1.0
-In-Reply-To: <0000000000009a59d2059dc3c8e9@google.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+        id S1727390AbgBDSGN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 4 Feb 2020 13:06:13 -0500
+Received: from ma1-aaemail-dr-lapp02.apple.com ([17.171.2.68]:60252 "EHLO
+        ma1-aaemail-dr-lapp02.apple.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1727355AbgBDSGN (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 4 Feb 2020 13:06:13 -0500
+Received: from pps.filterd (ma1-aaemail-dr-lapp02.apple.com [127.0.0.1])
+        by ma1-aaemail-dr-lapp02.apple.com (8.16.0.27/8.16.0.27) with SMTP id 014I24OA014731;
+        Tue, 4 Feb 2020 10:06:05 -0800
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=apple.com; h=sender : date : from :
+ to : cc : subject : message-id : references : mime-version : content-type
+ : in-reply-to; s=20180706;
+ bh=lNgQb1UhzFYTVYGl2krVP245ZrxITuG/kEiT9jXWpUU=;
+ b=sr7N33cJi1kEetnSP/l5TM86WxYqETqzoyxyqBU9s4bEbJ+bHZeEtBmGPs7g9a37aZdL
+ 5AYXjIMl8X4J7NQS3NEEKCKF79J7Xb9omZmdoP19/TtgCP0uYoJniIYEAwYV47Dwpgga
+ r52m9gxwuU4i+aXbGcWUpSeJMnkPOmrml0c74wmmo0N83uEOysPHCctrQBzmVDO27Vbu
+ 9zGqEOxj6D8qCkNABPlsjgLDC5x8734/i5/3REjD5AK0Ey//AkAjvMA+Oqzz+LMW+Lg+
+ qIw7xKPV8izqnf/2MGfBwC78n72K2B2nk5wW6RflUq8RUYLNWsNmIBRT+xn3q4VTcweg lQ== 
+Received: from rn-mailsvcp-mta-lapp04.rno.apple.com (rn-mailsvcp-mta-lapp04.rno.apple.com [10.225.203.152])
+        by ma1-aaemail-dr-lapp02.apple.com with ESMTP id 2xw6vy48tb-13
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NO);
+        Tue, 04 Feb 2020 10:06:05 -0800
+Received: from nwk-mmpp-sz09.apple.com
+ (nwk-mmpp-sz09.apple.com [17.128.115.80]) by
+ rn-mailsvcp-mta-lapp04.rno.apple.com
+ (Oracle Communications Messaging Server 8.1.0.1.20190704 64bit (built Jul  4
+ 2019)) with ESMTPS id <0Q5600PM4VM2XJJ0@rn-mailsvcp-mta-lapp04.rno.apple.com>;
+ Tue, 04 Feb 2020 10:06:02 -0800 (PST)
+Received: from process_milters-daemon.nwk-mmpp-sz09.apple.com by
+ nwk-mmpp-sz09.apple.com
+ (Oracle Communications Messaging Server 8.0.2.4.20190507 64bit (built May  7
+ 2019)) id <0Q5600600UTDCY00@nwk-mmpp-sz09.apple.com>; Tue,
+ 04 Feb 2020 10:06:02 -0800 (PST)
+X-Va-A: 
+X-Va-T-CD: 8ebbce1cad3882733c414095541cac94
+X-Va-E-CD: e1e3fb5ed01ea10f29d1a59de909f167
+X-Va-R-CD: d703191147a13c16905fb13b3e7ca23b
+X-Va-CD: 0
+X-Va-ID: f5fbfcb1-c4ff-4c00-8bd8-fc9817c1eae1
+X-V-A:  
+X-V-T-CD: 8ebbce1cad3882733c414095541cac94
+X-V-E-CD: e1e3fb5ed01ea10f29d1a59de909f167
+X-V-R-CD: d703191147a13c16905fb13b3e7ca23b
+X-V-CD: 0
+X-V-ID: 77b184eb-a022-4d15-9fd9-c88fa1e87659
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:,,
+ definitions=2020-02-04_06:,, signatures=0
+Received: from localhost ([17.234.127.62]) by nwk-mmpp-sz09.apple.com
+ (Oracle Communications Messaging Server 8.0.2.4.20190507 64bit (built May  7
+ 2019)) with ESMTPSA id <0Q56005ADVLT7Q60@nwk-mmpp-sz09.apple.com>; Tue,
+ 04 Feb 2020 10:05:54 -0800 (PST)
+Date:   Tue, 04 Feb 2020 10:05:53 -0800
+From:   Christoph Paasch <cpaasch@apple.com>
+To:     Florian Westphal <fw@strlen.de>
+Cc:     netdev@vger.kernel.org, Paolo Abeni <pabeni@redhat.com>
+Subject: Re: [PATCH net] mptcp: fix use-after-free on tcp fallback
+Message-id: <20200204180553.GG33105@MacBook-Pro-64.local>
+References: <20200204171230.618-1-fw@strlen.de>
+MIME-version: 1.0
+Content-type: text/plain; charset=us-ascii
+Content-disposition: inline
+In-reply-to: <20200204171230.618-1-fw@strlen.de>
+User-Agent: Mutt/1.12.2 (2019-09-21)
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:,, definitions=2020-02-04_06:,,
+ signatures=0
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-
-
-On 2/4/20 9:58 AM, syzbot wrote:
-> Hello,
+On 04/02/20 - 18:12:30, Florian Westphal wrote:
+> When an mptcp socket connects to a tcp peer or when a middlebox interferes
+> with tcp options, mptcp needs to fall back to plain tcp.
+> Problem is that mptcp is trying to be too clever in this case:
 > 
-> syzbot found the following crash on:
+> It attempts to close the mptcp meta sk and transparently replace it with
+> the (only) subflow tcp sk.
 > 
-> HEAD commit:    322bf2d3 Merge branch 'for-5.6' of git://git.kernel.org/pu..
-> git tree:       upstream
-> console output: https://syzkaller.appspot.com/x/log.txt?x=1111f8e6e00000
-> kernel config:  https://syzkaller.appspot.com/x/.config?x=8d0490614a000a37
-> dashboard link: https://syzkaller.appspot.com/bug?extid=f0bbb2287b8993d4fa74
-> compiler:       gcc (GCC) 9.0.0 20181231 (experimental)
-> syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=17db90f6e00000
-> C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=13a94511e00000
+> Unfortunately, this is racy -- the socket is already exposed to userspace.
+> Any parallel calls to send/recv/setsockopt etc. can cause use-after-free:
 > 
-> IMPORTANT: if you fix the bug, please add the following tag to the commit:
-> Reported-by: syzbot+f0bbb2287b8993d4fa74@syzkaller.appspotmail.com
+> BUG: KASAN: use-after-free in atomic_try_cmpxchg include/asm-generic/atomic-instrumented.h:693 [inline]
+> CPU: 1 PID: 2083 Comm: syz-executor.1 Not tainted 5.5.0 #2
+>  atomic_try_cmpxchg include/asm-generic/atomic-instrumented.h:693 [inline]
+>  queued_spin_lock include/asm-generic/qspinlock.h:78 [inline]
+>  do_raw_spin_lock include/linux/spinlock.h:181 [inline]
+>  __raw_spin_lock_bh include/linux/spinlock_api_smp.h:136 [inline]
+>  _raw_spin_lock_bh+0x71/0xd0 kernel/locking/spinlock.c:175
+>  spin_lock_bh include/linux/spinlock.h:343 [inline]
+>  __lock_sock+0x105/0x190 net/core/sock.c:2414
+>  lock_sock_nested+0x10f/0x140 net/core/sock.c:2938
+>  lock_sock include/net/sock.h:1516 [inline]
+>  mptcp_setsockopt+0x2f/0x1f0 net/mptcp/protocol.c:800
+>  __sys_setsockopt+0x152/0x240 net/socket.c:2130
+>  __do_sys_setsockopt net/socket.c:2146 [inline]
+>  __se_sys_setsockopt net/socket.c:2143 [inline]
+>  __x64_sys_setsockopt+0xba/0x150 net/socket.c:2143
+>  do_syscall_64+0xb7/0x3d0 arch/x86/entry/common.c:294
+>  entry_SYSCALL_64_after_hwframe+0x44/0xa9
 > 
->
+> While the use-after-free can be resolved, there is another problem:
+> sock->ops and sock->sk assignments are not atomic, i.e. we may get calls
+> into mptcp functions with sock->sk already pointing at the subflow socket,
+> or calls into tcp functions with a mptcp meta sk.
+> 
+> Remove the fallback code and call the relevant functions for the (only)
+> subflow in case the mptcp socket is connected to tcp peer.
+> 
+> Reported-by: Christoph Paasch <cpaasch@apple.com>
+> Diagnosed-by: Paolo Abeni <pabeni@redhat.com>
+> Signed-off-by: Florian Westphal <fw@strlen.de>
+> ---
+>  net/mptcp/protocol.c | 76 ++++----------------------------------------
+>  1 file changed, 6 insertions(+), 70 deletions(-)
 
-Might have been fixed already ?
-
-commit 599be01ee567b61f4471ee8078870847d0a11e8e    net_sched: fix an OOB access in cls_tcindex
+Tested-by: Christoph Paasch <cpaasch@apple.com>
 
