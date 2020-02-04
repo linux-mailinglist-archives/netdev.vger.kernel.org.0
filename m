@@ -2,225 +2,137 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id DD3AC151A79
-	for <lists+netdev@lfdr.de>; Tue,  4 Feb 2020 13:25:12 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6EE04151ACC
+	for <lists+netdev@lfdr.de>; Tue,  4 Feb 2020 13:52:19 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727156AbgBDMZI convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Tue, 4 Feb 2020 07:25:08 -0500
-Received: from shards.monkeyblade.net ([23.128.96.9]:42898 "EHLO
-        shards.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727119AbgBDMZI (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 4 Feb 2020 07:25:08 -0500
-Received: from localhost (unknown [IPv6:2001:982:756:1:57a7:3bfd:5e85:defb])
-        (using TLSv1 with cipher AES256-SHA (256/256 bits))
-        (Client did not present a certificate)
-        (Authenticated sender: davem-davemloft)
-        by shards.monkeyblade.net (Postfix) with ESMTPSA id A773213CF2FCF;
-        Tue,  4 Feb 2020 04:25:06 -0800 (PST)
-Date:   Tue, 04 Feb 2020 13:25:03 +0100 (CET)
-Message-Id: <20200204.132503.783799057091958363.davem@davemloft.net>
-To:     torvalds@linux-foundation.org
-CC:     akpm@linux-foundation.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: [GIT] Networking
-From:   David Miller <davem@davemloft.net>
-X-Mailer: Mew version 6.8 on Emacs 26.3
-Mime-Version: 1.0
-Content-Type: Text/Plain; charset=iso-8859-1
-Content-Transfer-Encoding: 8BIT
-X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Tue, 04 Feb 2020 04:25:07 -0800 (PST)
+        id S1727244AbgBDMwQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 4 Feb 2020 07:52:16 -0500
+Received: from mail-eopbgr80088.outbound.protection.outlook.com ([40.107.8.88]:11652
+        "EHLO EUR04-VI1-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1727126AbgBDMwP (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 4 Feb 2020 07:52:15 -0500
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=Hunt6rBe5ULWjDyCI35n3UJUQlpG9OrIt8B4HTj8A/6CNhKX+M1fJA3fg1/UlTgGuPY+rUNsxyjJsBPP/ZDf1/HIbk5+Afd9CTSYMhEOt3VBV7ER/j94iYoqEYNaxzCiPOFUyUTWYzJTA5Dn/j7KLhuAxZzZypioYPis1vHuoXui0pdzLDhD3A1beUHeiNfqtFCj6zFX53WZ0x8WAeyHQv3gFp0T9GnxyprHRO7GrNH6YLJgy0w6mTDPkY41LbdqnfQe0V0HNQz9So2jrUQk8RSZNFjbcmm0KBETnkAwAyO20IcDeHVxc4/71W8dwD1EG3GMKKI69l4sChtdM9IShg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=mpC4kyVFwC3rB+vTbnM6pkI+Hr9jmeheaKUwckA2Hcg=;
+ b=gjRV4Hbw7onbeJk9nKyGW+Uq8b7uggDcpvhboqbndYdi7rkLGVuHj4RuQ8E24asmPVebCluUYvSfOZFOR82u9ARdF0GZfXEMGNXjL/+OP1zD4D1X6LTHznf8DExHOpVVlEjr8OWPGbhOabGzZGzr6ZQv8jPpFDyWuwNKlv11iSHJ5+HYp6wdljI/Z59WxLWshEH+Jm/tlcbb22SQXrPvvk5HYFAkhJnUntCWNHGFhhrBzg2tt1Mq0WDLOzwExzS1czfQ5mAn6HM0JI5s4/XwzUNz5fVo+2aJO60PZMfm90NZR0rX4PFDQAj424lQC25mi/VmgNOrfcWpuP0qf0WMoQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=mellanox.com; dmarc=pass action=none header.from=mellanox.com;
+ dkim=pass header.d=mellanox.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Mellanox.com;
+ s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=mpC4kyVFwC3rB+vTbnM6pkI+Hr9jmeheaKUwckA2Hcg=;
+ b=FrmDGmLPgPi0FyJS7/DaY3IN2yXHT6wgBEs9vOgf+BXGG8HJunKkI+Onmmdz5zNE5knKPgmD9dTQueKNkA6+6o+RkP8AFzZ1PgUWEq1q4p2vYoqYFTz15x9sprMuJTle5LsttU6tK0A7es+NnTLaHG8h1crqfrrMmyu9rEz6QQg=
+Authentication-Results: spf=none (sender IP is )
+ smtp.mailfrom=jgg@mellanox.com; 
+Received: from VI1PR05MB4141.eurprd05.prod.outlook.com (52.133.14.15) by
+ VI1PR05MB5277.eurprd05.prod.outlook.com (20.178.9.23) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.2686.27; Tue, 4 Feb 2020 12:52:08 +0000
+Received: from VI1PR05MB4141.eurprd05.prod.outlook.com
+ ([fe80::1c00:7925:d5c6:d60d]) by VI1PR05MB4141.eurprd05.prod.outlook.com
+ ([fe80::1c00:7925:d5c6:d60d%7]) with mapi id 15.20.2686.031; Tue, 4 Feb 2020
+ 12:52:08 +0000
+Date:   Tue, 4 Feb 2020 08:52:04 -0400
+From:   Jason Gunthorpe <jgg@mellanox.com>
+To:     Jason Wang <jasowang@redhat.com>
+Cc:     Zhu Lingshan <lingshan.zhu@linux.intel.com>, mst@redhat.com,
+        linux-kernel@vger.kernel.org, kvm@vger.kernel.org,
+        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
+        tiwei.bie@intel.com, maxime.coquelin@redhat.com,
+        cunming.liang@intel.com, zhihong.wang@intel.com,
+        rob.miller@broadcom.com, xiao.w.wang@intel.com,
+        haotian.wang@sifive.com, lingshan.zhu@intel.com,
+        eperezma@redhat.com, lulu@redhat.com, parav@mellanox.com,
+        kevin.tian@intel.com, stefanha@redhat.com, rdunlap@infradead.org,
+        hch@infradead.org, aadam@redhat.com, jakub.kicinski@netronome.com,
+        jiri@mellanox.com, shahafs@mellanox.com, hanand@xilinx.com,
+        mhabets@solarflare.com
+Subject: Re: [PATCH 5/5] vdpasim: vDPA device simulator
+Message-ID: <20200204125204.GS23346@mellanox.com>
+References: <20200116124231.20253-1-jasowang@redhat.com>
+ <20200116124231.20253-6-jasowang@redhat.com>
+ <1b86d188-0666-f6ab-e3b3-bec1cfbd0c76@linux.intel.com>
+ <cca7901b-51dd-4f4b-5c30-c42577ad5194@redhat.com>
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <cca7901b-51dd-4f4b-5c30-c42577ad5194@redhat.com>
+User-Agent: Mutt/1.9.4 (2018-02-28)
+X-ClientProxiedBy: MN2PR05CA0003.namprd05.prod.outlook.com
+ (2603:10b6:208:c0::16) To VI1PR05MB4141.eurprd05.prod.outlook.com
+ (2603:10a6:803:44::15)
+MIME-Version: 1.0
+Received: from mlx.ziepe.ca (142.68.57.212) by MN2PR05CA0003.namprd05.prod.outlook.com (2603:10b6:208:c0::16) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.2707.9 via Frontend Transport; Tue, 4 Feb 2020 12:52:07 +0000
+Received: from jgg by mlx.ziepe.ca with local (Exim 4.90_1)     (envelope-from <jgg@mellanox.com>)      id 1iyxgS-0001Mu-BA; Tue, 04 Feb 2020 08:52:04 -0400
+X-Originating-IP: [142.68.57.212]
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-HT: Tenant
+X-MS-Office365-Filtering-Correlation-Id: e1e6986e-e8ef-4d48-fd46-08d7a9710b22
+X-MS-TrafficTypeDiagnostic: VI1PR05MB5277:|VI1PR05MB5277:
+X-MS-Exchange-Transport-Forked: True
+X-Microsoft-Antispam-PRVS: <VI1PR05MB527710630800F2D39D9A8313CF030@VI1PR05MB5277.eurprd05.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:10000;
+X-Forefront-PRVS: 03030B9493
+X-Forefront-Antispam-Report: SFV:NSPM;SFS:(10009020)(4636009)(366004)(346002)(396003)(136003)(376002)(39860400002)(199004)(189003)(66946007)(66476007)(33656002)(66556008)(86362001)(8936002)(1076003)(478600001)(5660300002)(186003)(26005)(316002)(4326008)(2616005)(52116002)(9746002)(7416002)(9786002)(8676002)(6916009)(81156014)(81166006)(2906002)(36756003)(24400500001);DIR:OUT;SFP:1101;SCL:1;SRVR:VI1PR05MB5277;H:VI1PR05MB4141.eurprd05.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;A:1;MX:1;
+Received-SPF: None (protection.outlook.com: mellanox.com does not designate
+ permitted sender hosts)
+X-MS-Exchange-SenderADCheck: 1
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: XDISqpoPOpohiCFsSvYYY08kahaUNrwILL4J0MuhX8aLG8S9Y4/Popl13wQ/DsZcjmSmxh/QRpguSLLVn5uCEAS48JtE/rPoWvviSAfxsJLYYM2knNI1MkCJUjwpgCYZBRS2XkEyvWwYOiHg6yT2KrmGO089BHXLVz9EAQDBS8MON0iLsGjF1utTdeAZlsgrZylfI45x6tQmryGNDX23APC182Cn93uSGSXa8f6NP2n7p87Mqzf3rUIfGXxVXtxtqxEj1hH0FyO+4kvJouSdQdDzJUVdS59YWtHlFLBGJUdfo2pLulXw2O4a27Gtlj7z2GeoxDS9AkpvKNNaW7HHMMJkjPBSXXKTGTyVs5BrKS2Tjgaajc4yc+JI5ba/CW7+//7Z/mKYkIkcuk+JzTe645jvNDK1b1wrR9evemWKGlwbYEp0+CM5I35KBJBoJbOAkIW+HdG62GM+Z0gTNXqNJbUqfulH7jc6dUImhL/DuPTZRs6WIuh3VPYngZNiyDC5
+X-MS-Exchange-AntiSpam-MessageData: YjcQgx1HsdIJVIig40XIush/QH2MeDhlC6P9RL2dVyQ0pEdat2Fq/nWP7KYXfzYFJ17YLUQYp4SaWVW9+gN6HY3WyyMxXNXThLoU6wqfNj1Y49R9Ad2ynODCy+PxnvqfIqOykiOTNbSZaH7IF5W8ug==
+X-OriginatorOrg: Mellanox.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: e1e6986e-e8ef-4d48-fd46-08d7a9710b22
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 04 Feb 2020 12:52:08.1104
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: a652971c-7d2e-4d9b-a6a4-d149256f461b
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: HdXM5URTq/Pcq3bZwIiYkzxVTDdoYEq3DpCJnMoYQqo5TsX+hHFCC0pIDxUgEq9pv/+gNYCgzfrljqUby2nrUQ==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR05MB5277
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Tue, Feb 04, 2020 at 04:28:27PM +0800, Jason Wang wrote:
+> 
+> On 2020/2/4 下午4:21, Zhu Lingshan wrote:
+> > > +static const struct dma_map_ops vdpasim_dma_ops = {
+> > > +    .map_page = vdpasim_map_page,
+> > > +    .unmap_page = vdpasim_unmap_page,
+> > > +    .alloc = vdpasim_alloc_coherent,
+> > > +    .free = vdpasim_free_coherent,
+> > > +};
+> > > +
+> > 
+> > Hey Jason,
+> > 
+> > IMHO, it would be nice if dma_ops of the parent device could be re-used.
+> > vdpa_device is expecting to represent a physical device except this
+> > simulator, however, there are not enough information in vdpa_device.dev
+> > to indicating which kind physical device it attached to. Namely
+> > get_arch_dma_ops(struct bus type) can not work on vdpa_device.dev. Then
+> > it seems device drivers need to implement a wrap of dma_ops of parent
+> > devices. Can this work be done in the vdpa framework since it looks like
+> > a common task? Can "vd_dev->vdev.dev.parent = vdpa->dev->parent;" in
+> > virtio_vdpa_probe() do the work?
+> > 
+> > Thanks,
+> > BR
+> > Zhu Lingshan
+> 
+> 
+> Good catch.
+> 
+> I think we can.
 
-1) Use after free in rxrpc_put_local(), from David Howells.
+IMHO you need to specify some 'dma_device', not try and play tricks
+with dma_ops, or assuming the parent is always the device used for
+dma.
 
-2) Fix 64-bit division error in mlxsw, from Nathan Chancellor.
-
-3) Make sure we clear various bits of TCP state in response to
-   tcp_disconnect().  From Eric Dumazet.
-
-4) Fix netlink attribute policy in cls_rsvp, from Eric Dumazet.
-
-5) txtimer must be deleted in stmmac suspend(), from Nicolin Chen.
-
-6) Fix TC queue mapping in bnxt_en driver, from Michael Chan.
-
-7) Various netdevsim fixes from Taehee Yoo (use of uninitialized
-   data, snapshot panics, stack out of bounds, etc.)
-
-8) cls_tcindex changes hash table size after allocating the table,
-   fix from Cong Wang.
-
-9) Fix regression in the enforcement of session ID uniqueness in
-   l2tp.  We only have to enforce uniqueness for IP based tunnels
-   not UDP ones.  From Ridge Kennedy.
-
-Please pull, thanks a lot!
-
-The following changes since commit 9f68e3655aae6d49d6ba05dd263f99f33c2567af:
-
-  Merge tag 'drm-next-2020-01-30' of git://anongit.freedesktop.org/drm/drm (2020-01-30 08:04:01 -0800)
-
-are available in the Git repository at:
-
-  git://git.kernel.org/pub/scm/linux/kernel/git/netdev/net.git 
-
-for you to fetch changes up to bd5cd35b782abf5437fbd01dfaee12437d20e832:
-
-  gtp: use __GFP_NOWARN to avoid memalloc warning (2020-02-04 12:38:50 +0100)
-
-----------------------------------------------------------------
-Cong Wang (1):
-      net_sched: fix an OOB access in cls_tcindex
-
-Dan Carpenter (2):
-      octeontx2-pf: Fix an IS_ERR() vs NULL bug
-      qed: Fix a error code in qed_hw_init()
-
-David Howells (4):
-      rxrpc: Fix use-after-free in rxrpc_put_local()
-      rxrpc: Fix insufficient receive notification generation
-      rxrpc: Fix missing active use pinning of rxrpc_local object
-      rxrpc: Fix NULL pointer deref due to call->conn being cleared on disconnect
-
-David S. Miller (1):
-      Merge branch 'unbreak-basic-and-bpf-tdc-testcases'
-
-Davide Caratti (2):
-      tc-testing: fix eBPF tests failure on linux fresh clones
-      tc-testing: add missing 'nsPlugin' to basic.json
-
-Eric Dumazet (6):
-      tcp: clear tp->total_retrans in tcp_disconnect()
-      tcp: clear tp->delivered in tcp_disconnect()
-      tcp: clear tp->data_segs{in|out} in tcp_disconnect()
-      tcp: clear tp->segs_{in|out} in tcp_disconnect()
-      cls_rsvp: fix rsvp_policy
-      net: hsr: fix possible NULL deref in hsr_handle_frame()
-
-Jakub Kicinski (5):
-      Merge git://git.kernel.org/.../pablo/nf
-      Merge branch 'Fix-reconnection-latency-caused-by-FIN-ACK-handling-race'
-      Merge tag 'rxrpc-fixes-20200203' of git://git.kernel.org/.../dhowells/linux-fs
-      Merge branch 'bnxt_en-Bug-fixes'
-      Merge branch 'netdevsim-fix-several-bugs-in-netdevsim-module'
-
-Joe Perches (1):
-      netfilter: Use kvcalloc
-
-Kadlecsik J�zsef (1):
-      netfilter: ipset: fix suspicious RCU usage in find_set_and_id
-
-Kai-Heng Feng (1):
-      r8152: Add MAC passthrough support to new device
-
-Lukas Bulwahn (1):
-      MAINTAINERS: correct entries for ISDN/mISDN section
-
-Matteo Croce (1):
-      netfilter: nf_flowtable: fix documentation
-
-Michael Chan (3):
-      bnxt_en: Refactor logic to re-enable SRIOV after firmware reset detected.
-      bnxt_en: Fix RDMA driver failure with SRIOV after firmware reset.
-      bnxt_en: Fix TC queue mapping.
-
-Michael Walle (3):
-      net: mdio: of: fix potential NULL pointer derefernce
-      net: mii_timestamper: fix static allocation by PHY driver
-      net: phy: at803x: disable vddio regulator
-
-Nathan Chancellor (1):
-      mlxsw: spectrum_qdisc: Fix 64-bit division error in mlxsw_sp_qdisc_tbf_rate_kbps
-
-Nicolin Chen (1):
-      net: stmmac: Delete txtimer in suspend()
-
-Paul Blakey (3):
-      netfilter: flowtable: Fix hardware flush order on nf_flow_table_cleanup
-      netfilter: flowtable: Fix missing flush hardware on table free
-      netfilter: flowtable: Fix setting forgotten NF_FLOW_HW_DEAD flag
-
-Ridge Kennedy (1):
-      l2tp: Allow duplicate session creation with UDP
-
-SeongJae Park (2):
-      tcp: Reduce SYN resend delay if a suspicous ACK is received
-      selftests: net: Add FIN_ACK processing order related latency spike test
-
-Shannon Nelson (1):
-      ionic: fix rxq comp packet type mask
-
-Sven Eckelmann (1):
-      MAINTAINERS: Orphan HSR network protocol
-
-Taehee Yoo (8):
-      netdevsim: fix using uninitialized resources
-      netdevsim: disable devlink reload when resources are being used
-      netdevsim: fix panic in nsim_dev_take_snapshot_write()
-      netdevsim: fix stack-out-of-bounds in nsim_dev_debugfs_init()
-      netdevsim: use IS_ERR instead of IS_ERR_OR_NULL for debugfs
-      netdevsim: use __GFP_NOWARN to avoid memalloc warning
-      netdevsim: remove unused sdev code
-      gtp: use __GFP_NOWARN to avoid memalloc warning
-
-Vasundhara Volam (1):
-      bnxt_en: Fix logic that disables Bus Master during firmware reset.
-
-YueHaibing (1):
-      qed: Remove set but not used variable 'p_link'
-
- Documentation/networking/nf_flowtable.txt                        |   2 +-
- MAINTAINERS                                                      |   9 ++++---
- drivers/net/ethernet/broadcom/bnxt/bnxt.c                        |  37 ++++++++++++++++----------
- drivers/net/ethernet/marvell/octeontx2/nic/otx2_common.c         |   4 +--
- drivers/net/ethernet/mellanox/mlxsw/spectrum_qdisc.c             |   2 +-
- drivers/net/ethernet/pensando/ionic/ionic_if.h                   |   2 +-
- drivers/net/ethernet/qlogic/qed/qed_cxt.c                        |   3 ---
- drivers/net/ethernet/qlogic/qed/qed_dev.c                        |   1 +
- drivers/net/ethernet/stmicro/stmmac/stmmac_main.c                |   4 +++
- drivers/net/gtp.c                                                |   4 +--
- drivers/net/netdevsim/bpf.c                                      |  10 +++++---
- drivers/net/netdevsim/bus.c                                      |  64 ++++++++++++++++++++++++++++++++++++++++++---
- drivers/net/netdevsim/dev.c                                      |  31 ++++++++++++++--------
- drivers/net/netdevsim/health.c                                   |   6 ++---
- drivers/net/netdevsim/netdevsim.h                                |   4 +++
- drivers/net/netdevsim/sdev.c                                     |  69 -------------------------------------------------
- drivers/net/phy/at803x.c                                         |  11 ++++++++
- drivers/net/phy/mii_timestamper.c                                |   7 +++++
- drivers/net/usb/r8152.c                                          |  13 +++++++---
- drivers/of/of_mdio.c                                             |  17 +++++++++---
- net/hsr/hsr_slave.c                                              |   2 ++
- net/ipv4/tcp.c                                                   |   6 +++++
- net/ipv4/tcp_input.c                                             |   8 +++++-
- net/l2tp/l2tp_core.c                                             |   7 ++++-
- net/netfilter/ipset/ip_set_core.c                                |  41 ++++++++++++++---------------
- net/netfilter/nf_conntrack_core.c                                |   3 +--
- net/netfilter/nf_flow_table_core.c                               |   3 ++-
- net/netfilter/nf_flow_table_offload.c                            |   1 +
- net/netfilter/x_tables.c                                         |   4 +--
- net/rxrpc/af_rxrpc.c                                             |   2 ++
- net/rxrpc/ar-internal.h                                          |  11 ++++++++
- net/rxrpc/call_object.c                                          |   4 +--
- net/rxrpc/conn_client.c                                          |   3 +--
- net/rxrpc/conn_event.c                                           |  30 ++++++++++++++--------
- net/rxrpc/conn_object.c                                          |   4 +--
- net/rxrpc/input.c                                                |   6 ++---
- net/rxrpc/local_object.c                                         |  23 ++++++++---------
- net/rxrpc/output.c                                               |  27 +++++++------------
- net/rxrpc/peer_event.c                                           |  42 ++++++++++++++++--------------
- net/sched/cls_rsvp.h                                             |   6 ++---
- net/sched/cls_tcindex.c                                          |  40 ++++++++++++++---------------
- tools/testing/selftests/net/.gitignore                           |   1 +
- tools/testing/selftests/net/Makefile                             |   2 ++
- tools/testing/selftests/net/fin_ack_lat.c                        | 151 +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
- tools/testing/selftests/net/fin_ack_lat.sh                       |  35 +++++++++++++++++++++++++
- tools/testing/selftests/tc-testing/plugin-lib/buildebpfPlugin.py |   2 +-
- tools/testing/selftests/tc-testing/tc-tests/filters/basic.json   |  51 ++++++++++++++++++++++++++++++++++++
- 47 files changed, 569 insertions(+), 246 deletions(-)
- delete mode 100644 drivers/net/netdevsim/sdev.c
- create mode 100644 tools/testing/selftests/net/fin_ack_lat.c
- create mode 100755 tools/testing/selftests/net/fin_ack_lat.sh
+Jason
