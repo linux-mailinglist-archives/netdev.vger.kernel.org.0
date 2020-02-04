@@ -2,129 +2,201 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 6B7F415212F
-	for <lists+netdev@lfdr.de>; Tue,  4 Feb 2020 20:33:02 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 40E4515216A
+	for <lists+netdev@lfdr.de>; Tue,  4 Feb 2020 21:08:24 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727657AbgBDTcr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 4 Feb 2020 14:32:47 -0500
-Received: from pandora.armlinux.org.uk ([78.32.30.218]:54924 "EHLO
-        pandora.armlinux.org.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727507AbgBDTcq (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 4 Feb 2020 14:32:46 -0500
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
-        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
-        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
-        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-         bh=NEyB+td276ts8YTAgKy+Wd6aG//Mg77+7niimGcvraE=; b=MS7LtFiH+GHOwbhBv+vWvw2G6
-        GGWaM353Shw+BRBXs3RPScYYjeHQWFMROBIpEnJT7HGRbSG1i8cbmhXaKODdxvHybU3ar6gtLPDjK
-        v7CeOGLDXcMudmwpzsdOQT8Tg3F1uCEx98i+Uv6jo4DSh0TY7l0+Oq1AzLR124wiV8lWBE+CtiRzt
-        H1JY2UDAKt+Sv2+BWrf3iA9Jkf/+VFwVJraFRdDYOAiVKA70VZuRUOCEckZxy2i9fRi38TAP0VZni
-        Zxa04NpiTRK6Y50rqsQgLNI2xlxelTAhwhieQKXV7XbA7I79pi+7flkAWySufmzU+MTigSV/8khep
-        JPfNySMhQ==;
-Received: from shell.armlinux.org.uk ([2001:4d48:ad52:3201:5054:ff:fe00:4ec]:35968)
-        by pandora.armlinux.org.uk with esmtpsa (TLSv1.2:ECDHE-RSA-AES256-GCM-SHA384:256)
-        (Exim 4.90_1)
-        (envelope-from <linux@armlinux.org.uk>)
-        id 1iz3w3-00040d-Fm; Tue, 04 Feb 2020 19:32:35 +0000
-Received: from linux by shell.armlinux.org.uk with local (Exim 4.92)
-        (envelope-from <linux@shell.armlinux.org.uk>)
-        id 1iz3vy-0001AI-Sy; Tue, 04 Feb 2020 19:32:30 +0000
-Date:   Tue, 4 Feb 2020 19:32:30 +0000
-From:   Russell King - ARM Linux admin <linux@armlinux.org.uk>
-To:     Andrew Lunn <andrew@lunn.ch>
-Cc:     Jose Abreu <Jose.Abreu@synopsys.com>,
-        Joao Pinto <Joao.Pinto@synopsys.com>,
-        Alexandre Torgue <alexandre.torgue@st.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "linux-stm32@st-md-mailman.stormreply.com" 
-        <linux-stm32@st-md-mailman.stormreply.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Giuseppe Cavallaro <peppe.cavallaro@st.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        "linux-arm-kernel@lists.infradead.org" 
-        <linux-arm-kernel@lists.infradead.org>,
-        Heiner Kallweit <hkallweit1@gmail.com>
-Subject: Re: [RFC net-next 6/8] net: phylink: Configure MAC/PCS when link is
- up without PHY
-Message-ID: <20200204193230.GT25745@shell.armlinux.org.uk>
-References: <20200127114600.GU25745@shell.armlinux.org.uk>
- <20200127140038.GD13647@lunn.ch>
- <20200127140834.GW25745@shell.armlinux.org.uk>
- <20200127145107.GE13647@lunn.ch>
- <20200127161132.GX25745@shell.armlinux.org.uk>
- <20200127162206.GJ13647@lunn.ch>
- <c3e863b8-2143-fee3-bb0b-65699661d7ab@gmail.com>
- <BN8PR12MB3266B69DA09E1CC215843C3CD30A0@BN8PR12MB3266.namprd12.prod.outlook.com>
- <20200204172603.GS25745@shell.armlinux.org.uk>
- <20200204174318.GB1364@lunn.ch>
+        id S1727490AbgBDUIR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 4 Feb 2020 15:08:17 -0500
+Received: from mail-wr1-f67.google.com ([209.85.221.67]:38222 "EHLO
+        mail-wr1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727389AbgBDUIR (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 4 Feb 2020 15:08:17 -0500
+Received: by mail-wr1-f67.google.com with SMTP id y17so24738498wrh.5;
+        Tue, 04 Feb 2020 12:08:16 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=PHx4gmYSsjhkcb+YYunSIVKUTRkmzceHIgudcZVaYjY=;
+        b=jOzf6L7FM4VQs0rJDocs2tJJqsE5W6K4dqb4y2g7BdzD521M5RZT8ywJzGPfGZLFst
+         lfswUpx1v9hNLG/rIl2pwEmtylSrHBb4J6KCGduSZ51dkE+wYYJELLMD2SqRHEL949Zw
+         BDXjIhmcOeBu5xJ70qYTRAKT1jU+xJ2msI+FEomo9s+tUYEU90GsHl//wZfOmwG++ohL
+         RBfgv1B6+4Hfs9tet/50S5vYWFnVUPzH5APKpc7ZyJ8Nigd/rRbc2lGgI2xUpI2cB4NE
+         XJJhvSwd0oD9+bcQrtm490lyhsT1In+rv/p8mMNt7gA8gH8PPdQAWoK8fTNXkzppwgI2
+         WQTA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=PHx4gmYSsjhkcb+YYunSIVKUTRkmzceHIgudcZVaYjY=;
+        b=N6oHIVLmL0v6g0GJthCzNYyYKH85fkDdDRqD8FYilAu39aoXqlpAu+JIOxOYYbIpPR
+         rgej9r2J5v4F6RgYwePUzchB0B1OIZG38koNG/wL0eRD/ibqEWEmrpv1tz3Yt86pkfSy
+         rNtVh9C9Tu5XTJBTPzCjMvU+ptBFFmuFR1VALZIV6txF790sWTdgjs8r3PuVfExkJuqO
+         COplZ8Yv/QfVT44ILgC3psG/toq1N0XUiK/1E4P3G9yDAltfUnzzSoMGVHTQti+p3iPf
+         EnG4Ia+Z6TflKkZMcGJPxx/jjB58PbMHUciRUAImx45Ta3yTrmEeptumQgTZ0pslqbbY
+         INRQ==
+X-Gm-Message-State: APjAAAWykPnN9duKAQkt7v4msEZkLjVYrt0JgkmM/9yp3ZBV2eLcNkbN
+        yExJ+jfdZ9qCm0TaroplH9tzVvhm
+X-Google-Smtp-Source: APXvYqzxZzrY8ceiVvGKbtHfxrjbMOZd1WNUPXE4zfI9fQCuTXYJgWlKPYzQumPdzVXk25tVTPfSEw==
+X-Received: by 2002:adf:e686:: with SMTP id r6mr23927442wrm.177.1580846895441;
+        Tue, 04 Feb 2020 12:08:15 -0800 (PST)
+Received: from ?IPv6:2003:ea:8f29:6000:bce3:a6b1:8ca3:57b9? (p200300EA8F296000BCE3A6B18CA357B9.dip0.t-ipconnect.de. [2003:ea:8f29:6000:bce3:a6b1:8ca3:57b9])
+        by smtp.googlemail.com with ESMTPSA id y7sm29419255wrr.56.2020.02.04.12.08.14
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 04 Feb 2020 12:08:14 -0800 (PST)
+Subject: Re: [PATCH net-next v2] net: phy: dp83867: Add speed optimization
+ feature
+To:     Dan Murphy <dmurphy@ti.com>, andrew@lunn.ch, f.fainelli@gmail.com
+Cc:     linux@armlinux.org.uk, davem@davemloft.net, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+References: <20200204181319.27381-1-dmurphy@ti.com>
+From:   Heiner Kallweit <hkallweit1@gmail.com>
+Message-ID: <f977a302-16fc-de68-e84b-d41a0eca4c12@gmail.com>
+Date:   Tue, 4 Feb 2020 21:08:07 +0100
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
+ Thunderbird/68.4.2
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200204174318.GB1364@lunn.ch>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+In-Reply-To: <20200204181319.27381-1-dmurphy@ti.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Feb 04, 2020 at 06:43:18PM +0100, Andrew Lunn wrote:
-> > There, there is one MAC, but there are multiple different PCS - one
-> > for SGMII and 1000base-X, another for 10G, another for 25G, etc.
-> > These PCS are accessed via a MDIO adapter embedded in each of the
-> > MAC hardware blocks.
+On 04.02.2020 19:13, Dan Murphy wrote:
+> Set the speed optimization bit on the DP83867 PHY.
+> This feature can also be strapped on the 64 pin PHY devices
+> but the 48 pin devices do not have the strap pin available to enable
+> this feature in the hardware.  PHY team suggests to have this bit set.
 > 
-> Hi Russell
+> With this bit set the PHY will auto negotiate and report the link
+> parameters in the PHYSTS register.  This register provides a single
+> location within the register set for quick access to commonly accessed
+> information.
 > 
-> Marvell mv88e6390X switches are like this is a well. There is a PCS
-> for SGMII and 1000Base-X, and a second one for 10G. And it dynamically
-> swaps between them depending on the port mode, the so called cmode.
+> In this case when auto negotiation is on the PHY core reads the bits
+> that have been configured or if auto negotiation is off the PHY core
+> reads the BMCR register and sets the phydev parameters accordingly.
 > 
-> So a generic solution is required, and please take your time to build
-> one.
+> This Giga bit PHY can throttle the speed to 100Mbps or 10Mbps to accomodate a
+> 4-wire cable.  If this should occur the PHYSTS register contains the
+> current negotiated speed and duplex mode.
+> 
+> In overriding the genphy_read_status the dp83867_read_status will do a
+> genphy_read_status to setup the LP and pause bits.  And then the PHYSTS
+> register is read and the phydev speed and duplex mode settings are
+> updated.
+> 
+> Signed-off-by: Dan Murphy <dmurphy@ti.com>
 
-Well, DSA is quite a mixed bag...
+net-next is closed currently. See here for details:
+https://www.kernel.org/doc/Documentation/networking/netdev-FAQ.txt
+Reopening will be announced on the netdev mailing list, you can also
+check net-next status here: http://vger.kernel.org/~davem/net-next.html
 
-As far as I can work out, the situation with the CPU and DSA ports is
-quite hopeless - you've claimed that a change in phylink has broken it,
-I can't find what that may be.  The fact is, phylink has never had any
-link information for DSA links when no fixed-link property has been
-specified in DT.  As I've already said in a previous email about this,
-I can't see *any* sane way to fix that - but there was no response.
+> ---
+> v2 - Updated read status to call genphy_read_status first, added link_change
+> callback to notify of speed change and use phy_set_bits - https://lore.kernel.org/patchwork/patch/1188348/ 
+> 
+>  drivers/net/phy/dp83867.c | 55 +++++++++++++++++++++++++++++++++++++++
+>  1 file changed, 55 insertions(+)
+> 
+> diff --git a/drivers/net/phy/dp83867.c b/drivers/net/phy/dp83867.c
+> index 967f57ed0b65..6f86ca1ebb51 100644
+> --- a/drivers/net/phy/dp83867.c
+> +++ b/drivers/net/phy/dp83867.c
+> @@ -21,6 +21,7 @@
+>  #define DP83867_DEVADDR		0x1f
+>  
+>  #define MII_DP83867_PHYCTRL	0x10
+> +#define MII_DP83867_PHYSTS	0x11
+>  #define MII_DP83867_MICR	0x12
+>  #define MII_DP83867_ISR		0x13
+>  #define DP83867_CFG2		0x14
+> @@ -118,6 +119,15 @@
+>  #define DP83867_IO_MUX_CFG_CLK_O_SEL_MASK	(0x1f << 8)
+>  #define DP83867_IO_MUX_CFG_CLK_O_SEL_SHIFT	8
+>  
+> +/* PHY STS bits */
+> +#define DP83867_PHYSTS_1000			BIT(15)
+> +#define DP83867_PHYSTS_100			BIT(14)
+> +#define DP83867_PHYSTS_DUPLEX			BIT(13)
+> +#define DP83867_PHYSTS_LINK			BIT(10)
+> +
+> +/* CFG2 bits */
+> +#define DP83867_SPEED_OPTIMIZED_EN		(BIT(8) | BIT(9))
+> +
+>  /* CFG3 bits */
+>  #define DP83867_CFG3_INT_OE			BIT(7)
+>  #define DP83867_CFG3_ROBUST_AUTO_MDIX		BIT(9)
+> @@ -287,6 +297,43 @@ static int dp83867_config_intr(struct phy_device *phydev)
+>  	return phy_write(phydev, MII_DP83867_MICR, micr_status);
+>  }
+>  
+> +static void dp83867_link_change_notify(struct phy_device *phydev)
+> +{
+> +	if (phydev->state != PHY_RUNNING)
+> +		return;
+> +
+> +	if (phydev->speed == SPEED_100 || phydev->speed == SPEED_10)
+> +		phydev_warn(phydev, "Downshift detected connection is %iMbps\n",
+> +			    phydev->speed);
+> +}
+> +
+> +static int dp83867_read_status(struct phy_device *phydev)
+> +{
+> +	int status = phy_read(phydev, MII_DP83867_PHYSTS);
+> +	int ret;
+> +
+> +	ret = genphy_read_status(phydev);
+> +	if (ret)
+> +		return ret;
+> +
+> +	if (status < 0)
+> +		return status;
+> +
+> +	if (status & DP83867_PHYSTS_DUPLEX)
+> +		phydev->duplex = DUPLEX_FULL;
+> +	else
+> +		phydev->duplex = DUPLEX_HALF;
+> +
+> +	if (status & DP83867_PHYSTS_1000)
+> +		phydev->speed = SPEED_1000;
+> +	else if (status & DP83867_PHYSTS_100)
+> +		phydev->speed = SPEED_100;
+> +	else
+> +		phydev->speed = SPEED_10;
+> +
+> +	return 0;
+> +}
+> +
+>  static int dp83867_config_port_mirroring(struct phy_device *phydev)
+>  {
+>  	struct dp83867_private *dp83867 =
+> @@ -467,6 +514,11 @@ static int dp83867_config_init(struct phy_device *phydev)
+>  	int ret, val, bs;
+>  	u16 delay;
+>  
+> +	/* Force speed optimization for the PHY even if it strapped */
+> +	ret = phy_set_bits(phydev, DP83867_CFG2, DP83867_SPEED_OPTIMIZED_EN);
+> +	if (ret)
+> +		return ret;
+> +
+>  	ret = dp83867_verify_rgmii_cfg(phydev);
+>  	if (ret)
+>  		return ret;
+> @@ -655,6 +707,9 @@ static struct phy_driver dp83867_driver[] = {
+>  		.config_init	= dp83867_config_init,
+>  		.soft_reset	= dp83867_phy_reset,
+>  
+> +		.read_status	= dp83867_read_status,
+> +		.link_change_notify = dp83867_link_change_notify,
+> +
+>  		.get_wol	= dp83867_get_wol,
+>  		.set_wol	= dp83867_set_wol,
+>  
+> 
 
-
-On a more positive note...
-
-The mac_link_up() changes that I've talked about should work for DSA,
-if only there was a reasonable way to reconfigure the ports.  If you
-look at the "phy" branch, you will notice that there's a patch there -
-"net: mv88e6xxx: use resolved link config in mac_link_up()" which adds
-the support to configure the MAC manually.  It's rather messy, and I
-see no way to deal with the pause settings.  There is support in some
-Marvell DSA switches to force flow control but that's not supported
-through the current mid-layer at all (port_set_pause doesn't do it.)
-I'm not sure whether the "mv88e6xxx_phy_is_internal()" check there is
-the right test for every DSA switch correct either.
-
-What is missing is reading the results from the PCS (aka serdes) and
-forwarding them into phylink - I did have a quick look at how that might
-be possible, but the DSA code structure (consisting of multiple
-mid-layers) makes it hard without rewriting quite a lot of code.  That's
-fine if you know all the DSA chips inside out, but I don't - and that's
-where we need someone who has the knowledge of all DSA switches that we
-support.  Or, we get rid of the multiple mid-layers and switch to a
-library approach, so that we can modify support for one DSA switch
-without affecting everything.  It may be a simple matter of dropping the
-existing serdes workaround, but I'm not sure at the moment.
-
-I've tried this code out on the ZII rev B, I haven't tried it on the rev
-C which has the 6390 switches yet.
-
--- 
-RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
-FTTC broadband for 0.8mile line in suburbia: sync at 12.1Mbps down 622kbps up
-According to speedtest.net: 11.9Mbps down 500kbps up
