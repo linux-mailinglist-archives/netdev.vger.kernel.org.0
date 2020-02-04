@@ -2,98 +2,183 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 9E7E515218B
-	for <lists+netdev@lfdr.de>; Tue,  4 Feb 2020 21:35:22 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3A7C1152185
+	for <lists+netdev@lfdr.de>; Tue,  4 Feb 2020 21:33:29 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727541AbgBDUfS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 4 Feb 2020 15:35:18 -0500
-Received: from fllv0016.ext.ti.com ([198.47.19.142]:47346 "EHLO
-        fllv0016.ext.ti.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727445AbgBDUfR (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 4 Feb 2020 15:35:17 -0500
-Received: from lelv0266.itg.ti.com ([10.180.67.225])
-        by fllv0016.ext.ti.com (8.15.2/8.15.2) with ESMTP id 014KZ5VG105411;
-        Tue, 4 Feb 2020 14:35:05 -0600
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
-        s=ti-com-17Q1; t=1580848505;
-        bh=IocsJb4lt8ba4aTh9yVCxKQrrItDY600pxBV4Igcxn0=;
-        h=Subject:To:CC:References:From:Date:In-Reply-To;
-        b=huoOQfewWrW/q7cjEvE35DCyOuUXPTBgUqHbU3Sj1MZWfpT0+BXXCbSxeurZ0U1qg
-         sZ/GsO5c2gWh2L1JSWu4Mkf+uRzhiID1M0IwdvI1Ir4KwYYhj7rfxcY1vMTo1JosIM
-         RcNugpb/cbW9z5U8w5Aw7KHF/vfyypvfSzqSozfA=
-Received: from DFLE109.ent.ti.com (dfle109.ent.ti.com [10.64.6.30])
-        by lelv0266.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 014KZ5vu126333
-        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
-        Tue, 4 Feb 2020 14:35:05 -0600
-Received: from DFLE110.ent.ti.com (10.64.6.31) by DFLE109.ent.ti.com
- (10.64.6.30) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1847.3; Tue, 4 Feb
- 2020 14:35:05 -0600
-Received: from lelv0327.itg.ti.com (10.180.67.183) by DFLE110.ent.ti.com
- (10.64.6.31) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1847.3 via
- Frontend Transport; Tue, 4 Feb 2020 14:35:05 -0600
-Received: from [128.247.59.107] (ileax41-snat.itg.ti.com [10.172.224.153])
-        by lelv0327.itg.ti.com (8.15.2/8.15.2) with ESMTP id 014KZ4rE087244;
-        Tue, 4 Feb 2020 14:35:04 -0600
-Subject: Re: [PATCH net-next v2] net: phy: dp83867: Add speed optimization
- feature
-To:     Heiner Kallweit <hkallweit1@gmail.com>, <andrew@lunn.ch>,
-        <f.fainelli@gmail.com>
-CC:     <linux@armlinux.org.uk>, <davem@davemloft.net>,
-        <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>
-References: <20200204181319.27381-1-dmurphy@ti.com>
- <f977a302-16fc-de68-e84b-d41a0eca4c12@gmail.com>
-From:   Dan Murphy <dmurphy@ti.com>
-Message-ID: <29de8f3f-d9ba-88b3-ca48-61936c012172@ti.com>
-Date:   Tue, 4 Feb 2020 14:30:39 -0600
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.4.1
-MIME-Version: 1.0
-In-Reply-To: <f977a302-16fc-de68-e84b-d41a0eca4c12@gmail.com>
-Content-Type: text/plain; charset="utf-8"; format=flowed
-Content-Transfer-Encoding: 8bit
-Content-Language: en-US
-X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
+        id S1727587AbgBDUdY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 4 Feb 2020 15:33:24 -0500
+Received: from mail-pl1-f193.google.com ([209.85.214.193]:39948 "EHLO
+        mail-pl1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727458AbgBDUdX (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 4 Feb 2020 15:33:23 -0500
+Received: by mail-pl1-f193.google.com with SMTP id y1so7747185plp.7;
+        Tue, 04 Feb 2020 12:33:21 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:message-id:in-reply-to:references:subject
+         :mime-version:content-transfer-encoding;
+        bh=4Y76WudeWCG5zXmxP2Nw4YSkfa14RC4kqB6t3Lg4X9M=;
+        b=UM63F9EXUlmTMTVYbwks5jV/yCvDqR4chYFapC5j4CVIQviDsobwExzj3GIkgPbRdq
+         //qsfAxnZ1oWlUcd0vhb6wNDUBvcZIH6/bP0reunmdDhUB2k2bkh75y4qAbG+VQgV0dp
+         59icHfEdfg/Fz/zx7NbCienbak2IANxuX84XGTEe1YxKly8z/OJi34H3uMjk7Er/HXhj
+         HGGS+RLISvXMN/aPIkoJD14ACshXu4NwMxheIOKq64mjltT9GCqP/sLbG29gRD80AuJr
+         DOLtHEeEaArGoQsmTFcUUHUWTxqxpsz5Bz5FEpdv9b884Ytw6QBnv7Vq18AdvXdoNP4B
+         yzVA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:message-id:in-reply-to
+         :references:subject:mime-version:content-transfer-encoding;
+        bh=4Y76WudeWCG5zXmxP2Nw4YSkfa14RC4kqB6t3Lg4X9M=;
+        b=KGbBrcpfE0rkOen2GJ+PWg/iX6oQWVxfqxYs04qeooU2bw5y8x82Uvc4cPDvt7cW+r
+         0veNqVqL6kPPGO3dyUc9kirJCtjMUIFBcab5MA6S3ERPqQXi355pM9X+3WsomTuHouCw
+         RDKadcrHkZQrlO6gHAQ2Sq0JUTxV+6FFnk83XU7k8KIHKr71lAFrMtl9Ydk4Zb0V84ha
+         DNSrQ/ELu43w+614xbZTqGm8TY0QrNnA2wLhVB8Mw+i8MXY7aRLGzM935GFOsQZNvZDp
+         7//wfVFhKvOK/RG+n9MBdVIL9TbKGbplF/huhiLTQoZOm8wN68rLqzTGFUf9wosHASbr
+         6YqA==
+X-Gm-Message-State: APjAAAXNh44ZdYkjrf79zg4z51PogHV2rC4vOVXKyVUmQCVWPgGOb6SG
+        JsqXRi+PWBL7WXCIQ5cGoXA=
+X-Google-Smtp-Source: APXvYqzeahYF5KBgE/fLGWyNk0UEHsBipBvuQH1Ndc7tvKe17Ilwb5Vq5hgNIVuTZ9BqoQ06SyLiQQ==
+X-Received: by 2002:a17:90a:a78b:: with SMTP id f11mr1202943pjq.8.1580848401174;
+        Tue, 04 Feb 2020 12:33:21 -0800 (PST)
+Received: from localhost ([184.63.162.180])
+        by smtp.gmail.com with ESMTPSA id v9sm4620636pja.26.2020.02.04.12.33.18
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 04 Feb 2020 12:33:20 -0800 (PST)
+Date:   Tue, 04 Feb 2020 12:33:13 -0800
+From:   John Fastabend <john.fastabend@gmail.com>
+To:     =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@gmail.com>,
+        Palmer Dabbelt <palmerdabbelt@google.com>
+Cc:     Daniel Borkmann <daniel@iogearbox.net>,
+        Alexei Starovoitov <ast@kernel.org>, zlim.lnx@gmail.com,
+        catalin.marinas@arm.com, will@kernel.org,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        Andrii Nakryiko <andriin@fb.com>,
+        Shuah Khan <shuah@kernel.org>, Netdev <netdev@vger.kernel.org>,
+        bpf <bpf@vger.kernel.org>, linux-arm-kernel@lists.infradead.org,
+        LKML <linux-kernel@vger.kernel.org>,
+        linux-kselftest@vger.kernel.org,
+        clang-built-linux@googlegroups.com, kernel-team@android.com
+Message-ID: <5e39d509c9edc_63882ad0d49345c08@john-XPS-13-9370.notmuch>
+In-Reply-To: <CAJ+HfNh2csyH2xZtGFXW1zwBEW4+bo_E60PWPydJkB6zZTVx3A@mail.gmail.com>
+References: <20200128021145.36774-1-palmerdabbelt@google.com>
+ <CAJ+HfNh2csyH2xZtGFXW1zwBEW4+bo_E60PWPydJkB6zZTVx3A@mail.gmail.com>
+Subject: Re: arm64: bpf: Elide some moves to a0 after calls
+Mime-Version: 1.0
+Content-Type: text/plain;
+ charset=utf-8
+Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Heiner
+Bj=C3=B6rn T=C3=B6pel wrote:
+> On Tue, 28 Jan 2020 at 03:14, Palmer Dabbelt <palmerdabbelt@google.com>=
+ wrote:
+> >
+> > There's four patches here, but only one of them actually does anythin=
+g.  The
+> > first patch fixes a BPF selftests build failure on my machine and has=
+ already
+> > been sent to the list separately.  The next three are just staged suc=
+h that
+> > there are some patches that avoid changing any functionality pulled o=
+ut from
+> > the whole point of those refactorings, with two cleanups and then the=
+ idea.
+> >
+> > Maybe this is an odd thing to say in a cover letter, but I'm not actu=
+ally sure
+> > this patch set is a good idea.  The issue of extra moves after calls =
+came up as
+> > I was reviewing some unrelated performance optimizations to the RISC-=
+V BPF JIT.
+> > I figured I'd take a whack at performing the optimization in the cont=
+ext of the
+> > arm64 port just to get a breath of fresh air, and I'm not convinced I=
+ like the
+> > results.
+> >
+> > That said, I think I would accept something like this for the RISC-V =
+port
+> > because we're already doing a multi-pass optimization for shrinking f=
+unction
+> > addresses so it's not as much extra complexity over there.  If we do =
+that we
+> > should probably start puling some of this code into the shared BPF co=
+mpiler,
+> > but we're also opening the doors to more complicated BPF JIT optimiza=
+tions.
+> > Given that the BPF JIT appears to have been designed explicitly to be=
 
-On 2/4/20 2:08 PM, Heiner Kallweit wrote:
-> On 04.02.2020 19:13, Dan Murphy wrote:
->> Set the speed optimization bit on the DP83867 PHY.
->> This feature can also be strapped on the 64 pin PHY devices
->> but the 48 pin devices do not have the strap pin available to enable
->> this feature in the hardware.  PHY team suggests to have this bit set.
->>
->> With this bit set the PHY will auto negotiate and report the link
->> parameters in the PHYSTS register.  This register provides a single
->> location within the register set for quick access to commonly accessed
->> information.
->>
->> In this case when auto negotiation is on the PHY core reads the bits
->> that have been configured or if auto negotiation is off the PHY core
->> reads the BMCR register and sets the phydev parameters accordingly.
->>
->> This Giga bit PHY can throttle the speed to 100Mbps or 10Mbps to accomodate a
->> 4-wire cable.  If this should occur the PHYSTS register contains the
->> current negotiated speed and duplex mode.
->>
->> In overriding the genphy_read_status the dp83867_read_status will do a
->> genphy_read_status to setup the LP and pause bits.  And then the PHYSTS
->> register is read and the phydev speed and duplex mode settings are
->> updated.
->>
->> Signed-off-by: Dan Murphy <dmurphy@ti.com>
-> net-next is closed currently. See here for details:
-> https://www.kernel.org/doc/Documentation/networking/netdev-FAQ.txt
-> Reopening will be announced on the netdev mailing list, you can also
-> check net-next status here: http://vger.kernel.org/~davem/net-next.html
->
-Thanks Heiner for the link I RTM.  I will wait for the opening.
+> > simple/fast as opposed to perform complex optimization, I'm not sure =
+this is a
+> > sane way to move forward.
+> >
+> =
 
-Dan
+> Obviously I can only speak for myself and the RISC-V JIT, but given
+> that we already have opened the door for more advanced translations
+> (branch relaxation e.g.), I think that this makes sense. At the same
+> time we don't want to go all JVM on the JITs. :-P
+
+I'm not against it although if we start to go this route I would want som=
+e
+way to quantify how we are increasing/descreasing load times.
+
+> =
+
+> > I figured I'd send the patch set out as more of a question than anyth=
+ing else.
+> > Specifically:
+> >
+> > * How should I go about measuring the performance of these sort of
+> >   optimizations?  I'd like to balance the time it takes to run the JI=
+T with the
+> >   time spent executing the program, but I don't have any feel for wha=
+t real BPF
+> >   programs look like or have any benchmark suite to run.  Is there so=
+mething
+> >   out there this should be benchmarked against?  (I'd also like to kn=
+ow that to
+> >   run those benchmarks on the RISC-V port.)
+> =
+
+> If you run the selftests 'test_progs' with -v it'll measure/print the
+> execution time of the programs. I'd say *most* BPF program invokes a
+> helper (via call). It would be interesting to see, for say the
+> selftests, how often the optimization can be performed.
+> =
+
+> > * Is this the sort of thing that makes sense in a BPF JIT?  I guess I=
+'ve just
+> >   realized I turned "review this patch" into a way bigger rabbit hole=
+ than I
+> >   really want to go down...
+> >
+> =
+
+> I'd say 'yes'. My hunch, and the workloads I've seen, BPF programs are
+> usually loaded, and then resident for a long time. So, the JIT time is
+> not super critical. The FB/Cilium folks can definitely provide a
+> better sample point, than my hunch. ;-)
+
+In our case the JIT time can be relevant because we are effectively holdi=
+ng
+up a kubernetes pod load waiting for programs to load. However, we can
+probably work-around it by doing more aggressive dynamic linking now that=
+
+this is starting to land.
+
+It would be interesting to have a test to measure load time in selftests
+or selftests/benchmark/ perhaps. We have some of these out of tree we
+could push in I think if there is interest.
+
+> =
+
+> =
+
+> Bj=C3=B6rn
+
 
