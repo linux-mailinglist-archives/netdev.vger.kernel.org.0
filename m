@@ -2,140 +2,218 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 762101522E1
-	for <lists+netdev@lfdr.de>; Wed,  5 Feb 2020 00:13:25 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7647B1522E9
+	for <lists+netdev@lfdr.de>; Wed,  5 Feb 2020 00:15:25 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727534AbgBDXNY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 4 Feb 2020 18:13:24 -0500
-Received: from mail-qk1-f193.google.com ([209.85.222.193]:38430 "EHLO
-        mail-qk1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727412AbgBDXNX (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 4 Feb 2020 18:13:23 -0500
-Received: by mail-qk1-f193.google.com with SMTP id 21so19122qki.5;
-        Tue, 04 Feb 2020 15:13:23 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=YF96ySPPnfFFS8eQg9ULBqeK+dN7iPi7BPUsi4Fg9eM=;
-        b=cwroxBL9wTqOYJT6JjOp0wdhfgVRLvS8jnsRTUPCkcpBziupMH5lLUhm8bOISd9qTD
-         ShZniQKv5atFnVuyETysM1tbtUVuAtecy2U9N9kFUIo6r4J5f9xj1sjVd6R4adSaTu0J
-         l3Qg5BaVJlQ3Quo+Z89882qG2zUMO6418an7SRcyVaJ7lUfLwwXppIFJmbiLP/ikfilw
-         zPZH5SRI2l7x23gLhgvivvWEsjLRRCFqFCqv3PgJQ72xGTY/zbExjIvISZYxzI80dBsK
-         d1cXExI0X9HAJPdAwjF9B8RKi9RoWOKstOQgWH5/+DWiKhJrOKV6X5q/EX2/Z8Skgiqh
-         vZJw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=YF96ySPPnfFFS8eQg9ULBqeK+dN7iPi7BPUsi4Fg9eM=;
-        b=T4XBFFGHn3gxuLfbeLQ5H7Ptz0zWrDB8uiyouaG+7sGY6NeCwohs3k33RQ594PjAHN
-         SogAZeKYdVFRJd8DFbNp2KtoM2k/s/71G5k+GcysZUOoiY4nGrpocv6btu9AObT9cXK8
-         MSE3+1DFK7570/I499WtXIgAd8XohE7HKpGQLRtTrCeSeIgrIsudaTKQ1yZkKJyaUT4S
-         3tqSbAxClJMoIu5+yPwwwUY0oFJLkWK7Ab/xCmTp8/++UyxaN+y8tDAgtTaN9szfkVQl
-         w2KRYAKMVpc3llWHBau67inc1/BB2WgLxiQ3MT40khkKsVDUB2NfTqpvAJKBBnLvS+dP
-         4Kow==
-X-Gm-Message-State: APjAAAVOkHfOu/I5XjtV2b0ZMbm2lfebQx2cOcjBsbwKmGnxW99sas/r
-        u5U3A3AC1DZSEdSa4BQAQqho3jhp+TM=
-X-Google-Smtp-Source: APXvYqysaIqvgGJ7GkA7oHMggevj4D4Ip8HsBBm44heTiTtTtkDgaq32M1pOsl64UoFDW0B0Xjynkw==
-X-Received: by 2002:a37:4dc1:: with SMTP id a184mr31652814qkb.62.1580858002374;
-        Tue, 04 Feb 2020 15:13:22 -0800 (PST)
-Received: from ?IPv6:2601:282:803:7700:3d10:e33:29a2:f093? ([2601:282:803:7700:3d10:e33:29a2:f093])
-        by smtp.googlemail.com with ESMTPSA id r10sm11768749qkm.23.2020.02.04.15.13.20
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 04 Feb 2020 15:13:21 -0800 (PST)
-Subject: Re: [RFC bpf-next 0/5] Convert iproute2 to use libbpf (WIP)
-To:     =?UTF-8?Q?Toke_H=c3=b8iland-J=c3=b8rgensen?= <toke@redhat.com>,
-        Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Cc:     Daniel Borkmann <daniel@iogearbox.net>,
-        Stephen Hemminger <stephen@networkplumber.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        David Miller <davem@davemloft.net>,
-        Jesper Dangaard Brouer <brouer@redhat.com>,
-        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>
-References: <20190820114706.18546-1-toke@redhat.com>
- <43e8c177-cc9c-ca0b-1622-e30a7a1281b7@iogearbox.net>
- <CAEf4Bzab_w0AXy5P9mG14mcyJVgUCzuuNda5FpU5wSEwUciGfg@mail.gmail.com>
- <87tva8m85t.fsf@toke.dk>
- <CAEf4BzbzQwLn87G046ZbkLtTbY6WF6o8JkygcPLPGUSezgs9Tw@mail.gmail.com>
- <CAEf4BzZOAukJZzo4J5q3F2v4MswQ6nJh6G1_c0H0fOJCdc7t0A@mail.gmail.com>
- <87blqfcvnf.fsf@toke.dk>
- <CAEf4Bza4bSAzjFp2WDiPAM7hbKcKgAX4A8_TUN8V38gXV9GbTg@mail.gmail.com>
- <0bf50b22-a8e2-e3b3-aa53-7bd5dd5d4399@gmail.com>
- <CAEf4Bzbzz3s0bSF_CkP56NTDd+WBLAy0QrMvreShubetahuH0g@mail.gmail.com>
- <2cf136a4-7f0e-f4b7-1ecb-6cbf6cb6c8ff@gmail.com>
- <CAEf4Bzb1fXdGFz7BkrQF7uMhBD1F-K_kudhLR5wC-+kA7PMqnA@mail.gmail.com>
- <87h80669o6.fsf@toke.dk>
- <CAEf4BzYGp95MKjBxNay2w=9RhFAEUCrZ8_y1pqzdG-fUyY63=w@mail.gmail.com>
- <8736bqf9dw.fsf@toke.dk>
- <CAEf4BzbNZQmDD3Ob+m6yJK2CzNb9=3F2bYfxOUyn7uOp0bhXZA@mail.gmail.com>
- <87tv46dnj6.fsf@toke.dk> <2ab65028-c200-f8f8-b57d-904cb8a7c00c@gmail.com>
- <87r1zadlpx.fsf@toke.dk>
-From:   David Ahern <dsahern@gmail.com>
-Message-ID: <d5434db9-1899-776d-c4cd-918e2418175d@gmail.com>
-Date:   Tue, 4 Feb 2020 16:13:19 -0700
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:68.0)
- Gecko/20100101 Thunderbird/68.4.2
+        id S1727703AbgBDXPU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 4 Feb 2020 18:15:20 -0500
+Received: from us-smtp-2.mimecast.com ([207.211.31.81]:20152 "EHLO
+        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1727678AbgBDXPT (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 4 Feb 2020 18:15:19 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1580858118;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=oE+GbwjQPEUxQxgoqp1axXub52iza+nsVW7DZrtJxPM=;
+        b=NIIqRq5R0lblUTuQnMKIHT8+haQ/NGEy9YKSeRT1eOYKai8q7ODVpmYWnJ7GUWCT33mfHM
+        uWw0YmPTzBWqpE3IvEn5AJ8NrK4lzXByB+22zpl6syK4k48uTNjBVz1n0NtLUCQ2tWS/Tb
+        We58eDAD6OJ+HnSaZHCb3kCIc/uc/hw=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-333-KJ8fBWDAPoyKV5DcK0QoQg-1; Tue, 04 Feb 2020 18:15:13 -0500
+X-MC-Unique: KJ8fBWDAPoyKV5DcK0QoQg-1
+Received: from smtp.corp.redhat.com (int-mx04.intmail.prod.int.phx2.redhat.com [10.5.11.14])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 9E6CC1084449;
+        Tue,  4 Feb 2020 23:15:11 +0000 (UTC)
+Received: from madcap2.tricolour.ca (ovpn-112-16.rdu2.redhat.com [10.10.112.16])
+        by smtp.corp.redhat.com (Postfix) with ESMTPS id 34FAD5DA2C;
+        Tue,  4 Feb 2020 23:14:57 +0000 (UTC)
+Date:   Tue, 4 Feb 2020 18:14:54 -0500
+From:   Richard Guy Briggs <rgb@redhat.com>
+To:     Paul Moore <paul@paul-moore.com>
+Cc:     nhorman@tuxdriver.com, linux-api@vger.kernel.org,
+        containers@lists.linux-foundation.org,
+        LKML <linux-kernel@vger.kernel.org>, dhowells@redhat.com,
+        Linux-Audit Mailing List <linux-audit@redhat.com>,
+        netfilter-devel@vger.kernel.org, ebiederm@xmission.com,
+        simo@redhat.com, netdev@vger.kernel.org,
+        linux-fsdevel@vger.kernel.org, Eric Paris <eparis@parisplace.org>,
+        mpatel@redhat.com, Serge Hallyn <serge@hallyn.com>
+Subject: Re: [PATCH ghak90 V8 07/16] audit: add contid support for signalling
+ the audit daemon
+Message-ID: <20200204231454.oxa7pyvuxbj466fj@madcap2.tricolour.ca>
+References: <cover.1577736799.git.rgb@redhat.com>
+ <7d7933d742fdf4a94c84b791906a450b16f2e81f.1577736799.git.rgb@redhat.com>
+ <CAHC9VhSuwJGryfrBfzxG01zwb-O_7dbjS0x0a3w-XjcNuYSAcg@mail.gmail.com>
+ <20200123162918.b3jbed7tbvr2sf2p@madcap2.tricolour.ca>
+ <CAHC9VhTusiQoudB8G5jjDFyM9WxBUAjZ6_X35ywJ063Jb75dQA@mail.gmail.com>
+ <20200123200412.j2aucdp3cvk57prw@madcap2.tricolour.ca>
+ <CAHC9VhQ2_MQdGAT6Pda9FRe6s0y4JC1XUQenpr-VJiyq9M_CBw@mail.gmail.com>
 MIME-Version: 1.0
-In-Reply-To: <87r1zadlpx.fsf@toke.dk>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAHC9VhQ2_MQdGAT6Pda9FRe6s0y4JC1XUQenpr-VJiyq9M_CBw@mail.gmail.com>
+User-Agent: NeoMutt/20180716
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.14
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 2/4/20 3:35 PM, Toke Høiland-Jørgensen wrote:
+On 2020-01-23 16:35, Paul Moore wrote:
+> On Thu, Jan 23, 2020 at 3:04 PM Richard Guy Briggs <rgb@redhat.com> wrote:
+> > On 2020-01-23 12:09, Paul Moore wrote:
+> > > On Thu, Jan 23, 2020 at 11:29 AM Richard Guy Briggs <rgb@redhat.com> wrote:
+> > > > On 2020-01-22 16:28, Paul Moore wrote:
+> > > > > On Tue, Dec 31, 2019 at 2:50 PM Richard Guy Briggs <rgb@redhat.com> wrote:
+> > > > > >
+> > > > > > Add audit container identifier support to the action of signalling the
+> > > > > > audit daemon.
+> > > > > >
+> > > > > > Since this would need to add an element to the audit_sig_info struct,
+> > > > > > a new record type AUDIT_SIGNAL_INFO2 was created with a new
+> > > > > > audit_sig_info2 struct.  Corresponding support is required in the
+> > > > > > userspace code to reflect the new record request and reply type.
+> > > > > > An older userspace won't break since it won't know to request this
+> > > > > > record type.
+> > > > > >
+> > > > > > Signed-off-by: Richard Guy Briggs <rgb@redhat.com>
+> > > > > > ---
+> > > > > >  include/linux/audit.h       |  7 +++++++
+> > > > > >  include/uapi/linux/audit.h  |  1 +
+> > > > > >  kernel/audit.c              | 35 +++++++++++++++++++++++++++++++++++
+> > > > > >  kernel/audit.h              |  1 +
+> > > > > >  security/selinux/nlmsgtab.c |  1 +
+> > > > > >  5 files changed, 45 insertions(+)
+> > > > >
+> > > > > ...
+> > > > >
+> > > > > > diff --git a/kernel/audit.c b/kernel/audit.c
+> > > > > > index 0871c3e5d6df..51159c94041c 100644
+> > > > > > --- a/kernel/audit.c
+> > > > > > +++ b/kernel/audit.c
+> > > > > > @@ -126,6 +126,14 @@ struct auditd_connection {
+> > > > > >  kuid_t         audit_sig_uid = INVALID_UID;
+> > > > > >  pid_t          audit_sig_pid = -1;
+> > > > > >  u32            audit_sig_sid = 0;
+> > > > > > +/* Since the signal information is stored in the record buffer at the
+> > > > > > + * time of the signal, but not retrieved until later, there is a chance
+> > > > > > + * that the last process in the container could terminate before the
+> > > > > > + * signal record is delivered.  In this circumstance, there is a chance
+> > > > > > + * the orchestrator could reuse the audit container identifier, causing
+> > > > > > + * an overlap of audit records that refer to the same audit container
+> > > > > > + * identifier, but a different container instance.  */
+> > > > > > +u64            audit_sig_cid = AUDIT_CID_UNSET;
+> > > > >
+> > > > > I believe we could prevent the case mentioned above by taking an
+> > > > > additional reference to the audit container ID object when the signal
+> > > > > information is collected, dropping it only after the signal
+> > > > > information is collected by userspace or another process signals the
+> > > > > audit daemon.  Yes, it would block that audit container ID from being
+> > > > > reused immediately, but since we are talking about one number out of
+> > > > > 2^64 that seems like a reasonable tradeoff.
+> > > >
+> > > > I had thought that through and should have been more explicit about that
+> > > > situation when I documented it.  We could do that, but then the syscall
+> > > > records would be connected with the call from auditd on shutdown to
+> > > > request that signal information, rather than the exit of that last
+> > > > process that was using that container.  This strikes me as misleading.
+> > > > Is that really what we want?
+> > >
+> > >  ???
+> > >
+> > > I think one of us is not understanding the other; maybe it's me, maybe
+> > > it's you, maybe it's both of us.
+> > >
+> > > Anyway, here is what I was trying to convey with my original comment
+> > > ... When we record the audit container ID in audit_signal_info() we
+> > > take an extra reference to the audit container ID object so that it
+> > > will not disappear (and get reused) until after we respond with an
+> > > AUDIT_SIGNAL_INFO2.  In audit_receive_msg() when we do the
+> > > AUDIT_SIGNAL_INFO2 processing we drop the extra reference we took in
+> > > audit_signal_info().  Unless I'm missing some other change you made,
+> > > this *shouldn't* affect the syscall records, all it does is preserve
+> > > the audit container ID object in the kernel's ACID store so it doesn't
+> > > get reused.
+> >
+> > This is exactly what I had understood.  I hadn't considered the extra
+> > details below in detail due to my original syscall concern, but they
+> > make sense.
+> >
+> > The syscall I refer to is the one connected with the drop of the
+> > audit container identifier by the last process that was in that
+> > container in patch 5/16.  The production of this record is contingent on
+> > the last ref in a contobj being dropped.  So if it is due to that ref
+> > being maintained by audit_signal_info() until the AUDIT_SIGNAL_INFO2
+> > record it fetched, then it will appear that the fetch action closed the
+> > container rather than the last process in the container to exit.
+> >
+> > Does this make sense?
 > 
->> Most likely, making iproute2 use libbpf statically is going to be
->> challenging and I am not sure it is the right thing to do (unless the
->> user is building a static version of iproute2 commands).
+> More so than your original reply, at least to me anyway.
 > 
-> Linking dynamically would imply a new dependency. I'm not necessarily
-> against that, but would it be acceptable from your PoV? And if so,
-> should we keep the current internal BPF code for when libbpf is not
-> available, or would it be acceptable to not be able to load BPF programs
-> if libbpf is not present (similar to how the libelf dependency works
-> today)?
-
-iproute2 recently gained the libmnl dependency for extack. Seems like
-libbpf falls into the similar category.
-
+> It makes sense that the audit container ID wouldn't be marked as
+> "dead" since it would still be very much alive and available for use
+> by the orchestrator, the question is if that is desirable or not.  I
+> think the answer to this comes down the preserving the correctness of
+> the audit log.
 > 
->> 2. git submodules can be a PITA to deal with (e.g., jumping between
->> branches and versions), so there needs to be a good reason for it.
+> If the audit container ID reported by AUDIT_SIGNAL_INFO2 has been
+> reused then I think there is a legitimate concern that the audit log
+> is not correct, and could be misleading.  If we solve that by grabbing
+> an extra reference, then there could also be some confusion as
+> userspace considers a container to be "dead" while the audit container
+> ID still exists in the kernel, and the kernel generated audit
+> container ID death record will not be generated until much later (and
+> possibly be associated with a different event, but that could be
+> solved by unassociating the container death record).
+
+How does syscall association of the death record with AUDIT_SIGNAL_INFO2
+possibly get associated with another event?  Or is the syscall
+association with the fetch for the AUDIT_SIGNAL_INFO2 the other event?
+
+Another idea might be to bump the refcount in audit_signal_info() but
+mark tht contid as dead so it can't be reused if we are concerned that
+the dead contid be reused?
+
+There is still the problem later that the reported contid is incomplete
+compared to the rest of the contid reporting cycle wrt nesting since
+AUDIT_SIGNAL_INFO2 will need to be more complex w/2 variable length
+fields to accommodate a nested contid list.
+
+>  Of the two
+> approaches, I think the latter is safer in that it preserves the
+> correctness of the audit log, even though it could result in a delay
+> of the container death record.
+
+I prefer the former since it strongly indicates last task in the
+container.  The AUDIT_SIGNAL_INFO2 msg has the pid and other subject
+attributes and the contid to strongly link the responsible party.
+
+> Neither way is perfect, so if you have any other ideas I'm all ears.
 > 
-> Yes, totally with you on that. Another option could be to just copy the
-> files into the iproute2 tree, and update them the same way the kernel
-> headers are? Or maybe doing fancy things like this:
-> https://github.com/apenwarr/git-subtrac
-
-kernel uapi is a totally different reason to import the headers. bpf
-functionality is an add-on.
-
-I would like to see iproute2 work with libbpf. Given libbpf's current
-status and availability across OS'es that is going to be a challenge for
-a lot of OS'es which is why I suggested the HAVE_LIBBPF check falls back
-to existing code if libbpf is not installed.
-
+> > > (We do need to do some extra housekeeping in audit_signal_info() to
+> > > deal with the case where nobody asks for AUDIT_SIGNAL_INFO2 -
+> > > basically if audit_sig_cid is not NULL we should drop a reference
+> > > before assigning it a new object pointer, and of course we would need
+> > > to set audit_sig_cid to NULL in audit_receive_msg() after sending it
+> > > up to userspace and dropping the extra ref.)
 > 
->> 3. iproute2 code needs to build for a wide range of OSes and not lose
->> functionality compared to what it has today.
-> 
-> Could you be a bit more specific about "a wide range of OSes"? I guess
-> we could do the work to make sure libbpf builds on all the same
-> platforms iproute2 supports, but we'd need something a bit more definite
-> to go on...
+> -- 
+> paul moore
+> www.paul-moore.com
 > 
 
-rhel5/centos5? definitely rhel6/centos6 time frame and forward.
+- RGB
 
-Stephen: has the backwards lifetime ever been stated?
-
-Changing configure to check for existence and fall back to existing code
-seems to me the safest option.
+--
+Richard Guy Briggs <rgb@redhat.com>
+Sr. S/W Engineer, Kernel Security, Base Operating Systems
+Remote, Ottawa, Red Hat Canada
+IRC: rgb, SunRaycer
+Voice: +1.647.777.2635, Internal: (81) 32635
 
