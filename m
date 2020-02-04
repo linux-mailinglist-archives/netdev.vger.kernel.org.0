@@ -2,147 +2,46 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 71233151903
-	for <lists+netdev@lfdr.de>; Tue,  4 Feb 2020 11:52:54 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 82D6F151907
+	for <lists+netdev@lfdr.de>; Tue,  4 Feb 2020 11:55:21 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726730AbgBDKwv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 4 Feb 2020 05:52:51 -0500
-Received: from host.76.145.23.62.rev.coltfrance.com ([62.23.145.76]:38297 "EHLO
-        proxy.6wind.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726603AbgBDKwv (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 4 Feb 2020 05:52:51 -0500
-Received: from bretzel.dev.6wind.com (unknown [10.16.0.19])
-        by proxy.6wind.com (Postfix) with ESMTPS id AA6FC37B47A;
-        Tue,  4 Feb 2020 11:52:49 +0100 (CET)
-Received: from dichtel by bretzel.dev.6wind.com with local (Exim 4.92)
-        (envelope-from <dichtel@bretzel.dev.6wind.com>)
-        id 1iyvp3-00046P-Cy; Tue, 04 Feb 2020 11:52:49 +0100
-From:   Nicolas Dichtel <nicolas.dichtel@6wind.com>
-To:     steffen.klassert@secunet.com, davem@davemloft.net
-Cc:     netdev@vger.kernel.org, Nicolas Dichtel <nicolas.dichtel@6wind.com>
-Subject: [PATCH ipsec v2] vti[6]: fix packet tx through bpf_redirect() in XinY cases
-Date:   Tue,  4 Feb 2020 11:52:48 +0100
-Message-Id: <20200204105248.28729-1-nicolas.dichtel@6wind.com>
-X-Mailer: git-send-email 2.24.0
-In-Reply-To: <202002041523.F56NC2Bi%lkp@intel.com>
-References: <202002041523.F56NC2Bi%lkp@intel.com>
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+        id S1726832AbgBDKzS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 4 Feb 2020 05:55:18 -0500
+Received: from shards.monkeyblade.net ([23.128.96.9]:41792 "EHLO
+        shards.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726631AbgBDKzS (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 4 Feb 2020 05:55:18 -0500
+Received: from localhost (unknown [IPv6:2001:982:756:1:57a7:3bfd:5e85:defb])
+        (using TLSv1 with cipher AES256-SHA (256/256 bits))
+        (Client did not present a certificate)
+        (Authenticated sender: davem-davemloft)
+        by shards.monkeyblade.net (Postfix) with ESMTPSA id 7233C12DE6612;
+        Tue,  4 Feb 2020 02:55:17 -0800 (PST)
+Date:   Tue, 04 Feb 2020 11:55:16 +0100 (CET)
+Message-Id: <20200204.115516.1053407271785679261.davem@davemloft.net>
+To:     michael.chan@broadcom.com
+Cc:     netdev@vger.kernel.org, vasundhara-v.volam@broadcom.com
+Subject: Re: [stable] bnxt_en: Move devlink_register before registering
+ netdev
+From:   David Miller <davem@davemloft.net>
+In-Reply-To: <CACKFLi=8uYrOx9GM412hArXzFHZW7WpD3P4F_hT5S0bgf_YTjA@mail.gmail.com>
+References: <CACKFLi=8uYrOx9GM412hArXzFHZW7WpD3P4F_hT5S0bgf_YTjA@mail.gmail.com>
+X-Mailer: Mew version 6.8 on Emacs 26.3
+Mime-Version: 1.0
+Content-Type: Text/Plain; charset=us-ascii
+Content-Transfer-Encoding: 7bit
+X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Tue, 04 Feb 2020 02:55:18 -0800 (PST)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-I forgot the 4in6/6in4 cases in my previous patch. Let's fix them.
+From: Michael Chan <michael.chan@broadcom.com>
+Date: Sun, 2 Feb 2020 23:42:00 -0800
 
-Fixes: 95224166a903 ("vti[6]: fix packet tx through bpf_redirect()")
-Signed-off-by: Nicolas Dichtel <nicolas.dichtel@6wind.com>
----
+> David, I'd like to request this patch for 5.4 and 5.5 stable kernels.
+> Without this patch, the phys_port_name may not be registered in time
+> for the netdev and some users report seeing inconsistent naming of the
+> device.  Thanks.
 
-v1 -> v2:
- - fix compilation when IPv6 is disabled
-
- net/ipv4/ip_vti.c  | 38 ++++++++++++++++++++++++++++++--------
- net/ipv6/ip6_vti.c | 32 +++++++++++++++++++++++++-------
- 2 files changed, 55 insertions(+), 15 deletions(-)
-
-diff --git a/net/ipv4/ip_vti.c b/net/ipv4/ip_vti.c
-index 37cddd18f282..1b4e6f298648 100644
---- a/net/ipv4/ip_vti.c
-+++ b/net/ipv4/ip_vti.c
-@@ -187,17 +187,39 @@ static netdev_tx_t vti_xmit(struct sk_buff *skb, struct net_device *dev,
- 	int mtu;
- 
- 	if (!dst) {
--		struct rtable *rt;
--
--		fl->u.ip4.flowi4_oif = dev->ifindex;
--		fl->u.ip4.flowi4_flags |= FLOWI_FLAG_ANYSRC;
--		rt = __ip_route_output_key(dev_net(dev), &fl->u.ip4);
--		if (IS_ERR(rt)) {
-+		switch (skb->protocol) {
-+		case htons(ETH_P_IP): {
-+			struct rtable *rt;
-+
-+			fl->u.ip4.flowi4_oif = dev->ifindex;
-+			fl->u.ip4.flowi4_flags |= FLOWI_FLAG_ANYSRC;
-+			rt = __ip_route_output_key(dev_net(dev), &fl->u.ip4);
-+			if (IS_ERR(rt)) {
-+				dev->stats.tx_carrier_errors++;
-+				goto tx_error_icmp;
-+			}
-+			dst = &rt->dst;
-+			skb_dst_set(skb, dst);
-+			break;
-+		}
-+#if IS_ENABLED(CONFIG_IPV6)
-+		case htons(ETH_P_IPV6):
-+			fl->u.ip6.flowi6_oif = dev->ifindex;
-+			fl->u.ip6.flowi6_flags |= FLOWI_FLAG_ANYSRC;
-+			dst = ip6_route_output(dev_net(dev), NULL, &fl->u.ip6);
-+			if (dst->error) {
-+				dst_release(dst);
-+				dst = NULL;
-+				dev->stats.tx_carrier_errors++;
-+				goto tx_error_icmp;
-+			}
-+			skb_dst_set(skb, dst);
-+			break;
-+#endif
-+		default:
- 			dev->stats.tx_carrier_errors++;
- 			goto tx_error_icmp;
- 		}
--		dst = &rt->dst;
--		skb_dst_set(skb, dst);
- 	}
- 
- 	dst_hold(dst);
-diff --git a/net/ipv6/ip6_vti.c b/net/ipv6/ip6_vti.c
-index 524006aa0d78..56e642efefff 100644
---- a/net/ipv6/ip6_vti.c
-+++ b/net/ipv6/ip6_vti.c
-@@ -450,15 +450,33 @@ vti6_xmit(struct sk_buff *skb, struct net_device *dev, struct flowi *fl)
- 	int mtu;
- 
- 	if (!dst) {
--		fl->u.ip6.flowi6_oif = dev->ifindex;
--		fl->u.ip6.flowi6_flags |= FLOWI_FLAG_ANYSRC;
--		dst = ip6_route_output(dev_net(dev), NULL, &fl->u.ip6);
--		if (dst->error) {
--			dst_release(dst);
--			dst = NULL;
-+		switch (skb->protocol) {
-+		case htons(ETH_P_IP): {
-+			struct rtable *rt;
-+
-+			fl->u.ip4.flowi4_oif = dev->ifindex;
-+			fl->u.ip4.flowi4_flags |= FLOWI_FLAG_ANYSRC;
-+			rt = __ip_route_output_key(dev_net(dev), &fl->u.ip4);
-+			if (IS_ERR(rt))
-+				goto tx_err_link_failure;
-+			dst = &rt->dst;
-+			skb_dst_set(skb, dst);
-+			break;
-+		}
-+		case htons(ETH_P_IPV6):
-+			fl->u.ip6.flowi6_oif = dev->ifindex;
-+			fl->u.ip6.flowi6_flags |= FLOWI_FLAG_ANYSRC;
-+			dst = ip6_route_output(dev_net(dev), NULL, &fl->u.ip6);
-+			if (dst->error) {
-+				dst_release(dst);
-+				dst = NULL;
-+				goto tx_err_link_failure;
-+			}
-+			skb_dst_set(skb, dst);
-+			break;
-+		default:
- 			goto tx_err_link_failure;
- 		}
--		skb_dst_set(skb, dst);
- 	}
- 
- 	dst_hold(dst);
--- 
-2.24.0
-
+Queued up, thanks Michael.
