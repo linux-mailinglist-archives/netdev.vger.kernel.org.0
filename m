@@ -2,269 +2,127 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 288CC152352
-	for <lists+netdev@lfdr.de>; Wed,  5 Feb 2020 00:43:31 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9944615239D
+	for <lists+netdev@lfdr.de>; Wed,  5 Feb 2020 00:53:04 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727705AbgBDXnV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 4 Feb 2020 18:43:21 -0500
-Received: from us-smtp-1.mimecast.com ([205.139.110.61]:33361 "EHLO
-        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1727562AbgBDXnV (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 4 Feb 2020 18:43:21 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1580859800;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=meSIjZ0BPANUIdkHYD3G5hsrkblgpeJ+gepMEAOzVvI=;
-        b=BKhi5bDG2mF3FHSeaxsf5MZrQaBvHFsMJqmGTfn8GeZBVsPZghZ9CD5pA3nA73JflNV6xU
-        oevjCXGgbiMpfvnuWRYgG1knOlN4EnEzkoPTmuHjK0SfdyWnh0k5pDCYtAo0wX+r6nqgT0
-        x6Lz2U8Vozb+bULjwcI/rB6LEJJKo3U=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-138-9ztUGwJdM76hyVQc14z62A-1; Tue, 04 Feb 2020 18:43:17 -0500
-X-MC-Unique: 9ztUGwJdM76hyVQc14z62A-1
-Received: from smtp.corp.redhat.com (int-mx04.intmail.prod.int.phx2.redhat.com [10.5.11.14])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 83704184AEA6;
-        Tue,  4 Feb 2020 23:43:14 +0000 (UTC)
-Received: from madcap2.tricolour.ca (ovpn-112-16.rdu2.redhat.com [10.10.112.16])
-        by smtp.corp.redhat.com (Postfix) with ESMTPS id 5B33B5D9E2;
-        Tue,  4 Feb 2020 23:43:01 +0000 (UTC)
-Date:   Tue, 4 Feb 2020 18:42:58 -0500
-From:   Richard Guy Briggs <rgb@redhat.com>
-To:     Paul Moore <paul@paul-moore.com>
-Cc:     containers@lists.linux-foundation.org, linux-api@vger.kernel.org,
-        Linux-Audit Mailing List <linux-audit@redhat.com>,
-        linux-fsdevel@vger.kernel.org, LKML <linux-kernel@vger.kernel.org>,
-        netdev@vger.kernel.org, netfilter-devel@vger.kernel.org,
-        sgrubb@redhat.com, omosnace@redhat.com, dhowells@redhat.com,
-        simo@redhat.com, Eric Paris <eparis@parisplace.org>,
-        Serge Hallyn <serge@hallyn.com>, ebiederm@xmission.com,
-        nhorman@tuxdriver.com, Dan Walsh <dwalsh@redhat.com>,
-        mpatel@redhat.com
-Subject: Re: [PATCH ghak90 V8 11/16] audit: add support for containerid to
- network namespaces
-Message-ID: <20200204234258.uwaqk3s3c42fxews@madcap2.tricolour.ca>
-References: <cover.1577736799.git.rgb@redhat.com>
- <2954ed671a7622ddf3abdb8854dbba2ad13e9f33.1577736799.git.rgb@redhat.com>
- <CAHC9VhRw3Fj9-hi+Vj8JJb_GXM4B9N5hRXa9H6aQkuuFqJJ15w@mail.gmail.com>
+        id S1727537AbgBDXxB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 4 Feb 2020 18:53:01 -0500
+Received: from mail-pg1-f195.google.com ([209.85.215.195]:38697 "EHLO
+        mail-pg1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727412AbgBDXxB (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 4 Feb 2020 18:53:01 -0500
+Received: by mail-pg1-f195.google.com with SMTP id a33so6351pgm.5
+        for <netdev@vger.kernel.org>; Tue, 04 Feb 2020 15:53:00 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:to:references:from:autocrypt:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=zUpj9C5xdjXl1iYLdDoci9E1xfLzsmABE+Xt4GKlY2A=;
+        b=QecfHVfWFvu1vKcXe702s+e1u/AwZbezMBf1mWWiwVGkcGm7sPYoRBJoTa1K4ynR5q
+         mf+5gNUMRpGrf3EgemwKjvAPlWgqJP6PSpFKEOZwc27Uu+MvQeoatvRNDwk0m5ESNqo4
+         12odLNggr1hTFIfbhA+a6LBjDBbr/85dGZdgNC6cnvlcwxomKxulROWOqsvDiRtSbjbA
+         /8sX8KC6vl/Dmaas0iCblXwB15NDl5R1OjbSaeRF7hdmeiyVaTLDU7ABMwysQSSO9yEm
+         PiM+pka0Fb7zZsRxrG0o6UKK4XgqLPkgU9eEN+iDNPTyw2ed4kZDQ2ahDenb5Up2BB4A
+         Kzuw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:references:from:autocrypt:message-id
+         :date:user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=zUpj9C5xdjXl1iYLdDoci9E1xfLzsmABE+Xt4GKlY2A=;
+        b=RA/MWVDCHrK1STciBqu3rQVOYzWsWvp7sVrtoFlTFosrzt9ofl/deA05/lJ5qBhNpL
+         6stT7OlAPLtwdaP+sA+yotZfbtwBY9h/C4n66595YEdXi+G9BQlXGpCdYKXFhpyXa016
+         ngYyScKOpBzStxxxHMkYIEuwPdfxSeASF53ZjlopAGOgIb4QlE6YuZDi1MoqfGMMdqG3
+         IJ1apbWO7TRvsnB33JUtu2NCkjD1DSGDphsIR/e7HLO2OqIr8WrPrIrjNBO8KsWmIwHd
+         2ki8xRkrWLQ1tbILSLdlmSjNjTDSKsd/tisDCAr5hQLU+7yQ44oXAtf+vUw9vQdPs6mo
+         2o2g==
+X-Gm-Message-State: APjAAAXAEH/wIARftkQjP1R7sMbwZ3AaHx0H5S+pUwyt2EYkfZsU2vqP
+        fDLcSSun/uQc0qyK2rnbb/8=
+X-Google-Smtp-Source: APXvYqzoKmcN3ZMx+4n4H459o65VBkFHLJ3JWOICgBoDJm3R1cw1p2nHyAZTWp6BwiWbA2BvzbNmIw==
+X-Received: by 2002:a63:e14b:: with SMTP id h11mr32677186pgk.297.1580860380278;
+        Tue, 04 Feb 2020 15:53:00 -0800 (PST)
+Received: from [10.67.50.115] ([192.19.223.252])
+        by smtp.googlemail.com with ESMTPSA id g21sm26387176pfb.126.2020.02.04.15.52.59
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 04 Feb 2020 15:52:59 -0800 (PST)
+Subject: Re: [PATCH v1] net: dsa: b53: Platform data shan't include kernel.h
+To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        netdev@vger.kernel.org, "David S . Miller" <davem@davemloft.net>
+References: <20200204161439.28385-1-andriy.shevchenko@linux.intel.com>
+From:   Florian Fainelli <f.fainelli@gmail.com>
+Autocrypt: addr=f.fainelli@gmail.com; prefer-encrypt=mutual; keydata=
+ xsDiBEjPuBIRBACW9MxSJU9fvEOCTnRNqG/13rAGsj+vJqontvoDSNxRgmafP8d3nesnqPyR
+ xGlkaOSDuu09rxuW+69Y2f1TzjFuGpBk4ysWOR85O2Nx8AJ6fYGCoeTbovrNlGT1M9obSFGQ
+ X3IzRnWoqlfudjTO5TKoqkbOgpYqIo5n1QbEjCCwCwCg3DOH/4ug2AUUlcIT9/l3pGvoRJ0E
+ AICDzi3l7pmC5IWn2n1mvP5247urtHFs/uusE827DDj3K8Upn2vYiOFMBhGsxAk6YKV6IP0d
+ ZdWX6fqkJJlu9cSDvWtO1hXeHIfQIE/xcqvlRH783KrihLcsmnBqOiS6rJDO2x1eAgC8meAX
+ SAgsrBhcgGl2Rl5gh/jkeA5ykwbxA/9u1eEuL70Qzt5APJmqVXR+kWvrqdBVPoUNy/tQ8mYc
+ nzJJ63ng3tHhnwHXZOu8hL4nqwlYHRa9eeglXYhBqja4ZvIvCEqSmEukfivk+DlIgVoOAJbh
+ qIWgvr3SIEuR6ayY3f5j0f2ejUMYlYYnKdiHXFlF9uXm1ELrb0YX4GMHz80nRmxvcmlhbiBG
+ YWluZWxsaSA8Zi5mYWluZWxsaUBnbWFpbC5jb20+wmYEExECACYCGyMGCwkIBwMCBBUCCAME
+ FgIDAQIeAQIXgAUCVF/S8QUJHlwd3wAKCRBhV5kVtWN2DvCVAJ4u4/bPF4P3jxb4qEY8I2gS
+ 6hG0gACffNWlqJ2T4wSSn+3o7CCZNd7SLSDOwU0EVxvH8AEQAOqv6agYuT4x3DgFIJNv9i0e
+ S443rCudGwmg+CbjXGA4RUe1bNdPHYgbbIaN8PFkXfb4jqg64SyU66FXJJJO+DmPK/t7dRNA
+ 3eMB1h0GbAHlLzsAzD0DKk1ARbjIusnc02aRQNsAUfceqH5fAMfs2hgXBa0ZUJ4bLly5zNbr
+ r0t/fqZsyI2rGQT9h1D5OYn4oF3KXpSpo+orJD93PEDeseho1EpmMfsVH7PxjVUlNVzmZ+tc
+ IDw24CDSXf0xxnaojoicQi7kzKpUrJodfhNXUnX2JAm/d0f9GR7zClpQMezJ2hYAX7BvBajb
+ Wbtzwi34s8lWGI121VjtQNt64mSqsK0iQAE6OYk0uuQbmMaxbBTT63+04rTPBO+gRAWZNDmQ
+ b2cTLjrOmdaiPGClSlKx1RhatzW7j1gnUbpfUl91Xzrp6/Rr9BgAZydBE/iu57KWsdMaqu84
+ JzO9UBGomh9eyBWBkrBt+Fe1qN78kM7JO6i3/QI56NA4SflV+N4PPgI8TjDVaxgrfUTV0gVa
+ cr9gDE5VgnSeSiOleChM1jOByZu0JTShOkT6AcSVW0kCz3fUrd4e5sS3J3uJezSvXjYDZ53k
+ +0GS/Hy//7PSvDbNVretLkDWL24Sgxu/v8i3JiYIxe+F5Br8QpkwNa1tm7FK4jOd95xvYADl
+ BUI1EZMCPI7zABEBAAHCwagEGBECAAkFAlcbx/ACGwICKQkQYVeZFbVjdg7BXSAEGQECAAYF
+ Alcbx/AACgkQh9CWnEQHBwSJBw//Z5n6IO19mVzMy/ZLU/vu8flv0Aa0kwk5qvDyvuvfiDTd
+ WQzq2PLs+obX0y1ffntluhvP+8yLzg7h5O6/skOfOV26ZYD9FeV3PIgR3QYF26p2Ocwa3B/k
+ P6ENkk2pRL2hh6jaA1Bsi0P34iqC2UzzLq+exctXPa07ioknTIJ09BT31lQ36Udg7NIKalnj
+ 5UbkRjqApZ+Rp0RAP9jFtq1n/gjvZGyEfuuo/G+EVCaiCt3Vp/cWxDYf2qsX6JxkwmUNswuL
+ C3duQ0AOMNYrT6Pn+Vf0kMboZ5UJEzgnSe2/5m8v6TUc9ZbC5I517niyC4+4DY8E2m2V2LS9
+ es9uKpA0yNcd4PfEf8bp29/30MEfBWOf80b1yaubrP5y7yLzplcGRZMF3PgBfi0iGo6kM/V2
+ 13iD/wQ45QTV0WTXaHVbklOdRDXDHIpT69hFJ6hAKnnM7AhqZ70Qi31UHkma9i/TeLLzYYXz
+ zhLHGIYaR04dFT8sSKTwTSqvm8rmDzMpN54/NeDSoSJitDuIE8givW/oGQFb0HGAF70qLgp0
+ 2XiUazRyRU4E4LuhNHGsUxoHOc80B3l+u3jM6xqJht2ZyMZndbAG4LyVA2g9hq2JbpX8BlsF
+ skzW1kbzIoIVXT5EhelxYEGqLFsZFdDhCy8tjePOWK069lKuuFSssaZ3C4edHtkZ8gCfWWtA
+ 8dMsqeOIg9Trx7ZBCDOZGNAAnjYQmSb2eYOAti3PX3Ex7vI8ZhJCzsNNBEjPuBIQEAC/6NPW
+ 6EfQ91ZNU7e/oKWK91kOoYGFTjfdOatp3RKANidHUMSTUcN7J2mxww80AQHKjr3Yu2InXwVX
+ SotMMR4UrkQX7jqabqXV5G+88bj0Lkr3gi6qmVkUPgnNkIBe0gaoM523ujYKLreal2OQ3GoJ
+ PS6hTRoSUM1BhwLCLIWqdX9AdT6FMlDXhCJ1ffA/F3f3nTN5oTvZ0aVF0SvQb7eIhGVFxrlb
+ WS0+dpyulr9hGdU4kzoqmZX9T/r8WCwcfXipmmz3Zt8o2pYWPMq9Utby9IEgPwultaP06MHY
+ nhda1jfzGB5ZKco/XEaXNvNYADtAD91dRtNGMwRHWMotIGiWwhEJ6vFc9bw1xcR88oYBs+7p
+ gbFSpmMGYAPA66wdDKGj9+cLhkd0SXGht9AJyaRA5AWB85yNmqcXXLkzzh2chIpSEawRsw8B
+ rQIZXc5QaAcBN2dzGN9UzqQArtWaTTjMrGesYhN+aVpMHNCmJuISQORhX5lkjeg54oplt6Zn
+ QyIsOCH3MfG95ha0TgWwyFtdxOdY/UY2zv5wGivZ3WeS0TtQf/BcGre2y85rAohFziWOzTaS
+ BKZKDaBFHwnGcJi61Pnjkz82hena8OmsnsBIucsz4N0wE+hVd6AbDYN8ZcFNIDyt7+oGD1+c
+ PfqLz2df6qjXzq27BBUboklbGUObNwADBQ//V45Z51Q4fRl/6/+oY5q+FPbRLDPlUF2lV6mb
+ hymkpqIzi1Aj/2FUKOyImGjbLAkuBQj3uMqy+BSSXyQLG3sg8pDDe8AJwXDpG2fQTyTzQm6l
+ OnaMCzosvALk2EOPJryMkOCI52+hk67cSFA0HjgTbkAv4Mssd52y/5VZR28a+LW+mJIZDurI
+ Y14UIe50G99xYxjuD1lNdTa/Yv6qFfEAqNdjEBKNuOEUQOlTLndOsvxOOPa1mRUk8Bqm9BUt
+ LHk3GDb8bfDwdos1/h2QPEi+eI+O/bm8YX7qE7uZ13bRWBY+S4+cd+Cyj8ezKYAJo9B+0g4a
+ RVhdhc3AtW44lvZo1h2iml9twMLfewKkGV3oG35CcF9mOd7n6vDad3teeNpYd/5qYhkopQrG
+ k2oRBqxyvpSLrJepsyaIpfrt5NNaH7yTCtGXcxlGf2jzGdei6H4xQPjDcVq2Ra5GJohnb/ix
+ uOc0pWciL80ohtpSspLlWoPiIowiKJu/D/Y0bQdatUOZcGadkywCZc/dg5hcAYNYchc8AwA4
+ 2dp6w8SlIsm1yIGafWlNnfvqbRBglSTnxFuKqVggiz2zk+1wa/oP+B96lm7N4/3Aw6uy7lWC
+ HvsHIcv4lxCWkFXkwsuWqzEKK6kxVpRDoEQPDj+Oy/ZJ5fYuMbkdHrlegwoQ64LrqdmiVVPC
+ TwQYEQIADwIbDAUCVF/S8QUJHlwd3wAKCRBhV5kVtWN2Do+FAJ956xSz2XpDHql+Wg/2qv3b
+ G10n8gCguORqNGMsVRxrlLs7/himep7MrCc=
+Message-ID: <1741abe6-9360-5ec9-d3cf-65b1d0de0d45@gmail.com>
+Date:   Tue, 4 Feb 2020 15:52:58 -0800
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.4.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CAHC9VhRw3Fj9-hi+Vj8JJb_GXM4B9N5hRXa9H6aQkuuFqJJ15w@mail.gmail.com>
-User-Agent: NeoMutt/20180716
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.14
+In-Reply-To: <20200204161439.28385-1-andriy.shevchenko@linux.intel.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 2020-01-22 16:28, Paul Moore wrote:
-> On Tue, Dec 31, 2019 at 2:51 PM Richard Guy Briggs <rgb@redhat.com> wrote:
-> >
-> > This also adds support to qualify NETFILTER_PKT records.
-> >
-> > Audit events could happen in a network namespace outside of a task
-> > context due to packets received from the net that trigger an auditing
-> > rule prior to being associated with a running task.  The network
-> > namespace could be in use by multiple containers by association to the
-> > tasks in that network namespace.  We still want a way to attribute
-> > these events to any potential containers.  Keep a list per network
-> > namespace to track these audit container identifiiers.
-> >
-> > Add/increment the audit container identifier on:
-> > - initial setting of the audit container identifier via /proc
-> > - clone/fork call that inherits an audit container identifier
-> > - unshare call that inherits an audit container identifier
-> > - setns call that inherits an audit container identifier
-> > Delete/decrement the audit container identifier on:
-> > - an inherited audit container identifier dropped when child set
-> > - process exit
-> > - unshare call that drops a net namespace
-> > - setns call that drops a net namespace
-> >
-> > Add audit container identifier auxiliary record(s) to NETFILTER_PKT
-> > event standalone records.  Iterate through all potential audit container
-> > identifiers associated with a network namespace.
-> >
-> > Please see the github audit kernel issue for contid net support:
-> >   https://github.com/linux-audit/audit-kernel/issues/92
-> > Please see the github audit testsuiite issue for the test case:
-> >   https://github.com/linux-audit/audit-testsuite/issues/64
-> > Please see the github audit wiki for the feature overview:
-> >   https://github.com/linux-audit/audit-kernel/wiki/RFE-Audit-Container-ID
-> > Signed-off-by: Richard Guy Briggs <rgb@redhat.com>
-> > Acked-by: Neil Horman <nhorman@tuxdriver.com>
-> > Reviewed-by: Ondrej Mosnacek <omosnace@redhat.com>
-> > ---
-> >  include/linux/audit.h    |  24 +++++++++
-> >  kernel/audit.c           | 132 ++++++++++++++++++++++++++++++++++++++++++++++-
-> >  kernel/nsproxy.c         |   4 ++
-> >  net/netfilter/nft_log.c  |  11 +++-
-> >  net/netfilter/xt_AUDIT.c |  11 +++-
-> >  5 files changed, 176 insertions(+), 6 deletions(-)
+On 2/4/20 8:14 AM, Andy Shevchenko wrote:
+> Replace with appropriate types.h.
 > 
-> ...
-> 
-> > diff --git a/include/linux/audit.h b/include/linux/audit.h
-> > index 5531d37a4226..ed8d5b74758d 100644
-> > --- a/include/linux/audit.h
-> > +++ b/include/linux/audit.h
-> > @@ -12,6 +12,7 @@
-> >  #include <linux/sched.h>
-> >  #include <linux/ptrace.h>
-> >  #include <uapi/linux/audit.h>
-> > +#include <linux/refcount.h>
-> >
-> >  #define AUDIT_INO_UNSET ((unsigned long)-1)
-> >  #define AUDIT_DEV_UNSET ((dev_t)-1)
-> > @@ -121,6 +122,13 @@ struct audit_task_info {
-> >
-> >  extern struct audit_task_info init_struct_audit;
-> >
-> > +struct audit_contobj_netns {
-> > +       struct list_head        list;
-> > +       u64                     id;
-> 
-> Since we now track audit container IDs in their own structure, why not
-> link directly to the audit container ID object (and bump the
-> refcount)?
+> Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 
-Ok, I've done this but at first I had doubts about the complexity.
-
-> > +       refcount_t              refcount;
-> > +       struct rcu_head         rcu;
-> > +};
-> > +
-> >  extern int is_audit_feature_set(int which);
-> >
-> >  extern int __init audit_register_class(int class, unsigned *list);
-> > @@ -225,6 +233,12 @@ static inline u64 audit_get_contid(struct task_struct *tsk)
-> >  }
-> >
-> >  extern void audit_log_container_id(struct audit_context *context, u64 contid);
-> > +extern void audit_netns_contid_add(struct net *net, u64 contid);
-> > +extern void audit_netns_contid_del(struct net *net, u64 contid);
-> > +extern void audit_switch_task_namespaces(struct nsproxy *ns,
-> > +                                        struct task_struct *p);
-> > +extern void audit_log_netns_contid_list(struct net *net,
-> > +                                       struct audit_context *context);
-> >
-> >  extern u32 audit_enabled;
-> >
-> > @@ -297,6 +311,16 @@ static inline u64 audit_get_contid(struct task_struct *tsk)
-> >
-> >  static inline void audit_log_container_id(struct audit_context *context, u64 contid)
-> >  { }
-> > +static inline void audit_netns_contid_add(struct net *net, u64 contid)
-> > +{ }
-> > +static inline void audit_netns_contid_del(struct net *net, u64 contid)
-> > +{ }
-> > +static inline void audit_switch_task_namespaces(struct nsproxy *ns,
-> > +                                               struct task_struct *p)
-> > +{ }
-> > +static inline void audit_log_netns_contid_list(struct net *net,
-> > +                                              struct audit_context *context)
-> > +{ }
-> >
-> >  #define audit_enabled AUDIT_OFF
-> >
-> > diff --git a/kernel/audit.c b/kernel/audit.c
-> > index d4e6eafe5644..f7a8d3288ca0 100644
-> > --- a/kernel/audit.c
-> > +++ b/kernel/audit.c
-> > @@ -59,6 +59,7 @@
-> >  #include <linux/freezer.h>
-> >  #include <linux/pid_namespace.h>
-> >  #include <net/netns/generic.h>
-> > +#include <net/net_namespace.h>
-> >
-> >  #include "audit.h"
-> >
-> > @@ -86,9 +87,13 @@
-> >  /**
-> >   * struct audit_net - audit private network namespace data
-> >   * @sk: communication socket
-> > + * @contid_list: audit container identifier list
-> > + * @contid_list_lock audit container identifier list lock
-> >   */
-> >  struct audit_net {
-> >         struct sock *sk;
-> > +       struct list_head contid_list;
-> > +       spinlock_t contid_list_lock;
-> >  };
-> >
-> >  /**
-> > @@ -305,8 +310,11 @@ struct audit_task_info init_struct_audit = {
-> >  void audit_free(struct task_struct *tsk)
-> >  {
-> >         struct audit_task_info *info = tsk->audit;
-> > +       struct nsproxy *ns = tsk->nsproxy;
-> >
-> >         audit_free_syscall(tsk);
-> > +       if (ns)
-> > +               audit_netns_contid_del(ns->net_ns, audit_get_contid(tsk));
-> >         /* Freeing the audit_task_info struct must be performed after
-> >          * audit_log_exit() due to need for loginuid and sessionid.
-> >          */
-> > @@ -409,6 +417,120 @@ static struct sock *audit_get_sk(const struct net *net)
-> >         return aunet->sk;
-> >  }
-> >
-> > +void audit_netns_contid_add(struct net *net, u64 contid)
-> > +{
-> > +       struct audit_net *aunet;
-> > +       struct list_head *contid_list;
-> > +       struct audit_contobj_netns *cont;
-> > +
-> > +       if (!net)
-> > +               return;
-> > +       if (!audit_contid_valid(contid))
-> > +               return;
-> > +       aunet = net_generic(net, audit_net_id);
-> > +       if (!aunet)
-> > +               return;
-> > +       contid_list = &aunet->contid_list;
-> > +       rcu_read_lock();
-> > +       list_for_each_entry_rcu(cont, contid_list, list)
-> > +               if (cont->id == contid) {
-> > +                       spin_lock(&aunet->contid_list_lock);
-> > +                       refcount_inc(&cont->refcount);
-> > +                       spin_unlock(&aunet->contid_list_lock);
-> > +                       goto out;
-> > +               }
-> > +       cont = kmalloc(sizeof(*cont), GFP_ATOMIC);
-> > +       if (cont) {
-> > +               INIT_LIST_HEAD(&cont->list);
-> > +               cont->id = contid;
-> > +               refcount_set(&cont->refcount, 1);
-> > +               spin_lock(&aunet->contid_list_lock);
-> > +               list_add_rcu(&cont->list, contid_list);
-> > +               spin_unlock(&aunet->contid_list_lock);
-> > +       }
-> > +out:
-> > +       rcu_read_unlock();
-> > +}
-> 
-> See my comments about refcount_t, spinlocks, and list manipulation
-> races from earlier in the patchset; the same thing applies to the
-> function above.
-
-This was some of the complexity that concerned me, but switching to rcu
-read locks helped.  In this case, since a stale list would cause an
-update issue and these counts aren't used or updated anywere else,
-switching to an int makes sense.
-
-> paul moore
-
-- RGB
-
---
-Richard Guy Briggs <rgb@redhat.com>
-Sr. S/W Engineer, Kernel Security, Base Operating Systems
-Remote, Ottawa, Red Hat Canada
-IRC: rgb, SunRaycer
-Voice: +1.647.777.2635, Internal: (81) 32635
-
+Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
+-- 
+Florian
