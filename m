@@ -2,113 +2,105 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id BBD3A1514EC
-	for <lists+netdev@lfdr.de>; Tue,  4 Feb 2020 05:20:45 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 67971151510
+	for <lists+netdev@lfdr.de>; Tue,  4 Feb 2020 05:43:17 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727210AbgBDETw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 3 Feb 2020 23:19:52 -0500
-Received: from us-smtp-2.mimecast.com ([205.139.110.61]:45263 "EHLO
-        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1727170AbgBDETw (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 3 Feb 2020 23:19:52 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1580789990;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=qnJ7pfLwugdYhxtD4QkD0UVYEM/OAM1UnVZIU6mM8I8=;
-        b=TMmBB64q+kN6FVe7DjZ2lgdnEr53dwQ96sHocmIr5exVXm+7+MA0WpZfJ/Y68ss2du8jf8
-        ivD88Y1nktNC951cWLnlSLa8P2oA9bO01iSy8bcl0OwiqFH+ZWgBCnYc9/YarK1aiuVwAN
-        25ztiPKhoRAr6CcCxxboEarBWWJvIMA=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-176-0vUHyZWFNFOwOQXfk-hPwA-1; Mon, 03 Feb 2020 23:19:49 -0500
-X-MC-Unique: 0vUHyZWFNFOwOQXfk-hPwA-1
-Received: from smtp.corp.redhat.com (int-mx06.intmail.prod.int.phx2.redhat.com [10.5.11.16])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 658278017DF;
-        Tue,  4 Feb 2020 04:19:46 +0000 (UTC)
-Received: from [10.72.12.170] (ovpn-12-170.pek2.redhat.com [10.72.12.170])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 3602B5C1D4;
-        Tue,  4 Feb 2020 04:19:29 +0000 (UTC)
-Subject: Re: [PATCH 5/5] vdpasim: vDPA device simulator
-To:     Jason Gunthorpe <jgg@mellanox.com>,
-        Parav Pandit <parav@mellanox.com>
-Cc:     "mst@redhat.com" <mst@redhat.com>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
-        "virtualization@lists.linux-foundation.org" 
-        <virtualization@lists.linux-foundation.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "tiwei.bie@intel.com" <tiwei.bie@intel.com>,
-        "maxime.coquelin@redhat.com" <maxime.coquelin@redhat.com>,
-        "cunming.liang@intel.com" <cunming.liang@intel.com>,
-        "zhihong.wang@intel.com" <zhihong.wang@intel.com>,
-        "rob.miller@broadcom.com" <rob.miller@broadcom.com>,
-        "xiao.w.wang@intel.com" <xiao.w.wang@intel.com>,
-        "haotian.wang@sifive.com" <haotian.wang@sifive.com>,
-        "lingshan.zhu@intel.com" <lingshan.zhu@intel.com>,
-        "eperezma@redhat.com" <eperezma@redhat.com>,
-        "lulu@redhat.com" <lulu@redhat.com>,
-        "kevin.tian@intel.com" <kevin.tian@intel.com>,
-        "stefanha@redhat.com" <stefanha@redhat.com>,
-        "rdunlap@infradead.org" <rdunlap@infradead.org>,
-        "hch@infradead.org" <hch@infradead.org>,
-        "aadam@redhat.com" <aadam@redhat.com>,
-        "jakub.kicinski@netronome.com" <jakub.kicinski@netronome.com>,
-        Jiri Pirko <jiri@mellanox.com>,
-        Shahaf Shuler <shahafs@mellanox.com>,
-        "hanand@xilinx.com" <hanand@xilinx.com>,
-        "mhabets@solarflare.com" <mhabets@solarflare.com>,
-        "kuba@kernel.org" <kuba@kernel.org>
-References: <20200116124231.20253-1-jasowang@redhat.com>
- <20200116124231.20253-6-jasowang@redhat.com>
- <20200116154658.GJ20978@mellanox.com>
- <aea2bff8-82c8-2c0f-19ee-e86db73e199f@redhat.com>
- <20200117141021.GW20978@mellanox.com>
-From:   Jason Wang <jasowang@redhat.com>
-Message-ID: <d53a864c-d96f-ccac-78ad-0c596bda2718@redhat.com>
-Date:   Tue, 4 Feb 2020 12:19:28 +0800
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.8.0
+        id S1727176AbgBDEnM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 3 Feb 2020 23:43:12 -0500
+Received: from mail-il1-f198.google.com ([209.85.166.198]:52688 "EHLO
+        mail-il1-f198.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726924AbgBDEnM (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 3 Feb 2020 23:43:12 -0500
+Received: by mail-il1-f198.google.com with SMTP id o5so13905109ilg.19
+        for <netdev@vger.kernel.org>; Mon, 03 Feb 2020 20:43:11 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
+        bh=i5yXvtiH1y6cVNcs98LhuiQSJ2L1URSUSXCgGl2kp4o=;
+        b=hidqGe1Erxcv77NHilEF3+R7AvbAGFRCs437OkNW77YwZZenurOJTyy2O4mhLWJTLO
+         8ppLWlNWj/s+Qq2oCJwUPYhC5i/HKZ0uw57Ola7cKBK3Dvl/DbdRcjTEvS5Qodnv+3hG
+         sYH6xuMzvR17TBMmpMGLyLUrq+JfkbNfQpI2wN15SrP9cUuoYyDG6u+EV5HhY58d/sNQ
+         sQl/QeM3jIMcysZzG8729VZk96BY3cJl9ks44qoN4y+OMxn5QklMH6scZYrHaDiQbuHf
+         GKpEifTZuDRQ0aFd3BKhRK8mUBwww6DY/BynPLExy0fC8TwyFXVCe/6QjWJeNdGcM9Ik
+         Dc2Q==
+X-Gm-Message-State: APjAAAX44R3ji0Zpjk7Vcde6f5zgU/KotU0SAm2CBZ1//DCh83BuOzWF
+        jtZ00NKhs21hBDSAMRUhAhCOhqYcq9SQAYuKa+JBcm7j2kjB
+X-Google-Smtp-Source: APXvYqxX6zG1qzU/DrmwB5dQxqB0SZivucTEFYJ6/NtVlFWzr7KkIpkeW5qBL1EBhh8tbFZUS27zAjdxQZK85VfxZFGD/7ffPaId
 MIME-Version: 1.0
-In-Reply-To: <20200117141021.GW20978@mellanox.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.16
-Content-Transfer-Encoding: quoted-printable
+X-Received: by 2002:a02:ccea:: with SMTP id l10mr14889099jaq.114.1580791391626;
+ Mon, 03 Feb 2020 20:43:11 -0800 (PST)
+Date:   Mon, 03 Feb 2020 20:43:11 -0800
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <0000000000005cad20059db8adba@google.com>
+Subject: BUG: stack guard page was hit in update_stack_state
+From:   syzbot <syzbot+c2fb6f9ddcea95ba49b5@syzkaller.appspotmail.com>
+To:     bp@alien8.de, hpa@zytor.com, jannh@google.com, jpoimboe@redhat.com,
+        linux-kernel@vger.kernel.org, mingo@redhat.com,
+        netdev@vger.kernel.org, peterz@infradead.org,
+        syzkaller-bugs@googlegroups.com, tglx@linutronix.de, x86@kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Hello,
 
-On 2020/1/17 =E4=B8=8B=E5=8D=8810:10, Jason Gunthorpe wrote:
->>>> Netlink based lifecycle management could be implemented for vDPA
->>>> simulator as well.
->>> This is just begging for a netlink based approach.
->>>
->>> Certainly netlink driven removal should be an agreeable standard for
->>> all devices, I think.
->> Well, I think Parav had some proposals during the discussion of mdev
->> approach. But I'm not sure if he had any RFC codes for me to integrate=
- it
->> into vdpasim.
->>
->> Or do you want me to propose the netlink API? If yes, would you prefer=
- to a
->> new virtio dedicated one or be a subset of devlink?
-> Well, lets see what feed back Parav has
->
-> Jason
+syzbot found the following crash on:
+
+HEAD commit:    b3a60822 Merge branch 'for-v5.6' of git://git.kernel.org:/..
+git tree:       net-next
+console output: https://syzkaller.appspot.com/x/log.txt?x=147ae5f1e00000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=614e56d86457f3a7
+dashboard link: https://syzkaller.appspot.com/bug?extid=c2fb6f9ddcea95ba49b5
+compiler:       gcc (GCC) 9.0.0 20181231 (experimental)
+
+Unfortunately, I don't have any reproducer for this crash yet.
+
+IMPORTANT: if you fix the bug, please add the following tag to the commit:
+Reported-by: syzbot+c2fb6f9ddcea95ba49b5@syzkaller.appspotmail.com
+
+8021q: adding VLAN 0 to HW filter on device bond40
+BUG: stack guard page was hit at 0000000018e8ec40 (stack is 000000008cfdf90e..000000000f88bd28)
+kernel stack overflow (double-fault): 0000 [#1] PREEMPT SMP KASAN
+CPU: 0 PID: 28658 Comm: syz-executor.3 Not tainted 5.5.0-syzkaller #0
+Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
+RIP: 0010:update_stack_state+0x4b/0x5f0 arch/x86/kernel/unwind_frame.c:194
+Code: fd 41 54 49 8d 0c 06 53 48 81 ec a0 00 00 00 48 c7 45 80 42 54 41 89 48 c7 85 78 ff ff ff b3 8a b5 41 48 c7 45 88 00 3f 33 81 <48> 89 b5 68 ff ff ff c7 01 f1 f1 f1 f1 c7 41 04 00 f3 f3 f3 48 89
+RSP: 0018:ffffc9000769ffc0 EFLAGS: 00010286
+RAX: dffffc0000000000 RBX: ffffc900076a01a8 RCX: fffff52000ed4000
+RDX: 1ffff92000ed4033 RSI: ffffc900076a0230 RDI: ffffc900076a01a8
+RBP: ffffc900076a0088 R08: ffffc900076a01d0 R09: ffffc900076a0200
+R10: ffffc900076a01d0 R11: ffffc900076a01e0 R12: 1ffff92000ed4018
+R13: ffffc900076a01a8 R14: 1ffff92000ed4000 R15: ffffc900076a0230
+FS:  00007fd172d8f700(0000) GS:ffff8880ae800000(0000) knlGS:0000000000000000
+CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+CR2: ffffc9000769ffb8 CR3: 0000000097238000 CR4: 00000000001406f0
+DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+Call Trace:
+Modules linked in:
+---[ end trace 04286e13cba26a71 ]---
+RIP: 0010:update_stack_state+0x4b/0x5f0 arch/x86/kernel/unwind_frame.c:194
+Code: fd 41 54 49 8d 0c 06 53 48 81 ec a0 00 00 00 48 c7 45 80 42 54 41 89 48 c7 85 78 ff ff ff b3 8a b5 41 48 c7 45 88 00 3f 33 81 <48> 89 b5 68 ff ff ff c7 01 f1 f1 f1 f1 c7 41 04 00 f3 f3 f3 48 89
+RSP: 0018:ffffc9000769ffc0 EFLAGS: 00010286
+RAX: dffffc0000000000 RBX: ffffc900076a01a8 RCX: fffff52000ed4000
+RDX: 1ffff92000ed4033 RSI: ffffc900076a0230 RDI: ffffc900076a01a8
+RBP: ffffc900076a0088 R08: ffffc900076a01d0 R09: ffffc900076a0200
+R10: ffffc900076a01d0 R11: ffffc900076a01e0 R12: 1ffff92000ed4018
+R13: ffffc900076a01a8 R14: 1ffff92000ed4000 R15: ffffc900076a0230
+FS:  00007fd172d8f700(0000) GS:ffff8880ae800000(0000) knlGS:0000000000000000
+CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+CR2: ffffc9000769ffb8 CR3: 0000000097238000 CR4: 00000000001406f0
+DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
 
 
-Hi Parav:
+---
+This bug is generated by a bot. It may contain errors.
+See https://goo.gl/tpsmEJ for more information about syzbot.
+syzbot engineers can be reached at syzkaller@googlegroups.com.
 
-Do you have any update on this? If it still require sometime, I will=20
-post V2 that sticks to sysfs based API.
-
-Thanks
-
+syzbot will keep track of this bug report. See:
+https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
