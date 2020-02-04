@@ -2,63 +2,79 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 14913151E10
-	for <lists+netdev@lfdr.de>; Tue,  4 Feb 2020 17:17:00 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C75B8151E42
+	for <lists+netdev@lfdr.de>; Tue,  4 Feb 2020 17:25:44 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727491AbgBDQQ5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 4 Feb 2020 11:16:57 -0500
-Received: from mga05.intel.com ([192.55.52.43]:11039 "EHLO mga05.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727310AbgBDQQ5 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 4 Feb 2020 11:16:57 -0500
-X-Amp-Result: SKIPPED(no attachment in message)
-X-Amp-File-Uploaded: False
-Received: from orsmga006.jf.intel.com ([10.7.209.51])
-  by fmsmga105.fm.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 04 Feb 2020 08:16:56 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.70,402,1574150400"; 
-   d="scan'208";a="235216040"
-Received: from black.fi.intel.com ([10.237.72.28])
-  by orsmga006.jf.intel.com with ESMTP; 04 Feb 2020 08:16:54 -0800
-Received: by black.fi.intel.com (Postfix, from userid 1003)
-        id BB5FA17C; Tue,  4 Feb 2020 18:16:53 +0200 (EET)
-From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To:     Florian Fainelli <f.fainelli@gmail.com>,
-        "David S . Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
-        Woojung Huh <woojung.huh@microchip.com>,
-        Microchip Linux Driver Support <UNGLinuxDriver@microchip.com>
-Cc:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Subject: [PATCH v1] dsa: Platform data shan't include kernel.h
-Date:   Tue,  4 Feb 2020 18:16:52 +0200
-Message-Id: <20200204161652.28577-1-andriy.shevchenko@linux.intel.com>
-X-Mailer: git-send-email 2.24.1
+        id S1727358AbgBDQZl (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 4 Feb 2020 11:25:41 -0500
+Received: from metis.ext.pengutronix.de ([85.220.165.71]:53201 "EHLO
+        metis.ext.pengutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727348AbgBDQZl (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 4 Feb 2020 11:25:41 -0500
+Received: from gallifrey.ext.pengutronix.de ([2001:67c:670:201:5054:ff:fe8d:eefb] helo=[IPv6:::1])
+        by metis.ext.pengutronix.de with esmtp (Exim 4.92)
+        (envelope-from <a.fatoum@pengutronix.de>)
+        id 1iz11A-0000TR-6w; Tue, 04 Feb 2020 17:25:40 +0100
+Subject: Re: [BUG] pfifo_fast may cause out-of-order CAN frame transmission
+From:   Ahmad Fatoum <a.fatoum@pengutronix.de>
+To:     Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org,
+        linux-can@vger.kernel.org,
+        Pengutronix Kernel Team <kernel@pengutronix.de>
+References: <661cc33a-5f65-2769-cc1a-65791cb4b131@pengutronix.de>
+ <7717e4470f6881bbc92645c72ad7f6ec71360796.camel@redhat.com>
+ <779d3346-0344-9064-15d5-4d565647a556@pengutronix.de>
+ <1b70f56b72943bf5dfd2813565373e8c1b639c31.camel@redhat.com>
+ <53ce1ab4-3346-2367-8aa5-85a89f6897ec@pengutronix.de>
+ <57a2352dfc442ea2aa9cd653f8e09db277bf67c7.camel@redhat.com>
+ <b012e914-fc1a-5a45-f28b-e9d4d4dfc0fe@pengutronix.de>
+Message-ID: <ef6b4e00-75fe-70f6-6b57-7bdbaa1aac33@pengutronix.de>
+Date:   Tue, 4 Feb 2020 17:25:38 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.3.0
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+In-Reply-To: <b012e914-fc1a-5a45-f28b-e9d4d4dfc0fe@pengutronix.de>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-SA-Exim-Connect-IP: 2001:67c:670:201:5054:ff:fe8d:eefb
+X-SA-Exim-Mail-From: a.fatoum@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: netdev@vger.kernel.org
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Replace with appropriate types.h.
+Hello Paolo,
 
-Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
----
- include/linux/platform_data/microchip-ksz.h | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+On 1/20/20 5:06 PM, Ahmad Fatoum wrote:
+> Hello Paolo,
+> 
+> On 1/16/20 1:40 PM, Paolo Abeni wrote:
+>> I'm sorry for this trial & error experience. I tried to reproduce the
+>> issue on top of the vcan virtual device, but it looks like it requires
+>> the timing imposed by a real device, and it's missing here (TL;DR: I
+>> can't reproduce the issue locally).
+> 
+> No worries. I don't mind testing.
+> 
+>>
+>> Code wise, the 2nd patch closed a possible race, but it dumbly re-
+>> opened the one addressed by the first attempt - the 'empty' field must
+>> be cleared prior to the trylock operation, or we may end-up with such
+>> field set and the queue not empty.
+>>
+>> So, could you please try the following code?
+> 
+> Unfortunately, I still see observe reodering.
 
-diff --git a/include/linux/platform_data/microchip-ksz.h b/include/linux/platform_data/microchip-ksz.h
-index 84789ca634aa..ea1cc6d829e9 100644
---- a/include/linux/platform_data/microchip-ksz.h
-+++ b/include/linux/platform_data/microchip-ksz.h
-@@ -19,7 +19,7 @@
- #ifndef __MICROCHIP_KSZ_H
- #define __MICROCHIP_KSZ_H
- 
--#include <linux/kernel.h>
-+#include <linux/types.h>
- 
- struct ksz_platform_data {
- 	u32 chip_id;
+Any news?
+
+Thanks
+Ahmad
+
 -- 
-2.24.1
-
+Pengutronix e.K.                           |                             |
+Steuerwalder Str. 21                       | http://www.pengutronix.de/  |
+31137 Hildesheim, Germany                  | Phone: +49-5121-206917-0    |
+Amtsgericht Hildesheim, HRA 2686           | Fax:   +49-5121-206917-5555 |
