@@ -2,58 +2,58 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 1C893151BB6
-	for <lists+netdev@lfdr.de>; Tue,  4 Feb 2020 14:58:34 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1A599151C0E
+	for <lists+netdev@lfdr.de>; Tue,  4 Feb 2020 15:22:13 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727240AbgBDN6a (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 4 Feb 2020 08:58:30 -0500
-Received: from mx2.suse.de ([195.135.220.15]:60312 "EHLO mx2.suse.de"
+        id S1727247AbgBDOWL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 4 Feb 2020 09:22:11 -0500
+Received: from mga09.intel.com ([134.134.136.24]:25324 "EHLO mga09.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727190AbgBDN63 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 4 Feb 2020 08:58:29 -0500
-X-Virus-Scanned: by amavisd-new at test-mx.suse.de
-Received: from relay2.suse.de (unknown [195.135.220.254])
-        by mx2.suse.de (Postfix) with ESMTP id E891BAE06;
-        Tue,  4 Feb 2020 13:58:27 +0000 (UTC)
-From:   Thomas Bogendoerfer <tbogendoerfer@suse.de>
-To:     "David S. Miller" <davem@davemloft.net>
-Cc:     Ralf Baechle <ralf@linux-mips.org>,
-        Paul Burton <paulburton@kernel.org>,
-        linux-mips@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH v2 net] net: sgi: ioc3-eth: Remove leftover free_irq()
-Date:   Tue,  4 Feb 2020 14:58:20 +0100
-Message-Id: <20200204135820.21931-1-tbogendoerfer@suse.de>
-X-Mailer: git-send-email 2.24.1
+        id S1727230AbgBDOWL (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 4 Feb 2020 09:22:11 -0500
+X-Amp-Result: UNSCANNABLE
+X-Amp-File-Uploaded: False
+Received: from fmsmga005.fm.intel.com ([10.253.24.32])
+  by orsmga102.jf.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 04 Feb 2020 06:22:10 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.70,402,1574150400"; 
+   d="scan'208";a="429820153"
+Received: from lkp-server01.sh.intel.com (HELO lkp-server01) ([10.239.97.150])
+  by fmsmga005.fm.intel.com with ESMTP; 04 Feb 2020 06:22:10 -0800
+Received: from kbuild by lkp-server01 with local (Exim 4.89)
+        (envelope-from <lkp@intel.com>)
+        id 1iyz5d-000HXc-At; Tue, 04 Feb 2020 22:22:09 +0800
+Date:   Tue, 4 Feb 2020 22:21:57 +0800
+From:   kbuild test robot <lkp@intel.com>
+To:     Taehee Yoo <ap420073@gmail.com>
+Cc:     kbuild-all@lists.01.org, netdev@vger.kernel.org,
+        Jakub Kicinski <kuba@kernel.org>
+Subject: [net:master 40/48] drivers/net/netdevsim/dev.c:937:1-3: WARNING:
+ PTR_ERR_OR_ZERO can be used
+Message-ID: <202002042248.5gLay9S1%lkp@intel.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+User-Agent: NeoMutt/20170113 (1.7.2)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Commit 0ce5ebd24d25 ("mfd: ioc3: Add driver for SGI IOC3 chip") moved
-request_irq() from ioc3_open into probe function, but forgot to remove
-free_irq() from ioc3_close.
+tree:   https://git.kernel.org/pub/scm/linux/kernel/git/davem/net.git master
+head:   83b43045308ea0600099830292955f18818f8d5e
+commit: 6556ff32f12d0a5380dd2fa6bbaa01373925a7d1 [40/48] netdevsim: use IS_ERR instead of IS_ERR_OR_NULL for debugfs
 
-Fixes: 0ce5ebd24d25 ("mfd: ioc3: Add driver for SGI IOC3 chip")
-Signed-off-by: Thomas Bogendoerfer <tbogendoerfer@suse.de>
+If you fix the issue, kindly add following tag
+Reported-by: kbuild test robot <lkp@intel.com>
+
+
+coccinelle warnings: (new ones prefixed by >>)
+
+>> drivers/net/netdevsim/dev.c:937:1-3: WARNING: PTR_ERR_OR_ZERO can be used
+
+Please review and possibly fold the followup patch.
+
 ---
- drivers/net/ethernet/sgi/ioc3-eth.c | 1 -
- 1 file changed, 1 deletion(-)
-
-diff --git a/drivers/net/ethernet/sgi/ioc3-eth.c b/drivers/net/ethernet/sgi/ioc3-eth.c
-index e61eb891c0f7..db6b2988e632 100644
---- a/drivers/net/ethernet/sgi/ioc3-eth.c
-+++ b/drivers/net/ethernet/sgi/ioc3-eth.c
-@@ -823,7 +823,6 @@ static int ioc3_close(struct net_device *dev)
- 	netif_stop_queue(dev);
- 
- 	ioc3_stop(ip);
--	free_irq(dev->irq, dev);
- 
- 	ioc3_free_rx_bufs(ip);
- 	ioc3_clean_tx_ring(ip);
--- 
-2.24.1
-
+0-DAY kernel test infrastructure                 Open Source Technology Center
+https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org Intel Corporation
