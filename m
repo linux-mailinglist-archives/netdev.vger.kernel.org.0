@@ -2,147 +2,129 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id CE0B7152119
-	for <lists+netdev@lfdr.de>; Tue,  4 Feb 2020 20:30:44 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6B7F415212F
+	for <lists+netdev@lfdr.de>; Tue,  4 Feb 2020 20:33:02 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727530AbgBDTag (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 4 Feb 2020 14:30:36 -0500
-Received: from mail-qt1-f194.google.com ([209.85.160.194]:37992 "EHLO
-        mail-qt1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727358AbgBDTaf (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 4 Feb 2020 14:30:35 -0500
-Received: by mail-qt1-f194.google.com with SMTP id c24so15288969qtp.5;
-        Tue, 04 Feb 2020 11:30:34 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=UapTR/Swn2AywRKzX/GSR/rd23O04e9h6Fgs9p2msUo=;
-        b=o/eOozhV6u7iYKKKZLmW9I9eE+A50S7MONuuj7k/cxVH+dM2FEQTnarK5ohzH6rGvj
-         0CgNbVzW529C0KjCozjxar2OsHiNfHWDnX2D253V7ISvOQqErGLlZMwIM+CvfvAk/ETr
-         kIN2VYeX2wVepBOg7pBlY3ot6HrDTlJcZar8+SV0kQAuWlb8sPSPR88RhgMETAMeMdzY
-         5OSNHeIIxUDDbrEHfmSZ+8Tu9uVC1FThvyOAscXaxa6fYkHHiOzH0GdC3vVlVJ72f7F6
-         bWTdyt9dGFRZE3xFNu6izLDDJf4wFBZDkFrHyopiOWXrfO0v+0bih6u0gyOnJ/ksyvBb
-         32Rg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=UapTR/Swn2AywRKzX/GSR/rd23O04e9h6Fgs9p2msUo=;
-        b=D8/fl8ysVBYsuMreGgoJ6g9oyKGASzItM6bd0laCA9V9ifLJ4BDYo16yX+HOJ89Wx9
-         ev4OMGrQz8B3lIo+REwDINOdPyMzimBl60+YChAaY8km6mGwhkE7SRcxe+a5HJWINCET
-         /gSbzF5eq1cfIJuWr69oMbDzE1Tgku4JuCHvgcaB8wcFCc58ZDQjYi+dh2YOwSrzy4hq
-         SPB8WltlMox/Lw+h6lcbAauddvqOuA7Tk105AaHoPhObtC0SsaQUxn/sHjo7l6TC4xXB
-         0iuYu6BjVVcg5+3en8jUv1Sx5gsQAPAeyXwI2tuR+ibNpSlDq+6yPMIi/s4k57edI73i
-         t+mA==
-X-Gm-Message-State: APjAAAUwGuPR9c796TUq/CO98Ra/ZUbWeVZPmMI7j/5Ex1Mk8Z+CRWwj
-        eynK3SgXNoEVQvzqeyB+b0yDzROszrVUQ3YkluE=
-X-Google-Smtp-Source: APXvYqzynoTQgpdm/iT9SFNSo/qjNEMHfOmhlVwoEI483RemBJB+ylGnJ7qiC5IrDY/m23437c91LCoT0rOjsfwP7pU=
-X-Received: by 2002:ac8:554b:: with SMTP id o11mr30093106qtr.36.1580844634484;
- Tue, 04 Feb 2020 11:30:34 -0800 (PST)
+        id S1727657AbgBDTcr (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 4 Feb 2020 14:32:47 -0500
+Received: from pandora.armlinux.org.uk ([78.32.30.218]:54924 "EHLO
+        pandora.armlinux.org.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727507AbgBDTcq (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 4 Feb 2020 14:32:46 -0500
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
+        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
+        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
+        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+         bh=NEyB+td276ts8YTAgKy+Wd6aG//Mg77+7niimGcvraE=; b=MS7LtFiH+GHOwbhBv+vWvw2G6
+        GGWaM353Shw+BRBXs3RPScYYjeHQWFMROBIpEnJT7HGRbSG1i8cbmhXaKODdxvHybU3ar6gtLPDjK
+        v7CeOGLDXcMudmwpzsdOQT8Tg3F1uCEx98i+Uv6jo4DSh0TY7l0+Oq1AzLR124wiV8lWBE+CtiRzt
+        H1JY2UDAKt+Sv2+BWrf3iA9Jkf/+VFwVJraFRdDYOAiVKA70VZuRUOCEckZxy2i9fRi38TAP0VZni
+        Zxa04NpiTRK6Y50rqsQgLNI2xlxelTAhwhieQKXV7XbA7I79pi+7flkAWySufmzU+MTigSV/8khep
+        JPfNySMhQ==;
+Received: from shell.armlinux.org.uk ([2001:4d48:ad52:3201:5054:ff:fe00:4ec]:35968)
+        by pandora.armlinux.org.uk with esmtpsa (TLSv1.2:ECDHE-RSA-AES256-GCM-SHA384:256)
+        (Exim 4.90_1)
+        (envelope-from <linux@armlinux.org.uk>)
+        id 1iz3w3-00040d-Fm; Tue, 04 Feb 2020 19:32:35 +0000
+Received: from linux by shell.armlinux.org.uk with local (Exim 4.92)
+        (envelope-from <linux@shell.armlinux.org.uk>)
+        id 1iz3vy-0001AI-Sy; Tue, 04 Feb 2020 19:32:30 +0000
+Date:   Tue, 4 Feb 2020 19:32:30 +0000
+From:   Russell King - ARM Linux admin <linux@armlinux.org.uk>
+To:     Andrew Lunn <andrew@lunn.ch>
+Cc:     Jose Abreu <Jose.Abreu@synopsys.com>,
+        Joao Pinto <Joao.Pinto@synopsys.com>,
+        Alexandre Torgue <alexandre.torgue@st.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "linux-stm32@st-md-mailman.stormreply.com" 
+        <linux-stm32@st-md-mailman.stormreply.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Giuseppe Cavallaro <peppe.cavallaro@st.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        "linux-arm-kernel@lists.infradead.org" 
+        <linux-arm-kernel@lists.infradead.org>,
+        Heiner Kallweit <hkallweit1@gmail.com>
+Subject: Re: [RFC net-next 6/8] net: phylink: Configure MAC/PCS when link is
+ up without PHY
+Message-ID: <20200204193230.GT25745@shell.armlinux.org.uk>
+References: <20200127114600.GU25745@shell.armlinux.org.uk>
+ <20200127140038.GD13647@lunn.ch>
+ <20200127140834.GW25745@shell.armlinux.org.uk>
+ <20200127145107.GE13647@lunn.ch>
+ <20200127161132.GX25745@shell.armlinux.org.uk>
+ <20200127162206.GJ13647@lunn.ch>
+ <c3e863b8-2143-fee3-bb0b-65699661d7ab@gmail.com>
+ <BN8PR12MB3266B69DA09E1CC215843C3CD30A0@BN8PR12MB3266.namprd12.prod.outlook.com>
+ <20200204172603.GS25745@shell.armlinux.org.uk>
+ <20200204174318.GB1364@lunn.ch>
 MIME-Version: 1.0
-References: <20200128021145.36774-1-palmerdabbelt@google.com>
-In-Reply-To: <20200128021145.36774-1-palmerdabbelt@google.com>
-From:   =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@gmail.com>
-Date:   Tue, 4 Feb 2020 20:30:23 +0100
-Message-ID: <CAJ+HfNh2csyH2xZtGFXW1zwBEW4+bo_E60PWPydJkB6zZTVx3A@mail.gmail.com>
-Subject: Re: arm64: bpf: Elide some moves to a0 after calls
-To:     Palmer Dabbelt <palmerdabbelt@google.com>
-Cc:     Daniel Borkmann <daniel@iogearbox.net>,
-        Alexei Starovoitov <ast@kernel.org>, zlim.lnx@gmail.com,
-        catalin.marinas@arm.com, will@kernel.org,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        Andrii Nakryiko <andriin@fb.com>,
-        Shuah Khan <shuah@kernel.org>, Netdev <netdev@vger.kernel.org>,
-        bpf <bpf@vger.kernel.org>, linux-arm-kernel@lists.infradead.org,
-        LKML <linux-kernel@vger.kernel.org>,
-        linux-kselftest@vger.kernel.org,
-        clang-built-linux@googlegroups.com, kernel-team@android.com
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20200204174318.GB1364@lunn.ch>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 28 Jan 2020 at 03:14, Palmer Dabbelt <palmerdabbelt@google.com> wro=
-te:
->
-> There's four patches here, but only one of them actually does anything.  =
-The
-> first patch fixes a BPF selftests build failure on my machine and has alr=
-eady
-> been sent to the list separately.  The next three are just staged such th=
-at
-> there are some patches that avoid changing any functionality pulled out f=
-rom
-> the whole point of those refactorings, with two cleanups and then the ide=
-a.
->
-> Maybe this is an odd thing to say in a cover letter, but I'm not actually=
- sure
-> this patch set is a good idea.  The issue of extra moves after calls came=
- up as
-> I was reviewing some unrelated performance optimizations to the RISC-V BP=
-F JIT.
-> I figured I'd take a whack at performing the optimization in the context =
-of the
-> arm64 port just to get a breath of fresh air, and I'm not convinced I lik=
-e the
-> results.
->
-> That said, I think I would accept something like this for the RISC-V port
-> because we're already doing a multi-pass optimization for shrinking funct=
-ion
-> addresses so it's not as much extra complexity over there.  If we do that=
- we
-> should probably start puling some of this code into the shared BPF compil=
-er,
-> but we're also opening the doors to more complicated BPF JIT optimization=
-s.
-> Given that the BPF JIT appears to have been designed explicitly to be
-> simple/fast as opposed to perform complex optimization, I'm not sure this=
- is a
-> sane way to move forward.
->
+On Tue, Feb 04, 2020 at 06:43:18PM +0100, Andrew Lunn wrote:
+> > There, there is one MAC, but there are multiple different PCS - one
+> > for SGMII and 1000base-X, another for 10G, another for 25G, etc.
+> > These PCS are accessed via a MDIO adapter embedded in each of the
+> > MAC hardware blocks.
+> 
+> Hi Russell
+> 
+> Marvell mv88e6390X switches are like this is a well. There is a PCS
+> for SGMII and 1000Base-X, and a second one for 10G. And it dynamically
+> swaps between them depending on the port mode, the so called cmode.
+> 
+> So a generic solution is required, and please take your time to build
+> one.
 
-Obviously I can only speak for myself and the RISC-V JIT, but given
-that we already have opened the door for more advanced translations
-(branch relaxation e.g.), I think that this makes sense. At the same
-time we don't want to go all JVM on the JITs. :-P
+Well, DSA is quite a mixed bag...
 
-> I figured I'd send the patch set out as more of a question than anything =
-else.
-> Specifically:
->
-> * How should I go about measuring the performance of these sort of
->   optimizations?  I'd like to balance the time it takes to run the JIT wi=
-th the
->   time spent executing the program, but I don't have any feel for what re=
-al BPF
->   programs look like or have any benchmark suite to run.  Is there someth=
-ing
->   out there this should be benchmarked against?  (I'd also like to know t=
-hat to
->   run those benchmarks on the RISC-V port.)
-
-If you run the selftests 'test_progs' with -v it'll measure/print the
-execution time of the programs. I'd say *most* BPF program invokes a
-helper (via call). It would be interesting to see, for say the
-selftests, how often the optimization can be performed.
-
-> * Is this the sort of thing that makes sense in a BPF JIT?  I guess I've =
-just
->   realized I turned "review this patch" into a way bigger rabbit hole tha=
-n I
->   really want to go down...
->
-
-I'd say 'yes'. My hunch, and the workloads I've seen, BPF programs are
-usually loaded, and then resident for a long time. So, the JIT time is
-not super critical. The FB/Cilium folks can definitely provide a
-better sample point, than my hunch. ;-)
+As far as I can work out, the situation with the CPU and DSA ports is
+quite hopeless - you've claimed that a change in phylink has broken it,
+I can't find what that may be.  The fact is, phylink has never had any
+link information for DSA links when no fixed-link property has been
+specified in DT.  As I've already said in a previous email about this,
+I can't see *any* sane way to fix that - but there was no response.
 
 
-Bj=C3=B6rn
+On a more positive note...
+
+The mac_link_up() changes that I've talked about should work for DSA,
+if only there was a reasonable way to reconfigure the ports.  If you
+look at the "phy" branch, you will notice that there's a patch there -
+"net: mv88e6xxx: use resolved link config in mac_link_up()" which adds
+the support to configure the MAC manually.  It's rather messy, and I
+see no way to deal with the pause settings.  There is support in some
+Marvell DSA switches to force flow control but that's not supported
+through the current mid-layer at all (port_set_pause doesn't do it.)
+I'm not sure whether the "mv88e6xxx_phy_is_internal()" check there is
+the right test for every DSA switch correct either.
+
+What is missing is reading the results from the PCS (aka serdes) and
+forwarding them into phylink - I did have a quick look at how that might
+be possible, but the DSA code structure (consisting of multiple
+mid-layers) makes it hard without rewriting quite a lot of code.  That's
+fine if you know all the DSA chips inside out, but I don't - and that's
+where we need someone who has the knowledge of all DSA switches that we
+support.  Or, we get rid of the multiple mid-layers and switch to a
+library approach, so that we can modify support for one DSA switch
+without affecting everything.  It may be a simple matter of dropping the
+existing serdes workaround, but I'm not sure at the moment.
+
+I've tried this code out on the ZII rev B, I haven't tried it on the rev
+C which has the 6390 switches yet.
+
+-- 
+RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
+FTTC broadband for 0.8mile line in suburbia: sync at 12.1Mbps down 622kbps up
+According to speedtest.net: 11.9Mbps down 500kbps up
