@@ -2,103 +2,140 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 8A2281520CA
-	for <lists+netdev@lfdr.de>; Tue,  4 Feb 2020 20:10:31 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D8DCC1520DA
+	for <lists+netdev@lfdr.de>; Tue,  4 Feb 2020 20:13:34 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727442AbgBDTK3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 4 Feb 2020 14:10:29 -0500
-Received: from mail-pg1-f194.google.com ([209.85.215.194]:45768 "EHLO
-        mail-pg1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727308AbgBDTK3 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 4 Feb 2020 14:10:29 -0500
-Received: by mail-pg1-f194.google.com with SMTP id b9so10106245pgk.12
-        for <netdev@vger.kernel.org>; Tue, 04 Feb 2020 11:10:29 -0800 (PST)
+        id S1727486AbgBDTNa (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 4 Feb 2020 14:13:30 -0500
+Received: from mail-qk1-f194.google.com ([209.85.222.194]:36328 "EHLO
+        mail-qk1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727308AbgBDTNa (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 4 Feb 2020 14:13:30 -0500
+Received: by mail-qk1-f194.google.com with SMTP id w25so19138475qki.3;
+        Tue, 04 Feb 2020 11:13:29 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=5rGBD/7nlOeZOq7npQwDNZSKuNJ0QYdSUw/HttXA9BI=;
-        b=q6tGcNjP0Jiur4ViIRWqXs4DISEQbgbXHbhSyuykb1QVlm+aDbYjMmSplmHFyHlzUf
-         mfU6E/jqo4dqj2nd0zk3SFxsXbw1ePaV9XZq3ICjXCJ+2mfatooXuVn4xAycDUB9nqiy
-         KEKEPgfXELQ13jFqrw+aXpl14Df2ee6bS97YxIqRIRegxKQFBIfIS31Ry26zhB9CLhpy
-         T+T+9MQhkZx76HzfgLggsHTmODwy8oNlPQRxnuzOM5048T+iZgclXlCgu0Co44kyoiXz
-         9Oc1SQYxDBom2oWtmoZf+/eDAcUVYd2sgezmkFF79/GMPz6P6y+lx0BubiUytdz1dxN6
-         GQIg==
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=bdX909F5cI382fCwL2BmbcR0X3LXro/I1upGDSYHuzo=;
+        b=af9b04eiFve+KyP+LhZf60HCVL8lPPYPwQ3FEmqeZfugnYDSuPcWsvjoIrXPo6YCva
+         Sc1FERU+4ZaaJsFfjiA+Ilwn0S5M+WFGlLJYvVeb3SEJ91x2vP63V+QrjbzKaZ7E0Lvs
+         QYcF+eLurguVf0WwaTyU99Y9wxY/l/BcQhknatNYVhyeIGROiRm+pSTnMqL7puw8leTx
+         YHFXfMcvNO7MNPf2hmS9+TQ1OLDH3/FYxrZWfKKNdej+Bjmyi3nYUvRsQrf5jf4/i9RI
+         oHbybLHDDO4NXvJzLAlQulpZD6bxgLg2iOA6Rg9/FtpCBh34ZJ4fUOiUP+PAf/YXIMmn
+         cVJw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=5rGBD/7nlOeZOq7npQwDNZSKuNJ0QYdSUw/HttXA9BI=;
-        b=nktZsh4ELGYKC5JZNpO1JT5MbdcmjqF9o3HogN4O0G5QxAKVzMQ72FlmNwiU8WVIiM
-         KftQlKFV6/4qXf/Y66jMGUP2B12q56RMbW0J/+JAja6sRFEs3wX7+w7LZcvez3yq/6OX
-         b6o6W5yFR5mJ4sRbUoFzljRidhTAinUtko9OZwfhPYdXv+7bERW8XxxC3UpcJaHkWykR
-         Y3qr2/486dW7TK0ql3kIC7JiUP/7y31lrv6bPlPFciZ+tFtKIdApxbV+fio2/NtAV5MX
-         l8YQQiZ/DKQFFGexUrfgdRQSboXwLunwyYnkP2qBPVXEoZcCrc3UkiR1ah+jVIhuw7c9
-         zlbw==
-X-Gm-Message-State: APjAAAX44b9MZkXxJpkcCSAebZE5PdYgqsKtJ6dmPc8zRZmiXlQZCdom
-        hw9B3vZvpVF7SH/AtYkQmzAtO651
-X-Google-Smtp-Source: APXvYqzda4BRnQbH2H6syGj9JQThgw6OfdW3qMNAG5XQYAzKtuPk0DMQdpzglVc6X2ojRbgcn9m1aQ==
-X-Received: by 2002:a63:f94b:: with SMTP id q11mr2729778pgk.161.1580843428871;
-        Tue, 04 Feb 2020 11:10:28 -0800 (PST)
-Received: from tw-172-25-31-76.office.twttr.net ([8.25.197.24])
-        by smtp.gmail.com with ESMTPSA id b3sm24376101pft.73.2020.02.04.11.10.28
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 04 Feb 2020 11:10:28 -0800 (PST)
-From:   Cong Wang <xiyou.wangcong@gmail.com>
-To:     netdev@vger.kernel.org
-Cc:     Cong Wang <xiyou.wangcong@gmail.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Jamal Hadi Salim <jhs@mojatatu.com>,
-        Jiri Pirko <jiri@resnulli.us>
-Subject: [Patch net] net_sched: fix a resource leak in tcindex_set_parms()
-Date:   Tue,  4 Feb 2020 11:10:12 -0800
-Message-Id: <20200204191012.22501-1-xiyou.wangcong@gmail.com>
-X-Mailer: git-send-email 2.21.1
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=bdX909F5cI382fCwL2BmbcR0X3LXro/I1upGDSYHuzo=;
+        b=ceqX/Ho2o3GpMXx6jY+g1mEVCxu6TtkGQXEPlpOTdu9A2UXQUbOhqcLp2JP+2ZPtYF
+         uBs3hSjMrqPCbVpcVZ+yCJ3cjmNOLFnRv50j+8/mM3bXQuhC4RVS7RqVmZaKI8XT8qOJ
+         IBZ6zPQHlLXAqWN0vjhJuOJiBzH8fBclSsCN/Dk1xF0E0Jv62opeJVBd5HVZviR7ZHvN
+         Q62fQdYueKub0dQJC7+pAFQya8addXpaMRuQfNkj8+kA48DAnWl41eirBmIbXBEmnh9R
+         Gm4DTCnhrnByd3xpfEkus+vLVzHrIfjAOjR1c4hUJlcep2YbaoKfEDrUlgXq9uy4god8
+         sQrQ==
+X-Gm-Message-State: APjAAAUnFo08sLklh9XQJ8y5zNX3+UTzUuERki4uwf2dehkCfYpe4W3u
+        JNjMnjb2L3uUVjH83xGYDtb8q9SIPqvG1Fsfvpc=
+X-Google-Smtp-Source: APXvYqzL2qBK84KG5kdgM/FLguBsVyHKuNA+SYxiM1gbwqv39K/jDfeV7q5nmkTTa6/okXiRZyHcbl5ya+Yw7DY8LmY=
+X-Received: by 2002:a37:63c7:: with SMTP id x190mr30030638qkb.232.1580843609003;
+ Tue, 04 Feb 2020 11:13:29 -0800 (PST)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20200128021145.36774-1-palmerdabbelt@google.com> <20200128021145.36774-5-palmerdabbelt@google.com>
+In-Reply-To: <20200128021145.36774-5-palmerdabbelt@google.com>
+From:   =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@gmail.com>
+Date:   Tue, 4 Feb 2020 20:13:17 +0100
+Message-ID: <CAJ+HfNjkacY-KStgGJMgvQh2=2OsMnH6Saij+nAPBqQrSJcNWw@mail.gmail.com>
+Subject: Re: [PATCH 4/4] arm64: bpf: Elide some moves to a0 after calls
+To:     Palmer Dabbelt <palmerdabbelt@google.com>
+Cc:     Daniel Borkmann <daniel@iogearbox.net>,
+        Alexei Starovoitov <ast@kernel.org>, zlim.lnx@gmail.com,
+        catalin.marinas@arm.com, will@kernel.org,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        Andrii Nakryiko <andriin@fb.com>,
+        Shuah Khan <shuah@kernel.org>, Netdev <netdev@vger.kernel.org>,
+        bpf <bpf@vger.kernel.org>, linux-arm-kernel@lists.infradead.org,
+        LKML <linux-kernel@vger.kernel.org>,
+        linux-kselftest@vger.kernel.org,
+        clang-built-linux@googlegroups.com, kernel-team@android.com
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Jakub noticed there is a potential resource leak in
-tcindex_set_parms(): when tcindex_filter_result_init() fails
-and it jumps to 'errout1' which doesn't release the memory
-and resources allocated by tcindex_alloc_perfect_hash().
+On Tue, 28 Jan 2020 at 03:15, Palmer Dabbelt <palmerdabbelt@google.com> wro=
+te:
+>
+> On arm64, the BPF function ABI doesn't match the C function ABI.  Specifi=
+cally,
+> arm64 encodes calls as `a0 =3D f(a0, a1, ...)` while BPF encodes calls as
+> `BPF_REG_0 =3D f(BPF_REG_1, BPF_REG_2, ...)`.  This discrepancy results i=
+n
+> function calls being encoded as a two operations sequence that first does=
+ a C
+> ABI calls and then moves the return register into the right place.  This
+> results in one extra instruction for every function call.
+>
 
-We should just jump to 'errout_alloc' which calls
-tcindex_free_perfect_hash().
+It's a lot of extra work for one reg-to-reg move, but it always
+annoyed me in the RISC-V JIT. :-) So, if it *can* be avoided, why not.
 
-Fixes: b9a24bb76bf6 ("net_sched: properly handle failure case of tcf_exts_init()")
-Reported-by: Jakub Kicinski <kuba@kernel.org>
-Cc: Jamal Hadi Salim <jhs@mojatatu.com>
-Cc: Jiri Pirko <jiri@resnulli.us>
-Signed-off-by: Cong Wang <xiyou.wangcong@gmail.com>
----
- net/sched/cls_tcindex.c | 3 +--
- 1 file changed, 1 insertion(+), 2 deletions(-)
+[...]
+>
+> +static int dead_register(const struct jit_ctx *ctx, int offset, int bpf_=
+reg)
 
-diff --git a/net/sched/cls_tcindex.c b/net/sched/cls_tcindex.c
-index 0323aee03de7..09b7dc5fe7e0 100644
---- a/net/sched/cls_tcindex.c
-+++ b/net/sched/cls_tcindex.c
-@@ -365,7 +365,7 @@ tcindex_set_parms(struct net *net, struct tcf_proto *tp, unsigned long base,
- 
- 	err = tcindex_filter_result_init(&new_filter_result, net);
- 	if (err < 0)
--		goto errout1;
-+		goto errout_alloc;
- 	if (old_r)
- 		cr = r->res;
- 
-@@ -484,7 +484,6 @@ tcindex_set_parms(struct net *net, struct tcf_proto *tp, unsigned long base,
- 		tcindex_free_perfect_hash(cp);
- 	else if (balloc == 2)
- 		kfree(cp->h);
--errout1:
- 	tcf_exts_destroy(&new_filter_result.exts);
- errout:
- 	kfree(cp);
--- 
-2.21.1
+Given that a lot of archs (RISC-V, arm?, MIPS?) might benefit from
+this, it would be nice if it could be made generic (it already is
+pretty much), and moved to kernel/bpf.
 
+> +{
+> +       const struct bpf_prog *prog =3D ctx->prog;
+> +       int i;
+> +
+> +       for (i =3D offset; i < prog->len; ++i) {
+> +               const struct bpf_insn *insn =3D &prog->insnsi[i];
+> +               const u8 code =3D insn->code;
+> +               const u8 bpf_dst =3D insn->dst_reg;
+> +               const u8 bpf_src =3D insn->src_reg;
+> +               const int writes_dst =3D !((code & BPF_ST) || (code & BPF=
+_STX)
+> +                                        || (code & BPF_JMP32) || (code &=
+ BPF_JMP));
+> +               const int reads_dst  =3D !((code & BPF_LD));
+> +               const int reads_src  =3D true;
+> +
+> +               /* Calls are a bit special in that they clobber a bunch o=
+f regisers. */
+> +               if ((code & (BPF_JMP | BPF_CALL)) || (code & (BPF_JMP | B=
+PF_TAIL_CALL)))
+> +                       if ((bpf_reg >=3D BPF_REG_0) && (bpf_reg <=3D BPF=
+_REG_5))
+> +                               return false;
+> +
+> +               /* Registers that are read before they're written are ali=
+ve.
+> +                * Most opcodes are of the form DST =3D DEST op SRC, but =
+there
+> +                * are some exceptions.*/
+> +               if (bpf_src =3D=3D bpf_reg && reads_src)
+> +                       return false;
+> +
+> +               if (bpf_dst =3D=3D bpf_reg && reads_dst)
+> +                       return false;
+> +
+> +               if (bpf_dst =3D=3D bpf_reg && writes_dst)
+> +                       return true;
+> +
+> +               /* Most BPF instructions are 8 bits long, but some ar 16 =
+bits
+> +                * long. */
+
+A bunch of spelling errors above.
+
+
+Cheers,
+Bj=C3=B6rn
