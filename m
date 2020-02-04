@@ -2,148 +2,142 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id D705C152099
-	for <lists+netdev@lfdr.de>; Tue,  4 Feb 2020 19:46:56 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3CB9215209E
+	for <lists+netdev@lfdr.de>; Tue,  4 Feb 2020 19:48:12 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727455AbgBDSqx (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 4 Feb 2020 13:46:53 -0500
-Received: from mail-yw1-f66.google.com ([209.85.161.66]:36690 "EHLO
-        mail-yw1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727381AbgBDSqw (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 4 Feb 2020 13:46:52 -0500
-Received: by mail-yw1-f66.google.com with SMTP id n184so18766515ywc.3;
-        Tue, 04 Feb 2020 10:46:52 -0800 (PST)
+        id S1727394AbgBDSsL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 4 Feb 2020 13:48:11 -0500
+Received: from mail-qt1-f195.google.com ([209.85.160.195]:44045 "EHLO
+        mail-qt1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727381AbgBDSsK (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 4 Feb 2020 13:48:10 -0500
+Received: by mail-qt1-f195.google.com with SMTP id w8so15133241qts.11;
+        Tue, 04 Feb 2020 10:48:10 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=xqzKkZZwYD8UmTNylzK68UHhE3Ou2TiZoSu6psgptxc=;
-        b=llCdtAB8qGVONkL1WDs486cYwq+0N9bCKpYycyW0QBpVz93Ee8uWtEQNHghzDtGGW3
-         VRMBr1Y0qOS1SmI6D5ub9m3PmBbp40ycsvjSzeCR2yVbs0FVTzrGcJ8BCYdJHFcgz/8f
-         xyA4nkFPh069H3Atlfsb17vQV+lkb+h+NUxFVwlCOdlN5EgwwRGGrFl3iY8OLHBRn4Iy
-         SkReHiQi4RGOrUY4tO3n++mqi70SKo+inieoEgT0V5gmNCYQdAwcATJ2YSGSlRA770MD
-         Fx8RlM+twW1y7tWzNceS8P4T/c+UXbpsGD7Juf2Wk8pxw7JU/CDUYBpj0PxArDpX+NIH
-         YozA==
+         :cc:content-transfer-encoding;
+        bh=pZ3lRV9H5GXmdJmVKgZelLW8v0KJbkKxQiunQLx4arI=;
+        b=lviyihjaQlK93Z0tUJEGUeDEM7tmqTxavD7sfrMkXhQcfo5j2pdcqgBteI+yb9GNzU
+         rwgJXk/uf+OizdrVCX1PTovV32kK2ce9eoQuOTjrKJk9YBb3QbOSa0sqJLTblGGXSutP
+         9pCtEJ2zDGoPSfbJexSh1C54k26C6tqibEu23O7xPJY6TToyNnoxy5ck8wUqbxTmXXi6
+         L3B3I4vMww9o4l9KCbMmlqo6iuBOTGP3y4f9m+om0V/30Evb5+GfiL9v2xXqXgEGjm0o
+         jJ5JB2TtZj3kK4Oc3yTfyQLdsTge9Ibll4rweuGg2ORm62glV5k2l7QQPRvJ02ejDBMt
+         18Zw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=xqzKkZZwYD8UmTNylzK68UHhE3Ou2TiZoSu6psgptxc=;
-        b=CyICAuKFoqPOKD2V/CrBFk/ktw8qQc+T+9dknS/NDtUPNRrG2V1HjeK6Sx+JA35EIy
-         R6uE6czlW08hrvgn1JdZC5mLA3rNU7br+qyyRfdE1+IOSiUlkQNLIdSFmc3AGz34jdMO
-         grluZarHaMkj/t/FP4BKUKu1ApGugLsGENVrSq1PwwEUmxMxZefhiiIEZ1iW4zvM8eeW
-         n+FuelG+ne1aHjG4oFE7OPpnXz0Wc6o+34x9bBrmo93duvyMRY5EC5Kj+KPY5+L+VWef
-         Om8YlbdqBycRkiLl3SC/XVlQXYqrx5o+HmTtQ4YjgibS7nU3mCcDVqvtyFla9j23Thya
-         fI4g==
-X-Gm-Message-State: APjAAAWHGsX37Rawj8hxcHV0trQpxVHZlfSpmC/KagUUafevnmyNXdKP
-        590ac/ipfEUFBIWG2JGZ3PoYGwbSdE7y2rpXfP0=
-X-Google-Smtp-Source: APXvYqyznM3JSsctyFV3LHXcVYtUQMGI945FYzOeF2DwokU04zfTUxXR2Y+b0OsjyVtyk++tp0VZYurDxaRh5YBoKq4=
-X-Received: by 2002:a81:3754:: with SMTP id e81mr7045993ywa.404.1580842011687;
- Tue, 04 Feb 2020 10:46:51 -0800 (PST)
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=pZ3lRV9H5GXmdJmVKgZelLW8v0KJbkKxQiunQLx4arI=;
+        b=rXCtpatQQ1N/XXp1dhe9Etxp8C9uS0y7lPW9ZkvYB1k2gqLWo1+Wsb70y4oZLglitv
+         ucGfR87mPavcCsW1ChYWus70rRM+X9vsDD7egsy5t7I5Q2qCuAlADquE7O4fnvbOtbf+
+         DZ5jA8j8QElGmH/CCdKzkIHe03Xns9zxjIwcE+l3UH/pKQJqnFRJcy2aTIU/xskFcrYa
+         DaPg/etdtqbchqr4pSVRF/VhL9Ngtdj/W25OtfdTUB+jPHNyMP2jP7gsYMMkeYsdW8EF
+         PqvZ70nzsOXBxzhkkhBVaOeyCz3Kvh/8xbCy7w4yXwnQRyOYQ+EfZ2/5cQJEhSVyTjqm
+         glHQ==
+X-Gm-Message-State: APjAAAWtwBEziu/hI//bO5cWRaG/1aQU6gD9JyuTHdck87ChtXp8Epsh
+        Id4OgT1ZbZHCrP5M8YKxvp6Vx6hZsi1qV3VoUZE=
+X-Google-Smtp-Source: APXvYqzAjb9rZmpKaAxpthXum21Sd9DUKvNAWQccHwUeJUvyMfw2XqIRfK3n0jKGnYlzDyN6z6CL6OOz1bjDJBmpdjE=
+X-Received: by 2002:ac8:140c:: with SMTP id k12mr29797867qtj.117.1580842089603;
+ Tue, 04 Feb 2020 10:48:09 -0800 (PST)
 MIME-Version: 1.0
-References: <20200131153440.20870-1-calvin.johnson@nxp.com>
- <20200131153440.20870-4-calvin.johnson@nxp.com> <6501a53b-40aa-5374-3c4a-6b21824f82fd@gmail.com>
-In-Reply-To: <6501a53b-40aa-5374-3c4a-6b21824f82fd@gmail.com>
-From:   Calvin Johnson <linux.cj@gmail.com>
-Date:   Wed, 5 Feb 2020 00:16:39 +0530
-Message-ID: <CAEhpT-VfWhha3B6qS6wFu-PQP9+zb4gxt7=nsrA58cecX21Dog@mail.gmail.com>
-Subject: Re: [PATCH v1 3/7] net/fsl: add ACPI support for mdio bus
-To:     Florian Fainelli <f.fainelli@gmail.com>
-Cc:     Calvin Johnson <calvin.johnson@nxp.com>,
-        Jon Nettleton <jon@solid-run.com>, linux@armlinux.org.uk,
-        Makarand Pawagi <makarand.pawagi@nxp.com>,
-        cristian.sovaiala@nxp.com, laurentiu.tudor@nxp.com,
-        ioana.ciornei@nxp.com, V.Sethi@nxp.com, pankaj.bansal@nxp.com,
-        "Rajesh V . Bikkina" <rajesh.bikkina@nxp.com>,
-        Calvin Johnson <calvin.johnson@oss.nxp.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Madalin Bucur <madalin.bucur@oss.nxp.com>,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org
+References: <20190820114706.18546-1-toke@redhat.com> <CAEf4BzZxb7qZabw6aDVaTqnhr3AGtwEo+DbuBR9U9tJr+qVuyg@mail.gmail.com>
+ <87blwiqlc8.fsf@toke.dk> <CAEf4BzYMKPbfOu4a4UDEfJVcNW1-KvRwJ7PVo+Mf_1YUJgE4Qw@mail.gmail.com>
+ <43e8c177-cc9c-ca0b-1622-e30a7a1281b7@iogearbox.net> <CAEf4Bzab_w0AXy5P9mG14mcyJVgUCzuuNda5FpU5wSEwUciGfg@mail.gmail.com>
+ <87tva8m85t.fsf@toke.dk> <CAEf4BzbzQwLn87G046ZbkLtTbY6WF6o8JkygcPLPGUSezgs9Tw@mail.gmail.com>
+ <CAEf4BzZOAukJZzo4J5q3F2v4MswQ6nJh6G1_c0H0fOJCdc7t0A@mail.gmail.com>
+ <87blqfcvnf.fsf@toke.dk> <CAEf4Bza4bSAzjFp2WDiPAM7hbKcKgAX4A8_TUN8V38gXV9GbTg@mail.gmail.com>
+ <0bf50b22-a8e2-e3b3-aa53-7bd5dd5d4399@gmail.com> <CAEf4Bzbzz3s0bSF_CkP56NTDd+WBLAy0QrMvreShubetahuH0g@mail.gmail.com>
+ <2cf136a4-7f0e-f4b7-1ecb-6cbf6cb6c8ff@gmail.com> <CAEf4Bzb1fXdGFz7BkrQF7uMhBD1F-K_kudhLR5wC-+kA7PMqnA@mail.gmail.com>
+ <87h80669o6.fsf@toke.dk>
+In-Reply-To: <87h80669o6.fsf@toke.dk>
+From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Date:   Tue, 4 Feb 2020 10:47:58 -0800
+Message-ID: <CAEf4BzYGp95MKjBxNay2w=9RhFAEUCrZ8_y1pqzdG-fUyY63=w@mail.gmail.com>
+Subject: Re: [RFC bpf-next 0/5] Convert iproute2 to use libbpf (WIP)
+To:     =?UTF-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <toke@redhat.com>
+Cc:     David Ahern <dsahern@gmail.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Stephen Hemminger <stephen@networkplumber.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        David Miller <davem@davemloft.net>,
+        Jesper Dangaard Brouer <brouer@redhat.com>,
+        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>
 Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, Feb 02, 2020 at 07:44:40PM -0800, Florian Fainelli wrote:
+On Tue, Feb 4, 2020 at 12:25 AM Toke H=C3=B8iland-J=C3=B8rgensen <toke@redh=
+at.com> wrote:
 >
+> Andrii Nakryiko <andrii.nakryiko@gmail.com> writes:
 >
-> On 1/31/2020 7:34 AM, Calvin Johnson wrote:
-> > From: Calvin Johnson <calvin.johnson@oss.nxp.com>
+> > On Mon, Feb 3, 2020 at 8:53 PM David Ahern <dsahern@gmail.com> wrote:
+> >>
+> >> On 2/3/20 8:41 PM, Andrii Nakryiko wrote:
+> >> > On Mon, Feb 3, 2020 at 5:46 PM David Ahern <dsahern@gmail.com> wrote=
+:
+> >> >>
+> >> >> On 2/3/20 5:56 PM, Andrii Nakryiko wrote:
+> >> >>> Great! Just to disambiguate and make sure we are in agreement, my =
+hope
+> >> >>> here is that iproute2 can completely delegate to libbpf all the EL=
+F
+> >> >>>
+> >> >>
+> >> >> iproute2 needs to compile and continue working as is when libbpf is=
+ not
+> >> >> available. e.g., add check in configure to define HAVE_LIBBPF and m=
+ove
+> >> >> the existing code and move under else branch.
+> >> >
+> >> > Wouldn't it be better to statically compile against libbpf in this
+> >> > case and get rid a lot of BPF-related code and simplify the rest of
+> >> > it? This can be easily done by using libbpf through submodule, the
+> >> > same way as BCC and pahole do it.
+> >> >
+> >>
+> >> iproute2 compiles today and runs on older distributions and older
+> >> distributions with newer kernels. That needs to hold true after the mo=
+ve
+> >> to libbpf.
 > >
-> > Add ACPI support for MDIO bus registration while maintaining
-> > the existing DT support.
-> >
-> > Signed-off-by: Calvin Johnson <calvin.johnson@oss.nxp.com>
-> > ---
+> > And by statically compiling against libbpf, checked out as a
+> > submodule, that will still hold true, wouldn't it? Or there is some
+> > complications I'm missing? Libbpf is designed to handle old kernels
+> > with no problems.
 >
-> [snip]
+> My plan was to use the same configure test I'm using for xdp-tools
+> (where I in turn copied the structure of the configure script from
+> iproute2):
 >
-> >     bus = mdiobus_alloc_size(sizeof(struct mdio_fsl_priv));
-> > @@ -263,25 +265,41 @@ static int xgmac_mdio_probe(struct platform_device *pdev)
-> >     bus->read = xgmac_mdio_read;
-> >     bus->write = xgmac_mdio_write;
-> >     bus->parent = &pdev->dev;
-> > -   snprintf(bus->id, MII_BUS_ID_SIZE, "%llx", (unsigned long long)res.start);
-> > +   snprintf(bus->id, MII_BUS_ID_SIZE, "%llx",
-> > +            (unsigned long long)res->start);
+> https://github.com/xdp-project/xdp-tools/blob/master/configure#L59
 >
-> You could omit this clean up change.
-Sure, will avoid split to newline.
-> >
-> >     /* Set the PHY base address */
-> >     priv = bus->priv;
-> > -   priv->mdio_base = of_iomap(np, 0);
-> > +   priv->mdio_base = devm_ioremap_resource(&pdev->dev, res);
-> >     if (!priv->mdio_base) {
->
-> This probably needs to become IS_ERR() instead of a plain NULL check
-Ok. Will take care in v2.
->
-> >             ret = -ENOMEM;
-> >             goto err_ioremap;
-> >     }
-> >
-> > -   priv->is_little_endian = of_property_read_bool(pdev->dev.of_node,
-> > -                                                  "little-endian");
-> > -
-> > -   priv->has_a011043 = of_property_read_bool(pdev->dev.of_node,
-> > -                                             "fsl,erratum-a011043");
-> > -
-> > -   ret = of_mdiobus_register(bus, np);
-> > -   if (ret) {
-> > -           dev_err(&pdev->dev, "cannot register MDIO bus\n");
-> > +   if (is_of_node(pdev->dev.fwnode)) {
-> > +           priv->is_little_endian = of_property_read_bool(pdev->dev.of_node,
-> > +                                                          "little-endian");
-> > +
-> > +           priv->has_a011043 = of_property_read_bool(pdev->dev.of_node,
-> > +                                                     "fsl,erratum-a011043");
-> > +
-> > +           ret = of_mdiobus_register(bus, np);
-> > +           if (ret) {
-> > +                   dev_err(&pdev->dev, "cannot register MDIO bus\n");
-> > +                   goto err_registration;
-> > +           }
-> > +   } else if (is_acpi_node(pdev->dev.fwnode)) {
-> > +           priv->is_little_endian =
-> > +                   fwnode_property_read_bool(pdev->dev.fwnode,
-> > +                                             "little-endian");
-> > +           ret = fwnode_mdiobus_register(bus, pdev->dev.fwnode);
-> > +           if (ret) {
-> > +                   dev_err(&pdev->dev, "cannot register MDIO bus\n");
-> > +                   goto err_registration;
-> > +           }
->
-> The little-endian property read can be moved out of the DT/ACPI paths
-> and you can just use device_property_read_bool() for that purpose.
-> Having both fwnode_mdiobus_register() and of_mdiobus_register() looks
-> fairly redundant, you could quite easily introduce a wrapper:
-> device_mdiobus_register() which internally takes the appropriate DT/ACPI
-> paths as needed.
-Had some difficulty with DT while using fwnode APIs. Will resolve them
-and provide better integrated code.
+> This will look for a system libbpf install and compile against it if it
+> is compatible, and otherwise fall back to a statically linking against a
+> git submodule.
 
-Thanks
+How will this work when build host has libbpf installed, but target
+host doesn't? You'll get dynamic linker error when trying to run that
+tool.
 
-Calvin
+If the goal is to have a reliable tool working everywhere, and you
+already support having libbpf as a submodule, why not always use
+submodule's libbpf? What's the concern? Libbpf is a small library, I
+don't think a binary size argument is enough reason to not do this. On
+the other hand, by using libbpf from submodule, your tool is built
+*and tested* with a well-known libbpf version that tool-producer
+controls.
+
+>
+> We'll need to double-check that this will work on everything currently
+> supported by iproute2, and fix libbpf if there are any issues with that.
+> Not that I foresee any, but you never know :)
+>
+> -Toke
+>
