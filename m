@@ -2,70 +2,63 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id C634F152112
-	for <lists+netdev@lfdr.de>; Tue,  4 Feb 2020 20:29:41 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id CE0B7152119
+	for <lists+netdev@lfdr.de>; Tue,  4 Feb 2020 20:30:44 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727594AbgBDT3h (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 4 Feb 2020 14:29:37 -0500
-Received: from mail-qk1-f193.google.com ([209.85.222.193]:35268 "EHLO
-        mail-qk1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727590AbgBDT3h (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 4 Feb 2020 14:29:37 -0500
-Received: by mail-qk1-f193.google.com with SMTP id q15so19218828qki.2;
-        Tue, 04 Feb 2020 11:29:36 -0800 (PST)
+        id S1727530AbgBDTag (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 4 Feb 2020 14:30:36 -0500
+Received: from mail-qt1-f194.google.com ([209.85.160.194]:37992 "EHLO
+        mail-qt1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727358AbgBDTaf (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 4 Feb 2020 14:30:35 -0500
+Received: by mail-qt1-f194.google.com with SMTP id c24so15288969qtp.5;
+        Tue, 04 Feb 2020 11:30:34 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc:content-transfer-encoding;
-        bh=tOcsRdIEVJsPfVc56q5aRcXI2fzaKKYcxclrcw+3oeE=;
-        b=vg0otN3cZcnUQTTwSGvqjKUMjITfaUhtKEcEnoUpgzzMGFJZjZ4f9x67GwxmA/kg+B
-         6h9pHvNNHjc8WwHzZlNZ0Z3a6Zoz4TMZ/Wx1imMIEmU9Yqmv2eaQQuiqn6m8Z5yeZo4U
-         l4mk6qodX9tkBsrBeMDQlgwSPEU1/nczNV5JcZOnuIfbbUoj1cDrANkt7TppOIADt6Z4
-         Fk0hiZmH3TKVR7cKqc2lM15LDqCLTg4WMxetm3tVI9Y5+0J93/PAEUiaoYlWFNXH82K/
-         G9Z+UqXcGsl0b6rR9vIt9eSnSU0vjLFNcowfZdiIsTMIoUrPIdYAaWEFdkwTZJzxPlJh
-         tSDg==
+        bh=UapTR/Swn2AywRKzX/GSR/rd23O04e9h6Fgs9p2msUo=;
+        b=o/eOozhV6u7iYKKKZLmW9I9eE+A50S7MONuuj7k/cxVH+dM2FEQTnarK5ohzH6rGvj
+         0CgNbVzW529C0KjCozjxar2OsHiNfHWDnX2D253V7ISvOQqErGLlZMwIM+CvfvAk/ETr
+         kIN2VYeX2wVepBOg7pBlY3ot6HrDTlJcZar8+SV0kQAuWlb8sPSPR88RhgMETAMeMdzY
+         5OSNHeIIxUDDbrEHfmSZ+8Tu9uVC1FThvyOAscXaxa6fYkHHiOzH0GdC3vVlVJ72f7F6
+         bWTdyt9dGFRZE3xFNu6izLDDJf4wFBZDkFrHyopiOWXrfO0v+0bih6u0gyOnJ/ksyvBb
+         32Rg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc:content-transfer-encoding;
-        bh=tOcsRdIEVJsPfVc56q5aRcXI2fzaKKYcxclrcw+3oeE=;
-        b=PTVfmD63091FClwILH9/Qo2PhtbRucIfXqXcve7KC6c1InD8rgIHTPqQpp1JVkj2Iu
-         G8w5TqLKCnLwpF/Ya8VBk0sP6CzY8Ho6iisrgPWLTgyE3tjFcnIp4OEFlgyMtlBDJZqI
-         oIb9diK2LA5ik8ubF0ehDkKsiXFqFg3J5BsUtg2QvmGZkRK20cj7FJVwtIbxTCUhZ4ue
-         FieSpsZm2thom9pAXikIEQVhnhwsJshsziOIHXhqt67Rc+KEF1wvemVXgagvE3Ucc9ww
-         G17+klsKp+if0kvOfhaj94FqynaokEStLqBHHJFxh0j7eAP5ODWEJeSCQ6QiC2klSRTl
-         VMzw==
-X-Gm-Message-State: APjAAAVfE64IXTvxTjBnBCma+ZL3ub6GL4NI1kSLeaLILfp79R+0b/OX
-        Sf5FipW2MPVsjzUiRtuP9TvUuASot9urvcSQDalKkA==
-X-Google-Smtp-Source: APXvYqwOcUHhL46at5qd10bWRMIsbEqCYzIHPtn14urSccE0iVQzvY2AA7pxxdzYDhNHGDb0/P+YOYeB4Uxh2FQuwXQ=
-X-Received: by 2002:a05:620a:14a2:: with SMTP id x2mr30600959qkj.36.1580844575676;
- Tue, 04 Feb 2020 11:29:35 -0800 (PST)
+        bh=UapTR/Swn2AywRKzX/GSR/rd23O04e9h6Fgs9p2msUo=;
+        b=D8/fl8ysVBYsuMreGgoJ6g9oyKGASzItM6bd0laCA9V9ifLJ4BDYo16yX+HOJ89Wx9
+         ev4OMGrQz8B3lIo+REwDINOdPyMzimBl60+YChAaY8km6mGwhkE7SRcxe+a5HJWINCET
+         /gSbzF5eq1cfIJuWr69oMbDzE1Tgku4JuCHvgcaB8wcFCc58ZDQjYi+dh2YOwSrzy4hq
+         SPB8WltlMox/Lw+h6lcbAauddvqOuA7Tk105AaHoPhObtC0SsaQUxn/sHjo7l6TC4xXB
+         0iuYu6BjVVcg5+3en8jUv1Sx5gsQAPAeyXwI2tuR+ibNpSlDq+6yPMIi/s4k57edI73i
+         t+mA==
+X-Gm-Message-State: APjAAAUwGuPR9c796TUq/CO98Ra/ZUbWeVZPmMI7j/5Ex1Mk8Z+CRWwj
+        eynK3SgXNoEVQvzqeyB+b0yDzROszrVUQ3YkluE=
+X-Google-Smtp-Source: APXvYqzynoTQgpdm/iT9SFNSo/qjNEMHfOmhlVwoEI483RemBJB+ylGnJ7qiC5IrDY/m23437c91LCoT0rOjsfwP7pU=
+X-Received: by 2002:ac8:554b:: with SMTP id o11mr30093106qtr.36.1580844634484;
+ Tue, 04 Feb 2020 11:30:34 -0800 (PST)
 MIME-Version: 1.0
-References: <20190820114706.18546-1-toke@redhat.com> <CAEf4BzZxb7qZabw6aDVaTqnhr3AGtwEo+DbuBR9U9tJr+qVuyg@mail.gmail.com>
- <87blwiqlc8.fsf@toke.dk> <CAEf4BzYMKPbfOu4a4UDEfJVcNW1-KvRwJ7PVo+Mf_1YUJgE4Qw@mail.gmail.com>
- <43e8c177-cc9c-ca0b-1622-e30a7a1281b7@iogearbox.net> <CAEf4Bzab_w0AXy5P9mG14mcyJVgUCzuuNda5FpU5wSEwUciGfg@mail.gmail.com>
- <87tva8m85t.fsf@toke.dk> <CAEf4BzbzQwLn87G046ZbkLtTbY6WF6o8JkygcPLPGUSezgs9Tw@mail.gmail.com>
- <CAEf4BzZOAukJZzo4J5q3F2v4MswQ6nJh6G1_c0H0fOJCdc7t0A@mail.gmail.com>
- <87blqfcvnf.fsf@toke.dk> <CAEf4Bza4bSAzjFp2WDiPAM7hbKcKgAX4A8_TUN8V38gXV9GbTg@mail.gmail.com>
- <0bf50b22-a8e2-e3b3-aa53-7bd5dd5d4399@gmail.com> <CAEf4Bzbzz3s0bSF_CkP56NTDd+WBLAy0QrMvreShubetahuH0g@mail.gmail.com>
- <2cf136a4-7f0e-f4b7-1ecb-6cbf6cb6c8ff@gmail.com> <CAEf4Bzb1fXdGFz7BkrQF7uMhBD1F-K_kudhLR5wC-+kA7PMqnA@mail.gmail.com>
- <87h80669o6.fsf@toke.dk> <CAEf4BzYGp95MKjBxNay2w=9RhFAEUCrZ8_y1pqzdG-fUyY63=w@mail.gmail.com>
- <8736bqf9dw.fsf@toke.dk>
-In-Reply-To: <8736bqf9dw.fsf@toke.dk>
-From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Tue, 4 Feb 2020 11:29:24 -0800
-Message-ID: <CAEf4BzbNZQmDD3Ob+m6yJK2CzNb9=3F2bYfxOUyn7uOp0bhXZA@mail.gmail.com>
-Subject: Re: [RFC bpf-next 0/5] Convert iproute2 to use libbpf (WIP)
-To:     =?UTF-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <toke@redhat.com>
-Cc:     David Ahern <dsahern@gmail.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Stephen Hemminger <stephen@networkplumber.org>,
-        Alexei Starovoitov <ast@kernel.org>,
+References: <20200128021145.36774-1-palmerdabbelt@google.com>
+In-Reply-To: <20200128021145.36774-1-palmerdabbelt@google.com>
+From:   =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@gmail.com>
+Date:   Tue, 4 Feb 2020 20:30:23 +0100
+Message-ID: <CAJ+HfNh2csyH2xZtGFXW1zwBEW4+bo_E60PWPydJkB6zZTVx3A@mail.gmail.com>
+Subject: Re: arm64: bpf: Elide some moves to a0 after calls
+To:     Palmer Dabbelt <palmerdabbelt@google.com>
+Cc:     Daniel Borkmann <daniel@iogearbox.net>,
+        Alexei Starovoitov <ast@kernel.org>, zlim.lnx@gmail.com,
+        catalin.marinas@arm.com, will@kernel.org,
         Martin KaFai Lau <kafai@fb.com>,
         Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        David Miller <davem@davemloft.net>,
-        Jesper Dangaard Brouer <brouer@redhat.com>,
-        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>
+        Andrii Nakryiko <andriin@fb.com>,
+        Shuah Khan <shuah@kernel.org>, Netdev <netdev@vger.kernel.org>,
+        bpf <bpf@vger.kernel.org>, linux-arm-kernel@lists.infradead.org,
+        LKML <linux-kernel@vger.kernel.org>,
+        linux-kselftest@vger.kernel.org,
+        clang-built-linux@googlegroups.com, kernel-team@android.com
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
@@ -73,115 +66,83 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Feb 4, 2020 at 11:19 AM Toke H=C3=B8iland-J=C3=B8rgensen <toke@redh=
-at.com> wrote:
+On Tue, 28 Jan 2020 at 03:14, Palmer Dabbelt <palmerdabbelt@google.com> wro=
+te:
 >
-> Andrii Nakryiko <andrii.nakryiko@gmail.com> writes:
+> There's four patches here, but only one of them actually does anything.  =
+The
+> first patch fixes a BPF selftests build failure on my machine and has alr=
+eady
+> been sent to the list separately.  The next three are just staged such th=
+at
+> there are some patches that avoid changing any functionality pulled out f=
+rom
+> the whole point of those refactorings, with two cleanups and then the ide=
+a.
 >
-> > On Tue, Feb 4, 2020 at 12:25 AM Toke H=C3=B8iland-J=C3=B8rgensen <toke@=
-redhat.com> wrote:
-> >>
-> >> Andrii Nakryiko <andrii.nakryiko@gmail.com> writes:
-> >>
-> >> > On Mon, Feb 3, 2020 at 8:53 PM David Ahern <dsahern@gmail.com> wrote=
-:
-> >> >>
-> >> >> On 2/3/20 8:41 PM, Andrii Nakryiko wrote:
-> >> >> > On Mon, Feb 3, 2020 at 5:46 PM David Ahern <dsahern@gmail.com> wr=
-ote:
-> >> >> >>
-> >> >> >> On 2/3/20 5:56 PM, Andrii Nakryiko wrote:
-> >> >> >>> Great! Just to disambiguate and make sure we are in agreement, =
-my hope
-> >> >> >>> here is that iproute2 can completely delegate to libbpf all the=
- ELF
-> >> >> >>>
-> >> >> >>
-> >> >> >> iproute2 needs to compile and continue working as is when libbpf=
- is not
-> >> >> >> available. e.g., add check in configure to define HAVE_LIBBPF an=
-d move
-> >> >> >> the existing code and move under else branch.
-> >> >> >
-> >> >> > Wouldn't it be better to statically compile against libbpf in thi=
-s
-> >> >> > case and get rid a lot of BPF-related code and simplify the rest =
-of
-> >> >> > it? This can be easily done by using libbpf through submodule, th=
-e
-> >> >> > same way as BCC and pahole do it.
-> >> >> >
-> >> >>
-> >> >> iproute2 compiles today and runs on older distributions and older
-> >> >> distributions with newer kernels. That needs to hold true after the=
- move
-> >> >> to libbpf.
-> >> >
-> >> > And by statically compiling against libbpf, checked out as a
-> >> > submodule, that will still hold true, wouldn't it? Or there is some
-> >> > complications I'm missing? Libbpf is designed to handle old kernels
-> >> > with no problems.
-> >>
-> >> My plan was to use the same configure test I'm using for xdp-tools
-> >> (where I in turn copied the structure of the configure script from
-> >> iproute2):
-> >>
-> >> https://github.com/xdp-project/xdp-tools/blob/master/configure#L59
-> >>
-> >> This will look for a system libbpf install and compile against it if i=
-t
-> >> is compatible, and otherwise fall back to a statically linking against=
- a
-> >> git submodule.
-> >
-> > How will this work when build host has libbpf installed, but target
-> > host doesn't? You'll get dynamic linker error when trying to run that
-> > tool.
+> Maybe this is an odd thing to say in a cover letter, but I'm not actually=
+ sure
+> this patch set is a good idea.  The issue of extra moves after calls came=
+ up as
+> I was reviewing some unrelated performance optimizations to the RISC-V BP=
+F JIT.
+> I figured I'd take a whack at performing the optimization in the context =
+of the
+> arm64 port just to get a breath of fresh air, and I'm not convinced I lik=
+e the
+> results.
 >
-> That's called dependency tracking; distros have various ways of going
-> about that :)
+> That said, I think I would accept something like this for the RISC-V port
+> because we're already doing a multi-pass optimization for shrinking funct=
+ion
+> addresses so it's not as much extra complexity over there.  If we do that=
+ we
+> should probably start puling some of this code into the shared BPF compil=
+er,
+> but we're also opening the doors to more complicated BPF JIT optimization=
+s.
+> Given that the BPF JIT appears to have been designed explicitly to be
+> simple/fast as opposed to perform complex optimization, I'm not sure this=
+ is a
+> sane way to move forward.
+>
 
-I'm confused, honestly. libbpf is either a dependency and thus can be
-relied upon to be present in the target system, or it's not and this
-whole dance with detecting libbpf presence needs to be performed.
+Obviously I can only speak for myself and the RISC-V JIT, but given
+that we already have opened the door for more advanced translations
+(branch relaxation e.g.), I think that this makes sense. At the same
+time we don't want to go all JVM on the JITs. :-P
 
-If libbpf is optional, then I don't see how iproute2 BPF-related code
-and complexity can be reduced at all, given it should still support
-loading BPF programs even without libbpf. Furthermore, given libbpf
-supports more features already and will probably be outpacing
-iproute2's own BPF support in the future, some users will start
-relying on BPF features supported only by libbpf "backend", so
-iproute2's own BPF backend will just fail to load such programs,
-bringing unpleasant surprises, potentially. So I still fail to see how
-libbpf can be optional and what benefit does that bring. But shared or
-static - whatever fits iproute2 best, no preferences.
+> I figured I'd send the patch set out as more of a question than anything =
+else.
+> Specifically:
+>
+> * How should I go about measuring the performance of these sort of
+>   optimizations?  I'd like to balance the time it takes to run the JIT wi=
+th the
+>   time spent executing the program, but I don't have any feel for what re=
+al BPF
+>   programs look like or have any benchmark suite to run.  Is there someth=
+ing
+>   out there this should be benchmarked against?  (I'd also like to know t=
+hat to
+>   run those benchmarks on the RISC-V port.)
 
->
-> But yeah, if you're going to do you own cross-compilation, you'd
-> probably want to just force using the static library.
->
-> > If the goal is to have a reliable tool working everywhere, and you
-> > already support having libbpf as a submodule, why not always use
-> > submodule's libbpf? What's the concern? Libbpf is a small library, I
-> > don't think a binary size argument is enough reason to not do this. On
-> > the other hand, by using libbpf from submodule, your tool is built
-> > *and tested* with a well-known libbpf version that tool-producer
-> > controls.
->
-> I thought we already had this discussion? :)
+If you run the selftests 'test_progs' with -v it'll measure/print the
+execution time of the programs. I'd say *most* BPF program invokes a
+helper (via call). It would be interesting to see, for say the
+selftests, how often the optimization can be performed.
 
-Yeah, I guess we did for bpftool :) No worries, I don't care that
-much, just see my notes above about optional libbpf and consequences.
+> * Is this the sort of thing that makes sense in a BPF JIT?  I guess I've =
+just
+>   realized I turned "review this patch" into a way bigger rabbit hole tha=
+n I
+>   really want to go down...
+>
 
->
-> libbpf is a library like any other. Distros that package the library
-> want the tools that use it to be dynamically linked against it so
-> library upgrades (especially of the CVE-fixing kind) get picked up by
-> all users. Other distros have memory and space constraints (iproute2 is
-> shipped on OpenWrt, for instance, which is *extremely*
-> space-constrained). And yeah, other deployments don't care and will just
-> statically compile in the vendored version. So we'll need to support all
-> of those use cases.
->
-> -Toke
->
+I'd say 'yes'. My hunch, and the workloads I've seen, BPF programs are
+usually loaded, and then resident for a long time. So, the JIT time is
+not super critical. The FB/Cilium folks can definitely provide a
+better sample point, than my hunch. ;-)
+
+
+Bj=C3=B6rn
