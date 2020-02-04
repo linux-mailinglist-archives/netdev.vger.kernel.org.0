@@ -2,86 +2,88 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 2C7A8151FBB
-	for <lists+netdev@lfdr.de>; Tue,  4 Feb 2020 18:43:35 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 462EF151FBE
+	for <lists+netdev@lfdr.de>; Tue,  4 Feb 2020 18:44:23 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727482AbgBDRn0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 4 Feb 2020 12:43:26 -0500
-Received: from vps0.lunn.ch ([185.16.172.187]:35406 "EHLO vps0.lunn.ch"
+        id S1727472AbgBDRoV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 4 Feb 2020 12:44:21 -0500
+Received: from mga11.intel.com ([192.55.52.93]:61678 "EHLO mga11.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727392AbgBDRn0 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 4 Feb 2020 12:43:26 -0500
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:
-        Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
-        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
-        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
-        List-Post:List-Owner:List-Archive;
-        bh=YkN8EICzEFNet3xsTGFEzCoFMZb0DnoCsILuNX9tis8=; b=t2tBPBb+2JKDwwrM0AfTALYPGt
-        3oEGx2P5EMacRxNuchFRj5zXvINXH73V5ZOHHacc/OUNKDErReuozxsGC6zauB4WsDrQT8Ad0Rquj
-        s1w3V02NrpptvykNnflDazp37e7pZBDbUk53WK5eXbKBSv2LPgcmaTFzCl+bDegKKKzs=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.93)
-        (envelope-from <andrew@lunn.ch>)
-        id 1iz2EI-0000gR-CJ; Tue, 04 Feb 2020 18:43:18 +0100
-Date:   Tue, 4 Feb 2020 18:43:18 +0100
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Russell King - ARM Linux admin <linux@armlinux.org.uk>
-Cc:     Jose Abreu <Jose.Abreu@synopsys.com>,
-        Joao Pinto <Joao.Pinto@synopsys.com>,
-        Alexandre Torgue <alexandre.torgue@st.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "linux-stm32@st-md-mailman.stormreply.com" 
-        <linux-stm32@st-md-mailman.stormreply.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Giuseppe Cavallaro <peppe.cavallaro@st.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        "linux-arm-kernel@lists.infradead.org" 
-        <linux-arm-kernel@lists.infradead.org>,
-        Heiner Kallweit <hkallweit1@gmail.com>
-Subject: Re: [RFC net-next 6/8] net: phylink: Configure MAC/PCS when link is
- up without PHY
-Message-ID: <20200204174318.GB1364@lunn.ch>
-References: <BN8PR12MB3266714AE9EC1A97218120B3D30B0@BN8PR12MB3266.namprd12.prod.outlook.com>
- <20200127114600.GU25745@shell.armlinux.org.uk>
- <20200127140038.GD13647@lunn.ch>
- <20200127140834.GW25745@shell.armlinux.org.uk>
- <20200127145107.GE13647@lunn.ch>
- <20200127161132.GX25745@shell.armlinux.org.uk>
- <20200127162206.GJ13647@lunn.ch>
- <c3e863b8-2143-fee3-bb0b-65699661d7ab@gmail.com>
- <BN8PR12MB3266B69DA09E1CC215843C3CD30A0@BN8PR12MB3266.namprd12.prod.outlook.com>
- <20200204172603.GS25745@shell.armlinux.org.uk>
+        id S1727392AbgBDRoV (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 4 Feb 2020 12:44:21 -0500
+X-Amp-Result: SKIPPED(no attachment in message)
+X-Amp-File-Uploaded: False
+Received: from fmsmga003.fm.intel.com ([10.253.24.29])
+  by fmsmga102.fm.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 04 Feb 2020 09:44:21 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.70,402,1574150400"; 
+   d="scan'208";a="279126874"
+Received: from mmccollu-mobl.amr.corp.intel.com ([10.251.18.225])
+  by FMSMGA003.fm.intel.com with ESMTP; 04 Feb 2020 09:44:20 -0800
+Date:   Tue, 4 Feb 2020 09:44:20 -0800 (PST)
+From:   Mat Martineau <mathew.j.martineau@linux.intel.com>
+X-X-Sender: mjmartin@mmccollu-mobl.amr.corp.intel.com
+To:     Florian Westphal <fw@strlen.de>
+cc:     netdev@vger.kernel.org, Christoph Paasch <cpaasch@apple.com>,
+        Paolo Abeni <pabeni@redhat.com>
+Subject: Re: [PATCH net] mptcp: fix use-after-free on tcp fallback
+In-Reply-To: <20200204171230.618-1-fw@strlen.de>
+Message-ID: <alpine.OSX.2.22.394.2002040937220.22631@mmccollu-mobl.amr.corp.intel.com>
+References: <20200204171230.618-1-fw@strlen.de>
+User-Agent: Alpine 2.22 (OSX 394 2020-01-19)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200204172603.GS25745@shell.armlinux.org.uk>
+Content-Type: text/plain; charset=US-ASCII; format=flowed
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> There, there is one MAC, but there are multiple different PCS - one
-> for SGMII and 1000base-X, another for 10G, another for 25G, etc.
-> These PCS are accessed via a MDIO adapter embedded in each of the
-> MAC hardware blocks.
+On Tue, 4 Feb 2020, Florian Westphal wrote:
 
-Hi Russell
+> When an mptcp socket connects to a tcp peer or when a middlebox interferes
+> with tcp options, mptcp needs to fall back to plain tcp.
+> Problem is that mptcp is trying to be too clever in this case:
+>
+> It attempts to close the mptcp meta sk and transparently replace it with
+> the (only) subflow tcp sk.
+>
+> Unfortunately, this is racy -- the socket is already exposed to userspace.
+> Any parallel calls to send/recv/setsockopt etc. can cause use-after-free:
+>
+> BUG: KASAN: use-after-free in atomic_try_cmpxchg include/asm-generic/atomic-instrumented.h:693 [inline]
+> CPU: 1 PID: 2083 Comm: syz-executor.1 Not tainted 5.5.0 #2
+> atomic_try_cmpxchg include/asm-generic/atomic-instrumented.h:693 [inline]
+> queued_spin_lock include/asm-generic/qspinlock.h:78 [inline]
+> do_raw_spin_lock include/linux/spinlock.h:181 [inline]
+> __raw_spin_lock_bh include/linux/spinlock_api_smp.h:136 [inline]
+> _raw_spin_lock_bh+0x71/0xd0 kernel/locking/spinlock.c:175
+> spin_lock_bh include/linux/spinlock.h:343 [inline]
+> __lock_sock+0x105/0x190 net/core/sock.c:2414
+> lock_sock_nested+0x10f/0x140 net/core/sock.c:2938
+> lock_sock include/net/sock.h:1516 [inline]
+> mptcp_setsockopt+0x2f/0x1f0 net/mptcp/protocol.c:800
+> __sys_setsockopt+0x152/0x240 net/socket.c:2130
+> __do_sys_setsockopt net/socket.c:2146 [inline]
+> __se_sys_setsockopt net/socket.c:2143 [inline]
+> __x64_sys_setsockopt+0xba/0x150 net/socket.c:2143
+> do_syscall_64+0xb7/0x3d0 arch/x86/entry/common.c:294
+> entry_SYSCALL_64_after_hwframe+0x44/0xa9
+>
+> While the use-after-free can be resolved, there is another problem:
+> sock->ops and sock->sk assignments are not atomic, i.e. we may get calls
+> into mptcp functions with sock->sk already pointing at the subflow socket,
+> or calls into tcp functions with a mptcp meta sk.
+>
+> Remove the fallback code and call the relevant functions for the (only)
+> subflow in case the mptcp socket is connected to tcp peer.
+>
+> Reported-by: Christoph Paasch <cpaasch@apple.com>
+> Diagnosed-by: Paolo Abeni <pabeni@redhat.com>
+> Signed-off-by: Florian Westphal <fw@strlen.de>
+> ---
 
-Marvell mv88e6390X switches are like this is a well. There is a PCS
-for SGMII and 1000Base-X, and a second one for 10G. And it dynamically
-swaps between them depending on the port mode, the so called cmode.
+Reviewed-by: Mat Martineau <mathew.j.martineau@linux.intel.com>
 
-So a generic solution is required, and please take your time to build
-one.
-
-> It's not production-ready yet, but I will continue working on it
-> over the coming week.
-
-I'm happy to test when you are ready.
-
-Thanks for working on this,
-
-       Andrew
+--
+Mat Martineau
+Intel
