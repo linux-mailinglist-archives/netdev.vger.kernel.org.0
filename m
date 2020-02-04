@@ -2,200 +2,147 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 16379151F00
-	for <lists+netdev@lfdr.de>; Tue,  4 Feb 2020 18:12:43 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6081C151F52
+	for <lists+netdev@lfdr.de>; Tue,  4 Feb 2020 18:23:05 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727381AbgBDRMl (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 4 Feb 2020 12:12:41 -0500
-Received: from Chamillionaire.breakpoint.cc ([193.142.43.52]:36518 "EHLO
-        Chamillionaire.breakpoint.cc" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1727310AbgBDRMl (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 4 Feb 2020 12:12:41 -0500
-Received: from fw by Chamillionaire.breakpoint.cc with local (Exim 4.92)
-        (envelope-from <fw@breakpoint.cc>)
-        id 1iz1kd-0004md-H2; Tue, 04 Feb 2020 18:12:39 +0100
-From:   Florian Westphal <fw@strlen.de>
-To:     <netdev@vger.kernel.org>
-Cc:     Florian Westphal <fw@strlen.de>,
-        Christoph Paasch <cpaasch@apple.com>,
-        Paolo Abeni <pabeni@redhat.com>
-Subject: [PATCH net] mptcp: fix use-after-free on tcp fallback
-Date:   Tue,  4 Feb 2020 18:12:30 +0100
-Message-Id: <20200204171230.618-1-fw@strlen.de>
-X-Mailer: git-send-email 2.24.1
+        id S1727565AbgBDRXA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 4 Feb 2020 12:23:00 -0500
+Received: from mail-pj1-f68.google.com ([209.85.216.68]:33733 "EHLO
+        mail-pj1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727501AbgBDRW7 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 4 Feb 2020 12:22:59 -0500
+Received: by mail-pj1-f68.google.com with SMTP id m7so1040878pjs.0;
+        Tue, 04 Feb 2020 09:22:59 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=Hc2O/DJa+SbVtGN5pJ7qoYwZMHQBm+KpbKV1j82QsLo=;
+        b=FZOSE1cm6cxg7GDUk43uErcYeL8r98b5mATYq32pk+E3rMY8r8481VSvVde93h+ecs
+         F7AjkBeWOgCvsMqzLtqKDne8hSkYuHYMHGLw7nLM/OyTQo6+C9Dp1iIIsUWiCw5lSMWf
+         NqjpLv1eVHUItpOI4iDdt6FdRkv6oRjDEfLTU4jXtPI9syWATjHcuqmuriWeGZCI8Y8y
+         4vkjtJqJvjGPQv+J9Rf+wuuxHGVBmwkYGHpuCA9XMXWZRWDZKE/dk1M6ceO/5Rv9YUOV
+         fBp+p6mVUk4C1W3qPpncp+Olr+9M3PecXxO9a8vpIni0DXSiHx/j9UgnqzfShLJq6+ch
+         ER1w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=Hc2O/DJa+SbVtGN5pJ7qoYwZMHQBm+KpbKV1j82QsLo=;
+        b=E6tPQrQwvy5w0VtE9maaUL/b1iUVbZXbkS/va36D+Iihqlx4O1sNqQJqFeXdBZyna7
+         FYg3PVmYB23Cne/IKUtTegOOKTt9jrJo5HYJez/G/CTGzqYT44HhJwo/PWjl76lAUaCi
+         2LuOjzOE6zCrZlJp4NT7K4ICZnxHlMbgc3BrppQO7xsPEZR+s8HmCpwgnJYAB73WzgN2
+         vHtGZ3NrSJDsfUKjTQ4BpwMqC/zPSqfZE/DMOqoxo26otua/fGKnb/5ELZkA8koAhPRk
+         L4RVEqGTVVs1WCuKqyecxQbShZ8a656ETJ4aNj9647TSGEBH3U9CCJ07QSFSlpxFmgy6
+         udow==
+X-Gm-Message-State: APjAAAVFprYoIcFLF6nVVW6+O8fSBycHcOIlgbxelK99qFP+X/WEvlom
+        pQ9jffGbYfMDrhPjWZHxUFJJAXDJ
+X-Google-Smtp-Source: APXvYqy7iG09y8o63IJ5RQklu8YJLenNB0Eekk87qymcm7jhpREh6oKFybD5WWWWusHykXWedpWD/w==
+X-Received: by 2002:a17:902:7e4b:: with SMTP id a11mr30483505pln.61.1580836978921;
+        Tue, 04 Feb 2020 09:22:58 -0800 (PST)
+Received: from ?IPv6:2620:15c:2c1:200:55c7:81e6:c7d8:94b? ([2620:15c:2c1:200:55c7:81e6:c7d8:94b])
+        by smtp.gmail.com with ESMTPSA id s7sm4515747pjk.22.2020.02.04.09.22.57
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 04 Feb 2020 09:22:58 -0800 (PST)
+Subject: Re: [PATCH v2] skbuff: fix a data race in skb_queue_len()
+To:     Qian Cai <cai@lca.pw>, davem@davemloft.net
+Cc:     kuba@kernel.org, elver@google.com, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+References: <1580832945-28331-1-git-send-email-cai@lca.pw>
+From:   Eric Dumazet <eric.dumazet@gmail.com>
+Message-ID: <d73b3f08-a01e-95db-8beb-a11b33d834e8@gmail.com>
+Date:   Tue, 4 Feb 2020 09:22:57 -0800
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.2.2
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+In-Reply-To: <1580832945-28331-1-git-send-email-cai@lca.pw>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-When an mptcp socket connects to a tcp peer or when a middlebox interferes
-with tcp options, mptcp needs to fall back to plain tcp.
-Problem is that mptcp is trying to be too clever in this case:
 
-It attempts to close the mptcp meta sk and transparently replace it with
-the (only) subflow tcp sk.
 
-Unfortunately, this is racy -- the socket is already exposed to userspace.
-Any parallel calls to send/recv/setsockopt etc. can cause use-after-free:
+On 2/4/20 8:15 AM, Qian Cai wrote:
+> sk_buff.qlen can be accessed concurrently as noticed by KCSAN,
+> 
+> 
+> Since only the read is operating as lockless, it could introduce a logic
+> bug in unix_recvq_full() due to the load tearing. Fix it by adding
+> a lockless variant of skb_queue_len() and unix_recvq_full() where
+> READ_ONCE() is on the read while WRITE_ONCE() is on the write similar to
+> the commit d7d16a89350a ("net: add skb_queue_empty_lockless()").
+> 
+> Signed-off-by: Qian Cai <cai@lca.pw>
+> ---
+> 
+> v2: add lockless variant helpers and WRITE_ONCE().
+> 
+>  include/linux/skbuff.h | 14 +++++++++++++-
+>  net/unix/af_unix.c     |  9 ++++++++-
+>  2 files changed, 21 insertions(+), 2 deletions(-)
+> 
+> diff --git a/include/linux/skbuff.h b/include/linux/skbuff.h
+> index 3d13a4b717e9..de5eade20e52 100644
+> --- a/include/linux/skbuff.h
+> +++ b/include/linux/skbuff.h
+> @@ -1822,6 +1822,18 @@ static inline __u32 skb_queue_len(const struct sk_buff_head *list_)
+>  }
+>  
+>  /**
+> + *	skb_queue_len	- get queue length
 
-BUG: KASAN: use-after-free in atomic_try_cmpxchg include/asm-generic/atomic-instrumented.h:693 [inline]
-CPU: 1 PID: 2083 Comm: syz-executor.1 Not tainted 5.5.0 #2
- atomic_try_cmpxchg include/asm-generic/atomic-instrumented.h:693 [inline]
- queued_spin_lock include/asm-generic/qspinlock.h:78 [inline]
- do_raw_spin_lock include/linux/spinlock.h:181 [inline]
- __raw_spin_lock_bh include/linux/spinlock_api_smp.h:136 [inline]
- _raw_spin_lock_bh+0x71/0xd0 kernel/locking/spinlock.c:175
- spin_lock_bh include/linux/spinlock.h:343 [inline]
- __lock_sock+0x105/0x190 net/core/sock.c:2414
- lock_sock_nested+0x10f/0x140 net/core/sock.c:2938
- lock_sock include/net/sock.h:1516 [inline]
- mptcp_setsockopt+0x2f/0x1f0 net/mptcp/protocol.c:800
- __sys_setsockopt+0x152/0x240 net/socket.c:2130
- __do_sys_setsockopt net/socket.c:2146 [inline]
- __se_sys_setsockopt net/socket.c:2143 [inline]
- __x64_sys_setsockopt+0xba/0x150 net/socket.c:2143
- do_syscall_64+0xb7/0x3d0 arch/x86/entry/common.c:294
- entry_SYSCALL_64_after_hwframe+0x44/0xa9
+Please fix to use the exact name.
 
-While the use-after-free can be resolved, there is another problem:
-sock->ops and sock->sk assignments are not atomic, i.e. we may get calls
-into mptcp functions with sock->sk already pointing at the subflow socket,
-or calls into tcp functions with a mptcp meta sk.
+> + *	@list_: list to measure
+> + *
+> + *	Return the length of an &sk_buff queue.
+> + *	This variant can be used in lockless contexts.
+> + */
+> +static inline __u32 skb_queue_len_lockless(const struct sk_buff_head *list_)
+> +{
+> +	return READ_ONCE(list_->qlen);
+> +}
+> +
+> +/**
+>   *	__skb_queue_head_init - initialize non-spinlock portions of sk_buff_head
+>   *	@list: queue to initialize
+>   *
+> @@ -2026,7 +2038,7 @@ static inline void __skb_unlink(struct sk_buff *skb, struct sk_buff_head *list)
+>  {
+>  	struct sk_buff *next, *prev;
+>  
+> -	list->qlen--;
+> +	WRITE_ONCE(list->qlen, list->qlen - 1);
+>  	next	   = skb->next;
+>  	prev	   = skb->prev;
+>  	skb->next  = skb->prev = NULL;
+> diff --git a/net/unix/af_unix.c b/net/unix/af_unix.c
+> index 321af97c7bbe..349e7fbfbc67 100644
+> --- a/net/unix/af_unix.c
+> +++ b/net/unix/af_unix.c
+> @@ -194,6 +194,12 @@ static inline int unix_recvq_full(struct sock const *sk)
+>  	return skb_queue_len(&sk->sk_receive_queue) > sk->sk_max_ack_backlog;
+>  }
+>  
+> +static inline int unix_recvq_full_lockless(struct sock const *sk)
 
-Remove the fallback code and call the relevant functions for the (only)
-subflow in case the mptcp socket is connected to tcp peer.
+The const attribute is misplaced. It should be :
 
-Reported-by: Christoph Paasch <cpaasch@apple.com>
-Diagnosed-by: Paolo Abeni <pabeni@redhat.com>
-Signed-off-by: Florian Westphal <fw@strlen.de>
----
- net/mptcp/protocol.c | 76 ++++----------------------------------------
- 1 file changed, 6 insertions(+), 70 deletions(-)
+static inline bool unix_recvq_full_lockless(const struct sock *sk)
 
-diff --git a/net/mptcp/protocol.c b/net/mptcp/protocol.c
-index 3bccee455688..353f2d16b986 100644
---- a/net/mptcp/protocol.c
-+++ b/net/mptcp/protocol.c
-@@ -24,58 +24,6 @@
- 
- #define MPTCP_SAME_STATE TCP_MAX_STATES
- 
--static void __mptcp_close(struct sock *sk, long timeout);
--
--static const struct proto_ops *tcp_proto_ops(struct sock *sk)
--{
--#if IS_ENABLED(CONFIG_MPTCP_IPV6)
--	if (sk->sk_family == AF_INET6)
--		return &inet6_stream_ops;
--#endif
--	return &inet_stream_ops;
--}
--
--/* MP_CAPABLE handshake failed, convert msk to plain tcp, replacing
-- * socket->sk and stream ops and destroying msk
-- * return the msk socket, as we can't access msk anymore after this function
-- * completes
-- * Called with msk lock held, releases such lock before returning
-- */
--static struct socket *__mptcp_fallback_to_tcp(struct mptcp_sock *msk,
--					      struct sock *ssk)
--{
--	struct mptcp_subflow_context *subflow;
--	struct socket *sock;
--	struct sock *sk;
--
--	sk = (struct sock *)msk;
--	sock = sk->sk_socket;
--	subflow = mptcp_subflow_ctx(ssk);
--
--	/* detach the msk socket */
--	list_del_init(&subflow->node);
--	sock_orphan(sk);
--	sock->sk = NULL;
--
--	/* socket is now TCP */
--	lock_sock(ssk);
--	sock_graft(ssk, sock);
--	if (subflow->conn) {
--		/* We can't release the ULP data on a live socket,
--		 * restore the tcp callback
--		 */
--		mptcp_subflow_tcp_fallback(ssk, subflow);
--		sock_put(subflow->conn);
--		subflow->conn = NULL;
--	}
--	release_sock(ssk);
--	sock->ops = tcp_proto_ops(ssk);
--
--	/* destroy the left-over msk sock */
--	__mptcp_close(sk, 0);
--	return sock;
--}
--
- /* If msk has an initial subflow socket, and the MP_CAPABLE handshake has not
-  * completed yet or has failed, return the subflow socket.
-  * Otherwise return NULL.
-@@ -93,10 +41,6 @@ static bool __mptcp_needs_tcp_fallback(const struct mptcp_sock *msk)
- 	return msk->first && !sk_is_mptcp(msk->first);
- }
- 
--/* if the mp_capable handshake has failed, it fallbacks msk to plain TCP,
-- * releases the socket lock and returns a reference to the now TCP socket.
-- * Otherwise returns NULL
-- */
- static struct socket *__mptcp_tcp_fallback(struct mptcp_sock *msk)
- {
- 	sock_owned_by_me((const struct sock *)msk);
-@@ -105,15 +49,11 @@ static struct socket *__mptcp_tcp_fallback(struct mptcp_sock *msk)
- 		return NULL;
- 
- 	if (msk->subflow) {
--		/* the first subflow is an active connection, discart the
--		 * paired socket
--		 */
--		msk->subflow->sk = NULL;
--		sock_release(msk->subflow);
--		msk->subflow = NULL;
-+		release_sock((struct sock *)msk);
-+		return msk->subflow;
- 	}
- 
--	return __mptcp_fallback_to_tcp(msk, msk->first);
-+	return NULL;
- }
- 
- static bool __mptcp_can_create_subflow(const struct mptcp_sock *msk)
-@@ -640,12 +580,14 @@ static void mptcp_subflow_shutdown(struct sock *ssk, int how)
- }
- 
- /* Called with msk lock held, releases such lock before returning */
--static void __mptcp_close(struct sock *sk, long timeout)
-+static void mptcp_close(struct sock *sk, long timeout)
- {
- 	struct mptcp_subflow_context *subflow, *tmp;
- 	struct mptcp_sock *msk = mptcp_sk(sk);
- 	LIST_HEAD(conn_list);
- 
-+	lock_sock(sk);
-+
- 	mptcp_token_destroy(msk->token);
- 	inet_sk_state_store(sk, TCP_CLOSE);
- 
-@@ -662,12 +604,6 @@ static void __mptcp_close(struct sock *sk, long timeout)
- 	sk_common_release(sk);
- }
- 
--static void mptcp_close(struct sock *sk, long timeout)
--{
--	lock_sock(sk);
--	__mptcp_close(sk, timeout);
--}
--
- static void mptcp_copy_inaddrs(struct sock *msk, const struct sock *ssk)
- {
- #if IS_ENABLED(CONFIG_MPTCP_IPV6)
--- 
-2.24.1
+> +{
+> +	return skb_queue_len_lockless(&sk->sk_receive_queue) >
+> +		sk->sk_max_ack_backlog;
 
+You probably also need a READ_ONCE() for sk->sk_max_ack_backlog
+
+It is a matter of time before syzbot finds how to trigger the race.
+
+Since you added a nice unix_recvq_full_lockless() helper, lets make it right.
+
+Thanks.
