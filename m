@@ -2,116 +2,118 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id E34EB1516E7
-	for <lists+netdev@lfdr.de>; Tue,  4 Feb 2020 09:18:23 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 05EFC1516EC
+	for <lists+netdev@lfdr.de>; Tue,  4 Feb 2020 09:19:31 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726924AbgBDISW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 4 Feb 2020 03:18:22 -0500
-Received: from us-smtp-delivery-1.mimecast.com ([207.211.31.120]:30032 "EHLO
-        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S1726566AbgBDISW (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 4 Feb 2020 03:18:22 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1580804301;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=pBGYZLblushYtsXweaHtBpvwr3TbUuhVxGoRYPzdYAM=;
-        b=SPRkfazajf/zfUmufCGgUoDBMXQWQ53Cu3tMKiZXBYsA1UnSkO0SGjjaTEbHLfyf77unTS
-        jPvNB3LCj+9wuBSbxK+MaCzqVlEkaH2mokarU7Q5RCS075r2FHH9uWc37l6D+dWxjensqz
-        +A9G2e2lUnFCx/zFmD1a51fCirMLr14=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-385-ygvo1I3NNG-N31GA9SxjfA-1; Tue, 04 Feb 2020 03:18:18 -0500
-X-MC-Unique: ygvo1I3NNG-N31GA9SxjfA-1
-Received: from smtp.corp.redhat.com (int-mx04.intmail.prod.int.phx2.redhat.com [10.5.11.14])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 961431137840;
-        Tue,  4 Feb 2020 08:18:16 +0000 (UTC)
-Received: from krava (ovpn-205-67.brq.redhat.com [10.40.205.67])
-        by smtp.corp.redhat.com (Postfix) with ESMTPS id 470A55D9CA;
-        Tue,  4 Feb 2020 08:18:13 +0000 (UTC)
-Date:   Tue, 4 Feb 2020 09:18:10 +0100
-From:   Jiri Olsa <jolsa@redhat.com>
-To:     =?iso-8859-1?Q?Bj=F6rn_T=F6pel?= <bjorn.topel@intel.com>
-Cc:     Alexei Starovoitov <alexei.starovoitov@gmail.com>,
-        Jiri Olsa <jolsa@kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>, netdev@vger.kernel.org,
-        bpf@vger.kernel.org, Andrii Nakryiko <andriin@fb.com>,
-        Yonghong Song <yhs@fb.com>, Martin KaFai Lau <kafai@fb.com>,
-        Jakub Kicinski <jakub.kicinski@netronome.com>,
-        David Miller <davem@redhat.com>
-Subject: Re: [PATCH 5/5] bpf: Allow to resolve bpf trampoline in unwind
-Message-ID: <20200204081810.GA1554679@krava>
-References: <20191229143740.29143-6-jolsa@kernel.org>
- <20200106234639.fo2ctgkb5vumayyl@ast-mbp>
- <20200107130546.GI290055@krava>
- <76a10338-391a-ffca-9af8-f407265d146a@intel.com>
- <20200113094310.GE35080@krava>
- <a2e2b84e-71dd-e32c-bcf4-09298e9f4ce7@intel.com>
- <9da1c8f9-7ca5-e10b-8931-6871fdbffb23@intel.com>
- <20200113123728.GA120834@krava>
- <20200203195826.GB1535545@krava>
- <8f656ce1-c350-0edd-096b-8f1c395609ec@intel.com>
+        id S1727126AbgBDIT3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 4 Feb 2020 03:19:29 -0500
+Received: from mail-pl1-f194.google.com ([209.85.214.194]:40730 "EHLO
+        mail-pl1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726741AbgBDIT2 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 4 Feb 2020 03:19:28 -0500
+Received: by mail-pl1-f194.google.com with SMTP id y1so6952374plp.7
+        for <netdev@vger.kernel.org>; Tue, 04 Feb 2020 00:19:26 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=e7VapZs7ToFtGQHirc2gqfuZaDOEBKykkyxeoFQPPr0=;
+        b=qDFRSO55Rv/R04oSblvygRyyFRoB6x6wb+su1cgyo/BppoM0+ZDgs8RozwgkK78Sci
+         ghPLeZFFf9kILD6GN0VLX2rpGOVtNip/n8BJEM708QGzL5965uow7Dp+dAorskXuSKkd
+         kcn9QHnmSeaZkVwiPSATgkTv8F9ZlkKyJQbYDy3F5BJFrbb4zlsvmlOaGPXaJgwfqoS4
+         m7OCdxGsCX/2yHJF65AXCxiler2uuqrKAaz6asOH0fvHc1zwYKC7ltO/LKQkLyK6f5hc
+         qu8bXKEK7Qek05xniIc0pewDBxQqbEGS/GplfUOEldjkJJTPWVKvHHvAbehYWChMP6MW
+         WtYg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=e7VapZs7ToFtGQHirc2gqfuZaDOEBKykkyxeoFQPPr0=;
+        b=SWjIit+QHj3mUrw5KrzfY3Z78838UEA19GhKxPCJsEjbxqN0eeL8A8dy3Co/cJELLg
+         sljY5lB78blxQ20P1hxRgXqYlU8YTUCB5r/71MDKN80vsKcF/MUyWrOP1NK/RF5ZKSD3
+         OKlt0rw361/rBhMNki24UpQz6X0lyOTtI0lU65z438oR+zdtzIFE61dJFaeZdgDntT5z
+         1QCjMA0aEDIuXgcYKVqJYPR0/bxwO4OGn6KIxipMrIjzfTBnpHUvr062CRtd/LkRjsS8
+         Il4TH6g/x/3AsAm/9LXYx+Sm0SKiZ3/Gq5TjQMHcQtQrWSOaFGiB7uxHgh4YQAQl0w93
+         flZA==
+X-Gm-Message-State: APjAAAWjfq/kdmPgjNWNWrEiD9Usa9KSLr0dsaLNp6R6G3GMV7Au1dow
+        wxcC6IYwgd/AJ7v08sxvhBi1
+X-Google-Smtp-Source: APXvYqwc3F+ajrWjrRQ9TQ7Nc/U7oGxap8lGBbplh9eigm6PnJygpBlf7IQd9svy86r/SV0NWozUhA==
+X-Received: by 2002:a17:902:b909:: with SMTP id bf9mr27151608plb.96.1580804366289;
+        Tue, 04 Feb 2020 00:19:26 -0800 (PST)
+Received: from Mani-XPS-13-9360 ([2409:4072:184:5239:5cf8:8075:e072:4b02])
+        by smtp.gmail.com with ESMTPSA id z29sm22684879pgc.21.2020.02.04.00.19.19
+        (version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
+        Tue, 04 Feb 2020 00:19:25 -0800 (PST)
+Date:   Tue, 4 Feb 2020 13:49:16 +0530
+From:   Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     gregkh@linuxfoundation.org, arnd@arndb.de, smohanad@codeaurora.org,
+        jhugo@codeaurora.org, kvalo@codeaurora.org,
+        bjorn.andersson@linaro.org, hemantk@codeaurora.org,
+        linux-arm-msm@vger.kernel.org, linux-kernel@vger.kernel.org,
+        "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org
+Subject: Re: [PATCH v2 14/16] net: qrtr: Add MHI transport layer
+Message-ID: <20200204081914.GB7452@Mani-XPS-13-9360>
+References: <20200131135009.31477-1-manivannan.sadhasivam@linaro.org>
+ <20200131135009.31477-15-manivannan.sadhasivam@linaro.org>
+ <20200203101225.43bd27bc@cakuba.hsd1.ca.comcast.net>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <8f656ce1-c350-0edd-096b-8f1c395609ec@intel.com>
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.14
-Content-Transfer-Encoding: quoted-printable
+In-Reply-To: <20200203101225.43bd27bc@cakuba.hsd1.ca.comcast.net>
+User-Agent: Mutt/1.9.4 (2018-02-28)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Feb 03, 2020 at 09:27:39PM +0100, Bj=F6rn T=F6pel wrote:
-> On 2020-02-03 20:58, Jiri Olsa wrote:
-> [...]
-> > > > ...and FWIW, it would be nice with bpf_dispatcher_<...> entries i=
-n kallsyms
-> > >=20
-> > > ok so it'd be 'bpf_dispatcher_<name>'
-> >=20
-> > hi,
-> > so the only dispatcher is currently defined as:
-> >    DEFINE_BPF_DISPATCHER(bpf_dispatcher_xdp)
-> >=20
-> > with the bpf_dispatcher_<name> logic it shows in kallsyms as:
-> >    ffffffffa0450000 t bpf_dispatcher_bpf_dispatcher_xdp    [bpf]
-> >=20
->=20
-> Ick! :-P
+Hi Jakub,
 
-yea, but it draws attention ;-)
+On Mon, Feb 03, 2020 at 10:12:25AM -0800, Jakub Kicinski wrote:
+> On Fri, 31 Jan 2020 19:20:07 +0530, Manivannan Sadhasivam wrote:
+> > +/* From QRTR to MHI */
+> > +static void qcom_mhi_qrtr_ul_callback(struct mhi_device *mhi_dev,
+> > +				      struct mhi_result *mhi_res)
+> > +{
+> > +	struct qrtr_mhi_dev *qdev = dev_get_drvdata(&mhi_dev->dev);
+> > +	struct qrtr_mhi_pkt *pkt;
+> > +	unsigned long flags;
+> > +
+> > +	spin_lock_irqsave(&qdev->ul_lock, flags);
+> > +	pkt = list_first_entry(&qdev->ul_pkts, struct qrtr_mhi_pkt, node);
+> > +	list_del(&pkt->node);
+> > +	complete_all(&pkt->done);
+> > +
+> > +	kref_put(&pkt->refcount, qrtr_mhi_pkt_release);
+> 
+> Which kref_get() does this pair with?
+> 
+> Looks like qcom_mhi_qrtr_send() will release a reference after
+> completion, too.
+> 
 
-> diff --git a/include/linux/filter.h b/include/linux/filter.h
-> index f349e2c0884c..eafe72644282 100644
-> --- a/include/linux/filter.h
-> +++ b/include/linux/filter.h
-> @@ -577,7 +577,7 @@ DECLARE_STATIC_KEY_FALSE(bpf_stats_enabled_key);
->  	ret; })
->=20
->  #define BPF_PROG_RUN(prog, ctx) __BPF_PROG_RUN(prog, ctx,		\
-> -					       bpf_dispatcher_nopfunc)
-> +					       bpf_dispatcher_nop_func)
->=20
->  #define BPF_SKB_CB_LEN QDISC_CB_PRIV_LEN
->=20
-> @@ -701,7 +701,7 @@ static inline u32 bpf_prog_run_clear_cb(const struc=
-t
-> bpf_prog *prog,
->  	return res;
->  }
->=20
-> -DECLARE_BPF_DISPATCHER(bpf_dispatcher_xdp)
-> +DECLARE_BPF_DISPATCHER(xdp)
+Yikes, there is some issue here...
 
-yep, that's what I prefer ;-) I'll attach your patch
-to my kallsyms changes
+Acutally the issue is not in what you referred above but the overall kref
+handling itself. Please see below.
 
-thanks,
-jirka
+kref_put() should be present in qcom_mhi_qrtr_ul_callback() as it will
+decrement the refcount which got incremented in qcom_mhi_qrtr_send(). It
+should be noted that kref_init() will fix the refcount to 1 and kref_get() will
+increment to 2. So for properly releasing the refcount to 0, we need to call
+kref_put() twice.
 
+So if all goes well, the refcount will get decremented twice in
+qcom_mhi_qrtr_ul_callback() as well as in qcom_mhi_qrtr_send() and we are good.
+
+But, if the transfer has failed ie., when qcom_mhi_qrtr_ul_callback() doesn't
+get called, then we are leaking the refcount. I need to rework the kref handling
+code in next iteration.
+
+Thanks for triggering this!
+
+Regards,
+Mani
+
+> > +	spin_unlock_irqrestore(&qdev->ul_lock, flags);
+> > +}
