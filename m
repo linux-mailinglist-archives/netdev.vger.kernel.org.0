@@ -2,88 +2,164 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id C7E14151DAC
-	for <lists+netdev@lfdr.de>; Tue,  4 Feb 2020 16:53:09 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3990C151DC0
+	for <lists+netdev@lfdr.de>; Tue,  4 Feb 2020 17:00:35 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727367AbgBDPwv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 4 Feb 2020 10:52:51 -0500
-Received: from mail-ed1-f66.google.com ([209.85.208.66]:34725 "EHLO
-        mail-ed1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727334AbgBDPwv (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 4 Feb 2020 10:52:51 -0500
-Received: by mail-ed1-f66.google.com with SMTP id r18so20287273edl.1
-        for <netdev@vger.kernel.org>; Tue, 04 Feb 2020 07:52:48 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=paul-moore-com.20150623.gappssmtp.com; s=20150623;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=0d0fJd2kqJOBxIhDrO5YQ550FVzvPHsXp/LZedW7iYo=;
-        b=jV+b0Pt2SFxKxAS8cj1UQHfhP4u6Is0Ked6engWmcGC4Vi3TiaYTuMDEDShbyo/W7Z
-         1G3Z0cM0PQWOg38Z+JVqucnhUkVnrOHTg50fin3WAGhZgHIYgSQ19+fPt7zs5oVqfJea
-         pFWTF/n1Y213SSzHRtw5+jlUvJShRGJ7FhRpHhM1nAXcPW2m+/YHt61prqobroLuGOGk
-         Y1CQM8QgSJwCyjxAesY/KCzkHfxFaZvogMV+xmE/W9owG68Y6pOv1plJSjhJiJzmsdiF
-         xLMebzV4Z6XBRCCVQYgqj7kXbOFpljAZJuaOraWTomEviTzwCFj9906EhFb5Yal9kDuO
-         Yt1g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=0d0fJd2kqJOBxIhDrO5YQ550FVzvPHsXp/LZedW7iYo=;
-        b=mbSeofqIBovkt6iH7ohogppWm8gv8K2BZLoe3DSPX06q/iNrwIwUWiULCdA5QHkY23
-         6rBeoNJ+/Y9YADHRS4Ph1USpYU7IFrHQ7KjpR7LJAmv72I6IfaXotBDvsLbjjwAK9HWO
-         /iD65POldkiNP5SJ9hM+RZkeRMWktzdqMwDVVDdG0WrOWCRSRIYjEZubtSsfHAhStlh3
-         irM13K3vzfQnlj+54OeWsxsRh/o3BF7fGXVOMRy0RPlHxgwt5qWw9yzWK7wwoeXaJm3r
-         QCkSTQRWVR3j3lAApSNY7cLT6f2JB1ce4gxDrBfFJlSo+Ll9Vmg6UyzNizC+qXfbFw41
-         P2fg==
-X-Gm-Message-State: APjAAAVxfueDG1oOS09TooELjS8vGgPX/nGl4vidJa1wzT79yJbNkj7v
-        jcGB6dn2Jz9BlXJhFwW4Kt9MBvoKdFroLBpFAM+H
-X-Google-Smtp-Source: APXvYqw+zYvw6F4Umt3lSDJsc2lvOiKELPOHsE6Als0Io7phWfq8MkukCyGdnY7at8Qo98R48gqGhqoNt5voV/XvnH4=
-X-Received: by 2002:a17:906:22cf:: with SMTP id q15mr26062018eja.77.1580831567900;
- Tue, 04 Feb 2020 07:52:47 -0800 (PST)
+        id S1727321AbgBDQAd (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 4 Feb 2020 11:00:33 -0500
+Received: from host.76.145.23.62.rev.coltfrance.com ([62.23.145.76]:39154 "EHLO
+        proxy.6wind.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727297AbgBDQAd (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 4 Feb 2020 11:00:33 -0500
+Received: from bretzel.dev.6wind.com (unknown [10.16.0.19])
+        by proxy.6wind.com (Postfix) with ESMTPS id 71C8C37B8D3;
+        Tue,  4 Feb 2020 17:00:31 +0100 (CET)
+Received: from dichtel by bretzel.dev.6wind.com with local (Exim 4.92)
+        (envelope-from <dichtel@bretzel.dev.6wind.com>)
+        id 1iz0cp-0007eG-5x; Tue, 04 Feb 2020 17:00:31 +0100
+From:   Nicolas Dichtel <nicolas.dichtel@6wind.com>
+To:     steffen.klassert@secunet.com, davem@davemloft.net
+Cc:     netdev@vger.kernel.org, sd@queasysnail.net,
+        Nicolas Dichtel <nicolas.dichtel@6wind.com>
+Subject: [PATCH ipsec v3] vti[6]: fix packet tx through bpf_redirect() in XinY cases
+Date:   Tue,  4 Feb 2020 17:00:27 +0100
+Message-Id: <20200204160027.29309-1-nicolas.dichtel@6wind.com>
+X-Mailer: git-send-email 2.24.0
+In-Reply-To: <20200204114604.GA59185@bistromath.localdomain>
+References: <20200204114604.GA59185@bistromath.localdomain>
 MIME-Version: 1.0
-References: <cover.1577736799.git.rgb@redhat.com> <5238532.OiMyN8JqPO@x2>
- <20200204131944.esnzcqvnecfnqgbi@madcap2.tricolour.ca> <3665686.i1MIc9PeWa@x2>
-In-Reply-To: <3665686.i1MIc9PeWa@x2>
-From:   Paul Moore <paul@paul-moore.com>
-Date:   Tue, 4 Feb 2020 10:52:36 -0500
-Message-ID: <CAHC9VhRHfjuv5yyn+nQ2LbHtcezBcjKtOQ69ssYrXOiExuCjBw@mail.gmail.com>
-Subject: Re: [PATCH ghak90 V8 13/16] audit: track container nesting
-To:     Steve Grubb <sgrubb@redhat.com>
-Cc:     Richard Guy Briggs <rgb@redhat.com>,
-        containers@lists.linux-foundation.org, linux-api@vger.kernel.org,
-        Linux-Audit Mailing List <linux-audit@redhat.com>,
-        linux-fsdevel@vger.kernel.org, LKML <linux-kernel@vger.kernel.org>,
-        netdev@vger.kernel.org, netfilter-devel@vger.kernel.org,
-        omosnace@redhat.com, dhowells@redhat.com, simo@redhat.com,
-        Eric Paris <eparis@parisplace.org>,
-        Serge Hallyn <serge@hallyn.com>, ebiederm@xmission.com,
-        nhorman@tuxdriver.com, Dan Walsh <dwalsh@redhat.com>,
-        mpatel@redhat.com
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Feb 4, 2020 at 10:47 AM Steve Grubb <sgrubb@redhat.com> wrote:
-> On Tuesday, February 4, 2020 8:19:44 AM EST Richard Guy Briggs wrote:
-> > > The established pattern is that we print -1 when its unset and "?" when
-> > > its totalling missing. So, how could this be invalid? It should be set
-> > > or not. That is unless its totally missing just like when we do not run
-> > > with selinux enabled and a context just doesn't exist.
-> >
-> > Ok, so in this case it is clearly unset, so should be -1, which will be a
-> > 20-digit number when represented as an unsigned long long int.
-> >
-> > Thank you for that clarification Steve.
->
-> It is literally a  -1.  ( 2 characters)
+I forgot the 4in6/6in4 cases in my previous patch. Let's fix them.
 
-Well, not as Richard has currently written the code, it is a "%llu".
-This was why I asked the question I did; if we want the "-1" here we
-probably want to special case that as I don't think we want to display
-audit container IDs as signed numbers in general.
+Fixes: 95224166a903 ("vti[6]: fix packet tx through bpf_redirect()")
+Signed-off-by: Nicolas Dichtel <nicolas.dichtel@6wind.com>
+---
 
+v2 -> v3:
+ - fix compilation when IPv6 is compiled as a module
+
+v1 -> v2:
+ - fix compilation when IPv6 is disabled
+
+ net/ipv4/Kconfig   |  1 +
+ net/ipv4/ip_vti.c  | 38 ++++++++++++++++++++++++++++++--------
+ net/ipv6/ip6_vti.c | 32 +++++++++++++++++++++++++-------
+ 3 files changed, 56 insertions(+), 15 deletions(-)
+
+diff --git a/net/ipv4/Kconfig b/net/ipv4/Kconfig
+index f96bd489b362..6490b845e17b 100644
+--- a/net/ipv4/Kconfig
++++ b/net/ipv4/Kconfig
+@@ -303,6 +303,7 @@ config SYN_COOKIES
+ 
+ config NET_IPVTI
+ 	tristate "Virtual (secure) IP: tunneling"
++	depends on IPV6 || IPV6=n
+ 	select INET_TUNNEL
+ 	select NET_IP_TUNNEL
+ 	select XFRM
+diff --git a/net/ipv4/ip_vti.c b/net/ipv4/ip_vti.c
+index 37cddd18f282..1b4e6f298648 100644
+--- a/net/ipv4/ip_vti.c
++++ b/net/ipv4/ip_vti.c
+@@ -187,17 +187,39 @@ static netdev_tx_t vti_xmit(struct sk_buff *skb, struct net_device *dev,
+ 	int mtu;
+ 
+ 	if (!dst) {
+-		struct rtable *rt;
+-
+-		fl->u.ip4.flowi4_oif = dev->ifindex;
+-		fl->u.ip4.flowi4_flags |= FLOWI_FLAG_ANYSRC;
+-		rt = __ip_route_output_key(dev_net(dev), &fl->u.ip4);
+-		if (IS_ERR(rt)) {
++		switch (skb->protocol) {
++		case htons(ETH_P_IP): {
++			struct rtable *rt;
++
++			fl->u.ip4.flowi4_oif = dev->ifindex;
++			fl->u.ip4.flowi4_flags |= FLOWI_FLAG_ANYSRC;
++			rt = __ip_route_output_key(dev_net(dev), &fl->u.ip4);
++			if (IS_ERR(rt)) {
++				dev->stats.tx_carrier_errors++;
++				goto tx_error_icmp;
++			}
++			dst = &rt->dst;
++			skb_dst_set(skb, dst);
++			break;
++		}
++#if IS_ENABLED(CONFIG_IPV6)
++		case htons(ETH_P_IPV6):
++			fl->u.ip6.flowi6_oif = dev->ifindex;
++			fl->u.ip6.flowi6_flags |= FLOWI_FLAG_ANYSRC;
++			dst = ip6_route_output(dev_net(dev), NULL, &fl->u.ip6);
++			if (dst->error) {
++				dst_release(dst);
++				dst = NULL;
++				dev->stats.tx_carrier_errors++;
++				goto tx_error_icmp;
++			}
++			skb_dst_set(skb, dst);
++			break;
++#endif
++		default:
+ 			dev->stats.tx_carrier_errors++;
+ 			goto tx_error_icmp;
+ 		}
+-		dst = &rt->dst;
+-		skb_dst_set(skb, dst);
+ 	}
+ 
+ 	dst_hold(dst);
+diff --git a/net/ipv6/ip6_vti.c b/net/ipv6/ip6_vti.c
+index 524006aa0d78..56e642efefff 100644
+--- a/net/ipv6/ip6_vti.c
++++ b/net/ipv6/ip6_vti.c
+@@ -450,15 +450,33 @@ vti6_xmit(struct sk_buff *skb, struct net_device *dev, struct flowi *fl)
+ 	int mtu;
+ 
+ 	if (!dst) {
+-		fl->u.ip6.flowi6_oif = dev->ifindex;
+-		fl->u.ip6.flowi6_flags |= FLOWI_FLAG_ANYSRC;
+-		dst = ip6_route_output(dev_net(dev), NULL, &fl->u.ip6);
+-		if (dst->error) {
+-			dst_release(dst);
+-			dst = NULL;
++		switch (skb->protocol) {
++		case htons(ETH_P_IP): {
++			struct rtable *rt;
++
++			fl->u.ip4.flowi4_oif = dev->ifindex;
++			fl->u.ip4.flowi4_flags |= FLOWI_FLAG_ANYSRC;
++			rt = __ip_route_output_key(dev_net(dev), &fl->u.ip4);
++			if (IS_ERR(rt))
++				goto tx_err_link_failure;
++			dst = &rt->dst;
++			skb_dst_set(skb, dst);
++			break;
++		}
++		case htons(ETH_P_IPV6):
++			fl->u.ip6.flowi6_oif = dev->ifindex;
++			fl->u.ip6.flowi6_flags |= FLOWI_FLAG_ANYSRC;
++			dst = ip6_route_output(dev_net(dev), NULL, &fl->u.ip6);
++			if (dst->error) {
++				dst_release(dst);
++				dst = NULL;
++				goto tx_err_link_failure;
++			}
++			skb_dst_set(skb, dst);
++			break;
++		default:
+ 			goto tx_err_link_failure;
+ 		}
+-		skb_dst_set(skb, dst);
+ 	}
+ 
+ 	dst_hold(dst);
 -- 
-paul moore
-www.paul-moore.com
+2.24.0
+
