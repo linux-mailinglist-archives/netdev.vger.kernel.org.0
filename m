@@ -2,36 +2,35 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id B21731521C8
-	for <lists+netdev@lfdr.de>; Tue,  4 Feb 2020 22:17:53 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C8ABE1521C9
+	for <lists+netdev@lfdr.de>; Tue,  4 Feb 2020 22:17:57 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727564AbgBDVRw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 4 Feb 2020 16:17:52 -0500
+        id S1727586AbgBDVR4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 4 Feb 2020 16:17:56 -0500
 Received: from frisell.zx2c4.com ([192.95.5.64]:54783 "EHLO frisell.zx2c4.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727387AbgBDVRv (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 4 Feb 2020 16:17:51 -0500
-Received: by frisell.zx2c4.com (ZX2C4 Mail Server) with ESMTP id da57187e;
-        Tue, 4 Feb 2020 21:16:58 +0000 (UTC)
+        id S1727387AbgBDVRz (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 4 Feb 2020 16:17:55 -0500
+Received: by frisell.zx2c4.com (ZX2C4 Mail Server) with ESMTP id eba804f0;
+        Tue, 4 Feb 2020 21:17:02 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha1; c=relaxed; d=zx2c4.com; h=from:to:cc
         :subject:date:message-id:in-reply-to:references:mime-version
-        :content-transfer-encoding; s=mail; bh=1zpfBgdueLmPHjsgAl6QLvWtV
-        +0=; b=juBzB4sFaZ45usiV+DGqtIugAlcEuVwSsqML2mkemp1Npk+hOx7PIrj8X
-        DZ1RJ89lO+OtYIFyjMhlwVFukgnNWM8dsqxxZhck8h+F66hxV9m2/khPqyg7mKwf
-        ++Qk8bGQrY+8AD9rXpO6vIgy87ekKPjQWL4KkKQhr1yol7Pr2LeEC900M1RTiLRO
-        YWpptQmZgXIKYlWHrOxVZnWDsGIXS4iLtD1p8DWcNI49SNgbNnBohnzGJpiz9FAP
-        RVtYPlpuJTS9n33d+prx6pLtz5KsBopE3/2Mw4AGHa1j4dTfgCTKQf2d4WeqMPX/
-        BmCiUX/9Tm7qW0xvcEZRGnzm66Ylw==
-Received: by frisell.zx2c4.com (ZX2C4 Mail Server) with ESMTPSA id 3582a01a (TLSv1.2:ECDHE-RSA-AES256-GCM-SHA384:256:NO);
-        Tue, 4 Feb 2020 21:16:57 +0000 (UTC)
+        :content-transfer-encoding; s=mail; bh=BC++7ExSeUTV2lC0vCd3G4fnM
+        tI=; b=dP/ax0dROnW4xAYppc936OOYacgdNd9rxRKFvF209u2gsE31qdme0TAuw
+        h+bgFetJ78iXkR2DJBP8uzNdb9amZ8mUHYmbgCT7DHo8hcqsUZJabz+diYQLrpyx
+        gLr6DDrTZN8FwN94MfiM5qXx9UKxSBtQCMJz/32rGUCcZUmQF9qrRSPxaeMxB8sy
+        /+lnVKPnGSaJZg2BBERD794HI8O/oBbjgJ/hZdsqqVzon7NtxKoKRDsk85hTJ2AE
+        iZcQY1MZQefzwmRKSUjlymz8DorXi24qlLs+rt0ctSH2AJowiNGLz/jos8XsOiV+
+        GSW/MZFMi87F8xAMrT5XZcPtZIPKw==
+Received: by frisell.zx2c4.com (ZX2C4 Mail Server) with ESMTPSA id b2880939 (TLSv1.2:ECDHE-RSA-AES256-GCM-SHA384:256:NO);
+        Tue, 4 Feb 2020 21:17:01 +0000 (UTC)
 From:   "Jason A. Donenfeld" <Jason@zx2c4.com>
 To:     netdev@vger.kernel.org, davem@davemloft.net
-Cc:     Eric Dumazet <edumazet@google.com>,
-        syzbot <syzkaller@googlegroups.com>,
-        "Jason A . Donenfeld" <Jason@zx2c4.com>, wireguard@lists.zx2c4.com
-Subject: [PATCH net 1/5] wireguard: allowedips: fix use-after-free in root_remove_peer_lists
-Date:   Tue,  4 Feb 2020 22:17:25 +0100
-Message-Id: <20200204211729.365431-2-Jason@zx2c4.com>
+Cc:     "Jason A. Donenfeld" <Jason@zx2c4.com>,
+        syzbot <syzkaller@googlegroups.com>
+Subject: [PATCH net 2/5] wireguard: noise: reject peers with low order public keys
+Date:   Tue,  4 Feb 2020 22:17:26 +0100
+Message-Id: <20200204211729.365431-3-Jason@zx2c4.com>
 In-Reply-To: <20200204211729.365431-1-Jason@zx2c4.com>
 References: <20200204211729.365431-1-Jason@zx2c4.com>
 MIME-Version: 1.0
@@ -41,164 +40,234 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Eric Dumazet <edumazet@google.com>
+Our static-static calculation returns a failure if the public key is of
+low order. We check for this when peers are added, and don't allow them
+to be added if they're low order, except in the case where we haven't
+yet been given a private key. In that case, we would defer the removal
+of the peer until we're given a private key, since at that point we're
+doing new static-static calculations which incur failures we can act on.
+This meant, however, that we wound up removing peers rather late in the
+configuration flow.
 
-In the unlikely case a new node could not be allocated, we need to
-remove @newnode from @peer->allowedips_list before freeing it.
+Syzkaller points out that peer_remove calls flush_workqueue, which in
+turn might then wait for sending a handshake initiation to complete.
+Since handshake initiation needs the static identity lock, holding the
+static identity lock while calling peer_remove can result in a rare
+deadlock. We have precisely this case in this situation of late-stage
+peer removal based on an invalid public key. We can't drop the lock when
+removing, because then incoming handshakes might interact with a bogus
+static-static calculation.
 
-syzbot reported:
+While the band-aid patch for this would involve breaking up the peer
+removal into two steps like wg_peer_remove_all does, in order to solve
+the locking issue, there's actually a much more elegant way of fixing
+this:
 
-BUG: KASAN: use-after-free in __list_del_entry_valid+0xdc/0xf5 lib/list_debug.c:54
-Read of size 8 at addr ffff88809881a538 by task syz-executor.4/30133
+If the static-static calculation succeeds with one private key, it
+*must* succeed with all others, because all 32-byte strings map to valid
+private keys, thanks to clamping. That means we can get rid of this
+silly dance and locking headaches of removing peers late in the
+configuration flow, and instead just reject them early on, regardless of
+whether the device has yet been assigned a private key. For the case
+where the device doesn't yet have a private key, we safely use zeros
+just for the purposes of checking for low order points by way of
+checking the output of the calculation.
 
-CPU: 0 PID: 30133 Comm: syz-executor.4 Not tainted 5.5.0-syzkaller #0
-Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
-Call Trace:
- __dump_stack lib/dump_stack.c:77 [inline]
- dump_stack+0x197/0x210 lib/dump_stack.c:118
- print_address_description.constprop.0.cold+0xd4/0x30b mm/kasan/report.c:374
- __kasan_report.cold+0x1b/0x32 mm/kasan/report.c:506
- kasan_report+0x12/0x20 mm/kasan/common.c:639
- __asan_report_load8_noabort+0x14/0x20 mm/kasan/generic_report.c:135
- __list_del_entry_valid+0xdc/0xf5 lib/list_debug.c:54
- __list_del_entry include/linux/list.h:132 [inline]
- list_del include/linux/list.h:146 [inline]
- root_remove_peer_lists+0x24f/0x4b0 drivers/net/wireguard/allowedips.c:65
- wg_allowedips_free+0x232/0x390 drivers/net/wireguard/allowedips.c:300
- wg_peer_remove_all+0xd5/0x620 drivers/net/wireguard/peer.c:187
- wg_set_device+0xd01/0x1350 drivers/net/wireguard/netlink.c:542
- genl_family_rcv_msg_doit net/netlink/genetlink.c:672 [inline]
- genl_family_rcv_msg net/netlink/genetlink.c:717 [inline]
- genl_rcv_msg+0x67d/0xea0 net/netlink/genetlink.c:734
- netlink_rcv_skb+0x177/0x450 net/netlink/af_netlink.c:2477
- genl_rcv+0x29/0x40 net/netlink/genetlink.c:745
- netlink_unicast_kernel net/netlink/af_netlink.c:1302 [inline]
- netlink_unicast+0x59e/0x7e0 net/netlink/af_netlink.c:1328
- netlink_sendmsg+0x91c/0xea0 net/netlink/af_netlink.c:1917
- sock_sendmsg_nosec net/socket.c:652 [inline]
- sock_sendmsg+0xd7/0x130 net/socket.c:672
- ____sys_sendmsg+0x753/0x880 net/socket.c:2343
- ___sys_sendmsg+0x100/0x170 net/socket.c:2397
- __sys_sendmsg+0x105/0x1d0 net/socket.c:2430
- __do_sys_sendmsg net/socket.c:2439 [inline]
- __se_sys_sendmsg net/socket.c:2437 [inline]
- __x64_sys_sendmsg+0x78/0xb0 net/socket.c:2437
- do_syscall_64+0xfa/0x790 arch/x86/entry/common.c:294
- entry_SYSCALL_64_after_hwframe+0x49/0xbe
-RIP: 0033:0x45b399
-Code: ad b6 fb ff c3 66 2e 0f 1f 84 00 00 00 00 00 66 90 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 0f 83 7b b6 fb ff c3 66 2e 0f 1f 84 00 00 00 00
-RSP: 002b:00007f99a9bcdc78 EFLAGS: 00000246 ORIG_RAX: 000000000000002e
-RAX: ffffffffffffffda RBX: 00007f99a9bce6d4 RCX: 000000000045b399
-RDX: 0000000000000000 RSI: 0000000020001340 RDI: 0000000000000003
-RBP: 000000000075bf20 R08: 0000000000000000 R09: 0000000000000000
-R10: 0000000000000000 R11: 0000000000000246 R12: 0000000000000004
-R13: 00000000000009ba R14: 00000000004cb2b8 R15: 0000000000000009
+The following PoC will trigger the deadlock:
 
-Allocated by task 30103:
- save_stack+0x23/0x90 mm/kasan/common.c:72
- set_track mm/kasan/common.c:80 [inline]
- __kasan_kmalloc mm/kasan/common.c:513 [inline]
- __kasan_kmalloc.constprop.0+0xcf/0xe0 mm/kasan/common.c:486
- kasan_kmalloc+0x9/0x10 mm/kasan/common.c:527
- kmem_cache_alloc_trace+0x158/0x790 mm/slab.c:3551
- kmalloc include/linux/slab.h:556 [inline]
- kzalloc include/linux/slab.h:670 [inline]
- add+0x70a/0x1970 drivers/net/wireguard/allowedips.c:236
- wg_allowedips_insert_v4+0xf6/0x160 drivers/net/wireguard/allowedips.c:320
- set_allowedip drivers/net/wireguard/netlink.c:343 [inline]
- set_peer+0xfb9/0x1150 drivers/net/wireguard/netlink.c:468
- wg_set_device+0xbd4/0x1350 drivers/net/wireguard/netlink.c:591
- genl_family_rcv_msg_doit net/netlink/genetlink.c:672 [inline]
- genl_family_rcv_msg net/netlink/genetlink.c:717 [inline]
- genl_rcv_msg+0x67d/0xea0 net/netlink/genetlink.c:734
- netlink_rcv_skb+0x177/0x450 net/netlink/af_netlink.c:2477
- genl_rcv+0x29/0x40 net/netlink/genetlink.c:745
- netlink_unicast_kernel net/netlink/af_netlink.c:1302 [inline]
- netlink_unicast+0x59e/0x7e0 net/netlink/af_netlink.c:1328
- netlink_sendmsg+0x91c/0xea0 net/netlink/af_netlink.c:1917
- sock_sendmsg_nosec net/socket.c:652 [inline]
- sock_sendmsg+0xd7/0x130 net/socket.c:672
- ____sys_sendmsg+0x753/0x880 net/socket.c:2343
- ___sys_sendmsg+0x100/0x170 net/socket.c:2397
- __sys_sendmsg+0x105/0x1d0 net/socket.c:2430
- __do_sys_sendmsg net/socket.c:2439 [inline]
- __se_sys_sendmsg net/socket.c:2437 [inline]
- __x64_sys_sendmsg+0x78/0xb0 net/socket.c:2437
- do_syscall_64+0xfa/0x790 arch/x86/entry/common.c:294
- entry_SYSCALL_64_after_hwframe+0x49/0xbe
+ip link add wg0 type wireguard
+ip addr add 10.0.0.1/24 dev wg0
+ip link set wg0 up
+ping -f 10.0.0.2 &
+while true; do
+        wg set wg0 private-key /dev/null peer AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA= allowed-ips 10.0.0.0/24 endpoint 10.0.0.3:1234
+        wg set wg0 private-key <(echo AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=)
+done
 
-Freed by task 30103:
- save_stack+0x23/0x90 mm/kasan/common.c:72
- set_track mm/kasan/common.c:80 [inline]
- kasan_set_free_info mm/kasan/common.c:335 [inline]
- __kasan_slab_free+0x102/0x150 mm/kasan/common.c:474
- kasan_slab_free+0xe/0x10 mm/kasan/common.c:483
- __cache_free mm/slab.c:3426 [inline]
- kfree+0x10a/0x2c0 mm/slab.c:3757
- add+0x12d2/0x1970 drivers/net/wireguard/allowedips.c:266
- wg_allowedips_insert_v4+0xf6/0x160 drivers/net/wireguard/allowedips.c:320
- set_allowedip drivers/net/wireguard/netlink.c:343 [inline]
- set_peer+0xfb9/0x1150 drivers/net/wireguard/netlink.c:468
- wg_set_device+0xbd4/0x1350 drivers/net/wireguard/netlink.c:591
- genl_family_rcv_msg_doit net/netlink/genetlink.c:672 [inline]
- genl_family_rcv_msg net/netlink/genetlink.c:717 [inline]
- genl_rcv_msg+0x67d/0xea0 net/netlink/genetlink.c:734
- netlink_rcv_skb+0x177/0x450 net/netlink/af_netlink.c:2477
- genl_rcv+0x29/0x40 net/netlink/genetlink.c:745
- netlink_unicast_kernel net/netlink/af_netlink.c:1302 [inline]
- netlink_unicast+0x59e/0x7e0 net/netlink/af_netlink.c:1328
- netlink_sendmsg+0x91c/0xea0 net/netlink/af_netlink.c:1917
- sock_sendmsg_nosec net/socket.c:652 [inline]
- sock_sendmsg+0xd7/0x130 net/socket.c:672
- ____sys_sendmsg+0x753/0x880 net/socket.c:2343
- ___sys_sendmsg+0x100/0x170 net/socket.c:2397
- __sys_sendmsg+0x105/0x1d0 net/socket.c:2430
- __do_sys_sendmsg net/socket.c:2439 [inline]
- __se_sys_sendmsg net/socket.c:2437 [inline]
- __x64_sys_sendmsg+0x78/0xb0 net/socket.c:2437
- do_syscall_64+0xfa/0x790 arch/x86/entry/common.c:294
- entry_SYSCALL_64_after_hwframe+0x49/0xbe
+[    0.949105] ======================================================
+[    0.949550] WARNING: possible circular locking dependency detected
+[    0.950143] 5.5.0-debug+ #18 Not tainted
+[    0.950431] ------------------------------------------------------
+[    0.950959] wg/89 is trying to acquire lock:
+[    0.951252] ffff8880333e2128 ((wq_completion)wg-kex-wg0){+.+.}, at: flush_workqueue+0xe3/0x12f0
+[    0.951865]
+[    0.951865] but task is already holding lock:
+[    0.952280] ffff888032819bc0 (&wg->static_identity.lock){++++}, at: wg_set_device+0x95d/0xcc0
+[    0.953011]
+[    0.953011] which lock already depends on the new lock.
+[    0.953011]
+[    0.953651]
+[    0.953651] the existing dependency chain (in reverse order) is:
+[    0.954292]
+[    0.954292] -> #2 (&wg->static_identity.lock){++++}:
+[    0.954804]        lock_acquire+0x127/0x350
+[    0.955133]        down_read+0x83/0x410
+[    0.955428]        wg_noise_handshake_create_initiation+0x97/0x700
+[    0.955885]        wg_packet_send_handshake_initiation+0x13a/0x280
+[    0.956401]        wg_packet_handshake_send_worker+0x10/0x20
+[    0.956841]        process_one_work+0x806/0x1500
+[    0.957167]        worker_thread+0x8c/0xcb0
+[    0.957549]        kthread+0x2ee/0x3b0
+[    0.957792]        ret_from_fork+0x24/0x30
+[    0.958234]
+[    0.958234] -> #1 ((work_completion)(&peer->transmit_handshake_work)){+.+.}:
+[    0.958808]        lock_acquire+0x127/0x350
+[    0.959075]        process_one_work+0x7ab/0x1500
+[    0.959369]        worker_thread+0x8c/0xcb0
+[    0.959639]        kthread+0x2ee/0x3b0
+[    0.959896]        ret_from_fork+0x24/0x30
+[    0.960346]
+[    0.960346] -> #0 ((wq_completion)wg-kex-wg0){+.+.}:
+[    0.960945]        check_prev_add+0x167/0x1e20
+[    0.961351]        __lock_acquire+0x2012/0x3170
+[    0.961725]        lock_acquire+0x127/0x350
+[    0.961990]        flush_workqueue+0x106/0x12f0
+[    0.962280]        peer_remove_after_dead+0x160/0x220
+[    0.962600]        wg_set_device+0xa24/0xcc0
+[    0.962994]        genl_rcv_msg+0x52f/0xe90
+[    0.963298]        netlink_rcv_skb+0x111/0x320
+[    0.963618]        genl_rcv+0x1f/0x30
+[    0.963853]        netlink_unicast+0x3f6/0x610
+[    0.964245]        netlink_sendmsg+0x700/0xb80
+[    0.964586]        __sys_sendto+0x1dd/0x2c0
+[    0.964854]        __x64_sys_sendto+0xd8/0x1b0
+[    0.965141]        do_syscall_64+0x90/0xd9a
+[    0.965408]        entry_SYSCALL_64_after_hwframe+0x49/0xbe
+[    0.965769]
+[    0.965769] other info that might help us debug this:
+[    0.965769]
+[    0.966337] Chain exists of:
+[    0.966337]   (wq_completion)wg-kex-wg0 --> (work_completion)(&peer->transmit_handshake_work) --> &wg->static_identity.lock
+[    0.966337]
+[    0.967417]  Possible unsafe locking scenario:
+[    0.967417]
+[    0.967836]        CPU0                    CPU1
+[    0.968155]        ----                    ----
+[    0.968497]   lock(&wg->static_identity.lock);
+[    0.968779]                                lock((work_completion)(&peer->transmit_handshake_work));
+[    0.969345]                                lock(&wg->static_identity.lock);
+[    0.969809]   lock((wq_completion)wg-kex-wg0);
+[    0.970146]
+[    0.970146]  *** DEADLOCK ***
+[    0.970146]
+[    0.970531] 5 locks held by wg/89:
+[    0.970908]  #0: ffffffff827433c8 (cb_lock){++++}, at: genl_rcv+0x10/0x30
+[    0.971400]  #1: ffffffff82743480 (genl_mutex){+.+.}, at: genl_rcv_msg+0x642/0xe90
+[    0.971924]  #2: ffffffff827160c0 (rtnl_mutex){+.+.}, at: wg_set_device+0x9f/0xcc0
+[    0.972488]  #3: ffff888032819de0 (&wg->device_update_lock){+.+.}, at: wg_set_device+0xb0/0xcc0
+[    0.973095]  #4: ffff888032819bc0 (&wg->static_identity.lock){++++}, at: wg_set_device+0x95d/0xcc0
+[    0.973653]
+[    0.973653] stack backtrace:
+[    0.973932] CPU: 1 PID: 89 Comm: wg Not tainted 5.5.0-debug+ #18
+[    0.974476] Call Trace:
+[    0.974638]  dump_stack+0x97/0xe0
+[    0.974869]  check_noncircular+0x312/0x3e0
+[    0.975132]  ? print_circular_bug+0x1f0/0x1f0
+[    0.975410]  ? __kernel_text_address+0x9/0x30
+[    0.975727]  ? unwind_get_return_address+0x51/0x90
+[    0.976024]  check_prev_add+0x167/0x1e20
+[    0.976367]  ? graph_lock+0x70/0x160
+[    0.976682]  __lock_acquire+0x2012/0x3170
+[    0.976998]  ? register_lock_class+0x1140/0x1140
+[    0.977323]  lock_acquire+0x127/0x350
+[    0.977627]  ? flush_workqueue+0xe3/0x12f0
+[    0.977890]  flush_workqueue+0x106/0x12f0
+[    0.978147]  ? flush_workqueue+0xe3/0x12f0
+[    0.978410]  ? find_held_lock+0x2c/0x110
+[    0.978662]  ? lock_downgrade+0x6e0/0x6e0
+[    0.978919]  ? queue_rcu_work+0x60/0x60
+[    0.979166]  ? netif_napi_del+0x151/0x3b0
+[    0.979501]  ? peer_remove_after_dead+0x160/0x220
+[    0.979871]  peer_remove_after_dead+0x160/0x220
+[    0.980232]  wg_set_device+0xa24/0xcc0
+[    0.980516]  ? deref_stack_reg+0x8e/0xc0
+[    0.980801]  ? set_peer+0xe10/0xe10
+[    0.981040]  ? __ww_mutex_check_waiters+0x150/0x150
+[    0.981430]  ? __nla_validate_parse+0x163/0x270
+[    0.981719]  ? genl_family_rcv_msg_attrs_parse+0x13f/0x310
+[    0.982078]  genl_rcv_msg+0x52f/0xe90
+[    0.982348]  ? genl_family_rcv_msg_attrs_parse+0x310/0x310
+[    0.982690]  ? register_lock_class+0x1140/0x1140
+[    0.983049]  netlink_rcv_skb+0x111/0x320
+[    0.983298]  ? genl_family_rcv_msg_attrs_parse+0x310/0x310
+[    0.983645]  ? netlink_ack+0x880/0x880
+[    0.983888]  genl_rcv+0x1f/0x30
+[    0.984168]  netlink_unicast+0x3f6/0x610
+[    0.984443]  ? netlink_detachskb+0x60/0x60
+[    0.984729]  ? find_held_lock+0x2c/0x110
+[    0.984976]  netlink_sendmsg+0x700/0xb80
+[    0.985220]  ? netlink_broadcast_filtered+0xa60/0xa60
+[    0.985533]  __sys_sendto+0x1dd/0x2c0
+[    0.985763]  ? __x64_sys_getpeername+0xb0/0xb0
+[    0.986039]  ? sockfd_lookup_light+0x17/0x160
+[    0.986397]  ? __sys_recvmsg+0x8c/0xf0
+[    0.986711]  ? __sys_recvmsg_sock+0xd0/0xd0
+[    0.987018]  __x64_sys_sendto+0xd8/0x1b0
+[    0.987283]  ? lockdep_hardirqs_on+0x39b/0x5a0
+[    0.987666]  do_syscall_64+0x90/0xd9a
+[    0.987903]  entry_SYSCALL_64_after_hwframe+0x49/0xbe
+[    0.988223] RIP: 0033:0x7fe77c12003e
+[    0.988508] Code: c3 8b 07 85 c0 75 24 49 89 fb 48 89 f0 48 89 d7 48 89 ce 4c 89 c2 4d 89 ca 4c 8b 44 24 08 4c 8b 4c 24 10 4c 4
+[    0.989666] RSP: 002b:00007fffada2ed58 EFLAGS: 00000246 ORIG_RAX: 000000000000002c
+[    0.990137] RAX: ffffffffffffffda RBX: 00007fe77c159d48 RCX: 00007fe77c12003e
+[    0.990583] RDX: 0000000000000040 RSI: 000055fd1d38e020 RDI: 0000000000000004
+[    0.991091] RBP: 000055fd1d38e020 R08: 000055fd1cb63358 R09: 000000000000000c
+[    0.991568] R10: 0000000000000000 R11: 0000000000000246 R12: 000000000000002c
+[    0.992014] R13: 0000000000000004 R14: 000055fd1d38e020 R15: 0000000000000001
 
-The buggy address belongs to the object at ffff88809881a500
- which belongs to the cache kmalloc-64 of size 64
-The buggy address is located 56 bytes inside of
- 64-byte region [ffff88809881a500, ffff88809881a540)
-The buggy address belongs to the page:
-page:ffffea0002620680 refcount:1 mapcount:0 mapping:ffff8880aa400380 index:0x0
-raw: 00fffe0000000200 ffffea000250b748 ffffea000254bac8 ffff8880aa400380
-raw: 0000000000000000 ffff88809881a000 0000000100000020 0000000000000000
-page dumped because: kasan: bad access detected
-
-Memory state around the buggy address:
- ffff88809881a400: fb fb fb fb fb fb fb fb fc fc fc fc fc fc fc fc
- ffff88809881a480: 00 00 00 00 00 fc fc fc fc fc fc fc fc fc fc fc
->ffff88809881a500: fb fb fb fb fb fb fb fb fc fc fc fc fc fc fc fc
-                                        ^
- ffff88809881a580: fb fb fb fb fb fb fb fb fc fc fc fc fc fc fc fc
- ffff88809881a600: 00 00 00 00 00 00 fc fc fc fc fc fc fc fc fc fc
-
-Fixes: e7096c131e51 ("net: WireGuard secure network tunnel")
-Signed-off-by: Eric Dumazet <edumazet@google.com>
-Reported-by: syzbot <syzkaller@googlegroups.com>
-Cc: Jason A. Donenfeld <Jason@zx2c4.com>
-Cc: wireguard@lists.zx2c4.com
 Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
+Reported-by: syzbot <syzkaller@googlegroups.com>
 ---
- drivers/net/wireguard/allowedips.c | 1 +
- 1 file changed, 1 insertion(+)
+ drivers/net/wireguard/netlink.c |  6 ++----
+ drivers/net/wireguard/noise.c   | 10 +++++++---
+ 2 files changed, 9 insertions(+), 7 deletions(-)
 
-diff --git a/drivers/net/wireguard/allowedips.c b/drivers/net/wireguard/allowedips.c
-index 121d9ea0f135..3725e9cd85f4 100644
---- a/drivers/net/wireguard/allowedips.c
-+++ b/drivers/net/wireguard/allowedips.c
-@@ -263,6 +263,7 @@ static int add(struct allowedips_node __rcu **trie, u8 bits, const u8 *key,
- 	} else {
- 		node = kzalloc(sizeof(*node), GFP_KERNEL);
- 		if (unlikely(!node)) {
-+			list_del(&newnode->peer_list);
- 			kfree(newnode);
- 			return -ENOMEM;
+diff --git a/drivers/net/wireguard/netlink.c b/drivers/net/wireguard/netlink.c
+index 0fdbd1c45977..bda26405497c 100644
+--- a/drivers/net/wireguard/netlink.c
++++ b/drivers/net/wireguard/netlink.c
+@@ -569,10 +569,8 @@ static int wg_set_device(struct sk_buff *skb, struct genl_info *info)
+ 							 private_key);
+ 		list_for_each_entry_safe(peer, temp, &wg->peer_list,
+ 					 peer_list) {
+-			if (wg_noise_precompute_static_static(peer))
+-				wg_noise_expire_current_peer_keypairs(peer);
+-			else
+-				wg_peer_remove(peer);
++			BUG_ON(!wg_noise_precompute_static_static(peer));
++			wg_noise_expire_current_peer_keypairs(peer);
  		}
+ 		wg_cookie_checker_precompute_device_keys(&wg->cookie_checker);
+ 		up_write(&wg->static_identity.lock);
+diff --git a/drivers/net/wireguard/noise.c b/drivers/net/wireguard/noise.c
+index d71c8db68a8c..919d9d866446 100644
+--- a/drivers/net/wireguard/noise.c
++++ b/drivers/net/wireguard/noise.c
+@@ -46,17 +46,21 @@ void __init wg_noise_init(void)
+ /* Must hold peer->handshake.static_identity->lock */
+ bool wg_noise_precompute_static_static(struct wg_peer *peer)
+ {
+-	bool ret = true;
++	bool ret;
+ 
+ 	down_write(&peer->handshake.lock);
+-	if (peer->handshake.static_identity->has_identity)
++	if (peer->handshake.static_identity->has_identity) {
+ 		ret = curve25519(
+ 			peer->handshake.precomputed_static_static,
+ 			peer->handshake.static_identity->static_private,
+ 			peer->handshake.remote_static);
+-	else
++	} else {
++		u8 empty[NOISE_PUBLIC_KEY_LEN] = { 0 };
++
++		ret = curve25519(empty, empty, peer->handshake.remote_static);
+ 		memset(peer->handshake.precomputed_static_static, 0,
+ 		       NOISE_PUBLIC_KEY_LEN);
++	}
+ 	up_write(&peer->handshake.lock);
+ 	return ret;
+ }
 -- 
 2.25.0
 
