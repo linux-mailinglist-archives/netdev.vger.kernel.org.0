@@ -2,53 +2,55 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 9944615239D
-	for <lists+netdev@lfdr.de>; Wed,  5 Feb 2020 00:53:04 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B26A815239F
+	for <lists+netdev@lfdr.de>; Wed,  5 Feb 2020 00:53:55 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727537AbgBDXxB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 4 Feb 2020 18:53:01 -0500
-Received: from mail-pg1-f195.google.com ([209.85.215.195]:38697 "EHLO
-        mail-pg1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727412AbgBDXxB (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 4 Feb 2020 18:53:01 -0500
-Received: by mail-pg1-f195.google.com with SMTP id a33so6351pgm.5
-        for <netdev@vger.kernel.org>; Tue, 04 Feb 2020 15:53:00 -0800 (PST)
+        id S1727664AbgBDXxy (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 4 Feb 2020 18:53:54 -0500
+Received: from mail-pj1-f68.google.com ([209.85.216.68]:39740 "EHLO
+        mail-pj1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727461AbgBDXxx (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 4 Feb 2020 18:53:53 -0500
+Received: by mail-pj1-f68.google.com with SMTP id e9so134775pjr.4
+        for <netdev@vger.kernel.org>; Tue, 04 Feb 2020 15:53:53 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=subject:to:references:from:autocrypt:message-id:date:user-agent
          :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=zUpj9C5xdjXl1iYLdDoci9E1xfLzsmABE+Xt4GKlY2A=;
-        b=QecfHVfWFvu1vKcXe702s+e1u/AwZbezMBf1mWWiwVGkcGm7sPYoRBJoTa1K4ynR5q
-         mf+5gNUMRpGrf3EgemwKjvAPlWgqJP6PSpFKEOZwc27Uu+MvQeoatvRNDwk0m5ESNqo4
-         12odLNggr1hTFIfbhA+a6LBjDBbr/85dGZdgNC6cnvlcwxomKxulROWOqsvDiRtSbjbA
-         /8sX8KC6vl/Dmaas0iCblXwB15NDl5R1OjbSaeRF7hdmeiyVaTLDU7ABMwysQSSO9yEm
-         PiM+pka0Fb7zZsRxrG0o6UKK4XgqLPkgU9eEN+iDNPTyw2ed4kZDQ2ahDenb5Up2BB4A
-         Kzuw==
+        bh=ULllSL0AA2IACSiRlzx6WquPgm/W7Ysy8bpCNVhkEec=;
+        b=V7IFa/roK8ynpyenYjO6jwllnx+fyz4f0CDDI5gO+zyGnqnQgLZUHmjk5KkvkibrmR
+         71qJohmsEA9FA6CbvrfuR6P1VoYlPuhpM5h5jAAfvFWkMTKV92I1DIl+nA5NMvLYzxeA
+         gTMiNopXowsv6R3CYSFsuN6uI/XtjQwwxdgvrWofB7ts45Ee3KW3agAeZit2G7afkIDz
+         a6nqVRDWkhTPZVquEnTchYpLnxuUhcwfvRgFCuce2UAAV7LxKN4WIFklZGNN05dxXA9i
+         +9GGJcSdlrcOi2l1gZcTn5GQwq8kmXVaG/p5WSeZW22x+0W6XJCy/ObbT1eCkirtr9UP
+         g0MA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:subject:to:references:from:autocrypt:message-id
          :date:user-agent:mime-version:in-reply-to:content-language
          :content-transfer-encoding;
-        bh=zUpj9C5xdjXl1iYLdDoci9E1xfLzsmABE+Xt4GKlY2A=;
-        b=RA/MWVDCHrK1STciBqu3rQVOYzWsWvp7sVrtoFlTFosrzt9ofl/deA05/lJ5qBhNpL
-         6stT7OlAPLtwdaP+sA+yotZfbtwBY9h/C4n66595YEdXi+G9BQlXGpCdYKXFhpyXa016
-         ngYyScKOpBzStxxxHMkYIEuwPdfxSeASF53ZjlopAGOgIb4QlE6YuZDi1MoqfGMMdqG3
-         IJ1apbWO7TRvsnB33JUtu2NCkjD1DSGDphsIR/e7HLO2OqIr8WrPrIrjNBO8KsWmIwHd
-         2ki8xRkrWLQ1tbILSLdlmSjNjTDSKsd/tisDCAr5hQLU+7yQ44oXAtf+vUw9vQdPs6mo
-         2o2g==
-X-Gm-Message-State: APjAAAXAEH/wIARftkQjP1R7sMbwZ3AaHx0H5S+pUwyt2EYkfZsU2vqP
-        fDLcSSun/uQc0qyK2rnbb/8=
-X-Google-Smtp-Source: APXvYqzoKmcN3ZMx+4n4H459o65VBkFHLJ3JWOICgBoDJm3R1cw1p2nHyAZTWp6BwiWbA2BvzbNmIw==
-X-Received: by 2002:a63:e14b:: with SMTP id h11mr32677186pgk.297.1580860380278;
-        Tue, 04 Feb 2020 15:53:00 -0800 (PST)
+        bh=ULllSL0AA2IACSiRlzx6WquPgm/W7Ysy8bpCNVhkEec=;
+        b=ht6bPC/UT8xUTBfnqdoES+/eNAePPEy41VdfqNCaqwp4CNvKejCqnVGUAB3p0Bcadh
+         5Dn1LrKissTpzbC5dNBLOAJoJ0gaZq1M0pZ0iLnnVnQ5jOhVUB4jioNOoAFd1JB3JxFm
+         22wMnAOfWLNXYGwd4WqzxbVL016HIBxfB3rOw4Xlexx0/bj4kHqiO2KTXR+tVIVUyRYV
+         1PwfwssZakLOEBJDWraEyDjfU/2CZ5R6MbxIdHBcAfK6F26Uqq+YGZP7Q/gNR4nID2q1
+         xUX9Ex/NEUv4O4/3iPkTb9OoGbUZbuiAGZld64qLi2VvOvhMV9LHl99TeYdGHrVdw3VQ
+         H+sw==
+X-Gm-Message-State: APjAAAXOu3qhUBo9Eh1uvb2N3OIjzb65jWVM6nMRX7DQgItiWBcBSAtO
+        zHK7/ENJz8wzH4e49oNXqkx2mb+q
+X-Google-Smtp-Source: APXvYqzhFdSxG8UzKYR6pkLCaavguFEewy4wqjsM4rsEv4uUwnVM63Kn+RJeWiGmqjDY1/r+vtJnhQ==
+X-Received: by 2002:a17:902:44d:: with SMTP id 71mr31514233ple.95.1580860432892;
+        Tue, 04 Feb 2020 15:53:52 -0800 (PST)
 Received: from [10.67.50.115] ([192.19.223.252])
-        by smtp.googlemail.com with ESMTPSA id g21sm26387176pfb.126.2020.02.04.15.52.59
+        by smtp.googlemail.com with ESMTPSA id f3sm25792001pfg.115.2020.02.04.15.53.51
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 04 Feb 2020 15:52:59 -0800 (PST)
-Subject: Re: [PATCH v1] net: dsa: b53: Platform data shan't include kernel.h
+        Tue, 04 Feb 2020 15:53:52 -0800 (PST)
+Subject: Re: [PATCH v1] dsa: Platform data shan't include kernel.h
 To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        netdev@vger.kernel.org, "David S . Miller" <davem@davemloft.net>
-References: <20200204161439.28385-1-andriy.shevchenko@linux.intel.com>
+        "David S . Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
+        Woojung Huh <woojung.huh@microchip.com>,
+        Microchip Linux Driver Support <UNGLinuxDriver@microchip.com>
+References: <20200204161652.28577-1-andriy.shevchenko@linux.intel.com>
 From:   Florian Fainelli <f.fainelli@gmail.com>
 Autocrypt: addr=f.fainelli@gmail.com; prefer-encrypt=mutual; keydata=
  xsDiBEjPuBIRBACW9MxSJU9fvEOCTnRNqG/13rAGsj+vJqontvoDSNxRgmafP8d3nesnqPyR
@@ -104,12 +106,12 @@ Autocrypt: addr=f.fainelli@gmail.com; prefer-encrypt=mutual; keydata=
  HvsHIcv4lxCWkFXkwsuWqzEKK6kxVpRDoEQPDj+Oy/ZJ5fYuMbkdHrlegwoQ64LrqdmiVVPC
  TwQYEQIADwIbDAUCVF/S8QUJHlwd3wAKCRBhV5kVtWN2Do+FAJ956xSz2XpDHql+Wg/2qv3b
  G10n8gCguORqNGMsVRxrlLs7/himep7MrCc=
-Message-ID: <1741abe6-9360-5ec9-d3cf-65b1d0de0d45@gmail.com>
-Date:   Tue, 4 Feb 2020 15:52:58 -0800
+Message-ID: <59aeabfb-4af4-8b4c-cbb6-d5ddb6ba1950@gmail.com>
+Date:   Tue, 4 Feb 2020 15:53:49 -0800
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
  Thunderbird/68.4.1
 MIME-Version: 1.0
-In-Reply-To: <20200204161439.28385-1-andriy.shevchenko@linux.intel.com>
+In-Reply-To: <20200204161652.28577-1-andriy.shevchenko@linux.intel.com>
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
@@ -118,10 +120,12 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 2/4/20 8:14 AM, Andy Shevchenko wrote:
+On 2/4/20 8:16 AM, Andy Shevchenko wrote:
 > Replace with appropriate types.h.
 > 
 > Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+
+The subject should be prefixed with "net: dsa: microchip: ", with that:
 
 Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
 -- 
