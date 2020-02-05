@@ -2,134 +2,209 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 4DAA215294E
-	for <lists+netdev@lfdr.de>; Wed,  5 Feb 2020 11:37:54 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 972511529F7
+	for <lists+netdev@lfdr.de>; Wed,  5 Feb 2020 12:34:00 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728273AbgBEKhw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 5 Feb 2020 05:37:52 -0500
-Received: from us-smtp-2.mimecast.com ([207.211.31.81]:27101 "EHLO
-        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1727234AbgBEKhw (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 5 Feb 2020 05:37:52 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1580899072;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=XJMxmKv/7NFy8a5uAJ1R6xwJxnA8R5SW1BrLj1tXa2s=;
-        b=MwqwDvxY6l55ws4pnp0YUDcYMyl8NBcaHKEL4mwCP5u1KsYuHeVF/1JjlG0OhJdZcL9B2g
-        xh3/nQsEPhz1N8gfcHQr6y+ZoqXXUIB5z9zbCIoS863N6nb4jak4HYRzblaAM1DA1Ylb63
-        TBY3FRTGbnU/bZwfxcM7Fg81cm7ivbU=
-Received: from mail-lj1-f198.google.com (mail-lj1-f198.google.com
- [209.85.208.198]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-287-Hjk9ZnCXMwa8jhHB6LSlIw-1; Wed, 05 Feb 2020 05:37:49 -0500
-X-MC-Unique: Hjk9ZnCXMwa8jhHB6LSlIw-1
-Received: by mail-lj1-f198.google.com with SMTP id d14so180684ljg.17
-        for <netdev@vger.kernel.org>; Wed, 05 Feb 2020 02:37:49 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
-         :message-id:mime-version:content-transfer-encoding;
-        bh=XJMxmKv/7NFy8a5uAJ1R6xwJxnA8R5SW1BrLj1tXa2s=;
-        b=I5NQI6aywg2xS5iw2YK7ufUWWVOD4YlZNNxEtbKch9r9TNJAeC1DOLfBl73Xqsyw/0
-         SvXBjyauptxK//nlC4ZqBG7p9OGUzQONcY3GoofCfPKH6e1CNXomWAwFA1KKoHB2kOFL
-         GUvDGWgZdrnlCF8oODDbLdQkX1Nt1DUTTLrUNc4b2OrBuI6qUeXgS1JOe1ndtrj/Jy/a
-         0iKkRi8RxNBd7JtPmzE+ZSeOibR4WZygTippelHZBVuvPfT3UXywJe0WPb/bjKblY7n5
-         Xysz1XIg4J+1WlSYr92TP5mcuw5mBvukySiCPFMUR2rsv5hQx61kdRQPqfC1Qbfe5b94
-         jfcw==
-X-Gm-Message-State: APjAAAVHPRt1s5Ii1VsRdmbCY7PJfGjQlMU2ICxc2qtQZFZleK32z6vQ
-        RiWSnjbUKVBAZeNTuewKMm64eQVipfpS91V+2iHmLdu10k/wultoFeXlOiJFcFaY8FEcfKMvIwE
-        /pWoqvXrsPF+HstSJ
-X-Received: by 2002:ac2:5c4a:: with SMTP id s10mr17114526lfp.88.1580899068299;
-        Wed, 05 Feb 2020 02:37:48 -0800 (PST)
-X-Google-Smtp-Source: APXvYqyGQ+MAW2nIcH05LZAor6Ff7MX5If5Gs68OzCOwxTnrnXXD/DVILU2bBb6oCjmDQy+/ADH1pQ==
-X-Received: by 2002:ac2:5c4a:: with SMTP id s10mr17114519lfp.88.1580899068050;
-        Wed, 05 Feb 2020 02:37:48 -0800 (PST)
-Received: from alrua-x1.borgediget.toke.dk ([2a0c:4d80:42:443::2])
-        by smtp.gmail.com with ESMTPSA id q24sm11977807lfm.78.2020.02.05.02.37.46
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 05 Feb 2020 02:37:46 -0800 (PST)
-Received: by alrua-x1.borgediget.toke.dk (Postfix, from userid 1000)
-        id 025DB1802D4; Wed,  5 Feb 2020 11:37:44 +0100 (CET)
-From:   Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
-To:     David Ahern <dsahern@gmail.com>,
-        Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Cc:     Daniel Borkmann <daniel@iogearbox.net>,
-        Stephen Hemminger <stephen@networkplumber.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        David Miller <davem@davemloft.net>,
-        Jesper Dangaard Brouer <brouer@redhat.com>,
-        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>
-Subject: Re: [RFC bpf-next 0/5] Convert iproute2 to use libbpf (WIP)
-In-Reply-To: <d5434db9-1899-776d-c4cd-918e2418175d@gmail.com>
-References: <20190820114706.18546-1-toke@redhat.com>
- <43e8c177-cc9c-ca0b-1622-e30a7a1281b7@iogearbox.net>
- <CAEf4Bzab_w0AXy5P9mG14mcyJVgUCzuuNda5FpU5wSEwUciGfg@mail.gmail.com>
- <87tva8m85t.fsf@toke.dk>
- <CAEf4BzbzQwLn87G046ZbkLtTbY6WF6o8JkygcPLPGUSezgs9Tw@mail.gmail.com>
- <CAEf4BzZOAukJZzo4J5q3F2v4MswQ6nJh6G1_c0H0fOJCdc7t0A@mail.gmail.com>
- <87blqfcvnf.fsf@toke.dk>
- <CAEf4Bza4bSAzjFp2WDiPAM7hbKcKgAX4A8_TUN8V38gXV9GbTg@mail.gmail.com>
- <0bf50b22-a8e2-e3b3-aa53-7bd5dd5d4399@gmail.com>
- <CAEf4Bzbzz3s0bSF_CkP56NTDd+WBLAy0QrMvreShubetahuH0g@mail.gmail.com>
- <2cf136a4-7f0e-f4b7-1ecb-6cbf6cb6c8ff@gmail.com>
- <CAEf4Bzb1fXdGFz7BkrQF7uMhBD1F-K_kudhLR5wC-+kA7PMqnA@mail.gmail.com>
- <87h80669o6.fsf@toke.dk>
- <CAEf4BzYGp95MKjBxNay2w=9RhFAEUCrZ8_y1pqzdG-fUyY63=w@mail.gmail.com>
- <8736bqf9dw.fsf@toke.dk>
- <CAEf4BzbNZQmDD3Ob+m6yJK2CzNb9=3F2bYfxOUyn7uOp0bhXZA@mail.gmail.com>
- <87tv46dnj6.fsf@toke.dk> <2ab65028-c200-f8f8-b57d-904cb8a7c00c@gmail.com>
- <87r1zadlpx.fsf@toke.dk> <d5434db9-1899-776d-c4cd-918e2418175d@gmail.com>
-X-Clacks-Overhead: GNU Terry Pratchett
-Date:   Wed, 05 Feb 2020 11:37:44 +0100
-Message-ID: <87imkle2vb.fsf@toke.dk>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+        id S1728361AbgBELds (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 5 Feb 2020 06:33:48 -0500
+Received: from mail-eopbgr140051.outbound.protection.outlook.com ([40.107.14.51]:13189
+        "EHLO EUR01-VE1-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1727562AbgBELds (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 5 Feb 2020 06:33:48 -0500
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=MpfE6qfpIYTvrN7eG+72RnY2Ho/HVQ+D3bFxvo/P4bOu0+rkH1GoFXdEG7YmAZLvKroLipPinMjHlrNS8R2bi9pYG/REWZPp2E3lRxIewFpUegvkujRAqUekecGSHbg4LvmFvU5ARNijDiEx4ZqqbR74dLMYiP7dxDAawJ0WH4TFptL7tC3oS0YLHqjFtycJMnZXufdmIZS+almDIEkSIQocpQIgPbHT7kFNrgbXwN9UROTqwn/xlZL6hz7V0LqjGJQXsEeek0/qwNGbTgdxb0W/e2M0kJMeQ6OOdteheUWHBVbfEhAILZSCwAAsNbQDvYTx/uKYFI1ze30rItcJeA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=v9z4NqEdh7x1/Eh9fEH3iTMZdHA2T3pBZnlucb64P4w=;
+ b=c/0yhXGDr1owC+rIfW5yT35hnlPEH8AfYbGmE2jKHzE1koqnl4wm/3XT8xbaUbqSu5Wrtgx9X2QBMqlMprxX5wlgY9VdJ5n3y+PLXzBYk82iwCcZHYH6kz4zrkDMNrG1HJ9gi/5ZbiGd4NU4HDvaCbSUyP4u4Y49XQM0BsWsFe3K9XTfQ57N5TjWMrEPqGPY9z/bbfT7yDNKG+CWA0tq4AOIobHlFTngNg3aUK4OSifE58SgjCEpfsK3l9LOJeM/9qSYjlq6SzA4LbsBtpV2eT97XMbhojaYPVCqikOVhv6DZGxfJ+X/2161vsLOfQzaTLrx20PcKieJqZjsGQCs+Q==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=oss.nxp.com; dmarc=pass action=none header.from=oss.nxp.com;
+ dkim=pass header.d=oss.nxp.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=NXP1.onmicrosoft.com;
+ s=selector2-NXP1-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=v9z4NqEdh7x1/Eh9fEH3iTMZdHA2T3pBZnlucb64P4w=;
+ b=MtYktUQyHRMLbjSoOLujBeKxnoJytwNRsY7cEJlnZ80aztVH7veCrnLpmZ4N5IVGwvnPeDJJVCx5c23Pcm+xozJHMgOzVYN2ajBMqpZBGA6Ok/tACXtIAgyelBv03V2TMkXoN7EwUnliiIOyle8APEXugx3tQPwtkt8DY9Oy/SU=
+Received: from AM0PR04MB5636.eurprd04.prod.outlook.com (20.178.202.86) by
+ AM0PR04MB5202.eurprd04.prod.outlook.com (52.134.89.90) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.2686.29; Wed, 5 Feb 2020 11:33:40 +0000
+Received: from AM0PR04MB5636.eurprd04.prod.outlook.com
+ ([fe80::1b4:31d2:1485:6e07]) by AM0PR04MB5636.eurprd04.prod.outlook.com
+ ([fe80::1b4:31d2:1485:6e07%7]) with mapi id 15.20.2686.034; Wed, 5 Feb 2020
+ 11:33:40 +0000
+From:   "Calvin Johnson (OSS)" <calvin.johnson@oss.nxp.com>
+To:     Russell King - ARM Linux admin <linux@armlinux.org.uk>
+CC:     "linux.cj@gmail.com" <linux.cj@gmail.com>,
+        Jon Nettleton <jon@solid-run.com>,
+        Makarand Pawagi <makarand.pawagi@nxp.com>,
+        Cristi Sovaiala <cristian.sovaiala@nxp.com>,
+        Laurentiu Tudor <laurentiu.tudor@nxp.com>,
+        Ioana Ciornei <ioana.ciornei@nxp.com>,
+        Varun Sethi <V.Sethi@nxp.com>,
+        Pankaj Bansal <pankaj.bansal@nxp.com>,
+        "Rajesh V. Bikkina" <rajesh.bikkina@nxp.com>,
+        "Calvin Johnson (OSS)" <calvin.johnson@oss.nxp.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        "David S. Miller" <davem@davemloft.net>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-acpi@vger.kernel.org" <linux-acpi@vger.kernel.org>
+Subject: RE: [EXT] Re: [PATCH v1 6/7] net: phylink: Introduce
+ phylink_fwnode_phy_connect()
+Thread-Topic: [EXT] Re: [PATCH v1 6/7] net: phylink: Introduce
+ phylink_fwnode_phy_connect()
+Thread-Index: AQHV2Ewe+AYJWjXPMEG+NfVVXqSvHKgJ0naAgAKpuiA=
+Date:   Wed, 5 Feb 2020 11:33:40 +0000
+Message-ID: <AM0PR04MB5636989ED51E9BD72BC78C1093020@AM0PR04MB5636.eurprd04.prod.outlook.com>
+References: <20200131153440.20870-1-calvin.johnson@nxp.com>
+ <20200131153440.20870-7-calvin.johnson@nxp.com>
+ <20200203184121.GR25745@shell.armlinux.org.uk>
+In-Reply-To: <20200203184121.GR25745@shell.armlinux.org.uk>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+authentication-results: spf=none (sender IP is )
+ smtp.mailfrom=calvin.johnson@oss.nxp.com; 
+x-ms-exchange-messagesentrepresentingtype: 1
+x-originating-ip: [92.121.36.197]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-ht: Tenant
+x-ms-office365-filtering-correlation-id: 71de16e8-190a-48b4-ff55-08d7aa2f3feb
+x-ms-traffictypediagnostic: AM0PR04MB5202:|AM0PR04MB5202:
+x-ms-exchange-sharedmailbox-routingagent-processed: True
+x-ms-exchange-transport-forked: True
+x-microsoft-antispam-prvs: <AM0PR04MB52024AD2A54270FB1244CBA3D2020@AM0PR04MB5202.eurprd04.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:8273;
+x-forefront-prvs: 0304E36CA3
+x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(4636009)(136003)(346002)(376002)(366004)(39860400002)(396003)(189003)(199004)(76116006)(33656002)(66476007)(66556008)(2906002)(9686003)(64756008)(66946007)(4326008)(55016002)(66446008)(26005)(81156014)(81166006)(86362001)(8936002)(8676002)(71200400001)(54906003)(52536014)(5660300002)(6506007)(53546011)(316002)(7696005)(478600001)(186003)(7416002)(6916009);DIR:OUT;SFP:1101;SCL:1;SRVR:AM0PR04MB5202;H:AM0PR04MB5636.eurprd04.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;MX:1;A:0;
+received-spf: None (protection.outlook.com: oss.nxp.com does not designate
+ permitted sender hosts)
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: JXBudp9AO4TXk8dcfQyyGNgyBOAv7kCKLWhKWBuO/wDwxCZp6phOQrnN14ouhrhloRSY9CmKPaCTxDvLM4vLpF2PxrWrgZ8aWthi9MvaRRue+0fyNyC4zule3ctlSvAMrQ1O1j2v/GOCPUvKiAxa7TV07cp1MPHGDTAVPyrd4UWhdbtTWbsnUvCVkOH6cZpFsUnIhfD58zJtox0VEo7JVT6OQUUA8QfLaaPDPFolC6eW4R6GQo5pltxbn05xj/0DjKsRw+OEy9b2GePfAF3SRjah1oVTjKLliFc/dFor5ZWxh/WlM5PwIicW793Ana1DBYRgRJfBAmr/+8lySf5gNUncvwNOiYoFj3hTagavRHcSXzduSXozVjx8MPPPCtrMGIz9NakkJVWJHkhysPexprfvi7PDRMIx5DgAPq+UhDgQs/ozRPIwgSHrfjlSsYYm
+x-ms-exchange-antispam-messagedata: t/Wli71+Ioefk4CXJXheA5nYXgvbudvSIqB9FnVFeHmCYLJ2K7OeMv1jvApg86lSevlWr6ZyGKjChlHH3FGln9yhNtp0wMv+oBRgD1aoG5gcs2QZeWzENc5KdeO73hkLULr2JfJiiIFthdm2/tSIYQ==
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: quoted-printable
+MIME-Version: 1.0
+X-OriginatorOrg: oss.nxp.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 71de16e8-190a-48b4-ff55-08d7aa2f3feb
+X-MS-Exchange-CrossTenant-originalarrivaltime: 05 Feb 2020 11:33:40.6931
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: HaouxkScYNNytwHRuqU5tpgMF0opU3h5MJyv/mJp+7Tm/Yp+YSSp1EGt/ct9NZdPo5lVYFRgxLnpvMB6DiOYew==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM0PR04MB5202
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-David Ahern <dsahern@gmail.com> writes:
+> -----Original Message-----
+> From: Russell King - ARM Linux admin <linux@armlinux.org.uk>
+> Sent: Tuesday, February 4, 2020 12:11 AM
+> To: Calvin Johnson <calvin.johnson@nxp.com>
 
-> On 2/4/20 3:35 PM, Toke H=C3=B8iland-J=C3=B8rgensen wrote:
->>=20
->>> Most likely, making iproute2 use libbpf statically is going to be
->>> challenging and I am not sure it is the right thing to do (unless the
->>> user is building a static version of iproute2 commands).
->>=20
->> Linking dynamically would imply a new dependency. I'm not necessarily
->> against that, but would it be acceptable from your PoV? And if so,
->> should we keep the current internal BPF code for when libbpf is not
->> available, or would it be acceptable to not be able to load BPF programs
->> if libbpf is not present (similar to how the libelf dependency works
->> today)?
->
-> iproute2 recently gained the libmnl dependency for extack. Seems like
-> libbpf falls into the similar category.
->
->>=20
->>> 2. git submodules can be a PITA to deal with (e.g., jumping between
->>> branches and versions), so there needs to be a good reason for it.
->>=20
->> Yes, totally with you on that. Another option could be to just copy the
->> files into the iproute2 tree, and update them the same way the kernel
->> headers are? Or maybe doing fancy things like this:
->> https://github.com/apenwarr/git-subtrac
->
-> kernel uapi is a totally different reason to import the headers. bpf
-> functionality is an add-on.
->
-> I would like to see iproute2 work with libbpf. Given libbpf's current
-> status and availability across OS'es that is going to be a challenge for
-> a lot of OS'es which is why I suggested the HAVE_LIBBPF check falls back
-> to existing code if libbpf is not installed.
+<snip>
 
-Sure, can do.
+> > Introduce phylink_fwnode_phy_connect API to connect the PHY using
+> > fwnode.
+> >
+> > Signed-off-by: Calvin Johnson <calvin.johnson@oss.nxp.com>
+> > ---
+> >
+> >  drivers/net/phy/phylink.c | 64
+> +++++++++++++++++++++++++++++++++++++++
+> >  include/linux/phylink.h   |  2 ++
+> >  2 files changed, 66 insertions(+)
+> >
+> > diff --git a/drivers/net/phy/phylink.c b/drivers/net/phy/phylink.c
+> > index ee7a718662c6..f211f62283b5 100644
+> > --- a/drivers/net/phy/phylink.c
+> > +++ b/drivers/net/phy/phylink.c
+> > @@ -18,6 +18,7 @@
+> >  #include <linux/spinlock.h>
+> >  #include <linux/timer.h>
+> >  #include <linux/workqueue.h>
+> > +#include <linux/acpi.h>
+> >
+> >  #include "sfp.h"
+> >  #include "swphy.h"
+> > @@ -817,6 +818,69 @@ int phylink_connect_phy(struct phylink *pl,
+> > struct phy_device *phy)  }  EXPORT_SYMBOL_GPL(phylink_connect_phy);
+> >
+> > +/**
+> > + * phylink_fwnode_phy_connect() - connect the PHY specified in the
+> fwnode.
+> > + * @pl: a pointer to a &struct phylink returned from phylink_create()
+> > + * @dn: a pointer to a &struct device_node.
+> > + * @flags: PHY-specific flags to communicate to the PHY device driver
+> > + *
+> > + * Connect the phy specified in the device node @dn to the phylink
+> > +instance
+> > + * specified by @pl. Actions specified in phylink_connect_phy() will
+> > +be
+> > + * performed.
+> > + *
+> > + * Returns 0 on success or a negative errno.
+> > + */
+> > +int phylink_fwnode_phy_connect(struct phylink *pl,
+> > +                            struct fwnode_handle *fwnode,
+> > +                            u32 flags) {
+> > +     struct fwnode_handle *phy_node;
+> > +     struct phy_device *phy_dev;
+> > +     int ret;
+> > +     int status;
+> > +     struct fwnode_reference_args args;
+> > +
+> > +     /* Fixed links and 802.3z are handled without needing a PHY */
+> > +     if (pl->link_an_mode =3D=3D MLO_AN_FIXED ||
+> > +         (pl->link_an_mode =3D=3D MLO_AN_INBAND &&
+> > +          phy_interface_mode_is_8023z(pl->link_interface)))
+> > +             return 0;
+> > +
+> > +     status =3D acpi_node_get_property_reference(fwnode, "phy-handle",=
+ 0,
+> > +                                               &args);
+> > +     if (ACPI_FAILURE(status) || !is_acpi_device_node(args.fwnode))
+> > +             status =3D acpi_node_get_property_reference(fwnode, "phy"=
+, 0,
+> > +                                                       &args);
+> > +     if (ACPI_FAILURE(status) || !is_acpi_device_node(args.fwnode))
+> > +             status =3D acpi_node_get_property_reference(fwnode,
+> > +                                                       "phy-device", 0=
+,
+> > +                                                       &args);
+>=20
+> This is a copy-and-paste of phylink_of_phy_connect() without much thought=
+.
+>=20
+> There is no need to duplicate the legacy DT functionality of phy/phy-
+> device/phy-handle in ACPI - there is no legacy to support, so it's pointl=
+ess
+> trying to find one of three properties here.
 
--Toke
+Ok. I'll remove it.
 
+> I'd prefer both the DT and ACPI variants to be more integrated, so we don=
+'t
+> have two almost identical functions except for the firmware specific deta=
+il.
+
+Did you mean phylink_of_phy_connect replaced with phylink_fwnode_phy_connec=
+t?
+I can add DT handling also inside phylink_fwnode_phy_connect. Please let me=
+ know.
+
+Thanks for pointing out about adding linux-acpi ML. I started added them in=
+ my responses.
+I was assuming they would be added by get_maintainer.pl.=20
+
+Thanks
+Calvin
