@@ -2,54 +2,60 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 3475C152757
-	for <lists+netdev@lfdr.de>; Wed,  5 Feb 2020 09:06:08 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 36E6A15275C
+	for <lists+netdev@lfdr.de>; Wed,  5 Feb 2020 09:08:21 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728000AbgBEIGE convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Wed, 5 Feb 2020 03:06:04 -0500
-Received: from coyote.holtmann.net ([212.227.132.17]:38576 "EHLO
+        id S1728036AbgBEIIR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 5 Feb 2020 03:08:17 -0500
+Received: from coyote.holtmann.net ([212.227.132.17]:44606 "EHLO
         mail.holtmann.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725906AbgBEIGE (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 5 Feb 2020 03:06:04 -0500
+        with ESMTP id S1727937AbgBEIIQ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 5 Feb 2020 03:08:16 -0500
 Received: from marcel-macpro.fritz.box (p4FEFC5A7.dip0.t-ipconnect.de [79.239.197.167])
-        by mail.holtmann.org (Postfix) with ESMTPSA id 690C3CECC4;
-        Wed,  5 Feb 2020 09:15:24 +0100 (CET)
+        by mail.holtmann.org (Postfix) with ESMTPSA id 1DC94CECC5;
+        Wed,  5 Feb 2020 09:17:37 +0100 (CET)
 Content-Type: text/plain;
         charset=us-ascii
 Mime-Version: 1.0 (Mac OS X Mail 13.0 \(3608.60.0.2.5\))
-Subject: Re: [PATCH] Bluetooth: prefetch channel before killing sock
+Subject: Re: [PATCH v2] net/bluetooth: remove __get_channel/dir and __dir
 From:   Marcel Holtmann <marcel@holtmann.org>
-In-Reply-To: <20200205023159.8764-1-hdanton@sina.com>
-Date:   Wed, 5 Feb 2020 09:06:02 +0100
-Cc:     Bluez mailing list <linux-bluetooth@vger.kernel.org>,
+In-Reply-To: <1e76a7b8-c90a-56fe-96d7-4088dc7f6c38@linux.alibaba.com>
+Date:   Wed, 5 Feb 2020 09:08:15 +0100
+Cc:     Johan Hedberg <johan.hedberg@gmail.com>,
         "David S. Miller" <davem@davemloft.net>,
-        Johan Hedberg <johan.hedberg@gmail.com>, kuba@kernel.org,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        syzkaller-bugs@googlegroups.com,
-        syzbot+c3c5bdea7863886115dc@syzkaller.appspotmail.com,
-        Manish Mandlik <mmandlik@google.com>
-Content-Transfer-Encoding: 8BIT
-Message-Id: <A08603C3-A9D9-4991-9609-664AF01A77D2@holtmann.org>
-References: <20200205023159.8764-1-hdanton@sina.com>
-To:     Hillf Danton <hdanton@sina.com>
+        "Gustavo A. R. Silva" <gustavo@embeddedor.com>,
+        linux-bluetooth@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Content-Transfer-Encoding: 7bit
+Message-Id: <140CEF7E-7BE9-4EC0-8625-292D95C45E7B@holtmann.org>
+References: <1579596583-258090-1-git-send-email-alex.shi@linux.alibaba.com>
+ <8CA3EF63-F688-48B2-A21D-16FDBC809EDE@holtmann.org>
+ <09359312-a1c8-c560-85ba-0f94be521b26@linux.alibaba.com>
+ <2287CD53-58F4-40FD-B2F3-81A9F22F4731@holtmann.org>
+ <1e76a7b8-c90a-56fe-96d7-4088dc7f6c38@linux.alibaba.com>
+To:     Alex Shi <alex.shi@linux.alibaba.com>
 X-Mailer: Apple Mail (2.3608.60.0.2.5)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Hillf,
+Hi Alex,
 
-> Prefetch channel before killing sock in order to fix UAF like
+> These 3 macros are never used from first git commit Linux-2.6.12-rc2.
+> let's remove them.
 > 
-> BUG: KASAN: use-after-free in l2cap_sock_release+0x24c/0x290 net/bluetooth/l2cap_sock.c:1212
-> Read of size 8 at addr ffff8880944904a0 by task syz-fuzzer/9751
-> 
-> Reported-by: syzbot+c3c5bdea7863886115dc@syzkaller.appspotmail.com
-> Fixes: 6c08fc896b60 ("Bluetooth: Fix refcount use-after-free issue")
-> Cc: Manish Mandlik <mmandlik@google.com>
-> Signed-off-by: Hillf Danton <hdanton@sina.com>
+> Signed-off-by: Alex Shi <alex.shi@linux.alibaba.com>
+> Cc: Marcel Holtmann <marcel@holtmann.org>
+> Cc: Johan Hedberg <johan.hedberg@gmail.com>
+> Cc: "David S. Miller" <davem@davemloft.net>
+> Cc: "Gustavo A. R. Silva" <gustavo@embeddedor.com>
+> Cc: linux-bluetooth@vger.kernel.org
+> Cc: netdev@vger.kernel.org
+> Cc: linux-kernel@vger.kernel.org
 > ---
+> net/bluetooth/rfcomm/core.c | 3 ---
+> 1 file changed, 3 deletions(-)
 
 patch has been applied to bluetooth-next tree.
 
