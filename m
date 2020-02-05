@@ -2,62 +2,69 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 83BEC15348F
-	for <lists+netdev@lfdr.de>; Wed,  5 Feb 2020 16:48:59 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6569A1534A5
+	for <lists+netdev@lfdr.de>; Wed,  5 Feb 2020 16:54:33 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726933AbgBEPsm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 5 Feb 2020 10:48:42 -0500
-Received: from mx1.cock.li ([185.10.68.5]:36725 "EHLO cock.li"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1726661AbgBEPsm (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 5 Feb 2020 10:48:42 -0500
-X-Spam-Checker-Version: SpamAssassin 3.4.2 (2018-09-13) on cock.li
-X-Spam-Level: 
-X-Spam-Status: No, score=0.7 required=5.0 tests=BAYES_50,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,NO_RECEIVED,NO_RELAYS shortcircuit=_SCTYPE_
-        autolearn=disabled version=3.4.2
-Date:   Wed, 5 Feb 2020 18:48:29 +0300
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=cock.li; s=mail;
-        t=1580917711; bh=YpQAOhC6zw8KkgDRwc/Chjw22SjapGWj8KZDT6YUh08=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=CrlkeOUt2vM5TosW5QTQIUNJkNFcAgcUy78QQI55D0r9c/GTV8eOZ4wRe68i1xwe5
-         hDO6dATizGy1uUQLiAtFrkxa+DuGVwJHF4r92yjzRQDVnn+zAJfRHvJh5AUal8cFQU
-         ICfzGOy6mJaePLx3l/YRO+3kOXHF4A2Ox4HEBdG7IBGSPNsJf5rkScU1jhbC+UG1fy
-         g07PjICV/5Ygf8uvwrMGvP7WpYr2J09wRuHCpaN9WHwRrlFpEfT/cTK+u2z9i4d9l7
-         8a4eZrntBmoQOP2WdCrcwB9KZCMvLNPm7a7CFyt6nIp8TNWXnLy9YPs0Qdh0+JmMW6
-         kep5BFc6A/2rA==
-From:   l29ah@cock.li
-To:     Dominique Martinet <asmadeus@codewreck.org>
-Cc:     v9fs-developer@lists.sourceforge.net,
-        Eric Van Hensbergen <ericvh@gmail.com>,
-        Latchesar Ionkov <lucho@ionkov.net>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 1/2] 9pnet: allow making incomplete read requests
-Message-ID: <20200205154829.wbgdp2r4gslnozpa@l29ah-x201.l29ah-x201>
-References: <20200205003457.24340-1-l29ah@cock.li>
- <20200205073504.GA16626@nautica>
+        id S1727303AbgBEPy1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 5 Feb 2020 10:54:27 -0500
+Received: from mail-pl1-f174.google.com ([209.85.214.174]:33976 "EHLO
+        mail-pl1-f174.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726334AbgBEPy1 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 5 Feb 2020 10:54:27 -0500
+Received: by mail-pl1-f174.google.com with SMTP id j7so1051689plt.1
+        for <netdev@vger.kernel.org>; Wed, 05 Feb 2020 07:54:27 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:from:date:message-id:subject:to;
+        bh=s16cKOha/WmNeVqgsvbjgtz46PQ9yGFvkksbjqo4wH4=;
+        b=KThhVkJ0QZvS8MuxnbnPEL8FDWpr6HJ6vdEiJ3L0wteFBuF728uQdkaKhp3RA9mDO4
+         CnmusEAXv2f89pUHN5gkc9Y/Jt72gjx8rRWmma9pHW/i/5Pyg96doOM9RspfKLI3+Kio
+         uFNX2jnkwsSEgKUydbBpO+8/kv3K7Ve4gzxdBSMmJg8CGZxez0gZY9xUZ2u4eVbkaCIS
+         1ijq7R2951WoDvjhwZv0u55tDRtTsUIWQusNID1b7w75i7tnrtitK8c+PM22AEoChZw1
+         nm6ugt69iZteu+Sq++Gg240OyZup9/zKYSbJpQ7OfYfrRBRd/di99eKWgsRupJuwc8E8
+         0AMQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:from:date:message-id:subject:to;
+        bh=s16cKOha/WmNeVqgsvbjgtz46PQ9yGFvkksbjqo4wH4=;
+        b=YMjZoKO4OMqAdJWxKSy6jswtXuyyYzROi4zG7IwUr5O8+OZYdBIozq5/xKio6UvzaE
+         ShQLiG7/urp5MFRIBmRRuqikzW73AHEdsHWHCKigN/JRQWH1BdvxnG/BjkfKugs7/iyq
+         hCO8PpdNmZPN78bjHnuL+YIG7qqvLjV3htD13fnkGI/+gZXa2YxVyRYmPuRyU3+cWRpW
+         Ppds8T9y3Fz8HbMwVQ80+PfhSHlWgacU3vtrFoYU6oOhUzbj0Nr8Hf9DP5qaJ9ivZp7k
+         yTDVNWNEUUQNx0+0X4q4e1ToIL4p1QBD5BSOXW8MscjQYSpZH+Uo//ALSsLniqYPA8Tb
+         5W+g==
+X-Gm-Message-State: APjAAAU5DEZkiwJhO/LsjN4fORRQHxp8pAI3GWZvLUkj4uHnhx8s5xXw
+        rze6fvmyVQtvwwZ8QA3q6UHCbYKQRE5SNumeNxWQG8IfcFs=
+X-Google-Smtp-Source: APXvYqyQNFsBTh5FcRQDXjkbTWLmC146xDMJHwzLugnrp17XD3yw4BDj9NuT++T1yiEU36Wekr1xeuE8tiqAiH4pEIg=
+X-Received: by 2002:a17:902:6a84:: with SMTP id n4mr35375445plk.294.1580918066636;
+ Wed, 05 Feb 2020 07:54:26 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200205073504.GA16626@nautica>
+From:   Farhad Jahangirov <farhad.jahangirov@gmail.com>
+Date:   Wed, 5 Feb 2020 15:53:56 +0000
+Message-ID: <CAFJOEto0PBVe-c6w9wx8mNxjNy3=E_kU12Ej05c89VXi7ZKo2Q@mail.gmail.com>
+Subject: AX88179 driver is appending a two-byte VSS Ethernet Monitoring
+ trailer to every IP packet
+To:     netdev@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Feb 05, 2020 at 08:35:04AM +0100, Dominique Martinet wrote:
-> Sergey Alirzaev wrote on Wed, Feb 05, 2020:
-> > A user doesn't necessarily want to wait for all the requested data to
-> > be available, since the waiting time is unbounded.
-> 
-> I'm not sure I agree on the argument there: the waiting time is
-> unbounded for a single request as well. What's your use case?
+The driver for AX88179 USB 3.0 to Gigabit Ethernet adapter appends a
+two-byte "VSS Ethernet Monitoring trailer" to every IP packet.
 
-I want to interface with synthetic file systems that represent arbitrary data streams.
-The one where i've hit the problem is reading the log of a XMPP chat client that blocks if there's no new data available.
+Issue observed on 4.15.0-76, 4.19.93, all the way up to
+5.5.0-050500-generic #202001262030.
 
--- 
-()  ascii ribbon campaign - against html mail
-/\  http://arc.pasp.de/   - against proprietary attachments
+The manufacturer-supplied driver from
+https://www.asix.com.tw/download.php?sub=driverdetail&PItemID=131 does
+not have this issue.
+
+This is the same issue as reported earlier here:
+https://bugzilla.kernel.org/show_bug.cgi?id=121141
+
+Please let me know if I can help with more information or anything else.
+
+Kind regards,
+Farhad
