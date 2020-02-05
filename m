@@ -2,187 +2,134 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 01AE2152927
-	for <lists+netdev@lfdr.de>; Wed,  5 Feb 2020 11:33:53 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4DAA215294E
+	for <lists+netdev@lfdr.de>; Wed,  5 Feb 2020 11:37:54 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727468AbgBEKdv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 5 Feb 2020 05:33:51 -0500
-Received: from us-smtp-1.mimecast.com ([207.211.31.81]:33691 "EHLO
+        id S1728273AbgBEKhw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 5 Feb 2020 05:37:52 -0500
+Received: from us-smtp-2.mimecast.com ([207.211.31.81]:27101 "EHLO
         us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1727562AbgBEKdu (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 5 Feb 2020 05:33:50 -0500
+        by vger.kernel.org with ESMTP id S1727234AbgBEKhw (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 5 Feb 2020 05:37:52 -0500
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1580898829;
+        s=mimecast20190719; t=1580899072;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=fMJo0Joxo+pl/mB5o3Pd3oM2dXap9Kiay0KNytUxRsU=;
-        b=ZIWxRiOIzLW96aEkYuzKP+c8c6Yr4VUb/c/lPxeAgEQfDfkgOe5MfIc00azpJg+CofmS5H
-        oFRmCVrbW2lAeXJYCkJvCYyvfywqE3Z8VW1XF1CPlZKOc6I3ZkOkPmGu/0ynXMJh1yC7i+
-        B9iSR9oVlUUGUgqROv65tADe6ktU4rY=
-Received: from mail-qk1-f197.google.com (mail-qk1-f197.google.com
- [209.85.222.197]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-221-f9-TraQROHy_FKqLsR1fvA-1; Wed, 05 Feb 2020 05:33:48 -0500
-X-MC-Unique: f9-TraQROHy_FKqLsR1fvA-1
-Received: by mail-qk1-f197.google.com with SMTP id b23so946839qkg.17
-        for <netdev@vger.kernel.org>; Wed, 05 Feb 2020 02:33:48 -0800 (PST)
+        bh=XJMxmKv/7NFy8a5uAJ1R6xwJxnA8R5SW1BrLj1tXa2s=;
+        b=MwqwDvxY6l55ws4pnp0YUDcYMyl8NBcaHKEL4mwCP5u1KsYuHeVF/1JjlG0OhJdZcL9B2g
+        xh3/nQsEPhz1N8gfcHQr6y+ZoqXXUIB5z9zbCIoS863N6nb4jak4HYRzblaAM1DA1Ylb63
+        TBY3FRTGbnU/bZwfxcM7Fg81cm7ivbU=
+Received: from mail-lj1-f198.google.com (mail-lj1-f198.google.com
+ [209.85.208.198]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-287-Hjk9ZnCXMwa8jhHB6LSlIw-1; Wed, 05 Feb 2020 05:37:49 -0500
+X-MC-Unique: Hjk9ZnCXMwa8jhHB6LSlIw-1
+Received: by mail-lj1-f198.google.com with SMTP id d14so180684ljg.17
+        for <netdev@vger.kernel.org>; Wed, 05 Feb 2020 02:37:49 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:content-transfer-encoding
-         :in-reply-to;
-        bh=fMJo0Joxo+pl/mB5o3Pd3oM2dXap9Kiay0KNytUxRsU=;
-        b=szRSzJFNEsgrkT07oAhJEYl5G454a2keezFprY6Tja9wckA2/w3nTuAn63753ILLog
-         JNdTGi7hpt9Fl4aw2dzLTCrJssTMA3+dc3DR2rezbY49go1W1oau7UUPIEgTjDwBAFt4
-         w3x6Kwn2Zu3qmwWVRKmLnxzgCg5P8cyQjOiM3OROhWE1gJzBIvdd+GXpDdBAD9v7jcJR
-         3FoR1drmrvq6e/QnbgSw3ts2LPhC5qXakKVyVNVNKR0xRDlo314mLwz0pzQ1hIs/QhKo
-         kCOdv20yd592MPGhn8PDSSlzunlTyu5udhvIU7epk7pvesia6HQc7/Prh7OLPeEKV8Qf
-         6Ehg==
-X-Gm-Message-State: APjAAAUN6aDfTuJveUWRZao5Ej6ow/CX/eg6tm5y6awz40f/ELcRx6iY
-        d8kPOfY3t9zfmmi/dU8G+xyBdO4oAarRhtqznqs7S4pxOoQWlU3ylqraHMnVGx+swpRC1o4wFQF
-        Mp9z2/+P3ZCovv2vs
-X-Received: by 2002:a37:6853:: with SMTP id d80mr4494830qkc.57.1580898827683;
-        Wed, 05 Feb 2020 02:33:47 -0800 (PST)
-X-Google-Smtp-Source: APXvYqxSqc1HJF8dt4Eb/7jFWTJnHSPo1HCY1H3WJbmwy+Vb8UDe9HwZCYMCfYz7+b2DU8mORTzDoA==
-X-Received: by 2002:a37:6853:: with SMTP id d80mr4494800qkc.57.1580898827421;
-        Wed, 05 Feb 2020 02:33:47 -0800 (PST)
-Received: from redhat.com (bzq-79-176-41-183.red.bezeqint.net. [79.176.41.183])
-        by smtp.gmail.com with ESMTPSA id p50sm13949401qtf.5.2020.02.05.02.33.42
+        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
+         :message-id:mime-version:content-transfer-encoding;
+        bh=XJMxmKv/7NFy8a5uAJ1R6xwJxnA8R5SW1BrLj1tXa2s=;
+        b=I5NQI6aywg2xS5iw2YK7ufUWWVOD4YlZNNxEtbKch9r9TNJAeC1DOLfBl73Xqsyw/0
+         SvXBjyauptxK//nlC4ZqBG7p9OGUzQONcY3GoofCfPKH6e1CNXomWAwFA1KKoHB2kOFL
+         GUvDGWgZdrnlCF8oODDbLdQkX1Nt1DUTTLrUNc4b2OrBuI6qUeXgS1JOe1ndtrj/Jy/a
+         0iKkRi8RxNBd7JtPmzE+ZSeOibR4WZygTippelHZBVuvPfT3UXywJe0WPb/bjKblY7n5
+         Xysz1XIg4J+1WlSYr92TP5mcuw5mBvukySiCPFMUR2rsv5hQx61kdRQPqfC1Qbfe5b94
+         jfcw==
+X-Gm-Message-State: APjAAAVHPRt1s5Ii1VsRdmbCY7PJfGjQlMU2ICxc2qtQZFZleK32z6vQ
+        RiWSnjbUKVBAZeNTuewKMm64eQVipfpS91V+2iHmLdu10k/wultoFeXlOiJFcFaY8FEcfKMvIwE
+        /pWoqvXrsPF+HstSJ
+X-Received: by 2002:ac2:5c4a:: with SMTP id s10mr17114526lfp.88.1580899068299;
+        Wed, 05 Feb 2020 02:37:48 -0800 (PST)
+X-Google-Smtp-Source: APXvYqyGQ+MAW2nIcH05LZAor6Ff7MX5If5Gs68OzCOwxTnrnXXD/DVILU2bBb6oCjmDQy+/ADH1pQ==
+X-Received: by 2002:ac2:5c4a:: with SMTP id s10mr17114519lfp.88.1580899068050;
+        Wed, 05 Feb 2020 02:37:48 -0800 (PST)
+Received: from alrua-x1.borgediget.toke.dk ([2a0c:4d80:42:443::2])
+        by smtp.gmail.com with ESMTPSA id q24sm11977807lfm.78.2020.02.05.02.37.46
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 05 Feb 2020 02:33:46 -0800 (PST)
-Date:   Wed, 5 Feb 2020 05:33:40 -0500
-From:   "Michael S. Tsirkin" <mst@redhat.com>
-To:     Shahaf Shuler <shahafs@mellanox.com>
-Cc:     Jason Wang <jasowang@redhat.com>, Tiwei Bie <tiwei.bie@intel.com>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
-        "virtualization@lists.linux-foundation.org" 
-        <virtualization@lists.linux-foundation.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        Jason Gunthorpe <jgg@mellanox.com>,
-        "rob.miller@broadcom.com" <rob.miller@broadcom.com>,
-        "haotian.wang@sifive.com" <haotian.wang@sifive.com>,
-        "eperezma@redhat.com" <eperezma@redhat.com>,
-        "lulu@redhat.com" <lulu@redhat.com>,
-        Parav Pandit <parav@mellanox.com>,
-        "rdunlap@infradead.org" <rdunlap@infradead.org>,
-        "hch@infradead.org" <hch@infradead.org>,
-        Jiri Pirko <jiri@mellanox.com>,
-        "hanand@xilinx.com" <hanand@xilinx.com>,
-        "mhabets@solarflare.com" <mhabets@solarflare.com>,
-        "maxime.coquelin@redhat.com" <maxime.coquelin@redhat.com>,
-        "lingshan.zhu@intel.com" <lingshan.zhu@intel.com>,
-        "dan.daly@intel.com" <dan.daly@intel.com>,
-        "cunming.liang@intel.com" <cunming.liang@intel.com>,
-        "zhihong.wang@intel.com" <zhihong.wang@intel.com>
-Subject: Re: [PATCH] vhost: introduce vDPA based backend
-Message-ID: <20200205053129-mutt-send-email-mst@kernel.org>
-References: <20200131033651.103534-1-tiwei.bie@intel.com>
- <7aab2892-bb19-a06a-a6d3-9c28bc4c3400@redhat.com>
- <20200205020247.GA368700@___>
- <AM0PR0502MB37952015716C1D5E07E390B6C3020@AM0PR0502MB3795.eurprd05.prod.outlook.com>
- <112858a4-1a01-f4d7-e41a-1afaaa1cad45@redhat.com>
- <AM0PR0502MB3795AD42233D69F350402A8AC3020@AM0PR0502MB3795.eurprd05.prod.outlook.com>
+        Wed, 05 Feb 2020 02:37:46 -0800 (PST)
+Received: by alrua-x1.borgediget.toke.dk (Postfix, from userid 1000)
+        id 025DB1802D4; Wed,  5 Feb 2020 11:37:44 +0100 (CET)
+From:   Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
+To:     David Ahern <dsahern@gmail.com>,
+        Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Cc:     Daniel Borkmann <daniel@iogearbox.net>,
+        Stephen Hemminger <stephen@networkplumber.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        David Miller <davem@davemloft.net>,
+        Jesper Dangaard Brouer <brouer@redhat.com>,
+        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>
+Subject: Re: [RFC bpf-next 0/5] Convert iproute2 to use libbpf (WIP)
+In-Reply-To: <d5434db9-1899-776d-c4cd-918e2418175d@gmail.com>
+References: <20190820114706.18546-1-toke@redhat.com>
+ <43e8c177-cc9c-ca0b-1622-e30a7a1281b7@iogearbox.net>
+ <CAEf4Bzab_w0AXy5P9mG14mcyJVgUCzuuNda5FpU5wSEwUciGfg@mail.gmail.com>
+ <87tva8m85t.fsf@toke.dk>
+ <CAEf4BzbzQwLn87G046ZbkLtTbY6WF6o8JkygcPLPGUSezgs9Tw@mail.gmail.com>
+ <CAEf4BzZOAukJZzo4J5q3F2v4MswQ6nJh6G1_c0H0fOJCdc7t0A@mail.gmail.com>
+ <87blqfcvnf.fsf@toke.dk>
+ <CAEf4Bza4bSAzjFp2WDiPAM7hbKcKgAX4A8_TUN8V38gXV9GbTg@mail.gmail.com>
+ <0bf50b22-a8e2-e3b3-aa53-7bd5dd5d4399@gmail.com>
+ <CAEf4Bzbzz3s0bSF_CkP56NTDd+WBLAy0QrMvreShubetahuH0g@mail.gmail.com>
+ <2cf136a4-7f0e-f4b7-1ecb-6cbf6cb6c8ff@gmail.com>
+ <CAEf4Bzb1fXdGFz7BkrQF7uMhBD1F-K_kudhLR5wC-+kA7PMqnA@mail.gmail.com>
+ <87h80669o6.fsf@toke.dk>
+ <CAEf4BzYGp95MKjBxNay2w=9RhFAEUCrZ8_y1pqzdG-fUyY63=w@mail.gmail.com>
+ <8736bqf9dw.fsf@toke.dk>
+ <CAEf4BzbNZQmDD3Ob+m6yJK2CzNb9=3F2bYfxOUyn7uOp0bhXZA@mail.gmail.com>
+ <87tv46dnj6.fsf@toke.dk> <2ab65028-c200-f8f8-b57d-904cb8a7c00c@gmail.com>
+ <87r1zadlpx.fsf@toke.dk> <d5434db9-1899-776d-c4cd-918e2418175d@gmail.com>
+X-Clacks-Overhead: GNU Terry Pratchett
+Date:   Wed, 05 Feb 2020 11:37:44 +0100
+Message-ID: <87imkle2vb.fsf@toke.dk>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <AM0PR0502MB3795AD42233D69F350402A8AC3020@AM0PR0502MB3795.eurprd05.prod.outlook.com>
+Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Feb 05, 2020 at 09:30:14AM +0000, Shahaf Shuler wrote:
-> Wednesday, February 5, 2020 9:50 AM, Jason Wang:
-> > Subject: Re: [PATCH] vhost: introduce vDPA based backend
-> > On 2020/2/5 下午3:15, Shahaf Shuler wrote:
-> > > Wednesday, February 5, 2020 4:03 AM, Tiwei Bie:
-> > >> Subject: Re: [PATCH] vhost: introduce vDPA based backend
-> > >>
-> > >> On Tue, Feb 04, 2020 at 11:30:11AM +0800, Jason Wang wrote:
-> > >>> On 2020/1/31 上午11:36, Tiwei Bie wrote:
-> > >>>> This patch introduces a vDPA based vhost backend. This backend is
-> > >>>> built on top of the same interface defined in virtio-vDPA and
-> > >>>> provides a generic vhost interface for userspace to accelerate the
-> > >>>> virtio devices in guest.
-> > >>>>
-> > >>>> This backend is implemented as a vDPA device driver on top of the
-> > >>>> same ops used in virtio-vDPA. It will create char device entry
-> > >>>> named vhost-vdpa/$vdpa_device_index for userspace to use.
-> > Userspace
-> > >>>> can use vhost ioctls on top of this char device to setup the backend.
-> > >>>>
-> > >>>> Signed-off-by: Tiwei Bie <tiwei.bie@intel.com>
-> > > [...]
-> > >
-> > >>>> +static long vhost_vdpa_do_dma_mapping(struct vhost_vdpa *v) {
-> > >>>> +	/* TODO: fix this */
-> > >>>
-> > >>> Before trying to do this it looks to me we need the following during
-> > >>> the probe
-> > >>>
-> > >>> 1) if set_map() is not supported by the vDPA device probe the IOMMU
-> > >>> that is supported by the vDPA device
-> > >>> 2) allocate IOMMU domain
-> > >>>
-> > >>> And then:
-> > >>>
-> > >>> 3) pin pages through GUP and do proper accounting
-> > >>> 4) store GPA->HPA mapping in the umem
-> > >>> 5) generate diffs of memory table and using IOMMU API to setup the
-> > >>> dma mapping in this method
-> > >>>
-> > >>> For 1), I'm not sure parent is sufficient for to doing this or need
-> > >>> to introduce new API like iommu_device in mdev.
-> > >> Agree. We may also need to introduce something like the iommu_device.
-> > >>
-> > > Would it be better for the map/umnap logic to happen inside each device ?
-> > > Devices that needs the IOMMU will call iommu APIs from inside the driver
-> > callback.
-> > 
-> > 
-> > Technically, this can work. But if it can be done by vhost-vpda it will make the
-> > vDPA driver more compact and easier to be implemented.
-> 
-> Need to see the layering of such proposal but am not sure. 
-> Vhost-vdpa is generic framework, while the DMA mapping is vendor specific. 
-> Maybe vhost-vdpa can have some shared code needed to operate on iommu, so drivers can re-use it.  to me it seems simpler than exposing a new iommu device. 
-> 
-> > 
-> > 
-> > > Devices that has other ways to do the DMA mapping will call the
-> > proprietary APIs.
-> > 
-> > 
-> > To confirm, do you prefer:
-> > 
-> > 1) map/unmap
-> 
-> It is not only that. AFAIR there also flush and invalidate calls, right?
-> 
-> > 
-> > or
-> > 
-> > 2) pass all maps at one time?
-> 
-> To me this seems more straight forward. 
-> It is correct that under hotplug and large number of memory segments
-> the driver will need to understand the diff (or not and just reload
-> the new configuration).
-> However, my assumption here is that memory
-> hotplug is heavy flow anyway, and the driver extra cycles will not be
-> that visible
+David Ahern <dsahern@gmail.com> writes:
 
-I think we can just allow both, after all vhost already has both interfaces ...
-We just need a flag that tells userspace whether it needs to
-update all maps aggressively or can wait for a fault.
+> On 2/4/20 3:35 PM, Toke H=C3=B8iland-J=C3=B8rgensen wrote:
+>>=20
+>>> Most likely, making iproute2 use libbpf statically is going to be
+>>> challenging and I am not sure it is the right thing to do (unless the
+>>> user is building a static version of iproute2 commands).
+>>=20
+>> Linking dynamically would imply a new dependency. I'm not necessarily
+>> against that, but would it be acceptable from your PoV? And if so,
+>> should we keep the current internal BPF code for when libbpf is not
+>> available, or would it be acceptable to not be able to load BPF programs
+>> if libbpf is not present (similar to how the libelf dependency works
+>> today)?
+>
+> iproute2 recently gained the libmnl dependency for extack. Seems like
+> libbpf falls into the similar category.
+>
+>>=20
+>>> 2. git submodules can be a PITA to deal with (e.g., jumping between
+>>> branches and versions), so there needs to be a good reason for it.
+>>=20
+>> Yes, totally with you on that. Another option could be to just copy the
+>> files into the iproute2 tree, and update them the same way the kernel
+>> headers are? Or maybe doing fancy things like this:
+>> https://github.com/apenwarr/git-subtrac
+>
+> kernel uapi is a totally different reason to import the headers. bpf
+> functionality is an add-on.
+>
+> I would like to see iproute2 work with libbpf. Given libbpf's current
+> status and availability across OS'es that is going to be a challenge for
+> a lot of OS'es which is why I suggested the HAVE_LIBBPF check falls back
+> to existing code if libbpf is not installed.
 
-> > 
-> > Thanks
-> > 
-> > 
-> > >
-> 
+Sure, can do.
+
+-Toke
 
