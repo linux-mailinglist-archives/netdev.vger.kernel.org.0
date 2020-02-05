@@ -2,54 +2,66 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id BB0731531AB
-	for <lists+netdev@lfdr.de>; Wed,  5 Feb 2020 14:22:05 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id BA4B71531B8
+	for <lists+netdev@lfdr.de>; Wed,  5 Feb 2020 14:25:04 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728003AbgBENWB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 5 Feb 2020 08:22:01 -0500
-Received: from shards.monkeyblade.net ([23.128.96.9]:46912 "EHLO
+        id S1727468AbgBENZD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 5 Feb 2020 08:25:03 -0500
+Received: from shards.monkeyblade.net ([23.128.96.9]:46940 "EHLO
         shards.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726748AbgBENWB (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 5 Feb 2020 08:22:01 -0500
+        with ESMTP id S1726748AbgBENZC (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 5 Feb 2020 08:25:02 -0500
 Received: from localhost (unknown [IPv6:2001:982:756:1:57a7:3bfd:5e85:defb])
         (using TLSv1 with cipher AES256-SHA (256/256 bits))
         (Client did not present a certificate)
         (Authenticated sender: davem-davemloft)
-        by shards.monkeyblade.net (Postfix) with ESMTPSA id 8D514158E30C3;
-        Wed,  5 Feb 2020 05:21:59 -0800 (PST)
-Date:   Wed, 05 Feb 2020 14:21:58 +0100 (CET)
-Message-Id: <20200205.142158.1877672466689439631.davem@davemloft.net>
-To:     mdf@kernel.org
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-parisc@vger.kernel.org, mst@redhat.com, hkallweit1@gmail.com,
-        morats@google.com
-Subject: Re: [PATCH] net: ethernet: dec: tulip: Fix length mask in receive
- length calculation
+        by shards.monkeyblade.net (Postfix) with ESMTPSA id 8037F158E4B9D;
+        Wed,  5 Feb 2020 05:25:01 -0800 (PST)
+Date:   Wed, 05 Feb 2020 14:25:00 +0100 (CET)
+Message-Id: <20200205.142500.1124442901896236230.davem@davemloft.net>
+To:     jacob.e.keller@intel.com
+Cc:     netdev@vger.kernel.org, jiri@resnulli.us, valex@mellanox.com,
+        parav@mellanox.com
+Subject: Re: [net] devlink: report 0 after hitting end in region read
 From:   David Miller <davem@davemloft.net>
-In-Reply-To: <20200204230118.7877-1-mdf@kernel.org>
-References: <20200204230118.7877-1-mdf@kernel.org>
+In-Reply-To: <20200204235950.2209828-1-jacob.e.keller@intel.com>
+References: <20200204235950.2209828-1-jacob.e.keller@intel.com>
 X-Mailer: Mew version 6.8 on Emacs 26.3
 Mime-Version: 1.0
 Content-Type: Text/Plain; charset=us-ascii
 Content-Transfer-Encoding: 7bit
-X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Wed, 05 Feb 2020 05:22:00 -0800 (PST)
+X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Wed, 05 Feb 2020 05:25:02 -0800 (PST)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Moritz Fischer <mdf@kernel.org>
-Date: Tue,  4 Feb 2020 15:01:18 -0800
+From: Jacob Keller <jacob.e.keller@intel.com>
+Date: Tue,  4 Feb 2020 15:59:50 -0800
 
-> The receive frame length calculation uses a wrong mask to calculate the
-> length of the received frames.
+> commit fdd41ec21e15 ("devlink: Return right error code in case of errors
+> for region read") modified the region read code to report errors
+> properly in unexpected cases.
 > 
-> Per spec table 4-1 the length is contained in the FL (Frame Length)
-> field in bits 30:16.
+> In the case where the start_offset and ret_offset match, it unilaterally
+> converted this into an error. This causes an issue for the "dump"
+> version of the command. In this case, the devlink region dump will
+> always report an invalid argument:
 > 
-> This didn't show up as an issue so far since frames were limited to
-> 1500 bytes which falls within the 11 bit window.
+> 000000000000ffd0 ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff
+> 000000000000ffe0 ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff
+> devlink answers: Invalid argument
+> 000000000000fff0 ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff
 > 
-> Signed-off-by: Moritz Fischer <mdf@kernel.org>
+> This occurs because the expected flow for the dump is to return 0 after
+> there is no further data.
+> 
+> The simplest fix would be to stop converting the error code to -EINVAL
+> if start_offset == ret_offset. However, avoid unnecessary work by
+> checking for when start_offset is larger than the region size and
+> returning 0 upfront.
+> 
+> Fixes: fdd41ec21e15 ("devlink: Return right error code in case of errors for region read")
+> Signed-off-by: Jacob Keller <jacob.e.keller@intel.com>
 
-Applied, thanks.
+Applied and queued up for -stable, thanks.
