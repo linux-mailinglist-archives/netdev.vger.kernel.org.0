@@ -2,187 +2,152 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id BE7E415266B
-	for <lists+netdev@lfdr.de>; Wed,  5 Feb 2020 07:50:29 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C44731526B3
+	for <lists+netdev@lfdr.de>; Wed,  5 Feb 2020 08:11:57 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726658AbgBEGuV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 5 Feb 2020 01:50:21 -0500
-Received: from us-smtp-delivery-1.mimecast.com ([207.211.31.120]:44881 "EHLO
-        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S1725875AbgBEGuU (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 5 Feb 2020 01:50:20 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1580885418;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=wE2vWrZfATx1m0Y7LHRA4jaMP+1sekxlUzJjAOwdAHM=;
-        b=FsAdKZTFBUdh4E4OXGXXdmndvHslSEWlpXxB5+6/qv2pcnSTLU4FYG3XfKgR3JRmNqz39z
-        HuagAtsB6fBwC4exN/Ik5OLI0/bG6fFYvFYerOrLPW8ctMrVlFKbrxoUo+7AYWQs/KlhkA
-        +HzpX+xkuEvrLf1fM+k5yq7XdPL5BMU=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-221-_Ob3lLb_MXmy3zWqO6IqAQ-1; Wed, 05 Feb 2020 01:50:16 -0500
-X-MC-Unique: _Ob3lLb_MXmy3zWqO6IqAQ-1
-Received: from smtp.corp.redhat.com (int-mx07.intmail.prod.int.phx2.redhat.com [10.5.11.22])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 2FB60DBA5;
-        Wed,  5 Feb 2020 06:50:14 +0000 (UTC)
-Received: from [10.72.13.188] (ovpn-13-188.pek2.redhat.com [10.72.13.188])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 394381001B09;
-        Wed,  5 Feb 2020 06:49:37 +0000 (UTC)
-Subject: Re: [PATCH] vhost: introduce vDPA based backend
-To:     "Michael S. Tsirkin" <mst@redhat.com>
-Cc:     Tiwei Bie <tiwei.bie@intel.com>, linux-kernel@vger.kernel.org,
-        kvm@vger.kernel.org, virtualization@lists.linux-foundation.org,
-        netdev@vger.kernel.org, shahafs@mellanox.com, jgg@mellanox.com,
-        rob.miller@broadcom.com, haotian.wang@sifive.com,
-        eperezma@redhat.com, lulu@redhat.com, parav@mellanox.com,
-        rdunlap@infradead.org, hch@infradead.org, jiri@mellanox.com,
-        hanand@xilinx.com, mhabets@solarflare.com,
-        maxime.coquelin@redhat.com, lingshan.zhu@intel.com,
-        dan.daly@intel.com, cunming.liang@intel.com, zhihong.wang@intel.com
-References: <20200131033651.103534-1-tiwei.bie@intel.com>
- <7aab2892-bb19-a06a-a6d3-9c28bc4c3400@redhat.com>
- <20200204005306-mutt-send-email-mst@kernel.org>
- <cf485e7f-46e3-20d3-8452-e3058b885d0a@redhat.com>
- <20200205020555.GA369236@___>
- <798e5644-ca28-ee46-c953-688af9bccd3b@redhat.com>
- <20200205003048-mutt-send-email-mst@kernel.org>
- <eb53d1c2-92ae-febf-f502-2d3e107ee608@redhat.com>
- <20200205011935-mutt-send-email-mst@kernel.org>
-From:   Jason Wang <jasowang@redhat.com>
-Message-ID: <2dd43fb5-6f02-2dcc-5c27-9f7419ef72fc@redhat.com>
-Date:   Wed, 5 Feb 2020 14:49:31 +0800
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.8.0
-MIME-Version: 1.0
-In-Reply-To: <20200205011935-mutt-send-email-mst@kernel.org>
-Content-Type: text/plain; charset=utf-8; format=flowed
+        id S1727561AbgBEHLn (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 5 Feb 2020 02:11:43 -0500
+Received: from mail-eopbgr80081.outbound.protection.outlook.com ([40.107.8.81]:34118
+        "EHLO EUR04-VI1-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1725980AbgBEHLn (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 5 Feb 2020 02:11:43 -0500
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=I2YmdeYOFeyioi0acX5YPeYbofbRG3ytpIPBxvMPjBLohWMffxdNzNv1bWwvj0IiaUmOw+sdC7sqBfAcom1iVQSBnaLbdo+FHb2S2nDr+QjyQDR/BoMvPUC8zVbrLzoij9IysiHmNOgpbEXXU5dbc47R8FcnsgIRF0aBscSd1BinY2NPsB+uOj0TP/72tULx28nPWvkS8S7o6qzLtpLLjXiJDwUJOQLqR5s35/Vj4VxDhdYxkh+glJMvMHtUwgBVLh8GuqIPlypuAQKBUuvlb8FVpmclrKTwbzbLwhQfLSbcvFHHNYGIQfGsEyKED95NEEQ/lM9gOSrzs59fPGACjg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=jLGrS9QStFVN7Qh5VIHW4t5KN9sy8ViNx0sI4tT9cjU=;
+ b=nSy9uTesCMrh/gJdkV7gUTGt2tabiGKHhVPNeqqcVLCOZ4tambI62BrDmus0cKFEZDMOrnMLaF/5TjW2H3Jt4fwYBx9GCHy81mW5jC6XMA49orpUIQW6ATmSOoc6JTWgbLrQDXvKjk6XYE67ewohaWpiVDIx8K3UlFgxUOozjlvKpiaLTGZmYs88GIfKpfdGhy3XlyHBryk19fs7Kyasso6pQOMw3YlwPMXKKxcygWxpaIWTZbvyJSiFpzioEp0mTKiDF9bchatiob4JhRXqH8ViFdLvv6RX3e1x9UHef+NON0LLClDmknSQjMTUC9nev8j6HhZVhs3KeV/1D7iFhQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=oss.nxp.com; dmarc=pass action=none header.from=oss.nxp.com;
+ dkim=pass header.d=oss.nxp.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=NXP1.onmicrosoft.com;
+ s=selector2-NXP1-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=jLGrS9QStFVN7Qh5VIHW4t5KN9sy8ViNx0sI4tT9cjU=;
+ b=BnCjssApr4yVITZPRtaFTN3D3N4t5nAG1HQOevl07lRlA9unjT8QQ8yVDVZNRhuCgtLExigmHFZDaGIwvuU22ufc1q5f/7Y2/8J03LKMZnEaOuUriERHDQxAdnelfN4ftszQwzIkph1qmg8xOQ6qjYworQYhN6Of4cpHIkc5qLU=
+Received: from AM0PR04MB5636.eurprd04.prod.outlook.com (20.178.202.86) by
+ AM0PR04MB7060.eurprd04.prod.outlook.com (10.186.129.87) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.2686.30; Wed, 5 Feb 2020 07:11:37 +0000
+Received: from AM0PR04MB5636.eurprd04.prod.outlook.com
+ ([fe80::1b4:31d2:1485:6e07]) by AM0PR04MB5636.eurprd04.prod.outlook.com
+ ([fe80::1b4:31d2:1485:6e07%7]) with mapi id 15.20.2686.034; Wed, 5 Feb 2020
+ 07:11:37 +0000
+From:   "Calvin Johnson (OSS)" <calvin.johnson@oss.nxp.com>
+To:     Andrew Lunn <andrew@lunn.ch>
+CC:     "linux.cj@gmail.com" <linux.cj@gmail.com>,
+        Jon Nettleton <jon@solid-run.com>,
+        "linux@armlinux.org.uk" <linux@armlinux.org.uk>,
+        Makarand Pawagi <makarand.pawagi@nxp.com>,
+        Cristi Sovaiala <cristian.sovaiala@nxp.com>,
+        Laurentiu Tudor <laurentiu.tudor@nxp.com>,
+        Ioana Ciornei <ioana.ciornei@nxp.com>,
+        Varun Sethi <V.Sethi@nxp.com>,
+        Pankaj Bansal <pankaj.bansal@nxp.com>,
+        "Rajesh V. Bikkina" <rajesh.bikkina@nxp.com>,
+        Marcin Wojtas <mw@semihalf.com>,
+        "Calvin Johnson (OSS)" <calvin.johnson@oss.nxp.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "linux-acpi@vger.kernel.org" <linux-acpi@vger.kernel.org>
+Subject: RE: [EXT] Re: [PATCH v1 1/7] mdio_bus: Introduce fwnode MDIO helpers
+Thread-Topic: [EXT] Re: [PATCH v1 1/7] mdio_bus: Introduce fwnode MDIO helpers
+Thread-Index: AQHV2EwP/pAQL9rldkeFtJ0S9YjbKagE9kYAgAcVUTA=
+Date:   Wed, 5 Feb 2020 07:11:37 +0000
+Message-ID: <AM0PR04MB5636F2F01AC234F2F613E5B293020@AM0PR04MB5636.eurprd04.prod.outlook.com>
+References: <20200131153440.20870-1-calvin.johnson@nxp.com>
+ <20200131153440.20870-2-calvin.johnson@nxp.com>
+ <20200131162814.GB17185@lunn.ch>
+In-Reply-To: <20200131162814.GB17185@lunn.ch>
+Accept-Language: en-US
 Content-Language: en-US
-X-Scanned-By: MIMEDefang 2.84 on 10.5.11.22
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+authentication-results: spf=none (sender IP is )
+ smtp.mailfrom=calvin.johnson@oss.nxp.com; 
+x-ms-exchange-messagesentrepresentingtype: 1
+x-originating-ip: [92.121.36.197]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-ht: Tenant
+x-ms-office365-filtering-correlation-id: 043b98ef-6738-4662-0be3-08d7aa0aa3ed
+x-ms-traffictypediagnostic: AM0PR04MB7060:|AM0PR04MB7060:
+x-ms-exchange-sharedmailbox-routingagent-processed: True
+x-ms-exchange-transport-forked: True
+x-microsoft-antispam-prvs: <AM0PR04MB7060F7F6D20BE19434AEDCC6D2020@AM0PR04MB7060.eurprd04.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:8882;
+x-forefront-prvs: 0304E36CA3
+x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(4636009)(376002)(346002)(39860400002)(396003)(366004)(136003)(199004)(189003)(33656002)(66446008)(64756008)(66556008)(66946007)(76116006)(66476007)(186003)(7696005)(6916009)(55016002)(478600001)(5660300002)(71200400001)(966005)(2906002)(4326008)(8676002)(9686003)(26005)(54906003)(316002)(81166006)(81156014)(6506007)(7416002)(52536014)(86362001)(8936002);DIR:OUT;SFP:1101;SCL:1;SRVR:AM0PR04MB7060;H:AM0PR04MB5636.eurprd04.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;A:0;MX:1;
+received-spf: None (protection.outlook.com: oss.nxp.com does not designate
+ permitted sender hosts)
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: Ikn9X1q2GyGWA+yERih8zkvdu7/kU/g0nQsjEFXCe5/AdRWCBvNqGfbyjBd0PNq5h27BUq/ytAsqUOElsH2ybI14kDn9iPWzf1pGLl7Wsix6+Hqv12qdyC+Wf6XvRbbYlX0o+yuOqUZdA7PxL2PYyBQxrDmgQAsuKQM+EUdgx/6zYELZ8eMr7Ni7suDcpKKQlNeAfv0CLvTGhGCLx8N57gLCZl4fdlVLViy+zlGnsC7hDcHHFV1dVWbe+9GsScRdfiSLDp01YYXFHTPpv+EkPPl/J+uQlc2HJJTJ0zdK01qAJUqkWny+lwX0VH0CYbpTPd0QlS2Zo1EcfLPsJhMkcLE8yPJHWDrMiIBK7IJT6w5AT2qm33pnNb5XT2vToveUsCCdj79Q7b4FY4oSjh9HLsKff59zEQuA1EHL2cyIJj30vXRH+GDVNwPdEwubuIVH9++YqAEDWAScqcGOvNQebFX47MUildfT6VD9JhH1ogCvVKIT13coiQy3p56Mc4HSX2om5YyKUASAG7bV+kwP3w==
+x-ms-exchange-antispam-messagedata: HnPKpSxv4X4vz+L5FoBgiPK7TG4vF3OHAKJkqDMrHmvPH1RJBGC7mlPJ0gE3EaK//+qrQU4X8Wx2Ql7asmozBjWGZpr8gUdHNs2qZV+qLtj7loTqJ4LiXgjpgiV/PyK1B2FU2SJOMupEtUHniDEYTA==
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: quoted-printable
+MIME-Version: 1.0
+X-OriginatorOrg: oss.nxp.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 043b98ef-6738-4662-0be3-08d7aa0aa3ed
+X-MS-Exchange-CrossTenant-originalarrivaltime: 05 Feb 2020 07:11:37.2101
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: bhx7KObTDmQ8+BWfR+LR0J7CaKZ42q65J79LTSvInrsxZwQgMIjm3hJpKtll2P5VIhDvCn891jSqJEqXbeL6Mw==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM0PR04MB7060
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Hi Andrew,
 
-On 2020/2/5 =E4=B8=8B=E5=8D=882:30, Michael S. Tsirkin wrote:
-> On Wed, Feb 05, 2020 at 01:50:28PM +0800, Jason Wang wrote:
->> On 2020/2/5 =E4=B8=8B=E5=8D=881:31, Michael S. Tsirkin wrote:
->>> On Wed, Feb 05, 2020 at 11:12:21AM +0800, Jason Wang wrote:
->>>> On 2020/2/5 =E4=B8=8A=E5=8D=8810:05, Tiwei Bie wrote:
->>>>> On Tue, Feb 04, 2020 at 02:46:16PM +0800, Jason Wang wrote:
->>>>>> On 2020/2/4 =E4=B8=8B=E5=8D=882:01, Michael S. Tsirkin wrote:
->>>>>>> On Tue, Feb 04, 2020 at 11:30:11AM +0800, Jason Wang wrote:
->>>>>>>> 5) generate diffs of memory table and using IOMMU API to setup t=
-he dma
->>>>>>>> mapping in this method
->>>>>>> Frankly I think that's a bunch of work. Why not a MAP/UNMAP inter=
-face?
->>>>>>>
->>>>>> Sure, so that basically VHOST_IOTLB_UPDATE/INVALIDATE I think?
->>>>> Do you mean we let userspace to only use VHOST_IOTLB_UPDATE/INVALID=
-ATE
->>>>> to do the DMA mapping in vhost-vdpa case? When vIOMMU isn't availab=
-le,
->>>>> userspace will set msg->iova to GPA, otherwise userspace will set
->>>>> msg->iova to GIOVA, and vhost-vdpa module will get HPA from msg->ua=
-ddr?
->>>>>
->>>>> Thanks,
->>>>> Tiwei
->>>> I think so. Michael, do you think this makes sense?
->>>>
->>>> Thanks
->>> to make sure, could you post the suggested argument format for
->>> these ioctls?
->>>
->> It's the existed uapi:
->>
->> /* no alignment requirement */
->> struct vhost_iotlb_msg {
->>  =C2=A0=C2=A0=C2=A0 __u64 iova;
->>  =C2=A0=C2=A0=C2=A0 __u64 size;
->>  =C2=A0=C2=A0=C2=A0 __u64 uaddr;
->> #define VHOST_ACCESS_RO=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 0x1
->> #define VHOST_ACCESS_WO=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 0x2
->> #define VHOST_ACCESS_RW=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 0x3
->>  =C2=A0=C2=A0=C2=A0 __u8 perm;
->> #define VHOST_IOTLB_MISS=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
-=C2=A0=C2=A0 1
->> #define VHOST_IOTLB_UPDATE=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
-=A0 2
->> #define VHOST_IOTLB_INVALIDATE=C2=A0=C2=A0=C2=A0=C2=A0 3
->> #define VHOST_IOTLB_ACCESS_FAIL=C2=A0=C2=A0=C2=A0 4
->>  =C2=A0=C2=A0=C2=A0 __u8 type;
->> };
->>
->> #define VHOST_IOTLB_MSG 0x1
->> #define VHOST_IOTLB_MSG_V2 0x2
->>
->> struct vhost_msg {
->>  =C2=A0=C2=A0=C2=A0 int type;
->>  =C2=A0=C2=A0=C2=A0 union {
->>  =C2=A0=C2=A0=C2=A0 =C2=A0=C2=A0=C2=A0 struct vhost_iotlb_msg iotlb;
->>  =C2=A0=C2=A0=C2=A0 =C2=A0=C2=A0=C2=A0 __u8 padding[64];
->>  =C2=A0=C2=A0=C2=A0 };
->> };
->>
->> struct vhost_msg_v2 {
->>  =C2=A0=C2=A0=C2=A0 __u32 type;
->>  =C2=A0=C2=A0=C2=A0 __u32 reserved;
->>  =C2=A0=C2=A0=C2=A0 union {
->>  =C2=A0=C2=A0=C2=A0 =C2=A0=C2=A0=C2=A0 struct vhost_iotlb_msg iotlb;
->>  =C2=A0=C2=A0=C2=A0 =C2=A0=C2=A0=C2=A0 __u8 padding[64];
->>  =C2=A0=C2=A0=C2=A0 };
->> };
-> Oh ok.  So with a real device, I suspect we do not want to wait for eac=
-h
-> change to be processed by device completely, so we might want an asynch=
-ronous variant
-> and then some kind of flush that tells device "you better apply these n=
-ow".
+> -----Original Message-----
+> From: Andrew Lunn <andrew@lunn.ch>
+> Sent: Friday, January 31, 2020 9:58 PM
 
+<snip>
 
-Let me explain:
+> On Fri, Jan 31, 2020 at 09:04:34PM +0530, Calvin Johnson wrote:
+> > From: Marcin Wojtas <mw@semihalf.com>
+> >
+> > This patch introduces fwnode helper for registering MDIO bus, as well
+> > as one for finding the PHY, basing on its firmware node pointer.
+> > Comparing to existing OF equivalent,
+> > fwnode_mdiobus_register() does not support:
+> >  * deprecated bindings (device whitelist, nor the PHY ID embedded
+> >    in the compatible string)
+> >  * MDIO bus auto scanning
+> >
+> > Signed-off-by: Marcin Wojtas <mw@semihalf.com>
+> > Signed-off-by: Calvin Johnson <calvin.johnson@oss.nxp.com>
+>=20
+> Hi Calvin
+> no
+> This appears to but a cut and paste, follow by an intelligent s/of/fwnode=
+/g.
 
-There are two types of devices:
+In this patchset, I tried to reuse Marcin's patch which was posted on 2017/=
+12/18.
+https://lkml.org/lkml/2017/12/18/211
+With my patch([v1,2/7] mdio_bus: modify fwnode phy related functions), I've=
+ made=20
+modifications to this(v1,1/7) patch to adapt to the changes in the kernel.
 
-1) device without on-chip IOMMU, DMA was done via IOMMU API which only=20
-support incremental map/unmap
-2) device with on-chip IOMMU, DMA could be done by device driver itself,=20
-and we could choose to pass the whole mappings to the driver at one time=20
-through vDPA bus operation (set_map)
+> Did you make any attempt to consolidate the two implementations?  It
+> seems like there should be some level of abstraction that hides away the
+> difference between DT properties, and DT properties stuffed into ACPI
+> tables?
 
-For vhost-vpda, there're two types of memory mapping:
-
-a) memory table, setup by userspace through VHOST_SET_MEM_TABLE, the=20
-whole mapping is updated in this way
-b) IOTLB API, incrementally done by userspace through vhost message=20
-(IOTLB_UPDATE/IOTLB_INVALIDATE)
-
-The current design is:
-
-- Reuse VHOST_SET_MEM_TABLE, and for type 1), we can choose to send=20
-diffs through IOMMU API or flush all the mappings then map new ones. For=20
-type 2), just send the whole mapping through set_map()
-- Reuse vhost IOTLB, so for type 1), simply forward update/invalidate=20
-request via IOMMU API, for type 2), send IOTLB to vDPA device driver via=20
-set_map(), device driver may choose to send diffs or rebuild all mapping=20
-at their will
-
-Technically we can use vhost IOTLB API (map/umap) for building=20
-VHOST_SET_MEM_TABLE, but to avoid device to process the each request, it=20
-looks to me we need new UAPI which seems sub optimal.
-
-What's you thought?
+Yes attempt is to consolidate DT and ACPI into fwnode. Sure, I'll revisit t=
+he patch
+and try to work on your recommendation.
 
 Thanks
-
-
->
-
+Calvin
