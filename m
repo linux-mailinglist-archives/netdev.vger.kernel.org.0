@@ -2,24 +2,24 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 459491527BB
-	for <lists+netdev@lfdr.de>; Wed,  5 Feb 2020 09:55:46 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3CC871527BE
+	for <lists+netdev@lfdr.de>; Wed,  5 Feb 2020 09:55:47 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728094AbgBEIzd (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 5 Feb 2020 03:55:33 -0500
+        id S1728114AbgBEIzg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 5 Feb 2020 03:55:36 -0500
 Received: from mga09.intel.com ([134.134.136.24]:48635 "EHLO mga09.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727068AbgBEIzd (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 5 Feb 2020 03:55:33 -0500
+        id S1728107AbgBEIzg (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 5 Feb 2020 03:55:36 -0500
 X-Amp-Result: SKIPPED(no attachment in message)
 X-Amp-File-Uploaded: False
 Received: from fmsmga002.fm.intel.com ([10.253.24.26])
-  by orsmga102.jf.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 05 Feb 2020 00:55:33 -0800
+  by orsmga102.jf.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 05 Feb 2020 00:55:36 -0800
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.70,405,1574150400"; 
-   d="scan'208";a="264149167"
+   d="scan'208";a="264149178"
 Received: from unknown (HELO bong5-HP-Z440.png.intel.com) ([10.221.118.166])
-  by fmsmga002.fm.intel.com with ESMTP; 05 Feb 2020 00:55:29 -0800
+  by fmsmga002.fm.intel.com with ESMTP; 05 Feb 2020 00:55:33 -0800
 From:   Ong Boon Leong <boon.leong.ong@intel.com>
 To:     netdev@vger.kernel.org
 Cc:     Tan Tee Min <tee.min.tan@intel.com>,
@@ -34,77 +34,72 @@ Cc:     Tan Tee Min <tee.min.tan@intel.com>,
         Alexandru Ardelean <alexandru.ardelean@analog.com>,
         linux-stm32@st-md-mailman.stormreply.com,
         linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
-Subject: [PATCH net v4 0/6] net: stmmac: general fixes for Ethernet functionality
-Date:   Wed,  5 Feb 2020 16:55:04 +0800
-Message-Id: <20200205085510.32353-1-boon.leong.ong@intel.com>
+Subject: [PATCH net v4 1/6] net: stmmac: Fix incorrect location to set real_num_rx|tx_queues
+Date:   Wed,  5 Feb 2020 16:55:05 +0800
+Message-Id: <20200205085510.32353-2-boon.leong.ong@intel.com>
 X-Mailer: git-send-email 2.17.1
+In-Reply-To: <20200205085510.32353-1-boon.leong.ong@intel.com>
+References: <20200205085510.32353-1-boon.leong.ong@intel.com>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Thanks to all feedbacks from community.
+From: Aashish Verma <aashishx.verma@intel.com>
 
-We updated the patch-series to below:-
+netif_set_real_num_tx_queues() & netif_set_real_num_rx_queues() should be
+used to inform network stack about the real Tx & Rx queue (active) number
+in both stmmac_open() and stmmac_resume(), therefore, we move the code
+from stmmac_dvr_probe() to stmmac_hw_setup().
 
-1/6: It ensures that the real_num_rx|tx_queues are set in both driver
-     probe() and resume(). So, move the netif_set_real_num_rx|tx_queues()
-     into stmmac_hw_setup(). Use rtnl_lock() and rtnl_unlock() for
-     stmmac_hw_setup() called inside stmmac_resume().
+For driver open(), rtnl_lock is acquired by network stack but not in the
+resume(). Therefore, we need to rtnl_lock() and rtnl_unlock() when
+calling stmmac_hw_setup() within resume(). Thanks Jose Abreu for input.
 
-2/6: It ensures that the previous value of GMAC_VLAN_TAG register is
-     read first before for updating the register.
+Fixes: c02b7a914551 ("net: stmmac: use netif_set_real_num_{rx,tx}_queues")
+Signed-off-by: Aashish Verma <aashishx.verma@intel.com>
+Tested-by: Tan, Tee Min <tee.min.tan@intel.com>
+Signed-off-by: Ong Boon Leong <boon.leong.ong@intel.com>
+---
+ drivers/net/ethernet/stmicro/stmmac/stmmac_main.c | 10 ++++++----
+ 1 file changed, 6 insertions(+), 4 deletions(-)
 
-3/6: Similar to 2/6 patch but it is a fix for XGMAC_VLAN_TAG register
-     as requested by Jose Abreu.
-
-4/6: It ensures the GMAC IP v4.xx and above behaves correctly to:-
-       ip link set <devname> multicast off|on
-
-5/6: Added similar IFF_MULTICAST flag for xgmac2, similar to 4/6.
-
-6/6: It ensures PCI platform data is using plat->phy_interface.
-
-Rgds,
-Boon Leong
-
-Changes from v3:-
-   patch 1/6 - add rtnl_lock() and rtnl_unlock() for stmmac_hw_setup()
-               called inside stmmac_resume()
-   patch 3/6 - Added new patch to fix XGMAC_VLAN_TAG register writting
-
-v2:-
-   patch 1/5 - added control for rtnl_lock() & rtnl_unlock() to ensure
-               they are used forstmmac_resume()
-   patch 4/5 - added IFF_MULTICAST flag check for xgmac to ensure
-               multicast works correctly.
-
-v1:-
- - Drop v1 patches (1/7, 3/7 & 4/7) that are not valid.
-
-Aashish Verma (1):
-  net: stmmac: Fix incorrect location to set real_num_rx|tx_queues
-
-Ong Boon Leong (1):
-  net: stmmac: xgmac: fix incorrect XGMAC_VLAN_TAG register writting
-
-Tan, Tee Min (2):
-  net: stmmac: fix incorrect GMAC_VLAN_TAG register writting in GMAC4+
-  net: stmmac: xgmac: fix missing IFF_MULTICAST checki in
-    dwxgmac2_set_filter
-
-Verma, Aashish (1):
-  net: stmmac: fix missing IFF_MULTICAST check in dwmac4_set_filter
-
-Voon Weifeng (1):
-  net: stmmac: update pci platform data to use phy_interface
-
- drivers/net/ethernet/stmicro/stmmac/dwmac4_core.c  |  9 +++++----
- .../net/ethernet/stmicro/stmmac/dwxgmac2_core.c    | 10 +++++++---
- drivers/net/ethernet/stmicro/stmmac/stmmac_main.c  | 10 ++++++----
- drivers/net/ethernet/stmicro/stmmac/stmmac_pci.c   | 14 ++++++++------
- 4 files changed, 26 insertions(+), 17 deletions(-)
-
+diff --git a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
+index 5836b21edd7e..4d9afa13eeb9 100644
+--- a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
++++ b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
+@@ -2657,6 +2657,10 @@ static int stmmac_hw_setup(struct net_device *dev, bool init_ptp)
+ 		stmmac_enable_tbs(priv, priv->ioaddr, enable, chan);
+ 	}
+ 
++	/* Configure real RX and TX queues */
++	netif_set_real_num_rx_queues(dev, priv->plat->rx_queues_to_use);
++	netif_set_real_num_tx_queues(dev, priv->plat->tx_queues_to_use);
++
+ 	/* Start the ball rolling... */
+ 	stmmac_start_all_dma(priv);
+ 
+@@ -4738,10 +4742,6 @@ int stmmac_dvr_probe(struct device *device,
+ 
+ 	stmmac_check_ether_addr(priv);
+ 
+-	/* Configure real RX and TX queues */
+-	netif_set_real_num_rx_queues(ndev, priv->plat->rx_queues_to_use);
+-	netif_set_real_num_tx_queues(ndev, priv->plat->tx_queues_to_use);
+-
+ 	ndev->netdev_ops = &stmmac_netdev_ops;
+ 
+ 	ndev->hw_features = NETIF_F_SG | NETIF_F_IP_CSUM | NETIF_F_IPV6_CSUM |
+@@ -5091,7 +5091,9 @@ int stmmac_resume(struct device *dev)
+ 
+ 	stmmac_clear_descriptors(priv);
+ 
++	rtnl_lock();
+ 	stmmac_hw_setup(ndev, false);
++	rtnl_unlock();
+ 	stmmac_init_coalesce(priv);
+ 	stmmac_set_rx_mode(ndev);
+ 
 -- 
 2.17.1
 
