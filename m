@@ -2,92 +2,90 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 54A131530B1
-	for <lists+netdev@lfdr.de>; Wed,  5 Feb 2020 13:28:20 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 17A6415307C
+	for <lists+netdev@lfdr.de>; Wed,  5 Feb 2020 13:22:45 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728000AbgBEM2Q (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 5 Feb 2020 07:28:16 -0500
-Received: from relay.cooperix.net ([176.58.120.209]:49756 "EHLO
-        relay.sandelman.ca" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727892AbgBEM2P (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 5 Feb 2020 07:28:15 -0500
-X-Greylist: delayed 393 seconds by postgrey-1.27 at vger.kernel.org; Wed, 05 Feb 2020 07:28:14 EST
-Received: from dooku.sandelman.ca (ip5f5bd76d.dynamic.kabel-deutschland.de [95.91.215.109])
-        by relay.sandelman.ca (Postfix) with ESMTPS id 4B8E61F45A;
-        Wed,  5 Feb 2020 12:21:40 +0000 (UTC)
-Received: by dooku.sandelman.ca (Postfix, from userid 179)
-        id 6A87F1314; Wed,  5 Feb 2020 07:21:37 -0500 (EST)
-From:   Michael Richardson <mcr@sandelman.ca>
-To:     Alexander Aring <alex.aring@gmail.com>
-cc:     netdev@vger.kernel.org
-Subject: Re: [PATCH net 0/2] net: ipv6: seg6: headroom fixes
-In-reply-to: <20200204173019.4437-1-alex.aring@gmail.com>
-References: <20200204173019.4437-1-alex.aring@gmail.com>
-Comments: In-reply-to Alexander Aring <alex.aring@gmail.com>
-   message dated "Tue, 04 Feb 2020 12:30:17 -0500."
-X-Mailer: MH-E 8.6; nmh 1.6; GNU Emacs 25.1.1
+        id S1726822AbgBEMWn (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 5 Feb 2020 07:22:43 -0500
+Received: from mail-wr1-f67.google.com ([209.85.221.67]:38627 "EHLO
+        mail-wr1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726308AbgBEMWn (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 5 Feb 2020 07:22:43 -0500
+Received: by mail-wr1-f67.google.com with SMTP id y17so2484918wrh.5
+        for <netdev@vger.kernel.org>; Wed, 05 Feb 2020 04:22:42 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=networkplumber-org.20150623.gappssmtp.com; s=20150623;
+        h=date:from:to:cc:subject:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=LR1dADKbZstR9fdZq2tvypSj5rs7exlyFx0sY6Ljn5o=;
+        b=SvKxjQ6VCDMZRK0nDqOrnT6jrEVbOO8l932HtaxfMRAjExwzP62yIAmSvCC2bqlmAA
+         uWF/aFkRljPdZFscHrSScACrFmJGcjj0r5Ci4KtiV8hGjzGLwnIuwcb0xMmPzrNC1KIF
+         t4sP1Tj1s3DizhnOCs4nvZvFAoD8gWBHCVB6JjPI3JPzgBqVkyMpQp+bvih57uD9F/vz
+         boO/qEXlyIpy2fP5bE8Z7vBbmqei5CekYXsSkGEAwpzR72HbF7xDny2lva5/NvTWJS+g
+         +hWShTrkpw2CjxPZ8VI1dhyc248oSugkjubLuhPxCtE3urVdU/L6af4H/yXODhmEwx0R
+         thmA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=LR1dADKbZstR9fdZq2tvypSj5rs7exlyFx0sY6Ljn5o=;
+        b=lSpcgx6tjE3Nc9y1I97L5CEWNgLxUugtXWUTgRxPXQDNhU81xKWjFepw8XxnulPbgg
+         SHv1ozSu5mrTE7a669g0Zk/mU6vEJ9uO4J6xjkPQtMFGnuWDktd3X2JfW4NpAncs2CCl
+         ++J4Ff8MinPBJwjjEraHb9TmMO3AIAe8Jb0ZQ/Ck7ltWMbEA0K1mTHcTa6dLt1Gqcuva
+         2MmxbkNrh+YMihm30jAsjLSt/d1cwwmYQIQh6izbXgfyCRn0iEAJegv6gYatOCM3rFLu
+         A3DPky/uD5XDqJ+IylyNRftoEd9Y0tEh6ajbYrmdzRtlB/yxH7nnBsUI88jI99Qdryya
+         k1xQ==
+X-Gm-Message-State: APjAAAX6K2D7IfuAGQ0HbjWzpKIUnmtfNcgVIjKOB2f+QHMP6cygNqE1
+        NThgupYZJS53OJ2q7KrYObapyA==
+X-Google-Smtp-Source: APXvYqzz6G6QEG3Bewbi3dObxjvmQ2SPmRAVAJDy5HFED4OtGNUXspsHf77zIh6imhUb1DOMlMeRuw==
+X-Received: by 2002:a5d:568a:: with SMTP id f10mr30003426wrv.180.1580905361915;
+        Wed, 05 Feb 2020 04:22:41 -0800 (PST)
+Received: from shemminger-XPS-13-9360 ([212.187.182.163])
+        by smtp.gmail.com with ESMTPSA id x132sm9023495wmg.0.2020.02.05.04.22.41
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 05 Feb 2020 04:22:41 -0800 (PST)
+Date:   Wed, 5 Feb 2020 04:22:39 -0800
+From:   Stephen Hemminger <stephen@networkplumber.org>
+To:     Xin Long <lucien.xin@gmail.com>
+Cc:     network dev <netdev@vger.kernel.org>,
+        Simon Horman <simon.horman@netronome.com>,
+        Pieter Jansen van Vuuren 
+        <pieter.jansenvanvuuren@netronome.com>
+Subject: Re: [PATCH iproute2-next 2/7] iproute_lwtunnel: add options support
+ for vxlan metadata
+Message-ID: <20200205042239.322cc844@shemminger-XPS-13-9360>
+In-Reply-To: <85a6a30aac8eeab7c408fdadfa5419dc1596cf5d.1580708369.git.lucien.xin@gmail.com>
+References: <cover.1580708369.git.lucien.xin@gmail.com>
+        <93e7cebfeda666b17c6a1b2bb8b5065bdab4814c.1580708369.git.lucien.xin@gmail.com>
+        <85a6a30aac8eeab7c408fdadfa5419dc1596cf5d.1580708369.git.lucien.xin@gmail.com>
 MIME-Version: 1.0
-Content-Type: multipart/signed; boundary="=-=-=";
-        micalg=pgp-sha256; protocol="application/pgp-signature"
-Date:   Wed, 05 Feb 2020 13:21:37 +0100
-Message-ID: <26689.1580905297@dooku.sandelman.ca>
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
---=-=-=
-Content-Type: text/plain
+On Mon,  3 Feb 2020 13:39:53 +0800
+Xin Long <lucien.xin@gmail.com> wrote:
 
+> +static void lwtunnel_print_vxlan_opts(struct rtattr *attr, char *opt)
+> +{
+> +	struct rtattr *tb[LWTUNNEL_IP_OPT_VXLAN_MAX + 1];
+> +	__u32 gbp;
+> +
+> +	parse_rtattr(tb, LWTUNNEL_IP_OPT_VXLAN_MAX, RTA_DATA(attr),
+> +		     RTA_PAYLOAD(attr));
+> +	gbp = rta_getattr_u32(tb[LWTUNNEL_IP_OPT_VXLAN_GBP]);
+> +	sprintf(opt, "%x", gbp);
+> +	print_string(PRINT_FP, "enc_opt", "\n  vxlan_opts %s ", opt);
 
-Alexander Aring <alex.aring@gmail.com> wrote:
-    > This patch series fixes issues which I discovered while implementing RPL
-    > source routing for 6LoWPAN interfaces. 6LoWPAN interfaces are using a MTU
-    > of 1280 which is the IPv6 minimum MTU. I suppose this is the right fix to
-    > do that according to my explanation that tunnels which acting before L3
-    > need to set this headroom. So far I see only segmentation route is affected
-    > to it. Maybe BPF tunnels, but it depends on the case... Maybe a comment
-    > need to be added there as well to not getting confused. If wanted I can
-    > send another patch for a comment for net-next or even net? May the
-    > variable should be renamed to l2_headroom?
+You need to handle single line mode and JSON.
 
-I had discussed this with Alex over the past few days.
-I had not looked closely at the code during that discussion, and maybe my
-comments in chat were wrong.  So these patches don't look right to me.
+Proper way is something like:
 
-I think that the issue we have here is that things are big vague when it
-comes to layer-2.5's, and fatter layer-3s.  Maybe this is well established in
-lore...
+	print_nl();
+	print_0xhex(PRINT_ANY, "enc_opt", "  vxlan_opts %#x", gpb);
 
-My understanding is that headroom is a general offset, usually set by the L2
-which tells the L3/L4 how much to offset in the SKB before the ULP header is
-inserted.   TCP/UDP/SCTP/ESP need to know this.
+Also, why the hex format, this is a an opaque user interface?
 
-MPLS is a layer-2.5, and so it quite weird, because it creates a new L2
-which lives upon other L2 and also other L3s.
-
-Segment routing, and RPL RH3 headers involve a fatter L3 header.
-
-Of course, one could mix all of these things together!
-
---
-]               Never tell me the odds!                 | ipv6 mesh networks [
-]   Michael Richardson, Sandelman Software Works        | network architect  [
-]     mcr@sandelman.ca  http://www.sandelman.ca/        |   ruby on rails    [
-
-
---=-=-=
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAEBCAAdFiEERK+9HEcJHTJ9UqTMlUzhVv38QpAFAl46s1AACgkQlUzhVv38
-QpBXbAf/esJasXYzIXpM5QlQ86jcP9DTVkAbAR5aZ6ROozi9/IdiPq8k6naBIlSj
-zWfFfCFnt9B0fpidq4DFlNaBLtZGFCZS7CHWuXtjZO0keW4yttiuNEYrxfsirHPu
-HqNHihTN8gRFGjS6QhjqliRiJS0eaH63xvCVssqDzD7kNnmGtk/uTHxBexw5Z+nG
-j4LW7zzukVYSfM/hzjFsissC0G+4oiuCKRaHUEMisCSmwR+fftE+Z0ZPW+A1OFiu
-gS3lhTw7lD5SUkBUxNlT2E6CGen6hn48ToWw6Wzy/tGo27k1D9PBynh+XVDfx8CK
-utDTdAG6fKhWvBfMMPVCbJE2hugjcA==
-=/Oxf
------END PGP SIGNATURE-----
---=-=-=--
