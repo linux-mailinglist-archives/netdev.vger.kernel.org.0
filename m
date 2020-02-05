@@ -2,209 +2,225 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id D4D3A1526C0
-	for <lists+netdev@lfdr.de>; Wed,  5 Feb 2020 08:17:15 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id CE2AA152729
+	for <lists+netdev@lfdr.de>; Wed,  5 Feb 2020 08:43:53 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726822AbgBEHRI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 5 Feb 2020 02:17:08 -0500
-Received: from us-smtp-1.mimecast.com ([207.211.31.81]:34032 "EHLO
-        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1725875AbgBEHRI (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 5 Feb 2020 02:17:08 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1580887027;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=AUYYDYCrK2cC9uPFN+Mov6qV7HoWj39WrJabiY6WXbQ=;
-        b=NIyqAySKfBkPzuUKgDRNt1yIwQF7Zi+t+bJ4P6qU/a4CVexEEzTEzxZQ3r6ErxCmPSOtzi
-        eHmoNggTQtmOLd/0sVImPs+O59qifTW5nx7jHa6MqBJyfw/5N+F5wg4/7HinBQPpwKjXH0
-        w2aENI3nBJr5SnF4QL3200xBoWPvK8Q=
-Received: from mail-qk1-f200.google.com (mail-qk1-f200.google.com
- [209.85.222.200]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-179-3DkkoV8cPYmQaIOTjoWCZg-1; Wed, 05 Feb 2020 02:17:06 -0500
-X-MC-Unique: 3DkkoV8cPYmQaIOTjoWCZg-1
-Received: by mail-qk1-f200.google.com with SMTP id x127so700551qkb.0
-        for <netdev@vger.kernel.org>; Tue, 04 Feb 2020 23:17:06 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:content-transfer-encoding
-         :in-reply-to;
-        bh=AUYYDYCrK2cC9uPFN+Mov6qV7HoWj39WrJabiY6WXbQ=;
-        b=WaBHfDzFLpJ+dy5yYnEVuOIFW4YhpyYWHJ2tdCmbQ6ATGSGwqiSQMNf2f+ZCYeiRu7
-         vBkAjbRN/1OsNrAZyoi+TxfA821qRWYmNod7C35OuqbU2We6+A1qZ68QMr8kwnM2fOfP
-         aXatBA8xFPx7burG5y/31xC1kpwivGGVBdEFzOpru9zZpaSqxXMH0Ds5ckkz63xzpW59
-         jrFkEHGl18DRYiDN1O6PFQQa2lLkXmGq/La815gy4qPoVi8qc5vj8G8yorAh2cef6FWS
-         gxsyKijJn9r7Fj9G6gVC6K4cTJlp732QHvgPEbsR5Jngk7FkWyTJY8TiCwmYAngwoCHN
-         JeDQ==
-X-Gm-Message-State: APjAAAXIWIcuIzjhyLfbELw79F+itD4k8f/j5Xg+49dvk6FIm0QzYRd/
-        2svSK7WpVd4cGbxd+Nnm8OnR1g4Zi2bbVL822rBtKedYSVLUdnKaPEUWhzvK9CyU486x+pCM75b
-        fk0jXQAFYFuEdflqe
-X-Received: by 2002:a05:620a:21d4:: with SMTP id h20mr30574782qka.468.1580887024970;
-        Tue, 04 Feb 2020 23:17:04 -0800 (PST)
-X-Google-Smtp-Source: APXvYqzEKzoKyfcbFGYqDxB2gYfRipDCYO1D0VQXc0nLsGPa3RFooMo/xVZkmNCTCYKTGNdfzll0uw==
-X-Received: by 2002:a05:620a:21d4:: with SMTP id h20mr30574765qka.468.1580887024660;
-        Tue, 04 Feb 2020 23:17:04 -0800 (PST)
-Received: from redhat.com (bzq-79-176-41-183.red.bezeqint.net. [79.176.41.183])
-        by smtp.gmail.com with ESMTPSA id y197sm3672395qka.65.2020.02.04.23.16.59
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 04 Feb 2020 23:17:03 -0800 (PST)
-Date:   Wed, 5 Feb 2020 02:16:57 -0500
-From:   "Michael S. Tsirkin" <mst@redhat.com>
-To:     Jason Wang <jasowang@redhat.com>
-Cc:     Tiwei Bie <tiwei.bie@intel.com>, linux-kernel@vger.kernel.org,
-        kvm@vger.kernel.org, virtualization@lists.linux-foundation.org,
-        netdev@vger.kernel.org, shahafs@mellanox.com, jgg@mellanox.com,
-        rob.miller@broadcom.com, haotian.wang@sifive.com,
-        eperezma@redhat.com, lulu@redhat.com, parav@mellanox.com,
-        rdunlap@infradead.org, hch@infradead.org, jiri@mellanox.com,
-        hanand@xilinx.com, mhabets@solarflare.com,
-        maxime.coquelin@redhat.com, lingshan.zhu@intel.com,
-        dan.daly@intel.com, cunming.liang@intel.com, zhihong.wang@intel.com
-Subject: Re: [PATCH] vhost: introduce vDPA based backend
-Message-ID: <20200205020547-mutt-send-email-mst@kernel.org>
-References: <20200131033651.103534-1-tiwei.bie@intel.com>
- <7aab2892-bb19-a06a-a6d3-9c28bc4c3400@redhat.com>
- <20200204005306-mutt-send-email-mst@kernel.org>
- <cf485e7f-46e3-20d3-8452-e3058b885d0a@redhat.com>
- <20200205020555.GA369236@___>
- <798e5644-ca28-ee46-c953-688af9bccd3b@redhat.com>
- <20200205003048-mutt-send-email-mst@kernel.org>
- <eb53d1c2-92ae-febf-f502-2d3e107ee608@redhat.com>
- <20200205011935-mutt-send-email-mst@kernel.org>
- <2dd43fb5-6f02-2dcc-5c27-9f7419ef72fc@redhat.com>
+        id S1728009AbgBEHns (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 5 Feb 2020 02:43:48 -0500
+Received: from nautica.notk.org ([91.121.71.147]:46412 "EHLO nautica.notk.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1725468AbgBEHns (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 5 Feb 2020 02:43:48 -0500
+Received: by nautica.notk.org (Postfix, from userid 1001)
+        id AC309C009; Wed,  5 Feb 2020 08:35:19 +0100 (CET)
+Date:   Wed, 5 Feb 2020 08:35:04 +0100
+From:   Dominique Martinet <asmadeus@codewreck.org>
+To:     Sergey Alirzaev <l29ah@cock.li>
+Cc:     v9fs-developer@lists.sourceforge.net,
+        Eric Van Hensbergen <ericvh@gmail.com>,
+        Latchesar Ionkov <lucho@ionkov.net>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 1/2] 9pnet: allow making incomplete read requests
+Message-ID: <20200205073504.GA16626@nautica>
+References: <20200205003457.24340-1-l29ah@cock.li>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <2dd43fb5-6f02-2dcc-5c27-9f7419ef72fc@redhat.com>
+In-Reply-To: <20200205003457.24340-1-l29ah@cock.li>
+User-Agent: Mutt/1.5.21 (2010-09-15)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Feb 05, 2020 at 02:49:31PM +0800, Jason Wang wrote:
-> 
-> On 2020/2/5 下午2:30, Michael S. Tsirkin wrote:
-> > On Wed, Feb 05, 2020 at 01:50:28PM +0800, Jason Wang wrote:
-> > > On 2020/2/5 下午1:31, Michael S. Tsirkin wrote:
-> > > > On Wed, Feb 05, 2020 at 11:12:21AM +0800, Jason Wang wrote:
-> > > > > On 2020/2/5 上午10:05, Tiwei Bie wrote:
-> > > > > > On Tue, Feb 04, 2020 at 02:46:16PM +0800, Jason Wang wrote:
-> > > > > > > On 2020/2/4 下午2:01, Michael S. Tsirkin wrote:
-> > > > > > > > On Tue, Feb 04, 2020 at 11:30:11AM +0800, Jason Wang wrote:
-> > > > > > > > > 5) generate diffs of memory table and using IOMMU API to setup the dma
-> > > > > > > > > mapping in this method
-> > > > > > > > Frankly I think that's a bunch of work. Why not a MAP/UNMAP interface?
-> > > > > > > > 
-> > > > > > > Sure, so that basically VHOST_IOTLB_UPDATE/INVALIDATE I think?
-> > > > > > Do you mean we let userspace to only use VHOST_IOTLB_UPDATE/INVALIDATE
-> > > > > > to do the DMA mapping in vhost-vdpa case? When vIOMMU isn't available,
-> > > > > > userspace will set msg->iova to GPA, otherwise userspace will set
-> > > > > > msg->iova to GIOVA, and vhost-vdpa module will get HPA from msg->uaddr?
-> > > > > > 
-> > > > > > Thanks,
-> > > > > > Tiwei
-> > > > > I think so. Michael, do you think this makes sense?
-> > > > > 
-> > > > > Thanks
-> > > > to make sure, could you post the suggested argument format for
-> > > > these ioctls?
-> > > > 
-> > > It's the existed uapi:
-> > > 
-> > > /* no alignment requirement */
-> > > struct vhost_iotlb_msg {
-> > >      __u64 iova;
-> > >      __u64 size;
-> > >      __u64 uaddr;
-> > > #define VHOST_ACCESS_RO      0x1
-> > > #define VHOST_ACCESS_WO      0x2
-> > > #define VHOST_ACCESS_RW      0x3
-> > >      __u8 perm;
-> > > #define VHOST_IOTLB_MISS           1
-> > > #define VHOST_IOTLB_UPDATE         2
-> > > #define VHOST_IOTLB_INVALIDATE     3
-> > > #define VHOST_IOTLB_ACCESS_FAIL    4
-> > >      __u8 type;
-> > > };
-> > > 
-> > > #define VHOST_IOTLB_MSG 0x1
-> > > #define VHOST_IOTLB_MSG_V2 0x2
-> > > 
-> > > struct vhost_msg {
-> > >      int type;
-> > >      union {
-> > >          struct vhost_iotlb_msg iotlb;
-> > >          __u8 padding[64];
-> > >      };
-> > > };
-> > > 
-> > > struct vhost_msg_v2 {
-> > >      __u32 type;
-> > >      __u32 reserved;
-> > >      union {
-> > >          struct vhost_iotlb_msg iotlb;
-> > >          __u8 padding[64];
-> > >      };
-> > > };
-> > Oh ok.  So with a real device, I suspect we do not want to wait for each
-> > change to be processed by device completely, so we might want an asynchronous variant
-> > and then some kind of flush that tells device "you better apply these now".
-> 
-> 
-> Let me explain:
-> 
-> There are two types of devices:
-> 
-> 1) device without on-chip IOMMU, DMA was done via IOMMU API which only
-> support incremental map/unmap
+Sergey Alirzaev wrote on Wed, Feb 05, 2020:
+> A user doesn't necessarily want to wait for all the requested data to
+> be available, since the waiting time is unbounded.
 
-Most IOMMUs have queues nowdays though. Whether APIs within kernel
-expose that matters but we are better off on emulating
-hardware not specific guest behaviour.
+I'm not sure I agree on the argument there: the waiting time is
+unbounded for a single request as well. What's your use case?
 
-> 2) device with on-chip IOMMU, DMA could be done by device driver itself, and
-> we could choose to pass the whole mappings to the driver at one time through
-> vDPA bus operation (set_map)
-> 
-> For vhost-vpda, there're two types of memory mapping:
-> 
-> a) memory table, setup by userspace through VHOST_SET_MEM_TABLE, the whole
-> mapping is updated in this way
-> b) IOTLB API, incrementally done by userspace through vhost message
-> (IOTLB_UPDATE/IOTLB_INVALIDATE)
-> 
-> The current design is:
-> 
-> - Reuse VHOST_SET_MEM_TABLE, and for type 1), we can choose to send diffs
-> through IOMMU API or flush all the mappings then map new ones. For type 2),
-> just send the whole mapping through set_map()
-
-I know that at least for RDMA based things, you can't change
-a mapping if it's active. So drivers will need to figure out the
-differences which just looks ugly: userspace knows what
-it was changing (really just adding/removing some guest memory).
+I think it would be better to describe what you really do with
+O_NONBLOCK that requires this, and not just false theoritical
+arguments.
 
 
+> Signed-off-by: Sergey Alirzaev <l29ah@cock.li>
 
-> - Reuse vhost IOTLB, so for type 1), simply forward update/invalidate
-> request via IOMMU API, for type 2), send IOTLB to vDPA device driver via
-> set_map(), device driver may choose to send diffs or rebuild all mapping at
-> their will
-> 
-> Technically we can use vhost IOTLB API (map/umap) for building
-> VHOST_SET_MEM_TABLE, but to avoid device to process the each request, it
-> looks to me we need new UAPI which seems sub optimal.
-> 
-> What's you thought?
-> 
-> Thanks
+Code-wise looks mostly good, just a nitpick about keeping the total
+variable in p9_client_read_once inline.
 
-I suspect we can't completely avoid a new UAPI.
-
+> ---
+>  include/net/9p/client.h |   2 +
+>  net/9p/client.c         | 133 ++++++++++++++++++++++------------------
+>  2 files changed, 76 insertions(+), 59 deletions(-)
 > 
-> > 
+> --- a/net/9p/client.c
+> +++ b/net/9p/client.c
+> @@ -1548,83 +1548,98 @@ EXPORT_SYMBOL(p9_client_unlinkat);
+>  
+>  int
+>  p9_client_read(struct p9_fid *fid, u64 offset, struct iov_iter *to, int *err)
+> +{
+> +	int total = 0;
+> +	*err = 0;
+> +
+> +	while (iov_iter_count(to)) {
+> +		int count;
+> +
+> +		count = p9_client_read_once(fid, offset, to, err);
+> +		if (!count || *err)
+> +			break;
+> +		offset += count;
+> +		total += count;
+> +	}
+> +	return total;
+> +}
+> +EXPORT_SYMBOL(p9_client_read);
+> +
+> +int
+> +p9_client_read_once(struct p9_fid *fid, u64 offset, struct iov_iter *to,
+> +		    int *err)
+>  {
+>  	struct p9_client *clnt = fid->clnt;
+>  	struct p9_req_t *req;
+>  	int total = 0;
 
+total only makes sense in an iterating p9_client_read, I think it makes
+code harder to read here (can basically use count or 0 directly now)
+
+> -	*err = 0;
+> +	int count = iov_iter_count(to);
+> +	int rsize, non_zc = 0;
+> +	char *dataptr;
+>  
+> +	*err = 0;
+>  	p9_debug(P9_DEBUG_9P, ">>> TREAD fid %d offset %llu %d\n",
+>  		   fid->fid, (unsigned long long) offset, (int)iov_iter_count(to));
+>  
+> -	while (iov_iter_count(to)) {
+> -		int count = iov_iter_count(to);
+> -		int rsize, non_zc = 0;
+> -		char *dataptr;
+> +	rsize = fid->iounit;
+> +	if (!rsize || rsize > clnt->msize - P9_IOHDRSZ)
+> +		rsize = clnt->msize - P9_IOHDRSZ;
+>  
+> -		rsize = fid->iounit;
+> -		if (!rsize || rsize > clnt->msize-P9_IOHDRSZ)
+> -			rsize = clnt->msize - P9_IOHDRSZ;
+> +	if (count < rsize)
+> +		rsize = count;
+>  
+> -		if (count < rsize)
+> -			rsize = count;
+> +	/* Don't bother zerocopy for small IO (< 1024) */
+> +	if (clnt->trans_mod->zc_request && rsize > 1024) {
+> +		/* response header len is 11
+> +		 * PDU Header(7) + IO Size (4)
+> +		 */
+> +		req = p9_client_zc_rpc(clnt, P9_TREAD, to, NULL, rsize,
+> +				       0, 11, "dqd", fid->fid,
+> +				       offset, rsize);
+> +	} else {
+> +		non_zc = 1;
+> +		req = p9_client_rpc(clnt, P9_TREAD, "dqd", fid->fid, offset,
+> +				    rsize);
+> +	}
+> +	if (IS_ERR(req)) {
+> +		*err = PTR_ERR(req);
+> +		return total;
+> +	}
+>  
+> -		/* Don't bother zerocopy for small IO (< 1024) */
+> -		if (clnt->trans_mod->zc_request && rsize > 1024) {
+> -			/*
+> -			 * response header len is 11
+> -			 * PDU Header(7) + IO Size (4)
+> -			 */
+> -			req = p9_client_zc_rpc(clnt, P9_TREAD, to, NULL, rsize,
+> -					       0, 11, "dqd", fid->fid,
+> -					       offset, rsize);
+> -		} else {
+> -			non_zc = 1;
+> -			req = p9_client_rpc(clnt, P9_TREAD, "dqd", fid->fid, offset,
+> -					    rsize);
+> -		}
+> -		if (IS_ERR(req)) {
+> -			*err = PTR_ERR(req);
+> -			break;
+> -		}
+> +	*err = p9pdu_readf(&req->rc, clnt->proto_version,
+> +			   "D", &count, &dataptr);
+> +	if (*err) {
+> +		trace_9p_protocol_dump(clnt, &req->rc);
+> +		p9_tag_remove(clnt, req);
+> +		return total;
+> +	}
+> +	if (rsize < count) {
+> +		pr_err("bogus RREAD count (%d > %d)\n", count, rsize);
+> +		count = rsize;
+> +	}
+>  
+> -		*err = p9pdu_readf(&req->rc, clnt->proto_version,
+> -				   "D", &count, &dataptr);
+> -		if (*err) {
+> -			trace_9p_protocol_dump(clnt, &req->rc);
+> -			p9_tag_remove(clnt, req);
+> -			break;
+> -		}
+> -		if (rsize < count) {
+> -			pr_err("bogus RREAD count (%d > %d)\n", count, rsize);
+> -			count = rsize;
+> -		}
+> +	p9_debug(P9_DEBUG_9P, "<<< RREAD count %d\n", count);
+> +	if (!count) {
+> +		p9_tag_remove(clnt, req);
+> +		return total;
+> +	}
+>  
+> -		p9_debug(P9_DEBUG_9P, "<<< RREAD count %d\n", count);
+> -		if (!count) {
+> -			p9_tag_remove(clnt, req);
+> -			break;
+> -		}
+> +	if (non_zc) {
+> +		int n = copy_to_iter(dataptr, count, to);
+>  
+> -		if (non_zc) {
+> -			int n = copy_to_iter(dataptr, count, to);
+> -			total += n;
+> -			offset += n;
+> -			if (n != count) {
+> -				*err = -EFAULT;
+> -				p9_tag_remove(clnt, req);
+> -				break;
+> -			}
+> -		} else {
+> -			iov_iter_advance(to, count);
+> -			total += count;
+> -			offset += count;
+> +		total += n;
+> +		if (n != count) {
+> +			*err = -EFAULT;
+> +			p9_tag_remove(clnt, req);
+> +			return total;
+>  		}
+> -		p9_tag_remove(clnt, req);
+> +	} else {
+> +		iov_iter_advance(to, count);
+> +		total += count;
+>  	}
+> +	p9_tag_remove(clnt, req);
+>  	return total;
+>  }
+> -EXPORT_SYMBOL(p9_client_read);
+> +EXPORT_SYMBOL(p9_client_read_once);
+>  
+>  int
+>  p9_client_write(struct p9_fid *fid, u64 offset, struct iov_iter *from, int *err)
+
+-- 
+Dominique
