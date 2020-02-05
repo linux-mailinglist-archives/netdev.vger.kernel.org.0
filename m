@@ -2,112 +2,155 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 154AE153755
-	for <lists+netdev@lfdr.de>; Wed,  5 Feb 2020 19:16:55 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1F62615385F
+	for <lists+netdev@lfdr.de>; Wed,  5 Feb 2020 19:43:08 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727524AbgBESQx (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 5 Feb 2020 13:16:53 -0500
-Received: from mail-eopbgr80092.outbound.protection.outlook.com ([40.107.8.92]:31205
-        "EHLO EUR04-VI1-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1727052AbgBESQx (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 5 Feb 2020 13:16:53 -0500
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=ORzfUEcnZBobNc8TXMsw0i+UmyoxtFYr1Ve5TEN1TrVIYn1OLYjq1eOVbt2GlLrlGEOkxuUB4ohe2knHDh4p9rwRly/wbnkJ224e0peBzZeGXBUEtxdZJgkhrthyTf1uy/Lv72S6p9YbfvOJxZBYuZHcCkGLZXeO7oAmVpi+6F4i+UVpgBbVPQ5G7YlDHn8mMclxNXhsyTbThEvDsKerAzx4mNLVozcTLKwCL0GFW0Gk7KFrYJ97iA8hg15w2UnWOTNtiWi/+XItGcEGKRBDMHA4EYXRmp+fqEBhOCXisTs9PhLh/owdKxjc/I6s+IPVTNF0K8lqE7XLHw5i7zgOxA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=OSB5MzRfXJQakJGbLYacEBHjZOe6i+op+Q5LXE2Xblg=;
- b=iioEJiMv3r7oqwnsSwbBMoWjFA+myvusLvboVNJarn57/KgmkAdqtrT3dLQ1zXZl0KLjCKcl49IJqpzzSyUruNtWYFQjAoMY2M4W7LzoKs9edGttwGEWh8aJMOOTxwpT6iqEReP5snlwTQ3Y9OzcLt5d8l1pToshhUOtc2Ov9YSUgDTnQQt31krBs6DZO1pwFnn7pf6fZ2oIFvndnydlRt2UYFw0ub/kwYMZCvEx+Z7WvXAA99cRnCH2kXDw8mew248gzdyBmenPIvi2EeKCqdg6olhWon5YI2pxVbDbIxXnhp97AAITPgO5Jx6/vKwakWZPoeO8DdKmYz0XOMMgUA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=criteo.com; dmarc=pass action=none header.from=criteo.com;
- dkim=pass header.d=criteo.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=criteo.com;
- s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=OSB5MzRfXJQakJGbLYacEBHjZOe6i+op+Q5LXE2Xblg=;
- b=AbYv+J41+sdSdlsJC4f1/aiZNgSTBuvhn9yjTF3q7oeIk7zOdFg1Bj5Td6g6SJfpToLu81UCU8PpDvGTJ9Z8PNoXvdD3ipA93xtyEiBdNVap04qZUeeoLKyzTs1ofMlWWYB4BeqG3V1raEBmEHeDPLNwtn0vA4HlxqOmpzBlpTM=
-Authentication-Results: spf=none (sender IP is )
- smtp.mailfrom=w.dauchy@criteo.com; 
-Received: from DB3PR0402MB3914.eurprd04.prod.outlook.com (52.134.71.157) by
- DB3PR0402MB3849.eurprd04.prod.outlook.com (52.134.71.16) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.2686.33; Wed, 5 Feb 2020 18:16:49 +0000
-Received: from DB3PR0402MB3914.eurprd04.prod.outlook.com
- ([fe80::917:f0e9:9756:589b]) by DB3PR0402MB3914.eurprd04.prod.outlook.com
- ([fe80::917:f0e9:9756:589b%3]) with mapi id 15.20.2686.035; Wed, 5 Feb 2020
- 18:16:49 +0000
-X-Gm-Message-State: APjAAAVvad0aqb/AY1QCb50UaY/JHf+IxduVVCqx8zlciUU4j0dADGDs
-        aC4BXMRUZH/zOqOAWXnw9/Zv1fhmi3OFS7hxoHc=
-X-Google-Smtp-Source: APXvYqy8XxR7F69oVU6pUNZjb7D3sACZg6M/+uRA45cjgTgwYLqknpQq9rvBN1J1zcGmfGVr+eWeRSrpSuRZWQZcnIU=
-X-Received: by 2002:a2e:98ca:: with SMTP id s10mr21237816ljj.160.1580926607709;
- Wed, 05 Feb 2020 10:16:47 -0800 (PST)
-References: <563334a2-8b5d-a80b-30ef-085fdaa2d1a8@6wind.com>
- <20200205162934.220154-3-w.dauchy@criteo.com> <d9913ff8-988a-0c24-d614-ff59815bf6d7@6wind.com>
- <CAJ75kXbS6AU6fLhVbKbvDBhN9-o3L94NsNcywROjU1bH0U4j+w@mail.gmail.com>
-In-Reply-To: <CAJ75kXbS6AU6fLhVbKbvDBhN9-o3L94NsNcywROjU1bH0U4j+w@mail.gmail.com>
-From:   William Dauchy <w.dauchy@criteo.com>
-Date:   Wed, 5 Feb 2020 19:16:35 +0100
-X-Gmail-Original-Message-ID: <CAJ75kXaPqjoSW=WnHzMzSs3Ms+byENzLRdE3UEb+nUXKHbEJ3Q@mail.gmail.com>
-Message-ID: <CAJ75kXaPqjoSW=WnHzMzSs3Ms+byENzLRdE3UEb+nUXKHbEJ3Q@mail.gmail.com>
-Subject: Re: [PATCH v2 2/2] net, ip6_tunnel: enhance tunnel locate with type check
-To:     William Dauchy <w.dauchy@criteo.com>
-Cc:     Nicolas Dichtel <nicolas.dichtel@6wind.com>,
-        NETDEV <netdev@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-X-ClientProxiedBy: FRYP281CA0006.DEUP281.PROD.OUTLOOK.COM (2603:10a6:d10::16)
- To DB3PR0402MB3914.eurprd04.prod.outlook.com (2603:10a6:8:f::29)
+        id S1727162AbgBESnA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 5 Feb 2020 13:43:00 -0500
+Received: from mout.gmx.net ([212.227.15.15]:47867 "EHLO mout.gmx.net"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1727033AbgBESnA (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 5 Feb 2020 13:43:00 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=gmx.net;
+        s=badeba3b8450; t=1580928165;
+        bh=QB2JA70Yoel/lOGMwX7Gp3bN7HfJIhMZjb14SZXE2GA=;
+        h=X-UI-Sender-Class:Subject:To:Cc:References:From:Date:In-Reply-To;
+        b=a3ngBNZzaFTkt4Ad4nczrW3cIIgpFf7iPrDTec0SyEeUQh0SLgfOMrA+jld6eiYAe
+         f7QLXcMFOyvErJfpqS4CZoWhnr+G1HpVPGmFr3nPgn9mvf04s2vjRXLWifHQMIptxm
+         QZdDWCr5o4YmO4RIELtPliQpN6QXSJExMiTWr/Ig=
+X-UI-Sender-Class: 01bb95c1-4bf8-414a-932a-4f6e2808ef9c
+Received: from [192.168.1.183] ([37.4.249.146]) by mail.gmx.com (mrgmx005
+ [212.227.17.190]) with ESMTPSA (Nemesis) id 1MUGe1-1j7Uec2F51-00RGAw; Wed, 05
+ Feb 2020 19:42:45 +0100
+Subject: Re: [PATCH 6/6] net: bcmgenet: reduce severity of missing clock
+ warnings
+To:     Florian Fainelli <florian.fainelli@broadcom.com>,
+        Nicolas Saenz Julienne <nsaenzjulienne@suse.de>,
+        Jeremy Linton <jeremy.linton@arm.com>, netdev@vger.kernel.org
+Cc:     opendmb@gmail.com, f.fainelli@gmail.com, davem@davemloft.net,
+        bcm-kernel-feedback-list@broadcom.com,
+        linux-kernel@vger.kernel.org, andrew@lunn.ch, hkallweit1@gmail.com
+References: <20200201074625.8698-1-jeremy.linton@arm.com>
+ <20200201074625.8698-7-jeremy.linton@arm.com>
+ <2dfd6cd2-1dd0-c8ff-8d83-aed3b4ea7a79@gmx.net>
+ <34aba1d9-5cad-0fee-038d-c5f3bfc9ed30@arm.com>
+ <45e138de5ddd70e8033bdef6484703eed60a9cb7.camel@suse.de>
+ <70a6ad63-dccc-e595-789d-800484197bbe@gmx.net>
+ <e5be3a95-0b7e-370a-2d65-fdeabbdfa187@broadcom.com>
+From:   Stefan Wahren <wahrenst@gmx.net>
+Message-ID: <5523ee3b-b65a-8096-c9a5-dd990cb7080a@gmx.net>
+Date:   Wed, 5 Feb 2020 19:42:42 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.9.0
 MIME-Version: 1.0
-Received: from mail-lj1-f175.google.com (209.85.208.175) by FRYP281CA0006.DEUP281.PROD.OUTLOOK.COM (2603:10a6:d10::16) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.2686.30 via Frontend Transport; Wed, 5 Feb 2020 18:16:48 +0000
-Received: by mail-lj1-f175.google.com with SMTP id a13so3257427ljm.10        for <netdev@vger.kernel.org>; Wed, 05 Feb 2020 10:16:48 -0800 (PST)
-X-Gm-Message-State: APjAAAVvad0aqb/AY1QCb50UaY/JHf+IxduVVCqx8zlciUU4j0dADGDs
-        aC4BXMRUZH/zOqOAWXnw9/Zv1fhmi3OFS7hxoHc=
-X-Google-Smtp-Source: APXvYqy8XxR7F69oVU6pUNZjb7D3sACZg6M/+uRA45cjgTgwYLqknpQq9rvBN1J1zcGmfGVr+eWeRSrpSuRZWQZcnIU=
-X-Received: by 2002:a2e:98ca:: with SMTP id
- s10mr21237816ljj.160.1580926607709; Wed, 05 Feb 2020 10:16:47 -0800 (PST)
-X-Gmail-Original-Message-ID: <CAJ75kXaPqjoSW=WnHzMzSs3Ms+byENzLRdE3UEb+nUXKHbEJ3Q@mail.gmail.com>
-X-Originating-IP: [209.85.208.175]
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: f11c9ca2-7b04-4685-f8ba-08d7aa679113
-X-MS-TrafficTypeDiagnostic: DB3PR0402MB3849:
-X-Microsoft-Antispam-PRVS: <DB3PR0402MB38494C3226E879AEC8D0A769E8020@DB3PR0402MB3849.eurprd04.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:9508;
-X-Forefront-PRVS: 0304E36CA3
-X-Forefront-Antispam-Report: SFV:NSPM;SFS:(10019020)(4636009)(396003)(376002)(39860400002)(346002)(366004)(136003)(189003)(199004)(53546011)(42186006)(66946007)(66556008)(66476007)(186003)(86362001)(478600001)(9686003)(5660300002)(52116002)(6200100001)(26005)(316002)(54906003)(8936002)(81166006)(8676002)(81156014)(4326008)(6862004)(4744005)(2906002)(55446002)(6666004);DIR:OUT;SFP:1102;SCL:1;SRVR:DB3PR0402MB3849;H:DB3PR0402MB3914.eurprd04.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;MX:1;A:1;
-Received-SPF: None (protection.outlook.com: criteo.com does not designate
- permitted sender hosts)
-X-MS-Exchange-SenderADCheck: 1
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: 8HYEBdMwj/XuuZPpwcqEmBv+jCz5bDNkdvVcuTGDyNrWN16zEqAWrboNCE+/rZUc7PXQi3qr0wO9kPk+XpSpZ7Zo4FIjtd0aLxLBLCaxt18Tvx9IVxED9Zz2hll2+g8N9u8HIznvXZHWuAjI3CfX2WFzbv5L5KIGBdNp2n2umXWO7QQBYtfEUmG/3McKo3qUFu1kJ38YButH/BURI2VNmIgxEp4236OStDrQiRYD6Obi2N7Oyz50hoWPMwmrwCvHCDB5FCdt9qzPRIfL+6UrWNDJSdeqpvLNY071W23TQCq24QlGFq6hXJBicpMrAY9KbzoUZ5j1ApeEShjw1in0Eb+9iHNchGls89cFs3QRAfbyGyaRyTtFEDA2vSynW4tfk5nv8Pj5JHxPi5jrReoWlUKOD1QoAh29anI5zZkwayNv1Ungp4pn79SuatxCsqv6
-X-MS-Exchange-AntiSpam-MessageData: v8axYuGTY8JrI2Fzq6qfoagSDuQE46609xyrD8ovsPVOi+mOXw8eOeXHfbdTkpS+ridO6fn7IBUaUealEH188rGxewYnMICq4iCfRk1YDU6j01hIEQo+Xqy3o4db3iue8dM9BFjCjeuLn/iGOuOgXQ==
-X-OriginatorOrg: criteo.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: f11c9ca2-7b04-4685-f8ba-08d7aa679113
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 05 Feb 2020 18:16:49.2530
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 2a35d8fd-574d-48e3-927c-8c398e225a01
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: 9+13n2vzLgYkuuoG+HLfByOXtvZjZLfwmZij80tJIW3axRQ+IGdGl5T4A74uvxvK+KKKZ+N0X2UE9CIyhkPHGQ==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DB3PR0402MB3849
+In-Reply-To: <e5be3a95-0b7e-370a-2d65-fdeabbdfa187@broadcom.com>
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 7bit
+Content-Language: en-US
+X-Provags-ID: V03:K1:byecORi8TWXhBfHT5p8Szo7iz30enBq9Jm2NmCJmJ8zcdNietdK
+ ydDMgge4TPXxs8hzagm3Yt4RQ4ETIXQt50mx47YgDpK2El7uwpPMI0lXC94d51fQDjw7a/I
+ e8kELrv+k6wSPP779xOXo/2iueREqQ9W+hOf0USHDDWKd5ckeqk623LbqVAC72yM2yTNKPF
+ RNJRtQ9m9PK7SPY4CNvkQ==
+X-Spam-Flag: NO
+X-UI-Out-Filterresults: notjunk:1;V03:K0:5sDQ1FJ6zCE=:lIqGyzQ9kktUgn/Wk0HTqF
+ 77WBl0zd+15O4OgV2gQL2H15y9yBQyJR6/he+M0SVHNjJWCea70FaWoSfoA61sksH/YmHjEUa
+ hOMK3YF22f93ri9/hhmwFrIc3XPeIvYWzL9foEqEuRWJmnlaHpodpKYZ8pRa4Zy1LxDjiYySG
+ VWFcOUI/nllFjYxVvmnSyigHHpZhcFHBeE2mVOzhYbkjpSYVMZOtHiVfWfQ7moUc8VY9+u1Xf
+ qSKtwqVUng8lKfSfkt2hE6CD1+l+K9YB9G/cvSdg4A9pvIgTAPTNElwvUx8zJuAZ/hX14R44i
+ IfV7O/N/1qbb4ci8DV0hCM8K+yKBy7Mi9etUK1Ih3Ogf/byytLmNXIfcW/QRKjh9uui4yuz1E
+ eiJuxZixqsbNFnI2LRhA0wSqgyTNIjtWA6nn3XrkPaXAqKiwNFufRSCmXRat18WHyKWcMWFGT
+ Ykzzab3BX80JhuCu0GhF1CWpAcE2uSSQjLhGACw+7INyC1o6W9BJU4idhVtqPp6W21Dn7/ez4
+ 15FebsWf9wxCjqVPLGExwxe0qNBsrDeE+hgfPP90349w0sPljLEshP2Ztf1ulaJk3+a0T/jdK
+ 6/xKYLoIk2tCGyuwV8ljTUuEdVChXA0/oIXzeAPCagm8eGUiiEv5tn80P8D54KD0v6E8Tw28H
+ f9gFN7OdXkdF/JDiqeM+iqO3MIhxL930s7ShJEnTqQ9QZ4cJsJuthqYWsycfaaScE1TJhYVfy
+ PWTnGb98cddES5TCNdskRcq2YMr5ULiok5gwmpQ2xAUFXid98WEzCWgmZUN3aLgFle7dAdeUZ
+ 61Y8Rr70uc77cx290bpM0mesXeSpxRB67V91hGRZpBECE3SOdT7AVeKtAWXzEyxC6B1lDAwWt
+ UkJCVz5U/kzbBUuPnjIMykQXugA0vJsG/R4ysNjCQh7Sb8YbIGpLs9ACaZKK/G+TVJDP1MKu5
+ PW/L6yvvYFe86KfKn/2a5nL2OgGa/RCJiGpNNAbMRhDtxbhkZ7ajZF1HOk7/LfPaZ/BZy5VrU
+ GSFq3onxYAMkJfRjDNE5zLzAvzjFKDgNtMCHrsgC9pgw9em7QfDdBlcEqRwV8ZAFrEqrDbDRo
+ lpE1n4jtVhq+x2hQ7ezVYStViOq3gr1R9yQdkSESSealzG2TcR3cGD+aCtPh6UjPL+OntNTdb
+ 95EQ7UWfaoEORMOOeKc1Q7j2TC0YRMo6thdZajQxJ0nIvFO7ATlh3+sPD95vrdVNho9hf+ji1
+ svwts4Gk+1/ISlkCm
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Feb 5, 2020 at 6:31 PM William Dauchy <w.dauchy@criteo.com> wrote:
-> On Wed, Feb 5, 2020 at 6:01 PM Nicolas Dichtel
-> <nicolas.dichtel@6wind.com> wrote:
-> > Can you elaborate? What problem does this solve?
-> > Which tree are you targeting? net or net-next?
+Hi Florian,
+
+Am 03.02.20 um 22:21 schrieb Florian Fainelli:
+> On 2/3/20 11:08 AM, Stefan Wahren wrote:
+>> Hi,
+>>
+>> Am 03.02.20 um 19:36 schrieb Nicolas Saenz Julienne:
+>>> Hi,
+>>> BTW the patch looks good to me too:
+>>>
+>>> Reviewed-by: Nicolas Saenz Julienne <nsaenzjulienne@suse.de>
+>>>
+>>> On Sat, 2020-02-01 at 13:27 -0600, Jeremy Linton wrote:
+>>>> Hi,
+>>>>
+>>>> First, thanks for looking at this!
+>>>>
+>>>> On 2/1/20 10:44 AM, Stefan Wahren wrote:
+>>>>> Hi Jeremy,
+>>>>>
+>>>>> [add Nicolas as BCM2835 maintainer]
+>>>>>
+>>>>> Am 01.02.20 um 08:46 schrieb Jeremy Linton:
+>>>>>> If one types "failed to get enet clock" or similar into google
+>>>>>> there are ~370k hits. The vast majority are people debugging
+>>>>>> problems unrelated to this adapter, or bragging about their
+>>>>>> rpi's. Given that its not a fatal situation with common DT based
+>>>>>> systems, lets reduce the severity so people aren't seeing failure
+>>>>>> messages in everyday operation.
+>>>>>>
+>>>>> i'm fine with your patch, since the clocks are optional according to the
+>>>>> binding. But instead of hiding of those warning, it would be better to
+>>>>> fix the root cause (missing clocks). Unfortunately i don't have the
+>>>>> necessary documentation, just some answers from the RPi guys.
+>>>> The DT case just added to my ammunition here :)
+>>>>
+>>>> But really, I'm fixing an ACPI problem because the ACPI power management
+>>>> methods are also responsible for managing the clocks. Which means if I
+>>>> don't lower the severity (or otherwise tweak the code path) these errors
+>>>> are going to happen on every ACPI boot.
+>>>>
+>>>>> This is what i got so far:
+>>> Stefan, Apart from the lack of documentation (and maybe also time), is there
+>>> any specific reason you didn't sent the genet clock patch yet? It should be OK
+>>> functionally isn't it?
+>> last time i tried to specify the both clocks as suggest by the binding
+>> document (took genet125 for wol, not sure this is correct), but this
+>> caused an abort on the BCM2711. In the lack of documentation i stopped
+>> further investigations. As i saw that Jeremy send this patch, i wanted
+>> to share my current results and retestet it with this version which
+>> doesn't crash. I don't know the reason why both clocks should be
+>> specified, but this patch should be acceptable since the RPi 4 doesn't
+>> support wake on LAN.
+> Your clock changes look correct, but there is also a CLKGEN register
+> block which has separate clocks for the GENET controller, which lives at
+> register offset 0x7d5e0048 and which has the following layout:
 >
-> I was seeing that as a nice to have for coherency between ip6_tunnel
-> and ip_tunnel. But we can drop this one if we lack of practical
-> example, as I was more concerned about link check in the 1/2 patch.
-> It was more for net in my opinion as I considered it not too invasive.
-
-Ok let's drop that one for now as there is no practical example as of
-today, I will focus on 1/2 around link check.
-
-Thanks,
--- 
-William
+> bit 0: GENET_CLK_250_CLOCK_ENABLE
+> bit 1: GENET_EEE_CLOCK_ENABLE
+> bit 2: GENET_GISB_CLOCK_ENABLE
+> bit 3: GENET_GMII_CLOCK_ENABLE
+> bit 4: GENET_HFB_CLOCK_ENABLE
+> bit 5: GENET_L2_INTR_CLOCK_ENABLE
+> bit 6: GENET_SCB_CLOCK_ENABLE
+> bit 7: GENET_UNIMAC_SYS_RX_CLOCK_ENABLE
+> bit 8: GENET_UNIMAC_SYS_TX_CLOCK_ENABLE
+>
+> you will need all of those clocks turned on for normal operation minus
+> EEE, unless EEE is desirable which is why it is a separate clock. Those
+> clocks default to ON unless turned off, and the main gate that you
+> control is probably enough.
+so you suggest to add these clock gate(s) to the clk-bcm2835 or
+introduce a "clk-genet" from DT perspective?
+>
+> The Pi4 could support Wake-on-LAN with appropriate VPU firmware changes,
+> but I do not believe there is any interest in doing that. I would not
+> "bend" the clock representation just so as to please the driver with its
+> clocking needs.
