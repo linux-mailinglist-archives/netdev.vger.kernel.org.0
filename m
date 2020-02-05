@@ -2,149 +2,58 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 6ADED152734
-	for <lists+netdev@lfdr.de>; Wed,  5 Feb 2020 08:51:06 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E6F8315273C
+	for <lists+netdev@lfdr.de>; Wed,  5 Feb 2020 08:55:41 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727995AbgBEHvD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 5 Feb 2020 02:51:03 -0500
-Received: from us-smtp-1.mimecast.com ([207.211.31.81]:39627 "EHLO
-        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1725468AbgBEHvD (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 5 Feb 2020 02:51:03 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1580889061;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=YQLo/Dujelpm0XrehqZm62mCFlSLkIvoH/a0QZl9D2s=;
-        b=Q99F0HvUrenx935z7sUnwylWNIvHETMvhBqHcQfA5QSeLFP0CivbbCxdWAu86vlMc8HtFB
-        if9r9jUFq5/rKmxd6ngkh/5fUCitC6fr8vRDslnrMJqvA7I4uZH+3H+Eb7XcVFb73Dzzql
-        lArdzsLIhSUG19TjBT6RGs9f34c7wP4=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-177-GBTihHV3M3uxJzsoVeentg-1; Wed, 05 Feb 2020 02:50:59 -0500
-X-MC-Unique: GBTihHV3M3uxJzsoVeentg-1
-Received: from smtp.corp.redhat.com (int-mx05.intmail.prod.int.phx2.redhat.com [10.5.11.15])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 826968010EF;
-        Wed,  5 Feb 2020 07:50:56 +0000 (UTC)
-Received: from [10.72.13.188] (ovpn-13-188.pek2.redhat.com [10.72.13.188])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 8648C7792A;
-        Wed,  5 Feb 2020 07:50:23 +0000 (UTC)
-Subject: Re: [PATCH] vhost: introduce vDPA based backend
-To:     Shahaf Shuler <shahafs@mellanox.com>,
-        Tiwei Bie <tiwei.bie@intel.com>
-Cc:     "mst@redhat.com" <mst@redhat.com>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
-        "virtualization@lists.linux-foundation.org" 
-        <virtualization@lists.linux-foundation.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        Jason Gunthorpe <jgg@mellanox.com>,
-        "rob.miller@broadcom.com" <rob.miller@broadcom.com>,
-        "haotian.wang@sifive.com" <haotian.wang@sifive.com>,
-        "eperezma@redhat.com" <eperezma@redhat.com>,
-        "lulu@redhat.com" <lulu@redhat.com>,
-        Parav Pandit <parav@mellanox.com>,
-        "rdunlap@infradead.org" <rdunlap@infradead.org>,
-        "hch@infradead.org" <hch@infradead.org>,
-        Jiri Pirko <jiri@mellanox.com>,
-        "hanand@xilinx.com" <hanand@xilinx.com>,
-        "mhabets@solarflare.com" <mhabets@solarflare.com>,
-        "maxime.coquelin@redhat.com" <maxime.coquelin@redhat.com>,
-        "lingshan.zhu@intel.com" <lingshan.zhu@intel.com>,
-        "dan.daly@intel.com" <dan.daly@intel.com>,
-        "cunming.liang@intel.com" <cunming.liang@intel.com>,
-        "zhihong.wang@intel.com" <zhihong.wang@intel.com>
-References: <20200131033651.103534-1-tiwei.bie@intel.com>
- <7aab2892-bb19-a06a-a6d3-9c28bc4c3400@redhat.com>
- <20200205020247.GA368700@___>
- <AM0PR0502MB37952015716C1D5E07E390B6C3020@AM0PR0502MB3795.eurprd05.prod.outlook.com>
-From:   Jason Wang <jasowang@redhat.com>
-Message-ID: <112858a4-1a01-f4d7-e41a-1afaaa1cad45@redhat.com>
-Date:   Wed, 5 Feb 2020 15:50:14 +0800
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.8.0
+        id S1726597AbgBEHzk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 5 Feb 2020 02:55:40 -0500
+Received: from sonic302-20.consmr.mail.ne1.yahoo.com ([66.163.186.146]:46727
+        "EHLO sonic302-20.consmr.mail.ne1.yahoo.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1725497AbgBEHzk (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 5 Feb 2020 02:55:40 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=yahoo.com; s=s2048; t=1580889339; bh=YooljpITC31Cc9KXMfJzAPmr/1tCBEdX27fhfqn54Fs=; h=Date:From:Reply-To:Subject:References:From:Subject; b=CZLRjSzjk+gvg/DEZ3fwkdde8YiBz45xYO+89+prgBwCcFEmegDNsbwytPAnrtwOtyglVDfN4NH6wMcP4hbymIgp2xGpUUoQQnY4rXeQUA2CsJXpOpXQmbvHBV79uFscod3ukwXPPDA94fIwo2WzRhFs/ar8BpRIeBNkuAYObXcrStjQiVE57qu/I2o7p42GPH7X3SPZEKTLxfFRYUOpO7x6KpT7sJYrTe7fxEFvDLA1Yl0WpjAZxw1PuHky1FODAJkVac2u3+kFaPCurS52J0cxlGZugSXC6EHDS4ViZ3CfwPFAdvUUtfAWKsjgXshWVIOO+8BHXB+wx7XVgLCLfA==
+X-YMail-OSG: EDOkQ1cVM1ms6763lPiI1gS_V_mRb5xCTj6MVNAntySe7yUg7ChT11GMUETMVM1
+ Qd13mLTHKcIXvGP5mvpTUZ6HYPc1Q_VncWnhvbMHeQsg3vHUv3aWYT_07rOdNkEvi.oOAGdZpdTv
+ lqKnBTv8dkhbJCnEZb0PEU9FfEo4aSSk1RueYR.HRC2HFZplUyugaNl1Km2LAKn7v_S0MFP.jjXg
+ si1yR2imQiMvAC6GyGgM5HnrVvclYqrHyMKoLdhLn1vN_y38IAl3md1NO8IekCcmRyOGLXI5pBKW
+ hw4nV1bcsUIPF2.4YlH8lYPuTrYirFMng8JqnUWAV50gWK16ShV18RQB7OaeYWimwDWTv.o2H666
+ 1HHkGGoIFVvrke14difhCRKj6EYQgh3tnSRXIj25fvRbycatwQnLAUL4zIp2UO0W917RPpge7TYC
+ eJxg_o9bnuUksI_LDCQIGlBaQGl0SGE8TfAHEwgKapVR1W_8E92mcSobYVYXflBGn7gejjcsY7id
+ mVGzHrB2u2XEbJMDPZE7KFn_QB3Vnk2jIzJuDgNIJB_H79nBPRyTHtTosQEOQEJ2Ut.IcPKi5D9x
+ mINuI1szBpzTPFS1RJbz7i_wJUo8JSojILAMIwNZw1qdHOkBnjeDguhz.C.6mOS68K7K6XnnYG1R
+ Ts_DfXZOZYPX1RNJsjXc2ZZynmPPXY.FdqW3lq4655J5eOMHSIE0_L6aemCz5_jVP693jgAjzCdc
+ ZV7b6pP_nLYiQGAxlKHdlPVOOCZyxewEQ.mkFrLK88Lktq100vBKzpOdXBubmeEhxmbIa.5bpR8_
+ Ffar.zdTPPn_6Cg6LKv7HkaJvLHYUHUE8hxxneGfUewsuOts.Q35IxPUhLRUqbGQubfvofSySGGd
+ xpFFRkGPbwleauYkkSfa8HHw1sAMX0liymUTA.qIxD4xYf4zrm9W339sW4QrbC_PxFDc9NKWzCRb
+ VlXOjLhVgrq1URv5DlhgF1bUetnSYxf7gx8AkUQD9jqFtEEf0hwWgLJFIkZBQNKNs64635MON0HO
+ q2KROUhqL88l2ALm3xvbqq8tA2ZZ7WgpdSybm08s1AJvZC8sX4IhJQR.TbkG_jLKPwPipw.4EShv
+ 1svO_Y.kuJbCu8JNiz_rZPbceFYAtPOZgDd5sbsorqJiGF3IWMdeJpq6nWfNm5ZkWfuBHxEt5N8O
+ Dopan.iKTo1UOCoJLil9pzbIUPuCwGjpPXHbhZ0zjuVxWMKWNm7FZKjVUzlS0LoXwrdd_uZfqdLh
+ Qg84.BpG3Mr04SOXIySRE.qFWhRXg_x5nXbJ0ykJU8_qP_HhH3Mo5PDj9Efzjwl4fc6Vq3sI-
+Received: from sonic.gate.mail.ne1.yahoo.com by sonic302.consmr.mail.ne1.yahoo.com with HTTP; Wed, 5 Feb 2020 07:55:39 +0000
+Date:   Wed, 5 Feb 2020 07:55:34 +0000 (UTC)
+From:   Lisa Williams <ah1195485@gmail.com>
+Reply-To: lisawilliams00357@yahoo.com
+Message-ID: <1407876975.669191.1580889334599@mail.yahoo.com>
+Subject:  Hello
 MIME-Version: 1.0
-In-Reply-To: <AM0PR0502MB37952015716C1D5E07E390B6C3020@AM0PR0502MB3795.eurprd05.prod.outlook.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.15
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+References: <1407876975.669191.1580889334599.ref@mail.yahoo.com>
+X-Mailer: WebService/1.1.15158 YMailNodin Mozilla/5.0 (Windows NT 6.1; rv:72.0) Gecko/20100101 Firefox/72.0
+To:     unlisted-recipients:; (no To-header on input)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 
-On 2020/2/5 =E4=B8=8B=E5=8D=883:15, Shahaf Shuler wrote:
-> Wednesday, February 5, 2020 4:03 AM, Tiwei Bie:
->> Subject: Re: [PATCH] vhost: introduce vDPA based backend
->>
->> On Tue, Feb 04, 2020 at 11:30:11AM +0800, Jason Wang wrote:
->>> On 2020/1/31 =E4=B8=8A=E5=8D=8811:36, Tiwei Bie wrote:
->>>> This patch introduces a vDPA based vhost backend. This backend is
->>>> built on top of the same interface defined in virtio-vDPA and
->>>> provides a generic vhost interface for userspace to accelerate the
->>>> virtio devices in guest.
->>>>
->>>> This backend is implemented as a vDPA device driver on top of the
->>>> same ops used in virtio-vDPA. It will create char device entry named
->>>> vhost-vdpa/$vdpa_device_index for userspace to use. Userspace can
->>>> use vhost ioctls on top of this char device to setup the backend.
->>>>
->>>> Signed-off-by: Tiwei Bie <tiwei.bie@intel.com>
-> [...]
->
->>>> +static long vhost_vdpa_do_dma_mapping(struct vhost_vdpa *v) {
->>>> +	/* TODO: fix this */
->>>
->>> Before trying to do this it looks to me we need the following during
->>> the probe
->>>
->>> 1) if set_map() is not supported by the vDPA device probe the IOMMU
->>> that is supported by the vDPA device
->>> 2) allocate IOMMU domain
->>>
->>> And then:
->>>
->>> 3) pin pages through GUP and do proper accounting
->>> 4) store GPA->HPA mapping in the umem
->>> 5) generate diffs of memory table and using IOMMU API to setup the dm=
-a
->>> mapping in this method
->>>
->>> For 1), I'm not sure parent is sufficient for to doing this or need t=
-o
->>> introduce new API like iommu_device in mdev.
->> Agree. We may also need to introduce something like the iommu_device.
->>
-> Would it be better for the map/umnap logic to happen inside each device=
- ?
-> Devices that needs the IOMMU will call iommu APIs from inside the drive=
-r callback.
 
+Hi Dear,
 
-Technically, this can work. But if it can be done by vhost-vpda it will=20
-make the vDPA driver more compact and easier to be implemented.
+I was just going through the Internet search when I found your email address, I want to make a new and special friend, so I decided to contact you to see how we can make it work out if we can. Please I wish you will have the desire with me so that we can get to know each other better and see what happens in future.
 
+My name is Lisa Williams, I am an American, but presently I live in the UK, I will be glad to see your reply for us to know each other better to exchange pictures and details about us
 
-> Devices that has other ways to do the DMA mapping will call the proprie=
-tary APIs.
-
-
-To confirm, do you prefer:
-
-1) map/unmap
-
-or
-
-2) pass all maps at one time?
-
-Thanks
-
-
->
-
+Yours
+Lisa
