@@ -2,139 +2,90 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 08B95152621
-	for <lists+netdev@lfdr.de>; Wed,  5 Feb 2020 06:52:24 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2580F152639
+	for <lists+netdev@lfdr.de>; Wed,  5 Feb 2020 07:20:03 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1725906AbgBEFvV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 5 Feb 2020 00:51:21 -0500
-Received: from us-smtp-2.mimecast.com ([205.139.110.61]:37749 "EHLO
-        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725875AbgBEFvS (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 5 Feb 2020 00:51:18 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1580881877;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=mCCBz5Rdlbkg4ojmDomdGX6wRFkIiLU8SA3hhtwlDwg=;
-        b=CDTocgNrNp/v/MPRdY1Z1xxqJcI6aeDY7cangVdqK8AbeIPTKYirbe48ezIr9SD4E0ycGs
-        OE/J23fr9EYDJso0eoWIcOxpy1LXKxxWzQUYsd6BEGrPX1YQKmTOe58RydpsKGEnnlLijg
-        afxOx7Y3aLl6N68CZckMirWa3CWjS1I=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-6-BTzEyaLKMeuvyVcErxsMpw-1; Wed, 05 Feb 2020 00:51:15 -0500
-X-MC-Unique: BTzEyaLKMeuvyVcErxsMpw-1
-Received: from smtp.corp.redhat.com (int-mx03.intmail.prod.int.phx2.redhat.com [10.5.11.13])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 2C27D1034B21;
-        Wed,  5 Feb 2020 05:51:13 +0000 (UTC)
-Received: from [10.72.13.188] (ovpn-13-188.pek2.redhat.com [10.72.13.188])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 5C1C548;
-        Wed,  5 Feb 2020 05:50:36 +0000 (UTC)
-Subject: Re: [PATCH] vhost: introduce vDPA based backend
-To:     "Michael S. Tsirkin" <mst@redhat.com>
-Cc:     Tiwei Bie <tiwei.bie@intel.com>, linux-kernel@vger.kernel.org,
-        kvm@vger.kernel.org, virtualization@lists.linux-foundation.org,
-        netdev@vger.kernel.org, shahafs@mellanox.com, jgg@mellanox.com,
-        rob.miller@broadcom.com, haotian.wang@sifive.com,
-        eperezma@redhat.com, lulu@redhat.com, parav@mellanox.com,
-        rdunlap@infradead.org, hch@infradead.org, jiri@mellanox.com,
-        hanand@xilinx.com, mhabets@solarflare.com,
-        maxime.coquelin@redhat.com, lingshan.zhu@intel.com,
-        dan.daly@intel.com, cunming.liang@intel.com, zhihong.wang@intel.com
-References: <20200131033651.103534-1-tiwei.bie@intel.com>
- <7aab2892-bb19-a06a-a6d3-9c28bc4c3400@redhat.com>
- <20200204005306-mutt-send-email-mst@kernel.org>
- <cf485e7f-46e3-20d3-8452-e3058b885d0a@redhat.com>
- <20200205020555.GA369236@___>
- <798e5644-ca28-ee46-c953-688af9bccd3b@redhat.com>
- <20200205003048-mutt-send-email-mst@kernel.org>
-From:   Jason Wang <jasowang@redhat.com>
-Message-ID: <eb53d1c2-92ae-febf-f502-2d3e107ee608@redhat.com>
-Date:   Wed, 5 Feb 2020 13:50:28 +0800
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.8.0
+        id S1725875AbgBEGSP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 5 Feb 2020 01:18:15 -0500
+Received: from mail-wm1-f48.google.com ([209.85.128.48]:53476 "EHLO
+        mail-wm1-f48.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725385AbgBEGSP (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 5 Feb 2020 01:18:15 -0500
+Received: by mail-wm1-f48.google.com with SMTP id s10so1073718wmh.3
+        for <netdev@vger.kernel.org>; Tue, 04 Feb 2020 22:18:13 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=resnulli-us.20150623.gappssmtp.com; s=20150623;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=njLcsjhB++HDsqa75PrZ5CIG5guTKmLM3uwLDSIaf6o=;
+        b=aHpXzvNP4YPIJ90EMFgIKL2dJcUmqFKijpBtxPOBF9BWLu9gwnffZXckqTrUC9a1m9
+         57J/H6V6RHZXyH10gx/UGq1tsaikAw0TN+sXKnVKddfIPem6uN2vraPfUAF2c4pNhO5g
+         4KndlzyJgiMXHrkUTb24t1xAXvPDqGxt8Bwtiq+rpq2Sj+paTO7dc1zIpSUJnGBcWexB
+         rqNmgwmX1EMKD8Tgn0vjWiTyJ1vd8zN6IIYWRlk9S/eAnyVyHNovzr4cxn1u+K4VVB8X
+         wlfNDgexosiCn7bivGFwSbCaKoPVN9dnFqxdD6I+tcru7Wu9LRpaC6gl1dFZi9sE9J/V
+         l0rg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=njLcsjhB++HDsqa75PrZ5CIG5guTKmLM3uwLDSIaf6o=;
+        b=PegHpJCyobnvxCvoqwaSBlflVFP1kmRxBayJIp5fturvc5jKAvfMNLPnekIl688FUD
+         H38WLu0wOejhE+b+XTMFWGIVV69UfAiGC5yyWC9sX9aAWoqlE/C++t+xfQTfUphXoimc
+         nYqGZmqSP1LVdFQiIm4ligg7NHoLKZrOpyCkLscx9U438Duw2XtTMeYeMepTlpZJGuIt
+         QTkaYwpA7n1VR31jchn9fk+sIdkBf5QzUsX0wdNJmUsezOcuO6DqY5VfddqC/IqdEZee
+         FwKPszJT08446cmqhPPTurC1LYRFUKt9cRGUIpJotXqEXi9lmoP2ED4dJCKPNyPbFggD
+         FOCA==
+X-Gm-Message-State: APjAAAWojTwYU0GJA1nbQN8V1W+HfQkX5RwKhNF14IAvDLtY+wMcbkUW
+        EggfpwY1utqwOoJbMnQCnW+voQ==
+X-Google-Smtp-Source: APXvYqxaTm8ue5PY+3Uacbw2ws2Z9IsOwpyJvesvFh2YZ8RWXSf7JqmUJPZb3/MNgFUFgThpQEI0/w==
+X-Received: by 2002:a7b:c416:: with SMTP id k22mr3751448wmi.25.1580883493121;
+        Tue, 04 Feb 2020 22:18:13 -0800 (PST)
+Received: from localhost (jirka.pirko.cz. [84.16.102.26])
+        by smtp.gmail.com with ESMTPSA id k16sm35563149wru.0.2020.02.04.22.18.12
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 04 Feb 2020 22:18:12 -0800 (PST)
+Date:   Wed, 5 Feb 2020 07:18:11 +0100
+From:   Jiri Pirko <jiri@resnulli.us>
+To:     Jacob Keller <jacob.e.keller@intel.com>
+Cc:     netdev@vger.kernel.org, valex@mellanox.com, parav@mellanox.com
+Subject: Re: [net] devlink: report 0 after hitting end in region read
+Message-ID: <20200205061811.GA2159@nanopsycho>
+References: <20200204235950.2209828-1-jacob.e.keller@intel.com>
 MIME-Version: 1.0
-In-Reply-To: <20200205003048-mutt-send-email-mst@kernel.org>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.13
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20200204235950.2209828-1-jacob.e.keller@intel.com>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-
-On 2020/2/5 =E4=B8=8B=E5=8D=881:31, Michael S. Tsirkin wrote:
-> On Wed, Feb 05, 2020 at 11:12:21AM +0800, Jason Wang wrote:
->> On 2020/2/5 =E4=B8=8A=E5=8D=8810:05, Tiwei Bie wrote:
->>> On Tue, Feb 04, 2020 at 02:46:16PM +0800, Jason Wang wrote:
->>>> On 2020/2/4 =E4=B8=8B=E5=8D=882:01, Michael S. Tsirkin wrote:
->>>>> On Tue, Feb 04, 2020 at 11:30:11AM +0800, Jason Wang wrote:
->>>>>> 5) generate diffs of memory table and using IOMMU API to setup the=
- dma
->>>>>> mapping in this method
->>>>> Frankly I think that's a bunch of work. Why not a MAP/UNMAP interfa=
-ce?
->>>>>
->>>> Sure, so that basically VHOST_IOTLB_UPDATE/INVALIDATE I think?
->>> Do you mean we let userspace to only use VHOST_IOTLB_UPDATE/INVALIDAT=
-E
->>> to do the DMA mapping in vhost-vdpa case? When vIOMMU isn't available=
-,
->>> userspace will set msg->iova to GPA, otherwise userspace will set
->>> msg->iova to GIOVA, and vhost-vdpa module will get HPA from msg->uadd=
-r?
->>>
->>> Thanks,
->>> Tiwei
->> I think so. Michael, do you think this makes sense?
->>
->> Thanks
-> to make sure, could you post the suggested argument format for
-> these ioctls?
+Wed, Feb 05, 2020 at 12:59:50AM CET, jacob.e.keller@intel.com wrote:
+>commit fdd41ec21e15 ("devlink: Return right error code in case of errors
+>for region read") modified the region read code to report errors
+>properly in unexpected cases.
 >
+>In the case where the start_offset and ret_offset match, it unilaterally
+>converted this into an error. This causes an issue for the "dump"
+>version of the command. In this case, the devlink region dump will
+>always report an invalid argument:
+>
+>000000000000ffd0 ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff
+>000000000000ffe0 ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff
+>devlink answers: Invalid argument
+>000000000000fff0 ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff
+>
+>This occurs because the expected flow for the dump is to return 0 after
+>there is no further data.
+>
+>The simplest fix would be to stop converting the error code to -EINVAL
+>if start_offset == ret_offset. However, avoid unnecessary work by
+>checking for when start_offset is larger than the region size and
+>returning 0 upfront.
+>
+>Fixes: fdd41ec21e15 ("devlink: Return right error code in case of errors for region read")
+>Signed-off-by: Jacob Keller <jacob.e.keller@intel.com>
 
-It's the existed uapi:
+Acked-by: Jiri Pirko <jiri@mellanox.com>
 
-/* no alignment requirement */
-struct vhost_iotlb_msg {
- =C2=A0=C2=A0=C2=A0 __u64 iova;
- =C2=A0=C2=A0=C2=A0 __u64 size;
- =C2=A0=C2=A0=C2=A0 __u64 uaddr;
-#define VHOST_ACCESS_RO=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 0x1
-#define VHOST_ACCESS_WO=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 0x2
-#define VHOST_ACCESS_RW=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 0x3
- =C2=A0=C2=A0=C2=A0 __u8 perm;
-#define VHOST_IOTLB_MISS=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
-=A0=C2=A0 1
-#define VHOST_IOTLB_UPDATE=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
- 2
-#define VHOST_IOTLB_INVALIDATE=C2=A0=C2=A0=C2=A0=C2=A0 3
-#define VHOST_IOTLB_ACCESS_FAIL=C2=A0=C2=A0=C2=A0 4
- =C2=A0=C2=A0=C2=A0 __u8 type;
-};
-
-#define VHOST_IOTLB_MSG 0x1
-#define VHOST_IOTLB_MSG_V2 0x2
-
-struct vhost_msg {
- =C2=A0=C2=A0=C2=A0 int type;
- =C2=A0=C2=A0=C2=A0 union {
- =C2=A0=C2=A0=C2=A0 =C2=A0=C2=A0=C2=A0 struct vhost_iotlb_msg iotlb;
- =C2=A0=C2=A0=C2=A0 =C2=A0=C2=A0=C2=A0 __u8 padding[64];
- =C2=A0=C2=A0=C2=A0 };
-};
-
-struct vhost_msg_v2 {
- =C2=A0=C2=A0=C2=A0 __u32 type;
- =C2=A0=C2=A0=C2=A0 __u32 reserved;
- =C2=A0=C2=A0=C2=A0 union {
- =C2=A0=C2=A0=C2=A0 =C2=A0=C2=A0=C2=A0 struct vhost_iotlb_msg iotlb;
- =C2=A0=C2=A0=C2=A0 =C2=A0=C2=A0=C2=A0 __u8 padding[64];
- =C2=A0=C2=A0=C2=A0 };
-};
-
+Thanks!
