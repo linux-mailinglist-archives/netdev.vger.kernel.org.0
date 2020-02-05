@@ -2,89 +2,235 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 819FA15398A
-	for <lists+netdev@lfdr.de>; Wed,  5 Feb 2020 21:32:19 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 88BC31539A2
+	for <lists+netdev@lfdr.de>; Wed,  5 Feb 2020 21:41:20 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727116AbgBEUcP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 5 Feb 2020 15:32:15 -0500
-Received: from mail-pj1-f68.google.com ([209.85.216.68]:55865 "EHLO
-        mail-pj1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726534AbgBEUcO (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 5 Feb 2020 15:32:14 -0500
-Received: by mail-pj1-f68.google.com with SMTP id d5so1462359pjz.5;
-        Wed, 05 Feb 2020 12:32:14 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id;
-        bh=5k3GTO4Ci6TDhcdvKol5kmWU37sOCm3ftBm1LMOT+MM=;
-        b=EoTJJkWz3RFGJjnoqsl1kIYmXpckaA6QnVfPv57Gaoqksw6p/PLC0FZMtQHJMHC+u3
-         cEoZttq7yhX163EL+5v2FPuvlZaiUrLevVt8kZhCmrZUiESbOc6LOJpjyShRsU/KzG+a
-         Wl8LAs/yQOKzTZiHESFFZBd6vpwXffJTtoUj/UuwG4DilKnhAfQMNjN6h2q8MxsWiNzX
-         8WF8VLXdHsQiW63sillbtyQnFRBQPtCUok0Lv6XOQlIhfAxggGEddsjsiY57920Eql60
-         LBnPE4qS0goIwf3CCK8RBgZdRhuUoAPTm4DKe0vpN7R3wY8gLnAn9/SfETvunDcaWDRW
-         FzqA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id;
-        bh=5k3GTO4Ci6TDhcdvKol5kmWU37sOCm3ftBm1LMOT+MM=;
-        b=qJm8irkng4140OQf8VmFGck1/4K7U3QL+8YF/3vdbVtQRNh7FIm6obz6qIH3kVpRCV
-         9vPRixNvXYzJ6zaEnlN5UrnpojInpMcErWbInlOemdbyZAJmZwgUncmITxiD/QA00jY7
-         YtpssumXDHSnn2SiJWqHp/uWoVnMP9rjHYJCcBUeVfUBpEDAB8oMBty7OXXuZj4aSlV1
-         A+3zsy+9Tp8/qSGcgQ5ft5kjJyqoICwuHCibl91cEANGZGMw91UQjJnIjxxtSZY0wa5y
-         HW/x0fJqkfivpgsIcokOE8KFFdX3vaYAfUn+AcCULb/zdW/W7q8E7v0CeU1J4uB+/RXL
-         6SZA==
-X-Gm-Message-State: APjAAAXm7+a5v+lD7BNBysJtOmf9S08q+xxiFgk0KZIIJkLc+1E79/50
-        cbIbP+NlEGBhV39CWvc4zixMrUiA
-X-Google-Smtp-Source: APXvYqzlQzWTQdLMhCSUkxHMjXcnATWIB7EGLMW8mc1KF/nm7DXsGGrcx1r2LZ4t6dL1GVUamCo7Ng==
-X-Received: by 2002:a17:90a:8545:: with SMTP id a5mr7666841pjw.43.1580934733817;
-        Wed, 05 Feb 2020 12:32:13 -0800 (PST)
-Received: from fainelli-desktop.igp.broadcom.net ([192.19.223.252])
-        by smtp.gmail.com with ESMTPSA id a22sm375939pfk.108.2020.02.05.12.32.12
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 05 Feb 2020 12:32:13 -0800 (PST)
-From:   Florian Fainelli <f.fainelli@gmail.com>
-To:     netdev@vger.kernel.org
-Cc:     Florian Fainelli <f.fainelli@gmail.com>,
+        id S1727178AbgBEUlO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 5 Feb 2020 15:41:14 -0500
+Received: from mx1.cock.li ([185.10.68.5]:45703 "EHLO cock.li"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1726534AbgBEUlN (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 5 Feb 2020 15:41:13 -0500
+X-Spam-Checker-Version: SpamAssassin 3.4.2 (2018-09-13) on cock.li
+X-Spam-Level: 
+X-Spam-Status: No, score=0.7 required=5.0 tests=BAYES_50,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,NO_RECEIVED,NO_RELAYS shortcircuit=_SCTYPE_
+        autolearn=disabled version=3.4.2
+From:   Sergey Alirzaev <l29ah@cock.li>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=cock.li; s=mail;
+        t=1580935270; bh=ntRFvU3hcsMEE34oypcg9/W6Ep/xOHm+MQXdA0Es7h4=;
+        h=From:To:Cc:Subject:Date:From;
+        b=NW7pcRwCupXSD4j8s711wENm+UqaKYaVIKzE4QcwCDYYhcWJmDlASquy90LYs00Wr
+         n515bEcisaEFfsw8CAxCbBakEl7EHaAgYB17BtTVG9hMcCzEydQTVKw/847pytpLiY
+         qLMLrvl5DePK1tWkqygcuVe3zig4jJAYWgtDCdhKwqumZOOMpa6U7kT+k3iRZiEcRX
+         ABKl30NZVG+ytvPOVg0h3OFYGja/ZnFFJKC1+iHEEY6DcoKtHYWz4xF22JMPXNChYT
+         tf2x3PyS1OcxHRipU7rQG7ZmBmHtmvF3JEZvsN3is1Ozk9cu1YNgZb7SlD5uuJ1YX0
+         XxoGy8oxzjguA==
+To:     v9fs-developer@lists.sourceforge.net
+Cc:     Eric Van Hensbergen <ericvh@gmail.com>,
+        Latchesar Ionkov <lucho@ionkov.net>,
+        Dominique Martinet <asmadeus@codewreck.org>,
         "David S. Miller" <davem@davemloft.net>,
-        bcm-kernel-feedback-list@broadcom.com (open list:BROADCOM SYSTEMPORT
-        ETHERNET DRIVER), linux-kernel@vger.kernel.org (open list)
-Subject: [PATCH net] net: systemport: Avoid RBUF stuck in Wake-on-LAN mode
-Date:   Wed,  5 Feb 2020 12:32:04 -0800
-Message-Id: <20200205203204.14511-1-f.fainelli@gmail.com>
-X-Mailer: git-send-email 2.17.1
+        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Sergey Alirzaev <l29ah@cock.li>
+Subject: [PATCH] 9pnet: allow making incomplete read requests
+Date:   Wed,  5 Feb 2020 23:40:53 +0300
+Message-Id: <20200205204053.12751-1-l29ah@cock.li>
+X-Mailer: git-send-email 2.25.0
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-After a number of suspend and resume cycles, it is possible for the RBUF
-to be stuck in Wake-on-LAN mode, despite the MPD enable bit being
-cleared which instructed the RBUF to exit that mode.
+A user doesn't necessarily want to wait for all the requested data to
+be available, since the waiting time for each request is unbounded.
 
-Avoid creating that problematic condition by clearing the RX_EN and
-TX_EN bits in the UniMAC prior to disable the Magic Packet Detector
-logic which is guaranteed to make the RBUF exit Wake-on-LAN mode.
+The new method permits sending one read request at a time and getting
+the response ASAP, allowing to use 9pnet with synthetic file systems
+representing arbitrary data streams.
 
-Fixes: 83e82f4c706b ("net: systemport: add Wake-on-LAN support")
-Signed-off-by: Florian Fainelli <f.fainelli@gmail.com>
+Signed-off-by: Sergey Alirzaev <l29ah@cock.li>
 ---
- drivers/net/ethernet/broadcom/bcmsysport.c | 3 +++
- 1 file changed, 3 insertions(+)
+ include/net/9p/client.h |   2 +
+ net/9p/client.c         | 135 ++++++++++++++++++++++------------------
+ 2 files changed, 76 insertions(+), 61 deletions(-)
 
-diff --git a/drivers/net/ethernet/broadcom/bcmsysport.c b/drivers/net/ethernet/broadcom/bcmsysport.c
-index f07ac0e0af59..e0611cba87f9 100644
---- a/drivers/net/ethernet/broadcom/bcmsysport.c
-+++ b/drivers/net/ethernet/broadcom/bcmsysport.c
-@@ -2736,6 +2736,9 @@ static int __maybe_unused bcm_sysport_resume(struct device *d)
+diff --git a/include/net/9p/client.h b/include/net/9p/client.h
+index acc60d8a3b3b..f6c890e94f87 100644
+--- a/include/net/9p/client.h
++++ b/include/net/9p/client.h
+@@ -200,6 +200,8 @@ int p9_client_fsync(struct p9_fid *fid, int datasync);
+ int p9_client_remove(struct p9_fid *fid);
+ int p9_client_unlinkat(struct p9_fid *dfid, const char *name, int flags);
+ int p9_client_read(struct p9_fid *fid, u64 offset, struct iov_iter *to, int *err);
++int p9_client_read_once(struct p9_fid *fid, u64 offset, struct iov_iter *to,
++		int *err);
+ int p9_client_write(struct p9_fid *fid, u64 offset, struct iov_iter *from, int *err);
+ int p9_client_readdir(struct p9_fid *fid, char *data, u32 count, u64 offset);
+ int p9dirent_read(struct p9_client *clnt, char *buf, int len,
+diff --git a/net/9p/client.c b/net/9p/client.c
+index 1d48afc7033c..240d7c05b282 100644
+--- a/net/9p/client.c
++++ b/net/9p/client.c
+@@ -1549,82 +1549,95 @@ EXPORT_SYMBOL(p9_client_unlinkat);
+ int
+ p9_client_read(struct p9_fid *fid, u64 offset, struct iov_iter *to, int *err)
+ {
+-	struct p9_client *clnt = fid->clnt;
+-	struct p9_req_t *req;
+ 	int total = 0;
+ 	*err = 0;
  
- 	umac_reset(priv);
- 
-+	/* Disable the UniMAC RX/TX */
-+	umac_enable_set(priv, CMD_RX_EN | CMD_TX_EN, 0);
++	while (iov_iter_count(to)) {
++		int count;
 +
- 	/* We may have been suspended and never received a WOL event that
- 	 * would turn off MPD detection, take care of that now
- 	 */
++		count = p9_client_read_once(fid, offset, to, err);
++		if (!count || *err)
++			break;
++		offset += count;
++		total += count;
++	}
++	return total;
++}
++EXPORT_SYMBOL(p9_client_read);
++
++int
++p9_client_read_once(struct p9_fid *fid, u64 offset, struct iov_iter *to,
++		    int *err)
++{
++	struct p9_client *clnt = fid->clnt;
++	struct p9_req_t *req;
++	int count = iov_iter_count(to);
++	int rsize, non_zc = 0;
++	char *dataptr;
++
++	*err = 0;
+ 	p9_debug(P9_DEBUG_9P, ">>> TREAD fid %d offset %llu %d\n",
+ 		   fid->fid, (unsigned long long) offset, (int)iov_iter_count(to));
+ 
+-	while (iov_iter_count(to)) {
+-		int count = iov_iter_count(to);
+-		int rsize, non_zc = 0;
+-		char *dataptr;
++	rsize = fid->iounit;
++	if (!rsize || rsize > clnt->msize - P9_IOHDRSZ)
++		rsize = clnt->msize - P9_IOHDRSZ;
+ 
+-		rsize = fid->iounit;
+-		if (!rsize || rsize > clnt->msize-P9_IOHDRSZ)
+-			rsize = clnt->msize - P9_IOHDRSZ;
++	if (count < rsize)
++		rsize = count;
+ 
+-		if (count < rsize)
+-			rsize = count;
++	/* Don't bother zerocopy for small IO (< 1024) */
++	if (clnt->trans_mod->zc_request && rsize > 1024) {
++		/* response header len is 11
++		 * PDU Header(7) + IO Size (4)
++		 */
++		req = p9_client_zc_rpc(clnt, P9_TREAD, to, NULL, rsize,
++				       0, 11, "dqd", fid->fid,
++				       offset, rsize);
++	} else {
++		non_zc = 1;
++		req = p9_client_rpc(clnt, P9_TREAD, "dqd", fid->fid, offset,
++				    rsize);
++	}
++	if (IS_ERR(req)) {
++		*err = PTR_ERR(req);
++		return 0;
++	}
+ 
+-		/* Don't bother zerocopy for small IO (< 1024) */
+-		if (clnt->trans_mod->zc_request && rsize > 1024) {
+-			/*
+-			 * response header len is 11
+-			 * PDU Header(7) + IO Size (4)
+-			 */
+-			req = p9_client_zc_rpc(clnt, P9_TREAD, to, NULL, rsize,
+-					       0, 11, "dqd", fid->fid,
+-					       offset, rsize);
+-		} else {
+-			non_zc = 1;
+-			req = p9_client_rpc(clnt, P9_TREAD, "dqd", fid->fid, offset,
+-					    rsize);
+-		}
+-		if (IS_ERR(req)) {
+-			*err = PTR_ERR(req);
+-			break;
+-		}
++	*err = p9pdu_readf(&req->rc, clnt->proto_version,
++			   "D", &count, &dataptr);
++	if (*err) {
++		trace_9p_protocol_dump(clnt, &req->rc);
++		p9_tag_remove(clnt, req);
++		return 0;
++	}
++	if (rsize < count) {
++		pr_err("bogus RREAD count (%d > %d)\n", count, rsize);
++		count = rsize;
++	}
+ 
+-		*err = p9pdu_readf(&req->rc, clnt->proto_version,
+-				   "D", &count, &dataptr);
+-		if (*err) {
+-			trace_9p_protocol_dump(clnt, &req->rc);
+-			p9_tag_remove(clnt, req);
+-			break;
+-		}
+-		if (rsize < count) {
+-			pr_err("bogus RREAD count (%d > %d)\n", count, rsize);
+-			count = rsize;
+-		}
++	p9_debug(P9_DEBUG_9P, "<<< RREAD count %d\n", count);
++	if (!count) {
++		p9_tag_remove(clnt, req);
++		return 0;
++	}
+ 
+-		p9_debug(P9_DEBUG_9P, "<<< RREAD count %d\n", count);
+-		if (!count) {
+-			p9_tag_remove(clnt, req);
+-			break;
+-		}
++	if (non_zc) {
++		int n = copy_to_iter(dataptr, count, to);
+ 
+-		if (non_zc) {
+-			int n = copy_to_iter(dataptr, count, to);
+-			total += n;
+-			offset += n;
+-			if (n != count) {
+-				*err = -EFAULT;
+-				p9_tag_remove(clnt, req);
+-				break;
+-			}
+-		} else {
+-			iov_iter_advance(to, count);
+-			total += count;
+-			offset += count;
++		if (n != count) {
++			*err = -EFAULT;
++			p9_tag_remove(clnt, req);
++			return n;
+ 		}
+-		p9_tag_remove(clnt, req);
++	} else {
++		iov_iter_advance(to, count);
++		count;
+ 	}
+-	return total;
++	p9_tag_remove(clnt, req);
++	return count;
+ }
+-EXPORT_SYMBOL(p9_client_read);
++EXPORT_SYMBOL(p9_client_read_once);
+ 
+ int
+ p9_client_write(struct p9_fid *fid, u64 offset, struct iov_iter *from, int *err)
 -- 
-2.17.1
+2.25.0
 
