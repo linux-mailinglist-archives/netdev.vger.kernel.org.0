@@ -2,58 +2,70 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 9D6DF1534F9
-	for <lists+netdev@lfdr.de>; Wed,  5 Feb 2020 17:07:54 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id ADD8415353A
+	for <lists+netdev@lfdr.de>; Wed,  5 Feb 2020 17:30:30 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727162AbgBEQHq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 5 Feb 2020 11:07:46 -0500
-Received: from nautica.notk.org ([91.121.71.147]:32879 "EHLO nautica.notk.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726534AbgBEQHp (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 5 Feb 2020 11:07:45 -0500
-Received: by nautica.notk.org (Postfix, from userid 1001)
-        id 738DAC009; Wed,  5 Feb 2020 17:07:44 +0100 (CET)
-Date:   Wed, 5 Feb 2020 17:07:29 +0100
-From:   Dominique Martinet <asmadeus@codewreck.org>
-To:     l29ah@cock.li
-Cc:     v9fs-developer@lists.sourceforge.net,
-        Eric Van Hensbergen <ericvh@gmail.com>,
-        Latchesar Ionkov <lucho@ionkov.net>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 1/2] 9pnet: allow making incomplete read requests
-Message-ID: <20200205160729.GA10862@nautica>
-References: <20200205003457.24340-1-l29ah@cock.li>
- <20200205073504.GA16626@nautica>
- <20200205154829.wbgdp2r4gslnozpa@l29ah-x201.l29ah-x201>
+        id S1727355AbgBEQa1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 5 Feb 2020 11:30:27 -0500
+Received: from mail-wm1-f48.google.com ([209.85.128.48]:50732 "EHLO
+        mail-wm1-f48.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726359AbgBEQa1 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 5 Feb 2020 11:30:27 -0500
+Received: by mail-wm1-f48.google.com with SMTP id a5so3177749wmb.0
+        for <netdev@vger.kernel.org>; Wed, 05 Feb 2020 08:30:24 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=BgtBpQ0rPqBXxJtk2kqAD5SKstAmMUuV7OwaT5fiB2c=;
+        b=k5qULNi4Hdwrq8xvPj9dtgtta/kR6ooaEYwojiqaQZyxqbCt/ZPjSt0hxD37Aj+lym
+         Bds9HYYI42KeUqf6yw+YOHSjhAUN0RGOs6+ShGwQC59JcFHmAt59fQIKFfgsWFKLlIIl
+         rt/J7Ix7Ij7ZLs7tnk24YTwZUwXwTE/OxPpGYXs8FMWoZN4VxuY2dllr1Uy1a584sT2e
+         j7yDH4XMyN3onBHZ/4S7EmDM2hObp1j94XkoENQRPpuN7ISy4TktfHqNKHq+5oF849QD
+         aVOcC6sg0b8/Ar69svOtqzSDlCkBp5UuuAK0y8x5sBso1OCbYcxlq9Bx7SUfqOFNlrBi
+         O8TQ==
+X-Gm-Message-State: APjAAAVQnm3H705xVXn/pT2s+PzcMBdHyRn+7KBF4pWfPa1BGt9DHups
+        XBIDuFv1WOUWFOB8FkS6MslAe2MN5B8=
+X-Google-Smtp-Source: APXvYqwyMR8QSXxGvZMwBYGvCRzNYxs9Couf9NsKq3Apxbsjh0BIvRFzokfHuge6+eiAzMO4DjCsfw==
+X-Received: by 2002:a1c:4c0c:: with SMTP id z12mr6494673wmf.63.1580920223487;
+        Wed, 05 Feb 2020 08:30:23 -0800 (PST)
+Received: from dontpanic.criteois.lan ([91.199.242.236])
+        by smtp.gmail.com with ESMTPSA id b10sm413610wrw.61.2020.02.05.08.30.22
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 05 Feb 2020 08:30:22 -0800 (PST)
+From:   William Dauchy <w.dauchy@criteo.com>
+To:     netdev@vger.kernel.org
+Cc:     Nicolas Dichtel <nicolas.dichtel@6wind.com>,
+        William Dauchy <w.dauchy@criteo.com>
+Subject: [PATCH v2 0/2] net, ip6_tunnel: enhance tunnel locate
+Date:   Wed,  5 Feb 2020 17:29:32 +0100
+Message-Id: <20200205162934.220154-1-w.dauchy@criteo.com>
+X-Mailer: git-send-email 2.24.1
+In-Reply-To: <563334a2-8b5d-a80b-30ef-085fdaa2d1a8@6wind.com>
+References: <563334a2-8b5d-a80b-30ef-085fdaa2d1a8@6wind.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <20200205154829.wbgdp2r4gslnozpa@l29ah-x201.l29ah-x201>
-User-Agent: Mutt/1.5.21 (2010-09-15)
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-l29ah@cock.li wrote on Wed, Feb 05, 2020:
-> On Wed, Feb 05, 2020 at 08:35:04AM +0100, Dominique Martinet wrote:
-> > I'm not sure I agree on the argument there: the waiting time is
-> > unbounded for a single request as well. What's your use case?
-> 
-> I want to interface with synthetic file systems that represent
-> arbitrary data streams.
-> The one where i've hit the problem is reading the log of a XMPP chat
-> client that blocks if there's no new data available.
+While trying to create additional ip6tnl interfaces, I noted behavior
+was different from ip_tunnel, especially when you need to create a new
+tunnel in order to make use for x-netns communication between root
+namespace and another one. It is an issue when you do not have specific
+remote/local address.
 
-Definitely a valid use case for 9p, please rephrase your commit message
-to describe the problem a bit better.
+changed in V2:
+- splitted patch in two parts for link/type parameter
 
-I'll wait for a v2 removing the 'total' variable from
-p9_client_read_once anyway, unless you disagree.
+William Dauchy (2):
+  net, ip6_tunnel: enhance tunnel locate with link check
+  net, ip6_tunnel: enhance tunnel locate with type check
 
+ net/ipv6/ip6_tunnel.c | 16 +++++++++-------
+ 1 file changed, 9 insertions(+), 7 deletions(-)
 
-Thanks,
 -- 
-Dominique
+2.24.1
+
