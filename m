@@ -2,91 +2,139 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 3675C152606
-	for <lists+netdev@lfdr.de>; Wed,  5 Feb 2020 06:34:08 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 08B95152621
+	for <lists+netdev@lfdr.de>; Wed,  5 Feb 2020 06:52:24 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726302AbgBEFeD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 5 Feb 2020 00:34:03 -0500
-Received: from us-smtp-1.mimecast.com ([205.139.110.61]:46586 "EHLO
-        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1725875AbgBEFeD (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 5 Feb 2020 00:34:03 -0500
+        id S1725906AbgBEFvV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 5 Feb 2020 00:51:21 -0500
+Received: from us-smtp-2.mimecast.com ([205.139.110.61]:37749 "EHLO
+        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725875AbgBEFvS (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 5 Feb 2020 00:51:18 -0500
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1580880842;
+        s=mimecast20190719; t=1580881877;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=UpoA79PTiO2rp87/4RjJ0Oaw1CL7CM0sYNu+diR+ohU=;
-        b=g6qCyz0sGTDSfWDlqn1tcafxWSNTrYjr8duwJAvjkl4UiZzf9+qsVhntYUYHtElEavLDty
-        0xmqencx0UBit5uWnps2XVyUvCpO7je4r3QxFGLoajc3gMMkW+BZZZbUsQeMrkcH0EpwnX
-        ayiSzmVUb0HZVjwXyMGJJ71iSUWNSeY=
-Received: from mail-qv1-f69.google.com (mail-qv1-f69.google.com
- [209.85.219.69]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-412-fM3p0apMPxWu8c2qhc81IQ-1; Wed, 05 Feb 2020 00:33:58 -0500
-X-MC-Unique: fM3p0apMPxWu8c2qhc81IQ-1
-Received: by mail-qv1-f69.google.com with SMTP id d7so804779qvq.12
-        for <netdev@vger.kernel.org>; Tue, 04 Feb 2020 21:33:58 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=UpoA79PTiO2rp87/4RjJ0Oaw1CL7CM0sYNu+diR+ohU=;
-        b=i7pC0qnAbUIEhpqIaz0AIIwyfhiz6H5fs3EEr4gmR2UA3uSX4oBLiWVPkcGpV4kTcL
-         U91W82X7Lunz3bCjOyBxZGcurDQSQi88cX7Bw05n73YbgfNOIS5bg1bpkVOZ6I0RxRe+
-         7KwZxKkOPXx7g0qc92AXbAo8uPGEHD2GTYGjpjMaqGDgb4p8G21RkY3CGksswWGm3KX3
-         f+o1lTRsVecf9HtMK6/8xCMJdkGMmrjUvX7f+jhxKe09BRmH5qA/uZYE9cVj29Tr4Qtd
-         j6r8CttQN2zB/tpbXEDL1RlvMjo9f9bW1IT4gBNJMSMadWMcIIwTjychL7VcdCgRo5Yd
-         LHTw==
-X-Gm-Message-State: APjAAAUXgsjEzr13oAhbafCl264PP0XISnIqnpM5jrg336f5tEtKTQz8
-        T/Ja/G/GGfFOes2Tucf0Y6wZYd2eSeFIFZpY5MxNkYUOM41SS1yT0eIn8WyhQYOwHNG4lHTJyF6
-        QsvEMi9d4wrMEg8FP
-X-Received: by 2002:ae9:c10b:: with SMTP id z11mr31554693qki.157.1580880838437;
-        Tue, 04 Feb 2020 21:33:58 -0800 (PST)
-X-Google-Smtp-Source: APXvYqyPyGS4sGVa29gfwEv/nW9Jz92sfCSHCicovqzsWK08mnYnXlDIxmWkXBF3U8uJQk1Lyqq61A==
-X-Received: by 2002:ae9:c10b:: with SMTP id z11mr31554675qki.157.1580880838213;
-        Tue, 04 Feb 2020 21:33:58 -0800 (PST)
-Received: from redhat.com (bzq-79-176-41-183.red.bezeqint.net. [79.176.41.183])
-        by smtp.gmail.com with ESMTPSA id r3sm3624696qtc.85.2020.02.04.21.33.54
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 04 Feb 2020 21:33:57 -0800 (PST)
-Date:   Wed, 5 Feb 2020 00:33:52 -0500
-From:   "Michael S. Tsirkin" <mst@redhat.com>
-To:     Yuya Kusakabe <yuya.kusakabe@gmail.com>
-Cc:     jasowang@redhat.com, ast@kernel.org, daniel@iogearbox.net,
-        davem@davemloft.net, hawk@kernel.org, john.fastabend@gmail.com,
-        kafai@fb.com, songliubraving@fb.com, yhs@fb.com, kuba@kernel.org,
-        andriin@fb.com, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, bpf@vger.kernel.org
-Subject: Re: [PATCH bpf-next v4] virtio_net: add XDP meta data support
-Message-ID: <20200205003236-mutt-send-email-mst@kernel.org>
-References: <8da1b560-3128-b885-b453-13de5c7431fb@redhat.com>
- <20200204071655.94474-1-yuya.kusakabe@gmail.com>
+        bh=mCCBz5Rdlbkg4ojmDomdGX6wRFkIiLU8SA3hhtwlDwg=;
+        b=CDTocgNrNp/v/MPRdY1Z1xxqJcI6aeDY7cangVdqK8AbeIPTKYirbe48ezIr9SD4E0ycGs
+        OE/J23fr9EYDJso0eoWIcOxpy1LXKxxWzQUYsd6BEGrPX1YQKmTOe58RydpsKGEnnlLijg
+        afxOx7Y3aLl6N68CZckMirWa3CWjS1I=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-6-BTzEyaLKMeuvyVcErxsMpw-1; Wed, 05 Feb 2020 00:51:15 -0500
+X-MC-Unique: BTzEyaLKMeuvyVcErxsMpw-1
+Received: from smtp.corp.redhat.com (int-mx03.intmail.prod.int.phx2.redhat.com [10.5.11.13])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 2C27D1034B21;
+        Wed,  5 Feb 2020 05:51:13 +0000 (UTC)
+Received: from [10.72.13.188] (ovpn-13-188.pek2.redhat.com [10.72.13.188])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 5C1C548;
+        Wed,  5 Feb 2020 05:50:36 +0000 (UTC)
+Subject: Re: [PATCH] vhost: introduce vDPA based backend
+To:     "Michael S. Tsirkin" <mst@redhat.com>
+Cc:     Tiwei Bie <tiwei.bie@intel.com>, linux-kernel@vger.kernel.org,
+        kvm@vger.kernel.org, virtualization@lists.linux-foundation.org,
+        netdev@vger.kernel.org, shahafs@mellanox.com, jgg@mellanox.com,
+        rob.miller@broadcom.com, haotian.wang@sifive.com,
+        eperezma@redhat.com, lulu@redhat.com, parav@mellanox.com,
+        rdunlap@infradead.org, hch@infradead.org, jiri@mellanox.com,
+        hanand@xilinx.com, mhabets@solarflare.com,
+        maxime.coquelin@redhat.com, lingshan.zhu@intel.com,
+        dan.daly@intel.com, cunming.liang@intel.com, zhihong.wang@intel.com
+References: <20200131033651.103534-1-tiwei.bie@intel.com>
+ <7aab2892-bb19-a06a-a6d3-9c28bc4c3400@redhat.com>
+ <20200204005306-mutt-send-email-mst@kernel.org>
+ <cf485e7f-46e3-20d3-8452-e3058b885d0a@redhat.com>
+ <20200205020555.GA369236@___>
+ <798e5644-ca28-ee46-c953-688af9bccd3b@redhat.com>
+ <20200205003048-mutt-send-email-mst@kernel.org>
+From:   Jason Wang <jasowang@redhat.com>
+Message-ID: <eb53d1c2-92ae-febf-f502-2d3e107ee608@redhat.com>
+Date:   Wed, 5 Feb 2020 13:50:28 +0800
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.8.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200204071655.94474-1-yuya.kusakabe@gmail.com>
+In-Reply-To: <20200205003048-mutt-send-email-mst@kernel.org>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.13
+Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Feb 04, 2020 at 04:16:55PM +0900, Yuya Kusakabe wrote:
-> @@ -852,8 +868,9 @@ static struct sk_buff *receive_mergeable(struct net_device *dev,
->  			 * adjustments. Note other cases do not build an
->  			 * skb and avoid using offset
->  			 */
-> -			offset = xdp.data -
-> -					page_address(xdp_page) - vi->hdr_len;
-> +			metasize = xdp.data - xdp.data_meta;
-> +			offset = xdp.data - page_address(xdp_page) -
-> +				 vi->hdr_len - metasize;
->  
->  			/* recalculate len if xdp.data or xdp.data_end were
->  			 * adjusted
 
-Tricky to get one's head around.
-Can you pls update the comment above to document the new math?
+On 2020/2/5 =E4=B8=8B=E5=8D=881:31, Michael S. Tsirkin wrote:
+> On Wed, Feb 05, 2020 at 11:12:21AM +0800, Jason Wang wrote:
+>> On 2020/2/5 =E4=B8=8A=E5=8D=8810:05, Tiwei Bie wrote:
+>>> On Tue, Feb 04, 2020 at 02:46:16PM +0800, Jason Wang wrote:
+>>>> On 2020/2/4 =E4=B8=8B=E5=8D=882:01, Michael S. Tsirkin wrote:
+>>>>> On Tue, Feb 04, 2020 at 11:30:11AM +0800, Jason Wang wrote:
+>>>>>> 5) generate diffs of memory table and using IOMMU API to setup the=
+ dma
+>>>>>> mapping in this method
+>>>>> Frankly I think that's a bunch of work. Why not a MAP/UNMAP interfa=
+ce?
+>>>>>
+>>>> Sure, so that basically VHOST_IOTLB_UPDATE/INVALIDATE I think?
+>>> Do you mean we let userspace to only use VHOST_IOTLB_UPDATE/INVALIDAT=
+E
+>>> to do the DMA mapping in vhost-vdpa case? When vIOMMU isn't available=
+,
+>>> userspace will set msg->iova to GPA, otherwise userspace will set
+>>> msg->iova to GIOVA, and vhost-vdpa module will get HPA from msg->uadd=
+r?
+>>>
+>>> Thanks,
+>>> Tiwei
+>> I think so. Michael, do you think this makes sense?
+>>
+>> Thanks
+> to make sure, could you post the suggested argument format for
+> these ioctls?
+>
 
--- 
-MST
+It's the existed uapi:
+
+/* no alignment requirement */
+struct vhost_iotlb_msg {
+ =C2=A0=C2=A0=C2=A0 __u64 iova;
+ =C2=A0=C2=A0=C2=A0 __u64 size;
+ =C2=A0=C2=A0=C2=A0 __u64 uaddr;
+#define VHOST_ACCESS_RO=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 0x1
+#define VHOST_ACCESS_WO=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 0x2
+#define VHOST_ACCESS_RW=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 0x3
+ =C2=A0=C2=A0=C2=A0 __u8 perm;
+#define VHOST_IOTLB_MISS=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
+=A0=C2=A0 1
+#define VHOST_IOTLB_UPDATE=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
+ 2
+#define VHOST_IOTLB_INVALIDATE=C2=A0=C2=A0=C2=A0=C2=A0 3
+#define VHOST_IOTLB_ACCESS_FAIL=C2=A0=C2=A0=C2=A0 4
+ =C2=A0=C2=A0=C2=A0 __u8 type;
+};
+
+#define VHOST_IOTLB_MSG 0x1
+#define VHOST_IOTLB_MSG_V2 0x2
+
+struct vhost_msg {
+ =C2=A0=C2=A0=C2=A0 int type;
+ =C2=A0=C2=A0=C2=A0 union {
+ =C2=A0=C2=A0=C2=A0 =C2=A0=C2=A0=C2=A0 struct vhost_iotlb_msg iotlb;
+ =C2=A0=C2=A0=C2=A0 =C2=A0=C2=A0=C2=A0 __u8 padding[64];
+ =C2=A0=C2=A0=C2=A0 };
+};
+
+struct vhost_msg_v2 {
+ =C2=A0=C2=A0=C2=A0 __u32 type;
+ =C2=A0=C2=A0=C2=A0 __u32 reserved;
+ =C2=A0=C2=A0=C2=A0 union {
+ =C2=A0=C2=A0=C2=A0 =C2=A0=C2=A0=C2=A0 struct vhost_iotlb_msg iotlb;
+ =C2=A0=C2=A0=C2=A0 =C2=A0=C2=A0=C2=A0 __u8 padding[64];
+ =C2=A0=C2=A0=C2=A0 };
+};
 
