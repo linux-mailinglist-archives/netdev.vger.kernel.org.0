@@ -2,152 +2,203 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 7EB82153C04
-	for <lists+netdev@lfdr.de>; Thu,  6 Feb 2020 00:39:57 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1ACBB153C18
+	for <lists+netdev@lfdr.de>; Thu,  6 Feb 2020 00:51:27 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727443AbgBEXjy (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 5 Feb 2020 18:39:54 -0500
-Received: from Chamillionaire.breakpoint.cc ([193.142.43.52]:42358 "EHLO
-        Chamillionaire.breakpoint.cc" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1727149AbgBEXjy (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 5 Feb 2020 18:39:54 -0500
-Received: from fw by Chamillionaire.breakpoint.cc with local (Exim 4.92)
-        (envelope-from <fw@breakpoint.cc>)
-        id 1izUGs-0005bp-AZ; Thu, 06 Feb 2020 00:39:50 +0100
-From:   Florian Westphal <fw@strlen.de>
-To:     <netdev@vger.kernel.org>
-Cc:     Florian Westphal <fw@strlen.de>,
-        Christoph Paasch <cpaasch@apple.com>
-Subject: [PATCH net] mptcp: fix use-after-free for ipv6
-Date:   Thu,  6 Feb 2020 00:39:37 +0100
-Message-Id: <20200205233937.30596-1-fw@strlen.de>
-X-Mailer: git-send-email 2.24.1
+        id S1727569AbgBEXvW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 5 Feb 2020 18:51:22 -0500
+Received: from us-smtp-delivery-1.mimecast.com ([207.211.31.120]:39006 "EHLO
+        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+        with ESMTP id S1727170AbgBEXvV (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 5 Feb 2020 18:51:21 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1580946679;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=21qSowVJcxcWYCp2yjWV+jXV3rSeSLvAJHZEZIMcZO8=;
+        b=FWhw7NCD1TNKugL1mHXE/YvmqmcHhUth+JBW7nke0MsiYPIXsh2orZfB6SN3Y+6fVnzq5y
+        nQFzYLKbjOwSHxq7enG/iIu5RwnHJRxN4Iejhnkqm4A/XDLYz+d+5iRgud7EQ6nGoJM4ba
+        57cEBfA/pnwiBzafsVbr/jQJebZdT7g=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-355-uJE-8bYYPnuJj-bwv06u2Q-1; Wed, 05 Feb 2020 18:51:14 -0500
+X-MC-Unique: uJE-8bYYPnuJj-bwv06u2Q-1
+Received: from smtp.corp.redhat.com (int-mx02.intmail.prod.int.phx2.redhat.com [10.5.11.12])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 50DE71800D42;
+        Wed,  5 Feb 2020 23:51:11 +0000 (UTC)
+Received: from madcap2.tricolour.ca (ovpn-112-16.rdu2.redhat.com [10.10.112.16])
+        by smtp.corp.redhat.com (Postfix) with ESMTPS id 85FA160BF7;
+        Wed,  5 Feb 2020 23:50:59 +0000 (UTC)
+Date:   Wed, 5 Feb 2020 18:50:56 -0500
+From:   Richard Guy Briggs <rgb@redhat.com>
+To:     Paul Moore <paul@paul-moore.com>
+Cc:     nhorman@tuxdriver.com, linux-api@vger.kernel.org,
+        containers@lists.linux-foundation.org,
+        LKML <linux-kernel@vger.kernel.org>, dhowells@redhat.com,
+        Linux-Audit Mailing List <linux-audit@redhat.com>,
+        netfilter-devel@vger.kernel.org, ebiederm@xmission.com,
+        simo@redhat.com, netdev@vger.kernel.org,
+        linux-fsdevel@vger.kernel.org, Eric Paris <eparis@parisplace.org>,
+        mpatel@redhat.com, Serge Hallyn <serge@hallyn.com>
+Subject: Re: [PATCH ghak90 V8 13/16] audit: track container nesting
+Message-ID: <20200205235056.e5365xtgz7rbese2@madcap2.tricolour.ca>
+References: <cover.1577736799.git.rgb@redhat.com>
+ <6452955c1e038227a5cd169f689f3fd3db27513f.1577736799.git.rgb@redhat.com>
+ <CAHC9VhRkH=YEjAY6dJJHSp934grHnf=O4RiqLu3U8DzdVQOZkg@mail.gmail.com>
+ <20200130192753.n7jjrshbhrczjzoe@madcap2.tricolour.ca>
+ <CAHC9VhSVN3mNb5enhLR1hY+ekiAyiYWbehrwd_zN7kz13dF=1w@mail.gmail.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAHC9VhSVN3mNb5enhLR1hY+ekiAyiYWbehrwd_zN7kz13dF=1w@mail.gmail.com>
+User-Agent: NeoMutt/20180716
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.12
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Turns out that when we accept a new subflow, the newly created
-inet_sk(tcp_sk)->pinet6 points at the ipv6_pinfo structure of the
-listener socket.
+On 2020-02-05 18:05, Paul Moore wrote:
+> On Thu, Jan 30, 2020 at 2:28 PM Richard Guy Briggs <rgb@redhat.com> wrote:
+> > On 2020-01-22 16:29, Paul Moore wrote:
+> > > On Tue, Dec 31, 2019 at 2:51 PM Richard Guy Briggs <rgb@redhat.com> wrote:
+> > > >
+> > > > Track the parent container of a container to be able to filter and
+> > > > report nesting.
+> > > >
+> > > > Now that we have a way to track and check the parent container of a
+> > > > container, modify the contid field format to be able to report that
+> > > > nesting using a carrat ("^") separator to indicate nesting.  The
+> > > > original field format was "contid=<contid>" for task-associated records
+> > > > and "contid=<contid>[,<contid>[...]]" for network-namespace-associated
+> > > > records.  The new field format is
+> > > > "contid=<contid>[^<contid>[...]][,<contid>[...]]".
+> > >
+> > > Let's make sure we always use a comma as a separator, even when
+> > > recording the parent information, for example:
+> > > "contid=<contid>[,^<contid>[...]][,<contid>[...]]"
+> >
+> > The intent here is to clearly indicate and separate nesting from
+> > parallel use of several containers by one netns.  If we do away with
+> > that distinction, then we lose that inheritance accountability and
+> > should really run the list through a "uniq" function to remove the
+> > produced redundancies.  This clear inheritance is something Steve was
+> > looking for since tracking down individual events/records to show that
+> > inheritance was not aways feasible due to rolled logs or search effort.
+> 
+> Perhaps my example wasn't clear.  I'm not opposed to the little
+> carat/hat character indicating a container's parent, I just think it
+> would be good to also include a comma *in*addition* to the carat/hat.
 
-This wasn't caught by the selftest because it closes the accepted fd
-before the listening one.
+Ah, ok.  Well, I'd offer that it would be slightly shorter, slightly
+less cluttered and having already written the parser in userspace, I
+think the parser would be slightly simpler.
 
-adding a close(listenfd) after accept returns is enough:
- BUG: KASAN: use-after-free in inet6_getname+0x6ba/0x790
- Read of size 1 at addr ffff88810e310866 by task mptcp_connect/2518
- Call Trace:
-  inet6_getname+0x6ba/0x790
-  __sys_getpeername+0x10b/0x250
-  __x64_sys_getpeername+0x6f/0xb0
+I must admit, I was a bit puzzled by your snippet of code that was used
+as a prefix to the next item rather than as a postfix to the given item.
 
-also alter test program to exercise this.
+Can you say why you prefer the comma in addition?
 
-Reported-by: Christoph Paasch <cpaasch@apple.com>
-Signed-off-by: Florian Westphal <fw@strlen.de>
----
- net/mptcp/protocol.c                          | 36 +++++++++++++++++--
- .../selftests/net/mptcp/mptcp_connect.c       |  9 +++++
- 2 files changed, 42 insertions(+), 3 deletions(-)
+> > > > Signed-off-by: Richard Guy Briggs <rgb@redhat.com>
+> > > > ---
+> > > >  include/linux/audit.h |  1 +
+> > > >  kernel/audit.c        | 53 +++++++++++++++++++++++++++++++++++++++++++--------
+> > > >  kernel/audit.h        |  1 +
+> > > >  kernel/auditfilter.c  | 17 ++++++++++++++++-
+> > > >  kernel/auditsc.c      |  2 +-
+> > > >  5 files changed, 64 insertions(+), 10 deletions(-)
+> > >
+> > > ...
+> > >
+> > > > diff --git a/kernel/audit.c b/kernel/audit.c
+> > > > index ef8e07524c46..68be59d1a89b 100644
+> > > > --- a/kernel/audit.c
+> > > > +++ b/kernel/audit.c
+> > >
+> > > > @@ -492,6 +493,7 @@ void audit_switch_task_namespaces(struct nsproxy *ns, struct task_struct *p)
+> > > >                 audit_netns_contid_add(new->net_ns, contid);
+> > > >  }
+> > > >
+> > > > +void audit_log_contid(struct audit_buffer *ab, u64 contid);
+> > >
+> > > If we need a forward declaration, might as well just move it up near
+> > > the top of the file with the rest of the declarations.
+> >
+> > Ok.
+> >
+> > > > +void audit_log_contid(struct audit_buffer *ab, u64 contid)
+> > > > +{
+> > > > +       struct audit_contobj *cont = NULL, *prcont = NULL;
+> > > > +       int h;
+> > >
+> > > It seems safer to pass the audit container ID object and not the u64.
+> >
+> > It would also be faster, but in some places it isn't available such as
+> > for ptrace and signal targets.  This also links back to the drop record
+> > refcounts to hold onto the contobj until process exit, or signal
+> > delivery.
+> >
+> > What we could do is to supply two potential parameters, a contobj and/or
+> > a contid, and have it use the contobj if it is valid, otherwise, use the
+> > contid, as is done for names and paths supplied to audit_log_name().
+> 
+> Let's not do multiple parameters, that begs for misuse, let's take the
+> wrapper function route:
+> 
+>  func a(int id) {
+>    // important stuff
+>  }
+> 
+>  func ao(struct obj) {
+>    a(obj.id);
+>  }
+> 
+> ... and we can add a comment that you *really* should be using the
+> variant that passes an object.
 
-diff --git a/net/mptcp/protocol.c b/net/mptcp/protocol.c
-index 353f2d16b986..73780b4cb108 100644
---- a/net/mptcp/protocol.c
-+++ b/net/mptcp/protocol.c
-@@ -24,6 +24,13 @@
- 
- #define MPTCP_SAME_STATE TCP_MAX_STATES
- 
-+#if IS_ENABLED(CONFIG_MPTCP_IPV6)
-+struct mptcp6_sock {
-+	struct mptcp_sock msk;
-+	struct ipv6_pinfo np;
-+};
-+#endif
-+
- /* If msk has an initial subflow socket, and the MP_CAPABLE handshake has not
-  * completed yet or has failed, return the subflow socket.
-  * Otherwise return NULL.
-@@ -627,6 +634,30 @@ static void mptcp_copy_inaddrs(struct sock *msk, const struct sock *ssk)
- 	inet_sk(msk)->inet_rcv_saddr = inet_sk(ssk)->inet_rcv_saddr;
- }
- 
-+#if IS_ENABLED(CONFIG_MPTCP_IPV6)
-+static struct ipv6_pinfo *mptcp_inet6_sk(const struct sock *sk)
-+{
-+	unsigned int offset = sizeof(struct mptcp6_sock) - sizeof(struct ipv6_pinfo);
-+
-+	return (struct ipv6_pinfo *)(((u8 *)sk) + offset);
-+}
-+#endif
-+
-+struct sock *mptcp_sk_clone_lock(const struct sock *sk)
-+{
-+	struct sock *nsk = sk_clone_lock(sk, GFP_ATOMIC);
-+
-+	if (!nsk)
-+		return NULL;
-+
-+#if IS_ENABLED(CONFIG_MPTCP_IPV6)
-+	if (nsk->sk_family == AF_INET6)
-+		inet_sk(nsk)->pinet6 = mptcp_inet6_sk(nsk);
-+#endif
-+
-+	return nsk;
-+}
-+
- static struct sock *mptcp_accept(struct sock *sk, int flags, int *err,
- 				 bool kern)
- {
-@@ -657,7 +688,7 @@ static struct sock *mptcp_accept(struct sock *sk, int flags, int *err,
- 		lock_sock(sk);
- 
- 		local_bh_disable();
--		new_mptcp_sock = sk_clone_lock(sk, GFP_ATOMIC);
-+		new_mptcp_sock = mptcp_sk_clone_lock(sk);
- 		if (!new_mptcp_sock) {
- 			*err = -ENOBUFS;
- 			local_bh_enable();
-@@ -1206,8 +1237,7 @@ int mptcp_proto_v6_init(void)
- 	strcpy(mptcp_v6_prot.name, "MPTCPv6");
- 	mptcp_v6_prot.slab = NULL;
- 	mptcp_v6_prot.destroy = mptcp_v6_destroy;
--	mptcp_v6_prot.obj_size = sizeof(struct mptcp_sock) +
--				 sizeof(struct ipv6_pinfo);
-+	mptcp_v6_prot.obj_size = sizeof(struct mptcp6_sock);
- 
- 	err = proto_register(&mptcp_v6_prot, 1);
- 	if (err)
-diff --git a/tools/testing/selftests/net/mptcp/mptcp_connect.c b/tools/testing/selftests/net/mptcp/mptcp_connect.c
-index a3dccd816ae4..99579c0223c1 100644
---- a/tools/testing/selftests/net/mptcp/mptcp_connect.c
-+++ b/tools/testing/selftests/net/mptcp/mptcp_connect.c
-@@ -634,6 +634,14 @@ static void check_getpeername_connect(int fd)
- 			cfg_host, a, cfg_port, b);
- }
- 
-+static void maybe_close(int fd)
-+{
-+	unsigned int r = rand();
-+
-+	if (r & 1)
-+		close(fd);
-+}
-+
- int main_loop_s(int listensock)
- {
- 	struct sockaddr_storage ss;
-@@ -657,6 +665,7 @@ int main_loop_s(int listensock)
- 	salen = sizeof(ss);
- 	remotesock = accept(listensock, (struct sockaddr *)&ss, &salen);
- 	if (remotesock >= 0) {
-+		maybe_close(listensock);
- 		check_sockaddr(pf, &ss, salen);
- 		check_getpeername(remotesock, &ss, salen);
- 
--- 
-2.24.1
+I was already doing that where it available, and dereferencing the id
+for the call.  But I see an advantage to having both parameters supplied
+to the function, since it saves us the trouble of dereferencing it,
+searching for the id in the hash list and re-locating the object if the
+object is already available.
+
+> > > > @@ -2705,9 +2741,10 @@ int audit_set_contid(struct task_struct *task, u64 contid)
+> > > >         if (!ab)
+> > > >                 return rc;
+> > > >
+> > > > -       audit_log_format(ab,
+> > > > -                        "op=set opid=%d contid=%llu old-contid=%llu",
+> > > > -                        task_tgid_nr(task), contid, oldcontid);
+> > > > +       audit_log_format(ab, "op=set opid=%d contid=", task_tgid_nr(task));
+> > > > +       audit_log_contid(ab, contid);
+> > > > +       audit_log_format(ab, " old-contid=");
+> > > > +       audit_log_contid(ab, oldcontid);
+> > >
+> > > This is an interesting case where contid and old-contid are going to
+> > > be largely the same, only the first (current) ID is going to be
+> > > different; do we want to duplicate all of those IDs?
+> >
+> > At first when I read your comment, I thought we could just take contid
+> > and drop oldcontid, but if it fails, we still want all the information,
+> > so given the way I've set up the search code in userspace, listing only
+> > the newest contid in the contid field and all the rest in oldcontid
+> > could be a good compromise.
+> 
+> This is along the lines of what I was thinking.
+
+Good.
+
+> paul moore
+
+- RGB
+
+--
+Richard Guy Briggs <rgb@redhat.com>
+Sr. S/W Engineer, Kernel Security, Base Operating Systems
+Remote, Ottawa, Red Hat Canada
+IRC: rgb, SunRaycer
+Voice: +1.647.777.2635, Internal: (81) 32635
 
