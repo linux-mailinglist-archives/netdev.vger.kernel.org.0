@@ -2,124 +2,93 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 3F6F21527DB
-	for <lists+netdev@lfdr.de>; Wed,  5 Feb 2020 09:57:11 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 59C26152804
+	for <lists+netdev@lfdr.de>; Wed,  5 Feb 2020 10:06:51 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728208AbgBEIzx (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 5 Feb 2020 03:55:53 -0500
-Received: from mga09.intel.com ([134.134.136.24]:48635 "EHLO mga09.intel.com"
+        id S1728134AbgBEJGo (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 5 Feb 2020 04:06:44 -0500
+Received: from mga07.intel.com ([134.134.136.100]:63399 "EHLO mga07.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728072AbgBEIzw (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 5 Feb 2020 03:55:52 -0500
-X-Amp-Result: SKIPPED(no attachment in message)
+        id S1727068AbgBEJGn (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 5 Feb 2020 04:06:43 -0500
+X-Amp-Result: UNSCANNABLE
 X-Amp-File-Uploaded: False
-Received: from fmsmga002.fm.intel.com ([10.253.24.26])
-  by orsmga102.jf.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 05 Feb 2020 00:55:52 -0800
+Received: from orsmga005.jf.intel.com ([10.7.209.41])
+  by orsmga105.jf.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 05 Feb 2020 01:06:43 -0800
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.70,405,1574150400"; 
-   d="scan'208";a="264149229"
-Received: from unknown (HELO bong5-HP-Z440.png.intel.com) ([10.221.118.166])
-  by fmsmga002.fm.intel.com with ESMTP; 05 Feb 2020 00:55:49 -0800
-From:   Ong Boon Leong <boon.leong.ong@intel.com>
-To:     netdev@vger.kernel.org
-Cc:     Tan Tee Min <tee.min.tan@intel.com>,
-        Voon Weifeng <weifeng.voon@intel.com>,
-        Giuseppe Cavallaro <peppe.cavallaro@st.com>,
-        Alexandre TORGUE <alexandre.torgue@st.com>,
-        Jose Abreu <Jose.Abreu@synopsys.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
-        Joao Pinto <Joao.Pinto@synopsys.com>,
-        Arnd Bergmann <arnd@arndb.de>,
-        Alexandru Ardelean <alexandru.ardelean@analog.com>,
-        linux-stm32@st-md-mailman.stormreply.com,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
-Subject: [PATCH net v4 6/6] net: stmmac: update pci platform data to use phy_interface
-Date:   Wed,  5 Feb 2020 16:55:10 +0800
-Message-Id: <20200205085510.32353-7-boon.leong.ong@intel.com>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20200205085510.32353-1-boon.leong.ong@intel.com>
-References: <20200205085510.32353-1-boon.leong.ong@intel.com>
+   d="scan'208";a="404085684"
+Received: from smile.fi.intel.com (HELO smile) ([10.237.68.40])
+  by orsmga005.jf.intel.com with ESMTP; 05 Feb 2020 01:06:37 -0800
+Received: from andy by smile with local (Exim 4.93)
+        (envelope-from <andriy.shevchenko@linux.intel.com>)
+        id 1izGdq-0008JD-Ad; Wed, 05 Feb 2020 11:06:38 +0200
+Date:   Wed, 5 Feb 2020 11:06:38 +0200
+From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+To:     Kai-Heng Feng <kai.heng.feng@canonical.com>
+Cc:     davem@davemloft.ne, mkubecek@suse.cz, jeffrey.t.kirsher@intel.com,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Jiri Pirko <jiri@mellanox.com>,
+        Pablo Neira Ayuso <pablo@netfilter.org>,
+        Maxime Chevallier <maxime.chevallier@bootlin.com>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Ido Schimmel <idosch@mellanox.com>,
+        Jouni Hogander <jouni.hogander@unikie.com>,
+        YueHaibing <yuehaibing@huawei.com>,
+        Eric Dumazet <edumazet@google.com>,
+        Wang Hai <wanghai26@huawei.com>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Li RongQing <lirongqing@baidu.com>,
+        open list <linux-kernel@vger.kernel.org>,
+        "open list:NETWORKING [GENERAL]" <netdev@vger.kernel.org>
+Subject: Re: [PATCH v2 2/2] net-sysfs: Ensure begin/complete are called in
+ speed_show() and duplex_show()
+Message-ID: <20200205090638.GS10400@smile.fi.intel.com>
+References: <20200205081616.18378-1-kai.heng.feng@canonical.com>
+ <20200205081616.18378-2-kai.heng.feng@canonical.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20200205081616.18378-2-kai.heng.feng@canonical.com>
+Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Voon Weifeng <weifeng.voon@intel.com>
+On Wed, Feb 05, 2020 at 04:16:16PM +0800, Kai-Heng Feng wrote:
+> Device like igb gets runtime suspended when there's no link partner. We
+> can't get correct speed under that state:
+> $ cat /sys/class/net/enp3s0/speed
+> 1000
+> 
+> In addition to that, an error can also be spotted in dmesg:
+> [  385.991957] igb 0000:03:00.0 enp3s0: PCIe link lost
+> 
+> It's because the igb device doesn't get runtime resumed before calling
+> get_link_ksettings().
+> 
+> So let's use a new helper to call begin() and complete() like what
+> dev_ethtool() does, to runtime resume/suspend or power up/down the
+> device properly.
+> 
+> Once this fix is in place, igb can show the speed correctly without link
+> partner:
+> $ cat /sys/class/net/enp3s0/speed
+> -1
 
-The recent patch to support passive mode converter did not take care the
-phy interface configuration in PCI platform data. Hence, converting all
-the PCI platform data from plat->interface to plat->phy_interface as the
-default mode is meant for PHY.
+What is the meaning of -1? Does it tells us "Hey, something is bad in hardware
+I can't tell you the speed" or does it imply anything else?
 
-Fixes: 0060c8783330 ("net: stmmac: implement support for passive mode converters via dt")
-Signed-off-by: Voon Weifeng <weifeng.voon@intel.com>
-Tested-by: Tan, Tee Min <tee.min.tan@intel.com>
-Signed-off-by: Ong Boon Leong <boon.leong.ong@intel.com>
----
- drivers/net/ethernet/stmicro/stmmac/stmmac_pci.c | 14 ++++++++------
- 1 file changed, 8 insertions(+), 6 deletions(-)
+Wouldn't be better to report 0?
 
-diff --git a/drivers/net/ethernet/stmicro/stmmac/stmmac_pci.c b/drivers/net/ethernet/stmicro/stmmac/stmmac_pci.c
-index 623521052152..fe2c9fa6a71c 100644
---- a/drivers/net/ethernet/stmicro/stmmac/stmmac_pci.c
-+++ b/drivers/net/ethernet/stmicro/stmmac/stmmac_pci.c
-@@ -95,7 +95,7 @@ static int stmmac_default_data(struct pci_dev *pdev,
- 
- 	plat->bus_id = 1;
- 	plat->phy_addr = 0;
--	plat->interface = PHY_INTERFACE_MODE_GMII;
-+	plat->phy_interface = PHY_INTERFACE_MODE_GMII;
- 
- 	plat->dma_cfg->pbl = 32;
- 	plat->dma_cfg->pblx8 = true;
-@@ -217,7 +217,8 @@ static int ehl_sgmii_data(struct pci_dev *pdev,
- {
- 	plat->bus_id = 1;
- 	plat->phy_addr = 0;
--	plat->interface = PHY_INTERFACE_MODE_SGMII;
-+	plat->phy_interface = PHY_INTERFACE_MODE_SGMII;
-+
- 	return ehl_common_data(pdev, plat);
- }
- 
-@@ -230,7 +231,8 @@ static int ehl_rgmii_data(struct pci_dev *pdev,
- {
- 	plat->bus_id = 1;
- 	plat->phy_addr = 0;
--	plat->interface = PHY_INTERFACE_MODE_RGMII;
-+	plat->phy_interface = PHY_INTERFACE_MODE_RGMII;
-+
- 	return ehl_common_data(pdev, plat);
- }
- 
-@@ -258,7 +260,7 @@ static int tgl_sgmii_data(struct pci_dev *pdev,
- {
- 	plat->bus_id = 1;
- 	plat->phy_addr = 0;
--	plat->interface = PHY_INTERFACE_MODE_SGMII;
-+	plat->phy_interface = PHY_INTERFACE_MODE_SGMII;
- 	return tgl_common_data(pdev, plat);
- }
- 
-@@ -358,7 +360,7 @@ static int quark_default_data(struct pci_dev *pdev,
- 
- 	plat->bus_id = pci_dev_id(pdev);
- 	plat->phy_addr = ret;
--	plat->interface = PHY_INTERFACE_MODE_RMII;
-+	plat->phy_interface = PHY_INTERFACE_MODE_RMII;
- 
- 	plat->dma_cfg->pbl = 16;
- 	plat->dma_cfg->pblx8 = true;
-@@ -415,7 +417,7 @@ static int snps_gmac5_default_data(struct pci_dev *pdev,
- 
- 	plat->bus_id = 1;
- 	plat->phy_addr = -1;
--	plat->interface = PHY_INTERFACE_MODE_GMII;
-+	plat->phy_interface = PHY_INTERFACE_MODE_GMII;
- 
- 	plat->dma_cfg->pbl = 32;
- 	plat->dma_cfg->pblx8 = true;
+Where is the documentation part of this ABI change?
+
 -- 
-2.17.1
+With Best Regards,
+Andy Shevchenko
+
 
