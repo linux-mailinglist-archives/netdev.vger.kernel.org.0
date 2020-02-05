@@ -2,213 +2,159 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id BDC2A1539FB
-	for <lists+netdev@lfdr.de>; Wed,  5 Feb 2020 22:18:39 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A1B2F153A07
+	for <lists+netdev@lfdr.de>; Wed,  5 Feb 2020 22:20:19 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727149AbgBEVQQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 5 Feb 2020 16:16:16 -0500
-Received: from mail-wm1-f66.google.com ([209.85.128.66]:53813 "EHLO
-        mail-wm1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727033AbgBEVQQ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 5 Feb 2020 16:16:16 -0500
-Received: by mail-wm1-f66.google.com with SMTP id s10so4015412wmh.3;
-        Wed, 05 Feb 2020 13:16:14 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=ynqPK9O5c/fnULNbN+OoxL2G/QEDXaAaZBUdKRK1g+Q=;
-        b=Tz6IfCTorokKtvwisezDI2uIyip1iyl/nKLcADWkM+/1qxpyWMENBRqANwdThMudJI
-         dmUo+b4SN8HS5to4sMsguLHonGyUM1UI8jvqhk4LhS/6ehADQitn0XQV+IiVp1jKBMNb
-         lGPbpEF7tgfflM/Rf3oP/F/lJko6cgZMp5HJ+okvTJmPG42ladqnz4A9xBc+KE0ZjJRL
-         U2TuDB/bEadc/hBSDlFdiukMnH4bFKr/uMs9ksu3yYiE2eSSX72n3Ok8YLj/ABoMatVs
-         IAm6wJP96GPN59BoR7R7JicoJsRoMSfNSuOJVm2a8+gKFzA/uXeRJiI91yDSrD66/MUO
-         HVCA==
+        id S1727234AbgBEVUP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 5 Feb 2020 16:20:15 -0500
+Received: from mail-il1-f197.google.com ([209.85.166.197]:53829 "EHLO
+        mail-il1-f197.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727070AbgBEVUO (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 5 Feb 2020 16:20:14 -0500
+Received: by mail-il1-f197.google.com with SMTP id d3so2626877ilg.20
+        for <netdev@vger.kernel.org>; Wed, 05 Feb 2020 13:20:14 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=ynqPK9O5c/fnULNbN+OoxL2G/QEDXaAaZBUdKRK1g+Q=;
-        b=aLdYpQnJ0jwkcVjkA733HqubQuPpJyX5Iif0QMO4C4X8p6Q/939jyn9t/nvfj4g4+Y
-         EEMMaeAl3wGyUawnATWq9Ed+0WoHnH9jrzDuOp8B+GUV+lzCT23fWeF58bwbdYPi7wQ0
-         Bpka5Muk+2i2znX7Vh6VCbvcAlZkd6EbFUgfUT5xwRVI0/6PpfQtISI/ms7pgtxephSa
-         2YYzwZ55USWM3rqfX+rI/TITX/2/Pdt0amJMs1CaPRD4eEwRF/cJievB3hyAaeS+Wv8R
-         2mzhFiTiiURuPxcJPppSiR9QeEy/haC1AAyI7LgZG0+ShTCAhxFrh0Xe7L9g1AkJ20AB
-         Aj6g==
-X-Gm-Message-State: APjAAAV/+VrqManCSkCzANpAyh1vTaYMID5TDnYb6ezRhn59gBA086aN
-        Kf+h7Iy5I9Y3FKJpi0idIM4mL28J
-X-Google-Smtp-Source: APXvYqzs5lgsgIKJDb59pkNODg5+gl7rDek95kUmovCzXfQiBzH+1UF+Z8paCfII85GsfqDogqu+dg==
-X-Received: by 2002:a7b:cf01:: with SMTP id l1mr7678705wmg.86.1580937373949;
-        Wed, 05 Feb 2020 13:16:13 -0800 (PST)
-Received: from ?IPv6:2003:ea:8f29:6000:7c61:997a:8e60:9300? (p200300EA8F2960007C61997A8E609300.dip0.t-ipconnect.de. [2003:ea:8f29:6000:7c61:997a:8e60:9300])
-        by smtp.googlemail.com with ESMTPSA id r14sm1284563wrj.26.2020.02.05.13.16.13
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 05 Feb 2020 13:16:13 -0800 (PST)
-Subject: Re: [PATCH net-next v2] net: phy: dp83867: Add speed optimization
- feature
-To:     Dan Murphy <dmurphy@ti.com>, andrew@lunn.ch, f.fainelli@gmail.com
-Cc:     linux@armlinux.org.uk, davem@davemloft.net, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-References: <20200204181319.27381-1-dmurphy@ti.com>
-From:   Heiner Kallweit <hkallweit1@gmail.com>
-Message-ID: <0ebcd40d-b9cc-1a76-bb18-91d8350aa1cd@gmail.com>
-Date:   Wed, 5 Feb 2020 22:16:03 +0100
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
- Thunderbird/68.4.2
+        h=x-gm-message-state:mime-version:date:in-reply-to:message-id:subject
+         :from:to;
+        bh=yeXkaU6z1oAYHjJ8XgSVU6rYjp0GpTAJJmGIMTNlysQ=;
+        b=EONgk/ThQ9awOkzT2OOX8eX/82opYcbODTfs81HqrkQtByvwNeGL8gtGhdM6/bIJbE
+         CKVorHE6DQ0R81l7iOP8axgyz1jgfGsNYPBeiWSD1pq6H/tS0LStHyY2oqNCh4+s+Mtd
+         6SZ9zbxR1MzObnoNLwptQRZxKghUGEN4q1RjwjhxM28ciN6qKKdQ95QVA42KaU8co1J4
+         5rUUVxzwOg4SXVrJzMetzrHy7kzbzzGTxmsLu1AHUIhkqvPGNsup3jyLBEGs8jKubH+f
+         QoXWaDVEMRQrLo0HiA0BQTWt+emKKOfC8/1mg77X4qUTyiJrn9iZ4uv3Tp5DolYtA1k9
+         y/Kw==
+X-Gm-Message-State: APjAAAXj4IsioRE5NUnqX2ar0VTFr1V7xyHSDBrycBZcJ8fziCHpKCgo
+        mNu5OtWP7Y7NSxS48KRTFVyGRn8m3c6gTtE8uiI3nK0bAyhj
+X-Google-Smtp-Source: APXvYqyvDiGo+UaqQXOuzP+fiPpY5cB/Q5k2WTDbSj1YM0SiZksxh1BjbAia4zzMV9cBDyRqFfSNXmDgDICvI+1MTnP+qlq9htZT
 MIME-Version: 1.0
-In-Reply-To: <20200204181319.27381-1-dmurphy@ti.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+X-Received: by 2002:a02:cc75:: with SMTP id j21mr30135547jaq.113.1580937613555;
+ Wed, 05 Feb 2020 13:20:13 -0800 (PST)
+Date:   Wed, 05 Feb 2020 13:20:13 -0800
+In-Reply-To: <000000000000f0baeb059db8b055@google.com>
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <000000000000de3ccd059ddab8b8@google.com>
+Subject: Re: inconsistent lock state in rxrpc_put_client_connection_id
+From:   syzbot <syzbot+d82f3ac8d87e7ccbb2c9@syzkaller.appspotmail.com>
+To:     davem@davemloft.net, dhowells@redhat.com, kuba@kernel.org,
+        linux-afs@lists.infradead.org, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org, syzkaller-bugs@googlegroups.com
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 04.02.2020 19:13, Dan Murphy wrote:
-> Set the speed optimization bit on the DP83867 PHY.
-> This feature can also be strapped on the 64 pin PHY devices
-> but the 48 pin devices do not have the strap pin available to enable
-> this feature in the hardware.  PHY team suggests to have this bit set.
-> 
-> With this bit set the PHY will auto negotiate and report the link
-> parameters in the PHYSTS register.  This register provides a single
-> location within the register set for quick access to commonly accessed
-> information.
-> 
-> In this case when auto negotiation is on the PHY core reads the bits
-> that have been configured or if auto negotiation is off the PHY core
-> reads the BMCR register and sets the phydev parameters accordingly.
-> 
-> This Giga bit PHY can throttle the speed to 100Mbps or 10Mbps to accomodate a
-> 4-wire cable.  If this should occur the PHYSTS register contains the
-> current negotiated speed and duplex mode.
-> 
-> In overriding the genphy_read_status the dp83867_read_status will do a
-> genphy_read_status to setup the LP and pause bits.  And then the PHYSTS
-> register is read and the phydev speed and duplex mode settings are
-> updated.
-> 
-> Signed-off-by: Dan Murphy <dmurphy@ti.com>
-> ---
-> v2 - Updated read status to call genphy_read_status first, added link_change
-> callback to notify of speed change and use phy_set_bits - https://lore.kernel.org/patchwork/patch/1188348/ 
-> 
+syzbot has found a reproducer for the following crash on:
 
-As stated in the first review, it would be appreciated if you implement
-also the downshift tunable. This could be a separate patch in this series.
-Most of the implementation would be boilerplate code.
+HEAD commit:    6992ca0d Merge branch 'parisc-5.6-1' of git://git.kernel.o..
+git tree:       upstream
+console output: https://syzkaller.appspot.com/x/log.txt?x=12dbd7f1e00000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=f22d38d7f9a488a8
+dashboard link: https://syzkaller.appspot.com/bug?extid=d82f3ac8d87e7ccbb2c9
+compiler:       gcc (GCC) 9.0.0 20181231 (experimental)
+syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=14317dbee00000
+C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=145a44f6e00000
 
-And I have to admit that I'm not too happy with the term "speed optimization".
-This sounds like the PHY has some magic to establish a 1.2Gbps link.
-Even though the vendor may call it this way in the datasheet, the standard
-term is "downshift". I'm fine with using "speed optimization" in constants
-to be in line with the datasheet. Just a comment in the code would be helpful
-that speed optimization is the vendor's term for downshift.
+IMPORTANT: if you fix the bug, please add the following tag to the commit:
+Reported-by: syzbot+d82f3ac8d87e7ccbb2c9@syzkaller.appspotmail.com
 
->  drivers/net/phy/dp83867.c | 55 +++++++++++++++++++++++++++++++++++++++
->  1 file changed, 55 insertions(+)
-> 
-> diff --git a/drivers/net/phy/dp83867.c b/drivers/net/phy/dp83867.c
-> index 967f57ed0b65..6f86ca1ebb51 100644
-> --- a/drivers/net/phy/dp83867.c
-> +++ b/drivers/net/phy/dp83867.c
-> @@ -21,6 +21,7 @@
->  #define DP83867_DEVADDR		0x1f
->  
->  #define MII_DP83867_PHYCTRL	0x10
-> +#define MII_DP83867_PHYSTS	0x11
->  #define MII_DP83867_MICR	0x12
->  #define MII_DP83867_ISR		0x13
->  #define DP83867_CFG2		0x14
-> @@ -118,6 +119,15 @@
->  #define DP83867_IO_MUX_CFG_CLK_O_SEL_MASK	(0x1f << 8)
->  #define DP83867_IO_MUX_CFG_CLK_O_SEL_SHIFT	8
->  
-> +/* PHY STS bits */
-> +#define DP83867_PHYSTS_1000			BIT(15)
-> +#define DP83867_PHYSTS_100			BIT(14)
-> +#define DP83867_PHYSTS_DUPLEX			BIT(13)
-> +#define DP83867_PHYSTS_LINK			BIT(10)
-> +
-> +/* CFG2 bits */
-> +#define DP83867_SPEED_OPTIMIZED_EN		(BIT(8) | BIT(9))
-> +
->  /* CFG3 bits */
->  #define DP83867_CFG3_INT_OE			BIT(7)
->  #define DP83867_CFG3_ROBUST_AUTO_MDIX		BIT(9)
-> @@ -287,6 +297,43 @@ static int dp83867_config_intr(struct phy_device *phydev)
->  	return phy_write(phydev, MII_DP83867_MICR, micr_status);
->  }
->  
-> +static void dp83867_link_change_notify(struct phy_device *phydev)
-> +{
-> +	if (phydev->state != PHY_RUNNING)
-> +		return;
-> +
-> +	if (phydev->speed == SPEED_100 || phydev->speed == SPEED_10)
-> +		phydev_warn(phydev, "Downshift detected connection is %iMbps\n",
-> +			    phydev->speed);
+================================
+WARNING: inconsistent lock state
+5.5.0-syzkaller #0 Not tainted
+--------------------------------
+inconsistent {SOFTIRQ-ON-W} -> {IN-SOFTIRQ-W} usage.
+swapper/1/0 [HC0[0]:SC1[1]:HE1:SE0] takes:
+ffffffff8a8c84b8 (rxrpc_conn_id_lock){+.?.}, at: spin_lock include/linux/spinlock.h:338 [inline]
+ffffffff8a8c84b8 (rxrpc_conn_id_lock){+.?.}, at: rxrpc_put_client_connection_id net/rxrpc/conn_client.c:138 [inline]
+ffffffff8a8c84b8 (rxrpc_conn_id_lock){+.?.}, at: rxrpc_put_client_connection_id+0x73/0xe0 net/rxrpc/conn_client.c:135
+{SOFTIRQ-ON-W} state was registered at:
+  lock_acquire+0x190/0x410 kernel/locking/lockdep.c:4484
+  __raw_spin_lock include/linux/spinlock_api_smp.h:142 [inline]
+  _raw_spin_lock+0x2f/0x40 kernel/locking/spinlock.c:151
+  spin_lock include/linux/spinlock.h:338 [inline]
+  rxrpc_get_client_connection_id net/rxrpc/conn_client.c:109 [inline]
+  rxrpc_alloc_client_connection net/rxrpc/conn_client.c:193 [inline]
+  rxrpc_get_client_conn net/rxrpc/conn_client.c:340 [inline]
+  rxrpc_connect_call+0x954/0x4e30 net/rxrpc/conn_client.c:701
+  rxrpc_new_client_call+0x9c0/0x1ad0 net/rxrpc/call_object.c:290
+  rxrpc_new_client_call_for_sendmsg net/rxrpc/sendmsg.c:595 [inline]
+  rxrpc_do_sendmsg+0xffa/0x1d5f net/rxrpc/sendmsg.c:652
+  rxrpc_sendmsg+0x4d6/0x5f0 net/rxrpc/af_rxrpc.c:586
+  sock_sendmsg_nosec net/socket.c:652 [inline]
+  sock_sendmsg+0xd7/0x130 net/socket.c:672
+  ____sys_sendmsg+0x358/0x880 net/socket.c:2343
+  ___sys_sendmsg+0x100/0x170 net/socket.c:2397
+  __sys_sendmmsg+0x1bf/0x4d0 net/socket.c:2487
+  __do_sys_sendmmsg net/socket.c:2516 [inline]
+  __se_sys_sendmmsg net/socket.c:2513 [inline]
+  __x64_sys_sendmmsg+0x9d/0x100 net/socket.c:2513
+  do_syscall_64+0xfa/0x790 arch/x86/entry/common.c:294
+  entry_SYSCALL_64_after_hwframe+0x49/0xbe
+irq event stamp: 182462
+hardirqs last  enabled at (182462): [<ffffffff87ec18d6>] __raw_spin_unlock_irqrestore include/linux/spinlock_api_smp.h:160 [inline]
+hardirqs last  enabled at (182462): [<ffffffff87ec18d6>] _raw_spin_unlock_irqrestore+0x66/0xe0 kernel/locking/spinlock.c:191
+hardirqs last disabled at (182461): [<ffffffff87ec1c4f>] __raw_spin_lock_irqsave include/linux/spinlock_api_smp.h:108 [inline]
+hardirqs last disabled at (182461): [<ffffffff87ec1c4f>] _raw_spin_lock_irqsave+0x6f/0xcd kernel/locking/spinlock.c:159
+softirqs last  enabled at (182386): [<ffffffff8147368c>] _local_bh_enable+0x1c/0x30 kernel/softirq.c:162
+softirqs last disabled at (182387): [<ffffffff8147608b>] invoke_softirq kernel/softirq.c:373 [inline]
+softirqs last disabled at (182387): [<ffffffff8147608b>] irq_exit+0x19b/0x1e0 kernel/softirq.c:413
 
-The link partner may simply not advertise 1Gbps. How do you know that
-a link speed of e.g. 100Mbps is caused by a downshift?
-Some PHY's I've seen with this feature have a flag somewhere indicating
-that downshift occurred. How about the PHY here?
+other info that might help us debug this:
+ Possible unsafe locking scenario:
 
-> +}
-> +
-> +static int dp83867_read_status(struct phy_device *phydev)
-> +{
-> +	int status = phy_read(phydev, MII_DP83867_PHYSTS);
-> +	int ret;
-> +
-> +	ret = genphy_read_status(phydev);
-> +	if (ret)
-> +		return ret;
-> +
-> +	if (status < 0)
-> +		return status;
-> +
-> +	if (status & DP83867_PHYSTS_DUPLEX)
-> +		phydev->duplex = DUPLEX_FULL;
-> +	else
-> +		phydev->duplex = DUPLEX_HALF;
-> +
-> +	if (status & DP83867_PHYSTS_1000)
-> +		phydev->speed = SPEED_1000;
-> +	else if (status & DP83867_PHYSTS_100)
-> +		phydev->speed = SPEED_100;
-> +	else
-> +		phydev->speed = SPEED_10;
-> +
-> +	return 0;
-> +}
-> +
->  static int dp83867_config_port_mirroring(struct phy_device *phydev)
->  {
->  	struct dp83867_private *dp83867 =
-> @@ -467,6 +514,11 @@ static int dp83867_config_init(struct phy_device *phydev)
->  	int ret, val, bs;
->  	u16 delay;
->  
-> +	/* Force speed optimization for the PHY even if it strapped */
-> +	ret = phy_set_bits(phydev, DP83867_CFG2, DP83867_SPEED_OPTIMIZED_EN);
-> +	if (ret)
-> +		return ret;
-> +
->  	ret = dp83867_verify_rgmii_cfg(phydev);
->  	if (ret)
->  		return ret;
-> @@ -655,6 +707,9 @@ static struct phy_driver dp83867_driver[] = {
->  		.config_init	= dp83867_config_init,
->  		.soft_reset	= dp83867_phy_reset,
->  
-> +		.read_status	= dp83867_read_status,
-> +		.link_change_notify = dp83867_link_change_notify,
-> +
->  		.get_wol	= dp83867_get_wol,
->  		.set_wol	= dp83867_set_wol,
->  
-> 
+       CPU0
+       ----
+  lock(rxrpc_conn_id_lock);
+  <Interrupt>
+    lock(rxrpc_conn_id_lock);
+
+ *** DEADLOCK ***
+
+1 lock held by swapper/1/0:
+ #0: ffffffff89babac0 (rcu_callback){....}, at: rcu_do_batch kernel/rcu/tree.c:2176 [inline]
+ #0: ffffffff89babac0 (rcu_callback){....}, at: rcu_core+0x562/0x1390 kernel/rcu/tree.c:2410
+
+stack backtrace:
+CPU: 1 PID: 0 Comm: swapper/1 Not tainted 5.5.0-syzkaller #0
+Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
+Call Trace:
+ <IRQ>
+ __dump_stack lib/dump_stack.c:77 [inline]
+ dump_stack+0x197/0x210 lib/dump_stack.c:118
+ print_usage_bug.cold+0x327/0x378 kernel/locking/lockdep.c:3100
+ valid_state kernel/locking/lockdep.c:3111 [inline]
+ mark_lock_irq kernel/locking/lockdep.c:3308 [inline]
+ mark_lock+0xbb4/0x1220 kernel/locking/lockdep.c:3665
+ mark_usage kernel/locking/lockdep.c:3565 [inline]
+ __lock_acquire+0x1e8e/0x4a00 kernel/locking/lockdep.c:3908
+ lock_acquire+0x190/0x410 kernel/locking/lockdep.c:4484
+ __raw_spin_lock include/linux/spinlock_api_smp.h:142 [inline]
+ _raw_spin_lock+0x2f/0x40 kernel/locking/spinlock.c:151
+ spin_lock include/linux/spinlock.h:338 [inline]
+ rxrpc_put_client_connection_id net/rxrpc/conn_client.c:138 [inline]
+ rxrpc_put_client_connection_id+0x73/0xe0 net/rxrpc/conn_client.c:135
+ rxrpc_put_one_client_conn net/rxrpc/conn_client.c:955 [inline]
+ rxrpc_put_client_conn+0x243/0xc90 net/rxrpc/conn_client.c:1001
+ rxrpc_put_connection net/rxrpc/ar-internal.h:965 [inline]
+ rxrpc_rcu_destroy_call+0xbd/0x200 net/rxrpc/call_object.c:572
+ rcu_do_batch kernel/rcu/tree.c:2186 [inline]
+ rcu_core+0x5e1/0x1390 kernel/rcu/tree.c:2410
+ rcu_core_si+0x9/0x10 kernel/rcu/tree.c:2419
+ __do_softirq+0x262/0x98c kernel/softirq.c:292
+ invoke_softirq kernel/softirq.c:373 [inline]
+ irq_exit+0x19b/0x1e0 kernel/softirq.c:413
+ exiting_irq arch/x86/include/asm/apic.h:536 [inline]
+ smp_apic_timer_interrupt+0x1a3/0x610 arch/x86/kernel/apic/apic.c:1137
+ apic_timer_interrupt+0xf/0x20 arch/x86/entry/entry_64.S:829
+ </IRQ>
+RIP: 0010:native_safe_halt+0xe/0x10 arch/x86/include/asm/irqflags.h:61
+Code: 38 ea c7 f9 eb 8a cc cc cc cc cc cc e9 07 00 00 00 0f 00 2d 94 76 5c 00 f4 c3 66 90 e9 07 00 00 00 0f 00 2d 84 76 5c 00 fb f4 <c3> cc 55 48 89 e5 41 57 41 56 41 55 41 54 53 e8 ce b7 76 f9 e8 09
+RSP: 0018:ffffc90000d3fd68 EFLAGS: 00000286 ORIG_RAX: ffffffffffffff13
+RAX: 1ffffffff1367542 RBX: ffff8880a99fc340 RCX: 0000000000000000
+RDX: dffffc0000000000 RSI: 0000000000000006 RDI: ffff8880a99fcbd4
+RBP: ffffc90000d3fd98 R08: ffff8880a99fc340 R09: 0000000000000000
+R10: 0000000000000000 R11: 0000000000000000 R12: dffffc0000000000
+R13: ffffffff8aa509c0 R14: 0000000000000000 R15: 0000000000000001
 
