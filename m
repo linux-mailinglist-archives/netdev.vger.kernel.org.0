@@ -2,53 +2,53 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 85D54153B69
-	for <lists+netdev@lfdr.de>; Wed,  5 Feb 2020 23:51:46 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id CDDC8153B82
+	for <lists+netdev@lfdr.de>; Wed,  5 Feb 2020 23:57:11 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727675AbgBEWvn (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 5 Feb 2020 17:51:43 -0500
-Received: from mail-ed1-f67.google.com ([209.85.208.67]:42860 "EHLO
-        mail-ed1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727591AbgBEWvm (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 5 Feb 2020 17:51:42 -0500
-Received: by mail-ed1-f67.google.com with SMTP id e10so3832551edv.9
-        for <netdev@vger.kernel.org>; Wed, 05 Feb 2020 14:51:41 -0800 (PST)
+        id S1727810AbgBEW5D (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 5 Feb 2020 17:57:03 -0500
+Received: from mail-ed1-f66.google.com ([209.85.208.66]:45127 "EHLO
+        mail-ed1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727795AbgBEW5C (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 5 Feb 2020 17:57:02 -0500
+Received: by mail-ed1-f66.google.com with SMTP id v28so3826965edw.12
+        for <netdev@vger.kernel.org>; Wed, 05 Feb 2020 14:56:59 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=paul-moore-com.20150623.gappssmtp.com; s=20150623;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=KkJqADdzREDp4wpCa3aAuBXzYy2a7dWtxmQqACuBiLA=;
-        b=tlFhwg7fuSsr9lDMyg/hJyhV9/r+SA/pNtn3GhTpEFeVNqw8D7oPmYV55YrajcvhPi
-         6USVBo6kXicLmvv6Bg2Y0ha0tk2Nay7mXyPilZSuO9GsGXq5p9msM1TW1ThqpEKIk6TO
-         4/OQyO/ulzcMerTQGaeD0VryqdPshEHuhKpG+unQcWhv6sPRbnKksfprLCn66VInLREd
-         Je6wlsaG5QsXqkI7MrdKq8b444s9J9M4EeNMgElcAD+QNFZ/daBRaPIp/Nv+OU/SgL9L
-         aTwx//Ff6J7OlQ/9BFdzCkZlg1MXq+nUXXnJiTXBCnSxNct/pUB8o87OQuSAcShpAQtW
-         d60Q==
+        bh=Amzhmy9xv9aiOonSPr+eThtNwsfLtl5zGLSppwlbgNs=;
+        b=Rr3ZuwxjBG88ry1cXtNHdnsHK7RNLh2i2hW7ZcjXrXXVz1dH4kyMtKdSaBC1CgHQur
+         rCvuy3O+y+wkmSkopUyOF1OMDhD5Hx2sYMQ0meeghuuW5a+Zn08zQjCRISQh9rPkNdLI
+         59Z8ME76zI91V5UP7hugC1xMeu73AOuDGvfa7wKGNTbTsSdGgEMMiHozgfut4YcVzURe
+         G2c9J84y+lzCAe08WlYOCgBuodxP7gxMj+eT09LfB5r+cyv9tJ1KYWxRm+MN59LjZBco
+         Q6x5NKczijf5H13m8eUXysrheth2N8SEecoHY/HTzEDU+eOsPj0dHABPnKvVDueKZ0ND
+         s2Eg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=KkJqADdzREDp4wpCa3aAuBXzYy2a7dWtxmQqACuBiLA=;
-        b=VIZEROp3tTTrCsNGoegd2MLR5MOrAm2J2BEqllsP+Ej35w7daOAIo9d0SrpbSxbZwz
-         1yCWT0Qad1wDZWa7068nG0KxXuGNT/OurW060f7NuH0tjSOUgwGgJ4vilZ4nJUpqAOT8
-         sQ1yjY7WHX56Y0ohttMkN0x2AmFZMyGF37wEK9tdiyUNczwZp1TX7/ltzL/AlIb4GMcI
-         8mr03kSh0ULS1x1xGJmvJxJXFjhGAaIKTSlJuSTquQRfNwOKC/FvZKIS73lOu87tPKFl
-         l8EqV/KROKNUKaJgLd5XgF39zZoiC53SPKPU/jYAd/TR9kMGyzt8fQKGQRMmb5LdrNAL
-         stUA==
-X-Gm-Message-State: APjAAAVlGR/BAQPR4kmW3S07eZEMBorN7VP9iLBArjn+SqiozO+E3U9o
-        Quxzal9aGMlD4rFoqpTb8o1LXMH7FUATQvvIXANo
-X-Google-Smtp-Source: APXvYqz2aK9JflWz0zHltcgH6zygcn9lbVHxrjU8/1oDrOSsvKKPYicMl7ZrYmjGxJ5ErI7H2IQMPuhpOBJ/wakZNE8=
-X-Received: by 2002:a50:e108:: with SMTP id h8mr394067edl.196.1580943101124;
- Wed, 05 Feb 2020 14:51:41 -0800 (PST)
+        bh=Amzhmy9xv9aiOonSPr+eThtNwsfLtl5zGLSppwlbgNs=;
+        b=SDKFl9NpetQHjI15tJKoj8E03jxa99ogDXwmpx5EKk6MC93oVvcLTMzz4ns4eh4Erb
+         3ZMvKRLycefH+2P8H5mKJI0+VKxMsj3C+7Tg8OkDZ+3fhtaKgB0e2e4NE3kjde9eL0gO
+         vqXUA8oUYvKTWJCs45vOOU5BJ97AhHKzT2SP5ifiqN5sQqSyJ0p6eG7pR5+jubTm8lcB
+         1x+r7V5dZxO+4eQyTj3eK9zuWZ4qcKAg4R1Qu0vLGun4qUvX1zgrwGrxRcEFvV/ni7zC
+         kBM+YK97T1F7i9EAR8I5peA7IsOne0FZeWjtobRdpVnYG+4vmteS3BgHVUBUrZvfK9k+
+         cLKg==
+X-Gm-Message-State: APjAAAUrMQyIJJc5uq+F5yJPNQflSEOGmL709FfXq1s8T3evB4MdieFs
+        8lM8fAlZQVdnQhfQ6R1rjyovNOL0AT0io1V7xznZ
+X-Google-Smtp-Source: APXvYqyinVfnH51DI0L2SrSFONQ5jPWbqu4SEEJkGSvze4nkV8Nj8TjI5cDCggcgijMU0lqRKjn1C1Mv8js0mEJYleE=
+X-Received: by 2002:a17:906:19d0:: with SMTP id h16mr350075ejd.70.1580943419104;
+ Wed, 05 Feb 2020 14:56:59 -0800 (PST)
 MIME-Version: 1.0
-References: <cover.1577736799.git.rgb@redhat.com> <2954ed671a7622ddf3abdb8854dbba2ad13e9f33.1577736799.git.rgb@redhat.com>
- <CAHC9VhRw3Fj9-hi+Vj8JJb_GXM4B9N5hRXa9H6aQkuuFqJJ15w@mail.gmail.com> <20200204234258.uwaqk3s3c42fxews@madcap2.tricolour.ca>
-In-Reply-To: <20200204234258.uwaqk3s3c42fxews@madcap2.tricolour.ca>
+References: <cover.1577736799.git.rgb@redhat.com> <5941671b6b6b5de28ab2cc80e72f288cf83291d5.1577736799.git.rgb@redhat.com>
+ <CAHC9VhQYXQp+C0EHwLuW50yUenfH4KF1xKQdS=bn_OzHfnFmmg@mail.gmail.com> <20200205003930.2efpm4tvrisgmj4t@madcap2.tricolour.ca>
+In-Reply-To: <20200205003930.2efpm4tvrisgmj4t@madcap2.tricolour.ca>
 From:   Paul Moore <paul@paul-moore.com>
-Date:   Wed, 5 Feb 2020 17:51:30 -0500
-Message-ID: <CAHC9VhT0NELsrEeTmX15GaZ1SE-qZiQmz9-WweRGWRPcGN5EmA@mail.gmail.com>
-Subject: Re: [PATCH ghak90 V8 11/16] audit: add support for containerid to
- network namespaces
+Date:   Wed, 5 Feb 2020 17:56:48 -0500
+Message-ID: <CAHC9VhSsfBbfYmqLoR=QBgF5_VwbA8Dqqz97MjqwwJ6Jq6fHwA@mail.gmail.com>
+Subject: Re: [PATCH ghak90 V8 16/16] audit: add capcontid to set contid
+ outside init_user_ns
 To:     Richard Guy Briggs <rgb@redhat.com>
 Cc:     containers@lists.linux-foundation.org, linux-api@vger.kernel.org,
         Linux-Audit Mailing List <linux-audit@redhat.com>,
@@ -65,81 +65,89 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Feb 4, 2020 at 6:43 PM Richard Guy Briggs <rgb@redhat.com> wrote:
-> On 2020-01-22 16:28, Paul Moore wrote:
+On Tue, Feb 4, 2020 at 7:39 PM Richard Guy Briggs <rgb@redhat.com> wrote:
+> On 2020-01-22 16:29, Paul Moore wrote:
 > > On Tue, Dec 31, 2019 at 2:51 PM Richard Guy Briggs <rgb@redhat.com> wrote:
 > > >
-> > > This also adds support to qualify NETFILTER_PKT records.
+> > > Provide a mechanism similar to CAP_AUDIT_CONTROL to explicitly give a
+> > > process in a non-init user namespace the capability to set audit
+> > > container identifiers.
 > > >
-> > > Audit events could happen in a network namespace outside of a task
-> > > context due to packets received from the net that trigger an auditing
-> > > rule prior to being associated with a running task.  The network
-> > > namespace could be in use by multiple containers by association to the
-> > > tasks in that network namespace.  We still want a way to attribute
-> > > these events to any potential containers.  Keep a list per network
-> > > namespace to track these audit container identifiiers.
-> > >
-> > > Add/increment the audit container identifier on:
-> > > - initial setting of the audit container identifier via /proc
-> > > - clone/fork call that inherits an audit container identifier
-> > > - unshare call that inherits an audit container identifier
-> > > - setns call that inherits an audit container identifier
-> > > Delete/decrement the audit container identifier on:
-> > > - an inherited audit container identifier dropped when child set
-> > > - process exit
-> > > - unshare call that drops a net namespace
-> > > - setns call that drops a net namespace
-> > >
-> > > Add audit container identifier auxiliary record(s) to NETFILTER_PKT
-> > > event standalone records.  Iterate through all potential audit container
-> > > identifiers associated with a network namespace.
-> > >
-> > > Please see the github audit kernel issue for contid net support:
-> > >   https://github.com/linux-audit/audit-kernel/issues/92
-> > > Please see the github audit testsuiite issue for the test case:
-> > >   https://github.com/linux-audit/audit-testsuite/issues/64
-> > > Please see the github audit wiki for the feature overview:
-> > >   https://github.com/linux-audit/audit-kernel/wiki/RFE-Audit-Container-ID
-> > > Signed-off-by: Richard Guy Briggs <rgb@redhat.com>
-> > > Acked-by: Neil Horman <nhorman@tuxdriver.com>
-> > > Reviewed-by: Ondrej Mosnacek <omosnace@redhat.com>
-> > > ---
-> > >  include/linux/audit.h    |  24 +++++++++
-> > >  kernel/audit.c           | 132 ++++++++++++++++++++++++++++++++++++++++++++++-
-> > >  kernel/nsproxy.c         |   4 ++
-> > >  net/netfilter/nft_log.c  |  11 +++-
-> > >  net/netfilter/xt_AUDIT.c |  11 +++-
-> > >  5 files changed, 176 insertions(+), 6 deletions(-)
+> > > Provide /proc/$PID/audit_capcontid interface to capcontid.
+> > > Valid values are: 1==enabled, 0==disabled
 > >
-> > ...
-> >
-> > > diff --git a/include/linux/audit.h b/include/linux/audit.h
-> > > index 5531d37a4226..ed8d5b74758d 100644
-> > > --- a/include/linux/audit.h
-> > > +++ b/include/linux/audit.h
-> > > @@ -12,6 +12,7 @@
-> > >  #include <linux/sched.h>
-> > >  #include <linux/ptrace.h>
-> > >  #include <uapi/linux/audit.h>
-> > > +#include <linux/refcount.h>
-> > >
-> > >  #define AUDIT_INO_UNSET ((unsigned long)-1)
-> > >  #define AUDIT_DEV_UNSET ((dev_t)-1)
-> > > @@ -121,6 +122,13 @@ struct audit_task_info {
-> > >
-> > >  extern struct audit_task_info init_struct_audit;
-> > >
-> > > +struct audit_contobj_netns {
-> > > +       struct list_head        list;
-> > > +       u64                     id;
-> >
-> > Since we now track audit container IDs in their own structure, why not
-> > link directly to the audit container ID object (and bump the
-> > refcount)?
+> > It would be good to be more explicit about "enabled" and "disabled" in
+> > the commit description.  For example, which setting allows the target
+> > task to set audit container IDs of it's children processes?
 >
-> Ok, I've done this but at first I had doubts about the complexity.
+> Ok...
+>
+> > > Report this action in message type AUDIT_SET_CAPCONTID 1022 with fields
+> > > opid= capcontid= old-capcontid=
+> > >
+> > > Signed-off-by: Richard Guy Briggs <rgb@redhat.com>
+> > > ---
+> > >  fs/proc/base.c             | 55 ++++++++++++++++++++++++++++++++++++++++++++++
+> > >  include/linux/audit.h      | 14 ++++++++++++
+> > >  include/uapi/linux/audit.h |  1 +
+> > >  kernel/audit.c             | 35 +++++++++++++++++++++++++++++
+> > >  4 files changed, 105 insertions(+)
 
-Yes, it will be more complex, but it should be much safer.
+...
+
+> > > diff --git a/kernel/audit.c b/kernel/audit.c
+> > > index 1287f0b63757..1c22dd084ae8 100644
+> > > --- a/kernel/audit.c
+> > > +++ b/kernel/audit.c
+> > > @@ -2698,6 +2698,41 @@ static bool audit_contid_isowner(struct task_struct *tsk)
+> > >         return false;
+> > >  }
+> > >
+> > > +int audit_set_capcontid(struct task_struct *task, u32 enable)
+> > > +{
+> > > +       u32 oldcapcontid;
+> > > +       int rc = 0;
+> > > +       struct audit_buffer *ab;
+> > > +
+> > > +       if (!task->audit)
+> > > +               return -ENOPROTOOPT;
+> > > +       oldcapcontid = audit_get_capcontid(task);
+> > > +       /* if task is not descendant, block */
+> > > +       if (task == current)
+> > > +               rc = -EBADSLT;
+> > > +       else if (!task_is_descendant(current, task))
+> > > +               rc = -EXDEV;
+> >
+> > See my previous comments about error code sanity.
+>
+> I'll go with EXDEV.
+>
+> > > +       else if (current_user_ns() == &init_user_ns) {
+> > > +               if (!capable(CAP_AUDIT_CONTROL) && !audit_get_capcontid(current))
+> > > +                       rc = -EPERM;
+> >
+> > I think we just want to use ns_capable() in the context of the current
+> > userns to check CAP_AUDIT_CONTROL, yes?  Something like this ...
+>
+> I thought we had firmly established in previous discussion that
+> CAP_AUDIT_CONTROL in anything other than init_user_ns was completely irrelevant
+> and untrustable.
+
+In the case of a container with multiple users, and multiple
+applications, one being a nested orchestrator, it seems relevant to
+allow that container to control which of it's processes are able to
+exercise CAP_AUDIT_CONTROL.  Granted, we still want to control it
+within the overall host, e.g. the container in question must be
+allowed to run a nested orchestrator, but allowing the container
+itself to provide it's own granularity seems like the right thing to
+do.
+
+> >   if (current_user_ns() != &init_user_ns) {
+> >     if (!ns_capable(CAP_AUDIT_CONTROL) || !audit_get_capcontid())
+> >       rc = -EPERM;
+> >   } else if (!capable(CAP_AUDIT_CONTROL))
+> >     rc = -EPERM;
+> >
 
 -- 
 paul moore
