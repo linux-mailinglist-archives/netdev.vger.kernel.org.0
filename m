@@ -2,131 +2,102 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id A530715353C
-	for <lists+netdev@lfdr.de>; Wed,  5 Feb 2020 17:30:39 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 57EEF15355C
+	for <lists+netdev@lfdr.de>; Wed,  5 Feb 2020 17:38:43 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727398AbgBEQaa (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 5 Feb 2020 11:30:30 -0500
-Received: from mail-wr1-f67.google.com ([209.85.221.67]:35989 "EHLO
-        mail-wr1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726359AbgBEQa3 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 5 Feb 2020 11:30:29 -0500
-Received: by mail-wr1-f67.google.com with SMTP id z3so3526309wru.3
-        for <netdev@vger.kernel.org>; Wed, 05 Feb 2020 08:30:28 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=oMMjmM9JNv+iSoKlV8oBvlm3EYZ0c09OhSnv+DgMgdw=;
-        b=PMgFFGyVdEekbAjPLm5bl3tRgpDb0tkz6IVu5WrgxZDGEMoYGir9piXauXsrKaVT8I
-         h6Ee6wSRCUYuJomaAbZemlQrz7fUGqzRLYNAy38RiyCzToYC2ldHoYZDKJZz64W57e7Y
-         HuncgLz9Pq3QE+KR4iOaqWaczLiD9sv1t1+kVPCDFNTgdVMxrhMgz6m+UpS7l2K6ZK73
-         fookx7YST2Ca+nMqwiFf2VHiBsC3mBBR7mdN5GGnM10qgQv4nbzB9uTXVYmlZtGAgN/9
-         naXME3Tr08I0KedGiNQ6FwdPImvnw+OE9FqI8AF8AhLQPlfX9tQLURRofROpWBbHOZey
-         H+zA==
-X-Gm-Message-State: APjAAAXGKpevhm5SaS9xnKvbJMQTlgRDvgJm/csm+FvU2d4aPia6njld
-        k3ngSaFysBv57JBzWkWBfzp/n+fefng=
-X-Google-Smtp-Source: APXvYqykJVPAOZ4kHBLDoI5JK6vDQdzOYiqJHY9ty+NMfga4hzjT/A3CIVhnRASt7T5ZIsaocWwafQ==
-X-Received: by 2002:a5d:6406:: with SMTP id z6mr29025841wru.294.1580920227111;
-        Wed, 05 Feb 2020 08:30:27 -0800 (PST)
-Received: from dontpanic.criteois.lan ([91.199.242.236])
-        by smtp.gmail.com with ESMTPSA id b10sm413610wrw.61.2020.02.05.08.30.25
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 05 Feb 2020 08:30:25 -0800 (PST)
-From:   William Dauchy <w.dauchy@criteo.com>
-To:     netdev@vger.kernel.org
-Cc:     Nicolas Dichtel <nicolas.dichtel@6wind.com>,
-        William Dauchy <w.dauchy@criteo.com>
-Subject: [PATCH v2 2/2] net, ip6_tunnel: enhance tunnel locate with type check
-Date:   Wed,  5 Feb 2020 17:29:34 +0100
-Message-Id: <20200205162934.220154-3-w.dauchy@criteo.com>
-X-Mailer: git-send-email 2.24.1
-In-Reply-To: <563334a2-8b5d-a80b-30ef-085fdaa2d1a8@6wind.com>
-References: <563334a2-8b5d-a80b-30ef-085fdaa2d1a8@6wind.com>
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+        id S1727330AbgBEQie (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 5 Feb 2020 11:38:34 -0500
+Received: from smtp.uniroma2.it ([160.80.6.23]:33558 "EHLO smtp.uniroma2.it"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726678AbgBEQie (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 5 Feb 2020 11:38:34 -0500
+Received: from smtpauth-2019-1.uniroma2.it (smtpauth.uniroma2.it [160.80.5.46])
+        by smtp-2015.uniroma2.it (8.14.4/8.14.4/Debian-8) with ESMTP id 015GbSSg024337;
+        Wed, 5 Feb 2020 17:37:33 +0100
+Received: from lubuntu-18.04 (unknown [160.80.103.126])
+        by smtpauth-2019-1.uniroma2.it (Postfix) with ESMTPSA id 0CA3B122908;
+        Wed,  5 Feb 2020 17:37:24 +0100 (CET)
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=uniroma2.it;
+        s=ed201904; t=1580920644; h=from:from:sender:reply-to:subject:subject:date:date:
+         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
+         content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=6+Z0uxaSywbrA//eJ07SOsgCkYFSRxtQ2TCp73WsBbo=;
+        b=QQC6AW2a6Xqxv4zeLYlsyu+fT3ES6fE6xMlHSde1JioMLGYidxl0IW4a6QaAxweri6tefd
+        sYl4PEMEmUe54TDg==
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=uniroma2.it; s=rsa201904;
+        t=1580920644; h=from:from:sender:reply-to:subject:subject:date:date:
+         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
+         content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=6+Z0uxaSywbrA//eJ07SOsgCkYFSRxtQ2TCp73WsBbo=;
+        b=gbZaRipvvSdsWz+UR789bhLhOJwLQa3/YZP63UGihpUcq0Eb/LpdzRp/A3X8KP1jZwp7EQ
+        Vx52BecSRnbswjFORMRBgaAfKc0d2iwvvLdk/+n8+dt9uHgCq0EkaG7Zcv1RjMqzAkTCla
+        NwRsuuQJA4lvrknp53ox+asW0+6dSwfUirRK8A+moH3V4r3+21y5krAeugoaKI9d62qx1X
+        2hxQRwJz23D1iLKAJuzaQBDg9w932gD6HcRJ6P8byMt/I0LxlSP1GBjE6K95PsU6ns9eH9
+        SIwjKwBtl8rVCsLQNe16gnE+FSpTyei8Y98gtiqf4ERPTI/o6IJu5KNsAIuKNQ==
+Date:   Wed, 5 Feb 2020 17:37:23 +0100
+From:   Andrea Mayer <andrea.mayer@uniroma2.it>
+To:     Leon Romanovsky <leon@kernel.org>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Alexey Kuznetsov <kuznet@ms2.inr.ac.ru>,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        David Lebrun <dav.lebrun@gmail.com>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        Andrii Nakryiko <andriin@fb.com>, bpf@vger.kernel.org,
+        Paolo Lungaroni <paolo.lungaroni@cnit.it>
+Subject: Re: [net-next] seg6: add support for optional attributes during
+ behavior construction
+Message-Id: <20200205173723.927eeaab1c37d5d94173457e@uniroma2.it>
+In-Reply-To: <20200203150800.GQ414821@unreal>
+References: <20200203143658.1561-1-andrea.mayer@uniroma2.it>
+        <20200203150800.GQ414821@unreal>
+X-Mailer: Sylpheed 3.5.1 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
+Mime-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+X-Virus-Scanned: clamav-milter 0.100.0 at smtp-2015
+X-Virus-Status: Clean
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-As it is done in ip_tunnel, compare dev->type when trying to locate an
-existing tunnel.
-This is therefore adding a new type parameter to `ip6_tnl_locate`.
+On Mon, 3 Feb 2020 17:08:00 +0200
+Leon Romanovsky <leon@kernel.org> wrote:
 
-Signed-off-by: William Dauchy <w.dauchy@criteo.com>
----
- net/ipv6/ip6_tunnel.c | 15 ++++++++-------
- 1 file changed, 8 insertions(+), 7 deletions(-)
+> On Mon, Feb 03, 2020 at 03:36:58PM +0100, Andrea Mayer wrote:
+> > before this patch, each SRv6 behavior specifies a set of required
+> > [...]
+> >
+> > diff --git a/net/ipv6/seg6_local.c b/net/ipv6/seg6_local.c
+> > index 85a5447a3e8d..480f1ab35221 100644
+> > --- a/net/ipv6/seg6_local.c
+> > +++ b/net/ipv6/seg6_local.c
+> > @@ -7,6 +7,13 @@
+> >   *  eBPF support: Mathieu Xhonneux <m.xhonneux@gmail.com>
+> >   */
+> >
+> > +/* Changes:
+> > + *
+> > + * Andrea Mayer <andrea.mayer@uniroma2.it>
+> > + *	add support for optional attributes during behavior construction
+> > + *
+> > + */
+> 
+> The lines above look strange in 2020 when all of us are using git.
+> 
+> Thanks
 
-diff --git a/net/ipv6/ip6_tunnel.c b/net/ipv6/ip6_tunnel.c
-index 053f44691cc6..94419b6479fd 100644
---- a/net/ipv6/ip6_tunnel.c
-+++ b/net/ipv6/ip6_tunnel.c
-@@ -339,7 +339,7 @@ static struct ip6_tnl *ip6_tnl_create(struct net *net, struct __ip6_tnl_parm *p)
-  **/
- 
- static struct ip6_tnl *ip6_tnl_locate(struct net *net,
--		struct __ip6_tnl_parm *p, int create)
-+		struct __ip6_tnl_parm *p, int create, int type)
- {
- 	const struct in6_addr *remote = &p->raddr;
- 	const struct in6_addr *local = &p->laddr;
-@@ -352,7 +352,8 @@ static struct ip6_tnl *ip6_tnl_locate(struct net *net,
- 	     tp = &t->next) {
- 		if (ipv6_addr_equal(local, &t->parms.laddr) &&
- 		    ipv6_addr_equal(remote, &t->parms.raddr) &&
--		    p->link == t->parms.link) {
-+		    p->link == t->parms.link &&
-+		    type == t->dev->type) {
- 			if (create)
- 				return ERR_PTR(-EEXIST);
- 
-@@ -1601,7 +1602,7 @@ ip6_tnl_ioctl(struct net_device *dev, struct ifreq *ifr, int cmd)
- 				break;
- 			}
- 			ip6_tnl_parm_from_user(&p1, &p);
--			t = ip6_tnl_locate(net, &p1, 0);
-+			t = ip6_tnl_locate(net, &p1, 0, ip6n->fb_tnl_dev->type);
- 			if (IS_ERR(t))
- 				t = netdev_priv(dev);
- 		} else {
-@@ -1625,7 +1626,7 @@ ip6_tnl_ioctl(struct net_device *dev, struct ifreq *ifr, int cmd)
- 		    p.proto != 0)
- 			break;
- 		ip6_tnl_parm_from_user(&p1, &p);
--		t = ip6_tnl_locate(net, &p1, cmd == SIOCADDTUNNEL);
-+		t = ip6_tnl_locate(net, &p1, cmd == SIOCADDTUNNEL, dev->type);
- 		if (cmd == SIOCCHGTUNNEL) {
- 			if (!IS_ERR(t)) {
- 				if (t->dev != dev) {
-@@ -1660,7 +1661,7 @@ ip6_tnl_ioctl(struct net_device *dev, struct ifreq *ifr, int cmd)
- 				break;
- 			err = -ENOENT;
- 			ip6_tnl_parm_from_user(&p1, &p);
--			t = ip6_tnl_locate(net, &p1, 0);
-+			t = ip6_tnl_locate(net, &p1, 0, ip6n->fb_tnl_dev->type);
- 			if (IS_ERR(t))
- 				break;
- 			err = -EPERM;
-@@ -2016,7 +2017,7 @@ static int ip6_tnl_newlink(struct net *src_net, struct net_device *dev,
- 		if (rtnl_dereference(ip6n->collect_md_tun))
- 			return -EEXIST;
- 	} else {
--		t = ip6_tnl_locate(net, &nt->parms, 0);
-+		t = ip6_tnl_locate(net, &nt->parms, 0, dev->type);
- 		if (!IS_ERR(t))
- 			return -EEXIST;
- 	}
-@@ -2051,7 +2052,7 @@ static int ip6_tnl_changelink(struct net_device *dev, struct nlattr *tb[],
- 	if (p.collect_md)
- 		return -EINVAL;
- 
--	t = ip6_tnl_locate(net, &p, 0);
-+	t = ip6_tnl_locate(net, &p, 0, dev->type);
- 	if (!IS_ERR(t)) {
- 		if (t->dev != dev)
- 			return -EEXIST;
+Hi Leon,
+
+We forgot to remove it from the patch. I will remove in the next revision. 
+Thanks
+
 -- 
-2.24.1
-
+Andrea Mayer <andrea.mayer@uniroma2.it>
