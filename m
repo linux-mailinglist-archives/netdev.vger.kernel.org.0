@@ -2,90 +2,156 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 2580F152639
-	for <lists+netdev@lfdr.de>; Wed,  5 Feb 2020 07:20:03 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8CE39152654
+	for <lists+netdev@lfdr.de>; Wed,  5 Feb 2020 07:33:41 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1725875AbgBEGSP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 5 Feb 2020 01:18:15 -0500
-Received: from mail-wm1-f48.google.com ([209.85.128.48]:53476 "EHLO
-        mail-wm1-f48.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725385AbgBEGSP (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 5 Feb 2020 01:18:15 -0500
-Received: by mail-wm1-f48.google.com with SMTP id s10so1073718wmh.3
-        for <netdev@vger.kernel.org>; Tue, 04 Feb 2020 22:18:13 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=resnulli-us.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=njLcsjhB++HDsqa75PrZ5CIG5guTKmLM3uwLDSIaf6o=;
-        b=aHpXzvNP4YPIJ90EMFgIKL2dJcUmqFKijpBtxPOBF9BWLu9gwnffZXckqTrUC9a1m9
-         57J/H6V6RHZXyH10gx/UGq1tsaikAw0TN+sXKnVKddfIPem6uN2vraPfUAF2c4pNhO5g
-         4KndlzyJgiMXHrkUTb24t1xAXvPDqGxt8Bwtiq+rpq2Sj+paTO7dc1zIpSUJnGBcWexB
-         rqNmgwmX1EMKD8Tgn0vjWiTyJ1vd8zN6IIYWRlk9S/eAnyVyHNovzr4cxn1u+K4VVB8X
-         wlfNDgexosiCn7bivGFwSbCaKoPVN9dnFqxdD6I+tcru7Wu9LRpaC6gl1dFZi9sE9J/V
-         l0rg==
+        id S1726896AbgBEGam (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 5 Feb 2020 01:30:42 -0500
+Received: from us-smtp-1.mimecast.com ([207.211.31.81]:33948 "EHLO
+        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1725875AbgBEGam (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 5 Feb 2020 01:30:42 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1580884241;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=SK/6EZm6JjjZrHYe/o5W90LoH1mAJQFt67RmR4CQh0M=;
+        b=YgkvhRC6oEL83OP1ymGPPJJYiDFnwqsRhnOqo6LV6h3nEX9VZU9anBYQ21hs7Z5J20uNUo
+        SZkb5eDb9rwubWni2fiPnCTX/RV+OcncXVRiQM2oD1RClkX3Lh0WSI/9zxSuVou9yIT6+R
+        71AwJ2Jy8XqBF7f3VnpPDgJV6RPSpvI=
+Received: from mail-qk1-f197.google.com (mail-qk1-f197.google.com
+ [209.85.222.197]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-209-XvI695W8NWGVHF5Ee_2-9A-1; Wed, 05 Feb 2020 01:30:40 -0500
+X-MC-Unique: XvI695W8NWGVHF5Ee_2-9A-1
+Received: by mail-qk1-f197.google.com with SMTP id c206so628309qkg.6
+        for <netdev@vger.kernel.org>; Tue, 04 Feb 2020 22:30:40 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=njLcsjhB++HDsqa75PrZ5CIG5guTKmLM3uwLDSIaf6o=;
-        b=PegHpJCyobnvxCvoqwaSBlflVFP1kmRxBayJIp5fturvc5jKAvfMNLPnekIl688FUD
-         H38WLu0wOejhE+b+XTMFWGIVV69UfAiGC5yyWC9sX9aAWoqlE/C++t+xfQTfUphXoimc
-         nYqGZmqSP1LVdFQiIm4ligg7NHoLKZrOpyCkLscx9U438Duw2XtTMeYeMepTlpZJGuIt
-         QTkaYwpA7n1VR31jchn9fk+sIdkBf5QzUsX0wdNJmUsezOcuO6DqY5VfddqC/IqdEZee
-         FwKPszJT08446cmqhPPTurC1LYRFUKt9cRGUIpJotXqEXi9lmoP2ED4dJCKPNyPbFggD
-         FOCA==
-X-Gm-Message-State: APjAAAWojTwYU0GJA1nbQN8V1W+HfQkX5RwKhNF14IAvDLtY+wMcbkUW
-        EggfpwY1utqwOoJbMnQCnW+voQ==
-X-Google-Smtp-Source: APXvYqxaTm8ue5PY+3Uacbw2ws2Z9IsOwpyJvesvFh2YZ8RWXSf7JqmUJPZb3/MNgFUFgThpQEI0/w==
-X-Received: by 2002:a7b:c416:: with SMTP id k22mr3751448wmi.25.1580883493121;
-        Tue, 04 Feb 2020 22:18:13 -0800 (PST)
-Received: from localhost (jirka.pirko.cz. [84.16.102.26])
-        by smtp.gmail.com with ESMTPSA id k16sm35563149wru.0.2020.02.04.22.18.12
+         :mime-version:content-disposition:content-transfer-encoding
+         :in-reply-to;
+        bh=SK/6EZm6JjjZrHYe/o5W90LoH1mAJQFt67RmR4CQh0M=;
+        b=Kg7HtlcDBXjeCTqGJZ1WhUjsoLHfReotw9ggnvuLwW3qV1G3n4WUGXC05jDIA6k+V7
+         cndWM6EwgSieDebvcxEiMpcZ+y4oi2IkDjqhObn1RH1p9X3pZ5C7skKSWKLAavejpSaK
+         EuIjhfUTcu9mXRdVt4FNoF1WAKnBkdGKHId0HlLaWMXEXBYddS6+Vt+lTzk8nfZ1Cz2x
+         /8nN1NgwpNnLc7rWMnIBrsyFjTCdxr4RYT7U3hleZIOrN1fwVomSZCQxaGIhoMIFWaBq
+         bYtbfz+RgcSExP99XmTXBs9gZjBFeMJWlC6psY7vuN7FSnz9mzwWsJIgLkFR/GDcvGhj
+         b2Jw==
+X-Gm-Message-State: APjAAAV+KXSk6AavEzS24gbKD9oEe24fQ8G8TavU/tznEnluIiqaDmNs
+        8ybQlZXLCibfM7hvekKxcjZCmxkjGoXPwnpAB6hOZkrEO13FOdZoFdiVfJ3W2iIP3RJ3iHqzYMd
+        Gb9LUgwZOI7zIGn3s
+X-Received: by 2002:a05:6214:11a8:: with SMTP id u8mr30684177qvv.16.1580884239900;
+        Tue, 04 Feb 2020 22:30:39 -0800 (PST)
+X-Google-Smtp-Source: APXvYqwkD0A2RyJgsZhuekPIPi4xkOg0VrIIr3OXInSUl8ooLyFt/kzVDntwDVhZLhJKb38ZnUEwpg==
+X-Received: by 2002:a05:6214:11a8:: with SMTP id u8mr30684150qvv.16.1580884239611;
+        Tue, 04 Feb 2020 22:30:39 -0800 (PST)
+Received: from redhat.com (bzq-79-176-41-183.red.bezeqint.net. [79.176.41.183])
+        by smtp.gmail.com with ESMTPSA id a36sm13471539qtk.29.2020.02.04.22.30.34
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 04 Feb 2020 22:18:12 -0800 (PST)
-Date:   Wed, 5 Feb 2020 07:18:11 +0100
-From:   Jiri Pirko <jiri@resnulli.us>
-To:     Jacob Keller <jacob.e.keller@intel.com>
-Cc:     netdev@vger.kernel.org, valex@mellanox.com, parav@mellanox.com
-Subject: Re: [net] devlink: report 0 after hitting end in region read
-Message-ID: <20200205061811.GA2159@nanopsycho>
-References: <20200204235950.2209828-1-jacob.e.keller@intel.com>
+        Tue, 04 Feb 2020 22:30:38 -0800 (PST)
+Date:   Wed, 5 Feb 2020 01:30:32 -0500
+From:   "Michael S. Tsirkin" <mst@redhat.com>
+To:     Jason Wang <jasowang@redhat.com>
+Cc:     Tiwei Bie <tiwei.bie@intel.com>, linux-kernel@vger.kernel.org,
+        kvm@vger.kernel.org, virtualization@lists.linux-foundation.org,
+        netdev@vger.kernel.org, shahafs@mellanox.com, jgg@mellanox.com,
+        rob.miller@broadcom.com, haotian.wang@sifive.com,
+        eperezma@redhat.com, lulu@redhat.com, parav@mellanox.com,
+        rdunlap@infradead.org, hch@infradead.org, jiri@mellanox.com,
+        hanand@xilinx.com, mhabets@solarflare.com,
+        maxime.coquelin@redhat.com, lingshan.zhu@intel.com,
+        dan.daly@intel.com, cunming.liang@intel.com, zhihong.wang@intel.com
+Subject: Re: [PATCH] vhost: introduce vDPA based backend
+Message-ID: <20200205011935-mutt-send-email-mst@kernel.org>
+References: <20200131033651.103534-1-tiwei.bie@intel.com>
+ <7aab2892-bb19-a06a-a6d3-9c28bc4c3400@redhat.com>
+ <20200204005306-mutt-send-email-mst@kernel.org>
+ <cf485e7f-46e3-20d3-8452-e3058b885d0a@redhat.com>
+ <20200205020555.GA369236@___>
+ <798e5644-ca28-ee46-c953-688af9bccd3b@redhat.com>
+ <20200205003048-mutt-send-email-mst@kernel.org>
+ <eb53d1c2-92ae-febf-f502-2d3e107ee608@redhat.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <20200204235950.2209828-1-jacob.e.keller@intel.com>
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <eb53d1c2-92ae-febf-f502-2d3e107ee608@redhat.com>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Wed, Feb 05, 2020 at 12:59:50AM CET, jacob.e.keller@intel.com wrote:
->commit fdd41ec21e15 ("devlink: Return right error code in case of errors
->for region read") modified the region read code to report errors
->properly in unexpected cases.
->
->In the case where the start_offset and ret_offset match, it unilaterally
->converted this into an error. This causes an issue for the "dump"
->version of the command. In this case, the devlink region dump will
->always report an invalid argument:
->
->000000000000ffd0 ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff
->000000000000ffe0 ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff
->devlink answers: Invalid argument
->000000000000fff0 ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff
->
->This occurs because the expected flow for the dump is to return 0 after
->there is no further data.
->
->The simplest fix would be to stop converting the error code to -EINVAL
->if start_offset == ret_offset. However, avoid unnecessary work by
->checking for when start_offset is larger than the region size and
->returning 0 upfront.
->
->Fixes: fdd41ec21e15 ("devlink: Return right error code in case of errors for region read")
->Signed-off-by: Jacob Keller <jacob.e.keller@intel.com>
+On Wed, Feb 05, 2020 at 01:50:28PM +0800, Jason Wang wrote:
+> 
+> On 2020/2/5 下午1:31, Michael S. Tsirkin wrote:
+> > On Wed, Feb 05, 2020 at 11:12:21AM +0800, Jason Wang wrote:
+> > > On 2020/2/5 上午10:05, Tiwei Bie wrote:
+> > > > On Tue, Feb 04, 2020 at 02:46:16PM +0800, Jason Wang wrote:
+> > > > > On 2020/2/4 下午2:01, Michael S. Tsirkin wrote:
+> > > > > > On Tue, Feb 04, 2020 at 11:30:11AM +0800, Jason Wang wrote:
+> > > > > > > 5) generate diffs of memory table and using IOMMU API to setup the dma
+> > > > > > > mapping in this method
+> > > > > > Frankly I think that's a bunch of work. Why not a MAP/UNMAP interface?
+> > > > > > 
+> > > > > Sure, so that basically VHOST_IOTLB_UPDATE/INVALIDATE I think?
+> > > > Do you mean we let userspace to only use VHOST_IOTLB_UPDATE/INVALIDATE
+> > > > to do the DMA mapping in vhost-vdpa case? When vIOMMU isn't available,
+> > > > userspace will set msg->iova to GPA, otherwise userspace will set
+> > > > msg->iova to GIOVA, and vhost-vdpa module will get HPA from msg->uaddr?
+> > > > 
+> > > > Thanks,
+> > > > Tiwei
+> > > I think so. Michael, do you think this makes sense?
+> > > 
+> > > Thanks
+> > to make sure, could you post the suggested argument format for
+> > these ioctls?
+> > 
+> 
+> It's the existed uapi:
+> 
+> /* no alignment requirement */
+> struct vhost_iotlb_msg {
+>     __u64 iova;
+>     __u64 size;
+>     __u64 uaddr;
+> #define VHOST_ACCESS_RO      0x1
+> #define VHOST_ACCESS_WO      0x2
+> #define VHOST_ACCESS_RW      0x3
+>     __u8 perm;
+> #define VHOST_IOTLB_MISS           1
+> #define VHOST_IOTLB_UPDATE         2
+> #define VHOST_IOTLB_INVALIDATE     3
+> #define VHOST_IOTLB_ACCESS_FAIL    4
+>     __u8 type;
+> };
+> 
+> #define VHOST_IOTLB_MSG 0x1
+> #define VHOST_IOTLB_MSG_V2 0x2
+> 
+> struct vhost_msg {
+>     int type;
+>     union {
+>         struct vhost_iotlb_msg iotlb;
+>         __u8 padding[64];
+>     };
+> };
+> 
+> struct vhost_msg_v2 {
+>     __u32 type;
+>     __u32 reserved;
+>     union {
+>         struct vhost_iotlb_msg iotlb;
+>         __u8 padding[64];
+>     };
+> };
 
-Acked-by: Jiri Pirko <jiri@mellanox.com>
+Oh ok.  So with a real device, I suspect we do not want to wait for each
+change to be processed by device completely, so we might want an asynchronous variant
+and then some kind of flush that tells device "you better apply these now".
 
-Thanks!
+-- 
+MST
+
