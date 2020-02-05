@@ -2,168 +2,356 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 580BA154D9F
-	for <lists+netdev@lfdr.de>; Thu,  6 Feb 2020 21:57:56 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 83311154E6C
+	for <lists+netdev@lfdr.de>; Thu,  6 Feb 2020 22:56:24 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727945AbgBFU5w (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 6 Feb 2020 15:57:52 -0500
-Received: from mail-eopbgr60056.outbound.protection.outlook.com ([40.107.6.56]:22890
-        "EHLO EUR04-DB3-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1727711AbgBFU5v (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 6 Feb 2020 15:57:51 -0500
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=l/Gh1ZVFYlTU6dpFVxXDErTs5sdLjZPrN9c4bbt9dIpv9dwRjTqkoBq8a98MmrhX60qDc4hocNaFNWcPw+TQR8SPkfla5D02Dwe1hPuxPj2W/JRKkoOFLYuNKurfLHOzHS79JBpXqtHhRyddcgBX3VBCu2uUHNqJhBtUmRe8dtum3YLbqt69BqM/4rafoULEHHH9zQ4N4Z9pldyYTRJn3CZ6KJk6y7TyJVKoBZEHjuisGuHLHgq8QsVbFhDMTdRXfFAaz4VTQfE3B1IANPk7TZOoT9ljFgK+Fame84oKhOqlpsivMiABQw6R+ezuioE+M8hEvpcObv3V9aZMWMSHew==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=MWvvrkTLNg5PgAolT5Hcex4B0hvlj96es8D3ekXWQc4=;
- b=G6wGuaesuCtEJezWGEwbto6tp6IX5SnNv0Rliz7NDbmniUDNrwJ1sEkrxFtXHJev032x7ufAeS2U0S1DgYDtQVBr3ERHMQxArGpOlISIXXnfgHNa8Q7lCmVyy9nJMfkXXJhAWxvGD9zL1jZByHW/pbjkItoVHDk41Fz2oOQ5tq5rwBXer1ISXn/G1QJ6g+NSZDfws6EXyT/f5L3J+f5lbcvmRjThbhnGwDQZvgjzV2OgKOjUDNQnDZCpmQf4grdbkeT0R+Jg6orTYJTa1x/eQzaPwKiQrWDqD9t4EPN3IeDhekpcbD+gsO1A0sKjNa5byJUdsrPhJS8EASeFT0AS4w==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=mellanox.com; dmarc=pass action=none header.from=mellanox.com;
- dkim=pass header.d=mellanox.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Mellanox.com;
- s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=MWvvrkTLNg5PgAolT5Hcex4B0hvlj96es8D3ekXWQc4=;
- b=ITsgPuf2B8ddobZI/iDKVVUn5FdRAVNdRmmHQHoY29RtPeOl23YAOWcXdFmTwLp9ZyOdqw1rZzRMKvuXTAGQS217xDIJgnk41HaFXE9wfnLL1tBMv69PrafToK9yDAgcmIsQo/saokW5/7NK4t4WFxW1VFalB0zABoOKbLBohHA=
-Authentication-Results: spf=none (sender IP is )
- smtp.mailfrom=saeedm@mellanox.com; 
-Received: from VI1PR05MB5102.eurprd05.prod.outlook.com (20.177.51.151) by
- VI1PR05MB3280.eurprd05.prod.outlook.com (10.175.243.21) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.2707.23; Thu, 6 Feb 2020 20:57:46 +0000
-Received: from VI1PR05MB5102.eurprd05.prod.outlook.com
- ([fe80::8cea:6c66:19fe:fbc2]) by VI1PR05MB5102.eurprd05.prod.outlook.com
- ([fe80::8cea:6c66:19fe:fbc2%7]) with mapi id 15.20.2707.024; Thu, 6 Feb 2020
- 20:57:46 +0000
-From:   Saeed Mahameed <saeedm@mellanox.com>
-To:     "David S. Miller" <davem@davemloft.net>
-Cc:     netdev@vger.kernel.org, Tariq Toukan <tariqt@mellanox.com>,
-        Eran Ben Elisha <eranbe@mellanox.com>,
-        Saeed Mahameed <saeedm@mellanox.com>
-Subject: [net 5/5] net/mlx5: Deprecate usage of generic TLS HW capability bit
-Date:   Thu,  6 Feb 2020 12:57:10 -0800
-Message-Id: <20200206205710.26861-6-saeedm@mellanox.com>
-X-Mailer: git-send-email 2.24.1
-In-Reply-To: <20200206205710.26861-1-saeedm@mellanox.com>
-References: <20200206205710.26861-1-saeedm@mellanox.com>
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-ClientProxiedBy: BY5PR20CA0005.namprd20.prod.outlook.com
- (2603:10b6:a03:1f4::18) To VI1PR05MB5102.eurprd05.prod.outlook.com
- (2603:10a6:803:5e::23)
+        id S1727524AbgBFV4R (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 6 Feb 2020 16:56:17 -0500
+Received: from foss.arm.com ([217.140.110.172]:34904 "EHLO foss.arm.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726765AbgBFV4R (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 6 Feb 2020 16:56:17 -0500
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 8D5F830E;
+        Thu,  6 Feb 2020 13:56:16 -0800 (PST)
+Received: from [192.168.122.164] (unknown [10.118.30.29])
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 0F8A53F68E;
+        Thu,  6 Feb 2020 13:56:16 -0800 (PST)
+Subject: Re: [PATCH v1 1/7] mdio_bus: Introduce fwnode MDIO helpers
+To:     Calvin Johnson <calvin.johnson@nxp.com>, linux.cj@gmail.com,
+        Jon Nettleton <jon@solid-run.com>, linux@armlinux.org.uk,
+        Makarand Pawagi <makarand.pawagi@nxp.com>,
+        cristian.sovaiala@nxp.com, laurentiu.tudor@nxp.com,
+        ioana.ciornei@nxp.com, V.Sethi@nxp.com, pankaj.bansal@nxp.com,
+        "Rajesh V . Bikkina" <rajesh.bikkina@nxp.com>
+Cc:     Marcin Wojtas <mw@semihalf.com>,
+        Calvin Johnson <calvin.johnson@oss.nxp.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        "David S. Miller" <davem@davemloft.net>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org
+References: <20200131153440.20870-1-calvin.johnson@nxp.com>
+ <20200131153440.20870-2-calvin.johnson@nxp.com>
+From:   Jeremy Linton <jeremy.linton@arm.com>
+Message-ID: <371ff9b4-4de6-7a03-90f8-a1eae4d5402d@arm.com>
+Date:   Wed, 5 Feb 2020 08:17:46 -0600
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.4.1
 MIME-Version: 1.0
-Received: from smtp.office365.com (209.116.155.178) by BY5PR20CA0005.namprd20.prod.outlook.com (2603:10b6:a03:1f4::18) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.2707.21 via Frontend Transport; Thu, 6 Feb 2020 20:57:45 +0000
-X-Mailer: git-send-email 2.24.1
-X-Originating-IP: [209.116.155.178]
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-HT: Tenant
-X-MS-Office365-Filtering-Correlation-Id: 644f07f0-a6c3-4c99-30bd-08d7ab4737ca
-X-MS-TrafficTypeDiagnostic: VI1PR05MB3280:|VI1PR05MB3280:
-X-MS-Exchange-Transport-Forked: True
-X-Microsoft-Antispam-PRVS: <VI1PR05MB3280A3885B31095BA4538523BE1D0@VI1PR05MB3280.eurprd05.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:95;
-X-Forefront-PRVS: 0305463112
-X-Forefront-Antispam-Report: SFV:NSPM;SFS:(10009020)(4636009)(136003)(39860400002)(376002)(346002)(396003)(366004)(199004)(189003)(86362001)(4326008)(6512007)(107886003)(26005)(5660300002)(16526019)(186003)(6506007)(8676002)(81156014)(6916009)(81166006)(8936002)(2906002)(478600001)(36756003)(52116002)(6486002)(316002)(54906003)(1076003)(6666004)(956004)(66476007)(2616005)(66556008)(66946007)(41533002)(54420400002);DIR:OUT;SFP:1101;SCL:1;SRVR:VI1PR05MB3280;H:VI1PR05MB5102.eurprd05.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;A:1;MX:1;
-Received-SPF: None (protection.outlook.com: mellanox.com does not designate
- permitted sender hosts)
-X-MS-Exchange-SenderADCheck: 1
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: RFUkZoMRMvCUZ4qmT/zxb6YVuFgVT/ulzryS8fpLOQlXTRmt4+41REfpuTrHiI3EymWYMat6h2vucFRxD2go8em/tLaulTxd/TWNYqH62bhyKV5szG5ZbZx1vOf05kLdZN3sb7fMdjKiw12R4N68IOqID9K50Vo4mpkuSfsdEktthrpcRDNPfVaDCd1zIMmSyzaQeEbNOsaZq0kbc9dnz1jK0PWWd7hqOORk5Hi5iUbLCw0vkdEt8+uyqUmPcQPlSLBGZx0yxk8YHvvn+hexmBD5TnHJcVEKDWzDHB9U/+pIWR3PrAszAm4M5WkuDZoBJk+ePNxKVnRsPqC0sErr26K9T2pD1IgHAjI4BEJtTWYEidiwHw88SUgew58xXH38VLPg69YVXF66sqvvjK15rj9DeTUN2XfAZibbRVB4k8Pdh7xDabKxrpk5r1Hsg5GImJzLI8EepAi3brUY67CwE/HIDP6VECGoO4DFnMUSKZSRtJM6SXRMrTmyLjVRNEakgLg3PjvppjxX7Z3YSQv2XNHqlk3FHBh6kOoeRd4LSYs2H4XA14SV6aETzgIygQvv
-X-MS-Exchange-AntiSpam-MessageData: Vy3Y5KL7Nxp1sCDtkP1vvNTRL73QF5Bi5dVwy5oZU8ZX5zcQJCiI+mInyfD/O3+dwVZuZLLudlK7kXzF4rQlHNY3FBeo1zKZSiQJyCbiMMgUEJngx8XOg0Ct+wFznn9P4HP+Z3ziIGMlOOeZtxQ1DA==
-X-OriginatorOrg: Mellanox.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 644f07f0-a6c3-4c99-30bd-08d7ab4737ca
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 06 Feb 2020 20:57:46.6537
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: a652971c-7d2e-4d9b-a6a4-d149256f461b
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: PtovepPEv6/sbxtmz9MT3TUoerRu6WvQe19iXz2ms0K0GJqtt8VFW2o8EbAiy+fzARxv1cg2KMUpREyUxTHIkw==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR05MB3280
+In-Reply-To: <20200131153440.20870-2-calvin.johnson@nxp.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Tariq Toukan <tariqt@mellanox.com>
+Hi,
 
-Deprecate the generic TLS cap bit, use the new TX-specific
-TLS cap bit instead.
+On 1/31/20 9:34 AM, Calvin Johnson wrote:
+> From: Marcin Wojtas <mw@semihalf.com>
+> 
+> This patch introduces fwnode helper for registering MDIO
+> bus, as well as one for finding the PHY, basing on its
+> firmware node pointer. Comparing to existing OF equivalent,
+> fwnode_mdiobus_register() does not support:
+>   * deprecated bindings (device whitelist, nor the PHY ID embedded
+>     in the compatible string)
+>   * MDIO bus auto scanning
+> 
+> Signed-off-by: Marcin Wojtas <mw@semihalf.com>
+> Signed-off-by: Calvin Johnson <calvin.johnson@oss.nxp.com>
+> ---
+> 
+>   drivers/net/phy/mdio_bus.c | 218 +++++++++++++++++++++++++++++++++++++
+>   include/linux/mdio.h       |   3 +
+>   2 files changed, 221 insertions(+)
+> 
+> diff --git a/drivers/net/phy/mdio_bus.c b/drivers/net/phy/mdio_bus.c
+> index 229e480179ff..b1830ae2abd9 100644
+> --- a/drivers/net/phy/mdio_bus.c
+> +++ b/drivers/net/phy/mdio_bus.c
+> @@ -22,6 +22,7 @@
+>   #include <linux/of_device.h>
+>   #include <linux/of_mdio.h>
+>   #include <linux/of_gpio.h>
+> +#include <linux/of_irq.h>
+>   #include <linux/netdevice.h>
+>   #include <linux/etherdevice.h>
+>   #include <linux/reset.h>
+> @@ -725,6 +726,223 @@ static int mdio_uevent(struct device *dev, struct kobj_uevent_env *env)
+>   	return 0;
+>   }
+>   
+> +static int fwnode_mdiobus_register_phy(struct mii_bus *bus,
+> +				       struct fwnode_handle *child, u32 addr)
+> +{
+> +	struct phy_device *phy;
+> +	bool is_c45 = false;
+> +	int rc;
+> +
+> +	rc = fwnode_property_match_string(child, "compatible",
+> +					  "ethernet-phy-ieee802.3-c45");
+> +	if (!rc)
+> +		is_c45 = true;
+> +
+> +	phy = get_phy_device(bus, addr, is_c45);
+> +	if (IS_ERR(phy))
+> +		return PTR_ERR(phy);
+> +
+> +	phy->irq = bus->irq[addr];
+> +
+> +	if (to_of_node(child)) {
+> +		rc = of_irq_get(to_of_node(child), 0);
+> +		if (rc == -EPROBE_DEFER) {
+> +			phy_device_free(phy);
+> +			return rc;
+> +		} else if (rc > 0) {
+> +			phy->irq = rc;
+> +			bus->irq[addr] = rc;
+> +		}
+> +	}
+> +
+> +	if (fwnode_property_read_bool(child, "broken-turn-around"))
+> +		bus->phy_ignore_ta_mask |= 1 << addr;
+> +
+> +	/* Associate the fwnode with the device structure so it
+> +	 * can be looked up later.
+> +	 */
+> +	phy->mdio.dev.fwnode = child;
+> +
+> +	/* All data is now stored in the phy struct, so register it */
+> +	rc = phy_device_register(phy);
+> +	if (rc) {
+> +		phy_device_free(phy);
+> +		fwnode_handle_put(child);
+> +		return rc;
+> +	}
+> +
+> +	dev_dbg(&bus->dev, "registered phy at address %i\n", addr);
+> +
+> +	return 0;
+> +}
+> +
+> +static int fwnode_mdiobus_register_device(struct mii_bus *bus,
+> +					  struct fwnode_handle *child, u32 addr)
+> +{
+> +	struct mdio_device *mdiodev;
+> +	int rc;
+> +
+> +	mdiodev = mdio_device_create(bus, addr);
+> +	if (IS_ERR(mdiodev))
+> +		return PTR_ERR(mdiodev);
+> +
+> +	/* Associate the fwnode with the device structure so it
+> +	 * can be looked up later.
+> +	 */
+> +	mdiodev->dev.fwnode = child;
+> +
+> +	/* All data is now stored in the mdiodev struct; register it. */
+> +	rc = mdio_device_register(mdiodev);
+> +	if (rc) {
+> +		mdio_device_free(mdiodev);
+> +		fwnode_handle_put(child);
+> +		return rc;
+> +	}
+> +
+> +	dev_dbg(&bus->dev, "registered mdio device at address %i\n", addr);
+> +
+> +	return 0;
+> +}
+> +
+> +static int fwnode_mdio_parse_addr(struct device *dev,
+> +				  const struct fwnode_handle *fwnode)
+> +{
+> +	u32 addr;
+> +	int ret;
+> +
+> +	ret = fwnode_property_read_u32(fwnode, "reg", &addr);
+> +	if (ret < 0) {
+> +		dev_err(dev, "PHY node has no 'reg' property\n");
+> +		return ret;
+> +	}
+> +
+> +	/* A PHY must have a reg property in the range [0-31] */
+> +	if (addr < 0 || addr >= PHY_MAX_ADDR) {
+> +		dev_err(dev, "PHY address %i is invalid\n", addr);
+> +		return -EINVAL;
+> +	}
+> +
+> +	return addr;
+> +}
 
-Fixes: a12ff35e0fb7 ("net/mlx5: Introduce TLS TX offload hardware bits and structures")
-Signed-off-by: Tariq Toukan <tariqt@mellanox.com>
-Reviewed-by: Eran Ben Elisha <eranbe@mellanox.com>
-Signed-off-by: Saeed Mahameed <saeedm@mellanox.com>
----
- drivers/net/ethernet/mellanox/mlx5/core/accel/tls.h        | 2 +-
- .../net/ethernet/mellanox/mlx5/core/en_accel/tls_rxtx.c    | 2 +-
- drivers/net/ethernet/mellanox/mlx5/core/fw.c               | 2 +-
- include/linux/mlx5/mlx5_ifc.h                              | 7 ++++---
- 4 files changed, 7 insertions(+), 6 deletions(-)
+Almost assuredly this is wrong, the _ADR method exists to identify a 
+device on its parent bus. The DT reg property shouldn't be used like 
+this in an ACPI enviroment.
 
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/accel/tls.h b/drivers/net/ethernet/mellanox/mlx5/core/accel/tls.h
-index d787bc0a4155..e09bc3858d57 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/accel/tls.h
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/accel/tls.h
-@@ -45,7 +45,7 @@ void mlx5_ktls_destroy_key(struct mlx5_core_dev *mdev, u32 key_id);
- 
- static inline bool mlx5_accel_is_ktls_device(struct mlx5_core_dev *mdev)
- {
--	if (!MLX5_CAP_GEN(mdev, tls))
-+	if (!MLX5_CAP_GEN(mdev, tls_tx))
- 		return false;
- 
- 	if (!MLX5_CAP_GEN(mdev, log_max_dek))
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_accel/tls_rxtx.c b/drivers/net/ethernet/mellanox/mlx5/core/en_accel/tls_rxtx.c
-index 71384ad1a443..ef1ed15a53b4 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en_accel/tls_rxtx.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en_accel/tls_rxtx.c
-@@ -269,7 +269,7 @@ struct sk_buff *mlx5e_tls_handle_tx_skb(struct net_device *netdev,
- 	int datalen;
- 	u32 skb_seq;
- 
--	if (MLX5_CAP_GEN(sq->channel->mdev, tls)) {
-+	if (MLX5_CAP_GEN(sq->channel->mdev, tls_tx)) {
- 		skb = mlx5e_ktls_handle_tx_skb(netdev, sq, skb, wqe, pi);
- 		goto out;
- 	}
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/fw.c b/drivers/net/ethernet/mellanox/mlx5/core/fw.c
-index d89ff1d09119..909a7f284614 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/fw.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/fw.c
-@@ -242,7 +242,7 @@ int mlx5_query_hca_caps(struct mlx5_core_dev *dev)
- 			return err;
- 	}
- 
--	if (MLX5_CAP_GEN(dev, tls)) {
-+	if (MLX5_CAP_GEN(dev, tls_tx)) {
- 		err = mlx5_core_get_caps(dev, MLX5_CAP_TLS);
- 		if (err)
- 			return err;
-diff --git a/include/linux/mlx5/mlx5_ifc.h b/include/linux/mlx5/mlx5_ifc.h
-index 032cd6630720..ff8c9d527bb4 100644
---- a/include/linux/mlx5/mlx5_ifc.h
-+++ b/include/linux/mlx5/mlx5_ifc.h
-@@ -1448,14 +1448,15 @@ struct mlx5_ifc_cmd_hca_cap_bits {
- 
- 	u8         reserved_at_440[0x20];
- 
--	u8         tls[0x1];
--	u8         reserved_at_461[0x2];
-+	u8         reserved_at_460[0x3];
- 	u8         log_max_uctx[0x5];
- 	u8         reserved_at_468[0x3];
- 	u8         log_max_umem[0x5];
- 	u8         max_num_eqs[0x10];
- 
--	u8         reserved_at_480[0x3];
-+	u8         reserved_at_480[0x1];
-+	u8         tls_tx[0x1];
-+	u8         reserved_at_482[0x1];
- 	u8         log_max_l2_table[0x5];
- 	u8         reserved_at_488[0x8];
- 	u8         log_uar_page_sz[0x10];
--- 
-2.24.1
+Further, there are a number of other dt bindings in this set that seem 
+inappropriate in common/shared ACPI code paths. That is because AFAIK 
+the _DSD methods are there to provide device implementation specific 
+behaviors, not as standardized methods for a generic classes of devices. 
+Its vaguly the equivlant of the "vendor,xxxx" properties in DT.
+
+This has been a discussion point on/off for a while with any attempt to 
+publicly specify/standardize for all OS vendors what they might find 
+encoded in a DSD property. The few year old "WORK_IN_PROGRESS" link on 
+the uefi page has a few suggested ones
+
+https://uefi.org/sites/default/files/resources/nic-request-v2.pdf
+
+Anyway, the use of phy-handle with a reference to the phy device on a 
+shared MDIO is a techically workable solution to the problem brought up 
+in the RPI/ACPI thread as well. OTOH, it suffers from the use of DSD and 
+at a minimum should probably be added to the document linked above if 
+its found to be the best way to handle this. Although, in the common 
+case of a mdio bus, matching acpi described devices with their 
+discovered counterparts (note the device() defintion in the spec 
+19.6.30) only to define DSD refrences is a bit overkill.
+
+Put another way, while seemingly not nessiary if a bus can be probed, a 
+nic/device->mdio->phy can be described in the normal ACPI heirarchy with 
+only appropriatly nested CRS and ADR resources. Its the shared nature of 
+the MDIO bus that causes problems.
+
+
+
+> +
+> +/**
+> + * fwnode_mdiobus_child_is_phy - Return true if the child is a PHY node.
+> + * It must either:
+> + * o Compatible string of "ethernet-phy-ieee802.3-c45"
+> + * o Compatible string of "ethernet-phy-ieee802.3-c22"
+> + * Checking "compatible" property is done, in order to follow the DT binding.
+> + */
+> +static bool fwnode_mdiobus_child_is_phy(struct fwnode_handle *child)
+> +{
+> +	int ret;
+> +
+> +	ret = fwnode_property_match_string(child, "compatible",
+> +					   "ethernet-phy-ieee802.3-c45");
+> +	if (!ret)
+> +		return true;
+> +
+> +	ret = fwnode_property_match_string(child, "compatible",
+> +					   "ethernet-phy-ieee802.3-c22");
+> +	if (!ret)
+> +		return true;
+> +
+> +	if (!fwnode_property_present(child, "compatible"))
+> +		return true;
+> +
+> +	return false;
+> +}
+> +
+> +/**
+> + * fwnode_mdiobus_register - Register mii_bus and create PHYs from the fwnode
+> + * @bus: pointer to mii_bus structure
+> + * @fwnode: pointer to fwnode_handle of MDIO bus.
+> + *
+> + * This function registers the mii_bus structure and registers a phy_device
+> + * for each child node of @fwnode.
+> + */
+> +int fwnode_mdiobus_register(struct mii_bus *bus, struct fwnode_handle *fwnode)
+> +{
+> +	struct fwnode_handle *child;
+> +	int addr, rc;
+> +	int default_gpio_reset_delay_ms = 10;
+> +
+> +	/* Do not continue if the node is disabled */
+> +	if (!fwnode_device_is_available(fwnode))
+> +		return -ENODEV;
+> +
+> +	/* Mask out all PHYs from auto probing. Instead the PHYs listed in
+> +	 * the firmware nodes are populated after the bus has been registered.
+> +	 */
+> +	bus->phy_mask = ~0;
+> +
+> +	bus->dev.fwnode = fwnode;
+> +
+> +	/* Get bus level PHY reset GPIO details */
+> +	bus->reset_delay_us = default_gpio_reset_delay_ms;
+> +	fwnode_property_read_u32(fwnode, "reset-delay-us",
+> +				 &bus->reset_delay_us);
+> +
+> +	/* Register the MDIO bus */
+> +	rc = mdiobus_register(bus);
+> +	if (rc)
+> +		return rc;
+> +
+> +	/* Loop over the child nodes and register a phy_device for each PHY */
+> +	fwnode_for_each_child_node(fwnode, child) {
+> +		addr = fwnode_mdio_parse_addr(&bus->dev, child);
+> +		if (addr < 0)
+> +			continue;
+> +
+> +		if (fwnode_mdiobus_child_is_phy(child))
+> +			rc = fwnode_mdiobus_register_phy(bus, child, addr);
+> +		else
+> +			rc = fwnode_mdiobus_register_device(bus, child, addr);
+> +		if (rc)
+> +			goto unregister;
+> +	}
+> +
+> +	return 0;
+> +
+> +unregister:
+> +	mdiobus_unregister(bus);
+> +
+> +	return rc;
+> +}
+> +EXPORT_SYMBOL(fwnode_mdiobus_register);
+> +
+> +/* Helper function for fwnode_phy_find_device */
+> +static int fwnode_phy_match(struct device *dev, const void *phy_fwnode)
+> +{
+> +	return dev->fwnode == phy_fwnode;
+> +}
+> +
+> +/**
+> + * fwnode_phy_find_device - find the phy_device associated to fwnode
+> + * @phy_fwnode: Pointer to the PHY's fwnode
+> + *
+> + * If successful, returns a pointer to the phy_device with the embedded
+> + * struct device refcount incremented by one, or NULL on failure.
+> + */
+> +struct phy_device *fwnode_phy_find_device(struct fwnode_handle *phy_fwnode)
+> +{
+> +	struct device *d;
+> +	struct mdio_device *mdiodev;
+> +
+> +	if (!phy_fwnode)
+> +		return NULL;
+> +
+> +	d = bus_find_device(&mdio_bus_type, NULL, phy_fwnode, fwnode_phy_match);
+> +	if (d) {
+> +		mdiodev = to_mdio_device(d);
+> +		if (mdiodev->flags & MDIO_DEVICE_FLAG_PHY)
+> +			return to_phy_device(d);
+> +		put_device(d);
+> +	}
+> +
+> +	return NULL;
+> +}
+> +EXPORT_SYMBOL(fwnode_phy_find_device);
+> +
+>   struct bus_type mdio_bus_type = {
+>   	.name		= "mdio_bus",
+>   	.match		= mdio_bus_match,
+> diff --git a/include/linux/mdio.h b/include/linux/mdio.h
+> index a7604248777b..5c600bb1183c 100644
+> --- a/include/linux/mdio.h
+> +++ b/include/linux/mdio.h
+> @@ -327,6 +327,9 @@ int mdiobus_unregister_device(struct mdio_device *mdiodev);
+>   bool mdiobus_is_registered_device(struct mii_bus *bus, int addr);
+>   struct phy_device *mdiobus_get_phy(struct mii_bus *bus, int addr);
+>   
+> +int fwnode_mdiobus_register(struct mii_bus *bus, struct fwnode_handle *fwnode);
+> +struct phy_device *fwnode_phy_find_device(struct fwnode_handle *phy_fwnode);
+> +
+>   /**
+>    * mdio_module_driver() - Helper macro for registering mdio drivers
+>    *
+> 
 
