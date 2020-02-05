@@ -2,110 +2,187 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 10C01152864
-	for <lists+netdev@lfdr.de>; Wed,  5 Feb 2020 10:33:55 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 01AE2152927
+	for <lists+netdev@lfdr.de>; Wed,  5 Feb 2020 11:33:53 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728168AbgBEJdu (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 5 Feb 2020 04:33:50 -0500
-Received: from mga05.intel.com ([192.55.52.43]:19048 "EHLO mga05.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728035AbgBEJdt (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 5 Feb 2020 04:33:49 -0500
-X-Amp-Result: UNKNOWN
-X-Amp-Original-Verdict: FILE UNKNOWN
-X-Amp-File-Uploaded: False
-Received: from orsmga004.jf.intel.com ([10.7.209.38])
-  by fmsmga105.fm.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 05 Feb 2020 01:33:49 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.70,405,1574150400"; 
-   d="scan'208";a="378683518"
-Received: from smile.fi.intel.com (HELO smile) ([10.237.68.40])
-  by orsmga004.jf.intel.com with ESMTP; 05 Feb 2020 01:33:43 -0800
-Received: from andy by smile with local (Exim 4.93)
-        (envelope-from <andriy.shevchenko@linux.intel.com>)
-        id 1izH43-0000Hp-JV; Wed, 05 Feb 2020 11:33:43 +0200
-Date:   Wed, 5 Feb 2020 11:33:43 +0200
-From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To:     Michal Kubecek <mkubecek@suse.cz>
-Cc:     Kai-Heng Feng <kai.heng.feng@canonical.com>, davem@davemloft.ne,
-        jeffrey.t.kirsher@intel.com,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
+        id S1727468AbgBEKdv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 5 Feb 2020 05:33:51 -0500
+Received: from us-smtp-1.mimecast.com ([207.211.31.81]:33691 "EHLO
+        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1727562AbgBEKdu (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 5 Feb 2020 05:33:50 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1580898829;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=fMJo0Joxo+pl/mB5o3Pd3oM2dXap9Kiay0KNytUxRsU=;
+        b=ZIWxRiOIzLW96aEkYuzKP+c8c6Yr4VUb/c/lPxeAgEQfDfkgOe5MfIc00azpJg+CofmS5H
+        oFRmCVrbW2lAeXJYCkJvCYyvfywqE3Z8VW1XF1CPlZKOc6I3ZkOkPmGu/0ynXMJh1yC7i+
+        B9iSR9oVlUUGUgqROv65tADe6ktU4rY=
+Received: from mail-qk1-f197.google.com (mail-qk1-f197.google.com
+ [209.85.222.197]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-221-f9-TraQROHy_FKqLsR1fvA-1; Wed, 05 Feb 2020 05:33:48 -0500
+X-MC-Unique: f9-TraQROHy_FKqLsR1fvA-1
+Received: by mail-qk1-f197.google.com with SMTP id b23so946839qkg.17
+        for <netdev@vger.kernel.org>; Wed, 05 Feb 2020 02:33:48 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:content-transfer-encoding
+         :in-reply-to;
+        bh=fMJo0Joxo+pl/mB5o3Pd3oM2dXap9Kiay0KNytUxRsU=;
+        b=szRSzJFNEsgrkT07oAhJEYl5G454a2keezFprY6Tja9wckA2/w3nTuAn63753ILLog
+         JNdTGi7hpt9Fl4aw2dzLTCrJssTMA3+dc3DR2rezbY49go1W1oau7UUPIEgTjDwBAFt4
+         w3x6Kwn2Zu3qmwWVRKmLnxzgCg5P8cyQjOiM3OROhWE1gJzBIvdd+GXpDdBAD9v7jcJR
+         3FoR1drmrvq6e/QnbgSw3ts2LPhC5qXakKVyVNVNKR0xRDlo314mLwz0pzQ1hIs/QhKo
+         kCOdv20yd592MPGhn8PDSSlzunlTyu5udhvIU7epk7pvesia6HQc7/Prh7OLPeEKV8Qf
+         6Ehg==
+X-Gm-Message-State: APjAAAUN6aDfTuJveUWRZao5Ej6ow/CX/eg6tm5y6awz40f/ELcRx6iY
+        d8kPOfY3t9zfmmi/dU8G+xyBdO4oAarRhtqznqs7S4pxOoQWlU3ylqraHMnVGx+swpRC1o4wFQF
+        Mp9z2/+P3ZCovv2vs
+X-Received: by 2002:a37:6853:: with SMTP id d80mr4494830qkc.57.1580898827683;
+        Wed, 05 Feb 2020 02:33:47 -0800 (PST)
+X-Google-Smtp-Source: APXvYqxSqc1HJF8dt4Eb/7jFWTJnHSPo1HCY1H3WJbmwy+Vb8UDe9HwZCYMCfYz7+b2DU8mORTzDoA==
+X-Received: by 2002:a37:6853:: with SMTP id d80mr4494800qkc.57.1580898827421;
+        Wed, 05 Feb 2020 02:33:47 -0800 (PST)
+Received: from redhat.com (bzq-79-176-41-183.red.bezeqint.net. [79.176.41.183])
+        by smtp.gmail.com with ESMTPSA id p50sm13949401qtf.5.2020.02.05.02.33.42
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 05 Feb 2020 02:33:46 -0800 (PST)
+Date:   Wed, 5 Feb 2020 05:33:40 -0500
+From:   "Michael S. Tsirkin" <mst@redhat.com>
+To:     Shahaf Shuler <shahafs@mellanox.com>
+Cc:     Jason Wang <jasowang@redhat.com>, Tiwei Bie <tiwei.bie@intel.com>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
+        "virtualization@lists.linux-foundation.org" 
+        <virtualization@lists.linux-foundation.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        Jason Gunthorpe <jgg@mellanox.com>,
+        "rob.miller@broadcom.com" <rob.miller@broadcom.com>,
+        "haotian.wang@sifive.com" <haotian.wang@sifive.com>,
+        "eperezma@redhat.com" <eperezma@redhat.com>,
+        "lulu@redhat.com" <lulu@redhat.com>,
+        Parav Pandit <parav@mellanox.com>,
+        "rdunlap@infradead.org" <rdunlap@infradead.org>,
+        "hch@infradead.org" <hch@infradead.org>,
         Jiri Pirko <jiri@mellanox.com>,
-        Pablo Neira Ayuso <pablo@netfilter.org>,
-        Maxime Chevallier <maxime.chevallier@bootlin.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Ido Schimmel <idosch@mellanox.com>,
-        Jouni Hogander <jouni.hogander@unikie.com>,
-        YueHaibing <yuehaibing@huawei.com>,
-        Eric Dumazet <edumazet@google.com>,
-        Wang Hai <wanghai26@huawei.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Li RongQing <lirongqing@baidu.com>,
-        open list <linux-kernel@vger.kernel.org>,
-        "open list:NETWORKING [GENERAL]" <netdev@vger.kernel.org>
-Subject: Re: [PATCH v2 2/2] net-sysfs: Ensure begin/complete are called in
- speed_show() and duplex_show()
-Message-ID: <20200205093343.GT10400@smile.fi.intel.com>
-References: <20200205081616.18378-1-kai.heng.feng@canonical.com>
- <20200205081616.18378-2-kai.heng.feng@canonical.com>
- <20200205090638.GS10400@smile.fi.intel.com>
- <20200205092345.GA14294@unicorn.suse.cz>
+        "hanand@xilinx.com" <hanand@xilinx.com>,
+        "mhabets@solarflare.com" <mhabets@solarflare.com>,
+        "maxime.coquelin@redhat.com" <maxime.coquelin@redhat.com>,
+        "lingshan.zhu@intel.com" <lingshan.zhu@intel.com>,
+        "dan.daly@intel.com" <dan.daly@intel.com>,
+        "cunming.liang@intel.com" <cunming.liang@intel.com>,
+        "zhihong.wang@intel.com" <zhihong.wang@intel.com>
+Subject: Re: [PATCH] vhost: introduce vDPA based backend
+Message-ID: <20200205053129-mutt-send-email-mst@kernel.org>
+References: <20200131033651.103534-1-tiwei.bie@intel.com>
+ <7aab2892-bb19-a06a-a6d3-9c28bc4c3400@redhat.com>
+ <20200205020247.GA368700@___>
+ <AM0PR0502MB37952015716C1D5E07E390B6C3020@AM0PR0502MB3795.eurprd05.prod.outlook.com>
+ <112858a4-1a01-f4d7-e41a-1afaaa1cad45@redhat.com>
+ <AM0PR0502MB3795AD42233D69F350402A8AC3020@AM0PR0502MB3795.eurprd05.prod.outlook.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <20200205092345.GA14294@unicorn.suse.cz>
-Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <AM0PR0502MB3795AD42233D69F350402A8AC3020@AM0PR0502MB3795.eurprd05.prod.outlook.com>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Feb 05, 2020 at 10:23:45AM +0100, Michal Kubecek wrote:
-> On Wed, Feb 05, 2020 at 11:06:38AM +0200, Andy Shevchenko wrote:
-> > On Wed, Feb 05, 2020 at 04:16:16PM +0800, Kai-Heng Feng wrote:
-> > > Device like igb gets runtime suspended when there's no link partner. We
-> > > can't get correct speed under that state:
-> > > $ cat /sys/class/net/enp3s0/speed
-> > > 1000
-> > > 
-> > > In addition to that, an error can also be spotted in dmesg:
-> > > [  385.991957] igb 0000:03:00.0 enp3s0: PCIe link lost
-> > > 
-> > > It's because the igb device doesn't get runtime resumed before calling
-> > > get_link_ksettings().
-> > > 
-> > > So let's use a new helper to call begin() and complete() like what
-> > > dev_ethtool() does, to runtime resume/suspend or power up/down the
-> > > device properly.
-> > > 
-> > > Once this fix is in place, igb can show the speed correctly without link
-> > > partner:
-> > > $ cat /sys/class/net/enp3s0/speed
-> > > -1
+On Wed, Feb 05, 2020 at 09:30:14AM +0000, Shahaf Shuler wrote:
+> Wednesday, February 5, 2020 9:50 AM, Jason Wang:
+> > Subject: Re: [PATCH] vhost: introduce vDPA based backend
+> > On 2020/2/5 下午3:15, Shahaf Shuler wrote:
+> > > Wednesday, February 5, 2020 4:03 AM, Tiwei Bie:
+> > >> Subject: Re: [PATCH] vhost: introduce vDPA based backend
+> > >>
+> > >> On Tue, Feb 04, 2020 at 11:30:11AM +0800, Jason Wang wrote:
+> > >>> On 2020/1/31 上午11:36, Tiwei Bie wrote:
+> > >>>> This patch introduces a vDPA based vhost backend. This backend is
+> > >>>> built on top of the same interface defined in virtio-vDPA and
+> > >>>> provides a generic vhost interface for userspace to accelerate the
+> > >>>> virtio devices in guest.
+> > >>>>
+> > >>>> This backend is implemented as a vDPA device driver on top of the
+> > >>>> same ops used in virtio-vDPA. It will create char device entry
+> > >>>> named vhost-vdpa/$vdpa_device_index for userspace to use.
+> > Userspace
+> > >>>> can use vhost ioctls on top of this char device to setup the backend.
+> > >>>>
+> > >>>> Signed-off-by: Tiwei Bie <tiwei.bie@intel.com>
+> > > [...]
+> > >
+> > >>>> +static long vhost_vdpa_do_dma_mapping(struct vhost_vdpa *v) {
+> > >>>> +	/* TODO: fix this */
+> > >>>
+> > >>> Before trying to do this it looks to me we need the following during
+> > >>> the probe
+> > >>>
+> > >>> 1) if set_map() is not supported by the vDPA device probe the IOMMU
+> > >>> that is supported by the vDPA device
+> > >>> 2) allocate IOMMU domain
+> > >>>
+> > >>> And then:
+> > >>>
+> > >>> 3) pin pages through GUP and do proper accounting
+> > >>> 4) store GPA->HPA mapping in the umem
+> > >>> 5) generate diffs of memory table and using IOMMU API to setup the
+> > >>> dma mapping in this method
+> > >>>
+> > >>> For 1), I'm not sure parent is sufficient for to doing this or need
+> > >>> to introduce new API like iommu_device in mdev.
+> > >> Agree. We may also need to introduce something like the iommu_device.
+> > >>
+> > > Would it be better for the map/umnap logic to happen inside each device ?
+> > > Devices that needs the IOMMU will call iommu APIs from inside the driver
+> > callback.
 > > 
-> > What is the meaning of -1? Does it tells us "Hey, something is bad in hardware
-> > I can't tell you the speed" or does it imply anything else?
-> 
-> It's SPEED_UNKNOWN constant printed with "%d" template.
-> 
-> > Wouldn't be better to report 0?
 > > 
-> > Where is the documentation part of this ABI change?
+> > Technically, this can work. But if it can be done by vhost-vpda it will make the
+> > vDPA driver more compact and easier to be implemented.
 > 
-> It's not an ABI change, /sys/class/net/*/speed already shows -1 when the
-> device reports SPEED_UNKNOWN. The only change is that after this patch,
-> igb driver reports SPEED_UNKNOWN rather than an outdated value if there
-> is no link.
+> Need to see the layering of such proposal but am not sure. 
+> Vhost-vdpa is generic framework, while the DMA mapping is vendor specific. 
+> Maybe vhost-vdpa can have some shared code needed to operate on iommu, so drivers can re-use it.  to me it seems simpler than exposing a new iommu device. 
+> 
+> > 
+> > 
+> > > Devices that has other ways to do the DMA mapping will call the
+> > proprietary APIs.
+> > 
+> > 
+> > To confirm, do you prefer:
+> > 
+> > 1) map/unmap
+> 
+> It is not only that. AFAIR there also flush and invalidate calls, right?
+> 
+> > 
+> > or
+> > 
+> > 2) pass all maps at one time?
+> 
+> To me this seems more straight forward. 
+> It is correct that under hotplug and large number of memory segments
+> the driver will need to understand the diff (or not and just reload
+> the new configuration).
+> However, my assumption here is that memory
+> hotplug is heavy flow anyway, and the driver extra cycles will not be
+> that visible
 
-Thanks for elaboration.
-Perhaps add a couple of words to the commit message that there is no ABI
-changes.
+I think we can just allow both, after all vhost already has both interfaces ...
+We just need a flag that tells userspace whether it needs to
+update all maps aggressively or can wait for a fault.
 
--- 
-With Best Regards,
-Andy Shevchenko
-
+> > 
+> > Thanks
+> > 
+> > 
+> > >
+> 
 
