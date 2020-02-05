@@ -2,193 +2,112 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 3F641153028
-	for <lists+netdev@lfdr.de>; Wed,  5 Feb 2020 12:50:47 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0E6BD153039
+	for <lists+netdev@lfdr.de>; Wed,  5 Feb 2020 12:56:42 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727068AbgBELuq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 5 Feb 2020 06:50:46 -0500
-Received: from us-smtp-1.mimecast.com ([205.139.110.61]:59496 "EHLO
-        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1726944AbgBELup (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 5 Feb 2020 06:50:45 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1580903443;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=FYebKB7yhQM7GctpkUqr4pLrxF+mVtTk76IkEEVA2Yk=;
-        b=Yu7AwkGFTrRGmow43zkwVqhJysA2RNE0HobR124iajWC0TNDz6ymdWEyljzzPPNdYVF8vM
-        4HAhfguKOo5WW7T4ODJt3CZvj7Cd8m4ThQVWRlqF6INuax6zaoMEVMeP+kz9uMQcgp1QMy
-        CcsKp39pqIuJZLvSQH3qHfJ6+jOaFX8=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-112-bqQCSUWmPFuF2hkihehTtw-1; Wed, 05 Feb 2020 06:50:40 -0500
-X-MC-Unique: bqQCSUWmPFuF2hkihehTtw-1
-Received: from smtp.corp.redhat.com (int-mx08.intmail.prod.int.phx2.redhat.com [10.5.11.23])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id D337285EE6A;
-        Wed,  5 Feb 2020 11:50:39 +0000 (UTC)
-Received: from carbon (ovpn-200-56.brq.redhat.com [10.40.200.56])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 9B34919C7F;
-        Wed,  5 Feb 2020 11:50:35 +0000 (UTC)
-Date:   Wed, 5 Feb 2020 12:50:31 +0100
-From:   Jesper Dangaard Brouer <brouer@redhat.com>
-To:     Li RongQing <lirongqing@baidu.com>
-Cc:     netdev@vger.kernel.org, brouer@redhat.com,
-        Ilias Apalodimas <ilias.apalodimas@linaro.org>
-Subject: Re: [PATCH] page_pool: fill page only when refill condition is true
-Message-ID: <20200205125031.57c1f0d6@carbon>
-In-Reply-To: <1580890954-21322-1-git-send-email-lirongqing@baidu.com>
-References: <1580890954-21322-1-git-send-email-lirongqing@baidu.com>
+        id S1727367AbgBEL4k (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 5 Feb 2020 06:56:40 -0500
+Received: from aserp2120.oracle.com ([141.146.126.78]:53972 "EHLO
+        aserp2120.oracle.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725793AbgBEL4k (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 5 Feb 2020 06:56:40 -0500
+Received: from pps.filterd (aserp2120.oracle.com [127.0.0.1])
+        by aserp2120.oracle.com (8.16.0.27/8.16.0.27) with SMTP id 015BrKnS014316;
+        Wed, 5 Feb 2020 11:56:28 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=date : from : to : cc
+ : subject : message-id : mime-version : content-type : in-reply-to;
+ s=corp-2019-08-05; bh=sE79fnn4E+4x+0PaTASzGc97LOZkUplSQbzVHPM8lGM=;
+ b=ZHIgjTTn2B+flaxB2imnvzGVoeW6bC+fWD/p08pxOUCwRDUu9nHwKidQC9K3YQnVDxkw
+ zBV7AOPCrReAYX72UIAPRY8W6NxMoTFy/zAepAQlnW40t0gDSn7q2wp4oiATikx57JwY
+ rCwLVoRFIzMgv/M0PG8no5KqXbkOVRsO/uUHJiQ1Hn2rMyFXqSjdLwLF+Df94Bm5UO1V
+ faYKZ5NYbgrGNju4+88aoP5wI6mRG7jxjtM55wIeQQr5zVgpy1vd8zlL1AQ2JfKbHJVa
+ +SnE64v148Gh5rwdokVdP97ih1+JaHFSSNgg+fhQr1hHrnPRy0lHywXkCZQgjoZKiKF2 0w== 
+Received: from aserp3030.oracle.com (aserp3030.oracle.com [141.146.126.71])
+        by aserp2120.oracle.com with ESMTP id 2xykbp2hp0-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Wed, 05 Feb 2020 11:56:28 +0000
+Received: from pps.filterd (aserp3030.oracle.com [127.0.0.1])
+        by aserp3030.oracle.com (8.16.0.27/8.16.0.27) with SMTP id 015BsJNp081033;
+        Wed, 5 Feb 2020 11:54:27 GMT
+Received: from aserv0122.oracle.com (aserv0122.oracle.com [141.146.126.236])
+        by aserp3030.oracle.com with ESMTP id 2xykbrnxyg-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Wed, 05 Feb 2020 11:54:27 +0000
+Received: from abhmp0018.oracle.com (abhmp0018.oracle.com [141.146.116.24])
+        by aserv0122.oracle.com (8.14.4/8.14.4) with ESMTP id 015BrcmP031577;
+        Wed, 5 Feb 2020 11:53:38 GMT
+Received: from kili.mountain (/129.205.23.165)
+        by default (Oracle Beehive Gateway v4.0)
+        with ESMTP ; Wed, 05 Feb 2020 03:53:38 -0800
+Date:   Wed, 5 Feb 2020 14:53:30 +0300
+From:   Dan Carpenter <dan.carpenter@oracle.com>
+To:     Jamal Hadi Salim <jhs@mojatatu.com>
+Cc:     Cong Wang <xiyou.wangcong@gmail.com>,
+        Jiri Pirko <jiri@resnulli.us>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Mohit Bhasi <mohitbhasi1998@gmail.com>,
+        "V. Saicharan" <vsaicharan1998@gmail.com>,
+        Leslie Monis <lesliemonis@gmail.com>,
+        "Sachin D. Patil" <sdp.sachin@gmail.com>,
+        Gautam Ramakrishnan <gautamramk@gmail.com>,
+        netdev@vger.kernel.org, kernel-janitors@vger.kernel.org
+Subject: [PATCH v2 net] net: sched: prevent a use after free
+Message-ID: <20200205115330.7x2qgaks7racy5wj@kili.mountain>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-X-Scanned-By: MIMEDefang 2.84 on 10.5.11.23
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAM_iQpVrckjFViizKZH+S=8GC_3T5Gm1vTAUeFkpmqJ_A66x1Q@mail.gmail.com>
+X-Mailer: git-send-email haha only kidding
+User-Agent: NeoMutt/20170113 (1.7.2)
+X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9521 signatures=668685
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 suspectscore=2 malwarescore=0
+ phishscore=0 bulkscore=0 spamscore=0 mlxscore=0 mlxlogscore=999
+ adultscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.0.1-1911140001 definitions=main-2002050097
+X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9521 signatures=668685
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 priorityscore=1501 malwarescore=0
+ suspectscore=2 phishscore=0 bulkscore=0 spamscore=0 clxscore=1011
+ lowpriorityscore=0 mlxscore=0 impostorscore=0 mlxlogscore=999 adultscore=0
+ classifier=spam adjust=0 reason=mlx scancount=1 engine=8.0.1-1911140001
+ definitions=main-2002050097
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed,  5 Feb 2020 16:22:34 +0800
-Li RongQing <lirongqing@baidu.com> wrote:
+The bug is that we call kfree_skb(skb) and then pass "skb" to
+qdisc_pkt_len(skb) on the next line, which is a use after free.
+Also Cong Wang points out that it's better to delay the actual
+frees until we drop the rtnl lock so we should use rtnl_kfree_skbs()
+instead of kfree_skb().
 
-> "do {} while" in page_pool_refill_alloc_cache will always
-> refill page once whether refill is true or false, and whether
-> alloc.count of pool is less than PP_ALLOC_CACHE_REFILL.
-> 
-> so fix it by calling page_pool_refill_alloc_cache() only when
-> refill is true
-> 
-> Fixes: 44768decb7c0 ("page_pool: handle page recycle for NUMA_NO_NODE condition")
-> Signed-off-by: Li RongQing <lirongqing@baidu.com>
-> Cc: Jesper Dangaard Brouer <brouer@redhat.com>
+Cc: Cong Wang <xiyou.wangcong@gmail.com>
+Fixes: ec97ecf1ebe4 ("net: sched: add Flow Queue PIE packet scheduler")
+Signed-off-by: Dan Carpenter <dan.carpenter@oracle.com>
+---
+v2: Use rtnl_kfree_skbs() instead of kfree_skb().  From static analysis.
+    Not tested, but I have audited the code pretty close and I think
+    switing to rtnl_kfree_skbs() is harmless.
 
-Hmmm... I'm not 100% convinced this is the right approach.
+ net/sched/sch_fq_pie.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-I do realize that in commit 44768decb7c0, I also added touching
-pool->alloc.cache[] which was protected by "called under" in_serving_softirq().
-(before I used a locked ptr_ring_consume(r)).
-
-BUT maybe it will be better to remove, the test in_serving_softirq(),
-because the caller should provide guarantee that pool->alloc.cache[] is
-safe to access.
-
-I added this in_serving_softirq() check, because I noticed NIC drivers
-will call this from normal process context, during (1) initial fill of
-their RX-rings, and (2) during driver RX-ring shutdown.  BUT in both
-cases the NIC drivers will first have made sure that their RX-ring have
-been disconnected and no concurrent accesses will happen.  Thus, access
-to pool->alloc.cache[] is safe, so page_pool API should trust the
-caller knows this.
-
-
-> ---
->  net/core/page_pool.c | 11 +++++------
->  1 file changed, 5 insertions(+), 6 deletions(-)
-> 
-> diff --git a/net/core/page_pool.c b/net/core/page_pool.c
-> index 9b7cbe35df37..35ce663cb9de 100644
-> --- a/net/core/page_pool.c
-> +++ b/net/core/page_pool.c
-> @@ -99,8 +99,7 @@ EXPORT_SYMBOL(page_pool_create);
->  static void __page_pool_return_page(struct page_pool *pool, struct page *page);
->  
->  noinline
-> -static struct page *page_pool_refill_alloc_cache(struct page_pool *pool,
-> -						 bool refill)
-> +static struct page *page_pool_refill_alloc_cache(struct page_pool *pool)
->  {
->  	struct ptr_ring *r = &pool->ring;
->  	struct page *page;
-> @@ -141,8 +140,7 @@ static struct page *page_pool_refill_alloc_cache(struct page_pool *pool,
->  			page = NULL;
->  			break;
->  		}
-> -	} while (pool->alloc.count < PP_ALLOC_CACHE_REFILL &&
-> -		 refill);
-> +	} while (pool->alloc.count < PP_ALLOC_CACHE_REFILL);
->  
->  	/* Return last page */
->  	if (likely(pool->alloc.count > 0))
-> @@ -156,7 +154,7 @@ static struct page *page_pool_refill_alloc_cache(struct page_pool *pool,
->  static struct page *__page_pool_get_cached(struct page_pool *pool)
->  {
->  	bool refill = false;
-> -	struct page *page;
-> +	struct page *page = NULL;
->  
->  	/* Test for safe-context, caller should provide this guarantee */
->  	if (likely(in_serving_softirq())) {
-> @@ -168,7 +166,8 @@ static struct page *__page_pool_get_cached(struct page_pool *pool)
->  		refill = true;
->  	}
->  
-> -	page = page_pool_refill_alloc_cache(pool, refill);
-> +	if (refill)
-> +		page = page_pool_refill_alloc_cache(pool);
->  	return page;
->  }
-
-I guess, I instead propose:
-
- git diff
-diff --git a/net/core/page_pool.c b/net/core/page_pool.c
-index 9b7cbe35df37..10d2b255df5e 100644
---- a/net/core/page_pool.c
-+++ b/net/core/page_pool.c
-@@ -99,8 +99,7 @@ EXPORT_SYMBOL(page_pool_create);
- static void __page_pool_return_page(struct page_pool *pool, struct page *page);
+diff --git a/net/sched/sch_fq_pie.c b/net/sched/sch_fq_pie.c
+index bbd0dea6b6b9..214657eb3dfd 100644
+--- a/net/sched/sch_fq_pie.c
++++ b/net/sched/sch_fq_pie.c
+@@ -349,9 +349,9 @@ static int fq_pie_change(struct Qdisc *sch, struct nlattr *opt,
+ 	while (sch->q.qlen > sch->limit) {
+ 		struct sk_buff *skb = fq_pie_qdisc_dequeue(sch);
  
- noinline
--static struct page *page_pool_refill_alloc_cache(struct page_pool *pool,
--                                                bool refill)
-+static struct page *page_pool_refill_alloc_cache(struct page_pool *pool)
- {
-        struct ptr_ring *r = &pool->ring;
-        struct page *page;
-@@ -141,8 +140,7 @@ static struct page *page_pool_refill_alloc_cache(struct page_pool *pool,
-                        page = NULL;
-                        break;
-                }
--       } while (pool->alloc.count < PP_ALLOC_CACHE_REFILL &&
--                refill);
-+       } while (pool->alloc.count < PP_ALLOC_CACHE_REFILL);
+-		kfree_skb(skb);
+ 		len_dropped += qdisc_pkt_len(skb);
+ 		num_dropped += 1;
++		rtnl_kfree_skbs(skb, skb);
+ 	}
+ 	qdisc_tree_reduce_backlog(sch, num_dropped, len_dropped);
  
-        /* Return last page */
-        if (likely(pool->alloc.count > 0))
-@@ -155,20 +153,16 @@ static struct page *page_pool_refill_alloc_cache(struct page_pool *pool,
- /* fast path */
- static struct page *__page_pool_get_cached(struct page_pool *pool)
- {
--       bool refill = false;
-        struct page *page;
- 
--       /* Test for safe-context, caller should provide this guarantee */
--       if (likely(in_serving_softirq())) {
--               if (likely(pool->alloc.count)) {
--                       /* Fast-path */
--                       page = pool->alloc.cache[--pool->alloc.count];
--                       return page;
--               }
--               refill = true;
-+       /* Caller MUST guarantee safe non-concurrent access, e.g. softirq */
-+       if (likely(pool->alloc.count)) {
-+               /* Fast-path */
-+               page = pool->alloc.cache[--pool->alloc.count];
-+       } else {
-+               page = page_pool_refill_alloc_cache(pool);
-        }
- 
--       page = page_pool_refill_alloc_cache(pool, refill);
-  
-
-
-
 -- 
-Best regards,
-  Jesper Dangaard Brouer
-  MSc.CS, Principal Kernel Engineer at Red Hat
-  LinkedIn: http://www.linkedin.com/in/brouer
+2.11.0
 
