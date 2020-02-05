@@ -2,147 +2,130 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 6136D1530AD
-	for <lists+netdev@lfdr.de>; Wed,  5 Feb 2020 13:28:02 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 535211530E2
+	for <lists+netdev@lfdr.de>; Wed,  5 Feb 2020 13:38:34 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728215AbgBEM1x (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 5 Feb 2020 07:27:53 -0500
-Received: from pandora.armlinux.org.uk ([78.32.30.218]:37902 "EHLO
-        pandora.armlinux.org.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727965AbgBEM1x (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 5 Feb 2020 07:27:53 -0500
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
-        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
-        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
-        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-         bh=BOW5KZykxI349ZwRVvxHRZ+Lw+4S+aeevegHK214C94=; b=q9KTEEJH599k/P0x11SS7ayg4
-        L0jenCNDR9Y+41TF9olCN0RGMhGGMfF1wNh1KyWIR/npJ7yX72i6h+c9Pf8RvVDbYd9CZLXFVglHC
-        eqjBzgFo/zhnRXaS6hrIfG3Wqjd3kXPn9gvb9gmzEEWrnue4KuyMiJtm/ZaSjJsd95YVX+mwb46De
-        4RrfB6rGoFMsCL3ra5SVHz0bbJPEqhMPCOV9Z4qXOqdzlakTjGR+G73D+/Mn9lru7np6ATjEBQUwA
-        q0FlTWlTEgMy6RHdDVUdajcHzH+IZgMtRgAo+f8PBglLJZ9aBnvHnuMxhwYXlt2BSyT3/vqFtzXkU
-        VG+Jm69dQ==;
-Received: from shell.armlinux.org.uk ([2001:4d48:ad52:3201:5054:ff:fe00:4ec]:36278)
-        by pandora.armlinux.org.uk with esmtpsa (TLSv1.2:ECDHE-RSA-AES256-GCM-SHA384:256)
-        (Exim 4.90_1)
-        (envelope-from <linux@armlinux.org.uk>)
-        id 1izJmN-0000RR-6U; Wed, 05 Feb 2020 12:27:39 +0000
-Received: from linux by shell.armlinux.org.uk with local (Exim 4.92)
-        (envelope-from <linux@shell.armlinux.org.uk>)
-        id 1izJmH-0001t4-Sd; Wed, 05 Feb 2020 12:27:33 +0000
-Date:   Wed, 5 Feb 2020 12:27:33 +0000
-From:   Russell King - ARM Linux admin <linux@armlinux.org.uk>
-To:     Andrew Lunn <andrew@lunn.ch>
-Cc:     Jose Abreu <Jose.Abreu@synopsys.com>,
-        Joao Pinto <Joao.Pinto@synopsys.com>,
-        Alexandre Torgue <alexandre.torgue@st.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
-        Giuseppe Cavallaro <peppe.cavallaro@st.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        "linux-stm32@st-md-mailman.stormreply.com" 
-        <linux-stm32@st-md-mailman.stormreply.com>,
-        "linux-arm-kernel@lists.infradead.org" 
-        <linux-arm-kernel@lists.infradead.org>,
-        Heiner Kallweit <hkallweit1@gmail.com>
-Subject: Re: [RFC net-next 6/8] net: phylink: Configure MAC/PCS when link is
- up without PHY
-Message-ID: <20200205122733.GU25745@shell.armlinux.org.uk>
-References: <20200127140038.GD13647@lunn.ch>
- <20200127140834.GW25745@shell.armlinux.org.uk>
- <20200127145107.GE13647@lunn.ch>
- <20200127161132.GX25745@shell.armlinux.org.uk>
- <20200127162206.GJ13647@lunn.ch>
- <c3e863b8-2143-fee3-bb0b-65699661d7ab@gmail.com>
- <BN8PR12MB3266B69DA09E1CC215843C3CD30A0@BN8PR12MB3266.namprd12.prod.outlook.com>
- <20200204172603.GS25745@shell.armlinux.org.uk>
- <20200204174318.GB1364@lunn.ch>
- <20200204193230.GT25745@shell.armlinux.org.uk>
+        id S1727068AbgBEMia (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 5 Feb 2020 07:38:30 -0500
+Received: from mail-mw2nam10on2051.outbound.protection.outlook.com ([40.107.94.51]:54561
+        "EHLO NAM10-MW2-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1726308AbgBEMi3 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 5 Feb 2020 07:38:29 -0500
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=X1EV8PN4QmLEUJDjFz0Qgp7it9PMgXSydudgzbEgRIh0V5EsGlqre+FrEInDvam2aG7T65mid3fWAWJk73Q+LnBw1KyoX369Me8WB2kYXsVHQpO4En95DJTrPm6RhhP3X6vtbD1Tg+fRomi8zi6SXzi37g4boqkDCd4LW298qBPL3SpEqgAPNf2/1i6qykvwcssw7SaZJv632RbuO3X/YP8j48fjBXMkagDqyv6hgWCJT+lpmOvFCoWnd/iunsa85H+2IL/TnQ+/ivotcX01P0KItSpd/BX3+5J8bakjM2meIuYZdwdlv2oi3ne+gzQ/8mmwW33ypRF3doGiDq4HMg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=W6qw6+VfszUYjflUjek9CgjnQsL4hjffM/LZB92hNPg=;
+ b=AJP+z4AaXArKpBYIUgNuil8Ws1aTeZCJgdYLcwGfKXWiXTTI2Vc9Dnna2LNvinfthp6K4E0oFM8c/Rj3ge82hXfQEjH8+IcpnGQJ8SB8LnQUI7uFw1A5tED6bBbR7efDdBSrbRoMhwHD5htRbFjOOxl4d6auVyAL7S602+j+TnFRnUMZYu2MuZxQdpoQfaUJu1Y9tSYKdandpepdgdxcesa+3+iGWTWdk6AQkEfP/kV3HBL2eLkHXX2f/XlZ6pvgN9Yvm9QLqULys0JT/o62CVLXlMP01hsFPu71ECpegzQ5XImy6rgyrkXtbbiZQwxvpvpAeYNEVsuOcFg7gpwsjQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 149.199.60.83) smtp.rcpttodomain=gmail.com smtp.mailfrom=xilinx.com;
+ dmarc=bestguesspass action=none header.from=xilinx.com; dkim=none (message
+ not signed); arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=xilinx.onmicrosoft.com; s=selector2-xilinx-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=W6qw6+VfszUYjflUjek9CgjnQsL4hjffM/LZB92hNPg=;
+ b=sBsUdT/FJvnVmaGznI0LfipyNNBy+JLGa0HP/ZnirTtttzVmylHrxtrEb5Tv80dzNnFsK0FY5+2TnKp1qYPCWepHSpNXFbWk0dki0zEO0YazqUT4ImZoN8w4DhCetab93+kGuihvHVodU1j3CNmQuRZtBBO/YM2JSmkxkyDBXL8=
+Received: from BYAPR02CA0044.namprd02.prod.outlook.com (2603:10b6:a03:54::21)
+ by BL0PR02MB4561.namprd02.prod.outlook.com (2603:10b6:208:42::21) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.2686.26; Wed, 5 Feb
+ 2020 12:38:25 +0000
+Received: from BL2NAM02FT043.eop-nam02.prod.protection.outlook.com
+ (2a01:111:f400:7e46::202) by BYAPR02CA0044.outlook.office365.com
+ (2603:10b6:a03:54::21) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.2686.34 via Frontend
+ Transport; Wed, 5 Feb 2020 12:38:24 +0000
+Authentication-Results: spf=pass (sender IP is 149.199.60.83)
+ smtp.mailfrom=xilinx.com; gmail.com; dkim=none (message not signed)
+ header.d=none;gmail.com; dmarc=bestguesspass action=none
+ header.from=xilinx.com;
+Received-SPF: Pass (protection.outlook.com: domain of xilinx.com designates
+ 149.199.60.83 as permitted sender) receiver=protection.outlook.com;
+ client-ip=149.199.60.83; helo=xsj-pvapsmtpgw01;
+Received: from xsj-pvapsmtpgw01 (149.199.60.83) by
+ BL2NAM02FT043.mail.protection.outlook.com (10.152.77.95) with Microsoft SMTP
+ Server (version=TLS1_0, cipher=TLS_RSA_WITH_AES_256_CBC_SHA) id 15.20.2707.21
+ via Frontend Transport; Wed, 5 Feb 2020 12:38:24 +0000
+Received: from unknown-38-66.xilinx.com ([149.199.38.66] helo=xsj-pvapsmtp01)
+        by xsj-pvapsmtpgw01 with esmtp (Exim 4.63)
+        (envelope-from <harini.katakam@xilinx.com>)
+        id 1izJwl-0001wt-Ot; Wed, 05 Feb 2020 04:38:23 -0800
+Received: from [127.0.0.1] (helo=localhost)
+        by xsj-pvapsmtp01 with smtp (Exim 4.63)
+        (envelope-from <harini.katakam@xilinx.com>)
+        id 1izJwg-0007vR-KC; Wed, 05 Feb 2020 04:38:18 -0800
+Received: from xsj-pvapsmtp01 (xsj-mail.xilinx.com [149.199.38.66])
+        by xsj-smtp-dlp2.xlnx.xilinx.com (8.13.8/8.13.1) with ESMTP id 015CcGir009590;
+        Wed, 5 Feb 2020 04:38:16 -0800
+Received: from [10.140.6.13] (helo=xhdharinik40.xilinx.com)
+        by xsj-pvapsmtp01 with esmtp (Exim 4.63)
+        (envelope-from <harini.katakam@xilinx.com>)
+        id 1izJwd-0007uq-PR; Wed, 05 Feb 2020 04:38:16 -0800
+From:   Harini Katakam <harini.katakam@xilinx.com>
+To:     nicolas.ferre@microchip.com, davem@davemloft.net,
+        claudiu.beznea@microchip.com, kuba@kernel.org
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        michal.simek@xilinx.com, harinikatakamlinux@gmail.com,
+        harini.katakam@xilinx.com
+Subject: [PATCH v3 0/2] TSO bug fixes
+Date:   Wed,  5 Feb 2020 18:08:10 +0530
+Message-Id: <1580906292-19445-1-git-send-email-harini.katakam@xilinx.com>
+X-Mailer: git-send-email 2.7.4
+X-RCIS-Action: ALLOW
+X-TM-AS-Product-Ver: IMSS-7.1.0.1224-8.2.0.1013-23620.005
+X-TM-AS-User-Approved-Sender: Yes;Yes
+X-EOPAttributedMessage: 0
+X-MS-Office365-Filtering-HT: Tenant
+X-Forefront-Antispam-Report: CIP:149.199.60.83;IPV:;CTRY:US;EFV:NLI;SFV:NSPM;SFS:(10009020)(4636009)(189003)(199004)(70586007)(5660300002)(70206006)(4744005)(8936002)(81166006)(81156014)(8676002)(9786002)(7696005)(498600001)(26005)(336012)(186003)(426003)(6666004)(356004)(2616005)(44832011)(107886003)(4326008)(36756003)(2906002);DIR:OUT;SFP:1101;SCL:1;SRVR:BL0PR02MB4561;H:xsj-pvapsmtpgw01;FPR:;SPF:Pass;LANG:en;PTR:unknown-60-83.xilinx.com;MX:1;A:1;
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200204193230.GT25745@shell.armlinux.org.uk>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+Content-Type: text/plain
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: d90e22eb-978e-45b2-268b-08d7aa384acd
+X-MS-TrafficTypeDiagnostic: BL0PR02MB4561:
+X-Microsoft-Antispam-PRVS: <BL0PR02MB45610E4B8509D97B8DCDDBC7C9020@BL0PR02MB4561.namprd02.prod.outlook.com>
+X-Auto-Response-Suppress: DR, RN, NRN, OOF, AutoReply
+X-MS-Oob-TLC-OOBClassifiers: OLM:9508;
+X-Forefront-PRVS: 0304E36CA3
+X-MS-Exchange-SenderADCheck: 1
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: DumXfbNshiYNB2/h9JyPPHSWA8TxuEAutyiOzFNrTzeue7gUqcWiz/+PAoH8H/sZoQYrKF/bIYscmGHgu89viWEHEBHM9CUbuDbNc3wYwHyQmcmchHqC5GsRCrpTf04ccjDs+M5cnlXlAyrn86+pFX06j6uOBWH3S4ezWI0ANZOWB7aZLAxJDccN9vgHqPLIw9cRkUeE8u0YmoQjliWfyg77XHV5BNaDyRnpp39Z13sk2nuSQcTe0j6aVQpDSy7+nK7R42bU84ZuYUr9TVx6wB3bz4q5wwfGOXRXI4YF5JYlft8K3DVPuWuMHmqYM0dRo9yvETLxo+vM5/urEN9S7dGv2DVKAAd3KA/FAUD0wpe4mDA/hbMdAh5gs9TQ+JiHa6vn0BQeO+AOA1OsqbTv3Ju7pCHVCI7UeAQldP3UNDNiRiE1OPCtwbWO2VlxL0jc
+X-OriginatorOrg: xilinx.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 05 Feb 2020 12:38:24.4292
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: d90e22eb-978e-45b2-268b-08d7aa384acd
+X-MS-Exchange-CrossTenant-Id: 657af505-d5df-48d0-8300-c31994686c5c
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=657af505-d5df-48d0-8300-c31994686c5c;Ip=[149.199.60.83];Helo=[xsj-pvapsmtpgw01]
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BL0PR02MB4561
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Feb 04, 2020 at 07:32:30PM +0000, Russell King - ARM Linux admin wrote:
-> On Tue, Feb 04, 2020 at 06:43:18PM +0100, Andrew Lunn wrote:
-> > > There, there is one MAC, but there are multiple different PCS - one
-> > > for SGMII and 1000base-X, another for 10G, another for 25G, etc.
-> > > These PCS are accessed via a MDIO adapter embedded in each of the
-> > > MAC hardware blocks.
-> > 
-> > Hi Russell
-> > 
-> > Marvell mv88e6390X switches are like this is a well. There is a PCS
-> > for SGMII and 1000Base-X, and a second one for 10G. And it dynamically
-> > swaps between them depending on the port mode, the so called cmode.
-> > 
-> > So a generic solution is required, and please take your time to build
-> > one.
-> 
-> Well, DSA is quite a mixed bag...
-> 
-> As far as I can work out, the situation with the CPU and DSA ports is
-> quite hopeless - you've claimed that a change in phylink has broken it,
-> I can't find what that may be.  The fact is, phylink has never had any
-> link information for DSA links when no fixed-link property has been
-> specified in DT.  As I've already said in a previous email about this,
-> I can't see *any* sane way to fix that - but there was no response.
-> 
-> 
-> On a more positive note...
-> 
-> The mac_link_up() changes that I've talked about should work for DSA,
-> if only there was a reasonable way to reconfigure the ports.  If you
-> look at the "phy" branch, you will notice that there's a patch there -
-> "net: mv88e6xxx: use resolved link config in mac_link_up()" which adds
-> the support to configure the MAC manually.  It's rather messy, and I
-> see no way to deal with the pause settings.  There is support in some
-> Marvell DSA switches to force flow control but that's not supported
-> through the current mid-layer at all (port_set_pause doesn't do it.)
-> I'm not sure whether the "mv88e6xxx_phy_is_internal()" check there is
-> the right test for every DSA switch correct either.
-> 
-> What is missing is reading the results from the PCS (aka serdes) and
-> forwarding them into phylink - I did have a quick look at how that might
-> be possible, but the DSA code structure (consisting of multiple
-> mid-layers) makes it hard without rewriting quite a lot of code.  That's
-> fine if you know all the DSA chips inside out, but I don't - and that's
-> where we need someone who has the knowledge of all DSA switches that we
-> support.  Or, we get rid of the multiple mid-layers and switch to a
-> library approach, so that we can modify support for one DSA switch
-> without affecting everything.  It may be a simple matter of dropping the
-> existing serdes workaround, but I'm not sure at the moment.
-> 
-> I've tried this code out on the ZII rev B, I haven't tried it on the rev
-> C which has the 6390 switches yet.
+An IP errata was recently discovered when testing TSO enabled versions
+with perf test tools where a false amba error is reported by the IP.
+Some ways to reproduce would be to use iperf or applications with payload
+descriptor sizes very close to 16K. Once the error is observed TXERR (or
+bit 6 of ISR) will be constantly triggered leading to a series of tx path
+error handling and clean up. Workaround the same by limiting this size to
+0x3FC0 as recommended by Cadence. There was no performance impact on 1G
+system that I tested with.
 
-Well, it seems GPIO hogging with the sx1503q (for the 3310 PHY, which
-is a local change) has broken sometime between v4.20 and v5.5, which
-prevents the sx1503q driver probing:
+Note on patch 1: The alignment code may be unused but leaving it there
+in case anyone is using UFO.
 
-[   23.378706] gpio gpiochip7: (sx1503q): setup of own GPIO 10g-rstn failed
-[   23.394858] requesting hog GPIO 10g-rstn (chip sx1503q, offset 9) failed, -517
-[   23.402512] gpiochip_add_data_with_key: GPIOs 480..495 (sx1503q) failed to register, -517
+Added Fixes tag to patch 1.
 
-Without the hog, the 3310 PHY doesn't come out of reset, so I lose
-port 9 on the first switch.
+Harini Katakam (2):
+  net: macb: Remove unnecessary alignment check for TSO
+  net: macb: Limit maximum GEM TX length in TSO
 
-With that removed, I can boot, and if I bring up sff2, I see the port 9
-on the second switch status report 0xef4b and control 0x303f without
-fiber connected.  I'm out of time to do anything further on this today
-(not even decode those), because its taken all morning to get the board
-to this point, and I won't have any time tomorrow either.
+ drivers/net/ethernet/cadence/macb_main.c | 14 ++++++++------
+ 1 file changed, 8 insertions(+), 6 deletions(-)
 
 -- 
-RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
-FTTC broadband for 0.8mile line in suburbia: sync at 12.1Mbps down 622kbps up
-According to speedtest.net: 11.9Mbps down 500kbps up
+2.7.4
+
