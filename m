@@ -2,31 +2,31 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 966361547BA
-	for <lists+netdev@lfdr.de>; Thu,  6 Feb 2020 16:19:09 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id CA91E1547D6
+	for <lists+netdev@lfdr.de>; Thu,  6 Feb 2020 16:19:51 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727925AbgBFPSx (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 6 Feb 2020 10:18:53 -0500
-Received: from bombadil.infradead.org ([198.137.202.133]:38066 "EHLO
+        id S1727779AbgBFPT3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 6 Feb 2020 10:19:29 -0500
+Received: from bombadil.infradead.org ([198.137.202.133]:38016 "EHLO
         bombadil.infradead.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727556AbgBFPR7 (ORCPT
+        with ESMTP id S1727325AbgBFPR7 (ORCPT
         <rfc822;netdev@vger.kernel.org>); Thu, 6 Feb 2020 10:17:59 -0500
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
         d=infradead.org; s=bombadil.20170209; h=Sender:Content-Transfer-Encoding:
         MIME-Version:References:In-Reply-To:Message-Id:Date:Subject:Cc:To:From:
         Reply-To:Content-Type:Content-ID:Content-Description;
-        bh=qBT8hXW0utD0sQMt8fDsSEi1NxQdqsHcjdFdMI3bOsE=; b=fmRZCfRtkomoh3HfCGzMQrfDqO
-        oH4kbl10zhC74TYWCrjhl0UaIe6XO3xjuVJUpbTlNF31TO2wm4ekMTvAUXcq7C3qTKihkfL0OqZil
-        DS92TK6AEHJYT0M4LDn21MWiWMAkOHGNMfx+HrtFDoY5D6kr3UecKq4W6Hvrl7I/9Ga/u7bsO1DEE
-        L69B6/lBZmuaTHadfl/gDiFwf0wmY4nP34ALflUeqN0nKeHXh9cKBQusfl7xL9KS3MHQpKkavryyw
-        /iOmDTmhO+ky0jEanlQL8/upQP3UGiJ8ZiseMQYI1zftZxaNZuJA9523h/+msFc+SnY1cTjH4Xhhz
-        wbeoO82A==;
+        bh=vsCJgMod9IRhYUs+7Ev711kOL2gRDtBSktRiz7ZiI1U=; b=MLF394YzkvykV73u70f90/+/WV
+        sAr4fjOlozsB96cEQaPy+RwZTAUv256MFwyeABY1RJuCkAiYZ7dqfyIaNJjDNTrUnP4cAeDw9SQC+
+        2HmJIKdTSnV8IvXaJolkKOwFomjfiPj3XZcved/qWwe27TcMrC0rOjoC8jIvBuDMdHFVLhG0L6Qqt
+        KlOMdJ+KQPUEefIqQgKqtUegSVSRpn7Jp6sk4GZ4fKb1TrtTZHfC9xyUA7Rrj0U9kg/T7j1fwim6o
+        W58XUQsnQ/3+y57C15xAomr97dH7d8BYh/69/GFrEhzZYQAckcOOaQFxWpiop70n7OGczVYs7P/op
+        Fhv2/b2Q==;
 Received: from [179.95.15.160] (helo=bombadil.infradead.org)
         by bombadil.infradead.org with esmtpsa (Exim 4.92.3 #3 (Red Hat Linux))
-        id 1iziul-0005jJ-B7; Thu, 06 Feb 2020 15:17:59 +0000
+        id 1iziuk-0005jB-VS; Thu, 06 Feb 2020 15:17:58 +0000
 Received: from mchehab by bombadil.infradead.org with local (Exim 4.92.3)
         (envelope-from <mchehab@bombadil.infradead.org>)
-        id 1iziud-002oVB-1B; Thu, 06 Feb 2020 16:17:51 +0100
+        id 1iziud-002oVF-2Y; Thu, 06 Feb 2020 16:17:51 +0100
 From:   Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
 To:     Linux Media Mailing List <linux-media@vger.kernel.org>
 Cc:     Mauro Carvalho Chehab <mchehab+huawei@kernel.org>,
@@ -35,9 +35,9 @@ Cc:     Mauro Carvalho Chehab <mchehab+huawei@kernel.org>,
         Jakub Kicinski <kuba@kernel.org>,
         Jonathan Corbet <corbet@lwn.net>, netdev@vger.kernel.org,
         linux-doc@vger.kernel.org
-Subject: [PATCH 07/28] docs: networking: convert atm.txt to ReST
-Date:   Thu,  6 Feb 2020 16:17:27 +0100
-Message-Id: <e771aefe31b94ae0989e52c21a7f0a0b0f09ea68.1581002063.git.mchehab+huawei@kernel.org>
+Subject: [PATCH 08/28] docs: networking: convert ax25.txt to ReST
+Date:   Thu,  6 Feb 2020 16:17:28 +0100
+Message-Id: <2d570e7948cbe3f2d59beff75bab2ddafbe22d55.1581002063.git.mchehab+huawei@kernel.org>
 X-Mailer: git-send-email 2.24.1
 In-Reply-To: <cover.1581002062.git.mchehab+huawei@kernel.org>
 References: <cover.1581002062.git.mchehab+huawei@kernel.org>
@@ -55,37 +55,37 @@ There isn't much to be done here. Just:
 
 Signed-off-by: Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
 ---
- Documentation/networking/{atm.txt => atm.rst} | 6 ++++++
- Documentation/networking/index.rst            | 1 +
+ Documentation/networking/{ax25.txt => ax25.rst} | 6 ++++++
+ Documentation/networking/index.rst              | 1 +
  2 files changed, 7 insertions(+)
- rename Documentation/networking/{atm.txt => atm.rst} (89%)
+ rename Documentation/networking/{ax25.txt => ax25.rst} (91%)
 
-diff --git a/Documentation/networking/atm.txt b/Documentation/networking/atm.rst
-similarity index 89%
-rename from Documentation/networking/atm.txt
-rename to Documentation/networking/atm.rst
-index 82921cee77fe..c1df8c038525 100644
---- a/Documentation/networking/atm.txt
-+++ b/Documentation/networking/atm.rst
+diff --git a/Documentation/networking/ax25.txt b/Documentation/networking/ax25.rst
+similarity index 91%
+rename from Documentation/networking/ax25.txt
+rename to Documentation/networking/ax25.rst
+index 8257dbf9be57..824afd7002db 100644
+--- a/Documentation/networking/ax25.txt
++++ b/Documentation/networking/ax25.rst
 @@ -1,3 +1,9 @@
 +.. SPDX-License-Identifier: GPL-2.0
 +
-+===
-+ATM
-+===
++=====
++AX.25
++=====
 +
- In order to use anything but the most primitive functions of ATM,
- several user-mode programs are required to assist the kernel. These
- programs and related material can be found via the ATM on Linux Web
+ To use the amateur radio protocols within Linux you will need to get a
+ suitable copy of the AX.25 Utilities. More detailed information about
+ AX.25, NET/ROM and ROSE, associated programs and and utilities can be
 diff --git a/Documentation/networking/index.rst b/Documentation/networking/index.rst
-index fb35cfc5d0a0..41386bff41f2 100644
+index 41386bff41f2..1e0fc66739cc 100644
 --- a/Documentation/networking/index.rst
 +++ b/Documentation/networking/index.rst
-@@ -39,6 +39,7 @@ Contents:
-    altera_tse
+@@ -40,6 +40,7 @@ Contents:
     arcnet-hardware
     arcnet
-+   atm
+    atm
++   ax25
  
  .. only::  subproject and html
  
