@@ -2,69 +2,81 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 3B468153C9C
-	for <lists+netdev@lfdr.de>; Thu,  6 Feb 2020 02:29:08 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6F265153CD1
+	for <lists+netdev@lfdr.de>; Thu,  6 Feb 2020 02:59:56 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727635AbgBFB3E (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 5 Feb 2020 20:29:04 -0500
-Received: from mail-io1-f69.google.com ([209.85.166.69]:36191 "EHLO
-        mail-io1-f69.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727170AbgBFB3E (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 5 Feb 2020 20:29:04 -0500
-Received: by mail-io1-f69.google.com with SMTP id d13so2883441ioc.3
-        for <netdev@vger.kernel.org>; Wed, 05 Feb 2020 17:29:02 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:date:in-reply-to:message-id:subject
-         :from:to;
-        bh=klRVBdr46Gl8WIF/3JqDp9paxXMagfLFmZ3zT/aOfAA=;
-        b=K3xn42jj/lEJQam5s0n7t5bssjToXgxoN7F45/bRAekWGCiTW7N6Xg1ouvOntgzk6e
-         ZfTlNBsaatIM3GJ/r6X4NWXjAQdkwNz8jXJhSRod4W3dO9aRwWHaJWTNQs9OETBTqunH
-         WaDo2AuIPTHrObNLP4Hhi72ts1KXWAwynDwvd2W81BqTyXHhti2sTsPmjEWj1j9VDo0y
-         qFUhsyyc8Sn07CWitTVn9RcPYrmM2Fh5HlyANHvrNACqRQjkTMD3H2M0FoGzsfCOQNX+
-         rYXR5UprCrAgJTzFKNbHqDCTM+vpHmiq2hvh8+vlW77h4Amuouj+p02qt+igQKxOCwZs
-         5MQA==
-X-Gm-Message-State: APjAAAV4xHXL/pqq9G+LmdC0WPL1nJKRGGjfCYe3Pswey4F1NVt/M97N
-        rMOoMN9xC51E5AV4AbBtn/J+BYrvA0w9cc9AzIwx7PXBGUe8
-X-Google-Smtp-Source: APXvYqyWzNDAJ3ZpISUwsx17tVrhy9Z/G8ZUJfNIMmI6YX1SRk5jCpKRGWJGMzRGbI8uNNHSqXoSH+2xK2x4wJjiLsGtYiFdEy2t
-MIME-Version: 1.0
-X-Received: by 2002:a92:1bd9:: with SMTP id f86mr1114630ill.18.1580952541990;
- Wed, 05 Feb 2020 17:29:01 -0800 (PST)
-Date:   Wed, 05 Feb 2020 17:29:01 -0800
-In-Reply-To: <000000000000f0baeb059db8b055@google.com>
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <000000000000ac1561059dde321a@google.com>
-Subject: Re: inconsistent lock state in rxrpc_put_client_connection_id
-From:   syzbot <syzbot+d82f3ac8d87e7ccbb2c9@syzkaller.appspotmail.com>
-To:     davem@davemloft.net, dhowells@redhat.com, kuba@kernel.org,
-        linux-afs@lists.infradead.org, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org, syzkaller-bugs@googlegroups.com
-Content-Type: text/plain; charset="UTF-8"
+        id S1727662AbgBFB7l (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 5 Feb 2020 20:59:41 -0500
+Received: from mx.socionext.com ([202.248.49.38]:48087 "EHLO mx.socionext.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1727474AbgBFB7l (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 5 Feb 2020 20:59:41 -0500
+Received: from unknown (HELO iyokan-ex.css.socionext.com) ([172.31.9.54])
+  by mx.socionext.com with ESMTP; 06 Feb 2020 10:59:40 +0900
+Received: from mail.mfilter.local (m-filter-1 [10.213.24.61])
+        by iyokan-ex.css.socionext.com (Postfix) with ESMTP id 38953603AB;
+        Thu,  6 Feb 2020 10:59:40 +0900 (JST)
+Received: from 172.31.9.51 (172.31.9.51) by m-FILTER with ESMTP; Thu, 6 Feb 2020 11:00:49 +0900
+Received: from plum.e01.socionext.com (unknown [10.213.132.32])
+        by kinkan.css.socionext.com (Postfix) with ESMTP id 9A1371A0006;
+        Thu,  6 Feb 2020 10:59:39 +0900 (JST)
+From:   Kunihiko Hayashi <hayashi.kunihiko@socionext.com>
+To:     "David S. Miller" <davem@davemloft.net>
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Masami Hiramatsu <masami.hiramatsu@linaro.org>,
+        Jassi Brar <jaswinder.singh@linaro.org>,
+        Kunihiko Hayashi <hayashi.kunihiko@socionext.com>
+Subject: [PATCH net] net: ethernet: ave: Add capability of rgmii-id mode
+Date:   Thu,  6 Feb 2020 10:59:36 +0900
+Message-Id: <1580954376-27283-1-git-send-email-hayashi.kunihiko@socionext.com>
+X-Mailer: git-send-email 2.7.4
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-syzbot has bisected this bug to:
+This allows you to specify the type of rgmii-id that will enable phy
+internal delay in ethernet phy-mode.
 
-commit 5273a191dca65a675dc0bcf3909e59c6933e2831
-Author: David Howells <dhowells@redhat.com>
-Date:   Thu Jan 30 21:50:36 2020 +0000
+Signed-off-by: Kunihiko Hayashi <hayashi.kunihiko@socionext.com>
+---
+ drivers/net/ethernet/socionext/sni_ave.c | 9 +++++++++
+ 1 file changed, 9 insertions(+)
 
-    rxrpc: Fix NULL pointer deref due to call->conn being cleared on disconnect
+diff --git a/drivers/net/ethernet/socionext/sni_ave.c b/drivers/net/ethernet/socionext/sni_ave.c
+index 3b4c7e6..7c574f2 100644
+--- a/drivers/net/ethernet/socionext/sni_ave.c
++++ b/drivers/net/ethernet/socionext/sni_ave.c
+@@ -1857,6 +1857,9 @@ static int ave_pro4_get_pinmode(struct ave_private *priv,
+ 		break;
+ 	case PHY_INTERFACE_MODE_MII:
+ 	case PHY_INTERFACE_MODE_RGMII:
++	case PHY_INTERFACE_MODE_RGMII_ID:
++	case PHY_INTERFACE_MODE_RGMII_RXID:
++	case PHY_INTERFACE_MODE_RGMII_TXID:
+ 		priv->pinmode_val = 0;
+ 		break;
+ 	default:
+@@ -1901,6 +1904,9 @@ static int ave_ld20_get_pinmode(struct ave_private *priv,
+ 		priv->pinmode_val = SG_ETPINMODE_RMII(0);
+ 		break;
+ 	case PHY_INTERFACE_MODE_RGMII:
++	case PHY_INTERFACE_MODE_RGMII_ID:
++	case PHY_INTERFACE_MODE_RGMII_RXID:
++	case PHY_INTERFACE_MODE_RGMII_TXID:
+ 		priv->pinmode_val = 0;
+ 		break;
+ 	default:
+@@ -1923,6 +1929,9 @@ static int ave_pxs3_get_pinmode(struct ave_private *priv,
+ 		priv->pinmode_val = SG_ETPINMODE_RMII(arg);
+ 		break;
+ 	case PHY_INTERFACE_MODE_RGMII:
++	case PHY_INTERFACE_MODE_RGMII_ID:
++	case PHY_INTERFACE_MODE_RGMII_RXID:
++	case PHY_INTERFACE_MODE_RGMII_TXID:
+ 		priv->pinmode_val = 0;
+ 		break;
+ 	default:
+-- 
+2.7.4
 
-bisection log:  https://syzkaller.appspot.com/x/bisect.txt?x=173d9dbee00000
-start commit:   6992ca0d Merge branch 'parisc-5.6-1' of git://git.kernel.o..
-git tree:       upstream
-final crash:    https://syzkaller.appspot.com/x/report.txt?x=14bd9dbee00000
-console output: https://syzkaller.appspot.com/x/log.txt?x=10bd9dbee00000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=f22d38d7f9a488a8
-dashboard link: https://syzkaller.appspot.com/bug?extid=d82f3ac8d87e7ccbb2c9
-syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=14317dbee00000
-C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=145a44f6e00000
-
-Reported-by: syzbot+d82f3ac8d87e7ccbb2c9@syzkaller.appspotmail.com
-Fixes: 5273a191dca6 ("rxrpc: Fix NULL pointer deref due to call->conn being cleared on disconnect")
-
-For information about bisection process see: https://goo.gl/tpsmEJ#bisection
