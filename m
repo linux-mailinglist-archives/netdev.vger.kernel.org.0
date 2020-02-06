@@ -2,59 +2,59 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 11F69154B87
-	for <lists+netdev@lfdr.de>; Thu,  6 Feb 2020 20:01:43 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D3CDB154B8E
+	for <lists+netdev@lfdr.de>; Thu,  6 Feb 2020 20:03:23 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727798AbgBFTBk (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 6 Feb 2020 14:01:40 -0500
-Received: from mail-pl1-f196.google.com ([209.85.214.196]:40338 "EHLO
-        mail-pl1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726990AbgBFTBk (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 6 Feb 2020 14:01:40 -0500
-Received: by mail-pl1-f196.google.com with SMTP id y1so2704353plp.7;
-        Thu, 06 Feb 2020 11:01:40 -0800 (PST)
+        id S1727791AbgBFTDV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 6 Feb 2020 14:03:21 -0500
+Received: from mail-pj1-f67.google.com ([209.85.216.67]:53864 "EHLO
+        mail-pj1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727703AbgBFTDV (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 6 Feb 2020 14:03:21 -0500
+Received: by mail-pj1-f67.google.com with SMTP id n96so373695pjc.3;
+        Thu, 06 Feb 2020 11:03:21 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=date:from:to:cc:message-id:in-reply-to:references:subject
          :mime-version:content-transfer-encoding;
-        bh=a2sauIoE8yJSGD4MjyvXJjJ8GqHISXK/q5BHRJnrkVY=;
-        b=Yb+ngTWheEbyy3sFO9Q5DZdJPhcVQsy93f/PE8lCkTKdHQ0bDdg+kCnb6oIPT0XFsU
-         ush4O4P1hUWgbrfxocZRu233bYFQztIZ34HC2+lUefvvrMhJlIgoA7HNi6M9Ymf08EKC
-         9ruvWf+fRr/IShI7Uzdya9KLcDW9zxCUdlUi7uHdGJ1RA8wnSSXWTKXudft3paQUUkh0
-         FiCZtLvY1mxAzS8aetJEF07eSwckELKr6QOxMy6UeuMqzlRZp2XijJzepDM+mN95+mJi
-         6BjjoFrqeN0PDXdJr81BrD0SAkjrbUKhPMCMeb7ycfB0mVyIZn/3eBuNBOqFXvuj/1xU
-         5lFw==
+        bh=m0YE9ta+l3R6mLiNSqlhrDUfKEKdzXDv7P6vhO+CCh0=;
+        b=pjt1nH/pOx7Ou/Fj8McFD6t6uk2qYxH8sfd30ZdyO0KnqnIT+N6OQvNue0+hEjgmWo
+         NwrSi70NO6rKCuXkaWSLxTh+snJwJjs5hvY/iI+CSOsJnhUJlB+T0x04IJnXw9A/95ek
+         anQfMuL1OiqNMlz1+hXctNYUqz/gR/iG7013NXx2ZXjd87UPS00S6r3VP2F9O1jSZci0
+         4SiG/HKiFZaND/XqPTyCRPM5DuqdwbTPFyo990sFcXRYmLY2YmT9sG1yaM+4qarL8a4t
+         1G5LC5LEXyC5VmchDs2oSpaAA8YFb58nf1cm22AstpJjtVE3x9S4Lomp78fShMR+KS4a
+         5q3Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:date:from:to:cc:message-id:in-reply-to
          :references:subject:mime-version:content-transfer-encoding;
-        bh=a2sauIoE8yJSGD4MjyvXJjJ8GqHISXK/q5BHRJnrkVY=;
-        b=cLNbkHDts6fw21+bIDHx4u8KiAZqULcpEXqA3b08O081wYsi9lzwML56BIKc6T8Szp
-         3TK6fFWOWzcLHznoGEPlmsICiY/GNqZXz1tllihVILnwRVWnJ7u+R2/jq2F67QQSY4qf
-         i3FF1Oxm7WY+Z7k+wWJEgM+AJ6E0mGE5gV0XaOERxV0LaOxtwIY+9ntJYW+06NIBFgcT
-         x5+C58PN2MKCYwgmPJNk2iJ4TXc0KhedAxLRShn9Jl1OiajJbQW0L4WdOcWGn8dtdYph
-         AhJDO5kw8aMTR7Hopidkny0GAEj4UBJg0BhYOMIDgC+tZdv2wpZ5yFyC74U1loZDyRdf
-         Mb6g==
-X-Gm-Message-State: APjAAAWrx8b7edlM9qfFceVEO9vwt0wq5HDrLJmeywLefoALfBpzm2G8
-        J5FCHlHDjlRFqtlGUz7MAew=
-X-Google-Smtp-Source: APXvYqxxUJrBa1rlpwgknK+tBAVut5RFwDUDnEgwyBHIz/ZFS0ItE51VBJe6jeh4U7SYK7OOvgUV0w==
-X-Received: by 2002:a17:90b:8ce:: with SMTP id ds14mr6432992pjb.70.1581015699596;
-        Thu, 06 Feb 2020 11:01:39 -0800 (PST)
+        bh=m0YE9ta+l3R6mLiNSqlhrDUfKEKdzXDv7P6vhO+CCh0=;
+        b=Hh2WZEt40nIFiK8rO619VgSkXgNqCvKTMS90g/yNLEOrKto7tlXKJXg4M7DWjyB8NY
+         nRwpZPnmKQRJXs0rb51Zg3B0WnYCcRQdWSTeWGbiSAMnch4RcYMV7w3E432qxtN0ySH/
+         3j70Z2DoXl43ZZbMe5cBGg1AgBKFOdKns6mQfAE2Z3BNbK5K3W3p2DbEIwNEatZSGqDO
+         n+NlLQOWQx52s/6DTNx3F3txl28N1ps4SHd6HLnN2HqJBsEbrHUYROAm20LYjYBHVK/k
+         hk6nciS93iS5zTMhWZPXffAS1BXoP1WAF1SVxhTB48q4pMAB0F7PvWSC3m2NNenay5yD
+         guAQ==
+X-Gm-Message-State: APjAAAVyTl6Cz3XfvjBhTqB3CvtfCuGtNN/owLKtCUn4z1xM8WMF9ok+
+        vbuhmJM4isDkgovf79ZAHP0=
+X-Google-Smtp-Source: APXvYqzY1rzRDIRkJo87+klWiI2eucxbBaLu8D4ufZqeaLREBFOEhIojn6FADhymp2HgRZeQHCqu4Q==
+X-Received: by 2002:a17:902:b690:: with SMTP id c16mr5496388pls.320.1581015800708;
+        Thu, 06 Feb 2020 11:03:20 -0800 (PST)
 Received: from localhost ([184.63.162.180])
-        by smtp.gmail.com with ESMTPSA id a21sm170044pgd.12.2020.02.06.11.01.36
+        by smtp.gmail.com with ESMTPSA id y10sm144877pfq.110.2020.02.06.11.03.19
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 06 Feb 2020 11:01:39 -0800 (PST)
-Date:   Thu, 06 Feb 2020 11:01:30 -0800
+        Thu, 06 Feb 2020 11:03:20 -0800 (PST)
+Date:   Thu, 06 Feb 2020 11:03:13 -0800
 From:   John Fastabend <john.fastabend@gmail.com>
 To:     Jakub Sitnicki <jakub@cloudflare.com>, bpf@vger.kernel.org
 Cc:     netdev@vger.kernel.org, kernel-team@cloudflare.com,
         John Fastabend <john.fastabend@gmail.com>
-Message-ID: <5e3c628ac298e_22ad2af2cbd0a5b4e3@john-XPS-13-9370.notmuch>
-In-Reply-To: <20200206111652.694507-3-jakub@cloudflare.com>
+Message-ID: <5e3c62f129cd3_22ad2af2cbd0a5b45@john-XPS-13-9370.notmuch>
+In-Reply-To: <20200206111652.694507-4-jakub@cloudflare.com>
 References: <20200206111652.694507-1-jakub@cloudflare.com>
- <20200206111652.694507-3-jakub@cloudflare.com>
-Subject: RE: [PATCH bpf 2/3] bpf, sockhash: synchronize_rcu before free'ing
- map
+ <20200206111652.694507-4-jakub@cloudflare.com>
+Subject: RE: [PATCH bpf 3/3] selftests/bpf: Test freeing sockmap/sockhash with
+ a socket in it
 Mime-Version: 1.0
 Content-Type: text/plain;
  charset=utf-8
@@ -65,50 +65,28 @@ List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 Jakub Sitnicki wrote:
-> We need to have a synchronize_rcu before free'ing the sockhash because any
-> outstanding psock references will have a pointer to the map and when they
-> use it, this could trigger a use after free.
+> Commit 7e81a3530206 ("bpf: Sockmap, ensure sock lock held during tear
+> down") introduced sleeping issues inside RCU critical sections and while
+> holding a spinlock on sockmap/sockhash tear-down. There has to be at least
+> one socket in the map for the problem to surface.
 > 
-> This is a sister fix for sockhash, following commit 2bb90e5cc90e ("bpf:
-> sockmap, synchronize_rcu before free'ing map") which addressed sockmap,
-> which comes from a manual audit.
+> This adds a test that triggers the warnings for broken locking rules. Not a
+> fix per se, but rather tooling to verify the accompanying fixes. Run on a
+> VM with 1 vCPU to reproduce the warnings.
 > 
-> Fixes: 604326b41a6fb ("bpf, sockmap: convert to generic sk_msg interface")
+> Fixes: 7e81a3530206 ("bpf: Sockmap, ensure sock lock held during tear down")
 > Signed-off-by: Jakub Sitnicki <jakub@cloudflare.com>
 > ---
->  net/core/sock_map.c | 4 ++++
->  1 file changed, 4 insertions(+)
+>  .../selftests/bpf/prog_tests/sockmap_basic.c  | 74 +++++++++++++++++++
+>  1 file changed, 74 insertions(+)
+>  create mode 100644 tools/testing/selftests/bpf/prog_tests/sockmap_basic.c
+> 
+> diff --git a/tools/testing/selftests/bpf/prog_tests/sockmap_basic.c b/tools/testing/selftests/bpf/prog_tests/sockmap_basic.c
+> new file mode 100644
+> index 000000000000..07f5b462c2ef
+> --- /dev/null
+> +++ b/tools/testing/selftests/bpf/prog_tests/sockmap_basic.c
 
-Nice catch thanks. As far as I know I've never seen this happen but
-lets get this fixed.
+Yes! This helps a lot now we will get some coverege on these cases.
 
 Acked-by: John Fastabend <john.fastabend@gmail.com>
-
-> 
-> diff --git a/net/core/sock_map.c b/net/core/sock_map.c
-> index fd8b426dbdf3..f36e13e577a3 100644
-> --- a/net/core/sock_map.c
-> +++ b/net/core/sock_map.c
-> @@ -250,6 +250,7 @@ static void sock_map_free(struct bpf_map *map)
->  	}
->  	raw_spin_unlock_bh(&stab->lock);
->  
-> +	/* wait for psock readers accessing its map link */
->  	synchronize_rcu();
->  
->  	bpf_map_area_free(stab->sks);
-> @@ -873,6 +874,9 @@ static void sock_hash_free(struct bpf_map *map)
->  		raw_spin_unlock_bh(&bucket->lock);
->  	}
->  
-> +	/* wait for psock readers accessing its map link */
-> +	synchronize_rcu();
-> +
->  	bpf_map_area_free(htab->buckets);
->  	kfree(htab);
->  }
-> -- 
-> 2.24.1
-> 
-
-
