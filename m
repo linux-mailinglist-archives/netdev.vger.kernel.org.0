@@ -2,169 +2,107 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id DA455154E81
-	for <lists+netdev@lfdr.de>; Thu,  6 Feb 2020 23:02:23 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B8298154ED6
+	for <lists+netdev@lfdr.de>; Thu,  6 Feb 2020 23:17:58 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727649AbgBFWCR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 6 Feb 2020 17:02:17 -0500
-Received: from mail-dm6nam11on2112.outbound.protection.outlook.com ([40.107.223.112]:21472
-        "EHLO NAM11-DM6-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1726765AbgBFWCR (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 6 Feb 2020 17:02:17 -0500
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=hevyWhjc+87kuG9I+CopraHBI0wsJywY/tBl/Sx9OXPyOSctigMKMsibI8+eEAYZGVjSZ0dxfaIq7apnaMGbYioURjmSGr+B1MqYogUxR1U9C8o3UOGSUHUolEEUYEnKoP9ddJlLVYeUw6tDdopIkdjA9Q8mmU00lz/DFDJHpfzMWFgPVZFibgZVFuWK/5Gn2Az0qordW5nkKj59bwt8CSJ00Ew6Mclxa6ScTTgW2Etc1u2rgv9jPIVP44iBAVdiIwxzcDVLOvSESByM13KjClSeF0wzi6f5imgd3iQLdJ1k0NG5QE6mPlmG0KbfYwQDLm0eAQx2/eGbnS7HVzyn7g==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=vN+XbgcGvfhWvx4AwrA6NIW1wUNIurLg4CELjId3Fz8=;
- b=EXGWzL2X4h9Z5udl2v3+d6P3h7xtAatt2qi+EZBbv083/JPRTf4oO0dg3G5z9TYaPYZ1/RmfgmxG/QjEAOexQFuiyR9qaDWsdKSc/PNOhciYomoDMMd4Mde6D0E0LSt4kRAHZnzKx3PhTIgHjUvnImcBCmzkAew/RDlcEtKdxY4+czODZP0zTnVrXkcL1J56dKdrng0KP8IPsQrrimZr78D5IznxCsDomFjy8v9oGMt1hcnod8SY9hgDdghBLiWx3ogw+/z+K3h9+t4QikoX7YXK9c5ks/UW1KRTAl32noiDr81cCtTXDewlah+qSiT8qy5VbSPSFjfwYjqY6OOFIw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=microsoft.com; dmarc=pass action=none
- header.from=microsoft.com; dkim=pass header.d=microsoft.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=vN+XbgcGvfhWvx4AwrA6NIW1wUNIurLg4CELjId3Fz8=;
- b=Gf7WPThYu0SePsdsQYf02NJPYuqJLbFmbzIpVjCWtOzWkDNXtuXSKI7KirMXXYxZFV5Y4NS3VOF2qjX9zSRYDNMz2rMEjqGjgb2xOVRpySXQpD9/kK30OXiuNvXMKft5OtPnBlHWlTHRVdEu1b7yQR0js5i9ZsstZ3FL5AeZUN8=
-Authentication-Results: spf=none (sender IP is )
- smtp.mailfrom=lkmlhyz@microsoft.com; 
-Received: from BL0PR2101MB0897.namprd21.prod.outlook.com (52.132.23.146) by
- BL0PR2101MB1108.namprd21.prod.outlook.com (52.132.24.31) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.2729.5; Thu, 6 Feb 2020 22:01:34 +0000
-Received: from BL0PR2101MB0897.namprd21.prod.outlook.com
- ([fe80::dfe:c227:1ff0:ff55]) by BL0PR2101MB0897.namprd21.prod.outlook.com
- ([fe80::dfe:c227:1ff0:ff55%5]) with mapi id 15.20.2729.004; Thu, 6 Feb 2020
- 22:01:34 +0000
-From:   Haiyang Zhang <haiyangz@microsoft.com>
-To:     sashal@kernel.org, linux-hyperv@vger.kernel.org,
-        netdev@vger.kernel.org
-Cc:     haiyangz@microsoft.com, kys@microsoft.com, sthemmin@microsoft.com,
-        olaf@aepfle.de, vkuznets@redhat.com, davem@davemloft.net,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH net] hv_netvsc: Fix XDP refcnt for synthetic and VF NICs
-Date:   Thu,  6 Feb 2020 14:01:05 -0800
-Message-Id: <1581026465-36161-1-git-send-email-haiyangz@microsoft.com>
-X-Mailer: git-send-email 1.8.3.1
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
-X-ClientProxiedBy: MWHPR21CA0056.namprd21.prod.outlook.com
- (2603:10b6:300:db::18) To BL0PR2101MB0897.namprd21.prod.outlook.com
- (2603:10b6:207:36::18)
+        id S1727570AbgBFWRw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 6 Feb 2020 17:17:52 -0500
+Received: from lelv0142.ext.ti.com ([198.47.23.249]:51066 "EHLO
+        lelv0142.ext.ti.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727517AbgBFWRw (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 6 Feb 2020 17:17:52 -0500
+Received: from lelv0266.itg.ti.com ([10.180.67.225])
+        by lelv0142.ext.ti.com (8.15.2/8.15.2) with ESMTP id 016MHcUu116917;
+        Thu, 6 Feb 2020 16:17:38 -0600
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
+        s=ti-com-17Q1; t=1581027458;
+        bh=R4m5Z48Yi0CW9KBoBFrwaaOfXjcfapPw/OutRzEAJwQ=;
+        h=Subject:To:CC:References:From:Date:In-Reply-To;
+        b=ELSdhvvGw0jm3cBcckyHHAmrIO+i/O1/tdh6xeg20hjXDazE9m5tms0Mzz/eQ2mHo
+         shcrYm+M09FntY3LwtoJ2GUBJwVOdhe4rVYsC/Tg6EcQfC2UTXOwDfqX9W1lyTvJCU
+         FeOhTPSwqngcOoawuX69/CeTzVCS120BN48HUpMA=
+Received: from DLEE102.ent.ti.com (dlee102.ent.ti.com [157.170.170.32])
+        by lelv0266.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 016MHcfK028517
+        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
+        Thu, 6 Feb 2020 16:17:38 -0600
+Received: from DLEE115.ent.ti.com (157.170.170.26) by DLEE102.ent.ti.com
+ (157.170.170.32) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1847.3; Thu, 6 Feb
+ 2020 16:17:38 -0600
+Received: from lelv0326.itg.ti.com (10.180.67.84) by DLEE115.ent.ti.com
+ (157.170.170.26) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1847.3 via
+ Frontend Transport; Thu, 6 Feb 2020 16:17:38 -0600
+Received: from [10.250.65.13] (ileax41-snat.itg.ti.com [10.172.224.153])
+        by lelv0326.itg.ti.com (8.15.2/8.15.2) with ESMTP id 016MHbDR103208;
+        Thu, 6 Feb 2020 16:17:38 -0600
+Subject: Re: [PATCH net-next v2] net: phy: dp83867: Add speed optimization
+ feature
+To:     Heiner Kallweit <hkallweit1@gmail.com>, <andrew@lunn.ch>,
+        <f.fainelli@gmail.com>
+CC:     <linux@armlinux.org.uk>, <davem@davemloft.net>,
+        <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>
+References: <20200204181319.27381-1-dmurphy@ti.com>
+ <0ebcd40d-b9cc-1a76-bb18-91d8350aa1cd@gmail.com>
+From:   Dan Murphy <dmurphy@ti.com>
+Message-ID: <47b9b462-6649-39a7-809f-613ce832bd5c@ti.com>
+Date:   Thu, 6 Feb 2020 16:13:09 -0600
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.4.1
 MIME-Version: 1.0
-Received: from linuxonhyperv3.guj3yctzbm1etfxqx2vob5hsef.xx.internal.cloudapp.net (13.77.154.182) by MWHPR21CA0056.namprd21.prod.outlook.com (2603:10b6:300:db::18) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.2729.6 via Frontend Transport; Thu, 6 Feb 2020 22:01:31 +0000
-X-Mailer: git-send-email 1.8.3.1
-X-Originating-IP: [13.77.154.182]
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-HT: Tenant
-X-MS-Office365-Filtering-Correlation-Id: 2644a06a-c446-4f71-669e-08d7ab502065
-X-MS-TrafficTypeDiagnostic: BL0PR2101MB1108:|BL0PR2101MB1108:|BL0PR2101MB1108:
-X-MS-Exchange-Transport-Forked: True
-X-LD-Processed: 72f988bf-86f1-41af-91ab-2d7cd011db47,ExtAddr
-X-Microsoft-Antispam-PRVS: <BL0PR2101MB11082360CA77F1842E9FC284AC1D0@BL0PR2101MB1108.namprd21.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:7219;
-X-Forefront-PRVS: 0305463112
-X-Forefront-Antispam-Report: SFV:NSPM;SFS:(10019020)(4636009)(366004)(376002)(346002)(136003)(39860400002)(396003)(189003)(199004)(36756003)(8676002)(6486002)(2616005)(956004)(10290500003)(81166006)(8936002)(478600001)(2906002)(4326008)(6666004)(81156014)(6512007)(52116002)(186003)(316002)(5660300002)(66946007)(66556008)(26005)(16526019)(6506007)(66476007);DIR:OUT;SFP:1102;SCL:1;SRVR:BL0PR2101MB1108;H:BL0PR2101MB0897.namprd21.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;MX:1;A:1;
-Received-SPF: None (protection.outlook.com: microsoft.com does not designate
- permitted sender hosts)
-X-MS-Exchange-SenderADCheck: 1
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: QuhZXqwl3tpX0fpcH7k/LC6XiUKVJtrXvuUESao7sqVryrFhPpEYNNVCV9QOPyqr0T3ESHNl/vSx1O8akg5TRN4aAHC01kCR1fKzxtU9NFwCORVNayw/+9AP4Lrr6GiC3LPgk2M7vToQQy0lOWOcAZbfuOHBWx4VSlvdh6+Gj7Cip045+gROO6pnTU449qSKPIUhONBmxt6Zbjp8qBdiNNXAl0KzvcpHFG6lH+Mebrp3MfO9fMT0bOEJlIoZb4+aShxiplYbPUKM+8/aUGTaJnVTyesomN2hNNoIdyREXS/M+gyUIvJgO6a5t3ixFEbdwmTJ69kCKbJl5ObdzCkRUz91w7l72+hUtuIQbQOHuZPSDbchxR6b2glV1uxNQnWmVSXNocIOWRpUhTbPSu872/Ja1/xjqamnUiivdiWP1IywpbvM9dHU0GeXqrf2Azxw
-X-MS-Exchange-AntiSpam-MessageData: +fhKuXs10z/P/Nr76A8Q0eIYYFIoyJhvSeGs0RHmI1Ax0jkhlS+NxCul8SlrmoC4K++Vu5dAaH3O926S3V8BLS4HPCkKjhZ3H20LpotE0o0LASIdPN+sr33hhyDOuSKTn0/+mnmxeKZ40cTOif1xYA==
-X-OriginatorOrg: microsoft.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 2644a06a-c446-4f71-669e-08d7ab502065
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 06 Feb 2020 22:01:34.1324
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 72f988bf-86f1-41af-91ab-2d7cd011db47
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: cAAgOQ2WTjlLtUBIXSDZ+WiNAxSE3vK8dWC0CeZ6PGnAvk6NjTp4PzpqmhM+F6VkpsPSzmFFwA2xPO/IDsTE6A==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BL0PR2101MB1108
+In-Reply-To: <0ebcd40d-b9cc-1a76-bb18-91d8350aa1cd@gmail.com>
+Content-Type: text/plain; charset="utf-8"; format=flowed
+Content-Transfer-Encoding: 8bit
+Content-Language: en-US
+X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The caller of XDP_SETUP_PROG has already incremented refcnt in
-__bpf_prog_get(), so drivers should only increment refcnt by
-num_queues - 1.
+Heiner
 
-To fix the issue, update netvsc_xdp_set() to add the correct number
-to refcnt.
+On 2/5/20 3:16 PM, Heiner Kallweit wrote:
+> On 04.02.2020 19:13, Dan Murphy wrote:
+>> Set the speed optimization bit on the DP83867 PHY.
+>> This feature can also be strapped on the 64 pin PHY devices
+>> but the 48 pin devices do not have the strap pin available to enable
+>> this feature in the hardware.  PHY team suggests to have this bit set.
+>>
+>> With this bit set the PHY will auto negotiate and report the link
+>> parameters in the PHYSTS register.  This register provides a single
+>> location within the register set for quick access to commonly accessed
+>> information.
+>>
+>> In this case when auto negotiation is on the PHY core reads the bits
+>> that have been configured or if auto negotiation is off the PHY core
+>> reads the BMCR register and sets the phydev parameters accordingly.
+>>
+>> This Giga bit PHY can throttle the speed to 100Mbps or 10Mbps to accomodate a
+>> 4-wire cable.  If this should occur the PHYSTS register contains the
+>> current negotiated speed and duplex mode.
+>>
+>> In overriding the genphy_read_status the dp83867_read_status will do a
+>> genphy_read_status to setup the LP and pause bits.  And then the PHYSTS
+>> register is read and the phydev speed and duplex mode settings are
+>> updated.
+>>
+>> Signed-off-by: Dan Murphy <dmurphy@ti.com>
+>> ---
+>> v2 - Updated read status to call genphy_read_status first, added link_change
+>> callback to notify of speed change and use phy_set_bits - https://lore.kernel.org/patchwork/patch/1188348/
+>>
+> As stated in the first review, it would be appreciated if you implement
+> also the downshift tunable. This could be a separate patch in this series.
+> Most of the implementation would be boilerplate code.
 
-Hold a refcnt in netvsc_xdp_set()’s other caller, netvsc_attach().
 
-And, do the same in netvsc_vf_setxdp(). Otherwise, every time when VF is
-removed and added from the host side, the refcnt will be decreased by one,
-which may cause page fault when unloading xdp program.
+I looked at this today and there are no registers that allow tuning the 
+downshift attempts.  There is only a RO register that tells you how many 
+attempts it took to achieve a link.  So at the very least we could put 
+in the get_tunable but there will be no set.
 
-Fixes: 351e1581395f ("hv_netvsc: Add XDP support")
-Signed-off-by: Haiyang Zhang <haiyangz@microsoft.com>
----
- drivers/net/hyperv/netvsc_bpf.c | 13 +++++++++++--
- drivers/net/hyperv/netvsc_drv.c |  5 ++++-
- 2 files changed, 15 insertions(+), 3 deletions(-)
+So we should probably skip this for this PHY.
 
-diff --git a/drivers/net/hyperv/netvsc_bpf.c b/drivers/net/hyperv/netvsc_bpf.c
-index 20adfe5..b866110 100644
---- a/drivers/net/hyperv/netvsc_bpf.c
-+++ b/drivers/net/hyperv/netvsc_bpf.c
-@@ -120,7 +120,7 @@ int netvsc_xdp_set(struct net_device *dev, struct bpf_prog *prog,
- 	}
- 
- 	if (prog)
--		bpf_prog_add(prog, nvdev->num_chn);
-+		bpf_prog_add(prog, nvdev->num_chn - 1);
- 
- 	for (i = 0; i < nvdev->num_chn; i++)
- 		rcu_assign_pointer(nvdev->chan_table[i].bpf_prog, prog);
-@@ -136,6 +136,7 @@ int netvsc_vf_setxdp(struct net_device *vf_netdev, struct bpf_prog *prog)
- {
- 	struct netdev_bpf xdp;
- 	bpf_op_t ndo_bpf;
-+	int ret;
- 
- 	ASSERT_RTNL();
- 
-@@ -148,10 +149,18 @@ int netvsc_vf_setxdp(struct net_device *vf_netdev, struct bpf_prog *prog)
- 
- 	memset(&xdp, 0, sizeof(xdp));
- 
-+	if (prog)
-+		bpf_prog_inc(prog);
-+
- 	xdp.command = XDP_SETUP_PROG;
- 	xdp.prog = prog;
- 
--	return ndo_bpf(vf_netdev, &xdp);
-+	ret = ndo_bpf(vf_netdev, &xdp);
-+
-+	if (ret && prog)
-+		bpf_prog_put(prog);
-+
-+	return ret;
- }
- 
- static u32 netvsc_xdp_query(struct netvsc_device *nvdev)
-diff --git a/drivers/net/hyperv/netvsc_drv.c b/drivers/net/hyperv/netvsc_drv.c
-index 8fc71bd..65e12cb 100644
---- a/drivers/net/hyperv/netvsc_drv.c
-+++ b/drivers/net/hyperv/netvsc_drv.c
-@@ -1059,9 +1059,12 @@ static int netvsc_attach(struct net_device *ndev,
- 
- 	prog = dev_info->bprog;
- 	if (prog) {
-+		bpf_prog_inc(prog);
- 		ret = netvsc_xdp_set(ndev, prog, NULL, nvdev);
--		if (ret)
-+		if (ret) {
-+			bpf_prog_put(prog);
- 			goto err1;
-+		}
- 	}
- 
- 	/* In any case device is now ready */
--- 
-1.8.3.1
+Dan
 
