@@ -2,93 +2,87 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 3CCDE1544C0
-	for <lists+netdev@lfdr.de>; Thu,  6 Feb 2020 14:21:26 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 597E41544C8
+	for <lists+netdev@lfdr.de>; Thu,  6 Feb 2020 14:22:12 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727769AbgBFNVW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 6 Feb 2020 08:21:22 -0500
-Received: from us-smtp-delivery-1.mimecast.com ([205.139.110.120]:42093 "EHLO
-        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S1726765AbgBFNVW (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 6 Feb 2020 08:21:22 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1580995281;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=u6S7ClQW5Wm4rgDcYznVacMFlwU0ScpDkO9Yz5LhdyY=;
-        b=DR9WjrVdZWqmvxmxDNT/v904Zy05A9hrbid9Rj+9Vz5fwYu+LHbQ/MzsFgpdqgU4Ay5elc
-        Hgj9DKcQhii2kwNX8ZthUG83iZ6sq0YerVYJrlBc/XlFWNfi5uZ8IgWsJEn8wcf8oWtEaR
-        jvTCQe++oHidrJzFWq1qRRmBjTnmXZM=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-94-HKeAtuHZMmeL9h-e_aZAig-1; Thu, 06 Feb 2020 08:21:19 -0500
-X-MC-Unique: HKeAtuHZMmeL9h-e_aZAig-1
-Received: from smtp.corp.redhat.com (int-mx01.intmail.prod.int.phx2.redhat.com [10.5.11.11])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 369DE10883B2;
-        Thu,  6 Feb 2020 13:21:18 +0000 (UTC)
-Received: from ovpn-116-143.ams2.redhat.com (ovpn-116-143.ams2.redhat.com [10.36.116.143])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 26FEE84DB4;
-        Thu,  6 Feb 2020 13:21:16 +0000 (UTC)
-Message-ID: <13e8950e8537e549f6afb6e254ec75a7462ce648.camel@redhat.com>
-Subject: Re: [BUG] pfifo_fast may cause out-of-order CAN frame transmission
-From:   Paolo Abeni <pabeni@redhat.com>
-To:     Ahmad Fatoum <a.fatoum@pengutronix.de>, netdev@vger.kernel.org,
-        linux-can@vger.kernel.org,
-        Pengutronix Kernel Team <kernel@pengutronix.de>
-Date:   Thu, 06 Feb 2020 14:21:16 +0100
-In-Reply-To: <ef6b4e00-75fe-70f6-6b57-7bdbaa1aac33@pengutronix.de>
-References: <661cc33a-5f65-2769-cc1a-65791cb4b131@pengutronix.de>
-         <7717e4470f6881bbc92645c72ad7f6ec71360796.camel@redhat.com>
-         <779d3346-0344-9064-15d5-4d565647a556@pengutronix.de>
-         <1b70f56b72943bf5dfd2813565373e8c1b639c31.camel@redhat.com>
-         <53ce1ab4-3346-2367-8aa5-85a89f6897ec@pengutronix.de>
-         <57a2352dfc442ea2aa9cd653f8e09db277bf67c7.camel@redhat.com>
-         <b012e914-fc1a-5a45-f28b-e9d4d4dfc0fe@pengutronix.de>
-         <ef6b4e00-75fe-70f6-6b57-7bdbaa1aac33@pengutronix.de>
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.32.5 (3.32.5-1.fc30) 
+        id S1727881AbgBFNWF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 6 Feb 2020 08:22:05 -0500
+Received: from mail-pj1-f67.google.com ([209.85.216.67]:38057 "EHLO
+        mail-pj1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727847AbgBFNWF (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 6 Feb 2020 08:22:05 -0500
+Received: by mail-pj1-f67.google.com with SMTP id j17so2550574pjz.3;
+        Thu, 06 Feb 2020 05:22:04 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=MMEdhBkwc3vUygsidCCQyAeg+NALFLEwybGyK66dnDM=;
+        b=ThufnkVcDU19LYejj+ltE3+1XMcAoY8Q+5t0KjvrkpxTrDaeOXYjjmvDvZN/xss2zg
+         c51VN03oWDQJKeGWbijzI7CpMn4Nl1RO0c2uNhdpZURO1rGkaTGV1iXXXzZ1QvutbMy/
+         LVSnZCHO4RmjIfUno4drB63Z33CNnlrYz3D/AATMdEg4kyx06lZ8PFkMMpjr3z3WV7/o
+         Xq50QheauxttDJWQN971cFp4SWsyZM8Lr+bYDGY2svzGNgyZNzEGW6iPJF9bjJAE56Zo
+         Th03yl9mlf985Cb/6oqKI6vrQhaMtcEGDcIAD0cp2d1QEt8m6fMtG1fniOeoygtxEInx
+         JHYw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=MMEdhBkwc3vUygsidCCQyAeg+NALFLEwybGyK66dnDM=;
+        b=VLPM9TFk/3uWy+W+fpOCeBAvxGnSsZS+j52KXEVtIs7D1bjKO268CH+92rvmaY7vg8
+         xXwC+7UG2I2Tc4L3QOM3LDoJwO3/qKmNjExiIlTws4GDWJXOje4v45JGUzMz2jwxUE9h
+         lw5vEQHX/U7Zq6Y9fdVFUuNEeFn9K0YvMRls9EvK/VVUB3cdgeCKDIAGdGj8I0AX6V3Q
+         slIwoLuP6C5YSroXf28Yvw5/+L9HeoFfC3vyorkYr/HtYexi4s/8snPAeUh9erla8J0n
+         K6610wMzjOHG0hEZL/UYvW4QzlPKIaEcMdu79SV8Ut8V/elRIXsEUP5xYGaqcD/v/vGL
+         I0eg==
+X-Gm-Message-State: APjAAAV8pA+93SlTRz31Px36VqxdiZD9R+ZI3R4iqQy/peEfohTp0nr/
+        2GpzypEMv92ZBgpDy2+Z0bc=
+X-Google-Smtp-Source: APXvYqxnin0IXvtlv+L3JlOyDTCqX/MIheUeZ43LFgp9JPOckvDVyoULOK5DJ/d00XhbqGPuQwVrVw==
+X-Received: by 2002:a17:902:680c:: with SMTP id h12mr3688016plk.102.1580995324525;
+        Thu, 06 Feb 2020 05:22:04 -0800 (PST)
+Received: from localhost (104.128.80.227.16clouds.com. [104.128.80.227])
+        by smtp.gmail.com with ESMTPSA id f9sm3306849pfd.141.2020.02.06.05.22.01
+        (version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
+        Thu, 06 Feb 2020 05:22:04 -0800 (PST)
+From:   Dejin Zheng <zhengdejin5@gmail.com>
+To:     vkoul@kernel.org, peppe.cavallaro@st.com, alexandre.torgue@st.com,
+        joabreu@synopsys.com, davem@davemloft.net,
+        mcoquelin.stm32@gmail.com
+Cc:     netdev@vger.kernel.org, linux-stm32@st-md-mailman.stormreply.com,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        Dejin Zheng <zhengdejin5@gmail.com>
+Subject: [PATCH] net: stmmac: fix a possible endless loop
+Date:   Thu,  6 Feb 2020 21:21:47 +0800
+Message-Id: <20200206132147.22874-1-zhengdejin5@gmail.com>
+X-Mailer: git-send-email 2.25.0
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.11
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 2020-02-04 at 17:25 +0100, Ahmad Fatoum wrote:
-> Hello Paolo,
-> 
-> On 1/20/20 5:06 PM, Ahmad Fatoum wrote:
-> > Hello Paolo,
-> > 
-> > On 1/16/20 1:40 PM, Paolo Abeni wrote:
-> > > I'm sorry for this trial & error experience. I tried to reproduce the
-> > > issue on top of the vcan virtual device, but it looks like it requires
-> > > the timing imposed by a real device, and it's missing here (TL;DR: I
-> > > can't reproduce the issue locally).
-> > 
-> > No worries. I don't mind testing.
-> > 
-> > > Code wise, the 2nd patch closed a possible race, but it dumbly re-
-> > > opened the one addressed by the first attempt - the 'empty' field must
-> > > be cleared prior to the trylock operation, or we may end-up with such
-> > > field set and the queue not empty.
-> > > 
-> > > So, could you please try the following code?
-> > 
-> > Unfortunately, I still see observe reodering.
-> 
-> Any news?
+It forgot to reduce the value of the variable retry in a while loop
+in the ethqos_configure() function. It may cause an endless loop and
+without timeout.
 
-I'm unable to find any better solution than a revert. That will cost
-some small performace regression, so I'm a bit reluctant to go ahead.
-If there is agreement I can post the revert.
+Signed-off-by: Dejin Zheng <zhengdejin5@gmail.com>
+---
+ drivers/net/ethernet/stmicro/stmmac/dwmac-qcom-ethqos.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-Cheers,
-
-Paolo
+diff --git a/drivers/net/ethernet/stmicro/stmmac/dwmac-qcom-ethqos.c b/drivers/net/ethernet/stmicro/stmmac/dwmac-qcom-ethqos.c
+index 7ec895407d23..e0a5fe83d8e0 100644
+--- a/drivers/net/ethernet/stmicro/stmmac/dwmac-qcom-ethqos.c
++++ b/drivers/net/ethernet/stmicro/stmmac/dwmac-qcom-ethqos.c
+@@ -413,6 +413,7 @@ static int ethqos_configure(struct qcom_ethqos *ethqos)
+ 			dll_lock = rgmii_readl(ethqos, SDC4_STATUS);
+ 			if (dll_lock & SDC4_STATUS_DLL_LOCK)
+ 				break;
++			retry--;
+ 		} while (retry > 0);
+ 		if (!retry)
+ 			dev_err(&ethqos->pdev->dev,
+-- 
+2.25.0
 
