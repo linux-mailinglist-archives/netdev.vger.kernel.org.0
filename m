@@ -2,71 +2,95 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id C9269154499
-	for <lists+netdev@lfdr.de>; Thu,  6 Feb 2020 14:09:46 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A50F21544A7
+	for <lists+netdev@lfdr.de>; Thu,  6 Feb 2020 14:13:05 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727529AbgBFNJp (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 6 Feb 2020 08:09:45 -0500
-Received: from us-smtp-delivery-1.mimecast.com ([207.211.31.120]:58711 "EHLO
-        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S1727325AbgBFNJo (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 6 Feb 2020 08:09:44 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1580994584;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=ZgKjq5f4oMoXVI4WqrUXov10JILu8ei/f35tvvz5Kbg=;
-        b=OBfTtH2gFhM7SMCntNjIjXR3uJk9zGymgCAR1P/c0jHT07pcWczFLetH7YWDjnj9nrWB9S
-        ae90wV8BEWt0KUMMyVwrBBqOL23jSNE2rD554ni4ufAi/ik//iBTIp48gFczeBuxs9NJGV
-        qwUhR0LxrVnUoo/jhHUs2JrkZ4omM7c=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-265-qH7P_AwpP2eTBjAnESgrMQ-1; Thu, 06 Feb 2020 08:09:41 -0500
-X-MC-Unique: qH7P_AwpP2eTBjAnESgrMQ-1
-Received: from smtp.corp.redhat.com (int-mx03.intmail.prod.int.phx2.redhat.com [10.5.11.13])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id A0E51104D419;
-        Thu,  6 Feb 2020 13:09:39 +0000 (UTC)
-Received: from warthog.procyon.org.uk (ovpn-120-218.rdu2.redhat.com [10.10.120.218])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id B996E90536;
-        Thu,  6 Feb 2020 13:09:37 +0000 (UTC)
-Organization: Red Hat UK Ltd. Registered Address: Red Hat UK Ltd, Amberley
-        Place, 107-111 Peascod Street, Windsor, Berkshire, SI4 1TE, United
-        Kingdom.
-        Registered in England and Wales under Company Registration No. 3798903
-From:   David Howells <dhowells@redhat.com>
-In-Reply-To: <20200204084005.11320-1-hdanton@sina.com>
-References: <20200204084005.11320-1-hdanton@sina.com>
-To:     Hillf Danton <hdanton@sina.com>
-Cc:     dhowells@redhat.com,
-        syzbot <syzbot+3f1fd6b8cbf8702d134e@syzkaller.appspotmail.com>,
-        davem@davemloft.net, kuba@kernel.org,
-        linux-afs@lists.infradead.org, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org, syzkaller-bugs@googlegroups.com
-Subject: Re: inconsistent lock state in rxrpc_put_client_conn
-MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-ID: <2183051.1580994576.1@warthog.procyon.org.uk>
-Date:   Thu, 06 Feb 2020 13:09:36 +0000
-Message-ID: <2183052.1580994576@warthog.procyon.org.uk>
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.13
+        id S1727599AbgBFNND (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 6 Feb 2020 08:13:03 -0500
+Received: from shards.monkeyblade.net ([23.128.96.9]:59360 "EHLO
+        shards.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727361AbgBFNND (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 6 Feb 2020 08:13:03 -0500
+Received: from localhost (unknown [IPv6:2001:982:756:1:57a7:3bfd:5e85:defb])
+        (using TLSv1 with cipher AES256-SHA (256/256 bits))
+        (Client did not present a certificate)
+        (Authenticated sender: davem-davemloft)
+        by shards.monkeyblade.net (Postfix) with ESMTPSA id BA50514C76F98;
+        Thu,  6 Feb 2020 05:13:01 -0800 (PST)
+Date:   Thu, 06 Feb 2020 14:13:00 +0100 (CET)
+Message-Id: <20200206.141300.1752448469848126511.davem@davemloft.net>
+To:     edumazet@google.com
+Cc:     netdev@vger.kernel.org, eric.dumazet@gmail.com,
+        syzkaller@googlegroups.com, maximmi@mellanox.com
+Subject: Re: [PATCH net] ipv6/addrconf: fix potential NULL deref in
+ inet6_set_link_af()
+From:   David Miller <davem@davemloft.net>
+In-Reply-To: <20200205165544.242623-1-edumazet@google.com>
+References: <20200205165544.242623-1-edumazet@google.com>
+X-Mailer: Mew version 6.8 on Emacs 26.3
+Mime-Version: 1.0
+Content-Type: Text/Plain; charset=us-ascii
+Content-Transfer-Encoding: 7bit
+X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Thu, 06 Feb 2020 05:13:02 -0800 (PST)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hillf Danton <hdanton@sina.com> wrote:
+From: Eric Dumazet <edumazet@google.com>
+Date: Wed,  5 Feb 2020 08:55:44 -0800
 
-> Take lock with irq quiesced.
+> __in6_dev_get(dev) called from inet6_set_link_af() can return NULL.
+> 
+> The needed check has been recently removed, let's add it back.
 
-I think that's overkill.  It only needs _bh annotations, not _irqsave/restore
-- but even that is probably not the best way.
+I am having trouble understanding this one.
 
-The best way is to offload the stuff done by rxrpc_rcu_destroy_call() to a
-workqueue if called in softirq mode.  I'm not sure whether rcu callbacks are
-done in softirq mode - if they are, then it can just call rxrpc_queue_work().
+When we have a do_setlink operation the flow is that we first validate
+the AFs and then invoke setlink operations after that validation.
 
-David
+do_setlink() {
+ ..
+	err = validate_linkmsg(dev, tb);
+	if (err < 0)
+		return err;
+ ..
+	if (tb[IFLA_AF_SPEC]) {
+ ...
+			err = af_ops->set_link_af(dev, af);
+			if (err < 0) {
+				rcu_read_unlock();
+				goto errout;
+			}
 
+By definition, we only get to ->set_link_af() if there is an
+IFLA_AF_SPEC nested attribute and if we look at the validation
+performed by validate_linkmsg() it goes:
+
+	if (tb[IFLA_AF_SPEC]) {
+ ...
+			if (af_ops->validate_link_af) {
+				err = af_ops->validate_link_af(dev, af);
+ ...
+
+And validate_link_af in net/ipv6/addrconf.c clearly does the
+following:
+
+static int inet6_validate_link_af(const struct net_device *dev,
+				  const struct nlattr *nla)
+ ...
+	if (dev) {
+		idev = __in6_dev_get(dev);
+		if (!idev)
+			return -EAFNOSUPPORT;
+	}
+ ...
+
+It checks the idev and makes sure it is not-NULL.
+
+I therefore cannot find a path by which we arrive at inet6_set_link_af
+with a NULL idev.  The above validation code should trap it.
+
+Please explain.
+
+Thank you.
