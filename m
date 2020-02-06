@@ -2,81 +2,86 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 6F265153CD1
-	for <lists+netdev@lfdr.de>; Thu,  6 Feb 2020 02:59:56 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 683F3153CF0
+	for <lists+netdev@lfdr.de>; Thu,  6 Feb 2020 03:23:35 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727662AbgBFB7l (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 5 Feb 2020 20:59:41 -0500
-Received: from mx.socionext.com ([202.248.49.38]:48087 "EHLO mx.socionext.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727474AbgBFB7l (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 5 Feb 2020 20:59:41 -0500
-Received: from unknown (HELO iyokan-ex.css.socionext.com) ([172.31.9.54])
-  by mx.socionext.com with ESMTP; 06 Feb 2020 10:59:40 +0900
-Received: from mail.mfilter.local (m-filter-1 [10.213.24.61])
-        by iyokan-ex.css.socionext.com (Postfix) with ESMTP id 38953603AB;
-        Thu,  6 Feb 2020 10:59:40 +0900 (JST)
-Received: from 172.31.9.51 (172.31.9.51) by m-FILTER with ESMTP; Thu, 6 Feb 2020 11:00:49 +0900
-Received: from plum.e01.socionext.com (unknown [10.213.132.32])
-        by kinkan.css.socionext.com (Postfix) with ESMTP id 9A1371A0006;
-        Thu,  6 Feb 2020 10:59:39 +0900 (JST)
-From:   Kunihiko Hayashi <hayashi.kunihiko@socionext.com>
-To:     "David S. Miller" <davem@davemloft.net>
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Masami Hiramatsu <masami.hiramatsu@linaro.org>,
-        Jassi Brar <jaswinder.singh@linaro.org>,
-        Kunihiko Hayashi <hayashi.kunihiko@socionext.com>
-Subject: [PATCH net] net: ethernet: ave: Add capability of rgmii-id mode
-Date:   Thu,  6 Feb 2020 10:59:36 +0900
-Message-Id: <1580954376-27283-1-git-send-email-hayashi.kunihiko@socionext.com>
-X-Mailer: git-send-email 2.7.4
+        id S1727604AbgBFCXe (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 5 Feb 2020 21:23:34 -0500
+Received: from mx24.baidu.com ([111.206.215.185]:50196 "EHLO baidu.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1727307AbgBFCXd (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 5 Feb 2020 21:23:33 -0500
+Received: from BC-Mail-Ex14.internal.baidu.com (unknown [172.31.51.54])
+        by Forcepoint Email with ESMTPS id 65E4E92E5797AFF46279;
+        Thu,  6 Feb 2020 10:23:22 +0800 (CST)
+Received: from BJHW-Mail-Ex13.internal.baidu.com (10.127.64.36) by
+ BC-Mail-Ex14.internal.baidu.com (172.31.51.54) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id
+ 15.1.1531.3; Thu, 6 Feb 2020 10:23:22 +0800
+Received: from BJHW-Mail-Ex13.internal.baidu.com ([100.100.100.36]) by
+ BJHW-Mail-Ex13.internal.baidu.com ([100.100.100.36]) with mapi id
+ 15.01.1713.004; Thu, 6 Feb 2020 10:23:22 +0800
+From:   "Li,Rongqing" <lirongqing@baidu.com>
+To:     Jesper Dangaard Brouer <brouer@redhat.com>
+CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        Ilias Apalodimas <ilias.apalodimas@linaro.org>
+Subject: =?gb2312?B?tPC4tDogW1BBVENIXSBwYWdlX3Bvb2w6IGZpbGwgcGFnZSBvbmx5IHdoZW4g?=
+ =?gb2312?Q?refill_condition_is_true?=
+Thread-Topic: [PATCH] page_pool: fill page only when refill condition is true
+Thread-Index: AQHV3BqC/shoQdrij0SLd8dbH6GYDagNb1mA
+Date:   Thu, 6 Feb 2020 02:23:22 +0000
+Message-ID: <130d2489bca54b36bda0a8178b8535b4@baidu.com>
+References: <1580890954-21322-1-git-send-email-lirongqing@baidu.com>
+ <20200205125031.57c1f0d6@carbon>
+In-Reply-To: <20200205125031.57c1f0d6@carbon>
+Accept-Language: zh-CN, en-US
+Content-Language: zh-CN
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-originating-ip: [10.21.0.29]
+x-baidu-bdmsfe-datecheck: 1_BC-Mail-Ex14_2020-02-06 10:23:22:391
+x-baidu-bdmsfe-viruscheck: BC-Mail-Ex14_GRAY_Inside_WithoutAtta_2020-02-06
+ 10:23:22:375
+Content-Type: text/plain; charset="gb2312"
+Content-Transfer-Encoding: base64
+MIME-Version: 1.0
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This allows you to specify the type of rgmii-id that will enable phy
-internal delay in ethernet phy-mode.
-
-Signed-off-by: Kunihiko Hayashi <hayashi.kunihiko@socionext.com>
----
- drivers/net/ethernet/socionext/sni_ave.c | 9 +++++++++
- 1 file changed, 9 insertions(+)
-
-diff --git a/drivers/net/ethernet/socionext/sni_ave.c b/drivers/net/ethernet/socionext/sni_ave.c
-index 3b4c7e6..7c574f2 100644
---- a/drivers/net/ethernet/socionext/sni_ave.c
-+++ b/drivers/net/ethernet/socionext/sni_ave.c
-@@ -1857,6 +1857,9 @@ static int ave_pro4_get_pinmode(struct ave_private *priv,
- 		break;
- 	case PHY_INTERFACE_MODE_MII:
- 	case PHY_INTERFACE_MODE_RGMII:
-+	case PHY_INTERFACE_MODE_RGMII_ID:
-+	case PHY_INTERFACE_MODE_RGMII_RXID:
-+	case PHY_INTERFACE_MODE_RGMII_TXID:
- 		priv->pinmode_val = 0;
- 		break;
- 	default:
-@@ -1901,6 +1904,9 @@ static int ave_ld20_get_pinmode(struct ave_private *priv,
- 		priv->pinmode_val = SG_ETPINMODE_RMII(0);
- 		break;
- 	case PHY_INTERFACE_MODE_RGMII:
-+	case PHY_INTERFACE_MODE_RGMII_ID:
-+	case PHY_INTERFACE_MODE_RGMII_RXID:
-+	case PHY_INTERFACE_MODE_RGMII_TXID:
- 		priv->pinmode_val = 0;
- 		break;
- 	default:
-@@ -1923,6 +1929,9 @@ static int ave_pxs3_get_pinmode(struct ave_private *priv,
- 		priv->pinmode_val = SG_ETPINMODE_RMII(arg);
- 		break;
- 	case PHY_INTERFACE_MODE_RGMII:
-+	case PHY_INTERFACE_MODE_RGMII_ID:
-+	case PHY_INTERFACE_MODE_RGMII_RXID:
-+	case PHY_INTERFACE_MODE_RGMII_TXID:
- 		priv->pinmode_val = 0;
- 		break;
- 	default:
--- 
-2.7.4
-
+DQoNCj4gLS0tLS3Tyrz+1K28/i0tLS0tDQo+ILeivP7IyzogSmVzcGVyIERhbmdhYXJkIEJyb3Vl
+ciBbbWFpbHRvOmJyb3VlckByZWRoYXQuY29tXQ0KPiC3osvNyrG85DogMjAyMMTqMtTCNcjVIDE5
+OjUxDQo+IMrVvP7IyzogTGksUm9uZ3FpbmcgPGxpcm9uZ3FpbmdAYmFpZHUuY29tPg0KPiCzrcvN
+OiBuZXRkZXZAdmdlci5rZXJuZWwub3JnOyBicm91ZXJAcmVkaGF0LmNvbTsgSWxpYXMgQXBhbG9k
+aW1hcw0KPiA8aWxpYXMuYXBhbG9kaW1hc0BsaW5hcm8ub3JnPg0KPiDW98ziOiBSZTogW1BBVENI
+XSBwYWdlX3Bvb2w6IGZpbGwgcGFnZSBvbmx5IHdoZW4gcmVmaWxsIGNvbmRpdGlvbiBpcyB0cnVl
+DQo+IA0KPiBPbiBXZWQsICA1IEZlYiAyMDIwIDE2OjIyOjM0ICswODAwDQo+IExpIFJvbmdRaW5n
+IDxsaXJvbmdxaW5nQGJhaWR1LmNvbT4gd3JvdGU6DQo+IA0KPiA+ICJkbyB7fSB3aGlsZSIgaW4g
+cGFnZV9wb29sX3JlZmlsbF9hbGxvY19jYWNoZSB3aWxsIGFsd2F5cyByZWZpbGwgcGFnZQ0KPiA+
+IG9uY2Ugd2hldGhlciByZWZpbGwgaXMgdHJ1ZSBvciBmYWxzZSwgYW5kIHdoZXRoZXIgYWxsb2Mu
+Y291bnQgb2YgcG9vbA0KPiA+IGlzIGxlc3MgdGhhbiBQUF9BTExPQ19DQUNIRV9SRUZJTEwuDQo+
+ID4NCj4gPiBzbyBmaXggaXQgYnkgY2FsbGluZyBwYWdlX3Bvb2xfcmVmaWxsX2FsbG9jX2NhY2hl
+KCkgb25seSB3aGVuIHJlZmlsbA0KPiA+IGlzIHRydWUNCj4gPg0KPiA+IEZpeGVzOiA0NDc2OGRl
+Y2I3YzAgKCJwYWdlX3Bvb2w6IGhhbmRsZSBwYWdlIHJlY3ljbGUgZm9yIE5VTUFfTk9fTk9ERQ0K
+PiA+IGNvbmRpdGlvbiIpDQo+ID4gU2lnbmVkLW9mZi1ieTogTGkgUm9uZ1FpbmcgPGxpcm9uZ3Fp
+bmdAYmFpZHUuY29tPg0KPiA+IENjOiBKZXNwZXIgRGFuZ2FhcmQgQnJvdWVyIDxicm91ZXJAcmVk
+aGF0LmNvbT4NCj4gDQo+IEhtbW0uLi4gSSdtIG5vdCAxMDAlIGNvbnZpbmNlZCB0aGlzIGlzIHRo
+ZSByaWdodCBhcHByb2FjaC4NCj4gDQo+IEkgZG8gcmVhbGl6ZSB0aGF0IGluIGNvbW1pdCA0NDc2
+OGRlY2I3YzAsIEkgYWxzbyBhZGRlZCB0b3VjaGluZw0KPiBwb29sLT5hbGxvYy5jYWNoZVtdIHdo
+aWNoIHdhcyBwcm90ZWN0ZWQgYnkgImNhbGxlZCB1bmRlciIgaW5fc2VydmluZ19zb2Z0aXJxKCku
+DQo+IChiZWZvcmUgSSB1c2VkIGEgbG9ja2VkIHB0cl9yaW5nX2NvbnN1bWUocikpLg0KPiANCj4g
+QlVUIG1heWJlIGl0IHdpbGwgYmUgYmV0dGVyIHRvIHJlbW92ZSwgdGhlIHRlc3QgaW5fc2Vydmlu
+Z19zb2Z0aXJxKCksIGJlY2F1c2UNCj4gdGhlIGNhbGxlciBzaG91bGQgcHJvdmlkZSBndWFyYW50
+ZWUgdGhhdCBwb29sLT5hbGxvYy5jYWNoZVtdIGlzIHNhZmUgdG8gYWNjZXNzLg0KPiANCj4gSSBh
+ZGRlZCB0aGlzIGluX3NlcnZpbmdfc29mdGlycSgpIGNoZWNrLCBiZWNhdXNlIEkgbm90aWNlZCBO
+SUMgZHJpdmVycyB3aWxsIGNhbGwNCj4gdGhpcyBmcm9tIG5vcm1hbCBwcm9jZXNzIGNvbnRleHQs
+IGR1cmluZyAoMSkgaW5pdGlhbCBmaWxsIG9mIHRoZWlyIFJYLXJpbmdzLCBhbmQgKDIpDQo+IGR1
+cmluZyBkcml2ZXIgUlgtcmluZyBzaHV0ZG93bi4gIEJVVCBpbiBib3RoIGNhc2VzIHRoZSBOSUMg
+ZHJpdmVycyB3aWxsIGZpcnN0DQo+IGhhdmUgbWFkZSBzdXJlIHRoYXQgdGhlaXIgUlgtcmluZyBo
+YXZlIGJlZW4gZGlzY29ubmVjdGVkIGFuZCBubyBjb25jdXJyZW50DQo+IGFjY2Vzc2VzIHdpbGwg
+aGFwcGVuLiAgVGh1cywgYWNjZXNzIHRvIHBvb2wtPmFsbG9jLmNhY2hlW10gaXMgc2FmZSwgc28N
+Cj4gcGFnZV9wb29sIEFQSSBzaG91bGQgdHJ1c3QgdGhlIGNhbGxlciBrbm93cyB0aGlzLg0KPiAN
+Cj4gDQoNCkkgdGhpbmsgaXQgaXMgYmV0dGVyIGFuZCBzZW1hbnRpYyBjbGFyaXR5IHRvIGtlZXAg
+aW5fc2VydmluZ19zb2Z0aXJxLCBhbmQgd2UgY2FuIHNlZSBvcGluaW9ucyBvZiBvdGhlcnMNCg0K
+VGhhbmtzDQoNCi1MaQ0KDQo=
