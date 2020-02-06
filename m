@@ -2,31 +2,31 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 50E571547D3
-	for <lists+netdev@lfdr.de>; Thu,  6 Feb 2020 16:19:50 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id ABABD1547CA
+	for <lists+netdev@lfdr.de>; Thu,  6 Feb 2020 16:19:45 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727983AbgBFPTY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 6 Feb 2020 10:19:24 -0500
-Received: from bombadil.infradead.org ([198.137.202.133]:38028 "EHLO
+        id S1727961AbgBFPTQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 6 Feb 2020 10:19:16 -0500
+Received: from bombadil.infradead.org ([198.137.202.133]:38058 "EHLO
         bombadil.infradead.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726673AbgBFPR7 (ORCPT
+        with ESMTP id S1727550AbgBFPR7 (ORCPT
         <rfc822;netdev@vger.kernel.org>); Thu, 6 Feb 2020 10:17:59 -0500
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
         d=infradead.org; s=bombadil.20170209; h=Sender:Content-Transfer-Encoding:
         MIME-Version:References:In-Reply-To:Message-Id:Date:Subject:Cc:To:From:
         Reply-To:Content-Type:Content-ID:Content-Description;
-        bh=+Yop00d0Xbp0545ICHmgql9c1fRKohAG5sloDCaSutw=; b=YNyc9QGAB77qhhIXE627igBUun
-        pRdC7duCqZujAd0sGW8lKr4thltvoXKguoIvi1r/usWoxBmsggH4ymckh+UBLAGt3Qg1iN5R5S810
-        89tLsOt/DzTeYBzMqrHrHjxtT1VPvj1aOHv96Yw0T9N3w6Vs9G9FB9omW1PTsMzcVCil8BVXwsVQx
-        7HUGrJCW2miECGfjIWUXdoEXVCQmQNWXqd3Q9mxje5lVeHAMrC9W3UhNKxPaVRFv4coTnL+5frmGv
-        9wNf1F7T58QaMUNKfAnUHKMItRgjw4QCyoFk7ePaxsxJB2v1UsJvSWr6FrPmch+x07Vg4LUpRdlNc
-        cykLL/eg==;
+        bh=xn1+ZBCwahWIeQZAzJiRDVozcz9pfwHWgQZ0V1jYyS4=; b=lkh0y2pOexVJ8XFV0CeJAfyTk1
+        KJf1OU924R9bSmyLyy12GHAEq3pOF68SOXbywLAngZfmFPjrgz/jTSRSQlmkx9Y52vySQTpts4JC8
+        TTc5mIzNkujGbNIKvhwKTb3j8OeHFIbPcs7u5Hi7irg2gF0E61Ved+UGpUuiELpeU7yDzwSFfFtd1
+        wDG/mpP/yIKheo7xzG7S95PZtCpRy3Xt54zaM1KN2wbf1BzYPk7FAAbav4Upjck5Fi+U5NNkspdp3
+        kIOVaDCnmUof3X/zJMoDyZ6IkgvdOwn8JHtedr/iFhgSSBTWVoIufV+w08bqSvUc3hHUbiFLSP33F
+        MZa8Xipg==;
 Received: from [179.95.15.160] (helo=bombadil.infradead.org)
         by bombadil.infradead.org with esmtpsa (Exim 4.92.3 #3 (Red Hat Linux))
-        id 1iziuk-0005jb-VV; Thu, 06 Feb 2020 15:17:59 +0000
+        id 1iziul-0005jc-5D; Thu, 06 Feb 2020 15:17:59 +0000
 Received: from mchehab by bombadil.infradead.org with local (Exim 4.92.3)
         (envelope-from <mchehab@bombadil.infradead.org>)
-        id 1iziud-002oVt-IW; Thu, 06 Feb 2020 16:17:51 +0100
+        id 1iziud-002oVx-JY; Thu, 06 Feb 2020 16:17:51 +0100
 From:   Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
 To:     Linux Media Mailing List <linux-media@vger.kernel.org>
 Cc:     Mauro Carvalho Chehab <mchehab+huawei@kernel.org>,
@@ -35,9 +35,9 @@ Cc:     Mauro Carvalho Chehab <mchehab+huawei@kernel.org>,
         Jakub Kicinski <kuba@kernel.org>,
         Jonathan Corbet <corbet@lwn.net>, netdev@vger.kernel.org,
         linux-doc@vger.kernel.org
-Subject: [PATCH 18/28] docs: networking: convert dns_resolver.txt to ReST
-Date:   Thu,  6 Feb 2020 16:17:38 +0100
-Message-Id: <a04a5efd9692da07fc60d407578bf97f21151dd9.1581002063.git.mchehab+huawei@kernel.org>
+Subject: [PATCH 19/28] docs: networking: convert driver.txt to ReST
+Date:   Thu,  6 Feb 2020 16:17:39 +0100
+Message-Id: <2a20446abe6e81d2ba1fa2a7b7f27cdf16c6a310.1581002063.git.mchehab+huawei@kernel.org>
 X-Mailer: git-send-email 2.24.1
 In-Reply-To: <cover.1581002062.git.mchehab+huawei@kernel.org>
 References: <cover.1581002062.git.mchehab+huawei@kernel.org>
@@ -49,161 +49,95 @@ List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 - add SPDX header;
-- adjust titles and chapters, adding proper markups;
-- comment out text-only TOC from html/pdf output;
-
+- add a document title;
 - mark code blocks and literals as such;
-
 - adjust identation, whitespaces and blank lines;
 - add to networking/index.rst.
 
 
 Signed-off-by: Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
 ---
- .../{dns_resolver.txt => dns_resolver.rst}    | 52 +++++++++----------
+ .../networking/{driver.txt => driver.rst}     | 22 +++++++++++--------
  Documentation/networking/index.rst            |  1 +
- 2 files changed, 26 insertions(+), 27 deletions(-)
- rename Documentation/networking/{dns_resolver.txt => dns_resolver.rst} (89%)
+ 2 files changed, 14 insertions(+), 9 deletions(-)
+ rename Documentation/networking/{driver.txt => driver.rst} (85%)
 
-diff --git a/Documentation/networking/dns_resolver.txt b/Documentation/networking/dns_resolver.rst
-similarity index 89%
-rename from Documentation/networking/dns_resolver.txt
-rename to Documentation/networking/dns_resolver.rst
-index eaa8f9a6fd5d..add4d59a99a5 100644
---- a/Documentation/networking/dns_resolver.txt
-+++ b/Documentation/networking/dns_resolver.rst
-@@ -1,8 +1,10 @@
--			     ===================
--			     DNS Resolver Module
--			     ===================
+diff --git a/Documentation/networking/driver.txt b/Documentation/networking/driver.rst
+similarity index 85%
+rename from Documentation/networking/driver.txt
+rename to Documentation/networking/driver.rst
+index da59e2884130..c8f59dbda46f 100644
+--- a/Documentation/networking/driver.txt
++++ b/Documentation/networking/driver.rst
+@@ -1,4 +1,8 @@
+-Document about softnet driver issues
 +.. SPDX-License-Identifier: GPL-2.0
- 
--Contents:
-+===================
-+DNS Resolver Module
-+===================
 +
-+.. Contents:
++=====================
++Softnet Driver Issues
++=====================
  
-  - Overview.
-  - Compilation.
-@@ -12,8 +14,7 @@ Contents:
-  - Debugging.
+ Transmit path guidelines:
  
+@@ -8,7 +12,7 @@ Transmit path guidelines:
+    transmit function will become busy.
  
--========
--OVERVIEW
-+Overview
- ========
+    Instead it must maintain the queue properly.  For example,
+-   for a driver implementing scatter-gather this means:
++   for a driver implementing scatter-gather this means::
  
- The DNS resolver module provides a way for kernel services to make DNS queries
-@@ -33,50 +34,50 @@ It does not yet support the following AFS features:
- This code is extracted from the CIFS filesystem.
+ 	static netdev_tx_t drv_hard_start_xmit(struct sk_buff *skb,
+ 					       struct net_device *dev)
+@@ -38,25 +42,25 @@ Transmit path guidelines:
+ 		return NETDEV_TX_OK;
+ 	}
  
+-   And then at the end of your TX reclamation event handling:
++   And then at the end of your TX reclamation event handling::
  
--===========
--COMPILATION
-+Compilation
- ===========
+ 	if (netif_queue_stopped(dp->dev) &&
+-            TX_BUFFS_AVAIL(dp) > (MAX_SKB_FRAGS + 1))
++	    TX_BUFFS_AVAIL(dp) > (MAX_SKB_FRAGS + 1))
+ 		netif_wake_queue(dp->dev);
  
--The module should be enabled by turning on the kernel configuration options:
-+The module should be enabled by turning on the kernel configuration options::
+-   For a non-scatter-gather supporting card, the three tests simply become:
++   For a non-scatter-gather supporting card, the three tests simply become::
  
- 	CONFIG_DNS_RESOLVER	- tristate "DNS Resolver support"
+ 		/* This is a hard error log it. */
+ 		if (TX_BUFFS_AVAIL(dp) <= 0)
  
+-   and:
++   and::
  
--==========
--SETTING UP
-+Setting up
- ==========
+ 		if (TX_BUFFS_AVAIL(dp) == 0)
  
- To set up this facility, the /etc/request-key.conf file must be altered so that
- /sbin/request-key can appropriately direct the upcalls.  For example, to handle
- basic dname to IPv4/IPv6 address resolution, the following line should be
--added:
-+added::
-+
+-   and:
++   and::
  
- 	#OP	TYPE		DESC	CO-INFO	PROGRAM ARG1 ARG2 ARG3 ...
- 	#======	============	=======	=======	==========================
- 	create	dns_resolver  	*	*	/usr/sbin/cifs.upcall %k
+ 	if (netif_queue_stopped(dp->dev) &&
+-            TX_BUFFS_AVAIL(dp) > 0)
++	    TX_BUFFS_AVAIL(dp) > 0)
+ 		netif_wake_queue(dp->dev);
  
- To direct a query for query type 'foo', a line of the following should be added
--before the more general line given above as the first match is the one taken.
-+before the more general line given above as the first match is the one taken::
+ 2) An ndo_start_xmit method must not modify the shared parts of a
+@@ -86,7 +90,7 @@ Close/stop guidelines:
  
- 	create	dns_resolver  	foo:*	*	/usr/sbin/dns.foo %k
+ 1) After the ndo_stop routine has been called, the hardware must
+    not receive or transmit any data.  All in flight packets must
+-   be aborted. If necessary, poll or wait for completion of 
++   be aborted. If necessary, poll or wait for completion of
+    any reset commands.
  
- 
--=====
--USAGE
-+Usage
- =====
- 
- To make use of this facility, one of the following functions that are
--implemented in the module can be called after doing:
-+implemented in the module can be called after doing::
- 
- 	#include <linux/dns_resolver.h>
- 
-- (1) int dns_query(const char *type, const char *name, size_t namelen,
--		   const char *options, char **_result, time_t *_expiry);
-+     ::
-+
-+	int dns_query(const char *type, const char *name, size_t namelen,
-+		     const char *options, char **_result, time_t *_expiry);
- 
-      This is the basic access function.  It looks for a cached DNS query and if
-      it doesn't find it, it upcalls to userspace to make a new DNS query, which
-      may then be cached.  The key description is constructed as a string of the
--     form:
-+     form::
- 
- 		[<type>:]<name>
- 
-@@ -107,16 +108,14 @@ This can be cleared by any process that has the CAP_SYS_ADMIN capability by
- the use of KEYCTL_KEYRING_CLEAR on the keyring ID.
- 
- 
--===============================
--READING DNS KEYS FROM USERSPACE
-+Reading DNS Keys from Userspace
- ===============================
- 
- Keys of dns_resolver type can be read from userspace using keyctl_read() or
- "keyctl read/print/pipe".
- 
- 
--=========
--MECHANISM
-+Mechanism
- =========
- 
- The dnsresolver module registers a key type called "dns_resolver".  Keys of
-@@ -147,11 +146,10 @@ See <file:Documentation/security/keys/request-key.rst> for further
- information about request-key function.
- 
- 
--=========
--DEBUGGING
-+Debugging
- =========
- 
- Debugging messages can be turned on dynamically by writing a 1 into the
--following file:
-+following file::
- 
--        /sys/module/dnsresolver/parameters/debug
-+	/sys/module/dnsresolver/parameters/debug
+ 2) The ndo_stop routine will be called by unregister_netdevice
 diff --git a/Documentation/networking/index.rst b/Documentation/networking/index.rst
-index 198851d45b26..68ddb023133c 100644
+index 68ddb023133c..b19188131d20 100644
 --- a/Documentation/networking/index.rst
 +++ b/Documentation/networking/index.rst
-@@ -50,6 +50,7 @@ Contents:
-    dctcp
+@@ -51,6 +51,7 @@ Contents:
     decnet
     defza
-+   dns_resolver
+    dns_resolver
++   driver
  
  .. only::  subproject and html
  
