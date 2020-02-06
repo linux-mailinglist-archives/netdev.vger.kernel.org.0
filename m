@@ -2,56 +2,111 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 7EB98154E35
-	for <lists+netdev@lfdr.de>; Thu,  6 Feb 2020 22:41:42 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 465D4154E41
+	for <lists+netdev@lfdr.de>; Thu,  6 Feb 2020 22:44:50 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727847AbgBFVll (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 6 Feb 2020 16:41:41 -0500
-Received: from mail2.candelatech.com ([208.74.158.173]:45814 "EHLO
-        mail3.candelatech.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727456AbgBFVll (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 6 Feb 2020 16:41:41 -0500
-Received: from [10.0.0.63] (unknown [118.127.122.146])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-        (No client certificate requested)
-        by mail3.candelatech.com (Postfix) with ESMTPSA id 1E69C137586
-        for <netdev@vger.kernel.org>; Thu,  6 Feb 2020 13:41:36 -0800 (PST)
-DKIM-Filter: OpenDKIM Filter v2.11.0 mail3.candelatech.com 1E69C137586
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=candelatech.com;
-        s=default; t=1581025297;
-        bh=WdV0CFrLdGTP0BxTXf8HToOupV0zmfOUldKbpGArzEk=;
-        h=Date:From:To:Subject:From;
-        b=hKRvGm95e1Ln5dBX4qxAy8E/QZBvOZ3990/kWZlKaA7nu6z2m6Ai2S3eUD93DFEzV
-         wzY5aed+lzEveepvN//eZJGBibQ3koIfBfWCbI65uC7mYoRkIMRkDf8GciSsIE3roM
-         Bb3qD3b1P7YjbQQLuNG/hP3AjymLVrblVp3ug/xI=
-Message-ID: <5E3C880F.1060708@candelatech.com>
-Date:   Thu, 06 Feb 2020 13:41:35 -0800
-From:   Ben Greear <greearb@candelatech.com>
-Organization: Candela Technologies
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:31.0) Gecko/20100101 Thunderbird/31.3.0
+        id S1727581AbgBFVos (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 6 Feb 2020 16:44:48 -0500
+Received: from mga04.intel.com ([192.55.52.120]:55693 "EHLO mga04.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726765AbgBFVos (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 6 Feb 2020 16:44:48 -0500
+X-Amp-Result: SKIPPED(no attachment in message)
+X-Amp-File-Uploaded: False
+Received: from orsmga008.jf.intel.com ([10.7.209.65])
+  by fmsmga104.fm.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 06 Feb 2020 13:44:47 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.70,411,1574150400"; 
+   d="scan'208";a="225156046"
+Received: from vcostago-desk1.jf.intel.com ([10.54.70.26])
+  by orsmga008.jf.intel.com with ESMTP; 06 Feb 2020 13:44:47 -0800
+From:   Vinicius Costa Gomes <vinicius.gomes@intel.com>
+To:     netdev@vger.kernel.org
+Cc:     Vinicius Costa Gomes <vinicius.gomes@intel.com>, jhs@mojatatu.com,
+        xiyou.wangcong@gmail.com, jiri@resnulli.us, davem@davemloft.net,
+        vladimir.oltean@nxp.com, po.liu@nxp.com
+Subject: [PATCH net v4 0/5] taprio: Some fixes
+Date:   Thu,  6 Feb 2020 13:46:05 -0800
+Message-Id: <20200206214610.1307191-1-vinicius.gomes@intel.com>
+X-Mailer: git-send-email 2.25.0
 MIME-Version: 1.0
-To:     netdev <netdev@vger.kernel.org>
-Subject: VRF:  Any good way to have DNS entry per VRF?
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello,
+Hi,
 
-While poking around with a libwebkit app, I realized I need a way to tell libwebkit to
-use a particular DNS address that makes sense to its specific VRF, not the global
-DNS address.
+Changes from v3:
+  - Replaced ENOTSUPP error code with EOPNOTSUPP (Jakub Kicinski);
+  - Added the missing policy validation for the flags netlink argument
+    (Jakub Kicinski);
+  - Fixed the destroy() flow to also destroy the priority to traffic
+    class mapping (David Miller);
+  - Fixed dropping packets when taprio offloading is used together
+    with ETF offloading (more on this below);
 
-I am loathe to try to patch something like libcares into webkit, so curious if there
-is some better way to have a DNS configured per VRF?
+Changes from v2:
+  - Squashed commits 2/3 and 3/3 into a single one (I think a single
+    commit is going to be easier to review);
+  - Removed an "improvement" that was causing changes in user visible
+    behavior;
 
-Thanks,
-Ben
+Changes from v1:
+  - Fixed ignoring the 'flags' argument when adding a new
+    instance (Vladimir Oltean);
+  - Changed the order of commits;
+
+Updated cover letter:
+
+One bit that might need some attention is the fix for not dropping all
+packets when taprio and ETF offloading are used, patch 5/5. The
+behavior when the fix is applied is that packets that have a 'txtime'
+that would fall outside of their transmission window are now dropped
+by taprio. The question that might be raised is: should taprio be
+responsible for dropping these packets, or should it be handled lower
+in the stack?
+
+My opinion is: taprio has all the information, and it's able to give
+feeback to the user. Lower in the stack, those packets might go into
+the void, and the only feedback could be a hard to find counter
+increasing.
+
+Patch 1/5: Reported by Po Liu, is more of a improvement of usability for
+drivers implementing offloading features, now they can rely on the
+value of dev->num_tc, instead of going through some hops to get this
+value.
+
+Patch 2/5: Use 'q->flags' as the source of truth for the offloading
+flags. Tries to solidify the current behavior, while avoiding going
+into invalid states, one of which was causing a "rcu stall" (more
+information in the commit message).
+
+Patch 3/5: Adds the missing netlink attribute validation for
+TCA_TAPRIO_ATTR_FLAGS.
+
+Patch 4/5: Replaces the usage of netdev_set_num_tc() with
+netdev_reset_tc() in taprio_destroy(), taprio_destroy() is called when
+applying a configuration fails, making sure that the device traffic
+class configuration goes back to the default state.
+
+@Vladimir: If possible, I would appreciate your Ack on patch 2/5. I
+have been looking at this code for so long that I might have missed
+something obvious (and my growing dislike for the word 'flags' may be
+affecting my judgement :-).
+
+
+Vinicius Costa Gomes (5):
+  taprio: Fix enabling offload with wrong number of traffic classes
+  taprio: Fix still allowing changing the flags during runtime
+  taprio: Add missing policy validation for flags
+  taprio: Use taprio_reset_tc() to reset Traffic Classes configuration
+  taprio: Fix dropping packets when using taprio + ETF offloading
+
+ net/sched/sch_taprio.c | 92 ++++++++++++++++++++++++++----------------
+ 1 file changed, 57 insertions(+), 35 deletions(-)
 
 -- 
-Ben Greear <greearb@candelatech.com>
-Candela Technologies Inc  http://www.candelatech.com
+2.25.0
 
