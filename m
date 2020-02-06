@@ -2,98 +2,78 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 7D78F154060
-	for <lists+netdev@lfdr.de>; Thu,  6 Feb 2020 09:35:46 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 580A01540D1
+	for <lists+netdev@lfdr.de>; Thu,  6 Feb 2020 10:03:12 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728063AbgBFIfo (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 6 Feb 2020 03:35:44 -0500
-Received: from mail-pl1-f193.google.com ([209.85.214.193]:39197 "EHLO
-        mail-pl1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728035AbgBFIfn (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 6 Feb 2020 03:35:43 -0500
-Received: by mail-pl1-f193.google.com with SMTP id g6so2057511plp.6;
-        Thu, 06 Feb 2020 00:35:42 -0800 (PST)
+        id S1728243AbgBFJDK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 6 Feb 2020 04:03:10 -0500
+Received: from mail-ed1-f48.google.com ([209.85.208.48]:42129 "EHLO
+        mail-ed1-f48.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726452AbgBFJDK (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 6 Feb 2020 04:03:10 -0500
+Received: by mail-ed1-f48.google.com with SMTP id e10so5081966edv.9
+        for <netdev@vger.kernel.org>; Thu, 06 Feb 2020 01:03:09 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=8JdIDcaQJOI9SGybGwtADbclwcv4lgbPyHvfU1VK7dI=;
-        b=sAkVj2qSLOauMRAerrVxhmeIk172Jj7DQKvID1xPnoA4fb8C3zQZyaEaE2wl4ZBpr4
-         ppIO7e1eWFkuBj5UGyGRkC8Ry06fKQOw3HPE+AiF1wrghI+nB1S/FbXt9q0/lamA49yL
-         AG6uSAQTJWxkztwucfi84BB3rROY8nIhY2uQy6yQY0jQJUHCV+s++5KXttozrJ7ERPRZ
-         T73xD0GhcXIN2Gvts9aZSczmhoZ1X0TNB2CZrIhtBLZwujAbSHytokuvx6Y6z9XusSRh
-         cwiHIDkXmEjoFdQHAOhxhm8MqDZ7yfOPt0Ty3DOjqndF2wPLWQ7ZfPEYpPBsoPq/oqbI
-         TvYA==
+        h=mime-version:from:date:message-id:subject:to;
+        bh=IXvMOQDlXmn4zH5JtxKFz1LCT4l0Wa8kDJCsvIosdkA=;
+        b=aexYpC5SegjeDJ2g7wxtIxNb57GQw/MksC4r4WmYa8skfsIHOmcLQ6NWUijfIw7Vdx
+         LKuaBgrZshanG/Vk0o/47gDR0IQ1lUZIveb8170nLOGGguzoGVsSiO/njFEM63prTahZ
+         QLoVF515qIfUGQd/fYgE3dkSUkzIKeBGqMTWGZW4j4obbyU/OFruUF2nNgVM05BWsmBK
+         V3xUlS6josgp+W9LiZHHDoTsJT5hvzDWNSg/WUSLe94C+3aeo3HePrzcWcZlQVn9l54j
+         HUsCLe3Z6PI7Gt41ahLCfLz4GrexkSqRPZr8mYmggz+vhIBDsVzqxirsmVTS6eCU/7Jy
+         nxng==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references;
-        bh=8JdIDcaQJOI9SGybGwtADbclwcv4lgbPyHvfU1VK7dI=;
-        b=iC2VWw3wF+kvjqHLfn50zQznJ0PD8YjPg/j2LNfFJbHZxl9T2G1+ZNbYw7C3qt+mnI
-         010Zkr4i3pyT05Riwj59DiWJrPxXJV5yUWYD23xlWy8Z4SjC72AjBIHWp5vPIjV3fyh/
-         ZHeEkMb6W0LuOtSOw1YJVmVHGLO3u2/eIWkKPyLqiJqtqHbBOhVWtzrAyi5wu1+jAUhg
-         W1QvPRS+vKGq1NKik3gUiXcxnRX+LFSKDTD1SSgwjWA/2vAafiJbbLmXeya13/cJniqt
-         rg5GVhZxrhwKzV31YjFwXQUG3I6zEwjS9+FDdJnV9RRHqjNo1DMKHlD0VhZVAthhe1jt
-         Onaw==
-X-Gm-Message-State: APjAAAUZuCk6BdBWfSEmDLD8xVTAF11YgmGeBeaOkGEYLj4Ot5Z33HqJ
-        Q9MBE3sTRtoSsHQDowUOOlFsRnGKImvyCQ==
-X-Google-Smtp-Source: APXvYqwFXqiefqXgeVl0QsFYZ4JnL1+CaMS7/D7VWCwFgj9+6+O5iq+l8BTONUyLLo+8bIx0EDtJTg==
-X-Received: by 2002:a17:90b:3d0:: with SMTP id go16mr2907497pjb.75.1580978142307;
-        Thu, 06 Feb 2020 00:35:42 -0800 (PST)
-Received: from localhost.localdomain ([124.156.165.26])
-        by smtp.gmail.com with ESMTPSA id 5sm2292070pfx.163.2020.02.06.00.35.40
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 06 Feb 2020 00:35:41 -0800 (PST)
-From:   Lingpeng Chen <forrest0579@gmail.com>
-To:     bpf <bpf@vger.kernel.org>
-Cc:     Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        John Fastabend <john.fastabend@gmail.com>,
-        "David S . Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
-        Lingpeng Chen <forrest0579@gmail.com>
-Subject: [PATCH bpf-next 2/2] bpf: Sync uapi bpf.h to tools/
-Date:   Thu,  6 Feb 2020 16:35:15 +0800
-Message-Id: <20200206083515.10334-3-forrest0579@gmail.com>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20200206083515.10334-1-forrest0579@gmail.com>
-References: <20200206083515.10334-1-forrest0579@gmail.com>
+        h=x-gm-message-state:mime-version:from:date:message-id:subject:to;
+        bh=IXvMOQDlXmn4zH5JtxKFz1LCT4l0Wa8kDJCsvIosdkA=;
+        b=UyaKmdZe/03qApLTkuVvgeHooVMnLhtZBdg/Al2n8naKoZM+wksFLebskHJIO0HfIS
+         Sboyc617+ssfRZDurLFQ942/6IqxtwvqbOzgsnPgk0IgdvaxM4knZ8ezjv29+qEJlrHo
+         W5D07MRYLIGQW8w8HW5Y3Oxfrp10+28wOHCnrv/YY9sDluL+sXv0RTDEpNYsm4R2xTlh
+         cRu12ez/qvVE8tZRWXbnE3ZbMxk2Myhk7RJw9Jr5RoJDD+4iG5F0EFDv01akuElQ3z4s
+         JAqtcWVvPXUP6te+/PlIA8s06ubOduqEwEhi9r9Q+emzH1GWpvwMAdMOMm1fBcEu4018
+         zrDg==
+X-Gm-Message-State: APjAAAU6Bagq1rDW0Gh/HhGKgCcQtt2jyqIXqG7IQzQiRuY1GOwgwZ3Q
+        CEwTkxFyyBRVJyq4b03zc+B4pm0vVFUUxG4rRnqfI7g5
+X-Google-Smtp-Source: APXvYqy9f9HodWFNyLmDW6oQvIaYs25qoo9xBaOtevGk9NJipmpsoJUKaHe9r81tRMwLj+KQsKa6se8YdLlrFOVlke4=
+X-Received: by 2002:a17:906:af99:: with SMTP id mj25mr2214953ejb.293.1580979788369;
+ Thu, 06 Feb 2020 01:03:08 -0800 (PST)
+MIME-Version: 1.0
+From:   Vladimir Oltean <olteanv@gmail.com>
+Date:   Thu, 6 Feb 2020 11:02:57 +0200
+Message-ID: <CA+h21hr4KsDCzEeLD5CtcdXMtY5pOoHGi7-Oig0-gmRKThG30A@mail.gmail.com>
+Subject: VLAN retagging for packets switched between 2 certain ports
+To:     netdev <netdev@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This patch sync uapi bpf.h to tools/.
+Hi netdev,
 
-Signed-off-by: Lingpeng Chen <forrest0579@gmail.com>
----
- tools/include/uapi/linux/bpf.h | 8 +++++++-
- 1 file changed, 7 insertions(+), 1 deletion(-)
+I am interested in modeling the following classifier/action with tc filters:
+- Match packets with VID N received on port A and going towards port B
+- Replace VID with M
 
-diff --git a/tools/include/uapi/linux/bpf.h b/tools/include/uapi/linux/bpf.h
-index f1d74a2bd234..b15a55051232 100644
---- a/tools/include/uapi/linux/bpf.h
-+++ b/tools/include/uapi/linux/bpf.h
-@@ -2892,6 +2892,11 @@ union bpf_attr {
-  *		Obtain the 64bit jiffies
-  *	Return
-  *		The 64 bit jiffies
-+ * u32 bpf_sock_ops_get_netns(struct bpf_sock_ops *bpf_socket)
-+ *  Description
-+ *      Obtain netns id of sock
-+ * Return
-+ *      The current netns inum
-  */
- #define __BPF_FUNC_MAPPER(FN)		\
- 	FN(unspec),			\
-@@ -3012,7 +3017,8 @@ union bpf_attr {
- 	FN(probe_read_kernel_str),	\
- 	FN(tcp_send_ack),		\
- 	FN(send_signal_thread),		\
--	FN(jiffies64),
-+	FN(jiffies64),		\
-+	FN(sock_ops_get_netns),
- 
- /* integer value in 'imm' field of BPF_CALL instruction selects which helper
-  * function eBPF program intends to call
--- 
-2.17.1
+Some hardware (DSA switch) I am working on supports this, so it would
+be good if I could model this with tc in a way that can be offloaded.
+In man tc-flower I found the following matches:
+       indev ifname
+              Match on incoming interface name. Obviously this makes
+sense only for forwarded flows.  ifname is the name of an interface
+which must exist at the time of tc invocation.
+       vlan_id VID
+              Match on vlan tag id.  VID is an unsigned 12bit value in
+decimal format.
 
+And there is a generic "vlan" action (man tc-vlan) that supports the
+"modify" command.
+
+Judging from this syntax, I would need to add a tc-flower rule on the
+egress qdisc of swpB, with indev swpA and vlan_id N.
+But what should I do if I need to do VLAN retagging towards the CPU
+(where DSA does not give me a hook for attaching tc filters)?
+
+Thanks,
+-Vladimir
