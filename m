@@ -2,85 +2,54 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 6474B154E46
-	for <lists+netdev@lfdr.de>; Thu,  6 Feb 2020 22:44:56 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id AF9BE154E69
+	for <lists+netdev@lfdr.de>; Thu,  6 Feb 2020 22:55:29 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727681AbgBFVou (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 6 Feb 2020 16:44:50 -0500
-Received: from mga04.intel.com ([192.55.52.120]:55694 "EHLO mga04.intel.com"
+        id S1727557AbgBFVzX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 6 Feb 2020 16:55:23 -0500
+Received: from frisell.zx2c4.com ([192.95.5.64]:55175 "EHLO frisell.zx2c4.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727658AbgBFVot (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 6 Feb 2020 16:44:49 -0500
-X-Amp-Result: SKIPPED(no attachment in message)
-X-Amp-File-Uploaded: False
-Received: from orsmga008.jf.intel.com ([10.7.209.65])
-  by fmsmga104.fm.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 06 Feb 2020 13:44:48 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.70,411,1574150400"; 
-   d="scan'208";a="225156057"
-Received: from vcostago-desk1.jf.intel.com ([10.54.70.26])
-  by orsmga008.jf.intel.com with ESMTP; 06 Feb 2020 13:44:47 -0800
-From:   Vinicius Costa Gomes <vinicius.gomes@intel.com>
-To:     netdev@vger.kernel.org
-Cc:     Vinicius Costa Gomes <vinicius.gomes@intel.com>, jhs@mojatatu.com,
-        xiyou.wangcong@gmail.com, jiri@resnulli.us, davem@davemloft.net,
-        vladimir.oltean@nxp.com, po.liu@nxp.com
-Subject: [PATCH net v4 5/5] taprio: Fix dropping packets when using taprio + ETF offloading
-Date:   Thu,  6 Feb 2020 13:46:10 -0800
-Message-Id: <20200206214610.1307191-6-vinicius.gomes@intel.com>
-X-Mailer: git-send-email 2.25.0
-In-Reply-To: <20200206214610.1307191-1-vinicius.gomes@intel.com>
-References: <20200206214610.1307191-1-vinicius.gomes@intel.com>
+        id S1726765AbgBFVzX (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 6 Feb 2020 16:55:23 -0500
+Received: by frisell.zx2c4.com (ZX2C4 Mail Server) with ESMTP id 76877a17;
+        Thu, 6 Feb 2020 21:54:14 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha1; c=relaxed; d=zx2c4.com; h=mime-version
+        :references:in-reply-to:from:date:message-id:subject:to:cc
+        :content-type; s=mail; bh=iEyYXoQeVJvL9VxBSqdINnENhik=; b=12M286
+        QcFw7FfPyXUco6JL08r7fRheSId3gtQL4kmvo3WK+hCB+kd0toeYc/mghSa19jwq
+        tIPpgmpmkSjxghjAKTrRHPzbF+vhLq2CNgcx4F2UPCLtwbZdqHcjZ/a3zrOnHBBv
+        KFzIu/HCMm72R2I2G7vvFXkOg0JF5+d3YDoGgl7E0i8nbREKFyvF/SAFeNA/sygr
+        aPZOqTaftwxalanM8Iv2JBkwwOrFMaVWMYb6VZg7RMHpfYCkBUggltYHBSDziYSq
+        J7Rpy1elZ2M1mlN72uIQlxvU33NrlwdeA25FIGa0Qx7pDoVLwGeG25eY71yw2/7W
+        I+ro8sh+UWoIEh7w==
+Received: by frisell.zx2c4.com (ZX2C4 Mail Server) with ESMTPSA id 3e4ade7e (TLSv1.2:ECDHE-RSA-AES256-GCM-SHA384:256:NO);
+        Thu, 6 Feb 2020 21:54:14 +0000 (UTC)
+Received: by mail-oi1-f173.google.com with SMTP id c16so6252794oic.3;
+        Thu, 06 Feb 2020 13:55:20 -0800 (PST)
+X-Gm-Message-State: APjAAAW2gXE9oxCaffzDOE4I9xsWxeiFYoXn3SDmBq4AoBTmWwEvMTuZ
+        A6ARu0WEO07l9dscrwKZRRvrKazNBVA3cFHR+CE=
+X-Google-Smtp-Source: APXvYqyEsdNrxjDdXuCYJDqUYruajj4xtoIZ5dk0Shwq1ewne2L7eFL197kHYxueoLyjEE5plCZkXk6x5VTXY0hNAgQ=
+X-Received: by 2002:aca:c383:: with SMTP id t125mr33887oif.122.1581026120166;
+ Thu, 06 Feb 2020 13:55:20 -0800 (PST)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <1580841629-7102-1-git-send-email-cai@lca.pw> <20200206163844.GA432041@zx2c4.com>
+ <453212cf-8987-9f05-ceae-42a4fc3b0876@gmail.com> <CAHmME9pGhQoY8MjR8uvEZpF66Y_DvReAjKBx8L4SRiqbL_9itw@mail.gmail.com>
+ <495f79f5-ae27-478a-2a1d-6d3fba2d4334@gmail.com> <20200206184340.GA494766@zx2c4.com>
+In-Reply-To: <20200206184340.GA494766@zx2c4.com>
+From:   "Jason A. Donenfeld" <Jason@zx2c4.com>
+Date:   Thu, 6 Feb 2020 22:55:08 +0100
+X-Gmail-Original-Message-ID: <CAHmME9oaPDNwXOAZSLRHQLawhRBPfgH4OewNBZH9Z_uL6BDDhA@mail.gmail.com>
+Message-ID: <CAHmME9oaPDNwXOAZSLRHQLawhRBPfgH4OewNBZH9Z_uL6BDDhA@mail.gmail.com>
+Subject: Re: [PATCH v3] skbuff: fix a data race in skb_queue_len()
+To:     Eric Dumazet <eric.dumazet@gmail.com>
+Cc:     cai@lca.pw, Netdev <netdev@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Marco Elver <elver@google.com>,
+        Dmitry Vyukov <dvyukov@google.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-When using taprio offloading together with ETF offloading, configured
-like this, for example:
-
-$ tc qdisc replace dev $IFACE parent root handle 100 taprio \
-  	num_tc 4 \
-        map 2 2 1 0 3 2 2 2 2 2 2 2 2 2 2 2 \
-	queues 1@0 1@1 1@2 1@3 \
-	base-time $BASE_TIME \
-	sched-entry S 01 1000000 \
-	sched-entry S 0e 1000000 \
-	flags 0x2
-
-$ tc qdisc replace dev $IFACE parent 100:1 etf \
-     	offload delta 300000 clockid CLOCK_TAI
-
-During enqueue, it works out that the verification added for the
-"txtime" assisted mode is run when using taprio + ETF offloading, the
-only thing missing is initializing the 'next_txtime' of all the cycle
-entries. (if we don't set 'next_txtime' all packets from SO_TXTIME
-sockets are dropped)
-
-Fixes: 4cfd5779bd6e ("taprio: Add support for txtime-assist mode")
-Signed-off-by: Vinicius Costa Gomes <vinicius.gomes@intel.com>
----
- net/sched/sch_taprio.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
-
-diff --git a/net/sched/sch_taprio.c b/net/sched/sch_taprio.c
-index 21df69071df2..660fc45ee40f 100644
---- a/net/sched/sch_taprio.c
-+++ b/net/sched/sch_taprio.c
-@@ -1522,9 +1522,9 @@ static int taprio_change(struct Qdisc *sch, struct nlattr *opt,
- 		goto unlock;
- 	}
- 
--	if (TXTIME_ASSIST_IS_ENABLED(q->flags)) {
--		setup_txtime(q, new_admin, start);
-+	setup_txtime(q, new_admin, start);
- 
-+	if (TXTIME_ASSIST_IS_ENABLED(q->flags)) {
- 		if (!oper) {
- 			rcu_assign_pointer(q->oper_sched, new_admin);
- 			err = 0;
--- 
-2.25.0
-
+Useful playground: https://godbolt.org/z/i7JFRW
