@@ -2,189 +2,99 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 9494B1547BC
-	for <lists+netdev@lfdr.de>; Thu,  6 Feb 2020 16:19:10 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A2EF1154819
+	for <lists+netdev@lfdr.de>; Thu,  6 Feb 2020 16:30:17 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727514AbgBFPTB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 6 Feb 2020 10:19:01 -0500
-Received: from mail-yw1-f65.google.com ([209.85.161.65]:33929 "EHLO
-        mail-yw1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727309AbgBFPS7 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 6 Feb 2020 10:18:59 -0500
-Received: by mail-yw1-f65.google.com with SMTP id b186so5257839ywc.1
-        for <netdev@vger.kernel.org>; Thu, 06 Feb 2020 07:18:59 -0800 (PST)
+        id S1727517AbgBFPaN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 6 Feb 2020 10:30:13 -0500
+Received: from mail-pl1-f194.google.com ([209.85.214.194]:45098 "EHLO
+        mail-pl1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725535AbgBFPaN (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 6 Feb 2020 10:30:13 -0500
+Received: by mail-pl1-f194.google.com with SMTP id b22so2468201pls.12;
+        Thu, 06 Feb 2020 07:30:11 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=TSwk4IaDhOhQXtmoQApXp+74uAkqXEfJhsHvhCiqDAo=;
-        b=mlit3AzwxAhFubp68BG/MUoGctFnaFsrd8YF6mmm0HS5m5UssFF/ADOmu8p5rDWnm4
-         tfUCOVp24AlzZ1yV9Hdp2DbMHLKZdKazm/UwvpcIc3dIfVSB6yr9Wx8msvfpQ9rd1eDR
-         ZLt8nbblKQtwS2FHNagladyiPkuUF/InCvDQsUqmyBhfO/wrT1DqQUJ0IQwVRDMYVDmM
-         AbXe5SgBzHJUtRjVg461+hzyuneNZnRuB8H5QDERV13Da/6u0FrpkzkXBEhg4t34OhnC
-         vDFewyNlWW4iS3zJ3WJMVHlijvJY4nDsC6lHyEM1tae3kgCcANcfW9+3RsQO8/PrJD+w
-         SpMA==
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=yvImeWdanhuXuKTpYgc+fUvWT1XXGf47f3QA3cS1IIo=;
+        b=rFy8JI1vDm33O8mChanZAaw9Ljfkv2cbVdDfPeB6ygWnADagveeIi5z8zmtsfjhtXk
+         tX/Hcd+yx6frFoD5raNVuvjk/3vnNIdFDP7R8yiJy2CxUbmqvk6e7GJoqIFIg2Byj4EA
+         XMSjcshvC9HFUwkmuc2dZP0x5lfcWssoZVFuunuHnSZEuTX5HfAQzUJjQIz+PQPbmwz8
+         GKRiviOt/4ZkcDTyuXqcrq3xuyinxw/KC2HxZAzjL+V+pTp1uHOJC7Tv01vRNfCYGtkK
+         4ATt7SzL7W7MvrYlowHvzlAmdqN+Y6UxmRwxpRZcHWZMlv4o6zEfEhISBxlAbX5xTxcC
+         dOAA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=TSwk4IaDhOhQXtmoQApXp+74uAkqXEfJhsHvhCiqDAo=;
-        b=YSrbLDMnr8ISwTPh3dR1O7PRyV+F9O2r86tGEKxeGzNAUvGX2icbni1qeleZxAInKk
-         RxmUTOsqLMuqf/i9T8jusR2S00oKIOwjMb4gqogjBqsyXsRV0ObORFMMC7P8qyDSnVx7
-         XnwE5/puGR3F62jC0LmrvsECr0Gjs1SNeO6bv2a2OuY0aJST8ANZ3PrdVlqdtJ+wHuIr
-         ssvCPEfRIVDVvYrxE9gFuZzZsB62B931cxJFuwDl+KPsFcDtAX3dnph7eXe8yDT4swFF
-         E7vHm4wonSBJUfnbIttfYQJ6pSAnRpGsfNXEdekWou31EsNtnSpc87XK4UEsdtRYxKu0
-         GaJg==
-X-Gm-Message-State: APjAAAWcgTCcdjkPYsuB9PZxjcbRXEb0/T1xxiEIc9+v6xEPvC0ke/j6
-        5k6tZ5v6WU9ODaS1U4lbtUXKpLBKGe+QmTdwOnK7Wg==
-X-Google-Smtp-Source: APXvYqwzT5tu09jrV2vAO+iJqrg6jtizcRaxPaetiuXo1gTRr7hORP/j92voheml5hY30dBvEQJm2Ho5gCirRduJia8=
-X-Received: by 2002:a81:7cd7:: with SMTP id x206mr3526094ywc.466.1581002338112;
- Thu, 06 Feb 2020 07:18:58 -0800 (PST)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=yvImeWdanhuXuKTpYgc+fUvWT1XXGf47f3QA3cS1IIo=;
+        b=W5FaGgSc4uM14xTgxh6A1HRuuUuaBdvnbvhxyWj8M3z2i+Yy5w/+b79J0DaTgNDx3O
+         fxt29EKy+XscdD4Ond4D3AlRflbtTaknIqrgEWLmaruNNeiH3gTUvPMk41rxx66EosQ5
+         yE0wC5UX7RmJm1awfN57BoEcQwvYWKkExUK87dJdo/8GKvqE3027YF2+JcVzG9SSu1dV
+         FH7vbXYWXgc59I1BPX6Ij9MfuBnMJxY8zfmodiBnurRuTc92DCrL7kXhFEq+uuFxTv+4
+         qxmxrHaRotDjnkEP4JndlTf/1mvbPkKD163PVNSd2qhB1n/ugBdfH+m2amAtvDPo+rme
+         Fe3Q==
+X-Gm-Message-State: APjAAAVLg9QE1vRpD8i3BEfHkCxTL/yX/NUAHmXus/BMjPyi7Nm3kDyf
+        7VE0h8A6iW5SbaEShn6dW/0=
+X-Google-Smtp-Source: APXvYqzpVmwc8UDf4PLytIuzNQu7ecLLGVgM3QijN3zs88b3yKr+R6UlvDt1Mn1NA3D4q/iXZ4uqmA==
+X-Received: by 2002:a17:90a:2ec5:: with SMTP id h5mr5063197pjs.79.1581003011165;
+        Thu, 06 Feb 2020 07:30:11 -0800 (PST)
+Received: from localhost (104.128.80.227.16clouds.com. [104.128.80.227])
+        by smtp.gmail.com with ESMTPSA id f43sm3879247pje.23.2020.02.06.07.30.08
+        (version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
+        Thu, 06 Feb 2020 07:30:10 -0800 (PST)
+From:   Dejin Zheng <zhengdejin5@gmail.com>
+To:     vkoul@kernel.org, peppe.cavallaro@st.com, alexandre.torgue@st.com,
+        joabreu@synopsys.com, davem@davemloft.net,
+        mcoquelin.stm32@gmail.com, niklas.cassel@linaro.org,
+        netdev@vger.kernel.org
+Cc:     linux-stm32@st-md-mailman.stormreply.com,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        Dejin Zheng <zhengdejin5@gmail.com>
+Subject: [PATCH v3] net: stmmac: fix a possible endless loop
+Date:   Thu,  6 Feb 2020 23:29:17 +0800
+Message-Id: <20200206152917.25564-1-zhengdejin5@gmail.com>
+X-Mailer: git-send-email 2.25.0
 MIME-Version: 1.0
-References: <20200205165544.242623-1-edumazet@google.com> <20200206.141300.1752448469848126511.davem@davemloft.net>
-In-Reply-To: <20200206.141300.1752448469848126511.davem@davemloft.net>
-From:   Eric Dumazet <edumazet@google.com>
-Date:   Thu, 6 Feb 2020 07:18:46 -0800
-Message-ID: <CANn89iLR8jR4L3ANiSBxuLoLFuUA5+SbJ06L3cW5-99i9=_yZQ@mail.gmail.com>
-Subject: Re: [PATCH net] ipv6/addrconf: fix potential NULL deref in inet6_set_link_af()
-To:     David Miller <davem@davemloft.net>
-Cc:     netdev <netdev@vger.kernel.org>,
-        Eric Dumazet <eric.dumazet@gmail.com>,
-        syzbot <syzkaller@googlegroups.com>, maximmi@mellanox.com
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Feb 6, 2020 at 5:13 AM David Miller <davem@davemloft.net> wrote:
->
-> From: Eric Dumazet <edumazet@google.com>
-> Date: Wed,  5 Feb 2020 08:55:44 -0800
->
-> > __in6_dev_get(dev) called from inet6_set_link_af() can return NULL.
-> >
-> > The needed check has been recently removed, let's add it back.
->
-> I am having trouble understanding this one.
->
-> When we have a do_setlink operation the flow is that we first validate
-> the AFs and then invoke setlink operations after that validation.
->
-> do_setlink() {
->  ..
->         err = validate_linkmsg(dev, tb);
->         if (err < 0)
->                 return err;
->  ..
->         if (tb[IFLA_AF_SPEC]) {
->  ...
->                         err = af_ops->set_link_af(dev, af);
->                         if (err < 0) {
->                                 rcu_read_unlock();
->                                 goto errout;
->                         }
->
-> By definition, we only get to ->set_link_af() if there is an
-> IFLA_AF_SPEC nested attribute and if we look at the validation
-> performed by validate_linkmsg() it goes:
->
->         if (tb[IFLA_AF_SPEC]) {
->  ...
->                         if (af_ops->validate_link_af) {
->                                 err = af_ops->validate_link_af(dev, af);
->  ...
->
-> And validate_link_af in net/ipv6/addrconf.c clearly does the
-> following:
->
-> static int inet6_validate_link_af(const struct net_device *dev,
->                                   const struct nlattr *nla)
->  ...
->         if (dev) {
->                 idev = __in6_dev_get(dev);
->                 if (!idev)
->                         return -EAFNOSUPPORT;
->         }
->  ...
->
-> It checks the idev and makes sure it is not-NULL.
->
-> I therefore cannot find a path by which we arrive at inet6_set_link_af
-> with a NULL idev.  The above validation code should trap it.
->
-> Please explain.
->
+It forgot to reduce the value of the variable retry in a while loop
+in the ethqos_configure() function. It may cause an endless loop and
+without timeout.
 
-I can give a repro if that helps.
+Fixes: a7c30e62d4b8 ("net: stmmac: Add driver for Qualcomm ethqos")
+Signed-off-by: Dejin Zheng <zhengdejin5@gmail.com>
+Acked-by: Vinod Koul <vkoul@kernel.org>
+---
 
-(I have to run, I might have more time later)
+Hi David, I'm so sorry for that.
 
-// autogenerated by syzkaller (https://github.com/google/syzkaller)
+v3:
+remove an empty line between Fixes and other tags.
 
-#define _GNU_SOURCE
+v2:
+add an appropriate Fixes tag.
 
-#include <endian.h>
-#include <stdint.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <sys/syscall.h>
-#include <sys/types.h>
-#include <unistd.h>
+ drivers/net/ethernet/stmicro/stmmac/dwmac-qcom-ethqos.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-#define BITMASK(bf_off, bf_len) (((1ull << (bf_len)) - 1) << (bf_off))
-#define STORE_BY_BITMASK(type, htobe, addr, val, bf_off, bf_len)               \
-  *(type*)(addr) =                                                             \
-      htobe((htobe(*(type*)(addr)) & ~BITMASK((bf_off), (bf_len))) |           \
-            (((type)(val) << (bf_off)) & BITMASK((bf_off), (bf_len))))
+diff --git a/drivers/net/ethernet/stmicro/stmmac/dwmac-qcom-ethqos.c b/drivers/net/ethernet/stmicro/stmmac/dwmac-qcom-ethqos.c
+index 7ec895407d23..e0a5fe83d8e0 100644
+--- a/drivers/net/ethernet/stmicro/stmmac/dwmac-qcom-ethqos.c
++++ b/drivers/net/ethernet/stmicro/stmmac/dwmac-qcom-ethqos.c
+@@ -413,6 +413,7 @@ static int ethqos_configure(struct qcom_ethqos *ethqos)
+ 			dll_lock = rgmii_readl(ethqos, SDC4_STATUS);
+ 			if (dll_lock & SDC4_STATUS_DLL_LOCK)
+ 				break;
++			retry--;
+ 		} while (retry > 0);
+ 		if (!retry)
+ 			dev_err(&ethqos->pdev->dev,
+-- 
+2.25.0
 
-uint64_t r[1] = {0xffffffffffffffff};
-
-int main(void)
-{
-  syscall(__NR_mmap, 0x20000000ul, 0x1000000ul, 3ul, 0x32ul, -1, 0);
-  intptr_t res = 0;
-  res = syscall(__NR_socket, 0x10ul, 3ul, 0ul);
-  if (res != -1)
-    r[0] = res;
-  *(uint64_t*)0x20000080 = 0;
-  *(uint32_t*)0x20000088 = 0;
-  *(uint64_t*)0x20000090 = 0x20000200;
-  *(uint64_t*)0x20000200 = 0x20000000;
-  *(uint32_t*)0x20000000 = 0x40;
-  *(uint16_t*)0x20000004 = 0x10;
-  *(uint16_t*)0x20000006 = 0x801;
-  *(uint32_t*)0x20000008 = 0;
-  *(uint32_t*)0x2000000c = 0;
-  *(uint8_t*)0x20000010 = 0;
-  *(uint8_t*)0x20000011 = 0;
-  *(uint16_t*)0x20000012 = 0;
-  *(uint32_t*)0x20000014 = 0;
-  *(uint32_t*)0x20000018 = 0;
-  *(uint32_t*)0x2000001c = 0;
-  *(uint16_t*)0x20000020 = 0x10;
-  STORE_BY_BITMASK(uint16_t, , 0x20000022, 0x1a, 0, 14);
-  STORE_BY_BITMASK(uint16_t, , 0x20000023, 0, 6, 1);
-  STORE_BY_BITMASK(uint16_t, , 0x20000023, 1, 7, 1);
-  *(uint16_t*)0x20000024 = 0xc;
-  STORE_BY_BITMASK(uint16_t, , 0x20000026, 0xa, 0, 14);
-  STORE_BY_BITMASK(uint16_t, , 0x20000027, 0, 6, 1);
-  STORE_BY_BITMASK(uint16_t, , 0x20000027, 1, 7, 1);
-  *(uint16_t*)0x20000028 = 5;
-  *(uint16_t*)0x2000002a = 8;
-  *(uint8_t*)0x2000002c = 0;
-  *(uint16_t*)0x20000030 = 8;
-  *(uint16_t*)0x20000032 = 0x1b;
-  *(uint32_t*)0x20000034 = 0;
-  *(uint16_t*)0x20000038 = 8;
-  *(uint16_t*)0x2000003a = 4;
-  *(uint32_t*)0x2000003c = 0x3ff;
-  *(uint64_t*)0x20000208 = 0x40;
-  *(uint64_t*)0x20000098 = 1;
-  *(uint64_t*)0x200000a0 = 0;
-  *(uint64_t*)0x200000a8 = 0;
-  *(uint32_t*)0x200000b0 = 0x54;
-  syscall(__NR_sendmsg, r[0], 0x20000080ul, 0ul);
-  return 0;
-}
