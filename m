@@ -2,56 +2,63 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 7A9781549F7
-	for <lists+netdev@lfdr.de>; Thu,  6 Feb 2020 18:07:05 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9FD50154A0C
+	for <lists+netdev@lfdr.de>; Thu,  6 Feb 2020 18:10:41 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727788AbgBFRG5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 6 Feb 2020 12:06:57 -0500
-Received: from mo4-p00-ob.smtp.rzone.de ([85.215.255.22]:35466 "EHLO
-        mo4-p00-ob.smtp.rzone.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727060AbgBFRG4 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 6 Feb 2020 12:06:56 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; t=1581008815;
-        s=strato-dkim-0002; d=hartkopp.net;
-        h=In-Reply-To:Date:Message-ID:From:References:To:Subject:
-        X-RZG-CLASS-ID:X-RZG-AUTH:From:Subject:Sender;
-        bh=Xekbzm1y2eWDWsDBv6FcjQ0BHpS6U3SXQC6QFTLcRj0=;
-        b=bodMkOqa9AHbl4fMPWmMPbQ4F7vmhA2GU0dVZ/+Y3J8CrjgZChOsIEDq5e6yfCi98g
-        9PLwQgVG+7DjjVxQ89NK1OCg3zzA3h+MpUI0M++/i/WjGZh6E85OoEl2+g9obfvGMXgF
-        IBmEpQUGVgBd393VE6sEYWh4RLI8hLapPS7CGWL8Z1I8A1t95NIKZk3IYK/+I5MdrqJq
-        U9FZEdU7EL3RZfgppwoSvoKPh5DvfDo3DnMdy9tJD3DZCy8YiXuBuyC676I+hjyQnx2y
-        nFYX0S6C82Qkh4cMGSW1tpZ7fxW90iRse1Fm0wuc4nCs0ZErHJApRVn56TOheaZY2cNL
-        Q6wA==
-X-RZG-AUTH: ":P2MHfkW8eP4Mre39l357AZT/I7AY/7nT2yrDxb8mjG14FZxedJy6qgO1o3PMaViOoLMJU8h6kUuM"
-X-RZG-CLASS-ID: mo00
-Received: from [192.168.1.177]
-        by smtp.strato.de (RZmta 46.1.12 DYNA|AUTH)
-        with ESMTPSA id g084e8w16H6oKc1
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256 bits))
-        (Client did not present a certificate);
-        Thu, 6 Feb 2020 18:06:50 +0100 (CET)
-Subject: Re: [BUG] pfifo_fast may cause out-of-order CAN frame transmission
-To:     Paolo Abeni <pabeni@redhat.com>,
-        Ahmad Fatoum <a.fatoum@pengutronix.de>, netdev@vger.kernel.org,
-        linux-can@vger.kernel.org,
-        Pengutronix Kernel Team <kernel@pengutronix.de>
-References: <661cc33a-5f65-2769-cc1a-65791cb4b131@pengutronix.de>
- <7717e4470f6881bbc92645c72ad7f6ec71360796.camel@redhat.com>
- <779d3346-0344-9064-15d5-4d565647a556@pengutronix.de>
- <1b70f56b72943bf5dfd2813565373e8c1b639c31.camel@redhat.com>
- <53ce1ab4-3346-2367-8aa5-85a89f6897ec@pengutronix.de>
- <57a2352dfc442ea2aa9cd653f8e09db277bf67c7.camel@redhat.com>
- <b012e914-fc1a-5a45-f28b-e9d4d4dfc0fe@pengutronix.de>
- <ef6b4e00-75fe-70f6-6b57-7bdbaa1aac33@pengutronix.de>
- <13e8950e8537e549f6afb6e254ec75a7462ce648.camel@redhat.com>
-From:   Oliver Hartkopp <socketcan@hartkopp.net>
-Message-ID: <5e9b81f5-018d-0680-2d0b-55ff3bfb978f@hartkopp.net>
-Date:   Thu, 6 Feb 2020 18:06:44 +0100
+        id S1727747AbgBFRKh (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 6 Feb 2020 12:10:37 -0500
+Received: from mail-pj1-f65.google.com ([209.85.216.65]:56067 "EHLO
+        mail-pj1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727440AbgBFRKh (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 6 Feb 2020 12:10:37 -0500
+Received: by mail-pj1-f65.google.com with SMTP id d5so235870pjz.5;
+        Thu, 06 Feb 2020 09:10:36 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=7+lAwSYC8iTX7zrUHCptKd74zLe4G6IoJxg7yC+WSMw=;
+        b=IlZd8Ec2CeQUIMo7JKROxECgERL2W7KqbQy9dwxtSVyxmj93wckSPexLQn8vAZfnxu
+         J7/RGwzUnnmkGEhvN1mxMbYEd1f+Frd39o+YPP5MeafHniRmjuqpp6FsfEkijzMMvAZR
+         l+jyyy0UUcVjpLktAWrHKC0uPiVJ7wnZfnXOaFaTgXlUhgBEWCCEbwF+Lob5Tt7aclu2
+         T8pu+TsX/ciwqv78yDab1ogSeoRSYgDgleCDxEUTu+ASdaOnoUQxURCA10PrV1Xkn9Uu
+         gaarc6K9R3nMu3GsPseBdYC8NQxpW5saqmouwXb7FfCIFWUJ7e4JwEpduQ2kvPYMjwax
+         J85Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=7+lAwSYC8iTX7zrUHCptKd74zLe4G6IoJxg7yC+WSMw=;
+        b=nkcvPTRKUE8mAL419gJCPXRcAc2PnTrtQVY6b84QJdy5q3seHO1piMStjGRB2X9kR/
+         rxF1fbFxow96+FQIK9fSyWx9xBwhomRd+ut+/E2UNXO3WB3RNFBPbMX2R5qoei7vU+d5
+         A2QS0dWPXP2ys/mbQR9cWXs4sCA+6ESUVazhFBvGIgL1Jz0KqnKpqVBJLIVa4bbyqH9O
+         fTBZ5WKYoKBDx1jEGsLFG0wqUUJmXVuJdtwEhixpqeilDL16jCOdHKFZvHU+V9PovCWT
+         Nm6exgx5h2u/z+lStBybWnzYF+HZkee74gGUzkbXQN5Zib9Zxd8pn1JIZASNVJIPXaU/
+         6YJQ==
+X-Gm-Message-State: APjAAAVi2nAQhKQBaXemSiPSubmcENP3Zv9qOQxvAv5KUx6wBS/mWjTa
+        5vA4QYvvyop3odksDQOp1O0=
+X-Google-Smtp-Source: APXvYqwp6YfS5qUU3b7hVaaDpvcsi7uYY+1y8VNhzJSn4CjyUw2P62KTa/pOo0hsVTWBAqMoXCS/gw==
+X-Received: by 2002:a17:90a:7307:: with SMTP id m7mr5699761pjk.75.1581009036305;
+        Thu, 06 Feb 2020 09:10:36 -0800 (PST)
+Received: from ?IPv6:2620:15c:2c1:200:55c7:81e6:c7d8:94b? ([2620:15c:2c1:200:55c7:81e6:c7d8:94b])
+        by smtp.gmail.com with ESMTPSA id d4sm4131894pjg.19.2020.02.06.09.10.34
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 06 Feb 2020 09:10:35 -0800 (PST)
+Subject: Re: [PATCH v3] skbuff: fix a data race in skb_queue_len()
+To:     "Jason A. Donenfeld" <Jason@zx2c4.com>, eric.dumazet@gmail.com
+Cc:     cai@lca.pw, netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Marco Elver <elver@google.com>
+References: <1580841629-7102-1-git-send-email-cai@lca.pw>
+ <20200206163844.GA432041@zx2c4.com>
+From:   Eric Dumazet <eric.dumazet@gmail.com>
+Message-ID: <453212cf-8987-9f05-ceae-42a4fc3b0876@gmail.com>
+Date:   Thu, 6 Feb 2020 09:10:34 -0800
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.4.1
+ Thunderbird/68.2.2
 MIME-Version: 1.0
-In-Reply-To: <13e8950e8537e549f6afb6e254ec75a7462ce648.camel@redhat.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
+In-Reply-To: <20200206163844.GA432041@zx2c4.com>
+Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
@@ -59,44 +66,40 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Paolo,
 
-On 06/02/2020 14.21, Paolo Abeni wrote:
-> On Tue, 2020-02-04 at 17:25 +0100, Ahmad Fatoum wrote:
->> Hello Paolo,
->>
->> On 1/20/20 5:06 PM, Ahmad Fatoum wrote:
->>> Hello Paolo,
->>>
->>> On 1/16/20 1:40 PM, Paolo Abeni wrote:
->>>> I'm sorry for this trial & error experience. I tried to reproduce the
->>>> issue on top of the vcan virtual device, but it looks like it requires
->>>> the timing imposed by a real device, and it's missing here (TL;DR: I
->>>> can't reproduce the issue locally).
->>>
->>> No worries. I don't mind testing.
->>>
->>>> Code wise, the 2nd patch closed a possible race, but it dumbly re-
->>>> opened the one addressed by the first attempt - the 'empty' field must
->>>> be cleared prior to the trylock operation, or we may end-up with such
->>>> field set and the queue not empty.
->>>>
->>>> So, could you please try the following code?
->>>
->>> Unfortunately, I still see observe reodering.
->>
->> Any news?
+
+On 2/6/20 8:38 AM, Jason A. Donenfeld wrote:
+> Hi Eric,
 > 
-> I'm unable to find any better solution than a revert. That will cost
-> some small performace regression, so I'm a bit reluctant to go ahead.
-> If there is agreement I can post the revert.
+> On Tue, Feb 04, 2020 at 01:40:29PM -0500, Qian Cai wrote:
+>> -	list->qlen--;
+>> +	WRITE_ONCE(list->qlen, list->qlen - 1);
+> 
+> Sorry I'm a bit late to the party here, but this immediately jumped out.
+> This generates worse code with a bigger race in some sense:
+> 
+> list->qlen-- is:
+> 
+>    0:   83 6f 10 01             subl   $0x1,0x10(%rdi)
+> 
+> whereas WRITE_ONCE(list->qlen, list->qlen - 1) is:
+> 
+>    0:   8b 47 10                mov    0x10(%rdi),%eax
+>    3:   83 e8 01                sub    $0x1,%eax
+>    6:   89 47 10                mov    %eax,0x10(%rdi)
+> 
+> Are you sure that's what we want?
+> 
+> Jason
+> 
 
-Is it possible that the current pfifo_fast handling has some additional 
-problems:
 
-https://marc.info/?l=linux-netdev&m=158092393613669&w=2
+Unfortunately we do not have ADD_ONCE() or something like that.
 
-Or is this unrelated?
+Sure, on x86 we could get much better code generation.
 
-Best,
-Oliver
+If we agree a READ_ONCE() was needed at the read side,
+then a WRITE_ONCE() is needed as well on write sides.
+
+If we believe load-tearing and/or write-tearing must not ever happen,
+then we must document this.
