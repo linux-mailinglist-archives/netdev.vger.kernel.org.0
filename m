@@ -2,54 +2,53 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id E764B155CA1
-	for <lists+netdev@lfdr.de>; Fri,  7 Feb 2020 18:11:03 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 68E28155CB1
+	for <lists+netdev@lfdr.de>; Fri,  7 Feb 2020 18:17:41 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727047AbgBGRK7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 7 Feb 2020 12:10:59 -0500
-Received: from mail-lj1-f196.google.com ([209.85.208.196]:32810 "EHLO
-        mail-lj1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726897AbgBGRK7 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 7 Feb 2020 12:10:59 -0500
-Received: by mail-lj1-f196.google.com with SMTP id y6so107674lji.0
-        for <netdev@vger.kernel.org>; Fri, 07 Feb 2020 09:10:58 -0800 (PST)
+        id S1727012AbgBGRRj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 7 Feb 2020 12:17:39 -0500
+Received: from mail-lj1-f193.google.com ([209.85.208.193]:34235 "EHLO
+        mail-lj1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726897AbgBGRRj (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 7 Feb 2020 12:17:39 -0500
+Received: by mail-lj1-f193.google.com with SMTP id x7so124424ljc.1
+        for <netdev@vger.kernel.org>; Fri, 07 Feb 2020 09:17:38 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=linaro.org; s=google;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=kHZ6O3yZLVjr/z8fh4b0NIHRATY9dkwE1ZXn4+1qxmE=;
-        b=DSrPBFU89WipvBFWDiBmx1WEfiNz+QcRasIkw0wuHAcsdY2yl/E8Va/dvrOsEis6nU
-         ll7iO7+BXahC5Wo35n+CMC/ZJB0BzkIBDQ6bz2oNfA/FfNyePShEo2IjGJMgHw34we6c
-         5ENqo4hbOu356FJCONM9PE3UF4X0c5eevOtFWuYJXogW+JEC2BZHyd0R3ME22fbUS4wT
-         +sb9wAS2ouuVh7BYly3TCt/391WbB/K3G6bQ90SeHhqyV0gFMGdZpz9qdnibj2WOgQu0
-         SPXFPFM3/TPol8Ju+QZsxciJrkYc66/7jrqn/cig1FoJoN7DwxG4mD5ex1K+QSUtP3a9
-         DjCg==
+        bh=+3Iqkt4MVXjWZGBV015Jcs9RMmQrhCpmKzo2XOdRy6s=;
+        b=zEKd6yGScHa2K0iECeZbhO0XjWI99X5SJjftT/fmqcLVLMycCQJ+7QU2JFU/KEmSym
+         xV3/luzzPlLjt/pCbk9ATk8QEahfIkoGWHKpAMAYcSlIyH9PJrvXsFoiJlAnW+9KFkyL
+         Hm6k8LS5YXlk43jRVp0OCuV8DWva5V5Egqq92jZ2rC4pYON9frYAaPqc1Xnz9pY64MU0
+         H45p0C579NYh/nxhJ1B2VKLVMaBkdtTyqAR21G06y8664XAn8/lBqTBDFOhBGcKBcFW8
+         LiadacqrX/7RaTlE8AfMkldn/alfMwoEvcKzbMx2YnZmxsyzrg50ldS7n7RFXP7ZF3HA
+         Aa0g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=kHZ6O3yZLVjr/z8fh4b0NIHRATY9dkwE1ZXn4+1qxmE=;
-        b=hh3LSrGd20pOIQxu0ng6mxwfiX9DZq4j1hIXUFhWpoa9Li/niVZcNYX4JOzvihBWNP
-         UyotxTrF15laZSGTThExcl0CUFZGB0lZXDGQ536XEi6N6kwQP0wxC7Pd4zVZ5CzQD91Y
-         pRHpeN4SRcwrVT0gn16nL2wdnUtct/bwmh9X53shK2+8wB0B8Uh75BOMpDOv4sC2+Miu
-         h8IqYnJ0+EI7lt0koXwiS8tLEn79NrK71CLsVCLbKICyq6N5Q7CFgolRafr34ibV7Gig
-         lH7gD86cXk3VcouSe8ZrKpiwDvDgDt1hbM6PqsRbhKeG6Xrv7mKd1VjCpD9RdXU00IZY
-         n5DA==
-X-Gm-Message-State: APjAAAVzDqmqshFo5QjBR/+c+noMCF4x+IdwloiRdZPfv/qN/CQjmn0w
-        lFFwNJIav/dSTXyJoSUZ6GJDyleIxAApwtrIiSKi1w==
-X-Google-Smtp-Source: APXvYqwIYH+HqZ0Lmzv1e+jykQ7bGnALdVo7BFeDQLK5lJfgzAzGTSciQR870PQ0CA55rMLcBTKI8lLCBo6ykwscAmg=
-X-Received: by 2002:a2e:81c3:: with SMTP id s3mr147514ljg.168.1581095457580;
- Fri, 07 Feb 2020 09:10:57 -0800 (PST)
+        bh=+3Iqkt4MVXjWZGBV015Jcs9RMmQrhCpmKzo2XOdRy6s=;
+        b=SapqyhX+cliiyAIWn/qDzNO+d5cySE9bSSaSwhaWs/I44m6E8IhDy2LPx4Tcdzv2dp
+         MZfS4dL3E1E7cCukLyiWYnB6oNL8NAngUuDpSXWKSu5paPbCv9p5+GRjGAmYtKWrMLnx
+         QJ+0KGTtzBSB0fjba+xQ85jnUO7wH5Jlo5HrmRWbEtdx4O60u3jVC+3xaIpzUoV12RQq
+         UGLT7PRlYVlpbkxIDr6w1deVOr5vD37NriXigTcMmruYvrhvz8U3/5aMcR/to7vTYy49
+         B7+fOCExpu4YYoR90p+B+fLWZewv7jHU1Wx2Ye16nc5Zifpoe440AIvyzPwfa4AOTj3W
+         oq+Q==
+X-Gm-Message-State: APjAAAWTfhtlzpUDtRcXSE79ql2gDWK5cSYXM7z32veqIoDxVOIjmPsq
+        UxanClpZsmRqNQdiVlpYCWHuNpcI6jTUsdd/x9p5vQ==
+X-Google-Smtp-Source: APXvYqyzv/j2Eu5b+5c1brAZEyAJvaN5OVlyXbW5amY0PgYq0jfxHZX/4J5eB7zvR7Ut2RgG4CuzIXEW9LjxaMgTG/4=
+X-Received: by 2002:a2e:7d0c:: with SMTP id y12mr155054ljc.39.1581095857258;
+ Fri, 07 Feb 2020 09:17:37 -0800 (PST)
 MIME-Version: 1.0
-References: <20191211214852.26317-1-christopher.s.hall@intel.com> <20191211214852.26317-6-christopher.s.hall@intel.com>
-In-Reply-To: <20191211214852.26317-6-christopher.s.hall@intel.com>
+References: <20191211214852.26317-1-christopher.s.hall@intel.com>
+In-Reply-To: <20191211214852.26317-1-christopher.s.hall@intel.com>
 From:   Linus Walleij <linus.walleij@linaro.org>
-Date:   Fri, 7 Feb 2020 18:10:46 +0100
-Message-ID: <CACRpkdbi7q5Vr2Lt12eirs3Z8GLL2AuLLrAARCHkYEYgKbYkHg@mail.gmail.com>
-Subject: Re: [Intel PMC TGPIO Driver 5/5] drivers/ptp: Add PMC Time-Aware GPIO Driver
-To:     christopher.s.hall@intel.com,
-        Mika Westerberg <mika.westerberg@linux.intel.com>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Date:   Fri, 7 Feb 2020 18:17:26 +0100
+Message-ID: <CACRpkdbQ-o0NOLzQK3Jb06wx2u62ik2xv1Q8UNpN_SMmGhgVXg@mail.gmail.com>
+Subject: Re: [Intel PMC TGPIO Driver 0/5] Add support for Intel PMC Time GPIO
+ Driver with PHC interface changes to support additional H/W Features
+To:     christopher.s.hall@intel.com
 Cc:     netdev <netdev@vger.kernel.org>,
         "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
         Thomas Gleixner <tglx@linutronix.de>,
@@ -64,70 +63,23 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Christopher,
+On Fri, Jan 31, 2020 at 7:40 AM <christopher.s.hall@intel.com> wrote:
 
-thanks for your patch!
-
-On Fri, Jan 31, 2020 at 7:41 AM <christopher.s.hall@intel.com> wrote:
-
-> From: Christopher Hall <christopher.s.hall@intel.com>
->
-> Add support for PMC Time-Aware GPIO (TGPIO) hardware that is present on
-> upcoming Intel platforms. The hardware logic is driven by the ART clock.
-> The current hardware has two GPIO pins. Input interrupts are not
-> implemented in hardware.
->
-> The driver implements to the expanded PHC interface. Input requires use of
-> the user-polling interface. Also, since the ART clock can't be adjusted,
-> modulating the output frequency uses the edge timestamp interface
-> (EVENT_COUNT_TSTAMP2) and the PEROUT2 ioctl output frequency adjustment
+> The TGPIO hardware doesn't implement interrupts. For TGPIO input, the
+> output edge-timestamp API is re-used to implement a user-space polling
 > interface.
->
-> Acknowledgment: Portions of the driver code were authored by Felipe
-> Balbi <balbi@kernel.org>
->
-> Signed-off-by: Christopher Hall <christopher.s.hall@intel.com>
 
-This driver becomes a big confusion for the GPIO maintainer...
+It you modeled it reusing the GPIO subsystem (which I don't know if
+you can) you would get access to the gpiochip character device
+/dev/gpiochipN and be able to read timestamped events like
+the tool in tools/gpio/gpio-event-mon.c does.
 
-> +config PTP_INTEL_PMC_TGPIO
-> +       tristate "Intel PMC Timed GPIO"
-> +       depends on X86
-> +       depends on ACPI
-> +       depends on PTP_1588_CLOCK
-(...)
-> +#include <linux/gpio.h>
+That said I am still confused about what this driver does or what the
+purpose is.
 
-Don't use this header in new code, use <linux/gpio/driver.h>
+GPIO pins in or out? Network coming in or going out using PTP?
 
-But it looks like you should just drop it because there is no GPIO
-of that generic type going on at all?
-
-> +/* Control Register */
-> +#define TGPIOCTL_EN                    BIT(0)
-> +#define TGPIOCTL_DIR                   BIT(1)
-> +#define TGPIOCTL_EP                    GENMASK(3, 2)
-> +#define TGPIOCTL_EP_RISING_EDGE                (0 << 2)
-> +#define TGPIOCTL_EP_FALLING_EDGE       (1 << 2)
-> +#define TGPIOCTL_EP_TOGGLE_EDGE                (2 << 2)
-> +#define TGPIOCTL_PM                    BIT(4)
-
-OK this looks like some GPIO registers...
-
-Then there is a bunch of PTP stuff I don't understand I suppose
-related to the precision time protocol.
-
-Could you explain to a simple soul like me what is going on?
-Should I bother myself with this or is this "some other GPIO,
-not what you work on" or could it be that it's something I should
-review?
-
-I get the impression that this so-called "general purpose I/O"
-isn't very general purpose at all, it seems to be very PTP-purpose
-rather, so this confusion needs to be explained in the commit
-message and possibly in the code as well.
-
-What is it for really?
+What is the use case?
 
 Yours,
 Linus Walleij
