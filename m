@@ -2,82 +2,151 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 6DD6E156155
-	for <lists+netdev@lfdr.de>; Fri,  7 Feb 2020 23:38:33 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0DB2D156161
+	for <lists+netdev@lfdr.de>; Fri,  7 Feb 2020 23:56:17 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727076AbgBGWib convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Fri, 7 Feb 2020 17:38:31 -0500
-Received: from mga11.intel.com ([192.55.52.93]:34024 "EHLO mga11.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727031AbgBGWib (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 7 Feb 2020 17:38:31 -0500
-X-Amp-Result: SKIPPED(no attachment in message)
-X-Amp-File-Uploaded: False
-Received: from fmsmga006.fm.intel.com ([10.253.24.20])
-  by fmsmga102.fm.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 07 Feb 2020 14:38:31 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.70,415,1574150400"; 
-   d="scan'208";a="432721170"
-Received: from fmsmsx108.amr.corp.intel.com ([10.18.124.206])
-  by fmsmga006.fm.intel.com with ESMTP; 07 Feb 2020 14:38:31 -0800
-Received: from fmsmsx601.amr.corp.intel.com (10.18.126.81) by
- FMSMSX108.amr.corp.intel.com (10.18.124.206) with Microsoft SMTP Server (TLS)
- id 14.3.439.0; Fri, 7 Feb 2020 14:38:31 -0800
-Received: from fmsmsx602.amr.corp.intel.com (10.18.126.82) by
- fmsmsx601.amr.corp.intel.com (10.18.126.81) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.1713.5; Fri, 7 Feb 2020 14:38:30 -0800
-Received: from fmsmsx602.amr.corp.intel.com ([10.18.126.82]) by
- fmsmsx602.amr.corp.intel.com ([10.18.126.82]) with mapi id 15.01.1713.004;
- Fri, 7 Feb 2020 14:38:30 -0800
-From:   "Bowers, AndrewX" <andrewx.bowers@intel.com>
-To:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "intel-wired-lan@lists.osuosl.org" <intel-wired-lan@lists.osuosl.org>
-Subject: RE: [Intel-wired-lan] [PATCH net] ice: Fix a couple off by one bugs
-Thread-Topic: [Intel-wired-lan] [PATCH net] ice: Fix a couple off by one bugs
-Thread-Index: AQHV1/L6QFkGydHjFE2oQ+RqQ75FIqgQXpFg
-Date:   Fri, 7 Feb 2020 22:38:30 +0000
-Message-ID: <4d2cb89e16e44f619e45d6470ce4b1c4@intel.com>
-References: <20200131045658.ahliv7jvubpwoeru@kili.mountain>
-In-Reply-To: <20200131045658.ahliv7jvubpwoeru@kili.mountain>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-dlp-product: dlpe-windows
-x-ctpclassification: CTP_NT
-x-titus-metadata-40: eyJDYXRlZ29yeUxhYmVscyI6IiIsIk1ldGFkYXRhIjp7Im5zIjoiaHR0cDpcL1wvd3d3LnRpdHVzLmNvbVwvbnNcL0ludGVsMyIsImlkIjoiNjU2MTVhMjktOWE0Yi00NjA5LWJkOTMtMWExNTk0ZTk2MWE1IiwicHJvcHMiOlt7Im4iOiJDVFBDbGFzc2lmaWNhdGlvbiIsInZhbHMiOlt7InZhbHVlIjoiQ1RQX05UIn1dfV19LCJTdWJqZWN0TGFiZWxzIjpbXSwiVE1DVmVyc2lvbiI6IjE3LjEwLjE4MDQuNDkiLCJUcnVzdGVkTGFiZWxIYXNoIjoiRzhUc09tNkRiQmpLSWk4dDd4SjhLNVZxTGV3WStCdEtJRUdHSHZTNHpBZ1lkVGdwMlZiWjMwM2Vxc0xZSkY4OSJ9
-dlp-reaction: no-action
-dlp-version: 11.0.400.15
-x-originating-ip: [10.22.254.132]
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 8BIT
+        id S1727162AbgBGW4P (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 7 Feb 2020 17:56:15 -0500
+Received: from www62.your-server.de ([213.133.104.62]:60546 "EHLO
+        www62.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727048AbgBGW4P (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 7 Feb 2020 17:56:15 -0500
+Received: from 192.42.7.85.dynamic.wline.res.cust.swisscom.ch ([85.7.42.192] helo=localhost)
+        by www62.your-server.de with esmtpsa (TLSv1.2:DHE-RSA-AES256-GCM-SHA384:256)
+        (Exim 4.89_1)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1j0CXe-0002dv-DW; Fri, 07 Feb 2020 23:56:06 +0100
+From:   Daniel Borkmann <daniel@iogearbox.net>
+To:     davem@davemloft.net
+Cc:     kuba@kernel.org, daniel@iogearbox.net, ast@kernel.org,
+        netdev@vger.kernel.org, bpf@vger.kernel.org
+Subject: pull-request: bpf 2020-02-07
+Date:   Fri,  7 Feb 2020 23:56:05 +0100
+Message-Id: <20200207225605.19411-1-daniel@iogearbox.net>
+X-Mailer: git-send-email 2.21.0
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+X-Authenticated-Sender: daniel@iogearbox.net
+X-Virus-Scanned: Clear (ClamAV 0.101.4/25717/Fri Feb  7 12:45:15 2020)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> -----Original Message-----
-> From: Intel-wired-lan [mailto:intel-wired-lan-bounces@osuosl.org] On
-> Behalf Of Dan Carpenter
-> Sent: Thursday, January 30, 2020 8:57 PM
-> To: Kirsher, Jeffrey T <jeffrey.t.kirsher@intel.com>; Nguyen, Anthony L
-> <anthony.l.nguyen@intel.com>
-> Cc: netdev@vger.kernel.org; kernel-janitors@vger.kernel.org; intel-wired-
-> lan@lists.osuosl.org; David S. Miller <davem@davemloft.net>
-> Subject: [Intel-wired-lan] [PATCH net] ice: Fix a couple off by one bugs
-> 
-> The hw->blk[blk]->es.ref_count[] array has hw->blk[blk].es.count elements.
-> It gets allocated in ice_init_hw_tbls().  So the > should be
-> >= to prevent accessing one element beyond the end of the array.
-> 
-> Fixes: 2c61054c5fda ("ice: Optimize table usage")
-> Signed-off-by: Dan Carpenter <dan.carpenter@oracle.com>
-> ---
->  drivers/net/ethernet/intel/ice/ice_flex_pipe.c | 4 ++--
->  1 file changed, 2 insertions(+), 2 deletions(-)
+Hi David,
 
-Tested-by: Andrew Bowers <andrewx.bowers@intel.com>
+The following pull-request contains BPF updates for your *net* tree.
 
+We've added 15 non-merge commits during the last 10 day(s) which contain
+a total of 12 files changed, 114 insertions(+), 31 deletions(-).
 
+The main changes are:
+
+1) Various BPF sockmap fixes related to RCU handling in the map's tear-
+   down code, from Jakub Sitnicki.
+
+2) Fix macro state explosion in BPF sk_storage map when calculating its
+   bucket_log on allocation, from Martin KaFai Lau.
+
+3) Fix potential BPF sockmap update race by rechecking socket's established
+   state under lock, from Lorenz Bauer.
+
+4) Fix crash in bpftool on missing xlated instructions when kptr_restrict
+   sysctl is set, from Toke Høiland-Jørgensen.
+
+5) Fix i40e's XSK wakeup code to return proper error in busy state and
+   various misc fixes in xdpsock BPF sample code, from Maciej Fijalkowski.
+
+6) Fix the way modifiers are skipped in BTF in the verifier while walking
+   pointers to avoid program rejection, from Alexei Starovoitov.
+
+7) Fix Makefile for runqslower BPF tool to i) rebuild on libbpf changes and
+   ii) to fix undefined reference linker errors for older gcc version due to
+   order of passed gcc parameters, from Yulia Kartseva and Song Liu.
+
+8) Fix a trampoline_count BPF kselftest warning about missing braces around
+   initializer, from Andrii Nakryiko.
+
+9) Fix up redundant "HAVE" prefix from large INSN limit kernel probe in
+   bpftool, from Michal Rostecki.
+
+Please consider pulling these changes from:
+
+  git://git.kernel.org/pub/scm/linux/kernel/git/bpf/bpf.git
+
+Thanks a lot!
+
+Also thanks to reporters, reviewers and testers of commits in this pull-request:
+
+Alexei Starovoitov, Andrii Nakryiko, Björn Töpel, Cameron Elliott, Jakub 
+Sitnicki, John Fastabend, Luc Van Oostenryck, Quentin Monnet, Randy 
+Dunlap, Yonghong Song
+
+----------------------------------------------------------------
+
+The following changes since commit 44efc78d0e464ce70b45b165c005f8bedc17952e:
+
+  net: mvneta: fix XDP support if sw bm is used as fallback (2020-01-29 13:57:59 +0100)
+
+are available in the Git repository at:
+
+  git://git.kernel.org/pub/scm/linux/kernel/git/bpf/bpf.git 
+
+for you to fetch changes up to 88d6f130e5632bbf419a2e184ec7adcbe241260b:
+
+  bpf: Improve bucket_log calculation logic (2020-02-07 23:01:41 +0100)
+
+----------------------------------------------------------------
+Alexei Starovoitov (1):
+      bpf: Fix modifier skipping logic
+
+Andrii Nakryiko (1):
+      selftests/bpf: Fix trampoline_count.c selftest compilation warning
+
+Daniel Borkmann (1):
+      Merge branch 'bpf-xsk-fixes'
+
+Jakub Sitnicki (3):
+      bpf, sockmap: Don't sleep while holding RCU lock on tear-down
+      bpf, sockhash: Synchronize_rcu before free'ing map
+      selftests/bpf: Test freeing sockmap/sockhash with a socket in it
+
+Lorenz Bauer (1):
+      bpf, sockmap: Check update requirements after locking
+
+Maciej Fijalkowski (3):
+      i40e: Relax i40e_xsk_wakeup's return value when PF is busy
+      samples: bpf: Drop doubled variable declaration in xdpsock
+      samples: bpf: Allow for -ENETDOWN in xdpsock
+
+Martin KaFai Lau (2):
+      bpf: Reuse log from btf_prase_vmlinux() in btf_struct_ops_init()
+      bpf: Improve bucket_log calculation logic
+
+Michal Rostecki (1):
+      bpftool: Remove redundant "HAVE" prefix from the large INSN limit check
+
+Song Liu (1):
+      tools/bpf/runqslower: Rebuild libbpf.a on libbpf source change
+
+Toke Høiland-Jørgensen (1):
+      bpftool: Don't crash on missing xlated program instructions
+
+Yulia Kartseva (1):
+      runqslower: Fix Makefile
+
+ drivers/net/ethernet/intel/i40e/i40e_xsk.c         |  2 +-
+ include/linux/bpf.h                                |  7 +-
+ kernel/bpf/bpf_struct_ops.c                        |  5 +-
+ kernel/bpf/btf.c                                   | 10 ++-
+ net/core/bpf_sk_storage.c                          |  5 +-
+ net/core/sock_map.c                                | 28 +++++---
+ samples/bpf/xdpsock_user.c                         |  4 +-
+ tools/bpf/bpftool/feature.c                        |  2 +-
+ tools/bpf/bpftool/prog.c                           |  2 +-
+ tools/bpf/runqslower/Makefile                      |  4 +-
+ .../selftests/bpf/prog_tests/sockmap_basic.c       | 74 ++++++++++++++++++++++
+ .../selftests/bpf/prog_tests/trampoline_count.c    |  2 +-
+ 12 files changed, 114 insertions(+), 31 deletions(-)
+ create mode 100644 tools/testing/selftests/bpf/prog_tests/sockmap_basic.c
