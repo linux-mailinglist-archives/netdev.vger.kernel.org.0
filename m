@@ -2,98 +2,72 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 35B7D1553A1
-	for <lists+netdev@lfdr.de>; Fri,  7 Feb 2020 09:18:29 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 90E62155475
+	for <lists+netdev@lfdr.de>; Fri,  7 Feb 2020 10:23:21 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726674AbgBGIS1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 7 Feb 2020 03:18:27 -0500
-Received: from mx0b-00082601.pphosted.com ([67.231.153.30]:46056 "EHLO
-        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1726130AbgBGISZ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 7 Feb 2020 03:18:25 -0500
-Received: from pps.filterd (m0001303.ppops.net [127.0.0.1])
-        by m0001303.ppops.net (8.16.0.42/8.16.0.42) with SMTP id 0178ILAt005106
-        for <netdev@vger.kernel.org>; Fri, 7 Feb 2020 00:18:24 -0800
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
- : date : message-id : mime-version : content-type; s=facebook;
- bh=4Bi3KKebGuwnCE2Wg3lcOsgdfWSKZzYEtvmsq2RBMGk=;
- b=Uogcjo4LvDnIiF0T3bNBBnVG5Ojx68QW8/h2BsrlIJj1ybBXC0oWTTqKvTTJ8ha8WsFj
- i5LcK9+FIqicTsBGBXaiTaxHrAAXXJ20lEbOkDmEOQR8eKJYQ9oAs+ayNpoKfB7cWxPI
- jVOyZdfrpaoWXOrmzezPlxDgO2+HuxRXWxs= 
-Received: from mail.thefacebook.com ([163.114.132.120])
-        by m0001303.ppops.net with ESMTP id 2y0exsdtts-7
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT)
-        for <netdev@vger.kernel.org>; Fri, 07 Feb 2020 00:18:24 -0800
-Received: from intmgw001.08.frc2.facebook.com (2620:10d:c085:108::4) by
- mail.thefacebook.com (2620:10d:c085:21d::5) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.1779.2; Fri, 7 Feb 2020 00:18:19 -0800
-Received: by devbig005.ftw2.facebook.com (Postfix, from userid 6611)
-        id E8B982944F9C; Fri,  7 Feb 2020 00:18:10 -0800 (PST)
-Smtp-Origin-Hostprefix: devbig
-From:   Martin KaFai Lau <kafai@fb.com>
-Smtp-Origin-Hostname: devbig005.ftw2.facebook.com
-To:     <bpf@vger.kernel.org>
-CC:     Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        David Miller <davem@davemloft.net>, <kernel-team@fb.com>,
-        Linus Torvalds <torvalds@linux-foundation.org>,
-        Linux-Sparse <linux-sparse@vger.kernel.org>,
-        Luc Van Oostenryck <luc.vanoostenryck@gmail.com>,
-        <netdev@vger.kernel.org>, Randy Dunlap <rdunlap@infradead.org>
-Smtp-Origin-Cluster: ftw2c04
-Subject: [PATCH bpf] bpf: Improve bucket_log calculation logic
-Date:   Fri, 7 Feb 2020 00:18:10 -0800
-Message-ID: <20200207081810.3918919-1-kafai@fb.com>
-X-Mailer: git-send-email 2.17.1
-X-FB-Internal: Safe
+        id S1727231AbgBGJXT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 7 Feb 2020 04:23:19 -0500
+Received: from mail-qk1-f195.google.com ([209.85.222.195]:46663 "EHLO
+        mail-qk1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726417AbgBGJXT (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 7 Feb 2020 04:23:19 -0500
+Received: by mail-qk1-f195.google.com with SMTP id g195so1491615qke.13
+        for <netdev@vger.kernel.org>; Fri, 07 Feb 2020 01:23:19 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:from:date:message-id:subject:to;
+        bh=jJmFys6DJKYsOoH1phcej3qH7MryyOGdPz+diPwZY3A=;
+        b=CX9zVaUeCJe0qHVLyhMnRSVB3Wy2ASa+s0wT+zpn7KwMPKg/kFqo5mZDU3keLlc+JP
+         x0PpfwFdZ5Y1VoP//qVPyKWkO0wk95JPI3+EgIPKeRSx0XNR+yWHI6Y35slzQUGBnA5L
+         CAU7f4Z7hDba9xX/ibv6Ba0G4Y2GgIVnKcw7n70pLRqpA7HGMTXmYPxPmDAS6h2MOQxk
+         g5CtZO5YxXh3MHopdTC2lZXs0uC5ou3qbn1wA7pYEHR/FxkSSLZnIy8bAnjQIc4AgTWX
+         PM1sMbbD6ShZlzDkP5cxWawt1ZitCx9xAjpCvE4TeBWOCi3v8YiB7bjTDfCX+HtiMME6
+         v0oA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:from:date:message-id:subject:to;
+        bh=jJmFys6DJKYsOoH1phcej3qH7MryyOGdPz+diPwZY3A=;
+        b=iiTZiiOIx6sLrCJ84zJQiEvrPBf0T41Kk0ivnuh1vsnHUA4WcekMtKNu55bc888nuY
+         ICzKcIfGuZ71OBF+tSvr58HmYJ5chvWlp6i7A+Kax46LlWSYYd5Ya8XNXIfgFp8K8HPm
+         ghsA/GcfiGwHhT1IWxbTJK1FaETTDdE7QjSBy5GNl9W6+x6f/qEDPlu34gJ0S+3hnFGF
+         4sIewLApL2v0RMfAIrCkpNz5xZP14YzzDk6mvFtycfH1TF0el1tJj+3D/tvQwO+q8Gkq
+         65o8Mus2oYCxU94Y3McBMAiv9YXsBD36dOBbnuvlIwbrhIEwcVms+8vRqKztU3JToe7c
+         B+qA==
+X-Gm-Message-State: APjAAAUqg5aUtJeGuFii0Ai24Iyx1xyN2dU5NfADKIEd02Ty7K7rdrjc
+        goFt3f+osTPVuy4naNLGD0khjw1dLYqhaH8pZgw=
+X-Google-Smtp-Source: APXvYqybjdGXY7Bc4WfBxt374dz8sPBDlxS5bL0ulQD3HAa4sVz1u57TK7dFf4R7hLqTAT3UnkRntQ051jWLhfQGJlM=
+X-Received: by 2002:a37:85c6:: with SMTP id h189mr5913072qkd.385.1581067398538;
+ Fri, 07 Feb 2020 01:23:18 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.138,18.0.572
- definitions=2020-02-06_04:2020-02-06,2020-02-06 signatures=0
-X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 adultscore=0
- lowpriorityscore=0 malwarescore=0 priorityscore=1501 mlxlogscore=719
- impostorscore=0 bulkscore=0 spamscore=0 suspectscore=13 phishscore=0
- mlxscore=0 clxscore=1015 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2001150001 definitions=main-2002070063
-X-FB-Internal: deliver
+Received: by 2002:ac8:73cf:0:0:0:0:0 with HTTP; Fri, 7 Feb 2020 01:23:18 -0800 (PST)
+From:   "PAUL HARRY." <avocatslawfirmoffice@gmail.com>
+Date:   Fri, 7 Feb 2020 10:23:18 +0100
+Message-ID: <CALdFchbJ9ZEFD+5Js07ovdVc-z7mBpUcXUz7vp9zhiwhrrVJCQ@mail.gmail.com>
+Subject: Re: PLEASE GET BACK TO ME AS SOON AS POSSIBLE.
+To:     undisclosed-recipients:;
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-It was reported that the max_t, ilog2, and roundup_pow_of_two macros have
-exponential effects on the number of states in the sparse checker.
-
-This patch breaks them up by calculating the "nbuckets" first so
-that the "bucket_log" only needs to take ilog2().
-
-Fixes: 6ac99e8f23d4 ("bpf: Introduce bpf sk local storage")
-Reported-by: Randy Dunlap <rdunlap@infradead.org>
-Reported-by: Luc Van Oostenryck <luc.vanoostenryck@gmail.com>
-Suggested-by: Linus Torvalds <torvalds@linux-foundation.org>
-Signed-off-by: Martin KaFai Lau <kafai@fb.com>
----
- net/core/bpf_sk_storage.c | 5 +++--
- 1 file changed, 3 insertions(+), 2 deletions(-)
-
-diff --git a/net/core/bpf_sk_storage.c b/net/core/bpf_sk_storage.c
-index 458be6b3eda9..3ab23f698221 100644
---- a/net/core/bpf_sk_storage.c
-+++ b/net/core/bpf_sk_storage.c
-@@ -643,9 +643,10 @@ static struct bpf_map *bpf_sk_storage_map_alloc(union bpf_attr *attr)
- 		return ERR_PTR(-ENOMEM);
- 	bpf_map_init_from_attr(&smap->map, attr);
- 
-+	nbuckets = roundup_pow_of_two(num_possible_cpus());
- 	/* Use at least 2 buckets, select_bucket() is undefined behavior with 1 bucket */
--	smap->bucket_log = max_t(u32, 1, ilog2(roundup_pow_of_two(num_possible_cpus())));
--	nbuckets = 1U << smap->bucket_log;
-+	nbuckets = max_t(u32, 2, nbuckets);
-+	smap->bucket_log = ilog2(nbuckets);
- 	cost = sizeof(*smap->buckets) * nbuckets + sizeof(*smap);
- 
- 	ret = bpf_map_charge_init(&smap->map.memory, cost);
 -- 
-2.17.1
-
+Hello good friend,
+ Have nice happy days dear, I hope for you and for your family the
+best health and top happiness, may The God blesses you and your people
+too with great mercies upon you, I am very pleased to communicate with
+your Excellency again my dear. I'm Paul Harry, a lawyer. Late Mr.
+Alberto, a gold merchant who was my client, died as a result of lung
+cancer without a will, now I want to present your name to late Mr.
+Alberto, bank so that money left behind by late Mr. Alberto, can be
+transferred into your account through my help. The amount of US$ 10.5
+million deposited in a local bank here, by late Mr. Alberto before his
+death on November 23, 2013, I need your information so that I can show
+you the bank as next of kin to Late Mr. Alberto for further process.
+Please provide name and full address, your age, profession and
+position, address and mobile number for contact purposes. I shall be
+waiting for your urgent response. Finally my eventual gratitude with
+great thanks, hoping always the great smart dealing, God blesses you
+and your entire household
+Greetings;
+Advocate Paul Harry.
