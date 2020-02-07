@@ -2,150 +2,121 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 428161550C7
-	for <lists+netdev@lfdr.de>; Fri,  7 Feb 2020 03:50:55 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8CEB3155175
+	for <lists+netdev@lfdr.de>; Fri,  7 Feb 2020 05:12:01 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727123AbgBGCux (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 6 Feb 2020 21:50:53 -0500
-Received: from mail-yb1-f195.google.com ([209.85.219.195]:45048 "EHLO
-        mail-yb1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726597AbgBGCux (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 6 Feb 2020 21:50:53 -0500
-Received: by mail-yb1-f195.google.com with SMTP id f21so539071ybg.11
-        for <netdev@vger.kernel.org>; Thu, 06 Feb 2020 18:50:52 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=N2/eEddJboKlMpWv2Is9YXJEKE2PZFszlgqn0u17YU0=;
-        b=LVhLlCdRJBhCeYshGu5vhGXQ4HgD9IdBlsVDWa7m02DajeYSwc2xBPtfokh0SUrjg4
-         Hkts1odemrOrWyDxvUEwzHucDofd1XKBZJQDyFWYZwvisy/CWe2Fr4ezVT1+eINvGpks
-         DVAVxcphdicHP8Rkgr9Nd2NBV+l7cLJX46NEr2hQUwSaHjUClg1PU1ezdeRQcgfM6WJ4
-         CNypeVngUe7qbouKomavdPRf1441OQ/XZqhITFd7qnHj9EBFc5UDj+5dV7VBYxnrXGSg
-         WXF/JhoSk/SrJweg55M/AugdU7aJJNBlLBGNDdnD48ajtHYZmS47OSXOAFcyrCFK6ZzG
-         wAzw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=N2/eEddJboKlMpWv2Is9YXJEKE2PZFszlgqn0u17YU0=;
-        b=WqC25JyL7hjKwKKeZ+w5OZP2hAFx9FiQ8vCMdsu5+mPPFMcC+iDDAjtqYqrR6QO2KD
-         Cbg07ToxvEfq5gNcuaTaL4CrXA4gZUyo/lB70/ffviNsvapEhn4AstiO4oCLwDx1V2vr
-         uxAO5UzQYP4ZSg4rXMfsytAkfFLxcyz6RX6Sh6a/bO2roIwKBOoTlwxOOVFyOaa9BFL8
-         xwDnj8z615UNNZRLhXiluZdWgDte5nhpXP90B4sidH/M9E9qX71BaNyJtcS1Y4PgdvK9
-         9JS0iNmSrZ7JdE/cBS9DleH5M7k+gtMju+za/34vA/GuyQfhpD0SMYVotB/8r7KQ0YMa
-         VggA==
-X-Gm-Message-State: APjAAAX68IXaYawVF1y3YIbF1WuB039MifLp28aIpDzgl8zG0pA38aeN
-        RFySlrLypO4uZVHyNw5ImC54LE9ZW0sRhzx58SbbIg==
-X-Google-Smtp-Source: APXvYqwT00OocyPpK6xpxGZQiYjk/TEuCpmnfERvJSnT0F/We72/JQCHPhm9EjAJgCY4ysPzd8aU0Uvd96+BR1rVtps=
-X-Received: by 2002:a25:1c45:: with SMTP id c66mr2433763ybc.101.1581043852009;
- Thu, 06 Feb 2020 18:50:52 -0800 (PST)
+        id S1727390AbgBGEL5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 6 Feb 2020 23:11:57 -0500
+Received: from userp2130.oracle.com ([156.151.31.86]:44672 "EHLO
+        userp2130.oracle.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726674AbgBGEL5 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 6 Feb 2020 23:11:57 -0500
+Received: from pps.filterd (userp2130.oracle.com [127.0.0.1])
+        by userp2130.oracle.com (8.16.0.27/8.16.0.27) with SMTP id 01744AWp173421;
+        Fri, 7 Feb 2020 04:11:41 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=date : from : to : cc
+ : subject : message-id : mime-version : content-type : in-reply-to;
+ s=corp-2020-01-29; bh=Uzkw3Dme7vW7Do23tVP5PYKy5jL7rEfCTSz69KsQAfo=;
+ b=vOes9tracP3bVQJ89vQaoG54tzEphz8IRfXYLTy3UuH0PQo98O3d9HlpcO1Ht5aAExxN
+ nwSDKJeFwunWt5cUgAHV2hrPkamK3Z9u9Mi/h4iacueveGQoV31RERzHfR6Itz7n/47e
+ jqE1i1Hb+RS9dEp54ZBIENw/LuIEqD1ml+Y5DVPtK54325riVZeXaHVXCjkwmDmiurx0
+ Szhg+hVQp79OslyPEdFbLFPX6phS2LQHj0pHzWJIGHMoF0wzf1N+ua8v03DlWawCBNV6
+ Kvl8Ds3AyfXUNZG9r3UesQvhTkndjhZdq5Y8DpodUkfXZ67zcBLLtMyhkzInby4tu0YW 7g== 
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=date : from : to : cc
+ : subject : message-id : mime-version : content-type : in-reply-to;
+ s=corp-2019-08-05; bh=Uzkw3Dme7vW7Do23tVP5PYKy5jL7rEfCTSz69KsQAfo=;
+ b=VW7WjaSY90j7fbjERaJfocVgcic9L5fqjjvgzWPqx1DgLBVB+PmdZ3TI2vUEOp5sbTlY
+ +8+/yfe9lkVP1XPTaBSvofxEK7o/g3RY4iyFo6qtejtZg6dK9fVSVM4yqHISTGn69TGD
+ e3TpSBwCk8VmcApvPT6WisiwNGOV08s7lRHyrapq9ouqRVJ/DmVWRm5OvnCmBYJpiNPI
+ hRtGAMLODI7rncwvR1U96S6NbwG9YGWIZvp/uyY9ClAJY1VchTbDNKrIOBXuJ3gaTMei
+ wI8TY0KuBJ94KwNHRjFt7RFo51iwA4zmnnyPXygFUt9RlKhuCCizYLc0QT9kqEqggnxd ig== 
+Received: from userp3020.oracle.com (userp3020.oracle.com [156.151.31.79])
+        by userp2130.oracle.com with ESMTP id 2xykbpdm9b-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Fri, 07 Feb 2020 04:11:40 +0000
+Received: from pps.filterd (userp3020.oracle.com [127.0.0.1])
+        by userp3020.oracle.com (8.16.0.27/8.16.0.27) with SMTP id 01744JrK137490;
+        Fri, 7 Feb 2020 04:11:40 GMT
+Received: from userv0121.oracle.com (userv0121.oracle.com [156.151.31.72])
+        by userp3020.oracle.com with ESMTP id 2y0jg0ejcv-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Fri, 07 Feb 2020 04:11:40 +0000
+Received: from abhmp0020.oracle.com (abhmp0020.oracle.com [141.146.116.26])
+        by userv0121.oracle.com (8.14.4/8.13.8) with ESMTP id 0174BZCZ019805;
+        Fri, 7 Feb 2020 04:11:36 GMT
+Received: from kadam (/129.205.23.165)
+        by default (Oracle Beehive Gateway v4.0)
+        with ESMTP ; Thu, 06 Feb 2020 20:11:34 -0800
+Date:   Fri, 7 Feb 2020 07:11:23 +0300
+From:   Dan Carpenter <dan.carpenter@oracle.com>
+To:     kbuild@lists.01.org, Kai-Heng Feng <kai.heng.feng@canonical.com>
+Cc:     kbuild-all@lists.01.org, davem@davemloft.ne, mkubecek@suse.cz,
+        jeffrey.t.kirsher@intel.com,
+        "open list:NETWORKING DRIVERS" <netdev@vger.kernel.org>,
+        Kai-Heng Feng <kai.heng.feng@canonical.com>,
+        "moderated list:INTEL ETHERNET DRIVERS" 
+        <intel-wired-lan@lists.osuosl.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        open list <linux-kernel@vger.kernel.org>
+Subject: Re: [Intel-wired-lan] [PATCH v2 1/2] igb: Use device_lock() insead
+ of rtnl_lock()
+Message-ID: <20200207041123.GO24804@kadam>
 MIME-Version: 1.0
-References: <20200205165544.242623-1-edumazet@google.com> <20200206.141300.1752448469848126511.davem@davemloft.net>
- <CANn89iLR8jR4L3ANiSBxuLoLFuUA5+SbJ06L3cW5-99i9=_yZQ@mail.gmail.com>
-In-Reply-To: <CANn89iLR8jR4L3ANiSBxuLoLFuUA5+SbJ06L3cW5-99i9=_yZQ@mail.gmail.com>
-From:   Eric Dumazet <edumazet@google.com>
-Date:   Thu, 6 Feb 2020 18:50:40 -0800
-Message-ID: <CANn89iLb-OcdVCV+qNH7BEUjw3KtEPhhOM_XUyyJaWbhA5=dQw@mail.gmail.com>
-Subject: Re: [PATCH net] ipv6/addrconf: fix potential NULL deref in inet6_set_link_af()
-To:     David Miller <davem@davemloft.net>
-Cc:     netdev <netdev@vger.kernel.org>,
-        Eric Dumazet <eric.dumazet@gmail.com>,
-        syzbot <syzkaller@googlegroups.com>, maximmi@mellanox.com
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20200205081616.18378-1-kai.heng.feng@canonical.com>
+User-Agent: Mutt/1.9.4 (2018-02-28)
+X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9523 signatures=668685
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 suspectscore=0 malwarescore=0
+ phishscore=0 bulkscore=0 spamscore=0 mlxscore=0 mlxlogscore=999
+ adultscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.0.1-1911140001 definitions=main-2002070025
+X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9523 signatures=668685
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 priorityscore=1501 malwarescore=0
+ suspectscore=0 phishscore=0 bulkscore=0 spamscore=0 clxscore=1011
+ lowpriorityscore=0 mlxscore=0 impostorscore=0 mlxlogscore=999 adultscore=0
+ classifier=spam adjust=0 reason=mlx scancount=1 engine=8.0.1-1911140001
+ definitions=main-2002070025
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Feb 6, 2020 at 7:18 AM Eric Dumazet <edumazet@google.com> wrote:
->
-> On Thu, Feb 6, 2020 at 5:13 AM David Miller <davem@davemloft.net> wrote:
-> >
-> > From: Eric Dumazet <edumazet@google.com>
-> > Date: Wed,  5 Feb 2020 08:55:44 -0800
-> >
-> > > __in6_dev_get(dev) called from inet6_set_link_af() can return NULL.
-> > >
-> > > The needed check has been recently removed, let's add it back.
-> >
-> > I am having trouble understanding this one.
-> >
-> > When we have a do_setlink operation the flow is that we first validate
-> > the AFs and then invoke setlink operations after that validation.
-> >
-> > do_setlink() {
-> >  ..
-> >         err = validate_linkmsg(dev, tb);
-> >         if (err < 0)
-> >                 return err;
-> >  ..
-> >         if (tb[IFLA_AF_SPEC]) {
-> >  ...
-> >                         err = af_ops->set_link_af(dev, af);
-> >                         if (err < 0) {
-> >                                 rcu_read_unlock();
-> >                                 goto errout;
-> >                         }
-> >
-> > By definition, we only get to ->set_link_af() if there is an
-> > IFLA_AF_SPEC nested attribute and if we look at the validation
-> > performed by validate_linkmsg() it goes:
-> >
-> >         if (tb[IFLA_AF_SPEC]) {
-> >  ...
-> >                         if (af_ops->validate_link_af) {
-> >                                 err = af_ops->validate_link_af(dev, af);
-> >  ...
-> >
-> > And validate_link_af in net/ipv6/addrconf.c clearly does the
-> > following:
-> >
-> > static int inet6_validate_link_af(const struct net_device *dev,
-> >                                   const struct nlattr *nla)
-> >  ...
-> >         if (dev) {
-> >                 idev = __in6_dev_get(dev);
-> >                 if (!idev)
-> >                         return -EAFNOSUPPORT;
-> >         }
-> >  ...
-> >
-> > It checks the idev and makes sure it is not-NULL.
-> >
-> > I therefore cannot find a path by which we arrive at inet6_set_link_af
-> > with a NULL idev.  The above validation code should trap it.
-> >
-> > Please explain.
-> >
->
-> I can give a repro if that helps.
->
-> (I have to run, I might have more time later)
->
+Hi Kai-Heng,
 
+url:    https://github.com/0day-ci/linux/commits/Kai-Heng-Feng/igb-Use-device_lock-insead-of-rtnl_lock/20200205-174208
+base:   https://git.kernel.org/pub/scm/linux/kernel/git/jkirsher/next-queue.git dev-queue
 
-If I understood the repro well enough, it seems it sets the device MTU
-to 1023, thus IPV6 is automatically disabled. (as mtu < 1280)
+If you fix the issue, kindly add following tag
+Reported-by: kbuild test robot <lkp@intel.com>
+Reported-by: Dan Carpenter <dan.carpenter@oracle.com>
 
-do_setlink()
-...
-err = validate_linkmsg(dev, tb); /* OK at this point */
-...
-if (tb[IFLA_MTU]) {
-    err = dev_set_mtu_ext(dev, nla_get_u32(tb[IFLA_MTU]), extack);
-    if (err < 0)
-          goto errout;
-    status |= DO_SETLINK_MODIFIED;
-}
-if (tb[IFLA_AF_SPEC]) {
-   ...
-   err = af_ops->set_link_af(dev, af);
-   ->inet6_set_link_af() // CRASH because idev is NULL
+New smatch warnings:
+drivers/net/ethernet/intel/igb/igb_main.c:4036 igb_close() warn: inconsistent returns 'dev->mutex'.
 
+# https://github.com/0day-ci/linux/commit/905877ae7d44efc1d9c5c1ae9f4489f56bcb13a6
+git remote add linux-review https://github.com/0day-ci/linux
+git remote update linux-review
+git checkout 905877ae7d44efc1d9c5c1ae9f4489f56bcb13a6
+vim +4036 drivers/net/ethernet/intel/igb/igb_main.c
 
-Please note that IPv4 is immune to the bug since inet_set_link_af() does :
+9d5c824399dea8 drivers/net/igb/igb_main.c                Auke Kok       2008-01-24  4026  
+46eafa59e18d03 drivers/net/ethernet/intel/igb/igb_main.c Stefan Assmann 2016-02-03  4027  int igb_close(struct net_device *netdev)
+749ab2cd127046 drivers/net/ethernet/intel/igb/igb_main.c Yan, Zheng     2012-01-04  4028  {
+905877ae7d44ef drivers/net/ethernet/intel/igb/igb_main.c Kai-Heng Feng  2020-02-05  4029  	struct igb_adapter *adapter = netdev_priv(netdev);
+905877ae7d44ef drivers/net/ethernet/intel/igb/igb_main.c Kai-Heng Feng  2020-02-05  4030  	struct device *dev = &adapter->pdev->dev;
+905877ae7d44ef drivers/net/ethernet/intel/igb/igb_main.c Kai-Heng Feng  2020-02-05  4031  
+905877ae7d44ef drivers/net/ethernet/intel/igb/igb_main.c Kai-Heng Feng  2020-02-05  4032  	device_lock(dev);
+888f22931478a0 drivers/net/ethernet/intel/igb/igb_main.c Lyude Paul     2017-12-12  4033  	if (netif_device_present(netdev) || netdev->dismantle)
+749ab2cd127046 drivers/net/ethernet/intel/igb/igb_main.c Yan, Zheng     2012-01-04  4034  		return __igb_close(netdev, false);
+                                                                                                        ^^^^^^
+Lock held for this return.
 
-struct in_device *in_dev = __in_dev_get_rcu(dev);
-if (!in_dev)
-    return -EAFNOSUPPORT;
+905877ae7d44ef drivers/net/ethernet/intel/igb/igb_main.c Kai-Heng Feng  2020-02-05  4035  	device_unlock(dev);
+9474933caf21a4 drivers/net/ethernet/intel/igb/igb_main.c Todd Fujinaka  2016-11-15 @4036  	return 0;
+749ab2cd127046 drivers/net/ethernet/intel/igb/igb_main.c Yan, Zheng     2012-01-04  4037  }
+749ab2cd127046 drivers/net/ethernet/intel/igb/igb_main.c Yan, Zheng     2012-01-04  4038  
+
+---
+0-DAY kernel test infrastructure                 Open Source Technology Center
+https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org Intel Corporation
