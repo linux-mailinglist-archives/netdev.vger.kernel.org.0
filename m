@@ -2,62 +2,105 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 70685156104
-	for <lists+netdev@lfdr.de>; Fri,  7 Feb 2020 23:05:03 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B6567156125
+	for <lists+netdev@lfdr.de>; Fri,  7 Feb 2020 23:24:46 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727517AbgBGWFC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 7 Feb 2020 17:05:02 -0500
-Received: from www62.your-server.de ([213.133.104.62]:52278 "EHLO
-        www62.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727031AbgBGWFB (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 7 Feb 2020 17:05:01 -0500
-Received: from sslproxy05.your-server.de ([78.46.172.2])
-        by www62.your-server.de with esmtpsa (TLSv1.2:DHE-RSA-AES256-GCM-SHA384:256)
-        (Exim 4.89_1)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1j0Bk3-0007YN-EL; Fri, 07 Feb 2020 23:04:51 +0100
-Received: from [85.7.42.192] (helo=pc-9.home)
-        by sslproxy05.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1j0Bk3-0008GF-1v; Fri, 07 Feb 2020 23:04:51 +0100
-Subject: Re: [PATCH bpf] bpf: Improve bucket_log calculation logic
-To:     Martin KaFai Lau <kafai@fb.com>, bpf@vger.kernel.org
-Cc:     Alexei Starovoitov <ast@kernel.org>,
-        David Miller <davem@davemloft.net>, kernel-team@fb.com,
-        Linus Torvalds <torvalds@linux-foundation.org>,
-        Linux-Sparse <linux-sparse@vger.kernel.org>,
-        Luc Van Oostenryck <luc.vanoostenryck@gmail.com>,
-        netdev@vger.kernel.org, Randy Dunlap <rdunlap@infradead.org>
-References: <20200207081810.3918919-1-kafai@fb.com>
-From:   Daniel Borkmann <daniel@iogearbox.net>
-Message-ID: <87b3934a-094f-28c1-c5ce-3792c1fa0356@iogearbox.net>
-Date:   Fri, 7 Feb 2020 23:04:50 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.7.2
-MIME-Version: 1.0
-In-Reply-To: <20200207081810.3918919-1-kafai@fb.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-Authenticated-Sender: daniel@iogearbox.net
-X-Virus-Scanned: Clear (ClamAV 0.101.4/25717/Fri Feb  7 12:45:15 2020)
+        id S1727289AbgBGWYj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 7 Feb 2020 17:24:39 -0500
+Received: from mxout2.idt.com ([157.165.5.26]:60256 "EHLO mxout2.idt.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1727031AbgBGWYi (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 7 Feb 2020 17:24:38 -0500
+Received: from mail3.idt.com (localhost [127.0.0.1])
+        by mxout2.idt.com (8.14.4/8.14.4) with ESMTP id 017MOSXV028453;
+        Fri, 7 Feb 2020 14:24:28 -0800
+Received: from corpml1.corp.idt.com (corpml1.corp.idt.com [157.165.140.20])
+        by mail3.idt.com (8.14.4/8.14.4) with ESMTP id 017MOSvu009547;
+        Fri, 7 Feb 2020 14:24:28 -0800
+Received: from minli-office.na.ads.idt.com (corpimss2.corp.idt.com [157.165.141.30])
+        by corpml1.corp.idt.com (8.11.7p1+Sun/8.11.7) with ESMTP id 017MORV16714;
+        Fri, 7 Feb 2020 14:24:27 -0800 (PST)
+From:   min.li.xe@renesas.com
+To:     robh+dt@kernel.org, mark.rutland@arm.com, netdev@vger.kernel.org
+Cc:     devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Min Li <min.li.xe@renesas.com>
+Subject: [PATCH net-next v2 1/2] dt-bindings: ptp: Add device tree binding for IDT 82P33 based PTP clock
+Date:   Fri,  7 Feb 2020 17:24:15 -0500
+Message-Id: <1581114255-6415-1-git-send-email-min.li.xe@renesas.com>
+X-Mailer: git-send-email 2.7.4
+X-TM-AS-MML: disable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 2/7/20 9:18 AM, Martin KaFai Lau wrote:
-> It was reported that the max_t, ilog2, and roundup_pow_of_two macros have
-> exponential effects on the number of states in the sparse checker.
-> 
-> This patch breaks them up by calculating the "nbuckets" first so
-> that the "bucket_log" only needs to take ilog2().
-> 
-> Fixes: 6ac99e8f23d4 ("bpf: Introduce bpf sk local storage")
-> Reported-by: Randy Dunlap <rdunlap@infradead.org>
-> Reported-by: Luc Van Oostenryck <luc.vanoostenryck@gmail.com>
-> Suggested-by: Linus Torvalds <torvalds@linux-foundation.org>
-> Signed-off-by: Martin KaFai Lau <kafai@fb.com>
+From: Min Li <min.li.xe@renesas.com>
 
-Applied (& improved changelog to clarify it's not just sparse), thanks!
+Add device tree binding doc for the PTP clock based on IDT 82P33
+Synchronization Management Unit (SMU).
+
+Changes since v1:
+ - As suggested by Rob Herring:
+   1. Drop reg description for i2c
+   2. Replace i2c@1 with i2c
+
+Signed-off-by: Min Li <min.li.xe@renesas.com>
+---
+ .../devicetree/bindings/ptp/ptp-idt82p33.yaml      | 45 ++++++++++++++++++++++
+ 1 file changed, 45 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/ptp/ptp-idt82p33.yaml
+
+diff --git a/Documentation/devicetree/bindings/ptp/ptp-idt82p33.yaml b/Documentation/devicetree/bindings/ptp/ptp-idt82p33.yaml
+new file mode 100644
+index 0000000..4c8f87a
+--- /dev/null
++++ b/Documentation/devicetree/bindings/ptp/ptp-idt82p33.yaml
+@@ -0,0 +1,45 @@
++# SPDX-License-Identifier: (GPL-2.0 OR BSD-2-Clause)
++%YAML 1.2
++---
++$id: http://devicetree.org/schemas/ptp/ptp-idt82p33.yaml#
++$schema: http://devicetree.org/meta-schemas/core.yaml#
++
++title: IDT 82P33 PTP Clock Device Tree Bindings
++
++description: |
++  IDT 82P33XXX Synchronization Management Unit (SMU) based PTP clock
++
++maintainers:
++  - Min Li <min.li.xe@renesas.com>
++
++properties:
++  compatible:
++    enum:
++      - idt,82p33810
++      - idt,82p33813
++      - idt,82p33814
++      - idt,82p33831
++      - idt,82p33910
++      - idt,82p33913
++      - idt,82p33914
++      - idt,82p33931
++
++  reg:
++    maxItems: 1
++
++required:
++  - compatible
++  - reg
++
++examples:
++  - |
++    i2c {
++        compatible = "abc,acme-1234";
++        reg = <0x01 0x400>;
++        #address-cells = <1>;
++        #size-cells = <0>;
++        phc@51 {
++            compatible = "idt,82p33810";
++            reg = <0x51>;
++        };
++    };
+-- 
+2.7.4
+
