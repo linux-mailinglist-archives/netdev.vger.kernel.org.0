@@ -2,114 +2,92 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id D2D13155AF1
-	for <lists+netdev@lfdr.de>; Fri,  7 Feb 2020 16:44:26 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9F65D155C9D
+	for <lists+netdev@lfdr.de>; Fri,  7 Feb 2020 18:08:24 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727011AbgBGPoX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 7 Feb 2020 10:44:23 -0500
-Received: from esa1.microchip.iphmx.com ([68.232.147.91]:20395 "EHLO
-        esa1.microchip.iphmx.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726897AbgBGPoW (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 7 Feb 2020 10:44:22 -0500
-Received-SPF: Pass (esa1.microchip.iphmx.com: domain of
-  Codrin.Ciubotariu@microchip.com designates 198.175.253.82 as
-  permitted sender) identity=mailfrom;
-  client-ip=198.175.253.82; receiver=esa1.microchip.iphmx.com;
-  envelope-from="Codrin.Ciubotariu@microchip.com";
-  x-sender="Codrin.Ciubotariu@microchip.com";
-  x-conformance=spf_only; x-record-type="v=spf1";
-  x-record-text="v=spf1 mx a:ushub1.microchip.com
-  a:smtpout.microchip.com -exists:%{i}.spf.microchip.iphmx.com
-  include:servers.mcsv.net include:mktomail.com
-  include:spf.protection.outlook.com ~all"
-Received-SPF: None (esa1.microchip.iphmx.com: no sender
-  authenticity information available from domain of
-  postmaster@email.microchip.com) identity=helo;
-  client-ip=198.175.253.82; receiver=esa1.microchip.iphmx.com;
-  envelope-from="Codrin.Ciubotariu@microchip.com";
-  x-sender="postmaster@email.microchip.com";
-  x-conformance=spf_only
-Authentication-Results: esa1.microchip.iphmx.com; spf=Pass smtp.mailfrom=Codrin.Ciubotariu@microchip.com; spf=None smtp.helo=postmaster@email.microchip.com; dmarc=pass (p=none dis=none) d=microchip.com
-IronPort-SDR: LA60xnPpd62EaiIhnERTdWqGT643gCgIeIyjeXpiacNTrS5a312SxgAdYle3agXUGkPe2hRGM1
- 4BS5NdE1uWuL2ciRuTYZUwmQ4EUrlRP4+kCPf45l+dSF6QuQkK3EsM4L4Cu6WogZJdI0tbRVqa
- Iut9DvcABJxzvdygJcr0PTTaemLasbTjGOhN5GHLCttMsFVEn/8kYoLxFpkvcJ3ZsT0RV1M6SP
- g2BaT6VzRj72fUe+/xbEFvGSKwOwR3rL/DOP+p7JCDiuzOETdbxITA1DyfrRtTKlKxj2hGVR6z
- s8U=
-X-IronPort-AV: E=Sophos;i="5.70,413,1574146800"; 
-   d="scan'208";a="67667033"
-Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
-  by esa1.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 07 Feb 2020 08:44:21 -0700
-Received: from chn-vm-ex03.mchp-main.com (10.10.85.151) by
- chn-vm-ex03.mchp-main.com (10.10.85.151) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.1713.5; Fri, 7 Feb 2020 08:44:21 -0700
-Received: from rob-ult-m19940.microchip.com (10.10.85.251) by
- chn-vm-ex03.mchp-main.com (10.10.85.151) with Microsoft SMTP Server id
- 15.1.1713.5 via Frontend Transport; Fri, 7 Feb 2020 08:44:17 -0700
-From:   Codrin Ciubotariu <codrin.ciubotariu@microchip.com>
-To:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>
-CC:     <woojung.huh@microchip.com>, <UNGLinuxDriver@microchip.com>,
-        <andrew@lunn.ch>, <vivien.didelot@gmail.com>,
-        <f.fainelli@gmail.com>, <davem@davemloft.net>,
-        Razvan Stefanescu <razvan.stefanescu@microchip.com>,
-        Codrin Ciubotariu <codrin.ciubotariu@microchip.com>
-Subject: [PATCH v3] net: dsa: microchip: enable module autoprobe
-Date:   Fri, 7 Feb 2020 17:44:04 +0200
-Message-ID: <20200207154404.1093-1-codrin.ciubotariu@microchip.com>
-X-Mailer: git-send-email 2.20.1
+        id S1727076AbgBGRIU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 7 Feb 2020 12:08:20 -0500
+Received: from mout.kundenserver.de ([212.227.17.24]:57065 "EHLO
+        mout.kundenserver.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726867AbgBGRIU (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 7 Feb 2020 12:08:20 -0500
+Received: from mail-lj1-f174.google.com ([209.85.208.174]) by
+ mrelayeu.kundenserver.de (mreue109 [212.227.15.145]) with ESMTPSA (Nemesis)
+ id 1MN5W7-1jGPTj1UO5-00J5cC; Fri, 07 Feb 2020 18:08:18 +0100
+Received: by mail-lj1-f174.google.com with SMTP id d10so42636ljl.9;
+        Fri, 07 Feb 2020 09:08:18 -0800 (PST)
+X-Gm-Message-State: APjAAAVG+HQjcCudOoMKOtklYFVo0H2f2va+Q5TUdse1BQZJvhZ/4iRd
+        HBxOuhz1sy5wNEtN/aj4CSLlJr1jINKtQ5Uxxqg=
+X-Google-Smtp-Source: APXvYqw9u3WcxbpVw6rO3j9Ozu9XMB+H2m1FoTnlA7ltWTv2RF4oTSzNzORrzx5UZNelPR7iZjN33BiBam2VYEndX7Q=
+X-Received: by 2002:a2e:5056:: with SMTP id v22mr142178ljd.164.1581095297786;
+ Fri, 07 Feb 2020 09:08:17 -0800 (PST)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
+References: <20200203095325.24c3ab1c@cakuba.hsd1.ca.comcast.net>
+ <C11859E1-BE71-494F-81E2-9B27E27E60EE@xenosoft.de> <87tv441gg1.fsf@mpe.ellerman.id.au>
+ <42888ad2-71e0-6d03-ddff-3de6f0ee5d43@xenosoft.de>
+In-Reply-To: <42888ad2-71e0-6d03-ddff-3de6f0ee5d43@xenosoft.de>
+From:   Arnd Bergmann <arnd@arndb.de>
+Date:   Fri, 7 Feb 2020 17:08:06 +0000
+X-Gmail-Original-Message-ID: <CAK8P3a39L5i4aEbKe9CiW6unbioL=T8GqXC007mXxUu+_j84FA@mail.gmail.com>
+Message-ID: <CAK8P3a39L5i4aEbKe9CiW6unbioL=T8GqXC007mXxUu+_j84FA@mail.gmail.com>
+Subject: Re: Latest Git kernel: avahi-daemon[2410]: ioctl(): Inappropriate
+ ioctl for device
+To:     Christian Zigotzky <chzigotzky@xenosoft.de>
+Cc:     Michael Ellerman <mpe@ellerman.id.au>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Christophe Leroy <christophe.leroy@c-s.fr>,
+        DTML <devicetree@vger.kernel.org>,
+        Darren Stevens <darren@stevens-zone.net>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        linuxppc-dev@ozlabs.org, "contact@a-eon.com" <contact@a-eon.com>,
+        "R.T.Dickinson" <rtd2@xtra.co.nz>, Christoph Hellwig <hch@lst.de>,
+        mad skateman <madskateman@gmail.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        Christian Zigotzky <info@xenosoft.de>
+Content-Type: text/plain; charset="UTF-8"
+X-Provags-ID: V03:K1:v2NzRURWLNpNd5Vze0NOfOG4ZOZI6pKd6oWf7SO7mXuEZ0uoq11
+ KIi7GIY9VO6IemzyHMrVkk3L/+sEJALYga7ggOoqu41gIyuPangzZ85ag2fGOYOLXfj/V3B
+ KM6ZABN5SojVwgP5IyTRC4koA0GQgVTFfleZnoZsj4VbZZ7kh94akKt2pa29f1yTbXEs452
+ +cxQF9hCDz6ciVAl4ia9Q==
+X-Spam-Flag: NO
+X-UI-Out-Filterresults: notjunk:1;V03:K0:16TBwXtvMN0=:qj5wbBvyRHNYDWfCZ3BwpA
+ qStdA9EFKDLUeL/ZGWvDz3mniWDrTvEBPhJtQeL4qy4I94TEOIYFuC2MVyZkVHqYLw7u78Cqt
+ oUIM/FNGMD7OMxizSxJpRCUebYacCpHVdGA/ZDCoUZIji0ijFQj2FiHsKIqKAoJFuVAOVZwX1
+ ukZ1z2S9FWHJxzOfTgBOLWdgkNIiTjLRqTJi+ofrTBaEghh2ApLBgT3ro2aU21Nw8/6jMJ5nr
+ AKAdr29Mk8Pu5FWZYUUvSKHgyhcTknjtn+LzUv6TiCYA96rm7vn+yofxCZFK51BQ85SAWObdx
+ WggGIUnZYkcJWmRvZcMA7zeuWgqBfsLV+0dAgJtz+ls6WBtQkOxT/MGksnJJ1u1OMi4wa4+cY
+ DN2gjHIX0uHWJ/Aw16Hi3BhMLwp2vpFyKxJ4tUdGWC3I5xR0AR3HZ0DcUnBabmiHCpw8Qj+9A
+ 3Epyj6TjxJKbvGvnrJKH84SW/12CgsyKsMi50gP2+2x4bFSXtFuRQmm/sm+om5wBxGn/bxSUc
+ q0tCu5ptcBcD6M+tq3H2UiFb+9FvrYnDEJNVltp533eKm+NrR4CuuryA51DzWu/wW1o2TFzoG
+ 05GEfPMRwlR5yFfgZ/4CNIeN0wOueVJZIu2K1mQXq8oUZ1gt5bobybPl05+abGodTrqZRYUW7
+ yB97MwPfdj6GA82JJ8jETSqnFeMvY6zk8HCcKjz+Nyl3y67qTgJg/hwx6Z3PNcGgV9MGdI/cD
+ CzvbKtaDGXpKZBx7iAQxr5wasH69V0xCge4Zn/fexNjse+iD38J+9CcWuTYX/pN08DLBtSdsc
+ EJtiJltwArGHWfypdLLs2zJolInjMeNS+sq6kivFpOn4tbiPdw=
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Razvan Stefanescu <razvan.stefanescu@microchip.com>
+On Fri, Feb 7, 2020 at 3:34 PM Christian Zigotzky
+<chzigotzky@xenosoft.de> wrote:
+>
+> Hello Arnd,
+>
+> We regularly compile and test Linux kernels every day during the merge
+> window. Since Thursday last week we have very high CPU usage because of
+> the avahi daemon on our desktop Linux systems (Ubuntu, Debian etc). The
+> avahi daemon produces a lot of the following log message. This generates
+> high CPU usage.
+>
+> Error message: avahi-daemon[2410]: ioctl(): Inappropriate ioctl for device
+>
+> strace /usr/sbin/avahi-daemon:
+>
 
-This matches /sys/devices/.../spi1.0/modalias content.
+Thanks a lot for the detailed analysis, with this I immediately saw
+what went wrong in my
+original commit and I sent you a fix. Please test to ensure that this
+correctly addresses
+the problem.
 
-Fixes: 9b2d9f05cddf ("net: dsa: microchip: add ksz9567 to ksz9477 driver")
-Fixes: d9033ae95cf4 ("net: dsa: microchip: add KSZ8563 compatibility string")
-Fixes: 8c29bebb1f8a ("net: dsa: microchip: add KSZ9893 switch support")
-Fixes: 45316818371d ("net: dsa: add support for ksz9897 ethernet switch")
-Fixes: b987e98e50ab ("dsa: add DSA switch driver for Microchip KSZ9477")
-Signed-off-by: Razvan Stefanescu <razvan.stefanescu@microchip.com>
-Signed-off-by: Codrin Ciubotariu <codrin.ciubotariu@microchip.com>
-Reviewed-by: Andrew Lunn <andrew@lunn.ch>
----
-
-Perhaps it is worth mentioning that the original file with the driver
-was renamed in:
-74a7194f15b3 ("net: dsa: microchip: rename ksz_spi.c to ksz9477_spi.c")
-
-Changes in v3:
- - added multiple 'Fixes' tags;
- - add 'Reviewed-by' tag from Andrew;
-
-Changes in v2:
- - added alias for all the variants of this driver
-
- drivers/net/dsa/microchip/ksz9477_spi.c | 6 ++++++
- 1 file changed, 6 insertions(+)
-
-diff --git a/drivers/net/dsa/microchip/ksz9477_spi.c b/drivers/net/dsa/microchip/ksz9477_spi.c
-index c5f64959a184..1142768969c2 100644
---- a/drivers/net/dsa/microchip/ksz9477_spi.c
-+++ b/drivers/net/dsa/microchip/ksz9477_spi.c
-@@ -101,6 +101,12 @@ static struct spi_driver ksz9477_spi_driver = {
- 
- module_spi_driver(ksz9477_spi_driver);
- 
-+MODULE_ALIAS("spi:ksz9477");
-+MODULE_ALIAS("spi:ksz9897");
-+MODULE_ALIAS("spi:ksz9893");
-+MODULE_ALIAS("spi:ksz9563");
-+MODULE_ALIAS("spi:ksz8563");
-+MODULE_ALIAS("spi:ksz9567");
- MODULE_AUTHOR("Woojung Huh <Woojung.Huh@microchip.com>");
- MODULE_DESCRIPTION("Microchip KSZ9477 Series Switch SPI access Driver");
- MODULE_LICENSE("GPL");
--- 
-2.20.1
-
+        Arnd
