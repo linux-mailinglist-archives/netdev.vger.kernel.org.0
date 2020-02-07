@@ -2,60 +2,58 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 49CB5155D28
-	for <lists+netdev@lfdr.de>; Fri,  7 Feb 2020 18:48:34 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5D1D6155D2B
+	for <lists+netdev@lfdr.de>; Fri,  7 Feb 2020 18:49:32 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727129AbgBGRsc (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 7 Feb 2020 12:48:32 -0500
-Received: from shards.monkeyblade.net ([23.128.96.9]:45416 "EHLO
+        id S1727289AbgBGRtZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 7 Feb 2020 12:49:25 -0500
+Received: from shards.monkeyblade.net ([23.128.96.9]:45446 "EHLO
         shards.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726900AbgBGRsc (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 7 Feb 2020 12:48:32 -0500
+        with ESMTP id S1726874AbgBGRtZ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 7 Feb 2020 12:49:25 -0500
 Received: from localhost (dhcp-077-249-119-090.chello.nl [77.249.119.90])
         (using TLSv1 with cipher AES256-SHA (256/256 bits))
         (Client did not present a certificate)
         (Authenticated sender: davem-davemloft)
-        by shards.monkeyblade.net (Postfix) with ESMTPSA id 3FB7715B27981;
-        Fri,  7 Feb 2020 09:48:31 -0800 (PST)
-Date:   Fri, 07 Feb 2020 18:48:29 +0100 (CET)
-Message-Id: <20200207.184829.1971454141455904967.davem@davemloft.net>
+        by shards.monkeyblade.net (Postfix) with ESMTPSA id 8368715B2799F;
+        Fri,  7 Feb 2020 09:49:23 -0800 (PST)
+Date:   Fri, 07 Feb 2020 18:49:22 +0100 (CET)
+Message-Id: <20200207.184922.684717862938638775.davem@davemloft.net>
 To:     idosch@idosch.org
-Cc:     netdev@vger.kernel.org, jiri@mellanox.com, mlxsw@mellanox.com,
-        idosch@mellanox.com
-Subject: Re: [PATCH net 0/5] mlxsw: Various fixes
+Cc:     netdev@vger.kernel.org, kuba@kernel.org, nhorman@tuxdriver.com,
+        jiri@mellanox.com, mlxsw@mellanox.com, idosch@mellanox.com
+Subject: Re: [PATCH net] drop_monitor: Do not cancel uninitialized work item
 From:   David Miller <davem@davemloft.net>
-In-Reply-To: <20200207172628.128763-1-idosch@idosch.org>
-References: <20200207172628.128763-1-idosch@idosch.org>
+In-Reply-To: <20200207172928.129123-1-idosch@idosch.org>
+References: <20200207172928.129123-1-idosch@idosch.org>
 X-Mailer: Mew version 6.8 on Emacs 26.3
 Mime-Version: 1.0
 Content-Type: Text/Plain; charset=us-ascii
 Content-Transfer-Encoding: 7bit
-X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Fri, 07 Feb 2020 09:48:32 -0800 (PST)
+X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Fri, 07 Feb 2020 09:49:24 -0800 (PST)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 From: Ido Schimmel <idosch@idosch.org>
-Date: Fri,  7 Feb 2020 19:26:23 +0200
+Date: Fri,  7 Feb 2020 19:29:28 +0200
 
 > From: Ido Schimmel <idosch@mellanox.com>
 > 
-> This patch set contains various fixes for the mlxsw driver.
+> Drop monitor uses a work item that takes care of constructing and
+> sending netlink notifications to user space. In case drop monitor never
+> started to monitor, then the work item is uninitialized and not
+> associated with a function.
 > 
-> Patch #1 fixes an issue introduced in 5.6 in which a route in the main
-> table can replace an identical route in the local table despite the
-> local table having an higher precedence.
+> Therefore, a stop command from user space results in canceling an
+> uninitialized work item which leads to the following warning [1].
 > 
-> Patch #2 contains a test case for the bug fixed in patch #1.
-> 
-> Patch #3 also fixes an issue introduced in 5.6 in which the driver
-> failed to clear the offload indication from IPv6 nexthops upon abort.
-> 
-> Patch #4 fixes an issue that prevents the driver from loading on
-> Spectrum-3 systems. The problem and solution are explained in detail in
-> the commit message.
-> 
-> Patch #5 adds a missing error path. Discovered using smatch.
+> Fix this by not processing a stop command if drop monitor is not
+> currently monitoring.
+...
+> Fixes: 8e94c3bc922e ("drop_monitor: Allow user to start monitoring hardware drops")
+> Signed-off-by: Ido Schimmel <idosch@mellanox.com>
+> Reviewed-by: Jiri Pirko <jiri@mellanox.com>
 
-Series applied, thank you.
+Applied and queued up for v5.4+ -stable, thanks.
