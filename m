@@ -2,120 +2,98 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 24DF615530D
-	for <lists+netdev@lfdr.de>; Fri,  7 Feb 2020 08:34:56 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 35B7D1553A1
+	for <lists+netdev@lfdr.de>; Fri,  7 Feb 2020 09:18:29 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726867AbgBGHev (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 7 Feb 2020 02:34:51 -0500
-Received: from mga14.intel.com ([192.55.52.115]:15598 "EHLO mga14.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726136AbgBGHev (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 7 Feb 2020 02:34:51 -0500
-X-Amp-Result: SKIPPED(no attachment in message)
-X-Amp-File-Uploaded: False
-Received: from fmsmga002.fm.intel.com ([10.253.24.26])
-  by fmsmga103.fm.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 06 Feb 2020 23:34:50 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.70,412,1574150400"; 
-   d="scan'208";a="264900707"
-Received: from unknown (HELO bong5-HP-Z440.png.intel.com) ([10.221.118.166])
-  by fmsmga002.fm.intel.com with ESMTP; 06 Feb 2020 23:34:47 -0800
-From:   Ong Boon Leong <boon.leong.ong@intel.com>
-To:     netdev@vger.kernel.org
-Cc:     Tan Tee Min <tee.min.tan@intel.com>,
-        Voon Weifeng <weifeng.voon@intel.com>,
-        Giuseppe Cavallaro <peppe.cavallaro@st.com>,
-        Alexandre TORGUE <alexandre.torgue@st.com>,
-        Jose Abreu <Jose.Abreu@synopsys.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
-        Alexandru Ardelean <alexandru.ardelean@analog.com>,
-        linux-stm32@st-md-mailman.stormreply.com,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
-Subject: [PATCH net v5 5/5] net: stmmac: update pci platform data to use phy_interface
-Date:   Fri,  7 Feb 2020 15:34:28 +0800
-Message-Id: <20200207073428.9562-1-boon.leong.ong@intel.com>
+        id S1726674AbgBGIS1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 7 Feb 2020 03:18:27 -0500
+Received: from mx0b-00082601.pphosted.com ([67.231.153.30]:46056 "EHLO
+        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1726130AbgBGISZ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 7 Feb 2020 03:18:25 -0500
+Received: from pps.filterd (m0001303.ppops.net [127.0.0.1])
+        by m0001303.ppops.net (8.16.0.42/8.16.0.42) with SMTP id 0178ILAt005106
+        for <netdev@vger.kernel.org>; Fri, 7 Feb 2020 00:18:24 -0800
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
+ : date : message-id : mime-version : content-type; s=facebook;
+ bh=4Bi3KKebGuwnCE2Wg3lcOsgdfWSKZzYEtvmsq2RBMGk=;
+ b=Uogcjo4LvDnIiF0T3bNBBnVG5Ojx68QW8/h2BsrlIJj1ybBXC0oWTTqKvTTJ8ha8WsFj
+ i5LcK9+FIqicTsBGBXaiTaxHrAAXXJ20lEbOkDmEOQR8eKJYQ9oAs+ayNpoKfB7cWxPI
+ jVOyZdfrpaoWXOrmzezPlxDgO2+HuxRXWxs= 
+Received: from mail.thefacebook.com ([163.114.132.120])
+        by m0001303.ppops.net with ESMTP id 2y0exsdtts-7
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT)
+        for <netdev@vger.kernel.org>; Fri, 07 Feb 2020 00:18:24 -0800
+Received: from intmgw001.08.frc2.facebook.com (2620:10d:c085:108::4) by
+ mail.thefacebook.com (2620:10d:c085:21d::5) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.1779.2; Fri, 7 Feb 2020 00:18:19 -0800
+Received: by devbig005.ftw2.facebook.com (Postfix, from userid 6611)
+        id E8B982944F9C; Fri,  7 Feb 2020 00:18:10 -0800 (PST)
+Smtp-Origin-Hostprefix: devbig
+From:   Martin KaFai Lau <kafai@fb.com>
+Smtp-Origin-Hostname: devbig005.ftw2.facebook.com
+To:     <bpf@vger.kernel.org>
+CC:     Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        David Miller <davem@davemloft.net>, <kernel-team@fb.com>,
+        Linus Torvalds <torvalds@linux-foundation.org>,
+        Linux-Sparse <linux-sparse@vger.kernel.org>,
+        Luc Van Oostenryck <luc.vanoostenryck@gmail.com>,
+        <netdev@vger.kernel.org>, Randy Dunlap <rdunlap@infradead.org>
+Smtp-Origin-Cluster: ftw2c04
+Subject: [PATCH bpf] bpf: Improve bucket_log calculation logic
+Date:   Fri, 7 Feb 2020 00:18:10 -0800
+Message-ID: <20200207081810.3918919-1-kafai@fb.com>
 X-Mailer: git-send-email 2.17.1
+X-FB-Internal: Safe
+MIME-Version: 1.0
+Content-Type: text/plain
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.138,18.0.572
+ definitions=2020-02-06_04:2020-02-06,2020-02-06 signatures=0
+X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 adultscore=0
+ lowpriorityscore=0 malwarescore=0 priorityscore=1501 mlxlogscore=719
+ impostorscore=0 bulkscore=0 spamscore=0 suspectscore=13 phishscore=0
+ mlxscore=0 clxscore=1015 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2001150001 definitions=main-2002070063
+X-FB-Internal: deliver
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Voon Weifeng <weifeng.voon@intel.com>
+It was reported that the max_t, ilog2, and roundup_pow_of_two macros have
+exponential effects on the number of states in the sparse checker.
 
-The recent patch to support passive mode converter did not take care the
-phy interface configuration in PCI platform data. Hence, converting all
-the PCI platform data from plat->interface to plat->phy_interface as the
-default mode is meant for PHY.
+This patch breaks them up by calculating the "nbuckets" first so
+that the "bucket_log" only needs to take ilog2().
 
-Fixes: 0060c8783330 ("net: stmmac: implement support for passive mode converters via dt")
-Signed-off-by: Voon Weifeng <weifeng.voon@intel.com>
-Tested-by: Tan, Tee Min <tee.min.tan@intel.com>
-Signed-off-by: Ong Boon Leong <boon.leong.ong@intel.com>
+Fixes: 6ac99e8f23d4 ("bpf: Introduce bpf sk local storage")
+Reported-by: Randy Dunlap <rdunlap@infradead.org>
+Reported-by: Luc Van Oostenryck <luc.vanoostenryck@gmail.com>
+Suggested-by: Linus Torvalds <torvalds@linux-foundation.org>
+Signed-off-by: Martin KaFai Lau <kafai@fb.com>
 ---
- drivers/net/ethernet/stmicro/stmmac/stmmac_pci.c | 14 ++++++++------
- 1 file changed, 8 insertions(+), 6 deletions(-)
+ net/core/bpf_sk_storage.c | 5 +++--
+ 1 file changed, 3 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/net/ethernet/stmicro/stmmac/stmmac_pci.c b/drivers/net/ethernet/stmicro/stmmac/stmmac_pci.c
-index 623521052152..fe2c9fa6a71c 100644
---- a/drivers/net/ethernet/stmicro/stmmac/stmmac_pci.c
-+++ b/drivers/net/ethernet/stmicro/stmmac/stmmac_pci.c
-@@ -95,7 +95,7 @@ static int stmmac_default_data(struct pci_dev *pdev,
+diff --git a/net/core/bpf_sk_storage.c b/net/core/bpf_sk_storage.c
+index 458be6b3eda9..3ab23f698221 100644
+--- a/net/core/bpf_sk_storage.c
++++ b/net/core/bpf_sk_storage.c
+@@ -643,9 +643,10 @@ static struct bpf_map *bpf_sk_storage_map_alloc(union bpf_attr *attr)
+ 		return ERR_PTR(-ENOMEM);
+ 	bpf_map_init_from_attr(&smap->map, attr);
  
- 	plat->bus_id = 1;
- 	plat->phy_addr = 0;
--	plat->interface = PHY_INTERFACE_MODE_GMII;
-+	plat->phy_interface = PHY_INTERFACE_MODE_GMII;
++	nbuckets = roundup_pow_of_two(num_possible_cpus());
+ 	/* Use at least 2 buckets, select_bucket() is undefined behavior with 1 bucket */
+-	smap->bucket_log = max_t(u32, 1, ilog2(roundup_pow_of_two(num_possible_cpus())));
+-	nbuckets = 1U << smap->bucket_log;
++	nbuckets = max_t(u32, 2, nbuckets);
++	smap->bucket_log = ilog2(nbuckets);
+ 	cost = sizeof(*smap->buckets) * nbuckets + sizeof(*smap);
  
- 	plat->dma_cfg->pbl = 32;
- 	plat->dma_cfg->pblx8 = true;
-@@ -217,7 +217,8 @@ static int ehl_sgmii_data(struct pci_dev *pdev,
- {
- 	plat->bus_id = 1;
- 	plat->phy_addr = 0;
--	plat->interface = PHY_INTERFACE_MODE_SGMII;
-+	plat->phy_interface = PHY_INTERFACE_MODE_SGMII;
-+
- 	return ehl_common_data(pdev, plat);
- }
- 
-@@ -230,7 +231,8 @@ static int ehl_rgmii_data(struct pci_dev *pdev,
- {
- 	plat->bus_id = 1;
- 	plat->phy_addr = 0;
--	plat->interface = PHY_INTERFACE_MODE_RGMII;
-+	plat->phy_interface = PHY_INTERFACE_MODE_RGMII;
-+
- 	return ehl_common_data(pdev, plat);
- }
- 
-@@ -258,7 +260,7 @@ static int tgl_sgmii_data(struct pci_dev *pdev,
- {
- 	plat->bus_id = 1;
- 	plat->phy_addr = 0;
--	plat->interface = PHY_INTERFACE_MODE_SGMII;
-+	plat->phy_interface = PHY_INTERFACE_MODE_SGMII;
- 	return tgl_common_data(pdev, plat);
- }
- 
-@@ -358,7 +360,7 @@ static int quark_default_data(struct pci_dev *pdev,
- 
- 	plat->bus_id = pci_dev_id(pdev);
- 	plat->phy_addr = ret;
--	plat->interface = PHY_INTERFACE_MODE_RMII;
-+	plat->phy_interface = PHY_INTERFACE_MODE_RMII;
- 
- 	plat->dma_cfg->pbl = 16;
- 	plat->dma_cfg->pblx8 = true;
-@@ -415,7 +417,7 @@ static int snps_gmac5_default_data(struct pci_dev *pdev,
- 
- 	plat->bus_id = 1;
- 	plat->phy_addr = -1;
--	plat->interface = PHY_INTERFACE_MODE_GMII;
-+	plat->phy_interface = PHY_INTERFACE_MODE_GMII;
- 
- 	plat->dma_cfg->pbl = 32;
- 	plat->dma_cfg->pblx8 = true;
+ 	ret = bpf_map_charge_init(&smap->map.memory, cost);
 -- 
 2.17.1
 
