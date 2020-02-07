@@ -2,121 +2,67 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id EC41B1552D5
-	for <lists+netdev@lfdr.de>; Fri,  7 Feb 2020 08:21:47 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A3FB31552E3
+	for <lists+netdev@lfdr.de>; Fri,  7 Feb 2020 08:23:32 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726974AbgBGHVn convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Fri, 7 Feb 2020 02:21:43 -0500
-Received: from mga02.intel.com ([134.134.136.20]:53490 "EHLO mga02.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726451AbgBGHVn (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 7 Feb 2020 02:21:43 -0500
-X-Amp-Result: SKIPPED(no attachment in message)
-X-Amp-File-Uploaded: False
-Received: from orsmga002.jf.intel.com ([10.7.209.21])
-  by orsmga101.jf.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 06 Feb 2020 23:21:42 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.70,412,1574150400"; 
-   d="scan'208";a="250325781"
-Received: from pgsmsx104.gar.corp.intel.com ([10.221.44.91])
-  by orsmga002.jf.intel.com with ESMTP; 06 Feb 2020 23:21:39 -0800
-Received: from pgsmsx114.gar.corp.intel.com ([169.254.4.192]) by
- PGSMSX104.gar.corp.intel.com ([169.254.3.14]) with mapi id 14.03.0439.000;
- Fri, 7 Feb 2020 15:21:38 +0800
-From:   "Ong, Boon Leong" <boon.leong.ong@intel.com>
-To:     David Miller <davem@davemloft.net>
-CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "Tan, Tee Min" <tee.min.tan@intel.com>,
-        "Voon, Weifeng" <weifeng.voon@intel.com>,
-        "peppe.cavallaro@st.com" <peppe.cavallaro@st.com>,
-        "alexandre.torgue@st.com" <alexandre.torgue@st.com>,
-        "Jose.Abreu@synopsys.com" <Jose.Abreu@synopsys.com>,
-        "mcoquelin.stm32@gmail.com" <mcoquelin.stm32@gmail.com>,
-        "Joao.Pinto@synopsys.com" <Joao.Pinto@synopsys.com>,
-        "arnd@arndb.de" <arnd@arndb.de>,
-        "alexandru.ardelean@analog.com" <alexandru.ardelean@analog.com>,
-        "linux-stm32@st-md-mailman.stormreply.com" 
-        <linux-stm32@st-md-mailman.stormreply.com>,
-        "linux-arm-kernel@lists.infradead.org" 
-        <linux-arm-kernel@lists.infradead.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: RE: [PATCH net v4 1/6] net: stmmac: Fix incorrect location to set
- real_num_rx|tx_queues
-Thread-Topic: [PATCH net v4 1/6] net: stmmac: Fix incorrect location to set
- real_num_rx|tx_queues
-Thread-Index: AQHV3AI9OlvIBg8tJE+vuiHHv7FbVKgMFToAgAM6L7A=
-Date:   Fri, 7 Feb 2020 07:21:38 +0000
-Message-ID: <AF233D1473C1364ABD51D28909A1B1B75C4A8F7E@pgsmsx114.gar.corp.intel.com>
-References: <20200205085510.32353-1-boon.leong.ong@intel.com>
-        <20200205085510.32353-2-boon.leong.ong@intel.com>
- <20200205.143924.1875004608052019375.davem@davemloft.net>
-In-Reply-To: <20200205.143924.1875004608052019375.davem@davemloft.net>
-Accept-Language: en-GB, en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-dlp-product: dlpe-windows
-dlp-version: 11.2.0.6
-dlp-reaction: no-action
-x-originating-ip: [172.30.20.206]
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 8BIT
+        id S1727123AbgBGHXZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 7 Feb 2020 02:23:25 -0500
+Received: from us-smtp-delivery-1.mimecast.com ([205.139.110.120]:29877 "EHLO
+        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+        with ESMTP id S1726451AbgBGHXZ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 7 Feb 2020 02:23:25 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1581060204;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=B/1eHis89MpyLuxYDGM/uGf+wxAz3YIEtRor+3W21dw=;
+        b=e4wqmYsumtzlwTfVQG8/2Fw3C8+moVh4IlE71pPekFSKimBLwTNBEvSezHxVDK+R/mNd+1
+        3/epPSxW3rZzQHCA0jx9MXIBRhPMABpQr4Rj9o9d+E0jEo5/eWeRdg3L5fKHThUPRysraz
+        u+d2c6UIVtr3d3FV2QNtgB2xZMsZp+k=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-98-w5vvEUNNNmCIBUUG-UCjJQ-1; Fri, 07 Feb 2020 02:23:16 -0500
+X-MC-Unique: w5vvEUNNNmCIBUUG-UCjJQ-1
+Received: from smtp.corp.redhat.com (int-mx03.intmail.prod.int.phx2.redhat.com [10.5.11.13])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 69644DB64;
+        Fri,  7 Feb 2020 07:23:15 +0000 (UTC)
+Received: from warthog.procyon.org.uk (ovpn-120-218.rdu2.redhat.com [10.10.120.218])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 88CF78E9FE;
+        Fri,  7 Feb 2020 07:23:13 +0000 (UTC)
+Organization: Red Hat UK Ltd. Registered Address: Red Hat UK Ltd, Amberley
+        Place, 107-111 Peascod Street, Windsor, Berkshire, SI4 1TE, United
+        Kingdom.
+        Registered in England and Wales under Company Registration No. 3798903
+From:   David Howells <dhowells@redhat.com>
+In-Reply-To: <20200207031553.18696-1-hdanton@sina.com>
+References: <20200207031553.18696-1-hdanton@sina.com> <20200204084005.11320-1-hdanton@sina.com>
+To:     Hillf Danton <hdanton@sina.com>
+Cc:     dhowells@redhat.com,
+        syzbot <syzbot+3f1fd6b8cbf8702d134e@syzkaller.appspotmail.com>,
+        davem@davemloft.net, kuba@kernel.org,
+        linux-afs@lists.infradead.org, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org, syzkaller-bugs@googlegroups.com
+Subject: Re: inconsistent lock state in rxrpc_put_client_conn
 MIME-Version: 1.0
+Content-Type: text/plain; charset="us-ascii"
+Content-ID: <2394695.1581060192.1@warthog.procyon.org.uk>
+Content-Transfer-Encoding: quoted-printable
+Date:   Fri, 07 Feb 2020 07:23:12 +0000
+Message-ID: <2394696.1581060192@warthog.procyon.org.uk>
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.13
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: David Miller <davem@davemloft.net>
-Date: Wednesday, February 5, 2020 9:39 PM
+I've posted a patch for this:
 
->From: Ong Boon Leong <boon.leong.ong@intel.com>
->Date: Wed,  5 Feb 2020 16:55:05 +0800
->
->> diff --git a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
->b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
->> index 5836b21edd7e..4d9afa13eeb9 100644
->> --- a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
->> +++ b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
->> @@ -2657,6 +2657,10 @@ static int stmmac_hw_setup(struct net_device
->*dev, bool init_ptp)
->>  >--->-------stmmac_enable_tbs(priv, priv->ioaddr, enable, chan);
->>  >---}
->>
->> +>---/* Configure real RX and TX queues */
->> +>---netif_set_real_num_rx_queues(dev, priv->plat->rx_queues_to_use);
->> +>---netif_set_real_num_tx_queues(dev, priv->plat->tx_queues_to_use);
->> +
->>  >---/* Start the ball rolling... */
->>  >---stmmac_start_all_dma(priv);
->>
->
->It is only safe to ignore the return values from
->netif_set_real_num_{rx,tx}_queues() if you call them before the
->network device is registered.  Because only in that case are these
->functions guaranteed to succeed.
->
->But now that you have moved these calls here, they can fail.
->
->Therefore you must check the return value and unwind the state
->completely upon failures.
->
->Honestly, I think this change will have several undesirable side effects:
->
->1) Lots of added new code complexity
->
->2) A new failure mode when resuming the device, users will find this
->   very hard to diagnose and recover from
->
->What real value do you get from doing these calls after probe?
->
->If you can't come up with a suitable answer to that question, you
->should reconsider this change.
->
->Thanks.
+https://lore.kernel.org/netdev/158099746025.2198892.1158535190228552910.st=
+git@warthog.procyon.org.uk/
 
-We have patch that implements get|set_channels() that depends on this fix.
-Anyway, we understand your insight and perspective now. So, we will drop
-this patch in v5 series.
+David
 
-Thanks
