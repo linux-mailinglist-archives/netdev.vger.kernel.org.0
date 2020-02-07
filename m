@@ -2,96 +2,67 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id BF25D155CCC
-	for <lists+netdev@lfdr.de>; Fri,  7 Feb 2020 18:27:23 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 13294155CD8
+	for <lists+netdev@lfdr.de>; Fri,  7 Feb 2020 18:28:58 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727175AbgBGR1U (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 7 Feb 2020 12:27:20 -0500
-Received: from out3-smtp.messagingengine.com ([66.111.4.27]:43351 "EHLO
-        out3-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1727047AbgBGR1U (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 7 Feb 2020 12:27:20 -0500
-Received: from compute3.internal (compute3.nyi.internal [10.202.2.43])
-        by mailout.nyi.internal (Postfix) with ESMTP id 8CDB021ACF;
-        Fri,  7 Feb 2020 12:27:19 -0500 (EST)
-Received: from mailfrontend2 ([10.202.2.163])
-  by compute3.internal (MEProxy); Fri, 07 Feb 2020 12:27:19 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-        messagingengine.com; h=cc:content-transfer-encoding:date:from
-        :in-reply-to:message-id:mime-version:references:subject:to
-        :x-me-proxy:x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=
-        fm2; bh=rQsmgsWnUCmau8gPbwjnTUcwQXYyz4FylIRPAtD/aQQ=; b=rLhBve2y
-        FUlSB84RLQeMk/ePWzqL8UG2Q4hVCnGmhJZUOAiQ+97G2qCA+Kx+Q1+sOh3Dcu8X
-        6pbQeoURToOX7981WQhwoFHKZUNzMLbCjrahTzgmBVPUq/TfRSXmJ7Zd/YBgQt9h
-        Kb+BukYarGBVG8WX9F+bQaTaVF7hzg5YjO86d1+bq0wuKkdMW5fO/Oswsgm5x4KA
-        ZQ+Pm+QiTJd9w+Lt3uhGodLSvuJrPFCIg4Nb29LVMsEaJ4jOLcpNy8LAUsxdOMyx
-        Ky/xz31pJwmjV+YAQ2GrD4qvFSwgLMF61HwjGVehfEKV/Lh0TAa77ZFgUTSV6Bk0
-        OeROzh8/Sa31hw==
-X-ME-Sender: <xms:9509Xn87iB6faVlxI_lwG19PQDcbM0mT9N4X-79MVBHuZBycGtVFeA>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedugedrheehgddutdduucetufdoteggodetrfdotf
-    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
-    uceurghilhhouhhtmecufedttdenucenucfjughrpefhvffufffkofgjfhgggfestdekre
-    dtredttdenucfhrhhomhepkfguohcuufgthhhimhhmvghluceoihguohhstghhsehiugho
-    shgthhdrohhrgheqnecukfhppeejledrudekfedruddtjedruddvtdenucevlhhushhtvg
-    hrufhiiigvpedunecurfgrrhgrmhepmhgrihhlfhhrohhmpehiughoshgthhesihguohhs
-    tghhrdhorhhg
-X-ME-Proxy: <xmx:9509Xn9krgHru2bi1TKK9wgLGNGgclZLXu76zDEaLDwWqjNqY0vRJA>
-    <xmx:9509XgDRSe7tMnCwYfsTrvJdHxe8FMFXxGek33dVXx2Ouf8R_FdBhg>
-    <xmx:9509XnwGM4LIwGrrgqtHyYJC_sDvo-uwL2qyS0l4Ue3eqdNQlv9fug>
-    <xmx:9509Xrsi-0xWWmaTgV785kxIa5HyRLcouG942O-RWwm0hbfdZY47Qg>
-Received: from splinter.mtl.com (bzq-79-183-107-120.red.bezeqint.net [79.183.107.120])
-        by mail.messagingengine.com (Postfix) with ESMTPA id 0DD8430607B0;
-        Fri,  7 Feb 2020 12:27:17 -0500 (EST)
-From:   Ido Schimmel <idosch@idosch.org>
-To:     netdev@vger.kernel.org
-Cc:     davem@davemloft.net, jiri@mellanox.com, mlxsw@mellanox.com,
-        Ido Schimmel <idosch@mellanox.com>
-Subject: [PATCH net 5/5] mlxsw: spectrum_dpipe: Add missing error path
-Date:   Fri,  7 Feb 2020 19:26:28 +0200
-Message-Id: <20200207172628.128763-6-idosch@idosch.org>
-X-Mailer: git-send-email 2.24.1
-In-Reply-To: <20200207172628.128763-1-idosch@idosch.org>
-References: <20200207172628.128763-1-idosch@idosch.org>
+        id S1727456AbgBGR2v (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 7 Feb 2020 12:28:51 -0500
+Received: from vps0.lunn.ch ([185.16.172.187]:38454 "EHLO vps0.lunn.ch"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726874AbgBGR2v (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 7 Feb 2020 12:28:51 -0500
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:
+        Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
+        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
+        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
+        List-Post:List-Owner:List-Archive;
+        bh=UEBTS0XrdoJSJQl95vSpuczU7JlSfYzUjvPMMXXJ5c4=; b=nZPxdgD/cUEFic5JI75m8v0Xr7
+        CzOliGBTSnBDBIgGpIokFggKL4yrT8Bccvx0sDAVG0BcwajXoK9KPtsWyzptxfB3FBdxfIx8Ofc6/
+        75s/hj9xZVa9oGxqU0yOIiT/04ftNIyXOmS9EE6zR/V1CQgvKi6M/zCYiY5bqEtEPJas=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.93)
+        (envelope-from <andrew@lunn.ch>)
+        id 1j07Qq-0004lY-If; Fri, 07 Feb 2020 18:28:44 +0100
+Date:   Fri, 7 Feb 2020 18:28:44 +0100
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Linus Walleij <linus.walleij@linaro.org>
+Cc:     christopher.s.hall@intel.com,
+        Mika Westerberg <mika.westerberg@linux.intel.com>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        netdev <netdev@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        "H. Peter Anvin" <hpa@zytor.com>, Ingo Molnar <mingo@redhat.com>,
+        "maintainer:X86 ARCHITECTURE (32-BIT AND 64-BIT)" <x86@kernel.org>,
+        jacob.e.keller@intel.com,
+        Richard Cochran <richardcochran@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>, sean.v.kelley@intel.com
+Subject: Re: [Intel PMC TGPIO Driver 5/5] drivers/ptp: Add PMC Time-Aware
+ GPIO Driver
+Message-ID: <20200207172844.GC19213@lunn.ch>
+References: <20191211214852.26317-1-christopher.s.hall@intel.com>
+ <20191211214852.26317-6-christopher.s.hall@intel.com>
+ <CACRpkdbi7q5Vr2Lt12eirs3Z8GLL2AuLLrAARCHkYEYgKbYkHg@mail.gmail.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CACRpkdbi7q5Vr2Lt12eirs3Z8GLL2AuLLrAARCHkYEYgKbYkHg@mail.gmail.com>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Ido Schimmel <idosch@mellanox.com>
+On Fri, Feb 07, 2020 at 06:10:46PM +0100, Linus Walleij wrote:
+> OK this looks like some GPIO registers...
+> 
+> Then there is a bunch of PTP stuff I don't understand I suppose
+> related to the precision time protocol.
 
-In case devlink_dpipe_entry_ctx_prepare() failed, release RTNL that was
-previously taken and free the memory allocated by
-mlxsw_sp_erif_entry_prepare().
+Hi Linus
 
-Fixes: 2ba5999f009d ("mlxsw: spectrum: Add Support for erif table entries access")
-Signed-off-by: Ido Schimmel <idosch@mellanox.com>
----
- drivers/net/ethernet/mellanox/mlxsw/spectrum_dpipe.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+I understand your confusion. The first time this was posted to netdev,
+i asked it to be renamed because it has very little to do with GPIO
 
-diff --git a/drivers/net/ethernet/mellanox/mlxsw/spectrum_dpipe.c b/drivers/net/ethernet/mellanox/mlxsw/spectrum_dpipe.c
-index 49933818c6f5..2dc0978428e6 100644
---- a/drivers/net/ethernet/mellanox/mlxsw/spectrum_dpipe.c
-+++ b/drivers/net/ethernet/mellanox/mlxsw/spectrum_dpipe.c
-@@ -215,7 +215,7 @@ mlxsw_sp_dpipe_table_erif_entries_dump(void *priv, bool counters_enabled,
- start_again:
- 	err = devlink_dpipe_entry_ctx_prepare(dump_ctx);
- 	if (err)
--		return err;
-+		goto err_ctx_prepare;
- 	j = 0;
- 	for (; i < rif_count; i++) {
- 		struct mlxsw_sp_rif *rif = mlxsw_sp_rif_by_index(mlxsw_sp, i);
-@@ -247,6 +247,7 @@ mlxsw_sp_dpipe_table_erif_entries_dump(void *priv, bool counters_enabled,
- 	return 0;
- err_entry_append:
- err_entry_get:
-+err_ctx_prepare:
- 	rtnl_unlock();
- 	devlink_dpipe_entry_clear(&entry);
- 	return err;
--- 
-2.24.1
+https://lore.kernel.org/netdev/20190719132021.GC24930@lunn.ch/
 
+	Andrew
