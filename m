@@ -2,186 +2,114 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 90CB9155A79
-	for <lists+netdev@lfdr.de>; Fri,  7 Feb 2020 16:16:44 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D2D13155AF1
+	for <lists+netdev@lfdr.de>; Fri,  7 Feb 2020 16:44:26 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726936AbgBGPQm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 7 Feb 2020 10:16:42 -0500
-Received: from mail-pl1-f202.google.com ([209.85.214.202]:45755 "EHLO
-        mail-pl1-f202.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726674AbgBGPQm (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 7 Feb 2020 10:16:42 -0500
-Received: by mail-pl1-f202.google.com with SMTP id 36so1431935plc.12
-        for <netdev@vger.kernel.org>; Fri, 07 Feb 2020 07:16:42 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20161025;
-        h=date:message-id:mime-version:subject:from:to:cc;
-        bh=2pJqs2Y8rD8iLoYER/oTnHKNVEHmCjYi45OkmGWUT9g=;
-        b=BizmGpgNcz0u979sGW6Rwlmw8VTHgwDzukbw/x6Bl9Ce9sazPMgiAy877hsXg9HDAZ
-         Z9N7fadYEv6s0wCu7UuvwtLMTRmFr09V0KBikx+WGknl5ww/P0n5msugSEXJJVmjeayV
-         XepVUhbt5zdJfIy/qp1weXgs6QiqqYUnKVfZxHEKDUiW697gvqKJLusb9A7WJn3tczgq
-         Vgvn1b36ArUIGF1x9BOJHcl8yL4oNKnpa35j5j0M3axOqzwi99sqmzmXLGQ4M8/5PZAh
-         Zw3nWjrkG44abzFo5X/y8Gfng6eee6KKENQZCJMjwVC3epTtZNVFI7JAO7gm9pn7GBVD
-         tEFg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:message-id:mime-version:subject:from:to:cc;
-        bh=2pJqs2Y8rD8iLoYER/oTnHKNVEHmCjYi45OkmGWUT9g=;
-        b=uoVLbqR4FNwZpOrM+UfmdQiTydsLHxTL+s6gMf5BE8HmGWrMEv3NRw7QwFWbr/mV5c
-         mVsBLY1Z7qr69AbdpWk+ZM+Hs3LREKLZCU2SDlW6Oplh6Waq0kv/kNXFrEU3pvuExILJ
-         le+ir6spDfAhELvzqlP9Ov5FsHnls2nxAvrPY0N9uEffoc4H8y3lwUVm4YgLnHyhFJ0O
-         b9chAyZP03GKNfEdMtoTfagcX5VJg9nA5zUVerzjzwuIznoe0jr6xMR3EsOpplZvlmdr
-         132+WZx+IjZV2HaGxfTnLjvRgVRvrxEPEiDXUneLBPQyUkpqS9M0qaPAJgK/ESEHq5N9
-         UqGw==
-X-Gm-Message-State: APjAAAVVqcqqFP6DeNadng1C3R3m6cXSONLRizcs4JlkYU2hB1Y/4q4x
-        fC7un/2ziLHy4Jb9rh6X817a/cGd3XnG8w==
-X-Google-Smtp-Source: APXvYqwQbZ5wYSkhQ4jwY5bdkb2NRFCbiPBxwWii7NuAFlelOlQujNW+n4pAfPXxkG5F5LRAD4KwVWuv18ZJ0A==
-X-Received: by 2002:a63:ed49:: with SMTP id m9mr9843577pgk.304.1581088601546;
- Fri, 07 Feb 2020 07:16:41 -0800 (PST)
-Date:   Fri,  7 Feb 2020 07:16:37 -0800
-Message-Id: <20200207151637.65999-1-edumazet@google.com>
-Mime-Version: 1.0
-X-Mailer: git-send-email 2.25.0.341.g760bfbb309-goog
-Subject: [PATCH v2 net] ipv6/addrconf: fix potential NULL deref in inet6_set_link_af()
-From:   Eric Dumazet <edumazet@google.com>
-To:     "David S . Miller" <davem@davemloft.net>
-Cc:     netdev <netdev@vger.kernel.org>,
-        Eric Dumazet <edumazet@google.com>,
-        Eric Dumazet <eric.dumazet@gmail.com>,
-        syzbot <syzkaller@googlegroups.com>,
-        Maxim Mikityanskiy <maximmi@mellanox.com>
-Content-Type: text/plain; charset="UTF-8"
+        id S1727011AbgBGPoX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 7 Feb 2020 10:44:23 -0500
+Received: from esa1.microchip.iphmx.com ([68.232.147.91]:20395 "EHLO
+        esa1.microchip.iphmx.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726897AbgBGPoW (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 7 Feb 2020 10:44:22 -0500
+Received-SPF: Pass (esa1.microchip.iphmx.com: domain of
+  Codrin.Ciubotariu@microchip.com designates 198.175.253.82 as
+  permitted sender) identity=mailfrom;
+  client-ip=198.175.253.82; receiver=esa1.microchip.iphmx.com;
+  envelope-from="Codrin.Ciubotariu@microchip.com";
+  x-sender="Codrin.Ciubotariu@microchip.com";
+  x-conformance=spf_only; x-record-type="v=spf1";
+  x-record-text="v=spf1 mx a:ushub1.microchip.com
+  a:smtpout.microchip.com -exists:%{i}.spf.microchip.iphmx.com
+  include:servers.mcsv.net include:mktomail.com
+  include:spf.protection.outlook.com ~all"
+Received-SPF: None (esa1.microchip.iphmx.com: no sender
+  authenticity information available from domain of
+  postmaster@email.microchip.com) identity=helo;
+  client-ip=198.175.253.82; receiver=esa1.microchip.iphmx.com;
+  envelope-from="Codrin.Ciubotariu@microchip.com";
+  x-sender="postmaster@email.microchip.com";
+  x-conformance=spf_only
+Authentication-Results: esa1.microchip.iphmx.com; spf=Pass smtp.mailfrom=Codrin.Ciubotariu@microchip.com; spf=None smtp.helo=postmaster@email.microchip.com; dmarc=pass (p=none dis=none) d=microchip.com
+IronPort-SDR: LA60xnPpd62EaiIhnERTdWqGT643gCgIeIyjeXpiacNTrS5a312SxgAdYle3agXUGkPe2hRGM1
+ 4BS5NdE1uWuL2ciRuTYZUwmQ4EUrlRP4+kCPf45l+dSF6QuQkK3EsM4L4Cu6WogZJdI0tbRVqa
+ Iut9DvcABJxzvdygJcr0PTTaemLasbTjGOhN5GHLCttMsFVEn/8kYoLxFpkvcJ3ZsT0RV1M6SP
+ g2BaT6VzRj72fUe+/xbEFvGSKwOwR3rL/DOP+p7JCDiuzOETdbxITA1DyfrRtTKlKxj2hGVR6z
+ s8U=
+X-IronPort-AV: E=Sophos;i="5.70,413,1574146800"; 
+   d="scan'208";a="67667033"
+Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
+  by esa1.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 07 Feb 2020 08:44:21 -0700
+Received: from chn-vm-ex03.mchp-main.com (10.10.85.151) by
+ chn-vm-ex03.mchp-main.com (10.10.85.151) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.1713.5; Fri, 7 Feb 2020 08:44:21 -0700
+Received: from rob-ult-m19940.microchip.com (10.10.85.251) by
+ chn-vm-ex03.mchp-main.com (10.10.85.151) with Microsoft SMTP Server id
+ 15.1.1713.5 via Frontend Transport; Fri, 7 Feb 2020 08:44:17 -0700
+From:   Codrin Ciubotariu <codrin.ciubotariu@microchip.com>
+To:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>
+CC:     <woojung.huh@microchip.com>, <UNGLinuxDriver@microchip.com>,
+        <andrew@lunn.ch>, <vivien.didelot@gmail.com>,
+        <f.fainelli@gmail.com>, <davem@davemloft.net>,
+        Razvan Stefanescu <razvan.stefanescu@microchip.com>,
+        Codrin Ciubotariu <codrin.ciubotariu@microchip.com>
+Subject: [PATCH v3] net: dsa: microchip: enable module autoprobe
+Date:   Fri, 7 Feb 2020 17:44:04 +0200
+Message-ID: <20200207154404.1093-1-codrin.ciubotariu@microchip.com>
+X-Mailer: git-send-email 2.20.1
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-__in6_dev_get(dev) called from inet6_set_link_af() can return NULL.
+From: Razvan Stefanescu <razvan.stefanescu@microchip.com>
 
-The needed check has been recently removed, let's add it back.
+This matches /sys/devices/.../spi1.0/modalias content.
 
-While do_setlink() does call validate_linkmsg() :
-...
-err = validate_linkmsg(dev, tb); /* OK at this point */
-...
-
-It is possible that the following call happening before the
-->set_link_af() removes IPv6 if MTU is less than 1280 :
-
-if (tb[IFLA_MTU]) {
-    err = dev_set_mtu_ext(dev, nla_get_u32(tb[IFLA_MTU]), extack);
-    if (err < 0)
-          goto errout;
-    status |= DO_SETLINK_MODIFIED;
-}
-...
-
-if (tb[IFLA_AF_SPEC]) {
-   ...
-   err = af_ops->set_link_af(dev, af);
-      ->inet6_set_link_af() // CRASH because idev is NULL
-
-Please note that IPv4 is immune to the bug since inet_set_link_af() does :
-
-struct in_device *in_dev = __in_dev_get_rcu(dev);
-if (!in_dev)
-    return -EAFNOSUPPORT;
-
-This problem has been mentioned in commit cf7afbfeb8ce ("rtnl: make
-link af-specific updates atomic") changelog :
-
-    This method is not fail proof, while it is currently sufficient
-    to make set_link_af() inerrable and thus 100% atomic, the
-    validation function method will not be able to detect all error
-    scenarios in the future, there will likely always be errors
-    depending on states which are f.e. not protected by rtnl_mutex
-    and thus may change between validation and setting.
-
-IPv6: ADDRCONF(NETDEV_CHANGE): lo: link becomes ready
-general protection fault, probably for non-canonical address 0xdffffc0000000056: 0000 [#1] PREEMPT SMP KASAN
-KASAN: null-ptr-deref in range [0x00000000000002b0-0x00000000000002b7]
-CPU: 0 PID: 9698 Comm: syz-executor712 Not tainted 5.5.0-syzkaller #0
-Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
-RIP: 0010:inet6_set_link_af+0x66e/0xae0 net/ipv6/addrconf.c:5733
-Code: 38 d0 7f 08 84 c0 0f 85 20 03 00 00 48 8d bb b0 02 00 00 45 0f b6 64 24 04 48 b8 00 00 00 00 00 fc ff df 48 89 fa 48 c1 ea 03 <0f> b6 04 02 84 c0 74 08 3c 03 0f 8e 1a 03 00 00 44 89 a3 b0 02 00
-RSP: 0018:ffffc90005b06d40 EFLAGS: 00010206
-RAX: dffffc0000000000 RBX: 0000000000000000 RCX: ffffffff86df39a6
-RDX: 0000000000000056 RSI: ffffffff86df3e74 RDI: 00000000000002b0
-RBP: ffffc90005b06e70 R08: ffff8880a2ac0380 R09: ffffc90005b06db0
-R10: fffff52000b60dbe R11: ffffc90005b06df7 R12: 0000000000000000
-R13: 0000000000000000 R14: ffff8880a1fcc424 R15: dffffc0000000000
-FS:  0000000000c46880(0000) GS:ffff8880ae800000(0000) knlGS:0000000000000000
-CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-CR2: 000055f0494ca0d0 CR3: 000000009e4ac000 CR4: 00000000001406f0
-DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
-DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
-Call Trace:
- do_setlink+0x2a9f/0x3720 net/core/rtnetlink.c:2754
- rtnl_group_changelink net/core/rtnetlink.c:3103 [inline]
- __rtnl_newlink+0xdd1/0x1790 net/core/rtnetlink.c:3257
- rtnl_newlink+0x69/0xa0 net/core/rtnetlink.c:3377
- rtnetlink_rcv_msg+0x45e/0xaf0 net/core/rtnetlink.c:5438
- netlink_rcv_skb+0x177/0x450 net/netlink/af_netlink.c:2477
- rtnetlink_rcv+0x1d/0x30 net/core/rtnetlink.c:5456
- netlink_unicast_kernel net/netlink/af_netlink.c:1302 [inline]
- netlink_unicast+0x59e/0x7e0 net/netlink/af_netlink.c:1328
- netlink_sendmsg+0x91c/0xea0 net/netlink/af_netlink.c:1917
- sock_sendmsg_nosec net/socket.c:652 [inline]
- sock_sendmsg+0xd7/0x130 net/socket.c:672
- ____sys_sendmsg+0x753/0x880 net/socket.c:2343
- ___sys_sendmsg+0x100/0x170 net/socket.c:2397
- __sys_sendmsg+0x105/0x1d0 net/socket.c:2430
- __do_sys_sendmsg net/socket.c:2439 [inline]
- __se_sys_sendmsg net/socket.c:2437 [inline]
- __x64_sys_sendmsg+0x78/0xb0 net/socket.c:2437
- do_syscall_64+0xfa/0x790 arch/x86/entry/common.c:294
- entry_SYSCALL_64_after_hwframe+0x49/0xbe
-RIP: 0033:0x4402e9
-Code: 18 89 d0 c3 66 2e 0f 1f 84 00 00 00 00 00 0f 1f 00 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 0f 83 fb 13 fc ff c3 66 2e 0f 1f 84 00 00 00 00
-RSP: 002b:00007fffd62fbcf8 EFLAGS: 00000246 ORIG_RAX: 000000000000002e
-RAX: ffffffffffffffda RBX: 00000000004002c8 RCX: 00000000004402e9
-RDX: 0000000000000000 RSI: 0000000020000080 RDI: 0000000000000003
-RBP: 00000000006ca018 R08: 0000000000000008 R09: 00000000004002c8
-R10: 0000000000000005 R11: 0000000000000246 R12: 0000000000401b70
-R13: 0000000000401c00 R14: 0000000000000000 R15: 0000000000000000
-Modules linked in:
----[ end trace cfa7664b8fdcdff3 ]---
-RIP: 0010:inet6_set_link_af+0x66e/0xae0 net/ipv6/addrconf.c:5733
-Code: 38 d0 7f 08 84 c0 0f 85 20 03 00 00 48 8d bb b0 02 00 00 45 0f b6 64 24 04 48 b8 00 00 00 00 00 fc ff df 48 89 fa 48 c1 ea 03 <0f> b6 04 02 84 c0 74 08 3c 03 0f 8e 1a 03 00 00 44 89 a3 b0 02 00
-RSP: 0018:ffffc90005b06d40 EFLAGS: 00010206
-RAX: dffffc0000000000 RBX: 0000000000000000 RCX: ffffffff86df39a6
-RDX: 0000000000000056 RSI: ffffffff86df3e74 RDI: 00000000000002b0
-RBP: ffffc90005b06e70 R08: ffff8880a2ac0380 R09: ffffc90005b06db0
-R10: fffff52000b60dbe R11: ffffc90005b06df7 R12: 0000000000000000
-R13: 0000000000000000 R14: ffff8880a1fcc424 R15: dffffc0000000000
-FS:  0000000000c46880(0000) GS:ffff8880ae900000(0000) knlGS:0000000000000000
-CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-CR2: 0000000020000004 CR3: 000000009e4ac000 CR4: 00000000001406e0
-DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
-DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
-
-Fixes: 7dc2bccab0ee ("Validate required parameters in inet6_validate_link_af")
-Signed-off-by: Eric Dumazet <edumazet@google.com>
-Bisected-and-reported-by: syzbot <syzkaller@googlegroups.com>
-Cc: Maxim Mikityanskiy <maximmi@mellanox.com>
+Fixes: 9b2d9f05cddf ("net: dsa: microchip: add ksz9567 to ksz9477 driver")
+Fixes: d9033ae95cf4 ("net: dsa: microchip: add KSZ8563 compatibility string")
+Fixes: 8c29bebb1f8a ("net: dsa: microchip: add KSZ9893 switch support")
+Fixes: 45316818371d ("net: dsa: add support for ksz9897 ethernet switch")
+Fixes: b987e98e50ab ("dsa: add DSA switch driver for Microchip KSZ9477")
+Signed-off-by: Razvan Stefanescu <razvan.stefanescu@microchip.com>
+Signed-off-by: Codrin Ciubotariu <codrin.ciubotariu@microchip.com>
+Reviewed-by: Andrew Lunn <andrew@lunn.ch>
 ---
- net/ipv6/addrconf.c | 3 +++
- 1 file changed, 3 insertions(+)
 
-diff --git a/net/ipv6/addrconf.c b/net/ipv6/addrconf.c
-index 39d861d0037719ecb02a3341b923d412b5cdc0c1..cb493e15959c4d1bb68cf30f4099a8daa785bb84 100644
---- a/net/ipv6/addrconf.c
-+++ b/net/ipv6/addrconf.c
-@@ -5718,6 +5718,9 @@ static int inet6_set_link_af(struct net_device *dev, const struct nlattr *nla)
- 	struct nlattr *tb[IFLA_INET6_MAX + 1];
- 	int err;
+Perhaps it is worth mentioning that the original file with the driver
+was renamed in:
+74a7194f15b3 ("net: dsa: microchip: rename ksz_spi.c to ksz9477_spi.c")
+
+Changes in v3:
+ - added multiple 'Fixes' tags;
+ - add 'Reviewed-by' tag from Andrew;
+
+Changes in v2:
+ - added alias for all the variants of this driver
+
+ drivers/net/dsa/microchip/ksz9477_spi.c | 6 ++++++
+ 1 file changed, 6 insertions(+)
+
+diff --git a/drivers/net/dsa/microchip/ksz9477_spi.c b/drivers/net/dsa/microchip/ksz9477_spi.c
+index c5f64959a184..1142768969c2 100644
+--- a/drivers/net/dsa/microchip/ksz9477_spi.c
++++ b/drivers/net/dsa/microchip/ksz9477_spi.c
+@@ -101,6 +101,12 @@ static struct spi_driver ksz9477_spi_driver = {
  
-+	if (!idev)
-+		return -EAFNOSUPPORT;
-+
- 	if (nla_parse_nested_deprecated(tb, IFLA_INET6_MAX, nla, NULL, NULL) < 0)
- 		BUG();
+ module_spi_driver(ksz9477_spi_driver);
  
++MODULE_ALIAS("spi:ksz9477");
++MODULE_ALIAS("spi:ksz9897");
++MODULE_ALIAS("spi:ksz9893");
++MODULE_ALIAS("spi:ksz9563");
++MODULE_ALIAS("spi:ksz8563");
++MODULE_ALIAS("spi:ksz9567");
+ MODULE_AUTHOR("Woojung Huh <Woojung.Huh@microchip.com>");
+ MODULE_DESCRIPTION("Microchip KSZ9477 Series Switch SPI access Driver");
+ MODULE_LICENSE("GPL");
 -- 
-2.25.0.341.g760bfbb309-goog
+2.20.1
 
