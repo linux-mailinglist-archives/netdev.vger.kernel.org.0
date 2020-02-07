@@ -2,250 +2,70 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 426A41559FA
-	for <lists+netdev@lfdr.de>; Fri,  7 Feb 2020 15:47:59 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0E113155A23
+	for <lists+netdev@lfdr.de>; Fri,  7 Feb 2020 15:55:09 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727011AbgBGOry (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 7 Feb 2020 09:47:54 -0500
-Received: from shards.monkeyblade.net ([23.128.96.9]:43294 "EHLO
-        shards.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726674AbgBGOry (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 7 Feb 2020 09:47:54 -0500
-Received: from localhost (unknown [IPv6:2001:982:756:1:57a7:3bfd:5e85:defb])
-        (using TLSv1 with cipher AES256-SHA (256/256 bits))
-        (Client did not present a certificate)
-        (Authenticated sender: davem-davemloft)
-        by shards.monkeyblade.net (Postfix) with ESMTPSA id 8159E15AD852B;
-        Fri,  7 Feb 2020 06:47:52 -0800 (PST)
-Date:   Fri, 07 Feb 2020 15:47:50 +0100 (CET)
-Message-Id: <20200207.154750.2170520195543672211.davem@davemloft.net>
-To:     min.li.xe@renesas.com
-Cc:     richardcochran@gmail.com, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH net-next 2/2] ptp: Add a ptp clock driver for IDT 82P33
- SMU.
-From:   David Miller <davem@davemloft.net>
-In-Reply-To: <1580934291-15468-1-git-send-email-min.li.xe@renesas.com>
-References: <1580934291-15468-1-git-send-email-min.li.xe@renesas.com>
-X-Mailer: Mew version 6.8 on Emacs 26.3
-Mime-Version: 1.0
-Content-Type: Text/Plain; charset=us-ascii
-Content-Transfer-Encoding: 7bit
-X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Fri, 07 Feb 2020 06:47:53 -0800 (PST)
+        id S1727018AbgBGOzH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 7 Feb 2020 09:55:07 -0500
+Received: from correo.us.es ([193.147.175.20]:51026 "EHLO mail.us.es"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726867AbgBGOzG (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 7 Feb 2020 09:55:06 -0500
+Received: from antivirus1-rhel7.int (unknown [192.168.2.11])
+        by mail.us.es (Postfix) with ESMTP id B4EB0C1249
+        for <netdev@vger.kernel.org>; Fri,  7 Feb 2020 15:55:05 +0100 (CET)
+Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
+        by antivirus1-rhel7.int (Postfix) with ESMTP id A6D74DA711
+        for <netdev@vger.kernel.org>; Fri,  7 Feb 2020 15:55:05 +0100 (CET)
+Received: by antivirus1-rhel7.int (Postfix, from userid 99)
+        id 9C370DA705; Fri,  7 Feb 2020 15:55:05 +0100 (CET)
+X-Spam-Checker-Version: SpamAssassin 3.4.1 (2015-04-28) on antivirus1-rhel7.int
+X-Spam-Level: 
+X-Spam-Status: No, score=-108.2 required=7.5 tests=ALL_TRUSTED,BAYES_50,
+        SMTPAUTH_US2,USER_IN_WHITELIST autolearn=disabled version=3.4.1
+Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
+        by antivirus1-rhel7.int (Postfix) with ESMTP id B7231DA709;
+        Fri,  7 Feb 2020 15:55:03 +0100 (CET)
+Received: from 192.168.1.97 (192.168.1.97)
+ by antivirus1-rhel7.int (F-Secure/fsigk_smtp/550/antivirus1-rhel7.int);
+ Fri, 07 Feb 2020 15:55:03 +0100 (CET)
+X-Virus-Status: clean(F-Secure/fsigk_smtp/550/antivirus1-rhel7.int)
+Received: from us.es (unknown [84.78.24.221])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        (Authenticated sender: 1984lsi)
+        by entrada.int (Postfix) with ESMTPSA id 6906C42EFB80;
+        Fri,  7 Feb 2020 15:55:03 +0100 (CET)
+Date:   Fri, 7 Feb 2020 15:54:59 +0100
+X-SMTPAUTHUS: auth mail.us.es
+From:   Pablo Neira Ayuso <pablo@netfilter.org>
+To:     Cong Wang <xiyou.wangcong@gmail.com>
+Cc:     netdev@vger.kernel.org, fw@strlen.de,
+        netfilter-devel@vger.kernel.org,
+        syzbot+adf6c6c2be1c3a718121@syzkaller.appspotmail.com,
+        Jozsef Kadlecsik <kadlec@netfilter.org>
+Subject: Re: [Patch nf v2 2/3] xt_hashlimit: reduce hashlimit_mutex scope for
+ htable_put()
+Message-ID: <20200207145459.cb2cxzzvz6wx6nae@salvia>
+References: <20200203043053.19192-1-xiyou.wangcong@gmail.com>
+ <20200203043053.19192-3-xiyou.wangcong@gmail.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20200203043053.19192-3-xiyou.wangcong@gmail.com>
+User-Agent: NeoMutt/20170113 (1.7.2)
+X-Virus-Scanned: ClamAV using ClamSMTP
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: min.li.xe@renesas.com
-Date: Wed,  5 Feb 2020 15:24:51 -0500
+On Sun, Feb 02, 2020 at 08:30:52PM -0800, Cong Wang wrote:
+> It is unnecessary to hold hashlimit_mutex for htable_destroy()
+> as it is already removed from the global hashtable and its
+> refcount is already zero.
+> 
+> Also, switch hinfo->use to refcount_t so that we don't have
+> to hold the mutex until it reaches zero in htable_put().
 
-> +/* Initializer */
-> +#define CHANNEL_INIT(chan, index) do { \
-> +	chan->dpll_tod_cnfg = DPLL##index##_TOD_CNFG; \
-> +	chan->dpll_tod_trigger = DPLL##index##_TOD_TRIGGER; \
-> +	chan->dpll_tod_sts = DPLL##index##_TOD_STS; \
-> +	chan->dpll_mode_cnfg = DPLL##index##_OPERATING_MODE_CNFG; \
-> +	chan->dpll_freq_cnfg = DPLL##index##_HOLDOVER_FREQ_CNFG; \
-> +	chan->dpll_phase_cnfg = DPLL##index##_PHASE_OFFSET_CNFG; \
-> +	chan->dpll_sync_cnfg = DPLL##index##_SYNC_EDGE_CNFG; \
-> +	chan->dpll_input_mode_cnfg = DPLL##index##_INPUT_MODE_CNFG; \
-> +	INIT_DELAYED_WORK(&chan->sync_tod_work, \
-> +			idt82p33_sync_tod_work_handler); \
-> +	chan->sync_tod_on = false; \
-> +	chan->current_freq_ppb = 0; \
-> +} while (0)
-
-This is messy and really belongs in a helper function.
-
-The only thing the index does is decide the register offsets
-which are conveniently exactly 0x80 bytes apart.  And you can
-use this knowledge to implement a real C function instead of
-using CPP expansion magic.
-
-> +static void idt82p33_caps_init(struct ptp_clock_info	*caps)
-> +{
-> +	(caps)->owner = THIS_MODULE;
-
-The parenthesis around caps is unnecessary.  I suspect this code
-was also originally coded in a CPP macro. :-)
-
-> +static void idt82p33_byte_array_to_timespec(struct timespec64 *ts,
-> +				u8 buf[TOD_BYTE_COUNT])
-> +{
-> +	u8 i;
-> +	s32 nsec;
-> +	time64_t sec;
-
-Please us reverse christmas tree ordering for local variables.
-
-> +static void idt82p33_timespec_to_byte_array(struct timespec64 const *ts,
-> +				  u8 buf[TOD_BYTE_COUNT])
-> +{
-> +	u8 i;
-> +	s32 nsec = ts->tv_nsec;
-> +	time64_t sec = ts->tv_sec;
-
-Likewise.
-
-> +static int idt82p33_rdwr(struct idt82p33 *idt82p33, unsigned int regaddr,
-> +			unsigned char *buf, unsigned int count, bool write)
-> +{
-> +	int err;
-> +	u8 page;
-> +	u8 offset;
-
-Likewise.
-
-> +static int idt82p33_dpll_set_mode(struct idt82p33_channel *channel,
-> +				enum pll_mode mode)
-> +{
-> +	struct idt82p33 *idt82p33 = channel->idt82p33;
-> +	int err;
-> +	u8 dpll_mode;
-
-Likewise.
-
-> +static int _idt82p33_gettime(struct idt82p33_channel *channel,
-> +			struct timespec64 *ts)
-> +{
-> +	struct idt82p33 *idt82p33 = channel->idt82p33;
-> +	int err;
-> +	u8 buf[TOD_BYTE_COUNT];
-> +	u8 trigger;
-
-Likewise.
-
-> +
-> +	trigger = TOD_TRIGGER(HW_TOD_WR_TRIG_SEL_MSB_TOD_CNFG,
-> +						HW_TOD_RD_TRIG_SEL_LSB_TOD_STS);
-
-This is indented improperly.  The second line should be indented
-exactly to the first column after the openning parenthesis of the
-first line.  You should use the appropriate number of TAB then SPACE
-characters necessary to achieve this.
-
-You should audit this entire file for this problem as I see it in
-many places.
-
-> +static int _idt82p33_settime(struct idt82p33_channel *channel,
-> +			struct timespec64 const *ts)
-> +{
-> +	struct idt82p33 *idt82p33 = channel->idt82p33;
-> +	int err;
-> +	u8 i;
-> +	unsigned char trigger;
-> +	struct timespec64 local_ts = *ts;
-> +	char buf[TOD_BYTE_COUNT];
-> +	s64 dynamic_overhead_ns;
-
-Reverse christmas tree please.
-
-> +static int _idt82p33_adjtime(struct idt82p33_channel *channel, s64 delta_ns)
-> +{
-> +	struct idt82p33 *idt82p33 = channel->idt82p33;
-> +	s64 now_ns;
-> +	int err;
-> +	struct timespec64 ts;
-
-Likewise.
-
-> +static int _idt82p33_adjfreq(struct idt82p33_channel *channel, s32 ppb)
-> +{
-> +	struct idt82p33 *idt82p33 = channel->idt82p33;
-> +	int err;
-> +	int i;
-> +	int neg_adj = 0;
-> +	unsigned char buf[5] = {0};
-> +	s64 fcw;
-
-Likewise.
-
-> +static int idt82p33_measure_one_byte_write_overhead(
-> +			struct idt82p33_channel *channel, s64 *overhead_ns)
-> +{
-> +	int err;
-> +	u8 i;
-> +	ktime_t start;
-> +	ktime_t stop;
-> +	u8 trigger;
-> +	s64 total_ns;
-> +	struct idt82p33 *idt82p33 = channel->idt82p33;
-
-Likewise, and combine same type variables into a single line such as:
-
-	ktime_t start, stop;
-
-to save vertical space.
-
-> +static int idt82p33_measure_tod_write_9_byte_overhead(
-> +					struct idt82p33_channel *channel)
-> +{
-> +	int err = 0;
-> +	u8 i;
-> +	u8 j;
-> +	ktime_t start;
-> +	ktime_t stop;
-> +	u8 buf[TOD_BYTE_COUNT];
-> +	struct idt82p33 *idt82p33 = channel->idt82p33;
-> +	s64 total_ns;
-
-Likewise.
-
-> +static int idt82p33_measure_settime_gettime_gap_overhead(
-> +					struct idt82p33_channel *channel,
-> +					s64 *overhead_ns)
-> +{
-> +	int err;
-> +	struct timespec64 ts1 = {0, 0};
-> +	struct timespec64 ts2;
-
-Likewise.
-
-> +static int idt82p33_measure_tod_write_overhead(struct idt82p33_channel *channel)
-> +{
-> +	int err;
-> +	s64 gap_ns;
-> +	s64 one_byte_write_ns;
-> +	s64 trailing_overhead_ns;
-> +	struct idt82p33 *idt82p33 = channel->idt82p33;
-
-Likewise.
-
-> +static void idt82p33_display_masks(struct idt82p33 *idt82p33)
-> +{
-> +	u8 i;
-> +	u8 mask;
-
-Likewise.
-
-> +static int idt82p33_sync_tod(struct idt82p33_channel *channel, bool enable)
-> +{
-> +	struct idt82p33 *idt82p33 = channel->idt82p33;
-> +	int err;
-> +	u8 sync_cnfg;
-
-Likewise.
-
-> +static int idt82p33_pps_enable(struct idt82p33_channel *channel, bool enable)
-> +{
-> +	struct idt82p33 *idt82p33 = channel->idt82p33;
-> +	u8 val;
-> +	int err;
-> +	u8 mask;
-> +	u8 outn;
-
-Likewise.
-
-> +static int idt82p33_enable_tod(struct idt82p33_channel *channel)
-> +{
-> +	struct idt82p33 *idt82p33 = channel->idt82p33;
-> +	int err;
-> +	struct timespec64 ts = {0, 0};
-> +	u8 val;
-
-Likewise.
-
-And so on and so forth for the rest of the driver.
-
-Thank you.
+Applied, thanks.
