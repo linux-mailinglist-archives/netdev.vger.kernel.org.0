@@ -2,56 +2,60 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 4B137155D22
-	for <lists+netdev@lfdr.de>; Fri,  7 Feb 2020 18:46:38 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 49CB5155D28
+	for <lists+netdev@lfdr.de>; Fri,  7 Feb 2020 18:48:34 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727012AbgBGRqd (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 7 Feb 2020 12:46:33 -0500
-Received: from shards.monkeyblade.net ([23.128.96.9]:45386 "EHLO
+        id S1727129AbgBGRsc (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 7 Feb 2020 12:48:32 -0500
+Received: from shards.monkeyblade.net ([23.128.96.9]:45416 "EHLO
         shards.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726900AbgBGRqd (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 7 Feb 2020 12:46:33 -0500
+        with ESMTP id S1726900AbgBGRsc (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 7 Feb 2020 12:48:32 -0500
 Received: from localhost (dhcp-077-249-119-090.chello.nl [77.249.119.90])
         (using TLSv1 with cipher AES256-SHA (256/256 bits))
         (Client did not present a certificate)
         (Authenticated sender: davem-davemloft)
-        by shards.monkeyblade.net (Postfix) with ESMTPSA id 53B0115B26295;
-        Fri,  7 Feb 2020 09:46:31 -0800 (PST)
-Date:   Fri, 07 Feb 2020 18:46:29 +0100 (CET)
-Message-Id: <20200207.184629.2031351294269270096.davem@davemloft.net>
-To:     codrin.ciubotariu@microchip.com
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        woojung.huh@microchip.com, UNGLinuxDriver@microchip.com,
-        andrew@lunn.ch, vivien.didelot@gmail.com, f.fainelli@gmail.com,
-        razvan.stefanescu@microchip.com
-Subject: Re: [PATCH v3] net: dsa: microchip: enable module autoprobe
+        by shards.monkeyblade.net (Postfix) with ESMTPSA id 3FB7715B27981;
+        Fri,  7 Feb 2020 09:48:31 -0800 (PST)
+Date:   Fri, 07 Feb 2020 18:48:29 +0100 (CET)
+Message-Id: <20200207.184829.1971454141455904967.davem@davemloft.net>
+To:     idosch@idosch.org
+Cc:     netdev@vger.kernel.org, jiri@mellanox.com, mlxsw@mellanox.com,
+        idosch@mellanox.com
+Subject: Re: [PATCH net 0/5] mlxsw: Various fixes
 From:   David Miller <davem@davemloft.net>
-In-Reply-To: <20200207154404.1093-1-codrin.ciubotariu@microchip.com>
-References: <20200207154404.1093-1-codrin.ciubotariu@microchip.com>
+In-Reply-To: <20200207172628.128763-1-idosch@idosch.org>
+References: <20200207172628.128763-1-idosch@idosch.org>
 X-Mailer: Mew version 6.8 on Emacs 26.3
 Mime-Version: 1.0
 Content-Type: Text/Plain; charset=us-ascii
 Content-Transfer-Encoding: 7bit
-X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Fri, 07 Feb 2020 09:46:33 -0800 (PST)
+X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Fri, 07 Feb 2020 09:48:32 -0800 (PST)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Codrin Ciubotariu <codrin.ciubotariu@microchip.com>
-Date: Fri, 7 Feb 2020 17:44:04 +0200
+From: Ido Schimmel <idosch@idosch.org>
+Date: Fri,  7 Feb 2020 19:26:23 +0200
 
-> From: Razvan Stefanescu <razvan.stefanescu@microchip.com>
+> From: Ido Schimmel <idosch@mellanox.com>
 > 
-> This matches /sys/devices/.../spi1.0/modalias content.
+> This patch set contains various fixes for the mlxsw driver.
 > 
-> Fixes: 9b2d9f05cddf ("net: dsa: microchip: add ksz9567 to ksz9477 driver")
-> Fixes: d9033ae95cf4 ("net: dsa: microchip: add KSZ8563 compatibility string")
-> Fixes: 8c29bebb1f8a ("net: dsa: microchip: add KSZ9893 switch support")
-> Fixes: 45316818371d ("net: dsa: add support for ksz9897 ethernet switch")
-> Fixes: b987e98e50ab ("dsa: add DSA switch driver for Microchip KSZ9477")
-> Signed-off-by: Razvan Stefanescu <razvan.stefanescu@microchip.com>
-> Signed-off-by: Codrin Ciubotariu <codrin.ciubotariu@microchip.com>
-> Reviewed-by: Andrew Lunn <andrew@lunn.ch>
+> Patch #1 fixes an issue introduced in 5.6 in which a route in the main
+> table can replace an identical route in the local table despite the
+> local table having an higher precedence.
+> 
+> Patch #2 contains a test case for the bug fixed in patch #1.
+> 
+> Patch #3 also fixes an issue introduced in 5.6 in which the driver
+> failed to clear the offload indication from IPv6 nexthops upon abort.
+> 
+> Patch #4 fixes an issue that prevents the driver from loading on
+> Spectrum-3 systems. The problem and solution are explained in detail in
+> the commit message.
+> 
+> Patch #5 adds a missing error path. Discovered using smatch.
 
-Applied and queued up for -stable, thank you.
+Series applied, thank you.
