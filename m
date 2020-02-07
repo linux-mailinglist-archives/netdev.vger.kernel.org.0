@@ -2,67 +2,118 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 13294155CD8
-	for <lists+netdev@lfdr.de>; Fri,  7 Feb 2020 18:28:58 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 98CA1155CE2
+	for <lists+netdev@lfdr.de>; Fri,  7 Feb 2020 18:30:03 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727456AbgBGR2v (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 7 Feb 2020 12:28:51 -0500
-Received: from vps0.lunn.ch ([185.16.172.187]:38454 "EHLO vps0.lunn.ch"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726874AbgBGR2v (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 7 Feb 2020 12:28:51 -0500
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:
-        Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
-        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
-        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
-        List-Post:List-Owner:List-Archive;
-        bh=UEBTS0XrdoJSJQl95vSpuczU7JlSfYzUjvPMMXXJ5c4=; b=nZPxdgD/cUEFic5JI75m8v0Xr7
-        CzOliGBTSnBDBIgGpIokFggKL4yrT8Bccvx0sDAVG0BcwajXoK9KPtsWyzptxfB3FBdxfIx8Ofc6/
-        75s/hj9xZVa9oGxqU0yOIiT/04ftNIyXOmS9EE6zR/V1CQgvKi6M/zCYiY5bqEtEPJas=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.93)
-        (envelope-from <andrew@lunn.ch>)
-        id 1j07Qq-0004lY-If; Fri, 07 Feb 2020 18:28:44 +0100
-Date:   Fri, 7 Feb 2020 18:28:44 +0100
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Linus Walleij <linus.walleij@linaro.org>
-Cc:     christopher.s.hall@intel.com,
-        Mika Westerberg <mika.westerberg@linux.intel.com>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        netdev <netdev@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        "H. Peter Anvin" <hpa@zytor.com>, Ingo Molnar <mingo@redhat.com>,
-        "maintainer:X86 ARCHITECTURE (32-BIT AND 64-BIT)" <x86@kernel.org>,
-        jacob.e.keller@intel.com,
-        Richard Cochran <richardcochran@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>, sean.v.kelley@intel.com
-Subject: Re: [Intel PMC TGPIO Driver 5/5] drivers/ptp: Add PMC Time-Aware
- GPIO Driver
-Message-ID: <20200207172844.GC19213@lunn.ch>
-References: <20191211214852.26317-1-christopher.s.hall@intel.com>
- <20191211214852.26317-6-christopher.s.hall@intel.com>
- <CACRpkdbi7q5Vr2Lt12eirs3Z8GLL2AuLLrAARCHkYEYgKbYkHg@mail.gmail.com>
+        id S1727113AbgBGRaA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 7 Feb 2020 12:30:00 -0500
+Received: from out3-smtp.messagingengine.com ([66.111.4.27]:41651 "EHLO
+        out3-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1726874AbgBGRaA (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 7 Feb 2020 12:30:00 -0500
+Received: from compute3.internal (compute3.nyi.internal [10.202.2.43])
+        by mailout.nyi.internal (Postfix) with ESMTP id D544421F7D;
+        Fri,  7 Feb 2020 12:29:59 -0500 (EST)
+Received: from mailfrontend1 ([10.202.2.162])
+  by compute3.internal (MEProxy); Fri, 07 Feb 2020 12:29:59 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+        messagingengine.com; h=cc:content-transfer-encoding:date:from
+        :message-id:mime-version:subject:to:x-me-proxy:x-me-proxy
+        :x-me-sender:x-me-sender:x-sasl-enc; s=fm2; bh=hCn1XkvLEawEVawV1
+        aSu21AvpDmWpSdlZTOdYU2p+cs=; b=d6859oz0ydQTeR2boxZ67pe3sU3jWViNW
+        /PQsh3IonKCV6A2XzaRRRLjVcQqyzQiujVIveKVTz17q0ayUAkUptgP+nbO5osbS
+        qttlvLKGBcYvsG2FF4Mz9IyR2f/6bmTADX3vGHPRoScVTfBFJLmrsA94rawslCl0
+        7j6ChUnYCxLEOUCcr3ctAs9YqVRJo3enevi1dc4X6XfqfJqGsocwNW4gYW5HAJMl
+        5bwhszh+eFEho41m+JBTRl+0/4mpZlTMsy7enFRxXwAdo6NMQmuyT7QHgui5O46q
+        Uy2dZbkG9kOGogA6SFTqG4AcuIw0RVm2EiEUgUZZnXivTY5M7PKIw==
+X-ME-Sender: <xms:l549XviEyo9aDopHn6nWbZ9kpZzL6MGzupxlqdTlMAXI-L7fCIYf9Q>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedugedrheehgddutdduucetufdoteggodetrfdotf
+    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
+    uceurghilhhouhhtmecufedttdenucenucfjughrpefhvffufffkofgggfestdekredtre
+    dttdenucfhrhhomhepkfguohcuufgthhhimhhmvghluceoihguohhstghhsehiughoshgt
+    hhdrohhrgheqnecukfhppeejledrudekfedruddtjedruddvtdenucevlhhushhtvghruf
+    hiiigvpedunecurfgrrhgrmhepmhgrihhlfhhrohhmpehiughoshgthhesihguohhstghh
+    rdhorhhg
+X-ME-Proxy: <xmx:l549Xr2KiXVYBz-sFLpzOILBQc3WBovrNVzRKjliyv9yTv6R2QOiRg>
+    <xmx:l549XhpopPf_KSm3MJbfyh4WcUI5xRx82rSndLt6yj_2pa2Pn9DSMA>
+    <xmx:l549Xo0HiBFTmv6RDYCAu4LNhfFvWhv4AfooLN7w2dBkPBHKv9tgxA>
+    <xmx:l549Xq3q09xCWjHw90K8e2_bMIjiRNDZPVYSUPQTI9ldhkr_2vhY3Q>
+Received: from splinter.mtl.com (bzq-79-183-107-120.red.bezeqint.net [79.183.107.120])
+        by mail.messagingengine.com (Postfix) with ESMTPA id DD8603280064;
+        Fri,  7 Feb 2020 12:29:57 -0500 (EST)
+From:   Ido Schimmel <idosch@idosch.org>
+To:     netdev@vger.kernel.org
+Cc:     davem@davemloft.net, kuba@kernel.org, nhorman@tuxdriver.com,
+        jiri@mellanox.com, mlxsw@mellanox.com,
+        Ido Schimmel <idosch@mellanox.com>
+Subject: [PATCH net] drop_monitor: Do not cancel uninitialized work item
+Date:   Fri,  7 Feb 2020 19:29:28 +0200
+Message-Id: <20200207172928.129123-1-idosch@idosch.org>
+X-Mailer: git-send-email 2.24.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CACRpkdbi7q5Vr2Lt12eirs3Z8GLL2AuLLrAARCHkYEYgKbYkHg@mail.gmail.com>
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Feb 07, 2020 at 06:10:46PM +0100, Linus Walleij wrote:
-> OK this looks like some GPIO registers...
-> 
-> Then there is a bunch of PTP stuff I don't understand I suppose
-> related to the precision time protocol.
+From: Ido Schimmel <idosch@mellanox.com>
 
-Hi Linus
+Drop monitor uses a work item that takes care of constructing and
+sending netlink notifications to user space. In case drop monitor never
+started to monitor, then the work item is uninitialized and not
+associated with a function.
 
-I understand your confusion. The first time this was posted to netdev,
-i asked it to be renamed because it has very little to do with GPIO
+Therefore, a stop command from user space results in canceling an
+uninitialized work item which leads to the following warning [1].
 
-https://lore.kernel.org/netdev/20190719132021.GC24930@lunn.ch/
+Fix this by not processing a stop command if drop monitor is not
+currently monitoring.
 
-	Andrew
+[1]
+[   31.735402] ------------[ cut here ]------------
+[   31.736470] WARNING: CPU: 0 PID: 143 at kernel/workqueue.c:3032 __flush_work+0x89f/0x9f0
+...
+[   31.738120] CPU: 0 PID: 143 Comm: dwdump Not tainted 5.5.0-custom-09491-g16d4077796b8 #727
+[   31.741968] RIP: 0010:__flush_work+0x89f/0x9f0
+...
+[   31.760526] Call Trace:
+[   31.771689]  __cancel_work_timer+0x2a6/0x3b0
+[   31.776809]  net_dm_cmd_trace+0x300/0xef0
+[   31.777549]  genl_rcv_msg+0x5c6/0xd50
+[   31.781005]  netlink_rcv_skb+0x13b/0x3a0
+[   31.784114]  genl_rcv+0x29/0x40
+[   31.784720]  netlink_unicast+0x49f/0x6a0
+[   31.787148]  netlink_sendmsg+0x7cf/0xc80
+[   31.790426]  ____sys_sendmsg+0x620/0x770
+[   31.793458]  ___sys_sendmsg+0xfd/0x170
+[   31.802216]  __sys_sendmsg+0xdf/0x1a0
+[   31.806195]  do_syscall_64+0xa0/0x540
+[   31.806885]  entry_SYSCALL_64_after_hwframe+0x49/0xbe
+
+Fixes: 8e94c3bc922e ("drop_monitor: Allow user to start monitoring hardware drops")
+Signed-off-by: Ido Schimmel <idosch@mellanox.com>
+Reviewed-by: Jiri Pirko <jiri@mellanox.com>
+---
+ net/core/drop_monitor.c | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
+
+diff --git a/net/core/drop_monitor.c b/net/core/drop_monitor.c
+index ea46fc6aa883..31700e0c3928 100644
+--- a/net/core/drop_monitor.c
++++ b/net/core/drop_monitor.c
+@@ -1000,8 +1000,10 @@ static void net_dm_hw_monitor_stop(struct netlink_ext_ack *extack)
+ {
+ 	int cpu;
+ 
+-	if (!monitor_hw)
++	if (!monitor_hw) {
+ 		NL_SET_ERR_MSG_MOD(extack, "Hardware monitoring already disabled");
++		return;
++	}
+ 
+ 	monitor_hw = false;
+ 
+-- 
+2.24.1
+
