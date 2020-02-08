@@ -2,164 +2,172 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 7D70F1563EC
-	for <lists+netdev@lfdr.de>; Sat,  8 Feb 2020 12:02:25 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9984515643D
+	for <lists+netdev@lfdr.de>; Sat,  8 Feb 2020 13:36:52 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727129AbgBHLCW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 8 Feb 2020 06:02:22 -0500
-Received: from mail25.static.mailgun.info ([104.130.122.25]:57650 "EHLO
-        mail25.static.mailgun.info" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726995AbgBHLCV (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 8 Feb 2020 06:02:21 -0500
-DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org; q=dns/txt;
- s=smtp; t=1581159741; h=Content-Type: MIME-Version: Message-ID: Date:
- Subject: Cc: To: From: Sender;
- bh=QnOjoTFexDpV1/TlXhTolGZnJCKEA2lEK8CFBB3jMxE=; b=E7nVVkzUuPNy/623K6jj7te7jHo30hixpLt0sAuMMrF7Ofsf+nyJHKAwDJY9JfRNs1waru/4
- sysRKt1EpA8K7XoJp2DLenw72ZPgjBuwucofZqBP2kHq3yA15SBLa8vI+O3cMN3WUPwIqjvK
- 0lwZUIj0BpWKshL1PGri5R0pjb4=
-X-Mailgun-Sending-Ip: 104.130.122.25
-X-Mailgun-Sid: WyJiZjI2MiIsICJuZXRkZXZAdmdlci5rZXJuZWwub3JnIiwgImJlOWU0YSJd
-Received: from smtp.codeaurora.org (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171])
- by mxa.mailgun.org with ESMTP id 5e3e9533.7f2e41d8af48-smtp-out-n03;
- Sat, 08 Feb 2020 11:02:11 -0000 (UTC)
-Received: by smtp.codeaurora.org (Postfix, from userid 1001)
-        id 4B00AC43383; Sat,  8 Feb 2020 11:02:10 +0000 (UTC)
-X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
-        aws-us-west-2-caf-mail-1.web.codeaurora.org
-X-Spam-Level: 
-X-Spam-Status: No, score=-1.0 required=2.0 tests=ALL_TRUSTED,SPF_NONE
-        autolearn=ham autolearn_force=no version=3.4.0
-Received: from potku.adurom.net (88-114-240-156.elisa-laajakaista.fi [88.114.240.156])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+        id S1727347AbgBHMgr (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 8 Feb 2020 07:36:47 -0500
+Received: from bilbo.ozlabs.org ([203.11.71.1]:38003 "EHLO ozlabs.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1727118AbgBHMgq (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sat, 8 Feb 2020 07:36:46 -0500
+Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
         (No client certificate requested)
-        (Authenticated sender: kvalo)
-        by smtp.codeaurora.org (Postfix) with ESMTPSA id EA573C433A2;
-        Sat,  8 Feb 2020 11:02:08 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org EA573C433A2
-Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
-Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; spf=none smtp.mailfrom=kvalo@codeaurora.org
-From:   Kalle Valo <kvalo@codeaurora.org>
-To:     netdev@vger.kernel.org
-Cc:     linux-wireless@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: pull-request: wireless-drivers-2020-02-08
-Date:   Sat, 08 Feb 2020 13:02:06 +0200
-Message-ID: <87sgjlxryp.fsf@kamboji.qca.qualcomm.com>
-User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/24.5 (gnu/linux)
+        by mail.ozlabs.org (Postfix) with ESMTPSA id 48FBVx05h8z9sPJ;
+        Sat,  8 Feb 2020 23:36:39 +1100 (AEDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=ellerman.id.au;
+        s=201909; t=1581165403;
+        bh=TIsBMikK22tP+iVnpNdBWnTezaZnCH4QX2IsCZvPKH0=;
+        h=From:To:Cc:Subject:In-Reply-To:References:Date:From;
+        b=RJe6RTnIjucqdrkV1R47EoAVUruFQ21tuPJZRji3dj8PHMoMeJiDFBH0WcpE8OUbv
+         wpxfqHmP9Qs1/IiKuxPCsx1YBPpZqRbXqhf6QRPj+YAkH9ema/+g9Er8KctHpzCEyY
+         f6Md2+myTJ+qW6Z1mSKpjdBC0zGiAwTmcznmdNbMYECjAsN046hiVhJqXQ/WF24sgQ
+         LSZX0tqiMWziqXP2NqBYLSDWl1iLv2W9qhHcynY7KxySG9dRjatXwJvBLJ/m8dg5Dg
+         khxlrwC15v3zsNVTHLkC2MFi7tkjVcEkUM4y5V5GR/7bzpA5BvdqRvcEc85KgRLZif
+         mZk9CrM9j07sA==
+From:   Michael Ellerman <mpe@ellerman.id.au>
+To:     Christian Zigotzky <chzigotzky@xenosoft.de>,
+        Jakub Kicinski <kuba@kernel.org>
+Cc:     Christophe Leroy <christophe.leroy@c-s.fr>,
+        DTML <devicetree@vger.kernel.org>,
+        Darren Stevens <darren@stevens-zone.net>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        linuxppc-dev@ozlabs.org, "contact\@a-eon.com" <contact@a-eon.com>,
+        "R.T.Dickinson" <rtd2@xtra.co.nz>, Christoph Hellwig <hch@lst.de>,
+        mad skateman <madskateman@gmail.com>,
+        "netdev\@vger.kernel.org" <netdev@vger.kernel.org>
+Subject: Re: Latest Git kernel: avahi-daemon[2410]: ioctl(): Inappropriate ioctl for device
+In-Reply-To: <f438e4ed-7746-1d80-6d72-455281884a1e@xenosoft.de>
+References: <20200203095325.24c3ab1c@cakuba.hsd1.ca.comcast.net> <C11859E1-BE71-494F-81E2-9B27E27E60EE@xenosoft.de> <87tv441gg1.fsf@mpe.ellerman.id.au> <f438e4ed-7746-1d80-6d72-455281884a1e@xenosoft.de>
+Date:   Sat, 08 Feb 2020 23:36:34 +1100
+Message-ID: <87imkh1cj1.fsf@mpe.ellerman.id.au>
 MIME-Version: 1.0
-Content-Type: text/plain
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi,
+Christian Zigotzky <chzigotzky@xenosoft.de> writes:
+> On 06 February 2020 at 05:35 am, Michael Ellerman wrote:
+>> Christian Zigotzky <chzigotzky@xenosoft.de> writes:
+>>> Kernel 5.5 PowerPC is also affected.
+>> I don't know what you mean by that. What sha are you talking about?
+>>
+>> I have a system with avahi running and everything's fine.
+>>
+>>    # grep use- /etc/avahi/avahi-daemon.conf
+>>    use-ipv4=3Dyes
+>>    use-ipv6=3Dyes
+>>=20=20=20=20
+>>    # systemctl status -l --no-pager avahi-daemon
+>>    =E2=97=8F avahi-daemon.service - Avahi mDNS/DNS-SD Stack
+>>       Loaded: loaded (/lib/systemd/system/avahi-daemon.service; enabled;=
+ vendor preset: enabled)
+>>       Active: active (running) since Thu 2020-02-06 14:55:34 AEDT; 38min=
+ ago
+>>     Main PID: 1884 (avahi-daemon)
+>>       Status: "avahi-daemon 0.7 starting up."
+>>       CGroup: /system.slice/avahi-daemon.service
+>>               =E2=94=9C=E2=94=801884 avahi-daemon: running [mpe-ubuntu-l=
+e.local]
+>>               =E2=94=94=E2=94=801888 avahi-daemon: chroot helper
+>>=20=20=20=20
+>>    Feb 06 14:55:34 mpe-ubuntu-le avahi-daemon[1884]: Registering new add=
+ress record for fe80::5054:ff:fe66:2a19 on eth0.*.
+>>    Feb 06 14:55:34 mpe-ubuntu-le avahi-daemon[1884]: Registering new add=
+ress record for 10.61.141.81 on eth0.IPv4.
+>>    Feb 06 14:55:34 mpe-ubuntu-le avahi-daemon[1884]: Registering new add=
+ress record for ::1 on lo.*.
+>>    Feb 06 14:55:34 mpe-ubuntu-le avahi-daemon[1884]: Registering new add=
+ress record for 127.0.0.1 on lo.IPv4.
+>>    Feb 06 14:55:34 mpe-ubuntu-le systemd[1]: Started Avahi mDNS/DNS-SD S=
+tack.
+>>    Feb 06 14:55:35 mpe-ubuntu-le avahi-daemon[1884]: Server startup comp=
+lete. Host name is mpe-ubuntu-le.local. Local service cookie is 3972418141.
+>>    Feb 06 14:55:38 mpe-ubuntu-le avahi-daemon[1884]: Leaving mDNS multic=
+ast group on interface eth0.IPv6 with address fe80::5054:ff:fe66:2a19.
+>>    Feb 06 14:55:38 mpe-ubuntu-le avahi-daemon[1884]: Joining mDNS multic=
+ast group on interface eth0.IPv6 with address fd69:d75f:b8b5:61:5054:ff:fe6=
+6:2a19.
+>>    Feb 06 14:55:38 mpe-ubuntu-le avahi-daemon[1884]: Registering new add=
+ress record for fd69:d75f:b8b5:61:5054:ff:fe66:2a19 on eth0.*.
+>>    Feb 06 14:55:38 mpe-ubuntu-le avahi-daemon[1884]: Withdrawing address=
+ record for fe80::5054:ff:fe66:2a19 on eth0.
+>>=20=20=20=20
+>>    # uname -r
+>>    5.5.0-gcc-8.2.0
+>>
+>>
+>> The key question is what ioctl is it complaining about. You should be
+>> able to find that via strace.
+>>
+>> cheers
+>>
+> Hello Michael,
+>
+> Sorry it isn't true that the kernel 5.5 is also affected. A Power Mac G5=
+=20
+> user told me that but this isn't correct. I compiled and tested the=20
+> stable kernel 5.5.1 and 5.5.2 today and both kernels don't have the=20
+> issue with the avahi daemon.
 
-here's a pull request to net tree for v5.6, more info below. Please let
-me know if there are any problems.
+OK good to know.
 
-Kalle
+> Could you please also test the latest Git kernel?
 
-The following changes since commit c312840cd79061af37158cb42590931cfa364c1b:
+That's literally all I ever do.
 
-  Revert "pktgen: Allow configuration of IPv6 source address range" (2020-01-27 13:49:33 +0100)
+The problem here is you didn't tell me you were running a big endian
+distro, which uses compat mode.
 
-are available in the git repository at:
+In hindsight I should have thought of that.
 
-  git://git.kernel.org/pub/scm/linux/kernel/git/kvalo/wireless-drivers.git tags/wireless-drivers-2020-02-08
+Now that I know that, I can reproduce the bug:
 
-for you to fetch changes up to d08f3010f4a32eec3c8aa771f03a1b342a1472fa:
+  Feb 08 23:31:12 mpe-ubuntu-be avahi-daemon[24819]: ioctl(): Inappropriate=
+ ioctl for device
+  Feb 08 23:31:12 mpe-ubuntu-be avahi-daemon[24819]: ioctl(): Inappropriate=
+ ioctl for device
+  Feb 08 23:31:12 mpe-ubuntu-be avahi-daemon[24819]: ioctl(): Inappropriate=
+ ioctl for device
+  Feb 08 23:31:12 mpe-ubuntu-be avahi-daemon[24819]: ioctl(): Inappropriate=
+ ioctl for device
 
-  mt76: mt7615: fix max_nss in mt7615_eeprom_parse_hw_cap (2020-02-08 11:59:03 +0200)
 
-----------------------------------------------------------------
-wireless-drivers fixes for v5.6
+But it seems you've already identified the problem commit, thanks for
+bisecting.
 
-First set of fixes for v5.6. Buffer overflow fixes to mwifiex, quite a
-few functionality fixes to iwlwifi and smaller fixes to other drivers.
+I'm sure Arnd will be able to fix it now that you've identified the
+problematic commit.
 
-mwifiex
+cheers
 
-* fix an unlock from a previous security fix
 
-* fix two buffer overflows
-
-libertas
-
-* fix two bugs from previous security fixes
-
-iwlwifi
-
-* fix module removal with multiple NICs
-
-* don't treat IGTK removal failure as an error
-
-* avoid FW crashes due to DTS measurement races
-
-* fix a potential use after free in FTM code
-
-* prevent a NULL pointer dereference in iwl_mvm_cfg_he_sta()
-
-* fix TDLS discovery
-
-* check all CPUs when trying to detect an error during resume
-
-rtw88
-
-* fix clang warning
-
-mt76
-
-* fix reading of max_nss value from a register
-
-----------------------------------------------------------------
-Andrei Otcheretianski (2):
-      iwlwifi: mvm: Fix thermal zone registration
-      iwlwifi: mvm: Check the sta is not NULL in iwl_mvm_cfg_he_sta()
-
-Avraham Stern (1):
-      iwlwifi: mvm: avoid use after free for pmsr request
-
-Brian Norris (1):
-      mwifiex: fix unbalanced locking in mwifiex_process_country_ie()
-
-Chin-Yen Lee (1):
-      rtw88: Fix return value of rtw_wow_check_fw_status
-
-Emmanuel Grumbach (1):
-      iwlwifi: mvm: fix TDLS discovery with the new firmware API
-
-Golan Ben Ami (1):
-      iwlwifi: mvm: update the DTS measurement type
-
-Lorenzo Bianconi (1):
-      mt76: mt7615: fix max_nss in mt7615_eeprom_parse_hw_cap
-
-Luca Coelho (1):
-      iwlwifi: don't throw error when trying to remove IGTK
-
-Mordechay Goodstein (1):
-      iwlwifi: d3: read all FW CPUs error info
-
-Nicolai Stange (2):
-      libertas: don't exit from lbs_ibss_join_existing() with RCU read lock held
-      libertas: make lbs_ibss_join_existing() return error code on rates overflow
-
-Qing Xu (2):
-      mwifiex: Fix possible buffer overflows in mwifiex_ret_wmm_get_status()
-      mwifiex: Fix possible buffer overflows in mwifiex_cmd_append_vsie_tlv()
-
- drivers/net/wireless/intel/iwlwifi/mvm/d3.c        | 52 ++++++++++++----
- .../net/wireless/intel/iwlwifi/mvm/ftm-initiator.c |  5 +-
- drivers/net/wireless/intel/iwlwifi/mvm/mac80211.c  | 10 ++-
- drivers/net/wireless/intel/iwlwifi/mvm/sta.c       | 10 ++-
- drivers/net/wireless/intel/iwlwifi/mvm/tdls.c      | 10 ++-
- .../net/wireless/intel/iwlwifi/mvm/time-event.c    | 71 ++++++++++++++++++----
- .../net/wireless/intel/iwlwifi/mvm/time-event.h    |  4 +-
- drivers/net/wireless/intel/iwlwifi/mvm/tt.c        | 10 +--
- drivers/net/wireless/marvell/libertas/cfg.c        |  2 +
- drivers/net/wireless/marvell/mwifiex/scan.c        |  7 +++
- drivers/net/wireless/marvell/mwifiex/sta_ioctl.c   |  1 +
- drivers/net/wireless/marvell/mwifiex/wmm.c         |  4 ++
- drivers/net/wireless/mediatek/mt76/mt7615/eeprom.c |  3 +-
- drivers/net/wireless/realtek/rtw88/wow.c           | 23 ++++---
- 14 files changed, 159 insertions(+), 53 deletions(-)
+> strace /usr/sbin/avahi-daemon
+>
+> ...
+> poll([{fd=3D4, events=3DPOLLIN}, {fd=3D16, events=3DPOLLIN}, {fd=3D15,=20
+> events=3DPOLLIN}, {fd=3D14, events=3DPOLLIN}, {fd=3D13, events=3DPOLLIN},=
+ {fd=3D12,=20
+> events=3DPOLLIN}, {fd=3D11, events=3DPOLLIN}, {fd=3D10, events=3DPOLLIN},=
+ {fd=3D9,=20
+> events=3DPOLLIN}, {fd=3D8, events=3DPOLLIN}, {fd=3D6, events=3DPOLLIN}], =
+11, 65) =3D=20
+> 2 ([{fd=3D12, revents=3DPOLLIN}, {fd=3D9, revents=3DPOLLIN}])
+> ioctl(12, FIONREAD, 0xffba6f24)=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
+=C2=A0 =3D -1 ENOTTY (Inappropriate ioctl=20
+> for device)
+> write(2, "ioctl(): Inappropriate ioctl for"..., 39ioctl(): Inappropriate=
+=20
+> ioctl for device) =3D 39
+> write(2, "\n", 1
+> )=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
+=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 =3D 1
+> ...
+>
+> Thanks,
+> Christian
