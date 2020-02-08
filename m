@@ -2,102 +2,95 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 3F55115653B
-	for <lists+netdev@lfdr.de>; Sat,  8 Feb 2020 16:43:20 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7BD11156543
+	for <lists+netdev@lfdr.de>; Sat,  8 Feb 2020 16:54:49 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727602AbgBHPnQ convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Sat, 8 Feb 2020 10:43:16 -0500
-Received: from us-smtp-delivery-1.mimecast.com ([207.211.31.120]:42542 "EHLO
-        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S1727591AbgBHPnP (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 8 Feb 2020 10:43:15 -0500
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-165-7bPdM3CtNmWEZytLkHEdMQ-1; Sat, 08 Feb 2020 10:43:10 -0500
-Received: from smtp.corp.redhat.com (int-mx06.intmail.prod.int.phx2.redhat.com [10.5.11.16])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id CC7DA1800D42;
-        Sat,  8 Feb 2020 15:43:08 +0000 (UTC)
-Received: from krava.redhat.com (ovpn-204-79.brq.redhat.com [10.40.204.79])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id F3D325C28F;
-        Sat,  8 Feb 2020 15:43:05 +0000 (UTC)
-From:   Jiri Olsa <jolsa@kernel.org>
-To:     Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>
-Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org,
-        Andrii Nakryiko <andriin@fb.com>, Yonghong Song <yhs@fb.com>,
-        Song Liu <songliubraving@fb.com>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        David Miller <davem@redhat.com>,
-        =?UTF-8?q?Bj=C3=B6rn=20T=C3=B6pel?= <bjorn.topel@intel.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Jesper Dangaard Brouer <hawk@kernel.org>
-Subject: [PATCH 14/14] bpf: Sort bpf kallsyms symbols
-Date:   Sat,  8 Feb 2020 16:42:09 +0100
-Message-Id: <20200208154209.1797988-15-jolsa@kernel.org>
-In-Reply-To: <20200208154209.1797988-1-jolsa@kernel.org>
-References: <20200208154209.1797988-1-jolsa@kernel.org>
+        id S1727360AbgBHPyr (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 8 Feb 2020 10:54:47 -0500
+Received: from vps0.lunn.ch ([185.16.172.187]:39050 "EHLO vps0.lunn.ch"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1727340AbgBHPyr (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sat, 8 Feb 2020 10:54:47 -0500
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=Content-Transfer-Encoding:MIME-Version:Message-Id:Date:Subject:
+        Cc:To:From:Sender:Reply-To:Content-Type:Content-ID:Content-Description:
+        Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:
+        In-Reply-To:References:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
+        List-Post:List-Owner:List-Archive;
+        bh=fFfSxoQPhL/uEo/oe0USyGFtICrLfNxYGxf39o4OMJs=; b=5Vv6IArus/hqpqjcvweoR/UNI9
+        +CmTiZjXymfLuRx2lEiQUzsfMyz0bin70YiydkMUPPsNGbl+7osRC5WOFGqT9jzz4ENLb2V5HQars
+        oIn/Qe/OY1JgFfH+QDjYbT5XejT/wYU2hatO+OEOKZAusiZB8bti98FYJMOVLDYf5CPY=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.93)
+        (envelope-from <andrew@lunn.ch>)
+        id 1j0SRP-0008Vq-3O; Sat, 08 Feb 2020 16:54:43 +0100
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     David Miller <davem@davemloft.net>
+Cc:     netdev <netdev@vger.kernel.org>,
+        Chris Healy <Chris.Healy@zii.aero>,
+        Lucas Stach <l.stach@pengutronix.de>,
+        Andrew Lunn <andrew@lunn.ch>
+Subject: [PATCH net] net: dsa: mv88e6xxx: Prevent truncation of longer interrupt names
+Date:   Sat,  8 Feb 2020 16:54:32 +0100
+Message-Id: <20200208155432.32680-1-andrew@lunn.ch>
+X-Mailer: git-send-email 2.25.0
 MIME-Version: 1.0
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.16
-X-MC-Unique: 7bPdM3CtNmWEZytLkHEdMQ-1
-X-Mimecast-Spam-Score: 0
-X-Mimecast-Originator: kernel.org
-Content-Type: text/plain; charset=WINDOWS-1252
-Content-Transfer-Encoding: 8BIT
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Currently we don't sort bpf_kallsyms and display symbols
-in proc/kallsyms as they come in via __bpf_ksym_add.
+When adding support for unique interrupt names, after testing on a few
+devices, it was assumed 32 characters would be sufficient. This
+assumption turned out to be incorrect, ZII RDU2 for example uses a
+device base name of mv88e6xxx-30be0000.ethernet-1:0, leaving no space
+for post fixes such as -g1-atu-prob and -watchdog. The names then
+become identical, defeating the point of the patch.
 
-Using the latch tree to get the next bpf_ksym object
-and insert the new symbol ahead of it.
+Increase the length of the string to 64 charactoes.
 
-Signed-off-by: Jiri Olsa <jolsa@kernel.org>
+Reported-by: Chris Healy <Chris.Healy@zii.aero>
+Fixes: 3095383a8ab4 ("net: dsa: mv88e6xxx: Unique IRQ name")
+Signed-off-by: Andrew Lunn <andrew@lunn.ch>
 ---
- kernel/bpf/core.c | 23 ++++++++++++++++++++++-
- 1 file changed, 22 insertions(+), 1 deletion(-)
+ drivers/net/dsa/mv88e6xxx/chip.h | 12 ++++++------
+ 1 file changed, 6 insertions(+), 6 deletions(-)
 
-diff --git a/kernel/bpf/core.c b/kernel/bpf/core.c
-index 50af5dcf7ff9..c63ff34b2128 100644
---- a/kernel/bpf/core.c
-+++ b/kernel/bpf/core.c
-@@ -651,9 +651,30 @@ static struct latch_tree_root bpf_progs_tree __cacheline_aligned;
+diff --git a/drivers/net/dsa/mv88e6xxx/chip.h b/drivers/net/dsa/mv88e6xxx/chip.h
+index f332cb4b2fbf..79cad5e751c6 100644
+--- a/drivers/net/dsa/mv88e6xxx/chip.h
++++ b/drivers/net/dsa/mv88e6xxx/chip.h
+@@ -236,7 +236,7 @@ struct mv88e6xxx_port {
+ 	bool mirror_ingress;
+ 	bool mirror_egress;
+ 	unsigned int serdes_irq;
+-	char serdes_irq_name[32];
++	char serdes_irq_name[64];
+ };
  
- static void __bpf_ksym_add(struct bpf_ksym *ksym)
- {
-+	struct list_head *head = &bpf_kallsyms;
-+
- 	WARN_ON_ONCE(!list_empty(&ksym->lnode));
--	list_add_tail_rcu(&ksym->lnode, &bpf_kallsyms);
- 	latch_tree_insert(&ksym->tnode, &bpf_kallsyms_tree, &bpf_kallsyms_tree_ops);
-+
-+	/*
-+	 * Add ksym into bpf_kallsyms in ordered position,
-+	 * which is prepared for us by latch tree addition.
-+	 *
-+	 * Find out the next symbol and insert ksym right
-+	 * ahead of it. If ksym is the last one, just tail
-+	 * add to the bpf_kallsyms.
-+	 */
-+	if (!list_empty(&bpf_kallsyms)) {
-+		struct rb_node *next = rb_next(&ksym->tnode.node[0]);
-+
-+		if (next) {
-+			struct bpf_ksym *ptr;
-+
-+			ptr = container_of(next, struct bpf_ksym, tnode.node[0]);
-+			head = &ptr->lnode;
-+		}
-+	}
-+	list_add_tail_rcu(&ksym->lnode, head);
- }
+ struct mv88e6xxx_chip {
+@@ -293,16 +293,16 @@ struct mv88e6xxx_chip {
+ 	struct mv88e6xxx_irq g1_irq;
+ 	struct mv88e6xxx_irq g2_irq;
+ 	int irq;
+-	char irq_name[32];
++	char irq_name[64];
+ 	int device_irq;
+-	char device_irq_name[32];
++	char device_irq_name[64];
+ 	int watchdog_irq;
+-	char watchdog_irq_name[32];
++	char watchdog_irq_name[64];
  
- void bpf_ksym_add(struct bpf_ksym *ksym)
+ 	int atu_prob_irq;
+-	char atu_prob_irq_name[32];
++	char atu_prob_irq_name[64];
+ 	int vtu_prob_irq;
+-	char vtu_prob_irq_name[32];
++	char vtu_prob_irq_name[64];
+ 	struct kthread_worker *kworker;
+ 	struct kthread_delayed_work irq_poll_work;
+ 
 -- 
-2.24.1
+2.25.0
 
