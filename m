@@ -2,176 +2,104 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id D4E94156545
-	for <lists+netdev@lfdr.de>; Sat,  8 Feb 2020 16:55:16 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D7F7D15655A
+	for <lists+netdev@lfdr.de>; Sat,  8 Feb 2020 17:09:41 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727392AbgBHPzO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 8 Feb 2020 10:55:14 -0500
-Received: from canardo.mork.no ([148.122.252.1]:53891 "EHLO canardo.mork.no"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727340AbgBHPzO (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sat, 8 Feb 2020 10:55:14 -0500
-Received: from miraculix.mork.no (miraculix.mork.no [IPv6:2001:4641:0:2:7627:374e:db74:e353])
-        (authenticated bits=0)
-        by canardo.mork.no (8.15.2/8.15.2) with ESMTPSA id 018FtAgJ014882
-        (version=TLSv1.3 cipher=TLS_AES_256_GCM_SHA384 bits=256 verify=NO);
-        Sat, 8 Feb 2020 16:55:11 +0100
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=mork.no; s=b;
-        t=1581177311; bh=vJOwTTfoqL06fKoYtpuRFsnFaF1X0/qhRi3tLFTzidE=;
-        h=From:To:Cc:Subject:Date:Message-Id:From;
-        b=nbj3Sgt9D8jNGUTsmmpqyUUKyOMiTm5H+1fsHrjc+7GtDZ2a45yMFWMMOeXdNp/BQ
-         CUoXnaoiJTi/oxB8SEsYi8Md1t01exfqyIwQO+1a8T96obcVD2cIqbZzSCNHTgQtP/
-         yl8o+JmAwvOdPJikbRWJHIreXCYBE3EAgE85kgco=
-Received: from bjorn by miraculix.mork.no with local (Exim 4.92)
-        (envelope-from <bjorn@miraculix.mork.no>)
-        id 1j0SRq-0007sV-P3; Sat, 08 Feb 2020 16:55:10 +0100
-From:   =?UTF-8?q?Bj=C3=B8rn=20Mork?= <bjorn@mork.no>
-To:     netdev@vger.kernel.org
-Cc:     linux-usb@vger.kernel.org,
-        =?UTF-8?q?Bj=C3=B8rn=20Mork?= <bjorn@mork.no>,
-        Kristian Evensen <kristian.evensen@gmail.com>,
-        Aleksander Morgado <aleksander@aleksander.es>
-Subject: [PATCH net-next] qmi_wwan: unconditionally reject 2 ep interfaces
-Date:   Sat,  8 Feb 2020 16:55:04 +0100
-Message-Id: <20200208155504.30243-1-bjorn@mork.no>
-X-Mailer: git-send-email 2.20.1
+        id S1727360AbgBHQJk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 8 Feb 2020 11:09:40 -0500
+Received: from mo4-p01-ob.smtp.rzone.de ([81.169.146.165]:21501 "EHLO
+        mo4-p01-ob.smtp.rzone.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727303AbgBHQJj (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 8 Feb 2020 11:09:39 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; t=1581178175;
+        s=strato-dkim-0002; d=xenosoft.de;
+        h=In-Reply-To:Date:Message-ID:References:Cc:To:From:Subject:
+        X-RZG-CLASS-ID:X-RZG-AUTH:From:Subject:Sender;
+        bh=PdihAqfeKD54YbNb2He1peHtwOFZYOu4uAedog826qA=;
+        b=Pk8Uo4ovKN1pL7kKOvCSgy7upAtqtwkcYqwT363YZgBKMuztnT7zY/i31di6xGLq3Z
+        E8ukM+PciN7RvrbluR9s/NdqOXzC7kYfDueyc98VQgiAyE6msIXi7tGWhWivDvQkG9CA
+        XcctgTZXp7ws980ZnAj+eMjLnTivU/t2KMvaiXxKxZBaribqEkwbLPCKVcswyan6klo6
+        BruRqU/xBV8FEiQVZw0Ek5z+Uk6CZuowkvV4F4IYRdqwcVTZ21BfcQKn0ZEqoObAoMWT
+        J1HTxjiZ736KS7SYQ/iTJTm7csaZyE52YfnXsWa9go9a+cOQZ7WWlmdScE2R6e2phWNz
+        NA1w==
+X-RZG-AUTH: ":L2QefEenb+UdBJSdRCXu93KJ1bmSGnhMdmOod1DhGM4l4Hio94KKxRySfLxnHfJ+Dkjp5DdBJSrwuuqxvPgBLiaxlASBVL8WJv/OkCrDe9HRcQ=="
+X-RZG-CLASS-ID: mo00
+Received: from [IPv6:2a02:8109:89c0:ebfc:b8e6:ddd1:f1d2:d845]
+        by smtp.strato.de (RZmta 46.1.12 AUTH)
+        with ESMTPSA id 40bcf3w18G8eit4
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256 bits))
+        (Client did not present a certificate);
+        Sat, 8 Feb 2020 17:08:40 +0100 (CET)
+Subject: Re: Latest Git kernel: avahi-daemon[2410]: ioctl(): Inappropriate
+ ioctl for device
+From:   Christian Zigotzky <chzigotzky@xenosoft.de>
+To:     Arnd Bergmann <arnd@arndb.de>
+Cc:     Michael Ellerman <mpe@ellerman.id.au>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Christophe Leroy <christophe.leroy@c-s.fr>,
+        DTML <devicetree@vger.kernel.org>,
+        Darren Stevens <darren@stevens-zone.net>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        linuxppc-dev@ozlabs.org, "contact@a-eon.com" <contact@a-eon.com>,
+        "R.T.Dickinson" <rtd2@xtra.co.nz>, Christoph Hellwig <hch@lst.de>,
+        mad skateman <madskateman@gmail.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        Christian Zigotzky <info@xenosoft.de>
+References: <CAK8P3a39L5i4aEbKe9CiW6unbioL=T8GqXC007mXxUu+_j84FA@mail.gmail.com>
+ <834D35CA-F0D5-43EC-97B2-2E97B4DA7703@xenosoft.de>
+Message-ID: <b8e3a03c-4aeb-5582-78df-144450b03927@xenosoft.de>
+Date:   Sat, 8 Feb 2020 17:08:40 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.4.2
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
+In-Reply-To: <834D35CA-F0D5-43EC-97B2-2E97B4DA7703@xenosoft.de>
+Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Transfer-Encoding: 8bit
-X-Virus-Scanned: clamav-milter 0.101.4 at canardo
-X-Virus-Status: Clean
+Content-Language: de-DE
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-We have been using the fact that the QMI and DIAG functions
-usually are the only ones with class/subclass/protocol being
-ff/ff/ff on Quectel modems. This has allowed us to match the
-QMI function without knowing the exact interface number,
-which can vary depending on firmware configuration.
+On 08 February 2020 at 07:59 am, Christian Zigotzky wrote:
+>
+>> On 7. Feb 2020, at 18:08, Arnd Bergmann <arnd@arndb.de> wrote:
+>>
+>> ﻿On Fri, Feb 7, 2020 at 3:34 PM Christian Zigotzky
+>> <chzigotzky@xenosoft.de> wrote:
+>>> Hello Arnd,
+>>>
+>>> We regularly compile and test Linux kernels every day during the merge
+>>> window. Since Thursday last week we have very high CPU usage because of
+>>> the avahi daemon on our desktop Linux systems (Ubuntu, Debian etc). The
+>>> avahi daemon produces a lot of the following log message. This generates
+>>> high CPU usage.
+>>>
+>>> Error message: avahi-daemon[2410]: ioctl(): Inappropriate ioctl for device
+>>>
+>>> strace /usr/sbin/avahi-daemon:
+>>>
+>> Thanks a lot for the detailed analysis, with this I immediately saw
+>> what went wrong in my
+>> original commit and I sent you a fix. Please test to ensure that this
+>> correctly addresses
+>> the problem.
+>>
+>>         Arnd
+> Hi Arnd,
+>
+> Thanks a lot for your patch! I will test it as soon as possible.
+>
+> Cheers,
+> Christian
 
-The ability to silently reject the DIAG function, which is
-usually handled by the option driver, is important for this
-method to work.  This is done based on the knowledge that it
-has exactly 2 bulk endpoints.  QMI function control interfaces
-will have either 3 or 1 endpoint. This rule is universal so
-the quirk condition can be removed.
+Hi Arnd,
 
-The fixed layouts known from the Gobi1k and Gobi2k modems
-have been gradually replaced by more dynamic layouts, and
-many vendors now use configurable layouts without changing
-device IDs.  Renaming the class/subclass/protocol matching
-macro makes it more obvious that this is now not Quectel
-specific anymore.
+I successfully compiled the latest Git kernel with your patch today. The 
+avahi daemon works fine now. That means your patch has solved the avahi 
+issue.
 
-Cc: Kristian Evensen <kristian.evensen@gmail.com>
-Cc: Aleksander Morgado <aleksander@aleksander.es>
-Signed-off-by: Bjørn Mork <bjorn@mork.no>
----
-What do you think, Kristian?  There is no real need to limit this
-rule to Quectel modems, is there?  And from what I've understood,
-it seems that most/all the upcoming X55 modems will have a
-completely configurable layout.  Which means that we should
-avoid macthing on interface number if we can.  And I believe we
-can. I've not yet seen an example where ff/ff/ff would match
-anything except QMI and DIAG.
+Thanks for your patch and have a nice weekend!
 
-
- drivers/net/usb/qmi_wwan.c | 42 ++++++++++++++------------------------
- 1 file changed, 15 insertions(+), 27 deletions(-)
-
-diff --git a/drivers/net/usb/qmi_wwan.c b/drivers/net/usb/qmi_wwan.c
-index 839cef720cf6..3b7a3b8a5e06 100644
---- a/drivers/net/usb/qmi_wwan.c
-+++ b/drivers/net/usb/qmi_wwan.c
-@@ -61,7 +61,6 @@ enum qmi_wwan_flags {
- 
- enum qmi_wwan_quirks {
- 	QMI_WWAN_QUIRK_DTR = 1 << 0,	/* needs "set DTR" request */
--	QMI_WWAN_QUIRK_QUECTEL_DYNCFG = 1 << 1,	/* check num. endpoints */
- };
- 
- struct qmimux_hdr {
-@@ -916,16 +915,6 @@ static const struct driver_info	qmi_wwan_info_quirk_dtr = {
- 	.data           = QMI_WWAN_QUIRK_DTR,
- };
- 
--static const struct driver_info	qmi_wwan_info_quirk_quectel_dyncfg = {
--	.description	= "WWAN/QMI device",
--	.flags		= FLAG_WWAN | FLAG_SEND_ZLP,
--	.bind		= qmi_wwan_bind,
--	.unbind		= qmi_wwan_unbind,
--	.manage_power	= qmi_wwan_manage_power,
--	.rx_fixup       = qmi_wwan_rx_fixup,
--	.data           = QMI_WWAN_QUIRK_DTR | QMI_WWAN_QUIRK_QUECTEL_DYNCFG,
--};
--
- #define HUAWEI_VENDOR_ID	0x12D1
- 
- /* map QMI/wwan function by a fixed interface number */
-@@ -946,14 +935,18 @@ static const struct driver_info	qmi_wwan_info_quirk_quectel_dyncfg = {
- #define QMI_GOBI_DEVICE(vend, prod) \
- 	QMI_FIXED_INTF(vend, prod, 0)
- 
--/* Quectel does not use fixed interface numbers on at least some of their
-- * devices. We need to check the number of endpoints to ensure that we bind to
-- * the correct interface.
-+/* Many devices have QMI and DIAG functions which are distinguishable
-+ * from other vendor specific functions by class, subclass and
-+ * protocol all being 0xff. The DIAG function has exactly 2 endpoints
-+ * and is silently rejected when probed.
-+ *
-+ * This makes it possible to match dynamically numbered QMI functions
-+ * as seen on e.g. many Quectel modems.
-  */
--#define QMI_QUIRK_QUECTEL_DYNCFG(vend, prod) \
-+#define QMI_MATCH_FF_FF_FF(vend, prod) \
- 	USB_DEVICE_AND_INTERFACE_INFO(vend, prod, USB_CLASS_VENDOR_SPEC, \
- 				      USB_SUBCLASS_VENDOR_SPEC, 0xff), \
--	.driver_info = (unsigned long)&qmi_wwan_info_quirk_quectel_dyncfg
-+	.driver_info = (unsigned long)&qmi_wwan_info_quirk_dtr
- 
- static const struct usb_device_id products[] = {
- 	/* 1. CDC ECM like devices match on the control interface */
-@@ -1059,10 +1052,10 @@ static const struct usb_device_id products[] = {
- 		USB_DEVICE_AND_INTERFACE_INFO(0x03f0, 0x581d, USB_CLASS_VENDOR_SPEC, 1, 7),
- 		.driver_info = (unsigned long)&qmi_wwan_info,
- 	},
--	{QMI_QUIRK_QUECTEL_DYNCFG(0x2c7c, 0x0125)},	/* Quectel EC25, EC20 R2.0  Mini PCIe */
--	{QMI_QUIRK_QUECTEL_DYNCFG(0x2c7c, 0x0306)},	/* Quectel EP06/EG06/EM06 */
--	{QMI_QUIRK_QUECTEL_DYNCFG(0x2c7c, 0x0512)},	/* Quectel EG12/EM12 */
--	{QMI_QUIRK_QUECTEL_DYNCFG(0x2c7c, 0x0800)},	/* Quectel RM500Q-GL */
-+	{QMI_MATCH_FF_FF_FF(0x2c7c, 0x0125)},	/* Quectel EC25, EC20 R2.0  Mini PCIe */
-+	{QMI_MATCH_FF_FF_FF(0x2c7c, 0x0306)},	/* Quectel EP06/EG06/EM06 */
-+	{QMI_MATCH_FF_FF_FF(0x2c7c, 0x0512)},	/* Quectel EG12/EM12 */
-+	{QMI_MATCH_FF_FF_FF(0x2c7c, 0x0800)},	/* Quectel RM500Q-GL */
- 
- 	/* 3. Combined interface devices matching on interface number */
- 	{QMI_FIXED_INTF(0x0408, 0xea42, 4)},	/* Yota / Megafon M100-1 */
-@@ -1455,7 +1448,6 @@ static int qmi_wwan_probe(struct usb_interface *intf,
- {
- 	struct usb_device_id *id = (struct usb_device_id *)prod;
- 	struct usb_interface_descriptor *desc = &intf->cur_altsetting->desc;
--	const struct driver_info *info;
- 
- 	/* Workaround to enable dynamic IDs.  This disables usbnet
- 	 * blacklisting functionality.  Which, if required, can be
-@@ -1491,12 +1483,8 @@ static int qmi_wwan_probe(struct usb_interface *intf,
- 	 * different. Ignore the current interface if the number of endpoints
- 	 * equals the number for the diag interface (two).
- 	 */
--	info = (void *)id->driver_info;
--
--	if (info->data & QMI_WWAN_QUIRK_QUECTEL_DYNCFG) {
--		if (desc->bNumEndpoints == 2)
--			return -ENODEV;
--	}
-+	if (desc->bNumEndpoints == 2)
-+		return -ENODEV;
- 
- 	return usbnet_probe(intf, id);
- }
--- 
-2.20.1
-
+Cheers,
+Christian
