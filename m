@@ -2,172 +2,137 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 9984515643D
-	for <lists+netdev@lfdr.de>; Sat,  8 Feb 2020 13:36:52 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id F313515648E
+	for <lists+netdev@lfdr.de>; Sat,  8 Feb 2020 14:32:21 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727347AbgBHMgr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 8 Feb 2020 07:36:47 -0500
-Received: from bilbo.ozlabs.org ([203.11.71.1]:38003 "EHLO ozlabs.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727118AbgBHMgq (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sat, 8 Feb 2020 07:36:46 -0500
-Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (No client certificate requested)
-        by mail.ozlabs.org (Postfix) with ESMTPSA id 48FBVx05h8z9sPJ;
-        Sat,  8 Feb 2020 23:36:39 +1100 (AEDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=ellerman.id.au;
-        s=201909; t=1581165403;
-        bh=TIsBMikK22tP+iVnpNdBWnTezaZnCH4QX2IsCZvPKH0=;
-        h=From:To:Cc:Subject:In-Reply-To:References:Date:From;
-        b=RJe6RTnIjucqdrkV1R47EoAVUruFQ21tuPJZRji3dj8PHMoMeJiDFBH0WcpE8OUbv
-         wpxfqHmP9Qs1/IiKuxPCsx1YBPpZqRbXqhf6QRPj+YAkH9ema/+g9Er8KctHpzCEyY
-         f6Md2+myTJ+qW6Z1mSKpjdBC0zGiAwTmcznmdNbMYECjAsN046hiVhJqXQ/WF24sgQ
-         LSZX0tqiMWziqXP2NqBYLSDWl1iLv2W9qhHcynY7KxySG9dRjatXwJvBLJ/m8dg5Dg
-         khxlrwC15v3zsNVTHLkC2MFi7tkjVcEkUM4y5V5GR/7bzpA5BvdqRvcEc85KgRLZif
-         mZk9CrM9j07sA==
-From:   Michael Ellerman <mpe@ellerman.id.au>
-To:     Christian Zigotzky <chzigotzky@xenosoft.de>,
-        Jakub Kicinski <kuba@kernel.org>
-Cc:     Christophe Leroy <christophe.leroy@c-s.fr>,
-        DTML <devicetree@vger.kernel.org>,
-        Darren Stevens <darren@stevens-zone.net>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        linuxppc-dev@ozlabs.org, "contact\@a-eon.com" <contact@a-eon.com>,
-        "R.T.Dickinson" <rtd2@xtra.co.nz>, Christoph Hellwig <hch@lst.de>,
-        mad skateman <madskateman@gmail.com>,
-        "netdev\@vger.kernel.org" <netdev@vger.kernel.org>
-Subject: Re: Latest Git kernel: avahi-daemon[2410]: ioctl(): Inappropriate ioctl for device
-In-Reply-To: <f438e4ed-7746-1d80-6d72-455281884a1e@xenosoft.de>
-References: <20200203095325.24c3ab1c@cakuba.hsd1.ca.comcast.net> <C11859E1-BE71-494F-81E2-9B27E27E60EE@xenosoft.de> <87tv441gg1.fsf@mpe.ellerman.id.au> <f438e4ed-7746-1d80-6d72-455281884a1e@xenosoft.de>
-Date:   Sat, 08 Feb 2020 23:36:34 +1100
-Message-ID: <87imkh1cj1.fsf@mpe.ellerman.id.au>
+        id S1727173AbgBHNcT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 8 Feb 2020 08:32:19 -0500
+Received: from mail-ed1-f53.google.com ([209.85.208.53]:33619 "EHLO
+        mail-ed1-f53.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727131AbgBHNcS (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 8 Feb 2020 08:32:18 -0500
+Received: by mail-ed1-f53.google.com with SMTP id r21so2775783edq.0
+        for <netdev@vger.kernel.org>; Sat, 08 Feb 2020 05:32:17 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=il1wiNsfS1hqVrcNCXQcWinRWFLQNVHN4PlcH6R5Q8E=;
+        b=KiogB4hyD90NrZ/7NQl2lajcD1xLiT3DLBX52BOlXaPIaEaSwHSctTknMDylcxOo1m
+         GCnZgESOfVSQQfgyMz5DVfsAZJq3wHUbebWDm6a9GpqO6qJTdWnJilrN39IAdt1dhgYT
+         mriAg2Bh2eCj2XB4e5K7jVMCEeuoifoiKgyQfcRFbGea0f0ZCg755IgSOsfg8jTThjqv
+         TE8BBi96npQDo2OR76kSgqAJXJF0vrQpIjfoIfAQeVudHyrsm1iqxqMEYHgRLyK76RIn
+         7z5ZSHFNifUCZ4uKYAFWammb2WnvGR9GF3u1uThF1daXIg+nI6yqAjw23+CI92vTNMkW
+         Un8w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=il1wiNsfS1hqVrcNCXQcWinRWFLQNVHN4PlcH6R5Q8E=;
+        b=af5V+buWeIuoL9PLSdRdn3GvheTzbC0OOREDXf4+is8lXvmPV0AqEFoeHnbYIGEbAl
+         FYridlDBS9OW70LV0pPhbTeh4FkZ4CJ/hur9KP/5HAiahe+3o7riKA2vrzQh2Dg9d+FH
+         r6VYjRhPIOmp9VI1b2JAbaZfmDcY3ssEzVX8t0akyQOwE6Dp60b4vfE1u8FL/b49d1y9
+         4m6yUSPJDVOr92+7FOyQX2y2my251/BA0stblOPdXw+6ZQMqUAvZsSHyK6jQaUf3+GYm
+         9HKfQdWB3fMKcE6NA/QZlinggKqtIDGJbHawZDomBn72ciOFs6tZ6sFA1xnGlDa4+G3X
+         6NsA==
+X-Gm-Message-State: APjAAAWk4WW5Di0jZgxJZ7CYNDpqCpnu/uNwLjm8FYZK+tay4v6xZcSe
+        +HLR3sf5QgKrhKQ8411Tqi5EcjGgpk3R/KeQtGluFA==
+X-Google-Smtp-Source: APXvYqxlCtwpjKd0Ijb1KwnZViDTukrbdq8D1NkE5DEU9lF6r9XbIvuOH+NbKZS0rfuAbe+KlYZmv/hpz46MZauU3TE=
+X-Received: by 2002:a17:906:1e48:: with SMTP id i8mr3802665ejj.189.1581168736695;
+ Sat, 08 Feb 2020 05:32:16 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
+References: <CA+h21hr4KsDCzEeLD5CtcdXMtY5pOoHGi7-Oig0-gmRKThG30A@mail.gmail.com>
+ <CA+h21hpWknrGjyK0eRVFmx7a1WWRyCZJtFRgGzr3YyeL3y2gYw@mail.gmail.com> <20200207174350.GA129227@splinter>
+In-Reply-To: <20200207174350.GA129227@splinter>
+From:   Vladimir Oltean <olteanv@gmail.com>
+Date:   Sat, 8 Feb 2020 15:32:06 +0200
+Message-ID: <CA+h21ho=r5i1ifFMPF1iTn3upCBkc-SMMFS7whqJ+utvXpHCQQ@mail.gmail.com>
+Subject: Re: VLAN retagging for packets switched between 2 certain ports
+To:     Ido Schimmel <idosch@idosch.org>
+Cc:     netdev <netdev@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Christian Zigotzky <chzigotzky@xenosoft.de> writes:
-> On 06 February 2020 at 05:35 am, Michael Ellerman wrote:
->> Christian Zigotzky <chzigotzky@xenosoft.de> writes:
->>> Kernel 5.5 PowerPC is also affected.
->> I don't know what you mean by that. What sha are you talking about?
->>
->> I have a system with avahi running and everything's fine.
->>
->>    # grep use- /etc/avahi/avahi-daemon.conf
->>    use-ipv4=3Dyes
->>    use-ipv6=3Dyes
->>=20=20=20=20
->>    # systemctl status -l --no-pager avahi-daemon
->>    =E2=97=8F avahi-daemon.service - Avahi mDNS/DNS-SD Stack
->>       Loaded: loaded (/lib/systemd/system/avahi-daemon.service; enabled;=
- vendor preset: enabled)
->>       Active: active (running) since Thu 2020-02-06 14:55:34 AEDT; 38min=
- ago
->>     Main PID: 1884 (avahi-daemon)
->>       Status: "avahi-daemon 0.7 starting up."
->>       CGroup: /system.slice/avahi-daemon.service
->>               =E2=94=9C=E2=94=801884 avahi-daemon: running [mpe-ubuntu-l=
-e.local]
->>               =E2=94=94=E2=94=801888 avahi-daemon: chroot helper
->>=20=20=20=20
->>    Feb 06 14:55:34 mpe-ubuntu-le avahi-daemon[1884]: Registering new add=
-ress record for fe80::5054:ff:fe66:2a19 on eth0.*.
->>    Feb 06 14:55:34 mpe-ubuntu-le avahi-daemon[1884]: Registering new add=
-ress record for 10.61.141.81 on eth0.IPv4.
->>    Feb 06 14:55:34 mpe-ubuntu-le avahi-daemon[1884]: Registering new add=
-ress record for ::1 on lo.*.
->>    Feb 06 14:55:34 mpe-ubuntu-le avahi-daemon[1884]: Registering new add=
-ress record for 127.0.0.1 on lo.IPv4.
->>    Feb 06 14:55:34 mpe-ubuntu-le systemd[1]: Started Avahi mDNS/DNS-SD S=
-tack.
->>    Feb 06 14:55:35 mpe-ubuntu-le avahi-daemon[1884]: Server startup comp=
-lete. Host name is mpe-ubuntu-le.local. Local service cookie is 3972418141.
->>    Feb 06 14:55:38 mpe-ubuntu-le avahi-daemon[1884]: Leaving mDNS multic=
-ast group on interface eth0.IPv6 with address fe80::5054:ff:fe66:2a19.
->>    Feb 06 14:55:38 mpe-ubuntu-le avahi-daemon[1884]: Joining mDNS multic=
-ast group on interface eth0.IPv6 with address fd69:d75f:b8b5:61:5054:ff:fe6=
-6:2a19.
->>    Feb 06 14:55:38 mpe-ubuntu-le avahi-daemon[1884]: Registering new add=
-ress record for fd69:d75f:b8b5:61:5054:ff:fe66:2a19 on eth0.*.
->>    Feb 06 14:55:38 mpe-ubuntu-le avahi-daemon[1884]: Withdrawing address=
- record for fe80::5054:ff:fe66:2a19 on eth0.
->>=20=20=20=20
->>    # uname -r
->>    5.5.0-gcc-8.2.0
->>
->>
->> The key question is what ioctl is it complaining about. You should be
->> able to find that via strace.
->>
->> cheers
->>
-> Hello Michael,
+Hi Ido,
+
+On Fri, 7 Feb 2020 at 19:43, Ido Schimmel <idosch@idosch.org> wrote:
 >
-> Sorry it isn't true that the kernel 5.5 is also affected. A Power Mac G5=
-=20
-> user told me that but this isn't correct. I compiled and tested the=20
-> stable kernel 5.5.1 and 5.5.2 today and both kernels don't have the=20
-> issue with the avahi daemon.
-
-OK good to know.
-
-> Could you please also test the latest Git kernel?
-
-That's literally all I ever do.
-
-The problem here is you didn't tell me you were running a big endian
-distro, which uses compat mode.
-
-In hindsight I should have thought of that.
-
-Now that I know that, I can reproduce the bug:
-
-  Feb 08 23:31:12 mpe-ubuntu-be avahi-daemon[24819]: ioctl(): Inappropriate=
- ioctl for device
-  Feb 08 23:31:12 mpe-ubuntu-be avahi-daemon[24819]: ioctl(): Inappropriate=
- ioctl for device
-  Feb 08 23:31:12 mpe-ubuntu-be avahi-daemon[24819]: ioctl(): Inappropriate=
- ioctl for device
-  Feb 08 23:31:12 mpe-ubuntu-be avahi-daemon[24819]: ioctl(): Inappropriate=
- ioctl for device
-
-
-But it seems you've already identified the problem commit, thanks for
-bisecting.
-
-I'm sure Arnd will be able to fix it now that you've identified the
-problematic commit.
-
-cheers
-
-
-> strace /usr/sbin/avahi-daemon
+> Hi Vladimir,
 >
-> ...
-> poll([{fd=3D4, events=3DPOLLIN}, {fd=3D16, events=3DPOLLIN}, {fd=3D15,=20
-> events=3DPOLLIN}, {fd=3D14, events=3DPOLLIN}, {fd=3D13, events=3DPOLLIN},=
- {fd=3D12,=20
-> events=3DPOLLIN}, {fd=3D11, events=3DPOLLIN}, {fd=3D10, events=3DPOLLIN},=
- {fd=3D9,=20
-> events=3DPOLLIN}, {fd=3D8, events=3DPOLLIN}, {fd=3D6, events=3DPOLLIN}], =
-11, 65) =3D=20
-> 2 ([{fd=3D12, revents=3DPOLLIN}, {fd=3D9, revents=3DPOLLIN}])
-> ioctl(12, FIONREAD, 0xffba6f24)=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
-=C2=A0 =3D -1 ENOTTY (Inappropriate ioctl=20
-> for device)
-> write(2, "ioctl(): Inappropriate ioctl for"..., 39ioctl(): Inappropriate=
-=20
-> ioctl for device) =3D 39
-> write(2, "\n", 1
-> )=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
-=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 =3D 1
-> ...
+> On Thu, Feb 06, 2020 at 11:32:52AM +0200, Vladimir Oltean wrote:
+> > On Thu, 6 Feb 2020 at 11:02, Vladimir Oltean <olteanv@gmail.com> wrote:
+> > >
+> > > Hi netdev,
+> > >
+> > > I am interested in modeling the following classifier/action with tc filters:
+> > > - Match packets with VID N received on port A and going towards port B
+> > > - Replace VID with M
+> > >
+> > > Some hardware (DSA switch) I am working on supports this, so it would
+> > > be good if I could model this with tc in a way that can be offloaded.
+> > > In man tc-flower I found the following matches:
+> > >        indev ifname
+> > >               Match on incoming interface name. Obviously this makes
+> > > sense only for forwarded flows.  ifname is the name of an interface
+> > > which must exist at the time of tc invocation.
+> > >        vlan_id VID
+> > >               Match on vlan tag id.  VID is an unsigned 12bit value in
+> > > decimal format.
+> > >
+> > > And there is a generic "vlan" action (man tc-vlan) that supports the
+> > > "modify" command.
+> > >
+> > > Judging from this syntax, I would need to add a tc-flower rule on the
+> > > egress qdisc of swpB, with indev swpA and vlan_id N.
+> > > But what should I do if I need to do VLAN retagging towards the CPU
+> > > (where DSA does not give me a hook for attaching tc filters)?
+> > >
+> > > Thanks,
+> > > -Vladimir
+> >
+> > While I don't want to influence the advice that I get, I tried to see
+> > this from the perspective of "what would a non-DSA device do?".
+> > So what I think would work for me is:
+> > - For VLAN retagging of autonomously forwarded flows (between 2
+> > front-panel ports) I can do the egress filter with indev that I
+> > mentioned above.
+> > - For VLAN retagging towards the CPU, I can just attach the filter to
+> > the ingress qdisc and not specify an indev at all. The idea being that
+> > this filter will match on locally terminated packets and not on all
+> > packets received on this port.
+> > Would this be confusing?
 >
-> Thanks,
-> Christian
+> Yes. The correct way to handle this would be to add a netdev to
+> represent the CPU port (switch side) and add the filter on its egress
+> qdisc. In addition to your use case, this also allows us to solve other
+> use cases:
+>
+> 1. Control Plane Policing (COPP): Policing of traffic going to the CPU.
+> By installing relevant filters with police/drop actions.
+> 2. Scheduling traffic towards the CPU: By appropriately configuring the
+> egress qdisc, just like for external ports.
+>
+> I hope to introduce a netdev for the CPU port in mlxsw to solve the
+> first use case in the upcoming months.
+
+I understand your point of view, but I personally don't think that
+adding a netdev for the CPU port is coherent with the interface that
+DSA is trying to expose. Sure, at times this design has perhaps
+limited what has been done with DSA, but that doesn't mean that
+exposing that net device would be the right solution.
+- Why is configuring an egress qdisc on the CPU port less confusing?
+As far as I'm aware, an egress qdisc offload should do the same thing
+as the non-offloaded version, but in the case of the CPU port, there
+isn't any "egress" from software perspective to speak of. As for
+ingress: what would tcpdump show? Nothing, probably.
+- If we add that CPU port net device, should traffic be allowed to
+pass between the front-panel ports and the CPU port by default? (of
+course the answer is yes, but: ) Should that CPU port be part of the
+bridge or not? It should be, but it won't be. So not having the net
+device avoids that problem and a bunch of others.
+
+Thanks,
+-Vladimir
