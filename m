@@ -2,77 +2,73 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id C73D91562D6
-	for <lists+netdev@lfdr.de>; Sat,  8 Feb 2020 05:06:17 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 22AFC156328
+	for <lists+netdev@lfdr.de>; Sat,  8 Feb 2020 07:04:18 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727305AbgBHEGD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 7 Feb 2020 23:06:03 -0500
-Received: from mail-il1-f197.google.com ([209.85.166.197]:40399 "EHLO
-        mail-il1-f197.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727075AbgBHEGD (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 7 Feb 2020 23:06:03 -0500
-Received: by mail-il1-f197.google.com with SMTP id m18so1576344ill.7
-        for <netdev@vger.kernel.org>; Fri, 07 Feb 2020 20:06:02 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:date:in-reply-to:message-id:subject
-         :from:to;
-        bh=YdmzA7D11PRTJN9WOgeGykpVtC5L5hrmQEgxtcYNPyo=;
-        b=lIR+uivwIwD1PmoqtCpe1bWYcFcaNIiD6Vq0EEIdi4DwVjetCmXY2vIj+sr1Yt1po5
-         0B8qv0jPy1EXtIGC9ndgE6MaOkOlV/SriKPmUUQt+WUvhJkh6LMKTyFxgF5dRRzrywyb
-         DU4elNcFTPlMaBJ9j9Cnwdl9rgwEK39DJIsTvcmBB5HI+iUoLBsz1FDqiZN3U05dmr/u
-         8SGGVYHUWX911Le27hVErJQtLS0UsDJybl4CjCjXS7OULr1qA6jEyR06He9+ubGwrjah
-         UNBPfY5bvoKqDLUOCYm5RTlbH0Thq9RFojLmQmViO1+PyDHdGCSOU5rQI1oWAfApr6VN
-         l2yA==
-X-Gm-Message-State: APjAAAWng6WCM2KPp2icpkMhzlodQTJCy3+JZEb+1KfqZSxvXiCR1v93
-        RnM9Dz0Zzep34eikYOOla2I/Ix8F78ZIWLm9XFJlPNeRLvX7
-X-Google-Smtp-Source: APXvYqx6+g7SHOZaaddW/1HIQIDO4JPcYx9LGs3vtbUQW2sQVYO85DabjDjhW9x29TzuvSOjB3EzxFCGFghJ6FpaAZ4nvi+3pD+q
+        id S1726407AbgBHGEP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 8 Feb 2020 01:04:15 -0500
+Received: from sonic301-30.consmr.mail.ne1.yahoo.com ([66.163.184.199]:46301
+        "EHLO sonic301-30.consmr.mail.ne1.yahoo.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1725789AbgBHGEP (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 8 Feb 2020 01:04:15 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=yahoo.com; s=s2048; t=1581141853; bh=pa1o5VRYWWG3WgDVzwpWeoz/bqhPAQKm9h7htHGAd9k=; h=Date:From:Reply-To:Subject:References:From:Subject; b=eaj+BwGHJUy3WuOPMl2d5UfLHqp6Do5+c3ZpZNfR+8VTnfYGshCXD5FKFWC7tQIcde5Vww62ZycjsLQq3UvnoM60fbq2ythlTeaIZ530u16tx+fbvgFu9cD1+htkgHvjp2OPP3BDRCoueXMmiTRTURVMoJwbrXb0icPOzANFhHLe/pweh1M97l8ONzORi2g0FXNW5DE7ykDDbOLLZRcCDPazha0AdqzBSs5RSeHumN/schYbDMhlPWQeYB6RRdiTNkWfS8UxVR5CAhtGPgbOEn7DRpPsmWRs1CBMsDEDAZ3bsqnw5r/K2kbT0ulp2+acby7yZOU1p/p7E/t2BI7xUg==
+X-YMail-OSG: UvyDkqUVM1lRYNh_CilBJc86ph_OuvjZ12ezYaYkPt1Pe6preMHCJorWZO8oW0A
+ i1M7mqi0n68fSzV6Yq87iB0nc61ILLkbanXv5hB6WHOAu56Ebv0m2ANzi0y2ccS1lx1HR6y3ZinV
+ kdRhS1HAk8iePWTolA6W8l7_A4FFjT54tVCOsJ2RrrnB6zGT4S9pRZ3FyxGFATtZUWNHBUyfzAe2
+ OXyhGBXBz4h5l69S9t3IwJfyNwXVabDX.7cdF137DnmFjhH81eFN9XLHhcFe.Aihz7AjL5duXkfx
+ 0q_uVKELuCjagANQiVs92g4JLqh9_.Xn29fsxq7xXfMqyVQRfwmtNgOo0A5YiBqCT9ohmKfrHgFl
+ _8GkiH05qQYMlTdjLps4RO07vs5fg1kct.JM.Y0Vb1A0Sv38RrdeUKKGPHClCOS6rPXeONxKcSS3
+ WbLrQFAWmDjavJevSG9JxTwK4VoasjOpFwXuCYXA3NYWFsfczTl57sEhiUPkobaOysX6geeSks74
+ ly6ZFMLuE1f0KKorU2q9h8ZIF2NAxhdzlllmKMKVFAkp1CPAGYH3.8GT_i7apYMtcnUUfGRt5rVU
+ GS9yMLYt6.PR1NjL_aL.edsv8blkJuYWyHCMuRm2w_x3y9vW4ePIldWAcQhWD0dZeM2bXSQphxuc
+ G5t0krDLjnBKHIdmPMFqV1ozX0utrhStcrfjI4BO.vLdjID_27.5levJivQ0HDkgocjX.DjfjhaX
+ p3aaJAa9BqKMbbeZ.xqGkynWPc2CyVd5OKbx0ZD3RjeQq0Y3DJ7ww84o5Cq2utqQma44nA1Y81L4
+ 1nt4.ass0kaf.QyUjRTcUNaVq967GsYgkzdWKxCnezQIOmkuk591F4JgPX4gxoQczqYU7kuJQaRY
+ o.toxJba5TC_.dgu_J2HlapZHHiTQdiQ0EOfuGbUSdYY1IizzL7M2ba0iajHe4RJyLF8EhKZscVT
+ RXaUqUWIeV4WjlFYRlyc9WrTsX7RflOpn7EGSfUhskPcJBGLiMtsJisqJREnhFj2UlzXqPs2uMZj
+ c6pK1IitaAwRh2vOveuyfRSdrMf3XLOoEJ.JAinSL_dRTFOzOtCHU2c44OlGtvu5IJSsYceXcRMH
+ cs3OaiXudSNdbwyrjKLZ9PNDMPeB05EhAVbAvq7VuiTtt_OGr._aJufMbRh.5GA.cVzjJxxluqqN
+ la6PuSxjlFb2yOgitzcwhqcdYZh0.DTOM6MOU7wREGR76Joh5AowsK6TjQv5PD4tOhuL_X7wrWgQ
+ jGyOhaZ1x5TWIHroFmapr3ncqqqwAP.BxEtyfjdyYdoPKmMGsHW0phX00oG6Sl_xlvMxEIlj7jNy
+ 1Lw--
+Received: from sonic.gate.mail.ne1.yahoo.com by sonic301.consmr.mail.ne1.yahoo.com with HTTP; Sat, 8 Feb 2020 06:04:13 +0000
+Date:   Sat, 8 Feb 2020 06:04:11 +0000 (UTC)
+From:   "D.H.L RAJOYS " <mrsrajoysmrsrajoyshassain@gmail.com>
+Reply-To: rejoy_hassain_2020@mail.ru
+Message-ID: <1163146201.77471.1581141851392@mail.yahoo.com>
+Subject: =?UTF-8?Q?Greetings=C2=A0to=C2=A0you.?=
 MIME-Version: 1.0
-X-Received: by 2002:a6b:92d4:: with SMTP id u203mr1503471iod.288.1581134761739;
- Fri, 07 Feb 2020 20:06:01 -0800 (PST)
-Date:   Fri, 07 Feb 2020 20:06:01 -0800
-In-Reply-To: <000000000000861441059e047626@google.com>
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <000000000000d0cac6059e089f5a@google.com>
-Subject: Re: INFO: task hung in tls_sw_cancel_work_tx
-From:   syzbot <syzbot+ba431dd9afc3a918981a@syzkaller.appspotmail.com>
-To:     airlied@linux.ie, andriin@fb.com, ast@kernel.org,
-        aviadye@mellanox.com, borisp@mellanox.com, bpf@vger.kernel.org,
-        chris@chris-wilson.co.uk, daniel@iogearbox.net, davejwatson@fb.com,
-        davem@davemloft.net, dri-devel@lists.freedesktop.org,
-        ilyal@mellanox.com, intel-gfx@lists.freedesktop.org,
-        jani.nikula@linux.intel.com, john.fastabend@gmail.com,
-        joonas.lahtinen@linux.intel.com, kafai@fb.com, kuba@kernel.org,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        rodrigo.vivi@intel.com, songliubraving@fb.com,
-        syzkaller-bugs@googlegroups.com, tvrtko.ursulin@intel.com,
-        yhs@fb.com
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+References: <1163146201.77471.1581141851392.ref@mail.yahoo.com>
+X-Mailer: WebService/1.1.15199 YMailNodin Mozilla/5.0 (Windows NT 5.1; rv:52.0) Gecko/20100101 Firefox/52.0
+To:     unlisted-recipients:; (no To-header on input)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-syzbot has bisected this bug to:
+ATTENTION: DEAR BENEFICIARY CONGRATULATIONS TO YOU DEAR GOOD DAY I AM SORRY IF YOU RECEIVED THIS LETTER IN YOUR SPAM OR JUNK MAIL IT IS DUE TO A RECENT CONNECTION HERE IN MY COUNTRY.
 
-commit f75f91574617a3c6fbc821c6b156f5777a59d0ed
-Author: Chris Wilson <chris@chris-wilson.co.uk>
-Date:   Tue May 15 14:31:49 2018 +0000
+DEAR FRIEND.
 
-    drm/i915: Shrink search list for active timelines
+YOU MAY BE WONDERING WHYI CONTACT YOU BUT SOMEONE LUCKY HAS TO BE CHOSEN WHICH IS YOU. I WANT YOU TO HANDLE THIS BUSINESS TRASACTION WITH ME IF CHANCE YOU TO DO INTERNATION BUSINESS I GO YOUR CONTACT FROM A RELIABLE WEB DIRECTORY.
 
-bisection log:  https://syzkaller.appspot.com/x/bisect.txt?x=121dc6b5e00000
-start commit:   90568ecf Merge tag 'kvm-5.6-2' of git://git.kernel.org/pub..
-git tree:       upstream
-final crash:    https://syzkaller.appspot.com/x/report.txt?x=111dc6b5e00000
-console output: https://syzkaller.appspot.com/x/log.txt?x=161dc6b5e00000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=69fa012479f9a62
-dashboard link: https://syzkaller.appspot.com/bug?extid=ba431dd9afc3a918981a
-syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=1036b6b5e00000
-C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=1651f6e9e00000
+I RECEIVE YOUR CONTENT OF YOUR EMAIL FROM THIS DHL MASTER CARD OFFICES FUND OF $10.5 USD MILLION AFTER THE BOARD OF DIRECTORS MEETINGS, THE UNITED NATIONS GOVERNMENT HAVE DECIDED TO ISSUE YOU YOUR (ATM) VALUED AT 10.5 MILLION UNITED STATES DOLLAR.THIS IS TO BRING TO YOUR NOTICE THAT YOUR VALUED SUM OF 10.5 MILLION DOLLAR HAS BEING TODAY CREDITED INTO (ATM) MASTER CARD AND HAS BEEN HANDLE TO THE FOREIGN REMITTANCE DEPARTMENT TO SEND IT TO YOU TODAY IN YOUR FAVOR.
 
-Reported-by: syzbot+ba431dd9afc3a918981a@syzkaller.appspotmail.com
-Fixes: f75f91574617 ("drm/i915: Shrink search list for active timelines")
+WITH YOUR (ATM) YOU WILL HAVE ACCESS TO MAKE DAILY WITHDRAWALS OF $5000,00 UNITED STATE DOLLARS DAILIES AS ALREADY PROGRAMMED UNTIL YOU WITHDRAW YOUR TOTAL SUM IN YOUR (ATM) CARD WHICH HAS REGISTERED IN OUR SYSTEM FOR PAYMENT RECORD, AS SOON AS WE RECEIVE YOUR INFORMATIONS AND YOUR HOME ADDRESS OF YOUR COUNTRY AS ALREADY PROGRAMMED, WE WILL SEND YOUR (ATM) CARD THROUGH DHL COURIER SERVICE, WE HAVE RECEIVED A SIGNAL FROM THE SWISS WORLD BANK TO INFECT YOUR TRANSFER TO YOU WITHIN ONE WEEK,
 
-For information about bisection process see: https://goo.gl/tpsmEJ#bisection
+WE HAVE JUST FINISHED OUR ANNUAL GENERAL MEETING WITH THE CENTRAL BANK OF AMERICA (BOA). AT THE END OF THE BOARD OF DIRECTORS MEETING TODAY, WE HAVE CONCLUDED TO IMMEDIATELY ISSUE YOU AS SOON AS POSSIBLE,
+
+AND YOUR VALUE SUM HAS BEEN CREDITED INTO YOUR (ATM) VISA CARD
+ACCOUNT. WHICH YOU WILL USE TO WITHDRAW YOUR FUND IN ANY PART OF THE WORLD, WE HAVE ISSUED AND CREDITED YOUR (ATM) CARD IN YOUR NAME TODAY,
+
+YOUR (ATM) WILL BE INSURE BY THE INSURANCE COMPANY AND SEND TO YOU
+THROUGH ANY AVAILABLE COURIER COMPANY OF OUR CHOICE.
+
+ONCE AGAIN CONGRATULATIONS TO YOU,
+
+DIRECTOR DHL SERVICE,
+THANKS,
+SINCERELY.
+MRS. RAJOYS HASSAIN,
