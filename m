@@ -2,104 +2,102 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id D7F7D15655A
-	for <lists+netdev@lfdr.de>; Sat,  8 Feb 2020 17:09:41 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 705631565C2
+	for <lists+netdev@lfdr.de>; Sat,  8 Feb 2020 18:38:23 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727360AbgBHQJk (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 8 Feb 2020 11:09:40 -0500
-Received: from mo4-p01-ob.smtp.rzone.de ([81.169.146.165]:21501 "EHLO
-        mo4-p01-ob.smtp.rzone.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727303AbgBHQJj (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 8 Feb 2020 11:09:39 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; t=1581178175;
-        s=strato-dkim-0002; d=xenosoft.de;
-        h=In-Reply-To:Date:Message-ID:References:Cc:To:From:Subject:
-        X-RZG-CLASS-ID:X-RZG-AUTH:From:Subject:Sender;
-        bh=PdihAqfeKD54YbNb2He1peHtwOFZYOu4uAedog826qA=;
-        b=Pk8Uo4ovKN1pL7kKOvCSgy7upAtqtwkcYqwT363YZgBKMuztnT7zY/i31di6xGLq3Z
-        E8ukM+PciN7RvrbluR9s/NdqOXzC7kYfDueyc98VQgiAyE6msIXi7tGWhWivDvQkG9CA
-        XcctgTZXp7ws980ZnAj+eMjLnTivU/t2KMvaiXxKxZBaribqEkwbLPCKVcswyan6klo6
-        BruRqU/xBV8FEiQVZw0Ek5z+Uk6CZuowkvV4F4IYRdqwcVTZ21BfcQKn0ZEqoObAoMWT
-        J1HTxjiZ736KS7SYQ/iTJTm7csaZyE52YfnXsWa9go9a+cOQZ7WWlmdScE2R6e2phWNz
-        NA1w==
-X-RZG-AUTH: ":L2QefEenb+UdBJSdRCXu93KJ1bmSGnhMdmOod1DhGM4l4Hio94KKxRySfLxnHfJ+Dkjp5DdBJSrwuuqxvPgBLiaxlASBVL8WJv/OkCrDe9HRcQ=="
-X-RZG-CLASS-ID: mo00
-Received: from [IPv6:2a02:8109:89c0:ebfc:b8e6:ddd1:f1d2:d845]
-        by smtp.strato.de (RZmta 46.1.12 AUTH)
-        with ESMTPSA id 40bcf3w18G8eit4
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256 bits))
-        (Client did not present a certificate);
-        Sat, 8 Feb 2020 17:08:40 +0100 (CET)
-Subject: Re: Latest Git kernel: avahi-daemon[2410]: ioctl(): Inappropriate
- ioctl for device
-From:   Christian Zigotzky <chzigotzky@xenosoft.de>
-To:     Arnd Bergmann <arnd@arndb.de>
-Cc:     Michael Ellerman <mpe@ellerman.id.au>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Christophe Leroy <christophe.leroy@c-s.fr>,
-        DTML <devicetree@vger.kernel.org>,
-        Darren Stevens <darren@stevens-zone.net>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        linuxppc-dev@ozlabs.org, "contact@a-eon.com" <contact@a-eon.com>,
-        "R.T.Dickinson" <rtd2@xtra.co.nz>, Christoph Hellwig <hch@lst.de>,
-        mad skateman <madskateman@gmail.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        Christian Zigotzky <info@xenosoft.de>
-References: <CAK8P3a39L5i4aEbKe9CiW6unbioL=T8GqXC007mXxUu+_j84FA@mail.gmail.com>
- <834D35CA-F0D5-43EC-97B2-2E97B4DA7703@xenosoft.de>
-Message-ID: <b8e3a03c-4aeb-5582-78df-144450b03927@xenosoft.de>
-Date:   Sat, 8 Feb 2020 17:08:40 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.4.2
+        id S1727443AbgBHRed (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 8 Feb 2020 12:34:33 -0500
+Received: from mail-qk1-f196.google.com ([209.85.222.196]:37723 "EHLO
+        mail-qk1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727303AbgBHRed (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 8 Feb 2020 12:34:33 -0500
+Received: by mail-qk1-f196.google.com with SMTP id c188so2405240qkg.4
+        for <netdev@vger.kernel.org>; Sat, 08 Feb 2020 09:34:32 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=vFbWXxT3BnnmeXjcvXz0cFQ59E9mn2EdxaVYevY4ALA=;
+        b=bMlZk+nIiloW+CHj1HqWU7wkAo99YL+g757LFTnC+Zyxet8pQPwYl3iaXi8qNakCx0
+         kWEYn2Pz3NNOzau+wi5mvN2PgihBWPYQ01iCEM/6DurU2uYkE8TQM4d5kgeNicLhkY3n
+         rSzrTlBcdKpo7wdSPtXxQkzv6tqt41p0ciaxkJlELaiM7B0ItM5KRnousv2eTjQ9oNzH
+         BNjXmZ36UNMXISIbe02wVZMp984OKF0KjDUvTAK+iKC3G8dpdbFWuq/LEi9KZB5ekjwd
+         NU1aCUDiJ/XK8vG+oyg+Q3J+eod02xaxHFWp4mQYGmNo5H6zUmclYJnryxj3iJ6j0TDw
+         2daw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=vFbWXxT3BnnmeXjcvXz0cFQ59E9mn2EdxaVYevY4ALA=;
+        b=da1DVbjRBmY8d4R2CwIvLNxmL9O7kRLc9JAe33DHkWl3huN+utFHswDMxNIPePOzTp
+         n0t+Ax4fwMn9t7v01acreei9kB2MzRMM3ubvmh3U/iyoAfKTercuWWGvUx3PXAIA+C/a
+         xT7heyYHVs8NIEARIdeEqcdUdzXHOpy0xrNOHlgdpblbX6ReSh7Y+1A9nt6RwC2THaWb
+         yM/HKo5FQY8Eu+HB4k1Pu5OY90N79Wu0vq6fGReuhicb1SZcUOzaL52OkjTVUDUo99Hp
+         1mLkiHdDaJ7jz6jxeNxmL2Azs8Z5C2bSFgnPynCfDhHRwZbc+AK41H5V2x8tZQ4mJZ/n
+         juOA==
+X-Gm-Message-State: APjAAAVLj7jVDW8qZNZAvczYrSABLblowMSFqyhZU5E+B+7j18dagGYj
+        BVlDSsg9QwsDP93RLKPxDsE=
+X-Google-Smtp-Source: APXvYqy1pakRsDqS67/T4Q2awWkeN+NIyi3Cnod8SOZmM55m9HQyuICPjURDverBisOeGTbo+Dw6kg==
+X-Received: by 2002:a05:620a:8cc:: with SMTP id z12mr3886614qkz.48.1581183271867;
+        Sat, 08 Feb 2020 09:34:31 -0800 (PST)
+Received: from ryzen (104-222-125-163.cpe.teksavvy.com. [104.222.125.163])
+        by smtp.gmail.com with ESMTPSA id 63sm3124005qki.57.2020.02.08.09.34.30
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sat, 08 Feb 2020 09:34:31 -0800 (PST)
+Date:   Sat, 8 Feb 2020 12:34:23 -0500
+From:   Alexander Aring <alex.aring@gmail.com>
+To:     David Miller <davem@davemloft.net>
+Cc:     kuznet@ms2.inr.ac.ru, yoshfuji@linux-ipv6.org, kuba@kernel.org,
+        netdev@vger.kernel.org, andrea.mayer@uniroma2.it,
+        dav.lebrun@gmail.com, mcr@sandelman.ca, stefan@datenfreihafen.org
+Subject: Re: [PATCH net 1/2] net: ipv6: seg6_iptunnel: set tunnel headroom to
+ zero
+Message-ID: <20200208173423.i2oymewkgiriciqh@ryzen>
+References: <20200204173019.4437-1-alex.aring@gmail.com>
+ <20200204173019.4437-2-alex.aring@gmail.com>
+ <20200206.135418.602918242715627740.davem@davemloft.net>
 MIME-Version: 1.0
-In-Reply-To: <834D35CA-F0D5-43EC-97B2-2E97B4DA7703@xenosoft.de>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 8bit
-Content-Language: de-DE
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <20200206.135418.602918242715627740.davem@davemloft.net>
+User-Agent: NeoMutt/20180716
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 08 February 2020 at 07:59 am, Christian Zigotzky wrote:
->
->> On 7. Feb 2020, at 18:08, Arnd Bergmann <arnd@arndb.de> wrote:
->>
->> ﻿On Fri, Feb 7, 2020 at 3:34 PM Christian Zigotzky
->> <chzigotzky@xenosoft.de> wrote:
->>> Hello Arnd,
->>>
->>> We regularly compile and test Linux kernels every day during the merge
->>> window. Since Thursday last week we have very high CPU usage because of
->>> the avahi daemon on our desktop Linux systems (Ubuntu, Debian etc). The
->>> avahi daemon produces a lot of the following log message. This generates
->>> high CPU usage.
->>>
->>> Error message: avahi-daemon[2410]: ioctl(): Inappropriate ioctl for device
->>>
->>> strace /usr/sbin/avahi-daemon:
->>>
->> Thanks a lot for the detailed analysis, with this I immediately saw
->> what went wrong in my
->> original commit and I sent you a fix. Please test to ensure that this
->> correctly addresses
->> the problem.
->>
->>         Arnd
-> Hi Arnd,
->
-> Thanks a lot for your patch! I will test it as soon as possible.
->
-> Cheers,
-> Christian
+Hi,
 
-Hi Arnd,
+On Thu, Feb 06, 2020 at 01:54:18PM +0100, David Miller wrote:
+> From: Alexander Aring <alex.aring@gmail.com>
+> Date: Tue,  4 Feb 2020 12:30:18 -0500
+> 
+> > diff --git a/net/ipv6/seg6_iptunnel.c b/net/ipv6/seg6_iptunnel.c
+> > index ab7f124ff5d7..5b6e88f16e2d 100644
+> > --- a/net/ipv6/seg6_iptunnel.c
+> > +++ b/net/ipv6/seg6_iptunnel.c
+> > @@ -449,8 +449,6 @@ static int seg6_build_state(struct nlattr *nla,
+> >  	if (tuninfo->mode != SEG6_IPTUN_MODE_L2ENCAP)
+> >  		newts->flags |= LWTUNNEL_STATE_OUTPUT_REDIRECT;
+> >  
+> > -	newts->headroom = seg6_lwt_headroom(tuninfo);
+> > -
+> >  	*ts = newts;
+> >  
+> >  	return 0;
+> 
+> Even if this change is correct, you are eliminating the one and only
+> user of seg6_lwt_headroom() so you would have to kill that in this
+> patch as well.
 
-I successfully compiled the latest Git kernel with your patch today. The 
-avahi daemon works fine now. That means your patch has solved the avahi 
-issue.
+Okay, this is in include/uapi but surrounding by __KERNEL__ so I guess
+it's still okay to remove it?
 
-Thanks for your patch and have a nice weekend!
+btw: why it is not static in seg6_iptunnel.c then?
 
-Cheers,
-Christian
+Anyway I will wait until I hear something back what the use of headroom
+exactly is and why the original authors of segmentation routing sets it.
+In my case it will simple not work with a IPv6 min mtu so I will set it
+to zero for possible net-next patches.
+
+- Alex
