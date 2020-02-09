@@ -2,98 +2,99 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 1A828156BBF
-	for <lists+netdev@lfdr.de>; Sun,  9 Feb 2020 18:14:53 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 648B5156BC4
+	for <lists+netdev@lfdr.de>; Sun,  9 Feb 2020 18:18:32 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727429AbgBIROt (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 9 Feb 2020 12:14:49 -0500
-Received: from mail-pj1-f65.google.com ([209.85.216.65]:53756 "EHLO
-        mail-pj1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727336AbgBIROt (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 9 Feb 2020 12:14:49 -0500
-Received: by mail-pj1-f65.google.com with SMTP id n96so3128579pjc.3;
-        Sun, 09 Feb 2020 09:14:48 -0800 (PST)
+        id S1727411AbgBIRSa (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 9 Feb 2020 12:18:30 -0500
+Received: from mail-lj1-f195.google.com ([209.85.208.195]:38828 "EHLO
+        mail-lj1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727399AbgBIRSa (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 9 Feb 2020 12:18:30 -0500
+Received: by mail-lj1-f195.google.com with SMTP id w1so4466391ljh.5
+        for <netdev@vger.kernel.org>; Sun, 09 Feb 2020 09:18:29 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=DM5IK0DECKxUrASVycyGmFhL+Y5jkj05TGZSDzLZlAw=;
-        b=hFsOM/4KNJNbuM2fyLAO2zsm6P72skJDUudaxwQkYJ30UvQRtF3rdUYLcZ7FsU+Jl4
-         fd2ouUWqFHSFSD+eIr+Yz0AcJepE7/x7cppSbVT/Rlg60vkZqG/oS0W6rjNMf6G/wdrl
-         Pt1bFB9Zpq0VahUI+C33yPmNgtiVkt1bbA52f5JOboIMKxrfMBgMmxes4Mb0LU8XmpKl
-         xWEIOieHtQtOT+gy6i7AanLlqux+bG7L6eNyuigPWDZj/C+3cQnJjqa62P3TnFmhlEFN
-         5duSab27N3GIf9V5tnRVbi/skUQbS3AUMudlFaaaEbMhQs4LVoI1nJOPLwyax6o0W84k
-         krvQ==
+        d=linaro.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=iX/Cwymqqdc137iwGo9GrIAl1+HtFCOAKUHk7azo7/w=;
+        b=sFUKdPO93vKYZEw/Ug0TorBuaULTB+Uw596VwGq84N61fjEmKVVtqeA1xgrFozmuU2
+         t4Hr906mncO3lEM4knNauRFkz7lxi9OkRW8vMUA4xKmPmMqg8PIDYE8orwi/XEA5P0pz
+         D70H67FMgivq0pq5Ra9CyBfYUfA4+HgOx8L1xi34ipbW+pkORxq4FAx6XUj4YwPmnfb5
+         oDm4Fm8O9SmqRSwPTzoQQaYEMA3heSsqggV3Nnu63ZDv/SoBa13svFvS8d1MflbOg4ix
+         5ff4rLLjpD3YlA5SkDC2t1QNgDcP3yNuOu3K8nq47bF2tsUKf6Il/Dka4R0t3M9kPHKd
+         zRMw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references;
-        bh=DM5IK0DECKxUrASVycyGmFhL+Y5jkj05TGZSDzLZlAw=;
-        b=kKNzVh6qQrS27RkDDgtrYLhFsz06m4y92gY+VE2vUmuWHLLtxNcI7hP+Yx0NN9wsH2
-         NS8DlElQUTJf3LrqYE+Rv0m00VtYtJCZw0b80qaS4f0URp6HOaPJnwDBGNtPoyP0QG+Z
-         IYZJ+TKy/y3ZOkEgKM6/Ab28Zw2Y3So0HU5XrxAFyOKixyd5Kbs4dL/RQ+wCGkajUi3o
-         eEqWjzGqHCVgPLiybKkFkgPjCgxQ0ukCwO3+L6q4cqF+nNcA2NAuig+Pn/Ti9ZVgvOM/
-         9LTqlEMmQwDi2cB1AJJJXDDAueH/QNWpXDC4q/6bqPWSmwuaaMFJnevPPAmPvcqXI0d8
-         FUPg==
-X-Gm-Message-State: APjAAAVey0YavYWVizzzrUWr+2h5xPfkdJTAgb79urmQLRYwrhrrJ8kM
-        TT4nvrHwpelEKoaRzQ1Tq+c=
-X-Google-Smtp-Source: APXvYqwoMABm+6xETYfKXdtttba+JXWqTZK6qPOzFn/8bDHq1WTEHXVY7EmGdRjPDHUz+8uxnUK8zw==
-X-Received: by 2002:a17:902:6bcb:: with SMTP id m11mr9373043plt.10.1581268488364;
-        Sun, 09 Feb 2020 09:14:48 -0800 (PST)
-Received: from localhost.localdomain ([157.44.204.164])
-        by smtp.googlemail.com with ESMTPSA id t66sm9587357pgb.91.2020.02.09.09.14.45
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 09 Feb 2020 09:14:47 -0800 (PST)
-From:   Mohana Datta Yelugoti <ymdatta.work@gmail.com>
-To:     gregkh@linuxfoundation.org
-Cc:     ymdatta.work@gmail.com, Manish Chopra <manishc@marvell.com>,
-        GR-Linux-NIC-Dev@marvell.com, netdev@vger.kernel.org,
-        devel@driverdev.osuosl.org, linux-kernel@vger.kernel.org
-Subject: [PATCH v2] staging: qlge: remove spaces at the start of a line
-Date:   Sun,  9 Feb 2020 22:44:30 +0530
-Message-Id: <20200209171431.19907-1-ymdatta.work@gmail.com>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <ymdatta.work@gmail.com>
-References: <ymdatta.work@gmail.com>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=iX/Cwymqqdc137iwGo9GrIAl1+HtFCOAKUHk7azo7/w=;
+        b=SxN4uEgIRqarNzd683XNjDSn6vR9JKFNy75kXPrL3W3p7lNKu/odd/XDlkg1xFpqQ1
+         AF/2Lwj11kLEeEfZchOJ+GdKC4J5SX09L1iq56RaO2NVnKu2H/Jg+eCsLO91+n8kc6/O
+         d5V8Yuh0xWk2XwZ9+qoPncCtZExy0BcftoJ4/it/tLfdGC/uhX5M3Rg6mzdFFkOHYUWI
+         Qh3w7254YTWidNgintVUOshq7DgDkg//57iSmS5t6GNdMi2xERND7rlAY03XGGqyDgu3
+         mcZsoXPW0IACvvWbOuK/E7KbRiF8sR8t1qGMTLWYej4WLOnRPxJ0f3CanMFY+8tIyNzu
+         HZWg==
+X-Gm-Message-State: APjAAAX8GXio0jnzIUEoTVg3RW+rOs5n6jJpXgY+UV3YYxN1MrUcZuEb
+        fTmspE4U8RPvlgTcWUyGZ3J+A8Zmdm1BxfKsiSP9gg==
+X-Google-Smtp-Source: APXvYqyERfzIRnh/UXfObLOmFk7HYzVxiDdS8MmtBaFvyP0yHM3y5rLzZkIaO0+sLLsBQtyMm6TQpLy5ZjyByBduyOA=
+X-Received: by 2002:a05:651c:414:: with SMTP id 20mr5307683lja.165.1581268708042;
+ Sun, 09 Feb 2020 09:18:28 -0800 (PST)
+MIME-Version: 1.0
+References: <20191212013521.1689228-1-andriin@fb.com>
+In-Reply-To: <20191212013521.1689228-1-andriin@fb.com>
+From:   Naresh Kamboju <naresh.kamboju@linaro.org>
+Date:   Sun, 9 Feb 2020 22:48:16 +0530
+Message-ID: <CA+G9fYtAQGwf=OoEvHwbJpitcfhpfhy-ar+6FRrWC_-ti7sUTg@mail.gmail.com>
+Subject: Re: [PATCH bpf-next 0/4] Fix perf_buffer creation on systems with
+ offline CPUs
+To:     Andrii Nakryiko <andriin@fb.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Sasha Levin <sashal@kernel.org>
+Cc:     bpf <bpf@vger.kernel.org>, Netdev <netdev@vger.kernel.org>,
+        ast@fb.com, Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii.nakryiko@gmail.com>,
+        Kernel Team <kernel-team@fb.com>,
+        linux- stable <stable@vger.kernel.org>,
+        lkft-triage@lists.linaro.org,
+        Arnaldo Carvalho de Melo <acme@redhat.com>,
+        Leo Yan <leo.yan@linaro.org>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This patch fixes "WARNING: please, no spaces at the start of a
-line" by checkpatch.pl by replacing spaces with the tab.
+On Thu, 12 Dec 2019 at 07:05, Andrii Nakryiko <andriin@fb.com> wrote:
+>
+> This patch set fixes perf_buffer__new() behavior on systems which have some of
+> the CPUs offline/missing (due to difference between "possible" and "online"
+> sets). perf_buffer will create per-CPU buffer and open/attach to corresponding
+> perf_event only on CPUs present and online at the moment of perf_buffer
+> creation. Without this logic, perf_buffer creation has no chances of
+> succeeding on such systems, preventing valid and correct BPF applications from
+> starting.
+>
+> Andrii Nakryiko (4):
+>   libbpf: extract and generalize CPU mask parsing logic
+>   selftests/bpf: add CPU mask parsing tests
+>   libbpf: don't attach perf_buffer to offline/missing CPUs
 
-Signed-off-by: Mohana Datta Yelugoti <ymdatta.work@gmail.com>
----
- drivers/staging/qlge/qlge_main.c | 12 ++++++------
- 1 file changed, 6 insertions(+), 6 deletions(-)
+perf build failed on stable-rc 5.5 branch.
 
-diff --git a/drivers/staging/qlge/qlge_main.c b/drivers/staging/qlge/qlge_main.c
-index ef8037d0b52e..86b9b7314a40 100644
---- a/drivers/staging/qlge/qlge_main.c
-+++ b/drivers/staging/qlge/qlge_main.c
-@@ -52,16 +52,16 @@ MODULE_LICENSE("GPL");
- MODULE_VERSION(DRV_VERSION);
- 
- static const u32 default_msg =
--    NETIF_MSG_DRV | NETIF_MSG_PROBE | NETIF_MSG_LINK |
-+	NETIF_MSG_DRV | NETIF_MSG_PROBE | NETIF_MSG_LINK |
- /* NETIF_MSG_TIMER |	*/
--    NETIF_MSG_IFDOWN |
--    NETIF_MSG_IFUP |
--    NETIF_MSG_RX_ERR |
--    NETIF_MSG_TX_ERR |
-+	NETIF_MSG_IFDOWN |
-+	NETIF_MSG_IFUP |
-+	NETIF_MSG_RX_ERR |
-+	NETIF_MSG_TX_ERR |
- /*  NETIF_MSG_TX_QUEUED | */
- /*  NETIF_MSG_INTR | NETIF_MSG_TX_DONE | NETIF_MSG_RX_STATUS | */
- /* NETIF_MSG_PKTDATA | */
--    NETIF_MSG_HW | NETIF_MSG_WOL | 0;
-+	NETIF_MSG_HW | NETIF_MSG_WOL | 0;
- 
- static int debug = -1;	/* defaults above */
- module_param(debug, int, 0664);
+libbpf.c: In function '__perf_buffer__new':
+libbpf.c:6159:8: error: implicit declaration of function
+'parse_cpu_mask_file'; did you mean 'parse_uint_from_file'?
+[-Werror=implicit-function-declaration]
+  err = parse_cpu_mask_file(online_cpus_file, &online, &n);
+        ^~~~~~~~~~~~~~~~~~~
+        parse_uint_from_file
+libbpf.c:6159:8: error: nested extern declaration of
+'parse_cpu_mask_file' [-Werror=nested-externs]
+
+build log,
+https://ci.linaro.org/view/lkft/job/openembedded-lkft-linux-stable-rc-5.5/DISTRO=lkft,MACHINE=hikey,label=docker-lkft/11/console
+
 -- 
-2.17.1
-
+Linaro LKFT
+https://lkft.linaro.org
