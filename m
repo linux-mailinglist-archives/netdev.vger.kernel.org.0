@@ -2,53 +2,55 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 34574156853
-	for <lists+netdev@lfdr.de>; Sun,  9 Feb 2020 02:30:31 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D136F15685F
+	for <lists+netdev@lfdr.de>; Sun,  9 Feb 2020 03:15:39 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727632AbgBIBaZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 8 Feb 2020 20:30:25 -0500
-Received: from mail.kernel.org ([198.145.29.99]:36216 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726474AbgBIBaY (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sat, 8 Feb 2020 20:30:24 -0500
-Subject: Re: [GIT] Networking
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1581211824;
-        bh=nP3WJUemZwOEGYMM6sFrfB/oEG8Nb2n/yQJFGwJv+us=;
-        h=From:In-Reply-To:References:Date:To:Cc:From;
-        b=QzvA3G/E9OC66clwdJJPSpTYOsgHGoj9yeJUrbz66/EFtUeCk2Ge0xN3inOdQqY5r
-         akSlUJLzjuR+LGengwlQbBiRoJRs80AKiN6ozBsO2ZyTjhnIX0IImz3TlvxUJ8rnsc
-         o3/NPje2e1gqf0kTxgc4mJWRqetPb7o72jq64IwI=
-From:   pr-tracker-bot@kernel.org
-In-Reply-To: <20200208.233612.1712791186124406955.davem@davemloft.net>
-References: <20200208.233612.1712791186124406955.davem@davemloft.net>
-X-PR-Tracked-List-Id: <linux-kernel.vger.kernel.org>
-X-PR-Tracked-Message-Id: <20200208.233612.1712791186124406955.davem@davemloft.net>
-X-PR-Tracked-Remote: git://git.kernel.org/pub/scm/linux/kernel/git/netdev/net.git
- refs/heads/master
-X-PR-Tracked-Commit-Id: 29ca3b31756fb7cfbfc85f2d82a0475bf38cc1ed
-X-PR-Merge-Tree: torvalds/linux.git
-X-PR-Merge-Refname: refs/heads/master
-X-PR-Merge-Commit-Id: 291abfea4746897b821830e0189dc225abd401eb
-Message-Id: <158121182430.19605.8913178584004677320.pr-tracker-bot@kernel.org>
-Date:   Sun, 09 Feb 2020 01:30:24 +0000
-To:     David Miller <davem@davemloft.net>
-Cc:     torvalds@linux-foundation.org, akpm@linux-foundation.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+        id S1727579AbgBICPd (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 8 Feb 2020 21:15:33 -0500
+Received: from mail-vs1-f66.google.com ([209.85.217.66]:43133 "EHLO
+        mail-vs1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727532AbgBICPd (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 8 Feb 2020 21:15:33 -0500
+Received: by mail-vs1-f66.google.com with SMTP id 7so1991790vsr.10
+        for <netdev@vger.kernel.org>; Sat, 08 Feb 2020 18:15:31 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:reply-to:from:date:message-id:subject:to;
+        bh=hWWZukPJh92rQ3vhdIt7GO3pCIdgbJac2b77G3PE640=;
+        b=oa1SlnX/JGQM8nnmK9Pr8uqsiDXCgQgWZ+tn2RxFJ3S5ybopF4kCmnDMlmvtGhsjkQ
+         +j4Qw6ds1OfrBPvpRv69f7kEcOvzYdjsRK5s57DcSAu2wUnv2ikzB6fHhRLaAi08VFz1
+         SUvrLaVFrD0YrIleYfTZTezW+qfcKxe1Q0tbswiCPjmLaYR9BPtt8ZYcpBl6NzwkVgmK
+         G9isRO5f9k8YEOitIXypxgqgofBnxxJvaBu4EPyO/f24/vmHQ6MMLIAV6bfzHBLkhoUk
+         Vo9G36teDBwebH7rYN6nRt2fcmKaVQ4HeBe/CqBcC1k5lFf/LkGv7oZcmUVqZRVpzSy9
+         Ea5g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:reply-to:from:date:message-id
+         :subject:to;
+        bh=hWWZukPJh92rQ3vhdIt7GO3pCIdgbJac2b77G3PE640=;
+        b=F46lMQRHrWnaf2LIos1d6Opmq+TQNkcw7lLTbVj7t4QFAX8dFuAGrub6FKx6kOtM3a
+         6YYg3zrG1YtyRSxn2U+91K5WYMJCmB6ADQ5WKRuvVz1twhxzQlF6//lFRzQOf0ppTHUB
+         GxH31rpYTqENJyUiY24z/nlhgnBqwihcyCK5CcCFBx/CBGq6cl7/IFbyc9v0Sp109FHx
+         Tfc3FBmBOb+LDb+gKbHS9VGxMbs6IRddKARvjo0kbNjkUFSAgcfK1xbi7EsK1Eb7WOoz
+         35yFC8/GXtiQIofW/c8ln4ERYZ+n2STWHbCRLPi2KFcz19O0XxUsZ3dk2uMuXHNNXquj
+         KzKQ==
+X-Gm-Message-State: APjAAAXBxEWuTrgPhqmHiatdbRsdYJwaBCyfc5UCRRVwKcSCiqvXFefg
+        L+BG/zZCduN+UrRReN1C0Gdj0KuqBxWRya/UN+8=
+X-Google-Smtp-Source: APXvYqy2lbY+bvEBqEHMla0N2EQS3RAuGZ0UCXhvtJvH+Nk5j+D9hieYlErLjIc7dyry3kTVtSZoouflYWs18j27U0w=
+X-Received: by 2002:a67:ae43:: with SMTP id u3mr3378514vsh.44.1581214530813;
+ Sat, 08 Feb 2020 18:15:30 -0800 (PST)
+MIME-Version: 1.0
+Received: by 2002:a67:7c97:0:0:0:0:0 with HTTP; Sat, 8 Feb 2020 18:15:30 -0800 (PST)
+Reply-To: info.moneygrampostunit@gmail.com
+From:   Money Gram <departmentinvestigatingsecurit@gmail.com>
+Date:   Sun, 9 Feb 2020 02:15:30 +0000
+Message-ID: <CAPBJQAmS06_-Ggs9oO5hBONKQL0Ofpz3k+CnOxs_snQKO5Vrng@mail.gmail.com>
+Subject: 42te
+To:     bkoko002 <bkoko002@mail.ru>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The pull request you sent on Sat, 08 Feb 2020 23:36:12 +0100 (CET):
-
-> git://git.kernel.org/pub/scm/linux/kernel/git/netdev/net.git refs/heads/master
-
-has been merged into torvalds/linux.git:
-https://git.kernel.org/torvalds/c/291abfea4746897b821830e0189dc225abd401eb
-
-Thank you!
-
--- 
-Deet-doot-dot, I am a bot.
-https://korg.wiki.kernel.org/userdoc/prtracker
+i have a good news for you i will be glad if you can contact me now
