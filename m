@@ -2,161 +2,105 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 85F5A1568D0
-	for <lists+netdev@lfdr.de>; Sun,  9 Feb 2020 05:13:14 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 81BE2156984
+	for <lists+netdev@lfdr.de>; Sun,  9 Feb 2020 08:36:29 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727634AbgBIENN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 8 Feb 2020 23:13:13 -0500
-Received: from mx0a-00082601.pphosted.com ([67.231.145.42]:55322 "EHLO
-        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1727550AbgBIENM (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 8 Feb 2020 23:13:12 -0500
-Received: from pps.filterd (m0109334.ppops.net [127.0.0.1])
-        by mx0a-00082601.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 01949FJ3002625;
-        Sat, 8 Feb 2020 20:12:57 -0800
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=subject : to : cc :
- references : from : message-id : date : in-reply-to : content-type :
- content-transfer-encoding : mime-version; s=facebook;
- bh=4THmbJc2Rb6HjUeqonMzFOF+KVnxn4/f6YfXcRY3A3o=;
- b=Hup0ZtMi8XmeToAisk/d7eQhR3bVUPLNlVhtaCWvgD0AtIYnC4vKEtNHu0lFrdkMTYBX
- AT8BtPxt/h2wV16WBnAnqUMfo2WZTE1845zqCKuUMuKQM4HlYtgb89NskTuTKHOrz8ww
- YMUDb8uJdLJ/W+cux25+KsMRWmcu2spNRmI= 
-Received: from mail.thefacebook.com ([163.114.132.120])
-        by mx0a-00082601.pphosted.com with ESMTP id 2y25pmgms8-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
-        Sat, 08 Feb 2020 20:12:57 -0800
-Received: from NAM11-CO1-obe.outbound.protection.outlook.com (100.104.98.9) by
- o365-in.thefacebook.com (100.104.94.231) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.1779.2; Sat, 8 Feb 2020 20:12:56 -0800
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=km7Jcz0wkCOhi2LDHzuZEh5KfErAPFgY6BJiOB6ptAjwP5ddwNhipqaQzYQr7CJrgQ4m1jstPU81aAIU8PsinllDnMRLKvPRdwUUtaA7PjL6it6L2MRq90pcDMBDjYfAbwF5mGOYGaWXDC9jeyD/YEgGdMMLeP1ANQmNUV114JLnX+g6SkpOnSt8XAw4tvOZURb9OPRzIUciPj2bI+U/njf6n7tB2ZhvPRdPZqzoXktJFIJY3iKjb0TspVKmZbHaWyH1wEjTpXd/ZMNp75OqFPuDWcNQhvBbkoni+EDtPzoWTXHaozMjOueokLuJd+qdSqAws1jwfBqpbhTnB+2gUw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=4THmbJc2Rb6HjUeqonMzFOF+KVnxn4/f6YfXcRY3A3o=;
- b=STaTMtBFML3vZZ1M6MCZpBy/489UnmS0PDUf6SYWgD/2cO0d3/pzW6DHkEye2ZK6v4eXf4ioZZo636J4JtBsco+f4nyrWIz+WlkPJS6ck4r0PZLWmdvsKHZEstIjz8JVwZb1yEUo70oxHHuhLS5e7qZ0MqCKnNBuaXQ/fULnOqtDAgWWlfXE6pExJ/dmXtqnvupoOKizJ5AD/HqKKshZzUw3ECuYmuPRtYBOVzLpp4buyt6b6lCA0Wic6Nn+o7PuPF2EzoNOCBxrJ3hlUXs5j4cMdXft4nEDeKD2mgPAw1TO+ClCmT+Jm+evi3/X0eeAQonzKxhrKnWmV3Y0PeNLsg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=fb.com; dmarc=pass action=none header.from=fb.com; dkim=pass
- header.d=fb.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.onmicrosoft.com;
- s=selector2-fb-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=4THmbJc2Rb6HjUeqonMzFOF+KVnxn4/f6YfXcRY3A3o=;
- b=Omt5K3sxbttOAadaWHe2npgXwGRvT8qFqsZDx7+gm436y4JsfBwQPTWodx92KrGdSulWkwdjEXvtnaCr1HG0Chw5nZetn6l8OycoYYjti/FFsiVk6eZtcpXTKkt5bjg6rbFlKkHEncvW2vSsk+qSWNybopkkIL4szDOwhW4sL2w=
-Received: from DM6PR15MB3001.namprd15.prod.outlook.com (20.178.231.16) by
- DM6PR15MB3706.namprd15.prod.outlook.com (10.141.164.33) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.2707.21; Sun, 9 Feb 2020 04:12:55 +0000
-Received: from DM6PR15MB3001.namprd15.prod.outlook.com
- ([fe80::294e:884:76fd:743c]) by DM6PR15MB3001.namprd15.prod.outlook.com
- ([fe80::294e:884:76fd:743c%4]) with mapi id 15.20.2707.027; Sun, 9 Feb 2020
- 04:12:55 +0000
-Subject: Re: [PATCH bpf 3/3] selftests/bpf: Test freeing sockmap/sockhash with
- a socket in it
-To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>,
-        Jakub Sitnicki <jakub@cloudflare.com>,
-        Daniel Borkmann <daniel@iogearbox.net>
-CC:     bpf <bpf@vger.kernel.org>,
-        Network Development <netdev@vger.kernel.org>,
-        kernel-team <kernel-team@cloudflare.com>,
-        John Fastabend <john.fastabend@gmail.com>
-References: <20200206111652.694507-1-jakub@cloudflare.com>
- <20200206111652.694507-4-jakub@cloudflare.com>
- <CAADnVQJU4RtAAMH0pL9AQSXDgHGcXOqm15EKZw10c=r-f=bfuw@mail.gmail.com>
-From:   Yonghong Song <yhs@fb.com>
-Message-ID: <970fe43f-f5dc-b2cc-7c5e-4889fb1b051d@fb.com>
-Date:   Sat, 8 Feb 2020 20:12:50 -0800
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.14; rv:68.0)
- Gecko/20100101 Thunderbird/68.4.2
-In-Reply-To: <CAADnVQJU4RtAAMH0pL9AQSXDgHGcXOqm15EKZw10c=r-f=bfuw@mail.gmail.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 8bit
-X-ClientProxiedBy: MWHPR13CA0019.namprd13.prod.outlook.com
- (2603:10b6:300:16::29) To DM6PR15MB3001.namprd15.prod.outlook.com
- (2603:10b6:5:13c::16)
-MIME-Version: 1.0
-Received: from tinayen-mbp.dhcp.thefacebook.com (2620:10d:c090:180::2f03) by MWHPR13CA0019.namprd13.prod.outlook.com (2603:10b6:300:16::29) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.2729.13 via Frontend Transport; Sun, 9 Feb 2020 04:12:53 +0000
-X-Originating-IP: [2620:10d:c090:180::2f03]
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: a569a5d7-0875-4d5c-6a64-08d7ad1656a2
-X-MS-TrafficTypeDiagnostic: DM6PR15MB3706:
-X-Microsoft-Antispam-PRVS: <DM6PR15MB3706A8BD76C46592135AD5F3D31E0@DM6PR15MB3706.namprd15.prod.outlook.com>
-X-FB-Source: Internal
-X-MS-Oob-TLC-OOBClassifiers: OLM:2201;
-X-Forefront-PRVS: 0308EE423E
-X-Forefront-Antispam-Report: SFV:NSPM;SFS:(10019020)(366004)(39860400002)(346002)(376002)(136003)(396003)(189003)(199004)(36756003)(2616005)(31686004)(478600001)(6506007)(52116002)(186003)(16526019)(5660300002)(53546011)(4326008)(6486002)(66946007)(2906002)(66476007)(8676002)(8936002)(6512007)(66556008)(81156014)(316002)(86362001)(110136005)(31696002)(81166006)(54906003);DIR:OUT;SFP:1102;SCL:1;SRVR:DM6PR15MB3706;H:DM6PR15MB3001.namprd15.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;MX:1;A:1;
-Received-SPF: None (protection.outlook.com: fb.com does not designate
- permitted sender hosts)
-X-MS-Exchange-SenderADCheck: 1
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: PRs0xDdxt6kWzyjjP6aVz5Gtnm7ikFlHtdkwBTEzYW4Zn7VSYfSy1zav+VxDoHDBpnrvEFAN0XfVJQdyZ3L9PhOtUC325yzVwFquI1dDCoji3kwvcXkdkA3qY6dtx1lKA1IuLiKkZ1Rkvu/xoRGqhyRcAFMxN0etxoxyWv9O6VHziWbFRhVlRuqLLxwbOCMBniemh+BXsupyIObThaPnTA/OBE2mXzkJ1Kl3mBvZM2BLA3Tu8pct1vqYqQqquLKb3mOWuETdjLQ6o7hfguLsFJCkl+xtzIs3dq2AwV1nRpwbLBeYH3S1zbOgSCIbg72AO8IZ53ICIGH9viHQWktJDJ0oNSPbIZWJLvlmfgXbR0xkaNeBQ9FUtyNmHKI1Lw5kqAFF7JSSIOrtvFNY6N5agCpLVXLvQkhq2HrA331W4EA06BP47+5IUrXFGl/6VDtu
-X-MS-Exchange-AntiSpam-MessageData: yQ9dA3VFPkHYx0fuCwJuOmIzzoXpzvfMMAb2qiU63QjNRwTZMQweThTX29GHDEZVH333rcsHG+ib9W3EaeMZMn9TXSKSwIe/Dj06MqUm8X7y3VjY7MkmcGIo7aV1MYH6mjJcDUjQX+n6X19dRsUGkrUH/F0Yt5cOgwR+fLOfsjM=
-X-MS-Exchange-CrossTenant-Network-Message-Id: a569a5d7-0875-4d5c-6a64-08d7ad1656a2
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 09 Feb 2020 04:12:55.3783
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 8ae927fe-1255-47a7-a2af-5f3a069daaa2
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: DlVOQwm/Xz2RzEJaI1h7WMCc6y96eV++EmetvMmU66K3saWl1NB4Q6DH3yjbiEek
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM6PR15MB3706
-X-OriginatorOrg: fb.com
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.138,18.0.572
- definitions=2020-02-08_08:2020-02-07,2020-02-08 signatures=0
-X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 suspectscore=0
- phishscore=0 mlxscore=0 clxscore=1011 priorityscore=1501 impostorscore=0
- lowpriorityscore=0 adultscore=0 spamscore=0 malwarescore=0 mlxlogscore=999
- bulkscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2001150001 definitions=main-2002090034
-X-FB-Internal: deliver
+        id S1725924AbgBIHg0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 9 Feb 2020 02:36:26 -0500
+Received: from mail-pf1-f194.google.com ([209.85.210.194]:41958 "EHLO
+        mail-pf1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725871AbgBIHg0 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 9 Feb 2020 02:36:26 -0500
+Received: by mail-pf1-f194.google.com with SMTP id j9so2037659pfa.8
+        for <netdev@vger.kernel.org>; Sat, 08 Feb 2020 23:36:25 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id;
+        bh=vs40ech2nqzZecsscoUYDUd7q5qMLMdyUKvxJgn5+wg=;
+        b=TgzaF+zIiOJhR0oJR2Cn5Mxw0wYQAog9i8mQhKUMRySHmKqTZTMjAM1oUGZrBTQIOl
+         G0y2g+K/jQS4H03zp8FSi/4z6uqUnt6QWsCUommNmJzPMs58ferWNQ8Tx66wibrdBU2A
+         /bZOlEp6gE/91tHvydyeRFO+cDNupSIS0TY5B27QDtlNh56NyXWCOmCFETDi/kSFk5jz
+         8M9pTRZtjTALghJQv4wlzvbL4kE1z9sDRGvHoX7/PWDzqM8WS+j15SrnM9gzU7yK/xLU
+         TVo059ogw/MpTj2QNbRhGzdLfScUPRcRH+Klf++3ADMcRW3YJ7c8CVKv2m2sVL40Ae/U
+         1vXQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=vs40ech2nqzZecsscoUYDUd7q5qMLMdyUKvxJgn5+wg=;
+        b=roNQcyzNqsL346JyUBiPvJ4nPWoGoO1s3KGkb5Nps3GcDSIO94CXKRTwRGLtALUKoS
+         7djzSJs/72tsARlpIyC20bvjfs2qzekyv0cR0BuvNS8uJHJsRgTMe6zEH4KlljRKERcj
+         1X+d4OdjSMsCbBKzohsGVp9vjqrvNbt6grhuk0RXEm6LabmfhIoFDGzankqsR0x6/vvS
+         g6kJWnK2QmVYP1znNv5F4NnZhxDbFDkXgoNkXLzU2PkJrT2OZNjLSGhWg11JmnUSNAZ+
+         ux6oD+8Io0UHvu2yZ8xeZrf8FaqE4syYKOPaOnZtE71e1K38uRS+CsboKyusra75QByi
+         ZRVA==
+X-Gm-Message-State: APjAAAUucmRdY+5hWkV4tlG+HrFZF+qErxV/QNOXfcQqNEIueAqJ0ywQ
+        x11ScuuQUvWVemp/kC8OnSIEqQj4
+X-Google-Smtp-Source: APXvYqypMXFwhPVrkTVJLygmKcOuBJN1wj+mfT1KyIr5TW1Z6vfVOLIUb2brUg3sZzJV65o62Qry9Q==
+X-Received: by 2002:a63:e044:: with SMTP id n4mr7961359pgj.338.1581233785160;
+        Sat, 08 Feb 2020 23:36:25 -0800 (PST)
+Received: from localhost.localdomain (S0106bcd16567bb27.ed.shawcable.net. [68.150.202.68])
+        by smtp.gmail.com with ESMTPSA id y64sm7926175pgb.25.2020.02.08.23.36.24
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sat, 08 Feb 2020 23:36:24 -0800 (PST)
+From:   Jarrett Knauer <jrtknauer@gmail.com>
+To:     netdev@vger.kernel.org
+Cc:     Jarrett Knauer <jrtknauer@gmail.com>
+Subject: [PATCH] staging: qlge: Fixed extra indentation in qlget_get_stats()
+Date:   Sun,  9 Feb 2020 00:36:21 -0700
+Message-Id: <20200209073621.30026-1-jrtknauer@gmail.com>
+X-Mailer: git-send-email 2.17.1
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+qlge TODO cited weird indentation all over qlge files, with
+qlget_get_stats() as an example. With this fix the TODO will need to be
+updated as well.
 
+This is also a re-submission, as I incorrectly sent my first patch
+directly to the maintainers instead of to the correct mailing list.
+Apologies.
 
-On 2/8/20 6:41 PM, Alexei Starovoitov wrote:
-> On Thu, Feb 6, 2020 at 3:28 AM Jakub Sitnicki <jakub@cloudflare.com> wrote:
->>
->> Commit 7e81a3530206 ("bpf: Sockmap, ensure sock lock held during tear
->> down") introduced sleeping issues inside RCU critical sections and while
->> holding a spinlock on sockmap/sockhash tear-down. There has to be at least
->> one socket in the map for the problem to surface.
->>
->> This adds a test that triggers the warnings for broken locking rules. Not a
->> fix per se, but rather tooling to verify the accompanying fixes. Run on a
->> VM with 1 vCPU to reproduce the warnings.
->>
->> Fixes: 7e81a3530206 ("bpf: Sockmap, ensure sock lock held during tear down")
->> Signed-off-by: Jakub Sitnicki <jakub@cloudflare.com>
-> 
-> selftests/bpf no longer builds for me.
-> make
->    BINARY   test_maps
->    TEST-OBJ [test_progs] sockmap_basic.test.o
-> /data/users/ast/net/tools/testing/selftests/bpf/prog_tests/sockmap_basic.c:
-> In function ‘connected_socket_v4’:
-> /data/users/ast/net/tools/testing/selftests/bpf/prog_tests/sockmap_basic.c:20:11:
-> error: ‘TCP_REPAIR_ON’ undeclared (first use in this function); did
-> you mean ‘TCP_REPAIR’?
->     20 |  repair = TCP_REPAIR_ON;
->        |           ^~~~~~~~~~~~~
->        |           TCP_REPAIR
-> /data/users/ast/net/tools/testing/selftests/bpf/prog_tests/sockmap_basic.c:20:11:
-> note: each undeclared identifier is reported only once for each
-> function it appears in
-> /data/users/ast/net/tools/testing/selftests/bpf/prog_tests/sockmap_basic.c:29:11:
-> error: ‘TCP_REPAIR_OFF_NO_WP’ undeclared (first use in this function);
-> did you mean ‘TCP_REPAIR_OPTIONS’?
->     29 |  repair = TCP_REPAIR_OFF_NO_WP;
->        |           ^~~~~~~~~~~~~~~~~~~~
->        |           TCP_REPAIR_OPTIONS
-> 
-> Clearly /usr/include/linux/tcp.h is too old.
-> Suggestions?
+Signed-off-by: Jarrett Knauer <jrtknauer@gmail.com>
+---
+ drivers/staging/qlge/qlge_main.c | 16 ++++++++--------
+ 1 file changed, 8 insertions(+), 8 deletions(-)
 
-In the past, when such situation happens, people typically sync to
-linux/tools/include/uapi/ directory. This probably will work in this 
-case as well.
+diff --git a/drivers/staging/qlge/qlge_main.c b/drivers/staging/qlge/qlge_main.c
+index ef8037d0b52e..a56bd69afd35 100644
+--- a/drivers/staging/qlge/qlge_main.c
++++ b/drivers/staging/qlge/qlge_main.c
+@@ -4123,11 +4123,11 @@ static struct net_device_stats *qlge_get_stats(struct net_device
+ 	/* Get RX stats. */
+ 	pkts = mcast = dropped = errors = bytes = 0;
+ 	for (i = 0; i < qdev->rss_ring_count; i++, rx_ring++) {
+-			pkts += rx_ring->rx_packets;
+-			bytes += rx_ring->rx_bytes;
+-			dropped += rx_ring->rx_dropped;
+-			errors += rx_ring->rx_errors;
+-			mcast += rx_ring->rx_multicast;
++		pkts += rx_ring->rx_packets;
++		bytes += rx_ring->rx_bytes;
++		dropped += rx_ring->rx_dropped;
++		errors += rx_ring->rx_errors;
++		mcast += rx_ring->rx_multicast;
+ 	}
+ 	ndev->stats.rx_packets = pkts;
+ 	ndev->stats.rx_bytes = bytes;
+@@ -4138,9 +4138,9 @@ static struct net_device_stats *qlge_get_stats(struct net_device
+ 	/* Get TX stats. */
+ 	pkts = errors = bytes = 0;
+ 	for (i = 0; i < qdev->tx_ring_count; i++, tx_ring++) {
+-			pkts += tx_ring->tx_packets;
+-			bytes += tx_ring->tx_bytes;
+-			errors += tx_ring->tx_errors;
++		pkts += tx_ring->tx_packets;
++		bytes += tx_ring->tx_bytes;
++		errors += tx_ring->tx_errors;
+ 	}
+ 	ndev->stats.tx_packets = pkts;
+ 	ndev->stats.tx_bytes = bytes;
+-- 
+2.17.1
+
