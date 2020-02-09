@@ -2,123 +2,98 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 21BB3156AFC
-	for <lists+netdev@lfdr.de>; Sun,  9 Feb 2020 16:29:53 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E12A0156B9F
+	for <lists+netdev@lfdr.de>; Sun,  9 Feb 2020 17:59:32 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727732AbgBIP3u (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 9 Feb 2020 10:29:50 -0500
-Received: from mail-lj1-f195.google.com ([209.85.208.195]:45196 "EHLO
-        mail-lj1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727682AbgBIP3u (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 9 Feb 2020 10:29:50 -0500
-Received: by mail-lj1-f195.google.com with SMTP id f25so4255245ljg.12
-        for <netdev@vger.kernel.org>; Sun, 09 Feb 2020 07:29:49 -0800 (PST)
+        id S1727795AbgBIQ4r (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 9 Feb 2020 11:56:47 -0500
+Received: from mail-pl1-f196.google.com ([209.85.214.196]:42015 "EHLO
+        mail-pl1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727698AbgBIQ4q (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 9 Feb 2020 11:56:46 -0500
+Received: by mail-pl1-f196.google.com with SMTP id e8so1817024plt.9;
+        Sun, 09 Feb 2020 08:56:46 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=cloudflare.com; s=google;
-        h=references:user-agent:from:to:cc:subject:in-reply-to:date
-         :message-id:mime-version:content-transfer-encoding;
-        bh=GeG1KWLb3anDrvTa9Q1tSCi6BsVsKZhJEV3LxmD8BUM=;
-        b=BEZFSL2kjB0jykfKIYokzx8baCX9jKke3FqJsdl0OqF3I8O83CH/+Wd+SVCTB9KbDr
-         KYsyXzw9piPUtm8HHVTMupikAHF6LRF57EJFdM0fLRqiQor3xqsSyUr5olkt8yF2kJWe
-         RQiG5F8ibpgOLjiPUmPJ8EWLptQV1W+sxNw6s=
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references;
+        bh=bYXiQhC5n5u/ihEX7aKChFXEwfa9YarVLF2hhJhV42c=;
+        b=uanZS5YpnfBmwJUJ+r7OgAIA+Wsd5XvpvXQfwihhP7Ttal4Tm5IkYeuk+IiGByv6eF
+         /zKEGckzC10V04/gVbf0PsNBDMzyde4Q6MwMdvWd1vaYsLaBTd4gNI45Q6ge6Frucrd7
+         rGzwmt9IptGJ8d8hCEX4iHW1wB5sqLu6Xdp4ebKFpfeGRsw9kNaffQOcG/Va3CIoZW4/
+         x2MaSGngOv26K/HKqPbqmmpjonL2S465KBSlVsL/znwNp0PfRfN1GiOA4OLcGzLtM8aG
+         HjAKy1H5Z0mYFcRt4T9D+Pc7k1GC8Q/wM0FNCu20O1m9qf/WSWCzcgB8kf3CRmHjpzhY
+         wVCA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:references:user-agent:from:to:cc:subject
-         :in-reply-to:date:message-id:mime-version:content-transfer-encoding;
-        bh=GeG1KWLb3anDrvTa9Q1tSCi6BsVsKZhJEV3LxmD8BUM=;
-        b=LsxoOGgHjBl4L19+2uuiNxw5iGdVaA8BtOYf29sWOcLzk8ecTf2n8dTrU4rcjVOlIn
-         IdNvUjHpyep/wRXTM2KmJOMZ1hSFOQtqjzW6w1gXCYfh0EWdaubA2AnD4+AFyTjbNfBX
-         TunAZbtZDuLUbfs2wOlrRdnUuxwTAT0uGoLxE6IIL6h/U9ufgGCtzTOl+RVlwFslT9Q0
-         POf5eqKDpyzbGHQ0TR4mV2uZWpbTrM5cUiV4OgNhfPCLAYo/tD/oZdYG0No+VG1R7x4q
-         euKTFkK/Yx/7iyI16xQnqVUgsfs3bbViQbBJMYJF1T9P+FAG8JNs0OiLeetom7y0ehhI
-         9QVQ==
-X-Gm-Message-State: APjAAAUsk3osHSAy+GK7rm/QyrbQAbT58G4UobNjjW1qBdiPvocTkuA/
-        Nrrpvmo8BTcrAB79cwnv+vx8OQ==
-X-Google-Smtp-Source: APXvYqyyhc5Hq9Up5D9WtT4+gync24YvGT2lp640zi8JRF9ONhPTeZnVEHQhfxmwCJyumbd3WfALXw==
-X-Received: by 2002:a2e:9b12:: with SMTP id u18mr5419310lji.274.1581262188646;
-        Sun, 09 Feb 2020 07:29:48 -0800 (PST)
-Received: from cloudflare.com (user-5-173-219-131.play-internet.pl. [5.173.219.131])
-        by smtp.gmail.com with ESMTPSA id z13sm4859546ljh.21.2020.02.09.07.29.46
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references;
+        bh=bYXiQhC5n5u/ihEX7aKChFXEwfa9YarVLF2hhJhV42c=;
+        b=tc08Rn5/gI3kqGQ1LHuQhA9vRgUSMolth+IEGAM9KLoNS4Zzh/mBgreCxcubJzriGW
+         tWZsuRRShkzIlgakRrlb8snBJRBbUy1c1lUEoTtV1F/s197uFfrP+TpDbhT6mHxX3ek9
+         3fPR8F178ZLbcU6782GAcIsahjD+zzESxGdN4JM1MkeR/7ZbqUjXQ2LIMRfvVf+XoWjg
+         HrJgl/2apLHZlK47BLUk4Iw6VJbM/LZ5GbW13Hpk15z9q5yXqktrpRbLRYP4gvMQ0X5r
+         +BAMo4bi2FfnIlg2VsUgefAMfFK6x47sAJpxUl5aMpNq/xYUveNFsMfuoKabuzCKpa2F
+         wPmA==
+X-Gm-Message-State: APjAAAViwi3WMpvMTXhoLafBVYGHhcCHQ6CrqEjWCBGAT+JPjrv5bK3U
+        yO0DNyNso19CbRWt4RGLuzw=
+X-Google-Smtp-Source: APXvYqyTLAgUBwo4RbJ29MJo22d4RDu1W7S/60tnhf9FFhVXSEX981uJZSEVQ790JyDQrCTveCttwQ==
+X-Received: by 2002:a17:90b:243:: with SMTP id fz3mr16500653pjb.29.1581267406107;
+        Sun, 09 Feb 2020 08:56:46 -0800 (PST)
+Received: from localhost.localdomain ([157.44.204.164])
+        by smtp.googlemail.com with ESMTPSA id c184sm9785000pfa.39.2020.02.09.08.56.42
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 09 Feb 2020 07:29:47 -0800 (PST)
-References: <20200206111652.694507-1-jakub@cloudflare.com> <20200206111652.694507-4-jakub@cloudflare.com> <CAADnVQJU4RtAAMH0pL9AQSXDgHGcXOqm15EKZw10c=r-f=bfuw@mail.gmail.com>
-User-agent: mu4e 1.1.0; emacs 26.3
-From:   Jakub Sitnicki <jakub@cloudflare.com>
-To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Cc:     Daniel Borkmann <daniel@iogearbox.net>, bpf <bpf@vger.kernel.org>,
-        Network Development <netdev@vger.kernel.org>,
-        kernel-team <kernel-team@cloudflare.com>,
-        John Fastabend <john.fastabend@gmail.com>
-Subject: Re: [PATCH bpf 3/3] selftests/bpf: Test freeing sockmap/sockhash with a socket in it
-In-reply-to: <CAADnVQJU4RtAAMH0pL9AQSXDgHGcXOqm15EKZw10c=r-f=bfuw@mail.gmail.com>
-Date:   Sun, 09 Feb 2020 16:29:44 +0100
-Message-ID: <87eev3aidz.fsf@cloudflare.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
+        Sun, 09 Feb 2020 08:56:45 -0800 (PST)
+From:   Mohana Datta Yelugoti <ymdatta.work@gmail.com>
+To:     gregkh@linuxfoundation.org
+Cc:     ymdatta.work@gmail.com, Manish Chopra <manishc@marvell.com>,
+        GR-Linux-NIC-Dev@marvell.com, netdev@vger.kernel.org,
+        devel@driverdev.osuosl.org, linux-kernel@vger.kernel.org
+Subject: [PATCH] staging: qlge: remove spaces at the start of a line
+Date:   Sun,  9 Feb 2020 22:26:19 +0530
+Message-Id: <20200209165619.18643-1-ymdatta.work@gmail.com>
+X-Mailer: git-send-email 2.17.1
+In-Reply-To: <ymdatta.work@gmail.com>
+References: <ymdatta.work@gmail.com>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, Feb 09, 2020 at 03:41 AM CET, Alexei Starovoitov wrote:
-> On Thu, Feb 6, 2020 at 3:28 AM Jakub Sitnicki <jakub@cloudflare.com> wrot=
-e:
->>
->> Commit 7e81a3530206 ("bpf: Sockmap, ensure sock lock held during tear
->> down") introduced sleeping issues inside RCU critical sections and while
->> holding a spinlock on sockmap/sockhash tear-down. There has to be at lea=
-st
->> one socket in the map for the problem to surface.
->>
->> This adds a test that triggers the warnings for broken locking rules. No=
-t a
->> fix per se, but rather tooling to verify the accompanying fixes. Run on a
->> VM with 1 vCPU to reproduce the warnings.
->>
->> Fixes: 7e81a3530206 ("bpf: Sockmap, ensure sock lock held during tear do=
-wn")
->> Signed-off-by: Jakub Sitnicki <jakub@cloudflare.com>
->
-> selftests/bpf no longer builds for me.
-> make
->   BINARY   test_maps
->   TEST-OBJ [test_progs] sockmap_basic.test.o
-> /data/users/ast/net/tools/testing/selftests/bpf/prog_tests/sockmap_basic.=
-c:
-> In function =E2=80=98connected_socket_v4=E2=80=99:
-> /data/users/ast/net/tools/testing/selftests/bpf/prog_tests/sockmap_basic.=
-c:20:11:
-> error: =E2=80=98TCP_REPAIR_ON=E2=80=99 undeclared (first use in this func=
-tion); did
-> you mean =E2=80=98TCP_REPAIR=E2=80=99?
->    20 |  repair =3D TCP_REPAIR_ON;
->       |           ^~~~~~~~~~~~~
->       |           TCP_REPAIR
-> /data/users/ast/net/tools/testing/selftests/bpf/prog_tests/sockmap_basic.=
-c:20:11:
-> note: each undeclared identifier is reported only once for each
-> function it appears in
-> /data/users/ast/net/tools/testing/selftests/bpf/prog_tests/sockmap_basic.=
-c:29:11:
-> error: =E2=80=98TCP_REPAIR_OFF_NO_WP=E2=80=99 undeclared (first use in th=
-is function);
-> did you mean =E2=80=98TCP_REPAIR_OPTIONS=E2=80=99?
->    29 |  repair =3D TCP_REPAIR_OFF_NO_WP;
->       |           ^~~~~~~~~~~~~~~~~~~~
->       |           TCP_REPAIR_OPTIONS
->
-> Clearly /usr/include/linux/tcp.h is too old.
-> Suggestions?
+This patch fixes "WARNING: please, no spaces at the start of a
+line" by checkpatch.pl.
 
-Sorry for the inconvenience. I see that tcp.h header is missing under
-linux/tools/include/uapi/.
+Signed-off-by: Mohana Datta Yelugoti <ymdatta.work@gmail.com>
+---
+ drivers/staging/qlge/qlge_main.c | 12 ++++++------
+ 1 file changed, 6 insertions(+), 6 deletions(-)
 
-I have been building against my distro kernel headers, completely
-unaware of this. This is an oversight on my side.
+diff --git a/drivers/staging/qlge/qlge_main.c b/drivers/staging/qlge/qlge_main.c
+index ef8037d0b52e..86b9b7314a40 100644
+--- a/drivers/staging/qlge/qlge_main.c
++++ b/drivers/staging/qlge/qlge_main.c
+@@ -52,16 +52,16 @@ MODULE_LICENSE("GPL");
+ MODULE_VERSION(DRV_VERSION);
+ 
+ static const u32 default_msg =
+-    NETIF_MSG_DRV | NETIF_MSG_PROBE | NETIF_MSG_LINK |
++	NETIF_MSG_DRV | NETIF_MSG_PROBE | NETIF_MSG_LINK |
+ /* NETIF_MSG_TIMER |	*/
+-    NETIF_MSG_IFDOWN |
+-    NETIF_MSG_IFUP |
+-    NETIF_MSG_RX_ERR |
+-    NETIF_MSG_TX_ERR |
++	NETIF_MSG_IFDOWN |
++	NETIF_MSG_IFUP |
++	NETIF_MSG_RX_ERR |
++	NETIF_MSG_TX_ERR |
+ /*  NETIF_MSG_TX_QUEUED | */
+ /*  NETIF_MSG_INTR | NETIF_MSG_TX_DONE | NETIF_MSG_RX_STATUS | */
+ /* NETIF_MSG_PKTDATA | */
+-    NETIF_MSG_HW | NETIF_MSG_WOL | 0;
++	NETIF_MSG_HW | NETIF_MSG_WOL | 0;
+ 
+ static int debug = -1;	/* defaults above */
+ module_param(debug, int, 0664);
+-- 
+2.17.1
 
-Can I ask for a revert? I'm traveling today with limited ability to
-post patches.
-
-I can resubmit the test with the missing header for bpf-next once it
-reopens.
