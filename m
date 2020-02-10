@@ -2,106 +2,167 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 103B6157D79
-	for <lists+netdev@lfdr.de>; Mon, 10 Feb 2020 15:34:05 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id EDE73157DEA
+	for <lists+netdev@lfdr.de>; Mon, 10 Feb 2020 15:55:30 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728320AbgBJOeD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 10 Feb 2020 09:34:03 -0500
-Received: from out5-smtp.messagingengine.com ([66.111.4.29]:52547 "EHLO
-        out5-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1727484AbgBJOeD (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 10 Feb 2020 09:34:03 -0500
-Received: from compute3.internal (compute3.nyi.internal [10.202.2.43])
-        by mailout.nyi.internal (Postfix) with ESMTP id 4C55921857;
-        Mon, 10 Feb 2020 09:34:02 -0500 (EST)
-Received: from mailfrontend2 ([10.202.2.163])
-  by compute3.internal (MEProxy); Mon, 10 Feb 2020 09:34:02 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-        messagingengine.com; h=cc:content-type:date:from:in-reply-to
-        :message-id:mime-version:references:subject:to:x-me-proxy
-        :x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=fm2; bh=d6RHHT
-        j8qlLQZgHBmp4zlV2V4aYHLE9xNfyWoswZnuc=; b=Z9H51bHfQaM468ClRiEUvY
-        e/YJoxrLtAILr0Z13yzBPws+3qF/7k9Xm5xdKmKGtBOclPrAONTp4PfRLkXq0jLl
-        tjONXjmK2RrRYfLWgSqdRsKAaS7YLSI9wia/Ze0STqX0WhoG1U7YhazVrZ4DaEWb
-        i8DbXfMaQ/OG0BRs1721UkSx9JFjC8DOPYlti2dUa3Ewa4YJtihySbiGRBpoErf2
-        pUp6vYGxml30elq0dTP87088m764VppsGbagaR6dtf59aZH37r3zBJCdrZOB2KIK
-        2CFeg0zxExEOrcxRI5FxHE9Wclpm6cEtAvXwOTN07NW4ITz6ykkVCCLDELLFj8kw
-        ==
-X-ME-Sender: <xms:2mlBXvtVYw8Yl3w9AXohTLJH5gIJCtYugf93KsEvcjK_s91lEXzQ7A>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedugedriedugdeifecutefuodetggdotefrodftvf
-    curfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfghnecu
-    uegrihhlohhuthemuceftddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmdenuc
-    fjughrpeffhffvuffkfhggtggujgesthdtredttddtvdenucfhrhhomhepkfguohcuufgt
-    hhhimhhmvghluceoihguohhstghhsehiughoshgthhdrohhrgheqnecukfhppeduleefrd
-    egjedrudeihedrvdehudenucevlhhushhtvghrufhiiigvpedtnecurfgrrhgrmhepmhgr
-    ihhlfhhrohhmpehiughoshgthhesihguohhstghhrdhorhhg
-X-ME-Proxy: <xmx:2mlBXswKmnuilSvBLjEUMHKr084PXoPv4nIXz0cN-Ppvol4BfJfuOw>
-    <xmx:2mlBXljqWPHmiceAeEQt3ixt8l8cwFtQwwtdI3YQo-ZFHcUnvwsMvw>
-    <xmx:2mlBXgB3GtfH_yJW5QLUFlpPwfbHyX75_86YcIcWQzFogjNM8toTKQ>
-    <xmx:2mlBXp71awAONn-BOOHq36Mus7xSy4qvEPtDb1LCZ0kqdr_aY6CBeg>
-Received: from localhost (unknown [193.47.165.251])
-        by mail.messagingengine.com (Postfix) with ESMTPA id C7DF730606E9;
-        Mon, 10 Feb 2020 09:34:01 -0500 (EST)
-Date:   Mon, 10 Feb 2020 16:34:00 +0200
-From:   Ido Schimmel <idosch@idosch.org>
-To:     Vladimir Oltean <olteanv@gmail.com>
-Cc:     netdev <netdev@vger.kernel.org>
-Subject: Re: VLAN retagging for packets switched between 2 certain ports
-Message-ID: <20200210143400.GA185791@splinter>
-References: <CA+h21hr4KsDCzEeLD5CtcdXMtY5pOoHGi7-Oig0-gmRKThG30A@mail.gmail.com>
- <CA+h21hpWknrGjyK0eRVFmx7a1WWRyCZJtFRgGzr3YyeL3y2gYw@mail.gmail.com>
+        id S1728152AbgBJOz0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 10 Feb 2020 09:55:26 -0500
+Received: from mail-bn7nam10on2081.outbound.protection.outlook.com ([40.107.92.81]:6569
+        "EHLO NAM10-BN7-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1727705AbgBJOz0 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 10 Feb 2020 09:55:26 -0500
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=He7m0n3fJs3Ua7+AfxSinZXYutpVWdeezeRiPOFGCBKmquKMHxfXriv5BBF3G36ixECrA9cgz5m6GZe5eC3EssoOa4IRw64LK4PjztZJs0kPVBkM/ayPa4CjIHSg5ypkRdBhMzHN7wTGewqpSltYRIafyYbBrbjdOZfn/1Fpa/P58lGRZXOg1IhmUtK9h2qeEpV6uYMWwCnLw+SQdFsQj6GzQL8UvLAytuRH+TpDehNBsKw3jt8pdhJyxDwndYjMsFb94cqObYF96aFoWgPjUJlTXKKuyaTgzXBLcXnCURZa27a9TKXRh3WQ/+4VLLtXdGlH5y09THRvaP7rLLatyg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=riD4gZBUVv7fMJ53Lom5OskEWlCxj/MBYYjfm8MZgtU=;
+ b=E1x9KM4YOODCyYgGK2w5zk+JzY89n22F2g4qKTvuvZxF3NPo5ui0XBwsAtEMDRVAFvhTmWvkWt/rCdFDtdez4yppwVP44feTWyKZCrwk8YGY/1gcmnf6/xYg/w0eRt/mnuG2WKf8Knw9UMecTndHHNe5tfJwpdCPdtJktzU1FxuoQFJ5MFSvhjvCORZgDw2u14XqU5M1DHO4LYA6kp/puPzk/LP+iw9HtfuWaZ/58EPbNSpod3weXZBErDaceNQg+kqZQJYWy5ymeXR0ZusrdbZYGyxcaZVAM/Ul76LgrUILHR5p3Dudtm+QLmlDpcVRDirf0Cxnu1PMy9SSxGB5lQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=xilinx.com; dmarc=pass action=none header.from=xilinx.com;
+ dkim=pass header.d=xilinx.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=xilinx.onmicrosoft.com; s=selector2-xilinx-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=riD4gZBUVv7fMJ53Lom5OskEWlCxj/MBYYjfm8MZgtU=;
+ b=OWUTvfLwljTsBi653nA0289TwXDW+uoB6VKlEmBHezbC9EP6pQLJiCbo6+k0n3uiSVGTQeRD2ISGzYw+6nb5t4lfnel5R7RlA+UvvNTW2Tfvrz5/a4bOzLpt3VXt7OGSi0PvI7bmwESb3nPk7JHYX6o2odsjzz3RjDaezCmNDxo=
+Received: from CH2PR02MB7000.namprd02.prod.outlook.com (20.180.9.216) by
+ CH2PR02MB6456.namprd02.prod.outlook.com (52.132.231.161) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.2707.24; Mon, 10 Feb 2020 14:55:20 +0000
+Received: from CH2PR02MB7000.namprd02.prod.outlook.com
+ ([fe80::969:436f:b4b8:4899]) by CH2PR02MB7000.namprd02.prod.outlook.com
+ ([fe80::969:436f:b4b8:4899%7]) with mapi id 15.20.2707.030; Mon, 10 Feb 2020
+ 14:55:20 +0000
+From:   Radhey Shyam Pandey <radheys@xilinx.com>
+To:     Andrew Lunn <andrew@lunn.ch>
+CC:     "davem@davemloft.net" <davem@davemloft.net>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        Anirudha Sarangi <anirudh@xilinx.com>,
+        Michal Simek <michals@xilinx.com>,
+        "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>,
+        "mchehab+samsung@kernel.org" <mchehab+samsung@kernel.org>,
+        John Linn <linnj@xilinx.com>,
+        "linux-arm-kernel@lists.infradead.org" 
+        <linux-arm-kernel@lists.infradead.org>
+Subject: RE: [PATCH v3 -next 4/4] net: emaclite: Fix restricted cast warning
+ of sparse
+Thread-Topic: [PATCH v3 -next 4/4] net: emaclite: Fix restricted cast warning
+ of sparse
+Thread-Index: AQHV2CxS+JD6AxkE/EyzRBxtS7+UeKgEyfuAgA/Il2A=
+Date:   Mon, 10 Feb 2020 14:55:20 +0000
+Message-ID: <CH2PR02MB70008E426323BBF4EF3BCCA2C7190@CH2PR02MB7000.namprd02.prod.outlook.com>
+References: <1580471270-16262-1-git-send-email-radhey.shyam.pandey@xilinx.com>
+ <1580471270-16262-5-git-send-email-radhey.shyam.pandey@xilinx.com>
+ <20200131134849.GE9639@lunn.ch>
+In-Reply-To: <20200131134849.GE9639@lunn.ch>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-Auto-Response-Suppress: DR, RN, NRN, OOF, AutoReply
+X-MS-TNEF-Correlator: 
+authentication-results: spf=none (sender IP is )
+ smtp.mailfrom=radheys@xilinx.com; 
+x-originating-ip: [149.199.50.133]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-ht: Tenant
+x-ms-office365-filtering-correlation-id: 580922c6-ae18-48f3-f8b5-08d7ae394016
+x-ms-traffictypediagnostic: CH2PR02MB6456:|CH2PR02MB6456:
+x-ms-exchange-transport-forked: True
+x-microsoft-antispam-prvs: <CH2PR02MB64569C9530F3B3F221B2839EC7190@CH2PR02MB6456.namprd02.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:3513;
+x-forefront-prvs: 03094A4065
+x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(4636009)(376002)(39860400002)(346002)(396003)(136003)(366004)(189003)(199004)(53546011)(26005)(54906003)(186003)(6916009)(86362001)(71200400001)(316002)(66476007)(66446008)(64756008)(66556008)(4326008)(66946007)(5660300002)(52536014)(7696005)(76116006)(81166006)(2906002)(8936002)(6506007)(478600001)(55016002)(81156014)(8676002)(9686003)(33656002);DIR:OUT;SFP:1101;SCL:1;SRVR:CH2PR02MB6456;H:CH2PR02MB7000.namprd02.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;MX:1;A:1;
+received-spf: None (protection.outlook.com: xilinx.com does not designate
+ permitted sender hosts)
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: FaNkBnHsuvA24Synz6SJnC3s1V8v0DHQ22jpT4WWtDJWW7BAMbjhiK72jKP+jl3vRelTRagxcUnvRcBiGQB98icpBbTLeFf2Pl+18NBu1zXe17aLU8jQKfOgcuyYGaD364Vc+PSPQ6dlHD/6V7LAZI3jB+WtEtaJbqxPK8jPAhuAyY8VfBhd8YzKMAkWsYhMsnylReGuX9uAEi7iCv9JLL5BOC79+iSsQxDJ4/K3o+zUqx+xTjC10yQyzw8biLkRTrY1nJtAiwpvathfhHouY4B9NkRFQQVN4GpHk5aUQdwowknK5u0VQ5pOL/MLw1+xvQJu7G6BhoimYU7kgRSj0vVV1Cb/xhEQ9uvmPQzlIF47/EpJgu6TtyoxGG+KlYkJJACLGuZg0qSXxcLGb7ST4Q0WBPJ+YA1m3T1GkfxMaglw1VnvrLenHayldaAaElsN
+x-ms-exchange-antispam-messagedata: A7lBoCBujzI/mzvKq6mKjcg9XbMJeHvbrsDtGkQDFKipUxhMS1EsESSilSNF/AG4mf2zqvg5dpX69vc6vpR6bkONXBhAMC4YIjlExBWFNAmio3epUmCDnvcp9NvNjwGsT0ZAwCTiJW5cIrbRCmwlxw==
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CA+h21hpWknrGjyK0eRVFmx7a1WWRyCZJtFRgGzr3YyeL3y2gYw@mail.gmail.com>
+X-OriginatorOrg: xilinx.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 580922c6-ae18-48f3-f8b5-08d7ae394016
+X-MS-Exchange-CrossTenant-originalarrivaltime: 10 Feb 2020 14:55:20.6566
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 657af505-d5df-48d0-8300-c31994686c5c
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: lH5LTOEs0OYcQDVq+NyUx9sB6ICTWNA+XaBRlfuOXKbPJlvpbio+BXWfYHwdr9I+xXsykVYaMZdNTwL3dEIK9A==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: CH2PR02MB6456
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Feb 06, 2020 at 11:32:52AM +0200, Vladimir Oltean wrote:
-> On Thu, 6 Feb 2020 at 11:02, Vladimir Oltean <olteanv@gmail.com> wrote:
+> -----Original Message-----
+> From: Andrew Lunn <andrew@lunn.ch>
+> Sent: Friday, January 31, 2020 7:19 PM
+> To: Radhey Shyam Pandey <radheys@xilinx.com>
+> Cc: davem@davemloft.net; netdev@vger.kernel.org; linux-
+> kernel@vger.kernel.org; Anirudha Sarangi <anirudh@xilinx.com>; Michal Sim=
+ek
+> <michals@xilinx.com>; gregkh@linuxfoundation.org;
+> mchehab+samsung@kernel.org; John Linn <linnj@xilinx.com>; linux-arm-
+> kernel@lists.infradead.org
+> Subject: Re: [PATCH v3 -next 4/4] net: emaclite: Fix restricted cast warn=
+ing of
+> sparse
+>=20
+> On Fri, Jan 31, 2020 at 05:17:50PM +0530, Radhey Shyam Pandey wrote:
+> > Explicitly cast xemaclite_readl return value when it's passed to ntohl.
+> > Fixes below reported sparse warnings:
 > >
-> > Hi netdev,
+> > xilinx_emaclite.c:411:24: sparse: sparse: cast to restricted __be32
+> > xilinx_emaclite.c:420:36: sparse: sparse: cast to restricted __be32
 > >
-> > I am interested in modeling the following classifier/action with tc filters:
-> > - Match packets with VID N received on port A and going towards port B
-> > - Replace VID with M
+> > Signed-off-by: Radhey Shyam Pandey <radhey.shyam.pandey@xilinx.com>
+> > Reported-by: kbuild test robot <lkp@intel.com>
+> > ---
+> >  drivers/net/ethernet/xilinx/xilinx_emaclite.c | 5 +++--
+> >  1 file changed, 3 insertions(+), 2 deletions(-)
 > >
-> > Some hardware (DSA switch) I am working on supports this, so it would
-> > be good if I could model this with tc in a way that can be offloaded.
-> > In man tc-flower I found the following matches:
-> >        indev ifname
-> >               Match on incoming interface name. Obviously this makes
-> > sense only for forwarded flows.  ifname is the name of an interface
-> > which must exist at the time of tc invocation.
-> >        vlan_id VID
-> >               Match on vlan tag id.  VID is an unsigned 12bit value in
-> > decimal format.
+> > diff --git a/drivers/net/ethernet/xilinx/xilinx_emaclite.c
+> b/drivers/net/ethernet/xilinx/xilinx_emaclite.c
+> > index 96e9d21..3273d4f 100644
+> > --- a/drivers/net/ethernet/xilinx/xilinx_emaclite.c
+> > +++ b/drivers/net/ethernet/xilinx/xilinx_emaclite.c
+> > @@ -408,7 +408,8 @@ static u16 xemaclite_recv_data(struct net_local
+> *drvdata, u8 *data, int maxlen)
 > >
-> > And there is a generic "vlan" action (man tc-vlan) that supports the
-> > "modify" command.
+> >  	/* Get the protocol type of the ethernet frame that arrived
+> >  	 */
+> > -	proto_type =3D ((ntohl(xemaclite_readl(addr + XEL_HEADER_OFFSET +
+> > +	proto_type =3D ((ntohl((__force __be32)xemaclite_readl(addr +
+> > +			XEL_HEADER_OFFSET +
+> >  			XEL_RXBUFF_OFFSET)) >> XEL_HEADER_SHIFT) &
+> >  			XEL_RPLR_LENGTH_MASK);
 > >
-> > Judging from this syntax, I would need to add a tc-flower rule on the
-> > egress qdisc of swpB, with indev swpA and vlan_id N.
-> > But what should I do if I need to do VLAN retagging towards the CPU
-> > (where DSA does not give me a hook for attaching tc filters)?
-> >
-> > Thanks,
-> > -Vladimir
-> 
-> While I don't want to influence the advice that I get, I tried to see
-> this from the perspective of "what would a non-DSA device do?".
-> So what I think would work for me is:
-> - For VLAN retagging of autonomously forwarded flows (between 2
-> front-panel ports) I can do the egress filter with indev that I
-> mentioned above.
-> - For VLAN retagging towards the CPU, I can just attach the filter to
-> the ingress qdisc and not specify an indev at all. The idea being that
-> this filter will match on locally terminated packets and not on all
-> packets received on this port.
-> Would this be confusing?
+> > @@ -417,7 +418,7 @@ static u16 xemaclite_recv_data(struct net_local
+> *drvdata, u8 *data, int maxlen)
+> >  	 */
+> >  	if (proto_type > ETH_DATA_LEN) {
+> >  		if (proto_type =3D=3D ETH_P_IP) {
+> > -			length =3D ((ntohl(xemaclite_readl(addr +
+> > +			length =3D ((ntohl((__force __be32)xemaclite_readl(addr
+> +
+> >  					XEL_HEADER_IP_LENGTH_OFFSET +
+> >  					XEL_RXBUFF_OFFSET)) >>
+> >  					XEL_HEADER_SHIFT) &
+>=20
+> If i understand this code correctly, you need the ntohl because you
+> are poking around inside the packet. All the other uses of
+> xemaclite_readl() are for descriptors etc.
+>=20
+> It would be cleaner if you defined a xemaclite_readlbe32. If you use
+> ioread32be() it will do the endinness swap for you, so you don't need
+> the ntohl() and the horrible cast.
+Thanks for the review. Yes, defining xemaclite_readlbe32 would eliminate th=
+e
+cast need.  I will address it in the next version.=20
 
-Why don't you just use "skip_hw" flag? The filter will not be installed
-in hardware and will only match locally received packets. Isn't this
-what you want?
+>=20
+>     Andrew
