@@ -2,93 +2,103 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 73982157F35
-	for <lists+netdev@lfdr.de>; Mon, 10 Feb 2020 16:51:22 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id CA803157F53
+	for <lists+netdev@lfdr.de>; Mon, 10 Feb 2020 17:01:20 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727704AbgBJPvU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 10 Feb 2020 10:51:20 -0500
-Received: from mail-qk1-f195.google.com ([209.85.222.195]:42064 "EHLO
-        mail-qk1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727634AbgBJPvU (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 10 Feb 2020 10:51:20 -0500
-Received: by mail-qk1-f195.google.com with SMTP id q15so6931702qke.9;
-        Mon, 10 Feb 2020 07:51:19 -0800 (PST)
+        id S1727649AbgBJQBT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 10 Feb 2020 11:01:19 -0500
+Received: from mail-pf1-f196.google.com ([209.85.210.196]:39692 "EHLO
+        mail-pf1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727143AbgBJQBS (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 10 Feb 2020 11:01:18 -0500
+Received: by mail-pf1-f196.google.com with SMTP id 84so3910730pfy.6;
+        Mon, 10 Feb 2020 08:01:18 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=YVjuzOjf5jIj1NQgZ5KfZIi1a0fBwZEsl9wI2Km+hW0=;
-        b=DcElZ8FkTJSjTPoesg3yiaUvLuXZKrhCV8Y93Q4i7ckb//Kww1dVDRlPjO/AfDKzxB
-         zkgNg1z94eXHlTZICKjPOvPOD3Xej/HFnPJiDJHSgLG11khSXjEyKYkdYJtfBEpJCpwR
-         evuf7sNcAxh02SKkhshlmSSU3b3AuZiKkLJoBDbQQJJKIYsDZx4yeWK60T9BPChcsd11
-         YsTSsdlUvswUl6NRiPLgnem0+ntlIepvKxobZfJcVqWJ3FkCB+bHPvlnd8yH5vO4CBpD
-         lzfl86hOo0JWmuKD7I7U/sINsjaQ085E4EUAyuhOKwK8HXe00aZ/65sIsNkBgwk7zmcL
-         ZOsw==
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version;
+        bh=cbKanf+tA6F0D95pERsnfD3BjonYsBX69BhpG0W+VPk=;
+        b=XzACNNvNIdlFqYsaAMhi0ncU95qHSIFaPnwh31zwfrK3+LwEUkYaQkvPcWWMQWQYFJ
+         jm6Nyp2FeDiV1EONti/QaSUyQWaPZ5PgMxzJDjqTIxZt2Es6VrhIJtAXvFqTRLupo8ob
+         9eMaddn7jsZBrKm2cAuB2fRQfC+mGaxoNMLM1poZUDUx45Ka/Qlkk7qDvdaCzh6K+ngI
+         Tae5LJ2xM9PezD1sY2ptlyiZj9yV+IxmsQaYG502nIer8Ndm/czPtPrD0D3ah7G+RyRy
+         rooEIJoxyjrp++JSNA19m1KVsTp+/FtOY2LYfBLEVqimyTp9tCDSoFcFZzAgno7FypJu
+         qm9w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=YVjuzOjf5jIj1NQgZ5KfZIi1a0fBwZEsl9wI2Km+hW0=;
-        b=VL06M8kMVNXnzako2yh2CDsaqhUO/htPNg9QpX0eJdHjSUhZwV1S1IVQpKt6Co7LGO
-         rl4LyJ5BWQJOHLKHdLwITfCI2NuYAZ/y1qz3EHkvs7NcQpdwa1Mq5/odInulh7+tHa2V
-         m/VCKoK9LmYAMOJNdMAyVsgDfULtbjmHLHKYWnx19X9PQgHEANelja0YDUJez16l4awz
-         kG4dnEIBsJSf9pnRW21Mw6rlJ1AH/jGy281gL++rhT082AUUUU0U2dniKNEt3yplB2IU
-         Tz8h4+9XL3Wy9Hx95yTIIvXxQB6trscMtNEUtVCODwCHRocvgX/3SKkZKNyFILzMuIga
-         Dp5Q==
-X-Gm-Message-State: APjAAAXUmHtVHv3JWRUJKwgGezSz0W1IyEYgLh0yA84jVD7UlVOO9M4D
-        kibcplwBHpGAmaTkPp9BR/44d7YBG/AkSalvgV0=
-X-Google-Smtp-Source: APXvYqw8zH1HreqSp2uI3VS9MsuFTrEZLbox+1tmNUYU7Th8P8emTHEfbeJNnQhk0hUJf8eEEa7umPpfdo6LSaiQomU=
-X-Received: by 2002:ae9:e10a:: with SMTP id g10mr1929397qkm.493.1581349879337;
- Mon, 10 Feb 2020 07:51:19 -0800 (PST)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version;
+        bh=cbKanf+tA6F0D95pERsnfD3BjonYsBX69BhpG0W+VPk=;
+        b=g86tbVF5baPPhB6LqznN+JIkcf0cvzqiT2AoP5dLNyxtXSEMuGI5gI+EUVjDZ2WSa0
+         ff2ybU7+8OtR0jHkoUtwh+I0zQllRqeQA+LTI/0OhtfzZGfFxWLG2smOfOUYppZIe3tC
+         EmtRcU6QxP/KzenC/ZxHv2Da2rvHmFvhZeo+49ywZ832Bc9MfYBoTrgkm81DkEVY0wLb
+         DZwfejv7HyQqZJFWk7xNHv8SJZ7WMFr0ymGhZA115v4KwqsiUyOPV4V6oh/zOULRcbd8
+         r7ax3oSYJwpzHFvxHkBPnqbApbKBqfdV1WpnLnRCQKoaEsB8s7/MkbbuixItKnJUyJnD
+         zlCA==
+X-Gm-Message-State: APjAAAV9b7vyl1LHFrR40bcgJe3yuirEIXMaWSDB/YFQ0/OuummayHPY
+        bKDI4XhSL1B6JwuL2hjMj43AFJFW
+X-Google-Smtp-Source: APXvYqwQn33MQiCd1UqJhYOXgX4eUFvs54EiBGJFQe5OlP6a8JHqSE7T9gT8L3Y25VddwDRUCmNhNQ==
+X-Received: by 2002:a63:520a:: with SMTP id g10mr2150675pgb.298.1581350478040;
+        Mon, 10 Feb 2020 08:01:18 -0800 (PST)
+Received: from [172.26.120.14] ([2620:10d:c090:180::6c4])
+        by smtp.gmail.com with ESMTPSA id c1sm923234pfa.51.2020.02.10.08.01.17
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Mon, 10 Feb 2020 08:01:17 -0800 (PST)
+From:   "Jonathan Lemon" <jonathan.lemon@gmail.com>
+To:     "Magnus Karlsson" <magnus.karlsson@intel.com>
+Cc:     maximmi@mellanox.com, bjorn.topel@intel.com, ast@kernel.org,
+        daniel@iogearbox.net, netdev@vger.kernel.org, rgoodfel@isi.edu,
+        bpf@vger.kernel.org, maciejromanfijalkowski@gmail.com
+Subject: Re: [PATCH bpf] xsk: publish global consumer pointers when NAPI is
+ finished
+Date:   Mon, 10 Feb 2020 08:01:16 -0800
+X-Mailer: MailMate (1.13.1r5671)
+Message-ID: <F64155CD-D3BB-4730-8168-6F6A4C18193F@gmail.com>
+In-Reply-To: <1581348432-6747-1-git-send-email-magnus.karlsson@intel.com>
+References: <1581348432-6747-1-git-send-email-magnus.karlsson@intel.com>
 MIME-Version: 1.0
-References: <20200208154209.1797988-1-jolsa@kernel.org>
-In-Reply-To: <20200208154209.1797988-1-jolsa@kernel.org>
-From:   =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@gmail.com>
-Date:   Mon, 10 Feb 2020 16:51:08 +0100
-Message-ID: <CAJ+HfNhBDU9c4-0D5RiHFZBq_LN7E=k8=rhL+VbmxJU7rdDBxQ@mail.gmail.com>
-Subject: Re: [PATCH 00/14] bpf: Add trampoline and dispatcher to /proc/kallsyms
-To:     Jiri Olsa <jolsa@kernel.org>
-Cc:     Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Netdev <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        Andrii Nakryiko <andriin@fb.com>, Yonghong Song <yhs@fb.com>,
-        Song Liu <songliubraving@fb.com>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        David Miller <davem@redhat.com>,
-        =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@intel.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Jesper Dangaard Brouer <hawk@kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, 8 Feb 2020 at 16:42, Jiri Olsa <jolsa@kernel.org> wrote:
+
+
+On 10 Feb 2020, at 7:27, Magnus Karlsson wrote:
+
+> The commit 4b638f13bab4 ("xsk: Eliminate the RX batch size")
+> introduced a much more lazy way of updating the global consumer
+> pointers from the kernel side, by only doing so when running out of
+> entries in the fill or Tx rings (the rings consumed by the
+> kernel). This can result in a deadlock with the user application if
+> the kernel requires more than one entry to proceed and the application
+> cannot put these entries in the fill ring because the kernel has not
+> updated the global consumer pointer since the ring is not empty.
 >
-> hi,
-> this patchset adds trampoline and dispatcher objects
-> to be visible in /proc/kallsyms. The last patch also
-> adds sorting for all bpf objects in /proc/kallsyms.
+> Fix this by publishing the local kernel side consumer pointer whenever
+> we have completed Rx or Tx processing in the kernel. This way, user
+> space will have an up-to-date view of the consumer pointers whenever it
+> gets to execute in the one core case (application and driver on the
+> same core), or after a certain number of packets have been processed
+> in the two core case (application and driver on different cores).
 >
+> A side effect of this patch is that the one core case gets better
+> performance, but the two core case gets worse. The reason that the one
+> core case improves is that updating the global consumer pointer is
+> relatively cheap since the application by definition is not running
+> when the kernel is (they are on the same core) and it is beneficial
+> for the application, once it gets to run, to have pointers that are
+> as up to date as possible since it then can operate on more packets
+> and buffers. In the two core case, the most important performance
+> aspect is to minimize the number of accesses to the global pointers
+> since they are shared between two cores and bounces between the caches
+> of those cores. This patch results in more updates to global state,
+> which means lower performance in the two core case.
+>
+> Fixes: 4b638f13bab4 ("xsk: Eliminate the RX batch size")
+> Reported-by: Ryan Goodfellow <rgoodfel@isi.edu>
+> Reported-by: Maxim Mikityanskiy <maximmi@mellanox.com>
+> Signed-off-by: Magnus Karlsson <magnus.karlsson@intel.com>
 
-Thanks for working on this!
-
-I'm probably missing something with my perf setup; I've applied your
-patches, and everything seem to work fine from an kallsyms
-perspective:
-
-# grep bpf_dispatcher_xdp /proc/kallsyms
-...
-ffffffffc0511000 t bpf_dispatcher_xdp   [bpf]
-
-However, when I run
-# perf top
-
-I still see the undecorated one:
-0.90%  [unknown]                  [k] 0xffffffffc0511037
-
-Any ideas?
-Bj=C3=B6rn
+Acked-by: Jonathan Lemon <jonathan.lemon@gmail.com>
