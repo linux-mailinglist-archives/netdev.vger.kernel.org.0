@@ -2,172 +2,95 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id BF12B1581F9
-	for <lists+netdev@lfdr.de>; Mon, 10 Feb 2020 19:03:04 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7FFAF158206
+	for <lists+netdev@lfdr.de>; Mon, 10 Feb 2020 19:05:48 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727609AbgBJSC6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 10 Feb 2020 13:02:58 -0500
-Received: from mail-ot1-f65.google.com ([209.85.210.65]:37468 "EHLO
-        mail-ot1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726809AbgBJSC5 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 10 Feb 2020 13:02:57 -0500
-Received: by mail-ot1-f65.google.com with SMTP id d3so7274070otp.4
-        for <netdev@vger.kernel.org>; Mon, 10 Feb 2020 10:02:56 -0800 (PST)
+        id S1727518AbgBJSFj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 10 Feb 2020 13:05:39 -0500
+Received: from mail-io1-f67.google.com ([209.85.166.67]:38809 "EHLO
+        mail-io1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726809AbgBJSFj (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 10 Feb 2020 13:05:39 -0500
+Received: by mail-io1-f67.google.com with SMTP id s24so8618376iog.5
+        for <netdev@vger.kernel.org>; Mon, 10 Feb 2020 10:05:39 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=sender:from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=7zev+nzf84O19+SsgOdC2PDlzmc84n4XaWfl0N7G4i0=;
-        b=Dm5a5NF32KMUXbMVRjY9EA3Lu2y+8Y1u6jlIPibi5pscf9+PxxuHEBLUcxn5GVYiEo
-         BFXXlCP+fpqSe1rZiDI1MhiSSlnMGt0AN78XxKV726Fpejy6W9MYAPXFZ8Wn1PRF99hY
-         fc0tKxZq7n9gtzN44yaSCSLOo2XhlgtFqWC07O98De42qk1U/xwSQZyXLS5c00WYETGn
-         XOlIbniRxuh26KCfgW9tcbVdoLMDSZdH2U5mn6h4oDLnjT7Q3RQvy7mH+KIdce0I14v3
-         /pUIvmX+rtwqWNHzwOkNs+4NXpxlRGq5PCZdLk+dDxKtDrcp0nthRc8q43JqINhzv0SO
-         FVYA==
+        h=mime-version:reply-to:sender:from:date:message-id:subject:to;
+        bh=qLCJ4hAwI+ZPm+mWZVhU/VYIdbcvrJ6z1bSQoVA5eG0=;
+        b=pb0EAWoD4CnzcLambxxophgLM2Mvj4EJ+fR5jQMTFn4jCDwSO6larkvXo318j+wEi/
+         PA8UXNc9WgatlsF2mvER7GDl/YPXx6ttlKcKLvl6DFqovbEfAJXmjw+mdLMw8fCM+a5a
+         wjxpyk7czkeeekLSB67sJCvZaYK5+H92Ncv9KdMglZPWC05CrGHtloTW2sdD8brsUZfF
+         bvtLUwbzM4jsbfqj1dCx7gSTzlPoGq92MKS9tdmnp9LjNvSSNJw1w8hyIIxUwr+VKguU
+         uzDicSFe8WRMa2wncWFTsm2/SzdHXBTN0fja0G1u//L4sM2uYo/KZOSe5DUzzIhCjE46
+         uvXQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:sender:from:to:cc:subject:date:message-id
-         :in-reply-to:references:mime-version:content-transfer-encoding;
-        bh=7zev+nzf84O19+SsgOdC2PDlzmc84n4XaWfl0N7G4i0=;
-        b=T9l1Q5v7v1ayWHKJ8LpHvDPkUTwM0eUA2XVFoXZlb51qi6j6Pzx2g71i3Htn43icaA
-         oJ04/jbZz7cQJ0gaz4D+L7QMkjJx+0mSLpCy3kUevY781UsTy1wjgHlM9yriPz8Jh2ZV
-         q8/Zi+98oGEiuPggu7I62rzskvYdGBdzohmpkO7jpCLI1KHIzTFgQSVhLg7NuYfKZwNx
-         oNn2XSQ2wWJEuE1WbgDOu4n8Zzy8yk4NHQMXvX2P6lajTy0KRVK1UND26c/s8YSE7Hul
-         gx9LH5mwOgM2rTbR7e/XOxzHTy/F3DSsW1uEGKn0+EXj9YtDco6/IcrcjEx0MFnR+6hG
-         jAjA==
-X-Gm-Message-State: APjAAAVyg1THjQf3blh6dKsJhjBiqLz7xFvBLkcB6XLTeFgzT0ou58ex
-        e2ioRYzpVkVQLza59vt3x04=
-X-Google-Smtp-Source: APXvYqxunMGeML/UlC7WUnBRDzKk0bdaw79CtqMWEXo2vCD0jzYIOUDupIbDs9S1OkiKbdIUqYkClQ==
-X-Received: by 2002:a05:6830:1218:: with SMTP id r24mr2037318otp.144.1581357775682;
-        Mon, 10 Feb 2020 10:02:55 -0800 (PST)
-Received: from localhost.localdomain (cpe-24-31-245-230.kc.res.rr.com. [24.31.245.230])
-        by smtp.gmail.com with ESMTPSA id d131sm313031oia.36.2020.02.10.10.02.55
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 10 Feb 2020 10:02:55 -0800 (PST)
-From:   Larry Finger <Larry.Finger@lwfinger.net>
-To:     gregkh@linuxfoundation.org
-Cc:     netdev@vger.kernel.org, devel@driverdev.osuosl.org,
-        Larry Finger <Larry.Finger@lwfinger.net>,
-        Pietro Oliva <pietroliva@gmail.com>
-Subject: [PATCH 6/6] staging: rtl8723bs: Remove unneeded goto statements
-Date:   Mon, 10 Feb 2020 12:02:35 -0600
-Message-Id: <20200210180235.21691-7-Larry.Finger@lwfinger.net>
-X-Mailer: git-send-email 2.25.0
-In-Reply-To: <20200210180235.21691-1-Larry.Finger@lwfinger.net>
-References: <20200210180235.21691-1-Larry.Finger@lwfinger.net>
+        h=x-gm-message-state:mime-version:reply-to:sender:from:date
+         :message-id:subject:to;
+        bh=qLCJ4hAwI+ZPm+mWZVhU/VYIdbcvrJ6z1bSQoVA5eG0=;
+        b=lP5Xjbf+F0Zv7MffHzUjsPe3SnC+buhPfrM5akje+40AICZcaSYjo1Y4SlTETziRi7
+         q+Cl8axB1wpCDVxb2mYibHh3hx5pBwgKDmnLDhWVtKtg96xuG9dWVPhWk+Mc37W1N0BF
+         tXa6s4mBiSZx27VKvu5uQqMLzwTjzNryqJzXHQwFXu24F4yeJpTXTyN796QFp4q+j22G
+         vjVEAlGuSTsKgJic8SkJ/IDghjX1nPOoJwcdEVdCzPvpOrFQRyuxDioSbFjSGVrBPmdb
+         2himVmHtO9G5ANvP8M8qWs+gAYZj2c1gemTpaPTAW+PLoVwqdmrO3aT1qGLzlHV1sJYs
+         UK8g==
+X-Gm-Message-State: APjAAAWBtv7r757FfLV6f4ngVEUzstdlBdX/hZk8opvNXpHRra8QuBJs
+        Xf9R1ofXJMj1slQlfSP/FWjYy+AQMXnqkx1u+uM=
+X-Google-Smtp-Source: APXvYqxQpgdNkwn++oExyZXZ26SWPmXEknfrSKKfqt393rJj+FdIXTEecOFsUzwAbI2rOjsY1FAzKGLBIJgjYcMpaL4=
+X-Received: by 2002:a6b:915:: with SMTP id t21mr9672110ioi.34.1581357938569;
+ Mon, 10 Feb 2020 10:05:38 -0800 (PST)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Reply-To: mrsnicolemarois94@gmail.com
+Received: by 2002:ac0:ea52:0:0:0:0:0 with HTTP; Mon, 10 Feb 2020 10:05:37
+ -0800 (PST)
+From:   "Mrs. Nicole Marois " <maroismrsnicole2@gmail.com>
+Date:   Mon, 10 Feb 2020 17:05:37 -0100
+X-Google-Sender-Auth: a0mS_5k6EHj7Mau6FJhf0pCAY5k
+Message-ID: <CAAmsZ46w9bCnH+qF2Mn5rVrOQuC58+nfJ5+umo0fPjtqu_Wqzw@mail.gmail.com>
+Subject: Greetings
+To:     undisclosed-recipients:;
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-In routines rtw_hostapd_ioctl() and wpa_supplicant_ioctl(), several
-error conditions involve setting a variable indicating the error,
-followed by a goto. The code following the target of that goto merely
-returns the value. It is simpler, therefore to return the error value
-immediately, and eliminate the got  target.
-
-Signed-off-by: Larry Finger <Larry.Finger@lwfinger.net>
-Cc: Pietro Oliva <pietroliva@gmail.com>
----
- .../staging/rtl8723bs/os_dep/ioctl_linux.c    | 47 +++++--------------
- 1 file changed, 12 insertions(+), 35 deletions(-)
-
-diff --git a/drivers/staging/rtl8723bs/os_dep/ioctl_linux.c b/drivers/staging/rtl8723bs/os_dep/ioctl_linux.c
-index 2ac0d84f090e..9b9038e7deb1 100644
---- a/drivers/staging/rtl8723bs/os_dep/ioctl_linux.c
-+++ b/drivers/staging/rtl8723bs/os_dep/ioctl_linux.c
-@@ -3373,21 +3373,16 @@ static int wpa_supplicant_ioctl(struct net_device *dev, struct iw_point *p)
- 
- 	/* down(&ieee->wx_sem); */
- 
--	if (!p->pointer || p->length != sizeof(struct ieee_param)) {
--		ret = -EINVAL;
--		goto out;
--	}
-+	if (!p->pointer || p->length != sizeof(struct ieee_param))
-+		return -EINVAL;
- 
- 	param = rtw_malloc(p->length);
--	if (param == NULL) {
--		ret = -ENOMEM;
--		goto out;
--	}
-+	if (param == NULL)
-+		return -ENOMEM;
- 
- 	if (copy_from_user(param, p->pointer, p->length)) {
- 		kfree(param);
--		ret = -EFAULT;
--		goto out;
-+		return -EFAULT;
- 	}
- 
- 	switch (param->cmd) {
-@@ -3421,12 +3416,8 @@ static int wpa_supplicant_ioctl(struct net_device *dev, struct iw_point *p)
- 
- 	kfree(param);
- 
--out:
--
- 	/* up(&ieee->wx_sem); */
--
- 	return ret;
--
- }
- 
- static int rtw_set_encryption(struct net_device *dev, struct ieee_param *param, u32 param_len)
-@@ -4200,28 +4191,19 @@ static int rtw_hostapd_ioctl(struct net_device *dev, struct iw_point *p)
- 	* so, we just check hw_init_completed
- 	*/
- 
--	if (!padapter->hw_init_completed) {
--		ret = -EPERM;
--		goto out;
--	}
--
-+	if (!padapter->hw_init_completed)
-+		return -EPERM;
- 
--	/* if (p->length < sizeof(struct ieee_param) || !p->pointer) { */
--	if (!p->pointer || p->length != sizeof(*param)) {
--		ret = -EINVAL;
--		goto out;
--	}
-+	if (!p->pointer || p->length != sizeof(*param))
-+		return -EINVAL;
- 
- 	param = rtw_malloc(p->length);
--	if (param == NULL) {
--		ret = -ENOMEM;
--		goto out;
--	}
-+	if (param == NULL)
-+		return -ENOMEM;
- 
- 	if (copy_from_user(param, p->pointer, p->length)) {
- 		kfree(param);
--		ret = -EFAULT;
--		goto out;
-+		return -EFAULT;
- 	}
- 
- 	/* DBG_871X("%s, cmd =%d\n", __func__, param->cmd); */
-@@ -4321,13 +4303,8 @@ static int rtw_hostapd_ioctl(struct net_device *dev, struct iw_point *p)
- 	if (ret == 0 && copy_to_user(p->pointer, param, p->length))
- 		ret = -EFAULT;
- 
--
- 	kfree(param);
--
--out:
--
- 	return ret;
--
- }
- 
- static int rtw_wx_set_priv(struct net_device *dev,
 -- 
-2.25.0
+Hello Dear,
 
+Please forgive me for stressing you with my predicaments as I know
+that this letter may come to you as big surprise. Actually, I came
+across your E-mail from my personal search afterward I decided to
+email you directly believing that you will be honest to fulfill my
+final wish before i die.
+
+Meanwhile, I am Mrs.  Nicole Marois 62 years old, from France, and I
+am suffering from a long time cancer and from all indication my
+condition is really deteriorating as my doctors have confirmed and
+courageously advised me that I may not live beyond two months from now
+for the reason that my tumor has reached a critical stage which has
+defiled all forms of medical treatment. As a matter of fact,
+registered nurse by profession while my husband was dealing on Gold
+Dust and Gold Dory Bars till his sudden death the year 2016 then I
+took over his business till date.
+
+In fact, at this moment I have a deposit sum of four million five
+hundred thousand US dollars ($4,500,000.00) with one bank but
+unfortunately I cannot visit the bank since I m critically sick and
+powerless to do anything myself but my bank account officer advised me
+to assign any of my trustworthy relative, friends or partner with
+authorization letter to stand as the recipient of my money but
+sorrowfully I dont have any reliable relative and no child.
+
+Therefore, I want you to receive the money and take 50% to take care
+of yourself and family while 50% should be use basically on
+humanitarian purposes mostly to orphanages home, Motherless babies
+home, less privileged and disable citizens and widows around the
+world. and as soon as I receive your I shall send you my pictures,
+banking records and with full contacts of my banking institution to
+communicate them on the matter. Please contact me with these email
+address.(mrsnicolemarois94@gmail.com)
+
+Hope to hear from you soon.
+Yours Faithfully,
+Mrs.  Nicole Marois
