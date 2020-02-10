@@ -2,88 +2,85 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id EC3FC1584B6
-	for <lists+netdev@lfdr.de>; Mon, 10 Feb 2020 22:27:10 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id CCA0B1584C0
+	for <lists+netdev@lfdr.de>; Mon, 10 Feb 2020 22:27:36 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727600AbgBJV0u (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 10 Feb 2020 16:26:50 -0500
-Received: from kvm5.telegraphics.com.au ([98.124.60.144]:59716 "EHLO
+        id S1727727AbgBJV1M (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 10 Feb 2020 16:27:12 -0500
+Received: from kvm5.telegraphics.com.au ([98.124.60.144]:59762 "EHLO
         kvm5.telegraphics.com.au" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727414AbgBJV0t (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 10 Feb 2020 16:26:49 -0500
+        with ESMTP id S1727529AbgBJV0u (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 10 Feb 2020 16:26:50 -0500
 Received: by kvm5.telegraphics.com.au (Postfix, from userid 502)
-        id 1350F29B4E; Mon, 10 Feb 2020 16:26:48 -0500 (EST)
+        id 50EA929B53; Mon, 10 Feb 2020 16:26:48 -0500 (EST)
 To:     "David S. Miller" <davem@davemloft.net>
 Cc:     Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
         Chris Zankel <chris@zankel.net>, netdev@vger.kernel.org,
         linux-kernel@vger.kernel.org
-Message-Id: <0adf9819ded56830f460cd1643e9ce013ed33f6d.1581369531.git.fthain@telegraphics.com.au>
+Message-Id: <dfc072d93a97b794235bc43a6c2c8c81f0b9de50.1581369531.git.fthain@telegraphics.com.au>
 In-Reply-To: <cover.1581369530.git.fthain@telegraphics.com.au>
 References: <cover.1581369530.git.fthain@telegraphics.com.au>
 From:   Finn Thain <fthain@telegraphics.com.au>
-Subject: [PATCH net-next 3/7] net/sonic: Remove redundant next_tx variable
+Subject: [PATCH net-next 7/7] net/macsonic: Remove interrupt handler wrapper
 Date:   Tue, 11 Feb 2020 08:18:50 +1100
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The eol_tx variable is the one that matters to the tx algorithm because
-packets are always placed at the end of the list. The next_tx variable
-just confuses things so remove it.
+On m68k, local irqs remain enabled while interrupt handlers execute.
+Therefore the macsonic driver has had to disable interrupts to avoid
+re-entering sonic_interrupt().
+
+As of commit 865ad2f2201d ("net/sonic: Add mutual exclusion for accessing
+shared state"), sonic_interrupt() became re-entrant, and its wrapper
+became redundant.
 
 Tested-by: Stan Johnson <userm57@yahoo.com>
 Signed-off-by: Finn Thain <fthain@telegraphics.com.au>
 ---
- drivers/net/ethernet/natsemi/sonic.c | 8 ++++----
- drivers/net/ethernet/natsemi/sonic.h | 1 -
- 2 files changed, 4 insertions(+), 5 deletions(-)
+ drivers/net/ethernet/natsemi/macsonic.c | 19 ++++---------------
+ 1 file changed, 4 insertions(+), 15 deletions(-)
 
-diff --git a/drivers/net/ethernet/natsemi/sonic.c b/drivers/net/ethernet/natsemi/sonic.c
-index c066510b348e..9ecdd67e1410 100644
---- a/drivers/net/ethernet/natsemi/sonic.c
-+++ b/drivers/net/ethernet/natsemi/sonic.c
-@@ -300,7 +300,7 @@ static int sonic_send_packet(struct sk_buff *skb, struct net_device *dev)
+diff --git a/drivers/net/ethernet/natsemi/macsonic.c b/drivers/net/ethernet/natsemi/macsonic.c
+index 0f4d0c25d626..1b5559aacb38 100644
+--- a/drivers/net/ethernet/natsemi/macsonic.c
++++ b/drivers/net/ethernet/natsemi/macsonic.c
+@@ -114,17 +114,6 @@ static inline void bit_reverse_addr(unsigned char addr[6])
+ 		addr[i] = bitrev8(addr[i]);
+ }
  
- 	spin_lock_irqsave(&lp->lock, flags);
- 
--	entry = lp->next_tx;
-+	entry = (lp->eol_tx + 1) & SONIC_TDS_MASK;
- 
- 	sonic_tda_put(dev, entry, SONIC_TD_STATUS, 0);       /* clear status */
- 	sonic_tda_put(dev, entry, SONIC_TD_FRAG_COUNT, 1);   /* single fragment */
-@@ -321,8 +321,8 @@ static int sonic_send_packet(struct sk_buff *skb, struct net_device *dev)
- 				  sonic_tda_get(dev, lp->eol_tx, SONIC_TD_LINK) & ~SONIC_EOL);
- 	lp->eol_tx = entry;
- 
--	lp->next_tx = (entry + 1) & SONIC_TDS_MASK;
--	if (lp->tx_skb[lp->next_tx] != NULL) {
-+	entry = (entry + 1) & SONIC_TDS_MASK;
-+	if (lp->tx_skb[entry]) {
- 		/* The ring is full, the ISR has yet to process the next TD. */
- 		netif_dbg(lp, tx_queued, dev, "%s: stopping queue\n", __func__);
- 		netif_stop_queue(dev);
-@@ -811,7 +811,7 @@ static int sonic_init(struct net_device *dev)
- 
- 	SONIC_WRITE(SONIC_UTDA, lp->tda_laddr >> 16);
- 	SONIC_WRITE(SONIC_CTDA, lp->tda_laddr & 0xffff);
--	lp->cur_tx = lp->next_tx = 0;
-+	lp->cur_tx = 0;
- 	lp->eol_tx = SONIC_NUM_TDS - 1;
- 
- 	/*
-diff --git a/drivers/net/ethernet/natsemi/sonic.h b/drivers/net/ethernet/natsemi/sonic.h
-index 053f12f5cf4a..3cbb62c860c8 100644
---- a/drivers/net/ethernet/natsemi/sonic.h
-+++ b/drivers/net/ethernet/natsemi/sonic.h
-@@ -321,7 +321,6 @@ struct sonic_local {
- 	unsigned int cur_tx;           /* first unacked transmit packet */
- 	unsigned int eol_rx;
- 	unsigned int eol_tx;           /* last unacked transmit packet */
--	unsigned int next_tx;          /* next free TD */
- 	int msg_enable;
- 	struct device *device;         /* generic device */
- 	struct net_device_stats stats;
+-static irqreturn_t macsonic_interrupt(int irq, void *dev_id)
+-{
+-	irqreturn_t result;
+-	unsigned long flags;
+-
+-	local_irq_save(flags);
+-	result = sonic_interrupt(irq, dev_id);
+-	local_irq_restore(flags);
+-	return result;
+-}
+-
+ static int macsonic_open(struct net_device* dev)
+ {
+ 	int retval;
+@@ -135,12 +124,12 @@ static int macsonic_open(struct net_device* dev)
+ 				dev->name, dev->irq);
+ 		goto err;
+ 	}
+-	/* Under the A/UX interrupt scheme, the onboard SONIC interrupt comes
+-	 * in at priority level 3. However, we sometimes get the level 2 inter-
+-	 * rupt as well, which must prevent re-entrance of the sonic handler.
++	/* Under the A/UX interrupt scheme, the onboard SONIC interrupt gets
++	 * moved from level 2 to level 3. Unfortunately we still get some
++	 * level 2 interrupts so register the handler for both.
+ 	 */
+ 	if (dev->irq == IRQ_AUTO_3) {
+-		retval = request_irq(IRQ_NUBUS_9, macsonic_interrupt, 0,
++		retval = request_irq(IRQ_NUBUS_9, sonic_interrupt, 0,
+ 				     "sonic", dev);
+ 		if (retval) {
+ 			printk(KERN_ERR "%s: unable to get IRQ %d.\n",
 -- 
 2.24.1
 
