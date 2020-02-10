@@ -2,103 +2,133 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id CA803157F53
-	for <lists+netdev@lfdr.de>; Mon, 10 Feb 2020 17:01:20 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 884D9157F79
+	for <lists+netdev@lfdr.de>; Mon, 10 Feb 2020 17:09:37 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727649AbgBJQBT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 10 Feb 2020 11:01:19 -0500
-Received: from mail-pf1-f196.google.com ([209.85.210.196]:39692 "EHLO
-        mail-pf1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727143AbgBJQBS (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 10 Feb 2020 11:01:18 -0500
-Received: by mail-pf1-f196.google.com with SMTP id 84so3910730pfy.6;
-        Mon, 10 Feb 2020 08:01:18 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version;
-        bh=cbKanf+tA6F0D95pERsnfD3BjonYsBX69BhpG0W+VPk=;
-        b=XzACNNvNIdlFqYsaAMhi0ncU95qHSIFaPnwh31zwfrK3+LwEUkYaQkvPcWWMQWQYFJ
-         jm6Nyp2FeDiV1EONti/QaSUyQWaPZ5PgMxzJDjqTIxZt2Es6VrhIJtAXvFqTRLupo8ob
-         9eMaddn7jsZBrKm2cAuB2fRQfC+mGaxoNMLM1poZUDUx45Ka/Qlkk7qDvdaCzh6K+ngI
-         Tae5LJ2xM9PezD1sY2ptlyiZj9yV+IxmsQaYG502nIer8Ndm/czPtPrD0D3ah7G+RyRy
-         rooEIJoxyjrp++JSNA19m1KVsTp+/FtOY2LYfBLEVqimyTp9tCDSoFcFZzAgno7FypJu
-         qm9w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version;
-        bh=cbKanf+tA6F0D95pERsnfD3BjonYsBX69BhpG0W+VPk=;
-        b=g86tbVF5baPPhB6LqznN+JIkcf0cvzqiT2AoP5dLNyxtXSEMuGI5gI+EUVjDZ2WSa0
-         ff2ybU7+8OtR0jHkoUtwh+I0zQllRqeQA+LTI/0OhtfzZGfFxWLG2smOfOUYppZIe3tC
-         EmtRcU6QxP/KzenC/ZxHv2Da2rvHmFvhZeo+49ywZ832Bc9MfYBoTrgkm81DkEVY0wLb
-         DZwfejv7HyQqZJFWk7xNHv8SJZ7WMFr0ymGhZA115v4KwqsiUyOPV4V6oh/zOULRcbd8
-         r7ax3oSYJwpzHFvxHkBPnqbApbKBqfdV1WpnLnRCQKoaEsB8s7/MkbbuixItKnJUyJnD
-         zlCA==
-X-Gm-Message-State: APjAAAV9b7vyl1LHFrR40bcgJe3yuirEIXMaWSDB/YFQ0/OuummayHPY
-        bKDI4XhSL1B6JwuL2hjMj43AFJFW
-X-Google-Smtp-Source: APXvYqwQn33MQiCd1UqJhYOXgX4eUFvs54EiBGJFQe5OlP6a8JHqSE7T9gT8L3Y25VddwDRUCmNhNQ==
-X-Received: by 2002:a63:520a:: with SMTP id g10mr2150675pgb.298.1581350478040;
-        Mon, 10 Feb 2020 08:01:18 -0800 (PST)
-Received: from [172.26.120.14] ([2620:10d:c090:180::6c4])
-        by smtp.gmail.com with ESMTPSA id c1sm923234pfa.51.2020.02.10.08.01.17
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Mon, 10 Feb 2020 08:01:17 -0800 (PST)
-From:   "Jonathan Lemon" <jonathan.lemon@gmail.com>
-To:     "Magnus Karlsson" <magnus.karlsson@intel.com>
-Cc:     maximmi@mellanox.com, bjorn.topel@intel.com, ast@kernel.org,
-        daniel@iogearbox.net, netdev@vger.kernel.org, rgoodfel@isi.edu,
-        bpf@vger.kernel.org, maciejromanfijalkowski@gmail.com
-Subject: Re: [PATCH bpf] xsk: publish global consumer pointers when NAPI is
- finished
-Date:   Mon, 10 Feb 2020 08:01:16 -0800
-X-Mailer: MailMate (1.13.1r5671)
-Message-ID: <F64155CD-D3BB-4730-8168-6F6A4C18193F@gmail.com>
-In-Reply-To: <1581348432-6747-1-git-send-email-magnus.karlsson@intel.com>
-References: <1581348432-6747-1-git-send-email-magnus.karlsson@intel.com>
-MIME-Version: 1.0
-Content-Type: text/plain
+        id S1727826AbgBJQJd (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 10 Feb 2020 11:09:33 -0500
+Received: from userp2130.oracle.com ([156.151.31.86]:48958 "EHLO
+        userp2130.oracle.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727120AbgBJQJd (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 10 Feb 2020 11:09:33 -0500
+Received: from pps.filterd (userp2130.oracle.com [127.0.0.1])
+        by userp2130.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 01AG8OH5046802;
+        Mon, 10 Feb 2020 16:09:09 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=content-type :
+ mime-version : subject : from : in-reply-to : date : cc :
+ content-transfer-encoding : message-id : references : to;
+ s=corp-2020-01-29; bh=Erm+X3P/zfd9sOxaGqkK2Iyf6viT+HO+bh4VgU2zvgY=;
+ b=mPrHGXMWlpsN84mIlBz6UUkwZjhI1N/TdstIAZaPrbf/lbSb9sYuy6bHlhHTjrx/6mrv
+ Yt1GA+DoZC43f2wWxKQgjZOV8GdmuHSCXoY/u8YBghiHisuLtDwM+W46o7Jb9f3i5mp3
+ KwNsjA8YtxyndFc4cxk9XaO2O0A6iecXRuA3VcvbXMf6NVP0qOhKZpBbgkrFutEYqZV2
+ t90SATuQuT/XyKLnzw/XmtA+syFyA+NEHg9gxtC7ZND9fSbOFVUUhgJ7CSM8hJ11IeGf
+ lw6y403jzSBsWTnaLSnlRoJt8tD2+CBrFXFt1MxMX1mU5Jaw2xSm61aammmn55hh0CrI Vg== 
+Received: from aserp3030.oracle.com (aserp3030.oracle.com [141.146.126.71])
+        by userp2130.oracle.com with ESMTP id 2y2k87wgrh-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=FAIL);
+        Mon, 10 Feb 2020 16:09:08 +0000
+Received: from pps.filterd (aserp3030.oracle.com [127.0.0.1])
+        by aserp3030.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 01AG86go117299;
+        Mon, 10 Feb 2020 16:09:08 GMT
+Received: from userv0121.oracle.com (userv0121.oracle.com [156.151.31.72])
+        by aserp3030.oracle.com with ESMTP id 2y26ht85dg-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Mon, 10 Feb 2020 16:09:08 +0000
+Received: from abhmp0013.oracle.com (abhmp0013.oracle.com [141.146.116.19])
+        by userv0121.oracle.com (8.14.4/8.13.8) with ESMTP id 01AG8wvI024202;
+        Mon, 10 Feb 2020 16:08:59 GMT
+Received: from anon-dhcp-152.1015granger.net (/68.61.232.219)
+        by default (Oracle Beehive Gateway v4.0)
+        with ESMTP ; Mon, 10 Feb 2020 08:08:58 -0800
+Content-Type: text/plain;
+        charset=us-ascii
+Mime-Version: 1.0 (Mac OS X Mail 12.4 \(3445.104.11\))
+Subject: Re: [PATCH next] xprtrdma: make the symbol
+ 'xprt_rdma_slot_table_entries' static
+From:   Chuck Lever <chuck.lever@oracle.com>
+In-Reply-To: <20200210073927.8769-1-chenwandun@huawei.com>
+Date:   Mon, 10 Feb 2020 11:08:57 -0500
+Cc:     Bruce Fields <bfields@fieldses.org>,
+        trond.myklebust@hammerspace.com,
+        Anna Schumaker <Anna.Schumaker@Netapp.com>,
+        davem@davemloft.net, kuba@kernel.org,
+        Linux NFS Mailing List <linux-nfs@vger.kernel.org>,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Content-Transfer-Encoding: quoted-printable
+Message-Id: <4A340D82-3FDF-415E-9C60-E8A915757C6A@oracle.com>
+References: <20200210073927.8769-1-chenwandun@huawei.com>
+To:     Chen Wandun <chenwandun@huawei.com>
+X-Mailer: Apple Mail (2.3445.104.11)
+X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9527 signatures=668685
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 mlxlogscore=999 phishscore=0
+ bulkscore=0 adultscore=0 malwarescore=0 suspectscore=0 mlxscore=0
+ spamscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2001150001 definitions=main-2002100122
+X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9527 signatures=668685
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 adultscore=0 lowpriorityscore=0
+ suspectscore=0 bulkscore=0 phishscore=0 mlxlogscore=999 mlxscore=0
+ malwarescore=0 impostorscore=0 clxscore=1011 spamscore=0
+ priorityscore=1501 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2001150001 definitions=main-2002100122
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Hi-
+
+The Fixes: tag seems incorrect to me.
 
 
-On 10 Feb 2020, at 7:27, Magnus Karlsson wrote:
+> On Feb 10, 2020, at 2:39 AM, Chen Wandun <chenwandun@huawei.com> =
+wrote:
+>=20
+> Fix the following sparse warning:
+> net/sunrpc/xprtrdma/transport.c:71:14: warning: symbol =
+'xprt_rdma_slot_table_entries' was not declared. Should it be static?
+>=20
+> Fixes: 86c4ccd9b92b ("xprtrdma: Eliminate struct =
+rpcrdma_create_data_internal")
 
-> The commit 4b638f13bab4 ("xsk: Eliminate the RX batch size")
-> introduced a much more lazy way of updating the global consumer
-> pointers from the kernel side, by only doing so when running out of
-> entries in the fill or Tx rings (the rings consumed by the
-> kernel). This can result in a deadlock with the user application if
-> the kernel requires more than one entry to proceed and the application
-> cannot put these entries in the fill ring because the kernel has not
-> updated the global consumer pointer since the ring is not empty.
->
-> Fix this by publishing the local kernel side consumer pointer whenever
-> we have completed Rx or Tx processing in the kernel. This way, user
-> space will have an up-to-date view of the consumer pointers whenever it
-> gets to execute in the one core case (application and driver on the
-> same core), or after a certain number of packets have been processed
-> in the two core case (application and driver on different cores).
->
-> A side effect of this patch is that the one core case gets better
-> performance, but the two core case gets worse. The reason that the one
-> core case improves is that updating the global consumer pointer is
-> relatively cheap since the application by definition is not running
-> when the kernel is (they are on the same core) and it is beneficial
-> for the application, once it gets to run, to have pointers that are
-> as up to date as possible since it then can operate on more packets
-> and buffers. In the two core case, the most important performance
-> aspect is to minimize the number of accesses to the global pointers
-> since they are shared between two cores and bounces between the caches
-> of those cores. This patch results in more updates to global state,
-> which means lower performance in the two core case.
->
-> Fixes: 4b638f13bab4 ("xsk: Eliminate the RX batch size")
-> Reported-by: Ryan Goodfellow <rgoodfel@isi.edu>
-> Reported-by: Maxim Mikityanskiy <maximmi@mellanox.com>
-> Signed-off-by: Magnus Karlsson <magnus.karlsson@intel.com>
+86c4ccd9b92b correctly makes xprt_rdma_slot_table_entries a
+global variable. This later commit (in v5.6-rc1)
 
-Acked-by: Jonathan Lemon <jonathan.lemon@gmail.com>
+7581d90109ca ("xprtrdma: Refactor initialization of =
+ep->rep_max_requests")
+
+should have changed xprt_rdma_slot_table_entries back to a static.
+
+I'm not sure what the call is on sparse warnings these days, but
+it doesn't seem like this clean up should be backported to stable.=20
+Should Fixes: be removed?
+
+
+> Signed-off-by: Chen Wandun <chenwandun@huawei.com>
+> ---
+> net/sunrpc/xprtrdma/transport.c | 2 +-
+> 1 file changed, 1 insertion(+), 1 deletion(-)
+>=20
+> diff --git a/net/sunrpc/xprtrdma/transport.c =
+b/net/sunrpc/xprtrdma/transport.c
+> index 3cfeba68ee9a..14c2a852d2a1 100644
+> --- a/net/sunrpc/xprtrdma/transport.c
+> +++ b/net/sunrpc/xprtrdma/transport.c
+> @@ -68,7 +68,7 @@
+>  * tunables
+>  */
+>=20
+> -unsigned int xprt_rdma_slot_table_entries =3D RPCRDMA_DEF_SLOT_TABLE;
+> +static unsigned int xprt_rdma_slot_table_entries =3D =
+RPCRDMA_DEF_SLOT_TABLE;
+> unsigned int xprt_rdma_max_inline_read =3D RPCRDMA_DEF_INLINE;
+> unsigned int xprt_rdma_max_inline_write =3D RPCRDMA_DEF_INLINE;
+> unsigned int xprt_rdma_memreg_strategy		=3D =
+RPCRDMA_FRWR;
+> --=20
+> 2.17.1
+
+--
+Chuck Lever
+
+
+
