@@ -2,104 +2,103 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id DA9F1156EE7
-	for <lists+netdev@lfdr.de>; Mon, 10 Feb 2020 06:44:52 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 33DA3156F5C
+	for <lists+netdev@lfdr.de>; Mon, 10 Feb 2020 07:08:51 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726584AbgBJFov (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 10 Feb 2020 00:44:51 -0500
-Received: from mail-pj1-f66.google.com ([209.85.216.66]:34530 "EHLO
-        mail-pj1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725536AbgBJFov (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 10 Feb 2020 00:44:51 -0500
-Received: by mail-pj1-f66.google.com with SMTP id f2so2606744pjq.1;
-        Sun, 09 Feb 2020 21:44:50 -0800 (PST)
+        id S1727429AbgBJGIt (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 10 Feb 2020 01:08:49 -0500
+Received: from mail-wr1-f66.google.com ([209.85.221.66]:36714 "EHLO
+        mail-wr1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726118AbgBJGIt (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 10 Feb 2020 01:08:49 -0500
+Received: by mail-wr1-f66.google.com with SMTP id z3so5980888wru.3
+        for <netdev@vger.kernel.org>; Sun, 09 Feb 2020 22:08:48 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=subject:from:to:cc:date:message-id:user-agent:mime-version
-         :content-transfer-encoding;
-        bh=labp035rli0OVm73UTGjoZ6dXuDB1qKbYO5tg3KOfN0=;
-        b=TU/wBb4XkZKeMhj1Q+CUixOVtoA1mf2W79DLnHBSGHDQaiDpoJohR2vtxYOA6WJnbb
-         7v9oBakXRcPcHlm0Hl9kuLsuJ1DmcMr1Xl8v0ULDK0kTxz66QREC1oWkVQyf77tB9R5U
-         449zXzCvTiuQHlM+xZY6VVH+Tp+TaG+gSWxv/Kv9LD/sPdiK474wkNE47xrJI+2qi1MJ
-         F36m2Pu/Agn7g8AuPLSkBmsEUaO2JA6nC6lPQHFL9JsU02TXSd+sC7niv6ZPLfKI9NyD
-         Svstm2AseGXwd5ThutJYBHUAMcTJ6aJeHEwgphgvHFmrY4cL+XQIe9+suYjQBTW+yf/P
-         vKtQ==
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=6RqOWgLC4rAK1/3FVQvcVawK7eWHcH+JYl4Mu9lHDxM=;
+        b=dTjVKSiCeY8J4eR5a2a0lWH0xevh4DMLFAAtBEr+P0V4QL61W66qBXMVSV7q4MtUFy
+         7ny+GYDGdlI//0U5KiDaSXpxJpLN6/fIyIACMs2ISSgNAejrG0ux3cpwc3v77l/rKUnL
+         QWRPX7GjDBhaVH3d7TTpYZP2S7HhMt5xoq2QYTJsy+JVgLggse7I/c/RSFWWNrfwlh+O
+         fJKK75tWmW6oReJye5lOj6uHbw/7FbomHBe5XspQmm7oapSioB7QGZrwO7JRiSh3jY/o
+         mCi057qcgr0eWYa+pYDAa98NqNtx1wK6z6Mu6Ab6UGgJCXswjYRFlNOrVh1pCoWefr4f
+         E9sQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:from:to:cc:date:message-id:user-agent
-         :mime-version:content-transfer-encoding;
-        bh=labp035rli0OVm73UTGjoZ6dXuDB1qKbYO5tg3KOfN0=;
-        b=H+YjCz3Umc3OBnf1KE9bLQE5YIpMaAdTJFUUpOysk1RJ0gkfn5gyxq6WranWob15Ce
-         cPn17XRI778ZyLP1VHsYA8uRcphJgBI+ByNGNC8PsIBUDMuYH6HXnOSEAkjUAJxZen4P
-         vLjSTnpQ3WWfpUBydSd+6F29J8S2n6y8QTmHQhqBA8g9xJHTwodsorOCdndgdE+jGDNI
-         3JAQUq6QmBOqPz7Ynrko9hjGPf9lRFG12By6Sqauv/MoYdO59/ue6s9/6Ys/iPpMv3eV
-         /FcY45fCc8AHoxZQ6VKHb90xQVOzCIbvfPHN/poG+MvuMmlflD0Rw/udK/fliqeMj68y
-         r+Cg==
-X-Gm-Message-State: APjAAAV7g64gnuN4NKqzBfGC6gSzd/kJrvZMcIvouO6ke0amI7/M6lu/
-        TqZfufO4UGICZOSKWdek17I=
-X-Google-Smtp-Source: APXvYqyz94mEMAGD9HZUu8ZQWtYKzgXd7PpEsARBppsi4WOvkCAbMogepgU8/i5/+jWLBF+D5hc7Yw==
-X-Received: by 2002:a17:90a:9f83:: with SMTP id o3mr18752096pjp.95.1581313490372;
-        Sun, 09 Feb 2020 21:44:50 -0800 (PST)
-Received: from [127.0.1.1] ([184.63.162.180])
-        by smtp.gmail.com with ESMTPSA id y190sm10861171pfb.82.2020.02.09.21.44.44
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Sun, 09 Feb 2020 21:44:49 -0800 (PST)
-Subject: [PATCH] bpf: selftests build error in sockmap_basic.c
-From:   John Fastabend <john.fastabend@gmail.com>
-To:     alexei.starovoitov@gmail.com, jakub@cloudflare.com
-Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org,
-        john.fastabend@gmail.com, daniel@iogearbox.net
-Date:   Sun, 09 Feb 2020 21:44:37 -0800
-Message-ID: <158131347731.21414.12120493483848386652.stgit@john-Precision-5820-Tower>
-User-Agent: StGit/0.17.1-dirty
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=6RqOWgLC4rAK1/3FVQvcVawK7eWHcH+JYl4Mu9lHDxM=;
+        b=RJ2iXIavOaNCf022QvxMtWt3gdieV75LQrJZqAEt6+SLdzuCtSEj1Ng91q8xgD6FWA
+         2Hy1UFo+mExMvXqDO8b+xu3tw0mjL8DYmsrfc1reysp1rnbLTy8AVrdXthW8dhPqSKjG
+         xu0urBSV3enO3RZbp0N176CTAjmA1rIqcFUocd7FRlbZnN79w6rIgJMBhh1O1TgP3SVI
+         2pA554fTOC6yiy3udW1EXVCuhu1sHrJ6sVuw2tNHOcUso3m20Dg3qb8qiXOd7mrp8EXW
+         xEk/QCMf1sDW2dfqfn1bZlWbcgoIH+YoVyP/Dk3h1OuhoWzMiu6661NzCowxrQQIXU2o
+         VxRA==
+X-Gm-Message-State: APjAAAUUTvu3tJ2xUU51r5e1EUoYs7xW5/xBnJjbeefDE9cqxjw09gB6
+        rijM7wJQ94UsHZBy8ppR4kOsN2dH/IYASKo9QM0=
+X-Google-Smtp-Source: APXvYqzrZLLqVbgcpi8Qts1yByZYE53mMvipRIb4C0tXFIyAb7VT9jseE5j2vjic8pC3f2gd30U5eeWIokQsMkkxgNg=
+X-Received: by 2002:a5d:4c88:: with SMTP id z8mr14991321wrs.395.1581314927548;
+ Sun, 09 Feb 2020 22:08:47 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
+References: <cover.1580708369.git.lucien.xin@gmail.com> <93e7cebfeda666b17c6a1b2bb8b5065bdab4814c.1580708369.git.lucien.xin@gmail.com>
+ <85a6a30aac8eeab7c408fdadfa5419dc1596cf5d.1580708369.git.lucien.xin@gmail.com>
+ <20200205042239.322cc844@shemminger-XPS-13-9360>
+In-Reply-To: <20200205042239.322cc844@shemminger-XPS-13-9360>
+From:   Xin Long <lucien.xin@gmail.com>
+Date:   Mon, 10 Feb 2020 14:09:17 +0800
+Message-ID: <CADvbK_eVkpGnJj5mQ19bXp+kzx0m9VSDfeMr09Fyp5jDk8FmAQ@mail.gmail.com>
+Subject: Re: [PATCH iproute2-next 2/7] iproute_lwtunnel: add options support
+ for vxlan metadata
+To:     Stephen Hemminger <stephen@networkplumber.org>
+Cc:     network dev <netdev@vger.kernel.org>,
+        Simon Horman <simon.horman@netronome.com>,
+        Pieter Jansen van Vuuren 
+        <pieter.jansenvanvuuren@netronome.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Fix following build error. We could push a tcp.h header into one of the
-include paths, but I think its easy enough to simply pull in the three
-defines we need here. If we end up using more of tcp.h at some point
-we can pull it in later.
+On Wed, Feb 5, 2020 at 8:22 PM Stephen Hemminger
+<stephen@networkplumber.org> wrote:
+>
+> On Mon,  3 Feb 2020 13:39:53 +0800
+> Xin Long <lucien.xin@gmail.com> wrote:
+>
+> > +static void lwtunnel_print_vxlan_opts(struct rtattr *attr, char *opt)
+> > +{
+> > +     struct rtattr *tb[LWTUNNEL_IP_OPT_VXLAN_MAX + 1];
+> > +     __u32 gbp;
+> > +
+> > +     parse_rtattr(tb, LWTUNNEL_IP_OPT_VXLAN_MAX, RTA_DATA(attr),
+> > +                  RTA_PAYLOAD(attr));
+> > +     gbp = rta_getattr_u32(tb[LWTUNNEL_IP_OPT_VXLAN_GBP]);
+> > +     sprintf(opt, "%x", gbp);
+> > +     print_string(PRINT_FP, "enc_opt", "\n  vxlan_opts %s ", opt);
+>
+> You need to handle single line mode and JSON.
+>
+> Proper way is something like:
+>
+>         print_nl();
+>         print_0xhex(PRINT_ANY, "enc_opt", "  vxlan_opts %#x", gpb);
+>
+yeah, right, didn't notice that, thanks.
 
-/home/john/git/bpf/tools/testing/selftests/bpf/prog_tests/sockmap_basic.c: In function ‘connected_socket_v4’:
-/home/john/git/bpf/tools/testing/selftests/bpf/prog_tests/sockmap_basic.c:20:11: error: ‘TCP_REPAIR_ON’ undeclared (first use in this function)
-  repair = TCP_REPAIR_ON;
-           ^
-/home/john/git/bpf/tools/testing/selftests/bpf/prog_tests/sockmap_basic.c:20:11: note: each undeclared identifier is reported only once for each function it appears in
-/home/john/git/bpf/tools/testing/selftests/bpf/prog_tests/sockmap_basic.c:29:11: error: ‘TCP_REPAIR_OFF_NO_WP’ undeclared (first use in this function)
-  repair = TCP_REPAIR_OFF_NO_WP;
+> Also, why the hex format, this is a an opaque user interface?
+>
 
-Then with fix,
+       0                   1                   2                   3
+       0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
+      +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+      |G|R|R|R|I|R|R|R|R|D|R|R|A|R|R|R|        Group Policy ID        |
+      +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
 
-$ ./test_progs -n 44
-#44/1 sockmap create_update_free:OK
-#44/2 sockhash create_update_free:OK
-#44 sockmap_basic:OK
+This is the gbp field in vxlan header, defined in:
 
-Fixes: 5d3919a953c3c ("selftests/bpf: Test freeing sockmap/sockhash with a socket in it")
-Signed-off-by: John Fastabend <john.fastabend@gmail.com>
----
- .../selftests/bpf/prog_tests/sockmap_basic.c       |    5 +++++
- 1 file changed, 5 insertions(+)
+  https://tools.ietf.org/html/draft-smith-vxlan-group-policy-05
 
-diff --git a/tools/testing/selftests/bpf/prog_tests/sockmap_basic.c b/tools/testing/selftests/bpf/prog_tests/sockmap_basic.c
-index 07f5b46..aa43e0b 100644
---- a/tools/testing/selftests/bpf/prog_tests/sockmap_basic.c
-+++ b/tools/testing/selftests/bpf/prog_tests/sockmap_basic.c
-@@ -3,6 +3,11 @@
- 
- #include "test_progs.h"
- 
-+#define TCP_REPAIR		19	/* TCP sock is under repair right now */
-+
-+#define TCP_REPAIR_ON		1
-+#define TCP_REPAIR_OFF_NO_WP	-1	/* Turn off without window probes */
-+
- static int connected_socket_v4(void)
- {
- 	struct sockaddr_in addr = {
-
+I think 'hex' makes it clearer than decimal to see which bit is set
+for users, no?
