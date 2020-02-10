@@ -2,81 +2,108 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 04C9C1585A2
-	for <lists+netdev@lfdr.de>; Mon, 10 Feb 2020 23:37:37 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5F34C1585F2
+	for <lists+netdev@lfdr.de>; Tue, 11 Feb 2020 00:08:11 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727484AbgBJWhf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 10 Feb 2020 17:37:35 -0500
-Received: from gate2.alliedtelesis.co.nz ([202.36.163.20]:36383 "EHLO
-        gate2.alliedtelesis.co.nz" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727422AbgBJWhf (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 10 Feb 2020 17:37:35 -0500
-Received: from mmarshal3.atlnz.lc (mmarshal3.atlnz.lc [10.32.18.43])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (Client did not present a certificate)
-        by gate2.alliedtelesis.co.nz (Postfix) with ESMTPS id 5D993886BF
-        for <netdev@vger.kernel.org>; Tue, 11 Feb 2020 11:37:31 +1300 (NZDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=alliedtelesis.co.nz;
-        s=mail181024; t=1581374251;
-        bh=Wqr8g/8se7mcoCvGHoeg+ET7QbbIGC6QCoyU+kTZk78=;
-        h=From:To:Subject:Date;
-        b=kugXIhGBqVB1iuqAT3IWUSiHinnXMeqYfK36UoT1zw17UJcpLL9wVc2qt6LnePufn
-         uKlyx8ylRN4REN0mINUA0JsKMnCc8lAiKbHZXQdmqflx4+lPOyiiOyeCBULmpA4jiW
-         oxMsoXa7Fn2yG51mHJsES6Wey6T6csKiSdpUmTFBQ5WNuguW48Kdi+OLCgiTTo13CU
-         QtGi/+HfUGqbcBTVDPMnJ8Gi+UmsrUC8N+E49pDp0nKQBSIJGnj1wfwCMnakpBLNgs
-         3HiDnx0rInJ29WVfXcTHtwhA4KSYV5ZRq/KgHAULH76cT2T4wVqyQ9pNY+YmfF2SzR
-         iOrhm3mFCpixw==
-Received: from svr-chch-ex1.atlnz.lc (Not Verified[10.32.16.77]) by mmarshal3.atlnz.lc with Trustwave SEG (v7,5,8,10121)
-        id <B5e41db2b0003>; Tue, 11 Feb 2020 11:37:31 +1300
-Received: from svr-chch-ex1.atlnz.lc (2001:df5:b000:bc8:409d:36f5:8899:92e8)
- by svr-chch-ex1.atlnz.lc (2001:df5:b000:bc8:409d:36f5:8899:92e8) with
- Microsoft SMTP Server (TLS) id 15.0.1473.3; Tue, 11 Feb 2020 11:37:31 +1300
-Received: from svr-chch-ex1.atlnz.lc ([fe80::409d:36f5:8899:92e8]) by
- svr-chch-ex1.atlnz.lc ([fe80::409d:36f5:8899:92e8%12]) with mapi id
- 15.00.1473.005; Tue, 11 Feb 2020 11:37:31 +1300
-From:   Chris Packham <Chris.Packham@alliedtelesis.co.nz>
-To:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "libc-help@sourceware.org" <libc-help@sourceware.org>
-Subject: redefinition of 'struct iphdr' - netinet/ip.h vs linux/ip.h
-Thread-Topic: redefinition of 'struct iphdr' - netinet/ip.h vs linux/ip.h
-Thread-Index: AQHV4GKtP+FedlXX+E+CqRZvUkiSRA==
-Date:   Mon, 10 Feb 2020 22:37:30 +0000
-Message-ID: <06d85c1ec9537fba479f9d02e938feeb7f623662.camel@alliedtelesis.co.nz>
-Accept-Language: en-NZ, en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-mailer: Evolution 3.28.5-0ubuntu0.18.04.1 
-x-ms-exchange-messagesentrepresentingtype: 1
-x-ms-exchange-transport-fromentityheader: Hosted
-x-originating-ip: [2001:df5:b000:22:7107:d7a8:1069:3b0e]
-Content-Type: text/plain; charset="utf-8"
-Content-ID: <176BAF982227A3459980BA1EBB33DFAB@atlnz.lc>
-Content-Transfer-Encoding: base64
+        id S1727646AbgBJXH5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 10 Feb 2020 18:07:57 -0500
+Received: from mail-ot1-f67.google.com ([209.85.210.67]:38283 "EHLO
+        mail-ot1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727516AbgBJXH5 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 10 Feb 2020 18:07:57 -0500
+Received: by mail-ot1-f67.google.com with SMTP id z9so8208584oth.5;
+        Mon, 10 Feb 2020 15:07:56 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=jRiq/HHzhlZ9XSHrTt87uvpDh68wK+B7Fb3SKhNR96E=;
+        b=mmWthATiZMjQ0XrMTxA59hikIPhEucZP+mt7+oAihEqjXm6Wyb3Lrpq2cG91kOtB34
+         1vMY1/Gv1Fh8aafOu36K+ir/jex3cbKsfmLy3JqANBIy+XAXo5KshNmkhi0mkXf3WScm
+         6MaW3lQsPdW0Sp60fAq4JW6zTOAHkOoSyMw4hq5X5fp0JORR14wf99EQqdaKTt1wydEl
+         KuYsxDRNVWhoxNMtSr/8yWNjpHGWhq1vwGgautz8EAV9UrV9DP2VU+WlttEaWZeEZBxl
+         YpMOLF2t1vBgUrQFw9ZCsJCQeL/K6jKwi59Ql41zGvB9cnwytfHoBPd+G+FklCRuIEg+
+         Gelw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=jRiq/HHzhlZ9XSHrTt87uvpDh68wK+B7Fb3SKhNR96E=;
+        b=h1Y/8ytBLIQdfZV3c2k0ioyNAkgrza+sXCklg6RpYzlRYzrOgQLZmGhae0YERoIQOD
+         iQXHggFRpI+6rpoS4UxSQ4w6eZO0rC551MqKR9ksDxPha8TjUtuAPNXmgzq23EZvnDEk
+         645giraU1BdaUDcL7K5E6TKE7xNqH6U6mB4S3QUxI64Q5tnh0pUjHznwxcs85XhI8KSc
+         sQ39BSU7c/v8liRHx85yKyeO2KTmGOebyBAGuH0/6sTZMTBetSA2moGCULN4lSvAb5G+
+         G1kD+orfC/BbpvwPWOjRWmmk963SAUIKTLJxmTSOxSYJqvMEOdB6Pd1vTkMC+/XkTW6I
+         Ok4g==
+X-Gm-Message-State: APjAAAXJj++UP4N82ke+ryHMijlWSM+cbuf6fnLm3nZEXKWMumeut6/r
+        itlcqEW5zUmoosBaearMputtcMC5xWIwjOnP1nw=
+X-Google-Smtp-Source: APXvYqwjMxBgYv9PzzxcHqfZhfSm4YWQLuMPKkkW21qvNdzy/laP5WsI/5fj67N+oxeU/bXXOndxzomwWW/Bs9gWHr4=
+X-Received: by 2002:a9d:53c4:: with SMTP id i4mr3144957oth.48.1581376076151;
+ Mon, 10 Feb 2020 15:07:56 -0800 (PST)
 MIME-Version: 1.0
+References: <00000000000019ff88059e3d0013@google.com>
+In-Reply-To: <00000000000019ff88059e3d0013@google.com>
+From:   Cong Wang <xiyou.wangcong@gmail.com>
+Date:   Mon, 10 Feb 2020 15:07:45 -0800
+Message-ID: <CAM_iQpWaO5C8FtaP6BGRAc3v0CTTOySH-SmTyd21vU8R_LwWCw@mail.gmail.com>
+Subject: Re: WARNING: proc registration bug in hashlimit_mt_check_common
+To:     syzbot <syzbot+d195fd3b9a364ddd6731@syzkaller.appspotmail.com>
+Cc:     coreteam@netfilter.org, David Miller <davem@davemloft.net>,
+        Florian Westphal <fw@strlen.de>,
+        Jozsef Kadlecsik <kadlec@netfilter.org>,
+        Jakub Kicinski <kuba@kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Linux Kernel Network Developers <netdev@vger.kernel.org>,
+        NetFilter <netfilter-devel@vger.kernel.org>,
+        Pablo Neira Ayuso <pablo@netfilter.org>,
+        syzkaller-bugs <syzkaller-bugs@googlegroups.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-SGksDQoNCkkgaGF2ZSBhbiBhcHBsaWNhdGlvbiB0aGF0IHdhbnRzIHRvIGluY2x1ZGUgYm90aCBu
-ZXRpbmV0L2lwLmggYW5kDQpsaW51eC9pZl90dW5uZWwuaC4NCg0KQXMgb2Yga2VybmVsIGhlYWRl
-cnMgdmVyc2lvbnMgbmV3ZXIgdGhhbiB2NC44IHRoZSBhcHBsaWNhdGlvbiBmYWlscyB0bw0KY29t
-cGlsZSB3aXRoIHRoZSBmb2xsb3dpbmcgZXJyb3INCg0KICBtYWtlWzFdOiBFbnRlcmluZyBkaXJl
-Y3RvcnkgJ2NvbXBpbGUtdGVzdCcNCiAgICBDQyAgICAgICBjb21waWxlLXRlc3Qubw0KICBJbiBm
-aWxlIGluY2x1ZGVkIGZyb20gL3Vzci9pbmNsdWRlL2xpbnV4L2lmX3R1bm5lbC5oOjcsDQogICAg
-ICAgICAgICAgICAgICAgZnJvbSBjb21waWxlLXRlc3QuYzozOg0KICAvdXNyL2luY2x1ZGUvbGlu
-dXgvaXAuaDo4Njo4OiBlcnJvcjogcmVkZWZpbml0aW9uIG9mICdzdHJ1Y3QgaXBoZHInDQogICBz
-dHJ1Y3QgaXBoZHIgew0KICAgICAgICBefn5+fg0KICBJbiBmaWxlIGluY2x1ZGVkIGZyb20gY29t
-cGlsZS10ZXN0LmM6MjoNCiAgL3Vzci9pbmNsdWRlL25ldGluZXQvaXAuaDo0NDo4OiBub3RlOiBv
-cmlnaW5hbGx5IGRlZmluZWQgaGVyZQ0KICAgc3RydWN0IGlwaGRyDQogICAgICAgICAgXn5+fn4N
-CiAgbWFrZVsxXTogKioqIFtNYWtlZmlsZTozODU6IGNvbXBpbGUtdGVzdC5vXSBFcnJvciAxDQoN
-Ckxvb2tpbmcgYXQgdGhlIGxpbnV4IGNvbW1pdCBjb21taXQgMWZlOGUwZjA3NGM3DQooImluY2x1
-ZGUvdWFwaS9saW51eC9pZl90dW5uZWwuaDogaW5jbHVkZSBsaW51eC9pZi5oLCBsaW51eC9pcC5o
-IGFuZA0KbGludXgvaW42LmgiKSBJIGNhbiBzZWUgdGhhdCB0aGUgYXBwbGljYXRpb24gd2FzIHBy
-b2JhYmx5IHdvcmtpbmcgYnkNCmx1Y2suDQoNCkRvaW5nIGEgYml0IG9mIHNlYXJjaGluZyBJIGNh
-biBzZWUgdmFyaW91cyBmaXhlcyB3aXRoIHJlbW92aW5nIG9uZSBvZg0KdGhlIG9mZmVuZGluZyBo
-ZWFkZXIgZmlsZXMgYnV0IHRoaXMgY2F1c2VzIG1vcmUgcHJvYmxlbXMgZm9yIHRoZQ0KYXBwbGlj
-YXRpb24gaW4gcXVlc3Rpb24uDQoNCklzIHRoZXJlIGEgd2F5IG9mIG1ha2luZyBuZXRpbmV0L2lw
-LmggYW5kIGxpbnV4L2lmX3R1bm5lbC5oIGNvLWV4aXN0Pw0KDQpUaGFua3MsDQpDaHJpcyBQYWNr
-aGFtDQo=
+On Mon, Feb 10, 2020 at 10:35 AM syzbot
+<syzbot+d195fd3b9a364ddd6731@syzkaller.appspotmail.com> wrote:
+>
+> Hello,
+>
+> syzbot found the following crash on:
+>
+> HEAD commit:    2981de74 Add linux-next specific files for 20200210
+> git tree:       linux-next
+> console output: https://syzkaller.appspot.com/x/log.txt?x=104b16b5e00000
+> kernel config:  https://syzkaller.appspot.com/x/.config?x=53fc3c3fcb36274f
+> dashboard link: https://syzkaller.appspot.com/bug?extid=d195fd3b9a364ddd6731
+> compiler:       gcc (GCC) 9.0.0 20181231 (experimental)
+> syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=136321d9e00000
+> C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=159f7431e00000
+>
+> The bug was bisected to:
+>
+> commit 8d0015a7ab76b8b1e89a3e5f5710a6e5103f2dd5
+> Author: Cong Wang <xiyou.wangcong@gmail.com>
+> Date:   Mon Feb 3 04:30:53 2020 +0000
+>
+>     netfilter: xt_hashlimit: limit the max size of hashtable
+>
+> bisection log:  https://syzkaller.appspot.com/x/bisect.txt?x=12a7f25ee00000
+> final crash:    https://syzkaller.appspot.com/x/report.txt?x=11a7f25ee00000
+> console output: https://syzkaller.appspot.com/x/log.txt?x=16a7f25ee00000
+>
+> IMPORTANT: if you fix the bug, please add the following tag to the commit:
+> Reported-by: syzbot+d195fd3b9a364ddd6731@syzkaller.appspotmail.com
+> Fixes: 8d0015a7ab76 ("netfilter: xt_hashlimit: limit the max size of hashtable")
+>
+> xt_hashlimit: size too large, truncated to 1048576
+> xt_hashlimit: max too large, truncated to 1048576
+> ------------[ cut here ]------------
+> proc_dir_entry 'ip6t_hashlimit/syzkaller1' already registered
+
+I think we probably have to remove the procfs file too before releasing
+the global mutex. Or, we can mark the table as deleted before actually
+delete it, but this requires to change the search logic as well.
+
+I will work on a patch.
+
+Thanks.
