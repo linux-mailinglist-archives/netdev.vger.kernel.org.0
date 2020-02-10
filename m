@@ -2,129 +2,151 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id DC0FD1570E4
-	for <lists+netdev@lfdr.de>; Mon, 10 Feb 2020 09:35:57 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7C7161570FB
+	for <lists+netdev@lfdr.de>; Mon, 10 Feb 2020 09:49:30 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727529AbgBJIf4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 10 Feb 2020 03:35:56 -0500
-Received: from f0-dek.dektech.com.au ([210.10.221.142]:33259 "EHLO
-        mail.dektech.com.au" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S1727452AbgBJIf4 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 10 Feb 2020 03:35:56 -0500
-Received: from localhost (localhost [127.0.0.1])
-        by mail.dektech.com.au (Postfix) with ESMTP id CAC474CED9;
-        Mon, 10 Feb 2020 19:35:51 +1100 (AEDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=dektech.com.au;
-         h=content-transfer-encoding:content-type:content-type
-        :mime-version:x-mailer:message-id:date:date:subject:subject:from
-        :from:received:received:received; s=mail_dkim; t=1581323751; bh=
-        qvB3o0SkGfxHZGh9syTq9zEyk3CFUBn0LIH0pAV5lII=; b=gQlEbqkPB3QFeiJ7
-        PDizSFPqdyL6WlAJ/Bdoxz+lg727S8TdhEAKyDSyqsp31f4XRXHD+DGqxR/1fnvw
-        QrPNokME9G/c0CTPYiBWS0iDczewuou+dpzLRySyndgW57Fqgto+41nGZa8Es13G
-        e02SSzxi5T1gZQZNLPNphlVygEM=
-X-Virus-Scanned: amavisd-new at dektech.com.au
-Received: from mail.dektech.com.au ([127.0.0.1])
-        by localhost (mail2.dektech.com.au [127.0.0.1]) (amavisd-new, port 10026)
-        with ESMTP id Jp1gaIMIONHN; Mon, 10 Feb 2020 19:35:51 +1100 (AEDT)
-Received: from mail.dektech.com.au (localhost [127.0.0.1])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.dektech.com.au (Postfix) with ESMTPS id 431954CEDE;
-        Mon, 10 Feb 2020 19:35:51 +1100 (AEDT)
-Received: from localhost.localdomain (unknown [14.161.14.188])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-SHA256 (128/128 bits))
-        (No client certificate requested)
-        by mail.dektech.com.au (Postfix) with ESMTPSA id D5C3C4CED9;
-        Mon, 10 Feb 2020 19:35:49 +1100 (AEDT)
-From:   Tuong Lien <tuong.t.lien@dektech.com.au>
-To:     davem@davemloft.net, jmaloy@redhat.com, maloy@donjonn.com,
-        ying.xue@windriver.com, netdev@vger.kernel.org
-Cc:     tipc-discussion@lists.sourceforge.net
-Subject: [net] tipc: fix successful connect() but timed out
-Date:   Mon, 10 Feb 2020 15:35:44 +0700
-Message-Id: <20200210083544.31501-1-tuong.t.lien@dektech.com.au>
-X-Mailer: git-send-email 2.13.7
-MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
+        id S1727507AbgBJIt0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 10 Feb 2020 03:49:26 -0500
+Received: from foss.arm.com ([217.140.110.172]:57416 "EHLO foss.arm.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726061AbgBJIt0 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 10 Feb 2020 03:49:26 -0500
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 2197B31B;
+        Mon, 10 Feb 2020 00:49:25 -0800 (PST)
+Received: from entos-d05.shanghai.arm.com (entos-d05.shanghai.arm.com [10.169.40.35])
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPA id 997A43F68F;
+        Mon, 10 Feb 2020 00:49:19 -0800 (PST)
+From:   Jianyong Wu <jianyong.wu@arm.com>
+To:     netdev@vger.kernel.org, yangbo.lu@nxp.com, john.stultz@linaro.org,
+        tglx@linutronix.de, pbonzini@redhat.com,
+        sean.j.christopherson@intel.com, maz@kernel.org,
+        richardcochran@gmail.com, Mark.Rutland@arm.com, will@kernel.org,
+        suzuki.poulose@arm.com, steven.price@arm.com
+Cc:     linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        kvmarm@lists.cs.columbia.edu, kvm@vger.kernel.org,
+        Steve.Capper@arm.com, Kaly.Xin@arm.com, justin.he@arm.com,
+        jianyong.wu@arm.com, nd@arm.com
+Subject: [RFC PATCH v10 0/9] Enable ptp_kvm for arm/arm64
+Date:   Mon, 10 Feb 2020 16:48:57 +0800
+Message-Id: <20200210084906.24870-1-jianyong.wu@arm.com>
+X-Mailer: git-send-email 2.17.1
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-In commit 9546a0b7ce00 ("tipc: fix wrong connect() return code"), we
-fixed the issue with the 'connect()' that returns zero even though the
-connecting has failed by waiting for the connection to be 'ESTABLISHED'
-really. However, the approach has one drawback in conjunction with our
-'lightweight' connection setup mechanism that the following scenario
-can happen:
+kvm ptp targets to provide high precision time sync between guest
+and host in virtualization environment. Here, we enable kvm ptp
+for arm64.
 
-          (server)                        (client)
+change log:
+from v10 to v9
+        (1) change code base to v5.5.
+	(2) enable ptp_kvm both for arm32 and arm64.
+        (3) let user choose which of virtual counter or physical counter
+should return when using crosstimestamp mode of ptp_kvm for arm/arm64.
+        (4) extend input argument for getcrosstimestamp API.
 
-   +- accept()|                      |             wait_for_conn()
-   |          |                      |connect() -------+
-   |          |<-------[SYN]---------|                 > sleeping
-   |          |                      *CONNECTING       |
-   |--------->*ESTABLISHED           |                 |
-              |--------[ACK]-------->*ESTABLISHED      > wakeup()
-        send()|--------[DATA]------->|\                > wakeup()
-        send()|--------[DATA]------->| |               > wakeup()
-          .   .          .           . |-> recvq       .
-          .   .          .           . |               .
-        send()|--------[DATA]------->|/                > wakeup()
-       close()|--------[FIN]-------->*DISCONNECTING    |
-              *DISCONNECTING         |                 |
-              |                      ~~~~~~~~~~~~~~~~~~> schedule()
-                                                       | wait again
-                                                       .
-                                                       .
-                                                       | ETIMEDOUT
+from v8 to v9:
+        (1) move ptp_kvm.h to driver/ptp/
+        (2) replace license declaration of ptp_kvm.h the same with other
+header files in the same directory.
 
-Upon the receipt of the server 'ACK', the client becomes 'ESTABLISHED'
-and the 'wait_for_conn()' process is woken up but not run. Meanwhile,
-the server starts to send a number of data following by a 'close()'
-shortly without waiting any response from the client, which then forces
-the client socket to be 'DISCONNECTING' immediately. When the wait
-process is switched to be running, it continues to wait until the timer
-expires because of the unexpected socket state. The client 'connect()'
-will finally get =E2=80=98-ETIMEDOUT=E2=80=99 and force to release the so=
-cket whereas
-there remains the messages in its receive queue.
+from v7 to v8:
+        (1) separate adding clocksource id for arm_arch_counter as a
+single patch.
+        (2) update commit message for patch 4/8.
+        (3) refine patch 7/8 and patch 8/8 to make them more independent.
 
-Obviously the issue would not happen if the server had some delay prior
-to its 'close()' (or the number of 'DATA' messages is large enough),
-but any kind of delay would make the connection setup/shutdown "heavy".
-We solve this by simply allowing the 'connect()' returns zero in this
-particular case. The socket is already 'DISCONNECTING', so any further
-write will get '-EPIPE' but the socket is still able to read the
-messages existing in its receive queue.
+from v6 to v7:
+        (1) include the omitted clocksource_id.h in last version.
+        (2) reorder the header file in patch.
+        (3) refine some words in commit message to make it more impersonal.
 
-Note: This solution doesn't break the previous one as it deals with a
-different situation that the socket state is 'DISCONNECTING' but has no
-error (i.e. sk->sk_err =3D 0).
+from v5 to v6:
+        (1) apply Mark's patch[4] to get SMCCC conduit.
+        (2) add mechanism to recognize current clocksource by add
+clocksouce_id value into struct clocksource instead of method in patch-v5.
+        (3) rename kvm_arch_ptp_get_clock_fn into
+kvm_arch_ptp_get_crosststamp.
 
-Fixes: 9546a0b7ce00 ("tipc: fix wrong connect() return code")
-Acked-by: Ying Xue <ying.xue@windriver.com>
-Acked-by: Jon Maloy <jon.maloy@ericsson.com>
-Signed-off-by: Tuong Lien <tuong.t.lien@dektech.com.au>
----
- net/tipc/socket.c | 2 ++
- 1 file changed, 2 insertions(+)
+from v4 to v5:
+        (1) remove hvc delay compensasion as it should leave to userspace.
+        (2) check current clocksource in hvc call service.
+        (3) expose current clocksource by adding it to
+system_time_snapshot.
+        (4) add helper to check if clocksource is arm_arch_counter.
+        (5) rename kvm_ptp.c to ptp_kvm_common.c
 
-diff --git a/net/tipc/socket.c b/net/tipc/socket.c
-index f9b4fb92c0b1..693e8902161e 100644
---- a/net/tipc/socket.c
-+++ b/net/tipc/socket.c
-@@ -2441,6 +2441,8 @@ static int tipc_wait_for_connect(struct socket *soc=
-k, long *timeo_p)
- 			return -ETIMEDOUT;
- 		if (signal_pending(current))
- 			return sock_intr_errno(*timeo_p);
-+		if (sk->sk_state =3D=3D TIPC_DISCONNECTING)
-+			break;
-=20
- 		add_wait_queue(sk_sleep(sk), &wait);
- 		done =3D sk_wait_event(sk, timeo_p, tipc_sk_connected(sk),
---=20
-2.13.7
+from v3 to v4:
+        (1) fix clocksource of ptp_kvm to arch_sys_counter.
+        (2) move kvm_arch_ptp_get_clock_fn into arm_arch_timer.c
+        (3) subtract cntvoff before return cycles from host.
+        (4) use ktime_get_snapshot instead of getnstimeofday and
+get_current_counterval to return time and counter value.
+        (5) split ktime and counter into two 32-bit block respectively
+to avoid Y2038-safe issue.
+        (6) set time compensation to device time as half of the delay of
+hvc call.
+        (7) add ARM_ARCH_TIMER as dependency of ptp_kvm for
+arm64.
+
+from v2 to v3:
+        (1) fix some issues in commit log.
+        (2) add some receivers in send list.
+
+from v1 to v2:
+        (1) move arch-specific code from arch/ to driver/ptp/
+        (2) offer mechanism to inform userspace if ptp_kvm service is
+available.
+        (3) separate ptp_kvm code for arm64 into hypervisor part and
+guest part.
+        (4) add API to expose monotonic clock and counter value.
+        (5) refine code: remove no necessary part and reconsitution.
+
+
+Jianyong Wu (8):
+  psci: export psci conduit get helper.
+  ptp: Reorganize ptp_kvm modules to make it arch-independent.
+  clocksource: Add clocksource id for arm arch counter
+  psci: Add hypercall service for ptp_kvm.
+  ptp: arm/arm64: Enable ptp_kvm for arm/arm64
+  ptp: extend input argument for getcrosstimestamp API
+  arm/arm64: add mechanism to let user choose which counter to return
+  arm/arm64: Add kvm capability check extension for ptp_kvm
+
+Thomas Gleixner (1):
+  time: Add mechanism to recognize clocksource in time_get_snapshot
+
+ drivers/clocksource/arm_arch_timer.c        | 33 ++++++++
+ drivers/firmware/psci/psci.c                |  1 +
+ drivers/net/ethernet/intel/e1000e/ptp.c     |  3 +-
+ drivers/ptp/Kconfig                         |  2 +-
+ drivers/ptp/Makefile                        |  5 ++
+ drivers/ptp/ptp_chardev.c                   |  8 +-
+ drivers/ptp/ptp_kvm.h                       | 11 +++
+ drivers/ptp/ptp_kvm_arm.c                   | 53 +++++++++++++
+ drivers/ptp/{ptp_kvm.c => ptp_kvm_common.c} | 83 ++++++--------------
+ drivers/ptp/ptp_kvm_x86.c                   | 87 +++++++++++++++++++++
+ include/linux/arm-smccc.h                   | 21 +++++
+ include/linux/clocksource.h                 |  6 ++
+ include/linux/clocksource_ids.h             | 13 +++
+ include/linux/ptp_clock_kernel.h            |  3 +-
+ include/linux/timekeeping.h                 | 12 +--
+ include/uapi/linux/kvm.h                    |  1 +
+ include/uapi/linux/ptp_clock.h              |  4 +-
+ kernel/time/clocksource.c                   |  3 +
+ kernel/time/timekeeping.c                   |  1 +
+ virt/kvm/arm/arm.c                          |  1 +
+ virt/kvm/arm/hypercalls.c                   | 44 ++++++++++-
+ 21 files changed, 323 insertions(+), 72 deletions(-)
+ create mode 100644 drivers/ptp/ptp_kvm.h
+ create mode 100644 drivers/ptp/ptp_kvm_arm.c
+ rename drivers/ptp/{ptp_kvm.c => ptp_kvm_common.c} (60%)
+ create mode 100644 drivers/ptp/ptp_kvm_x86.c
+ create mode 100644 include/linux/clocksource_ids.h
+
+-- 
+2.17.1
 
