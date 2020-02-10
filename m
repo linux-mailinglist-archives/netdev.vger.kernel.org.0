@@ -2,112 +2,95 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 1E887157F8B
-	for <lists+netdev@lfdr.de>; Mon, 10 Feb 2020 17:18:06 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E16DE15803F
+	for <lists+netdev@lfdr.de>; Mon, 10 Feb 2020 17:55:54 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727653AbgBJQSE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 10 Feb 2020 11:18:04 -0500
-Received: from us-smtp-delivery-1.mimecast.com ([207.211.31.120]:38897 "EHLO
-        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S1727599AbgBJQSD (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 10 Feb 2020 11:18:03 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1581351483;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=kLXBw1zL/2+Ww2WBo1LdiP+jpRFTEQIfB+dk7t2Uz4I=;
-        b=MT2G/mnbwQStvt2qfuHosndbvX71mGo16C/H/KM+rQJ4cta30du9kp35VFHqsUZS3mIrHD
-        9Sw6AbeVxMZ+feY6zgl42gGOh345d9653J9mwpgtYpwKMfl2HzlPaVsnRjGh5CYGSAFFK9
-        MJoQuXutBQCCEEakWbzaI9SNxm1Y3fs=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-283-D2pOxu0hOzWyUo5xHzubLg-1; Mon, 10 Feb 2020 11:17:59 -0500
-X-MC-Unique: D2pOxu0hOzWyUo5xHzubLg-1
-Received: from smtp.corp.redhat.com (int-mx07.intmail.prod.int.phx2.redhat.com [10.5.11.22])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id D0026800D55;
-        Mon, 10 Feb 2020 16:17:56 +0000 (UTC)
-Received: from krava (unknown [10.43.17.9])
-        by smtp.corp.redhat.com (Postfix) with ESMTPS id D62F410013A7;
-        Mon, 10 Feb 2020 16:17:53 +0000 (UTC)
-Date:   Mon, 10 Feb 2020 17:17:51 +0100
-From:   Jiri Olsa <jolsa@redhat.com>
-To:     =?iso-8859-1?Q?Bj=F6rn_T=F6pel?= <bjorn.topel@gmail.com>
-Cc:     Jiri Olsa <jolsa@kernel.org>, Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Netdev <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        Andrii Nakryiko <andriin@fb.com>, Yonghong Song <yhs@fb.com>,
-        Song Liu <songliubraving@fb.com>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        David Miller <davem@redhat.com>,
-        =?iso-8859-1?Q?Bj=F6rn_T=F6pel?= <bjorn.topel@intel.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Jesper Dangaard Brouer <hawk@kernel.org>
-Subject: Re: [PATCH 00/14] bpf: Add trampoline and dispatcher to
- /proc/kallsyms
-Message-ID: <20200210161751.GC28110@krava>
-References: <20200208154209.1797988-1-jolsa@kernel.org>
- <CAJ+HfNhBDU9c4-0D5RiHFZBq_LN7E=k8=rhL+VbmxJU7rdDBxQ@mail.gmail.com>
+        id S1727621AbgBJQzx (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 10 Feb 2020 11:55:53 -0500
+Received: from ivanoab7.miniserver.com ([37.128.132.42]:41754 "EHLO
+        www.kot-begemot.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727499AbgBJQzw (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 10 Feb 2020 11:55:52 -0500
+Received: from tun252.jain.kot-begemot.co.uk ([192.168.18.6] helo=jain.kot-begemot.co.uk)
+        by www.kot-begemot.co.uk with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <anton.ivanov@cambridgegreys.com>)
+        id 1j1CLa-0004sq-Iu; Mon, 10 Feb 2020 16:55:46 +0000
+Received: from jain.kot-begemot.co.uk ([192.168.3.3])
+        by jain.kot-begemot.co.uk with esmtp (Exim 4.92)
+        (envelope-from <anton.ivanov@cambridgegreys.com>)
+        id 1j1CLY-0004P0-4b; Mon, 10 Feb 2020 16:55:46 +0000
+Subject: Re: [PATCH] virtio: Work around frames incorrectly marked as gso
+To:     netdev@vger.kernel.org
+Cc:     linux-um@lists.infradead.org, jasowang@redhat.com, mst@redhat.com,
+        virtualization@lists.linux-foundation.org
+References: <20191209104824.17059-1-anton.ivanov@cambridgegreys.com>
+From:   Anton Ivanov <anton.ivanov@cambridgegreys.com>
+Message-ID: <57230228-7030-c65f-a24f-910ca52bbe9e@cambridgegreys.com>
+Date:   Mon, 10 Feb 2020 16:55:44 +0000
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.4.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-In-Reply-To: <CAJ+HfNhBDU9c4-0D5RiHFZBq_LN7E=k8=rhL+VbmxJU7rdDBxQ@mail.gmail.com>
-X-Scanned-By: MIMEDefang 2.84 on 10.5.11.22
-Content-Transfer-Encoding: quoted-printable
+In-Reply-To: <20191209104824.17059-1-anton.ivanov@cambridgegreys.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-Spam-Score: -1.0
+X-Spam-Score: -1.0
+X-Clacks-Overhead: GNU Terry Pratchett
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Feb 10, 2020 at 04:51:08PM +0100, Bj=F6rn T=F6pel wrote:
-> On Sat, 8 Feb 2020 at 16:42, Jiri Olsa <jolsa@kernel.org> wrote:
-> >
-> > hi,
-> > this patchset adds trampoline and dispatcher objects
-> > to be visible in /proc/kallsyms. The last patch also
-> > adds sorting for all bpf objects in /proc/kallsyms.
-> >
->=20
-> Thanks for working on this!
->=20
-> I'm probably missing something with my perf setup; I've applied your
-> patches, and everything seem to work fine from an kallsyms
-> perspective:
->=20
-> # grep bpf_dispatcher_xdp /proc/kallsyms
-> ...
-> ffffffffc0511000 t bpf_dispatcher_xdp   [bpf]
->=20
-> However, when I run
-> # perf top
->=20
-> I still see the undecorated one:
-> 0.90%  [unknown]                  [k] 0xffffffffc0511037
->=20
-> Any ideas?
 
-yea strange.. it should be picked up from /proc/kallsyms as
-fallback if there's no other source, I'll check on that
-(might be the problem with perf depending on address going
-only higher in /proc/kallsyms, while bpf symbols are at the
-end and start over from the lowest bpf address)
 
-anyway, in perf we enumerate bpf_progs via the perf events
-PERF_BPF_EVENT_PROG_LOAD,PERF_BPF_EVENT_PROG_UNLOAD interface
-together with PERF_RECORD_KSYMBOL_TYPE_BPF events
+On 09/12/2019 10:48, anton.ivanov@cambridgegreys.com wrote:
+> From: Anton Ivanov <anton.ivanov@cambridgegreys.com>
+> 
+> Some of the frames marked as GSO which arrive at
+> virtio_net_hdr_from_skb() have no GSO_TYPE, no
+> fragments (data_len = 0) and length significantly shorter
+> than the MTU (752 in my experiments).
+> 
+> This is observed on raw sockets reading off vEth interfaces
+> in all 4.x and 5.x kernels I tested.
+> 
+> These frames are reported as invalid while they are in fact
+> gso-less frames.
+> 
+> This patch marks the vnet header as no-GSO for them instead
+> of reporting it as invalid.
+> 
+> Signed-off-by: Anton Ivanov <anton.ivanov@cambridgegreys.com>
+> ---
+>   include/linux/virtio_net.h | 8 ++++++--
+>   1 file changed, 6 insertions(+), 2 deletions(-)
+> 
+> diff --git a/include/linux/virtio_net.h b/include/linux/virtio_net.h
+> index 0d1fe9297ac6..d90d5cff1b9a 100644
+> --- a/include/linux/virtio_net.h
+> +++ b/include/linux/virtio_net.h
+> @@ -112,8 +112,12 @@ static inline int virtio_net_hdr_from_skb(const struct sk_buff *skb,
+>   			hdr->gso_type = VIRTIO_NET_HDR_GSO_TCPV4;
+>   		else if (sinfo->gso_type & SKB_GSO_TCPV6)
+>   			hdr->gso_type = VIRTIO_NET_HDR_GSO_TCPV6;
+> -		else
+> -			return -EINVAL;
+> +		else {
+> +			if (skb->data_len == 0)
+> +				hdr->gso_type = VIRTIO_NET_HDR_GSO_NONE;
+> +			else
+> +				return -EINVAL;
+> +		}
+>   		if (sinfo->gso_type & SKB_GSO_TCP_ECN)
+>   			hdr->gso_type |= VIRTIO_NET_HDR_GSO_ECN;
+>   	} else
+> 
 
-we might need to add something like:
-  PERF_RECORD_KSYMBOL_TYPE_BPF_TRAMPOLINE
-  PERF_RECORD_KSYMBOL_TYPE_BPF_DISPATCHER
+ping.
 
-to notify about the area, I'll check on that
-
-however the /proc/kallsyms fallback should work in any
-case.. thanks for report ;-)
-
-jirka
-
+-- 
+Anton R. Ivanov
+Cambridgegreys Limited. Registered in England. Company Number 10273661
+https://www.cambridgegreys.com/
