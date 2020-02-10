@@ -2,120 +2,161 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id CD6F71573B2
-	for <lists+netdev@lfdr.de>; Mon, 10 Feb 2020 12:51:33 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 57DDF1573B6
+	for <lists+netdev@lfdr.de>; Mon, 10 Feb 2020 12:52:42 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727436AbgBJLvc (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 10 Feb 2020 06:51:32 -0500
-Received: from mail-ed1-f67.google.com ([209.85.208.67]:37173 "EHLO
-        mail-ed1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726950AbgBJLvb (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 10 Feb 2020 06:51:31 -0500
-Received: by mail-ed1-f67.google.com with SMTP id cy15so8284675edb.4
-        for <netdev@vger.kernel.org>; Mon, 10 Feb 2020 03:51:30 -0800 (PST)
+        id S1727452AbgBJLwl (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 10 Feb 2020 06:52:41 -0500
+Received: from mail-wm1-f67.google.com ([209.85.128.67]:36866 "EHLO
+        mail-wm1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726950AbgBJLwk (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 10 Feb 2020 06:52:40 -0500
+Received: by mail-wm1-f67.google.com with SMTP id a6so3610888wme.2
+        for <netdev@vger.kernel.org>; Mon, 10 Feb 2020 03:52:39 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:reply-to:from:date:message-id:subject:to;
-        bh=oa0bZQpkEyjcs7ABeeOu5qKY4d6etbTg8GwEpE2lwx4=;
-        b=I8NoJhUHuZ1TNhZ4CCWq/Tat2EnjZXLEhqQhMb2+Is1NNP4cdprd/HZ5d2FkMbeaBQ
-         VIck3140SpiKNs40fpzxt9qBPuupwYMnEzJFwnf74HpOSn7Poo5YAfKlEeDozWapJIMS
-         NMNkXp/RxFAjdJ7B5EUY3J5ULGRuKK18t8g12FkqDThIaoFCppJ7+6WCFkeIoWCs+hRp
-         ADulFxKNRANTE/rvuTihdvCIzj6vtfFTyjILyeLHtG7ndD1AwkOa7cPj690sQLIt24YJ
-         +pnRZL9xqoBHqBgDLilo5YDIchfn6D1ieRwkYfPRPBE+eVJkI0lUNj+zpw7P2/OM4miQ
-         kE1w==
+        d=cloudflare.com; s=google;
+        h=references:user-agent:from:to:cc:subject:in-reply-to:date
+         :message-id:mime-version:content-transfer-encoding;
+        bh=v0jsfdDUzAOrCN8MLFPhyS4TShYPDB3NuAvx8HFlXUo=;
+        b=ZfE2dAIoWQCCKQbXg/IGCuHB6GFkuDWFSAKaF5Rd8iG28tRFhT6YarG+OyIF5d/bW3
+         hI4lfzfJaNWpYDLzVj8+1QYCgOkQ3TjWPVeDT/Gb0RPiiPDGeBcSkTiGjXyA2e2RtDhJ
+         UuDQvKqLBc0zpechLd4ToaV5fnpnTa8KNcgmw=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:reply-to:from:date:message-id
-         :subject:to;
-        bh=oa0bZQpkEyjcs7ABeeOu5qKY4d6etbTg8GwEpE2lwx4=;
-        b=ogLApFMQsIfl5kgc6l/cQ9qk3RQAPsVJIqZqWef0HQCpqLIckBNjpNuw+S6T69GqWA
-         NSSaPtm0ohw2j0KXFzT51AwfpAdqpGOiOlwc7UZwsowe5lrUQahkCMeDt0JjnaP31JAs
-         GCqE6mOUNLgMrbKaKWkF3BZi4WjT+CTnSh/41ZSCi0TCimz4ApxgKgZzR7Qja+mhnsQF
-         4QwWFL0CBJgaSexhmsFgiPZ1Gc1+2pbSLI4vucVl+HVbQ1UZi/qpS6wT2Ss9axOGKpGn
-         9UINLwtNpN1qi1xovdLZKryPJE3+ybqu28bqClW14YnbL7jktPabsoNwNkkEO+fdvO0M
-         Ct6g==
-X-Gm-Message-State: APjAAAVi3UpkcFm1cMlZwCrJdazxLtpm4VKlLaXfhbK0AUyuEFYOZYGO
-        MEov3hDkxI+kuSquO+akoDZ6MR7PpOS2eVNqmao=
-X-Google-Smtp-Source: APXvYqy/rjlg74q8e8wrW617n+ptZUJfhi+0L1PThfxcI4QXQuLU1yMe0H1AWZb7QWfndk9HJykyb0i82j+U+I9N1TA=
-X-Received: by 2002:a05:6402:74a:: with SMTP id p10mr790193edy.377.1581335490038;
- Mon, 10 Feb 2020 03:51:30 -0800 (PST)
+        h=x-gm-message-state:references:user-agent:from:to:cc:subject
+         :in-reply-to:date:message-id:mime-version:content-transfer-encoding;
+        bh=v0jsfdDUzAOrCN8MLFPhyS4TShYPDB3NuAvx8HFlXUo=;
+        b=QEysH61Nr3wEGXWl8fRIiUD9BmEbef+tdjocj5Dg3bsEbiVLeDLwUwEbaxIsE4KZhn
+         axJUUnYSeJoU8Z+Gnu5UcTGUd4IGUfIVLftfR4ueo4RzBl1XbrBLPPOEjxErie5OluG+
+         dl6Gli0X65jUqVUxPRD5ui2cDUFJoSZuGUEuumB8fpHdv621O118kAVeZWS9Z7UkNCZb
+         5sVwrNciBp8LDyeSWHnU5ac5tb4RAmhwTNC2pD9vfWcQUJDjzZKkEZutU5FxB1VQanEC
+         SVljt26rHpGNfWcKYyh/q7F1QjIZLitV7uX15EJQUydz+Jz0jmH9SSDG6Sv6X2dEz2Tq
+         jeAA==
+X-Gm-Message-State: APjAAAU9d8bd8fZKC3NAUHk0uzpnu57gcBo5WYUgwsHVnbdpY+VoJuEC
+        NLV/RlRbjSmnhOzH+3Hav4wrutxuXpceQeyz
+X-Google-Smtp-Source: APXvYqy4WMchAPxTBVzuTtOmfOnSGwG4sYdP4mxAzL+6LjS3N56N26Hb0nKO0rvmB/8D4K4Gydyx2Q==
+X-Received: by 2002:a1c:6189:: with SMTP id v131mr14964365wmb.185.1581335558374;
+        Mon, 10 Feb 2020 03:52:38 -0800 (PST)
+Received: from cloudflare.com ([88.157.168.82])
+        by smtp.gmail.com with ESMTPSA id i204sm244164wma.44.2020.02.10.03.52.37
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 10 Feb 2020 03:52:37 -0800 (PST)
+References: <20200206111652.694507-1-jakub@cloudflare.com> <20200206111652.694507-4-jakub@cloudflare.com> <CAADnVQJU4RtAAMH0pL9AQSXDgHGcXOqm15EKZw10c=r-f=bfuw@mail.gmail.com> <87eev3aidz.fsf@cloudflare.com> <5e40d43715474_2a9a2abf5f7f85c025@john-XPS-13-9370.notmuch>
+User-agent: mu4e 1.1.0; emacs 26.3
+From:   Jakub Sitnicki <jakub@cloudflare.com>
+To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>,
+        John Fastabend <john.fastabend@gmail.com>
+Cc:     Daniel Borkmann <daniel@iogearbox.net>, bpf <bpf@vger.kernel.org>,
+        Network Development <netdev@vger.kernel.org>,
+        kernel-team <kernel-team@cloudflare.com>
+Subject: Re: [PATCH bpf 3/3] selftests/bpf: Test freeing sockmap/sockhash with a socket in it
+In-reply-to: <5e40d43715474_2a9a2abf5f7f85c025@john-XPS-13-9370.notmuch>
+Date:   Mon, 10 Feb 2020 11:52:36 +0000
+Message-ID: <87blq6accb.fsf@cloudflare.com>
 MIME-Version: 1.0
-Received: by 2002:a50:f1d3:0:0:0:0:0 with HTTP; Mon, 10 Feb 2020 03:51:29
- -0800 (PST)
-Reply-To: janvierlitse2019@gmail.com
-From:   Mr Janvier Litse <echecheamanamba@gmail.com>
-Date:   Mon, 10 Feb 2020 03:51:29 -0800
-Message-ID: <CAGOSys+1i8gqQ4OBEuZ7ECmQ2nMxXFKvHX+DKTStTtdv_sEt_Q@mail.gmail.com>
-Subject: URGENT RESPOND FOR MORE DETAILS!
-To:     undisclosed-recipients:;
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Mr Janvier Litse.
-African Development Bank
-Burkina Faso (ADB)
-Ouagadougou - Burkina Faso.
+On Mon, Feb 10, 2020 at 03:55 AM GMT, John Fastabend wrote:
+> Jakub Sitnicki wrote:
+>> On Sun, Feb 09, 2020 at 03:41 AM CET, Alexei Starovoitov wrote:
+>> > On Thu, Feb 6, 2020 at 3:28 AM Jakub Sitnicki <jakub@cloudflare.com> w=
+rote:
+>> >>
+>> >> Commit 7e81a3530206 ("bpf: Sockmap, ensure sock lock held during tear
+>> >> down") introduced sleeping issues inside RCU critical sections and wh=
+ile
+>> >> holding a spinlock on sockmap/sockhash tear-down. There has to be at =
+least
+>> >> one socket in the map for the problem to surface.
+>> >>
+>> >> This adds a test that triggers the warnings for broken locking rules.=
+ Not a
+>> >> fix per se, but rather tooling to verify the accompanying fixes. Run =
+on a
+>> >> VM with 1 vCPU to reproduce the warnings.
+>> >>
+>> >> Fixes: 7e81a3530206 ("bpf: Sockmap, ensure sock lock held during tear=
+ down")
+>> >> Signed-off-by: Jakub Sitnicki <jakub@cloudflare.com>
+>> >
+>> > selftests/bpf no longer builds for me.
+>> > make
+>> >   BINARY   test_maps
+>> >   TEST-OBJ [test_progs] sockmap_basic.test.o
+>> > /data/users/ast/net/tools/testing/selftests/bpf/prog_tests/sockmap_bas=
+ic.c:
+>> > In function =E2=80=98connected_socket_v4=E2=80=99:
+>> > /data/users/ast/net/tools/testing/selftests/bpf/prog_tests/sockmap_bas=
+ic.c:20:11:
+>> > error: =E2=80=98TCP_REPAIR_ON=E2=80=99 undeclared (first use in this f=
+unction); did
+>> > you mean =E2=80=98TCP_REPAIR=E2=80=99?
+>> >    20 |  repair =3D TCP_REPAIR_ON;
+>> >       |           ^~~~~~~~~~~~~
+>> >       |           TCP_REPAIR
+>> > /data/users/ast/net/tools/testing/selftests/bpf/prog_tests/sockmap_bas=
+ic.c:20:11:
+>> > note: each undeclared identifier is reported only once for each
+>> > function it appears in
+>> > /data/users/ast/net/tools/testing/selftests/bpf/prog_tests/sockmap_bas=
+ic.c:29:11:
+>> > error: =E2=80=98TCP_REPAIR_OFF_NO_WP=E2=80=99 undeclared (first use in=
+ this function);
+>> > did you mean =E2=80=98TCP_REPAIR_OPTIONS=E2=80=99?
+>> >    29 |  repair =3D TCP_REPAIR_OFF_NO_WP;
+>> >       |           ^~~~~~~~~~~~~~~~~~~~
+>> >       |           TCP_REPAIR_OPTIONS
+>> >
+>> > Clearly /usr/include/linux/tcp.h is too old.
+>> > Suggestions?
+>>
+>> Sorry for the inconvenience. I see that tcp.h header is missing under
+>> linux/tools/include/uapi/.
+>
+> How about we just add the couple defines needed to sockmap_basic.c I don't
+> see a need to pull in all of tcp.h just for a couple defines that wont
+> change anyways.
 
-Dear friend, Good Day
+Looking back at how this happened. test_progs.h pulls in netinet/tcp.h:
 
-I am writing to seek your cooperation over this business, Please due
-welcome this letter.
+# 19 "/home/jkbs/src/linux/tools/testing/selftests/bpf/test_progs.h" 2
+# 1 "/usr/include/netinet/tcp.h" 1 3 4
+# 92 "/usr/include/netinet/tcp.h" 3 4
 
-I am Mr Janvier Litse.the director of the accounts & auditing dept .at
-the African Development Bank Ouagadougou-west Africa (A D B) With due
-respect, I have decided to contact you on a business transaction that
-will be beneficial to both of us.At the bank's lastaccounts/auditing
-evaluations, my staffs came across an old account which was being
-maintained by a foreign client who we learnt was among the deceased
-passengers of motor accident on November.. 2003, the deceased was
-unable to run this account since his death. The account has remained
-dormant without the knowledge of his family since it was put in a safe
-deposit account in the bank for future investment by the client.
+A glibc header, which gained TCP_REPAIR_* constants in 2.29 [0]:
 
-Since his demise, even the members of his family haven't applied for
-claims over this fund and it has been in the safe deposit accountuntil
-I discovered that it cannot be claimed since our client is a foreign
-national and we are sure that he has no next of kin here to file
-claims over the money. As the director of the department, this
-discovery was brought to my office so as to decide what is to be done.
-I decided to seek ways through which to transfer this money out of the
-bank and out of the country too.
+$ git describe --contains 5cd7dbdea13eb302620491ef44837b17e9d39c5a
+glibc-2.29~510
 
-The total amount in the account is twenty eight  million three hundred
-thousand dollars (USD 28,300,000.00).with my positions as a staffs of
-the bank, I am handicapped because I can not operate foreign accounts
-and cannot lay bonafide claim over this money.The client was a foreign
-national and you will only be asked to act as his next of kin and I
-will supply you with all the necessary information and bank data to
-assist you in being able to transfer this money to any bank of your
-choice where this money could be transferred into.
+Pulling in linux/tcp.h would conflict with struct definitions in
+netinet/tcp.h. So redefining the possibly missing constants, like John
+suggests, is the right way out.
 
-The total sum will be shared as follows: 50% for me, 50% for you and
-expenses incidental occur during the transfer will be  incured by both
-of us. The transfer is risk free on both sides hence you are going to
-follow my instruction till the fund transfer to your account.
+I'm not sure, though, how to protect against such mistakes in the
+future. Any ideas?
 
-Since I work in this bank that is why you should be confident in the
-success of this transaction because you will be updated with
-information as at when desired I will wish you to keep this
-transaction secret and confidential as I am hoping to retire with my
-share of this money at the end of transaction which will be when this
-money is safety in your account. I will then come over to your country
-for sharing according to the previously agreed percentages. You might
-even have to advise me on possibilities of investment in your country
-or elsewhere of our choice. May God help you to help me to a restive
-retirement, Amen.
+[0] https://sourceware.org/git/?p=3Dglibc.git;a=3Dcommit;h=3D5cd7dbdea13eb3=
+02620491ef44837b17e9d39c5a
 
+>
+>>
+>> I have been building against my distro kernel headers, completely
+>> unaware of this. This is an oversight on my side.
+>>
+>> Can I ask for a revert? I'm traveling today with limited ability to
+>> post patches.
+>
+> I don't think we need a full revert.
+>
+>>
+>> I can resubmit the test with the missing header for bpf-next once it
+>> reopens.
+>
+> If you are traveling I'll post a patch with the defines.
 
-Please for further information and enquires feel free to contact me
-back immediately for more explanation and better  understanding.please
-contact me through this alternative email address
-(janvierlitse2019@gmail.com)
-
-I am waiting for your urgent response!!!
-Thanks and remain blessed
- Mr Janvier Litse.
-+226 54459253
+Thanks, again.
