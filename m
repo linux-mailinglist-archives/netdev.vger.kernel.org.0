@@ -2,105 +2,124 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 701DC158577
-	for <lists+netdev@lfdr.de>; Mon, 10 Feb 2020 23:26:23 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id DA7F915859B
+	for <lists+netdev@lfdr.de>; Mon, 10 Feb 2020 23:33:35 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727516AbgBJW0V (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 10 Feb 2020 17:26:21 -0500
-Received: from Chamillionaire.breakpoint.cc ([193.142.43.52]:33496 "EHLO
-        Chamillionaire.breakpoint.cc" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1727385AbgBJW0V (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 10 Feb 2020 17:26:21 -0500
-Received: from fw by Chamillionaire.breakpoint.cc with local (Exim 4.92)
-        (envelope-from <fw@strlen.de>)
-        id 1j1HVO-0000cw-PD; Mon, 10 Feb 2020 23:26:14 +0100
-Date:   Mon, 10 Feb 2020 23:26:14 +0100
-From:   Florian Westphal <fw@strlen.de>
-To:     "Jason A. Donenfeld" <Jason@zx2c4.com>
-Cc:     Florian Westphal <fw@strlen.de>, Netdev <netdev@vger.kernel.org>,
-        David Miller <davem@davemloft.net>
-Subject: Re: [PATCH v2 net 1/5] icmp: introduce helper for NAT'd source
- address in network device context
-Message-ID: <20200210222614.GJ2991@breakpoint.cc>
-References: <20200210141423.173790-1-Jason@zx2c4.com>
- <20200210141423.173790-2-Jason@zx2c4.com>
- <CAHmME9pa+x_i2b1HJi0Y8+bwn3wFBkM5Mm3bpVaH5z=H=2WJPw@mail.gmail.com>
- <20200210213259.GI2991@breakpoint.cc>
- <CAHmME9qQ=E1L0XVe=i714AMdpMJQs3zPz=XVKW9Ck6TvGu_Hew@mail.gmail.com>
+        id S1727516AbgBJWde (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 10 Feb 2020 17:33:34 -0500
+Received: from mail-lf1-f66.google.com ([209.85.167.66]:42840 "EHLO
+        mail-lf1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727422AbgBJWde (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 10 Feb 2020 17:33:34 -0500
+Received: by mail-lf1-f66.google.com with SMTP id y19so5504648lfl.9;
+        Mon, 10 Feb 2020 14:33:32 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=V9XkxYkaG0B+nnEMVRxPtaSnXiCsxqB6sbkGiIdacvU=;
+        b=HXEHJjzML3XxoB15B/F6ZuwkValmyqmVqMBma19E1Ygn2SaMdMsjUiU2eSS+fIpc1Q
+         HHZM7jaeEaw+yOvhHixtJmCMy/Ja8cqoLBWVwPYYrfHO1QuAB1OSAy8nQ74Ui0ln2z+F
+         GprwVdJySan5zmoasJUX5DWiOzdqMArG+y3UpFfLOGdEfbxkzLf68LOxEHTjw+PiYyMg
+         Ki5HUHic5WMX3tkU2zced1uuY1tQBKEnNpfMatJ2c9zX6VL6zSworR+EX3LN99uE+ZA2
+         G+KlDCr/idOl+SQhrV37TkWNKorXeVnFO9zlwbJtiOOxagUilEBCz4OSWirZKH4ejTvw
+         jLig==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=V9XkxYkaG0B+nnEMVRxPtaSnXiCsxqB6sbkGiIdacvU=;
+        b=LipJMnUtqiFWnha8jKObKXSyzueypF7x7LzIlaJH9qUO1qAXgjsc/HgdU3v0FSCI8q
+         DYM3rtlvJmjB06usFnovuB1jp0mqsWd+a4K63jW4c1QfK+srJ7fF++EGjlUatOnuum0f
+         PkI9T5tCPw/MG/p7gpCwdlh4Zk8kTnYDVQBAvMqN8DxhgbLeYRfGNMbXJ4JakLeuT6JC
+         zn9bG8TQSOo6yyIYNXRcn0edHT4iuWRQ3tlGuxQNW7NuZYE1TPIR2Jyv9hNByOaM861A
+         Y7mPSZCea1rhiO7ERTv7p7rIUEHf24UwHnU0ihG/1uDiezoe9DqYkEqJCVLxRXKSHd7w
+         J0lg==
+X-Gm-Message-State: APjAAAV7eVxR8uKHZst6ZumYu9Oa+t4KdPpcUUVly1+S733YKHFzphSx
+        QZYR7ijlzFO2263KyZrdRSajgtI9zgY+W0QFYjU=
+X-Google-Smtp-Source: APXvYqwcsxbmeYdyFqIdbutRPJ+eeMTWtggT+/1ngme9JHcO65/+eGyis5qROdf2Hy+h1k3wSEQsEO3Ba97WEh7/o8g=
+X-Received: by 2002:ac2:5626:: with SMTP id b6mr1849832lff.134.1581374011555;
+ Mon, 10 Feb 2020 14:33:31 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CAHmME9qQ=E1L0XVe=i714AMdpMJQs3zPz=XVKW9Ck6TvGu_Hew@mail.gmail.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+References: <158131347731.21414.12120493483848386652.stgit@john-Precision-5820-Tower>
+ <87d0amahk9.fsf@cloudflare.com>
+In-Reply-To: <87d0amahk9.fsf@cloudflare.com>
+From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Date:   Mon, 10 Feb 2020 14:33:20 -0800
+Message-ID: <CAADnVQJ0kSjGjj9N3Jt2t=i+aVWvJ8iUzuSJV90997gbX-Ah1Q@mail.gmail.com>
+Subject: Re: [PATCH] bpf: selftests build error in sockmap_basic.c
+To:     Jakub Sitnicki <jakub@cloudflare.com>
+Cc:     John Fastabend <john.fastabend@gmail.com>,
+        Network Development <netdev@vger.kernel.org>,
+        bpf <bpf@vger.kernel.org>, Daniel Borkmann <daniel@iogearbox.net>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Jason A. Donenfeld <Jason@zx2c4.com> wrote:
-> Hi Florian,
-> 
-> On Mon, Feb 10, 2020 at 10:33 PM Florian Westphal <fw@strlen.de> wrote:
+On Mon, Feb 10, 2020 at 1:59 AM Jakub Sitnicki <jakub@cloudflare.com> wrote=
+:
+>
+> On Mon, Feb 10, 2020 at 05:44 AM GMT, John Fastabend wrote:
+> > Fix following build error. We could push a tcp.h header into one of the
+> > include paths, but I think its easy enough to simply pull in the three
+> > defines we need here. If we end up using more of tcp.h at some point
+> > we can pull it in later.
 > >
-> > Jason A. Donenfeld <Jason@zx2c4.com> wrote:
-> > > On Mon, Feb 10, 2020 at 3:15 PM Jason A. Donenfeld <Jason@zx2c4.com> wrote:
-> > > > +               ip_hdr(skb_in)->saddr = ct->tuplehash[0].tuple.src.u3.ip;
-> > > > +       }
-> > > > +       icmp_send(skb_in, type, code, info);
-> > >
-> > > According to the comments in icmp_send, access to
-> > > ip_hdr(skb_in)->saddr requires first checking for `if
-> > > (skb_network_header(skb_in) < skb_in->head ||
-> > > (skb_network_header(skb_in) + sizeof(struct iphdr)) >
-> > > skb_tail_pointer(skb_in))` first to be safe.
+> > /home/john/git/bpf/tools/testing/selftests/bpf/prog_tests/sockmap_basic=
+.c: In function =E2=80=98connected_socket_v4=E2=80=99:
+> > /home/john/git/bpf/tools/testing/selftests/bpf/prog_tests/sockmap_basic=
+.c:20:11: error: =E2=80=98TCP_REPAIR_ON=E2=80=99 undeclared (first use in t=
+his function)
+> >   repair =3D TCP_REPAIR_ON;
+> >            ^
+> > /home/john/git/bpf/tools/testing/selftests/bpf/prog_tests/sockmap_basic=
+.c:20:11: note: each undeclared identifier is reported only once for each f=
+unction it appears in
+> > /home/john/git/bpf/tools/testing/selftests/bpf/prog_tests/sockmap_basic=
+.c:29:11: error: =E2=80=98TCP_REPAIR_OFF_NO_WP=E2=80=99 undeclared (first u=
+se in this function)
+> >   repair =3D TCP_REPAIR_OFF_NO_WP;
 > >
-> > You will probably also need skb_ensure_writable() to handle cloned skbs.
+> > Then with fix,
 > >
-> > I also suggest to check "ct->status & IPS_NAT_MASK", nat is only done if
-> > those bits are set.
-> 
-> Thanks for the suggestions. I've made these changes and they're queued
-> up for a v3, currently staged in wireguard-linux.git's stable branch:
-> https://git.zx2c4.com/wireguard-linux/log/?h=stable
+> > $ ./test_progs -n 44
+> > #44/1 sockmap create_update_free:OK
+> > #44/2 sockhash create_update_free:OK
+> > #44 sockmap_basic:OK
+> >
+> > Fixes: 5d3919a953c3c ("selftests/bpf: Test freeing sockmap/sockhash wit=
+h a socket in it")
+> > Signed-off-by: John Fastabend <john.fastabend@gmail.com>
+> > ---
+> >  .../selftests/bpf/prog_tests/sockmap_basic.c       |    5 +++++
+> >  1 file changed, 5 insertions(+)
+> >
+> > diff --git a/tools/testing/selftests/bpf/prog_tests/sockmap_basic.c b/t=
+ools/testing/selftests/bpf/prog_tests/sockmap_basic.c
+> > index 07f5b46..aa43e0b 100644
+> > --- a/tools/testing/selftests/bpf/prog_tests/sockmap_basic.c
+> > +++ b/tools/testing/selftests/bpf/prog_tests/sockmap_basic.c
+> > @@ -3,6 +3,11 @@
+> >
+> >  #include "test_progs.h"
+> >
+> > +#define TCP_REPAIR           19      /* TCP sock is under repair right=
+ now */
+> > +
+> > +#define TCP_REPAIR_ON                1
+> > +#define TCP_REPAIR_OFF_NO_WP -1      /* Turn off without window probes=
+ */
+> > +
+> >  static int connected_socket_v4(void)
+> >  {
+> >       struct sockaddr_in addr =3D {
+>
+> Neat, I haven't thought of that. Thank you for fixing up my mistake.
+>
+> Reviewed-by: Jakub Sitnicki <jakub@cloudflare.com>
 
-I think this is a bit too conservative, f.e. i don't see how
-ndo-called skbs could be shared (tx path needs to be able to change skb
-list pointers)?
-
-If its needed it looks ok.
-
-Otherwise, I would suggest something like this:
-
-void icmp_ndo_send(struct sk_buff *skb_in, int type, int code, __be32 info)
-{
-   enum ip_conntrack_info ctinfo;
-   struct nf_conn *ct;
-   __be32 orig_ip;
-
-   ct = nf_ct_get(skb_in, &ctinfo);
-   if (!ct || ((ct->status & IPS_NAT_MASK) == 0) {
-      icmp_send(skb_in, type, code, info);
-      return;
-    }
-
-   /* avoid reallocations */
-   if (skb_network_header(skb_in) < skb_in->head ||
-       (skb_network_header(skb_in) + sizeof(struct iphdr)) >
-        skb_tail_pointer(skb_in))
-       return;
-
-    /* handle clones. NB: if reallocations are to be avoided, then
-     * if (skb_cloned(skb_in) &&
-     * !skb_clone_writable(skb_in, skb_network_offset(skb_in) + iphlen))
-     *
-     * ... should be placed here instead:
-     */
-    if (unlikely(skb_ensure_writable(skb_in,
-                 skb_network_offset(skb_in) + sizeof(struct iphdr))))
-        return;
-
-    orig_ip = ip_hdr(skb_in)->saddr;
-    ip_hdr(skb_in)->saddr = ct->tuplehash[0].tuple.src.u3.ip;
-    icmp_send(skb_in, type, code, info);
-    ip_hdr(skb_in)->saddr = orig_ip;
-}
+I also think this is the better approach.
+Applied. Thanks.
