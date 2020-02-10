@@ -2,166 +2,102 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 4ECEE157B33
-	for <lists+netdev@lfdr.de>; Mon, 10 Feb 2020 14:29:03 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 66B85157B9D
+	for <lists+netdev@lfdr.de>; Mon, 10 Feb 2020 14:31:57 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731364AbgBJN2K (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 10 Feb 2020 08:28:10 -0500
-Received: from esa5.hc3370-68.iphmx.com ([216.71.155.168]:58949 "EHLO
-        esa5.hc3370-68.iphmx.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727784AbgBJN2I (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 10 Feb 2020 08:28:08 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
-  d=citrix.com; s=securemail; t=1581341287;
-  h=subject:to:cc:references:from:message-id:date:
-   mime-version:in-reply-to:content-transfer-encoding;
-  bh=opbvteBDcQt8TMq05Xoco2FvwOxB7xQFs3oCBwqLCAg=;
-  b=RGgk3lkRH2E0BmzV/lkt1ItWxNa8nr+rZW6tOVcY0n6sVWwd/CQvpsa9
-   UFMx4ZPQDXLEmSVke90etWlEurcOcJq3rUE1virvYzkIB/pzgL2VnnbiM
-   fWlcZ2D+Q1ogKIedkLZEWoaLBhtBm2FTOGxpMWAi9yRePKMyP3YB+laT4
-   Y=;
-Authentication-Results: esa5.hc3370-68.iphmx.com; dkim=none (message not signed) header.i=none; spf=None smtp.pra=sergey.dyasli@citrix.com; spf=Pass smtp.mailfrom=sergey.dyasli@citrix.com; spf=None smtp.helo=postmaster@mail.citrix.com
-Received-SPF: None (esa5.hc3370-68.iphmx.com: no sender
-  authenticity information available from domain of
-  sergey.dyasli@citrix.com) identity=pra;
-  client-ip=162.221.158.21; receiver=esa5.hc3370-68.iphmx.com;
-  envelope-from="sergey.dyasli@citrix.com";
-  x-sender="sergey.dyasli@citrix.com";
-  x-conformance=sidf_compatible
-Received-SPF: Pass (esa5.hc3370-68.iphmx.com: domain of
-  sergey.dyasli@citrix.com designates 162.221.158.21 as
-  permitted sender) identity=mailfrom;
-  client-ip=162.221.158.21; receiver=esa5.hc3370-68.iphmx.com;
-  envelope-from="sergey.dyasli@citrix.com";
-  x-sender="sergey.dyasli@citrix.com";
-  x-conformance=sidf_compatible; x-record-type="v=spf1";
-  x-record-text="v=spf1 ip4:209.167.231.154 ip4:178.63.86.133
-  ip4:195.66.111.40/30 ip4:85.115.9.32/28 ip4:199.102.83.4
-  ip4:192.28.146.160 ip4:192.28.146.107 ip4:216.52.6.88
-  ip4:216.52.6.188 ip4:162.221.158.21 ip4:162.221.156.83
-  ip4:168.245.78.127 ~all"
-Received-SPF: None (esa5.hc3370-68.iphmx.com: no sender
-  authenticity information available from domain of
-  postmaster@mail.citrix.com) identity=helo;
-  client-ip=162.221.158.21; receiver=esa5.hc3370-68.iphmx.com;
-  envelope-from="sergey.dyasli@citrix.com";
-  x-sender="postmaster@mail.citrix.com";
-  x-conformance=sidf_compatible
-IronPort-SDR: v27w17BgUeGjtp/rl+JvfJKbl+EaZoEoDjOXy+AxgNKoUVuR3HsBp3/YwqB9C4hhsfHfEiE5R8
- Whp2yvSJsJIZGHYa4NCcKw23XExw6bKzW3EMqZcR6rU8AvrEaseHho+J2sSxsiS3elFH0s0Ja0
- soe8U2ZuKnE5dtm/45/ysKOJjCySAWU8mJCVOf8aabf41Wa/kPUnRQlQDPiBOOUdHjg0MfKRgb
- h5R+0CQLPMCQ0uAK1uf+ztaHPEZ1AYc+pLaw6b6CVKL34Mz9s6NHWfx0Vt1uvPZ6aSMvam2HSV
- csE=
-X-SBRS: 2.7
-X-MesageID: 12569220
-X-Ironport-Server: esa5.hc3370-68.iphmx.com
-X-Remote-IP: 162.221.158.21
-X-Policy: $RELAYED
-X-IronPort-AV: E=Sophos;i="5.70,425,1574139600"; 
-   d="scan'208";a="12569220"
-Subject: Re: [PATCH v3 4/4] xen/netback: fix grant copy across page boundary
+        id S1731517AbgBJNbO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 10 Feb 2020 08:31:14 -0500
+Received: from mx0a-001b2d01.pphosted.com ([148.163.156.1]:36910 "EHLO
+        mx0a-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1728230AbgBJMgE (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 10 Feb 2020 07:36:04 -0500
+Received: from pps.filterd (m0098393.ppops.net [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 01ACVDFA040963
+        for <netdev@vger.kernel.org>; Mon, 10 Feb 2020 07:36:03 -0500
+Received: from e06smtp02.uk.ibm.com (e06smtp02.uk.ibm.com [195.75.94.98])
+        by mx0a-001b2d01.pphosted.com with ESMTP id 2y1tn4n5kv-1
+        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=NOT)
+        for <netdev@vger.kernel.org>; Mon, 10 Feb 2020 07:36:03 -0500
+Received: from localhost
+        by e06smtp02.uk.ibm.com with IBM ESMTP SMTP Gateway: Authorized Use Only! Violators will be prosecuted
+        for <netdev@vger.kernel.org> from <jwi@linux.ibm.com>;
+        Mon, 10 Feb 2020 12:36:01 -0000
+Received: from b06cxnps3074.portsmouth.uk.ibm.com (9.149.109.194)
+        by e06smtp02.uk.ibm.com (192.168.101.132) with IBM ESMTP SMTP Gateway: Authorized Use Only! Violators will be prosecuted;
+        (version=TLSv1/SSLv3 cipher=AES256-GCM-SHA384 bits=256/256)
+        Mon, 10 Feb 2020 12:35:58 -0000
+Received: from d06av26.portsmouth.uk.ibm.com (d06av26.portsmouth.uk.ibm.com [9.149.105.62])
+        by b06cxnps3074.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 01ACZu2k50462960
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Mon, 10 Feb 2020 12:35:57 GMT
+Received: from d06av26.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id E6275AE05A;
+        Mon, 10 Feb 2020 12:35:56 +0000 (GMT)
+Received: from d06av26.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id BD892AE053;
+        Mon, 10 Feb 2020 12:35:56 +0000 (GMT)
+Received: from tuxmaker.boeblingen.de.ibm.com (unknown [9.152.85.9])
+        by d06av26.portsmouth.uk.ibm.com (Postfix) with ESMTP;
+        Mon, 10 Feb 2020 12:35:56 +0000 (GMT)
+From:   Julian Wiedmann <jwi@linux.ibm.com>
 To:     David Miller <davem@davemloft.net>
-CC:     <xen-devel@lists.xen.org>, <kasan-dev@googlegroups.com>,
-        <linux-mm@kvack.org>, <linux-kernel@vger.kernel.org>,
-        <aryabinin@virtuozzo.com>, <glider@google.com>,
-        <dvyukov@google.com>, <boris.ostrovsky@oracle.com>,
-        <jgross@suse.com>, <sstabellini@kernel.org>,
-        <george.dunlap@citrix.com>, <ross.lagerwall@citrix.com>,
-        <akpm@linux-foundation.org>, <netdev@vger.kernel.org>,
-        <wei.liu@kernel.org>, <paul@xen.org>,
-        "sergey.dyasli@citrix.com >> Sergey Dyasli" 
-        <sergey.dyasli@citrix.com>
-References: <20200207142652.670-1-sergey.dyasli@citrix.com>
- <20200207142652.670-5-sergey.dyasli@citrix.com>
- <20200207.153630.1432371073271757175.davem@davemloft.net>
-From:   Sergey Dyasli <sergey.dyasli@citrix.com>
-Autocrypt: addr=sergey.dyasli@citrix.com; keydata=
- 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
-Message-ID: <db55bbec-e685-e3b6-638a-3d707d8892c0@citrix.com>
-Date:   Mon, 10 Feb 2020 13:27:38 +0000
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.4.1
-MIME-Version: 1.0
-In-Reply-To: <20200207.153630.1432371073271757175.davem@davemloft.net>
-Content-Type: text/plain; charset="utf-8"
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Cc:     <netdev@vger.kernel.org>, Julian Wiedmann <jwi@linux.ibm.com>
+Subject: [PATCH net-next] net: vlan: suppress "failed to kill vid" warnings
+Date:   Mon, 10 Feb 2020 13:35:53 +0100
+X-Mailer: git-send-email 2.17.1
+X-TM-AS-GCONF: 00
+x-cbid: 20021012-0008-0000-0000-0000035183C3
+X-IBM-AV-DETECTION: SAVI=unused REMOTE=unused XFE=unused
+x-cbparentid: 20021012-0009-0000-0000-00004A7220A0
+Message-Id: <20200210123553.89842-1-jwi@linux.ibm.com>
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.138,18.0.572
+ definitions=2020-02-10_02:2020-02-10,2020-02-10 signatures=0
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 malwarescore=0
+ mlxlogscore=999 suspectscore=0 bulkscore=0 clxscore=1015 impostorscore=0
+ lowpriorityscore=0 adultscore=0 priorityscore=1501 phishscore=0 mlxscore=0
+ spamscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2001150001 definitions=main-2002100098
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 07/02/2020 14:36, David Miller wrote:
-> From: Sergey Dyasli <sergey.dyasli@citrix.com>
-> Date: Fri, 7 Feb 2020 14:26:52 +0000
->
->> From: Ross Lagerwall <ross.lagerwall@citrix.com>
->>
->> When KASAN (or SLUB_DEBUG) is turned on, there is a higher chance that
->> non-power-of-two allocations are not aligned to the next power of 2 of
->> the size. Therefore, handle grant copies that cross page boundaries.
->>
->> Signed-off-by: Ross Lagerwall <ross.lagerwall@citrix.com>
->> Signed-off-by: Sergey Dyasli <sergey.dyasli@citrix.com>
->> Acked-by: Paul Durrant <paul@xen.org>
->
-> This is part of a larger patch series to which netdev was not CC:'d
->
-> Where is this patch targetted to be applied?
->
-> Do you expect a networking ACK on this?
->
-> Please do not submit patches in such an ambiguous manner like this
-> in the future, thank you.
+When a real dev unregisters, vlan_device_event() also unregisters all
+of its vlan interfaces. For each VID this ends up in __vlan_vid_del(),
+which attempts to remove the VID from the real dev's VLAN filter.
 
-Please see the following for more context:
+But the unregistering real dev might no longer be able to issue the
+required IOs, and return an error. Subsequently we raise a noisy warning
+msg that is not appropriate for this situation: the real dev is being
+torn down anyway, there shouldn't be any worry about cleanly releasing
+all of its HW-internal resources.
 
-    https://lore.kernel.org/linux-mm/20200122140512.zxtld5sanohpmgt2@debian/
+So to avoid scaring innocent users, suppress this warning when the
+failed deletion happens on an unregistering device.
+While at it also convert the raw pr_warn() to a more fitting
+netdev_warn().
 
-Sorry for not providing enough context with this submission.
+Signed-off-by: Julian Wiedmann <jwi@linux.ibm.com>
+---
+ net/8021q/vlan_core.c | 5 ++---
+ 1 file changed, 2 insertions(+), 3 deletions(-)
 
---
-Thanks,
-Sergey
+diff --git a/net/8021q/vlan_core.c b/net/8021q/vlan_core.c
+index a313165e7a67..78ec2e1b14d1 100644
+--- a/net/8021q/vlan_core.c
++++ b/net/8021q/vlan_core.c
+@@ -359,9 +359,8 @@ static void __vlan_vid_del(struct vlan_info *vlan_info,
+ 	int err;
+ 
+ 	err = vlan_kill_rx_filter_info(dev, proto, vid);
+-	if (err)
+-		pr_warn("failed to kill vid %04x/%d for device %s\n",
+-			proto, vid, dev->name);
++	if (err && dev->reg_state != NETREG_UNREGISTERING)
++		netdev_warn(dev, "failed to kill vid %04x/%d\n", proto, vid);
+ 
+ 	list_del(&vid_info->list);
+ 	kfree(vid_info);
+-- 
+2.17.1
+
