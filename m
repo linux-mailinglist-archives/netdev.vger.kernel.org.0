@@ -2,231 +2,126 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 65F5C159368
-	for <lists+netdev@lfdr.de>; Tue, 11 Feb 2020 16:42:35 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1404B1593FC
+	for <lists+netdev@lfdr.de>; Tue, 11 Feb 2020 16:54:55 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728808AbgBKPmd (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 11 Feb 2020 10:42:33 -0500
-Received: from mail-wr1-f67.google.com ([209.85.221.67]:34789 "EHLO
-        mail-wr1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727962AbgBKPmd (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 11 Feb 2020 10:42:33 -0500
-Received: by mail-wr1-f67.google.com with SMTP id t2so12977047wrr.1
-        for <netdev@vger.kernel.org>; Tue, 11 Feb 2020 07:42:30 -0800 (PST)
+        id S1729248AbgBKPyx (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 11 Feb 2020 10:54:53 -0500
+Received: from mail-pg1-f179.google.com ([209.85.215.179]:45637 "EHLO
+        mail-pg1-f179.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728573AbgBKPyx (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 11 Feb 2020 10:54:53 -0500
+Received: by mail-pg1-f179.google.com with SMTP id b9so5913099pgk.12
+        for <netdev@vger.kernel.org>; Tue, 11 Feb 2020 07:54:51 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=from:to:cc:subject:date:message-id:mime-version
+        d=networkplumber-org.20150623.gappssmtp.com; s=20150623;
+        h=date:from:to:subject:message-id:mime-version
          :content-transfer-encoding;
-        bh=1svkS+x0sVBOHLhKv9rhToqYl8q4+eSabsXm/UPIe54=;
-        b=kxuHJEKEkw73V1EEggw/9ig3mzwcIHRKic6t9G4tumlftE5az3nh4EyZKV/sXum5YS
-         vp1kMYZ8uIsToeAas/l2uYq2txIskMoOHAKKCxPaWq1KWc584o1T2f0XyKDlKH5HZJ2S
-         LfhJ/IXgheDQ+yyemF4vf6Pr9VUhKgbgXaddxPVJYmTGcEoCKGefffsG1M4khsbdk/aO
-         3LOKtOJ1Y2iJLQUAjzaBKluxQ+cFyOg3P69B+aVkcUk4tVxeXdfLieZgmj9AwXtzAO8T
-         ErdZVgZS1UhGJTTtNU/ixhEA/z3ek1jNXLtCpe7lOl3goJICddWf7veTE5xWs/LL5uSL
-         7nAg==
+        bh=YX2oJMlvutNZVS/q7UJNyF07p5YmCbx+KfvY7dLQhbs=;
+        b=dQhkAtL9Sx2LNrj+q9w6vBS5kqcwV/pAk8yc9xFoOc/nnsxefTXmN6lwrMdEM/rjLQ
+         sBOXALTme6HZ7tRCU27/ciRiTO3zkODAfeSbHh0e3JC36zKJe1UlIxishLQGsz8pKv/5
+         pDCOrZahDAZJ/u69kAP3mVWx+cllUXh5xB+fGGMvkhdWzoksHKUe0ykVOj9FRkiDJW1X
+         4UC8HnQdjAXEA8lXNEKAphgs10Zv5d2EwqhN2yhCNmxlW1yt1EIOMgH33zilFVlAjM4N
+         9NT0EIg3Emexd2bNaQXwUSn7sYB8nMLfR+lt6RN/Wl6+FjcTWTVRb24HquV88im4qynW
+         ywdA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+        h=x-gm-message-state:date:from:to:subject:message-id:mime-version
          :content-transfer-encoding;
-        bh=1svkS+x0sVBOHLhKv9rhToqYl8q4+eSabsXm/UPIe54=;
-        b=BQERN30TSZSBi2qyXQ/1ow7bYmcsgr5uJtIHPHwRjUB8iHthjxH0dnmWBG7QnlHjN5
-         me7/sRVJ6FMUsQplNSFifA11q2pCDr/XdSnLL4IMsPF/UbJagvFRQlWDn4TFiTEP4QZe
-         60y5GL1zZY1TMMUUAEfz04ZMEs1/tZvw/erGRIdzmNVXiUg4fT237xuolVThwyESq4fK
-         HULiKQp7EARRWTZe4uKmBlhgTfZGaZGVXRzXzLFJTF0NcCeKkPSwfj6b7XOZibUc5kTF
-         KzlprSPdWG5I5EzqoY3ubnV9Qpjyf+Cp5i4WVvdFeCET+RR0CHaWVS3XVUNtUgwsngbZ
-         IIPA==
-X-Gm-Message-State: APjAAAXRxfrh4REgXV5jtdmSh2xLjCc/2Kf8PBmnudKzVfuuwkeRUI54
-        5xbAT4odOZa1aM7Y4ab/TKB5VQ==
-X-Google-Smtp-Source: APXvYqx9w+mTd5cGFvokqvly9CZ5AfTiIdUwdzNVlWQigxvaUO6LFueaGQNiygoVJlpvnX4+T8GS1Q==
-X-Received: by 2002:adf:eb48:: with SMTP id u8mr8957097wrn.283.1581435750190;
-        Tue, 11 Feb 2020 07:42:30 -0800 (PST)
-Received: from apalos.home ([2a02:587:4655:3a80:2e56:dcff:fe9a:8f06])
-        by smtp.gmail.com with ESMTPSA id s15sm5470739wrp.4.2020.02.11.07.42.28
+        bh=YX2oJMlvutNZVS/q7UJNyF07p5YmCbx+KfvY7dLQhbs=;
+        b=tmNJQubDmWdpBij2RFXk3OnxoEeQ8jMR8NrRW3qiqSeM6E+LU54Ezscf+hZSmXGdbl
+         os+/HgnrP5TI2DK2iyAFa+caSI2GJNrZQRkA+mRg8diH2hanLYm6kcrzRBmRzP/5nIGf
+         Jh9e9EIxrG/guF5LzjdmTvCtaRIZHVimRK4ufwH0S67NB3mnINPfb8YxkSdL+k9fG6Vi
+         StT3ov8B/TgfBatKBFiygGTrSC5h9IxJOwpYiGUD4D7rkZAiIiETWEkrwVLT7WD9mk0T
+         y22sJznxs6uakLz/yhIoGVr53fUNFamzEXj/HryAjSya1aNvNoQcM+NBZL8ejZn8CfIC
+         G7Ow==
+X-Gm-Message-State: APjAAAVtNXFYefdbc18+x0Qv3bP3OPMUrTvJBRHbgY+JcCYVQtF/7UNO
+        IlOAU5OlVdCeiMmqstNlwc/1EqINCao=
+X-Google-Smtp-Source: APXvYqyKj/nDQF2Gm9mxFwO19dvki5jUEsDQH9k8SK7HEWGpzLhAj94or1VwXO5XPyCbSxTQPS00ZA==
+X-Received: by 2002:a65:621a:: with SMTP id d26mr7314435pgv.151.1581436490665;
+        Tue, 11 Feb 2020 07:54:50 -0800 (PST)
+Received: from hermes.lan (204-195-22-127.wavecable.com. [204.195.22.127])
+        by smtp.gmail.com with ESMTPSA id y127sm4944866pfg.22.2020.02.11.07.54.50
+        for <netdev@vger.kernel.org>
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 11 Feb 2020 07:42:29 -0800 (PST)
-From:   Ilias Apalodimas <ilias.apalodimas@linaro.org>
-To:     brouer@redhat.com, lorenzo@kernel.org, davem@davemloft.net,
-        netdev@vger.kernel.org
-Cc:     Ilias Apalodimas <ilias.apalodimas@linaro.org>
-Subject: [PATCH, net-next] net: page_pool: Add documentation on page_pool API
-Date:   Tue, 11 Feb 2020 17:42:27 +0200
-Message-Id: <20200211154227.1169600-1-ilias.apalodimas@linaro.org>
-X-Mailer: git-send-email 2.25.0
+        Tue, 11 Feb 2020 07:54:50 -0800 (PST)
+Date:   Tue, 11 Feb 2020 07:54:42 -0800
+From:   Stephen Hemminger <stephen@networkplumber.org>
+To:     netdev@vger.kernel.org
+Subject: Fw: [Bug 206497] New: pfifo_fast: netdev xmit sends frames OOO to
+ devices
+Message-ID: <20200211075442.0de80458@hermes.lan>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add documentation explaining the basic functionality and design
-principles of the API
 
-Signed-off-by: Ilias Apalodimas <ilias.apalodimas@linaro.org>
----
- Documentation/networking/page_pool.rst | 153 +++++++++++++++++++++++++
- 1 file changed, 153 insertions(+)
- create mode 100644 Documentation/networking/page_pool.rst
 
-diff --git a/Documentation/networking/page_pool.rst b/Documentation/networking/page_pool.rst
-new file mode 100644
-index 000000000000..e143339e4c80
---- /dev/null
-+++ b/Documentation/networking/page_pool.rst
-@@ -0,0 +1,153 @@
-+=============
-+Page Pool API
-+=============
-+
-+The page_pool allocator is optimized for the XDP mode that uses one frame 
-+per-page, but it can fallback on the regular page allocator APIs.
-+
-+Basic use involve replacing alloc_pages() calls with the
-+page_pool_alloc_pages() call.  Drivers should use page_pool_dev_alloc_pages() 
-+replacing dev_alloc_pages().
-+
-+API keeps track of in-flight pages, in-order to let API user know
-+when it is safe to free a page_pool object.  Thus, API users
-+must run page_pool_release_page() when a page is leaving the page_pool or
-+call page_pool_put_page() where appropriate in order to maintain correct
-+accounting.
-+
-+API user must call page_pool_put_page() once on a page, as it
-+will either recycle the page, or in case of refcnt > 1, it will
-+release the DMA mapping and in-flight state accounting.
-+
-+Architecture overview
-+=====================
-+
-+.. code-block:: none
-+
-+    +------------------+
-+    |       Driver     | 
-+    +------------------+
-+            ^ 
-+            |
-+            |
-+            |
-+            v
-+    +--------------------------------------------+
-+    |                request memory              | 
-+    +--------------------------------------------+
-+        ^                                  ^
-+        |                                  |
-+        | Pool empty                       | Pool has entries
-+        |                                  |
-+        v                                  v
-+    +-----------------------+     +------------------------+       
-+    | alloc (and map) pages |     |  get page from cache   |
-+    +-----------------------+     +------------------------+
-+                                    ^                    ^
-+                                    |                    |
-+                                    | cache available    | No entries, refill
-+                                    |                    | from ptr-ring
-+                                    |                    |
-+                                    v                    v
-+                          +-----------------+     +------------------+  
-+                          |     Fast cache  |     |  ptr-ring cache  | 
-+                          +-----------------+     +------------------+
-+
-+API interface
-+=============
-+The number of pools created **must** match the number of hardware queues
-+unless hardware restrictions make that impossible. This would otherwise beat the
-+purpose of page pool, which is allocate pages fast from cache without locking.
-+This lockless guarantee naturally comes from running under a NAPI softirq.
-+The protection doesn't strictly has to be NAPI, any guarantee that allocating a
-+page will cause no race-conditions is enough.
-+
-+* page_pool_create(): Create a pool.
-+    * flags:      PP_FLAG_DMA_MAP, PP_FLAG_DMA_SYNC_DEV
-+    * pool_size:  size of the ptr_ring
-+    * nid:        preferred NUMA node for allocation
-+    * dev:        struct device. Used on DMA operations
-+    * dma_dir:    DMA direction
-+    * max_len:    max DMA sync memory size
-+    * offset:     DMA address offset
-+
-+* page_pool_put_page(): The outcome of this depends on the page refcnt. If the
-+  driver uses refcnt > 1 this will unmap the page. If the pool object is
-+  responsible for DMA operations and account for the in-flight counting. 
-+  If the refcnt is 1, the allocator owns the page and will try to recycle and 
-+  sync it to be re-used by the device using dma_sync_single_range_for_device().
-+
-+* page_pool_release_page(): Unmap the page (if mapped) and account for it on
-+  inflight counters.
-+
-+* page_pool_dev_alloc_pages(): Get a page from the page allocator or page_pool 
-+  caches.
-+
-+* page_pool_get_dma_addr(): Retrieve the stored DMA address.
-+
-+* page_pool_get_dma_dir(): Retrieve the stored DMA direction.
-+
-+* page_pool_recycle_direct(): Recycle the page immediately. Must be used under
-+  NAPI context
-+
-+Coding examples
-+===============
-+
-+Registration
-+------------
-+
-+.. code-block:: c
-+
-+    /* Page pool registration */
-+    struct page_pool_params pp_params = { 0 };
-+    struct xdp_rxq_info xdp_rxq;
-+    int err;
-+
-+    pp_params.order = 0;
-+    /* internal DMA mapping in page_pool */
-+    pp_params.flags = PP_FLAG_DMA_MAP;
-+    pp_params.pool_size = DESC_NUM;
-+    pp_params.nid = NUMA_NO_NODE;
-+    pp_params.dev = priv->dev;
-+    pp_params.dma_dir = xdp_prog ? DMA_BIDIRECTIONAL : DMA_FROM_DEVICE;
-+    page_pool = page_pool_create(&pp_params);
-+
-+    err = xdp_rxq_info_reg(&xdp_rxq, ndev, 0);
-+    if (err)
-+        goto err_out;
-+    
-+    err = xdp_rxq_info_reg_mem_model(&xdp_rxq, MEM_TYPE_PAGE_POOL, page_pool);
-+    if (err)
-+        goto err_out;
-+    
-+NAPI poller
-+-----------
-+
-+
-+.. code-block:: c
-+
-+    /* NAPI Rx poller */
-+    enum dma_data_direction dma_dir;
-+
-+    dma_dir = page_pool_get_dma_dir(dring->page_pool);
-+    while (done < budget) {
-+        if (some error)
-+            page_pool_recycle_direct(page_pool, page);
-+        if (packet_is_xdp) {
-+            if XDP_DROP:
-+                page_pool_recycle_direct(page_pool, page);
-+        } else (packet_is_skb) {
-+            page_pool_release_page(page_pool, page);
-+            new_page = page_pool_dev_alloc_pages(page_pool);
-+        }
-+    }
-+    
-+Driver unload
-+-------------
-+
-+.. code-block:: c
-+    
-+    /* Driver unload */
-+    page_pool_put_page(page_pool, page, false);
-+    xdp_rxq_info_unreg(&xdp_rxq);
-+    page_pool_destroy(page_pool);
+This seems to be a duplicate of recent bug on qdisc ordering.
+But forwarded it so that netdev can see it as well.
+
+Begin forwarded message:
+
+Date: Tue, 11 Feb 2020 13:08:19 +0000
+From: bugzilla-daemon@bugzilla.kernel.org
+To: stephen@networkplumber.org
+Subject: [Bug 206497] New: pfifo_fast: netdev xmit sends frames OOO to devices
+
+
+https://bugzilla.kernel.org/show_bug.cgi?id=206497
+
+            Bug ID: 206497
+           Summary: pfifo_fast: netdev xmit sends frames OOO to devices
+           Product: Networking
+           Version: 2.5
+    Kernel Version: 5.4.18
+          Hardware: All
+                OS: Linux
+              Tree: Mainline
+            Status: NEW
+          Severity: normal
+          Priority: P1
+         Component: Other
+          Assignee: stephen@networkplumber.org
+          Reporter: chaitanya.mgit@gmail.com
+        Regression: No
+
+When running iperf3 on a Single Q device (WLAN device), iperf3 reports OOO (out
+of order frames) after investigating it was found the ndo_xmit() itself is
+sending the frames OOO. (only a few per stream)
+
+$ sudo tc -s qdisc show dev wlp4s0f0
+qdisc pfifo_fast 0: root refcnt 2 bands 3 priomap  1 2 2 2 1 2 0 0 1 1 1 1 1 1
+1 1
+ Sent 792082458 bytes 523933 pkt (dropped 0, overlimits 0 requeues 0) 
+ backlog 0b 0p requeues 0 
+
+
+4 iperf3 sessions are run on different ports and below rules to prioritize
+them:
+
+iptables -A OUTPUT -o lo -t mangle -d localhost -p udp --dport 5201 -j DSCP
+--set-dscp-class cs1
+iptables -A OUTPUT -o lo -t mangle -d localhost -p udp --dport 5202 -j DSCP
+--set-dscp-class cs0
+iptables -A OUTPUT -o lo -t mangle -d localhost -p udp --dport 5203 -j DSCP
+--set-dscp-class cs4
+iptables -A OUTPUT -o lo -t mangle -d localhost -p udp --dport 5204 -j DSCP
+--set-dscp-class cs6
+
+FYI, my problem seems to quite similar to the one
+https://www.spinics.net/lists/netdev/msg490934.html but the fix is already part
+of 5.4.18
+
+2 workarounds found
+ - booting with `nosmp` (similar to commenting TCQ_F_NOLOCK but haven't tried)
+ - And, switching to fq_codel solves the problem. (Forgot the exact params for
+the tc fq_codel)
+
 -- 
-2.25.0
-
+You are receiving this mail because:
+You are the assignee for the bug.
