@@ -2,45 +2,45 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id CD8B21592C1
-	for <lists+netdev@lfdr.de>; Tue, 11 Feb 2020 16:18:17 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 621011592C4
+	for <lists+netdev@lfdr.de>; Tue, 11 Feb 2020 16:18:23 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730318AbgBKPSP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 11 Feb 2020 10:18:15 -0500
-Received: from smtp-fw-33001.amazon.com ([207.171.190.10]:1963 "EHLO
-        smtp-fw-33001.amazon.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1730311AbgBKPSO (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 11 Feb 2020 10:18:14 -0500
+        id S1730331AbgBKPSW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 11 Feb 2020 10:18:22 -0500
+Received: from smtp-fw-6002.amazon.com ([52.95.49.90]:2052 "EHLO
+        smtp-fw-6002.amazon.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727786AbgBKPSV (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 11 Feb 2020 10:18:21 -0500
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
   d=amazon.com; i=@amazon.com; q=dns/txt; s=amazon201209;
-  t=1581434293; x=1612970293;
+  t=1581434301; x=1612970301;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=l/a1pLNWWE2OchmWArAIEYrBwi6n5EuRPWvZ0cV8+z0=;
-  b=H0LyKUD+7uLGH44mamln/3wsbZJWjx+WctejIVGSsSxCA/23uSNYdvj4
-   lu31GuVitp2gIP5wm0hOn42krc6lwJzDWPBtYvqw9quuj6kip71NIuVJA
-   Ka3qfE7xYo1d2kUNA9wwIuls0c9qtVZUzvchMc+mcAkrPOCEdG43kD1ec
-   Q=;
-IronPort-SDR: s+gzmK/yT3G17MdGcE2WzKsCbZVvy3bIIxnwAlGsZu5YSJ1Jatrzt4M9/x5IW9SJXJwtkm3Rye
- sRfwxlGC5qSQ==
+  bh=d7EkEPpul5d9WP4/P7XzSZcV5qlndQVvPOtItuRE6iY=;
+  b=f5sMIi61ZDxLORmxpRDFV/KlH1gpUvW8esMuiQvtI5dCdP55UicvuGsk
+   Z0gSJMuvlidmsUmN5oRYbCn3g0viF7La1Zytn275gz/GWKPTQRKBDG/bF
+   h9QDM8lFd8j5qCS3mwGVxFCNQ1Qo85TB4ZlQwO4xas3GGg2dalKzyBd8U
+   0=;
+IronPort-SDR: Q0/ga3vTK5w5ZKES64Pqhdgb02aQycW/AA7Y7ZrbbAjLb2x3z1KxXW2gMYs/BJ6qwyTFQH7XhH
+ 5Tg9IEkuTi2g==
 X-IronPort-AV: E=Sophos;i="5.70,428,1574121600"; 
-   d="scan'208";a="25719275"
-Received: from sea32-co-svc-lb4-vlan3.sea.corp.amazon.com (HELO email-inbound-relay-2b-4e24fd92.us-west-2.amazon.com) ([10.47.23.38])
-  by smtp-border-fw-out-33001.sea14.amazon.com with ESMTP; 11 Feb 2020 15:18:13 +0000
-Received: from EX13MTAUEB002.ant.amazon.com (pdx4-ws-svc-p6-lb7-vlan2.pdx.amazon.com [10.170.41.162])
-        by email-inbound-relay-2b-4e24fd92.us-west-2.amazon.com (Postfix) with ESMTPS id 23E46A26B9;
-        Tue, 11 Feb 2020 15:18:13 +0000 (UTC)
-Received: from EX13D08UEB002.ant.amazon.com (10.43.60.107) by
- EX13MTAUEB002.ant.amazon.com (10.43.60.12) with Microsoft SMTP Server (TLS)
+   d="scan'208";a="15757272"
+Received: from iad12-co-svc-p1-lb1-vlan3.amazon.com (HELO email-inbound-relay-1e-57e1d233.us-east-1.amazon.com) ([10.43.8.6])
+  by smtp-border-fw-out-6002.iad6.amazon.com with ESMTP; 11 Feb 2020 15:17:59 +0000
+Received: from EX13MTAUEE002.ant.amazon.com (iad55-ws-svc-p15-lb9-vlan3.iad.amazon.com [10.40.159.166])
+        by email-inbound-relay-1e-57e1d233.us-east-1.amazon.com (Postfix) with ESMTPS id 96BF41417F2;
+        Tue, 11 Feb 2020 15:17:58 +0000 (UTC)
+Received: from EX13D08UEE003.ant.amazon.com (10.43.62.118) by
+ EX13MTAUEE002.ant.amazon.com (10.43.62.24) with Microsoft SMTP Server (TLS)
  id 15.0.1367.3; Tue, 11 Feb 2020 15:17:57 +0000
-Received: from EX13MTAUEA002.ant.amazon.com (10.43.61.77) by
- EX13D08UEB002.ant.amazon.com (10.43.60.107) with Microsoft SMTP Server (TLS)
+Received: from EX13MTAUEE002.ant.amazon.com (10.43.62.24) by
+ EX13D08UEE003.ant.amazon.com (10.43.62.118) with Microsoft SMTP Server (TLS)
  id 15.0.1367.3; Tue, 11 Feb 2020 15:17:57 +0000
 Received: from dev-dsk-sameehj-1c-1edacdb5.eu-west-1.amazon.com (172.19.82.3)
- by mail-relay.amazon.com (10.43.61.169) with Microsoft SMTP Server id
- 15.0.1236.3 via Frontend Transport; Tue, 11 Feb 2020 15:17:57 +0000
+ by mail-relay.amazon.com (10.43.62.224) with Microsoft SMTP Server id
+ 15.0.1367.3 via Frontend Transport; Tue, 11 Feb 2020 15:17:57 +0000
 Received: by dev-dsk-sameehj-1c-1edacdb5.eu-west-1.amazon.com (Postfix, from userid 9775579)
-        id B415B81D3F; Tue, 11 Feb 2020 15:17:56 +0000 (UTC)
+        id B6AD681D41; Tue, 11 Feb 2020 15:17:56 +0000 (UTC)
 From:   <sameehj@amazon.com>
 To:     <davem@davemloft.net>, <netdev@vger.kernel.org>
 CC:     Arthur Kiyanovski <akiyano@amazon.com>, <dwmw@amazon.com>,
@@ -48,9 +48,9 @@ CC:     Arthur Kiyanovski <akiyano@amazon.com>, <dwmw@amazon.com>,
         <msw@amazon.com>, <aliguori@amazon.com>, <nafea@amazon.com>,
         <gtzalik@amazon.com>, <netanel@amazon.com>, <alisaidi@amazon.com>,
         <benh@amazon.com>, <sameehj@amazon.com>, <ndagan@amazon.com>
-Subject: [PATCH V2 net 08/12] net: ena: fix incorrectly saving queue numbers when setting RSS indirection table
-Date:   Tue, 11 Feb 2020 15:17:47 +0000
-Message-ID: <20200211151751.29718-9-sameehj@amazon.com>
+Subject: [PATCH V2 net 09/12] net: ena: fix corruption of dev_idx_to_host_tbl
+Date:   Tue, 11 Feb 2020 15:17:48 +0000
+Message-ID: <20200211151751.29718-10-sameehj@amazon.com>
 X-Mailer: git-send-email 2.24.1.AMZN
 In-Reply-To: <20200211151751.29718-1-sameehj@amazon.com>
 References: <20200211151751.29718-1-sameehj@amazon.com>
@@ -64,88 +64,75 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Arthur Kiyanovski <akiyano@amazon.com>
 
-The indirection table has the indices of the Rx queues. When we store it
-during set indirection operation, we convert the indices to our internal
-representation of the indices.
+The function ena_com_ind_tbl_convert_from_device() has an overflow
+bug as explained below. Either way, this function is not needed at
+all since we don't retrieve the indirection table from the device
+at any point which means that this conversion is not needed.
 
-Our internal representation of the indices is: even indices for Tx and
-uneven indices for Rx, where every Tx/Rx pair are in a consecutive order
-starting from 0. For example if the driver has 3 queues (3 for Tx and 3
-for Rx) then the indices are as follows:
-0  1  2  3  4  5
-Tx Rx Tx Rx Tx Rx
+The bug:
+The for loop iterates over all io_sq_queues, when passing the actual
+number of used queues the io_sq_queues[i].idx equals 0 since they are
+uninitialized which results in the following code to be executed till
+the end of the loop:
 
-The BUG:
-The issue is that when we satisfy a get request for the indirection
-table, we don't convert the indices back to the original representation.
+dev_idx_to_host_tbl[0] = i;
 
-The FIX:
-Simply apply the inverse function for the indices of the indirection
-table after we set it.
+This results dev_idx_to_host_tbl[0] in being equal to
+ENA_TOTAL_NUM_QUEUES - 1.
 
 Fixes: 1738cd3ed342 ("net: ena: Add a driver for Amazon Elastic Network Adapters (ENA)")
 Signed-off-by: Sameeh Jubran <sameehj@amazon.com>
 Signed-off-by: Arthur Kiyanovski <akiyano@amazon.com>
 ---
- drivers/net/ethernet/amazon/ena/ena_ethtool.c | 24 ++++++++++++++++++-
- drivers/net/ethernet/amazon/ena/ena_netdev.h  |  2 ++
- 2 files changed, 25 insertions(+), 1 deletion(-)
+ drivers/net/ethernet/amazon/ena/ena_com.c | 28 -----------------------
+ 1 file changed, 28 deletions(-)
 
-diff --git a/drivers/net/ethernet/amazon/ena/ena_ethtool.c b/drivers/net/ethernet/amazon/ena/ena_ethtool.c
-index 8be9df885..610a7c63e 100644
---- a/drivers/net/ethernet/amazon/ena/ena_ethtool.c
-+++ b/drivers/net/ethernet/amazon/ena/ena_ethtool.c
-@@ -636,6 +636,28 @@ static u32 ena_get_rxfh_key_size(struct net_device *netdev)
- 	return ENA_HASH_KEY_SIZE;
+diff --git a/drivers/net/ethernet/amazon/ena/ena_com.c b/drivers/net/ethernet/amazon/ena/ena_com.c
+index 8ab192cb2..74743fd8a 100644
+--- a/drivers/net/ethernet/amazon/ena/ena_com.c
++++ b/drivers/net/ethernet/amazon/ena/ena_com.c
+@@ -1281,30 +1281,6 @@ static int ena_com_ind_tbl_convert_to_device(struct ena_com_dev *ena_dev)
+ 	return 0;
  }
  
-+static int ena_indirection_table_get(struct ena_adapter *adapter, u32 *indir)
-+{
-+	struct ena_com_dev *ena_dev = adapter->ena_dev;
-+	int i, rc;
-+
-+	if (!indir)
-+		return 0;
-+
-+	rc = ena_com_indirect_table_get(ena_dev, indir);
-+	if (rc)
-+		return rc;
-+
-+	/* Our internal representation of the indices is: even indices
-+	 * for Tx and uneven indices for Rx. We need to convert the Rx
-+	 * indices to be consecutive
-+	 */
-+	for (i = 0; i < ENA_RX_RSS_TABLE_SIZE; i++)
-+		indir[i] = ENA_IO_RXQ_IDX_TO_COMBINED_IDX(indir[i]);
-+
-+	return rc;
-+}
-+
- static int ena_get_rxfh(struct net_device *netdev, u32 *indir, u8 *key,
- 			u8 *hfunc)
+-static int ena_com_ind_tbl_convert_from_device(struct ena_com_dev *ena_dev)
+-{
+-	u16 dev_idx_to_host_tbl[ENA_TOTAL_NUM_QUEUES] = { (u16)-1 };
+-	struct ena_rss *rss = &ena_dev->rss;
+-	u8 idx;
+-	u16 i;
+-
+-	for (i = 0; i < ENA_TOTAL_NUM_QUEUES; i++)
+-		dev_idx_to_host_tbl[ena_dev->io_sq_queues[i].idx] = i;
+-
+-	for (i = 0; i < 1 << rss->tbl_log_size; i++) {
+-		if (rss->rss_ind_tbl[i].cq_idx > ENA_TOTAL_NUM_QUEUES)
+-			return -EINVAL;
+-		idx = (u8)rss->rss_ind_tbl[i].cq_idx;
+-
+-		if (dev_idx_to_host_tbl[idx] > ENA_TOTAL_NUM_QUEUES)
+-			return -EINVAL;
+-
+-		rss->host_rss_ind_tbl[i] = dev_idx_to_host_tbl[idx];
+-	}
+-
+-	return 0;
+-}
+-
+ static void ena_com_update_intr_delay_resolution(struct ena_com_dev *ena_dev,
+ 						 u16 intr_delay_resolution)
  {
-@@ -644,7 +666,7 @@ static int ena_get_rxfh(struct net_device *netdev, u32 *indir, u8 *key,
- 	u8 func;
- 	int rc;
+@@ -2638,10 +2614,6 @@ int ena_com_indirect_table_get(struct ena_com_dev *ena_dev, u32 *ind_tbl)
+ 	if (!ind_tbl)
+ 		return 0;
  
--	rc = ena_com_indirect_table_get(adapter->ena_dev, indir);
-+	rc = ena_indirection_table_get(adapter, indir);
- 	if (rc)
- 		return rc;
+-	rc = ena_com_ind_tbl_convert_from_device(ena_dev);
+-	if (unlikely(rc))
+-		return rc;
+-
+ 	for (i = 0; i < (1 << rss->tbl_log_size); i++)
+ 		ind_tbl[i] = rss->host_rss_ind_tbl[i];
  
-diff --git a/drivers/net/ethernet/amazon/ena/ena_netdev.h b/drivers/net/ethernet/amazon/ena/ena_netdev.h
-index bffd778f2..2fe5eeea6 100644
---- a/drivers/net/ethernet/amazon/ena/ena_netdev.h
-+++ b/drivers/net/ethernet/amazon/ena/ena_netdev.h
-@@ -129,6 +129,8 @@
- 
- #define ENA_IO_TXQ_IDX(q)	(2 * (q))
- #define ENA_IO_RXQ_IDX(q)	(2 * (q) + 1)
-+#define ENA_IO_TXQ_IDX_TO_COMBINED_IDX(q)	((q) / 2)
-+#define ENA_IO_RXQ_IDX_TO_COMBINED_IDX(q)	(((q) - 1) / 2)
- 
- #define ENA_MGMNT_IRQ_IDX		0
- #define ENA_IO_IRQ_FIRST_IDX		1
 -- 
 2.24.1.AMZN
 
