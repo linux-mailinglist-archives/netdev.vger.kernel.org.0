@@ -2,124 +2,146 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 33119159970
-	for <lists+netdev@lfdr.de>; Tue, 11 Feb 2020 20:12:24 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 84B78159983
+	for <lists+netdev@lfdr.de>; Tue, 11 Feb 2020 20:14:01 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731496AbgBKTMW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 11 Feb 2020 14:12:22 -0500
-Received: from mail-qk1-f194.google.com ([209.85.222.194]:42908 "EHLO
-        mail-qk1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1730438AbgBKTMW (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 11 Feb 2020 14:12:22 -0500
-Received: by mail-qk1-f194.google.com with SMTP id q15so11215008qke.9;
-        Tue, 11 Feb 2020 11:12:20 -0800 (PST)
+        id S1731560AbgBKTOA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 11 Feb 2020 14:14:00 -0500
+Received: from mail-qk1-f196.google.com ([209.85.222.196]:42126 "EHLO
+        mail-qk1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729934AbgBKTN7 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 11 Feb 2020 14:13:59 -0500
+Received: by mail-qk1-f196.google.com with SMTP id q15so11220504qke.9;
+        Tue, 11 Feb 2020 11:13:59 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=OkdVz6fGH6pCPGelsMO9o5gr+Wm+OlxlgEUIcxl58Co=;
-        b=kQ2+yJQIRJZg95YFB8IAvZswoBEdjV+IZbKbKKh5mGZO+YaWgPmp5ZnekV5ETCnpMy
-         RK4OVfDPjKJzKfOSy7mNIjz/do33hO8IqE4TaY327lyJzRDWHFrvSK/71MtvvT14jalH
-         wtqRrDTkQsKUg0xGcqUyX9FYEk/1dTkZFeCl0gwQACPCsd6O8kQpnU/wADggj036PoGE
-         TgpdPklFoLYbimrIIaOcaFwdcyue6mQOU8aOtl22g//o9C0hli9qsBrQIbLVPBitPIR0
-         zpkWYwJhO9OBHZ0ESHDfy3bs6cttzMw0LzVGliOZBb7pOXPQ1MSUijAa4mCCXPNg/DHP
-         taxw==
+        h=from:date:to:cc:subject:message-id:references:mime-version
+         :content-disposition:content-transfer-encoding:in-reply-to;
+        bh=d1W30zHQdiQkj5IyypchYVwItXRzGT2oAJPS35EbEQ8=;
+        b=fLsbjOU+hlAXFHNCScMBjf2nbVfIcoHTSMBR103UbL4IQ0k3uojgEBSHD0i6BIiS4h
+         J+QLLh8QagnZGfvRoVSmNqRwlS2ETL9t26/320ZWrjNQ8NC+mpfPZkCIz2LR1w5w8DKV
+         x/H/8RLFvHQGcZcbvgU7puhM8kQqrmR/lZ3gU2FSlAtwwxc41d+n0kYlsRtZ6gHOURKi
+         /D3JEZqNTZMMuCWHHAKhQKxEvDwthHePURahSrl3q1aDdWBZUQ5tPXrgK59YepI5VuaL
+         KM7hY6iESLsNzDBPeTdt3U7dDpx3egyXmRyN5bXlI6FX6Ibmuwxel9vID0CVUC2voT4h
+         9y4A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=OkdVz6fGH6pCPGelsMO9o5gr+Wm+OlxlgEUIcxl58Co=;
-        b=UeEhlJH8lYnT1AmIEm6FDE8Ra8pReEKQhY1ft8Zvs9XmhSDdCr0wBzZuecMMHUvYAH
-         NaEvj8x5oGBajC9kooTVTL90TjwmKH2C/2qZl5CvbC894w4E1SaJcAMPDhl0g+wN4JsM
-         Wm4CyvOJkQhUYPqDTD2ByTIm4sGM5UAs+OMafz20O5rDYw0i8nVXu96BMN52ct0UsNDw
-         ZBFoyEBG18j2ZQjk/rh0tI5La29/PfPwLdhv6PjMsA5nlpz34q7ulfaJzAFJyx+29PLh
-         EhMl4eFGQG7CtFrxdeWf4u7RiExKfsN5EYg7APqnNyqz4k5myhq0+tWVOSSgNyaSJf+I
-         IWmA==
-X-Gm-Message-State: APjAAAVOk620dg87/LUy6gU28zO8xUTEL1Lr2HLwHUjenAjT1C2NoW93
-        H9jSjXMJ1xLcXeqIqFWGvxb5jqxcrswhwUQZOM8=
-X-Google-Smtp-Source: APXvYqy+JgFM7MtJ25oKg8PPKPWIvcJ4nCH3r3iga19Iu6U0daagkQO7kPUjNhoGelfQ36i8LTUfifPRdPBMbQlUrfU=
-X-Received: by 2002:ae9:eb48:: with SMTP id b69mr7633506qkg.39.1581448340092;
- Tue, 11 Feb 2020 11:12:20 -0800 (PST)
-MIME-Version: 1.0
-References: <20200208154209.1797988-1-jolsa@kernel.org> <20200208154209.1797988-15-jolsa@kernel.org>
-In-Reply-To: <20200208154209.1797988-15-jolsa@kernel.org>
-From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Tue, 11 Feb 2020 11:12:09 -0800
-Message-ID: <CAEf4BzYfSDc1PEBgFVAApN=8qVLjoE_fXV1x3e_p+7vwpQ_bag@mail.gmail.com>
-Subject: Re: [PATCH 14/14] bpf: Sort bpf kallsyms symbols
+        h=x-gm-message-state:from:date:to:cc:subject:message-id:references
+         :mime-version:content-disposition:content-transfer-encoding
+         :in-reply-to;
+        bh=d1W30zHQdiQkj5IyypchYVwItXRzGT2oAJPS35EbEQ8=;
+        b=Dx8DlRlCkAElKcJUc5CWimaZ7X819/Iu6h0lphI9wEXUEQIvSbhshQ93XWk0CM9DNP
+         snnZINJI/eG2J8+poao9SR0yygEETfBMUi0+z2uj/twQPB71m49FW1BnDCcQn1aySiyZ
+         v980zWUBNri1v4nppSUOFLoyOMfVrEntC+zea2U4sIn4Ui1+QMcLV5OxZQeTqhetHnj8
+         Rk2BJY26hfYeUgA3+aBN7wkzJwGTm9TsMEUHM5qZloK25M20bJDx7ch9xQV99N1R+Nl6
+         X+1GmhzTQSROO7vRtuM6DNrD1tpapyguQGPTZnlpyKbMqvyi6OUQA64SFbvtyD5kBJyR
+         Nr6Q==
+X-Gm-Message-State: APjAAAUKxNcWakPYxGKpA3Fb59DnxJd1xkcFXRSlcbvj1rtoKijO3naT
+        uoBKxHfnZOZ0sUIbFL/NERY=
+X-Google-Smtp-Source: APXvYqwI0G5bVWqS6HCpjd/UFLoG4amTwVDRrFkCIwicIOMZYe4RIk0doKcl/eoVWQTuSiPJ5FfT5Q==
+X-Received: by 2002:a37:b201:: with SMTP id b1mr7518397qkf.111.1581448438262;
+        Tue, 11 Feb 2020 11:13:58 -0800 (PST)
+Received: from quaco.ghostprotocols.net ([177.195.209.176])
+        by smtp.gmail.com with ESMTPSA id c8sm2452358qkk.37.2020.02.11.11.13.57
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 11 Feb 2020 11:13:57 -0800 (PST)
+From:   Arnaldo Carvalho de Melo <arnaldo.melo@gmail.com>
+X-Google-Original-From: Arnaldo Carvalho de Melo <acme@kernel.org>
+Received: by quaco.ghostprotocols.net (Postfix, from userid 1000)
+        id 2503140A7D; Tue, 11 Feb 2020 16:13:47 -0300 (-03)
+Date:   Tue, 11 Feb 2020 16:13:47 -0300
 To:     Jiri Olsa <jolsa@kernel.org>
 Cc:     Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        Andrii Nakryiko <andriin@fb.com>, Yonghong Song <yhs@fb.com>,
-        Song Liu <songliubraving@fb.com>,
+        Daniel Borkmann <daniel@iogearbox.net>, netdev@vger.kernel.org,
+        bpf@vger.kernel.org, Andrii Nakryiko <andriin@fb.com>,
+        Yonghong Song <yhs@fb.com>, Song Liu <songliubraving@fb.com>,
         Martin KaFai Lau <kafai@fb.com>,
         Jakub Kicinski <kuba@kernel.org>,
         David Miller <davem@redhat.com>,
-        =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@intel.com>,
+        =?iso-8859-1?Q?Bj=F6rn_T=F6pel?= <bjorn.topel@intel.com>,
         John Fastabend <john.fastabend@gmail.com>,
         Jesper Dangaard Brouer <hawk@kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Subject: Re: [PATCH 00/14] bpf: Add trampoline and dispatcher to
+ /proc/kallsyms
+Message-ID: <20200211191347.GH3416@kernel.org>
+References: <20200208154209.1797988-1-jolsa@kernel.org>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20200208154209.1797988-1-jolsa@kernel.org>
+X-Url:  http://acmel.wordpress.com
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, Feb 8, 2020 at 7:43 AM Jiri Olsa <jolsa@kernel.org> wrote:
->
-> Currently we don't sort bpf_kallsyms and display symbols
-> in proc/kallsyms as they come in via __bpf_ksym_add.
->
-> Using the latch tree to get the next bpf_ksym object
-> and insert the new symbol ahead of it.
->
-> Signed-off-by: Jiri Olsa <jolsa@kernel.org>
+Em Sat, Feb 08, 2020 at 04:41:55PM +0100, Jiri Olsa escreveu:
+> hi,
+> this patchset adds trampoline and dispatcher objects
+> to be visible in /proc/kallsyms. The last patch also
+> adds sorting for all bpf objects in /proc/kallsyms.
+
+This will allow those to appear in profiles, right? That would be
+interesting to explicitely state, i.e. the _why_ of this patch, not just
+the _what_.
+
+Thanks,
+
+- Arnaldo
+ 
+>   $ sudo cat /proc/kallsyms | tail -20
+>   ...
+>   ffffffffa050f000 t bpf_prog_5a2b06eab81b8f51    [bpf]
+>   ffffffffa0511000 t bpf_prog_6deef7357e7b4530    [bpf]
+>   ffffffffa0542000 t bpf_trampoline_13832 [bpf]
+>   ffffffffa0548000 t bpf_prog_96f1b5bf4e4cc6dc_mutex_lock [bpf]
+>   ffffffffa0572000 t bpf_prog_d1c63e29ad82c4ab_bpf_prog1  [bpf]
+>   ffffffffa0585000 t bpf_prog_e314084d332a5338__dissect   [bpf]
+>   ffffffffa0587000 t bpf_prog_59785a79eac7e5d2_mutex_unlock       [bpf]
+>   ffffffffa0589000 t bpf_prog_d0db6e0cac050163_mutex_lock [bpf]
+>   ffffffffa058d000 t bpf_prog_d8f047721e4d8321_bpf_prog2  [bpf]
+>   ffffffffa05df000 t bpf_trampoline_25637 [bpf]
+>   ffffffffa05e3000 t bpf_prog_d8f047721e4d8321_bpf_prog2  [bpf]
+>   ffffffffa05e5000 t bpf_prog_3b185187f1855c4c    [bpf]
+>   ffffffffa05e7000 t bpf_prog_d8f047721e4d8321_bpf_prog2  [bpf]
+>   ffffffffa05eb000 t bpf_prog_93cebb259dd5c4b2_do_sys_open        [bpf]
+>   ffffffffa0677000 t bpf_dispatcher_xdp   [bpf]
+> 
+> thanks,
+> jirka
+> 
+> 
 > ---
+> Björn Töpel (1):
+>       bpf: Add bpf_trampoline_ name prefix for DECLARE_BPF_DISPATCHER
+> 
+> Jiri Olsa (13):
+>       x86/mm: Rename is_kernel_text to __is_kernel_text
+>       bpf: Add struct bpf_ksym
+>       bpf: Add name to struct bpf_ksym
+>       bpf: Add lnode list node to struct bpf_ksym
+>       bpf: Add bpf_kallsyms_tree tree
+>       bpf: Move bpf_tree add/del from bpf_prog_ksym_node_add/del
+>       bpf: Separate kallsyms add/del functions
+>       bpf: Add bpf_ksym_add/del functions
+>       bpf: Re-initialize lnode in bpf_ksym_del
+>       bpf: Rename bpf_tree to bpf_progs_tree
+>       bpf: Add trampolines to kallsyms
+>       bpf: Add dispatchers to kallsyms
+>       bpf: Sort bpf kallsyms symbols
+> 
+>  arch/x86/mm/init_32.c   |  14 ++++++----
+>  include/linux/bpf.h     |  54 ++++++++++++++++++++++++++------------
+>  include/linux/filter.h  |  13 +++-------
+>  kernel/bpf/core.c       | 182 +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++--------------------------------
+>  kernel/bpf/dispatcher.c |   6 +++++
+>  kernel/bpf/trampoline.c |  23 ++++++++++++++++
+>  kernel/events/core.c    |   4 +--
+>  net/core/filter.c       |   5 ++--
+>  8 files changed, 219 insertions(+), 82 deletions(-)
+> 
 
-Acked-by: Andrii Nakryiko <andriin@fb.com>
+-- 
 
->  kernel/bpf/core.c | 23 ++++++++++++++++++++++-
->  1 file changed, 22 insertions(+), 1 deletion(-)
->
-> diff --git a/kernel/bpf/core.c b/kernel/bpf/core.c
-> index 50af5dcf7ff9..c63ff34b2128 100644
-> --- a/kernel/bpf/core.c
-> +++ b/kernel/bpf/core.c
-> @@ -651,9 +651,30 @@ static struct latch_tree_root bpf_progs_tree __cacheline_aligned;
->
->  static void __bpf_ksym_add(struct bpf_ksym *ksym)
->  {
-> +       struct list_head *head = &bpf_kallsyms;
-> +
->         WARN_ON_ONCE(!list_empty(&ksym->lnode));
-> -       list_add_tail_rcu(&ksym->lnode, &bpf_kallsyms);
->         latch_tree_insert(&ksym->tnode, &bpf_kallsyms_tree, &bpf_kallsyms_tree_ops);
-> +
-> +       /*
-> +        * Add ksym into bpf_kallsyms in ordered position,
-> +        * which is prepared for us by latch tree addition.
-> +        *
-> +        * Find out the next symbol and insert ksym right
-> +        * ahead of it. If ksym is the last one, just tail
-> +        * add to the bpf_kallsyms.
-> +        */
-> +       if (!list_empty(&bpf_kallsyms)) {
-
-nit: this is a bit redundant check (and unlikely to be false)
-
-> +               struct rb_node *next = rb_next(&ksym->tnode.node[0]);
-> +
-> +               if (next) {
-> +                       struct bpf_ksym *ptr;
-> +
-> +                       ptr = container_of(next, struct bpf_ksym, tnode.node[0]);
-> +                       head = &ptr->lnode;
-> +               }
-> +       }
-> +       list_add_tail_rcu(&ksym->lnode, head);
->  }
->
->  void bpf_ksym_add(struct bpf_ksym *ksym)
-> --
-> 2.24.1
->
+- Arnaldo
