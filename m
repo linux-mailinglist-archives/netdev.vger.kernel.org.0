@@ -2,86 +2,102 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 12A7D15881E
-	for <lists+netdev@lfdr.de>; Tue, 11 Feb 2020 03:07:58 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D502C158823
+	for <lists+netdev@lfdr.de>; Tue, 11 Feb 2020 03:14:08 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727728AbgBKCH4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 10 Feb 2020 21:07:56 -0500
-Received: from mail-lf1-f68.google.com ([209.85.167.68]:34453 "EHLO
-        mail-lf1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727592AbgBKCH4 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 10 Feb 2020 21:07:56 -0500
-Received: by mail-lf1-f68.google.com with SMTP id l18so5813461lfc.1
-        for <netdev@vger.kernel.org>; Mon, 10 Feb 2020 18:07:55 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linux-foundation.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=6ZmktFtWuNRr4MBQJWn7k52Pxjy+kjDuDMoIZxcgghA=;
-        b=JShucc8r6D0hpeQT1Nnrm1g5ANmN7Qo/kC9ja9eYheqbwRWtW6iBI7iAF7MqgaTDXe
-         EhrqvIPUINQoMoQ8goy1qNA3ZRXhiyGuval5jBA1G2OdAVfZKMH31Bd7+08ReOWRrocf
-         QaEnZGmB7acwDOJTWolplby3wrYLVP5sMqcdc=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=6ZmktFtWuNRr4MBQJWn7k52Pxjy+kjDuDMoIZxcgghA=;
-        b=hNWCLWkJFVDrlt2IliKxm/BGv3Ku+/yjTaZDXO+PFrSuRxm0qHcI+LZxTYY33vCpin
-         sXM0h0ZTsBaK2fluRga88wJ47W+XqQOrr8Ul5xkn/fYLDkCdMdR840ygLJMDT+n7WWvm
-         /YrryXNCgb2hMlb8smZOv6OcVas286G7BlyCnTR+rbI9O48IdMNcSRbhuiujnz7KYd/a
-         SGJtIyJ2KK0e2ubV5TrAfEeBYFbDfgrmF+rup7eITDQAZGRC2THSmgcZwN8gWo+jE6h3
-         UGr3FeOtgJQuabFqW9efeoi56q933Ue1zWa1bUlym1aHPCGs0+b8IlzcRRNl5ML/NPvc
-         Dgcw==
-X-Gm-Message-State: APjAAAUoWTbrch8vqSvkuGL0yKQRrU6CpJkxhVWNssuC1Eurrm91XCaz
-        f5wckOAFGWu6eqpS3rEqQWFHG/EQEp4=
-X-Google-Smtp-Source: APXvYqxDTzxP+3OXkxHUgaIpqqwzRFi+TEKUyen/2XSY34rXPJzhhFJSlC3Bha8Fku1X6h8wUiarGg==
-X-Received: by 2002:a19:c3c2:: with SMTP id t185mr2249290lff.56.1581386872785;
-        Mon, 10 Feb 2020 18:07:52 -0800 (PST)
-Received: from mail-lj1-f170.google.com (mail-lj1-f170.google.com. [209.85.208.170])
-        by smtp.gmail.com with ESMTPSA id w16sm914436lfc.1.2020.02.10.18.07.51
-        for <netdev@vger.kernel.org>
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 10 Feb 2020 18:07:51 -0800 (PST)
-Received: by mail-lj1-f170.google.com with SMTP id v17so9757536ljg.4
-        for <netdev@vger.kernel.org>; Mon, 10 Feb 2020 18:07:51 -0800 (PST)
-X-Received: by 2002:a2e:97cc:: with SMTP id m12mr2637598ljj.241.1581386871172;
- Mon, 10 Feb 2020 18:07:51 -0800 (PST)
-MIME-Version: 1.0
-References: <20200210010252-mutt-send-email-mst@kernel.org>
-In-Reply-To: <20200210010252-mutt-send-email-mst@kernel.org>
-From:   Linus Torvalds <torvalds@linux-foundation.org>
-Date:   Mon, 10 Feb 2020 18:07:35 -0800
-X-Gmail-Original-Message-ID: <CAHk-=whvPamkPZCyeERbgvmyWhJZhdt37G3ycaeRZgOo1bpVVw@mail.gmail.com>
-Message-ID: <CAHk-=whvPamkPZCyeERbgvmyWhJZhdt37G3ycaeRZgOo1bpVVw@mail.gmail.com>
-Subject: Re: [PULL] vhost: cleanups and fixes
-To:     "Michael S. Tsirkin" <mst@redhat.com>
-Cc:     KVM list <kvm@vger.kernel.org>,
-        virtualization@lists.linux-foundation.org,
-        Netdev <netdev@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        "Cc: stable@vger.kernel.org, david@redhat.com, dverkamp@chromium.org,
-        hch@lst.de, jasowang@redhat.com, liang.z.li@intel.com, mst@redhat.com,
-        tiny.windzz@gmail.com," <wei.w.wang@intel.com>
-Content-Type: text/plain; charset="UTF-8"
+        id S1727791AbgBKCN7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 10 Feb 2020 21:13:59 -0500
+Received: from mx133-tc.baidu.com ([61.135.168.133]:20578 "EHLO
+        tc-sys-mailedm03.tc.baidu.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1727612AbgBKCN7 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 10 Feb 2020 21:13:59 -0500
+Received: from localhost (cp01-cos-dev01.cp01.baidu.com [10.92.119.46])
+        by tc-sys-mailedm03.tc.baidu.com (Postfix) with ESMTP id 334394500032;
+        Tue, 11 Feb 2020 10:13:44 +0800 (CST)
+From:   Li RongQing <lirongqing@baidu.com>
+To:     netdev@vger.kernel.org, brouer@redhat.com
+Subject: [PATCH][v2] page_pool: refill page when alloc.count of pool is zero
+Date:   Tue, 11 Feb 2020 10:13:44 +0800
+Message-Id: <1581387224-20719-1-git-send-email-lirongqing@baidu.com>
+X-Mailer: git-send-email 1.7.1
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, Feb 9, 2020 at 10:03 PM Michael S. Tsirkin <mst@redhat.com> wrote:
->
->   https://git.kernel.org/pub/scm/linux/kernel/git/mst/vhost.git tags/for_linus
+"do {} while" in page_pool_refill_alloc_cache will always
+refill page once whether refill is true or false, and whether
+alloc.count of pool is less than PP_ALLOC_CACHE_REFILL or not
+this is wrong, and will cause overflow of pool->alloc.cache
 
-Hmm? Pull request re-send? This already got merged on Friday as commit
-e0f121c5cc2c, as far as I can tell.
+the caller of __page_pool_get_cached should provide guarantee
+that pool->alloc.cache is safe to access, so in_serving_softirq
+should be removed as suggested by Jesper Dangaard Brouer in
+https://patchwork.ozlabs.org/patch/1233713/
 
-It looks like the pr-tracker-bot didn't reply to that old email. Maybe
-because the subject line only says "PULL", not "GIT PULL". But more
-likely because it looks like lore.kernel.org doesn't have a record of
-that email at all.
+so fix this issue by calling page_pool_refill_alloc_cache()
+only when pool->alloc.count is zero
 
-You might want to check your email settings. You have some odd headers
-(including a completely broken name that has "Cc:" in it in the "To:"
-field).
+Fixes: 44768decb7c0 ("page_pool: handle page recycle for NUMA_NO_NODE condition")
+Signed-off-by: Li RongQing <lirongqing@baidu.com>
+Suggested: Jesper Dangaard Brouer <brouer@redhat.com>
+---
+v1-->v2: remove the in_serving_softirq test
 
-               Linus
+ net/core/page_pool.c | 22 ++++++++--------------
+ 1 file changed, 8 insertions(+), 14 deletions(-)
+
+diff --git a/net/core/page_pool.c b/net/core/page_pool.c
+index 9b7cbe35df37..10d2b255df5e 100644
+--- a/net/core/page_pool.c
++++ b/net/core/page_pool.c
+@@ -99,8 +99,7 @@ EXPORT_SYMBOL(page_pool_create);
+ static void __page_pool_return_page(struct page_pool *pool, struct page *page);
+ 
+ noinline
+-static struct page *page_pool_refill_alloc_cache(struct page_pool *pool,
+-						 bool refill)
++static struct page *page_pool_refill_alloc_cache(struct page_pool *pool)
+ {
+ 	struct ptr_ring *r = &pool->ring;
+ 	struct page *page;
+@@ -141,8 +140,7 @@ static struct page *page_pool_refill_alloc_cache(struct page_pool *pool,
+ 			page = NULL;
+ 			break;
+ 		}
+-	} while (pool->alloc.count < PP_ALLOC_CACHE_REFILL &&
+-		 refill);
++	} while (pool->alloc.count < PP_ALLOC_CACHE_REFILL);
+ 
+ 	/* Return last page */
+ 	if (likely(pool->alloc.count > 0))
+@@ -155,20 +153,16 @@ static struct page *page_pool_refill_alloc_cache(struct page_pool *pool,
+ /* fast path */
+ static struct page *__page_pool_get_cached(struct page_pool *pool)
+ {
+-	bool refill = false;
+ 	struct page *page;
+ 
+-	/* Test for safe-context, caller should provide this guarantee */
+-	if (likely(in_serving_softirq())) {
+-		if (likely(pool->alloc.count)) {
+-			/* Fast-path */
+-			page = pool->alloc.cache[--pool->alloc.count];
+-			return page;
+-		}
+-		refill = true;
++	/* Caller MUST guarantee safe non-concurrent access, e.g. softirq */
++	if (likely(pool->alloc.count)) {
++		/* Fast-path */
++		page = pool->alloc.cache[--pool->alloc.count];
++	} else {
++		page = page_pool_refill_alloc_cache(pool);
+ 	}
+ 
+-	page = page_pool_refill_alloc_cache(pool, refill);
+ 	return page;
+ }
+ 
+-- 
+2.16.2
+
