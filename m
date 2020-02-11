@@ -2,147 +2,172 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 61F6F1599AA
-	for <lists+netdev@lfdr.de>; Tue, 11 Feb 2020 20:23:39 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8D4941599EF
+	for <lists+netdev@lfdr.de>; Tue, 11 Feb 2020 20:42:53 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731655AbgBKTXf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 11 Feb 2020 14:23:35 -0500
-Received: from mail-io1-f46.google.com ([209.85.166.46]:38024 "EHLO
-        mail-io1-f46.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729332AbgBKTXe (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 11 Feb 2020 14:23:34 -0500
-Received: by mail-io1-f46.google.com with SMTP id s24so13091549iog.5
-        for <netdev@vger.kernel.org>; Tue, 11 Feb 2020 11:23:34 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=sargun.me; s=google;
-        h=date:from:to:cc:subject:message-id:mime-version:content-disposition
-         :user-agent;
-        bh=lT9xJ7SvN/dQd8seqFs4EtyAeHPxQPsBd/sPvJ0IIZ8=;
-        b=j0s6RQVomPXFSzP83hhfAu8hg5Tur3hgjj0dfNEa9igprkqyK4F8NC1fmFsWVHpTq7
-         UXjATsnGMfAtQePIcXrXLHfI6pJbgWYwJ+qsc6mc0dYbIXsGXlhiK0xAv3OnUya4rnZK
-         8Rpp2dQ8Jxsouvdqk/+dz12d0lZiXeoFtl8cs=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:mime-version
-         :content-disposition:user-agent;
-        bh=lT9xJ7SvN/dQd8seqFs4EtyAeHPxQPsBd/sPvJ0IIZ8=;
-        b=kSj0pUaY2XaGgwZNd6VKFOw9p2amBhYHqZJEzieJ+Gmf3S+g7oWfZwdTwaEIdh79iw
-         k+v5E5jv8vFHW62nFgh7gq3NXcU6WKfllbBiq9A45/gorqIbDV9jfrpp78PvxFCpj7vv
-         bZXEXUMPF1dnV+6/EkePAx8SjH5fqQ8YUClzgJ3K6+8Bqsv5i5QusPopaAcgYEXwYx1L
-         cmXiQVhYab7kEfB03itELBMBZYA3tT5eOaXfsHNnkc+rBf3kGR4gcj47Z+lEl1DUySPB
-         ce63743KYcANvtjbY2eF6EaB0+StW0JoY60SXICB46ibGT0SOd6z9QhDIDzNvC0odayG
-         qFGg==
-X-Gm-Message-State: APjAAAVLxvSlCmDQ6s6OO8lksZkUJ0k67+KP/+++r1Iprwq/n4Kcjf5F
-        eNjipm47p7cq0GnbHWtgize8a9E1osA=
-X-Google-Smtp-Source: APXvYqzSsq4YmkTLAHh7ksPppgiLPQ9XjzbYKvsim7LItpteWZ6SaNrJXp6WMH0DSGUgFkaIUnI/7A==
-X-Received: by 2002:a05:6602:241b:: with SMTP id s27mr15329487ioa.19.1581449013421;
-        Tue, 11 Feb 2020 11:23:33 -0800 (PST)
-Received: from ircssh-2.c.rugged-nimbus-611.internal (80.60.198.104.bc.googleusercontent.com. [104.198.60.80])
-        by smtp.gmail.com with ESMTPSA id x10sm1243726ioh.11.2020.02.11.11.23.32
-        (version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
-        Tue, 11 Feb 2020 11:23:32 -0800 (PST)
-Date:   Tue, 11 Feb 2020 19:23:31 +0000
-From:   Sargun Dhillon <sargun@sargun.me>
-To:     netdev <netdev@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>
-Cc:     Tetsuo Handa <penguin-kernel@i-love.sakura.ne.jp>,
-        Gabriel Hartmann <ghartmann@netflix.com>,
-        Rob Gulewich <rgulewich@netflix.com>,
-        Bruce Curtis <brucec@netflix.com>,
-        Hannes Frederic Sowa <hannes@stressinduktion.org>
-Subject: Deadlock in cleanup_net and addrconf_verify_work locks up workqueue
-Message-ID: <20200211192330.GA9862@ircssh-2.c.rugged-nimbus-611.internal>
+        id S1728666AbgBKTmw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 11 Feb 2020 14:42:52 -0500
+Received: from gateway36.websitewelcome.com ([192.185.201.2]:34513 "EHLO
+        gateway36.websitewelcome.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1727668AbgBKTmw (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 11 Feb 2020 14:42:52 -0500
+X-Greylist: delayed 1478 seconds by postgrey-1.27 at vger.kernel.org; Tue, 11 Feb 2020 14:42:50 EST
+Received: from cm12.websitewelcome.com (cm12.websitewelcome.com [100.42.49.8])
+        by gateway36.websitewelcome.com (Postfix) with ESMTP id A5E3940116704
+        for <netdev@vger.kernel.org>; Tue, 11 Feb 2020 12:32:11 -0600 (CST)
+Received: from gator4166.hostgator.com ([108.167.133.22])
+        by cmsmtp with SMTP
+        id 1b2xjFSEHvBMd1b2xjZ4ll; Tue, 11 Feb 2020 13:18:11 -0600
+X-Authority-Reason: nr=8
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=embeddedor.com; s=default; h=Content-Transfer-Encoding:Content-Type:
+        In-Reply-To:MIME-Version:Date:Message-ID:From:References:Cc:To:Subject:Sender
+        :Reply-To:Content-ID:Content-Description:Resent-Date:Resent-From:
+        Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:
+        List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+        bh=KUnmNlDbtbYuQNfGMmLFXMIf7snQvngBNj30s4oM6uM=; b=yJGEg6RT2vvuJ/Q81ldBjJ1n1U
+        o8mmVz7UalGiJ3K/QbT5WkBngpsfA6q8umPU2RWldStQ2tx7sNuBdH60VR43/29GXJSM0Nq0Ue+WE
+        35IMZHmrrJAsqUMKypRWzZKV3ZvLjwsJ72DHVxmcD3E6SWG30GO4WurQmBxVu3J1MuHvxWlrYTfLi
+        JbmeXBhpVXyquaw1Y5umkOnv8TNN9Pi1xiH9gop6BeDldYuu6TV+ku3rzPtAtbIU+HSdb4aB8xByC
+        9Tpn35TPGqP1lCrmjdpHRmkG1er7ulFnLMnqalpfOPcZKiqkUuIwrKdy61qghBosOdYTKBJomHadD
+        AG1E6g/Q==;
+Received: from [200.68.140.36] (port=30211 helo=[192.168.43.131])
+        by gator4166.hostgator.com with esmtpsa (TLSv1.2:ECDHE-RSA-AES128-GCM-SHA256:128)
+        (Exim 4.92)
+        (envelope-from <gustavo@embeddedor.com>)
+        id 1j1b2x-00183y-As; Tue, 11 Feb 2020 13:18:11 -0600
+Subject: Re: [PATCH] treewide: Replace zero-length arrays with flexible-array
+ member
+To:     Greg KH <gregkh@linuxfoundation.org>
+Cc:     linux-kernel@vger.kernel.org, Kees Cook <keescook@chromium.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        linux-crypto@vger.kernel.org, netdev@vger.kernel.org,
+        linux-usb@vger.kernel.org
+References: <20200211174126.GA29960@embeddedor>
+ <20200211183229.GA1938663@kroah.com>
+From:   "Gustavo A. R. Silva" <gustavo@embeddedor.com>
+Autocrypt: addr=gustavo@embeddedor.com; keydata=
+ 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
+ VtSixD1uOgytAP7RWS474w==
+Message-ID: <3fdbb16a-897c-aa5b-d45d-f824f6810412@embeddedor.com>
+Date:   Tue, 11 Feb 2020 13:20:36 -0600
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.4.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-User-Agent: Mutt/1.9.4 (2018-02-28)
+In-Reply-To: <20200211183229.GA1938663@kroah.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-AntiAbuse: This header was added to track abuse, please include it with any abuse report
+X-AntiAbuse: Primary Hostname - gator4166.hostgator.com
+X-AntiAbuse: Original Domain - vger.kernel.org
+X-AntiAbuse: Originator/Caller UID/GID - [47 12] / [47 12]
+X-AntiAbuse: Sender Address Domain - embeddedor.com
+X-BWhitelist: no
+X-Source-IP: 200.68.140.36
+X-Source-L: No
+X-Exim-ID: 1j1b2x-00183y-As
+X-Source: 
+X-Source-Args: 
+X-Source-Dir: 
+X-Source-Sender: ([192.168.43.131]) [200.68.140.36]:30211
+X-Source-Auth: gustavo@embeddedor.com
+X-Email-Count: 6
+X-Source-Cap: Z3V6aWRpbmU7Z3V6aWRpbmU7Z2F0b3I0MTY2Lmhvc3RnYXRvci5jb20=
+X-Local-Domain: yes
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-We've found a workqueue stall / deadlock. Our workload is a container-oriented
-workload in which we utilize IPv6. Our container (namespace) churn is quite
-frequent, and containers can be terminated before their networking is
-even setup.
-
-We're running 4.19.73 in production, and in investigation of the underlying
-causes, I don't think that future versions of 4.19 fix it.
-
-We've narrowed it down to a lockup between ipv6_addrconf, and cleanup_net.
-
-crash> bt 8
-PID: 8      TASK: ffff9a1072b50000  CPU: 24  COMMAND: "kworker/u192:0"
- #0 [ffffbfe2c00fbb70] __schedule at ffffffffa7f02bf7
- #1 [ffffbfe2c00fbc10] schedule at ffffffffa7f031e8
- #2 [ffffbfe2c00fbc18] schedule_timeout at ffffffffa7f0700e
- #3 [ffffbfe2c00fbc90] wait_for_completion at ffffffffa7f03b50
- #4 [ffffbfe2c00fbce0] __flush_work at ffffffffa76a2532
- #5 [ffffbfe2c00fbd58] rollback_registered_many at ffffffffa7dbcdf4
- #6 [ffffbfe2c00fbdc0] unregister_netdevice_many at ffffffffa7dbd31e
- #7 [ffffbfe2c00fbdd0] default_device_exit_batch at ffffffffa7dbd512
- #8 [ffffbfe2c00fbe40] cleanup_net at ffffffffa7dab970
- #9 [ffffbfe2c00fbe98] process_one_work at ffffffffa76a17c4
-#10 [ffffbfe2c00fbed8] worker_thread at ffffffffa76a19dd
-#11 [ffffbfe2c00fbf10] kthread at ffffffffa76a7fd3
-#12 [ffffbfe2c00fbf50] ret_from_fork at ffffffffa80001ff
-
-crash> bt 1369493
-PID: 1369493  TASK: ffff9a03684d9600  CPU: 58  COMMAND: "kworker/58:1"
- #0 [ffffbfe30d68fd48] __schedule at ffffffffa7f02bf7
- #1 [ffffbfe30d68fde8] schedule at ffffffffa7f031e8
- #2 [ffffbfe30d68fdf0] schedule_preempt_disabled at ffffffffa7f0349a
- #3 [ffffbfe30d68fdf8] __mutex_lock at ffffffffa7f04aed
- #4 [ffffbfe30d68fe90] addrconf_verify_work at ffffffffa7e8d1aa
- #5 [ffffbfe30d68fe98] process_one_work at ffffffffa76a17c4
- #6 [ffffbfe30d68fed8] worker_thread at ffffffffa76a19dd
- #7 [ffffbfe30d68ff10] kthread at ffffffffa76a7fd3
- #8 [ffffbfe30d68ff50] ret_from_fork at ffffffffa80001ff
 
 
+On 2/11/20 12:32, Greg KH wrote:
+> On Tue, Feb 11, 2020 at 11:41:26AM -0600, Gustavo A. R. Silva wrote:
+>> The current codebase makes use of the zero-length array language
+>> extension to the C90 standard, but the preferred mechanism to declare
+>> variable-length types such as these ones is a flexible array member[1][2],
+>> introduced in C99:
+>>
+>> struct foo {
+>>         int stuff;
+>>         struct boo array[];
+>> };
+>>
+>> By making use of the mechanism above, we will get a compiler warning
+>> in case the flexible array does not occur last in the structure, which
+>> will help us prevent some kind of undefined behavior bugs from being
+>> unadvertenly introduced[3] to the codebase from now on.
+>>
+>> All these instances of code were found with the help of the following
+>> Coccinelle script:
+>>
+>> @@
+>> identifier S, member, array;
+>> type T1, T2;
+>> @@
+>>
+>> struct S {
+>>   ...
+>>   T1 member;
+>>   T2 array[
+>> - 0
+>>   ];
+>> };
+>>
+>> [1] https://gcc.gnu.org/onlinedocs/gcc/Zero-Length.html
+>> [2] https://github.com/KSPP/linux/issues/21
+>> [3] commit 76497732932f ("cxgb3/l2t: Fix undefined behaviour")
+>>
+>> NOTE: I'll carry this in my -next tree for the v5.6 merge window.
+> 
+> Why not carve this up into per-subsystem patches so that we can apply
+> them to our 5.7-rc1 trees and then you submit the "remaining" that don't
+> somehow get merged at that timeframe for 5.7-rc2?
+> 
 
- struct -x mutex.owner.counter rtnl_mutex
-  owner.counter = 0xffff9a1072b50001
+Yep, sounds good. I'll do that.
 
-0xffff9a1072b50001 & (~0x07) = 0xffff9a1072b50000
-
-This points back to PID 8 / CPU 24. It is working on cleanup_net, and a part
-of cleanup net involves calling ops_exit_list, and as part of that it calls
-default_device_exit_batch. default_device_exit_batch takes the rtnl lock before
-calling into unregister_netdevice_many, and rollback_registered_many.
-rollback_registered_many calls flush_all_backlogs. This will never complete
-because it is holding the rtnl lock, and PID 1369493 / CPU 58 is waiting
-for rtnl_lock.
-
-If relevant, the workqueue stalls themselves look something like:
-BUG: workqueue lockup - pool cpus=70 node=0 flags=0x0 nice=0 stuck for 3720s!
-BUG: workqueue lockup - pool cpus=70 node=0 flags=0x0 nice=-20 stuck for 3719s!
-Showing busy workqueues and worker pools:
-workqueue events: flags=0x0
-  pwq 32: cpus=16 node=0 flags=0x0 nice=0 active=2/256
-    in-flight: 1274779:slab_caches_to_rcu_destroy_workfn slab_caches_to_rcu_destroy_workfn
-workqueue events_highpri: flags=0x10
-  pwq 141: cpus=70 node=0 flags=0x0 nice=-20 active=1/256
-    pending: flush_backlog BAR(8)
-workqueue events_power_efficient: flags=0x82
-  pwq 193: cpus=0-23,48-71 node=0 flags=0x4 nice=0 active=1/256
-    in-flight: 1396446:check_lifetime
-workqueue mm_percpu_wq: flags=0x8
-  pwq 140: cpus=70 node=0 flags=0x0 nice=0 active=1/256
-    pending: vmstat_update
-workqueue netns: flags=0xe000a
-  pwq 192: cpus=0-95 flags=0x4 nice=0 active=1/1
-    in-flight: 8:cleanup_net
-    delayed: cleanup_net
-workqueue writeback: flags=0x4e
-  pwq 193: cpus=0-23,48-71 node=0 flags=0x4 nice=0 active=1/256
-    in-flight: 1334335:wb_workfn
-workqueue kblockd: flags=0x18
-  pwq 141: cpus=70 node=0 flags=0x0 nice=-20 active=1/256
-    pending: blk_mq_run_work_fn
-workqueue ipv6_addrconf: flags=0x40008
-  pwq 116: cpus=58 node=0 flags=0x0 nice=0 active=1/1
-    in-flight: 1369493:addrconf_verify_work
-workqueue ena: flags=0xe000a
-  pwq 192: cpus=0-95 flags=0x4 nice=0 active=1/1
-    in-flight: 7505:ena_fw_reset_device [ena]
+Thanks
+--
+Gustavo
