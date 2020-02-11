@@ -2,174 +2,180 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 6F8A9158C27
-	for <lists+netdev@lfdr.de>; Tue, 11 Feb 2020 10:54:14 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 049DC158C3E
+	for <lists+netdev@lfdr.de>; Tue, 11 Feb 2020 10:58:34 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728083AbgBKJyL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 11 Feb 2020 04:54:11 -0500
-Received: from mail-eopbgr150051.outbound.protection.outlook.com ([40.107.15.51]:55523
-        "EHLO EUR01-DB5-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1728020AbgBKJyK (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 11 Feb 2020 04:54:10 -0500
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=dsYNxvIzSUFiyF83pwb4m785XdRbMXWXowmG/ZVreeWtHYmdfaYqWG+mw9brV6OS/J18rCVdAJYLxfLzqwivk3M8efqzIl3/ymWVZlkBLq34sxwf+ho2nrFuFsj87XF10n/FmLLUhbHdvfOvgLhHex186TSsPJAdcfqmXzUYmHONtd8JQ01++RYGBaRbGFZAywLszpUHhCqv14mNo2uFv5J6V08uVTVHz1IPB/mtYRp3XSlWuBKH5MwXWx1ZHFZpAs6X43xKm8elQwN5pvuNF2CPC6g3s0n/kR9Z8GG8TjBOZ9P07dOsn8bqabCE2HwfGkFdRihNeK/Gw+zuz/QDTw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=PxsFyuSYFN6ARU4xdVgmKePHxDX7VfzbrTRH6KSahyQ=;
- b=W9VGJEFgChSAutUf7v0Fc8igkbSBBGnOPR0uOWFB41vYipP8IUqF+x8Mtw/er3OLgqIP5BlgbIzMqwqtaLqjBk2jALCJZ2/Mbdh+oEZuLvlX6Z/CuzZXXJiQoT/9gTNiRwKJxVRCbQ9PVRXVLujQpRzlqiS6ous3vVcufYiqvd3D6FSWeXFqbHKUkwxBGiHVn31L49CQWqJ4uTTkSj/UgBRhHdg3QZiv81Yk8UVbIHWYAGu5IFS6ZlVDEEqzkhK9PVdbyZd1F9SJiKz18nbkOeVnk9ibfui0K+KLTifD5vhARXoy0ANx+e00GIB1FYcL/NlNzaP00U352FaL9MsgWw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=mellanox.com; dmarc=pass action=none header.from=mellanox.com;
- dkim=pass header.d=mellanox.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Mellanox.com;
- s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=PxsFyuSYFN6ARU4xdVgmKePHxDX7VfzbrTRH6KSahyQ=;
- b=UYGdKqu7ffndDuZTmk/1Rfbz0dm7eMNBe7D+QOLmg022ZLkEZWm2AfnxgrFh9+6fzFbTohHWNnCed+IDFT7gWFyVSAOmWU7l3N3s8M9OyN44XNGLsMk28Bi1eL6uaCNzqI2qBL18SDMCN8YS7Z0Ki1g6ZbF/R8xiOwD6sJ/JtCo=
-Received: from HE1PR0501MB2570.eurprd05.prod.outlook.com (10.168.126.17) by
- HE1PR0501MB2300.eurprd05.prod.outlook.com (10.168.29.138) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.2707.23; Tue, 11 Feb 2020 09:53:54 +0000
-Received: from HE1PR0501MB2570.eurprd05.prod.outlook.com
- ([fe80::60c4:f0b4:dc7b:c7fc]) by HE1PR0501MB2570.eurprd05.prod.outlook.com
- ([fe80::60c4:f0b4:dc7b:c7fc%10]) with mapi id 15.20.2707.030; Tue, 11 Feb
- 2020 09:53:54 +0000
-From:   Maxim Mikityanskiy <maximmi@mellanox.com>
-To:     Magnus Karlsson <magnus.karlsson@intel.com>
-CC:     "jonathan.lemon@gmail.com" <jonathan.lemon@gmail.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "daniel@iogearbox.net" <daniel@iogearbox.net>,
-        "ast@kernel.org" <ast@kernel.org>,
-        "bjorn.topel@intel.com" <bjorn.topel@intel.com>,
-        "rgoodfel@isi.edu" <rgoodfel@isi.edu>,
-        "bpf@vger.kernel.org" <bpf@vger.kernel.org>,
-        "maciejromanfijalkowski@gmail.com" <maciejromanfijalkowski@gmail.com>
-Subject: RE: [PATCH bpf] xsk: publish global consumer pointers when NAPI is
- finished
-Thread-Topic: [PATCH bpf] xsk: publish global consumer pointers when NAPI is
- finished
-Thread-Index: AQHV4CaXGckPhJY83Ua+L52EU3+kYKgVwXrg
-Date:   Tue, 11 Feb 2020 09:53:44 +0000
-Deferred-Delivery: Tue, 11 Feb 2020 09:53:40 +0000
-Message-ID: <HE1PR0501MB2570A5C385E2EA5A79CC1700D1180@HE1PR0501MB2570.eurprd05.prod.outlook.com>
-References: <1581348432-6747-1-git-send-email-magnus.karlsson@intel.com>
-In-Reply-To: <1581348432-6747-1-git-send-email-magnus.karlsson@intel.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-authentication-results: spf=none (sender IP is )
- smtp.mailfrom=maximmi@mellanox.com; 
-x-originating-ip: [77.75.144.194]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-ht: Tenant
-x-ms-office365-filtering-correlation-id: 9885e4ab-d73d-4ed7-edce-08d7aed84e7f
-x-ms-traffictypediagnostic: HE1PR0501MB2300:
-x-microsoft-antispam-prvs: <HE1PR0501MB2300B6578F2A0725B9ABD360D1180@HE1PR0501MB2300.eurprd05.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:3826;
-x-forefront-prvs: 0310C78181
-x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(4636009)(346002)(366004)(136003)(396003)(376002)(39860400002)(189003)(199004)(478600001)(316002)(53546011)(4326008)(2906002)(71200400001)(6506007)(54906003)(52536014)(86362001)(6666004)(8676002)(76116006)(7696005)(66476007)(5660300002)(6916009)(66446008)(26005)(8936002)(64756008)(66556008)(66946007)(33656002)(81166006)(55016002)(9686003)(186003)(81156014);DIR:OUT;SFP:1101;SCL:1;SRVR:HE1PR0501MB2300;H:HE1PR0501MB2570.eurprd05.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;MX:1;A:1;
-received-spf: None (protection.outlook.com: mellanox.com does not designate
- permitted sender hosts)
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: Y2KCBrDEIpOiLEJvsVgam5JhIXE1TGydeJzUf1OeBwN1iY9gshNsFwe/wRqWdJfHrZsuArumD1RjFniAePnm3dxfKt5l+JbvGN/kCjMxq7wEvi7l/1Xw5ETlwJQHA76Cw9wb6aL+DNjrE9fpYzAupHF0NTUCqWmp7JDvj+s7yWhMiWus8IZ5IEmx3AI1nyNyjr013xl7ekGCw7xMhnkHVjHZ+f+zY/eWrPkc2WOnczEI7x7EKmBjs7DUwjKCpNySn1MxwX6E1SjdmALjAIFetxif54kGYhwd6jLsXVuIh+l4ao4G+WBvHYX9Y0UZdemcfGl23ZdfX97EPsFhaSRjjVQo7BIMCS+RmosCrHCFGwg1GRQRrrGHjpBo6ykx+kQd162Qb3cCKELACazCoO/997slGV7hWQrxUAwQ25glcAiphukkf+KgM3JBkBa1lL4S
-x-ms-exchange-antispam-messagedata: BktyRGjB7ggzcdxAM6JC22BLMvif4RyILJ9gXbwlOAb9YiahRFUNNK23AI2/MVMl5Bd+/FkAPwv7ure4rwg9RUGIMsKyYWMMFzz1KqJvH57cX01IU/j5tJJn4cPnShPy2cFO4zyuIWJCnrn96a6eqg==
-x-ms-exchange-transport-forked: True
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
-MIME-Version: 1.0
-X-OriginatorOrg: Mellanox.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 9885e4ab-d73d-4ed7-edce-08d7aed84e7f
-X-MS-Exchange-CrossTenant-originalarrivaltime: 11 Feb 2020 09:53:54.8070
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: a652971c-7d2e-4d9b-a6a4-d149256f461b
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: sGKyfN4tx4qpgbFIyjcm7wVtVmOfxr04Ee+sULY2NpkmTOZ8tZwJfksTZV4vun5d+EGIy5nWy/c1SzfSw8fTiw==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: HE1PR0501MB2300
+        id S1728144AbgBKJ63 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 11 Feb 2020 04:58:29 -0500
+Received: from mail-pl1-f196.google.com ([209.85.214.196]:43746 "EHLO
+        mail-pl1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727945AbgBKJ62 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 11 Feb 2020 04:58:28 -0500
+Received: by mail-pl1-f196.google.com with SMTP id p11so4061906plq.10;
+        Tue, 11 Feb 2020 01:58:28 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references;
+        bh=oDYnBEZd/3hdA6X4VhVRHbAjKUJ0MDM6lOD9+y++Vi8=;
+        b=fA41pMH6FdB/1PGQtZQzCGkt96Ei5uG2O/lVjt//Fm5Ng2iifnWjjMi9jNE+eB375m
+         vX/uZSggKkD4XQvbcLhD+y+8ma+UdcEX9eQG+WyhaNUOW0e7kSTJZj2JQ8Hm8qWo6pYj
+         9wGePWgwZdRUQJj8HKgYA7exeXRjqk2B/Xt1fEW35icDbXJ0HMIOW/qibEPaYbwJLSoE
+         15dt+QAC+Nncv9WkV0AsVnmE9EvCXYCPqNwWN7q2VHkAbLYvqjXsx7Vk7Bz69Jso/6Tq
+         n4hiNacCoFXNWKslg2OyJFHsehYN3a5fmvocMHANDyvvMSS6UBk69xle4cFymxMDgh3t
+         e6qQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references;
+        bh=oDYnBEZd/3hdA6X4VhVRHbAjKUJ0MDM6lOD9+y++Vi8=;
+        b=ZIwwEyXNBkfk5jMdKCW+kkj9On83xE4SK9c7JZna4FVylsjWzBKzd8Z14mE31glg6M
+         gEhCdlUmn1ZFyythEpkiWYJ1y39audAhxo7AQ1YUxsbu24sX9bldhBpjxGgpdte1XiU4
+         Rl/eyLqFPXPZkxLOg193OMS4sfi8msFgZ9tQPYuL8Aa/5GtLIzRnbHKjlEHLBB1NcbLw
+         f3BGOxlCZL/RcCcFohUNu/3Lyrs9fr/H386+X4xvFatZuQoukyWTE5ba34hSNGCH/1P6
+         x2hc8tVWuvW1hEsPM4vaKQavo2btHyVmdPmZ/bfoBX8QBFc35V9aXEPBuOhlKVjcWB6B
+         zEpw==
+X-Gm-Message-State: APjAAAW4LN/JsUQ4agI8+4eWWDKkP/wIILxFegVYcIzekAs3Ro47SmhV
+        lKSBQsQM/s4QOK8U2Sbi+Ro=
+X-Google-Smtp-Source: APXvYqwU7yw+DMuQQI3h3Pr9SWIYNE3F+EBWzEQayilJdAFS2ekO7jN9BPSrTSW3DqZ560SJMtABjA==
+X-Received: by 2002:a17:902:8bc3:: with SMTP id r3mr17713048plo.220.1581415107634;
+        Tue, 11 Feb 2020 01:58:27 -0800 (PST)
+Received: from localhost.localdomain ([27.59.175.249])
+        by smtp.googlemail.com with ESMTPSA id i2sm2351854pjs.21.2020.02.11.01.58.23
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 11 Feb 2020 01:58:27 -0800 (PST)
+From:   Mohana Datta Yelugoti <ymdatta.work@gmail.com>
+To:     gregkh@linuxfoundation.org
+Cc:     ymdatta.work@gmail.com, Manish Chopra <manishc@marvell.com>,
+        GR-Linux-NIC-Dev@marvell.com, netdev@vger.kernel.org,
+        devel@driverdev.osuosl.org, linux-kernel@vger.kernel.org
+Subject: [PATCH] staging: qlge: qlge_main.c: fix style issues
+Date:   Tue, 11 Feb 2020 15:28:13 +0530
+Message-Id: <20200211095813.11426-1-ymdatta.work@gmail.com>
+X-Mailer: git-send-email 2.17.1
+In-Reply-To: <ymdatta.work@gmail.com>
+References: <ymdatta.work@gmail.com>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 2020-02-10 17:27, Magnus Karlsson wrote:
-> The commit 4b638f13bab4 ("xsk: Eliminate the RX batch size")
-> introduced a much more lazy way of updating the global consumer
-> pointers from the kernel side, by only doing so when running out of
-> entries in the fill or Tx rings (the rings consumed by the
-> kernel). This can result in a deadlock with the user application if
-> the kernel requires more than one entry to proceed and the application
-> cannot put these entries in the fill ring because the kernel has not
-> updated the global consumer pointer since the ring is not empty.
->=20
-> Fix this by publishing the local kernel side consumer pointer whenever
-> we have completed Rx or Tx processing in the kernel. This way, user
-> space will have an up-to-date view of the consumer pointers whenever it
-> gets to execute in the one core case (application and driver on the
-> same core), or after a certain number of packets have been processed
-> in the two core case (application and driver on different cores).
->=20
-> A side effect of this patch is that the one core case gets better
-> performance, but the two core case gets worse. The reason that the one
-> core case improves is that updating the global consumer pointer is
-> relatively cheap since the application by definition is not running
-> when the kernel is (they are on the same core) and it is beneficial
-> for the application, once it gets to run, to have pointers that are
-> as up to date as possible since it then can operate on more packets
-> and buffers. In the two core case, the most important performance
-> aspect is to minimize the number of accesses to the global pointers
-> since they are shared between two cores and bounces between the caches
-> of those cores. This patch results in more updates to global state,
-> which means lower performance in the two core case.
->=20
-> Fixes: 4b638f13bab4 ("xsk: Eliminate the RX batch size")
-> Reported-by: Ryan Goodfellow <rgoodfel@isi.edu>
-> Reported-by: Maxim Mikityanskiy <maximmi@mellanox.com>
-> Signed-off-by: Magnus Karlsson <magnus.karlsson@intel.com>
+This patch fixes "WARNING: Missing a blank line after
+declarations" generated from checkpatch.pl by adding
+a blank line after declarations.
 
-Acked-by: Maxim Mikityanskiy <maximmi@mellanox.com>
+Signed-off-by: Mohana Datta Yelugoti <ymdatta.work@gmail.com>
+---
+ drivers/staging/qlge/qlge_main.c | 13 +++++++++++++
+ 1 file changed, 13 insertions(+)
 
-> ---
->   net/xdp/xsk.c       | 2 ++
->   net/xdp/xsk_queue.h | 3 ++-
->   2 files changed, 4 insertions(+), 1 deletion(-)
->=20
-> diff --git a/net/xdp/xsk.c b/net/xdp/xsk.c
-> index df60048..356f90e 100644
-> --- a/net/xdp/xsk.c
-> +++ b/net/xdp/xsk.c
-> @@ -217,6 +217,7 @@ static int xsk_rcv(struct xdp_sock *xs, struct xdp_bu=
-ff *xdp)
->   static void xsk_flush(struct xdp_sock *xs)
->   {
->   	xskq_prod_submit(xs->rx);
-> +	__xskq_cons_release(xs->umem->fq);
->   	sock_def_readable(&xs->sk);
->   }
->  =20
-> @@ -304,6 +305,7 @@ void xsk_umem_consume_tx_done(struct xdp_umem *umem)
->  =20
->   	rcu_read_lock();
->   	list_for_each_entry_rcu(xs, &umem->xsk_list, list) {
-> +		__xskq_cons_release(xs->tx);
->   		xs->sk.sk_write_space(&xs->sk);
->   	}
->   	rcu_read_unlock();
-> diff --git a/net/xdp/xsk_queue.h b/net/xdp/xsk_queue.h
-> index bec2af1..89a01ac 100644
-> --- a/net/xdp/xsk_queue.h
-> +++ b/net/xdp/xsk_queue.h
-> @@ -271,7 +271,8 @@ static inline void xskq_cons_release(struct xsk_queue=
- *q)
->   {
->   	/* To improve performance, only update local state here.
->   	 * Reflect this to global state when we get new entries
-> -	 * from the ring in xskq_cons_get_entries().
-> +	 * from the ring in xskq_cons_get_entries() and whenever
-> +	 * Rx or Tx processing are completed in the NAPI loop.
->   	 */
->   	q->cached_cons++;
->   }
->
+diff --git a/drivers/staging/qlge/qlge_main.c b/drivers/staging/qlge/qlge_main.c
+index 86b9b7314a40..c712e1af90de 100644
+--- a/drivers/staging/qlge/qlge_main.c
++++ b/drivers/staging/qlge/qlge_main.c
+@@ -143,6 +143,7 @@ static int ql_sem_trylock(struct ql_adapter *qdev, u32 sem_mask)
+ int ql_sem_spinlock(struct ql_adapter *qdev, u32 sem_mask)
+ {
+ 	unsigned int wait_count = 30;
++
+ 	do {
+ 		if (!ql_sem_trylock(qdev, sem_mask))
+ 			return 0;
+@@ -1210,6 +1211,7 @@ static void ql_unmap_send(struct ql_adapter *qdev,
+ 			  struct tx_ring_desc *tx_ring_desc, int mapped)
+ {
+ 	int i;
++
+ 	for (i = 0; i < mapped; i++) {
+ 		if (i == 0 || (i == 7 && mapped > 7)) {
+ 			/*
+@@ -1290,6 +1292,7 @@ static int ql_map_send(struct ql_adapter *qdev,
+ 	 */
+ 	for (frag_idx = 0; frag_idx < frag_cnt; frag_idx++, map_idx++) {
+ 		skb_frag_t *frag = &skb_shinfo(skb)->frags[frag_idx];
++
+ 		tbd++;
+ 		if (frag_idx == 6 && frag_cnt > 7) {
+ 			/* Let's tack on an sglist.
+@@ -1649,6 +1652,7 @@ static void ql_process_mac_rx_skb(struct ql_adapter *qdev,
+ 				(ib_mac_rsp->flags3 & IB_MAC_IOCB_RSP_V4)) {
+ 			/* Unfragmented ipv4 UDP frame. */
+ 			struct iphdr *iph = (struct iphdr *) skb->data;
++
+ 			if (!(iph->frag_off &
+ 				htons(IP_MF|IP_OFFSET))) {
+ 				skb->ip_summed = CHECKSUM_UNNECESSARY;
+@@ -1818,6 +1822,7 @@ static struct sk_buff *ql_build_rx_skb(struct ql_adapter *qdev,
+ 		 *          eventually be in trouble.
+ 		 */
+ 		int size, i = 0;
++
+ 		sbq_desc = qlge_get_curr_buf(&rx_ring->sbq);
+ 		pci_unmap_single(qdev->pdev, sbq_desc->dma_addr,
+ 				 SMALL_BUF_MAP_SIZE, PCI_DMA_FROMDEVICE);
+@@ -1936,6 +1941,7 @@ static void ql_process_mac_split_rx_intr(struct ql_adapter *qdev,
+ 				(ib_mac_rsp->flags3 & IB_MAC_IOCB_RSP_V4)) {
+ 		/* Unfragmented ipv4 UDP frame. */
+ 			struct iphdr *iph = (struct iphdr *) skb->data;
++
+ 			if (!(iph->frag_off &
+ 				htons(IP_MF|IP_OFFSET))) {
+ 				skb->ip_summed = CHECKSUM_UNNECESSARY;
+@@ -2391,6 +2397,7 @@ static void qlge_restore_vlan(struct ql_adapter *qdev)
+ static irqreturn_t qlge_msix_rx_isr(int irq, void *dev_id)
+ {
+ 	struct rx_ring *rx_ring = dev_id;
++
+ 	napi_schedule(&rx_ring->napi);
+ 	return IRQ_HANDLED;
+ }
+@@ -2497,6 +2504,7 @@ static int ql_tso(struct sk_buff *skb, struct ob_mac_tso_iocb_req *mac_iocb_ptr)
+ 		mac_iocb_ptr->flags2 |= OB_MAC_TSO_IOCB_LSO;
+ 		if (likely(l3_proto == htons(ETH_P_IP))) {
+ 			struct iphdr *iph = ip_hdr(skb);
++
+ 			iph->check = 0;
+ 			mac_iocb_ptr->flags1 |= OB_MAC_TSO_IOCB_IP4;
+ 			tcp_hdr(skb)->check = ~csum_tcpudp_magic(iph->saddr,
+@@ -2521,6 +2529,7 @@ static void ql_hw_csum_setup(struct sk_buff *skb,
+ 	int len;
+ 	struct iphdr *iph = ip_hdr(skb);
+ 	__sum16 *check;
++
+ 	mac_iocb_ptr->opcode = OPCODE_OB_MAC_TSO_IOCB;
+ 	mac_iocb_ptr->frame_len = cpu_to_le32((u32) skb->len);
+ 	mac_iocb_ptr->net_trans_offset =
+@@ -4265,6 +4274,7 @@ static int qlge_set_mac_address(struct net_device *ndev, void *p)
+ static void qlge_tx_timeout(struct net_device *ndev, unsigned int txqueue)
+ {
+ 	struct ql_adapter *qdev = netdev_priv(ndev);
++
+ 	ql_queue_asic_error(qdev);
+ }
+ 
+@@ -4273,6 +4283,7 @@ static void ql_asic_reset_work(struct work_struct *work)
+ 	struct ql_adapter *qdev =
+ 	    container_of(work, struct ql_adapter, asic_reset_work.work);
+ 	int status;
++
+ 	rtnl_lock();
+ 	status = ql_adapter_down(qdev);
+ 	if (status)
+@@ -4344,6 +4355,7 @@ static int ql_get_alt_pcie_func(struct ql_adapter *qdev)
+ static int ql_get_board_info(struct ql_adapter *qdev)
+ {
+ 	int status;
++
+ 	qdev->func =
+ 	    (ql_read32(qdev, STS) & STS_FUNC_ID_MASK) >> STS_FUNC_ID_SHIFT;
+ 	if (qdev->func > 3)
+@@ -4652,6 +4664,7 @@ static void qlge_remove(struct pci_dev *pdev)
+ {
+ 	struct net_device *ndev = pci_get_drvdata(pdev);
+ 	struct ql_adapter *qdev = netdev_priv(ndev);
++
+ 	del_timer_sync(&qdev->timer);
+ 	ql_cancel_all_work_sync(qdev);
+ 	unregister_netdev(ndev);
+-- 
+2.17.1
+
