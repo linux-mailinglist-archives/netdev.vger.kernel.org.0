@@ -2,40 +2,63 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 2EB13159621
-	for <lists+netdev@lfdr.de>; Tue, 11 Feb 2020 18:27:48 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6854B15964A
+	for <lists+netdev@lfdr.de>; Tue, 11 Feb 2020 18:39:40 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729299AbgBKR1q (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 11 Feb 2020 12:27:46 -0500
-Received: from bombadil.infradead.org ([198.137.202.133]:45868 "EHLO
-        bombadil.infradead.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727785AbgBKR1q (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 11 Feb 2020 12:27:46 -0500
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=bombadil.20170209; h=Content-Transfer-Encoding:
-        Content-Type:In-Reply-To:MIME-Version:Date:Message-ID:From:References:To:
-        Subject:Sender:Reply-To:Cc:Content-ID:Content-Description;
-        bh=XN3k80jAjBnLXnZHypuHoeyUQPQKU2tTkCZKngcR1wk=; b=jriBwzahpX1iiNuiycukvzVifg
-        2Pfz1MXNXxRaIHdRaUuF/sAHZjzv7WfYrKic0p0CB1We6+llzKq2o8pl330TIZYc4KSfvi+gLTpdB
-        RYdiJxD80QCEWXTKB9LPn5iSW83n6b88Vu5q/a73TRs2GYDp7Tm7KaqpxyZdbqrZSuoDa2DEXZ6SZ
-        3k+C8dX2F8uLv5zE5gEkCgcbUCirmlXsKEvvvMGXz5TJFyyfsWJfFTv/W+zRflCddWa8eaDVh05DT
-        rgf+TSo908vHSRyktlZs4OR2FYgV1mQbQoC+o1xIxPanz/h2aE2jLknS/ftSnfs3+iY+xlmmTalnp
-        1g6ZccEA==;
-Received: from [2603:3004:32:9a00::c450]
-        by bombadil.infradead.org with esmtpsa (Exim 4.92.3 #3 (Red Hat Linux))
-        id 1j1ZK6-0008OA-38; Tue, 11 Feb 2020 17:27:46 +0000
-Subject: Re: [PATCH, net-next] net: page_pool: Add documentation on page_pool
- API
-To:     Ilias Apalodimas <ilias.apalodimas@linaro.org>, brouer@redhat.com,
-        lorenzo@kernel.org, davem@davemloft.net, netdev@vger.kernel.org
-References: <20200211154227.1169600-1-ilias.apalodimas@linaro.org>
-From:   Randy Dunlap <rdunlap@infradead.org>
-Message-ID: <25360a12-90ce-39ac-4956-8591a8c4eb74@infradead.org>
-Date:   Tue, 11 Feb 2020 09:22:21 -0800
-User-Agent: Mozilla/5.0 (X11; Linux i686; rv:68.0) Gecko/20100101
- Thunderbird/68.4.1
+        id S1729717AbgBKRjj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 11 Feb 2020 12:39:39 -0500
+Received: from mail-pj1-f65.google.com ([209.85.216.65]:55244 "EHLO
+        mail-pj1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729669AbgBKRji (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 11 Feb 2020 12:39:38 -0500
+Received: by mail-pj1-f65.google.com with SMTP id dw13so1620596pjb.4
+        for <netdev@vger.kernel.org>; Tue, 11 Feb 2020 09:39:38 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=91A5noViXAkZK1gW/L6CGIsmdNrH9RcpNU2N36BTV5s=;
+        b=MfbKwAvRtRdkAhQ46Od2zkQZ4ojQEBHQNtg0ATjymWEutBuhrclw1GiQYT3xEfKP1W
+         ohES3honN5xncqtbNRctBHXjL32DxOURAoUwsncv3KyieicAx8fBPzBY7Dq6mg2p/B0Y
+         0pPYh0BCZtR20WvtNTqUDF6wNpoccQfXoc68+wQDPUIvBYp3niGl5JA7qhexRsa7ighc
+         P5C87mDXA3Aim8MLRR7D/4gfCz+9OuB4gu2DrkU5WVYQHDSHU1Bm5E08D3P5zlHqHFqF
+         kSMZcrJ5pmHTqbItdwNGgZswrpoEC7J5b6Rd52m6Rv1/P3Lb4nvnRPh30MTjL9Y12Ml6
+         83Hw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=91A5noViXAkZK1gW/L6CGIsmdNrH9RcpNU2N36BTV5s=;
+        b=gp2+90EqdDIPfocUYkdYPbpFpyOyzN8muMFw4H3bK2g0AFpE+l3z2qEXTwJE0fkoh5
+         d6R2U/MtG1vgPD1cDF7oqoBFDX3xiQE6uwCBJoaElQmrYwFnRI5I4HiFgnS+S0THcyvT
+         10IKg06IXRL0Ac0gIFu9HRW8/8MHf5ZE/d/BXFschOdglovMXIpwpfJasG1dXSj6xKT9
+         6MVRKCetEL57lsRAj286AP7Jet2CQiffZrmeklyobphFYFnJ9r4DbKpxGivneduBisCb
+         2ke6UMrx6zyiUCfR2NdhfEuuykfsaO2oex2AN2KeVWKiGPtgxg+lPW6i9TxoqXNoKhXt
+         dZlg==
+X-Gm-Message-State: APjAAAVfU1dAI1HslMnd5Q1MdlABrKDLAesG4ZxlIpkSPT9/fiT72zgN
+        jI4SAPeEpg5aJmDmaxevl6M=
+X-Google-Smtp-Source: APXvYqyY32pK1KIHJ+L7c+1DVK7O8wjg153Dw2YQdSRVMcE+rIPtdRNnYlftqNgN0/2RXp2hlubCKw==
+X-Received: by 2002:a17:902:7c95:: with SMTP id y21mr4127118pll.186.1581442778190;
+        Tue, 11 Feb 2020 09:39:38 -0800 (PST)
+Received: from ?IPv6:2620:15c:2c1:200:55c7:81e6:c7d8:94b? ([2620:15c:2c1:200:55c7:81e6:c7d8:94b])
+        by smtp.gmail.com with ESMTPSA id h3sm5382236pfr.15.2020.02.11.09.39.32
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 11 Feb 2020 09:39:34 -0800 (PST)
+Subject: Re: [PATCH v3 net 7/9] ipvlan: remove skb_share_check from xmit path
+To:     "Jason A. Donenfeld" <Jason@zx2c4.com>, netdev@vger.kernel.org,
+        davem@davemloft.net
+Cc:     Mahesh Bandewar <maheshb@google.com>
+References: <20200210141423.173790-2-Jason@zx2c4.com>
+ <20200211150028.688073-1-Jason@zx2c4.com>
+ <20200211150028.688073-8-Jason@zx2c4.com>
+From:   Eric Dumazet <eric.dumazet@gmail.com>
+Message-ID: <db688bb4-bafa-8e9b-34aa-7f1d5a04e10f@gmail.com>
+Date:   Tue, 11 Feb 2020 09:39:31 -0800
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.2.2
 MIME-Version: 1.0
-In-Reply-To: <20200211154227.1169600-1-ilias.apalodimas@linaro.org>
+In-Reply-To: <20200211150028.688073-8-Jason@zx2c4.com>
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
@@ -44,200 +67,49 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi,
 
-Here are some doc comments for you...
 
-On 2/11/20 7:42 AM, Ilias Apalodimas wrote:
-> Add documentation explaining the basic functionality and design
-> principles of the API
+On 2/11/20 7:00 AM, Jason A. Donenfeld wrote:
+> This is an impossible condition to reach; an skb in ndo_start_xmit won't
+> be shared by definition.
 > 
-> Signed-off-by: Ilias Apalodimas <ilias.apalodimas@linaro.org>
+
+Yes, maybe, but can you elaborate in this changelog ?
+
+AFAIK net/core/pktgen.c can definitely provide shared skbs.
+
+     refcount_inc(&pkt_dev->skb->users);
+     ret = dev_queue_xmit(pkt_dev->skb);
+
+We might have to change pktgen to make sure we do not make skb shared
+just because it was convenient.
+
+Please do not give a link to some web page that might disappear in the future.
+
+Having to follow an old thread to understand the reasoning is not appealing
+for us having to fix bugs in the following years.
+
+Thanks.
+
+> Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
+> Cc: Mahesh Bandewar <maheshb@google.com>
+> Link: https://lore.kernel.org/netdev/CAHmME9pk8HEFRq_mBeatNbwXTx7UEfiQ_HG_+Lyz7E+80GmbSA@mail.gmail.com/
 > ---
->  Documentation/networking/page_pool.rst | 153 +++++++++++++++++++++++++
->  1 file changed, 153 insertions(+)
->  create mode 100644 Documentation/networking/page_pool.rst
+>  drivers/net/ipvlan/ipvlan_core.c | 3 ---
+>  1 file changed, 3 deletions(-)
 > 
-> diff --git a/Documentation/networking/page_pool.rst b/Documentation/networking/page_pool.rst
-> new file mode 100644
-> index 000000000000..e143339e4c80
-> --- /dev/null
-> +++ b/Documentation/networking/page_pool.rst
-> @@ -0,0 +1,153 @@
-> +=============
-> +Page Pool API
-> +=============
-> +
-> +The page_pool allocator is optimized for the XDP mode that uses one frame 
-> +per-page, but it can fallback on the regular page allocator APIs.
-> +
-> +Basic use involve replacing alloc_pages() calls with the
-> +page_pool_alloc_pages() call.  Drivers should use page_pool_dev_alloc_pages() 
-> +replacing dev_alloc_pages().
-> +
-> +API keeps track of in-flight pages, in-order to let API user know
-
-                                       in order
-
-> +when it is safe to free a page_pool object.  Thus, API users
-> +must run page_pool_release_page() when a page is leaving the page_pool or
-> +call page_pool_put_page() where appropriate in order to maintain correct
-> +accounting.
-> +
-> +API user must call page_pool_put_page() once on a page, as it
-> +will either recycle the page, or in case of refcnt > 1, it will
-> +release the DMA mapping and in-flight state accounting.
-> +
-> +Architecture overview
-> +=====================
-> +
-> +.. code-block:: none
-> +
-> +    +------------------+
-> +    |       Driver     | 
-> +    +------------------+
-> +            ^ 
-> +            |
-> +            |
-> +            |
-> +            v
-> +    +--------------------------------------------+
-> +    |                request memory              | 
-> +    +--------------------------------------------+
-> +        ^                                  ^
-> +        |                                  |
-> +        | Pool empty                       | Pool has entries
-> +        |                                  |
-> +        v                                  v
-> +    +-----------------------+     +------------------------+       
-> +    | alloc (and map) pages |     |  get page from cache   |
-> +    +-----------------------+     +------------------------+
-> +                                    ^                    ^
-> +                                    |                    |
-> +                                    | cache available    | No entries, refill
-> +                                    |                    | from ptr-ring
-> +                                    |                    |
-> +                                    v                    v
-> +                          +-----------------+     +------------------+  
-> +                          |     Fast cache  |     |  ptr-ring cache  | 
-> +                          +-----------------+     +------------------+
-> +
-> +API interface
-> +=============
-> +The number of pools created **must** match the number of hardware queues
-> +unless hardware restrictions make that impossible. This would otherwise beat the
-> +purpose of page pool, which is allocate pages fast from cache without locking.
-> +This lockless guarantee naturally comes from running under a NAPI softirq.
-> +The protection doesn't strictly has to be NAPI, any guarantee that allocating a
-
-                                   have to be NAPI;
-
-> +page will cause no race-conditions is enough.
-
-                      race conditions
-
-> +
-> +* page_pool_create(): Create a pool.
-> +    * flags:      PP_FLAG_DMA_MAP, PP_FLAG_DMA_SYNC_DEV
-
-what about 'order'?  is it optional?
-
-> +    * pool_size:  size of the ptr_ring
-> +    * nid:        preferred NUMA node for allocation
-> +    * dev:        struct device. Used on DMA operations
-> +    * dma_dir:    DMA direction
-> +    * max_len:    max DMA sync memory size
-> +    * offset:     DMA address offset
-> +
-> +* page_pool_put_page(): The outcome of this depends on the page refcnt. If the
-> +  driver uses refcnt > 1 this will unmap the page. If the pool object is
-> +  responsible for DMA operations and account for the in-flight counting. 
-
-Hm, above is not a sentence and it ends with a space character.
-Several lines end with a space character.  :(
-
-> +  If the refcnt is 1, the allocator owns the page and will try to recycle and 
-> +  sync it to be re-used by the device using dma_sync_single_range_for_device().
-> +
-> +* page_pool_release_page(): Unmap the page (if mapped) and account for it on
-> +  inflight counters.
-
-inflight is spelled as in-flight earlier.  Just choose one way, please.
-
-> +
-> +* page_pool_dev_alloc_pages(): Get a page from the page allocator or page_pool 
-> +  caches.
-> +
-> +* page_pool_get_dma_addr(): Retrieve the stored DMA address.
-> +
-> +* page_pool_get_dma_dir(): Retrieve the stored DMA direction.
-> +
-> +* page_pool_recycle_direct(): Recycle the page immediately. Must be used under
-> +  NAPI context
-> +
-> +Coding examples
-> +===============
-> +
-> +Registration
-> +------------
-> +
-> +.. code-block:: c
-> +
-> +    /* Page pool registration */
-> +    struct page_pool_params pp_params = { 0 };
-> +    struct xdp_rxq_info xdp_rxq;
-> +    int err;
-> +
-> +    pp_params.order = 0;
-> +    /* internal DMA mapping in page_pool */
-> +    pp_params.flags = PP_FLAG_DMA_MAP;
-> +    pp_params.pool_size = DESC_NUM;
-> +    pp_params.nid = NUMA_NO_NODE;
-> +    pp_params.dev = priv->dev;
-> +    pp_params.dma_dir = xdp_prog ? DMA_BIDIRECTIONAL : DMA_FROM_DEVICE;
-> +    page_pool = page_pool_create(&pp_params);
-> +
-> +    err = xdp_rxq_info_reg(&xdp_rxq, ndev, 0);
-> +    if (err)
-> +        goto err_out;
-> +    
-> +    err = xdp_rxq_info_reg_mem_model(&xdp_rxq, MEM_TYPE_PAGE_POOL, page_pool);
-> +    if (err)
-> +        goto err_out;
-> +    
-> +NAPI poller
-> +-----------
-> +
-> +
-> +.. code-block:: c
-> +
-> +    /* NAPI Rx poller */
-> +    enum dma_data_direction dma_dir;
-> +
-> +    dma_dir = page_pool_get_dma_dir(dring->page_pool);
-> +    while (done < budget) {
-> +        if (some error)
-> +            page_pool_recycle_direct(page_pool, page);
-> +        if (packet_is_xdp) {
-> +            if XDP_DROP:
-> +                page_pool_recycle_direct(page_pool, page);
-> +        } else (packet_is_skb) {
-> +            page_pool_release_page(page_pool, page);
-> +            new_page = page_pool_dev_alloc_pages(page_pool);
-> +        }
-> +    }
-> +    
-> +Driver unload
-> +-------------
-> +
-> +.. code-block:: c
-> +    
-> +    /* Driver unload */
-> +    page_pool_put_page(page_pool, page, false);
-> +    xdp_rxq_info_unreg(&xdp_rxq);
-> +    page_pool_destroy(page_pool);
+> diff --git a/drivers/net/ipvlan/ipvlan_core.c b/drivers/net/ipvlan/ipvlan_core.c
+> index 30cd0c4f0be0..da40723065f2 100644
+> --- a/drivers/net/ipvlan/ipvlan_core.c
+> +++ b/drivers/net/ipvlan/ipvlan_core.c
+> @@ -605,9 +605,6 @@ static int ipvlan_xmit_mode_l2(struct sk_buff *skb, struct net_device *dev)
+>  				return ipvlan_rcv_frame(addr, &skb, true);
+>  			}
+>  		}
+> -		skb = skb_share_check(skb, GFP_ATOMIC);
+> -		if (!skb)
+> -			return NET_XMIT_DROP;
+>  
+>  		/* Packet definitely does not belong to any of the
+>  		 * virtual devices, but the dest is local. So forward
 > 
-
-thanks.
--- 
-~Randy
