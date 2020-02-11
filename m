@@ -2,21 +2,22 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 2960A159A7F
-	for <lists+netdev@lfdr.de>; Tue, 11 Feb 2020 21:27:51 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6863F159A8E
+	for <lists+netdev@lfdr.de>; Tue, 11 Feb 2020 21:35:03 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731806AbgBKU1s (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 11 Feb 2020 15:27:48 -0500
-Received: from gateway23.websitewelcome.com ([192.185.50.129]:34690 "EHLO
-        gateway23.websitewelcome.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1728522AbgBKU1p (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 11 Feb 2020 15:27:45 -0500
+        id S1731127AbgBKUfB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 11 Feb 2020 15:35:01 -0500
+Received: from gateway32.websitewelcome.com ([192.185.145.18]:47570 "EHLO
+        gateway32.websitewelcome.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1730057AbgBKUfB (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 11 Feb 2020 15:35:01 -0500
+X-Greylist: delayed 1272 seconds by postgrey-1.27 at vger.kernel.org; Tue, 11 Feb 2020 15:35:00 EST
 Received: from cm11.websitewelcome.com (cm11.websitewelcome.com [100.42.49.5])
-        by gateway23.websitewelcome.com (Postfix) with ESMTP id 8BC7B69E9
-        for <netdev@vger.kernel.org>; Tue, 11 Feb 2020 14:27:43 -0600 (CST)
+        by gateway32.websitewelcome.com (Postfix) with ESMTP id 34502836E4
+        for <netdev@vger.kernel.org>; Tue, 11 Feb 2020 14:13:45 -0600 (CST)
 Received: from gator4166.hostgator.com ([108.167.133.22])
         by cmsmtp with SMTP
-        id 1c8FjDiCrSl8q1c8FjwpN7; Tue, 11 Feb 2020 14:27:43 -0600
+        id 1bujjDP3gSl8q1bujjwWQ1; Tue, 11 Feb 2020 14:13:45 -0600
 X-Authority-Reason: nr=8
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
         d=embeddedor.com; s=default; h=Content-Transfer-Encoding:Content-Type:
@@ -24,30 +25,27 @@ DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
         :Reply-To:Content-ID:Content-Description:Resent-Date:Resent-From:
         Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:
         List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=PPWWdaifeZzk9RLwFlJ5meY5m2rkkfSdPZkRBHo2zLg=; b=lMUWu+8neDtCWoM7HC7ndnZLve
-        CNLfWODYRH0dKfbYGWeisHnLSxwNAv69i74ZGjwscfb0/qmOAypEZD+6HBJFL+fTIjsho7HOEtwG1
-        MkHOsPZmKwA2Q5pvtdb3Fiw15YCeLaJIrWEpEr+djGYU1UyM4rUwYKd2T+uOu6kMzs+8Zoi0P1/fV
-        bYOr6VWSaXgDAjg9G1QXzRO17lr07NmB7n60KgWN3y8bbtk63wqdlYlBwoJS8OYKCJNFDxDDjsT2Q
-        kEdxfEnZv6oclhIyZH55YS7WheIc/5xVs6zTjk/g7Dp8gA06Fof0OK0Aw9jCl+XbJ8x4i5IDqZi6S
-        pym9IHiw==;
-Received: from [200.68.140.36] (port=27441 helo=[192.168.43.131])
+        bh=KF4U0slqD0nZwemRm48vcKehNF2NbyUtC90SR7y0UoM=; b=UAkNeQGdpLxfS26H0J7XBcMziN
+        zILKvQlDd7KBleY82/4L20JdzVeIDm92gRAi1VmBMNzgTltDXvWx84ovMcC9z4X3y0DT589BebZiL
+        gjk0CBYeXm8tWiQ/Vpw4GW2KNaGQ9yXD7tjHPPDn6+SWVRpaXxhRIdpIzMpUe/RDV8Et5FHIzKpr9
+        sA4Dd+1GxInJLsZISqNryGQdMSLbGdhe7e88fNHRM4W4zDv0QxbrfUrQMMOH6Sayt/CRvnrVBWEJg
+        ovDiFDGYi+KM9rS6JE99ybcbNj1nf4knCEuWPeu4cAhzW8SGv3li6dGg7Y3af/IhA059qGtu+D1tw
+        zeRxMYxA==;
+Received: from [200.68.140.36] (port=2377 helo=[192.168.43.131])
         by gator4166.hostgator.com with esmtpsa (TLSv1.2:ECDHE-RSA-AES128-GCM-SHA256:128)
         (Exim 4.92)
         (envelope-from <gustavo@embeddedor.com>)
-        id 1j1c8F-001jRM-5K; Tue, 11 Feb 2020 14:27:43 -0600
+        id 1j1bui-001bQa-NQ; Tue, 11 Feb 2020 14:13:44 -0600
 Subject: Re: [PATCH] treewide: Replace zero-length arrays with flexible-array
  member
 To:     Kees Cook <keescook@chromium.org>
-Cc:     Greg KH <gregkh@linuxfoundation.org>, linux-kernel@vger.kernel.org,
+Cc:     linux-kernel@vger.kernel.org,
         "David S. Miller" <davem@davemloft.net>,
+        Greg KH <gregkh@linuxfoundation.org>,
         linux-crypto@vger.kernel.org, netdev@vger.kernel.org,
         linux-usb@vger.kernel.org
 References: <20200211174126.GA29960@embeddedor>
- <20200211183229.GA1938663@kroah.com>
- <3fdbb16a-897c-aa5b-d45d-f824f6810412@embeddedor.com>
- <202002111129.77DB1CCC7B@keescook> <20200211193854.GA1972490@kroah.com>
- <88e09425-8207-7a1e-8802-886f9694a37f@embeddedor.com>
- <202002111210.876CEB6@keescook>
+ <202002111132.4A4F073CAF@keescook>
 From:   "Gustavo A. R. Silva" <gustavo@embeddedor.com>
 Autocrypt: addr=gustavo@embeddedor.com; keydata=
  xsFNBFssHAwBEADIy3ZoPq3z5UpsUknd2v+IQud4TMJnJLTeXgTf4biSDSrXn73JQgsISBwG
@@ -92,12 +90,12 @@ Autocrypt: addr=gustavo@embeddedor.com; keydata=
  YJWH93PN+ZUh6i6Rd2U/i8jH5WvzR57UeWxE4P8bQc0hNGrUsHQH6bpHV2lbuhDdqo+cM9eh
  GZEO3+gCDFmKrjspZjkJbB5Gadzvts5fcWGOXEvuT8uQSvl+vEL0g6vczsyPBtqoBLa9SNrS
  VtSixD1uOgytAP7RWS474w==
-Message-ID: <2b73d115-1259-24ae-6f56-e3aa12e5e408@embeddedor.com>
-Date:   Tue, 11 Feb 2020 14:30:17 -0600
+Message-ID: <541a4f6a-60b3-a171-a223-1692f78b48ee@embeddedor.com>
+Date:   Tue, 11 Feb 2020 14:16:19 -0600
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
  Thunderbird/68.4.1
 MIME-Version: 1.0
-In-Reply-To: <202002111210.876CEB6@keescook>
+In-Reply-To: <202002111132.4A4F073CAF@keescook>
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
@@ -109,13 +107,13 @@ X-AntiAbuse: Sender Address Domain - embeddedor.com
 X-BWhitelist: no
 X-Source-IP: 200.68.140.36
 X-Source-L: No
-X-Exim-ID: 1j1c8F-001jRM-5K
+X-Exim-ID: 1j1bui-001bQa-NQ
 X-Source: 
 X-Source-Args: 
 X-Source-Dir: 
-X-Source-Sender: ([192.168.43.131]) [200.68.140.36]:27441
+X-Source-Sender: ([192.168.43.131]) [200.68.140.36]:2377
 X-Source-Auth: gustavo@embeddedor.com
-X-Email-Count: 24
+X-Email-Count: 17
 X-Source-Cap: Z3V6aWRpbmU7Z3V6aWRpbmU7Z2F0b3I0MTY2Lmhvc3RnYXRvci5jb20=
 X-Local-Domain: yes
 Sender: netdev-owner@vger.kernel.org
@@ -125,89 +123,30 @@ X-Mailing-List: netdev@vger.kernel.org
 
 
 
-On 2/11/20 14:12, Kees Cook wrote:
-> On Tue, Feb 11, 2020 at 01:54:22PM -0600, Gustavo A. R. Silva wrote:
+On 2/11/20 13:35, Kees Cook wrote:
+> On Tue, Feb 11, 2020 at 11:41:26AM -0600, Gustavo A. R. Silva wrote:
+>> The current codebase makes use of the zero-length array language
+>> extension to the C90 standard, but the preferred mechanism to declare
+>> variable-length types such as these ones is a flexible array member[1][2],
+>> introduced in C99:
 >>
+>> struct foo {
+>>         int stuff;
+>>         struct boo array[];
+>> };
 >>
->> On 2/11/20 13:38, Greg KH wrote:
->>> On Tue, Feb 11, 2020 at 11:32:04AM -0800, Kees Cook wrote:
->>>> On Tue, Feb 11, 2020 at 01:20:36PM -0600, Gustavo A. R. Silva wrote:
->>>>>
->>>>>
->>>>> On 2/11/20 12:32, Greg KH wrote:
->>>>>> On Tue, Feb 11, 2020 at 11:41:26AM -0600, Gustavo A. R. Silva wrote:
->>>>>>> The current codebase makes use of the zero-length array language
->>>>>>> extension to the C90 standard, but the preferred mechanism to declare
->>>>>>> variable-length types such as these ones is a flexible array member[1][2],
->>>>>>> introduced in C99:
->>>>>>>
->>>>>>> struct foo {
->>>>>>>         int stuff;
->>>>>>>         struct boo array[];
->>>>>>> };
->>>>>>>
->>>>>>> By making use of the mechanism above, we will get a compiler warning
->>>>>>> in case the flexible array does not occur last in the structure, which
->>>>>>> will help us prevent some kind of undefined behavior bugs from being
->>>>>>> unadvertenly introduced[3] to the codebase from now on.
->>>>>>>
->>>>>>> All these instances of code were found with the help of the following
->>>>>>> Coccinelle script:
->>>>>>>
->>>>>>> @@
->>>>>>> identifier S, member, array;
->>>>>>> type T1, T2;
->>>>>>> @@
->>>>>>>
->>>>>>> struct S {
->>>>>>>   ...
->>>>>>>   T1 member;
->>>>>>>   T2 array[
->>>>>>> - 0
->>>>>>>   ];
->>>>>>> };
->>>>>>>
->>>>>>> [1] https://gcc.gnu.org/onlinedocs/gcc/Zero-Length.html
->>>>>>> [2] https://github.com/KSPP/linux/issues/21
->>>>>>> [3] commit 76497732932f ("cxgb3/l2t: Fix undefined behaviour")
->>>>>>>
->>>>>>> NOTE: I'll carry this in my -next tree for the v5.6 merge window.
->>>>>>
->>>>>> Why not carve this up into per-subsystem patches so that we can apply
->>>>>> them to our 5.7-rc1 trees and then you submit the "remaining" that don't
->>>>>> somehow get merged at that timeframe for 5.7-rc2?
->>>>>>
->>>>>
->>>>> Yep, sounds good. I'll do that.
->>>>
->>>> FWIW, I'd just like to point out that since this is a mechanical change
->>>> with no code generation differences (unlike the pre-C90 1-byte array
->>>> conversions), it's a way better use of everyone's time to just splat
->>>> this in all at once.
->>>>
->>>> That said, it looks like Gustavo is up for it, but I'd like us to
->>>> generally consider these kinds of mechanical changes as being easier to
->>>> manage in a single patch. (Though getting Acks tends to be a bit
->>>> harder...)
->>>
->>> Hey, if this is such a mechanical patch, let's get it to Linus now,
->>> what's preventing that from being merged now?
+>> By making use of the mechanism above, we will get a compiler warning
+>> in case the flexible array does not occur last in the structure, which
+>> will help us prevent some kind of undefined behavior bugs from being
+>> unadvertenly introduced[3] to the codebase from now on.
 > 
-> Now would be a good time, yes. (Linus has wanted Acks for such things
-> sometimes, but those were more "risky" changes...)
-> 
->> Well, the only thing is that this has never been in linux-next.
-> 
-> Hmm. Was it in one of your 0day-tested trees?
+> Is there a compiler warning we can enable to avoid new 0-byte arrays
+> from entering the kernel source tree? I can only find "-pedantic" which
+> enables way too many other checks.
 > 
 
-It was in my tree for quite a while, but it was never 0day-tested.
-Just recently, the 0day guys started testing my _new_ branches,
-regularly.
-
-Today, I updated my -next branch to v5.6-rc1 and added the
-treewide patch. So, I expect it to be 0day-tested in a couple
-of days.
+Months ago, I only found -pedantic, too. And we definitely don't want
+to use it for this. :/
 
 --
 Gustavo
