@@ -2,166 +2,118 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 32A98158A72
-	for <lists+netdev@lfdr.de>; Tue, 11 Feb 2020 08:33:15 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9B4C5158A8E
+	for <lists+netdev@lfdr.de>; Tue, 11 Feb 2020 08:42:48 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727572AbgBKHdM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 11 Feb 2020 02:33:12 -0500
-Received: from mail-pl1-f194.google.com ([209.85.214.194]:34565 "EHLO
-        mail-pl1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725787AbgBKHdL (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 11 Feb 2020 02:33:11 -0500
-Received: by mail-pl1-f194.google.com with SMTP id j7so3924442plt.1
-        for <netdev@vger.kernel.org>; Mon, 10 Feb 2020 23:33:11 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=aIwKZHgWPZVzsQUzZ8UKnB19bLveljpjddOzNYirBJQ=;
-        b=vNT0fy2fSFWvC5KpJeSr1PoC8lSvB0Pc25k4Bo5Nx5tPx0+pWq0jkM85XsHOEEPlyQ
-         Bow+uE8Z1djkmpIeRmp4/k/LKBAQdkNrr/4ckydp2Sy712G+9iL+cZtI90fx1ywpRTdt
-         xFcmU6lYjDXmbQk6HoaqyxCcIMtv/5CvQO5RTeJv/vYoY3fqfet+VqU5asj3OE1PabRj
-         LmMIvol4jV9uBT7G3utYuFE40/jDLVt3I2cOH9fyIL1bi8JXdlcbBablgf9EgMdT78np
-         ATh2+86wQDu/zGQuCUYarw3Gg1+k4+8PQQpgZEzNcEHgcTPkfK3M/Lk5F00lTbToTYf/
-         XXWg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=aIwKZHgWPZVzsQUzZ8UKnB19bLveljpjddOzNYirBJQ=;
-        b=tEp0Wrbv/ClAtc5+qSIdXgbTRgUVTumCbQ94rA9ZTJy+in+kZcVSn3mTWW4EXLyCxN
-         2XtBkx2nv4eTnnHmxS8c+rqD92lADPs0+H6PrM8nYY7lbyZbC/4u4MpqVKXej7wwr+rt
-         EwBHj4ic7P3ztyQCKTQlPxhPtTYy8qF4HJy3yfqk0Jse4YiMh5G7uca8LX35H4LuTJRa
-         4MwLVJm00j8Q5iqHPceDM7G1ttTx1oO0xYOakSuw7unROVUBmxR1emHOtO00qoeckyZX
-         T4zRS0iVMFCPGwgjgko2WblNXVvA+DjAfcsGHYkWP0DZ+qt7/XR1LF1nQZ98q5hJBPg0
-         HxoA==
-X-Gm-Message-State: APjAAAXxP9jWYUsji5QSAvDVmG2YLr3OPMBMqjUpw0tsM7UHISyB7Hzm
-        T1e5N3UvA+dpOp9QBrJlM1bFbXXUuw4=
-X-Google-Smtp-Source: APXvYqzMmRGGf1xo2vgNTHyTnZEM7TUeuuhgPq+8lKYZs2I3idKCIdxtqOH/YiNVSv545AtDkYAlnA==
-X-Received: by 2002:a17:902:864a:: with SMTP id y10mr16959067plt.2.1581406390643;
-        Mon, 10 Feb 2020 23:33:10 -0800 (PST)
-Received: from dhcp-12-139.nay.redhat.com ([209.132.188.80])
-        by smtp.gmail.com with ESMTPSA id h7sm3121060pfq.36.2020.02.10.23.33.08
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 10 Feb 2020 23:33:10 -0800 (PST)
-From:   Hangbin Liu <liuhangbin@gmail.com>
-To:     netdev@vger.kernel.org
-Cc:     Petr Machata <petrm@mellanox.com>, Jiri Pirko <jiri@mellanox.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Hangbin Liu <liuhangbin@gmail.com>
-Subject: [PATCH net] selftests: forwarding: use proto icmp for {gretap,ip6gretap}_mac testing
-Date:   Tue, 11 Feb 2020 15:32:56 +0800
-Message-Id: <20200211073256.32652-1-liuhangbin@gmail.com>
-X-Mailer: git-send-email 2.19.2
+        id S1727722AbgBKHmp (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 11 Feb 2020 02:42:45 -0500
+Received: from ivanoab7.miniserver.com ([37.128.132.42]:42908 "EHLO
+        www.kot-begemot.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726219AbgBKHmp (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 11 Feb 2020 02:42:45 -0500
+Received: from tun252.jain.kot-begemot.co.uk ([192.168.18.6] helo=jain.kot-begemot.co.uk)
+        by www.kot-begemot.co.uk with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <anton.ivanov@cambridgegreys.com>)
+        id 1j1QBs-0007Vn-1k; Tue, 11 Feb 2020 07:42:40 +0000
+Received: from sleer.kot-begemot.co.uk ([192.168.3.72])
+        by jain.kot-begemot.co.uk with esmtps (TLS1.3:ECDHE_RSA_AES_128_GCM_SHA256:128)
+        (Exim 4.92)
+        (envelope-from <anton.ivanov@cambridgegreys.com>)
+        id 1j1QBp-0007Nw-Mr; Tue, 11 Feb 2020 07:42:39 +0000
+Subject: Re: [PATCH] virtio: Work around frames incorrectly marked as gso
+To:     Jason Wang <jasowang@redhat.com>, netdev@vger.kernel.org
+Cc:     linux-um@lists.infradead.org, mst@redhat.com,
+        virtualization@lists.linux-foundation.org
+References: <20191209104824.17059-1-anton.ivanov@cambridgegreys.com>
+ <57230228-7030-c65f-a24f-910ca52bbe9e@cambridgegreys.com>
+ <f78bfe6e-2ffc-3734-9618-470f1afea0c6@redhat.com>
+From:   Anton Ivanov <anton.ivanov@cambridgegreys.com>
+Organization: Cambridge Greys
+Message-ID: <918222d9-816a-be70-f8af-b8dfcb586240@cambridgegreys.com>
+Date:   Tue, 11 Feb 2020 07:42:37 +0000
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.4.1
 MIME-Version: 1.0
+In-Reply-To: <f78bfe6e-2ffc-3734-9618-470f1afea0c6@redhat.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
 Content-Transfer-Encoding: 8bit
+X-Spam-Score: -1.0
+X-Spam-Score: -1.0
+X-Clacks-Overhead: GNU Terry Pratchett
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-For tc ip_proto filter, when we extract the flow via __skb_flow_dissect()
-without flag FLOW_DISSECTOR_F_STOP_AT_ENCAP, we will continue extract to
-the inner proto.
+On 11/02/2020 02:51, Jason Wang wrote:
+> 
+> On 2020/2/11 上午12:55, Anton Ivanov wrote:
+>>
+>>
+>> On 09/12/2019 10:48, anton.ivanov@cambridgegreys.com wrote:
+>>> From: Anton Ivanov <anton.ivanov@cambridgegreys.com>
+>>>
+>>> Some of the frames marked as GSO which arrive at
+>>> virtio_net_hdr_from_skb() have no GSO_TYPE, no
+>>> fragments (data_len = 0) and length significantly shorter
+>>> than the MTU (752 in my experiments).
+>>>
+>>> This is observed on raw sockets reading off vEth interfaces
+>>> in all 4.x and 5.x kernels I tested.
+>>>
+>>> These frames are reported as invalid while they are in fact
+>>> gso-less frames.
+>>>
+>>> This patch marks the vnet header as no-GSO for them instead
+>>> of reporting it as invalid.
+>>>
+>>> Signed-off-by: Anton Ivanov <anton.ivanov@cambridgegreys.com>
+>>> ---
+>>>   include/linux/virtio_net.h | 8 ++++++--
+>>>   1 file changed, 6 insertions(+), 2 deletions(-)
+>>>
+>>> diff --git a/include/linux/virtio_net.h b/include/linux/virtio_net.h
+>>> index 0d1fe9297ac6..d90d5cff1b9a 100644
+>>> --- a/include/linux/virtio_net.h
+>>> +++ b/include/linux/virtio_net.h
+>>> @@ -112,8 +112,12 @@ static inline int virtio_net_hdr_from_skb(const 
+>>> struct sk_buff *skb,
+>>>               hdr->gso_type = VIRTIO_NET_HDR_GSO_TCPV4;
+>>>           else if (sinfo->gso_type & SKB_GSO_TCPV6)
+>>>               hdr->gso_type = VIRTIO_NET_HDR_GSO_TCPV6;
+>>> -        else
+>>> -            return -EINVAL;
+>>> +        else {
+>>> +            if (skb->data_len == 0)
+>>> +                hdr->gso_type = VIRTIO_NET_HDR_GSO_NONE;
+>>> +            else
+>>> +                return -EINVAL;
+>>> +        }
+>>>           if (sinfo->gso_type & SKB_GSO_TCP_ECN)
+>>>               hdr->gso_type |= VIRTIO_NET_HDR_GSO_ECN;
+>>>       } else
+>>>
+>>
+>> ping.
+>>
+> 
+> Do you mean gso_size is set but gso_type is not? Looks like a bug 
+> elsewhere.
+> 
+> Thanks
+> 
+> 
+Yes.
 
-So for GRE + ICMP messages, we should not track GRE proto, but inner ICMP
-proto.
+I could not trace it where it is coming from.
 
-For test mirror_gre.sh, it may make user confused if we capture ICMP
-message on $h3(since the flow is GRE message). So I move the capture
-dev to h3-gt{4,6}, and only capture ICMP message.
+I see it when doing recvmmsg on raw sockets in the UML vector network 
+drivers.
 
-Before the fix:
-]# ./mirror_gre.sh
-TEST: ingress mirror to gretap (skip_hw)                            [ OK ]
-TEST: egress mirror to gretap (skip_hw)                             [ OK ]
-TEST: ingress mirror to ip6gretap (skip_hw)                         [ OK ]
-TEST: egress mirror to ip6gretap (skip_hw)                          [ OK ]
-TEST: ingress mirror to gretap: envelope MAC (skip_hw)              [FAIL]
- Expected to capture 10 packets, got 0.
-TEST: egress mirror to gretap: envelope MAC (skip_hw)               [FAIL]
- Expected to capture 10 packets, got 0.
-TEST: ingress mirror to ip6gretap: envelope MAC (skip_hw)           [FAIL]
- Expected to capture 10 packets, got 0.
-TEST: egress mirror to ip6gretap: envelope MAC (skip_hw)            [FAIL]
- Expected to capture 10 packets, got 0.
-TEST: two simultaneously configured mirrors (skip_hw)               [ OK ]
-WARN: Could not test offloaded functionality
 
-After fix:
-]# ./mirror_gre.sh
-TEST: ingress mirror to gretap (skip_hw)                            [ OK ]
-TEST: egress mirror to gretap (skip_hw)                             [ OK ]
-TEST: ingress mirror to ip6gretap (skip_hw)                         [ OK ]
-TEST: egress mirror to ip6gretap (skip_hw)                          [ OK ]
-TEST: ingress mirror to gretap: envelope MAC (skip_hw)              [ OK ]
-TEST: egress mirror to gretap: envelope MAC (skip_hw)               [ OK ]
-TEST: ingress mirror to ip6gretap: envelope MAC (skip_hw)           [ OK ]
-TEST: egress mirror to ip6gretap: envelope MAC (skip_hw)            [ OK ]
-TEST: two simultaneously configured mirrors (skip_hw)               [ OK ]
-WARN: Could not test offloaded functionality
-
-Fixes: ba8d39871a10 ("selftests: forwarding: Add test for mirror to gretap")
-Signed-off-by: Hangbin Liu <liuhangbin@gmail.com>
----
- .../selftests/net/forwarding/mirror_gre.sh    | 25 ++++++++++---------
- 1 file changed, 13 insertions(+), 12 deletions(-)
-
-diff --git a/tools/testing/selftests/net/forwarding/mirror_gre.sh b/tools/testing/selftests/net/forwarding/mirror_gre.sh
-index e6fd7a18c655..0266443601bc 100755
---- a/tools/testing/selftests/net/forwarding/mirror_gre.sh
-+++ b/tools/testing/selftests/net/forwarding/mirror_gre.sh
-@@ -63,22 +63,23 @@ test_span_gre_mac()
- {
- 	local tundev=$1; shift
- 	local direction=$1; shift
--	local prot=$1; shift
- 	local what=$1; shift
- 
--	local swp3mac=$(mac_get $swp3)
--	local h3mac=$(mac_get $h3)
-+	case "$direction" in
-+	ingress) local src_mac=$(mac_get $h1); local dst_mac=$(mac_get $h2)
-+		;;
-+	egress) local src_mac=$(mac_get $h2); local dst_mac=$(mac_get $h1)
-+		;;
-+	esac
- 
- 	RET=0
- 
- 	mirror_install $swp1 $direction $tundev "matchall $tcflags"
--	tc filter add dev $h3 ingress pref 77 prot $prot \
--		flower ip_proto 0x2f src_mac $swp3mac dst_mac $h3mac \
--		action pass
-+	icmp_capture_install h3-${tundev} "src_mac $src_mac dst_mac $dst_mac"
- 
--	mirror_test v$h1 192.0.2.1 192.0.2.2 $h3 77 10
-+	mirror_test v$h1 192.0.2.1 192.0.2.2 h3-${tundev} 100 10
- 
--	tc filter del dev $h3 ingress pref 77
-+	icmp_capture_uninstall h3-${tundev}
- 	mirror_uninstall $swp1 $direction
- 
- 	log_test "$direction $what: envelope MAC ($tcflags)"
-@@ -120,14 +121,14 @@ test_ip6gretap()
- 
- test_gretap_mac()
- {
--	test_span_gre_mac gt4 ingress ip "mirror to gretap"
--	test_span_gre_mac gt4 egress ip "mirror to gretap"
-+	test_span_gre_mac gt4 ingress "mirror to gretap"
-+	test_span_gre_mac gt4 egress "mirror to gretap"
- }
- 
- test_ip6gretap_mac()
- {
--	test_span_gre_mac gt6 ingress ipv6 "mirror to ip6gretap"
--	test_span_gre_mac gt6 egress ipv6 "mirror to ip6gretap"
-+	test_span_gre_mac gt6 ingress "mirror to ip6gretap"
-+	test_span_gre_mac gt6 egress "mirror to ip6gretap"
- }
- 
- test_all()
 -- 
-2.19.2
-
+Anton R. Ivanov
+Cambridgegreys Limited. Registered in England. Company Number 10273661
+https://www.cambridgegreys.com/
