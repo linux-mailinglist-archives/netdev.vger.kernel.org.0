@@ -2,130 +2,242 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id D141C159458
-	for <lists+netdev@lfdr.de>; Tue, 11 Feb 2020 17:06:17 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2EB13159621
+	for <lists+netdev@lfdr.de>; Tue, 11 Feb 2020 18:27:48 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730746AbgBKQGL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 11 Feb 2020 11:06:11 -0500
-Received: from mail-il1-f199.google.com ([209.85.166.199]:40208 "EHLO
-        mail-il1-f199.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729908AbgBKQGL (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 11 Feb 2020 11:06:11 -0500
-Received: by mail-il1-f199.google.com with SMTP id m18so9897345ill.7
-        for <netdev@vger.kernel.org>; Tue, 11 Feb 2020 08:06:10 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
-        bh=Jdoz05JAAw+9K6HAuWNyOVTPMvhxyYRmEKIP8cTLjUA=;
-        b=jtGbqlHCWDFTHQWJ2oGM3i6drq0Kx11Su67yqPcqHo8zoZlRL49LCpjpg/97HqHubt
-         tr18a+JpOTmfUOGxnICFE1KutqxDNVyS8xzyc3B0EaMFmIxBjApts5vO7ZEHqWAjwHGD
-         IPR768gbg2JGUgITFSYeFR3AQt7aYTKqDN5W2d2T8xqzadNxNCCYM1kQe72uzSUrEMKr
-         jWR/iz7gdXZUyVKQ7Boo4t4D7YVw+2X3HQH9Dniqhp4dZ/eBsAWkeIomKS9GOJhq87lZ
-         RG5XBIsAoLvmUc0GGk00a3lvRkbZZlnBsbMLiiw2dlZS+u9u6ap4v1474dbFRZbyJOc3
-         D9nw==
-X-Gm-Message-State: APjAAAVHlNdug5z36D1elWv0JdcoaOuMsWmDgCAUI7ny0Cpbi3p0GZcb
-        99Sfb7ofUXA8UoK1GCPXErriKy04TaxAhwZEp6reGrXJdNQe
-X-Google-Smtp-Source: APXvYqynHf3OEs4Q7nFiEkAHlhoE3vw/BAvA5frqHvj6nn+PEKRsD7ZEggL5lc2dfMXJ9M0izXdgr3AaxDjhk4SZAOJOBt9p3tCz
+        id S1729299AbgBKR1q (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 11 Feb 2020 12:27:46 -0500
+Received: from bombadil.infradead.org ([198.137.202.133]:45868 "EHLO
+        bombadil.infradead.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727785AbgBKR1q (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 11 Feb 2020 12:27:46 -0500
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=bombadil.20170209; h=Content-Transfer-Encoding:
+        Content-Type:In-Reply-To:MIME-Version:Date:Message-ID:From:References:To:
+        Subject:Sender:Reply-To:Cc:Content-ID:Content-Description;
+        bh=XN3k80jAjBnLXnZHypuHoeyUQPQKU2tTkCZKngcR1wk=; b=jriBwzahpX1iiNuiycukvzVifg
+        2Pfz1MXNXxRaIHdRaUuF/sAHZjzv7WfYrKic0p0CB1We6+llzKq2o8pl330TIZYc4KSfvi+gLTpdB
+        RYdiJxD80QCEWXTKB9LPn5iSW83n6b88Vu5q/a73TRs2GYDp7Tm7KaqpxyZdbqrZSuoDa2DEXZ6SZ
+        3k+C8dX2F8uLv5zE5gEkCgcbUCirmlXsKEvvvMGXz5TJFyyfsWJfFTv/W+zRflCddWa8eaDVh05DT
+        rgf+TSo908vHSRyktlZs4OR2FYgV1mQbQoC+o1xIxPanz/h2aE2jLknS/ftSnfs3+iY+xlmmTalnp
+        1g6ZccEA==;
+Received: from [2603:3004:32:9a00::c450]
+        by bombadil.infradead.org with esmtpsa (Exim 4.92.3 #3 (Red Hat Linux))
+        id 1j1ZK6-0008OA-38; Tue, 11 Feb 2020 17:27:46 +0000
+Subject: Re: [PATCH, net-next] net: page_pool: Add documentation on page_pool
+ API
+To:     Ilias Apalodimas <ilias.apalodimas@linaro.org>, brouer@redhat.com,
+        lorenzo@kernel.org, davem@davemloft.net, netdev@vger.kernel.org
+References: <20200211154227.1169600-1-ilias.apalodimas@linaro.org>
+From:   Randy Dunlap <rdunlap@infradead.org>
+Message-ID: <25360a12-90ce-39ac-4956-8591a8c4eb74@infradead.org>
+Date:   Tue, 11 Feb 2020 09:22:21 -0800
+User-Agent: Mozilla/5.0 (X11; Linux i686; rv:68.0) Gecko/20100101
+ Thunderbird/68.4.1
 MIME-Version: 1.0
-X-Received: by 2002:a02:cd0d:: with SMTP id g13mr15627399jaq.110.1581437170301;
- Tue, 11 Feb 2020 08:06:10 -0800 (PST)
-Date:   Tue, 11 Feb 2020 08:06:10 -0800
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <000000000000c54420059e4f08ff@google.com>
-Subject: WARNING in dev_change_net_namespace
-From:   syzbot <syzbot+830c6dbfc71edc4f0b8f@syzkaller.appspotmail.com>
-To:     andriin@fb.com, ast@kernel.org, bpf@vger.kernel.org,
-        daniel@iogearbox.net, davem@davemloft.net, dsahern@gmail.com,
-        hawk@kernel.org, jiri@mellanox.com, johannes.berg@intel.com,
-        john.fastabend@gmail.com, kafai@fb.com, kuba@kernel.org,
-        linux-kernel@vger.kernel.org, mkubecek@suse.cz,
-        netdev@vger.kernel.org, songliubraving@fb.com,
-        syzkaller-bugs@googlegroups.com, yhs@fb.com
-Content-Type: text/plain; charset="UTF-8"
+In-Reply-To: <20200211154227.1169600-1-ilias.apalodimas@linaro.org>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello,
+Hi,
 
-syzbot found the following crash on:
+Here are some doc comments for you...
 
-HEAD commit:    0a679e13 Merge branch 'for-5.6-fixes' of git://git.kernel...
-git tree:       upstream
-console output: https://syzkaller.appspot.com/x/log.txt?x=15142701e00000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=6780df5a5f208964
-dashboard link: https://syzkaller.appspot.com/bug?extid=830c6dbfc71edc4f0b8f
-compiler:       clang version 10.0.0 (https://github.com/llvm/llvm-project/ c2443155a0fb245c8f17f2c1c72b6ea391e86e81)
+On 2/11/20 7:42 AM, Ilias Apalodimas wrote:
+> Add documentation explaining the basic functionality and design
+> principles of the API
+> 
+> Signed-off-by: Ilias Apalodimas <ilias.apalodimas@linaro.org>
+> ---
+>  Documentation/networking/page_pool.rst | 153 +++++++++++++++++++++++++
+>  1 file changed, 153 insertions(+)
+>  create mode 100644 Documentation/networking/page_pool.rst
+> 
+> diff --git a/Documentation/networking/page_pool.rst b/Documentation/networking/page_pool.rst
+> new file mode 100644
+> index 000000000000..e143339e4c80
+> --- /dev/null
+> +++ b/Documentation/networking/page_pool.rst
+> @@ -0,0 +1,153 @@
+> +=============
+> +Page Pool API
+> +=============
+> +
+> +The page_pool allocator is optimized for the XDP mode that uses one frame 
+> +per-page, but it can fallback on the regular page allocator APIs.
+> +
+> +Basic use involve replacing alloc_pages() calls with the
+> +page_pool_alloc_pages() call.  Drivers should use page_pool_dev_alloc_pages() 
+> +replacing dev_alloc_pages().
+> +
+> +API keeps track of in-flight pages, in-order to let API user know
 
-Unfortunately, I don't have any reproducer for this crash yet.
+                                       in order
 
-IMPORTANT: if you fix the bug, please add the following tag to the commit:
-Reported-by: syzbot+830c6dbfc71edc4f0b8f@syzkaller.appspotmail.com
+> +when it is safe to free a page_pool object.  Thus, API users
+> +must run page_pool_release_page() when a page is leaving the page_pool or
+> +call page_pool_put_page() where appropriate in order to maintain correct
+> +accounting.
+> +
+> +API user must call page_pool_put_page() once on a page, as it
+> +will either recycle the page, or in case of refcnt > 1, it will
+> +release the DMA mapping and in-flight state accounting.
+> +
+> +Architecture overview
+> +=====================
+> +
+> +.. code-block:: none
+> +
+> +    +------------------+
+> +    |       Driver     | 
+> +    +------------------+
+> +            ^ 
+> +            |
+> +            |
+> +            |
+> +            v
+> +    +--------------------------------------------+
+> +    |                request memory              | 
+> +    +--------------------------------------------+
+> +        ^                                  ^
+> +        |                                  |
+> +        | Pool empty                       | Pool has entries
+> +        |                                  |
+> +        v                                  v
+> +    +-----------------------+     +------------------------+       
+> +    | alloc (and map) pages |     |  get page from cache   |
+> +    +-----------------------+     +------------------------+
+> +                                    ^                    ^
+> +                                    |                    |
+> +                                    | cache available    | No entries, refill
+> +                                    |                    | from ptr-ring
+> +                                    |                    |
+> +                                    v                    v
+> +                          +-----------------+     +------------------+  
+> +                          |     Fast cache  |     |  ptr-ring cache  | 
+> +                          +-----------------+     +------------------+
+> +
+> +API interface
+> +=============
+> +The number of pools created **must** match the number of hardware queues
+> +unless hardware restrictions make that impossible. This would otherwise beat the
+> +purpose of page pool, which is allocate pages fast from cache without locking.
+> +This lockless guarantee naturally comes from running under a NAPI softirq.
+> +The protection doesn't strictly has to be NAPI, any guarantee that allocating a
 
-RDX: 0000000000000000 RSI: 0000000020000080 RDI: 0000000000000004
-RBP: 000000000075bfc8 R08: 0000000000000000 R09: 0000000000000000
-R10: 0000000000000000 R11: 0000000000000246 R12: 0000000000000007
-R13: 00000000000009cb R14: 00000000004cb3dd R15: 0000000000000016
-------------[ cut here ]------------
-WARNING: CPU: 0 PID: 24839 at net/core/dev.c:10108 dev_change_net_namespace+0x155f/0x16b0 net/core/dev.c:10108
-Kernel panic - not syncing: panic_on_warn set ...
-CPU: 0 PID: 24839 Comm: syz-executor.4 Not tainted 5.6.0-rc1-syzkaller #0
-Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
-Call Trace:
- __dump_stack lib/dump_stack.c:77 [inline]
- dump_stack+0x1fb/0x318 lib/dump_stack.c:118
- panic+0x264/0x7a9 kernel/panic.c:221
- __warn+0x209/0x210 kernel/panic.c:582
- report_bug+0x1b6/0x2f0 lib/bug.c:195
- fixup_bug arch/x86/kernel/traps.c:174 [inline]
- do_error_trap+0xcf/0x1c0 arch/x86/kernel/traps.c:267
- do_invalid_op+0x36/0x40 arch/x86/kernel/traps.c:286
- invalid_op+0x23/0x30 arch/x86/entry/entry_64.S:1027
-RIP: 0010:dev_change_net_namespace+0x155f/0x16b0 net/core/dev.c:10108
-Code: b7 f9 02 01 48 c7 c7 5d 66 e6 88 48 c7 c6 b4 42 04 89 ba 25 27 00 00 31 c0 e8 6d a6 dc fa 0f 0b e9 0d eb ff ff e8 a1 e6 0a fb <0f> 0b e9 2f fe ff ff e8 95 e6 0a fb c6 05 05 b7 f9 02 01 48 c7 c7
-RSP: 0018:ffffc90001ae7140 EFLAGS: 00010246
-RAX: ffffffff866c18df RBX: 00000000fffffff4 RCX: 0000000000040000
-RDX: ffffc90012028000 RSI: 000000000003ffff RDI: 0000000000040000
-RBP: ffffc90001ae7240 R08: ffffffff866c1700 R09: fffffbfff1406318
-R10: fffffbfff1406318 R11: 0000000000000000 R12: ffff8880918d2b60
-R13: ffff8880918d20b8 R14: ffffc90001ae71e8 R15: ffffc90001ae71e0
- do_setlink+0x196/0x3880 net/core/rtnetlink.c:2501
- __rtnl_newlink net/core/rtnetlink.c:3252 [inline]
- rtnl_newlink+0x1509/0x1c00 net/core/rtnetlink.c:3377
- rtnetlink_rcv_msg+0x889/0xd40 net/core/rtnetlink.c:5438
- netlink_rcv_skb+0x19e/0x3e0 net/netlink/af_netlink.c:2477
- rtnetlink_rcv+0x1c/0x20 net/core/rtnetlink.c:5456
- netlink_unicast_kernel net/netlink/af_netlink.c:1302 [inline]
- netlink_unicast+0x766/0x920 net/netlink/af_netlink.c:1328
- netlink_sendmsg+0xa2b/0xd40 net/netlink/af_netlink.c:1917
- sock_sendmsg_nosec net/socket.c:652 [inline]
- sock_sendmsg net/socket.c:672 [inline]
- ____sys_sendmsg+0x4f7/0x7f0 net/socket.c:2343
- ___sys_sendmsg net/socket.c:2397 [inline]
- __sys_sendmsg+0x1ed/0x290 net/socket.c:2430
- __do_sys_sendmsg net/socket.c:2439 [inline]
- __se_sys_sendmsg net/socket.c:2437 [inline]
- __x64_sys_sendmsg+0x7f/0x90 net/socket.c:2437
- do_syscall_64+0xf7/0x1c0 arch/x86/entry/common.c:294
- entry_SYSCALL_64_after_hwframe+0x49/0xbe
-RIP: 0033:0x45b3b9
-Code: ad b6 fb ff c3 66 2e 0f 1f 84 00 00 00 00 00 66 90 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 0f 83 7b b6 fb ff c3 66 2e 0f 1f 84 00 00 00 00
-RSP: 002b:00007f483611ac78 EFLAGS: 00000246 ORIG_RAX: 000000000000002e
-RAX: ffffffffffffffda RBX: 00007f483611b6d4 RCX: 000000000045b3b9
-RDX: 0000000000000000 RSI: 0000000020000080 RDI: 0000000000000004
-RBP: 000000000075bfc8 R08: 0000000000000000 R09: 0000000000000000
-R10: 0000000000000000 R11: 0000000000000246 R12: 0000000000000007
-R13: 00000000000009cb R14: 00000000004cb3dd R15: 0000000000000016
-Kernel Offset: disabled
-Rebooting in 86400 seconds..
+                                   have to be NAPI;
 
+> +page will cause no race-conditions is enough.
 
----
-This bug is generated by a bot. It may contain errors.
-See https://goo.gl/tpsmEJ for more information about syzbot.
-syzbot engineers can be reached at syzkaller@googlegroups.com.
+                      race conditions
 
-syzbot will keep track of this bug report. See:
-https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
+> +
+> +* page_pool_create(): Create a pool.
+> +    * flags:      PP_FLAG_DMA_MAP, PP_FLAG_DMA_SYNC_DEV
+
+what about 'order'?  is it optional?
+
+> +    * pool_size:  size of the ptr_ring
+> +    * nid:        preferred NUMA node for allocation
+> +    * dev:        struct device. Used on DMA operations
+> +    * dma_dir:    DMA direction
+> +    * max_len:    max DMA sync memory size
+> +    * offset:     DMA address offset
+> +
+> +* page_pool_put_page(): The outcome of this depends on the page refcnt. If the
+> +  driver uses refcnt > 1 this will unmap the page. If the pool object is
+> +  responsible for DMA operations and account for the in-flight counting. 
+
+Hm, above is not a sentence and it ends with a space character.
+Several lines end with a space character.  :(
+
+> +  If the refcnt is 1, the allocator owns the page and will try to recycle and 
+> +  sync it to be re-used by the device using dma_sync_single_range_for_device().
+> +
+> +* page_pool_release_page(): Unmap the page (if mapped) and account for it on
+> +  inflight counters.
+
+inflight is spelled as in-flight earlier.  Just choose one way, please.
+
+> +
+> +* page_pool_dev_alloc_pages(): Get a page from the page allocator or page_pool 
+> +  caches.
+> +
+> +* page_pool_get_dma_addr(): Retrieve the stored DMA address.
+> +
+> +* page_pool_get_dma_dir(): Retrieve the stored DMA direction.
+> +
+> +* page_pool_recycle_direct(): Recycle the page immediately. Must be used under
+> +  NAPI context
+> +
+> +Coding examples
+> +===============
+> +
+> +Registration
+> +------------
+> +
+> +.. code-block:: c
+> +
+> +    /* Page pool registration */
+> +    struct page_pool_params pp_params = { 0 };
+> +    struct xdp_rxq_info xdp_rxq;
+> +    int err;
+> +
+> +    pp_params.order = 0;
+> +    /* internal DMA mapping in page_pool */
+> +    pp_params.flags = PP_FLAG_DMA_MAP;
+> +    pp_params.pool_size = DESC_NUM;
+> +    pp_params.nid = NUMA_NO_NODE;
+> +    pp_params.dev = priv->dev;
+> +    pp_params.dma_dir = xdp_prog ? DMA_BIDIRECTIONAL : DMA_FROM_DEVICE;
+> +    page_pool = page_pool_create(&pp_params);
+> +
+> +    err = xdp_rxq_info_reg(&xdp_rxq, ndev, 0);
+> +    if (err)
+> +        goto err_out;
+> +    
+> +    err = xdp_rxq_info_reg_mem_model(&xdp_rxq, MEM_TYPE_PAGE_POOL, page_pool);
+> +    if (err)
+> +        goto err_out;
+> +    
+> +NAPI poller
+> +-----------
+> +
+> +
+> +.. code-block:: c
+> +
+> +    /* NAPI Rx poller */
+> +    enum dma_data_direction dma_dir;
+> +
+> +    dma_dir = page_pool_get_dma_dir(dring->page_pool);
+> +    while (done < budget) {
+> +        if (some error)
+> +            page_pool_recycle_direct(page_pool, page);
+> +        if (packet_is_xdp) {
+> +            if XDP_DROP:
+> +                page_pool_recycle_direct(page_pool, page);
+> +        } else (packet_is_skb) {
+> +            page_pool_release_page(page_pool, page);
+> +            new_page = page_pool_dev_alloc_pages(page_pool);
+> +        }
+> +    }
+> +    
+> +Driver unload
+> +-------------
+> +
+> +.. code-block:: c
+> +    
+> +    /* Driver unload */
+> +    page_pool_put_page(page_pool, page, false);
+> +    xdp_rxq_info_unreg(&xdp_rxq);
+> +    page_pool_destroy(page_pool);
+> 
+
+thanks.
+-- 
+~Randy
