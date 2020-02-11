@@ -2,146 +2,141 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 84B78159983
-	for <lists+netdev@lfdr.de>; Tue, 11 Feb 2020 20:14:01 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 60E1215999D
+	for <lists+netdev@lfdr.de>; Tue, 11 Feb 2020 20:21:30 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731560AbgBKTOA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 11 Feb 2020 14:14:00 -0500
-Received: from mail-qk1-f196.google.com ([209.85.222.196]:42126 "EHLO
-        mail-qk1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729934AbgBKTN7 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 11 Feb 2020 14:13:59 -0500
-Received: by mail-qk1-f196.google.com with SMTP id q15so11220504qke.9;
-        Tue, 11 Feb 2020 11:13:59 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:date:to:cc:subject:message-id:references:mime-version
-         :content-disposition:content-transfer-encoding:in-reply-to;
-        bh=d1W30zHQdiQkj5IyypchYVwItXRzGT2oAJPS35EbEQ8=;
-        b=fLsbjOU+hlAXFHNCScMBjf2nbVfIcoHTSMBR103UbL4IQ0k3uojgEBSHD0i6BIiS4h
-         J+QLLh8QagnZGfvRoVSmNqRwlS2ETL9t26/320ZWrjNQ8NC+mpfPZkCIz2LR1w5w8DKV
-         x/H/8RLFvHQGcZcbvgU7puhM8kQqrmR/lZ3gU2FSlAtwwxc41d+n0kYlsRtZ6gHOURKi
-         /D3JEZqNTZMMuCWHHAKhQKxEvDwthHePURahSrl3q1aDdWBZUQ5tPXrgK59YepI5VuaL
-         KM7hY6iESLsNzDBPeTdt3U7dDpx3egyXmRyN5bXlI6FX6Ibmuwxel9vID0CVUC2voT4h
-         9y4A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:date:to:cc:subject:message-id:references
-         :mime-version:content-disposition:content-transfer-encoding
-         :in-reply-to;
-        bh=d1W30zHQdiQkj5IyypchYVwItXRzGT2oAJPS35EbEQ8=;
-        b=Dx8DlRlCkAElKcJUc5CWimaZ7X819/Iu6h0lphI9wEXUEQIvSbhshQ93XWk0CM9DNP
-         snnZINJI/eG2J8+poao9SR0yygEETfBMUi0+z2uj/twQPB71m49FW1BnDCcQn1aySiyZ
-         v980zWUBNri1v4nppSUOFLoyOMfVrEntC+zea2U4sIn4Ui1+QMcLV5OxZQeTqhetHnj8
-         Rk2BJY26hfYeUgA3+aBN7wkzJwGTm9TsMEUHM5qZloK25M20bJDx7ch9xQV99N1R+Nl6
-         X+1GmhzTQSROO7vRtuM6DNrD1tpapyguQGPTZnlpyKbMqvyi6OUQA64SFbvtyD5kBJyR
-         Nr6Q==
-X-Gm-Message-State: APjAAAUKxNcWakPYxGKpA3Fb59DnxJd1xkcFXRSlcbvj1rtoKijO3naT
-        uoBKxHfnZOZ0sUIbFL/NERY=
-X-Google-Smtp-Source: APXvYqwI0G5bVWqS6HCpjd/UFLoG4amTwVDRrFkCIwicIOMZYe4RIk0doKcl/eoVWQTuSiPJ5FfT5Q==
-X-Received: by 2002:a37:b201:: with SMTP id b1mr7518397qkf.111.1581448438262;
-        Tue, 11 Feb 2020 11:13:58 -0800 (PST)
-Received: from quaco.ghostprotocols.net ([177.195.209.176])
-        by smtp.gmail.com with ESMTPSA id c8sm2452358qkk.37.2020.02.11.11.13.57
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 11 Feb 2020 11:13:57 -0800 (PST)
-From:   Arnaldo Carvalho de Melo <arnaldo.melo@gmail.com>
-X-Google-Original-From: Arnaldo Carvalho de Melo <acme@kernel.org>
-Received: by quaco.ghostprotocols.net (Postfix, from userid 1000)
-        id 2503140A7D; Tue, 11 Feb 2020 16:13:47 -0300 (-03)
-Date:   Tue, 11 Feb 2020 16:13:47 -0300
-To:     Jiri Olsa <jolsa@kernel.org>
-Cc:     Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>, netdev@vger.kernel.org,
-        bpf@vger.kernel.org, Andrii Nakryiko <andriin@fb.com>,
-        Yonghong Song <yhs@fb.com>, Song Liu <songliubraving@fb.com>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        David Miller <davem@redhat.com>,
-        =?iso-8859-1?Q?Bj=F6rn_T=F6pel?= <bjorn.topel@intel.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Jesper Dangaard Brouer <hawk@kernel.org>
-Subject: Re: [PATCH 00/14] bpf: Add trampoline and dispatcher to
- /proc/kallsyms
-Message-ID: <20200211191347.GH3416@kernel.org>
-References: <20200208154209.1797988-1-jolsa@kernel.org>
+        id S1731621AbgBKTVY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 11 Feb 2020 14:21:24 -0500
+Received: from mga14.intel.com ([192.55.52.115]:52862 "EHLO mga14.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1729800AbgBKTVX (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 11 Feb 2020 14:21:23 -0500
+X-Amp-Result: SKIPPED(no attachment in message)
+X-Amp-File-Uploaded: False
+Received: from fmsmga006.fm.intel.com ([10.253.24.20])
+  by fmsmga103.fm.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 11 Feb 2020 11:21:22 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.70,428,1574150400"; 
+   d="scan'208";a="433791170"
+Received: from vcostago-desk1.jf.intel.com (HELO vcostago-desk1) ([10.54.70.26])
+  by fmsmga006.fm.intel.com with ESMTP; 11 Feb 2020 11:21:21 -0800
+From:   Vinicius Costa Gomes <vinicius.gomes@intel.com>
+To:     Murali Karicheri <m-karicheri2@ti.com>,
+        Vladimir Oltean <olteanv@gmail.com>
+Cc:     Po Liu <po.liu@nxp.com>,
+        "davem\@davemloft.net" <davem@davemloft.net>,
+        "hauke.mehrtens\@intel.com" <hauke.mehrtens@intel.com>,
+        "gregkh\@linuxfoundation.org" <gregkh@linuxfoundation.org>,
+        "allison\@lohutok.net" <allison@lohutok.net>,
+        "tglx\@linutronix.de" <tglx@linutronix.de>,
+        "hkallweit1\@gmail.com" <hkallweit1@gmail.com>,
+        "saeedm\@mellanox.com" <saeedm@mellanox.com>,
+        "andrew\@lunn.ch" <andrew@lunn.ch>,
+        "f.fainelli\@gmail.com" <f.fainelli@gmail.com>,
+        "alexandru.ardelean\@analog.com" <alexandru.ardelean@analog.com>,
+        "jiri\@mellanox.com" <jiri@mellanox.com>,
+        "ayal\@mellanox.com" <ayal@mellanox.com>,
+        "pablo\@netfilter.org" <pablo@netfilter.org>,
+        "linux-kernel\@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "netdev\@vger.kernel.org" <netdev@vger.kernel.org>,
+        "simon.horman\@netronome.com" <simon.horman@netronome.com>,
+        Claudiu Manoil <claudiu.manoil@nxp.com>,
+        Vladimir Oltean <vladimir.oltean@nxp.com>,
+        Alexandru Marginean <alexandru.marginean@nxp.com>,
+        Xiaoliang Yang <xiaoliang.yang_1@nxp.com>,
+        Roy Zang <roy.zang@nxp.com>, Mingkai Hu <mingkai.hu@nxp.com>,
+        Jerry Huang <jerry.huang@nxp.com>, Leo Li <leoyang.li@nxp.com>
+Subject: Re: [v1,net-next, 1/2] ethtool: add setting frame preemption of traffic classes
+In-Reply-To: <70deb628-d7bc-d2a3-486d-d3e53854c06e@ti.com>
+References: <20191127094517.6255-1-Po.Liu@nxp.com> <87v9p93a2s.fsf@linux.intel.com> <9b13a47e-8ca3-66b0-063c-798a5fa71149@ti.com> <CA+h21hqk2pCfrQg5kC6HzmL=eEqJXjuRsu+cVkGsEi8OXGpKJA@mail.gmail.com> <87d0bajc3l.fsf@linux.intel.com> <70deb628-d7bc-d2a3-486d-d3e53854c06e@ti.com>
+Date:   Tue, 11 Feb 2020 11:22:56 -0800
+Message-ID: <877e0tx71r.fsf@linux.intel.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20200208154209.1797988-1-jolsa@kernel.org>
-X-Url:  http://acmel.wordpress.com
+Content-Type: text/plain
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Em Sat, Feb 08, 2020 at 04:41:55PM +0100, Jiri Olsa escreveu:
-> hi,
-> this patchset adds trampoline and dispatcher objects
-> to be visible in /proc/kallsyms. The last patch also
-> adds sorting for all bpf objects in /proc/kallsyms.
+Murali Karicheri <m-karicheri2@ti.com> writes:
 
-This will allow those to appear in profiles, right? That would be
-interesting to explicitely state, i.e. the _why_ of this patch, not just
-the _what_.
+> We are still working to send a patch for taprio offload on our hardware
+> and it may take a while to get to this. So if someone can help to add
+> the required kernel/driver interface for this, that will be great!
 
-Thanks,
+Will add this to my todo list. But if anyone else has the spare cycles
+feel free to have a go at it.
 
-- Arnaldo
- 
->   $ sudo cat /proc/kallsyms | tail -20
->   ...
->   ffffffffa050f000 t bpf_prog_5a2b06eab81b8f51    [bpf]
->   ffffffffa0511000 t bpf_prog_6deef7357e7b4530    [bpf]
->   ffffffffa0542000 t bpf_trampoline_13832 [bpf]
->   ffffffffa0548000 t bpf_prog_96f1b5bf4e4cc6dc_mutex_lock [bpf]
->   ffffffffa0572000 t bpf_prog_d1c63e29ad82c4ab_bpf_prog1  [bpf]
->   ffffffffa0585000 t bpf_prog_e314084d332a5338__dissect   [bpf]
->   ffffffffa0587000 t bpf_prog_59785a79eac7e5d2_mutex_unlock       [bpf]
->   ffffffffa0589000 t bpf_prog_d0db6e0cac050163_mutex_lock [bpf]
->   ffffffffa058d000 t bpf_prog_d8f047721e4d8321_bpf_prog2  [bpf]
->   ffffffffa05df000 t bpf_trampoline_25637 [bpf]
->   ffffffffa05e3000 t bpf_prog_d8f047721e4d8321_bpf_prog2  [bpf]
->   ffffffffa05e5000 t bpf_prog_3b185187f1855c4c    [bpf]
->   ffffffffa05e7000 t bpf_prog_d8f047721e4d8321_bpf_prog2  [bpf]
->   ffffffffa05eb000 t bpf_prog_93cebb259dd5c4b2_do_sys_open        [bpf]
->   ffffffffa0677000 t bpf_dispatcher_xdp   [bpf]
-> 
-> thanks,
-> jirka
-> 
-> 
-> ---
-> Björn Töpel (1):
->       bpf: Add bpf_trampoline_ name prefix for DECLARE_BPF_DISPATCHER
-> 
-> Jiri Olsa (13):
->       x86/mm: Rename is_kernel_text to __is_kernel_text
->       bpf: Add struct bpf_ksym
->       bpf: Add name to struct bpf_ksym
->       bpf: Add lnode list node to struct bpf_ksym
->       bpf: Add bpf_kallsyms_tree tree
->       bpf: Move bpf_tree add/del from bpf_prog_ksym_node_add/del
->       bpf: Separate kallsyms add/del functions
->       bpf: Add bpf_ksym_add/del functions
->       bpf: Re-initialize lnode in bpf_ksym_del
->       bpf: Rename bpf_tree to bpf_progs_tree
->       bpf: Add trampolines to kallsyms
->       bpf: Add dispatchers to kallsyms
->       bpf: Sort bpf kallsyms symbols
-> 
->  arch/x86/mm/init_32.c   |  14 ++++++----
->  include/linux/bpf.h     |  54 ++++++++++++++++++++++++++------------
->  include/linux/filter.h  |  13 +++-------
->  kernel/bpf/core.c       | 182 +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++--------------------------------
->  kernel/bpf/dispatcher.c |   6 +++++
->  kernel/bpf/trampoline.c |  23 ++++++++++++++++
->  kernel/events/core.c    |   4 +--
->  net/core/filter.c       |   5 ++--
->  8 files changed, 219 insertions(+), 82 deletions(-)
-> 
+>
+>>>>       - ConfigChangeError - Error in configuration (AdminBaseTime <
+>>>>         CurrentTime)
+>>>
+>>> This can be exported similarly.
+>> 
+>> In my view, having this as a "runtime" error is not useful, as we can
+>> verify this at configuration time.
+>
+> Looks like this is not an error per 802.1Q standard if I understood it
+> correctly.
+>
+> This is what I see.
+> =======================================================================
+>  From 802.1Q 2018, 8.6.9.1.1 SetCycleStartTime()
+>
+> If AdminBaseTime is set to the same time in the past in all bridges and
+> end stations, OperBaseTime is always in the past, and all cycles start
+> synchronized. Using AdminBaseTime in the past is appropriate when you
+> can start schedules prior to starting the application that uses the
+> schedules. Use of AdminBaseTime in the future is intended to change a
+> currently running schedule in all bridges and end stations to a new
+> schedule at a future time. Using AdminBaseTime in the future is
+> appropriate when schedules must be changed without stopping the
+> application
+> ========================================================================
+>
+
+What I meant here is the case that I already have an "oper" schedule
+running, so my "oper->base_time" is in the past, and I try to add an
+"admin" schedule with a "base_time" also in the past. What's the
+expected behavior in this case? The text about stopping/starting
+applications doesn't seem to apply to the way the tc subsystem interacts
+with the applications.
+
+>> 
+>>>
+>>>>       - SupportedListMax - Maximum supported Admin/Open shed list.
+>>>>
+>>>> Is there a plan to export these from driver through tc show or such
+>>>> command? The reason being, there would be applications developed to
+>>>> manage configuration/schedule of TSN nodes that would requires these
+>>>> information from the node. So would need a support either in tc or
+>>>> some other means to retrieve them from hardware or driver. That is my
+>>>> understanding...
+>>>>
+>> 
+>> Hm, now I understamd what you meant here...
+>> 
+>>>
+>>> Not sure what answer you expect to receive for "is there any plan".
+>>> You can go ahead and propose something, as long as it is reasonably
+>>> useful to have.
+>> 
+>> ... if this is indeed useful, perhaps one way to do is to add a subcommand
+>> to TC_SETUP_QDISC_TAPRIO, so we can retrieve the stats/information we want
+>> from the driver. Similar to what cls_flower does.
+>> 
+>
+> What I understand is that there will be some work done to allow auto
+> configuration of TSN nodes from user space and that would need access to
+> all or some of the above parameters along with tc command to configure
+> the same. May be a open source project for this or some custom
+> application? Any such projects existing??
+
+Yeah, this is a big missing piece for TSN. I've heard 'netopeer2' and
+'sysrepo' mentioned when similar questions were asked, but I have still
+to take a look at them and see what's missing. (Or if they are the right
+tool for the job)
+
 
 -- 
-
-- Arnaldo
+Vinicius
