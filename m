@@ -2,118 +2,59 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 9B4C5158A8E
-	for <lists+netdev@lfdr.de>; Tue, 11 Feb 2020 08:42:48 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 405C9158AFE
+	for <lists+netdev@lfdr.de>; Tue, 11 Feb 2020 09:03:18 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727722AbgBKHmp (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 11 Feb 2020 02:42:45 -0500
-Received: from ivanoab7.miniserver.com ([37.128.132.42]:42908 "EHLO
-        www.kot-begemot.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726219AbgBKHmp (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 11 Feb 2020 02:42:45 -0500
-Received: from tun252.jain.kot-begemot.co.uk ([192.168.18.6] helo=jain.kot-begemot.co.uk)
-        by www.kot-begemot.co.uk with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <anton.ivanov@cambridgegreys.com>)
-        id 1j1QBs-0007Vn-1k; Tue, 11 Feb 2020 07:42:40 +0000
-Received: from sleer.kot-begemot.co.uk ([192.168.3.72])
-        by jain.kot-begemot.co.uk with esmtps (TLS1.3:ECDHE_RSA_AES_128_GCM_SHA256:128)
-        (Exim 4.92)
-        (envelope-from <anton.ivanov@cambridgegreys.com>)
-        id 1j1QBp-0007Nw-Mr; Tue, 11 Feb 2020 07:42:39 +0000
-Subject: Re: [PATCH] virtio: Work around frames incorrectly marked as gso
-To:     Jason Wang <jasowang@redhat.com>, netdev@vger.kernel.org
-Cc:     linux-um@lists.infradead.org, mst@redhat.com,
-        virtualization@lists.linux-foundation.org
-References: <20191209104824.17059-1-anton.ivanov@cambridgegreys.com>
- <57230228-7030-c65f-a24f-910ca52bbe9e@cambridgegreys.com>
- <f78bfe6e-2ffc-3734-9618-470f1afea0c6@redhat.com>
-From:   Anton Ivanov <anton.ivanov@cambridgegreys.com>
-Organization: Cambridge Greys
-Message-ID: <918222d9-816a-be70-f8af-b8dfcb586240@cambridgegreys.com>
-Date:   Tue, 11 Feb 2020 07:42:37 +0000
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.4.1
+        id S1727901AbgBKIDP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 11 Feb 2020 03:03:15 -0500
+Received: from mail-ua1-f65.google.com ([209.85.222.65]:42005 "EHLO
+        mail-ua1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727613AbgBKIDP (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 11 Feb 2020 03:03:15 -0500
+Received: by mail-ua1-f65.google.com with SMTP id p2so2081751uao.9
+        for <netdev@vger.kernel.org>; Tue, 11 Feb 2020 00:03:14 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:from:date:message-id:subject:to;
+        bh=IP1qcBtUVW99xkVH2L4lN++bJQ5pAvrdSWHuwzkX3tw=;
+        b=ltwfpTA/3ZKKaArw+EyfKf4nd891ZCDIJtWamb5Gw76ufZUXN9jCwBLCtk7gtydQWI
+         JLJ5Zs1Abmdkvw52heettOKN+a5yPhUXeGdn1XTW8XwRf39N0qOA+l2a+Hg13irfI5RD
+         8ljkuWKp4Lth5QJfMtDDdHALJWTM+8F5xizbBvbgfwCweI8r8Uvqs5LfNrNa8j7z0BF+
+         dM21c1mpmln+HekycS8RAFUi6wJUMlbKw7h72pUOrS3NJ6MLGJOT6oRyaIw74z6nLvaU
+         pvMUx4JyRRUoQYplWa9Chp20ARM4FuUKF9INZ+bVZr5rlulKu2MbN+ZQBOvEyJNRF5o+
+         rNpg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:from:date:message-id:subject:to;
+        bh=IP1qcBtUVW99xkVH2L4lN++bJQ5pAvrdSWHuwzkX3tw=;
+        b=XJpAOJP9S9oPbCl75NmPcgG1055idQvGH6pyuZ0v2DKNP4bEpOZfUbNxApJExw40Ey
+         wkuL7U5U2WS7VgPJRxdLaMpeKU3U+9D3ydb0q3tTAOZgVes4f/DFonUWpHoZwffG/Ouz
+         CFYjxukStC4lbe+HeaVwSnGDk02/MoEZElx3r5lsPCBWeOE72ESgcckthi3MP18a/DzZ
+         7O9+rXv6rXbhF5ZJNUjLCvJxDkHb4hTbYMV0ICb5Qdv1v7gzoamNP4t5yipvLlGmjG8s
+         X4fZXX0xMSgCf23Ve7+qscutG1w2N4bctJUqyoVS+XOxIgbMW++mnwfDkZT2NqEv1xNu
+         Imtw==
+X-Gm-Message-State: APjAAAW88+E2PGvT6rBzPagYl5Z2/9s5GN6ialRU73o30Eg4hQe5oysC
+        z5JfUjHFwHGz4o/Q+zQduX8Sjqbvar80CcoYzzI=
+X-Google-Smtp-Source: APXvYqwChe75i6dPiUTX0AQ9qSqIqLlI9/DAlNW3rYj2Q6DmmUtAwUT8FS3MAZvQlJcjIZ0Hqhg5m7POt2P9T7D6VSg=
+X-Received: by 2002:ab0:45c7:: with SMTP id u65mr3186051uau.109.1581408194283;
+ Tue, 11 Feb 2020 00:03:14 -0800 (PST)
 MIME-Version: 1.0
-In-Reply-To: <f78bfe6e-2ffc-3734-9618-470f1afea0c6@redhat.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 8bit
-X-Spam-Score: -1.0
-X-Spam-Score: -1.0
-X-Clacks-Overhead: GNU Terry Pratchett
+Received: by 2002:a05:6102:2424:0:0:0:0 with HTTP; Tue, 11 Feb 2020 00:03:13
+ -0800 (PST)
+From:   Fabio verde <fabioverde060@gmail.com>
+Date:   Tue, 11 Feb 2020 09:03:13 +0100
+Message-ID: <CAAPJqJWy8hjWePpyfCVM8wp+TrzCwbZrFwgS09hYdi_MtERqZg@mail.gmail.com>
+Subject: Urgent
+To:     fabioverde060 <fabioverde060@gmail.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 11/02/2020 02:51, Jason Wang wrote:
-> 
-> On 2020/2/11 上午12:55, Anton Ivanov wrote:
->>
->>
->> On 09/12/2019 10:48, anton.ivanov@cambridgegreys.com wrote:
->>> From: Anton Ivanov <anton.ivanov@cambridgegreys.com>
->>>
->>> Some of the frames marked as GSO which arrive at
->>> virtio_net_hdr_from_skb() have no GSO_TYPE, no
->>> fragments (data_len = 0) and length significantly shorter
->>> than the MTU (752 in my experiments).
->>>
->>> This is observed on raw sockets reading off vEth interfaces
->>> in all 4.x and 5.x kernels I tested.
->>>
->>> These frames are reported as invalid while they are in fact
->>> gso-less frames.
->>>
->>> This patch marks the vnet header as no-GSO for them instead
->>> of reporting it as invalid.
->>>
->>> Signed-off-by: Anton Ivanov <anton.ivanov@cambridgegreys.com>
->>> ---
->>>   include/linux/virtio_net.h | 8 ++++++--
->>>   1 file changed, 6 insertions(+), 2 deletions(-)
->>>
->>> diff --git a/include/linux/virtio_net.h b/include/linux/virtio_net.h
->>> index 0d1fe9297ac6..d90d5cff1b9a 100644
->>> --- a/include/linux/virtio_net.h
->>> +++ b/include/linux/virtio_net.h
->>> @@ -112,8 +112,12 @@ static inline int virtio_net_hdr_from_skb(const 
->>> struct sk_buff *skb,
->>>               hdr->gso_type = VIRTIO_NET_HDR_GSO_TCPV4;
->>>           else if (sinfo->gso_type & SKB_GSO_TCPV6)
->>>               hdr->gso_type = VIRTIO_NET_HDR_GSO_TCPV6;
->>> -        else
->>> -            return -EINVAL;
->>> +        else {
->>> +            if (skb->data_len == 0)
->>> +                hdr->gso_type = VIRTIO_NET_HDR_GSO_NONE;
->>> +            else
->>> +                return -EINVAL;
->>> +        }
->>>           if (sinfo->gso_type & SKB_GSO_TCP_ECN)
->>>               hdr->gso_type |= VIRTIO_NET_HDR_GSO_ECN;
->>>       } else
->>>
->>
->> ping.
->>
-> 
-> Do you mean gso_size is set but gso_type is not? Looks like a bug 
-> elsewhere.
-> 
-> Thanks
-> 
-> 
-Yes.
+Good day , my name is Fabio Verde, i sent you a mail and there was no
+response , please confirm that you did get this mail for more details.
 
-I could not trace it where it is coming from.
+Regards.
 
-I see it when doing recvmmsg on raw sockets in the UML vector network 
-drivers.
-
-
--- 
-Anton R. Ivanov
-Cambridgegreys Limited. Registered in England. Company Number 10273661
-https://www.cambridgegreys.com/
+Fabio Verde
