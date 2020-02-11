@@ -2,62 +2,57 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 5DDAA158CAA
-	for <lists+netdev@lfdr.de>; Tue, 11 Feb 2020 11:25:43 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3AD97158CB3
+	for <lists+netdev@lfdr.de>; Tue, 11 Feb 2020 11:32:12 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728376AbgBKKZk (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 11 Feb 2020 05:25:40 -0500
-Received: from us-smtp-2.mimecast.com ([207.211.31.81]:57654 "EHLO
-        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1728284AbgBKKZk (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 11 Feb 2020 05:25:40 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1581416738;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=MaKO/4RzA2khe3y4lY7ppPIXFRN7e9gTeNdzJG/BwUs=;
-        b=O3q3uOKgqAmBcms7jJItIXuXikdp4QKfHH/X8FCqfaSlOdF0grwoYJ202CpDY2A58ZxTrD
-        0f9P0TXkaWPeU/ojiyTljCzpJGoIRj+NUwpBret3adn1QfwAGFqhN/0cICWRwZ/HbOZCNk
-        LA1bdYfRg3SffMMouAg60ENXTX9bDes=
-Received: from mail-wr1-f72.google.com (mail-wr1-f72.google.com
- [209.85.221.72]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-383-fmH5fYGAMiml45Chl9Rm8g-1; Tue, 11 Feb 2020 05:25:35 -0500
-X-MC-Unique: fmH5fYGAMiml45Chl9Rm8g-1
-Received: by mail-wr1-f72.google.com with SMTP id j4so6622684wrs.13
-        for <netdev@vger.kernel.org>; Tue, 11 Feb 2020 02:25:35 -0800 (PST)
+        id S1728312AbgBKKcK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 11 Feb 2020 05:32:10 -0500
+Received: from mail-pl1-f176.google.com ([209.85.214.176]:46770 "EHLO
+        mail-pl1-f176.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727805AbgBKKcK (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 11 Feb 2020 05:32:10 -0500
+Received: by mail-pl1-f176.google.com with SMTP id y8so4086280pll.13
+        for <netdev@vger.kernel.org>; Tue, 11 Feb 2020 02:32:10 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=AyB66NTdq7yhWz2AFMXQKr3S67on8v3ZkrNHdXM+tzE=;
+        b=Mfl5x80uxOkKtCtfeM0FiW685byJ37gX42wier6gqJtgdlFiCaPaDCDs57aRg4xdSo
+         8InMOBGab2PrUhUVZrQoywZfiNM2ByPC3PK+KRq5ut9++buasRlczoS0WdzfxYrOpjE/
+         HfSMitPYdnnroRWm8heq8HUm5Rpek2Cv19MmF1nOLrx04dWGlZO/gwCYP88nuUXnxUoz
+         HZGHjtqmObAPvG7/q94Ke4MWs9FrV5dxsJnOpV34FediTZ5A8nWH7Zsz2YcXXqAb2aIr
+         NbgKodoT0TNGACn4LSfZDILO4ykbN53K4/izZPbyg6BZofLTgPHBAP3LLUoeuIv6sKzK
+         0aWg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
          :content-transfer-encoding;
-        bh=MaKO/4RzA2khe3y4lY7ppPIXFRN7e9gTeNdzJG/BwUs=;
-        b=o+XvClqI4u9kTCi8t52QW2ukM7yPYmwJhu5bGMtN28nC5oLVCg22lRI8KmeI/XSevY
-         f1dK1+XvmLoqFhxGcUSyfD/S4UQogz3qcCP+nYjUPe42WSrtCXTGvVNJwMmpF5pdwXwY
-         N4dsWZskgrtnAkeCzKUjtb2DxwMUUsFNkcLeT4OPq1tFYMk4L8FhNto+3kStMPEMzUqk
-         OYUwpSgWT4V+L96pgvrug/pvbTUwjnR2n7JlMBOP3fEeL6sO4ZAXY9YiK6O6dMAFSyZV
-         B06n1kr8jOni7dJs6HSVFMpcjuN3Jxfk5lRilxTB7nrKuWK5qlt/9BME1VISsTogKCl/
-         CObw==
-X-Gm-Message-State: APjAAAV0AYn6gvU1Svn4eVR0E8XXWotVnnLvuGdMd5i/3jMu7wjgsK+8
-        XNkbVI5ylS6Dfep7YqV6QzVLaSwBPCvgbEfiVz6V2AJy07gIPS+Jt11rbVaNgpX0ghC/GVP9iH2
-        EdLnhtZNN7qGEy2Go
-X-Received: by 2002:a1c:41c4:: with SMTP id o187mr4787126wma.24.1581416734369;
-        Tue, 11 Feb 2020 02:25:34 -0800 (PST)
-X-Google-Smtp-Source: APXvYqwz0zddOWlFD9KufcFvIJHpG41yJOjdgVve70lwTZtnuC30FkQUxWHW8bBIOybJAmc0mxf4Zg==
-X-Received: by 2002:a1c:41c4:: with SMTP id o187mr4787101wma.24.1581416734107;
-        Tue, 11 Feb 2020 02:25:34 -0800 (PST)
-Received: from steredhat.redhat.com (host209-4-dynamic.27-79-r.retail.telecomitalia.it. [79.27.4.209])
-        by smtp.gmail.com with ESMTPSA id c4sm3076513wml.7.2020.02.11.02.25.33
+        bh=AyB66NTdq7yhWz2AFMXQKr3S67on8v3ZkrNHdXM+tzE=;
+        b=Cuu1xzKTLteYWhdcfM6t89iw4fjjE5MEWcVrFnlUC7BEDU39FRLI0EbKALVneSao6m
+         /reS36HLzB0LHzA/haRc1hhPyT+a8zCjDoIzq/jJ3Sm619VXhROoJCunYdRgd1bW2Hau
+         WM66BoM247SuuiHh6Fid374DYmDReeqGvGfzt9Su5YhxCgTblss+qu1JcZDEDVVIhv1u
+         50DuQt4GzVndqKBdv1LXZaHVYlU7/UEFfNVSN5Qlgz7GJtAlGf5lFzBqFgw6Af1GlXaa
+         Rje5Wr7eGcukuYL2cKCaP02SrJoRENqkhMP3aiuFIBqPrtTtv6xMByJpCn2et2eYpNzN
+         krUw==
+X-Gm-Message-State: APjAAAUR1rtElLopx9OHptgT45haQzN8D9CA6a7yUr7V+uO/LV14Lpmo
+        oRiT4iKVQJq/heONOyp3wXgK1wOxEU0=
+X-Google-Smtp-Source: APXvYqzO3ggnJthwsP1Pyz6aHh9EI/+UhAKmBVLfk/D0iI2Fe9B/wnQUFKlIiX6Rmyvlo/GiiufuYg==
+X-Received: by 2002:a17:90a:8a08:: with SMTP id w8mr2856696pjn.125.1581417129446;
+        Tue, 11 Feb 2020 02:32:09 -0800 (PST)
+Received: from dhcp-12-139.nay.redhat.com ([209.132.188.80])
+        by smtp.gmail.com with ESMTPSA id w128sm3311858pgb.53.2020.02.11.02.32.07
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 11 Feb 2020 02:25:33 -0800 (PST)
-From:   Stefano Garzarella <sgarzare@redhat.com>
-To:     mtk.manpages@gmail.com
-Cc:     Stefan Hajnoczi <stefanha@redhat.com>, netdev@vger.kernel.org,
-        linux-man@vger.kernel.org, Dexuan Cui <decui@microsoft.com>,
-        Jorgen Hansen <jhansen@vmware.com>
-Subject: [PATCH] vsock.7: add VMADDR_CID_LOCAL description
-Date:   Tue, 11 Feb 2020 11:25:32 +0100
-Message-Id: <20200211102532.56795-1-sgarzare@redhat.com>
-X-Mailer: git-send-email 2.24.1
+        Tue, 11 Feb 2020 02:32:09 -0800 (PST)
+From:   Hangbin Liu <liuhangbin@gmail.com>
+To:     netdev@vger.kernel.org
+Cc:     Tom Herbert <tom@herbertland.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Hangbin Liu <liuhangbin@gmail.com>
+Subject: [PATCH net] net/flow_dissector: remove unexist field description
+Date:   Tue, 11 Feb 2020 18:31:54 +0800
+Message-Id: <20200211103154.3943-1-liuhangbin@gmail.com>
+X-Mailer: git-send-email 2.19.2
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
@@ -65,58 +60,26 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Linux 5.6 added the new well-known VMADDR_CID_LOCAL for
-local communication.
+@thoff has moved to struct flow_dissector_key_control.
 
-This patch explains how to use it and remove the legacy
-VMADDR_CID_RESERVED no longer available.
-
-Signed-off-by: Stefano Garzarella <sgarzare@redhat.com>
+Fixes: 42aecaa9bb2b ("net: Get skb hash over flow_keys structure")
+Signed-off-by: Hangbin Liu <liuhangbin@gmail.com>
 ---
- man7/vsock.7 | 16 ++++++++++++++--
- 1 file changed, 14 insertions(+), 2 deletions(-)
+ include/net/flow_dissector.h | 1 -
+ 1 file changed, 1 deletion(-)
 
-diff --git a/man7/vsock.7 b/man7/vsock.7
-index c5ffcf07d..d7dc37dcc 100644
---- a/man7/vsock.7
-+++ b/man7/vsock.7
-@@ -127,8 +127,8 @@ There are several special addresses:
- means any address for binding;
- .B VMADDR_CID_HYPERVISOR
- (0) is reserved for services built into the hypervisor;
--.B VMADDR_CID_RESERVED
--(1) must not be used;
-+.B VMADDR_CID_LOCAL
-+(1) is the well-known address for local communication (loopback);
- .B VMADDR_CID_HOST
- (2)
- is the well-known address of the host.
-@@ -164,6 +164,16 @@ Consider using
- .B VMADDR_CID_ANY
- when binding instead of getting the local CID with
- .BR IOCTL_VM_SOCKETS_GET_LOCAL_CID .
-+.SS Local communication
-+The
-+.B VMADDR_CID_LOCAL
-+(1) can be used to address itself. In this case all packets are redirected
-+to the same host that generated them. Useful for testing and debugging.
-+.PP
-+The local CID obtained with
-+.BR IOCTL_VM_SOCKETS_GET_LOCAL_CID
-+can be used for the same purpose, but it is preferable to use
-+.B VMADDR_CID_LOCAL .
- .SH ERRORS
- .TP
- .B EACCES
-@@ -222,6 +232,8 @@ are valid.
- Support for VMware (VMCI) has been available since Linux 3.9.
- KVM (virtio) is supported since Linux 4.8.
- Hyper-V is supported since Linux 4.14.
-+.PP
-+VMADDR_CID_LOCAL is supported since Linux 5.6.
- .SH SEE ALSO
- .BR bind (2),
- .BR connect (2),
+diff --git a/include/net/flow_dissector.h b/include/net/flow_dissector.h
+index d93017a7ce5c..e9391e877f9a 100644
+--- a/include/net/flow_dissector.h
++++ b/include/net/flow_dissector.h
+@@ -33,7 +33,6 @@ enum flow_dissect_ret {
+ 
+ /**
+  * struct flow_dissector_key_basic:
+- * @thoff: Transport header offset
+  * @n_proto: Network header protocol (eg. IPv4/IPv6)
+  * @ip_proto: Transport header protocol (eg. TCP/UDP)
+  */
 -- 
-2.24.1
+2.19.2
 
