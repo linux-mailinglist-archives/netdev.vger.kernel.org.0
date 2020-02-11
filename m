@@ -2,94 +2,86 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 1A953158675
-	for <lists+netdev@lfdr.de>; Tue, 11 Feb 2020 01:15:36 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 12A7D15881E
+	for <lists+netdev@lfdr.de>; Tue, 11 Feb 2020 03:07:58 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727566AbgBKAPb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 10 Feb 2020 19:15:31 -0500
-Received: from mail-pf1-f193.google.com ([209.85.210.193]:45912 "EHLO
-        mail-pf1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727455AbgBKAPa (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 10 Feb 2020 19:15:30 -0500
-Received: by mail-pf1-f193.google.com with SMTP id 2so4504937pfg.12;
-        Mon, 10 Feb 2020 16:15:30 -0800 (PST)
+        id S1727728AbgBKCH4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 10 Feb 2020 21:07:56 -0500
+Received: from mail-lf1-f68.google.com ([209.85.167.68]:34453 "EHLO
+        mail-lf1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727592AbgBKCH4 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 10 Feb 2020 21:07:56 -0500
+Received: by mail-lf1-f68.google.com with SMTP id l18so5813461lfc.1
+        for <netdev@vger.kernel.org>; Mon, 10 Feb 2020 18:07:55 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=r5ohSbrtojTxCSFCkg8rYW9zCxgtMfpQZkLpXgHPTpk=;
-        b=KQylGPxdiaGvk+7Y+4BneWCRdxmvASR00418Jv7gHTm/EZxZkAZt8Hj7qbRh3JOGFy
-         oxl2x5m6yV6iMc5YLIlOjEox0c90qBOT+fwVam8DvtExHZ1JkoYBwPjGtqNhiRcZzwQq
-         TtY0mLuruewCig3yfcTFRMCAesZI8xyGIGReVInSiRC1XvxvpQq6veSmY1sNTWCG4Fwl
-         LLMc6e0KVLz+vy3Umv/5RTzT1ubEHIv95CCcWRKM8oKJcjqI1cX1Y8UcJSx9wMbYbBi7
-         H3aZXfZWPc9EK8I+72g6uwnDPYF0MUz4QJtn6UjV0uyHk3G1avz4AXDxhznkFQy9s/5o
-         JNFg==
+        d=linux-foundation.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=6ZmktFtWuNRr4MBQJWn7k52Pxjy+kjDuDMoIZxcgghA=;
+        b=JShucc8r6D0hpeQT1Nnrm1g5ANmN7Qo/kC9ja9eYheqbwRWtW6iBI7iAF7MqgaTDXe
+         EhrqvIPUINQoMoQ8goy1qNA3ZRXhiyGuval5jBA1G2OdAVfZKMH31Bd7+08ReOWRrocf
+         QaEnZGmB7acwDOJTWolplby3wrYLVP5sMqcdc=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=r5ohSbrtojTxCSFCkg8rYW9zCxgtMfpQZkLpXgHPTpk=;
-        b=BWJkqB8kaXTQ6vRF2tfYkpBrwH5Aal6vL1eAr01oX1eJZmRWaMdlXeSb+bT5Wxq0ev
-         lnD7SH0TK7edouZG0a82L94GS6l2gAz2Ls9shKGUmebYbR7m7jI+MTkaeidC9DY8wEpG
-         pTiTkiBx9KioZ4HyKMvP9bNN7bEpqUhzP8XgsBjlqh/RC//rXTR5kmyy5lKSZZCqUIcK
-         appJ9QczHPEmclmdmhUVhdF6Z7vAy7Wk/Pu7eH4x1Jh1xN3b0L8S2WP7ze8C5wUWVu87
-         jcxchbeZgZedXllDkuiwxdvOR86zNa8zoG/A+DqQnXwTI4a3FwFFz2yxM1HAq7Ghl+ZB
-         fa7Q==
-X-Gm-Message-State: APjAAAWuyuIpZdTjeu2Lf6XZxEOFiZd6kCV23/J4MXkrVK1roLjQvTLf
-        DYorImDf4/koNJ1Pv9bat+s=
-X-Google-Smtp-Source: APXvYqwaI1pmqbF0HQJmCdNPwqmI2s1WtrWOIQeTyY/IRieg6LQrDFvOhcDN4OionXTTqMh7Vs1K2g==
-X-Received: by 2002:a65:5549:: with SMTP id t9mr4124065pgr.439.1581380129926;
-        Mon, 10 Feb 2020 16:15:29 -0800 (PST)
-Received: from ast-mbp ([2620:10d:c090:200::2:685c])
-        by smtp.gmail.com with ESMTPSA id z26sm1201161pgu.80.2020.02.10.16.15.28
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Mon, 10 Feb 2020 16:15:29 -0800 (PST)
-Date:   Mon, 10 Feb 2020 16:15:27 -0800
-From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
-To:     Palmer Dabbelt <palmerdabbelt@google.com>
-Cc:     Bjorn Topel <bjorn.topel@gmail.com>, daniel@iogearbox.net,
-        ast@kernel.org, zlim.lnx@gmail.com, catalin.marinas@arm.com,
-        will@kernel.org, kafai@fb.com, songliubraving@fb.com, yhs@fb.com,
-        andriin@fb.com, shuah@kernel.org, netdev@vger.kernel.org,
-        bpf@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-kernel@vger.kernel.org, linux-kselftest@vger.kernel.org,
-        clang-built-linux@googlegroups.com, kernel-team@android.com
-Subject: Re: [PATCH 4/4] arm64: bpf: Elide some moves to a0 after calls
-Message-ID: <20200211001526.xbfwdnpjqrg3ed6q@ast-mbp>
-References: <20200128021145.36774-1-palmerdabbelt@google.com>
- <20200128021145.36774-5-palmerdabbelt@google.com>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=6ZmktFtWuNRr4MBQJWn7k52Pxjy+kjDuDMoIZxcgghA=;
+        b=hNWCLWkJFVDrlt2IliKxm/BGv3Ku+/yjTaZDXO+PFrSuRxm0qHcI+LZxTYY33vCpin
+         sXM0h0ZTsBaK2fluRga88wJ47W+XqQOrr8Ul5xkn/fYLDkCdMdR840ygLJMDT+n7WWvm
+         /YrryXNCgb2hMlb8smZOv6OcVas286G7BlyCnTR+rbI9O48IdMNcSRbhuiujnz7KYd/a
+         SGJtIyJ2KK0e2ubV5TrAfEeBYFbDfgrmF+rup7eITDQAZGRC2THSmgcZwN8gWo+jE6h3
+         UGr3FeOtgJQuabFqW9efeoi56q933Ue1zWa1bUlym1aHPCGs0+b8IlzcRRNl5ML/NPvc
+         Dgcw==
+X-Gm-Message-State: APjAAAUoWTbrch8vqSvkuGL0yKQRrU6CpJkxhVWNssuC1Eurrm91XCaz
+        f5wckOAFGWu6eqpS3rEqQWFHG/EQEp4=
+X-Google-Smtp-Source: APXvYqxDTzxP+3OXkxHUgaIpqqwzRFi+TEKUyen/2XSY34rXPJzhhFJSlC3Bha8Fku1X6h8wUiarGg==
+X-Received: by 2002:a19:c3c2:: with SMTP id t185mr2249290lff.56.1581386872785;
+        Mon, 10 Feb 2020 18:07:52 -0800 (PST)
+Received: from mail-lj1-f170.google.com (mail-lj1-f170.google.com. [209.85.208.170])
+        by smtp.gmail.com with ESMTPSA id w16sm914436lfc.1.2020.02.10.18.07.51
+        for <netdev@vger.kernel.org>
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 10 Feb 2020 18:07:51 -0800 (PST)
+Received: by mail-lj1-f170.google.com with SMTP id v17so9757536ljg.4
+        for <netdev@vger.kernel.org>; Mon, 10 Feb 2020 18:07:51 -0800 (PST)
+X-Received: by 2002:a2e:97cc:: with SMTP id m12mr2637598ljj.241.1581386871172;
+ Mon, 10 Feb 2020 18:07:51 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200128021145.36774-5-palmerdabbelt@google.com>
-User-Agent: NeoMutt/20180223
+References: <20200210010252-mutt-send-email-mst@kernel.org>
+In-Reply-To: <20200210010252-mutt-send-email-mst@kernel.org>
+From:   Linus Torvalds <torvalds@linux-foundation.org>
+Date:   Mon, 10 Feb 2020 18:07:35 -0800
+X-Gmail-Original-Message-ID: <CAHk-=whvPamkPZCyeERbgvmyWhJZhdt37G3ycaeRZgOo1bpVVw@mail.gmail.com>
+Message-ID: <CAHk-=whvPamkPZCyeERbgvmyWhJZhdt37G3ycaeRZgOo1bpVVw@mail.gmail.com>
+Subject: Re: [PULL] vhost: cleanups and fixes
+To:     "Michael S. Tsirkin" <mst@redhat.com>
+Cc:     KVM list <kvm@vger.kernel.org>,
+        virtualization@lists.linux-foundation.org,
+        Netdev <netdev@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        "Cc: stable@vger.kernel.org, david@redhat.com, dverkamp@chromium.org,
+        hch@lst.de, jasowang@redhat.com, liang.z.li@intel.com, mst@redhat.com,
+        tiny.windzz@gmail.com," <wei.w.wang@intel.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Jan 27, 2020 at 06:11:45PM -0800, Palmer Dabbelt wrote:
->  
-> +	/* Handle BPF_REG_0, which may be in the wrong place because the ARM64
-> +	 * ABI doesn't match the BPF ABI for function calls. */
-> +	if (ctx->reg0_in_reg1) {
-> +		/* If we're writing BPF_REG_0 then we don't need to do any
-> +		 * extra work to get the registers back in their correct
-> +		 * locations. */
-> +		if (insn->dst_reg == BPF_REG_0)
-> +			ctx->reg0_in_reg1 = false;
-> +
-> +		/* If we're writing to BPF_REG_1 then we need to save BPF_REG_0
-> +		 * into the correct location if it's still alive, as otherwise
-> +		 * it will be clobbered. */
-> +		if (insn->dst_reg == BPF_REG_1) {
-> +			if (!dead_register(ctx, off + 1, BPF_REG_0))
-> +				emit(A64_MOV(1, A64_R(7), A64_R(0)), ctx);
-> +			ctx->reg0_in_reg1 = false;
-> +		}
-> +	}
+On Sun, Feb 9, 2020 at 10:03 PM Michael S. Tsirkin <mst@redhat.com> wrote:
+>
+>   https://git.kernel.org/pub/scm/linux/kernel/git/mst/vhost.git tags/for_linus
 
-I'm not sure this is correct, since it processes insns as a linear code, but
-there could be jumps in the middle. The logic should be following the control
-flow of the program. The verifier is a better place to do such analysis.
-I don't see how JITs can do it on their own.
+Hmm? Pull request re-send? This already got merged on Friday as commit
+e0f121c5cc2c, as far as I can tell.
+
+It looks like the pr-tracker-bot didn't reply to that old email. Maybe
+because the subject line only says "PULL", not "GIT PULL". But more
+likely because it looks like lore.kernel.org doesn't have a record of
+that email at all.
+
+You might want to check your email settings. You have some odd headers
+(including a completely broken name that has "Cc:" in it in the "To:"
+field).
+
+               Linus
