@@ -2,90 +2,138 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id E27B5159786
-	for <lists+netdev@lfdr.de>; Tue, 11 Feb 2020 19:00:56 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id EC022159848
+	for <lists+netdev@lfdr.de>; Tue, 11 Feb 2020 19:21:03 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731119AbgBKR7O (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 11 Feb 2020 12:59:14 -0500
-Received: from mx0a-00082601.pphosted.com ([67.231.145.42]:59304 "EHLO
-        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1728845AbgBKR7O (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 11 Feb 2020 12:59:14 -0500
-Received: from pps.filterd (m0044012.ppops.net [127.0.0.1])
-        by mx0a-00082601.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 01BHu1Gh002973
-        for <netdev@vger.kernel.org>; Tue, 11 Feb 2020 09:59:13 -0800
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
- : date : message-id : mime-version : content-type; s=facebook;
- bh=zBLUyVl7tED7mwHhxTDFIspZ3ahulNnkoOEM7Uu7GuU=;
- b=gLlmZ+igpU0j9VbMF8jTvX47fvzWDuZYoNzTLteUIQJBRh7iugeJQ8pRS+v12jCGchd4
- Bu+XeQbyNJhfkN9kLku+2sNJFb0qUc7cDcyEgvBNfT5MyTb2/L2X9DL0E+xsF6fQE/Za
- kJN040fSi+rhu9kvurkBr7Cuh0xDZ5MEsq8= 
-Received: from maileast.thefacebook.com ([163.114.130.16])
-        by mx0a-00082601.pphosted.com with ESMTP id 2y3pq3ty8f-5
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT)
-        for <netdev@vger.kernel.org>; Tue, 11 Feb 2020 09:59:13 -0800
-Received: from intmgw002.08.frc2.facebook.com (2620:10d:c0a8:1b::d) by
- mail.thefacebook.com (2620:10d:c0a8:82::c) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.1779.2; Tue, 11 Feb 2020 09:59:12 -0800
-Received: by devbig005.ftw2.facebook.com (Postfix, from userid 6611)
-        id 5D5952941E15; Tue, 11 Feb 2020 09:59:10 -0800 (PST)
-Smtp-Origin-Hostprefix: devbig
-From:   Martin KaFai Lau <kafai@fb.com>
-Smtp-Origin-Hostname: devbig005.ftw2.facebook.com
-To:     <bpf@vger.kernel.org>
-CC:     Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        David Miller <davem@davemloft.net>, <kernel-team@fb.com>,
-        <netdev@vger.kernel.org>
-Smtp-Origin-Cluster: ftw2c04
-Subject: [PATCH bpf] bpf: selftests: Fix error checking on reading the tcp_fastopen sysctl
-Date:   Tue, 11 Feb 2020 09:59:10 -0800
-Message-ID: <20200211175910.3235321-1-kafai@fb.com>
-X-Mailer: git-send-email 2.17.1
-X-FB-Internal: Safe
+        id S1731312AbgBKSUx (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 11 Feb 2020 13:20:53 -0500
+Received: from mail-pg1-f193.google.com ([209.85.215.193]:46867 "EHLO
+        mail-pg1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1730404AbgBKSUu (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 11 Feb 2020 13:20:50 -0500
+Received: by mail-pg1-f193.google.com with SMTP id b35so6123195pgm.13
+        for <netdev@vger.kernel.org>; Tue, 11 Feb 2020 10:20:50 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=4OgG0hetIsP1V38kbC307zOjczZWs0KOp5Ez5Rl0KME=;
+        b=lDSRjevbxM40tz/93zZtEf0l5hvgAJaYkwnSWnpl1y1J058EWn71+v9gGdFqjyE+LM
+         1s4OIdw7yTpcWQTOq78Kzb/qRXieUEXKhZD1e2no6c6b8LIKHiCiOhHk5IQ7CvjD+4ZG
+         iamdeGk/eC+W3+8zZ3SoHfWNLug+eDxbO22PGJxFXTjmO3FyBy9bpuBT9fAD+SJoPWRy
+         swmj5LdJkecykIqqY9Xqa+ITTp8kIdfwQlM67qbKEfKq2cmKZSsVZ+Ghx1T9cJJCeA3s
+         sPO8DhjPO+7NsB6lmFx1DVTzfI3s0fn2XPRQlZb5shxgKYa3Qgijkc12NseHBQcRqo+R
+         LdDw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=4OgG0hetIsP1V38kbC307zOjczZWs0KOp5Ez5Rl0KME=;
+        b=Xq9DwemovcoPuI+5AMNNW+HSxwN45rrQ4gzXLNIaytiRrC04DDrIZjamw0R46Q7fHe
+         IAoqxbfmrf+cY8DNrXISKosUD2+K1GvkRw+yl7pkmpLE2mz6mFCoYlW+CKl2uSL+VZLV
+         X97ZBwR4nY+rR9WsogjpJXxX3SR/YtRkfC97OFZKjxWEbaeinEs24Kx436raFXJIWSph
+         LHyUqceo3P2xx9N/YZjCHN+rIi53VX1YBE1ReZWIErifH/a1VVGYFrKm6wY2/CcfRs67
+         HUDcKzB8/xgP07uuTqTFhem+5BfVOaMPi6SiIpJXhzySKY3Gt2XlbnOJFZ+r85P5gdPy
+         372Q==
+X-Gm-Message-State: APjAAAUR5u1bgUt7nOGI2hmu6vqgB6JYm9Ta4NkIde9ktCD6NyMUD6ni
+        VxUEcQoqXGKvOcM7/SjrFVL0qaT2BK7uVgNbEQg+Fg==
+X-Google-Smtp-Source: APXvYqxMvSkOVcfNtGbDzyRqqzjTst6GjcEty8BqJsis9ObxAC/QNdkqDYmzeMZhO0NEe3Lhmu8jwxwDkyO1K6X7SpM=
+X-Received: by 2002:a62:1615:: with SMTP id 21mr4402234pfw.84.1581445249952;
+ Tue, 11 Feb 2020 10:20:49 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.138,18.0.572
- definitions=2020-02-11_05:2020-02-10,2020-02-11 signatures=0
-X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 adultscore=0
- suspectscore=13 lowpriorityscore=0 bulkscore=0 priorityscore=1501
- spamscore=0 impostorscore=0 clxscore=1015 phishscore=0 mlxlogscore=588
- malwarescore=0 mlxscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2001150001 definitions=main-2002110125
-X-FB-Internal: deliver
+References: <20200128021145.36774-1-palmerdabbelt@google.com> <20200128021145.36774-2-palmerdabbelt@google.com>
+In-Reply-To: <20200128021145.36774-2-palmerdabbelt@google.com>
+From:   Nick Desaulniers <ndesaulniers@google.com>
+Date:   Tue, 11 Feb 2020 18:20:39 +0000
+Message-ID: <CAKwvOdnPu8-0O5kLDY2t=wq1rqWNX7v0CSrRmomPYLA1=BX=GQ@mail.gmail.com>
+Subject: Re: [PATCH 1/4] selftests/bpf: Elide a check for LLVM versions that
+ can't compile it
+To:     Palmer Dabbelt <palmerdabbelt@google.com>
+Cc:     Bjorn Topel <bjorn.topel@gmail.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Alexei Starovoitov <ast@kernel.org>, zlim.lnx@gmail.com,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        Will Deacon <will@kernel.org>, Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        andriin@fb.com, Shuah Khan <shuah@kernel.org>,
+        Network Development <netdev@vger.kernel.org>,
+        bpf@vger.kernel.org,
+        Linux ARM <linux-arm-kernel@lists.infradead.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        "open list:KERNEL SELFTEST FRAMEWORK" 
+        <linux-kselftest@vger.kernel.org>,
+        clang-built-linux <clang-built-linux@googlegroups.com>,
+        kernel-team <kernel-team@android.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-There is a typo in checking the "saved_tcp_fo" and instead
-"saved_tcp_syncookie" is checked again.  This patch fixes it
-and also breaks them into separate if statements such that
-the test will abort asap.
+On Mon, Jan 27, 2020 at 6:14 PM 'Palmer Dabbelt' via Clang Built Linux
+<clang-built-linux@googlegroups.com> wrote:
+>
+> The current stable LLVM BPF backend fails to compile the BPF selftests
+> due to a compiler bug.  The bug has been fixed in trunk, but that fix
+> hasn't landed in the binary packages I'm using yet (Fedora arm64).
+> Without this workaround the tests don't compile for me.
+>
+> This patch triggers a preprocessor warning on LLVM versions that
+> definitely have the bug.  The test may be conservative (ie, I'm not sure
+> if 9.1 will have the fix), but it should at least make the current set
+> of stable releases work together.
 
-Reported-by: David Binderman <dcb314@hotmail.com>
-Signed-off-by: Martin KaFai Lau <kafai@fb.com>
----
- tools/testing/selftests/bpf/prog_tests/select_reuseport.c | 4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
+Do older versions of clang still work? Should there be a lower bounds?
 
-diff --git a/tools/testing/selftests/bpf/prog_tests/select_reuseport.c b/tools/testing/selftests/bpf/prog_tests/select_reuseport.c
-index 098bcae5f827..b577666d028e 100644
---- a/tools/testing/selftests/bpf/prog_tests/select_reuseport.c
-+++ b/tools/testing/selftests/bpf/prog_tests/select_reuseport.c
-@@ -822,8 +822,10 @@ void test_select_reuseport(void)
- 		goto out;
- 
- 	saved_tcp_fo = read_int_sysctl(TCP_FO_SYSCTL);
-+	if (saved_tcp_fo < 0)
-+		goto out;
- 	saved_tcp_syncookie = read_int_sysctl(TCP_SYNCOOKIE_SYSCTL);
--	if (saved_tcp_syncookie < 0 || saved_tcp_syncookie < 0)
-+	if (saved_tcp_syncookie < 0)
- 		goto out;
- 
- 	if (enable_fastopen())
+>
+> See https://reviews.llvm.org/D69438 for more information on the fix.  I
+> obtained the workaround from
+> https://lore.kernel.org/linux-kselftest/aed8eda7-df20-069b-ea14-f06628984566@gmail.com/T/
+>
+> Fixes: 20a9ad2e7136 ("selftests/bpf: add CO-RE relocs array tests")
+> Signed-off-by: Palmer Dabbelt <palmerdabbelt@google.com>
+> ---
+>  .../testing/selftests/bpf/progs/test_core_reloc_arrays.c  | 8 ++++++++
+>  1 file changed, 8 insertions(+)
+>
+> diff --git a/tools/testing/selftests/bpf/progs/test_core_reloc_arrays.c b/tools/testing/selftests/bpf/progs/test_core_reloc_arrays.c
+> index bf67f0fdf743..c9a3e0585a84 100644
+> --- a/tools/testing/selftests/bpf/progs/test_core_reloc_arrays.c
+> +++ b/tools/testing/selftests/bpf/progs/test_core_reloc_arrays.c
+> @@ -40,15 +40,23 @@ int test_core_arrays(void *ctx)
+>         /* in->a[2] */
+>         if (BPF_CORE_READ(&out->a2, &in->a[2]))
+>                 return 1;
+> +#if defined(__clang__) && (__clang_major__ < 10) && (__clang_minor__ < 1)
+> +# warning "clang 9.0 SEGVs on multidimensional arrays, see https://reviews.llvm.org/D69438"
+> +#else
+>         /* in->b[1][2][3] */
+>         if (BPF_CORE_READ(&out->b123, &in->b[1][2][3]))
+>                 return 1;
+> +#endif
+>         /* in->c[1].c */
+>         if (BPF_CORE_READ(&out->c1c, &in->c[1].c))
+>                 return 1;
+> +#if defined(__clang__) && (__clang_major__ < 10) && (__clang_minor__ < 1)
+> +# warning "clang 9.0 SEGVs on multidimensional arrays, see https://reviews.llvm.org/D69438"
+> +#else
+>         /* in->d[0][0].d */
+>         if (BPF_CORE_READ(&out->d00d, &in->d[0][0].d))
+>                 return 1;
+> +#endif
+>
+>         return 0;
+>  }
+> --
+> 2.25.0.341.g760bfbb309-goog
+>
+> --
+> You received this message because you are subscribed to the Google Groups "Clang Built Linux" group.
+> To unsubscribe from this group and stop receiving emails from it, send an email to clang-built-linux+unsubscribe@googlegroups.com.
+> To view this discussion on the web visit https://groups.google.com/d/msgid/clang-built-linux/20200128021145.36774-2-palmerdabbelt%40google.com.
+
+
+
 -- 
-2.17.1
-
+Thanks,
+~Nick Desaulniers
