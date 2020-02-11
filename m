@@ -2,69 +2,88 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 3C4B9158C43
-	for <lists+netdev@lfdr.de>; Tue, 11 Feb 2020 10:59:53 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7275F158CA2
+	for <lists+netdev@lfdr.de>; Tue, 11 Feb 2020 11:24:24 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728156AbgBKJ7v (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 11 Feb 2020 04:59:51 -0500
-Received: from frisell.zx2c4.com ([192.95.5.64]:60433 "EHLO frisell.zx2c4.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728073AbgBKJ7v (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 11 Feb 2020 04:59:51 -0500
-Received: by frisell.zx2c4.com (ZX2C4 Mail Server) with ESMTP id 69e62a04
-        for <netdev@vger.kernel.org>;
-        Tue, 11 Feb 2020 09:58:07 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha1; c=relaxed; d=zx2c4.com; h=mime-version
-        :references:in-reply-to:from:date:message-id:subject:to:cc
-        :content-type; s=mail; bh=z+xzTYIx52HdTTXC1S+sHLaqpJ8=; b=2Hzgsr
-        R9HLUqsAdsoUVAMLvWvSaz/ppXwFwyYIPzg2TlRz6NR/20cmfQypaPeaLZVgD9O8
-        zhgKV7j6pr0L0FHbTh3sAjlx9B32AZnL6NmO9jDWIHy1xpiiD+nMTEnBuStJwu4E
-        kq++2rHx3jY+iMAfYGVfMmRdbAQdPY8rPANnkehOHxMlL5O3GdUgZ9pjfayDcA0N
-        Y7AurFj2Mc5D6itadCbXlEmODuKC2fASQw+AWig3zvpCl+c5IGiO2Er4nFM+kSP/
-        oc1PDsLq0UnAWLjAz1ggeDptVK4RZjMBrQaXjmLkADZ4a8ryujKh7TXTLm7F99LA
-        g86j0ig0Kz0PahoA==
-Received: by frisell.zx2c4.com (ZX2C4 Mail Server) with ESMTPSA id a0eb861f (TLSv1.2:ECDHE-RSA-AES256-GCM-SHA384:256:NO)
-        for <netdev@vger.kernel.org>;
-        Tue, 11 Feb 2020 09:58:07 +0000 (UTC)
-Received: by mail-oi1-f172.google.com with SMTP id v19so12205188oic.12
-        for <netdev@vger.kernel.org>; Tue, 11 Feb 2020 01:59:49 -0800 (PST)
-X-Gm-Message-State: APjAAAV1NDkOO9Cc7f2DS7wZXamyUBgcDcHFFnjkaE5hRnPEhNmHZxTg
-        JbNXzMbWah4/0AozTFpXyxYrnNMm3wZ4ZtgN/yg=
-X-Google-Smtp-Source: APXvYqxWEjj2Uok/48lVZVTZi/03i7PTGXubSRFhPszCoxk4INEbD+ELZt+G+RdYEwNccs4y2hPgHHtt6axubxM0RNg=
-X-Received: by 2002:aca:2109:: with SMTP id 9mr2189132oiz.119.1581415188709;
- Tue, 11 Feb 2020 01:59:48 -0800 (PST)
+        id S1728342AbgBKKYK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 11 Feb 2020 05:24:10 -0500
+Received: from fllv0015.ext.ti.com ([198.47.19.141]:56092 "EHLO
+        fllv0015.ext.ti.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728236AbgBKKYK (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 11 Feb 2020 05:24:10 -0500
+Received: from fllv0035.itg.ti.com ([10.64.41.0])
+        by fllv0015.ext.ti.com (8.15.2/8.15.2) with ESMTP id 01BAO3JI080604;
+        Tue, 11 Feb 2020 04:24:03 -0600
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
+        s=ti-com-17Q1; t=1581416643;
+        bh=IT0XtP14rOcxVvIjEkJLAVhnV8MbpGdBDYqA20Ogvvg=;
+        h=To:CC:From:Subject:Date;
+        b=ieDwTSX3jBi/zU1u4phaOZr/3Ii8HGFTXg5HGFMr7ljayvLceHG8Ur/umMkvypjRh
+         QAQk97bS+itM9Sg0T+qBvIFm/dBtzumU10HinzZarwXkKrmUxTzv/JcfNi8oIXIkIW
+         SvftF7u0/x73WxmsKAgW8ob+31xkdvsU5ZvYCsdk=
+Received: from DLEE114.ent.ti.com (dlee114.ent.ti.com [157.170.170.25])
+        by fllv0035.itg.ti.com (8.15.2/8.15.2) with ESMTP id 01BAO2kT021354;
+        Tue, 11 Feb 2020 04:24:03 -0600
+Received: from DLEE103.ent.ti.com (157.170.170.33) by DLEE114.ent.ti.com
+ (157.170.170.25) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1847.3; Tue, 11
+ Feb 2020 04:24:02 -0600
+Received: from fllv0040.itg.ti.com (10.64.41.20) by DLEE103.ent.ti.com
+ (157.170.170.33) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1847.3 via
+ Frontend Transport; Tue, 11 Feb 2020 04:24:03 -0600
+Received: from [10.250.100.73] (ileax41-snat.itg.ti.com [10.172.224.153])
+        by fllv0040.itg.ti.com (8.15.2/8.15.2) with ESMTP id 01BAO08Y044972;
+        Tue, 11 Feb 2020 04:24:01 -0600
+To:     "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        Petr Mladek <pmladek@suse.com>
+CC:     <linux-rt-users@vger.kernel.org>,
+        Linux ARM <linux-arm-kernel@lists.infradead.org>,
+        netdev <netdev@vger.kernel.org>,
+        Richard Cochran <richardcochran@gmail.com>
+From:   Grygorii Strashko <grygorii.strashko@ti.com>
+Subject: Question about kthread_mod_delayed_work() allowed context
+Message-ID: <cfa886ad-e3b7-c0d2-3ff8-58d94170eab5@ti.com>
+Date:   Tue, 11 Feb 2020 12:23:59 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.2.2
 MIME-Version: 1.0
-References: <20200210141423.173790-1-Jason@zx2c4.com> <20200210141423.173790-2-Jason@zx2c4.com>
- <CAHmME9pa+x_i2b1HJi0Y8+bwn3wFBkM5Mm3bpVaH5z=H=2WJPw@mail.gmail.com>
- <20200210213259.GI2991@breakpoint.cc> <CAHmME9qQ=E1L0XVe=i714AMdpMJQs3zPz=XVKW9Ck6TvGu_Hew@mail.gmail.com>
- <20200210222614.GJ2991@breakpoint.cc>
-In-Reply-To: <20200210222614.GJ2991@breakpoint.cc>
-From:   "Jason A. Donenfeld" <Jason@zx2c4.com>
-Date:   Tue, 11 Feb 2020 10:59:37 +0100
-X-Gmail-Original-Message-ID: <CAHmME9pk8HEFRq_mBeatNbwXTx7UEfiQ_HG_+Lyz7E+80GmbSA@mail.gmail.com>
-Message-ID: <CAHmME9pk8HEFRq_mBeatNbwXTx7UEfiQ_HG_+Lyz7E+80GmbSA@mail.gmail.com>
-Subject: Re: [PATCH v2 net 1/5] icmp: introduce helper for NAT'd source
- address in network device context
-To:     Florian Westphal <fw@strlen.de>
-Cc:     Netdev <netdev@vger.kernel.org>, David Miller <davem@davemloft.net>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset="utf-8"; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Feb 10, 2020 at 11:33 PM Florian Westphal <fw@strlen.de> wrote:
-> I think this is a bit too conservative, f.e. i don't see how
-> ndo-called skbs could be shared (tx path needs to be able to change skb
-> list pointers)?
+Hi All,
 
-Are you *sure* about that? Dave - do you know?
+I'd like to ask question about allowed calling context for kthread_mod_delayed_work().
 
-I'm asking with *asterisks* because I see a few drivers in tree that
-do call skb_share_check from their ndo_start_xmit function. If this
-makes no sense and isn't needed, then I'll send a cleanup series for
-these. And, I'll remove it from icmp_ndo_send for v3, replacing it
-with a `if (WARN_ON(skb_shared(skb_in))) return;`.
+The comment to kthread_mod_delayed_work() says:
 
-Thanks,
-Jason
+  * This function is safe to call from any context including IRQ handler.
+  * See __kthread_cancel_work() and kthread_delayed_work_timer_fn()
+  * for details.
+  */
+
+But it has del_timer_sync() inside which seems can't be called from hard_irq context:
+kthread_mod_delayed_work()
+   |-__kthread_cancel_work()
+      |- del_timer_sync()
+	|- WARN_ON(in_irq() && !(timer->flags & TIMER_IRQSAFE));
+
+My use case is related to PTP processing using PTP auxiliary worker:
+(commit d9535cb7b760 ("ptp: introduce ptp auxiliary worker")):
+  - periodic work A is started and res-schedules itself for every dtX
+  - on IRQ - the work A need to be scheduled immediately
+
+Any advice on how to proceed?
+Can kthread_queue_work() be used even if there is delayed work is
+scheduled already (in general, don't care if work A will be executed one
+more time after timer expiration)?
+
+-- 
+Best regards,
+grygorii
