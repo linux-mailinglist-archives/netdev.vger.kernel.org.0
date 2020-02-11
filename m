@@ -2,131 +2,117 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 9266F158B31
-	for <lists+netdev@lfdr.de>; Tue, 11 Feb 2020 09:20:27 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0A9D3158BB0
+	for <lists+netdev@lfdr.de>; Tue, 11 Feb 2020 10:19:41 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727835AbgBKIUY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 11 Feb 2020 03:20:24 -0500
-Received: from mail-il-dmz.mellanox.com ([193.47.165.129]:44434 "EHLO
+        id S1727707AbgBKJTj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 11 Feb 2020 04:19:39 -0500
+Received: from mail-il-dmz.mellanox.com ([193.47.165.129]:50207 "EHLO
         mellanox.co.il" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S1727613AbgBKIUY (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 11 Feb 2020 03:20:24 -0500
-Received: from Internal Mail-Server by MTLPINE2 (envelope-from raeds@mellanox.com)
-        with ESMTPS (AES256-SHA encrypted); 11 Feb 2020 10:20:21 +0200
-Received: from dev-l-vrt-074.mtl.labs.mlnx (dev-l-vrt-074.mtl.labs.mlnx [10.134.74.1])
-        by labmailer.mlnx (8.13.8/8.13.8) with ESMTP id 01B8KL87013094;
-        Tue, 11 Feb 2020 10:20:21 +0200
-From:   Raed Salem <raeds@mellanox.com>
-To:     steffen.klassert@secunet.com, herbert@gondor.apana.org.au
-Cc:     netdev@vger.kernel.org, kuznet@ms2.inr.ac.ru, davem@davemloft.net,
-        yoshfuji@linux-ipv6.org, Raed Salem <raeds@mellanox.com>
-Subject: [PATCH net-next] ESP: Export esp_output_fill_trailer function
-Date:   Tue, 11 Feb 2020 10:20:02 +0200
-Message-Id: <1581409202-23654-1-git-send-email-raeds@mellanox.com>
-X-Mailer: git-send-email 1.9.4
+        with ESMTP id S1727682AbgBKJTj (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 11 Feb 2020 04:19:39 -0500
+Received: from Internal Mail-Server by MTLPINE2 (envelope-from vladbu@mellanox.com)
+        with ESMTPS (AES256-SHA encrypted); 11 Feb 2020 11:19:37 +0200
+Received: from reg-r-vrt-018-180.mtr.labs.mlnx. (reg-r-vrt-018-180.mtr.labs.mlnx [10.215.1.1])
+        by labmailer.mlnx (8.13.8/8.13.8) with ESMTP id 01B9Jbgt031153;
+        Tue, 11 Feb 2020 11:19:37 +0200
+From:   Vlad Buslov <vladbu@mellanox.com>
+To:     netdev@vger.kernel.org, davem@davemloft.net
+Cc:     jhs@mojatatu.com, xiyou.wangcong@gmail.com, jiri@resnulli.us,
+        pablo@netfilter.org, marcelo.leitner@gmail.com,
+        Vlad Buslov <vladbu@mellanox.com>
+Subject: [PATCH net-next 0/4] Remove rtnl lock dependency from flow_action infra
+Date:   Tue, 11 Feb 2020 11:19:14 +0200
+Message-Id: <20200211091918.20974-1-vladbu@mellanox.com>
+X-Mailer: git-send-email 2.21.0
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The esp fill trailer method is identical for both
-IPv6 and IPv4.
+Currently, TC flow_action infrastructure code obtain rtnl lock before
+accessing action state in tc_setup_flow_action() function and releases
+it afterwards. This behavior is not supposed to impact TC filter
+insertion rate because filling flow_action representation is only a
+small part of creating new filter and expensive operations (hardware
+offload callbacks, classifiers, cls API code that creates chains and
+classifiers instances) already support unlocked execution. However,
+typical vswitch implementation might need to also dump TC filters
+concurrently, for example to age out unused flows or update flow
+counters. TC dump is fully serialized and holds rtnl lock during its
+whole execution in kernel space. As such, it can significantly impact
+concurrent tasks that try to intermittently obtain rtnl lock when
+filling intermediate representation for new filter offload (performance
+evaluation at the end of this mail).
 
-Share the implementation for esp6 and esp to avoid
-code duplication in addition it could be also used
-at various drivers code.
+Refactor flow_action cls API infrastructure and its dependencies to not
+rely on rtnl lock for synchronization. Patch set overview:
 
-Change-Id: Iebb4325fe12ef655a5cd6cb896cf9eed68033979
-Signed-off-by: Raed Salem <raeds@mellanox.com>
-Reviewed-by: Boris Pismenny <borisp@mellanox.com>
-Reviewed-by: Saeed Mahameed <saeedm@mellanox.com>
----
- include/net/esp.h | 16 ++++++++++++++++
- net/ipv4/esp4.c   | 16 ----------------
- net/ipv6/esp6.c   | 16 ----------------
- 3 files changed, 16 insertions(+), 32 deletions(-)
+- Refactor tc_setup_flow_action() to obtain action tcf_lock when
+  accessing action state. Fix its dependencies to not obtain tcf_lock
+  themselves and assume that caller already holds it (needs to be done
+  in same patch to prevent deadlock) and not to call sleeping functions
+  (needs to be done in same patch to prevent "sleeping while atomic"
+  dmesg warnings).
 
-diff --git a/include/net/esp.h b/include/net/esp.h
-index 117652e..9c5637d 100644
---- a/include/net/esp.h
-+++ b/include/net/esp.h
-@@ -11,6 +11,22 @@ static inline struct ip_esp_hdr *ip_esp_hdr(const struct sk_buff *skb)
- 	return (struct ip_esp_hdr *)skb_transport_header(skb);
- }
- 
-+static inline void esp_output_fill_trailer(u8 *tail, int tfclen, int plen, __u8 proto)
-+{
-+	/* Fill padding... */
-+	if (tfclen) {
-+		memset(tail, 0, tfclen);
-+		tail += tfclen;
-+	}
-+	do {
-+		int i;
-+		for (i = 0; i < plen - 2; i++)
-+			tail[i] = i + 1;
-+	} while (0);
-+	tail[plen - 2] = plen - 2;
-+	tail[plen - 1] = proto;
-+}
-+
- struct esp_info {
- 	struct	ip_esp_hdr *esph;
- 	__be64	seqno;
-diff --git a/net/ipv4/esp4.c b/net/ipv4/esp4.c
-index 5c96776..2c7f391 100644
---- a/net/ipv4/esp4.c
-+++ b/net/ipv4/esp4.c
-@@ -209,22 +209,6 @@ static void esp_output_done_esn(struct crypto_async_request *base, int err)
- 	esp_output_done(base, err);
- }
- 
--static void esp_output_fill_trailer(u8 *tail, int tfclen, int plen, __u8 proto)
--{
--	/* Fill padding... */
--	if (tfclen) {
--		memset(tail, 0, tfclen);
--		tail += tfclen;
--	}
--	do {
--		int i;
--		for (i = 0; i < plen - 2; i++)
--			tail[i] = i + 1;
--	} while (0);
--	tail[plen - 2] = plen - 2;
--	tail[plen - 1] = proto;
--}
--
- static int esp_output_udp_encap(struct xfrm_state *x, struct sk_buff *skb, struct esp_info *esp)
- {
- 	int encap_type;
-diff --git a/net/ipv6/esp6.c b/net/ipv6/esp6.c
-index a3b403b..11143d0 100644
---- a/net/ipv6/esp6.c
-+++ b/net/ipv6/esp6.c
-@@ -207,22 +207,6 @@ static void esp_output_done_esn(struct crypto_async_request *base, int err)
- 	esp_output_done(base, err);
- }
- 
--static void esp_output_fill_trailer(u8 *tail, int tfclen, int plen, __u8 proto)
--{
--	/* Fill padding... */
--	if (tfclen) {
--		memset(tail, 0, tfclen);
--		tail += tfclen;
--	}
--	do {
--		int i;
--		for (i = 0; i < plen - 2; i++)
--			tail[i] = i + 1;
--	} while (0);
--	tail[plen - 2] = plen - 2;
--	tail[plen - 1] = proto;
--}
--
- int esp6_output_head(struct xfrm_state *x, struct sk_buff *skb, struct esp_info *esp)
- {
- 	u8 *tail;
+- Refactor action helper functions to require tcf_lock instead of rtnl.
+  Internally, all of the actions already use tcf_lock for
+  synchronization to accommodate unlocked classifier API, so this change
+  relies on already existing functionality.
+
+- Remove rtnl lock and "rtnl_held" argument from tc_setup_flow_action()
+  function.
+
+
+To test the change, multiple concurrent TC instances are invoked with
+following command:
+
+time ls add* | xargs -n 1 -P 100 sudo tc -b
+
+Ten batch files with following typical rules (100k each) are used:
+
+filter add dev ens1f0_0 protocol ip ingress prio 1 handle 1 flower
+	src_mac e4:11:0:0:0:0 dst_mac e4:12:0:0:0:0 src_ip 192.168.111.1
+	dst_ip 192.168.111.2 ip_proto udp dst_port 1 src_port 1 action
+	tunnel_key set id 1 src_ip 2.2.2.2 dst_ip 2.2.2.3 dst_port 4789
+	no_percpu action mirred egress redirect dev vxlan1 no_percpu
+
+TC dump of same device is called in infinite loop from five concurrent
+instances:
+
+while true do tc -s filter show dev $NIC ingress >/dev/null done
+
+Results obtained on current net-next commit 9f68e3655aae ("Merge tag
+'drm-next-2020-01-30' of git://anongit.freedesktop.org/drm/drm"):
+
+               | net-next | this change 
+---------------+----------+-------------
+ TC add        | 6.3s     | 6.3s        
+ TC add + dump | 29.3s    | 6.8s        
+
+Test results confirm significant impact of concurrent TC dump. The
+impact is almost fully mitigated by proposed change (differences can be
+attributed to contention for chain and tp locks between add and dump TC
+instances).
+
+Vlad Buslov (4):
+  net: sched: lock action when translating it to flow_action infra
+  net: sched: refactor police action helpers to require tcf_lock
+  net: sched: refactor ct action helpers to require tcf_lock
+  net: sched: don't take rtnl lock during flow_action setup
+
+ include/net/pkt_cls.h              |  2 +-
+ include/net/tc_act/tc_ct.h         |  6 ++++--
+ include/net/tc_act/tc_police.h     |  6 ++++--
+ include/net/tc_act/tc_tunnel_key.h |  2 +-
+ net/sched/act_sample.c             |  2 --
+ net/sched/cls_api.c                | 25 ++++++++++++-------------
+ net/sched/cls_flower.c             |  6 ++----
+ net/sched/cls_matchall.c           |  4 ++--
+ 8 files changed, 26 insertions(+), 27 deletions(-)
+
 -- 
-1.9.4
+2.21.0
 
