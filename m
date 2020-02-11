@@ -2,64 +2,94 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 581BF1591AF
-	for <lists+netdev@lfdr.de>; Tue, 11 Feb 2020 15:17:20 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 034A61591CC
+	for <lists+netdev@lfdr.de>; Tue, 11 Feb 2020 15:24:45 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729969AbgBKORN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 11 Feb 2020 09:17:13 -0500
-Received: from szxga06-in.huawei.com ([45.249.212.32]:52088 "EHLO huawei.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1728495AbgBKORN (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 11 Feb 2020 09:17:13 -0500
-Received: from DGGEMS408-HUB.china.huawei.com (unknown [172.30.72.58])
-        by Forcepoint Email with ESMTP id 12EAC98FE9F5F2753074;
-        Tue, 11 Feb 2020 22:16:55 +0800 (CST)
-Received: from localhost (10.133.213.239) by DGGEMS408-HUB.china.huawei.com
- (10.3.19.208) with Microsoft SMTP Server id 14.3.439.0; Tue, 11 Feb 2020
- 22:16:45 +0800
-From:   YueHaibing <yuehaibing@huawei.com>
-To:     <linux-net-drivers@solarflare.com>, <ecree@solarflare.com>,
-        <mhabets@solarflare.com>, <davem@davemloft.net>
-CC:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        YueHaibing <yuehaibing@huawei.com>
-Subject: [PATCH net-next] sfc: remove unused variable 'efx_default_channel_type'
-Date:   Tue, 11 Feb 2020 22:16:06 +0800
-Message-ID: <20200211141606.47180-1-yuehaibing@huawei.com>
-X-Mailer: git-send-email 2.10.2.windows.1
+        id S1730111AbgBKOYh (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 11 Feb 2020 09:24:37 -0500
+Received: from mail26.static.mailgun.info ([104.130.122.26]:27804 "EHLO
+        mail26.static.mailgun.info" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1729268AbgBKOYg (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 11 Feb 2020 09:24:36 -0500
+DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org; q=dns/txt;
+ s=smtp; t=1581431076; h=Date: Message-Id: Cc: To: References:
+ In-Reply-To: From: Subject: Content-Transfer-Encoding: MIME-Version:
+ Content-Type: Sender; bh=q1NnbfY5scviQ81WhVjeiiyH3xhw4C/A+lxpopfw2dM=;
+ b=bjYj1LpLfJuMWFJLA7nlLRQ+rF/a3xlz2ZnLZsrZskAk6l2cYax2uWxqWfvOGmxh5BvCrhXA
+ kU9+iIeAe+q20UHhYFNjz6kZDud74illPLgJNCTLR35CYoBonRS9ffrB6B02Tmp78Ef4F/iQ
+ QcH903u4GpDVR80E9Qv9/LxNF3o=
+X-Mailgun-Sending-Ip: 104.130.122.26
+X-Mailgun-Sid: WyJiZjI2MiIsICJuZXRkZXZAdmdlci5rZXJuZWwub3JnIiwgImJlOWU0YSJd
+Received: from smtp.codeaurora.org (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171])
+ by mxa.mailgun.org with ESMTP id 5e42b91f.7f1e67052298-smtp-out-n03;
+ Tue, 11 Feb 2020 14:24:31 -0000 (UTC)
+Received: by smtp.codeaurora.org (Postfix, from userid 1001)
+        id 2B510C4479D; Tue, 11 Feb 2020 14:24:31 +0000 (UTC)
+X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
+        aws-us-west-2-caf-mail-1.web.codeaurora.org
+X-Spam-Level: 
+X-Spam-Status: No, score=0.5 required=2.0 tests=ALL_TRUSTED,MISSING_DATE,
+        MISSING_MID,SPF_NONE autolearn=no autolearn_force=no version=3.4.0
+Received: from potku.adurom.net (88-114-240-156.elisa-laajakaista.fi [88.114.240.156])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        (Authenticated sender: kvalo)
+        by smtp.codeaurora.org (Postfix) with ESMTPSA id E7677C43383;
+        Tue, 11 Feb 2020 14:24:28 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org E7677C43383
+Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
+Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; spf=none smtp.mailfrom=kvalo@codeaurora.org
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.133.213.239]
-X-CFilter-Loop: Reflected
+Content-Transfer-Encoding: 7bit
+Subject: Re: [PATCH] ath11k: Silence clang -Wsometimes-uninitialized in
+ ath11k_update_per_peer_stats_from_txcompl
+From:   Kalle Valo <kvalo@codeaurora.org>
+In-Reply-To: <20200130015905.18610-1-natechancellor@gmail.com>
+References: <20200130015905.18610-1-natechancellor@gmail.com>
+To:     Nathan Chancellor <natechancellor@gmail.com>
+Cc:     ath11k@lists.infradead.org, linux-wireless@vger.kernel.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        clang-built-linux@googlegroups.com,
+        Nathan Chancellor <natechancellor@gmail.com>,
+        ci_notify@linaro.org
+User-Agent: pwcli/0.0.0-git (https://github.com/kvalo/pwcli/) Python/2.7.12
+Message-Id: <20200211142431.2B510C4479D@smtp.codeaurora.org>
+Date:   Tue, 11 Feb 2020 14:24:31 +0000 (UTC)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-drivers/net/ethernet/sfc/efx.c:116:38: warning:
- efx_default_channel_type defined but not used [-Wunused-const-variable=]
+Nathan Chancellor <natechancellor@gmail.com> wrote:
 
-commit 83975485077d ("sfc: move channel alloc/removal code")
-left behind this, remove it.
+> Clang warns a few times (trimmed for brevity):
+> 
+> ../drivers/net/wireless/ath/ath11k/debugfs_sta.c:185:7: warning:
+> variable 'rate_idx' is used uninitialized whenever 'if' condition is
+> false [-Wsometimes-uninitialized]
+> 
+> It is not wrong, rate_idx is only initialized in the first if block.
+> However, this is not necessarily an issue in practice because rate_idx
+> will only be used when initialized because
+> ath11k_accumulate_per_peer_tx_stats only uses rate_idx when flags is not
+> set to RATE_INFO_FLAGS_HE_MCS, RATE_INFO_FLAGS_VHT_MCS, or
+> RATE_INFO_FLAGS_MCS. Still, it is not good to stick uninitialized values
+> into another function so initialize it to zero to prevent any issues
+> down the line.
+> 
+> Fixes: d5c65159f289 ("ath11k: driver for Qualcomm IEEE 802.11ax devices")
+> Link: https://github.com/ClangBuiltLinux/linux/issues/832
+> Reported-by: ci_notify@linaro.org
+> Signed-off-by: Nathan Chancellor <natechancellor@gmail.com>
+> Reviewed-by: Nick Desaulniers <ndesaulniers@google.com>
+> Signed-off-by: Kalle Valo <kvalo@codeaurora.org>
 
-Reported-by: Hulk Robot <hulkci@huawei.com>
-Signed-off-by: YueHaibing <yuehaibing@huawei.com>
----
- drivers/net/ethernet/sfc/efx.c | 1 -
- 1 file changed, 1 deletion(-)
+Patch applied to ath-next branch of ath.git, thanks.
 
-diff --git a/drivers/net/ethernet/sfc/efx.c b/drivers/net/ethernet/sfc/efx.c
-index 4481f21a1f43..256807c28ff7 100644
---- a/drivers/net/ethernet/sfc/efx.c
-+++ b/drivers/net/ethernet/sfc/efx.c
-@@ -113,7 +113,6 @@ MODULE_PARM_DESC(debug, "Bitmapped debugging message enable value");
-  *
-  *************************************************************************/
- 
--static const struct efx_channel_type efx_default_channel_type;
- static void efx_remove_port(struct efx_nic *efx);
- static int efx_xdp_setup_prog(struct efx_nic *efx, struct bpf_prog *prog);
- static int efx_xdp(struct net_device *dev, struct netdev_bpf *xdp);
+df57acc415b1 ath11k: Silence clang -Wsometimes-uninitialized in ath11k_update_per_peer_stats_from_txcompl
+
 -- 
-2.20.1
+https://patchwork.kernel.org/patch/11357331/
 
-
+https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
