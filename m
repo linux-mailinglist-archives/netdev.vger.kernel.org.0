@@ -2,88 +2,121 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 7275F158CA2
-	for <lists+netdev@lfdr.de>; Tue, 11 Feb 2020 11:24:24 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5DDAA158CAA
+	for <lists+netdev@lfdr.de>; Tue, 11 Feb 2020 11:25:43 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728342AbgBKKYK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 11 Feb 2020 05:24:10 -0500
-Received: from fllv0015.ext.ti.com ([198.47.19.141]:56092 "EHLO
-        fllv0015.ext.ti.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728236AbgBKKYK (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 11 Feb 2020 05:24:10 -0500
-Received: from fllv0035.itg.ti.com ([10.64.41.0])
-        by fllv0015.ext.ti.com (8.15.2/8.15.2) with ESMTP id 01BAO3JI080604;
-        Tue, 11 Feb 2020 04:24:03 -0600
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
-        s=ti-com-17Q1; t=1581416643;
-        bh=IT0XtP14rOcxVvIjEkJLAVhnV8MbpGdBDYqA20Ogvvg=;
-        h=To:CC:From:Subject:Date;
-        b=ieDwTSX3jBi/zU1u4phaOZr/3Ii8HGFTXg5HGFMr7ljayvLceHG8Ur/umMkvypjRh
-         QAQk97bS+itM9Sg0T+qBvIFm/dBtzumU10HinzZarwXkKrmUxTzv/JcfNi8oIXIkIW
-         SvftF7u0/x73WxmsKAgW8ob+31xkdvsU5ZvYCsdk=
-Received: from DLEE114.ent.ti.com (dlee114.ent.ti.com [157.170.170.25])
-        by fllv0035.itg.ti.com (8.15.2/8.15.2) with ESMTP id 01BAO2kT021354;
-        Tue, 11 Feb 2020 04:24:03 -0600
-Received: from DLEE103.ent.ti.com (157.170.170.33) by DLEE114.ent.ti.com
- (157.170.170.25) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1847.3; Tue, 11
- Feb 2020 04:24:02 -0600
-Received: from fllv0040.itg.ti.com (10.64.41.20) by DLEE103.ent.ti.com
- (157.170.170.33) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1847.3 via
- Frontend Transport; Tue, 11 Feb 2020 04:24:03 -0600
-Received: from [10.250.100.73] (ileax41-snat.itg.ti.com [10.172.224.153])
-        by fllv0040.itg.ti.com (8.15.2/8.15.2) with ESMTP id 01BAO08Y044972;
-        Tue, 11 Feb 2020 04:24:01 -0600
-To:     "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        Petr Mladek <pmladek@suse.com>
-CC:     <linux-rt-users@vger.kernel.org>,
-        Linux ARM <linux-arm-kernel@lists.infradead.org>,
-        netdev <netdev@vger.kernel.org>,
-        Richard Cochran <richardcochran@gmail.com>
-From:   Grygorii Strashko <grygorii.strashko@ti.com>
-Subject: Question about kthread_mod_delayed_work() allowed context
-Message-ID: <cfa886ad-e3b7-c0d2-3ff8-58d94170eab5@ti.com>
-Date:   Tue, 11 Feb 2020 12:23:59 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.2.2
+        id S1728376AbgBKKZk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 11 Feb 2020 05:25:40 -0500
+Received: from us-smtp-2.mimecast.com ([207.211.31.81]:57654 "EHLO
+        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1728284AbgBKKZk (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 11 Feb 2020 05:25:40 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1581416738;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=MaKO/4RzA2khe3y4lY7ppPIXFRN7e9gTeNdzJG/BwUs=;
+        b=O3q3uOKgqAmBcms7jJItIXuXikdp4QKfHH/X8FCqfaSlOdF0grwoYJ202CpDY2A58ZxTrD
+        0f9P0TXkaWPeU/ojiyTljCzpJGoIRj+NUwpBret3adn1QfwAGFqhN/0cICWRwZ/HbOZCNk
+        LA1bdYfRg3SffMMouAg60ENXTX9bDes=
+Received: from mail-wr1-f72.google.com (mail-wr1-f72.google.com
+ [209.85.221.72]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-383-fmH5fYGAMiml45Chl9Rm8g-1; Tue, 11 Feb 2020 05:25:35 -0500
+X-MC-Unique: fmH5fYGAMiml45Chl9Rm8g-1
+Received: by mail-wr1-f72.google.com with SMTP id j4so6622684wrs.13
+        for <netdev@vger.kernel.org>; Tue, 11 Feb 2020 02:25:35 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=MaKO/4RzA2khe3y4lY7ppPIXFRN7e9gTeNdzJG/BwUs=;
+        b=o+XvClqI4u9kTCi8t52QW2ukM7yPYmwJhu5bGMtN28nC5oLVCg22lRI8KmeI/XSevY
+         f1dK1+XvmLoqFhxGcUSyfD/S4UQogz3qcCP+nYjUPe42WSrtCXTGvVNJwMmpF5pdwXwY
+         N4dsWZskgrtnAkeCzKUjtb2DxwMUUsFNkcLeT4OPq1tFYMk4L8FhNto+3kStMPEMzUqk
+         OYUwpSgWT4V+L96pgvrug/pvbTUwjnR2n7JlMBOP3fEeL6sO4ZAXY9YiK6O6dMAFSyZV
+         B06n1kr8jOni7dJs6HSVFMpcjuN3Jxfk5lRilxTB7nrKuWK5qlt/9BME1VISsTogKCl/
+         CObw==
+X-Gm-Message-State: APjAAAV0AYn6gvU1Svn4eVR0E8XXWotVnnLvuGdMd5i/3jMu7wjgsK+8
+        XNkbVI5ylS6Dfep7YqV6QzVLaSwBPCvgbEfiVz6V2AJy07gIPS+Jt11rbVaNgpX0ghC/GVP9iH2
+        EdLnhtZNN7qGEy2Go
+X-Received: by 2002:a1c:41c4:: with SMTP id o187mr4787126wma.24.1581416734369;
+        Tue, 11 Feb 2020 02:25:34 -0800 (PST)
+X-Google-Smtp-Source: APXvYqwz0zddOWlFD9KufcFvIJHpG41yJOjdgVve70lwTZtnuC30FkQUxWHW8bBIOybJAmc0mxf4Zg==
+X-Received: by 2002:a1c:41c4:: with SMTP id o187mr4787101wma.24.1581416734107;
+        Tue, 11 Feb 2020 02:25:34 -0800 (PST)
+Received: from steredhat.redhat.com (host209-4-dynamic.27-79-r.retail.telecomitalia.it. [79.27.4.209])
+        by smtp.gmail.com with ESMTPSA id c4sm3076513wml.7.2020.02.11.02.25.33
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 11 Feb 2020 02:25:33 -0800 (PST)
+From:   Stefano Garzarella <sgarzare@redhat.com>
+To:     mtk.manpages@gmail.com
+Cc:     Stefan Hajnoczi <stefanha@redhat.com>, netdev@vger.kernel.org,
+        linux-man@vger.kernel.org, Dexuan Cui <decui@microsoft.com>,
+        Jorgen Hansen <jhansen@vmware.com>
+Subject: [PATCH] vsock.7: add VMADDR_CID_LOCAL description
+Date:   Tue, 11 Feb 2020 11:25:32 +0100
+Message-Id: <20200211102532.56795-1-sgarzare@redhat.com>
+X-Mailer: git-send-email 2.24.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi All,
+Linux 5.6 added the new well-known VMADDR_CID_LOCAL for
+local communication.
 
-I'd like to ask question about allowed calling context for kthread_mod_delayed_work().
+This patch explains how to use it and remove the legacy
+VMADDR_CID_RESERVED no longer available.
 
-The comment to kthread_mod_delayed_work() says:
+Signed-off-by: Stefano Garzarella <sgarzare@redhat.com>
+---
+ man7/vsock.7 | 16 ++++++++++++++--
+ 1 file changed, 14 insertions(+), 2 deletions(-)
 
-  * This function is safe to call from any context including IRQ handler.
-  * See __kthread_cancel_work() and kthread_delayed_work_timer_fn()
-  * for details.
-  */
-
-But it has del_timer_sync() inside which seems can't be called from hard_irq context:
-kthread_mod_delayed_work()
-   |-__kthread_cancel_work()
-      |- del_timer_sync()
-	|- WARN_ON(in_irq() && !(timer->flags & TIMER_IRQSAFE));
-
-My use case is related to PTP processing using PTP auxiliary worker:
-(commit d9535cb7b760 ("ptp: introduce ptp auxiliary worker")):
-  - periodic work A is started and res-schedules itself for every dtX
-  - on IRQ - the work A need to be scheduled immediately
-
-Any advice on how to proceed?
-Can kthread_queue_work() be used even if there is delayed work is
-scheduled already (in general, don't care if work A will be executed one
-more time after timer expiration)?
-
+diff --git a/man7/vsock.7 b/man7/vsock.7
+index c5ffcf07d..d7dc37dcc 100644
+--- a/man7/vsock.7
++++ b/man7/vsock.7
+@@ -127,8 +127,8 @@ There are several special addresses:
+ means any address for binding;
+ .B VMADDR_CID_HYPERVISOR
+ (0) is reserved for services built into the hypervisor;
+-.B VMADDR_CID_RESERVED
+-(1) must not be used;
++.B VMADDR_CID_LOCAL
++(1) is the well-known address for local communication (loopback);
+ .B VMADDR_CID_HOST
+ (2)
+ is the well-known address of the host.
+@@ -164,6 +164,16 @@ Consider using
+ .B VMADDR_CID_ANY
+ when binding instead of getting the local CID with
+ .BR IOCTL_VM_SOCKETS_GET_LOCAL_CID .
++.SS Local communication
++The
++.B VMADDR_CID_LOCAL
++(1) can be used to address itself. In this case all packets are redirected
++to the same host that generated them. Useful for testing and debugging.
++.PP
++The local CID obtained with
++.BR IOCTL_VM_SOCKETS_GET_LOCAL_CID
++can be used for the same purpose, but it is preferable to use
++.B VMADDR_CID_LOCAL .
+ .SH ERRORS
+ .TP
+ .B EACCES
+@@ -222,6 +232,8 @@ are valid.
+ Support for VMware (VMCI) has been available since Linux 3.9.
+ KVM (virtio) is supported since Linux 4.8.
+ Hyper-V is supported since Linux 4.14.
++.PP
++VMADDR_CID_LOCAL is supported since Linux 5.6.
+ .SH SEE ALSO
+ .BR bind (2),
+ .BR connect (2),
 -- 
-Best regards,
-grygorii
+2.24.1
+
