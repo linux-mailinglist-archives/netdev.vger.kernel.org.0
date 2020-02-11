@@ -2,122 +2,186 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id BE12E159925
-	for <lists+netdev@lfdr.de>; Tue, 11 Feb 2020 19:50:52 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0E2EB159927
+	for <lists+netdev@lfdr.de>; Tue, 11 Feb 2020 19:51:41 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728613AbgBKSuv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 11 Feb 2020 13:50:51 -0500
-Received: from mail-pl1-f193.google.com ([209.85.214.193]:36512 "EHLO
-        mail-pl1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727722AbgBKSuu (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 11 Feb 2020 13:50:50 -0500
-Received: by mail-pl1-f193.google.com with SMTP id a6so4624000plm.3
-        for <netdev@vger.kernel.org>; Tue, 11 Feb 2020 10:50:50 -0800 (PST)
+        id S1729000AbgBKSvj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 11 Feb 2020 13:51:39 -0500
+Received: from mail-qk1-f193.google.com ([209.85.222.193]:46913 "EHLO
+        mail-qk1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727722AbgBKSvj (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 11 Feb 2020 13:51:39 -0500
+Received: by mail-qk1-f193.google.com with SMTP id g195so11121728qke.13;
+        Tue, 11 Feb 2020 10:51:38 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=6lEDHRFOlcXjrp5Q5eSsi/cHTEGkzjD0PlGuHdBxnqo=;
-        b=d8oekofX9+Dq/D7Jf+cbWXqtCY/EmXlpQeHZnnQmeWSVwj/lA0YRkotRRegOsSjozv
-         7beNtOt+D6ItjI7lOc0oImLIjqp8WQ7gf+TqKqaTNSinpVEx8PtV0PeFHT0U65ZJPJpq
-         FuLpREjvaz5J9u0UypDONs0oQWc52jMSBnNGWd5Hc08y5jOizAYajHS1epVhSoqUdNAO
-         ooVgT0XWRVTwDQOe4zpr47D5S8XD8iHSL81/GnikQllPuQQNP9wzMqUEsVvJOIcaoerM
-         XLDl4fc+iVFn5c+KJ/Y0BiSXniu+iJbjI8EsmRxdBEgXsYhRBYcvup4kt/Mzt1OWV4ny
-         jtzA==
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=l/+E2eVsRW0Yo4vFctboUwHNG9669KLGFE00pneG3vM=;
+        b=rLK6G0qJiN02pSXjNvkjM2OrYuVgwHM6VnYInbus+DfuYXtUgPPe2r14DaYgCcWNyH
+         toFbmkc8EXMHctCTtcq7xVjnD1yjowCnLpnWbs32RhvKeHOQp6AR5ZdCNSz9EP7zS5yD
+         0q2+EKbDL1IyKMDPzytneJVlUxA7BmRzb+zhFsp9Moi7Z0/Dyx3PItt+TW86wYvBljrm
+         siKznHQlPiZLo5MjzT1XOdmYGQJ1VcjH3kqz1q9qWGpsd2T1NlS18BbVsPIUokPEzPNT
+         9YKhtrDaj5q4xexZX551ahMRvcqEwTlRGX3Oj476nLWX0YOIMhaE8VXc2G9PYNRyo7ly
+         2ueA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=6lEDHRFOlcXjrp5Q5eSsi/cHTEGkzjD0PlGuHdBxnqo=;
-        b=FR388og3uJBmO8fIu1ppHFoyQfixQ8066GFc+9fetnAFpg6dUck7PuVR2ajYS2RusW
-         wXVroznwBJGPCsdhme1m9fNjaGWJUvyPhTkKNRGL90ZwlkoB4DIboW/CZM1RkGJJOVsL
-         eppZeJCUf1dj7XdYQClb/l6eOLTbIiAJbsCtJYP2Mu5Cyj52r5mg8556SPvwTzxBkqul
-         InI5NMYU5TySK4RNraBMzD1JKWfzflJJDxvvVhc3XcMmUd6kdizMnUKUQWXbQn5dY66s
-         cpWIpO1Z/91GW8vzfVIzZefsBJWSXp75jcMusBPOhUpLzhCtTq7Gqls+pY69pMcvjHCV
-         ChEA==
-X-Gm-Message-State: APjAAAXbeaTByN7Ov1rKGO97hZeDdGQomRK7BlxO+aT98lJp0RFB3opf
-        V28yq19kLyLehQQl+MScLxs=
-X-Google-Smtp-Source: APXvYqyyNFPQxG4SHoo6yJRwm+BiWhUpIaW8DV6eIIg50EksuXLwo25qoNq70aFMebGl9NA47vMOVQ==
-X-Received: by 2002:a17:90a:858a:: with SMTP id m10mr5200675pjn.117.1581447050159;
-        Tue, 11 Feb 2020 10:50:50 -0800 (PST)
-Received: from ?IPv6:2620:15c:2c1:200:55c7:81e6:c7d8:94b? ([2620:15c:2c1:200:55c7:81e6:c7d8:94b])
-        by smtp.gmail.com with ESMTPSA id r7sm5178652pfg.34.2020.02.11.10.50.48
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 11 Feb 2020 10:50:49 -0800 (PST)
-Subject: Re: [PATCH v3 net 7/9] ipvlan: remove skb_share_check from xmit path
-To:     "Jason A. Donenfeld" <Jason@zx2c4.com>
-Cc:     Netdev <netdev@vger.kernel.org>,
-        David Miller <davem@davemloft.net>,
-        Mahesh Bandewar <maheshb@google.com>,
-        Florian Westphal <fw@strlen.de>
-References: <20200210141423.173790-2-Jason@zx2c4.com>
- <20200211150028.688073-1-Jason@zx2c4.com>
- <20200211150028.688073-8-Jason@zx2c4.com>
- <db688bb4-bafa-8e9b-34aa-7f1d5a04e10f@gmail.com>
- <CAHmME9o07Ugxet7sKHc9GYU5DkgyDEYsx36+KyAt7PAVtQRiag@mail.gmail.com>
-From:   Eric Dumazet <eric.dumazet@gmail.com>
-Message-ID: <9c36a95d-aed7-0b63-ccda-8cd49ad97d8f@gmail.com>
-Date:   Tue, 11 Feb 2020 10:50:46 -0800
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.2.2
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=l/+E2eVsRW0Yo4vFctboUwHNG9669KLGFE00pneG3vM=;
+        b=PPCQWHHQ7dlTOrX7KltQrZhGjr8bY8uffCBtFQl1vrfInRsMbbY7gqUxltGs+shV6Z
+         JijhNovSMvmqGi79xCWHlFSRCWl8uKr8gmqER1HIcJYrDCXF86YyfB3E+R71Pyvs13GJ
+         5NPuxM0sBBOw3QkafDkJ1vyObhqJm0KBwGLybqdwV1tb8cbtuOy8NLo6VhEbSUBHLZNH
+         6EF3fXsQVAjIouVtcaH0hN3mtUC0h0mOllyLUJTNPN4qe//f761txm+87zc7A9SK81p/
+         LOc2GAOC2i39KSNNQMjuRQpLjjlH0T0+cTAJvnnVYkAzRIF8xjM0WcukQHA1Wh4TO/ii
+         o6/w==
+X-Gm-Message-State: APjAAAW7XOoTc130Hu8bjErtW2wwiCB3U+vR9XsucNSWBXonytX8RzTM
+        JVkBf7yOT5h1b6ebKLaGn/mshzO7BxWjw9hmmgA=
+X-Google-Smtp-Source: APXvYqzKmL1sYrrdHMxxtTh9JVJ+1phmHcTzJ9y1HZBKGYmp8+U9/aeOn35Pw5FKRg4YxyxEQyKbVhtRSz53Ivd8oes=
+X-Received: by 2002:a37:a685:: with SMTP id p127mr7868061qke.449.1581447098036;
+ Tue, 11 Feb 2020 10:51:38 -0800 (PST)
 MIME-Version: 1.0
-In-Reply-To: <CAHmME9o07Ugxet7sKHc9GYU5DkgyDEYsx36+KyAt7PAVtQRiag@mail.gmail.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+References: <20200208154209.1797988-1-jolsa@kernel.org> <20200208154209.1797988-13-jolsa@kernel.org>
+In-Reply-To: <20200208154209.1797988-13-jolsa@kernel.org>
+From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Date:   Tue, 11 Feb 2020 10:51:27 -0800
+Message-ID: <CAEf4BzZFBYVAs5-LowuMov86cbNFdXABkcA=XZAC2JJWg52HKg@mail.gmail.com>
+Subject: Re: [PATCH 12/14] bpf: Add trampolines to kallsyms
+To:     Jiri Olsa <jolsa@kernel.org>
+Cc:     Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        Andrii Nakryiko <andriin@fb.com>, Yonghong Song <yhs@fb.com>,
+        Song Liu <songliubraving@fb.com>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        David Miller <davem@redhat.com>,
+        =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@intel.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        Jesper Dangaard Brouer <hawk@kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Sat, Feb 8, 2020 at 7:43 AM Jiri Olsa <jolsa@kernel.org> wrote:
+>
+> Adding trampolines to kallsyms. It's displayed as
+>   bpf_trampoline_<ID> [bpf]
+>
+> where ID is the BTF id of the trampoline function.
+>
+> Signed-off-by: Jiri Olsa <jolsa@kernel.org>
+> ---
+>  include/linux/bpf.h     |  2 ++
+>  kernel/bpf/trampoline.c | 23 +++++++++++++++++++++++
+>  2 files changed, 25 insertions(+)
+>
+> diff --git a/include/linux/bpf.h b/include/linux/bpf.h
+> index 7a4626c8e747..b91bac10d3ea 100644
+> --- a/include/linux/bpf.h
+> +++ b/include/linux/bpf.h
+> @@ -502,6 +502,7 @@ struct bpf_trampoline {
+>         /* Executable image of trampoline */
+>         void *image;
+>         u64 selector;
+> +       struct bpf_ksym ksym;
+>  };
+>
+>  #define BPF_DISPATCHER_MAX 48 /* Fits in 2048B */
+> @@ -573,6 +574,7 @@ struct bpf_image {
+>  #define BPF_IMAGE_SIZE (PAGE_SIZE - sizeof(struct bpf_image))
+>  bool is_bpf_image_address(unsigned long address);
+>  void *bpf_image_alloc(void);
+> +void bpf_image_ksym_add(void *data, struct bpf_ksym *ksym);
+>  /* Called only from code, so there's no need for stubs. */
+>  void bpf_ksym_add(struct bpf_ksym *ksym);
+>  void bpf_ksym_del(struct bpf_ksym *ksym);
+> diff --git a/kernel/bpf/trampoline.c b/kernel/bpf/trampoline.c
+> index 6b264a92064b..1ee29907cbe5 100644
+> --- a/kernel/bpf/trampoline.c
+> +++ b/kernel/bpf/trampoline.c
+> @@ -96,6 +96,15 @@ bool is_bpf_image_address(unsigned long addr)
+>         return ret;
+>  }
+>
+> +void bpf_image_ksym_add(void *data, struct bpf_ksym *ksym)
+> +{
+> +       struct bpf_image *image = container_of(data, struct bpf_image, data);
+> +
+> +       ksym->start = (unsigned long) image;
+> +       ksym->end = ksym->start + PAGE_SIZE;
 
+this seems wrong, use BPF_IMAGE_SIZE instead of PAGE_SIZE?
 
-On 2/11/20 9:44 AM, Jason A. Donenfeld wrote:
-> On Tue, Feb 11, 2020 at 6:39 PM Eric Dumazet <eric.dumazet@gmail.com> wrote:
->> Yes, maybe, but can you elaborate in this changelog ?
->>
->> AFAIK net/core/pktgen.c can definitely provide shared skbs.
->>
->>      refcount_inc(&pkt_dev->skb->users);
->>      ret = dev_queue_xmit(pkt_dev->skb);
->>
->> We might have to change pktgen to make sure we do not make skb shared
->> just because it was convenient.
->>
->> Please do not give a link to some web page that might disappear in the future.
->>
->> Having to follow an old thread to understand the reasoning is not appealing
->> for us having to fix bugs in the following years.
-> 
-> Well, I don't know really.
-> 
-> Florian said I should remove skb_share_check() from a function I was
-> adding, because according to him, the ndo_start_xmit path cannot
-> contain shared skbs. (See the 0/9 cover letter.) If this claim is
-> true, then this series is correct. If this claim is not true, then the
-> series needs to be adjusted.
+> +       bpf_ksym_add(ksym);
+> +}
+> +
+>  struct bpf_trampoline *bpf_trampoline_lookup(u64 key)
+>  {
+>         struct bpf_trampoline *tr;
+> @@ -131,6 +140,7 @@ struct bpf_trampoline *bpf_trampoline_lookup(u64 key)
+>         for (i = 0; i < BPF_TRAMP_MAX; i++)
+>                 INIT_HLIST_HEAD(&tr->progs_hlist[i]);
+>         tr->image = image;
+> +       INIT_LIST_HEAD_RCU(&tr->ksym.lnode);
+>  out:
+>         mutex_unlock(&trampoline_mutex);
+>         return tr;
+> @@ -267,6 +277,15 @@ static enum bpf_tramp_prog_type bpf_attach_type_to_tramp(enum bpf_attach_type t)
+>         }
+>  }
+>
+> +static void bpf_trampoline_kallsyms_add(struct bpf_trampoline *tr)
+> +{
+> +       struct bpf_ksym *ksym = &tr->ksym;
+> +
+> +       snprintf(ksym->name, KSYM_NAME_LEN, "bpf_trampoline_%llu",
+> +                tr->key & ((u64) (1LU << 32) - 1));
 
-The claim might be true for a particular driver, but not others.
+why the 32-bit truncation? also, wouldn't it be more trivial as (u32)tr->key?
 
-ipvlan has a way to forward packets from TX to RX, and RX to TX,
-I would rather not touch it unless you really can make good arguments,
-and possibly some tests :)
+> +       bpf_image_ksym_add(tr->image, &tr->ksym);
+> +}
+> +
+>  int bpf_trampoline_link_prog(struct bpf_prog *prog)
+>  {
+>         enum bpf_tramp_prog_type kind;
+> @@ -311,6 +330,8 @@ int bpf_trampoline_link_prog(struct bpf_prog *prog)
+>         if (err) {
+>                 hlist_del(&prog->aux->tramp_hlist);
+>                 tr->progs_cnt[kind]--;
+> +       } else if (cnt == 0) {
+> +               bpf_trampoline_kallsyms_add(tr);
 
-I am worried about a missing skb_share_check() if for some
-reason pskb_expand_head() has to be called later
+You didn't handle BPF_TRAMP_REPLACE case above.
 
-      BUG_ON(skb_shared(skb));
+Also this if (err) { ... } else if (cnt == 0) { } pattern is a bit
+convoluted. How about:
 
-> 
-> I tried to trace these and couldn't totally make up my mind, hence the
-> ALL CAPS mention in the 0/9.
-> 
-> Do you know if this is a safe presumption to make? It sounds like your
-> opinion is "no" in light of pktgen.c? Should that simply be adjusted
-> instead?
+if (err) {
+   ... whatever ...
+   goto out;
+}
+if (cnt == 0) { ... }
 
-The key here is IFF_TX_SKB_SHARING, but really this is the intent.
-I am not sure if all paths have been correctly audited/tested.
+>         }
+>  out:
+>         mutex_unlock(&tr->mutex);
+> @@ -336,6 +357,8 @@ int bpf_trampoline_unlink_prog(struct bpf_prog *prog)
+>         }
+>         hlist_del(&prog->aux->tramp_hlist);
+>         tr->progs_cnt[kind]--;
+> +       if (!(tr->progs_cnt[BPF_TRAMP_FENTRY] + tr->progs_cnt[BPF_TRAMP_FEXIT]))
+> +               bpf_ksym_del(&tr->ksym);
 
-I am not saying your patch is wrong, I am unsure about it.
+same, BPF_TRAMP_REPLACE case. I'd also introduce cnt for consistency
+with bpf_trampoline_link_prog?
+
+>         err = bpf_trampoline_update(prog->aux->trampoline);
+>  out:
+>         mutex_unlock(&tr->mutex);
+> --
+> 2.24.1
+>
