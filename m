@@ -2,125 +2,164 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id A5FFA1599CD
-	for <lists+netdev@lfdr.de>; Tue, 11 Feb 2020 20:32:09 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E7E751599D3
+	for <lists+netdev@lfdr.de>; Tue, 11 Feb 2020 20:32:32 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731695AbgBKTcH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 11 Feb 2020 14:32:07 -0500
-Received: from mail-pj1-f65.google.com ([209.85.216.65]:52054 "EHLO
-        mail-pj1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1731688AbgBKTcH (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 11 Feb 2020 14:32:07 -0500
-Received: by mail-pj1-f65.google.com with SMTP id fa20so1782785pjb.1
-        for <netdev@vger.kernel.org>; Tue, 11 Feb 2020 11:32:07 -0800 (PST)
+        id S1731704AbgBKTcb (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 11 Feb 2020 14:32:31 -0500
+Received: from mail-qk1-f194.google.com ([209.85.222.194]:40470 "EHLO
+        mail-qk1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728849AbgBKTcb (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 11 Feb 2020 14:32:31 -0500
+Received: by mail-qk1-f194.google.com with SMTP id b7so11306080qkl.7;
+        Tue, 11 Feb 2020 11:32:30 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=bKC/+INk7BBaA88bOwTNnbtW23n0LE6x5PuhmJzM5kY=;
-        b=eQIlwDpRIi9KcpJVM+JZ3qGN7yArwrjpKRyJl3fghWHE3D5u4/NFcJ+ij/9ezER0MV
-         FcCaOWKKWF2OS4FjhrC6ZBjGmjgM4+YKGu96dYZ3OybKv3p8e7FHJwA0DChGU663e8Ap
-         SHPWHapeJnEnfDUvRE39q1GsEP9MxpUkl/YEQ=
+        d=gmail.com; s=20161025;
+        h=from:date:to:cc:subject:message-id:references:mime-version
+         :content-disposition:content-transfer-encoding:in-reply-to;
+        bh=Jv32+hQlvyuqWyQZrfmL7SM1lCUMOPRtNgkxMCMMRjc=;
+        b=o/Bs8QDgs29PFBmp+uMx+YyqHqyX9gug4WxKxnazsRYu6qnpmicfba9R7CkyqVmpwO
+         Vr+kdV9BiNqbUF/ew7oOTCuMHSrGRDPmcIe8ADMqcQwE5FmY0H7uGbuBaHdoyuY0VEJS
+         VpSRKEavyELmFEjxeDRGvaXRpp/jpfjCNoVq6TmyrrVtrPTZfaURUSfaoz7OjSeDRIVm
+         gfGeXQFODdAKKzf58mYhI1wRcUHzs4ewFeaioIr6Bp5p0kqDPKjLFCJ2nTmdmZGrpQay
+         w7N1JS0btthILjiPzXAr8sPJl/4s524Z2mptG+bTIwoGgThpvXf37rPt5K+xthXKKolc
+         WFgQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=bKC/+INk7BBaA88bOwTNnbtW23n0LE6x5PuhmJzM5kY=;
-        b=UAJKeWSwmDPwmh7L6OvsddixdJVn+w6mm07H8maUyyoLtJaqZmkNrcjMScUjKANtMn
-         cKlgtFFSUfwpFA/Ht2k9u6xNzKsrvvHHu2xjUU9M6rjDC8mZ0YcNJC3FoYfUuD7iCDU9
-         z6CI9ZJZFuwHk9NehQ/OT9cZSim2xEM7mKFlLePf32iF+O5fYCe5tc8U+CJR0m9VjVz7
-         XZ4fTTcKsft8HddDW+Tm9+BFlP/BqUL0cN5V6WozWRJOP7jRFpItMK7QdylVduopdKOk
-         NP/kCM5jh3MsQ9UqSVIT6UnZWx/7SaVhK8CU6eqMuvwW+Clny+nvRIrbqoxLVJM6TXMp
-         cEYw==
-X-Gm-Message-State: APjAAAXKK6oGsGDR5ahiTiWgpFfX3jsDhtVb/jpkYv0+dYV4zUtekJZX
-        SS3npi+2Ipoq8PHDX0Sgg8ZiKw==
-X-Google-Smtp-Source: APXvYqzMlIzIUhu7YvDxV6j0XKIWzMpG7d+7n8kKgXm21z7Q7i6+twmsKhUHg4Vtv4sMTLeD6qBWyQ==
-X-Received: by 2002:a17:90a:f013:: with SMTP id bt19mr5350862pjb.47.1581449526662;
-        Tue, 11 Feb 2020 11:32:06 -0800 (PST)
-Received: from www.outflux.net (smtp.outflux.net. [198.145.64.163])
-        by smtp.gmail.com with ESMTPSA id o6sm4685775pgg.37.2020.02.11.11.32.05
+        h=x-gm-message-state:from:date:to:cc:subject:message-id:references
+         :mime-version:content-disposition:content-transfer-encoding
+         :in-reply-to;
+        bh=Jv32+hQlvyuqWyQZrfmL7SM1lCUMOPRtNgkxMCMMRjc=;
+        b=tc/EoLcPEgXtWRZlbfz5pa+7hmYh+LgX8Ju0dUZG8fAh2KuoCrt5dpz+qO06YM/5JB
+         8wH4A+dSx9SaPvPbZIi+4BhPphzV61TUG6Ti38grtlkMKpkbKz/jgV5ZPUbcAXwRQ2Ku
+         dF8zJbfHKPl/wqGXELZJyYNgipHZwO5zPGVi3zaHDiTnIRV30LzRNxSCUc93jKVPLsFJ
+         xpIyx09zlmKzYnO6Qvjke0H7yhXP6aHBaavE5tzVIEkby5DIAMbBDwg53zgqF5b1jYPo
+         ls/+42ieaq7rViwKxWcFOlCI+UfJ15y5IWOrrvKpc6nJdZRcyOpjPAWKHyor28WIjebp
+         UIIg==
+X-Gm-Message-State: APjAAAU2h3YGEhfqkjIVcA7/rdMhjoDwX/PKM7WVuxYK4zmaHweTATx8
+        N67Wrk758Lsw3ngfp6Q7gUg=
+X-Google-Smtp-Source: APXvYqx7hgyhFuIjIj0kJ8Hkkx3RAoznfr4OmkQ2Zz6673Q4D6ZSqHyiIAc3mt+ZsUHoGzqEr7wu5w==
+X-Received: by 2002:a05:620a:140d:: with SMTP id d13mr3297259qkj.450.1581449549652;
+        Tue, 11 Feb 2020 11:32:29 -0800 (PST)
+Received: from quaco.ghostprotocols.net ([177.195.209.176])
+        by smtp.gmail.com with ESMTPSA id v10sm2755866qtj.26.2020.02.11.11.32.28
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 11 Feb 2020 11:32:05 -0800 (PST)
-Date:   Tue, 11 Feb 2020 11:32:04 -0800
-From:   Kees Cook <keescook@chromium.org>
-To:     "Gustavo A. R. Silva" <gustavo@embeddedor.com>
-Cc:     Greg KH <gregkh@linuxfoundation.org>, linux-kernel@vger.kernel.org,
-        "David S. Miller" <davem@davemloft.net>,
-        linux-crypto@vger.kernel.org, netdev@vger.kernel.org,
-        linux-usb@vger.kernel.org
-Subject: Re: [PATCH] treewide: Replace zero-length arrays with flexible-array
- member
-Message-ID: <202002111129.77DB1CCC7B@keescook>
-References: <20200211174126.GA29960@embeddedor>
- <20200211183229.GA1938663@kroah.com>
- <3fdbb16a-897c-aa5b-d45d-f824f6810412@embeddedor.com>
+        Tue, 11 Feb 2020 11:32:29 -0800 (PST)
+From:   Arnaldo Carvalho de Melo <arnaldo.melo@gmail.com>
+X-Google-Original-From: Arnaldo Carvalho de Melo <acme@kernel.org>
+Received: by quaco.ghostprotocols.net (Postfix, from userid 1000)
+        id CA36840A7D; Tue, 11 Feb 2020 16:32:23 -0300 (-03)
+Date:   Tue, 11 Feb 2020 16:32:23 -0300
+To:     Jiri Olsa <jolsa@redhat.com>
+Cc:     =?iso-8859-1?Q?Bj=F6rn_T=F6pel?= <bjorn.topel@gmail.com>,
+        Jiri Olsa <jolsa@kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Netdev <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        Andrii Nakryiko <andriin@fb.com>, Yonghong Song <yhs@fb.com>,
+        Song Liu <songliubraving@fb.com>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        David Miller <davem@redhat.com>,
+        =?iso-8859-1?Q?Bj=F6rn_T=F6pel?= <bjorn.topel@intel.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        Jesper Dangaard Brouer <hawk@kernel.org>
+Subject: Re: [PATCH 00/14] bpf: Add trampoline and dispatcher to
+ /proc/kallsyms
+Message-ID: <20200211193223.GI3416@kernel.org>
+References: <20200208154209.1797988-1-jolsa@kernel.org>
+ <CAJ+HfNhBDU9c4-0D5RiHFZBq_LN7E=k8=rhL+VbmxJU7rdDBxQ@mail.gmail.com>
+ <20200210161751.GC28110@krava>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=iso-8859-1
 Content-Disposition: inline
-In-Reply-To: <3fdbb16a-897c-aa5b-d45d-f824f6810412@embeddedor.com>
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20200210161751.GC28110@krava>
+X-Url:  http://acmel.wordpress.com
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Feb 11, 2020 at 01:20:36PM -0600, Gustavo A. R. Silva wrote:
-> 
-> 
-> On 2/11/20 12:32, Greg KH wrote:
-> > On Tue, Feb 11, 2020 at 11:41:26AM -0600, Gustavo A. R. Silva wrote:
-> >> The current codebase makes use of the zero-length array language
-> >> extension to the C90 standard, but the preferred mechanism to declare
-> >> variable-length types such as these ones is a flexible array member[1][2],
-> >> introduced in C99:
-> >>
-> >> struct foo {
-> >>         int stuff;
-> >>         struct boo array[];
-> >> };
-> >>
-> >> By making use of the mechanism above, we will get a compiler warning
-> >> in case the flexible array does not occur last in the structure, which
-> >> will help us prevent some kind of undefined behavior bugs from being
-> >> unadvertenly introduced[3] to the codebase from now on.
-> >>
-> >> All these instances of code were found with the help of the following
-> >> Coccinelle script:
-> >>
-> >> @@
-> >> identifier S, member, array;
-> >> type T1, T2;
-> >> @@
-> >>
-> >> struct S {
-> >>   ...
-> >>   T1 member;
-> >>   T2 array[
-> >> - 0
-> >>   ];
-> >> };
-> >>
-> >> [1] https://gcc.gnu.org/onlinedocs/gcc/Zero-Length.html
-> >> [2] https://github.com/KSPP/linux/issues/21
-> >> [3] commit 76497732932f ("cxgb3/l2t: Fix undefined behaviour")
-> >>
-> >> NOTE: I'll carry this in my -next tree for the v5.6 merge window.
+Em Mon, Feb 10, 2020 at 05:17:51PM +0100, Jiri Olsa escreveu:
+> On Mon, Feb 10, 2020 at 04:51:08PM +0100, Björn Töpel wrote:
+> > On Sat, 8 Feb 2020 at 16:42, Jiri Olsa <jolsa@kernel.org> wrote:
+> > > this patchset adds trampoline and dispatcher objects
+> > > to be visible in /proc/kallsyms. The last patch also
+> > > adds sorting for all bpf objects in /proc/kallsyms.
+
+> > Thanks for working on this!
+
+> > I'm probably missing something with my perf setup; I've applied your
+> > patches, and everything seem to work fine from an kallsyms
+> > perspective:
+
+> > # grep bpf_dispatcher_xdp /proc/kallsyms
+> > ...
+> > ffffffffc0511000 t bpf_dispatcher_xdp   [bpf]
 > > 
-> > Why not carve this up into per-subsystem patches so that we can apply
-> > them to our 5.7-rc1 trees and then you submit the "remaining" that don't
-> > somehow get merged at that timeframe for 5.7-rc2?
+> > However, when I run
+> > # perf top
 > > 
+> > I still see the undecorated one:
+> > 0.90%  [unknown]                  [k] 0xffffffffc0511037
+> > 
+> > Any ideas?
+ 
+> yea strange.. it should be picked up from /proc/kallsyms as
+> fallback if there's no other source, I'll check on that
+> (might be the problem with perf depending on address going
+> only higher in /proc/kallsyms, while bpf symbols are at the
+> end and start over from the lowest bpf address)
 > 
-> Yep, sounds good. I'll do that.
+> anyway, in perf we enumerate bpf_progs via the perf events
+> PERF_BPF_EVENT_PROG_LOAD,PERF_BPF_EVENT_PROG_UNLOAD interface
+> together with PERF_RECORD_KSYMBOL_TYPE_BPF events
+> 
+> we might need to add something like:
+>   PERF_RECORD_KSYMBOL_TYPE_BPF_TRAMPOLINE
+>   PERF_RECORD_KSYMBOL_TYPE_BPF_DISPATCHER
+> 
+> to notify about the area, I'll check on that
+> 
+> however the /proc/kallsyms fallback should work in any
+> case.. thanks for report ;-)
 
-FWIW, I'd just like to point out that since this is a mechanical change
-with no code generation differences (unlike the pre-C90 1-byte array
-conversions), it's a way better use of everyone's time to just splat
-this in all at once.
+We should by now move kallsyms to be the preferred source of symbols,
+not vmlinux, right?
 
-That said, it looks like Gustavo is up for it, but I'd like us to
-generally consider these kinds of mechanical changes as being easier to
-manage in a single patch. (Though getting Acks tends to be a bit
-harder...)
+Perhaps what is happening is:
 
--- 
-Kees Cook
+[root@quaco ~]# strace -f -e open,openat -o /tmp/bla perf top
+[root@quaco ~]# grep vmlinux /tmp/bla
+11013 openat(AT_FDCWD, "vmlinux", O_RDONLY) = -1 ENOENT (No such file or directory)
+11013 openat(AT_FDCWD, "/boot/vmlinux", O_RDONLY) = -1 ENOENT (No such file or directory)
+11013 openat(AT_FDCWD, "/boot/vmlinux-5.5.0+", O_RDONLY) = -1 ENOENT (No such file or directory)
+11013 openat(AT_FDCWD, "/usr/lib/debug/boot/vmlinux-5.5.0+", O_RDONLY) = -1 ENOENT (No such file or directory)
+11013 openat(AT_FDCWD, "/lib/modules/5.5.0+/build/vmlinux", O_RDONLY) = 152
+[root@quaco ~]#
+
+I.e. it is using vmlinux for resolving symbols and he should try with:
+
+[root@quaco ~]# strace -f -e open,openat -o /tmp/bla perf top --ignore-vmlinux
+[root@quaco ~]# perf top -h vmlinux
+
+ Usage: perf top [<options>]
+
+    -k, --vmlinux <file>  vmlinux pathname
+        --ignore-vmlinux  don't load vmlinux even if found
+
+[root@quaco ~]# grep vmlinux /tmp/bla
+[root@quaco ~]#
+
+Historically vmlinux was preferred because it contains function sizes,
+but with all these out of the blue symbols, we need to prefer starting
+with /proc/kallsyms and, as we do now, continue getting updates via
+PERF_RECORD_KSYMBOL.
+
+Humm, but then trampolines don't generate that, right? Or does it? If it
+doesn't, then we will know about just the trampolines in place when the
+record/top session starts, reparsing /proc/kallsyms periodically seems
+excessive?
+
+- Arnaldo
