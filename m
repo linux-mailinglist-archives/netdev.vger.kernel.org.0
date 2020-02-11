@@ -2,94 +2,83 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 034A61591CC
-	for <lists+netdev@lfdr.de>; Tue, 11 Feb 2020 15:24:45 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2ACDE15924D
+	for <lists+netdev@lfdr.de>; Tue, 11 Feb 2020 15:52:48 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730111AbgBKOYh (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 11 Feb 2020 09:24:37 -0500
-Received: from mail26.static.mailgun.info ([104.130.122.26]:27804 "EHLO
-        mail26.static.mailgun.info" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1729268AbgBKOYg (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 11 Feb 2020 09:24:36 -0500
-DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org; q=dns/txt;
- s=smtp; t=1581431076; h=Date: Message-Id: Cc: To: References:
- In-Reply-To: From: Subject: Content-Transfer-Encoding: MIME-Version:
- Content-Type: Sender; bh=q1NnbfY5scviQ81WhVjeiiyH3xhw4C/A+lxpopfw2dM=;
- b=bjYj1LpLfJuMWFJLA7nlLRQ+rF/a3xlz2ZnLZsrZskAk6l2cYax2uWxqWfvOGmxh5BvCrhXA
- kU9+iIeAe+q20UHhYFNjz6kZDud74illPLgJNCTLR35CYoBonRS9ffrB6B02Tmp78Ef4F/iQ
- QcH903u4GpDVR80E9Qv9/LxNF3o=
-X-Mailgun-Sending-Ip: 104.130.122.26
-X-Mailgun-Sid: WyJiZjI2MiIsICJuZXRkZXZAdmdlci5rZXJuZWwub3JnIiwgImJlOWU0YSJd
-Received: from smtp.codeaurora.org (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171])
- by mxa.mailgun.org with ESMTP id 5e42b91f.7f1e67052298-smtp-out-n03;
- Tue, 11 Feb 2020 14:24:31 -0000 (UTC)
-Received: by smtp.codeaurora.org (Postfix, from userid 1001)
-        id 2B510C4479D; Tue, 11 Feb 2020 14:24:31 +0000 (UTC)
-X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
-        aws-us-west-2-caf-mail-1.web.codeaurora.org
-X-Spam-Level: 
-X-Spam-Status: No, score=0.5 required=2.0 tests=ALL_TRUSTED,MISSING_DATE,
-        MISSING_MID,SPF_NONE autolearn=no autolearn_force=no version=3.4.0
-Received: from potku.adurom.net (88-114-240-156.elisa-laajakaista.fi [88.114.240.156])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        (Authenticated sender: kvalo)
-        by smtp.codeaurora.org (Postfix) with ESMTPSA id E7677C43383;
-        Tue, 11 Feb 2020 14:24:28 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org E7677C43383
-Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
-Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; spf=none smtp.mailfrom=kvalo@codeaurora.org
-Content-Type: text/plain; charset="utf-8"
+        id S1730275AbgBKOwq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 11 Feb 2020 09:52:46 -0500
+Received: from www62.your-server.de ([213.133.104.62]:51152 "EHLO
+        www62.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729831AbgBKOwq (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 11 Feb 2020 09:52:46 -0500
+Received: from sslproxy03.your-server.de ([88.198.220.132])
+        by www62.your-server.de with esmtpsa (TLSv1.2:DHE-RSA-AES256-GCM-SHA384:256)
+        (Exim 4.89_1)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1j1Wtz-0004W3-2W; Tue, 11 Feb 2020 15:52:39 +0100
+Received: from [2001:1620:665:0:5795:5b0a:e5d5:5944] (helo=linux-3.fritz.box)
+        by sslproxy03.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1j1Wty-000OYm-Nh; Tue, 11 Feb 2020 15:52:38 +0100
+Subject: Re: [PATCH bpf] xsk: publish global consumer pointers when NAPI is
+ finished
+To:     Magnus Karlsson <magnus.karlsson@intel.com>, maximmi@mellanox.com,
+        bjorn.topel@intel.com, ast@kernel.org, netdev@vger.kernel.org,
+        jonathan.lemon@gmail.com
+Cc:     rgoodfel@isi.edu, bpf@vger.kernel.org,
+        maciejromanfijalkowski@gmail.com
+References: <1581348432-6747-1-git-send-email-magnus.karlsson@intel.com>
+From:   Daniel Borkmann <daniel@iogearbox.net>
+Message-ID: <e4702dd2-3968-4740-aa50-9f7cda3bb13e@iogearbox.net>
+Date:   Tue, 11 Feb 2020 15:52:37 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.7.2
 MIME-Version: 1.0
+In-Reply-To: <1581348432-6747-1-git-send-email-magnus.karlsson@intel.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
 Content-Transfer-Encoding: 7bit
-Subject: Re: [PATCH] ath11k: Silence clang -Wsometimes-uninitialized in
- ath11k_update_per_peer_stats_from_txcompl
-From:   Kalle Valo <kvalo@codeaurora.org>
-In-Reply-To: <20200130015905.18610-1-natechancellor@gmail.com>
-References: <20200130015905.18610-1-natechancellor@gmail.com>
-To:     Nathan Chancellor <natechancellor@gmail.com>
-Cc:     ath11k@lists.infradead.org, linux-wireless@vger.kernel.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        clang-built-linux@googlegroups.com,
-        Nathan Chancellor <natechancellor@gmail.com>,
-        ci_notify@linaro.org
-User-Agent: pwcli/0.0.0-git (https://github.com/kvalo/pwcli/) Python/2.7.12
-Message-Id: <20200211142431.2B510C4479D@smtp.codeaurora.org>
-Date:   Tue, 11 Feb 2020 14:24:31 +0000 (UTC)
+X-Authenticated-Sender: daniel@iogearbox.net
+X-Virus-Scanned: Clear (ClamAV 0.102.1/25720/Mon Feb 10 12:53:41 2020)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Nathan Chancellor <natechancellor@gmail.com> wrote:
-
-> Clang warns a few times (trimmed for brevity):
+On 2/10/20 4:27 PM, Magnus Karlsson wrote:
+> The commit 4b638f13bab4 ("xsk: Eliminate the RX batch size")
+> introduced a much more lazy way of updating the global consumer
+> pointers from the kernel side, by only doing so when running out of
+> entries in the fill or Tx rings (the rings consumed by the
+> kernel). This can result in a deadlock with the user application if
+> the kernel requires more than one entry to proceed and the application
+> cannot put these entries in the fill ring because the kernel has not
+> updated the global consumer pointer since the ring is not empty.
 > 
-> ../drivers/net/wireless/ath/ath11k/debugfs_sta.c:185:7: warning:
-> variable 'rate_idx' is used uninitialized whenever 'if' condition is
-> false [-Wsometimes-uninitialized]
+> Fix this by publishing the local kernel side consumer pointer whenever
+> we have completed Rx or Tx processing in the kernel. This way, user
+> space will have an up-to-date view of the consumer pointers whenever it
+> gets to execute in the one core case (application and driver on the
+> same core), or after a certain number of packets have been processed
+> in the two core case (application and driver on different cores).
 > 
-> It is not wrong, rate_idx is only initialized in the first if block.
-> However, this is not necessarily an issue in practice because rate_idx
-> will only be used when initialized because
-> ath11k_accumulate_per_peer_tx_stats only uses rate_idx when flags is not
-> set to RATE_INFO_FLAGS_HE_MCS, RATE_INFO_FLAGS_VHT_MCS, or
-> RATE_INFO_FLAGS_MCS. Still, it is not good to stick uninitialized values
-> into another function so initialize it to zero to prevent any issues
-> down the line.
+> A side effect of this patch is that the one core case gets better
+> performance, but the two core case gets worse. The reason that the one
+> core case improves is that updating the global consumer pointer is
+> relatively cheap since the application by definition is not running
+> when the kernel is (they are on the same core) and it is beneficial
+> for the application, once it gets to run, to have pointers that are
+> as up to date as possible since it then can operate on more packets
+> and buffers. In the two core case, the most important performance
+> aspect is to minimize the number of accesses to the global pointers
+> since they are shared between two cores and bounces between the caches
+> of those cores. This patch results in more updates to global state,
+> which means lower performance in the two core case.
 > 
-> Fixes: d5c65159f289 ("ath11k: driver for Qualcomm IEEE 802.11ax devices")
-> Link: https://github.com/ClangBuiltLinux/linux/issues/832
-> Reported-by: ci_notify@linaro.org
-> Signed-off-by: Nathan Chancellor <natechancellor@gmail.com>
-> Reviewed-by: Nick Desaulniers <ndesaulniers@google.com>
-> Signed-off-by: Kalle Valo <kvalo@codeaurora.org>
+> Fixes: 4b638f13bab4 ("xsk: Eliminate the RX batch size")
+> Reported-by: Ryan Goodfellow <rgoodfel@isi.edu>
+> Reported-by: Maxim Mikityanskiy <maximmi@mellanox.com>
+> Signed-off-by: Magnus Karlsson <magnus.karlsson@intel.com>
 
-Patch applied to ath-next branch of ath.git, thanks.
-
-df57acc415b1 ath11k: Silence clang -Wsometimes-uninitialized in ath11k_update_per_peer_stats_from_txcompl
-
--- 
-https://patchwork.kernel.org/patch/11357331/
-
-https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
+Applied, thanks!
