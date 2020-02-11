@@ -2,34 +2,34 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 483F3159B7B
-	for <lists+netdev@lfdr.de>; Tue, 11 Feb 2020 22:44:16 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1A1A4159B61
+	for <lists+netdev@lfdr.de>; Tue, 11 Feb 2020 22:42:43 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728354AbgBKVna (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 11 Feb 2020 16:43:30 -0500
-Received: from mo4-p04-ob.smtp.rzone.de ([81.169.146.223]:30035 "EHLO
+        id S1728071AbgBKVlz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 11 Feb 2020 16:41:55 -0500
+Received: from mo4-p04-ob.smtp.rzone.de ([85.215.255.123]:28862 "EHLO
         mo4-p04-ob.smtp.rzone.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727953AbgBKVly (ORCPT
+        with ESMTP id S1728004AbgBKVly (ORCPT
         <rfc822;netdev@vger.kernel.org>); Tue, 11 Feb 2020 16:41:54 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; t=1581457309;
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; t=1581457310;
         s=strato-dkim-0002; d=goldelico.com;
         h=References:In-Reply-To:Message-Id:Date:Subject:Cc:To:From:
         X-RZG-CLASS-ID:X-RZG-AUTH:From:Subject:Sender;
-        bh=o2aaGn+CrBGGFUCI/aU8qBP4BNQ+G25EUxt570OpKBY=;
-        b=t1kKf1CMl2v02AQpB3xHcmj4Dwxsrce6Ucp3Rcn2L1lWyYSByeffFSbhC+r41q3yHX
-        lLn9+LSSK0DoXI92s8wQTScT/9lPlD/FN78j2F6yRvjzdbk3vH61iWQcS9oMM5gE4xHo
-        cfAo8P8fjbAbfFvjFgTC8DashBNNSv3MWZnqXz8f3swQW/cwTZjpEj8cYfQwpY1dh6f3
-        EY/kk65s88jgzkkzoZlm4swb/r8yQStVRScd9ztP30xqhhVE8hKVhddNhMS9XujJR/Eb
-        t/t3XPa/lGpGlztn0IH/WYmkopg9ceV7NYFJPB2t+jgIpYMs5k7dL54AxkvgCiDdI/ZD
-        3gLQ==
+        bh=R6XWZKI0Jv5BBqy+e+tuVA81iAkMhtX+RXM2onbHsho=;
+        b=Tg/zA16GVAvBW53C2Kl0UIW5DCIP3Ars3Vum3WtXfxI+t2tSumWhclujVsijqSA2lP
+        JlS2cZy/PWDxuvYk/pqBN7BDw8DXkmgHVNn1smcw8kjUW7zoe9EVi81jzPn3kPz1+wvb
+        NpLHhY6JYOHsYJtEFkyKO2rwY3QTOpvKqLvK4gQdpQe+jfOCH+MfVPnWMFm+VRfG/GkO
+        3rBP/bfDnfbcWPFILiYQx2A+7TQnzaltWBfEZPQtSWKa9heXA4DexqCTG31ytDvDsgKh
+        /QG97sTElPY6wjwiXzebbsfQoAIqagquCZv1CXc1VdRdIvraVWP3fu7VxajXzkxqZtq7
+        oNWw==
 X-RZG-AUTH: ":JGIXVUS7cutRB/49FwqZ7WcJeFKiMhflhwDubTJ9o1OAA2UNf2M0P2mp10IM"
 X-RZG-CLASS-ID: mo00
 Received: from iMac.fritz.box
         by smtp.strato.de (RZmta 46.1.12 DYNA|AUTH)
-        with ESMTPSA id U06217w1BLfc0EO
+        with ESMTPSA id U06217w1BLfd0EP
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256 bits))
         (Client did not present a certificate);
-        Tue, 11 Feb 2020 22:41:38 +0100 (CET)
+        Tue, 11 Feb 2020 22:41:39 +0100 (CET)
 From:   "H. Nikolaus Schaller" <hns@goldelico.com>
 To:     Paul Cercueil <paul@crapouillou.net>,
         Paul Boddie <paul@boddie.org.uk>,
@@ -57,9 +57,9 @@ Cc:     devicetree@vger.kernel.org, linux-mips@vger.kernel.org,
         linux-i2c@vger.kernel.org, netdev@vger.kernel.org,
         linux-gpio@vger.kernel.org, letux-kernel@openphoenux.org,
         kernel@pyra-handheld.com
-Subject: [PATCH 08/14] MIPS: CI20: defconfig: configure CONFIG_REGULATOR_ACT8865 for PMU
-Date:   Tue, 11 Feb 2020 22:41:25 +0100
-Message-Id: <123a132d735a02c1fcbf989c25551a616b1cb991.1581457290.git.hns@goldelico.com>
+Subject: [PATCH 09/14] MIPS: DTS: CI20: give eth0_power a defined voltage.
+Date:   Tue, 11 Feb 2020 22:41:26 +0100
+Message-Id: <c6697a2551e7ef8e4de4a92f2602b47ba1d52ee4.1581457290.git.hns@goldelico.com>
 X-Mailer: git-send-email 2.23.0
 In-Reply-To: <cover.1581457290.git.hns@goldelico.com>
 References: <cover.1581457290.git.hns@goldelico.com>
@@ -70,27 +70,26 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The PMU on the CI20 board is an ACT8600 using the ACT8865 driver.
-Since it is not compiled, the PMU and the CI20 board is running in
-power-on reset state of the PMU.
+This is a 3.3V regulator.
 
 Signed-off-by: H. Nikolaus Schaller <hns@goldelico.com>
 ---
- arch/mips/configs/ci20_defconfig | 1 +
- 1 file changed, 1 insertion(+)
+ arch/mips/boot/dts/ingenic/ci20.dts | 2 ++
+ 1 file changed, 2 insertions(+)
 
-diff --git a/arch/mips/configs/ci20_defconfig b/arch/mips/configs/ci20_defconfig
-index 30a47a7a2994..74e5775b8a05 100644
---- a/arch/mips/configs/ci20_defconfig
-+++ b/arch/mips/configs/ci20_defconfig
-@@ -95,6 +95,7 @@ CONFIG_JZ4740_WDT=y
- CONFIG_REGULATOR=y
- CONFIG_REGULATOR_DEBUG=y
- CONFIG_REGULATOR_FIXED_VOLTAGE=y
-+CONFIG_REGULATOR_ACT8865=y
- # CONFIG_VGA_CONSOLE is not set
- # CONFIG_HID is not set
- # CONFIG_USB_SUPPORT is not set
+diff --git a/arch/mips/boot/dts/ingenic/ci20.dts b/arch/mips/boot/dts/ingenic/ci20.dts
+index e02a19db7ef1..e1364f941c7d 100644
+--- a/arch/mips/boot/dts/ingenic/ci20.dts
++++ b/arch/mips/boot/dts/ingenic/ci20.dts
+@@ -56,6 +56,8 @@
+ 	eth0_power: fixedregulator@0 {
+ 		compatible = "regulator-fixed";
+ 		regulator-name = "eth0_power";
++		regulator-min-microvolt = <3300000>;
++		regulator-max-microvolt = <3300000>;
+ 		gpio = <&gpb 25 GPIO_ACTIVE_LOW>;
+ 		enable-active-high;
+ 	};
 -- 
 2.23.0
 
