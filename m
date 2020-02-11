@@ -2,55 +2,56 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id B50C51592C0
-	for <lists+netdev@lfdr.de>; Tue, 11 Feb 2020 16:18:15 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A2FF91592C5
+	for <lists+netdev@lfdr.de>; Tue, 11 Feb 2020 16:18:27 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730313AbgBKPSN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 11 Feb 2020 10:18:13 -0500
-Received: from smtp-fw-33001.amazon.com ([207.171.190.10]:1963 "EHLO
-        smtp-fw-33001.amazon.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729635AbgBKPSM (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 11 Feb 2020 10:18:12 -0500
+        id S1730342AbgBKPS0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 11 Feb 2020 10:18:26 -0500
+Received: from smtp-fw-6001.amazon.com ([52.95.48.154]:1800 "EHLO
+        smtp-fw-6001.amazon.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729018AbgBKPSZ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 11 Feb 2020 10:18:25 -0500
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
   d=amazon.com; i=@amazon.com; q=dns/txt; s=amazon201209;
-  t=1581434292; x=1612970292;
+  t=1581434306; x=1612970306;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=/M3YMWDXinVWSFZB3uwNNvdhROuACGBLiY9j4t7vGzk=;
-  b=BJxA/x5g1bU+lz2uqpKVWbYzbDsNJ7gOgPqS0Pqd8pw+sLw7DUX0Xzbb
-   bZRXbAK8B7UyFBZAAbcdJOBBIgxD+KV4qEUqU6eJWBexGh7ezN4aghcdi
-   FO4XjOpzHOoBwijBrGbYMyoLmuH5UKE0oEqE8ZEG+0aO/zvX/QTpK5ikW
-   k=;
-IronPort-SDR: QM37gYPcP5isKazn/HJxhN7axpS/JE/PyJ9hHHv+u7+R3UJYzNJx5L47VRE3NRAi6iIR5gh/Zr
- CsUNywTspCYQ==
+  bh=6xzgtDORqyJNBW10jla/yglZJRoJoP3XhY0M/+WBJig=;
+  b=K2esDYT5w8Gp3Ob6IPNRHgu9pGz+0RbTXmsriohgJCrFDecS6Ml9uOKe
+   UbTp9sJG4017GXabW8LVirzAcpJh5Wmb0AZhMbZ6piuiEbAirD+Eae0+6
+   fCJvAOxrC0E9D5Qk3j/s0KFLEX8ijr1mpDJtkFFh3Jw+0+PkBqwSCkaqm
+   M=;
+IronPort-SDR: A0veJMkwlKQF7NljqOYUqPrc5K/TN1/gptUWaraF2uppwxrVoqp66OQ9ehG/LHhxXvV7wBnnI7
+ mDWc/8ZdRAqw==
 X-IronPort-AV: E=Sophos;i="5.70,428,1574121600"; 
-   d="scan'208";a="25719231"
-Received: from sea32-co-svc-lb4-vlan3.sea.corp.amazon.com (HELO email-inbound-relay-1a-821c648d.us-east-1.amazon.com) ([10.47.23.38])
-  by smtp-border-fw-out-33001.sea14.amazon.com with ESMTP; 11 Feb 2020 15:17:59 +0000
-Received: from EX13MTAUWC001.ant.amazon.com (iad55-ws-svc-p15-lb9-vlan3.iad.amazon.com [10.40.159.166])
-        by email-inbound-relay-1a-821c648d.us-east-1.amazon.com (Postfix) with ESMTPS id DDB40A242C;
-        Tue, 11 Feb 2020 15:17:57 +0000 (UTC)
-Received: from EX13d09UWC001.ant.amazon.com (10.43.162.60) by
- EX13MTAUWC001.ant.amazon.com (10.43.162.135) with Microsoft SMTP Server (TLS)
+   d="scan'208";a="17206418"
+Received: from iad12-co-svc-p1-lb1-vlan3.amazon.com (HELO email-inbound-relay-1e-62350142.us-east-1.amazon.com) ([10.43.8.6])
+  by smtp-border-fw-out-6001.iad6.amazon.com with ESMTP; 11 Feb 2020 15:17:59 +0000
+Received: from EX13MTAUWA001.ant.amazon.com (iad55-ws-svc-p15-lb9-vlan3.iad.amazon.com [10.40.159.166])
+        by email-inbound-relay-1e-62350142.us-east-1.amazon.com (Postfix) with ESMTPS id 0CDDCA1FE9;
+        Tue, 11 Feb 2020 15:17:58 +0000 (UTC)
+Received: from EX13D21UWA002.ant.amazon.com (10.43.160.246) by
+ EX13MTAUWA001.ant.amazon.com (10.43.160.118) with Microsoft SMTP Server (TLS)
  id 15.0.1367.3; Tue, 11 Feb 2020 15:17:57 +0000
-Received: from EX13MTAUWC001.ant.amazon.com (10.43.162.135) by
- EX13d09UWC001.ant.amazon.com (10.43.162.60) with Microsoft SMTP Server (TLS)
+Received: from EX13MTAUWA001.ant.amazon.com (10.43.160.58) by
+ EX13D21UWA002.ant.amazon.com (10.43.160.246) with Microsoft SMTP Server (TLS)
  id 15.0.1367.3; Tue, 11 Feb 2020 15:17:57 +0000
 Received: from dev-dsk-sameehj-1c-1edacdb5.eu-west-1.amazon.com (172.19.82.3)
- by mail-relay.amazon.com (10.43.162.232) with Microsoft SMTP Server id
- 15.0.1367.3 via Frontend Transport; Tue, 11 Feb 2020 15:17:56 +0000
+ by mail-relay.amazon.com (10.43.160.118) with Microsoft SMTP Server id
+ 15.0.1367.3 via Frontend Transport; Tue, 11 Feb 2020 15:17:57 +0000
 Received: by dev-dsk-sameehj-1c-1edacdb5.eu-west-1.amazon.com (Postfix, from userid 9775579)
-        id A46C181D33; Tue, 11 Feb 2020 15:17:56 +0000 (UTC)
+        id A6FB581D36; Tue, 11 Feb 2020 15:17:56 +0000 (UTC)
 From:   <sameehj@amazon.com>
 To:     <davem@davemloft.net>, <netdev@vger.kernel.org>
 CC:     Arthur Kiyanovski <akiyano@amazon.com>, <dwmw@amazon.com>,
         <zorik@amazon.com>, <matua@amazon.com>, <saeedb@amazon.com>,
         <msw@amazon.com>, <aliguori@amazon.com>, <nafea@amazon.com>,
         <gtzalik@amazon.com>, <netanel@amazon.com>, <alisaidi@amazon.com>,
-        <benh@amazon.com>, <sameehj@amazon.com>, <ndagan@amazon.com>
-Subject: [PATCH V2 net 02/12] net: ena: fix uses of round_jiffies()
-Date:   Tue, 11 Feb 2020 15:17:41 +0000
-Message-ID: <20200211151751.29718-3-sameehj@amazon.com>
+        <benh@amazon.com>, <sameehj@amazon.com>, <ndagan@amazon.com>,
+        "Ezequiel Lara Gomez" <ezegomez@amazon.com>
+Subject: [PATCH V2 net 03/12] net: ena: add missing ethtool TX timestamping indication
+Date:   Tue, 11 Feb 2020 15:17:42 +0000
+Message-ID: <20200211151751.29718-4-sameehj@amazon.com>
 X-Mailer: git-send-email 2.24.1.AMZN
 In-Reply-To: <20200211151751.29718-1-sameehj@amazon.com>
 References: <20200211151751.29718-1-sameehj@amazon.com>
@@ -64,67 +65,37 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Arthur Kiyanovski <akiyano@amazon.com>
 
-From the documentation of round_jiffies():
-"Rounds a time delta  in the future (in jiffies) up or down to
-(approximately) full seconds. This is useful for timers for which
-the exact time they fire does not matter too much, as long as
-they fire approximately every X seconds.
-By rounding these timers to whole seconds, all such timers will fire
-at the same time, rather than at various times spread out. The goal
-of this is to have the CPU wake up less, which saves power."
+Current implementation of the driver calls skb_tx_timestamp()to add a
+software tx timestamp to the skb, however the software-transmit capability
+is not reported in ethtool -T.
 
-There are 2 parts to this patch:
-================================
-Part 1:
--------
-In our case we need timer_service to be called approximately every
-X=1 seconds, and the exact time does not matter, so using round_jiffies()
-is the right way to go.
+This commit updates the ethtool structure to report the software-transmit
+capability in ethtool -T using the standard ethtool_op_get_ts_info().
+This function reports all software timestamping capabilities (tx and rx),
+as well as setting phc_index = -1. phc_index is the index of the PTP
+hardware clock device that will be used for hardware timestamps. Since we
+don't have such a device in ENA, using the default -1 value is the correct
+setting.
 
-Therefore we add round_jiffies() to the mod_timer() in ena_timer_service().
-
-Part 2:
--------
-round_jiffies() is used in check_for_missing_keep_alive() when
-getting the jiffies of the expiration of the keep_alive timeout. Here it
-is actually a mistake to use round_jiffies() because we want the exact
-time when keep_alive should expire and not an approximate rounded time,
-which can cause early, false positive, timeouts.
-
-Therefore we remove round_jiffies() in the calculation of
-keep_alive_expired() in check_for_missing_keep_alive().
-
-Fixes: 82ef30f13be0 ("net: ena: add hardware hints capability to the driver")
 Fixes: 1738cd3ed342 ("net: ena: Add a driver for Amazon Elastic Network Adapters (ENA)")
+Signed-off-by: Ezequiel Lara Gomez <ezegomez@amazon.com>
 Signed-off-by: Arthur Kiyanovski <akiyano@amazon.com>
 ---
- drivers/net/ethernet/amazon/ena/ena_netdev.c | 6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
+ drivers/net/ethernet/amazon/ena/ena_ethtool.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/drivers/net/ethernet/amazon/ena/ena_netdev.c b/drivers/net/ethernet/amazon/ena/ena_netdev.c
-index 948583fdc..1c1a41bd1 100644
---- a/drivers/net/ethernet/amazon/ena/ena_netdev.c
-+++ b/drivers/net/ethernet/amazon/ena/ena_netdev.c
-@@ -3049,8 +3049,8 @@ static void check_for_missing_keep_alive(struct ena_adapter *adapter)
- 	if (adapter->keep_alive_timeout == ENA_HW_HINTS_NO_TIMEOUT)
- 		return;
+diff --git a/drivers/net/ethernet/amazon/ena/ena_ethtool.c b/drivers/net/ethernet/amazon/ena/ena_ethtool.c
+index fc96c66b4..8b56383b6 100644
+--- a/drivers/net/ethernet/amazon/ena/ena_ethtool.c
++++ b/drivers/net/ethernet/amazon/ena/ena_ethtool.c
+@@ -812,6 +812,7 @@ static const struct ethtool_ops ena_ethtool_ops = {
+ 	.set_channels		= ena_set_channels,
+ 	.get_tunable		= ena_get_tunable,
+ 	.set_tunable		= ena_set_tunable,
++	.get_ts_info            = ethtool_op_get_ts_info,
+ };
  
--	keep_alive_expired = round_jiffies(adapter->last_keep_alive_jiffies +
--					   adapter->keep_alive_timeout);
-+	keep_alive_expired = adapter->last_keep_alive_jiffies +
-+			     adapter->keep_alive_timeout;
- 	if (unlikely(time_is_before_jiffies(keep_alive_expired))) {
- 		netif_err(adapter, drv, adapter->netdev,
- 			  "Keep alive watchdog timeout.\n");
-@@ -3152,7 +3152,7 @@ static void ena_timer_service(struct timer_list *t)
- 	}
- 
- 	/* Reset the timer */
--	mod_timer(&adapter->timer_service, jiffies + HZ);
-+	mod_timer(&adapter->timer_service, round_jiffies(jiffies + HZ));
- }
- 
- static int ena_calc_max_io_queue_num(struct pci_dev *pdev,
+ void ena_set_ethtool_ops(struct net_device *netdev)
 -- 
 2.24.1.AMZN
 
