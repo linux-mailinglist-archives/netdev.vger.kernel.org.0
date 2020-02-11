@@ -2,143 +2,95 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 6E1E1158BB4
-	for <lists+netdev@lfdr.de>; Tue, 11 Feb 2020 10:19:48 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id ADB02158C13
+	for <lists+netdev@lfdr.de>; Tue, 11 Feb 2020 10:49:49 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727857AbgBKJTp (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 11 Feb 2020 04:19:45 -0500
-Received: from mail-il-dmz.mellanox.com ([193.47.165.129]:50234 "EHLO
-        mellanox.co.il" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S1727806AbgBKJTo (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 11 Feb 2020 04:19:44 -0500
-Received: from Internal Mail-Server by MTLPINE2 (envelope-from vladbu@mellanox.com)
-        with ESMTPS (AES256-SHA encrypted); 11 Feb 2020 11:19:37 +0200
-Received: from reg-r-vrt-018-180.mtr.labs.mlnx. (reg-r-vrt-018-180.mtr.labs.mlnx [10.215.1.1])
-        by labmailer.mlnx (8.13.8/8.13.8) with ESMTP id 01B9Jbgx031153;
-        Tue, 11 Feb 2020 11:19:37 +0200
-From:   Vlad Buslov <vladbu@mellanox.com>
-To:     netdev@vger.kernel.org, davem@davemloft.net
-Cc:     jhs@mojatatu.com, xiyou.wangcong@gmail.com, jiri@resnulli.us,
-        pablo@netfilter.org, marcelo.leitner@gmail.com,
-        Vlad Buslov <vladbu@mellanox.com>,
-        Jiri Pirko <jiri@mellanox.com>
-Subject: [PATCH net-next 4/4] net: sched: don't take rtnl lock during flow_action setup
-Date:   Tue, 11 Feb 2020 11:19:18 +0200
-Message-Id: <20200211091918.20974-5-vladbu@mellanox.com>
-X-Mailer: git-send-email 2.21.0
-In-Reply-To: <20200211091918.20974-1-vladbu@mellanox.com>
+        id S1728008AbgBKJts (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 11 Feb 2020 04:49:48 -0500
+Received: from mail-eopbgr80073.outbound.protection.outlook.com ([40.107.8.73]:22796
+        "EHLO EUR04-VI1-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1727966AbgBKJtr (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 11 Feb 2020 04:49:47 -0500
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=gNEC2iXo1noQHpikdPOieHUZj+rIY75cxoHHptaqdyN0IONGqQ5rVD5DTnHUBRXLcLh8fvWaW/dnRrVK3HKagB81gZMasK1pMLTFAOR9Ba42iknPdekgo5d7b3TLwaqz0epJMtyoT+ujo3wjRC4Xu2Sk50lW6oTtPr6/N4T94nOTIAF7zMFFCnW8CxgGImS6d4zdhW9Ujc7NrkfAw4UZ31alLUKIR3GfAxUsXyLjvleI+/KYppQpOLpzYAtRFzyxmyWRiYN/8kN1I59o72DATilDVS0AQcpRpHnhaSXIfAWSAm+S8T74N349BYUXPzshT6MihMpVI03gVadF3kFudA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=7UefWr7a+IyvQbFJhpnq1wlR8t6er7riLjRo1pag15k=;
+ b=b107AMRUqO2RMuZxD9J4Dv3cCxo1ZG+uvd8f/3fVMaykqoCIMZG8fRkWijpOSBisCeoL2BQ2pLc0XvlBND4ssQZdxTf8hsIRNdBdExXz/xefNbeL6NUlymSrtIsdgg+wFd1VmnI4KcLLeJjfrYZMmyWpAWCu3EB/FuVQMhuJpNa2z1qLpiH0UOwjsEnap/h3C8sTSilsFLpF0+JTXS9CII/pqf05X4QbAxKRGFkvgwRRYRMv7KdxC7yPiqFUGYCK5YpJW0/MRvlsYW4pJinVHSW5wKW4z3idsoCl4Ys+SSEpWzpLoLAOkac7UEH/P9Ko1os5q0G05bwlzWgQVz551Q==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=mellanox.com; dmarc=pass action=none header.from=mellanox.com;
+ dkim=pass header.d=mellanox.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Mellanox.com;
+ s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=7UefWr7a+IyvQbFJhpnq1wlR8t6er7riLjRo1pag15k=;
+ b=T4+rc25f3O9/FEf7wdxoT/A2zcEPXR89n4wiKiB6qjxbm8NxBRgMuQa3QeWz9AwP4QQh6xx83ZoaRh70+WM3OGrqNM5zSRIWMs+YAUcNdgdl4evWo59tTuS+NOvwHwRYlNV8Q/M4HsjoVql0LYFreNDhSSJm/5weaK4WqyeOvmA=
+Authentication-Results: spf=none (sender IP is )
+ smtp.mailfrom=vladbu@mellanox.com; 
+Received: from VI1PR05MB3359.eurprd05.prod.outlook.com (10.170.238.32) by
+ VI1PR05MB3437.eurprd05.prod.outlook.com (10.170.239.15) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.2707.23; Tue, 11 Feb 2020 09:49:44 +0000
+Received: from VI1PR05MB3359.eurprd05.prod.outlook.com
+ ([fe80::e417:36ea:e4c7:6de6]) by VI1PR05MB3359.eurprd05.prod.outlook.com
+ ([fe80::e417:36ea:e4c7:6de6%5]) with mapi id 15.20.2707.030; Tue, 11 Feb 2020
+ 09:49:43 +0000
 References: <20200211091918.20974-1-vladbu@mellanox.com>
+User-agent: mu4e 1.2.0; emacs 26.2.90
+From:   Vlad Buslov <vladbu@mellanox.com>
+To:     David Miller <davem@davemloft.net>
+Cc:     netdev@vger.kernel.org, jhs@mojatatu.com, xiyou.wangcong@gmail.com,
+        jiri@resnulli.us, pablo@netfilter.org, marcelo.leitner@gmail.com
+Subject: Re: [PATCH net-next 0/4] Remove rtnl lock dependency from flow_action infra
+In-reply-to: <20200211091918.20974-1-vladbu@mellanox.com>
+Date:   Tue, 11 Feb 2020 11:49:39 +0200
+Message-ID: <vbfa75p8nd8.fsf@mellanox.com>
+Content-Type: text/plain
+X-ClientProxiedBy: PR0P264CA0188.FRAP264.PROD.OUTLOOK.COM
+ (2603:10a6:100:1c::32) To VI1PR05MB3359.eurprd05.prod.outlook.com
+ (2603:10a6:802:1c::32)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Received: from reg-r-vrt-018-180.mellanox.com (37.142.13.130) by PR0P264CA0188.FRAP264.PROD.OUTLOOK.COM (2603:10a6:100:1c::32) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.2707.21 via Frontend Transport; Tue, 11 Feb 2020 09:49:42 +0000
+X-Originating-IP: [37.142.13.130]
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-HT: Tenant
+X-MS-Office365-Filtering-Correlation-Id: 070b7d1d-d09c-4cb8-a4c2-08d7aed7b8c4
+X-MS-TrafficTypeDiagnostic: VI1PR05MB3437:
+X-Microsoft-Antispam-PRVS: <VI1PR05MB343758BBD98E3B14B4C8E851AD180@VI1PR05MB3437.eurprd05.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:4714;
+X-Forefront-PRVS: 0310C78181
+X-Forefront-Antispam-Report: SFV:NSPM;SFS:(10009020)(4636009)(376002)(39860400002)(366004)(136003)(396003)(346002)(189003)(199004)(2616005)(956004)(6666004)(478600001)(7696005)(52116002)(966005)(2906002)(4326008)(186003)(36756003)(16526019)(5660300002)(8936002)(86362001)(66476007)(66946007)(26005)(8676002)(66556008)(6486002)(316002)(6916009)(558084003)(81166006)(81156014)(15302535012);DIR:OUT;SFP:1101;SCL:1;SRVR:VI1PR05MB3437;H:VI1PR05MB3359.eurprd05.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;MX:1;A:1;
+Received-SPF: None (protection.outlook.com: mellanox.com does not designate
+ permitted sender hosts)
+X-MS-Exchange-SenderADCheck: 1
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: LHGhF7edgMKOjqwHaCf/t3XfvuGTo0tRKQHFdEBsEBdzp4wfvbKBtlgY7+Wh3QfIUxzsXIrRCdqLEgw9fF8Qw5YD9/WTG8eJPEx5hxJdKyl+u3BVRtCeDMByY82MhQsg1a6lNJU90EWxrisCvEGjF1uLM7F7vRSix+ZZ70ah7GsiCTRC8gf0M9cAisD/4KiFTQxFEauLzP0MLSGlpNyNc1aE+X/N22yCeKDeqhUTpx5TBVEeTGEN6RMqU8xxnUOdN+pSu8k3+lfV8KBVPFswO+1PTxk0dNbtCMSmNgbnxeULfSNEvdaTSdZipal4g5jrjpNcOtBWVhf0k+mTchriARFqCI4uHudbsdc9qSvrxTCj3FcKPiCUHoedx4HAs2u9pKkxvBZJxRssay6Mk5MU+7/FZNLlNrkcqeKkSc11t+BqdOZGMAKZaoB/z5ljf9C4ZZZxR4MlREglpYgS2CfbJJScWRiz1dvJ3FFen2oUowmkzA1XdpR5CZV9HsQn6bhoe4hrLtTqBOgNQgKO/qX+iPj5lYjByaHpgGTsd3mMCcliaied1ewl/xjHuy2AuQKfFm4x60W92q/CubWDlAlgbA==
+X-MS-Exchange-AntiSpam-MessageData: kB77haVbhiTEMCEe1RVWYWXnfQfpqGEFUNuO4n0Sq2tpImn/CCdJIDnhRe1cfraRp9aNqfgB5OTPhzUBb2T+NrjMwFnqfAYsoA0gVzVObvPX3diSgfYKgmyjB2dYPKYk1NlqAlYuuprey7TQJRxVTA==
+X-OriginatorOrg: Mellanox.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 070b7d1d-d09c-4cb8-a4c2-08d7aed7b8c4
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 11 Feb 2020 09:49:43.8960
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: a652971c-7d2e-4d9b-a6a4-d149256f461b
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: tjSpDZqrMrcl4fTMGALJAmJPXneKUN7HJoDaQrxAf8rS4+EJaqt7cy9EiV6aOKR3L7hoU1crFx6ntqhgilsF5Q==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR05MB3437
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Refactor tc_setup_flow_action() function not to use rtnl lock and remove
-'rtnl_held' argument that is no longer needed.
+Hi,
 
-Signed-off-by: Vlad Buslov <vladbu@mellanox.com>
-Acked-by: Jiri Pirko <jiri@mellanox.com>
----
- include/net/pkt_cls.h    | 2 +-
- net/sched/cls_api.c      | 8 +-------
- net/sched/cls_flower.c   | 6 ++----
- net/sched/cls_matchall.c | 4 ++--
- 4 files changed, 6 insertions(+), 14 deletions(-)
+I've just noticed that http://vger.kernel.org/~davem/net-next.html is
+still "closed".
+Sorry for sending it early. I can resubmit when net-next is open again.
 
-diff --git a/include/net/pkt_cls.h b/include/net/pkt_cls.h
-index a972244ab193..53946b509b51 100644
---- a/include/net/pkt_cls.h
-+++ b/include/net/pkt_cls.h
-@@ -509,7 +509,7 @@ tcf_match_indev(struct sk_buff *skb, int ifindex)
- }
- 
- int tc_setup_flow_action(struct flow_action *flow_action,
--			 const struct tcf_exts *exts, bool rtnl_held);
-+			 const struct tcf_exts *exts);
- void tc_cleanup_flow_action(struct flow_action *flow_action);
- 
- int tc_setup_cb_call(struct tcf_block *block, enum tc_setup_type type,
-diff --git a/net/sched/cls_api.c b/net/sched/cls_api.c
-index 610505117780..13c33eaf1ca1 100644
---- a/net/sched/cls_api.c
-+++ b/net/sched/cls_api.c
-@@ -3433,7 +3433,7 @@ static void tcf_sample_get_group(struct flow_action_entry *entry,
- }
- 
- int tc_setup_flow_action(struct flow_action *flow_action,
--			 const struct tcf_exts *exts, bool rtnl_held)
-+			 const struct tcf_exts *exts)
- {
- 	struct tc_action *act;
- 	int i, j, k, err = 0;
-@@ -3441,9 +3441,6 @@ int tc_setup_flow_action(struct flow_action *flow_action,
- 	if (!exts)
- 		return 0;
- 
--	if (!rtnl_held)
--		rtnl_lock();
--
- 	j = 0;
- 	tcf_exts_for_each_action(i, act, exts) {
- 		struct flow_action_entry *entry;
-@@ -3577,9 +3574,6 @@ int tc_setup_flow_action(struct flow_action *flow_action,
- 	}
- 
- err_out:
--	if (!rtnl_held)
--		rtnl_unlock();
--
- 	if (err)
- 		tc_cleanup_flow_action(flow_action);
- 
-diff --git a/net/sched/cls_flower.c b/net/sched/cls_flower.c
-index f9c0d1e8d380..d7d3aab53120 100644
---- a/net/sched/cls_flower.c
-+++ b/net/sched/cls_flower.c
-@@ -449,8 +449,7 @@ static int fl_hw_replace_filter(struct tcf_proto *tp,
- 	cls_flower.rule->match.key = &f->mkey;
- 	cls_flower.classid = f->res.classid;
- 
--	err = tc_setup_flow_action(&cls_flower.rule->action, &f->exts,
--				   rtnl_held);
-+	err = tc_setup_flow_action(&cls_flower.rule->action, &f->exts);
- 	if (err) {
- 		kfree(cls_flower.rule);
- 		if (skip_sw) {
-@@ -1999,8 +1998,7 @@ static int fl_reoffload(struct tcf_proto *tp, bool add, flow_setup_cb_t *cb,
- 		cls_flower.rule->match.mask = &f->mask->key;
- 		cls_flower.rule->match.key = &f->mkey;
- 
--		err = tc_setup_flow_action(&cls_flower.rule->action, &f->exts,
--					   true);
-+		err = tc_setup_flow_action(&cls_flower.rule->action, &f->exts);
- 		if (err) {
- 			kfree(cls_flower.rule);
- 			if (tc_skip_sw(f->flags)) {
-diff --git a/net/sched/cls_matchall.c b/net/sched/cls_matchall.c
-index 039cc86974f4..bf2d42ee55a3 100644
---- a/net/sched/cls_matchall.c
-+++ b/net/sched/cls_matchall.c
-@@ -97,7 +97,7 @@ static int mall_replace_hw_filter(struct tcf_proto *tp,
- 	cls_mall.command = TC_CLSMATCHALL_REPLACE;
- 	cls_mall.cookie = cookie;
- 
--	err = tc_setup_flow_action(&cls_mall.rule->action, &head->exts, true);
-+	err = tc_setup_flow_action(&cls_mall.rule->action, &head->exts);
- 	if (err) {
- 		kfree(cls_mall.rule);
- 		mall_destroy_hw_filter(tp, head, cookie, NULL);
-@@ -301,7 +301,7 @@ static int mall_reoffload(struct tcf_proto *tp, bool add, flow_setup_cb_t *cb,
- 		TC_CLSMATCHALL_REPLACE : TC_CLSMATCHALL_DESTROY;
- 	cls_mall.cookie = (unsigned long)head;
- 
--	err = tc_setup_flow_action(&cls_mall.rule->action, &head->exts, true);
-+	err = tc_setup_flow_action(&cls_mall.rule->action, &head->exts);
- 	if (err) {
- 		kfree(cls_mall.rule);
- 		if (add && tc_skip_sw(head->flags)) {
--- 
-2.21.0
+Regards,
+Vlad
+
+On Tue 11 Feb 2020 at 11:19, Vlad Buslov <vladbu@mellanox.com> wrote:
+[...]
 
