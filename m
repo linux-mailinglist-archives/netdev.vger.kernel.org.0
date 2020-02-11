@@ -2,59 +2,131 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 405C9158AFE
-	for <lists+netdev@lfdr.de>; Tue, 11 Feb 2020 09:03:18 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9266F158B31
+	for <lists+netdev@lfdr.de>; Tue, 11 Feb 2020 09:20:27 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727901AbgBKIDP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 11 Feb 2020 03:03:15 -0500
-Received: from mail-ua1-f65.google.com ([209.85.222.65]:42005 "EHLO
-        mail-ua1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727613AbgBKIDP (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 11 Feb 2020 03:03:15 -0500
-Received: by mail-ua1-f65.google.com with SMTP id p2so2081751uao.9
-        for <netdev@vger.kernel.org>; Tue, 11 Feb 2020 00:03:14 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:from:date:message-id:subject:to;
-        bh=IP1qcBtUVW99xkVH2L4lN++bJQ5pAvrdSWHuwzkX3tw=;
-        b=ltwfpTA/3ZKKaArw+EyfKf4nd891ZCDIJtWamb5Gw76ufZUXN9jCwBLCtk7gtydQWI
-         JLJ5Zs1Abmdkvw52heettOKN+a5yPhUXeGdn1XTW8XwRf39N0qOA+l2a+Hg13irfI5RD
-         8ljkuWKp4Lth5QJfMtDDdHALJWTM+8F5xizbBvbgfwCweI8r8Uvqs5LfNrNa8j7z0BF+
-         dM21c1mpmln+HekycS8RAFUi6wJUMlbKw7h72pUOrS3NJ6MLGJOT6oRyaIw74z6nLvaU
-         pvMUx4JyRRUoQYplWa9Chp20ARM4FuUKF9INZ+bVZr5rlulKu2MbN+ZQBOvEyJNRF5o+
-         rNpg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:from:date:message-id:subject:to;
-        bh=IP1qcBtUVW99xkVH2L4lN++bJQ5pAvrdSWHuwzkX3tw=;
-        b=XJpAOJP9S9oPbCl75NmPcgG1055idQvGH6pyuZ0v2DKNP4bEpOZfUbNxApJExw40Ey
-         wkuL7U5U2WS7VgPJRxdLaMpeKU3U+9D3ydb0q3tTAOZgVes4f/DFonUWpHoZwffG/Ouz
-         CFYjxukStC4lbe+HeaVwSnGDk02/MoEZElx3r5lsPCBWeOE72ESgcckthi3MP18a/DzZ
-         7O9+rXv6rXbhF5ZJNUjLCvJxDkHb4hTbYMV0ICb5Qdv1v7gzoamNP4t5yipvLlGmjG8s
-         X4fZXX0xMSgCf23Ve7+qscutG1w2N4bctJUqyoVS+XOxIgbMW++mnwfDkZT2NqEv1xNu
-         Imtw==
-X-Gm-Message-State: APjAAAW88+E2PGvT6rBzPagYl5Z2/9s5GN6ialRU73o30Eg4hQe5oysC
-        z5JfUjHFwHGz4o/Q+zQduX8Sjqbvar80CcoYzzI=
-X-Google-Smtp-Source: APXvYqwChe75i6dPiUTX0AQ9qSqIqLlI9/DAlNW3rYj2Q6DmmUtAwUT8FS3MAZvQlJcjIZ0Hqhg5m7POt2P9T7D6VSg=
-X-Received: by 2002:ab0:45c7:: with SMTP id u65mr3186051uau.109.1581408194283;
- Tue, 11 Feb 2020 00:03:14 -0800 (PST)
-MIME-Version: 1.0
-Received: by 2002:a05:6102:2424:0:0:0:0 with HTTP; Tue, 11 Feb 2020 00:03:13
- -0800 (PST)
-From:   Fabio verde <fabioverde060@gmail.com>
-Date:   Tue, 11 Feb 2020 09:03:13 +0100
-Message-ID: <CAAPJqJWy8hjWePpyfCVM8wp+TrzCwbZrFwgS09hYdi_MtERqZg@mail.gmail.com>
-Subject: Urgent
-To:     fabioverde060 <fabioverde060@gmail.com>
-Content-Type: text/plain; charset="UTF-8"
+        id S1727835AbgBKIUY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 11 Feb 2020 03:20:24 -0500
+Received: from mail-il-dmz.mellanox.com ([193.47.165.129]:44434 "EHLO
+        mellanox.co.il" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+        with ESMTP id S1727613AbgBKIUY (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 11 Feb 2020 03:20:24 -0500
+Received: from Internal Mail-Server by MTLPINE2 (envelope-from raeds@mellanox.com)
+        with ESMTPS (AES256-SHA encrypted); 11 Feb 2020 10:20:21 +0200
+Received: from dev-l-vrt-074.mtl.labs.mlnx (dev-l-vrt-074.mtl.labs.mlnx [10.134.74.1])
+        by labmailer.mlnx (8.13.8/8.13.8) with ESMTP id 01B8KL87013094;
+        Tue, 11 Feb 2020 10:20:21 +0200
+From:   Raed Salem <raeds@mellanox.com>
+To:     steffen.klassert@secunet.com, herbert@gondor.apana.org.au
+Cc:     netdev@vger.kernel.org, kuznet@ms2.inr.ac.ru, davem@davemloft.net,
+        yoshfuji@linux-ipv6.org, Raed Salem <raeds@mellanox.com>
+Subject: [PATCH net-next] ESP: Export esp_output_fill_trailer function
+Date:   Tue, 11 Feb 2020 10:20:02 +0200
+Message-Id: <1581409202-23654-1-git-send-email-raeds@mellanox.com>
+X-Mailer: git-send-email 1.9.4
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Good day , my name is Fabio Verde, i sent you a mail and there was no
-response , please confirm that you did get this mail for more details.
+The esp fill trailer method is identical for both
+IPv6 and IPv4.
 
-Regards.
+Share the implementation for esp6 and esp to avoid
+code duplication in addition it could be also used
+at various drivers code.
 
-Fabio Verde
+Change-Id: Iebb4325fe12ef655a5cd6cb896cf9eed68033979
+Signed-off-by: Raed Salem <raeds@mellanox.com>
+Reviewed-by: Boris Pismenny <borisp@mellanox.com>
+Reviewed-by: Saeed Mahameed <saeedm@mellanox.com>
+---
+ include/net/esp.h | 16 ++++++++++++++++
+ net/ipv4/esp4.c   | 16 ----------------
+ net/ipv6/esp6.c   | 16 ----------------
+ 3 files changed, 16 insertions(+), 32 deletions(-)
+
+diff --git a/include/net/esp.h b/include/net/esp.h
+index 117652e..9c5637d 100644
+--- a/include/net/esp.h
++++ b/include/net/esp.h
+@@ -11,6 +11,22 @@ static inline struct ip_esp_hdr *ip_esp_hdr(const struct sk_buff *skb)
+ 	return (struct ip_esp_hdr *)skb_transport_header(skb);
+ }
+ 
++static inline void esp_output_fill_trailer(u8 *tail, int tfclen, int plen, __u8 proto)
++{
++	/* Fill padding... */
++	if (tfclen) {
++		memset(tail, 0, tfclen);
++		tail += tfclen;
++	}
++	do {
++		int i;
++		for (i = 0; i < plen - 2; i++)
++			tail[i] = i + 1;
++	} while (0);
++	tail[plen - 2] = plen - 2;
++	tail[plen - 1] = proto;
++}
++
+ struct esp_info {
+ 	struct	ip_esp_hdr *esph;
+ 	__be64	seqno;
+diff --git a/net/ipv4/esp4.c b/net/ipv4/esp4.c
+index 5c96776..2c7f391 100644
+--- a/net/ipv4/esp4.c
++++ b/net/ipv4/esp4.c
+@@ -209,22 +209,6 @@ static void esp_output_done_esn(struct crypto_async_request *base, int err)
+ 	esp_output_done(base, err);
+ }
+ 
+-static void esp_output_fill_trailer(u8 *tail, int tfclen, int plen, __u8 proto)
+-{
+-	/* Fill padding... */
+-	if (tfclen) {
+-		memset(tail, 0, tfclen);
+-		tail += tfclen;
+-	}
+-	do {
+-		int i;
+-		for (i = 0; i < plen - 2; i++)
+-			tail[i] = i + 1;
+-	} while (0);
+-	tail[plen - 2] = plen - 2;
+-	tail[plen - 1] = proto;
+-}
+-
+ static int esp_output_udp_encap(struct xfrm_state *x, struct sk_buff *skb, struct esp_info *esp)
+ {
+ 	int encap_type;
+diff --git a/net/ipv6/esp6.c b/net/ipv6/esp6.c
+index a3b403b..11143d0 100644
+--- a/net/ipv6/esp6.c
++++ b/net/ipv6/esp6.c
+@@ -207,22 +207,6 @@ static void esp_output_done_esn(struct crypto_async_request *base, int err)
+ 	esp_output_done(base, err);
+ }
+ 
+-static void esp_output_fill_trailer(u8 *tail, int tfclen, int plen, __u8 proto)
+-{
+-	/* Fill padding... */
+-	if (tfclen) {
+-		memset(tail, 0, tfclen);
+-		tail += tfclen;
+-	}
+-	do {
+-		int i;
+-		for (i = 0; i < plen - 2; i++)
+-			tail[i] = i + 1;
+-	} while (0);
+-	tail[plen - 2] = plen - 2;
+-	tail[plen - 1] = proto;
+-}
+-
+ int esp6_output_head(struct xfrm_state *x, struct sk_buff *skb, struct esp_info *esp)
+ {
+ 	u8 *tail;
+-- 
+1.9.4
+
