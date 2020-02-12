@@ -2,212 +2,148 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id BCFE115A35A
-	for <lists+netdev@lfdr.de>; Wed, 12 Feb 2020 09:31:13 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D6EBC15A364
+	for <lists+netdev@lfdr.de>; Wed, 12 Feb 2020 09:36:17 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728462AbgBLIbM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 12 Feb 2020 03:31:12 -0500
-Received: from mail-wm1-f65.google.com ([209.85.128.65]:53400 "EHLO
-        mail-wm1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728192AbgBLIbL (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 12 Feb 2020 03:31:11 -0500
-Received: by mail-wm1-f65.google.com with SMTP id s10so1063123wmh.3
-        for <netdev@vger.kernel.org>; Wed, 12 Feb 2020 00:31:09 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=8j7fiO0KMPUPBU/lKJcUZimCs21h8mk5hayYLRUChLQ=;
-        b=rIk1NDtCSUKi/gU61dC1azCXc4LwU1M2lZWPOlo9MntLf6BsDb2o8R99hJTXSDmgHC
-         aYardjTJIWGYysrUEDfBA/mVcubpWWibzZsrQenqdyJlan1vYNNg80pICV0a4EjzsAvG
-         EfgfnmFO+BJFPc6r3wFoXXXENZQ10okHG7IV5XYNsQtI8E6suUFTMTZp/SoozadegBUZ
-         ZBaGDu/GXxwtbNgymqUs+eoyll1ajiuO/W5RL0rLSMoBItwJdxhfT04PONV1bVyTFk38
-         yFd2zJ7iQUpshKg4pGev5u3KJcQZyb+jAI/ptcX38Iip4nKhlrnvSMTRwv9XzaHXSgfp
-         tLQQ==
-X-Gm-Message-State: APjAAAVitGcUP7hqflc0gB7Vjmsdir2IGoJ3KWd7aIW/ma7YNwnRDl83
-        1AS3paqp/SxEpgru+9CRuHedh1TQPu0=
-X-Google-Smtp-Source: APXvYqxUNFdbkqrl+IAlY4JHKPjQ//LEscxhyJw022m1zkWWkMaeADyQh46SH7OmecYxd4sEQMJ0RQ==
-X-Received: by 2002:a1c:960c:: with SMTP id y12mr11260128wmd.9.1581496268266;
-        Wed, 12 Feb 2020 00:31:08 -0800 (PST)
-Received: from dontpanic.criteo.prod ([91.199.242.231])
-        by smtp.gmail.com with ESMTPSA id a13sm9025428wrp.93.2020.02.12.00.31.07
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 12 Feb 2020 00:31:07 -0800 (PST)
-From:   William Dauchy <w.dauchy@criteo.com>
-To:     netdev@vger.kernel.org
-Cc:     nicolas.dichtel@6wind.com, William Dauchy <w.dauchy@criteo.com>
-Subject: [PATCH v3 net] net, ip6_tunnel: enhance tunnel locate with link check
-Date:   Wed, 12 Feb 2020 09:30:36 +0100
-Message-Id: <20200212083036.134761-1-w.dauchy@criteo.com>
-X-Mailer: git-send-email 2.25.0
-In-Reply-To: <b3497834-1ab5-3315-bfbd-ac4f5236eee3@6wind.com>
-References: <b3497834-1ab5-3315-bfbd-ac4f5236eee3@6wind.com>
+        id S1728452AbgBLIgQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 12 Feb 2020 03:36:16 -0500
+Received: from us-smtp-delivery-1.mimecast.com ([207.211.31.120]:42860 "EHLO
+        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+        with ESMTP id S1728370AbgBLIgP (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 12 Feb 2020 03:36:15 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1581496575;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=odThS3v+1FjM1ZTU82Q0GSNfQbpDXwfoFtJgRysmwgc=;
+        b=DxNjeVl/EISWK3dvFSHLlDyyM/lsSU7Q1oMmlDeLRxtR0Q7Z3NOBuMqk4bgmKFD49O+yOm
+        C0qDXdmp6sEjzBrm+zCKb82ED5bhIwsHWEs+0nuvc7g/Ui7sI+KO8+9tVwP2z7r9K5p+Un
+        SK13NklOgWKIHIhZPzQVjBtvb8ZTIJ8=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-53-trKM1IamONm8sekB-HkW7g-1; Wed, 12 Feb 2020 03:36:07 -0500
+X-MC-Unique: trKM1IamONm8sekB-HkW7g-1
+Received: from smtp.corp.redhat.com (int-mx01.intmail.prod.int.phx2.redhat.com [10.5.11.11])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 55A791857341;
+        Wed, 12 Feb 2020 08:36:06 +0000 (UTC)
+Received: from carbon (ovpn-200-41.brq.redhat.com [10.40.200.41])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 82F4988836;
+        Wed, 12 Feb 2020 08:36:02 +0000 (UTC)
+Date:   Wed, 12 Feb 2020 09:36:00 +0100
+From:   Jesper Dangaard Brouer <brouer@redhat.com>
+To:     Li RongQing <lirongqing@baidu.com>
+Cc:     netdev@vger.kernel.org, brouer@redhat.com
+Subject: Re: [PATCH][v2] page_pool: refill page when alloc.count of pool is
+ zero
+Message-ID: <20200212093600.7c1a71fe@carbon>
+In-Reply-To: <1581387224-20719-1-git-send-email-lirongqing@baidu.com>
+References: <1581387224-20719-1-git-send-email-lirongqing@baidu.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.11
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-With ipip, it is possible to create an extra interface explicitly
-attached to a given physical interface:
+On Tue, 11 Feb 2020 10:13:44 +0800
+Li RongQing <lirongqing@baidu.com> wrote:
 
-  # ip link show tunl0
-  4: tunl0@NONE: <NOARP> mtu 1480 qdisc noop state DOWN mode DEFAULT group default qlen 1000
-    link/ipip 0.0.0.0 brd 0.0.0.0
-  # ip link add tunl1 type ipip dev eth0
-  # ip link show tunl1
-  6: tunl1@eth0: <NOARP> mtu 1480 qdisc noop state DOWN mode DEFAULT group default qlen 1000
-    link/ipip 0.0.0.0 brd 0.0.0.0
+> "do {} while" in page_pool_refill_alloc_cache will always
+> refill page once whether refill is true or false, and whether
+> alloc.count of pool is less than PP_ALLOC_CACHE_REFILL or not
+> this is wrong, and will cause overflow of pool->alloc.cache
+> 
+> the caller of __page_pool_get_cached should provide guarantee
+> that pool->alloc.cache is safe to access, so in_serving_softirq
+> should be removed as suggested by Jesper Dangaard Brouer in
+> https://patchwork.ozlabs.org/patch/1233713/
+> 
+> so fix this issue by calling page_pool_refill_alloc_cache()
+> only when pool->alloc.count is zero
+> 
+> Fixes: 44768decb7c0 ("page_pool: handle page recycle for NUMA_NO_NODE condition")
+> Signed-off-by: Li RongQing <lirongqing@baidu.com>
+> Suggested: Jesper Dangaard Brouer <brouer@redhat.com>
 
-But it is not possible with ip6tnl:
+You forgot the "-by" part of "suggested-by:", added it below so patchwork pick it up.
 
-  # ip link show ip6tnl0
-  5: ip6tnl0@NONE: <NOARP> mtu 1452 qdisc noop state DOWN mode DEFAULT group default qlen 1000
-      link/tunnel6 :: brd ::
-  # ip link add ip6tnl1 type ip6tnl dev eth0
-  RTNETLINK answers: File exists
+Suggested-by: Jesper Dangaard Brouer <brouer@redhat.com>
 
-This patch aims to make it possible by adding link comparaison in both
-tunnel locate and lookup functions; we also modify mtu calculation when
-attached to an interface with a lower mtu.
 
-This permits to make use of x-netns communication by moving the newly
-created tunnel in a given netns.
+> ---
+> v1-->v2: remove the in_serving_softirq test
 
-Signed-off-by: William Dauchy <w.dauchy@criteo.com>
----
- net/ipv6/ip6_tunnel.c | 55 ++++++++++++++++++++++++++++++++-----------
- 1 file changed, 41 insertions(+), 14 deletions(-)
+Acked-by: Jesper Dangaard Brouer <brouer@redhat.com>
 
-diff --git a/net/ipv6/ip6_tunnel.c b/net/ipv6/ip6_tunnel.c
-index b5dd20c4599b..e57802f100fd 100644
---- a/net/ipv6/ip6_tunnel.c
-+++ b/net/ipv6/ip6_tunnel.c
-@@ -121,6 +121,7 @@ static struct net_device_stats *ip6_get_stats(struct net_device *dev)
+I've tested the patch and gave it some exercise with my page_pool
+benchmarks tools, everything looked good.
+
  
- /**
-  * ip6_tnl_lookup - fetch tunnel matching the end-point addresses
-+ *   @link: ifindex of underlying interface
-  *   @remote: the address of the tunnel exit-point
-  *   @local: the address of the tunnel entry-point
-  *
-@@ -134,37 +135,56 @@ static struct net_device_stats *ip6_get_stats(struct net_device *dev)
- 	for (t = rcu_dereference(start); t; t = rcu_dereference(t->next))
- 
- static struct ip6_tnl *
--ip6_tnl_lookup(struct net *net, const struct in6_addr *remote, const struct in6_addr *local)
-+ip6_tnl_lookup(struct net *net, int link,
-+	       const struct in6_addr *remote, const struct in6_addr *local)
- {
- 	unsigned int hash = HASH(remote, local);
--	struct ip6_tnl *t;
-+	struct ip6_tnl *t, *cand = NULL;
- 	struct ip6_tnl_net *ip6n = net_generic(net, ip6_tnl_net_id);
- 	struct in6_addr any;
- 
- 	for_each_ip6_tunnel_rcu(ip6n->tnls_r_l[hash]) {
--		if (ipv6_addr_equal(local, &t->parms.laddr) &&
--		    ipv6_addr_equal(remote, &t->parms.raddr) &&
--		    (t->dev->flags & IFF_UP))
-+		if (!ipv6_addr_equal(local, &t->parms.laddr) ||
-+		    !ipv6_addr_equal(remote, &t->parms.raddr) ||
-+		    !(t->dev->flags & IFF_UP))
-+			continue;
-+
-+		if (link == t->parms.link)
- 			return t;
-+		else
-+			cand = t;
- 	}
- 
- 	memset(&any, 0, sizeof(any));
- 	hash = HASH(&any, local);
- 	for_each_ip6_tunnel_rcu(ip6n->tnls_r_l[hash]) {
--		if (ipv6_addr_equal(local, &t->parms.laddr) &&
--		    ipv6_addr_any(&t->parms.raddr) &&
--		    (t->dev->flags & IFF_UP))
-+		if (!ipv6_addr_equal(local, &t->parms.laddr) ||
-+		    !ipv6_addr_any(&t->parms.raddr) ||
-+		    !(t->dev->flags & IFF_UP))
-+			continue;
-+
-+		if (link == t->parms.link)
- 			return t;
-+		else if (!cand)
-+			cand = t;
- 	}
- 
- 	hash = HASH(remote, &any);
- 	for_each_ip6_tunnel_rcu(ip6n->tnls_r_l[hash]) {
--		if (ipv6_addr_equal(remote, &t->parms.raddr) &&
--		    ipv6_addr_any(&t->parms.laddr) &&
--		    (t->dev->flags & IFF_UP))
-+		if (!ipv6_addr_equal(remote, &t->parms.raddr) ||
-+		    !ipv6_addr_any(&t->parms.laddr) ||
-+		    !(t->dev->flags & IFF_UP))
-+			continue;
-+
-+		if (link == t->parms.link)
- 			return t;
-+		else if (!cand)
-+			cand = t;
- 	}
- 
-+	if (cand)
-+		return cand;
-+
- 	t = rcu_dereference(ip6n->collect_md_tun);
- 	if (t && t->dev->flags & IFF_UP)
- 		return t;
-@@ -351,7 +371,8 @@ static struct ip6_tnl *ip6_tnl_locate(struct net *net,
- 	     (t = rtnl_dereference(*tp)) != NULL;
- 	     tp = &t->next) {
- 		if (ipv6_addr_equal(local, &t->parms.laddr) &&
--		    ipv6_addr_equal(remote, &t->parms.raddr)) {
-+		    ipv6_addr_equal(remote, &t->parms.raddr) &&
-+		    p->link == t->parms.link) {
- 			if (create)
- 				return ERR_PTR(-EEXIST);
- 
-@@ -485,7 +506,7 @@ ip6_tnl_err(struct sk_buff *skb, __u8 ipproto, struct inet6_skb_parm *opt,
- 	   processing of the error. */
- 
- 	rcu_read_lock();
--	t = ip6_tnl_lookup(dev_net(skb->dev), &ipv6h->daddr, &ipv6h->saddr);
-+	t = ip6_tnl_lookup(dev_net(skb->dev), skb->dev->ifindex, &ipv6h->daddr, &ipv6h->saddr);
- 	if (!t)
- 		goto out;
- 
-@@ -887,7 +908,7 @@ static int ipxip6_rcv(struct sk_buff *skb, u8 ipproto,
- 	int ret = -1;
- 
- 	rcu_read_lock();
--	t = ip6_tnl_lookup(dev_net(skb->dev), &ipv6h->saddr, &ipv6h->daddr);
-+	t = ip6_tnl_lookup(dev_net(skb->dev), skb->dev->ifindex, &ipv6h->saddr, &ipv6h->daddr);
- 
- 	if (t) {
- 		u8 tproto = READ_ONCE(t->parms.proto);
-@@ -1823,6 +1844,7 @@ static void ip6_tnl_dev_setup(struct net_device *dev)
- static inline int
- ip6_tnl_dev_init_gen(struct net_device *dev)
- {
-+	struct net_device *tdev = NULL;
- 	struct ip6_tnl *t = netdev_priv(dev);
- 	int ret;
- 	int t_hlen;
-@@ -1848,6 +1870,11 @@ ip6_tnl_dev_init_gen(struct net_device *dev)
- 	dev->type = ARPHRD_TUNNEL6;
- 	dev->hard_header_len = LL_MAX_HEADER + t_hlen;
- 	dev->mtu = ETH_DATA_LEN - t_hlen;
-+	if (t->parms.link) {
-+		tdev = __dev_get_by_index(t->net, t->parms.link);
-+		if (tdev && tdev->mtu < dev->mtu)
-+			dev->mtu = tdev->mtu;
-+	}
- 	if (!(t->parms.flags & IP6_TNL_F_IGN_ENCAP_LIMIT))
- 		dev->mtu -= 8;
- 	dev->min_mtu = ETH_MIN_MTU;
+>  net/core/page_pool.c | 22 ++++++++--------------
+>  1 file changed, 8 insertions(+), 14 deletions(-)
+> 
+> diff --git a/net/core/page_pool.c b/net/core/page_pool.c
+> index 9b7cbe35df37..10d2b255df5e 100644
+> --- a/net/core/page_pool.c
+> +++ b/net/core/page_pool.c
+> @@ -99,8 +99,7 @@ EXPORT_SYMBOL(page_pool_create);
+>  static void __page_pool_return_page(struct page_pool *pool, struct page *page);
+>  
+>  noinline
+> -static struct page *page_pool_refill_alloc_cache(struct page_pool *pool,
+> -						 bool refill)
+> +static struct page *page_pool_refill_alloc_cache(struct page_pool *pool)
+>  {
+>  	struct ptr_ring *r = &pool->ring;
+>  	struct page *page;
+> @@ -141,8 +140,7 @@ static struct page *page_pool_refill_alloc_cache(struct page_pool *pool,
+>  			page = NULL;
+>  			break;
+>  		}
+> -	} while (pool->alloc.count < PP_ALLOC_CACHE_REFILL &&
+> -		 refill);
+> +	} while (pool->alloc.count < PP_ALLOC_CACHE_REFILL);
+>  
+>  	/* Return last page */
+>  	if (likely(pool->alloc.count > 0))
+> @@ -155,20 +153,16 @@ static struct page *page_pool_refill_alloc_cache(struct page_pool *pool,
+>  /* fast path */
+>  static struct page *__page_pool_get_cached(struct page_pool *pool)
+>  {
+> -	bool refill = false;
+>  	struct page *page;
+>  
+> -	/* Test for safe-context, caller should provide this guarantee */
+> -	if (likely(in_serving_softirq())) {
+> -		if (likely(pool->alloc.count)) {
+> -			/* Fast-path */
+> -			page = pool->alloc.cache[--pool->alloc.count];
+> -			return page;
+> -		}
+> -		refill = true;
+> +	/* Caller MUST guarantee safe non-concurrent access, e.g. softirq */
+> +	if (likely(pool->alloc.count)) {
+> +		/* Fast-path */
+> +		page = pool->alloc.cache[--pool->alloc.count];
+> +	} else {
+> +		page = page_pool_refill_alloc_cache(pool);
+>  	}
+>  
+> -	page = page_pool_refill_alloc_cache(pool, refill);
+>  	return page;
+>  }
+>  
+
+
 -- 
-2.25.0
+Best regards,
+  Jesper Dangaard Brouer
+  MSc.CS, Principal Kernel Engineer at Red Hat
+  LinkedIn: http://www.linkedin.com/in/brouer
 
