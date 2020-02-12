@@ -2,71 +2,88 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 4C52E15AEF5
-	for <lists+netdev@lfdr.de>; Wed, 12 Feb 2020 18:44:03 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 36FFF15AF0E
+	for <lists+netdev@lfdr.de>; Wed, 12 Feb 2020 18:51:00 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728612AbgBLRoA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 12 Feb 2020 12:44:00 -0500
-Received: from shards.monkeyblade.net ([23.128.96.9]:33468 "EHLO
-        shards.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726728AbgBLRoA (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 12 Feb 2020 12:44:00 -0500
-Received: from localhost (unknown [IPv6:2601:601:9f00:477::3d5])
-        (using TLSv1 with cipher AES256-SHA (256/256 bits))
-        (Client did not present a certificate)
-        (Authenticated sender: davem-davemloft)
-        by shards.monkeyblade.net (Postfix) with ESMTPSA id 484DE13B28916;
-        Wed, 12 Feb 2020 09:43:59 -0800 (PST)
-Date:   Wed, 12 Feb 2020 09:43:56 -0800 (PST)
-Message-Id: <20200212.094356.734697556409905980.davem@davemloft.net>
-To:     firo.yang@suse.com
-Cc:     netdev@vger.kernel.org, pkaustub@cisco.com, _govind@gmx.com,
-        benve@cisco.com, firogm@gmail.com
-Subject: Re: [PATCH 1/1] enic: prevent waking up stopped tx queues over
- watchdog reset
-From:   David Miller <davem@davemloft.net>
-In-Reply-To: <20200212050917.848742-1-firo.yang@suse.com>
-References: <20200212050917.848742-1-firo.yang@suse.com>
-X-Mailer: Mew version 6.8 on Emacs 26.1
-Mime-Version: 1.0
-Content-Type: Text/Plain; charset=us-ascii
+        id S1727429AbgBLRu5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 12 Feb 2020 12:50:57 -0500
+Received: from mail-pl1-f170.google.com ([209.85.214.170]:33271 "EHLO
+        mail-pl1-f170.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727231AbgBLRu5 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 12 Feb 2020 12:50:57 -0500
+Received: by mail-pl1-f170.google.com with SMTP id ay11so1243535plb.0;
+        Wed, 12 Feb 2020 09:50:56 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=to:from:subject:message-id:date:user-agent:mime-version
+         :content-language:content-transfer-encoding;
+        bh=WlfizKyJLlE4PPRpEBnAfQhblO6ccbV8l8FfcsZgVuU=;
+        b=OMmy+8/yQYIE8kudw/ta1hRvXKj2eHxdbIRVeh0uciEHHqZTK7f79gQzG4g/v+PUad
+         qZbe4/lE+9UWRqikkzt4QllvZHk8Q4Um325o4EG594R+4NABr7QdAJldUWojSlxtQoS3
+         CRMpfZT6+VvB3LeFASwqPmc+VmhSsrndfqtvh22flVRJ96k3zpW1cK67ZE5q0Km015tX
+         6YDjJ8UbR6kC/SMMwVvQSIT74XL2U5wv6iUV079C6JvjrFklRok1/nC+RRG+QGBAlJZ/
+         2gj2Jdc3WsT6ZvtFlY3eHuYTMPv6ox1hbqZTRLQ6kFjMJP5OxYc1h7VBC6wWGM9QC3Tj
+         5CTQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:to:from:subject:message-id:date:user-agent
+         :mime-version:content-language:content-transfer-encoding;
+        bh=WlfizKyJLlE4PPRpEBnAfQhblO6ccbV8l8FfcsZgVuU=;
+        b=dbZAmeDo8fCbh+2XJR+7YV+BkNnxMXTXPDGlqWUZfi5l7NJ9fekX0EDvjk/mwplizj
+         8JM1LPRSARB8JCjvqQv1wQYDJY/CuSMNxad7Tr9GrU2JpdutpuUvPVk/cYrVxzf5DLeW
+         jR3yg6zeSrE1F5rnb3lFOcKYUfwCPs94UubSUqtEQhOHIsHKlzgAJS2EXvOTCtFLz4oK
+         gAHsBN4dKHXRGPBCQkQlgmRyoBT0xpZHtBolkPGvomVn90vmHJcAk7vqaXkdC6YEKVms
+         V9RKIDTNZRMLo2HbYCMSdlXjHUY04GnQ4dcb3hHcUCVqm3RZdWQWJyRh/Ca3Rtl0raLx
+         GtUQ==
+X-Gm-Message-State: APjAAAXp3YwPuFfiN8kDj9GGfVJRodrqUnY9W/r0mNK8TwFBbiJBvviR
+        2XDdeP5O4nz4FVlmxSw9+/+2VJlX
+X-Google-Smtp-Source: APXvYqylxQAkr6l5pubQoJJDDtrgm6cLwOt+feOvg6PlruY4p00p9hlEEWhTd87WJUgAZkVJRUhZIg==
+X-Received: by 2002:a17:90a:858a:: with SMTP id m10mr198932pjn.117.1581529856264;
+        Wed, 12 Feb 2020 09:50:56 -0800 (PST)
+Received: from ?IPv6:2620:15c:2c1:200:55c7:81e6:c7d8:94b? ([2620:15c:2c1:200:55c7:81e6:c7d8:94b])
+        by smtp.gmail.com with ESMTPSA id e4sm1067264pgg.94.2020.02.12.09.50.54
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 12 Feb 2020 09:50:55 -0800 (PST)
+To:     Michael Kerrisk <mtk.manpages@gmail.com>,
+        netdev <netdev@vger.kernel.org>, linux-man@vger.kernel.org
+From:   Eric Dumazet <eric.dumazet@gmail.com>
+Subject: connect() man page
+Message-ID: <f8517600-620b-1604-5f30-0f0698f5e33c@gmail.com>
+Date:   Wed, 12 Feb 2020 09:50:53 -0800
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.2.2
+MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
 Content-Transfer-Encoding: 7bit
-X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Wed, 12 Feb 2020 09:43:59 -0800 (PST)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Firo Yang <firo.yang@suse.com>
-Date: Wed, 12 Feb 2020 06:09:17 +0100
+Hi Michael
 
-> Recent months, our customer reported several kernel crashes all
-> preceding with following message:
-> NETDEV WATCHDOG: eth2 (enic): transmit queue 0 timed out
-> Error message of one of those crashes:
-> BUG: unable to handle kernel paging request at ffffffffa007e090
-> 
-> After analyzing severl vmcores, I found that most of crashes are
-> caused by memory corruption. And all the corrupted memory areas
-> are overwritten by data of network packets. Moreover, I also found
-> that the tx queues were enabled over watchdog reset.
-> 
-> After going through the source code, I found that in enic_stop(),
-> the tx queues stopped by netif_tx_disable() could be woken up over
-> a small time window between netif_tx_disable() and the
-> napi_disable() by the following code path:
-> napi_poll->
->   enic_poll_msix_wq->
->      vnic_cq_service->
->         enic_wq_service->
->            netif_wake_subqueue(enic->netdev, q_number)->
->               test_and_clear_bit(__QUEUE_STATE_DRV_XOFF, &txq->state)
-> In turn, upper netowrk stack could queue skb to ENIC NIC though
-> enic_hard_start_xmit(). And this might introduce some race condition.
-> 
-> Our customer comfirmed that this kind of kernel crash doesn't occur over
-> 90 days since they applied this patch.
-> 
-> Signed-off-by: Firo Yang <firo.yang@suse.com>
+connect() man page seems obsolete or confusing :
 
-Applied and queued up for -stable, thanks.
+       Generally,  connection-based  protocol  sockets may successfully connect()
+       only once; connectionless protocol  sockets  may  use  connect()  multiple
+       times  to  change  their association.  Connectionless sockets may dissolve
+       the association by connecting to an address with the sa_family  member  of
+       sockaddr set to AF_UNSPEC (supported on Linux since kernel 2.2).
+
+
+1) At least TCP has supported AF_UNSPEC thing forever.
+
+2) By definition connectionless sockets do not have an association,
+   why would they call connect(AF_UNSPEC) to remove a connection which does not exist ...
+
+Maybe we should rewrite this paragraph to match reality, since this causes confusion.
+
+
+       Some protocol sockets may successfully connect() only once.
+       Some protocol sockets may use connect() multiple times  to  change  their association.
+       Some protocol sockets may dissolve the association by connecting to an address with
+       the sa_family member of sockaddr set to AF_UNSPEC (supported on Linux since kernel 2.2).
+
+Thanks.
+
