@@ -2,124 +2,147 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 6C41A15A28F
-	for <lists+netdev@lfdr.de>; Wed, 12 Feb 2020 09:01:21 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id BBC2815A29D
+	for <lists+netdev@lfdr.de>; Wed, 12 Feb 2020 09:01:56 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728410AbgBLIBJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 12 Feb 2020 03:01:09 -0500
-Received: from mail-oi1-f193.google.com ([209.85.167.193]:38851 "EHLO
-        mail-oi1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728109AbgBLIBJ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 12 Feb 2020 03:01:09 -0500
-Received: by mail-oi1-f193.google.com with SMTP id l9so1188963oii.5;
-        Wed, 12 Feb 2020 00:01:08 -0800 (PST)
+        id S1728464AbgBLIBq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 12 Feb 2020 03:01:46 -0500
+Received: from mail-wm1-f66.google.com ([209.85.128.66]:33695 "EHLO
+        mail-wm1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728192AbgBLIBq (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 12 Feb 2020 03:01:46 -0500
+Received: by mail-wm1-f66.google.com with SMTP id m10so4063212wmc.0
+        for <netdev@vger.kernel.org>; Wed, 12 Feb 2020 00:01:45 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=lmPR1Xe9opiuaBTqrJK/I3zu36nY5Lxo/WsN3SiXlI0=;
+        b=NOz0kGbONpCvbGLpHXyA4Q80Txi1QLqlWEjOXFPVUa3QxO6Iu9JwYaRNJYQAvV5fhT
+         fzjos+xg51q4TFepcexEzDzHvnTTPguzGhhYOSFC+ngvCnRXCDEDf3Y1Ocxe39KzYAL0
+         mUi0MwkgZAvEdVjiWcZoseQc7+oqL0onEL50VmCRt7ze+/fJOED4VhPNuVpltxYfh9jn
+         Cu+mUdMkIMoPKQX3+q+ROvAI9uwTFUgT2uceXtuibpGO5vrdozpkv4aOA9y/Zj8LETl6
+         aaYl+YrdVqHcemw6VkpIB623gbJBJ0W5gWirpZGy0NjNj6+/DNse7lpGUE7miZSut31Z
+         EUuQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=KZX62Ncm7BRBCAe4drc/sfEHJXd9NYa0w9qMKq0PjM8=;
-        b=QqMVPqa0vn11NKTeYrlI8UfEvB/etjkx27NA5FHWFLK2TclXkTio7yygyVHSRzs5UF
-         M6Dr/oNgUFEKukikI8sD5o+OM2x1MlxigzwFLyIDSIwQwJRmKICURATQwZKR/Kqw71Mo
-         bMyJ4YCI/7WB5Urm6QbjB2JnIjy4JuVVyKJ0JZnBXE+4tw+06JzELajoUO5f1JtPh4Wj
-         MuoELqj3F85huGPvrY7KqqQVttpgpMyfOpOSA2gBwvVXMHDgG4c6slzwPjtaLzjGePKb
-         ZsA11YM90EiozrMS/a+HUyl7t/pGJ7xBGiJs5kFBr2oTUDLVNN1aedDP200jU7Dqnxh/
-         w3pA==
-X-Gm-Message-State: APjAAAW5j2/zuVB04a2FRRx8adAJZLua/CjTD+z8pSZoKId+QrwpGHa9
-        rl+MsByInNEK0ByejeVdxxjH0nZqyOrMOWy71lM=
-X-Google-Smtp-Source: APXvYqxIAWciXgX8Kg/NU7BBZdipTfk2Iit3VO6zsFrUPVMgKeeaRMICqmTEeOvyNcdispn7Re4fuSGTerOY5ooQ4Qk=
-X-Received: by 2002:a54:4707:: with SMTP id k7mr5186800oik.153.1581494468476;
- Wed, 12 Feb 2020 00:01:08 -0800 (PST)
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=lmPR1Xe9opiuaBTqrJK/I3zu36nY5Lxo/WsN3SiXlI0=;
+        b=j08Fk5EdpeS3up4inlo2NdGnJ5+3rJw21QffAYLrcldfYD1Z22sGEYWIQlwo7LDQsK
+         flvczWw52n9ceMQpD2YNO/J6ovHrpk8RTanJ7P/9UaIJ/Sx/KveMYdmH7g0pof+YLpc0
+         jIx3t2ipwxX+hKo1vSVIiUS6xOb+YbiWNYso/bmeewtNdN/hH25JM+oX1kVW3StfgOox
+         1c3w9nTApASaSrvzV4vhhZpsf16Mw6DzgctcCp0Lm0miX8TbsDWDDrP7n0s4ZFDUXiri
+         yVYWmhpVFCho0U0lfnx3fet9jxMntIUJ7HMX4BgW6jfsD/5euTfXIpY3hHWJbzdsa8SD
+         m+bw==
+X-Gm-Message-State: APjAAAUpII0orAQieid/59/vDKI44aawk+fBsVFSfri11fj+J7jNaJ5T
+        Iab8O9o0J60uciKjqnUox4qsZg==
+X-Google-Smtp-Source: APXvYqw+Ie/n5t8mClN7YTsdOesmGk4YpEm2+t+XRc9xxjbuU63PqDca4gVk8bDUk8SbPvsGpKwYnQ==
+X-Received: by 2002:a1c:48c1:: with SMTP id v184mr11029309wma.5.1581494504748;
+        Wed, 12 Feb 2020 00:01:44 -0800 (PST)
+Received: from apalos.home (ppp-2-87-54-32.home.otenet.gr. [2.87.54.32])
+        by smtp.gmail.com with ESMTPSA id i204sm7531612wma.44.2020.02.12.00.01.43
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 12 Feb 2020 00:01:44 -0800 (PST)
+Date:   Wed, 12 Feb 2020 10:01:41 +0200
+From:   Ilias Apalodimas <ilias.apalodimas@linaro.org>
+To:     Li RongQing <lirongqing@baidu.com>
+Cc:     netdev@vger.kernel.org, brouer@redhat.com
+Subject: Re: [PATCH][v2] page_pool: refill page when alloc.count of pool is
+ zero
+Message-ID: <20200212080141.GA1174676@apalos.home>
+References: <1581387224-20719-1-git-send-email-lirongqing@baidu.com>
 MIME-Version: 1.0
-References: <20200211174126.GA29960@embeddedor>
-In-Reply-To: <20200211174126.GA29960@embeddedor>
-From:   Geert Uytterhoeven <geert@linux-m68k.org>
-Date:   Wed, 12 Feb 2020 09:00:57 +0100
-Message-ID: <CAMuHMdV3DY1X3s7fvZz8MpxvqsUZAOivc18f40Ca8kHiZqfqKw@mail.gmail.com>
-Subject: Re: [PATCH] treewide: Replace zero-length arrays with flexible-array member
-To:     "Gustavo A. R. Silva" <gustavo@embeddedor.com>
-Cc:     Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Kees Cook <keescook@chromium.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Greg KH <gregkh@linuxfoundation.org>,
-        Linux Crypto Mailing List <linux-crypto@vger.kernel.org>,
-        netdev <netdev@vger.kernel.org>,
-        USB list <linux-usb@vger.kernel.org>,
-        linux-m68k <linux-m68k@lists.linux-m68k.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <1581387224-20719-1-git-send-email-lirongqing@baidu.com>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Gustavo,
+Hi Li,
 
-On Tue, Feb 11, 2020 at 10:49 PM Gustavo A. R. Silva
-<gustavo@embeddedor.com> wrote:
-> The current codebase makes use of the zero-length array language
-> extension to the C90 standard, but the preferred mechanism to declare
-> variable-length types such as these ones is a flexible array member[1][2],
-> introduced in C99:
->
-> struct foo {
->         int stuff;
->         struct boo array[];
-> };
->
-> By making use of the mechanism above, we will get a compiler warning
-> in case the flexible array does not occur last in the structure, which
-> will help us prevent some kind of undefined behavior bugs from being
-> unadvertenly introduced[3] to the codebase from now on.
->
-> All these instances of code were found with the help of the following
-> Coccinelle script:
->
-> @@
-> identifier S, member, array;
-> type T1, T2;
-> @@
->
-> struct S {
->   ...
->   T1 member;
->   T2 array[
-> - 0
->   ];
-> };
->
-> [1] https://gcc.gnu.org/onlinedocs/gcc/Zero-Length.html
-> [2] https://github.com/KSPP/linux/issues/21
-> [3] commit 76497732932f ("cxgb3/l2t: Fix undefined behaviour")
->
-> NOTE: I'll carry this in my -next tree for the v5.6 merge window.
->
-> Signed-off-by: Gustavo A. R. Silva <gustavo@embeddedor.com>
+On Tue, Feb 11, 2020 at 10:13:44AM +0800, Li RongQing wrote:
+> "do {} while" in page_pool_refill_alloc_cache will always
+> refill page once whether refill is true or false, and whether
+> alloc.count of pool is less than PP_ALLOC_CACHE_REFILL or not
+> this is wrong, and will cause overflow of pool->alloc.cache
+> 
+> the caller of __page_pool_get_cached should provide guarantee
+> that pool->alloc.cache is safe to access, so in_serving_softirq
+> should be removed as suggested by Jesper Dangaard Brouer in
+> https://patchwork.ozlabs.org/patch/1233713/
+> 
+> so fix this issue by calling page_pool_refill_alloc_cache()
+> only when pool->alloc.count is zero
 
-Thanks!
+Please include me on any future mails regarding pate pool. I almost missed this
+one
 
-> --- a/arch/m68k/tools/amiga/dmesg.c
-> +++ b/arch/m68k/tools/amiga/dmesg.c
-> @@ -34,7 +34,7 @@ struct savekmsg {
->      u_long magic2;     /* SAVEKMSG_MAGIC2 */
->      u_long magicptr;   /* address of magic1 */
->      u_long size;
-> -    char data[0];
-> +       char data[];
->  };
-
-JFTR, this file is not really part of the kernel, but supposed to be compiled
-by an AmigaOS compiler, which may predate the introduction of support
-for flexible array members.
-
-Well, even if you keep it included, I guess the rare users can manage ;-)
-My binary dates back to 1996, and I have no plans to recompile it.
-
-Gr{oetje,eeting}s,
-
-                        Geert
-
--- 
-Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
-
-In personal conversations with technical people, I call myself a hacker. But
-when I'm talking to journalists I just say "programmer" or something like that.
-                                -- Linus Torvalds
+Thanks
+/Ilias
+> 
+> Fixes: 44768decb7c0 ("page_pool: handle page recycle for NUMA_NO_NODE condition")
+> Signed-off-by: Li RongQing <lirongqing@baidu.com>
+> Suggested: Jesper Dangaard Brouer <brouer@redhat.com>
+> ---
+> v1-->v2: remove the in_serving_softirq test
+> 
+>  net/core/page_pool.c | 22 ++++++++--------------
+>  1 file changed, 8 insertions(+), 14 deletions(-)
+> 
+> diff --git a/net/core/page_pool.c b/net/core/page_pool.c
+> index 9b7cbe35df37..10d2b255df5e 100644
+> --- a/net/core/page_pool.c
+> +++ b/net/core/page_pool.c
+> @@ -99,8 +99,7 @@ EXPORT_SYMBOL(page_pool_create);
+>  static void __page_pool_return_page(struct page_pool *pool, struct page *page);
+>  
+>  noinline
+> -static struct page *page_pool_refill_alloc_cache(struct page_pool *pool,
+> -						 bool refill)
+> +static struct page *page_pool_refill_alloc_cache(struct page_pool *pool)
+>  {
+>  	struct ptr_ring *r = &pool->ring;
+>  	struct page *page;
+> @@ -141,8 +140,7 @@ static struct page *page_pool_refill_alloc_cache(struct page_pool *pool,
+>  			page = NULL;
+>  			break;
+>  		}
+> -	} while (pool->alloc.count < PP_ALLOC_CACHE_REFILL &&
+> -		 refill);
+> +	} while (pool->alloc.count < PP_ALLOC_CACHE_REFILL);
+>  
+>  	/* Return last page */
+>  	if (likely(pool->alloc.count > 0))
+> @@ -155,20 +153,16 @@ static struct page *page_pool_refill_alloc_cache(struct page_pool *pool,
+>  /* fast path */
+>  static struct page *__page_pool_get_cached(struct page_pool *pool)
+>  {
+> -	bool refill = false;
+>  	struct page *page;
+>  
+> -	/* Test for safe-context, caller should provide this guarantee */
+> -	if (likely(in_serving_softirq())) {
+> -		if (likely(pool->alloc.count)) {
+> -			/* Fast-path */
+> -			page = pool->alloc.cache[--pool->alloc.count];
+> -			return page;
+> -		}
+> -		refill = true;
+> +	/* Caller MUST guarantee safe non-concurrent access, e.g. softirq */
+> +	if (likely(pool->alloc.count)) {
+> +		/* Fast-path */
+> +		page = pool->alloc.cache[--pool->alloc.count];
+> +	} else {
+> +		page = page_pool_refill_alloc_cache(pool);
+>  	}
+>  
+> -	page = page_pool_refill_alloc_cache(pool, refill);
+>  	return page;
+>  }
+>  
+> -- 
+> 2.16.2
+> 
