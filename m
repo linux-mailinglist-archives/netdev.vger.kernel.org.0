@@ -2,75 +2,82 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 54DD815A567
-	for <lists+netdev@lfdr.de>; Wed, 12 Feb 2020 10:55:19 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id CA2BA15A571
+	for <lists+netdev@lfdr.de>; Wed, 12 Feb 2020 10:57:04 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728993AbgBLJzQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 12 Feb 2020 04:55:16 -0500
-Received: from mxhk.zte.com.cn ([63.217.80.70]:48150 "EHLO mxhk.zte.com.cn"
+        id S1728926AbgBLJ5B (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 12 Feb 2020 04:57:01 -0500
+Received: from smtp2.axis.com ([195.60.68.18]:42037 "EHLO smtp2.axis.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728846AbgBLJzP (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 12 Feb 2020 04:55:15 -0500
-Received: from mse-fl1.zte.com.cn (unknown [10.30.14.238])
-        by Forcepoint Email with ESMTPS id 0429CB67386CD6FE23CF;
-        Wed, 12 Feb 2020 17:55:14 +0800 (CST)
-Received: from notes_smtp.zte.com.cn (notessmtp.zte.com.cn [10.30.1.239])
-        by mse-fl1.zte.com.cn with ESMTP id 01C9sg5i032881;
-        Wed, 12 Feb 2020 17:54:42 +0800 (GMT-8)
-        (envelope-from wang.yi59@zte.com.cn)
-Received: from fox-host8.localdomain ([10.74.120.8])
-          by szsmtp06.zte.com.cn (Lotus Domino Release 8.5.3FP6)
-          with ESMTP id 2020021217550296-2102571 ;
-          Wed, 12 Feb 2020 17:55:02 +0800 
-From:   Yi Wang <wang.yi59@zte.com.cn>
-To:     steffen.klassert@secunet.com
-Cc:     herbert@gondor.apana.org.au, davem@davemloft.net, kuba@kernel.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        xue.zhihong@zte.com.cn, wang.yi59@zte.com.cn,
-        wang.liang82@zte.com.cn, Huang Zijiang <huang.zijiang@zte.com.cn>
-Subject: [PATCH] xfrm: Use kmem_cache_zalloc() instead of kmem_cache_alloc() with flag GFP_ZERO.
-Date:   Wed, 12 Feb 2020 17:54:36 +0800
-Message-Id: <1581501276-5636-1-git-send-email-wang.yi59@zte.com.cn>
-X-Mailer: git-send-email 1.8.3.1
-X-MIMETrack: Itemize by SMTP Server on SZSMTP06/server/zte_ltd(Release 8.5.3FP6|November
- 21, 2013) at 2020-02-12 17:55:03,
-        Serialize by Router on notes_smtp/zte_ltd(Release 9.0.1FP7|August  17, 2016) at
- 2020-02-12 17:54:45,
-        Serialize complete at 2020-02-12 17:54:45
-X-MAIL: mse-fl1.zte.com.cn 01C9sg5i032881
+        id S1728745AbgBLJ5B (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 12 Feb 2020 04:57:01 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=axis.com; l=789; q=dns/txt; s=axis-central1;
+  t=1581501421; x=1613037421;
+  h=from:to:cc:subject:date:message-id:
+   content-transfer-encoding:mime-version;
+  bh=q14WuvPzXGRi8UR5yHYhZpOy+zA4EB3WOsMdi49JbeY=;
+  b=JYq7+O0jKzDn378SMHs8I5ub9yI8K6P6LV8MfeNIGAqLXfZe5Sm8hVqT
+   FGzcrmGC1d1gonPB6yEXUMAGlRUd8KfL/iGLqk/hbbnSyxngPlnRRmOeT
+   htlf9hPSoNUweO6116IhIN9p79cuh7d8oX+DYWxf9USr/fwpwI/4/7vxM
+   eONCJi9XsTbDgT8ZHlm77wrDZCySaB1U+fb45i6YpaeZtjuNVhG5bFJls
+   tVD5e7FH9OxW1jxfA+KEZXhRL3iv0hnqhFT9M9Zq/SjXOlBMYsEnX2uZI
+   cQHRaxAHECbnVmzfSL2KVraG3IYGQScyBQoJcC+Pj9SqF23lEY6+3BZq6
+   w==;
+IronPort-SDR: 7lXDnhOrMxhab03866KUi9pn9BeRgT0xwRz0DFSLmQhvCYbyTV4DO/Bc0us0aNSO5K78WreaTb
+ oR0H4Yn+pWMLHFqBoXCQaYmRmTx7nvvnvCcSqfJy4hGYqbXBatXY4oXFCc+odM5yYu3+AH6WE4
+ vXnKqrar+P5XyoXyWmV4J2lcpm25gSmWknGZ5V/PH7zZEtvGkgBSnzT5bb+ecE00nlxzNGMDFD
+ /dg+aFyF65HSdcTcDqXTcrbgF+SVDgSr5lkXi8RFw3Uu2PXFpwO1zhK3EtW6OLWXVOSK8jprzz
+ 8IQ=
+X-IronPort-AV: E=Sophos;i="5.70,428,1574118000"; 
+   d="scan'208";a="5190707"
+From:   =?iso-8859-1?Q?Per_F=F6rlin?= <Per.Forlin@axis.com>
+To:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "john@phrozen.org" <john@phrozen.org>
+CC:     "andrew@lunn.ch" <andrew@lunn.ch>,
+        "f.fainelli@gmail.com" <f.fainelli@gmail.com>
+Subject: [Question] net: dsa: tag_qca: QCA tag and headroom size?
+Thread-Topic: [Question] net: dsa: tag_qca: QCA tag and headroom size?
+Thread-Index: AQHV4YqjsBkgaUILIE2xIc9Wj2Kh/Q==
+Date:   Wed, 12 Feb 2020 09:57:00 +0000
+Message-ID: <1581501418212.84729@axis.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-ms-exchange-transport-fromentityheader: Hosted
+x-originating-ip: [10.0.5.60]
+Content-Type: text/plain; charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
+MIME-Version: 1.0
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Huang Zijiang <huang.zijiang@zte.com.cn>
-
-Use kmem_cache_zalloc instead of manually setting kmem_cache_alloc
-with flag GFP_ZERO since kzalloc sets allocated memory
-to zero.
-
-Change in v2:
-     add indation
-
-Signed-off-by: Huang Zijiang <huang.zijiang@zte.com.cn>
-Signed-off-by: Yi Wang <wang.yi59@zte.com.cn>
----
- net/xfrm/xfrm_state.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/net/xfrm/xfrm_state.c b/net/xfrm/xfrm_state.c
-index f342356..6ac25f7 100644
---- a/net/xfrm/xfrm_state.c
-+++ b/net/xfrm/xfrm_state.c
-@@ -612,7 +612,7 @@ struct xfrm_state *xfrm_state_alloc(struct net *net)
- {
- 	struct xfrm_state *x;
- 
--	x = kmem_cache_alloc(xfrm_state_cache, GFP_ATOMIC | __GFP_ZERO);
-+	x = kmem_cache_zalloc(xfrm_state_cache, GFP_ATOMIC);
- 
- 	if (x) {
- 		write_pnet(&x->xs_net, net);
--- 
-1.9.1
-
+Hi,=0A=
+=0A=
+---=0A=
+ net/dsa/tag_qca.c | 2 +-=0A=
+ 1 file changed, 1 insertion(+), 1 deletion(-)=0A=
+=0A=
+diff --git a/net/dsa/tag_qca.c b/net/dsa/tag_qca.c=0A=
+index c8a128c9e5e0..70db7c909f74 100644=0A=
+--- a/net/dsa/tag_qca.c=0A=
++++ b/net/dsa/tag_qca.c=0A=
+@@ -33,7 +33,7 @@ static struct sk_buff *qca_tag_xmit(struct sk_buff *skb, =
+struct net_device *dev)=0A=
+ 	struct dsa_port *dp =3D dsa_slave_to_port(dev);=0A=
+ 	u16 *phdr, hdr;=0A=
+ =0A=
+-	if (skb_cow_head(skb, 0) < 0)=0A=
+>  Is it really safe to assume there is enough headroom for the QCA tag?=0A=
+=0A=
++	if (skb_cow_head(skb, QCA_HDR_LEN) < 0)=0A=
+> My proposal. Specify QCA tag size to make sure there is headroom.=0A=
+=0A=
+ 		return NULL;=0A=
+ =0A=
+ 	skb_push(skb, QCA_HDR_LEN);=0A=
+-- =0A=
+2.11.0=0A=
