@@ -2,118 +2,105 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 6E9FC15B194
-	for <lists+netdev@lfdr.de>; Wed, 12 Feb 2020 21:06:32 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7B3BB15B19B
+	for <lists+netdev@lfdr.de>; Wed, 12 Feb 2020 21:13:54 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728986AbgBLUG2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 12 Feb 2020 15:06:28 -0500
-Received: from mail-pf1-f193.google.com ([209.85.210.193]:46305 "EHLO
-        mail-pf1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727439AbgBLUG2 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 12 Feb 2020 15:06:28 -0500
-Received: by mail-pf1-f193.google.com with SMTP id k29so1748369pfp.13;
-        Wed, 12 Feb 2020 12:06:27 -0800 (PST)
+        id S1728962AbgBLUNw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 12 Feb 2020 15:13:52 -0500
+Received: from mail-wm1-f43.google.com ([209.85.128.43]:39361 "EHLO
+        mail-wm1-f43.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727361AbgBLUNw (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 12 Feb 2020 15:13:52 -0500
+Received: by mail-wm1-f43.google.com with SMTP id c84so4066226wme.4
+        for <netdev@vger.kernel.org>; Wed, 12 Feb 2020 12:13:51 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id;
-        bh=B5E+DB4+vknXt88petGEGI+dIA4MgxXGZFZRi0jSQkc=;
-        b=aJiaddZTO7Hg7BNimGLLTGUBqNLBZOj0cNtWV/YmN+qhdYCfTQ52ZCVoKC7w0h23ny
-         UqNGD3iJo7AysaIjnH4YPQdN0f62CG+i/yZCF1/Zs54Px4vvNZ3hUzZKQass1O0RX6Oh
-         MQMFiux29AAgrp9Yacl0GLeEFXJ6uPDXkIUPLT3QxYzeqgOYLkF0yeNFeFWrCaMX0yyb
-         alcUP7IfbwiAEyEAnnncoM4TosiULvfev5y6nzvF71Ux9da6yT9Pt2PrE5xtejcPxKAp
-         K90piSZN1VlwX57Q3mOU7/AtYWsS29z5hMsZ8hfJVZxPkOskgfZx+r8Lj9a6sgkd6FyS
-         d6UA==
+        h=subject:to:references:from:message-id:date:user-agent:mime-version
+         :in-reply-to:content-language:content-transfer-encoding;
+        bh=39ZNRUOeWlTyrkTgfwvaI8bMicW3LqYdUBIRb/zxRfU=;
+        b=ZenIpIm9Q8V6l4ofyfSWobxzJe3xv0F5DQlmga1X7/8saTigl7394SxbZHj03uWojF
+         VJ8xRFY7g/zlCFpLLd79aA6kigbAPqIhS9ze2/0MJuzvNAYfsVMMlSDdKcxP7Yla5RYW
+         n/p0ahIkIqhDudpnCjMTbdzvlAj/KsHBLxdyqxmo+RcrF3HTKXwgihKepLUdSDNvRzxZ
+         +8acT6gEubgGYkHNuc5u/lf1gvMGxsG77T5JNfLH/8kbjsxuXoFGdSWqYGugoAb7BdNj
+         w70tJe6qKOEzzUZX3dXV8tHXW5AiTB5LvITUKcTNPqtO5+b5Gd6YQlgGRPnwyYKfxamj
+         gGmg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id;
-        bh=B5E+DB4+vknXt88petGEGI+dIA4MgxXGZFZRi0jSQkc=;
-        b=f2zhLTwWOUhbQOpPYIv8xlQ444I+l7hJLHosnytsF9sqD78N+H6ZOfeaae76U5xJgi
-         5Fn8TdPSaHQU+9CdJXC0u4W8+5VOc5FTnMlQcjnEErFWsaL1yYTRNf4t2ztm55BhA7wz
-         jF/Fx+NhpGxg6j1F2yDtTM4sS9k9leT0wrioCenMKh12qDpYtY1p2cyj7UX08GfO7hZd
-         faMyf9WxUHuy85nF0fPkRh1GAp85KlmWjDCxfXdEnCX6B9xRgvxhBRv1PQ5eN+FrKvi8
-         Z0sxRdM0Xdgt2M9NpS2mJScFIChdxxYZm/Kh77hGYzV4sBIy3hD8QbfiqMjIVzRkIjSY
-         at6w==
-X-Gm-Message-State: APjAAAX9l8M7FuNRCMjw8Pj0n+g9n+pwl2EslPg0fAAcNxzp7mGu0BG9
-        Ds9GtH9AptEF5sIN6aI7UXguDFNU
-X-Google-Smtp-Source: APXvYqwdieK8nyzLx+4nfdeVsv0hkcfU+KuNygTwMkohZq4AersD7fPV0sqJtCIiuyJYlBAe34n1Cg==
-X-Received: by 2002:a63:2a13:: with SMTP id q19mr13455341pgq.82.1581537987047;
-        Wed, 12 Feb 2020 12:06:27 -0800 (PST)
-Received: from fainelli-desktop.igp.broadcom.net ([192.19.223.252])
-        by smtp.gmail.com with ESMTPSA id x7sm77557pfp.93.2020.02.12.12.06.25
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 12 Feb 2020 12:06:26 -0800 (PST)
-From:   Florian Fainelli <f.fainelli@gmail.com>
-To:     netdev@vger.kernel.org
-Cc:     olteanv@gmail.com, hkallweit1@gmail.com, michal.vokac@ysoft.com,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        linux-kernel@vger.kernel.org (open list)
-Subject: [PATCH net] net: dsa: Treat VLAN ID 0 as PVID untagged
-Date:   Wed, 12 Feb 2020 12:05:55 -0800
-Message-Id: <20200212200555.2393-1-f.fainelli@gmail.com>
-X-Mailer: git-send-email 2.17.1
+        h=x-gm-message-state:subject:to:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=39ZNRUOeWlTyrkTgfwvaI8bMicW3LqYdUBIRb/zxRfU=;
+        b=C+WvsmHT2IWmZqzL0GufGXDz6fDE5CiWmDD10HkFSltJAiD+o8A2QYnz1+/3EK7ZN9
+         iNxsNwZWIvJE1sPhqplgH1938VUWaYeNXOGdz7+gdnS0UVs84GJkxSyYCpgSrRi0EnJf
+         CN4vG6k65bL3dYN0EftVp9c9Zv1+C/Fpwp3kvGqhlLocbul0bwIrgI5vB66RduoMhWtx
+         B+nnJyoiWsDxjdyEVagO0o3rZuZVMRYtIuSKHoT3/FTHwcysscPRFSsLR+/6P6h6dvyk
+         L523zp2uGoVQiAqkZeoI2r1leE/+7Kt7zR/OZAFcUff4nwg7VGytL8IEmFFQoM6LH1NS
+         Jxww==
+X-Gm-Message-State: APjAAAUr5aqWgiwH7tz57DyEianKCEfU4fRzMJGMm9J/AGblyPVlbdgy
+        KZS+pnZvbl0o/xoOe3YBFclPqxrQ
+X-Google-Smtp-Source: APXvYqxXbr9nfZswJ/NmN2pVEm0iltf+lThGm+Ujep1MXrNeAZ2LxWNqFt8MFVnVV96JK89JvdJCwQ==
+X-Received: by 2002:a1c:1f56:: with SMTP id f83mr771246wmf.93.1581538430304;
+        Wed, 12 Feb 2020 12:13:50 -0800 (PST)
+Received: from ?IPv6:2003:ea:8f29:6000:a02c:8004:c041:2ad1? (p200300EA8F296000A02C8004C0412AD1.dip0.t-ipconnect.de. [2003:ea:8f29:6000:a02c:8004:c041:2ad1])
+        by smtp.googlemail.com with ESMTPSA id x10sm2016367wrp.58.2020.02.12.12.13.49
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 12 Feb 2020 12:13:49 -0800 (PST)
+Subject: Re: Question related to GSO6 checksum magic
+To:     Alexander Duyck <alexander.h.duyck@linux.intel.com>,
+        Eric Dumazet <edumazet@google.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+References: <29eb3035-1777-8b9a-c744-f2996fc5fae1@gmail.com>
+ <142527b01cfab091b2715d093f75fc1c1c4aa939.camel@linux.intel.com>
+From:   Heiner Kallweit <hkallweit1@gmail.com>
+Message-ID: <28d3a327-e065-cea2-52ae-708ec9a05057@gmail.com>
+Date:   Wed, 12 Feb 2020 21:13:43 +0100
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
+ Thunderbird/68.4.2
+MIME-Version: 1.0
+In-Reply-To: <142527b01cfab091b2715d093f75fc1c1c4aa939.camel@linux.intel.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-VLAN ID 0 is special by all kinds and is really meant to be the default
-ingress and egress untagged VLAN. We were not configuring it that way
-and so we would be ingress untagged but egress tagged.
+On 11.02.2020 22:01, Alexander Duyck wrote:
+> On Tue, 2020-02-11 at 20:48 +0100, Heiner Kallweit wrote:
+>> Few network drivers like Intel e1000e or r8169 have the following in the
+>> GSO6 tx path:
+>>
+>> ipv6_hdr(skb)->payload_len = 0;
+>> tcp_hdr(skb)->check = ~csum_ipv6_magic(&ipv6_hdr(skb)->saddr,
+>> 				       &ipv6_hdr(skb)->daddr,
+>> 				       0, IPPROTO_TCP, 0);
+>> (partially also w/o the payload_len assignment)
+>>
+>> This sounds like we should factor it out to a helper.
+>> The code however leaves few questions to me, but I'm not familiar enough
+>> with the net core low-level details to answer them:
+>>
+>> - This code is used in a number of drivers, so is it something that
+>>   should be moved to the core? If yes, where would it belong to?
+>>
+>> - Is clearing payload_len needed? IOW, can it be a problem if drivers
+>>   miss this?
+>>
+>> Thanks, Heiner
+> 
+> The hardware is expecting the TCP header to contain the partial checksum
+> minus the length. It does this because it reuses the value when it
+> computes the checksum for the header of outgoing TCP frames and it will
+> add the payload length as it is segmenting the frames.
+> 
+Thanks, that helped a lot!
 
-When our devices are interfaced with other link partners such as switch
-devices, the results would be entirely equipment dependent. Some
-switches are completely fine with accepting an egress tagged frame with
-VLAN ID 0 and would send their responses untagged, so everything works,
-but other devices are not so tolerant and would typically reject a VLAN
-ID 0 tagged frame.
-
-Fixes: 061f6a505ac3 ("net: dsa: Add ndo_vlan_rx_{add, kill}_vid implementation")
-Signed-off-by: Florian Fainelli <f.fainelli@gmail.com>
----
-Hi all,
-
-After looking at all DSA drivers and how they implement port_vlan_add()
-I think this is the right change to do, but would appreciate if you
-could test this on your respective platforms to ensure this is not
-problematic.
-
-Thank you
-
-
- net/dsa/slave.c | 9 ++++++++-
- 1 file changed, 8 insertions(+), 1 deletion(-)
-
-diff --git a/net/dsa/slave.c b/net/dsa/slave.c
-index 088c886e609e..d3a2782eb94d 100644
---- a/net/dsa/slave.c
-+++ b/net/dsa/slave.c
-@@ -1100,6 +1100,7 @@ static int dsa_slave_vlan_rx_add_vid(struct net_device *dev, __be16 proto,
- {
- 	struct dsa_port *dp = dsa_slave_to_port(dev);
- 	struct bridge_vlan_info info;
-+	u16 flags = 0;
- 	int ret;
- 
- 	/* Check for a possible bridge VLAN entry now since there is no
-@@ -1118,7 +1119,13 @@ static int dsa_slave_vlan_rx_add_vid(struct net_device *dev, __be16 proto,
- 			return -EBUSY;
- 	}
- 
--	ret = dsa_port_vid_add(dp, vid, 0);
-+	/* VLAN ID 0 is special and should be the default egress and ingress
-+	 * untagged VLAN, make sure it gets programmed as such.
-+	 */
-+	if (vid == 0)
-+		flags = BRIDGE_VLAN_INFO_PVID | BRIDGE_VLAN_INFO_UNTAGGED;
-+
-+	ret = dsa_port_vid_add(dp, vid, flags);
- 	if (ret)
- 		return ret;
- 
--- 
-2.17.1
-
+> An alternative approach would be to pull the original checksum value out
+> and simply do the checksum math to subtract the length from it. If I am
+> not mistaken there are some drivers that take that approach for some of
+> the headers.
+> 
+> - Alex
+> 
+Heiner
