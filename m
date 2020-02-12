@@ -2,183 +2,116 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 1ECB315A627
-	for <lists+netdev@lfdr.de>; Wed, 12 Feb 2020 11:20:00 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6E3BB15A63A
+	for <lists+netdev@lfdr.de>; Wed, 12 Feb 2020 11:24:32 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727581AbgBLKT6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 12 Feb 2020 05:19:58 -0500
-Received: from us-smtp-delivery-1.mimecast.com ([207.211.31.120]:31257 "EHLO
-        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S1725887AbgBLKT6 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 12 Feb 2020 05:19:58 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1581502796;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=pkNV/KaDwN6AKmUOQ5xnMqy8J0aNzbNDziugjPZsXyc=;
-        b=KY84ElQB3g5+CtWCJMgA0xKce7366fni3KaBJeEymxomCevTh8bmfwHGUForH5eGhvAL9U
-        UZ0DSqJBoO9eLFPoYuc+zLSBN+4XipnLiDi/uZ5JM6TbFl9j3T76m+WonJ2cVMhFVWj3oL
-        L96GI+7zoV9ddku9VCZ3m4oJswhiZiM=
-Received: from mail-qk1-f200.google.com (mail-qk1-f200.google.com
- [209.85.222.200]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-179-a4dinS4SODqh_n8n9D_S3w-1; Wed, 12 Feb 2020 05:19:50 -0500
-X-MC-Unique: a4dinS4SODqh_n8n9D_S3w-1
-Received: by mail-qk1-f200.google.com with SMTP id n126so1009339qkc.18
-        for <netdev@vger.kernel.org>; Wed, 12 Feb 2020 02:19:50 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:content-transfer-encoding
-         :in-reply-to;
-        bh=pkNV/KaDwN6AKmUOQ5xnMqy8J0aNzbNDziugjPZsXyc=;
-        b=MciWl5MBnCL3TchHh6FoibU5wESka+9R7fZfU5EgVCrhKZqx11312gMuoAxv5UZX1W
-         Xy36G5K/xf6exbUxobPcP1mQjBDc01n+0qWeqca+V4lVJItM98A0/ukStrcTg/QfxuII
-         ImhrT/M/WynrpT1AJOO9TpISAXDq+iNCbA1YLnZ2/1+DmzUr98qPaOppJyg7mF2BbCoy
-         4Zc0ZpnpVOaRVKtzgtYbxCHZbfpA2e809Jb6BsVbTP7BA7RbmH5qQY2T3cCakNR7TDGs
-         WV9rwFa+sqXeuHTPiHIJT5LTVYf5brtK0DVvSLnHK3vFs9ww6bKOLfeX0AmodG59tC/X
-         CVHg==
-X-Gm-Message-State: APjAAAVzHVe4XQmrz7u1buv3eko8jflwwCz/dn1MYF4r+GzXWmdRjI1h
-        ApeN5jVbutZjzPH9Of2/TExq1fVtAiD4Kl7vQCWTZ+KC8dvbRzw/HYcFhvFPX2erwAOYduh5Y1F
-        BU/Wpg+RnSy4Jn5Ga
-X-Received: by 2002:ac8:498f:: with SMTP id f15mr6359535qtq.123.1581502789849;
-        Wed, 12 Feb 2020 02:19:49 -0800 (PST)
-X-Google-Smtp-Source: APXvYqz8bIfk3B81LZ2B3XHLSDkzZ+2r6RRQancRdP1l7oFpUpC4EeBkeHbMVGxD5yYdqkLQc9G2DA==
-X-Received: by 2002:ac8:498f:: with SMTP id f15mr6359509qtq.123.1581502789462;
-        Wed, 12 Feb 2020 02:19:49 -0800 (PST)
-Received: from redhat.com (bzq-79-176-41-183.red.bezeqint.net. [79.176.41.183])
-        by smtp.gmail.com with ESMTPSA id s6sm1435263qth.16.2020.02.12.02.19.46
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 12 Feb 2020 02:19:48 -0800 (PST)
-Date:   Wed, 12 Feb 2020 05:19:44 -0500
-From:   "Michael S. Tsirkin" <mst@redhat.com>
-To:     Anton Ivanov <anton.ivanov@cambridgegreys.com>
-Cc:     netdev@vger.kernel.org, Jason Wang <jasowang@redhat.com>,
-        linux-um@lists.infradead.org,
-        virtualization@lists.linux-foundation.org
-Subject: Re: [PATCH] virtio: Work around frames incorrectly marked as gso
-Message-ID: <20200212051913-mutt-send-email-mst@kernel.org>
-References: <20191209104824.17059-1-anton.ivanov@cambridgegreys.com>
- <57230228-7030-c65f-a24f-910ca52bbe9e@cambridgegreys.com>
- <f78bfe6e-2ffc-3734-9618-470f1afea0c6@redhat.com>
- <918222d9-816a-be70-f8af-b8dfcb586240@cambridgegreys.com>
- <20200211053502-mutt-send-email-mst@kernel.org>
- <8e730fe1-3129-de8d-bcb6-d5e10695238a@cambridgegreys.com>
+        id S1727163AbgBLKYa (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 12 Feb 2020 05:24:30 -0500
+Received: from mail-eopbgr40082.outbound.protection.outlook.com ([40.107.4.82]:9935
+        "EHLO EUR03-DB5-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1725710AbgBLKYa (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 12 Feb 2020 05:24:30 -0500
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=i4VaBCJ+JkW9sD1D+kSGu7gEtbjW0lKTizgYklsReY7CMlWLZs7Jd8pjDGeQergJhnJcCiA90H+T2uBTNVZ8ZqvRx2KgnQBx2tvY8ktl4M7fQg0GGTvICyDWzfBSjsx2VfUV5/zCi+XblNVpV4iODkT8/D7IwGXEC322IxHEW30NX0dxg3X66T5YVJB1/2hyjU5hjF0CUkKrTpd6i6f1SOLNtUsvnWxZTX3T5aRAiwd8IgNUID3TVyEKBmvrJ8kPZ1H0/sAsOsFUSGd8fhJ+Gp0HjYjS8v7w5SxiBam6J+mgN9vHRw5h4EmpPs8+7Pn/02Lyr4P+LHohqvVZYQjRqQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=XDXLxzRI+u82dUfOtfz0yQYBRUPAn0XQ8rMzrbk0fBo=;
+ b=W6Arz8K4kigNE04DyY/fsQxy9QKq8fAxpB6+UYwSFamUK3lpZXk9XjEAaFza1BROyTjzPWA4B4hUz2n+rxX3XD8GOExc0sAf7G7+ryiIjufwiqQHutYF7FoRhADusKmB6cO1rQ/V01WvCGg0XDYuaLstpvXF6bWSKNfxAY2omsrGwzDALIv5oPypzX8nvAH85zgWFDnBkeGnM50QvliL26uv6Nc/2ZW65k1jWepCF6JFZfJ0vVmMG7JF7Q106UhTn/oIk+aXbaZG0C5LCwSKe5CfRQlum2TbV8OcsfhYVXStgpgZUMIdRHpSxkC2zLRqzsl8Xewfcpl2ySaZr6wyWw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
+ header.d=nxp.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=XDXLxzRI+u82dUfOtfz0yQYBRUPAn0XQ8rMzrbk0fBo=;
+ b=I+DoEscRjRA98DQO99QoYkEjlYHKcI2x+L2pnRDTnZl3SnK5W7BnoFj2J2iazDLMDgEYaAiBg0qJqvcunFzUf7m0ScCOurUBEGWR2rp5coxp68Z+6ho+XAMIMDTNrBDxTx8ky1wjnV9x0umESSk+XNeR/kLjCVNbjbGOKb9uE8w=
+Received: from AM7PR04MB6885.eurprd04.prod.outlook.com (10.141.174.88) by
+ AM7PR04MB7141.eurprd04.prod.outlook.com (52.135.58.148) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.2707.21; Wed, 12 Feb 2020 10:24:27 +0000
+Received: from AM7PR04MB6885.eurprd04.prod.outlook.com
+ ([fe80::8a5:3800:3341:c064]) by AM7PR04MB6885.eurprd04.prod.outlook.com
+ ([fe80::8a5:3800:3341:c064%7]) with mapi id 15.20.2729.021; Wed, 12 Feb 2020
+ 10:24:27 +0000
+From:   "Y.b. Lu" <yangbo.lu@nxp.com>
+To:     David Miller <davem@davemloft.net>
+CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "richardcochran@gmail.com" <richardcochran@gmail.com>
+Subject: RE: [PATCH] ptp_qoriq: add initialization message
+Thread-Topic: [PATCH] ptp_qoriq: add initialization message
+Thread-Index: AQHV4Jcxgewx58wIn0aNZKEUqjecgagWwCiAgACbX4A=
+Date:   Wed, 12 Feb 2020 10:24:27 +0000
+Message-ID: <AM7PR04MB68852520F30921405A717B6CF81B0@AM7PR04MB6885.eurprd04.prod.outlook.com>
+References: <20200211045053.8088-1-yangbo.lu@nxp.com>
+ <20200211.170635.1835700541257020515.davem@davemloft.net>
+In-Reply-To: <20200211.170635.1835700541257020515.davem@davemloft.net>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+authentication-results: spf=none (sender IP is )
+ smtp.mailfrom=yangbo.lu@nxp.com; 
+x-originating-ip: [223.72.61.127]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-ht: Tenant
+x-ms-office365-filtering-correlation-id: ebba8b0e-c7d9-4d36-6dec-08d7afa5bd29
+x-ms-traffictypediagnostic: AM7PR04MB7141:
+x-microsoft-antispam-prvs: <AM7PR04MB7141A9711B24F76D62C91AC7F81B0@AM7PR04MB7141.eurprd04.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:7691;
+x-forefront-prvs: 0311124FA9
+x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(4636009)(376002)(366004)(396003)(136003)(39860400002)(346002)(199004)(189003)(52536014)(6916009)(53546011)(15650500001)(5660300002)(33656002)(316002)(4326008)(66556008)(8676002)(6506007)(76116006)(26005)(66946007)(54906003)(64756008)(66476007)(66446008)(478600001)(81166006)(186003)(8936002)(7696005)(86362001)(81156014)(55016002)(71200400001)(9686003)(2906002);DIR:OUT;SFP:1101;SCL:1;SRVR:AM7PR04MB7141;H:AM7PR04MB6885.eurprd04.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;A:1;MX:1;
+received-spf: None (protection.outlook.com: nxp.com does not designate
+ permitted sender hosts)
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: V8t1OlDBC6//7Kj8IGNrlMWu3ehFg9tiUqXSBmubK6wVLb2Yk4l/a5q1MZflMZBuqwMLRPGgtT2JjtvmSbK4KE7a5mNBTvwYB9IDVdsqxhJoN7KGEJbcko2W8DHZL/JpreDtN/uoIM1f+UlqI1rlGKIvJvcFjQMtiryGO4OIMFNVuh9lGr6VcUqW+hoikJj7wZHY6/q+EGW+1OSEpXD2lV1vrVPLBd/+kPjzFirukqU3gZTIivgA33h1aKQEvN6hUkvK1JzMfY/6b+98bGGdljjylp59SVRJJsrcQ0X9RhKJm635nQ8VbWwH8i8ugpradeeKoQLBJVZ2/y1Gu8fAxWpHsQRZT0COUELZ4Vo+PG5Ta8SClaY2LlXz98NXTP7ndDjXt/sqPhv5ixaplmL3tmSV+ChuIv3PsvicDyC6HyTYFVrXEUcWM0Jb6qIK22qK
+x-ms-exchange-antispam-messagedata: 75sP9k1DcSQeiJUXlsRHqIl1jGJr+puYF0c3Ahy2iSWxdjn7f3hRXNv7jurnTWg+uXZkTlP4LAeNUACzk/r/A5Uu4EmpS0A2OwUIc/erbt0sK3++J7VO1JjSWtfbE4znvhgL1Afd/fZ6CKK/X+IN5g==
+x-ms-exchange-transport-forked: True
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <8e730fe1-3129-de8d-bcb6-d5e10695238a@cambridgegreys.com>
+X-OriginatorOrg: nxp.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: ebba8b0e-c7d9-4d36-6dec-08d7afa5bd29
+X-MS-Exchange-CrossTenant-originalarrivaltime: 12 Feb 2020 10:24:27.3173
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: CiwNNKO7Z6xsrXT+If92YFkJWFiQcX7KsFAqSddu8kzZ3W8lIlnSGuneIdTHs+C6GSlUGYsOOD7atd9JGpmCSg==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM7PR04MB7141
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Feb 12, 2020 at 10:03:31AM +0000, Anton Ivanov wrote:
-> 
-> 
-> On 11/02/2020 10:37, Michael S. Tsirkin wrote:
-> > On Tue, Feb 11, 2020 at 07:42:37AM +0000, Anton Ivanov wrote:
-> > > On 11/02/2020 02:51, Jason Wang wrote:
-> > > > 
-> > > > On 2020/2/11 上午12:55, Anton Ivanov wrote:
-> > > > > 
-> > > > > 
-> > > > > On 09/12/2019 10:48, anton.ivanov@cambridgegreys.com wrote:
-> > > > > > From: Anton Ivanov <anton.ivanov@cambridgegreys.com>
-> > > > > > 
-> > > > > > Some of the frames marked as GSO which arrive at
-> > > > > > virtio_net_hdr_from_skb() have no GSO_TYPE, no
-> > > > > > fragments (data_len = 0) and length significantly shorter
-> > > > > > than the MTU (752 in my experiments).
-> > > > > > 
-> > > > > > This is observed on raw sockets reading off vEth interfaces
-> > > > > > in all 4.x and 5.x kernels I tested.
-> > > > > > 
-> > > > > > These frames are reported as invalid while they are in fact
-> > > > > > gso-less frames.
-> > > > > > 
-> > > > > > This patch marks the vnet header as no-GSO for them instead
-> > > > > > of reporting it as invalid.
-> > > > > > 
-> > > > > > Signed-off-by: Anton Ivanov <anton.ivanov@cambridgegreys.com>
-> > > > > > ---
-> > > > > >    include/linux/virtio_net.h | 8 ++++++--
-> > > > > >    1 file changed, 6 insertions(+), 2 deletions(-)
-> > > > > > 
-> > > > > > diff --git a/include/linux/virtio_net.h b/include/linux/virtio_net.h
-> > > > > > index 0d1fe9297ac6..d90d5cff1b9a 100644
-> > > > > > --- a/include/linux/virtio_net.h
-> > > > > > +++ b/include/linux/virtio_net.h
-> > > > > > @@ -112,8 +112,12 @@ static inline int
-> > > > > > virtio_net_hdr_from_skb(const struct sk_buff *skb,
-> > > > > >                hdr->gso_type = VIRTIO_NET_HDR_GSO_TCPV4;
-> > > > > >            else if (sinfo->gso_type & SKB_GSO_TCPV6)
-> > > > > >                hdr->gso_type = VIRTIO_NET_HDR_GSO_TCPV6;
-> > > > > > -        else
-> > > > > > -            return -EINVAL;
-> > > > > > +        else {
-> > > > > > +            if (skb->data_len == 0)
-> > > > > > +                hdr->gso_type = VIRTIO_NET_HDR_GSO_NONE;
-> > > > > > +            else
-> > > > > > +                return -EINVAL;
-> > > > > > +        }
-> > > > > >            if (sinfo->gso_type & SKB_GSO_TCP_ECN)
-> > > > > >                hdr->gso_type |= VIRTIO_NET_HDR_GSO_ECN;
-> > > > > >        } else
-> > > > > > 
-> > > > > 
-> > > > > ping.
-> > > > > 
-> > > > 
-> > > > Do you mean gso_size is set but gso_type is not? Looks like a bug
-> > > > elsewhere.
-> > > > 
-> > > > Thanks
-> > > > 
-> > > > 
-> > > Yes.
-> > > 
-> > > I could not trace it where it is coming from.
-> > > 
-> > > I see it when doing recvmmsg on raw sockets in the UML vector network
-> > > drivers.
-> > > 
-> > 
-> > I think we need to find the culprit and fix it there, lots of other things
-> > can break otherwise.
-> > Just printing out skb->dev->name should do the trick, no?
-> 
-> I will rebuild my rig and retest (it's been a while since I worked on this bug).
-> 
-> In theory, it should be veth - the test is over a vEth pair and all frames are locally originated by iperf.
-> 
-> In practice - I will retest and post the results sometimes later today.
-> 
-> Brgds,
+> -----Original Message-----
+> From: netdev-owner@vger.kernel.org <netdev-owner@vger.kernel.org> On
+> Behalf Of David Miller
+> Sent: Wednesday, February 12, 2020 9:07 AM
+> To: Y.b. Lu <yangbo.lu@nxp.com>
+> Cc: netdev@vger.kernel.org; richardcochran@gmail.com
+> Subject: Re: [PATCH] ptp_qoriq: add initialization message
+>=20
+> From: Yangbo Lu <yangbo.lu@nxp.com>
+> Date: Tue, 11 Feb 2020 12:50:53 +0800
+>=20
+> > It is necessary to print the initialization result.
+>=20
+> No, it is not.
 
+Sorry, I should have added my reasons into commit message.
+I sent out v2. Do you think if it makes sense?
 
-ok if it's veth then you need to add a similar printk patch to veth
-and re-run to see where does it come from originally.
+" Current ptp_qoriq driver prints only warning or error messages.
+It may be loaded successfully without any messages.
+Although this is fine, it would be convenient to have an oneline
+initialization log showing success and PTP clock index.
+The goods are,
+- The ptp_qoriq driver users may know whether this driver is loaded
+  successfully, or not, or not loaded from the booting log.
+- The ptp_qoriq driver users don't have to install an ethtool to
+  check the PTP clock index for using. Or don't have to check which
+  /sys/class/ptp/ptpX is PTP QorIQ clock."
 
-> >
-> > 
-> > 
-> > > -- 
-> > > Anton R. Ivanov
-> > > Cambridgegreys Limited. Registered in England. Company Number 10273661
-> > > https://www.cambridgegreys.com/
-> > 
-> > 
-> > _______________________________________________
-> > linux-um mailing list
-> > linux-um@lists.infradead.org
-> > http://lists.infradead.org/mailman/listinfo/linux-um
-> > 
-> 
-> -- 
-> Anton R. Ivanov
-> Cambridgegreys Limited. Registered in England. Company Number 10273661
-> https://www.cambridgegreys.com/
-
+Thanks.
