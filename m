@@ -2,148 +2,101 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id D6EBC15A364
-	for <lists+netdev@lfdr.de>; Wed, 12 Feb 2020 09:36:17 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 13CEB15A410
+	for <lists+netdev@lfdr.de>; Wed, 12 Feb 2020 09:57:01 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728452AbgBLIgQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 12 Feb 2020 03:36:16 -0500
-Received: from us-smtp-delivery-1.mimecast.com ([207.211.31.120]:42860 "EHLO
-        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S1728370AbgBLIgP (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 12 Feb 2020 03:36:15 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1581496575;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=odThS3v+1FjM1ZTU82Q0GSNfQbpDXwfoFtJgRysmwgc=;
-        b=DxNjeVl/EISWK3dvFSHLlDyyM/lsSU7Q1oMmlDeLRxtR0Q7Z3NOBuMqk4bgmKFD49O+yOm
-        C0qDXdmp6sEjzBrm+zCKb82ED5bhIwsHWEs+0nuvc7g/Ui7sI+KO8+9tVwP2z7r9K5p+Un
-        SK13NklOgWKIHIhZPzQVjBtvb8ZTIJ8=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-53-trKM1IamONm8sekB-HkW7g-1; Wed, 12 Feb 2020 03:36:07 -0500
-X-MC-Unique: trKM1IamONm8sekB-HkW7g-1
-Received: from smtp.corp.redhat.com (int-mx01.intmail.prod.int.phx2.redhat.com [10.5.11.11])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 55A791857341;
-        Wed, 12 Feb 2020 08:36:06 +0000 (UTC)
-Received: from carbon (ovpn-200-41.brq.redhat.com [10.40.200.41])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 82F4988836;
-        Wed, 12 Feb 2020 08:36:02 +0000 (UTC)
-Date:   Wed, 12 Feb 2020 09:36:00 +0100
-From:   Jesper Dangaard Brouer <brouer@redhat.com>
-To:     Li RongQing <lirongqing@baidu.com>
-Cc:     netdev@vger.kernel.org, brouer@redhat.com
-Subject: Re: [PATCH][v2] page_pool: refill page when alloc.count of pool is
- zero
-Message-ID: <20200212093600.7c1a71fe@carbon>
-In-Reply-To: <1581387224-20719-1-git-send-email-lirongqing@baidu.com>
-References: <1581387224-20719-1-git-send-email-lirongqing@baidu.com>
+        id S1728606AbgBLI46 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 12 Feb 2020 03:56:58 -0500
+Received: from smtpq3.tb.mail.iss.as9143.net ([212.54.42.166]:45162 "EHLO
+        smtpq3.tb.mail.iss.as9143.net" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1728534AbgBLI46 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 12 Feb 2020 03:56:58 -0500
+X-Greylist: delayed 1232 seconds by postgrey-1.27 at vger.kernel.org; Wed, 12 Feb 2020 03:56:56 EST
+Received: from [212.54.42.110] (helo=smtp7.tb.mail.iss.as9143.net)
+        by smtpq3.tb.mail.iss.as9143.net with esmtps (TLS1.2:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.90_1)
+        (envelope-from <karsdejong@home.nl>)
+        id 1j1nVO-0002VA-AH; Wed, 12 Feb 2020 09:36:22 +0100
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=home.nl;
+        s=201809corplgsmtpnl; h=To:Subject:Date:From;
+        bh=OuSzKhfxW8Gje2W8iT3ROQfQieVCxF7/6LjQe5C2nlU=; b=C1tZig2yOeXhiBttMk490YvCX0
+        dpjontyCTTk/xJa/3dIL65DhVpdOJl5etAJlJxJpIPaz33rrpjIsfK4AQFqsys7mUHJ8k6E7s361f
+        4VFIvxmByp2Qyf5nNrThPYAiIlpQZmtbeZJhVuj3wktmZDe+zwOF4wpJ53cm87asc54F09BhOAWq9
+        UNKuaM8R91Dm7zoNYtPn8ZoQrsZX6cWb+E7pn1pdSZA7940UEDqS5NMyL487f9B13ldMXerHc0LLJ
+        Q+kh82B5NlCChuB7Jt4gGza35fScNsVN+Xw9ezZgOJ7PLskAv4PPQj7KSpRwXqxbqfijzj8iT0zWL
+        HsH5ALgQ==;
+Received: from mail-wr1-f48.google.com ([209.85.221.48])
+        by smtp7.tb.mail.iss.as9143.net with esmtpsa (TLS1.3:ECDHE_RSA_AES_128_GCM_SHA256:128)
+        (Exim 4.92)
+        (envelope-from <karsdejong@home.nl>)
+        id 1j1nVO-0001vK-75; Wed, 12 Feb 2020 09:36:22 +0100
+Received: by mail-wr1-f48.google.com with SMTP id y11so1106568wrt.6;
+        Wed, 12 Feb 2020 00:36:22 -0800 (PST)
+X-Gm-Message-State: APjAAAV3AtQMX4mqcKQ6yTeGknTVyv9+ft5rP0fFnE0vl0SRCBYbDp/r
+        PGE5GiMfgh4prLzfEEZWg7GRysDLsYUagi6WL8s=
+X-Google-Smtp-Source: APXvYqypjRsTG8DHRIbsXdGcPAkCfbey86PfEpUgceAU5FztilErtQJztFGZaFVToi09qUn3H+IsvJz7CZ3ylvF5Cf0=
+X-Received: by 2002:a5d:4d04:: with SMTP id z4mr15132130wrt.157.1581496581870;
+ Wed, 12 Feb 2020 00:36:21 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.11
+References: <20200211174126.GA29960@embeddedor> <CAMuHMdV3DY1X3s7fvZz8MpxvqsUZAOivc18f40Ca8kHiZqfqKw@mail.gmail.com>
+In-Reply-To: <CAMuHMdV3DY1X3s7fvZz8MpxvqsUZAOivc18f40Ca8kHiZqfqKw@mail.gmail.com>
+From:   Kars de Jong <karsdejong@home.nl>
+Date:   Wed, 12 Feb 2020 09:36:10 +0100
+X-Gmail-Original-Message-ID: <CACz-3rgCkoJ-Zx_RBTLBH0yOhz36dH+io+VFRgsXNx2qqwKVMQ@mail.gmail.com>
+Message-ID: <CACz-3rgCkoJ-Zx_RBTLBH0yOhz36dH+io+VFRgsXNx2qqwKVMQ@mail.gmail.com>
+Subject: Re: [PATCH] treewide: Replace zero-length arrays with flexible-array member
+To:     Geert Uytterhoeven <geert@linux-m68k.org>
+Cc:     "Gustavo A. R. Silva" <gustavo@embeddedor.com>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Kees Cook <keescook@chromium.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Greg KH <gregkh@linuxfoundation.org>,
+        Linux Crypto Mailing List <linux-crypto@vger.kernel.org>,
+        netdev <netdev@vger.kernel.org>,
+        USB list <linux-usb@vger.kernel.org>,
+        linux-m68k <linux-m68k@lists.linux-m68k.org>
+Content-Type: text/plain; charset="UTF-8"
+X-SourceIP: 209.85.221.48
+X-Authenticated-Sender: karsdejong@home.nl (via SMTP)
+X-Ziggo-spambar: /
+X-Ziggo-spamscore: 0.0
+X-Ziggo-spamreport: CMAE Analysis: v=2.3 cv=UJNG4BXy c=1 sm=1 tr=0 a=9+rZDBEiDlHhcck0kWbJtElFXBc=:19 a=jpOVt7BSZ2e4Z31A5e1TngXxSK0=:19 a=IkcTkHD0fZMA:10 a=l697ptgUJYAA:10 a=tBb2bbeoAAAA:8 a=_Wotqz80AAAA:8 a=YMzxVbYnAAAA:20 a=wNy__qbTz1_nECwbz_UA:9 a=QEXdDO2ut3YA:10 a=Oj-tNtZlA1e06AYgeCfH:22 a=buJP51TR1BpY-zbLSsyS:22
+X-Ziggo-Spam-Status: No
+X-Spam-Status: No
+X-Spam-Flag: No
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 11 Feb 2020 10:13:44 +0800
-Li RongQing <lirongqing@baidu.com> wrote:
+Op wo 12 feb. 2020 om 09:00 schreef Geert Uytterhoeven <geert@linux-m68k.org>:
+>
+> Hi Gustavo,
+>
+> On Tue, Feb 11, 2020 at 10:49 PM Gustavo A. R. Silva
+> <gustavo@embeddedor.com> wrote:
+> > --- a/arch/m68k/tools/amiga/dmesg.c
+> > +++ b/arch/m68k/tools/amiga/dmesg.c
+> > @@ -34,7 +34,7 @@ struct savekmsg {
+> >      u_long magic2;     /* SAVEKMSG_MAGIC2 */
+> >      u_long magicptr;   /* address of magic1 */
+> >      u_long size;
+> > -    char data[0];
+> > +       char data[];
+> >  };
+>
+> JFTR, this file is not really part of the kernel, but supposed to be compiled
+> by an AmigaOS compiler, which may predate the introduction of support
+> for flexible array members.
 
-> "do {} while" in page_pool_refill_alloc_cache will always
-> refill page once whether refill is true or false, and whether
-> alloc.count of pool is less than PP_ALLOC_CACHE_REFILL or not
-> this is wrong, and will cause overflow of pool->alloc.cache
-> 
-> the caller of __page_pool_get_cached should provide guarantee
-> that pool->alloc.cache is safe to access, so in_serving_softirq
-> should be removed as suggested by Jesper Dangaard Brouer in
-> https://patchwork.ozlabs.org/patch/1233713/
-> 
-> so fix this issue by calling page_pool_refill_alloc_cache()
-> only when pool->alloc.count is zero
-> 
-> Fixes: 44768decb7c0 ("page_pool: handle page recycle for NUMA_NO_NODE condition")
-> Signed-off-by: Li RongQing <lirongqing@baidu.com>
-> Suggested: Jesper Dangaard Brouer <brouer@redhat.com>
+FYI, there's a reasonably modern toolchain for AmigaOS which can
+compile this just fine (https://github.com/bebbo/amiga-gcc).
 
-You forgot the "-by" part of "suggested-by:", added it below so patchwork pick it up.
+> Well, even if you keep it included, I guess the rare users can manage ;-)
+> My binary dates back to 1996, and I have no plans to recompile it.
 
-Suggested-by: Jesper Dangaard Brouer <brouer@redhat.com>
+I did, just to check whether it still worked.
 
+Kind regards,
 
-> ---
-> v1-->v2: remove the in_serving_softirq test
-
-Acked-by: Jesper Dangaard Brouer <brouer@redhat.com>
-
-I've tested the patch and gave it some exercise with my page_pool
-benchmarks tools, everything looked good.
-
- 
->  net/core/page_pool.c | 22 ++++++++--------------
->  1 file changed, 8 insertions(+), 14 deletions(-)
-> 
-> diff --git a/net/core/page_pool.c b/net/core/page_pool.c
-> index 9b7cbe35df37..10d2b255df5e 100644
-> --- a/net/core/page_pool.c
-> +++ b/net/core/page_pool.c
-> @@ -99,8 +99,7 @@ EXPORT_SYMBOL(page_pool_create);
->  static void __page_pool_return_page(struct page_pool *pool, struct page *page);
->  
->  noinline
-> -static struct page *page_pool_refill_alloc_cache(struct page_pool *pool,
-> -						 bool refill)
-> +static struct page *page_pool_refill_alloc_cache(struct page_pool *pool)
->  {
->  	struct ptr_ring *r = &pool->ring;
->  	struct page *page;
-> @@ -141,8 +140,7 @@ static struct page *page_pool_refill_alloc_cache(struct page_pool *pool,
->  			page = NULL;
->  			break;
->  		}
-> -	} while (pool->alloc.count < PP_ALLOC_CACHE_REFILL &&
-> -		 refill);
-> +	} while (pool->alloc.count < PP_ALLOC_CACHE_REFILL);
->  
->  	/* Return last page */
->  	if (likely(pool->alloc.count > 0))
-> @@ -155,20 +153,16 @@ static struct page *page_pool_refill_alloc_cache(struct page_pool *pool,
->  /* fast path */
->  static struct page *__page_pool_get_cached(struct page_pool *pool)
->  {
-> -	bool refill = false;
->  	struct page *page;
->  
-> -	/* Test for safe-context, caller should provide this guarantee */
-> -	if (likely(in_serving_softirq())) {
-> -		if (likely(pool->alloc.count)) {
-> -			/* Fast-path */
-> -			page = pool->alloc.cache[--pool->alloc.count];
-> -			return page;
-> -		}
-> -		refill = true;
-> +	/* Caller MUST guarantee safe non-concurrent access, e.g. softirq */
-> +	if (likely(pool->alloc.count)) {
-> +		/* Fast-path */
-> +		page = pool->alloc.cache[--pool->alloc.count];
-> +	} else {
-> +		page = page_pool_refill_alloc_cache(pool);
->  	}
->  
-> -	page = page_pool_refill_alloc_cache(pool, refill);
->  	return page;
->  }
->  
-
-
--- 
-Best regards,
-  Jesper Dangaard Brouer
-  MSc.CS, Principal Kernel Engineer at Red Hat
-  LinkedIn: http://www.linkedin.com/in/brouer
-
+Kars.
