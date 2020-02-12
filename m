@@ -2,106 +2,141 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id D355915A3DD
-	for <lists+netdev@lfdr.de>; Wed, 12 Feb 2020 09:50:17 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7BF2615A408
+	for <lists+netdev@lfdr.de>; Wed, 12 Feb 2020 09:55:00 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728624AbgBLItH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 12 Feb 2020 03:49:07 -0500
-Received: from mail-lj1-f196.google.com ([209.85.208.196]:45643 "EHLO
-        mail-lj1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728457AbgBLItH (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 12 Feb 2020 03:49:07 -0500
-Received: by mail-lj1-f196.google.com with SMTP id e18so1310229ljn.12
-        for <netdev@vger.kernel.org>; Wed, 12 Feb 2020 00:49:06 -0800 (PST)
+        id S1728613AbgBLIy6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 12 Feb 2020 03:54:58 -0500
+Received: from mail-wr1-f66.google.com ([209.85.221.66]:33223 "EHLO
+        mail-wr1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728533AbgBLIy6 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 12 Feb 2020 03:54:58 -0500
+Received: by mail-wr1-f66.google.com with SMTP id u6so1203723wrt.0
+        for <netdev@vger.kernel.org>; Wed, 12 Feb 2020 00:54:57 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=KsXH890iQs0AQkxd7TvO/8AHZ7l/Fhdn024GDtGuR/o=;
-        b=ox+v+cRpypAFoD6CuWQEot6Zm7GJq2/l91kITNPxOlsdYlCJN3jxn8N1j8Ua7w0ke/
-         K5qkmC3rXgcKUSdm8/Ocl6GW6QAViMGl08JIvqjbxZoxlIGArRf+7GeVWaJiQZohNkle
-         LutxGmKj6/NT/7t9FMXfaxKvcZU1LA+iB62y7dwYP+n6o5NgWpYNMaj0N6WySR6PpUS+
-         e1EC3mY3pjuapJiM5pFXwC9dcDuPyvSQpUCZNqCiUAexj3QGUE56H0t/cB14+3L8DJjj
-         nUY/XhRGXk/UEXr+HeVLVIZjlrKIcykApywnoRYSUEC77L1LOPeql6tyjaxfNx9fr6pT
-         lTqQ==
+        d=linaro.org; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=AW2rXZETrRJaKBFlOMRMrrok587Wjo8k9wRUzDgbX2s=;
+        b=WbmOt5MojWk+Lbo0aI1T5AVy9iZfSc0O4qTeY8kA1x5xy0cqTOAJmHeKxN3psE4Utp
+         nqbv7K7zgr9rCmqcuXa2X4fulo59YJbz3aWk95qHK7rcnep6aLdoeGi9pwBcH2XEtFCb
+         H9MUSKJeVFg60OHeCD4+J7c26ZKs6qVmsgqerLhYCZ8crVD0KSHjWUfy84DZyJVUM4rQ
+         hPkoif4N8yFqTwh7s8pgWSQonT5wMjN4p2u7PUPmYb/o82fHsH/O4rJhNz3wmnK4Cx6A
+         sJZ236S92F37GZ5l+XEj5uNand9+OoLcvvFOmcrgG+f8iHyPLe72CO/YvNLiN/4/9i40
+         vd6w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=KsXH890iQs0AQkxd7TvO/8AHZ7l/Fhdn024GDtGuR/o=;
-        b=Pm2iTmEAP6lJWHw05ad4wvaXNXi8E19Ah/W4faqiG6bVv00tON0/0iQx/CYb03fd6C
-         6tzkEjkn3yOlR1c+7LLYjO3pdxAdN3hfdDJIuhRAcnz4bM9EFPylOl6eVHy4lPSGyg1/
-         8DPn/jR3UczzhdtyvsMioStvMAu7XqC0AS00/36+FPrHlnU8T0NJKvyEeyQdCPGgBHjs
-         e8VbCxWtO0+q6flK8ximzz7rPQMXmjA3fLBXVphQAZTI3/cCCpdWSlRma5XLjCZP9xnY
-         OYiiA2+XSvpx1bgSj/D1DCzFxbmMH19JsLUw5QhNL+gi5Hx+LlTRCGM4JXGjfiNwq7eL
-         Q+5Q==
-X-Gm-Message-State: APjAAAU+SoxZ//VbXkIqqMN5o1InTeiFOv4HjngX0yLv63OPR3nTjRSl
-        xzWCVXnsAW0VBUnMDmP6CAg=
-X-Google-Smtp-Source: APXvYqx027RqH5nJHgXmezqxDKjhocZ/+ydmOCdUZh9l7U5LqyrCQfEgh+jOL4GtbJo30jbdpKdlSw==
-X-Received: by 2002:a2e:b80e:: with SMTP id u14mr7219638ljo.17.1581497345096;
-        Wed, 12 Feb 2020 00:49:05 -0800 (PST)
-Received: from elitebook.lan (ip-194-187-74-233.konfederacka.maverick.com.pl. [194.187.74.233])
-        by smtp.googlemail.com with ESMTPSA id 21sm3547389ljv.19.2020.02.12.00.49.03
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 12 Feb 2020 00:49:04 -0800 (PST)
-Subject: Re: Regression: net/ipv6/mld running system out of memory (not a
- leak)
-To:     Hangbin Liu <liuhangbin@gmail.com>
-Cc:     Network Development <netdev@vger.kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Alexey Kuznetsov <kuznet@ms2.inr.ac.ru>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        Felix Fietkau <nbd@nbd.name>, John Crispin <john@phrozen.org>,
-        Jo-Philipp Wich <jo@mein.io>
-References: <CACna6rwD_tnYagOPs2i=1jOJhnzS5ueiQSpMf23TdTycFtwOYQ@mail.gmail.com>
- <20200212082434.GM2159@dhcp-12-139.nay.redhat.com>
-From:   =?UTF-8?B?UmFmYcWCIE1pxYJlY2tp?= <zajec5@gmail.com>
-Message-ID: <2bc4f125-db14-734d-724e-4028b863eca2@gmail.com>
-Date:   Wed, 12 Feb 2020 09:49:02 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.4.2
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=AW2rXZETrRJaKBFlOMRMrrok587Wjo8k9wRUzDgbX2s=;
+        b=QjrBZ8VqLvMuNDWwVK8jxzGGIR+exyLUNPnd6JKqWutFHOkt+NUyMCvJEXaF21zdL/
+         0d35wTk4Ndm3r5eKmepCscLdnxX8HrjOlUqxGRRywT1O6V1T4S5woHRppEgrXxw0dgCW
+         LMYcEALTaF972pklADDEfIKqZZ007njVGtDyZarl+K3ozMql/0A4XBuPF6BVesPmCsOn
+         Wc52ejmbk+UeFe5RmM66LvPNNBCfkZdRQ3ZuZNpfbk6PepW/t+YMyESD5ZjumMspLmA8
+         d6Z1QFFu8qfrCngHUTyFndNg+M/JJB+I+CwLWzXEZht97fxtN1/ts4UEad8wd9TVBgI6
+         RbNQ==
+X-Gm-Message-State: APjAAAXAZ1zLN1T4+0k43p/ItAIf2LLEv7dVrvloP8oYvX7XOkAC9VzK
+        kcdbcuRtTLrVRCfOB0IJ9rCl+g==
+X-Google-Smtp-Source: APXvYqxBa+AzL1Qnf+Q1bRABioSpC/7kzStNtSi7vCnzjYEaSb+BS5d0AKz4DY5sdnPGbRwNI4ySYg==
+X-Received: by 2002:a5d:4c84:: with SMTP id z4mr14644530wrs.423.1581497696614;
+        Wed, 12 Feb 2020 00:54:56 -0800 (PST)
+Received: from apalos.home (ppp-2-87-54-32.home.otenet.gr. [2.87.54.32])
+        by smtp.gmail.com with ESMTPSA id 16sm7104338wmi.0.2020.02.12.00.54.55
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 12 Feb 2020 00:54:56 -0800 (PST)
+Date:   Wed, 12 Feb 2020 10:54:54 +0200
+From:   Ilias Apalodimas <ilias.apalodimas@linaro.org>
+To:     Li RongQing <lirongqing@baidu.com>
+Cc:     netdev@vger.kernel.org, brouer@redhat.com
+Subject: Re: [PATCH][v2] page_pool: refill page when alloc.count of pool is
+ zero
+Message-ID: <20200212085454.GA1179593@apalos.home>
+References: <1581387224-20719-1-git-send-email-lirongqing@baidu.com>
 MIME-Version: 1.0
-In-Reply-To: <20200212082434.GM2159@dhcp-12-139.nay.redhat.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <1581387224-20719-1-git-send-email-lirongqing@baidu.com>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 12.02.2020 09:24, Hangbin Liu wrote:
-> On Wed, Feb 12, 2020 at 08:37:31AM +0100, Rafał Miłecki wrote:
->> Hi, I need some help with my devices running out of memory. I've
->> debugging skills but I don't know net subsystem.
->>
->> I run Linux based OpenWrt distribution on home wireless devices (ARM
->> routers and access points with brcmfmac wireless driver). I noticed
->> that using wireless monitor mode interface results in my devices (128
->> MiB RAM) running out of memory in about 2 days. This is NOT a memory
->> leak as putting wireless down brings back all the memory.
->>
->> Interestingly this memory drain requires at least one of:
->> net.ipv6.conf.default.forwarding=1
->> net.ipv6.conf.all.forwarding=1
->> to be set. OpenWrt happens to use both by default.
->>
->> This regression was introduced by the commit 1666d49e1d41 ("mld: do
->> not remove mld souce list info when set link down") - first appeared
->> in 4.10 and then backported. This bug exists in 4.9.14 and 4.14.169.
->> Reverting that commit from 4.9.14 and 4.14.169 /fixes/ the problem.
->>
->> Can you look at possible cause/fix of this problem, please? Is there
->> anything I can test or is there more info I can provide?
+On Tue, Feb 11, 2020 at 10:13:44AM +0800, Li RongQing wrote:
+> "do {} while" in page_pool_refill_alloc_cache will always
+> refill page once whether refill is true or false, and whether
+> alloc.count of pool is less than PP_ALLOC_CACHE_REFILL or not
+> this is wrong, and will cause overflow of pool->alloc.cache
 > 
-> Hi Rafał,
+> the caller of __page_pool_get_cached should provide guarantee
+> that pool->alloc.cache is safe to access, so in_serving_softirq
+> should be removed as suggested by Jesper Dangaard Brouer in
+> https://patchwork.ozlabs.org/patch/1233713/
 > 
-> Thanks for the report. Although you said this is not a memory leak. Maybe
-> you can try a84d01647989 ("mld: fix memory leak in mld_del_delrec()").
+> so fix this issue by calling page_pool_refill_alloc_cache()
+> only when pool->alloc.count is zero
+> 
+> Fixes: 44768decb7c0 ("page_pool: handle page recycle for NUMA_NO_NODE condition")
+> Signed-off-by: Li RongQing <lirongqing@baidu.com>
+> Suggested: Jesper Dangaard Brouer <brouer@redhat.com>
+> ---
+> v1-->v2: remove the in_serving_softirq test
+> 
+>  net/core/page_pool.c | 22 ++++++++--------------
+>  1 file changed, 8 insertions(+), 14 deletions(-)
+> 
+> diff --git a/net/core/page_pool.c b/net/core/page_pool.c
+> index 9b7cbe35df37..10d2b255df5e 100644
+> --- a/net/core/page_pool.c
+> +++ b/net/core/page_pool.c
+> @@ -99,8 +99,7 @@ EXPORT_SYMBOL(page_pool_create);
+>  static void __page_pool_return_page(struct page_pool *pool, struct page *page);
+>  
+>  noinline
+> -static struct page *page_pool_refill_alloc_cache(struct page_pool *pool,
+> -						 bool refill)
+> +static struct page *page_pool_refill_alloc_cache(struct page_pool *pool)
+>  {
+>  	struct ptr_ring *r = &pool->ring;
+>  	struct page *page;
+> @@ -141,8 +140,7 @@ static struct page *page_pool_refill_alloc_cache(struct page_pool *pool,
+>  			page = NULL;
+>  			break;
+>  		}
+> -	} while (pool->alloc.count < PP_ALLOC_CACHE_REFILL &&
+> -		 refill);
+> +	} while (pool->alloc.count < PP_ALLOC_CACHE_REFILL);
+>  
+>  	/* Return last page */
+>  	if (likely(pool->alloc.count > 0))
+> @@ -155,20 +153,16 @@ static struct page *page_pool_refill_alloc_cache(struct page_pool *pool,
+>  /* fast path */
+>  static struct page *__page_pool_get_cached(struct page_pool *pool)
+>  {
+> -	bool refill = false;
+>  	struct page *page;
+>  
+> -	/* Test for safe-context, caller should provide this guarantee */
+> -	if (likely(in_serving_softirq())) {
+> -		if (likely(pool->alloc.count)) {
+> -			/* Fast-path */
+> -			page = pool->alloc.cache[--pool->alloc.count];
+> -			return page;
+> -		}
+> -		refill = true;
+> +	/* Caller MUST guarantee safe non-concurrent access, e.g. softirq */
+> +	if (likely(pool->alloc.count)) {
+> +		/* Fast-path */
+> +		page = pool->alloc.cache[--pool->alloc.count];
+> +	} else {
+> +		page = page_pool_refill_alloc_cache(pool);
+>  	}
+>  
+> -	page = page_pool_refill_alloc_cache(pool, refill);
+>  	return page;
+>  }
+>  
+> -- 
+> 2.16.2
+> 
 
-Thanks, that commit was also pointed by Eric and I verified it was
-backported as:
-https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux.git/commit/?h=linux-4.9.y&id=df9c0f8a15c283b3339ef636642d3769f8fbc434
-
-So it must be some other bug affecting me.
+Acked-by: Ilias Apalodimas <ilias.apalodimas@linaro.org>
