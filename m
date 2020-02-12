@@ -2,74 +2,127 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id B48D315B097
-	for <lists+netdev@lfdr.de>; Wed, 12 Feb 2020 20:14:48 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 87D7C15B0D2
+	for <lists+netdev@lfdr.de>; Wed, 12 Feb 2020 20:18:19 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729099AbgBLTOl (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 12 Feb 2020 14:14:41 -0500
-Received: from mga06.intel.com ([134.134.136.31]:41406 "EHLO mga06.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1729030AbgBLTOi (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 12 Feb 2020 14:14:38 -0500
-X-Amp-Result: SKIPPED(no attachment in message)
-X-Amp-File-Uploaded: False
-Received: from orsmga006.jf.intel.com ([10.7.209.51])
-  by orsmga104.jf.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 12 Feb 2020 11:14:30 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.70,433,1574150400"; 
-   d="scan'208";a="237807065"
-Received: from jtkirshe-desk1.jf.intel.com ([134.134.177.74])
-  by orsmga006.jf.intel.com with ESMTP; 12 Feb 2020 11:14:29 -0800
-From:   Jeff Kirsher <jeffrey.t.kirsher@intel.com>
-To:     davem@davemloft.net, gregkh@linuxfoundation.org
-Cc:     Shiraz Saleem <shiraz.saleem@intel.com>, netdev@vger.kernel.org,
-        linux-rdma@vger.kernel.org, nhorman@redhat.com,
-        sassmann@redhat.com, jgg@ziepe.ca,
-        Mustafa Ismail <mustafa.ismail@intel.com>,
-        Jeff Kirsher <jeffrey.t.kirsher@intel.com>
-Subject: [RFC PATCH v4 25/25] RDMA/irdma: Update MAINTAINERS file
-Date:   Wed, 12 Feb 2020 11:14:24 -0800
-Message-Id: <20200212191424.1715577-26-jeffrey.t.kirsher@intel.com>
-X-Mailer: git-send-email 2.24.1
-In-Reply-To: <20200212191424.1715577-1-jeffrey.t.kirsher@intel.com>
-References: <20200212191424.1715577-1-jeffrey.t.kirsher@intel.com>
+        id S1728866AbgBLTSP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 12 Feb 2020 14:18:15 -0500
+Received: from lelv0143.ext.ti.com ([198.47.23.248]:43326 "EHLO
+        lelv0143.ext.ti.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727231AbgBLTSP (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 12 Feb 2020 14:18:15 -0500
+Received: from lelv0265.itg.ti.com ([10.180.67.224])
+        by lelv0143.ext.ti.com (8.15.2/8.15.2) with ESMTP id 01CJI2nt129769;
+        Wed, 12 Feb 2020 13:18:02 -0600
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
+        s=ti-com-17Q1; t=1581535082;
+        bh=RddroMl+8V9fWReNg0unj/DoPpgOqUAGzQHwwWEjayM=;
+        h=Subject:To:CC:References:From:Date:In-Reply-To;
+        b=iyt0kwiq+Zq9gc61whMBKHqQL+1AHSFr0zlCgr2krxL8AEBt0WMnafVGBgcTZRAln
+         sUPOlXS6XQeoKNMR+92LDJ/Uy6jX+TNZL3hZma9YBqfn3V0LeXHQR0Qedl1n8Jo+rW
+         Xyc9RZbHtIEFz2UAKmeNTj7RjcDWQLHZrCGBCfoI=
+Received: from DLEE110.ent.ti.com (dlee110.ent.ti.com [157.170.170.21])
+        by lelv0265.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 01CJI2OO121270
+        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
+        Wed, 12 Feb 2020 13:18:02 -0600
+Received: from DLEE114.ent.ti.com (157.170.170.25) by DLEE110.ent.ti.com
+ (157.170.170.21) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1847.3; Wed, 12
+ Feb 2020 13:18:01 -0600
+Received: from fllv0039.itg.ti.com (10.64.41.19) by DLEE114.ent.ti.com
+ (157.170.170.25) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1847.3 via
+ Frontend Transport; Wed, 12 Feb 2020 13:18:01 -0600
+Received: from [10.250.100.73] (ileax41-snat.itg.ti.com [10.172.224.153])
+        by fllv0039.itg.ti.com (8.15.2/8.15.2) with ESMTP id 01CJHxFU129951;
+        Wed, 12 Feb 2020 13:18:00 -0600
+Subject: Re: Question about kthread_mod_delayed_work() allowed context
+To:     Petr Mladek <pmladek@suse.com>
+CC:     "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        <linux-rt-users@vger.kernel.org>,
+        Linux ARM <linux-arm-kernel@lists.infradead.org>,
+        netdev <netdev@vger.kernel.org>,
+        Richard Cochran <richardcochran@gmail.com>
+References: <cfa886ad-e3b7-c0d2-3ff8-58d94170eab5@ti.com>
+ <20200212154116.hh2vdyi7e2xflxr5@pathway.suse.cz>
+From:   Grygorii Strashko <grygorii.strashko@ti.com>
+Message-ID: <59802c56-1013-3042-167d-89f288f51b58@ti.com>
+Date:   Wed, 12 Feb 2020 21:17:53 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.2.2
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+In-Reply-To: <20200212154116.hh2vdyi7e2xflxr5@pathway.suse.cz>
+Content-Type: text/plain; charset="utf-8"; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Shiraz Saleem <shiraz.saleem@intel.com>
 
-Add maintainer entry for irdma driver.
 
-Signed-off-by: Mustafa Ismail <mustafa.ismail@intel.com>
-Signed-off-by: Shiraz Saleem <shiraz.saleem@intel.com>
-Signed-off-by: Jeff Kirsher <jeffrey.t.kirsher@intel.com>
----
- MAINTAINERS | 8 ++++++++
- 1 file changed, 8 insertions(+)
+On 12/02/2020 17:41, Petr Mladek wrote:
+> On Tue 2020-02-11 12:23:59, Grygorii Strashko wrote:
+>> Hi All,
+>>
+>> I'd like to ask question about allowed calling context for kthread_mod_delayed_work().
+>>
+>> The comment to kthread_mod_delayed_work() says:
+>>
+>>   * This function is safe to call from any context including IRQ handler.
+>>   * See __kthread_cancel_work() and kthread_delayed_work_timer_fn()
+>>   * for details.
+>>   */
+>>
+>> But it has del_timer_sync() inside which seems can't be called from hard_irq context:
+>> kthread_mod_delayed_work()
+>>    |-__kthread_cancel_work()
+>>       |- del_timer_sync()
+>> 	|- WARN_ON(in_irq() && !(timer->flags & TIMER_IRQSAFE));
+> 
+> It is safe because kthread_delayed_work_timer_fn() is IRQ safe.
+> Note that it uses raw_spin_lock_irqsave(). It is the reason why
+> the timer could have set TIMER_IRQSAFE flag, see
+> KTHREAD_DELAYED_WORK_INIT().
+> 
+> In more details. The timer is either canceled before the callback
+> is called. Or it waits for the callback but the callback is safe
+> because it can't sleep.
 
-diff --git a/MAINTAINERS b/MAINTAINERS
-index 4fe855bfa017..72b748eb7c1c 100644
---- a/MAINTAINERS
-+++ b/MAINTAINERS
-@@ -8626,6 +8626,14 @@ L:	linux-pm@vger.kernel.org
- S:	Supported
- F:	drivers/cpufreq/intel_pstate.c
- 
-+INTEL ETHERNET PROTOCL DRIVER FOR RDMA
-+M:	Mustafa Ismail <mustafa.ismail@intel.com>
-+M:	Shiraz Saleem <shiraz.saleem@intel.com>
-+L:	linux-rdma@vger.kernel.org
-+S:	Supported
-+F:	drivers/infiniband/hw/irdma/
-+F:	include/uapi/rdma/irdma-abi.h
-+
- INTEL SPEED SELECT TECHNOLOGY
- M:	Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
- L:	platform-driver-x86@vger.kernel.org
+I think, my issue (warning) could be related to the fact that kthread_init_delayed_work()
+is used, which seems doesn't set TIMER_IRQSAFE flag.
+
+> 
+> 
+>> My use case is related to PTP processing using PTP auxiliary worker:
+>> (commit d9535cb7b760 ("ptp: introduce ptp auxiliary worker")):
+>>   - periodic work A is started and res-schedules itself for every dtX
+>>   - on IRQ - the work A need to be scheduled immediately
+> 
+> This is exactly where kthread_mod_delayed_work() need to be used
+> in the IRQ context with 0 delay.
+> 
+> 
+>> Any advice on how to proceed?
+>> Can kthread_queue_work() be used even if there is delayed work is
+>> scheduled already (in general, don't care if work A will be executed one
+>> more time after timer expiration)?
+> 
+> Yes, it can be used this way. It should behave the same way as
+> the workqueue API.
+> 
+> I am happy that there are more users for this API. I wanted to
+> convert more kthreads but it was just falling down in my TODO.
+> 
+> I hope that I answered all questions. Feel free to ask more
+> when in doubts.
+> 
+> Best Regards,
+> Petr
+> 
+
 -- 
-2.24.1
-
+Best regards,
+grygorii
