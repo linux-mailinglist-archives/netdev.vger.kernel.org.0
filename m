@@ -2,88 +2,110 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 29F9615AE98
-	for <lists+netdev@lfdr.de>; Wed, 12 Feb 2020 18:19:53 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 64DC015AEC5
+	for <lists+netdev@lfdr.de>; Wed, 12 Feb 2020 18:32:41 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727458AbgBLRTr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 12 Feb 2020 12:19:47 -0500
-Received: from vps0.lunn.ch ([185.16.172.187]:43056 "EHLO vps0.lunn.ch"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726728AbgBLRTq (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 12 Feb 2020 12:19:46 -0500
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:
-        Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
-        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
-        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
-        List-Post:List-Owner:List-Archive;
-        bh=rkM9QGmsqKaUtiT8wCi5xafHwiZcklUGCeleqBo8SCM=; b=TF3BD4Z07Dig+7/BleThInvxyJ
-        s+g7cYYr9Gij0deR+kCx/edpUOEv05/YEwrkbMkEhnQKE+/E8wj7tKHjB+SriAnYi03a466Ay54RA
-        3OhEWWx1/1F2QZ2wFlIR4GP37Jb30vq0xUFKw16FCn/2T0sDnWQN0UB/6059Hmi5ITds=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.93)
-        (envelope-from <andrew@lunn.ch>)
-        id 1j1vfr-0006lH-0S; Wed, 12 Feb 2020 18:19:43 +0100
-Date:   Wed, 12 Feb 2020 18:19:42 +0100
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Tim Harvey <tharvey@gateworks.com>
-Cc:     netdev <netdev@vger.kernel.org>,
-        open list <linux-kernel@vger.kernel.org>, rrichter@marvell.com,
-        linux-arm-kernel@lists.infradead.org,
-        David Miller <davem@davemloft.net>, sgoutham@marvell.com
-Subject: Re: [PATCH] net: thunderx: use proper interface type for RGMII
-Message-ID: <20200212171942.GR19213@lunn.ch>
-References: <1581108026-28170-1-git-send-email-tharvey@gateworks.com>
- <20200207210209.GD19213@lunn.ch>
- <CAJ+vNU0LV7EquWXfBKfYYLzagXiVHtvqMtx5hiM1zxXQWVgWrA@mail.gmail.com>
+        id S1728716AbgBLRcR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 12 Feb 2020 12:32:17 -0500
+Received: from userp2120.oracle.com ([156.151.31.85]:40724 "EHLO
+        userp2120.oracle.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726982AbgBLRcQ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 12 Feb 2020 12:32:16 -0500
+Received: from pps.filterd (userp2120.oracle.com [127.0.0.1])
+        by userp2120.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 01CHVO1d096683;
+        Wed, 12 Feb 2020 17:31:57 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=subject : to : cc :
+ references : from : message-id : date : mime-version : in-reply-to :
+ content-type : content-transfer-encoding; s=corp-2020-01-29;
+ bh=s65aO/8IZJu4xCgV1gff0ctcMPYShMHG/a2PtOoIauY=;
+ b=PtqNSKTuGm2rh0qwec5o0nv6tsIw9GkespctJjWvBi/nKDvfLzF+qIrs8eBWD/C2qqYh
+ ZwiHJ3aIg0V4lNasBx5KvTCBRcwfK2R6mNsgLhX3FfCH/tKGH/kBEQbzKZ2ZIwLKW9vH
+ vLFYyRREkaH5IQepvY9jutuaM42rC8jFnPw5p5ES+icjnvEQ/mESp6H9W1r3Id1VCyWw
+ Cz31rr3n7M3mUAqNw3HJm+5mJTCjzM5f5SY8Ewhyp8lwdyLXBltlD8T/o1TeUjXbT0ny
+ 9xGLa+FB02g0gdkHqpj3jVKLnUArHKL98g6y07SGRiZmHuakZ1GAOYtp0NymiwLkupuP uA== 
+Received: from aserp3030.oracle.com (aserp3030.oracle.com [141.146.126.71])
+        by userp2120.oracle.com with ESMTP id 2y2p3smaat-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=FAIL);
+        Wed, 12 Feb 2020 17:31:57 +0000
+Received: from pps.filterd (aserp3030.oracle.com [127.0.0.1])
+        by aserp3030.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 01CHRisZ101603;
+        Wed, 12 Feb 2020 17:31:56 GMT
+Received: from pps.reinject (localhost [127.0.0.1])
+        by aserp3030.oracle.com with ESMTP id 2y4k7x2r88-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=FAIL);
+        Wed, 12 Feb 2020 17:31:56 +0000
+Received: from aserp3030.oracle.com (aserp3030.oracle.com [127.0.0.1])
+        by pps.reinject (8.16.0.36/8.16.0.36) with SMTP id 01CHVuxh154129;
+        Wed, 12 Feb 2020 17:31:56 GMT
+Received: from userv0122.oracle.com (userv0122.oracle.com [156.151.31.75])
+        by aserp3030.oracle.com with ESMTP id 2y4k7x2r6r-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Wed, 12 Feb 2020 17:31:55 +0000
+Received: from abhmp0003.oracle.com (abhmp0003.oracle.com [141.146.116.9])
+        by userv0122.oracle.com (8.14.4/8.14.4) with ESMTP id 01CHVrj4020985;
+        Wed, 12 Feb 2020 17:31:53 GMT
+Received: from [10.209.227.41] (/10.209.227.41)
+        by default (Oracle Beehive Gateway v4.0)
+        with ESMTP ; Wed, 12 Feb 2020 09:31:52 -0800
+Subject: Re: [PATCH 1/1] net/rds: Track user mapped pages through special API
+To:     John Hubbard <jhubbard@nvidia.com>,
+        Andrew Morton <akpm@linux-foundation.org>
+Cc:     Hans Westgaard Ry <hans.westgaard.ry@oracle.com>,
+        Leon Romanovsky <leonro@mellanox.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
+        rds-devel@oss.oracle.com, linux-rdma@vger.kernel.org,
+        linux-mm@kvack.org, LKML <linux-kernel@vger.kernel.org>
+References: <20200212030355.1600749-1-jhubbard@nvidia.com>
+ <20200212030355.1600749-2-jhubbard@nvidia.com>
+From:   santosh.shilimkar@oracle.com
+Organization: Oracle Corporation
+Message-ID: <c0d8d04e-08d1-60ff-ea4c-e6c71f3e118a@oracle.com>
+Date:   Wed, 12 Feb 2020 09:31:51 -0800
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.14; rv:60.0)
+ Gecko/20100101 Thunderbird/60.7.2
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CAJ+vNU0LV7EquWXfBKfYYLzagXiVHtvqMtx5hiM1zxXQWVgWrA@mail.gmail.com>
+In-Reply-To: <20200212030355.1600749-2-jhubbard@nvidia.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9529 signatures=668685
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 spamscore=0 mlxscore=0 malwarescore=0
+ suspectscore=0 mlxlogscore=999 priorityscore=1501 clxscore=1011
+ impostorscore=0 lowpriorityscore=0 phishscore=0 adultscore=0 bulkscore=0
+ classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2001150001
+ definitions=main-2002120130
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Feb 12, 2020 at 08:55:39AM -0800, Tim Harvey wrote:
-> On Fri, Feb 7, 2020 at 1:02 PM Andrew Lunn <andrew@lunn.ch> wrote:
-> >
-> > On Fri, Feb 07, 2020 at 12:40:26PM -0800, Tim Harvey wrote:
-> > > The configuration of the OCTEONTX XCV_DLL_CTL register via
-> > > xcv_init_hw() is such that the RGMII RX delay is bypassed
-> > > leaving the RGMII TX delay enabled in the MAC:
-> > >
-> > >       /* Configure DLL - enable or bypass
-> > >        * TX no bypass, RX bypass
-> > >        */
-> > >       cfg = readq_relaxed(xcv->reg_base + XCV_DLL_CTL);
-> > >       cfg &= ~0xFF03;
-> > >       cfg |= CLKRX_BYP;
-> > >       writeq_relaxed(cfg, xcv->reg_base + XCV_DLL_CTL);
-> > >
-> > > This would coorespond to a interface type of PHY_INTERFACE_MODE_RGMII_RXID
-> > > and not PHY_INTERFACE_MODE_RGMII.
-> > >
-> > > Fixing this allows RGMII PHY drivers to do the right thing (enable
-> > > RX delay in the PHY) instead of erroneously enabling both delays in the
-> > > PHY.
-> >
-> > Hi Tim
-> >
-> > This seems correct. But how has it worked in the past? Does this
-> > suggest there is PHY driver out there which is doing the wrong thing
-> > when passed PHY_INTERFACE_MODE_RGMII?
-> >
-> > Reviewed-by: Andrew Lunn <andrew@lunn.ch>
-> >
+On 2/11/20 7:03 PM, John Hubbard wrote:
+> From: Leon Romanovsky <leonro@mellanox.com>
 > 
-> Andrew,
+> Convert net/rds to use the newly introduces pin_user_pages() API,
+> which properly sets FOLL_PIN. Setting FOLL_PIN is now required for
+> code that requires tracking of pinned pages.
 > 
-> Yes, the DP83867 phy driver used on the Gateworks Newport boards would
-> configure the delay in an incompatible way when enabled.
+> Note that this effectively changes the code's behavior: it now
+> ultimately calls set_page_dirty_lock(), instead of set_page_dirty().
+> This is probably more accurate.
+> 
+> As Christoph Hellwig put it, "set_page_dirty() is only safe if we are
+> dealing with a file backed page where we have reference on the inode it
+> hangs off." [1]
+> 
+> [1] https://urldefense.com/v3/__https://lore.kernel.org/r/20190723153640.GB720@lst.de__;!!GqivPVa7Brio!OJHuecs9Iup5ig3kQBi_423uMMuskWhBQAdOICrY3UQ_ZfEaxt9ySY7E8y32Q7pk5tByyA$
+> 
+> Cc: Hans Westgaard Ry <hans.westgaard.ry@oracle.com>
+> Cc: Santosh Shilimkar <santosh.shilimkar@oracle.com>
+> Signed-off-by: Leon Romanovsky <leonro@mellanox.com>
+> Signed-off-by: John Hubbard <jhubbard@nvidia.com>
+> ---
+Change looks fine to me. Just on safer side, we will try
+to test this change with regression suite to make sure it
+works as expected.
 
-Hi Tim
+For patch itself,
 
-So it was broken? Maybe find the appropriate Fixes tag, and have David
-add it to stable?
-
-    Andrew
+Acked-by: Santosh Shilimkar <santosh.shilimkar@oracle.com>
