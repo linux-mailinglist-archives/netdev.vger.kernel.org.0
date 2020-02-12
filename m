@@ -2,115 +2,106 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id D8D9F15A0F7
-	for <lists+netdev@lfdr.de>; Wed, 12 Feb 2020 06:58:45 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3544815A145
+	for <lists+netdev@lfdr.de>; Wed, 12 Feb 2020 07:29:55 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728148AbgBLF6o (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 12 Feb 2020 00:58:44 -0500
-Received: from mail-eopbgr70054.outbound.protection.outlook.com ([40.107.7.54]:6212
-        "EHLO EUR04-HE1-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1727163AbgBLF6o (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 12 Feb 2020 00:58:44 -0500
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=Or2McDkYT63vg5hk8av8inF/TVICxheE0G3vohVCXZnckBUOQcRuqO++iwdtgYz1ONIVMxTihKc8hehP5uHegvFNzGUYaQ2sU+oRVD0s+Kbtu+TG+EVlIDkBoYT2kR7Wgjw0FKjXqUWXBVLmz6kfbCZ+UC5bsCiZsu3ndeeTJ5ssOf06MDc4NyIUGJxTf1eDpGAAglRn2Zgu0MgPD6A2fmX9Uotq4T4iO+sgKSXBFMjoKBbYOZqnyK3hMvZF7ix+HgLGTn8ONQGb+3Q4efrK4PMrvzvm/VXZyjurs82qMCuJ3ER2kvjnSthK21TLXV62bkoiY7AcE7b479GTY6ijSw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=aZn7Xum9kDJbRRBJ8kx0YOayqB+tCSpQnIKvMdNJOaQ=;
- b=nW1QTlct5i/PSszhk5ucYvpZfWwzlUBqzZsAOIcN+kvvuaZofbUOjFUasYKmxYXwXYbfcSLa6tUn9bLNvnXdn6sl7NY91cUsAwdVbxSgtxbOMp7HC1y60kYDvsJNtGymvzs0s2ho42N18C1VaBvI206WUCxM4s7zKW5UywY3GPXfsmPcJR1Q+XfvUEzZ7qjR1nP4IWW+sWa7oPbaIpWR4r0Cy43t6NK+EYUcHDmOKapxfpSYOE8P1qvWXyDPbjOaZdwC4ueYlvWw3PveIoSxjbYRxTC0ZPyeg7KnU5bDDp7jQFLpY5AeLhi5llaNqSiFx5wWTaXQaEDd6QAysG++iw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=mellanox.com; dmarc=pass action=none header.from=mellanox.com;
- dkim=pass header.d=mellanox.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Mellanox.com;
- s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=aZn7Xum9kDJbRRBJ8kx0YOayqB+tCSpQnIKvMdNJOaQ=;
- b=geZJEGHZRjpduHYzRFhA6d1RpTB75w+IDJiL/BesS2G+M7zwlZAmj5VbMGlLMq4PPFCoDN1KrpRfTfzDbd12j5TUFTU+T5t5BnQbjm4pL7k+PkWLWDsF0zY1WgAeaPiuHUargMLC3AUfTmvJFTwZR9vDBDCAm/MglzPXAfgpnUY=
-Received: from AM0PR05MB5250.eurprd05.prod.outlook.com (20.178.18.79) by
- AM0PR05MB4660.eurprd05.prod.outlook.com (52.133.55.144) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.2707.25; Wed, 12 Feb 2020 05:58:40 +0000
-Received: from AM0PR05MB5250.eurprd05.prod.outlook.com
- ([fe80::2d7b:6cce:da16:b166]) by AM0PR05MB5250.eurprd05.prod.outlook.com
- ([fe80::2d7b:6cce:da16:b166%5]) with mapi id 15.20.2707.030; Wed, 12 Feb 2020
- 05:58:39 +0000
-From:   Raed Salem <raeds@mellanox.com>
-To:     David Miller <davem@davemloft.net>
-CC:     "steffen.klassert@secunet.com" <steffen.klassert@secunet.com>,
-        "herbert@gondor.apana.org.au" <herbert@gondor.apana.org.au>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "kuznet@ms2.inr.ac.ru" <kuznet@ms2.inr.ac.ru>,
-        "yoshfuji@linux-ipv6.org" <yoshfuji@linux-ipv6.org>
-Subject: RE: [PATCH net-next] ESP: Export esp_output_fill_trailer function
-Thread-Topic: [PATCH net-next] ESP: Export esp_output_fill_trailer function
-Thread-Index: AQHV4LQeAv17UzFDwUWM81MDwC2yNagWwCWAgABRVIA=
-Date:   Wed, 12 Feb 2020 05:58:39 +0000
-Message-ID: <AM0PR05MB52508390E49CDF2FE039AD32C41B0@AM0PR05MB5250.eurprd05.prod.outlook.com>
-References: <1581409202-23654-1-git-send-email-raeds@mellanox.com>
- <20200211.170721.1119133630862180946.davem@davemloft.net>
-In-Reply-To: <20200211.170721.1119133630862180946.davem@davemloft.net>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-authentication-results: spf=none (sender IP is )
- smtp.mailfrom=raeds@mellanox.com; 
-x-originating-ip: [193.47.165.251]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-ht: Tenant
-x-ms-office365-filtering-correlation-id: 18916a0f-21f1-4b88-0f5f-08d7af809bb6
-x-ms-traffictypediagnostic: AM0PR05MB4660:
-x-microsoft-antispam-prvs: <AM0PR05MB4660B9DC74B9877E697AE97DC41B0@AM0PR05MB4660.eurprd05.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:5236;
-x-forefront-prvs: 0311124FA9
-x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(4636009)(366004)(39860400002)(346002)(376002)(136003)(396003)(189003)(199004)(52536014)(2906002)(4744005)(6506007)(53546011)(54906003)(33656002)(4326008)(9686003)(6916009)(71200400001)(316002)(8676002)(81166006)(86362001)(55016002)(8936002)(81156014)(66946007)(5660300002)(7696005)(478600001)(66446008)(64756008)(76116006)(66476007)(66556008)(186003)(26005);DIR:OUT;SFP:1101;SCL:1;SRVR:AM0PR05MB4660;H:AM0PR05MB5250.eurprd05.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;MX:1;A:1;
-received-spf: None (protection.outlook.com: mellanox.com does not designate
- permitted sender hosts)
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: ZJncjLOffXrYEgwOKtzXpIbu/NJIA8QxVxN7OYns5lkFceR8E0guz7QZHRBf4lejSnX2pu63wvQizoUN6Mbf5AaghoClW5EHGCAH7uDBr8kefLA6f32+v5pMtUuKCiSMIw5D0VkxrjpVXq5lx3UuOOdrnSZkXm/18ZNhKjMqCX8Asdiq5tU++6LG9PyOq43YYqbmE1bpY3TeQjl3pAYEELv3JHsvtemdzueFklG9l3AxPb98m5q2kG7F34ePTtmCKakWcs9CIHX4urg0SQDzTSfNSyI5WHUKmxFb4CU2DyOo8r0z3q0IYlEsxxiVPipTXNZYw69zU6vB4+efvJulKaPjNMHkfm+RepxaFBYenUhXDIJeVL/+XGonXQgb7xZqxCtx6C8ceItY52b994Ep0x8tk1UfW74e+r8+dul1mFNJC6iDraJ8/2f5qMtBhIQv
-x-ms-exchange-antispam-messagedata: oVRfJ/ZxY2OrBpM/cKuU4KfqpjjxD7DUprHruJfwOOLNgbutZezQ+ZdCo1bavU/iZiWAh0NR2S+1hF3p3bEkraq37JsNvJavxOOqRNvNhqTaxh/33e1I8xowHW+vpP+Vd0CtqHPi9BgL9NH/ENQV1g==
-x-ms-exchange-transport-forked: True
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+        id S1728142AbgBLG3x (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 12 Feb 2020 01:29:53 -0500
+Received: from mail-wr1-f43.google.com ([209.85.221.43]:34993 "EHLO
+        mail-wr1-f43.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727893AbgBLG3x (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 12 Feb 2020 01:29:53 -0500
+Received: by mail-wr1-f43.google.com with SMTP id w12so737346wrt.2
+        for <netdev@vger.kernel.org>; Tue, 11 Feb 2020 22:29:51 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=pItV3/3Hj7DWUi7bWcMdxXGwSnz+kOatMuXj/xey/20=;
+        b=eFyxlxqlNpwqpUoOOCUdsLwE4ZYU2lIc9112YabR2J1keX8hK9ip2Heo6jLSF+pu+J
+         TM57AvtCReZKA0zv+6JMakI87fXp+UUyEVFjH3SBUNMKPdGu5d9tKlLoEYG9NJ+lPFxR
+         aZOPH+Jy/7gCfTdUg3hlxMqBPqNTddSj6iiQ0wCuswmkjBIBhNnzZ5rv7TCfOh6c9mo2
+         fQRotdir7oDf/v+Mqyj09pv/KoI4yVKlljHubGnML1fad9C+nMuDDmDJQ8i889SE/yeo
+         0QhVmnVsEW4GE6i5w6xsvQ9JnWyxGahgOKo2REeuPZ1EEpQyAWs8gQXngMuYnIWl6nrx
+         htQQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=pItV3/3Hj7DWUi7bWcMdxXGwSnz+kOatMuXj/xey/20=;
+        b=S0wn1KhN8sra4WnOlpb1kh7bQmAiTgtW0rqIEaju6n+Jn9WqY7EY97tP9EJN7VwyKu
+         Ct7+XOqZFbtg2P/55nO3vJRAOzxe77HGsJTpuHEdtT0iEx11rl1oLdptWXPHS4uoev1T
+         UG2S/hHFzG8nrpF7rka3D7y8nhy8AljjEvI78Cl4DLKv2NjO+ljpe6qbH8oVuRJ5Xa6s
+         VFCV1FYJ9UVIX+BLIWYIlsi6tAVKtyLAsUYGI4U0tPjVRIPwMEYHTWql2jD+g2U1GEhG
+         WT3k6eTcsmOpEeZ1rdXA+RdDxC876s7nGAawN+e2qux2lmoOF79DRFlXoZm4ZOhFsRE/
+         lNwA==
+X-Gm-Message-State: APjAAAVDxTr8gQ1jCICIkGLBvGwH2hZ1EUHsdhzVSKnt2A/oDX+FYHCN
+        JI5LWKiGqgmh0nEyxjll7k6PUw==
+X-Google-Smtp-Source: APXvYqy0IACO/46r8B32bt5bIVRCSTtxVL04mNEhjv9xYiqv/YW/4SSnS1GnFjMwGhNoqPDlJVg+gw==
+X-Received: by 2002:adf:e686:: with SMTP id r6mr13360911wrm.177.1581488990940;
+        Tue, 11 Feb 2020 22:29:50 -0800 (PST)
+Received: from apalos.home (ppp-2-87-54-32.home.otenet.gr. [2.87.54.32])
+        by smtp.gmail.com with ESMTPSA id s15sm7959241wrp.4.2020.02.11.22.29.49
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 11 Feb 2020 22:29:50 -0800 (PST)
+Date:   Wed, 12 Feb 2020 08:29:47 +0200
+From:   Ilias Apalodimas <ilias.apalodimas@linaro.org>
+To:     Randy Dunlap <rdunlap@infradead.org>
+Cc:     brouer@redhat.com, lorenzo@kernel.org, davem@davemloft.net,
+        netdev@vger.kernel.org
+Subject: Re: [PATCH, net-next] net: page_pool: Add documentation on page_pool
+ API
+Message-ID: <20200212062947.GA1171328@apalos.home>
+References: <20200211154227.1169600-1-ilias.apalodimas@linaro.org>
+ <25360a12-90ce-39ac-4956-8591a8c4eb74@infradead.org>
 MIME-Version: 1.0
-X-OriginatorOrg: Mellanox.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 18916a0f-21f1-4b88-0f5f-08d7af809bb6
-X-MS-Exchange-CrossTenant-originalarrivaltime: 12 Feb 2020 05:58:39.7610
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: a652971c-7d2e-4d9b-a6a4-d149256f461b
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: Zjx/vGgzGfMz5TF+OwjOs0QjbL33LIY7S1Puw82NSDcfi4yhbvU3Q64OEIHUD4bdHousCzeN5qJVS/fng/QS/A==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM0PR05MB4660
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <25360a12-90ce-39ac-4956-8591a8c4eb74@infradead.org>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Thanks, will do
+[...]
+> 
+> what about 'order'?  is it optional?
 
------Original Message-----
-From: David Miller [mailto:davem@davemloft.net]=20
-Sent: Wednesday, February 12, 2020 3:07 AM
-To: Raed Salem <raeds@mellanox.com>
-Cc: steffen.klassert@secunet.com; herbert@gondor.apana.org.au; netdev@vger.=
-kernel.org; kuznet@ms2.inr.ac.ru; yoshfuji@linux-ipv6.org
-Subject: Re: [PATCH net-next] ESP: Export esp_output_fill_trailer function
+I actually forgot about it, i'll add it on v2
 
-From: Raed Salem <raeds@mellanox.com>
-Date: Tue, 11 Feb 2020 10:20:02 +0200
+> 
+> > +    * pool_size:  size of the ptr_ring
+> > +    * nid:        preferred NUMA node for allocation
+> > +    * dev:        struct device. Used on DMA operations
+> > +    * dma_dir:    DMA direction
+> > +    * max_len:    max DMA sync memory size
+> > +    * offset:     DMA address offset
+> > +
+> > +* page_pool_put_page(): The outcome of this depends on the page refcnt. If the
+> > +  driver uses refcnt > 1 this will unmap the page. If the pool object is
+> > +  responsible for DMA operations and account for the in-flight counting. 
+> 
+> Hm, above is not a sentence and it ends with a space character.
+> Several lines end with a space character.  :(
 
-> The esp fill trailer method is identical for both
-> IPv6 and IPv4.
->=20
-> Share the implementation for esp6 and esp to avoid code duplication in=20
-> addition it could be also used at various drivers code.
->=20
-> Change-Id: Iebb4325fe12ef655a5cd6cb896cf9eed68033979
-> Signed-off-by: Raed Salem <raeds@mellanox.com>
-> Reviewed-by: Boris Pismenny <borisp@mellanox.com>
-> Reviewed-by: Saeed Mahameed <saeedm@mellanox.com>
+i'll fix both on V2
 
-net-next is closed, please resubmit this when it opens back up
+> 
+> > +  If the refcnt is 1, the allocator owns the page and will try to recycle and 
+> > +  sync it to be re-used by the device using dma_sync_single_range_for_device().
+> > +
+> > +* page_pool_release_page(): Unmap the page (if mapped) and account for it on
+> > +  inflight counters.
+> 
+> inflight is spelled as in-flight earlier.  Just choose one way, please.
+
+ok
+
+[...]
+> > +    page_pool_put_page(page_pool, page, false);
+> > +    xdp_rxq_info_unreg(&xdp_rxq);
+> > +    page_pool_destroy(page_pool);
+
+Thanks for the review, i'll wait until net-next reopens and update this
+
+/Ilias
