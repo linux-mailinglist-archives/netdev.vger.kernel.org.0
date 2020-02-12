@@ -2,118 +2,131 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id DF2EE15B2BB
-	for <lists+netdev@lfdr.de>; Wed, 12 Feb 2020 22:30:05 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id AEC7A15B2C3
+	for <lists+netdev@lfdr.de>; Wed, 12 Feb 2020 22:34:02 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729132AbgBLV36 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 12 Feb 2020 16:29:58 -0500
-Received: from mail-ot1-f68.google.com ([209.85.210.68]:34443 "EHLO
-        mail-ot1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727420AbgBLV36 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 12 Feb 2020 16:29:58 -0500
-Received: by mail-ot1-f68.google.com with SMTP id j16so3482806otl.1;
-        Wed, 12 Feb 2020 13:29:57 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=6EUdtzaj5HeATaXjc8VyFybXqFaOOVdixXXnNM4Bwu8=;
-        b=Gm7kWnYIxvK5ldgUz4g0nVBMQc639uswc6TWHlep6sMqtQ+qujlnjp283SbnnrOPbU
-         b7avqm/swkSzEN9Ep5ayPFEhjB1lKr0rbO+LZ0bGR1mC47DVV3RJ5mtUiJct8Dy/lwHr
-         3JV/DMBqqGEnml0UNFYuKej4E1ULCpr/3MFyEk3OGTwVn6LNgAhJV2yCIcJGcuISfvw1
-         fLV80ZpcvfknDPnc+7UPtii/Iu54o/RXKZra9rrrR57tnQlg77PXMFzjqGbWejck6OXe
-         u9EIa1vIAEzSevFbx3pN/zGWFslWR5FY9NjIQPKkaGkV+8CiA2T9I36/yz5PQiuNDw6e
-         +gOw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=6EUdtzaj5HeATaXjc8VyFybXqFaOOVdixXXnNM4Bwu8=;
-        b=pTgDhW6FFiakFY0gMc3lfbZK9af6qiKp3OHj7WqtO/e2Xz7D5eeNoh97OQLpxQCUOj
-         92TVKZm+sPoqbOMI78isW9JR2yz9uEXs/1EKkBTURkru4gXZAsZfn/4Ucg6Ge0yei3A1
-         ublo8NilbTmFgQVPxlrIeHhzyLpdX6cGI74dsCQl6d3r8AAVPRmm/HSUSCSUmKd6WC49
-         GzBJQv1efVBoHlFGGNzNx4JTtxYETpftCq+1GdeiigDfVyj2vvuho9JLQa9CPZp+RhQ4
-         JD8uJG8y+BDrWpKDKSAfuuUy/eCoM23LwBpOD0EHdecArPAnHjAj4JU9TDJwyQ/O5GqI
-         7Wgw==
-X-Gm-Message-State: APjAAAVg5AnWGe/hy8gZCuZNOoKT4mRkY3FpkLZMTdOgQQrqWdQX/L0G
-        JdpvikmyFj+/B8bDEtVdYLdDRnh/9O2L7JU3QgE=
-X-Google-Smtp-Source: APXvYqy5luJF34R6oX+y3IwKbEVG0rnSH6Vpc0tpBKh0KsYzhDGd+I9stl5ZEIoqRDlVt8ljiqqVs8QSXHmCsYp2cVU=
-X-Received: by 2002:a9d:6d10:: with SMTP id o16mr11255994otp.28.1581542997421;
- Wed, 12 Feb 2020 13:29:57 -0800 (PST)
+        id S1729089AbgBLVeB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 12 Feb 2020 16:34:01 -0500
+Received: from mga11.intel.com ([192.55.52.93]:42951 "EHLO mga11.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1727564AbgBLVeA (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 12 Feb 2020 16:34:00 -0500
+X-Amp-Result: SKIPPED(no attachment in message)
+X-Amp-File-Uploaded: False
+Received: from orsmga003.jf.intel.com ([10.7.209.27])
+  by fmsmga102.fm.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 12 Feb 2020 13:34:00 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.70,434,1574150400"; 
+   d="scan'208";a="233911676"
+Received: from jtkirshe-desk1.jf.intel.com ([134.134.177.74])
+  by orsmga003.jf.intel.com with ESMTP; 12 Feb 2020 13:33:59 -0800
+From:   Jeff Kirsher <jeffrey.t.kirsher@intel.com>
+To:     davem@davemloft.net
+Cc:     Jeff Kirsher <jeffrey.t.kirsher@intel.com>, netdev@vger.kernel.org,
+        nhorman@redhat.com, sassmann@redhat.com
+Subject: [net 00/15][pull request] Intel Wired LAN Driver Updates 2020-02-12
+Date:   Wed, 12 Feb 2020 13:33:42 -0800
+Message-Id: <20200212213357.2198911-1-jeffrey.t.kirsher@intel.com>
+X-Mailer: git-send-email 2.24.1
 MIME-Version: 1.0
-References: <20200212212316.Bluez.v3.1.Ia71869d2f3e19a76a6a352c61088a085a1d41ba6@changeid>
- <89D0B633-381D-4700-AB33-5F803BCB6E94@holtmann.org> <86D0ACD5-BEF7-45B3-B621-BA2E457AB57B@gmail.com>
-In-Reply-To: <86D0ACD5-BEF7-45B3-B621-BA2E457AB57B@gmail.com>
-From:   Luiz Augusto von Dentz <luiz.dentz@gmail.com>
-Date:   Wed, 12 Feb 2020 13:29:45 -0800
-Message-ID: <CABBYNZLm_q_WV3nmGVpePXpLsjnkk_zpEm1cYK0ps7H3PM=_kQ@mail.gmail.com>
-Subject: Re: [Bluez PATCH v3] bluetooth: secure bluetooth stack from bluedump attack
-To:     Johan Hedberg <johan.hedberg@gmail.com>
-Cc:     Marcel Holtmann <marcel@holtmann.org>,
-        Howard Chung <howardchung@google.com>,
-        Bluez mailing list <linux-bluetooth@vger.kernel.org>,
-        ChromeOS Bluetooth Upstreaming 
-        <chromeos-bluetooth-upstreaming@chromium.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        "open list:NETWORKING [GENERAL]" <netdev@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Howard,
+This series contains fixes to only the ice driver.
 
-On Wed, Feb 12, 2020 at 7:39 AM Johan Hedberg <johan.hedberg@gmail.com> wrote:
->
-> Hi Marcel,
->
-> On 12. Feb 2020, at 17.19, Marcel Holtmann <marcel@holtmann.org> wrote:
-> >> +            key = hci_find_ltk(hcon->hdev, &hcon->dst, hcon->dst_type,
-> >> +                               hcon->role);
-> >> +
-> >> +            /* If there already exists link key in local host, leave the
-> >> +             * decision to user space since the remote device could be
-> >> +             * legitimate or malicious.
-> >> +             */
-> >> +            if (smp->method == JUST_WORKS && key) {
-> >> +                    err = mgmt_user_confirm_request(hcon->hdev, &hcon->dst,
-> >> +                                                    hcon->type,
-> >> +                                                    hcon->dst_type, passkey,
-> >> +                                                    1);
-> >> +                    if (err)
-> >> +                            return SMP_UNSPECIFIED;
-> >> +                    set_bit(SMP_FLAG_WAIT_USER, &smp->flags);
-> >> +            }
-> >>      }
-> >
-> > while this looks good, I like to optimize this to only look up the LTK when needed.
+Dave fixes logic flaws in the DCB rebuild function which is used after a
+reset.  Also fixed a configuration issue when switching between firmware
+and software LLDP mode where the number of TLV's configured was getting
+out of sync with what lldpad thinks is configured.
 
-I wonder why we don't just call user confirm everytime? That way the
-new policy preference applies to both a new pair or when already
-paired, and we don't have to really do the key lookup here since the
-userspace can do the check if really needed.
+Paul fixes how the driver displayed all the supported and advertised
+link modes by basing it on the PHY capabilities, and in the process
+cleaned up a lot of code.
 
-> >
-> >       /* comment here */
-> >       if (smp->method != JUST_WORKS)
-> >               goto mackey_and_ltk;
-> >
-> >
-> >       /* and command here */
-> >       if (hci_find_ltk()) {
-> >               mgmt_user_confirm_request()
-> >               ..
-> >       }
-> >
-> > And my preference that we also get an Ack from Johan or Luiz that double checked that this is fine.
->
-> Acked-by: Johan Hedberg <johan.hedberg@intel.com>
->
-> Johan
+Brett fixes duplicate receive tail bumps by comparing the value we are
+writing to tail with the previously written tail value.  Also cleaned up
+workarounds that are no longer needed with the latest NVM images.
 
+Anirudh cleaned up unnecessary CONFIG_PCI_IOV wrappers.  Updated the
+driver to use ice_pf_to_dev() instead of &pf->pdev->dev or
+&vsi->back->pdev->dev.  Cleaned up the string format in print function
+calls to remove newlines where applicable.
 
+Akeem updates the link message logging to include "Full Duplex" and
+"Negotiated", to help distinguish from "Requested" for FEC.
+
+Bruce fixes and consolidates the logging of firmware/NVM information
+during driver load, since the information is duplicate of what is
+available via ethtool.  Fixed the checking of the Unit Load Status bits
+after reset to ensure they are 0x7FF before continuing, by updating the
+mask.  Cleanup up possible NULL dereferences that were created by a
+previous commit.
+
+Ben fixes the driver to use the correct netif_msg_tx/rx_error() to
+determine whether to print the MDD event type.
+
+Tony provides several trivial fixes, which include whitespace, typos,
+function header comments, reverse Christmas tree issues.
+
+The following are changes since commit b9287f2ac321ecac56eb51e6231f6579683dcdae:
+  net: ethernet: ave: Add capability of rgmii-id mode
+and are available in the git repository at:
+  git://git.kernel.org/pub/scm/linux/kernel/git/jkirsher/net-queue 100GbE
+
+Akeem G Abodunrin (1):
+  ice: Modify link message logging
+
+Anirudh Venkataramanan (4):
+  ice: Remove CONFIG_PCI_IOV wrap in ice_set_pf_caps
+  ice: Use ice_pf_to_dev
+  ice: Make print statements more compact
+  ice: Cleanup ice_vsi_alloc_q_vectors
+
+Ben Shelton (1):
+  ice: Use correct netif error function
+
+Brett Creeley (2):
+  ice: Don't allow same value for Rx tail to be written twice
+  ice: Remove ice_dev_onetime_setup()
+
+Bruce Allan (2):
+  ice: fix and consolidate logging of NVM/firmware version information
+  ice: update Unit Load Status bitmask to check after reset
+
+Dave Ertman (2):
+  ice: Fix DCB rebuild after reset
+  ice: Fix switch between FW and SW LLDP
+
+Paul Greenwalt (1):
+  ice: display supported and advertised link modes
+
+Tony Nguyen (2):
+  ice: Remove possible null dereference
+  ice: Trivial fixes
+
+ .../net/ethernet/intel/ice/ice_adminq_cmd.h   |   1 +
+ drivers/net/ethernet/intel/ice/ice_base.c     |  35 +-
+ drivers/net/ethernet/intel/ice/ice_common.c   |  37 +-
+ drivers/net/ethernet/intel/ice/ice_common.h   |   2 -
+ drivers/net/ethernet/intel/ice/ice_dcb.c      |   8 +-
+ drivers/net/ethernet/intel/ice/ice_dcb_lib.c  |  99 ++---
+ drivers/net/ethernet/intel/ice/ice_dcb_nl.c   |  20 +-
+ drivers/net/ethernet/intel/ice/ice_ethtool.c  | 355 ++----------------
+ .../net/ethernet/intel/ice/ice_hw_autogen.h   |   7 +-
+ drivers/net/ethernet/intel/ice/ice_lib.c      |  71 +---
+ drivers/net/ethernet/intel/ice/ice_lib.h      |   2 -
+ drivers/net/ethernet/intel/ice/ice_main.c     | 195 ++++------
+ drivers/net/ethernet/intel/ice/ice_txrx.c     |  11 +-
+ drivers/net/ethernet/intel/ice/ice_txrx.h     |   4 +-
+ drivers/net/ethernet/intel/ice/ice_txrx_lib.c |   2 +-
+ drivers/net/ethernet/intel/ice/ice_type.h     |   2 +-
+ .../net/ethernet/intel/ice/ice_virtchnl_pf.c  |  67 ++--
+ drivers/net/ethernet/intel/ice/ice_xsk.c      |   4 +-
+ 18 files changed, 247 insertions(+), 675 deletions(-)
 
 -- 
-Luiz Augusto von Dentz
+2.24.1
+
