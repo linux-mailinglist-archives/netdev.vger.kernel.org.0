@@ -2,98 +2,147 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id C57A115AC6E
-	for <lists+netdev@lfdr.de>; Wed, 12 Feb 2020 16:54:27 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A7FB815ACAE
+	for <lists+netdev@lfdr.de>; Wed, 12 Feb 2020 17:04:27 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728094AbgBLPyX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 12 Feb 2020 10:54:23 -0500
-Received: from mail-wr1-f42.google.com ([209.85.221.42]:43591 "EHLO
-        mail-wr1-f42.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727458AbgBLPyX (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 12 Feb 2020 10:54:23 -0500
-Received: by mail-wr1-f42.google.com with SMTP id r11so2962670wrq.10
-        for <netdev@vger.kernel.org>; Wed, 12 Feb 2020 07:54:21 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=6wind.com; s=google;
-        h=reply-to:subject:to:references:from:organization:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=F/rXOpsKkt10moU7lekEvTC0uEyocGlv1SxIocX3MWw=;
-        b=UU9X7xwB/mvhwXjMGXQzeoEjVwmosJR6gEXgmMqBrkTXSMdBW/1JLNRMOGmTJcdqNA
-         vfehW/cZrxTfvaDEutGU00EabogazDha41k/K6aMHxIp6C2BC7c59HMSsK7HQLZt0Upf
-         syIn6/2I3eneVxOzdDGU7BCm9LxFBr63gOFWDTN0kDhKknE0//bW+fg76cxlaYp5Q0Tx
-         MBuOwhpJ52qkyfzy9LS6G6FtZ2nENyDJ7t8A3Kzr05l6nZaN91LArSgtw42nf1KTPJ4O
-         WEYXBI/1kPDggLZ3FzZfzSf/owwJeM0/ALKc/lLMFAw/Kr1WcNq5BNxnf8YXvJciVkIJ
-         02Cw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:reply-to:subject:to:references:from:organization
-         :message-id:date:user-agent:mime-version:in-reply-to
-         :content-language:content-transfer-encoding;
-        bh=F/rXOpsKkt10moU7lekEvTC0uEyocGlv1SxIocX3MWw=;
-        b=JArJAfHRizTzaNH6uRMQ8kfu6VnFRGJk2G150uB+0FDoFClSfJsiPK0RamCamgJhFE
-         NbjTi6dw4aMMKqys2dzDbpjRwfCkEp/cFWLIbwFeudez1Ut0WYOgia4yLzRHOfhI70Gg
-         qWg6a+/WUk06jIED+dAEMndishc5YOls/nr9ISU0IqN6eyfBDoETp8uRchNUbA15kr85
-         6T6EtD3uerC45iyLt/hWGxhxOeLm1Gl16Ce/XJLhDYk+/ehp2Oz0nwIuWRHIeUJ5LdXb
-         LBovYZ7UKTxCWDW+7VS+EIppP5JRmh7JCt6gJHailma/DoQD8yCeKiSsfx2QY6jM4jTe
-         tipQ==
-X-Gm-Message-State: APjAAAUE263XAXrD5FrWxRlhutsCIflWchG4SIdlDUJi+tizEIZbbrtK
-        3H2zucsInixcJvxkHx6me3+gtizCT3g=
-X-Google-Smtp-Source: APXvYqxhutMki2hrv2T6Hbwj3HQr2MPNwTygBfs5eVoJ0epnVKd759VIZBITYw/s68q4sdNrLp+c5w==
-X-Received: by 2002:a5d:498f:: with SMTP id r15mr15638015wrq.284.1581522860895;
-        Wed, 12 Feb 2020 07:54:20 -0800 (PST)
-Received: from ?IPv6:2a01:e0a:410:bb00:69db:fab1:ccba:51cb? ([2a01:e0a:410:bb00:69db:fab1:ccba:51cb])
-        by smtp.gmail.com with ESMTPSA id v5sm1064711wrv.86.2020.02.12.07.54.20
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 12 Feb 2020 07:54:20 -0800 (PST)
-Reply-To: nicolas.dichtel@6wind.com
-Subject: Re: [PATCH v3 net] net, ip6_tunnel: enhance tunnel locate with link
- check
-To:     William Dauchy <w.dauchy@criteo.com>, netdev@vger.kernel.org
-References: <b3497834-1ab5-3315-bfbd-ac4f5236eee3@6wind.com>
- <20200212083036.134761-1-w.dauchy@criteo.com>
-From:   Nicolas Dichtel <nicolas.dichtel@6wind.com>
-Organization: 6WIND
-Message-ID: <ce1f9fbe-a28a-d5c3-c792-ded028df52e5@6wind.com>
-Date:   Wed, 12 Feb 2020 16:54:19 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.4.1
+        id S1728676AbgBLQEE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 12 Feb 2020 11:04:04 -0500
+Received: from mail.kernel.org ([198.145.29.99]:53926 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726728AbgBLQEE (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 12 Feb 2020 11:04:04 -0500
+Received: from localhost (unknown [104.132.1.104])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 26EFD2082F;
+        Wed, 12 Feb 2020 16:04:03 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1581523443;
+        bh=xU2rLIEhWXbj7R8laJx0IdOIdIu2LUAcXTPhXJVEGts=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=s2wmDc2m/nLk75G4YSx5bHyDiFUbZLlVFIIXygs098A1skc2j+utskUCrOA66qQl9
+         7jGPPvqRTxjMSKJI4frmiE3XkvpjPDGb/qSUUdl6X3x7jT6kc/DQxsph1C3AF0veK7
+         Y5inDoL9lP0tLIbht/gumou5mEGOejK6bkPVT/ng=
+Date:   Wed, 12 Feb 2020 08:04:02 -0800
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     Christian Brauner <christian.brauner@ubuntu.com>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        "Rafael J. Wysocki" <rafael@kernel.org>,
+        Pavel Machek <pavel@ucw.cz>, Jakub Kicinski <kuba@kernel.org>,
+        Eric Dumazet <edumazet@google.com>,
+        Stephen Hemminger <stephen@networkplumber.org>,
+        linux-pm@vger.kernel.org
+Subject: Re: [PATCH net-next 05/10] sysfs: add sysfs_change_owner()
+Message-ID: <20200212160402.GA1799124@kroah.com>
+References: <20200212104321.43570-1-christian.brauner@ubuntu.com>
+ <20200212104321.43570-6-christian.brauner@ubuntu.com>
+ <20200212131808.GA1789899@kroah.com>
+ <20200212150743.zyubvz53unyevbkx@wittgenstein>
 MIME-Version: 1.0
-In-Reply-To: <20200212083036.134761-1-w.dauchy@criteo.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20200212150743.zyubvz53unyevbkx@wittgenstein>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Le 12/02/2020 à 09:30, William Dauchy a écrit :
-[snip]
-> @@ -1848,6 +1870,11 @@ ip6_tnl_dev_init_gen(struct net_device *dev)
->  	dev->type = ARPHRD_TUNNEL6;
->  	dev->hard_header_len = LL_MAX_HEADER + t_hlen;
->  	dev->mtu = ETH_DATA_LEN - t_hlen;
-> +	if (t->parms.link) {
-> +		tdev = __dev_get_by_index(t->net, t->parms.link);
-> +		if (tdev && tdev->mtu < dev->mtu)
-> +			dev->mtu = tdev->mtu;
-Hmm, I was expecting 'tdev->mtu - t_hlen'. Am I wrong?
+On Wed, Feb 12, 2020 at 04:07:43PM +0100, Christian Brauner wrote:
+> On Wed, Feb 12, 2020 at 05:18:08AM -0800, Greg Kroah-Hartman wrote:
+> > On Wed, Feb 12, 2020 at 11:43:16AM +0100, Christian Brauner wrote:
+> > > Add a helper to change the owner of sysfs objects.
+> > 
+> > Seems sane, but:
+> > 
+> > > The ownership of a sysfs object is determined based on the ownership of
+> > > the corresponding kobject, i.e. only if the ownership of a kobject is
+> > > changed will this function change the ownership of the corresponding
+> > > sysfs entry.
+> > 
+> > A "sysfs object" is a kobject.  So I don't understand this sentance,
+> > sorry.
+> 
+> I meant that only if you change the uid/gid the underlying kobject is
+> associated with will this function do anything, meaning that you can't
+> pass in uids/gids directly. I'll explain why I did this down below [1].
+> Sorry if that was confusing.
+> 
+> > 
+> > > This function will be used to correctly account for kobject ownership
+> > > changes, e.g. when moving network devices between network namespaces.
+> > > 
+> > > Signed-off-by: Christian Brauner <christian.brauner@ubuntu.com>
+> > > ---
+> > >  fs/sysfs/file.c       | 35 +++++++++++++++++++++++++++++++++++
+> > >  include/linux/sysfs.h |  6 ++++++
+> > >  2 files changed, 41 insertions(+)
+> > > 
+> > > diff --git a/fs/sysfs/file.c b/fs/sysfs/file.c
+> > > index 6239d9584f0b..6a0fe88061fd 100644
+> > > --- a/fs/sysfs/file.c
+> > > +++ b/fs/sysfs/file.c
+> > > @@ -642,3 +642,38 @@ int sysfs_file_change_owner(struct kobject *kobj, const char *name)
+> > >  	return error;
+> > >  }
+> > >  EXPORT_SYMBOL_GPL(sysfs_file_change_owner);
+> > > +
+> > > +/**
+> > > + *	sysfs_change_owner - change owner of the given object.
+> > > + *	@kobj:	object.
+> > > + */
+> > > +int sysfs_change_owner(struct kobject *kobj)
+> > 
+> > What does this change the owner of the given object _to_?
+> 
+> [1]:
+> So ownership only changes if the kobject's uid/gid have been changed.
+> So when to stick with the networking example, when a network device is
+> moved into a new network namespace, the uid/gid of the kobject will be
+> changed to the root user of the owning user namespace of that network
+> namespace. So when the move of the network device has completed and
+> kobject_get_ownership() is called it will now return a different
+> uid/gid.
 
-In fact, something like this:
-dev->mtu = ETH_DATA_LEN - t_hlen;
-if (t->parms.link) {
-	tdev = __dev_get_by_index(t->net, t->parms.link);
-	if (tdev)
-		dev->mtu = tdev->mtu - t_hlen;
-}
+Ok, then this needs to say "change the uid/gid of the kobject to..." in
+order to explain what it is now being set to.  Otherwise this is really
+confusing if you only read the kerneldoc, right?
 
-With ipip:
-$ ip l s eth1 mtu 2000
-$ ip link add ipip1 type ipip remote 10.16.0.121 local 10.16.0.249 dev eth1
-$ ip l
-3: eth1: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 2000 qdisc pfifo_fast state UP
-mode DEFAULT group default qlen 1000
-...
-10: ipip1@eth1: <POINTOPOINT,NOARP> mtu 1980 qdisc noop state DOWN mode DEFAULT
-group default qlen 1000
+> So my reasoning was that ownership is determined dynamically that way. I
+> guess what you're hinting at is that we could simply add uid_t uid,
+> gid_t gid arguments to these sysfs helpers. That's fine with me too.
+
+It's fine if you want to set it to the "root owner", just say that
+somewhere :)
+
+> It
+> means that callers are responsible to either retrieve the ownership from
+> the kobject (in case it was changed through another call) or the call to
+> syfs_change_owner(kobj, uid, gid) sets the new owner of the kobject. I
+> don't know what the best approach is. Maybe a hybrid whereby we allow
+> passing in uid/gid but also allow passing in ({g,u}id_t - 1) to indicate
+> that we want the ownership to be taken from the kobject itself (e.g.
+> when a network device has been updated by dev_change_net_namespace()).
+> 
+> > 
+> > > +{
+> > > +	int error;
+> > > +	const struct kobj_type *ktype;
+> > > +
+> > > +	if (!kobj->state_in_sysfs)
+> > > +		return -EINVAL;
+> > > +
+> > > +	error = sysfs_file_change_owner(kobj, NULL);
+> > 
+> > It passes NULL?
+> 
+> Which means, change the ownership of "kobj" itself and not lookup a file
+> relative to "kobj".
+
+Ok, that's totally not obvious at all :(
+
+Better naming please, I know it's hard, but it matters.
+
+thanks,
+
+greg k-h
