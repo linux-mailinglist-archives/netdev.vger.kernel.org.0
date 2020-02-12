@@ -2,45 +2,45 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id BD4B915B3D8
-	for <lists+netdev@lfdr.de>; Wed, 12 Feb 2020 23:34:53 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6BE7315B3E2
+	for <lists+netdev@lfdr.de>; Wed, 12 Feb 2020 23:36:04 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729229AbgBLWes (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 12 Feb 2020 17:34:48 -0500
-Received: from smtp-fw-9101.amazon.com ([207.171.184.25]:61877 "EHLO
-        smtp-fw-9101.amazon.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727947AbgBLWes (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 12 Feb 2020 17:34:48 -0500
+        id S1729149AbgBLWfz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 12 Feb 2020 17:35:55 -0500
+Received: from smtp-fw-33001.amazon.com ([207.171.190.10]:20597 "EHLO
+        smtp-fw-33001.amazon.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727947AbgBLWfz (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 12 Feb 2020 17:35:55 -0500
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
   d=amazon.com; i=@amazon.com; q=dns/txt; s=amazon201209;
-  t=1581546888; x=1613082888;
+  t=1581546954; x=1613082954;
   h=date:from:to:subject:message-id:mime-version;
-  bh=tYSU9iIsoDiHOrDtUYIpPVrJzHedrCrd1HEsqWaOGf0=;
-  b=tD+1J8/GbJodCU7B5y1Kbz1Bu64/n3fcoZneWvH4rFY7ChaexmiKoAxJ
-   rKdflZjgdYrtWXGR4A2BQH/vSMMEAXA2E26PnAKAbBp+1IakhRrcw5G0F
-   37FqG1v2wRGviETPJfk4R0MiKIj+dY6/75KopLV/AqoCjbkE98hCYl67X
-   8=;
-IronPort-SDR: bkSrtJsJHpidimijd2L1wIMETSIqwjC5vVxq1oCoMg6L/owqJK4HB0Xj7VHCDOcGTayR5JOFV8
- X4CMSFr17QNw==
+  bh=mAb4SIbaoDODH4/U698l6fYXrmrb6YPbZDM+uvQY0QE=;
+  b=iatwNokwJfmqybGRbKGmmuyX4HVWBliDadeXDwfydFKfy7/e8scEqcBo
+   EBgT6mSZGotmLe9gKupcL4xJLwiLGTFBTgTYq/W2dwGJQTBOiJZn/8+qG
+   FonS8bsM0/5uAt9Te1wd1vJfkS5ZjDJUyw0LaUlZKtZEHvYvp46q2IE0j
+   s=;
+IronPort-SDR: 1TWmY1HVjrLqoQ7uteZMkEOTJhXdjkOW3b8fpdoEoaiYwZhT6a8l//IPpK5Y8YqgCdgDuPuJ93
+ Y1bbRTNghAjA==
 X-IronPort-AV: E=Sophos;i="5.70,434,1574121600"; 
-   d="scan'208";a="16328108"
-Received: from sea32-co-svc-lb4-vlan3.sea.corp.amazon.com (HELO email-inbound-relay-2a-538b0bfb.us-west-2.amazon.com) ([10.47.23.38])
-  by smtp-border-fw-out-9101.sea19.amazon.com with ESMTP; 12 Feb 2020 22:34:47 +0000
-Received: from EX13MTAUWC001.ant.amazon.com (pdx4-ws-svc-p6-lb7-vlan3.pdx.amazon.com [10.170.41.166])
-        by email-inbound-relay-2a-538b0bfb.us-west-2.amazon.com (Postfix) with ESMTPS id E0121A28F3;
-        Wed, 12 Feb 2020 22:34:45 +0000 (UTC)
-Received: from EX13D05UWC001.ant.amazon.com (10.43.162.82) by
- EX13MTAUWC001.ant.amazon.com (10.43.162.135) with Microsoft SMTP Server (TLS)
- id 15.0.1367.3; Wed, 12 Feb 2020 22:34:39 +0000
-Received: from EX13MTAUWC001.ant.amazon.com (10.43.162.135) by
- EX13D05UWC001.ant.amazon.com (10.43.162.82) with Microsoft SMTP Server (TLS)
- id 15.0.1367.3; Wed, 12 Feb 2020 22:34:39 +0000
+   d="scan'208";a="26089661"
+Received: from sea32-co-svc-lb4-vlan3.sea.corp.amazon.com (HELO email-inbound-relay-1a-807d4a99.us-east-1.amazon.com) ([10.47.23.38])
+  by smtp-border-fw-out-33001.sea14.amazon.com with ESMTP; 12 Feb 2020 22:35:52 +0000
+Received: from EX13MTAUEB002.ant.amazon.com (iad55-ws-svc-p15-lb9-vlan2.iad.amazon.com [10.40.159.162])
+        by email-inbound-relay-1a-807d4a99.us-east-1.amazon.com (Postfix) with ESMTPS id 8A1EBA1D80;
+        Wed, 12 Feb 2020 22:35:44 +0000 (UTC)
+Received: from EX13D08UEB001.ant.amazon.com (10.43.60.245) by
+ EX13MTAUEB002.ant.amazon.com (10.43.60.12) with Microsoft SMTP Server (TLS)
+ id 15.0.1367.3; Wed, 12 Feb 2020 22:35:19 +0000
+Received: from EX13MTAUEA001.ant.amazon.com (10.43.61.82) by
+ EX13D08UEB001.ant.amazon.com (10.43.60.245) with Microsoft SMTP Server (TLS)
+ id 15.0.1367.3; Wed, 12 Feb 2020 22:35:19 +0000
 Received: from dev-dsk-anchalag-2a-9c2d1d96.us-west-2.amazon.com
- (172.22.96.68) by mail-relay.amazon.com (10.43.162.232) with Microsoft SMTP
- Server id 15.0.1367.3 via Frontend Transport; Wed, 12 Feb 2020 22:34:39 +0000
+ (172.22.96.68) by mail-relay.amazon.com (10.43.61.243) with Microsoft SMTP
+ Server id 15.0.1367.3 via Frontend Transport; Wed, 12 Feb 2020 22:35:19 +0000
 Received: by dev-dsk-anchalag-2a-9c2d1d96.us-west-2.amazon.com (Postfix, from userid 4335130)
-        id 83531400D1; Wed, 12 Feb 2020 22:34:39 +0000 (UTC)
-Date:   Wed, 12 Feb 2020 22:34:39 +0000
+        id 4B461400D1; Wed, 12 Feb 2020 22:35:19 +0000 (UTC)
+Date:   Wed, 12 Feb 2020 22:35:19 +0000
 From:   Anchal Agarwal <anchalag@amazon.com>
 To:     <tglx@linutronix.de>, <mingo@redhat.com>, <bp@alien8.de>,
         <hpa@zytor.com>, <x86@kernel.org>, <boris.ostrovsky@oracle.com>,
@@ -54,9 +54,9 @@ To:     <tglx@linutronix.de>, <mingo@redhat.com>, <bp@alien8.de>,
         <vkuznets@redhat.com>, <netdev@vger.kernel.org>,
         <linux-kernel@vger.kernel.org>, <dwmw@amazon.co.uk>,
         <fllinden@amaozn.com>, <benh@kernel.crashing.org>
-Subject: [RFC PATCH v3 10/12] xen: Introduce wrapper for save/restore sched
- clock offset
-Message-ID: <20200212223439.GA4444@dev-dsk-anchalag-2a-9c2d1d96.us-west-2.amazon.com>
+Subject: [RFC PATCH v3 11/12] xen: Update sched clock offset to avoid system
+ instability in hibernation
+Message-ID: <20200212223519.GA4483@dev-dsk-anchalag-2a-9c2d1d96.us-west-2.amazon.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Disposition: inline
@@ -66,73 +66,51 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Introduce wrappers for save/restore xen_sched_clock_offset to be
-used by PM hibernation code to avoid system instability during resume.
+Save/restore xen_sched_clock_offset in syscore suspend/resume during PM
+hibernation. Commit '867cefb4cb1012: ("xen: Fix x86 sched_clock() interface
+for xen")' fixes xen guest time handling during migration. A similar issue
+is seen during PM hibernation when system runs CPU intensive workload.
+Post resume pvclock resets the value to 0 however, xen sched_clock_offset
+is never updated. System instability is seen during resume from hibernation
+when system is under heavy CPU load. Since xen_sched_clock_offset is not
+updated, system does not see the monotonic clock value and the scheduler
+would then think that heavy CPU hog tasks need more time in CPU, causing
+the system to freeze
 
 Signed-off-by: Anchal Agarwal <anchalag@amazon.com>
-
 ---
-Changes since V2:
-* Dropped marking tsc unstable during hibernation patch
-* Fixed issue with xen_sched_clock_offset during suspend/resume
-* On further interrogation and testing, the issue wasn't with tsc
-being stable/unstable
-
+Changes Since V2:
+ * New patch to update sched clock offset during hibernation to avoid
+   hungups during resume when running a CPU intensive workload
 ---
- arch/x86/xen/time.c    | 15 +++++++++++++--
- arch/x86/xen/xen-ops.h |  2 ++
- 2 files changed, 15 insertions(+), 2 deletions(-)
+ arch/x86/xen/suspend.c | 8 ++++++++
+ 1 file changed, 8 insertions(+)
 
-diff --git a/arch/x86/xen/time.c b/arch/x86/xen/time.c
-index 8cf632dda605..eeb6d3d2eaab 100644
---- a/arch/x86/xen/time.c
-+++ b/arch/x86/xen/time.c
-@@ -379,12 +379,23 @@ static const struct pv_time_ops xen_time_ops __initconst = {
- static struct pvclock_vsyscall_time_info *xen_clock __read_mostly;
- static u64 xen_clock_value_saved;
+diff --git a/arch/x86/xen/suspend.c b/arch/x86/xen/suspend.c
+index dae0f74f5390..7e5275944810 100644
+--- a/arch/x86/xen/suspend.c
++++ b/arch/x86/xen/suspend.c
+@@ -105,6 +105,8 @@ static int xen_syscore_suspend(void)
+ 		xen_save_steal_clock(cpu);
+ 	}
  
-+/*This is needed to maintain a monotonic clock value during PM hibernation */
-+void xen_save_sched_clock_offset(void)
-+{
-+	xen_clock_value_saved = xen_clocksource_read() - xen_sched_clock_offset;
-+}
-+
-+void xen_restore_sched_clock_offset(void)
-+{
-+	xen_sched_clock_offset = xen_clocksource_read() - xen_clock_value_saved;
-+}
-+
- void xen_save_time_memory_area(void)
- {
- 	struct vcpu_register_time_memory_area t;
- 	int ret;
- 
--	xen_clock_value_saved = xen_clocksource_read() - xen_sched_clock_offset;
 +	xen_save_sched_clock_offset();
++
+ 	xrfp.domid = DOMID_SELF;
+ 	xrfp.gpfn = __pa(HYPERVISOR_shared_info) >> PAGE_SHIFT;
  
- 	if (!xen_clock)
- 		return;
-@@ -426,7 +437,7 @@ void xen_restore_time_memory_area(void)
- out:
- 	/* Need pvclock_resume() before using xen_clocksource_read(). */
+@@ -126,6 +128,12 @@ static void xen_syscore_resume(void)
+ 
  	pvclock_resume();
--	xen_sched_clock_offset = xen_clocksource_read() - xen_clock_value_saved;
+ 
++	/*
++	 * Restore xen_sched_clock_offset during resume to maintain
++	 * monotonic clock value
++	 */
 +	xen_restore_sched_clock_offset();
- }
- 
- static void xen_setup_vsyscall_time_info(void)
-diff --git a/arch/x86/xen/xen-ops.h b/arch/x86/xen/xen-ops.h
-index d84c357994bd..9f49124df033 100644
---- a/arch/x86/xen/xen-ops.h
-+++ b/arch/x86/xen/xen-ops.h
-@@ -72,6 +72,8 @@ void xen_save_time_memory_area(void);
- void xen_restore_time_memory_area(void);
- void xen_init_time_ops(void);
- void xen_hvm_init_time_ops(void);
-+void xen_save_sched_clock_offset(void);
-+void xen_restore_sched_clock_offset(void);
- 
- irqreturn_t xen_debug_interrupt(int irq, void *dev_id);
++
+ 	/* Nonboot CPUs will be resumed when they're brought up */
+ 	xen_restore_steal_clock(smp_processor_id());
  
 -- 
 2.24.1.AMZN
