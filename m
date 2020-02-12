@@ -2,86 +2,120 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id AD6A015A6B4
-	for <lists+netdev@lfdr.de>; Wed, 12 Feb 2020 11:44:08 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6FD3E15A6B9
+	for <lists+netdev@lfdr.de>; Wed, 12 Feb 2020 11:44:33 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728094AbgBLKnx (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 12 Feb 2020 05:43:53 -0500
-Received: from youngberry.canonical.com ([91.189.89.112]:52574 "EHLO
-        youngberry.canonical.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727347AbgBLKno (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 12 Feb 2020 05:43:44 -0500
-Received: from ip5f5bf7ec.dynamic.kabel-deutschland.de ([95.91.247.236] helo=wittgenstein.fritz.box)
-        by youngberry.canonical.com with esmtpsa (TLS1.2:ECDHE_RSA_AES_128_GCM_SHA256:128)
-        (Exim 4.86_2)
-        (envelope-from <christian.brauner@ubuntu.com>)
-        id 1j1pUc-0005aC-KQ; Wed, 12 Feb 2020 10:43:42 +0000
-From:   Christian Brauner <christian.brauner@ubuntu.com>
-To:     "David S. Miller" <davem@davemloft.net>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org
-Cc:     "Rafael J. Wysocki" <rafael@kernel.org>,
-        Pavel Machek <pavel@ucw.cz>, Jakub Kicinski <kuba@kernel.org>,
-        Eric Dumazet <edumazet@google.com>,
-        Stephen Hemminger <stephen@networkplumber.org>,
-        linux-pm@vger.kernel.org,
-        Christian Brauner <christian.brauner@ubuntu.com>
-Subject: [PATCH net-next 10/10] net: fix sysfs permssions when device changes network namespace
-Date:   Wed, 12 Feb 2020 11:43:21 +0100
-Message-Id: <20200212104321.43570-11-christian.brauner@ubuntu.com>
-X-Mailer: git-send-email 2.25.0
-In-Reply-To: <20200212104321.43570-1-christian.brauner@ubuntu.com>
-References: <20200212104321.43570-1-christian.brauner@ubuntu.com>
+        id S1725710AbgBLKnm (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 12 Feb 2020 05:43:42 -0500
+Received: from us-smtp-2.mimecast.com ([207.211.31.81]:55317 "EHLO
+        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1727535AbgBLKnk (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 12 Feb 2020 05:43:40 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1581504217;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=YjRCeO/nyWvPOF/c2mr64joPRjE0wRZjF1FDzleGvQE=;
+        b=VcmsvNnuWJpU4j8sMjRO5NYiHCki9gFMCs/MmARyPEDu2XSpQdGA1LTi2Q+JkZ7pfzTi08
+        6DDiFmAmKCmko3VmrDPXyK8EQYjDXyA+3FfZr476xBnuv0kOO1N3X1Xt2WTa+VT/URhFSg
+        8Ya9p9NzDLx/ezW+ZIuZbtYdDkJym2g=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-259-9SuEL6oUMyONNpnfFsXrHg-1; Wed, 12 Feb 2020 05:43:33 -0500
+X-MC-Unique: 9SuEL6oUMyONNpnfFsXrHg-1
+Received: from smtp.corp.redhat.com (int-mx01.intmail.prod.int.phx2.redhat.com [10.5.11.11])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 0C8EBA0CC2;
+        Wed, 12 Feb 2020 10:43:31 +0000 (UTC)
+Received: from krava (ovpn-204-247.brq.redhat.com [10.40.204.247])
+        by smtp.corp.redhat.com (Postfix) with ESMTPS id C5D4E8AC20;
+        Wed, 12 Feb 2020 10:43:26 +0000 (UTC)
+Date:   Wed, 12 Feb 2020 11:43:24 +0100
+From:   Jiri Olsa <jolsa@redhat.com>
+To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Cc:     Jiri Olsa <jolsa@kernel.org>, Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        Andrii Nakryiko <andriin@fb.com>, Yonghong Song <yhs@fb.com>,
+        Song Liu <songliubraving@fb.com>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        David Miller <davem@redhat.com>,
+        =?iso-8859-1?Q?Bj=F6rn_T=F6pel?= <bjorn.topel@intel.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        Jesper Dangaard Brouer <hawk@kernel.org>
+Subject: Re: [PATCH 10/14] bpf: Re-initialize lnode in bpf_ksym_del
+Message-ID: <20200212104324.GA183981@krava>
+References: <20200208154209.1797988-1-jolsa@kernel.org>
+ <20200208154209.1797988-11-jolsa@kernel.org>
+ <CAEf4Bzb-J67oKcKtB-7TsO7wD7bnp57NAgqNJW9giZrhrqu_+g@mail.gmail.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAEf4Bzb-J67oKcKtB-7TsO7wD7bnp57NAgqNJW9giZrhrqu_+g@mail.gmail.com>
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.11
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Now that we moved all the helpers in place and make use netdev_change_owner()
-to fixup the permissions when moving network devices between network
-namespaces.
+On Tue, Feb 11, 2020 at 10:28:50AM -0800, Andrii Nakryiko wrote:
+> On Sat, Feb 8, 2020 at 7:43 AM Jiri Olsa <jolsa@kernel.org> wrote:
+> >
+> > When bpf_prog is removed from kallsyms it's on the way
+> > out to be removed, so we don't care about lnode state.
+> >
+> > However the bpf_ksym_del will be used also by bpf_trampoline
+> > and bpf_dispatcher objects, which stay allocated even when
+> > they are not in kallsyms list, hence the lnode re-init.
+> >
+> > The list_del_rcu commentary states that we need to call
+> > synchronize_rcu, before we can change/re-init the list_head
+> > pointers.
+> >
+> > Signed-off-by: Jiri Olsa <jolsa@kernel.org>
+> > ---
+> 
+> Wouldn't it make more sense to have patches 7 though 10 as a one
+> patch? It's a generalization of ksym from being bpf_prog-specific to
+> be more general (which this initialization fix is part of, arguably).
 
-Signed-off-by: Christian Brauner <christian.brauner@ubuntu.com>
----
- net/core/dev.c | 9 ++++++++-
- 1 file changed, 8 insertions(+), 1 deletion(-)
+it was my initial change ;-) but then I realized I have to explain
+several things in the changelog, and that's usually the sign that
+you need to split the patch.. also I think now it's easier for review
+and backporting
 
-diff --git a/net/core/dev.c b/net/core/dev.c
-index a69e8bd7ed74..e463539f0b1d 100644
---- a/net/core/dev.c
-+++ b/net/core/dev.c
-@@ -10017,6 +10017,7 @@ EXPORT_SYMBOL(unregister_netdev);
- int dev_change_net_namespace(struct net_device *dev, struct net *net, const char *pat)
- {
- 	int err, new_nsid, new_ifindex;
-+	struct net *net_old = dev_net(dev);
- 
- 	ASSERT_RTNL();
- 
-@@ -10031,7 +10032,7 @@ int dev_change_net_namespace(struct net_device *dev, struct net *net, const char
- 
- 	/* Get out if there is nothing todo */
- 	err = 0;
--	if (net_eq(dev_net(dev), net))
-+	if (net_eq(net_old, net))
- 		goto out;
- 
- 	/* Pick the destination device name, and ensure
-@@ -10107,6 +10108,12 @@ int dev_change_net_namespace(struct net_device *dev, struct net *net, const char
- 	err = device_rename(&dev->dev, dev->name);
- 	WARN_ON(err);
- 
-+	/* Adapt owner in case owning user namespace of target network
-+	 * namespace is different from the original one.
-+	 */
-+	err = netdev_change_owner(dev, net_old, net);
-+	WARN_ON(err);
-+
- 	/* Add the device back in the hashes */
- 	list_netdevice(dev);
- 
--- 
-2.25.0
+so I prefer it split like this, but if you guys want to squash it
+together, I'll do it ;-)
+
+jirka
+
+> 
+> >  kernel/bpf/core.c | 7 +++++++
+> >  1 file changed, 7 insertions(+)
+> >
+> > diff --git a/kernel/bpf/core.c b/kernel/bpf/core.c
+> > index 73242fd07893..66b17bea286e 100644
+> > --- a/kernel/bpf/core.c
+> > +++ b/kernel/bpf/core.c
+> > @@ -676,6 +676,13 @@ void bpf_ksym_del(struct bpf_ksym *ksym)
+> >         spin_lock_bh(&bpf_lock);
+> >         __bpf_ksym_del(ksym);
+> >         spin_unlock_bh(&bpf_lock);
+> > +
+> > +       /*
+> > +        * As explained in list_del_rcu, We must call synchronize_rcu
+> > +        * before changing list_head pointers.
+> > +        */
+> > +       synchronize_rcu();
+> > +       INIT_LIST_HEAD_RCU(&ksym->lnode);
+> >  }
+> >
+> >  static bool bpf_prog_kallsyms_candidate(const struct bpf_prog *fp)
+> > --
+> > 2.24.1
+> >
+> 
 
