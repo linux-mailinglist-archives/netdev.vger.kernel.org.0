@@ -2,116 +2,98 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 2558915AC3B
-	for <lists+netdev@lfdr.de>; Wed, 12 Feb 2020 16:44:01 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C57A115AC6E
+	for <lists+netdev@lfdr.de>; Wed, 12 Feb 2020 16:54:27 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728098AbgBLPnw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 12 Feb 2020 10:43:52 -0500
-Received: from mail-eopbgr770133.outbound.protection.outlook.com ([40.107.77.133]:5505
-        "EHLO NAM02-SN1-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1727026AbgBLPnw (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 12 Feb 2020 10:43:52 -0500
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=UMwKe8eh2r0DtCGZhDOK8/2kYJyIfE9zFeuZD6G/M/41WMgomXBizmS4pOWjldW/z8nBXkkrOORWY7pm/ye/32ixA0L2PYkkYDwbt8yGtTLJCZhTUki3GeDKCFaZ3z4q7iBo9/X+cZud/SXKfZbxXBTNONGd2ckOcifcSzKhtEV+qtocBiTFAQ3KaMWAeK880TYoDFil6IQ1bFIZ2wqlDs4gnbtswkOcfiNvwd9f0Fd7vcL1jNyTnmoSA2ptmgkTZfMUTH4kDTgxlAPF2dNVSfjpPb85p7kK/Ixma+8u5DQooWbOUfL2ZOoR6yN1ESqyi4H7vg5gz7t0h3JewzNarg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=MdACdbUyUzv7/HKrkFgUvgyXHqCzNqAs7/9+e0Gmy6E=;
- b=kbRqj8L6AYpRI4rRhZYAtc7L9CN58YfaR0ZaFv1q93a2X4zSYyMQ6PWLZbec/sQmT+qUQum40kgwFmDkCLkz1Kc8IHzFXtBsRw2MRwYNsHD4Op3oB9vGHCrbSprmHo+KSnHmFDjcMD7v8mryQBv77eiihlOvO2vvxGhiLQrngnE1oi+PCB7Ox3Q7z9AbCICBfcbbmmd/vfcLKOOWQUUeVLa2rsSmwyaMkVMzM0Q8zLCkV7DdxExXlU2jhAu40KrGJ6PfMZxcVn/X8+cvxYOfI5oS5atWy61lbrEqydTL0JGssr0f43kp9FVL4xFBle3Twh9V0vFhk4xTGh++vI9csw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=fortanix.com; dmarc=pass action=none header.from=fortanix.com;
- dkim=pass header.d=fortanix.com; arc=none
+        id S1728094AbgBLPyX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 12 Feb 2020 10:54:23 -0500
+Received: from mail-wr1-f42.google.com ([209.85.221.42]:43591 "EHLO
+        mail-wr1-f42.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727458AbgBLPyX (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 12 Feb 2020 10:54:23 -0500
+Received: by mail-wr1-f42.google.com with SMTP id r11so2962670wrq.10
+        for <netdev@vger.kernel.org>; Wed, 12 Feb 2020 07:54:21 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=fortanix.onmicrosoft.com; s=selector2-fortanix-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=MdACdbUyUzv7/HKrkFgUvgyXHqCzNqAs7/9+e0Gmy6E=;
- b=ehjoQFFjnBrBjx/4Dc7KdUVlDwMxCL8VTJQ2pILCmgjs7iJUPMLO6ZnGdW7KiOw3whgVAgv2it6Zbib72KtXaglMpKD1QVkbV/Vm/R66PoeBvKblK1//DsGPUgaT0LT+SlsdF18VC/vM0RMIl+zLSp6uRuuE5Y4oRKlOnbud+Po=
-Authentication-Results: spf=none (sender IP is )
- smtp.mailfrom=jethro@fortanix.com; 
-Received: from BYAPR11MB3734.namprd11.prod.outlook.com (20.178.239.29) by
- BYAPR11MB3846.namprd11.prod.outlook.com (20.178.236.205) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.2707.21; Wed, 12 Feb 2020 15:43:48 +0000
-Received: from BYAPR11MB3734.namprd11.prod.outlook.com
- ([fe80::180:d484:4d3f:fd99]) by BYAPR11MB3734.namprd11.prod.outlook.com
- ([fe80::180:d484:4d3f:fd99%7]) with mapi id 15.20.2729.021; Wed, 12 Feb 2020
- 15:43:48 +0000
-To:     "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Jiri Pirko <jiri@mellanox.com>,
-        Hangbin Liu <liuhangbin@gmail.com>,
-        Nathan Chancellor <natechancellor@gmail.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Johannes Berg <johannes.berg@intel.com>,
-        Jethro Beekman <jethro@fortanix.com>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-From:   Jethro Beekman <jethro@fortanix.com>
-Subject: [PATCH] net: fib_rules: Correctly set table field when table number
- exceeds 8 bits
-Message-ID: <ec5c8c2f-34c6-bd70-7f61-7ed14b358d9d@fortanix.com>
-Date:   Wed, 12 Feb 2020 16:43:41 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.9.0
+        d=6wind.com; s=google;
+        h=reply-to:subject:to:references:from:organization:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=F/rXOpsKkt10moU7lekEvTC0uEyocGlv1SxIocX3MWw=;
+        b=UU9X7xwB/mvhwXjMGXQzeoEjVwmosJR6gEXgmMqBrkTXSMdBW/1JLNRMOGmTJcdqNA
+         vfehW/cZrxTfvaDEutGU00EabogazDha41k/K6aMHxIp6C2BC7c59HMSsK7HQLZt0Upf
+         syIn6/2I3eneVxOzdDGU7BCm9LxFBr63gOFWDTN0kDhKknE0//bW+fg76cxlaYp5Q0Tx
+         MBuOwhpJ52qkyfzy9LS6G6FtZ2nENyDJ7t8A3Kzr05l6nZaN91LArSgtw42nf1KTPJ4O
+         WEYXBI/1kPDggLZ3FzZfzSf/owwJeM0/ALKc/lLMFAw/Kr1WcNq5BNxnf8YXvJciVkIJ
+         02Cw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:reply-to:subject:to:references:from:organization
+         :message-id:date:user-agent:mime-version:in-reply-to
+         :content-language:content-transfer-encoding;
+        bh=F/rXOpsKkt10moU7lekEvTC0uEyocGlv1SxIocX3MWw=;
+        b=JArJAfHRizTzaNH6uRMQ8kfu6VnFRGJk2G150uB+0FDoFClSfJsiPK0RamCamgJhFE
+         NbjTi6dw4aMMKqys2dzDbpjRwfCkEp/cFWLIbwFeudez1Ut0WYOgia4yLzRHOfhI70Gg
+         qWg6a+/WUk06jIED+dAEMndishc5YOls/nr9ISU0IqN6eyfBDoETp8uRchNUbA15kr85
+         6T6EtD3uerC45iyLt/hWGxhxOeLm1Gl16Ce/XJLhDYk+/ehp2Oz0nwIuWRHIeUJ5LdXb
+         LBovYZ7UKTxCWDW+7VS+EIppP5JRmh7JCt6gJHailma/DoQD8yCeKiSsfx2QY6jM4jTe
+         tipQ==
+X-Gm-Message-State: APjAAAUE263XAXrD5FrWxRlhutsCIflWchG4SIdlDUJi+tizEIZbbrtK
+        3H2zucsInixcJvxkHx6me3+gtizCT3g=
+X-Google-Smtp-Source: APXvYqxhutMki2hrv2T6Hbwj3HQr2MPNwTygBfs5eVoJ0epnVKd759VIZBITYw/s68q4sdNrLp+c5w==
+X-Received: by 2002:a5d:498f:: with SMTP id r15mr15638015wrq.284.1581522860895;
+        Wed, 12 Feb 2020 07:54:20 -0800 (PST)
+Received: from ?IPv6:2a01:e0a:410:bb00:69db:fab1:ccba:51cb? ([2a01:e0a:410:bb00:69db:fab1:ccba:51cb])
+        by smtp.gmail.com with ESMTPSA id v5sm1064711wrv.86.2020.02.12.07.54.20
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 12 Feb 2020 07:54:20 -0800 (PST)
+Reply-To: nicolas.dichtel@6wind.com
+Subject: Re: [PATCH v3 net] net, ip6_tunnel: enhance tunnel locate with link
+ check
+To:     William Dauchy <w.dauchy@criteo.com>, netdev@vger.kernel.org
+References: <b3497834-1ab5-3315-bfbd-ac4f5236eee3@6wind.com>
+ <20200212083036.134761-1-w.dauchy@criteo.com>
+From:   Nicolas Dichtel <nicolas.dichtel@6wind.com>
+Organization: 6WIND
+Message-ID: <ce1f9fbe-a28a-d5c3-c792-ded028df52e5@6wind.com>
+Date:   Wed, 12 Feb 2020 16:54:19 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.4.1
+MIME-Version: 1.0
+In-Reply-To: <20200212083036.134761-1-w.dauchy@criteo.com>
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
 Content-Transfer-Encoding: 8bit
-X-ClientProxiedBy: LO2P265CA0436.GBRP265.PROD.OUTLOOK.COM
- (2603:10a6:600:e::16) To BYAPR11MB3734.namprd11.prod.outlook.com
- (2603:10b6:a03:fe::29)
-MIME-Version: 1.0
-Received: from [10.195.0.226] (212.61.132.179) by LO2P265CA0436.GBRP265.PROD.OUTLOOK.COM (2603:10a6:600:e::16) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.2729.22 via Frontend Transport; Wed, 12 Feb 2020 15:43:45 +0000
-X-Originating-IP: [212.61.132.179]
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 60bc2b2c-89d6-4ade-836e-08d7afd259b1
-X-MS-TrafficTypeDiagnostic: BYAPR11MB3846:
-X-MS-Exchange-Transport-Forked: True
-X-Microsoft-Antispam-PRVS: <BYAPR11MB38462F6D038C489FCBB51573AA1B0@BYAPR11MB3846.namprd11.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:2733;
-X-Forefront-PRVS: 0311124FA9
-X-Forefront-Antispam-Report: SFV:NSPM;SFS:(10019020)(346002)(136003)(396003)(39840400004)(366004)(376002)(189003)(199004)(52116002)(6666004)(81166006)(8936002)(8676002)(81156014)(4744005)(316002)(508600001)(16576012)(110136005)(6486002)(26005)(2906002)(186003)(66946007)(66556008)(86362001)(31696002)(16526019)(36756003)(956004)(5660300002)(2616005)(31686004)(66476007)(921003)(1121003);DIR:OUT;SFP:1102;SCL:1;SRVR:BYAPR11MB3846;H:BYAPR11MB3734.namprd11.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;MX:1;A:1;
-Received-SPF: None (protection.outlook.com: fortanix.com does not designate
- permitted sender hosts)
-X-MS-Exchange-SenderADCheck: 1
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: 6wU8OrUxQKXWyZJWyF0vqpHXVY9nyojUFtVRivVDP2iJBOzUMI66SbNt2zzYfJSlyjNMET/zThRSEJNn5TpNCSPXseilh7pzaSfxzTMFmDrLbNSgrJFJdkLHMluxel87rzH3X6q63eRLBZ0VyzCS/YXKaPM7GPK2Yj2Mzsbcd5hMfVI6XlmtH/gD2qvzWxGJTcyKVwsZNl+RDXQsQLaQVYJgzPHwIhFI1stEe8TyJCCHmfcjEXZ2t12w8IC+jqhR42DTQDV9g9cMvftYqNpuf9P/RqgPjQpHnXdeoQf9KgH2SJLVXzO3d86uUj5OmRvX4+gD00bllj2heXyQ7iOUQwrT+XtAs2+lbK0yuq4ezXBVWBZXlkp2i4rr1Sq4OqbJf37y1bzku7q3WUBcd4e4fH5sA/505gsMddCL5yaQMXalmXyXWaz2uo4MsVB6F1zTvYX2oaq2gztinS+EwdX7W4q5C+lnZnlA+fxpRt0BC8anZ5NPPiU+5qG+7z5/5ekO
-X-MS-Exchange-AntiSpam-MessageData: P2wajyEvZo7OmnCbo6mDcwQlDbtZJ1fWCAh54DBit8sPxRIisldg6x7FxpE4wCkPct9svgo7SEGNLQZrVXdm1B/eV2w2qFdpGKSgrETUFS7HB8eVVJB8croxDBVUugPpqEBqIHJxKFXvxpMTZc4XAg==
-X-OriginatorOrg: fortanix.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 60bc2b2c-89d6-4ade-836e-08d7afd259b1
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 12 Feb 2020 15:43:48.3810
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: de7becae-4883-43e8-82c7-7dbdbb988ae6
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: MRzolq/z8R/eDFCpru7unWUr7MZ3L5AmcAvx2xb8/jCwPdT3igiJeOCkks7Ug02NhNWBB/MY8RpkFtoMJQMNcQ==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BYAPR11MB3846
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-In 709772e6e06564ed94ba740de70185ac3d792773, RT_TABLE_COMPAT was added to
-allow legacy software to deal with routing table numbers >= 256, but the
-same change to FIB rule queries was overlooked.
+Le 12/02/2020 à 09:30, William Dauchy a écrit :
+[snip]
+> @@ -1848,6 +1870,11 @@ ip6_tnl_dev_init_gen(struct net_device *dev)
+>  	dev->type = ARPHRD_TUNNEL6;
+>  	dev->hard_header_len = LL_MAX_HEADER + t_hlen;
+>  	dev->mtu = ETH_DATA_LEN - t_hlen;
+> +	if (t->parms.link) {
+> +		tdev = __dev_get_by_index(t->net, t->parms.link);
+> +		if (tdev && tdev->mtu < dev->mtu)
+> +			dev->mtu = tdev->mtu;
+Hmm, I was expecting 'tdev->mtu - t_hlen'. Am I wrong?
 
-Signed-off-by: Jethro Beekman <jethro@fortanix.com>
----
- net/core/fib_rules.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+In fact, something like this:
+dev->mtu = ETH_DATA_LEN - t_hlen;
+if (t->parms.link) {
+	tdev = __dev_get_by_index(t->net, t->parms.link);
+	if (tdev)
+		dev->mtu = tdev->mtu - t_hlen;
+}
 
-diff --git a/net/core/fib_rules.c b/net/core/fib_rules.c
-index 3e7e152..bd7eba9 100644
---- a/net/core/fib_rules.c
-+++ b/net/core/fib_rules.c
-@@ -974,7 +974,7 @@ static int fib_nl_fill_rule(struct sk_buff *skb, struct fib_rule *rule,
- 
- 	frh = nlmsg_data(nlh);
- 	frh->family = ops->family;
--	frh->table = rule->table;
-+	frh->table = rule->table < 256 ? rule->table : RT_TABLE_COMPAT;
- 	if (nla_put_u32(skb, FRA_TABLE, rule->table))
- 		goto nla_put_failure;
- 	if (nla_put_u32(skb, FRA_SUPPRESS_PREFIXLEN, rule->suppress_prefixlen))
--- 
-2.7.4
-
+With ipip:
+$ ip l s eth1 mtu 2000
+$ ip link add ipip1 type ipip remote 10.16.0.121 local 10.16.0.249 dev eth1
+$ ip l
+3: eth1: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 2000 qdisc pfifo_fast state UP
+mode DEFAULT group default qlen 1000
+...
+10: ipip1@eth1: <POINTOPOINT,NOARP> mtu 1980 qdisc noop state DOWN mode DEFAULT
+group default qlen 1000
