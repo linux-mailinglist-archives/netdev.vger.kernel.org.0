@@ -2,213 +2,329 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id BF5BB15B008
-	for <lists+netdev@lfdr.de>; Wed, 12 Feb 2020 19:42:08 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6F1CC15B08C
+	for <lists+netdev@lfdr.de>; Wed, 12 Feb 2020 20:14:29 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728930AbgBLSmH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 12 Feb 2020 13:42:07 -0500
-Received: from mx0a-00082601.pphosted.com ([67.231.145.42]:27332 "EHLO
-        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1727054AbgBLSmH (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 12 Feb 2020 13:42:07 -0500
-Received: from pps.filterd (m0109334.ppops.net [127.0.0.1])
-        by mx0a-00082601.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 01CIY8Mb014512;
-        Wed, 12 Feb 2020 10:40:56 -0800
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
- : date : message-id : references : in-reply-to : content-type : content-id
- : content-transfer-encoding : mime-version; s=facebook;
- bh=Pfm4Ins0onsbySSV3DIQ7I4/jrcIZZtmUHPZuWknubc=;
- b=SFbbq2jaqCJ4AL4M1B1afysTvABJPaCqg+fthJXlyF3uJK7H8W6HmhZlVGvAKj+Rk6To
- 1ShGkNrHKEEfqLiIh/TmMfqEXDjy6KKglDIaALTmeEA/LGShsPvhHWxEqD1EAO0CE1tH
- S6+TMkRLyYMQUYuiH/whK0hQvIip+2FuU8E= 
-Received: from mail.thefacebook.com ([163.114.132.120])
-        by mx0a-00082601.pphosted.com with ESMTP id 2y4607mqph-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
-        Wed, 12 Feb 2020 10:40:56 -0800
-Received: from NAM02-SN1-obe.outbound.protection.outlook.com (100.104.98.9) by
- o365-in.thefacebook.com (100.104.94.196) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.1779.2; Wed, 12 Feb 2020 10:40:55 -0800
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=dfEGi+55sWBdBuUtWE9OkT2jUO/LLZKcvD2WhpBTtoxKhFhEa1xId/x/6vANIsm+Ma9NaLL5zKmS8B3oH1Pvz48HworcHMhxn6wFo4L5UNVBntLOjWaPrEUN8fZRIamcoutqkRTF6mRZL8R/BKwrVv4+cdiZ9UnGIP0G8RsA52IPoZVAXzrNEQTXfOK0odr9nkYHG+a2pipaJr/9yCdEGA7HN4dCk1SfqS9Nw5YPsa5bmMU480SxGt20paie+sylXioF22HMMeiXbwRQxlWHAKw3QQP1vsaMi9m6IZDyTSegRfKl1kFRkUT0cIxkP5LMAzxSdI4zlxQeVkWlf20g+w==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=Pfm4Ins0onsbySSV3DIQ7I4/jrcIZZtmUHPZuWknubc=;
- b=khRsyslNKhd6L+zqhzjiByGW13KUL9H1C6ANi9X4kvaHE97y5UkxIxKr7g3Z2bvDXINDJCUScXtX1ZZ1L/gQOwsXCjnGtNAyHO8XHxeIir9kq67jz/jC32kp1rrRrmjG8UYQCG9fmI5AGEBOpuhLg4tBEake7CxZvuAZxY7Sc65/cz4rXfH0GxGvqVq4w93lLMyndgF7JJy/s6f4iY4tVOHMyeD/W/qf3tKVpCnhkLlXlBHIaKJ3Xoz2ifBxYU+e1B6Vv+70QUZ4Ph8icAa2IXI+h5W4Wj2eu2yWqZHaflnyjUobqOXi4+L40+Vhp0QG3BWDzimGyVxpSV5YVKPn+A==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=fb.com; dmarc=pass action=none header.from=fb.com; dkim=pass
- header.d=fb.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.onmicrosoft.com;
- s=selector2-fb-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=Pfm4Ins0onsbySSV3DIQ7I4/jrcIZZtmUHPZuWknubc=;
- b=kh1TXYqOPF45bTjmB61KDucMYauR87W1FfSa08z2HSeIfJxGUEVmhN9O+51DF1sT8hAjKJr5f3xBBkaPOjtRO9fJKTDAIQBD7Ynd6RmgliDgtbw7fDA3+EXNIA8XHvZKTX5ID6eFr22kl1SiDZUSjU5PpZxEDuoCPcHmSHWO5bw=
-Received: from MW2PR1501MB2171.namprd15.prod.outlook.com (52.132.153.155) by
- MW2PR1501MB2044.namprd15.prod.outlook.com (52.132.147.155) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.2707.28; Wed, 12 Feb 2020 18:40:54 +0000
-Received: from MW2PR1501MB2171.namprd15.prod.outlook.com
- ([fe80::492d:3e00:17dc:6b30]) by MW2PR1501MB2171.namprd15.prod.outlook.com
- ([fe80::492d:3e00:17dc:6b30%7]) with mapi id 15.20.2707.030; Wed, 12 Feb 2020
- 18:40:54 +0000
-From:   Song Liu <songliubraving@fb.com>
-To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
-CC:     Eelco Chaudron <echaudro@redhat.com>, bpf <bpf@vger.kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Networking <netdev@vger.kernel.org>,
-        "Alexei Starovoitov" <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        "Martin Lau" <kafai@fb.com>, Yonghong Song <yhs@fb.com>,
-        Andrii Nakryiko <andriin@fb.com>,
-        =?iso-8859-1?Q?Toke_H=F8iland-J=F8rgensen?= <toke@redhat.com>
-Subject: Re: [PATCH bpf-next] libbpf: Add support for dynamic program attach
- target
-Thread-Topic: [PATCH bpf-next] libbpf: Add support for dynamic program attach
- target
-Thread-Index: AQHV4aBmkuDy8vU+NUWdt8DKhmBCX6gX0g0AgAAGM4CAAAUIAIAAA/gAgAABgYCAAAHmgA==
-Date:   Wed, 12 Feb 2020 18:40:54 +0000
-Message-ID: <04B1C476-5ABC-4F98-A5A3-5A2E124B516F@fb.com>
-References: <158151067149.71757.2222114135650741733.stgit@xdp-tutorial>
- <CAEf4BzZqxQxWe5qawBOuDzvDpCHsmgfyqxWnackHd=hUQpz6bA@mail.gmail.com>
- <628E972C-1156-46F8-AC61-DB0D38C34C81@fb.com>
- <CAEf4BzYFVtgW4Zyz09vuppAJA3oQ-UAT4yALeFJk2JQ70+mE2g@mail.gmail.com>
- <F37F13F4-DAFE-4431-804F-BF7940D9970D@fb.com>
- <CAEf4Bza4MQW6QEg7_VdWJwMJPKP8nPSD-ErkUFhVtxyA=jLkHw@mail.gmail.com>
-In-Reply-To: <CAEf4Bza4MQW6QEg7_VdWJwMJPKP8nPSD-ErkUFhVtxyA=jLkHw@mail.gmail.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-mailer: Apple Mail (2.3608.60.0.2.5)
-x-originating-ip: [2620:10d:c090:400::5:f48e]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: 8b6ed840-c640-4e31-3e4c-08d7afeb178c
-x-ms-traffictypediagnostic: MW2PR1501MB2044:
-x-ms-exchange-transport-forked: True
-x-microsoft-antispam-prvs: <MW2PR1501MB2044C4F4F5337363B33B678EB31B0@MW2PR1501MB2044.namprd15.prod.outlook.com>
-x-fb-source: Internal
-x-ms-oob-tlc-oobclassifiers: OLM:7691;
-x-forefront-prvs: 0311124FA9
-x-forefront-antispam-report: SFV:NSPM;SFS:(10019020)(39860400002)(396003)(136003)(346002)(366004)(376002)(189003)(199004)(36756003)(54906003)(6506007)(8936002)(66556008)(5660300002)(4326008)(66446008)(76116006)(71200400001)(66946007)(316002)(8676002)(64756008)(53546011)(6486002)(81166006)(81156014)(6916009)(33656002)(66476007)(478600001)(6512007)(2616005)(186003)(86362001)(2906002)(21314003);DIR:OUT;SFP:1102;SCL:1;SRVR:MW2PR1501MB2044;H:MW2PR1501MB2171.namprd15.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;MX:1;A:1;
-received-spf: None (protection.outlook.com: fb.com does not designate
- permitted sender hosts)
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: QRdXAcdlg1I8HZsbjfLjQJmjmTYwH6HTwNKB9vzPvVRT65XgCEw7oC1jWHCj4y8zOGJ+sfzNuNdV1iOIfVy+LBcIp52QoF8jWcuH6MtymCIX2Fi1J+ne0J6KjR89NmVOeEOQgdyh6VZnTx3CBnk1MLaAKp/9AUJuAl4LJUXOW/LjIqpP1RD/OiTET1//3YAQvsRp0bBVO1luHioAPXd6I75ghQ21WEGsyOcdjulNsHYnHf0QPiQ69T94oENEHY35AzW0n+/NSgbWKiY9kkGCTMTezQxIJhAS7F85rZZ76AkSEW6NrD5X6CzRMZloO71UII/ZeZgz6P0qhkjH9rIPYTiErCXlABed2UObx2JV6qkVoDFdWOC4dGJestsgJUX5aVZhLYH4pWLCRhRVPbQYqKTA7QXiD6ZzD1xdnrg9BE/iq4qARK9Fho7aTbUenB80j/BegJAWTCn78J1f1Zrc+wnjXKpiCtQ/0U1j3SxpQt944+QtIFgWf0cEkNHWj+2U
-x-ms-exchange-antispam-messagedata: nPFqG5sXd0iHRRU8tnKXEtpxe8bWWiGXNhSzlXuoxn1IQP2b1BPQzCpvCuz1h4knlKl3Yih1cDJGSXOxSL+oUWUxNMwRvlUInMtWhAa/dIMDGNpWvVUiUmXvGLrvnZT7T5O1WKUOvg+2ttzpGdh3o41KxrYEQMe6bqFDxIldfsZZkHZDaHPZGiQ5/WpOKspz
-Content-Type: text/plain; charset="iso-8859-1"
-Content-ID: <93C484F6E903FC4CB103FDE0B6FDB4CC@namprd15.prod.outlook.com>
-Content-Transfer-Encoding: quoted-printable
+        id S1728912AbgBLTO1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 12 Feb 2020 14:14:27 -0500
+Received: from mga07.intel.com ([134.134.136.100]:19422 "EHLO mga07.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1727231AbgBLTO1 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 12 Feb 2020 14:14:27 -0500
+X-Amp-Result: SKIPPED(no attachment in message)
+X-Amp-File-Uploaded: False
+Received: from orsmga006.jf.intel.com ([10.7.209.51])
+  by orsmga105.jf.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 12 Feb 2020 11:14:26 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.70,433,1574150400"; 
+   d="scan'208";a="237806973"
+Received: from jtkirshe-desk1.jf.intel.com ([134.134.177.74])
+  by orsmga006.jf.intel.com with ESMTP; 12 Feb 2020 11:14:25 -0800
+From:   Jeff Kirsher <jeffrey.t.kirsher@intel.com>
+To:     davem@davemloft.net, gregkh@linuxfoundation.org
+Cc:     Jeff Kirsher <jeffrey.t.kirsher@intel.com>, netdev@vger.kernel.org,
+        linux-rdma@vger.kernel.org, nhorman@redhat.com,
+        sassmann@redhat.com, jgg@ziepe.ca, parav@mellanox.com,
+        galpress@amazon.com, selvin.xavier@broadcom.com,
+        sriharsha.basavapatna@broadcom.com, benve@cisco.com,
+        bharat@chelsio.com, xavier.huwei@huawei.com, yishaih@mellanox.com,
+        leonro@mellanox.com, mkalderon@marvell.com, aditr@vmware.com
+Subject: [RFC PATCH v4 00/25] Intel Wired LAN/RDMA Driver Updates 2020-02-11
+Date:   Wed, 12 Feb 2020 11:13:59 -0800
+Message-Id: <20200212191424.1715577-1-jeffrey.t.kirsher@intel.com>
+X-Mailer: git-send-email 2.24.1
 MIME-Version: 1.0
-X-MS-Exchange-CrossTenant-Network-Message-Id: 8b6ed840-c640-4e31-3e4c-08d7afeb178c
-X-MS-Exchange-CrossTenant-originalarrivaltime: 12 Feb 2020 18:40:54.2337
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 8ae927fe-1255-47a7-a2af-5f3a069daaa2
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: /jBaAJFZDDx7jGUT2G9kmkOoyNaGMLuiYiUEXLZJ/feB+bTKYCY1wf1xEt8YMsKf3zDG4rEn6AQhax4aq0k+OQ==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: MW2PR1501MB2044
-X-OriginatorOrg: fb.com
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.138,18.0.572
- definitions=2020-02-12_08:2020-02-12,2020-02-12 signatures=0
-X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 phishscore=0 bulkscore=0
- adultscore=0 impostorscore=0 malwarescore=0 suspectscore=0
- priorityscore=1501 lowpriorityscore=0 spamscore=0 mlxscore=0
- mlxlogscore=999 clxscore=1015 classifier=spam adjust=0 reason=mlx
- scancount=1 engine=8.12.0-2001150001 definitions=main-2002120133
-X-FB-Internal: deliver
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+This series contains the initial implementation of the Virtual Bus,
+virtbus_device, virtbus_driver, updates to 'ice' and 'i40e' to use the new
+Virtual Bus and the new RDMA driver 'irdma' for use with 'ice' and 'i40e'.
 
+The primary purpose of the Virtual bus is to put devices on it and hook
+the devices up to drivers.  This will allow drivers, like the RDMA
+drivers, to hook up to devices via this Virtual bus.
 
-> On Feb 12, 2020, at 10:34 AM, Andrii Nakryiko <andrii.nakryiko@gmail.com>=
- wrote:
->=20
-> On Wed, Feb 12, 2020 at 10:29 AM Song Liu <songliubraving@fb.com> wrote:
->>=20
->>=20
->>=20
->>> On Feb 12, 2020, at 10:14 AM, Andrii Nakryiko <andrii.nakryiko@gmail.co=
-m> wrote:
->>>=20
->>> On Wed, Feb 12, 2020 at 10:07 AM Song Liu <songliubraving@fb.com> wrote=
-:
->>>>=20
->>>>=20
->>>>=20
->>>>> On Feb 12, 2020, at 9:34 AM, Andrii Nakryiko <andrii.nakryiko@gmail.c=
-om> wrote:
->>>>>=20
->>>>> On Wed, Feb 12, 2020 at 4:32 AM Eelco Chaudron <echaudro@redhat.com> =
-wrote:
->>>>>>=20
->>>>>> Currently when you want to attach a trace program to a bpf program
->>>>>> the section name needs to match the tracepoint/function semantics.
->>>>>>=20
->>>>>> However the addition of the bpf_program__set_attach_target() API
->>>>>> allows you to specify the tracepoint/function dynamically.
->>>>>>=20
->>>>>> The call flow would look something like this:
->>>>>>=20
->>>>>> xdp_fd =3D bpf_prog_get_fd_by_id(id);
->>>>>> trace_obj =3D bpf_object__open_file("func.o", NULL);
->>>>>> prog =3D bpf_object__find_program_by_title(trace_obj,
->>>>>>                                         "fentry/myfunc");
->>>>>> bpf_program__set_attach_target(prog, xdp_fd,
->>>>>>                               "fentry/xdpfilt_blk_all");
->>>>>> bpf_object__load(trace_obj)
->>>>>>=20
->>>>>> Signed-off-by: Eelco Chaudron <echaudro@redhat.com>
->>>>=20
->>>>=20
->>>> I am trying to solve the same problem with slightly different approach=
-.
->>>>=20
->>>> It works as the following (with skeleton):
->>>>=20
->>>>       obj =3D myobject_bpf__open_opts(&opts);
->>>>       bpf_object__for_each_program(prog, obj->obj)
->>>>               bpf_program__overwrite_section_name(prog, new_names[id++=
-]);
->>>>       err =3D myobject_bpf__load(obj);
->>>>=20
->>>> I don't have very strong preference. But I think my approach is simple=
-r?
->>>=20
->>> I prefer bpf_program__set_attach_target() approach. Section name is a
->>> program identifier and a *hint* for libbpf to determine program type,
->>> attach type, and whatever else makes sense. But there still should be
->>> an API to set all that manually at runtime, thus
->>> bpf_program__set_attach_target(). Doing same by overriding section
->>> name feels like a hack, plus it doesn't handle overriding
->>> attach_program_fd at all.
->>=20
->> We already have bpf_object_open_opts to handle different attach_program_=
-fd.
->=20
-> Not really, because open_opts apply to bpf_object and all its
-> bpf_programs, not to individual bpf_program. So it works only if BPF
-> application has only one BPF program. If you have many, you can only
-> set the same attach_program_fd for all of them. Basically, open_opts'
-> attach_prog_fd should be treated as a default or fallback
-> attach_prog_fd.
+The last 16 patches of the series adds a unified Intel Ethernet Protocol
+driver for RDMA that supports a new network device E810 (iWARP and
+RoCEv2 capable) and the existing X722 iWARP device.  The driver
+architecture provides the extensibility for future generations of Intel
+hardware supporting RDMA.
 
-Fair enough. I will use set_attach_target in my code.=20
+Patches 7-25 adds a unified Intel Ethernet Protocol driver for RDMA that
+supports a new network device E810 (iWARP and RoCEv2 capable) and the
+existing X722 iWARP device.  The driver architecture provides the
+extensibility for future generations of Intel hardware supporting RDMA.
 
->=20
->> Can we depreciate bpf_object_open_opts.attach_prog_fd with the
->> bpf_program__set_attach_target() approach?
->=20
-> bpf_program__set_attach_target() overrides attach_prog_fd, yes. But we
-> can't just deprecate that option because it's part of an API already,
-> even though adding it to open opts was probably a mistake. But for
-> simple BPF apps with single BPF program it does work fine, so...
+The 'irdma' driver replaces the legacy X722 driver i40iw and extends the
+ABI already defined for i40iw.  It is backward compatible with legacy
+X722 rdma-core provider (libi40iw).
 
-Maybe add a warning saying "attach_prog_fd is deprecated, xxx"?
+This series currently builds against net-next tree AND the rdma "for-next"
+branch.
 
-Thanks,
-Song=
+v1: Initial virtual bus submission
+v2: Added example virtbus_dev and virtbus_drv in
+    tools/testing/sefltests/ to test the virtual bus and provide an
+    example on how to implement
+v3: Added ice and i40e driver changes to implement the virtual bus, also
+    added the new irdma driver which is the RDMA driver which
+    communicates with the ice and i40e drivers
+v4: Added other RDMA driver maintainers on the virtbus changes
+    * Updated commit message and documentation, removed PM dependency, used
+      static inlines where possible, cleaned up deprecated code based on
+      feedback for patch 1 of the series
+    * Simplified the relationship and ensure that the lifetime rules are
+      controlled by the bus in patches 1 & 2 of the series
+    irdma driver changes:
+    * Remove redundant explicit casts
+    * Scrub all WQs to define correct charateristics and use system WQ for
+      reset recovery work
+    * Remove all non-functional NULL checks on IDC peer dev OPs
+    * Change all pr_* to dev_* if struct device present. Remove dev_info logging
+    * Don't use test_bit on non-atomic IIDC_* event types
+    * Remove all module parameters
+    * Use bool bitfields in structures instead of bool
+    * Change CQP completion handling from kthread to WQ
+    * Use the generic devlink parameter enable_roce instead of driver specific
+      one
+    * Use meaningful labels for goto unwind
+    * Use new RDMA mmap API
+    * Use refcount_t APIs for refcounts on driver objects
+    * Add support for ibdev OP dealloc_driver
+    * Adapt to use new version of virtbus
+    * Remove RCU locking in CM address resolve
+    * Misc. driver fixes
+
+For ease of review and testing, the entire series is available in the
+git repository below.
+
+The following are changes since commit fdfa3a6778b194974df77b384cc71eb2e503639a:
+  Merge tag 'scsi-misc' of git://git.kernel.org/pub/scm/linux/kernel/git/jejb/scsi
+and are available in the git repository at:
+  git://git.kernel.org/pub/scm/linux/kernel/git/jkirsher/next-queue rdma
+
+Dave Ertman (7):
+  virtual-bus: Implementation of Virtual Bus
+  ice: Create and register virtual bus for RDMA
+  ice: Complete RDMA peer registration
+  ice: Support resource allocation requests
+  ice: Enable event notifications
+  ice: Allow reset operations
+  ice: Pass through communications to VF
+
+Michael J. Ruhl (1):
+  RDMA/irdma: Add dynamic tracing for CM
+
+Mustafa Ismail (13):
+  RDMA/irdma: Add driver framework definitions
+  RDMA/irdma: Implement device initialization definitions
+  RDMA/irdma: Implement HW Admin Queue OPs
+  RDMA/irdma: Add HMC backing store setup functions
+  RDMA/irdma: Add privileged UDA queue implementation
+  RDMA/irdma: Add QoS definitions
+  RDMA/irdma: Add connection manager
+  RDMA/irdma: Add PBLE resource manager
+  RDMA/irdma: Implement device supported verb APIs
+  RDMA/irdma: Add RoCEv2 UD OP support
+  RDMA/irdma: Add user/kernel shared libraries
+  RDMA/irdma: Add miscellaneous utility definitions
+  RDMA/irdma: Add ABI definitions
+
+Shiraz Saleem (4):
+  i40e: Move client header location
+  i40e: Register a virtbus device to provide RDMA
+  RDMA: Add irdma Kconfig/Makefile and remove i40iw
+  RDMA/irdma: Update MAINTAINERS file
+
+ .../ABI/stable/sysfs-class-infiniband         |   18 -
+ Documentation/driver-api/virtual_bus.rst      |   59 +
+ MAINTAINERS                                   |    9 +-
+ drivers/bus/Kconfig                           |   11 +
+ drivers/bus/Makefile                          |    1 +
+ drivers/bus/virtual_bus.c                     |  267 +
+ drivers/infiniband/Kconfig                    |    2 +-
+ drivers/infiniband/hw/Makefile                |    2 +-
+ drivers/infiniband/hw/i40iw/Kconfig           |    9 -
+ drivers/infiniband/hw/i40iw/Makefile          |   10 -
+ drivers/infiniband/hw/i40iw/i40iw.h           |  602 --
+ drivers/infiniband/hw/i40iw/i40iw_cm.c        | 4422 ------------
+ drivers/infiniband/hw/i40iw/i40iw_cm.h        |  462 --
+ drivers/infiniband/hw/i40iw/i40iw_ctrl.c      | 5198 --------------
+ drivers/infiniband/hw/i40iw/i40iw_d.h         | 1737 -----
+ drivers/infiniband/hw/i40iw/i40iw_hmc.c       |  821 ---
+ drivers/infiniband/hw/i40iw/i40iw_hmc.h       |  241 -
+ drivers/infiniband/hw/i40iw/i40iw_hw.c        |  852 ---
+ drivers/infiniband/hw/i40iw/i40iw_main.c      | 2070 ------
+ drivers/infiniband/hw/i40iw/i40iw_osdep.h     |  217 -
+ drivers/infiniband/hw/i40iw/i40iw_p.h         |  128 -
+ drivers/infiniband/hw/i40iw/i40iw_pble.c      |  612 --
+ drivers/infiniband/hw/i40iw/i40iw_pble.h      |  131 -
+ drivers/infiniband/hw/i40iw/i40iw_puda.c      | 1493 ----
+ drivers/infiniband/hw/i40iw/i40iw_puda.h      |  188 -
+ drivers/infiniband/hw/i40iw/i40iw_register.h  | 1030 ---
+ drivers/infiniband/hw/i40iw/i40iw_status.h    |  101 -
+ drivers/infiniband/hw/i40iw/i40iw_type.h      | 1363 ----
+ drivers/infiniband/hw/i40iw/i40iw_uk.c        | 1232 ----
+ drivers/infiniband/hw/i40iw/i40iw_user.h      |  430 --
+ drivers/infiniband/hw/i40iw/i40iw_utils.c     | 1557 -----
+ drivers/infiniband/hw/i40iw/i40iw_verbs.c     | 2789 --------
+ drivers/infiniband/hw/i40iw/i40iw_verbs.h     |  179 -
+ drivers/infiniband/hw/i40iw/i40iw_vf.c        |   85 -
+ drivers/infiniband/hw/i40iw/i40iw_vf.h        |   62 -
+ drivers/infiniband/hw/i40iw/i40iw_virtchnl.c  |  756 ---
+ drivers/infiniband/hw/i40iw/i40iw_virtchnl.h  |  124 -
+ drivers/infiniband/hw/irdma/Kconfig           |   11 +
+ drivers/infiniband/hw/irdma/Makefile          |   28 +
+ drivers/infiniband/hw/irdma/cm.c              | 4499 +++++++++++++
+ drivers/infiniband/hw/irdma/cm.h              |  413 ++
+ drivers/infiniband/hw/irdma/ctrl.c            | 5985 +++++++++++++++++
+ drivers/infiniband/hw/irdma/defs.h            | 2132 ++++++
+ drivers/infiniband/hw/irdma/hmc.c             |  705 ++
+ drivers/infiniband/hw/irdma/hmc.h             |  217 +
+ drivers/infiniband/hw/irdma/hw.c              | 2597 +++++++
+ drivers/infiniband/hw/irdma/i40iw_hw.c        |  211 +
+ drivers/infiniband/hw/irdma/i40iw_hw.h        |  162 +
+ drivers/infiniband/hw/irdma/i40iw_if.c        |  228 +
+ drivers/infiniband/hw/irdma/icrdma_hw.c       |   76 +
+ drivers/infiniband/hw/irdma/icrdma_hw.h       |   62 +
+ drivers/infiniband/hw/irdma/irdma.h           |  190 +
+ drivers/infiniband/hw/irdma/irdma_if.c        |  424 ++
+ drivers/infiniband/hw/irdma/main.c            |  572 ++
+ drivers/infiniband/hw/irdma/main.h            |  595 ++
+ drivers/infiniband/hw/irdma/osdep.h           |  105 +
+ drivers/infiniband/hw/irdma/pble.c            |  510 ++
+ drivers/infiniband/hw/irdma/pble.h            |  135 +
+ drivers/infiniband/hw/irdma/protos.h          |   93 +
+ drivers/infiniband/hw/irdma/puda.c            | 1690 +++++
+ drivers/infiniband/hw/irdma/puda.h            |  186 +
+ drivers/infiniband/hw/irdma/status.h          |   69 +
+ drivers/infiniband/hw/irdma/trace.c           |  112 +
+ drivers/infiniband/hw/irdma/trace.h           |    3 +
+ drivers/infiniband/hw/irdma/trace_cm.h        |  458 ++
+ drivers/infiniband/hw/irdma/type.h            | 1714 +++++
+ drivers/infiniband/hw/irdma/uda.c             |  390 ++
+ drivers/infiniband/hw/irdma/uda.h             |   64 +
+ drivers/infiniband/hw/irdma/uda_d.h           |  382 ++
+ drivers/infiniband/hw/irdma/uk.c              | 1744 +++++
+ drivers/infiniband/hw/irdma/user.h            |  448 ++
+ drivers/infiniband/hw/irdma/utils.c           | 2425 +++++++
+ drivers/infiniband/hw/irdma/verbs.c           | 4582 +++++++++++++
+ drivers/infiniband/hw/irdma/verbs.h           |  213 +
+ drivers/infiniband/hw/irdma/ws.c              |  395 ++
+ drivers/infiniband/hw/irdma/ws.h              |   39 +
+ drivers/net/ethernet/intel/Kconfig            |    2 +
+ drivers/net/ethernet/intel/i40e/i40e.h        |    2 +-
+ drivers/net/ethernet/intel/i40e/i40e_client.c |  139 +-
+ drivers/net/ethernet/intel/ice/Makefile       |    1 +
+ drivers/net/ethernet/intel/ice/ice.h          |   15 +
+ .../net/ethernet/intel/ice/ice_adminq_cmd.h   |   33 +
+ drivers/net/ethernet/intel/ice/ice_common.c   |  203 +
+ drivers/net/ethernet/intel/ice/ice_common.h   |    9 +
+ drivers/net/ethernet/intel/ice/ice_dcb_lib.c  |   65 +
+ drivers/net/ethernet/intel/ice/ice_dcb_lib.h  |    3 +
+ .../net/ethernet/intel/ice/ice_hw_autogen.h   |    1 +
+ drivers/net/ethernet/intel/ice/ice_idc.c      | 1349 ++++
+ drivers/net/ethernet/intel/ice/ice_idc_int.h  |  105 +
+ drivers/net/ethernet/intel/ice/ice_lib.c      |   50 +
+ drivers/net/ethernet/intel/ice/ice_lib.h      |    4 +
+ drivers/net/ethernet/intel/ice/ice_main.c     |  104 +-
+ drivers/net/ethernet/intel/ice/ice_sched.c    |   69 +-
+ drivers/net/ethernet/intel/ice/ice_switch.c   |   27 +
+ drivers/net/ethernet/intel/ice/ice_switch.h   |    4 +
+ drivers/net/ethernet/intel/ice/ice_type.h     |    4 +
+ .../net/ethernet/intel/ice/ice_virtchnl_pf.c  |   59 +-
+ include/linux/mod_devicetable.h               |    8 +
+ .../linux/net/intel}/i40e_client.h            |   15 +
+ include/linux/net/intel/iidc.h                |  337 +
+ include/linux/virtual_bus.h                   |   57 +
+ include/uapi/rdma/i40iw-abi.h                 |  107 -
+ include/uapi/rdma/ib_user_ioctl_verbs.h       |    1 +
+ include/uapi/rdma/irdma-abi.h                 |  140 +
+ scripts/mod/devicetable-offsets.c             |    3 +
+ scripts/mod/file2alias.c                      |    8 +
+ 106 files changed, 37965 insertions(+), 29093 deletions(-)
+ create mode 100644 Documentation/driver-api/virtual_bus.rst
+ create mode 100644 drivers/bus/virtual_bus.c
+ delete mode 100644 drivers/infiniband/hw/i40iw/Kconfig
+ delete mode 100644 drivers/infiniband/hw/i40iw/Makefile
+ delete mode 100644 drivers/infiniband/hw/i40iw/i40iw.h
+ delete mode 100644 drivers/infiniband/hw/i40iw/i40iw_cm.c
+ delete mode 100644 drivers/infiniband/hw/i40iw/i40iw_cm.h
+ delete mode 100644 drivers/infiniband/hw/i40iw/i40iw_ctrl.c
+ delete mode 100644 drivers/infiniband/hw/i40iw/i40iw_d.h
+ delete mode 100644 drivers/infiniband/hw/i40iw/i40iw_hmc.c
+ delete mode 100644 drivers/infiniband/hw/i40iw/i40iw_hmc.h
+ delete mode 100644 drivers/infiniband/hw/i40iw/i40iw_hw.c
+ delete mode 100644 drivers/infiniband/hw/i40iw/i40iw_main.c
+ delete mode 100644 drivers/infiniband/hw/i40iw/i40iw_osdep.h
+ delete mode 100644 drivers/infiniband/hw/i40iw/i40iw_p.h
+ delete mode 100644 drivers/infiniband/hw/i40iw/i40iw_pble.c
+ delete mode 100644 drivers/infiniband/hw/i40iw/i40iw_pble.h
+ delete mode 100644 drivers/infiniband/hw/i40iw/i40iw_puda.c
+ delete mode 100644 drivers/infiniband/hw/i40iw/i40iw_puda.h
+ delete mode 100644 drivers/infiniband/hw/i40iw/i40iw_register.h
+ delete mode 100644 drivers/infiniband/hw/i40iw/i40iw_status.h
+ delete mode 100644 drivers/infiniband/hw/i40iw/i40iw_type.h
+ delete mode 100644 drivers/infiniband/hw/i40iw/i40iw_uk.c
+ delete mode 100644 drivers/infiniband/hw/i40iw/i40iw_user.h
+ delete mode 100644 drivers/infiniband/hw/i40iw/i40iw_utils.c
+ delete mode 100644 drivers/infiniband/hw/i40iw/i40iw_verbs.c
+ delete mode 100644 drivers/infiniband/hw/i40iw/i40iw_verbs.h
+ delete mode 100644 drivers/infiniband/hw/i40iw/i40iw_vf.c
+ delete mode 100644 drivers/infiniband/hw/i40iw/i40iw_vf.h
+ delete mode 100644 drivers/infiniband/hw/i40iw/i40iw_virtchnl.c
+ delete mode 100644 drivers/infiniband/hw/i40iw/i40iw_virtchnl.h
+ create mode 100644 drivers/infiniband/hw/irdma/Kconfig
+ create mode 100644 drivers/infiniband/hw/irdma/Makefile
+ create mode 100644 drivers/infiniband/hw/irdma/cm.c
+ create mode 100644 drivers/infiniband/hw/irdma/cm.h
+ create mode 100644 drivers/infiniband/hw/irdma/ctrl.c
+ create mode 100644 drivers/infiniband/hw/irdma/defs.h
+ create mode 100644 drivers/infiniband/hw/irdma/hmc.c
+ create mode 100644 drivers/infiniband/hw/irdma/hmc.h
+ create mode 100644 drivers/infiniband/hw/irdma/hw.c
+ create mode 100644 drivers/infiniband/hw/irdma/i40iw_hw.c
+ create mode 100644 drivers/infiniband/hw/irdma/i40iw_hw.h
+ create mode 100644 drivers/infiniband/hw/irdma/i40iw_if.c
+ create mode 100644 drivers/infiniband/hw/irdma/icrdma_hw.c
+ create mode 100644 drivers/infiniband/hw/irdma/icrdma_hw.h
+ create mode 100644 drivers/infiniband/hw/irdma/irdma.h
+ create mode 100644 drivers/infiniband/hw/irdma/irdma_if.c
+ create mode 100644 drivers/infiniband/hw/irdma/main.c
+ create mode 100644 drivers/infiniband/hw/irdma/main.h
+ create mode 100644 drivers/infiniband/hw/irdma/osdep.h
+ create mode 100644 drivers/infiniband/hw/irdma/pble.c
+ create mode 100644 drivers/infiniband/hw/irdma/pble.h
+ create mode 100644 drivers/infiniband/hw/irdma/protos.h
+ create mode 100644 drivers/infiniband/hw/irdma/puda.c
+ create mode 100644 drivers/infiniband/hw/irdma/puda.h
+ create mode 100644 drivers/infiniband/hw/irdma/status.h
+ create mode 100644 drivers/infiniband/hw/irdma/trace.c
+ create mode 100644 drivers/infiniband/hw/irdma/trace.h
+ create mode 100644 drivers/infiniband/hw/irdma/trace_cm.h
+ create mode 100644 drivers/infiniband/hw/irdma/type.h
+ create mode 100644 drivers/infiniband/hw/irdma/uda.c
+ create mode 100644 drivers/infiniband/hw/irdma/uda.h
+ create mode 100644 drivers/infiniband/hw/irdma/uda_d.h
+ create mode 100644 drivers/infiniband/hw/irdma/uk.c
+ create mode 100644 drivers/infiniband/hw/irdma/user.h
+ create mode 100644 drivers/infiniband/hw/irdma/utils.c
+ create mode 100644 drivers/infiniband/hw/irdma/verbs.c
+ create mode 100644 drivers/infiniband/hw/irdma/verbs.h
+ create mode 100644 drivers/infiniband/hw/irdma/ws.c
+ create mode 100644 drivers/infiniband/hw/irdma/ws.h
+ create mode 100644 drivers/net/ethernet/intel/ice/ice_idc.c
+ create mode 100644 drivers/net/ethernet/intel/ice/ice_idc_int.h
+ rename {drivers/net/ethernet/intel/i40e => include/linux/net/intel}/i40e_client.h (94%)
+ create mode 100644 include/linux/net/intel/iidc.h
+ create mode 100644 include/linux/virtual_bus.h
+ delete mode 100644 include/uapi/rdma/i40iw-abi.h
+ create mode 100644 include/uapi/rdma/irdma-abi.h
+
+-- 
+2.24.1
+
