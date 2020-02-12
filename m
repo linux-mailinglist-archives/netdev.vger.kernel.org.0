@@ -2,49 +2,54 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 31699159E77
-	for <lists+netdev@lfdr.de>; Wed, 12 Feb 2020 02:02:37 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4C9BB159E7B
+	for <lists+netdev@lfdr.de>; Wed, 12 Feb 2020 02:04:14 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728147AbgBLBCe convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Tue, 11 Feb 2020 20:02:34 -0500
-Received: from shards.monkeyblade.net ([23.128.96.9]:54934 "EHLO
+        id S1728177AbgBLBEL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 11 Feb 2020 20:04:11 -0500
+Received: from shards.monkeyblade.net ([23.128.96.9]:54950 "EHLO
         shards.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728120AbgBLBCe (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 11 Feb 2020 20:02:34 -0500
+        with ESMTP id S1728134AbgBLBEL (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 11 Feb 2020 20:04:11 -0500
 Received: from localhost (unknown [IPv6:2601:601:9f00:477:9e51:a893:b0fe:602a])
         (using TLSv1 with cipher AES256-SHA (256/256 bits))
         (Client did not present a certificate)
         (Authenticated sender: davem-davemloft)
-        by shards.monkeyblade.net (Postfix) with ESMTPSA id 55AE5151671B4;
-        Tue, 11 Feb 2020 17:02:33 -0800 (PST)
-Date:   Tue, 11 Feb 2020 17:02:32 -0800 (PST)
-Message-Id: <20200211.170232.1486991008920101035.davem@davemloft.net>
-To:     toke@redhat.com
-Cc:     kuba@kernel.org, john.fastabend@gmail.com, brouer@redhat.com,
-        netdev@vger.kernel.org, bpf@vger.kernel.org, shoracek@redhat.com,
-        pabeni@redhat.com
-Subject: Re: [PATCH net] core: Don't skip generic XDP program execution for
- cloned SKBs
+        by shards.monkeyblade.net (Postfix) with ESMTPSA id AD87E151679C8;
+        Tue, 11 Feb 2020 17:04:10 -0800 (PST)
+Date:   Tue, 11 Feb 2020 17:04:10 -0800 (PST)
+Message-Id: <20200211.170410.226180513890431439.davem@davemloft.net>
+To:     jeffrey.t.kirsher@intel.com
+Cc:     brett.creeley@intel.com, netdev@vger.kernel.org,
+        nhorman@redhat.com, sassmann@redhat.com, andrewx.bowers@intel.com
+Subject: Re: [net 1/1] i40e: Fix the conditional for
+ i40e_vc_validate_vqs_bitmaps
 From:   David Miller <davem@davemloft.net>
-In-Reply-To: <20200210161046.221258-1-toke@redhat.com>
-References: <20200210161046.221258-1-toke@redhat.com>
+In-Reply-To: <20200210185918.2903634-1-jeffrey.t.kirsher@intel.com>
+References: <20200210185918.2903634-1-jeffrey.t.kirsher@intel.com>
 X-Mailer: Mew version 6.8 on Emacs 26.1
 Mime-Version: 1.0
-Content-Type: Text/Plain; charset=iso-8859-1
-Content-Transfer-Encoding: 8BIT
-X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Tue, 11 Feb 2020 17:02:33 -0800 (PST)
+Content-Type: Text/Plain; charset=us-ascii
+Content-Transfer-Encoding: 7bit
+X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Tue, 11 Feb 2020 17:04:10 -0800 (PST)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Toke Høiland-Jørgensen <toke@redhat.com>
-Date: Mon, 10 Feb 2020 17:10:46 +0100
+From: Jeff Kirsher <jeffrey.t.kirsher@intel.com>
+Date: Mon, 10 Feb 2020 10:59:18 -0800
 
-> The current generic XDP handler skips execution of XDP programs entirely if
-> an SKB is marked as cloned. This leads to some surprising behaviour, as
-> packets can end up being cloned in various ways, which will make an XDP
-> program not see all the traffic on an interface.
+> From: Brett Creeley <brett.creeley@intel.com>
+> 
+> Commit d9d6a9aed3f6 ("i40e: Fix virtchnl_queue_select bitmap
+> validation") introduced a necessary change for verifying how queue
+> bitmaps from the iavf driver get validated. Unfortunately, the
+> conditional was reversed. Fix this.
+> 
+> Fixes: d9d6a9aed3f6 ("i40e: Fix virtchnl_queue_select bitmap validation")
+> Signed-off-by: Brett Creeley <brett.creeley@intel.com>
+> Tested-by: Andrew Bowers <andrewx.bowers@intel.com>
+> Signed-off-by: Jeff Kirsher <jeffrey.t.kirsher@intel.com>
 
-Yeah this has been a sort spot for a while, applied and queued up for
--stable, thanks.
+Applied.
