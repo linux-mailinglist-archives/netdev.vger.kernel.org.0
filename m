@@ -2,72 +2,88 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 749E515ADEB
-	for <lists+netdev@lfdr.de>; Wed, 12 Feb 2020 18:00:30 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 29F9615AE98
+	for <lists+netdev@lfdr.de>; Wed, 12 Feb 2020 18:19:53 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727600AbgBLRA1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 12 Feb 2020 12:00:27 -0500
-Received: from mail-pj1-f68.google.com ([209.85.216.68]:54905 "EHLO
-        mail-pj1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726982AbgBLRA1 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 12 Feb 2020 12:00:27 -0500
-Received: by mail-pj1-f68.google.com with SMTP id dw13so1126073pjb.4
-        for <netdev@vger.kernel.org>; Wed, 12 Feb 2020 09:00:27 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=VzHWDOof07WBoTbsUagoJgmuhY3y5Os9XY61/G67Xyc=;
-        b=I1W1jVE4vS1hUxEdxLjHCxqJENbzeF+TB2HP/zDO90G1c5ekxVxfvX6pc6lXLQz67s
-         4AbuzV5OMF0bZpFsQnwGQvr+Gft6M8paZb3ZsigUxX8a95aYZav+Y90T98cY60R+U/er
-         TWX9Em6WDlJ9SNTV9EX0DAE2h89tBL9MHvHWwLHfYIkFAeB2hfB6zgkVdk6jb4hzKn39
-         A9WiCJNfEigCuWe22uddQI5RHd9E6zAEe9jyjXuPyKkIz8+Pzm4soECtqq9yObbbkiNM
-         aG/2uVGkJc4lIz4xaemB7uEni5tqZNxCN+PsSUh5ZiSJHMpO4Is6KYaPR/tTwZN2faYJ
-         ywbg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=VzHWDOof07WBoTbsUagoJgmuhY3y5Os9XY61/G67Xyc=;
-        b=IisqkoMSc6VUS8cluV/Hdzceb5VpCORNvJwSkLTR6vr9TCy0Stj9TkTtk7BnOiyyHO
-         cZbJftu+CeQYalabNkcdI04TL0dVv2vfDRzmDS14+GLjOiAdsQHCJ9Xseyw6xI19fcNM
-         b88IouqzhyoQLTH58u8u4AoeN24840e4T5/3l5Oy7J4Xn4YQQ46fv9SPzZErNV1iypwz
-         yM2pzOtnq+0NvivDHEOBglUrE9C/3gQirL8gZjt7YrnUaPeu4y8gl90/NIczbfKflzfA
-         fQTqQCqzr1R4AaKpI5Y21j/VSyytadiP5k1RTP+SCBE0A34p4a0zNXyDTlU0XMGelWJx
-         Ggcg==
-X-Gm-Message-State: APjAAAWK2ySOZM/D0FIk6jULuhj9ha21jIaP9v/4fSHN8ZAEfYSATzuI
-        istK65GpOq3mqZrSyTfXunBFr1iF
-X-Google-Smtp-Source: APXvYqyAm87OPQqfgJm86+GH22476hSMEcTCPIjTCgNc205qzv80c85FdRmFNorckCD+R6JH1MCMjg==
-X-Received: by 2002:a17:90a:f17:: with SMTP id 23mr16846pjy.84.1581526826850;
-        Wed, 12 Feb 2020 09:00:26 -0800 (PST)
-Received: from localhost (c-73-241-114-122.hsd1.ca.comcast.net. [73.241.114.122])
-        by smtp.gmail.com with ESMTPSA id x12sm1601029pfr.47.2020.02.12.09.00.25
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 12 Feb 2020 09:00:25 -0800 (PST)
-Date:   Wed, 12 Feb 2020 09:00:23 -0800
-From:   Richard Cochran <richardcochran@gmail.com>
-To:     Yangbo Lu <yangbo.lu@nxp.com>
-Cc:     netdev@vger.kernel.org, "David S . Miller" <davem@davemloft.net>
-Subject: Re: [v2] ptp_qoriq: add initialization message
-Message-ID: <20200212170023.GB1758@localhost>
-References: <20200212101916.27085-1-yangbo.lu@nxp.com>
+        id S1727458AbgBLRTr (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 12 Feb 2020 12:19:47 -0500
+Received: from vps0.lunn.ch ([185.16.172.187]:43056 "EHLO vps0.lunn.ch"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726728AbgBLRTq (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 12 Feb 2020 12:19:46 -0500
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:
+        Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
+        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
+        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
+        List-Post:List-Owner:List-Archive;
+        bh=rkM9QGmsqKaUtiT8wCi5xafHwiZcklUGCeleqBo8SCM=; b=TF3BD4Z07Dig+7/BleThInvxyJ
+        s+g7cYYr9Gij0deR+kCx/edpUOEv05/YEwrkbMkEhnQKE+/E8wj7tKHjB+SriAnYi03a466Ay54RA
+        3OhEWWx1/1F2QZ2wFlIR4GP37Jb30vq0xUFKw16FCn/2T0sDnWQN0UB/6059Hmi5ITds=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.93)
+        (envelope-from <andrew@lunn.ch>)
+        id 1j1vfr-0006lH-0S; Wed, 12 Feb 2020 18:19:43 +0100
+Date:   Wed, 12 Feb 2020 18:19:42 +0100
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Tim Harvey <tharvey@gateworks.com>
+Cc:     netdev <netdev@vger.kernel.org>,
+        open list <linux-kernel@vger.kernel.org>, rrichter@marvell.com,
+        linux-arm-kernel@lists.infradead.org,
+        David Miller <davem@davemloft.net>, sgoutham@marvell.com
+Subject: Re: [PATCH] net: thunderx: use proper interface type for RGMII
+Message-ID: <20200212171942.GR19213@lunn.ch>
+References: <1581108026-28170-1-git-send-email-tharvey@gateworks.com>
+ <20200207210209.GD19213@lunn.ch>
+ <CAJ+vNU0LV7EquWXfBKfYYLzagXiVHtvqMtx5hiM1zxXQWVgWrA@mail.gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20200212101916.27085-1-yangbo.lu@nxp.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+In-Reply-To: <CAJ+vNU0LV7EquWXfBKfYYLzagXiVHtvqMtx5hiM1zxXQWVgWrA@mail.gmail.com>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Feb 12, 2020 at 06:19:16PM +0800, Yangbo Lu wrote:
-> - The ptp_qoriq driver users don't have to install an ethtool to
->   check the PTP clock index for using. Or don't have to check which
->   /sys/class/ptp/ptpX is PTP QorIQ clock.
+On Wed, Feb 12, 2020 at 08:55:39AM -0800, Tim Harvey wrote:
+> On Fri, Feb 7, 2020 at 1:02 PM Andrew Lunn <andrew@lunn.ch> wrote:
+> >
+> > On Fri, Feb 07, 2020 at 12:40:26PM -0800, Tim Harvey wrote:
+> > > The configuration of the OCTEONTX XCV_DLL_CTL register via
+> > > xcv_init_hw() is such that the RGMII RX delay is bypassed
+> > > leaving the RGMII TX delay enabled in the MAC:
+> > >
+> > >       /* Configure DLL - enable or bypass
+> > >        * TX no bypass, RX bypass
+> > >        */
+> > >       cfg = readq_relaxed(xcv->reg_base + XCV_DLL_CTL);
+> > >       cfg &= ~0xFF03;
+> > >       cfg |= CLKRX_BYP;
+> > >       writeq_relaxed(cfg, xcv->reg_base + XCV_DLL_CTL);
+> > >
+> > > This would coorespond to a interface type of PHY_INTERFACE_MODE_RGMII_RXID
+> > > and not PHY_INTERFACE_MODE_RGMII.
+> > >
+> > > Fixing this allows RGMII PHY drivers to do the right thing (enable
+> > > RX delay in the PHY) instead of erroneously enabling both delays in the
+> > > PHY.
+> >
+> > Hi Tim
+> >
+> > This seems correct. But how has it worked in the past? Does this
+> > suggest there is PHY driver out there which is doing the wrong thing
+> > when passed PHY_INTERFACE_MODE_RGMII?
+> >
+> > Reviewed-by: Andrew Lunn <andrew@lunn.ch>
+> >
+> 
+> Andrew,
+> 
+> Yes, the DP83867 phy driver used on the Gateworks Newport boards would
+> configure the delay in an incompatible way when enabled.
 
-You just stated the reason why your new pr_info() is more spam in the
-kernel log.  So, NAK on this patch.
+Hi Tim
 
-Sorry,
-Richard
+So it was broken? Maybe find the appropriate Fixes tag, and have David
+add it to stable?
+
+    Andrew
