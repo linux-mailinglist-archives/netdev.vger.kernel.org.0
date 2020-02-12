@@ -2,159 +2,120 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 5404515B220
-	for <lists+netdev@lfdr.de>; Wed, 12 Feb 2020 21:48:01 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0AEA015B272
+	for <lists+netdev@lfdr.de>; Wed, 12 Feb 2020 22:06:55 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729056AbgBLUr4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 12 Feb 2020 15:47:56 -0500
-Received: from mail-ed1-f65.google.com ([209.85.208.65]:38578 "EHLO
-        mail-ed1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727548AbgBLUrz (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 12 Feb 2020 15:47:55 -0500
-Received: by mail-ed1-f65.google.com with SMTP id p23so4022142edr.5;
-        Wed, 12 Feb 2020 12:47:54 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=ocVi9UeaQe1UnqqnrvLRMbaF86CAckEwz1wjknCQnjg=;
-        b=ievYme6tNhf7wTnSDN1+8dI+y71+GcsRdTmWT5zD0zXgldCLscjL8DmdMrYvoNjapw
-         85Zb5pOcZ0aXklXnT99JoGssExC96kdlzwFffVY+8CEeYWzGHuNbyRCU2339GrdAt2CJ
-         AS3KZEeuArEPSPGIJbH9h5smuPwXNzJgal4nDtzXQ2MgvTLR24NXsua69EQDKEWRTppB
-         hSpfPCAPYSrJ7yUAxoQvRFcaIePuPWDeuppJc4TTUM7PEXyK6pteDYOM0pUNOQOZTEYr
-         zQGWb18rfDzHrGtuP8JY4G6xi9iugXJtcAM5fxyKcdR/gfFZdGUJ1pET7oLRhgv3Pxgp
-         ibmQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=ocVi9UeaQe1UnqqnrvLRMbaF86CAckEwz1wjknCQnjg=;
-        b=J/bmwOVTFuppIVhNgrnhmo/ZQ3SFAVSY9jLck+8PvL3QnWXN8S79r1BLfTUVtWeACv
-         Ytz7EYumDEeNdGE81TTu/1YFkWU+2Rl2uV8Duq37Ck9d2Q5X6aSErvR02/rI3/Rb+W5O
-         UszJQ8scHE5CRjYVpxoRi48Msq5W35RWxzSdF/hLoR2KyNDAG+LdSs2yaCfgNklOTq82
-         IefL+4eFA44dLR9kda2dv7x25IrNOUWpyf6J4KOnRsAU1HaJMBFDaK1yNfIUKM+oL63L
-         sQjyIYeM4bQicwWjpxTrro7stWswsEH3mK/ysXIH1Jk5LLP1QXHPaNtvA4v0LA7vqyLB
-         Z/KA==
-X-Gm-Message-State: APjAAAWVCy9+BwVzOo/E2X/JD3Ju96MYBQU0rCHk+5yZ/IIosQ6TnEGp
-        qvZZu10INwoz1grRgRCoGjEYrZxZ+Bo20Dp9Z9w=
-X-Google-Smtp-Source: APXvYqySCIIJhmq37z2RmNr9z8yiBAXyw7CW1K6vEWy4ZznnC+5H7VxR1Ka5yEdaSUvZOZLzggXFQJjBnmoRjX7gQ38=
-X-Received: by 2002:a17:906:9501:: with SMTP id u1mr12014650ejx.113.1581540473965;
- Wed, 12 Feb 2020 12:47:53 -0800 (PST)
+        id S1727692AbgBLVGx (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 12 Feb 2020 16:06:53 -0500
+Received: from mail-eopbgr60097.outbound.protection.outlook.com ([40.107.6.97]:14375
+        "EHLO EUR04-DB3-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1727138AbgBLVGx (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 12 Feb 2020 16:06:53 -0500
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=WZhvG9dxJg0cVoSYBL3hUsZpyQ1iME0U1kN3ID1yMDhf/VmfbDS035baBx6UGYlhJNq2Ta0XgzVd6Oxe/ZYUFTxM0EiWijaqV0rmAD+VbquE6UrMW18v8mX5eYiFipJw7HKyNJzKyAAS5Edw8RCMJrJTZBT5OAla+cQa4brgjGBUwdT2GZZC4OorkOkSlDnzE0LKGpAvca7Yqu0pvKsreva+MPDsgKEyti526pboqZbVK6hZhCXnZo4qY79svU0vfGoRuMEzUHEAkMzQLhgd+SVwLTuWxGy0XGfXIUT/EUhlhLPOVgbj6Hb9B+KvjLVIDK9qTi9uVacs79tZ4wpj+g==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=vErBOtzjglspGzVvAzy37gKNQa3oFldnzJUUPPgC9lE=;
+ b=ggQoeh7Bk1ad4N/5BUsBdLADSOSff9E+GYEY0//NfPMXEYODn0CEFanBLtZW2TKri8xOvNmutzTQhInIyyN3lTKlYzWRm32TR0bGzs0sKs3Cu3mFfnY4JjDOg54URSy3qFmeu76ivFFFdGq+4ShZtjecZj8jSS5/tBofgTTqmdDNPSv8Jfix6cr3OyrGHd/1dZuwXxnLIH8lgQzVH97mAk92rVjyw5yljina73v0K6o2w3C6L8Eri7bc7K0ddtN2Z0Nx14tz9b5ztvF8oP6sJyrk4Mt+a+ify8gawAybThAFCctK5mH1Zhow8tOcf8VlPxhRQyTET4DfpcwWsuUlnw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=criteo.com; dmarc=pass action=none header.from=criteo.com;
+ dkim=pass header.d=criteo.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=criteo.com;
+ s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=vErBOtzjglspGzVvAzy37gKNQa3oFldnzJUUPPgC9lE=;
+ b=FPCRAlL16zzKy+iVQbqlRRWleTsz912xh6Ex0cDzzopvM2lGO82x3kHv5u3ZeadxxUmfz/lz52ZDEIy8XIJMcErkHtDiHZmwnXl/0fqK2oe1Z9+hODcNJyJvFZ0xIFIgEpKCt2SF9jS87QyydHdf1JAMERzuSpknaOP1oPT8sRU=
+Authentication-Results: spf=none (sender IP is )
+ smtp.mailfrom=w.dauchy@criteo.com; 
+Received: from DB3PR0402MB3914.eurprd04.prod.outlook.com (52.134.71.157) by
+ DB3PR0402MB3900.eurprd04.prod.outlook.com (52.134.71.14) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.2707.23; Wed, 12 Feb 2020 21:06:50 +0000
+Received: from DB3PR0402MB3914.eurprd04.prod.outlook.com
+ ([fe80::917:f0e9:9756:589b]) by DB3PR0402MB3914.eurprd04.prod.outlook.com
+ ([fe80::917:f0e9:9756:589b%3]) with mapi id 15.20.2729.021; Wed, 12 Feb 2020
+ 21:06:50 +0000
+Date:   Wed, 12 Feb 2020 22:06:47 +0100
+From:   William Dauchy <w.dauchy@criteo.com>
+To:     Nicolas Dichtel <nicolas.dichtel@6wind.com>
+Cc:     netdev@vger.kernel.org
+Subject: Re: [PATCH v3 net] net, ip6_tunnel: enhance tunnel locate with link
+ check
+Message-ID: <20200212210647.GB159357@dontpanic>
+References: <b3497834-1ab5-3315-bfbd-ac4f5236eee3@6wind.com>
+ <20200212083036.134761-1-w.dauchy@criteo.com>
+ <ce1f9fbe-a28a-d5c3-c792-ded028df52e5@6wind.com>
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <ce1f9fbe-a28a-d5c3-c792-ded028df52e5@6wind.com>
+X-ClientProxiedBy: PR2P264CA0007.FRAP264.PROD.OUTLOOK.COM (2603:10a6:101::19)
+ To DB3PR0402MB3914.eurprd04.prod.outlook.com (2603:10a6:8:f::29)
 MIME-Version: 1.0
-References: <20200212200555.2393-1-f.fainelli@gmail.com>
-In-Reply-To: <20200212200555.2393-1-f.fainelli@gmail.com>
-From:   Vladimir Oltean <olteanv@gmail.com>
-Date:   Wed, 12 Feb 2020 22:47:43 +0200
-Message-ID: <CA+h21hpG5y1D2d53P7KK6X5uBFxoSQ_iCs3rRAJe61yxfWWAPA@mail.gmail.com>
-Subject: Re: [PATCH net] net: dsa: Treat VLAN ID 0 as PVID untagged
-To:     Florian Fainelli <f.fainelli@gmail.com>
-Cc:     netdev <netdev@vger.kernel.org>,
-        Heiner Kallweit <hkallweit1@gmail.com>, michal.vokac@ysoft.com,
-        Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        open list <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Received: from dontpanic (91.199.242.231) by PR2P264CA0007.FRAP264.PROD.OUTLOOK.COM (2603:10a6:101::19) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.2729.22 via Frontend Transport; Wed, 12 Feb 2020 21:06:49 +0000
+X-Originating-IP: [91.199.242.231]
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: cb7f57e9-a743-4366-7cc7-08d7afff7a51
+X-MS-TrafficTypeDiagnostic: DB3PR0402MB3900:
+X-Microsoft-Antispam-PRVS: <DB3PR0402MB3900E0B5043319AEB216E2E2E81B0@DB3PR0402MB3900.eurprd04.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:9508;
+X-Forefront-PRVS: 0311124FA9
+X-Forefront-Antispam-Report: SFV:NSPM;SFS:(10019020)(4636009)(366004)(396003)(39860400002)(346002)(376002)(136003)(189003)(199004)(2906002)(316002)(33656002)(33716001)(956004)(8936002)(6916009)(55016002)(66556008)(5660300002)(81166006)(66946007)(66476007)(6496006)(8676002)(9686003)(52116002)(186003)(1076003)(9576002)(478600001)(4326008)(81156014)(4744005)(16526019)(86362001)(26005);DIR:OUT;SFP:1102;SCL:1;SRVR:DB3PR0402MB3900;H:DB3PR0402MB3914.eurprd04.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;MX:1;A:1;
+Received-SPF: None (protection.outlook.com: criteo.com does not designate
+ permitted sender hosts)
+X-MS-Exchange-SenderADCheck: 1
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: X8s4dfXJ3DkEaOoMYus+Ohm90zD0RNrjkrIs1gbYmT7qAktogTElFectJGX/LVMG/0KjjQaRfJrZeL45Pm6HDyXS+C5sed6nVjwzs5RBoLq52XFD8XOCDY1I7RTT7GPcRKSp+T+0fAO/rpixh81s9x6ld4pERnxdbsZ2bTMYzEFT6vaPJbhHsviz+faSPjvxpPv3C+UWeWVGe3mlImeXRY3SmAIe38mt+K7m0qBGx0nJPqi+Xj6iAbxUk7skNOziErdb8vdZ4WSSdZVqgmZFYe2RnsnRXCRje8/R7Uja+E4GQc5KFklV7b6Z4OHIm6E5UWBoZ8T8NzW+0cVB4rEdd0w/Ce+c6ERDbbYea52II8Q0m/txl0PaDg4qTqVPgjU7s8AnksUV4dXJOSqxqju1iqTDW3cwoYwnAUxUGBdXxrHwzyXu58fIuyLFgEvTL2vU
+X-MS-Exchange-AntiSpam-MessageData: E1lrKUi1fLkwh10JQlI//FPYkBwQawpiXFaPzE0N/ZuRw2zPg14Zv+aAnn7+eTgNq36BhmO7UY/T10Fg7kF0eGFVMpZSse0JTnhIwrBdXaEuGRSVIn2//Hl7WDuIqxJKjVQm2xLqS4u4BDcZTAhCTg==
+X-OriginatorOrg: criteo.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: cb7f57e9-a743-4366-7cc7-08d7afff7a51
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 12 Feb 2020 21:06:50.1937
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 2a35d8fd-574d-48e3-927c-8c398e225a01
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: pFqsEbp/xjYq8EXTTwQkAtJnk5Y0ehF8g/D1gjwu4Aas2zCOg8RmGf9qkYQa+Q+zmKJD3byJ2sTg2tUTz98Z2A==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DB3PR0402MB3900
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Florian,
+Hello Nicolas,
 
-On Wed, 12 Feb 2020 at 22:06, Florian Fainelli <f.fainelli@gmail.com> wrote=
-:
->
-> VLAN ID 0 is special by all kinds and is really meant to be the default
-> ingress and egress untagged VLAN. We were not configuring it that way
-> and so we would be ingress untagged but egress tagged.
->
-> When our devices are interfaced with other link partners such as switch
-> devices, the results would be entirely equipment dependent. Some
-> switches are completely fine with accepting an egress tagged frame with
-> VLAN ID 0 and would send their responses untagged, so everything works,
-> but other devices are not so tolerant and would typically reject a VLAN
-> ID 0 tagged frame.
+Thank you for your review.
 
-Are you sure that it's not in fact those devices that are not doing
-what they're supposed to? VID 0 should be sent as tagged and no port
-membership checks should be enforced on it.
+On Wed, Feb 12, 2020 at 04:54:19PM +0100, Nicolas Dichtel wrote:
+> Hmm, I was expecting 'tdev->mtu - t_hlen'. Am I wrong?
+> 
+> In fact, something like this:
+> dev->mtu = ETH_DATA_LEN - t_hlen;
+> if (t->parms.link) {
+> 	tdev = __dev_get_by_index(t->net, t->parms.link);
+> 	if (tdev)
+> 		dev->mtu = tdev->mtu - t_hlen;
+> }
 
->
-> Fixes: 061f6a505ac3 ("net: dsa: Add ndo_vlan_rx_{add, kill}_vid implement=
-ation")
-> Signed-off-by: Florian Fainelli <f.fainelli@gmail.com>
-> ---
-> Hi all,
->
-> After looking at all DSA drivers and how they implement port_vlan_add()
-> I think this is the right change to do, but would appreciate if you
-> could test this on your respective platforms to ensure this is not
-> problematic.
+true, I missed that one; I reworked to something like:
 
-I'm pretty sure this is problematic, for the simple reason that with
-this change, DSA is insisting that the default PVID is 0, contrary to
-the bridge core which insists it is 1. And some switches, like the
-Microchip Ocelot/Felix, don't support more than 1 egress-untagged
-VLAN, so adding one of the VIDs 0 or 1 will fail (I don't know the
-exact order off-hand). See 1c44ce560b4d ("net: mscc: ocelot: fix
-vlan_filtering when enslaving to bridge before link is up") for more
-details of how that is going to work.
+int mtu;
 
->
-> Thank you
->
->
->  net/dsa/slave.c | 9 ++++++++-
->  1 file changed, 8 insertions(+), 1 deletion(-)
->
-> diff --git a/net/dsa/slave.c b/net/dsa/slave.c
-> index 088c886e609e..d3a2782eb94d 100644
-> --- a/net/dsa/slave.c
-> +++ b/net/dsa/slave.c
-> @@ -1100,6 +1100,7 @@ static int dsa_slave_vlan_rx_add_vid(struct net_dev=
-ice *dev, __be16 proto,
->  {
->         struct dsa_port *dp =3D dsa_slave_to_port(dev);
->         struct bridge_vlan_info info;
-> +       u16 flags =3D 0;
->         int ret;
->
->         /* Check for a possible bridge VLAN entry now since there is no
-> @@ -1118,7 +1119,13 @@ static int dsa_slave_vlan_rx_add_vid(struct net_de=
-vice *dev, __be16 proto,
->                         return -EBUSY;
->         }
->
-> -       ret =3D dsa_port_vid_add(dp, vid, 0);
-> +       /* VLAN ID 0 is special and should be the default egress and ingr=
-ess
-> +        * untagged VLAN, make sure it gets programmed as such.
-> +        */
-> +       if (vid =3D=3D 0)
-> +               flags =3D BRIDGE_VLAN_INFO_PVID | BRIDGE_VLAN_INFO_UNTAGG=
-ED;
+mtu = ETH_DATA_LEN;
+if (t->parms.link) {
+	tdev = __dev_get_by_index(t->net, t->parms.link);
+	if (tdev && tdev->mtu < mtu)
+		mtu = tdev->mtu;
+}
+dev->mtu = mtu - t_hlen;
 
-IEEE 802.1Q-2018, page 247, Table 9-2=E2=80=94Reserved VID values:
 
-The null VID. Indicates that the tag header contains only priority
-information; no VID is
-present in the frame. This VID value shall not be configured as a PVID
-or a member of a VID
-Set, or configured in any FDB entry, or used in any Management operation.
+However in ipip we do:
 
-> +
-> +       ret =3D dsa_port_vid_add(dp, vid, flags);
->         if (ret)
->                 return ret;
->
-> --
-> 2.17.1
->
+mtu -= (dev->hard_header_len + t_hlen);
 
-Is this a test?
+Do I need to use hard_header_len as well?
 
-Regards,
--Vladimir
+Thanks,
+-- 
+William
