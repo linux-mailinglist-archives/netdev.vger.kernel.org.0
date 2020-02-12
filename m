@@ -2,33 +2,34 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 904BC15B2C9
-	for <lists+netdev@lfdr.de>; Wed, 12 Feb 2020 22:34:13 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id CB6F915B2CC
+	for <lists+netdev@lfdr.de>; Wed, 12 Feb 2020 22:34:20 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727791AbgBLVeL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 12 Feb 2020 16:34:11 -0500
-Received: from mga18.intel.com ([134.134.136.126]:18127 "EHLO mga18.intel.com"
+        id S1729205AbgBLVeR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 12 Feb 2020 16:34:17 -0500
+Received: from mga18.intel.com ([134.134.136.126]:18121 "EHLO mga18.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1729147AbgBLVeE (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 12 Feb 2020 16:34:04 -0500
+        id S1729140AbgBLVeD (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 12 Feb 2020 16:34:03 -0500
 X-Amp-Result: SKIPPED(no attachment in message)
 X-Amp-File-Uploaded: False
 Received: from orsmga003.jf.intel.com ([10.7.209.27])
   by orsmga106.jf.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 12 Feb 2020 13:34:01 -0800
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.70,434,1574150400"; 
-   d="scan'208";a="233911698"
+   d="scan'208";a="233911701"
 Received: from jtkirshe-desk1.jf.intel.com ([134.134.177.74])
   by orsmga003.jf.intel.com with ESMTP; 12 Feb 2020 13:34:00 -0800
 From:   Jeff Kirsher <jeffrey.t.kirsher@intel.com>
 To:     davem@davemloft.net
 Cc:     Bruce Allan <bruce.w.allan@intel.com>, netdev@vger.kernel.org,
         nhorman@redhat.com, sassmann@redhat.com,
+        Tony Nguyen <anthony.l.nguyen@intel.com>,
         Andrew Bowers <andrewx.bowers@intel.com>,
         Jeff Kirsher <jeffrey.t.kirsher@intel.com>
-Subject: [net 08/15] ice: fix and consolidate logging of NVM/firmware version information
-Date:   Wed, 12 Feb 2020 13:33:50 -0800
-Message-Id: <20200212213357.2198911-9-jeffrey.t.kirsher@intel.com>
+Subject: [net 09/15] ice: update Unit Load Status bitmask to check after reset
+Date:   Wed, 12 Feb 2020 13:33:51 -0800
+Message-Id: <20200212213357.2198911-10-jeffrey.t.kirsher@intel.com>
 X-Mailer: git-send-email 2.24.1
 In-Reply-To: <20200212213357.2198911-1-jeffrey.t.kirsher@intel.com>
 References: <20200212213357.2198911-1-jeffrey.t.kirsher@intel.com>
@@ -41,113 +42,76 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Bruce Allan <bruce.w.allan@intel.com>
 
-Logging the firmware/NVM information during driver load is redundant since
-that information is also available via ethtool.  Move the functionality
-found in ice_nvm_version_str() directly into ice_get_drvinfo() and remove
-calling the former and logging that info during driver probe.  This also
-gets rid of a bug in ice_nvm_version_str() where it returns a pointer to
-a buffer which is free'ed when that function exits.
+After a reset the Unit Load Status bits in the GLNVM_ULD register to check
+for completion should be 0x7FF before continuing.  Update the mask to check
+(minus the three reserved bits that are always set).
 
 Signed-off-by: Bruce Allan <bruce.w.allan@intel.com>
+Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
 Tested-by: Andrew Bowers <andrewx.bowers@intel.com>
 Signed-off-by: Jeff Kirsher <jeffrey.t.kirsher@intel.com>
 ---
- drivers/net/ethernet/intel/ice/ice_ethtool.c | 15 +++++++++++++--
- drivers/net/ethernet/intel/ice/ice_lib.c     | 19 -------------------
- drivers/net/ethernet/intel/ice/ice_lib.h     |  2 --
- drivers/net/ethernet/intel/ice/ice_main.c    |  5 -----
- 4 files changed, 13 insertions(+), 28 deletions(-)
+ drivers/net/ethernet/intel/ice/ice_common.c     | 17 ++++++++++++-----
+ drivers/net/ethernet/intel/ice/ice_hw_autogen.h |  6 ++++++
+ 2 files changed, 18 insertions(+), 5 deletions(-)
 
-diff --git a/drivers/net/ethernet/intel/ice/ice_ethtool.c b/drivers/net/ethernet/intel/ice/ice_ethtool.c
-index 26eca4ce9e2c..7539fd8147de 100644
---- a/drivers/net/ethernet/intel/ice/ice_ethtool.c
-+++ b/drivers/net/ethernet/intel/ice/ice_ethtool.c
-@@ -166,13 +166,24 @@ static void
- ice_get_drvinfo(struct net_device *netdev, struct ethtool_drvinfo *drvinfo)
+diff --git a/drivers/net/ethernet/intel/ice/ice_common.c b/drivers/net/ethernet/intel/ice/ice_common.c
+index cee2c91381bc..a46d51357650 100644
+--- a/drivers/net/ethernet/intel/ice/ice_common.c
++++ b/drivers/net/ethernet/intel/ice/ice_common.c
+@@ -818,7 +818,7 @@ void ice_deinit_hw(struct ice_hw *hw)
+  */
+ enum ice_status ice_check_reset(struct ice_hw *hw)
  {
- 	struct ice_netdev_priv *np = netdev_priv(netdev);
-+	u8 oem_ver, oem_patch, nvm_ver_hi, nvm_ver_lo;
- 	struct ice_vsi *vsi = np->vsi;
- 	struct ice_pf *pf = vsi->back;
-+	struct ice_hw *hw = &pf->hw;
-+	u16 oem_build;
+-	u32 cnt, reg = 0, grst_delay;
++	u32 cnt, reg = 0, grst_delay, uld_mask;
  
- 	strlcpy(drvinfo->driver, KBUILD_MODNAME, sizeof(drvinfo->driver));
- 	strlcpy(drvinfo->version, ice_drv_ver, sizeof(drvinfo->version));
--	strlcpy(drvinfo->fw_version, ice_nvm_version_str(&pf->hw),
--		sizeof(drvinfo->fw_version));
-+
-+	/* Display NVM version (from which the firmware version can be
-+	 * determined) which contains more pertinent information.
-+	 */
-+	ice_get_nvm_version(hw, &oem_ver, &oem_build, &oem_patch,
-+			    &nvm_ver_hi, &nvm_ver_lo);
-+	snprintf(drvinfo->fw_version, sizeof(drvinfo->fw_version),
-+		 "%x.%02x 0x%x %d.%d.%d", nvm_ver_hi, nvm_ver_lo,
-+		 hw->nvm.eetrack, oem_ver, oem_build, oem_patch);
-+
- 	strlcpy(drvinfo->bus_info, pci_name(pf->pdev),
- 		sizeof(drvinfo->bus_info));
- 	drvinfo->n_priv_flags = ICE_PRIV_FLAG_ARRAY_SIZE;
-diff --git a/drivers/net/ethernet/intel/ice/ice_lib.c b/drivers/net/ethernet/intel/ice/ice_lib.c
-index 19f908d9b47f..921d21285f14 100644
---- a/drivers/net/ethernet/intel/ice/ice_lib.c
-+++ b/drivers/net/ethernet/intel/ice/ice_lib.c
-@@ -2890,25 +2890,6 @@ int ice_vsi_cfg_tc(struct ice_vsi *vsi, u8 ena_tc)
- }
- #endif /* CONFIG_DCB */
- 
--/**
-- * ice_nvm_version_str - format the NVM version strings
-- * @hw: ptr to the hardware info
-- */
--char *ice_nvm_version_str(struct ice_hw *hw)
--{
--	u8 oem_ver, oem_patch, ver_hi, ver_lo;
--	static char buf[ICE_NVM_VER_LEN];
--	u16 oem_build;
--
--	ice_get_nvm_version(hw, &oem_ver, &oem_build, &oem_patch, &ver_hi,
--			    &ver_lo);
--
--	snprintf(buf, sizeof(buf), "%x.%02x 0x%x %d.%d.%d", ver_hi, ver_lo,
--		 hw->nvm.eetrack, oem_ver, oem_build, oem_patch);
--
--	return buf;
--}
--
- /**
-  * ice_update_ring_stats - Update ring statistics
-  * @ring: ring to update
-diff --git a/drivers/net/ethernet/intel/ice/ice_lib.h b/drivers/net/ethernet/intel/ice/ice_lib.h
-index 68fd0d4505c2..e2c0dadce920 100644
---- a/drivers/net/ethernet/intel/ice/ice_lib.h
-+++ b/drivers/net/ethernet/intel/ice/ice_lib.h
-@@ -97,8 +97,6 @@ void ice_vsi_cfg_frame_size(struct ice_vsi *vsi);
- 
- u32 ice_intrl_usec_to_reg(u8 intrl, u8 gran);
- 
--char *ice_nvm_version_str(struct ice_hw *hw);
--
- enum ice_status
- ice_vsi_cfg_mac_fltr(struct ice_vsi *vsi, const u8 *macaddr, bool set);
- 
-diff --git a/drivers/net/ethernet/intel/ice/ice_main.c b/drivers/net/ethernet/intel/ice/ice_main.c
-index e92af2471635..f08acf18e1c7 100644
---- a/drivers/net/ethernet/intel/ice/ice_main.c
-+++ b/drivers/net/ethernet/intel/ice/ice_main.c
-@@ -3244,11 +3244,6 @@ ice_probe(struct pci_dev *pdev, const struct pci_device_id __always_unused *ent)
- 		goto err_exit_unroll;
+ 	/* Poll for Device Active state in case a recent CORER, GLOBR,
+ 	 * or EMPR has occurred. The grst delay value is in 100ms units.
+@@ -840,13 +840,20 @@ enum ice_status ice_check_reset(struct ice_hw *hw)
+ 		return ICE_ERR_RESET_FAILED;
  	}
  
--	dev_info(dev, "firmware %d.%d.%d api %d.%d.%d nvm %s build 0x%08x\n",
--		 hw->fw_maj_ver, hw->fw_min_ver, hw->fw_patch,
--		 hw->api_maj_ver, hw->api_min_ver, hw->api_patch,
--		 ice_nvm_version_str(hw), hw->fw_build);
--
- 	ice_request_fw(pf);
+-#define ICE_RESET_DONE_MASK	(GLNVM_ULD_CORER_DONE_M | \
+-				 GLNVM_ULD_GLOBR_DONE_M)
++#define ICE_RESET_DONE_MASK	(GLNVM_ULD_PCIER_DONE_M |\
++				 GLNVM_ULD_PCIER_DONE_1_M |\
++				 GLNVM_ULD_CORER_DONE_M |\
++				 GLNVM_ULD_GLOBR_DONE_M |\
++				 GLNVM_ULD_POR_DONE_M |\
++				 GLNVM_ULD_POR_DONE_1_M |\
++				 GLNVM_ULD_PCIER_DONE_2_M)
++
++	uld_mask = ICE_RESET_DONE_MASK;
  
- 	/* if ice_request_fw fails, ICE_FLAG_ADV_FEATURES bit won't be
+ 	/* Device is Active; check Global Reset processes are done */
+ 	for (cnt = 0; cnt < ICE_PF_RESET_WAIT_COUNT; cnt++) {
+-		reg = rd32(hw, GLNVM_ULD) & ICE_RESET_DONE_MASK;
+-		if (reg == ICE_RESET_DONE_MASK) {
++		reg = rd32(hw, GLNVM_ULD) & uld_mask;
++		if (reg == uld_mask) {
+ 			ice_debug(hw, ICE_DBG_INIT,
+ 				  "Global reset processes done. %d\n", cnt);
+ 			break;
+diff --git a/drivers/net/ethernet/intel/ice/ice_hw_autogen.h b/drivers/net/ethernet/intel/ice/ice_hw_autogen.h
+index edff3260060d..6db3d0494127 100644
+--- a/drivers/net/ethernet/intel/ice/ice_hw_autogen.h
++++ b/drivers/net/ethernet/intel/ice/ice_hw_autogen.h
+@@ -267,8 +267,14 @@
+ #define GLNVM_GENS_SR_SIZE_S			5
+ #define GLNVM_GENS_SR_SIZE_M			ICE_M(0x7, 5)
+ #define GLNVM_ULD				0x000B6008
++#define GLNVM_ULD_PCIER_DONE_M			BIT(0)
++#define GLNVM_ULD_PCIER_DONE_1_M		BIT(1)
+ #define GLNVM_ULD_CORER_DONE_M			BIT(3)
+ #define GLNVM_ULD_GLOBR_DONE_M			BIT(4)
++#define GLNVM_ULD_POR_DONE_M			BIT(5)
++#define GLNVM_ULD_POR_DONE_1_M			BIT(8)
++#define GLNVM_ULD_PCIER_DONE_2_M		BIT(9)
++#define GLNVM_ULD_PE_DONE_M			BIT(10)
+ #define GLPCI_CNF2				0x000BE004
+ #define GLPCI_CNF2_CACHELINE_SIZE_M		BIT(1)
+ #define PF_FUNC_RID				0x0009E880
 -- 
 2.24.1
 
