@@ -2,45 +2,45 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id B034F15B3D1
-	for <lists+netdev@lfdr.de>; Wed, 12 Feb 2020 23:34:30 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 598DD15B3D4
+	for <lists+netdev@lfdr.de>; Wed, 12 Feb 2020 23:34:32 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729127AbgBLWeR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 12 Feb 2020 17:34:17 -0500
-Received: from smtp-fw-9102.amazon.com ([207.171.184.29]:21070 "EHLO
-        smtp-fw-9102.amazon.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727947AbgBLWeR (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 12 Feb 2020 17:34:17 -0500
+        id S1729245AbgBLWeX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 12 Feb 2020 17:34:23 -0500
+Received: from smtp-fw-9101.amazon.com ([207.171.184.25]:61693 "EHLO
+        smtp-fw-9101.amazon.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727947AbgBLWeX (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 12 Feb 2020 17:34:23 -0500
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
   d=amazon.com; i=@amazon.com; q=dns/txt; s=amazon201209;
-  t=1581546856; x=1613082856;
+  t=1581546863; x=1613082863;
   h=date:from:to:subject:message-id:mime-version;
-  bh=h6//YngfznNHckkx9Ke5t7SZWnTpuxZy2r6uPSfxRCE=;
-  b=tPn3ZqL+1B2ulBs4TtC/x5igj99yJsK+o2s+GmDjgGvwtour6nmLwgsW
-   Jx0K27NMKOof3dltvdloC8oEntTvXDgWlK92Uta2UlBQfR5PVnl2+qxYG
-   v+3SkVfjXHIFmXoE7e/xrM6UsaywsHadR6VWDEEnwhMGlPDLWMQ6Lkc/I
-   o=;
-IronPort-SDR: 2sE+e2jd+GGBElALb7Ph5Zz+ct1lsXDGX/PXq+AtmOqwAOaaSF/aeEOS4lmkGyqTdM+lQJLtnt
- f0+oC1hLM+lQ==
+  bh=Eo18FuPqTI4s9/8b+RyMmqnZX5xJ4fL1BD2xZjVWSBE=;
+  b=mY3E4OGEZvstavDfNfa2/qa6u4Twa7Cm2DszTXho4H/Smv/MmIcvH71I
+   YtV0ZXFPG8akppBAcxMti1No2Og4b3Ti/SIH5J5WA+V+RX6W0idp0cE7C
+   +l4txKlcrV3B159hvg2TZgqbMIskdE4/f2XHNjtynCWVM2RJgblyiko2M
+   Y=;
+IronPort-SDR: CAoTjaJQmXCSqypAs4vlySVkxQ/IlBFjWb07NalXRqztxgZBJy36fgeRw1UIfOlZSSKUHy7wPG
+ GxFxRyu9NIIA==
 X-IronPort-AV: E=Sophos;i="5.70,434,1574121600"; 
-   d="scan'208";a="24723164"
-Received: from sea32-co-svc-lb4-vlan3.sea.corp.amazon.com (HELO email-inbound-relay-1d-37fd6b3d.us-east-1.amazon.com) ([10.47.23.38])
-  by smtp-border-fw-out-9102.sea19.amazon.com with ESMTP; 12 Feb 2020 22:34:13 +0000
-Received: from EX13MTAUWB001.ant.amazon.com (iad55-ws-svc-p15-lb9-vlan2.iad.amazon.com [10.40.159.162])
-        by email-inbound-relay-1d-37fd6b3d.us-east-1.amazon.com (Postfix) with ESMTPS id 96E8728364D;
-        Wed, 12 Feb 2020 22:34:04 +0000 (UTC)
-Received: from EX13D07UWB002.ant.amazon.com (10.43.161.131) by
- EX13MTAUWB001.ant.amazon.com (10.43.161.249) with Microsoft SMTP Server (TLS)
- id 15.0.1367.3; Wed, 12 Feb 2020 22:33:36 +0000
-Received: from EX13MTAUWB001.ant.amazon.com (10.43.161.207) by
- EX13D07UWB002.ant.amazon.com (10.43.161.131) with Microsoft SMTP Server (TLS)
- id 15.0.1367.3; Wed, 12 Feb 2020 22:33:35 +0000
+   d="scan'208";a="16327964"
+Received: from sea32-co-svc-lb4-vlan3.sea.corp.amazon.com (HELO email-inbound-relay-2a-6e2fc477.us-west-2.amazon.com) ([10.47.23.38])
+  by smtp-border-fw-out-9101.sea19.amazon.com with ESMTP; 12 Feb 2020 22:34:21 +0000
+Received: from EX13MTAUWC001.ant.amazon.com (pdx4-ws-svc-p6-lb7-vlan2.pdx.amazon.com [10.170.41.162])
+        by email-inbound-relay-2a-6e2fc477.us-west-2.amazon.com (Postfix) with ESMTPS id 7E329A24DF;
+        Wed, 12 Feb 2020 22:34:19 +0000 (UTC)
+Received: from EX13D05UWC001.ant.amazon.com (10.43.162.82) by
+ EX13MTAUWC001.ant.amazon.com (10.43.162.135) with Microsoft SMTP Server (TLS)
+ id 15.0.1367.3; Wed, 12 Feb 2020 22:34:13 +0000
+Received: from EX13MTAUWC001.ant.amazon.com (10.43.162.135) by
+ EX13D05UWC001.ant.amazon.com (10.43.162.82) with Microsoft SMTP Server (TLS)
+ id 15.0.1367.3; Wed, 12 Feb 2020 22:34:13 +0000
 Received: from dev-dsk-anchalag-2a-9c2d1d96.us-west-2.amazon.com
- (172.22.96.68) by mail-relay.amazon.com (10.43.161.249) with Microsoft SMTP
- Server id 15.0.1367.3 via Frontend Transport; Wed, 12 Feb 2020 22:33:35 +0000
+ (172.22.96.68) by mail-relay.amazon.com (10.43.162.232) with Microsoft SMTP
+ Server id 15.0.1367.3 via Frontend Transport; Wed, 12 Feb 2020 22:34:13 +0000
 Received: by dev-dsk-anchalag-2a-9c2d1d96.us-west-2.amazon.com (Postfix, from userid 4335130)
-        id 01AA9400D1; Wed, 12 Feb 2020 22:33:35 +0000 (UTC)
-Date:   Wed, 12 Feb 2020 22:33:35 +0000
+        id 58D23400D1; Wed, 12 Feb 2020 22:34:13 +0000 (UTC)
+Date:   Wed, 12 Feb 2020 22:34:13 +0000
 From:   Anchal Agarwal <anchalag@amazon.com>
 To:     <tglx@linutronix.de>, <mingo@redhat.com>, <bp@alien8.de>,
         <hpa@zytor.com>, <x86@kernel.org>, <boris.ostrovsky@oracle.com>,
@@ -54,9 +54,8 @@ To:     <tglx@linutronix.de>, <mingo@redhat.com>, <bp@alien8.de>,
         <vkuznets@redhat.com>, <netdev@vger.kernel.org>,
         <linux-kernel@vger.kernel.org>, <dwmw@amazon.co.uk>,
         <fllinden@amaozn.com>, <benh@kernel.crashing.org>
-Subject: [RFC PATCH v3 08/12] xen/time: introduce
- xen_{save,restore}_steal_clock
-Message-ID: <20200212223335.GA4330@dev-dsk-anchalag-2a-9c2d1d96.us-west-2.amazon.com>
+Subject: [RFC PATCH v3 09/12] x86/xen: save and restore steal clock
+Message-ID: <20200212223413.GA4354@dev-dsk-anchalag-2a-9c2d1d96.us-west-2.amazon.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Disposition: inline
@@ -68,109 +67,72 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Munehisa Kamata <kamatam@amazon.com>
 
-Currently, steal time accounting code in scheduler expects steal clock
-callback to provide monotonically increasing value. If the accounting
-code receives a smaller value than previous one, it uses a negative
-value to calculate steal time and results in incorrectly updated idle
-and steal time accounting. This breaks userspace tools which read
-/proc/stat.
-
-top - 08:05:35 up  2:12,  3 users,  load average: 0.00, 0.07, 0.23
-Tasks:  80 total,   1 running,  79 sleeping,   0 stopped,   0 zombie
-Cpu(s):  0.0%us,  0.0%sy,  0.0%ni,30100.0%id,  0.0%wa,  0.0%hi, 0.0%si,-1253874204672.0%st
-
-This can actually happen when a Xen PVHVM guest gets restored from
-hibernation, because such a restored guest is just a fresh domain from
-Xen perspective and the time information in runstate info starts over
-from scratch.
-
-This patch introduces xen_save_steal_clock() which saves current values
-in runstate info into per-cpu variables. Its couterpart,
-xen_restore_steal_clock(), sets offset if it found the current values in
-runstate info are smaller than previous ones. xen_steal_clock() is also
-modified to use the offset to ensure that scheduler only sees
-monotonically increasing number.
+Save steal clock values of all present CPUs in the system core ops
+suspend callbacks. Also, restore a boot CPU's steal clock in the system
+core resume callback. For non-boot CPUs, restore after they're brought
+up, because runstate info for non-boot CPUs are not active until then.
 
 Signed-off-by: Munehisa Kamata <kamatam@amazon.com>
 Signed-off-by: Anchal Agarwal <anchalag@amazon.com>
 
 ---
 Changes since V2:
-    * separated the previously merged patches
-    * In V2, introduction of save/restore steal clock and usage in
-      hibernation code was merged in a single patch
+    * Separate patch to add save/restore call to suspend/resume code
 ---
- drivers/xen/time.c    | 29 ++++++++++++++++++++++++++++-
- include/xen/xen-ops.h |  2 ++
- 2 files changed, 30 insertions(+), 1 deletion(-)
+ arch/x86/xen/suspend.c | 13 ++++++++++++-
+ arch/x86/xen/time.c    |  3 +++
+ 2 files changed, 15 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/xen/time.c b/drivers/xen/time.c
-index 0968859c29d0..3560222cc0dd 100644
---- a/drivers/xen/time.c
-+++ b/drivers/xen/time.c
-@@ -23,6 +23,9 @@ static DEFINE_PER_CPU(struct vcpu_runstate_info, xen_runstate);
- 
- static DEFINE_PER_CPU(u64[4], old_runstate_time);
- 
-+static DEFINE_PER_CPU(u64, xen_prev_steal_clock);
-+static DEFINE_PER_CPU(u64, xen_steal_clock_offset);
-+
- /* return an consistent snapshot of 64-bit time/counter value */
- static u64 get64(const u64 *p)
+diff --git a/arch/x86/xen/suspend.c b/arch/x86/xen/suspend.c
+index 784c4484100b..dae0f74f5390 100644
+--- a/arch/x86/xen/suspend.c
++++ b/arch/x86/xen/suspend.c
+@@ -91,12 +91,20 @@ void xen_arch_suspend(void)
+ static int xen_syscore_suspend(void)
  {
-@@ -149,7 +152,7 @@ bool xen_vcpu_stolen(int vcpu)
- 	return per_cpu(xen_runstate, vcpu).state == RUNSTATE_runnable;
- }
+ 	struct xen_remove_from_physmap xrfp;
+-	int ret;
++	int cpu, ret;
  
--u64 xen_steal_clock(int cpu)
-+static u64 __xen_steal_clock(int cpu)
- {
- 	struct vcpu_runstate_info state;
+ 	/* Xen suspend does similar stuffs in its own logic */
+ 	if (xen_suspend_mode_is_xen_suspend())
+ 		return 0;
  
-@@ -157,6 +160,30 @@ u64 xen_steal_clock(int cpu)
- 	return state.time[RUNSTATE_runnable] + state.time[RUNSTATE_offline];
- }
- 
-+u64 xen_steal_clock(int cpu)
-+{
-+	return __xen_steal_clock(cpu) + per_cpu(xen_steal_clock_offset, cpu);
-+}
-+
-+void xen_save_steal_clock(int cpu)
-+{
-+	per_cpu(xen_prev_steal_clock, cpu) = xen_steal_clock(cpu);
-+}
-+
-+void xen_restore_steal_clock(int cpu)
-+{
-+	u64 steal_clock = __xen_steal_clock(cpu);
-+
-+	if (per_cpu(xen_prev_steal_clock, cpu) > steal_clock) {
-+		/* Need to update the offset */
-+		per_cpu(xen_steal_clock_offset, cpu) =
-+		    per_cpu(xen_prev_steal_clock, cpu) - steal_clock;
-+	} else {
-+		/* Avoid unnecessary steal clock warp */
-+		per_cpu(xen_steal_clock_offset, cpu) = 0;
++	for_each_present_cpu(cpu) {
++		/*
++		 * Nonboot CPUs are already offline, but the last copy of
++		 * runstate info is still accessible.
++		 */
++		xen_save_steal_clock(cpu);
 +	}
-+}
 +
- void xen_setup_runstate_info(int cpu)
+ 	xrfp.domid = DOMID_SELF;
+ 	xrfp.gpfn = __pa(HYPERVISOR_shared_info) >> PAGE_SHIFT;
+ 
+@@ -118,6 +126,9 @@ static void xen_syscore_resume(void)
+ 
+ 	pvclock_resume();
+ 
++	/* Nonboot CPUs will be resumed when they're brought up */
++	xen_restore_steal_clock(smp_processor_id());
++
+ 	gnttab_resume();
+ }
+ 
+diff --git a/arch/x86/xen/time.c b/arch/x86/xen/time.c
+index befbdd8b17f0..8cf632dda605 100644
+--- a/arch/x86/xen/time.c
++++ b/arch/x86/xen/time.c
+@@ -537,6 +537,9 @@ static void xen_hvm_setup_cpu_clockevents(void)
  {
- 	struct vcpu_register_runstate_memory_area area;
-diff --git a/include/xen/xen-ops.h b/include/xen/xen-ops.h
-index 3b3992b5b0c2..12b3f4474a05 100644
---- a/include/xen/xen-ops.h
-+++ b/include/xen/xen-ops.h
-@@ -37,6 +37,8 @@ void xen_time_setup_guest(void);
- void xen_manage_runstate_time(int action);
- void xen_get_runstate_snapshot(struct vcpu_runstate_info *res);
- u64 xen_steal_clock(int cpu);
-+void xen_save_steal_clock(int cpu);
-+void xen_restore_steal_clock(int cpu);
- 
- int xen_setup_shutdown_event(void);
- 
+ 	int cpu = smp_processor_id();
+ 	xen_setup_runstate_info(cpu);
++	if (cpu)
++		xen_restore_steal_clock(cpu);
++
+ 	/*
+ 	 * xen_setup_timer(cpu) - snprintf is bad in atomic context. Hence
+ 	 * doing it xen_hvm_cpu_notify (which gets called by smp_init during
 -- 
 2.24.1.AMZN
 
