@@ -2,138 +2,200 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 6E80A15A066
-	for <lists+netdev@lfdr.de>; Wed, 12 Feb 2020 06:13:31 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 09E0415A0AD
+	for <lists+netdev@lfdr.de>; Wed, 12 Feb 2020 06:36:36 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1725843AbgBLFN1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 12 Feb 2020 00:13:27 -0500
-Received: from m9a0014g.houston.softwaregrp.com ([15.124.64.90]:33272 "EHLO
-        m9a0014g.houston.softwaregrp.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1725601AbgBLFN1 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 12 Feb 2020 00:13:27 -0500
-Received: FROM m9a0014g.houston.softwaregrp.com (15.121.0.190) BY m9a0014g.houston.softwaregrp.com WITH ESMTP;
- Wed, 12 Feb 2020 05:12:19 +0000
-Received: from M4W0334.microfocus.com (2002:f78:1192::f78:1192) by
- M9W0067.microfocus.com (2002:f79:be::f79:be) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id
- 15.1.1591.10; Wed, 12 Feb 2020 05:09:47 +0000
-Received: from NAM12-DM6-obe.outbound.protection.outlook.com (15.124.8.10) by
- M4W0334.microfocus.com (15.120.17.146) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id
- 15.1.1591.10 via Frontend Transport; Wed, 12 Feb 2020 05:09:47 +0000
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=NiM1lEx85W1SBiDbSPYy2SIFyBXb1M1oiglyMXRY0F3Mq/UEtxI5+M6WxLsUuTjxGLqupIdDyh1xZZI/NvARpr90sJoGA2S2cJ/cA3h/OOw1dE22OYnlL9a7P5RfAnskpadEErmBl4UidxXZ+BGIW11l7CQTjl2f0wnelZ8G6/nbartbXd3wef+QjorIyI6Deux4dIpIS80iLmRWYqjwBETX9XU3/UuonbKPBLxSSva6qHVhXrDqTtQHtHptUkUg6jKX9twDiUxwkcMq1TxdjzVfpxLP2qq+8MzToih8B/Uro/kbrzkvuoPL2zpyn7pN6Hu4cw3lCnHX1XKegDCPZQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=MsX8SyFgZx35DCtWGnHfF6/+AwS1bA9uIeb1n9BK+NI=;
- b=O6SMsF/iXwJGFM/BrO+hhqYUb/3X+zqZJMvZmdubd2duDXMoST28FK5UXpohWbi6bjw06lnlKuMG1jAxEre+eB0H/w5y7ryw9qY8Q8aKUs6t7BDuV/Es918QNdu72qOX4Zc3ky7hUllvpz67UTffZ2lRo/WTznL5EaQ7cEAZo+MSskp11x1p9vwEp2K/kgYvdbcFuK1LhlLoGqr3RZlvOnq0mde+nCb+XB11f3XiXggRNzI87RpYVdX8UtT5MA5AZSG1ctgXQUKrcrZjOYYf3qjnqDDvgBRurDjUxK6ovEUqBfAuEhA8KuI01ei/m5VwNUO3CtAc+H0eF5vUCHnW3Q==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=suse.com; dmarc=pass action=none header.from=suse.com;
- dkim=pass header.d=suse.com; arc=none
-Authentication-Results: spf=none (sender IP is )
- smtp.mailfrom=firo.yang@suse.com; 
-Received: from BY5PR18MB3187.namprd18.prod.outlook.com (10.255.139.221) by
- BY5PR18MB3329.namprd18.prod.outlook.com (10.255.137.30) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.2729.22; Wed, 12 Feb 2020 05:09:46 +0000
-Received: from BY5PR18MB3187.namprd18.prod.outlook.com
- ([fe80::c1f6:c296:bddf:20e4]) by BY5PR18MB3187.namprd18.prod.outlook.com
- ([fe80::c1f6:c296:bddf:20e4%4]) with mapi id 15.20.2707.030; Wed, 12 Feb 2020
- 05:09:46 +0000
-From:   Firo Yang <firo.yang@suse.com>
-To:     <netdev@vger.kernel.org>
-CC:     <davem@davemloft.net>, <pkaustub@cisco.com>, <_govind@gmx.com>,
-        <benve@cisco.com>, <firogm@gmail.com>,
-        Firo Yang <firo.yang@suse.com>
-Subject: [PATCH 1/1] enic: prevent waking up stopped tx queues over watchdog reset
-Date:   Wed, 12 Feb 2020 06:09:17 +0100
-Message-ID: <20200212050917.848742-1-firo.yang@suse.com>
-X-Mailer: git-send-email 2.16.4
-Content-Type: text/plain
-X-ClientProxiedBy: LNXP265CA0028.GBRP265.PROD.OUTLOOK.COM
- (2603:10a6:600:5c::16) To BY5PR18MB3187.namprd18.prod.outlook.com
- (2603:10b6:a03:196::29)
+        id S1726448AbgBLFgc (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 12 Feb 2020 00:36:32 -0500
+Received: from mail-pl1-f193.google.com ([209.85.214.193]:36670 "EHLO
+        mail-pl1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725601AbgBLFgb (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 12 Feb 2020 00:36:31 -0500
+Received: by mail-pl1-f193.google.com with SMTP id a6so513222plm.3;
+        Tue, 11 Feb 2020 21:36:31 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:from:to:cc:references:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=djGdtLQBSo6slMTPwkCZM128lW+uk2cY++9NjwuUFtg=;
+        b=qAzWdnmG0i+/gCiKXMqTvTKModKwn16+zDrN3sJbaPgHglcgWuGbKihzCHuTUPer6E
+         T4FI4U+vhy1VHR2SUbywkeLivwjN5zOcT+t2be4nhhC2rXTOPKLdltOSXl3WcKZXJR0p
+         JT2BtmWAYa4FVuOXfBEV0qzAK3AT4ksRfNIuDD8zrgBZGb8f51WLcb4DjcebQIEpUcO+
+         qLWDGcU0dMeQsco96R09YomlKVqwv6inOGiTRtyeS5PoHtUyEJt9bbpmRdVS8f7Vf6en
+         Kh3Mxd0zdGlxzjJEQxTHTTOO7Qedy0OzuHsQRSgbY/qlDjHjp2NhigilXkn6A2MCeI3v
+         bIuw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:from:to:cc:references:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=djGdtLQBSo6slMTPwkCZM128lW+uk2cY++9NjwuUFtg=;
+        b=QTKh0Lm4UVwZ5r0vpkKFIlPIcK8PV1mqLwMJPMhIz/5Ofep5Fahqg4SsapqsnAW5NT
+         G2GfVn3yATNcjicl8NPHs1CAkb0OgYYed2nuqqsBT2Anq0rvdVjYyShWdNZBq3M3QbrI
+         ElD/YTGnDQSP2OZzbpnjT7eVg1MCveAEwID9O7A7el/UWsPjUX3LrHF9m8TyVL/1zrxH
+         Rt/HCShwUEUw7bWSkTRVq5GrPYYQowZHrF13VSGQ9xDHei/kNTq29x4uW6D0ZlEIhLbN
+         RiTC3Mmkx2vUgIbD0D70y8MirLRrdjqa8r+DofWgvSqlQ82SoxQo5MA3AgRR87pWc52M
+         u3ow==
+X-Gm-Message-State: APjAAAVMBh6imv8+IoEvISN/ZlEh4z4w1C6HQhRkWq7XNecpYET5NC6D
+        kKV/mnVkII6YFXr3BeyASnQ=
+X-Google-Smtp-Source: APXvYqynQlvI7U4wvrevwh4HRFy3Xyt//DV5BuosPmk/enKxdVat+xl7Q1uWKNKmr3HwNObMpB3Vxg==
+X-Received: by 2002:a17:90b:3c9:: with SMTP id go9mr7992864pjb.7.1581485790863;
+        Tue, 11 Feb 2020 21:36:30 -0800 (PST)
+Received: from [192.168.86.235] (c-73-241-150-58.hsd1.ca.comcast.net. [73.241.150.58])
+        by smtp.gmail.com with ESMTPSA id h7sm6149415pgc.69.2020.02.11.21.36.29
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 11 Feb 2020 21:36:30 -0800 (PST)
+Subject: Re: Deadlock in cleanup_net and addrconf_verify_work locks up
+ workqueue
+From:   Eric Dumazet <eric.dumazet@gmail.com>
+To:     Sargun Dhillon <sargun@sargun.me>, netdev <netdev@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>
+Cc:     Tetsuo Handa <penguin-kernel@i-love.sakura.ne.jp>,
+        Gabriel Hartmann <ghartmann@netflix.com>,
+        Rob Gulewich <rgulewich@netflix.com>,
+        Bruce Curtis <brucec@netflix.com>,
+        Hannes Frederic Sowa <hannes@stressinduktion.org>
+References: <20200211192330.GA9862@ircssh-2.c.rugged-nimbus-611.internal>
+ <8924a0a5-9179-f6a9-91d8-1163b425ec35@gmail.com>
+Message-ID: <75e34850-54f5-6d08-e4f9-dd6e1e9ee09d@gmail.com>
+Date:   Tue, 11 Feb 2020 21:36:28 -0800
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.2.2
 MIME-Version: 1.0
-Received: from l3mule.suse.de (195.135.221.2) by LNXP265CA0028.GBRP265.PROD.OUTLOOK.COM (2603:10a6:600:5c::16) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.2707.23 via Frontend Transport; Wed, 12 Feb 2020 05:09:44 +0000
-X-Mailer: git-send-email 2.16.4
-X-Originating-IP: [195.135.221.2]
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: e700ef6f-e74f-4488-f836-08d7af79c729
-X-MS-TrafficTypeDiagnostic: BY5PR18MB3329:
-X-MS-Exchange-Transport-Forked: True
-X-Microsoft-Antispam-PRVS: <BY5PR18MB332991212650BA92ACAE69F6881B0@BY5PR18MB3329.namprd18.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:6108;
-X-Forefront-PRVS: 0311124FA9
-X-Forefront-Antispam-Report: SFV:NSPM;SFS:(10019020)(4636009)(396003)(376002)(136003)(39860400002)(366004)(346002)(199004)(189003)(316002)(2906002)(81156014)(81166006)(6666004)(8676002)(8936002)(36756003)(956004)(2616005)(44832011)(1076003)(5660300002)(6486002)(6512007)(26005)(66946007)(66556008)(6506007)(66476007)(16526019)(107886003)(86362001)(478600001)(6916009)(4326008)(52116002)(186003);DIR:OUT;SFP:1102;SCL:1;SRVR:BY5PR18MB3329;H:BY5PR18MB3187.namprd18.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;A:1;MX:1;
-Received-SPF: None (protection.outlook.com: suse.com does not designate
- permitted sender hosts)
-X-MS-Exchange-SenderADCheck: 1
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: YcF2PpxGZetXvOL1N4xXAW9IPIJvaaRpd0cQ0kOBabfoWo4A9byR8SlD7ehSNv2IOG+OF9pJ5P7UVX8INhK/vo3whM/rRuhfUqgG8lgIzOdY3xGLF/qzHl/8q/X1dc7pMRkLO+I0NaiKXp9q/jrb+bDrF3F/sNr8/Qduv3SJExiU7BQBVcFt/fCQPFcWejGO9j7DCWmU1kIR62YdFKGqwuNINMkWlZ9J8Zse496XHEU1Y+xyp5xJDkaYQ6/oVogXrl8Oo+fLPptdgM7qbKZ+mqrI1PV55P/5GntJdPQgTOs7sddZttj0GCc0s/QcZa1SwuPF6TJEzRSM3n3TcgSoUSADIQTpug6H7fnwStyXG54mWNfwFjunYVUoFKl+xRJZpiEh+7f9WR4vGNQx8wiUSb7zhmuS6h648TwCb9mGfTeA03Red1QJUZtuxE5+rH36
-X-MS-Exchange-AntiSpam-MessageData: 1LFxQOU8VMhgNtpZrz72Dlmf+4t+Xm++Rhg2dTmHFJ+SiLGRey3qVazB1PEAWSSwy3rJfizB5M17Y9AnTf6O/AZ4030cCYsqLl08ko4rcUSqPLyYEfwiuSFtHDNr6BET2JqhSBR4yHriajXGYsnNnw==
-X-MS-Exchange-CrossTenant-Network-Message-Id: e700ef6f-e74f-4488-f836-08d7af79c729
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 12 Feb 2020 05:09:46.5313
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 856b813c-16e5-49a5-85ec-6f081e13b527
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: GF9QZSdtVvzL29YCDalcDCNZ8eqmiRksCmkmLrm9iRSO3vvtSWeVhqdToiqJaWsMsgpImRsQebj9WDEaQcVspA==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BY5PR18MB3329
-X-OriginatorOrg: suse.com
+In-Reply-To: <8924a0a5-9179-f6a9-91d8-1163b425ec35@gmail.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Recent months, our customer reported several kernel crashes all
-preceding with following message:
-NETDEV WATCHDOG: eth2 (enic): transmit queue 0 timed out
-Error message of one of those crashes:
-BUG: unable to handle kernel paging request at ffffffffa007e090
 
-After analyzing severl vmcores, I found that most of crashes are
-caused by memory corruption. And all the corrupted memory areas
-are overwritten by data of network packets. Moreover, I also found
-that the tx queues were enabled over watchdog reset.
 
-After going through the source code, I found that in enic_stop(),
-the tx queues stopped by netif_tx_disable() could be woken up over
-a small time window between netif_tx_disable() and the
-napi_disable() by the following code path:
-napi_poll->
-  enic_poll_msix_wq->
-     vnic_cq_service->
-        enic_wq_service->
-           netif_wake_subqueue(enic->netdev, q_number)->
-              test_and_clear_bit(__QUEUE_STATE_DRV_XOFF, &txq->state)
-In turn, upper netowrk stack could queue skb to ENIC NIC though
-enic_hard_start_xmit(). And this might introduce some race condition.
+On 2/11/20 9:08 PM, Eric Dumazet wrote:
+> 
+> 
+> On 2/11/20 11:23 AM, Sargun Dhillon wrote:
+>> We've found a workqueue stall / deadlock. Our workload is a container-oriented
+>> workload in which we utilize IPv6. Our container (namespace) churn is quite
+>> frequent, and containers can be terminated before their networking is
+>> even setup.
+>>
+>> We're running 4.19.73 in production, and in investigation of the underlying
+>> causes, I don't think that future versions of 4.19 fix it.
+>>
+>> We've narrowed it down to a lockup between ipv6_addrconf, and cleanup_net.
+> 
+> Sure, PID 1369493 addrconf_verify_work() is waiting for RTNL.
+> 
+> But PID 8  ?
+> 
+> __flush_work() is being called.
+> 
+> But from where ? Stacks seem not complete.
+> 
+> 
+>>
+>> crash> bt 8
+>> PID: 8      TASK: ffff9a1072b50000  CPU: 24  COMMAND: "kworker/u192:0"
+>>  #0 [ffffbfe2c00fbb70] __schedule at ffffffffa7f02bf7
+>>  #1 [ffffbfe2c00fbc10] schedule at ffffffffa7f031e8
+>>  #2 [ffffbfe2c00fbc18] schedule_timeout at ffffffffa7f0700e
+>>  #3 [ffffbfe2c00fbc90] wait_for_completion at ffffffffa7f03b50
+>>  #4 [ffffbfe2c00fbce0] __flush_work at ffffffffa76a2532
+>>  #5 [ffffbfe2c00fbd58] rollback_registered_many at ffffffffa7dbcdf4
+>>  #6 [ffffbfe2c00fbdc0] unregister_netdevice_many at ffffffffa7dbd31e
+>>  #7 [ffffbfe2c00fbdd0] default_device_exit_batch at ffffffffa7dbd512
+>>  #8 [ffffbfe2c00fbe40] cleanup_net at ffffffffa7dab970
+>>  #9 [ffffbfe2c00fbe98] process_one_work at ffffffffa76a17c4
+>> #10 [ffffbfe2c00fbed8] worker_thread at ffffffffa76a19dd
+>> #11 [ffffbfe2c00fbf10] kthread at ffffffffa76a7fd3
+>> #12 [ffffbfe2c00fbf50] ret_from_fork at ffffffffa80001ff
+>>
+>> crash> bt 1369493
+>> PID: 1369493  TASK: ffff9a03684d9600  CPU: 58  COMMAND: "kworker/58:1"
+>>  #0 [ffffbfe30d68fd48] __schedule at ffffffffa7f02bf7
+>>  #1 [ffffbfe30d68fde8] schedule at ffffffffa7f031e8
+>>  #2 [ffffbfe30d68fdf0] schedule_preempt_disabled at ffffffffa7f0349a
+>>  #3 [ffffbfe30d68fdf8] __mutex_lock at ffffffffa7f04aed
+>>  #4 [ffffbfe30d68fe90] addrconf_verify_work at ffffffffa7e8d1aa
+>>  #5 [ffffbfe30d68fe98] process_one_work at ffffffffa76a17c4
+>>  #6 [ffffbfe30d68fed8] worker_thread at ffffffffa76a19dd
+>>  #7 [ffffbfe30d68ff10] kthread at ffffffffa76a7fd3
+>>  #8 [ffffbfe30d68ff50] ret_from_fork at ffffffffa80001ff
+>>
+>>
+>>
+>>  struct -x mutex.owner.counter rtnl_mutex
+>>   owner.counter = 0xffff9a1072b50001
+>>
+>> 0xffff9a1072b50001 & (~0x07) = 0xffff9a1072b50000
+>>
+>> This points back to PID 8 / CPU 24. It is working on cleanup_net, and a part
+>> of cleanup net involves calling ops_exit_list, and as part of that it calls
+>> default_device_exit_batch. default_device_exit_batch takes the rtnl lock before
+>> calling into unregister_netdevice_many, and rollback_registered_many.
+>> rollback_registered_many calls flush_all_backlogs. This will never complete
+>> because it is holding the rtnl lock, and PID 1369493 / CPU 58 is waiting
+>> for rtnl_lock.
+> 
+> But PID 1369493 is waiting on a mutex, thus properly yielding the cpu.
+> (schedule() is clearly shown)
+> 
+> This should not prevent other threads
+> from making progress so that flush_all_backlogs() completes eventually.
+> 
+> flush_all_backlogs() does not care of how many threads are currently blocked
+> because they can not grab rtnl while flush_all_backlogs() is running.
+> 
+>>
+>> If relevant, the workqueue stalls themselves look something like:
+>> BUG: workqueue lockup - pool cpus=70 node=0 flags=0x0 nice=0 stuck for 3720s!
+>> BUG: workqueue lockup - pool cpus=70 node=0 flags=0x0 nice=-20 stuck for 3719s!
+>> Showing busy workqueues and worker pools:
+>> workqueue events: flags=0x0
+>>   pwq 32: cpus=16 node=0 flags=0x0 nice=0 active=2/256
+>>     in-flight: 1274779:slab_caches_to_rcu_destroy_workfn slab_caches_to_rcu_destroy_workfn
+>> workqueue events_highpri: flags=0x10
+>>   pwq 141: cpus=70 node=0 flags=0x0 nice=-20 active=1/256
+>>     pending: flush_backlog BAR(8)
+>> workqueue events_power_efficient: flags=0x82
+>>   pwq 193: cpus=0-23,48-71 node=0 flags=0x4 nice=0 active=1/256
+>>     in-flight: 1396446:check_lifetime
+>> workqueue mm_percpu_wq: flags=0x8
+>>   pwq 140: cpus=70 node=0 flags=0x0 nice=0 active=1/256
+>>     pending: vmstat_update
+>> workqueue netns: flags=0xe000a
+>>   pwq 192: cpus=0-95 flags=0x4 nice=0 active=1/1
+>>     in-flight: 8:cleanup_net
+>>     delayed: cleanup_net
+>> workqueue writeback: flags=0x4e
+>>   pwq 193: cpus=0-23,48-71 node=0 flags=0x4 nice=0 active=1/256
+>>     in-flight: 1334335:wb_workfn
+>> workqueue kblockd: flags=0x18
+>>   pwq 141: cpus=70 node=0 flags=0x0 nice=-20 active=1/256
+>>     pending: blk_mq_run_work_fn
+>> workqueue ipv6_addrconf: flags=0x40008
+>>   pwq 116: cpus=58 node=0 flags=0x0 nice=0 active=1/1
+>>     in-flight: 1369493:addrconf_verify_work
+>> workqueue ena: flags=0xe000a
+>>   pwq 192: cpus=0-95 flags=0x4 nice=0 active=1/1
+>>     in-flight: 7505:ena_fw_reset_device [ena]
+>>
 
-Our customer comfirmed that this kind of kernel crash doesn't occur over
-90 days since they applied this patch.
+Can you test the following :
 
-Signed-off-by: Firo Yang <firo.yang@suse.com>
----
- drivers/net/ethernet/cisco/enic/enic_main.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/drivers/net/ethernet/cisco/enic/enic_main.c b/drivers/net/ethernet/cisco/enic/enic_main.c
-index bbd7b3175f09..ddf60dc9ad16 100644
---- a/drivers/net/ethernet/cisco/enic/enic_main.c
-+++ b/drivers/net/ethernet/cisco/enic/enic_main.c
-@@ -2013,10 +2013,10 @@ static int enic_stop(struct net_device *netdev)
- 		napi_disable(&enic->napi[i]);
+diff --git a/net/ipv6/addrconf.c b/net/ipv6/addrconf.c
+index cb493e15959c4d1bb68cf30f4099a8daa785bb84..bcc7ce03f13881415f64c7329559c7ed1e6321f3 100644
+--- a/net/ipv6/addrconf.c
++++ b/net/ipv6/addrconf.c
+@@ -4410,8 +4410,6 @@ static void addrconf_verify_rtnl(void)
+        now = jiffies;
+        next = round_jiffies_up(now + ADDR_CHECK_FREQUENCY);
  
- 	netif_carrier_off(netdev);
--	netif_tx_disable(netdev);
- 	if (vnic_dev_get_intr_mode(enic->vdev) == VNIC_DEV_INTR_MODE_MSIX)
- 		for (i = 0; i < enic->wq_count; i++)
- 			napi_disable(&enic->napi[enic_cq_wq(enic, i)]);
-+	netif_tx_disable(netdev);
- 
- 	if (!enic_is_dynamic(enic) && !enic_is_sriov_vf(enic))
- 		enic_dev_del_station_addr(enic);
--- 
-2.24.1
-
+-       cancel_delayed_work(&addr_chk_work);
+-
+        for (i = 0; i < IN6_ADDR_HSIZE; i++) {
+ restart:
+                hlist_for_each_entry_rcu_bh(ifp, &inet6_addr_lst[i], addr_lst) {
