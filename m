@@ -2,72 +2,56 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id AF13615AD9F
-	for <lists+netdev@lfdr.de>; Wed, 12 Feb 2020 17:45:48 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 653A915ADAE
+	for <lists+netdev@lfdr.de>; Wed, 12 Feb 2020 17:50:36 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727680AbgBLQpn (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 12 Feb 2020 11:45:43 -0500
-Received: from relay12.mail.gandi.net ([217.70.178.232]:37299 "EHLO
-        relay12.mail.gandi.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727264AbgBLQpm (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 12 Feb 2020 11:45:42 -0500
-Received: from localhost (lfbn-lyo-1-1670-129.w90-65.abo.wanadoo.fr [90.65.102.129])
-        (Authenticated sender: alexandre.belloni@bootlin.com)
-        by relay12.mail.gandi.net (Postfix) with ESMTPSA id C3FD1200010;
-        Wed, 12 Feb 2020 16:45:40 +0000 (UTC)
-From:   Alexandre Belloni <alexandre.belloni@bootlin.com>
-To:     "David S . Miller" <davem@davemloft.net>
-Cc:     Nicolas Ferre <nicolas.ferre@microchip.com>,
-        Harini Katakam <harini.katakam@xilinx.com>,
-        Shubhrajyoti Datta <shubhrajyoti.datta@xilinx.com>,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>
-Subject: [PATCH net] net: macb: ensure interface is not suspended on at91rm9200
-Date:   Wed, 12 Feb 2020 17:45:38 +0100
-Message-Id: <20200212164538.383741-1-alexandre.belloni@bootlin.com>
-X-Mailer: git-send-email 2.24.1
+        id S1727458AbgBLQuf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 12 Feb 2020 11:50:35 -0500
+Received: from www62.your-server.de ([213.133.104.62]:40574 "EHLO
+        www62.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726728AbgBLQue (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 12 Feb 2020 11:50:34 -0500
+Received: from sslproxy03.your-server.de ([88.198.220.132])
+        by www62.your-server.de with esmtpsa (TLSv1.2:DHE-RSA-AES256-GCM-SHA384:256)
+        (Exim 4.89_1)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1j1vDY-0003nr-OV; Wed, 12 Feb 2020 17:50:28 +0100
+Received: from [2001:1620:665:0:5795:5b0a:e5d5:5944] (helo=linux-3.fritz.box)
+        by sslproxy03.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1j1vDY-000FFG-GA; Wed, 12 Feb 2020 17:50:28 +0100
+Subject: Re: [PATCH bpf] bpf: selftests: Fix error checking on reading the
+ tcp_fastopen sysctl
+To:     Martin KaFai Lau <kafai@fb.com>, bpf@vger.kernel.org
+Cc:     Alexei Starovoitov <ast@kernel.org>,
+        David Miller <davem@davemloft.net>, kernel-team@fb.com,
+        netdev@vger.kernel.org
+References: <20200211175910.3235321-1-kafai@fb.com>
+From:   Daniel Borkmann <daniel@iogearbox.net>
+Message-ID: <f092bb3b-aad4-1685-7b69-b669fae51471@iogearbox.net>
+Date:   Wed, 12 Feb 2020 17:50:27 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.7.2
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+In-Reply-To: <20200211175910.3235321-1-kafai@fb.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-Authenticated-Sender: daniel@iogearbox.net
+X-Virus-Scanned: Clear (ClamAV 0.102.1/25721/Wed Feb 12 06:24:38 2020)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Because of autosuspend, at91ether_start is called with clocks disabled.
-Ensure that pm_runtime doesn't suspend the interface as soon as it is
-opened as there is no pm_runtime support is the other relevant parts of the
-platform support for at91rm9200.
+On 2/11/20 6:59 PM, Martin KaFai Lau wrote:
+> There is a typo in checking the "saved_tcp_fo" and instead
+> "saved_tcp_syncookie" is checked again.  This patch fixes it
+> and also breaks them into separate if statements such that
+> the test will abort asap.
+> 
+> Reported-by: David Binderman <dcb314@hotmail.com>
+> Signed-off-by: Martin KaFai Lau <kafai@fb.com>
 
-Fixes: d54f89af6cc4 ("net: macb: Add pm runtime support")
-Signed-off-by: Alexandre Belloni <alexandre.belloni@bootlin.com>
----
- drivers/net/ethernet/cadence/macb_main.c | 6 +++++-
- 1 file changed, 5 insertions(+), 1 deletion(-)
-
-diff --git a/drivers/net/ethernet/cadence/macb_main.c b/drivers/net/ethernet/cadence/macb_main.c
-index 4508f0d150da..def94e91883a 100644
---- a/drivers/net/ethernet/cadence/macb_main.c
-+++ b/drivers/net/ethernet/cadence/macb_main.c
-@@ -3790,6 +3790,10 @@ static int at91ether_open(struct net_device *dev)
- 	u32 ctl;
- 	int ret;
- 
-+	ret = pm_runtime_get_sync(&lp->pdev->dev);
-+	if (ret < 0)
-+		return ret;
-+
- 	/* Clear internal statistics */
- 	ctl = macb_readl(lp, NCR);
- 	macb_writel(lp, NCR, ctl | MACB_BIT(CLRSTAT));
-@@ -3854,7 +3858,7 @@ static int at91ether_close(struct net_device *dev)
- 			  q->rx_buffers, q->rx_buffers_dma);
- 	q->rx_buffers = NULL;
- 
--	return 0;
-+	return pm_runtime_put(&lp->pdev->dev);
- }
- 
- /* Transmit packet */
--- 
-2.24.1
-
+Applied, thanks!
