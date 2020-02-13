@@ -2,124 +2,124 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 964E315C43E
-	for <lists+netdev@lfdr.de>; Thu, 13 Feb 2020 16:53:21 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 25CDD15C495
+	for <lists+netdev@lfdr.de>; Thu, 13 Feb 2020 16:53:58 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729917AbgBMPpQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 13 Feb 2020 10:45:16 -0500
-Received: from gateway36.websitewelcome.com ([192.185.200.11]:34696 "EHLO
-        gateway36.websitewelcome.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1728169AbgBMPpP (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 13 Feb 2020 10:45:15 -0500
-X-Greylist: delayed 1408 seconds by postgrey-1.27 at vger.kernel.org; Thu, 13 Feb 2020 10:45:14 EST
-Received: from cm12.websitewelcome.com (cm12.websitewelcome.com [100.42.49.8])
-        by gateway36.websitewelcome.com (Postfix) with ESMTP id A8B784019E742
-        for <netdev@vger.kernel.org>; Thu, 13 Feb 2020 08:35:47 -0600 (CST)
-Received: from gator4166.hostgator.com ([108.167.133.22])
-        by cmsmtp with SMTP
-        id 2GJBjLTcxvBMd2GJBjJyMD; Thu, 13 Feb 2020 09:21:41 -0600
-X-Authority-Reason: nr=8
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=embeddedor.com; s=default; h=Content-Type:MIME-Version:Message-ID:Subject:
-        Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
-        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
-        :Resent-Message-ID:In-Reply-To:References:List-Id:List-Help:List-Unsubscribe:
-        List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=tlzInWey23Efbti3IVI7QK7bG7x1edOF4vWB/j8UuCg=; b=qUBPc+5fDEGt6M5dgwJulMJp+G
-        xcMtSAYOH/X0jV8IyUUPvs80Ttm+MXBgQ8qc27gOJWz05nEnxh4pFjiFklBTyOZgBCxQ0gkv0qNVU
-        oKGPrxltSRC+XnaTwGk/xuX5mhgyFpgQdq+I4gqPpsSIi2DpRDoQCe55ho30GyrzWIqoyuzXhHiwE
-        jyiSnpGoggRlGalXfSmMNqIutwrK5Wee4Z77OuIp/CvM13nU/t/nBmkfntKDkFRCSdgrqjor/APB0
-        5QE3/CkAoKBfUgQV9K5AT+4GfPe1H4rDZTWmD742+C+7oRRpkbCKEhX4WDPXJMHEDFtddVW2fo3hk
-        OXEc0N7Q==;
-Received: from [200.68.140.15] (port=29529 helo=embeddedor)
-        by gator4166.hostgator.com with esmtpa (Exim 4.92)
-        (envelope-from <gustavo@embeddedor.com>)
-        id 1j2GJA-003BYr-8t; Thu, 13 Feb 2020 09:21:40 -0600
-Date:   Thu, 13 Feb 2020 09:24:16 -0600
-From:   "Gustavo A. R. Silva" <gustavo@embeddedor.com>
-To:     Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        Andrii Nakryiko <andriin@fb.com>
-Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        "Gustavo A. R. Silva" <gustavo@embeddedor.com>
-Subject: [PATCH] bpf: queue_stack_maps: Replace zero-length array with
- flexible-array member
-Message-ID: <20200213152416.GA1873@embeddedor>
-MIME-Version: 1.0
+        id S1729320AbgBMPso (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 13 Feb 2020 10:48:44 -0500
+Received: from mail-eopbgr150117.outbound.protection.outlook.com ([40.107.15.117]:26338
+        "EHLO EUR01-DB5-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1729263AbgBMP0w (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 13 Feb 2020 10:26:52 -0500
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=hMq95m2GIaZpNtT3llygZUk+mwuZgsFIMVp1AZj0V51XFG1eBEE6PS7gpvI/OGAOoyzkHgJwf3hTgXuXItxTOLqzcwv9XCqqEUqO94IolcL7RsoBZ87qs0wxsoLuojmyzeg2ecrS33oboYUeYu0Qxy+lr02QLfAx21hwVLH0dEcwurRH09/dRzUnIU2bHBrz7Ccw/lA0aLfiWEHarOA3grwpmSeBz7yAQiUlC4uW9rIWT6CioQZkBRjEpgNy4I5ZHRcMkLlontw3POuyeXcr/fnNh5XDnd788lSWyiwKeZRkkmbOEN1/KNd6sI3lJ2Qt8/NjB7C2idhWtR54O20tlQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=Y6V3fLCaQZjk2QzIJjLgb8cfCdwm3NgfCBBHtNbgn8U=;
+ b=Oxj8LM9+Se3ZiaAXIm80Pw236jezLH8fcrmc+vu8fNRcOJsCIRGazJfuhOGSYi6BWJMurDIyxegxCU26yHqFbtQooAh/5vZ8gf94ffEpGq3z64ky05LZU+H4cku9W9j9BD5kOOZNXKFTc2FVuYO0b7JK9PLk5tuh2UJ/Qcsd3G5qqlLnSujk2/3kXo9qz3ae1czfuWj1pskXtSbNNQK4SH1KZcPHmjWFbF+bANhKccC+yU2hjyPMBUbANUKNV/rMw6g9FCfqgt17jx//YhnCgFLcmuQ67AiQo4z+2d0XvCahT8Nv0oPgFeuL5K68g/r2CAfXBSBu9sSBS1W9lFYk1g==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=criteo.com; dmarc=pass action=none header.from=criteo.com;
+ dkim=pass header.d=criteo.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=criteo.com;
+ s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=Y6V3fLCaQZjk2QzIJjLgb8cfCdwm3NgfCBBHtNbgn8U=;
+ b=JJ6bKxxI6eH9O5xMk0alyd8N60b/WKOl4+vuJygg+7q+j+NB3Irii9E6B2UMz8f7BgqEDiHSxF8nBjUwR7Zup1rC6qRcB8HOey2fpFAjuunJboDZvjDUoIOr/8SI+IDifqT3Xxeup8o3XxN3pTx82q3Xw7z/fkt/ZxDsGNliJg4=
+Authentication-Results: spf=none (sender IP is )
+ smtp.mailfrom=w.dauchy@criteo.com; 
+Received: from DB3PR0402MB3914.eurprd04.prod.outlook.com (52.134.71.157) by
+ DB3PR0402MB3818.eurprd04.prod.outlook.com (52.134.71.29) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.2707.21; Thu, 13 Feb 2020 15:26:49 +0000
+Received: from DB3PR0402MB3914.eurprd04.prod.outlook.com
+ ([fe80::917:f0e9:9756:589b]) by DB3PR0402MB3914.eurprd04.prod.outlook.com
+ ([fe80::917:f0e9:9756:589b%3]) with mapi id 15.20.2729.021; Thu, 13 Feb 2020
+ 15:26:49 +0000
+Date:   Thu, 13 Feb 2020 16:26:46 +0100
+From:   William Dauchy <w.dauchy@criteo.com>
+To:     Nicolas Dichtel <nicolas.dichtel@6wind.com>
+Cc:     netdev@vger.kernel.org
+Subject: Re: [PATCH v3 net] net, ip6_tunnel: enhance tunnel locate with link
+ check
+Message-ID: <20200213152646.GA169249@dontpanic>
+References: <b3497834-1ab5-3315-bfbd-ac4f5236eee3@6wind.com>
+ <20200212083036.134761-1-w.dauchy@criteo.com>
+ <ce1f9fbe-a28a-d5c3-c792-ded028df52e5@6wind.com>
+ <20200212210647.GB159357@dontpanic>
+ <cc378ec7-03ec-58ec-e3c9-158fb02b283e@6wind.com>
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-User-Agent: Mutt/1.9.4 (2018-02-28)
-X-AntiAbuse: This header was added to track abuse, please include it with any abuse report
-X-AntiAbuse: Primary Hostname - gator4166.hostgator.com
-X-AntiAbuse: Original Domain - vger.kernel.org
-X-AntiAbuse: Originator/Caller UID/GID - [47 12] / [47 12]
-X-AntiAbuse: Sender Address Domain - embeddedor.com
-X-BWhitelist: no
-X-Source-IP: 200.68.140.15
-X-Source-L: No
-X-Exim-ID: 1j2GJA-003BYr-8t
-X-Source: 
-X-Source-Args: 
-X-Source-Dir: 
-X-Source-Sender: (embeddedor) [200.68.140.15]:29529
-X-Source-Auth: gustavo@embeddedor.com
-X-Email-Count: 28
-X-Source-Cap: Z3V6aWRpbmU7Z3V6aWRpbmU7Z2F0b3I0MTY2Lmhvc3RnYXRvci5jb20=
-X-Local-Domain: yes
+In-Reply-To: <cc378ec7-03ec-58ec-e3c9-158fb02b283e@6wind.com>
+X-ClientProxiedBy: PR0P264CA0067.FRAP264.PROD.OUTLOOK.COM
+ (2603:10a6:100:1d::31) To DB3PR0402MB3914.eurprd04.prod.outlook.com
+ (2603:10a6:8:f::29)
+MIME-Version: 1.0
+Received: from dontpanic (91.199.242.231) by PR0P264CA0067.FRAP264.PROD.OUTLOOK.COM (2603:10a6:100:1d::31) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.2729.24 via Frontend Transport; Thu, 13 Feb 2020 15:26:49 +0000
+X-Originating-IP: [91.199.242.231]
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: fce176ef-8a52-4873-93bb-08d7b099250c
+X-MS-TrafficTypeDiagnostic: DB3PR0402MB3818:
+X-Microsoft-Antispam-PRVS: <DB3PR0402MB3818280337FB4E0B97976148E81A0@DB3PR0402MB3818.eurprd04.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:6430;
+X-Forefront-PRVS: 031257FE13
+X-Forefront-Antispam-Report: SFV:NSPM;SFS:(10019020)(4636009)(366004)(396003)(136003)(39860400002)(346002)(376002)(199004)(189003)(86362001)(66476007)(66556008)(5660300002)(66946007)(6496006)(52116002)(478600001)(6916009)(1076003)(33656002)(26005)(16526019)(186003)(33716001)(9576002)(316002)(4326008)(8676002)(81156014)(81166006)(9686003)(6666004)(55016002)(956004)(2906002)(8936002);DIR:OUT;SFP:1102;SCL:1;SRVR:DB3PR0402MB3818;H:DB3PR0402MB3914.eurprd04.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;A:1;MX:1;
+Received-SPF: None (protection.outlook.com: criteo.com does not designate
+ permitted sender hosts)
+X-MS-Exchange-SenderADCheck: 1
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: Ji+YFzD7Tm/mEPmwSnScveecHPWHEwhBnMKox/3KXXsach/Pcy1xFxmpXFxLEIdDWhcz3IkvnPBtAOK0Js6tmaIAdzACvpvJ+wanV3lnOAOC3gXA2Fd5BWnhcTXyFJWVMMCDIYG/+BehE2Ts5NqG0MOdSbOKjQIVOZWxu5yeDTLTSVD+VklCkC+G3qT/xJvU7VUIglMe8zYkh5yIfO4s3D1F9kUZVtmq4dzSMZHABuUJMkV5wu69Dg1/7SWeNDFVkTKN5AxnlFdWDIitpYlyT3gpz/vd7ycb7vB8+HPq0b6DFc/DOyTr99mUR5EV0q+oicSco04sLuiKob62hbWb0+WzPxqEZIlwG2iMglLnCb4M5pfSidXhOJxbOOSptBcHb6NPlYftaKzqH754LDqfjLg+e6ImqHc484JxFsJJh6rq9S2AXSaRxfl/PLe/IRHi
+X-MS-Exchange-AntiSpam-MessageData: 2woSCQiW/OCM1wx205ZzT9lJXhEe6yySf9+PJCODHYMOOcpJBpjWzZVTGem5NVkokXCnoYBgu0mJMdCnYjC5RMJvIictKPyX/vEE1v//AwTPrGQq6QAlSnDxvliDVKzVCBU7/TLpRBZTEqJUw0ujPA==
+X-OriginatorOrg: criteo.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: fce176ef-8a52-4873-93bb-08d7b099250c
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 13 Feb 2020 15:26:49.6636
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 2a35d8fd-574d-48e3-927c-8c398e225a01
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: KKAJd0G7GpVoJFWr6FvwWwaJEoGWwkZqQ2RNqpGRld+2wjWAyVWJ26UZSiZV3OlaYcbzQzKIRAfwQ0mfSHp3Dg==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DB3PR0402MB3818
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The current codebase makes use of the zero-length array language
-extension to the C90 standard, but the preferred mechanism to declare
-variable-length types such as these ones is a flexible array member[1][2],
-introduced in C99:
+On Thu, Feb 13, 2020 at 10:34:19AM +0100, Nicolas Dichtel wrote:
+> > mtu = ETH_DATA_LEN;
+> > if (t->parms.link) {
+> > 	tdev = __dev_get_by_index(t->net, t->parms.link);
+> > 	if (tdev && tdev->mtu < mtu)
+> Why this second condition? Why not allowing more than ETH_DATA_LEN (1500)?
+> ip_tunnels do:
+>         if (tdev) {
+> 
+>                 hlen = tdev->hard_header_len + tdev->needed_headroom;
+> 
+>                 mtu = min(tdev->mtu, IP_MAX_MTU);
+> 
+>         }
+> which seems better.
 
-struct foo {
-        int stuff;
-        struct boo array[];
-};
+I wrongly mixed the two codes in my head as I wanted to take the lowest
+of the two values; will correct that; sorry for the confusion.
 
-By making use of the mechanism above, we will get a compiler warning
-in case the flexible array does not occur last in the structure, which
-will help us prevent some kind of undefined behavior bugs from being
-inadvertently introduced[3] to the codebase from now on.
+> Note also that you patch ip6_tnl_dev_init_gen(), but ip6_tnl_link_config() is
+> called later and may adjust the mtu. I would suggest to take care of link mtu in
+> ip6_tnl_link_config().
 
-Also, notice that, dynamic memory allocations won't be affected by
-this change:
+agreed, I overlooked it. Unsure whether I can put it in CAP_XMIT
+condition as well.
 
-"Flexible array members have incomplete type, and so the sizeof operator
-may not be applied. As a quirk of the original implementation of
-zero-length arrays, sizeof evaluates to zero."[1]
+> hard_header_len is not set for ipv4 tunnels, but for ipv6 tunnels:
+>         dev->hard_header_len = LL_MAX_HEADER + t_hlen;
+> 
+> This is not the real value, I don't think you can calculate the real mtu based
+> on this.
 
-This issue was found with the help of Coccinelle.
+understood, I indeed did not noticed hard_header_len was not set in
+ip_tunnel.
 
-[1] https://gcc.gnu.org/onlinedocs/gcc/Zero-Length.html
-[2] https://github.com/KSPP/linux/issues/21
-[3] commit 76497732932f ("cxgb3/l2t: Fix undefined behaviour")
-
-Signed-off-by: Gustavo A. R. Silva <gustavo@embeddedor.com>
----
- kernel/bpf/queue_stack_maps.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/kernel/bpf/queue_stack_maps.c b/kernel/bpf/queue_stack_maps.c
-index f697647ceb54..30e1373fd437 100644
---- a/kernel/bpf/queue_stack_maps.c
-+++ b/kernel/bpf/queue_stack_maps.c
-@@ -19,7 +19,7 @@ struct bpf_queue_stack {
- 	u32 head, tail;
- 	u32 size; /* max_entries + 1 */
- 
--	char elements[0] __aligned(8);
-+	char elements[] __aligned(8);
- };
- 
- static struct bpf_queue_stack *bpf_queue_stack(struct bpf_map *map)
+Best,
 -- 
-2.25.0
-
+William
