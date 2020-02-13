@@ -2,139 +2,129 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 39D1315B9D5
-	for <lists+netdev@lfdr.de>; Thu, 13 Feb 2020 07:58:06 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 221E515B9DD
+	for <lists+netdev@lfdr.de>; Thu, 13 Feb 2020 08:03:48 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729750AbgBMG6E (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 13 Feb 2020 01:58:04 -0500
-Received: from mail-pg1-f194.google.com ([209.85.215.194]:41993 "EHLO
-        mail-pg1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729702AbgBMG6E (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 13 Feb 2020 01:58:04 -0500
-Received: by mail-pg1-f194.google.com with SMTP id w21so2559669pgl.9
-        for <netdev@vger.kernel.org>; Wed, 12 Feb 2020 22:58:03 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=TSSJzhLNctIxeID3U6wKVuxxMM3DTNrqfpveXN8MA5Q=;
-        b=Dz7KSSd+DOjauxZG5D7M5ENIARKhvWwBqcjlXDzufq7gSVKc3aGvtf0jexOhPhnOde
-         nQK08YkMtv4Qnwptf07kD9OeLVNiOOzYdQ9d8xWH1ZQc+1UinV91kNm5icjI/xn+rT47
-         KxqBSgFo8x107sgXazSCVpo/sEkB83JZiSTF3Ppiy85ZHGV5pxMiErKmUbWL1sJ0NPKE
-         SvTElneNkI4Ac0cwAsgK8l7HJQmu0nNkAJ0VqcLOeFcNz+b5XzSzfPOS/IAjXGN14den
-         0/E0AFNN3R2+SjVaAHzM65XQXL7UwcrsAddCazwlpRGLr2Czk6voKTfb7aZO4u+elfTJ
-         hCTg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=TSSJzhLNctIxeID3U6wKVuxxMM3DTNrqfpveXN8MA5Q=;
-        b=VwskEvMyXje2/XaSMlLmIudC1KDkpqoL0WxpEj20MRHa9IsymYk/N/ujs8RT/0Ol7p
-         mo4Lnjfx7upTtYNvLcYD+Ej5rgPpCp4zVDCfs6fukq3tUQA6/0XYAXIX+z87M0CAQUMZ
-         fn6aNZyhAxu0Iy/ZyFMSI7/xNwwlKRZastv6lxeAaDIgGCBVLZWRUIZIkWQHzpzWtYTI
-         MOIMI4kNKvBtQyb114Q0ZzXh5+Xx7m22oaSSuRgqhw2W5xXn+t7DtGSUhMIDOIfkC5dD
-         UBb9jR2WYPR23te+cC+VqPKPeZGbE7gHba1j7HEBcDA/bH2O6qN6WSda+uiYVhkGO+QV
-         VDeA==
-X-Gm-Message-State: APjAAAVVpuk8RXD7+88d1YETmcJxjuraaHS0C2pYbGlM2m1pHA5UZ3Ty
-        u/Dcl63AmnrZxX6GU0Q4arg=
-X-Google-Smtp-Source: APXvYqy1Qvp92aafvRNbF85fu6cTjw4FteEMyoYwxJdNEX7l0dNHoS60vv+rIFZWHMKKAbRk13JeSg==
-X-Received: by 2002:a63:5947:: with SMTP id j7mr17097855pgm.48.1581577083440;
-        Wed, 12 Feb 2020 22:58:03 -0800 (PST)
-Received: from [192.168.86.235] (c-73-241-150-58.hsd1.ca.comcast.net. [73.241.150.58])
-        by smtp.gmail.com with ESMTPSA id f8sm1529869pfn.2.2020.02.12.22.58.02
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 12 Feb 2020 22:58:02 -0800 (PST)
-Subject: Re: [PATCH net] net: rtnetlink: fix bugs in rtnl_alt_ifname()
-To:     Jiri Pirko <jiri@resnulli.us>, Eric Dumazet <edumazet@google.com>
-Cc:     "David S . Miller" <davem@davemloft.net>,
-        netdev <netdev@vger.kernel.org>, Jiri Pirko <jiri@mellanox.com>,
-        syzbot <syzkaller@googlegroups.com>
-References: <20200213045826.181478-1-edumazet@google.com>
- <20200213064532.GD22610@nanopsycho>
-From:   Eric Dumazet <eric.dumazet@gmail.com>
-Message-ID: <2e122d94-89a1-f2aa-2613-2fc75ff6b4d1@gmail.com>
-Date:   Wed, 12 Feb 2020 22:58:01 -0800
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.4.1
-MIME-Version: 1.0
-In-Reply-To: <20200213064532.GD22610@nanopsycho>
-Content-Type: text/plain; charset=utf-8
+        id S1729745AbgBMHDn (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 13 Feb 2020 02:03:43 -0500
+Received: from mx07-00178001.pphosted.com ([62.209.51.94]:43924 "EHLO
+        mx07-00178001.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1726368AbgBMHDm (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 13 Feb 2020 02:03:42 -0500
+Received: from pps.filterd (m0046668.ppops.net [127.0.0.1])
+        by mx07-00178001.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 01D72dkA002664;
+        Thu, 13 Feb 2020 08:03:29 +0100
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=st.com; h=from : to : cc : subject
+ : date : message-id : references : in-reply-to : content-type : content-id
+ : content-transfer-encoding : mime-version; s=STMicroelectronics;
+ bh=Qyy1L07BH1L5Cv6RE/nYDx0PsDCpdtrPRXQEdj+m4fE=;
+ b=o09ULSGD+CcV+4iKCcMhTcL7Ep4ROC0d06xhuD3NVK7lyYdDeIQmVTnLVWp1sltstFxx
+ UvuKWy5gjqwdLL87rd2YpzObmqFNXEIjDMEnSM8cAp9sY9LpvNcywHEqmWYj8mLb01W7
+ U7SRs6tdQwQzZFSxKz15bJQdIqsANeeuPWQxwcXTT7O+Lad9vcykvyeLOFUDhnbxHUFN
+ jMw/r9IrKBWZ9/QgWOPSKxkmRC1F0iJcC3hv4FWtnDtBlzKbR3ZEhUv/ExFi85rQxtky
+ dv2aZ4Uq20saaF2yXmBpNASRNsyJMfOSh/6gYNrEvKB61NfIsHxCGTYEyJ/5l2HD0rkE 6w== 
+Received: from beta.dmz-eu.st.com (beta.dmz-eu.st.com [164.129.1.35])
+        by mx07-00178001.pphosted.com with ESMTP id 2y1ufhka9d-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Thu, 13 Feb 2020 08:03:29 +0100
+Received: from euls16034.sgp.st.com (euls16034.sgp.st.com [10.75.44.20])
+        by beta.dmz-eu.st.com (STMicroelectronics) with ESMTP id BC795100038;
+        Thu, 13 Feb 2020 08:03:28 +0100 (CET)
+Received: from Webmail-eu.st.com (sfhdag4node1.st.com [10.75.127.10])
+        by euls16034.sgp.st.com (STMicroelectronics) with ESMTP id 78ED821FE84;
+        Thu, 13 Feb 2020 08:03:28 +0100 (CET)
+Received: from SFHDAG5NODE3.st.com (10.75.127.15) by SFHDAG4NODE1.st.com
+ (10.75.127.10) with Microsoft SMTP Server (TLS) id 15.0.1473.3; Thu, 13 Feb
+ 2020 08:03:27 +0100
+Received: from SFHDAG5NODE3.st.com ([fe80::7c09:5d6b:d2c7:5f47]) by
+ SFHDAG5NODE3.st.com ([fe80::7c09:5d6b:d2c7:5f47%20]) with mapi id
+ 15.00.1473.003; Thu, 13 Feb 2020 08:03:27 +0100
+From:   Christophe ROULLIER <christophe.roullier@st.com>
+To:     David Miller <davem@davemloft.net>
+CC:     "joabreu@synopsys.com" <joabreu@synopsys.com>,
+        "mcoquelin.stm32@gmail.com" <mcoquelin.stm32@gmail.com>,
+        Alexandre TORGUE <alexandre.torgue@st.com>,
+        Peppe CAVALLARO <peppe.cavallaro@st.com>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "linux-arm-kernel@lists.infradead.org" 
+        <linux-arm-kernel@lists.infradead.org>,
+        "linux-stm32@st-md-mailman.stormreply.com" 
+        <linux-stm32@st-md-mailman.stormreply.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+Subject: Re: [PATCH 1/1] net: ethernet: stmmac: simplify phy modes management
+ for stm32
+Thread-Topic: [PATCH 1/1] net: ethernet: stmmac: simplify phy modes management
+ for stm32
+Thread-Index: AQHV1pIW1y791lwjMUusjpFyRZvewKgDJNKAgBWUnwA=
+Date:   Thu, 13 Feb 2020 07:03:27 +0000
+Message-ID: <643e23a7-131f-f801-d3e7-280f211589dd@st.com>
+References: <20200128083942.17823-1-christophe.roullier@st.com>
+ <20200129.115131.1101786807458791369.davem@davemloft.net>
+ <05adc7cc-19cb-7e6e-f6df-07ec8f5e841f@st.com>
+In-Reply-To: <05adc7cc-19cb-7e6e-f6df-07ec8f5e841f@st.com>
+Accept-Language: fr-FR, en-US
 Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+user-agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.4.1
+x-ms-exchange-messagesentrepresentingtype: 1
+x-ms-exchange-transport-fromentityheader: Hosted
+x-originating-ip: [10.75.127.46]
+Content-Type: text/plain; charset="utf-8"
+Content-ID: <A7CFD59FA7949A47B1C3DAC66BD19033@st.com>
+Content-Transfer-Encoding: base64
+MIME-Version: 1.0
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.138,18.0.572
+ definitions=2020-02-13_01:2020-02-12,2020-02-13 signatures=0
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-
-
-On 2/12/20 10:45 PM, Jiri Pirko wrote:
-> Thu, Feb 13, 2020 at 05:58:26AM CET, edumazet@google.com wrote:
->> Since IFLA_ALT_IFNAME is an NLA_STRING, we have no
->> guarantee it is nul terminated.
->>
->> We should use nla_strdup() instead of kstrdup(), since this
->> helper will make sure not accessing out-of-bounds data.
->>
->> 
->> Fixes: 36fbf1e52bd3 ("net: rtnetlink: add linkprop commands to add and delete alternative ifnames")
->> Signed-off-by: Eric Dumazet <edumazet@google.com>
->> Cc: Jiri Pirko <jiri@mellanox.com>
->> Reported-by: syzbot <syzkaller@googlegroups.com>
->> ---
->> net/core/rtnetlink.c | 26 ++++++++++++--------------
->> 1 file changed, 12 insertions(+), 14 deletions(-)
->>
->> diff --git a/net/core/rtnetlink.c b/net/core/rtnetlink.c
->> index 09c44bf2e1d28842d77b4ed442ef2c051a25ad21..e1152f4ffe33efb0a69f17a1f5940baa04942e5b 100644
->> --- a/net/core/rtnetlink.c
->> +++ b/net/core/rtnetlink.c
->> @@ -3504,27 +3504,25 @@ static int rtnl_alt_ifname(int cmd, struct net_device *dev, struct nlattr *attr,
->> 	if (err)
->> 		return err;
->>
->> -	alt_ifname = nla_data(attr);
->> +	alt_ifname = nla_strdup(attr, GFP_KERNEL);
->> +	if (!alt_ifname)
->> +		return -ENOMEM;
->> +
->> 	if (cmd == RTM_NEWLINKPROP) {
->> -		alt_ifname = kstrdup(alt_ifname, GFP_KERNEL);
->> -		if (!alt_ifname)
->> -			return -ENOMEM;
->> 		err = netdev_name_node_alt_create(dev, alt_ifname);
->> -		if (err) {
->> -			kfree(alt_ifname);
->> -			return err;
->> -		}
->> +		if (!err)
->> +			alt_ifname = NULL;
->> 	} else if (cmd == RTM_DELLINKPROP) {
->> 		err = netdev_name_node_alt_destroy(dev, alt_ifname);
->> -		if (err)
->> -			return err;
->> 	} else {
-> 
-> 
->> -		WARN_ON(1);
->> -		return 0;
->> +		WARN_ON_ONCE(1);
->> +		err = -EINVAL;
-> 
-> These 4 lines do not seem to be related to the rest of the patch. Should
-> it be a separate patch?
-
-Well, we have to kfree(alt_ifname).
-
-Generally speaking I tried to avoid return in the middle of this function.
-
-The WARN_ON(1) is dead code today, making it a WARN_ON_ONCE(1) is simply
-a matter of avoiding syslog floods if this path is ever triggered in the future.
-
-> 
-> Otherwise, the patch looks fine to me.
->
-
-Thanks !
-
+R2VudGxlIHJlbWluZGVyDQoNClRoYW5rcw0KDQpPbiAxLzMwLzIwIDI6MjkgUE0sIENocmlzdG9w
+aGUgUk9VTExJRVIgd3JvdGU6DQo+IE9uIDEvMjkvMjAgMTE6NTEgQU0sIERhdmlkIE1pbGxlciB3
+cm90ZToNCj4+IEZyb206IENocmlzdG9waGUgUm91bGxpZXIgPGNocmlzdG9waGUucm91bGxpZXJA
+c3QuY29tPg0KPj4gRGF0ZTogVHVlLCAyOCBKYW4gMjAyMCAwOTozOTo0MiArMDEwMA0KPj4NCj4+
+PiBObyBuZXcgZmVhdHVyZSwganVzdCB0byBzaW1wbGlmeSBzdG0zMiBwYXJ0IHRvIGJlIGVhc2ll
+ciB0byB1c2UuDQo+Pj4gQWRkIGJ5IGRlZmF1bHQgYWxsIEV0aGVybmV0IGNsb2NrcyBpbiBEVCwg
+YW5kIGFjdGl2YXRlIG9yIG5vdCBpbiANCj4+PiBmdW5jdGlvbg0KPj4+IG9mIHBoeSBtb2RlLCBj
+bG9jayBmcmVxdWVuY3ksIGlmIHByb3BlcnR5ICJzdCxleHQtcGh5Y2xrIiBpcyBzZXQgb3IgDQo+
+Pj4gbm90Lg0KPj4+IEtlZXAgYmFja3dhcmQgY29tcGF0aWJpbGl0eQ0KPj4+IC0tLS0tLS0tLS0t
+LS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0t
+LS0tDQo+Pj4gfFBIWV9NT0RFIHwgTm9ybWFsIHwgUEhZIHdvIGNyeXN0YWx8wqDCoCBQSFkgd28g
+Y3J5c3RhbMKgwqAgfMKgIE5vIDEyNU1oesKgIHwNCj4+PiB8wqDCoMKgwqDCoMKgwqDCoCB8wqDC
+oMKgwqDCoMKgwqAgfMKgwqDCoMKgwqAgMjVNSHrCoMKgwqAgfMKgwqDCoMKgwqDCoMKgIDUwTUh6
+wqDCoMKgwqDCoMKgIHwgZnJvbSBQSFnCoMKgIHwNCj4+PiAtLS0tLS0tLS0tLS0tLS0tLS0tLS0t
+LS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLQ0KPj4+IHzC
+oCBNSUnCoMKgwqAgfMKgwqDCoMKgIC3CoMKgwqAgfMKgwqDCoMKgIGV0aC1ja8KgwqDCoCB8wqDC
+oMKgwqDCoMKgIG4vYSB8wqDCoMKgwqDCoMKgwqAgbi9hwqAgfA0KPj4+IHzCoMKgwqDCoMKgwqDC
+oMKgIHzCoMKgwqDCoMKgwqDCoCB8IHN0LGV4dC1waHljbGsgfCB8wqDCoMKgwqDCoMKgwqDCoMKg
+wqDCoMKgIHwNCj4+PiAtLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0t
+LS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLQ0KPj4+IHzCoCBHTUlJwqDCoCB8wqDCoMKgwqAg
+LcKgwqDCoCB8wqDCoMKgwqAgZXRoLWNrwqDCoMKgIHzCoMKgwqDCoMKgwqAgbi9hIHzCoMKgwqDC
+oMKgwqDCoCBuL2HCoCB8DQo+Pj4gfMKgwqDCoMKgwqDCoMKgwqAgfMKgwqDCoMKgwqDCoMKgIHwg
+c3QsZXh0LXBoeWNsayB8IHzCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqAgfA0KPj4+IC0tLS0tLS0t
+LS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0t
+LS0tLS0tDQo+Pj4gfCBSR01JScKgwqAgfMKgwqDCoMKgIC3CoMKgwqAgfMKgwqDCoMKgIGV0aC1j
+a8KgwqDCoCB8wqDCoMKgwqDCoMKgIG4vYSB8wqDCoMKgwqDCoCBldGgtY2vCoCB8DQo+Pj4gfMKg
+wqDCoMKgwqDCoMKgwqAgfMKgwqDCoMKgwqDCoMKgIHwgc3QsZXh0LXBoeWNsayB8IHxzdCxldGgt
+Y2xrLXNlbHwNCj4+PiB8wqDCoMKgwqDCoMKgwqDCoCB8wqDCoMKgwqDCoMKgwqAgfMKgwqDCoMKg
+wqDCoMKgwqDCoMKgwqDCoMKgwqAgfCB8wqDCoMKgwqDCoMKgIG9ywqDCoMKgwqAgfA0KPj4+IHzC
+oMKgwqDCoMKgwqDCoMKgIHzCoMKgwqDCoMKgwqDCoCB8wqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKg
+wqDCoCB8wqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqAgfCANCj4+PiBzdCxl
+eHQtcGh5Y2xrfA0KPj4+IC0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0t
+LS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLSANCj4+Pg0KPj4+IHwgUk1JScKgwqDCoCB8
+wqDCoMKgwqAgLcKgwqDCoCB8wqDCoMKgwqAgZXRoLWNrwqDCoMKgIHzCoMKgwqDCoMKgIGV0aC1j
+ayB8wqDCoMKgwqDCoMKgwqDCoCBuL2HCoCB8DQo+Pj4gfMKgwqDCoMKgwqDCoMKgwqAgfMKgwqDC
+oMKgwqDCoMKgIHwgc3QsZXh0LXBoeWNsayB8IHN0LGV0aC1yZWYtY2xrLXNlbCANCj4+PiB8wqDC
+oMKgwqDCoMKgwqDCoMKgwqDCoMKgwqAgfA0KPj4+IHzCoMKgwqDCoMKgwqDCoMKgIHzCoMKgwqDC
+oMKgwqDCoCB8wqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoCB8IG9yIHN0LGV4dC1waHljbGsg
+fMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgIHwNCj4+PiAtLS0tLS0tLS0tLS0tLS0tLS0tLS0t
+LS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0gDQo+Pj4N
+Cj4+Pg0KPj4+IFNpZ25lZC1vZmYtYnk6IENocmlzdG9waGUgUm91bGxpZXIgPGNocmlzdG9waGUu
+cm91bGxpZXJAc3QuY29tPg0KPj4gSWYgYW55dGhpbmcsIHRoaXMgaXMgbW9yZSBvZiBhIGNsZWFu
+dXAsIGFuZCB0aGVyZWZvcmUgb25seSANCj4+IGFwcHJvcHJpYXRlIGZvcg0KPj4gbmV0LW5leHQg
+d2hlbiBpdCBvcGVucyBiYWNrIHVwLg0KPiBUaGFua3MgRGF2aWQsIEl0IGlzIG5vdCB1cmdlbnQs
+IGRvIHlvdSB3YW50IHRoYXQgSSByZS1wdXNoIGl0IHdpdGggDQo+ICJQQVRDSCBuZXQgbmV4dCIg
+Pw==
