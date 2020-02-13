@@ -2,212 +2,175 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 4EF9015BD47
-	for <lists+netdev@lfdr.de>; Thu, 13 Feb 2020 12:03:07 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 63AA215BD53
+	for <lists+netdev@lfdr.de>; Thu, 13 Feb 2020 12:07:56 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729843AbgBMLDF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 13 Feb 2020 06:03:05 -0500
-Received: from us-smtp-1.mimecast.com ([205.139.110.61]:30604 "EHLO
-        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1729511AbgBMLDF (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 13 Feb 2020 06:03:05 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1581591781;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=AVZjTtPT9BC7uyYP1H9zKyGGB+mGylhZ9/tJmLOCmOM=;
-        b=Y0JtNMc4xy+C+gpC3dVkol1WqIVYCtaPNHbW+p5ZIqFpwgLAO1LKd3RzHrm+guwNqH5Bsf
-        GWIL7HdsppNz+UNt8KIOoUyfCS2yZV0AouJTA1xRUSMuiSdf2+uM6XBLnViesc++FixiWl
-        9ynDAeqXJSGNe1TExP8y0sMZOD5iSUA=
-Received: from mail-wr1-f71.google.com (mail-wr1-f71.google.com
- [209.85.221.71]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-248-9HCuDAGJMO60Aq3HBODmWA-1; Thu, 13 Feb 2020 06:02:55 -0500
-X-MC-Unique: 9HCuDAGJMO60Aq3HBODmWA-1
-Received: by mail-wr1-f71.google.com with SMTP id p8so2185298wrw.5
-        for <netdev@vger.kernel.org>; Thu, 13 Feb 2020 03:02:55 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=AVZjTtPT9BC7uyYP1H9zKyGGB+mGylhZ9/tJmLOCmOM=;
-        b=RsSDLHSVCORnyAK4NK5lxm9o/ZPDEcu4NGgITfbu7ufQSKZr3tyoV6fO0JGh0b/BTp
-         PDz73v54e2EAN/4PmYH8OVez9HWxtf5tSGg/LtM/m4dl8fVMug0vmtXgn/VmUI6KmeLu
-         osENtP36sb4jvkn67B/N8jLWfhCtPT2b/i2Tgi8G7M7eK2r+7/3VyyIIMsHuUMGjBbJ9
-         Bds0M6PyrkxTrjWttebtmBXuhvlu7A+AXdRVRop0QBWuOlDdj5g9pBkoM1kzXPcQgXUV
-         pmVMW+pdJE4cgl7cTFOsyvK3pJU8XmmiHiPfiPLSD9aNuN5Q104uiRZM6zrLkCnAF8HD
-         5IFw==
-X-Gm-Message-State: APjAAAUajbyBeinMETuZeQ+4yS+o9rAsdkgZTsOXMwVwSsi9qtBcfE0v
-        2vYfJr5vcLMK3tNraR766ttrjwTaMJY40QpReGIAWF1paFEPAFQpt5mlq6LpsNg70TfYgjJFGqN
-        PBfeM6wuHUeXs88Ky
-X-Received: by 2002:a1c:4008:: with SMTP id n8mr5232656wma.121.1581591774114;
-        Thu, 13 Feb 2020 03:02:54 -0800 (PST)
-X-Google-Smtp-Source: APXvYqxSpzHMfAJwOSUOSj94W7ENBPeJM6Zbkkq3LjWC5FBHMYcUZtanUZnvYCf3bSp6vRaiA+fX/g==
-X-Received: by 2002:a1c:4008:: with SMTP id n8mr5232635wma.121.1581591773866;
-        Thu, 13 Feb 2020 03:02:53 -0800 (PST)
-Received: from steredhat (host209-4-dynamic.27-79-r.retail.telecomitalia.it. [79.27.4.209])
-        by smtp.gmail.com with ESMTPSA id f207sm2716900wme.9.2020.02.13.03.02.52
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 13 Feb 2020 03:02:53 -0800 (PST)
-Date:   Thu, 13 Feb 2020 12:02:51 +0100
-From:   Stefano Garzarella <sgarzare@redhat.com>
-To:     "Boeuf, Sebastien" <sebastien.boeuf@intel.com>
-Cc:     "stefanha@redhat.com" <stefanha@redhat.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "davem@davemloft.net" <davem@davemloft.net>
-Subject: Re: [PATCH] net: virtio_vsock: Fix race condition between bind and
- listen
-Message-ID: <20200213110251.2unj3sykwpku6dd7@steredhat>
-References: <668b0eda8823564cd604b1663dc53fbaece0cd4e.camel@intel.com>
- <20200213094130.vehzkr4a3pnoiogr@steredhat>
- <3448e588f11dad913e93dfce8031fbd60ba4c85b.camel@intel.com>
- <20200213102237.uyhfv5g2td5ayg2b@steredhat>
- <1d4c3958d8b75756341548e7d51ccf42397c2d27.camel@intel.com>
+        id S1729557AbgBMLHy (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 13 Feb 2020 06:07:54 -0500
+Received: from ivanoab7.miniserver.com ([37.128.132.42]:47680 "EHLO
+        www.kot-begemot.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729466AbgBMLHy (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 13 Feb 2020 06:07:54 -0500
+Received: from tun252.jain.kot-begemot.co.uk ([192.168.18.6] helo=jain.kot-begemot.co.uk)
+        by www.kot-begemot.co.uk with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <anton.ivanov@cambridgegreys.com>)
+        id 1j2CLV-0007ye-DZ; Thu, 13 Feb 2020 11:07:49 +0000
+Received: from jain.kot-begemot.co.uk ([192.168.3.3])
+        by jain.kot-begemot.co.uk with esmtp (Exim 4.92)
+        (envelope-from <anton.ivanov@cambridgegreys.com>)
+        id 1j2CLT-0007ip-6t; Thu, 13 Feb 2020 11:07:49 +0000
+Subject: Re: [PATCH] virtio: Work around frames incorrectly marked as gso
+To:     Jason Wang <jasowang@redhat.com>,
+        "Michael S. Tsirkin" <mst@redhat.com>
+Cc:     netdev@vger.kernel.org, linux-um@lists.infradead.org,
+        virtualization@lists.linux-foundation.org
+References: <20191209104824.17059-1-anton.ivanov@cambridgegreys.com>
+ <57230228-7030-c65f-a24f-910ca52bbe9e@cambridgegreys.com>
+ <f78bfe6e-2ffc-3734-9618-470f1afea0c6@redhat.com>
+ <918222d9-816a-be70-f8af-b8dfcb586240@cambridgegreys.com>
+ <20200211053502-mutt-send-email-mst@kernel.org>
+ <9547228b-aa93-f2b6-6fdc-8d33cde3716a@cambridgegreys.com>
+ <71193f51-9606-58ba-39d7-904bc9fbd29a@redhat.com>
+From:   Anton Ivanov <anton.ivanov@cambridgegreys.com>
+Message-ID: <0c204585-d297-0ecb-2af1-cc3b4cac13da@cambridgegreys.com>
+Date:   Thu, 13 Feb 2020 11:07:47 +0000
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.4.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <1d4c3958d8b75756341548e7d51ccf42397c2d27.camel@intel.com>
+In-Reply-To: <71193f51-9606-58ba-39d7-904bc9fbd29a@redhat.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
+X-Spam-Score: -1.0
+X-Spam-Score: -1.0
+X-Clacks-Overhead: GNU Terry Pratchett
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Feb 13, 2020 at 10:44:18AM +0000, Boeuf, Sebastien wrote:
-> On Thu, 2020-02-13 at 11:22 +0100, Stefano Garzarella wrote:
-> > On Thu, Feb 13, 2020 at 09:51:36AM +0000, Boeuf, Sebastien wrote:
-> > > Hi Stefano,
-> > > 
-> > > On Thu, 2020-02-13 at 10:41 +0100, Stefano Garzarella wrote:
-> > > > Hi Sebastien,
-> > > > 
-> > > > On Thu, Feb 13, 2020 at 09:16:11AM +0000, Boeuf, Sebastien wrote:
-> > > > > From 2f1276d02f5a12d85aec5adc11dfe1eab7e160d6 Mon Sep 17
-> > > > > 00:00:00
-> > > > > 2001
-> > > > > From: Sebastien Boeuf <sebastien.boeuf@intel.com>
-> > > > > Date: Thu, 13 Feb 2020 08:50:38 +0100
-> > > > > Subject: [PATCH] net: virtio_vsock: Fix race condition between
-> > > > > bind
-> > > > > and listen
-> > > > > 
-> > > > > Whenever the vsock backend on the host sends a packet through
-> > > > > the
-> > > > > RX
-> > > > > queue, it expects an answer on the TX queue. Unfortunately,
-> > > > > there
-> > > > > is one
-> > > > > case where the host side will hang waiting for the answer and
-> > > > > will
-> > > > > effectively never recover.
-> > > > 
-> > > > Do you have a test case?
-> > > 
-> > > Yes I do. This has been a bug we've been investigating on Kata
-> > > Containers for quite some time now. This was happening when using
-> > > Kata
-> > > along with Cloud-Hypervisor (which rely on the hybrid vsock
-> > > implementation from Firecracker). The thing is, this bug is very
-> > > hard
-> > > to reproduce and was happening for Kata because of the connection
-> > > strategy. The kata-runtime tries to connect a million times after
-> > > it
-> > > started the VM, just hoping the kata-agent will start to listen
-> > > from
-> > > the guest side at some point.
-> > 
-> > Maybe is related to something else. I tried the following which
-> > should be
-> > your case simplified (IIUC):
-> > 
-> > guest$ python
-> >     import socket
-> >     s = socket.socket(socket.AF_VSOCK, socket.SOCK_STREAM)
-> >     s.bind((socket.VMADDR_CID_ANY, 1234))
-> > 
-> > host$ python
-> >     import socket
-> >     s = socket.socket(socket.AF_VSOCK, socket.SOCK_STREAM)
-> >     s.connect((3, 1234))
-> > 
-> > Traceback (most recent call last):
-> >   File "<stdin>", line 1, in <module>
-> > TimeoutError: [Errno 110] Connection timed out
-> 
-> Yes this is exactly the simplified case. But that's the point, I don't
-> think the timeout is the best way to go here. Because this means that
-> when we run into this case, the host side will wait for quite some time
-> before retrying, which can cause a very long delay before the
-> communication with the guest is established. By simply answering the
-> host with a RST packet, we inform it that nobody's listening on the
-> guest side yet, therefore the host side will close and try again.
 
-Yes, make sense.
 
-I just wanted to point out that the host shouldn't get stuck if the
-guest doesn't respond. So it's weird that this happens and it might be
-related to some other problem.
+On 13/02/2020 03:31, Jason Wang wrote:
+> 
+> On 2020/2/13 上午1:38, Anton Ivanov wrote:
+>>
+>>
+>> On 11/02/2020 10:37, Michael S. Tsirkin wrote:
+>>> On Tue, Feb 11, 2020 at 07:42:37AM +0000, Anton Ivanov wrote:
+>>>> On 11/02/2020 02:51, Jason Wang wrote:
+>>>>>
+>>>>> On 2020/2/11 上午12:55, Anton Ivanov wrote:
+>>>>>>
+>>>>>>
+>>>>>> On 09/12/2019 10:48, anton.ivanov@cambridgegreys.com wrote:
+>>>>>>> From: Anton Ivanov <anton.ivanov@cambridgegreys.com>
+>>>>>>>
+>>>>>>> Some of the frames marked as GSO which arrive at
+>>>>>>> virtio_net_hdr_from_skb() have no GSO_TYPE, no
+>>>>>>> fragments (data_len = 0) and length significantly shorter
+>>>>>>> than the MTU (752 in my experiments).
+>>>>>>>
+>>>>>>> This is observed on raw sockets reading off vEth interfaces
+>>>>>>> in all 4.x and 5.x kernels I tested.
+>>>>>>>
+>>>>>>> These frames are reported as invalid while they are in fact
+>>>>>>> gso-less frames.
+>>>>>>>
+>>>>>>> This patch marks the vnet header as no-GSO for them instead
+>>>>>>> of reporting it as invalid.
+>>>>>>>
+>>>>>>> Signed-off-by: Anton Ivanov <anton.ivanov@cambridgegreys.com>
+>>>>>>> ---
+>>>>>>>    include/linux/virtio_net.h | 8 ++++++--
+>>>>>>>    1 file changed, 6 insertions(+), 2 deletions(-)
+>>>>>>>
+>>>>>>> diff --git a/include/linux/virtio_net.h b/include/linux/virtio_net.h
+>>>>>>> index 0d1fe9297ac6..d90d5cff1b9a 100644
+>>>>>>> --- a/include/linux/virtio_net.h
+>>>>>>> +++ b/include/linux/virtio_net.h
+>>>>>>> @@ -112,8 +112,12 @@ static inline int
+>>>>>>> virtio_net_hdr_from_skb(const struct sk_buff *skb,
+>>>>>>>                hdr->gso_type = VIRTIO_NET_HDR_GSO_TCPV4;
+>>>>>>>            else if (sinfo->gso_type & SKB_GSO_TCPV6)
+>>>>>>>                hdr->gso_type = VIRTIO_NET_HDR_GSO_TCPV6;
+>>>>>>> -        else
+>>>>>>> -            return -EINVAL;
+>>>>>>> +        else {
+>>>>>>> +            if (skb->data_len == 0)
+>>>>>>> +                hdr->gso_type = VIRTIO_NET_HDR_GSO_NONE;
+>>>>>>> +            else
+>>>>>>> +                return -EINVAL;
+>>>>>>> +        }
+>>>>>>>            if (sinfo->gso_type & SKB_GSO_TCP_ECN)
+>>>>>>>                hdr->gso_type |= VIRTIO_NET_HDR_GSO_ECN;
+>>>>>>>        } else
+>>>>>>>
+>>>>>>
+>>>>>> ping.
+>>>>>>
+>>>>>
+>>>>> Do you mean gso_size is set but gso_type is not? Looks like a bug
+>>>>> elsewhere.
+>>>>>
+>>>>> Thanks
+>>>>>
+>>>>>
+>>>> Yes.
+>>>>
+>>>> I could not trace it where it is coming from.
+>>>>
+>>>> I see it when doing recvmmsg on raw sockets in the UML vector network
+>>>> drivers.
+>>>>
+>>>
+>>> I think we need to find the culprit and fix it there, lots of other things
+>>> can break otherwise.
+>>> Just printing out skb->dev->name should do the trick, no?
+>>
+>> The printk in virtio_net_hdr_from_skb says NULL.
+>>
+>> That is probably normal for a locally originated frame.
+>>
+>> I cannot reproduce this with network traffic by the way - it happens only if the traffic is locally originated on the host.
+>>
+>> A,
+> 
+> 
+> Or maybe you can try add dump_stack() there.
 
-> 
-> > 
-> > > > In the host, the af_vsock.c:vsock_stream_connect() set a timeout,
-> > > > so
-> > > > if
-> > > > the host try to connect before the guest starts listening, the
-> > > > connect()
-> > > > should return ETIMEDOUT if the guest does not answer anything.
-> > > > 
-> > > > Anyway, maybe the patch make sense anyway, changing a bit the
-> > > > description
-> > > > (if the host connect() receive the ETIMEDOUT).
-> > > > I'm just concerned that this code is common between guest and
-> > > > host.
-> > > > If a
-> > > > malicious guest starts sending us wrong requests, we spend time
-> > > > sending
-> > > > a reset packet. But we already do that if we can't find the bound
-> > > > socket,
-> > > > so it might make sense.
-> > > 
-> > > Yes I don't think this is gonna cause more trouble, but at least we
-> > > cannot end up in this weird situation I described.
-> > 
-> > Okay, but in the host, we can't trust the guest to answer, we should
-> > handle this case properly.
-> 
-> Well I cannot agree more with the "we cannot trust the guest"
-> philosophy, but in this case the worst thing that can happen is the
-> guest shooting himself in the foot because it would simply prevent the
-> connection from happening.
-> 
-> And I agree setting up a timeout from the host side is still a good
-> idea for preventing from such DOS attack.
-> 
-> But as I mentioned above, in the normal use case, this allows for
-> better responsiveness when it comes to establish the connection as fast
-> as possible.
+That unfortunately is not very informative. At that point it shows me the invocation chain from recvmmsg:
 
-Sure, maybe you can rewrite a bit the commit (title and body) to explain
-this.
+[ 2334.180854] Call Trace:
+[ 2334.181947]  dump_stack+0x5c/0x80
+[ 2334.183021]  packet_recvmsg.cold+0x23/0x49
+[ 2334.184063]  ___sys_recvmsg+0xe1/0x1f0
+[ 2334.185034]  ? packet_poll+0xca/0x130
+[ 2334.186014]  ? sock_poll+0x77/0xb0
+[ 2334.186977]  ? ep_item_poll.isra.0+0x3f/0xb0
+[ 2334.187936]  ? ep_send_events_proc+0xf1/0x240
+[ 2334.188901]  ? dequeue_signal+0xdb/0x180
+[ 2334.189848]  do_recvmmsg+0xc8/0x2d0
+[ 2334.190728]  ? ep_poll+0x8c/0x470
+[ 2334.191581]  __sys_recvmmsg+0x108/0x150
+[ 2334.192441]  __x64_sys_recvmmsg+0x25/0x30
+[ 2334.193346]  do_syscall_64+0x53/0x140
+[ 2334.194262]  entry_SYSCALL_64_after_hwframe+0x44/0xa9
+
 
 > 
-> > 
-> > > I was just not sure if the function we should use to do the reset
-> > > should be virtio_transport_reset_no_sock() or
-> > > virtio_transport_reset()
-> > > since at this point the socket is already bound.
-> > 
-> > I think you can safely use virtio_transport_reset() in this case.
+> Thanks
 > 
-> I've just tried it and unfortunately it doesn't work. I think that's
-> because the connection has not been properly established yet, so we
-> cannot consider being in this case.
-> Using virtio_transport_reset_no_sock() seems like the less intrusive
-> function here.
+> 
+> 
+> 
+> _______________________________________________
+> linux-um mailing list
+> linux-um@lists.infradead.org
+> http://lists.infradead.org/mailman/listinfo/linux-um
 
-Oh sorry, I also put a comment on virtio_transport_reset() to say to use it
-only on connected sockets and not listeners.
-In this case it's a listener, sorry for the wrong suggestion.
-
-Thanks,
-Stefano
-
+-- 
+Anton R. Ivanov
+Cambridgegreys Limited. Registered in England. Company Number 10273661
+https://www.cambridgegreys.com/
