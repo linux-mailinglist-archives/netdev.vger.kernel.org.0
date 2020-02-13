@@ -2,108 +2,91 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 2860D15CD61
-	for <lists+netdev@lfdr.de>; Thu, 13 Feb 2020 22:38:05 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id EEAAB15CD70
+	for <lists+netdev@lfdr.de>; Thu, 13 Feb 2020 22:44:51 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728209AbgBMViA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 13 Feb 2020 16:38:00 -0500
-Received: from mail-lj1-f193.google.com ([209.85.208.193]:42042 "EHLO
-        mail-lj1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727778AbgBMViA (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 13 Feb 2020 16:38:00 -0500
-Received: by mail-lj1-f193.google.com with SMTP id d10so8337977ljl.9
-        for <netdev@vger.kernel.org>; Thu, 13 Feb 2020 13:37:59 -0800 (PST)
+        id S1728689AbgBMVor (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 13 Feb 2020 16:44:47 -0500
+Received: from mail-ed1-f68.google.com ([209.85.208.68]:46320 "EHLO
+        mail-ed1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728209AbgBMVoo (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 13 Feb 2020 16:44:44 -0500
+Received: by mail-ed1-f68.google.com with SMTP id p14so510167edy.13
+        for <netdev@vger.kernel.org>; Thu, 13 Feb 2020 13:44:41 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linux-foundation.org; s=google;
+        d=paul-moore-com.20150623.gappssmtp.com; s=20150623;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=jtS4rjKch/eIxYuRE1rBd1Np3fh95EMJHZPtozx1IdU=;
-        b=cFIjwFlka8Q6k5k0uwiVOYQh3KBGZAx1jTW+glsWmbGPwW49m06Ggcglnis/tiHHay
-         ZSE+vfV0yXAAXW0sTdr2mfTP0lHIqZJAWrU2TNWwpoj1rKjxwn/vmL5G7GDwWRxe9gI5
-         OFGRlR97WSSIJ71X/s74bTCKEX95FOy4zawho=
+        bh=d6iMkJnmuaDOT/nQ8QyRCzJW1DxHpPU5cNxqRI+5goo=;
+        b=PIw7E5FK5uMGQSQO8wbpPUp6f5T9D17OUGexKYbXdtUQttg7lkFcb7ZrY7zxqkJuF7
+         IUDTTxfFWuajXiDFDWQXvBELPs2+KOoqds7y/MldWSq0di1ROQs14wpIC16aAbnzux9Y
+         qTBvzLrg6gTeYg5Wb+/fgQXuupbE2u9OV73zEr2tujxtHYiZ2igPBO+L0RiCnuBbY33H
+         JTGxZFfAlWsYu5+0uaqBK6gTlPgjcJoCWGD1613byRZSuN+WJYaIWoSr865H09zNQXZ4
+         iJ2yQcaJmzck0TPBQtlzrJJ61lJ/sdUV7Mkch0Em0zgoL4IjpU8MKonw+E3A6AI+Grt1
+         Ly8Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=jtS4rjKch/eIxYuRE1rBd1Np3fh95EMJHZPtozx1IdU=;
-        b=lHWR4zt1YTErOj4+70Vc5HqDDOjcqDfCBhixihoPV5cHQKkrYGAs2bRb8wPHS5nStI
-         eCBZLPxY91kKnl5SKMfP9djBNfL2BCHYPpQ0+v7BmrBFPTNWg8H1YkYJC/7U1iacayr9
-         8bniDKoRhzb7LMT/PR/qmURnTf8WAq5Nftx6feNQId4kIGimejonBRHZBJvaMuTxt1vz
-         MFUcWsqlrGOXaDlkRuaUlVUlbL+UylaOwxTaUreeCXRqmjCQUofJPlKyBbO+1LweT2EI
-         j0eAaMVtbR3J4zsatrhaCw45jUwWDyDvCU1mv8WGTIH1lJ5vXKPxCZveLiRLtWCeh9o7
-         AApQ==
-X-Gm-Message-State: APjAAAXVflPigUBJJoeSfa1k7wRQ1ps5V/PpEdPEXIGhWoF7HFbWukku
-        XvbAp8PRrXJDSqNTm2jiXBw23aLlXy0=
-X-Google-Smtp-Source: APXvYqxcHErnDgEJ5ArINcx2+PMBl0nhkUtM2ohxf7eU7mukkWDaFvtKWfvmvtU3MrAZ9AshIKTg8A==
-X-Received: by 2002:a2e:9b90:: with SMTP id z16mr12781831lji.254.1581629878031;
-        Thu, 13 Feb 2020 13:37:58 -0800 (PST)
-Received: from mail-lj1-f178.google.com (mail-lj1-f178.google.com. [209.85.208.178])
-        by smtp.gmail.com with ESMTPSA id t10sm2247779lji.61.2020.02.13.13.37.56
-        for <netdev@vger.kernel.org>
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 13 Feb 2020 13:37:56 -0800 (PST)
-Received: by mail-lj1-f178.google.com with SMTP id q8so8353506ljb.2
-        for <netdev@vger.kernel.org>; Thu, 13 Feb 2020 13:37:56 -0800 (PST)
-X-Received: by 2002:a2e:88c5:: with SMTP id a5mr12479474ljk.201.1581629876398;
- Thu, 13 Feb 2020 13:37:56 -0800 (PST)
+        bh=d6iMkJnmuaDOT/nQ8QyRCzJW1DxHpPU5cNxqRI+5goo=;
+        b=GZWRx+6o1nz+rVRAcZqEPhQ/itgF8Ng3TdqUB6o7HkYxF1XbzfnauFjAGXwWp8TS/I
+         MsZ17YPCth+AjzuPBxI2HY6Mqir+yE8toslYw2JmQQkSLAQo+290NtqFxQDYKaqbcQw0
+         Mrug1Xl9n4ziWN0nczZf1B70GaZ3hq31ZjziYdSZDEigWvmL2oJR26Yk/5LG8M4vLb3j
+         5TugNixtpHAPL87XPrrs6icjwiivHY0ZxBDj9pPXODLZGtUtoMOc8em6cnZ/gW0l153T
+         IPzxOCkkmSNI5+PPOKosc8X466Fxmd8LC26rS5PuXdkWaUUZV29qSaDe9aOn0L91IIXJ
+         580A==
+X-Gm-Message-State: APjAAAVFCQJZYxw5UmZIpseQ3EWaDhQjxtuLLGURaZBI/fg8sXOY1Rcr
+        xXIy4PaF159kNj5OUn+aw53lplq3TDpru4I8fIUT
+X-Google-Smtp-Source: APXvYqzivqkXBB8NR1AVMPaykKlw/9vR8JhyBC59wFMjKjm5evBAVa6TlImCpH9hT3l8uI72hnHie5UbgBWCB+RdQRU=
+X-Received: by 2002:aa7:db55:: with SMTP id n21mr16664962edt.31.1581630280853;
+ Thu, 13 Feb 2020 13:44:40 -0800 (PST)
 MIME-Version: 1.0
-References: <20200128025958.43490-1-arjunroy.kdev@gmail.com>
- <20200128025958.43490-2-arjunroy.kdev@gmail.com> <20200212184101.b8551710bd19c8216d62290d@linux-foundation.org>
-In-Reply-To: <20200212184101.b8551710bd19c8216d62290d@linux-foundation.org>
-From:   Linus Torvalds <torvalds@linux-foundation.org>
-Date:   Thu, 13 Feb 2020 13:37:40 -0800
-X-Gmail-Original-Message-ID: <CAHk-=whXrLfFrgJKrLUCXB0_ncXAetOqp7Crv4pqmKfiEjh4=w@mail.gmail.com>
-Message-ID: <CAHk-=whXrLfFrgJKrLUCXB0_ncXAetOqp7Crv4pqmKfiEjh4=w@mail.gmail.com>
-Subject: Re: [PATCH resend mm,net-next 2/3] mm: Add vm_insert_pages().
-To:     Andrew Morton <akpm@linux-foundation.org>
-Cc:     Arjun Roy <arjunroy.kdev@gmail.com>,
-        David Miller <davem@davemloft.net>,
-        Netdev <netdev@vger.kernel.org>, Linux-MM <linux-mm@kvack.org>,
-        arjunroy@google.com, Eric Dumazet <edumazet@google.com>,
-        Soheil Hassas Yeganeh <soheil@google.com>
+References: <cover.1577736799.git.rgb@redhat.com> <20200204231454.oxa7pyvuxbj466fj@madcap2.tricolour.ca>
+ <CAHC9VhQquokw+7UOU=G0SsD35UdgmfysVKCGCE87JVaoTkbisg@mail.gmail.com>
+ <3142237.YMNxv0uec1@x2> <CAHC9VhTiCHQbp2SwK0Xb1QgpUZxOQ26JKKPsVGT0ZvMqx28oPQ@mail.gmail.com>
+In-Reply-To: <CAHC9VhTiCHQbp2SwK0Xb1QgpUZxOQ26JKKPsVGT0ZvMqx28oPQ@mail.gmail.com>
+From:   Paul Moore <paul@paul-moore.com>
+Date:   Thu, 13 Feb 2020 16:44:29 -0500
+Message-ID: <CAHC9VhS09b_fM19tn7pHZzxfyxcHnK+PJx80Z9Z1hn8-==4oLA@mail.gmail.com>
+Subject: Re: [PATCH ghak90 V8 07/16] audit: add contid support for signalling
+ the audit daemon
+To:     Steve Grubb <sgrubb@redhat.com>
+Cc:     linux-audit@redhat.com, Richard Guy Briggs <rgb@redhat.com>,
+        nhorman@tuxdriver.com, linux-api@vger.kernel.org,
+        containers@lists.linux-foundation.org,
+        LKML <linux-kernel@vger.kernel.org>, dhowells@redhat.com,
+        netfilter-devel@vger.kernel.org, ebiederm@xmission.com,
+        simo@redhat.com, netdev@vger.kernel.org,
+        linux-fsdevel@vger.kernel.org, Eric Paris <eparis@parisplace.org>,
+        mpatel@redhat.com, Serge Hallyn <serge@hallyn.com>
 Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Feb 12, 2020 at 6:41 PM Andrew Morton <akpm@linux-foundation.org> wrote:
->
-> Also, vm_insert_page() does
->
->         if (!page_count(page))
->                 return -EINVAL;
->
-> and this was not carried over into vm_insert_pages().  How come?
+This is a bit of a thread-hijack, and for that I apologize, but
+another thought crossed my mind while thinking about this issue
+further ... Once we support multiple auditd instances, including the
+necessary record routing and duplication/multiple-sends (the host
+always sees *everything*), we will likely need to find a way to "trim"
+the audit container ID (ACID) lists we send in the records.  The
+auditd instance running on the host/initns will always see everything,
+so it will want the full container ACID list; however an auditd
+instance running inside a container really should only see the ACIDs
+of any child containers.
 
-Sounds like that was just a mistake.
+For example, imagine a system where the host has containers 1 and 2,
+each running an auditd instance.  Inside container 1 there are
+containers A and B.  Inside container 2 there are containers Y and Z.
+If an audit event is generated in container Z, I would expect the
+host's auditd to see a ACID list of "1,Z" but container 1's auditd
+should only see an ACID list of "Z".  The auditd running in container
+2 should not see the record at all (that will be relatively
+straightforward).  Does that make sense?  Do we have the record
+formats properly designed to handle this without too much problem (I'm
+not entirely sure we do)?
 
-> I don't know what that test does - it was added by Linus in the
-> original commit a145dd411eb28c83.  It's only been 15 years so I'm sure
-> he remembers ;)
-
-Oh, sure.
-
-No, I have absolutely no memory of the details, but I think the commit
-message is actually the big hint: the difference between
-vm_insert_page() and some of the more random "insert any pdf" cases we
-have is exactly that:
-
-    The page you insert needs to be a nice clean kernel allocation, so you
-    can't insert arbitrary page mappings with this, but that's not what
-    people want.
-
-thing. The comment above it also kind of hints at it.
-
-We *historically* had interfaces to insert random reserved pages (for
-IO mappings, but also the zero page etc), but the whole point of that
-vm_insert_page() is that it's now an interface for drivers to insert
-the pages they maintain into the page tables.
-
-But that also means that we very much didn't allow just random pages
-accessed by doing pfn lookups (that might not be in use at all).
-
-Is "page_count()" a great test? No. But it's at least _a_ test of
-that. No reserved pages or other magic need apply.
-
-         Linus
+-- 
+paul moore
+www.paul-moore.com
