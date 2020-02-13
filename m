@@ -2,221 +2,121 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id E6EF515C9AE
-	for <lists+netdev@lfdr.de>; Thu, 13 Feb 2020 18:45:15 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 308F815C9B5
+	for <lists+netdev@lfdr.de>; Thu, 13 Feb 2020 18:47:43 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727671AbgBMRpN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 13 Feb 2020 12:45:13 -0500
-Received: from pandora.armlinux.org.uk ([78.32.30.218]:58740 "EHLO
-        pandora.armlinux.org.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726282AbgBMRpN (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 13 Feb 2020 12:45:13 -0500
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
-        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
-        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
-        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-         bh=i2VuKE/Crz0V3iiiBqFb3yZYkvbU/26MGWQEcchOv/s=; b=do3CfEGUqRXgP13ylSQwxN2RO
-        2DkDw+cK/lGWZITolrdcnLiqETBuJUy0MuHxJqhUULcedpUkqpZIoCKhGzOAWKB9YbqJRqsigXP8U
-        rTv58101UejaVnho4AyxDi+PkdZuBkLRXSnUINcnkGNbfO4YwIAWjtFHNHzJAkTt4Hvr1g4Fro7KO
-        aKNH1OgR3cBEEMxFEFSfpPqhiEqEnsha9MtByeAtjx7Wu0+gJxaNcRURgWJiLRUxnuZIua+K+wUQW
-        WFEwVu94XwmVqMAysksNT4CjMtWY6q+DyR58K4pnoUmRy8vPNHHUHrUkW5l7lbzWWDt6YVj7B0XUc
-        xzW0cJbBg==;
-Received: from shell.armlinux.org.uk ([2002:4e20:1eda:1:5054:ff:fe00:4ec]:47380)
-        by pandora.armlinux.org.uk with esmtpsa (TLSv1.2:ECDHE-RSA-AES256-GCM-SHA384:256)
-        (Exim 4.90_1)
-        (envelope-from <linux@armlinux.org.uk>)
-        id 1j2IXx-000204-UV; Thu, 13 Feb 2020 17:45:06 +0000
-Received: from linux by shell.armlinux.org.uk with local (Exim 4.92)
-        (envelope-from <linux@shell.armlinux.org.uk>)
-        id 1j2IXs-0002Ys-OX; Thu, 13 Feb 2020 17:45:00 +0000
-Date:   Thu, 13 Feb 2020 17:45:00 +0000
-From:   Russell King - ARM Linux admin <linux@armlinux.org.uk>
-To:     Andrew Lunn <andrew@lunn.ch>
-Cc:     netdev@vger.kernel.org, Florian Fainelli <f.fainelli@gmail.com>,
-        Sean Wang <sean.wang@mediatek.com>,
-        John Crispin <john@phrozen.org>,
-        Mark Lee <Mark-MC.Lee@mediatek.com>,
-        Giuseppe Cavallaro <peppe.cavallaro@st.com>,
-        Alexandre Torgue <alexandre.torgue@st.com>,
-        Jose Abreu <joabreu@synopsys.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        Radhey Shyam Pandey <radhey.shyam.pandey@xilinx.com>,
-        Nicolas Ferre <nicolas.ferre@microchip.com>,
-        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
-        Ioana Ciornei <ioana.ciornei@nxp.com>
-Subject: Re: Heads up: phylink changes for next merge window
-Message-ID: <20200213174500.GI18808@shell.armlinux.org.uk>
-References: <20200213133831.GM25745@shell.armlinux.org.uk>
- <20200213144615.GH18808@shell.armlinux.org.uk>
- <20200213160004.GC31084@lunn.ch>
- <20200213171602.GO25745@shell.armlinux.org.uk>
+        id S1727884AbgBMRrk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 13 Feb 2020 12:47:40 -0500
+Received: from mail-qk1-f195.google.com ([209.85.222.195]:44361 "EHLO
+        mail-qk1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725781AbgBMRrj (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 13 Feb 2020 12:47:39 -0500
+Received: by mail-qk1-f195.google.com with SMTP id v195so6470465qkb.11;
+        Thu, 13 Feb 2020 09:47:37 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=QqYQBHl3dLMvD5Z6qSR6RJN0d5WnItMFfOyEDAwMXCo=;
+        b=Ki5E6dMoRZTUfdResgbYtn48OiDJhJPt96efZpVZTxXU67/iLnRdLnKFw9WEU17QuL
+         9ioG/sMDQHwiaAceH9BlAVI9a9EOTUJGm08R9ZowZop97ko6cxgIURBG+An33EitrxTm
+         cX3MJZ/GOoSXQCQJq+hi5x4r1J/xLale9rxUVyImfQLWEJ9yHSmoxqXZn4OPHS3THAVW
+         eDG05oPrM5tcP08hokvE+qfGHn6Cm3TjOOvUsggVbOpQIJnITD1Z6d+IYstqNRQSmiPr
+         N3e1lMd305ayw9ONHgRzU/7w0t3rUSD6VMbwIO22+UuNPaq5DYkb9RJhfZgac6gLkhXg
+         kM/Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=QqYQBHl3dLMvD5Z6qSR6RJN0d5WnItMFfOyEDAwMXCo=;
+        b=uXFdQ9mCWNxXDR3kvDVc1KFl0tE9oQ4RCeBpgWsMAEaGRROGPFGxs7Cuxci7S5J80g
+         8Z1fi4Nljjm7ZIixUvRBhUTn7A3HaLKvZiD1bSQnG95yoGXDc+Jv1m3QEZSYmIVUhHKa
+         rEl5U9+Xms75hd6Mt6wAcPD20L8wq/D7vutF8ZRUSbwCfbAe3lLEkunvDpx5Sv/D9Mse
+         O2Glh67+EZEa7K5XLPoX/caYrUsFcEYIsS/eB4p3OSjv4kabnf8BrFNI6SmQn+/J/Fa+
+         BswSd+Tn3zNjQsODhkCg22s8FQ0Oi5vdEL15rEeuYzNSvfi4+yxp1GVMSNOwCcAlZnPI
+         pZZQ==
+X-Gm-Message-State: APjAAAWOav5BP/FCr6lY5FCHh4At30jMOEwFF1Qi1J7aPtuCSYvMAgB8
+        UVRGbMI5J7L2pKys7gISBWZUHoGw0pSpt7X+wE0=
+X-Google-Smtp-Source: APXvYqyfayhltEAhkoqdbYnchFW7sXFhdJb0s2Oi1gjy6iPWMTHeIVsV9b6s9/hHeFf05GQusuipitPcvO+Zhv/+n8M=
+X-Received: by 2002:a05:620a:14a2:: with SMTP id x2mr16976934qkj.36.1581616057237;
+ Thu, 13 Feb 2020 09:47:37 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200213171602.GO25745@shell.armlinux.org.uk>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+References: <20200213152416.GA1873@embeddedor>
+In-Reply-To: <20200213152416.GA1873@embeddedor>
+From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Date:   Thu, 13 Feb 2020 09:47:25 -0800
+Message-ID: <CAEf4Bzae=Afp_4FGgeFy+=kk64nm1vhRso2zF3j7Qdst66RFZw@mail.gmail.com>
+Subject: Re: [PATCH] bpf: queue_stack_maps: Replace zero-length array with
+ flexible-array member
+To:     "Gustavo A. R. Silva" <gustavo@embeddedor.com>
+Cc:     Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        Andrii Nakryiko <andriin@fb.com>,
+        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        open list <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Feb 13, 2020 at 05:16:02PM +0000, Russell King - ARM Linux admin wrote:
-> On Thu, Feb 13, 2020 at 05:00:04PM +0100, Andrew Lunn wrote:
-> > On Thu, Feb 13, 2020 at 02:46:16PM +0000, Russell King - ARM Linux admin wrote:
-> > > [Recipient list updated; removed addresses that bounce, added Ioana
-> > > Ciornei for dpaa2 and DSA issue mentioned below.]
-> > > 
-> > > On Thu, Feb 13, 2020 at 01:38:31PM +0000, Russell King - ARM Linux admin wrote:
-> > > > Hi,
-> > > > 
-> > > > During the next round of development changes, I wish to make some
-> > > > changes to phylink which will affect almost every user out there,
-> > > > as it affects the interfaces to the MAC drivers.
-> > > > 
-> > > > The reason behind the change is to allow us to support situations
-> > > > where the MAC is not closely coupled with its associated PCS, such
-> > > > as is found in mvneta and mvpp2.  This is necessary to support
-> > > > already existing hardware properly, such as Marvell DSA and Xilinx
-> > > > AXI ethernet drivers, and there seems to be a growing need for this.
-> > > > 
-> > > > What I'm proposing to do is to move the MAC setup for the negotiated
-> > > > speed, duplex and pause settings to the mac_link_up() method, out of
-> > > > the existing mac_config() method.  I have already converted the
-> > > > axienet, dpaa2-mac, macb, mvneta, mvpp2 and mv88e6xxx (dsa) drivers,
-> > > > but I'm not able to test all those.  Thus far, I've tested dpaa2-mac,
-> > > > mvneta, and mv88e6xxx.  There's a bunch of other drivers that I don't
-> > > > know enough about the hardware to do the conversion myself.
-> > > 
-> > > I should also have pointed out that with mv88e6xxx, the patch
-> > > "net: mv88e6xxx: use resolved link config in mac_link_up()" "fixes" by
-> > > side-effect an issue that Andrew has mentioned, where inter-DSA ports
-> > > get configured down to 10baseHD speed.  This is by no means a true fix
-> > > for that problem - which is way deeper than this series can address.
-> > > The reason it fixes it is because we no longer set the speed/duplex
-> > > in mac_config() but set it in mac_link_up() - but mac_link_up() is
-> > > never called for CPU and DSA ports.
-> > > 
-> > > However, I think there may be another side-effect of that - any fixed
-> > > link declaration in DT may not be respected after this patch.
-> > > 
-> > > I believe the root of this goes back to this commit:
-> > > 
-> > >   commit 0e27921816ad99f78140e0c61ddf2bc515cc7e22
-> > >   Author: Ioana Ciornei <ioana.ciornei@nxp.com>
-> > >   Date:   Tue May 28 20:38:16 2019 +0300
-> > > 
-> > >   net: dsa: Use PHYLINK for the CPU/DSA ports
-> > > 
-> > > and, in the case of no fixed-link declaration, phylink has no idea what
-> > > the link parameters should be (and hence the initial bug, where
-> > > mac_config gets called with speed=0 duplex=0, which gets interpreted as
-> > > 10baseHD.)  Moreover, as far as phylink is concerned, these links never
-> > > come up. Essentially, this commit was not fully tested with inter-DSA
-> > > links, and probably was never tested with phylink debugging enabled.
-> > > 
-> > > There is currently no fix for this, and it is not an easy problem to
-> > > resolve, irrespective of the patches I'm proposing.
-> > 
-> > Hi Russell
-> > 
-> > I've been playing around with this a bit. I have a partial fix:
-> > 
-> > diff --git a/net/dsa/port.c b/net/dsa/port.c
-> > index 9b54e5a76297..dc4da4dc44f5 100644
-> > --- a/net/dsa/port.c
-> > +++ b/net/dsa/port.c
-> > @@ -629,9 +629,14 @@ static int dsa_port_phylink_register(struct dsa_port *dp)
-> >  int dsa_port_link_register_of(struct dsa_port *dp)
-> >  {
-> >         struct dsa_switch *ds = dp->ds;
-> > +       struct device_node *phy_np;
-> >  
-> > -       if (!ds->ops->adjust_link)
-> > -               return dsa_port_phylink_register(dp);
-> > +       if (!ds->ops->adjust_link) {
-> > +               phy_np = of_parse_phandle(dp->dn, "phy-handle", 0);
-> > +               if (of_phy_is_fixed_link(dp->dn) || phy_np)
-> > +                       return dsa_port_phylink_register(dp);
-> > +               return 0;
-> > +       }
-> >  
-> >         dev_warn(ds->dev,
-> >                  "Using legacy PHYLIB callbacks. Please migrate to PHYLINK!\n");
-> > @@ -646,11 +651,12 @@ void dsa_port_link_unregister_of(struct dsa_port *dp)
-> >  {
-> >         struct dsa_switch *ds = dp->ds;
-> >  
-> > -       if (!ds->ops->adjust_link) {
-> > +       if (!ds->ops->adjust_link && dp->pl) {
-> >                 rtnl_lock();
-> >                 phylink_disconnect_phy(dp->pl);
-> >                 rtnl_unlock();
-> >                 phylink_destroy(dp->pl);
-> > +               dp->pl = NULL;
-> >                 return;
-> >         }
-> > 
-> > So basically only instantiate phylink if there is a fixed-link
-> > property, or a phy-handle.
-> > 
-> > What i think is still broken is if there is a phy-mode property, and
-> > nothing else. e.g. to set RGMII delays. I think that will get ignored.
-> 
-> Can you please verify that mac_link_up() gets called for these if
-> there is a fixed-link property or phy-handle?
-> 
-> Also, there is another way around this, which is for phylink_create()
-> to callback through the mac_ops to request the default configuration.
-> That could be plumbed down through the various DSA layers such that
-> the old "max speed / max link" business could be setup.  However,
-> that brings with it a new problem: if we default to a fixed-link, then
-> attempting to connect a phy later will be ignored.  However, deferring
-> the default create-time configuration setup to phylink_start() would
-> work around it, but brings with it a bit more complexity.
+On Thu, Feb 13, 2020 at 7:22 AM Gustavo A. R. Silva
+<gustavo@embeddedor.com> wrote:
+>
+> The current codebase makes use of the zero-length array language
+> extension to the C90 standard, but the preferred mechanism to declare
+> variable-length types such as these ones is a flexible array member[1][2],
+> introduced in C99:
+>
+> struct foo {
+>         int stuff;
+>         struct boo array[];
+> };
+>
+> By making use of the mechanism above, we will get a compiler warning
+> in case the flexible array does not occur last in the structure, which
+> will help us prevent some kind of undefined behavior bugs from being
+> inadvertently introduced[3] to the codebase from now on.
+>
+> Also, notice that, dynamic memory allocations won't be affected by
+> this change:
+>
+> "Flexible array members have incomplete type, and so the sizeof operator
+> may not be applied. As a quirk of the original implementation of
+> zero-length arrays, sizeof evaluates to zero."[1]
+>
+> This issue was found with the help of Coccinelle.
+>
+> [1] https://gcc.gnu.org/onlinedocs/gcc/Zero-Length.html
+> [2] https://github.com/KSPP/linux/issues/21
+> [3] commit 76497732932f ("cxgb3/l2t: Fix undefined behaviour")
+>
+> Signed-off-by: Gustavo A. R. Silva <gustavo@embeddedor.com>
+> ---
 
-Hmm.
+Sure, why not, though I don't think that's the only one (e.g.,
+bpf_storage_buffer's data is zero-length as well).
 
-Andrew, it is possible that what I have in the ZII branch does end
-up fixing this problem by accident without requiring any further
-code changes in DSA.
+Acked-by: Andrii Nakryiko <andriin@fb.com>
 
-If a node has no fixed-link nor PHY, phylink defaults to MLO_AN_PHY
-mode - and without a PHY, phylink will never believe that the link
-has come up.  Hence, mac_link_up() will never be called.
-
-If a node has a fixed-link property, then phylink will parse it,
-and by default, fixed-links without GPIOs or a callback function
-will come up at initialisation.  Hence, we get a mac_link_up()
-call with the fixed-link parameters.
-
-If a node has a PHY, then DSA will instruct phylink to connect to
-it, and it will behave as any other PHY-attached MAC, calling
-mac_link_up() at the appropriate time.
-
-The mv88e6xxx driver by default configures CPU and DSA ports to
-maximum speed, which is what we get if mac_link_up() is never
-called.  On the other hand, if there's a fixed-link or PHY, we'll
-call mac_link_up() to program those parameters.
-
-So, provided all drivers are converted to program the speed/duplex
-etc in mac_link_up(), we might not have a problem at all - and
-that would be an additional motivation for everyone to update to
-the changes I've proposed!
-
-What I don't like - if the above is correct - is that this is
-merely coincidental.
-
-Now, while that sounds great, something's niggling me about it.
-If the link is forced up by the DSA driver initialisation defaulting
-the speed to maximum speed, but phylink believes the link to be down,
-and then we get a mac_link_up() call, with the patches as they stand
-we end up changing the port configuration while the link is up, which
-I'm sure I've read shouldn't be done in some of the DSA switch
-functional specs.  Hmm.
-
--- 
-RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
-FTTC broadband for 0.8mile line in suburbia: sync at 12.1Mbps down 622kbps up
-According to speedtest.net: 11.9Mbps down 500kbps up
+>  kernel/bpf/queue_stack_maps.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+>
+> diff --git a/kernel/bpf/queue_stack_maps.c b/kernel/bpf/queue_stack_maps.c
+> index f697647ceb54..30e1373fd437 100644
+> --- a/kernel/bpf/queue_stack_maps.c
+> +++ b/kernel/bpf/queue_stack_maps.c
+> @@ -19,7 +19,7 @@ struct bpf_queue_stack {
+>         u32 head, tail;
+>         u32 size; /* max_entries + 1 */
+>
+> -       char elements[0] __aligned(8);
+> +       char elements[] __aligned(8);
+>  };
+>
+>  static struct bpf_queue_stack *bpf_queue_stack(struct bpf_map *map)
+> --
+> 2.25.0
+>
