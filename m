@@ -2,119 +2,73 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 1A97315B9D0
-	for <lists+netdev@lfdr.de>; Thu, 13 Feb 2020 07:54:32 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C0D8A15B9D3
+	for <lists+netdev@lfdr.de>; Thu, 13 Feb 2020 07:55:42 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729801AbgBMGya (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 13 Feb 2020 01:54:30 -0500
-Received: from mail-pj1-f68.google.com ([209.85.216.68]:54796 "EHLO
-        mail-pj1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726368AbgBMGya (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 13 Feb 2020 01:54:30 -0500
-Received: by mail-pj1-f68.google.com with SMTP id dw13so1955582pjb.4;
-        Wed, 12 Feb 2020 22:54:28 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=/8OPE3QClCM3tJ/k8M5VunHmvW/7oEs/dWvoTT+1C/w=;
-        b=BGCcKoMqQT1f4WrwRoQM+uU2rWZx8+pR3R+Hto3Iy59l7qrYHGsbyCBMFRD/UIW9cG
-         m0mWDZpfJ6DlISgJcZRZNN3qj3IEgPDqqXF2MhCNl/yszIYtXTvPfV9xEShYAwVjahlY
-         98WFL2jzaLBe2RGwdtpOKb0eoFkemjBRu86EBa21KDtKnKm0TpVHW4iaJcTurHka74y0
-         qmUwtw360q7GN9vDUTWVf7Ws0grYk+1t3yE321JUKs2VVEuWIWUcam36qVVDi2leiXKQ
-         eAYR7/pbXCraf0rLYbiv3geSGoHbK17fO1oc1RoAbT3oozHfF0qFS3U+BLmSD/zCx7Ui
-         Fc2Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=/8OPE3QClCM3tJ/k8M5VunHmvW/7oEs/dWvoTT+1C/w=;
-        b=gD3CFgOrG+JKtRUT3gC5fp5YxuUtb94QKG59fHNTWZeVZcrcoChGdrmdD1XxxDgELi
-         kJyUWqlRO0BSv2bKlPxsgk7qRGkz2g7M/UFPbLIQKhdCUG7o1Cwpq/VAzAb09MAinbQh
-         sLNcXF0yFWhsViLd9bqGkApdx3rvJPV6wI2h1M2xPNIRp04jILuJxICPx1QpGiuh3Ipp
-         CxSGFUmSxouibOtNEUBOMFENRfiwceRuk/zyOesEt1pfZCL54ejfmjcWT9LH7887wx3w
-         yUxFvcuUBsLmaiYFyI91xQ9vQtVIVXG/DZ1FGuETNRb4nRq25zD68uIRWpxi06aIjthk
-         xgUA==
-X-Gm-Message-State: APjAAAX4UrLsY+i+WsL1+bfdcItCyzeo7/gCKIF2L23qN3nJt1RSp6UY
-        oCYV0Rpzu1y+BxoIQGIAhW2Ck4Iw
-X-Google-Smtp-Source: APXvYqymgooCRcFXaTTCTOB9wLJD4VlCpjgkje5+whVps+yfri+vh9v3RU5TRPt2N0KXXExfTus7pQ==
-X-Received: by 2002:a17:90a:a78b:: with SMTP id f11mr3558719pjq.8.1581576867716;
-        Wed, 12 Feb 2020 22:54:27 -0800 (PST)
-Received: from tw-172-25-31-76.office.twttr.net ([8.25.197.24])
-        by smtp.gmail.com with ESMTPSA id y16sm1430168pfn.177.2020.02.12.22.54.26
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 12 Feb 2020 22:54:27 -0800 (PST)
-From:   Cong Wang <xiyou.wangcong@gmail.com>
-To:     netdev@vger.kernel.org
-Cc:     fw@strlen.de, netfilter-devel@vger.kernel.org,
-        Cong Wang <xiyou.wangcong@gmail.com>,
-        syzbot+d195fd3b9a364ddd6731@syzkaller.appspotmail.com,
-        Pablo Neira Ayuso <pablo@netfilter.org>
-Subject: [Patch nf] netfilter: xt_hashlimit: unregister proc file before releasing mutex
-Date:   Wed, 12 Feb 2020 22:53:52 -0800
-Message-Id: <20200213065352.6310-1-xiyou.wangcong@gmail.com>
-X-Mailer: git-send-email 2.21.1
+        id S1729761AbgBMGzl (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 13 Feb 2020 01:55:41 -0500
+Received: from stargate.chelsio.com ([12.32.117.8]:38423 "EHLO
+        stargate.chelsio.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726368AbgBMGzl (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 13 Feb 2020 01:55:41 -0500
+Received: from [10.193.187.42] (win-egq4kmmdjvo.asicdesigners.com [10.193.187.42] (may be forged))
+        by stargate.chelsio.com (8.13.8/8.13.8) with ESMTP id 01D6taFa029051;
+        Wed, 12 Feb 2020 22:55:37 -0800
+Subject: Re: [net] net/tls: Fix to avoid gettig invalid tls record
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     davem@davemloft.net, netdev@vger.kernel.org,
+        linux-crypto@vger.kernel.org
+References: <20200212071630.26650-1-rohitm@chelsio.com>
+ <20200212200945.34460c3a@cakuba.hsd1.ca.comcast.net>
+From:   rohit maheshwari <rohitm@chelsio.com>
+Message-ID: <6a47e7aa-c98a-ede5-f0d6-ce2bdc4875e8@chelsio.com>
+Date:   Thu, 13 Feb 2020 12:25:36 +0530
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.2.1
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+In-Reply-To: <20200212200945.34460c3a@cakuba.hsd1.ca.comcast.net>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 7bit
+Content-Language: en-US
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Before releasing the global mutex, we only unlink the hashtable
-from the hash list, its proc file is still not unregistered at
-this point. So syzbot could trigger a race condition where a
-parallel htable_create() could register the same file immediately
-after the mutex is released.
 
-Move htable_remove_proc_entry() back to mutex protection to
-fix this. And, fold htable_destroy() into htable_put() to make
-the code slightly easier to understand.
+On 13/02/20 9:39 AM, Jakub Kicinski wrote:
+> On Wed, 12 Feb 2020 12:46:30 +0530, Rohit Maheshwari wrote:
+>> Current code doesn't check if tcp sequence number is starting from (/after)
+>> 1st record's start sequnce number. It only checks if seq number is before
+>> 1st record's end sequnce number. This problem will always be a possibility
+>> in re-transmit case. If a record which belongs to a requested seq number is
+>> already deleted, tls_get_record will start looking into list and as per the
+>> check it will look if seq number is before the end seq of 1st record, which
+>> will always be true and will return 1st record always, it should in fact
+>> return NULL.
+> I think I see your point, do you observe this problem in practice
+> or did you find this through code review?
+I am seeing this issue while running stress test.
+>> diff --git a/net/tls/tls_device.c b/net/tls/tls_device.c
+>> index cd91ad812291..2898517298bf 100644
+>> --- a/net/tls/tls_device.c
+>> +++ b/net/tls/tls_device.c
+>> @@ -602,7 +602,8 @@ struct tls_record_info *tls_get_record(struct tls_offload_context_tx *context,
+>>   		 */
+>>   		info = list_first_entry_or_null(&context->records_list,
+>>   						struct tls_record_info, list);
+>> -		if (!info)
+>> +		/* return NULL if seq number even before the 1st entry. */
+>> +		if (!info || before(seq, info->end_seq - info->len))
+> Is it not more appropriate to use between() in the actual comparison
+> below? I feel like with this patch we can get false negatives.
 
-Reported-and-tested-by: syzbot+d195fd3b9a364ddd6731@syzkaller.appspotmail.com
-Fixes: c4a3922d2d20 ("netfilter: xt_hashlimit: reduce hashlimit_mutex scope for htable_put()")
-Cc: Florian Westphal <fw@strlen.de>
-Cc: Pablo Neira Ayuso <pablo@netfilter.org>
-Signed-off-by: Cong Wang <xiyou.wangcong@gmail.com>
----
- net/netfilter/xt_hashlimit.c | 16 ++++++----------
- 1 file changed, 6 insertions(+), 10 deletions(-)
+If we use between(), though record doesn't exist, we still go and 
+compare each record,
 
-diff --git a/net/netfilter/xt_hashlimit.c b/net/netfilter/xt_hashlimit.c
-index 7a2c4b8408c4..8c835ad63729 100644
---- a/net/netfilter/xt_hashlimit.c
-+++ b/net/netfilter/xt_hashlimit.c
-@@ -402,15 +402,6 @@ static void htable_remove_proc_entry(struct xt_hashlimit_htable *hinfo)
- 		remove_proc_entry(hinfo->name, parent);
- }
- 
--static void htable_destroy(struct xt_hashlimit_htable *hinfo)
--{
--	cancel_delayed_work_sync(&hinfo->gc_work);
--	htable_remove_proc_entry(hinfo);
--	htable_selective_cleanup(hinfo, true);
--	kfree(hinfo->name);
--	vfree(hinfo);
--}
--
- static struct xt_hashlimit_htable *htable_find_get(struct net *net,
- 						   const char *name,
- 						   u_int8_t family)
-@@ -432,8 +423,13 @@ static void htable_put(struct xt_hashlimit_htable *hinfo)
- {
- 	if (refcount_dec_and_mutex_lock(&hinfo->use, &hashlimit_mutex)) {
- 		hlist_del(&hinfo->node);
-+		htable_remove_proc_entry(hinfo);
- 		mutex_unlock(&hashlimit_mutex);
--		htable_destroy(hinfo);
-+
-+		cancel_delayed_work_sync(&hinfo->gc_work);
-+		htable_selective_cleanup(hinfo, true);
-+		kfree(hinfo->name);
-+		vfree(hinfo);
- 	}
- }
- 
--- 
-2.21.1
+which I think, should actually be avoided.
 
+>>   			return NULL;
+>>   		record_sn = context->unacked_record_sn;
+>>   	}
+> If you post a v2 please add a Fixes tag and CC maintainers of this code.
