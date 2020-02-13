@@ -2,119 +2,108 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 715CF15CCD2
-	for <lists+netdev@lfdr.de>; Thu, 13 Feb 2020 22:01:42 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2860D15CD61
+	for <lists+netdev@lfdr.de>; Thu, 13 Feb 2020 22:38:05 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728105AbgBMVBd (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 13 Feb 2020 16:01:33 -0500
-Received: from mx0a-00082601.pphosted.com ([67.231.145.42]:1574 "EHLO
-        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1728053AbgBMVBa (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 13 Feb 2020 16:01:30 -0500
-Received: from pps.filterd (m0109334.ppops.net [127.0.0.1])
-        by mx0a-00082601.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 01DKwp2B030291
-        for <netdev@vger.kernel.org>; Thu, 13 Feb 2020 13:01:30 -0800
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
- : date : message-id : in-reply-to : references : mime-version :
- content-type; s=facebook; bh=Qow9JKY4oE3pQAjHYvfF82onevFNQU6h376iKCnwHIg=;
- b=Ahn3aNRi9jRjCEikkfhTvST4iph2slUyyXuBfLRoCLSAusDF5UTewwhb4M2Jf+YL8kIt
- 5IFfErDEJW0u11KDxKjTMNyWU86evOHzZ05g+TXG3ZI2YSZSwhjCOopciRU0zLxvvNED
- poEHFstnDn3cvLLVtETa1PczTgDkW6OlgiY= 
-Received: from maileast.thefacebook.com ([163.114.130.16])
-        by mx0a-00082601.pphosted.com with ESMTP id 2y53j937u2-9
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT)
-        for <netdev@vger.kernel.org>; Thu, 13 Feb 2020 13:01:29 -0800
-Received: from intmgw001.08.frc2.facebook.com (2620:10d:c0a8:1b::d) by
- mail.thefacebook.com (2620:10d:c0a8:82::e) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.1779.2; Thu, 13 Feb 2020 13:01:28 -0800
-Received: by devbig006.ftw2.facebook.com (Postfix, from userid 4523)
-        id 51DFD62E2004; Thu, 13 Feb 2020 13:01:22 -0800 (PST)
-Smtp-Origin-Hostprefix: devbig
-From:   Song Liu <songliubraving@fb.com>
-Smtp-Origin-Hostname: devbig006.ftw2.facebook.com
-To:     <netdev@vger.kernel.org>, <bpf@vger.kernel.org>
-CC:     <kernel-team@fb.com>, <ast@kernel.org>, <daniel@iogearbox.net>,
-        Song Liu <songliubraving@fb.com>
-Smtp-Origin-Cluster: ftw2c04
-Subject: [RFC bpf-next 4/4] bpftool: Documentation for bpftool prog profile
-Date:   Thu, 13 Feb 2020 13:01:15 -0800
-Message-ID: <20200213210115.1455809-5-songliubraving@fb.com>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20200213210115.1455809-1-songliubraving@fb.com>
-References: <20200213210115.1455809-1-songliubraving@fb.com>
-X-FB-Internal: Safe
+        id S1728209AbgBMViA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 13 Feb 2020 16:38:00 -0500
+Received: from mail-lj1-f193.google.com ([209.85.208.193]:42042 "EHLO
+        mail-lj1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727778AbgBMViA (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 13 Feb 2020 16:38:00 -0500
+Received: by mail-lj1-f193.google.com with SMTP id d10so8337977ljl.9
+        for <netdev@vger.kernel.org>; Thu, 13 Feb 2020 13:37:59 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linux-foundation.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=jtS4rjKch/eIxYuRE1rBd1Np3fh95EMJHZPtozx1IdU=;
+        b=cFIjwFlka8Q6k5k0uwiVOYQh3KBGZAx1jTW+glsWmbGPwW49m06Ggcglnis/tiHHay
+         ZSE+vfV0yXAAXW0sTdr2mfTP0lHIqZJAWrU2TNWwpoj1rKjxwn/vmL5G7GDwWRxe9gI5
+         OFGRlR97WSSIJ71X/s74bTCKEX95FOy4zawho=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=jtS4rjKch/eIxYuRE1rBd1Np3fh95EMJHZPtozx1IdU=;
+        b=lHWR4zt1YTErOj4+70Vc5HqDDOjcqDfCBhixihoPV5cHQKkrYGAs2bRb8wPHS5nStI
+         eCBZLPxY91kKnl5SKMfP9djBNfL2BCHYPpQ0+v7BmrBFPTNWg8H1YkYJC/7U1iacayr9
+         8bniDKoRhzb7LMT/PR/qmURnTf8WAq5Nftx6feNQId4kIGimejonBRHZBJvaMuTxt1vz
+         MFUcWsqlrGOXaDlkRuaUlVUlbL+UylaOwxTaUreeCXRqmjCQUofJPlKyBbO+1LweT2EI
+         j0eAaMVtbR3J4zsatrhaCw45jUwWDyDvCU1mv8WGTIH1lJ5vXKPxCZveLiRLtWCeh9o7
+         AApQ==
+X-Gm-Message-State: APjAAAXVflPigUBJJoeSfa1k7wRQ1ps5V/PpEdPEXIGhWoF7HFbWukku
+        XvbAp8PRrXJDSqNTm2jiXBw23aLlXy0=
+X-Google-Smtp-Source: APXvYqxcHErnDgEJ5ArINcx2+PMBl0nhkUtM2ohxf7eU7mukkWDaFvtKWfvmvtU3MrAZ9AshIKTg8A==
+X-Received: by 2002:a2e:9b90:: with SMTP id z16mr12781831lji.254.1581629878031;
+        Thu, 13 Feb 2020 13:37:58 -0800 (PST)
+Received: from mail-lj1-f178.google.com (mail-lj1-f178.google.com. [209.85.208.178])
+        by smtp.gmail.com with ESMTPSA id t10sm2247779lji.61.2020.02.13.13.37.56
+        for <netdev@vger.kernel.org>
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 13 Feb 2020 13:37:56 -0800 (PST)
+Received: by mail-lj1-f178.google.com with SMTP id q8so8353506ljb.2
+        for <netdev@vger.kernel.org>; Thu, 13 Feb 2020 13:37:56 -0800 (PST)
+X-Received: by 2002:a2e:88c5:: with SMTP id a5mr12479474ljk.201.1581629876398;
+ Thu, 13 Feb 2020 13:37:56 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.138,18.0.572
- definitions=2020-02-13_08:2020-02-12,2020-02-13 signatures=0
-X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 malwarescore=0
- priorityscore=1501 phishscore=0 lowpriorityscore=0 suspectscore=0
- bulkscore=0 adultscore=0 mlxscore=0 impostorscore=0 clxscore=1015
- spamscore=0 mlxlogscore=999 classifier=spam adjust=0 reason=mlx
- scancount=1 engine=8.12.0-2001150001 definitions=main-2002130150
-X-FB-Internal: deliver
+References: <20200128025958.43490-1-arjunroy.kdev@gmail.com>
+ <20200128025958.43490-2-arjunroy.kdev@gmail.com> <20200212184101.b8551710bd19c8216d62290d@linux-foundation.org>
+In-Reply-To: <20200212184101.b8551710bd19c8216d62290d@linux-foundation.org>
+From:   Linus Torvalds <torvalds@linux-foundation.org>
+Date:   Thu, 13 Feb 2020 13:37:40 -0800
+X-Gmail-Original-Message-ID: <CAHk-=whXrLfFrgJKrLUCXB0_ncXAetOqp7Crv4pqmKfiEjh4=w@mail.gmail.com>
+Message-ID: <CAHk-=whXrLfFrgJKrLUCXB0_ncXAetOqp7Crv4pqmKfiEjh4=w@mail.gmail.com>
+Subject: Re: [PATCH resend mm,net-next 2/3] mm: Add vm_insert_pages().
+To:     Andrew Morton <akpm@linux-foundation.org>
+Cc:     Arjun Roy <arjunroy.kdev@gmail.com>,
+        David Miller <davem@davemloft.net>,
+        Netdev <netdev@vger.kernel.org>, Linux-MM <linux-mm@kvack.org>,
+        arjunroy@google.com, Eric Dumazet <edumazet@google.com>,
+        Soheil Hassas Yeganeh <soheil@google.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add documentation for the new bpftool prog profile command.
+On Wed, Feb 12, 2020 at 6:41 PM Andrew Morton <akpm@linux-foundation.org> wrote:
+>
+> Also, vm_insert_page() does
+>
+>         if (!page_count(page))
+>                 return -EINVAL;
+>
+> and this was not carried over into vm_insert_pages().  How come?
 
-Signed-off-by: Song Liu <songliubraving@fb.com>
----
- .../bpf/bpftool/Documentation/bpftool-prog.rst  | 17 +++++++++++++++++
- 1 file changed, 17 insertions(+)
+Sounds like that was just a mistake.
 
-diff --git a/tools/bpf/bpftool/Documentation/bpftool-prog.rst b/tools/bpf/bpftool/Documentation/bpftool-prog.rst
-index 64ddf8a4c518..22ff0df327a1 100644
---- a/tools/bpf/bpftool/Documentation/bpftool-prog.rst
-+++ b/tools/bpf/bpftool/Documentation/bpftool-prog.rst
-@@ -30,6 +30,7 @@ PROG COMMANDS
- |	**bpftool** **prog detach** *PROG* *ATTACH_TYPE* [*MAP*]
- |	**bpftool** **prog tracelog**
- |	**bpftool** **prog run** *PROG* **data_in** *FILE* [**data_out** *FILE* [**data_size_out** *L*]] [**ctx_in** *FILE* [**ctx_out** *FILE* [**ctx_size_out** *M*]]] [**repeat** *N*]
-+|	**bpftool** **prog profile** *DURATION* *PROG* *METRICs*
- |	**bpftool** **prog help**
- |
- |	*MAP* := { **id** *MAP_ID* | **pinned** *FILE* }
-@@ -47,6 +48,9 @@ PROG COMMANDS
- |       *ATTACH_TYPE* := {
- |		**msg_verdict** | **stream_verdict** | **stream_parser** | **flow_dissector**
- |	}
-+|	*METRIC* := {
-+|		**cycles** | **instructions** | **l1d_loads** | **llc_misses**
-+|	}
- 
- 
- DESCRIPTION
-@@ -188,6 +192,10 @@ DESCRIPTION
- 		  not all of them can take the **ctx_in**/**ctx_out**
- 		  arguments. bpftool does not perform checks on program types.
- 
-+	**bpftool prog profile** *DURATION* *PROG* *METRICs*
-+		  Profile *METRICs* for bpf program *PROG* for *DURATION*
-+		  seconds.
-+
- 	**bpftool prog help**
- 		  Print short help message.
- 
-@@ -310,6 +318,15 @@ EXAMPLES
- 
- **# rm /sys/fs/bpf/xdp1**
- 
-+|
-+| **# bpftool prog profile 20 id 810 cycles instructions**
-+
-+::
-+    cycles: duration 20 run_cnt 1368 miss_cnt 665
-+            counter 503377 enabled 668202 running 351857
-+    instructions: duration 20 run_cnt 1368 miss_cnt 707
-+	    counter 398625 enabled 502330 running 272014
-+
- SEE ALSO
- ========
- 	**bpf**\ (2),
--- 
-2.17.1
+> I don't know what that test does - it was added by Linus in the
+> original commit a145dd411eb28c83.  It's only been 15 years so I'm sure
+> he remembers ;)
 
+Oh, sure.
+
+No, I have absolutely no memory of the details, but I think the commit
+message is actually the big hint: the difference between
+vm_insert_page() and some of the more random "insert any pdf" cases we
+have is exactly that:
+
+    The page you insert needs to be a nice clean kernel allocation, so you
+    can't insert arbitrary page mappings with this, but that's not what
+    people want.
+
+thing. The comment above it also kind of hints at it.
+
+We *historically* had interfaces to insert random reserved pages (for
+IO mappings, but also the zero page etc), but the whole point of that
+vm_insert_page() is that it's now an interface for drivers to insert
+the pages they maintain into the page tables.
+
+But that also means that we very much didn't allow just random pages
+accessed by doing pfn lookups (that might not be in use at all).
+
+Is "page_count()" a great test? No. But it's at least _a_ test of
+that. No reserved pages or other magic need apply.
+
+         Linus
