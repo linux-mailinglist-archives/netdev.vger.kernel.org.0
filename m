@@ -2,183 +2,262 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 10D6015BD7A
-	for <lists+netdev@lfdr.de>; Thu, 13 Feb 2020 12:14:03 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7CDA115BD99
+	for <lists+netdev@lfdr.de>; Thu, 13 Feb 2020 12:22:09 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729872AbgBMLN7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 13 Feb 2020 06:13:59 -0500
-Received: from mga03.intel.com ([134.134.136.65]:13458 "EHLO mga03.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726232AbgBMLN7 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 13 Feb 2020 06:13:59 -0500
-X-Amp-Result: SKIPPED(no attachment in message)
-X-Amp-File-Uploaded: False
-Received: from fmsmga002.fm.intel.com ([10.253.24.26])
-  by orsmga103.jf.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 13 Feb 2020 03:13:57 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.70,436,1574150400"; 
-   d="scan'208";a="267040890"
-Received: from orsmsx101.amr.corp.intel.com ([10.22.225.128])
-  by fmsmga002.fm.intel.com with ESMTP; 13 Feb 2020 03:13:56 -0800
-Received: from orsmsx157.amr.corp.intel.com (10.22.240.23) by
- ORSMSX101.amr.corp.intel.com (10.22.225.128) with Microsoft SMTP Server (TLS)
- id 14.3.439.0; Thu, 13 Feb 2020 03:13:56 -0800
-Received: from orsmsx115.amr.corp.intel.com ([169.254.4.100]) by
- ORSMSX157.amr.corp.intel.com ([169.254.9.95]) with mapi id 14.03.0439.000;
- Thu, 13 Feb 2020 03:13:55 -0800
-From:   "Boeuf, Sebastien" <sebastien.boeuf@intel.com>
-To:     "sgarzare@redhat.com" <sgarzare@redhat.com>
-CC:     "stefanha@redhat.com" <stefanha@redhat.com>,
+        id S1729761AbgBMLWI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 13 Feb 2020 06:22:08 -0500
+Received: from us-smtp-2.mimecast.com ([205.139.110.61]:34231 "EHLO
+        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1729428AbgBMLWH (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 13 Feb 2020 06:22:07 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1581592926;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=2Sse7iKtOsTLbxsfOMaYwOFldT7RFxq2LUJ0r3ymtPM=;
+        b=Ig7klHiJMAs8zW/4za0Moi2VY0GmCR9YDeOa+icKF/SiifB/QCV1WGwlVmFxSh05aiJP69
+        yAARRzpZZI57vFXN2WhMoYq0GQEsgnOn58i9WtUcJCxRyjtlRrYJ7leH7nvPBupS9oN8xD
+        SVmY/Y2yTLlCNFrLQAMrIyhIxCXVu8I=
+Received: from mail-wr1-f71.google.com (mail-wr1-f71.google.com
+ [209.85.221.71]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-142-nuWR8fmhOIuAj965etT_rw-1; Thu, 13 Feb 2020 06:22:05 -0500
+X-MC-Unique: nuWR8fmhOIuAj965etT_rw-1
+Received: by mail-wr1-f71.google.com with SMTP id a12so2192112wrn.19
+        for <netdev@vger.kernel.org>; Thu, 13 Feb 2020 03:22:04 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=2Sse7iKtOsTLbxsfOMaYwOFldT7RFxq2LUJ0r3ymtPM=;
+        b=hMxlb0KajoiCPr09YSID9m0OMrw5WW59pDc5S/KiM6HGdyunnePfTUZGBIK1Sy6PM9
+         VK2Edcm/8upEVEkhHVUPSztQXwRkArY2KV86uxwQL+oVQln5IcV2Ep5I7xAD+H4XXb6s
+         aEDBeC+8P8mdUB1UWWktGSDBqz0Ayi3ELsug7f1KIny0YdRgEHs5mEhV5Hrvy/Tn4rQo
+         idtdfbwURhkYzWAUpKLL1B966L5A+nKZ/QeX6PCELxe+r0VDi+kbuw9iMCfipYiVUv3s
+         0NBJ7qXFl/TUftVESHO24nWXCcgJ+PbvCxf875rh/rwYZE/zFgsk+8Eo1bPE2uiifpdV
+         zUMw==
+X-Gm-Message-State: APjAAAUTRtFO6lMUUR8zsT7CB9EaLi61CMJzuDsznnwvC3MyXmq6/nQ3
+        TIXAdDj3GBbLxASV+cEb5xxwMm8MLZkSPfc+WgX/Rt3eYiMYdMjN8kBaOKVpvGjxMiKlTQ8GBcw
+        WEm2YCYnBKKz0W92a
+X-Received: by 2002:adf:f5cb:: with SMTP id k11mr20944034wrp.63.1581592923774;
+        Thu, 13 Feb 2020 03:22:03 -0800 (PST)
+X-Google-Smtp-Source: APXvYqxwZegzL4oNL0+cCxkqt2MR6p1S5jmwlAJp7qC0dpflOMm6Ti43kAWJ25piyx03GBh2NIQuxg==
+X-Received: by 2002:adf:f5cb:: with SMTP id k11mr20944007wrp.63.1581592923524;
+        Thu, 13 Feb 2020 03:22:03 -0800 (PST)
+Received: from steredhat (host209-4-dynamic.27-79-r.retail.telecomitalia.it. [79.27.4.209])
+        by smtp.gmail.com with ESMTPSA id u8sm2648710wmm.15.2020.02.13.03.22.02
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 13 Feb 2020 03:22:02 -0800 (PST)
+Date:   Thu, 13 Feb 2020 12:22:00 +0100
+From:   Stefano Garzarella <sgarzare@redhat.com>
+To:     "Boeuf, Sebastien" <sebastien.boeuf@intel.com>
+Cc:     "stefanha@redhat.com" <stefanha@redhat.com>,
         "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
         "davem@davemloft.net" <davem@davemloft.net>
 Subject: Re: [PATCH] net: virtio_vsock: Fix race condition between bind and
  listen
-Thread-Topic: [PATCH] net: virtio_vsock: Fix race condition between bind and
- listen
-Thread-Index: AQHV4k47o+FvdyeZdUa5OLpq2zu4PqgZZQkAgAAC0ACAAAitgIAABgwAgAAFMoCAAAMUAA==
-Date:   Thu, 13 Feb 2020 11:13:55 +0000
-Message-ID: <efccb718a50a91e31807ac93fee58852ef334434.camel@intel.com>
+Message-ID: <20200213112200.7qv2a7em64jpyjs3@steredhat>
 References: <668b0eda8823564cd604b1663dc53fbaece0cd4e.camel@intel.com>
-         <20200213094130.vehzkr4a3pnoiogr@steredhat>
-         <3448e588f11dad913e93dfce8031fbd60ba4c85b.camel@intel.com>
-         <20200213102237.uyhfv5g2td5ayg2b@steredhat>
-         <1d4c3958d8b75756341548e7d51ccf42397c2d27.camel@intel.com>
-         <20200213110251.2unj3sykwpku6dd7@steredhat>
-In-Reply-To: <20200213110251.2unj3sykwpku6dd7@steredhat>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-originating-ip: [10.252.24.191]
-Content-Type: text/plain; charset="utf-8"
-Content-ID: <C397B99C8E613547AAE4642352EDFA69@intel.com>
+ <20200213094130.vehzkr4a3pnoiogr@steredhat>
+ <3448e588f11dad913e93dfce8031fbd60ba4c85b.camel@intel.com>
+ <20200213102237.uyhfv5g2td5ayg2b@steredhat>
+ <1d4c3958d8b75756341548e7d51ccf42397c2d27.camel@intel.com>
+ <20200213110251.2unj3sykwpku6dd7@steredhat>
+ <efccb718a50a91e31807ac93fee58852ef334434.camel@intel.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <efccb718a50a91e31807ac93fee58852ef334434.camel@intel.com>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-T24gVGh1LCAyMDIwLTAyLTEzIGF0IDEyOjAyICswMTAwLCBTdGVmYW5vIEdhcnphcmVsbGEgd3Jv
-dGU6DQo+IE9uIFRodSwgRmViIDEzLCAyMDIwIGF0IDEwOjQ0OjE4QU0gKzAwMDAsIEJvZXVmLCBT
-ZWJhc3RpZW4gd3JvdGU6DQo+ID4gT24gVGh1LCAyMDIwLTAyLTEzIGF0IDExOjIyICswMTAwLCBT
-dGVmYW5vIEdhcnphcmVsbGEgd3JvdGU6DQo+ID4gPiBPbiBUaHUsIEZlYiAxMywgMjAyMCBhdCAw
-OTo1MTozNkFNICswMDAwLCBCb2V1ZiwgU2ViYXN0aWVuIHdyb3RlOg0KPiA+ID4gPiBIaSBTdGVm
-YW5vLA0KPiA+ID4gPiANCj4gPiA+ID4gT24gVGh1LCAyMDIwLTAyLTEzIGF0IDEwOjQxICswMTAw
-LCBTdGVmYW5vIEdhcnphcmVsbGEgd3JvdGU6DQo+ID4gPiA+ID4gSGkgU2ViYXN0aWVuLA0KPiA+
-ID4gPiA+IA0KPiA+ID4gPiA+IE9uIFRodSwgRmViIDEzLCAyMDIwIGF0IDA5OjE2OjExQU0gKzAw
-MDAsIEJvZXVmLCBTZWJhc3RpZW4NCj4gPiA+ID4gPiB3cm90ZToNCj4gPiA+ID4gPiA+IEZyb20g
-MmYxMjc2ZDAyZjVhMTJkODVhZWM1YWRjMTFkZmUxZWFiN2UxNjBkNiBNb24gU2VwIDE3DQo+ID4g
-PiA+ID4gPiAwMDowMDowMA0KPiA+ID4gPiA+ID4gMjAwMQ0KPiA+ID4gPiA+ID4gRnJvbTogU2Vi
-YXN0aWVuIEJvZXVmIDxzZWJhc3RpZW4uYm9ldWZAaW50ZWwuY29tPg0KPiA+ID4gPiA+ID4gRGF0
-ZTogVGh1LCAxMyBGZWIgMjAyMCAwODo1MDozOCArMDEwMA0KPiA+ID4gPiA+ID4gU3ViamVjdDog
-W1BBVENIXSBuZXQ6IHZpcnRpb192c29jazogRml4IHJhY2UgY29uZGl0aW9uDQo+ID4gPiA+ID4g
-PiBiZXR3ZWVuDQo+ID4gPiA+ID4gPiBiaW5kDQo+ID4gPiA+ID4gPiBhbmQgbGlzdGVuDQo+ID4g
-PiA+ID4gPiANCj4gPiA+ID4gPiA+IFdoZW5ldmVyIHRoZSB2c29jayBiYWNrZW5kIG9uIHRoZSBo
-b3N0IHNlbmRzIGEgcGFja2V0DQo+ID4gPiA+ID4gPiB0aHJvdWdoDQo+ID4gPiA+ID4gPiB0aGUN
-Cj4gPiA+ID4gPiA+IFJYDQo+ID4gPiA+ID4gPiBxdWV1ZSwgaXQgZXhwZWN0cyBhbiBhbnN3ZXIg
-b24gdGhlIFRYIHF1ZXVlLiBVbmZvcnR1bmF0ZWx5LA0KPiA+ID4gPiA+ID4gdGhlcmUNCj4gPiA+
-ID4gPiA+IGlzIG9uZQ0KPiA+ID4gPiA+ID4gY2FzZSB3aGVyZSB0aGUgaG9zdCBzaWRlIHdpbGwg
-aGFuZyB3YWl0aW5nIGZvciB0aGUgYW5zd2VyDQo+ID4gPiA+ID4gPiBhbmQNCj4gPiA+ID4gPiA+
-IHdpbGwNCj4gPiA+ID4gPiA+IGVmZmVjdGl2ZWx5IG5ldmVyIHJlY292ZXIuDQo+ID4gPiA+ID4g
-DQo+ID4gPiA+ID4gRG8geW91IGhhdmUgYSB0ZXN0IGNhc2U/DQo+ID4gPiA+IA0KPiA+ID4gPiBZ
-ZXMgSSBkby4gVGhpcyBoYXMgYmVlbiBhIGJ1ZyB3ZSd2ZSBiZWVuIGludmVzdGlnYXRpbmcgb24g
-S2F0YQ0KPiA+ID4gPiBDb250YWluZXJzIGZvciBxdWl0ZSBzb21lIHRpbWUgbm93LiBUaGlzIHdh
-cyBoYXBwZW5pbmcgd2hlbg0KPiA+ID4gPiB1c2luZw0KPiA+ID4gPiBLYXRhDQo+ID4gPiA+IGFs
-b25nIHdpdGggQ2xvdWQtSHlwZXJ2aXNvciAod2hpY2ggcmVseSBvbiB0aGUgaHlicmlkIHZzb2Nr
-DQo+ID4gPiA+IGltcGxlbWVudGF0aW9uIGZyb20gRmlyZWNyYWNrZXIpLiBUaGUgdGhpbmcgaXMs
-IHRoaXMgYnVnIGlzDQo+ID4gPiA+IHZlcnkNCj4gPiA+ID4gaGFyZA0KPiA+ID4gPiB0byByZXBy
-b2R1Y2UgYW5kIHdhcyBoYXBwZW5pbmcgZm9yIEthdGEgYmVjYXVzZSBvZiB0aGUNCj4gPiA+ID4g
-Y29ubmVjdGlvbg0KPiA+ID4gPiBzdHJhdGVneS4gVGhlIGthdGEtcnVudGltZSB0cmllcyB0byBj
-b25uZWN0IGEgbWlsbGlvbiB0aW1lcw0KPiA+ID4gPiBhZnRlcg0KPiA+ID4gPiBpdA0KPiA+ID4g
-PiBzdGFydGVkIHRoZSBWTSwganVzdCBob3BpbmcgdGhlIGthdGEtYWdlbnQgd2lsbCBzdGFydCB0
-byBsaXN0ZW4NCj4gPiA+ID4gZnJvbQ0KPiA+ID4gPiB0aGUgZ3Vlc3Qgc2lkZSBhdCBzb21lIHBv
-aW50Lg0KPiA+ID4gDQo+ID4gPiBNYXliZSBpcyByZWxhdGVkIHRvIHNvbWV0aGluZyBlbHNlLiBJ
-IHRyaWVkIHRoZSBmb2xsb3dpbmcgd2hpY2gNCj4gPiA+IHNob3VsZCBiZQ0KPiA+ID4geW91ciBj
-YXNlIHNpbXBsaWZpZWQgKElJVUMpOg0KPiA+ID4gDQo+ID4gPiBndWVzdCQgcHl0aG9uDQo+ID4g
-PiAgICAgaW1wb3J0IHNvY2tldA0KPiA+ID4gICAgIHMgPSBzb2NrZXQuc29ja2V0KHNvY2tldC5B
-Rl9WU09DSywgc29ja2V0LlNPQ0tfU1RSRUFNKQ0KPiA+ID4gICAgIHMuYmluZCgoc29ja2V0LlZN
-QUREUl9DSURfQU5ZLCAxMjM0KSkNCj4gPiA+IA0KPiA+ID4gaG9zdCQgcHl0aG9uDQo+ID4gPiAg
-ICAgaW1wb3J0IHNvY2tldA0KPiA+ID4gICAgIHMgPSBzb2NrZXQuc29ja2V0KHNvY2tldC5BRl9W
-U09DSywgc29ja2V0LlNPQ0tfU1RSRUFNKQ0KPiA+ID4gICAgIHMuY29ubmVjdCgoMywgMTIzNCkp
-DQo+ID4gPiANCj4gPiA+IFRyYWNlYmFjayAobW9zdCByZWNlbnQgY2FsbCBsYXN0KToNCj4gPiA+
-ICAgRmlsZSAiPHN0ZGluPiIsIGxpbmUgMSwgaW4gPG1vZHVsZT4NCj4gPiA+IFRpbWVvdXRFcnJv
-cjogW0Vycm5vIDExMF0gQ29ubmVjdGlvbiB0aW1lZCBvdXQNCj4gPiANCj4gPiBZZXMgdGhpcyBp
-cyBleGFjdGx5IHRoZSBzaW1wbGlmaWVkIGNhc2UuIEJ1dCB0aGF0J3MgdGhlIHBvaW50LCBJDQo+
-ID4gZG9uJ3QNCj4gPiB0aGluayB0aGUgdGltZW91dCBpcyB0aGUgYmVzdCB3YXkgdG8gZ28gaGVy
-ZS4gQmVjYXVzZSB0aGlzIG1lYW5zDQo+ID4gdGhhdA0KPiA+IHdoZW4gd2UgcnVuIGludG8gdGhp
-cyBjYXNlLCB0aGUgaG9zdCBzaWRlIHdpbGwgd2FpdCBmb3IgcXVpdGUgc29tZQ0KPiA+IHRpbWUN
-Cj4gPiBiZWZvcmUgcmV0cnlpbmcsIHdoaWNoIGNhbiBjYXVzZSBhIHZlcnkgbG9uZyBkZWxheSBi
-ZWZvcmUgdGhlDQo+ID4gY29tbXVuaWNhdGlvbiB3aXRoIHRoZSBndWVzdCBpcyBlc3RhYmxpc2hl
-ZC4gQnkgc2ltcGx5IGFuc3dlcmluZw0KPiA+IHRoZQ0KPiA+IGhvc3Qgd2l0aCBhIFJTVCBwYWNr
-ZXQsIHdlIGluZm9ybSBpdCB0aGF0IG5vYm9keSdzIGxpc3RlbmluZyBvbiB0aGUNCj4gPiBndWVz
-dCBzaWRlIHlldCwgdGhlcmVmb3JlIHRoZSBob3N0IHNpZGUgd2lsbCBjbG9zZSBhbmQgdHJ5IGFn
-YWluLg0KPiANCj4gWWVzLCBtYWtlIHNlbnNlLg0KPiANCj4gSSBqdXN0IHdhbnRlZCB0byBwb2lu
-dCBvdXQgdGhhdCB0aGUgaG9zdCBzaG91bGRuJ3QgZ2V0IHN0dWNrIGlmIHRoZQ0KPiBndWVzdCBk
-b2Vzbid0IHJlc3BvbmQuIFNvIGl0J3Mgd2VpcmQgdGhhdCB0aGlzIGhhcHBlbnMgYW5kIGl0IG1p
-Z2h0DQo+IGJlDQo+IHJlbGF0ZWQgdG8gc29tZSBvdGhlciBwcm9ibGVtLg0KDQpZZXMgdGhhdCdz
-IGJlY2F1c2Ugd2UncmUgdXNpbmcgdGhlIGh5YnJpZCB2c29jayBpbXBsZW1lbnRhdGlvbiBmcm9t
-DQpGaXJlY3JhY2tlci4gU28gYmFzaWNhbGx5IHRoZXkgcHJveHkgYSBVTklYIHNvY2tldCBjb25u
-ZWN0aW9uIGludG8gYQ0KVlNPQ0sgc29ja2V0LiBBbmQgdGhlIHRpbWVvdXQgaXMgbm90IGltcGxl
-bWVudGVkLiBJJ2xsIHBvaW50IHRoZW0gb3V0DQp0aGF0J3Mgc29tZXRoaW5nIGl0J2QgYmUgbmlj
-ZSB0byBoYXZlIGFsb25nIHdpdGggdGhpcyBmaXggaW4gdGhlIGd1ZXN0Lg0KDQo+IA0KPiA+ID4g
-PiA+IEluIHRoZSBob3N0LCB0aGUgYWZfdnNvY2suYzp2c29ja19zdHJlYW1fY29ubmVjdCgpIHNl
-dCBhDQo+ID4gPiA+ID4gdGltZW91dCwNCj4gPiA+ID4gPiBzbw0KPiA+ID4gPiA+IGlmDQo+ID4g
-PiA+ID4gdGhlIGhvc3QgdHJ5IHRvIGNvbm5lY3QgYmVmb3JlIHRoZSBndWVzdCBzdGFydHMgbGlz
-dGVuaW5nLA0KPiA+ID4gPiA+IHRoZQ0KPiA+ID4gPiA+IGNvbm5lY3QoKQ0KPiA+ID4gPiA+IHNo
-b3VsZCByZXR1cm4gRVRJTUVET1VUIGlmIHRoZSBndWVzdCBkb2VzIG5vdCBhbnN3ZXINCj4gPiA+
-ID4gPiBhbnl0aGluZy4NCj4gPiA+ID4gPiANCj4gPiA+ID4gPiBBbnl3YXksIG1heWJlIHRoZSBw
-YXRjaCBtYWtlIHNlbnNlIGFueXdheSwgY2hhbmdpbmcgYSBiaXQgdGhlDQo+ID4gPiA+ID4gZGVz
-Y3JpcHRpb24NCj4gPiA+ID4gPiAoaWYgdGhlIGhvc3QgY29ubmVjdCgpIHJlY2VpdmUgdGhlIEVU
-SU1FRE9VVCkuDQo+ID4gPiA+ID4gSSdtIGp1c3QgY29uY2VybmVkIHRoYXQgdGhpcyBjb2RlIGlz
-IGNvbW1vbiBiZXR3ZWVuIGd1ZXN0IGFuZA0KPiA+ID4gPiA+IGhvc3QuDQo+ID4gPiA+ID4gSWYg
-YQ0KPiA+ID4gPiA+IG1hbGljaW91cyBndWVzdCBzdGFydHMgc2VuZGluZyB1cyB3cm9uZyByZXF1
-ZXN0cywgd2Ugc3BlbmQNCj4gPiA+ID4gPiB0aW1lDQo+ID4gPiA+ID4gc2VuZGluZw0KPiA+ID4g
-PiA+IGEgcmVzZXQgcGFja2V0LiBCdXQgd2UgYWxyZWFkeSBkbyB0aGF0IGlmIHdlIGNhbid0IGZp
-bmQgdGhlDQo+ID4gPiA+ID4gYm91bmQNCj4gPiA+ID4gPiBzb2NrZXQsDQo+ID4gPiA+ID4gc28g
-aXQgbWlnaHQgbWFrZSBzZW5zZS4NCj4gPiA+ID4gDQo+ID4gPiA+IFllcyBJIGRvbid0IHRoaW5r
-IHRoaXMgaXMgZ29ubmEgY2F1c2UgbW9yZSB0cm91YmxlLCBidXQgYXQNCj4gPiA+ID4gbGVhc3Qg
-d2UNCj4gPiA+ID4gY2Fubm90IGVuZCB1cCBpbiB0aGlzIHdlaXJkIHNpdHVhdGlvbiBJIGRlc2Ny
-aWJlZC4NCj4gPiA+IA0KPiA+ID4gT2theSwgYnV0IGluIHRoZSBob3N0LCB3ZSBjYW4ndCB0cnVz
-dCB0aGUgZ3Vlc3QgdG8gYW5zd2VyLCB3ZQ0KPiA+ID4gc2hvdWxkDQo+ID4gPiBoYW5kbGUgdGhp
-cyBjYXNlIHByb3Blcmx5Lg0KPiA+IA0KPiA+IFdlbGwgSSBjYW5ub3QgYWdyZWUgbW9yZSB3aXRo
-IHRoZSAid2UgY2Fubm90IHRydXN0IHRoZSBndWVzdCINCj4gPiBwaGlsb3NvcGh5LCBidXQgaW4g
-dGhpcyBjYXNlIHRoZSB3b3JzdCB0aGluZyB0aGF0IGNhbiBoYXBwZW4gaXMgdGhlDQo+ID4gZ3Vl
-c3Qgc2hvb3RpbmcgaGltc2VsZiBpbiB0aGUgZm9vdCBiZWNhdXNlIGl0IHdvdWxkIHNpbXBseSBw
-cmV2ZW50DQo+ID4gdGhlDQo+ID4gY29ubmVjdGlvbiBmcm9tIGhhcHBlbmluZy4NCj4gPiANCj4g
-PiBBbmQgSSBhZ3JlZSBzZXR0aW5nIHVwIGEgdGltZW91dCBmcm9tIHRoZSBob3N0IHNpZGUgaXMg
-c3RpbGwgYSBnb29kDQo+ID4gaWRlYSBmb3IgcHJldmVudGluZyBmcm9tIHN1Y2ggRE9TIGF0dGFj
-ay4NCj4gPiANCj4gPiBCdXQgYXMgSSBtZW50aW9uZWQgYWJvdmUsIGluIHRoZSBub3JtYWwgdXNl
-IGNhc2UsIHRoaXMgYWxsb3dzIGZvcg0KPiA+IGJldHRlciByZXNwb25zaXZlbmVzcyB3aGVuIGl0
-IGNvbWVzIHRvIGVzdGFibGlzaCB0aGUgY29ubmVjdGlvbiBhcw0KPiA+IGZhc3QNCj4gPiBhcyBw
-b3NzaWJsZS4NCj4gDQo+IFN1cmUsIG1heWJlIHlvdSBjYW4gcmV3cml0ZSBhIGJpdCB0aGUgY29t
-bWl0ICh0aXRsZSBhbmQgYm9keSkgdG8NCj4gZXhwbGFpbg0KPiB0aGlzLg0KDQpPZiBjb3Vyc2Us
-IGxldCBtZSB3b3JrIG9uIHRoaXMuDQpIb3cgYW0gSSBzdXBwb3NlZCB0byByZXNlbmQgdGhlIHBh
-dGNoPyBTaG91bGQgSSBzZW5kIGEgbmV3IGVtYWlsIHdpdGgNCnYyIGluIHRoZSB0aXRsZT8NCg0K
-PiANCj4gPiA+ID4gSSB3YXMganVzdCBub3Qgc3VyZSBpZiB0aGUgZnVuY3Rpb24gd2Ugc2hvdWxk
-IHVzZSB0byBkbyB0aGUNCj4gPiA+ID4gcmVzZXQNCj4gPiA+ID4gc2hvdWxkIGJlIHZpcnRpb190
-cmFuc3BvcnRfcmVzZXRfbm9fc29jaygpIG9yDQo+ID4gPiA+IHZpcnRpb190cmFuc3BvcnRfcmVz
-ZXQoKQ0KPiA+ID4gPiBzaW5jZSBhdCB0aGlzIHBvaW50IHRoZSBzb2NrZXQgaXMgYWxyZWFkeSBi
-b3VuZC4NCj4gPiA+IA0KPiA+ID4gSSB0aGluayB5b3UgY2FuIHNhZmVseSB1c2UgdmlydGlvX3Ry
-YW5zcG9ydF9yZXNldCgpIGluIHRoaXMgY2FzZS4NCj4gPiANCj4gPiBJJ3ZlIGp1c3QgdHJpZWQg
-aXQgYW5kIHVuZm9ydHVuYXRlbHkgaXQgZG9lc24ndCB3b3JrLiBJIHRoaW5rDQo+ID4gdGhhdCdz
-DQo+ID4gYmVjYXVzZSB0aGUgY29ubmVjdGlvbiBoYXMgbm90IGJlZW4gcHJvcGVybHkgZXN0YWJs
-aXNoZWQgeWV0LCBzbyB3ZQ0KPiA+IGNhbm5vdCBjb25zaWRlciBiZWluZyBpbiB0aGlzIGNhc2Uu
-DQo+ID4gVXNpbmcgdmlydGlvX3RyYW5zcG9ydF9yZXNldF9ub19zb2NrKCkgc2VlbXMgbGlrZSB0
-aGUgbGVzcw0KPiA+IGludHJ1c2l2ZQ0KPiA+IGZ1bmN0aW9uIGhlcmUuDQo+IA0KPiBPaCBzb3Jy
-eSwgSSBhbHNvIHB1dCBhIGNvbW1lbnQgb24gdmlydGlvX3RyYW5zcG9ydF9yZXNldCgpIHRvIHNh
-eSB0bw0KPiB1c2UgaXQNCj4gb25seSBvbiBjb25uZWN0ZWQgc29ja2V0cyBhbmQgbm90IGxpc3Rl
-bmVycy4NCj4gSW4gdGhpcyBjYXNlIGl0J3MgYSBsaXN0ZW5lciwgc29ycnkgZm9yIHRoZSB3cm9u
-ZyBzdWdnZXN0aW9uLg0KDQpIZWhlIG5vIHdvcnJpZXMsIGF0IGxlYXN0IHdlJ3JlIG9uIHRoZSBz
-YW1lIHBhZ2UgOikNCg0KVGhhbmtzLA0KU2ViYXN0aWVuDQoNCj4gDQo+IFRoYW5rcywNCj4gU3Rl
-ZmFubw0KPiANCi0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0t
-LS0tLS0tLS0tLS0tLS0tLS0tLS0tLQpJbnRlbCBDb3Jwb3JhdGlvbiBTQVMgKEZyZW5jaCBzaW1w
-bGlmaWVkIGpvaW50IHN0b2NrIGNvbXBhbnkpClJlZ2lzdGVyZWQgaGVhZHF1YXJ0ZXJzOiAiTGVz
-IE1vbnRhbGV0cyItIDIsIHJ1ZSBkZSBQYXJpcywgCjkyMTk2IE1ldWRvbiBDZWRleCwgRnJhbmNl
-ClJlZ2lzdHJhdGlvbiBOdW1iZXI6ICAzMDIgNDU2IDE5OSBSLkMuUy4gTkFOVEVSUkUKQ2FwaXRh
-bDogNCw1NzIsMDAwIEV1cm9zCgpUaGlzIGUtbWFpbCBhbmQgYW55IGF0dGFjaG1lbnRzIG1heSBj
-b250YWluIGNvbmZpZGVudGlhbCBtYXRlcmlhbCBmb3IKdGhlIHNvbGUgdXNlIG9mIHRoZSBpbnRl
-bmRlZCByZWNpcGllbnQocykuIEFueSByZXZpZXcgb3IgZGlzdHJpYnV0aW9uCmJ5IG90aGVycyBp
-cyBzdHJpY3RseSBwcm9oaWJpdGVkLiBJZiB5b3UgYXJlIG5vdCB0aGUgaW50ZW5kZWQKcmVjaXBp
-ZW50LCBwbGVhc2UgY29udGFjdCB0aGUgc2VuZGVyIGFuZCBkZWxldGUgYWxsIGNvcGllcy4K
+On Thu, Feb 13, 2020 at 11:13:55AM +0000, Boeuf, Sebastien wrote:
+> On Thu, 2020-02-13 at 12:02 +0100, Stefano Garzarella wrote:
+> > On Thu, Feb 13, 2020 at 10:44:18AM +0000, Boeuf, Sebastien wrote:
+> > > On Thu, 2020-02-13 at 11:22 +0100, Stefano Garzarella wrote:
+> > > > On Thu, Feb 13, 2020 at 09:51:36AM +0000, Boeuf, Sebastien wrote:
+> > > > > Hi Stefano,
+> > > > > 
+> > > > > On Thu, 2020-02-13 at 10:41 +0100, Stefano Garzarella wrote:
+> > > > > > Hi Sebastien,
+> > > > > > 
+> > > > > > On Thu, Feb 13, 2020 at 09:16:11AM +0000, Boeuf, Sebastien
+> > > > > > wrote:
+> > > > > > > From 2f1276d02f5a12d85aec5adc11dfe1eab7e160d6 Mon Sep 17
+> > > > > > > 00:00:00
+> > > > > > > 2001
+> > > > > > > From: Sebastien Boeuf <sebastien.boeuf@intel.com>
+> > > > > > > Date: Thu, 13 Feb 2020 08:50:38 +0100
+> > > > > > > Subject: [PATCH] net: virtio_vsock: Fix race condition
+> > > > > > > between
+> > > > > > > bind
+> > > > > > > and listen
+> > > > > > > 
+> > > > > > > Whenever the vsock backend on the host sends a packet
+> > > > > > > through
+> > > > > > > the
+> > > > > > > RX
+> > > > > > > queue, it expects an answer on the TX queue. Unfortunately,
+> > > > > > > there
+> > > > > > > is one
+> > > > > > > case where the host side will hang waiting for the answer
+> > > > > > > and
+> > > > > > > will
+> > > > > > > effectively never recover.
+> > > > > > 
+> > > > > > Do you have a test case?
+> > > > > 
+> > > > > Yes I do. This has been a bug we've been investigating on Kata
+> > > > > Containers for quite some time now. This was happening when
+> > > > > using
+> > > > > Kata
+> > > > > along with Cloud-Hypervisor (which rely on the hybrid vsock
+> > > > > implementation from Firecracker). The thing is, this bug is
+> > > > > very
+> > > > > hard
+> > > > > to reproduce and was happening for Kata because of the
+> > > > > connection
+> > > > > strategy. The kata-runtime tries to connect a million times
+> > > > > after
+> > > > > it
+> > > > > started the VM, just hoping the kata-agent will start to listen
+> > > > > from
+> > > > > the guest side at some point.
+> > > > 
+> > > > Maybe is related to something else. I tried the following which
+> > > > should be
+> > > > your case simplified (IIUC):
+> > > > 
+> > > > guest$ python
+> > > >     import socket
+> > > >     s = socket.socket(socket.AF_VSOCK, socket.SOCK_STREAM)
+> > > >     s.bind((socket.VMADDR_CID_ANY, 1234))
+> > > > 
+> > > > host$ python
+> > > >     import socket
+> > > >     s = socket.socket(socket.AF_VSOCK, socket.SOCK_STREAM)
+> > > >     s.connect((3, 1234))
+> > > > 
+> > > > Traceback (most recent call last):
+> > > >   File "<stdin>", line 1, in <module>
+> > > > TimeoutError: [Errno 110] Connection timed out
+> > > 
+> > > Yes this is exactly the simplified case. But that's the point, I
+> > > don't
+> > > think the timeout is the best way to go here. Because this means
+> > > that
+> > > when we run into this case, the host side will wait for quite some
+> > > time
+> > > before retrying, which can cause a very long delay before the
+> > > communication with the guest is established. By simply answering
+> > > the
+> > > host with a RST packet, we inform it that nobody's listening on the
+> > > guest side yet, therefore the host side will close and try again.
+> > 
+> > Yes, make sense.
+> > 
+> > I just wanted to point out that the host shouldn't get stuck if the
+> > guest doesn't respond. So it's weird that this happens and it might
+> > be
+> > related to some other problem.
+> 
+> Yes that's because we're using the hybrid vsock implementation from
+> Firecracker. So basically they proxy a UNIX socket connection into a
+> VSOCK socket. And the timeout is not implemented. I'll point them out
+> that's something it'd be nice to have along with this fix in the guest.
+> 
+
+Okay, now I get it.
+
+> > 
+> > > > > > In the host, the af_vsock.c:vsock_stream_connect() set a
+> > > > > > timeout,
+> > > > > > so
+> > > > > > if
+> > > > > > the host try to connect before the guest starts listening,
+> > > > > > the
+> > > > > > connect()
+> > > > > > should return ETIMEDOUT if the guest does not answer
+> > > > > > anything.
+> > > > > > 
+> > > > > > Anyway, maybe the patch make sense anyway, changing a bit the
+> > > > > > description
+> > > > > > (if the host connect() receive the ETIMEDOUT).
+> > > > > > I'm just concerned that this code is common between guest and
+> > > > > > host.
+> > > > > > If a
+> > > > > > malicious guest starts sending us wrong requests, we spend
+> > > > > > time
+> > > > > > sending
+> > > > > > a reset packet. But we already do that if we can't find the
+> > > > > > bound
+> > > > > > socket,
+> > > > > > so it might make sense.
+> > > > > 
+> > > > > Yes I don't think this is gonna cause more trouble, but at
+> > > > > least we
+> > > > > cannot end up in this weird situation I described.
+> > > > 
+> > > > Okay, but in the host, we can't trust the guest to answer, we
+> > > > should
+> > > > handle this case properly.
+> > > 
+> > > Well I cannot agree more with the "we cannot trust the guest"
+> > > philosophy, but in this case the worst thing that can happen is the
+> > > guest shooting himself in the foot because it would simply prevent
+> > > the
+> > > connection from happening.
+> > > 
+> > > And I agree setting up a timeout from the host side is still a good
+> > > idea for preventing from such DOS attack.
+> > > 
+> > > But as I mentioned above, in the normal use case, this allows for
+> > > better responsiveness when it comes to establish the connection as
+> > > fast
+> > > as possible.
+> > 
+> > Sure, maybe you can rewrite a bit the commit (title and body) to
+> > explain
+> > this.
+> 
+> Of course, let me work on this.
+> How am I supposed to resend the patch? Should I send a new email with
+> v2 in the title?
+> 
+
+Yes, v2 in the []. Something like this:
+[PATCH net v2] vsock/virtio: ...
+
+> > 
+> > > > > I was just not sure if the function we should use to do the
+> > > > > reset
+> > > > > should be virtio_transport_reset_no_sock() or
+> > > > > virtio_transport_reset()
+> > > > > since at this point the socket is already bound.
+> > > > 
+> > > > I think you can safely use virtio_transport_reset() in this case.
+> > > 
+> > > I've just tried it and unfortunately it doesn't work. I think
+> > > that's
+> > > because the connection has not been properly established yet, so we
+> > > cannot consider being in this case.
+> > > Using virtio_transport_reset_no_sock() seems like the less
+> > > intrusive
+> > > function here.
+> > 
+> > Oh sorry, I also put a comment on virtio_transport_reset() to say to
+> > use it
+> > only on connected sockets and not listeners.
+> > In this case it's a listener, sorry for the wrong suggestion.
+> 
+> Hehe no worries, at least we're on the same page :)
+> 
+
+:-)
+
+Thanks,
+Stefano
 
