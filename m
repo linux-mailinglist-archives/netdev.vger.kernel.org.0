@@ -2,162 +2,165 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 3B44A15C0F5
-	for <lists+netdev@lfdr.de>; Thu, 13 Feb 2020 16:05:00 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6D21515C0FD
+	for <lists+netdev@lfdr.de>; Thu, 13 Feb 2020 16:06:05 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727609AbgBMPE6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 13 Feb 2020 10:04:58 -0500
-Received: from us-smtp-2.mimecast.com ([205.139.110.61]:32702 "EHLO
-        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1726937AbgBMPE6 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 13 Feb 2020 10:04:58 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1581606296;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=HLe357ysOGQZCr5dc1Y3s+U/g5TdgVSZKlWqF02Wz2I=;
-        b=A+r2O03CUVU55vHyqAZfSxrwnydm4vJssgQFKRk9Gl/J3Ob8koV2IV8HU97bJKd2swWUHH
-        d+gDzb16d9ZhfCTY2ET7QcWIo0tFvMLPs3CFCG3KEtx+ly+1CXeN4U8Sf9EEeH5FAdg+kr
-        1XozxODhfOi1cuILQytNeiw/OB0Yaak=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-362-Z9ez1DWpONSa0Q5chqR47Q-1; Thu, 13 Feb 2020 10:04:52 -0500
-X-MC-Unique: Z9ez1DWpONSa0Q5chqR47Q-1
-Received: from smtp.corp.redhat.com (int-mx08.intmail.prod.int.phx2.redhat.com [10.5.11.23])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id A076E13F8;
-        Thu, 13 Feb 2020 15:04:50 +0000 (UTC)
-Received: from localhost.localdomain (wsfd-netdev76.ntdv.lab.eng.bos.redhat.com [10.19.188.157])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id F2FF119C70;
-        Thu, 13 Feb 2020 15:04:46 +0000 (UTC)
-From:   Eelco Chaudron <echaudro@redhat.com>
-To:     bpf@vger.kernel.org
-Cc:     davem@davemloft.net, netdev@vger.kernel.org, ast@kernel.org,
-        daniel@iogearbox.net, kafai@fb.com, songliubraving@fb.com,
-        yhs@fb.com, andriin@fb.com, toke@redhat.com
-Subject: [PATCH bpf-next v2] libbpf: Add support for dynamic program attach target
-Date:   Thu, 13 Feb 2020 15:04:25 +0000
-Message-Id: <158160616195.80320.5636088335810242866.stgit@xdp-tutorial>
-User-Agent: StGit/0.19
+        id S1727802AbgBMPFw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 13 Feb 2020 10:05:52 -0500
+Received: from mail-eopbgr20084.outbound.protection.outlook.com ([40.107.2.84]:17728
+        "EHLO EUR02-VE1-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1726937AbgBMPFv (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 13 Feb 2020 10:05:51 -0500
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=noSSVL51yIXso78V/Drx7VlBIuluW9PG+LVgjG1w9olWlzONG0vk5GF097ZgVVgGVLjfONTjp8ZgizsY0iMIsTg5/3xbYz5TtC1Zaj/HiOv7MID9KBblTdMY+BKT5D43F6nSjZWPj+IZqLWizCmJdvp/ttBQdO8HK978U91K2vwhoEcLa+pGbj9wvF7WWyP9zs+ZEnIAuYEyQ8AsMqMy+kb8QJm20IHsK5xVsp/eWQEpSfdL5++nyy5NOYGg9K6pkCjoIX35+cbj/jJUb44BajK3+lN06/hMtYYWrHMHCpCMc+ihgpht+ovUxKfhZpq7wOnDgXeKzusDKVghFW6d/w==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=AZPJ+StsmdpwxZ9pIrUwvbhuQ3GSj2LQY7edxansr/c=;
+ b=auO7HzasFaBNK8rMTYqVUwyEVXw3ndgqgyGRg4JFd62TN/f9KnOwqos6tAso7SgO01jbRhSuRAwVq5ulxv45xbewpExVvHz5vthi5guGv2adn887JJ9GOt0any2OSKV/3C5uXO5WLYy+KNlEn9aoy54h2Ei1/WBnLDyudMW2qE2mWW2BRi3TOwICx1eCzNLWM+ZnANqbngMCO9hABYorhcaK8EvJ/XW1QWvSKA4/AqQPgcdDMc6aOPAA+HoGZbBM/7FX2rdq6JWGh8OTsTP6oS36kShT+d1rHv0WnhPmTdcbn838ahqijUlEWHUY5EGSnWd9d4dC8cQBHgDTZj5biQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=mellanox.com; dmarc=pass action=none header.from=mellanox.com;
+ dkim=pass header.d=mellanox.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Mellanox.com;
+ s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=AZPJ+StsmdpwxZ9pIrUwvbhuQ3GSj2LQY7edxansr/c=;
+ b=tBkJ4bz+01k3FHjFAQjeScwkYVAIiXcdb9dZOeLGXnU5xgUNAvqlKQOoR55pfjNxnVrs/QlYxl+9RcjWfXUVfxbtrb4w16YMhWwHeLThEhF/P5XecE41koHqPqiOompDqUj+6JKjpcx3UjyawrLbdB88xhPdqKLX1nSwAKznJiU=
+Authentication-Results: spf=none (sender IP is )
+ smtp.mailfrom=jgg@mellanox.com; 
+Received: from VI1PR05MB4141.eurprd05.prod.outlook.com (52.133.14.15) by
+ VI1PR05MB4303.eurprd05.prod.outlook.com (52.133.15.147) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.2707.21; Thu, 13 Feb 2020 15:05:46 +0000
+Received: from VI1PR05MB4141.eurprd05.prod.outlook.com
+ ([fe80::1c00:7925:d5c6:d60d]) by VI1PR05MB4141.eurprd05.prod.outlook.com
+ ([fe80::1c00:7925:d5c6:d60d%7]) with mapi id 15.20.2729.025; Thu, 13 Feb 2020
+ 15:05:46 +0000
+Date:   Thu, 13 Feb 2020 11:05:42 -0400
+From:   Jason Gunthorpe <jgg@mellanox.com>
+To:     Jason Wang <jasowang@redhat.com>
+Cc:     mst@redhat.com, linux-kernel@vger.kernel.org, kvm@vger.kernel.org,
+        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
+        tiwei.bie@intel.com, maxime.coquelin@redhat.com,
+        cunming.liang@intel.com, zhihong.wang@intel.com,
+        rob.miller@broadcom.com, xiao.w.wang@intel.com,
+        haotian.wang@sifive.com, lingshan.zhu@intel.com,
+        eperezma@redhat.com, lulu@redhat.com, parav@mellanox.com,
+        kevin.tian@intel.com, stefanha@redhat.com, rdunlap@infradead.org,
+        hch@infradead.org, aadam@redhat.com, jiri@mellanox.com,
+        shahafs@mellanox.com, hanand@xilinx.com, mhabets@solarflare.com
+Subject: Re: [PATCH V2 3/5] vDPA: introduce vDPA bus
+Message-ID: <20200213150542.GW4271@mellanox.com>
+References: <20200210035608.10002-1-jasowang@redhat.com>
+ <20200210035608.10002-4-jasowang@redhat.com>
+ <20200211134746.GI4271@mellanox.com>
+ <cf7abcc9-f8ef-1fe2-248e-9b9028788ade@redhat.com>
+ <20200212125108.GS4271@mellanox.com>
+ <12775659-1589-39e4-e344-b7a2c792b0f3@redhat.com>
+ <20200213134128.GV4271@mellanox.com>
+ <ebaea825-5432-65e2-2ab3-720a8c4030e7@redhat.com>
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <ebaea825-5432-65e2-2ab3-720a8c4030e7@redhat.com>
+User-Agent: Mutt/1.9.4 (2018-02-28)
+X-ClientProxiedBy: MN2PR13CA0030.namprd13.prod.outlook.com
+ (2603:10b6:208:160::43) To VI1PR05MB4141.eurprd05.prod.outlook.com
+ (2603:10a6:803:44::15)
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-X-Scanned-By: MIMEDefang 2.84 on 10.5.11.23
-Content-Transfer-Encoding: quoted-printable
+Received: from mlx.ziepe.ca (142.68.57.212) by MN2PR13CA0030.namprd13.prod.outlook.com (2603:10b6:208:160::43) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.2750.8 via Frontend Transport; Thu, 13 Feb 2020 15:05:46 +0000
+Received: from jgg by mlx.ziepe.ca with local (Exim 4.90_1)     (envelope-from <jgg@mellanox.com>)      id 1j2G3i-00051c-IR; Thu, 13 Feb 2020 11:05:42 -0400
+X-Originating-IP: [142.68.57.212]
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-HT: Tenant
+X-MS-Office365-Filtering-Correlation-Id: 1de89200-f5cd-4531-9b8b-08d7b0963424
+X-MS-TrafficTypeDiagnostic: VI1PR05MB4303:|VI1PR05MB4303:
+X-MS-Exchange-Transport-Forked: True
+X-Microsoft-Antispam-PRVS: <VI1PR05MB4303985C9353290AE0B7AFC5CF1A0@VI1PR05MB4303.eurprd05.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:8882;
+X-Forefront-PRVS: 031257FE13
+X-Forefront-Antispam-Report: SFV:NSPM;SFS:(10009020)(4636009)(396003)(39860400002)(346002)(136003)(376002)(366004)(199004)(189003)(66946007)(66556008)(66476007)(1076003)(5660300002)(2616005)(9786002)(9746002)(6916009)(33656002)(7416002)(36756003)(81156014)(316002)(8936002)(8676002)(186003)(4326008)(52116002)(26005)(2906002)(478600001)(81166006)(86362001)(24400500001);DIR:OUT;SFP:1101;SCL:1;SRVR:VI1PR05MB4303;H:VI1PR05MB4141.eurprd05.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;A:1;MX:1;
+Received-SPF: None (protection.outlook.com: mellanox.com does not designate
+ permitted sender hosts)
+X-MS-Exchange-SenderADCheck: 1
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: 0JV+7gcnIpRhY7xy6VlPe50jvbWAdQ/VgWpnmlYS34kEZItBzHLgfbAd/fYyRfdKFbMYcXiOcppWPg8eLl3BnIyMXf46EypX4A5RCDbE2HnB6AH883q9UTzAum9lTkHdN65ojwxUaBUVBbhnq4WZjidZgMKSyG30Y2g1iQdJVU2tQrA6P6h66Qcn9aEqmEfvyKnqcL1k53Xwrx7kqu338aTR+z7Te+hyDmJSVAbnH+yBcz5lzerUybhblGGE7sfkJ3Fz3NG1bMZHjU+3gE6Nq4fQWLZUsFxPE3ymVr6d/PLhSmFkz/kEVq1meF3rOZgeM8p+rS68ypsvb4NALoxLcLx2LQcjlCd5nnyF8NDjE6zvqOx4DVvEC9Ysye4k4vSfben30/By6mA9CAZrOqiBkOE6Pe7p1MPD2kBfGo3ce2OHsw3OSFe73DGvoSVNwZ89Ms391nHJPhotRJtdC8AlB8KCFX38ZCYElvVd6GKfv04vrHrPpSLBT3ZozYI4RnK+
+X-MS-Exchange-AntiSpam-MessageData: 2knGk/lhiSDBLfVEG7p0Gewtp8omMkfE3scWuR+/HuuJOhjjlZkqIzDQKVVisdnCgG+519Dq90GIstvc/zU8uaEKzqfVK+93ZRGfMb95diSCoQqiOEeUSwVMv1aK84dGAUOToRglULVP5wZO/icr5w==
+X-OriginatorOrg: Mellanox.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 1de89200-f5cd-4531-9b8b-08d7b0963424
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 13 Feb 2020 15:05:46.5619
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: a652971c-7d2e-4d9b-a6a4-d149256f461b
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: 5OgHvRSQiJaIqUR0iQv5SiJgQj0mFopLu5IxDzpYTxDmC7hHopdzG/PriGlsv9ctdMmatxPwkpEhdRPisGqssg==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR05MB4303
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Currently when you want to attach a trace program to a bpf program
-the section name needs to match the tracepoint/function semantics.
+On Thu, Feb 13, 2020 at 10:58:44PM +0800, Jason Wang wrote:
+> 
+> On 2020/2/13 下午9:41, Jason Gunthorpe wrote:
+> > On Thu, Feb 13, 2020 at 11:34:10AM +0800, Jason Wang wrote:
+> > 
+> > > >    You have dev, type or
+> > > > class to choose from. Type is rarely used and doesn't seem to be used
+> > > > by vdpa, so class seems the right choice
+> > > > 
+> > > > Jason
+> > > Yes, but my understanding is class and bus are mutually exclusive. So we
+> > > can't add a class to a device which is already attached on a bus.
+> > While I suppose there are variations, typically 'class' devices are
+> > user facing things and 'bus' devices are internal facing (ie like a
+> > PCI device)
+> 
+> 
+> Though all vDPA devices have the same programming interface, but the
+> semantic is different. So it looks to me that use bus complies what
+> class.rst said:
+> 
+> "
+> 
+> Each device class defines a set of semantics and a programming interface
+> that devices of that class adhere to. Device drivers are the
+> implementation of that programming interface for a particular device on
+> a particular bus.
+> 
+> "
 
-However the addition of the bpf_program__set_attach_target() API
-allows you to specify the tracepoint/function dynamically.
+Here we are talking about the /dev/XX node that provides the
+programming interface. All the vdpa devices have the same basic
+chardev interface and discover any semantic variations 'in band'
 
-The call flow would look something like this:
+> > So why is this using a bus? VDPA is a user facing object, so the
+> > driver should create a class vhost_vdpa device directly, and that
+> > driver should live in the drivers/vhost/ directory.
+>  
+> This is because we want vDPA to be generic for being used by different
+> drivers which is not limited to vhost-vdpa. E.g in this series, it allows
+> vDPA to be used by kernel virtio drivers. And in the future, we will
+> probably introduce more drivers in the future.
 
-  xdp_fd =3D bpf_prog_get_fd_by_id(id);
-  trace_obj =3D bpf_object__open_file("func.o", NULL);
-  prog =3D bpf_object__find_program_by_title(trace_obj,
-                                           "fentry/myfunc");
-  bpf_program__set_expected_attach_type(prog, BPF_TRACE_FENTRY);
-  bpf_program__set_attach_target(prog, xdp_fd,
-                                 "xdpfilt_blk_all");
-  bpf_object__load(trace_obj)
+I don't see how that connects with using a bus.
 
-Signed-off-by: Eelco Chaudron <echaudro@redhat.com>
----
-v1 -> v2: Remove requirement for attach type name in API
+Every class of virtio traffic is going to need a special HW driver to
+enable VDPA, that special driver can create the correct vhost side
+class device.
 
- tools/lib/bpf/libbpf.c   |   33 +++++++++++++++++++++++++++++++--
- tools/lib/bpf/libbpf.h   |    4 ++++
- tools/lib/bpf/libbpf.map |    1 +
- 3 files changed, 36 insertions(+), 2 deletions(-)
+> > For the PCI VF case this driver would bind to a PCI device like
+> > everything else
+> > 
+> > For our future SF/ADI cases the driver would bind to some
+> > SF/ADI/whatever device on a bus.
+> 
+> All these driver will still be bound to their own bus (PCI or other). And
+> what the driver needs is to present a vDPA device to virtual vDPA bus on
+> top.
 
-diff --git a/tools/lib/bpf/libbpf.c b/tools/lib/bpf/libbpf.c
-index 514b1a524abb..9b8cab995580 100644
---- a/tools/lib/bpf/libbpf.c
-+++ b/tools/lib/bpf/libbpf.c
-@@ -4939,8 +4939,8 @@ int bpf_program__load(struct bpf_program *prog, cha=
-r *license, __u32 kern_ver)
- {
- 	int err =3D 0, fd, i, btf_id;
-=20
--	if (prog->type =3D=3D BPF_PROG_TYPE_TRACING ||
--	    prog->type =3D=3D BPF_PROG_TYPE_EXT) {
-+	if ((prog->type =3D=3D BPF_PROG_TYPE_TRACING ||
-+	     prog->type =3D=3D BPF_PROG_TYPE_EXT) && !prog->attach_btf_id) {
- 		btf_id =3D libbpf_find_attach_btf_id(prog);
- 		if (btf_id <=3D 0)
- 			return btf_id;
-@@ -8132,6 +8132,35 @@ void bpf_program__bpil_offs_to_addr(struct bpf_pro=
-g_info_linear *info_linear)
- 	}
- }
-=20
-+int bpf_program__set_attach_target(struct bpf_program *prog,
-+				   int attach_prog_fd,
-+				   const char *attach_func_name)
-+{
-+	int btf_id;
-+
-+	if (!prog || attach_prog_fd < 0 || !attach_func_name)
-+		return -EINVAL;
-+
-+	if (attach_prog_fd)
-+		btf_id =3D libbpf_find_prog_btf_id(attach_func_name,
-+						 attach_prog_fd);
-+	else
-+		btf_id =3D __find_vmlinux_btf_id(prog->obj->btf_vmlinux,
-+					       attach_func_name,
-+					       prog->expected_attach_type);
-+
-+	if (btf_id <=3D 0) {
-+		if (!attach_prog_fd)
-+			pr_warn("%s is not found in vmlinux BTF\n",
-+				attach_func_name);
-+		return btf_id;
-+	}
-+
-+	prog->attach_btf_id =3D btf_id;
-+	prog->attach_prog_fd =3D attach_prog_fd;
-+	return 0;
-+}
-+
- int parse_cpu_mask_str(const char *s, bool **mask, int *mask_sz)
- {
- 	int err =3D 0, n, len, start, end =3D -1;
-diff --git a/tools/lib/bpf/libbpf.h b/tools/lib/bpf/libbpf.h
-index 3fe12c9d1f92..02fc58a21a7f 100644
---- a/tools/lib/bpf/libbpf.h
-+++ b/tools/lib/bpf/libbpf.h
-@@ -334,6 +334,10 @@ LIBBPF_API void
- bpf_program__set_expected_attach_type(struct bpf_program *prog,
- 				      enum bpf_attach_type type);
-=20
-+LIBBPF_API int
-+bpf_program__set_attach_target(struct bpf_program *prog, int attach_prog=
-_fd,
-+			       const char *attach_func_name);
-+
- LIBBPF_API bool bpf_program__is_socket_filter(const struct bpf_program *=
-prog);
- LIBBPF_API bool bpf_program__is_tracepoint(const struct bpf_program *pro=
-g);
- LIBBPF_API bool bpf_program__is_raw_tracepoint(const struct bpf_program =
-*prog);
-diff --git a/tools/lib/bpf/libbpf.map b/tools/lib/bpf/libbpf.map
-index b035122142bb..8aba5438a3f0 100644
---- a/tools/lib/bpf/libbpf.map
-+++ b/tools/lib/bpf/libbpf.map
-@@ -230,6 +230,7 @@ LIBBPF_0.0.7 {
- 		bpf_program__name;
- 		bpf_program__is_extension;
- 		bpf_program__is_struct_ops;
-+		bpf_program__set_attach_target;
- 		bpf_program__set_extension;
- 		bpf_program__set_struct_ops;
- 		btf__align_of;
+Again, I can't see any reason to inject a 'vdpa virtual bus' on
+top. That seems like mis-using the driver core.
 
+Jason
