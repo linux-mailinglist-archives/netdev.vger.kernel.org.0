@@ -2,220 +2,170 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id B648315C85F
-	for <lists+netdev@lfdr.de>; Thu, 13 Feb 2020 17:37:34 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8332215C896
+	for <lists+netdev@lfdr.de>; Thu, 13 Feb 2020 17:51:44 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728584AbgBMQhb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 13 Feb 2020 11:37:31 -0500
-Received: from us-smtp-delivery-1.mimecast.com ([207.211.31.120]:50888 "EHLO
-        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S1728055AbgBMQhb (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 13 Feb 2020 11:37:31 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1581611849;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=eCOS1WTh+5YoNP9A08K63Y7Q0hZciqVvtfKTwj5+FFA=;
-        b=aV3dT/y7rx/fctBPI91Jw1JAyjk/k1OC9qwiPtRxDedZc6vOi5o2sTynDXUwea6I/N5slp
-        pSJ8lJ5oDu8DxMsN+tAuE7+HiJJgrAleEIUnbkPb57gTeCP9FE1CfzYp+U+n+osueTVjFc
-        v+DLAfKbIz5QajY4riegMz5Z31jP2Aw=
-Received: from mail-qk1-f197.google.com (mail-qk1-f197.google.com
- [209.85.222.197]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-199-nWgFk4-CM72Po8duaLv61A-1; Thu, 13 Feb 2020 11:37:23 -0500
-X-MC-Unique: nWgFk4-CM72Po8duaLv61A-1
-Received: by mail-qk1-f197.google.com with SMTP id a132so4098898qkg.5
-        for <netdev@vger.kernel.org>; Thu, 13 Feb 2020 08:37:23 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:content-transfer-encoding
-         :in-reply-to;
-        bh=eCOS1WTh+5YoNP9A08K63Y7Q0hZciqVvtfKTwj5+FFA=;
-        b=m/SddR75TPYt8Nq1ggRf1n3BJPo/ikHFuf1h2Uj6omCHf3x8n9rNvt4xjc50i7f+kX
-         03GqcjLMvqCpZ8DZTT7QEoi5sBkgV5jZ89z+M0mlnKW8jH1+5caZZHo+v8X/n+URQo9h
-         jbEuAFMwvKgpVilf85wUYobr2Tmb1SARYP6Eu0l3s6U+MD3txIhcbpebP+tNs5X5fmzh
-         KHNXz5IGHVkdV5kRoyLNHFvCLPxlHKR2YVbXng1HN+zWtKpJNw1B8goK5sKsGlSvxPlM
-         vUqgoxa3to0MXFqtW9pBKzc6kvMKEVpulTNfXfeCmSmKs35uSM3BuEQ9JXtptM2/0LzI
-         Q6Kg==
-X-Gm-Message-State: APjAAAXYT/lpied+UE/WuhBhNQe9CYB0vMXgXt1JyC0CJFRAvHGlBKyf
-        LDTmpLIJ2rQx6g5Qm2EU5YZ9SPUf6Lww5ojzIcP5Wn4NpyimC0+kD+u07LqNzoPQmrx6bKYOx6c
-        Dj1ORNybh3RTbV9cK
-X-Received: by 2002:a05:620a:89e:: with SMTP id b30mr16113967qka.398.1581611841143;
-        Thu, 13 Feb 2020 08:37:21 -0800 (PST)
-X-Google-Smtp-Source: APXvYqxvgU/Go4ObHDgoqZyrNkss5Y1hUf6NDyAxdpnATEPwDonOvDUWqewU3vmkE/IllyLsw5QSgg==
-X-Received: by 2002:a05:620a:89e:: with SMTP id b30mr16113944qka.398.1581611840852;
-        Thu, 13 Feb 2020 08:37:20 -0800 (PST)
-Received: from redhat.com (bzq-79-176-28-95.red.bezeqint.net. [79.176.28.95])
-        by smtp.gmail.com with ESMTPSA id o187sm1541284qkf.26.2020.02.13.08.37.18
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 13 Feb 2020 08:37:20 -0800 (PST)
-Date:   Thu, 13 Feb 2020 11:37:16 -0500
-From:   "Michael S. Tsirkin" <mst@redhat.com>
-To:     Anton Ivanov <anton.ivanov@cambridgegreys.com>
-Cc:     Eric Dumazet <eric.dumazet@gmail.com>, netdev@vger.kernel.org,
-        Jason Wang <jasowang@redhat.com>,
-        virtualization@lists.linux-foundation.org,
-        linux-um@lists.infradead.org
-Subject: Re: [PATCH] virtio: Work around frames incorrectly marked as gso
-Message-ID: <20200213113654-mutt-send-email-mst@kernel.org>
-References: <20191209104824.17059-1-anton.ivanov@cambridgegreys.com>
- <57230228-7030-c65f-a24f-910ca52bbe9e@cambridgegreys.com>
- <f78bfe6e-2ffc-3734-9618-470f1afea0c6@redhat.com>
- <918222d9-816a-be70-f8af-b8dfcb586240@cambridgegreys.com>
- <20200211053502-mutt-send-email-mst@kernel.org>
- <9547228b-aa93-f2b6-6fdc-8d33cde3716a@cambridgegreys.com>
- <20200213045937-mutt-send-email-mst@kernel.org>
- <94fb9656-99ee-a001-e428-9d76c3620e61@gmail.com>
- <20200213105010-mutt-send-email-mst@kernel.org>
- <35510da7-08f1-4aa5-c6d6-6bffbccaee0c@cambridgegreys.com>
+        id S1727963AbgBMQvm (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 13 Feb 2020 11:51:42 -0500
+Received: from mga09.intel.com ([134.134.136.24]:46824 "EHLO mga09.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1727752AbgBMQvm (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 13 Feb 2020 11:51:42 -0500
+X-Amp-Result: SKIPPED(no attachment in message)
+X-Amp-File-Uploaded: False
+Received: from fmsmga008.fm.intel.com ([10.253.24.58])
+  by orsmga102.jf.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 13 Feb 2020 08:51:40 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.70,437,1574150400"; 
+   d="scan'208";a="228191264"
+Received: from orsmsx109.amr.corp.intel.com ([10.22.240.7])
+  by fmsmga008.fm.intel.com with ESMTP; 13 Feb 2020 08:51:40 -0800
+Received: from orsmsx160.amr.corp.intel.com (10.22.226.43) by
+ ORSMSX109.amr.corp.intel.com (10.22.240.7) with Microsoft SMTP Server (TLS)
+ id 14.3.439.0; Thu, 13 Feb 2020 08:51:40 -0800
+Received: from orsmsx115.amr.corp.intel.com ([169.254.4.100]) by
+ ORSMSX160.amr.corp.intel.com ([169.254.13.167]) with mapi id 14.03.0439.000;
+ Thu, 13 Feb 2020 08:51:39 -0800
+From:   "Boeuf, Sebastien" <sebastien.boeuf@intel.com>
+To:     "sgarzare@redhat.com" <sgarzare@redhat.com>,
+        "stefanha@redhat.com" <stefanha@redhat.com>
+CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "davem@davemloft.net" <davem@davemloft.net>
+Subject: Re: [PATCH] net: virtio_vsock: Fix race condition between bind and
+ listen
+Thread-Topic: [PATCH] net: virtio_vsock: Fix race condition between bind and
+ listen
+Thread-Index: AQHV4k47o+FvdyeZdUa5OLpq2zu4PqgZZQkAgAAC0ACAAAitgIAABgwAgAAPhoCAABfKAIAAP1OA
+Date:   Thu, 13 Feb 2020 16:51:39 +0000
+Message-ID: <ee9a929c3b9c5b958bf6399a5048a3c9b6ea4aae.camel@intel.com>
+References: <668b0eda8823564cd604b1663dc53fbaece0cd4e.camel@intel.com>
+         <20200213094130.vehzkr4a3pnoiogr@steredhat>
+         <3448e588f11dad913e93dfce8031fbd60ba4c85b.camel@intel.com>
+         <20200213102237.uyhfv5g2td5ayg2b@steredhat>
+         <1d4c3958d8b75756341548e7d51ccf42397c2d27.camel@intel.com>
+         <20200213113949.GA544499@stefanha-x1.localdomain>
+         <20200213130458.ugu6rx6cv4k6v5rh@steredhat>
+In-Reply-To: <20200213130458.ugu6rx6cv4k6v5rh@steredhat>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-originating-ip: [10.252.24.191]
+Content-Type: text/plain; charset="utf-8"
+Content-ID: <9887E39E2A67B843B61F5B862328F626@intel.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <35510da7-08f1-4aa5-c6d6-6bffbccaee0c@cambridgegreys.com>
+Content-Transfer-Encoding: base64
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Feb 13, 2020 at 04:23:24PM +0000, Anton Ivanov wrote:
-> 
-> On 13/02/2020 15:53, Michael S. Tsirkin wrote:
-> > On Thu, Feb 13, 2020 at 07:44:06AM -0800, Eric Dumazet wrote:
-> > > 
-> > > On 2/13/20 2:00 AM, Michael S. Tsirkin wrote:
-> > > > On Wed, Feb 12, 2020 at 05:38:09PM +0000, Anton Ivanov wrote:
-> > > > > 
-> > > > > On 11/02/2020 10:37, Michael S. Tsirkin wrote:
-> > > > > > On Tue, Feb 11, 2020 at 07:42:37AM +0000, Anton Ivanov wrote:
-> > > > > > > On 11/02/2020 02:51, Jason Wang wrote:
-> > > > > > > > On 2020/2/11 上午12:55, Anton Ivanov wrote:
-> > > > > > > > > 
-> > > > > > > > > On 09/12/2019 10:48, anton.ivanov@cambridgegreys.com wrote:
-> > > > > > > > > > From: Anton Ivanov <anton.ivanov@cambridgegreys.com>
-> > > > > > > > > > 
-> > > > > > > > > > Some of the frames marked as GSO which arrive at
-> > > > > > > > > > virtio_net_hdr_from_skb() have no GSO_TYPE, no
-> > > > > > > > > > fragments (data_len = 0) and length significantly shorter
-> > > > > > > > > > than the MTU (752 in my experiments).
-> > > > > > > > > > 
-> > > > > > > > > > This is observed on raw sockets reading off vEth interfaces
-> > > > > > > > > > in all 4.x and 5.x kernels I tested.
-> > > > > > > > > > 
-> > > > > > > > > > These frames are reported as invalid while they are in fact
-> > > > > > > > > > gso-less frames.
-> > > > > > > > > > 
-> > > > > > > > > > This patch marks the vnet header as no-GSO for them instead
-> > > > > > > > > > of reporting it as invalid.
-> > > > > > > > > > 
-> > > > > > > > > > Signed-off-by: Anton Ivanov <anton.ivanov@cambridgegreys.com>
-> > > > > > > > > > ---
-> > > > > > > > > >     include/linux/virtio_net.h | 8 ++++++--
-> > > > > > > > > >     1 file changed, 6 insertions(+), 2 deletions(-)
-> > > > > > > > > > 
-> > > > > > > > > > diff --git a/include/linux/virtio_net.h b/include/linux/virtio_net.h
-> > > > > > > > > > index 0d1fe9297ac6..d90d5cff1b9a 100644
-> > > > > > > > > > --- a/include/linux/virtio_net.h
-> > > > > > > > > > +++ b/include/linux/virtio_net.h
-> > > > > > > > > > @@ -112,8 +112,12 @@ static inline int
-> > > > > > > > > > virtio_net_hdr_from_skb(const struct sk_buff *skb,
-> > > > > > > > > >                 hdr->gso_type = VIRTIO_NET_HDR_GSO_TCPV4;
-> > > > > > > > > >             else if (sinfo->gso_type & SKB_GSO_TCPV6)
-> > > > > > > > > >                 hdr->gso_type = VIRTIO_NET_HDR_GSO_TCPV6;
-> > > > > > > > > > -        else
-> > > > > > > > > > -            return -EINVAL;
-> > > > > > > > > > +        else {
-> > > > > > > > > > +            if (skb->data_len == 0)
-> > > > > > > > > > +                hdr->gso_type = VIRTIO_NET_HDR_GSO_NONE;
-> > > > > > > > > > +            else
-> > > > > > > > > > +                return -EINVAL;
-> > > > > > > > > > +        }
-> > > > > > > > > >             if (sinfo->gso_type & SKB_GSO_TCP_ECN)
-> > > > > > > > > >                 hdr->gso_type |= VIRTIO_NET_HDR_GSO_ECN;
-> > > > > > > > > >         } else
-> > > > > > > > > > 
-> > > > > > > > > ping.
-> > > > > > > > > 
-> > > > > > > > Do you mean gso_size is set but gso_type is not? Looks like a bug
-> > > > > > > > elsewhere.
-> > > > > > > > 
-> > > > > > > > Thanks
-> > > > > > > > 
-> > > > > > > > 
-> > > > > > > Yes.
-> > > > > > > 
-> > > > > > > I could not trace it where it is coming from.
-> > > > > > > 
-> > > > > > > I see it when doing recvmmsg on raw sockets in the UML vector network
-> > > > > > > drivers.
-> > > > > > > 
-> > > > > > I think we need to find the culprit and fix it there, lots of other things
-> > > > > > can break otherwise.
-> > > > > > Just printing out skb->dev->name should do the trick, no?
-> > > > > The printk in virtio_net_hdr_from_skb says NULL.
-> > > > > 
-> > > > > That is probably normal for a locally originated frame.
-> > > > > 
-> > > > > I cannot reproduce this with network traffic by the way - it happens only if the traffic is locally originated on the host.
-> > > > > 
-> > > > > A,
-> > > > OK so is it code in __tcp_transmit_skb that sets gso_size to non-null
-> > > > when gso_type is 0?
-> > > > 
-> > > Correct way to determine if a packet is a gso one is by looking at gso_size.
-> > > Then only it is legal looking at gso_type
-> > > 
-> > > 
-> > > static inline bool skb_is_gso(const struct sk_buff *skb)
-> > > {
-> > >      return skb_shinfo(skb)->gso_size;
-> > > }
-> > > 
-> > > /* Note: Should be called only if skb_is_gso(skb) is true */
-> > > static inline bool skb_is_gso_v6(const struct sk_buff *skb)
-> > > ...
-> > > 
-> > > 
-> > > There is absolutely no relation between GSO and skb->data_len, skb can be linearized
-> > > for various orthogonal reasons.
-> > The reported problem is that virtio gets a packet where gso_size
-> > is !0 but gso_type is 0.
-> > 
-> > It currently drops these on the assumption that it's some type
-> > of a gso packet it does not know how to handle.
-> > 
-> > 
-> > So you are saying if skb_is_gso we can still have gso_type set to 0,
-> > and that's an expected configuration?
-> > 
-> > So the patch should just be:
-> > 
-> > 
-> > -        if (skb_is_gso(skb)) {
-> > +        if (skb_is_gso(skb) && sinfo->gso_type) {
-> > 
-> Yes, provided that skb_is_gso(skb) and sinfo->gso_type == 0 is a valid state.
-> 
-> I agree with Jason, there may be something wrong going on here and we need to find the source which creates these packets.
-> 
-> A.
-
-Well Eric will know for sure. Eric is skb_is_gso(skb) and
-sinfo->gso_type == 0 a valid state?
-
-> > 
-> > ?
-> > 
-> > 
-> > _______________________________________________
-> > linux-um mailing list
-> > linux-um@lists.infradead.org
-> > http://lists.infradead.org/mailman/listinfo/linux-um
-> 
-> -- 
-> Anton R. Ivanov
-> Cambridgegreys Limited. Registered in England. Company Number 10273661
-> https://www.cambridgegreys.com/
+T24gVGh1LCAyMDIwLTAyLTEzIGF0IDE0OjA0ICswMTAwLCBTdGVmYW5vIEdhcnphcmVsbGEgd3Jv
+dGU6DQo+IE9uIFRodSwgRmViIDEzLCAyMDIwIGF0IDExOjM5OjQ5QU0gKzAwMDAsIFN0ZWZhbiBI
+YWpub2N6aSB3cm90ZToNCj4gPiBPbiBUaHUsIEZlYiAxMywgMjAyMCBhdCAxMDo0NDoxOEFNICsw
+MDAwLCBCb2V1ZiwgU2ViYXN0aWVuIHdyb3RlOg0KPiA+ID4gT24gVGh1LCAyMDIwLTAyLTEzIGF0
+IDExOjIyICswMTAwLCBTdGVmYW5vIEdhcnphcmVsbGEgd3JvdGU6DQo+ID4gPiA+IE9uIFRodSwg
+RmViIDEzLCAyMDIwIGF0IDA5OjUxOjM2QU0gKzAwMDAsIEJvZXVmLCBTZWJhc3RpZW4NCj4gPiA+
+ID4gd3JvdGU6DQo+ID4gPiA+ID4gSGkgU3RlZmFubywNCj4gPiA+ID4gPiANCj4gPiA+ID4gPiBP
+biBUaHUsIDIwMjAtMDItMTMgYXQgMTA6NDEgKzAxMDAsIFN0ZWZhbm8gR2FyemFyZWxsYSB3cm90
+ZToNCj4gPiA+ID4gPiA+IEhpIFNlYmFzdGllbiwNCj4gPiA+ID4gPiA+IA0KPiA+ID4gPiA+ID4g
+T24gVGh1LCBGZWIgMTMsIDIwMjAgYXQgMDk6MTY6MTFBTSArMDAwMCwgQm9ldWYsIFNlYmFzdGll
+bg0KPiA+ID4gPiA+ID4gd3JvdGU6DQo+ID4gPiA+ID4gPiA+IEZyb20gMmYxMjc2ZDAyZjVhMTJk
+ODVhZWM1YWRjMTFkZmUxZWFiN2UxNjBkNiBNb24gU2VwIDE3DQo+ID4gPiA+ID4gPiA+IDAwOjAw
+OjAwDQo+ID4gPiA+ID4gPiA+IDIwMDENCj4gPiA+ID4gPiA+ID4gRnJvbTogU2ViYXN0aWVuIEJv
+ZXVmIDxzZWJhc3RpZW4uYm9ldWZAaW50ZWwuY29tPg0KPiA+ID4gPiA+ID4gPiBEYXRlOiBUaHUs
+IDEzIEZlYiAyMDIwIDA4OjUwOjM4ICswMTAwDQo+ID4gPiA+ID4gPiA+IFN1YmplY3Q6IFtQQVRD
+SF0gbmV0OiB2aXJ0aW9fdnNvY2s6IEZpeCByYWNlIGNvbmRpdGlvbg0KPiA+ID4gPiA+ID4gPiBi
+ZXR3ZWVuDQo+ID4gPiA+ID4gPiA+IGJpbmQNCj4gPiA+ID4gPiA+ID4gYW5kIGxpc3Rlbg0KPiA+
+ID4gPiA+ID4gPiANCj4gPiA+ID4gPiA+ID4gV2hlbmV2ZXIgdGhlIHZzb2NrIGJhY2tlbmQgb24g
+dGhlIGhvc3Qgc2VuZHMgYSBwYWNrZXQNCj4gPiA+ID4gPiA+ID4gdGhyb3VnaA0KPiA+ID4gPiA+
+ID4gPiB0aGUNCj4gPiA+ID4gPiA+ID4gUlgNCj4gPiA+ID4gPiA+ID4gcXVldWUsIGl0IGV4cGVj
+dHMgYW4gYW5zd2VyIG9uIHRoZSBUWCBxdWV1ZS4NCj4gPiA+ID4gPiA+ID4gVW5mb3J0dW5hdGVs
+eSwNCj4gPiA+ID4gPiA+ID4gdGhlcmUNCj4gPiA+ID4gPiA+ID4gaXMgb25lDQo+ID4gPiA+ID4g
+PiA+IGNhc2Ugd2hlcmUgdGhlIGhvc3Qgc2lkZSB3aWxsIGhhbmcgd2FpdGluZyBmb3IgdGhlIGFu
+c3dlcg0KPiA+ID4gPiA+ID4gPiBhbmQNCj4gPiA+ID4gPiA+ID4gd2lsbA0KPiA+ID4gPiA+ID4g
+PiBlZmZlY3RpdmVseSBuZXZlciByZWNvdmVyLg0KPiA+ID4gPiA+ID4gDQo+ID4gPiA+ID4gPiBE
+byB5b3UgaGF2ZSBhIHRlc3QgY2FzZT8NCj4gPiA+ID4gPiANCj4gPiA+ID4gPiBZZXMgSSBkby4g
+VGhpcyBoYXMgYmVlbiBhIGJ1ZyB3ZSd2ZSBiZWVuIGludmVzdGlnYXRpbmcgb24NCj4gPiA+ID4g
+PiBLYXRhDQo+ID4gPiA+ID4gQ29udGFpbmVycyBmb3IgcXVpdGUgc29tZSB0aW1lIG5vdy4gVGhp
+cyB3YXMgaGFwcGVuaW5nIHdoZW4NCj4gPiA+ID4gPiB1c2luZw0KPiA+ID4gPiA+IEthdGENCj4g
+PiA+ID4gPiBhbG9uZyB3aXRoIENsb3VkLUh5cGVydmlzb3IgKHdoaWNoIHJlbHkgb24gdGhlIGh5
+YnJpZCB2c29jaw0KPiA+ID4gPiA+IGltcGxlbWVudGF0aW9uIGZyb20gRmlyZWNyYWNrZXIpLiBU
+aGUgdGhpbmcgaXMsIHRoaXMgYnVnIGlzDQo+ID4gPiA+ID4gdmVyeQ0KPiA+ID4gPiA+IGhhcmQN
+Cj4gPiA+ID4gPiB0byByZXByb2R1Y2UgYW5kIHdhcyBoYXBwZW5pbmcgZm9yIEthdGEgYmVjYXVz
+ZSBvZiB0aGUNCj4gPiA+ID4gPiBjb25uZWN0aW9uDQo+ID4gPiA+ID4gc3RyYXRlZ3kuIFRoZSBr
+YXRhLXJ1bnRpbWUgdHJpZXMgdG8gY29ubmVjdCBhIG1pbGxpb24gdGltZXMNCj4gPiA+ID4gPiBh
+ZnRlcg0KPiA+ID4gPiA+IGl0DQo+ID4gPiA+ID4gc3RhcnRlZCB0aGUgVk0sIGp1c3QgaG9waW5n
+IHRoZSBrYXRhLWFnZW50IHdpbGwgc3RhcnQgdG8NCj4gPiA+ID4gPiBsaXN0ZW4NCj4gPiA+ID4g
+PiBmcm9tDQo+ID4gPiA+ID4gdGhlIGd1ZXN0IHNpZGUgYXQgc29tZSBwb2ludC4NCj4gPiA+ID4g
+DQo+ID4gPiA+IE1heWJlIGlzIHJlbGF0ZWQgdG8gc29tZXRoaW5nIGVsc2UuIEkgdHJpZWQgdGhl
+IGZvbGxvd2luZyB3aGljaA0KPiA+ID4gPiBzaG91bGQgYmUNCj4gPiA+ID4geW91ciBjYXNlIHNp
+bXBsaWZpZWQgKElJVUMpOg0KPiA+ID4gPiANCj4gPiA+ID4gZ3Vlc3QkIHB5dGhvbg0KPiA+ID4g
+PiAgICAgaW1wb3J0IHNvY2tldA0KPiA+ID4gPiAgICAgcyA9IHNvY2tldC5zb2NrZXQoc29ja2V0
+LkFGX1ZTT0NLLCBzb2NrZXQuU09DS19TVFJFQU0pDQo+ID4gPiA+ICAgICBzLmJpbmQoKHNvY2tl
+dC5WTUFERFJfQ0lEX0FOWSwgMTIzNCkpDQo+ID4gPiA+IA0KPiA+ID4gPiBob3N0JCBweXRob24N
+Cj4gPiA+ID4gICAgIGltcG9ydCBzb2NrZXQNCj4gPiA+ID4gICAgIHMgPSBzb2NrZXQuc29ja2V0
+KHNvY2tldC5BRl9WU09DSywgc29ja2V0LlNPQ0tfU1RSRUFNKQ0KPiA+ID4gPiAgICAgcy5jb25u
+ZWN0KCgzLCAxMjM0KSkNCj4gPiA+ID4gDQo+ID4gPiA+IFRyYWNlYmFjayAobW9zdCByZWNlbnQg
+Y2FsbCBsYXN0KToNCj4gPiA+ID4gICBGaWxlICI8c3RkaW4+IiwgbGluZSAxLCBpbiA8bW9kdWxl
+Pg0KPiA+ID4gPiBUaW1lb3V0RXJyb3I6IFtFcnJubyAxMTBdIENvbm5lY3Rpb24gdGltZWQgb3V0
+DQo+ID4gPiANCj4gPiA+IFllcyB0aGlzIGlzIGV4YWN0bHkgdGhlIHNpbXBsaWZpZWQgY2FzZS4g
+QnV0IHRoYXQncyB0aGUgcG9pbnQsIEkNCj4gPiA+IGRvbid0DQo+ID4gPiB0aGluayB0aGUgdGlt
+ZW91dCBpcyB0aGUgYmVzdCB3YXkgdG8gZ28gaGVyZS4gQmVjYXVzZSB0aGlzIG1lYW5zDQo+ID4g
+PiB0aGF0DQo+ID4gPiB3aGVuIHdlIHJ1biBpbnRvIHRoaXMgY2FzZSwgdGhlIGhvc3Qgc2lkZSB3
+aWxsIHdhaXQgZm9yIHF1aXRlDQo+ID4gPiBzb21lIHRpbWUNCj4gPiA+IGJlZm9yZSByZXRyeWlu
+Zywgd2hpY2ggY2FuIGNhdXNlIGEgdmVyeSBsb25nIGRlbGF5IGJlZm9yZSB0aGUNCj4gPiA+IGNv
+bW11bmljYXRpb24gd2l0aCB0aGUgZ3Vlc3QgaXMgZXN0YWJsaXNoZWQuIEJ5IHNpbXBseSBhbnN3
+ZXJpbmcNCj4gPiA+IHRoZQ0KPiA+ID4gaG9zdCB3aXRoIGEgUlNUIHBhY2tldCwgd2UgaW5mb3Jt
+IGl0IHRoYXQgbm9ib2R5J3MgbGlzdGVuaW5nIG9uDQo+ID4gPiB0aGUNCj4gPiA+IGd1ZXN0IHNp
+ZGUgeWV0LCB0aGVyZWZvcmUgdGhlIGhvc3Qgc2lkZSB3aWxsIGNsb3NlIGFuZCB0cnkgYWdhaW4u
+DQo+ID4gDQo+ID4gTXkgZXhwZWN0YXRpb24gaXMgdGhhdCBUQ1AvSVAgd2lsbCBwcm9kdWNlIEVD
+T05OUkVGVVNFRCBpbiB0aGlzDQo+ID4gY2FzZSBidXQNCj4gPiBJIGhhdmVuJ3QgY2hlY2tlZC4g
+IFRpbWluZyBvdXQgaXMgd2VpcmQgYmVoYXZpb3IuDQo+IA0KPiBJIGp1c3QgdHJpZWQgYW5kIHll
+cywgVENQL0lQIHByb2R1Y2VzIEVDT05OUkVGVVNFRC4gVGhlIHNhbWUgZXJyb3INCj4gcmV0dXJu
+ZWQNCj4gd2hlbiBubyBvbmUncyBib3VuZCB0byB0aGUgcG9ydC4NCj4gDQo+IEluc3RlYWQgdmly
+dGlvLXZzb2NrIHJldHVybnMgRUNPTk5SRVNFVCBpbiB0aGUgbGFzdCBjYXNlLg0KPiBJJ20gbm90
+IHN1cmUgaXQncyBjb3JyZWN0IChsb29raW5nIGF0IHRoZSBtYW4gcGFnZSBjb25uZWN0KDIpIGl0
+DQo+IHdvdWxkDQo+IHNlZW0gbm90KSwgYnV0IGlmIEkgdW5kZXJzdG9vZCBjb3JyZWN0bHkgVk1D
+SSByZXR1cm5zIHRoZSBzYW1lDQo+IEVDT05OUkVTRVQgaW4gdGhpcyBjYXNlLg0KPiANCj4gPiBJ
+biBhbnkgY2FzZSwgdGhlIHJlZmVyZW5jZSBmb3IgdmlydGlvLXZzb2NrIHNlbWFudGljcyBpczoN
+Cj4gPiAxLiBIb3cgZG9lcyBWTUNJIChWTXdhcmUpIHZzb2NrIGJlaGF2ZT8gIFdlIHN0cml2ZSB0
+byBiZSBjb21wYXRpYmxlDQo+ID4gd2l0aA0KPiA+IHRoZSBWTUNJIHRyYW5zcG9ydC4NCj4gDQo+
+IExvb2tpbmcgYXQgdGhlIGNvZGUsIGl0IGxvb2tzIGxpa2UgVk1DSSByZXR1cm5zIEVDT05OUkVT
+RVQgaW4gdGhpcw0KPiBjYXNlLA0KPiBzbyB0aGlzIHBhdGNoIHNob3VsZCBiZSBva2F5LiAoSSBo
+YXZlbid0IHRyaWVkIGl0KQ0KPiANCj4gPiAyLiBJZiB0aGVyZSBpcyBubyBjbGVhciBWTUNJIGJl
+aGF2aW9yLCB0aGVuIHdlIGxvb2sgYXQgVENQL0lQDQo+ID4gYmVjYXVzZQ0KPiA+IHRob3NlIHNl
+bWFudGljcyBhcmUgZXhwZWN0ZWQgYnkgbW9zdCBhcHBsaWNhdGlvbnMuDQo+ID4gDQo+ID4gVGhp
+cyBidWcgbmVlZHMgYSB0ZXN0IGNhc2UgaW4gdG9vbHMvdGVzdGluZ3MvdnNvY2svIGFuZCB0aGF0
+IHRlc3QNCj4gPiBjYXNlDQo+ID4gd2lsbCBydW4gYWdhaW5zdCBWTUNJLCB2aXJ0aW8tdnNvY2ss
+IGFuZCBIeXBlci1WLiAgRG9pbmcgdGhhdCB3aWxsDQo+ID4gYW5zd2VyIHRoZSBxdWVzdGlvbiBv
+ZiBob3cgVk1DSSBoYW5kbGVzIHRoaXMgY2FzZS4NCj4gDQo+IEkgYWdyZWUuDQoNCkknbSB0cnlp
+bmcgdG8gd3JpdGUgdGhlIHRlc3QgYnV0IEknbSBraW5kYSBzdHVjayBhcyBJIGhhdmUgbm8gd2F5
+IHRvDQplbnN1cmUgdGhlIHByb3BlciB0aW1pbmcgYmV0d2VlbiB0aGUgdGVzdCBvbiB0aGUgc2Vy
+dmVyKGd1ZXN0KSBhbmQgdGhlDQp0ZXN0IG9uIGZyb20gdGhlIGNsaWVudChob3N0KS4NCg0KQmFz
+aWNhbGx5IEkgd2FzIHRoaW5raW5nIGFib3V0IGNyZWF0aW5nIGEgbmV3IHRlc3QgcmV1c2luZw0K
+dGVzdF9zdHJlYW1fY29ubmVjdGlvbl9yZXNldCgpIGZyb20gdnNvY2tfdGVzdC5jLiBUaGUgcmV1
+c2VkIGZ1bmN0aW9uDQp3b3VsZCBiZSB1c2VkIGZvciB0aGUgcnVuX2NsaWVudCBjYWxsYmFjaywg
+d2hpbGUgSSB3b3VsZCBkZWZpbmUgYSBuZXcNCmZ1bmN0aW9uIGZvciB0aGUgcnVuX3NlcnZlci4g
+SSB3YW50ZWQgdG8gYmFzaWNhbGx5IGRvIGEgYmluZCBvbmx5LCBhbmQNCmRvbid0IGdvIHVwIHRv
+IHRoZSBsaXN0ZW4vYWNjZXB0IGNhbGxzLg0KUHJvYmxlbSBpcywgdGhlIHNlcnZlciB3b24ndCBi
+bG9jayBhZnRlciB0aGUgYmluZCBpcyBkb25lLCBhbmQgSSBkb24ndA0Ka25vdyBob3cgbXVjaCB0
+aGUgdGVzdCBzaG91bGQgd2FpdCBiZXR3ZWVuIHRoZSBiaW5kIGFuZCB0aGUgZW5kLg0KSSB3b3Vs
+ZCBsaWtlIHRvIHNob3cgdGhhdCBldmVuIHdoZW4gdGhlIHNlcnZlciByZWFjaGVzIHRoZSBwb2lu
+dCB3aGVyZQ0KdGhlIHNvY2tldCBpcyBib3VuZCwgdGhlIGNvbm5lY3Qgd2lsbCBzdGlsbCByZXR1
+cm4gd2l0aCBFQ09OTlJFU0VULiBUaGUNCnNhbWUgdGVzdCB3aXRob3V0IHRoZSBwYXRjaCB3b3Vs
+ZCBzaW1wbHkgaGFuZyB0aWxsIHdlIGhpdCB0aGUgdGltZW91dA0Kb24gdGhlIGNsaWVudCBzaWRl
+Lg0KRG9lcyB0aGF0IG1ha2Ugc2Vuc2U/IEFuZCBob3cgbXVjaCB0aW1lIHNob3VsZCBJIHdhaXQg
+Zm9yIGFmdGVyIHRoZQ0KYmluZCBvbiB0aGUgc2VydmVyIHNpZGU/DQoNClRoYW5rcywNClNlYmFz
+dGllbg0KDQo+IA0KPiBUaGFua3MsDQo+IFN0ZWZhbm8NCj4gDQotLS0tLS0tLS0tLS0tLS0tLS0t
+LS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0KSW50ZWwg
+Q29ycG9yYXRpb24gU0FTIChGcmVuY2ggc2ltcGxpZmllZCBqb2ludCBzdG9jayBjb21wYW55KQpS
+ZWdpc3RlcmVkIGhlYWRxdWFydGVyczogIkxlcyBNb250YWxldHMiLSAyLCBydWUgZGUgUGFyaXMs
+IAo5MjE5NiBNZXVkb24gQ2VkZXgsIEZyYW5jZQpSZWdpc3RyYXRpb24gTnVtYmVyOiAgMzAyIDQ1
+NiAxOTkgUi5DLlMuIE5BTlRFUlJFCkNhcGl0YWw6IDQsNTcyLDAwMCBFdXJvcwoKVGhpcyBlLW1h
+aWwgYW5kIGFueSBhdHRhY2htZW50cyBtYXkgY29udGFpbiBjb25maWRlbnRpYWwgbWF0ZXJpYWwg
+Zm9yCnRoZSBzb2xlIHVzZSBvZiB0aGUgaW50ZW5kZWQgcmVjaXBpZW50KHMpLiBBbnkgcmV2aWV3
+IG9yIGRpc3RyaWJ1dGlvbgpieSBvdGhlcnMgaXMgc3RyaWN0bHkgcHJvaGliaXRlZC4gSWYgeW91
+IGFyZSBub3QgdGhlIGludGVuZGVkCnJlY2lwaWVudCwgcGxlYXNlIGNvbnRhY3QgdGhlIHNlbmRl
+ciBhbmQgZGVsZXRlIGFsbCBjb3BpZXMuCg==
 
