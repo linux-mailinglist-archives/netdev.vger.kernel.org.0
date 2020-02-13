@@ -2,203 +2,248 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id EF8BF15C952
-	for <lists+netdev@lfdr.de>; Thu, 13 Feb 2020 18:19:04 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A458E15C953
+	for <lists+netdev@lfdr.de>; Thu, 13 Feb 2020 18:19:45 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728701AbgBMRTC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 13 Feb 2020 12:19:02 -0500
-Received: from mga02.intel.com ([134.134.136.20]:3144 "EHLO mga02.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728618AbgBMRTB (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 13 Feb 2020 12:19:01 -0500
-X-Amp-Result: SKIPPED(no attachment in message)
-X-Amp-File-Uploaded: False
-Received: from fmsmga003.fm.intel.com ([10.253.24.29])
-  by orsmga101.jf.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 13 Feb 2020 09:18:59 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.70,437,1574150400"; 
-   d="scan'208";a="281576685"
-Received: from orsmsx105.amr.corp.intel.com ([10.22.225.132])
-  by FMSMGA003.fm.intel.com with ESMTP; 13 Feb 2020 09:18:59 -0800
-Received: from orsmsx152.amr.corp.intel.com (10.22.226.39) by
- ORSMSX105.amr.corp.intel.com (10.22.225.132) with Microsoft SMTP Server (TLS)
- id 14.3.439.0; Thu, 13 Feb 2020 09:18:58 -0800
-Received: from orsmsx115.amr.corp.intel.com ([169.254.4.100]) by
- ORSMSX152.amr.corp.intel.com ([169.254.8.38]) with mapi id 14.03.0439.000;
- Thu, 13 Feb 2020 09:18:58 -0800
-From:   "Boeuf, Sebastien" <sebastien.boeuf@intel.com>
-To:     "sgarzare@redhat.com" <sgarzare@redhat.com>
-CC:     "stefanha@redhat.com" <stefanha@redhat.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "davem@davemloft.net" <davem@davemloft.net>
-Subject: Re: [PATCH] net: virtio_vsock: Fix race condition between bind and
- listen
-Thread-Topic: [PATCH] net: virtio_vsock: Fix race condition between bind and
- listen
-Thread-Index: AQHV4k47o+FvdyeZdUa5OLpq2zu4PqgZZQkAgAAC0ACAAAitgIAABgwAgAAPhoCAABfKAIAAP1OAgAAGewCAAAEiAA==
-Date:   Thu, 13 Feb 2020 17:18:57 +0000
-Message-ID: <4cd620bec54b0b57792dd3ffd874637ef97a77f1.camel@intel.com>
-References: <668b0eda8823564cd604b1663dc53fbaece0cd4e.camel@intel.com>
-         <20200213094130.vehzkr4a3pnoiogr@steredhat>
-         <3448e588f11dad913e93dfce8031fbd60ba4c85b.camel@intel.com>
-         <20200213102237.uyhfv5g2td5ayg2b@steredhat>
-         <1d4c3958d8b75756341548e7d51ccf42397c2d27.camel@intel.com>
-         <20200213113949.GA544499@stefanha-x1.localdomain>
-         <20200213130458.ugu6rx6cv4k6v5rh@steredhat>
-         <ee9a929c3b9c5b958bf6399a5048a3c9b6ea4aae.camel@intel.com>
-         <CAGxU2F6v99haTtnGP8FT-GKuDEG03uDip+L-NFe3yFZJt7jUxQ@mail.gmail.com>
-In-Reply-To: <CAGxU2F6v99haTtnGP8FT-GKuDEG03uDip+L-NFe3yFZJt7jUxQ@mail.gmail.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-originating-ip: [10.252.24.191]
-Content-Type: text/plain; charset="utf-8"
-Content-ID: <20857C9F333DDC438437FC309294395B@intel.com>
+        id S1728374AbgBMRTo (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 13 Feb 2020 12:19:44 -0500
+Received: from mail-wm1-f67.google.com ([209.85.128.67]:33013 "EHLO
+        mail-wm1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728078AbgBMRTn (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 13 Feb 2020 12:19:43 -0500
+Received: by mail-wm1-f67.google.com with SMTP id m10so204320wmc.0
+        for <netdev@vger.kernel.org>; Thu, 13 Feb 2020 09:19:41 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=o7UuiQ4EXxTUtgvkjYHkhsdAOZrJSM0pJwSGAT7bMBA=;
+        b=szTw2sA0+Ch8dtHEZnri7acSFJi+FbzHE6pECpJ+cVFgmG31BMjdio5rKRN4h/hdpK
+         4SseCuaZpqZke/02hG0UbBYktXwxoyEubtczflzwjikneGeNwXqk4Tirgm9JNeBX88dl
+         rZopfZEvDsZFJDWOzwWoy2tVLFyUHhEv56iewIvJyu9DF89QlSwTYS5k2vLXOKxG2GKl
+         a5BujaUEYrDEn+c9xfFScNksCw+1iNqLHhMXPu6585NQCSTRNP9C8zDPYctAA6FS/XfT
+         1zTpRV21Uwvh8zCGZEfd8lotkzqXm9MVyQ6CrrUl69SpKwfscdJgVnhEdhOMZsr4pOKt
+         +MyA==
+X-Gm-Message-State: APjAAAVetiIkriydne5tDOlhTtL/knygPrzgSkRp3HKt46IIzTevCpB9
+        ZbXWU+XO7NkmRgcMSH+E6nyT6m1FOdI=
+X-Google-Smtp-Source: APXvYqy8o8dMuve2NlC8i7sqY5CdbyafFyi+sjHmOcHzEBUNcxT+iA4C0YIdQQsjs9IrH2SwS5NRtA==
+X-Received: by 2002:a7b:cbc8:: with SMTP id n8mr6896528wmi.35.1581614380291;
+        Thu, 13 Feb 2020 09:19:40 -0800 (PST)
+Received: from dontpanic.criteo.prod ([91.199.242.231])
+        by smtp.gmail.com with ESMTPSA id t81sm3847221wmg.6.2020.02.13.09.19.39
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 13 Feb 2020 09:19:39 -0800 (PST)
+From:   William Dauchy <w.dauchy@criteo.com>
+To:     netdev@vger.kernel.org
+Cc:     William Dauchy <w.dauchy@criteo.com>,
+        Nicolas Dichtel <nicolas.dichtel@6wind.com>
+Subject: [PATCH v5 net] net, ip6_tunnel: enhance tunnel locate with link check
+Date:   Thu, 13 Feb 2020 18:19:22 +0100
+Message-Id: <20200213171922.510172-1-w.dauchy@criteo.com>
+X-Mailer: git-send-email 2.25.0
+In-Reply-To: <cf5ef569-1742-a22f-ec7d-f987287e12fb@6wind.com>
+References: <cf5ef569-1742-a22f-ec7d-f987287e12fb@6wind.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: base64
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-T24gVGh1LCAyMDIwLTAyLTEzIGF0IDE4OjE0ICswMTAwLCBTdGVmYW5vIEdhcnphcmVsbGEgd3Jv
-dGU6DQo+IE9uIFRodSwgRmViIDEzLCAyMDIwIGF0IDU6NTEgUE0gQm9ldWYsIFNlYmFzdGllbiA8
-DQo+IHNlYmFzdGllbi5ib2V1ZkBpbnRlbC5jb20+IHdyb3RlOg0KPiA+IE9uIFRodSwgMjAyMC0w
-Mi0xMyBhdCAxNDowNCArMDEwMCwgU3RlZmFubyBHYXJ6YXJlbGxhIHdyb3RlOg0KPiA+ID4gT24g
-VGh1LCBGZWIgMTMsIDIwMjAgYXQgMTE6Mzk6NDlBTSArMDAwMCwgU3RlZmFuIEhham5vY3ppIHdy
-b3RlOg0KPiA+ID4gPiBPbiBUaHUsIEZlYiAxMywgMjAyMCBhdCAxMDo0NDoxOEFNICswMDAwLCBC
-b2V1ZiwgU2ViYXN0aWVuDQo+ID4gPiA+IHdyb3RlOg0KPiA+ID4gPiA+IE9uIFRodSwgMjAyMC0w
-Mi0xMyBhdCAxMToyMiArMDEwMCwgU3RlZmFubyBHYXJ6YXJlbGxhIHdyb3RlOg0KPiA+ID4gPiA+
-ID4gT24gVGh1LCBGZWIgMTMsIDIwMjAgYXQgMDk6NTE6MzZBTSArMDAwMCwgQm9ldWYsIFNlYmFz
-dGllbg0KPiA+ID4gPiA+ID4gd3JvdGU6DQo+ID4gPiA+ID4gPiA+IEhpIFN0ZWZhbm8sDQo+ID4g
-PiA+ID4gPiA+IA0KPiA+ID4gPiA+ID4gPiBPbiBUaHUsIDIwMjAtMDItMTMgYXQgMTA6NDEgKzAx
-MDAsIFN0ZWZhbm8gR2FyemFyZWxsYQ0KPiA+ID4gPiA+ID4gPiB3cm90ZToNCj4gPiA+ID4gPiA+
-ID4gPiBIaSBTZWJhc3RpZW4sDQo+ID4gPiA+ID4gPiA+ID4gDQo+ID4gPiA+ID4gPiA+ID4gT24g
-VGh1LCBGZWIgMTMsIDIwMjAgYXQgMDk6MTY6MTFBTSArMDAwMCwgQm9ldWYsDQo+ID4gPiA+ID4g
-PiA+ID4gU2ViYXN0aWVuDQo+ID4gPiA+ID4gPiA+ID4gd3JvdGU6DQo+ID4gPiA+ID4gPiA+ID4g
-PiBGcm9tIDJmMTI3NmQwMmY1YTEyZDg1YWVjNWFkYzExZGZlMWVhYjdlMTYwZDYgTW9uIFNlcA0K
-PiA+ID4gPiA+ID4gPiA+ID4gMTcNCj4gPiA+ID4gPiA+ID4gPiA+IDAwOjAwOjAwDQo+ID4gPiA+
-ID4gPiA+ID4gPiAyMDAxDQo+ID4gPiA+ID4gPiA+ID4gPiBGcm9tOiBTZWJhc3RpZW4gQm9ldWYg
-PHNlYmFzdGllbi5ib2V1ZkBpbnRlbC5jb20+DQo+ID4gPiA+ID4gPiA+ID4gPiBEYXRlOiBUaHUs
-IDEzIEZlYiAyMDIwIDA4OjUwOjM4ICswMTAwDQo+ID4gPiA+ID4gPiA+ID4gPiBTdWJqZWN0OiBb
-UEFUQ0hdIG5ldDogdmlydGlvX3Zzb2NrOiBGaXggcmFjZQ0KPiA+ID4gPiA+ID4gPiA+ID4gY29u
-ZGl0aW9uDQo+ID4gPiA+ID4gPiA+ID4gPiBiZXR3ZWVuDQo+ID4gPiA+ID4gPiA+ID4gPiBiaW5k
-DQo+ID4gPiA+ID4gPiA+ID4gPiBhbmQgbGlzdGVuDQo+ID4gPiA+ID4gPiA+ID4gPiANCj4gPiA+
-ID4gPiA+ID4gPiA+IFdoZW5ldmVyIHRoZSB2c29jayBiYWNrZW5kIG9uIHRoZSBob3N0IHNlbmRz
-IGEgcGFja2V0DQo+ID4gPiA+ID4gPiA+ID4gPiB0aHJvdWdoDQo+ID4gPiA+ID4gPiA+ID4gPiB0
-aGUNCj4gPiA+ID4gPiA+ID4gPiA+IFJYDQo+ID4gPiA+ID4gPiA+ID4gPiBxdWV1ZSwgaXQgZXhw
-ZWN0cyBhbiBhbnN3ZXIgb24gdGhlIFRYIHF1ZXVlLg0KPiA+ID4gPiA+ID4gPiA+ID4gVW5mb3J0
-dW5hdGVseSwNCj4gPiA+ID4gPiA+ID4gPiA+IHRoZXJlDQo+ID4gPiA+ID4gPiA+ID4gPiBpcyBv
-bmUNCj4gPiA+ID4gPiA+ID4gPiA+IGNhc2Ugd2hlcmUgdGhlIGhvc3Qgc2lkZSB3aWxsIGhhbmcg
-d2FpdGluZyBmb3IgdGhlDQo+ID4gPiA+ID4gPiA+ID4gPiBhbnN3ZXINCj4gPiA+ID4gPiA+ID4g
-PiA+IGFuZA0KPiA+ID4gPiA+ID4gPiA+ID4gd2lsbA0KPiA+ID4gPiA+ID4gPiA+ID4gZWZmZWN0
-aXZlbHkgbmV2ZXIgcmVjb3Zlci4NCj4gPiA+ID4gPiA+ID4gPiANCj4gPiA+ID4gPiA+ID4gPiBE
-byB5b3UgaGF2ZSBhIHRlc3QgY2FzZT8NCj4gPiA+ID4gPiA+ID4gDQo+ID4gPiA+ID4gPiA+IFll
-cyBJIGRvLiBUaGlzIGhhcyBiZWVuIGEgYnVnIHdlJ3ZlIGJlZW4gaW52ZXN0aWdhdGluZyBvbg0K
-PiA+ID4gPiA+ID4gPiBLYXRhDQo+ID4gPiA+ID4gPiA+IENvbnRhaW5lcnMgZm9yIHF1aXRlIHNv
-bWUgdGltZSBub3cuIFRoaXMgd2FzIGhhcHBlbmluZw0KPiA+ID4gPiA+ID4gPiB3aGVuDQo+ID4g
-PiA+ID4gPiA+IHVzaW5nDQo+ID4gPiA+ID4gPiA+IEthdGENCj4gPiA+ID4gPiA+ID4gYWxvbmcg
-d2l0aCBDbG91ZC1IeXBlcnZpc29yICh3aGljaCByZWx5IG9uIHRoZSBoeWJyaWQNCj4gPiA+ID4g
-PiA+ID4gdnNvY2sNCj4gPiA+ID4gPiA+ID4gaW1wbGVtZW50YXRpb24gZnJvbSBGaXJlY3JhY2tl
-cikuIFRoZSB0aGluZyBpcywgdGhpcyBidWcNCj4gPiA+ID4gPiA+ID4gaXMNCj4gPiA+ID4gPiA+
-ID4gdmVyeQ0KPiA+ID4gPiA+ID4gPiBoYXJkDQo+ID4gPiA+ID4gPiA+IHRvIHJlcHJvZHVjZSBh
-bmQgd2FzIGhhcHBlbmluZyBmb3IgS2F0YSBiZWNhdXNlIG9mIHRoZQ0KPiA+ID4gPiA+ID4gPiBj
-b25uZWN0aW9uDQo+ID4gPiA+ID4gPiA+IHN0cmF0ZWd5LiBUaGUga2F0YS1ydW50aW1lIHRyaWVz
-IHRvIGNvbm5lY3QgYSBtaWxsaW9uDQo+ID4gPiA+ID4gPiA+IHRpbWVzDQo+ID4gPiA+ID4gPiA+
-IGFmdGVyDQo+ID4gPiA+ID4gPiA+IGl0DQo+ID4gPiA+ID4gPiA+IHN0YXJ0ZWQgdGhlIFZNLCBq
-dXN0IGhvcGluZyB0aGUga2F0YS1hZ2VudCB3aWxsIHN0YXJ0IHRvDQo+ID4gPiA+ID4gPiA+IGxp
-c3Rlbg0KPiA+ID4gPiA+ID4gPiBmcm9tDQo+ID4gPiA+ID4gPiA+IHRoZSBndWVzdCBzaWRlIGF0
-IHNvbWUgcG9pbnQuDQo+ID4gPiA+ID4gPiANCj4gPiA+ID4gPiA+IE1heWJlIGlzIHJlbGF0ZWQg
-dG8gc29tZXRoaW5nIGVsc2UuIEkgdHJpZWQgdGhlIGZvbGxvd2luZw0KPiA+ID4gPiA+ID4gd2hp
-Y2gNCj4gPiA+ID4gPiA+IHNob3VsZCBiZQ0KPiA+ID4gPiA+ID4geW91ciBjYXNlIHNpbXBsaWZp
-ZWQgKElJVUMpOg0KPiA+ID4gPiA+ID4gDQo+ID4gPiA+ID4gPiBndWVzdCQgcHl0aG9uDQo+ID4g
-PiA+ID4gPiAgICAgaW1wb3J0IHNvY2tldA0KPiA+ID4gPiA+ID4gICAgIHMgPSBzb2NrZXQuc29j
-a2V0KHNvY2tldC5BRl9WU09DSywgc29ja2V0LlNPQ0tfU1RSRUFNKQ0KPiA+ID4gPiA+ID4gICAg
-IHMuYmluZCgoc29ja2V0LlZNQUREUl9DSURfQU5ZLCAxMjM0KSkNCj4gPiA+ID4gPiA+IA0KPiA+
-ID4gPiA+ID4gaG9zdCQgcHl0aG9uDQo+ID4gPiA+ID4gPiAgICAgaW1wb3J0IHNvY2tldA0KPiA+
-ID4gPiA+ID4gICAgIHMgPSBzb2NrZXQuc29ja2V0KHNvY2tldC5BRl9WU09DSywgc29ja2V0LlNP
-Q0tfU1RSRUFNKQ0KPiA+ID4gPiA+ID4gICAgIHMuY29ubmVjdCgoMywgMTIzNCkpDQo+ID4gPiA+
-ID4gPiANCj4gPiA+ID4gPiA+IFRyYWNlYmFjayAobW9zdCByZWNlbnQgY2FsbCBsYXN0KToNCj4g
-PiA+ID4gPiA+ICAgRmlsZSAiPHN0ZGluPiIsIGxpbmUgMSwgaW4gPG1vZHVsZT4NCj4gPiA+ID4g
-PiA+IFRpbWVvdXRFcnJvcjogW0Vycm5vIDExMF0gQ29ubmVjdGlvbiB0aW1lZCBvdXQNCj4gPiA+
-ID4gPiANCj4gPiA+ID4gPiBZZXMgdGhpcyBpcyBleGFjdGx5IHRoZSBzaW1wbGlmaWVkIGNhc2Uu
-IEJ1dCB0aGF0J3MgdGhlDQo+ID4gPiA+ID4gcG9pbnQsIEkNCj4gPiA+ID4gPiBkb24ndA0KPiA+
-ID4gPiA+IHRoaW5rIHRoZSB0aW1lb3V0IGlzIHRoZSBiZXN0IHdheSB0byBnbyBoZXJlLiBCZWNh
-dXNlIHRoaXMNCj4gPiA+ID4gPiBtZWFucw0KPiA+ID4gPiA+IHRoYXQNCj4gPiA+ID4gPiB3aGVu
-IHdlIHJ1biBpbnRvIHRoaXMgY2FzZSwgdGhlIGhvc3Qgc2lkZSB3aWxsIHdhaXQgZm9yIHF1aXRl
-DQo+ID4gPiA+ID4gc29tZSB0aW1lDQo+ID4gPiA+ID4gYmVmb3JlIHJldHJ5aW5nLCB3aGljaCBj
-YW4gY2F1c2UgYSB2ZXJ5IGxvbmcgZGVsYXkgYmVmb3JlIHRoZQ0KPiA+ID4gPiA+IGNvbW11bmlj
-YXRpb24gd2l0aCB0aGUgZ3Vlc3QgaXMgZXN0YWJsaXNoZWQuIEJ5IHNpbXBseQ0KPiA+ID4gPiA+
-IGFuc3dlcmluZw0KPiA+ID4gPiA+IHRoZQ0KPiA+ID4gPiA+IGhvc3Qgd2l0aCBhIFJTVCBwYWNr
-ZXQsIHdlIGluZm9ybSBpdCB0aGF0IG5vYm9keSdzIGxpc3RlbmluZw0KPiA+ID4gPiA+IG9uDQo+
-ID4gPiA+ID4gdGhlDQo+ID4gPiA+ID4gZ3Vlc3Qgc2lkZSB5ZXQsIHRoZXJlZm9yZSB0aGUgaG9z
-dCBzaWRlIHdpbGwgY2xvc2UgYW5kIHRyeQ0KPiA+ID4gPiA+IGFnYWluLg0KPiA+ID4gPiANCj4g
-PiA+ID4gTXkgZXhwZWN0YXRpb24gaXMgdGhhdCBUQ1AvSVAgd2lsbCBwcm9kdWNlIEVDT05OUkVG
-VVNFRCBpbiB0aGlzDQo+ID4gPiA+IGNhc2UgYnV0DQo+ID4gPiA+IEkgaGF2ZW4ndCBjaGVja2Vk
-LiAgVGltaW5nIG91dCBpcyB3ZWlyZCBiZWhhdmlvci4NCj4gPiA+IA0KPiA+ID4gSSBqdXN0IHRy
-aWVkIGFuZCB5ZXMsIFRDUC9JUCBwcm9kdWNlcyBFQ09OTlJFRlVTRUQuIFRoZSBzYW1lDQo+ID4g
-PiBlcnJvcg0KPiA+ID4gcmV0dXJuZWQNCj4gPiA+IHdoZW4gbm8gb25lJ3MgYm91bmQgdG8gdGhl
-IHBvcnQuDQo+ID4gPiANCj4gPiA+IEluc3RlYWQgdmlydGlvLXZzb2NrIHJldHVybnMgRUNPTk5S
-RVNFVCBpbiB0aGUgbGFzdCBjYXNlLg0KPiA+ID4gSSdtIG5vdCBzdXJlIGl0J3MgY29ycmVjdCAo
-bG9va2luZyBhdCB0aGUgbWFuIHBhZ2UgY29ubmVjdCgyKSBpdA0KPiA+ID4gd291bGQNCj4gPiA+
-IHNlZW0gbm90KSwgYnV0IGlmIEkgdW5kZXJzdG9vZCBjb3JyZWN0bHkgVk1DSSByZXR1cm5zIHRo
-ZSBzYW1lDQo+ID4gPiBFQ09OTlJFU0VUIGluIHRoaXMgY2FzZS4NCj4gPiA+IA0KPiA+ID4gPiBJ
-biBhbnkgY2FzZSwgdGhlIHJlZmVyZW5jZSBmb3IgdmlydGlvLXZzb2NrIHNlbWFudGljcyBpczoN
-Cj4gPiA+ID4gMS4gSG93IGRvZXMgVk1DSSAoVk13YXJlKSB2c29jayBiZWhhdmU/ICBXZSBzdHJp
-dmUgdG8gYmUNCj4gPiA+ID4gY29tcGF0aWJsZQ0KPiA+ID4gPiB3aXRoDQo+ID4gPiA+IHRoZSBW
-TUNJIHRyYW5zcG9ydC4NCj4gPiA+IA0KPiA+ID4gTG9va2luZyBhdCB0aGUgY29kZSwgaXQgbG9v
-a3MgbGlrZSBWTUNJIHJldHVybnMgRUNPTk5SRVNFVCBpbg0KPiA+ID4gdGhpcw0KPiA+ID4gY2Fz
-ZSwNCj4gPiA+IHNvIHRoaXMgcGF0Y2ggc2hvdWxkIGJlIG9rYXkuIChJIGhhdmVuJ3QgdHJpZWQg
-aXQpDQo+ID4gPiANCj4gPiA+ID4gMi4gSWYgdGhlcmUgaXMgbm8gY2xlYXIgVk1DSSBiZWhhdmlv
-ciwgdGhlbiB3ZSBsb29rIGF0IFRDUC9JUA0KPiA+ID4gPiBiZWNhdXNlDQo+ID4gPiA+IHRob3Nl
-IHNlbWFudGljcyBhcmUgZXhwZWN0ZWQgYnkgbW9zdCBhcHBsaWNhdGlvbnMuDQo+ID4gPiA+IA0K
-PiA+ID4gPiBUaGlzIGJ1ZyBuZWVkcyBhIHRlc3QgY2FzZSBpbiB0b29scy90ZXN0aW5ncy92c29j
-ay8gYW5kIHRoYXQNCj4gPiA+ID4gdGVzdA0KPiA+ID4gPiBjYXNlDQo+ID4gPiA+IHdpbGwgcnVu
-IGFnYWluc3QgVk1DSSwgdmlydGlvLXZzb2NrLCBhbmQgSHlwZXItVi4gIERvaW5nIHRoYXQNCj4g
-PiA+ID4gd2lsbA0KPiA+ID4gPiBhbnN3ZXIgdGhlIHF1ZXN0aW9uIG9mIGhvdyBWTUNJIGhhbmRs
-ZXMgdGhpcyBjYXNlLg0KPiA+ID4gDQo+ID4gPiBJIGFncmVlLg0KPiA+IA0KPiA+IEknbSB0cnlp
-bmcgdG8gd3JpdGUgdGhlIHRlc3QgYnV0IEknbSBraW5kYSBzdHVjayBhcyBJIGhhdmUgbm8gd2F5
-DQo+ID4gdG8NCj4gDQo+IEdyZWF0IQ0KPiANCj4gPiBlbnN1cmUgdGhlIHByb3BlciB0aW1pbmcg
-YmV0d2VlbiB0aGUgdGVzdCBvbiB0aGUgc2VydmVyKGd1ZXN0KSBhbmQNCj4gPiB0aGUNCj4gPiB0
-ZXN0IG9uIGZyb20gdGhlIGNsaWVudChob3N0KS4NCj4gPiANCj4gPiBCYXNpY2FsbHkgSSB3YXMg
-dGhpbmtpbmcgYWJvdXQgY3JlYXRpbmcgYSBuZXcgdGVzdCByZXVzaW5nDQo+ID4gdGVzdF9zdHJl
-YW1fY29ubmVjdGlvbl9yZXNldCgpIGZyb20gdnNvY2tfdGVzdC5jLiBUaGUgcmV1c2VkDQo+ID4g
-ZnVuY3Rpb24NCj4gPiB3b3VsZCBiZSB1c2VkIGZvciB0aGUgcnVuX2NsaWVudCBjYWxsYmFjaywg
-d2hpbGUgSSB3b3VsZCBkZWZpbmUgYQ0KPiA+IG5ldw0KPiA+IGZ1bmN0aW9uIGZvciB0aGUgcnVu
-X3NlcnZlci4gSSB3YW50ZWQgdG8gYmFzaWNhbGx5IGRvIGEgYmluZCBvbmx5LA0KPiA+IGFuZA0K
-PiA+IGRvbid0IGdvIHVwIHRvIHRoZSBsaXN0ZW4vYWNjZXB0IGNhbGxzLg0KPiA+IFByb2JsZW0g
-aXMsIHRoZSBzZXJ2ZXIgd29uJ3QgYmxvY2sgYWZ0ZXIgdGhlIGJpbmQgaXMgZG9uZSwgYW5kIEkN
-Cj4gPiBkb24ndA0KPiA+IGtub3cgaG93IG11Y2ggdGhlIHRlc3Qgc2hvdWxkIHdhaXQgYmV0d2Vl
-biB0aGUgYmluZCBhbmQgdGhlIGVuZC4NCj4gPiBJIHdvdWxkIGxpa2UgdG8gc2hvdyB0aGF0IGV2
-ZW4gd2hlbiB0aGUgc2VydmVyIHJlYWNoZXMgdGhlIHBvaW50DQo+ID4gd2hlcmUNCj4gPiB0aGUg
-c29ja2V0IGlzIGJvdW5kLCB0aGUgY29ubmVjdCB3aWxsIHN0aWxsIHJldHVybiB3aXRoIEVDT05O
-UkVTRVQuDQo+ID4gVGhlDQo+ID4gc2FtZSB0ZXN0IHdpdGhvdXQgdGhlIHBhdGNoIHdvdWxkIHNp
-bXBseSBoYW5nIHRpbGwgd2UgaGl0IHRoZQ0KPiA+IHRpbWVvdXQNCj4gPiBvbiB0aGUgY2xpZW50
-IHNpZGUuDQo+ID4gRG9lcyB0aGF0IG1ha2Ugc2Vuc2U/IEFuZCBob3cgbXVjaCB0aW1lIHNob3Vs
-ZCBJIHdhaXQgZm9yIGFmdGVyIHRoZQ0KPiA+IGJpbmQgb24gdGhlIHNlcnZlciBzaWRlPw0KPiAN
-Cj4gWW91IGNhbiB1c2UgY29udHJvbF93cml0ZWxuKCkgYW5kIGNvbnRyb2xfZXhwZWN0bG4oKSBm
-cm9tIGNvbnRyb2wuYw0KPiB0bw0KPiBzeW5jcm9uaXplIHNlcnZlciBhbmQgY2xpZW50LiBUaGUg
-Y29udHJvbCBwYXRoIHVzZXMgYSBUQ1AvSVAgc29ja2V0Lg0KDQpPaCB0aGF0J3MgY29vbCEgSSBj
-b21wbGV0ZWx5IG1pc3NlZCB0aGlzIGZlYXR1cmUgOikNCkxldCBtZSByZXN1bWUgbXkgd29yayB0
-aGVuIQ0KIA0KPiANCj4gWW91IGNhbiBkbyBzb21ldGhpbmcgbGlrZSB0aGlzOg0KPiANCj4gc2Vy
-dmVyICAgICAgICAgICAgICAgICAgICAgICAgICAgY2xpZW50DQo+IA0KPiBzID0gc29ja2V0KCk7
-ICAgICAgICAgICAgICAgICAgICBzID0gc29ja2V0KCk7DQo+IGJpbmQocywgLi4uKTsNCj4gY29u
-dHJvbF93cml0ZWxuKCJCSU5EIik7DQo+ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
-IGNvbnRyb2xfZXhwZWN0bG4oIkJJTkQiKTsNCj4gICAgICAgICAgICAgICAgICAgICAgICAgICAg
-ICAgICAgY29ubmVjdChzLCAuLi4pOw0KPiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
-ICAjIGNoZWNrIHJldCBhbmQgZXJybm8NCj4gICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
-ICAgY29udHJvbF93cml0ZWxuKCJET05FIik7DQo+IGNvbnRyb2xfZXhwZWN0bG4oIkRPTkUiKTsN
-Cj4gY2xvc2Uocyk7ICAgICAgICAgICAgICAgICAgICAgICAgY2xvc2Uocyk7DQo+IA0KPiBDaGVl
-cnMsDQo+IFN0ZWZhbm8NCj4gDQotLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0t
-LS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0KSW50ZWwgQ29ycG9yYXRpb24gU0FTIChG
-cmVuY2ggc2ltcGxpZmllZCBqb2ludCBzdG9jayBjb21wYW55KQpSZWdpc3RlcmVkIGhlYWRxdWFy
-dGVyczogIkxlcyBNb250YWxldHMiLSAyLCBydWUgZGUgUGFyaXMsIAo5MjE5NiBNZXVkb24gQ2Vk
-ZXgsIEZyYW5jZQpSZWdpc3RyYXRpb24gTnVtYmVyOiAgMzAyIDQ1NiAxOTkgUi5DLlMuIE5BTlRF
-UlJFCkNhcGl0YWw6IDQsNTcyLDAwMCBFdXJvcwoKVGhpcyBlLW1haWwgYW5kIGFueSBhdHRhY2ht
-ZW50cyBtYXkgY29udGFpbiBjb25maWRlbnRpYWwgbWF0ZXJpYWwgZm9yCnRoZSBzb2xlIHVzZSBv
-ZiB0aGUgaW50ZW5kZWQgcmVjaXBpZW50KHMpLiBBbnkgcmV2aWV3IG9yIGRpc3RyaWJ1dGlvbgpi
-eSBvdGhlcnMgaXMgc3RyaWN0bHkgcHJvaGliaXRlZC4gSWYgeW91IGFyZSBub3QgdGhlIGludGVu
-ZGVkCnJlY2lwaWVudCwgcGxlYXNlIGNvbnRhY3QgdGhlIHNlbmRlciBhbmQgZGVsZXRlIGFsbCBj
-b3BpZXMuCg==
+With ipip, it is possible to create an extra interface explicitly
+attached to a given physical interface:
+
+  # ip link show tunl0
+  4: tunl0@NONE: <NOARP> mtu 1480 qdisc noop state DOWN mode DEFAULT group default qlen 1000
+    link/ipip 0.0.0.0 brd 0.0.0.0
+  # ip link add tunl1 type ipip dev eth0
+  # ip link show tunl1
+  6: tunl1@eth0: <NOARP> mtu 1480 qdisc noop state DOWN mode DEFAULT group default qlen 1000
+    link/ipip 0.0.0.0 brd 0.0.0.0
+
+But it is not possible with ip6tnl:
+
+  # ip link show ip6tnl0
+  5: ip6tnl0@NONE: <NOARP> mtu 1452 qdisc noop state DOWN mode DEFAULT group default qlen 1000
+      link/tunnel6 :: brd ::
+  # ip link add ip6tnl1 type ip6tnl dev eth0
+  RTNETLINK answers: File exists
+
+This patch aims to make it possible by adding link comparaison in both
+tunnel locate and lookup functions; we also modify mtu calculation when
+attached to an interface with a lower mtu.
+
+This permits to make use of x-netns communication by moving the newly
+created tunnel in a given netns.
+
+Signed-off-by: William Dauchy <w.dauchy@criteo.com>
+---
+changes in v2:
+- splitted code to differenciate link/type check
+changes in v3:
+- abadon 2/2 with type check as we do not have any real use case as of
+  today
+- fix lookup function and mtu calculation
+changes in v4:
+- fix and move mtu calculation in ip6_tnl_link_config
+changes in v5:
+- mtu fixes: rt->dst.dev check + IP6_MAX_MTU
+---
+ net/ipv6/ip6_tunnel.c | 68 ++++++++++++++++++++++++++++++-------------
+ 1 file changed, 47 insertions(+), 21 deletions(-)
+
+diff --git a/net/ipv6/ip6_tunnel.c b/net/ipv6/ip6_tunnel.c
+index b5dd20c4599b..5d65436ad5ad 100644
+--- a/net/ipv6/ip6_tunnel.c
++++ b/net/ipv6/ip6_tunnel.c
+@@ -121,6 +121,7 @@ static struct net_device_stats *ip6_get_stats(struct net_device *dev)
+ 
+ /**
+  * ip6_tnl_lookup - fetch tunnel matching the end-point addresses
++ *   @link: ifindex of underlying interface
+  *   @remote: the address of the tunnel exit-point
+  *   @local: the address of the tunnel entry-point
+  *
+@@ -134,37 +135,56 @@ static struct net_device_stats *ip6_get_stats(struct net_device *dev)
+ 	for (t = rcu_dereference(start); t; t = rcu_dereference(t->next))
+ 
+ static struct ip6_tnl *
+-ip6_tnl_lookup(struct net *net, const struct in6_addr *remote, const struct in6_addr *local)
++ip6_tnl_lookup(struct net *net, int link,
++	       const struct in6_addr *remote, const struct in6_addr *local)
+ {
+ 	unsigned int hash = HASH(remote, local);
+-	struct ip6_tnl *t;
++	struct ip6_tnl *t, *cand = NULL;
+ 	struct ip6_tnl_net *ip6n = net_generic(net, ip6_tnl_net_id);
+ 	struct in6_addr any;
+ 
+ 	for_each_ip6_tunnel_rcu(ip6n->tnls_r_l[hash]) {
+-		if (ipv6_addr_equal(local, &t->parms.laddr) &&
+-		    ipv6_addr_equal(remote, &t->parms.raddr) &&
+-		    (t->dev->flags & IFF_UP))
++		if (!ipv6_addr_equal(local, &t->parms.laddr) ||
++		    !ipv6_addr_equal(remote, &t->parms.raddr) ||
++		    !(t->dev->flags & IFF_UP))
++			continue;
++
++		if (link == t->parms.link)
+ 			return t;
++		else
++			cand = t;
+ 	}
+ 
+ 	memset(&any, 0, sizeof(any));
+ 	hash = HASH(&any, local);
+ 	for_each_ip6_tunnel_rcu(ip6n->tnls_r_l[hash]) {
+-		if (ipv6_addr_equal(local, &t->parms.laddr) &&
+-		    ipv6_addr_any(&t->parms.raddr) &&
+-		    (t->dev->flags & IFF_UP))
++		if (!ipv6_addr_equal(local, &t->parms.laddr) ||
++		    !ipv6_addr_any(&t->parms.raddr) ||
++		    !(t->dev->flags & IFF_UP))
++			continue;
++
++		if (link == t->parms.link)
+ 			return t;
++		else if (!cand)
++			cand = t;
+ 	}
+ 
+ 	hash = HASH(remote, &any);
+ 	for_each_ip6_tunnel_rcu(ip6n->tnls_r_l[hash]) {
+-		if (ipv6_addr_equal(remote, &t->parms.raddr) &&
+-		    ipv6_addr_any(&t->parms.laddr) &&
+-		    (t->dev->flags & IFF_UP))
++		if (!ipv6_addr_equal(remote, &t->parms.raddr) ||
++		    !ipv6_addr_any(&t->parms.laddr) ||
++		    !(t->dev->flags & IFF_UP))
++			continue;
++
++		if (link == t->parms.link)
+ 			return t;
++		else if (!cand)
++			cand = t;
+ 	}
+ 
++	if (cand)
++		return cand;
++
+ 	t = rcu_dereference(ip6n->collect_md_tun);
+ 	if (t && t->dev->flags & IFF_UP)
+ 		return t;
+@@ -351,7 +371,8 @@ static struct ip6_tnl *ip6_tnl_locate(struct net *net,
+ 	     (t = rtnl_dereference(*tp)) != NULL;
+ 	     tp = &t->next) {
+ 		if (ipv6_addr_equal(local, &t->parms.laddr) &&
+-		    ipv6_addr_equal(remote, &t->parms.raddr)) {
++		    ipv6_addr_equal(remote, &t->parms.raddr) &&
++		    p->link == t->parms.link) {
+ 			if (create)
+ 				return ERR_PTR(-EEXIST);
+ 
+@@ -485,7 +506,7 @@ ip6_tnl_err(struct sk_buff *skb, __u8 ipproto, struct inet6_skb_parm *opt,
+ 	   processing of the error. */
+ 
+ 	rcu_read_lock();
+-	t = ip6_tnl_lookup(dev_net(skb->dev), &ipv6h->daddr, &ipv6h->saddr);
++	t = ip6_tnl_lookup(dev_net(skb->dev), skb->dev->ifindex, &ipv6h->daddr, &ipv6h->saddr);
+ 	if (!t)
+ 		goto out;
+ 
+@@ -887,7 +908,7 @@ static int ipxip6_rcv(struct sk_buff *skb, u8 ipproto,
+ 	int ret = -1;
+ 
+ 	rcu_read_lock();
+-	t = ip6_tnl_lookup(dev_net(skb->dev), &ipv6h->saddr, &ipv6h->daddr);
++	t = ip6_tnl_lookup(dev_net(skb->dev), skb->dev->ifindex, &ipv6h->saddr, &ipv6h->daddr);
+ 
+ 	if (t) {
+ 		u8 tproto = READ_ONCE(t->parms.proto);
+@@ -1420,8 +1441,10 @@ ip6_tnl_start_xmit(struct sk_buff *skb, struct net_device *dev)
+ static void ip6_tnl_link_config(struct ip6_tnl *t)
+ {
+ 	struct net_device *dev = t->dev;
++	struct net_device *tdev = NULL;
+ 	struct __ip6_tnl_parm *p = &t->parms;
+ 	struct flowi6 *fl6 = &t->fl.u.ip6;
++	unsigned int mtu;
+ 	int t_hlen;
+ 
+ 	memcpy(dev->dev_addr, &p->laddr, sizeof(struct in6_addr));
+@@ -1457,22 +1480,25 @@ static void ip6_tnl_link_config(struct ip6_tnl *t)
+ 		struct rt6_info *rt = rt6_lookup(t->net,
+ 						 &p->raddr, &p->laddr,
+ 						 p->link, NULL, strict);
++		if (rt) {
++			tdev = rt->dst.dev;
++			ip6_rt_put(rt);
++		}
+ 
+-		if (!rt)
+-			return;
++		if (!tdev && p->link)
++			tdev = __dev_get_by_index(t->net, p->link);
+ 
+-		if (rt->dst.dev) {
+-			dev->hard_header_len = rt->dst.dev->hard_header_len +
+-				t_hlen;
++		if (tdev) {
++			dev->hard_header_len = tdev->hard_header_len + t_hlen;
++			mtu = min_t(unsigned int, tdev->mtu, IP6_MAX_MTU);
+ 
+-			dev->mtu = rt->dst.dev->mtu - t_hlen;
++			dev->mtu = mtu - t_hlen;
+ 			if (!(t->parms.flags & IP6_TNL_F_IGN_ENCAP_LIMIT))
+ 				dev->mtu -= 8;
+ 
+ 			if (dev->mtu < IPV6_MIN_MTU)
+ 				dev->mtu = IPV6_MIN_MTU;
+ 		}
+-		ip6_rt_put(rt);
+ 	}
+ }
+ 
+-- 
+2.25.0
 
