@@ -2,103 +2,119 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 95B3215BAE4
-	for <lists+netdev@lfdr.de>; Thu, 13 Feb 2020 09:40:13 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4897115BB01
+	for <lists+netdev@lfdr.de>; Thu, 13 Feb 2020 09:46:07 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729612AbgBMIkJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 13 Feb 2020 03:40:09 -0500
-Received: from mail-wr1-f66.google.com ([209.85.221.66]:34481 "EHLO
-        mail-wr1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729485AbgBMIkJ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 13 Feb 2020 03:40:09 -0500
-Received: by mail-wr1-f66.google.com with SMTP id n10so3613918wrm.1
-        for <netdev@vger.kernel.org>; Thu, 13 Feb 2020 00:40:07 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=resnulli-us.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=Jj6IL3uoOW6O/Dds8hVOuDjOtm4PzGXqbiZewKiQWhk=;
-        b=kY/3cw+stscbPKmIOoyWlHw0uwh4Um5iiftiTtHFXoaMjeNA/lTWRIlxSiUdvSwVW+
-         ebFE6uyp8xfZ+V8x7NXlBVc2dT/EqJAUz4WbHc/CYrLXaZdAbgdF9HTi5mxOX/AORxPb
-         eME+aPQvIU5azXJ4t6FrK9YNLXqIYs8NwH2Vol8sI8gQUoxLBN+nj0PdkPRDLvYp4VRi
-         DusM5rQThRGM5v69sljoiao/z4Wqv7+tnh6vI/RO7eQpFS9kVHerpmKOu2rKDZNbuv73
-         JwkHZdwRZlC57JSrJjeS9hbi2R+U1Sbny+0VQMGhH6UBfTxk+9uZsGD2CtbIqzkZPPZN
-         azKA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=Jj6IL3uoOW6O/Dds8hVOuDjOtm4PzGXqbiZewKiQWhk=;
-        b=mhyYGrax64MmVeWmnN34oQKYOUR8R1czygIbqxVTxyd1to3VIr1vK6QYYzvVnWH2M4
-         eZ+r3qFOF6lGnfPxC0dlK7A5vns1PH6QvAcbCVOu6Q8NdoPy/BtNTGGaVKbAxqezFsnn
-         q+pMfvMpeapXFNluEETvKSiVDA6oI7+0dw0IAEa90Mwp037rr92EkZH97semSFRjB6ZC
-         7ttsfttHsvnZ5ff6Zv6IwnRsDYM7vDa6NyAqcI/OZNvbDLwWerDH7lgijnsEjWAVxwdl
-         yYXi30mIvZP1POzmcjs31UUolsJ3h+LbzfLDbOd0GA5c9JMWlUpDm/sulaLmxPenSFVN
-         spAg==
-X-Gm-Message-State: APjAAAVNtity619/Vl6uYJwm5gX4eZqauwViYRLixUOUANIRZQTxVBG4
-        CCRqa+DilLoUXmpcTPnWBJ7/ew==
-X-Google-Smtp-Source: APXvYqyx7gEfcTMsnd+nLBb8Fdy9LVsbZSzlDPjgHgAZKKWvjuO6cBc0Imxl++hGthzpgzxq2dbN+Q==
-X-Received: by 2002:a5d:474b:: with SMTP id o11mr21254953wrs.255.1581583207232;
-        Thu, 13 Feb 2020 00:40:07 -0800 (PST)
-Received: from localhost (ip-89-177-128-209.net.upcbroadband.cz. [89.177.128.209])
-        by smtp.gmail.com with ESMTPSA id q124sm14397420wme.2.2020.02.13.00.40.06
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 13 Feb 2020 00:40:06 -0800 (PST)
-Date:   Thu, 13 Feb 2020 09:40:05 +0100
-From:   Jiri Pirko <jiri@resnulli.us>
-To:     Keiya Nobuta <nobuta.keiya@fujitsu.com>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org
-Subject: Re: [PATCH] net: sched: Add sysfs_notify for /sys/class/net/*/carrier
-Message-ID: <20200213084005.GF22610@nanopsycho>
-References: <20200213052111.19595-1-nobuta.keiya@fujitsu.com>
+        id S1729684AbgBMIp6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 13 Feb 2020 03:45:58 -0500
+Received: from esa6.microchip.iphmx.com ([216.71.154.253]:16914 "EHLO
+        esa6.microchip.iphmx.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729526AbgBMIp6 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 13 Feb 2020 03:45:58 -0500
+Received-SPF: Pass (esa6.microchip.iphmx.com: domain of
+  Nicolas.Ferre@microchip.com designates 198.175.253.82 as
+  permitted sender) identity=mailfrom;
+  client-ip=198.175.253.82; receiver=esa6.microchip.iphmx.com;
+  envelope-from="Nicolas.Ferre@microchip.com";
+  x-sender="Nicolas.Ferre@microchip.com";
+  x-conformance=spf_only; x-record-type="v=spf1";
+  x-record-text="v=spf1 mx a:ushub1.microchip.com
+  a:smtpout.microchip.com -exists:%{i}.spf.microchip.iphmx.com
+  include:servers.mcsv.net include:mktomail.com
+  include:spf.protection.outlook.com ~all"
+Received-SPF: None (esa6.microchip.iphmx.com: no sender
+  authenticity information available from domain of
+  postmaster@email.microchip.com) identity=helo;
+  client-ip=198.175.253.82; receiver=esa6.microchip.iphmx.com;
+  envelope-from="Nicolas.Ferre@microchip.com";
+  x-sender="postmaster@email.microchip.com";
+  x-conformance=spf_only
+Authentication-Results: esa6.microchip.iphmx.com; spf=Pass smtp.mailfrom=Nicolas.Ferre@microchip.com; spf=None smtp.helo=postmaster@email.microchip.com; dmarc=pass (p=none dis=none) d=microchip.com
+IronPort-SDR: 1C20GDZ9zHq6lqhyTuQjNJdhEbeitvDgpQ2mrR6kPvGPMepTCxAIsj56LRp0LRCd2j8a7ShWu2
+ OCBT1ZxsDwUnSV3bT3285biPtzcM7yE8PG9J/CdRjuNdMVo+sq6/5Q71WrDHnSX5bn1KMMpsVJ
+ 4pDHw2A6Zn4rbaG9IRfYAFtVqpOQ4FRcw4x5xBInRuFgSqm+QGi5BoxVNy0mXyXNkwxwk0OqIR
+ idUU8HPazFW/pQpYuQfTHjIlaisR1x27CJcysNaABc37n/CmK+evIllnMXu+nUFTj/Tt9joSBm
+ lgo=
+X-IronPort-AV: E=Sophos;i="5.70,436,1574146800"; 
+   d="scan'208";a="2253968"
+Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
+  by esa6.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 13 Feb 2020 01:45:40 -0700
+Received: from chn-vm-ex01.mchp-main.com (10.10.85.143) by
+ chn-vm-ex02.mchp-main.com (10.10.85.144) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.1713.5; Thu, 13 Feb 2020 01:45:40 -0700
+Received: from [10.159.205.131] (10.10.85.251) by chn-vm-ex01.mchp-main.com
+ (10.10.85.143) with Microsoft SMTP Server id 15.1.1713.5 via Frontend
+ Transport; Thu, 13 Feb 2020 01:45:35 -0700
+Subject: Re: [PATCH net] net: macb: ensure interface is not suspended on
+ at91rm9200
+To:     Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        "David S . Miller" <davem@davemloft.net>
+CC:     Harini Katakam <harini.katakam@xilinx.com>,
+        Shubhrajyoti Datta <shubhrajyoti.datta@xilinx.com>,
+        <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>
+References: <20200212164538.383741-1-alexandre.belloni@bootlin.com>
+From:   Nicolas Ferre <nicolas.ferre@microchip.com>
+Organization: microchip
+Message-ID: <a27e7d3f-b576-a90a-00c4-c5ce7bf69592@microchip.com>
+Date:   Thu, 13 Feb 2020 09:45:35 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.4.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200213052111.19595-1-nobuta.keiya@fujitsu.com>
+In-Reply-To: <20200212164538.383741-1-alexandre.belloni@bootlin.com>
+Content-Type: text/plain; charset="windows-1252"; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Thu, Feb 13, 2020 at 06:21:11AM CET, nobuta.keiya@fujitsu.com wrote:
->This patch makes /sys/class/<iface>/carrier pollable and allows
->application to monitor current physical link state changes.
->
->Signed-off-by: Keiya Nobuta <nobuta.keiya@fujitsu.com>
->---
-> net/sched/sch_generic.c | 2 ++
-> 1 file changed, 2 insertions(+)
->
->diff --git a/net/sched/sch_generic.c b/net/sched/sch_generic.c
->index 6c9595f..67e4190 100644
->--- a/net/sched/sch_generic.c
->+++ b/net/sched/sch_generic.c
->@@ -493,6 +493,7 @@ void netif_carrier_on(struct net_device *dev)
-> 		linkwatch_fire_event(dev);
-> 		if (netif_running(dev))
-> 			__netdev_watchdog_up(dev);
->+		sysfs_notify(&dev->dev.kobj, NULL, "carrier");
+On 12/02/2020 at 17:45, Alexandre Belloni wrote:
+> EXTERNAL EMAIL: Do not click links or open attachments unless you know the content is safe
+> 
+> Because of autosuspend, at91ether_start is called with clocks disabled.
+> Ensure that pm_runtime doesn't suspend the interface as soon as it is
+> opened as there is no pm_runtime support is the other relevant parts of the
+> platform support for at91rm9200.
+> 
+> Fixes: d54f89af6cc4 ("net: macb: Add pm runtime support")
+> Signed-off-by: Alexandre Belloni <alexandre.belloni@bootlin.com>
 
-This would be the only use of sysfs notify in net. I wonder, what makes
-the carrier different comparing to other attributes that might change
-during runtime?
+Acked-by: Nicolas Ferre <nicolas.ferre@microchip.com>
 
-Also, in net, we have RTNETLINK that app can listen to and react.
-Carrier change is propagated through that as well.
+> ---
+>   drivers/net/ethernet/cadence/macb_main.c | 6 +++++-
+>   1 file changed, 5 insertions(+), 1 deletion(-)
+> 
+> diff --git a/drivers/net/ethernet/cadence/macb_main.c b/drivers/net/ethernet/cadence/macb_main.c
+> index 4508f0d150da..def94e91883a 100644
+> --- a/drivers/net/ethernet/cadence/macb_main.c
+> +++ b/drivers/net/ethernet/cadence/macb_main.c
+> @@ -3790,6 +3790,10 @@ static int at91ether_open(struct net_device *dev)
+>          u32 ctl;
+>          int ret;
+> 
+> +       ret = pm_runtime_get_sync(&lp->pdev->dev);
+> +       if (ret < 0)
+> +               return ret;
+> +
+>          /* Clear internal statistics */
+>          ctl = macb_readl(lp, NCR);
+>          macb_writel(lp, NCR, ctl | MACB_BIT(CLRSTAT));
+> @@ -3854,7 +3858,7 @@ static int at91ether_close(struct net_device *dev)
+>                            q->rx_buffers, q->rx_buffers_dma);
+>          q->rx_buffers = NULL;
+> 
+> -       return 0;
+> +       return pm_runtime_put(&lp->pdev->dev);
+>   }
+> 
+>   /* Transmit packet */
+> --
+> 2.24.1
+> 
 
 
-> 	}
-> }
-> EXPORT_SYMBOL(netif_carrier_on);
->@@ -510,6 +511,7 @@ void netif_carrier_off(struct net_device *dev)
-> 			return;
-> 		atomic_inc(&dev->carrier_down_count);
-> 		linkwatch_fire_event(dev);
->+		sysfs_notify(&dev->dev.kobj, NULL, "carrier");
-> 	}
-> }
-> EXPORT_SYMBOL(netif_carrier_off);
->-- 
->2.7.4
->
+-- 
+Nicolas Ferre
