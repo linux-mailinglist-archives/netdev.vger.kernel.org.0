@@ -2,95 +2,104 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id E311D15BB4D
-	for <lists+netdev@lfdr.de>; Thu, 13 Feb 2020 10:15:09 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1722915BB56
+	for <lists+netdev@lfdr.de>; Thu, 13 Feb 2020 10:16:19 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729694AbgBMJOw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 13 Feb 2020 04:14:52 -0500
-Received: from mail-pl1-f193.google.com ([209.85.214.193]:39164 "EHLO
-        mail-pl1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729637AbgBMJOv (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 13 Feb 2020 04:14:51 -0500
-Received: by mail-pl1-f193.google.com with SMTP id g6so2101127plp.6
-        for <netdev@vger.kernel.org>; Thu, 13 Feb 2020 01:14:50 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=3B2WVvkuAA9A6bwYgb8u2nBzsvuVPQHZafhOD4bZX4A=;
-        b=difkvvXIqPLjHVlUb8Sl1R3LEnTQF9AxuER7YiQ8LdqdpaS1IfPhNFBddZlHkViHqM
-         pt0Jc6koDTYj9x1cKmQgs7rRH5OCM5fuAcZ1usyQoV3ktpOPjzxabK5SGl4De3Wq/p31
-         /xF2B4eq95O1rFysOb1NjE/VBmUrqYMRKwk4psc5athjHRtlXYd5eA1MR+ix/QIWoHtA
-         V9KYqzzu4Db4mKh2XmRcAxn1aKrb0MdItlVlnAYl0cdtb7BrCQCh0xp36suFFASDEXUi
-         4Di03LalY+qJxb74SfcApCV6iRD9cK2jne9EXLkFpJL4H2pqMjuKKYOc5Po5mhHbR2jz
-         BF3w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references;
-        bh=3B2WVvkuAA9A6bwYgb8u2nBzsvuVPQHZafhOD4bZX4A=;
-        b=Ugv+05xKptsuCaN64g23SGxXgBwwe9Q8uqYjB4EQ3Cg3l5uNp0E4uvkanYvBbCaMR+
-         OMMg1VeEz5naNSoyhOzsxumn5DkDiECQhRZyVT7rafSIJMxOYSxFaSR50xlFqgPvFJ9x
-         5QPG+dE8Xa/Bc/0fQ2bpQcYGxPSEYoY8qeK3IlBfQWc2B211UpFLsB1z0ISjCkXU6fXC
-         HJTAE2vejPpw8CMDv1D/LO8j3JXNTLbxhSFgDDbleFn3eTsw5Jz0oCT9AiHLC4U7ovE3
-         KcVT+7wjRlRjBiL3BcyPaYhCBuU9pDNYv7iYmhBfde+qFGX5hHno/UpT37sTYmgvNxXn
-         R9fQ==
-X-Gm-Message-State: APjAAAW8zOCCIbhQUxi/robzOUnMikxWZH54D3LYeUxRPgVCoW8E1lMi
-        5m6ZJbA9i16RndkY0ByvdEaT
-X-Google-Smtp-Source: APXvYqwdYHQFYGY2OpbEyxFS+D//8KHJ/NOIMk7Imb1dWdDbbx+JR0qJtCjne6j/WZ04ib8I7t+jHQ==
-X-Received: by 2002:a17:90a:c691:: with SMTP id n17mr4022465pjt.41.1581585290331;
-        Thu, 13 Feb 2020 01:14:50 -0800 (PST)
-Received: from localhost.localdomain ([103.59.133.81])
-        by smtp.googlemail.com with ESMTPSA id s206sm2294391pfs.100.2020.02.13.01.14.47
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 13 Feb 2020 01:14:49 -0800 (PST)
-From:   Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
-To:     davem@davemloft.net, kuba@kernel.org
-Cc:     bjorn.andersson@linaro.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
-Subject: [PATCH 2/2] net: qrtr: Fix the local node ID as 1
-Date:   Thu, 13 Feb 2020 14:44:27 +0530
-Message-Id: <20200213091427.13435-3-manivannan.sadhasivam@linaro.org>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20200213091427.13435-1-manivannan.sadhasivam@linaro.org>
-References: <20200213091427.13435-1-manivannan.sadhasivam@linaro.org>
+        id S1729759AbgBMJQO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 13 Feb 2020 04:16:14 -0500
+Received: from mga05.intel.com ([192.55.52.43]:7677 "EHLO mga05.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1729646AbgBMJQO (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 13 Feb 2020 04:16:14 -0500
+X-Amp-Result: SKIPPED(no attachment in message)
+X-Amp-File-Uploaded: False
+Received: from orsmga002.jf.intel.com ([10.7.209.21])
+  by fmsmga105.fm.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 13 Feb 2020 01:16:13 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.70,436,1574150400"; 
+   d="scan'208,223";a="252223674"
+Received: from orsmsx110.amr.corp.intel.com ([10.22.240.8])
+  by orsmga002.jf.intel.com with ESMTP; 13 Feb 2020 01:16:12 -0800
+Received: from orsmsx156.amr.corp.intel.com (10.22.240.22) by
+ ORSMSX110.amr.corp.intel.com (10.22.240.8) with Microsoft SMTP Server (TLS)
+ id 14.3.439.0; Thu, 13 Feb 2020 01:16:12 -0800
+Received: from orsmsx115.amr.corp.intel.com ([169.254.4.100]) by
+ ORSMSX156.amr.corp.intel.com ([169.254.8.240]) with mapi id 14.03.0439.000;
+ Thu, 13 Feb 2020 01:16:12 -0800
+From:   "Boeuf, Sebastien" <sebastien.boeuf@intel.com>
+To:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+CC:     "stefanha@redhat.com" <stefanha@redhat.com>,
+        "sgarzare@redhat.com" <sgarzare@redhat.com>,
+        "davem@davemloft.net" <davem@davemloft.net>
+Subject: [PATCH] net: virtio_vsock: Fix race condition between bind and
+ listen
+Thread-Topic: [PATCH] net: virtio_vsock: Fix race condition between bind and
+ listen
+Thread-Index: AQHV4k47o+FvdyeZdUa5OLpq2zu4Pg==
+Date:   Thu, 13 Feb 2020 09:16:11 +0000
+Message-ID: <668b0eda8823564cd604b1663dc53fbaece0cd4e.camel@intel.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-originating-ip: [10.252.24.191]
+Content-Type: text/plain; charset="utf-8"
+Content-ID: <6705580ED78DAE4EA3246B2B113F2667@intel.com>
+MIME-Version: 1.0
+Content-Transfer-Encoding: base64
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-In order to start the QRTR nameservice, the local node ID needs to be
-valid. Hence, fix it to 1. Previously, the node ID was configured through
-a userspace tool before starting the nameservice daemon. Since we have now
-integrated the nameservice handling to kernel, this change is necessary
-for making it functional.
-
-Signed-off-by: Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
----
- net/qrtr/qrtr.c | 3 +--
- 1 file changed, 1 insertion(+), 2 deletions(-)
-
-diff --git a/net/qrtr/qrtr.c b/net/qrtr/qrtr.c
-index e97d20640de3..03616b9f4724 100644
---- a/net/qrtr/qrtr.c
-+++ b/net/qrtr/qrtr.c
-@@ -7,7 +7,6 @@
- #include <linux/netlink.h>
- #include <linux/qrtr.h>
- #include <linux/termios.h>	/* For TIOCINQ/OUTQ */
--#include <linux/numa.h>
- #include <linux/workqueue.h>
- 
- #include <net/sock.h>
-@@ -95,7 +94,7 @@ static inline struct qrtr_sock *qrtr_sk(struct sock *sk)
- 	return container_of(sk, struct qrtr_sock, sk);
- }
- 
--static unsigned int qrtr_local_nid = NUMA_NO_NODE;
-+static unsigned int qrtr_local_nid = 1;
- 
- /* for node ids */
- static RADIX_TREE(qrtr_nodes, GFP_KERNEL);
--- 
-2.17.1
+RnJvbSAyZjEyNzZkMDJmNWExMmQ4NWFlYzVhZGMxMWRmZTFlYWI3ZTE2MGQ2IE1vbiBTZXAgMTcg
+MDA6MDA6MDAgMjAwMQ0KRnJvbTogU2ViYXN0aWVuIEJvZXVmIDxzZWJhc3RpZW4uYm9ldWZAaW50
+ZWwuY29tPg0KRGF0ZTogVGh1LCAxMyBGZWIgMjAyMCAwODo1MDozOCArMDEwMA0KU3ViamVjdDog
+W1BBVENIXSBuZXQ6IHZpcnRpb192c29jazogRml4IHJhY2UgY29uZGl0aW9uIGJldHdlZW4gYmlu
+ZCBhbmQgbGlzdGVuDQoNCldoZW5ldmVyIHRoZSB2c29jayBiYWNrZW5kIG9uIHRoZSBob3N0IHNl
+bmRzIGEgcGFja2V0IHRocm91Z2ggdGhlIFJYDQpxdWV1ZSwgaXQgZXhwZWN0cyBhbiBhbnN3ZXIg
+b24gdGhlIFRYIHF1ZXVlLiBVbmZvcnR1bmF0ZWx5LCB0aGVyZSBpcyBvbmUNCmNhc2Ugd2hlcmUg
+dGhlIGhvc3Qgc2lkZSB3aWxsIGhhbmcgd2FpdGluZyBmb3IgdGhlIGFuc3dlciBhbmQgd2lsbA0K
+ZWZmZWN0aXZlbHkgbmV2ZXIgcmVjb3Zlci4NCg0KVGhpcyBpc3N1ZSBoYXBwZW5zIHdoZW4gdGhl
+IGd1ZXN0IHNpZGUgc3RhcnRzIGJpbmRpbmcgdG8gdGhlIHNvY2tldCwNCndoaWNoIGluc2VydCBh
+IG5ldyBib3VuZCBzb2NrZXQgaW50byB0aGUgbGlzdCBvZiBhbHJlYWR5IGJvdW5kIHNvY2tldHMu
+DQpBdCB0aGlzIHRpbWUsIHdlIGV4cGVjdCB0aGUgZ3Vlc3QgdG8gYWxzbyBzdGFydCBsaXN0ZW5p
+bmcsIHdoaWNoIHdpbGwNCnRyaWdnZXIgdGhlIHNrX3N0YXRlIHRvIG1vdmUgZnJvbSBUQ1BfQ0xP
+U0UgdG8gVENQX0xJU1RFTi4gVGhlIHByb2JsZW0NCm9jY3VycyBpZiB0aGUgaG9zdCBzaWRlIHF1
+ZXVlZCBhIFJYIHBhY2tldCBhbmQgdHJpZ2dlcmVkIGFuIGludGVycnVwdA0KcmlnaHQgYmV0d2Vl
+biB0aGUgZW5kIG9mIHRoZSBiaW5kaW5nIHByb2Nlc3MgYW5kIHRoZSBiZWdpbm5pbmcgb2YgdGhl
+DQpsaXN0ZW5pbmcgcHJvY2Vzcy4gSW4gdGhpcyBzcGVjaWZpYyBjYXNlLCB0aGUgZnVuY3Rpb24g
+cHJvY2Vzc2luZyB0aGUNCnBhY2tldCB2aXJ0aW9fdHJhbnNwb3J0X3JlY3ZfcGt0KCkgd2lsbCBm
+aW5kIGEgYm91bmQgc29ja2V0LCB3aGljaCBtZWFucw0KaXQgd2lsbCBoaXQgdGhlIHN3aXRjaCBz
+dGF0ZW1lbnQgY2hlY2tpbmcgZm9yIHRoZSBza19zdGF0ZSwgYnV0IHRoZQ0Kc3RhdGUgd29uJ3Qg
+YmUgY2hhbmdlZCBpbnRvIFRDUF9MSVNURU4geWV0LCB3aGljaCBsZWFkcyB0aGUgY29kZSB0byBw
+aWNrDQp0aGUgZGVmYXVsdCBzdGF0ZW1lbnQuIFRoaXMgZGVmYXVsdCBzdGF0ZW1lbnQgd2lsbCBv
+bmx5IGZyZWUgdGhlIGJ1ZmZlciwNCndoaWxlIGl0IHNob3VsZCBhbHNvIHJlc3BvbmQgdG8gdGhl
+IGhvc3Qgc2lkZSwgYnkgc2VuZGluZyBhIHBhY2tldCBvbg0KaXRzIFRYIHF1ZXVlLg0KDQpJbiBv
+cmRlciB0byBzaW1wbHkgZml4IHRoaXMgdW5mb3J0dW5hdGUgY2hhaW4gb2YgZXZlbnRzLCBpdCBp
+cyBpbXBvcnRhbnQNCnRoYXQgaW4gY2FzZSB0aGUgZGVmYXVsdCBzdGF0ZW1lbnQgaXMgZW50ZXJl
+ZCwgYW5kIGJlY2F1c2UgYXQgdGhpcyBzdGFnZQ0Kd2Uga25vdyB0aGUgaG9zdCBzaWRlIGlzIHdh
+aXRpbmcgZm9yIGFuIGFuc3dlciwgd2UgbXVzdCBzZW5kIGJhY2sgYQ0KcGFja2V0IGNvbnRhaW5p
+bmcgdGhlIG9wZXJhdGlvbiBWSVJUSU9fVlNPQ0tfT1BfUlNULg0KDQpTaWduZWQtb2ZmLWJ5OiBT
+ZWJhc3RpZW4gQm9ldWYgPHNlYmFzdGllbi5ib2V1ZkBpbnRlbC5jb20+DQotLS0NCiBuZXQvdm13
+X3Zzb2NrL3ZpcnRpb190cmFuc3BvcnRfY29tbW9uLmMgfCAxICsNCiAxIGZpbGUgY2hhbmdlZCwg
+MSBpbnNlcnRpb24oKykNCg0KZGlmZiAtLWdpdCBhL25ldC92bXdfdnNvY2svdmlydGlvX3RyYW5z
+cG9ydF9jb21tb24uYyBiL25ldC92bXdfdnNvY2svdmlydGlvX3RyYW5zcG9ydF9jb21tb24uYw0K
+aW5kZXggZTVlYTI5YzZiY2E3Li45MDkzMzRkNTgzMjggMTAwNjQ0DQotLS0gYS9uZXQvdm13X3Zz
+b2NrL3ZpcnRpb190cmFuc3BvcnRfY29tbW9uLmMNCisrKyBiL25ldC92bXdfdnNvY2svdmlydGlv
+X3RyYW5zcG9ydF9jb21tb24uYw0KQEAgLTExNDMsNiArMTE0Myw3IEBAIHZvaWQgdmlydGlvX3Ry
+YW5zcG9ydF9yZWN2X3BrdChzdHJ1Y3QgdmlydGlvX3RyYW5zcG9ydCAqdCwNCiAJCXZpcnRpb190
+cmFuc3BvcnRfZnJlZV9wa3QocGt0KTsNCiAJCWJyZWFrOw0KIAlkZWZhdWx0Og0KKwkJKHZvaWQp
+dmlydGlvX3RyYW5zcG9ydF9yZXNldF9ub19zb2NrKHQsIHBrdCk7DQogCQl2aXJ0aW9fdHJhbnNw
+b3J0X2ZyZWVfcGt0KHBrdCk7DQogCQlicmVhazsNCiAJfQ0KLS0gDQoyLjIwLjENCg0KLS0tLS0t
+LS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0t
+LS0tLS0tCkludGVsIENvcnBvcmF0aW9uIFNBUyAoRnJlbmNoIHNpbXBsaWZpZWQgam9pbnQgc3Rv
+Y2sgY29tcGFueSkKUmVnaXN0ZXJlZCBoZWFkcXVhcnRlcnM6ICJMZXMgTW9udGFsZXRzIi0gMiwg
+cnVlIGRlIFBhcmlzLCAKOTIxOTYgTWV1ZG9uIENlZGV4LCBGcmFuY2UKUmVnaXN0cmF0aW9uIE51
+bWJlcjogIDMwMiA0NTYgMTk5IFIuQy5TLiBOQU5URVJSRQpDYXBpdGFsOiA0LDU3MiwwMDAgRXVy
+b3MKClRoaXMgZS1tYWlsIGFuZCBhbnkgYXR0YWNobWVudHMgbWF5IGNvbnRhaW4gY29uZmlkZW50
+aWFsIG1hdGVyaWFsIGZvcgp0aGUgc29sZSB1c2Ugb2YgdGhlIGludGVuZGVkIHJlY2lwaWVudChz
+KS4gQW55IHJldmlldyBvciBkaXN0cmlidXRpb24KYnkgb3RoZXJzIGlzIHN0cmljdGx5IHByb2hp
+Yml0ZWQuIElmIHlvdSBhcmUgbm90IHRoZSBpbnRlbmRlZApyZWNpcGllbnQsIHBsZWFzZSBjb250
+YWN0IHRoZSBzZW5kZXIgYW5kIGRlbGV0ZSBhbGwgY29waWVzLgo=
 
