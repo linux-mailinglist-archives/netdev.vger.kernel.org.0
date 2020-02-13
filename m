@@ -2,153 +2,63 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 041D015BC18
-	for <lists+netdev@lfdr.de>; Thu, 13 Feb 2020 10:51:50 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9196515BC32
+	for <lists+netdev@lfdr.de>; Thu, 13 Feb 2020 10:55:49 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729613AbgBMJvi (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 13 Feb 2020 04:51:38 -0500
-Received: from mga01.intel.com ([192.55.52.88]:43093 "EHLO mga01.intel.com"
+        id S1729721AbgBMJzm (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 13 Feb 2020 04:55:42 -0500
+Received: from a.mx.secunet.com ([62.96.220.36]:37136 "EHLO a.mx.secunet.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726232AbgBMJvh (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 13 Feb 2020 04:51:37 -0500
-X-Amp-Result: SKIPPED(no attachment in message)
-X-Amp-File-Uploaded: False
-Received: from orsmga006.jf.intel.com ([10.7.209.51])
-  by fmsmga101.fm.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 13 Feb 2020 01:51:35 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.70,436,1574150400"; 
-   d="scan'208";a="237986660"
-Received: from orsmsx110.amr.corp.intel.com ([10.22.240.8])
-  by orsmga006.jf.intel.com with ESMTP; 13 Feb 2020 01:51:37 -0800
-Received: from orsmsx159.amr.corp.intel.com (10.22.240.24) by
- ORSMSX110.amr.corp.intel.com (10.22.240.8) with Microsoft SMTP Server (TLS)
- id 14.3.439.0; Thu, 13 Feb 2020 01:51:36 -0800
-Received: from orsmsx115.amr.corp.intel.com ([169.254.4.100]) by
- ORSMSX159.amr.corp.intel.com ([169.254.11.53]) with mapi id 14.03.0439.000;
- Thu, 13 Feb 2020 01:51:36 -0800
-From:   "Boeuf, Sebastien" <sebastien.boeuf@intel.com>
-To:     "sgarzare@redhat.com" <sgarzare@redhat.com>
-CC:     "stefanha@redhat.com" <stefanha@redhat.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "davem@davemloft.net" <davem@davemloft.net>
-Subject: Re: [PATCH] net: virtio_vsock: Fix race condition between bind and
- listen
-Thread-Topic: [PATCH] net: virtio_vsock: Fix race condition between bind and
- listen
-Thread-Index: AQHV4k47o+FvdyeZdUa5OLpq2zu4PqgZZQkAgAAC0AA=
-Date:   Thu, 13 Feb 2020 09:51:36 +0000
-Message-ID: <3448e588f11dad913e93dfce8031fbd60ba4c85b.camel@intel.com>
-References: <668b0eda8823564cd604b1663dc53fbaece0cd4e.camel@intel.com>
-         <20200213094130.vehzkr4a3pnoiogr@steredhat>
-In-Reply-To: <20200213094130.vehzkr4a3pnoiogr@steredhat>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-originating-ip: [10.252.24.191]
-Content-Type: text/plain; charset="utf-8"
-Content-ID: <DEA20C4311295043B51B70BBE46624EC@intel.com>
+        id S1729532AbgBMJzl (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 13 Feb 2020 04:55:41 -0500
+Received: from localhost (localhost [127.0.0.1])
+        by a.mx.secunet.com (Postfix) with ESMTP id 9DAA6200A7;
+        Thu, 13 Feb 2020 10:55:39 +0100 (CET)
+X-Virus-Scanned: by secunet
+Received: from a.mx.secunet.com ([127.0.0.1])
+        by localhost (a.mx.secunet.com [127.0.0.1]) (amavisd-new, port 10024)
+        with ESMTP id sN-_csWmh8oB; Thu, 13 Feb 2020 10:55:39 +0100 (CET)
+Received: from mail-essen-01.secunet.de (mail-essen-01.secunet.de [10.53.40.204])
+        (using TLSv1 with cipher ECDHE-RSA-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by a.mx.secunet.com (Postfix) with ESMTPS id 41CDF20082;
+        Thu, 13 Feb 2020 10:55:39 +0100 (CET)
+Received: from gauss2.secunet.de (10.182.7.193) by mail-essen-01.secunet.de
+ (10.53.40.204) with Microsoft SMTP Server id 14.3.439.0; Thu, 13 Feb 2020
+ 10:55:38 +0100
+Received: by gauss2.secunet.de (Postfix, from userid 1000)      id D612731805ED;
+ Thu, 13 Feb 2020 10:55:38 +0100 (CET)
+Date:   Thu, 13 Feb 2020 10:55:38 +0100
+From:   Steffen Klassert <steffen.klassert@secunet.com>
+To:     Xin Long <lucien.xin@gmail.com>
+CC:     <netdev@vger.kernel.org>, Herbert Xu <herbert@gondor.apana.org.au>,
+        "David S. Miller" <davem@davemloft.net>,
+        Trent Jaeger <tjaeger@cse.psu.edu>,
+        Jamal Hadi Salim <hadi@cyberus.ca>,
+        Sabrina Dubroca <sd@queasysnail.net>
+Subject: Re: [PATCH ipsec] xfrm: fix uctx len check in verify_sec_ctx_len
+Message-ID: <20200213095538.GF3469@gauss3.secunet.de>
+References: <afee25abdf818c7a7374773a6f347cf5c719038e.1581254129.git.lucien.xin@gmail.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset="us-ascii"
+Content-Disposition: inline
+In-Reply-To: <afee25abdf818c7a7374773a6f347cf5c719038e.1581254129.git.lucien.xin@gmail.com>
+User-Agent: Mutt/1.9.4 (2018-02-28)
+X-EXCLAIMER-MD-CONFIG: 2c86f778-e09b-4440-8b15-867914633a10
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-SGkgU3RlZmFubywNCg0KT24gVGh1LCAyMDIwLTAyLTEzIGF0IDEwOjQxICswMTAwLCBTdGVmYW5v
-IEdhcnphcmVsbGEgd3JvdGU6DQo+IEhpIFNlYmFzdGllbiwNCj4gDQo+IE9uIFRodSwgRmViIDEz
-LCAyMDIwIGF0IDA5OjE2OjExQU0gKzAwMDAsIEJvZXVmLCBTZWJhc3RpZW4gd3JvdGU6DQo+ID4g
-RnJvbSAyZjEyNzZkMDJmNWExMmQ4NWFlYzVhZGMxMWRmZTFlYWI3ZTE2MGQ2IE1vbiBTZXAgMTcg
-MDA6MDA6MDANCj4gPiAyMDAxDQo+ID4gRnJvbTogU2ViYXN0aWVuIEJvZXVmIDxzZWJhc3RpZW4u
-Ym9ldWZAaW50ZWwuY29tPg0KPiA+IERhdGU6IFRodSwgMTMgRmViIDIwMjAgMDg6NTA6MzggKzAx
-MDANCj4gPiBTdWJqZWN0OiBbUEFUQ0hdIG5ldDogdmlydGlvX3Zzb2NrOiBGaXggcmFjZSBjb25k
-aXRpb24gYmV0d2VlbiBiaW5kDQo+ID4gYW5kIGxpc3Rlbg0KPiA+IA0KPiA+IFdoZW5ldmVyIHRo
-ZSB2c29jayBiYWNrZW5kIG9uIHRoZSBob3N0IHNlbmRzIGEgcGFja2V0IHRocm91Z2ggdGhlDQo+
-ID4gUlgNCj4gPiBxdWV1ZSwgaXQgZXhwZWN0cyBhbiBhbnN3ZXIgb24gdGhlIFRYIHF1ZXVlLiBV
-bmZvcnR1bmF0ZWx5LCB0aGVyZQ0KPiA+IGlzIG9uZQ0KPiA+IGNhc2Ugd2hlcmUgdGhlIGhvc3Qg
-c2lkZSB3aWxsIGhhbmcgd2FpdGluZyBmb3IgdGhlIGFuc3dlciBhbmQgd2lsbA0KPiA+IGVmZmVj
-dGl2ZWx5IG5ldmVyIHJlY292ZXIuDQo+IA0KPiBEbyB5b3UgaGF2ZSBhIHRlc3QgY2FzZT8NCg0K
-WWVzIEkgZG8uIFRoaXMgaGFzIGJlZW4gYSBidWcgd2UndmUgYmVlbiBpbnZlc3RpZ2F0aW5nIG9u
-IEthdGENCkNvbnRhaW5lcnMgZm9yIHF1aXRlIHNvbWUgdGltZSBub3cuIFRoaXMgd2FzIGhhcHBl
-bmluZyB3aGVuIHVzaW5nIEthdGENCmFsb25nIHdpdGggQ2xvdWQtSHlwZXJ2aXNvciAod2hpY2gg
-cmVseSBvbiB0aGUgaHlicmlkIHZzb2NrDQppbXBsZW1lbnRhdGlvbiBmcm9tIEZpcmVjcmFja2Vy
-KS4gVGhlIHRoaW5nIGlzLCB0aGlzIGJ1ZyBpcyB2ZXJ5IGhhcmQNCnRvIHJlcHJvZHVjZSBhbmQg
-d2FzIGhhcHBlbmluZyBmb3IgS2F0YSBiZWNhdXNlIG9mIHRoZSBjb25uZWN0aW9uDQpzdHJhdGVn
-eS4gVGhlIGthdGEtcnVudGltZSB0cmllcyB0byBjb25uZWN0IGEgbWlsbGlvbiB0aW1lcyBhZnRl
-ciBpdA0Kc3RhcnRlZCB0aGUgVk0sIGp1c3QgaG9waW5nIHRoZSBrYXRhLWFnZW50IHdpbGwgc3Rh
-cnQgdG8gbGlzdGVuIGZyb20NCnRoZSBndWVzdCBzaWRlIGF0IHNvbWUgcG9pbnQuDQoNCj4gDQo+
-IEluIHRoZSBob3N0LCB0aGUgYWZfdnNvY2suYzp2c29ja19zdHJlYW1fY29ubmVjdCgpIHNldCBh
-IHRpbWVvdXQsIHNvDQo+IGlmDQo+IHRoZSBob3N0IHRyeSB0byBjb25uZWN0IGJlZm9yZSB0aGUg
-Z3Vlc3Qgc3RhcnRzIGxpc3RlbmluZywgdGhlDQo+IGNvbm5lY3QoKQ0KPiBzaG91bGQgcmV0dXJu
-IEVUSU1FRE9VVCBpZiB0aGUgZ3Vlc3QgZG9lcyBub3QgYW5zd2VyIGFueXRoaW5nLg0KPiANCj4g
-QW55d2F5LCBtYXliZSB0aGUgcGF0Y2ggbWFrZSBzZW5zZSBhbnl3YXksIGNoYW5naW5nIGEgYml0
-IHRoZQ0KPiBkZXNjcmlwdGlvbg0KPiAoaWYgdGhlIGhvc3QgY29ubmVjdCgpIHJlY2VpdmUgdGhl
-IEVUSU1FRE9VVCkuDQo+IEknbSBqdXN0IGNvbmNlcm5lZCB0aGF0IHRoaXMgY29kZSBpcyBjb21t
-b24gYmV0d2VlbiBndWVzdCBhbmQgaG9zdC4NCj4gSWYgYQ0KPiBtYWxpY2lvdXMgZ3Vlc3Qgc3Rh
-cnRzIHNlbmRpbmcgdXMgd3JvbmcgcmVxdWVzdHMsIHdlIHNwZW5kIHRpbWUNCj4gc2VuZGluZw0K
-PiBhIHJlc2V0IHBhY2tldC4gQnV0IHdlIGFscmVhZHkgZG8gdGhhdCBpZiB3ZSBjYW4ndCBmaW5k
-IHRoZSBib3VuZA0KPiBzb2NrZXQsDQo+IHNvIGl0IG1pZ2h0IG1ha2Ugc2Vuc2UuDQoNClllcyBJ
-IGRvbid0IHRoaW5rIHRoaXMgaXMgZ29ubmEgY2F1c2UgbW9yZSB0cm91YmxlLCBidXQgYXQgbGVh
-c3Qgd2UNCmNhbm5vdCBlbmQgdXAgaW4gdGhpcyB3ZWlyZCBzaXR1YXRpb24gSSBkZXNjcmliZWQu
-DQoNCkkgd2FzIGp1c3Qgbm90IHN1cmUgaWYgdGhlIGZ1bmN0aW9uIHdlIHNob3VsZCB1c2UgdG8g
-ZG8gdGhlIHJlc2V0DQpzaG91bGQgYmUgdmlydGlvX3RyYW5zcG9ydF9yZXNldF9ub19zb2NrKCkg
-b3IgdmlydGlvX3RyYW5zcG9ydF9yZXNldCgpDQpzaW5jZSBhdCB0aGlzIHBvaW50IHRoZSBzb2Nr
-ZXQgaXMgYWxyZWFkeSBib3VuZC4NCg0KVGhhbmtzLA0KU2ViYXN0aWVuDQoNCj4gDQo+IFRoYW5r
-cywNCj4gU3RlZmFubw0KPiANCj4gPiBUaGlzIGlzc3VlIGhhcHBlbnMgd2hlbiB0aGUgZ3Vlc3Qg
-c2lkZSBzdGFydHMgYmluZGluZyB0byB0aGUNCj4gPiBzb2NrZXQsDQo+ID4gd2hpY2ggaW5zZXJ0
-IGEgbmV3IGJvdW5kIHNvY2tldCBpbnRvIHRoZSBsaXN0IG9mIGFscmVhZHkgYm91bmQNCj4gPiBz
-b2NrZXRzLg0KPiA+IEF0IHRoaXMgdGltZSwgd2UgZXhwZWN0IHRoZSBndWVzdCB0byBhbHNvIHN0
-YXJ0IGxpc3RlbmluZywgd2hpY2gNCj4gPiB3aWxsDQo+ID4gdHJpZ2dlciB0aGUgc2tfc3RhdGUg
-dG8gbW92ZSBmcm9tIFRDUF9DTE9TRSB0byBUQ1BfTElTVEVOLiBUaGUNCj4gPiBwcm9ibGVtDQo+
-ID4gb2NjdXJzIGlmIHRoZSBob3N0IHNpZGUgcXVldWVkIGEgUlggcGFja2V0IGFuZCB0cmlnZ2Vy
-ZWQgYW4NCj4gPiBpbnRlcnJ1cHQNCj4gPiByaWdodCBiZXR3ZWVuIHRoZSBlbmQgb2YgdGhlIGJp
-bmRpbmcgcHJvY2VzcyBhbmQgdGhlIGJlZ2lubmluZyBvZg0KPiA+IHRoZQ0KPiA+IGxpc3Rlbmlu
-ZyBwcm9jZXNzLiBJbiB0aGlzIHNwZWNpZmljIGNhc2UsIHRoZSBmdW5jdGlvbiBwcm9jZXNzaW5n
-DQo+ID4gdGhlDQo+ID4gcGFja2V0IHZpcnRpb190cmFuc3BvcnRfcmVjdl9wa3QoKSB3aWxsIGZp
-bmQgYSBib3VuZCBzb2NrZXQsIHdoaWNoDQo+ID4gbWVhbnMNCj4gPiBpdCB3aWxsIGhpdCB0aGUg
-c3dpdGNoIHN0YXRlbWVudCBjaGVja2luZyBmb3IgdGhlIHNrX3N0YXRlLCBidXQgdGhlDQo+ID4g
-c3RhdGUgd29uJ3QgYmUgY2hhbmdlZCBpbnRvIFRDUF9MSVNURU4geWV0LCB3aGljaCBsZWFkcyB0
-aGUgY29kZSB0bw0KPiA+IHBpY2sNCj4gPiB0aGUgZGVmYXVsdCBzdGF0ZW1lbnQuIFRoaXMgZGVm
-YXVsdCBzdGF0ZW1lbnQgd2lsbCBvbmx5IGZyZWUgdGhlDQo+ID4gYnVmZmVyLA0KPiA+IHdoaWxl
-IGl0IHNob3VsZCBhbHNvIHJlc3BvbmQgdG8gdGhlIGhvc3Qgc2lkZSwgYnkgc2VuZGluZyBhIHBh
-Y2tldA0KPiA+IG9uDQo+ID4gaXRzIFRYIHF1ZXVlLg0KPiA+IA0KPiA+IEluIG9yZGVyIHRvIHNp
-bXBseSBmaXggdGhpcyB1bmZvcnR1bmF0ZSBjaGFpbiBvZiBldmVudHMsIGl0IGlzDQo+ID4gaW1w
-b3J0YW50DQo+ID4gdGhhdCBpbiBjYXNlIHRoZSBkZWZhdWx0IHN0YXRlbWVudCBpcyBlbnRlcmVk
-LCBhbmQgYmVjYXVzZSBhdCB0aGlzDQo+ID4gc3RhZ2UNCj4gPiB3ZSBrbm93IHRoZSBob3N0IHNp
-ZGUgaXMgd2FpdGluZyBmb3IgYW4gYW5zd2VyLCB3ZSBtdXN0IHNlbmQgYmFjayBhDQo+ID4gcGFj
-a2V0IGNvbnRhaW5pbmcgdGhlIG9wZXJhdGlvbiBWSVJUSU9fVlNPQ0tfT1BfUlNULg0KPiA+IA0K
-PiA+IFNpZ25lZC1vZmYtYnk6IFNlYmFzdGllbiBCb2V1ZiA8c2ViYXN0aWVuLmJvZXVmQGludGVs
-LmNvbT4NCj4gPiAtLS0NCj4gPiAgbmV0L3Ztd192c29jay92aXJ0aW9fdHJhbnNwb3J0X2NvbW1v
-bi5jIHwgMSArDQo+ID4gIDEgZmlsZSBjaGFuZ2VkLCAxIGluc2VydGlvbigrKQ0KPiA+IA0KPiA+
-IGRpZmYgLS1naXQgYS9uZXQvdm13X3Zzb2NrL3ZpcnRpb190cmFuc3BvcnRfY29tbW9uLmMNCj4g
-PiBiL25ldC92bXdfdnNvY2svdmlydGlvX3RyYW5zcG9ydF9jb21tb24uYw0KPiA+IGluZGV4IGU1
-ZWEyOWM2YmNhNy4uOTA5MzM0ZDU4MzI4IDEwMDY0NA0KPiA+IC0tLSBhL25ldC92bXdfdnNvY2sv
-dmlydGlvX3RyYW5zcG9ydF9jb21tb24uYw0KPiA+ICsrKyBiL25ldC92bXdfdnNvY2svdmlydGlv
-X3RyYW5zcG9ydF9jb21tb24uYw0KPiA+IEBAIC0xMTQzLDYgKzExNDMsNyBAQCB2b2lkIHZpcnRp
-b190cmFuc3BvcnRfcmVjdl9wa3Qoc3RydWN0DQo+ID4gdmlydGlvX3RyYW5zcG9ydCAqdCwNCj4g
-PiAgCQl2aXJ0aW9fdHJhbnNwb3J0X2ZyZWVfcGt0KHBrdCk7DQo+ID4gIAkJYnJlYWs7DQo+ID4g
-IAlkZWZhdWx0Og0KPiA+ICsJCSh2b2lkKXZpcnRpb190cmFuc3BvcnRfcmVzZXRfbm9fc29jayh0
-LCBwa3QpOw0KPiA+ICAJCXZpcnRpb190cmFuc3BvcnRfZnJlZV9wa3QocGt0KTsNCj4gPiAgCQli
-cmVhazsNCj4gPiAgCX0NCj4gPiAtLSANCj4gPiAyLjIwLjENCj4gPiANCj4gPiAtLS0tLS0tLS0t
-LS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLQ0K
-PiA+IC0tLS0NCj4gPiBJbnRlbCBDb3Jwb3JhdGlvbiBTQVMgKEZyZW5jaCBzaW1wbGlmaWVkIGpv
-aW50IHN0b2NrIGNvbXBhbnkpDQo+ID4gUmVnaXN0ZXJlZCBoZWFkcXVhcnRlcnM6ICJMZXMgTW9u
-dGFsZXRzIi0gMiwgcnVlIGRlIFBhcmlzLCANCj4gPiA5MjE5NiBNZXVkb24gQ2VkZXgsIEZyYW5j
-ZQ0KPiA+IFJlZ2lzdHJhdGlvbiBOdW1iZXI6ICAzMDIgNDU2IDE5OSBSLkMuUy4gTkFOVEVSUkUN
-Cj4gPiBDYXBpdGFsOiA0LDU3MiwwMDAgRXVyb3MNCj4gPiANCj4gPiBUaGlzIGUtbWFpbCBhbmQg
-YW55IGF0dGFjaG1lbnRzIG1heSBjb250YWluIGNvbmZpZGVudGlhbCBtYXRlcmlhbA0KPiA+IGZv
-cg0KPiA+IHRoZSBzb2xlIHVzZSBvZiB0aGUgaW50ZW5kZWQgcmVjaXBpZW50KHMpLiBBbnkgcmV2
-aWV3IG9yDQo+ID4gZGlzdHJpYnV0aW9uDQo+ID4gYnkgb3RoZXJzIGlzIHN0cmljdGx5IHByb2hp
-Yml0ZWQuIElmIHlvdSBhcmUgbm90IHRoZSBpbnRlbmRlZA0KPiA+IHJlY2lwaWVudCwgcGxlYXNl
-IGNvbnRhY3QgdGhlIHNlbmRlciBhbmQgZGVsZXRlIGFsbCBjb3BpZXMuDQotLS0tLS0tLS0tLS0t
-LS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0K
-SW50ZWwgQ29ycG9yYXRpb24gU0FTIChGcmVuY2ggc2ltcGxpZmllZCBqb2ludCBzdG9jayBjb21w
-YW55KQpSZWdpc3RlcmVkIGhlYWRxdWFydGVyczogIkxlcyBNb250YWxldHMiLSAyLCBydWUgZGUg
-UGFyaXMsIAo5MjE5NiBNZXVkb24gQ2VkZXgsIEZyYW5jZQpSZWdpc3RyYXRpb24gTnVtYmVyOiAg
-MzAyIDQ1NiAxOTkgUi5DLlMuIE5BTlRFUlJFCkNhcGl0YWw6IDQsNTcyLDAwMCBFdXJvcwoKVGhp
-cyBlLW1haWwgYW5kIGFueSBhdHRhY2htZW50cyBtYXkgY29udGFpbiBjb25maWRlbnRpYWwgbWF0
-ZXJpYWwgZm9yCnRoZSBzb2xlIHVzZSBvZiB0aGUgaW50ZW5kZWQgcmVjaXBpZW50KHMpLiBBbnkg
-cmV2aWV3IG9yIGRpc3RyaWJ1dGlvbgpieSBvdGhlcnMgaXMgc3RyaWN0bHkgcHJvaGliaXRlZC4g
-SWYgeW91IGFyZSBub3QgdGhlIGludGVuZGVkCnJlY2lwaWVudCwgcGxlYXNlIGNvbnRhY3QgdGhl
-IHNlbmRlciBhbmQgZGVsZXRlIGFsbCBjb3BpZXMuCg==
+On Sun, Feb 09, 2020 at 09:15:29PM +0800, Xin Long wrote:
+> It's not sufficient to do 'uctx->len != (sizeof(struct xfrm_user_sec_ctx) +
+> uctx->ctx_len)' check only, as uctx->len may be greater than nla_len(rt),
+> in which case it will cause slab-out-of-bounds when accessing uctx->ctx_str
+> later.
+> 
+> This patch is to fix it by return -EINVAL when uctx->len > nla_len(rt).
+> 
+> Fixes: df71837d5024 ("[LSM-IPSec]: Security association restriction.")
+> Signed-off-by: Xin Long <lucien.xin@gmail.com>
 
+Applied, thanks!
