@@ -2,49 +2,48 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 94D8115BFE3
-	for <lists+netdev@lfdr.de>; Thu, 13 Feb 2020 15:00:09 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 26AE215BFF2
+	for <lists+netdev@lfdr.de>; Thu, 13 Feb 2020 15:01:55 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730156AbgBMOAE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 13 Feb 2020 09:00:04 -0500
-Received: from metis.ext.pengutronix.de ([85.220.165.71]:56633 "EHLO
-        metis.ext.pengutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1730036AbgBMOAE (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 13 Feb 2020 09:00:04 -0500
-Received: from soja.hi.pengutronix.de ([2001:67c:670:100:3ad5:47ff:feaf:13da])
-        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_128_GCM_SHA256:128)
-        (Exim 4.92)
-        (envelope-from <o.rempel@pengutronix.de>)
-        id 1j2F28-0005zr-0t; Thu, 13 Feb 2020 15:00:00 +0100
-Subject: Re: [PATCH net 2/2] net: dsa: tag_ar9331: Make sure there is headroom
+        id S1730217AbgBMOBf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 13 Feb 2020 09:01:35 -0500
+Received: from vps0.lunn.ch ([185.16.172.187]:44248 "EHLO vps0.lunn.ch"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1730036AbgBMOBf (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 13 Feb 2020 09:01:35 -0500
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:
+        Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
+        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
+        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
+        List-Post:List-Owner:List-Archive;
+        bh=dBPcaumofvER+ysc/5YzhCD8WPvgMzyqDiq0EqFZH28=; b=quL/ByWr5NLXCoyC0GNZJfknyY
+        FFGV85ZDYk01LlJl52CmTeqemXxZg8ChC81Zcok4VUVKsAuMuefv61CKkCcTn5QJgOIrLrN5DWYQr
+        fnmlizbHuKnPK8pqWuMB+7Q9qsJUuVDZJSrICgGbEAGseM6pMjhcEhaPmX8oWaXWGUyY=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.93)
+        (envelope-from <andrew@lunn.ch>)
+        id 1j2F3c-0003Iq-VA; Thu, 13 Feb 2020 15:01:32 +0100
+Date:   Thu, 13 Feb 2020 15:01:32 +0100
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Per@axis.com, Forlin <per.forlin@axis.com>
+Cc:     netdev@vger.kernel.org, o.rempel@pengutronix.de,
+        davem@davemloft.net, Per Forlin <per.forlin@axis.com>,
+        Per Forlin <perfn@axis.com>
+Subject: Re: [PATCH net 1/2] net: dsa: tag_qca: Make sure there is headroom
  for tag
-To:     Per@axis.com, "\"Forlin" <"per.forlin\""@axis.co>,
-        netdev@vger.kernel.org, andrew@lunn.ch, davem@davemloft.net
-Cc:     Per Forlin <per.forlin@axis.com>, Per Forlin <perfn@axis.com>
+Message-ID: <20200213140132.GC12151@lunn.ch>
 References: <20200213135100.2963-1-per.forlin@axis.com>
- <20200213135100.2963-3-per.forlin@axis.com>
-From:   Oleksij Rempel <o.rempel@pengutronix.de>
-Message-ID: <e1c554fa-fde7-0e8b-959d-603e66db54b0@pengutronix.de>
-Date:   Thu, 13 Feb 2020 14:59:58 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.4.1
+ <20200213135100.2963-2-per.forlin@axis.com>
 MIME-Version: 1.0
-In-Reply-To: <20200213135100.2963-3-per.forlin@axis.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-SA-Exim-Connect-IP: 2001:67c:670:100:3ad5:47ff:feaf:13da
-X-SA-Exim-Mail-From: o.rempel@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: netdev@vger.kernel.org
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20200213135100.2963-2-per.forlin@axis.com>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi,
-
-On 13.02.20 14:51, Per@axis.com wrote:
+On Thu, Feb 13, 2020 at 02:50:59PM +0100, Per@axis.com wrote:
 > From: Per Forlin <per.forlin@axis.com>
 > 
 > Passing tag size to skb_cow_head will make sure
@@ -54,36 +53,10 @@ On 13.02.20 14:51, Per@axis.com wrote:
 > 
 > Signed-off-by: Per Forlin <perfn@axis.com>
 
-Tested-by: Oleksij Rempel <o.rempel@pengutronix.de>
+Hi Per
 
-Thank you!
+If these are for net, you need a Fixes: tag.
 
-Are you using this driver?
+Also, you should add the Reivewed-by: tags i gave for these patches.
 
-> ---
->   net/dsa/tag_ar9331.c | 2 +-
->   1 file changed, 1 insertion(+), 1 deletion(-)
-> 
-> diff --git a/net/dsa/tag_ar9331.c b/net/dsa/tag_ar9331.c
-> index 466ffa92a474..55b00694cdba 100644
-> --- a/net/dsa/tag_ar9331.c
-> +++ b/net/dsa/tag_ar9331.c
-> @@ -31,7 +31,7 @@ static struct sk_buff *ar9331_tag_xmit(struct sk_buff *skb,
->   	__le16 *phdr;
->   	u16 hdr;
->   
-> -	if (skb_cow_head(skb, 0) < 0)
-> +	if (skb_cow_head(skb, AR9331_HDR_LEN) < 0)
->   		return NULL;
->   
->   	phdr = skb_push(skb, AR9331_HDR_LEN);
-> 
-
-Kind regards,
-Oleksij Rempel
-
--- 
-Pengutronix e.K.                           |                             |
-Industrial Linux Solutions                 | http://www.pengutronix.de/  |
-Peiner Str. 6-8, 31137 Hildesheim, Germany | Phone: +49-5121-206917-0    |
-Amtsgericht Hildesheim, HRA 2686           | Fax:   +49-5121-206917-5555 |
+      Andrew
