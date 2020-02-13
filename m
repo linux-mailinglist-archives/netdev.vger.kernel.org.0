@@ -2,82 +2,125 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id B592815C832
-	for <lists+netdev@lfdr.de>; Thu, 13 Feb 2020 17:26:53 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B8A9015C845
+	for <lists+netdev@lfdr.de>; Thu, 13 Feb 2020 17:33:08 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727991AbgBMQ0q (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 13 Feb 2020 11:26:46 -0500
-Received: from mail-pj1-f66.google.com ([209.85.216.66]:40136 "EHLO
-        mail-pj1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727558AbgBMQ0q (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 13 Feb 2020 11:26:46 -0500
-Received: by mail-pj1-f66.google.com with SMTP id 12so2627149pjb.5
-        for <netdev@vger.kernel.org>; Thu, 13 Feb 2020 08:26:45 -0800 (PST)
+        id S1728078AbgBMQdF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 13 Feb 2020 11:33:05 -0500
+Received: from mail-wm1-f65.google.com ([209.85.128.65]:40953 "EHLO
+        mail-wm1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727828AbgBMQdF (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 13 Feb 2020 11:33:05 -0500
+Received: by mail-wm1-f65.google.com with SMTP id t14so7469252wmi.5
+        for <netdev@vger.kernel.org>; Thu, 13 Feb 2020 08:33:04 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=networkplumber-org.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:cc:subject:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=VWpD/oSC/9lwwBJJFvh9A77mCFIdYRk2VVCD/TRAJxA=;
-        b=nlrHdafi0puXsV7lraciQQQUdOxTObP5STkchE2xLZOUinTPAT+d3CKxJXQphQ17rE
-         NjwFGlly4ylistT7fdf0beA/V9/z0Iw2Y+bpqq+X6HsACxj9gPz9m0G2ivxmpJHguZva
-         tLIhagCJYkR1p9enfbIYzsmznnAVy9r3xIR21RyDxhZTRwL+JUjZbpnMUx6AjwWfiqWK
-         qje3Uhqokfaseq9gXNJrbTJYyHjfmeBpYU0lbNegThZawUV/tmCS+vQai93FLrc33PRa
-         IvyGsFnTLJaxW197dLAcz+1rkepBP1e9PmnyK8YjNtsum6XkPHHG1o/AnNruDCjxaSln
-         gqmA==
+        d=6wind.com; s=google;
+        h=reply-to:subject:to:references:from:organization:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=9tHgekIHlC5+cihMkWFyyekxwRBJeo3gDHbBhpXzdUI=;
+        b=VnuRT2MBphLMUVUlAuVys1hgQ2ewyy9uvuwxTtjRkQyG+GjW1HoMnTI6N8EqpsPoOW
+         mgvTIIpIB7wYOfbIz2i0bYDkOx/bjBvOX3dhm1vMdmgDWNWtYXDOrhgsOe98bvLVrckd
+         87klj417thhcm2uRrKFNUMICxW2tNSqeBMiSUncKrunIYFuuz0k/Q5mBozo39degIgka
+         oCUe5Fjc1KmBOl59hWt8Y6QznFG0OTASV7I5+s3maMd+iBlucywMG6ME9nFEvJC6B1UI
+         MUzw1CuAM43ILuItSquj/g485Art+vcINJTWSMNFy5Wwh3YZV5rNWcVHvXq3QiSnRSeM
+         8nHQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=VWpD/oSC/9lwwBJJFvh9A77mCFIdYRk2VVCD/TRAJxA=;
-        b=FYLkgELX8RFiHxgN/h16u3eYxSaPc6e0Sw7v451ZfIiwCRaCZRbqvihLs74azmwYSd
-         wKeaK3hjaGs3ceNARtIm7VvV+1Dv2B34ZJ0tR5badkjEi99LLp+2quJ264yI1uHanbrk
-         HQ8qhkhhOGZ5QEyXmDN0dqw5COT+ZmSbBco0caUeaHIssTc6TQbcFTEKIEJlTmCMxQTX
-         +n3HiQcEBa25BHAlL92xbNS+Q5OlotVA6iiyj1r/76MT45uqCjnMmPqkCTs4kr9QlKuj
-         c2vSkh1s4lQNC8Az6A0pnQCz6FvAbNGj3xx8OeTgNc2L8W+B+325AxjhvWMQB+Ym8dht
-         jPig==
-X-Gm-Message-State: APjAAAUmcHZ+idI6lOO2Jr1701BLa1hTiaevSdkBjrcl5nWwckzJ/72R
-        1vGhrSN/1z6r16ZTpIV8Z6dtUA==
-X-Google-Smtp-Source: APXvYqwDZmQbbtFjm0mg+V5ys0hdJrGtAhB1jG8Lk0w+Ow3W1sLrykqNDRGdyINrQfmfPVef9y/gZg==
-X-Received: by 2002:a17:902:ff16:: with SMTP id f22mr13742773plj.229.1581611205102;
-        Thu, 13 Feb 2020 08:26:45 -0800 (PST)
-Received: from hermes.lan (204-195-22-127.wavecable.com. [204.195.22.127])
-        by smtp.gmail.com with ESMTPSA id ci5sm3231289pjb.5.2020.02.13.08.26.44
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 13 Feb 2020 08:26:44 -0800 (PST)
-Date:   Thu, 13 Feb 2020 08:26:35 -0800
-From:   Stephen Hemminger <stephen@networkplumber.org>
-To:     Xin Long <lucien.xin@gmail.com>
-Cc:     network dev <netdev@vger.kernel.org>,
-        Simon Horman <simon.horman@netronome.com>
-Subject: Re: [PATCHv2 iproute2-next 1/7] iproute_lwtunnel: add options
- support for geneve metadata
-Message-ID: <20200213082635.0fde6ab8@hermes.lan>
-In-Reply-To: <0fd1ae76c7689ab4fbd7c9f9fb85adf063154bdb.1581594682.git.lucien.xin@gmail.com>
-References: <cover.1581594682.git.lucien.xin@gmail.com>
-        <0fd1ae76c7689ab4fbd7c9f9fb85adf063154bdb.1581594682.git.lucien.xin@gmail.com>
+        h=x-gm-message-state:reply-to:subject:to:references:from:organization
+         :message-id:date:user-agent:mime-version:in-reply-to
+         :content-language:content-transfer-encoding;
+        bh=9tHgekIHlC5+cihMkWFyyekxwRBJeo3gDHbBhpXzdUI=;
+        b=XuqyXhZ2wSXXqjxXx8wextXVg5Tp+JYRtN0lQQEuR4BRs9C5K5FnfnaCSj+ITVvOah
+         XcqvvUJl0pJSo98zAexb/3QQsCzQrD7i9qKRdqSw1XFavt9ZqapWitxFob1myI4UFRxi
+         sYRM9tjBp+MTFYAQO764JoX4o93YixS0rJdMquWs/rsVsJppA3rMKe2FesUsaiOWNQUe
+         VJl5gcZlKybaa7W4GvYBAFtnR/1ey5a3LFWrYut8ENl9N2sYH/IFO6Ivxl0ng4YadpI8
+         HI5N26ny0IEIvwnCvpODc3DPYrcoXcZ+G7+PTGXSqZSW+9owoLEv3AGFC7F1/KZDqxRU
+         kTDw==
+X-Gm-Message-State: APjAAAU3WFKNVlSs4vE/Ebwkcux5PR1kTohhL3Gs2mqP24jCF8ZGdVWS
+        SqNSZYrk0o05+HW8WwmW5eEtgd8juYQ=
+X-Google-Smtp-Source: APXvYqzpjv55RQMLX6eNx3bSKVToLVRO8UwHbyj4PRBo9g0d6tLyCWYRuFYe9IXtcRagj7V0YU1VOg==
+X-Received: by 2002:a7b:cae9:: with SMTP id t9mr6570686wml.186.1581611583011;
+        Thu, 13 Feb 2020 08:33:03 -0800 (PST)
+Received: from ?IPv6:2a01:e0a:410:bb00:7cb8:8eea:bf1c:ed6? ([2a01:e0a:410:bb00:7cb8:8eea:bf1c:ed6])
+        by smtp.gmail.com with ESMTPSA id x6sm3459098wmi.44.2020.02.13.08.33.02
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 13 Feb 2020 08:33:02 -0800 (PST)
+Reply-To: nicolas.dichtel@6wind.com
+Subject: Re: [PATCH v4 net] net, ip6_tunnel: enhance tunnel locate with link
+ check
+To:     William Dauchy <w.dauchy@criteo.com>, netdev@vger.kernel.org
+References: <cc378ec7-03ec-58ec-e3c9-158fb02b283e@6wind.com>
+ <20200213153552.330380-1-w.dauchy@criteo.com>
+From:   Nicolas Dichtel <nicolas.dichtel@6wind.com>
+Organization: 6WIND
+Message-ID: <cf5ef569-1742-a22f-ec7d-f987287e12fb@6wind.com>
+Date:   Thu, 13 Feb 2020 17:33:01 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.4.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+In-Reply-To: <20200213153552.330380-1-w.dauchy@criteo.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 13 Feb 2020 19:56:59 +0800
-Xin Long <lucien.xin@gmail.com> wrote:
+Le 13/02/2020 à 16:35, William Dauchy a écrit :
+[snip]
+> @@ -1420,9 +1441,11 @@ ip6_tnl_start_xmit(struct sk_buff *skb, struct net_device *dev)
+>  static void ip6_tnl_link_config(struct ip6_tnl *t)
+>  {
+>  	struct net_device *dev = t->dev;
+> +	struct net_device *tdev = NULL;
+>  	struct __ip6_tnl_parm *p = &t->parms;
+>  	struct flowi6 *fl6 = &t->fl.u.ip6;
+>  	int t_hlen;
+> +	int mtu;
+>  
+>  	memcpy(dev->dev_addr, &p->laddr, sizeof(struct in6_addr));
+>  	memcpy(dev->broadcast, &p->raddr, sizeof(struct in6_addr));
+> @@ -1457,22 +1480,24 @@ static void ip6_tnl_link_config(struct ip6_tnl *t)
+>  		struct rt6_info *rt = rt6_lookup(t->net,
+>  						 &p->raddr, &p->laddr,
+>  						 p->link, NULL, strict);
+> +		if (!IS_ERR(rt)) {
+Why IS_ERR()? rt6_lookup() returns a valid pointer or NULL.
 
-> +	while (rem) {
-> +		parse_rtattr(tb, LWTUNNEL_IP_OPT_GENEVE_MAX, i, rem);
-> +		class = rta_getattr_be16(tb[LWTUNNEL_IP_OPT_GENEVE_CLASS]);
-> +		type = rta_getattr_u8(tb[LWTUNNEL_IP_OPT_GENEVE_TYPE]);
-> +		data_len = RTA_PAYLOAD(tb[LWTUNNEL_IP_OPT_GENEVE_DATA]);
-> +		hexstring_n2a(RTA_DATA(tb[LWTUNNEL_IP_OPT_GENEVE_DATA]),
-> +			      data_len, data, sizeof(data));
-> +		offset += data_len + 20;
-> +		rem -= data_len + 20;
-> +		i = RTA_DATA(attr) + offset;
-> +		slen += sprintf(opt + slen, "%04x:%02x:%s", class, type, data);
-> +		if (rem)
-> +		
+> +			tdev = rt->dst.dev;
+> +			ip6_rt_put(rt);
+> +		} else if (t->parms.link) {
+> +			tdev = __dev_get_by_index(t->net, t->parms.link);
+p->link to be consistent with the rest of the function.
 
-Please implement proper JSON array for these. Not just bunch of strings.
+> +		}
+>  
+> -		if (!rt)
+> -			return;
+> -
+> -		if (rt->dst.dev) {
+But rt->dst.dev can be NULL.
+
+> -			dev->hard_header_len = rt->dst.dev->hard_header_len +
+> -				t_hlen;
+> +		if (tdev) {
+> +			dev->hard_header_len = tdev->hard_header_len + t_hlen;
+> +			mtu = min(tdev->mtu, IP_MAX_MTU);
+IP6_MAX_MTU?
+
+>  
+> -			dev->mtu = rt->dst.dev->mtu - t_hlen;
+> +			dev->mtu = mtu - t_hlen;
+>  			if (!(t->parms.flags & IP6_TNL_F_IGN_ENCAP_LIMIT))
+>  				dev->mtu -= 8;
+>  
+>  			if (dev->mtu < IPV6_MIN_MTU)
+>  				dev->mtu = IPV6_MIN_MTU;
+>  		}
+> -		ip6_rt_put(rt);
+>  	}
+>  }
+>  
+> 
