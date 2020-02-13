@@ -2,126 +2,97 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id D029D15C629
-	for <lists+netdev@lfdr.de>; Thu, 13 Feb 2020 17:11:53 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id EA30515C65A
+	for <lists+netdev@lfdr.de>; Thu, 13 Feb 2020 17:12:14 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2387465AbgBMP5y (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 13 Feb 2020 10:57:54 -0500
-Received: from mail-ed1-f53.google.com ([209.85.208.53]:37518 "EHLO
-        mail-ed1-f53.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727964AbgBMP5t (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 13 Feb 2020 10:57:49 -0500
-Received: by mail-ed1-f53.google.com with SMTP id df17so665776edb.4
-        for <netdev@vger.kernel.org>; Thu, 13 Feb 2020 07:57:48 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=OiFCwTHGnxWOPqya1mGqa2xpgcV+wBJ/acYQ6pZEZCo=;
-        b=VLIrUR4p+9YWt9WEV6E9JheOJv1TRDUNNZTsY4X0w2guWYJVphHNzLWw3gqGkzw3+1
-         iHJBFcfGoVE8XupTLVIKswYSD8+foi7aYwn2CljB8vjGzca/QWhmRmaUnxPpRsI9Iq3R
-         03zvj1/mgp15tdpmo1vu9FriaE/knI8RhvEUJ6yilLZel13bi+Kjvo0/wKaagd76weEZ
-         V0A2MGPnRXb/Dhm0BxkbfDwQAfNnz4QzWhEJPqQY0FOlSoAgRA4rMVqCbXRDzJBjQbnU
-         nqdrHvXroUBTJRz+VsSa6T883/bGspCKA4R9Uc+WBmBAJMKn97y6KhJffoKV1aKpEDJO
-         SKFQ==
+        id S2387460AbgBMP7r (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 13 Feb 2020 10:59:47 -0500
+Received: from us-smtp-2.mimecast.com ([207.211.31.81]:32689 "EHLO
+        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1728921AbgBMP7p (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 13 Feb 2020 10:59:45 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1581609584;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=YjESY5U+42gtKNpvEnDRTyHV+mXqJmvUAfYgrE7ny0Y=;
+        b=iEuMHtMDQJGT4zIAt7kB0SgAoxppHf57ldT9HPdxkD0viABA+r+tkEXUR26GeUm2ouQMxX
+        vUkUtdcFyX4wI0ATfy/TXFUoxc11eKOZpJAsUid0VKbVNl1tF78z1mQaMh5JdrbWqT7eGe
+        ssShISjdGZKx/w8/nlOOL0vz229uI1U=
+Received: from mail-qk1-f198.google.com (mail-qk1-f198.google.com
+ [209.85.222.198]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-331-dqVVk65GM3qLgjOd3AZ9NQ-1; Thu, 13 Feb 2020 10:59:42 -0500
+X-MC-Unique: dqVVk65GM3qLgjOd3AZ9NQ-1
+Received: by mail-qk1-f198.google.com with SMTP id n126so3986771qkc.18
+        for <netdev@vger.kernel.org>; Thu, 13 Feb 2020 07:59:42 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=OiFCwTHGnxWOPqya1mGqa2xpgcV+wBJ/acYQ6pZEZCo=;
-        b=Z4vEeDMIFFT6Okx6a+VlaONKSpNBgD2+q7HPW4Einm6DalYtpM0hfcyefWVVRaqcVD
-         SxuNA0wAH9JnVaMhX5tovC6ffEo+1kKjzhvUBQhE/lr41iyO8m0OOomO2Zur8b+YKVrI
-         yvvnovp73VGz/FzIcByIQzuvxpuGIkeOY4/94TMFbYsfVCfsIoIrV2/sZLkEi+B4ZNl5
-         DJj0/ssOyBNJXjOON+A19G6LnN68CR14WrYqSialoacll8nCn02o8o+TXpYgiilsbWjc
-         tAT0BpBDAKdBDrinPHpxYhmwIpr4bzbPXDfHfNIqhy1WQ2NWgbUnxFNCmfpDMvvvrDqd
-         NIzQ==
-X-Gm-Message-State: APjAAAVmZc4w0Mhh/3nyPGZdFdNgN//fjr1GyENqu+cdhqUThAtcjvpe
-        9FShPSgQ81pW6vZ9OKGzNnhuCUcMijDzRVFu+PNqjg==
-X-Google-Smtp-Source: APXvYqwygQORcCpVsZxOojw5HTsTUB62JJK2WMcPPLcON8ZFo+QFqjqpZ7RhttzBuC1Gl8w4s1XxN/UnQ1dHyE94Lu8=
-X-Received: by 2002:a17:906:7a07:: with SMTP id d7mr9321225ejo.176.1581609467163;
- Thu, 13 Feb 2020 07:57:47 -0800 (PST)
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=YjESY5U+42gtKNpvEnDRTyHV+mXqJmvUAfYgrE7ny0Y=;
+        b=rB6snREfSMfTIOFidURDTVqlVM9NmpCB2Y/rAFQr30enpP4WnEYFF0WeYHtgFqPsaJ
+         lDgu6miBNZGZTLTneuesKzhKo/2HnP707ZwAEoz6ZWW71h2Xh9BnKACGj5KJrPSsjJ+z
+         IiElPFAknVovI+yqeiN0Nij7x+lcCyLsQ6wlaCN8xRuzECrOfNYxR5577XXLbTKA7t/P
+         Cj4WLSY8ilASutiCbMaCgSHDRT/nobYcL6/Gjar7cyRm3EV6r1d2fBYE+puJWfp4XvI6
+         ZSF/gap0X78TZo9FEFNWpxLrpWiDpQw/mYR5RYS9yQvCVH3J8QgMzPQCrzReipl6AKet
+         A04Q==
+X-Gm-Message-State: APjAAAVjNEQ89f0leHto0ja7pXMe7YqDnlNI6umV2/+yxhr5yGKEyoJ8
+        UaoFkOIJ1/d9BT36ftlh49cwGRhhDLNJ3VwuLHsOZ4USmtF9CppIhFPnXarfYijqJRBsq6zFMpd
+        WWHqxQr5/4rkJ2vJT
+X-Received: by 2002:a37:648c:: with SMTP id y134mr12655817qkb.112.1581609582442;
+        Thu, 13 Feb 2020 07:59:42 -0800 (PST)
+X-Google-Smtp-Source: APXvYqwblUv4o0toVmVYl/HEAfrRzni+p8oGrxwrOCdC64VBDuyyCDEhJs814GPsgJHzOlkKNS9BGQ==
+X-Received: by 2002:a37:648c:: with SMTP id y134mr12655792qkb.112.1581609582252;
+        Thu, 13 Feb 2020 07:59:42 -0800 (PST)
+Received: from redhat.com (bzq-79-176-28-95.red.bezeqint.net. [79.176.28.95])
+        by smtp.gmail.com with ESMTPSA id b7sm1490925qka.67.2020.02.13.07.59.37
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 13 Feb 2020 07:59:41 -0800 (PST)
+Date:   Thu, 13 Feb 2020 10:59:34 -0500
+From:   "Michael S. Tsirkin" <mst@redhat.com>
+To:     Jason Gunthorpe <jgg@mellanox.com>
+Cc:     Jason Wang <jasowang@redhat.com>, linux-kernel@vger.kernel.org,
+        kvm@vger.kernel.org, virtualization@lists.linux-foundation.org,
+        netdev@vger.kernel.org, tiwei.bie@intel.com,
+        maxime.coquelin@redhat.com, cunming.liang@intel.com,
+        zhihong.wang@intel.com, rob.miller@broadcom.com,
+        xiao.w.wang@intel.com, haotian.wang@sifive.com,
+        lingshan.zhu@intel.com, eperezma@redhat.com, lulu@redhat.com,
+        parav@mellanox.com, kevin.tian@intel.com, stefanha@redhat.com,
+        rdunlap@infradead.org, hch@infradead.org, aadam@redhat.com,
+        jiri@mellanox.com, shahafs@mellanox.com, hanand@xilinx.com,
+        mhabets@solarflare.com
+Subject: Re: [PATCH V2 3/5] vDPA: introduce vDPA bus
+Message-ID: <20200213105743-mutt-send-email-mst@kernel.org>
+References: <20200210035608.10002-4-jasowang@redhat.com>
+ <20200211134746.GI4271@mellanox.com>
+ <cf7abcc9-f8ef-1fe2-248e-9b9028788ade@redhat.com>
+ <20200212125108.GS4271@mellanox.com>
+ <12775659-1589-39e4-e344-b7a2c792b0f3@redhat.com>
+ <20200213134128.GV4271@mellanox.com>
+ <ebaea825-5432-65e2-2ab3-720a8c4030e7@redhat.com>
+ <20200213150542.GW4271@mellanox.com>
+ <20200213103714-mutt-send-email-mst@kernel.org>
+ <20200213155154.GX4271@mellanox.com>
 MIME-Version: 1.0
-References: <20200213133831.GM25745@shell.armlinux.org.uk> <20200213144615.GH18808@shell.armlinux.org.uk>
-In-Reply-To: <20200213144615.GH18808@shell.armlinux.org.uk>
-From:   Vladimir Oltean <olteanv@gmail.com>
-Date:   Thu, 13 Feb 2020 17:57:36 +0200
-Message-ID: <CA+h21ho=siWbp9B=sC5P-Z5B2YEtmnjxnZLzwSwfcVHBkO6rKA@mail.gmail.com>
-Subject: Re: Heads up: phylink changes for next merge window
-To:     Russell King - ARM Linux admin <linux@armlinux.org.uk>
-Cc:     netdev <netdev@vger.kernel.org>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Sean Wang <sean.wang@mediatek.com>,
-        John Crispin <john@phrozen.org>,
-        Mark Lee <Mark-MC.Lee@mediatek.com>,
-        Giuseppe Cavallaro <peppe.cavallaro@st.com>,
-        Alexandre Torgue <alexandre.torgue@st.com>,
-        Jose Abreu <joabreu@synopsys.com>,
-        Radhey Shyam Pandey <radhey.shyam.pandey@xilinx.com>,
-        Nicolas Ferre <nicolas.ferre@microchip.com>,
-        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
-        Ioana Ciornei <ioana.ciornei@nxp.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20200213155154.GX4271@mellanox.com>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Russell,
+On Thu, Feb 13, 2020 at 11:51:54AM -0400, Jason Gunthorpe wrote:
+> The 'class' is supposed to provide all the library functions to remove
+> this duplication. Instead of plugging the HW driver in via some bus
+> scheme every subsystem has its own 'ops' that the HW driver provides
+> to the subsystem's class via subsystem_register()
 
-On Thu, 13 Feb 2020 at 16:46, Russell King - ARM Linux admin
-<linux@armlinux.org.uk> wrote:
->
-> [Recipient list updated; removed addresses that bounce, added Ioana
-> Ciornei for dpaa2 and DSA issue mentioned below.]
->
-> On Thu, Feb 13, 2020 at 01:38:31PM +0000, Russell King - ARM Linux admin wrote:
-> > Hi,
->
-> I should also have pointed out that with mv88e6xxx, the patch
-> "net: mv88e6xxx: use resolved link config in mac_link_up()" "fixes" by
-> side-effect an issue that Andrew has mentioned, where inter-DSA ports
-> get configured down to 10baseHD speed.  This is by no means a true fix
-> for that problem - which is way deeper than this series can address.
-> The reason it fixes it is because we no longer set the speed/duplex
-> in mac_config() but set it in mac_link_up() - but mac_link_up() is
-> never called for CPU and DSA ports.
->
-> However, I think there may be another side-effect of that - any fixed
-> link declaration in DT may not be respected after this patch.
->
-> I believe the root of this goes back to this commit:
->
->   commit 0e27921816ad99f78140e0c61ddf2bc515cc7e22
->   Author: Ioana Ciornei <ioana.ciornei@nxp.com>
->   Date:   Tue May 28 20:38:16 2019 +0300
->
->   net: dsa: Use PHYLINK for the CPU/DSA ports
->
-> and, in the case of no fixed-link declaration, phylink has no idea what
-> the link parameters should be (and hence the initial bug, where
-> mac_config gets called with speed=0 duplex=0, which gets interpreted as
-> 10baseHD.)  Moreover, as far as phylink is concerned, these links never
-> come up. Essentially, this commit was not fully tested with inter-DSA
-> links, and probably was never tested with phylink debugging enabled.
->
-> There is currently no fix for this, and it is not an easy problem to
-> resolve, irrespective of the patches I'm proposing.
->
-> --
-> RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
-> FTTC broadband for 0.8mile line in suburbia: sync at 12.1Mbps down 622kbps up
-> According to speedtest.net: 11.9Mbps down 500kbps up
+Hmm I'm not familiar with subsystem_register. A grep didn't find it
+in the kernel either ...
 
-Correct me if I'm wrong, but if the lack of fixed-link specifier for
-CPU and DSA ports was not a problem before, but has suddenly started
-to become a problem with that patch, then simply reverting to the old
-"legacy" logic from dsa_port_link_register_of() should restore the
-behavior for those device tree blobs that don't specify an explicit
-fixed-link?
-In the longer term, can't we just require fixed-link specifiers for
-non-netdev ports on new boards, keep the adjust_link code in DSA for
-the legacy blobs (which works through some sort of magic), and be done
-with it?
+-- 
+MST
 
-Regards,
--Vladimir
