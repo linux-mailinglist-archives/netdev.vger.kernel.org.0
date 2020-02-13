@@ -2,150 +2,88 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 746C715CA64
-	for <lists+netdev@lfdr.de>; Thu, 13 Feb 2020 19:31:55 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7012815CA67
+	for <lists+netdev@lfdr.de>; Thu, 13 Feb 2020 19:32:32 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727652AbgBMSbx (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 13 Feb 2020 13:31:53 -0500
-Received: from mga17.intel.com ([192.55.52.151]:53626 "EHLO mga17.intel.com"
+        id S1727954AbgBMSca (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 13 Feb 2020 13:32:30 -0500
+Received: from mail.kernel.org ([198.145.29.99]:42616 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725781AbgBMSbx (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 13 Feb 2020 13:31:53 -0500
-X-Amp-Result: SKIPPED(no attachment in message)
-X-Amp-File-Uploaded: False
-Received: from fmsmga002.fm.intel.com ([10.253.24.26])
-  by fmsmga107.fm.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 13 Feb 2020 10:31:51 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.70,437,1574150400"; 
-   d="scan'208,223";a="267236454"
-Received: from orsmsx106.amr.corp.intel.com ([10.22.225.133])
-  by fmsmga002.fm.intel.com with ESMTP; 13 Feb 2020 10:31:51 -0800
-Received: from orsmsx121.amr.corp.intel.com (10.22.225.226) by
- ORSMSX106.amr.corp.intel.com (10.22.225.133) with Microsoft SMTP Server (TLS)
- id 14.3.439.0; Thu, 13 Feb 2020 10:31:50 -0800
-Received: from orsmsx115.amr.corp.intel.com ([169.254.4.100]) by
- ORSMSX121.amr.corp.intel.com ([169.254.10.140]) with mapi id 14.03.0439.000;
- Thu, 13 Feb 2020 10:31:51 -0800
-From:   "Boeuf, Sebastien" <sebastien.boeuf@intel.com>
-To:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-CC:     "stefanha@redhat.com" <stefanha@redhat.com>,
-        "sgarzare@redhat.com" <sgarzare@redhat.com>,
-        "davem@davemloft.net" <davem@davemloft.net>
-Subject: [PATCH net v2] net: virtio_vsock: Enhance connection semantics
-Thread-Topic: [PATCH net v2] net: virtio_vsock: Enhance connection semantics
-Thread-Index: AQHV4pvbiVSTfgZY5EmkfxfQ2ITxnA==
-Date:   Thu, 13 Feb 2020 18:31:50 +0000
-Message-ID: <38828afab4efd8f6b8b8c43501a5f164a2841990.camel@intel.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-originating-ip: [10.252.24.191]
-Content-Type: text/plain; charset="utf-8"
-Content-ID: <3835F53AF1C2D5479755F66360EA83AD@intel.com>
+        id S1725781AbgBMSca (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 13 Feb 2020 13:32:30 -0500
+Received: from kicinski-fedora-PC1C0HJN (unknown [199.201.64.135])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 0CE4F222C2;
+        Thu, 13 Feb 2020 18:32:30 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1581618750;
+        bh=Rwjgf/5L2jRWf6y1Nw0KE57Nl41sV5Slxmaal99CMPM=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=kZWNjC2xPi8k8/Pc5e2Tkiin7Sa/2ekIrh8Tmi0jdKv7iKYCnLihY8MXWsmtM8ONt
+         Clf90QG0U75nwTYpcVFZNEzelJgporHf3r/VUMte7w6dKaha4aXQ96AMTP21tg3or7
+         Jye56qWPD/HghGAOwot0XGy8daT5jtWl8XAaQMrg=
+Date:   Thu, 13 Feb 2020 10:32:28 -0800
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Or Gerlitz <ogerlitz@mellanox.com>
+Cc:     Tariq Toukan <tariqt@mellanox.com>, netdev@vger.kernel.org
+Subject: Re: [PATCH net] net/tls: Act on going down event
+Message-ID: <20200213103228.2123025f@kicinski-fedora-PC1C0HJN>
+In-Reply-To: <20200213165407.60140-1-ogerlitz@mellanox.com>
+References: <20200213165407.60140-1-ogerlitz@mellanox.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-RnJvbSBkNTkxMDBiOGFiOTEyODlkOWVhYzgwZDBlMmE3YWU5YjBlMTlmZTljIE1vbiBTZXAgMTcg
-MDA6MDA6MDAgMjAwMQ0KRnJvbTogU2ViYXN0aWVuIEJvZXVmIDxzZWJhc3RpZW4uYm9ldWZAaW50
-ZWwuY29tPg0KRGF0ZTogVGh1LCAxMyBGZWIgMjAyMCAwODo1MDozOCArMDEwMA0KU3ViamVjdDog
-W1BBVENIXSBuZXQ6IHZpcnRpb192c29jazogRW5oYW5jZSBjb25uZWN0aW9uIHNlbWFudGljcw0K
-DQpXaGVuZXZlciB0aGUgdnNvY2sgYmFja2VuZCBvbiB0aGUgaG9zdCBzZW5kcyBhIHBhY2tldCB0
-aHJvdWdoIHRoZSBSWA0KcXVldWUsIGl0IGV4cGVjdHMgYW4gYW5zd2VyIG9uIHRoZSBUWCBxdWV1
-ZS4gVW5mb3J0dW5hdGVseSwgdGhlcmUgaXMgb25lDQpjYXNlIHdoZXJlIHRoZSBob3N0IHNpZGUg
-d2lsbCBoYW5nIHdhaXRpbmcgZm9yIHRoZSBhbnN3ZXIgYW5kIG1pZ2h0DQplZmZlY3RpdmVseSBu
-ZXZlciByZWNvdmVyIGlmIG5vIHRpbWVvdXQgbWVjaGFuaXNtIHdhcyBpbXBsZW1lbnRlZC4NCg0K
-VGhpcyBpc3N1ZSBoYXBwZW5zIHdoZW4gdGhlIGd1ZXN0IHNpZGUgc3RhcnRzIGJpbmRpbmcgdG8g
-dGhlIHNvY2tldCwNCndoaWNoIGluc2VydCBhIG5ldyBib3VuZCBzb2NrZXQgaW50byB0aGUgbGlz
-dCBvZiBhbHJlYWR5IGJvdW5kIHNvY2tldHMuDQpBdCB0aGlzIHRpbWUsIHdlIGV4cGVjdCB0aGUg
-Z3Vlc3QgdG8gYWxzbyBzdGFydCBsaXN0ZW5pbmcsIHdoaWNoIHdpbGwNCnRyaWdnZXIgdGhlIHNr
-X3N0YXRlIHRvIG1vdmUgZnJvbSBUQ1BfQ0xPU0UgdG8gVENQX0xJU1RFTi4gVGhlIHByb2JsZW0N
-Cm9jY3VycyBpZiB0aGUgaG9zdCBzaWRlIHF1ZXVlZCBhIFJYIHBhY2tldCBhbmQgdHJpZ2dlcmVk
-IGFuIGludGVycnVwdA0KcmlnaHQgYmV0d2VlbiB0aGUgZW5kIG9mIHRoZSBiaW5kaW5nIHByb2Nl
-c3MgYW5kIHRoZSBiZWdpbm5pbmcgb2YgdGhlDQpsaXN0ZW5pbmcgcHJvY2Vzcy4gSW4gdGhpcyBz
-cGVjaWZpYyBjYXNlLCB0aGUgZnVuY3Rpb24gcHJvY2Vzc2luZyB0aGUNCnBhY2tldCB2aXJ0aW9f
-dHJhbnNwb3J0X3JlY3ZfcGt0KCkgd2lsbCBmaW5kIGEgYm91bmQgc29ja2V0LCB3aGljaCBtZWFu
-cw0KaXQgd2lsbCBoaXQgdGhlIHN3aXRjaCBzdGF0ZW1lbnQgY2hlY2tpbmcgZm9yIHRoZSBza19z
-dGF0ZSwgYnV0IHRoZQ0Kc3RhdGUgd29uJ3QgYmUgY2hhbmdlZCBpbnRvIFRDUF9MSVNURU4geWV0
-LCB3aGljaCBsZWFkcyB0aGUgY29kZSB0byBwaWNrDQp0aGUgZGVmYXVsdCBzdGF0ZW1lbnQuIFRo
-aXMgZGVmYXVsdCBzdGF0ZW1lbnQgd2lsbCBvbmx5IGZyZWUgdGhlIGJ1ZmZlciwNCndoaWxlIGl0
-IHNob3VsZCBhbHNvIHJlc3BvbmQgdG8gdGhlIGhvc3Qgc2lkZSwgYnkgc2VuZGluZyBhIHBhY2tl
-dCBvbg0KaXRzIFRYIHF1ZXVlLg0KDQpJbiBvcmRlciB0byBzaW1wbHkgZml4IHRoaXMgdW5mb3J0
-dW5hdGUgY2hhaW4gb2YgZXZlbnRzLCBpdCBpcyBpbXBvcnRhbnQNCnRoYXQgaW4gY2FzZSB0aGUg
-ZGVmYXVsdCBzdGF0ZW1lbnQgaXMgZW50ZXJlZCwgYW5kIGJlY2F1c2UgYXQgdGhpcyBzdGFnZQ0K
-d2Uga25vdyB0aGUgaG9zdCBzaWRlIGlzIHdhaXRpbmcgZm9yIGFuIGFuc3dlciwgd2UgbXVzdCBz
-ZW5kIGJhY2sgYQ0KcGFja2V0IGNvbnRhaW5pbmcgdGhlIG9wZXJhdGlvbiBWSVJUSU9fVlNPQ0tf
-T1BfUlNULg0KDQpPbmUgY291bGQgc2F5IHRoYXQgYSBwcm9wZXIgdGltZW91dCBtZWNoYW5pc20g
-b24gdGhlIGhvc3Qgc2lkZSB3aWxsIGJlDQplbm91Z2ggdG8gYXZvaWQgdGhlIGJhY2tlbmQgdG8g
-aGFuZy4gQnV0IHRoZSBwb2ludCBvZiB0aGlzIHBhdGNoIGlzIHRvDQplbnN1cmUgdGhlIG5vcm1h
-bCB1c2UgY2FzZSB3aWxsIGJlIHByb3ZpZGVkIHdpdGggcHJvcGVyIHJlc3BvbnNpdmVuZXNzDQp3
-aGVuIGl0IGNvbWVzIHRvIGVzdGFibGlzaGluZyB0aGUgY29ubmVjdGlvbi4NCg0KU2lnbmVkLW9m
-Zi1ieTogU2ViYXN0aWVuIEJvZXVmIDxzZWJhc3RpZW4uYm9ldWZAaW50ZWwuY29tPg0KLS0tDQog
-bmV0L3Ztd192c29jay92aXJ0aW9fdHJhbnNwb3J0X2NvbW1vbi5jIHwgIDEgKw0KIHRvb2xzL3Rl
-c3RpbmcvdnNvY2svdnNvY2tfdGVzdC5jICAgICAgICB8IDc3ICsrKysrKysrKysrKysrKysrKysr
-KysrKysNCiAyIGZpbGVzIGNoYW5nZWQsIDc4IGluc2VydGlvbnMoKykNCg0KZGlmZiAtLWdpdCBh
-L25ldC92bXdfdnNvY2svdmlydGlvX3RyYW5zcG9ydF9jb21tb24uYyBiL25ldC92bXdfdnNvY2sv
-dmlydGlvX3RyYW5zcG9ydF9jb21tb24uYw0KaW5kZXggZDlmMGM5YzU0MjVhLi4yZjY5NjEyNGJh
-YjYgMTAwNjQ0DQotLS0gYS9uZXQvdm13X3Zzb2NrL3ZpcnRpb190cmFuc3BvcnRfY29tbW9uLmMN
-CisrKyBiL25ldC92bXdfdnNvY2svdmlydGlvX3RyYW5zcG9ydF9jb21tb24uYw0KQEAgLTExNTMs
-NiArMTE1Myw3IEBAIHZvaWQgdmlydGlvX3RyYW5zcG9ydF9yZWN2X3BrdChzdHJ1Y3QgdmlydGlv
-X3RyYW5zcG9ydCAqdCwNCiAJCXZpcnRpb190cmFuc3BvcnRfZnJlZV9wa3QocGt0KTsNCiAJCWJy
-ZWFrOw0KIAlkZWZhdWx0Og0KKwkJKHZvaWQpdmlydGlvX3RyYW5zcG9ydF9yZXNldF9ub19zb2Nr
-KHQsIHBrdCk7DQogCQl2aXJ0aW9fdHJhbnNwb3J0X2ZyZWVfcGt0KHBrdCk7DQogCQlicmVhazsN
-CiAJfQ0KZGlmZiAtLWdpdCBhL3Rvb2xzL3Rlc3RpbmcvdnNvY2svdnNvY2tfdGVzdC5jIGIvdG9v
-bHMvdGVzdGluZy92c29jay92c29ja190ZXN0LmMNCmluZGV4IDFkOGI5M2YxYWYzMS4uNWE0ZmI4
-MGZhODMyIDEwMDY0NA0KLS0tIGEvdG9vbHMvdGVzdGluZy92c29jay92c29ja190ZXN0LmMNCisr
-KyBiL3Rvb2xzL3Rlc3RpbmcvdnNvY2svdnNvY2tfdGVzdC5jDQpAQCAtNTUsNiArNTUsNzggQEAg
-c3RhdGljIHZvaWQgdGVzdF9zdHJlYW1fY29ubmVjdGlvbl9yZXNldChjb25zdCBzdHJ1Y3QgdGVz
-dF9vcHRzICpvcHRzKQ0KIAljbG9zZShmZCk7DQogfQ0KIA0KK3N0YXRpYyB2b2lkIHRlc3Rfc3Ry
-ZWFtX2JpbmRfb25seV9jbGllbnQoY29uc3Qgc3RydWN0IHRlc3Rfb3B0cyAqb3B0cykNCit7DQor
-CXVuaW9uIHsNCisJCXN0cnVjdCBzb2NrYWRkciBzYTsNCisJCXN0cnVjdCBzb2NrYWRkcl92bSBz
-dm07DQorCX0gYWRkciA9IHsNCisJCS5zdm0gPSB7DQorCQkJLnN2bV9mYW1pbHkgPSBBRl9WU09D
-SywNCisJCQkuc3ZtX3BvcnQgPSAxMjM0LA0KKwkJCS5zdm1fY2lkID0gb3B0cy0+cGVlcl9jaWQs
-DQorCQl9LA0KKwl9Ow0KKwlpbnQgcmV0Ow0KKwlpbnQgZmQ7DQorDQorCS8qIFdhaXQgZm9yIHRo
-ZSBzZXJ2ZXIgdG8gYmUgcmVhZHkgKi8NCisJY29udHJvbF9leHBlY3RsbigiQklORCIpOw0KKw0K
-KwlmZCA9IHNvY2tldChBRl9WU09DSywgU09DS19TVFJFQU0sIDApOw0KKw0KKwl0aW1lb3V0X2Jl
-Z2luKFRJTUVPVVQpOw0KKwlkbyB7DQorCQlyZXQgPSBjb25uZWN0KGZkLCAmYWRkci5zYSwgc2l6
-ZW9mKGFkZHIuc3ZtKSk7DQorCQl0aW1lb3V0X2NoZWNrKCJjb25uZWN0Iik7DQorCX0gd2hpbGUg
-KHJldCA8IDAgJiYgZXJybm8gPT0gRUlOVFIpOw0KKwl0aW1lb3V0X2VuZCgpOw0KKw0KKwlpZiAo
-cmV0ICE9IC0xKSB7DQorCQlmcHJpbnRmKHN0ZGVyciwgImV4cGVjdGVkIGNvbm5lY3QoMikgZmFp
-bHVyZSwgZ290ICVkXG4iLCByZXQpOw0KKwkJZXhpdChFWElUX0ZBSUxVUkUpOw0KKwl9DQorCWlm
-IChlcnJubyAhPSBFQ09OTlJFU0VUKSB7DQorCQlmcHJpbnRmKHN0ZGVyciwgInVuZXhwZWN0ZWQg
-Y29ubmVjdCgyKSBlcnJubyAlZFxuIiwgZXJybm8pOw0KKwkJZXhpdChFWElUX0ZBSUxVUkUpOw0K
-Kwl9DQorDQorCS8qIE5vdGlmeSB0aGUgc2VydmVyIHRoYXQgdGhlIGNsaWVudCBoYXMgZmluaXNo
-ZWQgKi8NCisJY29udHJvbF93cml0ZWxuKCJET05FIik7DQorDQorCWNsb3NlKGZkKTsNCit9DQor
-DQorc3RhdGljIHZvaWQgdGVzdF9zdHJlYW1fYmluZF9vbmx5X3NlcnZlcihjb25zdCBzdHJ1Y3Qg
-dGVzdF9vcHRzICpvcHRzKQ0KK3sNCisJdW5pb24gew0KKwkJc3RydWN0IHNvY2thZGRyIHNhOw0K
-KwkJc3RydWN0IHNvY2thZGRyX3ZtIHN2bTsNCisJfSBhZGRyID0gew0KKwkJLnN2bSA9IHsNCisJ
-CQkuc3ZtX2ZhbWlseSA9IEFGX1ZTT0NLLA0KKwkJCS5zdm1fcG9ydCA9IDEyMzQsDQorCQkJLnN2
-bV9jaWQgPSBWTUFERFJfQ0lEX0FOWSwNCisJCX0sDQorCX07DQorCWludCBmZDsNCisNCisJZmQg
-PSBzb2NrZXQoQUZfVlNPQ0ssIFNPQ0tfU1RSRUFNLCAwKTsNCisNCisJaWYgKGJpbmQoZmQsICZh
-ZGRyLnNhLCBzaXplb2YoYWRkci5zdm0pKSA8IDApIHsNCisJCXBlcnJvcigiYmluZCIpOw0KKwkJ
-ZXhpdChFWElUX0ZBSUxVUkUpOw0KKwl9DQorDQorCS8qIE5vdGlmeSB0aGUgY2xpZW50IHRoYXQg
-dGhlIHNlcnZlciBpcyByZWFkeSAqLw0KKwljb250cm9sX3dyaXRlbG4oIkJJTkQiKTsNCisNCisJ
-LyogV2FpdCBmb3IgdGhlIGNsaWVudCB0byBmaW5pc2ggKi8NCisJY29udHJvbF9leHBlY3Rsbigi
-RE9ORSIpOw0KKw0KKwljbG9zZShmZCk7DQorfQ0KKw0KIHN0YXRpYyB2b2lkIHRlc3Rfc3RyZWFt
-X2NsaWVudF9jbG9zZV9jbGllbnQoY29uc3Qgc3RydWN0IHRlc3Rfb3B0cyAqb3B0cykNCiB7DQog
-CWludCBmZDsNCkBAIC0yMTIsNiArMjg0LDExIEBAIHN0YXRpYyBzdHJ1Y3QgdGVzdF9jYXNlIHRl
-c3RfY2FzZXNbXSA9IHsNCiAJCS5uYW1lID0gIlNPQ0tfU1RSRUFNIGNvbm5lY3Rpb24gcmVzZXQi
-LA0KIAkJLnJ1bl9jbGllbnQgPSB0ZXN0X3N0cmVhbV9jb25uZWN0aW9uX3Jlc2V0LA0KIAl9LA0K
-Kwl7DQorCQkubmFtZSA9ICJTT0NLX1NUUkVBTSBiaW5kIG9ubHkiLA0KKwkJLnJ1bl9jbGllbnQg
-PSB0ZXN0X3N0cmVhbV9iaW5kX29ubHlfY2xpZW50LA0KKwkJLnJ1bl9zZXJ2ZXIgPSB0ZXN0X3N0
-cmVhbV9iaW5kX29ubHlfc2VydmVyLA0KKwl9LA0KIAl7DQogCQkubmFtZSA9ICJTT0NLX1NUUkVB
-TSBjbGllbnQgY2xvc2UiLA0KIAkJLnJ1bl9jbGllbnQgPSB0ZXN0X3N0cmVhbV9jbGllbnRfY2xv
-c2VfY2xpZW50LA0KLS0gDQoyLjIwLjENCg0KLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0t
-LS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tCkludGVsIENvcnBvcmF0aW9u
-IFNBUyAoRnJlbmNoIHNpbXBsaWZpZWQgam9pbnQgc3RvY2sgY29tcGFueSkKUmVnaXN0ZXJlZCBo
-ZWFkcXVhcnRlcnM6ICJMZXMgTW9udGFsZXRzIi0gMiwgcnVlIGRlIFBhcmlzLCAKOTIxOTYgTWV1
-ZG9uIENlZGV4LCBGcmFuY2UKUmVnaXN0cmF0aW9uIE51bWJlcjogIDMwMiA0NTYgMTk5IFIuQy5T
-LiBOQU5URVJSRQpDYXBpdGFsOiA0LDU3MiwwMDAgRXVyb3MKClRoaXMgZS1tYWlsIGFuZCBhbnkg
-YXR0YWNobWVudHMgbWF5IGNvbnRhaW4gY29uZmlkZW50aWFsIG1hdGVyaWFsIGZvcgp0aGUgc29s
-ZSB1c2Ugb2YgdGhlIGludGVuZGVkIHJlY2lwaWVudChzKS4gQW55IHJldmlldyBvciBkaXN0cmli
-dXRpb24KYnkgb3RoZXJzIGlzIHN0cmljdGx5IHByb2hpYml0ZWQuIElmIHlvdSBhcmUgbm90IHRo
-ZSBpbnRlbmRlZApyZWNpcGllbnQsIHBsZWFzZSBjb250YWN0IHRoZSBzZW5kZXIgYW5kIGRlbGV0
-ZSBhbGwgY29waWVzLgo=
+On Thu, 13 Feb 2020 16:54:07 +0000 Or Gerlitz wrote:
+> By the time of the down event, the netdevice stop ndo was
+> already called and the nic driver is likely to destroy the HW
+> objects/constructs which are used for the tls_dev_resync op.
+> 
+> Instead, act on the going down event which is triggered before
+> the stop ndo.
+>
+> Fixes: e8f69799810c ("net/tls: Add generic NIC offload infrastructure")
+> Signed-off-by: Or Gerlitz <ogerlitz@mellanox.com>
+> ---
+> 
+> compile tested only.
 
+For a fix that you have hardware to test that is a little 
+disappointing :(
+
+> # vim net/core/dev.c +1555
+>  *	This function moves an active device into down state. A
+>  *	%NETDEV_GOING_DOWN is sent to the netdev notifier chain. The device
+>  *	is then deactivated and finally a %NETDEV_DOWN is sent to the notifier chain.
+> [..]
+> void dev_close(struct net_device *dev)
+
+As is quoting a comment rather than justifying changes based on the
+code.
+
+> diff --git a/net/tls/tls_device.c b/net/tls/tls_device.c
+> index 1ba5a92832bb..457c4b8352d8 100644
+> --- a/net/tls/tls_device.c
+> +++ b/net/tls/tls_device.c
+> @@ -1246,7 +1246,7 @@ static int tls_dev_event(struct notifier_block *this, unsigned long event,
+>  			return NOTIFY_DONE;
+>  		else
+>  			return NOTIFY_BAD;
+> -	case NETDEV_DOWN:
+> +	case NETDEV_GOING_DOWN:
+
+Now we'll have two race conditions. 1. Traffic is still running while
+we remove the connection state. 2. We clean out the state and then
+close the device. Between the two new connections may be installed.
+
+I think it's an inherently racy to only be able to perform clean up 
+while the device is still up.
+
+>  		return tls_device_down(dev);
+>  	}
+>  	return NOTIFY_DONE;
