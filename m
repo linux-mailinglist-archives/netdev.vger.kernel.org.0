@@ -2,76 +2,118 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 1F9C515C2C8
-	for <lists+netdev@lfdr.de>; Thu, 13 Feb 2020 16:39:01 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B7A7615C291
+	for <lists+netdev@lfdr.de>; Thu, 13 Feb 2020 16:35:53 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2387991AbgBMPah (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 13 Feb 2020 10:30:37 -0500
-Received: from mail.kernel.org ([198.145.29.99]:34072 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728808AbgBMPag (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 13 Feb 2020 10:30:36 -0500
-Received: from kicinski-fedora-PC1C0HJN (mobile-166-170-39-42.mycingular.net [166.170.39.42])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 2F4982465D;
-        Thu, 13 Feb 2020 15:30:36 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1581607836;
-        bh=5o3xb8FrlPLpSSQuBTDmkQAgYT/me+gGXdkm+ieNt2A=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=txSJtbI9FMecm5whhPXQscV4wsoWQr4yTHypdXzmaRKMcA+a5pI217H/VlYmo5Lrd
-         wrniku0+6gI6BQKO6D+WfJonDBTjOA+rFhM4g4EjSPhtyiIQxCQcSsdrXfEIM3iD5z
-         2Vn9Mcz5YvQBLbksXmmUUR3pckqomxpoZRTudN4I=
-Date:   Thu, 13 Feb 2020 07:30:31 -0800
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     rohit maheshwari <rohitm@chelsio.com>
-Cc:     davem@davemloft.net, netdev@vger.kernel.org,
-        linux-crypto@vger.kernel.org
-Subject: Re: [net] net/tls: Fix to avoid gettig invalid tls record
-Message-ID: <20200213072921.232ac66c@kicinski-fedora-PC1C0HJN>
-In-Reply-To: <6a47e7aa-c98a-ede5-f0d6-ce2bdc4875e8@chelsio.com>
-References: <20200212071630.26650-1-rohitm@chelsio.com>
- <20200212200945.34460c3a@cakuba.hsd1.ca.comcast.net>
- <6a47e7aa-c98a-ede5-f0d6-ce2bdc4875e8@chelsio.com>
+        id S1728709AbgBMPes (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 13 Feb 2020 10:34:48 -0500
+Received: from us-smtp-delivery-1.mimecast.com ([207.211.31.120]:56953 "EHLO
+        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+        with ESMTP id S1727511AbgBMPdG (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 13 Feb 2020 10:33:06 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1581607985;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=RFvkSpm4IwLd01HTkzruRySmSPs5no9cLpZYqP7h4Y8=;
+        b=TmRkcMHBClzRLkZUf8CILrLro4guakeKKayoq6Bq4pXEJWnBcznUiS7PSjv2PtDx5blck9
+        E+qgQHQGlxru++MJSf3CyOugDU4eXiQQnJjQjdpJMufcLkG3l7yJkWnyvF97w0F8C9kddZ
+        NTrDz69Dvkc0JK1BHow8zi/AALYBof0=
+Received: from mail-lj1-f198.google.com (mail-lj1-f198.google.com
+ [209.85.208.198]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-247-FS36aJkGMm25-P1LwcjhiQ-1; Thu, 13 Feb 2020 10:32:04 -0500
+X-MC-Unique: FS36aJkGMm25-P1LwcjhiQ-1
+Received: by mail-lj1-f198.google.com with SMTP id y24so2237210ljc.19
+        for <netdev@vger.kernel.org>; Thu, 13 Feb 2020 07:32:04 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
+         :message-id:mime-version;
+        bh=RFvkSpm4IwLd01HTkzruRySmSPs5no9cLpZYqP7h4Y8=;
+        b=fsBXKTeNZexNJWcMR4QO4AS5V+o4ympy/qVUiUiwsJT0FAkWRLIsy+AwR78jhbEM+2
+         5MR/KNoEpny4I9GM/tmxKmNZWdBN1hYIUvYJDtfC1QmGK3BPIR3jJwbp3+TnsKp4xllL
+         XjAsEnp80/lW2UgG+sDw50VTGdFa9VrcNSBIN0k/5sjnU8GJpSZczZtfbtHS1ha+VbRp
+         lFxHIGm0AaWvN1p6AOZvYXJKdeuEiWjdDvqWcKkexXM29LfkDr7vc2Wq7N5cztwO1nye
+         G8CO29Eqs7UeyDxJf2BBJ6dGlHRG8B91jxzO1xnEKm1NKNqrTQX3+62GIXrqG/1S1Nn3
+         /84g==
+X-Gm-Message-State: APjAAAXJO50pcdrq5VSra5UIbjSoNSYoSMstP79HV0kf0LzvWd0UfvIM
+        LM4wlEbjKPb1pj/E35f20CcBu+hfuCOpCChUOg5JzfV577s12vTUl02yuWI0pJtzMsZ/NhymWOy
+        jHwdNibUsGSo8nEoZ
+X-Received: by 2002:a2e:7818:: with SMTP id t24mr11193081ljc.195.1581607923162;
+        Thu, 13 Feb 2020 07:32:03 -0800 (PST)
+X-Google-Smtp-Source: APXvYqw0y9boF3lVrvrxVIhdVwRR6fhl5800oZPJ3Twbe8XRUDRYmViuzFOpaQTcoR3Z8ImnxC8Dfw==
+X-Received: by 2002:a2e:7818:: with SMTP id t24mr11193064ljc.195.1581607922961;
+        Thu, 13 Feb 2020 07:32:02 -0800 (PST)
+Received: from alrua-x1.borgediget.toke.dk ([2a0c:4d80:42:443::2])
+        by smtp.gmail.com with ESMTPSA id a12sm1699198ljk.48.2020.02.13.07.32.02
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 13 Feb 2020 07:32:02 -0800 (PST)
+Received: by alrua-x1.borgediget.toke.dk (Postfix, from userid 1000)
+        id 9103B180365; Thu, 13 Feb 2020 16:32:01 +0100 (CET)
+From:   Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
+To:     Eelco Chaudron <echaudro@redhat.com>, bpf@vger.kernel.org
+Cc:     davem@davemloft.net, netdev@vger.kernel.org, ast@kernel.org,
+        daniel@iogearbox.net, kafai@fb.com, songliubraving@fb.com,
+        yhs@fb.com, andriin@fb.com
+Subject: Re: [PATCH bpf-next v2] libbpf: Add support for dynamic program attach target
+In-Reply-To: <158160616195.80320.5636088335810242866.stgit@xdp-tutorial>
+References: <158160616195.80320.5636088335810242866.stgit@xdp-tutorial>
+X-Clacks-Overhead: GNU Terry Pratchett
+Date:   Thu, 13 Feb 2020 16:32:01 +0100
+Message-ID: <87h7zuh5am.fsf@toke.dk>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 13 Feb 2020 12:25:36 +0530 rohit maheshwari wrote:
-> On 13/02/20 9:39 AM, Jakub Kicinski wrote:
-> >> diff --git a/net/tls/tls_device.c b/net/tls/tls_device.c
-> >> index cd91ad812291..2898517298bf 100644
-> >> --- a/net/tls/tls_device.c
-> >> +++ b/net/tls/tls_device.c
-> >> @@ -602,7 +602,8 @@ struct tls_record_info *tls_get_record(struct
-> >> tls_offload_context_tx *context, */
-> >>   		info =
-> >> list_first_entry_or_null(&context->records_list, struct
-> >> tls_record_info, list);
-> >> -		if (!info)
-> >> +		/* return NULL if seq number even before the 1st
-> >> entry. */
-> >> +		if (!info || before(seq, info->end_seq -
-> >> info->len))  
-> > Is it not more appropriate to use between() in the actual comparison
-> > below? I feel like with this patch we can get false negatives.  
-> 
-> If we use between(), though record doesn't exist, we still go and 
-> compare each record,
-> 
-> which I think, should actually be avoided.
+Eelco Chaudron <echaudro@redhat.com> writes:
 
-You can between() first and last element on the list at the very start 
-of the search.
+> Currently when you want to attach a trace program to a bpf program
+> the section name needs to match the tracepoint/function semantics.
+>
+> However the addition of the bpf_program__set_attach_target() API
+> allows you to specify the tracepoint/function dynamically.
+>
+> The call flow would look something like this:
+>
+>   xdp_fd = bpf_prog_get_fd_by_id(id);
+>   trace_obj = bpf_object__open_file("func.o", NULL);
+>   prog = bpf_object__find_program_by_title(trace_obj,
+>                                            "fentry/myfunc");
+>   bpf_program__set_expected_attach_type(prog, BPF_TRACE_FENTRY);
+>   bpf_program__set_attach_target(prog, xdp_fd,
+>                                  "xdpfilt_blk_all");
+>   bpf_object__load(trace_obj)
+>
+> Signed-off-by: Eelco Chaudron <echaudro@redhat.com>
 
-> >>   			return NULL;
-> >>   		record_sn = context->unacked_record_sn;
-> >>   	}  
-> > If you post a v2 please add a Fixes tag and CC maintainers of this
-> > code.  
+Hmm, one question about the attach_prog_fd usage:
+
+> +int bpf_program__set_attach_target(struct bpf_program *prog,
+> +				   int attach_prog_fd,
+> +				   const char *attach_func_name)
+> +{
+> +	int btf_id;
+> +
+> +	if (!prog || attach_prog_fd < 0 || !attach_func_name)
+> +		return -EINVAL;
+> +
+> +	if (attach_prog_fd)
+> +		btf_id = libbpf_find_prog_btf_id(attach_func_name,
+> +						 attach_prog_fd);
+> +	else
+> +		btf_id = __find_vmlinux_btf_id(prog->obj->btf_vmlinux,
+> +					       attach_func_name,
+> +					       prog->expected_attach_type);
+
+This implies that no one would end up using fd 0 as a legitimate prog
+fd. This already seems to be the case for the existing code, but is that
+really a safe assumption? Couldn't a caller that closes fd 0 (for
+instance while forking) end up having it reused? Seems like this could
+result in weird hard-to-debug bugs?
+
+-Toke
 
