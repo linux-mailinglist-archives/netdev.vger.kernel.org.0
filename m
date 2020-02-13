@@ -2,170 +2,183 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id C662815BD75
-	for <lists+netdev@lfdr.de>; Thu, 13 Feb 2020 12:12:53 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 10D6015BD7A
+	for <lists+netdev@lfdr.de>; Thu, 13 Feb 2020 12:14:03 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729823AbgBMLMv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 13 Feb 2020 06:12:51 -0500
-Received: from ivanoab7.miniserver.com ([37.128.132.42]:47738 "EHLO
-        www.kot-begemot.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726232AbgBMLMv (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 13 Feb 2020 06:12:51 -0500
-Received: from tun252.jain.kot-begemot.co.uk ([192.168.18.6] helo=jain.kot-begemot.co.uk)
-        by www.kot-begemot.co.uk with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <anton.ivanov@cambridgegreys.com>)
-        id 1j2CQJ-00081T-WC; Thu, 13 Feb 2020 11:12:48 +0000
-Received: from jain.kot-begemot.co.uk ([192.168.3.3])
-        by jain.kot-begemot.co.uk with esmtp (Exim 4.92)
-        (envelope-from <anton.ivanov@cambridgegreys.com>)
-        id 1j2CQH-0007rt-Ni; Thu, 13 Feb 2020 11:12:47 +0000
-Subject: Re: [PATCH] virtio: Work around frames incorrectly marked as gso
-To:     "Michael S. Tsirkin" <mst@redhat.com>
-Cc:     netdev@vger.kernel.org, Jason Wang <jasowang@redhat.com>,
-        linux-um@lists.infradead.org,
-        virtualization@lists.linux-foundation.org
-References: <20191209104824.17059-1-anton.ivanov@cambridgegreys.com>
- <57230228-7030-c65f-a24f-910ca52bbe9e@cambridgegreys.com>
- <f78bfe6e-2ffc-3734-9618-470f1afea0c6@redhat.com>
- <918222d9-816a-be70-f8af-b8dfcb586240@cambridgegreys.com>
- <20200211053502-mutt-send-email-mst@kernel.org>
- <9547228b-aa93-f2b6-6fdc-8d33cde3716a@cambridgegreys.com>
- <20200213045937-mutt-send-email-mst@kernel.org>
-From:   Anton Ivanov <anton.ivanov@cambridgegreys.com>
-Message-ID: <54692f06-f687-8bd3-7a1b-3dac3e79110b@cambridgegreys.com>
-Date:   Thu, 13 Feb 2020 11:12:45 +0000
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.4.1
-MIME-Version: 1.0
-In-Reply-To: <20200213045937-mutt-send-email-mst@kernel.org>
-Content-Type: text/plain; charset=utf-8; format=flowed
+        id S1729872AbgBMLN7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 13 Feb 2020 06:13:59 -0500
+Received: from mga03.intel.com ([134.134.136.65]:13458 "EHLO mga03.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726232AbgBMLN7 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 13 Feb 2020 06:13:59 -0500
+X-Amp-Result: SKIPPED(no attachment in message)
+X-Amp-File-Uploaded: False
+Received: from fmsmga002.fm.intel.com ([10.253.24.26])
+  by orsmga103.jf.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 13 Feb 2020 03:13:57 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.70,436,1574150400"; 
+   d="scan'208";a="267040890"
+Received: from orsmsx101.amr.corp.intel.com ([10.22.225.128])
+  by fmsmga002.fm.intel.com with ESMTP; 13 Feb 2020 03:13:56 -0800
+Received: from orsmsx157.amr.corp.intel.com (10.22.240.23) by
+ ORSMSX101.amr.corp.intel.com (10.22.225.128) with Microsoft SMTP Server (TLS)
+ id 14.3.439.0; Thu, 13 Feb 2020 03:13:56 -0800
+Received: from orsmsx115.amr.corp.intel.com ([169.254.4.100]) by
+ ORSMSX157.amr.corp.intel.com ([169.254.9.95]) with mapi id 14.03.0439.000;
+ Thu, 13 Feb 2020 03:13:55 -0800
+From:   "Boeuf, Sebastien" <sebastien.boeuf@intel.com>
+To:     "sgarzare@redhat.com" <sgarzare@redhat.com>
+CC:     "stefanha@redhat.com" <stefanha@redhat.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "davem@davemloft.net" <davem@davemloft.net>
+Subject: Re: [PATCH] net: virtio_vsock: Fix race condition between bind and
+ listen
+Thread-Topic: [PATCH] net: virtio_vsock: Fix race condition between bind and
+ listen
+Thread-Index: AQHV4k47o+FvdyeZdUa5OLpq2zu4PqgZZQkAgAAC0ACAAAitgIAABgwAgAAFMoCAAAMUAA==
+Date:   Thu, 13 Feb 2020 11:13:55 +0000
+Message-ID: <efccb718a50a91e31807ac93fee58852ef334434.camel@intel.com>
+References: <668b0eda8823564cd604b1663dc53fbaece0cd4e.camel@intel.com>
+         <20200213094130.vehzkr4a3pnoiogr@steredhat>
+         <3448e588f11dad913e93dfce8031fbd60ba4c85b.camel@intel.com>
+         <20200213102237.uyhfv5g2td5ayg2b@steredhat>
+         <1d4c3958d8b75756341548e7d51ccf42397c2d27.camel@intel.com>
+         <20200213110251.2unj3sykwpku6dd7@steredhat>
+In-Reply-To: <20200213110251.2unj3sykwpku6dd7@steredhat>
+Accept-Language: en-US
 Content-Language: en-US
-Content-Transfer-Encoding: 8bit
-X-Spam-Score: -1.0
-X-Spam-Score: -1.0
-X-Clacks-Overhead: GNU Terry Pratchett
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-originating-ip: [10.252.24.191]
+Content-Type: text/plain; charset="utf-8"
+Content-ID: <C397B99C8E613547AAE4642352EDFA69@intel.com>
+MIME-Version: 1.0
+Content-Transfer-Encoding: base64
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+T24gVGh1LCAyMDIwLTAyLTEzIGF0IDEyOjAyICswMTAwLCBTdGVmYW5vIEdhcnphcmVsbGEgd3Jv
+dGU6DQo+IE9uIFRodSwgRmViIDEzLCAyMDIwIGF0IDEwOjQ0OjE4QU0gKzAwMDAsIEJvZXVmLCBT
+ZWJhc3RpZW4gd3JvdGU6DQo+ID4gT24gVGh1LCAyMDIwLTAyLTEzIGF0IDExOjIyICswMTAwLCBT
+dGVmYW5vIEdhcnphcmVsbGEgd3JvdGU6DQo+ID4gPiBPbiBUaHUsIEZlYiAxMywgMjAyMCBhdCAw
+OTo1MTozNkFNICswMDAwLCBCb2V1ZiwgU2ViYXN0aWVuIHdyb3RlOg0KPiA+ID4gPiBIaSBTdGVm
+YW5vLA0KPiA+ID4gPiANCj4gPiA+ID4gT24gVGh1LCAyMDIwLTAyLTEzIGF0IDEwOjQxICswMTAw
+LCBTdGVmYW5vIEdhcnphcmVsbGEgd3JvdGU6DQo+ID4gPiA+ID4gSGkgU2ViYXN0aWVuLA0KPiA+
+ID4gPiA+IA0KPiA+ID4gPiA+IE9uIFRodSwgRmViIDEzLCAyMDIwIGF0IDA5OjE2OjExQU0gKzAw
+MDAsIEJvZXVmLCBTZWJhc3RpZW4NCj4gPiA+ID4gPiB3cm90ZToNCj4gPiA+ID4gPiA+IEZyb20g
+MmYxMjc2ZDAyZjVhMTJkODVhZWM1YWRjMTFkZmUxZWFiN2UxNjBkNiBNb24gU2VwIDE3DQo+ID4g
+PiA+ID4gPiAwMDowMDowMA0KPiA+ID4gPiA+ID4gMjAwMQ0KPiA+ID4gPiA+ID4gRnJvbTogU2Vi
+YXN0aWVuIEJvZXVmIDxzZWJhc3RpZW4uYm9ldWZAaW50ZWwuY29tPg0KPiA+ID4gPiA+ID4gRGF0
+ZTogVGh1LCAxMyBGZWIgMjAyMCAwODo1MDozOCArMDEwMA0KPiA+ID4gPiA+ID4gU3ViamVjdDog
+W1BBVENIXSBuZXQ6IHZpcnRpb192c29jazogRml4IHJhY2UgY29uZGl0aW9uDQo+ID4gPiA+ID4g
+PiBiZXR3ZWVuDQo+ID4gPiA+ID4gPiBiaW5kDQo+ID4gPiA+ID4gPiBhbmQgbGlzdGVuDQo+ID4g
+PiA+ID4gPiANCj4gPiA+ID4gPiA+IFdoZW5ldmVyIHRoZSB2c29jayBiYWNrZW5kIG9uIHRoZSBo
+b3N0IHNlbmRzIGEgcGFja2V0DQo+ID4gPiA+ID4gPiB0aHJvdWdoDQo+ID4gPiA+ID4gPiB0aGUN
+Cj4gPiA+ID4gPiA+IFJYDQo+ID4gPiA+ID4gPiBxdWV1ZSwgaXQgZXhwZWN0cyBhbiBhbnN3ZXIg
+b24gdGhlIFRYIHF1ZXVlLiBVbmZvcnR1bmF0ZWx5LA0KPiA+ID4gPiA+ID4gdGhlcmUNCj4gPiA+
+ID4gPiA+IGlzIG9uZQ0KPiA+ID4gPiA+ID4gY2FzZSB3aGVyZSB0aGUgaG9zdCBzaWRlIHdpbGwg
+aGFuZyB3YWl0aW5nIGZvciB0aGUgYW5zd2VyDQo+ID4gPiA+ID4gPiBhbmQNCj4gPiA+ID4gPiA+
+IHdpbGwNCj4gPiA+ID4gPiA+IGVmZmVjdGl2ZWx5IG5ldmVyIHJlY292ZXIuDQo+ID4gPiA+ID4g
+DQo+ID4gPiA+ID4gRG8geW91IGhhdmUgYSB0ZXN0IGNhc2U/DQo+ID4gPiA+IA0KPiA+ID4gPiBZ
+ZXMgSSBkby4gVGhpcyBoYXMgYmVlbiBhIGJ1ZyB3ZSd2ZSBiZWVuIGludmVzdGlnYXRpbmcgb24g
+S2F0YQ0KPiA+ID4gPiBDb250YWluZXJzIGZvciBxdWl0ZSBzb21lIHRpbWUgbm93LiBUaGlzIHdh
+cyBoYXBwZW5pbmcgd2hlbg0KPiA+ID4gPiB1c2luZw0KPiA+ID4gPiBLYXRhDQo+ID4gPiA+IGFs
+b25nIHdpdGggQ2xvdWQtSHlwZXJ2aXNvciAod2hpY2ggcmVseSBvbiB0aGUgaHlicmlkIHZzb2Nr
+DQo+ID4gPiA+IGltcGxlbWVudGF0aW9uIGZyb20gRmlyZWNyYWNrZXIpLiBUaGUgdGhpbmcgaXMs
+IHRoaXMgYnVnIGlzDQo+ID4gPiA+IHZlcnkNCj4gPiA+ID4gaGFyZA0KPiA+ID4gPiB0byByZXBy
+b2R1Y2UgYW5kIHdhcyBoYXBwZW5pbmcgZm9yIEthdGEgYmVjYXVzZSBvZiB0aGUNCj4gPiA+ID4g
+Y29ubmVjdGlvbg0KPiA+ID4gPiBzdHJhdGVneS4gVGhlIGthdGEtcnVudGltZSB0cmllcyB0byBj
+b25uZWN0IGEgbWlsbGlvbiB0aW1lcw0KPiA+ID4gPiBhZnRlcg0KPiA+ID4gPiBpdA0KPiA+ID4g
+PiBzdGFydGVkIHRoZSBWTSwganVzdCBob3BpbmcgdGhlIGthdGEtYWdlbnQgd2lsbCBzdGFydCB0
+byBsaXN0ZW4NCj4gPiA+ID4gZnJvbQ0KPiA+ID4gPiB0aGUgZ3Vlc3Qgc2lkZSBhdCBzb21lIHBv
+aW50Lg0KPiA+ID4gDQo+ID4gPiBNYXliZSBpcyByZWxhdGVkIHRvIHNvbWV0aGluZyBlbHNlLiBJ
+IHRyaWVkIHRoZSBmb2xsb3dpbmcgd2hpY2gNCj4gPiA+IHNob3VsZCBiZQ0KPiA+ID4geW91ciBj
+YXNlIHNpbXBsaWZpZWQgKElJVUMpOg0KPiA+ID4gDQo+ID4gPiBndWVzdCQgcHl0aG9uDQo+ID4g
+PiAgICAgaW1wb3J0IHNvY2tldA0KPiA+ID4gICAgIHMgPSBzb2NrZXQuc29ja2V0KHNvY2tldC5B
+Rl9WU09DSywgc29ja2V0LlNPQ0tfU1RSRUFNKQ0KPiA+ID4gICAgIHMuYmluZCgoc29ja2V0LlZN
+QUREUl9DSURfQU5ZLCAxMjM0KSkNCj4gPiA+IA0KPiA+ID4gaG9zdCQgcHl0aG9uDQo+ID4gPiAg
+ICAgaW1wb3J0IHNvY2tldA0KPiA+ID4gICAgIHMgPSBzb2NrZXQuc29ja2V0KHNvY2tldC5BRl9W
+U09DSywgc29ja2V0LlNPQ0tfU1RSRUFNKQ0KPiA+ID4gICAgIHMuY29ubmVjdCgoMywgMTIzNCkp
+DQo+ID4gPiANCj4gPiA+IFRyYWNlYmFjayAobW9zdCByZWNlbnQgY2FsbCBsYXN0KToNCj4gPiA+
+ICAgRmlsZSAiPHN0ZGluPiIsIGxpbmUgMSwgaW4gPG1vZHVsZT4NCj4gPiA+IFRpbWVvdXRFcnJv
+cjogW0Vycm5vIDExMF0gQ29ubmVjdGlvbiB0aW1lZCBvdXQNCj4gPiANCj4gPiBZZXMgdGhpcyBp
+cyBleGFjdGx5IHRoZSBzaW1wbGlmaWVkIGNhc2UuIEJ1dCB0aGF0J3MgdGhlIHBvaW50LCBJDQo+
+ID4gZG9uJ3QNCj4gPiB0aGluayB0aGUgdGltZW91dCBpcyB0aGUgYmVzdCB3YXkgdG8gZ28gaGVy
+ZS4gQmVjYXVzZSB0aGlzIG1lYW5zDQo+ID4gdGhhdA0KPiA+IHdoZW4gd2UgcnVuIGludG8gdGhp
+cyBjYXNlLCB0aGUgaG9zdCBzaWRlIHdpbGwgd2FpdCBmb3IgcXVpdGUgc29tZQ0KPiA+IHRpbWUN
+Cj4gPiBiZWZvcmUgcmV0cnlpbmcsIHdoaWNoIGNhbiBjYXVzZSBhIHZlcnkgbG9uZyBkZWxheSBi
+ZWZvcmUgdGhlDQo+ID4gY29tbXVuaWNhdGlvbiB3aXRoIHRoZSBndWVzdCBpcyBlc3RhYmxpc2hl
+ZC4gQnkgc2ltcGx5IGFuc3dlcmluZw0KPiA+IHRoZQ0KPiA+IGhvc3Qgd2l0aCBhIFJTVCBwYWNr
+ZXQsIHdlIGluZm9ybSBpdCB0aGF0IG5vYm9keSdzIGxpc3RlbmluZyBvbiB0aGUNCj4gPiBndWVz
+dCBzaWRlIHlldCwgdGhlcmVmb3JlIHRoZSBob3N0IHNpZGUgd2lsbCBjbG9zZSBhbmQgdHJ5IGFn
+YWluLg0KPiANCj4gWWVzLCBtYWtlIHNlbnNlLg0KPiANCj4gSSBqdXN0IHdhbnRlZCB0byBwb2lu
+dCBvdXQgdGhhdCB0aGUgaG9zdCBzaG91bGRuJ3QgZ2V0IHN0dWNrIGlmIHRoZQ0KPiBndWVzdCBk
+b2Vzbid0IHJlc3BvbmQuIFNvIGl0J3Mgd2VpcmQgdGhhdCB0aGlzIGhhcHBlbnMgYW5kIGl0IG1p
+Z2h0DQo+IGJlDQo+IHJlbGF0ZWQgdG8gc29tZSBvdGhlciBwcm9ibGVtLg0KDQpZZXMgdGhhdCdz
+IGJlY2F1c2Ugd2UncmUgdXNpbmcgdGhlIGh5YnJpZCB2c29jayBpbXBsZW1lbnRhdGlvbiBmcm9t
+DQpGaXJlY3JhY2tlci4gU28gYmFzaWNhbGx5IHRoZXkgcHJveHkgYSBVTklYIHNvY2tldCBjb25u
+ZWN0aW9uIGludG8gYQ0KVlNPQ0sgc29ja2V0LiBBbmQgdGhlIHRpbWVvdXQgaXMgbm90IGltcGxl
+bWVudGVkLiBJJ2xsIHBvaW50IHRoZW0gb3V0DQp0aGF0J3Mgc29tZXRoaW5nIGl0J2QgYmUgbmlj
+ZSB0byBoYXZlIGFsb25nIHdpdGggdGhpcyBmaXggaW4gdGhlIGd1ZXN0Lg0KDQo+IA0KPiA+ID4g
+PiA+IEluIHRoZSBob3N0LCB0aGUgYWZfdnNvY2suYzp2c29ja19zdHJlYW1fY29ubmVjdCgpIHNl
+dCBhDQo+ID4gPiA+ID4gdGltZW91dCwNCj4gPiA+ID4gPiBzbw0KPiA+ID4gPiA+IGlmDQo+ID4g
+PiA+ID4gdGhlIGhvc3QgdHJ5IHRvIGNvbm5lY3QgYmVmb3JlIHRoZSBndWVzdCBzdGFydHMgbGlz
+dGVuaW5nLA0KPiA+ID4gPiA+IHRoZQ0KPiA+ID4gPiA+IGNvbm5lY3QoKQ0KPiA+ID4gPiA+IHNo
+b3VsZCByZXR1cm4gRVRJTUVET1VUIGlmIHRoZSBndWVzdCBkb2VzIG5vdCBhbnN3ZXINCj4gPiA+
+ID4gPiBhbnl0aGluZy4NCj4gPiA+ID4gPiANCj4gPiA+ID4gPiBBbnl3YXksIG1heWJlIHRoZSBw
+YXRjaCBtYWtlIHNlbnNlIGFueXdheSwgY2hhbmdpbmcgYSBiaXQgdGhlDQo+ID4gPiA+ID4gZGVz
+Y3JpcHRpb24NCj4gPiA+ID4gPiAoaWYgdGhlIGhvc3QgY29ubmVjdCgpIHJlY2VpdmUgdGhlIEVU
+SU1FRE9VVCkuDQo+ID4gPiA+ID4gSSdtIGp1c3QgY29uY2VybmVkIHRoYXQgdGhpcyBjb2RlIGlz
+IGNvbW1vbiBiZXR3ZWVuIGd1ZXN0IGFuZA0KPiA+ID4gPiA+IGhvc3QuDQo+ID4gPiA+ID4gSWYg
+YQ0KPiA+ID4gPiA+IG1hbGljaW91cyBndWVzdCBzdGFydHMgc2VuZGluZyB1cyB3cm9uZyByZXF1
+ZXN0cywgd2Ugc3BlbmQNCj4gPiA+ID4gPiB0aW1lDQo+ID4gPiA+ID4gc2VuZGluZw0KPiA+ID4g
+PiA+IGEgcmVzZXQgcGFja2V0LiBCdXQgd2UgYWxyZWFkeSBkbyB0aGF0IGlmIHdlIGNhbid0IGZp
+bmQgdGhlDQo+ID4gPiA+ID4gYm91bmQNCj4gPiA+ID4gPiBzb2NrZXQsDQo+ID4gPiA+ID4gc28g
+aXQgbWlnaHQgbWFrZSBzZW5zZS4NCj4gPiA+ID4gDQo+ID4gPiA+IFllcyBJIGRvbid0IHRoaW5r
+IHRoaXMgaXMgZ29ubmEgY2F1c2UgbW9yZSB0cm91YmxlLCBidXQgYXQNCj4gPiA+ID4gbGVhc3Qg
+d2UNCj4gPiA+ID4gY2Fubm90IGVuZCB1cCBpbiB0aGlzIHdlaXJkIHNpdHVhdGlvbiBJIGRlc2Ny
+aWJlZC4NCj4gPiA+IA0KPiA+ID4gT2theSwgYnV0IGluIHRoZSBob3N0LCB3ZSBjYW4ndCB0cnVz
+dCB0aGUgZ3Vlc3QgdG8gYW5zd2VyLCB3ZQ0KPiA+ID4gc2hvdWxkDQo+ID4gPiBoYW5kbGUgdGhp
+cyBjYXNlIHByb3Blcmx5Lg0KPiA+IA0KPiA+IFdlbGwgSSBjYW5ub3QgYWdyZWUgbW9yZSB3aXRo
+IHRoZSAid2UgY2Fubm90IHRydXN0IHRoZSBndWVzdCINCj4gPiBwaGlsb3NvcGh5LCBidXQgaW4g
+dGhpcyBjYXNlIHRoZSB3b3JzdCB0aGluZyB0aGF0IGNhbiBoYXBwZW4gaXMgdGhlDQo+ID4gZ3Vl
+c3Qgc2hvb3RpbmcgaGltc2VsZiBpbiB0aGUgZm9vdCBiZWNhdXNlIGl0IHdvdWxkIHNpbXBseSBw
+cmV2ZW50DQo+ID4gdGhlDQo+ID4gY29ubmVjdGlvbiBmcm9tIGhhcHBlbmluZy4NCj4gPiANCj4g
+PiBBbmQgSSBhZ3JlZSBzZXR0aW5nIHVwIGEgdGltZW91dCBmcm9tIHRoZSBob3N0IHNpZGUgaXMg
+c3RpbGwgYSBnb29kDQo+ID4gaWRlYSBmb3IgcHJldmVudGluZyBmcm9tIHN1Y2ggRE9TIGF0dGFj
+ay4NCj4gPiANCj4gPiBCdXQgYXMgSSBtZW50aW9uZWQgYWJvdmUsIGluIHRoZSBub3JtYWwgdXNl
+IGNhc2UsIHRoaXMgYWxsb3dzIGZvcg0KPiA+IGJldHRlciByZXNwb25zaXZlbmVzcyB3aGVuIGl0
+IGNvbWVzIHRvIGVzdGFibGlzaCB0aGUgY29ubmVjdGlvbiBhcw0KPiA+IGZhc3QNCj4gPiBhcyBw
+b3NzaWJsZS4NCj4gDQo+IFN1cmUsIG1heWJlIHlvdSBjYW4gcmV3cml0ZSBhIGJpdCB0aGUgY29t
+bWl0ICh0aXRsZSBhbmQgYm9keSkgdG8NCj4gZXhwbGFpbg0KPiB0aGlzLg0KDQpPZiBjb3Vyc2Us
+IGxldCBtZSB3b3JrIG9uIHRoaXMuDQpIb3cgYW0gSSBzdXBwb3NlZCB0byByZXNlbmQgdGhlIHBh
+dGNoPyBTaG91bGQgSSBzZW5kIGEgbmV3IGVtYWlsIHdpdGgNCnYyIGluIHRoZSB0aXRsZT8NCg0K
+PiANCj4gPiA+ID4gSSB3YXMganVzdCBub3Qgc3VyZSBpZiB0aGUgZnVuY3Rpb24gd2Ugc2hvdWxk
+IHVzZSB0byBkbyB0aGUNCj4gPiA+ID4gcmVzZXQNCj4gPiA+ID4gc2hvdWxkIGJlIHZpcnRpb190
+cmFuc3BvcnRfcmVzZXRfbm9fc29jaygpIG9yDQo+ID4gPiA+IHZpcnRpb190cmFuc3BvcnRfcmVz
+ZXQoKQ0KPiA+ID4gPiBzaW5jZSBhdCB0aGlzIHBvaW50IHRoZSBzb2NrZXQgaXMgYWxyZWFkeSBi
+b3VuZC4NCj4gPiA+IA0KPiA+ID4gSSB0aGluayB5b3UgY2FuIHNhZmVseSB1c2UgdmlydGlvX3Ry
+YW5zcG9ydF9yZXNldCgpIGluIHRoaXMgY2FzZS4NCj4gPiANCj4gPiBJJ3ZlIGp1c3QgdHJpZWQg
+aXQgYW5kIHVuZm9ydHVuYXRlbHkgaXQgZG9lc24ndCB3b3JrLiBJIHRoaW5rDQo+ID4gdGhhdCdz
+DQo+ID4gYmVjYXVzZSB0aGUgY29ubmVjdGlvbiBoYXMgbm90IGJlZW4gcHJvcGVybHkgZXN0YWJs
+aXNoZWQgeWV0LCBzbyB3ZQ0KPiA+IGNhbm5vdCBjb25zaWRlciBiZWluZyBpbiB0aGlzIGNhc2Uu
+DQo+ID4gVXNpbmcgdmlydGlvX3RyYW5zcG9ydF9yZXNldF9ub19zb2NrKCkgc2VlbXMgbGlrZSB0
+aGUgbGVzcw0KPiA+IGludHJ1c2l2ZQ0KPiA+IGZ1bmN0aW9uIGhlcmUuDQo+IA0KPiBPaCBzb3Jy
+eSwgSSBhbHNvIHB1dCBhIGNvbW1lbnQgb24gdmlydGlvX3RyYW5zcG9ydF9yZXNldCgpIHRvIHNh
+eSB0bw0KPiB1c2UgaXQNCj4gb25seSBvbiBjb25uZWN0ZWQgc29ja2V0cyBhbmQgbm90IGxpc3Rl
+bmVycy4NCj4gSW4gdGhpcyBjYXNlIGl0J3MgYSBsaXN0ZW5lciwgc29ycnkgZm9yIHRoZSB3cm9u
+ZyBzdWdnZXN0aW9uLg0KDQpIZWhlIG5vIHdvcnJpZXMsIGF0IGxlYXN0IHdlJ3JlIG9uIHRoZSBz
+YW1lIHBhZ2UgOikNCg0KVGhhbmtzLA0KU2ViYXN0aWVuDQoNCj4gDQo+IFRoYW5rcywNCj4gU3Rl
+ZmFubw0KPiANCi0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0t
+LS0tLS0tLS0tLS0tLS0tLS0tLS0tLQpJbnRlbCBDb3Jwb3JhdGlvbiBTQVMgKEZyZW5jaCBzaW1w
+bGlmaWVkIGpvaW50IHN0b2NrIGNvbXBhbnkpClJlZ2lzdGVyZWQgaGVhZHF1YXJ0ZXJzOiAiTGVz
+IE1vbnRhbGV0cyItIDIsIHJ1ZSBkZSBQYXJpcywgCjkyMTk2IE1ldWRvbiBDZWRleCwgRnJhbmNl
+ClJlZ2lzdHJhdGlvbiBOdW1iZXI6ICAzMDIgNDU2IDE5OSBSLkMuUy4gTkFOVEVSUkUKQ2FwaXRh
+bDogNCw1NzIsMDAwIEV1cm9zCgpUaGlzIGUtbWFpbCBhbmQgYW55IGF0dGFjaG1lbnRzIG1heSBj
+b250YWluIGNvbmZpZGVudGlhbCBtYXRlcmlhbCBmb3IKdGhlIHNvbGUgdXNlIG9mIHRoZSBpbnRl
+bmRlZCByZWNpcGllbnQocykuIEFueSByZXZpZXcgb3IgZGlzdHJpYnV0aW9uCmJ5IG90aGVycyBp
+cyBzdHJpY3RseSBwcm9oaWJpdGVkLiBJZiB5b3UgYXJlIG5vdCB0aGUgaW50ZW5kZWQKcmVjaXBp
+ZW50LCBwbGVhc2UgY29udGFjdCB0aGUgc2VuZGVyIGFuZCBkZWxldGUgYWxsIGNvcGllcy4K
 
-
-On 13/02/2020 10:00, Michael S. Tsirkin wrote:
-> On Wed, Feb 12, 2020 at 05:38:09PM +0000, Anton Ivanov wrote:
->>
->>
->> On 11/02/2020 10:37, Michael S. Tsirkin wrote:
->>> On Tue, Feb 11, 2020 at 07:42:37AM +0000, Anton Ivanov wrote:
->>>> On 11/02/2020 02:51, Jason Wang wrote:
->>>>>
->>>>> On 2020/2/11 上午12:55, Anton Ivanov wrote:
->>>>>>
->>>>>>
->>>>>> On 09/12/2019 10:48, anton.ivanov@cambridgegreys.com wrote:
->>>>>>> From: Anton Ivanov <anton.ivanov@cambridgegreys.com>
->>>>>>>
->>>>>>> Some of the frames marked as GSO which arrive at
->>>>>>> virtio_net_hdr_from_skb() have no GSO_TYPE, no
->>>>>>> fragments (data_len = 0) and length significantly shorter
->>>>>>> than the MTU (752 in my experiments).
->>>>>>>
->>>>>>> This is observed on raw sockets reading off vEth interfaces
->>>>>>> in all 4.x and 5.x kernels I tested.
->>>>>>>
->>>>>>> These frames are reported as invalid while they are in fact
->>>>>>> gso-less frames.
->>>>>>>
->>>>>>> This patch marks the vnet header as no-GSO for them instead
->>>>>>> of reporting it as invalid.
->>>>>>>
->>>>>>> Signed-off-by: Anton Ivanov <anton.ivanov@cambridgegreys.com>
->>>>>>> ---
->>>>>>>     include/linux/virtio_net.h | 8 ++++++--
->>>>>>>     1 file changed, 6 insertions(+), 2 deletions(-)
->>>>>>>
->>>>>>> diff --git a/include/linux/virtio_net.h b/include/linux/virtio_net.h
->>>>>>> index 0d1fe9297ac6..d90d5cff1b9a 100644
->>>>>>> --- a/include/linux/virtio_net.h
->>>>>>> +++ b/include/linux/virtio_net.h
->>>>>>> @@ -112,8 +112,12 @@ static inline int
->>>>>>> virtio_net_hdr_from_skb(const struct sk_buff *skb,
->>>>>>>                 hdr->gso_type = VIRTIO_NET_HDR_GSO_TCPV4;
->>>>>>>             else if (sinfo->gso_type & SKB_GSO_TCPV6)
->>>>>>>                 hdr->gso_type = VIRTIO_NET_HDR_GSO_TCPV6;
->>>>>>> -        else
->>>>>>> -            return -EINVAL;
->>>>>>> +        else {
->>>>>>> +            if (skb->data_len == 0)
->>>>>>> +                hdr->gso_type = VIRTIO_NET_HDR_GSO_NONE;
->>>>>>> +            else
->>>>>>> +                return -EINVAL;
->>>>>>> +        }
->>>>>>>             if (sinfo->gso_type & SKB_GSO_TCP_ECN)
->>>>>>>                 hdr->gso_type |= VIRTIO_NET_HDR_GSO_ECN;
->>>>>>>         } else
->>>>>>>
->>>>>>
->>>>>> ping.
->>>>>>
->>>>>
->>>>> Do you mean gso_size is set but gso_type is not? Looks like a bug
->>>>> elsewhere.
->>>>>
->>>>> Thanks
->>>>>
->>>>>
->>>> Yes.
->>>>
->>>> I could not trace it where it is coming from.
->>>>
->>>> I see it when doing recvmmsg on raw sockets in the UML vector network
->>>> drivers.
->>>>
->>>
->>> I think we need to find the culprit and fix it there, lots of other things
->>> can break otherwise.
->>> Just printing out skb->dev->name should do the trick, no?
->>
->> The printk in virtio_net_hdr_from_skb says NULL.
->>
->> That is probably normal for a locally originated frame.
->>
->> I cannot reproduce this with network traffic by the way - it happens only if the traffic is locally originated on the host.
->>
->> A,
-> 
-> OK so is it code in __tcp_transmit_skb that sets gso_size to non-null
-> when gso_type is 0?
-
-It does look like that, but I cannot see it when reading it :(
-
-
-> 
-> 
->>>
->>>
->>>> -- 
->>>> Anton R. Ivanov
->>>> Cambridgegreys Limited. Registered in England. Company Number 10273661
->>>> https://www.cambridgegreys.com/
->>>
->>>
->>> _______________________________________________
->>> linux-um mailing list
->>> linux-um@lists.infradead.org
->>> http://lists.infradead.org/mailman/listinfo/linux-um
->>>
->>
->> -- 
->> Anton R. Ivanov
->> Cambridgegreys Limited. Registered in England. Company Number 10273661
->> https://www.cambridgegreys.com/
-> 
-> 
-
--- 
-Anton R. Ivanov
-Cambridgegreys Limited. Registered in England. Company Number 10273661
-https://www.cambridgegreys.com/
