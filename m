@@ -2,56 +2,56 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 935F315CB9D
-	for <lists+netdev@lfdr.de>; Thu, 13 Feb 2020 21:02:22 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9D56115CBA0
+	for <lists+netdev@lfdr.de>; Thu, 13 Feb 2020 21:03:12 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728195AbgBMUCV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 13 Feb 2020 15:02:21 -0500
-Received: from mail-ed1-f68.google.com ([209.85.208.68]:41992 "EHLO
-        mail-ed1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727910AbgBMUCU (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 13 Feb 2020 15:02:20 -0500
-Received: by mail-ed1-f68.google.com with SMTP id e10so8341181edv.9
-        for <netdev@vger.kernel.org>; Thu, 13 Feb 2020 12:02:18 -0800 (PST)
+        id S1728388AbgBMUDL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 13 Feb 2020 15:03:11 -0500
+Received: from mail-ed1-f65.google.com ([209.85.208.65]:35460 "EHLO
+        mail-ed1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727910AbgBMUDK (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 13 Feb 2020 15:03:10 -0500
+Received: by mail-ed1-f65.google.com with SMTP id f8so8383149edv.2
+        for <netdev@vger.kernel.org>; Thu, 13 Feb 2020 12:03:08 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=subject:to:cc:references:from:autocrypt:message-id:date:user-agent
          :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=phwNuXVaInDvnUmv1pUxvdc6fPnT6uNHJ0b4x0n+FSs=;
-        b=VIcJoj0BPIMWEqJrVCJPwtcHm2ndtX7O+3DXjL42PuTxXsYuM37R50ybxlDtwdlPYg
-         Sv2Lr6FORyPN3wCm5ua3/Zr6xy2QvaDh4RS1/DIjdnY0RHZpe2gWM7jwuQ/u2rgRTHwO
-         CWxVSCiahWKSBWlIBWq5V6/np8E0UQyfFQ9FDvmnGJhgcE+saZeV4bMTDkeBMinfCAZP
-         bPfpxG7Jw9Qb1AOmpybYWPOJqHGz8DqBlkBTj3Fc6fRAn6bJzqkzqNdWWTsPL2NH2db1
-         BzzhsxdIIrvMpiOFaVHej1PH2OxcLI6K3Z04d2bPWT5PtqX7L+yzYDz7bRL4TikMA98R
-         CDig==
+        bh=SYvfDCACn6t00AmspNdN6RXAGrPFqp6GwWs2HGOUMsQ=;
+        b=lKC5NaFipXcxPs1i5UihR4qoGeK95/oaALTNhLimY3gpLh7jVNNsl3Lg2pUE0l/rnY
+         LB/yEQRMrmesrWTFbMWuReQlJPJs4r3uQocXy0VcUc2uhHqyujCvRaJGgqpinXsZFLI+
+         IHGtKssPzNmhIw3Gr5TdOmacy2eC3Y3wOpxFi1Xh5QzSWLejLxB1BDqhPGL6NqIcctqj
+         pTyNUWEzCaqV1/ludGNLZQ8AbbZdaTP5G6zrAyCH+v68GjiRp/myDqs0ta+U8gVaHJ8g
+         10V9ivLMBhsNZPA/AYRlN6PstS1dNrhXxI42dQKZwQtWCBE4KUE0Rj9L9fiw/CvGgdiR
+         WwQg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:subject:to:cc:references:from:autocrypt
          :message-id:date:user-agent:mime-version:in-reply-to
          :content-language:content-transfer-encoding;
-        bh=phwNuXVaInDvnUmv1pUxvdc6fPnT6uNHJ0b4x0n+FSs=;
-        b=BiKrdQPaU3Lu5oQDvgHDaiZPj+ioCDaanxx6rwrqvuQNKPNcjClQZgvkYS4duKoFQp
-         b2i/pczY2uRbTSx12/Z1XmnTvCnGwWr7Hvk5YZWBVKbFEbR2mN8CocLJStsQVEhHYdHR
-         Elvdt8mUf458dKrduohayatNLl2uJWMwp4W3iM8b9GfzJez4ROCW7YRBQl6qlGQM147X
-         Wojg3OQyc8J20vM8QTIy15pi3kFGmnNI0og1aJ9q27BwNwR1QKzZt69JS6moG5/4qom1
-         PwIyuFA2ZLTpV4qqkrDgg6a0TI9uX7Th30uLhlLj1JmY8IcDh3eeVTEgDHZ64p0COfNC
-         tMOA==
-X-Gm-Message-State: APjAAAVgKuKuXJyOfVpXiHLVQaL5KSdMG4G+yp9srKiJ40hIXaFUGvPN
-        sqASZE0YT7h4RIr11epvPIuTgUzS
-X-Google-Smtp-Source: APXvYqxA3j8i1Ber4PFUVrPopfSiHn8ibgepJQBclkXJ/H4P7Fmj2f+R0VJB+vRblISryEeJCG6oPg==
-X-Received: by 2002:a17:906:6a4a:: with SMTP id n10mr17089552ejs.375.1581624138232;
-        Thu, 13 Feb 2020 12:02:18 -0800 (PST)
+        bh=SYvfDCACn6t00AmspNdN6RXAGrPFqp6GwWs2HGOUMsQ=;
+        b=oibQVCR3fqT/sPu+A3T8TNt5IOPbY3y+FfWJk3w29OteS+rrt6/no4Ex2P5AeoQ6DX
+         i/T6OrWP4MBMntoLsMpaobbOIkcf89R6W3Cy+mbTgosvemXgIUjQbgBOsA6+uDiuCRuF
+         AX9o+F46FDIYzBvLgEQCngGnepNC28/gUzVZLL/LBvQ1+lE08NwcBeVP0P6v3tdXztkV
+         FRMhLbG8SqvrayKth7W7U+XvBiB+VD3A8+kOfJXyND4C6CMFq7Di0ZhFDWgUNnBx5B/0
+         nPtWlrVCikSMiTX0i/XxFdTSnq3Jsja5tQckegOPdcileLXg0iHBAGW4cfBU1SGB+esX
+         MZrQ==
+X-Gm-Message-State: APjAAAXyxLgPFJsA+BNRxkbHv/x2KyfmtvUcDPR7Vu0bnMfsey9HImGV
+        MTpjgMekOI440czgBjULZfQ=
+X-Google-Smtp-Source: APXvYqwF3s8qYnk6XiSRwVIaULE20qRfZ4bSu8ml9aIX0LHNfdSYPU++bKBp+iRQvFOdmv0m746NiQ==
+X-Received: by 2002:a17:907:2165:: with SMTP id rl5mr18007085ejb.193.1581624188105;
+        Thu, 13 Feb 2020 12:03:08 -0800 (PST)
 Received: from [10.67.48.204] ([192.19.223.252])
-        by smtp.googlemail.com with ESMTPSA id br7sm330325ejb.13.2020.02.13.12.02.13
+        by smtp.googlemail.com with ESMTPSA id k6sm297443edi.68.2020.02.13.12.03.03
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 13 Feb 2020 12:02:17 -0800 (PST)
-Subject: Re: [PATCH net 1/2] net: dsa: tag_qca: Make sure there is headroom
+        Thu, 13 Feb 2020 12:03:07 -0800 (PST)
+Subject: Re: [PATCH net 2/2] net: dsa: tag_ar9331: Make sure there is headroom
  for tag
 To:     Per Forlin <per.forlin@axis.com>, netdev@vger.kernel.org,
         andrew@lunn.ch, o.rempel@pengutronix.de, davem@davemloft.net
 Cc:     Per Forlin <perfn@axis.com>
 References: <20200213143710.22811-1-per.forlin@axis.com>
- <20200213143710.22811-2-per.forlin@axis.com>
+ <20200213143710.22811-3-per.forlin@axis.com>
 From:   Florian Fainelli <f.fainelli@gmail.com>
 Autocrypt: addr=f.fainelli@gmail.com; prefer-encrypt=mutual; keydata=
  xsDiBEjPuBIRBACW9MxSJU9fvEOCTnRNqG/13rAGsj+vJqontvoDSNxRgmafP8d3nesnqPyR
@@ -107,12 +107,12 @@ Autocrypt: addr=f.fainelli@gmail.com; prefer-encrypt=mutual; keydata=
  HvsHIcv4lxCWkFXkwsuWqzEKK6kxVpRDoEQPDj+Oy/ZJ5fYuMbkdHrlegwoQ64LrqdmiVVPC
  TwQYEQIADwIbDAUCVF/S8QUJHlwd3wAKCRBhV5kVtWN2Do+FAJ956xSz2XpDHql+Wg/2qv3b
  G10n8gCguORqNGMsVRxrlLs7/himep7MrCc=
-Message-ID: <f36defd9-8256-c649-9f4d-adfedb8b0cdc@gmail.com>
-Date:   Thu, 13 Feb 2020 12:02:08 -0800
+Message-ID: <d249ee6b-982a-b5fb-1b52-57b44d97d051@gmail.com>
+Date:   Thu, 13 Feb 2020 12:02:58 -0800
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
  Thunderbird/68.4.1
 MIME-Version: 1.0
-In-Reply-To: <20200213143710.22811-2-per.forlin@axis.com>
+In-Reply-To: <20200213143710.22811-3-per.forlin@axis.com>
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
@@ -129,7 +129,8 @@ On 2/13/20 6:37 AM, Per Forlin wrote:
 > 
 > Signed-off-by: Per Forlin <perfn@axis.com>
 
+
 Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
-Fixes: cafdc45c949b ("net-next: dsa: add Qualcomm tag RX/TX handler")
+Fixes: 48fda74f0a93 ("net: dsa: add support for Atheros AR9331 TAG format")
 -- 
 Florian
