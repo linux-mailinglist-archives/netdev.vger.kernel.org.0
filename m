@@ -2,119 +2,74 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 4897115BB01
-	for <lists+netdev@lfdr.de>; Thu, 13 Feb 2020 09:46:07 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 766F515BB27
+	for <lists+netdev@lfdr.de>; Thu, 13 Feb 2020 10:07:22 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729684AbgBMIp6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 13 Feb 2020 03:45:58 -0500
-Received: from esa6.microchip.iphmx.com ([216.71.154.253]:16914 "EHLO
-        esa6.microchip.iphmx.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729526AbgBMIp6 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 13 Feb 2020 03:45:58 -0500
-Received-SPF: Pass (esa6.microchip.iphmx.com: domain of
-  Nicolas.Ferre@microchip.com designates 198.175.253.82 as
-  permitted sender) identity=mailfrom;
-  client-ip=198.175.253.82; receiver=esa6.microchip.iphmx.com;
-  envelope-from="Nicolas.Ferre@microchip.com";
-  x-sender="Nicolas.Ferre@microchip.com";
-  x-conformance=spf_only; x-record-type="v=spf1";
-  x-record-text="v=spf1 mx a:ushub1.microchip.com
-  a:smtpout.microchip.com -exists:%{i}.spf.microchip.iphmx.com
-  include:servers.mcsv.net include:mktomail.com
-  include:spf.protection.outlook.com ~all"
-Received-SPF: None (esa6.microchip.iphmx.com: no sender
-  authenticity information available from domain of
-  postmaster@email.microchip.com) identity=helo;
-  client-ip=198.175.253.82; receiver=esa6.microchip.iphmx.com;
-  envelope-from="Nicolas.Ferre@microchip.com";
-  x-sender="postmaster@email.microchip.com";
-  x-conformance=spf_only
-Authentication-Results: esa6.microchip.iphmx.com; spf=Pass smtp.mailfrom=Nicolas.Ferre@microchip.com; spf=None smtp.helo=postmaster@email.microchip.com; dmarc=pass (p=none dis=none) d=microchip.com
-IronPort-SDR: 1C20GDZ9zHq6lqhyTuQjNJdhEbeitvDgpQ2mrR6kPvGPMepTCxAIsj56LRp0LRCd2j8a7ShWu2
- OCBT1ZxsDwUnSV3bT3285biPtzcM7yE8PG9J/CdRjuNdMVo+sq6/5Q71WrDHnSX5bn1KMMpsVJ
- 4pDHw2A6Zn4rbaG9IRfYAFtVqpOQ4FRcw4x5xBInRuFgSqm+QGi5BoxVNy0mXyXNkwxwk0OqIR
- idUU8HPazFW/pQpYuQfTHjIlaisR1x27CJcysNaABc37n/CmK+evIllnMXu+nUFTj/Tt9joSBm
- lgo=
-X-IronPort-AV: E=Sophos;i="5.70,436,1574146800"; 
-   d="scan'208";a="2253968"
-Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
-  by esa6.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 13 Feb 2020 01:45:40 -0700
-Received: from chn-vm-ex01.mchp-main.com (10.10.85.143) by
- chn-vm-ex02.mchp-main.com (10.10.85.144) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.1713.5; Thu, 13 Feb 2020 01:45:40 -0700
-Received: from [10.159.205.131] (10.10.85.251) by chn-vm-ex01.mchp-main.com
- (10.10.85.143) with Microsoft SMTP Server id 15.1.1713.5 via Frontend
- Transport; Thu, 13 Feb 2020 01:45:35 -0700
-Subject: Re: [PATCH net] net: macb: ensure interface is not suspended on
- at91rm9200
-To:     Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        "David S . Miller" <davem@davemloft.net>
-CC:     Harini Katakam <harini.katakam@xilinx.com>,
-        Shubhrajyoti Datta <shubhrajyoti.datta@xilinx.com>,
-        <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>
-References: <20200212164538.383741-1-alexandre.belloni@bootlin.com>
-From:   Nicolas Ferre <nicolas.ferre@microchip.com>
-Organization: microchip
-Message-ID: <a27e7d3f-b576-a90a-00c4-c5ce7bf69592@microchip.com>
-Date:   Thu, 13 Feb 2020 09:45:35 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.4.1
+        id S1729526AbgBMJHU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 13 Feb 2020 04:07:20 -0500
+Received: from smtp2.axis.com ([195.60.68.18]:43606 "EHLO smtp2.axis.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1729428AbgBMJHU (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 13 Feb 2020 04:07:20 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=axis.com; l=808; q=dns/txt; s=axis-central1;
+  t=1581584840; x=1613120840;
+  h=from:to:cc:subject:date:message-id:mime-version;
+  bh=neit+G2QPCYogCkw7kRFA35h8RIT00UOwrrcZ8NKeJ8=;
+  b=oxzlo9mYrJIyM9cEz1rMLuR4UsMa1g4Hq8RYN7n5lRNDiCeQC8c2lZ4y
+   7qn047ZU+ELsXRMZXJ+jIIFAcY8v6oj56CIE0YFRgmwslq/rjOUSW+wt0
+   sI4eRfr8nyqb72rtYvh0EXaeKrd7+DCxLpu1LCagXyjt8XpBvh11V+6dJ
+   8ku5X2qp9FiSuSyBGN0Agd8nSEtbiCep0ByFXgnIydxJrwWd6CmRGe+eO
+   0XoRpKT7Rq8k1SdOOmNXgbjzdmzy08DSwUbd7Ya1lB5sZinxFD+PJwIsU
+   +U9aidXMXEieX4oWtl0/AH6mm65YNeRmGUrfBv0PYnbid3h2qeoSlZH+L
+   w==;
+IronPort-SDR: WFI5lTpzgaW8v0GcKX6WnnPMWhhUhUeR82fBLLfJuxXkl/yoKXZ7FEIQkqqUACbloVr9K9ZIba
+ qSl6/eeJ8beBkhdF6RBlDU5RiQF20M49rBn96G1eXHlzaOuk1F6GMgfLPU3Kioiz7sg6drvntO
+ 26j+om1GsEF1342TluYzPRaFCeTQBoQaH1xEWw9vwL2Q7ZOGZ4JZXRHJQzwCcnHRESK3bUf1Q4
+ J+ML+maTAfNdJirYgyLb2dA/0KbXM1PPJ8Rc70MdaUf9uuOvgiEWoDAvYzeLQrZmBDFBFb+9O1
+ EC4=
+X-IronPort-AV: E=Sophos;i="5.70,436,1574118000"; 
+   d="scan'208";a="5231234"
+From:   <Per@axis.com>, <"Forlin <per.forlin"@axis.com>
+To:     <netdev@vger.kernel.org>, <andrew@lunn.ch>,
+        <o.rempel@pengutronix.de>, <davem@davemloft.net>
+CC:     Per Forlin <per.forlin@axis.com>, Per Forlin <perfn@axis.com>
+Subject: [PATCH 1/2] net: dsa: tag_qca: Make sure there is headroom for tag
+Date:   Thu, 13 Feb 2020 10:07:06 +0100
+Message-ID: <20200213090707.27937-1-per.forlin@axis.com>
+X-Mailer: git-send-email 2.11.0
 MIME-Version: 1.0
-In-Reply-To: <20200212164538.383741-1-alexandre.belloni@bootlin.com>
-Content-Type: text/plain; charset="windows-1252"; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 12/02/2020 at 17:45, Alexandre Belloni wrote:
-> EXTERNAL EMAIL: Do not click links or open attachments unless you know the content is safe
-> 
-> Because of autosuspend, at91ether_start is called with clocks disabled.
-> Ensure that pm_runtime doesn't suspend the interface as soon as it is
-> opened as there is no pm_runtime support is the other relevant parts of the
-> platform support for at91rm9200.
-> 
-> Fixes: d54f89af6cc4 ("net: macb: Add pm runtime support")
-> Signed-off-by: Alexandre Belloni <alexandre.belloni@bootlin.com>
+From: Per Forlin <per.forlin@axis.com>
 
-Acked-by: Nicolas Ferre <nicolas.ferre@microchip.com>
+Passing tag size to skb_cow_head will make sure
+there is enough headroom for the tag data.
+This change does not introduce any overhead in case there
+is already available headroom for tag.
 
-> ---
->   drivers/net/ethernet/cadence/macb_main.c | 6 +++++-
->   1 file changed, 5 insertions(+), 1 deletion(-)
-> 
-> diff --git a/drivers/net/ethernet/cadence/macb_main.c b/drivers/net/ethernet/cadence/macb_main.c
-> index 4508f0d150da..def94e91883a 100644
-> --- a/drivers/net/ethernet/cadence/macb_main.c
-> +++ b/drivers/net/ethernet/cadence/macb_main.c
-> @@ -3790,6 +3790,10 @@ static int at91ether_open(struct net_device *dev)
->          u32 ctl;
->          int ret;
-> 
-> +       ret = pm_runtime_get_sync(&lp->pdev->dev);
-> +       if (ret < 0)
-> +               return ret;
-> +
->          /* Clear internal statistics */
->          ctl = macb_readl(lp, NCR);
->          macb_writel(lp, NCR, ctl | MACB_BIT(CLRSTAT));
-> @@ -3854,7 +3858,7 @@ static int at91ether_close(struct net_device *dev)
->                            q->rx_buffers, q->rx_buffers_dma);
->          q->rx_buffers = NULL;
-> 
-> -       return 0;
-> +       return pm_runtime_put(&lp->pdev->dev);
->   }
-> 
->   /* Transmit packet */
-> --
-> 2.24.1
-> 
+Signed-off-by: Per Forlin <perfn@axis.com>
+---
+ net/dsa/tag_qca.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-
+diff --git a/net/dsa/tag_qca.c b/net/dsa/tag_qca.c
+index c8a128c9e5e0..70db7c909f74 100644
+--- a/net/dsa/tag_qca.c
++++ b/net/dsa/tag_qca.c
+@@ -33,7 +33,7 @@ static struct sk_buff *qca_tag_xmit(struct sk_buff *skb, struct net_device *dev)
+ 	struct dsa_port *dp = dsa_slave_to_port(dev);
+ 	u16 *phdr, hdr;
+ 
+-	if (skb_cow_head(skb, 0) < 0)
++	if (skb_cow_head(skb, QCA_HDR_LEN) < 0)
+ 		return NULL;
+ 
+ 	skb_push(skb, QCA_HDR_LEN);
 -- 
-Nicolas Ferre
+2.11.0
+
