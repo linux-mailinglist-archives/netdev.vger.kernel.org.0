@@ -2,179 +2,203 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 091D415C943
-	for <lists+netdev@lfdr.de>; Thu, 13 Feb 2020 18:16:15 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id EF8BF15C952
+	for <lists+netdev@lfdr.de>; Thu, 13 Feb 2020 18:19:04 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728279AbgBMRQN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 13 Feb 2020 12:16:13 -0500
-Received: from pandora.armlinux.org.uk ([78.32.30.218]:58402 "EHLO
-        pandora.armlinux.org.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727781AbgBMRQN (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 13 Feb 2020 12:16:13 -0500
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
-        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
-        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
-        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-         bh=CW2tcY1SICyPiBILUelQjRAVuOU6UuW29LgBHYEyRds=; b=BkXW4SBQCgVxU76oevhJpHBbb
-        lV+6wIutopcT/b17xe77r/InC8MejeMV9Ka6p0TbqLoqoYy4HS07gPpTXV6NH//r2NglIpBcrVtWl
-        Vw+eOkozW6WMEI4bbcXcVf0Pr4pKiLC9BjFBukc6Z002gzez3pNtWBpLTUM5TYQEZHdMeq+07n2JF
-        zmWjiHTH++otCtY0ebd3i5ZvPwGTZHMjLsYN+0dfxEi+TmAwhsPn/R4DCGO9IP/rJ6js4DsekT+x5
-        dC+iz5+Ce+zfZXOjjE6evvSnqnpKYaOECzlG8gs4JPreXLWkf6ZoCW7DwxlatmVawinQ1JoV3ZNIq
-        KpBCjkhLg==;
-Received: from shell.armlinux.org.uk ([2002:4e20:1eda:1:5054:ff:fe00:4ec]:47370)
-        by pandora.armlinux.org.uk with esmtpsa (TLSv1.2:ECDHE-RSA-AES256-GCM-SHA384:256)
-        (Exim 4.90_1)
-        (envelope-from <linux@armlinux.org.uk>)
-        id 1j2I5u-0001sr-3Y; Thu, 13 Feb 2020 17:16:06 +0000
-Received: from linux by shell.armlinux.org.uk with local (Exim 4.92)
-        (envelope-from <linux@shell.armlinux.org.uk>)
-        id 1j2I5q-0002Xd-BU; Thu, 13 Feb 2020 17:16:02 +0000
-Date:   Thu, 13 Feb 2020 17:16:02 +0000
-From:   Russell King - ARM Linux admin <linux@armlinux.org.uk>
-To:     Andrew Lunn <andrew@lunn.ch>
-Cc:     netdev@vger.kernel.org, Florian Fainelli <f.fainelli@gmail.com>,
-        Sean Wang <sean.wang@mediatek.com>,
-        John Crispin <john@phrozen.org>,
-        Mark Lee <Mark-MC.Lee@mediatek.com>,
-        Giuseppe Cavallaro <peppe.cavallaro@st.com>,
-        Alexandre Torgue <alexandre.torgue@st.com>,
-        Jose Abreu <joabreu@synopsys.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        Radhey Shyam Pandey <radhey.shyam.pandey@xilinx.com>,
-        Nicolas Ferre <nicolas.ferre@microchip.com>,
-        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
-        Ioana Ciornei <ioana.ciornei@nxp.com>
-Subject: Re: Heads up: phylink changes for next merge window
-Message-ID: <20200213171602.GO25745@shell.armlinux.org.uk>
-References: <20200213133831.GM25745@shell.armlinux.org.uk>
- <20200213144615.GH18808@shell.armlinux.org.uk>
- <20200213160004.GC31084@lunn.ch>
+        id S1728701AbgBMRTC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 13 Feb 2020 12:19:02 -0500
+Received: from mga02.intel.com ([134.134.136.20]:3144 "EHLO mga02.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1728618AbgBMRTB (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 13 Feb 2020 12:19:01 -0500
+X-Amp-Result: SKIPPED(no attachment in message)
+X-Amp-File-Uploaded: False
+Received: from fmsmga003.fm.intel.com ([10.253.24.29])
+  by orsmga101.jf.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 13 Feb 2020 09:18:59 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.70,437,1574150400"; 
+   d="scan'208";a="281576685"
+Received: from orsmsx105.amr.corp.intel.com ([10.22.225.132])
+  by FMSMGA003.fm.intel.com with ESMTP; 13 Feb 2020 09:18:59 -0800
+Received: from orsmsx152.amr.corp.intel.com (10.22.226.39) by
+ ORSMSX105.amr.corp.intel.com (10.22.225.132) with Microsoft SMTP Server (TLS)
+ id 14.3.439.0; Thu, 13 Feb 2020 09:18:58 -0800
+Received: from orsmsx115.amr.corp.intel.com ([169.254.4.100]) by
+ ORSMSX152.amr.corp.intel.com ([169.254.8.38]) with mapi id 14.03.0439.000;
+ Thu, 13 Feb 2020 09:18:58 -0800
+From:   "Boeuf, Sebastien" <sebastien.boeuf@intel.com>
+To:     "sgarzare@redhat.com" <sgarzare@redhat.com>
+CC:     "stefanha@redhat.com" <stefanha@redhat.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "davem@davemloft.net" <davem@davemloft.net>
+Subject: Re: [PATCH] net: virtio_vsock: Fix race condition between bind and
+ listen
+Thread-Topic: [PATCH] net: virtio_vsock: Fix race condition between bind and
+ listen
+Thread-Index: AQHV4k47o+FvdyeZdUa5OLpq2zu4PqgZZQkAgAAC0ACAAAitgIAABgwAgAAPhoCAABfKAIAAP1OAgAAGewCAAAEiAA==
+Date:   Thu, 13 Feb 2020 17:18:57 +0000
+Message-ID: <4cd620bec54b0b57792dd3ffd874637ef97a77f1.camel@intel.com>
+References: <668b0eda8823564cd604b1663dc53fbaece0cd4e.camel@intel.com>
+         <20200213094130.vehzkr4a3pnoiogr@steredhat>
+         <3448e588f11dad913e93dfce8031fbd60ba4c85b.camel@intel.com>
+         <20200213102237.uyhfv5g2td5ayg2b@steredhat>
+         <1d4c3958d8b75756341548e7d51ccf42397c2d27.camel@intel.com>
+         <20200213113949.GA544499@stefanha-x1.localdomain>
+         <20200213130458.ugu6rx6cv4k6v5rh@steredhat>
+         <ee9a929c3b9c5b958bf6399a5048a3c9b6ea4aae.camel@intel.com>
+         <CAGxU2F6v99haTtnGP8FT-GKuDEG03uDip+L-NFe3yFZJt7jUxQ@mail.gmail.com>
+In-Reply-To: <CAGxU2F6v99haTtnGP8FT-GKuDEG03uDip+L-NFe3yFZJt7jUxQ@mail.gmail.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-originating-ip: [10.252.24.191]
+Content-Type: text/plain; charset="utf-8"
+Content-ID: <20857C9F333DDC438437FC309294395B@intel.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200213160004.GC31084@lunn.ch>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+Content-Transfer-Encoding: base64
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Feb 13, 2020 at 05:00:04PM +0100, Andrew Lunn wrote:
-> On Thu, Feb 13, 2020 at 02:46:16PM +0000, Russell King - ARM Linux admin wrote:
-> > [Recipient list updated; removed addresses that bounce, added Ioana
-> > Ciornei for dpaa2 and DSA issue mentioned below.]
-> > 
-> > On Thu, Feb 13, 2020 at 01:38:31PM +0000, Russell King - ARM Linux admin wrote:
-> > > Hi,
-> > > 
-> > > During the next round of development changes, I wish to make some
-> > > changes to phylink which will affect almost every user out there,
-> > > as it affects the interfaces to the MAC drivers.
-> > > 
-> > > The reason behind the change is to allow us to support situations
-> > > where the MAC is not closely coupled with its associated PCS, such
-> > > as is found in mvneta and mvpp2.  This is necessary to support
-> > > already existing hardware properly, such as Marvell DSA and Xilinx
-> > > AXI ethernet drivers, and there seems to be a growing need for this.
-> > > 
-> > > What I'm proposing to do is to move the MAC setup for the negotiated
-> > > speed, duplex and pause settings to the mac_link_up() method, out of
-> > > the existing mac_config() method.  I have already converted the
-> > > axienet, dpaa2-mac, macb, mvneta, mvpp2 and mv88e6xxx (dsa) drivers,
-> > > but I'm not able to test all those.  Thus far, I've tested dpaa2-mac,
-> > > mvneta, and mv88e6xxx.  There's a bunch of other drivers that I don't
-> > > know enough about the hardware to do the conversion myself.
-> > 
-> > I should also have pointed out that with mv88e6xxx, the patch
-> > "net: mv88e6xxx: use resolved link config in mac_link_up()" "fixes" by
-> > side-effect an issue that Andrew has mentioned, where inter-DSA ports
-> > get configured down to 10baseHD speed.  This is by no means a true fix
-> > for that problem - which is way deeper than this series can address.
-> > The reason it fixes it is because we no longer set the speed/duplex
-> > in mac_config() but set it in mac_link_up() - but mac_link_up() is
-> > never called for CPU and DSA ports.
-> > 
-> > However, I think there may be another side-effect of that - any fixed
-> > link declaration in DT may not be respected after this patch.
-> > 
-> > I believe the root of this goes back to this commit:
-> > 
-> >   commit 0e27921816ad99f78140e0c61ddf2bc515cc7e22
-> >   Author: Ioana Ciornei <ioana.ciornei@nxp.com>
-> >   Date:   Tue May 28 20:38:16 2019 +0300
-> > 
-> >   net: dsa: Use PHYLINK for the CPU/DSA ports
-> > 
-> > and, in the case of no fixed-link declaration, phylink has no idea what
-> > the link parameters should be (and hence the initial bug, where
-> > mac_config gets called with speed=0 duplex=0, which gets interpreted as
-> > 10baseHD.)  Moreover, as far as phylink is concerned, these links never
-> > come up. Essentially, this commit was not fully tested with inter-DSA
-> > links, and probably was never tested with phylink debugging enabled.
-> > 
-> > There is currently no fix for this, and it is not an easy problem to
-> > resolve, irrespective of the patches I'm proposing.
-> 
-> Hi Russell
-> 
-> I've been playing around with this a bit. I have a partial fix:
-> 
-> diff --git a/net/dsa/port.c b/net/dsa/port.c
-> index 9b54e5a76297..dc4da4dc44f5 100644
-> --- a/net/dsa/port.c
-> +++ b/net/dsa/port.c
-> @@ -629,9 +629,14 @@ static int dsa_port_phylink_register(struct dsa_port *dp)
->  int dsa_port_link_register_of(struct dsa_port *dp)
->  {
->         struct dsa_switch *ds = dp->ds;
-> +       struct device_node *phy_np;
->  
-> -       if (!ds->ops->adjust_link)
-> -               return dsa_port_phylink_register(dp);
-> +       if (!ds->ops->adjust_link) {
-> +               phy_np = of_parse_phandle(dp->dn, "phy-handle", 0);
-> +               if (of_phy_is_fixed_link(dp->dn) || phy_np)
-> +                       return dsa_port_phylink_register(dp);
-> +               return 0;
-> +       }
->  
->         dev_warn(ds->dev,
->                  "Using legacy PHYLIB callbacks. Please migrate to PHYLINK!\n");
-> @@ -646,11 +651,12 @@ void dsa_port_link_unregister_of(struct dsa_port *dp)
->  {
->         struct dsa_switch *ds = dp->ds;
->  
-> -       if (!ds->ops->adjust_link) {
-> +       if (!ds->ops->adjust_link && dp->pl) {
->                 rtnl_lock();
->                 phylink_disconnect_phy(dp->pl);
->                 rtnl_unlock();
->                 phylink_destroy(dp->pl);
-> +               dp->pl = NULL;
->                 return;
->         }
-> 
-> So basically only instantiate phylink if there is a fixed-link
-> property, or a phy-handle.
-> 
-> What i think is still broken is if there is a phy-mode property, and
-> nothing else. e.g. to set RGMII delays. I think that will get ignored.
+T24gVGh1LCAyMDIwLTAyLTEzIGF0IDE4OjE0ICswMTAwLCBTdGVmYW5vIEdhcnphcmVsbGEgd3Jv
+dGU6DQo+IE9uIFRodSwgRmViIDEzLCAyMDIwIGF0IDU6NTEgUE0gQm9ldWYsIFNlYmFzdGllbiA8
+DQo+IHNlYmFzdGllbi5ib2V1ZkBpbnRlbC5jb20+IHdyb3RlOg0KPiA+IE9uIFRodSwgMjAyMC0w
+Mi0xMyBhdCAxNDowNCArMDEwMCwgU3RlZmFubyBHYXJ6YXJlbGxhIHdyb3RlOg0KPiA+ID4gT24g
+VGh1LCBGZWIgMTMsIDIwMjAgYXQgMTE6Mzk6NDlBTSArMDAwMCwgU3RlZmFuIEhham5vY3ppIHdy
+b3RlOg0KPiA+ID4gPiBPbiBUaHUsIEZlYiAxMywgMjAyMCBhdCAxMDo0NDoxOEFNICswMDAwLCBC
+b2V1ZiwgU2ViYXN0aWVuDQo+ID4gPiA+IHdyb3RlOg0KPiA+ID4gPiA+IE9uIFRodSwgMjAyMC0w
+Mi0xMyBhdCAxMToyMiArMDEwMCwgU3RlZmFubyBHYXJ6YXJlbGxhIHdyb3RlOg0KPiA+ID4gPiA+
+ID4gT24gVGh1LCBGZWIgMTMsIDIwMjAgYXQgMDk6NTE6MzZBTSArMDAwMCwgQm9ldWYsIFNlYmFz
+dGllbg0KPiA+ID4gPiA+ID4gd3JvdGU6DQo+ID4gPiA+ID4gPiA+IEhpIFN0ZWZhbm8sDQo+ID4g
+PiA+ID4gPiA+IA0KPiA+ID4gPiA+ID4gPiBPbiBUaHUsIDIwMjAtMDItMTMgYXQgMTA6NDEgKzAx
+MDAsIFN0ZWZhbm8gR2FyemFyZWxsYQ0KPiA+ID4gPiA+ID4gPiB3cm90ZToNCj4gPiA+ID4gPiA+
+ID4gPiBIaSBTZWJhc3RpZW4sDQo+ID4gPiA+ID4gPiA+ID4gDQo+ID4gPiA+ID4gPiA+ID4gT24g
+VGh1LCBGZWIgMTMsIDIwMjAgYXQgMDk6MTY6MTFBTSArMDAwMCwgQm9ldWYsDQo+ID4gPiA+ID4g
+PiA+ID4gU2ViYXN0aWVuDQo+ID4gPiA+ID4gPiA+ID4gd3JvdGU6DQo+ID4gPiA+ID4gPiA+ID4g
+PiBGcm9tIDJmMTI3NmQwMmY1YTEyZDg1YWVjNWFkYzExZGZlMWVhYjdlMTYwZDYgTW9uIFNlcA0K
+PiA+ID4gPiA+ID4gPiA+ID4gMTcNCj4gPiA+ID4gPiA+ID4gPiA+IDAwOjAwOjAwDQo+ID4gPiA+
+ID4gPiA+ID4gPiAyMDAxDQo+ID4gPiA+ID4gPiA+ID4gPiBGcm9tOiBTZWJhc3RpZW4gQm9ldWYg
+PHNlYmFzdGllbi5ib2V1ZkBpbnRlbC5jb20+DQo+ID4gPiA+ID4gPiA+ID4gPiBEYXRlOiBUaHUs
+IDEzIEZlYiAyMDIwIDA4OjUwOjM4ICswMTAwDQo+ID4gPiA+ID4gPiA+ID4gPiBTdWJqZWN0OiBb
+UEFUQ0hdIG5ldDogdmlydGlvX3Zzb2NrOiBGaXggcmFjZQ0KPiA+ID4gPiA+ID4gPiA+ID4gY29u
+ZGl0aW9uDQo+ID4gPiA+ID4gPiA+ID4gPiBiZXR3ZWVuDQo+ID4gPiA+ID4gPiA+ID4gPiBiaW5k
+DQo+ID4gPiA+ID4gPiA+ID4gPiBhbmQgbGlzdGVuDQo+ID4gPiA+ID4gPiA+ID4gPiANCj4gPiA+
+ID4gPiA+ID4gPiA+IFdoZW5ldmVyIHRoZSB2c29jayBiYWNrZW5kIG9uIHRoZSBob3N0IHNlbmRz
+IGEgcGFja2V0DQo+ID4gPiA+ID4gPiA+ID4gPiB0aHJvdWdoDQo+ID4gPiA+ID4gPiA+ID4gPiB0
+aGUNCj4gPiA+ID4gPiA+ID4gPiA+IFJYDQo+ID4gPiA+ID4gPiA+ID4gPiBxdWV1ZSwgaXQgZXhw
+ZWN0cyBhbiBhbnN3ZXIgb24gdGhlIFRYIHF1ZXVlLg0KPiA+ID4gPiA+ID4gPiA+ID4gVW5mb3J0
+dW5hdGVseSwNCj4gPiA+ID4gPiA+ID4gPiA+IHRoZXJlDQo+ID4gPiA+ID4gPiA+ID4gPiBpcyBv
+bmUNCj4gPiA+ID4gPiA+ID4gPiA+IGNhc2Ugd2hlcmUgdGhlIGhvc3Qgc2lkZSB3aWxsIGhhbmcg
+d2FpdGluZyBmb3IgdGhlDQo+ID4gPiA+ID4gPiA+ID4gPiBhbnN3ZXINCj4gPiA+ID4gPiA+ID4g
+PiA+IGFuZA0KPiA+ID4gPiA+ID4gPiA+ID4gd2lsbA0KPiA+ID4gPiA+ID4gPiA+ID4gZWZmZWN0
+aXZlbHkgbmV2ZXIgcmVjb3Zlci4NCj4gPiA+ID4gPiA+ID4gPiANCj4gPiA+ID4gPiA+ID4gPiBE
+byB5b3UgaGF2ZSBhIHRlc3QgY2FzZT8NCj4gPiA+ID4gPiA+ID4gDQo+ID4gPiA+ID4gPiA+IFll
+cyBJIGRvLiBUaGlzIGhhcyBiZWVuIGEgYnVnIHdlJ3ZlIGJlZW4gaW52ZXN0aWdhdGluZyBvbg0K
+PiA+ID4gPiA+ID4gPiBLYXRhDQo+ID4gPiA+ID4gPiA+IENvbnRhaW5lcnMgZm9yIHF1aXRlIHNv
+bWUgdGltZSBub3cuIFRoaXMgd2FzIGhhcHBlbmluZw0KPiA+ID4gPiA+ID4gPiB3aGVuDQo+ID4g
+PiA+ID4gPiA+IHVzaW5nDQo+ID4gPiA+ID4gPiA+IEthdGENCj4gPiA+ID4gPiA+ID4gYWxvbmcg
+d2l0aCBDbG91ZC1IeXBlcnZpc29yICh3aGljaCByZWx5IG9uIHRoZSBoeWJyaWQNCj4gPiA+ID4g
+PiA+ID4gdnNvY2sNCj4gPiA+ID4gPiA+ID4gaW1wbGVtZW50YXRpb24gZnJvbSBGaXJlY3JhY2tl
+cikuIFRoZSB0aGluZyBpcywgdGhpcyBidWcNCj4gPiA+ID4gPiA+ID4gaXMNCj4gPiA+ID4gPiA+
+ID4gdmVyeQ0KPiA+ID4gPiA+ID4gPiBoYXJkDQo+ID4gPiA+ID4gPiA+IHRvIHJlcHJvZHVjZSBh
+bmQgd2FzIGhhcHBlbmluZyBmb3IgS2F0YSBiZWNhdXNlIG9mIHRoZQ0KPiA+ID4gPiA+ID4gPiBj
+b25uZWN0aW9uDQo+ID4gPiA+ID4gPiA+IHN0cmF0ZWd5LiBUaGUga2F0YS1ydW50aW1lIHRyaWVz
+IHRvIGNvbm5lY3QgYSBtaWxsaW9uDQo+ID4gPiA+ID4gPiA+IHRpbWVzDQo+ID4gPiA+ID4gPiA+
+IGFmdGVyDQo+ID4gPiA+ID4gPiA+IGl0DQo+ID4gPiA+ID4gPiA+IHN0YXJ0ZWQgdGhlIFZNLCBq
+dXN0IGhvcGluZyB0aGUga2F0YS1hZ2VudCB3aWxsIHN0YXJ0IHRvDQo+ID4gPiA+ID4gPiA+IGxp
+c3Rlbg0KPiA+ID4gPiA+ID4gPiBmcm9tDQo+ID4gPiA+ID4gPiA+IHRoZSBndWVzdCBzaWRlIGF0
+IHNvbWUgcG9pbnQuDQo+ID4gPiA+ID4gPiANCj4gPiA+ID4gPiA+IE1heWJlIGlzIHJlbGF0ZWQg
+dG8gc29tZXRoaW5nIGVsc2UuIEkgdHJpZWQgdGhlIGZvbGxvd2luZw0KPiA+ID4gPiA+ID4gd2hp
+Y2gNCj4gPiA+ID4gPiA+IHNob3VsZCBiZQ0KPiA+ID4gPiA+ID4geW91ciBjYXNlIHNpbXBsaWZp
+ZWQgKElJVUMpOg0KPiA+ID4gPiA+ID4gDQo+ID4gPiA+ID4gPiBndWVzdCQgcHl0aG9uDQo+ID4g
+PiA+ID4gPiAgICAgaW1wb3J0IHNvY2tldA0KPiA+ID4gPiA+ID4gICAgIHMgPSBzb2NrZXQuc29j
+a2V0KHNvY2tldC5BRl9WU09DSywgc29ja2V0LlNPQ0tfU1RSRUFNKQ0KPiA+ID4gPiA+ID4gICAg
+IHMuYmluZCgoc29ja2V0LlZNQUREUl9DSURfQU5ZLCAxMjM0KSkNCj4gPiA+ID4gPiA+IA0KPiA+
+ID4gPiA+ID4gaG9zdCQgcHl0aG9uDQo+ID4gPiA+ID4gPiAgICAgaW1wb3J0IHNvY2tldA0KPiA+
+ID4gPiA+ID4gICAgIHMgPSBzb2NrZXQuc29ja2V0KHNvY2tldC5BRl9WU09DSywgc29ja2V0LlNP
+Q0tfU1RSRUFNKQ0KPiA+ID4gPiA+ID4gICAgIHMuY29ubmVjdCgoMywgMTIzNCkpDQo+ID4gPiA+
+ID4gPiANCj4gPiA+ID4gPiA+IFRyYWNlYmFjayAobW9zdCByZWNlbnQgY2FsbCBsYXN0KToNCj4g
+PiA+ID4gPiA+ICAgRmlsZSAiPHN0ZGluPiIsIGxpbmUgMSwgaW4gPG1vZHVsZT4NCj4gPiA+ID4g
+PiA+IFRpbWVvdXRFcnJvcjogW0Vycm5vIDExMF0gQ29ubmVjdGlvbiB0aW1lZCBvdXQNCj4gPiA+
+ID4gPiANCj4gPiA+ID4gPiBZZXMgdGhpcyBpcyBleGFjdGx5IHRoZSBzaW1wbGlmaWVkIGNhc2Uu
+IEJ1dCB0aGF0J3MgdGhlDQo+ID4gPiA+ID4gcG9pbnQsIEkNCj4gPiA+ID4gPiBkb24ndA0KPiA+
+ID4gPiA+IHRoaW5rIHRoZSB0aW1lb3V0IGlzIHRoZSBiZXN0IHdheSB0byBnbyBoZXJlLiBCZWNh
+dXNlIHRoaXMNCj4gPiA+ID4gPiBtZWFucw0KPiA+ID4gPiA+IHRoYXQNCj4gPiA+ID4gPiB3aGVu
+IHdlIHJ1biBpbnRvIHRoaXMgY2FzZSwgdGhlIGhvc3Qgc2lkZSB3aWxsIHdhaXQgZm9yIHF1aXRl
+DQo+ID4gPiA+ID4gc29tZSB0aW1lDQo+ID4gPiA+ID4gYmVmb3JlIHJldHJ5aW5nLCB3aGljaCBj
+YW4gY2F1c2UgYSB2ZXJ5IGxvbmcgZGVsYXkgYmVmb3JlIHRoZQ0KPiA+ID4gPiA+IGNvbW11bmlj
+YXRpb24gd2l0aCB0aGUgZ3Vlc3QgaXMgZXN0YWJsaXNoZWQuIEJ5IHNpbXBseQ0KPiA+ID4gPiA+
+IGFuc3dlcmluZw0KPiA+ID4gPiA+IHRoZQ0KPiA+ID4gPiA+IGhvc3Qgd2l0aCBhIFJTVCBwYWNr
+ZXQsIHdlIGluZm9ybSBpdCB0aGF0IG5vYm9keSdzIGxpc3RlbmluZw0KPiA+ID4gPiA+IG9uDQo+
+ID4gPiA+ID4gdGhlDQo+ID4gPiA+ID4gZ3Vlc3Qgc2lkZSB5ZXQsIHRoZXJlZm9yZSB0aGUgaG9z
+dCBzaWRlIHdpbGwgY2xvc2UgYW5kIHRyeQ0KPiA+ID4gPiA+IGFnYWluLg0KPiA+ID4gPiANCj4g
+PiA+ID4gTXkgZXhwZWN0YXRpb24gaXMgdGhhdCBUQ1AvSVAgd2lsbCBwcm9kdWNlIEVDT05OUkVG
+VVNFRCBpbiB0aGlzDQo+ID4gPiA+IGNhc2UgYnV0DQo+ID4gPiA+IEkgaGF2ZW4ndCBjaGVja2Vk
+LiAgVGltaW5nIG91dCBpcyB3ZWlyZCBiZWhhdmlvci4NCj4gPiA+IA0KPiA+ID4gSSBqdXN0IHRy
+aWVkIGFuZCB5ZXMsIFRDUC9JUCBwcm9kdWNlcyBFQ09OTlJFRlVTRUQuIFRoZSBzYW1lDQo+ID4g
+PiBlcnJvcg0KPiA+ID4gcmV0dXJuZWQNCj4gPiA+IHdoZW4gbm8gb25lJ3MgYm91bmQgdG8gdGhl
+IHBvcnQuDQo+ID4gPiANCj4gPiA+IEluc3RlYWQgdmlydGlvLXZzb2NrIHJldHVybnMgRUNPTk5S
+RVNFVCBpbiB0aGUgbGFzdCBjYXNlLg0KPiA+ID4gSSdtIG5vdCBzdXJlIGl0J3MgY29ycmVjdCAo
+bG9va2luZyBhdCB0aGUgbWFuIHBhZ2UgY29ubmVjdCgyKSBpdA0KPiA+ID4gd291bGQNCj4gPiA+
+IHNlZW0gbm90KSwgYnV0IGlmIEkgdW5kZXJzdG9vZCBjb3JyZWN0bHkgVk1DSSByZXR1cm5zIHRo
+ZSBzYW1lDQo+ID4gPiBFQ09OTlJFU0VUIGluIHRoaXMgY2FzZS4NCj4gPiA+IA0KPiA+ID4gPiBJ
+biBhbnkgY2FzZSwgdGhlIHJlZmVyZW5jZSBmb3IgdmlydGlvLXZzb2NrIHNlbWFudGljcyBpczoN
+Cj4gPiA+ID4gMS4gSG93IGRvZXMgVk1DSSAoVk13YXJlKSB2c29jayBiZWhhdmU/ICBXZSBzdHJp
+dmUgdG8gYmUNCj4gPiA+ID4gY29tcGF0aWJsZQ0KPiA+ID4gPiB3aXRoDQo+ID4gPiA+IHRoZSBW
+TUNJIHRyYW5zcG9ydC4NCj4gPiA+IA0KPiA+ID4gTG9va2luZyBhdCB0aGUgY29kZSwgaXQgbG9v
+a3MgbGlrZSBWTUNJIHJldHVybnMgRUNPTk5SRVNFVCBpbg0KPiA+ID4gdGhpcw0KPiA+ID4gY2Fz
+ZSwNCj4gPiA+IHNvIHRoaXMgcGF0Y2ggc2hvdWxkIGJlIG9rYXkuIChJIGhhdmVuJ3QgdHJpZWQg
+aXQpDQo+ID4gPiANCj4gPiA+ID4gMi4gSWYgdGhlcmUgaXMgbm8gY2xlYXIgVk1DSSBiZWhhdmlv
+ciwgdGhlbiB3ZSBsb29rIGF0IFRDUC9JUA0KPiA+ID4gPiBiZWNhdXNlDQo+ID4gPiA+IHRob3Nl
+IHNlbWFudGljcyBhcmUgZXhwZWN0ZWQgYnkgbW9zdCBhcHBsaWNhdGlvbnMuDQo+ID4gPiA+IA0K
+PiA+ID4gPiBUaGlzIGJ1ZyBuZWVkcyBhIHRlc3QgY2FzZSBpbiB0b29scy90ZXN0aW5ncy92c29j
+ay8gYW5kIHRoYXQNCj4gPiA+ID4gdGVzdA0KPiA+ID4gPiBjYXNlDQo+ID4gPiA+IHdpbGwgcnVu
+IGFnYWluc3QgVk1DSSwgdmlydGlvLXZzb2NrLCBhbmQgSHlwZXItVi4gIERvaW5nIHRoYXQNCj4g
+PiA+ID4gd2lsbA0KPiA+ID4gPiBhbnN3ZXIgdGhlIHF1ZXN0aW9uIG9mIGhvdyBWTUNJIGhhbmRs
+ZXMgdGhpcyBjYXNlLg0KPiA+ID4gDQo+ID4gPiBJIGFncmVlLg0KPiA+IA0KPiA+IEknbSB0cnlp
+bmcgdG8gd3JpdGUgdGhlIHRlc3QgYnV0IEknbSBraW5kYSBzdHVjayBhcyBJIGhhdmUgbm8gd2F5
+DQo+ID4gdG8NCj4gDQo+IEdyZWF0IQ0KPiANCj4gPiBlbnN1cmUgdGhlIHByb3BlciB0aW1pbmcg
+YmV0d2VlbiB0aGUgdGVzdCBvbiB0aGUgc2VydmVyKGd1ZXN0KSBhbmQNCj4gPiB0aGUNCj4gPiB0
+ZXN0IG9uIGZyb20gdGhlIGNsaWVudChob3N0KS4NCj4gPiANCj4gPiBCYXNpY2FsbHkgSSB3YXMg
+dGhpbmtpbmcgYWJvdXQgY3JlYXRpbmcgYSBuZXcgdGVzdCByZXVzaW5nDQo+ID4gdGVzdF9zdHJl
+YW1fY29ubmVjdGlvbl9yZXNldCgpIGZyb20gdnNvY2tfdGVzdC5jLiBUaGUgcmV1c2VkDQo+ID4g
+ZnVuY3Rpb24NCj4gPiB3b3VsZCBiZSB1c2VkIGZvciB0aGUgcnVuX2NsaWVudCBjYWxsYmFjaywg
+d2hpbGUgSSB3b3VsZCBkZWZpbmUgYQ0KPiA+IG5ldw0KPiA+IGZ1bmN0aW9uIGZvciB0aGUgcnVu
+X3NlcnZlci4gSSB3YW50ZWQgdG8gYmFzaWNhbGx5IGRvIGEgYmluZCBvbmx5LA0KPiA+IGFuZA0K
+PiA+IGRvbid0IGdvIHVwIHRvIHRoZSBsaXN0ZW4vYWNjZXB0IGNhbGxzLg0KPiA+IFByb2JsZW0g
+aXMsIHRoZSBzZXJ2ZXIgd29uJ3QgYmxvY2sgYWZ0ZXIgdGhlIGJpbmQgaXMgZG9uZSwgYW5kIEkN
+Cj4gPiBkb24ndA0KPiA+IGtub3cgaG93IG11Y2ggdGhlIHRlc3Qgc2hvdWxkIHdhaXQgYmV0d2Vl
+biB0aGUgYmluZCBhbmQgdGhlIGVuZC4NCj4gPiBJIHdvdWxkIGxpa2UgdG8gc2hvdyB0aGF0IGV2
+ZW4gd2hlbiB0aGUgc2VydmVyIHJlYWNoZXMgdGhlIHBvaW50DQo+ID4gd2hlcmUNCj4gPiB0aGUg
+c29ja2V0IGlzIGJvdW5kLCB0aGUgY29ubmVjdCB3aWxsIHN0aWxsIHJldHVybiB3aXRoIEVDT05O
+UkVTRVQuDQo+ID4gVGhlDQo+ID4gc2FtZSB0ZXN0IHdpdGhvdXQgdGhlIHBhdGNoIHdvdWxkIHNp
+bXBseSBoYW5nIHRpbGwgd2UgaGl0IHRoZQ0KPiA+IHRpbWVvdXQNCj4gPiBvbiB0aGUgY2xpZW50
+IHNpZGUuDQo+ID4gRG9lcyB0aGF0IG1ha2Ugc2Vuc2U/IEFuZCBob3cgbXVjaCB0aW1lIHNob3Vs
+ZCBJIHdhaXQgZm9yIGFmdGVyIHRoZQ0KPiA+IGJpbmQgb24gdGhlIHNlcnZlciBzaWRlPw0KPiAN
+Cj4gWW91IGNhbiB1c2UgY29udHJvbF93cml0ZWxuKCkgYW5kIGNvbnRyb2xfZXhwZWN0bG4oKSBm
+cm9tIGNvbnRyb2wuYw0KPiB0bw0KPiBzeW5jcm9uaXplIHNlcnZlciBhbmQgY2xpZW50LiBUaGUg
+Y29udHJvbCBwYXRoIHVzZXMgYSBUQ1AvSVAgc29ja2V0Lg0KDQpPaCB0aGF0J3MgY29vbCEgSSBj
+b21wbGV0ZWx5IG1pc3NlZCB0aGlzIGZlYXR1cmUgOikNCkxldCBtZSByZXN1bWUgbXkgd29yayB0
+aGVuIQ0KIA0KPiANCj4gWW91IGNhbiBkbyBzb21ldGhpbmcgbGlrZSB0aGlzOg0KPiANCj4gc2Vy
+dmVyICAgICAgICAgICAgICAgICAgICAgICAgICAgY2xpZW50DQo+IA0KPiBzID0gc29ja2V0KCk7
+ICAgICAgICAgICAgICAgICAgICBzID0gc29ja2V0KCk7DQo+IGJpbmQocywgLi4uKTsNCj4gY29u
+dHJvbF93cml0ZWxuKCJCSU5EIik7DQo+ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
+IGNvbnRyb2xfZXhwZWN0bG4oIkJJTkQiKTsNCj4gICAgICAgICAgICAgICAgICAgICAgICAgICAg
+ICAgICAgY29ubmVjdChzLCAuLi4pOw0KPiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
+ICAjIGNoZWNrIHJldCBhbmQgZXJybm8NCj4gICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
+ICAgY29udHJvbF93cml0ZWxuKCJET05FIik7DQo+IGNvbnRyb2xfZXhwZWN0bG4oIkRPTkUiKTsN
+Cj4gY2xvc2Uocyk7ICAgICAgICAgICAgICAgICAgICAgICAgY2xvc2Uocyk7DQo+IA0KPiBDaGVl
+cnMsDQo+IFN0ZWZhbm8NCj4gDQotLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0t
+LS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0KSW50ZWwgQ29ycG9yYXRpb24gU0FTIChG
+cmVuY2ggc2ltcGxpZmllZCBqb2ludCBzdG9jayBjb21wYW55KQpSZWdpc3RlcmVkIGhlYWRxdWFy
+dGVyczogIkxlcyBNb250YWxldHMiLSAyLCBydWUgZGUgUGFyaXMsIAo5MjE5NiBNZXVkb24gQ2Vk
+ZXgsIEZyYW5jZQpSZWdpc3RyYXRpb24gTnVtYmVyOiAgMzAyIDQ1NiAxOTkgUi5DLlMuIE5BTlRF
+UlJFCkNhcGl0YWw6IDQsNTcyLDAwMCBFdXJvcwoKVGhpcyBlLW1haWwgYW5kIGFueSBhdHRhY2ht
+ZW50cyBtYXkgY29udGFpbiBjb25maWRlbnRpYWwgbWF0ZXJpYWwgZm9yCnRoZSBzb2xlIHVzZSBv
+ZiB0aGUgaW50ZW5kZWQgcmVjaXBpZW50KHMpLiBBbnkgcmV2aWV3IG9yIGRpc3RyaWJ1dGlvbgpi
+eSBvdGhlcnMgaXMgc3RyaWN0bHkgcHJvaGliaXRlZC4gSWYgeW91IGFyZSBub3QgdGhlIGludGVu
+ZGVkCnJlY2lwaWVudCwgcGxlYXNlIGNvbnRhY3QgdGhlIHNlbmRlciBhbmQgZGVsZXRlIGFsbCBj
+b3BpZXMuCg==
 
-Can you please verify that mac_link_up() gets called for these if
-there is a fixed-link property or phy-handle?
-
-Also, there is another way around this, which is for phylink_create()
-to callback through the mac_ops to request the default configuration.
-That could be plumbed down through the various DSA layers such that
-the old "max speed / max link" business could be setup.  However,
-that brings with it a new problem: if we default to a fixed-link, then
-attempting to connect a phy later will be ignored.  However, deferring
-the default create-time configuration setup to phylink_start() would
-work around it, but brings with it a bit more complexity.
-
--- 
-RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
-FTTC broadband for 0.8mile line in suburbia: sync at 12.1Mbps down 622kbps up
-According to speedtest.net: 11.9Mbps down 500kbps up
