@@ -2,125 +2,170 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 2779215BD71
-	for <lists+netdev@lfdr.de>; Thu, 13 Feb 2020 12:12:24 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C662815BD75
+	for <lists+netdev@lfdr.de>; Thu, 13 Feb 2020 12:12:53 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729875AbgBMLMQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 13 Feb 2020 06:12:16 -0500
-Received: from mail-wm1-f65.google.com ([209.85.128.65]:35343 "EHLO
-        mail-wm1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729588AbgBMLMP (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 13 Feb 2020 06:12:15 -0500
-Received: by mail-wm1-f65.google.com with SMTP id b17so6221856wmb.0
-        for <netdev@vger.kernel.org>; Thu, 13 Feb 2020 03:12:13 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=HjbPZrEbtFmqBlxSEQ8uJW/5jdaC0VtLl/huovljPNk=;
-        b=XvOWm20J8V2hJtzrfZP9BsSVOpuodtNgDW83ikwOXQBl1TJEaHj94NjxXPbANZznnn
-         OGeoiFim/TK2WS9FCW6wBzogEtRGt/GftYzZYxRSO2j/4Z8PlHtExSFMfKeNvzb68q4s
-         VHUvSQnHlzcXp9lIlZR0ciHcdLkOKKAb3r95vbLVJPBEKQdKAXNswuQ5kQ3eEYINkKYN
-         RdA+VK/zmq0+7J2Gjh88EuIZhmEuQYsplNQEeumrTzXXenYqvwuSSYCHNM+6nTw9mAv6
-         SIk8xIsuQtJMYYEPDWMZR7Cz4nLV0JJVzvcaRxen8iRwyIMMpITMHTk/EPimIERJXwGL
-         RC2w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=HjbPZrEbtFmqBlxSEQ8uJW/5jdaC0VtLl/huovljPNk=;
-        b=cTMVbs5Nw2Pima/U/Oc4OwKXwxXj7ZTgV+ZxfMkMjQquQeUGkzea+rl3nIk6NhZtso
-         r90E+ORh0evhcoTaC6iTTEGrgKdvz90oE6PspL4xVEGHmtzrmYL6HGTwFEYDO0jxpoov
-         5Ss5K/ky38qHjgKZqcw+mBNUEJA0Wyyn/J5cm0vLiQnMGgvnDVjHniRPYPlBTeEhb8t1
-         6vX5ToMWJrBp6l1LWYA0QPaOG2O66jvcGt1p1qxrvCOPc5ZZW6qvAzOIUcwY/+EmPgYN
-         n3UyBPYRCk6fSPL+XgN15osxTUP0d+qfX/g5wNZjrc7DVbWD2iaQtFt5T7KT5cPQHVL7
-         JvLg==
-X-Gm-Message-State: APjAAAWYxGfgxZFD3FsXAEJC6p7y0c3BQx4agUlOBAR1w7GIUIAlZf/7
-        ITJ0fz7fISfdG4M9bTFsyF1DsVg2K2zOsAEv9ykovw==
-X-Google-Smtp-Source: APXvYqxrfIYPP1alv0HAEx19Rj2wPXEesEtdsffep7m+n7renjP/jG11icrYenbgM8sL3AwqLhoQFTxp1g29tBjw2Zk=
-X-Received: by 2002:a7b:cc81:: with SMTP id p1mr5174972wma.62.1581592332274;
- Thu, 13 Feb 2020 03:12:12 -0800 (PST)
+        id S1729823AbgBMLMv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 13 Feb 2020 06:12:51 -0500
+Received: from ivanoab7.miniserver.com ([37.128.132.42]:47738 "EHLO
+        www.kot-begemot.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726232AbgBMLMv (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 13 Feb 2020 06:12:51 -0500
+Received: from tun252.jain.kot-begemot.co.uk ([192.168.18.6] helo=jain.kot-begemot.co.uk)
+        by www.kot-begemot.co.uk with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <anton.ivanov@cambridgegreys.com>)
+        id 1j2CQJ-00081T-WC; Thu, 13 Feb 2020 11:12:48 +0000
+Received: from jain.kot-begemot.co.uk ([192.168.3.3])
+        by jain.kot-begemot.co.uk with esmtp (Exim 4.92)
+        (envelope-from <anton.ivanov@cambridgegreys.com>)
+        id 1j2CQH-0007rt-Ni; Thu, 13 Feb 2020 11:12:47 +0000
+Subject: Re: [PATCH] virtio: Work around frames incorrectly marked as gso
+To:     "Michael S. Tsirkin" <mst@redhat.com>
+Cc:     netdev@vger.kernel.org, Jason Wang <jasowang@redhat.com>,
+        linux-um@lists.infradead.org,
+        virtualization@lists.linux-foundation.org
+References: <20191209104824.17059-1-anton.ivanov@cambridgegreys.com>
+ <57230228-7030-c65f-a24f-910ca52bbe9e@cambridgegreys.com>
+ <f78bfe6e-2ffc-3734-9618-470f1afea0c6@redhat.com>
+ <918222d9-816a-be70-f8af-b8dfcb586240@cambridgegreys.com>
+ <20200211053502-mutt-send-email-mst@kernel.org>
+ <9547228b-aa93-f2b6-6fdc-8d33cde3716a@cambridgegreys.com>
+ <20200213045937-mutt-send-email-mst@kernel.org>
+From:   Anton Ivanov <anton.ivanov@cambridgegreys.com>
+Message-ID: <54692f06-f687-8bd3-7a1b-3dac3e79110b@cambridgegreys.com>
+Date:   Thu, 13 Feb 2020 11:12:45 +0000
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.4.1
 MIME-Version: 1.0
-References: <20200211174126.GA29960@embeddedor> <CAMuHMdVZq3Lho0HxEvhv8di=OCBhvNEo=O198b1iayX_Wz_QcA@mail.gmail.com>
-In-Reply-To: <CAMuHMdVZq3Lho0HxEvhv8di=OCBhvNEo=O198b1iayX_Wz_QcA@mail.gmail.com>
-From:   Ard Biesheuvel <ard.biesheuvel@linaro.org>
-Date:   Thu, 13 Feb 2020 11:11:59 +0000
-Message-ID: <CAKv+Gu-eRn+H2xj=iYW8gqKRCWWzeOTbC=9W5nKae0ytq5NYGA@mail.gmail.com>
-Subject: Re: [PATCH] treewide: Replace zero-length arrays with flexible-array member
-To:     Geert Uytterhoeven <geert@linux-m68k.org>
-Cc:     "Gustavo A. R. Silva" <gustavo@embeddedor.com>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Kees Cook <keescook@chromium.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Greg KH <gregkh@linuxfoundation.org>,
-        Linux Crypto Mailing List <linux-crypto@vger.kernel.org>,
-        netdev <netdev@vger.kernel.org>,
-        USB list <linux-usb@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+In-Reply-To: <20200213045937-mutt-send-email-mst@kernel.org>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
+X-Spam-Score: -1.0
+X-Spam-Score: -1.0
+X-Clacks-Overhead: GNU Terry Pratchett
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 13 Feb 2020 at 12:09, Geert Uytterhoeven <geert@linux-m68k.org> wrote:
->
-> Hi Gustavo,
->
-> On Tue, Feb 11, 2020 at 10:49 PM Gustavo A. R. Silva
-> <gustavo@embeddedor.com> wrote:
-> > The current codebase makes use of the zero-length array language
-> > extension to the C90 standard, but the preferred mechanism to declare
-> > variable-length types such as these ones is a flexible array member[1][2],
-> > introduced in C99:
-> >
-> > struct foo {
-> >         int stuff;
-> >         struct boo array[];
-> > };
-> >
-> > By making use of the mechanism above, we will get a compiler warning
-> > in case the flexible array does not occur last in the structure, which
-> > will help us prevent some kind of undefined behavior bugs from being
-> > unadvertenly introduced[3] to the codebase from now on.
-> >
-> > All these instances of code were found with the help of the following
-> > Coccinelle script:
-> >
-> > @@
-> > identifier S, member, array;
-> > type T1, T2;
-> > @@
-> >
-> > struct S {
-> >   ...
-> >   T1 member;
-> >   T2 array[
-> > - 0
-> >   ];
-> > };
->
-> I've stumbled across one more in include/uapi/linux/usb/ch9.h:
->
->     struct usb_key_descriptor {
->             __u8  bLength;
->             __u8  bDescriptorType;
->
->             __u8  tTKID[3];
->             __u8  bReserved;
->             __u8  bKeyData[0];
->     } __attribute__((packed));
->
-> And it seems people are (ab)using one-sized arrays for flexible arrays, too:
->
->     struct usb_string_descriptor {
->             __u8  bLength;
->             __u8  bDescriptorType;
->
->             __le16 wData[1];                /* UTF-16LE encoded */
->     } __attribute__ ((packed));
->
-> As this is UAPI, we have to be careful for regressions, though.
->
 
-These were probably taken straight from the specification. The [1]
-trick is used a lot in the UEFI specification as well, for instance.
+
+On 13/02/2020 10:00, Michael S. Tsirkin wrote:
+> On Wed, Feb 12, 2020 at 05:38:09PM +0000, Anton Ivanov wrote:
+>>
+>>
+>> On 11/02/2020 10:37, Michael S. Tsirkin wrote:
+>>> On Tue, Feb 11, 2020 at 07:42:37AM +0000, Anton Ivanov wrote:
+>>>> On 11/02/2020 02:51, Jason Wang wrote:
+>>>>>
+>>>>> On 2020/2/11 上午12:55, Anton Ivanov wrote:
+>>>>>>
+>>>>>>
+>>>>>> On 09/12/2019 10:48, anton.ivanov@cambridgegreys.com wrote:
+>>>>>>> From: Anton Ivanov <anton.ivanov@cambridgegreys.com>
+>>>>>>>
+>>>>>>> Some of the frames marked as GSO which arrive at
+>>>>>>> virtio_net_hdr_from_skb() have no GSO_TYPE, no
+>>>>>>> fragments (data_len = 0) and length significantly shorter
+>>>>>>> than the MTU (752 in my experiments).
+>>>>>>>
+>>>>>>> This is observed on raw sockets reading off vEth interfaces
+>>>>>>> in all 4.x and 5.x kernels I tested.
+>>>>>>>
+>>>>>>> These frames are reported as invalid while they are in fact
+>>>>>>> gso-less frames.
+>>>>>>>
+>>>>>>> This patch marks the vnet header as no-GSO for them instead
+>>>>>>> of reporting it as invalid.
+>>>>>>>
+>>>>>>> Signed-off-by: Anton Ivanov <anton.ivanov@cambridgegreys.com>
+>>>>>>> ---
+>>>>>>>     include/linux/virtio_net.h | 8 ++++++--
+>>>>>>>     1 file changed, 6 insertions(+), 2 deletions(-)
+>>>>>>>
+>>>>>>> diff --git a/include/linux/virtio_net.h b/include/linux/virtio_net.h
+>>>>>>> index 0d1fe9297ac6..d90d5cff1b9a 100644
+>>>>>>> --- a/include/linux/virtio_net.h
+>>>>>>> +++ b/include/linux/virtio_net.h
+>>>>>>> @@ -112,8 +112,12 @@ static inline int
+>>>>>>> virtio_net_hdr_from_skb(const struct sk_buff *skb,
+>>>>>>>                 hdr->gso_type = VIRTIO_NET_HDR_GSO_TCPV4;
+>>>>>>>             else if (sinfo->gso_type & SKB_GSO_TCPV6)
+>>>>>>>                 hdr->gso_type = VIRTIO_NET_HDR_GSO_TCPV6;
+>>>>>>> -        else
+>>>>>>> -            return -EINVAL;
+>>>>>>> +        else {
+>>>>>>> +            if (skb->data_len == 0)
+>>>>>>> +                hdr->gso_type = VIRTIO_NET_HDR_GSO_NONE;
+>>>>>>> +            else
+>>>>>>> +                return -EINVAL;
+>>>>>>> +        }
+>>>>>>>             if (sinfo->gso_type & SKB_GSO_TCP_ECN)
+>>>>>>>                 hdr->gso_type |= VIRTIO_NET_HDR_GSO_ECN;
+>>>>>>>         } else
+>>>>>>>
+>>>>>>
+>>>>>> ping.
+>>>>>>
+>>>>>
+>>>>> Do you mean gso_size is set but gso_type is not? Looks like a bug
+>>>>> elsewhere.
+>>>>>
+>>>>> Thanks
+>>>>>
+>>>>>
+>>>> Yes.
+>>>>
+>>>> I could not trace it where it is coming from.
+>>>>
+>>>> I see it when doing recvmmsg on raw sockets in the UML vector network
+>>>> drivers.
+>>>>
+>>>
+>>> I think we need to find the culprit and fix it there, lots of other things
+>>> can break otherwise.
+>>> Just printing out skb->dev->name should do the trick, no?
+>>
+>> The printk in virtio_net_hdr_from_skb says NULL.
+>>
+>> That is probably normal for a locally originated frame.
+>>
+>> I cannot reproduce this with network traffic by the way - it happens only if the traffic is locally originated on the host.
+>>
+>> A,
+> 
+> OK so is it code in __tcp_transmit_skb that sets gso_size to non-null
+> when gso_type is 0?
+
+It does look like that, but I cannot see it when reading it :(
+
+
+> 
+> 
+>>>
+>>>
+>>>> -- 
+>>>> Anton R. Ivanov
+>>>> Cambridgegreys Limited. Registered in England. Company Number 10273661
+>>>> https://www.cambridgegreys.com/
+>>>
+>>>
+>>> _______________________________________________
+>>> linux-um mailing list
+>>> linux-um@lists.infradead.org
+>>> http://lists.infradead.org/mailman/listinfo/linux-um
+>>>
+>>
+>> -- 
+>> Anton R. Ivanov
+>> Cambridgegreys Limited. Registered in England. Company Number 10273661
+>> https://www.cambridgegreys.com/
+> 
+> 
+
+-- 
+Anton R. Ivanov
+Cambridgegreys Limited. Registered in England. Company Number 10273661
+https://www.cambridgegreys.com/
