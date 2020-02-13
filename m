@@ -2,107 +2,165 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 3895915B754
-	for <lists+netdev@lfdr.de>; Thu, 13 Feb 2020 03:56:09 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5D32E15B7C7
+	for <lists+netdev@lfdr.de>; Thu, 13 Feb 2020 04:31:56 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729538AbgBMC4G (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 12 Feb 2020 21:56:06 -0500
-Received: from mail.kernel.org ([198.145.29.99]:39204 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1729521AbgBMC4G (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 12 Feb 2020 21:56:06 -0500
-Received: from localhost.localdomain (c-73-231-172-41.hsd1.ca.comcast.net [73.231.172.41])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        id S1729471AbgBMDbx (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 12 Feb 2020 22:31:53 -0500
+Received: from us-smtp-delivery-1.mimecast.com ([207.211.31.120]:20223 "EHLO
+        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+        with ESMTP id S1729432AbgBMDbx (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 12 Feb 2020 22:31:53 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1581564712;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=x48Xkc/52KhxaaQHOFtPu2ZMXbY1JrtqvmLAgLZ6e18=;
+        b=f56hXAbVG0xt+fOpk8wdrJnSIHfHglYwz11krUjAqqOalFatHln3FhDWd0dStisvRcn99C
+        nM53whYrb5kWx6hCjGZhf/Nn4MmH+8alrdLFqrXaDGUvNBDI/TnHOdfv3QAlULv2Rw7/GW
+        MGvUT5EX1bDsPQPlk+bMeKe945jFCuw=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-35-qgUXa6ttM3qy-xfPilOMbw-1; Wed, 12 Feb 2020 22:31:45 -0500
+X-MC-Unique: qgUXa6ttM3qy-xfPilOMbw-1
+Received: from smtp.corp.redhat.com (int-mx06.intmail.prod.int.phx2.redhat.com [10.5.11.16])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 7970621739;
-        Thu, 13 Feb 2020 02:56:05 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1581562565;
-        bh=v1Cdow8c5mnT/NMDSQZkvFxjLExeUuklGL4gKnniKXs=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=a7+1+jEh8u1G/rdtaepjruSQQTwG5z1NHyOkLot8vD1WbNRqccP+XJhHxzYhtWFCR
-         1Xy9x1m1LyhaAJSTKS2NOMn71lcsgbJR+IovLNztH7t4BEYfQsK41VP5kT/7NLLT9b
-         m490Lyxu3UsoUPYGilDHonx//E+lgK6OQI22INxs=
-Date:   Wed, 12 Feb 2020 18:56:05 -0800
-From:   Andrew Morton <akpm@linux-foundation.org>
-To:     Arjun Roy <arjunroy.kdev@gmail.com>
-Cc:     davem@davemloft.net, netdev@vger.kernel.org, linux-mm@kvack.org,
-        arjunroy@google.com, Eric Dumazet <edumazet@google.com>,
-        Soheil Hassas Yeganeh <soheil@google.com>
-Subject: Re: [PATCH resend mm,net-next 3/3] net-zerocopy: Use
- vm_insert_pages() for tcp rcv zerocopy.
-Message-Id: <20200212185605.d89c820903b7aa9fbbc060b2@linux-foundation.org>
-In-Reply-To: <20200128025958.43490-3-arjunroy.kdev@gmail.com>
-References: <20200128025958.43490-1-arjunroy.kdev@gmail.com>
-        <20200128025958.43490-3-arjunroy.kdev@gmail.com>
-X-Mailer: Sylpheed 3.5.1 (GTK+ 2.24.31; x86_64-pc-linux-gnu)
-Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 6555D1005502;
+        Thu, 13 Feb 2020 03:31:44 +0000 (UTC)
+Received: from [10.72.13.212] (ovpn-13-212.pek2.redhat.com [10.72.13.212])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id F3CA35C1B2;
+        Thu, 13 Feb 2020 03:31:39 +0000 (UTC)
+Subject: Re: [PATCH] virtio: Work around frames incorrectly marked as gso
+To:     Anton Ivanov <anton.ivanov@cambridgegreys.com>,
+        "Michael S. Tsirkin" <mst@redhat.com>
+Cc:     netdev@vger.kernel.org, linux-um@lists.infradead.org,
+        virtualization@lists.linux-foundation.org
+References: <20191209104824.17059-1-anton.ivanov@cambridgegreys.com>
+ <57230228-7030-c65f-a24f-910ca52bbe9e@cambridgegreys.com>
+ <f78bfe6e-2ffc-3734-9618-470f1afea0c6@redhat.com>
+ <918222d9-816a-be70-f8af-b8dfcb586240@cambridgegreys.com>
+ <20200211053502-mutt-send-email-mst@kernel.org>
+ <9547228b-aa93-f2b6-6fdc-8d33cde3716a@cambridgegreys.com>
+From:   Jason Wang <jasowang@redhat.com>
+Message-ID: <71193f51-9606-58ba-39d7-904bc9fbd29a@redhat.com>
+Date:   Thu, 13 Feb 2020 11:31:38 +0800
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.8.0
+MIME-Version: 1.0
+In-Reply-To: <9547228b-aa93-f2b6-6fdc-8d33cde3716a@cambridgegreys.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.16
+Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, 27 Jan 2020 18:59:58 -0800 Arjun Roy <arjunroy.kdev@gmail.com> wrote:
 
-> Use vm_insert_pages() for tcp receive zerocopy. Spin lock cycles
-> (as reported by perf) drop from a couple of percentage points
-> to a fraction of a percent. This results in a roughly 6% increase in
-> efficiency, measured roughly as zerocopy receive count divided by CPU
-> utilization.
-> 
-> The intention of this patch-set is to reduce atomic ops for
-> tcp zerocopy receives, which normally hits the same spinlock multiple
-> times consecutively.
+On 2020/2/13 =E4=B8=8A=E5=8D=881:38, Anton Ivanov wrote:
+>
+>
+> On 11/02/2020 10:37, Michael S. Tsirkin wrote:
+>> On Tue, Feb 11, 2020 at 07:42:37AM +0000, Anton Ivanov wrote:
+>>> On 11/02/2020 02:51, Jason Wang wrote:
+>>>>
+>>>> On 2020/2/11 =E4=B8=8A=E5=8D=8812:55, Anton Ivanov wrote:
+>>>>>
+>>>>>
+>>>>> On 09/12/2019 10:48, anton.ivanov@cambridgegreys.com wrote:
+>>>>>> From: Anton Ivanov <anton.ivanov@cambridgegreys.com>
+>>>>>>
+>>>>>> Some of the frames marked as GSO which arrive at
+>>>>>> virtio_net_hdr_from_skb() have no GSO_TYPE, no
+>>>>>> fragments (data_len =3D 0) and length significantly shorter
+>>>>>> than the MTU (752 in my experiments).
+>>>>>>
+>>>>>> This is observed on raw sockets reading off vEth interfaces
+>>>>>> in all 4.x and 5.x kernels I tested.
+>>>>>>
+>>>>>> These frames are reported as invalid while they are in fact
+>>>>>> gso-less frames.
+>>>>>>
+>>>>>> This patch marks the vnet header as no-GSO for them instead
+>>>>>> of reporting it as invalid.
+>>>>>>
+>>>>>> Signed-off-by: Anton Ivanov <anton.ivanov@cambridgegreys.com>
+>>>>>> ---
+>>>>>> =C2=A0=C2=A0 include/linux/virtio_net.h | 8 ++++++--
+>>>>>> =C2=A0=C2=A0 1 file changed, 6 insertions(+), 2 deletions(-)
+>>>>>>
+>>>>>> diff --git a/include/linux/virtio_net.h b/include/linux/virtio_net=
+.h
+>>>>>> index 0d1fe9297ac6..d90d5cff1b9a 100644
+>>>>>> --- a/include/linux/virtio_net.h
+>>>>>> +++ b/include/linux/virtio_net.h
+>>>>>> @@ -112,8 +112,12 @@ static inline int
+>>>>>> virtio_net_hdr_from_skb(const struct sk_buff *skb,
+>>>>>> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
+=C2=A0=C2=A0=C2=A0 hdr->gso_type =3D VIRTIO_NET_HDR_GSO_TCPV4;
+>>>>>> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 else =
+if (sinfo->gso_type & SKB_GSO_TCPV6)
+>>>>>> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
+=C2=A0=C2=A0=C2=A0 hdr->gso_type =3D VIRTIO_NET_HDR_GSO_TCPV6;
+>>>>>> -=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 else
+>>>>>> -=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
+ return -EINVAL;
+>>>>>> +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 else {
+>>>>>> +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
+ if (skb->data_len =3D=3D 0)
+>>>>>> +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
+=C2=A0=C2=A0=C2=A0=C2=A0 hdr->gso_type =3D VIRTIO_NET_HDR_GSO_NONE;
+>>>>>> +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
+ else
+>>>>>> +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
+=C2=A0=C2=A0=C2=A0=C2=A0 return -EINVAL;
+>>>>>> +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 }
+>>>>>> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 if (s=
+info->gso_type & SKB_GSO_TCP_ECN)
+>>>>>> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
+=C2=A0=C2=A0=C2=A0 hdr->gso_type |=3D VIRTIO_NET_HDR_GSO_ECN;
+>>>>>> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 } else
+>>>>>>
+>>>>>
+>>>>> ping.
+>>>>>
+>>>>
+>>>> Do you mean gso_size is set but gso_type is not? Looks like a bug
+>>>> elsewhere.
+>>>>
+>>>> Thanks
+>>>>
+>>>>
+>>> Yes.
+>>>
+>>> I could not trace it where it is coming from.
+>>>
+>>> I see it when doing recvmmsg on raw sockets in the UML vector network
+>>> drivers.
+>>>
+>>
+>> I think we need to find the culprit and fix it there, lots of other=20
+>> things
+>> can break otherwise.
+>> Just printing out skb->dev->name should do the trick, no?
+>
+> The printk in virtio_net_hdr_from_skb says NULL.
+>
+> That is probably normal for a locally originated frame.
+>
+> I cannot reproduce this with network traffic by the way - it happens=20
+> only if the traffic is locally originated on the host.
+>
+> A,
 
-For some reason the patch causes this:
 
-In file included from ./arch/x86/include/asm/atomic.h:5:0,
-                 from ./include/linux/atomic.h:7,
-                 from ./include/linux/crypto.h:15,
-                 from ./include/crypto/hash.h:11,
-                 from net/ipv4/tcp.c:246:
-net/ipv4/tcp.c: In function ‘do_tcp_getsockopt.isra.29’:
-./include/linux/compiler.h:225:31: warning: ‘tp’ may be used uninitialized in this function [-Wmaybe-uninitialized]
-  case 4: *(volatile __u32 *)p = *(__u32 *)res; break;
-          ~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~
-net/ipv4/tcp.c:1779:19: note: ‘tp’ was declared here
-  struct tcp_sock *tp;
-                   ^~
+Or maybe you can try add dump_stack() there.
 
-It's a false positive.  gcc-7.2.0
-
-: out:
-:        up_read(&current->mm->mmap_sem);
-:        if (length) {
-:                WRITE_ONCE(tp->copied_seq, seq);
-
-but `length' is zero here.  
-
-This suppresses it:
-
---- a/net/ipv4/tcp.c~net-zerocopy-use-vm_insert_pages-for-tcp-rcv-zerocopy-fix
-+++ a/net/ipv4/tcp.c
-@@ -1788,6 +1788,8 @@ static int tcp_zerocopy_receive(struct s
- 
- 	sock_rps_record_flow(sk);
- 
-+	tp = tcp_sk(sk);
-+
- 	down_read(&current->mm->mmap_sem);
- 
- 	ret = -EINVAL;
-@@ -1796,7 +1798,6 @@ static int tcp_zerocopy_receive(struct s
- 		goto out;
- 	zc->length = min_t(unsigned long, zc->length, vma->vm_end - address);
- 
--	tp = tcp_sk(sk);
- 	seq = tp->copied_seq;
- 	inq = tcp_inq(sk);
- 	zc->length = min_t(u32, zc->length, inq);
-
-and I guess it's zero-cost.
+Thanks
 
 
-Anyway, I'll sit on this lot for a while, hoping for a davem ack?
+
