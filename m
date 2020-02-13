@@ -2,174 +2,294 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 97C8A15CD8E
-	for <lists+netdev@lfdr.de>; Thu, 13 Feb 2020 22:50:06 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 63A2C15CD97
+	for <lists+netdev@lfdr.de>; Thu, 13 Feb 2020 22:52:01 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728738AbgBMVtw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 13 Feb 2020 16:49:52 -0500
-Received: from mail-ed1-f67.google.com ([209.85.208.67]:40321 "EHLO
-        mail-ed1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728138AbgBMVtw (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 13 Feb 2020 16:49:52 -0500
-Received: by mail-ed1-f67.google.com with SMTP id p3so8701799edx.7
-        for <netdev@vger.kernel.org>; Thu, 13 Feb 2020 13:49:50 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=paul-moore-com.20150623.gappssmtp.com; s=20150623;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=CIr8PnObM5ymwiwL1EiMYkctE0asXfoeHqvExzLeSc4=;
-        b=FqFjEPBAWPA+rQxGxDZQVc/+KDC775ecwL3/+FaBoa2038OKUe3oN6g8shGj/YRVtO
-         kRm/wFg1uwYyzuvE14fQXQ/6hccJfwRgO3aVKboiJnszaYINoRpEp4EArtkScaku61pv
-         QZ6TB6Ttwea8tpsUi/cKCopeKQgLK3GqQTdzhfnRTdTRXeGrihMjkHplbG+dbDWPPg8u
-         EotRIFc6D/ah43gjEO73ItC+Y45grJMPIZ36X9aHuxaoapr80EM/gJKOUsD9kMnu1vJr
-         YN+eSSyvvyTL2Fyf5YZg/7zFE2QFdGsBJ87am0k5EsyuLu8LGmzWJZqAFQG8z9n1hf0k
-         nCnw==
+        id S1728688AbgBMVuO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 13 Feb 2020 16:50:14 -0500
+Received: from us-smtp-delivery-1.mimecast.com ([205.139.110.120]:59272 "EHLO
+        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+        with ESMTP id S1727778AbgBMVuN (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 13 Feb 2020 16:50:13 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1581630611;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=rccrrusYeh/lKJYi1zR95yhXu0ox759XDiw1HfFrUwQ=;
+        b=ZXRdVo2XXwyREaCdO1B+DbWJGbAr0wxLcSIU1j5IyDPuBjXoM5Ni7cDezNUkFjSP+QbRXF
+        szBO3uVY7ALJpb4mK9ZLUXxbEtl1+XWUS4emOy2XKjWHJJxyX+H/gVRYDNQp9hv847MDRv
+        LIgDgX0MvMv02yxE3zuyq7WyqJcCZwU=
+Received: from mail-lj1-f198.google.com (mail-lj1-f198.google.com
+ [209.85.208.198]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-42-NB2Vd6o4PI27vZZ-as6cDQ-1; Thu, 13 Feb 2020 16:50:09 -0500
+X-MC-Unique: NB2Vd6o4PI27vZZ-as6cDQ-1
+Received: by mail-lj1-f198.google.com with SMTP id j1so2568856lja.3
+        for <netdev@vger.kernel.org>; Thu, 13 Feb 2020 13:50:09 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=CIr8PnObM5ymwiwL1EiMYkctE0asXfoeHqvExzLeSc4=;
-        b=Z60wK+1Qb5JgJae4Z6+PLFu7RsWaNYPGHkLQaEG4gNnTWqsFAbkSfd194EcLBJUnBN
-         wCNCTOWkZY+JTmG2dGQHaA4oV4jODk/GGqxsP/eGSqA59ixp2F5pRwt8686wCARSSKr1
-         OrwoQzAvrpvxIL7Gkrp+38aNToQfKYxXSIe7FK4WzLPEZaxLJ4mEBFNdM/X3KQULXUYw
-         ne1kNeib8VMdo7FTNRs6XTkuAiq3Fn/yZSwWxJ5vihVMdMPjJZcrbHjnHKVRjZgtGEJM
-         Wo4rNOKygBDAYA9BdM0KShZH8nm6qhnHwawA6teGTPnnFri1BJsbFnC3h1PZ4GFmiurW
-         iq3w==
-X-Gm-Message-State: APjAAAVMoF0AggDp4RWM/InLR7AqQn0BXgDw4VnWpTs5AN5GOnXoKLic
-        KR63/S6WccFn5l8dgemp/eyD1gCCRbIEkVkFDr8k
-X-Google-Smtp-Source: APXvYqzSQm4JJnSM2NwbsgUln1Ol3jVku13aQhiI2KX5XKlMiqINrDBjs9ZRBvvzwBRwGvS0GSsKMYn/KfzBkhIn7o0=
-X-Received: by 2002:a17:906:9352:: with SMTP id p18mr17616846ejw.95.1581630589598;
- Thu, 13 Feb 2020 13:49:49 -0800 (PST)
+        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
+         :message-id:mime-version;
+        bh=rccrrusYeh/lKJYi1zR95yhXu0ox759XDiw1HfFrUwQ=;
+        b=tPa2R5ohysGrtxOgIQETDcE66dJCR/QcOPPFmTmEAdzlnXeEo5O/1GxNWFwWhgARrc
+         8waWBDXXHAhdL004SD7VPoJB77j75HjRmZ9/KgPN3PbPG/OEEEXWbpw7BlANbM5PhbNp
+         gFz7jMbR8ZJ/skOCbWXeeC5rs4N+4qVE+1EAx4zaFNKPUbO81kj4pjuWCfrzLrfox6F3
+         CEHADkIF41nC4JeLWLDLc1caGWJIAHEdovMbn40LeYCT8Kg1lTd9lzD6IDFXyWSnqiZL
+         Q3ytTAM56/eLQZMMMjCdRYIRfpnVUKSE8s2KDxgmWGBSDBhhv3nRMzNyUD5TvBBBKb9z
+         JSBQ==
+X-Gm-Message-State: APjAAAUO6Q5ccxWK6UOC//rLCpmjxj+5sZbDFwrii4RpxLa04HojrUXm
+        tQYn72oZcw3i1OPUdv+EyO6emWX8f2MGDhLc4KKUEJK3KCrEyIxHQz30+kcBdAapEPnDyxXlt8U
+        hzr1yctXqjPgF3N0S
+X-Received: by 2002:a2e:7812:: with SMTP id t18mr12947428ljc.289.1581630608080;
+        Thu, 13 Feb 2020 13:50:08 -0800 (PST)
+X-Google-Smtp-Source: APXvYqyXjkEZfMsjk1Sf2VTCksNc2vfWRGOAZDq6df04jcnIkWuCsFmH9R7MtIPfyy8/M8ggS39bEw==
+X-Received: by 2002:a2e:7812:: with SMTP id t18mr12947420ljc.289.1581630607825;
+        Thu, 13 Feb 2020 13:50:07 -0800 (PST)
+Received: from alrua-x1.borgediget.toke.dk ([45.145.92.2])
+        by smtp.gmail.com with ESMTPSA id v9sm2370728lfe.18.2020.02.13.13.50.07
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 13 Feb 2020 13:50:07 -0800 (PST)
+Received: by alrua-x1.borgediget.toke.dk (Postfix, from userid 1000)
+        id 4BC75180371; Thu, 13 Feb 2020 22:50:06 +0100 (CET)
+From:   Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
+To:     Song Liu <songliubraving@fb.com>, netdev@vger.kernel.org,
+        bpf@vger.kernel.org
+Cc:     kernel-team@fb.com, ast@kernel.org, daniel@iogearbox.net,
+        Song Liu <songliubraving@fb.com>
+Subject: Re: [RFC bpf-next 3/4] bpftool: introduce "prog profile" command
+In-Reply-To: <20200213210115.1455809-4-songliubraving@fb.com>
+References: <20200213210115.1455809-1-songliubraving@fb.com> <20200213210115.1455809-4-songliubraving@fb.com>
+X-Clacks-Overhead: GNU Terry Pratchett
+Date:   Thu, 13 Feb 2020 22:50:06 +0100
+Message-ID: <87o8u2dunl.fsf@toke.dk>
 MIME-Version: 1.0
-References: <cover.1577736799.git.rgb@redhat.com> <6452955c1e038227a5cd169f689f3fd3db27513f.1577736799.git.rgb@redhat.com>
- <CAHC9VhRkH=YEjAY6dJJHSp934grHnf=O4RiqLu3U8DzdVQOZkg@mail.gmail.com>
- <20200130192753.n7jjrshbhrczjzoe@madcap2.tricolour.ca> <CAHC9VhSVN3mNb5enhLR1hY+ekiAyiYWbehrwd_zN7kz13dF=1w@mail.gmail.com>
- <20200205235056.e5365xtgz7rbese2@madcap2.tricolour.ca>
-In-Reply-To: <20200205235056.e5365xtgz7rbese2@madcap2.tricolour.ca>
-From:   Paul Moore <paul@paul-moore.com>
-Date:   Thu, 13 Feb 2020 16:49:38 -0500
-Message-ID: <CAHC9VhTM6MDHLcBfwJ_9DCroG0VA-meO770ihjn1sVy6=0JrHw@mail.gmail.com>
-Subject: Re: [PATCH ghak90 V8 13/16] audit: track container nesting
-To:     Richard Guy Briggs <rgb@redhat.com>
-Cc:     nhorman@tuxdriver.com, linux-api@vger.kernel.org,
-        containers@lists.linux-foundation.org,
-        LKML <linux-kernel@vger.kernel.org>, dhowells@redhat.com,
-        Linux-Audit Mailing List <linux-audit@redhat.com>,
-        netfilter-devel@vger.kernel.org, ebiederm@xmission.com,
-        simo@redhat.com, netdev@vger.kernel.org,
-        linux-fsdevel@vger.kernel.org, Eric Paris <eparis@parisplace.org>,
-        mpatel@redhat.com, Serge Hallyn <serge@hallyn.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Feb 5, 2020 at 6:51 PM Richard Guy Briggs <rgb@redhat.com> wrote:
-> On 2020-02-05 18:05, Paul Moore wrote:
-> > On Thu, Jan 30, 2020 at 2:28 PM Richard Guy Briggs <rgb@redhat.com> wrote:
-> > > On 2020-01-22 16:29, Paul Moore wrote:
-> > > > On Tue, Dec 31, 2019 at 2:51 PM Richard Guy Briggs <rgb@redhat.com> wrote:
-> > > > >
-> > > > > Track the parent container of a container to be able to filter and
-> > > > > report nesting.
-> > > > >
-> > > > > Now that we have a way to track and check the parent container of a
-> > > > > container, modify the contid field format to be able to report that
-> > > > > nesting using a carrat ("^") separator to indicate nesting.  The
-> > > > > original field format was "contid=<contid>" for task-associated records
-> > > > > and "contid=<contid>[,<contid>[...]]" for network-namespace-associated
-> > > > > records.  The new field format is
-> > > > > "contid=<contid>[^<contid>[...]][,<contid>[...]]".
-> > > >
-> > > > Let's make sure we always use a comma as a separator, even when
-> > > > recording the parent information, for example:
-> > > > "contid=<contid>[,^<contid>[...]][,<contid>[...]]"
-> > >
-> > > The intent here is to clearly indicate and separate nesting from
-> > > parallel use of several containers by one netns.  If we do away with
-> > > that distinction, then we lose that inheritance accountability and
-> > > should really run the list through a "uniq" function to remove the
-> > > produced redundancies.  This clear inheritance is something Steve was
-> > > looking for since tracking down individual events/records to show that
-> > > inheritance was not aways feasible due to rolled logs or search effort.
-> >
-> > Perhaps my example wasn't clear.  I'm not opposed to the little
-> > carat/hat character indicating a container's parent, I just think it
-> > would be good to also include a comma *in*addition* to the carat/hat.
->
-> Ah, ok.  Well, I'd offer that it would be slightly shorter, slightly
-> less cluttered and having already written the parser in userspace, I
-> think the parser would be slightly simpler.
->
-> I must admit, I was a bit puzzled by your snippet of code that was used
-> as a prefix to the next item rather than as a postfix to the given item.
->
-> Can you say why you prefer the comma in addition?
+Song Liu <songliubraving@fb.com> writes:
 
-Generally speaking, I believe that a single delimiter is both easier
-for the eyes to parse, and easier/safer for machines to parse as well.
-In this particular case I think of the comma as a delimiter and the
-carat as a modifier, reusing the carat as a delimiter seems like a bad
-idea to me.
-
-> > > > > diff --git a/kernel/audit.c b/kernel/audit.c
-> > > > > index ef8e07524c46..68be59d1a89b 100644
-> > > > > --- a/kernel/audit.c
-> > > > > +++ b/kernel/audit.c
-> > > >
-> > > > > @@ -492,6 +493,7 @@ void audit_switch_task_namespaces(struct nsproxy *ns, struct task_struct *p)
-> > > > >                 audit_netns_contid_add(new->net_ns, contid);
-> > > > >  }
-> > > > >
-> > > > > +void audit_log_contid(struct audit_buffer *ab, u64 contid);
-> > > >
-> > > > If we need a forward declaration, might as well just move it up near
-> > > > the top of the file with the rest of the declarations.
-> > >
-> > > Ok.
-> > >
-> > > > > +void audit_log_contid(struct audit_buffer *ab, u64 contid)
-> > > > > +{
-> > > > > +       struct audit_contobj *cont = NULL, *prcont = NULL;
-> > > > > +       int h;
-> > > >
-> > > > It seems safer to pass the audit container ID object and not the u64.
-> > >
-> > > It would also be faster, but in some places it isn't available such as
-> > > for ptrace and signal targets.  This also links back to the drop record
-> > > refcounts to hold onto the contobj until process exit, or signal
-> > > delivery.
-> > >
-> > > What we could do is to supply two potential parameters, a contobj and/or
-> > > a contid, and have it use the contobj if it is valid, otherwise, use the
-> > > contid, as is done for names and paths supplied to audit_log_name().
-> >
-> > Let's not do multiple parameters, that begs for misuse, let's take the
-> > wrapper function route:
-> >
-> >  func a(int id) {
-> >    // important stuff
-> >  }
-> >
-> >  func ao(struct obj) {
-> >    a(obj.id);
-> >  }
-> >
-> > ... and we can add a comment that you *really* should be using the
-> > variant that passes an object.
+> With fentry/fexit programs, it is possible to profile BPF program with
+> hardware counters. Introduce bpftool "prog profile", which measures key
+> metrics of a BPF program.
 >
-> I was already doing that where it available, and dereferencing the id
-> for the call.  But I see an advantage to having both parameters supplied
-> to the function, since it saves us the trouble of dereferencing it,
-> searching for the id in the hash list and re-locating the object if the
-> object is already available.
+> bpftool prog profile command creates per-cpu perf events. Then it attaches
+> fentry/fexit programs to the target BPF program. The fentry program saves
+> perf event value to a map. The fexit program reads the perf event again,
+> and calculates the difference, which is the instructions/cycles used by
+> the target program.
+>
+> Example input and output:
+>
+>   ./bpftool prog profile 20 id 810 cycles instructions
+>   cycles: duration 20 run_cnt 1368 miss_cnt 665
+>           counter 503377 enabled 668202 running 351857
+>   instructions: duration 20 run_cnt 1368 miss_cnt 707
+>           counter 398625 enabled 502330 running 272014
+>
+> This command measures cycles and instructions for BPF program with id
+> 810 for 20 seconds. The program has triggered 1368 times. cycles was not
+> measured in 665 out of these runs, because of perf event multiplexing
+> (some perf commands are running in the background). In these runs, the BPF
+> program consumed 503377 cycles. The perf_event enabled and running time
+> are 668202 and 351857 respectively.
+>
+> Note that, this approach measures cycles and instructions in very small
+> increments. So the fentry/fexit programs introduce noticable errors to
+> the measurement results.
+>
+> The fentry/fexit programs are generated with BPF skeleton. Currently,
+> generation of the skeleton requires some manual steps.
+>
+> Signed-off-by: Song Liu <songliubraving@fb.com>
+> ---
+>  tools/bpf/bpftool/profiler.skel.h         | 820 ++++++++++++++++++++++
+>  tools/bpf/bpftool/prog.c                  | 387 +++++++++-
+>  tools/bpf/bpftool/skeleton/README         |   3 +
+>  tools/bpf/bpftool/skeleton/profiler.bpf.c | 185 +++++
+>  tools/bpf/bpftool/skeleton/profiler.h     |  47 ++
+>  5 files changed, 1441 insertions(+), 1 deletion(-)
+>  create mode 100644 tools/bpf/bpftool/profiler.skel.h
+>  create mode 100644 tools/bpf/bpftool/skeleton/README
+>  create mode 100644 tools/bpf/bpftool/skeleton/profiler.bpf.c
+>  create mode 100644 tools/bpf/bpftool/skeleton/profiler.h
+>
+> diff --git a/tools/bpf/bpftool/profiler.skel.h b/tools/bpf/bpftool/profiler.skel.h
+> new file mode 100644
+> index 000000000000..10e99989c03e
+> --- /dev/null
+> +++ b/tools/bpf/bpftool/profiler.skel.h
+> @@ -0,0 +1,820 @@
+> +/* SPDX-License-Identifier: (LGPL-2.1 OR BSD-2-Clause) */
+> +
+> +/* THIS FILE IS AUTOGENERATED! */
+> +#ifndef __PROFILER_BPF_SKEL_H__
+> +#define __PROFILER_BPF_SKEL_H__
+> +
+> +#include <stdlib.h>
+> +#include <bpf/libbpf.h>
+> +
+> +struct profiler_bpf {
+> +	struct bpf_object_skeleton *skeleton;
+> +	struct bpf_object *obj;
+> +	struct {
+> +		struct bpf_map *events;
+> +		struct bpf_map *fentry_readings;
+> +		struct bpf_map *accum_readings;
+> +		struct bpf_map *counts;
+> +		struct bpf_map *miss_counts;
+> +		struct bpf_map *rodata;
+> +	} maps;
+> +	struct {
+> +		struct bpf_program *fentry_XXX;
+> +		struct bpf_program *fexit_XXX;
+> +	} progs;
+> +	struct {
+> +		struct bpf_link *fentry_XXX;
+> +		struct bpf_link *fexit_XXX;
+> +	} links;
+> +	struct profiler_bpf__rodata {
+> +		__u32 num_cpu;
+> +		__u32 num_metric;
+> +	} *rodata;
+> +};
+> +
+> +static void
+> +profiler_bpf__destroy(struct profiler_bpf *obj)
+> +{
+> +	if (!obj)
+> +		return;
+> +	if (obj->skeleton)
+> +		bpf_object__destroy_skeleton(obj->skeleton);
+> +	free(obj);
+> +}
+> +
+> +static inline int
+> +profiler_bpf__create_skeleton(struct profiler_bpf *obj);
+> +
+> +static inline struct profiler_bpf *
+> +profiler_bpf__open_opts(const struct bpf_object_open_opts *opts)
+> +{
+> +	struct profiler_bpf *obj;
+> +
+> +	obj = (typeof(obj))calloc(1, sizeof(*obj));
+> +	if (!obj)
+> +		return NULL;
+> +	if (profiler_bpf__create_skeleton(obj))
+> +		goto err;
+> +	if (bpf_object__open_skeleton(obj->skeleton, opts))
+> +		goto err;
+> +
+> +	return obj;
+> +err:
+> +	profiler_bpf__destroy(obj);
+> +	return NULL;
+> +}
+> +
+> +static inline struct profiler_bpf *
+> +profiler_bpf__open(void)
+> +{
+> +	return profiler_bpf__open_opts(NULL);
+> +}
+> +
+> +static inline int
+> +profiler_bpf__load(struct profiler_bpf *obj)
+> +{
+> +	return bpf_object__load_skeleton(obj->skeleton);
+> +}
+> +
+> +static inline struct profiler_bpf *
+> +profiler_bpf__open_and_load(void)
+> +{
+> +	struct profiler_bpf *obj;
+> +
+> +	obj = profiler_bpf__open();
+> +	if (!obj)
+> +		return NULL;
+> +	if (profiler_bpf__load(obj)) {
+> +		profiler_bpf__destroy(obj);
+> +		return NULL;
+> +	}
+> +	return obj;
+> +}
+> +
+> +static inline int
+> +profiler_bpf__attach(struct profiler_bpf *obj)
+> +{
+> +	return bpf_object__attach_skeleton(obj->skeleton);
+> +}
+> +
+> +static inline void
+> +profiler_bpf__detach(struct profiler_bpf *obj)
+> +{
+> +	return bpf_object__detach_skeleton(obj->skeleton);
+> +}
+> +
+> +static inline int
+> +profiler_bpf__create_skeleton(struct profiler_bpf *obj)
+> +{
+> +	struct bpf_object_skeleton *s;
+> +
+> +	s = (typeof(s))calloc(1, sizeof(*s));
+> +	if (!s)
+> +		return -1;
+> +	obj->skeleton = s;
+> +
+> +	s->sz = sizeof(*s);
+> +	s->name = "profiler_bpf";
+> +	s->obj = &obj->obj;
+> +
+> +	/* maps */
+> +	s->map_cnt = 6;
+> +	s->map_skel_sz = sizeof(*s->maps);
+> +	s->maps = (typeof(s->maps))calloc(s->map_cnt, s->map_skel_sz);
+> +	if (!s->maps)
+> +		goto err;
+> +
+> +	s->maps[0].name = "events";
+> +	s->maps[0].map = &obj->maps.events;
+> +
+> +	s->maps[1].name = "fentry_readings";
+> +	s->maps[1].map = &obj->maps.fentry_readings;
+> +
+> +	s->maps[2].name = "accum_readings";
+> +	s->maps[2].map = &obj->maps.accum_readings;
+> +
+> +	s->maps[3].name = "counts";
+> +	s->maps[3].map = &obj->maps.counts;
+> +
+> +	s->maps[4].name = "miss_counts";
+> +	s->maps[4].map = &obj->maps.miss_counts;
+> +
+> +	s->maps[5].name = "profiler.rodata";
+> +	s->maps[5].map = &obj->maps.rodata;
+> +	s->maps[5].mmaped = (void **)&obj->rodata;
+> +
+> +	/* programs */
+> +	s->prog_cnt = 2;
+> +	s->prog_skel_sz = sizeof(*s->progs);
+> +	s->progs = (typeof(s->progs))calloc(s->prog_cnt, s->prog_skel_sz);
+> +	if (!s->progs)
+> +		goto err;
+> +
+> +	s->progs[0].name = "fentry_XXX";
+> +	s->progs[0].prog = &obj->progs.fentry_XXX;
+> +	s->progs[0].link = &obj->links.fentry_XXX;
+> +
+> +	s->progs[1].name = "fexit_XXX";
+> +	s->progs[1].prog = &obj->progs.fexit_XXX;
+> +	s->progs[1].link = &obj->links.fexit_XXX;
+> +
+> +	s->data_sz = 18256;
+> +	s->data = (void *)"\
+> +\x7f\x45\x4c\x46\x02\x01\x01\0\0\0\0\0\0\0\0\0\x01\0\xf7\0\x01\0\0\0\0\0\0\0\0\
 
-I strongly prefer we not do multiple parameters for the same "thing";
-I would much rather do the wrapper approach as described above.  I
-would also like to see us use the audit container ID object as much as
-possible, using a bare integer should be a last resort.
+Holy binary blob, Batman! :)
 
--- 
-paul moore
-www.paul-moore.com
+What is this blob, exactly? The bytecode output of a precompiled
+program?
+
+-Toke
+
