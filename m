@@ -2,39 +2,37 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 50E4F15F2E0
-	for <lists+netdev@lfdr.de>; Fri, 14 Feb 2020 19:20:46 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id CB27215F3FB
+	for <lists+netdev@lfdr.de>; Fri, 14 Feb 2020 19:22:57 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730334AbgBNPvU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 14 Feb 2020 10:51:20 -0500
-Received: from mail.kernel.org ([198.145.29.99]:56130 "EHLO mail.kernel.org"
+        id S2405046AbgBNSRF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 14 Feb 2020 13:17:05 -0500
+Received: from mail.kernel.org ([198.145.29.99]:56178 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1730729AbgBNPvS (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 14 Feb 2020 10:51:18 -0500
+        id S1730727AbgBNPvT (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 14 Feb 2020 10:51:19 -0500
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 890CB2168B;
-        Fri, 14 Feb 2020 15:51:16 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 100F124649;
+        Fri, 14 Feb 2020 15:51:17 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1581695477;
-        bh=a/JbiaU6A10GtmsEI/rx+V/8XXumfKNN7zGs8yipPCQ=;
+        s=default; t=1581695478;
+        bh=sOWt88WVkaqu6GMzTtpvWwwMB224frFvtLxOEicCWVI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=wNO1mdywvv4ZtQ8+g4yT4e/9eZJk1dXv6qgUUYDrBu/me1neYILUI+FRXtwdKj7Q4
-         ALZbOSI78oV/ni+oRxPNyT9J+HJzlZr/T1RMcH2BoFbXJxcKZsL54vIE22n9+37bIu
-         gHS1YDHJi5WL5JVzAuIK86VjHzTOwkhMzkTzmP9s=
+        b=RHOLBxujQosx3eOlgNu8wqaYwg5tOKZ6wE5XYyzbNtJc6Aw5qsRbmI+s2nlOtb70p
+         LntM+8AiAj5mjjAqI4rtVoxN7RqN3evErV5m0swrJ8iH4AnbzQxXZ1XEHjYLOALGjD
+         Vx0vzkw7rT13KgSazhhtlIs8uA1fBLOPDmLQBPwc=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Jean-Philippe Brucker <jean-philippe@linaro.org>,
-        Arend van Spriel <arend.vanspriel@broadcom.com>,
+Cc:     Nicolai Stange <nstange@suse.de>,
         Kalle Valo <kvalo@codeaurora.org>,
         Sasha Levin <sashal@kernel.org>,
-        linux-wireless@vger.kernel.org,
-        brcm80211-dev-list.pdl@broadcom.com,
-        brcm80211-dev-list@cypress.com, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.5 110/542] brcmfmac: sdio: Fix OOB interrupt initialization on brcm43362
-Date:   Fri, 14 Feb 2020 10:41:42 -0500
-Message-Id: <20200214154854.6746-110-sashal@kernel.org>
+        libertas-dev@lists.infradead.org, linux-wireless@vger.kernel.org,
+        netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.5 111/542] libertas: don't exit from lbs_ibss_join_existing() with RCU read lock held
+Date:   Fri, 14 Feb 2020 10:41:43 -0500
+Message-Id: <20200214154854.6746-111-sashal@kernel.org>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20200214154854.6746-1-sashal@kernel.org>
 References: <20200214154854.6746-1-sashal@kernel.org>
@@ -47,65 +45,37 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Jean-Philippe Brucker <jean-philippe@linaro.org>
+From: Nicolai Stange <nstange@suse.de>
 
-[ Upstream commit 8c8e60fb86a90a30721bbd797f58f96b3980dcc1 ]
+[ Upstream commit c7bf1fb7ddca331780b9a733ae308737b39f1ad4 ]
 
-Commit 262f2b53f679 ("brcmfmac: call brcmf_attach() just before calling
-brcmf_bus_started()") changed the initialization order of the brcmfmac
-SDIO driver. Unfortunately since brcmf_sdiod_intr_register() is now
-called before the sdiodev->bus_if initialization, it reads the wrong
-chip ID and fails to initialize the GPIO on brcm43362. Thus the chip
-cannot send interrupts and fails to probe:
+Commit e5e884b42639 ("libertas: Fix two buffer overflows at parsing bss
+descriptor") introduced a bounds check on the number of supplied rates to
+lbs_ibss_join_existing().
 
-[   12.517023] brcmfmac: brcmf_sdio_bus_rxctl: resumed on timeout
-[   12.531214] ieee80211 phy0: brcmf_bus_started: failed: -110
-[   12.536976] ieee80211 phy0: brcmf_attach: dongle is not responding: err=-110
-[   12.566467] brcmfmac: brcmf_sdio_firmware_callback: brcmf_attach failed
+Unfortunately, it introduced a return path from within a RCU read side
+critical section without a corresponding rcu_read_unlock(). Fix this.
 
-Initialize the bus interface earlier to ensure that
-brcmf_sdiod_intr_register() properly sets up the OOB interrupt.
-
-BugLink: https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=908438
-Fixes: 262f2b53f679 ("brcmfmac: call brcmf_attach() just before calling brcmf_bus_started()")
-Signed-off-by: Jean-Philippe Brucker <jean-philippe@linaro.org>
-Reviewed-by: Arend van Spriel <arend.vanspriel@broadcom.com>
+Fixes: e5e884b42639 ("libertas: Fix two buffer overflows at parsing bss descriptor")
+Signed-off-by: Nicolai Stange <nstange@suse.de>
 Signed-off-by: Kalle Valo <kvalo@codeaurora.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- .../net/wireless/broadcom/brcm80211/brcmfmac/sdio.c  | 12 ++++++------
- 1 file changed, 6 insertions(+), 6 deletions(-)
+ drivers/net/wireless/marvell/libertas/cfg.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/sdio.c b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/sdio.c
-index 1dea0178832ea..a935993a3c514 100644
---- a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/sdio.c
-+++ b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/sdio.c
-@@ -4226,6 +4226,12 @@ static void brcmf_sdio_firmware_callback(struct device *dev, int err,
- 	}
- 
- 	if (err == 0) {
-+		/* Assign bus interface call back */
-+		sdiod->bus_if->dev = sdiod->dev;
-+		sdiod->bus_if->ops = &brcmf_sdio_bus_ops;
-+		sdiod->bus_if->chip = bus->ci->chip;
-+		sdiod->bus_if->chiprev = bus->ci->chiprev;
-+
- 		/* Allow full data communication using DPC from now on. */
- 		brcmf_sdiod_change_state(bus->sdiodev, BRCMF_SDIOD_DATA);
- 
-@@ -4242,12 +4248,6 @@ static void brcmf_sdio_firmware_callback(struct device *dev, int err,
- 
- 	sdio_release_host(sdiod->func1);
- 
--	/* Assign bus interface call back */
--	sdiod->bus_if->dev = sdiod->dev;
--	sdiod->bus_if->ops = &brcmf_sdio_bus_ops;
--	sdiod->bus_if->chip = bus->ci->chip;
--	sdiod->bus_if->chiprev = bus->ci->chiprev;
--
- 	err = brcmf_alloc(sdiod->dev, sdiod->settings);
- 	if (err) {
- 		brcmf_err("brcmf_alloc failed\n");
+diff --git a/drivers/net/wireless/marvell/libertas/cfg.c b/drivers/net/wireless/marvell/libertas/cfg.c
+index c9401c121a14e..68985d7663491 100644
+--- a/drivers/net/wireless/marvell/libertas/cfg.c
++++ b/drivers/net/wireless/marvell/libertas/cfg.c
+@@ -1785,6 +1785,7 @@ static int lbs_ibss_join_existing(struct lbs_private *priv,
+ 		rates_max = rates_eid[1];
+ 		if (rates_max > MAX_RATES) {
+ 			lbs_deb_join("invalid rates");
++			rcu_read_unlock();
+ 			goto out;
+ 		}
+ 		rates = cmd.bss.rates;
 -- 
 2.20.1
 
