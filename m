@@ -2,216 +2,98 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 55E7815D4CA
-	for <lists+netdev@lfdr.de>; Fri, 14 Feb 2020 10:33:31 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8879E15D4FE
+	for <lists+netdev@lfdr.de>; Fri, 14 Feb 2020 10:50:38 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729069AbgBNJd3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 14 Feb 2020 04:33:29 -0500
-Received: from ssl.serverraum.org ([176.9.125.105]:42807 "EHLO
-        ssl.serverraum.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728807AbgBNJd3 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 14 Feb 2020 04:33:29 -0500
-Received: from ssl.serverraum.org (web.serverraum.org [172.16.0.2])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ssl.serverraum.org (Postfix) with ESMTPSA id 0377522FB6;
-        Fri, 14 Feb 2020 10:33:26 +0100 (CET)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=walle.cc; s=mail2016061301;
-        t=1581672806;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=N8SmNhdMY8qx5pj4Vo7NJU1TqLaS1FwOIi0U+8UWf5U=;
-        b=jow0IQnY/XW+UNNnWLTz3oPkgWsBjbx5QarPXEvfjcXyo5jTi2/Pc8APgpo1py3JkTQH25
-        +ceZVCZRfr396NDXbVRE6xj5EqfytE1zdhKoqxEbqKUmDNAKj7QGAZaQU1lHatPrZJDd/p
-        iCNOUe/Usk3mCHLzvA8wuSi7RGL2TyA=
+        id S1729076AbgBNJuf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 14 Feb 2020 04:50:35 -0500
+Received: from mail-wr1-f66.google.com ([209.85.221.66]:41772 "EHLO
+        mail-wr1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728865AbgBNJuf (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 14 Feb 2020 04:50:35 -0500
+Received: by mail-wr1-f66.google.com with SMTP id c9so10159741wrw.8
+        for <netdev@vger.kernel.org>; Fri, 14 Feb 2020 01:50:33 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=6wind.com; s=google;
+        h=reply-to:subject:to:references:from:organization:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=mD2YmEK4gCSV3hnc/dY0/Jzo5HOdOyl1iKFO3KoNy+U=;
+        b=RjNuaZUdXhPBsWNoILkrFF7l09xgcK0K0Fqkd8FzVv2CsyJsN9HB9wCKho9mmXuR0v
+         4WdtxhzvRO04TScUXvVE7WAmTg5ekpAoDcnYjunfb4DtgOIiYyP5NTbcvdWk2fRzCYrM
+         CdDgCSBNSCs3GvXYO/UoOmLNm/gy+ovdR4udBX54dAGexQGt7ulWw3BkLZ/7hvLUaOzA
+         Rv4ggce+fAn0nMhMT50JebQs0fMmBzooqsyCjoyNR6EO6O5FO4q1LsAoSlBb7GSrBr7u
+         NUawy2iZMz6PKTB9/IMEhakRbENaM13T64kb0oMikzkymLwaKG8NxsIAgMqn9BWzEn3d
+         +23Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:reply-to:subject:to:references:from:organization
+         :message-id:date:user-agent:mime-version:in-reply-to
+         :content-language:content-transfer-encoding;
+        bh=mD2YmEK4gCSV3hnc/dY0/Jzo5HOdOyl1iKFO3KoNy+U=;
+        b=YTqDYP2b2EmZO3cU5wdNJ9ssI/QkfQ+OQ1NM8dEExEHSHgJvYIhAvEqIZbJBHC4fAT
+         u8t2vZaarsAZPZsZLyZQhXdn1uzi8Hv2mzWRRIA85X9D3f4JCiRKwR+K1YSOTX2OM3cu
+         0AKrtNSsJUANpRQ66nQMKrhOSUrApY+qvBJgUfGrXgpKnNOKI0ppcoJQ7OBDUPCOWSIJ
+         UpphuE5s0joPCVC6bYtLE2pxoNEpWqwqLptX5DWykHISWu95V+BN6vz9B5UuQrdJjCgF
+         trJncwhMrogUwvOiHGtUQWFl2upkU0BCFcOiVtPR9FY/2QFAXAZRikoDM0tOEF4RtVK2
+         u3OA==
+X-Gm-Message-State: APjAAAVfJjzgPej80qqVXGoFi9nd/AJuoy8BcNjFILjj7YpoYqy7JS4e
+        gSn12TkLMqJtZEHT6PufNutSySsnz/0=
+X-Google-Smtp-Source: APXvYqyWaTLqFI33tla3YHVDRK253otcw/QrO9xEl+FmnlcscWzMlrXzY2DwbYKQZQtD/oo+Fu2B7Q==
+X-Received: by 2002:adf:f5cb:: with SMTP id k11mr3088787wrp.63.1581673832540;
+        Fri, 14 Feb 2020 01:50:32 -0800 (PST)
+Received: from ?IPv6:2a01:e0a:410:bb00:7cb8:8eea:bf1c:ed6? ([2a01:e0a:410:bb00:7cb8:8eea:bf1c:ed6])
+        by smtp.gmail.com with ESMTPSA id s23sm6524540wra.15.2020.02.14.01.50.31
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 14 Feb 2020 01:50:31 -0800 (PST)
+Reply-To: nicolas.dichtel@6wind.com
+Subject: Re: [PATCH v5 net] net, ip6_tunnel: enhance tunnel locate with link
+ check
+To:     William Dauchy <w.dauchy@criteo.com>, netdev@vger.kernel.org
+References: <cf5ef569-1742-a22f-ec7d-f987287e12fb@6wind.com>
+ <20200213171922.510172-1-w.dauchy@criteo.com>
+From:   Nicolas Dichtel <nicolas.dichtel@6wind.com>
+Organization: 6WIND
+Message-ID: <13b0e28f-136f-0a16-8900-784afcad549d@6wind.com>
+Date:   Fri, 14 Feb 2020 10:50:31 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.4.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8;
- format=flowed
+In-Reply-To: <20200213171922.510172-1-w.dauchy@criteo.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
 Content-Transfer-Encoding: 8bit
-Date:   Fri, 14 Feb 2020 10:33:25 +0100
-From:   Michael Walle <michael@walle.cc>
-To:     Joakim Zhang <qiangqing.zhang@nxp.com>
-Cc:     Marc Kleine-Budde <mkl@pengutronix.de>, wg@grandegger.com,
-        netdev@vger.kernel.org, linux-can@vger.kernel.org,
-        Pankaj Bansal <pankaj.bansal@nxp.com>,
-        Shawn Guo <shawnguo@kernel.org>
-Subject: Re: [PATCH 0/8] can: flexcan: add CAN FD support for NXP Flexcan
-In-Reply-To: <DB7PR04MB46187A6B5A8EC3A1D73D69FFE6150@DB7PR04MB4618.eurprd04.prod.outlook.com>
-References: <24eb5c67-4692-1002-2468-4ae2e1a6b68b@pengutronix.de>
- <20200213192027.4813-1-michael@walle.cc>
- <DB7PR04MB461896B6CC3EDC7009BCD741E6150@DB7PR04MB4618.eurprd04.prod.outlook.com>
- <2322fb83486c678917957d9879e27e63@walle.cc>
- <DB7PR04MB46187A6B5A8EC3A1D73D69FFE6150@DB7PR04MB4618.eurprd04.prod.outlook.com>
-Message-ID: <bf671072ce479049eb354d44f3617383@walle.cc>
-X-Sender: michael@walle.cc
-User-Agent: Roundcube Webmail/1.3.10
-X-Spamd-Bar: /
-X-Spam-Status: No, score=-0.10
-X-Rspamd-Server: web
-X-Spam-Score: -0.10
-X-Rspamd-Queue-Id: 0377522FB6
-X-Spamd-Result: default: False [-0.10 / 15.00];
-         FROM_HAS_DN(0.00)[];
-         TO_DN_SOME(0.00)[];
-         TO_MATCH_ENVRCPT_ALL(0.00)[];
-         MIME_GOOD(-0.10)[text/plain];
-         DKIM_SIGNED(0.00)[];
-         RCPT_COUNT_SEVEN(0.00)[7];
-         NEURAL_HAM(-0.00)[-0.904];
-         RCVD_COUNT_ZERO(0.00)[0];
-         FROM_EQ_ENVFROM(0.00)[];
-         MIME_TRACE(0.00)[0:+];
-         MID_RHS_MATCH_FROM(0.00)[]
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Am 2020-02-14 10:18, schrieb Joakim Zhang:
-> Best Regards,
-> Joakim Zhang
+Le 13/02/2020 à 18:19, William Dauchy a écrit :
+> With ipip, it is possible to create an extra interface explicitly
+> attached to a given physical interface:
 > 
->> -----Original Message-----
->> From: Michael Walle <michael@walle.cc>
->> Sent: 2020年2月14日 16:43
->> To: Joakim Zhang <qiangqing.zhang@nxp.com>
->> Cc: Marc Kleine-Budde <mkl@pengutronix.de>; wg@grandegger.com;
->> netdev@vger.kernel.org; linux-can@vger.kernel.org; Pankaj Bansal
->> <pankaj.bansal@nxp.com>
->> Subject: Re: [PATCH 0/8] can: flexcan: add CAN FD support for NXP 
->> Flexcan
->> 
->> Hi Joakim,
->> 
->> Am 2020-02-14 02:55, schrieb Joakim Zhang:
->> > Hi Michal,
->> >
->> >> -----Original Message-----
->> >> From: Michael Walle <michael@walle.cc>
->> >> Sent: 2020年2月14日 3:20
->> >> To: Marc Kleine-Budde <mkl@pengutronix.de>
->> >> Cc: Joakim Zhang <qiangqing.zhang@nxp.com>; wg@grandegger.com;
->> >> netdev@vger.kernel.org; linux-can@vger.kernel.org; Pankaj Bansal
->> >> <pankaj.bansal@nxp.com>; Michael Walle <michael@walle.cc>
->> >> Subject: Re: [PATCH 0/8] can: flexcan: add CAN FD support for NXP
->> >> Flexcan
->> >>
->> >> Hi,
->> >>
->> >> >>> Are you prepared to add back these patches as they are necessary
->> >> >>> for Flexcan CAN FD? And this Flexcan CAN FD patch set is based on
->> >> >>> these patches.
->> >> >>
->> >> >> Yes, these patches will be added back.
->> >> >
->> >> >I've cleaned up the first patch a bit, and pushed everything to the
->> >> >testing branch. Can you give it a test.
->> >>
->> >> What happend to that branch? FWIW I've just tried the patches on a
->> >> custom board with a LS1028A SoC. Both CAN and CAN-FD are working.
->> >> I've tested against a Peaktech USB CAN adapter. I'd love to see these
->> >> patches upstream, because our board also offers CAN and basic support
->> >> for it just made it upstream [1].
->> > The FlexCAN CAN FD related patches have stayed in
->> > linux-can-next/flexcan branch for a long time, I still don't know why
->> > Marc doesn't merge them into Linux mainline.
->> > https://eur01.safelinks.protection.outlook.com/?url=https%3A%2F%2Fgit.
->> >
->> kernel.org%2Fpub%2Fscm%2Flinux%2Fkernel%2Fgit%2Fmkl%2Flinux-can-next.g
->> >
->> it%2Ftree%2F%3Fh%3Dflexcan&amp;data=02%7C01%7Cqiangqing.zhang%40n
->> xp.co
->> >
->> m%7C94dca4472a584410b3b908d7b129db27%7C686ea1d3bc2b4c6fa92cd99c
->> 5c30163
->> >
->> 5%7C0%7C0%7C637172665642079192&amp;sdata=77tG6VuQCi%2FZXBKb23
->> 8%2FdNSV3
->> > NUIFrM5Y0e9yj0J3os%3D&amp;reserved=0
->> > Also must hope that this patch set can be upstreamed soon. :-)
->> 
->> I've took them from this branch and applied them to the latest linux 
->> master.
->> 
->> Thus,
->> 
->> Tested-by: Michael Walle <michael@walle.cc>
->> 
->> 
->> >> If these patches are upstream, only the device tree nodes seems to be
->> >> missing.
->> >> I don't know what has happened to [2]. But the patch doesn't seem to
->> >> be necessary.
->> > Yes, this patch is unnecessary. I have NACKed this patch for that,
->> > according to FlexCAN Integrated Guide, CTRL1[CLKSRC]=0 select
->> > oscillator clock and CTRL1[CLKSRC]=1 select peripheral clock.
->> > But it is actually decided by SoC integration, for i.MX, the design is
->> > different.
->> 
->> ok thanks for clarifying.
->> 
->> > I have not upstream i.MX FlexCAN device tree nodes, since it's
->> > dependency have not upstreamed yet.
->> >
->> >> Pankaj already send a patch to add the device node to the LS1028A [3].
->> >> Thats basically the same I've used, only that mine didn't had the
->> >> "fsl,ls1028ar1-flexcan" compatiblity string, but only the
->> >> "lx2160ar1-flexcan"
->> >> which is the correct way to use it, right?
->> > You can see below table from FlexCAN driver, "fsl,lx2160ar1-flexcan"
->> > supports CAN FD, you can use this compatible string.
->> 
->> correct. I've already a patch that does exactly this ;) Who would take 
->> the patch
->> for adding the LS1028A can device tree nodes to ls1028a.dtsi? You or 
->> Shawn
->> Guo?
-> Sorry, I missed the link[3], we usually write it this way:
-> 			compatible = "fsl,ls1028ar1-flexcan","fsl,lx2160ar1-flexcan";
-> Please send patch to Shawn Guo, he will review the device tree.
-
-As far as I know, there should be no undocumented binding. Eg. the 
-ls1028ar1-flexcan
-is neither in the source nor in the device tree binding documentation, 
-thus wouldn't
-be accepted.
-
-Thus either there should be another ls1028ar1-flexcan in the 
-flexcan_of_match table
-and the node should only contain that string or the node should only 
-contain
-fsl,lx2160ar1-flexcan. Is there any advantage of the first option?
-
-
--michael
-
-
+>   # ip link show tunl0
+>   4: tunl0@NONE: <NOARP> mtu 1480 qdisc noop state DOWN mode DEFAULT group default qlen 1000
+>     link/ipip 0.0.0.0 brd 0.0.0.0
+>   # ip link add tunl1 type ipip dev eth0
+>   # ip link show tunl1
+>   6: tunl1@eth0: <NOARP> mtu 1480 qdisc noop state DOWN mode DEFAULT group default qlen 1000
+>     link/ipip 0.0.0.0 brd 0.0.0.0
 > 
->> > static const struct of_device_id flexcan_of_match[] = {
->> > 	{ .compatible = "fsl,imx8qm-flexcan", .data =
->> > &fsl_imx8qm_devtype_data, },
->> > 	{ .compatible = "fsl,imx6q-flexcan", .data = &fsl_imx6q_devtype_data,
->> > },
->> > 	{ .compatible = "fsl,imx28-flexcan", .data = &fsl_imx28_devtype_data,
->> > },
->> > 	{ .compatible = "fsl,imx53-flexcan", .data = &fsl_imx25_devtype_data,
->> > },
->> > 	{ .compatible = "fsl,imx35-flexcan", .data = &fsl_imx25_devtype_data,
->> > },
->> > 	{ .compatible = "fsl,imx25-flexcan", .data = &fsl_imx25_devtype_data,
->> > },
->> > 	{ .compatible = "fsl,p1010-flexcan", .data = &fsl_p1010_devtype_data,
->> > },
->> > 	{ .compatible = "fsl,vf610-flexcan", .data = &fsl_vf610_devtype_data,
->> > },
->> > 	{ .compatible = "fsl,ls1021ar2-flexcan", .data =
->> > &fsl_ls1021a_r2_devtype_data, },
->> > 	{ .compatible = "fsl,lx2160ar1-flexcan", .data =
->> > &fsl_lx2160a_r1_devtype_data, },
->> > 	{ /* sentinel */ },
->> > };
->> >
->> 
->> -michael
+> But it is not possible with ip6tnl:
+> 
+>   # ip link show ip6tnl0
+>   5: ip6tnl0@NONE: <NOARP> mtu 1452 qdisc noop state DOWN mode DEFAULT group default qlen 1000
+>       link/tunnel6 :: brd ::
+>   # ip link add ip6tnl1 type ip6tnl dev eth0
+>   RTNETLINK answers: File exists
+> 
+> This patch aims to make it possible by adding link comparaison in both
+> tunnel locate and lookup functions; we also modify mtu calculation when
+> attached to an interface with a lower mtu.
+> 
+> This permits to make use of x-netns communication by moving the newly
+> created tunnel in a given netns.
+> 
+> Signed-off-by: William Dauchy <w.dauchy@criteo.com>
+Reviewed-by: Nicolas Dichtel <nicolas.dichtel@6wind.com>
