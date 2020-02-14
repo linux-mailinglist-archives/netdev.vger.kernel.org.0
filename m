@@ -2,106 +2,101 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 936B515EB92
-	for <lists+netdev@lfdr.de>; Fri, 14 Feb 2020 18:21:59 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B4A0915F0E7
+	for <lists+netdev@lfdr.de>; Fri, 14 Feb 2020 18:59:49 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2391939AbgBNRVg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 14 Feb 2020 12:21:36 -0500
-Received: from mail-lj1-f170.google.com ([209.85.208.170]:36341 "EHLO
-        mail-lj1-f170.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2391360AbgBNRVe (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 14 Feb 2020 12:21:34 -0500
-Received: by mail-lj1-f170.google.com with SMTP id r19so11570324ljg.3
-        for <netdev@vger.kernel.org>; Fri, 14 Feb 2020 09:21:33 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=to:from:subject:message-id:date:user-agent:mime-version
-         :content-language:content-transfer-encoding;
-        bh=lht9Ow2Bc9TICgWtrUEjSgRB5YD4jANMEWWhF66y+Uw=;
-        b=exO8OgKLgG7Je+5M79ItGEEWeTRy2APsEOlFOQNXXIwfCGqAl7Ym3fTThwg/RAQVsj
-         tl+LT47E6vZGSK/6XtOW6TIQpAl8qX7HH68Qc5Lb3gEioYxR7UGrOoQvC02A2uE7IF9+
-         UhqyEN3So7zsU4jIPlITjOC/Vsr4GzZSpozU9vgZRppGNVMZBY6H/FsbYUc9P1nw3kzz
-         QS5GxCy2cDKS4yTAXpj2LJMT7Vrq2oZJnHfWwoIMBWoAPhOZmw3UtNW2QIS0OrAzhsOQ
-         M69MBziY9N73BQgmNtp62vXUnlg9j76H4wciXOZRzX3zz5h9MivhI2LSDyI/uDlizqu4
-         2Wyw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:to:from:subject:message-id:date:user-agent
-         :mime-version:content-language:content-transfer-encoding;
-        bh=lht9Ow2Bc9TICgWtrUEjSgRB5YD4jANMEWWhF66y+Uw=;
-        b=C6rmVTjq0yWKnttTns9sbW8duQIrNon53faTuE4YxzUY7BXN3jmdhx05s6HYeFkJ0m
-         bo+w7YVO3OuJ6V+TgD1vwUooEaJwWA0xz3WHgOtM8RhgXFSC3CsTpdxK9knX7dHCaxGZ
-         PKXv8z71Jgw7647xQI+73AXcfxwLIEGoi1xqv0wV3SZNe2MNttQMhpS+zT0zYeMEIz1r
-         5dUos4Cu3dqcMedR/9Wyeft/0R00UbOV6IbmSy2cXPhaOxGJw8rGwpfwMFJzEdlBHKDy
-         HFaL9zirGi3t8BBSZed6k1ala0kVgD1sgb/H6q6QrlxnGHO4ACUI9YTI40C2q2SmPEFS
-         jFRQ==
-X-Gm-Message-State: APjAAAVzJH/FYPhbA0++9xi87PHH2iylSm6WAb5IaLiadrn9b/Jrw71v
-        8ufrKMMxNglMmVpCsqbzUUNsSBGX
-X-Google-Smtp-Source: APXvYqyLoBPNkGju+/86VPuw4TG11aF4pg8caFGOtDZYooohI2nPHbtdC0AkBAZmF3skud7IjarUkg==
-X-Received: by 2002:a2e:b5ac:: with SMTP id f12mr2807594ljn.0.1581700892203;
-        Fri, 14 Feb 2020 09:21:32 -0800 (PST)
-Received: from [192.168.1.10] (hst-227-49.splius.lt. [62.80.227.49])
-        by smtp.gmail.com with ESMTPSA id l3sm3804059lja.78.2020.02.14.09.21.31
-        for <netdev@vger.kernel.org>
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 14 Feb 2020 09:21:31 -0800 (PST)
-To:     netdev@vger.kernel.org
-From:   Vincas Dargis <vindrg@gmail.com>
-Subject: About r8169 regression 5.4
-Message-ID: <b46d29d8-faf6-351e-0d9f-a4d4c043a54c@gmail.com>
-Date:   Fri, 14 Feb 2020 19:21:30 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.5.0
+        id S2388467AbgBNR6G (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 14 Feb 2020 12:58:06 -0500
+Received: from mail.kernel.org ([198.145.29.99]:39788 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1730621AbgBNP5O (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 14 Feb 2020 10:57:14 -0500
+Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id ED396222C4;
+        Fri, 14 Feb 2020 15:57:12 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1581695833;
+        bh=XdazMGhwIbJBiuiXlZkpj9HZX5NWsSPBy8ztckTuicA=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=UDdl9zWh9mhlZnghccYlO/ED6eS5TRgVuXuVYgYV8WAmrEjEPmW5hCcXNTn98httE
+         woBDVmQ862mP3HJ2BlgyrvTNMl9LchEZHl4j8Dw3yKoL8tE7KIp6ZjP85VdNCf3+EQ
+         Y9oRUgVWY67XZ6Mc9JCCghtvDWyer6MV9vy8uS9o=
+From:   Sasha Levin <sashal@kernel.org>
+To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
+Cc:     Pablo Neira Ayuso <pablo@netfilter.org>,
+        Sasha Levin <sashal@kernel.org>,
+        netfilter-devel@vger.kernel.org, coreteam@netfilter.org,
+        netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.5 386/542] netfilter: flowtable: restrict flow dissector match on meta ingress device
+Date:   Fri, 14 Feb 2020 10:46:18 -0500
+Message-Id: <20200214154854.6746-386-sashal@kernel.org>
+X-Mailer: git-send-email 2.20.1
+In-Reply-To: <20200214154854.6746-1-sashal@kernel.org>
+References: <20200214154854.6746-1-sashal@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+X-stable: review
+X-Patchwork-Hint: Ignore
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi,
+From: Pablo Neira Ayuso <pablo@netfilter.org>
 
-I've found similar issue I have myself since 5.4 on mailing list archive [0], for this device:
+[ Upstream commit a7521a60a5f3e1f58a015fedb6e69aed40455feb ]
 
-05:00.1 Ethernet controller: Realtek Semiconductor Co., Ltd. RTL8111/8168/8411 PCI Express Gigabit 
-Ethernet Controller (rev 12)
-         Subsystem: ASUSTeK Computer Inc. RTL8111/8168/8411 PCI Express Gigabit Ethernet Controller
+Set on FLOW_DISSECTOR_KEY_META meta key using flow tuple ingress interface.
 
+Fixes: c29f74e0df7a ("netfilter: nf_flow_table: hardware offload support")
+Signed-off-by: Pablo Neira Ayuso <pablo@netfilter.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ net/netfilter/nf_flow_table_offload.c | 8 +++++++-
+ 1 file changed, 7 insertions(+), 1 deletion(-)
 
-It works fine as long as I select 5.3 in Grub (it seems no longer maintained in Debian Sid though...)
+diff --git a/net/netfilter/nf_flow_table_offload.c b/net/netfilter/nf_flow_table_offload.c
+index d06969af1085e..9e01074dc34cb 100644
+--- a/net/netfilter/nf_flow_table_offload.c
++++ b/net/netfilter/nf_flow_table_offload.c
+@@ -24,6 +24,7 @@ struct flow_offload_work {
+ };
+ 
+ struct nf_flow_key {
++	struct flow_dissector_key_meta			meta;
+ 	struct flow_dissector_key_control		control;
+ 	struct flow_dissector_key_basic			basic;
+ 	union {
+@@ -55,6 +56,7 @@ static int nf_flow_rule_match(struct nf_flow_match *match,
+ 	struct nf_flow_key *mask = &match->mask;
+ 	struct nf_flow_key *key = &match->key;
+ 
++	NF_FLOW_DISSECTOR(match, FLOW_DISSECTOR_KEY_META, meta);
+ 	NF_FLOW_DISSECTOR(match, FLOW_DISSECTOR_KEY_CONTROL, control);
+ 	NF_FLOW_DISSECTOR(match, FLOW_DISSECTOR_KEY_BASIC, basic);
+ 	NF_FLOW_DISSECTOR(match, FLOW_DISSECTOR_KEY_IPV4_ADDRS, ipv4);
+@@ -62,6 +64,9 @@ static int nf_flow_rule_match(struct nf_flow_match *match,
+ 	NF_FLOW_DISSECTOR(match, FLOW_DISSECTOR_KEY_TCP, tcp);
+ 	NF_FLOW_DISSECTOR(match, FLOW_DISSECTOR_KEY_PORTS, tp);
+ 
++	key->meta.ingress_ifindex = tuple->iifidx;
++	mask->meta.ingress_ifindex = 0xffffffff;
++
+ 	switch (tuple->l3proto) {
+ 	case AF_INET:
+ 		key->control.addr_type = FLOW_DISSECTOR_KEY_IPV4_ADDRS;
+@@ -105,7 +110,8 @@ static int nf_flow_rule_match(struct nf_flow_match *match,
+ 	key->tp.dst = tuple->dst_port;
+ 	mask->tp.dst = 0xffff;
+ 
+-	match->dissector.used_keys |= BIT(FLOW_DISSECTOR_KEY_CONTROL) |
++	match->dissector.used_keys |= BIT(FLOW_DISSECTOR_KEY_META) |
++				      BIT(FLOW_DISSECTOR_KEY_CONTROL) |
+ 				      BIT(FLOW_DISSECTOR_KEY_BASIC) |
+ 				      BIT(FLOW_DISSECTOR_KEY_PORTS);
+ 	return 0;
+-- 
+2.20.1
 
-I see number of commits in net/etherenet/realtek tree, not sure if fix is there, or do we need 
-another fix for this particular device? I've keep testing latest Debian kernel updates (latest is 
-5.4.19-1), and no good news yet.
-
-There's Debian bug report [1] which might contain more information.
-
-Some extra info:
-
-$ sudo ethtool -i enp5s0f1
-driver: r8169
-version:
-firmware-version: rtl8411-2_0.0.1 07/08/13
-expansion-rom-version:
-bus-info: 0000:05:00.1
-supports-statistics: yes
-supports-test: no
-supports-eeprom-access: no
-supports-register-dump: yes
-supports-priv-flags: no
-
-
-$ sudo mii-tool -v enp5s0f1
-enp5s0f1: negotiated 1000baseT-FD flow-control, link ok
-   product info: vendor 00:07:32, model 0 rev 0
-   basic mode:   autonegotiation enabled
-   basic status: autonegotiation complete, link ok
-   capabilities: 1000baseT-FD 100baseTx-FD 100baseTx-HD 10baseT-FD 10baseT-HD
-   advertising:  1000baseT-FD 100baseTx-FD 100baseTx-HD 10baseT-FD 10baseT-HD flow-control
-   link partner: 1000baseT-FD 100baseTx-FD 100baseTx-HD 10baseT-FD 10baseT-HD flow-control
-
-
-[0] https://lkml.org/lkml/2019/11/30/119
-[1] https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=947685
