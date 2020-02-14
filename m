@@ -2,105 +2,92 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id D670515D48A
-	for <lists+netdev@lfdr.de>; Fri, 14 Feb 2020 10:18:33 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5FA2E15D48F
+	for <lists+netdev@lfdr.de>; Fri, 14 Feb 2020 10:19:27 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729030AbgBNJSc (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 14 Feb 2020 04:18:32 -0500
-Received: from mail-pj1-f65.google.com ([209.85.216.65]:54471 "EHLO
-        mail-pj1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728982AbgBNJSc (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 14 Feb 2020 04:18:32 -0500
-Received: by mail-pj1-f65.google.com with SMTP id dw13so3617818pjb.4;
-        Fri, 14 Feb 2020 01:18:31 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id;
-        bh=UzYbwtwKA1AGrhFZKB3Ip5Yi+gAW9TQK1zZ/5sDugks=;
-        b=SVae4BfApQzyb7YjOJUfBEMzPKrdEnNYKj0XGWfGfHP43HqNwuISRfIon4XPOn6Ocq
-         3aTjwGIkhOQk75xC0g9C3pA2FQ7RI1cokJ5G9OIhBJ1O64ZsGc/6h7JR2V6f2ss0VyaB
-         D49sI1GuODI45DtB/tvcdesuJLzEU6uKyMK6DJWvUANQ7BshLMncbPU2UXLXiUIYJ0Ci
-         GrNZVgd7TGkBG2d7wurrmtpy0Y3pXE655TXHPK8fieQnl/Y604AmoY1tSf7kuVJLNEYZ
-         BaxPH+7iLFUd14OczZrbAh4ErLLrC3/sc4kOhwvZ9G4lBDL8kiRg41SPy2pEGOowrIot
-         faaw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id;
-        bh=UzYbwtwKA1AGrhFZKB3Ip5Yi+gAW9TQK1zZ/5sDugks=;
-        b=I5ATS08t9AQbVOUcIJHaZ1z6jjUsKGtgOz+S0nvDVYQrVp2NByc/sdjLWtwHUQ6DOl
-         P5nrnn219rAnnnkNiNzom0RU1MdJefedM6lQ8Dlt+VIZkxWW+7qnwnVgrPk0gZ5GKtTQ
-         TQq0FNm4eIVWz393SJPGQKEQnbKFnvkO8WvrMA2Xj0GbszDgNLXFmqq+kJv2J2KmCeWf
-         EK6GnZqBMFL5pj2nUar7I9KqEUVMq3Qyzmyt7/+Zv0ivfoXt0dxflNVjP2o28z+Ldosf
-         PmxrT2Te9pg0ZsvFF6HXYir7Iw9VF7nfG/kV27/VqFwXM4f99MeqCjn7Z5rl/L6OHW+I
-         La3g==
-X-Gm-Message-State: APjAAAUrBlR2LJKx3TCt9H6/m9JWb8NA/OwBOBV2Xqm6OuQo95Vf5Fb1
-        Uv9MNLwL0KiE2YIVsoHSgCs=
-X-Google-Smtp-Source: APXvYqy9K6vKKGpHrFOmxbiRWhKhYqTWWw9O2OSvhy6ZvsdUgYZu2Te0tLaLK5EbKpcGeJhQvlnDXQ==
-X-Received: by 2002:a17:902:a416:: with SMTP id p22mr2389510plq.107.1581671911419;
-        Fri, 14 Feb 2020 01:18:31 -0800 (PST)
-Received: from localhost ([43.224.245.179])
-        by smtp.gmail.com with ESMTPSA id q66sm6421722pfq.27.2020.02.14.01.18.30
-        (version=TLS1_2 cipher=AES128-SHA bits=128/128);
-        Fri, 14 Feb 2020 01:18:31 -0800 (PST)
-From:   qiwuchen55@gmail.com
-To:     andrew.hendry@gmail.com, davem@davemloft.net, kuba@kernel.org
-Cc:     allison@lohutok.net, tglx@linutronix.de, linux-x25@vger.kernel.org,
-        netdev@vger.kernel.org, chenqiwu <chenqiwu@xiaomi.com>
-Subject: [PATCH] net: x25: convert to list_for_each_entry_safe()
-Date:   Fri, 14 Feb 2020 17:18:26 +0800
-Message-Id: <1581671906-25193-1-git-send-email-qiwuchen55@gmail.com>
-X-Mailer: git-send-email 1.9.1
+        id S1729014AbgBNJTZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 14 Feb 2020 04:19:25 -0500
+Received: from s3.sipsolutions.net ([144.76.43.62]:39394 "EHLO
+        sipsolutions.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726769AbgBNJTZ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 14 Feb 2020 04:19:25 -0500
+Received: by sipsolutions.net with esmtpsa (TLS1.3:ECDHE_X25519__RSA_PSS_RSAE_SHA256__AES_256_GCM:256)
+        (Exim 4.93)
+        (envelope-from <johannes@sipsolutions.net>)
+        id 1j2X87-00BExV-Bj; Fri, 14 Feb 2020 10:19:23 +0100
+From:   Johannes Berg <johannes@sipsolutions.net>
+To:     netdev@vger.kernel.org
+Cc:     linux-wireless@vger.kernel.org
+Subject: pull-request: mac80211 2020-02-14
+Date:   Fri, 14 Feb 2020 10:19:10 +0100
+Message-Id: <20200214091911.9516-1-johannes@sipsolutions.net>
+X-Mailer: git-send-email 2.24.1
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: chenqiwu <chenqiwu@xiaomi.com>
+Hi,
 
-Use list_for_each_entry_safe() instead of list_for_each_safe()
-to simplify the code.
+Here's a new pull request, long delayed unfortunately, but it
+wasn't that many fixes and some are pretty recent too. See the
+description below, it's really various things all over that we
+discovered.
 
-Signed-off-by: chenqiwu <chenqiwu@xiaomi.com>
----
- net/x25/x25_forward.c | 12 ++++--------
- 1 file changed, 4 insertions(+), 8 deletions(-)
+Please pull and let me know if there's any problem.
 
-diff --git a/net/x25/x25_forward.c b/net/x25/x25_forward.c
-index c829999..d48ad6d 100644
---- a/net/x25/x25_forward.c
-+++ b/net/x25/x25_forward.c
-@@ -131,13 +131,11 @@ int x25_forward_data(int lci, struct x25_neigh *from, struct sk_buff *skb) {
- 
- void x25_clear_forward_by_lci(unsigned int lci)
- {
--	struct x25_forward *fwd;
--	struct list_head *entry, *tmp;
-+	struct x25_forward *fwd, *tmp;
- 
- 	write_lock_bh(&x25_forward_list_lock);
- 
--	list_for_each_safe(entry, tmp, &x25_forward_list) {
--		fwd = list_entry(entry, struct x25_forward, node);
-+	list_for_each_entry_safe(fwd, tmp, &x25_forward_list, node) {
- 		if (fwd->lci == lci) {
- 			list_del(&fwd->node);
- 			kfree(fwd);
-@@ -149,13 +147,11 @@ void x25_clear_forward_by_lci(unsigned int lci)
- 
- void x25_clear_forward_by_dev(struct net_device *dev)
- {
--	struct x25_forward *fwd;
--	struct list_head *entry, *tmp;
-+	struct x25_forward *fwd, *tmp;
- 
- 	write_lock_bh(&x25_forward_list_lock);
- 
--	list_for_each_safe(entry, tmp, &x25_forward_list) {
--		fwd = list_entry(entry, struct x25_forward, node);
-+	list_for_each_entry_safe(fwd, tmp, &x25_forward_list, node) {
- 		if ((fwd->dev1 == dev) || (fwd->dev2 == dev)){
- 			list_del(&fwd->node);
- 			kfree(fwd);
--- 
-1.9.1
+Thanks,
+johannes
+
+
+
+The following changes since commit df373702bc0f8f2d83980ea441e71639fc1efcf8:
+
+  net: dsa: b53: Always use dev->vlan_enabled in b53_configure_vlan() (2020-02-07 11:25:09 +0100)
+
+are available in the Git repository at:
+
+  git://git.kernel.org/pub/scm/linux/kernel/git/jberg/mac80211.git tags/mac80211-for-net-2020-02-14
+
+for you to fetch changes up to 33181ea7f5a62a17fbe55f0f73428ecb5e686be8:
+
+  mac80211: fix wrong 160/80+80 MHz setting (2020-02-14 09:54:12 +0100)
+
+----------------------------------------------------------------
+Just a few fixes:
+ * avoid running out of tracking space for frames that need
+   to be reported to userspace by using more bits
+ * fix beacon handling suppression by adding some relevant
+   elements to the CRC calculation
+ * fix quiet mode in action frames
+ * fix crash in ethtool for virt_wifi and similar
+ * add a missing policy entry
+ * fix 160 & 80+80 bandwidth to take local capabilities into
+   account
+
+----------------------------------------------------------------
+Johannes Berg (2):
+      mac80211: use more bits for ack_frame_id
+      mac80211: consider more elements in parsing CRC
+
+Sara Sharon (1):
+      mac80211: fix quiet mode activation in action frames
+
+Sergey Matyukevich (2):
+      cfg80211: check wiphy driver existence for drvinfo report
+      cfg80211: add missing policy for NL80211_ATTR_STATUS_CODE
+
+Shay Bar (1):
+      mac80211: fix wrong 160/80+80 MHz setting
+
+ include/net/mac80211.h | 11 +++++------
+ net/mac80211/cfg.c     |  2 +-
+ net/mac80211/mlme.c    |  8 ++++----
+ net/mac80211/tx.c      |  2 +-
+ net/mac80211/util.c    | 34 ++++++++++++++++++++++++++--------
+ net/wireless/ethtool.c |  8 ++++++--
+ net/wireless/nl80211.c |  1 +
+ 7 files changed, 44 insertions(+), 22 deletions(-)
 
