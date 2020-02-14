@@ -2,36 +2,37 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id E57E115EC93
-	for <lists+netdev@lfdr.de>; Fri, 14 Feb 2020 18:29:36 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 82B9C15EBCD
+	for <lists+netdev@lfdr.de>; Fri, 14 Feb 2020 18:23:37 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2390819AbgBNQH6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 14 Feb 2020 11:07:58 -0500
-Received: from mail.kernel.org ([198.145.29.99]:59690 "EHLO mail.kernel.org"
+        id S2404309AbgBNRWq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 14 Feb 2020 12:22:46 -0500
+Received: from mail.kernel.org ([198.145.29.99]:34760 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2390040AbgBNQH5 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 14 Feb 2020 11:07:57 -0500
+        id S2391355AbgBNQJt (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 14 Feb 2020 11:09:49 -0500
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 9EFEA24676;
-        Fri, 14 Feb 2020 16:07:55 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 1DFCA24650;
+        Fri, 14 Feb 2020 16:09:48 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1581696476;
-        bh=IDpon7Kel+MjWfOUEwoMjIHhIYdi6Oyu2TpugZYs3X0=;
+        s=default; t=1581696589;
+        bh=1xCCUDJRyOV29jDvyw2qulGXTvVC0OZvGv+a2Mz9d4o=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=S+1HwI2dY2R7hdokZMOQQusQH/hOmBj6RBUqURwoWhUKesj4LSTgV6Y1mePg+49Gy
-         GN9ILySibHfH2SHrnyREdcSyMRT8P8cLNis0Bp/pyGfEXkIAIJ3i4/4Tcla27RZwY1
-         4j4BGncnjhrnMZPtw8HVJkQpJzwe8mT6mx9Puxo0=
+        b=FHWLK4p8Jt15Zx8aHtKYrxL5JFG57ycOhTISW5DeUqdFC00BLWeuir10UmL6bha6c
+         EV8+kYjYwziLEKiclPyL6ZBuVwSoXK2IVGjSxQ/Rr89B752iJD7fgQrnjC7pwfnBLJ
+         D1HqpQOuVuEHFq0da9SaBR/t7naO176LgSRAHlIY=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Jonathan Lemon <jonathan.lemon@gmail.com>,
-        Andy Gospodarek <gospo@broadcom.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.4 284/459] bnxt: Detach page from page pool before sending up the stack
-Date:   Fri, 14 Feb 2020 10:58:54 -0500
-Message-Id: <20200214160149.11681-284-sashal@kernel.org>
+Cc:     Chris Down <chris@chrisdown.name>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andriin@fb.com>,
+        Sasha Levin <sashal@kernel.org>, linux-kbuild@vger.kernel.org,
+        netdev@vger.kernel.org, bpf@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.4 376/459] bpf, btf: Always output invariant hit in pahole DWARF to BTF transform
+Date:   Fri, 14 Feb 2020 11:00:26 -0500
+Message-Id: <20200214160149.11681-376-sashal@kernel.org>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20200214160149.11681-1-sashal@kernel.org>
 References: <20200214160149.11681-1-sashal@kernel.org>
@@ -44,36 +45,58 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Jonathan Lemon <jonathan.lemon@gmail.com>
+From: Chris Down <chris@chrisdown.name>
 
-[ Upstream commit 3071c51783b39d6a676d02a9256c3b3f87804285 ]
+[ Upstream commit 2a67a6ccb01f21b854715d86ff6432a18b97adb3 ]
 
-When running in XDP mode, pages come from the page pool, and should
-be freed back to the same pool or specifically detached.  Currently,
-when the driver re-initializes, the page pool destruction is delayed
-forever since it thinks there are oustanding pages.
+When trying to compile with CONFIG_DEBUG_INFO_BTF enabled, I got this
+error:
 
-Fixes: 322b87ca55f2 ("bnxt_en: add page_pool support")
-Signed-off-by: Jonathan Lemon <jonathan.lemon@gmail.com>
-Reviewed-by: Andy Gospodarek <gospo@broadcom.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+    % make -s
+    Failed to generate BTF for vmlinux
+    Try to disable CONFIG_DEBUG_INFO_BTF
+    make[3]: *** [vmlinux] Error 1
+
+Compiling again without -s shows the true error (that pahole is
+missing), but since this is fatal, we should show the error
+unconditionally on stderr as well, not silence it using the `info`
+function. With this patch:
+
+    % make -s
+    BTF: .tmp_vmlinux.btf: pahole (pahole) is not available
+    Failed to generate BTF for vmlinux
+    Try to disable CONFIG_DEBUG_INFO_BTF
+    make[3]: *** [vmlinux] Error 1
+
+Signed-off-by: Chris Down <chris@chrisdown.name>
+Signed-off-by: Daniel Borkmann <daniel@iogearbox.net>
+Acked-by: Andrii Nakryiko <andriin@fb.com>
+Link: https://lore.kernel.org/bpf/20200122000110.GA310073@chrisdown.name
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/broadcom/bnxt/bnxt.c | 1 +
- 1 file changed, 1 insertion(+)
+ scripts/link-vmlinux.sh | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt.c b/drivers/net/ethernet/broadcom/bnxt/bnxt.c
-index 41297533b4a86..68618891b0e42 100644
---- a/drivers/net/ethernet/broadcom/bnxt/bnxt.c
-+++ b/drivers/net/ethernet/broadcom/bnxt/bnxt.c
-@@ -942,6 +942,7 @@ static struct sk_buff *bnxt_rx_page_skb(struct bnxt *bp,
- 	dma_addr -= bp->rx_dma_offset;
- 	dma_unmap_page_attrs(&bp->pdev->dev, dma_addr, PAGE_SIZE, bp->rx_dir,
- 			     DMA_ATTR_WEAK_ORDERING);
-+	page_pool_release_page(rxr->page_pool, page);
+diff --git a/scripts/link-vmlinux.sh b/scripts/link-vmlinux.sh
+index 4363799403561..408b5c0b99b1b 100755
+--- a/scripts/link-vmlinux.sh
++++ b/scripts/link-vmlinux.sh
+@@ -108,13 +108,13 @@ gen_btf()
+ 	local bin_arch
  
- 	if (unlikely(!payload))
- 		payload = eth_get_headlen(bp->dev, data_ptr, len);
+ 	if ! [ -x "$(command -v ${PAHOLE})" ]; then
+-		info "BTF" "${1}: pahole (${PAHOLE}) is not available"
++		echo >&2 "BTF: ${1}: pahole (${PAHOLE}) is not available"
+ 		return 1
+ 	fi
+ 
+ 	pahole_ver=$(${PAHOLE} --version | sed -E 's/v([0-9]+)\.([0-9]+)/\1\2/')
+ 	if [ "${pahole_ver}" -lt "113" ]; then
+-		info "BTF" "${1}: pahole version $(${PAHOLE} --version) is too old, need at least v1.13"
++		echo >&2 "BTF: ${1}: pahole version $(${PAHOLE} --version) is too old, need at least v1.13"
+ 		return 1
+ 	fi
+ 
 -- 
 2.20.1
 
