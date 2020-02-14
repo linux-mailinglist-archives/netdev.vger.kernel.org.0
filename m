@@ -2,84 +2,138 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 8398515EAC5
-	for <lists+netdev@lfdr.de>; Fri, 14 Feb 2020 18:17:01 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id F18B515ECBE
+	for <lists+netdev@lfdr.de>; Fri, 14 Feb 2020 18:29:55 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2391824AbgBNQLg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 14 Feb 2020 11:11:36 -0500
-Received: from mail.kernel.org ([198.145.29.99]:38426 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2391818AbgBNQLd (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 14 Feb 2020 11:11:33 -0500
-Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 9B96F246A4;
-        Fri, 14 Feb 2020 16:11:32 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1581696693;
-        bh=nk3Sqj0NLjtU5VjaolQGd8Dtv/Yym6D2gggQLfIKF8c=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=S7EF/VE7x4WrsQaxp26jNwP+eZLmxqFa6BZXLtaARzeYnH/3sYIPMiZHlax20HNmc
-         eAJ5+uI7cpMZ5+4f2Ra5A4CQOiH3+cHsiP0TYFlY26KBFd8A/oZdRO1GLrNUPRInRz
-         RtzvTGAK8kvNNQdaVcwxi9rZxyvKhH/k3mAx8HDY=
-From:   Sasha Levin <sashal@kernel.org>
-To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Ido Schimmel <idosch@mellanox.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.4 459/459] mlxsw: spectrum_dpipe: Add missing error path
-Date:   Fri, 14 Feb 2020 11:01:49 -0500
-Message-Id: <20200214160149.11681-459-sashal@kernel.org>
-X-Mailer: git-send-email 2.20.1
-In-Reply-To: <20200214160149.11681-1-sashal@kernel.org>
-References: <20200214160149.11681-1-sashal@kernel.org>
+        id S2390788AbgBNQHu (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 14 Feb 2020 11:07:50 -0500
+Received: from mo4-p01-ob.smtp.rzone.de ([81.169.146.165]:10762 "EHLO
+        mo4-p01-ob.smtp.rzone.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2390768AbgBNQHt (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 14 Feb 2020 11:07:49 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; t=1581696467;
+        s=strato-dkim-0002; d=goldelico.com;
+        h=Message-Id:Date:Subject:Cc:To:From:X-RZG-CLASS-ID:X-RZG-AUTH:From:
+        Subject:Sender;
+        bh=QeKv3h6vRqJ4wCD4+A7gbij8dajmVYg9hOuzCvCzqmo=;
+        b=nuijQscJhPn8JCg+cNCVkD3gDvPqs3lQTxvPAmAk/HBZkedfnBTtckAwF5XDylUt5p
+        w+WQ/brEVOSKOYVNVzkThCcJ9Rrbqu/BrSEQwj6dePmJvpDDiTucXAkqUgWQppPrPcwC
+        DlUolY0z4lg5xdibIM30BNbgkMaNXcQIaGIPaXfmQfc7kXtmBu+h2fAeunVaBVc4e1d4
+        G7ndPSVbGV2g/1Qcvj/yOZk77fZH9q7jZ9KnzTjHnku246EBZmwJ1NdmPhGWrsydNg0f
+        CNNzamnDsEmaA/wiHWVBd51Ewlt/3nar96MZGzp1X65S6WbOfIWocGtOKNvhs4Cs0B+1
+        x32g==
+X-RZG-AUTH: ":JGIXVUS7cutRB/49FwqZ7WcJeFKiMhflhwDubTJ9o1OAA2UNf2M7OMfsfQx3"
+X-RZG-CLASS-ID: mo00
+Received: from iMac.fritz.box
+        by smtp.strato.de (RZmta 46.1.12 DYNA|AUTH)
+        with ESMTPSA id U06217w1EG7ZFkL
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256 bits))
+        (Client did not present a certificate);
+        Fri, 14 Feb 2020 17:07:35 +0100 (CET)
+From:   "H. Nikolaus Schaller" <hns@goldelico.com>
+To:     Andrew Lunn <andrew@lunn.ch>, Paul Cercueil <paul@crapouillou.net>,
+        "David S. Miller" <davem@davemloft.net>,
+        =?UTF-8?q?Petr=20=C5=A0tetiar?= <ynezz@true.cz>,
+        Richard Fontana <rfontana@redhat.com>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Heiner Kallweit <hkallweit1@gmail.com>
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        letux-kernel@openphoenux.org, kernel@pyra-handheld.com,
+        "H. Nikolaus Schaller" <hns@goldelico.com>
+Subject: [PATCH v2] net: davicom: dm9000: allow to pass MAC address through mac_addr module parameter
+Date:   Fri, 14 Feb 2020 17:07:35 +0100
+Message-Id: <0d6b4d383bb29ed5d4710e9706e5ad6c7f92d9da.1581696454.git.hns@goldelico.com>
+X-Mailer: git-send-email 2.23.0
 MIME-Version: 1.0
-X-stable: review
-X-Patchwork-Hint: Ignore
 Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Ido Schimmel <idosch@mellanox.com>
+The MIPS Ingenic CI20 board is shipped with a quite old u-boot
+(ci20-v2013.10 see https://elinux.org/CI20_Dev_Zone). This passes
+the MAC address through dm9000.mac_addr=xx:xx:xx:xx:xx:xx
+kernel module parameter to give the board a fixed MAC address.
 
-[ Upstream commit 3a99cbb6fa7bca1995586ec2dc21b0368aad4937 ]
+This is not processed by the dm9000 driver which assigns a random
+MAC address on each boot, making DHCP assign a new IP address
+each time.
 
-In case devlink_dpipe_entry_ctx_prepare() failed, release RTNL that was
-previously taken and free the memory allocated by
-mlxsw_sp_erif_entry_prepare().
+So we add a check for the mac_addr module parameter as a last
+resort before assigning a random one. This mechanism can also
+be used outside of u-boot to provide a value through modprobe
+config.
 
-Fixes: 2ba5999f009d ("mlxsw: spectrum: Add Support for erif table entries access")
-Signed-off-by: Ido Schimmel <idosch@mellanox.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+To parse the MAC address in a new function get_mac_addr() we
+use an copy adapted from the ksz884x.c driver which provides
+the same functionality.
+
+Signed-off-by: H. Nikolaus Schaller <hns@goldelico.com>
 ---
- drivers/net/ethernet/mellanox/mlxsw/spectrum_dpipe.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ drivers/net/ethernet/davicom/dm9000.c | 42 +++++++++++++++++++++++++++
+ 1 file changed, 42 insertions(+)
 
-diff --git a/drivers/net/ethernet/mellanox/mlxsw/spectrum_dpipe.c b/drivers/net/ethernet/mellanox/mlxsw/spectrum_dpipe.c
-index 49933818c6f59..2dc0978428e64 100644
---- a/drivers/net/ethernet/mellanox/mlxsw/spectrum_dpipe.c
-+++ b/drivers/net/ethernet/mellanox/mlxsw/spectrum_dpipe.c
-@@ -215,7 +215,7 @@ mlxsw_sp_dpipe_table_erif_entries_dump(void *priv, bool counters_enabled,
- start_again:
- 	err = devlink_dpipe_entry_ctx_prepare(dump_ctx);
- 	if (err)
--		return err;
-+		goto err_ctx_prepare;
- 	j = 0;
- 	for (; i < rif_count; i++) {
- 		struct mlxsw_sp_rif *rif = mlxsw_sp_rif_by_index(mlxsw_sp, i);
-@@ -247,6 +247,7 @@ mlxsw_sp_dpipe_table_erif_entries_dump(void *priv, bool counters_enabled,
- 	return 0;
- err_entry_append:
- err_entry_get:
-+err_ctx_prepare:
- 	rtnl_unlock();
- 	devlink_dpipe_entry_clear(&entry);
- 	return err;
+diff --git a/drivers/net/ethernet/davicom/dm9000.c b/drivers/net/ethernet/davicom/dm9000.c
+index 1ea3372775e6..7402030b0352 100644
+--- a/drivers/net/ethernet/davicom/dm9000.c
++++ b/drivers/net/ethernet/davicom/dm9000.c
+@@ -1409,6 +1409,43 @@ static struct dm9000_plat_data *dm9000_parse_dt(struct device *dev)
+ 	return pdata;
+ }
+ 
++static char *mac_addr = ":";
++module_param(mac_addr, charp, 0);
++MODULE_PARM_DESC(mac_addr, "MAC address");
++
++static void get_mac_addr(struct net_device *ndev, char *macaddr)
++{
++	int i = 0;
++	int j = 0;
++	int got_num = 0;
++	int num = 0;
++
++	while (j < ETH_ALEN) {
++		if (macaddr[i]) {
++			int digit;
++
++			got_num = 1;
++			digit = hex_to_bin(macaddr[i]);
++			if (digit >= 0)
++				num = num * 16 + digit;
++			else if (':' == macaddr[i])
++				got_num = 2;
++			else
++				break;
++		} else if (got_num) {
++			got_num = 2;
++		} else {
++			break;
++		}
++		if (got_num == 2) {
++			ndev->dev_addr[j++] = (u8)num;
++			num = 0;
++			got_num = 0;
++		}
++		i++;
++	}
++}
++
+ /*
+  * Search DM9000 board, allocate space and register it
+  */
+@@ -1679,6 +1716,11 @@ dm9000_probe(struct platform_device *pdev)
+ 			ndev->dev_addr[i] = ior(db, i+DM9000_PAR);
+ 	}
+ 
++	if (!is_valid_ether_addr(ndev->dev_addr)) {
++		mac_src = "param";
++		get_mac_addr(ndev, mac_addr);
++	}
++
+ 	if (!is_valid_ether_addr(ndev->dev_addr)) {
+ 		inv_mac_addr = true;
+ 		eth_hw_addr_random(ndev);
 -- 
-2.20.1
+2.23.0
 
