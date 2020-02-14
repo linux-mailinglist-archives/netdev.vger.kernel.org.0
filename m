@@ -2,114 +2,93 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 5E77E15FAC0
-	for <lists+netdev@lfdr.de>; Sat, 15 Feb 2020 00:40:24 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id CD39E15FAD6
+	for <lists+netdev@lfdr.de>; Sat, 15 Feb 2020 00:42:00 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728370AbgBNXjF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 14 Feb 2020 18:39:05 -0500
-Received: from mail-pg1-f195.google.com ([209.85.215.195]:34659 "EHLO
-        mail-pg1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727649AbgBNXjD (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 14 Feb 2020 18:39:03 -0500
-Received: by mail-pg1-f195.google.com with SMTP id j4so5714239pgi.1;
-        Fri, 14 Feb 2020 15:39:02 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=r/daHq14j7KlCEleoh0AsLVk0GU+/IpGzIdkWOGu9j8=;
-        b=leCAS4Unb6+jGXWE0rvBqK9AwU54E8dbuT0heucRvFgcJhOl9Nnyab6zIU55jawRwQ
-         aLYcfghOpARj2JfpIJujnZx4GB4cp8KswWBdWanJ7j/amtHoqW5zjXXNgaDQWhexzu8P
-         3TCSICMvcYwRSLEFvqtRK0aFW06N1aD4WcTKj4mqpQa/6YNBJRNYMHeZLRpv8r4iq4MD
-         7Ns2gPGVYsiPkVTlTF5QMGr5auYaD3qIlWBugWD9OKzpxkVqxF3lHXeqQh6AcjklvQsH
-         r0dtEdcvQQFl3E+koOmMY2DH9xbFDU/SGd9ThW8IzXL2/LPPOR5Z7lrB3a3JOHYIRtWQ
-         MeXA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references;
-        bh=r/daHq14j7KlCEleoh0AsLVk0GU+/IpGzIdkWOGu9j8=;
-        b=Vkkh62PrUnfgFEgO2coJg7B9Xv9qaqmobeAuHfL6t8wMRA2AwQOABhLIlvK1IYy1Mg
-         n26DUN4TjtVUIgAziyDiUPEa6sfWR96BIA5n3JM1m1j/1/XOB/yGmONiYcLioTF4DzXu
-         PZt02jsdjkYKLcGFBfNZtWGQoeC2D4hULFqohwWzGEi4TQ7WomQu/TUiWFwqdEdnzi4Q
-         6qyHirzH7PaMX0h6EIlFpYzktS9ZKz1EKv3r5BPVQxd9r5EDFacD4CZ9aCG127F1OXlB
-         oaossL1SRRdZGfdRpQ+d1DHBlSUL1UYFKmoquWtRdpaoZJrdhDKJ0xLLNdsj7u4x4s01
-         7+lw==
-X-Gm-Message-State: APjAAAVSLjET7q4TFCDqEsv0itVVp+eolt82jRrzg0FDKlaaiXQQrZ3y
-        s+S+bv3CB5mzkcHaz0ACOqRN7tWZ
-X-Google-Smtp-Source: APXvYqyR7VvXUTgn8ShzEg8QgrIaIAsIHsVUqJojROs4F12qWanN9/ER6J0swzxRiqGU2nzZwR0OZA==
-X-Received: by 2002:a63:2bc3:: with SMTP id r186mr6010885pgr.294.1581723541252;
-        Fri, 14 Feb 2020 15:39:01 -0800 (PST)
-Received: from fainelli-desktop.igp.broadcom.net ([192.19.223.252])
-        by smtp.gmail.com with ESMTPSA id p17sm7797397pfn.31.2020.02.14.15.39.00
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 14 Feb 2020 15:39:00 -0800 (PST)
-From:   Florian Fainelli <f.fainelli@gmail.com>
-To:     netdev@vger.kernel.org
-Cc:     Florian Fainelli <f.fainelli@gmail.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
-        "David S. Miller" <davem@davemloft.net>,
-        linux-kernel@vger.kernel.org (open list)
-Subject: [PATCH net-next 3/3] net: phy: broadcom: Wire suspend/resume for BCM54810
-Date:   Fri, 14 Feb 2020 15:38:53 -0800
-Message-Id: <20200214233853.27217-4-f.fainelli@gmail.com>
+        id S1728103AbgBNXl5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 14 Feb 2020 18:41:57 -0500
+Received: from mx0a-00082601.pphosted.com ([67.231.145.42]:22510 "EHLO
+        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1726861AbgBNXl5 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 14 Feb 2020 18:41:57 -0500
+Received: from pps.filterd (m0109334.ppops.net [127.0.0.1])
+        by mx0a-00082601.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 01ENYc5S021549
+        for <netdev@vger.kernel.org>; Fri, 14 Feb 2020 15:41:56 -0800
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
+ : date : message-id : mime-version : content-type; s=facebook;
+ bh=s5AINjqbi4/0oeVLttio2uLVEGZPsLRmz6siQCTuMVM=;
+ b=JqaETfaj5Wx/w5LIRtwG2/Os7HChJsAa1IO6j82hc1MvdkD7l//46b1LSo5RdkJm/215
+ oW0hTCi+KebW+g4nIry3b1FrRMQChJ2dsikUYjOQSeksnudCL20X4V+FfUfBiLc14dwm
+ 1kPMwijPakKlwHd1DKME9mnKIzpTQwG2/i8= 
+Received: from maileast.thefacebook.com ([163.114.130.16])
+        by mx0a-00082601.pphosted.com with ESMTP id 2y5yud1ngs-2
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT)
+        for <netdev@vger.kernel.org>; Fri, 14 Feb 2020 15:41:56 -0800
+Received: from intmgw003.08.frc2.facebook.com (2620:10d:c0a8:1b::d) by
+ mail.thefacebook.com (2620:10d:c0a8:83::5) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.1779.2; Fri, 14 Feb 2020 15:41:54 -0800
+Received: by devbig006.ftw2.facebook.com (Postfix, from userid 4523)
+        id 6ABCD62E356D; Fri, 14 Feb 2020 15:41:48 -0800 (PST)
+Smtp-Origin-Hostprefix: devbig
+From:   Song Liu <songliubraving@fb.com>
+Smtp-Origin-Hostname: devbig006.ftw2.facebook.com
+To:     <netdev@vger.kernel.org>, <bpf@vger.kernel.org>
+CC:     <kernel-team@fb.com>, <ast@kernel.org>, <daniel@iogearbox.net>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>
+Smtp-Origin-Cluster: ftw2c04
+Subject: [PATCH bpf-next] bpf: allow bpf_perf_event_read_value in all BPF programs
+Date:   Fri, 14 Feb 2020 15:41:46 -0800
+Message-ID: <20200214234146.2910011-1-songliubraving@fb.com>
 X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20200214233853.27217-1-f.fainelli@gmail.com>
-References: <20200214233853.27217-1-f.fainelli@gmail.com>
+X-FB-Internal: Safe
+MIME-Version: 1.0
+Content-Type: text/plain
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.138,18.0.572
+ definitions=2020-02-14_09:2020-02-14,2020-02-14 signatures=0
+X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 mlxlogscore=956
+ clxscore=1015 adultscore=0 impostorscore=0 suspectscore=0
+ priorityscore=1501 phishscore=0 lowpriorityscore=0 mlxscore=0 bulkscore=0
+ malwarescore=0 spamscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2001150001 definitions=main-2002140172
+X-FB-Internal: deliver
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The BCM54810 PHY can use the standard BMCR Power down suspend, but needs
-a custom resume routine which first clear the Power down bit, and then
-re-initializes the PHY. While in low-power mode, the PHY only accepts
-writes to the BMCR register. The datasheet clearly says it:
+bpf_perf_event_read_value() is NMI safe. Enable it for all BPF programs.
+This can be used in fentry/fexit to profile BPF program and individual
+kernel function with hardware counters.
 
-Reads or writes to any MII register other than MII Control register
-(address 00h) while the device is in the standby power-down mode may
-cause unpredictable results.
-
-Signed-off-by: Florian Fainelli <f.fainelli@gmail.com>
+Cc: Yonghong Song <yhs@fb.com>
+Signed-off-by: Song Liu <songliubraving@fb.com>
 ---
- drivers/net/phy/broadcom.c | 16 ++++++++++++++++
- 1 file changed, 16 insertions(+)
+ kernel/trace/bpf_trace.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/net/phy/broadcom.c b/drivers/net/phy/broadcom.c
-index b4eae84a9195..ab24692a92c6 100644
---- a/drivers/net/phy/broadcom.c
-+++ b/drivers/net/phy/broadcom.c
-@@ -313,6 +313,20 @@ static int bcm54xx_config_init(struct phy_device *phydev)
- 	return 0;
- }
- 
-+static int bcm54xx_resume(struct phy_device *phydev)
-+{
-+	int ret;
-+
-+	/* Writes to register other than BMCR would be ignored
-+	 * unless we clear the PDOWN bit first
-+	 */
-+	ret = genphy_resume(phydev);
-+	if (ret < 0)
-+		return ret;
-+
-+	return bcm54xx_config_init(phydev);
-+}
-+
- static int bcm5482_config_init(struct phy_device *phydev)
- {
- 	int err, reg;
-@@ -706,6 +720,8 @@ static struct phy_driver broadcom_drivers[] = {
- 	.config_aneg    = bcm5481_config_aneg,
- 	.ack_interrupt  = bcm_phy_ack_intr,
- 	.config_intr    = bcm_phy_config_intr,
-+	.suspend	= genphy_suspend,
-+	.resume		= bcm54xx_resume,
- }, {
- 	.phy_id		= PHY_ID_BCM5482,
- 	.phy_id_mask	= 0xfffffff0,
+diff --git a/kernel/trace/bpf_trace.c b/kernel/trace/bpf_trace.c
+index 19e793aa441a..4ddd5ac46094 100644
+--- a/kernel/trace/bpf_trace.c
++++ b/kernel/trace/bpf_trace.c
+@@ -843,6 +843,8 @@ tracing_func_proto(enum bpf_func_id func_id, const struct bpf_prog *prog)
+ 		return &bpf_send_signal_proto;
+ 	case BPF_FUNC_send_signal_thread:
+ 		return &bpf_send_signal_thread_proto;
++	case BPF_FUNC_perf_event_read_value:
++		return &bpf_perf_event_read_value_proto;
+ 	default:
+ 		return NULL;
+ 	}
+@@ -858,8 +860,6 @@ kprobe_prog_func_proto(enum bpf_func_id func_id, const struct bpf_prog *prog)
+ 		return &bpf_get_stackid_proto;
+ 	case BPF_FUNC_get_stack:
+ 		return &bpf_get_stack_proto;
+-	case BPF_FUNC_perf_event_read_value:
+-		return &bpf_perf_event_read_value_proto;
+ #ifdef CONFIG_BPF_KPROBE_OVERRIDE
+ 	case BPF_FUNC_override_return:
+ 		return &bpf_override_return_proto;
 -- 
 2.17.1
 
