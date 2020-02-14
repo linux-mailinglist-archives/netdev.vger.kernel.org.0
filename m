@@ -2,26 +2,26 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 24DD015E5E5
-	for <lists+netdev@lfdr.de>; Fri, 14 Feb 2020 17:44:39 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E1D9915E641
+	for <lists+netdev@lfdr.de>; Fri, 14 Feb 2020 17:47:41 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2393032AbgBNQVh (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 14 Feb 2020 11:21:37 -0500
-Received: from Galois.linutronix.de ([193.142.43.55]:55566 "EHLO
+        id S2394139AbgBNQqL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 14 Feb 2020 11:46:11 -0500
+Received: from Galois.linutronix.de ([193.142.43.55]:55548 "EHLO
         Galois.linutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2392998AbgBNQVe (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 14 Feb 2020 11:21:34 -0500
+        with ESMTP id S2392961AbgBNQVb (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 14 Feb 2020 11:21:31 -0500
 Received: from [5.158.153.52] (helo=nanos.tec.linutronix.de)
         by Galois.linutronix.de with esmtpsa (TLS1.2:DHE_RSA_AES_256_CBC_SHA256:256)
         (Exim 4.80)
         (envelope-from <tglx@linutronix.de>)
-        id 1j2diC-0003I9-Ou; Fri, 14 Feb 2020 17:21:04 +0100
+        id 1j2diC-0003IB-WC; Fri, 14 Feb 2020 17:21:05 +0100
 Received: from nanos.tec.linutronix.de (localhost [IPv6:::1])
-        by nanos.tec.linutronix.de (Postfix) with ESMTP id 6B4A1101DF3;
+        by nanos.tec.linutronix.de (Postfix) with ESMTP id 9FF87101DF6;
         Fri, 14 Feb 2020 17:21:04 +0100 (CET)
-Message-Id: <20200214161503.289763704@linutronix.de>
+Message-Id: <20200214161503.382318072@linutronix.de>
 User-Agent: quilt/0.65
-Date:   Fri, 14 Feb 2020 14:39:21 +0100
+Date:   Fri, 14 Feb 2020 14:39:22 +0100
 From:   Thomas Gleixner <tglx@linutronix.de>
 To:     LKML <linux-kernel@vger.kernel.org>
 Cc:     David Miller <davem@davemloft.net>, bpf@vger.kernel.org,
@@ -33,7 +33,7 @@ Cc:     David Miller <davem@davemloft.net>, bpf@vger.kernel.org,
         Steven Rostedt <rostedt@goodmis.org>,
         Juri Lelli <juri.lelli@redhat.com>,
         Ingo Molnar <mingo@kernel.org>
-Subject: [RFC patch 04/19] bpf/tracing: Remove redundant preempt_disable() in __bpf_trace_run()
+Subject: [RFC patch 05/19] perf/bpf: Remove preempt disable around BPF invocation
 References: <20200214133917.304937432@linutronix.de>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -42,29 +42,31 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-__bpf_trace_run() disables preemption around the BPF_PROG_RUN() invocation.
-
-This is redundant because __bpf_trace_run() is invoked from a trace point
-via __DO_TRACE() which already disables preemption _before_ invoking any of
-the functions which are attached to a trace point.
-
-Remove it.
+The BPF invocation from the perf event overflow handler does not require to
+disable preemption because this is called from NMI or at least hard
+interrupt context which is already non-preemptible.
 
 Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
 ---
- kernel/trace/bpf_trace.c |    2 --
+ kernel/events/core.c |    2 --
  1 file changed, 2 deletions(-)
 
---- a/kernel/trace/bpf_trace.c
-+++ b/kernel/trace/bpf_trace.c
-@@ -1476,9 +1476,7 @@ static __always_inline
- void __bpf_trace_run(struct bpf_prog *prog, u64 *args)
- {
- 	rcu_read_lock();
+--- a/kernel/events/core.c
++++ b/kernel/events/core.c
+@@ -9206,7 +9206,6 @@ static void bpf_overflow_handler(struct
+ 	int ret = 0;
+ 
+ 	ctx.regs = perf_arch_bpf_user_pt_regs(regs);
 -	preempt_disable();
- 	(void) BPF_PROG_RUN(prog, args);
--	preempt_enable();
+ 	if (unlikely(__this_cpu_inc_return(bpf_prog_active) != 1))
+ 		goto out;
+ 	rcu_read_lock();
+@@ -9214,7 +9213,6 @@ static void bpf_overflow_handler(struct
  	rcu_read_unlock();
- }
+ out:
+ 	__this_cpu_dec(bpf_prog_active);
+-	preempt_enable();
+ 	if (!ret)
+ 		return;
  
 
