@@ -2,37 +2,34 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 037B115EF64
-	for <lists+netdev@lfdr.de>; Fri, 14 Feb 2020 18:48:08 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D058E15EF58
+	for <lists+netdev@lfdr.de>; Fri, 14 Feb 2020 18:47:24 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2389865AbgBNRr3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 14 Feb 2020 12:47:29 -0500
-Received: from mail.kernel.org ([198.145.29.99]:45130 "EHLO mail.kernel.org"
+        id S2389189AbgBNQBx (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 14 Feb 2020 11:01:53 -0500
+Received: from mail.kernel.org ([198.145.29.99]:45286 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2388742AbgBNQAB (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 14 Feb 2020 11:00:01 -0500
+        id S2389053AbgBNQAG (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 14 Feb 2020 11:00:06 -0500
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id C2ABF24676;
-        Fri, 14 Feb 2020 15:59:59 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id CE59B24688;
+        Fri, 14 Feb 2020 16:00:04 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1581696000;
-        bh=pd3vW5CltaAH7ihM3zmQr5dhDqK1vW4wOOnGegMwc7s=;
+        s=default; t=1581696005;
+        bh=rBVsO9RtdshMyfNFpqDV6D3hRwZdC8NqUMFcgHcdMj8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=hUF73yukZTKNUc60Fr1jz0tC9BdLIojaHCxPGDLwXv2tKidED6MoX/pRuvBA9brUL
-         Muwe8CfKUx+b4TWubKZwgpq0hHLzj1CHlli1ofHpZxgu+lb8sFh9gK0OAibkAIzySP
-         Y2HBTO/w+kt07yDMLNjxZq2gfyxn/4LC5SGtlab0=
+        b=VgEBS6YHZZlgyad9WJCp1Nkl5UtlinTpvPmhOdFqfioy4Wo2ZS3vYxxov0JHQkPRp
+         etd+UJVT/YLfG1TUz5V6+Ku1rqz8rRH6s4PFW7yp0zZx3eX735XHzr1sDmBXWKdbZq
+         wsyazmfhqpJTSfwO9B9f/CHEaiaELIAMUHjX7DYc=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Emmanuel Grumbach <emmanuel.grumbach@intel.com>,
-        Luca Coelho <luciano.coelho@intel.com>,
-        Kalle Valo <kvalo@codeaurora.org>,
-        Sasha Levin <sashal@kernel.org>,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.5 519/542] iwlwifi: mvm: fix TDLS discovery with the new firmware API
-Date:   Fri, 14 Feb 2020 10:48:31 -0500
-Message-Id: <20200214154854.6746-519-sashal@kernel.org>
+Cc:     Taehee Yoo <ap420073@gmail.com>, Jakub Kicinski <kuba@kernel.org>,
+        Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.5 523/542] netdevsim: fix panic in nsim_dev_take_snapshot_write()
+Date:   Fri, 14 Feb 2020 10:48:35 -0500
+Message-Id: <20200214154854.6746-523-sashal@kernel.org>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20200214154854.6746-1-sashal@kernel.org>
 References: <20200214154854.6746-1-sashal@kernel.org>
@@ -45,185 +42,133 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Emmanuel Grumbach <emmanuel.grumbach@intel.com>
+From: Taehee Yoo <ap420073@gmail.com>
 
-[ Upstream commit b5b878e36c1836c0195575132cc7c199e5a34a7b ]
+[ Upstream commit 8526ad9646b17c59b6d430d8baa8f152a14fe177 ]
 
-I changed the API for asking for a session protection but
-I omitted the TDLS flows. Fix that now.
-Note that for the TDLS flow, we need to block until the
-session protection actually starts, so add this option
-to iwl_mvm_schedule_session_protection.
-This patch fixes a firmware assert in the TDLS flow since
-the old TIME_EVENT_CMD is not supported anymore by newer
-firwmare versions.
+nsim_dev_take_snapshot_write() uses nsim_dev and nsim_dev->dummy_region.
+So, during this function, these data shouldn't be removed.
+But there is no protecting stuff in this function.
 
-Signed-off-by: Emmanuel Grumbach <emmanuel.grumbach@intel.com>
-Fixes: fe959c7b2049 ("iwlwifi: mvm: use the new session protection command")
-Signed-off-by: Luca Coelho <luciano.coelho@intel.com>
-Signed-off-by: Kalle Valo <kvalo@codeaurora.org>
+There are two similar cases.
+1. reload case
+reload could be called during nsim_dev_take_snapshot_write().
+When reload is being executed, nsim_dev_reload_down() is called and it
+calls nsim_dev_reload_destroy(). nsim_dev_reload_destroy() calls
+devlink_region_destroy() to destroy nsim_dev->dummy_region.
+So, during nsim_dev_take_snapshot_write(), nsim_dev->dummy_region()
+would be removed.
+At this point, snapshot_write() would access freed pointer.
+In order to fix this case, take_snapshot file will be removed before
+devlink_region_destroy().
+The take_snapshot file will be re-created by ->reload_up().
+
+2. del_device_store case
+del_device_store() also could call nsim_dev_reload_destroy()
+during nsim_dev_take_snapshot_write(). If so, panic would occur.
+This problem is actually the same problem with the first case.
+So, this problem will be fixed by the first case's solution.
+
+Test commands:
+    modprobe netdevsim
+    while :
+    do
+        echo 1 > /sys/bus/netdevsim/new_device &
+        echo 1 > /sys/bus/netdevsim/del_device &
+	devlink dev reload netdevsim/netdevsim1 &
+	echo 1 > /sys/kernel/debug/netdevsim/netdevsim1/take_snapshot &
+    done
+
+Splat looks like:
+[   45.564513][  T975] general protection fault, probably for non-canonical address 0xdffffc000000003a: 0000 [#1] SMP DEI
+[   45.566131][  T975] KASAN: null-ptr-deref in range [0x00000000000001d0-0x00000000000001d7]
+[   45.566135][  T975] CPU: 1 PID: 975 Comm: bash Not tainted 5.5.0+ #322
+[   45.569020][  T975] Hardware name: innotek GmbH VirtualBox/VirtualBox, BIOS VirtualBox 12/01/2006
+[   45.569026][  T975] RIP: 0010:__mutex_lock+0x10a/0x14b0
+[   45.570518][  T975] Code: 08 84 d2 0f 85 7f 12 00 00 44 8b 0d 10 23 65 02 45 85 c9 75 29 49 8d 7f 68 48 b8 00 00 00 0f
+[   45.570522][  T975] RSP: 0018:ffff888046ccfbf0 EFLAGS: 00010206
+[   45.572305][  T975] RAX: dffffc0000000000 RBX: 0000000000000000 RCX: 0000000000000000
+[   45.572308][  T975] RDX: 000000000000003a RSI: ffffffffac926440 RDI: 00000000000001d0
+[   45.576843][  T975] RBP: ffff888046ccfd70 R08: ffffffffab610645 R09: 0000000000000000
+[   45.576847][  T975] R10: ffff888046ccfd90 R11: ffffed100d6360ad R12: 0000000000000000
+[   45.578471][  T975] R13: dffffc0000000000 R14: ffffffffae1976c0 R15: 0000000000000168
+[   45.578475][  T975] FS:  00007f614d6e7740(0000) GS:ffff88806c400000(0000) knlGS:0000000000000000
+[   45.581492][  T975] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+[   45.582942][  T975] CR2: 00005618677d1cf0 CR3: 000000005fb9c002 CR4: 00000000000606e0
+[   45.584543][  T975] DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+[   45.586633][  T975] DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+[   45.589889][  T975] Call Trace:
+[   45.591445][  T975]  ? devlink_region_snapshot_create+0x55/0x4a0
+[   45.601250][  T975]  ? mutex_lock_io_nested+0x1380/0x1380
+[   45.602817][  T975]  ? mutex_lock_io_nested+0x1380/0x1380
+[   45.603875][  T975]  ? mark_held_locks+0xa5/0xe0
+[   45.604769][  T975]  ? _raw_spin_unlock_irqrestore+0x2d/0x50
+[   45.606147][  T975]  ? __mutex_unlock_slowpath+0xd0/0x670
+[   45.607723][  T975]  ? crng_backtrack_protect+0x80/0x80
+[   45.613530][  T975]  ? wait_for_completion+0x390/0x390
+[   45.615152][  T975]  ? devlink_region_snapshot_create+0x55/0x4a0
+[   45.616834][  T975]  devlink_region_snapshot_create+0x55/0x4a0
+[ ... ]
+
+Fixes: 4418f862d675 ("netdevsim: implement support for devlink region and snapshots")
+Signed-off-by: Taehee Yoo <ap420073@gmail.com>
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- .../net/wireless/intel/iwlwifi/mvm/mac80211.c |  2 +-
- drivers/net/wireless/intel/iwlwifi/mvm/tdls.c | 10 ++-
- .../wireless/intel/iwlwifi/mvm/time-event.c   | 71 ++++++++++++++++---
- .../wireless/intel/iwlwifi/mvm/time-event.h   |  4 +-
- 4 files changed, 72 insertions(+), 15 deletions(-)
+ drivers/net/netdevsim/dev.c       | 13 +++++++++++--
+ drivers/net/netdevsim/netdevsim.h |  1 +
+ 2 files changed, 12 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/net/wireless/intel/iwlwifi/mvm/mac80211.c b/drivers/net/wireless/intel/iwlwifi/mvm/mac80211.c
-index 8ecd1f6875deb..02df603b64000 100644
---- a/drivers/net/wireless/intel/iwlwifi/mvm/mac80211.c
-+++ b/drivers/net/wireless/intel/iwlwifi/mvm/mac80211.c
-@@ -3291,7 +3291,7 @@ static void iwl_mvm_mac_mgd_prepare_tx(struct ieee80211_hw *hw,
- 	if (fw_has_capa(&mvm->fw->ucode_capa,
- 			IWL_UCODE_TLV_CAPA_SESSION_PROT_CMD))
- 		iwl_mvm_schedule_session_protection(mvm, vif, 900,
--						    min_duration);
-+						    min_duration, false);
- 	else
- 		iwl_mvm_protect_session(mvm, vif, duration,
- 					min_duration, 500, false);
-diff --git a/drivers/net/wireless/intel/iwlwifi/mvm/tdls.c b/drivers/net/wireless/intel/iwlwifi/mvm/tdls.c
-index 1851719e9f4b4..d781777b6b965 100644
---- a/drivers/net/wireless/intel/iwlwifi/mvm/tdls.c
-+++ b/drivers/net/wireless/intel/iwlwifi/mvm/tdls.c
-@@ -205,9 +205,15 @@ void iwl_mvm_mac_mgd_protect_tdls_discover(struct ieee80211_hw *hw,
- 	struct iwl_mvm *mvm = IWL_MAC80211_GET_MVM(hw);
- 	u32 duration = 2 * vif->bss_conf.dtim_period * vif->bss_conf.beacon_int;
+diff --git a/drivers/net/netdevsim/dev.c b/drivers/net/netdevsim/dev.c
+index 2a945b3c7c764..54bc089550b3d 100644
+--- a/drivers/net/netdevsim/dev.c
++++ b/drivers/net/netdevsim/dev.c
+@@ -88,8 +88,11 @@ static int nsim_dev_debugfs_init(struct nsim_dev *nsim_dev)
+ 			   &nsim_dev->max_macs);
+ 	debugfs_create_bool("test1", 0600, nsim_dev->ddir,
+ 			    &nsim_dev->test1);
+-	debugfs_create_file("take_snapshot", 0200, nsim_dev->ddir, nsim_dev,
+-			    &nsim_dev_take_snapshot_fops);
++	nsim_dev->take_snapshot = debugfs_create_file("take_snapshot",
++						      0200,
++						      nsim_dev->ddir,
++						      nsim_dev,
++						&nsim_dev_take_snapshot_fops);
+ 	debugfs_create_bool("dont_allow_reload", 0600, nsim_dev->ddir,
+ 			    &nsim_dev->dont_allow_reload);
+ 	debugfs_create_bool("fail_reload", 0600, nsim_dev->ddir,
+@@ -740,6 +743,11 @@ static int nsim_dev_reload_create(struct nsim_dev *nsim_dev,
+ 	if (err)
+ 		goto err_health_exit;
  
--	mutex_lock(&mvm->mutex);
- 	/* Protect the session to hear the TDLS setup response on the channel */
--	iwl_mvm_protect_session(mvm, vif, duration, duration, 100, true);
-+	mutex_lock(&mvm->mutex);
-+	if (fw_has_capa(&mvm->fw->ucode_capa,
-+			IWL_UCODE_TLV_CAPA_SESSION_PROT_CMD))
-+		iwl_mvm_schedule_session_protection(mvm, vif, duration,
-+						    duration, true);
-+	else
-+		iwl_mvm_protect_session(mvm, vif, duration,
-+					duration, 100, true);
- 	mutex_unlock(&mvm->mutex);
- }
++	nsim_dev->take_snapshot = debugfs_create_file("take_snapshot",
++						      0200,
++						      nsim_dev->ddir,
++						      nsim_dev,
++						&nsim_dev_take_snapshot_fops);
+ 	return 0;
  
-diff --git a/drivers/net/wireless/intel/iwlwifi/mvm/time-event.c b/drivers/net/wireless/intel/iwlwifi/mvm/time-event.c
-index 51b138673ddbc..c0b420fe5e48f 100644
---- a/drivers/net/wireless/intel/iwlwifi/mvm/time-event.c
-+++ b/drivers/net/wireless/intel/iwlwifi/mvm/time-event.c
-@@ -1056,13 +1056,42 @@ int iwl_mvm_schedule_csa_period(struct iwl_mvm *mvm,
- 	return iwl_mvm_time_event_send_add(mvm, vif, te_data, &time_cmd);
- }
+ err_health_exit:
+@@ -853,6 +861,7 @@ static void nsim_dev_reload_destroy(struct nsim_dev *nsim_dev)
  
-+static bool iwl_mvm_session_prot_notif(struct iwl_notif_wait_data *notif_wait,
-+				       struct iwl_rx_packet *pkt, void *data)
-+{
-+	struct iwl_mvm *mvm =
-+		container_of(notif_wait, struct iwl_mvm, notif_wait);
-+	struct iwl_mvm_session_prot_notif *resp;
-+	int resp_len = iwl_rx_packet_payload_len(pkt);
-+
-+	if (WARN_ON(pkt->hdr.cmd != SESSION_PROTECTION_NOTIF ||
-+		    pkt->hdr.group_id != MAC_CONF_GROUP))
-+		return true;
-+
-+	if (WARN_ON_ONCE(resp_len != sizeof(*resp))) {
-+		IWL_ERR(mvm, "Invalid SESSION_PROTECTION_NOTIF response\n");
-+		return true;
-+	}
-+
-+	resp = (void *)pkt->data;
-+
-+	if (!resp->status)
-+		IWL_ERR(mvm,
-+			"TIME_EVENT_NOTIFICATION received but not executed\n");
-+
-+	return true;
-+}
-+
- void iwl_mvm_schedule_session_protection(struct iwl_mvm *mvm,
- 					 struct ieee80211_vif *vif,
--					 u32 duration, u32 min_duration)
-+					 u32 duration, u32 min_duration,
-+					 bool wait_for_notif)
- {
- 	struct iwl_mvm_vif *mvmvif = iwl_mvm_vif_from_mac80211(vif);
- 	struct iwl_mvm_time_event_data *te_data = &mvmvif->time_event_data;
--
-+	const u16 notif[] = { iwl_cmd_id(SESSION_PROTECTION_NOTIF,
-+					 MAC_CONF_GROUP, 0) };
-+	struct iwl_notification_wait wait_notif;
- 	struct iwl_mvm_session_prot_cmd cmd = {
- 		.id_and_color =
- 			cpu_to_le32(FW_CMD_ID_AND_COLOR(mvmvif->id,
-@@ -1071,7 +1100,6 @@ void iwl_mvm_schedule_session_protection(struct iwl_mvm *mvm,
- 		.conf_id = cpu_to_le32(SESSION_PROTECT_CONF_ASSOC),
- 		.duration_tu = cpu_to_le32(MSEC_TO_TU(duration)),
- 	};
--	int ret;
- 
- 	lockdep_assert_held(&mvm->mutex);
- 
-@@ -1092,14 +1120,35 @@ void iwl_mvm_schedule_session_protection(struct iwl_mvm *mvm,
- 	IWL_DEBUG_TE(mvm, "Add new session protection, duration %d TU\n",
- 		     le32_to_cpu(cmd.duration_tu));
- 
--	ret = iwl_mvm_send_cmd_pdu(mvm, iwl_cmd_id(SESSION_PROTECTION_CMD,
--						   MAC_CONF_GROUP, 0),
--				   0, sizeof(cmd), &cmd);
--	if (ret) {
-+	if (!wait_for_notif) {
-+		if (iwl_mvm_send_cmd_pdu(mvm,
-+					 iwl_cmd_id(SESSION_PROTECTION_CMD,
-+						    MAC_CONF_GROUP, 0),
-+					 0, sizeof(cmd), &cmd)) {
-+			IWL_ERR(mvm,
-+				"Couldn't send the SESSION_PROTECTION_CMD\n");
-+			spin_lock_bh(&mvm->time_event_lock);
-+			iwl_mvm_te_clear_data(mvm, te_data);
-+			spin_unlock_bh(&mvm->time_event_lock);
-+		}
-+
-+		return;
-+	}
-+
-+	iwl_init_notification_wait(&mvm->notif_wait, &wait_notif,
-+				   notif, ARRAY_SIZE(notif),
-+				   iwl_mvm_session_prot_notif, NULL);
-+
-+	if (iwl_mvm_send_cmd_pdu(mvm,
-+				 iwl_cmd_id(SESSION_PROTECTION_CMD,
-+					    MAC_CONF_GROUP, 0),
-+				 0, sizeof(cmd), &cmd)) {
- 		IWL_ERR(mvm,
--			"Couldn't send the SESSION_PROTECTION_CMD: %d\n", ret);
--		spin_lock_bh(&mvm->time_event_lock);
--		iwl_mvm_te_clear_data(mvm, te_data);
--		spin_unlock_bh(&mvm->time_event_lock);
-+			"Couldn't send the SESSION_PROTECTION_CMD\n");
-+		iwl_remove_notification(&mvm->notif_wait, &wait_notif);
-+	} else if (iwl_wait_notification(&mvm->notif_wait, &wait_notif,
-+					 TU_TO_JIFFIES(100))) {
-+		IWL_ERR(mvm,
-+			"Failed to protect session until session protection\n");
- 	}
- }
-diff --git a/drivers/net/wireless/intel/iwlwifi/mvm/time-event.h b/drivers/net/wireless/intel/iwlwifi/mvm/time-event.h
-index df6832b796666..3186d7e40567c 100644
---- a/drivers/net/wireless/intel/iwlwifi/mvm/time-event.h
-+++ b/drivers/net/wireless/intel/iwlwifi/mvm/time-event.h
-@@ -250,10 +250,12 @@ iwl_mvm_te_scheduled(struct iwl_mvm_time_event_data *te_data)
-  * @mvm: the mvm component
-  * @vif: the virtual interface for which the protection issued
-  * @duration: the duration of the protection
-+ * @wait_for_notif: if true, will block until the start of the protection
-  */
- void iwl_mvm_schedule_session_protection(struct iwl_mvm *mvm,
- 					 struct ieee80211_vif *vif,
--					 u32 duration, u32 min_duration);
-+					 u32 duration, u32 min_duration,
-+					 bool wait_for_notif);
- 
- /**
-  * iwl_mvm_rx_session_protect_notif - handles %SESSION_PROTECTION_NOTIF
+ 	if (devlink_is_reload_failed(devlink))
+ 		return;
++	debugfs_remove(nsim_dev->take_snapshot);
+ 	nsim_dev_port_del_all(nsim_dev);
+ 	nsim_dev_health_exit(nsim_dev);
+ 	nsim_dev_traps_exit(devlink);
+diff --git a/drivers/net/netdevsim/netdevsim.h b/drivers/net/netdevsim/netdevsim.h
+index be100b11a0550..2eb7b0dc1594e 100644
+--- a/drivers/net/netdevsim/netdevsim.h
++++ b/drivers/net/netdevsim/netdevsim.h
+@@ -160,6 +160,7 @@ struct nsim_dev {
+ 	struct nsim_trap_data *trap_data;
+ 	struct dentry *ddir;
+ 	struct dentry *ports_ddir;
++	struct dentry *take_snapshot;
+ 	struct bpf_offload_dev *bpf_dev;
+ 	bool bpf_bind_accept;
+ 	u32 bpf_bind_verifier_delay;
 -- 
 2.20.1
 
