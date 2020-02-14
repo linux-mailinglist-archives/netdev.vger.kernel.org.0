@@ -2,71 +2,72 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id A422015F9FA
-	for <lists+netdev@lfdr.de>; Fri, 14 Feb 2020 23:53:41 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 995DC15FA05
+	for <lists+netdev@lfdr.de>; Fri, 14 Feb 2020 23:57:35 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727573AbgBNWxh (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 14 Feb 2020 17:53:37 -0500
-Received: from frisell.zx2c4.com ([192.95.5.64]:47059 "EHLO frisell.zx2c4.com"
+        id S1728055AbgBNW5c (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 14 Feb 2020 17:57:32 -0500
+Received: from frisell.zx2c4.com ([192.95.5.64]:36023 "EHLO frisell.zx2c4.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726164AbgBNWxh (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 14 Feb 2020 17:53:37 -0500
-Received: by frisell.zx2c4.com (ZX2C4 Mail Server) with ESMTP id c1c0a495
-        for <netdev@vger.kernel.org>;
-        Fri, 14 Feb 2020 22:51:26 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha1; c=relaxed; d=zx2c4.com; h=mime-version
-        :references:in-reply-to:from:date:message-id:subject:to:cc
-        :content-type; s=mail; bh=3+Qlztex9Zyw/MhrfBtIeOoX4sU=; b=rV8Kpf
-        csFYWxg1PVaSNuwMiHiLuBBVbVhbQmHocA8i3wMpJ8yOWrUeG97OZwrhNdrwK+bs
-        AmeIuCoEj7kXNDYVvOLWcfsb+351V0eF1x0D+I0R8sCIvpkMu+7zQgL1dBOeyKp1
-        X/J/F04YT446yOOKsIIAeJZYqU9BXyOerW8YJsZ/bhleeqPYMd2RYYiMDRDnadC6
-        0NfQwgrm1QLxIG/jAtzarN4BxM1UujpldWYfoHksdY54UFMn6vQaw3Ip9Rcr5kxR
-        PiXOqSULxseEBc58zY9KUK0kW2wg09ZXQgwhYq0eh/OkORz0N7XblaMX9Mbs0div
-        S3fgVvT1tVOUMVGQ==
-Received: by frisell.zx2c4.com (ZX2C4 Mail Server) with ESMTPSA id 2e5fc1f1 (TLSv1.2:ECDHE-RSA-AES256-GCM-SHA384:256:NO)
-        for <netdev@vger.kernel.org>;
-        Fri, 14 Feb 2020 22:51:25 +0000 (UTC)
-Received: by mail-ot1-f43.google.com with SMTP id 66so10694657otd.9
-        for <netdev@vger.kernel.org>; Fri, 14 Feb 2020 14:53:34 -0800 (PST)
-X-Gm-Message-State: APjAAAWTOB1vlv4622BDI/8j/ah4WmkQ757CZlvd/4pLgMNPe2TSYbSW
-        5xRNVQI0Bk6z4lZ8EZqSMjOz+vLdJlkO288LlX8=
-X-Google-Smtp-Source: APXvYqxbQAmY+aem1wuZUa5aiIiUJcrayX0jmT5hvWvxcmgOvmwi7xGp4kTJAEuJatg9HxdsG6DAzCxvSx75VuxRjNw=
-X-Received: by 2002:a9d:7a47:: with SMTP id z7mr4209430otm.179.1581720814047;
- Fri, 14 Feb 2020 14:53:34 -0800 (PST)
-MIME-Version: 1.0
-References: <20200214173407.52521-1-Jason@zx2c4.com> <20200214173407.52521-4-Jason@zx2c4.com>
- <135ffa7a-f06a-80e3-4412-17457b202c77@gmail.com> <CAHmME9pjLfscZ-b0YFsOoKMcENRh4Ld1rfiTTzzHmt+OxOzdjA@mail.gmail.com>
- <e20d0c52-cb83-224d-7507-b53c5c4a5b69@gmail.com> <CAHmME9oXfDCGmsCJJEuaPmgj7_U4yfrBoqi0wRZrOD9SdWny_w@mail.gmail.com>
- <ec52e8cb-5649-9167-bb14-7e9775c6a8be@gmail.com> <CAHmME9r6gTCV8cpPgyjOVMWCbRJtswzqXMYBqTQmo001AZz05Q@mail.gmail.com>
- <1b132351-d4a7-851c-ac98-0a48c8d90797@gmail.com>
-In-Reply-To: <1b132351-d4a7-851c-ac98-0a48c8d90797@gmail.com>
+        id S1727811AbgBNW5c (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 14 Feb 2020 17:57:32 -0500
+Received: by frisell.zx2c4.com (ZX2C4 Mail Server) with ESMTP id f846fd0f;
+        Fri, 14 Feb 2020 22:55:21 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha1; c=relaxed; d=zx2c4.com; h=from:to:cc
+        :subject:date:message-id:mime-version:content-transfer-encoding;
+         s=mail; bh=06+yMhbdxeYZJncgZWh5JeOSc3g=; b=3icJgGR/IqTwuGfRikki
+        dHIL7oA5331FFtNTfCsM7ER0XDC6xM4b5j1axYnrgFMClup7xyNSna6pGtdje0WV
+        TLI98zzKLyj8GRcV8vRzyJQ0+fLTI91JWIbFEH+pBcE9ET11GCwDKqOnTGHSJpkx
+        I7OUdKZ4ZoSWCfTtObTMRx00cVfCh4l55hEh+KI1J1aS1S0kxnfUOjxQPsws+VZn
+        yyiURQHWP3fb8c4ui80d5Rurg1XZI6HlRy+pcb3pFugjDDOY0VBKaUjC+xlhXQx0
+        bLWf7bllBC+1I7UvuTijbv8tIJP5NwD8Wfp18TRN6yjC3R8tZ1+zeajzdDHw5cyH
+        Xw==
+Received: by frisell.zx2c4.com (ZX2C4 Mail Server) with ESMTPSA id 75cb62ee (TLSv1.2:ECDHE-RSA-AES256-GCM-SHA384:256:NO);
+        Fri, 14 Feb 2020 22:55:21 +0000 (UTC)
 From:   "Jason A. Donenfeld" <Jason@zx2c4.com>
-Date:   Fri, 14 Feb 2020 23:53:23 +0100
-X-Gmail-Original-Message-ID: <CAHmME9ok5ktHCvn0o1M-qjK68He-AsKJvKQMPkWnZL7Tq1GWVw@mail.gmail.com>
-Message-ID: <CAHmME9ok5ktHCvn0o1M-qjK68He-AsKJvKQMPkWnZL7Tq1GWVw@mail.gmail.com>
-Subject: Re: [PATCH v2 net 3/3] wireguard: send: account for mtu=0 devices
-To:     Eric Dumazet <eric.dumazet@gmail.com>
-Cc:     Netdev <netdev@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+To:     davem@davemloft.net, netdev@vger.kernel.org
+Cc:     "Jason A. Donenfeld" <Jason@zx2c4.com>
+Subject: [PATCH v3 net 0/4] wireguard fixes for 5.6-rc2
+Date:   Fri, 14 Feb 2020 23:57:19 +0100
+Message-Id: <20200214225723.63646-1-Jason@zx2c4.com>
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Feb 14, 2020 at 11:30 PM Eric Dumazet <eric.dumazet@gmail.com> wrote:
-> Also note that UDP sockets have SOCK_RCU_FREE flag set, so core
-> networking also respect one RCU grace period before freeing them.
+Here are four fixes for wireguard collected since rc1:
 
-       if (use_call_rcu)
-               call_rcu(&sk->sk_rcu, __sk_destruct);
-       else
-               __sk_destruct(&sk->sk_rcu);
+1) Some small cleanups to the test suite to help massively parallel
+   builds.
 
-Ah, that's handy indeed.
+2) A change in how we reset our load calculation to avoid a more
+   expensive comparison, suggested by Matt Dunwoodie.
 
-> It is possible that no extra synchronize_{net|rcu}() call is needed,
-> but this is left as an exercise for future kernels :)
+3) I've been loading more and more of wireguard's surface into
+   syzkaller, trying to get our coverage as complete as possible,
+   leading in this case to a fix for mtu=0 devices.
 
-Cool, yea, sounds like something I should play with for 5.7.
+4) A removal of superfluous code, pointed out by Eric Dumazet.
 
-Sending v3 out in a few minutes.
+v2 fixes a logical problem in the patch for (3) pointed out by Eric Dumazet. v3
+replaces some non-obvious bitmath in (3) with a more obvious expression, and
+adds patch (4).
+
+Jason A. Donenfeld (4):
+  wireguard: selftests: reduce complexity and fix make races
+  wireguard: receive: reset last_under_load to zero
+  wireguard: send: account for mtu=0 devices
+  wireguard: socket: remove extra call to synchronize_net
+
+ drivers/net/wireguard/device.c                |  7 ++--
+ drivers/net/wireguard/receive.c               |  7 +++-
+ drivers/net/wireguard/send.c                  | 16 +++++---
+ drivers/net/wireguard/socket.c                |  1 -
+ .../testing/selftests/wireguard/qemu/Makefile | 38 +++++++------------
+ 5 files changed, 34 insertions(+), 35 deletions(-)
+
+-- 
+2.25.0
+
