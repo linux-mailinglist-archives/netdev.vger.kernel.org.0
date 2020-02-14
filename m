@@ -2,37 +2,35 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id ACE2E15DBE6
-	for <lists+netdev@lfdr.de>; Fri, 14 Feb 2020 16:51:30 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 560DA15DC6D
+	for <lists+netdev@lfdr.de>; Fri, 14 Feb 2020 16:53:48 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730719AbgBNPvQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 14 Feb 2020 10:51:16 -0500
-Received: from mail.kernel.org ([198.145.29.99]:56078 "EHLO mail.kernel.org"
+        id S1731132AbgBNPxD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 14 Feb 2020 10:53:03 -0500
+Received: from mail.kernel.org ([198.145.29.99]:60280 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1730231AbgBNPvP (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 14 Feb 2020 10:51:15 -0500
+        id S1731018AbgBNPxC (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 14 Feb 2020 10:53:02 -0500
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id E454424650;
-        Fri, 14 Feb 2020 15:51:13 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 2E60424676;
+        Fri, 14 Feb 2020 15:53:01 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1581695474;
-        bh=ZAZQ4pdAnry+OBx1ralUNrdcqcjYjEJG1WhPRjFjRNM=;
+        s=default; t=1581695581;
+        bh=/73/ybL08y3MfdJofkFDbGAMVH9v2eU7vMke69tEJVs=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=IXSK7n/8iCwGj+bov0T2iLiAXvUr8TjUpAtl699it57Hax1t3U6apBgB16rceiWw9
-         06fxShkte0/m9v8wbPdsh65mzXLI2ccjumxC9RhGdhStjGiYr60qncTpeW9FFdSyuA
-         JHO126BHNJrgAg9Fo7ZXRn5XJ30PFbc4mB0M48JE=
+        b=15Px0gQXGM+qHpK8cLn8h/HKWXX346C/3gjEOEwRBVBvI5RDNq4Bh7FAxH4fTDGNM
+         5WRdelOew0gtS50GBGzCUj6FOnDTm8eKM28Xsf0DoCcSXYaYXsSOUKOSw5k8giboUj
+         5eKuGhwYrVe8kzV8PQjWGxZk50UWQ4WwweD10do4=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Danit Goldberg <danitg@mellanox.com>,
-        Leon Romanovsky <leonro@mellanox.com>,
-        Jason Gunthorpe <jgg@mellanox.com>,
-        Sasha Levin <sashal@kernel.org>, linux-rdma@vger.kernel.org,
-        netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.5 108/542] IB/mlx5: Return the administrative GUID if exists
-Date:   Fri, 14 Feb 2020 10:41:40 -0500
-Message-Id: <20200214154854.6746-108-sashal@kernel.org>
+Cc:     Chen Wandun <chenwandun@huawei.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.5 191/542] enetc: remove variable 'tc_max_sized_frame' set but not used
+Date:   Fri, 14 Feb 2020 10:43:03 -0500
+Message-Id: <20200214154854.6746-191-sashal@kernel.org>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20200214154854.6746-1-sashal@kernel.org>
 References: <20200214154854.6746-1-sashal@kernel.org>
@@ -45,119 +43,44 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Danit Goldberg <danitg@mellanox.com>
+From: Chen Wandun <chenwandun@huawei.com>
 
-[ Upstream commit 4bbd4923d1f5627b0c47a9d7dfb5cc91224cfe0c ]
+[ Upstream commit 6525b5ef65fdaf8a782449fb5d585195b573c2c1 ]
 
-A user can change the operational GUID (a.k.a affective GUID) through
-link/infiniband. Therefore it is preferred to return the currently set
-GUID if it exists instead of the operational.
+Fixes gcc '-Wunused-but-set-variable' warning:
 
-This way the PF can query which VF GUID will be set in the next bind.  In
-order to align with MAC address, zero is returned if administrative GUID
-is not set.
+drivers/net/ethernet/freescale/enetc/enetc_qos.c: In function enetc_setup_tc_cbs:
+drivers/net/ethernet/freescale/enetc/enetc_qos.c:195:6: warning: variable tc_max_sized_frame set but not used [-Wunused-but-set-variable]
 
-For example, before setting administrative GUID:
- $ ip link show
- ib0: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 4092 qdisc mq state UP mode DEFAULT group default qlen 256
- link/infiniband 00:00:00:08:fe:80:00:00:00:00:00:00:52:54:00:c0:fe:12:34:55 brd 00:ff:ff:ff:ff:12:40:1b:ff:ff:00:00:00:00:00:00:ff:ff:ff:ff
- vf 0     link/infiniband 00:00:00:08:fe:80:00:00:00:00:00:00:52:54:00:c0:fe:12:34:55 brd 00:ff:ff:ff:ff:12:40:1b:ff:ff:00:00:00:00:00:00:ff:ff:ff:ff,
- spoof checking off, NODE_GUID 00:00:00:00:00:00:00:00, PORT_GUID 00:00:00:00:00:00:00:00, link-state auto, trust off, query_rss off
-
-Then:
-
- $ ip link set ib0 vf 0 node_guid 11:00:af:21:cb:05:11:00
- $ ip link set ib0 vf 0 port_guid 22:11:af:21:cb:05:11:00
-
-After setting administrative GUID:
- $ ip link show
- ib0: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 4092 qdisc mq state UP mode DEFAULT group default qlen 256
- link/infiniband 00:00:00:08:fe:80:00:00:00:00:00:00:52:54:00:c0:fe:12:34:55 brd 00:ff:ff:ff:ff:12:40:1b:ff:ff:00:00:00:00:00:00:ff:ff:ff:ff
- vf 0     link/infiniband 00:00:00:08:fe:80:00:00:00:00:00:00:52:54:00:c0:fe:12:34:55 brd 00:ff:ff:ff:ff:12:40:1b:ff:ff:00:00:00:00:00:00:ff:ff:ff:ff,
- spoof checking off, NODE_GUID 11:00:af:21:cb:05:11:00, PORT_GUID 22:11:af:21:cb:05:11:00, link-state auto, trust off, query_rss off
-
-Fixes: 9c0015ef0928 ("IB/mlx5: Implement callbacks for getting VFs GUID attributes")
-Link: https://lore.kernel.org/r/20200116120048.12744-1-leon@kernel.org
-Signed-off-by: Danit Goldberg <danitg@mellanox.com>
-Signed-off-by: Leon Romanovsky <leonro@mellanox.com>
-Signed-off-by: Jason Gunthorpe <jgg@mellanox.com>
+Fixes: c431047c4efe ("enetc: add support Credit Based Shaper(CBS) for hardware offload")
+Signed-off-by: Chen Wandun <chenwandun@huawei.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/infiniband/hw/mlx5/ib_virt.c | 28 ++++++++++++----------------
- include/linux/mlx5/driver.h          |  5 +++++
- 2 files changed, 17 insertions(+), 16 deletions(-)
+ drivers/net/ethernet/freescale/enetc/enetc_qos.c | 3 +--
+ 1 file changed, 1 insertion(+), 2 deletions(-)
 
-diff --git a/drivers/infiniband/hw/mlx5/ib_virt.c b/drivers/infiniband/hw/mlx5/ib_virt.c
-index 4f0edd4832bdf..b61165359954e 100644
---- a/drivers/infiniband/hw/mlx5/ib_virt.c
-+++ b/drivers/infiniband/hw/mlx5/ib_virt.c
-@@ -164,8 +164,10 @@ static int set_vf_node_guid(struct ib_device *device, int vf, u8 port, u64 guid)
- 	in->field_select = MLX5_HCA_VPORT_SEL_NODE_GUID;
- 	in->node_guid = guid;
- 	err = mlx5_core_modify_hca_vport_context(mdev, 1, 1, vf + 1, in);
--	if (!err)
-+	if (!err) {
- 		vfs_ctx[vf].node_guid = guid;
-+		vfs_ctx[vf].node_guid_valid = 1;
-+	}
- 	kfree(in);
- 	return err;
- }
-@@ -185,8 +187,10 @@ static int set_vf_port_guid(struct ib_device *device, int vf, u8 port, u64 guid)
- 	in->field_select = MLX5_HCA_VPORT_SEL_PORT_GUID;
- 	in->port_guid = guid;
- 	err = mlx5_core_modify_hca_vport_context(mdev, 1, 1, vf + 1, in);
--	if (!err)
-+	if (!err) {
- 		vfs_ctx[vf].port_guid = guid;
-+		vfs_ctx[vf].port_guid_valid = 1;
-+	}
- 	kfree(in);
- 	return err;
- }
-@@ -208,20 +212,12 @@ int mlx5_ib_get_vf_guid(struct ib_device *device, int vf, u8 port,
- {
- 	struct mlx5_ib_dev *dev = to_mdev(device);
- 	struct mlx5_core_dev *mdev = dev->mdev;
--	struct mlx5_hca_vport_context *rep;
--	int err;
--
--	rep = kzalloc(sizeof(*rep), GFP_KERNEL);
--	if (!rep)
--		return -ENOMEM;
-+	struct mlx5_vf_context *vfs_ctx = mdev->priv.sriov.vfs_ctx;
+diff --git a/drivers/net/ethernet/freescale/enetc/enetc_qos.c b/drivers/net/ethernet/freescale/enetc/enetc_qos.c
+index 2e99438cb1bf3..9190ffc9f6b21 100644
+--- a/drivers/net/ethernet/freescale/enetc/enetc_qos.c
++++ b/drivers/net/ethernet/freescale/enetc/enetc_qos.c
+@@ -192,7 +192,6 @@ int enetc_setup_tc_cbs(struct net_device *ndev, void *type_data)
+ 	u32 hi_credit_bit, hi_credit_reg;
+ 	u32 max_interference_size;
+ 	u32 port_frame_max_size;
+-	u32 tc_max_sized_frame;
+ 	u8 tc = cbs->queue;
+ 	u8 prio_top, prio_next;
+ 	int bw_sum = 0;
+@@ -250,7 +249,7 @@ int enetc_setup_tc_cbs(struct net_device *ndev, void *type_data)
+ 		return -EINVAL;
+ 	}
  
--	err = mlx5_query_hca_vport_context(mdev, 1, 1, vf+1, rep);
--	if (err)
--		goto ex;
-+	node_guid->guid =
-+		vfs_ctx[vf].node_guid_valid ? vfs_ctx[vf].node_guid : 0;
-+	port_guid->guid =
-+		vfs_ctx[vf].port_guid_valid ? vfs_ctx[vf].port_guid : 0;
+-	tc_max_sized_frame = enetc_port_rd(&si->hw, ENETC_PTCMSDUR(tc));
++	enetc_port_rd(&si->hw, ENETC_PTCMSDUR(tc));
  
--	port_guid->guid = rep->port_guid;
--	node_guid->guid = rep->node_guid;
--ex:
--	kfree(rep);
--	return err;
-+	return 0;
- }
-diff --git a/include/linux/mlx5/driver.h b/include/linux/mlx5/driver.h
-index 27200dea02977..a24937fc56b91 100644
---- a/include/linux/mlx5/driver.h
-+++ b/include/linux/mlx5/driver.h
-@@ -461,6 +461,11 @@ struct mlx5_vf_context {
- 	int	enabled;
- 	u64	port_guid;
- 	u64	node_guid;
-+	/* Valid bits are used to validate administrative guid only.
-+	 * Enabled after ndo_set_vf_guid
-+	 */
-+	u8	port_guid_valid:1;
-+	u8	node_guid_valid:1;
- 	enum port_state_policy	policy;
- };
- 
+ 	/* For top prio TC, the max_interfrence_size is maxSizedFrame.
+ 	 *
 -- 
 2.20.1
 
