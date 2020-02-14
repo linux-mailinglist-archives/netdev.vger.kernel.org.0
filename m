@@ -2,84 +2,173 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id ED20215FA4D
-	for <lists+netdev@lfdr.de>; Sat, 15 Feb 2020 00:22:11 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 91F9915FA4E
+	for <lists+netdev@lfdr.de>; Sat, 15 Feb 2020 00:22:35 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728103AbgBNXWC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 14 Feb 2020 18:22:02 -0500
-Received: from mail-pf1-f196.google.com ([209.85.210.196]:37582 "EHLO
-        mail-pf1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727458AbgBNXWC (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 14 Feb 2020 18:22:02 -0500
-Received: by mail-pf1-f196.google.com with SMTP id p14so5600158pfn.4
-        for <netdev@vger.kernel.org>; Fri, 14 Feb 2020 15:22:01 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=RD00yQTaWRQhVoIeYbivs0VjY8rWc/0oeTR8kZlaU68=;
-        b=mlhAdIpIjDpUiL0kOWdpI5r1tjMYl7/F196K4zfyta+vbun5Xg3O5EkmtLh8TBNsWC
-         4oTVN2LH8gFNrPDEqx+13PCt1svShAxekSrlAhH0ayoQ90+bZ/CbD2qy55JaoT4Jwd5y
-         gjDJf2nuzRIfg+M1nj0ytwfwgWm7gDLkX16659JOFxmdniYxbgvSSwexubtlxsfX9Whw
-         mFJIMYjSGJRf0Q0kcl9lyGOJMbtsdNKrnOCUcnNAAmW7HJTAF9q8l0fvkoqIy0rQC3Cc
-         XXP7OsrnzHTBKmVSZhhpMp5X1wDLXQCG5IsZ3AAmxpqEt5fRf4aRukXxigA8npEwvSxf
-         TnSQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=RD00yQTaWRQhVoIeYbivs0VjY8rWc/0oeTR8kZlaU68=;
-        b=k/DkbsZzQxa7DJjH/+p9L5hCC6KQ1TgpKzjjZKm0U4BRQEalKUUWAlzHWSqgx8Xs6U
-         A6jYBWJa4mzmaDDXu0OD4i0+sD0atWbARmon/NtAN1FTNvRmA77kexemn2kNDLGZTtMH
-         fqYFbTZI2GraQlBue5KqcggObKec/V2J8KF7SHKbDOqQbYWA0wxWiCL//9V2296vIkDS
-         sRXko8CVaB8cUUZGPIbyvG9Mtt7qevt3i5eFhSJ8ZEVbC/i9z1pgKyEcEZJFGmMsNGOV
-         pkkr3/b0M+Zpe9icVEaBbmXV5VNiciXcE0gqT/Ufw78Redk/42Ks6vpmC/37M2bbKE8b
-         lvvA==
-X-Gm-Message-State: APjAAAW6rqIKlFgck1KHmBE3Efb+mFfPVfYEdgmAJO4FY/ei9cxNbgz4
-        UMcj/ENmH9w4SHBzZhhzTgs=
-X-Google-Smtp-Source: APXvYqySnv0TxH3+yKN7nHCE5fg3MmGRak1Mbt32Otcnnq3m0H06JohkjJrOzFzt1iSsVcyfWn2jdQ==
-X-Received: by 2002:a65:5c44:: with SMTP id v4mr6216168pgr.340.1581722521487;
-        Fri, 14 Feb 2020 15:22:01 -0800 (PST)
-Received: from ?IPv6:2620:15c:2c1:200:55c7:81e6:c7d8:94b? ([2620:15c:2c1:200:55c7:81e6:c7d8:94b])
-        by smtp.gmail.com with ESMTPSA id q8sm8289268pfs.161.2020.02.14.15.22.00
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 14 Feb 2020 15:22:00 -0800 (PST)
-Subject: Re: [PATCH v3 net 4/4] wireguard: socket: remove extra call to
- synchronize_net
-To:     "Jason A. Donenfeld" <Jason@zx2c4.com>, davem@davemloft.net,
-        netdev@vger.kernel.org
-Cc:     Eric Dumazet <eric.dumazet@gmail.com>
-References: <20200214225723.63646-1-Jason@zx2c4.com>
- <20200214225723.63646-5-Jason@zx2c4.com>
-From:   Eric Dumazet <eric.dumazet@gmail.com>
-Message-ID: <d29e7d7e-5e60-9790-4851-eaf7bc14a58c@gmail.com>
+        id S1728126AbgBNXW1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 14 Feb 2020 18:22:27 -0500
+Received: from mga02.intel.com ([134.134.136.20]:41443 "EHLO mga02.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1727458AbgBNXW1 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 14 Feb 2020 18:22:27 -0500
+X-Amp-Result: SKIPPED(no attachment in message)
+X-Amp-File-Uploaded: False
+Received: from fmsmga008.fm.intel.com ([10.253.24.58])
+  by orsmga101.jf.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 14 Feb 2020 15:22:26 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.70,442,1574150400"; 
+   d="scan'208";a="228629262"
+Received: from jekeller-desk.amr.corp.intel.com (HELO jekeller-desk.jekeller.internal) ([10.166.244.172])
+  by fmsmga008.fm.intel.com with ESMTP; 14 Feb 2020 15:22:25 -0800
+From:   Jacob Keller <jacob.e.keller@intel.com>
+To:     netdev@vger.kernel.org
+Cc:     jiri@resnulli.us, valex@mellanox.com, linyunsheng@huawei.com,
+        lihong.yang@intel.com, kuba@kernel.org,
+        Jacob Keller <jacob.e.keller@intel.com>
+Subject: [RFC PATCH v2 00/22] devlink region updates
 Date:   Fri, 14 Feb 2020 15:21:59 -0800
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.4.1
+Message-Id: <20200214232223.3442651-1-jacob.e.keller@intel.com>
+X-Mailer: git-send-email 2.25.0.368.g28a2d05eebfb
 MIME-Version: 1.0
-In-Reply-To: <20200214225723.63646-5-Jason@zx2c4.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+This is a second revision of the previous RFC series I sent to enable two
+new devlink region features.
 
+The original series can be viewed on the list archives at
 
-On 2/14/20 2:57 PM, Jason A. Donenfeld wrote:
-> synchronize_net() is a wrapper around synchronize_rcu(), so there's no
-> point in having synchronize_net and synchronize_rcu back to back,
-> despite the documentation comment suggesting maybe it's somewhat useful,
-> "Wait for packets currently being received to be done." This commit
-> removes the extra call.
-> 
-> Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
-> Suggested-by: Eric Dumazet <eric.dumazet@gmail.com>
+https://lore.kernel.org/netdev/20200130225913.1671982-1-jacob.e.keller@intel.com/
 
-Reviewed-by: Eric Dumazet <edumazet@google.com>
+Overall, this series can be broken into 5 phases:
 
-Thanks !
+ 1) implement basic devlink support in the ice driver, including .info_get
+ 2) convert regions to use the new devlink_region_ops structure
+ 3) implement support for DEVLINK_CMD_REGION_NEW
+ 4) implement support for directly reading from a region
+ 5) use these new features in the ice driver for the Shadow RAM region
+
+(1) comprises 6 patches for the ice driver that add the devlink framework
+and cleanup a few places in the code in preparation for the new region.
+
+(2) comprises 2 patches which convert regions to use the new
+devlink_region_ops structure, and additionally move the snapshot destructor
+to a region operation.
+
+(3) comprises 6 patches to enable supporting the DEVLINK_CMD_REGION_NEW
+operation. This replaces what was previously the
+DEVLINK_CMD_REGION_TAKE_SNAPSHOT, as per Jiri's suggestion. The new
+operation supports specifying the requested id for the snapshot. To make
+that possible, first snapshot id management is refactored to use an IDR.
+Note that the extra complexity of the IDR is necessary in order to maintain
+the ability for the snapshot IDs to be generated so that multiple regions
+can use the same ID if triggered at the same time.
+
+(4) comprises 6 patches for modifying DEVLINK_CMD_REGION_READ so that it
+accepts a request without a snapshot id. A new region operation is defined
+for regions to optionally support the requests. The first few patches
+refactor and simplify the functions used so that adding the new read method
+reuses logic where possible.
+
+(5) finally comprises a single patch to implement a region for the ice
+device hardware's Shadow RAM contents.
+
+Note that I plan to submit the ice patches through the Intel Wired LAN list,
+but am sending the complete set here as an RFC in case there is further
+feedback, and so that reviewers can have the correct context.
+
+I expect to get further feedback this RFC revision, and will hopefully send
+the patches as non-RFC following this, if feedback looks good. Thank you for
+the diligent review.
+
+Changes since v1:
+
+* reword some comments and variable names in the ice driver that used the
+  term "page" to use the term "sector" to avoid confusion with the PAGE_SIZE
+  of the system.
+* Fixed a bug in the ice_read_flat_nvm function due to misusing the last_cmd
+  variable
+* Remove the devlinkm* functions and just use devm_add_action in the ice
+  driver for managing the devlink memory similar to how the PF memory was
+  managed by the devm_kzalloc.
+* Fix typos in a couple of function comments in ice_devlink.c
+* use dev_err instead of dev_warn for an error case where the main VSI can't
+  be found.
+* Only call devlink_port_type_eth_set if the VSI has a netdev
+* Move where the devlink_port is created in the ice_probe flow
+* Update the new ice.rst documentation for info versions, providing more
+  clear descriptions of the parameters. Give examples for each field as
+  well. Squash the documentation additions into the relevant patches.
+* Add a new patch to the ice driver which renames some variables referring
+  to the Option ROM version.
+* keep the string constants in the mlx4 crdump.c file, converting them to
+  "const char * const" so that the compiler understands they can be used in
+  constant initializers.
+* Add a patch to convert snapshot destructors into a region operation
+* Add a patch to fix a trivial typo in a devlink function comment
+* Use __ as a prefix for static internal functions instead of a _locked
+  suffix.
+* Refactor snapshot id management to use an IDR.
+* Implement DEVLINK_CMD_REGION_NEW of DEVLINK_CMD_REGION_TAKE_SNAPSHOT
+* Add several patches which refactor devlink_nl_cmd_region_snapshot_fill
+* Use the new cb_ and cb_priv parameters to implement what was previously
+  a separate function called devlink_nl_cmd_region_direct_fill
+
+Jacob Keller (21):
+  ice: use __le16 types for explicitly Little Endian values
+  ice: create function to read a section of the NVM and Shadow RAM
+  ice: enable initial devlink support
+  ice: rename variables used for Option ROM version
+  ice: add basic handler for devlink .info_get
+  ice: add board identifier info to devlink .info_get
+  devlink: prepare to support region operations
+  devlink: convert snapshot destructor callback to region op
+  devlink: trivial: fix tab in function documentation
+  devlink: add functions to take snapshot while locked
+  devlink: convert snapshot id getter to return an error
+  devlink: track snapshot ids using an IDR and refcounts
+  devlink: implement DEVLINK_CMD_REGION_NEW
+  netdevsim: support taking immediate snapshot via devlink
+  devlink: simplify arguments for read_snapshot_fill
+  devlink: use min_t to calculate data_size
+  devlink: report extended error message in region_read_dumpit
+  devlink: remove unnecessary parameter from chunk_fill function
+  devlink: refactor region_read_snapshot_fill to use a callback function
+  devlink: support directly reading from region memory
+  ice: add a devlink region to dump shadow RAM contents
+
+Jesse Brandeburg (1):
+  ice: implement full NVM read from ETHTOOL_GEEPROM
+
+ .../networking/devlink/devlink-region.rst     |  20 +-
+ Documentation/networking/devlink/ice.rst      |  87 ++++
+ Documentation/networking/devlink/index.rst    |   1 +
+ drivers/net/ethernet/intel/Kconfig            |   1 +
+ drivers/net/ethernet/intel/ice/Makefile       |   1 +
+ drivers/net/ethernet/intel/ice/ice.h          |   6 +
+ .../net/ethernet/intel/ice/ice_adminq_cmd.h   |   3 +
+ drivers/net/ethernet/intel/ice/ice_common.c   |  85 +---
+ drivers/net/ethernet/intel/ice/ice_common.h   |  10 +-
+ drivers/net/ethernet/intel/ice/ice_devlink.c  | 360 ++++++++++++++
+ drivers/net/ethernet/intel/ice/ice_devlink.h  |  17 +
+ drivers/net/ethernet/intel/ice/ice_ethtool.c  |  44 +-
+ drivers/net/ethernet/intel/ice/ice_main.c     |  23 +-
+ drivers/net/ethernet/intel/ice/ice_nvm.c      | 354 +++++++------
+ drivers/net/ethernet/intel/ice/ice_nvm.h      |  12 +
+ drivers/net/ethernet/intel/ice/ice_type.h     |  17 +-
+ drivers/net/ethernet/mellanox/mlx4/crdump.c   |  32 +-
+ drivers/net/netdevsim/dev.c                   |  41 +-
+ include/net/devlink.h                         |  38 +-
+ net/core/devlink.c                            | 465 ++++++++++++++----
+ .../drivers/net/netdevsim/devlink.sh          |  15 +
+ 21 files changed, 1257 insertions(+), 375 deletions(-)
+ create mode 100644 Documentation/networking/devlink/ice.rst
+ create mode 100644 drivers/net/ethernet/intel/ice/ice_devlink.c
+ create mode 100644 drivers/net/ethernet/intel/ice/ice_devlink.h
+
+-- 
+2.25.0.368.g28a2d05eebfb
 
