@@ -2,210 +2,188 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id C428B15F739
-	for <lists+netdev@lfdr.de>; Fri, 14 Feb 2020 20:57:55 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 002B415F75F
+	for <lists+netdev@lfdr.de>; Fri, 14 Feb 2020 21:03:12 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2388997AbgBNT5t (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 14 Feb 2020 14:57:49 -0500
-Received: from outils.crapouillou.net ([89.234.176.41]:46230 "EHLO
-        crapouillou.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2387401AbgBNT5s (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 14 Feb 2020 14:57:48 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=crapouillou.net;
-        s=mail; t=1581710266; h=from:from:sender:reply-to:subject:subject:date:date:
-         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
-         content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=XGsEWDNrQKidFJwaa50lpYzjGiChrJWUAw/LIJ3LzK8=;
-        b=nFOW8kz4oWxRZZv89gwXAXgdzdUQ6vuwyAGS8GPcI7QxC31O4Mc7CJofL/sK9U3igkeOqH
-        bOyLTFbz58ThR/fT3aR8Hw7c2+SaujkVyqoQYPz7BINeZjbGvtz++QtR8qYWZYAAEwkLs1
-        i33TlGkoyDby/PXq0VJFXN9Y5v9751I=
-Date:   Fri, 14 Feb 2020 16:57:30 -0300
-From:   Paul Cercueil <paul@crapouillou.net>
-Subject: Re: [Letux-kernel] [PATCH v2] net: davicom: dm9000: allow to pass MAC
- address through mac_addr module parameter
-To:     "H. Nikolaus Schaller" <hns@goldelico.com>
-Cc:     Discussions about the Letux Kernel <letux-kernel@openphoenux.org>,
-        Andrew Lunn <andrew@lunn.ch>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        "David S. Miller" <davem@davemloft.net>,
-        Richard Fontana <rfontana@redhat.com>,
-        kernel@pyra-handheld.com,
-        Petr =?UTF-8?b?xaB0ZXRpYXI=?= <ynezz@true.cz>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Heiner Kallweit <hkallweit1@gmail.com>
-Message-Id: <1581710250.3.10@crapouillou.net>
-In-Reply-To: <A686A3C7-09A4-4654-A265-2BDBEF41A7C4@goldelico.com>
-References: <0d6b4d383bb29ed5d4710e9706e5ad6c7f92d9da.1581696454.git.hns@goldelico.com>
-        <1581706048.3.3@crapouillou.net>
-        <996F2206-B261-46E3-9167-B48BA7D3C9FF@goldelico.com>
-        <A686A3C7-09A4-4654-A265-2BDBEF41A7C4@goldelico.com>
+        id S2389595AbgBNUCr (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 14 Feb 2020 15:02:47 -0500
+Received: from mail.kernel.org ([198.145.29.99]:34408 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S2389578AbgBNUCq (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 14 Feb 2020 15:02:46 -0500
+Received: from localhost (unknown [12.246.51.142])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 32545206D7;
+        Fri, 14 Feb 2020 20:02:45 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1581710565;
+        bh=qiSX8QFKcSeTp4mmGvE+BSPkGtpXSQaCqLDWDWB7McM=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=NYwDAVoKZ3IC2YQpshcazJxfIRzOcoWPWj3Va9jRpnKaj2hOJDOTRDEPHhCqd7Vga
+         n0PQSnc33F7ocY7P5oLV3ZE1+SAnxqpXlJT/YRon34mhklmOptIVr/JE11B0de1u2c
+         xSKH1II96Hckq4lMYc0yONdG6j9mdYawzoiCvTpo=
+Date:   Fri, 14 Feb 2020 09:02:40 -0800
+From:   Greg KH <gregkh@linuxfoundation.org>
+To:     Jeff Kirsher <jeffrey.t.kirsher@intel.com>
+Cc:     davem@davemloft.net, Dave Ertman <david.m.ertman@intel.com>,
+        netdev@vger.kernel.org, linux-rdma@vger.kernel.org,
+        nhorman@redhat.com, sassmann@redhat.com, jgg@ziepe.ca,
+        parav@mellanox.com, galpress@amazon.com,
+        selvin.xavier@broadcom.com, sriharsha.basavapatna@broadcom.com,
+        benve@cisco.com, bharat@chelsio.com, xavier.huwei@huawei.com,
+        yishaih@mellanox.com, leonro@mellanox.com, mkalderon@marvell.com,
+        aditr@vmware.com, Kiran Patil <kiran.patil@intel.com>,
+        Andrew Bowers <andrewx.bowers@intel.com>
+Subject: Re: [RFC PATCH v4 01/25] virtual-bus: Implementation of Virtual Bus
+Message-ID: <20200214170240.GA4034785@kroah.com>
+References: <20200212191424.1715577-1-jeffrey.t.kirsher@intel.com>
+ <20200212191424.1715577-2-jeffrey.t.kirsher@intel.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1; format=flowed
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20200212191424.1715577-2-jeffrey.t.kirsher@intel.com>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Wed, Feb 12, 2020 at 11:14:00AM -0800, Jeff Kirsher wrote:
+> From: Dave Ertman <david.m.ertman@intel.com>
+> 
+> This is the initial implementation of the Virtual Bus,
+> virtbus_device and virtbus_driver.  The virtual bus is
+> a software based bus intended to support registering
+> virtbus_devices and virtbus_drivers and provide matching
+> between them and probing of the registered drivers.
+> 
+> The bus will support probe/remove shutdown and
+> suspend/resume callbacks.
+> 
+> Kconfig and Makefile alterations are included
+> 
+> Signed-off-by: Dave Ertman <david.m.ertman@intel.com>
+> Signed-off-by: Kiran Patil <kiran.patil@intel.com>
+> Tested-by: Andrew Bowers <andrewx.bowers@intel.com>
+> Signed-off-by: Jeff Kirsher <jeffrey.t.kirsher@intel.com>
+
+This looks a lot better, and is more of what I was thinking.  Some minor
+comments below:
+
+> +/**
+> + * virtbus_dev_register - add a virtual bus device
+> + * @vdev: virtual bus device to add
+> + */
+> +int virtbus_dev_register(struct virtbus_device *vdev)
+> +{
+> +	int ret;
+> +
+> +	if (!vdev->release) {
+> +		dev_err(&vdev->dev, "virtbus_device .release callback NULL\n");
+
+"virtbus_device MUST have a .release callback that does something!\n" 
+
+> +		return -EINVAL;
+> +	}
+> +
+> +	device_initialize(&vdev->dev);
+> +
+> +	vdev->dev.bus = &virtual_bus_type;
+> +	vdev->dev.release = virtbus_dev_release;
+> +	/* All device IDs are automatically allocated */
+> +	ret = ida_simple_get(&virtbus_dev_ida, 0, 0, GFP_KERNEL);
+> +	if (ret < 0) {
+> +		dev_err(&vdev->dev, "get IDA idx for virtbus device failed!\n");
+> +		put_device(&vdev->dev);
+
+If you allocate the number before device_initialize(), no need to call
+put_device().  Just a minor thing, no big deal.
+
+> +		return ret;
+> +	}
+> +
+> +	vdev->id = ret;
+> +	dev_set_name(&vdev->dev, "%s.%d", vdev->name, vdev->id);
+> +
+> +	dev_dbg(&vdev->dev, "Registering virtbus device '%s'\n",
+> +		dev_name(&vdev->dev));
+> +
+> +	ret = device_add(&vdev->dev);
+> +	if (ret)
+> +		goto device_add_err;
+> +
+> +	return 0;
+> +
+> +device_add_err:
+> +	dev_err(&vdev->dev, "Add device to virtbus failed!\n");
+
+Print the return error here too?
+
+> +	put_device(&vdev->dev);
+> +	ida_simple_remove(&virtbus_dev_ida, vdev->id);
+
+You need to do this before put_device().
+
+> +
+> +	return ret;
+> +}
+> +EXPORT_SYMBOL_GPL(virtbus_dev_register);
+> +
 
 
-Le ven., f=E9vr. 14, 2020 at 20:38, H. Nikolaus Schaller=20
-<hns@goldelico.com> a =E9crit :
->>  Am 14.02.2020 um 20:24 schrieb H. Nikolaus Schaller=20
->> <hns@goldelico.com>:
->>=20
->>=20
->>>  Am 14.02.2020 um 19:47 schrieb Paul Cercueil=20
->>> <paul@crapouillou.net>:
->>>=20
->>>  Hi Nikolaus,
->>>=20
->>>  What I'd suggest is to write a NVMEM driver for the efuse and=20
->>> retrieve the MAC address cleanly with nvmem_get_mac_address().
->>>=20
->>>  It shouldn't be hard to do (there's already code for it in the=20
->>> non-upstream 3.18 kernel for the CI20) and you remove the=20
->>> dependency on uboot.
->>=20
->>  Interesting approach. I have found this:
->>=20
->>  https://lore.kernel.org/patchwork/patch/868158/
->>=20
->>  but it looks as if it was never finished (I could not locate a V3=20
->> or anything mainline?)
->>  and and it tries to solve other problems as well.
->>=20
+> --- /dev/null
+> +++ b/include/linux/virtual_bus.h
+> @@ -0,0 +1,57 @@
+> +/* SPDX-License-Identifier: GPL-2.0-only */
+> +/*
+> + * virtual_bus.h - lightweight software bus
+> + *
+> + * Copyright (c) 2019-20 Intel Corporation
+> + *
+> + * Please see Documentation/driver-api/virtual_bus.rst for more information
+> + */
+> +
+> +#ifndef _VIRTUAL_BUS_H_
+> +#define _VIRTUAL_BUS_H_
+> +
+> +#include <linux/device.h>
+> +
+> +struct virtbus_device {
+> +	struct device dev;
+> +	const char *name;
+> +	void (*release)(struct virtbus_device *);
+> +	int id;
+> +	const struct virtbus_dev_id *matched_element;
+> +};
 
-Yes, I think it's a bit too complex - it's probably fine to just read=20
-chunks of 4 bytes.
+Any reason you need to make "struct virtbus_device" a public structure
+at all?  Why not just make it private and have the release function
+pointer be passed as part of the register function?  That will keep
+people from poking around in here.
 
->>=20
->>  And it looks to be much more complex than my "solution" to the=20
->> immediate problem.
->>=20
+> +
+> +/* The memory for the table is expected to remain allocated for the duration
+> + * of the pairing between driver and device.  The pointer for the matching
+> + * element will be copied to the matched_element field of the virtbus_device.
 
-Yes, a proper fix usually means more work ;)
->>=20
->>  I have to study it to know if I can write a nvmem_get_mac_address().
->=20
-> Another question is how to link this very jz4780 specific code to the=20
-> generic davicom dm9000 driver?
-> And where should the new code live. In some jz4780 specific file or=20
-> elsewhere?
+I don't understand this last sentance, what are you trying to say?  We
+save off a pointer to the element, so it better not go away, is that
+what you mean?  Why would this happen?
 
-In the dm9000's devicetree node you'd have a "mac-address =3D=20
-<&mac_addr>;". The "mac-address" is already a standard property, and=20
-the davicom driver already supports it.
+> + */
+> +struct virtbus_driver {
+> +	int (*probe)(struct virtbus_device *);
+> +	int (*remove)(struct virtbus_device *);
+> +	void (*shutdown)(struct virtbus_device *);
+> +	int (*suspend)(struct virtbus_device *, pm_message_t);
+> +	int (*resume)(struct virtbus_device *);
 
-The "mac_addr" should be a pointer to the efuse cell that corresponds=20
-to the MAC address. See the examples at the bottom of=20
-Documentation/devicetree/bindings/nvmem/nvmem.yaml and=20
-Documentation/devicetree/bindings/nvmem/nvmem-consumer.yaml.
+Can all of these be const pointers such that we will not change them?
 
--Paul
+> +	struct device_driver driver;
+> +	const struct virtbus_dev_id *id_table;
+> +};
 
->=20
->>=20
->>  BR,
->>  Nikolaus
->>=20
->>>=20
->>>  -Paul
->>>=20
->>>=20
->>>  Le ven., f=E9vr. 14, 2020 at 17:07, H. Nikolaus Schaller=20
->>> <hns@goldelico.com> a =E9crit :
->>>>  The MIPS Ingenic CI20 board is shipped with a quite old u-boot
->>>>  (ci20-v2013.10 see https://elinux.org/CI20_Dev_Zone). This passes
->>>>  the MAC address through dm9000.mac_addr=3Dxx:xx:xx:xx:xx:xx
->>>>  kernel module parameter to give the board a fixed MAC address.
->>>>  This is not processed by the dm9000 driver which assigns a random
->>>>  MAC address on each boot, making DHCP assign a new IP address
->>>>  each time.
->>>>  So we add a check for the mac_addr module parameter as a last
->>>>  resort before assigning a random one. This mechanism can also
->>>>  be used outside of u-boot to provide a value through modprobe
->>>>  config.
->>>>  To parse the MAC address in a new function get_mac_addr() we
->>>>  use an copy adapted from the ksz884x.c driver which provides
->>>>  the same functionality.
->>>>  Signed-off-by: H. Nikolaus Schaller <hns@goldelico.com>
->>>>  ---
->>>>  drivers/net/ethernet/davicom/dm9000.c | 42=20
->>>> +++++++++++++++++++++++++++
->>>>  1 file changed, 42 insertions(+)
->>>>  diff --git a/drivers/net/ethernet/davicom/dm9000.c=20
->>>> b/drivers/net/ethernet/davicom/dm9000.c
->>>>  index 1ea3372775e6..7402030b0352 100644
->>>>  --- a/drivers/net/ethernet/davicom/dm9000.c
->>>>  +++ b/drivers/net/ethernet/davicom/dm9000.c
->>>>  @@ -1409,6 +1409,43 @@ static struct dm9000_plat_data=20
->>>> *dm9000_parse_dt(struct device *dev)
->>>>  	return pdata;
->>>>  }
->>>>  +static char *mac_addr =3D ":";
->>>>  +module_param(mac_addr, charp, 0);
->>>>  +MODULE_PARM_DESC(mac_addr, "MAC address");
->>>>  +
->>>>  +static void get_mac_addr(struct net_device *ndev, char *macaddr)
->>>>  +{
->>>>  +	int i =3D 0;
->>>>  +	int j =3D 0;
->>>>  +	int got_num =3D 0;
->>>>  +	int num =3D 0;
->>>>  +
->>>>  +	while (j < ETH_ALEN) {
->>>>  +		if (macaddr[i]) {
->>>>  +			int digit;
->>>>  +
->>>>  +			got_num =3D 1;
->>>>  +			digit =3D hex_to_bin(macaddr[i]);
->>>>  +			if (digit >=3D 0)
->>>>  +				num =3D num * 16 + digit;
->>>>  +			else if (':' =3D=3D macaddr[i])
->>>>  +				got_num =3D 2;
->>>>  +			else
->>>>  +				break;
->>>>  +		} else if (got_num) {
->>>>  +			got_num =3D 2;
->>>>  +		} else {
->>>>  +			break;
->>>>  +		}
->>>>  +		if (got_num =3D=3D 2) {
->>>>  +			ndev->dev_addr[j++] =3D (u8)num;
->>>>  +			num =3D 0;
->>>>  +			got_num =3D 0;
->>>>  +		}
->>>>  +		i++;
->>>>  +	}
->>>>  +}
->>>>  +
->>>>  /*
->>>>  * Search DM9000 board, allocate space and register it
->>>>  */
->>>>  @@ -1679,6 +1716,11 @@ dm9000_probe(struct platform_device *pdev)
->>>>  			ndev->dev_addr[i] =3D ior(db, i+DM9000_PAR);
->>>>  	}
->>>>  +	if (!is_valid_ether_addr(ndev->dev_addr)) {
->>>>  +		mac_src =3D "param";
->>>>  +		get_mac_addr(ndev, mac_addr);
->>>>  +	}
->>>>  +
->>>>  	if (!is_valid_ether_addr(ndev->dev_addr)) {
->>>>  		inv_mac_addr =3D true;
->>>>  		eth_hw_addr_random(ndev);
->>>>  --
->>>>  2.23.0
->>>=20
->>>=20
->>=20
->>  _______________________________________________
->>  http://projects.goldelico.com/p/gta04-kernel/
->>  Letux-kernel mailing list
->>  Letux-kernel@openphoenux.org
->>  http://lists.goldelico.com/mailman/listinfo.cgi/letux-kernel
+thanks,
 
-=
-
+greg k-h
