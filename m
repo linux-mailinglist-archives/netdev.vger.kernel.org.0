@@ -2,48 +2,48 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 6676615F816
-	for <lists+netdev@lfdr.de>; Fri, 14 Feb 2020 21:50:17 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id CAA6415F81D
+	for <lists+netdev@lfdr.de>; Fri, 14 Feb 2020 21:50:20 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2388957AbgBNUtE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 14 Feb 2020 15:49:04 -0500
-Received: from mail-wm1-f65.google.com ([209.85.128.65]:50602 "EHLO
-        mail-wm1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2388856AbgBNUtD (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 14 Feb 2020 15:49:03 -0500
-Received: by mail-wm1-f65.google.com with SMTP id a5so11326067wmb.0;
-        Fri, 14 Feb 2020 12:49:02 -0800 (PST)
+        id S2389654AbgBNUtt (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 14 Feb 2020 15:49:49 -0500
+Received: from mail-wm1-f67.google.com ([209.85.128.67]:34073 "EHLO
+        mail-wm1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2388892AbgBNUtE (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 14 Feb 2020 15:49:04 -0500
+Received: by mail-wm1-f67.google.com with SMTP id s144so2845081wme.1;
+        Fri, 14 Feb 2020 12:49:03 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=5VHMVKXLHBNxjyTw9PodUAEyMC2IYxb6HL4YYaDfpFo=;
-        b=TJd4McuiYr/ITRKbYOrr+cWzpWCbleppZ9QpDEG33Ynbcot2kvqD8xH3YkWMmoh8I5
-         cOT/8hDhzuYpGxhQw9vcs8fNI9rtugg4rXH/9KCDomKViQcBJ33CFIFy0I557UryCXwo
-         /rvqh3Thhb7tTbCpDVYPp32t6IAVSw6BXwL7ambONsi9SI0RSHyAXpT2yncaWHqYQEVi
-         EVPrGJ20OYHN7cAyksjcYAruF76fTZQkziMwnHTGkanVYo48JpFejj3u4K85iP7RD3Yv
-         8Cbb4WDM9BrPlVIbSdwjNKP4OibHHaaSMl8Ei2sm48eFXqhUWZQkk19Z2gdsvg7aDfkN
-         D+nw==
+        bh=GCRH+QSVscHEtOqyJbkVwS2XTrXy464tV8myRNcAShs=;
+        b=Ay8hOWvCaf/jjwOzQL4nq3SxxQqmuZYQX8aqs71KDQfmrlnHqCU4FTeYtgzsW3T5D3
+         QJ+59vMkLvAC487GmN798HbJ3thFXm0t9Wc6pAAgd/CZ9F/J+ownXtBvdR+fEJFgcW40
+         bJr91ikng2vo7ZAmr43HAbSNb5GOTZ6yuJ0Su2g8ukACKa5nWCuA9ap0YWm5BijuqqWY
+         XgR91YELX1wXHX71irhswQcsP1EyzId/VMwURtVpNFgcieo/BY4hxV9Lnlh0SQRrq56/
+         sIa5uqSrooQ6DY7RTFwd3DL6JC8x+Sb2SRYr8U9o/+BrbJPAtR8O4mpjfhHazWL8pjam
+         2ReQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=5VHMVKXLHBNxjyTw9PodUAEyMC2IYxb6HL4YYaDfpFo=;
-        b=pYDNsL2ovVZSYQOzyU2ZUBb2SL6z+9M5xzHrr9V4IyZPTMsUbIxFfUCL3BQmI1wYH9
-         o6S8HC63YmXZrXAVw9UzI1kw9OElEK2TEXiPB9eRIbpahVcfM7eRWYZ1mgWkv5y6eKjO
-         5Au0KEpqXuV68aIs76mv9+lx4bsr2U0boUlNqrX+e1uUlKM5fCShInGbQgF/g1jacGnb
-         DnI1y7D33PZ/k0QMII9Qp9Tjy8RGZvcx2Z5ZQPre94Y2ay37DpUCP+hAKt4z6yRyCLZt
-         f4UpiiUrvbXWMvvoNAbLFgz9SCEyvGVj0VaVyMlhIihpjh9PZltkbczLsxLmrQ+7cOfp
-         N+7Q==
-X-Gm-Message-State: APjAAAV66cP5+6yJqSQQF1+jT1c3jsVbu04hNqHO+lqeKxO+pCb7vOZh
-        SMxXi/B+0J7nrHQm2fHX5TIKHHQUUiKa
-X-Google-Smtp-Source: APXvYqwzVnMWjFKcCKtE6H0LQQPUyRuehJzk0vpQiz9ZNA6O2oNJs575AorCv6hLyHJqFNmNJQC5Vw==
-X-Received: by 2002:a7b:c459:: with SMTP id l25mr6309989wmi.17.1581713341270;
-        Fri, 14 Feb 2020 12:49:01 -0800 (PST)
+        bh=GCRH+QSVscHEtOqyJbkVwS2XTrXy464tV8myRNcAShs=;
+        b=cBAkuhYHBNwQleLUfve/XniysjH/b7Hh1yEW35SwTVA2C/9PFUiEIYgjpZC1qfWSyd
+         Ds0w4CaGpBJbWQZfnlUxMY/lEJkagEciTxT2HpS1kXpyP8ylcptByD/cwiXwQX+epqAm
+         s/iR6mm/f2/Vjc9F9WUk+GKbcMFAVsCORBsPM4g84rCEeaMoz6eDFLkHHcNyPhO3Txpa
+         ibJYbsPmXsq48fqnSuPW0i8HIqV8oc96ax3uEIdcTlSvdxOWkDio12jyJ5PrgeWWvEIX
+         CKrvaZiHjghFTzJV+iwkL/oBGCCwR6D1Nxpiknpn63S168w6TTRHzabm0CkRA2P6b/sK
+         qBuw==
+X-Gm-Message-State: APjAAAVy3ggdapEl8EV+RASxOddAyG6eRRQlsrlhJErsFPGTwRuMLGcB
+        tf2/3n6IymfVYQOYpUv5d+bv9reKmDeI
+X-Google-Smtp-Source: APXvYqwTxeuGXC7F27jC1xbbu0tmh8GGXdsK27UP9jCeJm5RiluBDSW2gTi2k1Vk8Z86EPg58UDpbA==
+X-Received: by 2002:a7b:c088:: with SMTP id r8mr6522805wmh.18.1581713342352;
+        Fri, 14 Feb 2020 12:49:02 -0800 (PST)
 Received: from ninjahost.lan (host-2-102-13-223.as13285.net. [2.102.13.223])
-        by smtp.googlemail.com with ESMTPSA id y12sm8660782wmj.6.2020.02.14.12.49.00
+        by smtp.googlemail.com with ESMTPSA id y12sm8660782wmj.6.2020.02.14.12.49.01
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 14 Feb 2020 12:49:00 -0800 (PST)
+        Fri, 14 Feb 2020 12:49:01 -0800 (PST)
 From:   Jules Irenge <jbi.octave@gmail.com>
 To:     linux-kernel@vger.kernel.org
 Cc:     boqun.feng@gmail.com, Jules Irenge <jbi.octave@gmail.com>,
@@ -53,9 +53,9 @@ Cc:     boqun.feng@gmail.com, Jules Irenge <jbi.octave@gmail.com>,
         Jakub Kicinski <kuba@kernel.org>,
         netdev@vger.kernel.org (open list:TIPC NETWORK LAYER),
         tipc-discussion@lists.sourceforge.net (open list:TIPC NETWORK LAYER)
-Subject: [PATCH 25/30] tipc: Add missing annotation for tipc_node_read_unlock()
-Date:   Fri, 14 Feb 2020 20:47:36 +0000
-Message-Id: <20200214204741.94112-26-jbi.octave@gmail.com>
+Subject: [PATCH 26/30] tipc: Add missing annotation for tipc_node_write_lock()
+Date:   Fri, 14 Feb 2020 20:47:37 +0000
+Message-Id: <20200214204741.94112-27-jbi.octave@gmail.com>
 X-Mailer: git-send-email 2.24.1
 In-Reply-To: <20200214204741.94112-1-jbi.octave@gmail.com>
 References: <0/30>
@@ -67,12 +67,12 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Sparse reports a warning at tipc_node_read_unlock()
+Sparse reports a warning at tipc_node_write_lock()
 
-warning: context imbalance in  tipc_node_read_unlock - unexpected unlock
+warning: context imbalance in  tipc_node_write_lock - wrong count at exit
 
-The root cause is the missing annotation at tipc_node_read_unlock()
-Add the missing __releases(&n->lock) annotation
+The root cause is the missing annotation at tipc_node_write_lock()
+Add the missing __acquires(&n->lock) annotation
 
 Signed-off-by: Jules Irenge <jbi.octave@gmail.com>
 ---
@@ -80,17 +80,17 @@ Signed-off-by: Jules Irenge <jbi.octave@gmail.com>
  1 file changed, 1 insertion(+), 1 deletion(-)
 
 diff --git a/net/tipc/node.c b/net/tipc/node.c
-index 4e267ed94a2a..eafa38896e3a 100644
+index eafa38896e3a..d8401789fa23 100644
 --- a/net/tipc/node.c
 +++ b/net/tipc/node.c
-@@ -356,7 +356,7 @@ static void tipc_node_read_lock(struct tipc_node *n) __acquires(&n->lock)
- 	read_lock_bh(&n->lock);
+@@ -361,7 +361,7 @@ static void tipc_node_read_unlock(struct tipc_node *n) __releases(&n->lock)
+ 	read_unlock_bh(&n->lock);
  }
  
--static void tipc_node_read_unlock(struct tipc_node *n)
-+static void tipc_node_read_unlock(struct tipc_node *n) __releases(&n->lock)
+-static void tipc_node_write_lock(struct tipc_node *n)
++static void tipc_node_write_lock(struct tipc_node *n) __acquires(&n->lock)
  {
- 	read_unlock_bh(&n->lock);
+ 	write_lock_bh(&n->lock);
  }
 -- 
 2.24.1
