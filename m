@@ -2,152 +2,89 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 6213615F610
-	for <lists+netdev@lfdr.de>; Fri, 14 Feb 2020 19:48:08 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2600B15F622
+	for <lists+netdev@lfdr.de>; Fri, 14 Feb 2020 19:50:50 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2389892AbgBNSrw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 14 Feb 2020 13:47:52 -0500
-Received: from outils.crapouillou.net ([89.234.176.41]:37722 "EHLO
-        crapouillou.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729556AbgBNSrv (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 14 Feb 2020 13:47:51 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=crapouillou.net;
-        s=mail; t=1581706065; h=from:from:sender:reply-to:subject:subject:date:date:
-         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
-         content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=08Fa+pLah8UyWV+8NCdksFLq62eYzwJRp9fI48pdQnk=;
-        b=L7MVffhWzexPuicAmUqPog06SMxfj5O7CDE2vc1RWVM6USElGRW+LN139Sv5TaDSWiMQko
-        P2VWt9Xpt05R0PchjqTgh8tX2qKvJNMvrM2f9rRNTGZF6mnzLzlo5MYnuH1UUH/zjJ5GfK
-        26OPpn0spUs1k860KGn30J1FDU+cWO8=
-Date:   Fri, 14 Feb 2020 15:47:28 -0300
-From:   Paul Cercueil <paul@crapouillou.net>
-Subject: Re: [PATCH v2] net: davicom: dm9000: allow to pass MAC address
- through mac_addr module parameter
-To:     "H. Nikolaus Schaller" <hns@goldelico.com>
-Cc:     Andrew Lunn <andrew@lunn.ch>,
-        "David S. Miller" <davem@davemloft.net>,
-        Petr =?UTF-8?b?xaB0ZXRpYXI=?= <ynezz@true.cz>,
-        Richard Fontana <rfontana@redhat.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Heiner Kallweit <hkallweit1@gmail.com>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, letux-kernel@openphoenux.org,
-        kernel@pyra-handheld.com
-Message-Id: <1581706048.3.3@crapouillou.net>
-In-Reply-To: <0d6b4d383bb29ed5d4710e9706e5ad6c7f92d9da.1581696454.git.hns@goldelico.com>
-References: <0d6b4d383bb29ed5d4710e9706e5ad6c7f92d9da.1581696454.git.hns@goldelico.com>
+        id S2390431AbgBNSub (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 14 Feb 2020 13:50:31 -0500
+Received: from mail.efficios.com ([167.114.26.124]:58502 "EHLO
+        mail.efficios.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2388268AbgBNSub (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 14 Feb 2020 13:50:31 -0500
+Received: from localhost (localhost [127.0.0.1])
+        by mail.efficios.com (Postfix) with ESMTP id 256EF23BC1F;
+        Fri, 14 Feb 2020 13:50:30 -0500 (EST)
+Received: from mail.efficios.com ([127.0.0.1])
+        by localhost (mail03.efficios.com [127.0.0.1]) (amavisd-new, port 10032)
+        with ESMTP id YYpVRuuR_C_6; Fri, 14 Feb 2020 13:50:29 -0500 (EST)
+Received: from localhost (localhost [127.0.0.1])
+        by mail.efficios.com (Postfix) with ESMTP id CFC9F23B8E1;
+        Fri, 14 Feb 2020 13:50:29 -0500 (EST)
+DKIM-Filter: OpenDKIM Filter v2.10.3 mail.efficios.com CFC9F23B8E1
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=efficios.com;
+        s=default; t=1581706229;
+        bh=VzUR9Bfe3F/JSoaq6QEVx8D9A43LNgpVZoQQa6Y285o=;
+        h=Date:From:To:Message-ID:MIME-Version;
+        b=tF77J3ZG5K6RKC7QA+KvDTzXXSjI6ATvHNWQHVRnG5ZrNIXUwMsSkZdoTThDk9J4D
+         njRQaJPlXHoj6T9YwJwEbF0Vm2y/uJ5vXwKB4UtRESpcV5QqTj4vvVBMrckN+TDt1l
+         JFYJvUiaM0qOb0wJeHJ1toSz+xYZzJUOSizPOv44TZ+2feTghgbD3tEMzuyWCbrbgR
+         ZtHPNn3lwcrupb2P/Xsl4CaSCrOWAwNQXaYdUEndNGwoe+h69yQQ2wMEphKyaLVDys
+         k1ZYER6Sqk1f2Zd1ZjDnh+R5/uqhVo87ymto+ZyjQLebIZWERQfeDjp3MRl68leKRe
+         HjO+X71YSt7Bw==
+X-Virus-Scanned: amavisd-new at efficios.com
+Received: from mail.efficios.com ([127.0.0.1])
+        by localhost (mail03.efficios.com [127.0.0.1]) (amavisd-new, port 10026)
+        with ESMTP id CtnvbEbnMtXo; Fri, 14 Feb 2020 13:50:29 -0500 (EST)
+Received: from localhost (192-222-181-218.qc.cable.ebox.net [192.222.181.218])
+        by mail.efficios.com (Postfix) with ESMTPSA id 909E923B77F;
+        Fri, 14 Feb 2020 13:50:28 -0500 (EST)
+Date:   Fri, 14 Feb 2020 13:50:27 -0500
+From:   Mathieu Desnoyers <mathieu.desnoyers@efficios.com>
+To:     Thomas Gleixner <tglx@linutronix.de>
+Cc:     LKML <linux-kernel@vger.kernel.org>,
+        David Miller <davem@davemloft.net>, bpf@vger.kernel.org,
+        netdev@vger.kernel.org, Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Sebastian Sewior <bigeasy@linutronix.de>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Clark Williams <williams@redhat.com>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        Juri Lelli <juri.lelli@redhat.com>,
+        Ingo Molnar <mingo@kernel.org>
+Subject: Re: [RFC patch 07/19] bpf: Provide BPF_PROG_RUN_PIN_ON_CPU() macro
+Message-ID: <20200214185027.nx6enxvmghucai2d@localhost>
+References: <20200214133917.304937432@linutronix.de>
+ <20200214161503.595780887@linutronix.de>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1; format=flowed
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20200214161503.595780887@linutronix.de>
+User-Agent: NeoMutt/20170113 (1.7.2)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Nikolaus,
+On 14-Feb-2020 02:39:24 PM, Thomas Gleixner wrote:
+[...]
+> +#define BPF_PROG_RUN_PIN_ON_CPU(prog, ctx) ({				\
+> +	u32 ret;							\
+> +	migrate_disable();						\
+> +	ret = __BPF_PROG_RUN(prog, ctx, bpf_dispatcher_nopfunc);	\
+> +	migrate_enable();						\
+> +	ret; })
 
-What I'd suggest is to write a NVMEM driver for the efuse and retrieve=20
-the MAC address cleanly with nvmem_get_mac_address().
+Does it really have to be a statement expression with a local variable ?
 
-It shouldn't be hard to do (there's already code for it in the=20
-non-upstream 3.18 kernel for the CI20) and you remove the dependency on=20
-uboot.
+If so, we should consider renaming "ret" to "__ret" to minimize the
+chances of a caller issuing BPF_PROG_RUN_PIN_ON_CPU with "ret" as
+prog or ctx argument, which would lead to unexpected results.
 
--Paul
+Thanks,
 
+Mathieu
 
-Le ven., f=E9vr. 14, 2020 at 17:07, H. Nikolaus Schaller=20
-<hns@goldelico.com> a =E9crit :
-> The MIPS Ingenic CI20 board is shipped with a quite old u-boot
-> (ci20-v2013.10 see https://elinux.org/CI20_Dev_Zone). This passes
-> the MAC address through dm9000.mac_addr=3Dxx:xx:xx:xx:xx:xx
-> kernel module parameter to give the board a fixed MAC address.
->=20
-> This is not processed by the dm9000 driver which assigns a random
-> MAC address on each boot, making DHCP assign a new IP address
-> each time.
->=20
-> So we add a check for the mac_addr module parameter as a last
-> resort before assigning a random one. This mechanism can also
-> be used outside of u-boot to provide a value through modprobe
-> config.
->=20
-> To parse the MAC address in a new function get_mac_addr() we
-> use an copy adapted from the ksz884x.c driver which provides
-> the same functionality.
->=20
-> Signed-off-by: H. Nikolaus Schaller <hns@goldelico.com>
-> ---
->  drivers/net/ethernet/davicom/dm9000.c | 42=20
-> +++++++++++++++++++++++++++
->  1 file changed, 42 insertions(+)
->=20
-> diff --git a/drivers/net/ethernet/davicom/dm9000.c=20
-> b/drivers/net/ethernet/davicom/dm9000.c
-> index 1ea3372775e6..7402030b0352 100644
-> --- a/drivers/net/ethernet/davicom/dm9000.c
-> +++ b/drivers/net/ethernet/davicom/dm9000.c
-> @@ -1409,6 +1409,43 @@ static struct dm9000_plat_data=20
-> *dm9000_parse_dt(struct device *dev)
->  	return pdata;
->  }
->=20
-> +static char *mac_addr =3D ":";
-> +module_param(mac_addr, charp, 0);
-> +MODULE_PARM_DESC(mac_addr, "MAC address");
-> +
-> +static void get_mac_addr(struct net_device *ndev, char *macaddr)
-> +{
-> +	int i =3D 0;
-> +	int j =3D 0;
-> +	int got_num =3D 0;
-> +	int num =3D 0;
-> +
-> +	while (j < ETH_ALEN) {
-> +		if (macaddr[i]) {
-> +			int digit;
-> +
-> +			got_num =3D 1;
-> +			digit =3D hex_to_bin(macaddr[i]);
-> +			if (digit >=3D 0)
-> +				num =3D num * 16 + digit;
-> +			else if (':' =3D=3D macaddr[i])
-> +				got_num =3D 2;
-> +			else
-> +				break;
-> +		} else if (got_num) {
-> +			got_num =3D 2;
-> +		} else {
-> +			break;
-> +		}
-> +		if (got_num =3D=3D 2) {
-> +			ndev->dev_addr[j++] =3D (u8)num;
-> +			num =3D 0;
-> +			got_num =3D 0;
-> +		}
-> +		i++;
-> +	}
-> +}
-> +
->  /*
->   * Search DM9000 board, allocate space and register it
->   */
-> @@ -1679,6 +1716,11 @@ dm9000_probe(struct platform_device *pdev)
->  			ndev->dev_addr[i] =3D ior(db, i+DM9000_PAR);
->  	}
->=20
-> +	if (!is_valid_ether_addr(ndev->dev_addr)) {
-> +		mac_src =3D "param";
-> +		get_mac_addr(ndev, mac_addr);
-> +	}
-> +
->  	if (!is_valid_ether_addr(ndev->dev_addr)) {
->  		inv_mac_addr =3D true;
->  		eth_hw_addr_random(ndev);
-> --
-> 2.23.0
->=20
-
-=
-
+-- 
+Mathieu Desnoyers
+EfficiOS Inc.
+http://www.efficios.com
