@@ -2,40 +2,36 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 485E115E0FA
-	for <lists+netdev@lfdr.de>; Fri, 14 Feb 2020 17:16:52 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 94C0E15E0FF
+	for <lists+netdev@lfdr.de>; Fri, 14 Feb 2020 17:16:54 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2392562AbgBNQQU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 14 Feb 2020 11:16:20 -0500
-Received: from mail.kernel.org ([198.145.29.99]:47050 "EHLO mail.kernel.org"
+        id S2403905AbgBNQQ2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 14 Feb 2020 11:16:28 -0500
+Received: from mail.kernel.org ([198.145.29.99]:47236 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2392549AbgBNQQS (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 14 Feb 2020 11:16:18 -0500
+        id S2404265AbgBNQQ1 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 14 Feb 2020 11:16:27 -0500
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 3B2422467E;
-        Fri, 14 Feb 2020 16:16:17 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 328B2206D7;
+        Fri, 14 Feb 2020 16:16:25 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1581696978;
-        bh=SZ+EEgFGGs8fHOBEzI2RELZv2D/lFMcVH/KA9xcKH7w=;
+        s=default; t=1581696986;
+        bh=ddIpi/d1e/5EnrNbU1fZOgOAwxxMdjaxNtAhPR1p+hs=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=wxoa7oT0V6o5VfyIKerlSjOVfVW6/eUo8rAgo2ftn2nSgWUYoq+Hw7NHpX0psICH1
-         3xS44dJLrjURu77n22DjBnYVK7GEPSkN97qPYfHuSpvUdQ6EpyacicVNQ1BWarZxoR
-         WDn0+Kw8c/PgeddBvNZ16VT/B1RaN3ZqSDgjz/4g=
+        b=atraFmWcbBHBxoKapQeZKatqzfrx/Ujab1M8aoKEQ6Ddvm4nxG7T9ePDdc80fxCqZ
+         UDkAmTHkyxY5u32Q4pIC+Gd2jZg4rmM1vt25mylQt0T4iUTHYsyHoSAYo9PQzjHOFb
+         1Ib7mBJCOOVgJyVtzdAm91Vj7qS1QCwNFm7NP7uc=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Lorenz Bauer <lmb@cloudflare.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Jakub Sitnicki <jakub@cloudflare.com>,
-        Martin KaFai Lau <kafai@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
+Cc:     YueHaibing <yuehaibing@huawei.com>, Hulk Robot <hulkci@huawei.com>,
+        Kalle Valo <kvalo@codeaurora.org>,
         Sasha Levin <sashal@kernel.org>,
-        linux-kselftest@vger.kernel.org, netdev@vger.kernel.org,
-        bpf@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.19 215/252] selftests: bpf: Reset global state between reuseport test runs
-Date:   Fri, 14 Feb 2020 11:11:10 -0500
-Message-Id: <20200214161147.15842-215-sashal@kernel.org>
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 4.19 221/252] rtlwifi: rtl8821ae: remove unused variables
+Date:   Fri, 14 Feb 2020 11:11:16 -0500
+Message-Id: <20200214161147.15842-221-sashal@kernel.org>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20200214161147.15842-1-sashal@kernel.org>
 References: <20200214161147.15842-1-sashal@kernel.org>
@@ -48,62 +44,156 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Lorenz Bauer <lmb@cloudflare.com>
+From: YueHaibing <yuehaibing@huawei.com>
 
-[ Upstream commit 51bad0f05616c43d6d34b0a19bcc9bdab8e8fb39 ]
+[ Upstream commit cc071a6f26aae3321cf193dc2e8c35090709b8ab ]
 
-Currently, there is a lot of false positives if a single reuseport test
-fails. This is because expected_results and the result map are not cleared.
+drivers/net/wireless/realtek/rtlwifi/rtl8821ae/dm.c:142:17:
+ warning: cckswing_table_ch1ch13 defined but not used [-Wunused-const-variable=]
+drivers/net/wireless/realtek/rtlwifi/rtl8821ae/dm.c:178:17:
+ warning: cckswing_table_ch14 defined but not used [-Wunused-const-variable=]
+drivers/net/wireless/realtek/rtlwifi/rtl8821ae/dm.c:96:18:
+ warning: ofdmswing_table defined but not used [-Wunused-const-variable=]
 
-Zero both after individual test runs, which fixes the mentioned false
-positives.
+These variable is never used, so remove them.
 
-Fixes: 91134d849a0e ("bpf: Test BPF_PROG_TYPE_SK_REUSEPORT")
-Signed-off-by: Lorenz Bauer <lmb@cloudflare.com>
-Signed-off-by: Daniel Borkmann <daniel@iogearbox.net>
-Reviewed-by: Jakub Sitnicki <jakub@cloudflare.com>
-Acked-by: Martin KaFai Lau <kafai@fb.com>
-Acked-by: John Fastabend <john.fastabend@gmail.com>
-Link: https://lore.kernel.org/bpf/20200124112754.19664-5-lmb@cloudflare.com
+Reported-by: Hulk Robot <hulkci@huawei.com>
+Signed-off-by: YueHaibing <yuehaibing@huawei.com>
+Signed-off-by: Kalle Valo <kvalo@codeaurora.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- .../selftests/bpf/test_select_reuseport.c        | 16 ++++++++++++++--
- 1 file changed, 14 insertions(+), 2 deletions(-)
+ .../wireless/realtek/rtlwifi/rtl8821ae/dm.c   | 118 ------------------
+ 1 file changed, 118 deletions(-)
 
-diff --git a/tools/testing/selftests/bpf/test_select_reuseport.c b/tools/testing/selftests/bpf/test_select_reuseport.c
-index 75646d9b34aaa..cdbbdab2725fc 100644
---- a/tools/testing/selftests/bpf/test_select_reuseport.c
-+++ b/tools/testing/selftests/bpf/test_select_reuseport.c
-@@ -30,7 +30,7 @@
- #define REUSEPORT_ARRAY_SIZE 32
+diff --git a/drivers/net/wireless/realtek/rtlwifi/rtl8821ae/dm.c b/drivers/net/wireless/realtek/rtlwifi/rtl8821ae/dm.c
+index 3be8c88971e2c..91b8c6babfcd0 100644
+--- a/drivers/net/wireless/realtek/rtlwifi/rtl8821ae/dm.c
++++ b/drivers/net/wireless/realtek/rtlwifi/rtl8821ae/dm.c
+@@ -115,124 +115,6 @@ static const u32 rtl8821ae_txscaling_table[TXSCALE_TABLE_SIZE] = {
+ 	0x3FE  /* 36, +6.0dB */
+ };
  
- static int result_map, tmp_index_ovr_map, linum_map, data_check_map;
--static enum result expected_results[NR_RESULTS];
-+static __u32 expected_results[NR_RESULTS];
- static int sk_fds[REUSEPORT_ARRAY_SIZE];
- static int reuseport_array, outer_map;
- static int select_by_skb_data_prog;
-@@ -610,7 +610,19 @@ static void setup_per_test(int type, unsigned short family, bool inany)
- 
- static void cleanup_per_test(void)
- {
--	int i, err;
-+	int i, err, zero = 0;
-+
-+	memset(expected_results, 0, sizeof(expected_results));
-+
-+	for (i = 0; i < NR_RESULTS; i++) {
-+		err = bpf_map_update_elem(result_map, &i, &zero, BPF_ANY);
-+		RET_IF(err, "reset elem in result_map",
-+		       "i:%u err:%d errno:%d\n", i, err, errno);
-+	}
-+
-+	err = bpf_map_update_elem(linum_map, &zero, &zero, BPF_ANY);
-+	RET_IF(err, "reset line number in linum_map", "err:%d errno:%d\n",
-+	       err, errno);
- 
- 	for (i = 0; i < REUSEPORT_ARRAY_SIZE; i++)
- 		close(sk_fds[i]);
+-static const u32 ofdmswing_table[] = {
+-	0x0b40002d, /* 0, -15.0dB */
+-	0x0c000030, /* 1, -14.5dB */
+-	0x0cc00033, /* 2, -14.0dB */
+-	0x0d800036, /* 3, -13.5dB */
+-	0x0e400039, /* 4, -13.0dB */
+-	0x0f00003c, /* 5, -12.5dB */
+-	0x10000040, /* 6, -12.0dB */
+-	0x11000044, /* 7, -11.5dB */
+-	0x12000048, /* 8, -11.0dB */
+-	0x1300004c, /* 9, -10.5dB */
+-	0x14400051, /* 10, -10.0dB */
+-	0x15800056, /* 11, -9.5dB */
+-	0x16c0005b, /* 12, -9.0dB */
+-	0x18000060, /* 13, -8.5dB */
+-	0x19800066, /* 14, -8.0dB */
+-	0x1b00006c, /* 15, -7.5dB */
+-	0x1c800072, /* 16, -7.0dB */
+-	0x1e400079, /* 17, -6.5dB */
+-	0x20000080, /* 18, -6.0dB */
+-	0x22000088, /* 19, -5.5dB */
+-	0x24000090, /* 20, -5.0dB */
+-	0x26000098, /* 21, -4.5dB */
+-	0x288000a2, /* 22, -4.0dB */
+-	0x2ac000ab, /* 23, -3.5dB */
+-	0x2d4000b5, /* 24, -3.0dB */
+-	0x300000c0, /* 25, -2.5dB */
+-	0x32c000cb, /* 26, -2.0dB */
+-	0x35c000d7, /* 27, -1.5dB */
+-	0x390000e4, /* 28, -1.0dB */
+-	0x3c8000f2, /* 29, -0.5dB */
+-	0x40000100, /* 30, +0dB */
+-	0x43c0010f, /* 31, +0.5dB */
+-	0x47c0011f, /* 32, +1.0dB */
+-	0x4c000130, /* 33, +1.5dB */
+-	0x50800142, /* 34, +2.0dB */
+-	0x55400155, /* 35, +2.5dB */
+-	0x5a400169, /* 36, +3.0dB */
+-	0x5fc0017f, /* 37, +3.5dB */
+-	0x65400195, /* 38, +4.0dB */
+-	0x6b8001ae, /* 39, +4.5dB */
+-	0x71c001c7, /* 40, +5.0dB */
+-	0x788001e2, /* 41, +5.5dB */
+-	0x7f8001fe  /* 42, +6.0dB */
+-};
+-
+-static const u8 cckswing_table_ch1ch13[CCK_TABLE_SIZE][8] = {
+-	{0x09, 0x08, 0x07, 0x06, 0x04, 0x03, 0x01, 0x01}, /* 0, -16.0dB */
+-	{0x09, 0x09, 0x08, 0x06, 0x05, 0x03, 0x01, 0x01}, /* 1, -15.5dB */
+-	{0x0a, 0x09, 0x08, 0x07, 0x05, 0x03, 0x02, 0x01}, /* 2, -15.0dB */
+-	{0x0a, 0x0a, 0x09, 0x07, 0x05, 0x03, 0x02, 0x01}, /* 3, -14.5dB */
+-	{0x0b, 0x0a, 0x09, 0x08, 0x06, 0x04, 0x02, 0x01}, /* 4, -14.0dB */
+-	{0x0b, 0x0b, 0x0a, 0x08, 0x06, 0x04, 0x02, 0x01}, /* 5, -13.5dB */
+-	{0x0c, 0x0c, 0x0a, 0x09, 0x06, 0x04, 0x02, 0x01}, /* 6, -13.0dB */
+-	{0x0d, 0x0c, 0x0b, 0x09, 0x07, 0x04, 0x02, 0x01}, /* 7, -12.5dB */
+-	{0x0d, 0x0d, 0x0c, 0x0a, 0x07, 0x05, 0x02, 0x01}, /* 8, -12.0dB */
+-	{0x0e, 0x0e, 0x0c, 0x0a, 0x08, 0x05, 0x02, 0x01}, /* 9, -11.5dB */
+-	{0x0f, 0x0f, 0x0d, 0x0b, 0x08, 0x05, 0x03, 0x01}, /* 10, -11.0dB */
+-	{0x10, 0x10, 0x0e, 0x0b, 0x08, 0x05, 0x03, 0x01}, /* 11, -10.5dB */
+-	{0x11, 0x11, 0x0f, 0x0c, 0x09, 0x06, 0x03, 0x01}, /* 12, -10.0dB */
+-	{0x12, 0x12, 0x0f, 0x0c, 0x09, 0x06, 0x03, 0x01}, /* 13, -9.5dB */
+-	{0x13, 0x13, 0x10, 0x0d, 0x0a, 0x06, 0x03, 0x01}, /* 14, -9.0dB */
+-	{0x14, 0x14, 0x11, 0x0e, 0x0b, 0x07, 0x03, 0x02}, /* 15, -8.5dB */
+-	{0x16, 0x15, 0x12, 0x0f, 0x0b, 0x07, 0x04, 0x01}, /* 16, -8.0dB */
+-	{0x17, 0x16, 0x13, 0x10, 0x0c, 0x08, 0x04, 0x02}, /* 17, -7.5dB */
+-	{0x18, 0x17, 0x15, 0x11, 0x0c, 0x08, 0x04, 0x02}, /* 18, -7.0dB */
+-	{0x1a, 0x19, 0x16, 0x12, 0x0d, 0x09, 0x04, 0x02}, /* 19, -6.5dB */
+-	{0x1b, 0x1a, 0x17, 0x13, 0x0e, 0x09, 0x04, 0x02}, /* 20, -6.0dB */
+-	{0x1d, 0x1c, 0x18, 0x14, 0x0f, 0x0a, 0x05, 0x02}, /* 21, -5.5dB */
+-	{0x1f, 0x1e, 0x1a, 0x15, 0x10, 0x0a, 0x05, 0x02}, /* 22, -5.0dB */
+-	{0x20, 0x20, 0x1b, 0x16, 0x11, 0x08, 0x05, 0x02}, /* 23, -4.5dB */
+-	{0x22, 0x21, 0x1d, 0x18, 0x11, 0x0b, 0x06, 0x02}, /* 24, -4.0dB */
+-	{0x24, 0x23, 0x1f, 0x19, 0x13, 0x0c, 0x06, 0x03}, /* 25, -3.5dB */
+-	{0x26, 0x25, 0x21, 0x1b, 0x14, 0x0d, 0x06, 0x03}, /* 26, -3.0dB */
+-	{0x28, 0x28, 0x22, 0x1c, 0x15, 0x0d, 0x07, 0x03}, /* 27, -2.5dB */
+-	{0x2b, 0x2a, 0x25, 0x1e, 0x16, 0x0e, 0x07, 0x03}, /* 28, -2.0dB */
+-	{0x2d, 0x2d, 0x27, 0x1f, 0x18, 0x0f, 0x08, 0x03}, /* 29, -1.5dB */
+-	{0x30, 0x2f, 0x29, 0x21, 0x19, 0x10, 0x08, 0x03}, /* 30, -1.0dB */
+-	{0x33, 0x32, 0x2b, 0x23, 0x1a, 0x11, 0x08, 0x04}, /* 31, -0.5dB */
+-	{0x36, 0x35, 0x2e, 0x25, 0x1c, 0x12, 0x09, 0x04} /* 32, +0dB */
+-};
+-
+-static const u8 cckswing_table_ch14[CCK_TABLE_SIZE][8] = {
+-	{0x09, 0x08, 0x07, 0x04, 0x00, 0x00, 0x00, 0x00}, /* 0, -16.0dB */
+-	{0x09, 0x09, 0x08, 0x05, 0x00, 0x00, 0x00, 0x00}, /* 1, -15.5dB */
+-	{0x0a, 0x09, 0x08, 0x05, 0x00, 0x00, 0x00, 0x00}, /* 2, -15.0dB */
+-	{0x0a, 0x0a, 0x09, 0x05, 0x00, 0x00, 0x00, 0x00}, /* 3, -14.5dB */
+-	{0x0b, 0x0a, 0x09, 0x05, 0x00, 0x00, 0x00, 0x00}, /* 4, -14.0dB */
+-	{0x0b, 0x0b, 0x0a, 0x06, 0x00, 0x00, 0x00, 0x00}, /* 5, -13.5dB */
+-	{0x0c, 0x0c, 0x0a, 0x06, 0x00, 0x00, 0x00, 0x00}, /* 6, -13.0dB */
+-	{0x0d, 0x0c, 0x0b, 0x06, 0x00, 0x00, 0x00, 0x00}, /* 7, -12.5dB */
+-	{0x0d, 0x0d, 0x0c, 0x07, 0x00, 0x00, 0x00, 0x00}, /* 8, -12.0dB */
+-	{0x0e, 0x0e, 0x0c, 0x07, 0x00, 0x00, 0x00, 0x00}, /* 9, -11.5dB */
+-	{0x0f, 0x0f, 0x0d, 0x08, 0x00, 0x00, 0x00, 0x00}, /* 10, -11.0dB */
+-	{0x10, 0x10, 0x0e, 0x08, 0x00, 0x00, 0x00, 0x00}, /* 11, -10.5dB */
+-	{0x11, 0x11, 0x0f, 0x09, 0x00, 0x00, 0x00, 0x00}, /* 12, -10.0dB */
+-	{0x12, 0x12, 0x0f, 0x09, 0x00, 0x00, 0x00, 0x00}, /* 13, -9.5dB */
+-	{0x13, 0x13, 0x10, 0x0a, 0x00, 0x00, 0x00, 0x00}, /* 14, -9.0dB */
+-	{0x14, 0x14, 0x11, 0x0a, 0x00, 0x00, 0x00, 0x00}, /* 15, -8.5dB */
+-	{0x16, 0x15, 0x12, 0x0b, 0x00, 0x00, 0x00, 0x00}, /* 16, -8.0dB */
+-	{0x17, 0x16, 0x13, 0x0b, 0x00, 0x00, 0x00, 0x00}, /* 17, -7.5dB */
+-	{0x18, 0x17, 0x15, 0x0c, 0x00, 0x00, 0x00, 0x00}, /* 18, -7.0dB */
+-	{0x1a, 0x19, 0x16, 0x0d, 0x00, 0x00, 0x00, 0x00}, /* 19, -6.5dB */
+-	{0x1b, 0x1a, 0x17, 0x0e, 0x00, 0x00, 0x00, 0x00}, /* 20, -6.0dB */
+-	{0x1d, 0x1c, 0x18, 0x0e, 0x00, 0x00, 0x00, 0x00}, /* 21, -5.5dB */
+-	{0x1f, 0x1e, 0x1a, 0x0f, 0x00, 0x00, 0x00, 0x00}, /* 22, -5.0dB */
+-	{0x20, 0x20, 0x1b, 0x10, 0x00, 0x00, 0x00, 0x00}, /* 23, -4.5dB */
+-	{0x22, 0x21, 0x1d, 0x11, 0x00, 0x00, 0x00, 0x00}, /* 24, -4.0dB */
+-	{0x24, 0x23, 0x1f, 0x12, 0x00, 0x00, 0x00, 0x00}, /* 25, -3.5dB */
+-	{0x26, 0x25, 0x21, 0x13, 0x00, 0x00, 0x00, 0x00}, /* 26, -3.0dB */
+-	{0x28, 0x28, 0x24, 0x14, 0x00, 0x00, 0x00, 0x00}, /* 27, -2.5dB */
+-	{0x2b, 0x2a, 0x25, 0x15, 0x00, 0x00, 0x00, 0x00}, /* 28, -2.0dB */
+-	{0x2d, 0x2d, 0x17, 0x17, 0x00, 0x00, 0x00, 0x00}, /* 29, -1.5dB */
+-	{0x30, 0x2f, 0x29, 0x18, 0x00, 0x00, 0x00, 0x00}, /* 30, -1.0dB */
+-	{0x33, 0x32, 0x2b, 0x19, 0x00, 0x00, 0x00, 0x00}, /* 31, -0.5dB */
+-	{0x36, 0x35, 0x2e, 0x1b, 0x00, 0x00, 0x00, 0x00} /* 32, +0dB */
+-};
+-
+ static const u32 edca_setting_dl[PEER_MAX] = {
+ 	0xa44f,		/* 0 UNKNOWN */
+ 	0x5ea44f,	/* 1 REALTEK_90 */
 -- 
 2.20.1
 
