@@ -2,162 +2,71 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id DD80515F9D7
-	for <lists+netdev@lfdr.de>; Fri, 14 Feb 2020 23:43:19 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A422015F9FA
+	for <lists+netdev@lfdr.de>; Fri, 14 Feb 2020 23:53:41 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727827AbgBNWnQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 14 Feb 2020 17:43:16 -0500
-Received: from mail-pg1-f202.google.com ([209.85.215.202]:36635 "EHLO
-        mail-pg1-f202.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727566AbgBNWnQ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 14 Feb 2020 17:43:16 -0500
-Received: by mail-pg1-f202.google.com with SMTP id i8so6974276pgs.3
-        for <netdev@vger.kernel.org>; Fri, 14 Feb 2020 14:43:14 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20161025;
-        h=date:message-id:mime-version:subject:from:to:cc;
-        bh=uHN7vdUXj9zg5j6BFSm9FeBemrt4Oks3aUAhhkdikgA=;
-        b=IeXW9Ek8IIWzbRkroTSuaubhFbW+FB8nYXCtlIy26K7MVDvhCdpSfLETg8Si9wMve2
-         UiHxMDhpjR9Dl0QaCK8Ds1kdIqYaTlWqA+xmfPOpbrCMXauCY5Y+ai7GExkl/HfSa311
-         KOX/CueF5MxQbOZroE0U02KBQDrTdv15TAd1Cm8PjniDcK3eEOBwOAQzYCvT4NDKSpR3
-         1eH+b20qtF0OAJKVSaBsZzr3MynnY33jR1dntOVJntwWWxuPUHmeL01TxDRViqbSGhcV
-         HE1vNcxhg8Ou9tkWYURTl9jJ9ebB3ZbnuSa6UJMll1dgr5TlVS7BNVkDGlpGTQR+l1cq
-         ndAg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:message-id:mime-version:subject:from:to:cc;
-        bh=uHN7vdUXj9zg5j6BFSm9FeBemrt4Oks3aUAhhkdikgA=;
-        b=VgV5vKprlrtJJdvL99YnUBa1wCac0CAv8HdJPCXBorC9poq5c9K1Dg2olUG2B79rar
-         7NGQCh9HPRBVW+oiwCkkN63NBGFGkY0YybxFmenYR4mpCWG5SHAw3Dv6imwwjKUGy9k4
-         k5wT5QiMtelqV2xpp+f1TqYCLoac8R2z7uzzFd0puq8lcP3AYXhSjoNX2bwa5wesq7Mn
-         NyUAz+kiTK06QJKHdlN5SLwtKeZuZNzJ5HL2J+z9D4JBJJFQ1lbqh2uWE0Neu4viOtmW
-         P39jRtt5BZg2cUJDLU7qgmlFjk9DaOqX3EGkrqiOn1J1uNKtDV6S2mSHlC5QCB38S5zA
-         uugQ==
-X-Gm-Message-State: APjAAAWENrVHu0+GaHqyYLKbadBPhPN6OEY84u+oKJ4aRxQrrNauXqSd
-        KSDZOMFUQODdufbc9ITvqgZuT/J9M/Cm
-X-Google-Smtp-Source: APXvYqyByT20Xf2cS83FQR4XFLJ7Tfrbx1N29R/vELEta1kYPJIR+JGWxOYQELvfk6vRtBTB8wdqez/C4cDs
-X-Received: by 2002:a63:2254:: with SMTP id t20mr5909022pgm.423.1581720194053;
- Fri, 14 Feb 2020 14:43:14 -0800 (PST)
-Date:   Fri, 14 Feb 2020 14:43:02 -0800
-Message-Id: <20200214224302.229920-1-brianvv@google.com>
-Mime-Version: 1.0
-X-Mailer: git-send-email 2.25.0.265.gbab2e86ba0-goog
-Subject: [PATCH bpf] bpf: Do not grab the bucket spinlock by default on htab
- batch ops
-From:   Brian Vazquez <brianvv@google.com>
-To:     Brian Vazquez <brianvv.kernel@gmail.com>,
-        Brian Vazquez <brianvv@google.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        "David S . Miller" <davem@davemloft.net>
-Cc:     linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        bpf@vger.kernel.org, Yonghong Song <yhs@fb.com>
+        id S1727573AbgBNWxh (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 14 Feb 2020 17:53:37 -0500
+Received: from frisell.zx2c4.com ([192.95.5.64]:47059 "EHLO frisell.zx2c4.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726164AbgBNWxh (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 14 Feb 2020 17:53:37 -0500
+Received: by frisell.zx2c4.com (ZX2C4 Mail Server) with ESMTP id c1c0a495
+        for <netdev@vger.kernel.org>;
+        Fri, 14 Feb 2020 22:51:26 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha1; c=relaxed; d=zx2c4.com; h=mime-version
+        :references:in-reply-to:from:date:message-id:subject:to:cc
+        :content-type; s=mail; bh=3+Qlztex9Zyw/MhrfBtIeOoX4sU=; b=rV8Kpf
+        csFYWxg1PVaSNuwMiHiLuBBVbVhbQmHocA8i3wMpJ8yOWrUeG97OZwrhNdrwK+bs
+        AmeIuCoEj7kXNDYVvOLWcfsb+351V0eF1x0D+I0R8sCIvpkMu+7zQgL1dBOeyKp1
+        X/J/F04YT446yOOKsIIAeJZYqU9BXyOerW8YJsZ/bhleeqPYMd2RYYiMDRDnadC6
+        0NfQwgrm1QLxIG/jAtzarN4BxM1UujpldWYfoHksdY54UFMn6vQaw3Ip9Rcr5kxR
+        PiXOqSULxseEBc58zY9KUK0kW2wg09ZXQgwhYq0eh/OkORz0N7XblaMX9Mbs0div
+        S3fgVvT1tVOUMVGQ==
+Received: by frisell.zx2c4.com (ZX2C4 Mail Server) with ESMTPSA id 2e5fc1f1 (TLSv1.2:ECDHE-RSA-AES256-GCM-SHA384:256:NO)
+        for <netdev@vger.kernel.org>;
+        Fri, 14 Feb 2020 22:51:25 +0000 (UTC)
+Received: by mail-ot1-f43.google.com with SMTP id 66so10694657otd.9
+        for <netdev@vger.kernel.org>; Fri, 14 Feb 2020 14:53:34 -0800 (PST)
+X-Gm-Message-State: APjAAAWTOB1vlv4622BDI/8j/ah4WmkQ757CZlvd/4pLgMNPe2TSYbSW
+        5xRNVQI0Bk6z4lZ8EZqSMjOz+vLdJlkO288LlX8=
+X-Google-Smtp-Source: APXvYqxbQAmY+aem1wuZUa5aiIiUJcrayX0jmT5hvWvxcmgOvmwi7xGp4kTJAEuJatg9HxdsG6DAzCxvSx75VuxRjNw=
+X-Received: by 2002:a9d:7a47:: with SMTP id z7mr4209430otm.179.1581720814047;
+ Fri, 14 Feb 2020 14:53:34 -0800 (PST)
+MIME-Version: 1.0
+References: <20200214173407.52521-1-Jason@zx2c4.com> <20200214173407.52521-4-Jason@zx2c4.com>
+ <135ffa7a-f06a-80e3-4412-17457b202c77@gmail.com> <CAHmME9pjLfscZ-b0YFsOoKMcENRh4Ld1rfiTTzzHmt+OxOzdjA@mail.gmail.com>
+ <e20d0c52-cb83-224d-7507-b53c5c4a5b69@gmail.com> <CAHmME9oXfDCGmsCJJEuaPmgj7_U4yfrBoqi0wRZrOD9SdWny_w@mail.gmail.com>
+ <ec52e8cb-5649-9167-bb14-7e9775c6a8be@gmail.com> <CAHmME9r6gTCV8cpPgyjOVMWCbRJtswzqXMYBqTQmo001AZz05Q@mail.gmail.com>
+ <1b132351-d4a7-851c-ac98-0a48c8d90797@gmail.com>
+In-Reply-To: <1b132351-d4a7-851c-ac98-0a48c8d90797@gmail.com>
+From:   "Jason A. Donenfeld" <Jason@zx2c4.com>
+Date:   Fri, 14 Feb 2020 23:53:23 +0100
+X-Gmail-Original-Message-ID: <CAHmME9ok5ktHCvn0o1M-qjK68He-AsKJvKQMPkWnZL7Tq1GWVw@mail.gmail.com>
+Message-ID: <CAHmME9ok5ktHCvn0o1M-qjK68He-AsKJvKQMPkWnZL7Tq1GWVw@mail.gmail.com>
+Subject: Re: [PATCH v2 net 3/3] wireguard: send: account for mtu=0 devices
+To:     Eric Dumazet <eric.dumazet@gmail.com>
+Cc:     Netdev <netdev@vger.kernel.org>
 Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Grabbing the spinlock for every bucket even if it's empty, was causing
-significant perfomance cost when traversing htab maps that have only a
-few entries. This patch addresses the issue by checking first the
-bucket_cnt, if the bucket has some entries then we go and grab the
-spinlock and proceed with the batching.
+On Fri, Feb 14, 2020 at 11:30 PM Eric Dumazet <eric.dumazet@gmail.com> wrote:
+> Also note that UDP sockets have SOCK_RCU_FREE flag set, so core
+> networking also respect one RCU grace period before freeing them.
 
-Tested with a htab of size 50K and different value of populated entries.
+       if (use_call_rcu)
+               call_rcu(&sk->sk_rcu, __sk_destruct);
+       else
+               __sk_destruct(&sk->sk_rcu);
 
-Before:
-  Benchmark             Time(ns)        CPU(ns)
-  ---------------------------------------------
-  BM_DumpHashMap/1       2759655        2752033
-  BM_DumpHashMap/10      2933722        2930825
-  BM_DumpHashMap/200     3171680        3170265
-  BM_DumpHashMap/500     3639607        3635511
-  BM_DumpHashMap/1000    4369008        4364981
-  BM_DumpHashMap/5k     11171919       11134028
-  BM_DumpHashMap/20k    69150080       69033496
-  BM_DumpHashMap/39k   190501036      190226162
+Ah, that's handy indeed.
 
-After:
-  Benchmark             Time(ns)        CPU(ns)
-  ---------------------------------------------
-  BM_DumpHashMap/1        202707         200109
-  BM_DumpHashMap/10       213441         210569
-  BM_DumpHashMap/200      478641         472350
-  BM_DumpHashMap/500      980061         967102
-  BM_DumpHashMap/1000    1863835        1839575
-  BM_DumpHashMap/5k      8961836        8902540
-  BM_DumpHashMap/20k    69761497       69322756
-  BM_DumpHashMap/39k   187437830      186551111
+> It is possible that no extra synchronize_{net|rcu}() call is needed,
+> but this is left as an exercise for future kernels :)
 
-Fixes: 057996380a42 ("bpf: Add batch ops to all htab bpf map")
-Cc: Yonghong Song <yhs@fb.com>
-Signed-off-by: Brian Vazquez <brianvv@google.com>
----
- kernel/bpf/hashtab.c | 21 +++++++++++++++++++--
- 1 file changed, 19 insertions(+), 2 deletions(-)
+Cool, yea, sounds like something I should play with for 5.7.
 
-diff --git a/kernel/bpf/hashtab.c b/kernel/bpf/hashtab.c
-index 2d182c4ee9d99..fdbde28b0fe06 100644
---- a/kernel/bpf/hashtab.c
-+++ b/kernel/bpf/hashtab.c
-@@ -1260,6 +1260,7 @@ __htab_map_lookup_and_delete_batch(struct bpf_map *map,
- 	struct hlist_nulls_head *head;
- 	struct hlist_nulls_node *n;
- 	unsigned long flags;
-+	bool locked = false;
- 	struct htab_elem *l;
- 	struct bucket *b;
- 	int ret = 0;
-@@ -1319,15 +1320,25 @@ __htab_map_lookup_and_delete_batch(struct bpf_map *map,
- 	dst_val = values;
- 	b = &htab->buckets[batch];
- 	head = &b->head;
--	raw_spin_lock_irqsave(&b->lock, flags);
-+	/* do not grab the lock unless need it (bucket_cnt > 0). */
-+	if (locked)
-+		raw_spin_lock_irqsave(&b->lock, flags);
- 
- 	bucket_cnt = 0;
- 	hlist_nulls_for_each_entry_rcu(l, n, head, hash_node)
- 		bucket_cnt++;
- 
-+	if (bucket_cnt && !locked) {
-+		locked = true;
-+		goto again_nocopy;
-+	}
-+
- 	if (bucket_cnt > (max_count - total)) {
- 		if (total == 0)
- 			ret = -ENOSPC;
-+		/* Note that since bucket_cnt > 0 here, it is implicit
-+		 * that the locked was grabbed, so release it.
-+		 */
- 		raw_spin_unlock_irqrestore(&b->lock, flags);
- 		rcu_read_unlock();
- 		this_cpu_dec(bpf_prog_active);
-@@ -1337,6 +1348,9 @@ __htab_map_lookup_and_delete_batch(struct bpf_map *map,
- 
- 	if (bucket_cnt > bucket_size) {
- 		bucket_size = bucket_cnt;
-+		/* Note that since bucket_cnt > 0 here, it is implicit
-+		 * that the locked was grabbed, so release it.
-+		 */
- 		raw_spin_unlock_irqrestore(&b->lock, flags);
- 		rcu_read_unlock();
- 		this_cpu_dec(bpf_prog_active);
-@@ -1379,7 +1393,10 @@ __htab_map_lookup_and_delete_batch(struct bpf_map *map,
- 		dst_val += value_size;
- 	}
- 
--	raw_spin_unlock_irqrestore(&b->lock, flags);
-+	if (locked) {
-+		raw_spin_unlock_irqrestore(&b->lock, flags);
-+		locked = false;
-+	}
- 	/* If we are not copying data, we can go to next bucket and avoid
- 	 * unlocking the rcu.
- 	 */
--- 
-2.25.0.265.gbab2e86ba0-goog
-
+Sending v3 out in a few minutes.
