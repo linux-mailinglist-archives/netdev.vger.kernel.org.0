@@ -2,40 +2,40 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 1B30C15E48B
-	for <lists+netdev@lfdr.de>; Fri, 14 Feb 2020 17:36:55 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6DB2C15E47E
+	for <lists+netdev@lfdr.de>; Fri, 14 Feb 2020 17:36:49 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2393721AbgBNQgk (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 14 Feb 2020 11:36:40 -0500
-Received: from mail.kernel.org ([198.145.29.99]:60968 "EHLO mail.kernel.org"
+        id S2393688AbgBNQgG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 14 Feb 2020 11:36:06 -0500
+Received: from mail.kernel.org ([198.145.29.99]:33098 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2405835AbgBNQYO (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 14 Feb 2020 11:24:14 -0500
+        id S2405888AbgBNQYa (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 14 Feb 2020 11:24:30 -0500
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 6009024797;
-        Fri, 14 Feb 2020 16:24:13 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id B4F622479D;
+        Fri, 14 Feb 2020 16:24:28 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1581697454;
-        bh=EvBleNZ5qR3F6cqPeTjbeYqOuB2YOs2UqbF/r7WHfj4=;
+        s=default; t=1581697469;
+        bh=kqobUzNIK0zbxE3SOKiTCuJq60wEzhM2JkGtXbIxiek=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=RPj+p9lHvJz0ULON82hpLapMRbwSIZkewsA/y996Ut/DRvtI9RG2rcSdSy36OU8zL
-         ieC7NppnkgN2nRtHMlC9MClV9sCQYcCLaVxdTNMKYvorPH90VdvBOszdfXaleTn/+M
-         7LonBOLLcb8PAmJ1zq/F6q1Jk12063i+EjpSFnGs=
+        b=Z2LOYZeMAOHfrw9UFGk/V2BL4VCqP43CuRPFJ+gnyp3I6lZ78hdc6+ZE3pPpE+kZX
+         nY7BLEQqE7ftQ6rCRnsXe4nnhfGvDpe+WcD/1DX01yevAMrT9d/nZ0MF+w1kt3p+4F
+         aRA34Om0lFGzMyTaNvGlYEV4SmFufS/jU4tCR9Lk=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Andrei Otcheretianski <andrei.otcheretianski@intel.com>,
-        Luca Coelho <luciano.coelho@intel.com>,
+Cc:     Dan Carpenter <dan.carpenter@oracle.com>,
+        Franky Lin <franky.lin@broadcom.com>,
         Kalle Valo <kvalo@codeaurora.org>,
         Sasha Levin <sashal@kernel.org>,
         linux-wireless@vger.kernel.org, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.9 137/141] iwlwifi: mvm: Fix thermal zone registration
-Date:   Fri, 14 Feb 2020 11:21:17 -0500
-Message-Id: <20200214162122.19794-137-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 4.4 003/100] brcmfmac: Fix use after free in brcmf_sdio_readframes()
+Date:   Fri, 14 Feb 2020 11:22:47 -0500
+Message-Id: <20200214162425.21071-3-sashal@kernel.org>
 X-Mailer: git-send-email 2.20.1
-In-Reply-To: <20200214162122.19794-1-sashal@kernel.org>
-References: <20200214162122.19794-1-sashal@kernel.org>
+In-Reply-To: <20200214162425.21071-1-sashal@kernel.org>
+References: <20200214162425.21071-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
@@ -45,62 +45,39 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Andrei Otcheretianski <andrei.otcheretianski@intel.com>
+From: Dan Carpenter <dan.carpenter@oracle.com>
 
-[ Upstream commit baa6cf8450b72dcab11f37c47efce7c5b9b8ad0f ]
+[ Upstream commit 216b44000ada87a63891a8214c347e05a4aea8fe ]
 
-Use a unique name when registering a thermal zone. Otherwise, with
-multiple NICS, we hit the following warning during the unregistration.
+The brcmu_pkt_buf_free_skb() function frees "pkt" so it leads to a
+static checker warning:
 
-WARNING: CPU: 2 PID: 3525 at fs/sysfs/group.c:255
- RIP: 0010:sysfs_remove_group+0x80/0x90
- Call Trace:
-  dpm_sysfs_remove+0x57/0x60
-  device_del+0x5a/0x350
-  ? sscanf+0x4e/0x70
-  device_unregister+0x1a/0x60
-  hwmon_device_unregister+0x4a/0xa0
-  thermal_remove_hwmon_sysfs+0x175/0x1d0
-  thermal_zone_device_unregister+0x188/0x1e0
-  iwl_mvm_thermal_exit+0xe7/0x100 [iwlmvm]
-  iwl_op_mode_mvm_stop+0x27/0x180 [iwlmvm]
-  _iwl_op_mode_stop.isra.3+0x2b/0x50 [iwlwifi]
-  iwl_opmode_deregister+0x90/0xa0 [iwlwifi]
-  __exit_compat+0x10/0x2c7 [iwlmvm]
-  __x64_sys_delete_module+0x13f/0x270
-  do_syscall_64+0x5a/0x110
-  entry_SYSCALL_64_after_hwframe+0x44/0xa9
+    drivers/net/wireless/broadcom/brcm80211/brcmfmac/sdio.c:1974 brcmf_sdio_readframes()
+    error: dereferencing freed memory 'pkt'
 
-Signed-off-by: Andrei Otcheretianski <andrei.otcheretianski@intel.com>
-Signed-off-by: Luca Coelho <luciano.coelho@intel.com>
+It looks like there was supposed to be a continue after we free "pkt".
+
+Fixes: 4754fceeb9a6 ("brcmfmac: streamline SDIO read frame routine")
+Signed-off-by: Dan Carpenter <dan.carpenter@oracle.com>
+Acked-by: Franky Lin <franky.lin@broadcom.com>
 Signed-off-by: Kalle Valo <kvalo@codeaurora.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/wireless/intel/iwlwifi/mvm/tt.c | 4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
+ drivers/net/wireless/brcm80211/brcmfmac/sdio.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/drivers/net/wireless/intel/iwlwifi/mvm/tt.c b/drivers/net/wireless/intel/iwlwifi/mvm/tt.c
-index c5203568a47ac..f0f205c3aadb7 100644
---- a/drivers/net/wireless/intel/iwlwifi/mvm/tt.c
-+++ b/drivers/net/wireless/intel/iwlwifi/mvm/tt.c
-@@ -736,7 +736,8 @@ static  struct thermal_zone_device_ops tzone_ops = {
- static void iwl_mvm_thermal_zone_register(struct iwl_mvm *mvm)
- {
- 	int i;
--	char name[] = "iwlwifi";
-+	char name[16];
-+	static atomic_t counter = ATOMIC_INIT(0);
- 
- 	if (!iwl_mvm_is_tt_in_fw(mvm)) {
- 		mvm->tz_device.tzone = NULL;
-@@ -746,6 +747,7 @@ static void iwl_mvm_thermal_zone_register(struct iwl_mvm *mvm)
- 
- 	BUILD_BUG_ON(ARRAY_SIZE(name) >= THERMAL_NAME_LENGTH);
- 
-+	sprintf(name, "iwlwifi_%u", atomic_inc_return(&counter) & 0xFF);
- 	mvm->tz_device.tzone = thermal_zone_device_register(name,
- 							IWL_MAX_DTS_TRIPS,
- 							IWL_WRITABLE_TRIPS_MSK,
+diff --git a/drivers/net/wireless/brcm80211/brcmfmac/sdio.c b/drivers/net/wireless/brcm80211/brcmfmac/sdio.c
+index 9954e641c943d..8bb028f740fd8 100644
+--- a/drivers/net/wireless/brcm80211/brcmfmac/sdio.c
++++ b/drivers/net/wireless/brcm80211/brcmfmac/sdio.c
+@@ -2027,6 +2027,7 @@ static uint brcmf_sdio_readframes(struct brcmf_sdio *bus, uint maxframes)
+ 					       BRCMF_SDIO_FT_NORMAL)) {
+ 				rd->len = 0;
+ 				brcmu_pkt_buf_free_skb(pkt);
++				continue;
+ 			}
+ 			bus->sdcnt.rx_readahead_cnt++;
+ 			if (rd->len != roundup(rd_new.len, 16)) {
 -- 
 2.20.1
 
