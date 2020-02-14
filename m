@@ -2,269 +2,282 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id AD13515F261
-	for <lists+netdev@lfdr.de>; Fri, 14 Feb 2020 19:09:47 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 479FD15F239
+	for <lists+netdev@lfdr.de>; Fri, 14 Feb 2020 19:09:28 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2392708AbgBNSIx convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Fri, 14 Feb 2020 13:08:53 -0500
-Received: from shards.monkeyblade.net ([23.128.96.9]:53710 "EHLO
-        shards.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1731434AbgBNPyK (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 14 Feb 2020 10:54:10 -0500
-Received: from localhost (unknown [IPv6:2601:601:9f00:477::3d5])
-        (using TLSv1 with cipher AES256-SHA (256/256 bits))
-        (Client did not present a certificate)
-        (Authenticated sender: davem-davemloft)
-        by shards.monkeyblade.net (Postfix) with ESMTPSA id E247F15C5582F;
-        Fri, 14 Feb 2020 07:54:09 -0800 (PST)
-Date:   Fri, 14 Feb 2020 07:54:09 -0800 (PST)
-Message-Id: <20200214.075409.535471157405842746.davem@davemloft.net>
-To:     torvalds@linux-foundation.org
-CC:     akpm@linux-foundation.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: [GIT] Networking
-From:   David Miller <davem@davemloft.net>
-X-Mailer: Mew version 6.8 on Emacs 26.1
-Mime-Version: 1.0
-Content-Type: Text/Plain; charset=iso-8859-1
-Content-Transfer-Encoding: 8BIT
-X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Fri, 14 Feb 2020 07:54:10 -0800 (PST)
+        id S2387583AbgBNSIB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 14 Feb 2020 13:08:01 -0500
+Received: from mail.kernel.org ([198.145.29.99]:34482 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1731521AbgBNPy1 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 14 Feb 2020 10:54:27 -0500
+Received: from disco-boy.misterjones.org (disco-boy.misterjones.org [51.254.78.96])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 0CB6D2467C;
+        Fri, 14 Feb 2020 15:54:26 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1581695666;
+        bh=GeKdTvnywdeP8MWj0VNmxO0/yB5ZrHe8bH94R5osg5I=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=UieYlkOWDSA5iGNGqb4TX8AldH9CFgR3ogyJ/4Kkt0vjhiq7hjB9kSwtihrFPGHKL
+         LTXuu1waz+qzRC4ZYU6xDisrdOBf2tBwsuHrx8n2H1nnjkdUFFFaJoNgKeVzWfA6IV
+         n1o/K6Y89PK3l2bxM5lZOXzf/Ri152gnYDeJI0XY=
+Received: from disco-boy.misterjones.org ([51.254.78.96] helo=www.loen.fr)
+        by disco-boy.misterjones.org with esmtpsa (TLS1.2:ECDHE_RSA_AES_128_GCM_SHA256:128)
+        (Exim 4.92)
+        (envelope-from <maz@kernel.org>)
+        id 1j2dIO-0059RP-BJ; Fri, 14 Feb 2020 15:54:24 +0000
+MIME-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII;
+ format=flowed
+Content-Transfer-Encoding: 7bit
+Date:   Fri, 14 Feb 2020 15:54:24 +0000
+From:   Marc Zyngier <maz@kernel.org>
+To:     Pankaj Bansal <pankaj.bansal@nxp.com>
+Cc:     Ard Biesheuvel <ard.biesheuvel@linaro.org>,
+        Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
+        Makarand Pawagi <makarand.pawagi@nxp.com>,
+        Calvin Johnson <calvin.johnson@nxp.com>, stuyoder@gmail.com,
+        nleeder@codeaurora.org, Ioana Ciornei <ioana.ciornei@nxp.com>,
+        Cristi Sovaiala <cristian.sovaiala@nxp.com>,
+        Hanjun Guo <guohanjun@huawei.com>,
+        Will Deacon <will@kernel.org>, jon@solid-run.com,
+        Russell King <linux@armlinux.org.uk>,
+        ACPI Devel Maling List <linux-acpi@vger.kernel.org>,
+        Len Brown <lenb@kernel.org>,
+        Jason Cooper <jason@lakedaemon.net>,
+        Andy Wang <Andy.Wang@arm.com>, Varun Sethi <V.Sethi@nxp.com>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        linux-arm-kernel <linux-arm-kernel@lists.infradead.org>,
+        Laurentiu Tudor <laurentiu.tudor@nxp.com>,
+        Paul Yang <Paul.Yang@arm.com>, <netdev@vger.kernel.org>,
+        "Rafael J. Wysocki" <rjw@rjwysocki.net>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Shameerali Kolothum Thodi 
+        <shameerali.kolothum.thodi@huawei.com>,
+        Sudeep Holla <sudeep.holla@arm.com>,
+        Robin Murphy <robin.murphy@arm.com>
+Subject: Re: [EXT] Re: [PATCH] bus: fsl-mc: Add ACPI support for fsl-mc
+In-Reply-To: <VI1PR0401MB249622CFA9B213632F1DE955F1150@VI1PR0401MB2496.eurprd04.prod.outlook.com>
+References: <1580198925-50411-1-git-send-email-makarand.pawagi@nxp.com>
+ <20200128110916.GA491@e121166-lin.cambridge.arm.com>
+ <DB8PR04MB7164DDF48480956F05886DABEB070@DB8PR04MB7164.eurprd04.prod.outlook.com>
+ <12531d6c569c7e14dffe8e288d9f4a0b@kernel.org>
+ <CAKv+Gu8uaJBmy5wDgk=uzcmC4vkEyOjW=JRvhpjfsdh-HcOCLg@mail.gmail.com>
+ <VI1PR0401MB249622CFA9B213632F1DE955F1150@VI1PR0401MB2496.eurprd04.prod.outlook.com>
+Message-ID: <7349fa0e6d62a3e0d0e540f2e17646e0@kernel.org>
+X-Sender: maz@kernel.org
+User-Agent: Roundcube Webmail/1.3.10
+X-SA-Exim-Connect-IP: 51.254.78.96
+X-SA-Exim-Rcpt-To: pankaj.bansal@nxp.com, ard.biesheuvel@linaro.org, lorenzo.pieralisi@arm.com, makarand.pawagi@nxp.com, calvin.johnson@nxp.com, stuyoder@gmail.com, nleeder@codeaurora.org, ioana.ciornei@nxp.com, cristian.sovaiala@nxp.com, guohanjun@huawei.com, will@kernel.org, jon@solid-run.com, linux@armlinux.org.uk, linux-acpi@vger.kernel.org, lenb@kernel.org, jason@lakedaemon.net, Andy.Wang@arm.com, V.Sethi@nxp.com, tglx@linutronix.de, linux-arm-kernel@lists.infradead.org, laurentiu.tudor@nxp.com, Paul.Yang@arm.com, netdev@vger.kernel.org, rjw@rjwysocki.net, linux-kernel@vger.kernel.org, shameerali.kolothum.thodi@huawei.com, sudeep.holla@arm.com, robin.murphy@arm.com
+X-SA-Exim-Mail-From: maz@kernel.org
+X-SA-Exim-Scanned: No (on disco-boy.misterjones.org); SAEximRunCond expanded to false
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On 2020-02-14 15:05, Pankaj Bansal wrote:
+>> -----Original Message-----
+>> From: Ard Biesheuvel <ard.biesheuvel@linaro.org>
+>> Sent: Friday, January 31, 2020 5:32 PM
+>> To: Marc Zyngier <maz@kernel.org>
+>> Cc: Makarand Pawagi <makarand.pawagi@nxp.com>; Calvin Johnson
+>> <calvin.johnson@nxp.com>; stuyoder@gmail.com; nleeder@codeaurora.org;
+>> Ioana Ciornei <ioana.ciornei@nxp.com>; Cristi Sovaiala
+>> <cristian.sovaiala@nxp.com>; Hanjun Guo <guohanjun@huawei.com>; Will
+>> Deacon <will@kernel.org>; Lorenzo Pieralisi 
+>> <lorenzo.pieralisi@arm.com>;
+>> Pankaj Bansal <pankaj.bansal@nxp.com>; jon@solid-run.com; Russell King
+>> <linux@armlinux.org.uk>; ACPI Devel Maling List 
+>> <linux-acpi@vger.kernel.org>;
+>> Len Brown <lenb@kernel.org>; Jason Cooper <jason@lakedaemon.net>; Andy
+>> Wang <Andy.Wang@arm.com>; Varun Sethi <V.Sethi@nxp.com>; Thomas
+>> Gleixner <tglx@linutronix.de>; linux-arm-kernel <linux-arm-
+>> kernel@lists.infradead.org>; Laurentiu Tudor 
+>> <laurentiu.tudor@nxp.com>; Paul
+>> Yang <Paul.Yang@arm.com>; <netdev@vger.kernel.org>
+>> <netdev@vger.kernel.org>; Rafael J. Wysocki <rjw@rjwysocki.net>; Linux 
+>> Kernel
+>> Mailing List <linux-kernel@vger.kernel.org>; Shameerali Kolothum Thodi
+>> <shameerali.kolothum.thodi@huawei.com>; Sudeep Holla
+>> <sudeep.holla@arm.com>; Robin Murphy <robin.murphy@arm.com>
+>> Subject: Re: [EXT] Re: [PATCH] bus: fsl-mc: Add ACPI support for 
+>> fsl-mc
+>> 
+>> On Fri, 31 Jan 2020 at 12:06, Marc Zyngier <maz@kernel.org> wrote:
+>> >
+>> > On 2020-01-31 10:35, Makarand Pawagi wrote:
+>> > >> -----Original Message-----
+>> > >> From: Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>
+>> > >> Sent: Tuesday, January 28, 2020 4:39 PM
+>> > >> To: Makarand Pawagi <makarand.pawagi@nxp.com>
+>> > >> Cc: netdev@vger.kernel.org; linux-kernel@vger.kernel.org;
+>> > >> linux-arm- kernel@lists.infradead.org; linux-acpi@vger.kernel.org;
+>> > >> linux@armlinux.org.uk; jon@solid-run.com; Cristi Sovaiala
+>> > >> <cristian.sovaiala@nxp.com>; Laurentiu Tudor
+>> > >> <laurentiu.tudor@nxp.com>; Ioana Ciornei <ioana.ciornei@nxp.com>;
+>> > >> Varun Sethi <V.Sethi@nxp.com>; Calvin Johnson
+>> > >> <calvin.johnson@nxp.com>; Pankaj Bansal <pankaj.bansal@nxp.com>;
+>> > >> guohanjun@huawei.com; sudeep.holla@arm.com; rjw@rjwysocki.net;
+>> > >> lenb@kernel.org; stuyoder@gmail.com; tglx@linutronix.de;
+>> > >> jason@lakedaemon.net; maz@kernel.org;
+>> > >> shameerali.kolothum.thodi@huawei.com; will@kernel.org;
+>> > >> robin.murphy@arm.com; nleeder@codeaurora.org
+>> > >> Subject: [EXT] Re: [PATCH] bus: fsl-mc: Add ACPI support for fsl-mc
+>> > >>
+>> > >> Caution: EXT Email
+>> > >>
+>> > >> On Tue, Jan 28, 2020 at 01:38:45PM +0530, Makarand Pawagi wrote:
+>> > >> > ACPI support is added in the fsl-mc driver. Driver will parse MC
+>> > >> > DSDT table to extract memory and other resorces.
+>> > >> >
+>> > >> > Interrupt (GIC ITS) information will be extracted from MADT table
+>> > >> > by drivers/irqchip/irq-gic-v3-its-fsl-mc-msi.c.
+>> > >> >
+>> > >> > IORT table will be parsed to configure DMA.
+>> > >> >
+>> > >> > Signed-off-by: Makarand Pawagi <makarand.pawagi@nxp.com>
+>> > >> > ---
+>> > >> >  drivers/acpi/arm64/iort.c                   | 53 +++++++++++++++++++++
+>> > >> >  drivers/bus/fsl-mc/dprc-driver.c            |  3 +-
+>> > >> >  drivers/bus/fsl-mc/fsl-mc-bus.c             | 48 +++++++++++++------
+>> > >> >  drivers/bus/fsl-mc/fsl-mc-msi.c             | 10 +++-
+>> > >> >  drivers/bus/fsl-mc/fsl-mc-private.h         |  4 +-
+>> > >> >  drivers/irqchip/irq-gic-v3-its-fsl-mc-msi.c | 71
+>> > >> ++++++++++++++++++++++++++++-
+>> > >> >  include/linux/acpi_iort.h                   |  5 ++
+>> > >> >  7 files changed, 174 insertions(+), 20 deletions(-)
+>> > >> >
+>> > >> > diff --git a/drivers/acpi/arm64/iort.c
+>> > >> > b/drivers/acpi/arm64/iort.c index 33f7198..beb9cd5 100644
+>> > >> > --- a/drivers/acpi/arm64/iort.c
+>> > >> > +++ b/drivers/acpi/arm64/iort.c
+>> > >> > @@ -15,6 +15,7 @@
+>> > >> >  #include <linux/kernel.h>
+>> > >> >  #include <linux/list.h>
+>> > >> >  #include <linux/pci.h>
+>> > >> > +#include <linux/fsl/mc.h>
+>> > >> >  #include <linux/platform_device.h>  #include <linux/slab.h>
+>> > >> >
+>> > >> > @@ -622,6 +623,29 @@ static int iort_dev_find_its_id(struct
+>> > >> > device *dev, u32 req_id,  }
+>> > >> >
+>> > >> >  /**
+>> > >> > + * iort_get_fsl_mc_device_domain() - Find MSI domain related to
+>> > >> > +a device
+>> > >> > + * @dev: The device.
+>> > >> > + * @mc_icid: ICID for the fsl_mc device.
+>> > >> > + *
+>> > >> > + * Returns: the MSI domain for this device, NULL otherwise  */
+>> > >> > +struct irq_domain *iort_get_fsl_mc_device_domain(struct device *dev,
+>> > >> > +                                                     u32 mc_icid) {
+>> > >> > +     struct fwnode_handle *handle;
+>> > >> > +     int its_id;
+>> > >> > +
+>> > >> > +     if (iort_dev_find_its_id(dev, mc_icid, 0, &its_id))
+>> > >> > +             return NULL;
+>> > >> > +
+>> > >> > +     handle = iort_find_domain_token(its_id);
+>> > >> > +     if (!handle)
+>> > >> > +             return NULL;
+>> > >> > +
+>> > >> > +     return irq_find_matching_fwnode(handle,
+>> > >> > +DOMAIN_BUS_FSL_MC_MSI); }
+>> > >>
+>> > >> NAK
+>> > >>
+>> > >> I am not willing to take platform specific code in the generic IORT
+>> > >> layer.
+>> > >>
+>> > >> ACPI on ARM64 works on platforms that comply with SBSA/SBBR
+>> > >> guidelines:
+>> > >>
+>> > >>
+>> > >> https://eur01.safelinks.protection.outlook.com/?url=https%3A%2F%2Fd
+>> > >> eveloper.arm.com%2Farchitectures%2Fplatform-design%2Fserver-systems
+>> > >>
+>> &amp;data=02%7C01%7Cpankaj.bansal%40nxp.com%7Cdb56d889d85646277ee
+>> 30
+>> > >>
+>> 8d7a64562fa%7C686ea1d3bc2b4c6fa92cd99c5c301635%7C0%7C0%7C6371606
+>> 892
+>> > >>
+>> 50769265&amp;sdata=C7nCty8%2BVeuq6VhcEUXCwiAinN01rCfe12NRVnXJCIY%
+>> 3D
+>> > >> &amp;reserved=0
+>> > >>
+>> > >> Deviating from those requires butchering ACPI specifications (ie
+>> > >> IORT) and related kernel code which goes totally against what ACPI
+>> > >> is meant for on ARM64 systems, so there is no upstream pathway for
+>> > >> this code I am afraid.
+>> > >>
+>> > > Reason of adding this platform specific function in the generic IORT
+>> > > layer is That iort_get_device_domain() only deals with PCI bus
+>> > > (DOMAIN_BUS_PCI_MSI).
+>> > >
+>> > > fsl-mc objects when probed, need to find irq_domain which is
+>> > > associated with the fsl-mc bus (DOMAIN_BUS_FSL_MC_MSI). It will not
+>> > > be possible to do that if we do not add this function because there
+>> > > are no other suitable APIs exported by IORT layer to do the job.
+>> >
+>> > I think we all understood the patch. What both Lorenzo and myself are
+>> > saying is that we do not want non-PCI support in IORT.
+>> >
+>> 
+>> IORT supports platform devices (aka named components) as well, and
+>> there is some support for platform MSIs in the GIC layer.
+>> 
+>> So it may be possible to hide your exotic bus from the OS entirely,
+>> and make the firmware instantiate a DSDT with device objects and
+>> associated IORT nodes that describe whatever lives on that bus as
+>> named components.
+>> 
+>> That way, you will not have to change the OS at all, so your hardware
+>> will not only be supported in linux v5.7+, it will also be supported
+>> by OSes that commercial distro vendors are shipping today. *That* is
+>> the whole point of using ACPI.
+>> 
+>> If you are going to bother and modify the OS, you lose this advantage,
+>> and ACPI gives you no benefit over DT at all.
+> 
+> I am replying to old message in this conversation, because the
+> discussion got sidetracked from IORT
+> table to SFP/QSFP/devlink stuff from this point onwards, which is not
+> related to IORT.
+> I will only focus on representing the MC device in IORT and using the
+> same in linux.
+> As Ard said:
+> "IORT supports platform devices (aka named components) as well, and
+> there is some support for platform MSIs in the GIC layer."
+> 
+> We can represent MC bus as named component in IORT table and use 
+> platform MSIs.
+> The only caveat is that with current implementation of platform MSIs,
+> the Input id of a device is not considered.
+> https://elixir.bootlin.com/linux/latest/source/drivers/irqchip/irq-gic-v3-its-platform-msi.c#L50
+> https://elixir.bootlin.com/linux/latest/source/drivers/acpi/arm64/iort.c#L464
 
-1) Fix interrupt name truncation in mv88e6xxx dsa driver, from Andrew
-   Lunn.
+I don't understand what you mean. Platform MSI using IORT uses the DevID
+of end-points. How could the ITS could work without specifying a DevID?
+See for example how the SMMUv3 driver uses platform MSI.
 
-2) Process generic XDP even if SKB is cloned, from Toke
-   Høiland-Jørgensen.
+> While, IORT spec doesn't specify any such limitation.
+> 
+> we can easily update iort.c to remove this limitation.
+> But, I am not sure how the input id would be passed from platform MSI
+> GIC layer to IORT.
+> Most obviously, the input id should be supplied by dev itself.
 
-3) Fix leak of kernel memory to userspace in smc, from Eric Dumazet.
+Why should the device know about its own ID? That's a bus/interconnect
+thing. And nothing should be passed *to* IORT. IORT is the source.
 
-4) Add some missing netlink attribute validation to matchall and
-   flower, from Davide Caratti.
+> Any thoughts?
 
-5) Send icmp responses properly when NAT has been applied to the frame
-   before we get to the tunnel emitting the icmp, from Jason
-   A. Donenfeld.
+I think that in this thread, we have been fairly explicit about what our
+train of though was.
 
-6) Make sure there is enough SKB headroom when adding dsa tags for qca
-   and ar9331.  From Per Forlin.
-
-Please pull, thanks a lot!
-
-The following changes since commit fdfa3a6778b194974df77b384cc71eb2e503639a:
-
-  Merge tag 'scsi-misc' of git://git.kernel.org/pub/scm/linux/kernel/git/jejb/scsi (2020-02-08 17:24:41 -0800)
-
-are available in the Git repository at:
-
-  git://git.kernel.org/pub/scm/linux/kernel/git/netdev/net.git 
-
-for you to fetch changes up to a1fa83bdab784fa0ff2e92870011c0dcdbd2f680:
-
-  netdevice.h: fix all kernel-doc and Sphinx warnings (2020-02-14 07:38:24 -0800)
-
-----------------------------------------------------------------
-Akeem G Abodunrin (1):
-      ice: Modify link message logging
-
-Andrew Lunn (1):
-      net: dsa: mv88e6xxx: Prevent truncation of longer interrupt names
-
-Anirudh Venkataramanan (4):
-      ice: Remove CONFIG_PCI_IOV wrap in ice_set_pf_caps
-      ice: Use ice_pf_to_dev
-      ice: Make print statements more compact
-      ice: Cleanup ice_vsi_alloc_q_vectors
-
-Arthur Kiyanovski (9):
-      net: ena: fix potential crash when rxfh key is NULL
-      net: ena: fix uses of round_jiffies()
-      net: ena: add missing ethtool TX timestamping indication
-      net: ena: fix incorrect default RSS key
-      net: ena: rss: store hash function as values and not bits
-      net: ena: fix incorrectly saving queue numbers when setting RSS indirection table
-      net: ena: fix corruption of dev_idx_to_host_tbl
-      net: ena: make ena rxfh support ETH_RSS_HASH_NO_CHANGE
-      net: ena: ena-com.c: prevent NULL pointer dereference
-
-Ben Shelton (1):
-      ice: Use correct netif error function
-
-Bjørn Mork (2):
-      qmi_wwan: re-add DW5821e pre-production variant
-      qmi_wwan: unconditionally reject 2 ep interfaces
-
-Brett Creeley (3):
-      i40e: Fix the conditional for i40e_vc_validate_vqs_bitmaps
-      ice: Don't allow same value for Rx tail to be written twice
-      ice: Remove ice_dev_onetime_setup()
-
-Bruce Allan (2):
-      ice: fix and consolidate logging of NVM/firmware version information
-      ice: update Unit Load Status bitmask to check after reset
-
-Chen Wandun (2):
-      tipc: make three functions static
-      mptcp: make the symbol 'mptcp_sk_clone_lock' static
-
-Dave Ertman (2):
-      ice: Fix DCB rebuild after reset
-      ice: Fix switch between FW and SW LLDP
-
-David S. Miller (8):
-      Merge branch 'Bug-fixes-for-ENA-Ethernet-driver'
-      Merge branch '100GbE' of git://git.kernel.org/.../jkirsher/net-queue
-      Merge branch 'skip_sw-skip_hw-validation'
-      Merge branch 'icmp-account-for-NAT-when-sending-icmps-from-ndo-layer'
-      Merge branch 'hns3-fixes'
-      Merge branch 'smc-fixes'
-      Merge tag 'mac80211-for-net-2020-02-14' of git://git.kernel.org/.../jberg/mac80211
-      Merge branch 'dsa-headroom'
-
-Davide Caratti (2):
-      net/sched: matchall: add missing validation of TCA_MATCHALL_FLAGS
-      net/sched: flower: add missing validation of TCA_FLOWER_FLAGS
-
-Eric Dumazet (1):
-      net/smc: fix leak of kernel memory to user space
-
-Firo Yang (1):
-      enic: prevent waking up stopped tx queues over watchdog reset
-
-Guangbin Huang (1):
-      net: hns3: fix a copying IPv6 address error in hclge_fd_get_flow_tuples()
-
-Hangbin Liu (1):
-      net/flow_dissector: remove unexist field description
-
-Jason A. Donenfeld (5):
-      icmp: introduce helper for nat'd source address in network device context
-      gtp: use icmp_ndo_send helper
-      sunvnet: use icmp_ndo_send helper
-      wireguard: device: use icmp_ndo_send helper
-      xfrm: interface: use icmp_ndo_send helper
-
-Johannes Berg (2):
-      mac80211: use more bits for ack_frame_id
-      mac80211: consider more elements in parsing CRC
-
-Kunihiko Hayashi (1):
-      net: ethernet: ave: Add capability of rgmii-id mode
-
-Li RongQing (1):
-      page_pool: refill page when alloc.count of pool is zero
-
-Paul Greenwalt (1):
-      ice: display supported and advertised link modes
-
-Per Forlin (2):
-      net: dsa: tag_qca: Make sure there is headroom for tag
-      net: dsa: tag_ar9331: Make sure there is headroom for tag
-
-Randy Dunlap (1):
-      netdevice.h: fix all kernel-doc and Sphinx warnings
-
-Sameeh Jubran (3):
-      net: ena: rss: do not allocate key when not supported
-      net: ena: rss: fix failure to get indirection table
-      net: ena: ethtool: use correct value for crc32 hash
-
-Sara Sharon (1):
-      mac80211: fix quiet mode activation in action frames
-
-Sergey Matyukevich (2):
-      cfg80211: check wiphy driver existence for drvinfo report
-      cfg80211: add missing policy for NL80211_ATTR_STATUS_CODE
-
-Shay Bar (1):
-      mac80211: fix wrong 160/80+80 MHz setting
-
-Toke Høiland-Jørgensen (1):
-      core: Don't skip generic XDP program execution for cloned SKBs
-
-Tony Nguyen (2):
-      ice: Remove possible null dereference
-      ice: Trivial fixes
-
-Tuong Lien (1):
-      tipc: fix successful connect() but timed out
-
-Ursula Braun (2):
-      net/smc: transfer fasync_list in case of fallback
-      net/smc: no peer ID in CLC decline for SMCD
-
-William Dauchy (1):
-      net, ip6_tunnel: enhance tunnel locate with link check
-
-Yonglong Liu (1):
-      net: hns3: fix VF bandwidth does not take effect in some case
-
-Yufeng Mo (1):
-      net: hns3: add management table after IMP reset
-
- drivers/net/dsa/mv88e6xxx/chip.h                        |  12 ++--
- drivers/net/ethernet/amazon/ena/ena_com.c               |  96 +++++++++++++++++-----------
- drivers/net/ethernet/amazon/ena/ena_com.h               |   9 +++
- drivers/net/ethernet/amazon/ena/ena_ethtool.c           |  46 ++++++++++++-
- drivers/net/ethernet/amazon/ena/ena_netdev.c            |   6 +-
- drivers/net/ethernet/amazon/ena/ena_netdev.h            |   2 +
- drivers/net/ethernet/cisco/enic/enic_main.c             |   2 +-
- drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.c |  22 +++++--
- drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_tm.c   |   2 +-
- drivers/net/ethernet/intel/i40e/i40e_virtchnl_pf.c      |   4 +-
- drivers/net/ethernet/intel/ice/ice_adminq_cmd.h         |   1 +
- drivers/net/ethernet/intel/ice/ice_base.c               |  35 ++++------
- drivers/net/ethernet/intel/ice/ice_common.c             |  37 ++++-------
- drivers/net/ethernet/intel/ice/ice_common.h             |   2 -
- drivers/net/ethernet/intel/ice/ice_dcb.c                |   8 +--
- drivers/net/ethernet/intel/ice/ice_dcb_lib.c            |  99 ++++++++++++----------------
- drivers/net/ethernet/intel/ice/ice_dcb_nl.c             |  20 +++---
- drivers/net/ethernet/intel/ice/ice_ethtool.c            | 355 +++++++++++------------------------------------------------------------------------------------------
- drivers/net/ethernet/intel/ice/ice_hw_autogen.h         |   7 +-
- drivers/net/ethernet/intel/ice/ice_lib.c                |  71 ++++++---------------
- drivers/net/ethernet/intel/ice/ice_lib.h                |   2 -
- drivers/net/ethernet/intel/ice/ice_main.c               | 195 +++++++++++++++++++++----------------------------------
- drivers/net/ethernet/intel/ice/ice_txrx.c               |  11 ++--
- drivers/net/ethernet/intel/ice/ice_txrx.h               |   4 +-
- drivers/net/ethernet/intel/ice/ice_txrx_lib.c           |   2 +-
- drivers/net/ethernet/intel/ice/ice_type.h               |   2 +-
- drivers/net/ethernet/intel/ice/ice_virtchnl_pf.c        |  67 +++++++------------
- drivers/net/ethernet/intel/ice/ice_xsk.c                |   4 +-
- drivers/net/ethernet/socionext/sni_ave.c                |   9 +++
- drivers/net/ethernet/sun/sunvnet_common.c               |  23 ++-----
- drivers/net/gtp.c                                       |   4 +-
- drivers/net/usb/qmi_wwan.c                              |  43 +++++--------
- drivers/net/wireguard/device.c                          |   4 +-
- include/linux/icmpv6.h                                  |   6 ++
- include/linux/netdevice.h                               |  16 ++++-
- include/net/flow_dissector.h                            |   1 -
- include/net/icmp.h                                      |   6 ++
- include/net/mac80211.h                                  |  11 ++--
- net/core/dev.c                                          |   4 +-
- net/core/page_pool.c                                    |  22 +++----
- net/dsa/tag_ar9331.c                                    |   2 +-
- net/dsa/tag_qca.c                                       |   2 +-
- net/ipv4/icmp.c                                         |  33 ++++++++++
- net/ipv6/ip6_icmp.c                                     |  34 ++++++++++
- net/ipv6/ip6_tunnel.c                                   |  68 ++++++++++++++------
- net/mac80211/cfg.c                                      |   2 +-
- net/mac80211/mlme.c                                     |   8 +--
- net/mac80211/tx.c                                       |   2 +-
- net/mac80211/util.c                                     |  34 +++++++---
- net/mptcp/protocol.c                                    |   2 +-
- net/sched/cls_flower.c                                  |   1 +
- net/sched/cls_matchall.c                                |   1 +
- net/smc/af_smc.c                                        |   2 +
- net/smc/smc_clc.c                                       |   4 +-
- net/smc/smc_diag.c                                      |   5 +-
- net/tipc/node.c                                         |   7 +-
- net/tipc/socket.c                                       |   2 +
- net/wireless/ethtool.c                                  |   8 ++-
- net/wireless/nl80211.c                                  |   1 +
- net/xfrm/xfrm_interface.c                               |   6 +-
- tools/testing/selftests/wireguard/netns.sh              |  11 ++++
- 61 files changed, 648 insertions(+), 859 deletions(-)
+         M.
+-- 
+Jazz is not dead. It just smells funny...
