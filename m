@@ -2,14 +2,14 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id E3B3A15FA6C
-	for <lists+netdev@lfdr.de>; Sat, 15 Feb 2020 00:24:36 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 10DD015FA55
+	for <lists+netdev@lfdr.de>; Sat, 15 Feb 2020 00:24:27 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728359AbgBNXXV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 14 Feb 2020 18:23:21 -0500
-Received: from mga02.intel.com ([134.134.136.20]:41445 "EHLO mga02.intel.com"
+        id S1728217AbgBNXWa (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 14 Feb 2020 18:22:30 -0500
+Received: from mga02.intel.com ([134.134.136.20]:41443 "EHLO mga02.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727787AbgBNXW2 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S1728146AbgBNXW2 (ORCPT <rfc822;netdev@vger.kernel.org>);
         Fri, 14 Feb 2020 18:22:28 -0500
 X-Amp-Result: SKIPPED(no attachment in message)
 X-Amp-File-Uploaded: False
@@ -17,18 +17,17 @@ Received: from fmsmga008.fm.intel.com ([10.253.24.58])
   by orsmga101.jf.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 14 Feb 2020 15:22:26 -0800
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.70,442,1574150400"; 
-   d="scan'208";a="228629274"
+   d="scan'208";a="228629277"
 Received: from jekeller-desk.amr.corp.intel.com (HELO jekeller-desk.jekeller.internal) ([10.166.244.172])
   by fmsmga008.fm.intel.com with ESMTP; 14 Feb 2020 15:22:26 -0800
 From:   Jacob Keller <jacob.e.keller@intel.com>
 To:     netdev@vger.kernel.org
 Cc:     jiri@resnulli.us, valex@mellanox.com, linyunsheng@huawei.com,
         lihong.yang@intel.com, kuba@kernel.org,
-        Jesse Brandeburg <jesse.brandeburg@intel.com>,
         Jacob Keller <jacob.e.keller@intel.com>
-Subject: [RFC PATCH v2 03/22] ice: implement full NVM read from ETHTOOL_GEEPROM
-Date:   Fri, 14 Feb 2020 15:22:02 -0800
-Message-Id: <20200214232223.3442651-4-jacob.e.keller@intel.com>
+Subject: [RFC PATCH v2 04/22] ice: enable initial devlink support
+Date:   Fri, 14 Feb 2020 15:22:03 -0800
+Message-Id: <20200214232223.3442651-5-jacob.e.keller@intel.com>
 X-Mailer: git-send-email 2.25.0.368.g28a2d05eebfb
 In-Reply-To: <20200214232223.3442651-1-jacob.e.keller@intel.com>
 References: <20200214232223.3442651-1-jacob.e.keller@intel.com>
@@ -39,331 +38,308 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Jesse Brandeburg <jesse.brandeburg@intel.com>
+Begin implementing support for the devlink interface with the ice
+driver.
 
-The current implementation of .get_eeprom only enables reading from the
-Shadow RAM portion of the NVM contents. Implement support for reading
-the entire flash contents instead of only the initial portion contained
-in the Shadow RAM.
+The pf structure is currently memory managed through devres, via
+a devm_alloc. To mimic this behavior, after allocating the devlink
+pointer, use devm_add_action to add a teardown action for releasing the
+devlink memory on exit.
 
-A complete dump can take several seconds, but the ETHTOOL_GEEPROM ioctl
-is capable of reading only a limited portion at a time by specifying the
-offset and length to read.
+The ice hardware is a multi-function PCIe device. Thus, each physical
+function will get its own devlink instance. This means that each
+function will be treated independently, with its own parameters and
+configuration. This is done because the ice driver loads a separate
+instance for each function.
 
-In order to perform the reads directly, several functions are made non
-static. Additionally, the unused ice_read_sr_buf_aq and ice_read_sr_buf
-functions are removed.
+Due to this, the implementation does not enable devlink to manage
+device-wide resources or configuration, as each physical function will
+be treated independently. This is done for simplicity, as managing
+a devlink instance across multiple driver instances would significantly
+increase the complexity for minimal gain.
 
-Signed-off-by: Jesse Brandeburg <jesse.brandeburg@intel.com>
 Signed-off-by: Jacob Keller <jacob.e.keller@intel.com>
 ---
- .../net/ethernet/intel/ice/ice_adminq_cmd.h   |   1 +
- drivers/net/ethernet/intel/ice/ice_common.h   |   3 -
- drivers/net/ethernet/intel/ice/ice_ethtool.c  |  36 +++--
- drivers/net/ethernet/intel/ice/ice_nvm.c      | 150 +-----------------
- drivers/net/ethernet/intel/ice/ice_nvm.h      |   4 +
- 5 files changed, 31 insertions(+), 163 deletions(-)
+ drivers/net/ethernet/intel/Kconfig           |   1 +
+ drivers/net/ethernet/intel/ice/Makefile      |   1 +
+ drivers/net/ethernet/intel/ice/ice.h         |   4 +
+ drivers/net/ethernet/intel/ice/ice_devlink.c | 119 +++++++++++++++++++
+ drivers/net/ethernet/intel/ice/ice_devlink.h |  14 +++
+ drivers/net/ethernet/intel/ice/ice_main.c    |  19 ++-
+ 6 files changed, 157 insertions(+), 1 deletion(-)
+ create mode 100644 drivers/net/ethernet/intel/ice/ice_devlink.c
+ create mode 100644 drivers/net/ethernet/intel/ice/ice_devlink.h
 
-diff --git a/drivers/net/ethernet/intel/ice/ice_adminq_cmd.h b/drivers/net/ethernet/intel/ice/ice_adminq_cmd.h
-index 04bc092e8f45..ba4e4f9a89ad 100644
---- a/drivers/net/ethernet/intel/ice/ice_adminq_cmd.h
-+++ b/drivers/net/ethernet/intel/ice/ice_adminq_cmd.h
-@@ -1758,6 +1758,7 @@ enum ice_aq_err {
- 	ICE_AQ_RC_ENOMEM	= 9,  /* Out of memory */
- 	ICE_AQ_RC_EBUSY		= 12, /* Device or resource busy */
- 	ICE_AQ_RC_EEXIST	= 13, /* Object already exists */
-+	ICE_AQ_RC_EINVAL	= 14, /* Invalid argument */
- 	ICE_AQ_RC_ENOSPC	= 16, /* No space left or allocation failure */
- 	ICE_AQ_RC_ENOSYS	= 17, /* Function not implemented */
- 	ICE_AQ_RC_ENOSEC	= 24, /* Missing security manifest */
-diff --git a/drivers/net/ethernet/intel/ice/ice_common.h b/drivers/net/ethernet/intel/ice/ice_common.h
-index f9fc005d35a7..9d5e86c9f886 100644
---- a/drivers/net/ethernet/intel/ice/ice_common.h
-+++ b/drivers/net/ethernet/intel/ice/ice_common.h
-@@ -38,9 +38,6 @@ enum ice_status
- ice_alloc_hw_res(struct ice_hw *hw, u16 type, u16 num, bool btm, u16 *res);
- enum ice_status
- ice_free_hw_res(struct ice_hw *hw, u16 type, u16 num, u16 *res);
--enum ice_status ice_init_nvm(struct ice_hw *hw);
--enum ice_status
--ice_read_sr_buf(struct ice_hw *hw, u16 offset, u16 *words, u16 *data);
- enum ice_status
- ice_aq_alloc_free_res(struct ice_hw *hw, u16 num_entries,
- 		      struct ice_aqc_alloc_free_res_elem *buf, u16 buf_size,
-diff --git a/drivers/net/ethernet/intel/ice/ice_ethtool.c b/drivers/net/ethernet/intel/ice/ice_ethtool.c
-index b002ab4e5838..223e8e707dcb 100644
---- a/drivers/net/ethernet/intel/ice/ice_ethtool.c
-+++ b/drivers/net/ethernet/intel/ice/ice_ethtool.c
-@@ -251,39 +251,51 @@ ice_get_eeprom(struct net_device *netdev, struct ethtool_eeprom *eeprom,
- 	       u8 *bytes)
- {
- 	struct ice_netdev_priv *np = netdev_priv(netdev);
--	u16 first_word, last_word, nwords;
- 	struct ice_vsi *vsi = np->vsi;
- 	struct ice_pf *pf = vsi->back;
- 	struct ice_hw *hw = &pf->hw;
- 	enum ice_status status;
- 	struct device *dev;
- 	int ret = 0;
--	u16 *buf;
-+	u8 *buf;
+diff --git a/drivers/net/ethernet/intel/Kconfig b/drivers/net/ethernet/intel/Kconfig
+index 154e2e818ec6..ad34e4335df2 100644
+--- a/drivers/net/ethernet/intel/Kconfig
++++ b/drivers/net/ethernet/intel/Kconfig
+@@ -294,6 +294,7 @@ config ICE
+ 	tristate "Intel(R) Ethernet Connection E800 Series Support"
+ 	default n
+ 	depends on PCI_MSI
++	select NET_DEVLINK
+ 	---help---
+ 	  This driver supports Intel(R) Ethernet Connection E800 Series of
+ 	  devices.  For more information on how to identify your adapter, go
+diff --git a/drivers/net/ethernet/intel/ice/Makefile b/drivers/net/ethernet/intel/ice/Makefile
+index 59544b0fc086..e2502ff3229d 100644
+--- a/drivers/net/ethernet/intel/ice/Makefile
++++ b/drivers/net/ethernet/intel/ice/Makefile
+@@ -19,6 +19,7 @@ ice-y := ice_main.o	\
+ 	 ice_txrx.o	\
+ 	 ice_flex_pipe.o \
+ 	 ice_flow.o	\
++	 ice_devlink.o \
+ 	 ice_ethtool.o
+ ice-$(CONFIG_PCI_IOV) += ice_virtchnl_pf.o ice_sriov.o
+ ice-$(CONFIG_DCB) += ice_dcb.o ice_dcb_nl.o ice_dcb_lib.o
+diff --git a/drivers/net/ethernet/intel/ice/ice.h b/drivers/net/ethernet/intel/ice/ice.h
+index cb10abb14e11..a195135f840f 100644
+--- a/drivers/net/ethernet/intel/ice/ice.h
++++ b/drivers/net/ethernet/intel/ice/ice.h
+@@ -36,6 +36,7 @@
+ #include <linux/avf/virtchnl.h>
+ #include <net/ipv6.h>
+ #include <net/xdp_sock.h>
++#include <net/devlink.h>
+ #include "ice_devids.h"
+ #include "ice_type.h"
+ #include "ice_txrx.h"
+@@ -346,6 +347,9 @@ enum ice_pf_flags {
+ struct ice_pf {
+ 	struct pci_dev *pdev;
  
- 	dev = ice_pf_to_dev(pf);
- 
- 	eeprom->magic = hw->vendor_id | (hw->device_id << 16);
-+	netdev_dbg(netdev, "GEEPROM cmd 0x%08x, offset 0x%08x, len 0x%08x\n",
-+		   eeprom->cmd, eeprom->offset, eeprom->len);
- 
--	first_word = eeprom->offset >> 1;
--	last_word = (eeprom->offset + eeprom->len - 1) >> 1;
--	nwords = last_word - first_word + 1;
--
--	buf = devm_kcalloc(dev, nwords, sizeof(u16), GFP_KERNEL);
-+	buf = kzalloc(eeprom->len, GFP_KERNEL);
- 	if (!buf)
- 		return -ENOMEM;
- 
--	status = ice_read_sr_buf(hw, first_word, &nwords, buf);
-+	status = ice_acquire_nvm(hw, ICE_RES_READ);
- 	if (status) {
--		dev_err(dev, "ice_read_sr_buf failed, err %d aq_err %d\n",
-+		dev_err(dev, "ice_acquire_nvm failed, err %d aq_err %d\n",
- 			status, hw->adminq.sq_last_status);
--		eeprom->len = sizeof(u16) * nwords;
- 		ret = -EIO;
- 		goto out;
- 	}
- 
--	memcpy(bytes, (u8 *)buf + (eeprom->offset & 1), eeprom->len);
-+	status = ice_read_flat_nvm(hw, eeprom->offset, &eeprom->len, buf, false);
-+	if (status == ICE_ERR_AQ_ERROR &&
-+	    hw->adminq.sq_last_status == ICE_AQ_RC_EINVAL) {
-+		/* do nothing, we reached the end */
-+		ice_release_nvm(hw);
-+		goto out;
-+	} else if (status) {
-+		dev_err(dev, "ice_read_flat_nvm failed, err %d aq_err %d\n",
-+			status, hw->adminq.sq_last_status);
-+		ret = -EIO;
-+		ice_release_nvm(hw);
-+		goto out;
++	/* devlink port data */
++	struct devlink_port devlink_port;
++
+ 	/* OS reserved IRQ details */
+ 	struct msix_entry *msix_entries;
+ 	struct ice_res_tracker *irq_tracker;
+diff --git a/drivers/net/ethernet/intel/ice/ice_devlink.c b/drivers/net/ethernet/intel/ice/ice_devlink.c
+new file mode 100644
+index 000000000000..2a72857c4b26
+--- /dev/null
++++ b/drivers/net/ethernet/intel/ice/ice_devlink.c
+@@ -0,0 +1,119 @@
++// SPDX-License-Identifier: GPL-2.0
++/* Copyright (c) 2019, Intel Corporation. */
++
++#include "ice.h"
++#include "ice_devlink.h"
++
++const struct devlink_ops ice_devlink_ops = {
++};
++
++static void ice_devlink_free(void *devlink_ptr)
++{
++	devlink_free((struct devlink *)devlink_ptr);
++}
++
++/**
++ * ice_allocate_pf - Allocate devlink and return PF structure pointer
++ * @dev: the device to allocate for
++ *
++ * Allocate a devlink instance for this device and return the private area as
++ * the PF structure. The devlink memory is kept track of through devres by
++ * adding an action to remove it when unwinding.
++ */
++struct ice_pf *ice_allocate_pf(struct device *dev)
++{
++	struct devlink *devlink;
++
++	devlink = devlink_alloc(&ice_devlink_ops, sizeof(struct ice_pf));
++	if (!devlink)
++		return NULL;
++
++	/* Add an action to teardown the devlink when unwinding the driver */
++	if (devm_add_action(dev, ice_devlink_free, devlink)) {
++		devlink_free(devlink);
++		return NULL;
 +	}
 +
-+	ice_release_nvm(hw);
++	return devlink_priv(devlink);
++}
 +
-+	memcpy(bytes, buf, eeprom->len);
- out:
--	devm_kfree(dev, buf);
-+	kfree(buf);
- 	return ret;
- }
++/**
++ * ice_devlink_register - Register devlink interface for this PF
++ * @pf: the PF to register the devlink for.
++ *
++ * Register the devlink instance associated with this physical function.
++ *
++ * @returns zero on success or an error code on failure.
++ */
++int ice_devlink_register(struct ice_pf *pf)
++{
++	struct devlink *devlink = priv_to_devlink(pf);
++	struct device *dev = ice_pf_to_dev(pf);
++	int err;
++
++	err = devlink_register(devlink, dev);
++	if (err) {
++		dev_err(dev, "devlink registration failed: %d\n", err);
++		return err;
++	}
++
++	return 0;
++}
++
++/**
++ * ice_devlink_unregister - Unregister devlink resources for this PF.
++ * @pf: the PF structure to cleanup
++ *
++ * Releases resources used by devlink and cleans up associated memory.
++ */
++void ice_devlink_unregister(struct ice_pf *pf)
++{
++	devlink_unregister(priv_to_devlink(pf));
++}
++
++/**
++ * ice_devlink_create_port - Create a devlink port for this PF
++ * @pf: the PF to create a port for
++ *
++ * Create and register a devlink_port for this PF. Note that although each
++ * physical function is connected to a separate devlink instance, the port
++ * will still be numbered according to the physical function id.
++ *
++ * @returns zero on success or an error code on failure.
++ */
++int ice_devlink_create_port(struct ice_pf *pf)
++{
++	struct devlink *devlink = priv_to_devlink(pf);
++	struct ice_vsi *vsi = ice_get_main_vsi(pf);
++	struct device *dev = ice_pf_to_dev(pf);
++	int err;
++
++	if (!vsi) {
++		dev_err(dev, "%s: unable to find main VSI\n", __func__);
++		return -EIO;
++	}
++
++	devlink_port_attrs_set(&pf->devlink_port, DEVLINK_PORT_FLAVOUR_PHYSICAL,
++			       pf->hw.pf_id, false, 0, NULL, 0);
++	err = devlink_port_register(devlink, &pf->devlink_port, pf->hw.pf_id);
++	if (err) {
++		dev_err(dev, "devlink_port_register failed: %d\n", err);
++		return err;
++	}
++	if (vsi->netdev)
++		devlink_port_type_eth_set(&pf->devlink_port, vsi->netdev);
++
++	return 0;
++}
++
++/**
++ * ice_devlink_destroy_port - Destroy the devlink_port for this PF
++ * @pf: the PF to cleanup
++ *
++ * Unregisters the devlink_port structure associated with this PF.
++ */
++void ice_devlink_destroy_port(struct ice_pf *pf)
++{
++	devlink_port_type_clear(&pf->devlink_port);
++	devlink_port_unregister(&pf->devlink_port);
++}
+diff --git a/drivers/net/ethernet/intel/ice/ice_devlink.h b/drivers/net/ethernet/intel/ice/ice_devlink.h
+new file mode 100644
+index 000000000000..f94dc93c24c5
+--- /dev/null
++++ b/drivers/net/ethernet/intel/ice/ice_devlink.h
+@@ -0,0 +1,14 @@
++/* SPDX-License-Identifier: GPL-2.0 */
++/* Copyright (c) 2019, Intel Corporation. */
++
++#ifndef _ICE_DEVLINK_H_
++#define _ICE_DEVLINK_H_
++
++struct ice_pf *ice_allocate_pf(struct device *dev);
++
++int ice_devlink_register(struct ice_pf *pf);
++void ice_devlink_unregister(struct ice_pf *pf);
++int ice_devlink_create_port(struct ice_pf *pf);
++void ice_devlink_destroy_port(struct ice_pf *pf);
++
++#endif /* _ICE_DEVLINK_H_ */
+diff --git a/drivers/net/ethernet/intel/ice/ice_main.c b/drivers/net/ethernet/intel/ice/ice_main.c
+index 5ef28052c0f8..f2cca810977d 100644
+--- a/drivers/net/ethernet/intel/ice/ice_main.c
++++ b/drivers/net/ethernet/intel/ice/ice_main.c
+@@ -10,6 +10,7 @@
+ #include "ice_lib.h"
+ #include "ice_dcb_lib.h"
+ #include "ice_dcb_nl.h"
++#include "ice_devlink.h"
  
-diff --git a/drivers/net/ethernet/intel/ice/ice_nvm.c b/drivers/net/ethernet/intel/ice/ice_nvm.c
-index e2214c076ca9..aaf5fd064725 100644
---- a/drivers/net/ethernet/intel/ice/ice_nvm.c
-+++ b/drivers/net/ethernet/intel/ice/ice_nvm.c
-@@ -108,70 +108,6 @@ ice_read_flat_nvm(struct ice_hw *hw, u32 offset, u32 *length, u8 *data,
- 	return status;
- }
+ #define DRV_VERSION_MAJOR 0
+ #define DRV_VERSION_MINOR 8
+@@ -3166,7 +3167,7 @@ ice_probe(struct pci_dev *pdev, const struct pci_device_id __always_unused *ent)
+ 		return err;
+ 	}
  
--/**
-- * ice_check_sr_access_params - verify params for Shadow RAM R/W operations.
-- * @hw: pointer to the HW structure
-- * @offset: offset in words from module start
-- * @words: number of words to access
-- */
--static enum ice_status
--ice_check_sr_access_params(struct ice_hw *hw, u32 offset, u16 words)
--{
--	if ((offset + words) > hw->nvm.sr_words) {
--		ice_debug(hw, ICE_DBG_NVM,
--			  "NVM error: offset beyond SR lmt.\n");
--		return ICE_ERR_PARAM;
--	}
--
--	if (words > ICE_SR_SECTOR_SIZE_IN_WORDS) {
--		/* We can access only up to 4KB (one sector), in one AQ write */
--		ice_debug(hw, ICE_DBG_NVM,
--			  "NVM error: tried to access %d words, limit is %d.\n",
--			  words, ICE_SR_SECTOR_SIZE_IN_WORDS);
--		return ICE_ERR_PARAM;
--	}
--
--	if (((offset + (words - 1)) / ICE_SR_SECTOR_SIZE_IN_WORDS) !=
--	    (offset / ICE_SR_SECTOR_SIZE_IN_WORDS)) {
--		/* A single access cannot spread over two sectors */
--		ice_debug(hw, ICE_DBG_NVM,
--			  "NVM error: cannot spread over two sectors.\n");
--		return ICE_ERR_PARAM;
--	}
--
--	return 0;
--}
--
--/**
-- * ice_read_sr_aq - Read Shadow RAM.
-- * @hw: pointer to the HW structure
-- * @offset: offset in words from module start
-- * @words: number of words to read
-- * @data: storage for the words read from Shadow RAM (Little Endian)
-- * @last_command: tells the AdminQ that this is the last command
-- *
-- * Reads 16-bit Little Endian word buffers from the Shadow RAM using the admin
-- * command.
-- */
--static enum ice_status
--ice_read_sr_aq(struct ice_hw *hw, u32 offset, u16 words, __le16 *data,
--	       bool last_command)
--{
--	enum ice_status status;
--
--	status = ice_check_sr_access_params(hw, offset, words);
--
--	/* values in "offset" and "words" parameters are sized as words
--	 * (16 bits) but ice_aq_read_nvm expects these values in bytes.
--	 * So do this conversion while calling ice_aq_read_nvm.
--	 */
--	if (!status)
--		status = ice_aq_read_nvm(hw, 0, 2 * offset, 2 * words, data,
--					 last_command, true, NULL);
--
--	return status;
--}
--
- /**
-  * ice_read_sr_word_aq - Reads Shadow RAM via AQ
-  * @hw: pointer to the HW structure
-@@ -199,63 +135,6 @@ ice_read_sr_word_aq(struct ice_hw *hw, u16 offset, u16 *data)
+-	pf = devm_kzalloc(dev, sizeof(*pf), GFP_KERNEL);
++	pf = ice_allocate_pf(dev);
+ 	if (!pf)
+ 		return -ENOMEM;
+ 
+@@ -3204,6 +3205,12 @@ ice_probe(struct pci_dev *pdev, const struct pci_device_id __always_unused *ent)
+ 
+ 	pf->msg_enable = netif_msg_init(debug, ICE_DFLT_NETIF_M);
+ 
++	err = ice_devlink_register(pf);
++	if (err) {
++		dev_err(dev, "ice_devlink_register failed: %d\n", err);
++		goto err_exit_unroll;
++	}
++
+ #ifndef CONFIG_DYNAMIC_DEBUG
+ 	if (debug < -1)
+ 		hw->debug_mask = debug;
+@@ -3295,6 +3302,11 @@ ice_probe(struct pci_dev *pdev, const struct pci_device_id __always_unused *ent)
+ 		goto err_alloc_sw_unroll;
+ 	}
+ 
++	err = ice_devlink_create_port(pf);
++	if (err)
++		goto err_alloc_sw_unroll;
++
++
+ 	clear_bit(__ICE_SERVICE_DIS, pf->state);
+ 
+ 	/* tell the firmware we are up */
+@@ -3336,6 +3348,7 @@ ice_probe(struct pci_dev *pdev, const struct pci_device_id __always_unused *ent)
  	return 0;
+ 
+ err_alloc_sw_unroll:
++	ice_devlink_destroy_port(pf);
+ 	set_bit(__ICE_SERVICE_DIS, pf->state);
+ 	set_bit(__ICE_DOWN, pf->state);
+ 	devm_kfree(dev, pf->first_sw);
+@@ -3348,6 +3361,7 @@ ice_probe(struct pci_dev *pdev, const struct pci_device_id __always_unused *ent)
+ 	ice_deinit_pf(pf);
+ 	ice_deinit_hw(hw);
+ err_exit_unroll:
++	ice_devlink_unregister(pf);
+ 	pci_disable_pcie_error_reporting(pdev);
+ 	return err;
  }
+@@ -3375,6 +3389,7 @@ static void ice_remove(struct pci_dev *pdev)
  
--/**
-- * ice_read_sr_buf_aq - Reads Shadow RAM buf via AQ
-- * @hw: pointer to the HW structure
-- * @offset: offset of the Shadow RAM word to read (0x000000 - 0x001FFF)
-- * @words: (in) number of words to read; (out) number of words actually read
-- * @data: words read from the Shadow RAM
-- *
-- * Reads 16 bit words (data buf) from the SR using the ice_read_sr_aq
-- * method. Ownership of the NVM is taken before reading the buffer and later
-- * released.
-- */
--static enum ice_status
--ice_read_sr_buf_aq(struct ice_hw *hw, u16 offset, u16 *words, u16 *data)
--{
--	enum ice_status status;
--	bool last_cmd = false;
--	u16 words_read = 0;
--	u16 i = 0;
--
--	do {
--		u16 read_size, off_w;
--
--		/* Calculate number of bytes we should read in this step.
--		 * It's not allowed to read more than one page at a time or
--		 * to cross page boundaries.
--		 */
--		off_w = offset % ICE_SR_SECTOR_SIZE_IN_WORDS;
--		read_size = off_w ?
--			min_t(u16, *words,
--			      (ICE_SR_SECTOR_SIZE_IN_WORDS - off_w)) :
--			min_t(u16, (*words - words_read),
--			      ICE_SR_SECTOR_SIZE_IN_WORDS);
--
--		/* Check if this is last command, if so set proper flag */
--		if ((words_read + read_size) >= *words)
--			last_cmd = true;
--
--		status = ice_read_sr_aq(hw, offset, read_size,
--					data + words_read, last_cmd);
--		if (status)
--			goto read_nvm_buf_aq_exit;
--
--		/* Increment counter for words already read and move offset to
--		 * new read location
--		 */
--		words_read += read_size;
--		offset += read_size;
--	} while (words_read < *words);
--
--	for (i = 0; i < *words; i++)
--		data[i] = le16_to_cpu(((__force __le16 *)data)[i]);
--
--read_nvm_buf_aq_exit:
--	*words = words_read;
--	return status;
--}
--
- /**
-  * ice_acquire_nvm - Generic request for acquiring the NVM ownership
-  * @hw: pointer to the HW structure
-@@ -263,7 +142,7 @@ ice_read_sr_buf_aq(struct ice_hw *hw, u16 offset, u16 *words, u16 *data)
-  *
-  * This function will request NVM ownership.
-  */
--static enum ice_status
-+enum ice_status
- ice_acquire_nvm(struct ice_hw *hw, enum ice_aq_res_access_type access)
- {
- 	if (hw->nvm.blank_nvm_mode)
-@@ -278,7 +157,7 @@ ice_acquire_nvm(struct ice_hw *hw, enum ice_aq_res_access_type access)
-  *
-  * This function will release NVM ownership.
-  */
--static void ice_release_nvm(struct ice_hw *hw)
-+void ice_release_nvm(struct ice_hw *hw)
- {
- 	if (hw->nvm.blank_nvm_mode)
- 		return;
-@@ -412,31 +291,6 @@ enum ice_status ice_init_nvm(struct ice_hw *hw)
- 	return 0;
- }
- 
--/**
-- * ice_read_sr_buf - Reads Shadow RAM buf and acquire lock if necessary
-- * @hw: pointer to the HW structure
-- * @offset: offset of the Shadow RAM word to read (0x000000 - 0x001FFF)
-- * @words: (in) number of words to read; (out) number of words actually read
-- * @data: words read from the Shadow RAM
-- *
-- * Reads 16 bit words (data buf) from the SR using the ice_read_nvm_buf_aq
-- * method. The buf read is preceded by the NVM ownership take
-- * and followed by the release.
-- */
--enum ice_status
--ice_read_sr_buf(struct ice_hw *hw, u16 offset, u16 *words, u16 *data)
--{
--	enum ice_status status;
--
--	status = ice_acquire_nvm(hw, ICE_RES_READ);
--	if (!status) {
--		status = ice_read_sr_buf_aq(hw, offset, words, data);
--		ice_release_nvm(hw);
--	}
--
--	return status;
--}
--
- /**
-  * ice_nvm_validate_checksum
-  * @hw: pointer to the HW struct
-diff --git a/drivers/net/ethernet/intel/ice/ice_nvm.h b/drivers/net/ethernet/intel/ice/ice_nvm.h
-index 4245ef988edf..7375f6b96919 100644
---- a/drivers/net/ethernet/intel/ice/ice_nvm.h
-+++ b/drivers/net/ethernet/intel/ice/ice_nvm.h
-@@ -4,8 +4,12 @@
- #ifndef _ICE_NVM_H_
- #define _ICE_NVM_H_
- 
-+enum ice_status
-+ice_acquire_nvm(struct ice_hw *hw, enum ice_aq_res_access_type access);
-+void ice_release_nvm(struct ice_hw *hw);
- enum ice_status
- ice_read_flat_nvm(struct ice_hw *hw, u32 offset, u32 *length, u8 *data,
- 		  bool read_shadow_ram);
-+enum ice_status ice_init_nvm(struct ice_hw *hw);
- enum ice_status ice_read_sr_word(struct ice_hw *hw, u16 offset, u16 *data);
- #endif /* _ICE_NVM_H_ */
+ 	if (test_bit(ICE_FLAG_SRIOV_ENA, pf->flags))
+ 		ice_free_vfs(pf);
++	ice_devlink_destroy_port(pf);
+ 	ice_vsi_release_all(pf);
+ 	ice_free_irq_msix_misc(pf);
+ 	ice_for_each_vsi(pf, i) {
+@@ -3384,6 +3399,8 @@ static void ice_remove(struct pci_dev *pdev)
+ 	}
+ 	ice_deinit_pf(pf);
+ 	ice_deinit_hw(&pf->hw);
++	ice_devlink_unregister(pf);
++
+ 	/* Issue a PFR as part of the prescribed driver unload flow.  Do not
+ 	 * do it via ice_schedule_reset() since there is no need to rebuild
+ 	 * and the service task is already stopped.
 -- 
 2.25.0.368.g28a2d05eebfb
 
