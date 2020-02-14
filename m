@@ -2,90 +2,110 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id EBC4C15F572
-	for <lists+netdev@lfdr.de>; Fri, 14 Feb 2020 19:39:46 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id CD35815F574
+	for <lists+netdev@lfdr.de>; Fri, 14 Feb 2020 19:39:47 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2388956AbgBNShD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 14 Feb 2020 13:37:03 -0500
-Received: from Galois.linutronix.de ([193.142.43.55]:55987 "EHLO
-        Galois.linutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2387551AbgBNShC (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 14 Feb 2020 13:37:02 -0500
-Received: from p5b06da22.dip0.t-ipconnect.de ([91.6.218.34] helo=nanos.tec.linutronix.de)
-        by Galois.linutronix.de with esmtpsa (TLS1.2:DHE_RSA_AES_256_CBC_SHA256:256)
-        (Exim 4.80)
-        (envelope-from <tglx@linutronix.de>)
-        id 1j2fpO-0004c8-S7; Fri, 14 Feb 2020 19:36:39 +0100
-Received: by nanos.tec.linutronix.de (Postfix, from userid 1000)
-        id 57DD9101161; Fri, 14 Feb 2020 19:36:37 +0100 (CET)
-From:   Thomas Gleixner <tglx@linutronix.de>
-To:     David Miller <davem@davemloft.net>
-Cc:     linux-kernel@vger.kernel.org, bpf@vger.kernel.org,
-        netdev@vger.kernel.org, ast@kernel.org, daniel@iogearbox.net,
-        bigeasy@linutronix.de, peterz@infradead.org, williams@redhat.com,
-        rostedt@goodmis.org, juri.lelli@redhat.com, mingo@kernel.org
-Subject: Re: [RFC patch 00/19] bpf: Make BPF and PREEMPT_RT co-exist
-In-Reply-To: <20200214.095303.341559462549043464.davem@davemloft.net>
-Date:   Fri, 14 Feb 2020 19:36:37 +0100
-Message-ID: <87pneht3re.fsf@nanos.tec.linutronix.de>
+        id S1729790AbgBNShc (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 14 Feb 2020 13:37:32 -0500
+Received: from frisell.zx2c4.com ([192.95.5.64]:46517 "EHLO frisell.zx2c4.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1728239AbgBNShb (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 14 Feb 2020 13:37:31 -0500
+Received: by frisell.zx2c4.com (ZX2C4 Mail Server) with ESMTP id 0bb1088c
+        for <netdev@vger.kernel.org>;
+        Fri, 14 Feb 2020 18:35:22 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha1; c=relaxed; d=zx2c4.com; h=mime-version
+        :in-reply-to:references:from:date:message-id:subject:to:cc
+        :content-type; s=mail; bh=0sFyxxR4A39qHjDmq76rlWlV6qA=; b=YLyHgQ
+        vN9IM1kREnmUWV1odAct1+UTuF3uAzIa1PClwfq7BxX1+78ZZrR/Xg6Tc+dw2Hyc
+        oy6EVtsaBEDr5R5fCujh3sZmSrXg5xzzIpBumu28BvF+LsinoGjSm+Mc6R2HLQYU
+        pKGB0iwEIKIWqAWaGzytIyoDtQ86wAUbGSN3gLcmvL9yu35i4W4DmhRbIyFjiern
+        43vkgOGEEVbW6MH/R2xJqIXAIKBBrdkbtww6X1AQc72LbpbTUxxuPQoVdTk2T0oj
+        nTJ9tDZP1ushaN6DDhe1hGWRnLT+emWFXt9APsay+v+hnEW/2IC3P1MBUBbhQyr8
+        AokXMAjPq0n6gtPg==
+Received: by frisell.zx2c4.com (ZX2C4 Mail Server) with ESMTPSA id 9af8967d (TLSv1.2:ECDHE-RSA-AES256-GCM-SHA384:256:NO)
+        for <netdev@vger.kernel.org>;
+        Fri, 14 Feb 2020 18:35:21 +0000 (UTC)
+Received: by mail-ot1-f44.google.com with SMTP id z9so10073530oth.5
+        for <netdev@vger.kernel.org>; Fri, 14 Feb 2020 10:37:29 -0800 (PST)
+X-Gm-Message-State: APjAAAVyeJNXFwu60NF9c56nu+gSE95fqyjJg45xffKwkZN4v+LBhflb
+        GwVDRmjQQVPzW3S07iVrpTyDr/KZyv/W1vYUCgs=
+X-Google-Smtp-Source: APXvYqyYJrXIJj7PX8xj0uin5vinquDwegzbkfpuNOBXanp/mk8tTqvH4ADlbvDJJzwQf19RDy4W1xOw787k0HrPAVM=
+X-Received: by 2002:a9d:674f:: with SMTP id w15mr3372207otm.243.1581705449206;
+ Fri, 14 Feb 2020 10:37:29 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Linutronix-Spam-Score: -1.0
-X-Linutronix-Spam-Level: -
-X-Linutronix-Spam-Status: No , -1.0 points, 5.0 required,  ALL_TRUSTED=-1,SHORTCIRCUIT=-0.0001
+Received: by 2002:a4a:dd10:0:0:0:0:0 with HTTP; Fri, 14 Feb 2020 10:37:28
+ -0800 (PST)
+In-Reply-To: <e20d0c52-cb83-224d-7507-b53c5c4a5b69@gmail.com>
+References: <20200214173407.52521-1-Jason@zx2c4.com> <20200214173407.52521-4-Jason@zx2c4.com>
+ <135ffa7a-f06a-80e3-4412-17457b202c77@gmail.com> <CAHmME9pjLfscZ-b0YFsOoKMcENRh4Ld1rfiTTzzHmt+OxOzdjA@mail.gmail.com>
+ <e20d0c52-cb83-224d-7507-b53c5c4a5b69@gmail.com>
+From:   "Jason A. Donenfeld" <Jason@zx2c4.com>
+Date:   Fri, 14 Feb 2020 19:37:28 +0100
+X-Gmail-Original-Message-ID: <CAHmME9oXfDCGmsCJJEuaPmgj7_U4yfrBoqi0wRZrOD9SdWny_w@mail.gmail.com>
+Message-ID: <CAHmME9oXfDCGmsCJJEuaPmgj7_U4yfrBoqi0wRZrOD9SdWny_w@mail.gmail.com>
+Subject: Re: [PATCH v2 net 3/3] wireguard: send: account for mtu=0 devices
+To:     Eric Dumazet <eric.dumazet@gmail.com>
+Cc:     David Miller <davem@davemloft.net>,
+        Netdev <netdev@vger.kernel.org>,
+        Eric Dumazet <edumazet@google.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-David Miller <davem@davemloft.net> writes:
-
-> From: Thomas Gleixner <tglx@linutronix.de>
-> Date: Fri, 14 Feb 2020 14:39:17 +0100
+On 2/14/20, Eric Dumazet <eric.dumazet@gmail.com> wrote:
 >
->> This is a follow up to the initial patch series which David posted a
->> while ago:
->> 
->>  https://lore.kernel.org/bpf/20191207.160357.828344895192682546.davem@davemloft.net/
->> 
->> which was (while non-functional on RT) a good starting point for further
->> investigations.
 >
-> This looks really good after a cursory review, thanks for doing this week.
+> On 2/14/20 10:15 AM, Jason A. Donenfeld wrote:
+>> On Fri, Feb 14, 2020 at 6:56 PM Eric Dumazet <eric.dumazet@gmail.com>
+>> wrote:
+>>> Oh dear, can you describe what do you expect of a wireguard device with
+>>> mtu == 0 or mtu == 1
+>>>
+>>> Why simply not allowing silly configurations, instead of convoluted tests
+>>> in fast path ?
+>>>
+>>> We are speaking of tunnels adding quite a lot of headers, so we better
+>>> not try to make them
+>>> work on networks with tiny mtu. Just say no to syzbot.
+>>
+>> The idea was that wireguard might still be useful for the persistent
+>> keepalive stuff. This branch becomes very cold very fast, so I don't
+>> think it makes a difference performance wise, but if you feel strongly
+>> about it, I can get rid of it and set a non-zero min_mtu that's the
+>> smallest thing wireguard's xmit semantics will accept. It sounds like
+>> you'd prefer that?
+>>
+> Well, if you believe that wireguard in persistent keepalive
+> has some value on its own, I guess that we will have to support this mode.
+
+Alright.
+
 >
-> I was personally unaware of the pre-allocation rules for MAPs used by
-> tracing et al.  And that definitely shapes how this should be handled.
+> Some legacy devices can have arbitrary mtu, and this has caused headaches.
+> I was hoping that for brand new devices, we could have saner limits.
+>
+> About setting max_mtu to ~MAX_INT, does it mean wireguard will attempt
+> to send UDP datagrams bigger than 64K ? Where is the segmentation done ?
 
-Hmm. I just noticed that my analysis only holds for PERF events. But
-that's broken on mainline already.
+The before passings off to the udp tunnel api, we indicate that we
+support ip segmentation, and then it gets handled and fragmented
+deeper down. Check out socket.c. This winds up being sometimes useful
+for some odd people when it's faster to encrypt longer packets on
+networks with no loss. I can't say I generally recommend people go
+that route, but some report benefitting from it.
 
-Assume the following simplified callchain:
 
-       kmalloc() from regular non BPF context
-         cache empty
-           freelist empty
-             lock(zone->lock);
-                tracepoint or kprobe
-                  BPF()
-                    update_elem()
-                      lock(bucket)
-                        kmalloc()
-                          cache empty
-                            freelist empty
-                              lock(zone->lock);  <- DEADLOCK
+>
 
-So really, preallocation _must_ be enforced for all variants of
-intrusive instrumentation. There is no if and but, it's simply mandatory
-as all intrusive instrumentation has to follow the only sensible
-principle: KISS = Keep It Safe and Simple.
 
-The above is a perfectly valid scenario and works with perf and tracing,
-so it has to work with BPF in the same safe way.
-
-I might be missing some magic enforcement of that, but I got lost in the
-maze.
-
-Thanks,
-
-        tglx
-
+-- 
+Jason A. Donenfeld
+Deep Space Explorer
+fr: +33 6 51 90 82 66
+us: +1 513 476 1200
+www.jasondonenfeld.com
+www.zx2c4.com
+zx2c4.com/keys/AB9942E6D4A4CFC3412620A749FC7012A5DE03AE.asc
