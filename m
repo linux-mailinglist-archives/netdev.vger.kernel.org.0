@@ -2,115 +2,79 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id EA88315F715
-	for <lists+netdev@lfdr.de>; Fri, 14 Feb 2020 20:49:08 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E726215F737
+	for <lists+netdev@lfdr.de>; Fri, 14 Feb 2020 20:56:40 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2388260AbgBNTtG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 14 Feb 2020 14:49:06 -0500
-Received: from mail-pg1-f196.google.com ([209.85.215.196]:36262 "EHLO
-        mail-pg1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2387508AbgBNTtF (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 14 Feb 2020 14:49:05 -0500
-Received: by mail-pg1-f196.google.com with SMTP id d9so5466211pgu.3
-        for <netdev@vger.kernel.org>; Fri, 14 Feb 2020 11:49:05 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=broadcom.com; s=google;
-        h=from:to:cc:subject:date:message-id;
-        bh=ZWng66Hoj7xQzhbUhm9kO2M9MQGzsOmKGEij3AJEDXU=;
-        b=ONX9OTdBNa/5a5mLeDhmt5afoWTqsbefXAjxdh/WIid2nembeEayJx0HLEs8vp++ya
-         qNSBA5/39f/Uiub0eo9h4mFy2IyRKrvLNU62KsbY2C+JbPxgLzOLkU2rAk4X2B4CzKQG
-         7vZQJzLhiUc00YnSzHTqzKKTWkjPZ/hxr9A0Q=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id;
-        bh=ZWng66Hoj7xQzhbUhm9kO2M9MQGzsOmKGEij3AJEDXU=;
-        b=Ysg3miF550xtD3tVx6d54564TLRfLRELq6+yzEPoH3Bnz3Ur4FG87ap1NwpLvgo8dp
-         /qE59Ar1BPsL4qW1hh51B3VCrSXo4qd+9jAinNxXussWPiVkbQbD+qJCs3emGSEfSlMQ
-         9gyWJTbZe550Ra2mVlVFbSDx59rexnkdQV8yExPN2WJnf9+GBObPyI90rI2ZyRELtq63
-         FaI0/PGRz7HJ21j2Qk3X/ytW5FqcF9g0TNDE9UxqJtiogsZUMCs8zpZLQmPwIAt5XPxQ
-         DDvanEpfXrO5q5sPWcKnRbx4NcYQnKE9SOz+oZqUSd4Wwob0v5pwn8VQ0dAgJ6stmH5C
-         q4Tw==
-X-Gm-Message-State: APjAAAUKqvyNS9xjOPPcyyRB32tS4y5hMLHH5Ri9XAwhLqUKJAxmM8eX
-        jDRcylAqgH+dP2IYGSimxflg/A==
-X-Google-Smtp-Source: APXvYqwODEoeN+gxHepqNLozmja+mZtjocOV32D//1Zb1ppvJzZVslchQzuA62bl70OctqgEcPFbtg==
-X-Received: by 2002:aa7:9808:: with SMTP id e8mr5202704pfl.32.1581709745136;
-        Fri, 14 Feb 2020 11:49:05 -0800 (PST)
-Received: from lbrmn-lnxub113.broadcom.net ([192.19.228.250])
-        by smtp.gmail.com with ESMTPSA id u3sm7349815pjv.32.2020.02.14.11.49.03
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 14 Feb 2020 11:49:04 -0800 (PST)
-From:   Scott Branden <scott.branden@broadcom.com>
-To:     Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>
-Cc:     Russell King <linux@armlinux.org.uk>,
-        "David S . Miller" <davem@davemloft.net>,
-        Ray Jui <rjui@broadcom.com>,
-        bcm-kernel-feedback-list@broadcom.com, netdev@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        Arun Parameswaran <arun.parameswaran@broadcom.com>,
-        Scott Branden <scott.branden@broadcom.com>
-Subject: [PATCH] net: phy: restore mdio regs in the iproc mdio driver
-Date:   Fri, 14 Feb 2020 11:48:58 -0800
-Message-Id: <20200214194858.8528-1-scott.branden@broadcom.com>
-X-Mailer: git-send-email 2.17.1
+        id S2388980AbgBNT4f (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 14 Feb 2020 14:56:35 -0500
+Received: from Galois.linutronix.de ([193.142.43.55]:56146 "EHLO
+        Galois.linutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2387881AbgBNT4e (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 14 Feb 2020 14:56:34 -0500
+Received: from p5b06da22.dip0.t-ipconnect.de ([91.6.218.34] helo=nanos.tec.linutronix.de)
+        by Galois.linutronix.de with esmtpsa (TLS1.2:DHE_RSA_AES_256_CBC_SHA256:256)
+        (Exim 4.80)
+        (envelope-from <tglx@linutronix.de>)
+        id 1j2h4P-00065q-EI; Fri, 14 Feb 2020 20:56:13 +0100
+Received: by nanos.tec.linutronix.de (Postfix, from userid 1000)
+        id 9BCA7101304; Fri, 14 Feb 2020 20:56:12 +0100 (CET)
+From:   Thomas Gleixner <tglx@linutronix.de>
+To:     Mathieu Desnoyers <mathieu.desnoyers@efficios.com>
+Cc:     LKML <linux-kernel@vger.kernel.org>,
+        David Miller <davem@davemloft.net>, bpf@vger.kernel.org,
+        netdev@vger.kernel.org, Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Sebastian Sewior <bigeasy@linutronix.de>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Clark Williams <williams@redhat.com>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        Juri Lelli <juri.lelli@redhat.com>,
+        Ingo Molnar <mingo@kernel.org>
+Subject: Re: [RFC patch 14/19] bpf: Use migrate_disable() in hashtab code
+In-Reply-To: <20200214191126.lbiusetaxecdl3of@localhost>
+References: <20200214133917.304937432@linutronix.de> <20200214161504.325142160@linutronix.de> <20200214191126.lbiusetaxecdl3of@localhost>
+Date:   Fri, 14 Feb 2020 20:56:12 +0100
+Message-ID: <87imk9t02r.fsf@nanos.tec.linutronix.de>
+MIME-Version: 1.0
+Content-Type: text/plain
+X-Linutronix-Spam-Score: -1.0
+X-Linutronix-Spam-Level: -
+X-Linutronix-Spam-Status: No , -1.0 points, 5.0 required,  ALL_TRUSTED=-1,SHORTCIRCUIT=-0.0001
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Arun Parameswaran <arun.parameswaran@broadcom.com>
+Mathieu Desnoyers <mathieu.desnoyers@efficios.com> writes:
+> On 14-Feb-2020 02:39:31 PM, Thomas Gleixner wrote:
+>> Replace the preempt_disable/enable() pairs with migrate_disable/enable()
+>> pairs to prepare BPF to work on PREEMPT_RT enabled kernels. On a non-RT
+>> kernel this maps to preempt_disable/enable(), i.e. no functional change.
 
-The mii management register in iproc mdio block
-does not have a reention register so it is lost on suspend.
-Save and restore value of register while resuming from suspend.
+...
 
-Fixes: bb1a619735b4 ("net: phy: Initialize mdio clock at probe function")
+> Having all those events randomly and silently discarded might be quite
+> unexpected from a user standpoint. This turns the deadlock prevention
+> mechanism into a random tracepoint-dropping facility, which is
+> unsettling.
 
-Signed-off-by: Arun Parameswaran <arun.parameswaran@broadcom.com>
-Signed-off-by: Scott Branden <scott.branden@broadcom.com>
----
- drivers/net/phy/mdio-bcm-iproc.c | 20 ++++++++++++++++++++
- 1 file changed, 20 insertions(+)
+Well, it randomly drops events which might be unrelated to the syscall
+target today already, this will just drop some more. Shrug.
 
-diff --git a/drivers/net/phy/mdio-bcm-iproc.c b/drivers/net/phy/mdio-bcm-iproc.c
-index 7e9975d25066..f1ded03f0229 100644
---- a/drivers/net/phy/mdio-bcm-iproc.c
-+++ b/drivers/net/phy/mdio-bcm-iproc.c
-@@ -178,6 +178,23 @@ static int iproc_mdio_remove(struct platform_device *pdev)
- 	return 0;
- }
- 
-+#ifdef CONFIG_PM_SLEEP
-+int iproc_mdio_resume(struct device *dev)
-+{
-+	struct platform_device *pdev = to_platform_device(dev);
-+	struct iproc_mdio_priv *priv = platform_get_drvdata(pdev);
-+
-+	/* restore the mii clock configuration */
-+	iproc_mdio_config_clk(priv->base);
-+
-+	return 0;
-+}
-+
-+static const struct dev_pm_ops iproc_mdio_pm_ops = {
-+	.resume = iproc_mdio_resume
-+};
-+#endif /* CONFIG_PM_SLEEP */
-+
- static const struct of_device_id iproc_mdio_of_match[] = {
- 	{ .compatible = "brcm,iproc-mdio", },
- 	{ /* sentinel */ },
-@@ -188,6 +205,9 @@ static struct platform_driver iproc_mdio_driver = {
- 	.driver = {
- 		.name = "iproc-mdio",
- 		.of_match_table = iproc_mdio_of_match,
-+#ifdef CONFIG_PM_SLEEP
-+		.pm = &iproc_mdio_pm_ops,
-+#endif
- 	},
- 	.probe = iproc_mdio_probe,
- 	.remove = iproc_mdio_remove,
--- 
-2.17.1
+> One alternative approach we could consider to solve this is to make
+> this deadlock prevention nesting counter per-thread rather than
+> per-cpu.
 
+That should work both on !RT and RT.
+
+> Also, I don't think using __this_cpu_inc() without preempt-disable or
+> irq off is safe. You'll probably want to move to this_cpu_inc/dec
+> instead, which can be heavier on some architectures.
+
+Good catch.
+
+Thanks,
+
+        tglx
+
+      
