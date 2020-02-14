@@ -2,36 +2,38 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 4A45B15E4E2
-	for <lists+netdev@lfdr.de>; Fri, 14 Feb 2020 17:39:32 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 25FFF15E4A9
+	for <lists+netdev@lfdr.de>; Fri, 14 Feb 2020 17:38:09 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2405579AbgBNQXR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 14 Feb 2020 11:23:17 -0500
-Received: from mail.kernel.org ([198.145.29.99]:59358 "EHLO mail.kernel.org"
+        id S2405740AbgBNQXw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 14 Feb 2020 11:23:52 -0500
+Received: from mail.kernel.org ([198.145.29.99]:60390 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2405566AbgBNQXP (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 14 Feb 2020 11:23:15 -0500
+        id S2405727AbgBNQXv (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 14 Feb 2020 11:23:51 -0500
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 6DBAD24768;
-        Fri, 14 Feb 2020 16:23:14 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 33F7424779;
+        Fri, 14 Feb 2020 16:23:49 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1581697395;
-        bh=wVAFLn1OyiGv+jbPEipLto9iRXEUfr6/MkA/lc67GIc=;
+        s=default; t=1581697430;
+        bh=8uQNylXb2cMPa/IAvoG1yr4KCjozPlMUbaqb0vdw3D8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=qYYHlfFhnurNt5YdehSnMniCBae3YPNwCSbWMMi/b8meKijcaEByRgwcqryzLyfiz
-         K8E80EMeGyVs6abl1DbnegHA+Op3dd/CMkFwZqDiKpeo52z5yNbTG8/8oph7lR/BJn
-         LSqFi08PP69FYzHue82s1d4IhMi8puS4sy6sGZLg=
+        b=KXhRKrvInW9bPdXN7UKZYr1SM6FcOGCQJ5bfq+T7KNcbfYtQ37PwNvylPrNTV7UUQ
+         2qEJA3zAW6uMoVmaUCuZbwgagUEH7cgXpOjW8VXGt1pTP/XoHAtbt9vomD2IFWTRFU
+         ckKQiICchviGyN2NTUrX9C1lw2oYEKPJHEiVdir8=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Arnd Bergmann <arnd@arndb.de>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.9 089/141] wan: ixp4xx_hss: fix compile-testing on 64-bit
-Date:   Fri, 14 Feb 2020 11:20:29 -0500
-Message-Id: <20200214162122.19794-89-sashal@kernel.org>
+Cc:     Nathan Chancellor <natechancellor@gmail.com>,
+        Nick Desaulniers <ndesaulniers@google.com>,
+        Kalle Valo <kvalo@codeaurora.org>,
+        Sasha Levin <sashal@kernel.org>,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        clang-built-linux@googlegroups.com
+Subject: [PATCH AUTOSEL 4.9 118/141] hostap: Adjust indentation in prism2_hostapd_add_sta
+Date:   Fri, 14 Feb 2020 11:20:58 -0500
+Message-Id: <20200214162122.19794-118-sashal@kernel.org>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20200214162122.19794-1-sashal@kernel.org>
 References: <20200214162122.19794-1-sashal@kernel.org>
@@ -44,53 +46,50 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Arnd Bergmann <arnd@arndb.de>
+From: Nathan Chancellor <natechancellor@gmail.com>
 
-[ Upstream commit 504c28c853ec5c626900b914b5833daf0581a344 ]
+[ Upstream commit b61156fba74f659d0bc2de8f2dbf5bad9f4b8faf ]
 
-Change the driver to use portable integer types to avoid
-warnings during compile testing:
+Clang warns:
 
-drivers/net/wan/ixp4xx_hss.c:863:21: error: cast to 'u32 *' (aka 'unsigned int *') from smaller integer type 'int' [-Werror,-Wint-to-pointer-cast]
-        memcpy_swab32(mem, (u32 *)((int)skb->data & ~3), bytes / 4);
-                           ^
-drivers/net/wan/ixp4xx_hss.c:979:12: error: incompatible pointer types passing 'u32 *' (aka 'unsigned int *') to parameter of type 'dma_addr_t *' (aka 'unsigned long long *') [-Werror,-Wincompatible-pointer-types]
-                                              &port->desc_tab_phys)))
-                                              ^~~~~~~~~~~~~~~~~~~~
-include/linux/dmapool.h:27:20: note: passing argument to parameter 'handle' here
-                     dma_addr_t *handle);
-                                 ^
+../drivers/net/wireless/intersil/hostap/hostap_ap.c:2511:3: warning:
+misleading indentation; statement is not part of the previous 'if'
+[-Wmisleading-indentation]
+        if (sta->tx_supp_rates & WLAN_RATE_5M5)
+        ^
+../drivers/net/wireless/intersil/hostap/hostap_ap.c:2509:2: note:
+previous statement is here
+        if (sta->tx_supp_rates & WLAN_RATE_2M)
+        ^
+1 warning generated.
 
-Signed-off-by: Arnd Bergmann <arnd@arndb.de>
-Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+This warning occurs because there is a space before the tab on this
+line. Remove it so that the indentation is consistent with the Linux
+kernel coding style and clang no longer warns.
+
+Fixes: ff1d2767d5a4 ("Add HostAP wireless driver.")
+Link: https://github.com/ClangBuiltLinux/linux/issues/813
+Signed-off-by: Nathan Chancellor <natechancellor@gmail.com>
+Reviewed-by: Nick Desaulniers <ndesaulniers@google.com>
+Signed-off-by: Kalle Valo <kvalo@codeaurora.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/wan/ixp4xx_hss.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ drivers/net/wireless/intersil/hostap/hostap_ap.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/net/wan/ixp4xx_hss.c b/drivers/net/wan/ixp4xx_hss.c
-index e7bbdb7af53ac..97968e6a6a4eb 100644
---- a/drivers/net/wan/ixp4xx_hss.c
-+++ b/drivers/net/wan/ixp4xx_hss.c
-@@ -261,7 +261,7 @@ struct port {
- 	struct hss_plat_info *plat;
- 	buffer_t *rx_buff_tab[RX_DESCS], *tx_buff_tab[TX_DESCS];
- 	struct desc *desc_tab;	/* coherent */
--	u32 desc_tab_phys;
-+	dma_addr_t desc_tab_phys;
- 	unsigned int id;
- 	unsigned int clock_type, clock_rate, loopback;
- 	unsigned int initialized, carrier;
-@@ -861,7 +861,7 @@ static int hss_hdlc_xmit(struct sk_buff *skb, struct net_device *dev)
- 		dev->stats.tx_dropped++;
- 		return NETDEV_TX_OK;
- 	}
--	memcpy_swab32(mem, (u32 *)((int)skb->data & ~3), bytes / 4);
-+	memcpy_swab32(mem, (u32 *)((uintptr_t)skb->data & ~3), bytes / 4);
- 	dev_kfree_skb(skb);
- #endif
- 
+diff --git a/drivers/net/wireless/intersil/hostap/hostap_ap.c b/drivers/net/wireless/intersil/hostap/hostap_ap.c
+index c995ace153ee6..30171d4c47187 100644
+--- a/drivers/net/wireless/intersil/hostap/hostap_ap.c
++++ b/drivers/net/wireless/intersil/hostap/hostap_ap.c
+@@ -2570,7 +2570,7 @@ static int prism2_hostapd_add_sta(struct ap_data *ap,
+ 		sta->supported_rates[0] = 2;
+ 	if (sta->tx_supp_rates & WLAN_RATE_2M)
+ 		sta->supported_rates[1] = 4;
+- 	if (sta->tx_supp_rates & WLAN_RATE_5M5)
++	if (sta->tx_supp_rates & WLAN_RATE_5M5)
+ 		sta->supported_rates[2] = 11;
+ 	if (sta->tx_supp_rates & WLAN_RATE_11M)
+ 		sta->supported_rates[3] = 22;
 -- 
 2.20.1
 
