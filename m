@@ -2,36 +2,36 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id B4A0915F0E7
-	for <lists+netdev@lfdr.de>; Fri, 14 Feb 2020 18:59:49 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B4D6A15F08F
+	for <lists+netdev@lfdr.de>; Fri, 14 Feb 2020 18:55:58 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2388467AbgBNR6G (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 14 Feb 2020 12:58:06 -0500
-Received: from mail.kernel.org ([198.145.29.99]:39788 "EHLO mail.kernel.org"
+        id S2388280AbgBNP5d (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 14 Feb 2020 10:57:33 -0500
+Received: from mail.kernel.org ([198.145.29.99]:40586 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1730621AbgBNP5O (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 14 Feb 2020 10:57:14 -0500
+        id S2388271AbgBNP5c (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 14 Feb 2020 10:57:32 -0500
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id ED396222C4;
-        Fri, 14 Feb 2020 15:57:12 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 7E0B924676;
+        Fri, 14 Feb 2020 15:57:31 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1581695833;
-        bh=XdazMGhwIbJBiuiXlZkpj9HZX5NWsSPBy8ztckTuicA=;
+        s=default; t=1581695852;
+        bh=GenGKx8klKN5QOWUcat6rkevYzH+j2MnwyEAoetKWvM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=UDdl9zWh9mhlZnghccYlO/ED6eS5TRgVuXuVYgYV8WAmrEjEPmW5hCcXNTn98httE
-         woBDVmQ862mP3HJ2BlgyrvTNMl9LchEZHl4j8Dw3yKoL8tE7KIp6ZjP85VdNCf3+EQ
-         Y9oRUgVWY67XZ6Mc9JCCghtvDWyer6MV9vy8uS9o=
+        b=Uqs3Jx56DNBaxzKJL2+jKtSh2JeVBUQqZiHvXwbUMIWec4bqSu0p1Q/znNiCRVh+2
+         w0Q7gh7JbQPKY6RDgssEFeE+jhR5oulOITRZoUSqb+O/6QIIxh1gPZKBY71AAL7W3A
+         9M5fPlQmGC7pxVs2aPMmatrH7ezw3Gx35nGP4M8A=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Pablo Neira Ayuso <pablo@netfilter.org>,
-        Sasha Levin <sashal@kernel.org>,
-        netfilter-devel@vger.kernel.org, coreteam@netfilter.org,
-        netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.5 386/542] netfilter: flowtable: restrict flow dissector match on meta ingress device
-Date:   Fri, 14 Feb 2020 10:46:18 -0500
-Message-Id: <20200214154854.6746-386-sashal@kernel.org>
+Cc:     Vladimir Oltean <vladimir.oltean@nxp.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        "David S . Miller" <davem@davemloft.net>,
+        Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.5 401/542] enetc: Don't print from enetc_sched_speed_set when link goes down
+Date:   Fri, 14 Feb 2020 10:46:33 -0500
+Message-Id: <20200214154854.6746-401-sashal@kernel.org>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20200214154854.6746-1-sashal@kernel.org>
 References: <20200214154854.6746-1-sashal@kernel.org>
@@ -44,59 +44,38 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Pablo Neira Ayuso <pablo@netfilter.org>
+From: Vladimir Oltean <vladimir.oltean@nxp.com>
 
-[ Upstream commit a7521a60a5f3e1f58a015fedb6e69aed40455feb ]
+[ Upstream commit 90f29f0eada4d60e1f6ae537502ddb2202b9540d ]
 
-Set on FLOW_DISSECTOR_KEY_META meta key using flow tuple ingress interface.
+It is not an error to unplug a cable from the ENETC port even with TSN
+offloads, so don't spam the log with link-related messages from the
+tc-taprio offload subsystem, a single notification is sufficient:
 
-Fixes: c29f74e0df7a ("netfilter: nf_flow_table: hardware offload support")
-Signed-off-by: Pablo Neira Ayuso <pablo@netfilter.org>
+[10972.351859] fsl_enetc 0000:00:00.0 eno0: Qbv PSPEED set speed link down.
+[10972.360241] fsl_enetc 0000:00:00.0 eno0: Link is Down
+
+Fixes: 2e47cb415f0a ("enetc: update TSN Qbv PSPEED set according to adjust link speed")
+Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
+Reviewed-by: Andrew Lunn <andrew@lunn.ch>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/netfilter/nf_flow_table_offload.c | 8 +++++++-
- 1 file changed, 7 insertions(+), 1 deletion(-)
+ drivers/net/ethernet/freescale/enetc/enetc_qos.c | 1 -
+ 1 file changed, 1 deletion(-)
 
-diff --git a/net/netfilter/nf_flow_table_offload.c b/net/netfilter/nf_flow_table_offload.c
-index d06969af1085e..9e01074dc34cb 100644
---- a/net/netfilter/nf_flow_table_offload.c
-+++ b/net/netfilter/nf_flow_table_offload.c
-@@ -24,6 +24,7 @@ struct flow_offload_work {
- };
+diff --git a/drivers/net/ethernet/freescale/enetc/enetc_qos.c b/drivers/net/ethernet/freescale/enetc/enetc_qos.c
+index 9190ffc9f6b21..de52686b1d467 100644
+--- a/drivers/net/ethernet/freescale/enetc/enetc_qos.c
++++ b/drivers/net/ethernet/freescale/enetc/enetc_qos.c
+@@ -36,7 +36,6 @@ void enetc_sched_speed_set(struct net_device *ndev)
+ 	case SPEED_10:
+ 	default:
+ 		pspeed = ENETC_PMR_PSPEED_10M;
+-		netdev_err(ndev, "Qbv PSPEED set speed link down.\n");
+ 	}
  
- struct nf_flow_key {
-+	struct flow_dissector_key_meta			meta;
- 	struct flow_dissector_key_control		control;
- 	struct flow_dissector_key_basic			basic;
- 	union {
-@@ -55,6 +56,7 @@ static int nf_flow_rule_match(struct nf_flow_match *match,
- 	struct nf_flow_key *mask = &match->mask;
- 	struct nf_flow_key *key = &match->key;
- 
-+	NF_FLOW_DISSECTOR(match, FLOW_DISSECTOR_KEY_META, meta);
- 	NF_FLOW_DISSECTOR(match, FLOW_DISSECTOR_KEY_CONTROL, control);
- 	NF_FLOW_DISSECTOR(match, FLOW_DISSECTOR_KEY_BASIC, basic);
- 	NF_FLOW_DISSECTOR(match, FLOW_DISSECTOR_KEY_IPV4_ADDRS, ipv4);
-@@ -62,6 +64,9 @@ static int nf_flow_rule_match(struct nf_flow_match *match,
- 	NF_FLOW_DISSECTOR(match, FLOW_DISSECTOR_KEY_TCP, tcp);
- 	NF_FLOW_DISSECTOR(match, FLOW_DISSECTOR_KEY_PORTS, tp);
- 
-+	key->meta.ingress_ifindex = tuple->iifidx;
-+	mask->meta.ingress_ifindex = 0xffffffff;
-+
- 	switch (tuple->l3proto) {
- 	case AF_INET:
- 		key->control.addr_type = FLOW_DISSECTOR_KEY_IPV4_ADDRS;
-@@ -105,7 +110,8 @@ static int nf_flow_rule_match(struct nf_flow_match *match,
- 	key->tp.dst = tuple->dst_port;
- 	mask->tp.dst = 0xffff;
- 
--	match->dissector.used_keys |= BIT(FLOW_DISSECTOR_KEY_CONTROL) |
-+	match->dissector.used_keys |= BIT(FLOW_DISSECTOR_KEY_META) |
-+				      BIT(FLOW_DISSECTOR_KEY_CONTROL) |
- 				      BIT(FLOW_DISSECTOR_KEY_BASIC) |
- 				      BIT(FLOW_DISSECTOR_KEY_PORTS);
- 	return 0;
+ 	priv->speed = speed;
 -- 
 2.20.1
 
