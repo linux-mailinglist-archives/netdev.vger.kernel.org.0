@@ -2,106 +2,98 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 1A94915D9D8
-	for <lists+netdev@lfdr.de>; Fri, 14 Feb 2020 15:54:49 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id DF68B15DA02
+	for <lists+netdev@lfdr.de>; Fri, 14 Feb 2020 15:58:46 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729314AbgBNOyr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 14 Feb 2020 09:54:47 -0500
-Received: from mail-qk1-f194.google.com ([209.85.222.194]:39225 "EHLO
-        mail-qk1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726191AbgBNOyq (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 14 Feb 2020 09:54:46 -0500
-Received: by mail-qk1-f194.google.com with SMTP id w15so9433796qkf.6
-        for <netdev@vger.kernel.org>; Fri, 14 Feb 2020 06:54:44 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ziepe.ca; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=Cx8F59JuTbMdxDy8f+ZvChzU2qcwFcSX+twtJt8aVBc=;
-        b=DIIo603TxlXBqYTRCeKdVG9PWbqQAhqzArqQh9BrsOYvEKIIYIuXSuJycx+wTLFxEy
-         s6kKrELmSarYflKIlfnYghwph+BMkdgyllL8JC0DKhno9pmSh4PK5OxcwKya9hiuaL1q
-         5+8HvQY8t8nsXe9+lLjAcF76shdmUINo8+NOZK5sN+s5KYrbK1cq1KHagPzz/Sx8gmAA
-         96GWATcO8nkSYmHghvPxSzJ+23C+Oh25QXZUYbDc+PXtvAMjXPQG78USbSlAwEzOWSTy
-         qdfiLoieImQd/OiJ2jk5V1PRkQ3dzI0yGoKO9u7za8tFAimn/QGVOV3P2GbYFu9n0Zj1
-         fqhQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=Cx8F59JuTbMdxDy8f+ZvChzU2qcwFcSX+twtJt8aVBc=;
-        b=dAcQO/6m32GzmpTj0oV3MIenFygd/V5+e+C/gkPz6oyIbGwl+Fy73KqvYHOSSD5p1W
-         7TSG7jaM5t7KSkPS/ggm0gK8csm6PO3Kkp3/q0oCWLbqR6jidrS+pcgnP8knjy0BTf8d
-         U4ngzMwuGWdIIBumEQ+I8gahAkq/aa/10OR8+uaMtPjvVb+lg089y8PoIh93pcSaKuYT
-         oIjXlzxqiU5w4PdrfLooN2xzT/FtAuZg3T+auHhodmgl8SG1O28hViZvqdfZDxbi7r8q
-         NYkHDQF5eknRj42Q9uhg5Y5eFsg4Pk2LyOqs7gNi06XSmAX83mSg6inFhpJ/nqDBbZsQ
-         08/A==
-X-Gm-Message-State: APjAAAUIwPmOXWPXw/046388+XZHWqYZHmDBBrkgfH4sjw5yI3sUE/SD
-        X+KSvrUCaswvLuL7VV5Yi6nf8Q==
-X-Google-Smtp-Source: APXvYqypwuZskQ1yIgXoYBG4S+9MbSSD/z8QLOBLMjqXEo8tkXH+zZeU1p9bdnsU+MPZrI89HRDRpQ==
-X-Received: by 2002:a05:620a:22fb:: with SMTP id p27mr2786542qki.365.1581692084474;
-        Fri, 14 Feb 2020 06:54:44 -0800 (PST)
-Received: from ziepe.ca (hlfxns017vw-142-68-57-212.dhcp-dynamic.fibreop.ns.bellaliant.net. [142.68.57.212])
-        by smtp.gmail.com with ESMTPSA id d20sm1540890qkg.8.2020.02.14.06.54.43
-        (version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
-        Fri, 14 Feb 2020 06:54:43 -0800 (PST)
-Received: from jgg by mlx.ziepe.ca with local (Exim 4.90_1)
-        (envelope-from <jgg@ziepe.ca>)
-        id 1j2cMd-0007Uv-E7; Fri, 14 Feb 2020 10:54:43 -0400
-Date:   Fri, 14 Feb 2020 10:54:43 -0400
-From:   Jason Gunthorpe <jgg@ziepe.ca>
-To:     Jeff Kirsher <jeffrey.t.kirsher@intel.com>
-Cc:     davem@davemloft.net, gregkh@linuxfoundation.org,
-        Mustafa Ismail <mustafa.ismail@intel.com>,
-        netdev@vger.kernel.org, linux-rdma@vger.kernel.org,
-        nhorman@redhat.com, sassmann@redhat.com,
-        Shiraz Saleem <shiraz.saleem@intel.com>
-Subject: Re: [RFC PATCH v4 18/25] RDMA/irdma: Implement device supported verb
- APIs
-Message-ID: <20200214145443.GU31668@ziepe.ca>
-References: <20200212191424.1715577-1-jeffrey.t.kirsher@intel.com>
- <20200212191424.1715577-19-jeffrey.t.kirsher@intel.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200212191424.1715577-19-jeffrey.t.kirsher@intel.com>
-User-Agent: Mutt/1.9.4 (2018-02-28)
+        id S1729505AbgBNO6j (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 14 Feb 2020 09:58:39 -0500
+Received: from coyote.holtmann.net ([212.227.132.17]:37432 "EHLO
+        mail.holtmann.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729241AbgBNO6i (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 14 Feb 2020 09:58:38 -0500
+Received: from marcel-macbook.fritz.box (p4FEFC5A7.dip0.t-ipconnect.de [79.239.197.167])
+        by mail.holtmann.org (Postfix) with ESMTPSA id 3FA2ACECE6;
+        Fri, 14 Feb 2020 16:08:00 +0100 (CET)
+Content-Type: text/plain;
+        charset=us-ascii
+Mime-Version: 1.0 (Mac OS X Mail 13.0 \(3608.60.0.2.5\))
+Subject: Re: [Bluez PATCH v5] bluetooth: secure bluetooth stack from bluedump
+ attack
+From:   Marcel Holtmann <marcel@holtmann.org>
+In-Reply-To: <20200214191609.Bluez.v5.1.Ia71869d2f3e19a76a6a352c61088a085a1d41ba6@changeid>
+Date:   Fri, 14 Feb 2020 15:58:36 +0100
+Cc:     Bluez mailing list <linux-bluetooth@vger.kernel.org>,
+        chromeos-bluetooth-upstreaming@chromium.org,
+        "David S. Miller" <davem@davemloft.net>,
+        Johan Hedberg <johan.hedberg@gmail.com>,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Content-Transfer-Encoding: 7bit
+Message-Id: <FCBA4B93-8249-4557-96C1-83060CFA8640@holtmann.org>
+References: <20200214191609.Bluez.v5.1.Ia71869d2f3e19a76a6a352c61088a085a1d41ba6@changeid>
+To:     Howard Chung <howardchung@google.com>
+X-Mailer: Apple Mail (2.3608.60.0.2.5)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Feb 12, 2020 at 11:14:17AM -0800, Jeff Kirsher wrote:
+Hi Howard,
 
-> +/**
-> + * irdma_ib_register_device - register irdma device to IB core
-> + * @iwdev: irdma device
-> + */
-> +int irdma_ib_register_device(struct irdma_device *iwdev)
-> +{
-> +	int ret;
-> +
-> +	ret = irdma_init_rdma_device(iwdev);
-> +	if (ret)
-> +		return ret;
-> +
-> +	rdma_set_device_sysfs_group(&iwdev->ibdev, &irdma_attr_group);
+> Attack scenario:
+> 1. A Chromebook (let's call this device A) is paired to a legitimate
+>   Bluetooth classic device (e.g. a speaker) (let's call this device
+>   B).
+> 2. A malicious device (let's call this device C) pretends to be the
+>   Bluetooth speaker by using the same BT address.
+> 3. If device A is not currently connected to device B, device A will
+>   be ready to accept connection from device B in the background
+>   (technically, doing Page Scan).
+> 4. Therefore, device C can initiate connection to device A
+>   (because device A is doing Page Scan) and device A will accept the
+>   connection because device A trusts device C's address which is the
+>   same as device B's address.
+> 5. Device C won't be able to communicate at any high level Bluetooth
+>   profile with device A because device A enforces that device C is
+>   encrypted with their common Link Key, which device C doesn't have.
+>   But device C can initiate pairing with device A with just-works
+>   model without requiring user interaction (there is only pairing
+>   notification). After pairing, device A now trusts device C with a
+>   new different link key, common between device A and C.
+> 6. From now on, device A trusts device C, so device C can at anytime
+>   connect to device A to do any kind of high-level hijacking, e.g.
+>   speaker hijack or mouse/keyboard hijack.
+> 
+> Since we don't know whether the repairing is legitimate or not,
+> leave the decision to user space if all the conditions below are met.
+> - the pairing is initialized by peer
+> - the authorization method is just-work
+> - host already had the link key to the peer
+> 
+> Signed-off-by: Howard Chung <howardchung@google.com>
+> ---
+> 
+> Changes in v5:
+> - Rephrase the comment
+> 
+> Changes in v4:
+> - optimise the check in smp.c.
+> 
+> Changes in v3:
+> - Change confirm_hint from 2 to 1
+> - Fix coding style (declaration order)
+> 
+> Changes in v2:
+> - Remove the HCI_PERMIT_JUST_WORK_REPAIR debugfs option
+> - Fix the added code in classic
+> - Add a similar fix for LE
+> 
+> net/bluetooth/hci_event.c | 10 ++++++++++
+> net/bluetooth/smp.c       | 19 +++++++++++++++++++
+> 2 files changed, 29 insertions(+)
 
-New drivers are forbidden from calling this:
+patch has been applied to bluetooth-next tree.
 
-/**
- * rdma_set_device_sysfs_group - Set device attributes group to have
- *				 driver specific sysfs entries at
- *				 for infiniband class.
- *
- * @device:	device pointer for which attributes to be created
- * @group:	Pointer to group which should be added when device
- *		is registered with sysfs.
- * rdma_set_device_sysfs_group() allows existing drivers to expose one
- * group per device to have sysfs attributes.
- *
- * NOTE: New drivers should not make use of this API; instead new device
- * parameter should be exposed via netlink command. This API and mechanism
- * exist only for existing drivers.
- */
+Regards
 
-Jason
+Marcel
+
