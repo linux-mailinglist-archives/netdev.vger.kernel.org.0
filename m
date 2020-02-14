@@ -2,65 +2,95 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 41ECF15E674
-	for <lists+netdev@lfdr.de>; Fri, 14 Feb 2020 17:49:05 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4A45B15E4E2
+	for <lists+netdev@lfdr.de>; Fri, 14 Feb 2020 17:39:32 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2392871AbgBNQUg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 14 Feb 2020 11:20:36 -0500
-Received: from mail.kernel.org ([198.145.29.99]:54324 "EHLO mail.kernel.org"
+        id S2405579AbgBNQXR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 14 Feb 2020 11:23:17 -0500
+Received: from mail.kernel.org ([198.145.29.99]:59358 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2405224AbgBNQUc (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 14 Feb 2020 11:20:32 -0500
-Received: from kicinski-fedora-pc1c0hjn.DHCP.thefacebook.com (unknown [163.114.132.128])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        id S2405566AbgBNQXP (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 14 Feb 2020 11:23:15 -0500
+Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 3D4612472D;
-        Fri, 14 Feb 2020 16:20:31 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 6DBAD24768;
+        Fri, 14 Feb 2020 16:23:14 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1581697231;
-        bh=V/EDnm96acT9qk1c6SHMF0KqVGZhxiZZ6WOI0t4tuj4=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=Ie8ma1uu/iwSfuIPDTRQeYUqZNX/WfKMI8i+/FdzY8wUg+xIneQSPrK+8USeBOrGU
-         r+ZyhBjybpeKK2unxu5l7Xbpz/CN4y6eqtymOHlDoP0uDpM3T4wv/ls8xzMAbOp4PT
-         FxNnECzcmk4TqbM6BrxNYeVLAWtZzzqf6Jjt5Dcs=
-Date:   Fri, 14 Feb 2020 08:20:28 -0800
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Cris Forno <cforno12@linux.vnet.ibm.com>
-Cc:     netdev@vger.kernel.org, mst@redhat.com, jasowang@redhat.com,
-        haiyangz@microsoft.com, sthemmin@microsoft.com, sashal@kernel.org,
-        tlfalcon@linux.ibm.com, davem@davemloft.net, mkubecek@suse.cz,
-        willemdebruijn.kernel@gmail.com
-Subject: Re: [PATCH, net-next, v4, 1/2] ethtool: Factored out similar
- ethtool link settings for virtual devices to core
-Message-ID: <20200214082028.3d82d957@kicinski-fedora-pc1c0hjn.DHCP.thefacebook.com>
-In-Reply-To: <20200213201410.6912-2-cforno12@linux.vnet.ibm.com>
-References: <20200213201410.6912-1-cforno12@linux.vnet.ibm.com>
-        <20200213201410.6912-2-cforno12@linux.vnet.ibm.com>
+        s=default; t=1581697395;
+        bh=wVAFLn1OyiGv+jbPEipLto9iRXEUfr6/MkA/lc67GIc=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=qYYHlfFhnurNt5YdehSnMniCBae3YPNwCSbWMMi/b8meKijcaEByRgwcqryzLyfiz
+         K8E80EMeGyVs6abl1DbnegHA+Op3dd/CMkFwZqDiKpeo52z5yNbTG8/8oph7lR/BJn
+         LSqFi08PP69FYzHue82s1d4IhMi8puS4sy6sGZLg=
+From:   Sasha Levin <sashal@kernel.org>
+To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
+Cc:     Arnd Bergmann <arnd@arndb.de>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 4.9 089/141] wan: ixp4xx_hss: fix compile-testing on 64-bit
+Date:   Fri, 14 Feb 2020 11:20:29 -0500
+Message-Id: <20200214162122.19794-89-sashal@kernel.org>
+X-Mailer: git-send-email 2.20.1
+In-Reply-To: <20200214162122.19794-1-sashal@kernel.org>
+References: <20200214162122.19794-1-sashal@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+X-stable: review
+X-Patchwork-Hint: Ignore
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 13 Feb 2020 14:14:09 -0600 Cris Forno wrote:
-> diff --git a/include/linux/ethtool.h b/include/linux/ethtool.h
-> index 95991e43..149f982 100644
-> --- a/include/linux/ethtool.h
-> +++ b/include/linux/ethtool.h
-> @@ -394,6 +394,8 @@ struct ethtool_ops {
->  					  struct ethtool_coalesce *);
->  	int	(*set_per_queue_coalesce)(struct net_device *, u32,
->  					  struct ethtool_coalesce *);
-> +	bool    (*virtdev_validate_link_ksettings)(const struct
-> +						   ethtool_link_ksettings *);
+From: Arnd Bergmann <arnd@arndb.de>
 
-Could this callback be passed to ethtool_virtdev_set_link_ksettings()
-as an argument instead of being in the global structure? Callers need
-to pass speed and duplex pointers anyway.
+[ Upstream commit 504c28c853ec5c626900b914b5833daf0581a344 ]
 
->  	int	(*get_link_ksettings)(struct net_device *,
->  				      struct ethtool_link_ksettings *);
->  	int	(*set_link_ksettings)(struct net_device *,
+Change the driver to use portable integer types to avoid
+warnings during compile testing:
+
+drivers/net/wan/ixp4xx_hss.c:863:21: error: cast to 'u32 *' (aka 'unsigned int *') from smaller integer type 'int' [-Werror,-Wint-to-pointer-cast]
+        memcpy_swab32(mem, (u32 *)((int)skb->data & ~3), bytes / 4);
+                           ^
+drivers/net/wan/ixp4xx_hss.c:979:12: error: incompatible pointer types passing 'u32 *' (aka 'unsigned int *') to parameter of type 'dma_addr_t *' (aka 'unsigned long long *') [-Werror,-Wincompatible-pointer-types]
+                                              &port->desc_tab_phys)))
+                                              ^~~~~~~~~~~~~~~~~~~~
+include/linux/dmapool.h:27:20: note: passing argument to parameter 'handle' here
+                     dma_addr_t *handle);
+                                 ^
+
+Signed-off-by: Arnd Bergmann <arnd@arndb.de>
+Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ drivers/net/wan/ixp4xx_hss.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/drivers/net/wan/ixp4xx_hss.c b/drivers/net/wan/ixp4xx_hss.c
+index e7bbdb7af53ac..97968e6a6a4eb 100644
+--- a/drivers/net/wan/ixp4xx_hss.c
++++ b/drivers/net/wan/ixp4xx_hss.c
+@@ -261,7 +261,7 @@ struct port {
+ 	struct hss_plat_info *plat;
+ 	buffer_t *rx_buff_tab[RX_DESCS], *tx_buff_tab[TX_DESCS];
+ 	struct desc *desc_tab;	/* coherent */
+-	u32 desc_tab_phys;
++	dma_addr_t desc_tab_phys;
+ 	unsigned int id;
+ 	unsigned int clock_type, clock_rate, loopback;
+ 	unsigned int initialized, carrier;
+@@ -861,7 +861,7 @@ static int hss_hdlc_xmit(struct sk_buff *skb, struct net_device *dev)
+ 		dev->stats.tx_dropped++;
+ 		return NETDEV_TX_OK;
+ 	}
+-	memcpy_swab32(mem, (u32 *)((int)skb->data & ~3), bytes / 4);
++	memcpy_swab32(mem, (u32 *)((uintptr_t)skb->data & ~3), bytes / 4);
+ 	dev_kfree_skb(skb);
+ #endif
+ 
+-- 
+2.20.1
 
