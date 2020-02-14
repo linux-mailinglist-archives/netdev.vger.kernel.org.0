@@ -2,167 +2,171 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 4761915D3DF
-	for <lists+netdev@lfdr.de>; Fri, 14 Feb 2020 09:33:36 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8311A15D3FA
+	for <lists+netdev@lfdr.de>; Fri, 14 Feb 2020 09:42:45 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729035AbgBNIde (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 14 Feb 2020 03:33:34 -0500
-Received: from mail-wr1-f65.google.com ([209.85.221.65]:35528 "EHLO
-        mail-wr1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725897AbgBNIde (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 14 Feb 2020 03:33:34 -0500
-Received: by mail-wr1-f65.google.com with SMTP id w12so9891187wrt.2
-        for <netdev@vger.kernel.org>; Fri, 14 Feb 2020 00:33:31 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=resnulli-us.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=Ga2UjLKuVSIX3KkoqxUzrI3r+N/AydKyt5U+BEN4+kc=;
-        b=FA0WS6rjZ5/PFEljQWq9/66CO1IKzs//KK0bCSEbnOhyvHr+Scvfs6HZ/MhMzNHPNm
-         fjip/MfMJ00EM8xCCofmv8WCKjj6jD/TFYA9wN05tsBiHZtzU2SyaKJ5AfrAYTjlHIag
-         TnW9lEEzywEO6fyZupFPCA3DwU4G/2QzjbaUbVYF41cCP88YNV2YVTuMdH/WTALysg7W
-         e/lkxij8ZYgHtKkcdfMrjFjPZKUBo1MiuDUlyJL82UGQvGCVlxRH1nXp+O2xp4wPc2uQ
-         GVQLdjWPrhRFYrojuwz6EWaFJbOqmFH7H/ZN+4iAeaIbxX4hHj5kjqgKVZ+MaFhx//M9
-         gz2A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=Ga2UjLKuVSIX3KkoqxUzrI3r+N/AydKyt5U+BEN4+kc=;
-        b=D43Frc4Ik8x+/ltJIO0manrE0uFNUPLnAl7jVyo5Ik54It62m5uFWX3Vj4Ac9UYL7P
-         7lh57yDKyoHmjJ5ul0xim4zuxk+OuBmYHo2SSH2spaV4O1/oZu1j21MqkwJ5UVyWsPoS
-         8igvHbAQuCqw1se168gmYOQ3nnoFfA7OYpUYkIk28M2f/liqim/Dtk9wVb9X+x4zck/6
-         wW9/f/cVk6c8Ul0nantIH4VpaQgl+IcdzDqZdXXJM3G5AUhZYAx9/Dhyg7rvCql8ZM9j
-         bKM1iThVgZEm/mk38nqIA2Rss9hYS5LeaXdn0Lw+SeJale/34FpwI/tJLXr6SzGVUmTY
-         rFVA==
-X-Gm-Message-State: APjAAAUPiaOYueA+FgcpQbpXsFg7AWRjWNXRRqcD/qPznjSmkmLWLPh+
-        N0ITN31NqUBxQumGKc0XnPtBxQ==
-X-Google-Smtp-Source: APXvYqykPB2o6zu5qz0aEAmCV5drtZLktVPr+8z/Bl3kMkBlQxew4fx5K5AaE7OxhsDNX2OeWEEoww==
-X-Received: by 2002:a5d:494f:: with SMTP id r15mr2738423wrs.143.1581669210958;
-        Fri, 14 Feb 2020 00:33:30 -0800 (PST)
-Received: from localhost (mail.chocen-mesto.cz. [85.163.43.2])
-        by smtp.gmail.com with ESMTPSA id p15sm6257061wma.40.2020.02.14.00.33.30
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 14 Feb 2020 00:33:30 -0800 (PST)
-Date:   Fri, 14 Feb 2020 09:33:29 +0100
-From:   Jiri Pirko <jiri@resnulli.us>
-To:     Eric Dumazet <eric.dumazet@gmail.com>
-Cc:     Eric Dumazet <edumazet@google.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        netdev <netdev@vger.kernel.org>, Jiri Pirko <jiri@mellanox.com>,
-        syzbot <syzkaller@googlegroups.com>
-Subject: Re: [PATCH net] net: rtnetlink: fix bugs in rtnl_alt_ifname()
-Message-ID: <20200214083329.GA2100@nanopsycho>
-References: <20200213045826.181478-1-edumazet@google.com>
- <20200213064532.GD22610@nanopsycho>
- <2e122d94-89a1-f2aa-2613-2fc75ff6b4d1@gmail.com>
- <741c1c4e-9f83-d5bd-0100-d33cb5db7cc6@gmail.com>
+        id S1728522AbgBNImo (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 14 Feb 2020 03:42:44 -0500
+Received: from ssl.serverraum.org ([176.9.125.105]:55005 "EHLO
+        ssl.serverraum.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726179AbgBNImn (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 14 Feb 2020 03:42:43 -0500
+Received: from ssl.serverraum.org (web.serverraum.org [172.16.0.2])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ssl.serverraum.org (Postfix) with ESMTPSA id 120A823E7E;
+        Fri, 14 Feb 2020 09:42:40 +0100 (CET)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=walle.cc; s=mail2016061301;
+        t=1581669761;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=Drg2TfR69JJA9uYd3n1D/w+0guAcOcBmhomM1X4jJd8=;
+        b=qo9oOV3qEftHLc1GnTarDgNNhbYiWfUOo4liai/9a8mO1ea+pw/EtkhMnyyIr7FkCkiVzo
+        UNpCM493daWNTDYBPFT7rRNYCWO70B2Kf8A9JxVX5Pn1IBK+GE2HGai5MRFsNd2P7q6CDk
+        OWcMsPlwdC3tUacIyejBcyohIm2Wc+E=
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <741c1c4e-9f83-d5bd-0100-d33cb5db7cc6@gmail.com>
+Content-Type: text/plain; charset=UTF-8;
+ format=flowed
+Content-Transfer-Encoding: 8bit
+Date:   Fri, 14 Feb 2020 09:42:40 +0100
+From:   Michael Walle <michael@walle.cc>
+To:     Joakim Zhang <qiangqing.zhang@nxp.com>
+Cc:     Marc Kleine-Budde <mkl@pengutronix.de>, wg@grandegger.com,
+        netdev@vger.kernel.org, linux-can@vger.kernel.org,
+        Pankaj Bansal <pankaj.bansal@nxp.com>
+Subject: Re: [PATCH 0/8] can: flexcan: add CAN FD support for NXP Flexcan
+In-Reply-To: <DB7PR04MB461896B6CC3EDC7009BCD741E6150@DB7PR04MB4618.eurprd04.prod.outlook.com>
+References: <24eb5c67-4692-1002-2468-4ae2e1a6b68b@pengutronix.de>
+ <20200213192027.4813-1-michael@walle.cc>
+ <DB7PR04MB461896B6CC3EDC7009BCD741E6150@DB7PR04MB4618.eurprd04.prod.outlook.com>
+Message-ID: <2322fb83486c678917957d9879e27e63@walle.cc>
+X-Sender: michael@walle.cc
+User-Agent: Roundcube Webmail/1.3.10
+X-Spamd-Bar: /
+X-Spam-Status: No, score=-0.10
+X-Rspamd-Server: web
+X-Spam-Score: -0.10
+X-Rspamd-Queue-Id: 120A823E7E
+X-Spamd-Result: default: False [-0.10 / 15.00];
+         FROM_HAS_DN(0.00)[];
+         TO_DN_SOME(0.00)[];
+         TO_MATCH_ENVRCPT_ALL(0.00)[];
+         MIME_GOOD(-0.10)[text/plain];
+         RCPT_COUNT_FIVE(0.00)[6];
+         DKIM_SIGNED(0.00)[];
+         NEURAL_HAM(-0.00)[-0.912];
+         RCVD_COUNT_ZERO(0.00)[0];
+         FROM_EQ_ENVFROM(0.00)[];
+         MIME_TRACE(0.00)[0:+];
+         MID_RHS_MATCH_FROM(0.00)[]
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Fri, Feb 14, 2020 at 08:11:26AM CET, eric.dumazet@gmail.com wrote:
->
->
->On 2/12/20 10:58 PM, Eric Dumazet wrote:
->> 
->> 
->> On 2/12/20 10:45 PM, Jiri Pirko wrote:
->>> Thu, Feb 13, 2020 at 05:58:26AM CET, edumazet@google.com wrote:
->>>> Since IFLA_ALT_IFNAME is an NLA_STRING, we have no
->>>> guarantee it is nul terminated.
->>>>
->>>> We should use nla_strdup() instead of kstrdup(), since this
->>>> helper will make sure not accessing out-of-bounds data.
->>>>
->>>>
->>>> Fixes: 36fbf1e52bd3 ("net: rtnetlink: add linkprop commands to add and delete alternative ifnames")
->>>> Signed-off-by: Eric Dumazet <edumazet@google.com>
->>>> Cc: Jiri Pirko <jiri@mellanox.com>
->>>> Reported-by: syzbot <syzkaller@googlegroups.com>
->>>> ---
->>>> net/core/rtnetlink.c | 26 ++++++++++++--------------
->>>> 1 file changed, 12 insertions(+), 14 deletions(-)
->>>>
->>>> diff --git a/net/core/rtnetlink.c b/net/core/rtnetlink.c
->>>> index 09c44bf2e1d28842d77b4ed442ef2c051a25ad21..e1152f4ffe33efb0a69f17a1f5940baa04942e5b 100644
->>>> --- a/net/core/rtnetlink.c
->>>> +++ b/net/core/rtnetlink.c
->>>> @@ -3504,27 +3504,25 @@ static int rtnl_alt_ifname(int cmd, struct net_device *dev, struct nlattr *attr,
->>>> 	if (err)
->>>> 		return err;
->>>>
->>>> -	alt_ifname = nla_data(attr);
->>>> +	alt_ifname = nla_strdup(attr, GFP_KERNEL);
->>>> +	if (!alt_ifname)
->>>> +		return -ENOMEM;
->>>> +
->>>> 	if (cmd == RTM_NEWLINKPROP) {
->>>> -		alt_ifname = kstrdup(alt_ifname, GFP_KERNEL);
->>>> -		if (!alt_ifname)
->>>> -			return -ENOMEM;
->>>> 		err = netdev_name_node_alt_create(dev, alt_ifname);
->>>> -		if (err) {
->>>> -			kfree(alt_ifname);
->>>> -			return err;
->>>> -		}
->>>> +		if (!err)
->>>> +			alt_ifname = NULL;
->>>> 	} else if (cmd == RTM_DELLINKPROP) {
->>>> 		err = netdev_name_node_alt_destroy(dev, alt_ifname);
->>>> -		if (err)
->>>> -			return err;
->>>> 	} else {
->>>
->>>
->>>> -		WARN_ON(1);
->>>> -		return 0;
->>>> +		WARN_ON_ONCE(1);
->>>> +		err = -EINVAL;
->>>
->>> These 4 lines do not seem to be related to the rest of the patch. Should
->>> it be a separate patch?
->> 
->> Well, we have to kfree(alt_ifname).
->> 
->> Generally speaking I tried to avoid return in the middle of this function.
->> 
->> The WARN_ON(1) is dead code today, making it a WARN_ON_ONCE(1) is simply
->> a matter of avoiding syslog floods if this path is ever triggered in the future.
->
->Also, related to this new fancy code ;)
->
->Is there anything preventing netdev_name_node_alt_destroy() from destroying the primary
->ifname ?
->
->netdev_name_node_lookup() should be able to find dev->name_node itself ?
->
->Then we would leave a dangling pointer in dev->name_node, and crash later.
->
->I am thinking we need this fix :
+Hi Joakim,
 
-That is correct. We need that. Thanks!
-
-
->
->diff --git a/net/core/dev.c b/net/core/dev.c
->index a6316b336128cdb31eea6e80f1a47620abbd0d31..3fa2bc2c30ee1350b5b4b400f0552b9bf2a62697 100644
->--- a/net/core/dev.c
->+++ b/net/core/dev.c
->@@ -331,6 +331,11 @@ int netdev_name_node_alt_destroy(struct net_device *dev, const char *name)
->        name_node = netdev_name_node_lookup(net, name);
->        if (!name_node)
->                return -ENOENT;
->+
->+       /* Do not trust users, ever ! */
->+       if (name_node == dev->name_node || name_node->dev != dev)
->+               return -EINVAL;
->+
->        __netdev_name_node_alt_destroy(name_node);
+Am 2020-02-14 02:55, schrieb Joakim Zhang:
+> Hi Michal,
 > 
->        return 0;
+>> -----Original Message-----
+>> From: Michael Walle <michael@walle.cc>
+>> Sent: 2020年2月14日 3:20
+>> To: Marc Kleine-Budde <mkl@pengutronix.de>
+>> Cc: Joakim Zhang <qiangqing.zhang@nxp.com>; wg@grandegger.com;
+>> netdev@vger.kernel.org; linux-can@vger.kernel.org; Pankaj Bansal
+>> <pankaj.bansal@nxp.com>; Michael Walle <michael@walle.cc>
+>> Subject: Re: [PATCH 0/8] can: flexcan: add CAN FD support for NXP 
+>> Flexcan
+>> 
+>> Hi,
+>> 
+>> >>> Are you prepared to add back these patches as they are necessary for
+>> >>> Flexcan CAN FD? And this Flexcan CAN FD patch set is based on these
+>> >>> patches.
+>> >>
+>> >> Yes, these patches will be added back.
+>> >
+>> >I've cleaned up the first patch a bit, and pushed everything to the
+>> >testing branch. Can you give it a test.
+>> 
+>> What happend to that branch? FWIW I've just tried the patches on a 
+>> custom
+>> board with a LS1028A SoC. Both CAN and CAN-FD are working. I've tested
+>> against a Peaktech USB CAN adapter. I'd love to see these patches 
+>> upstream,
+>> because our board also offers CAN and basic support for it just made 
+>> it
+>> upstream [1].
+> The FlexCAN CAN FD related patches have stayed in
+> linux-can-next/flexcan branch for a long time, I still don't know why
+> Marc doesn't merge them into Linux mainline.
+> https://git.kernel.org/pub/scm/linux/kernel/git/mkl/linux-can-next.git/tree/?h=flexcan
+> Also must hope that this patch set can be upstreamed soon. :-)
+
+I've took them from this branch and applied them to the latest linux 
+master.
+
+Thus,
+
+Tested-by: Michael Walle <michael@walle.cc>
+
+
+>> If these patches are upstream, only the device tree nodes seems to be 
+>> missing.
+>> I don't know what has happened to [2]. But the patch doesn't seem to 
+>> be
+>> necessary.
+> Yes, this patch is unnecessary. I have NACKed this patch for that,
+> according to FlexCAN Integrated Guide, CTRL1[CLKSRC]=0 select
+> oscillator clock and CTRL1[CLKSRC]=1 select peripheral clock.
+> But it is actually decided by SoC integration, for i.MX, the design is
+> different.
+
+ok thanks for clarifying.
+
+> I have not upstream i.MX FlexCAN device tree nodes, since it's
+> dependency have not upstreamed yet.
+> 
+>> Pankaj already send a patch to add the device node to the LS1028A [3].
+>> Thats basically the same I've used, only that mine didn't had the
+>> "fsl,ls1028ar1-flexcan" compatiblity string, but only the 
+>> "lx2160ar1-flexcan"
+>> which is the correct way to use it, right?
+> You can see below table from FlexCAN driver, "fsl,lx2160ar1-flexcan"
+> supports CAN FD, you can use this compatible string.
+
+correct. I've already a patch that does exactly this ;) Who would take 
+the
+patch for adding the LS1028A can device tree nodes to ls1028a.dtsi? You 
+or
+Shawn Guo?
+
+> static const struct of_device_id flexcan_of_match[] = {
+> 	{ .compatible = "fsl,imx8qm-flexcan", .data = 
+> &fsl_imx8qm_devtype_data, },
+> 	{ .compatible = "fsl,imx6q-flexcan", .data = &fsl_imx6q_devtype_data, 
+> },
+> 	{ .compatible = "fsl,imx28-flexcan", .data = &fsl_imx28_devtype_data, 
+> },
+> 	{ .compatible = "fsl,imx53-flexcan", .data = &fsl_imx25_devtype_data, 
+> },
+> 	{ .compatible = "fsl,imx35-flexcan", .data = &fsl_imx25_devtype_data, 
+> },
+> 	{ .compatible = "fsl,imx25-flexcan", .data = &fsl_imx25_devtype_data, 
+> },
+> 	{ .compatible = "fsl,p1010-flexcan", .data = &fsl_p1010_devtype_data, 
+> },
+> 	{ .compatible = "fsl,vf610-flexcan", .data = &fsl_vf610_devtype_data, 
+> },
+> 	{ .compatible = "fsl,ls1021ar2-flexcan", .data =
+> &fsl_ls1021a_r2_devtype_data, },
+> 	{ .compatible = "fsl,lx2160ar1-flexcan", .data =
+> &fsl_lx2160a_r1_devtype_data, },
+> 	{ /* sentinel */ },
+> };
+> 
+
+-michael
