@@ -2,39 +2,37 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id D8B4B15F2FA
-	for <lists+netdev@lfdr.de>; Fri, 14 Feb 2020 19:20:58 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id CF68D15F2FC
+	for <lists+netdev@lfdr.de>; Fri, 14 Feb 2020 19:20:59 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730895AbgBNPvy (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 14 Feb 2020 10:51:54 -0500
-Received: from mail.kernel.org ([198.145.29.99]:57152 "EHLO mail.kernel.org"
+        id S1730906AbgBNPv4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 14 Feb 2020 10:51:56 -0500
+Received: from mail.kernel.org ([198.145.29.99]:57162 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1730878AbgBNPvw (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 14 Feb 2020 10:51:52 -0500
+        id S1730275AbgBNPvy (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 14 Feb 2020 10:51:54 -0500
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 1495A2465D;
-        Fri, 14 Feb 2020 15:51:50 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 8426924676;
+        Fri, 14 Feb 2020 15:51:52 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1581695512;
-        bh=Ff9aojnCxvJNKh/uQrHeECcEeScxqOiWDzlfY4OG+x8=;
+        s=default; t=1581695513;
+        bh=a427hp4mAZ4+pNfuW2wAhJwG6Fz8yU/Bnkot/sV7VBA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=pP/cZCgOXDKB5DYJH45SRukx5ZBMnC69Yhi2v9WcS4wC5/dJuD432BItKq7ApAjEB
-         tSPy4fGkdDezFx2Ujhird/sTer0qCBHrwgttiRUTkKtsx0bFeRAOWlyUKOJdUG2rI/
-         qkWxxwADLtd9pokIhXL2SYosVerfMBIEFysVuVlQ=
+        b=py8KzrTNros6QR5eaQGk/5GCoXFmgHYn+CzoAwQ3VeRMXkiT6EOXqjAwl335pX8ge
+         qxUt/Xl7pRlp3r8jIJBGykLrPINLPf4BgCKGRPdLmE/g3WYx3KTPU1/+IDbpXVacEC
+         wgWOc6prqd6f3uLeV9RioDLd0fTngT7w3rgLiHkk=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Martin KaFai Lau <kafai@fb.com>,
-        Randy Dunlap <rdunlap@infradead.org>,
-        Luc Van Oostenryck <luc.vanoostenryck@gmail.com>,
-        Linus Torvalds <torvalds@linux-foundation.org>,
+Cc:     Jakub Sitnicki <jakub@cloudflare.com>,
         Daniel Borkmann <daniel@iogearbox.net>,
+        John Fastabend <john.fastabend@gmail.com>,
         Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org,
         bpf@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.5 136/542] bpf: Improve bucket_log calculation logic
-Date:   Fri, 14 Feb 2020 10:42:08 -0500
-Message-Id: <20200214154854.6746-136-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 5.5 137/542] bpf, sockmap: Don't sleep while holding RCU lock on tear-down
+Date:   Fri, 14 Feb 2020 10:42:09 -0500
+Message-Id: <20200214154854.6746-137-sashal@kernel.org>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20200214154854.6746-1-sashal@kernel.org>
 References: <20200214154854.6746-1-sashal@kernel.org>
@@ -47,67 +45,143 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Martin KaFai Lau <kafai@fb.com>
+From: Jakub Sitnicki <jakub@cloudflare.com>
 
-[ Upstream commit 88d6f130e5632bbf419a2e184ec7adcbe241260b ]
+[ Upstream commit db6a5018b6e008c1d69c6628cdaa9541b8e70940 ]
 
-It was reported that the max_t, ilog2, and roundup_pow_of_two macros have
-exponential effects on the number of states in the sparse checker.
+rcu_read_lock is needed to protect access to psock inside sock_map_unref
+when tearing down the map. However, we can't afford to sleep in lock_sock
+while in RCU read-side critical section. Grab the RCU lock only after we
+have locked the socket.
 
-This patch breaks them up by calculating the "nbuckets" first so that the
-"bucket_log" only needs to take ilog2().
+This fixes RCU warnings triggerable on a VM with 1 vCPU when free'ing a
+sockmap/sockhash that contains at least one socket:
 
-In addition, Linus mentioned:
+| =============================
+| WARNING: suspicious RCU usage
+| 5.5.0-04005-g8fc91b972b73 #450 Not tainted
+| -----------------------------
+| include/linux/rcupdate.h:272 Illegal context switch in RCU read-side critical section!
+|
+| other info that might help us debug this:
+|
+|
+| rcu_scheduler_active = 2, debug_locks = 1
+| 4 locks held by kworker/0:1/62:
+|  #0: ffff88813b019748 ((wq_completion)events){+.+.}, at: process_one_work+0x1d7/0x5e0
+|  #1: ffffc900000abe50 ((work_completion)(&map->work)){+.+.}, at: process_one_work+0x1d7/0x5e0
+|  #2: ffffffff82065d20 (rcu_read_lock){....}, at: sock_map_free+0x5/0x170
+|  #3: ffff8881368c5df8 (&stab->lock){+...}, at: sock_map_free+0x64/0x170
+|
+| stack backtrace:
+| CPU: 0 PID: 62 Comm: kworker/0:1 Not tainted 5.5.0-04005-g8fc91b972b73 #450
+| Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS ?-20190727_073836-buildvm-ppc64le-16.ppc.fedoraproject.org-3.fc31 04/01/2014
+| Workqueue: events bpf_map_free_deferred
+| Call Trace:
+|  dump_stack+0x71/0xa0
+|  ___might_sleep+0x105/0x190
+|  lock_sock_nested+0x28/0x90
+|  sock_map_free+0x95/0x170
+|  bpf_map_free_deferred+0x58/0x80
+|  process_one_work+0x260/0x5e0
+|  worker_thread+0x4d/0x3e0
+|  kthread+0x108/0x140
+|  ? process_one_work+0x5e0/0x5e0
+|  ? kthread_park+0x90/0x90
+|  ret_from_fork+0x3a/0x50
 
-  Patch looks good, but I'd like to point out that it's not just sparse.
+| =============================
+| WARNING: suspicious RCU usage
+| 5.5.0-04005-g8fc91b972b73-dirty #452 Not tainted
+| -----------------------------
+| include/linux/rcupdate.h:272 Illegal context switch in RCU read-side critical section!
+|
+| other info that might help us debug this:
+|
+|
+| rcu_scheduler_active = 2, debug_locks = 1
+| 4 locks held by kworker/0:1/62:
+|  #0: ffff88813b019748 ((wq_completion)events){+.+.}, at: process_one_work+0x1d7/0x5e0
+|  #1: ffffc900000abe50 ((work_completion)(&map->work)){+.+.}, at: process_one_work+0x1d7/0x5e0
+|  #2: ffffffff82065d20 (rcu_read_lock){....}, at: sock_hash_free+0x5/0x1d0
+|  #3: ffff888139966e00 (&htab->buckets[i].lock){+...}, at: sock_hash_free+0x92/0x1d0
+|
+| stack backtrace:
+| CPU: 0 PID: 62 Comm: kworker/0:1 Not tainted 5.5.0-04005-g8fc91b972b73-dirty #452
+| Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS ?-20190727_073836-buildvm-ppc64le-16.ppc.fedoraproject.org-3.fc31 04/01/2014
+| Workqueue: events bpf_map_free_deferred
+| Call Trace:
+|  dump_stack+0x71/0xa0
+|  ___might_sleep+0x105/0x190
+|  lock_sock_nested+0x28/0x90
+|  sock_hash_free+0xec/0x1d0
+|  bpf_map_free_deferred+0x58/0x80
+|  process_one_work+0x260/0x5e0
+|  worker_thread+0x4d/0x3e0
+|  kthread+0x108/0x140
+|  ? process_one_work+0x5e0/0x5e0
+|  ? kthread_park+0x90/0x90
+|  ret_from_fork+0x3a/0x50
 
-  You can see it with a simple
-
-    make net/core/bpf_sk_storage.i
-    grep 'smap->bucket_log = ' net/core/bpf_sk_storage.i | wc
-
-  and see the end result:
-
-      1  365071 2686974
-
-  That's one line (the assignment line) that is 2,686,974 characters in
-  length.
-
-  Now, sparse does happen to react particularly badly to that (I didn't
-  look to why, but I suspect it's just that evaluating all the types
-  that don't actually ever end up getting used ends up being much more
-  expensive than it should be), but I bet it's not good for gcc either.
-
-Fixes: 6ac99e8f23d4 ("bpf: Introduce bpf sk local storage")
-Reported-by: Randy Dunlap <rdunlap@infradead.org>
-Reported-by: Luc Van Oostenryck <luc.vanoostenryck@gmail.com>
-Suggested-by: Linus Torvalds <torvalds@linux-foundation.org>
-Signed-off-by: Martin KaFai Lau <kafai@fb.com>
+Fixes: 7e81a3530206 ("bpf: Sockmap, ensure sock lock held during tear down")
+Signed-off-by: Jakub Sitnicki <jakub@cloudflare.com>
 Signed-off-by: Daniel Borkmann <daniel@iogearbox.net>
-Reviewed-by: Luc Van Oostenryck <luc.vanoostenryck@gmail.com>
-Link: https://lore.kernel.org/bpf/20200207081810.3918919-1-kafai@fb.com
+Acked-by: John Fastabend <john.fastabend@gmail.com>
+Link: https://lore.kernel.org/bpf/20200206111652.694507-2-jakub@cloudflare.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/core/bpf_sk_storage.c | 5 +++--
- 1 file changed, 3 insertions(+), 2 deletions(-)
+ net/core/sock_map.c | 8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
 
-diff --git a/net/core/bpf_sk_storage.c b/net/core/bpf_sk_storage.c
-index 458be6b3eda97..3ab23f698221c 100644
---- a/net/core/bpf_sk_storage.c
-+++ b/net/core/bpf_sk_storage.c
-@@ -643,9 +643,10 @@ static struct bpf_map *bpf_sk_storage_map_alloc(union bpf_attr *attr)
- 		return ERR_PTR(-ENOMEM);
- 	bpf_map_init_from_attr(&smap->map, attr);
+diff --git a/net/core/sock_map.c b/net/core/sock_map.c
+index b16ff3b8c6503..085cef5857bbf 100644
+--- a/net/core/sock_map.c
++++ b/net/core/sock_map.c
+@@ -234,7 +234,6 @@ static void sock_map_free(struct bpf_map *map)
+ 	int i;
  
-+	nbuckets = roundup_pow_of_two(num_possible_cpus());
- 	/* Use at least 2 buckets, select_bucket() is undefined behavior with 1 bucket */
--	smap->bucket_log = max_t(u32, 1, ilog2(roundup_pow_of_two(num_possible_cpus())));
--	nbuckets = 1U << smap->bucket_log;
-+	nbuckets = max_t(u32, 2, nbuckets);
-+	smap->bucket_log = ilog2(nbuckets);
- 	cost = sizeof(*smap->buckets) * nbuckets + sizeof(*smap);
+ 	synchronize_rcu();
+-	rcu_read_lock();
+ 	raw_spin_lock_bh(&stab->lock);
+ 	for (i = 0; i < stab->map.max_entries; i++) {
+ 		struct sock **psk = &stab->sks[i];
+@@ -243,12 +242,13 @@ static void sock_map_free(struct bpf_map *map)
+ 		sk = xchg(psk, NULL);
+ 		if (sk) {
+ 			lock_sock(sk);
++			rcu_read_lock();
+ 			sock_map_unref(sk, psk);
++			rcu_read_unlock();
+ 			release_sock(sk);
+ 		}
+ 	}
+ 	raw_spin_unlock_bh(&stab->lock);
+-	rcu_read_unlock();
  
- 	ret = bpf_map_charge_init(&smap->map.memory, cost);
+ 	/* wait for psock readers accessing its map link */
+ 	synchronize_rcu();
+@@ -864,19 +864,19 @@ static void sock_hash_free(struct bpf_map *map)
+ 	int i;
+ 
+ 	synchronize_rcu();
+-	rcu_read_lock();
+ 	for (i = 0; i < htab->buckets_num; i++) {
+ 		bucket = sock_hash_select_bucket(htab, i);
+ 		raw_spin_lock_bh(&bucket->lock);
+ 		hlist_for_each_entry_safe(elem, node, &bucket->head, node) {
+ 			hlist_del_rcu(&elem->node);
+ 			lock_sock(elem->sk);
++			rcu_read_lock();
+ 			sock_map_unref(elem->sk, elem);
++			rcu_read_unlock();
+ 			release_sock(elem->sk);
+ 		}
+ 		raw_spin_unlock_bh(&bucket->lock);
+ 	}
+-	rcu_read_unlock();
+ 
+ 	/* wait for psock readers accessing its map link */
+ 	synchronize_rcu();
 -- 
 2.20.1
 
