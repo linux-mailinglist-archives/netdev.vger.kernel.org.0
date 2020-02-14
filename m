@@ -2,92 +2,87 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id CDB2F15D738
-	for <lists+netdev@lfdr.de>; Fri, 14 Feb 2020 13:18:11 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6703715D741
+	for <lists+netdev@lfdr.de>; Fri, 14 Feb 2020 13:20:29 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729032AbgBNMSK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 14 Feb 2020 07:18:10 -0500
-Received: from us-smtp-2.mimecast.com ([205.139.110.61]:25883 "EHLO
-        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1728582AbgBNMSK (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 14 Feb 2020 07:18:10 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1581682689;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=GxW6IZnV896EyTIDav2L+lzzwUj9aa2oWUdly4vXUC0=;
-        b=N0XtH1YuRlmxzk5iXFJuyaORhUUWoVdDckw/Dy5HsNfng3L7BdqchovgH7i9qxw98jT1GL
-        7B/TInyZveMM+BnTUNmeV+x/l+Ey3wNuqVvHwqLUkyvpVXTFRExpNuLpPfDLs2aiQPeAJJ
-        uqz4gLazbErUVb4L+azGFrq6jT/9QcA=
-Received: from mail-wr1-f72.google.com (mail-wr1-f72.google.com
- [209.85.221.72]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-26-MK9NJI1dNLuSmoQWLwyTRg-1; Fri, 14 Feb 2020 07:18:07 -0500
-X-MC-Unique: MK9NJI1dNLuSmoQWLwyTRg-1
-Received: by mail-wr1-f72.google.com with SMTP id n23so3913141wra.20
-        for <netdev@vger.kernel.org>; Fri, 14 Feb 2020 04:18:07 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=GxW6IZnV896EyTIDav2L+lzzwUj9aa2oWUdly4vXUC0=;
-        b=CVZcobuT+oI8dQH6trB7wSp+GANt0npmOIBGaW6uehqt1adQ5qArRSBD20PhMJ1j2/
-         eFNv8tGhEcGsQuMMjhXrK3ksw16IDdZWSo5z9HWSUFYG+gUCutYJ8eNzmoLyZ/kS04so
-         2akLXIPZm9ZQ5Ehr9KtNSGbMcvQTB8qPHCfpBuhYKo+590WIteBbhX0gjgWssCjbkaGH
-         qUZkVRBSRNaOm7BjqC+s8hv/ljdD6ycEJwz0f8RAI9I4PletB5+e6X7CXT72cEiGCi3g
-         24qa+HeHQUmchkA69agrV+BQiV0svgh6FUji00xF7xqmqoPKtwHkyN+jDwe9LNLzZOQp
-         n29A==
-X-Gm-Message-State: APjAAAVMuTkB0MtSsqCN2Ztrm0HIcUfgqILqwmj0KhF0wvCUtTlx/uay
-        tZ3IcputzEcYfSM7heuhpyij5k9BEB79FWWPI2BwXwHklok5T+jdUR+nWXk7PbyVVvIJpcgWZ64
-        1W1oRX1hHhJc+VIas
-X-Received: by 2002:a7b:c183:: with SMTP id y3mr4446309wmi.0.1581682686276;
-        Fri, 14 Feb 2020 04:18:06 -0800 (PST)
-X-Google-Smtp-Source: APXvYqzwoB+X56u/QQ+OuiMD+r6zCO5Q/ZdH2SzDJvMsIaVp2/BPI4RW23G1odXHXaJ+AQ/de/gnRg==
-X-Received: by 2002:a7b:c183:: with SMTP id y3mr4446285wmi.0.1581682686037;
-        Fri, 14 Feb 2020 04:18:06 -0800 (PST)
-Received: from steredhat (host209-4-dynamic.27-79-r.retail.telecomitalia.it. [79.27.4.209])
-        by smtp.gmail.com with ESMTPSA id t81sm7120128wmg.6.2020.02.14.04.18.04
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 14 Feb 2020 04:18:05 -0800 (PST)
-Date:   Fri, 14 Feb 2020 13:18:03 +0100
-From:   Stefano Garzarella <sgarzare@redhat.com>
-To:     Sebastien Boeuf <sebastien.boeuf@intel.com>
-Cc:     netdev@vger.kernel.org, stefanha@redhat.com, davem@davemloft.net
+        id S1728864AbgBNMU1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 14 Feb 2020 07:20:27 -0500
+Received: from mga05.intel.com ([192.55.52.43]:30457 "EHLO mga05.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1728582AbgBNMU1 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 14 Feb 2020 07:20:27 -0500
+X-Amp-Result: SKIPPED(no attachment in message)
+X-Amp-File-Uploaded: False
+Received: from orsmga004.jf.intel.com ([10.7.209.38])
+  by fmsmga105.fm.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 14 Feb 2020 04:20:27 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.70,440,1574150400"; 
+   d="scan'208";a="381429286"
+Received: from orsmsx106.amr.corp.intel.com ([10.22.225.133])
+  by orsmga004.jf.intel.com with ESMTP; 14 Feb 2020 04:20:26 -0800
+Received: from orsmsx157.amr.corp.intel.com (10.22.240.23) by
+ ORSMSX106.amr.corp.intel.com (10.22.225.133) with Microsoft SMTP Server (TLS)
+ id 14.3.439.0; Fri, 14 Feb 2020 04:20:26 -0800
+Received: from orsmsx115.amr.corp.intel.com ([169.254.4.100]) by
+ ORSMSX157.amr.corp.intel.com ([169.254.9.95]) with mapi id 14.03.0439.000;
+ Fri, 14 Feb 2020 04:20:26 -0800
+From:   "Boeuf, Sebastien" <sebastien.boeuf@intel.com>
+To:     "sgarzare@redhat.com" <sgarzare@redhat.com>
+CC:     "stefanha@redhat.com" <stefanha@redhat.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "davem@davemloft.net" <davem@davemloft.net>
 Subject: Re: [PATCH v3 0/2] Enhance virtio-vsock connection semantics
-Message-ID: <20200214121803.kpblkpywkvwkoc7h@steredhat>
+Thread-Topic: [PATCH v3 0/2] Enhance virtio-vsock connection semantics
+Thread-Index: AQHV4yyrh/V/2txMb02EtEAkK2wIxKgbIV6AgAAAqAA=
+Date:   Fri, 14 Feb 2020 12:20:25 +0000
+Message-ID: <cdad5dee6207d8fdb667cbdc4b67d8f9b61ad23c.camel@intel.com>
 References: <20200214114802.23638-1-sebastien.boeuf@intel.com>
+         <20200214121803.kpblkpywkvwkoc7h@steredhat>
+In-Reply-To: <20200214121803.kpblkpywkvwkoc7h@steredhat>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-originating-ip: [10.252.24.179]
+Content-Type: text/plain; charset="utf-8"
+Content-ID: <84D16CF6DECC4045BF893CADAABE2A74@intel.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200214114802.23638-1-sebastien.boeuf@intel.com>
+Content-Transfer-Encoding: base64
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Feb 14, 2020 at 12:48:00PM +0100, Sebastien Boeuf wrote:
-> This series improves the semantics behind the way virtio-vsock server
-> accepts connections coming from the client. Whenever the server
-> receives a connection request from the client, if it is bound to the
-> socket but not yet listening, it will answer with a RST packet. The
-> point is to ensure each request from the client is quickly processed
-> so that the client can decide about the strategy of retrying or not.
-> 
-> The series includes along with the improvement patch a new test to
-> ensure the behavior is consistent across all hypervisors drivers.
-> 
-> Sebastien Boeuf (2):
->   net: virtio_vsock: Enhance connection semantics
->   tools: testing: vsock: Test when server is bound but not listening
-> 
->  net/vmw_vsock/virtio_transport_common.c |  1 +
->  tools/testing/vsock/vsock_test.c        | 77 +++++++++++++++++++++++++
->  2 files changed, 78 insertions(+)
-> 
-
-Thanks,
-now they apply cleanly!
-
-Tested-by: Stefano Garzarella <sgarzare@redhat.com>
-Reviewed-by: Stefano Garzarella <sgarzare@redhat.com>
+T24gRnJpLCAyMDIwLTAyLTE0IGF0IDEzOjE4ICswMTAwLCBTdGVmYW5vIEdhcnphcmVsbGEgd3Jv
+dGU6DQo+IE9uIEZyaSwgRmViIDE0LCAyMDIwIGF0IDEyOjQ4OjAwUE0gKzAxMDAsIFNlYmFzdGll
+biBCb2V1ZiB3cm90ZToNCj4gPiBUaGlzIHNlcmllcyBpbXByb3ZlcyB0aGUgc2VtYW50aWNzIGJl
+aGluZCB0aGUgd2F5IHZpcnRpby12c29jaw0KPiA+IHNlcnZlcg0KPiA+IGFjY2VwdHMgY29ubmVj
+dGlvbnMgY29taW5nIGZyb20gdGhlIGNsaWVudC4gV2hlbmV2ZXIgdGhlIHNlcnZlcg0KPiA+IHJl
+Y2VpdmVzIGEgY29ubmVjdGlvbiByZXF1ZXN0IGZyb20gdGhlIGNsaWVudCwgaWYgaXQgaXMgYm91
+bmQgdG8NCj4gPiB0aGUNCj4gPiBzb2NrZXQgYnV0IG5vdCB5ZXQgbGlzdGVuaW5nLCBpdCB3aWxs
+IGFuc3dlciB3aXRoIGEgUlNUIHBhY2tldC4gVGhlDQo+ID4gcG9pbnQgaXMgdG8gZW5zdXJlIGVh
+Y2ggcmVxdWVzdCBmcm9tIHRoZSBjbGllbnQgaXMgcXVpY2tseQ0KPiA+IHByb2Nlc3NlZA0KPiA+
+IHNvIHRoYXQgdGhlIGNsaWVudCBjYW4gZGVjaWRlIGFib3V0IHRoZSBzdHJhdGVneSBvZiByZXRy
+eWluZyBvcg0KPiA+IG5vdC4NCj4gPiANCj4gPiBUaGUgc2VyaWVzIGluY2x1ZGVzIGFsb25nIHdp
+dGggdGhlIGltcHJvdmVtZW50IHBhdGNoIGEgbmV3IHRlc3QgdG8NCj4gPiBlbnN1cmUgdGhlIGJl
+aGF2aW9yIGlzIGNvbnNpc3RlbnQgYWNyb3NzIGFsbCBoeXBlcnZpc29ycyBkcml2ZXJzLg0KPiA+
+IA0KPiA+IFNlYmFzdGllbiBCb2V1ZiAoMik6DQo+ID4gICBuZXQ6IHZpcnRpb192c29jazogRW5o
+YW5jZSBjb25uZWN0aW9uIHNlbWFudGljcw0KPiA+ICAgdG9vbHM6IHRlc3Rpbmc6IHZzb2NrOiBU
+ZXN0IHdoZW4gc2VydmVyIGlzIGJvdW5kIGJ1dCBub3QNCj4gPiBsaXN0ZW5pbmcNCj4gPiANCj4g
+PiAgbmV0L3Ztd192c29jay92aXJ0aW9fdHJhbnNwb3J0X2NvbW1vbi5jIHwgIDEgKw0KPiA+ICB0
+b29scy90ZXN0aW5nL3Zzb2NrL3Zzb2NrX3Rlc3QuYyAgICAgICAgfCA3Nw0KPiA+ICsrKysrKysr
+KysrKysrKysrKysrKysrKysNCj4gPiAgMiBmaWxlcyBjaGFuZ2VkLCA3OCBpbnNlcnRpb25zKCsp
+DQo+ID4gDQo+IA0KPiBUaGFua3MsDQo+IG5vdyB0aGV5IGFwcGx5IGNsZWFubHkhDQoNCkdyZWF0
+IQ0KDQo+IA0KPiBUZXN0ZWQtYnk6IFN0ZWZhbm8gR2FyemFyZWxsYSA8c2dhcnphcmVAcmVkaGF0
+LmNvbT4NCj4gUmV2aWV3ZWQtYnk6IFN0ZWZhbm8gR2FyemFyZWxsYSA8c2dhcnphcmVAcmVkaGF0
+LmNvbT4NCj4gDQotLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0t
+LS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0KSW50ZWwgQ29ycG9yYXRpb24gU0FTIChGcmVuY2ggc2lt
+cGxpZmllZCBqb2ludCBzdG9jayBjb21wYW55KQpSZWdpc3RlcmVkIGhlYWRxdWFydGVyczogIkxl
+cyBNb250YWxldHMiLSAyLCBydWUgZGUgUGFyaXMsIAo5MjE5NiBNZXVkb24gQ2VkZXgsIEZyYW5j
+ZQpSZWdpc3RyYXRpb24gTnVtYmVyOiAgMzAyIDQ1NiAxOTkgUi5DLlMuIE5BTlRFUlJFCkNhcGl0
+YWw6IDQsNTcyLDAwMCBFdXJvcwoKVGhpcyBlLW1haWwgYW5kIGFueSBhdHRhY2htZW50cyBtYXkg
+Y29udGFpbiBjb25maWRlbnRpYWwgbWF0ZXJpYWwgZm9yCnRoZSBzb2xlIHVzZSBvZiB0aGUgaW50
+ZW5kZWQgcmVjaXBpZW50KHMpLiBBbnkgcmV2aWV3IG9yIGRpc3RyaWJ1dGlvbgpieSBvdGhlcnMg
+aXMgc3RyaWN0bHkgcHJvaGliaXRlZC4gSWYgeW91IGFyZSBub3QgdGhlIGludGVuZGVkCnJlY2lw
+aWVudCwgcGxlYXNlIGNvbnRhY3QgdGhlIHNlbmRlciBhbmQgZGVsZXRlIGFsbCBjb3BpZXMuCg==
 
