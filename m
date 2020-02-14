@@ -2,133 +2,133 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 2698115ED83
-	for <lists+netdev@lfdr.de>; Fri, 14 Feb 2020 18:34:54 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 919DE15EE64
+	for <lists+netdev@lfdr.de>; Fri, 14 Feb 2020 18:40:48 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2390637AbgBNReZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 14 Feb 2020 12:34:25 -0500
-Received: from frisell.zx2c4.com ([192.95.5.64]:52863 "EHLO frisell.zx2c4.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2390331AbgBNReW (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 14 Feb 2020 12:34:22 -0500
-Received: by frisell.zx2c4.com (ZX2C4 Mail Server) with ESMTP id 57d1e613;
-        Fri, 14 Feb 2020 17:32:13 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha1; c=relaxed; d=zx2c4.com; h=from:to:cc
-        :subject:date:message-id:in-reply-to:references:mime-version
-        :content-transfer-encoding; s=mail; bh=vm6a9/E6LFoGRv3B58XZuRK2v
-        P8=; b=lXxOhTWaoiZkHHjbbLIgw1vV8DMCsfqZVveJb30uCgC1TuinHRFOB/f+w
-        nBxcBYcl9A7APL8tKShjZVq3j6A01KXXomiiKtMoWC8BhCw024OgCvmsxmzSTJS8
-        YI2mZZeXKODPFtW8iQKW5DCDFnPRoj0ivcj9dIBzPbPyzlQ0kIQ+hzL3Jh2ycYTC
-        w+iGA8VInJmWn2IM/a6PwJVco8lQOPgupdk3wFtEbFJZajv8WvYbwJZ2MreYvifB
-        qQDUOv8E6JgfwzZMHVLBa5lJlu8eFF38UzDH7z5DYgXT8Q2bBlt8GZ53Tvek3/pb
-        pHkMdzhqF+4abMR7J07WP/GfYfjSA==
-Received: by frisell.zx2c4.com (ZX2C4 Mail Server) with ESMTPSA id b0ddefbf (TLSv1.2:ECDHE-RSA-AES256-GCM-SHA384:256:NO);
-        Fri, 14 Feb 2020 17:32:13 +0000 (UTC)
-From:   "Jason A. Donenfeld" <Jason@zx2c4.com>
-To:     davem@davemloft.net, netdev@vger.kernel.org
-Cc:     "Jason A. Donenfeld" <Jason@zx2c4.com>,
-        Eric Dumazet <edumazet@google.com>
-Subject: [PATCH v2 net 3/3] wireguard: send: account for mtu=0 devices
-Date:   Fri, 14 Feb 2020 18:34:07 +0100
-Message-Id: <20200214173407.52521-4-Jason@zx2c4.com>
-In-Reply-To: <20200214173407.52521-1-Jason@zx2c4.com>
-References: <20200214173407.52521-1-Jason@zx2c4.com>
+        id S1729417AbgBNRjq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 14 Feb 2020 12:39:46 -0500
+Received: from mail-wr1-f48.google.com ([209.85.221.48]:46365 "EHLO
+        mail-wr1-f48.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729298AbgBNRjo (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 14 Feb 2020 12:39:44 -0500
+Received: by mail-wr1-f48.google.com with SMTP id z7so11830733wrl.13
+        for <netdev@vger.kernel.org>; Fri, 14 Feb 2020 09:39:42 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=pYuOJLW01DzOuCLaDBQPnbbeoDpAXhJ8eRHOWxJepx8=;
+        b=JP3Vg9cacoCrHrFk85nOqvzwEVxDp7vVzICFyuHBNg6gpRjWnDxoFmQWvvwe84w50B
+         4UjBJZEXOiNZFvbmMWD105VKwNNci0hLy0yLclKxVrw3qHUznOTrVaQZGP2g8GBDDXkX
+         HGGrS5ZOMowNVv2JjDqDHMy9T+ABbS3bQe7OwTW+K/dvcZYzjx/iotS9dKRC0p+5St2k
+         6gZ2aZeSo+YGilNZ+hJN418BP1jlPJU8vGflC6q/FjeZw1bbM0zxxeznrivFqmWtcTEe
+         FRChZ/aqz2h52msbgW4iCgdXfl3nPf7czsWw3hbiWX9f+WEQdC4tj5DjO33RXEnjwMdC
+         RjJg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=pYuOJLW01DzOuCLaDBQPnbbeoDpAXhJ8eRHOWxJepx8=;
+        b=iz+jwzPkq+mqtN7rZQa8id0LSbeNuyd6qXDcQ7PigEtYAdn8107VnkvraRLJDKMW1i
+         rqRRNRxAYOLekSKevyYqtNy1PXxX0fgYzXHQOnlXtYN8qqGZvhZ6ED7TJ0S31JuMvCzL
+         GYy/6OBt8X6gLP5DeWwJeHBGNTEsbuKudhCanouYOBOv2LqGNddOFKMGejmKcxOr6Cuu
+         NE9lO2uOwfEN4Oeipr+H5Zn+CaxwZLdihus8dzSoj43yfsEbLdAQzGpjSltlHUsud209
+         60VGwbiFu62XSaj8+tWfT+tYw8M9vNv7hpVwoRUO/PZAYWEJ6IRBfFDBGwicl5hMKAvP
+         fGHg==
+X-Gm-Message-State: APjAAAWK+y0Vhxw1RyIiZyfjtw53aLPyuxJlRGtO7fzvVLH4KDLxRJfs
+        ArPEm6v1JxXqjiKB9NqEjfGVqjOcT9uIOr45vtKipz0U
+X-Google-Smtp-Source: APXvYqzD6D+4LImyanYPp8o7IHsMNenEEvRxMpNs4luLxus9ZkM/5l8z+TGWK1iDprQfXdxcXgBnMzQH1GHcjk5gwco=
+X-Received: by 2002:a5d:4c88:: with SMTP id z8mr5086837wrs.395.1581701981660;
+ Fri, 14 Feb 2020 09:39:41 -0800 (PST)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <cover.1581676056.git.lucien.xin@gmail.com> <44db73e423003e95740f831e1d16a4043bb75034.1581676056.git.lucien.xin@gmail.com>
+ <77f68795aeb3faeaf76078be9311fded7f716ea5.1581676056.git.lucien.xin@gmail.com>
+ <290ab5d2dc06b183159d293ab216962a3cc0df6d.1581676056.git.lucien.xin@gmail.com>
+ <20200214081324.48dc2090@hermes.lan>
+In-Reply-To: <20200214081324.48dc2090@hermes.lan>
+From:   Xin Long <lucien.xin@gmail.com>
+Date:   Sat, 15 Feb 2020 01:40:27 +0800
+Message-ID: <CADvbK_dYwQ6LTuNPfGjdZPkFbrV2_vrX7OL7q3oR9830Mb8NcQ@mail.gmail.com>
+Subject: Re: [PATCHv3 iproute2-next 3/7] iproute_lwtunnel: add options support
+ for erspan metadata
+To:     Stephen Hemminger <stephen@networkplumber.org>
+Cc:     network dev <netdev@vger.kernel.org>,
+        Simon Horman <simon.horman@netronome.com>,
+        David Ahern <dsahern@gmail.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-It turns out there's an easy way to get packets queued up while still
-having an MTU of zero, and that's via persistent keep alive. This commit
-makes sure that in whatever condition, we don't wind up dividing by
-zero. Note that an MTU of zero for a wireguard interface is something
-quasi-valid, so I don't think the correct fix is to limit it via
-min_mtu. This can be reproduced easily with:
+On Sat, Feb 15, 2020 at 12:13 AM Stephen Hemminger
+<stephen@networkplumber.org> wrote:
+>
+> On Fri, 14 Feb 2020 18:30:47 +0800
+> Xin Long <lucien.xin@gmail.com> wrote:
+>
+> > +
+> > +     open_json_array(PRINT_JSON, name);
+> > +     open_json_object(NULL);
+> > +     print_uint(PRINT_JSON, "ver", NULL, ver);
+> > +     print_uint(PRINT_JSON, "index", NULL, idx);
+> > +     print_uint(PRINT_JSON, "dir", NULL, dir);
+> > +     print_uint(PRINT_JSON, "hwid", NULL, hwid);
+> > +     close_json_object();
+> > +     close_json_array(PRINT_JSON, name);
+> > +
+> > +     print_nl();
+> > +     print_string(PRINT_FP, name, "\t%s ", name);
+> > +     sprintf(strbuf, "%02x:%08x:%02x:%02x", ver, idx, dir, hwid);
+> > +     print_string(PRINT_FP, NULL, "%s ", strbuf);
+> > +}
+>
+> Instead of having two sets of prints, is it possible to do this
+>         print_nl();
+>         print_string(PRINT_FP, NULL, "\t", NULL);
+>
+>         open_json_array(PRINT_ANY, name);
+>         open_json_object(NULL);
+>         print_0xhex(PRINT_ANY, "ver", " %02x", ver);
+>         print_0xhex(PRINT_ANY, "idx", ":%08x", idx);
+>         print_0xhex(PRINT_ANY, "dir", ":%02x", dir);
+>         print_0xhex(PRINT_ANY, "hwid", ":%02x", hwid)
+>         close_json_object();
+>         close_json_array(PRINT_ANY, " ");
+Hi Stephen,
 
-ip link add wg0 type wireguard
-ip link add wg1 type wireguard
-ip link set wg0 up mtu 0
-ip link set wg1 up
-wg set wg0 private-key <(wg genkey)
-wg set wg1 listen-port 1 private-key <(wg genkey) peer $(wg show wg0 public-key)
-wg set wg0 peer $(wg show wg1 public-key) persistent-keepalive 1 endpoint 127.0.0.1:1
+This's not gonna work. as the output will be:
+{"ver":"0x2","idx":"0","dir":"0x1","hwid":"0x2"}  (string)
+instead of
+{"ver":2,"index":0,"dir":1,"hwid":2} (number)
 
-However, while min_mtu=0 seems fine, it makes sense to restrict the
-max_mtu. This commit also restricts the maximum MTU to the greatest
-number for which rounding up to the padding multiple won't overflow a
-signed integer. Packets this large were always rejected anyway
-eventually, due to checks deeper in, but it seems more sound not to even
-let the administrator configure something that won't work anyway.
+>
+> Also, you seem to not hear the request to not use opaque hex values
+> in the iproute2 interface. The version, index, etc should be distinct
+> parameter values not a hex string.
+The opts STRING, especially these like "XX:YY:ZZ" are represented
+as hex string on both adding and dumping. It is to keep consistent with
+geneve_opts in m_tunnel_key and f_flower,  see
 
-We use this opportunity to clean up this function a bit so that it's
-clear which paths we're expecting.
+commit 6217917a382682d8e8a7ecdeb0c6626f701a0933
+Author: Simon Horman <simon.horman@netronome.com>
+Date:   Thu Jul 5 17:12:00 2018 -0700
 
-Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
-Cc: Eric Dumazet <edumazet@google.com>
----
- drivers/net/wireguard/device.c |  7 ++++---
- drivers/net/wireguard/send.c   | 16 +++++++++++-----
- 2 files changed, 15 insertions(+), 8 deletions(-)
+    tc: m_tunnel_key: Add tunnel option support to act_tunnel_key
 
-diff --git a/drivers/net/wireguard/device.c b/drivers/net/wireguard/device.c
-index 43db442b1373..cdc96968b0f4 100644
---- a/drivers/net/wireguard/device.c
-+++ b/drivers/net/wireguard/device.c
-@@ -258,6 +258,8 @@ static void wg_setup(struct net_device *dev)
- 	enum { WG_NETDEV_FEATURES = NETIF_F_HW_CSUM | NETIF_F_RXCSUM |
- 				    NETIF_F_SG | NETIF_F_GSO |
- 				    NETIF_F_GSO_SOFTWARE | NETIF_F_HIGHDMA };
-+	const int overhead = MESSAGE_MINIMUM_LENGTH + sizeof(struct udphdr) +
-+			     max(sizeof(struct ipv6hdr), sizeof(struct iphdr));
- 
- 	dev->netdev_ops = &netdev_ops;
- 	dev->hard_header_len = 0;
-@@ -271,9 +273,8 @@ static void wg_setup(struct net_device *dev)
- 	dev->features |= WG_NETDEV_FEATURES;
- 	dev->hw_features |= WG_NETDEV_FEATURES;
- 	dev->hw_enc_features |= WG_NETDEV_FEATURES;
--	dev->mtu = ETH_DATA_LEN - MESSAGE_MINIMUM_LENGTH -
--		   sizeof(struct udphdr) -
--		   max(sizeof(struct ipv6hdr), sizeof(struct iphdr));
-+	dev->mtu = ETH_DATA_LEN - overhead;
-+	dev->max_mtu = round_down(INT_MAX, MESSAGE_PADDING_MULTIPLE) - overhead;
- 
- 	SET_NETDEV_DEVTYPE(dev, &device_type);
- 
-diff --git a/drivers/net/wireguard/send.c b/drivers/net/wireguard/send.c
-index c13260563446..2a9990ab66cd 100644
---- a/drivers/net/wireguard/send.c
-+++ b/drivers/net/wireguard/send.c
-@@ -143,16 +143,22 @@ static void keep_key_fresh(struct wg_peer *peer)
- 
- static unsigned int calculate_skb_padding(struct sk_buff *skb)
- {
-+	unsigned int padded_size, last_unit = skb->len;
-+
-+	if (unlikely(!PACKET_CB(skb)->mtu))
-+		return -last_unit % MESSAGE_PADDING_MULTIPLE;
-+
- 	/* We do this modulo business with the MTU, just in case the networking
- 	 * layer gives us a packet that's bigger than the MTU. In that case, we
- 	 * wouldn't want the final subtraction to overflow in the case of the
--	 * padded_size being clamped.
-+	 * padded_size being clamped. Fortunately, that's very rarely the case,
-+	 * so we optimize for that not happening.
- 	 */
--	unsigned int last_unit = skb->len % PACKET_CB(skb)->mtu;
--	unsigned int padded_size = ALIGN(last_unit, MESSAGE_PADDING_MULTIPLE);
-+	if (unlikely(last_unit > PACKET_CB(skb)->mtu))
-+		last_unit %= PACKET_CB(skb)->mtu;
- 
--	if (padded_size > PACKET_CB(skb)->mtu)
--		padded_size = PACKET_CB(skb)->mtu;
-+	padded_size = min(PACKET_CB(skb)->mtu,
-+			  ALIGN(last_unit, MESSAGE_PADDING_MULTIPLE));
- 	return padded_size - last_unit;
- }
- 
--- 
-2.25.0
+and
+commit 56155d4df86d489c4207444c8a90ce4e0e22e49f
+Author: Pieter Jansen van Vuuren <pieter.jansenvanvuuren@netronome.com>
+Date:   Fri Sep 28 16:03:39 2018 +0200
 
+    tc: f_flower: add geneve option match support to flower
+
+and actually, the code type I'm using is exactly from these 2 patches.
+please take a look.
+
+I don't think this patchset should go to another type of format for opts.
+
+Thanks.
+
+>
+> I think this still needs more work before merging.
