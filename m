@@ -2,22 +2,22 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 2456B15FA68
-	for <lists+netdev@lfdr.de>; Sat, 15 Feb 2020 00:24:35 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 403F815FA64
+	for <lists+netdev@lfdr.de>; Sat, 15 Feb 2020 00:24:33 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728335AbgBNXXK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 14 Feb 2020 18:23:10 -0500
+        id S1728048AbgBNXXE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 14 Feb 2020 18:23:04 -0500
 Received: from mga02.intel.com ([134.134.136.20]:41443 "EHLO mga02.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727458AbgBNXW2 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 14 Feb 2020 18:22:28 -0500
+        id S1728208AbgBNXW3 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 14 Feb 2020 18:22:29 -0500
 X-Amp-Result: SKIPPED(no attachment in message)
 X-Amp-File-Uploaded: False
 Received: from fmsmga008.fm.intel.com ([10.253.24.58])
   by orsmga101.jf.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 14 Feb 2020 15:22:27 -0800
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.70,442,1574150400"; 
-   d="scan'208";a="228629290"
+   d="scan'208";a="228629293"
 Received: from jekeller-desk.amr.corp.intel.com (HELO jekeller-desk.jekeller.internal) ([10.166.244.172])
   by fmsmga008.fm.intel.com with ESMTP; 14 Feb 2020 15:22:27 -0800
 From:   Jacob Keller <jacob.e.keller@intel.com>
@@ -25,9 +25,9 @@ To:     netdev@vger.kernel.org
 Cc:     jiri@resnulli.us, valex@mellanox.com, linyunsheng@huawei.com,
         lihong.yang@intel.com, kuba@kernel.org,
         Jacob Keller <jacob.e.keller@intel.com>
-Subject: [RFC PATCH v2 08/22] devlink: prepare to support region operations
-Date:   Fri, 14 Feb 2020 15:22:07 -0800
-Message-Id: <20200214232223.3442651-9-jacob.e.keller@intel.com>
+Subject: [RFC PATCH v2 09/22] devlink: convert snapshot destructor callback to region op
+Date:   Fri, 14 Feb 2020 15:22:08 -0800
+Message-Id: <20200214232223.3442651-10-jacob.e.keller@intel.com>
 X-Mailer: git-send-email 2.25.0.368.g28a2d05eebfb
 In-Reply-To: <20200214232223.3442651-1-jacob.e.keller@intel.com>
 References: <20200214232223.3442651-1-jacob.e.keller@intel.com>
@@ -38,203 +38,161 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Modify the devlink region code in preparation for adding new operations
-on regions.
+It does not makes sense that two snapshots for a given region would use
+different destructors. Simplify snapshot creation by adding
+a .destructor op for regions.
 
-Create a devlink_region_ops structure, and move the name pointer from
-within the devlink_region structure into the ops structure (similar to
-the devlink_health_reporter_ops).
+This operation will replace the data_destructor for the snapshot
+creation, and makes snapshot creation easier.
 
-This prepares the regions to enable support of additional operations in
-the future such as requesting snapshots, or accessing the region
-directly without a snapshot.
-
-In order to re-use the constant strings in the mlx4 driver their
-declaration must be changed to 'const char * const' to ensure the
-compiler realizes that both the data and the pointer cannot change.
-
+Noticed-by: Jakub Kicinski <kuba@kernel.org>
 Signed-off-by: Jacob Keller <jacob.e.keller@intel.com>
-Reviewed-by: Jakub Kicinski <kuba@kernel.org>
 ---
- drivers/net/ethernet/mellanox/mlx4/crdump.c | 16 +++++++++++----
- drivers/net/netdevsim/dev.c                 |  6 +++++-
- include/net/devlink.h                       | 16 +++++++++++----
- net/core/devlink.c                          | 22 ++++++++++-----------
- 4 files changed, 40 insertions(+), 20 deletions(-)
+ drivers/net/ethernet/mellanox/mlx4/crdump.c |  6 ++++--
+ drivers/net/netdevsim/dev.c                 |  3 ++-
+ include/net/devlink.h                       |  7 +++----
+ net/core/devlink.c                          | 11 +++++------
+ 4 files changed, 14 insertions(+), 13 deletions(-)
 
 diff --git a/drivers/net/ethernet/mellanox/mlx4/crdump.c b/drivers/net/ethernet/mellanox/mlx4/crdump.c
-index 64ed725aec28..cc2bf596c74b 100644
+index cc2bf596c74b..c3f90c0f9554 100644
 --- a/drivers/net/ethernet/mellanox/mlx4/crdump.c
 +++ b/drivers/net/ethernet/mellanox/mlx4/crdump.c
-@@ -38,8 +38,16 @@
- #define CR_ENABLE_BIT_OFFSET		0xF3F04
- #define MAX_NUM_OF_DUMPS_TO_STORE	(8)
+@@ -43,10 +43,12 @@ static const char * const region_fw_health_str = "fw-health";
  
--static const char *region_cr_space_str = "cr-space";
--static const char *region_fw_health_str = "fw-health";
-+static const char * const region_cr_space_str = "cr-space";
-+static const char * const region_fw_health_str = "fw-health";
-+
-+static const struct devlink_region_ops region_cr_space_ops = {
-+	.name = region_cr_space_str,
-+};
-+
-+static const struct devlink_region_ops region_fw_health_ops = {
-+	.name = region_fw_health_str,
-+};
+ static const struct devlink_region_ops region_cr_space_ops = {
+ 	.name = region_cr_space_str,
++	.destructor = &kvfree,
+ };
+ 
+ static const struct devlink_region_ops region_fw_health_ops = {
+ 	.name = region_fw_health_str,
++	.destructor = &kvfree,
+ };
  
  /* Set to true in case cr enable bit was set to true before crdump */
- static bool crdump_enbale_bit_set;
-@@ -205,7 +213,7 @@ int mlx4_crdump_init(struct mlx4_dev *dev)
- 	/* Create cr-space region */
- 	crdump->region_crspace =
- 		devlink_region_create(devlink,
--				      region_cr_space_str,
-+				      &region_cr_space_ops,
- 				      MAX_NUM_OF_DUMPS_TO_STORE,
- 				      pci_resource_len(pdev, 0));
- 	if (IS_ERR(crdump->region_crspace))
-@@ -216,7 +224,7 @@ int mlx4_crdump_init(struct mlx4_dev *dev)
- 	/* Create fw-health region */
- 	crdump->region_fw_health =
- 		devlink_region_create(devlink,
--				      region_fw_health_str,
-+				      &region_fw_health_ops,
- 				      MAX_NUM_OF_DUMPS_TO_STORE,
- 				      HEALTH_BUFFER_SIZE);
- 	if (IS_ERR(crdump->region_fw_health))
+@@ -107,7 +109,7 @@ static void mlx4_crdump_collect_crspace(struct mlx4_dev *dev,
+ 					readl(cr_space + offset);
+ 
+ 		err = devlink_region_snapshot_create(crdump->region_crspace,
+-						     crspace_data, id, &kvfree);
++						     crspace_data, id);
+ 		if (err) {
+ 			kvfree(crspace_data);
+ 			mlx4_warn(dev, "crdump: devlink create %s snapshot id %d err %d\n",
+@@ -146,7 +148,7 @@ static void mlx4_crdump_collect_fw_health(struct mlx4_dev *dev,
+ 					readl(health_buf_start + offset);
+ 
+ 		err = devlink_region_snapshot_create(crdump->region_fw_health,
+-						     health_data, id, &kvfree);
++						     health_data, id);
+ 		if (err) {
+ 			kvfree(health_data);
+ 			mlx4_warn(dev, "crdump: devlink create %s snapshot id %d err %d\n",
 diff --git a/drivers/net/netdevsim/dev.c b/drivers/net/netdevsim/dev.c
-index d7706a0346f2..3365de48ea9d 100644
+index 3365de48ea9d..5b1ba67fd4a0 100644
 --- a/drivers/net/netdevsim/dev.c
 +++ b/drivers/net/netdevsim/dev.c
-@@ -245,11 +245,15 @@ static void nsim_devlink_param_load_driverinit_values(struct devlink *devlink)
+@@ -55,7 +55,7 @@ static ssize_t nsim_dev_take_snapshot_write(struct file *file,
  
- #define NSIM_DEV_DUMMY_REGION_SNAPSHOT_MAX 16
+ 	id = devlink_region_snapshot_id_get(priv_to_devlink(nsim_dev));
+ 	err = devlink_region_snapshot_create(nsim_dev->dummy_region,
+-					     dummy_data, id, kfree);
++					     dummy_data, id);
+ 	if (err) {
+ 		pr_err("Failed to create region snapshot\n");
+ 		kfree(dummy_data);
+@@ -247,6 +247,7 @@ static void nsim_devlink_param_load_driverinit_values(struct devlink *devlink)
  
-+static const struct devlink_region_ops dummy_region_ops = {
-+	.name = "dummy",
-+};
-+
+ static const struct devlink_region_ops dummy_region_ops = {
+ 	.name = "dummy",
++	.destructor = &kfree,
+ };
+ 
  static int nsim_dev_dummy_region_init(struct nsim_dev *nsim_dev,
- 				      struct devlink *devlink)
- {
- 	nsim_dev->dummy_region =
--		devlink_region_create(devlink, "dummy",
-+		devlink_region_create(devlink, &dummy_region_ops,
- 				      NSIM_DEV_DUMMY_REGION_SNAPSHOT_MAX,
- 				      NSIM_DEV_DUMMY_REGION_SIZE);
- 	return PTR_ERR_OR_ZERO(nsim_dev->dummy_region);
 diff --git a/include/net/devlink.h b/include/net/devlink.h
-index ce5cea428fdc..7012bda22aa8 100644
+index 7012bda22aa8..437d3f51a5ab 100644
 --- a/include/net/devlink.h
 +++ b/include/net/devlink.h
-@@ -495,6 +495,14 @@ struct devlink_info_req;
+@@ -493,14 +493,14 @@ enum devlink_param_generic_id {
+ struct devlink_region;
+ struct devlink_info_req;
  
- typedef void devlink_snapshot_data_dest_t(const void *data);
+-typedef void devlink_snapshot_data_dest_t(const void *data);
+-
+ /**
+  * struct devlink_region_ops - Region operations
+  * @name: region name
++ * @destructor: callback used to free snapshot memory when deleting
+  */
+ struct devlink_region_ops {
+ 	const char *name;
++	void (*destructor)(const void *data);
+ };
  
-+/**
-+ * struct devlink_region_ops - Region operations
-+ * @name: region name
-+ */
-+struct devlink_region_ops {
-+	const char *name;
-+};
-+
  struct devlink_fmsg;
- struct devlink_health_reporter;
- 
-@@ -949,10 +957,10 @@ void devlink_port_param_value_changed(struct devlink_port *devlink_port,
- 				      u32 param_id);
- void devlink_param_value_str_fill(union devlink_param_value *dst_val,
- 				  const char *src);
--struct devlink_region *devlink_region_create(struct devlink *devlink,
--					     const char *region_name,
--					     u32 region_max_snapshots,
--					     u64 region_size);
-+struct devlink_region *
-+devlink_region_create(struct devlink *devlink,
-+		      const struct devlink_region_ops *ops,
-+		      u32 region_max_snapshots, u64 region_size);
+@@ -964,8 +964,7 @@ devlink_region_create(struct devlink *devlink,
  void devlink_region_destroy(struct devlink_region *region);
  u32 devlink_region_snapshot_id_get(struct devlink *devlink);
  int devlink_region_snapshot_create(struct devlink_region *region,
+-				   u8 *data, u32 snapshot_id,
+-				   devlink_snapshot_data_dest_t *data_destructor);
++				   u8 *data, u32 snapshot_id);
+ int devlink_info_serial_number_put(struct devlink_info_req *req,
+ 				   const char *sn);
+ int devlink_info_driver_name_put(struct devlink_info_req *req,
 diff --git a/net/core/devlink.c b/net/core/devlink.c
-index 549ee56b7a21..4128fd1f604a 100644
+index 4128fd1f604a..7f9e98776434 100644
 --- a/net/core/devlink.c
 +++ b/net/core/devlink.c
-@@ -344,7 +344,7 @@ devlink_sb_tc_index_get_from_info(struct devlink_sb *devlink_sb,
- struct devlink_region {
- 	struct devlink *devlink;
+@@ -354,7 +354,6 @@ struct devlink_region {
+ struct devlink_snapshot {
  	struct list_head list;
--	const char *name;
-+	const struct devlink_region_ops *ops;
- 	struct list_head snapshot_list;
- 	u32 max_snapshots;
- 	u32 cur_snapshots;
-@@ -365,7 +365,7 @@ devlink_region_get_by_name(struct devlink *devlink, const char *region_name)
  	struct devlink_region *region;
+-	devlink_snapshot_data_dest_t *data_destructor;
+ 	u8 *data;
+ 	u32 id;
+ };
+@@ -3767,7 +3766,7 @@ static void devlink_region_snapshot_del(struct devlink_region *region,
+ 	devlink_nl_region_notify(region, snapshot, DEVLINK_CMD_REGION_DEL);
+ 	region->cur_snapshots--;
+ 	list_del(&snapshot->list);
+-	(*snapshot->data_destructor)(snapshot->data);
++	region->ops->destructor(snapshot->data);
+ 	kfree(snapshot);
+ }
  
- 	list_for_each_entry(region, &devlink->region_list, list)
--		if (!strcmp(region->name, region_name))
-+		if (!strcmp(region->ops->name, region_name))
- 			return region;
- 
- 	return NULL;
-@@ -3687,7 +3687,7 @@ static int devlink_nl_region_fill(struct sk_buff *msg, struct devlink *devlink,
- 	if (err)
- 		goto nla_put_failure;
- 
--	err = nla_put_string(msg, DEVLINK_ATTR_REGION_NAME, region->name);
-+	err = nla_put_string(msg, DEVLINK_ATTR_REGION_NAME, region->ops->name);
- 	if (err)
- 		goto nla_put_failure;
- 
-@@ -3733,7 +3733,7 @@ static void devlink_nl_region_notify(struct devlink_region *region,
- 		goto out_cancel_msg;
- 
- 	err = nla_put_string(msg, DEVLINK_ATTR_REGION_NAME,
--			     region->name);
-+			     region->ops->name);
- 	if (err)
- 		goto out_cancel_msg;
- 
-@@ -7536,21 +7536,21 @@ EXPORT_SYMBOL_GPL(devlink_param_value_str_fill);
-  *	devlink_region_create - create a new address region
-  *
-  *	@devlink: devlink
-- *	@region_name: region name
-+ *	@ops: region operations and name
-  *	@region_max_snapshots: Maximum supported number of snapshots for region
-  *	@region_size: size of region
-  */
--struct devlink_region *devlink_region_create(struct devlink *devlink,
--					     const char *region_name,
--					     u32 region_max_snapshots,
--					     u64 region_size)
-+struct devlink_region *
-+devlink_region_create(struct devlink *devlink,
-+		      const struct devlink_region_ops *ops,
-+		      u32 region_max_snapshots, u64 region_size)
- {
+@@ -7548,6 +7547,9 @@ devlink_region_create(struct devlink *devlink,
  	struct devlink_region *region;
  	int err = 0;
  
++	if (WARN_ON(!ops) || WARN_ON(!ops->destructor))
++		return ERR_PTR(-EINVAL);
++
  	mutex_lock(&devlink->lock);
  
--	if (devlink_region_get_by_name(devlink, region_name)) {
-+	if (devlink_region_get_by_name(devlink, ops->name)) {
- 		err = -EEXIST;
- 		goto unlock;
- 	}
-@@ -7563,7 +7563,7 @@ struct devlink_region *devlink_region_create(struct devlink *devlink,
+ 	if (devlink_region_get_by_name(devlink, ops->name)) {
+@@ -7634,11 +7636,9 @@ EXPORT_SYMBOL_GPL(devlink_region_snapshot_id_get);
+  *	@region: devlink region of the snapshot
+  *	@data: snapshot data
+  *	@snapshot_id: snapshot id to be created
+- *	@data_destructor: pointer to destructor function to free data
+  */
+ int devlink_region_snapshot_create(struct devlink_region *region,
+-				   u8 *data, u32 snapshot_id,
+-				   devlink_snapshot_data_dest_t *data_destructor)
++				   u8 *data, u32 snapshot_id)
+ {
+ 	struct devlink *devlink = region->devlink;
+ 	struct devlink_snapshot *snapshot;
+@@ -7666,7 +7666,6 @@ int devlink_region_snapshot_create(struct devlink_region *region,
+ 	snapshot->id = snapshot_id;
+ 	snapshot->region = region;
+ 	snapshot->data = data;
+-	snapshot->data_destructor = data_destructor;
  
- 	region->devlink = devlink;
- 	region->max_snapshots = region_max_snapshots;
--	region->name = region_name;
-+	region->ops = ops;
- 	region->size = region_size;
- 	INIT_LIST_HEAD(&region->snapshot_list);
- 	list_add_tail(&region->list, &devlink->region_list);
+ 	list_add_tail(&snapshot->list, &region->snapshot_list);
+ 
 -- 
 2.25.0.368.g28a2d05eebfb
 
