@@ -2,50 +2,48 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 0EE1215DB4E
+	by mail.lfdr.de (Postfix) with ESMTP id 7908715DB4F
 	for <lists+netdev@lfdr.de>; Fri, 14 Feb 2020 16:45:22 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729573AbgBNPpR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 14 Feb 2020 10:45:17 -0500
-Received: from mx0b-0016f401.pphosted.com ([67.231.156.173]:17428 "EHLO
+        id S1729585AbgBNPpT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 14 Feb 2020 10:45:19 -0500
+Received: from mx0b-0016f401.pphosted.com ([67.231.156.173]:37016 "EHLO
         mx0b-0016f401.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1728859AbgBNPpR (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 14 Feb 2020 10:45:17 -0500
+        by vger.kernel.org with ESMTP id S1728859AbgBNPpT (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 14 Feb 2020 10:45:19 -0500
 Received: from pps.filterd (m0045851.ppops.net [127.0.0.1])
-        by mx0b-0016f401.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 01EFj7u1005985;
-        Fri, 14 Feb 2020 07:45:15 -0800
+        by mx0b-0016f401.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 01EFjDj8006473;
+        Fri, 14 Feb 2020 07:45:17 -0800
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=marvell.com; h=from : to : cc :
  subject : date : message-id : in-reply-to : references : mime-version :
- content-type; s=pfpt0818; bh=nTV3r0z1YTr4OmZgpxhxQqx2OcwJ7Th5v2u62MA2kgE=;
- b=evnA0cbzSqJBoRx+i8mGui9vs0NX2AKUFgVW1glXom1VVRtV+SSo4iptrbpQioJs1P6X
- umtLm6FDUKCATzQJfPuYP7xmpS42teRO+jg+ajT+4hgbn1upaiyY1bcWMGCVUe/ocx1x
- fDmPjTMVWdT5Xwexg5Ek0r3JTE+6F9jhvIm1Ej+T6bAvks1f0tgxabmgAXUwSzO28t0g
- MeYL5IfQPCbBmRP2sSvs7d6mvjIHSfQDM2tt0ggIOs8u6HoIQ98PSGS4D0GyvG9qf97p
- 6MgpIh9dQI0pcXa020TvmHmrZfEoJkwPI62d8A0/L0jHRGmKMcnwiWKexB+1gyNHB8KT 1A== 
-Received: from sc-exch02.marvell.com ([199.233.58.182])
-        by mx0b-0016f401.pphosted.com with ESMTP id 2y4j5k3par-1
+ content-type; s=pfpt0818; bh=b6NStWudufQzV9gAjRCxI7kXhJ6h63qPb8qjUoQ3Zrg=;
+ b=GUrO2Py+aXoUbQdxpSYhCjIr8lEBC6jRk3v+AHhK1qIIbCuxtUE2+WfDDh2IkWySv7eG
+ dVRTeUI71iPNZsY5nh+Dkry2CVf2KHU9MrXbWl/3sT76f/O4w0Nj5Al2FXEnL7kkpkbX
+ iwvBwrHaG+zilaFEPvxcCxH0q2t5diAVBNuoSHiGtunGjBp9GwRDpfjCvd4ICkRWlX37
+ ptwNbgijS13HfTxJePs3nTcoucCBb0JGJjLyhD08s2GRtsF/X3GHhOP7ceDQ9LdqfNlI
+ EavSPvbAe//AmH6jQRCaM686eGTla78K6lPz3p48TDEYzy94KAQrxvz6L4BN6ScDfFpq Dg== 
+Received: from sc-exch04.marvell.com ([199.233.58.184])
+        by mx0b-0016f401.pphosted.com with ESMTP id 2y4j5k3pau-1
         (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT);
-        Fri, 14 Feb 2020 07:45:15 -0800
-Received: from DC5-EXCH02.marvell.com (10.69.176.39) by SC-EXCH02.marvell.com
- (10.93.176.82) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Fri, 14 Feb
- 2020 07:45:13 -0800
-Received: from SC-EXCH03.marvell.com (10.93.176.83) by DC5-EXCH02.marvell.com
- (10.69.176.39) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Fri, 14 Feb
- 2020 07:45:13 -0800
-Received: from maili.marvell.com (10.93.176.43) by SC-EXCH03.marvell.com
- (10.93.176.83) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Fri, 14 Feb 2020 07:45:12 -0800
+        Fri, 14 Feb 2020 07:45:17 -0800
+Received: from SC-EXCH01.marvell.com (10.93.176.81) by SC-EXCH04.marvell.com
+ (10.93.176.84) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Fri, 14 Feb
+ 2020 07:45:14 -0800
+Received: from maili.marvell.com (10.93.176.43) by SC-EXCH01.marvell.com
+ (10.93.176.81) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
+ Transport; Fri, 14 Feb 2020 07:45:15 -0800
 Received: from NN-LT0019.rdc.aquantia.com (unknown [10.9.16.63])
-        by maili.marvell.com (Postfix) with ESMTP id 06EC53F703F;
-        Fri, 14 Feb 2020 07:45:10 -0800 (PST)
+        by maili.marvell.com (Postfix) with ESMTP id 31A353F7041;
+        Fri, 14 Feb 2020 07:45:12 -0800 (PST)
 From:   Igor Russkikh <irusskikh@marvell.com>
 To:     <netdev@vger.kernel.org>
 CC:     <dbogdanov@marvell.com>, <pbelous@marvell.com>,
         <ndanilov@marvell.com>, <davem@davemloft.net>,
-        Igor Russkikh <irusskikh@marvell.com>
-Subject: [PATCH net 2/8] net: atlantic: check rpc result and wait for rpc address
-Date:   Fri, 14 Feb 2020 18:44:52 +0300
-Message-ID: <293b71eea3185bb39ac3957e6cf18b3998361585.1580299250.git.irusskikh@marvell.com>
+        Igor Russkikh <irusskikh@marvell.com>,
+        Egor Pomozov <epomozov@marvell.com>
+Subject: [PATCH net 3/8] net: atlantic: ptp gpio adjustments
+Date:   Fri, 14 Feb 2020 18:44:53 +0300
+Message-ID: <4fa6fa30f18d66de4892bdd2e1ca63d02c20a619.1580299250.git.irusskikh@marvell.com>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <cover.1580299250.git.irusskikh@marvell.com>
 References: <cover.1580299250.git.irusskikh@marvell.com>
@@ -58,88 +56,90 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Artificial HW reliability tests revealed a possible hangup in
-the driver. Normally, when device disappears from bus, all
-register reads returns 0xFFFFFFFF.
+From: Egor Pomozov <epomozov@marvell.com>
 
-At remote procedure invocation towards FW there is a logic
-where result is compared with -1 in a loop.
-That caused an infinite loop if hardware due to some issues
-disappears from bus.
+Clock adjustment data should be passed to FW as well, otherwise in some
+cases a drift was observed when using GPIO features.
 
-Add extra result checks to prevent this.
-
-Signed-off-by: Dmitry Bogdanov <dbogdanov@marvell.com>
+Signed-off-by: Egor Pomozov <epomozov@marvell.com>
 Signed-off-by: Igor Russkikh <irusskikh@marvell.com>
+Signed-off-by: Dmitry Bogdanov <dbogdanov@marvell.com>
 ---
- .../aquantia/atlantic/hw_atl/hw_atl_utils.c   | 19 +++++++++++++++++--
- 1 file changed, 17 insertions(+), 2 deletions(-)
+ drivers/net/ethernet/aquantia/atlantic/aq_hw.h       |  2 ++
+ .../ethernet/aquantia/atlantic/hw_atl/hw_atl_b0.c    |  4 +++-
+ .../aquantia/atlantic/hw_atl/hw_atl_utils_fw2x.c     | 12 ++++++++++++
+ 3 files changed, 17 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/net/ethernet/aquantia/atlantic/hw_atl/hw_atl_utils.c b/drivers/net/ethernet/aquantia/atlantic/hw_atl/hw_atl_utils.c
-index f547baa6c954..354705f9bc49 100644
---- a/drivers/net/ethernet/aquantia/atlantic/hw_atl/hw_atl_utils.c
-+++ b/drivers/net/ethernet/aquantia/atlantic/hw_atl/hw_atl_utils.c
-@@ -22,6 +22,7 @@
- #define HW_ATL_MIF_ADDR         0x0208U
- #define HW_ATL_MIF_VAL          0x020CU
+diff --git a/drivers/net/ethernet/aquantia/atlantic/aq_hw.h b/drivers/net/ethernet/aquantia/atlantic/aq_hw.h
+index cc70c606b6ef..251767c31f7e 100644
+--- a/drivers/net/ethernet/aquantia/atlantic/aq_hw.h
++++ b/drivers/net/ethernet/aquantia/atlantic/aq_hw.h
+@@ -337,6 +337,8 @@ struct aq_fw_ops {
  
-+#define HW_ATL_MPI_RPC_ADDR     0x0334U
- #define HW_ATL_RPC_CONTROL_ADR  0x0338U
- #define HW_ATL_RPC_STATE_ADR    0x033CU
+ 	void (*enable_ptp)(struct aq_hw_s *self, int enable);
  
-@@ -53,15 +54,14 @@ enum mcp_area {
- };
- 
- static int hw_atl_utils_ver_match(u32 ver_expected, u32 ver_actual);
--
- static int hw_atl_utils_mpi_set_state(struct aq_hw_s *self,
- 				      enum hal_atl_utils_fw_state_e state);
--
- static u32 hw_atl_utils_get_mpi_mbox_tid(struct aq_hw_s *self);
- static u32 hw_atl_utils_mpi_get_state(struct aq_hw_s *self);
- static u32 hw_atl_utils_mif_cmd_get(struct aq_hw_s *self);
- static u32 hw_atl_utils_mif_addr_get(struct aq_hw_s *self);
- static u32 hw_atl_utils_rpc_state_get(struct aq_hw_s *self);
-+static u32 aq_fw1x_rpc_get(struct aq_hw_s *self);
- 
- int hw_atl_utils_initfw(struct aq_hw_s *self, const struct aq_fw_ops **fw_ops)
- {
-@@ -476,6 +476,10 @@ static int hw_atl_utils_init_ucp(struct aq_hw_s *self,
- 					self, self->mbox_addr,
- 					self->mbox_addr != 0U,
- 					1000U, 10000U);
-+	err = readx_poll_timeout_atomic(aq_fw1x_rpc_get, self,
-+					self->rpc_addr,
-+					self->rpc_addr != 0U,
-+					1000U, 100000U);
- 
- 	return err;
- }
-@@ -531,6 +535,12 @@ int hw_atl_utils_fw_rpc_wait(struct aq_hw_s *self,
- 						self, fw.val,
- 						sw.tid == fw.tid,
- 						1000U, 100000U);
-+		if (err < 0)
-+			goto err_exit;
++	void (*adjust_ptp)(struct aq_hw_s *self, uint64_t adj);
 +
-+		err = aq_hw_err_from_flags(self);
-+		if (err < 0)
-+			goto err_exit;
+ 	int (*set_eee_rate)(struct aq_hw_s *self, u32 speed);
  
- 		if (fw.len == 0xFFFFU) {
- 			err = hw_atl_utils_fw_rpc_call(self, sw.len);
-@@ -1025,6 +1035,11 @@ static u32 hw_atl_utils_rpc_state_get(struct aq_hw_s *self)
- 	return aq_hw_read_reg(self, HW_ATL_RPC_STATE_ADR);
+ 	int (*get_eee_rate)(struct aq_hw_s *self, u32 *rate,
+diff --git a/drivers/net/ethernet/aquantia/atlantic/hw_atl/hw_atl_b0.c b/drivers/net/ethernet/aquantia/atlantic/hw_atl/hw_atl_b0.c
+index 5784da26f868..9acdb3fbb750 100644
+--- a/drivers/net/ethernet/aquantia/atlantic/hw_atl/hw_atl_b0.c
++++ b/drivers/net/ethernet/aquantia/atlantic/hw_atl/hw_atl_b0.c
+@@ -1162,6 +1162,8 @@ static int hw_atl_b0_adj_sys_clock(struct aq_hw_s *self, s64 delta)
+ {
+ 	self->ptp_clk_offset += delta;
+ 
++	self->aq_fw_ops->adjust_ptp(self, self->ptp_clk_offset);
++
+ 	return 0;
  }
  
-+static u32 aq_fw1x_rpc_get(struct aq_hw_s *self)
+@@ -1212,7 +1214,7 @@ static int hw_atl_b0_gpio_pulse(struct aq_hw_s *self, u32 index,
+ 	fwreq.ptp_gpio_ctrl.index = index;
+ 	fwreq.ptp_gpio_ctrl.period = period;
+ 	/* Apply time offset */
+-	fwreq.ptp_gpio_ctrl.start = start - self->ptp_clk_offset;
++	fwreq.ptp_gpio_ctrl.start = start;
+ 
+ 	size = sizeof(fwreq.msg_id) + sizeof(fwreq.ptp_gpio_ctrl);
+ 	return self->aq_fw_ops->send_fw_request(self, &fwreq, size);
+diff --git a/drivers/net/ethernet/aquantia/atlantic/hw_atl/hw_atl_utils_fw2x.c b/drivers/net/ethernet/aquantia/atlantic/hw_atl/hw_atl_utils_fw2x.c
+index 97ebf849695f..77a4ed64830f 100644
+--- a/drivers/net/ethernet/aquantia/atlantic/hw_atl/hw_atl_utils_fw2x.c
++++ b/drivers/net/ethernet/aquantia/atlantic/hw_atl/hw_atl_utils_fw2x.c
+@@ -30,6 +30,9 @@
+ #define HW_ATL_FW3X_EXT_CONTROL_ADDR     0x378
+ #define HW_ATL_FW3X_EXT_STATE_ADDR       0x37c
+ 
++#define HW_ATL_FW3X_PTP_ADJ_LSW_ADDR	 0x50a0
++#define HW_ATL_FW3X_PTP_ADJ_MSW_ADDR	 0x50a4
++
+ #define HW_ATL_FW2X_CAP_PAUSE            BIT(CAPS_HI_PAUSE)
+ #define HW_ATL_FW2X_CAP_ASYM_PAUSE       BIT(CAPS_HI_ASYMMETRIC_PAUSE)
+ #define HW_ATL_FW2X_CAP_SLEEP_PROXY      BIT(CAPS_HI_SLEEP_PROXY)
+@@ -475,6 +478,14 @@ static void aq_fw3x_enable_ptp(struct aq_hw_s *self, int enable)
+ 	aq_hw_write_reg(self, HW_ATL_FW3X_EXT_CONTROL_ADDR, ptp_opts);
+ }
+ 
++static void aq_fw3x_adjust_ptp(struct aq_hw_s *self, uint64_t adj)
 +{
-+	return aq_hw_read_reg(self, HW_ATL_MPI_RPC_ADDR);
++	aq_hw_write_reg(self, HW_ATL_FW3X_PTP_ADJ_LSW_ADDR,
++			(adj >>  0) & 0xffffffff);
++	aq_hw_write_reg(self, HW_ATL_FW3X_PTP_ADJ_MSW_ADDR,
++			(adj >> 32) & 0xffffffff);
 +}
 +
- const struct aq_fw_ops aq_fw_1x_ops = {
- 	.init = hw_atl_utils_mpi_create,
- 	.deinit = hw_atl_fw1x_deinit,
+ static int aq_fw2x_led_control(struct aq_hw_s *self, u32 mode)
+ {
+ 	if (self->fw_ver_actual < HW_ATL_FW_VER_LED)
+@@ -633,4 +644,5 @@ const struct aq_fw_ops aq_fw_2x_ops = {
+ 	.enable_ptp         = aq_fw3x_enable_ptp,
+ 	.led_control        = aq_fw2x_led_control,
+ 	.set_phyloopback    = aq_fw2x_set_phyloopback,
++	.adjust_ptp         = aq_fw3x_adjust_ptp,
+ };
 -- 
 2.17.1
 
