@@ -2,118 +2,106 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id B52FD15EACE
-	for <lists+netdev@lfdr.de>; Fri, 14 Feb 2020 18:17:05 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 936B515EB92
+	for <lists+netdev@lfdr.de>; Fri, 14 Feb 2020 18:21:59 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2392736AbgBNRQJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 14 Feb 2020 12:16:09 -0500
-Received: from mail-ed1-f68.google.com ([209.85.208.68]:37524 "EHLO
-        mail-ed1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2390425AbgBNRQH (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 14 Feb 2020 12:16:07 -0500
-Received: by mail-ed1-f68.google.com with SMTP id t7so381808edr.4;
-        Fri, 14 Feb 2020 09:16:06 -0800 (PST)
+        id S2391939AbgBNRVg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 14 Feb 2020 12:21:36 -0500
+Received: from mail-lj1-f170.google.com ([209.85.208.170]:36341 "EHLO
+        mail-lj1-f170.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2391360AbgBNRVe (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 14 Feb 2020 12:21:34 -0500
+Received: by mail-lj1-f170.google.com with SMTP id r19so11570324ljg.3
+        for <netdev@vger.kernel.org>; Fri, 14 Feb 2020 09:21:33 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=+TQaiejN2oJWkvYEyn08fAwxJfSRMe4srFaIp4RWV5Q=;
-        b=oYLPl5qBYmO1vBuRlYsixTkkJW6FWJLFmxAwB1o1VnXY4DHfk8GvEarNEbfMQ/uszw
-         djdSQyjEQJOYpzwAt7k3HF0QZ2zI7Ks5n3/V4QuCzu/Ryhi4Zk0VY8QdGS3+s0aEPtmG
-         MvN22umgGn+1FoZaMcAM5UyXHsSRC4rJ54VmXrQ1PxbXHBsE+5dLMs/exSoFF4azmK+Q
-         tTbyyyJsk0nxgukBQ9lhC9pSiwK6KlqnjSywLkz0lP+b9qxbQen2bnhGmVfP6S3XBgwj
-         o4WtWsomcFn/CoyRIRnVUFQSqhSxn/8KBtEpuCAx0S0GWM6BxO6UWIzeBDhiJDNWJ0Ai
-         lT5w==
+        h=to:from:subject:message-id:date:user-agent:mime-version
+         :content-language:content-transfer-encoding;
+        bh=lht9Ow2Bc9TICgWtrUEjSgRB5YD4jANMEWWhF66y+Uw=;
+        b=exO8OgKLgG7Je+5M79ItGEEWeTRy2APsEOlFOQNXXIwfCGqAl7Ym3fTThwg/RAQVsj
+         tl+LT47E6vZGSK/6XtOW6TIQpAl8qX7HH68Qc5Lb3gEioYxR7UGrOoQvC02A2uE7IF9+
+         UhqyEN3So7zsU4jIPlITjOC/Vsr4GzZSpozU9vgZRppGNVMZBY6H/FsbYUc9P1nw3kzz
+         QS5GxCy2cDKS4yTAXpj2LJMT7Vrq2oZJnHfWwoIMBWoAPhOZmw3UtNW2QIS0OrAzhsOQ
+         M69MBziY9N73BQgmNtp62vXUnlg9j76H4wciXOZRzX3zz5h9MivhI2LSDyI/uDlizqu4
+         2Wyw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=+TQaiejN2oJWkvYEyn08fAwxJfSRMe4srFaIp4RWV5Q=;
-        b=Or4zPsXH1xG6r6qIW1tZVbarxQBgnlNkDiM4/M5dDiMawbIYTmAes0V5kMfkmdQqZw
-         MM193Lupx5cqEJrmlaOyLsqvXkmGsTHJbude6+s4mrtuGHXyWcPkYzVjp8TPW3P9QqgO
-         JyMCfMHqKeN9iDWYy9xAgEwb09boYoFFzeekkxHa0lN7z2XiAqK21A1kkGrbDYbz3zEu
-         crFZmEB9b/qs8ToTWcU/omSgv2GN/nCf49DbkdDWBxp7SwjQejl2wfOLiQJI77GT27Q1
-         GiGMXXVeGco1H4d1RLlFIfc/cAYKzFauVncKpRzaUpmqmMwvARiPI0hAAx3uly+SDj+A
-         Zq8A==
-X-Gm-Message-State: APjAAAXIo+62TbCk/rjzTqFq/Sb3NqKBw8bZ8tj9ay6/Bn9+Q6ObBwEg
-        9rFHWtBWCsjQ0InJ7GzYzJv1b46uQ9knmBtzfo2T1En4
-X-Google-Smtp-Source: APXvYqycb3Z4H8Wemp8qMTqfZ0sCEaV8Lc9arsL+tB8jQfxNHQ9YsIhHn5tU9xN5JGvOrWZ6wh8W8hVtPo/Osi4IerA=
-X-Received: by 2002:aa7:d3cb:: with SMTP id o11mr3715602edr.145.1581700565704;
- Fri, 14 Feb 2020 09:16:05 -0800 (PST)
+        h=x-gm-message-state:to:from:subject:message-id:date:user-agent
+         :mime-version:content-language:content-transfer-encoding;
+        bh=lht9Ow2Bc9TICgWtrUEjSgRB5YD4jANMEWWhF66y+Uw=;
+        b=C6rmVTjq0yWKnttTns9sbW8duQIrNon53faTuE4YxzUY7BXN3jmdhx05s6HYeFkJ0m
+         bo+w7YVO3OuJ6V+TgD1vwUooEaJwWA0xz3WHgOtM8RhgXFSC3CsTpdxK9knX7dHCaxGZ
+         PKXv8z71Jgw7647xQI+73AXcfxwLIEGoi1xqv0wV3SZNe2MNttQMhpS+zT0zYeMEIz1r
+         5dUos4Cu3dqcMedR/9Wyeft/0R00UbOV6IbmSy2cXPhaOxGJw8rGwpfwMFJzEdlBHKDy
+         HFaL9zirGi3t8BBSZed6k1ala0kVgD1sgb/H6q6QrlxnGHO4ACUI9YTI40C2q2SmPEFS
+         jFRQ==
+X-Gm-Message-State: APjAAAVzJH/FYPhbA0++9xi87PHH2iylSm6WAb5IaLiadrn9b/Jrw71v
+        8ufrKMMxNglMmVpCsqbzUUNsSBGX
+X-Google-Smtp-Source: APXvYqyLoBPNkGju+/86VPuw4TG11aF4pg8caFGOtDZYooohI2nPHbtdC0AkBAZmF3skud7IjarUkg==
+X-Received: by 2002:a2e:b5ac:: with SMTP id f12mr2807594ljn.0.1581700892203;
+        Fri, 14 Feb 2020 09:21:32 -0800 (PST)
+Received: from [192.168.1.10] (hst-227-49.splius.lt. [62.80.227.49])
+        by smtp.gmail.com with ESMTPSA id l3sm3804059lja.78.2020.02.14.09.21.31
+        for <netdev@vger.kernel.org>
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 14 Feb 2020 09:21:31 -0800 (PST)
+To:     netdev@vger.kernel.org
+From:   Vincas Dargis <vindrg@gmail.com>
+Subject: About r8169 regression 5.4
+Message-ID: <b46d29d8-faf6-351e-0d9f-a4d4c043a54c@gmail.com>
+Date:   Fri, 14 Feb 2020 19:21:30 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.5.0
 MIME-Version: 1.0
-References: <20200213191015.7150-1-f.fainelli@gmail.com> <CA+h21hqVWc6Tis12oJsfgXtsW2mJr0qUFu28G3qjMf-sOJWAwg@mail.gmail.com>
- <ab4e0ce1-dd48-8c1b-8753-a400dfcb38ec@gmail.com>
-In-Reply-To: <ab4e0ce1-dd48-8c1b-8753-a400dfcb38ec@gmail.com>
-From:   Vladimir Oltean <olteanv@gmail.com>
-Date:   Fri, 14 Feb 2020 19:15:54 +0200
-Message-ID: <CA+h21hr5U-E9En+R1C7bhh2+DpS9i0qTBHsnAk=pLeamcqTHMg@mail.gmail.com>
-Subject: Re: [PATCH net] net: dsa: b53: Ensure the default VID is untagged
-To:     Florian Fainelli <f.fainelli@gmail.com>
-Cc:     netdev <netdev@vger.kernel.org>, Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        open list <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, 14 Feb 2020 at 19:08, Florian Fainelli <f.fainelli@gmail.com> wrote:
->
->
->
-> On 2/14/2020 2:36 AM, Vladimir Oltean wrote:
-> > Hi Florian,
-> >
-> > On Thu, 13 Feb 2020 at 21:10, Florian Fainelli <f.fainelli@gmail.com> wrote:
-> >>
-> >> We need to ensure that the default VID is untagged otherwise the switch
-> >> will be sending frames tagged frames and the results can be problematic.
-> >> This is especially true with b53 switches that use VID 0 as their
-> >> default VLAN since VID 0 has a special meaning.
-> >>
-> >> Fixes: fea83353177a ("net: dsa: b53: Fix default VLAN ID")
-> >> Fixes: 061f6a505ac3 ("net: dsa: Add ndo_vlan_rx_{add, kill}_vid implementation")
-> >> Signed-off-by: Florian Fainelli <f.fainelli@gmail.com>
-> >> ---
-> >>  drivers/net/dsa/b53/b53_common.c | 3 +++
-> >>  1 file changed, 3 insertions(+)
-> >>
-> >> diff --git a/drivers/net/dsa/b53/b53_common.c b/drivers/net/dsa/b53/b53_common.c
-> >> index 449a22172e07..f25c43b300d4 100644
-> >> --- a/drivers/net/dsa/b53/b53_common.c
-> >> +++ b/drivers/net/dsa/b53/b53_common.c
-> >> @@ -1366,6 +1366,9 @@ void b53_vlan_add(struct dsa_switch *ds, int port,
-> >>
-> >>                 b53_get_vlan_entry(dev, vid, vl);
-> >>
-> >> +               if (vid == b53_default_pvid(dev))
-> >> +                       untagged = true;
-> >> +
-> >>                 vl->members |= BIT(port);
-> >>                 if (untagged && !dsa_is_cpu_port(ds, port))
-> >>                         vl->untag |= BIT(port);
-> >> --
-> >> 2.17.1
-> >>
-> >
-> > Don't you mean to force untagged egress only for the pvid value of 0?
->
-> The default VID (0 for most switches, 1 for 5325/65) is configured as
-> pvid during b53_configure_vlan() so when we get a call to port_vlan_add
-> with VID == 0 this is coming exclusively from
-> dsa_slave_vlan_rx_add_vid() since the bridge will never program a VID <
-> 1. When dsa_slave_vlan_rx_add_vid() calls us, we do not have any VLAN
-> flags set in the object.
-> --
-> Florian
+Hi,
 
-Exactly. So the only case you need to guard against is when vid == 0
-&& vid == b53_default_pvid(dev) - basically the 8021q module messing
-with your untagged (pvid-tagged) traffic. So both have to be zero in
-order to interfere. If vid is 0 but the b53_default_pvid is 1 - no
-problem. If vid is 1 and the b53_default_pvid is 1, again no problem.
-At least that's what you described in the previous patch. No?
+I've found similar issue I have myself since 5.4 on mailing list archive [0], for this device:
 
--Vladimir
+05:00.1 Ethernet controller: Realtek Semiconductor Co., Ltd. RTL8111/8168/8411 PCI Express Gigabit 
+Ethernet Controller (rev 12)
+         Subsystem: ASUSTeK Computer Inc. RTL8111/8168/8411 PCI Express Gigabit Ethernet Controller
+
+
+It works fine as long as I select 5.3 in Grub (it seems no longer maintained in Debian Sid though...)
+
+I see number of commits in net/etherenet/realtek tree, not sure if fix is there, or do we need 
+another fix for this particular device? I've keep testing latest Debian kernel updates (latest is 
+5.4.19-1), and no good news yet.
+
+There's Debian bug report [1] which might contain more information.
+
+Some extra info:
+
+$ sudo ethtool -i enp5s0f1
+driver: r8169
+version:
+firmware-version: rtl8411-2_0.0.1 07/08/13
+expansion-rom-version:
+bus-info: 0000:05:00.1
+supports-statistics: yes
+supports-test: no
+supports-eeprom-access: no
+supports-register-dump: yes
+supports-priv-flags: no
+
+
+$ sudo mii-tool -v enp5s0f1
+enp5s0f1: negotiated 1000baseT-FD flow-control, link ok
+   product info: vendor 00:07:32, model 0 rev 0
+   basic mode:   autonegotiation enabled
+   basic status: autonegotiation complete, link ok
+   capabilities: 1000baseT-FD 100baseTx-FD 100baseTx-HD 10baseT-FD 10baseT-HD
+   advertising:  1000baseT-FD 100baseTx-FD 100baseTx-HD 10baseT-FD 10baseT-HD flow-control
+   link partner: 1000baseT-FD 100baseTx-FD 100baseTx-HD 10baseT-FD 10baseT-HD flow-control
+
+
+[0] https://lkml.org/lkml/2019/11/30/119
+[1] https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=947685
